@@ -55,7 +55,6 @@ type
       FPassCount    : integer;
 
       FLineSmooth : Boolean;
-      FBlendline  : Boolean;
       FSolid      : Boolean;
 
       FBackGroundColor : TGLColor;
@@ -67,7 +66,6 @@ type
       FShadeModel : TGLShadeModel;
 
       procedure SetlineSmooth(v : boolean);
-      procedure SetBlendline(v : boolean);
       procedure SetSolid(v : boolean);
       procedure SetBackgroundColor(AColor: TGLColor);
       procedure SetLighting(v : boolean);
@@ -86,11 +84,8 @@ type
       { Published Declarations }
       property FrontLine : TGLLineSettings read FFrontLine write FFrontLine;
       property BackLine : TGLLineSettings read FBackLine write FBackLine;
-      {: Line smoothing control.<p>
-         Not that smoothing will be effective only if BlendLine is True. }
+      {: Line smoothing control }
       property LineSmooth : Boolean read FlineSmooth write SetlineSmooth default false;
-      {: Line transparency blending. }
-      property BlendLine : Boolean read FBlendline write SetBlendline default false;
       {: Solid controls if you can see through the front-line wireframe. }
       property Solid : Boolean read FSolid write SetSolid default false;
       {: Color used for solid fill. }
@@ -251,7 +246,7 @@ begin
       glDisable(GL_LINE_SMOOTH);
    end;
 
-   if BlendLine then begin
+   if LineSmooth or (FBackLine.FColor.Alpha<1) or (FFrontLine.FColor.Alpha<1) then begin
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    end else begin
@@ -332,16 +327,6 @@ procedure TGLHiddenLineShader.SetBackgroundColor(AColor: TGLColor);
 begin
    FBackgroundColor.Color:=AColor.Color;
    NotifyChange(Self);
-end;
-
-// SetBlendline
-//
-procedure TGLHiddenLineShader.SetBlendline(v: boolean);
-begin
-   if FBlendline<>v then begin
-      FBlendline:=v;
-      NotifyChange(self);
-   end;
 end;
 
 // SetlineSmooth

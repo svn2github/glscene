@@ -10,6 +10,7 @@
      <li> 3. Doesn't Works with visible backfaces.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/12/03 - NelC - Removed BlendLine, automatically determine if blend   
       <li>20/10/03 - NelC - Removed unnecessary properties. Shader now honors
                             rci.ignoreMaterials.
       <li>04/09/03 - NelC - Converted into a component from the TOutlineShader
@@ -33,12 +34,10 @@ type
          FPassCount : integer;
          FLineColor     : TGLColor;
          FOutlineSmooth : Boolean;
-         FBlendOutline  : Boolean;
          FOutlineWidth  : Single;
 
          procedure SetOutlineWidth(v : single);
          procedure SetOutlineSmooth(v : boolean);
-         procedure SetBlendOutline(v : boolean);
 
       protected
          { Protected Declarations }
@@ -53,11 +52,8 @@ type
       published
          { Published Declarations }
          property LineColor : TGLColor read FLineColor write FLineColor;
-         {: Line smoothing control.<p>
-            Not that smoothing will be effective only if BlendLine is True. }
+         {: Line smoothing control }
          property LineSmooth : Boolean read FOutlineSmooth write SetOutlineSmooth default false;
-         {: Line transparency blending. }         
-         property BlendLine : Boolean read FBlendOutline write SetBlendOutline default false;
          property LineWidth : Single read FOutlineWidth write SetOutlineWidth;
    end;
 
@@ -133,7 +129,7 @@ begin
             glDisable(GL_LINE_SMOOTH);
          end;
 
-         if FBlendOutline then begin
+         if FOutlineSmooth or (FlineColor.Alpha<1) then begin
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          end else begin
@@ -167,16 +163,6 @@ procedure TGLOutlineShader.SetOutlineWidth(v: single);
 begin
    if FOutlineWidth<>v then begin
       FOutlineWidth:=v;
-      NotifyChange(self);
-   end;
-end;
-
-// SetBlendOutline
-//
-procedure TGLOutlineShader.SetBlendOutline(v: boolean);
-begin
-   if FBlendOutline<>v then begin
-      FBlendOutline:=v;
       NotifyChange(self);
    end;
 end;
