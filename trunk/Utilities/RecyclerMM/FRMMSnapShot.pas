@@ -1,3 +1,9 @@
+// FRMMSnapShot
+{: Eric Grange<p>
+
+   Part of RecyclerMM, this form can display memory allocation and usage
+   statistics at runtime.
+}
 unit FRMMSnapShot;
 
 interface
@@ -92,13 +98,14 @@ begin
    Result.r:=Round(c1.r*invf+c2.r*f);
 end;
 
-function ByteSizeToString(size : Cardinal) : String;
+function SizeToString(size : Int64; const unitStr : String) : String;
 begin
    if size<1024*1024 then
-      Result:=Format('%.1f kB', [size*(1/1024)])
+      Result:=Format('%.1f k', [size*(1/1024)])
    else if size<1024*1024*1024 then
-      Result:=Format('%.1f MB', [size*(1/(1024*1024))])
-   else Result:=Format('%.1f GB', [size*(1/(1024*1024*1024))]);
+      Result:=Format('%.1f M', [size*(1/(1024*1024))])
+   else Result:=Format('%.1f G', [size*(1/(1024*1024*1024))]);
+   Result:=Result+unitStr;
 end;
 
 procedure TRMMSnapShot.FormCreate(Sender: TObject);
@@ -116,11 +123,11 @@ procedure TRMMSnapShot.Display(const aSnapShot : TRMMUsageSnapShot);
       end;
    end;
 
-   procedure AddSizeStat(const name : String; value : Cardinal);
+   procedure AddSizeStat(const name : String; value : Int64);
    begin
       with LVStats.Items.Add do begin
          Caption:=name;
-         SubItems.Add(ByteSizeToString(value));
+         SubItems.Add(SizeToString(value, 'B'));
       end;
    end;
 
@@ -129,6 +136,14 @@ procedure TRMMSnapShot.Display(const aSnapShot : TRMMUsageSnapShot);
       with LVStats.Items.Add do begin
          Caption:=name;
          SubItems.Add(IntToStr(value));
+      end;
+   end;
+
+   procedure AddBigCountStat(const name : String; value : Int64);
+   begin
+      with LVStats.Items.Add do begin
+         Caption:=name;
+         SubItems.Add(SizeToString(value, ''));
       end;
    end;
 
@@ -150,6 +165,16 @@ begin
    AddSizeStat ('System Allocated', aSnapShot.SystemAllocatedVM);
    AddSizeStat ('System Reserved', aSnapShot.SystemReservedVM);
    AddSizeStat ('Largest Contiguous Free', aSnapShot.LargestFreeVM);
+   if aSnapShot.BenchRGetMem.NbCalls>0 then begin
+      AddSpacer('Usage');
+      AddBigCountStat('RGetMem Calls', aSnapShot.BenchRGetMem.NbCalls);
+      AddBigCountStat('RReallocMem Calls', aSnapShot.BenchRReallocMem.NbCalls);
+      AddBigCountStat('RFreeMem Calls', aSnapShot.BenchRFreeMem.NbCalls);
+      AddBigCountStat('RGetMem CPU Ticks', aSnapShot.BenchRGetMem.TotalTime);
+      AddBigCountStat('RReallocMem CPU Ticks', aSnapShot.BenchRReallocMem.TotalTime);
+      AddBigCountStat('RFreeMem CPU Ticks', aSnapShot.BenchRFreeMem.TotalTime);
+   end;
+   // Memory map
    bmp:=TBitmap.Create;
    try
       scanLine:=nil;
@@ -185,8 +210,8 @@ begin
       smbStat:=@aSnapShot.SMBStats[i];
       with LVSMB.Items.Add do begin
          Caption:=IntToStr(smbStat.BlockSize);
-         SubItems.Add(ByteSizeToString(smbStat.TotalVirtualAllocated));
-         SubItems.Add(ByteSizeToString(smbStat.AllocatedUserSize));
+         SubItems.Add(SizeToString(smbStat.TotalVirtualAllocated, 'B'));
+         SubItems.Add(SizeToString(smbStat.AllocatedUserSize, 'B'));
          SubItems.Add(IntToStr(smbStat.AllocatedBlocks));
       end;
    end;

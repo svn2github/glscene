@@ -1,15 +1,15 @@
 object RMMSnapShot: TRMMSnapShot
   Left = 306
   Top = 96
-  Width = 295
-  Height = 350
+  Width = 299
+  Height = 361
   BorderStyle = bsSizeToolWin
   BorderWidth = 3
   Caption = 'RecyclerMM SnapShot Viewer'
   Color = clBtnFace
-  Constraints.MaxWidth = 295
+  Constraints.MaxWidth = 299
   Constraints.MinHeight = 300
-  Constraints.MinWidth = 295
+  Constraints.MinWidth = 299
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,29 +23,30 @@ object RMMSnapShot: TRMMSnapShot
   object PageControl: TPageControl
     Left = 0
     Top = 0
-    Width = 281
-    Height = 315
-    ActivePage = TSMemoryMap
+    Width = 285
+    Height = 326
+    ActivePage = TSSummary
     Align = alClient
+    TabIndex = 0
     TabOrder = 0
     object TSSummary: TTabSheet
       Caption = 'Summary'
       object LVStats: TListView
         Left = 0
         Top = 0
-        Width = 273
-        Height = 286
+        Width = 277
+        Height = 297
         Align = alClient
         BorderStyle = bsNone
         Columns = <
           item
             Caption = 'Stat'
-            Width = 150
+            Width = 200
           end
           item
             Alignment = taRightJustify
             Caption = 'Value'
-            Width = 105
+            Width = 75
           end>
         ColumnClick = False
         FlatScrollBars = True
@@ -62,8 +63,8 @@ object RMMSnapShot: TRMMSnapShot
       ImageIndex = 1
       object PBLegend: TPaintBox
         Left = 0
-        Top = 256
-        Width = 273
+        Top = 267
+        Width = 277
         Height = 30
         Align = alBottom
         Font.Charset = DEFAULT_CHARSET
@@ -77,8 +78,8 @@ object RMMSnapShot: TRMMSnapShot
       object ScrollBox: TScrollBox
         Left = 0
         Top = 0
-        Width = 273
-        Height = 256
+        Width = 277
+        Height = 267
         VertScrollBar.Smooth = True
         VertScrollBar.Style = ssHotTrack
         VertScrollBar.Tracking = True
@@ -103,8 +104,8 @@ object RMMSnapShot: TRMMSnapShot
       object LVSMB: TListView
         Left = 0
         Top = 0
-        Width = 273
-        Height = 286
+        Width = 277
+        Height = 297
         Align = alClient
         BorderStyle = bsNone
         Columns = <
