@@ -11,7 +11,7 @@ unit GLFileOCT;
 
 interface
 
-uses Classes, GLVectorFileObjects, GLMisc, Geometry;
+uses Classes, GLVectorFileObjects, GLMisc, Geometry, FileOCT;
 
 type
 
@@ -34,7 +34,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, FileOCT, GLTexture, Graphics;
+uses SysUtils, GLTexture, Graphics;
 
 // ------------------
 // ------------------ TGLOCTVectorFile ------------------
