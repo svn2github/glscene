@@ -270,6 +270,8 @@ type
             opacify view, "opaque" is more rarely used.<p>
             Note: specific PFX managers may override/ignore this setting. } 
 			property BlendingMode : TBlendingMode read FBlendingMode write FBlendingMode default bmAdditive;
+
+         property Visible;
    end;
 
    // TGLSourcePFXVelocityMode
