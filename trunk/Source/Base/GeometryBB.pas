@@ -74,6 +74,8 @@ function BBMaxZ(const c : THmgBoundingBox) : Single;
 
 {: Resize the AABB if necessary to include p. }
 procedure AABBInclude(var bb : TAABB; const p : TAffineVector);
+{: Make an AABB that is formed by sweeping a sphere (or AABB) from Start to Dest}
+procedure AABBFromSweep(var SweepAABB:TAABB; const Start,Dest:TVector; const Radius:Single);
 
 {: Extract AABB information from a BB. }
 function BBToAABB(const aBB : THmgBoundingBox) : TAABB;
@@ -342,6 +344,44 @@ begin
    if p[1]>bb.max[1] then bb.max[1]:=p[1];
    if p[2]<bb.min[2] then bb.min[2]:=p[2];
    if p[2]>bb.max[2] then bb.max[2]:=p[2];
+end;
+
+// AABBFromSweep
+//
+procedure AABBFromSweep(var SweepAABB:TAABB; const Start,Dest:TVector; const Radius:Single);
+begin
+   if Start[0]<Dest[0] then
+   begin
+     SweepAABB.min[0]:=Start[0]-radius;
+     SweepAABB.max[0]:=Dest[0]+radius;
+   end
+   else
+   begin
+     SweepAABB.min[0]:=Dest[0]-radius;
+     SweepAABB.max[0]:=Start[0]+radius;
+   end;
+
+   if Start[1]<Dest[1] then
+   begin
+     SweepAABB.min[1]:=Start[1]-radius;
+     SweepAABB.max[1]:=Dest[1]+radius;
+   end
+   else
+   begin
+     SweepAABB.min[1]:=Dest[1]-radius;
+     SweepAABB.max[1]:=Start[1]+radius;
+   end;
+
+   if Start[2]<Dest[2] then
+   begin
+     SweepAABB.min[2]:=Start[2]-radius;
+     SweepAABB.max[2]:=Dest[2]+radius;
+   end
+   else
+   begin
+     SweepAABB.min[2]:=Dest[2]-radius;
+     SweepAABB.max[2]:=Start[2]+radius;
+   end;
 end;
 
 // BBToAABB
