@@ -13,7 +13,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Windows, Forms, Messages, Classes, GLScene, Controls;
+uses Windows, Forms, Messages, Classes, GLScene, Controls, Menus;
 
 type
 
@@ -163,6 +163,7 @@ type
          FStayOnTop : Boolean;
          FVSync : TVSyncMode;
          FCursor : TCursor;
+         FPopupMenu : TPopupMenu;
 
       protected
          { Protected Declarations }
@@ -179,6 +180,7 @@ type
          procedure SetOnKeyPress(const val : TKeyPressEvent);
          procedure SetStayOnTop(const val : Boolean);
          procedure SetCursor(const val : TCursor);
+         procedure SetPopupMenu(const val : TPopupMenu);
 
          procedure DoBeforeRender(Sender : TObject);
          procedure DoBufferChange(Sender : TObject); override;
@@ -231,6 +233,8 @@ type
          property VSync : TVSyncMode read FVSync write FVSync default vsmNoSync;
 
          property Cursor : TCursor read FCursor write SetCursor default crDefault;
+         property PopupMenu : TPopupMenu read FPopupMenu write SetPopupMenu;
+
          property OnClose : TCloseEvent read FOnClose write SetOnClose;
          property OnKeyUp : TKeyEvent read FOnKeyUp write SetOnKeyUp;
          property OnKeyDown : TKeyEvent read FOnKeyDown write SetOnKeyDown;
@@ -626,6 +630,9 @@ begin
       WindowState:=wsMaximized;
       BorderStyle:=bsNone;
       Align:=alClient;
+      Cursor:=Self.Cursor;
+      PopupMenu:=Self.PopupMenu;
+
       BindFormEvents;
       FOldWndProc:=WindowProc;
       WindowProc:=WndProc;
@@ -825,6 +832,17 @@ begin
       FCursor:=val;
       if Assigned(FForm) then
          FForm.Cursor:=val;
+   end;
+end;
+
+// SetPopupMenu
+//
+procedure TGLFullScreenViewer.SetPopupMenu(const val : TPopupMenu);
+begin
+   if val<>FPopupMenu then begin
+      FPopupMenu:=val;
+      if Assigned(FForm) then
+         FForm.PopupMenu:=val;
    end;
 end;
 
