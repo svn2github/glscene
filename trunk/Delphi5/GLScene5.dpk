@@ -165,6 +165,7 @@ contains
   GLTilePlane in '..\Source\GLTilePlane.pas',
   PerlinNoise in '..\Source\Base\PerlinNoise.pas',
   TypesMDC in '..\Source\FileFormats\TypesMDC.pas',
-  GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas';
+  GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas',
+  GLFPSMovement in '..\Source\GLFPSMovement.pas';
 
 end.
