@@ -3113,26 +3113,26 @@ function VectorLerp(const V1, V2: TAffineVector; t: Single): TAffineVector;
 asm
    fld   t
 
-   fld   [eax+0]
-   fld   [edx+0]
+   fld   dword ptr [eax+0]
+   fld   dword ptr [edx+0]
    fsub  st(0), st(1)
    fmul  st(0), st(2)
    faddp
-   fstp  [ecx+0]
+   fstp  dword ptr [ecx+0]
 
-   fld   [eax+4]
-   fld   [edx+4]
+   fld   dword ptr [eax+4]
+   fld   dword ptr [edx+4]
    fsub  st(0), st(1)
    fmul  st(0), st(2)
    faddp
-   fstp  [ecx+4]
+   fstp  dword ptr [ecx+4]
 
-   fld   [eax+8]
-   fld   [edx+8]
+   fld   dword ptr [eax+8]
+   fld   dword ptr [edx+8]
    fsub  st(0), st(1)
    fmul  st(0), st(2)
    faddp
-   fstp  [ecx+8]
+   fstp  dword ptr [ecx+8]
 
    ffree st(0)
 {$else}
@@ -3154,26 +3154,26 @@ procedure VectorLerp(const v1, v2 : TAffineVector; t : Single; var vr : TAffineV
 asm
       fld   t
 
-      fld   [eax+0]
-      fld   [edx+0]
+      fld   dword ptr [eax+0]
+      fld   dword ptr [edx+0]
       fsub  st(0), st(1)
       fmul  st(0), st(2)
       faddp
-      fstp  [ecx+0]
+      fstp  dword ptr [ecx+0]
 
-      fld   [eax+4]
-      fld   [edx+4]
+      fld   dword ptr [eax+4]
+      fld   dword ptr [edx+4]
       fsub  st(0), st(1)
       fmul  st(0), st(2)
       faddp
-      fstp  [ecx+4]
+      fstp  dword ptr [ecx+4]
 
-      fld   [eax+8]
-      fld   [edx+8]
+      fld   dword ptr [eax+8]
+      fld   dword ptr [edx+8]
       fsub  st(0), st(1)
       fmul  st(0), st(2)
       faddp
-      fstp  [ecx+8]
+      fstp  dword ptr [ecx+8]
 
       ffree st(0)
 {$else}

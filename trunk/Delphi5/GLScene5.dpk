@@ -1,10 +1,10 @@
 package GLScene5;
 
-{$R *.res}
+{$R *.RES}
 {$R '..\Source\DesignTime\GLSceneObjects.dcr'}
 {$R '..\Source\DesignTime\GLSceneVCL.dcr'}
 {$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
-{$ALIGN 8}
+{$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -156,6 +156,13 @@ contains
   GLBSP in '..\Source\GLBSP.pas',
   GLState in '..\Source\GLState.pas',
   GLUtils in '..\Source\GLUtils.pas',
-  GLVfsPAK in '..\Source\FileFormats\GLVfsPAK.pas';
+  GLVfsPAK in '..\Source\FileFormats\GLVfsPAK.pas',
+  GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas',
+  GLTexLensFlare in '..\Source\GLTexLensFlare.pas',
+  GLWaterPlane in '..\Source\GLWaterPlane.pas',
+  GLPerlinPFX in '..\Source\GLPerlinPFX.pas',
+  GLImposter in '..\Source\GLImposter.pas',
+  GLTilePlane in '..\Source\GLTilePlane.pas',
+  PerlinNoise in '..\Source\Base\PerlinNoise.pas';
 
 end.
