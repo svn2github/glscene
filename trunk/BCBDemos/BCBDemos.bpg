@@ -9,10 +9,11 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = FPSMovement.exe CgSimple.exe boxedin.exe octreedemo.exe fxy.exe \
-  splines.exe mirror.exe ducky.exe shadedterrain.exe terrain.exe tree.exe \
-  pointto.exe FurBall.exe machine.exe simple.exe celshading.exe Project1.exe \
-  shadowvolumes.exe spiral.exe waterplane.exe particles.exe Recorder.exe
+PROJECTS = Archipelago.exe FPSMovement.exe CgSimple.exe boxedin.exe \
+  octreedemo.exe SimpleGLSL.exe fxy.exe splines.exe mirror.exe ducky.exe \
+  shadedterrain.exe terrain.exe tree.exe pointto.exe FurBall.exe machine.exe \
+  simple.exe celshading.exe Project1.exe shadowvolumes.exe spiral.exe \
+  waterplane.exe particles.exe Recorder.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------

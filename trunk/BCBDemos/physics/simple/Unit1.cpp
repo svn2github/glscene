@@ -17,6 +17,9 @@
 #pragma link "GLODEManager"
 #pragma link "GLScene"
 #pragma link "GLWin32Viewer"
+#pragma link "GLODECustomColliders"
+#pragma link "GLODEManager"
+#pragma link "GLGeomObjects"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------

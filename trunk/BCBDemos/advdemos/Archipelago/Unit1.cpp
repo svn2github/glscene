@@ -45,6 +45,8 @@
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
 #pragma link "GLWindowsFont"
+#pragma link "Keyboard"
+#pragma link "GLState"
 #pragma link "jpeg"
 #pragma resource "*.dfm"
 TForm1 *Form1;
