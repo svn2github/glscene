@@ -1,4 +1,5 @@
-{
+{: Shadow volumes demo.<p>
+
    This demo is under construction...
 
    246
@@ -10,7 +11,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCadencer, GLMisc, GLWin32Viewer, GLShadowVolume,
-  ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD;
+  ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD, GLTexture;
 
 type
   TForm1 = class(TForm)
@@ -47,6 +48,7 @@ type
     DCSpheres: TGLDummyCube;
     GLFreeForm: TGLFreeForm;
     GLCube1: TGLCube;
+    GLMaterialLibrary1: TGLMaterialLibrary;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -144,12 +146,14 @@ end;
 procedure TForm1.GLSceneViewerMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-   if Shift=[ssLeft] then
-      GLCamera.MoveAroundTarget((my-y)*0.5, (mx-x)*0.5)
-   else if Shift=[ssRight] then begin
+   if Shift=[ssLeft] then begin
+      GLCamera.MoveAroundTarget((my-y)*0.5, (mx-x)*0.5);
+      GLCadencer1.Progress;
+   end else if Shift=[ssRight] then begin
       DCLight1Turn.Turn((mx-x)*0.5);
       DCLight1Pitch.Pitch((my-y)*0.5);
       GLLightSource1.TransformationChanged;
+      GLCadencer1.Progress;
    end;
    mx:=x; my:=y;
 end;

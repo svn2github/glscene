@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 71
-  Top = 63
+  Left = 73
+  Top = 86
   Width = 703
   Height = 485
   Caption = 'Form1'
@@ -217,6 +217,7 @@ object Form1: TForm1
         Scale.Coordinates = {295C8F3D295C8F3D295C8F3D00000000}
         Up.Coordinates = {0000000000000000000080BF00000000}
         AutoCentering = [macCenterX, macCenterY, macCenterZ]
+        MaterialLibrary = GLMaterialLibrary1
       end
       object GLCube1: TGLCube
         Position.Coordinates = {00004040000000C0000000000000803F}
@@ -278,5 +279,9 @@ object Form1: TForm1
     OnTimer = Timer1Timer
     Left = 96
     Top = 16
+  end
+  object GLMaterialLibrary1: TGLMaterialLibrary
+    Left = 16
+    Top = 56
   end
 end
