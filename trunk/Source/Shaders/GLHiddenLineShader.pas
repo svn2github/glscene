@@ -5,6 +5,7 @@
    so that there is no z-fighting in rendering the same geometry multiple times.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/09/04 - NelC - Fixed bug of disabled blend (thx Carlos)   
       <li>05/02/04 - NelC - Fixed memory leak in TGLHiddenLineShader.Destroy (thx Achim Hammes)
       <li>13/12/03 - NelC - Added SurfaceLit, ShadeModel
       <li>05/12/03 - NelC - Added ForceMaterial
@@ -241,20 +242,6 @@ begin
    glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_POLYGON_BIT or
                 GL_HINT_BIT or GL_DEPTH_BUFFER_BIT or GL_LINE_BIT or GL_LIGHTING_BIT);
 
-   if LineSmooth then begin
-      glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-      glEnable(GL_LINE_SMOOTH);
-   end else begin
-      glDisable(GL_LINE_SMOOTH);
-   end;
-
-   if LineSmooth or (FBackLine.FColor.Alpha<1) or (FFrontLine.FColor.Alpha<1) then begin
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   end else begin
-      glDisable(GL_BLEND);
-   end;
-
    if solid then begin
        // draw filled front faces in first pass
        glPolygonMode(GL_FRONT, GL_FILL);
@@ -290,6 +277,24 @@ end;
 // DoUnApply
 //
 function TGLHiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+
+  procedure SetLineSmoothBlend;
+  begin
+    if LineSmooth then begin
+       glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+       glEnable(GL_LINE_SMOOTH);
+    end else begin
+       glDisable(GL_LINE_SMOOTH);
+    end;
+
+    if LineSmooth or (FBackLine.FColor.Alpha<1) or (FFrontLine.FColor.Alpha<1) then begin
+       glEnable(GL_BLEND);
+       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    end else begin
+       glDisable(GL_BLEND);
+    end;
+  end;
+
 begin
    case FPassCount of
       1 : begin
@@ -298,6 +303,8 @@ begin
 
             FBackLine.UnApply(rci);
             FFrontLine.Apply(rci);
+
+            SetLineSmoothBlend;
 
             if solid and FLighting then
               glDisable(GL_LIGHTING);
