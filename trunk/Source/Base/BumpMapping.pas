@@ -5,7 +5,8 @@
 {: Some useful methods for setting up bump maps.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>22/09/03 - SG - Partially fixed tangent space normal map creation
+      <li>22/09/03 - SG - Partially fixed tangent space normal map creation,
+                          Fixed normal blending coefficients
       <li>18/09/03 - SG - Added methods for creating normal maps,
                           CreateTangentSpaceNormalMap is a little buggy
       <li>28/07/03 - SG - Creation
@@ -180,68 +181,81 @@ var
   m1,m2,d1,d2,
   px,py : single;
 begin
-  if x1 = x then begin
-    m2:=(y3-y2)/(x3-x2);
-    d2:=y2-m2*x2;
-    px:=x;
-    py:=m2*px+d2;
-  end else if x2 = x3 then begin
-    m1:=(y1-y)/(x1-x);
-    d1:=y1-m1*x1;
-    px:=x2;
-    py:=m1*px+d1;
-  end else begin
-    m1:=(y1-y)/(x1-x);
-    d1:=y1-m1*x1;
-    m2:=(y3-y2)/(x3-x2);
-    d2:=y2-m2*x2;
-    px:=(d1-d2)/(m2-m1);
-    py:=m2*px+d2;
+  if (x1 = x) and (x2 = x3) then
+    f1:=0
+  else begin
+    if x1 = x then begin
+      m2:=(y3-y2)/(x3-x2);
+      d2:=y2-m2*x2;
+      px:=x;
+      py:=m2*px+d2;
+    end else if x2 = x3 then begin
+      m1:=(y1-y)/(x1-x);
+      d1:=y1-m1*x1;
+      px:=x2;
+      py:=m1*px+d1;
+    end else begin
+      m1:=(y1-y)/(x1-x);
+      d1:=y1-m1*x1;
+      m2:=(y3-y2)/(x3-x2);
+      d2:=y2-m2*x2;
+      px:=(d1-d2)/(m2-m1);
+      py:=m2*px+d2;
+    end;
+    f1:=sqrt((x-x1)*(x-x1)+(y-y1)*(y-y1))
+        /sqrt((px-x1)*(px-x1)+(py-y1)*(py-y1));
   end;
-  f1:=sqrt((x-x1)*(x-x1)+(y-y1)*(y-y1))
-      /sqrt((px-x1)*(px-x1)+(py-y1)*(py-y1));
 
-  if x2 = x then begin
-    m2:=(y3-y1)/(x3-x1);
-    d2:=y1-m2*x1;
-    px:=x;
-    py:=m2*px+d2;
-  end else if x3 = x1 then begin
-    m1:=(y2-y)/(x2-x);
-    d1:=y2-m1*x2;
-    px:=x1;
-    py:=m1*px+d1;
-  end else begin
-    m1:=(y2-y)/(x2-x);
-    d1:=y2-m1*x2;
-    m2:=(y3-y1)/(x3-x1);
-    d2:=y1-m2*x1;
-    px:=(d1-d2)/(m2-m1);
-    py:=m2*px+d2;
+  if (x2 = x) and (x1 = x3) then
+    f2:=0
+  else begin
+    if x2 = x then begin
+      m2:=(y3-y1)/(x3-x1);
+      d2:=y1-m2*x1;
+      px:=x;
+      py:=m2*px+d2;
+    end else if x3 = x1 then begin
+      m1:=(y2-y)/(x2-x);
+      d1:=y2-m1*x2;
+      px:=x1;
+      py:=m1*px+d1;
+    end else begin
+      m1:=(y2-y)/(x2-x);
+      d1:=y2-m1*x2;
+      m2:=(y3-y1)/(x3-x1);
+      d2:=y1-m2*x1;
+      px:=(d1-d2)/(m2-m1);
+      py:=m2*px+d2;
+    end;
+    f2:=sqrt((x-x2)*(x-x2)+(y-y2)*(y-y2))
+        /sqrt((px-x2)*(px-x2)+(py-y2)*(py-y2));
   end;
-  f2:=sqrt((x-x2)*(x-x2)+(y-y2)*(y-y2))
-      /sqrt((px-x2)*(px-x2)+(py-y2)*(py-y2));
 
-  if x = x3 then begin
-    m2:=(y2-y1)/(x2-x1);
-    d2:=y1-m2*x1;
-    px:=x;
-    py:=m2*px+d2;
-  end else if x2 = x1 then begin
-    m1:=(y3-y)/(x3-x);
-    d1:=y3-m1*x3;
-    px:=x1;
-    py:=m1*px+d1;
-  end else begin
-    m1:=(y3-y)/(x3-x);
-    d1:=y3-m1*x3;
-    m2:=(y2-y1)/(x2-x1);
-    d2:=y1-m2*x1;
-    px:=(d1-d2)/(m2-m1);
-    py:=m2*px+d2;
+  if (x3 = x) and (x1 = x2) then
+    f3:=0
+  else begin
+    if x = x3 then begin
+      m2:=(y2-y1)/(x2-x1);
+      d2:=y1-m2*x1;
+      px:=x;
+      py:=m2*px+d2;
+    end else if x2 = x1 then begin
+      m1:=(y3-y)/(x3-x);
+      d1:=y3-m1*x3;
+      px:=x1;
+      py:=m1*px+d1;
+    end else begin
+      m1:=(y3-y)/(x3-x);
+      d1:=y3-m1*x3;
+      m2:=(y2-y1)/(x2-x1);
+      d2:=y1-m2*x1;
+      px:=(d1-d2)/(m2-m1);
+      py:=m2*px+d2;
+    end;
+    f3:=sqrt((x-x3)*(x-x3)+(y-y3)*(y-y3))
+        /sqrt((px-x3)*(px-x3)+(py-y3)*(py-y3));
   end;
-  f3:=sqrt((x-x3)*(x-x3)+(y-y3)*(y-y3))
-      /sqrt((px-x3)*(px-x3)+(py-y3)*(py-y3));
+
 end;
 
 function BlendNormals(x,y,x1,y1,x2,y2,x3,y3 : Integer;
