@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled
       <li>03/02/03 - EG - Faster PrepareBuildList logic
       <li>31/01/03 - EG - Added MaterialCache logic
       <li>30/01/03 - EG - Fixed color array enable/disable (Nelson Chu),
@@ -18,7 +19,7 @@
       <li>21/10/02 - EG - Read support for .GTS (GNU Triangulated Surface library) 
       <li>18/10/02 - EG - FindExtByIndex (Adem)
       <li>17/10/02 - EG - TGLSTLVectorFile moved to new GLFileSTL unit
-      <li>04/09/02 - EG - Fixed TGLBaseMesh.AxisAlignedDimensions 
+      <li>04/09/02 - EG - Fixed TGLBaseMesh.AxisAlignedDimensions
       <li>23/08/02 - EG - Added TGLBaseMesh.Visible
       <li>23/07/02 - EG - TGLBaseMesh.LoadFromStream fix (D. Angilella)
       <li>13/07/02 - EG - AutoCenter on barycenter
@@ -1114,7 +1115,8 @@ type
          procedure Assign(Source: TPersistent); override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector;override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
 			procedure DoRender(var rci : TRenderContextInfo;
@@ -5169,7 +5171,24 @@ end;
 
 // AxisAlignedDimensions
 //
+{
 function TGLBaseMesh.AxisAlignedDimensions : TVector;
+var
+   dMin, dMax : TAffineVector;
+begin
+   if FAxisAlignedDimensionsCache[0]<0 then begin
+      MeshObjects.GetExtents(dMin, dMax);
+      FAxisAlignedDimensionsCache[0]:=MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
+      FAxisAlignedDimensionsCache[1]:=MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
+      FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+   end;
+   SetVector(Result, FAxisAlignedDimensionsCache);
+   ScaleVector(Result,Scale.AsVector);  //added by DanB
+end;
+}
+// AxisAlignedDimensionsUnscaled
+//
+function TGLBaseMesh.AxisAlignedDimensionsUnscaled : TVector;
 var
    dMin, dMax : TAffineVector;
 begin

@@ -4,6 +4,7 @@
 	Collision-detection management for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/02/03 - DanB - New collision code, and support for scaled objects
       <li>22/02/01 - Egg - Included new collision code by Uwe Raabe
       <li>08/08/00 - Egg - Fixed TGLBCollision.Assign
       <li>16/07/00 - Egg - Added support for all bounding modes (most are un-tested)
@@ -15,7 +16,7 @@ unit GLCollision;
 interface
 
 uses Classes, GLScene, XCollection, Geometry, VectorLists, GLVectorFileObjects,
-   GeometryBB, GLCrossPlatform;
+   GeometryBB, GLCrossPlatform, dialogs;
 
 type
 
@@ -125,6 +126,8 @@ function FastCheckCubeVsPoint(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 function FastCheckCubeVsSphere(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 function FastCheckCubeVsEllipsoid(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 function FastCheckCubeVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
+function FastCheckCubeVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;   //experimental
+function FastCheckFaceVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;   //experimental
 function FastCheckFaceVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 
 {: Returns true when the bounding box cubes does intersect the other.<p>
@@ -149,8 +152,8 @@ const
        (FastCheckPointVsPoint,      FastCheckPointVsSphere,       FastCheckPointVsEllipsoid,       FastCheckPointVsCube,      FastCheckPointVsCube),
        (FastCheckSphereVsPoint,     FastCheckSphereVsSphere,      FastCheckSphereVsEllipsoid,      FastCheckSphereVsCube,     FastCheckSphereVsCube),
        (FastCheckEllipsoidVsPoint,  FastCheckEllipsoidVsSphere,   FastCheckEllipsoidVsEllipsoid,   FastCheckEllipsoidVsCube,  FastCheckEllipsoidVsCube),
-       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        IntersectCubes,            IntersectCubes),
-       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        IntersectCubes,            FastCheckFaceVsFace)
+       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        IntersectCubes,            IntersectCubes{FastCheckCubeVsFace}),
+       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        IntersectCubes{FastCheckFaceVsCube},       FastCheckFaceVsFace)
       );
 
 // Collision utility routines
@@ -175,10 +178,13 @@ begin
    // calc vector expressed in local coordinates (for obj2)
    v:=VectorTransform(obj1.AbsolutePosition, obj2.InvAbsoluteMatrix);
    // rescale to unit dimensions
-   DivideVector(v, obj2.AxisAlignedDimensions);
+//   DivideVector(v, obj2.Scale.AsVector);  //DanB - Scale removed in VectorTransform
+   DivideVector(v, obj2.AxisAlignedDimensionsUnscaled);
+//   ScaleVector(v,obj2.Scale.AsVector);
+//   ScaleVector();
    v[3]:=0;
    // if norm is below 1, collision
-   Result:=(VectorNorm(v)<=1);
+   Result:=(VectorNorm(v)<=1{Sqr(obj2.BoundingSphereRadius)});  //DanB - since radius*radius = 1/2*1/2 = 1/4 for unit sphere
 end;
 
 function FastCheckPointVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
@@ -188,7 +194,7 @@ begin
    // calc vector expressed in local coordinates (for obj2)
    v:=VectorTransform(obj1.AbsolutePosition, obj2.InvAbsoluteMatrix);
    // rescale to unit dimensions
-   DivideVector(v, obj2.AxisAlignedDimensions);
+   DivideVector(v, obj2.AxisAlignedDimensionsUnscaled);
    // if abs() of all components are below 1, collision
    Result:=(MaxAbsXYZComponent(v)<=1);
 end;
@@ -215,6 +221,7 @@ begin
    //VectorSubstract(pt1, obj2.AbsolutePosition, v);
    aad:=VectorAdd(obj2.AxisAlignedDimensions, obj1.BoundingSphereRadius);
    DivideVector(v, aad);
+      ScaleVector(v,obj2.Scale.AsVector);  //by DanB
    v[3]:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1);
@@ -233,10 +240,14 @@ begin
    v[0] := abs(v[0]);
    v[1] := abs(v[1]);
    v[2] := abs(v[2]);
+   ScaleVector(v,obj2.Scale.AsVector);  //by DanB
+
    aad := obj2.AxisAlignedDimensions; // should be abs at all!
+
    VectorSubtract(v, aad, v); // v holds the distance in each axis
    v[3] := 0;
-   r := obj1.BoundingSphereRadius;
+
+   r := obj1.BoundingSphereRadius{UnScaled};
    r2 := Sqr(r);
    if (v[0]>0) then begin
      if (v[1]>0) then begin
@@ -307,6 +318,8 @@ begin
    Result:=(VectorNorm(v1)+VectorNorm(v2)<=2);
 end;
 
+
+
 function FastCheckEllipsoidVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 { current implementation assumes Ellipsoid as Sphere }
 var
@@ -316,11 +329,12 @@ begin
    // express in local coordinates (for obj2)
    v:=VectorTransform(obj1.AbsolutePosition, obj2.InvAbsoluteMatrix);
    // calc local vector, and rescale to unit dimensions
-   aad:=VectorAdd(obj2.AxisAlignedDimensions, obj1.BoundingSphereRadius);
+   aad:=VectorAdd(obj2.AxisAlignedDimensionsUnscaled, obj1.BoundingSphereRadius);
    DivideVector(v, aad);
    v[3]:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1);
+
 end;
 
 function FastCheckCubeVsPoint(obj1, obj2 : TGLBaseSceneObject) : Boolean;
@@ -411,8 +425,8 @@ var
   aad : TVector;
 begin
   result := true;
-  aad := obj2.AxisAlignedDimensions;
-  InitArray(obj1.AxisAlignedDimensions,pt1);
+  aad := obj2.AxisAlignedDimensionsUnscaled; //DanB experiment
+  InitArray(obj1.AxisAlignedDimensionsUnscaled,pt1);
   // calculate the matrix to transform obj1 into obj2
   MatrixMultiply(obj1.AbsoluteMatrix,obj2.InvAbsoluteMatrix,M);
   for I:=0 to 7 do begin // transform points of obj1
@@ -431,6 +445,7 @@ var
   aad1,aad2 : TVector;
   D1,D2,D : Double;
 begin
+//DanB -this bit of code isn't needed (since collision code does BoundingBox elimination)
   aad1 := obj1.AxisAlignedDimensions;
   aad2 := obj2.AxisAlignedDimensions;
   D1 := VectorLength(aad1);
@@ -442,11 +457,83 @@ begin
     D2 := MinAbsXYZComponent(aad2);
     if D<(D1+D2) then result := true
     else begin
+//DanB
       result := DoCubesIntersectPrim(obj1,obj2) or
                 DoCubesIntersectPrim(obj2,obj1);
     end;
   end;
 end;
+
+
+//  FastCheckCubeVsFace - by Dan Bartlett
+//
+//  Behaviour - Checks for collisions between Faces and cube by Checking
+//              whether triangles on the mesh have a point inside the cube
+//
+//  Issues -  Checks whether triangles on the mesh have a point inside the cube
+//            1)  When the cube is completely inside a mesh, it will contain
+//               no triangles hence no collision detected
+//            2)  When the mesh is (almost) completely inside the cube
+//               Octree.GetTrianglesInCube returns no points, why?
+//
+
+function FastCheckCubeVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
+var
+   triList : TAffineVectorList;
+   m1to2, m2to1 : TMatrix;
+   i:integer;
+   v:TVector;
+begin
+   result:= false;
+   if (obj2 is TGLFreeForm) then begin
+      //check if we are initialized correctly
+      if not Assigned(TGLFreeForm(obj2).Octree) then
+         TGLFreeForm(obj2).BuildOctree;
+
+      // Check triangles against the other object
+      // check only the one that are near the destination object (using octree of obj2)
+      // get the 'hot' ones using the tree
+
+      MatrixMultiply(obj2.AbsoluteMatrix, obj1.InvAbsoluteMatrix, m1to2);
+      MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m2to1);
+
+      //does this return Triangles inside cube or triangles near cube?
+      triList:=TGLFreeForm(obj2).Octree.GetTrianglesInCube(obj1.AxisAlignedBoundingBox, m2to1, m1to2);
+
+      if Trilist.Count>0 then   //this should have been enough to return true
+      begin
+//        trilist.TransformAsPoints(obj2.AbsoluteMatrix);
+//        trilist.TransformAsPoints(obj1.InvAbsoluteMatrix);
+        trilist.TransformAsPoints(m1to2);
+        for i:=0 to TriList.Count-1 do
+        begin
+          // calc vector expressed in local coordinates (for obj2)
+          v:=VectorMake(TriList.Items[i]);
+          // rescale to unit dimensions
+          DivideVector(v, obj1.AxisAlignedDimensionsUnscaled);
+          // if abs() of all components are below 1, collision
+          if (MaxAbsXYZComponent(v)<=1)then
+          begin
+            Result:=True;
+            Break;
+          end;
+        end;
+      end;
+
+      TriList.Free;
+
+   end else begin
+      // CubeVsFace only works if one is FreeForm Object
+      Result:=IntersectCubes(obj1, obj2);
+   end;
+end;
+
+function FastCheckFaceVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
+begin
+  Result:=FastCheckCubeVsFace(obj2,obj1);
+end;
+
+
 
 //this function does not check for rounds that results from Smoth rendering
 //if anybody needs this, you are welcome to show a solution, but usually this should be good enough
@@ -460,6 +547,7 @@ var
    triList : TAffineVectorList;
    tri : PTriangle;
    m1to2, m2to1 : TMatrix;
+   AABB2:TAABB;
 begin
    result:= false;
    if (obj1 is TGLFreeForm) and (obj2 is TGLFreeForm) then begin
@@ -476,7 +564,8 @@ begin
       MatrixMultiply(obj2.AbsoluteMatrix, obj1.InvAbsoluteMatrix, m1to2);
       MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m2to1);
 
-      triList:=TGLFreeForm(obj1).Octree.GetTrianglesInCube(obj2.AxisAlignedBoundingBox, m1to2, m2to1);
+      AABB2:=obj2.AxisAlignedBoundingBoxUnscaled;
+      triList:=TGLFreeForm(obj1).Octree.GetTrianglesInCube({obj2.AxisAlignedBoundingBox}AABB2, m1to2, m2to1);
 
       //in the list originally are the local coords, TransformAsPoints-> now we have obj1 absolute coords
       triList.TransformAsPoints(obj1.AbsoluteMatrix); //Transform to Absolute Coords
@@ -510,8 +599,13 @@ var
   m1To2, m2To1 : TMatrix;
 begin
    // Calc AABBs
-   aabb1:=Obj1.AxisAlignedBoundingBox;
-   aabb2:=Obj2.AxisAlignedBoundingBox;
+   aabb1:=Obj1.AxisAlignedBoundingBoxUnscaled;
+//   ScaleVector(aabb1.min,obj1.Scale.AsAffineVector);   //by DanB
+//   ScaleVector(aabb1.max,obj1.Scale.AsAffineVector);   //by DanB
+   aabb2:=Obj2.AxisAlignedBoundingBoxUnscaled;
+//   ScaleVector(aabb2.min,obj2.Scale.AsAffineVector);   //by DanB
+//   ScaleVector(aabb2.max,obj2.Scale.AsAffineVector);   //by DanB
+
    // Calc Conversion Matrixes
    MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m1To2);
    MatrixMultiply(obj2.AbsoluteMatrix, obj1.InvAbsoluteMatrix, m2To1);
@@ -835,7 +929,7 @@ begin
 end;
 
 // Reference code
-
+{
 // CheckCollisions
 //
 procedure TCollisionManager.CheckCollisions;
@@ -865,13 +959,16 @@ begin
    end;
 end;
 
-{
+ }
+
+
 // [---- new CheckCollisions / Dan Bartlett
 
 // CheckCollisions  (By Dan Bartlett) - sort according to Z axis
 //
 //  Some comments:  Much faster than original, especially when objects are spread out.
 //                  TODO:
+//                  Try to make faster when objects are close
 //                  Still more improvements can be made, better method
 //                  Faster sorting? (If a faster way than Delphi's QuickSort is available)
 //                  Another Event called OnNoCollisionEvent could be added
@@ -906,7 +1003,7 @@ procedure TCollisionManager.CheckCollisions;
    begin
       //  Z-axis sort
       d:=TCollisionNode(Item2).AABB.min[2]-TCollisionNode(Item1).AABB.min[2];
-      if d>0 then Result:=1 else if d<0 then Result:=-1 else Result:=0;
+      if d>0 then Result:=-1 else if d<0 then Result:=1 else Result:=0;
    end;
 
 var
@@ -916,7 +1013,7 @@ var
   cli1, cli2 : TGLBCollision;
   grp1, grp2 : Integer;   // GroupIndex of collisions
   i, j : Integer;
-  box1,box2:TAABB;
+  box1:TAABB;
 begin
   if not Assigned(FOnCollision) then Exit;
 
@@ -933,8 +1030,8 @@ begin
 //    if obj1.Visible=false then
 //      Continue;           //if object is not visible, don't add to list
     //TODO:  need to do different things for different objects, especially points
-    box1:=obj1.AxisAlignedBoundingBox;         //get obj1 axis-aligned bounding box
-    AABBTransform(box1,obj1.Matrix);           //& transform it to world axis
+    box1:=obj1.AxisAlignedBoundingBoxUnscaled;         //get obj1 axis-aligned bounding box
+    AABBTransform(box1,obj1.AbsoluteMatrix);           //& transform it to world axis
     CollisionNode1:=TCollisionNode.Create(cli1,box1);
     NodeList.Add(CollisionNode1);
   end;
@@ -948,9 +1045,6 @@ begin
      grp1:=cli1.GroupIndex;
      obj1:=cli1.OwnerBaseSceneObject;
 
-      //Get bounding box for obj1
-      box1:=CollisionNode1.AABB;
-
       for j:=i+1 to NodeList.Count-1 do begin
        CollisionNode2:=TCollisionNode(NodeList[j]);
        cli2:=CollisionNode2.Collision;
@@ -958,27 +1052,33 @@ begin
        // if either one GroupIndex=0 or both are different, check for collision
        if ((grp1=0) or (grp2=0) or (grp1<>grp2))=false then Break;
 
-      //Get bounding box for obj2
-       box2:=CollisionNode2.AABB;
-
-       //Check box1 and box2 intersect in the z-direction
-       if (box2.min[2]>box1.max[2]) then Break;
+       //Check BBox1 and BBox2 overlap in the z-direction
+       if (CollisionNode2.AABB.min[2]>CollisionNode1.AABB.max[2]) then
+         Break;
 
        //check whether box1 and box2 overlap in the XY Plane
-         if IntersectAABBsAbsoluteXY(box1,box2) then
+         if IntersectAABBsAbsoluteXY(CollisionNode1.AABB,CollisionNode2.AABB) then
          begin
-          obj2:=cli2.OwnerBaseSceneObject;
-          if cFastCollisionChecker[cli1.BoundingMode, cli2.BoundingMode](obj1, obj2) then
+           obj2:=cli2.OwnerBaseSceneObject;
+            if cFastCollisionChecker[cli1.BoundingMode, cli2.BoundingMode](obj1, obj2) then
               FOnCollision(Self, obj1, obj2);
          end;
       end;
+   end;
+
+   for i:=0 to NodeList.Count-1 do
+   begin
+     CollisionNode1 := NodeList.Items[i];
+     CollisionNode1.Free;
    end;
 
    NodeList.Free;
 end;
 
 // new CheckCollisions / Dan Bartlett -----]
-}
+
+
+
 
 // ------------------
 // ------------------ TGLBCollision ------------------

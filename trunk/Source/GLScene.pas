@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/02/03 - DanB - added unscaled Dimensions and Bounding Box methods
       <li>03/01/03 - JAJ - Added TGLBaseGuiObject as minimal base GUI class.
       <li>31/12/02 - JAJ - NotifyHide/NotifyShow implemented. Crucial for the Gui system.
       <li>14/10/02 - Egg - Camera.TargetObject explicitly registered for notifications
@@ -216,7 +217,7 @@ interface
 
 uses
    Classes, GLMisc, GLTexture, SysUtils, Geometry, XCollection,
-   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,
+   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,{ dialogs, }
    {$ifdef GLS_VCL}Graphics{$else}QGraphics{$endif}
    ;
 
@@ -497,18 +498,22 @@ type
             <i>with</i> scale accounted for, in the object's coordinates
             (not in absolute coordinates).<p>
             Default value is half the object's Scale.<br> }
-         function AxisAlignedDimensions : TVector; virtual;
+         function AxisAlignedDimensions : TVector; //virtual;
+         function AxisAlignedDimensionsUnscaled : TVector; virtual;
 
          {: Calculates and return the AABB for the object.<p>
             The AABB is currently calculated from the BB. }
          function AxisAlignedBoundingBox : TAABB;
+         function AxisAlignedBoundingBoxUnscaled : TAABB;
          {: Calculates and return the Bounding Box for the object.<p>
             The BB is calculated <b>each</b> time this method is invoked,
             based on the AxisAlignedDimensions of the object and that of its
             children, there is <b>no</b> caching scheme as of now. }
          function BoundingBox : THmgBoundingBox;
+         function BoundingBoxUnscaled : THmgBoundingBox;
          {: Max distance of corners of the BoundingBox. }
          function BoundingSphereRadius : Single;
+         function BoundingSphereRadiusUnscaled : Single;         
          {: Indicates if a point is within an object.<p>
             Given coordinate is an absolute coordinate.<br>
             Linear or surfacic objects shall always return False.<p>
@@ -966,7 +971,8 @@ type
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
 
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean; override;
@@ -2748,7 +2754,18 @@ end;
 //
 function TGLBaseSceneObject.AxisAlignedDimensions : TVector;
 begin
-   VectorScale(Scale.AsVector, 0.5, Result);
+//   VectorScale(Scale.AsVector, 0.5, Result);
+   Result:=AxisAlignedDimensionsUnscaled();
+   ScaleVector(Result,Scale.AsVector);
+end;
+
+// AxisAlignedDimensionsUnscaled
+//
+function TGLBaseSceneObject.AxisAlignedDimensionsUnscaled : TVector;
+begin
+  Result[0]:=0.5;
+  Result[1]:=0.5;
+  Result[2]:=0.5;
 end;
 
 // AxisAlignedBoundingBox
@@ -2759,6 +2776,7 @@ var
    aabb : TAABB;
 begin
    SetAABB(Result, AxisAlignedDimensions);
+   //not tested for child objects
    for i:=0 to FChildren.Count-1 do begin
       aabb:=TGLBaseSceneObject(FChildren[i]).AxisAlignedBoundingBox;
       AABBTransform(aabb, TGLBaseSceneObject(FChildren[i]).Matrix);
@@ -2766,11 +2784,35 @@ begin
    end;
 end;
 
+// AxisAlignedBoundingBoxUnscaled
+//
+function TGLBaseSceneObject.AxisAlignedBoundingBoxUnscaled : TAABB;
+var
+   i : Integer;
+   aabb : TAABB;
+begin
+   SetAABB(Result, AxisAlignedDimensionsUnscaled);
+   //not tested for child objects
+   for i:=0 to FChildren.Count-1 do begin
+      aabb:=TGLBaseSceneObject(FChildren[i]).AxisAlignedBoundingBoxUnscaled;
+      AABBTransform(aabb, TGLBaseSceneObject(FChildren[i]).Matrix);
+      AddAABB(Result, aabb);
+   end;
+end;
+
+
 // BoundingBox
 //
 function TGLBaseSceneObject.BoundingBox : THmgBoundingBox;
 begin
    Result:=AABBToBB(AxisAlignedBoundingBox);
+end;
+
+// BoundingBox
+//
+function TGLBaseSceneObject.BoundingBoxUnscaled : THmgBoundingBox;
+begin
+   Result:=AABBToBB(AxisAlignedBoundingBoxUnscaled);
 end;
 
 // BoundingSphereRadius
@@ -2782,6 +2824,26 @@ function TGLBaseSceneObject.BoundingSphereRadius : Single;
    bb : THmgBoundingBox;}
 begin
    Result:=MaxXYZComponent(AxisAlignedDimensions);
+{  For use when bounding boxes will be cached...
+
+   Result:=0;
+   bb:=BoundingBox;
+   for i:=0 to 7 do begin
+      d:=VectorNorm(bb[i]);
+      if d>Result then Result:=d;
+   end;
+   Result:=Sqrt(Result); }
+end;
+
+// BoundingSphereRadiusUnscaled
+//
+function TGLBaseSceneObject.BoundingSphereRadiusUnscaled : Single;
+{var
+   i : Integer;
+   d : Single;
+   bb : THmgBoundingBox;}
+begin
+   Result:=MaxXYZComponent(AxisAlignedDimensionsUnscaled);
 {  For use when bounding boxes will be cached...
 
    Result:=0;
@@ -4575,6 +4637,8 @@ var
    resMat : TMatrix;
    vDir, vUp, vRight : TVector;
    v : TAffineVector;
+   position1:TVEctor;
+   Scale1:TVector;
 begin
    // First we need to compute the actual camera's vectors, which may not be
    // directly available if we're in "targeting" mode
@@ -4588,14 +4652,19 @@ begin
       vRight:=VectorCrossProduct(vDir, vUp);
    end;
 
-   resMat:=obj.Matrix;
-   // No we build rotation matrices and use them to rotate the obj
+   //save scale & position info
+   Scale1:=obj.Scale.AsVector;
+   position1:=obj.Position.asVector;
+     resMat:=obj.Matrix;
+   //get rid of scaling & location info
+   NormalizeMatrix(resMat);
+   // Now we build rotation matrices and use them to rotate the obj
    if rollDelta<>0 then begin
       SetVector(v, obj.AbsoluteToLocal(vDir));
       resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(rollDelta)), resMat);
    end;
    if turnDelta<>0 then begin
-      SetVector(v, obj.AbsoluteToLocal(vUp));
+      SetVector(v,obj.AbsoluteToLocal(vUp));
       resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(turnDelta)), resMat);
    end;
    if pitchDelta<>0 then begin
@@ -4603,6 +4672,9 @@ begin
       resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(pitchDelta)), resMat);
    end;
    obj.Matrix:=resMat;
+   //restore scaling & rotation info
+   obj.Scale.AsVector:=Scale1;
+   obj.Position.AsVector:=Position1;
 end;
 
 // RotateTarget
@@ -4916,12 +4988,22 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLProxyObject.AxisAlignedDimensions : TVector;
+{function TGLProxyObject.AxisAlignedDimensions : TVector;
 begin
    if Assigned(FMasterObject) then begin
       Result:=FMasterObject.AxisAlignedDimensions;
       ScaleVector(Result, Scale.AsVector);
    end else Result:=inherited AxisAlignedDimensions;
+end;
+}
+// AxisAlignedDimensions
+//
+function TGLProxyObject.AxisAlignedDimensionsUnscaled : TVector;
+begin
+   if Assigned(FMasterObject) then begin
+      Result:=FMasterObject.AxisAlignedDimensionsUnscaled;
+//      ScaleVector(Result, Scale.AsVector);
+   end else Result:=inherited AxisAlignedDimensionsUnscaled;
 end;
 
 // Notification

@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/02/03 - DanB - added TGLMirror.AxisAlignedDimensionsUnscaled
       <li>13/11/02 - EG - Fixed TGLMirror.DoRender transform
       <li>06/11/02 - EG - Fixed Stencil setup
       <li>30/10/02 - EG - Added OnBegin/EndRenderingMirrors
@@ -70,7 +71,8 @@ type
 		   procedure BuildList(var rci : TRenderContextInfo); override;
 
 		   procedure Assign(Source: TPersistent); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
 
 		published
 			{ Public Declarations }
@@ -372,7 +374,7 @@ begin
    end;
    inherited Assign(Source);
 end;
-
+{
 // AxisAlignedDimensions
 //
 function TGLMirror.AxisAlignedDimensions: TVector;
@@ -380,6 +382,15 @@ begin
    Result:=VectorMake(0.5*Abs(FWidth)*Scale.DirectX,
                       0.5*Abs(FHeight)*Scale.DirectY, 0);
 end;
+}
+// AxisAlignedDimensions
+//
+function TGLMirror.AxisAlignedDimensionsUnscaled: TVector;
+begin
+   Result:=VectorMake(0.5*Abs(FWidth),
+                      0.5*Abs(FHeight), 0);
+end;
+
 
 // SetMirrorOptions
 //

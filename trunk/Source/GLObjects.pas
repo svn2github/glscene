@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
       <li>22/01/03 - EG - TGLCube.RayCastIntersect fixes (Dan Bartlett)
       <li>10/01/03 - EG - TGLCube.RayCastIntersect (Stuart Gooding)
       <li>08/01/03 - RC - Added TGLPlane.XScope and YScope, to use just a part of the texture
@@ -136,7 +137,8 @@ type
 
 			procedure Assign(Source: TPersistent); override;
 
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -211,7 +213,8 @@ type
 
 		   procedure Assign(Source: TPersistent); override;
 
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -540,7 +543,8 @@ type
          destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
 
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          procedure AddNode(const coords : TGLCoordinates); overload;
@@ -611,7 +615,8 @@ type
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          procedure Assign(Source: TPersistent); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -752,7 +757,8 @@ type
          procedure Assign(Source:TPersistent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -794,7 +800,8 @@ type
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          procedure Assign(Source: TPersistent); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -876,7 +883,8 @@ type
 			procedure Assign(Source: TPersistent); override;
 
 			procedure BuildList(var rci : TRenderContextInfo); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
 
 		published
 			{ Published Declarations }
@@ -914,7 +922,8 @@ type
 			procedure Assign(Source: TPersistent); override;
 
 			procedure BuildList(var rci : TRenderContextInfo); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -959,7 +968,8 @@ type
          procedure Assign(Source: TPersistent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
 
       published
 			{ Published Declarations }
@@ -990,7 +1000,8 @@ type
          constructor Create(AOwner: TComponent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
-         function AxisAlignedDimensions : TVector; override;
+//         function AxisAlignedDimensions : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -1267,9 +1278,17 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLDummyCube.AxisAlignedDimensions : TVector;
+{function TGLDummyCube.AxisAlignedDimensions : TVector;
 begin
    VectorScale(Scale.AsVector, 0.5*Abs(FCubeSize), Result);
+end;
+}
+function TGLDummyCube.AxisAlignedDimensionsUnscaled : TVector;
+begin
+   Result[0]:=0.5*Abs(FCubeSize);
+   Result[1]:=Result[0];
+   Result[2]:=Result[0];
+//   VectorScale(Scale.AsVector, 0.5*Abs(FCubeSize), Result);
 end;
 
 // RayCastIntersect
@@ -1416,11 +1435,20 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLPlane.AxisAlignedDimensions: TVector;
+{function TGLPlane.AxisAlignedDimensions: TVector;
 begin
    Result:=VectorMake(0.5*Abs(FWidth)*Scale.DirectX,
                       0.5*Abs(FHeight)*Scale.DirectY, 0);
 end;
+}
+// AxisAlignedDimensions
+//
+function TGLPlane.AxisAlignedDimensionsUnscaled: TVector;
+begin
+   Result:=VectorMake(0.5*Abs(FWidth){*Scale.DirectX},
+                      0.5*Abs(FHeight){*Scale.DirectY}, 0);
+end;
+
 
 // RayCastIntersect
 //
@@ -2482,7 +2510,7 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLLines.AxisAlignedDimensions : TVector;
+{function TGLLines.AxisAlignedDimensions : TVector;
 var
    i : Integer;
 begin
@@ -2490,6 +2518,19 @@ begin
    for i:=0 to Nodes.Count-1 do
       MaxVector(Result, VectorAbs(Nodes[i].AsVector));
 end;
+}
+// AxisAlignedDimensions
+//
+function TGLLines.AxisAlignedDimensionsUnscaled : TVector;
+var
+   i : Integer;
+begin
+   RstVector(Result);
+   for i:=0 to Nodes.Count-1 do
+      MaxVector(Result, VectorAbs(Nodes[i].AsVector));
+   DivideVector(Result,Scale.AsVector);     //DanB ?
+end;
+
 
 // BuildList
 //
@@ -2737,11 +2778,21 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLCube.AxisAlignedDimensions : TVector;
+{function TGLCube.AxisAlignedDimensions : TVector;
 begin
    Result[0]:=FCubeSize[0]*Scale.DirectX*0.5;
    Result[1]:=FCubeSize[1]*Scale.DirectY*0.5;
    Result[2]:=FCubeSize[2]*Scale.DirectZ*0.5;
+   Result[3]:=0;
+end;
+}
+// AxisAlignedDimensions
+//
+function TGLCube.AxisAlignedDimensionsUnscaled : TVector;
+begin
+   Result[0]:=FCubeSize[0]*{Scale.DirectX*}0.5;
+   Result[1]:=FCubeSize[1]*{Scale.DirectY*}0.5;
+   Result[2]:=FCubeSize[2]*{Scale.DirectZ*}0.5;
    Result[3]:=0;
 end;
 
@@ -3417,11 +3468,22 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLSphere.AxisAlignedDimensions : TVector;
+{function TGLSphere.AxisAlignedDimensions : TVector;
 // ToDo: take bottom and top into account
 begin
    VectorScale(Scale.AsVector, Abs(FRadius), Result);
 end;
+}
+// AxisAlignedDimensions
+//
+function TGLSphere.AxisAlignedDimensionsUnscaled : TVector;
+begin
+   Result[0]:=Abs(FRadius);
+   Result[1]:=Abs(FRadius);
+   Result[2]:=Abs(FRadius);
+   Result[3]:=0;
+end;
+
 
 //----------------- TGLDisk ------------------------------------------------------
 
@@ -3537,12 +3599,23 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLDisk.AxisAlignedDimensions : TVector;
+{function TGLDisk.AxisAlignedDimensions : TVector;
 var
   r : TGLFloat;
 begin
    r:=Abs(FOuterRadius);
    Result:=VectorMake(r*Scale.DirectX, r*Scale.DirectY, 0);
+end;
+}
+
+// AxisAlignedDimensions
+//
+function TGLDisk.AxisAlignedDimensionsUnscaled : TVector;
+var
+  r : TGLFloat;
+begin
+   r:=Abs(FOuterRadius);
+   Result:=VectorMake(r{*Scale.DirectX}, r{*Scale.DirectY}, 0);
 end;
 
 // RayCastIntersect
@@ -3699,13 +3772,24 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLCone.AxisAlignedDimensions : TVector;
+{function TGLCone.AxisAlignedDimensions : TVector;
 var
    r : TGLFloat;
 begin
    r:=Abs(FBottomRadius);
    Result:=VectorMake(r*Scale.DirectX, 0.5*FHeight*Scale.DirectY, r*Scale.DirectZ);
 end;
+}
+// AxisAlignedDimensions
+//
+function TGLCone.AxisAlignedDimensionsUnscaled : TVector;
+var
+   r : TGLFloat;
+begin
+   r:=Abs(FBottomRadius);
+   Result:=VectorMake(r{*Scale.DirectX}, 0.5*FHeight{*Scale.DirectY}, r{*Scale.DirectZ});
+end;
+
 
 //----------------- TGLCylinder --------------------------------------------------
 
@@ -3795,7 +3879,7 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLCylinder.AxisAlignedDimensions: TVector;
+{function TGLCylinder.AxisAlignedDimensions: TVector;
 var
   r, r1 : TGLFloat;
 begin
@@ -3804,6 +3888,19 @@ begin
   if r1>r then r:=r1;
   Result:=VectorMake(r, 0.5*FHeight, r);
   ScaleVector(Result, Scale.AsVector);
+end;
+}
+// AxisAlignedDimensions
+//
+function TGLCylinder.AxisAlignedDimensionsUnscaled: TVector;
+var
+  r, r1 : TGLFloat;
+begin
+  r:=Abs(FBottomRadius);
+  r1:=Abs(FTopRadius);
+  if r1>r then r:=r1;
+  Result:=VectorMake(r, 0.5*FHeight, r);
+//  ScaleVector(Result, Scale.AsVector);
 end;
 
 // RayCastIntersect
@@ -4042,7 +4139,7 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLAnnulus.AxisAlignedDimensions : TVector;
+{function TGLAnnulus.AxisAlignedDimensions : TVector;
 var
    r, r1 : TGLFloat;
 begin
@@ -4052,6 +4149,20 @@ begin
    Result:=VectorMake(r, 0.5*FHeight, r);
    ScaleVector(Result, Scale.AsVector);
 end;
+}
+// AxisAlignedDimensions
+//
+function TGLAnnulus.AxisAlignedDimensionsUnscaled : TVector;
+var
+   r, r1 : TGLFloat;
+begin
+   r:=Abs(FBottomRadius);
+   r1:=Abs(FTopRadius);
+   if r1>r then r:=r1;
+   Result:=VectorMake(r, 0.5*FHeight, r);
+//   ScaleVector(Result, Scale.AsVector);
+end;
+
 
 // ------------------
 // ------------------ TGLTorus ------------------
@@ -4154,7 +4265,7 @@ end;
 
 // AxisAlignedDimensions
 //
-function TGLTorus.AxisAlignedDimensions : TVector;
+{function TGLTorus.AxisAlignedDimensions : TVector;
 var
    r, r1 : TGLFloat;
 begin
@@ -4163,6 +4274,19 @@ begin
    Result:=VectorMake(r, r1, r);
    ScaleVector(Result, Scale.AsVector);
 end;
+}
+// AxisAlignedDimensions
+//
+function TGLTorus.AxisAlignedDimensionsUnscaled : TVector;
+var
+   r, r1 : TGLFloat;
+begin
+   r:=Abs(FMajorRadius);
+   r1:=Abs(FMinorRadius);
+   Result:=VectorMake(r, r1, r);
+//   ScaleVector(Result, Scale.AsVector);
+end;
+
 
 // RayCastIntersect
 //
