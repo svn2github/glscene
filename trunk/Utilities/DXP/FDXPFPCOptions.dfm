@@ -54,7 +54,7 @@ object DXPFPCOptions: TDXPFPCOptions
     Top = 0
     Width = 522
     Height = 278
-    ActivePage = TSCompilerMessages
+    ActivePage = TSCompiler
     Align = alClient
     TabOrder = 1
     object TSCompiler: TTabSheet

@@ -332,6 +332,7 @@ begin
       cfgFile.Insert(1, '-Sd');
 //      cfgFile.Insert(1, '-Mobjfpc');
       cfgFile.Insert(2, '-l');
+      cfgFile.Insert(2, '-CX');
       Result:= vFPC_BinaryPath+'\fpc.exe '+extraOptions
               +' -Fe'+FPCErrorFile;
       cfgFile.Add('-Fud:\FreePascal/units/$TARGET');

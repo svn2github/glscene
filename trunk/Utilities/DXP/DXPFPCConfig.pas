@@ -51,6 +51,7 @@ constructor TDXPFPCConfig.Create;
 begin
    inherited;
    FOptions:=TStringList.Create;
+   TStringList(FOptions).CaseSensitive:=True;
    FOptions.CommaText:=cDefaultFPCoptions;
 end;
 
