@@ -203,6 +203,8 @@ contains
   GLProjectedTextures in '..\Source\GLProjectedTextures.pas',
   GLBlur in '..\Source\GLBlur.pas',
   GLPerlinBase in '..\Source\GLPerlinBase.pas',
-  GLPerlin in '..\Source\GLPerlin.pas';
+  GLPerlin in '..\Source\GLPerlin.pas',
+  ARBProgram in '..\Source\Base\ARBProgram.pas',
+  GLPhongShader in '..\Source\Shaders\GLPhongShader.pas';
 
 end.
