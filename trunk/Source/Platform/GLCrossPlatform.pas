@@ -3,9 +3,10 @@
 	Cross platform support functions and types for GLScene.<p>
 
    Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core GLScene unit, and moved here instead.<p>
+   in the core GLScene units, and moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>06/12/01 - EG - Added several abstraction calls
       <li>31/08/01 - EG - Creation
 	</ul></font>
 }
@@ -25,6 +26,7 @@ uses Windows, Graphics, Dialogs, SysUtils, GLWin32Context;
 type
 
    TGLRect = TRect;
+   PGLRect = ^TGLRect;
 
 {: Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b : Byte) : TColor;
@@ -37,6 +39,22 @@ function GetBValue(rgb: DWORD): Byte;
 procedure InformationDlg(const msg : String);
 
 procedure RaiseLastOSError;
+
+{$IFNDEF DELPHI5_UP}
+procedure FreeAndNil(var anObject);
+{$ENDIF DELPHI5_UP}
+
+{: Number of pixels per logical inch along the screen width for the device.<p>
+   Under Win32 awaits a HDC and returns its LOGPIXELSX. }
+function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
+
+{: Returns the current value of the highest-resolution counter.<p>
+   If the platform has none, should return a value derived from the highest-time
+   reference available. }
+procedure QueryPerformanceCounter(var val : Int64);
+{: Returns the frequency of the counter used by QueryPerformanceCounter.<p>
+   Return value is in ticks per second (Hz). }
+procedure QueryPerformanceFrequency(var val : Int64);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -57,21 +75,21 @@ end;
 //
 function GetRValue(rgb: DWORD): Byte;
 begin
-   Result := Byte(rgb);
+   Result:=Byte(rgb);
 end;
 
 // GetGValue
 //
 function GetGValue(rgb: DWORD): Byte;
 begin
-   Result := Byte(rgb shr 8);
+   Result:=Byte(rgb shr 8);
 end;
 
 // GetBValue
 //
 function GetBValue(rgb: DWORD): Byte;
 begin
-   Result := Byte(rgb shr 16);
+   Result:=Byte(rgb shr 16);
 end;
 
 // InformationDlg
@@ -90,6 +108,40 @@ begin
    {$else}
    RaiseLastWin32Error;
    {$endif}
+end;
+
+{$IFNDEF DELPHI5_UP}
+// FreeAndNil
+//
+procedure FreeAndNil(var anObject);
+var
+  buf : TObject;
+begin
+  buf:=TObject(anObject);
+  TObject(anObject):=nil;  // clear the reference before destroying the object
+  buf.Free;
+end;
+{$ENDIF DELPHI5_UP}
+
+// GetDeviceLogicalPixelsX
+//
+function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
+begin
+   Result:=GetDeviceCaps(device, LOGPIXELSX);
+end;
+
+// QueryPerformanceCounter
+//
+procedure QueryPerformanceCounter(var val : Int64);
+begin
+   Windows.QueryPerformanceCounter(val);
+end;
+
+// QueryPerformanceFrequency
+//
+procedure QueryPerformanceFrequency(var val : Int64);
+begin
+   Windows.QueryPerformanceFrequency(val);
 end;
 
 end.

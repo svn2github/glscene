@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>06/12/01 - Egg - Published OnDblClik and misc. events (Chris S)
+      <li>06/12/01 - Egg - Published OnDblClik and misc. events (Chris S),
+                           Some cross-platform cleanups
       <li>05/12/01 - Egg - MoveAroundTarget fix (Phil Scadden)
       <li>30/11/01 - Egg - Hardware acceleration detection support,
                            Added Camera.SceneScale (based on code by Chris S)
@@ -172,8 +173,9 @@ interface
 
 {$i GLScene.inc}
 
-uses Windows, Classes, Controls, GLScreen, GLMisc, GLTexture, SysUtils, Graphics,
-   Messages, Geometry, XCollection, GLGraphics, GeometryBB, GLContext;
+uses Classes, Controls, GLScreen, GLMisc, GLTexture, SysUtils, Graphics,
+   Messages, Geometry, XCollection, GLGraphics, GeometryBB, GLContext,
+   GLCrossPlatform;
 
 type
 
@@ -187,7 +189,7 @@ const
    cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
 
 type
-  TObjectHandle = UINT; // a display list name or GL_LIGHTx constant
+  TObjectHandle = Cardinal; // a display list name or GL_LIGHTx constant
 
   TNormalDirection = (ndInside, ndOutside);
   TTransformationMode = (tmLocal, tmParentNoPos, tmParentWithPos);
@@ -1248,10 +1250,10 @@ type
          FFogEnvironment : TGLFogEnvironment;
 
          // Monitoring
-         FFrames: Longint;
-         FTicks: TLargeInteger;
-         FFramesPerSecond: Single;
-         FLastPerfCounter: Int64;
+         FFrames : Longint;
+         FTicks  : Cardinal;
+         FFramesPerSecond : Single;
+         FLastPerfCounter : Int64;
 
          // Events
          FOnChange : TNotifyEvent;
@@ -1275,7 +1277,7 @@ type
          function  StoreFog : Boolean;
 
          procedure PrepareRenderingMatrices(const aViewPort : TRectangle;
-                              resolution : Integer; pickingRect : PRect = nil);
+                              resolution : Integer; pickingRect : PGLRect = nil);
          procedure DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
                                 drawState : TDrawState);
 
@@ -1303,11 +1305,12 @@ type
          function Acceleration : TGLContextAcceleration;
 
          //: Fills the PickList with objects in Rect area
-         procedure PickObjects(const Rect: TRect; PickList: TGLPickList; ObjectCountGuess: Integer);
+         procedure PickObjects(const rect : TGLRect; pickList : TGLPickList;
+                               objectCountGuess : Integer);
          {: Returns a PickList with objects in Rect area.<p>
             Returned list should be freed by caller.<br>
             Objects are sorted by depth (nearest objects first). }
-         function GetPickedObjects(const Rect: TRect; objectCountGuess : Integer = 64) : TGLPickList;
+         function GetPickedObjects(const rect: TGLRect; objectCountGuess : Integer = 64) : TGLPickList;
          //: Returns the nearest object at x, y coordinates or nil if there is none
          function GetPickedObject(x, y : Integer) : TGLBaseSceneObject;
 
@@ -1576,7 +1579,7 @@ type
          FBuffer : TGLSceneBuffer;
          FBeforeRender : TNotifyEvent;
          FVSync : TVSyncMode;
-         FOwnDC : HDC;
+         FOwnDC : Cardinal;
 
          procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); Message WM_ERASEBKGND;
          procedure WMPaint(var Message: TWMPaint); Message WM_PAINT;
@@ -1613,7 +1616,7 @@ type
          function FramesPerSecond : Single;
          procedure ResetPerformanceMonitor;
 
-         property RenderDC : HDC read FOwnDC;
+         property RenderDC : Cardinal read FOwnDC;
 
       published
          { Public Declarations }
@@ -1696,8 +1699,8 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   Consts, Dialogs, ExtDlgs, Forms, GLStrings, Info, VectorLists, XOpenGL,
-   VectorTypes, OpenGL12, GLCrossPlatform;
+   Windows, Consts, Dialogs, ExtDlgs, Forms, GLStrings, Info, VectorLists, XOpenGL,
+   VectorTypes, OpenGL12;
 
 const
    GLAllStates = [stAlphaTest..stStencilTest];
@@ -1711,20 +1714,20 @@ var
 //
 procedure CheckOpenGLError;
 var
-   GLError: UINT;
-   Count: Word;
+   err : Cardinal;
+   count : Word;
 begin
-   GLError:=glGetError;
-   if GLError <> GL_NO_ERROR then begin
-      Count:=0;
+   err:=glGetError;
+   if err<>GL_NO_ERROR then begin
+      count:=0;
       // Because under some circumstances reading the error code creates a new error
       // and thus hanging up the thread, we limit the loop to 6 reads.
       try
-         while (glGetError <> GL_NO_ERROR) and (Count < 6) do Inc(Count);
+         while (glGetError<>GL_NO_ERROR) and (count<6) do Inc(count);
       except
          // Egg : ignore exceptions here, will perhaps avoid problem expressed before
       end;
-      raise EOpenGLError.Create(gluErrorString(GLError));
+      raise EOpenGLError.Create(gluErrorString(err));
    end;
 end;
 
@@ -4596,8 +4599,7 @@ begin
       i:=FBuffers.IndexOf(aBuffer);
       if i>=0 then begin
          if FBuffers.Count=1 then begin
-            FBuffers.Free;
-            FBuffers:=nil;
+            FreeAndNil(FBuffers);
             FBaseContext:=nil;
          end else begin
             FBuffers.Delete(i);
@@ -5200,7 +5202,7 @@ begin
    end;
    DestroyRC;
    FAfterRenderEffects.Free;
-   FFogEnvironment.free;
+   FFogEnvironment.Free;
    inherited Destroy;
 end;
 
@@ -5264,8 +5266,7 @@ procedure TGLSceneBuffer.DestroyRC;
 begin
    if Assigned(FRenderingContext) then begin
       // for some obscure reason, Mesa3D doesn't like this call... any help welcome
-      FRenderingContext.Free;
-      FRenderingContext:=nil;
+      FreeAndNil(FRenderingContext);
    end;
 end;
 
@@ -5417,14 +5418,14 @@ end;
 //
 procedure TGLSceneBuffer.RenderToFile(const aFile : String; DPI : Integer);
 var
-   aBitmap : TBitmap;
+   aBitmap : Graphics.TBitmap;
    saveDialog : TSavePictureDialog;
    saveAllowed : Boolean;
    fileName: String;
 begin
    Assert((not FRendering), glsAlreadyRendering);
    saveDialog:=nil;
-   aBitmap:=TBitmap.Create;
+   aBitmap:=Graphics.TBitmap.Create;
    try
       aBitmap.Width:=FViewPort.Width;
       aBitmap.Height:=FViewPort.Height;
@@ -5458,19 +5459,19 @@ end;
 //
 procedure TGLSceneBuffer.RenderToFile(const AFile: String; bmpWidth, bmpHeight : Integer);
 var
-   ABitmap: TBitmap;
+   aBitmap: Graphics.TBitmap;
    SaveDialog: TSavePictureDialog;
    SaveAllowed: Boolean;
    FName: String;
 begin
    Assert((not FRendering), glsAlreadyRendering);
    SaveDialog:=nil;
-   ABitmap:=TBitmap.Create;
+   aBitmap:=Graphics.TBitmap.Create;
    try
       ABitmap.Width:=bmpWidth;
       ABitmap.Height:=bmpHeight;
       ABitmap.PixelFormat:=pf24Bit;
-      RenderToBitmap(ABitmap, (GetDeviceCaps(ABitmap.Canvas.Handle, LOGPIXELSX)*bmpWidth) div FViewPort.Width);
+      RenderToBitmap(ABitmap, (GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle)*bmpWidth) div FViewPort.Width);
       FName:=AFile;
       SaveAllowed:=True;
       if FName = '' then begin
@@ -5540,7 +5541,7 @@ end;
 
 // RenderToBitmap
 //
-procedure TGLSceneBuffer.RenderToBitmap(ABitmap: TBitmap; DPI: Integer);
+procedure TGLSceneBuffer.RenderToBitmap(ABitmap: Graphics.TBitmap; DPI: Integer);
 var
    bmpContext: TGLContext;
    BackColor: TColorVector;
@@ -5595,7 +5596,7 @@ begin
             ResetGLCurrentTexture;
             Resolution:=DPI;
             if Resolution=0 then
-               Resolution:=GetDeviceCaps(ABitmap.Canvas.Handle, LOGPIXELSX);
+               Resolution:=GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle);
             // render
             DoBaseRender(viewport, Resolution, dsPrinting);
             glFinish;
@@ -5842,8 +5843,8 @@ end;
 
 // PickObjects
 //
-procedure TGLSceneBuffer.PickObjects(const Rect: TRect; PickList: TGLPickList;
-                                     objectCountGuess: Integer);
+procedure TGLSceneBuffer.PickObjects(const rect : TGLRect; pickList : TGLPickList;
+                                     objectCountGuess : Integer);
 var
    buffer : PCardinalVector;
    hits : Integer;
@@ -5917,7 +5918,7 @@ end;
 
 // GetPickedObjects
 //
-function TGLSceneBuffer.GetPickedObjects(const Rect: TRect; objectCountGuess : Integer = 64) : TGLPickList;
+function TGLSceneBuffer.GetPickedObjects(const rect : TGLRect; objectCountGuess : Integer = 64) : TGLPickList;
 begin
    Result:=TGLPickList.Create(psMinDepth);
    PickObjects(Rect, Result, objectCountGuess);
@@ -6014,7 +6015,7 @@ end;
 // PrepareRenderingMatrices
 //
 procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort : TRectangle;
-                           resolution : Integer; pickingRect : PRect = nil);
+                           resolution : Integer; pickingRect : PGLRect = nil);
 begin
    // setup projection matrix
    glMatrixMode(GL_PROJECTION);
@@ -6493,7 +6494,7 @@ begin
    inherited CreateParams(Params);
    with Params do begin
       Style:=Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
-      WindowClass.Style:=CS_VREDRAW or CS_HREDRAW or CS_OWNDC or CS_DBLCLKS;
+      WindowClass.Style:=WindowClass.Style or CS_OWNDC;
    end;
 end;
 
