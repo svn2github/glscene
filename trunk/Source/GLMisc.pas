@@ -433,6 +433,7 @@ type
          FVertices : TVectorList;
          FIndices : TIntegerList;
          FCapIndices : TIntegerList;
+         FParameters : TGLSilhouetteParameters;
 
       protected
          { Protected Declarations }
@@ -445,6 +446,7 @@ type
          constructor Create; virtual;
          destructor Destroy; override;
 
+         property Parameters : TGLSilhouetteParameters read FParameters write FParameters;
          property Vertices : TVectorList read FVertices write SetVertices;
          property Indices : TIntegerList read FIndices write SetIndices;
          property CapIndices : TIntegerList read FCapIndices write SetCapIndices;
@@ -2055,8 +2057,8 @@ begin
    vList:=Vertices.List;
    vListN:=@vList[nv];
    for i:=0 to nv-1 do begin
-      VectorSubtract(PAffineVector(@vList[i])^, origin, PAffineVector(@vListN[i])^);
       vListN[i][3]:=0;
+      VectorSubtract(PAffineVector(@vList[i])^, origin, PAffineVector(@vListN[i])^);
    end;
    // change silhouette indices to quad indices
    ni:=Indices.Count;
