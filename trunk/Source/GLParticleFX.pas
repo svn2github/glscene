@@ -1744,7 +1744,11 @@ begin
    if Manager=nil then Exit;
 
    SetVector(pos, OwnerBaseSceneObject.AbsolutePosition);
-   AddVector(pos, InitialPosition.AsAffineVector);
+   if VelocityMode=svmRelative then
+        AddVector(pos, VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(InitialPosition.AsAffineVector),OwnerBaseSceneObject.LocalToAbsolute(NullVector)))
+   else
+        AddVector(pos, InitialPosition.AsAffineVector);
+
 
    if FManager is TGLDynamicPFXManager then
    begin
@@ -1759,9 +1763,7 @@ begin
       RndVector(DispersionMode, av, FVelocityDispersion, nil);
       VectorAdd(InitialVelocity.AsAffineVector, av, @particle.Velocity);
       if VelocityMode=svmRelative then
-      begin
            particle.FVelocity:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity),OwnerBaseSceneObject.LocalToAbsolute(NullVector));
-      end;
       particle.CreationTime:=time;
       if FRotationDispersion <> 0 then
         particle.FRotation := Random * FRotationDispersion
