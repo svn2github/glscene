@@ -319,7 +319,6 @@ begin
       glEnable(GL_BLEND);
       glEnable(GL_LINE_SMOOTH);
       glEnable(GL_CULL_FACE);
-      glEnable(GL_COLOR_MATERIAL);
 
       glPolygonMode(GL_BACK, GL_LINE);
       glCullFace(GL_FRONT);
