@@ -86,6 +86,11 @@ var
 begin
         if FMaterialLibrary<>nil then
         begin
+             // store current stDepthTest state and disable it here
+             IsDepthTestSet := stDepthTest in rci.currentStates;
+             if IsDepthTestSet then
+                glDisable(GL_DEPTH_TEST);
+
              try
                 dV := Self.AbsoluteToLocal(rci.cameraPosition);
 
@@ -100,14 +105,6 @@ begin
 
                 // paint over
                 glDepthMask(false);
-
-
-
-                // store current stDepthTest state and disable it here
-                IsDepthTestSet := stDepthTest in rci.currentStates;
-                if IsDepthTestSet then
-                   glDisable(GL_DEPTH_TEST);
-
 
                 // TOP
                 if FMatNameTop<>'' then
