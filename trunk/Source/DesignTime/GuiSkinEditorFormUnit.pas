@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects,
-  GLWindows, GLHUDObjects, GLMisc, GLWin32Viewer, GLGui, GLGraphics;
+  GLWindows, GLHUDObjects, GLMisc, GLWin32Viewer, GLGui, GLGraphics,
+  GLUtils;
 
 type
   TGUISkinEditor = class(TForm)

@@ -81,7 +81,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses VectorGeometry, GLMisc;
+uses VectorGeometry, GLUtils;
 
 constructor TGLProcTextureNoise.Create(AOwner: TPersistent);
 var
