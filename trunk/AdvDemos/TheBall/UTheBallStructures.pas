@@ -9,7 +9,7 @@ unit UTheBallStructures;
 
 interface
 
-uses Classes, GLScene, GLMisc, GLObjects, VectorGeometry, ODEImport, GLBitmapFont,
+uses Classes, SysUtils, GLScene, GLMisc, GLObjects, VectorGeometry, ODEImport, GLBitmapFont,
    GLGeomObjects;
 
 type
@@ -258,7 +258,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, FMain, GLTexture, ODEGL, GLParticleFX, GLSound;
+uses FMain, GLTexture, ODEGL, GLParticleFX, GLSound;
 
 // ParseTheBallMap
 //
