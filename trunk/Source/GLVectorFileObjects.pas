@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>18/02/02 - EG - Fixed persistence of skeletal meshes
       <li>04/01/02 - EG - Added basic RayCastIntersect implementation
       <li>17/12/01 - EG - Upgraded TActor.Synchronize (smooth transitions support)
       <li>30/11/01 - EG - Added smooth transitions (based on Mrqzzz code)
@@ -607,7 +608,7 @@ type
          FVerticeBoneWeightCount : Integer;
          FBonesPerVertex : Integer;
          FLastVerticeBoneWeightCount, FLastBonesPerVertex : Integer; // not persistent
-         FBoneMatrixInvertedMeshes : TList;
+         FBoneMatrixInvertedMeshes : TList; // not persistent
 
 	   protected
 	      { Protected Declarations }
@@ -2641,9 +2642,15 @@ end;
 procedure TMeshObjectList.ReadFromFiler(reader : TVirtualReader);
 var
    i : Integer;
+   mesh : TMeshObject;
 begin
    inherited;
-   for i:=0 to Count-1 do Items[i].FOwner:=Self;
+   for i:=0 to Count-1 do begin
+      mesh:=Items[i];
+      mesh.FOwner:=Self;
+      if mesh is TSkeletonMeshObject then
+         TSkeletonMeshObject(mesh).PrepareBoneMatrixInvertedMeshes;
+   end;
 end;
 
 // PrepareBuildList
@@ -2935,6 +2942,7 @@ procedure TMorphableMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       FMorphTargets.ReadFromFiler(reader);
