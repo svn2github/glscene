@@ -4917,8 +4917,7 @@ end;
 procedure TODEJointBall.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateBall(FManager.World,0);
+  FJointID:=dJointCreateBall(FManager.World,0);
   inherited;
 end;
 
@@ -5010,8 +5009,7 @@ end;
 procedure TODEJointSlider.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateSlider(FManager.World,0);
+  FJointID:=dJointCreateSlider(FManager.World,0);
   inherited;
 end;
 
@@ -5120,8 +5118,7 @@ end;
 procedure TODEJointFixed.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateFixed(FManager.World,0);
+  FJointID:=dJointCreateFixed(FManager.World,0);
   inherited;
 end;
 
@@ -5199,11 +5196,7 @@ end;
 procedure TODEJointHinge2.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateHinge2(FManager.World,0);
-  AnchorChange(nil);
-  Axis1Change(nil);
-  Axis2Change(nil);
+  FJointID:=dJointCreateHinge2(FManager.World,0);
   inherited;
 end;
 
@@ -5415,8 +5408,7 @@ end;
 procedure TODEJointUniversal.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateUniversal(FManager.World,0);
+  FJointID:=dJointCreateUniversal(FManager.World,0);
   inherited;
 end;
 
