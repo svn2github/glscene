@@ -334,6 +334,7 @@ var
   GL_ARB_imaging,
   GL_ARB_multisample,
   GL_ARB_multitexture,
+  GL_ARB_texture_border_clamp,
   GL_ARB_texture_compression,
   GL_ARB_texture_cube_map,
   GL_ARB_transpose_matrix,
@@ -2660,6 +2661,9 @@ const
   {$EXTERNALSYM GL_PROXY_TEXTURE_CUBE_MAP_ARB}
   GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB                  = $851C;
   {$EXTERNALSYM GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB}
+
+  // GL_ARB_texture_border_clamp
+  GL_CLAMP_TO_BORDER_ARB                            = $812D;
 
   // GL_ARB_texture_compression
   GL_COMPRESSED_ALPHA_ARB                           = $84E9;
@@ -8367,7 +8371,8 @@ begin
 
   GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
   GL_ARB_multisample := CheckExtension(' GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
-  GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture'); 
+  GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture');
+  GL_ARB_texture_border_clamp := CheckExtension('GL_ARB_texture_border_clamp');
   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
   GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
   GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix');
