@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/03/02 - Egg - CoordinateChanged default rightVector based on X, then Y
       <li>27/02/02 - Egg - Added DepthPrecision and ColorDepth to buffer,
                            ResetAndPitchTurnRoll, ShadeModel (Chris Strahm)
       <li>26/02/02 - Egg - DestroyHandle/DestroyHandles split,
@@ -3309,8 +3310,11 @@ begin
          rightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
          // Rightvector is zero if direction changed exactly by 90 degrees,
          // in this case assume a default vector
-         if VectorLength(rightVector) = 0 then with FDirection do
-            Geometry.SetVector(rightVector, X+1, Y+2, Z+3);
+         if VectorLength(rightVector)<1e-20 then begin
+            rightVector:=VectorCrossProduct(ZHmgVector, FUp.AsVector);
+            if VectorLength(rightVector)<1e-20 then
+               rightVector:=VectorCrossProduct(XHmgVector, FUp.AsVector);
+         end;
          FUp.DirectVector:=VectorCrossProduct(rightVector, FDirection.AsVector);
          FUp.Normalize;
       end else if Sender = FUp then begin
@@ -3321,8 +3325,11 @@ begin
          rightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
          // Rightvector is zero if direction changed exactly by 90 degrees,
          // in this case assume a default vector
-         if VectorLength(rightVector) = 0 then with FUp do
-            Geometry.SetVector(rightVector, X+1, Y+2, Z+3);
+         if VectorLength(rightVector)<1e-20 then begin
+            rightVector:=VectorCrossProduct(ZHmgVector, FUp.AsVector);
+            if VectorLength(rightVector)<1e-20 then
+               rightVector:=VectorCrossProduct(XHmgVector, FUp.AsVector);
+         end;
          FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, RightVector);
          FDirection.Normalize;
       end;
