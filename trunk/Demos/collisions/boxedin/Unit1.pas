@@ -62,7 +62,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLCrossPlatform;
+uses GLCrossPlatform, GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
