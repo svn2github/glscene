@@ -1,0 +1,437 @@
+object GUISkinEditor: TGUISkinEditor
+  Left = 115
+  Top = 115
+  Width = 990
+  Height = 432
+  HorzScrollBar.Range = 986
+  HorzScrollBar.Visible = False
+  VertScrollBar.Range = 425
+  VertScrollBar.Visible = False
+  ActiveControl = Button5
+  Caption = 'Skin Editor'
+  Color = clButton
+  Font.Color = clBlack
+  Font.Height = 14
+  Font.Name = 'adobe-helvetica'
+  Font.Pitch = fpVariable
+  Font.Style = []
+  Font.Weight = 0
+  ParentFont = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  PixelsPerInch = 75
+  TextHeight = 17
+  TextWidth = 7
+  object Label5: TLabel
+    Left = 374
+    Top = 281
+    Width = 36
+    Height = 17
+    Caption = 'Width'
+  end
+  object Label6: TLabel
+    Left = 374
+    Top = 310
+    Width = 41
+    Height = 17
+    Caption = 'Height'
+  end
+  object Label7: TLabel
+    Left = 10
+    Top = 364
+    Width = 24
+    Height = 17
+    Caption = 'X: 0'
+  end
+  object Label8: TLabel
+    Left = 98
+    Top = 364
+    Width = 24
+    Height = 17
+    Caption = 'Y: 0'
+  end
+  object Panel1: TPanel
+    Left = 10
+    Top = 10
+    Width = 317
+    Height = 317
+    TabOrder = 0
+    object Image1: TImage
+      Left = 1
+      Top = 1
+      Width = 315
+      Height = 315
+      Align = alClient
+      OnMouseDown = Image1MouseDown
+      OnMouseMove = Image1MouseMove
+      OnMouseUp = Image1MouseUp
+    end
+  end
+  object Panel2: TPanel
+    Left = 374
+    Top = 10
+    Width = 160
+    Height = 160
+    TabOrder = 1
+    object Image2: TImage
+      Left = 1
+      Top = 1
+      Width = 158
+      Height = 158
+      Align = alClient
+    end
+  end
+  object ScrollBar1: TScrollBar
+    Left = 335
+    Top = 10
+    Width = 21
+    Height = 316
+    Kind = sbVertical
+    LargeChange = 64
+    Min = 1
+    Max = 256
+    Position = 1
+    TabOrder = 2
+    OnChange = ScrollbarChange
+    OnScroll = ScrollBarScroll
+  end
+  object ScrollBar2: TScrollBar
+    Left = 10
+    Top = 335
+    Width = 316
+    Height = 21
+    LargeChange = 64
+    Min = 1
+    Max = 256
+    Position = 1
+    TabOrder = 3
+    OnChange = ScrollbarChange
+    OnScroll = ScrollBarScroll
+  end
+  object Panel3: TPanel
+    Left = 374
+    Top = 177
+    Width = 159
+    Height = 33
+    BevelOuter = bvLowered
+    TabOrder = 4
+    object Label2: TLabel
+      Left = 98
+      Top = 9
+      Width = 19
+      Height = 17
+      Alignment = taRightJustify
+      Caption = '1.0'
+    end
+    object Label1: TLabel
+      Left = 15
+      Top = 9
+      Width = 39
+      Height = 17
+      Caption = 'Zoom:'
+    end
+    object Button3: TButton
+      Left = 139
+      Top = 1
+      Width = 19
+      Height = 15
+      Caption = '+'
+      Font.Color = clBlack
+      Font.Height = 15
+      Font.Name = 'adobe-helvetica'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 0
+      OnClick = Button3Click
+    end
+    object Button4: TButton
+      Left = 139
+      Top = 16
+      Width = 19
+      Height = 15
+      Caption = '-'
+      Font.Color = clBlack
+      Font.Height = 15
+      Font.Name = 'adobe-helvetica'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 1
+      OnClick = Button4Click
+    end
+  end
+  object CheckBox1: TCheckBox
+    Left = 374
+    Top = 246
+    Width = 159
+    Height = 21
+    Caption = 'Show Preview'
+    TabOrder = 5
+    OnClick = CheckBox1Click
+  end
+  object WidthEdit: TEdit
+    Left = 423
+    Top = 276
+    Width = 110
+    Height = 25
+    TabOrder = 6
+    Text = '256'
+    OnChange = WidthEditChange
+  end
+  object HeightEdit: TEdit
+    Left = 423
+    Top = 305
+    Width = 110
+    Height = 25
+    TabOrder = 7
+    Text = '256'
+    OnChange = HeightEditChange
+  end
+  object Button5: TButton
+    Left = 768
+    Top = 394
+    Width = 92
+    Height = 31
+    Caption = 'OK'
+    ModalResult = 1
+    TabOrder = 8
+  end
+  object Button6: TButton
+    Left = 876
+    Top = 394
+    Width = 93
+    Height = 31
+    Caption = 'Cancel'
+    ModalResult = 2
+    TabOrder = 9
+  end
+  object GroupBox1: TGroupBox
+    Left = 542
+    Top = 10
+    Width = 444
+    Height = 375
+    Caption = 'Element List'
+    TabOrder = 10
+    object Label3: TLabel
+      Left = 197
+      Top = 20
+      Width = 98
+      Height = 17
+      Caption = 'Skin Elements'
+      Font.Color = clBlack
+      Font.Height = 15
+      Font.Name = 'adobe-helvetica'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
+    object Label4: TLabel
+      Left = 10
+      Top = 54
+      Width = 57
+      Height = 17
+      Caption = 'Skin Part'
+    end
+    object Label11: TLabel
+      Left = 10
+      Top = 98
+      Width = 24
+      Height = 17
+      Caption = 'Left'
+    end
+    object Label12: TLabel
+      Left = 10
+      Top = 128
+      Width = 25
+      Height = 17
+      Caption = 'Top'
+    end
+    object Label13: TLabel
+      Left = 10
+      Top = 158
+      Width = 33
+      Height = 17
+      Caption = 'Right'
+    end
+    object Label9: TLabel
+      Left = 10
+      Top = 222
+      Width = 48
+      Height = 17
+      Caption = 'Scale X'
+    end
+    object Label10: TLabel
+      Left = 10
+      Top = 251
+      Width = 48
+      Height = 17
+      Caption = 'Scale Y'
+    end
+    object Label14: TLabel
+      Left = 10
+      Top = 187
+      Width = 44
+      Height = 17
+      Caption = 'Bottom'
+    end
+    object ListBox1: TListBox
+      Left = 197
+      Top = 49
+      Width = 237
+      Height = 317
+      ItemHeight = 17
+      TabOrder = 0
+      OnClick = ListBox1Click
+      OnKeyDown = ListBox1KeyDown
+    end
+    object Button1: TButton
+      Left = 315
+      Top = 20
+      Width = 60
+      Height = 21
+      Caption = '+'
+      Font.Color = clBlack
+      Font.Height = 20
+      Font.Name = 'adobe-helvetica'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 1
+      OnClick = Button1Click
+    end
+    object Button2: TButton
+      Left = 384
+      Top = 20
+      Width = 50
+      Height = 21
+      Caption = '-'
+      Font.Color = clBlack
+      Font.Height = 20
+      Font.Name = 'adobe-helvetica'
+      Font.Pitch = fpVariable
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 2
+      OnClick = Button2Click
+    end
+    object ComboBox1: TComboBox
+      Left = 89
+      Top = 49
+      Width = 99
+      Height = 25
+      Style = csDropDownList
+      ItemHeight = 19
+      Items.Strings = (
+        'TopLeft'
+        'Top'
+        'TopRight'
+        'Left'
+        'Center'
+        'Right'
+        'BottomLeft'
+        'Bottom'
+        'BottomRight')
+      TabOrder = 3
+      OnChange = ComboBox1Change
+    end
+    object LeftEdit: TEdit
+      Left = 89
+      Top = 89
+      Width = 99
+      Height = 25
+      TabOrder = 4
+      Text = '256'
+      OnChange = LeftEditChange
+    end
+    object TopEdit: TEdit
+      Left = 89
+      Top = 118
+      Width = 99
+      Height = 25
+      TabOrder = 5
+      Text = '256'
+      OnChange = TopEditChange
+    end
+    object RightEdit: TEdit
+      Left = 89
+      Top = 148
+      Width = 99
+      Height = 25
+      TabOrder = 6
+      Text = '256'
+      OnChange = RightEditChange
+    end
+    object BottomEdit: TEdit
+      Left = 89
+      Top = 177
+      Width = 99
+      Height = 25
+      TabOrder = 7
+      Text = '256'
+      OnChange = BottomEditChange
+    end
+    object ScaleXEdit: TEdit
+      Left = 89
+      Top = 207
+      Width = 99
+      Height = 25
+      TabOrder = 8
+      Text = '1'
+      OnChange = ScaleXEditChange
+    end
+    object ScaleYEdit: TEdit
+      Left = 89
+      Top = 241
+      Width = 99
+      Height = 25
+      TabOrder = 9
+      Text = '1'
+      OnChange = ScaleYEditChange
+    end
+  end
+  object GLScene1: TGLScene
+    Left = 16
+    Top = 16
+    object HUDSprite1: TGLHUDSprite
+      Material.FrontProperties.Ambient.Color = {938C0C3E938E0E3F938C0C3E0000803F}
+      Material.FrontProperties.Diffuse.Color = {938C0C3E938E0E3F938C0C3E0000803F}
+      Material.FrontProperties.Emission.Color = {938C0C3E938E0E3F938C0C3E0000803F}
+      Material.FrontProperties.Specular.Color = {938C0C3E938E0E3F938C0C3E0000803F}
+      Position.Coordinates = {0000804300008043000000000000803F}
+      Visible = False
+      Width = 512.000000000000000000
+      Height = 512.000000000000000000
+      NoZWrite = False
+      MirrorU = False
+      MirrorV = False
+    end
+    object GLPanel1: TGLPanel
+      RedrawAtOnce = False
+      NoZWrite = False
+      Visible = False
+      Width = 256.000000000000000000
+      Height = 256.000000000000000000
+    end
+    object GLCamera1: TGLCamera
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
+      Position.Coordinates = {0000000000000000000020410000803F}
+      object GLLightSource1: TGLLightSource
+        ConstAttenuation = 1.000000000000000000
+        LightStyle = lsOmni
+        SpotCutOff = 180.000000000000000000
+      end
+    end
+  end
+  object GLMemoryViewer1: TGLMemoryViewer
+    Camera = GLCamera1
+    Buffer.ContextOptions = []
+    Buffer.DepthTest = False
+    Buffer.FaceCulling = False
+    Buffer.Lighting = False
+    Buffer.ColorDepth = cd8bits
+    Left = 16
+    Top = 64
+  end
+end
