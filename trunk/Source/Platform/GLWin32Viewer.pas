@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/02/02 - EG - Fixed BeforeRender
       <li>29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
       <li>22/01/02 - EG - Added TGLFullScreenViewer
       <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
@@ -38,7 +39,6 @@ type
          { Private Declarations }
          FIsOpenGLAvailable : Boolean;
          FBuffer : TGLSceneBuffer;
-         FBeforeRender : TNotifyEvent;
          FVSync : TVSyncMode;
          FOwnDC : Cardinal;
 
@@ -49,6 +49,8 @@ type
 
       protected
          { Protected Declarations }
+         procedure SetBeforeRender(const val : TNotifyEvent);
+         function GetBeforeRender : TNotifyEvent;
          procedure SetPostRender(const val : TNotifyEvent);
          function GetPostRender : TNotifyEvent;
          procedure SetAfterRender(const val : TNotifyEvent);
@@ -91,7 +93,7 @@ type
 
          {: Triggered before the scene's objects get rendered.<p>
             You may use this event to execute your own OpenGL rendering. }
-         property BeforeRender : TNotifyEvent read FBeforeRender write FBeforeRender;
+         property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering.<p> }
@@ -319,6 +321,20 @@ begin
    inherited;
    if (Operation = opRemove) and (AComponent = Camera) then
       Camera:=nil;
+end;
+
+// SetBeforeRender
+//
+procedure TGLSceneViewer.SetBeforeRender(const val : TNotifyEvent);
+begin
+   FBuffer.BeforeRender:=val;
+end;
+
+// GetBeforeRender
+//
+function TGLSceneViewer.GetBeforeRender : TNotifyEvent;
+begin
+   Result:=FBuffer.BeforeRender;
 end;
 
 // SetPostRender
