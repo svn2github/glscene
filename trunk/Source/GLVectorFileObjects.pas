@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>22/10/02 - EG - Added actor options, fixed skeleton normals transform (thx Marcu)
       <li>21/10/02 - EG - Read support for .GTS (GNU Triangulated Surface library) 
       <li>18/10/02 - EG - FindExtByIndex (Adem)
       <li>17/10/02 - EG - TGLSTLVectorFile moved to new GLFileSTL unit
@@ -404,7 +405,7 @@ type
          procedure MakeSkeletalRotationDelta(startFrame, endFrame : Integer);
 
          {: Applies current frame to morph all mesh objects. }
-         procedure MorphMesh;
+         procedure MorphMesh(normalize : Boolean);
 
          {: Release bones and frames info. }
          procedure Clear;
@@ -660,7 +661,7 @@ type
 
          procedure AddWeightedBone(aBoneID : Integer; aWeight : Single);
          procedure PrepareBoneMatrixInvertedMeshes;
-         procedure ApplyCurrentSkeletonFrame;
+         procedure ApplyCurrentSkeletonFrame(normalize : Boolean);
 	      procedure Clear;
 	end;
 
@@ -1121,11 +1122,27 @@ type
          property NormalsOrientation;
    end;
 
+   // TGLActorOption
+   //
+   {: Miscellanious actor options.<p>
+      <ul>
+      <li>aoSkeletonNormalizeNormals : if set the normals of a skeleton-animated
+          mesh will be normalized, this is not required if no normals-based texture
+          coordinates generation occurs, and thus may be unset to improve performance.
+      </ul> }
+   TGLActorOption = (aoSkeletonNormalizeNormals);
+   TGLActorOptions = set of TGLActorOption;
+
+const
+   cDefaultGLActorOptions = [aoSkeletonNormalizeNormals];
+
+type
+
+   TGLActor = class;
+
    // TActorAnimationReference
    //
    TActorAnimationReference = (aarMorph, aarSkeleton);
-
-   TGLActor = class;
 
 	// TActorAnimation
 	//
@@ -1302,6 +1319,7 @@ type
          FAnimations : TActorAnimations;
          FTargetSmoothAnimation : TActorAnimation;
          FControlers : TList;
+         FOptions : TGLActorOptions;
 
       protected
          { Protected Declarations }
@@ -1310,6 +1328,7 @@ type
          procedure SetEndFrame(val : Integer);
          procedure SetReference(val : TActorAnimationReference);
          procedure SetAnimations(const val : TActorAnimations);
+         procedure SetOptions(const val : TGLActorOptions);
 
          procedure PrepareMesh; override;
          procedure RegisterControler(aControler : TAnimationControler);
@@ -1345,7 +1364,7 @@ type
          { Published Declarations }
          property StartFrame : Integer read FStartFrame write SetStartFrame;
          property EndFrame : Integer read FEndFrame write SetEndFrame;
-         
+
          {: Reference Frame Animation mode.<p>
             Allows specifying if the model is primarily morph or skeleton based. }
          property Reference : TActorAnimationReference read FReference write FReference default aarMorph;
@@ -1361,6 +1380,8 @@ type
          property AnimationMode : TActorAnimationMode read FAnimationMode write FAnimationMode default aamNone;
          {: Interval between frames, in milliseconds. }
          property Interval : Integer read FInterval write FInterval;
+         {: Actor and animation miscellanious options. }
+         property Options : TGLActorOptions read FOptions write SetOptions default cDefaultGLActorOptions; 
 
          {: Triggered after each CurrentFrame change. }
          property OnFrameChanged : TNotifyEvent read FOnFrameChanged write FOnFrameChanged;
@@ -2480,7 +2501,7 @@ end;
 
 // MorphMesh
 //
-procedure TSkeleton.MorphMesh;
+procedure TSkeleton.MorphMesh(normalize : Boolean);
 var
    i : Integer;
    mesh : TBaseMeshObject;
@@ -2490,7 +2511,7 @@ begin
       for i:=0 to Owner.MeshObjects.Count-1 do begin
          mesh:=Owner.MeshObjects.Items[0];
          if mesh is TSkeletonMeshObject then
-            TSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame;
+            TSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
       end;
    end;
 end;
@@ -3364,11 +3385,11 @@ end;
 
 // ApplyCurrentSkeletonFrame
 //
-procedure TSkeletonMeshObject.ApplyCurrentSkeletonFrame;
+procedure TSkeletonMeshObject.ApplyCurrentSkeletonFrame(normalize : Boolean);
 var
    i, boneID : Integer;
    refVertices, refNormals : TAffineVectorList;
-   p : TVector;
+   n : TVector;
    bone : TSkeletonBone;
    skeleton : TSkeleton;
 begin
@@ -3377,14 +3398,17 @@ begin
       refNormals:=Normals;
    end;
    skeleton:=Owner.Owner.Skeleton;
+   n[3]:=0;
    for i:=0 to refVertices.Count-1 do begin
       boneID:=VerticesBonesWeights[i][0].BoneID;
       bone:=skeleton.BoneByID(boneID);
-      MakePoint(p, refVertices.List[i]);
-      p:=VectorTransform(p, bone.GlobalMatrix);
-      Vertices.List[i]:=PAffineVector(@p)^;
-      Normals.List[i]:=VectorTransform(refNormals.List[i], bone.GlobalMatrix)
-   end; 
+      Vertices.List[i]:=VectorTransform(refVertices.List[i], bone.GlobalMatrix);
+      PAffineVector(@n)^:=refNormals.List[i];
+      n:=VectorTransform(n, bone.GlobalMatrix);
+      Normals.List[i]:=PAffineVector(@n)^;
+   end;
+   if normalize then
+      Normals.Normalize;
 end;
 
 // Clear
@@ -5202,6 +5226,7 @@ begin
    FInterval:=100; // 10 animation frames per second
    FAnimations:=TActorAnimations.Create(Self);
    FControlers:=nil; // created on request
+   FOptions:=cDefaultGLActorOptions;
 end;
 
 // Destroy
@@ -5298,6 +5323,16 @@ end;
 procedure TGLActor.SetAnimations(const val : TActorAnimations);
 begin
    FAnimations.Assign(val);
+end;
+
+// SetOptions
+//
+procedure TGLActor.SetOptions(const val : TGLActorOptions);
+begin
+   if val<>FOptions then begin
+      FOptions:=val;
+      StructureChanged;
+   end;
 end;
 
 // NextFrameIndex
@@ -5420,7 +5455,7 @@ begin
                   Skeleton.SetCurrentFrame(Skeleton.Frames[CurrentFrame]);
                end;
             end;
-            Skeleton.MorphMesh;
+            Skeleton.MorphMesh(aoSkeletonNormalizeNormals in Options);
          end;
       end;
    end;
