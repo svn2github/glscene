@@ -813,8 +813,8 @@ type
 			FImage               : TGLTextureImage;
 			FImageAlpha          : TGLTextureImageAlpha;
          FMappingMode         : TGLTextureMappingMode;
-         FMapSCoordinates     : TGLCoordinates;
-         FMapTCoordinates     : TGLCoordinates;
+         FMapSCoordinates     : TGLCoordinates4;
+         FMapTCoordinates     : TGLCoordinates4;
          FOnTextureNeeded     : TTextureNeededEvent;
          FCompression         : TGLTextureCompression;
          FRequiredMemorySize  : Integer;
@@ -832,10 +832,10 @@ type
          procedure SetCompression(const val : TGLTextureCompression);
          procedure SetFilteringQuality(const val : TGLTextureFilteringQuality);
          procedure SetMappingMode(const val : TGLTextureMappingMode);
-         function  GetMappingSCoordinates : TGLCoordinates;
-         procedure SetMappingSCoordinates(const val : TGLCoordinates);
-         function  GetMappingTCoordinates : TGLCoordinates;
-         procedure SetMappingTCoordinates(const val : TGLCoordinates);
+         function  GetMappingSCoordinates : TGLCoordinates4;
+         procedure SetMappingSCoordinates(const val : TGLCoordinates4);
+         function  GetMappingTCoordinates : TGLCoordinates4;
+         procedure SetMappingTCoordinates(const val : TGLCoordinates4);
 			procedure SetDisabled(AValue: Boolean);
          procedure SetEnabled(const val : Boolean);
          function GetEnabled : Boolean;
@@ -942,11 +942,11 @@ type
          {: Texture mapping coordinates mode for S axis.<p>
             This property stores the coordinates for automatic texture
             coordinates generation. }
-         property MappingSCoordinates : TGLCoordinates read GetMappingSCoordinates write SetMappingSCoordinates;
+         property MappingSCoordinates : TGLCoordinates4 read GetMappingSCoordinates write SetMappingSCoordinates;
          {: Texture mapping coordinates mode for T axis.<p>
             This property stores the coordinates for automatic texture
             coordinates generation. }
-         property MappingTCoordinates : TGLCoordinates read GetMappingTCoordinates write SetMappingTCoordinates;
+         property MappingTCoordinates : TGLCoordinates4 read GetMappingTCoordinates write SetMappingTCoordinates;
 
          {: If true, the texture is disabled (not used). }
 			property Disabled: Boolean read FDisabled write SetDisabled default True;
@@ -2857,33 +2857,33 @@ end;
 
 // SetMappingSCoordinates
 //
-procedure TGLTexture.SetMappingSCoordinates(const val : TGLCoordinates);
+procedure TGLTexture.SetMappingSCoordinates(const val : TGLCoordinates4);
 begin
    MappingSCoordinates.Assign(val);
 end;
 
 // GetMappingSCoordinates
 //
-function TGLTexture.GetMappingSCoordinates : TGLCoordinates;
+function TGLTexture.GetMappingSCoordinates : TGLCoordinates4;
 begin
    if not Assigned(FMapSCoordinates) then
-      FMapSCoordinates:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
+      FMapSCoordinates:=TGLCoordinates4.CreateInitialized(Self, XHmgVector, csVector);
    Result:=FMapSCoordinates;
 end;
 
 // SetMappingTCoordinates
 //
-procedure TGLTexture.SetMappingTCoordinates(const val : TGLCoordinates);
+procedure TGLTexture.SetMappingTCoordinates(const val : TGLCoordinates4);
 begin
    MappingTCoordinates.Assign(val);
 end;
 
 // GetMappingTCoordinates
 //
-function TGLTexture.GetMappingTCoordinates : TGLCoordinates;
+function TGLTexture.GetMappingTCoordinates : TGLCoordinates4;
 begin
    if not Assigned(FMapTCoordinates) then
-      FMapTCoordinates:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
+      FMapTCoordinates:=TGLCoordinates4.CreateInitialized(Self, XHmgVector, csVector);
    Result:=FMapTCoordinates;
 end;
 

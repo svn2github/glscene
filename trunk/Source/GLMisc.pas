@@ -280,6 +280,15 @@ type
 
   	end;
 
+   // TGLCoordinates
+   //
+   {: A TGLCoordinates that publishes W property. }
+	TGLCoordinates4 = class(TGLCoordinates)
+		published
+			{ Published Declarations }
+         property W;
+   end;
+
 	// TGLNode
 	//
 	TGLNode = class (TCollectionItem)
