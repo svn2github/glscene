@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
       <li>11/02/02 - EG - Non-spinned QuaternionSlerp (Alex Grigny de Castro)
       <li>07/02/02 - EG - Added AnglePreservingMatrixInvert
       <li>30/01/02 - EG - New Quaternion<->Matrix code (Alex Grigny de Castro)
@@ -794,6 +795,9 @@ procedure CalcPlaneNormal(const p1, p2, p3 : TVector; var vr : TAffineVector); o
 // Quaternion functions
 //------------------------------------------------------------------------------
 
+type
+   TEulerOrder = (eulXYZ, eulXZY, eulYXZ, eulYZX, eulZXY, eulZYX);
+
 //: Creates a quaternion from the given values
 function QuaternionMake(Imag: array of Single; Real: Single): TQuaternion;
 //: Returns the conjugate of a quaternion
@@ -818,6 +822,8 @@ function QuaternionToMatrix(quat : TQuaternion) : TMatrix;
 function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVector) : TQuaternion;
 //: Constructs quaternion from Euler angles
 function QuaternionFromRollPitchYaw(const r, p, y : Single) : TQuaternion;
+//: Constructs quaternion from Euler angles in arbitrary order (angles in degrees)
+function QuaternionFromEuler(const x, y, z: Single; eulerOrder : TEulerOrder) : TQuaternion;
 
 {: Returns quaternion product qL * qR.<p>
    Note: order is important!<p>
@@ -4739,6 +4745,59 @@ begin
    Result:=QuaternionMultiply(qy, Result);
 end;
 
+// QuaternionFromEuler
+//
+function QuaternionFromEuler(const x, y, z: Single; eulerOrder: TEulerOrder): TQuaternion;
+// input angles in degrees
+var
+   gimbalLock: Boolean;
+   quat1, quat2: TQuaternion;
+
+   function EulerToQuat(const X, Y, Z: Single; eulerOrder: TEulerOrder) : TQuaternion;
+   const
+      cOrder : array [Low(TEulerOrder)..High(TEulerOrder)] of array [1..3] of Byte =
+         ( (1, 2, 3), (1, 3, 2), (2, 1, 3),     // eulXYZ, eulXZY, eulYXZ,
+           (2, 3, 1), (3, 1, 2), (3, 2, 1) );   // eulYZX, eulZXY, eulZYX
+   var
+      q : array [1..3] of TQuaternion;
+   begin
+      q[cOrder[eulerOrder][1]]:=QuaternionFromAngleAxis(X, XVector);
+      q[cOrder[eulerOrder][2]]:=QuaternionFromAngleAxis(Y, YVector);
+      q[cOrder[eulerOrder][3]]:=QuaternionFromAngleAxis(Z, ZVector);
+      Result:=QuaternionMultiply(q[2], q[3]);
+      Result:=QuaternionMultiply(q[1], Result);
+   end;
+
+const
+   SMALL_ANGLE = 0.001;
+begin
+   NormalizeDegAngle(x);
+   NormalizeDegAngle(y);
+   NormalizeDegAngle(z);
+   case EulerOrder of
+      eulXYZ, eulZYX: GimbalLock := Abs(Abs(y) - 90.0) <= EPSILON2; // cos(Y) = 0;
+      eulYXZ, eulZXY: GimbalLock := Abs(Abs(x) - 90.0) <= EPSILON2; // cos(X) = 0;
+      eulXZY, eulYZX: GimbalLock := Abs(Abs(z) - 90.0) <= EPSILON2; // cos(Z) = 0;
+   else
+      Assert(False);
+      gimbalLock:=False;
+   end;
+   if gimbalLock then begin
+      case EulerOrder of
+        eulXYZ, eulZYX: quat1 := EulerToQuat(x, y - SMALL_ANGLE, z, EulerOrder);
+        eulYXZ, eulZXY: quat1 := EulerToQuat(x - SMALL_ANGLE, y, z, EulerOrder);
+        eulXZY, eulYZX: quat1 := EulerToQuat(x, y, z - SMALL_ANGLE, EulerOrder);
+      end;
+      case EulerOrder of
+        eulXYZ, eulZYX: quat2 := EulerToQuat(x, y + SMALL_ANGLE, z, EulerOrder);
+        eulYXZ, eulZXY: quat2 := EulerToQuat(x + SMALL_ANGLE, y, z, EulerOrder);
+        eulXZY, eulYZX: quat2 := EulerToQuat(x, y, z + SMALL_ANGLE, EulerOrder);
+      end;
+      Result := QuaternionSlerp(quat1, quat2, 0.5);
+   end else begin
+      Result := EulerToQuat(x, y, z, EulerOrder);
+   end;
+end;
 
 // QuaternionToPoints
 //
