@@ -901,6 +901,10 @@ function RSqrt(v : Single) : Single;
 {: Computes 1/Sqrt(Sqr(x)+Sqr(y)). }
 function RLength(x, y : Single) : Single;
 
+{: Generates a random point on the unit sphere.<p>
+   Point repartition is correctly isotropic with no privilegied direction. }
+procedure RandomPointOnSphere(var p : TAffineVector);
+
 function Trunc(v : Single) : Integer; overload;
 function Trunc64(v : Extended) : Int64; overload;
 function Int(v : Single) : Single; overload;
@@ -5049,6 +5053,18 @@ asm
       fld1
       fdivr
 @@End:
+end;
+
+// RandomPointOnSphere
+//
+procedure RandomPointOnSphere(var p : TAffineVector);
+var
+   t, w : Single;
+begin
+   p[2]:=2*Random-1;
+   t:=2*PI*Random;
+   w:=Sqrt(1-p[2]*p[2]);
+   SinCos(t, w, p[1], p[0]);
 end;
 
 // Trunc64 (extended)
