@@ -6,6 +6,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/08/03 - SG - Added TQuaternionList
       <li>05/06/03 - EG - Added MinInteger, some TIntegerList optimizations
       <li>03/06/03 - EG - Added TIntegerList.BinarySearch and AddSorted (Mattias Fagerlund)
       <li>22/01/03 - EG - Added AddIntegers
@@ -406,6 +407,47 @@ type
 	      procedure Offset(delta : Single);
 	      procedure Scale(factor : Single);
          function  Sum : Single;
+	end;
+
+  	// TQuaternionList
+	//
+	{: A list of TQuaternion.<p>
+	   Similar to TList, but using TQuaternion as items.<p>
+       The list has stack-like push/pop methods. }
+	TQuaternionList = class (TBaseVectorList)
+		private
+         { Private Declarations }
+			FList: PQuaternionArray;
+
+		protected
+         { Protected Declarations }
+			function  Get(Index: Integer) : TQuaternion;
+			procedure Put(Index: Integer; const item : TQuaternion);
+			procedure SetCapacity(NewCapacity: Integer); override;
+
+		public
+         { Public Declarations }
+			constructor Create; override;
+			procedure Assign(Src: TPersistent); override;
+
+			function Add(const item : TQuaternion) : Integer; overload;
+			function Add(const item : TAffineVector; w : Single) : Integer; overload;
+			function Add(const x, y, z, w : Single) : Integer; overload;
+			procedure Push(const val : TQuaternion);
+			function  Pop : TQuaternion;
+         function  IndexOf(const item : TQuaternion) : Integer;
+         function  FindOrAdd(const item : TQuaternion) : Integer;
+			procedure Insert(Index: Integer; const item : TQuaternion);
+
+			property Items[Index: Integer] : TQuaternion read Get write Put; default;
+			property List: PQuaternionArray read FList;
+
+         {: Lerps corresponding quaternions from both lists using QuaternionSlerp. }
+         procedure Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); override;
+         {: Multiplies corresponding quaternions after the second quaternion is
+            slerped with the IdentityQuaternion using factor. This allows for weighted
+            combining of rotation transforms using quaternions. }
+         procedure Combine(const list2 : TBaseVectorList; factor : Single); override;
 	end;
 
 {: Sort the refList in ascending order, ordering objList (TList) on the way. }
@@ -2165,6 +2207,172 @@ var
 begin
    Result:=0;
    for i:=0 to FCount-1 do Result:=Result+FList^[i];
+end;
+
+// ------------------
+// ------------------ TQuaternionList ------------------
+// ------------------
+
+// Create
+//
+constructor TQuaternionList.Create;
+begin
+   FItemSize:=SizeOf(TQuaternion);
+	inherited Create;
+	FGrowthDelta:=cDefaultListGrowthDelta;
+end;
+
+// Assign
+//
+procedure TQuaternionList.Assign(Src: TPersistent);
+begin
+	if Assigned(Src) then begin
+      inherited;
+		if (Src is TQuaternionList) then
+			System.Move(TQuaternionList(Src).FList^, FList^, FCount*SizeOf(TQuaternion));
+	end else Clear;
+end;
+
+// Add
+//
+function TQuaternionList.Add(const item : TQuaternion): Integer;
+begin
+	Result:=FCount;
+	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+	FList^[Result] := Item;
+  	Inc(FCount);
+end;
+
+// Add
+//
+function TQuaternionList.Add(const item : TAffineVector; w : Single): Integer;
+begin
+   Result:=Add(QuaternionMake(item, w));
+end;
+
+// Add
+//
+function TQuaternionList.Add(const x, y, z, w : Single): Integer;
+begin
+   Result:=Add(QuaternionMake([x, y, z], w));
+end;
+
+// Get
+//
+function TQuaternionList.Get(Index: Integer): TQuaternion;
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$endif}
+	Result := FList^[Index];
+end;
+
+// Insert
+//
+procedure TQuaternionList.Insert(Index: Integer; const Item: TQuaternion);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+	if FCount = FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+	if Index < FCount then
+		System.Move(FList^[Index], FList^[Index + 1],
+						(FCount - Index) * SizeOf(TQuaternion));
+	FList^[Index] := Item;
+	Inc(FCount);
+end;
+
+// Put
+//
+procedure TQuaternionList.Put(Index: Integer; const Item: TQuaternion);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index) < Cardinal(FCount));
+{$ENDIF}
+	FList^[Index] := Item;
+end;
+
+// SetCapacity
+//
+procedure TQuaternionList.SetCapacity(NewCapacity: Integer);
+begin
+   inherited;
+   FList:=PQuaternionArray(FBaseList);
+end;
+
+// Push
+//
+procedure TQuaternionList.Push(const val : TQuaternion);
+begin
+	Add(val);
+end;
+
+// Pop
+//
+function TQuaternionList.Pop : TQuaternion;
+begin
+	if FCount>0 then begin
+		Result:=Get(FCount-1);
+		Delete(FCount-1);
+	end else Result:=IdentityQuaternion;
+end;
+
+// IndexOf
+//
+function TQuaternionList.IndexOf(const item : TQuaternion) : Integer;
+var
+   i : Integer;
+begin
+   Result:=-1;
+   for i:=0 to Count-1 do if VectorEquals(item.vector, FList^[i].vector) then begin
+      Result:=i;
+      Break;
+   end;
+end;
+
+// FindOrAdd
+//
+function TQuaternionList.FindOrAdd(const item : TQuaternion) : Integer;
+begin
+   Result:=IndexOf(item);
+   if Result<0 then Result:=Add(item);
+end;
+
+// Lerp
+//
+procedure TQuaternionList.Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single);
+var
+   i : integer;
+begin
+   if (list1 is TQuaternionList) and (list2 is TQuaternionList) then begin
+      Assert(list1.Count=list2.Count);
+      Capacity:=list1.Count;
+      FCount:=list1.Count;
+      for i:=0 to FCount-1 do
+         Put(i,QuaternionSlerp(TQuaternionList(list1)[i],TQuaternionList(list2)[i],lerpFactor));
+   end else inherited;
+end;
+
+// Combine
+//
+procedure TQuaternionList.Combine(const list2 : TBaseVectorList; factor : Single);
+
+   procedure CombineQuaternion(var q1 : TQuaternion; const q2 : TQuaternion; factor : Single);
+   begin
+      q1:=QuaternionMultiply(q1,QuaternionSlerp(IdentityQuaternion, q2, factor));
+   end;
+
+var
+   i : Integer;
+begin
+   Assert(list2.Count>=Count);
+   if list2 is TQuaternionList then begin
+      for i:=0 to Count-1 do begin
+         CombineQuaternion(PQuaternion(ItemAddress[i])^,
+                           PQuaternion(list2.ItemAddress[i])^,
+                           factor);
+      end;
+   end else inherited;
 end;
 
 // ------------------------------------------------------------------
