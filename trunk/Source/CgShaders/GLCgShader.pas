@@ -625,11 +625,10 @@ end;
 //
 function TCustomCgShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
 begin
-   if (csDesigning in ComponentState) and (not FDesignEnable) then Exit;
-
-   FVertexProgram.UnApply(rci);
-   FFragmentProgram.UnApply(rci);
-
+   if (not (csDesigning in ComponentState)) or FDesignEnable then begin
+      FVertexProgram.UnApply(rci);
+      FFragmentProgram.UnApply(rci);
+   end;
    Result:=False;
 end;
 
