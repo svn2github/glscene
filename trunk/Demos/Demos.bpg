@@ -19,7 +19,7 @@ PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe \
   candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering.exe \
   warping.exe raycast.exe memviewer.exe volcano.exe shadows.exe tentacles.exe \
   pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe tobitmap.exe meshhit.exe \
-  mirror.exe canvas.exe spiral.exe
+  mirror.exe canvas.exe spiral.exe fullscreen.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -205,4 +205,7 @@ canvas.exe: bench\canvas\canvas.dpr
   $(DCC)
 
 spiral.exe: specialsFX\spiral\spiral.dpr
+  $(DCC)
+
+fullscreen.exe: rendering\fullscreen\fullscreen.dpr
   $(DCC)
