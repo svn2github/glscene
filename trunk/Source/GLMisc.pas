@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/10/02 - EG - Added ParseFloat
       <li>22/10/02 - EG - Added ParseInteger
       <li>03/07/02 - EG - Added TGLNodes.Normal
       <li>17/03/02 - EG - Added First/Last to TGLNodes
@@ -461,6 +462,10 @@ function StrToFloatDef(strValue : String; defValue : Extended = 0) : Extended;
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. '+' and '-' are acknowledged. }
 function ParseInteger(var p : PChar) : Integer;
+{: Parses the next integer in the string.<p>
+   Initial non-numeric characters are skipper, p is altered, returns 0 if none
+   found. Both '.' and ',' are accepted as decimal separators. }
+function ParseFloat(var p : PChar) : Extended;
 
 {: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array : PSqrt255Array;
@@ -1025,27 +1030,89 @@ end;
 function ParseInteger(var p : PChar) : Integer;
 var
    neg : Boolean;
+   c : Char;
 begin
    Result:=0;
    if p=nil then Exit;
    neg:=False;
    // skip non-numerics
    while not (p^ in [#0, '0'..'9', '+', '-']) do Inc(p);
-   if (p^='+') then
+   c:=p^;
+   if c='+' then
       Inc(p)
-   else if (p^='-') then begin
+   else if c='-' then begin
       neg:=True;
       Inc(p);
    end;
    // Parse numerics
-   while p^ in ['0'..'9'] do begin
-      Result:=Result*10+Integer(p^)-Integer('0');
+   while True do begin
+      c:=p^;
+      if not (c in ['0'..'9']) then Break;
+      Result:=Result*10+Integer(c)-Integer('0');
       Inc(p);
    end;
    if neg then
       Result:=-Result;
 end;
 
+// ParseFloat
+//
+function ParseFloat(var p : PChar) : Extended;
+var
+   decimals, expSign, exponent : Integer;
+   c : Char;
+   neg : Boolean;
+begin
+   Result:=0;
+   if p=nil then Exit;
+   // skip non-numerics
+   while not (p^ in [#0, '0'..'9', '+', '-']) do Inc(p);
+   c:=p^;
+   if c='+' then begin
+      neg:=False;
+      Inc(p);
+   end else if c='-' then begin
+      neg:=True;
+      Inc(p);
+   end else neg:=False;
+   // parse numbers
+   while (p^ in ['0'..'9']) do begin
+      Result:=Result*10+(Integer(p^)-Integer('0'));
+      Inc(p);
+   end;
+   // parse dot, then decimals, if any
+   decimals:=0;
+   if (p^='.') then begin
+      Inc(p);
+      while (p^ in ['0'..'9']) do begin
+         Result:=Result*10+(Integer(p^)-Integer('0'));
+         Inc(p);
+         Dec(decimals);
+      end;
+   end;
+   // parse exponent, if any
+   if (p^ in ['e', 'E']) then begin
+      Inc(p);
+      // parse exponent sign
+      c:=p^;
+      if c='-' then begin
+         expSign:=-1;
+         Inc(p);
+      end else if c='+' then begin
+         expSign:=1;
+         Inc(p);
+      end else expSign:=1;
+      // parse exponent
+      exponent:=0;
+      while (p^ in ['0'..'9']) do begin
+         exponent:=exponent*10+(Integer(p^)-Integer('0'));
+         Inc(p);
+      end;
+      decimals:=decimals+expSign*exponent;
+   end;
+   if decimals<>0 then Result:=Result*Exp(decimals*Ln(10));
+   if neg then Result:=-Result;
+end;
 
 // ------------------
 // ------------------ TGLCoordinates ------------------
