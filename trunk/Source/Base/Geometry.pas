@@ -29,7 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>29/01/02 - EG - Fixed AngleLerp (Alex Grigny de Castro)
+      <li>29/01/02 - EG - Fixed AngleLerp, added DistanceBetweenAngles (Alex Grigny de Castro)
       <li>20/01/02 - EG - Added VectorArrayAdd, ScaleFloatArray, OffsetFloatArray
       <li>11/01/02 - EG - 3DNow Optim for VectorAdd (hmg)
       <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1"),
@@ -532,6 +532,10 @@ procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVecto
 function Lerp(const start, stop, t : Single) : Single;
 //: Calculates angular interpolation between start and stop at point t
 function AngleLerp(start, stop, t : Single) : Single;
+
+{: Calculates the angular distance between two angles in radians.<p>
+   Result is in the [0; PI] range. }
+function DistanceBetweenAngles(angle1, angle2 : Single) : Single;
 
 //: Calculates linear interpolation between vector1 and vector2 at point t
 function VectorLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector; overload;
@@ -2236,6 +2240,17 @@ begin
       d:=d+c2PI;
    end;
    Result:=start+d*t;
+end;
+
+// DistanceBetweenAngles
+//
+function DistanceBetweenAngles(angle1, angle2 : Single) : Single;
+begin
+   angle1:=NormalizeAngle(angle1);
+   angle2:=NormalizeAngle(angle2);
+   Result:=Abs(angle2-angle1);
+   if Result>PI then
+      Result:=c2PI-Result;
 end;
 
 // VectorAffineLerp
