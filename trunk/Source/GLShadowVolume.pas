@@ -401,14 +401,14 @@ begin
       glPushAttrib(GL_ENABLE_BIT);
 
       if Mode=svmAccurate then begin
-         // first turn of all the shadow casting lights diffuse and specular
+         // first turn off all the shadow casting lights diffuse and specular
          for i:=0 to lights.Count-1 do begin
             lightID:=TGLLightSource(lights[i]).LightID;
             glLightfv(lightID, GL_DIFFUSE, @NullHmgVector);
             glLightfv(lightID, GL_SPECULAR, @NullHmgVector);
          end;
       end;
-      
+
       // render shadow receivers with ambient lighting
       Self.RenderChildren(0, Count-1, rci);
 
@@ -422,6 +422,7 @@ begin
       glGetIntegerv(GL_MAX_LIGHTS, @n);
       for i:=0 to n-1 do
          glDisable(GL_LIGHT0+i);
+      glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
 
       // render contribution of all shadow casting lights
       for i:=0 to lights.Count-1 do begin
@@ -449,6 +450,7 @@ begin
             glDisable(GL_BLEND);
          end;
          SetGLState(rci.currentStates, stCullFace);
+         
          glDisable(GL_LIGHTING);
 
          // for all opaque shadow casters
@@ -598,6 +600,7 @@ begin
       glPopAttrib;
       glDepthMask(True);
       glDepthFunc(GL_LESS);
+//      glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @rci.sceneAmbientColor);
       rci.ignoreBlendingRequests:=False;
    finally
       FRendering:=False;
