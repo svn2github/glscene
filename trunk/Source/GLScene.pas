@@ -4887,7 +4887,7 @@ begin
          FRenderingContext:=GLContextManager.CreateContext;
          with FRenderingContext do begin
             Options:=locOptions;
-            ColorBits:=32;
+            ColorBits:=24;
             StencilBits:=locStencilBits;
             AccumBits:=0;
             AuxBuffers:=0;
@@ -5895,6 +5895,7 @@ begin
       glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
       ClearBuffers;
       // render
+      glEnable(GL_MULTISAMPLE_ARB);
       DoBaseRender(FViewport, GetDeviceCaps(RenderDC, LOGPIXELSX));
       glFlush;
       if FDoubleBuffered then SwapBuffers(RenderDC);

@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>12/08/01 - EG - DepthMask no set to False during rendering
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
       <li>12/03/01 - EG - Reversed polar caps orientation
       <li>28/01/01 - EG - Fixed TSkyDomeBand rendering (vertex coordinates)
@@ -498,6 +499,7 @@ begin
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
+   glDepthMask(GL_FALSE);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentViewer.ModelViewMatrix);
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
@@ -509,6 +511,7 @@ begin
    glCallList(GetHandle(rci));
    // restore
    glPopMatrix;
+   glDepthMask(GL_TRUE);
    glPopAttrib;
    // process childs
    if Count>0 then

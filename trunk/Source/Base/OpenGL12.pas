@@ -455,16 +455,19 @@ var
 
   WGL_EXT_swap_control,
 
+  WGL_ARB_extensions_string,
+  WGL_ARB_pixel_format,
+
   // Extensions (glu)
   GLU_EXT_Texture,
   GLU_EXT_object_space_tess,
-  GLU_EXT_nurbs_tessellator: Boolean; 
+  GLU_EXT_nurbs_tessellator: Boolean;
 
 const
   // ********** GL generic constants **********
 
   // errors
-  GL_NO_ERROR                                       = 0; 
+  GL_NO_ERROR                                       = 0;
   GL_INVALID_ENUM                                   = $0500; 
   GL_INVALID_VALUE                                  = $0501; 
   GL_INVALID_OPERATION                              = $0502; 
@@ -476,13 +479,13 @@ const
   GL_CURRENT_BIT                                    = $00000001; 
   GL_POINT_BIT                                      = $00000002; 
   GL_LINE_BIT                                       = $00000004; 
-  GL_POLYGON_BIT                                    = $00000008; 
+  GL_POLYGON_BIT                                    = $00000008;
   GL_POLYGON_STIPPLE_BIT                            = $00000010; 
   GL_PIXEL_MODE_BIT                                 = $00000020;
   GL_LIGHTING_BIT                                   = $00000040; 
   GL_FOG_BIT                                        = $00000080; 
   GL_DEPTH_BUFFER_BIT                               = $00000100; 
-  GL_ACCUM_BUFFER_BIT                               = $00000200; 
+  GL_ACCUM_BUFFER_BIT                               = $00000200;
   GL_STENCIL_BUFFER_BIT                             = $00000400; 
   GL_VIEWPORT_BIT                                   = $00000800; 
   GL_TRANSFORM_BIT                                  = $00001000; 
@@ -526,7 +529,7 @@ const
   GL_DST_ALPHA                                      = $0304; 
   GL_ONE_MINUS_DST_ALPHA                            = $0305; 
   GL_DST_COLOR                                      = $0306; 
-  GL_ONE_MINUS_DST_COLOR                            = $0307; 
+  GL_ONE_MINUS_DST_COLOR                            = $0307;
   GL_SRC_ALPHA_SATURATE                             = $0308; 
   GL_BLEND_DST                                      = $0BE0; 
   GL_BLEND_SRC                                      = $0BE1; 
@@ -548,7 +551,7 @@ const
   GL_COLOR_TABLE                                    = $80D0; 
   GL_POST_CONVOLUTION_COLOR_TABLE                   = $80D1; 
   GL_POST_COLOR_MATRIX_COLOR_TABLE                  = $80D2; 
-  GL_PROXY_COLOR_TABLE                              = $80D3; 
+  GL_PROXY_COLOR_TABLE                              = $80D3;
   GL_PROXY_POST_CONVOLUTION_COLOR_TABLE             = $80D4; 
   GL_PROXY_POST_COLOR_MATRIX_COLOR_TABLE            = $80D5;
   GL_COLOR_TABLE_SCALE                              = $80D6; 
@@ -570,7 +573,7 @@ const
   GL_CONVOLUTION_FILTER_SCALE                       = $8014; 
   GL_CONVOLUTION_FILTER_BIAS                        = $8015;
   GL_REDUCE                                         = $8016; 
-  GL_CONVOLUTION_FORMAT                             = $8017; 
+  GL_CONVOLUTION_FORMAT                             = $8017;
   GL_CONVOLUTION_WIDTH                              = $8018; 
   GL_CONVOLUTION_HEIGHT                             = $8019; 
   GL_MAX_CONVOLUTION_WIDTH                          = $801A; 
@@ -592,7 +595,7 @@ const
   GL_HISTOGRAM_RED_SIZE                             = $8028; 
   GL_HISTOGRAM_GREEN_SIZE                           = $8029; 
   GL_HISTOGRAM_BLUE_SIZE                            = $802A; 
-  GL_HISTOGRAM_ALPHA_SIZE                           = $802B; 
+  GL_HISTOGRAM_ALPHA_SIZE                           = $802B;
   GL_HISTOGRAM_LUMINANCE_SIZE                       = $802C; 
   GL_HISTOGRAM_SINK                                 = $802D; 
   GL_MINMAX                                         = $802E; 
@@ -614,7 +617,7 @@ const
   GL_AUX1                                           = $040A; 
   GL_AUX2                                           = $040B; 
   GL_AUX3                                           = $040C; 
-  GL_AUX_BUFFERS                                    = $0C00; 
+  GL_AUX_BUFFERS                                    = $0C00;
   GL_DRAW_BUFFER                                    = $0C01; 
   GL_READ_BUFFER                                    = $0C02; 
   GL_DOUBLEBUFFER                                   = $0C32; 
@@ -636,7 +639,7 @@ const
   GL_ALWAYS                                         = $0207; 
 
   // accumulation buffer
-  GL_ACCUM                                          = $0100; 
+  GL_ACCUM                                          = $0100;
   GL_LOAD                                           = $0101; 
   GL_RETURN                                         = $0102; 
   GL_MULT                                           = $0103; 
@@ -680,7 +683,7 @@ const
   GL_PIXEL_MAP_I_TO_I                               = $0C70; 
   GL_PIXEL_MAP_S_TO_S                               = $0C71; 
   GL_PIXEL_MAP_I_TO_R                               = $0C72; 
-  GL_PIXEL_MAP_I_TO_G                               = $0C73; 
+  GL_PIXEL_MAP_I_TO_G                               = $0C73;
   GL_PIXEL_MAP_I_TO_B                               = $0C74; 
   GL_PIXEL_MAP_I_TO_A                               = $0C75; 
   GL_PIXEL_MAP_R_TO_R                               = $0C76; 
@@ -702,7 +705,7 @@ const
   GL_STENCIL_FUNC                                   = $0B92; 
   GL_STENCIL_VALUE_MASK                             = $0B93; 
   GL_STENCIL_FAIL                                   = $0B94; 
-  GL_STENCIL_PASS_DEPTH_FAIL                        = $0B95; 
+  GL_STENCIL_PASS_DEPTH_FAIL                        = $0B95;
   GL_STENCIL_PASS_DEPTH_PASS                        = $0B96; 
   GL_STENCIL_REF                                    = $0B97; 
   GL_STENCIL_WRITEMASK                              = $0B98; 
@@ -724,7 +727,7 @@ const
 
   // lines
   GL_LINE_SMOOTH                                    = $0B20; 
-  GL_LINE_WIDTH                                     = $0B21; 
+  GL_LINE_WIDTH                                     = $0B21;
   GL_LINE_WIDTH_RANGE                               = $0B22; 
   GL_LINE_WIDTH_GRANULARITY                         = $0B23; 
   GL_LINE_STIPPLE                                   = $0B24; 
@@ -746,7 +749,7 @@ const
   GL_FILL                                           = $1B02; 
 
   // display lists
-  GL_LIST_MODE                                      = $0B30; 
+  GL_LIST_MODE                                      = $0B30;
   GL_LIST_BASE                                      = $0B32; 
   GL_LIST_INDEX                                     = $0B33;
   GL_COMPILE                                        = $1300; 
@@ -768,12 +771,12 @@ const
   GL_SPOT_EXPONENT                                  = $1205; 
   GL_SPOT_CUTOFF                                    = $1206;
   GL_CONSTANT_ATTENUATION                           = $1207; 
-  GL_LINEAR_ATTENUATION                             = $1208; 
+  GL_LINEAR_ATTENUATION                             = $1208;
   GL_QUADRATIC_ATTENUATION                          = $1209; 
   GL_EMISSION                                       = $1600; 
   GL_SHININESS                                      = $1601; 
   GL_AMBIENT_AND_DIFFUSE                            = $1602; 
-  GL_COLOR_INDEXES                                  = $1603; 
+  GL_COLOR_INDEXES                                  = $1603;
   GL_FLAT                                           = $1D00; 
   GL_SMOOTH                                         = $1D01; 
   GL_LIGHT0                                         = $4000;
@@ -795,7 +798,7 @@ const
   GL_CURRENT_COLOR                                  = $0B00; 
   GL_CURRENT_INDEX                                  = $0B01; 
   GL_CURRENT_NORMAL                                 = $0B02; 
-  GL_CURRENT_TEXTURE_COORDS                         = $0B03; 
+  GL_CURRENT_TEXTURE_COORDS                         = $0B03;
   GL_CURRENT_RASTER_COLOR                           = $0B04; 
   GL_CURRENT_RASTER_INDEX                           = $0B05; 
   GL_CURRENT_RASTER_TEXTURE_COORDS                  = $0B06;
@@ -817,7 +820,7 @@ const
   GL_SEPARATE_SPECULAR_COLOR                        = $81FA; // GL 1.2
 
   // alpha testing
-  GL_ALPHA_TEST                                     = $0BC0; 
+  GL_ALPHA_TEST                                     = $0BC0;
   GL_ALPHA_TEST_FUNC                                = $0BC1; 
   GL_ALPHA_TEST_REF                                 = $0BC2; 
 
@@ -834,12 +837,12 @@ const
   GL_INDEX_MODE                                     = $0C30; 
   GL_RGBA_MODE                                      = $0C31; 
   GL_RENDER_MODE                                    = $0C40; 
-  GL_PERSPECTIVE_CORRECTION_HINT                    = $0C50; 
+  GL_PERSPECTIVE_CORRECTION_HINT                    = $0C50;
   GL_POINT_SMOOTH_HINT                              = $0C51; 
   GL_LINE_SMOOTH_HINT                               = $0C52; 
   GL_POLYGON_SMOOTH_HINT                            = $0C53; 
   GL_FOG_HINT                                       = $0C54;
-  GL_TEXTURE_GEN_S                                  = $0C60; 
+  GL_TEXTURE_GEN_S                                  = $0C60;
   GL_TEXTURE_GEN_T                                  = $0C61; 
   GL_TEXTURE_GEN_R                                  = $0C62; 
   GL_TEXTURE_GEN_Q                                  = $0C63;
@@ -861,7 +864,7 @@ const
   GL_UNPACK_ALIGNMENT                               = $0CF5; 
   GL_PACK_SWAP_BYTES                                = $0D00; 
   GL_PACK_LSB_FIRST                                 = $0D01; 
-  GL_PACK_ROW_LENGTH                                = $0D02; 
+  GL_PACK_ROW_LENGTH                                = $0D02;
   GL_PACK_SKIP_ROWS                                 = $0D03; 
   GL_PACK_SKIP_PIXELS                               = $0D04; 
   GL_PACK_ALIGNMENT                                 = $0D05;
@@ -878,12 +881,12 @@ const
   GL_ZOOM_X                                         = $0D16; 
   GL_ZOOM_Y                                         = $0D17; 
   GL_GREEN_SCALE                                    = $0D18; 
-  GL_GREEN_BIAS                                     = $0D19; 
+  GL_GREEN_BIAS                                     = $0D19;
   GL_BLUE_SCALE                                     = $0D1A; 
   GL_BLUE_BIAS                                      = $0D1B; 
   GL_ALPHA_SCALE                                    = $0D1C; 
   GL_ALPHA_BIAS                                     = $0D1D; 
-  GL_DEPTH_SCALE                                    = $0D1E; 
+  GL_DEPTH_SCALE                                    = $0D1E;
   GL_DEPTH_BIAS                                     = $0D1F; 
   GL_MAX_EVAL_ORDER                                 = $0D30; 
   GL_MAX_LIGHTS                                     = $0D31;
@@ -905,7 +908,7 @@ const
   GL_INDEX_BITS                                     = $0D51; 
   GL_RED_BITS                                       = $0D52; 
   GL_GREEN_BITS                                     = $0D53; 
-  GL_BLUE_BITS                                      = $0D54; 
+  GL_BLUE_BITS                                      = $0D54;
   GL_ALPHA_BITS                                     = $0D55; 
   GL_DEPTH_BITS                                     = $0D56; 
   GL_STENCIL_BITS                                   = $0D57;
@@ -922,12 +925,12 @@ const
   GL_MAP1_TEXTURE_COORD_2                           = $0D94; 
   GL_MAP1_TEXTURE_COORD_3                           = $0D95; 
   GL_MAP1_TEXTURE_COORD_4                           = $0D96; 
-  GL_MAP1_VERTEX_3                                  = $0D97; 
+  GL_MAP1_VERTEX_3                                  = $0D97;
   GL_MAP1_VERTEX_4                                  = $0D98; 
   GL_MAP2_COLOR_4                                   = $0DB0; 
   GL_MAP2_INDEX                                     = $0DB1; 
   GL_MAP2_NORMAL                                    = $0DB2; 
-  GL_MAP2_TEXTURE_COORD_1                           = $0DB3; 
+  GL_MAP2_TEXTURE_COORD_1                           = $0DB3;
   GL_MAP2_TEXTURE_COORD_2                           = $0DB4;
   GL_MAP2_TEXTURE_COORD_3                           = $0DB5; 
   GL_MAP2_TEXTURE_COORD_4                           = $0DB6;
@@ -944,12 +947,12 @@ const
   GL_SELECTION_BUFFER_SIZE                          = $0DF4; 
   GL_POLYGON_OFFSET_UNITS                           = $2A00; 
   GL_POLYGON_OFFSET_POINT                           = $2A01; 
-  GL_POLYGON_OFFSET_LINE                            = $2A02; 
+  GL_POLYGON_OFFSET_LINE                            = $2A02;
   GL_POLYGON_OFFSET_FILL                            = $8037; 
   GL_POLYGON_OFFSET_FACTOR                          = $8038;
   GL_TEXTURE_BINDING_1D                             = $8068; 
   GL_TEXTURE_BINDING_2D                             = $8069; 
-  GL_VERTEX_ARRAY                                   = $8074; 
+  GL_VERTEX_ARRAY                                   = $8074;
   GL_NORMAL_ARRAY                                   = $8075; 
   GL_COLOR_ARRAY                                    = $8076; 
   GL_INDEX_ARRAY                                    = $8077;
@@ -966,7 +969,7 @@ const
   GL_INDEX_ARRAY_TYPE                               = $8085; 
   GL_INDEX_ARRAY_STRIDE                             = $8086;
   GL_TEXTURE_COORD_ARRAY_SIZE                       = $8088; 
-  GL_TEXTURE_COORD_ARRAY_TYPE                       = $8089; 
+  GL_TEXTURE_COORD_ARRAY_TYPE                       = $8089;
   GL_TEXTURE_COORD_ARRAY_STRIDE                     = $808A; 
   GL_EDGE_FLAG_ARRAY_STRIDE                         = $808C; 
   GL_COLOR_MATRIX                                   = $80B1; // GL 1.2 ARB imaging
@@ -988,12 +991,12 @@ const
   
   // texture mapping
   GL_TEXTURE_WIDTH                                  = $1000; 
-  GL_TEXTURE_HEIGHT                                 = $1001; 
+  GL_TEXTURE_HEIGHT                                 = $1001;
   GL_TEXTURE_INTERNAL_FORMAT                        = $1003; 
   GL_TEXTURE_COMPONENTS                             = $1003; 
   GL_TEXTURE_BORDER_COLOR                           = $1004; 
   GL_TEXTURE_BORDER                                 = $1005; 
-  GL_TEXTURE_RED_SIZE                               = $805C; 
+  GL_TEXTURE_RED_SIZE                               = $805C;
   GL_TEXTURE_GREEN_SIZE                             = $805D; 
   GL_TEXTURE_BLUE_SIZE                              = $805E; 
   GL_TEXTURE_ALPHA_SIZE                             = $805F;
@@ -1010,12 +1013,12 @@ const
   GL_MODULATE                                       = $2100; 
   GL_DECAL                                          = $2101; 
   GL_TEXTURE_ENV_MODE                               = $2200; 
-  GL_TEXTURE_ENV_COLOR                              = $2201; 
+  GL_TEXTURE_ENV_COLOR                              = $2201;
   GL_TEXTURE_ENV                                    = $2300; 
   GL_EYE_LINEAR                                     = $2400; 
   GL_OBJECT_LINEAR                                  = $2401; 
   GL_SPHERE_MAP                                     = $2402; 
-  GL_TEXTURE_GEN_MODE                               = $2500; 
+  GL_TEXTURE_GEN_MODE                               = $2500;
   GL_OBJECT_PLANE                                   = $2501; 
   GL_EYE_PLANE                                      = $2502; 
   GL_NEAREST                                        = $2600;
@@ -1076,12 +1079,12 @@ const
   GL_COPY_INVERTED                                  = $150C; 
   GL_OR_INVERTED                                    = $150D; 
   GL_NAND                                           = $150E; 
-  GL_SET                                            = $150F; 
+  GL_SET                                            = $150F;
 
   // PixelCopyType
   GL_COLOR                                          = $1800; 
   GL_DEPTH                                          = $1801; 
-  GL_STENCIL                                        = $1802; 
+  GL_STENCIL                                        = $1802;
 
   // pixel formats
   GL_COLOR_INDEX                                    = $1900;
@@ -1120,12 +1123,12 @@ const
   GL_LUMINANCE8                                     = $8040; 
   GL_LUMINANCE12                                    = $8041; 
   GL_LUMINANCE16                                    = $8042; 
-  GL_LUMINANCE4_ALPHA4                              = $8043; 
+  GL_LUMINANCE4_ALPHA4                              = $8043;
   GL_LUMINANCE6_ALPHA2                              = $8044; 
   GL_LUMINANCE8_ALPHA8                              = $8045; 
   GL_LUMINANCE12_ALPHA4                             = $8046; 
   GL_LUMINANCE12_ALPHA12                            = $8047; 
-  GL_LUMINANCE16_ALPHA16                            = $8048; 
+  GL_LUMINANCE16_ALPHA16                            = $8048;
   GL_INTENSITY                                      = $8049;
   GL_INTENSITY4                                     = $804A; 
   GL_INTENSITY8                                     = $804B;
@@ -1142,7 +1145,7 @@ const
   GL_RGB5_A1                                        = $8057; 
   GL_RGBA8                                          = $8058; 
   GL_RGB10_A2                                       = $8059; 
-  GL_RGBA12                                         = $805A; 
+  GL_RGBA12                                         = $805A;
   GL_RGBA16                                         = $805B; 
   UNSIGNED_BYTE_3_3_2                               = $8032; // GL 1.2
   UNSIGNED_BYTE_2_3_3_REV                           = $8362; // GL 1.2
@@ -1164,12 +1167,12 @@ const
   GL_C4UB_V3F                                       = $2A23; 
   GL_C3F_V3F                                        = $2A24;
   GL_N3F_V3F                                        = $2A25; 
-  GL_C4F_N3F_V3F                                    = $2A26; 
+  GL_C4F_N3F_V3F                                    = $2A26;
   GL_T2F_V3F                                        = $2A27; 
   GL_T4F_V4F                                        = $2A28; 
   GL_T2F_C4UB_V3F                                   = $2A29; 
   GL_T2F_C3F_V3F                                    = $2A2A; 
-  GL_T2F_N3F_V3F                                    = $2A2B; 
+  GL_T2F_N3F_V3F                                    = $2A2B;
   GL_T2F_C4F_N3F_V3F                                = $2A2C; 
   GL_T4F_C4F_N3F_V4F                                = $2A2D; 
 
@@ -1186,12 +1189,12 @@ const
 
   // ----- extensions enumerants -----
   // EXT_abgr
-  GL_ABGR_EXT                                       = $8000; 
+  GL_ABGR_EXT                                       = $8000;
 
   // EXT_packed_pixels
   GL_UNSIGNED_BYTE_3_3_2_EXT                        = $8032; 
   GL_UNSIGNED_SHORT_4_4_4_4_EXT                     = $8033; 
-  GL_UNSIGNED_SHORT_5_5_5_1_EXT                     = $8034; 
+  GL_UNSIGNED_SHORT_5_5_5_1_EXT                     = $8034;
   GL_UNSIGNED_INT_8_8_8_8_EXT                       = $8035; 
   GL_UNSIGNED_INT_10_10_10_2_EXT                    = $8036; 
 
@@ -1208,12 +1211,12 @@ const
   GL_VERTEX_ARRAY_COUNT_EXT                         = $807D; 
   GL_NORMAL_ARRAY_TYPE_EXT                          = $807E; 
   GL_NORMAL_ARRAY_STRIDE_EXT                        = $807F; 
-  GL_NORMAL_ARRAY_COUNT_EXT                         = $8080; 
+  GL_NORMAL_ARRAY_COUNT_EXT                         = $8080;
   GL_COLOR_ARRAY_SIZE_EXT                           = $8081; 
   GL_COLOR_ARRAY_TYPE_EXT                           = $8082; 
   GL_COLOR_ARRAY_STRIDE_EXT                         = $8083; 
   GL_COLOR_ARRAY_COUNT_EXT                          = $8084; 
-  GL_INDEX_ARRAY_TYPE_EXT                           = $8085; 
+  GL_INDEX_ARRAY_TYPE_EXT                           = $8085;
   GL_INDEX_ARRAY_STRIDE_EXT                         = $8086; 
   GL_INDEX_ARRAY_COUNT_EXT                          = $8087; 
   GL_TEXTURE_COORD_ARRAY_SIZE_EXT                   = $8088;
@@ -1230,12 +1233,12 @@ const
   GL_EDGE_FLAG_ARRAY_POINTER_EXT                    = $8093; 
 
   // EXT_color_table
-  GL_TABLE_TOO_LARGE_EXT                            = $8031; 
+  GL_TABLE_TOO_LARGE_EXT                            = $8031;
   GL_COLOR_TABLE_EXT                                = $80D0; 
   GL_POST_CONVOLUTION_COLOR_TABLE_EXT               = $80D1; 
   GL_POST_COLOR_MATRIX_COLOR_TABLE_EXT              = $80D2; 
   GL_PROXY_COLOR_TABLE_EXT                          = $80D3;
-  GL_PROXY_POST_CONVOLUTION_COLOR_TABLE_EXT         = $80D4; 
+  GL_PROXY_POST_CONVOLUTION_COLOR_TABLE_EXT         = $80D4;
   GL_PROXY_POST_COLOR_MATRIX_COLOR_TABLE_EXT        = $80D5; 
   GL_COLOR_TABLE_SCALE_EXT                          = $80D6; 
   GL_COLOR_TABLE_BIAS_EXT                           = $80D7;
@@ -1257,7 +1260,7 @@ const
   GL_COLOR_INDEX2_EXT                               = $80E3; 
   GL_COLOR_INDEX4_EXT                               = $80E4; 
   GL_COLOR_INDEX8_EXT                               = $80E5; 
-  GL_COLOR_INDEX12_EXT                              = $80E6; 
+  GL_COLOR_INDEX12_EXT                              = $80E6;
   GL_COLOR_INDEX16_EXT                              = $80E7; 
 
   // EXT_blend_color
@@ -1274,12 +1277,12 @@ const
   GL_BLEND_EQUATION_EXT                             = $8009; 
 
   // EXT_blend_subtract
-  GL_FUNC_SUBTRACT_EXT                              = $800A; 
+  GL_FUNC_SUBTRACT_EXT                              = $800A;
   GL_FUNC_REVERSE_SUBTRACT_EXT                      = $800B; 
 
   // EXT_convolution
   GL_CONVOLUTION_1D_EXT                             = $8010; 
-  GL_CONVOLUTION_2D_EXT                             = $8011; 
+  GL_CONVOLUTION_2D_EXT                             = $8011;
   GL_SEPARABLE_2D_EXT                               = $8012; 
   GL_CONVOLUTION_BORDER_MODE_EXT                    = $8013; 
   GL_CONVOLUTION_FILTER_SCALE_EXT                   = $8014;
@@ -1296,12 +1299,12 @@ const
   GL_POST_CONVOLUTION_ALPHA_SCALE_EXT               = $801F; 
   GL_POST_CONVOLUTION_RED_BIAS_EXT                  = $8020; 
   GL_POST_CONVOLUTION_GREEN_BIAS_EXT                = $8021; 
-  GL_POST_CONVOLUTION_BLUE_BIAS_EXT                 = $8022; 
+  GL_POST_CONVOLUTION_BLUE_BIAS_EXT                 = $8022;
   GL_POST_CONVOLUTION_ALPHA_BIAS_EXT                = $8023; 
 
   // EXT_histogram
   GL_HISTOGRAM_EXT                                  = $8024; 
-  GL_PROXY_HISTOGRAM_EXT                            = $8025; 
+  GL_PROXY_HISTOGRAM_EXT                            = $8025;
   GL_HISTOGRAM_WIDTH_EXT                            = $8026; 
   GL_HISTOGRAM_FORMAT_EXT                           = $8027; 
   GL_HISTOGRAM_RED_SIZE_EXT                         = $8028;
@@ -1323,7 +1326,7 @@ const
   GL_ALPHA4_EXT                                     = $803B; 
   GL_ALPHA8_EXT                                     = $803C; 
   GL_ALPHA12_EXT                                    = $803D; 
-  GL_ALPHA16_EXT                                    = $803E; 
+  GL_ALPHA16_EXT                                    = $803E;
   GL_LUMINANCE4_EXT                                 = $803F;
   GL_LUMINANCE8_EXT                                 = $8040; 
   GL_LUMINANCE12_EXT                                = $8041;
@@ -1340,12 +1343,12 @@ const
   GL_INTENSITY12_EXT                                = $804C; 
   GL_INTENSITY16_EXT                                = $804D; 
   GL_RGB2_EXT                                       = $804E; 
-  GL_RGB4_EXT                                       = $804F; 
+  GL_RGB4_EXT                                       = $804F;
   GL_RGB5_EXT                                       = $8050; 
   GL_RGB8_EXT                                       = $8051;
   GL_RGB10_EXT                                      = $8052; 
   GL_RGB12_EXT                                      = $8053; 
-  GL_RGB16_EXT                                      = $8054; 
+  GL_RGB16_EXT                                      = $8054;
   GL_RGBA2_EXT                                      = $8055; 
   GL_RGBA4_EXT                                      = $8056; 
   GL_RGB5_A1_EXT                                    = $8057;
@@ -1362,12 +1365,12 @@ const
   GL_REPLACE_EXT                                    = $8062; 
   GL_PROXY_TEXTURE_1D_EXT                           = $8063;
   GL_PROXY_TEXTURE_2D_EXT                           = $8064; 
-  GL_TEXTURE_TOO_LARGE_EXT                          = $8065; 
+  GL_TEXTURE_TOO_LARGE_EXT                          = $8065;
 
   // EXT_texture_object
   GL_TEXTURE_PRIORITY_EXT                           = $8066; 
   GL_TEXTURE_RESIDENT_EXT                           = $8067; 
-  GL_TEXTURE_1D_BINDING_EXT                         = $8068; 
+  GL_TEXTURE_1D_BINDING_EXT                         = $8068;
   GL_TEXTURE_2D_BINDING_EXT                         = $8069; 
   GL_TEXTURE_3D_BINDING_EXT                         = $806A; 
 
@@ -1384,12 +1387,12 @@ const
 
   // SGI_color_matrix
   GL_COLOR_MATRIX_SGI                               = $80B1; 
-  GL_COLOR_MATRIX_STACK_DEPTH_SGI                   = $80B2; 
+  GL_COLOR_MATRIX_STACK_DEPTH_SGI                   = $80B2;
   GL_MAX_COLOR_MATRIX_STACK_DEPTH_SGI               = $80B3; 
   GL_POST_COLOR_MATRIX_RED_SCALE_SGI                = $80B4; 
   GL_POST_COLOR_MATRIX_GREEN_SCALE_SGI              = $80B5; 
   GL_POST_COLOR_MATRIX_BLUE_SCALE_SGI               = $80B6; 
-  GL_POST_COLOR_MATRIX_ALPHA_SCALE_SGI              = $80B7; 
+  GL_POST_COLOR_MATRIX_ALPHA_SCALE_SGI              = $80B7;
   GL_POST_COLOR_MATRIX_RED_BIAS_SGI                 = $80B8; 
   GL_POST_COLOR_MATRIX_GREEN_BIAS_SGI               = $80B9; 
   GL_POST_COLOR_MATRIX_BLUE_BIAS_SGI                = $80BA;
@@ -1406,12 +1409,12 @@ const
   GL_POST_CONVOLUTION_COLOR_TABLE_SGI               = $80D1; 
   GL_POST_COLOR_MATRIX_COLOR_TABLE_SGI              = $80D2; 
   GL_PROXY_COLOR_TABLE_SGI                          = $80D3; 
-  GL_PROXY_POST_CONVOLUTION_COLOR_TABLE_SGI         = $80D4; 
+  GL_PROXY_POST_CONVOLUTION_COLOR_TABLE_SGI         = $80D4;
   GL_PROXY_POST_COLOR_MATRIX_COLOR_TABLE_SGI        = $80D5; 
   GL_COLOR_TABLE_SCALE_SGI                          = $80D6; 
   GL_COLOR_TABLE_BIAS_SGI                           = $80D7; 
   GL_COLOR_TABLE_FORMAT_SGI                         = $80D8; 
-  GL_COLOR_TABLE_WIDTH_SGI                          = $80D9; 
+  GL_COLOR_TABLE_WIDTH_SGI                          = $80D9;
   GL_COLOR_TABLE_RED_SIZE_SGI                       = $80DA; 
   GL_COLOR_TABLE_GREEN_SIZE_SGI                     = $80DB; 
   GL_COLOR_TABLE_BLUE_SIZE_SGI                      = $80DC;
@@ -1433,7 +1436,7 @@ const
 
   // EXT_cull_vertex
   GL_CULL_VERTEX_EXT                                = $81AA;
-  GL_CULL_VERTEX_EYE_POSITION_EXT                   = $81AB; 
+  GL_CULL_VERTEX_EYE_POSITION_EXT                   = $81AB;
   GL_CULL_VERTEX_OBJECT_POSITION_EXT                = $81AC; 
 
   // EXT_index_array_formats
@@ -1472,12 +1475,12 @@ const
   GLU_NURBS_BEGIN_EXT                               = 100164; 
   GLU_NURBS_VERTEX_EXT                              = 100165; 
   GLU_NURBS_NORMAL_EXT                              = 100166; 
-  GLU_NURBS_COLOR_EXT                               = 100167; 
+  GLU_NURBS_COLOR_EXT                               = 100167;
   GLU_NURBS_TEX_COORD_EXT                           = 100168; 
   GLU_NURBS_END_EXT                                 = 100169; 
   GLU_NURBS_BEGIN_DATA_EXT                          = 100170; 
   GLU_NURBS_VERTEX_DATA_EXT                         = 100171; 
-  GLU_NURBS_NORMAL_DATA_EXT                         = 100172; 
+  GLU_NURBS_NORMAL_DATA_EXT                         = 100172;
   GLU_NURBS_COLOR_DATA_EXT                          = 100173; 
   GLU_NURBS_TEX_COORD_DATA_EXT                      = 100174; 
   GLU_NURBS_END_DATA_EXT                            = 100175;
@@ -1494,12 +1497,12 @@ const
 
   // EXT_compiled_vertex_array
   GL_ARRAY_ELEMENT_LOCK_FIRST_EXT                   = $81A8; 
-  GL_ARRAY_ELEMENT_LOCK_COUNT_EXT                   = $81A9; 
+  GL_ARRAY_ELEMENT_LOCK_COUNT_EXT                   = $81A9;
 
   // ARB_multitexture
   GL_ACTIVE_TEXTURE_ARB                             = $84E0; 
   GL_CLIENT_ACTIVE_TEXTURE_ARB                      = $84E1; 
-  GL_MAX_TEXTURE_UNITS_ARB                          = $84E2; 
+  GL_MAX_TEXTURE_UNITS_ARB                          = $84E2;
   GL_TEXTURE0_ARB                                   = $84C0; 
   GL_TEXTURE1_ARB                                   = $84C1; 
   GL_TEXTURE2_ARB                                   = $84C2;
@@ -1516,12 +1519,12 @@ const
   GL_TEXTURE13_ARB                                  = $84CD; 
   GL_TEXTURE14_ARB                                  = $84CE; 
   GL_TEXTURE15_ARB                                  = $84CF; 
-  GL_TEXTURE16_ARB                                  = $84D0; 
+  GL_TEXTURE16_ARB                                  = $84D0;
   GL_TEXTURE17_ARB                                  = $84D1; 
   GL_TEXTURE18_ARB                                  = $84D2; 
   GL_TEXTURE19_ARB                                  = $84D3; 
   GL_TEXTURE20_ARB                                  = $84D4; 
-  GL_TEXTURE21_ARB                                  = $84D5; 
+  GL_TEXTURE21_ARB                                  = $84D5;
   GL_TEXTURE22_ARB                                  = $84D6;
   GL_TEXTURE23_ARB                                  = $84D7; 
   GL_TEXTURE24_ARB                                  = $84D8;
@@ -1538,12 +1541,12 @@ const
   GL_DECR_WRAP_EXT                                  = $8508; 
 
   // NV_texgen_reflection
-  GL_NORMAL_MAP_NV                                  = $8511; 
+  GL_NORMAL_MAP_NV                                  = $8511;
   GL_REFLECTION_MAP_NV                              = $8512; 
 
   // EXT_texture_env_combine
   GL_COMBINE_EXT                                    = $8570; 
-  GL_COMBINE_RGB_EXT                                = $8571; 
+  GL_COMBINE_RGB_EXT                                = $8571;
   GL_COMBINE_ALPHA_EXT                              = $8572; 
   GL_RGB_SCALE_EXT                                  = $8573; 
   GL_ADD_SIGNED_EXT                                 = $8574;
@@ -1560,12 +1563,12 @@ const
   GL_OPERAND0_RGB_EXT                               = $8590; 
   GL_OPERAND1_RGB_EXT                               = $8591;
   GL_OPERAND2_RGB_EXT                               = $8592; 
-  GL_OPERAND0_ALPHA_EXT                             = $8598; 
+  GL_OPERAND0_ALPHA_EXT                             = $8598;
   GL_OPERAND1_ALPHA_EXT                             = $8599; 
   GL_OPERAND2_ALPHA_EXT                             = $859A; 
 
   // NV_texture_env_combine4
-  GL_COMBINE4_NV                                    = $8503; 
+  GL_COMBINE4_NV                                    = $8503;
   GL_SOURCE3_RGB_NV                                 = $8583; 
   GL_SOURCE3_ALPHA_NV                               = $858B; 
   GL_OPERAND3_RGB_NV                                = $8593;
@@ -1582,12 +1585,12 @@ const
   GL_UNSIGNED_SHORT_5_6_5                           = $8363; 
   GL_UNSIGNED_SHORT_5_6_5_REV                       = $8364; 
   GL_UNSIGNED_SHORT_4_4_4_4_REV                     = $8365; 
-  GL_UNSIGNED_SHORT_1_5_5_5_REV                     = $8366; 
+  GL_UNSIGNED_SHORT_1_5_5_5_REV                     = $8366;
   GL_UNSIGNED_INT_8_8_8_8_REV                       = $8367; 
   GL_UNSIGNED_INT_2_10_10_10_REV                    = $8368; 
 
   // GL_ARB_transpose_matrix
-  GL_TRANSPOSE_MODELVIEW_MATRIX_ARB                 = $84E3; 
+  GL_TRANSPOSE_MODELVIEW_MATRIX_ARB                 = $84E3;
   GL_TRANSPOSE_PROJECTION_MATRIX_ARB                = $84E4; 
   GL_TRANSPOSE_TEXTURE_MATRIX_ARB                   = $84E5; 
   GL_TRANSPOSE_COLOR_MATRIX_ARB                     = $84E6;
@@ -1597,19 +1600,25 @@ const
   GL_SAMPLE_ALPHA_TO_COVERAGE_ARB                   = $809E;
   GL_SAMPLE_ALPHA_TO_ONE_ARB                        = $809F; 
   GL_SAMPLE_COVERAGE_ARB                            = $80A0; 
-  GL_SAMPLE_BUFFERS_ARB                             = $80A8; 
-  GL_SAMPLES_ARB                                    = $80A9; 
+  GL_SAMPLE_BUFFERS_ARB                             = $80A8;
+  GL_SAMPLES_ARB                                    = $80A9;
   GL_SAMPLE_COVERAGE_VALUE_ARB                      = $80AA; 
   GL_SAMPLE_COVERAGE_INVERT_ARB                     = $80AB; 
-  GL_MULTISAMPLE_BIT_ARB                            = $20000000; 
+  GL_MULTISAMPLE_BIT_ARB                            = $20000000;
+
+  GLX_SAMPLE_BUFFERS_ARB                            = 100000;
+  GLX_SAMPLES_ARB                                   = 100001;
+
+  WGL_SAMPLE_BUFFERS_ARB                            = $2041;
+  WGL_SAMPLES_ARB                                   = $2042;
 
   // GL_ARB_texture_cube_map
-  GL_NORMAL_MAP_ARB                                 = $8511; 
+  GL_NORMAL_MAP_ARB                                 = $8511;
   GL_REFLECTION_MAP_ARB                             = $8512; 
   GL_TEXTURE_CUBE_MAP_ARB                           = $8513; 
   GL_TEXTURE_BINDING_CUBE_MAP_ARB                   = $8514; 
   GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB                = $8515; 
-  GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB                = $8516; 
+  GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB                = $8516;
   GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB                = $8517; 
   GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB                = $8518; 
   GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB                = $8519;
@@ -1626,12 +1635,12 @@ const
   GL_COMPRESSED_RGBA_ARB                            = $84EE; 
   GL_TEXTURE_COMPRESSION_HINT_ARB                   = $84EF; 
   GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB              = $86A0; 
-  GL_TEXTURE_COMPRESSED_ARB                         = $86A1; 
+  GL_TEXTURE_COMPRESSED_ARB                         = $86A1;
   GL_NUM_COMPRESSED_TEXTURE_FORMATS_ARB             = $86A2; 
   GL_COMPRESSED_TEXTURE_FORMATS_ARB                 = $86A3; 
 
   // GL_ARB_vertex_blend
-  GL_MAX_VERTEX_UNITS_ARB                           = $86A4; 
+  GL_MAX_VERTEX_UNITS_ARB                           = $86A4;
   GL_ACTIVE_VERTEX_UNITS_ARB                        = $86A5; 
   GL_WEIGHT_SUM_UNITY_ARB                           = $86A6; 
   GL_VERTEX_BLEND_ARB                               = $86A7;
@@ -1653,7 +1662,7 @@ const
   GL_MODELVIEW9_ARB                                 = $8729; 
   GL_MODELVIEW10_ARB                                = $872A; 
   GL_MODELVIEW11_ARB                                = $872B; 
-  GL_MODELVIEW12_ARB                                = $872C; 
+  GL_MODELVIEW12_ARB                                = $872C;
   GL_MODELVIEW13_ARB                                = $872D; 
   GL_MODELVIEW14_ARB                                = $872E; 
   GL_MODELVIEW15_ARB                                = $872F;
@@ -1670,12 +1679,12 @@ const
   GL_MODELVIEW26_ARB                                = $873A; 
   GL_MODELVIEW27_ARB                                = $873B; 
   GL_MODELVIEW28_ARB                                = $873C; 
-  GL_MODELVIEW29_ARB                                = $873D; 
+  GL_MODELVIEW29_ARB                                = $873D;
   GL_MODELVIEW30_ARB                                = $873E; 
   GL_MODELVIEW31_ARB                                = $873F; 
 
   // GL_SGIS_texture_filter4
-  GL_FILTER4_SGIS                                   = $8146; 
+  GL_FILTER4_SGIS                                   = $8146;
   GL_TEXTURE_FILTER4_SIZE_SGIS                      = $8147; 
 
   // GL_SGIS_pixel_texture
@@ -1692,12 +1701,12 @@ const
   GL_PACK_SKIP_VOLUMES_SGIS                         = $8130; 
   GL_PACK_IMAGE_DEPTH_SGIS                          = $8131; 
   GL_UNPACK_SKIP_VOLUMES_SGIS                       = $8132; 
-  GL_UNPACK_IMAGE_DEPTH_SGIS                        = $8133; 
+  GL_UNPACK_IMAGE_DEPTH_SGIS                        = $8133;
   GL_TEXTURE_4D_SGIS                                = $8134; 
   GL_PROXY_TEXTURE_4D_SGIS                          = $8135; 
   GL_TEXTURE_4DSIZE_SGIS                            = $8136; 
   GL_TEXTURE_WRAP_Q_SGIS                            = $8137; 
-  GL_MAX_4D_TEXTURE_SIZE_SGIS                       = $8138; 
+  GL_MAX_4D_TEXTURE_SIZE_SGIS                       = $8138;
   GL_TEXTURE_4D_BINDING_SGIS                        = $814F; 
 
   // GL_SGIS_detail_texture
@@ -1714,12 +1723,12 @@ const
   GL_LINEAR_SHARPEN_SGIS                            = $80AD; 
   GL_LINEAR_SHARPEN_ALPHA_SGIS                      = $80AE; 
   GL_LINEAR_SHARPEN_COLOR_SGIS                      = $80AF; 
-  GL_SHARPEN_TEXTURE_FUNC_POINTS_SGIS               = $80B0; 
+  GL_SHARPEN_TEXTURE_FUNC_POINTS_SGIS               = $80B0;
 
   // GL_SGIS_texture_lod
   GL_TEXTURE_MIN_LOD_SGIS                           = $813A; 
   GL_TEXTURE_MAX_LOD_SGIS                           = $813B; 
-  GL_TEXTURE_BASE_LEVEL_SGIS                        = $813C; 
+  GL_TEXTURE_BASE_LEVEL_SGIS                        = $813C;
   GL_TEXTURE_MAX_LEVEL_SGIS                         = $813D;
 
   // GL_SGIS_multisample
@@ -1736,12 +1745,12 @@ const
   GL_4PASS_3_SGIS                                   = $80A7; 
   GL_SAMPLE_BUFFERS_SGIS                            = $80A8; 
   GL_SAMPLES_SGIS                                   = $80A9; 
-  GL_SAMPLE_MASK_VALUE_SGIS                         = $80AA; 
+  GL_SAMPLE_MASK_VALUE_SGIS                         = $80AA;
   GL_SAMPLE_MASK_INVERT_SGIS                        = $80AB; 
   GL_SAMPLE_PATTERN_SGIS                            = $80AC;
 
   // GL_SGIS_generate_mipmap
-  GL_GENERATE_MIPMAP_SGIS                           = $8191; 
+  GL_GENERATE_MIPMAP_SGIS                           = $8191;
   GL_GENERATE_MIPMAP_HINT_SGIS                      = $8192; 
 
   // GL_SGIX_clipmap
@@ -1780,12 +1789,12 @@ const
   GL_PIXEL_TILE_HEIGHT_SGIX                         = $8141; 
   GL_PIXEL_TILE_GRID_WIDTH_SGIX                     = $8142; 
   GL_PIXEL_TILE_GRID_HEIGHT_SGIX                    = $8143; 
-  GL_PIXEL_TILE_GRID_DEPTH_SGIX                     = $8144; 
+  GL_PIXEL_TILE_GRID_DEPTH_SGIX                     = $8144;
   GL_PIXEL_TILE_CACHE_SIZE_SGIX                     = $8145; 
 
   // GL_SGIS_texture_select
   GL_DUAL_ALPHA4_SGIS                               = $8110; 
-  GL_DUAL_ALPHA8_SGIS                               = $8111; 
+  GL_DUAL_ALPHA8_SGIS                               = $8111;
   GL_DUAL_ALPHA12_SGIS                              = $8112; 
   GL_DUAL_ALPHA16_SGIS                              = $8113; 
   GL_DUAL_LUMINANCE4_SGIS                           = $8114;
@@ -1802,7 +1811,7 @@ const
   GL_QUAD_ALPHA8_SGIS                               = $811F; 
   GL_QUAD_LUMINANCE4_SGIS                           = $8120; 
   GL_QUAD_LUMINANCE8_SGIS                           = $8121; 
-  GL_QUAD_INTENSITY4_SGIS                           = $8122; 
+  GL_QUAD_INTENSITY4_SGIS                           = $8122;
   GL_QUAD_INTENSITY8_SGIS                           = $8123; 
   GL_DUAL_TEXTURE_SELECT_SGIS                       = $8124; 
   GL_QUAD_TEXTURE_SELECT_SGIS                       = $8125; 
@@ -1851,7 +1860,7 @@ const
   GL_MAX_DEFORMATION_ORDER_SGIX                     = $8197; 
 
   // GL_SGIX_reference_plane
-  GL_REFERENCE_PLANE_SGIX                           = $817D; 
+  GL_REFERENCE_PLANE_SGIX                           = $817D;
   GL_REFERENCE_PLANE_EQUATION_SGIX                  = $817E; 
 
   // GL_SGIX_depth_texture
@@ -1873,7 +1882,7 @@ const
   GL_IMAGE_SCALE_Y_HP                               = $8156; 
   GL_IMAGE_TRANSLATE_X_HP                           = $8157; 
   GL_IMAGE_TRANSLATE_Y_HP                           = $8158; 
-  GL_IMAGE_ROTATE_ANGLE_HP                          = $8159; 
+  GL_IMAGE_ROTATE_ANGLE_HP                          = $8159;
   GL_IMAGE_ROTATE_ORIGIN_X_HP                       = $815A; 
   GL_IMAGE_ROTATE_ORIGIN_Y_HP                       = $815B; 
   GL_IMAGE_MAG_FILTER_HP                            = $815C;
@@ -1895,7 +1904,7 @@ const
   GL_TEXTURE_ENV_BIAS_SGIX                          = $80BE; 
 
   // GL_PGI_vertex_hints
-  GL_VERTEX_DATA_HINT_PGI                           = $1A22A; 
+  GL_VERTEX_DATA_HINT_PGI                           = $1A22A;
   GL_VERTEX_CONSISTENT_HINT_PGI                     = $1A22B; 
   GL_MATERIAL_SIDE_HINT_PGI                         = $1A22C; 
   GL_MAX_VERTEX_HINT_PGI                            = $1A22D;
@@ -1912,7 +1921,7 @@ const
   GL_MAT_SPECULAR_BIT_PGI                           = $04000000; 
   GL_NORMAL_BIT_PGI                                 = $08000000; 
   GL_TEXCOORD1_BIT_PGI                              = $10000000; 
-  GL_TEXCOORD2_BIT_PGI                              = $20000000; 
+  GL_TEXCOORD2_BIT_PGI                              = $20000000;
   GL_TEXCOORD3_BIT_PGI                              = $40000000; 
   GL_TEXCOORD4_BIT_PGI                              = $80000000; 
   GL_VERTEX23_BIT_PGI                               = $00000004; 
@@ -1934,7 +1943,7 @@ const
   GL_STRICT_DEPTHFUNC_HINT_PGI                      = $1A216; 
   GL_STRICT_LIGHTING_HINT_PGI                       = $1A217; 
   GL_STRICT_SCISSOR_HINT_PGI                        = $1A218; 
-  GL_FULL_STIPPLE_HINT_PGI                          = $1A219; 
+  GL_FULL_STIPPLE_HINT_PGI                          = $1A219;
   GL_CLIP_NEAR_HINT_PGI                             = $1A220; 
   GL_CLIP_FAR_HINT_PGI                              = $1A221;
   GL_WIDE_LINE_HINT_PGI                             = $1A222; 
@@ -1961,7 +1970,7 @@ const
   GL_SHADOW_AMBIENT_SGIX                            = $80BF; 
 
   // GL_SGIX_ycrcb
-  GL_YCRCB_422_SGIX                                 = $81BB; 
+  GL_YCRCB_422_SGIX                                 = $81BB;
   GL_YCRCB_444_SGIX                                 = $81BC; 
 
   // GL_SGIX_fragment_lighting
@@ -1978,12 +1987,12 @@ const
   GL_FRAGMENT_LIGHT_MODEL_AMBIENT_SGIX              = $840A; 
   GL_FRAGMENT_LIGHT_MODEL_NORMAL_INTERPOLATION_SGIX = $840B; 
   GL_FRAGMENT_LIGHT0_SGIX                           = $840C; 
-  GL_FRAGMENT_LIGHT1_SGIX                           = $840D; 
+  GL_FRAGMENT_LIGHT1_SGIX                           = $840D;
   GL_FRAGMENT_LIGHT2_SGIX                           = $840E; 
   GL_FRAGMENT_LIGHT3_SGIX                           = $840F; 
   GL_FRAGMENT_LIGHT4_SGIX                           = $8410; 
   GL_FRAGMENT_LIGHT5_SGIX                           = $8411; 
-  GL_FRAGMENT_LIGHT6_SGIX                           = $8412; 
+  GL_FRAGMENT_LIGHT6_SGIX                           = $8412;
   GL_FRAGMENT_LIGHT7_SGIX                           = $8413; 
 
   // GL_IBM_rasterpos_clip
@@ -2000,7 +2009,7 @@ const
 
   // GL_WIN_phong_shading
   GL_PHONG_WIN                                      = $80EA; 
-  GL_PHONG_HINT_WIN                                 = $80EB; 
+  GL_PHONG_HINT_WIN                                 = $80EB;
 
   // GL_WIN_specular_fog
   GL_FOG_SPECULAR_TEXTURE_WIN                       = $80EC; 
@@ -2027,7 +2036,7 @@ const
   GL_ASYNC_TEX_IMAGE_SGIX                           = $835C; 
   GL_ASYNC_DRAW_PIXELS_SGIX                         = $835D; 
   GL_ASYNC_READ_PIXELS_SGIX                         = $835E;
-  GL_MAX_ASYNC_TEX_IMAGE_SGIX                       = $835F; 
+  GL_MAX_ASYNC_TEX_IMAGE_SGIX                       = $835F;
   GL_MAX_ASYNC_DRAW_PIXELS_SGIX                     = $8360; 
   GL_MAX_ASYNC_READ_PIXELS_SGIX                     = $8361; 
 
@@ -2049,7 +2058,7 @@ const
   // GL_EXT_pixel_transform
   GL_PIXEL_TRANSFORM_2D_EXT                         = $8330; 
   GL_PIXEL_MAG_FILTER_EXT                           = $8331; 
-  GL_PIXEL_MIN_FILTER_EXT                           = $8332; 
+  GL_PIXEL_MIN_FILTER_EXT                           = $8332;
   GL_PIXEL_CUBIC_WEIGHT_EXT                         = $8333; 
   GL_CUBIC_EXT                                      = $8334; 
   GL_AVERAGE_EXT                                    = $8335;
@@ -2066,7 +2075,7 @@ const
   GL_COLOR_SUM_EXT                                  = $8458; 
   GL_CURRENT_SECONDARY_COLOR_EXT                    = $8459; 
   GL_SECONDARY_COLOR_ARRAY_SIZE_EXT                 = $845A; 
-  GL_SECONDARY_COLOR_ARRAY_TYPE_EXT                 = $845B; 
+  GL_SECONDARY_COLOR_ARRAY_TYPE_EXT                 = $845B;
   GL_SECONDARY_COLOR_ARRAY_STRIDE_EXT               = $845C; 
   GL_SECONDARY_COLOR_ARRAY_POINTER_EXT              = $845D; 
   GL_SECONDARY_COLOR_ARRAY_EXT                      = $845E; 
@@ -2093,7 +2102,7 @@ const
   GL_TANGENT_ARRAY_EXT                              = $8439; 
   GL_BINORMAL_ARRAY_EXT                             = $843A; 
   GL_CURRENT_TANGENT_EXT                            = $843B; 
-  GL_CURRENT_BINORMAL_EXT                           = $843C; 
+  GL_CURRENT_BINORMAL_EXT                           = $843C;
   GL_TANGENT_ARRAY_TYPE_EXT                         = $843E; 
   GL_TANGENT_ARRAY_STRIDE_EXT                       = $843F; 
   GL_BINORMAL_ARRAY_TYPE_EXT                        = $8440;
@@ -2110,12 +2119,12 @@ const
   GL_SOURCE4_RGB_EXT                                = $8584; 
   GL_SOURCE5_RGB_EXT                                = $8585; 
   GL_SOURCE6_RGB_EXT                                = $8586; 
-  GL_SOURCE7_RGB_EXT                                = $8587; 
+  GL_SOURCE7_RGB_EXT                                = $8587;
   GL_SOURCE3_ALPHA_EXT                              = $858B; 
   GL_SOURCE4_ALPHA_EXT                              = $858C; 
   GL_SOURCE5_ALPHA_EXT                              = $858D; 
   GL_SOURCE6_ALPHA_EXT                              = $858E; 
-  GL_SOURCE7_ALPHA_EXT                              = $858F; 
+  GL_SOURCE7_ALPHA_EXT                              = $858F;
   GL_OPERAND3_RGB_EXT                               = $8593;
   GL_OPERAND4_RGB_EXT                               = $8594; 
   GL_OPERAND5_RGB_EXT                               = $8595;
@@ -2154,12 +2163,12 @@ const
   GL_REPLACEMENT_CODE_ARRAY_SUN                     = $85C0; 
   GL_REPLACEMENT_CODE_ARRAY_TYPE_SUN                = $85C1;
   GL_REPLACEMENT_CODE_ARRAY_STRIDE_SUN              = $85C2; 
-  GL_REPLACEMENT_CODE_ARRAY_POINTER_SUN             = $85C3; 
+  GL_REPLACEMENT_CODE_ARRAY_POINTER_SUN             = $85C3;
   GL_R1UI_V3F_SUN                                   = $85C4; 
   GL_R1UI_C4UB_V3F_SUN                              = $85C5; 
   GL_R1UI_C3F_V3F_SUN                               = $85C6; 
   GL_R1UI_N3F_V3F_SUN                               = $85C7; 
-  GL_R1UI_C4F_N3F_V3F_SUN                           = $85C8; 
+  GL_R1UI_C4F_N3F_V3F_SUN                           = $85C8;
   GL_R1UI_T2F_V3F_SUN                               = $85C9; 
   GL_R1UI_T2F_N3F_V3F_SUN                           = $85CA; 
   GL_R1UI_T2F_C4F_N3F_V3F_SUN                       = $85CB;
@@ -2176,12 +2185,12 @@ const
   GL_BLUE_MIN_CLAMP_INGR                            = $8562; 
   GL_ALPHA_MIN_CLAMP_INGR                           = $8563; 
   GL_RED_MAX_CLAMP_INGR                             = $8564; 
-  GL_GREEN_MAX_CLAMP_INGR                           = $8565; 
+  GL_GREEN_MAX_CLAMP_INGR                           = $8565;
   GL_BLUE_MAX_CLAMP_INGR                            = $8566; 
   GL_ALPHA_MAX_CLAMP_INGR                           = $8567; 
 
   // GL_INGR_interlace_read
-  GL_INTERLACE_READ_INGR                            = $8568; 
+  GL_INTERLACE_READ_INGR                            = $8568;
 
   // GL_EXT_422_pixels
   GL_422_EXT                                        = $80CC;
@@ -2198,7 +2207,7 @@ const
   GL_TEXTURE_CUBE_MAP_NEGATIVE_X_EXT                = $8516; 
   GL_TEXTURE_CUBE_MAP_POSITIVE_Y_EXT                = $8517; 
   GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_EXT                = $8518; 
-  GL_TEXTURE_CUBE_MAP_POSITIVE_Z_EXT                = $8519; 
+  GL_TEXTURE_CUBE_MAP_POSITIVE_Z_EXT                = $8519;
   GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_EXT                = $851A; 
   GL_PROXY_TEXTURE_CUBE_MAP_EXT                     = $851B; 
   GL_MAX_CUBE_MAP_TEXTURE_SIZE_EXT                  = $851C; 
@@ -2220,12 +2229,12 @@ const
   GL_MODELVIEW1_STACK_DEPTH_EXT                     = $8502; 
   GL_MODELVIEW0_MATRIX_EXT                          = GL_MODELVIEW_MATRIX; 
   GL_MODELVIEW_MATRIX1_EXT                          = $8506; 
-  GL_VERTEX_WEIGHTING_EXT                           = $8509; 
+  GL_VERTEX_WEIGHTING_EXT                           = $8509;
   GL_MODELVIEW0_EXT                                 = GL_MODELVIEW; 
   GL_MODELVIEW1_EXT                                 = $850A; 
   GL_CURRENT_VERTEX_WEIGHT_EXT                      = $850B; 
   GL_VERTEX_WEIGHT_ARRAY_EXT                        = $850C;
-  GL_VERTEX_WEIGHT_ARRAY_SIZE_EXT                   = $850D; 
+  GL_VERTEX_WEIGHT_ARRAY_SIZE_EXT                   = $850D;
   GL_VERTEX_WEIGHT_ARRAY_TYPE_EXT                   = $850E; 
   GL_VERTEX_WEIGHT_ARRAY_STRIDE_EXT                 = $850F; 
   GL_VERTEX_WEIGHT_ARRAY_POINTER_EXT                = $8510;
@@ -2247,7 +2256,7 @@ const
   GL_VARIABLE_B_NV                                  = $8524; 
   GL_VARIABLE_C_NV                                  = $8525; 
   GL_VARIABLE_D_NV                                  = $8526; 
-  GL_VARIABLE_E_NV                                  = $8527; 
+  GL_VARIABLE_E_NV                                  = $8527;
   GL_VARIABLE_F_NV                                  = $8528; 
   GL_VARIABLE_G_NV                                  = $8529; 
   GL_CONSTANT_COLOR0_NV                             = $852A;
@@ -2264,12 +2273,12 @@ const
   GL_EXPAND_NORMAL_NV                               = $8538; 
   GL_EXPAND_NEGATE_NV                               = $8539; 
   GL_HALF_BIAS_NORMAL_NV                            = $853A; 
-  GL_HALF_BIAS_NEGATE_NV                            = $853B; 
+  GL_HALF_BIAS_NEGATE_NV                            = $853B;
   GL_SIGNED_IDENTITY_NV                             = $853C; 
   GL_SIGNED_NEGATE_NV                               = $853D; 
   GL_SCALE_BY_TWO_NV                                = $853E; 
   GL_SCALE_BY_FOUR_NV                               = $853F; 
-  GL_SCALE_BY_ONE_HALF_NV                           = $8540; 
+  GL_SCALE_BY_ONE_HALF_NV                           = $8540;
   GL_BIAS_BY_NEGATIVE_ONE_HALF_NV                   = $8541; 
   GL_COMBINER_INPUT_NV                              = $8542; 
   GL_COMBINER_MAPPING_NV                            = $8543;
@@ -2286,12 +2295,12 @@ const
   GL_NUM_GENERAL_COMBINERS_NV                       = $854E; 
   GL_COLOR_SUM_CLAMP_NV                             = $854F; 
   GL_COMBINER0_NV                                   = $8550; 
-  GL_COMBINER1_NV                                   = $8551; 
+  GL_COMBINER1_NV                                   = $8551;
   GL_COMBINER2_NV                                   = $8552; 
   GL_COMBINER3_NV                                   = $8553; 
   GL_COMBINER4_NV                                   = $8554; 
   GL_COMBINER5_NV                                   = $8555; 
-  GL_COMBINER6_NV                                   = $8556; 
+  GL_COMBINER6_NV                                   = $8556;
   GL_COMBINER7_NV                                   = $8557; 
 
   // GL_NV_fog_distance
@@ -2308,7 +2317,7 @@ const
   GL_COMPRESSED_RGB_S3TC_DXT1_EXT                   = $83F0; 
   GL_COMPRESSED_RGBA_S3TC_DXT1_EXT                  = $83F1; 
   GL_COMPRESSED_RGBA_S3TC_DXT3_EXT                  = $83F2; 
-  GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                  = $83F3; 
+  GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                  = $83F3;
 
   // GL_IBM_cull_vertex
   GL_CULL_VERTEX_IBM                                = 103050; 
@@ -2335,7 +2344,7 @@ const
   GL_PACK_SUBSAMPLE_RATE_SGIX                       = $85A0;
   GL_UNPACK_SUBSAMPLE_RATE_SGIX                     = $85A1; 
   GL_PIXEL_SUBSAMPLE_4444_SGIX                      = $85A2; 
-  GL_PIXEL_SUBSAMPLE_2424_SGIX                      = $85A3; 
+  GL_PIXEL_SUBSAMPLE_2424_SGIX                      = $85A3;
   GL_PIXEL_SUBSAMPLE_4242_SGIX                      = $85A4; 
 
   // GL_SGIX_ycrcba
@@ -2352,7 +2361,7 @@ const
   GL_COMPRESSED_RGBA_FXT1_3DFX                      = $86B1; 
 
   // GL_3DFX_multisample
-  GL_MULTISAMPLE_3DFX                               = $86B2; 
+  GL_MULTISAMPLE_3DFX                               = $86B2;
   GL_SAMPLE_BUFFERS_3DFX                            = $86B3; 
   GL_SAMPLES_3DFX                                   = $86B4; 
   GL_MULTISAMPLE_BIT_3DFX                           = $20000000; 
@@ -2423,7 +2432,7 @@ const
   GL_MATRIX2_NV                                     = $8632; 
   GL_MATRIX3_NV                                     = $8633; 
   GL_MATRIX4_NV                                     = $8634;
-  GL_MATRIX5_NV                                     = $8635; 
+  GL_MATRIX5_NV                                     = $8635;
   GL_MATRIX6_NV                                     = $8636; 
   GL_MATRIX7_NV                                     = $8637; 
   GL_CURRENT_MATRIX_STACK_DEPTH_NV                  = $8640;
@@ -2445,7 +2454,7 @@ const
   GL_VERTEX_ATTRIB_ARRAY4_NV                        = $8654; 
   GL_VERTEX_ATTRIB_ARRAY5_NV                        = $8655; 
   GL_VERTEX_ATTRIB_ARRAY6_NV                        = $8656; 
-  GL_VERTEX_ATTRIB_ARRAY7_NV                        = $8657; 
+  GL_VERTEX_ATTRIB_ARRAY7_NV                        = $8657;
   GL_VERTEX_ATTRIB_ARRAY8_NV                        = $8658; 
   GL_VERTEX_ATTRIB_ARRAY9_NV                        = $8659; 
   GL_VERTEX_ATTRIB_ARRAY10_NV                       = $865A;
@@ -2467,7 +2476,7 @@ const
   GL_MAP1_VERTEX_ATTRIB10_4_NV                      = $866A; 
   GL_MAP1_VERTEX_ATTRIB11_4_NV                      = $866B; 
   GL_MAP1_VERTEX_ATTRIB12_4_NV                      = $866C; 
-  GL_MAP1_VERTEX_ATTRIB13_4_NV                      = $866D; 
+  GL_MAP1_VERTEX_ATTRIB13_4_NV                      = $866D;
   GL_MAP1_VERTEX_ATTRIB14_4_NV                      = $866E; 
   GL_MAP1_VERTEX_ATTRIB15_4_NV                      = $866F; 
   GL_MAP2_VERTEX_ATTRIB0_4_NV                       = $8670;
@@ -2511,7 +2520,7 @@ const
   GLU_NONE                                          = 100002; 
 
   // QuadricDrawStyle
-  GLU_POINT                                         = 100010; 
+  GLU_POINT                                         = 100010;
   GLU_LINE                                          = 100011;
   GLU_FILL                                          = 100012; 
   GLU_SILHOUETTE                                    = 100013;
@@ -2533,7 +2542,7 @@ const
   GLU_TESS_WINDING_NONZERO                          = 100131;
   GLU_TESS_WINDING_POSITIVE                         = 100132; 
   GLU_TESS_WINDING_NEGATIVE                         = 100133; 
-  GLU_TESS_WINDING_ABS_GEQ_TWO                      = 100134; 
+  GLU_TESS_WINDING_ABS_GEQ_TWO                      = 100134;
 
   // TessCallback
   GLU_TESS_BEGIN                                    = 100100; // TGLUTessBeginProc
@@ -2555,7 +2564,7 @@ const
   GLU_TESS_ERROR3                                   = 100153; 
   GLU_TESS_ERROR4                                   = 100154; 
   GLU_TESS_ERROR5                                   = 100155; 
-  GLU_TESS_ERROR6                                   = 100156; 
+  GLU_TESS_ERROR6                                   = 100156;
   GLU_TESS_ERROR7                                   = 100157; 
   GLU_TESS_ERROR8                                   = 100158; 
 
@@ -2574,7 +2583,7 @@ const
   GLU_SAMPLING_TOLERANCE                            = 100203; 
   GLU_DISPLAY_MODE                                  = 100204; 
   GLU_PARAMETRIC_TOLERANCE                          = 100202; 
-  GLU_SAMPLING_METHOD                               = 100205; 
+  GLU_SAMPLING_METHOD                               = 100205;
   GLU_U_STEP                                        = 100206; 
   GLU_V_STEP                                        = 100207; 
 
@@ -2596,10 +2605,10 @@ const
   GLU_NURBS_ERROR2                                  = 100252; 
   GLU_NURBS_ERROR3                                  = 100253; 
   GLU_NURBS_ERROR4                                  = 100254; 
-  GLU_NURBS_ERROR5                                  = 100255; 
+  GLU_NURBS_ERROR5                                  = 100255;
   GLU_NURBS_ERROR6                                  = 100256; 
   GLU_NURBS_ERROR7                                  = 100257; 
-  GLU_NURBS_ERROR8                                  = 100258; 
+  GLU_NURBS_ERROR8                                  = 100258;
   GLU_NURBS_ERROR9                                  = 100259; 
   GLU_NURBS_ERROR10                                 = 100260; 
   GLU_NURBS_ERROR11                                 = 100261;
@@ -2618,16 +2627,16 @@ const
   GLU_NURBS_ERROR24                                 = 100274; 
   GLU_NURBS_ERROR25                                 = 100275; 
   GLU_NURBS_ERROR26                                 = 100276; 
-  GLU_NURBS_ERROR27                                 = 100277; 
+  GLU_NURBS_ERROR27                                 = 100277;
   GLU_NURBS_ERROR28                                 = 100278; 
   GLU_NURBS_ERROR29                                 = 100279;
-  GLU_NURBS_ERROR30                                 = 100280; 
+  GLU_NURBS_ERROR30                                 = 100280;
   GLU_NURBS_ERROR31                                 = 100281; 
   GLU_NURBS_ERROR32                                 = 100282; 
   GLU_NURBS_ERROR33                                 = 100283;
   GLU_NURBS_ERROR34                                 = 100284; 
   GLU_NURBS_ERROR35                                 = 100285; 
-  GLU_NURBS_ERROR36                                 = 100286; 
+  GLU_NURBS_ERROR36                                 = 100286;
   GLU_NURBS_ERROR37                                 = 100287; 
 
   // Contours types -- obsolete!
@@ -2640,16 +2649,16 @@ const
   // Names without "TESS_" prefix
   GLU_BEGIN                                         = GLU_TESS_BEGIN;
   GLU_VERTEX                                        = GLU_TESS_VERTEX; 
-  GLU_END                                           = GLU_TESS_END; 
+  GLU_END                                           = GLU_TESS_END;
   GLU_ERROR                                         = GLU_TESS_ERROR; 
   GLU_EDGE_FLAG                                     = GLU_TESS_EDGE_FLAG; 
 
   GLX_VERSION_1_1                                   = 1; 
-  GLX_VERSION_1_2                                   = 1; 
+  GLX_VERSION_1_2                                   = 1;
   GLX_VERSION_1_3                                   = 1;
   GLX_EXTENSION_NAME                                = 'GLX'; 
   GLX_USE_GL                                        = 1; 
-  GLX_BUFFER_SIZE                                   = 2; 
+  GLX_BUFFER_SIZE                                   = 2;
   GLX_LEVEL                                         = 3; 
   GLX_RGBA                                          = 4;
   GLX_DOUBLEBUFFER                                  = 5; 
@@ -2662,12 +2671,12 @@ const
   GLX_DEPTH_SIZE                                    = 12; 
   GLX_STENCIL_SIZE                                  = 13; 
   GLX_ACCUM_RED_SIZE                                = 14; 
-  GLX_ACCUM_GREEN_SIZE                              = 15; 
+  GLX_ACCUM_GREEN_SIZE                              = 15;
   GLX_ACCUM_BLUE_SIZE                               = 16; 
   GLX_ACCUM_ALPHA_SIZE                              = 17; 
 
   // Error codes returned by glXGetConfig:
-  GLX_BAD_SCREEN                                    = 1; 
+  GLX_BAD_SCREEN                                    = 1;
   GLX_BAD_ATTRIBUTE                                 = 2;
   GLX_NO_EXTENSION                                  = 3; 
   GLX_BAD_VISUAL                                    = 4; 
@@ -2684,16 +2693,16 @@ const
   GLX_CONFIG_CAVEAT                                 = $20; 
   GLX_DONT_CARE                                     = $FFFFFFFF; 
   GLX_SLOW_CONFIG                                   = $8001; 
-  GLX_NON_CONFORMANT_CONFIG                         = $800D; 
+  GLX_NON_CONFORMANT_CONFIG                         = $800D;
   GLX_X_VISUAL_TYPE                                 = $22; 
   GLX_TRANSPARENT_TYPE                              = $23; 
-  GLX_TRANSPARENT_INDEX_VALUE                       = $24; 
+  GLX_TRANSPARENT_INDEX_VALUE                       = $24;
   GLX_TRANSPARENT_RED_VALUE                         = $25; 
-  GLX_TRANSPARENT_GREEN_VALUE                       = $26; 
+  GLX_TRANSPARENT_GREEN_VALUE                       = $26;
   GLX_TRANSPARENT_BLUE_VALUE                        = $27;
   GLX_TRANSPARENT_ALPHA_VALUE                       = $28;
   GLX_MAX_PBUFFER_WIDTH                             = $8016;
-  GLX_MAX_PBUFFER_HEIGHT                            = $8017; 
+  GLX_MAX_PBUFFER_HEIGHT                            = $8017;
   GLX_MAX_PBUFFER_PIXELS                            = $8018; 
   GLX_PRESERVED_CONTENTS                            = $801B; 
   GLX_LARGEST_BUFFER                                = $801C; 
@@ -2701,21 +2710,21 @@ const
   GLX_FBCONFIG_ID                                   = $8013; 
   GLX_VISUAL_ID                                     = $800B; 
   GLX_WINDOW_BIT                                    = $00000001; 
-  GLX_PIXMAP_BIT                                    = $00000002; 
+  GLX_PIXMAP_BIT                                    = $00000002;
   GLX_PBUFFER_BIT                                   = $00000004; 
   GLX_AUX_BUFFERS_BIT                               = $00000010; 
   GLX_FRONT_LEFT_BUFFER_BIT                         = $00000001; 
   GLX_FRONT_RIGHT_BUFFER_BIT                        = $00000002; 
-  GLX_BACK_LEFT_BUFFER_BIT                          = $00000004; 
+  GLX_BACK_LEFT_BUFFER_BIT                          = $00000004;
   GLX_BACK_RIGHT_BUFFER_BIT                         = $00000008; 
   GLX_DEPTH_BUFFER_BIT                              = $00000020; 
-  GLX_STENCIL_BUFFER_BIT                            = $00000040; 
+  GLX_STENCIL_BUFFER_BIT                            = $00000040;
   GLX_ACCUM_BUFFER_BIT                              = $00000080;
   GLX_RENDER_TYPE                                   = $8011;
   GLX_X_RENDERABLE                                  = $8012;
   GLX_NONE                                          = $8000; 
   GLX_TRUE_COLOR                                    = $8002; 
-  GLX_DIRECT_COLOR                                  = $8003; 
+  GLX_DIRECT_COLOR                                  = $8003;
   GLX_PSEUDO_COLOR                                  = $8004; 
   GLX_STATIC_COLOR                                  = $8005; 
   GLX_GRAY_SCALE                                    = $8006; 
@@ -2723,7 +2732,7 @@ const
   GLX_TRANSPARENT_INDEX                             = $8009; 
   GLX_COLOR_INDEX_TYPE                              = $8015; 
   GLX_COLOR_INDEX_BIT                               = $00000002; 
-  GLX_SCREEN                                        = $800C; 
+  GLX_SCREEN                                        = $800C;
   GLX_PBUFFER_CLOBBER_MASK                          = $08000000; 
   GLX_DAMAGED                                       = $8020; 
   GLX_SAVED                                         = $8021; 
@@ -2733,11 +2742,11 @@ const
   GLX_X_VISUAL_TYPE_EXT                             = $22; 
   GLX_TRANSPARENT_TYPE_EXT                          = $23;
   GLX_TRANSPARENT_INDEX_VALUE_EXT                   = $24; 
-  GLX_TRANSPARENT_RED_VALUE_EXT                     = $25; 
+  GLX_TRANSPARENT_RED_VALUE_EXT                     = $25;
   GLX_TRANSPARENT_GREEN_VALUE_EXT                   = $26;
   GLX_TRANSPARENT_BLUE_VALUE_EXT                    = $27; 
   GLX_TRANSPARENT_ALPHA_VALUE_EXT                   = $28; 
-  GLX_TRUE_COLOR_EXT                                = $8002; 
+  GLX_TRUE_COLOR_EXT                                = $8002;
   GLX_DIRECT_COLOR_EXT                              = $8003; 
   GLX_PSEUDO_COLOR_EXT                              = $8004; 
   GLX_STATIC_COLOR_EXT                              = $8005; 
@@ -2745,25 +2754,78 @@ const
   GLX_STATIC_GRAY_EXT                               = $8007; 
   GLX_NONE_EXT                                      = $8000; 
   GLX_TRANSPARENT_RGB_EXT                           = $8008; 
-  GLX_TRANSPARENT_INDEX_EXT                         = $8009; 
+  GLX_TRANSPARENT_INDEX_EXT                         = $8009;
   GLX_VISUAL_CAVEAT_EXT                             = $20;
   GLX_SLOW_VISUAL_EXT                               = $8001; 
   GLX_NON_CONFORMANT_VISUAL_EXT                     = $800D; 
   GLX_SHARE_CONTEXT_EXT                             = $800A; 
-  GLX_VISUAL_ID_EXT                                 = $800B; 
+  GLX_VISUAL_ID_EXT                                 = $800B;
   GLX_SCREEN_EXT                                    = $800C;
-  GLX_3DFX_WINDOW_MODE_MESA                         = $1; 
-  GLX_3DFX_FULLSCREEN_MODE_MESA                     = $2; 
+  GLX_3DFX_WINDOW_MODE_MESA                         = $1;
+  GLX_3DFX_FULLSCREEN_MODE_MESA                     = $2;
 
+   // WGL_ARB_pixel_format
+  	WGL_NUMBER_PIXEL_FORMATS_ARB	                   =	$2000;
+	WGL_DRAW_TO_WINDOW_ARB		                      = $2001;
+	WGL_DRAW_TO_BITMAP_ARB		                      = $2002;
+	WGL_ACCELERATION_ARB			                      = $2003;
+	WGL_NEED_PALETTE_ARB			                      = $2004;
+	WGL_NEED_SYSTEM_PALETTE_ARB		                = $2005;
+	WGL_SWAP_LAYER_BUFFERS_ARB		                   = $2006;
+	WGL_SWAP_METHOD_ARB			                      = $2007;
+	WGL_NUMBER_OVERLAYS_ARB			                   = $2008;
+	WGL_NUMBER_UNDERLAYS_ARB		                   = $2009;
+	WGL_TRANSPARENT_ARB			                      = $200A;
+	WGL_TRANSPARENT_RED_VALUE_ARB		                = $2037;
+	WGL_TRANSPARENT_GREEN_VALUE_ARB		             = $2038;
+	WGL_TRANSPARENT_BLUE_VALUE_ARB		             = $2039;
+	WGL_TRANSPARENT_ALPHA_VALUE_ARB		             = $203A;
+	WGL_TRANSPARENT_INDEX_VALUE_ARB		             = $203B;
+	WGL_SHARE_DEPTH_ARB		                         = $200C;
+	WGL_SHARE_STENCIL_ARB			                   = $200D;
+	WGL_SHARE_ACCUM_ARB			                      = $200E;
+	WGL_SUPPORT_GDI_ARB			                      = $200F;
+	WGL_SUPPORT_OPENGL_ARB			                   = $2010;
+	WGL_DOUBLE_BUFFER_ARB			                   = $2011;
+	WGL_STEREO_ARB				                         = $2012;
+	WGL_PIXEL_TYPE_ARB			                      = $2013;
+	WGL_COLOR_BITS_ARB			                      = $2014;
+	WGL_RED_BITS_ARB			                         = $2015;
+	WGL_RED_SHIFT_ARB			                         = $2016;
+	WGL_GREEN_BITS_ARB			                      = $2017;
+	WGL_GREEN_SHIFT_ARB			                      = $2018;
+	WGL_BLUE_BITS_ARB			                         = $2019;
+	WGL_BLUE_SHIFT_ARB			                      = $201A;
+	WGL_ALPHA_BITS_ARB			                      = $201B;
+	WGL_ALPHA_SHIFT_ARB			                      = $201C;
+	WGL_ACCUM_BITS_ARB			                      = $201D;
+	WGL_ACCUM_RED_BITS_ARB			                   = $201E;
+	WGL_ACCUM_GREEN_BITS_ARB		                   = $201F;
+	WGL_ACCUM_BLUE_BITS_ARB			                   = $2020;
+	WGL_ACCUM_ALPHA_BITS_ARB		                   = $2021;
+	WGL_DEPTH_BITS_ARB			                      = $2022;
+	WGL_STENCIL_BITS_ARB			                      = $2023;
+	WGL_AUX_BUFFERS_ARB			                      = $2024;
+
+	WGL_NO_ACCELERATION_ARB			                   = $2025;
+	WGL_GENERIC_ACCELERATION_ARB		                = $2026;
+	WGL_FULL_ACCELERATION_ARB		                   = $2027;
+
+	WGL_SWAP_EXCHANGE_ARB			                   = $2028;
+	WGL_SWAP_COPY_ARB			                         = $2029;
+	WGL_SWAP_UNDEFINED_ARB			                   = $202A;
+
+	WGL_TYPE_RGBA_ARB			                         = $202B;
+	WGL_TYPE_COLORINDEX_ARB			                   = $202C;
 
 type
   // GLU types
-  TGLUNurbs = record end; 
-  TGLUQuadric = record end; 
-  TGLUTesselator = record end; 
+  TGLUNurbs = record end;
+  TGLUQuadric = record end;
+  TGLUTesselator = record end;
 
-  PGLUNurbs = ^TGLUNurbs; 
-  PGLUQuadric = ^TGLUQuadric; 
+  PGLUNurbs = ^TGLUNurbs;
+  PGLUQuadric = ^TGLUQuadric;
   PGLUTesselator = ^TGLUTesselator;
 
   // backwards compatibility
@@ -2772,7 +2834,7 @@ type
   TGLUTesselatorObj = TGLUTesselator; 
   TGLUTriangulatorObj = TGLUTesselator; 
 
-  PGLUNurbsObj = PGLUNurbs; 
+  PGLUNurbsObj = PGLUNurbs;
   PGLUQuadricObj = PGLUQuadric; 
   PGLUTesselatorObj = PGLUTesselator; 
   PGLUTriangulatorObj = PGLUTesselator; 
@@ -3110,7 +3172,7 @@ var
   glTexParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glTexParameteri: procedure(target, pname: TGLEnum; param: TGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glTexParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
-  glTexSubImage1D: procedure(target: TGLEnum; level, xoffset: TGLint; width: TGLsizei; format, atype: TGLEnum; 
+  glTexSubImage1D: procedure(target: TGLEnum; level, xoffset: TGLint; width: TGLsizei; format, atype: TGLEnum;
     pixels: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glTexSubImage2D: procedure(target: TGLEnum; level, xoffset, yoffset: TGLint; width, height: TGLsizei; format,
     atype: TGLEnum; pixels: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -3146,7 +3208,7 @@ var
   // GL 1.2
   glDrawRangeElements: procedure(mode: TGLEnum; Astart, Aend: TGLuint; count: TGLsizei; Atype: TGLEnum; 
     indices: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
-  glTexImage3D: procedure(target: TGLEnum; level: TGLint; internalformat: TGLEnum; width, height, depth: TGLsizei; 
+  glTexImage3D: procedure(target: TGLEnum; level: TGLint; internalformat: TGLEnum; width, height, depth: TGLsizei;
     border: TGLint; format: TGLEnum; Atype: TGLEnum; pixels: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
   // GL 1.2 ARB imaging
@@ -3154,7 +3216,7 @@ var
   glBlendEquation: procedure(mode: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glColorSubTable: procedure(target: TGLEnum; start, count: TGLsizei; format, Atype: TGLEnum; data: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glCopyColorSubTable: procedure(target: TGLEnum; start: TGLsizei; x, y: TGLint; width: TGLsizei); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
-  glColorTable: procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum; 
+  glColorTable: procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum;
     table: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glCopyColorTable: procedure(target, internalformat: TGLEnum; x, y: TGLint; width: TGLsizei); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glColorTableParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -3162,7 +3224,7 @@ var
   glGetColorTable: procedure(target, format, Atype: TGLEnum; table: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glGetColorTableParameteriv: procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glGetColorTableParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
-  glConvolutionFilter1D: procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum; 
+  glConvolutionFilter1D: procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum;
     image: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glConvolutionFilter2D: procedure(target, internalformat: TGLEnum; width, height: TGLsizei; format, Atype: TGLEnum; 
     image: Pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -3198,7 +3260,7 @@ var
   gluLookAt: procedure(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz: TGLdouble); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   gluProject: function(objx, objy, objz: TGLdouble; modelMatrix: TMatrix4d; projMatrix: TMatrix4d; viewport: TVector4i;
     winx, winy, winz: PGLdouble): TGLint; {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
-  gluUnProject: function(winx, winy, winz: TGLdouble; modelMatrix: TMatrix4d; projMatrix: TMatrix4d; viewport: TVector4i; 
+  gluUnProject: function(winx, winy, winz: TGLdouble; modelMatrix: TMatrix4d; projMatrix: TMatrix4d; viewport: TVector4i;
     objx, objy, objz: PGLdouble): TGLint; {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   gluScaleImage: function(format: TGLEnum; widthin, heightin: TGLint; typein: TGLEnum; datain: Pointer; widthout,
     heightout: TGLint; typeout: TGLEnum; dataout: Pointer): TGLint; {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -3852,6 +3914,16 @@ var
   glVertexAttribs4svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
   glVertexAttribs4ubvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLubyte); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
+  {$IFDEF WIN32}
+  wglGetExtensionsStringARB: function(DC: HDC): PChar; stdcall;
+  wglGetPixelFormatAttribivARB: function(DC: HDC; iPixelFormat, iLayerPlane: Integer;
+         nAttributes: UINT; const piAttributes: PInteger; piValues : PInteger) : BOOL; stdcall;
+  wglGetPixelFormatAttribfvARB: function(DC: HDC; iPixelFormat, iLayerPlane: Integer;
+         nAttributes: UINT; const piAttributes: PInteger; piValues : PGLFloat) : BOOL; stdcall;
+  wglChoosePixelFormatARB: function(DC: HDC; const piAttribIList : PInteger; const pfAttribFList : PGLFloat;
+         nMaxFormats: UINT; piFormats: PInteger; nNumFormats: PUINT) : BOOL; stdcall;
+  {$ENDIF}
+
 {$IFDEF LINUX}
 type
   GLXContext     = Pointer;
@@ -3859,7 +3931,7 @@ type
   GLXDrawable    = XID;
 
   // GLX 1.3 and later
-  GLXFBConfig    = Pointer; 
+  GLXFBConfig    = Pointer;
   GLXFBConfigID  = XID; 
   GLXContextID   = XID; 
   GLXWindow      = XID;
@@ -3981,7 +4053,7 @@ const
 
 var
   GLHandle: Pointer; 
-  GLUHandle: Pointer; 
+  GLUHandle: Pointer;
 {$ENDIF}
 
   // The context list is used to determine if a context is active already in any thread.
@@ -3991,7 +4063,7 @@ resourcestring
   SRCAlreadyActive = 'Rendering context already active in another thread.';
   SMakeCurrentFailed = 'wglMakeCurrent failed';
   SDeleteContextFailed = 'wglDeleteContext failed'; 
-  SContextInUse = 'Cannot delete rendering context. It is still in use by another thread.'; 
+  SContextInUse = 'Cannot delete rendering context. It is still in use by another thread.';
 
 {$IFDEF Win32}
   SDefaultGLLibrary = 'OpenGL32.dll'; 
@@ -4000,7 +4072,7 @@ resourcestring
 
 {$IFDEF LINUX}
   SDefaultGLLibrary = 'libGL.so'; 
-  SDefaultGLULibrary = 'libGLU.so'; 
+  SDefaultGLULibrary = 'libGLU.so';
 {$ENDIF}
 
 //------------------------------------------------------------------------------
@@ -4018,9 +4090,9 @@ end;
 procedure ClearProcAddresses; 
 begin
   glAccum := nil; 
-  glAlphaFunc := nil; 
-  glAreTexturesResident := nil; 
-  glArrayElement := nil; 
+  glAlphaFunc := nil;
+  glAreTexturesResident := nil;
+  glArrayElement := nil;
   glBegin := nil; 
   glBindTexture := nil; 
   glBitmap := nil; 
@@ -4028,21 +4100,21 @@ begin
   glCallList := nil; 
   glCallLists := nil; 
   glClear := nil; 
-  glClearAccum := nil; 
+  glClearAccum := nil;
   glClearColor := nil; 
   glClearDepth := nil; 
   glClearIndex := nil;
   glClearStencil := nil;
   glClipPlane := nil; 
   glColor3b := nil; 
-  glColor3bv := nil; 
+  glColor3bv := nil;
   glColor3d := nil; 
   glColor3dv := nil; 
-  glColor3f := nil; 
+  glColor3f := nil;
   glColor3fv := nil; 
-  glColor3i := nil; 
+  glColor3i := nil;
   glColor3iv := nil; 
-  glColor3s := nil; 
+  glColor3s := nil;
   glColor3sv := nil; 
   glColor3ub := nil; 
   glColor3ubv := nil; 
@@ -4050,21 +4122,21 @@ begin
   glColor3uiv := nil; 
   glColor3us := nil; 
   glColor3usv := nil; 
-  glColor4b := nil; 
+  glColor4b := nil;
   glColor4bv := nil; 
   glColor4d := nil;
   glColor4dv := nil; 
   glColor4f := nil;
   glColor4fv := nil; 
   glColor4i := nil; 
-  glColor4iv := nil; 
+  glColor4iv := nil;
   glColor4s := nil; 
   glColor4sv := nil; 
   glColor4ub := nil; 
   glColor4ubv := nil; 
-  glColor4ui := nil; 
+  glColor4ui := nil;
   glColor4uiv := nil; 
-  glColor4us := nil; 
+  glColor4us := nil;
   glColor4usv := nil; 
   glColorMask := nil; 
   glColorMaterial := nil; 
@@ -4072,21 +4144,21 @@ begin
   glCopyPixels := nil; 
   glCopyTexImage1D := nil; 
   glCopyTexImage2D := nil; 
-  glCopyTexSubImage1D := nil; 
+  glCopyTexSubImage1D := nil;
   glCopyTexSubImage2D := nil;
   glCullFace := nil; 
   glDeleteLists := nil; 
   glDeleteTextures := nil;
   glDepthFunc := nil; 
   glDepthMask := nil; 
-  glDepthRange := nil; 
+  glDepthRange := nil;
   glDisable := nil; 
   glDisableClientState := nil; 
   glDrawArrays := nil; 
   glDrawBuffer := nil; 
-  glDrawElements := nil; 
+  glDrawElements := nil;
   glDrawPixels := nil; 
-  glEdgeFlag := nil; 
+  glEdgeFlag := nil;
   glEdgeFlagPointer := nil; 
   glEdgeFlagv := nil; 
   glEnable := nil; 
@@ -4095,64 +4167,64 @@ begin
   glEndList := nil; 
   glEvalCoord1d := nil; 
   glEvalCoord1dv := nil;
-  glEvalCoord1f := nil; 
+  glEvalCoord1f := nil;
   glEvalCoord1fv := nil; 
   glEvalCoord2d := nil; 
   glEvalCoord2dv := nil;
   glEvalCoord2f := nil; 
   glEvalCoord2fv := nil; 
-  glEvalMesh1 := nil; 
+  glEvalMesh1 := nil;
   glEvalMesh2 := nil; 
   glEvalPoint1 := nil; 
   glEvalPoint2 := nil; 
   glFeedbackBuffer := nil; 
-  glFinish := nil; 
+  glFinish := nil;
   glFlush := nil; 
-  glFogf := nil; 
+  glFogf := nil;
   glFogfv := nil; 
   glFogi := nil; 
   glFogiv := nil; 
   glFrontFace := nil; 
   glFrustum := nil; 
-  glGenLists := nil; 
+  glGenLists := nil;
   glGenTextures := nil;
-  glGetBooleanv := nil; 
+  glGetBooleanv := nil;
   glGetClipPlane := nil; 
   glGetDoublev := nil; 
   glGetError := nil; 
   glGetFloatv := nil;
   glGetIntegerv := nil; 
   glGetLightfv := nil; 
-  glGetLightiv := nil; 
+  glGetLightiv := nil;
   glGetMapdv := nil; 
   glGetMapfv := nil; 
   glGetMapiv := nil; 
   glGetMaterialfv := nil; 
-  glGetMaterialiv := nil; 
+  glGetMaterialiv := nil;
   glGetPixelMapfv := nil; 
-  glGetPixelMapuiv := nil; 
+  glGetPixelMapuiv := nil;
   glGetPixelMapusv := nil; 
   glGetPointerv := nil; 
-  glGetPolygonStipple := nil; 
+  glGetPolygonStipple := nil;
   glGetString := nil; 
   glGetTexEnvfv := nil; 
   glGetTexEnviv := nil;
   glGetTexGendv := nil; 
-  glGetTexGenfv := nil; 
+  glGetTexGenfv := nil;
   glGetTexGeniv := nil; 
   glGetTexImage := nil; 
   glGetTexLevelParameterfv := nil; 
   glGetTexLevelParameteriv := nil;
   glGetTexParameterfv := nil; 
   glGetTexParameteriv := nil; 
-  glHint := nil; 
+  glHint := nil;
   glIndexMask := nil; 
   glIndexPointer := nil; 
   glIndexd := nil; 
   glIndexdv := nil; 
-  glIndexf := nil; 
+  glIndexf := nil;
   glIndexfv := nil; 
-  glIndexi := nil; 
+  glIndexi := nil;
   glIndexiv := nil; 
   glIndexs := nil; 
   glIndexsv := nil; 
@@ -4160,21 +4232,21 @@ begin
   glIndexubv := nil;
   glInitNames := nil; 
   glInterleavedArrays := nil; 
-  glIsEnabled := nil; 
+  glIsEnabled := nil;
   glIsList := nil; 
   glIsTexture := nil; 
   glLightModelf := nil; 
   glLightModelfv := nil;
   glLightModeli := nil; 
   glLightModeliv := nil; 
-  glLightf := nil; 
+  glLightf := nil;
   glLightfv := nil; 
   glLighti := nil; 
   glLightiv := nil; 
-  glLineStipple := nil; 
-  glLineWidth := nil; 
+  glLineStipple := nil;
+  glLineWidth := nil;
   glListBase := nil; 
-  glLoadIdentity := nil; 
+  glLoadIdentity := nil;
   glLoadMatrixd := nil; 
   glLoadMatrixf := nil; 
   glLoadName := nil; 
@@ -4182,21 +4254,21 @@ begin
   glMap1d := nil; 
   glMap1f := nil; 
   glMap2d := nil; 
-  glMap2f := nil; 
+  glMap2f := nil;
   glMapGrid1d := nil; 
   glMapGrid1f := nil; 
   glMapGrid2d := nil; 
   glMapGrid2f := nil;
   glMaterialf := nil; 
   glMaterialfv := nil; 
-  glMateriali := nil; 
-  glMaterialiv := nil; 
+  glMateriali := nil;
+  glMaterialiv := nil;
   glMatrixMode := nil; 
   glMultMatrixd := nil; 
   glMultMatrixf := nil; 
-  glNewList := nil; 
+  glNewList := nil;
   glNormal3b := nil; 
-  glNormal3bv := nil; 
+  glNormal3bv := nil;
   glNormal3d := nil; 
   glNormal3dv := nil; 
   glNormal3f := nil;
@@ -4204,21 +4276,21 @@ begin
   glNormal3i := nil; 
   glNormal3iv := nil; 
   glNormal3s := nil; 
-  glNormal3sv := nil; 
+  glNormal3sv := nil;
   glNormalPointer := nil; 
   glOrtho := nil; 
   glPassThrough := nil; 
   glPixelMapfv := nil;
-  glPixelMapuiv := nil; 
+  glPixelMapuiv := nil;
   glPixelMapusv := nil; 
-  glPixelStoref := nil; 
+  glPixelStoref := nil;
   glPixelStorei := nil; 
   glPixelTransferf := nil; 
   glPixelTransferi := nil; 
   glPixelZoom := nil; 
-  glPointSize := nil; 
+  glPointSize := nil;
   glPolygonMode := nil; 
-  glPolygonOffset := nil; 
+  glPolygonOffset := nil;
   glPolygonStipple := nil; 
   glPopAttrib := nil;
   glPopClientAttrib := nil; 
@@ -4226,87 +4298,87 @@ begin
   glPopName := nil; 
   glPrioritizeTextures := nil; 
   glPushAttrib := nil; 
-  glPushClientAttrib := nil; 
+  glPushClientAttrib := nil;
   glPushMatrix := nil; 
-  glPushName := nil; 
+  glPushName := nil;
   glRasterPos2d := nil; 
   glRasterPos2dv := nil;
   glRasterPos2f := nil; 
   glRasterPos2fv := nil; 
-  glRasterPos2i := nil; 
+  glRasterPos2i := nil;
   glRasterPos2iv := nil; 
   glRasterPos2s := nil; 
   glRasterPos2sv := nil; 
   glRasterPos3d := nil; 
-  glRasterPos3dv := nil; 
+  glRasterPos3dv := nil;
   glRasterPos3f := nil; 
-  glRasterPos3fv := nil; 
+  glRasterPos3fv := nil;
   glRasterPos3i := nil;
   glRasterPos3iv := nil; 
   glRasterPos3s := nil; 
   glRasterPos3sv := nil; 
   glRasterPos4d := nil; 
   glRasterPos4dv := nil; 
-  glRasterPos4f := nil; 
-  glRasterPos4fv := nil; 
+  glRasterPos4f := nil;
+  glRasterPos4fv := nil;
   glRasterPos4i := nil; 
   glRasterPos4iv := nil; 
   glRasterPos4s := nil; 
   glRasterPos4sv := nil;
   glReadBuffer := nil; 
   glReadPixels := nil; 
-  glRectd := nil; 
+  glRectd := nil;
   glRectdv := nil; 
   glRectf := nil; 
   glRectfv := nil; 
   glRecti := nil; 
-  glRectiv := nil; 
+  glRectiv := nil;
   glRects := nil; 
   glRectsv := nil;
   glRenderMode := nil; 
   glRotated := nil; 
   glRotatef := nil; 
-  glScaled := nil; 
+  glScaled := nil;
   glScalef := nil; 
   glScissor := nil; 
   glSelectBuffer := nil; 
-  glShadeModel := nil; 
+  glShadeModel := nil;
   glStencilFunc := nil; 
   glStencilMask := nil; 
   glStencilOp := nil; 
   glTexCoord1d := nil;
   glTexCoord1dv := nil; 
   glTexCoord1f := nil; 
-  glTexCoord1fv := nil; 
+  glTexCoord1fv := nil;
   glTexCoord1i := nil; 
   glTexCoord1iv := nil; 
   glTexCoord1s := nil; 
   glTexCoord1sv := nil; 
-  glTexCoord2d := nil; 
+  glTexCoord2d := nil;
   glTexCoord2dv := nil;
-  glTexCoord2f := nil; 
-  glTexCoord2fv := nil; 
+  glTexCoord2f := nil;
+  glTexCoord2fv := nil;
   glTexCoord2i := nil; 
   glTexCoord2iv := nil; 
   glTexCoord2s := nil; 
   glTexCoord2sv := nil; 
   glTexCoord3d := nil; 
   glTexCoord3dv := nil; 
-  glTexCoord3f := nil; 
+  glTexCoord3f := nil;
   glTexCoord3fv := nil; 
   glTexCoord3i := nil; 
   glTexCoord3iv := nil; 
   glTexCoord3s := nil;
   glTexCoord3sv := nil; 
   glTexCoord4d := nil; 
-  glTexCoord4dv := nil; 
+  glTexCoord4dv := nil;
   glTexCoord4f := nil; 
   glTexCoord4fv := nil; 
   glTexCoord4i := nil; 
-  glTexCoord4iv := nil; 
+  glTexCoord4iv := nil;
   glTexCoord4s := nil;
   glTexCoord4sv := nil; 
-  glTexCoordPointer := nil; 
+  glTexCoordPointer := nil;
   glTexEnvf := nil; 
   glTexEnvfv := nil; 
   glTexEnvi := nil; 
@@ -4314,21 +4386,21 @@ begin
   glTexGend := nil; 
   glTexGendv := nil; 
   glTexGenf := nil; 
-  glTexGenfv := nil; 
+  glTexGenfv := nil;
   glTexGeni := nil; 
   glTexGeniv := nil; 
   glTexImage1D := nil; 
   glTexImage2D := nil;
   glTexParameterf := nil; 
   glTexParameterfv := nil; 
-  glTexParameteri := nil; 
+  glTexParameteri := nil;
   glTexParameteriv := nil; 
-  glTexSubImage1D := nil; 
+  glTexSubImage1D := nil;
   glTexSubImage2D := nil; 
   glTranslated := nil;
-  glTranslatef := nil; 
+  glTranslatef := nil;
   glVertex2d := nil; 
-  glVertex2dv := nil; 
+  glVertex2dv := nil;
   glVertex2f := nil; 
   glVertex2fv := nil; 
   glVertex2i := nil; 
@@ -4342,64 +4414,64 @@ begin
   glVertex3i := nil; 
   glVertex3iv := nil;
   glVertex3s := nil; 
-  glVertex3sv := nil; 
-  glVertex4d := nil; 
+  glVertex3sv := nil;
+  glVertex4d := nil;
   glVertex4dv := nil; 
   glVertex4f := nil; 
   glVertex4fv := nil;
-  glVertex4i := nil; 
-  glVertex4iv := nil; 
-  glVertex4s := nil; 
-  glVertex4sv := nil; 
-  glVertexPointer := nil; 
-  glViewport := nil; 
+  glVertex4i := nil;
+  glVertex4iv := nil;
+  glVertex4s := nil;
+  glVertex4sv := nil;
+  glVertexPointer := nil;
+  glViewport := nil;
 
   {$IFDEF Win32}
-  wglGetProcAddress := nil; 
-  wglCopyContext := nil; 
-  wglCreateContext := nil; 
-  wglCreateLayerContext := nil; 
-  wglDeleteContext := nil; 
-  wglDescribeLayerPlane := nil; 
-  wglGetCurrentContext := nil; 
+  wglGetProcAddress := nil;
+  wglCopyContext := nil;
+  wglCreateContext := nil;
+  wglCreateLayerContext := nil;
+  wglDeleteContext := nil;
+  wglDescribeLayerPlane := nil;
+  wglGetCurrentContext := nil;
   wglGetCurrentDC := nil;
-  wglGetLayerPaletteEntries := nil; 
-  wglMakeCurrent := nil; 
-  wglRealizeLayerPalette := nil; 
-  wglSetLayerPaletteEntries := nil; 
+  wglGetLayerPaletteEntries := nil;
+  wglMakeCurrent := nil;
+  wglRealizeLayerPalette := nil;
+  wglSetLayerPaletteEntries := nil;
   wglShareLists := nil;
-  wglSwapLayerBuffers := nil; 
-  wglSwapMultipleBuffers := nil; 
-  wglUseFontBitmapsA := nil; 
-  wglUseFontOutlinesA := nil; 
-  wglUseFontBitmapsW := nil; 
-  wglUseFontOutlinesW := nil; 
-  wglUseFontBitmaps := nil; 
-  wglUseFontOutlines := nil; 
+  wglSwapLayerBuffers := nil;
+  wglSwapMultipleBuffers := nil;
+  wglUseFontBitmapsA := nil;
+  wglUseFontOutlinesA := nil;
+  wglUseFontBitmapsW := nil;
+  wglUseFontOutlinesW := nil;
+  wglUseFontBitmaps := nil;
+  wglUseFontOutlines := nil;
   {$ENDIF}
 
   // GL 1.2
-  glDrawRangeElements := nil; 
-  glTexImage3D := nil; 
+  glDrawRangeElements := nil;
+  glTexImage3D := nil;
 
   // GL 1.2 ARB imaging
-  glBlendColor := nil; 
+  glBlendColor := nil;
   glBlendEquation := nil;
-  glColorSubTable := nil; 
+  glColorSubTable := nil;
   glCopyColorSubTable := nil; 
-  glColorTable := nil; 
+  glColorTable := nil;
   glCopyColorTable := nil;
   glColorTableParameteriv := nil; 
   glColorTableParameterfv := nil; 
-  glGetColorTable := nil; 
-  glGetColorTableParameteriv := nil; 
+  glGetColorTable := nil;
+  glGetColorTableParameteriv := nil;
   glGetColorTableParameterfv := nil; 
-  glConvolutionFilter1D := nil; 
+  glConvolutionFilter1D := nil;
   glConvolutionFilter2D := nil; 
   glCopyConvolutionFilter1D := nil; 
   glCopyConvolutionFilter2D := nil; 
   glGetConvolutionFilter := nil; 
-  glSeparableFilter2D := nil; 
+  glSeparableFilter2D := nil;
   glGetSeparableFilter := nil; 
   glConvolutionParameteri := nil; 
   glConvolutionParameteriv := nil; 
@@ -4407,7 +4479,7 @@ begin
   glConvolutionParameterfv := nil; 
   glGetConvolutionParameteriv := nil; 
   glGetConvolutionParameterfv := nil;
-  glHistogram := nil; 
+  glHistogram := nil;
   glResetHistogram := nil; 
   glGetHistogram := nil;
   glGetHistogramParameteriv := nil;
@@ -4483,6 +4555,14 @@ end;
 procedure LoadProcAddresses;
 var
   Handle: Cardinal;
+  Buffer : String;
+//  rc : Integer;
+
+   function CheckExtension(const Extension: String): Boolean;
+   begin
+     Result := Pos(Extension, Buffer) > 0;
+   end;
+
 begin
   if GLHandle <> INVALID_MODULEHANDLE then
   begin
@@ -4501,8 +4581,8 @@ begin
     glClear := GetProcAddress(Handle, 'glClear');
     glClearAccum := GetProcAddress(Handle, 'glClearAccum'); 
     glClearColor := GetProcAddress(Handle, 'glClearColor'); 
-    glClearDepth := GetProcAddress(Handle, 'glClearDepth'); 
-    glClearIndex := GetProcAddress(Handle, 'glClearIndex'); 
+    glClearDepth := GetProcAddress(Handle, 'glClearDepth');
+    glClearIndex := GetProcAddress(Handle, 'glClearIndex');
     glClearStencil := GetProcAddress(Handle, 'glClearStencil'); 
     glClipPlane := GetProcAddress(Handle, 'glClipPlane');
     glColor3b := GetProcAddress(Handle, 'glColor3b'); 
@@ -4513,7 +4593,7 @@ begin
     glColor3fv := GetProcAddress(Handle, 'glColor3fv'); 
     glColor3i := GetProcAddress(Handle, 'glColor3i'); 
     glColor3iv := GetProcAddress(Handle, 'glColor3iv'); 
-    glColor3s := GetProcAddress(Handle, 'glColor3s'); 
+    glColor3s := GetProcAddress(Handle, 'glColor3s');
     glColor3sv := GetProcAddress(Handle, 'glColor3sv'); 
     glColor3ub := GetProcAddress(Handle, 'glColor3ub'); 
     glColor3ubv := GetProcAddress(Handle, 'glColor3ubv');
@@ -4523,16 +4603,16 @@ begin
     glColor3usv := GetProcAddress(Handle, 'glColor3usv'); 
     glColor4b := GetProcAddress(Handle, 'glColor4b'); 
     glColor4bv := GetProcAddress(Handle, 'glColor4bv'); 
-    glColor4d := GetProcAddress(Handle, 'glColor4d'); 
-    glColor4dv := GetProcAddress(Handle, 'glColor4dv'); 
+    glColor4d := GetProcAddress(Handle, 'glColor4d');
+    glColor4dv := GetProcAddress(Handle, 'glColor4dv');
     glColor4f := GetProcAddress(Handle, 'glColor4f');
-    glColor4fv := GetProcAddress(Handle, 'glColor4fv'); 
+    glColor4fv := GetProcAddress(Handle, 'glColor4fv');
     glColor4i := GetProcAddress(Handle, 'glColor4i'); 
     glColor4iv := GetProcAddress(Handle, 'glColor4iv'); 
     glColor4s := GetProcAddress(Handle, 'glColor4s'); 
     glColor4sv := GetProcAddress(Handle, 'glColor4sv'); 
     glColor4ub := GetProcAddress(Handle, 'glColor4ub'); 
-    glColor4ubv := GetProcAddress(Handle, 'glColor4ubv'); 
+    glColor4ubv := GetProcAddress(Handle, 'glColor4ubv');
     glColor4ui := GetProcAddress(Handle, 'glColor4ui'); 
     glColor4uiv := GetProcAddress(Handle, 'glColor4uiv'); 
     glColor4us := GetProcAddress(Handle, 'glColor4us'); 
@@ -4541,17 +4621,17 @@ begin
     glColorMaterial := GetProcAddress(Handle, 'glColorMaterial');
     glColorPointer := GetProcAddress(Handle, 'glColorPointer'); 
     glCopyPixels := GetProcAddress(Handle, 'glCopyPixels');
-    glCopyTexImage1D := GetProcAddress(Handle, 'glCopyTexImage1D'); 
+    glCopyTexImage1D := GetProcAddress(Handle, 'glCopyTexImage1D');
     glCopyTexImage2D := GetProcAddress(Handle, 'glCopyTexImage2D'); 
     glCopyTexSubImage1D := GetProcAddress(Handle, 'glCopyTexSubImage1D'); 
     glCopyTexSubImage2D := GetProcAddress(Handle, 'glCopyTexSubImage2D'); 
-    glCullFace := GetProcAddress(Handle, 'glCullFace'); 
+    glCullFace := GetProcAddress(Handle, 'glCullFace');
     glDeleteLists := GetProcAddress(Handle, 'glDeleteLists');
     glDeleteTextures := GetProcAddress(Handle, 'glDeleteTextures'); 
-    glDepthFunc := GetProcAddress(Handle, 'glDepthFunc'); 
+    glDepthFunc := GetProcAddress(Handle, 'glDepthFunc');
     glDepthMask := GetProcAddress(Handle, 'glDepthMask'); 
     glDepthRange := GetProcAddress(Handle, 'glDepthRange'); 
-    glDisable := GetProcAddress(Handle, 'glDisable'); 
+    glDisable := GetProcAddress(Handle, 'glDisable');
     glDisableClientState := GetProcAddress(Handle, 'glDisableClientState'); 
     glDrawArrays := GetProcAddress(Handle, 'glDrawArrays'); 
     glDrawBuffer := GetProcAddress(Handle, 'glDrawBuffer'); 
@@ -4563,14 +4643,14 @@ begin
     glEnable := GetProcAddress(Handle, 'glEnable');
     glEnableClientState := GetProcAddress(Handle, 'glEnableClientState');
     glEnd := GetProcAddress(Handle, 'glEnd'); 
-    glEndList := GetProcAddress(Handle, 'glEndList'); 
+    glEndList := GetProcAddress(Handle, 'glEndList');
     glEvalCoord1d := GetProcAddress(Handle, 'glEvalCoord1d'); 
     glEvalCoord1dv := GetProcAddress(Handle, 'glEvalCoord1dv'); 
     glEvalCoord1f := GetProcAddress(Handle, 'glEvalCoord1f'); 
     glEvalCoord1fv := GetProcAddress(Handle, 'glEvalCoord1fv');
-    glEvalCoord2d := GetProcAddress(Handle, 'glEvalCoord2d'); 
+    glEvalCoord2d := GetProcAddress(Handle, 'glEvalCoord2d');
     glEvalCoord2dv := GetProcAddress(Handle, 'glEvalCoord2dv'); 
-    glEvalCoord2f := GetProcAddress(Handle, 'glEvalCoord2f'); 
+    glEvalCoord2f := GetProcAddress(Handle, 'glEvalCoord2f');
     glEvalCoord2fv := GetProcAddress(Handle, 'glEvalCoord2fv'); 
     glEvalMesh1 := GetProcAddress(Handle, 'glEvalMesh1'); 
     glEvalMesh2 := GetProcAddress(Handle, 'glEvalMesh2'); 
@@ -4585,14 +4665,14 @@ begin
     glFogiv := GetProcAddress(Handle, 'glFogiv');
     glFrontFace := GetProcAddress(Handle, 'glFrontFace'); 
     glFrustum := GetProcAddress(Handle, 'glFrustum'); 
-    glGenLists := GetProcAddress(Handle, 'glGenLists'); 
+    glGenLists := GetProcAddress(Handle, 'glGenLists');
     glGenTextures := GetProcAddress(Handle, 'glGenTextures'); 
     glGetBooleanv := GetProcAddress(Handle, 'glGetBooleanv'); 
     glGetClipPlane := GetProcAddress(Handle, 'glGetClipPlane');
-    glGetDoublev := GetProcAddress(Handle, 'glGetDoublev'); 
-    glGetError := GetProcAddress(Handle, 'glGetError'); 
+    glGetDoublev := GetProcAddress(Handle, 'glGetDoublev');
+    glGetError := GetProcAddress(Handle, 'glGetError');
     glGetFloatv := GetProcAddress(Handle, 'glGetFloatv'); 
-    glGetIntegerv := GetProcAddress(Handle, 'glGetIntegerv'); 
+    glGetIntegerv := GetProcAddress(Handle, 'glGetIntegerv');
     glGetLightfv := GetProcAddress(Handle, 'glGetLightfv'); 
     glGetLightiv := GetProcAddress(Handle, 'glGetLightiv'); 
     glGetMapdv := GetProcAddress(Handle, 'glGetMapdv'); 
@@ -4607,14 +4687,14 @@ begin
     glGetPolygonStipple := GetProcAddress(Handle, 'glGetPolygonStipple');
     glGetString := GetProcAddress(Handle, 'glGetString'); 
     glGetTexEnvfv := GetProcAddress(Handle, 'glGetTexEnvfv'); 
-    glGetTexEnviv := GetProcAddress(Handle, 'glGetTexEnviv'); 
-    glGetTexGendv := GetProcAddress(Handle, 'glGetTexGendv'); 
+    glGetTexEnviv := GetProcAddress(Handle, 'glGetTexEnviv');
+    glGetTexGendv := GetProcAddress(Handle, 'glGetTexGendv');
     glGetTexGenfv := GetProcAddress(Handle, 'glGetTexGenfv');
     glGetTexGeniv := GetProcAddress(Handle, 'glGetTexGeniv'); 
-    glGetTexImage := GetProcAddress(Handle, 'glGetTexImage'); 
-    glGetTexLevelParameterfv := GetProcAddress(Handle, 'glGetTexLevelParameterfv'); 
+    glGetTexImage := GetProcAddress(Handle, 'glGetTexImage');
+    glGetTexLevelParameterfv := GetProcAddress(Handle, 'glGetTexLevelParameterfv');
     glGetTexLevelParameteriv := GetProcAddress(Handle, 'glGetTexLevelParameteriv'); 
-    glGetTexParameterfv := GetProcAddress(Handle, 'glGetTexParameterfv'); 
+    glGetTexParameterfv := GetProcAddress(Handle, 'glGetTexParameterfv');
     glGetTexParameteriv := GetProcAddress(Handle, 'glGetTexParameteriv'); 
     glHint := GetProcAddress(Handle, 'glHint'); 
     glIndexMask := GetProcAddress(Handle, 'glIndexMask'); 
@@ -4627,16 +4707,16 @@ begin
     glIndexiv := GetProcAddress(Handle, 'glIndexiv');
     glIndexs := GetProcAddress(Handle, 'glIndexs'); 
     glIndexsv := GetProcAddress(Handle, 'glIndexsv');
-    glIndexub := GetProcAddress(Handle, 'glIndexub'); 
+    glIndexub := GetProcAddress(Handle, 'glIndexub');
     glIndexubv := GetProcAddress(Handle, 'glIndexubv'); 
-    glInitNames := GetProcAddress(Handle, 'glInitNames'); 
+    glInitNames := GetProcAddress(Handle, 'glInitNames');
     glInterleavedArrays := GetProcAddress(Handle, 'glInterleavedArrays');
     glIsEnabled := GetProcAddress(Handle, 'glIsEnabled'); 
     glIsList := GetProcAddress(Handle, 'glIsList'); 
-    glIsTexture := GetProcAddress(Handle, 'glIsTexture'); 
-    glLightModelf := GetProcAddress(Handle, 'glLightModelf'); 
+    glIsTexture := GetProcAddress(Handle, 'glIsTexture');
+    glLightModelf := GetProcAddress(Handle, 'glLightModelf');
     glLightModelfv := GetProcAddress(Handle, 'glLightModelfv'); 
-    glLightModeli := GetProcAddress(Handle, 'glLightModeli'); 
+    glLightModeli := GetProcAddress(Handle, 'glLightModeli');
     glLightModeliv := GetProcAddress(Handle, 'glLightModeliv'); 
     glLightf := GetProcAddress(Handle, 'glLightf'); 
     glLightfv := GetProcAddress(Handle, 'glLightfv'); 
@@ -4646,7 +4726,7 @@ begin
     glLineWidth := GetProcAddress(Handle, 'glLineWidth'); 
     glListBase := GetProcAddress(Handle, 'glListBase'); 
     glLoadIdentity := GetProcAddress(Handle, 'glLoadIdentity');
-    glLoadMatrixd := GetProcAddress(Handle, 'glLoadMatrixd'); 
+    glLoadMatrixd := GetProcAddress(Handle, 'glLoadMatrixd');
     glLoadMatrixf := GetProcAddress(Handle, 'glLoadMatrixf'); 
     glLoadName := GetProcAddress(Handle, 'glLoadName');
     glLogicOp := GetProcAddress(Handle, 'glLogicOp'); 
@@ -4655,17 +4735,17 @@ begin
     glMap2d := GetProcAddress(Handle, 'glMap2d'); 
     glMap2f := GetProcAddress(Handle, 'glMap2f'); 
     glMapGrid1d := GetProcAddress(Handle, 'glMapGrid1d'); 
-    glMapGrid1f := GetProcAddress(Handle, 'glMapGrid1f'); 
-    glMapGrid2d := GetProcAddress(Handle, 'glMapGrid2d'); 
+    glMapGrid1f := GetProcAddress(Handle, 'glMapGrid1f');
+    glMapGrid2d := GetProcAddress(Handle, 'glMapGrid2d');
     glMapGrid2f := GetProcAddress(Handle, 'glMapGrid2f'); 
-    glMaterialf := GetProcAddress(Handle, 'glMaterialf'); 
+    glMaterialf := GetProcAddress(Handle, 'glMaterialf');
     glMaterialfv := GetProcAddress(Handle, 'glMaterialfv'); 
     glMateriali := GetProcAddress(Handle, 'glMateriali'); 
     glMaterialiv := GetProcAddress(Handle, 'glMaterialiv'); 
     glMatrixMode := GetProcAddress(Handle, 'glMatrixMode'); 
     glMultMatrixd := GetProcAddress(Handle, 'glMultMatrixd');
     glMultMatrixf := GetProcAddress(Handle, 'glMultMatrixf'); 
-    glNewList := GetProcAddress(Handle, 'glNewList'); 
+    glNewList := GetProcAddress(Handle, 'glNewList');
     glNormal3b := GetProcAddress(Handle, 'glNormal3b');
     glNormal3bv := GetProcAddress(Handle, 'glNormal3bv'); 
     glNormal3d := GetProcAddress(Handle, 'glNormal3d'); 
@@ -4673,14 +4753,14 @@ begin
     glNormal3f := GetProcAddress(Handle, 'glNormal3f');
     glNormal3fv := GetProcAddress(Handle, 'glNormal3fv'); 
     glNormal3i := GetProcAddress(Handle, 'glNormal3i');
-    glNormal3iv := GetProcAddress(Handle, 'glNormal3iv'); 
+    glNormal3iv := GetProcAddress(Handle, 'glNormal3iv');
     glNormal3s := GetProcAddress(Handle, 'glNormal3s'); 
     glNormal3sv := GetProcAddress(Handle, 'glNormal3sv'); 
     glNormalPointer := GetProcAddress(Handle, 'glNormalPointer'); 
-    glOrtho := GetProcAddress(Handle, 'glOrtho'); 
-    glPassThrough := GetProcAddress(Handle, 'glPassThrough'); 
+    glOrtho := GetProcAddress(Handle, 'glOrtho');
+    glPassThrough := GetProcAddress(Handle, 'glPassThrough');
     glPixelMapfv := GetProcAddress(Handle, 'glPixelMapfv'); 
-    glPixelMapuiv := GetProcAddress(Handle, 'glPixelMapuiv'); 
+    glPixelMapuiv := GetProcAddress(Handle, 'glPixelMapuiv');
     glPixelMapusv := GetProcAddress(Handle, 'glPixelMapusv'); 
     glPixelStoref := GetProcAddress(Handle, 'glPixelStoref'); 
     glPixelStorei := GetProcAddress(Handle, 'glPixelStorei'); 
@@ -4695,15 +4775,15 @@ begin
     glPopClientAttrib := GetProcAddress(Handle, 'glPopClientAttrib');
     glPopMatrix := GetProcAddress(Handle, 'glPopMatrix');
     glPopName := GetProcAddress(Handle, 'glPopName'); 
-    glPrioritizeTextures := GetProcAddress(Handle, 'glPrioritizeTextures'); 
+    glPrioritizeTextures := GetProcAddress(Handle, 'glPrioritizeTextures');
     glPushAttrib := GetProcAddress(Handle, 'glPushAttrib'); 
     glPushClientAttrib := GetProcAddress(Handle, 'glPushClientAttrib'); 
     glPushMatrix := GetProcAddress(Handle, 'glPushMatrix'); 
-    glPushName := GetProcAddress(Handle, 'glPushName'); 
-    glRasterPos2d := GetProcAddress(Handle, 'glRasterPos2d'); 
+    glPushName := GetProcAddress(Handle, 'glPushName');
+    glRasterPos2d := GetProcAddress(Handle, 'glRasterPos2d');
     glRasterPos2dv := GetProcAddress(Handle, 'glRasterPos2dv'); 
-    glRasterPos2f := GetProcAddress(Handle, 'glRasterPos2f'); 
-    glRasterPos2fv := GetProcAddress(Handle, 'glRasterPos2fv'); 
+    glRasterPos2f := GetProcAddress(Handle, 'glRasterPos2f');
+    glRasterPos2fv := GetProcAddress(Handle, 'glRasterPos2fv');
     glRasterPos2i := GetProcAddress(Handle, 'glRasterPos2i'); 
     glRasterPos2iv := GetProcAddress(Handle, 'glRasterPos2iv');
     glRasterPos2s := GetProcAddress(Handle, 'glRasterPos2s'); 
@@ -4717,14 +4797,14 @@ begin
     glRasterPos3s := GetProcAddress(Handle, 'glRasterPos3s');
     glRasterPos3sv := GetProcAddress(Handle, 'glRasterPos3sv'); 
     glRasterPos4d := GetProcAddress(Handle, 'glRasterPos4d'); 
-    glRasterPos4dv := GetProcAddress(Handle, 'glRasterPos4dv'); 
+    glRasterPos4dv := GetProcAddress(Handle, 'glRasterPos4dv');
     glRasterPos4f := GetProcAddress(Handle, 'glRasterPos4f'); 
     glRasterPos4fv := GetProcAddress(Handle, 'glRasterPos4fv'); 
     glRasterPos4i := GetProcAddress(Handle, 'glRasterPos4i'); 
-    glRasterPos4iv := GetProcAddress(Handle, 'glRasterPos4iv'); 
-    glRasterPos4s := GetProcAddress(Handle, 'glRasterPos4s'); 
+    glRasterPos4iv := GetProcAddress(Handle, 'glRasterPos4iv');
+    glRasterPos4s := GetProcAddress(Handle, 'glRasterPos4s');
     glRasterPos4sv := GetProcAddress(Handle, 'glRasterPos4sv'); 
-    glReadBuffer := GetProcAddress(Handle, 'glReadBuffer'); 
+    glReadBuffer := GetProcAddress(Handle, 'glReadBuffer');
     glReadPixels := GetProcAddress(Handle, 'glReadPixels'); 
     glRectd := GetProcAddress(Handle, 'glRectd');
     glRectdv := GetProcAddress(Handle, 'glRectdv'); 
@@ -4734,19 +4814,19 @@ begin
     glRectiv := GetProcAddress(Handle, 'glRectiv'); 
     glRects := GetProcAddress(Handle, 'glRects'); 
     glRectsv := GetProcAddress(Handle, 'glRectsv'); 
-    glRenderMode := GetProcAddress(Handle, 'glRenderMode'); 
+    glRenderMode := GetProcAddress(Handle, 'glRenderMode');
     glRotated := GetProcAddress(Handle, 'glRotated');
     glRotatef := GetProcAddress(Handle, 'glRotatef');
     glScaled := GetProcAddress(Handle, 'glScaled'); 
     glScalef := GetProcAddress(Handle, 'glScalef'); 
-    glScissor := GetProcAddress(Handle, 'glScissor'); 
+    glScissor := GetProcAddress(Handle, 'glScissor');
     glSelectBuffer := GetProcAddress(Handle, 'glSelectBuffer'); 
-    glShadeModel := GetProcAddress(Handle, 'glShadeModel'); 
+    glShadeModel := GetProcAddress(Handle, 'glShadeModel');
     glStencilFunc := GetProcAddress(Handle, 'glStencilFunc'); 
-    glStencilMask := GetProcAddress(Handle, 'glStencilMask'); 
-    glStencilOp := GetProcAddress(Handle, 'glStencilOp'); 
+    glStencilMask := GetProcAddress(Handle, 'glStencilMask');
+    glStencilOp := GetProcAddress(Handle, 'glStencilOp');
     glTexCoord1d := GetProcAddress(Handle, 'glTexCoord1d'); 
-    glTexCoord1dv := GetProcAddress(Handle, 'glTexCoord1dv'); 
+    glTexCoord1dv := GetProcAddress(Handle, 'glTexCoord1dv');
     glTexCoord1f := GetProcAddress(Handle, 'glTexCoord1f');
     glTexCoord1fv := GetProcAddress(Handle, 'glTexCoord1fv'); 
     glTexCoord1i := GetProcAddress(Handle, 'glTexCoord1i'); 
@@ -4760,13 +4840,13 @@ begin
     glTexCoord2i := GetProcAddress(Handle, 'glTexCoord2i'); 
     glTexCoord2iv := GetProcAddress(Handle, 'glTexCoord2iv');
     glTexCoord2s := GetProcAddress(Handle, 'glTexCoord2s'); 
-    glTexCoord2sv := GetProcAddress(Handle, 'glTexCoord2sv'); 
-    glTexCoord3d := GetProcAddress(Handle, 'glTexCoord3d'); 
+    glTexCoord2sv := GetProcAddress(Handle, 'glTexCoord2sv');
+    glTexCoord3d := GetProcAddress(Handle, 'glTexCoord3d');
     glTexCoord3dv := GetProcAddress(Handle, 'glTexCoord3dv'); 
     glTexCoord3f := GetProcAddress(Handle, 'glTexCoord3f'); 
     glTexCoord3fv := GetProcAddress(Handle, 'glTexCoord3fv'); 
-    glTexCoord3i := GetProcAddress(Handle, 'glTexCoord3i'); 
-    glTexCoord3iv := GetProcAddress(Handle, 'glTexCoord3iv'); 
+    glTexCoord3i := GetProcAddress(Handle, 'glTexCoord3i');
+    glTexCoord3iv := GetProcAddress(Handle, 'glTexCoord3iv');
     glTexCoord3s := GetProcAddress(Handle, 'glTexCoord3s'); 
     glTexCoord3sv := GetProcAddress(Handle, 'glTexCoord3sv');
     glTexCoord4d := GetProcAddress(Handle, 'glTexCoord4d'); 
@@ -4778,19 +4858,19 @@ begin
     glTexCoord4s := GetProcAddress(Handle, 'glTexCoord4s'); 
     glTexCoord4sv := GetProcAddress(Handle, 'glTexCoord4sv'); 
     glTexCoordPointer := GetProcAddress(Handle, 'glTexCoordPointer');
-    glTexEnvf := GetProcAddress(Handle, 'glTexEnvf'); 
-    glTexEnvfv := GetProcAddress(Handle, 'glTexEnvfv'); 
+    glTexEnvf := GetProcAddress(Handle, 'glTexEnvf');
+    glTexEnvfv := GetProcAddress(Handle, 'glTexEnvfv');
     glTexEnvi := GetProcAddress(Handle, 'glTexEnvi');
     glTexEnviv := GetProcAddress(Handle, 'glTexEnviv'); 
     glTexGend := GetProcAddress(Handle, 'glTexGend');
-    glTexGendv := GetProcAddress(Handle, 'glTexGendv'); 
+    glTexGendv := GetProcAddress(Handle, 'glTexGendv');
     glTexGenf := GetProcAddress(Handle, 'glTexGenf'); 
     glTexGenfv := GetProcAddress(Handle, 'glTexGenfv'); 
     glTexGeni := GetProcAddress(Handle, 'glTexGeni'); 
-    glTexGeniv := GetProcAddress(Handle, 'glTexGeniv'); 
-    glTexImage1D := GetProcAddress(Handle, 'glTexImage1D'); 
+    glTexGeniv := GetProcAddress(Handle, 'glTexGeniv');
+    glTexImage1D := GetProcAddress(Handle, 'glTexImage1D');
     glTexImage2D := GetProcAddress(Handle, 'glTexImage2D');
-    glTexParameterf := GetProcAddress(Handle, 'glTexParameterf'); 
+    glTexParameterf := GetProcAddress(Handle, 'glTexParameterf');
     glTexParameterfv := GetProcAddress(Handle, 'glTexParameterfv'); 
     glTexParameteri := GetProcAddress(Handle, 'glTexParameteri');
     glTexParameteriv := GetProcAddress(Handle, 'glTexParameteriv'); 
@@ -4800,35 +4880,35 @@ begin
     glTranslatef := GetProcAddress(Handle, 'glTranslatef'); 
     glVertex2d := GetProcAddress(Handle, 'glVertex2d');
     glVertex2dv := GetProcAddress(Handle, 'glVertex2dv'); 
-    glVertex2f := GetProcAddress(Handle, 'glVertex2f'); 
+    glVertex2f := GetProcAddress(Handle, 'glVertex2f');
     glVertex2fv := GetProcAddress(Handle, 'glVertex2fv'); 
     glVertex2i := GetProcAddress(Handle, 'glVertex2i');
     glVertex2iv := GetProcAddress(Handle, 'glVertex2iv'); 
     glVertex2s := GetProcAddress(Handle, 'glVertex2s'); 
-    glVertex2sv := GetProcAddress(Handle, 'glVertex2sv'); 
+    glVertex2sv := GetProcAddress(Handle, 'glVertex2sv');
     glVertex3d := GetProcAddress(Handle, 'glVertex3d'); 
     glVertex3dv := GetProcAddress(Handle, 'glVertex3dv'); 
     glVertex3f := GetProcAddress(Handle, 'glVertex3f'); 
-    glVertex3fv := GetProcAddress(Handle, 'glVertex3fv'); 
+    glVertex3fv := GetProcAddress(Handle, 'glVertex3fv');
     glVertex3i := GetProcAddress(Handle, 'glVertex3i');
     glVertex3iv := GetProcAddress(Handle, 'glVertex3iv'); 
-    glVertex3s := GetProcAddress(Handle, 'glVertex3s'); 
+    glVertex3s := GetProcAddress(Handle, 'glVertex3s');
     glVertex3sv := GetProcAddress(Handle, 'glVertex3sv'); 
     glVertex4d := GetProcAddress(Handle, 'glVertex4d'); 
     glVertex4dv := GetProcAddress(Handle, 'glVertex4dv'); 
     glVertex4f := GetProcAddress(Handle, 'glVertex4f'); 
-    glVertex4fv := GetProcAddress(Handle, 'glVertex4fv'); 
+    glVertex4fv := GetProcAddress(Handle, 'glVertex4fv');
     glVertex4i := GetProcAddress(Handle, 'glVertex4i'); 
     glVertex4iv := GetProcAddress(Handle, 'glVertex4iv');
     glVertex4s := GetProcAddress(Handle, 'glVertex4s'); 
     glVertex4sv := GetProcAddress(Handle, 'glVertex4sv'); 
-    glVertexPointer := GetProcAddress(Handle, 'glVertexPointer'); 
+    glVertexPointer := GetProcAddress(Handle, 'glVertexPointer');
     glViewport := GetProcAddress(Handle, 'glViewport'); 
 
     // window support routines
 {$IFDEF Win32}
-    wglGetProcAddress := GetProcAddress(Handle, 'wglGetProcAddress'); 
-    wglCopyContext := GetProcAddress(Handle, 'wglCopyContext'); 
+    wglGetProcAddress := GetProcAddress(Handle, 'wglGetProcAddress');
+    wglCopyContext := GetProcAddress(Handle, 'wglCopyContext');
     wglCreateContext := GetProcAddress(Handle, 'wglCreateContext'); 
     wglCreateLayerContext := GetProcAddress(Handle, 'wglCreateLayerContext'); 
     wglDeleteContext := GetProcAddress(Handle, 'wglDeleteContext');
@@ -4859,26 +4939,26 @@ begin
     glBlendEquation := GetProcAddress(Handle, 'glBlendEquation');
     glColorSubTable := GetProcAddress(Handle, 'glColorSubTable');
     glCopyColorSubTable := GetProcAddress(Handle, 'glCopyColorSubTable');
-    glColorTable := GetProcAddress(Handle, 'glCopyColorSubTable'); 
-    glCopyColorTable := GetProcAddress(Handle, 'glCopyColorTable'); 
-    glColorTableParameteriv := GetProcAddress(Handle, 'glColorTableParameteriv'); 
-    glColorTableParameterfv := GetProcAddress(Handle, 'glColorTableParameterfv'); 
-    glGetColorTable := GetProcAddress(Handle, 'glGetColorTable'); 
-    glGetColorTableParameteriv := GetProcAddress(Handle, 'glGetColorTableParameteriv'); 
+    glColorTable := GetProcAddress(Handle, 'glCopyColorSubTable');
+    glCopyColorTable := GetProcAddress(Handle, 'glCopyColorTable');
+    glColorTableParameteriv := GetProcAddress(Handle, 'glColorTableParameteriv');
+    glColorTableParameterfv := GetProcAddress(Handle, 'glColorTableParameterfv');
+    glGetColorTable := GetProcAddress(Handle, 'glGetColorTable');
+    glGetColorTableParameteriv := GetProcAddress(Handle, 'glGetColorTableParameteriv');
     glGetColorTableParameterfv := GetProcAddress(Handle, 'glGetColorTableParameterfv'); 
-    glConvolutionFilter1D := GetProcAddress(Handle, 'glConvolutionFilter1D'); 
+    glConvolutionFilter1D := GetProcAddress(Handle, 'glConvolutionFilter1D');
     glConvolutionFilter2D := GetProcAddress(Handle, 'glConvolutionFilter2D'); 
     glCopyConvolutionFilter1D := GetProcAddress(Handle, 'glCopyConvolutionFilter1D');
     glCopyConvolutionFilter2D := GetProcAddress(Handle, 'glCopyConvolutionFilter2D'); 
     glGetConvolutionFilter := GetProcAddress(Handle, 'glGetConvolutionFilter'); 
-    glSeparableFilter2D := GetProcAddress(Handle, 'glSeparableFilter2D'); 
-    glGetSeparableFilter := GetProcAddress(Handle, 'glGetSeparableFilter'); 
+    glSeparableFilter2D := GetProcAddress(Handle, 'glSeparableFilter2D');
+    glGetSeparableFilter := GetProcAddress(Handle, 'glGetSeparableFilter');
     glConvolutionParameteri := GetProcAddress(Handle, 'glConvolutionParameteri');
-    glConvolutionParameteriv := GetProcAddress(Handle, 'glConvolutionParameteriv'); 
-    glConvolutionParameterf := GetProcAddress(Handle, 'glConvolutionParameterf'); 
-    glConvolutionParameterfv := GetProcAddress(Handle, 'glConvolutionParameterfv'); 
+    glConvolutionParameteriv := GetProcAddress(Handle, 'glConvolutionParameteriv');
+    glConvolutionParameterf := GetProcAddress(Handle, 'glConvolutionParameterf');
+    glConvolutionParameterfv := GetProcAddress(Handle, 'glConvolutionParameterfv');
     glGetConvolutionParameteriv := GetProcAddress(Handle, 'glGetConvolutionParameteriv'); 
-    glGetConvolutionParameterfv := GetProcAddress(Handle, 'glGetConvolutionParameterfv'); 
+    glGetConvolutionParameterfv := GetProcAddress(Handle, 'glGetConvolutionParameterfv');
     glHistogram := GetProcAddress(Handle, 'glHistogram'); 
     glResetHistogram := GetProcAddress(Handle, 'glResetHistogram');
     glGetHistogram := GetProcAddress(Handle, 'glGetHistogram');
@@ -4888,19 +4968,19 @@ begin
     glResetMinmax := GetProcAddress(Handle, 'glResetMinmax'); 
     glGetMinmax := GetProcAddress(Handle, 'glGetMinmax'); 
     glGetMinmaxParameteriv := GetProcAddress(Handle, 'glGetMinmaxParameteriv'); 
-    glGetMinmaxParameterfv := GetProcAddress(Handle, 'glGetMinmaxParameterfv'); 
+    glGetMinmaxParameterfv := GetProcAddress(Handle, 'glGetMinmaxParameterfv');
 
     {$IFDEF LINUX}
     glXChooseVisual := GetProcAddress(Handle, 'glXChooseVisual'); 
     glXCreateContext := GetProcAddress(Handle, 'glXCreateContext'); 
-    glXDestroyContext := GetProcAddress(Handle, 'glXDestroyContext'); 
+    glXDestroyContext := GetProcAddress(Handle, 'glXDestroyContext');
     glXMakeCurrent := GetProcAddress(Handle, 'glXMakeCurrent');
     glXCopyContext := GetProcAddress(Handle, 'glXCopyContext'); 
     glXSwapBuffers := GetProcAddress(Handle, 'glXSwapBuffers'); 
-    glXCreateGLXPixmap := GetProcAddress(Handle, 'glXCreateGLXPixmap'); 
-    glXDestroyGLXPixmap := GetProcAddress(Handle, 'glXDestroyGLXPixmap'); 
+    glXCreateGLXPixmap := GetProcAddress(Handle, 'glXCreateGLXPixmap');
+    glXDestroyGLXPixmap := GetProcAddress(Handle, 'glXDestroyGLXPixmap');
     glXQueryExtension := GetProcAddress(Handle, 'glXQueryExtension'); 
-    glXQueryVersion := GetProcAddress(Handle, 'glXQueryVersion'); 
+    glXQueryVersion := GetProcAddress(Handle, 'glXQueryVersion');
     glXIsDirect := GetProcAddress(Handle, 'glXIsDirect'); 
     glXGetConfig := GetProcAddress(Handle, 'glXGetConfig'); 
     glXGetCurrentContext := GetProcAddress(Handle, 'glXGetCurrentContext'); 
@@ -4910,19 +4990,19 @@ begin
     glXUseXFont := GetProcAddress(Handle, 'glXUseXFont'); 
     glXQueryExtensionsString := GetProcAddress(Handle, 'glXQueryExtensionsString'); 
     glXQueryServerString := GetProcAddress(Handle, 'glXQueryServerString'); 
-    glXGetClientString := GetProcAddress(Handle, 'glXGetClientString'); 
+    glXGetClientString := GetProcAddress(Handle, 'glXGetClientString');
     glXGetCurrentDisplay := GetProcAddress(Handle, 'glXGetCurrentDisplay'); 
     glXChooseFBConfig := GetProcAddress(Handle, 'glXChooseFBConfig');
     glXGetFBConfigAttrib := GetProcAddress(Handle, 'glXGetFBConfigAttrib'); 
     glXGetFBConfigs := GetProcAddress(Handle, 'glXGetFBConfigs'); 
     glXGetVisualFromFBConfig := GetProcAddress(Handle, 'glXGetVisualFromFBConfig');
-    glXCreateWindow := GetProcAddress(Handle, 'glXCreateWindow'); 
+    glXCreateWindow := GetProcAddress(Handle, 'glXCreateWindow');
     glXDestroyWindow := GetProcAddress(Handle, 'glXDestroyWindow'); 
     glXCreatePixmap := GetProcAddress(Handle, 'glXCreatePixmap'); 
-    glXDestroyPixmap := GetProcAddress(Handle, 'glXDestroyPixmap'); 
-    glXCreatePbuffer := GetProcAddress(Handle, 'glXCreatePbuffer'); 
+    glXDestroyPixmap := GetProcAddress(Handle, 'glXDestroyPixmap');
+    glXCreatePbuffer := GetProcAddress(Handle, 'glXCreatePbuffer');
     glXDestroyPbuffer := GetProcAddress(Handle, 'glXDestroyPbuffer'); 
-    glXQueryDrawable := GetProcAddress(Handle, 'glXQueryDrawable'); 
+    glXQueryDrawable := GetProcAddress(Handle, 'glXQueryDrawable');
     glXCreateNewContext := GetProcAddress(Handle, 'glXCreateNewContext'); 
     glXMakeContextCurrent := GetProcAddress(Handle, 'glXMakeContextCurrent'); 
     glXGetCurrentReadDrawable := GetProcAddress(Handle, 'glXGetCurrentReadDrawable'); 
@@ -4931,17 +5011,17 @@ begin
     glXGetSelectedEvent := GetProcAddress(Handle, 'glXGetSelectedEvent'); 
     glXGetVideoSyncSGI := GetProcAddress(Handle, 'glXGetVideoSyncSGI'); 
     glXWaitVideoSyncSGI := GetProcAddress(Handle, 'glXWaitVideoSyncSGI'); 
-    glXFreeContextEXT := GetProcAddress(Handle, 'glXFreeContextEXT'); 
-    glXGetContextIDEXT := GetProcAddress(Handle, 'glXGetContextIDEXT'); 
+    glXFreeContextEXT := GetProcAddress(Handle, 'glXFreeContextEXT');
+    glXGetContextIDEXT := GetProcAddress(Handle, 'glXGetContextIDEXT');
     glXGetCurrentDisplayEXT := GetProcAddress(Handle, 'glXGetCurrentDisplayEXT'); 
     glXImportContextEXT := GetProcAddress(Handle, 'glXImportContextEXT');
     glXQueryContextInfoEXT := GetProcAddress(Handle, 'glXQueryContextInfoEXT'); 
     glXCopySubBufferMESA := GetProcAddress(Handle, 'glXCopySubBufferMESA');
-    glXCreateGLXPixmapMESA := GetProcAddress(Handle, 'glXCreateGLXPixmapMESA'); 
-    glXReleaseBuffersMESA := GetProcAddress(Handle, 'glXReleaseBuffersMESA'); 
+    glXCreateGLXPixmapMESA := GetProcAddress(Handle, 'glXCreateGLXPixmapMESA');
+    glXReleaseBuffersMESA := GetProcAddress(Handle, 'glXReleaseBuffersMESA');
     glXSet3DfxModeMESA := GetProcAddress(Handle, 'glXSet3DfxModeMESA'); 
     {$ENDIF}
-  end; 
+  end;
 
   if GLUHandle <> INVALID_MODULEHANDLE then
   begin
@@ -4950,647 +5030,93 @@ begin
     gluBeginCurve := GetProcAddress(Handle, 'gluBeginCurve'); 
     gluBeginPolygon := GetProcAddress(Handle, 'gluBeginPolygon'); 
     gluBeginSurface := GetProcAddress(Handle, 'gluBeginSurface'); 
-    gluBeginTrim := GetProcAddress(Handle, 'gluBeginTrim'); 
+    gluBeginTrim := GetProcAddress(Handle, 'gluBeginTrim');
     gluBuild1DMipmaps := GetProcAddress(Handle, 'gluBuild1DMipmaps'); 
     gluBuild2DMipmaps := GetProcAddress(Handle, 'gluBuild2DMipmaps'); 
     gluCylinder := GetProcAddress(Handle, 'gluCylinder'); 
-    gluDeleteNurbsRenderer := GetProcAddress(Handle, 'gluDeleteNurbsRenderer'); 
+    gluDeleteNurbsRenderer := GetProcAddress(Handle, 'gluDeleteNurbsRenderer');
     gluDeleteQuadric := GetProcAddress(Handle, 'gluDeleteQuadric'); 
     gluDeleteTess := GetProcAddress(Handle, 'gluDeleteTess');
     gluDisk := GetProcAddress(Handle, 'gluDisk');
     gluEndCurve := GetProcAddress(Handle, 'gluEndCurve'); 
-    gluEndPolygon := GetProcAddress(Handle, 'gluEndPolygon'); 
-    gluEndSurface := GetProcAddress(Handle, 'gluEndSurface'); 
+    gluEndPolygon := GetProcAddress(Handle, 'gluEndPolygon');
+    gluEndSurface := GetProcAddress(Handle, 'gluEndSurface');
     gluEndTrim := GetProcAddress(Handle, 'gluEndTrim'); 
     gluErrorString := GetProcAddress(Handle, 'gluErrorString'); 
-    gluGetNurbsProperty := GetProcAddress(Handle, 'gluGetNurbsProperty'); 
-    gluGetString := GetProcAddress(Handle, 'gluGetString'); 
+    gluGetNurbsProperty := GetProcAddress(Handle, 'gluGetNurbsProperty');
+    gluGetString := GetProcAddress(Handle, 'gluGetString');
     gluGetTessProperty := GetProcAddress(Handle, 'gluGetTessProperty'); 
-    gluLoadSamplingMatrices := GetProcAddress(Handle, 'gluLoadSamplingMatrices'); 
+    gluLoadSamplingMatrices := GetProcAddress(Handle, 'gluLoadSamplingMatrices');
     gluLookAt := GetProcAddress(Handle, 'gluLookAt'); 
     gluNewNurbsRenderer := GetProcAddress(Handle, 'gluNewNurbsRenderer'); 
-    gluNewQuadric := GetProcAddress(Handle, 'gluNewQuadric'); 
+    gluNewQuadric := GetProcAddress(Handle, 'gluNewQuadric');
     gluNewTess := GetProcAddress(Handle, 'gluNewTess'); 
     gluNextContour := GetProcAddress(Handle, 'gluNextContour'); 
     gluNurbsCallback := GetProcAddress(Handle, 'gluNurbsCallback'); 
     gluNurbsCurve := GetProcAddress(Handle, 'gluNurbsCurve'); 
     gluNurbsProperty := GetProcAddress(Handle, 'gluNurbsProperty'); 
     gluNurbsSurface := GetProcAddress(Handle, 'gluNurbsSurface'); 
-    gluOrtho2D := GetProcAddress(Handle, 'gluOrtho2D'); 
+    gluOrtho2D := GetProcAddress(Handle, 'gluOrtho2D');
     gluPartialDisk := GetProcAddress(Handle, 'gluPartialDisk'); 
     gluPerspective := GetProcAddress(Handle, 'gluPerspective');
     gluPickMatrix := GetProcAddress(Handle, 'gluPickMatrix'); 
     gluProject := GetProcAddress(Handle, 'gluProject'); 
-    gluPwlCurve := GetProcAddress(Handle, 'gluPwlCurve'); 
-    gluQuadricCallback := GetProcAddress(Handle, 'gluQuadricCallback'); 
+    gluPwlCurve := GetProcAddress(Handle, 'gluPwlCurve');
+    gluQuadricCallback := GetProcAddress(Handle, 'gluQuadricCallback');
     gluQuadricDrawStyle := GetProcAddress(Handle, 'gluQuadricDrawStyle'); 
     gluQuadricNormals := GetProcAddress(Handle, 'gluQuadricNormals'); 
-    gluQuadricOrientation := GetProcAddress(Handle, 'gluQuadricOrientation'); 
-    gluQuadricTexture := GetProcAddress(Handle, 'gluQuadricTexture'); 
+    gluQuadricOrientation := GetProcAddress(Handle, 'gluQuadricOrientation');
+    gluQuadricTexture := GetProcAddress(Handle, 'gluQuadricTexture');
     gluScaleImage := GetProcAddress(Handle, 'gluScaleImage'); 
-    gluSphere := GetProcAddress(Handle, 'gluSphere'); 
-    gluTessBeginContour := GetProcAddress(Handle, 'gluTessBeginContour'); 
-    gluTessBeginPolygon := GetProcAddress(Handle, 'gluTessBeginPolygon'); 
-    gluTessCallback := GetProcAddress(Handle, 'gluTessCallback'); 
-    gluTessEndContour := GetProcAddress(Handle, 'gluTessEndContour'); 
-    gluTessEndPolygon := GetProcAddress(Handle, 'gluTessEndPolygon'); 
-    gluTessNormal := GetProcAddress(Handle, 'gluTessNormal'); 
-    gluTessProperty := GetProcAddress(Handle, 'gluTessProperty'); 
-    gluTessVertex := GetProcAddress(Handle, 'gluTessVertex'); 
-    gluUnProject := GetProcAddress(Handle, 'gluUnProject'); 
-  end; 
+    gluSphere := GetProcAddress(Handle, 'gluSphere');
+    gluTessBeginContour := GetProcAddress(Handle, 'gluTessBeginContour');
+    gluTessBeginPolygon := GetProcAddress(Handle, 'gluTessBeginPolygon');
+    gluTessCallback := GetProcAddress(Handle, 'gluTessCallback');
+    gluTessEndContour := GetProcAddress(Handle, 'gluTessEndContour');
+    gluTessEndPolygon := GetProcAddress(Handle, 'gluTessEndPolygon');
+    gluTessNormal := GetProcAddress(Handle, 'gluTessNormal');
+    gluTessProperty := GetProcAddress(Handle, 'gluTessProperty');
+    gluTessVertex := GetProcAddress(Handle, 'gluTessVertex');
+    gluUnProject := GetProcAddress(Handle, 'gluUnProject');
+  end;
+
+(*  rc:=CreateRenderingContext(GetDC(0), [], 24, 0, 0, 0, 0);
+  wglMakeCurrent(GetDC(0), rc);
+
+   {$IFDEF WIN32}
+   wglGetExtensionsStringARB := wglGetProcAddress('wglGetExtensionsStringARB');
+   wglGetPixelFormatAttribivARB := wglGetProcAddress('wglGetPixelFormatAttribivARB');
+   wglGetPixelFormatAttribfvARB := wglGetProcAddress('wglGetPixelFormatAttribfvARB');
+   wglChoosePixelFormatARB := wglGetProcAddress('wglChoosePixelFormatARB');
+   {$ENDIF}
+
+   // WGL
+   if Assigned(wglGetExtensionsStringARB) then
+      Buffer:=wglGetExtensionsStringARB(wglGetCurrentDC)
+   else Buffer:='';
+   WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
+   WGL_ARB_pixel_format := CheckExtension('WGL_ARB_pixel_format');
+
+  wglMakeCurrent(0, 0);
+  wglDeleteContext(rc); *)
+
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure ClearExtensions; 
+procedure ClearExtensions;
 begin
-  glArrayElementEXT := nil; 
-  glDrawArraysEXT := nil; 
-  glVertexPointerEXT := nil; 
-  glNormalPointerEXT := nil; 
-  glColorPointerEXT := nil; 
-  glIndexPointerEXT := nil; 
-  glTexCoordPointerEXT := nil; 
-  glEdgeFlagPointerEXT := nil; 
-  glGetPointervEXT := nil; 
-  glArrayElementArrayEXT := nil; 
-  glAddSwapHintRectWIN := nil; 
-  glColorTableEXT := nil; 
-  glColorSubTableEXT := nil; 
-  glGetColorTableEXT := nil; 
-  glGetColorTablePameterivEXT := nil; 
-  glGetColorTablePameterfvEXT := nil;
-  gluNurbsCallbackDataEXT := nil; 
-  gluNewNurbsTessellatorEXT := nil;
-  gluDeleteNurbsTessellatorEXT := nil; 
-  glLockArraysEXT := nil; 
-  glUnlockArraysEXT := nil; 
-  glCopyTexImage1DEXT := nil; 
-  glCopyTexSubImage1DEXT := nil; 
-  glCopyTexImage2DEXT := nil; 
-  glCopyTexSubImage2DEXT := nil; 
-  glCopyTexSubImage3DEXT := nil; 
-  glCullParameterfvEXT := nil; 
-  glCullParameterdvEXT := nil; 
-  glIndexFuncEXT := nil; 
-  glIndexMaterialEXT := nil; 
-  glPolygonOffsetEXT := nil; 
-  glTexSubImage1DEXT := nil; 
-  glTexSubImage2DEXT := nil; 
-  glTexSubImage3DEXT := nil; 
-  glGenTexturesEXT := nil; 
-  glDeleteTexturesEXT := nil; 
-  glBindTextureEXT := nil;
-  glPrioritizeTexturesEXT := nil; 
-  glAreTexturesResidentEXT := nil; 
-  glIsTextureEXT := nil;
-
-  glMultiTexCoord1dARB := nil; 
-  glMultiTexCoord1dVARB := nil; 
-  glMultiTexCoord1fARBP := nil; 
-  glMultiTexCoord1fVARB := nil; 
-  glMultiTexCoord1iARB := nil; 
-  glMultiTexCoord1iVARB := nil; 
-  glMultiTexCoord1sARBP := nil; 
-  glMultiTexCoord1sVARB := nil; 
-  glMultiTexCoord2dARB := nil; 
-  glMultiTexCoord2dvARB := nil; 
-  glMultiTexCoord2fARB := nil; 
-  glMultiTexCoord2fvARB := nil; 
-  glMultiTexCoord2iARB := nil; 
-  glMultiTexCoord2ivARB := nil; 
-  glMultiTexCoord2sARB := nil; 
-  glMultiTexCoord2svARB := nil; 
-  glMultiTexCoord3dARB := nil;
-  glMultiTexCoord3dvARB := nil; 
-  glMultiTexCoord3fARB := nil; 
-  glMultiTexCoord3fvARB := nil; 
-  glMultiTexCoord3iARB := nil;
-  glMultiTexCoord3ivARB := nil; 
-  glMultiTexCoord3sARB := nil; 
-  glMultiTexCoord3svARB := nil; 
-  glMultiTexCoord4dARB := nil; 
-  glMultiTexCoord4dvARB := nil; 
-  glMultiTexCoord4fARB := nil; 
-  glMultiTexCoord4fvARB := nil; 
-  glMultiTexCoord4iARB := nil; 
-  glMultiTexCoord4ivARB := nil; 
-  glMultiTexCoord4sARB := nil; 
-  glMultiTexCoord4svARB := nil; 
-  glActiveTextureARB := nil; 
-  glClientActiveTextureARB := nil; 
-
-  // EXT_compiled_vertex_array
-  glLockArrayEXT := nil; 
-  glUnlockArrayEXT := nil;
-
-  // EXT_cull_vertex
-  glCullParameterdvEXT := nil; 
-  glCullParameterfvEXT := nil; 
-
-  // WIN_swap_hint
-  glAddSwapHintRectWIN := nil; 
-
-  // EXT_point_parameter
-  glPointParameterfEXT := nil; 
-  glPointParameterfvEXT := nil; 
-
-  // GL_ARB_transpose_matrix
-  glLoadTransposeMatrixfARB := nil; 
-  glLoadTransposeMatrixdARB := nil; 
-  glMultTransposeMatrixfARB := nil; 
-  glMultTransposeMatrixdARB := nil; 
-
-  glSampleCoverageARB := nil; 
-  glSamplePassARB := nil; 
-
-  // GL_ARB_multisample
-  glCompressedTexImage3DARB := nil; 
-  glCompressedTexImage2DARB := nil; 
-  glCompressedTexImage1DARB := nil; 
-  glCompressedTexSubImage3DARB := nil; 
-  glCompressedTexSubImage2DARB := nil;
-  glCompressedTexSubImage1DARB := nil; 
-  glGetCompressedTexImageARB := nil; 
-
-  // GL_EXT_blend_color
-  glBlendColorEXT := nil; 
-
-  // GL_EXT_texture3D
-  glTexImage3DEXT := nil; 
-
-  // GL_SGIS_texture_filter4
-  glGetTexFilterFuncSGIS := nil; 
-  glTexFilterFuncSGIS := nil; 
-
-  // GL_EXT_histogram
-  glGetHistogramEXT := nil;
-  glGetHistogramParameterfvEXT := nil; 
-  glGetHistogramParameterivEXT := nil; 
-  glGetMinmaxEXT := nil; 
-  glGetMinmaxParameterfvEXT := nil; 
-  glGetMinmaxParameterivEXT := nil; 
-  glHistogramEXT := nil; 
-  glMinmaxEXT := nil;
-  glResetHistogramEXT := nil; 
-  glResetMinmaxEXT := nil; 
-
-  // GL_EXT_convolution
-  glConvolutionFilter1DEXT := nil; 
-  glConvolutionFilter2DEXT := nil; 
-  glConvolutionParameterfEXT := nil; 
-  glConvolutionParameterfvEXT := nil; 
-  glConvolutionParameteriEXT := nil; 
-  glConvolutionParameterivEXT := nil; 
-  glCopyConvolutionFilter1DEXT := nil; 
-  glCopyConvolutionFilter2DEXT := nil; 
-  glGetConvolutionFilterEXT := nil; 
-  glGetConvolutionParameterfvEXT := nil;
-  glGetConvolutionParameterivEXT := nil; 
-  glGetSeparableFilterEXT := nil; 
-  glSeparableFilter2DEXT := nil; 
-
-  // GL_SGI_color_table
-  glColorTableSGI := nil; 
-  glColorTableParameterfvSGI := nil; 
-  glColorTableParameterivSGI := nil;
-  glCopyColorTableSGI := nil; 
-  glGetColorTableSGI := nil; 
-  glGetColorTableParameterfvSGI := nil; 
-  glGetColorTableParameterivSGI := nil; 
-
-  // GL_SGIX_pixel_texture
-  glPixelTexGenSGIX := nil; 
-
-  // GL_SGIS_pixel_texture
-  glPixelTexGenParameteriSGIS := nil; 
-  glPixelTexGenParameterivSGIS := nil; 
-  glPixelTexGenParameterfSGIS := nil; 
-  glPixelTexGenParameterfvSGIS := nil;
-  glGetPixelTexGenParameterivSGIS := nil; 
-  glGetPixelTexGenParameterfvSGIS := nil; 
-
-  // GL_SGIS_texture4D
-  glTexImage4DSGIS := nil; 
-  glTexSubImage4DSGIS := nil; 
-
-  // GL_SGIS_detail_texture
-  glDetailTexFuncSGIS := nil;
-  glGetDetailTexFuncSGIS := nil; 
-
-  // GL_SGIS_sharpen_texture
-  glSharpenTexFuncSGIS := nil; 
-  glGetSharpenTexFuncSGIS := nil; 
-
-  // GL_SGIS_multisample
-  glSampleMaskSGIS := nil; 
-  glSamplePatternSGIS := nil; 
-
-  // GL_EXT_blend_minmax
-  glBlendEquationEXT := nil;
-
-  // GL_SGIX_sprite
-  glSpriteParameterfSGIX := nil; 
-  glSpriteParameterfvSGIX := nil; 
-  glSpriteParameteriSGIX := nil; 
-  glSpriteParameterivSGIX := nil; 
-
-  // GL_EXT_point_parameters
-  glPointParameterfSGIS := nil; 
-  glPointParameterfvSGIS := nil;
-
-  // GL_SGIX_instruments
-  glGetInstrumentsSGIX := nil; 
-  glInstrumentsBufferSGIX := nil; 
-  glPollInstrumentsSGIX := nil; 
-  glReadInstrumentsSGIX := nil; 
-  glStartInstrumentsSGIX := nil; 
-  glStopInstrumentsSGIX := nil; 
-
-  // GL_SGIX_framezoom
-  glFrameZoomSGIX := nil;
-
-  // GL_SGIX_tag_sample_buffer
-  glTagSampleBufferSGIX := nil; 
-
-  // GL_SGIX_polynomial_ffd
-  glDeformationMap3dSGIX := nil; 
-  glDeformationMap3fSGIX := nil; 
-  glDeformSGIX := nil; 
-  glLoadIdentityDeformationMapSGIX := nil; 
-
-  // GL_SGIX_reference_plane
-  glReferencePlaneSGIX := nil; 
-
-  // GL_SGIX_flush_raster
-  glFlushRasterSGIX := nil; 
-
-  // GL_SGIS_fog_function
-  glFogFuncSGIS := nil; 
-  glGetFogFuncSGIS := nil; 
-
-  // GL_HP_image_transform
-  glImageTransformParameteriHP := nil; 
-  glImageTransformParameterfHP := nil; 
-  glImageTransformParameterivHP := nil; 
-  glImageTransformParameterfvHP := nil; 
-  glGetImageTransformParameterivHP := nil;
-  glGetImageTransformParameterfvHP := nil; 
-
-  // GL_EXT_color_subtable
-  glCopyColorSubTableEXT := nil; 
-
-  // GL_PGI_misc_hints
-  glHintPGI := nil;
-
-  // GL_EXT_paletted_texture
-  glGetColorTableParameterivEXT := nil; 
-  glGetColorTableParameterfvEXT := nil; 
-
-  // GL_SGIX_list_priority
-  glGetListParameterfvSGIX := nil; 
-  glGetListParameterivSGIX := nil; 
-  glListParameterfSGIX := nil;
-  glListParameterfvSGIX := nil; 
-  glListParameteriSGIX := nil; 
-  glListParameterivSGIX := nil; 
-
-  // GL_SGIX_fragment_lighting
-  glFragmentColorMaterialSGIX := nil;
-  glFragmentLightfSGIX := nil; 
-  glFragmentLightfvSGIX := nil; 
-  glFragmentLightiSGIX := nil; 
-  glFragmentLightivSGIX := nil; 
-  glFragmentLightModelfSGIX := nil; 
-  glFragmentLightModelfvSGIX := nil; 
-  glFragmentLightModeliSGIX := nil;
-  glFragmentLightModelivSGIX := nil; 
-  glFragmentMaterialfSGIX := nil; 
-  glFragmentMaterialfvSGIX := nil; 
-  glFragmentMaterialiSGIX := nil; 
-  glFragmentMaterialivSGIX := nil; 
-  glGetFragmentLightfvSGIX := nil; 
-  glGetFragmentLightivSGIX := nil; 
-  glGetFragmentMaterialfvSGIX := nil;
-  glGetFragmentMaterialivSGIX := nil; 
-  glLightEnviSGIX := nil; 
-
-  // GL_EXT_draw_range_elements
-  glDrawRangeElementsEXT := nil; 
-
-  // GL_EXT_light_texture
-  glApplyTextureEXT := nil; 
-  glTextureLightEXT := nil; 
-  glTextureMaterialEXT := nil; 
-
-  // GL_SGIX_async
-  glAsyncMarkerSGIX := nil; 
-  glFinishAsyncSGIX := nil;
-  glPollAsyncSGIX := nil; 
-  glGenAsyncMarkersSGIX := nil; 
-  glDeleteAsyncMarkersSGIX := nil; 
-  glIsAsyncMarkerSGIX := nil; 
-
-  // GL_INTEL_parallel_arrays
-  glVertexPointervINTEL := nil;
-  glNormalPointervINTEL := nil; 
-  glColorPointervINTEL := nil; 
-  glTexCoordPointervINTEL := nil; 
-
-  // GL_EXT_pixel_transform
-  glPixelTransformParameteriEXT := nil; 
-  glPixelTransformParameterfEXT := nil; 
-  glPixelTransformParameterivEXT := nil;
-  glPixelTransformParameterfvEXT := nil; 
-
-  // GL_EXT_secondary_color
-  glSecondaryColor3bEXT := nil; 
-  glSecondaryColor3bvEXT := nil; 
-  glSecondaryColor3dEXT := nil; 
-  glSecondaryColor3dvEXT := nil;
-  glSecondaryColor3fEXT := nil; 
-  glSecondaryColor3fvEXT := nil; 
-  glSecondaryColor3iEXT := nil; 
-  glSecondaryColor3ivEXT := nil; 
-  glSecondaryColor3sEXT := nil; 
-  glSecondaryColor3svEXT := nil;
-  glSecondaryColor3ubEXT := nil; 
-  glSecondaryColor3ubvEXT := nil; 
-  glSecondaryColor3uiEXT := nil; 
-  glSecondaryColor3uivEXT := nil; 
-  glSecondaryColor3usEXT := nil; 
-  glSecondaryColor3usvEXT := nil; 
-  glSecondaryColorPointerEXT := nil; 
-
-  // GL_EXT_texture_perturb_normal
-  glTextureNormalEXT := nil; 
-
-  // GL_EXT_multi_draw_arrays
-  glMultiDrawArraysEXT := nil; 
-  glMultiDrawElementsEXT := nil; 
-
-  // GL_EXT_fog_coord
-  glFogCoordfEXT := nil; 
-  glFogCoordfvEXT := nil; 
-  glFogCoorddEXT := nil; 
-  glFogCoorddvEXT := nil; 
-  glFogCoordPointerEXT := nil;
-
-  // GL_EXT_coordinate_frame
-  glTangent3bEXT := nil; 
-  glTangent3bvEXT := nil; 
-  glTangent3dEXT := nil; 
-  glTangent3dvEXT := nil; 
-  glTangent3fEXT := nil; 
-  glTangent3fvEXT := nil; 
-  glTangent3iEXT := nil; 
-  glTangent3ivEXT := nil;
-  glTangent3sEXT := nil; 
-  glTangent3svEXT := nil; 
-  glBinormal3bEXT := nil; 
-  glBinormal3bvEXT := nil; 
-  glBinormal3dEXT := nil; 
-  glBinormal3dvEXT := nil; 
-  glBinormal3fEXT := nil;
-  glBinormal3fvEXT := nil; 
-  glBinormal3iEXT := nil; 
-  glBinormal3ivEXT := nil; 
-  glBinormal3sEXT := nil;
-  glBinormal3svEXT := nil; 
-  glTangentPointerEXT := nil; 
-  glBinormalPointerEXT := nil; 
-
-  // GL_SUNX_constant_data
-  glFinishTextureSUNX := nil; 
-  
-  // GL_SUN_global_alpha
-  glGlobalAlphaFactorbSUN := nil; 
-  glGlobalAlphaFactorsSUN := nil; 
-  glGlobalAlphaFactoriSUN := nil;
-  glGlobalAlphaFactorfSUN := nil; 
-  glGlobalAlphaFactordSUN := nil; 
-  glGlobalAlphaFactorubSUN := nil; 
-  glGlobalAlphaFactorusSUN := nil; 
-  glGlobalAlphaFactoruiSUN := nil; 
-
-  // GL_SUN_triangle_list
-  glReplacementCodeuiSUN := nil; 
-  glReplacementCodeusSUN := nil; 
-  glReplacementCodeubSUN := nil;
-  glReplacementCodeuivSUN := nil; 
-  glReplacementCodeusvSUN := nil; 
-  glReplacementCodeubvSUN := nil; 
-  glReplacementCodePointerSUN := nil; 
-
-  // GL_SUN_vertex
-  glColor4ubVertex2fSUN := nil; 
-  glColor4ubVertex2fvSUN := nil; 
-  glColor4ubVertex3fSUN := nil; 
-  glColor4ubVertex3fvSUN := nil; 
-  glColor3fVertex3fSUN := nil; 
-  glColor3fVertex3fvSUN := nil;
-  glNormal3fVertex3fSUN := nil; 
-  glNormal3fVertex3fvSUN := nil; 
-  glColor4fNormal3fVertex3fSUN := nil; 
-  glColor4fNormal3fVertex3fvSUN := nil; 
-  glTexCoord2fVertex3fSUN := nil; 
-  glTexCoord2fVertex3fvSUN := nil; 
-  glTexCoord4fVertex4fSUN := nil;
-  glTexCoord4fVertex4fvSUN := nil; 
-  glTexCoord2fColor4ubVertex3fSUN := nil;
-  glTexCoord2fColor4ubVertex3fvSUN := nil; 
-  glTexCoord2fColor3fVertex3fSUN := nil; 
-  glTexCoord2fColor3fVertex3fvSUN := nil; 
-  glTexCoord2fNormal3fVertex3fSUN := nil; 
-  glTexCoord2fNormal3fVertex3fvSUN := nil; 
-  glTexCoord2fColor4fNormal3fVertex3fSUN := nil; 
-  glTexCoord2fColor4fNormal3fVertex3fvSUN := nil; 
-  glTexCoord4fColor4fNormal3fVertex4fSUN := nil; 
-  glTexCoord4fColor4fNormal3fVertex4fvSUN := nil; 
-  glReplacementCodeuiVertex3fSUN := nil; 
-  glReplacementCodeuiVertex3fvSUN := nil; 
-  glReplacementCodeuiColor4ubVertex3fSUN := nil; 
-  glReplacementCodeuiColor4ubVertex3fvSUN := nil;
-  glReplacementCodeuiColor3fVertex3fSUN := nil; 
-  glReplacementCodeuiColor3fVertex3fvSUN := nil; 
-  glReplacementCodeuiNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiNormal3fVertex3fvSUN := nil; 
-  glReplacementCodeuiColor4fNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiColor4fNormal3fVertex3fvSUN := nil; 
-  glReplacementCodeuiTexCoord2fVertex3fSUN := nil;
-  glReplacementCodeuiTexCoord2fVertex3fvSUN := nil;
-  glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN := nil; 
-  glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN := nil; 
-
-  // GL_EXT_blend_func_separate
-  glBlendFuncSeparateEXT := nil; 
-
-  // GL_EXT_vertex_weighting
-  glVertexWeightfEXT := nil; 
-  glVertexWeightfvEXT := nil; 
-  glVertexWeightPointerEXT := nil; 
-
-  // GL_NV_vertex_array_range
-  glFlushVertexArrayRangeNV := nil; 
-  glVertexArrayRangeNV := nil; 
-  wglAllocateMemoryNV := nil; 
-  wglFreeMemoryNV := nil; 
-
-  // GL_NV_register_combiners
-  glCombinerParameterfvNV := nil;
-  glCombinerParameterfNV := nil; 
-  glCombinerParameterivNV := nil; 
-  glCombinerParameteriNV := nil; 
-  glCombinerInputNV := nil; 
-  glCombinerOutputNV := nil; 
-  glFinalCombinerInputNV := nil; 
-  glGetCombinerInputParameterfvNV := nil; 
-  glGetCombinerInputParameterivNV := nil; 
-  glGetCombinerOutputParameterfvNV := nil; 
-  glGetCombinerOutputParameterivNV := nil; 
-  glGetFinalCombinerInputParameterfvNV := nil; 
-  glGetFinalCombinerInputParameterivNV := nil; 
-
-  // GL_MESA_resize_buffers
-  glResizeBuffersMESA := nil;
-
-  // GL_MESA_window_pos
-  glWindowPos2dMESA := nil; 
-  glWindowPos2dvMESA := nil; 
-  glWindowPos2fMESA := nil; 
-  glWindowPos2fvMESA := nil;
-  glWindowPos2iMESA := nil;
-  glWindowPos2ivMESA := nil; 
-  glWindowPos2sMESA := nil; 
-  glWindowPos2svMESA := nil; 
-  glWindowPos3dMESA := nil; 
-  glWindowPos3dvMESA := nil; 
-  glWindowPos3fMESA := nil; 
-  glWindowPos3fvMESA := nil; 
-  glWindowPos3iMESA := nil; 
-  glWindowPos3ivMESA := nil; 
-  glWindowPos3sMESA := nil; 
-  glWindowPos3svMESA := nil; 
-  glWindowPos4dMESA := nil; 
-  glWindowPos4dvMESA := nil; 
-  glWindowPos4fMESA := nil; 
-  glWindowPos4fvMESA := nil;
-  glWindowPos4iMESA := nil; 
-  glWindowPos4ivMESA := nil; 
-  glWindowPos4sMESA := nil; 
-  glWindowPos4svMESA := nil; 
-
-  // GL_IBM_multimode_draw_arrays
-  glMultiModeDrawArraysIBM := nil;
-  glMultiModeDrawElementsIBM := nil; 
-
-  // GL_IBM_vertex_array_lists
-  glColorPointerListIBM := nil; 
-  glSecondaryColorPointerListIBM := nil; 
-  glEdgeFlagPointerListIBM := nil; 
-  glFogCoordPointerListIBM := nil; 
-  glIndexPointerListIBM := nil; 
-  glNormalPointerListIBM := nil; 
-  glTexCoordPointerListIBM := nil; 
-  glVertexPointerListIBM := nil; 
-
-  // GL_3DFX_tbuffer
-  glTbufferMask3DFX := nil; 
-
-  // GL_EXT_multisample
-  glSampleMaskEXT := nil; 
-  glSamplePatternEXT := nil; 
-
-  // GL_SGIS_texture_color_mask
-  glTextureColorMaskSGIS := nil; 
-
-  // GL_SGIX_igloo_interface
-  glIglooInterfaceSGIX := nil; 
-
-  // GLU extensions
-  gluNurbsCallbackDataEXT := nil; 
-  gluNewNurbsTessellatorEXT := nil; 
-  gluDeleteNurbsTessellatorEXT := nil; 
-
-  // GL_NV_vertex_program
-  glAreProgramsResidentNV := nil; 
-  glBindProgramNV := nil; 
-  glDeleteProgramsNV := nil; 
-  glExecuteProgramNV := nil; 
-  glGenProgramsNV := nil; 
-  glGetProgramParameterdvNV := nil;
-  glGetProgramParameterfvNV := nil; 
-  glGetProgramivNV := nil; 
-  glGetProgramStringNV := nil;
-  glGetTrackMatrixivNV := nil; 
-  glGetVertexAttribdvNV:= nil; 
-  glGetVertexAttribfvNV:= nil; 
-  glGetVertexAttribivNV:= nil;
-  glGetVertexAttribPointervNV := nil; 
-  glIsProgramNV := nil; 
-  glLoadProgramNV := nil; 
-  glProgramParameter4dNV := nil; 
-  glProgramParameter4dvNV := nil; 
-  glProgramParameter4fNV := nil; 
-  glProgramParameter4fvNV := nil; 
-  glProgramParameters4dvNV := nil; 
-  glProgramParameters4fvNV := nil; 
-  glRequestResidentProgramsNV := nil; 
-  glTrackMatrixNV := nil; 
-  glVertexAttribPointerNV := nil; 
-  glVertexAttrib1dNV := nil; 
-  glVertexAttrib1dvNV := nil; 
-  glVertexAttrib1fNV := nil;
-  glVertexAttrib1fvNV := nil; 
-  glVertexAttrib1sNV := nil;
-  glVertexAttrib1svNV := nil; 
-  glVertexAttrib2dNV := nil; 
-  glVertexAttrib2dvNV := nil; 
-  glVertexAttrib2fNV := nil; 
-  glVertexAttrib2fvNV := nil;
-  glVertexAttrib2sNV := nil; 
-  glVertexAttrib2svNV := nil; 
-  glVertexAttrib3dNV := nil; 
-  glVertexAttrib3dvNV := nil; 
-  glVertexAttrib3fNV := nil; 
-  glVertexAttrib3fvNV := nil; 
-  glVertexAttrib3sNV := nil; 
-  glVertexAttrib3svNV := nil; 
-  glVertexAttrib4dNV := nil; 
-  glVertexAttrib4dvNV := nil; 
-  glVertexAttrib4fNV := nil; 
-  glVertexAttrib4fvNV := nil; 
-  glVertexAttrib4sNV := nil; 
-  glVertexAttrib4svNV := nil; 
-  glVertexAttrib4ubvNV := nil;
-  glVertexAttribs1dvNV := nil;
-  glVertexAttribs1fvNV := nil; 
-  glVertexAttribs1svNV := nil; 
-  glVertexAttribs2dvNV := nil; 
-  glVertexAttribs2fvNV := nil; 
-  glVertexAttribs2svNV := nil; 
-  glVertexAttribs3dvNV := nil;
-  glVertexAttribs3fvNV := nil; 
-  glVertexAttribs3svNV := nil; 
-  glVertexAttribs4dvNV := nil; 
-  glVertexAttribs4fvNV := nil; 
-  glVertexAttribs4svNV := nil; 
-  glVertexAttribs4ubvNV := nil; 
-
   LastPixelFormat := 0; // to get synchronized again, if this proc was called from outside
-end; 
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 {$IFDEF Win32}
-function HasActiveContext: Boolean; 
+function HasActiveContext: Boolean;
 // Returns True if the caller thread has an active (current) rendering context.
 begin
-  Result := ActivationRefCount > 0; 
-end; 
+  Result := ActivationRefCount > 0;
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -5598,27 +5124,27 @@ procedure ReadExtensions;
 // To be used in an active rendering context only!
 begin
   // GL extensions
-  glArrayElementArrayEXT := wglGetProcAddress('glArrayElementArrayEXT'); 
-  glColorTableEXT := wglGetProcAddress('glColorTableEXT'); 
-  glColorSubTableEXT := wglGetProcAddress('glColorSubTableEXT'); 
-  glGetColorTableEXT := wglGetProcAddress('glGetColorTableEXT'); 
-  glGetColorTablePameterivEXT := wglGetProcAddress('glGetColorTablePameterivEXT'); 
-  glGetColorTablePameterfvEXT := wglGetProcAddress('glGetColorTablePameterfvEXT'); 
-  glLockArraysEXT := wglGetProcAddress('glLockArraysEXT'); 
-  glUnlockArraysEXT := wglGetProcAddress('glUnlockArraysEXT'); 
-  glCopyTexImage1DEXT := wglGetProcAddress('glCopyTexImage1DEXT'); 
+  glArrayElementArrayEXT := wglGetProcAddress('glArrayElementArrayEXT');
+  glColorTableEXT := wglGetProcAddress('glColorTableEXT');
+  glColorSubTableEXT := wglGetProcAddress('glColorSubTableEXT');
+  glGetColorTableEXT := wglGetProcAddress('glGetColorTableEXT');
+  glGetColorTablePameterivEXT := wglGetProcAddress('glGetColorTablePameterivEXT');
+  glGetColorTablePameterfvEXT := wglGetProcAddress('glGetColorTablePameterfvEXT');
+  glLockArraysEXT := wglGetProcAddress('glLockArraysEXT');
+  glUnlockArraysEXT := wglGetProcAddress('glUnlockArraysEXT');
+  glCopyTexImage1DEXT := wglGetProcAddress('glCopyTexImage1DEXT');
   glCopyTexSubImage1DEXT := wglGetProcAddress('glCopyTexSubImage1DEXT'); 
-  glCopyTexImage2DEXT := wglGetProcAddress('glCopyTexImage2DEXT'); 
+  glCopyTexImage2DEXT := wglGetProcAddress('glCopyTexImage2DEXT');
   glCopyTexSubImage2DEXT := wglGetProcAddress('glCopyTexSubImage2DEXT');
   glCopyTexSubImage3DEXT := wglGetProcAddress('glCopyTexSubImage3DEXT'); 
-  glIndexFuncEXT := wglGetProcAddress('glIndexFuncEXT'); 
+  glIndexFuncEXT := wglGetProcAddress('glIndexFuncEXT');
   glIndexMaterialEXT := wglGetProcAddress('glIndexMaterialEXT'); 
   glPolygonOffsetEXT := wglGetProcAddress('glPolygonOffsetEXT'); 
-  glTexSubImage1dEXT := wglGetProcAddress('glTexSubImage1DEXT'); 
+  glTexSubImage1dEXT := wglGetProcAddress('glTexSubImage1DEXT');
   glTexSubImage2dEXT := wglGetProcAddress('glTexSubImage2DEXT'); 
   glTexSubImage3dEXT := wglGetProcAddress('glTexSubImage3DEXT');
   glGenTexturesEXT := wglGetProcAddress('glGenTexturesEXT'); 
-  glDeleteTexturesEXT := wglGetProcAddress('glDeleteTexturesEXT'); 
+  glDeleteTexturesEXT := wglGetProcAddress('glDeleteTexturesEXT');
   glBindTextureEXT := wglGetProcAddress('glBindTextureEXT'); 
   glPrioritizeTexturesEXT := wglGetProcAddress('glPrioritizeTexturesEXT'); 
   glAreTexturesResidentEXT := wglGetProcAddress('glAreTexturesResidentEXT'); 
@@ -5630,14 +5156,14 @@ begin
   glDrawArraysEXT := wglGetProcAddress('glDrawArraysEXT'); 
   glEdgeFlagPointerEXT := wglGetProcAddress('glEdgeFlagPointerEXT'); 
   glGetPointervEXT := wglGetProcAddress('glGetPointervEXT'); 
-  glIndexPointerEXT := wglGetProcAddress('glIndexPointerEXT'); 
+  glIndexPointerEXT := wglGetProcAddress('glIndexPointerEXT');
   glNormalPointerEXT := wglGetProcAddress('glNormalPointerEXT');
   glTexCoordPointerEXT := wglGetProcAddress('glTexCoordPointerEXT'); 
-  glVertexPointerEXT := wglGetProcAddress('glVertexPointerEXT'); 
+  glVertexPointerEXT := wglGetProcAddress('glVertexPointerEXT');
 
   // ARB_multitexture
-  glMultiTexCoord1dARB := wglGetProcAddress('glMultiTexCoord1dARB'); 
-  glMultiTexCoord1dVARB := wglGetProcAddress('glMultiTexCoord1dVARB'); 
+  glMultiTexCoord1dARB := wglGetProcAddress('glMultiTexCoord1dARB');
+  glMultiTexCoord1dVARB := wglGetProcAddress('glMultiTexCoord1dVARB');
   glMultiTexCoord1fARBP := wglGetProcAddress('glMultiTexCoord1fARBP');
   glMultiTexCoord1fVARB := wglGetProcAddress('glMultiTexCoord1fVARB'); 
   glMultiTexCoord1iARB := wglGetProcAddress('glMultiTexCoord1iARB'); 
@@ -5646,19 +5172,19 @@ begin
   glMultiTexCoord1sVARB := wglGetProcAddress('glMultiTexCoord1sVARB'); 
   glMultiTexCoord2dARB := wglGetProcAddress('glMultiTexCoord2dARB'); 
   glMultiTexCoord2dvARB := wglGetProcAddress('glMultiTexCoord2dvARB'); 
-  glMultiTexCoord2fARB := wglGetProcAddress('glMultiTexCoord2fARB'); 
+  glMultiTexCoord2fARB := wglGetProcAddress('glMultiTexCoord2fARB');
   glMultiTexCoord2fvARB := wglGetProcAddress('glMultiTexCoord2fvARB'); 
   glMultiTexCoord2iARB := wglGetProcAddress('glMultiTexCoord2iARB'); 
   glMultiTexCoord2ivARB := wglGetProcAddress('glMultiTexCoord2ivARB'); 
   glMultiTexCoord2sARB := wglGetProcAddress('glMultiTexCoord2sARB'); 
   glMultiTexCoord2svARB := wglGetProcAddress('glMultiTexCoord2svARB'); 
-  glMultiTexCoord3dARB := wglGetProcAddress('glMultiTexCoord3dARB'); 
+  glMultiTexCoord3dARB := wglGetProcAddress('glMultiTexCoord3dARB');
   glMultiTexCoord3dvARB := wglGetProcAddress('glMultiTexCoord3dvARB');
   glMultiTexCoord3fARB := wglGetProcAddress('glMultiTexCoord3fARB'); 
-  glMultiTexCoord3fvARB := wglGetProcAddress('glMultiTexCoord3fvARB'); 
-  glMultiTexCoord3iARB := wglGetProcAddress('glMultiTexCoord3iARB'); 
+  glMultiTexCoord3fvARB := wglGetProcAddress('glMultiTexCoord3fvARB');
+  glMultiTexCoord3iARB := wglGetProcAddress('glMultiTexCoord3iARB');
   glMultiTexCoord3ivARB := wglGetProcAddress('glMultiTexCoord3ivARB'); 
-  glMultiTexCoord3sARB := wglGetProcAddress('glMultiTexCoord3sARB'); 
+  glMultiTexCoord3sARB := wglGetProcAddress('glMultiTexCoord3sARB');
   glMultiTexCoord3svARB := wglGetProcAddress('glMultiTexCoord3svARB'); 
   glMultiTexCoord4dARB := wglGetProcAddress('glMultiTexCoord4dARB');
   glMultiTexCoord4dvARB := wglGetProcAddress('glMultiTexCoord4dvARB'); 
@@ -5668,7 +5194,7 @@ begin
   glMultiTexCoord4ivARB := wglGetProcAddress('glMultiTexCoord4ivARB'); 
   glMultiTexCoord4sARB := wglGetProcAddress('glMultiTexCoord4sARB'); 
   glMultiTexCoord4svARB := wglGetProcAddress('glMultiTexCoord4svARB'); 
-  glActiveTextureARB := wglGetProcAddress('glActiveTextureARB'); 
+  glActiveTextureARB := wglGetProcAddress('glActiveTextureARB');
   glClientActiveTextureARB := wglGetProcAddress('glClientActiveTextureARB'); 
 
   // EXT_compiled_vertex_array
@@ -5677,10 +5203,10 @@ begin
 
   // EXT_cull_vertex
   glCullParameterdvEXT := wglGetProcAddress('glCullParameterdvEXT'); 
-  glCullParameterfvEXT := wglGetProcAddress('glCullParameterfvEXT'); 
+  glCullParameterfvEXT := wglGetProcAddress('glCullParameterfvEXT');
 
   // WIN_swap_hint
-  glAddSwapHintRectWIN := wglGetProcAddress('glAddSwapHintRectWIN'); 
+  glAddSwapHintRectWIN := wglGetProcAddress('glAddSwapHintRectWIN');
 
   // EXT_point_parameter
   glPointParameterfEXT := wglGetProcAddress('glPointParameterfEXT'); 
@@ -5690,19 +5216,19 @@ begin
   glLoadTransposeMatrixfARB := wglGetProcAddress('glLoadTransposeMatrixfARB'); 
   glLoadTransposeMatrixdARB := wglGetProcAddress('glLoadTransposeMatrixdARB'); 
   glMultTransposeMatrixfARB := wglGetProcAddress('glMultTransposeMatrixfARB'); 
-  glMultTransposeMatrixdARB := wglGetProcAddress('glMultTransposeMatrixdARB'); 
+  glMultTransposeMatrixdARB := wglGetProcAddress('glMultTransposeMatrixdARB');
 
   glSampleCoverageARB := wglGetProcAddress('glSampleCoverageARB'); 
   glSamplePassARB := wglGetProcAddress('glSamplePassARB'); 
 
   // GL_ARB_multisample
-  glCompressedTexImage3DARB := wglGetProcAddress('glCompressedTexImage3DARB'); 
+  glCompressedTexImage3DARB := wglGetProcAddress('glCompressedTexImage3DARB');
   glCompressedTexImage2DARB := wglGetProcAddress('glCompressedTexImage2DARB');
   glCompressedTexImage1DARB := wglGetProcAddress('glCompressedTexImage1DARB'); 
-  glCompressedTexSubImage3DARB := wglGetProcAddress('glCompressedTexSubImage3DARB'); 
+  glCompressedTexSubImage3DARB := wglGetProcAddress('glCompressedTexSubImage3DARB');
   glCompressedTexSubImage2DARB := wglGetProcAddress('glCompressedTexSubImage2DARB'); 
   glCompressedTexSubImage1DARB := wglGetProcAddress('glCompressedTexSubImage1DARB'); 
-  glGetCompressedTexImageARB := wglGetProcAddress('glGetCompressedTexImageARB'); 
+  glGetCompressedTexImageARB := wglGetProcAddress('glGetCompressedTexImageARB');
 
   // GL_EXT_blend_color
   glBlendColorEXT := wglGetProcAddress('glBlendColorEXT'); 
@@ -5712,19 +5238,19 @@ begin
 
   // GL_SGIS_texture_filter4
   glGetTexFilterFuncSGIS := wglGetProcAddress('glGetTexFilterFuncSGIS'); 
-  glTexFilterFuncSGIS := wglGetProcAddress('glTexFilterFuncSGIS'); 
+  glTexFilterFuncSGIS := wglGetProcAddress('glTexFilterFuncSGIS');
 
   // GL_EXT_histogram
   glGetHistogramEXT := wglGetProcAddress('glGetHistogramEXT'); 
   glGetHistogramParameterfvEXT := wglGetProcAddress('glGetHistogramParameterfvEXT'); 
   glGetHistogramParameterivEXT := wglGetProcAddress('glGetHistogramParameterivEXT'); 
-  glGetMinmaxEXT := wglGetProcAddress('glGetMinmaxEXT'); 
+  glGetMinmaxEXT := wglGetProcAddress('glGetMinmaxEXT');
   glGetMinmaxParameterfvEXT := wglGetProcAddress('glGetMinmaxParameterfvEXT');
   glGetMinmaxParameterivEXT := wglGetProcAddress('glGetMinmaxParameterivEXT'); 
-  glHistogramEXT := wglGetProcAddress('glHistogramEXT'); 
+  glHistogramEXT := wglGetProcAddress('glHistogramEXT');
   glMinmaxEXT := wglGetProcAddress('glMinmaxEXT'); 
   glResetHistogramEXT := wglGetProcAddress('glResetHistogramEXT'); 
-  glResetMinmaxEXT := wglGetProcAddress('glResetMinmaxEXT'); 
+  glResetMinmaxEXT := wglGetProcAddress('glResetMinmaxEXT');
 
   // GL_EXT_convolution
   glConvolutionFilter1DEXT := wglGetProcAddress('glConvolutionFilter1DEXT'); 
@@ -5732,9 +5258,9 @@ begin
   glConvolutionParameterfEXT := wglGetProcAddress('glConvolutionParameterfEXT'); 
   glConvolutionParameterfvEXT := wglGetProcAddress('glConvolutionParameterfvEXT'); 
   glConvolutionParameteriEXT := wglGetProcAddress('glConvolutionParameteriEXT'); 
-  glConvolutionParameterivEXT := wglGetProcAddress('glConvolutionParameterivEXT'); 
+  glConvolutionParameterivEXT := wglGetProcAddress('glConvolutionParameterivEXT');
   glCopyConvolutionFilter1DEXT := wglGetProcAddress('glCopyConvolutionFilter1DEXT'); 
-  glCopyConvolutionFilter2DEXT := wglGetProcAddress('glCopyConvolutionFilter2DEXT'); 
+  glCopyConvolutionFilter2DEXT := wglGetProcAddress('glCopyConvolutionFilter2DEXT');
   glGetConvolutionFilterEXT := wglGetProcAddress('glGetConvolutionFilterEXT'); 
   glGetConvolutionParameterfvEXT := wglGetProcAddress('glGetConvolutionParameterfvEXT'); 
   glGetConvolutionParameterivEXT := wglGetProcAddress('glGetConvolutionParameterivEXT'); 
@@ -5743,10 +5269,10 @@ begin
 
   // GL_SGI_color_table
   glColorTableSGI := wglGetProcAddress('glColorTableSGI'); 
-  glColorTableParameterfvSGI := wglGetProcAddress('glColorTableParameterfvSGI'); 
+  glColorTableParameterfvSGI := wglGetProcAddress('glColorTableParameterfvSGI');
   glColorTableParameterivSGI := wglGetProcAddress('glColorTableParameterivSGI'); 
   glCopyColorTableSGI := wglGetProcAddress('glCopyColorTableSGI'); 
-  glGetColorTableSGI := wglGetProcAddress('glGetColorTableSGI'); 
+  glGetColorTableSGI := wglGetProcAddress('glGetColorTableSGI');
   glGetColorTableParameterfvSGI := wglGetProcAddress('glGetColorTableParameterfvSGI'); 
   glGetColorTableParameterivSGI := wglGetProcAddress('glGetColorTableParameterivSGI');
 
@@ -5756,13 +5282,13 @@ begin
   // GL_SGIS_pixel_texture
   glPixelTexGenParameteriSGIS := wglGetProcAddress('glPixelTexGenParameteriSGIS'); 
   glPixelTexGenParameterivSGIS := wglGetProcAddress('glPixelTexGenParameterivSGIS'); 
-  glPixelTexGenParameterfSGIS := wglGetProcAddress('glPixelTexGenParameterfSGIS'); 
+  glPixelTexGenParameterfSGIS := wglGetProcAddress('glPixelTexGenParameterfSGIS');
   glPixelTexGenParameterfvSGIS := wglGetProcAddress('glPixelTexGenParameterfvSGIS'); 
   glGetPixelTexGenParameterivSGIS := wglGetProcAddress('glGetPixelTexGenParameterivSGIS'); 
   glGetPixelTexGenParameterfvSGIS := wglGetProcAddress('glGetPixelTexGenParameterfvSGIS'); 
 
   // GL_SGIS_texture4D
-  glTexImage4DSGIS := wglGetProcAddress('glTexImage4DSGIS'); 
+  glTexImage4DSGIS := wglGetProcAddress('glTexImage4DSGIS');
   glTexSubImage4DSGIS := wglGetProcAddress('glTexSubImage4DSGIS');
 
   // GL_SGIS_detail_texture
@@ -5778,16 +5304,16 @@ begin
   glSamplePatternSGIS := wglGetProcAddress('glSamplePatternSGIS'); 
 
   // GL_EXT_blend_minmax
-  glBlendEquationEXT := wglGetProcAddress('glBlendEquationEXT'); 
+  glBlendEquationEXT := wglGetProcAddress('glBlendEquationEXT');
 
   // GL_SGIX_sprite
   glSpriteParameterfSGIX := wglGetProcAddress('glSpriteParameterfSGIX'); 
   glSpriteParameterfvSGIX := wglGetProcAddress('glSpriteParameterfvSGIX'); 
   glSpriteParameteriSGIX := wglGetProcAddress('glSpriteParameteriSGIX'); 
-  glSpriteParameterivSGIX := wglGetProcAddress('glSpriteParameterivSGIX'); 
+  glSpriteParameterivSGIX := wglGetProcAddress('glSpriteParameterivSGIX');
 
   // GL_EXT_point_parameters
-  glPointParameterfSGIS := wglGetProcAddress('glPointParameterfSGIS'); 
+  glPointParameterfSGIS := wglGetProcAddress('glPointParameterfSGIS');
   glPointParameterfvSGIS := wglGetProcAddress('glPointParameterfvSGIS'); 
 
   // GL_SGIX_instruments
@@ -5806,7 +5332,7 @@ begin
 
   // GL_SGIX_polynomial_ffd
   glDeformationMap3dSGIX := wglGetProcAddress('glDeformationMap3dSGIX'); 
-  glDeformationMap3fSGIX := wglGetProcAddress('glDeformationMap3fSGIX'); 
+  glDeformationMap3fSGIX := wglGetProcAddress('glDeformationMap3fSGIX');
   glDeformSGIX := wglGetProcAddress('glDeformSGIX');
   glLoadIdentityDeformationMapSGIX := wglGetProcAddress('glLoadIdentityDeformationMapSGIX'); 
 
@@ -5822,7 +5348,7 @@ begin
 
   // GL_HP_image_transform
   glImageTransformParameteriHP := wglGetProcAddress('glImageTransformParameteriHP'); 
-  glImageTransformParameterfHP := wglGetProcAddress('glImageTransformParameterfHP'); 
+  glImageTransformParameterfHP := wglGetProcAddress('glImageTransformParameterfHP');
   glImageTransformParameterivHP := wglGetProcAddress('glImageTransformParameterivHP'); 
   glImageTransformParameterfvHP := wglGetProcAddress('glImageTransformParameterfvHP'); 
   glGetImageTransformParameterivHP := wglGetProcAddress('glGetImageTransformParameterivHP'); 
@@ -5844,19 +5370,19 @@ begin
   glListParameterfSGIX := wglGetProcAddress('glListParameterfSGIX'); 
   glListParameterfvSGIX := wglGetProcAddress('glListParameterfvSGIX'); 
   glListParameteriSGIX := wglGetProcAddress('glListParameteriSGIX'); 
-  glListParameterivSGIX := wglGetProcAddress('glListParameterivSGIX'); 
+  glListParameterivSGIX := wglGetProcAddress('glListParameterivSGIX');
 
   // GL_SGIX_fragment_lighting
   glFragmentColorMaterialSGIX := wglGetProcAddress('glFragmentColorMaterialSGIX'); 
   glFragmentLightfSGIX := wglGetProcAddress('glFragmentLightfSGIX'); 
   glFragmentLightfvSGIX := wglGetProcAddress('glFragmentLightfvSGIX'); 
-  glFragmentLightiSGIX := wglGetProcAddress('glFragmentLightiSGIX'); 
+  glFragmentLightiSGIX := wglGetProcAddress('glFragmentLightiSGIX');
   glFragmentLightivSGIX := wglGetProcAddress('glFragmentLightivSGIX');
   glFragmentLightModelfSGIX := wglGetProcAddress('glFragmentLightModelfSGIX'); 
-  glFragmentLightModelfvSGIX := wglGetProcAddress('glFragmentLightModelfvSGIX'); 
+  glFragmentLightModelfvSGIX := wglGetProcAddress('glFragmentLightModelfvSGIX');
   glFragmentLightModeliSGIX := wglGetProcAddress('glFragmentLightModeliSGIX'); 
   glFragmentLightModelivSGIX := wglGetProcAddress('glFragmentLightModelivSGIX'); 
-  glFragmentMaterialfSGIX := wglGetProcAddress('glFragmentMaterialfSGIX'); 
+  glFragmentMaterialfSGIX := wglGetProcAddress('glFragmentMaterialfSGIX');
   glFragmentMaterialfvSGIX := wglGetProcAddress('glFragmentMaterialfvSGIX'); 
   glFragmentMaterialiSGIX := wglGetProcAddress('glFragmentMaterialiSGIX');
   glFragmentMaterialivSGIX := wglGetProcAddress('glFragmentMaterialivSGIX'); 
@@ -5872,13 +5398,13 @@ begin
   // GL_EXT_light_texture
   glApplyTextureEXT := wglGetProcAddress('glApplyTextureEXT'); 
   glTextureLightEXT := wglGetProcAddress('glTextureLightEXT'); 
-  glTextureMaterialEXT := wglGetProcAddress('glTextureMaterialEXT'); 
+  glTextureMaterialEXT := wglGetProcAddress('glTextureMaterialEXT');
 
   // GL_SGIX_async
-  glAsyncMarkerSGIX := wglGetProcAddress('glAsyncMarkerSGIX'); 
+  glAsyncMarkerSGIX := wglGetProcAddress('glAsyncMarkerSGIX');
   glFinishAsyncSGIX := wglGetProcAddress('glFinishAsyncSGIX'); 
   glPollAsyncSGIX := wglGetProcAddress('glPollAsyncSGIX'); 
-  glGenAsyncMarkersSGIX := wglGetProcAddress('glGenAsyncMarkersSGIX'); 
+  glGenAsyncMarkersSGIX := wglGetProcAddress('glGenAsyncMarkersSGIX');
   glDeleteAsyncMarkersSGIX := wglGetProcAddress('glDeleteAsyncMarkersSGIX'); 
   glIsAsyncMarkerSGIX := wglGetProcAddress('glIsAsyncMarkerSGIX');
 
@@ -5897,10 +5423,10 @@ begin
   // GL_EXT_secondary_color
   glSecondaryColor3bEXT := wglGetProcAddress('glSecondaryColor3bEXT');
   glSecondaryColor3bvEXT := wglGetProcAddress('glSecondaryColor3bvEXT'); 
-  glSecondaryColor3dEXT := wglGetProcAddress('glSecondaryColor3dEXT'); 
+  glSecondaryColor3dEXT := wglGetProcAddress('glSecondaryColor3dEXT');
   glSecondaryColor3dvEXT := wglGetProcAddress('glSecondaryColor3dvEXT'); 
   glSecondaryColor3fEXT := wglGetProcAddress('glSecondaryColor3fEXT'); 
-  glSecondaryColor3fvEXT := wglGetProcAddress('glSecondaryColor3fvEXT'); 
+  glSecondaryColor3fvEXT := wglGetProcAddress('glSecondaryColor3fvEXT');
   glSecondaryColor3iEXT := wglGetProcAddress('glSecondaryColor3iEXT'); 
   glSecondaryColor3ivEXT := wglGetProcAddress('glSecondaryColor3ivEXT');
   glSecondaryColor3sEXT := wglGetProcAddress('glSecondaryColor3sEXT'); 
@@ -5910,7 +5436,7 @@ begin
   glSecondaryColor3uiEXT := wglGetProcAddress('glSecondaryColor3uiEXT'); 
   glSecondaryColor3uivEXT := wglGetProcAddress('glSecondaryColor3uivEXT'); 
   glSecondaryColor3usEXT := wglGetProcAddress('glSecondaryColor3usEXT'); 
-  glSecondaryColor3usvEXT := wglGetProcAddress('glSecondaryColor3usvEXT'); 
+  glSecondaryColor3usvEXT := wglGetProcAddress('glSecondaryColor3usvEXT');
   glSecondaryColorPointerEXT := wglGetProcAddress('glSecondaryColorPointerEXT'); 
 
   // GL_EXT_texture_perturb_normal
@@ -5922,7 +5448,7 @@ begin
 
   // GL_EXT_fog_coord
   glFogCoordfEXT := wglGetProcAddress('glFogCoordfEXT'); 
-  glFogCoordfvEXT := wglGetProcAddress('glFogCoordfvEXT'); 
+  glFogCoordfvEXT := wglGetProcAddress('glFogCoordfvEXT');
   glFogCoorddEXT := wglGetProcAddress('glFogCoorddEXT'); 
   glFogCoorddvEXT := wglGetProcAddress('glFogCoorddvEXT');
   glFogCoordPointerEXT := wglGetProcAddress('glFogCoordPointerEXT'); 
@@ -5932,19 +5458,19 @@ begin
   glTangent3bvEXT := wglGetProcAddress('glTangent3bvEXT'); 
   glTangent3dEXT := wglGetProcAddress('glTangent3dEXT'); 
   glTangent3dvEXT := wglGetProcAddress('glTangent3dvEXT'); 
-  glTangent3fEXT := wglGetProcAddress('glTangent3fEXT'); 
+  glTangent3fEXT := wglGetProcAddress('glTangent3fEXT');
   glTangent3fvEXT := wglGetProcAddress('glTangent3fvEXT'); 
   glTangent3iEXT := wglGetProcAddress('glTangent3iEXT'); 
   glTangent3ivEXT := wglGetProcAddress('glTangent3ivEXT'); 
   glTangent3sEXT := wglGetProcAddress('glTangent3sEXT'); 
   glTangent3svEXT := wglGetProcAddress('glTangent3svEXT'); 
-  glBinormal3bEXT := wglGetProcAddress('glBinormal3bEXT'); 
+  glBinormal3bEXT := wglGetProcAddress('glBinormal3bEXT');
   glBinormal3bvEXT := wglGetProcAddress('glBinormal3bvEXT');
   glBinormal3dEXT := wglGetProcAddress('glBinormal3dEXT'); 
-  glBinormal3dvEXT := wglGetProcAddress('glBinormal3dvEXT'); 
+  glBinormal3dvEXT := wglGetProcAddress('glBinormal3dvEXT');
   glBinormal3fEXT := wglGetProcAddress('glBinormal3fEXT'); 
   glBinormal3fvEXT := wglGetProcAddress('glBinormal3fvEXT'); 
-  glBinormal3iEXT := wglGetProcAddress('glBinormal3iEXT'); 
+  glBinormal3iEXT := wglGetProcAddress('glBinormal3iEXT');
   glBinormal3ivEXT := wglGetProcAddress('glBinormal3ivEXT'); 
   glBinormal3sEXT := wglGetProcAddress('glBinormal3sEXT');
   glBinormal3svEXT := wglGetProcAddress('glBinormal3svEXT'); 
@@ -5960,13 +5486,13 @@ begin
   glGlobalAlphaFactoriSUN := wglGetProcAddress('glGlobalAlphaFactoriSUN'); 
   glGlobalAlphaFactorfSUN := wglGetProcAddress('glGlobalAlphaFactorfSUN'); 
   glGlobalAlphaFactordSUN := wglGetProcAddress('glGlobalAlphaFactordSUN'); 
-  glGlobalAlphaFactorubSUN := wglGetProcAddress('glGlobalAlphaFactorubSUN'); 
+  glGlobalAlphaFactorubSUN := wglGetProcAddress('glGlobalAlphaFactorubSUN');
   glGlobalAlphaFactorusSUN := wglGetProcAddress('glGlobalAlphaFactorusSUN');
   glGlobalAlphaFactoruiSUN := wglGetProcAddress('glGlobalAlphaFactoruiSUN'); 
 
   // GL_SUN_triangle_list
   glReplacementCodeuiSUN := wglGetProcAddress('glReplacementCodeuiSUN'); 
-  glReplacementCodeusSUN := wglGetProcAddress('glReplacementCodeusSUN'); 
+  glReplacementCodeusSUN := wglGetProcAddress('glReplacementCodeusSUN');
   glReplacementCodeubSUN := wglGetProcAddress('glReplacementCodeubSUN'); 
   glReplacementCodeuivSUN := wglGetProcAddress('glReplacementCodeuivSUN');
   glReplacementCodeusvSUN := wglGetProcAddress('glReplacementCodeusvSUN'); 
@@ -5976,19 +5502,19 @@ begin
   // GL_SUN_vertex
   glColor4ubVertex2fSUN := wglGetProcAddress('glColor4ubVertex2fSUN'); 
   glColor4ubVertex2fvSUN := wglGetProcAddress('glColor4ubVertex2fvSUN'); 
-  glColor4ubVertex3fSUN := wglGetProcAddress('glColor4ubVertex3fSUN'); 
+  glColor4ubVertex3fSUN := wglGetProcAddress('glColor4ubVertex3fSUN');
   glColor4ubVertex3fvSUN := wglGetProcAddress('glColor4ubVertex3fvSUN'); 
   glColor3fVertex3fSUN := wglGetProcAddress('glColor3fVertex3fSUN'); 
   glColor3fVertex3fvSUN := wglGetProcAddress('glColor3fVertex3fvSUN'); 
   glNormal3fVertex3fSUN := wglGetProcAddress('glNormal3fVertex3fSUN'); 
   glNormal3fVertex3fvSUN := wglGetProcAddress('glNormal3fVertex3fvSUN'); 
-  glColor4fNormal3fVertex3fSUN := wglGetProcAddress('glColor4fNormal3fVertex3fSUN'); 
+  glColor4fNormal3fVertex3fSUN := wglGetProcAddress('glColor4fNormal3fVertex3fSUN');
   glColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glColor4fNormal3fVertex3fvSUN');
   glTexCoord2fVertex3fSUN := wglGetProcAddress('glTexCoord2fVertex3fSUN'); 
-  glTexCoord2fVertex3fvSUN := wglGetProcAddress('glTexCoord2fVertex3fvSUN'); 
+  glTexCoord2fVertex3fvSUN := wglGetProcAddress('glTexCoord2fVertex3fvSUN');
   glTexCoord4fVertex4fSUN := wglGetProcAddress('glTexCoord4fVertex4fSUN'); 
   glTexCoord4fVertex4fvSUN := wglGetProcAddress('glTexCoord4fVertex4fvSUN'); 
-  glTexCoord2fColor4ubVertex3fSUN := wglGetProcAddress('glTexCoord2fColor4ubVertex3fSUN'); 
+  glTexCoord2fColor4ubVertex3fSUN := wglGetProcAddress('glTexCoord2fColor4ubVertex3fSUN');
   glTexCoord2fColor4ubVertex3fvSUN := wglGetProcAddress('glTexCoord2fColor4ubVertex3fvSUN'); 
   glTexCoord2fColor3fVertex3fSUN := wglGetProcAddress('glTexCoord2fColor3fVertex3fSUN');
   glTexCoord2fColor3fVertex3fvSUN := wglGetProcAddress('glTexCoord2fColor3fVertex3fvSUN'); 
@@ -5998,19 +5524,19 @@ begin
   glTexCoord2fColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glTexCoord2fColor4fNormal3fVertex3fvSUN'); 
   glTexCoord4fColor4fNormal3fVertex4fSUN := wglGetProcAddress('glTexCoord4fColor4fNormal3fVertex4fSUN'); 
   glTexCoord4fColor4fNormal3fVertex4fvSUN := wglGetProcAddress('glTexCoord4fColor4fNormal3fVertex4fvSUN'); 
-  glReplacementCodeuiVertex3fSUN := wglGetProcAddress('glReplacementCodeuiVertex3fSUN'); 
+  glReplacementCodeuiVertex3fSUN := wglGetProcAddress('glReplacementCodeuiVertex3fSUN');
   glReplacementCodeuiVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiVertex3fvSUN'); 
   glReplacementCodeuiColor4ubVertex3fSUN := wglGetProcAddress('glReplacementCodeuiColor4ubVertex3fSUN'); 
   glReplacementCodeuiColor4ubVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiColor4ubVertex3fvSUN'); 
   glReplacementCodeuiColor3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiColor3fVertex3fSUN'); 
   glReplacementCodeuiColor3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiColor3fVertex3fvSUN'); 
-  glReplacementCodeuiNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiNormal3fVertex3fSUN'); 
+  glReplacementCodeuiNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiNormal3fVertex3fSUN');
   glReplacementCodeuiNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiNormal3fVertex3fvSUN');
   glReplacementCodeuiColor4fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiColor4fNormal3fVertex3fSUN'); 
-  glReplacementCodeuiColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiColor4fNormal3fVertex3fvSUN'); 
+  glReplacementCodeuiColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiColor4fNormal3fVertex3fvSUN');
   glReplacementCodeuiTexCoord2fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fVertex3fSUN'); 
   glReplacementCodeuiTexCoord2fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fVertex3fvSUN'); 
-  glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN'); 
+  glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN');
   glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN'); 
   glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN');
   glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN'); 
@@ -6020,19 +5546,19 @@ begin
 
   // GL_EXT_vertex_weighting
   glVertexWeightfEXT := wglGetProcAddress('glVertexWeightfEXT'); 
-  glVertexWeightfvEXT := wglGetProcAddress('glVertexWeightfvEXT'); 
+  glVertexWeightfvEXT := wglGetProcAddress('glVertexWeightfvEXT');
   glVertexWeightPointerEXT := wglGetProcAddress('glVertexWeightPointerEXT'); 
 
   // GL_NV_vertex_array_range
   glFlushVertexArrayRangeNV := wglGetProcAddress('glFlushVertexArrayRangeNV'); 
   glVertexArrayRangeNV := wglGetProcAddress('glVertexArrayRangeNV'); 
-  wglAllocateMemoryNV := wglGetProcAddress('wglAllocateMemoryNV'); 
+  wglAllocateMemoryNV := wglGetProcAddress('wglAllocateMemoryNV');
   wglFreeMemoryNV := wglGetProcaddress('wglFreeMemoryNV');
 
   // GL_NV_register_combiners
   glCombinerParameterfvNV := wglGetProcAddress('glCombinerParameterfvNV'); 
   glCombinerParameterfNV := wglGetProcAddress('glCombinerParameterfNV'); 
-  glCombinerParameterivNV := wglGetProcAddress('glCombinerParameterivNV'); 
+  glCombinerParameterivNV := wglGetProcAddress('glCombinerParameterivNV');
   glCombinerParameteriNV := wglGetProcAddress('glCombinerParameteriNV'); 
   glCombinerInputNV := wglGetProcAddress('glCombinerInputNV');
   glCombinerOutputNV := wglGetProcAddress('glCombinerOutputNV'); 
@@ -6042,19 +5568,19 @@ begin
   glGetCombinerOutputParameterfvNV := wglGetProcAddress('glGetCombinerOutputParameterfvNV'); 
   glGetCombinerOutputParameterivNV := wglGetProcAddress('glGetCombinerOutputParameterivNV'); 
   glGetFinalCombinerInputParameterfvNV := wglGetProcAddress('glGetFinalCombinerInputParameterfvNV'); 
-  glGetFinalCombinerInputParameterivNV := wglGetProcAddress('glGetFinalCombinerInputParameterivNV'); 
+  glGetFinalCombinerInputParameterivNV := wglGetProcAddress('glGetFinalCombinerInputParameterivNV');
 
   // GL_MESA_resize_buffers
   glResizeBuffersMESA := wglGetProcAddress('glResizeBuffersMESA'); 
 
   // GL_MESA_window_pos
-  glWindowPos2dMESA := wglGetProcAddress('glWindowPos2dMESA'); 
+  glWindowPos2dMESA := wglGetProcAddress('glWindowPos2dMESA');
   glWindowPos2dvMESA := wglGetProcAddress('glWindowPos2dvMESA');
   glWindowPos2fMESA := wglGetProcAddress('glWindowPos2fMESA'); 
-  glWindowPos2fvMESA := wglGetProcAddress('glWindowPos2fvMESA'); 
+  glWindowPos2fvMESA := wglGetProcAddress('glWindowPos2fvMESA');
   glWindowPos2iMESA := wglGetProcAddress('glWindowPos2iMESA'); 
   glWindowPos2ivMESA := wglGetProcAddress('glWindowPos2ivMESA'); 
-  glWindowPos2sMESA := wglGetProcAddress('glWindowPos2sMESA'); 
+  glWindowPos2sMESA := wglGetProcAddress('glWindowPos2sMESA');
   glWindowPos2svMESA := wglGetProcAddress('glWindowPos2svMESA'); 
   glWindowPos3dMESA := wglGetProcAddress('glWindowPos3dMESA');
   glWindowPos3dvMESA := wglGetProcAddress('glWindowPos3dvMESA'); 
@@ -6064,13 +5590,13 @@ begin
   glWindowPos3ivMESA := wglGetProcAddress('glWindowPos3ivMESA'); 
   glWindowPos3sMESA := wglGetProcAddress('glWindowPos3sMESA'); 
   glWindowPos3svMESA := wglGetProcAddress('glWindowPos3svMESA'); 
-  glWindowPos4dMESA := wglGetProcAddress('glWindowPos4dMESA'); 
+  glWindowPos4dMESA := wglGetProcAddress('glWindowPos4dMESA');
   glWindowPos4dvMESA := wglGetProcAddress('glWindowPos4dvMESA'); 
   glWindowPos4fMESA := wglGetProcAddress('glWindowPos4fMESA'); 
   glWindowPos4fvMESA := wglGetProcAddress('glWindowPos4fvMESA'); 
   glWindowPos4iMESA := wglGetProcAddress('glWindowPos4iMESA'); 
   glWindowPos4ivMESA := wglGetProcAddress('glWindowPos4ivMESA'); 
-  glWindowPos4sMESA := wglGetProcAddress('glWindowPos4sMESA'); 
+  glWindowPos4sMESA := wglGetProcAddress('glWindowPos4sMESA');
   glWindowPos4svMESA := wglGetProcAddress('glWindowPos4svMESA');
 
   // GL_IBM_multimode_draw_arrays
@@ -6092,13 +5618,13 @@ begin
 
   // GL_EXT_multisample
   glSampleMaskEXT := wglGetProcAddress('glSampleMaskEXT'); 
-  glSamplePatternEXT := wglGetProcAddress('glSamplePatternEXT'); 
+  glSamplePatternEXT := wglGetProcAddress('glSamplePatternEXT');
 
   // GL_SGIS_texture_color_mask
-  glTextureColorMaskSGIS := wglGetProcAddress('glTextureColorMaskSGIS'); 
+  glTextureColorMaskSGIS := wglGetProcAddress('glTextureColorMaskSGIS');
 
   // GL_SGIX_igloo_interface
-  glIglooInterfaceSGIX := wglGetProcAddress('glIglooInterfaceSGIX'); 
+  glIglooInterfaceSGIX := wglGetProcAddress('glIglooInterfaceSGIX');
 
   // GLU extensions
   gluNurbsCallbackDataEXT := wglGetProcAddress('gluNurbsCallbackDataEXT'); 
@@ -6108,19 +5634,19 @@ begin
   // GL_NV_vertex_program
   glAreProgramsResidentNV := wglGetProcAddress('glAreProgramsResidentNV'); 
   glBindProgramNV := wglGetProcAddress('glBindProgramNV'); 
-  glDeleteProgramsNV := wglGetProcAddress('glDeleteProgramsNV'); 
+  glDeleteProgramsNV := wglGetProcAddress('glDeleteProgramsNV');
   glExecuteProgramNV := wglGetProcAddress('glExecuteProgramNV'); 
   glGenProgramsNV := wglGetProcAddress('glGenProgramsNV'); 
   glGetProgramParameterdvNV := wglGetProcAddress('glGetProgramParameterdvNV'); 
   glGetProgramParameterfvNV := wglGetProcAddress('glGetProgramParameterfvNV'); 
   glGetProgramivNV := wglGetProcAddress('glGetProgramivNV'); 
-  glGetProgramStringNV := wglGetProcAddress('glGetProgramStringNV'); 
+  glGetProgramStringNV := wglGetProcAddress('glGetProgramStringNV');
   glGetTrackMatrixivNV := wglGetProcAddress('glGetTrackMatrixivNV');
   glGetVertexAttribdvNV:= wglGetProcAddress('glGetVertexAttribdvNV'); 
-  glGetVertexAttribfvNV:= wglGetProcAddress('glGetVertexAttribfvNV'); 
+  glGetVertexAttribfvNV:= wglGetProcAddress('glGetVertexAttribfvNV');
   glGetVertexAttribivNV:= wglGetProcAddress('glGetVertexAttribivNV'); 
   glGetVertexAttribPointervNV := wglGetProcAddress ('glGetVertexAttribPointervNV'); 
-  glIsProgramNV := wglGetProcAddress('glIsProgramNV'); 
+  glIsProgramNV := wglGetProcAddress('glIsProgramNV');
   glLoadProgramNV := wglGetProcAddress('glLoadProgramNV'); 
   glProgramParameter4dNV := wglGetProcAddress('glProgramParameter4dNV');
   glProgramParameter4dvNV := wglGetProcAddress('glProgramParameter4dvNV'); 
@@ -6130,19 +5656,19 @@ begin
   glProgramParameters4fvNV := wglGetProcAddress ('glProgramParameters4fvNV'); 
   glRequestResidentProgramsNV := wglGetProcAddress ('glRequestResidentProgramsNV'); 
   glTrackMatrixNV := wglGetProcAddress('glTrackMatrixNV'); 
-  glVertexAttribPointerNV := wglGetProcAddress('glVertexAttribPointerNV'); 
+  glVertexAttribPointerNV := wglGetProcAddress('glVertexAttribPointerNV');
   glVertexAttrib1dNV := wglGetProcAddress('glVertexAttrib1dNV'); 
   glVertexAttrib1dvNV := wglGetProcAddress('glVertexAttrib1dvNV'); 
   glVertexAttrib1fNV := wglGetProcAddress('glVertexAttrib1fNV'); 
   glVertexAttrib1fvNV := wglGetProcAddress('glVertexAttrib1fvNV'); 
   glVertexAttrib1sNV := wglGetProcAddress('glVertexAttrib1sNV'); 
-  glVertexAttrib1svNV := wglGetProcAddress('glVertexAttrib1svNV'); 
+  glVertexAttrib1svNV := wglGetProcAddress('glVertexAttrib1svNV');
   glVertexAttrib2dNV := wglGetProcAddress('glVertexAttrib2dNV');
   glVertexAttrib2dvNV := wglGetProcAddress('glVertexAttrib2dvNV'); 
-  glVertexAttrib2fNV := wglGetProcAddress('glVertexAttrib2fNV'); 
+  glVertexAttrib2fNV := wglGetProcAddress('glVertexAttrib2fNV');
   glVertexAttrib2fvNV := wglGetProcAddress('glVertexAttrib2fvNV'); 
   glVertexAttrib2sNV := wglGetProcAddress('glVertexAttrib2sNV'); 
-  glVertexAttrib2svNV := wglGetProcAddress('glVertexAttrib2svNV'); 
+  glVertexAttrib2svNV := wglGetProcAddress('glVertexAttrib2svNV');
   glVertexAttrib3dNV := wglGetProcAddress('glVertexAttrib3dNV'); 
   glVertexAttrib3dvNV := wglGetProcAddress('glVertexAttrib3dvNV');
   glVertexAttrib3fNV := wglGetProcAddress('glVertexAttrib3fNV'); 
@@ -6152,38 +5678,38 @@ begin
   glVertexAttrib4dNV := wglGetProcAddress('glVertexAttrib4dNV'); 
   glVertexAttrib4dvNV := wglGetProcAddress('glVertexAttrib4dvNV'); 
   glVertexAttrib4fNV := wglGetProcAddress('glVertexAttrib4fNV'); 
-  glVertexAttrib4fvNV := wglGetProcAddress('glVertexAttrib4fvNV'); 
+  glVertexAttrib4fvNV := wglGetProcAddress('glVertexAttrib4fvNV');
   glVertexAttrib4sNV := wglGetProcAddress('glVertexAttrib4sNV'); 
   glVertexAttrib4svNV := wglGetProcAddress('glVertexAttrib4svNV'); 
   glVertexAttrib4ubvNV := wglGetProcAddress('glVertexAttrib4ubvNV'); 
   glVertexAttribs1dvNV := wglGetProcAddress('glVertexAttribs1dvNV'); 
   glVertexAttribs1fvNV := wglGetProcAddress('glVertexAttribs1fvNV'); 
-  glVertexAttribs1svNV := wglGetProcAddress('glVertexAttribs1svNV'); 
+  glVertexAttribs1svNV := wglGetProcAddress('glVertexAttribs1svNV');
   glVertexAttribs2dvNV := wglGetProcAddress('glVertexAttribs2dvNV');
   glVertexAttribs2fvNV := wglGetProcAddress('glVertexAttribs2fvNV'); 
-  glVertexAttribs2svNV := wglGetProcAddress('glVertexAttribs2svNV'); 
+  glVertexAttribs2svNV := wglGetProcAddress('glVertexAttribs2svNV');
   glVertexAttribs3dvNV := wglGetProcAddress('glVertexAttribs3dvNV'); 
   glVertexAttribs3fvNV := wglGetProcAddress('glVertexAttribs3fvNV'); 
-  glVertexAttribs3svNV := wglGetProcAddress('glVertexAttribs3svNV'); 
+  glVertexAttribs3svNV := wglGetProcAddress('glVertexAttribs3svNV');
   glVertexAttribs4dvNV := wglGetProcAddress('glVertexAttribs4dvNV'); 
   glVertexAttribs4fvNV := wglGetProcAddress('glVertexAttribs4fvNV');
   glVertexAttribs4svNV := wglGetProcAddress('glVertexAttribs4svNV'); 
-  glVertexAttribs4ubvNV := wglGetProcAddress('glVertexAttribs4ubvN'); 
+  glVertexAttribs4ubvNV := wglGetProcAddress('glVertexAttribs4ubvN');
 
   // to get synchronized again, if this proc was called externally
-  LastPixelFormat := 0; 
-end; 
+  LastPixelFormat := 0;
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure TrimAndSplitVersionString(Buffer: String; var Max, Min: Integer); 
+procedure TrimAndSplitVersionString(Buffer: String; var Max, Min: Integer);
 // peel out the X.Y form
 var
-  Separator: Integer; 
+  Separator: Integer;
 begin
   try
     // there must be at least one dot to separate major and minor version number
-    Separator := Pos('.', Buffer); 
+    Separator := Pos('.', Buffer);
     // at least one number must be before and one after the dot
     if (Separator > 1) and (Separator < Length(Buffer)) and (Buffer[Separator - 1] in ['0'..'9']) and
       (Buffer[Separator + 1] in ['0'..'9']) then
@@ -6193,7 +5719,7 @@ begin
       Dec(Separator); 
       // find last non-numeric character before version number
       while (Separator > 0) and (Buffer[Separator] in ['0'..'9']) do
-        Dec(Separator); 
+        Dec(Separator);
       // delete leading characters not belonging to the version string
       Delete(Buffer, 1, Separator); 
       Separator := Pos('.', Buffer) + 1; 
@@ -6205,10 +5731,10 @@ begin
       // now translate the numbers
       Separator := Pos('.', Buffer); // necessary, because the buffer length may be changed
       Max := StrToInt(Copy(Buffer, 1, Separator - 1)); 
-      Min := StrToInt(Copy(Buffer, Separator + 1, 255)); 
+      Min := StrToInt(Copy(Buffer, Separator + 1, 255));
     end
     else
-      Abort; 
+      Abort;
   except
     Min := 0;
     Max := 0; 
@@ -6217,7 +5743,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure ReadImplementationProperties; 
+procedure ReadImplementationProperties;
 var
   Buffer: String; 
   MajorVersion,
@@ -6228,8 +5754,8 @@ var
    function CheckExtension(const Extension: String): Boolean;
 
    begin
-     Result := Pos(Extension, Buffer) > 0; 
-   end; 
+     Result := Pos(Extension, Buffer) > 0;
+   end;
 
   //--------------- end local function ----------------------------------------
 
@@ -6237,7 +5763,7 @@ begin
   // determine version of implementation
   // GL
   Buffer := glGetString(GL_VERSION); 
-  TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion); 
+  TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion);
   GL_VERSION_1_0 := True; 
   GL_VERSION_1_1 := False; 
   GL_VERSION_1_2 := False; 
@@ -6249,18 +5775,18 @@ begin
       if MinorVersion > 1 then
         GL_VERSION_1_2 := True;
     end; 
-  end; 
+  end;
 
   // GLU
-  GLU_VERSION_1_1 := False; 
-  GLU_VERSION_1_2 := False; 
+  GLU_VERSION_1_1 := False;
+  GLU_VERSION_1_2 := False;
   GLU_VERSION_1_3 := False;
   // gluGetString is valid for version 1.1 or later
   if Assigned(gluGetString) then
   begin
     Buffer := gluGetString(GLU_VERSION); 
-    TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion); 
-    GLU_VERSION_1_1 := True; 
+    TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion);
+    GLU_VERSION_1_1 := True;
     if MinorVersion > 1 then
     begin
       GLU_VERSION_1_2 := True; 
@@ -6271,17 +5797,17 @@ begin
 
   // check supported extensions
   // GL
-  Buffer := glGetString(GL_EXTENSIONS); 
-  GL_3DFX_multisample :=CheckExtension('GL_3DFX_multisample'); 
-  GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer'); 
-  GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1'); 
+  Buffer := glGetString(GL_EXTENSIONS);
+  GL_3DFX_multisample :=CheckExtension('GL_3DFX_multisample');
+  GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
+  GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
 
   GL_APPLE_specular_vector := CheckExtension('GL_APPLE_specular_vector');
-  GL_APPLE_transform_hint := CheckExtension('GL_APPLE_transform_hint'); 
+  GL_APPLE_transform_hint := CheckExtension('GL_APPLE_transform_hint');
 
-  GL_ARB_imaging := CheckExtension('GL_ARB_imaging'); 
+  GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
   GL_ARB_multisample := CheckExtension('GL_ARB_multisample'); 
-  GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture'); 
+  GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture');
   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
   GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map'); 
   GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix'); 
@@ -6293,17 +5819,17 @@ begin
   GL_EXT_blend_color := CheckExtension('GL_EXT_blend_color'); 
   GL_EXT_blend_func_separate := CheckExtension('GL_EXT_blend_func_separate');
   GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op'); 
-  GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax'); 
-  GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract'); 
-  GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint'); 
-  GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka'); 
-  GL_EXT_color_subtable := CheckExtension('GL_EXT_color_subtable'); 
+  GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax');
+  GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract');
+  GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
+  GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka');
+  GL_EXT_color_subtable := CheckExtension('GL_EXT_color_subtable');
   GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array');
-  GL_EXT_convolution := CheckExtension('GL_EXT_convolution'); 
+  GL_EXT_convolution := CheckExtension('GL_EXT_convolution');
   GL_EXT_coordinate_frame := CheckExtension('GL_EXT_coordinate_frame'); 
   GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture'); 
   GL_EXT_cull_vertex := CheckExtension('GL_EXT_cull_vertex'); 
-  GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements'); 
+  GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements');
   GL_EXT_fog_coord := CheckExtension('GL_EXT_fog_coord'); 
   GL_EXT_histogram := CheckExtension('GL_EXT_histogram'); 
   GL_EXT_index_array_formats := CheckExtension('GL_EXT_index_array_formats'); 
@@ -6315,17 +5841,17 @@ begin
   GL_EXT_misc_attribute := CheckExtension('GL_EXT_misc_attribute'); 
   GL_EXT_multi_draw_arrays := CheckExtension('GL_EXT_multi_draw_arrays');
   GL_EXT_multisample := CheckExtension('GL_EXT_multisample'); 
-  GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels'); 
-  GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture'); 
-  GL_EXT_pixel_transform := CheckExtension('GL_EXT_pixel_transform'); 
-  GL_EXT_point_parameters := CheckExtension('GL_EXT_point_parameters'); 
-  GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset'); 
+  GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels');
+  GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture');
+  GL_EXT_pixel_transform := CheckExtension('GL_EXT_pixel_transform');
+  GL_EXT_point_parameters := CheckExtension('GL_EXT_point_parameters');
+  GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset');
   GL_EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal');
-  GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker'); 
+  GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker');
   GL_EXT_secondary_color := CheckExtension('GL_EXT_secondary_color'); 
   GL_EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color'); 
   GL_EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette'); 
-  GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap'); 
+  GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap');
   GL_EXT_subtexture := CheckExtension('GL_EXT_subtexture'); 
   GL_EXT_texture_color_table := CheckExtension('GL_EXT_texture_color_table'); 
   GL_EXT_texture_compression_s3tc := CheckExtension('GL_EXT_texture_compression_s3tc'); 
@@ -6336,18 +5862,18 @@ begin
   GL_EXT_texture_filter_anisotropic := CheckExtension('GL_EXT_texture_filter_anisotropic'); 
   GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
   GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object');
-  GL_EXT_texture_perturb_normal := CheckExtension('GL_EXT_texture_perturb_normal'); 
-  GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D'); 
-  GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array'); 
-  GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting'); 
+  GL_EXT_texture_perturb_normal := CheckExtension('GL_EXT_texture_perturb_normal');
+  GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
+  GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
+  GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting');
 
-  GL_FfdMaskSGIX := CheckExtension('GL_FfdMaskSGIX'); 
+  GL_FfdMaskSGIX := CheckExtension('GL_FfdMaskSGIX');
   GL_HP_convolution_border_modes := CheckExtension('GL_HP_convolution_border_modes');
-  GL_HP_image_transform := CheckExtension('GL_HP_image_transform'); 
+  GL_HP_image_transform := CheckExtension('GL_HP_image_transform');
   GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test'); 
   GL_HP_texture_lighting := CheckExtension('GL_HP_texture_lighting'); 
 
-  GL_IBM_cull_vertex := CheckExtension('GL_IBM_cull_vertex'); 
+  GL_IBM_cull_vertex := CheckExtension('GL_IBM_cull_vertex');
   GL_IBM_multimode_draw_arrays := CheckExtension('GL_IBM_multimode_draw_arrays'); 
   GL_IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip'); 
   GL_IBM_vertex_array_lists := CheckExtension('GL_IBM_vertex_array_lists'); 
@@ -6355,21 +5881,21 @@ begin
   GL_INGR_color_clamp := CheckExtension('GL_INGR_color_clamp'); 
   GL_INGR_interlace_read := CheckExtension('GL_INGR_interlace_read'); 
 
-  GL_INTEL_parallel_arrays := CheckExtension('GL_INTEL_parallel_arrays'); 
+  GL_INTEL_parallel_arrays := CheckExtension('GL_INTEL_parallel_arrays');
 
   GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region');
 
-  GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers'); 
-  GL_MESA_window_pos := CheckExtension('GL_MESA_window_pos'); 
+  GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers');
+  GL_MESA_window_pos := CheckExtension('GL_MESA_window_pos');
 
-  GL_NV_blend_square := CheckExtension('GL_NV_blend_square'); 
-  GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance'); 
+  GL_NV_blend_square := CheckExtension('GL_NV_blend_square');
+  GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance');
   GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent');
-  GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners'); 
+  GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners');
   GL_NV_texgen_emboss := CheckExtension('GL_NV_texgen_emboss'); 
   GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection'); 
   GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4'); 
-  GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range'); 
+  GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
   GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program'); 
 
   GL_PGI_misc_hints := CheckExtension('GL_PGI_misc_hints'); 
@@ -6381,19 +5907,19 @@ begin
   GL_SGI_color_table := CheckExtension('GL_SGI_color_table'); 
   GL_SGI_depth_pass_instrument := CheckExtension('GL_SGI_depth_pass_instrument');
 
-  GL_SGIS_detail_texture := CheckExtension('GL_SGIS_detail_texture'); 
-  GL_SGIS_fog_function := CheckExtension('GL_SGIS_fog_function'); 
-  GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap'); 
-  GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample'); 
-  GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture'); 
+  GL_SGIS_detail_texture := CheckExtension('GL_SGIS_detail_texture');
+  GL_SGIS_fog_function := CheckExtension('GL_SGIS_fog_function');
+  GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
+  GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample');
+  GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture');
   GL_SGIS_pixel_texture := CheckExtension('GL_SGIS_pixel_texture');
-  GL_SGIS_point_line_texgen := CheckExtension('GL_SGIS_point_line_texgen'); 
+  GL_SGIS_point_line_texgen := CheckExtension('GL_SGIS_point_line_texgen');
   GL_SGIS_point_parameters := CheckExtension('GL_SGIS_point_parameters'); 
   GL_SGIS_sharpen_texture := CheckExtension('GL_SGIS_sharpen_texture'); 
   GL_SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp'); 
-  GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask'); 
+  GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask');
   GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp'); 
-  GL_SGIS_texture_filter4 := CheckExtension('GL_SGIS_texture_filter4'); 
+  GL_SGIS_texture_filter4 := CheckExtension('GL_SGIS_texture_filter4');
   GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
   GL_SGIS_texture_select := CheckExtension('GL_SGIS_texture_select'); 
   GL_SGIS_texture4D := CheckExtension('GL_SGIS_texture4D'); 
@@ -6403,17 +5929,17 @@ begin
   GL_SGIX_async_pixel := CheckExtension('GL_SGIX_async_pixel'); 
   GL_SGIX_blend_alpha_minmax := CheckExtension('GL_SGIX_blend_alpha_minmax');
   GL_SGIX_calligraphic_fragment := CheckExtension('GL_SGIX_calligraphic_fragment');
-  GL_SGIX_clipmap := CheckExtension('GL_SGIX_clipmap'); 
-  GL_SGIX_convolution_accuracy := CheckExtension('GL_SGIX_convolution_accuracy'); 
-  GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture'); 
-  GL_SGIX_flush_raster := CheckExtension('GL_SGIX_flush_raster'); 
-  GL_SGIX_fog_offset := CheckExtension('GL_SGIX_fog_offset'); 
+  GL_SGIX_clipmap := CheckExtension('GL_SGIX_clipmap');
+  GL_SGIX_convolution_accuracy := CheckExtension('GL_SGIX_convolution_accuracy');
+  GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture');
+  GL_SGIX_flush_raster := CheckExtension('GL_SGIX_flush_raster');
+  GL_SGIX_fog_offset := CheckExtension('GL_SGIX_fog_offset');
   GL_SGIX_fog_scale := CheckExtension('GL_SGIX_fog_scale');
-  GL_SGIX_fragment_lighting := CheckExtension('GL_SGIX_fragment_lighting'); 
+  GL_SGIX_fragment_lighting := CheckExtension('GL_SGIX_fragment_lighting');
   GL_SGIX_framezoom := CheckExtension('GL_SGIX_framezoom'); 
   GL_SGIX_igloo_interface := CheckExtension('GL_SGIX_igloo_interface'); 
-  GL_SGIX_instruments := CheckExtension('GL_SGIX_instruments'); 
-  GL_SGIX_interlace := CheckExtension('GL_SGIX_interlace'); 
+  GL_SGIX_instruments := CheckExtension('GL_SGIX_instruments');
+  GL_SGIX_interlace := CheckExtension('GL_SGIX_interlace');
   GL_SGIX_ir_instrument1 := CheckExtension('GL_SGIX_ir_instrument1'); 
   GL_SGIX_list_priority := CheckExtension('GL_SGIX_list_priority'); 
   GL_SGIX_pixel_texture := CheckExtension('GL_SGIX_pixel_texture'); 
@@ -6425,17 +5951,17 @@ begin
   GL_SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient'); 
   GL_SGIX_sprite := CheckExtension('GL_SGIX_sprite');
   GL_SGIX_subsample := CheckExtension('GL_SGIX_subsample'); 
-  GL_SGIX_tag_sample_buffer := CheckExtension('GL_SGIX_tag_sample_buffer'); 
-  GL_SGIX_texture_add_env := CheckExtension('GL_SGIX_texture_add_env'); 
-  GL_SGIX_texture_lod_bias := CheckExtension('GL_SGIX_texture_lod_bias'); 
-  GL_SGIX_texture_multi_buffer := CheckExtension('GL_SGIX_texture_multi_buffer'); 
-  GL_SGIX_texture_scale_bias := CheckExtension('GL_SGIX_texture_scale_bias'); 
+  GL_SGIX_tag_sample_buffer := CheckExtension('GL_SGIX_tag_sample_buffer');
+  GL_SGIX_texture_add_env := CheckExtension('GL_SGIX_texture_add_env');
+  GL_SGIX_texture_lod_bias := CheckExtension('GL_SGIX_texture_lod_bias');
+  GL_SGIX_texture_multi_buffer := CheckExtension('GL_SGIX_texture_multi_buffer');
+  GL_SGIX_texture_scale_bias := CheckExtension('GL_SGIX_texture_scale_bias');
   GL_SGIX_vertex_preclip := CheckExtension('GL_SGIX_vertex_preclip');
-  GL_SGIX_ycrcb := CheckExtension('GL_SGIX_ycrcb'); 
+  GL_SGIX_ycrcb := CheckExtension('GL_SGIX_ycrcb');
   GL_SGIX_ycrcba := CheckExtension('GL_SGIX_ycrcba'); 
 
   GL_SUN_convolution_border_modes := CheckExtension('GL_SUN_convolution_border_modes');
-  GL_SUN_global_alpha := CheckExtension('GL_SUN_global_alpha'); 
+  GL_SUN_global_alpha := CheckExtension('GL_SUN_global_alpha');
   GL_SUN_triangle_list := CheckExtension('GL_SUN_triangle_list'); 
   GL_SUN_vertex := CheckExtension('GL_SUN_vertex'); 
 
@@ -6448,10 +5974,11 @@ begin
   WGL_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
 
   // GLU
-  Buffer := gluGetString(GLU_EXTENSIONS); 
-  GLU_EXT_TEXTURE := CheckExtension('GLU_EXT_TEXTURE'); 
+  Buffer := gluGetString(GLU_EXTENSIONS);
+  GLU_EXT_TEXTURE := CheckExtension('GLU_EXT_TEXTURE');
   GLU_EXT_object_space_tess := CheckExtension('GLU_EXT_object_space_tess');
-  GLU_EXT_nurbs_tessellator := CheckExtension('GLU_EXT_nurbs_tessellator'); 
+  GLU_EXT_nurbs_tessellator := CheckExtension('GLU_EXT_nurbs_tessellator');
+
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -6484,7 +6011,7 @@ begin
   if Result <> 0 then
   begin
     SelectPalette(DC, Result, False); 
-    RealizePalette(DC); 
+    RealizePalette(DC);
   end
   else
     RaiseLastOSError; 
@@ -6614,16 +6141,16 @@ begin
   else
   begin
     Assert((wglGetCurrentDC = DC) and (wglGetCurrentContext = RC), 'Incoherent DC/RC pair.');
-    Inc(ActivationRefCount); 
-  end; 
-end; 
+    Inc(ActivationRefCount);
+  end;
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 procedure DoDeactivateRenderingContext;
 
 begin
-  Assert(ActivationRefCount > 0, 'Unbalanced deactivation.'); 
+  Assert(ActivationRefCount > 0, 'Unbalanced deactivation.');
   if ActivationRefCount > 0 then
   begin
     Dec(ActivationRefCount);
@@ -6640,7 +6167,7 @@ begin
       end; 
       if not wglMakeCurrent(0, 0) then
         raise Exception.Create(SMakeCurrentFailed);
-    end; 
+    end;
   end; 
 end;
 

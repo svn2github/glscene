@@ -960,41 +960,98 @@ end;
 procedure TGLWin32Context.DoCreateContext(outputDevice : Integer);
 const
    cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
+   cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
 var
    pfDescriptor : TPixelFormatDescriptor;
    pixelFormat : Integer;
    aType : DWORD;
-begin
-   FillChar(pfDescriptor, SizeOf(pfDescriptor), 0);
-   with PFDescriptor do begin
-      nSize:=SizeOf(PFDescriptor);
-      nVersion:=1;
-      dwFlags:=PFD_SUPPORT_OPENGL;
-      aType:=GetObjectType(outputDevice);
-      if aType=0 then
-         RaiseLastOSError;
-      if aType in cMemoryDCs then
-         dwFlags:=dwFlags or PFD_DRAW_TO_BITMAP
-      else dwFlags:=dwFlags or PFD_DRAW_TO_WINDOW;
-      if rcoDoubleBuffered in Options then
-         dwFlags:=dwFlags or PFD_DOUBLEBUFFER;
-      if rcoStereo in Options then
-         dwFlags:=dwFlags or PFD_STEREO;
-      iPixelType:=PFD_TYPE_RGBA;
-      cColorBits:=ColorBits;
-      cDepthBits:=32;
-      cStencilBits:=StencilBits;
-      cAccumBits:=AccumBits;
-      cAuxBuffers:=AuxBuffers;
-      iLayerType:=PFD_MAIN_PLANE;
-   end;
+{   iAttribList, iFormats, iValues : array of Integer;
+   fAttribList : array of Single;
+   nbFormats, rc, i : Integer;
+   chooseResult : LongBool;
 
+   procedure AddAttrib(attrib, value : Integer);
+   var
+      n : Integer;
+   begin
+      n:=Length(iAttribList);
+      SetLength(iAttribList, n+2);
+      iAttribList[n]:=attrib;
+      iAttribList[n+1]:=value;
+   end; }
+
+begin
    // Just in case it didn't happen already.
-   if not InitOpenGL then
-      RaiseLastOSError;
-   pixelFormat:=ChoosePixelFormat(outputDevice, @PFDescriptor);
-   if pixelFormat=0 then
-      RaiseLastOSError;
+   if not InitOpenGL then RaiseLastOSError;
+   // *UNDER CONSTRUCTION... ENABLE BACK ONLY IF YOU UNDERSTAND THAT STUFF*
+   //
+{   if WGL_ARB_pixel_format then begin
+      // New pixel format selection via wglChoosePixelFormatARB
+      SetLength(iAttribList, 0);
+      AddAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
+//      AddAttrib(WGL_DRAW_TO_BITMAP_ARB, GL_TRUE);
+      AddAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
+//      AddAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
+//      AddAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB);
+      AddAttrib(WGL_SUPPORT_OPENGL_ARB, GL_TRUE);
+      AddAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+//      AddAttrib(WGL_DEPTH_BITS_ARB, 24);
+//      AddAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
+//      AddAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
+//      AddAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
+//      AddAttrib(WGL_SAMPLE_BUFFERS_ARB, 4);
+      AddAttrib(0, 0);
+      SetLength(fAttribList, 2); fAttribList[0]:=0; fAttribList[1]:=0;
+      SetLength(iFormats, 512);
+      nbFormats:=1;
+      outputDevice:=GetDC(0);
+      rc:=CreateRenderingContext(outputDevice, [], 24, 0, 0, 0, 0);
+      wglMakeCurrent(outputDevice, rc);
+      chooseResult:=wglChoosePixelFormatARB(outputDevice, @iAttribList[0], @fAttribList[0], 512, @iFormats[0], @nbFormats);
+      Assert(chooseResult);
+      Assert(nbFormats<>0);
+      for i:=0 to nbFormats-1 do begin
+         SetLength(iAttribList, 6);
+         iAttribList[0]:=WGL_ACCELERATION_ARB;
+         iAttribList[1]:=WGL_SWAP_METHOD_ARB;
+         iAttribList[2]:=WGL_COLOR_BITS_ARB;
+         iAttribList[3]:=WGL_DEPTH_BITS_ARB;
+         iAttribList[4]:=WGL_STENCIL_BITS_ARB;
+         iAttribList[5]:=WGL_SAMPLES_ARB;
+         SetLength(iValues, 6);
+         wglGetPixelFormatAttribivARB(outputDevice, iFormats[i], 0, 6, @iAttribList[0], @iValues[0]);
+      end;
+
+   end else begin }
+      // Legacy pixel format selection
+      FillChar(pfDescriptor, SizeOf(pfDescriptor), 0);
+      with PFDescriptor do begin
+         nSize:=SizeOf(PFDescriptor);
+         nVersion:=1;
+         dwFlags:=PFD_SUPPORT_OPENGL;
+         aType:=GetObjectType(outputDevice);
+         if aType=0 then
+            RaiseLastOSError;
+         if aType in cMemoryDCs then
+            dwFlags:=dwFlags or PFD_DRAW_TO_BITMAP
+         else dwFlags:=dwFlags or PFD_DRAW_TO_WINDOW;
+         if rcoDoubleBuffered in Options then
+            dwFlags:=dwFlags or PFD_DOUBLEBUFFER;
+         if rcoStereo in Options then
+            dwFlags:=dwFlags or PFD_STEREO;
+         iPixelType:=PFD_TYPE_RGBA;
+         cColorBits:=ColorBits;
+         cDepthBits:=32;
+         cStencilBits:=StencilBits;
+         cAccumBits:=AccumBits;
+         cAuxBuffers:=AuxBuffers;
+         iLayerType:=PFD_MAIN_PLANE;
+      end;
+
+      pixelFormat:=ChoosePixelFormat(outputDevice, @PFDescriptor);
+//   end;
+
+   if pixelFormat=0 then RaiseLastOSError;
 
    if GetPixelFormat(outputDevice)<>pixelFormat then begin
       if not SetPixelFormat(outputDevice, pixelFormat, @PFDescriptor) then
@@ -1002,7 +1059,7 @@ begin
    end;
 
    // Check the properties we just set.
-   DescribePixelFormat(outputDevice, PixelFormat, SizeOf(PFDescriptor), PFDescriptor);
+   DescribePixelFormat(outputDevice, pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
    with pfDescriptor do
       if (dwFlags and PFD_NEED_PALETTE) <> 0 then
          SetupPalette(outputDevice, PFDescriptor);

@@ -2715,7 +2715,7 @@ begin
    // ok, not an absolute path, try given paths
    with mLib do begin
       if FTexturePathList<>nil then for i:=0 to FTexturePathList.Count-1 do begin
-         tryName:=FTexturePathList[i]+textureFileName;
+         tryName:=IncludeTrailingBackslash(FTexturePathList[i])+textureFileName;
          if FileExists(tryName) then begin
             textureFileName:=tryName;
             Break;
