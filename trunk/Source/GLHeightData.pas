@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/02/02 - EG - Faster Cleanup & cache management
       <li>21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
       <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
       <li>10/09/01 - EG - Added TGLTerrainBaseHDS
@@ -74,6 +75,7 @@ type
          FMaxThreads : Integer;
          FMaxPoolSize : Integer;
          FHeightDataClass : THeightDataClass;
+         FReleaseLatency : TDateTime;
 
 	   protected
 	      { Protected Declarations }
@@ -217,6 +219,7 @@ type
          FObjectTag : TObject;
          FTag, FTag2 : Integer;
          FOnDestroy : TNotifyEvent;
+         FReleaseTimeStamp : TDateTime;
          FDirty : Boolean;
 
          procedure BuildByteRaster;
@@ -360,6 +363,7 @@ type
 	TGLBitmapHDS = class (THeightDataSource)
 	   private
 	      { Private Declarations }
+         FScanLineCache : array of PByteArray;
          FBitmap : Graphics.TBitmap;
          FPicture : TPicture;
 
@@ -370,6 +374,7 @@ type
 
          procedure CreateMonochromeBitmap(size : Integer);
          procedure FreeMonochromeBitmap;
+         function GetScanLine(y : Integer) : PByteArray;
 
          procedure StartPreparingData(heightData : THeightData); override;
 
@@ -490,6 +495,7 @@ begin
 	inherited Create(AOwner);
    FHeightDataClass:=THeightData;
    FData:=TThreadList.Create;
+   FReleaseLatency:=15/(3600*24);
    FThread:=THeightDataSourceThread.Create(True);
    FThread.FreeOnTerminate:=False;
    THeightDataSourceThread(FThread).FOwner:=Self;
@@ -527,7 +533,8 @@ begin
       try
          for i:=0 to Count-1 do
             if THeightData(Items[i]).UseCounter>0 then
-               raise Exception.Create('ERR: HeightData still in use');
+               if not (csDestroying in ComponentState) then
+                  raise Exception.Create('ERR: HeightData still in use');
          for i:=0 to Count-1 do begin
             THeightData(Items[i]).FOwner:=nil;
             THeightData(Items[i]).Free;
@@ -587,9 +594,8 @@ end;
 function THeightDataSource.PreLoad(xLeft, yTop, size : Integer;
                                    dataType : THeightDataType) : THeightData;
 begin
-   CleanUp;
    Result:=HeightDataClass.Create(Self, xLeft, yTop, size, dataType);
-   FData.LockList.Insert(0, Result);
+   FData.LockList.Add(Result);
    FData.UnlockList;
    if MaxThreads=0 then
       StartPreparingData(Result);
@@ -599,7 +605,7 @@ end;
 //
 procedure THeightDataSource.Release(aHeightData : THeightData);
 begin
-   CleanUp;
+   // nothing, yet
 end;
 
 // MarkDirty (rect)
@@ -648,32 +654,51 @@ end;
 //
 procedure THeightDataSource.CleanUp;
 var
-   i : Integer;
+   packList : Boolean;
+   i, k : Integer;
    usedMemory : Integer;
+   hd : THeightData;
 begin
    with FData.LockList do begin
       try
          usedMemory:=0;
-         // cleanup dirty tiles and compute used memory
-         for i:=Count-1 downto 0 do with THeightData(Items[i]) do begin
-            if Dirty then begin
-               FOwner:=nil;
-               Free;
-               Delete(i);
-            end else usedMemory:=usedMemory+THeightData(Items[i]).DataSize;
-         end;
-         // if MaxPoolSize exceeded, release all that may be
-         if usedMemory>MaxPoolSize then begin
-            for i:=Count-1 downto 0 do with THeightData(Items[i]) do begin
-               if (DataState=hdsReady) and (UseCounter=0) then begin
-                  usedMemory:=usedMemory-DataSize;
+         packList:=False;
+         // Cleanup dirty tiles and compute used memory
+         for i:=Count-1 downto 0 do begin
+            hd:=THeightData(List[i]);
+            if hd<>nil then with hd do begin
+               if Dirty then begin
                   FOwner:=nil;
                   Free;
-                  Delete(i);
-                  if usedMemory<=MaxPoolSize then Break;
+                  List[i]:=nil;
+                  packList:=True;
+               end else usedMemory:=usedMemory+hd.DataSize;
+            end;
+         end;
+         // If MaxPoolSize exceeded, release all that may be, and pack the list
+         k:=0;
+         if usedMemory>MaxPoolSize then begin
+            for i:=0 to Count-1 do begin
+               hd:=THeightData(List[i]);
+               if hd<>nil then with hd do begin
+                  if (DataState=hdsReady) and (UseCounter=0) then begin
+                     FOwner:=nil;
+                     Free;
+                  end else begin
+                     List[k]:=hd;
+                     Inc(k);
+                  end;
                end;
             end;
-         end; 
+            Count:=k;
+         end else if packList then begin
+            for i:=0 to Count-1 do
+               if List[i]<>nil then begin
+                  List[k]:=List[i];
+                  Inc(k);
+               end;
+            Count:=k;
+         end;
       finally
          FData.UnlockList;
       end;
@@ -811,8 +836,10 @@ procedure THeightData.Release;
 begin
    Dec(FUseCounter);
    Assert(FUseCounter>=0);
-   if FUseCounter=0 then
+   if FUseCounter=0 then begin
+      FReleaseTimeStamp:=Now;
       Owner.Release(Self);
+   end;
 end;
 
 // MarkDirty
@@ -1195,14 +1222,28 @@ begin
    finally
       Picture.OnChange:=OnPictureChanged;
    end;
+   SetLength(FScanLineCache, 0); // clear the cache
+   SetLength(FScanLineCache, size);
 end;
 
 // FreeMonochromeBitmap
 //
 procedure TGLBitmapHDS.FreeMonochromeBitmap;
 begin
+   SetLength(FScanLineCache, 0);
    FBitmap.Free;
    FBitmap:=nil;
+end;
+
+// GetScanLine
+//
+function TGLBitmapHDS.GetScanLine(y : Integer) : PByteArray;
+begin
+   Result:=FScanLineCache[y];
+   if not Assigned(Result) then begin
+      Result:=FBitmap.ScanLine[y];
+      FScanLineCache[y]:=Result;
+   end;
 end;
 
 // StartPreparingData
@@ -1223,7 +1264,7 @@ begin
       oldType:=DataType;
       DataType:=hdtByte;
       for y:=YTop to YTop+Size-1 do begin
-         bitmapLine:=FBitmap.ScanLine[y and wrapMask];
+         bitmapLine:=GetScanLine(y and wrapMask);
          rasterLine:=ByteRaster[y-YTop];
          // *BIG CAUTION HERE* : Don't remove the intermediate variable here!!!
          // or Delphi compiler will "optimize" to 32 bits access with clamping

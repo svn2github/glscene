@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
       <li>18/12/01 - EG - Vertex-cache aware stripifier (+10% on GeForce)
       <li>12/08/01 - EG - Completely rewritten handles management
       <li>21/07/01 - EG - Added Notication registration in SetHeightDataSource
@@ -13,7 +14,8 @@ unit GLTerrainRenderer;
 
 interface
 
-uses Classes, GLScene, GLHeightData, GLTexture, Geometry, GLContext, GLROAMPatch;
+uses Classes, GLScene, GLHeightData, GLTexture, Geometry, GLContext, GLROAMPatch,
+   VectorLists;
 
 type
 
@@ -31,20 +33,28 @@ type
 	      { Private Declarations }
          FHeightDataSource : THeightDataSource;
          FTileSize : Integer;
-         FQualityDistance : Single;
+         FQualityDistance, FinvTileSize : Single;
          FLastTriangleCount : Integer;
          FTilesPerTexture : Single;
+         FMaxCLODTriangles, FCLODPrecision : Integer;
+         FBufferVertices : TAffineVectorList;
+         FBufferTexPoints : TTexPointList;
+         FBufferVertexIndices : TIntegerList;
 
 	   protected
 	      { Protected Declarations }
          FTilesHash : array [0..255] of TList;
 
-         function HashedTiled(const tilePos : TAffineVector) : THeightData; overload;
-         function HashedTiled(const xLeft, yTop : Integer) : THeightData; overload;
+         procedure MarkAllTilesAsUnused;
+         procedure ReleaseAllUnusedTiles;
+         procedure MarkHashedTileAsUsed(const tilePos : TAffineVector);
+         function HashedTile(const tilePos : TAffineVector; canAllocate : Boolean = True) : THeightData; overload;
+         function HashedTile(const xLeft, yTop : Integer; canAllocate : Boolean = True) : THeightData; overload;
 
          procedure SetHeightDataSource(const val : THeightDataSource);
          procedure SetTileSize(const val : Integer);
          procedure SetTilesPerTexture(const val : Single);
+         procedure SetCLODPrecision(const val : Integer);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 			procedure DestroyHandles; override;
@@ -52,23 +62,7 @@ type
          procedure ReleaseAllTiles; dynamic;
          procedure OnTileDestroyed(sender : TObject); virtual;
 
-         {: Render the best fitting tile for tilePos.<p>
-            tilePos is in *local* coordinates }
-         procedure RenderTile(const tilePos : TAffineVector; eyeDistance : Single;
-                              texFactor : Single); virtual;
-
-         function RenderTile2(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
-
-         {: Renders a THeightData as a quad, axis-aligned tile.<p>
-            The tile is rendered with a triangle strips. }
-         procedure RenderTileAsTriangleStrip(aTile : THeightData;
-                       const leftTop, scale, texLeftTop, texScale : TAffineVector;
-                       texFactor : Single);
-         {: Renders a THeightData as a quad, axis-aligned tile.<p>
-            The tile is rendered with a single triangle fans (center to edges). }
-         procedure RenderTileAsTriangleFan(aTile : THeightData;
-                       const leftTop, scale, texLeftTop, texScale : TAffineVector;
-                       texFactor : Single);
+         function GetPreparedPatch(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
 
 	   public
 	      { Public Declarations }
@@ -98,8 +92,18 @@ type
             This parameter gives an hint to the terrain renderer at which distance
             the terrain quality can be degraded to favor speed. The distance is
             expressed in absolute coordinates units.<p>
-            A value of 0 (default) should be interpreted as "the highest quality". }
+            All tiles closer than this distance are rendered without any LOD
+            or mesh simplification. }
          property QualityDistance : Single read FQualityDistance write FQualityDistance;
+         {: Maximum number of CLOD triangles per scene.<p>
+            Triangles in high-resolution tiles (closer than QualityDistance) do
+            not count toward this limit. }
+         property MaxCLODTriangles : Integer read FMaxCLODTriangles write FMaxCLODTriangles default 65536;
+         {: Precision of CLOD tiles.<p>
+            The lower the value, the higher the precision and triangle count.
+            Large values will result in coarse terrain.<br>
+            high-resolution tiles (closer than QualityDistance) ignore this setting. }
+         property CLODPrecision : Integer read FCLODPrecision write SetCLODPrecision default 100;
 	end;
 
 // ------------------------------------------------------------------
@@ -110,7 +114,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL12, GLMisc, XOpenGL, VectorLists;
+uses SysUtils, OpenGL12, GLMisc, XOpenGL;
 
 // ------------------
 // ------------------ TTerrainRenderer ------------------
@@ -127,7 +131,13 @@ begin
       FTilesHash[i]:=TList.Create;
    ObjectStyle:=ObjectStyle+[osDirectDraw];
    FTileSize:=16;
+   FinvTileSize:=1/16;
    FTilesPerTexture:=1;
+   FMaxCLODTriangles:=65536;
+   FCLODPrecision:=100;
+   FBufferVertices:=TAffineVectorList.Create;
+   FBufferTexPoints:=TTexPointList.Create;
+   FBufferVertexIndices:=TIntegerList.Create;
 end;
 
 // Destroy
@@ -136,6 +146,9 @@ destructor TTerrainRenderer.Destroy;
 var
    i : Integer;
 begin
+   FBufferVertices.Free;
+   FBufferTexPoints.Free;
+   FBufferVertexIndices.Free;
    ReleaseAllTiles;
    for i:=0 to High(FTilesHash) do
       FTilesHash[i]:=TList.Create;
@@ -210,15 +223,12 @@ var
    vEye : TVector;
    tilePos, absTilePos, observer : TAffineVector;
    delta, n, rpIdxDelta : Integer;
-   f, tileRadius, texFactor, maxTilePosX : Single;
+   f, tileRadius, texFactor, maxTilePosX, tileDist, qDist : Single;
    patch, prevPatch : TGLROAMPatch;
-   vertices : TAffineVectorList;
-   vertexIndices : TIntegerList;
-   texPoints : TTexPointList;
    patchList, rowList, prevRow, buf : TList;
    rcci : TRenderContextClippingInfo;
+//   trackDetails : Boolean;
 begin
-   texFactor:=1/(TilesPerTexture*TileSize);
    if csDesigning in ComponentState then Exit;
    if HeightDataSource=nil then Exit;
    // first project eye position into heightdata coordinates
@@ -226,7 +236,7 @@ begin
    SetVector(observer, vEye);
    vEye[0]:=Round(vEye[0]/TileSize-0.5)*TileSize+TileSize*0.5;
    vEye[1]:=Round(vEye[1]/TileSize-0.5)*TileSize+TileSize*0.5;
-   tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(128*Scale.Z))*2;
+   tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(256*Scale.Z))*1.3;
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
    delta:=TileSize;
@@ -234,12 +244,34 @@ begin
    f:=(rci.rcci.farClippingDistance+tileRadius)/Scale.X;
    f:=Round(f/TileSize+1.0)*TileSize;
    maxTilePosX:=vEye[0]+f;
+   texFactor:=1/(TilesPerTexture*TileSize);
    rcci:=rci.rcci;
+   if QualityDistance>0 then
+      qDist:=QualityDistance+tileRadius*0.5
+   else qDist:=-1;
+//   trackDetails:=Material.HasSecondaryTexture;
 
-   SetROAMTrianglesCapacity(900000);
+   SetROAMTrianglesCapacity(MaxCLODTriangles);
+   n:=Sqr(TileSize+1)*2;
+   FBufferVertices.Capacity:=n;
+   FBufferTexPoints.Capacity:=n;
+
+   glPushMatrix;
+   glScalef(1, 1, 1/128);
+   glTranslatef(-0.5*TileSize, -0.5*TileSize, 0);
+   glEnableClientState(GL_VERTEX_ARRAY);
+   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   glDisableClientState(GL_NORMAL_ARRAY);
+
+   glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.List);
+   xglTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.List);
+   FLastTriangleCount:=0;
+
    patchList:=TList.Create;
    rowList:=TList.Create;
    prevRow:=TList.Create;
+
+   MarkAllTilesAsUnused;
 
    tilePos[1]:=vEye[1]-f;
    while tilePos[1]<=vEye[1]+f do begin
@@ -249,21 +281,30 @@ begin
       while tilePos[0]<=maxTilePosX do begin
          absTilePos:=VectorTransform(tilePos, DirectAbsoluteMatrix^);
          if not IsVolumeClipped(absTilePos, tileRadius, rcci) then begin
-//            RenderTile(tilePos, VectorDistance(absTilePos, AffineVectorMake(rci.cameraPosition)), texFactor);
-//            RenderTileAsTriangleStrip(
-            patch:=RenderTile2(tilePos, observer, texFactor);
+            patch:=GetPreparedPatch(tilePos, observer, texFactor);
 
-            patch.HighRes:=True and (VectorDistance(AffineVectorMake(rcci.origin), absTilePos)<QualityDistance);
-            
+            tileDist:=VectorDistance(PAffineVector(@rcci.origin)^, absTilePos);
+            patch.HighRes:=(tileDist<qDist);
+//            patch.NoDetails:=trackDetails and (tileDist>QualityDistance);
+
             if Assigned(prevPatch) then
                patch.ConnectToTheWest(prevPatch);
             if prevRow.Count>n then
-               if prevRow.List[n]<>nil then
+               if (prevRow.List[n]<>nil) then
                   patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
             prevPatch:=patch;
-            patchList.Add(patch);
             rowList.Add(patch);
+
+            if patch.HighRes then begin
+               // high-res patches are issued immediately
+               patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
+               FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+            end else begin
+               // CLOD patches are issued after tesselation
+               patchList.Add(patch);
+            end;
          end else begin
+            MarkHashedTileAsUsed(tilePos);
             prevPatch:=nil;
             rowList.Add(nil);
          end;
@@ -277,78 +318,81 @@ begin
       rowList.Count:=0;
    end;
 
-   n:=Sqr(TileSize+1)*2;
-   vertices:=TAffineVectorList.Create;
-   vertices.Capacity:=n;
-   texPoints:=TTexPointList.Create;
-   texPoints.Capacity:=n;
-
-   vertexIndices:=TIntegerList.Create;
-
    rpIdxDelta:=Round(2*f/delta)+2;
-
-   glPushMatrix;
-   glScalef(1, 1, 1/128);
-   glTranslatef(-0.5*TileSize, -0.5*TileSize, 0);
-   glEnableClientState(GL_VERTEX_ARRAY);
-   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-   glDisableClientState(GL_NORMAL_ARRAY);
-
-   glVertexPointer(3, GL_FLOAT, 0, vertices.List);
-   xglTexCoordPointer(2, GL_FLOAT, 0, texPoints.List);
-   FLastTriangleCount:=0;
 
    for n:=0 to patchList.Count-1+rpIdxDelta do begin
       if n<patchList.Count then begin
          patch:=TGLROAMPatch(patchList[n]);
          patch.Tesselate;
       end;
-
       if n>=rpIdxDelta then begin
          patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
-
-         vertices.Count:=0;
-         texPoints.Count:=0;
-         vertexIndices.Count:=0;
-//         patch.Render(vertices, vertexIndices, texPoints);
-         patch.Render(vertices, vertexIndices, texPoints);
-
-//         glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
-
+         patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
          FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
-
       end;
    end;
 
+   glDisableClientState(GL_VERTEX_ARRAY);
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
    glPopMatrix;
 
-   texPoints.Free;
-   vertexIndices.Free;
-   vertices.Free;
+   ReleaseAllUnusedTiles;
+   HeightDataSource.CleanUp;
 
    rowList.Free;
    prevRow.Free;
    patchList.Free;
-
-   FLastTriangleCount:=FLastTriangleCount;// div 3;
 end;
 
-// HashedTiled
+// MarkAllTilesAsUnused
 //
-function TTerrainRenderer.HashedTiled(const tilePos : TAffineVector) : THeightData;
+procedure TTerrainRenderer.MarkAllTilesAsUnused;
+var
+   i, j : Integer;
+begin
+   for i:=Low(FTilesHash) to High(FTilesHash) do with FTilesHash[i] do
+      for j:=Count-1 downto 0 do THeightData(List[j]).Tag:=0;
+end;
+
+// ReleaseAllUnusedTiles
+//
+procedure TTerrainRenderer.ReleaseAllUnusedTiles;
+var
+   i, j : Integer;
+begin
+   for i:=Low(FTilesHash) to High(FTilesHash) do with FTilesHash[i] do
+      for j:=Count-1 downto 0 do with THeightData(List[j]) do
+         if Tag=0 then begin
+            Delete(j);
+            Release;
+         end;
+end;
+
+// MarkHashedTileAsUsed
+//
+procedure TTerrainRenderer.MarkHashedTileAsUsed(const tilePos : TAffineVector);
+var
+   hd : THeightData;
+begin
+   hd:=HashedTile(tilePos);
+   if Assigned(hd) then hd.Tag:=1;
+end;
+
+// HashedTile
+//
+function TTerrainRenderer.HashedTile(const tilePos : TAffineVector; canAllocate : Boolean = True) : THeightData;
 var
    xLeft, yTop : Integer;
 begin
    xLeft:=Round(tilePos[0]/(TileSize)-0.5)*(TileSize);
    yTop:=Round(tilePos[1]/(TileSize)-0.5)*(TileSize);
-   Result:=HashedTiled(xLeft, yTop);
+   Result:=HashedTile(xLeft, yTop, canAllocate);
 end;
 
-// HashedTiled
+// HashedTile
 //
-function TTerrainRenderer.HashedTiled(const xLeft, yTop : Integer) : THeightData;
+function TTerrainRenderer.HashedTile(const xLeft, yTop : Integer; canAllocate : Boolean = True) : THeightData;
 var
    i, hash : Integer;
    hd : THeightData;
@@ -367,7 +411,7 @@ begin
       end;
    end;
    // if not, request it
-   if not Assigned(Result) then begin
+   if canAllocate and (not Assigned(Result)) then begin
       Result:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtByte);
       Result.RegisterUse;
       Result.OnDestroy:=OnTileDestroyed;
@@ -376,17 +420,18 @@ begin
    end;
 end;
 
-// RenderTile2
+// GetPreparedPatch
 //
-function TTerrainRenderer.RenderTile2(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
+function TTerrainRenderer.GetPreparedPatch(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
 var
    tile : THeightData;
    patch : TGLROAMPatch;
    xLeft, yTop : Integer;
 begin
-   xLeft:=Round(tilePos[0]/(TileSize)-0.5)*(TileSize);
-   yTop:=Round(tilePos[1]/(TileSize)-0.5)*(TileSize);
-   tile:=HashedTiled(xLeft, yTop);
+   xLeft:=Round(tilePos[0]*FinvTileSize-0.5)*TileSize;
+   yTop:=Round(tilePos[1]*FinvTileSize-0.5)*TileSize;
+   tile:=HashedTile(xLeft, yTop);
+   tile.Tag:=1;
    patch:=TGLROAMPatch(tile.ObjectTag);
    if not Assigned(patch) then begin
       // spawn ROAM patch
@@ -397,195 +442,13 @@ begin
       patch.VertexOffset:=tilePos;
       patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
       patch.TextureOffset:=AffineVectorMake(xLeft*texFactor, 1-yTop*texFactor, 0);
-      patch.ComputeVariance(11, 175);
+      patch.ComputeVariance(FCLODPrecision);
    end;
-   PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-xLeft-(TileSize shr 1));
-   PAffineIntVector(@patch.ObserverPosition)[1]:=Round(eyePos[1]-yTop-(TileSize shr 1));
-   PAffineIntVector(@patch.ObserverPosition)[2]:=Round(eyePos[2])*128;
+   PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-tilePos[0]);
+   PAffineIntVector(@patch.ObserverPosition)[1]:=Round(eyePos[1]-tilePos[1]);
+   PAffineIntVector(@patch.ObserverPosition)[2]:=Round(eyePos[2]-tilePos[2]);
    patch.ResetTessellation;
    Result:=patch;
-end;
-
-// RenderTile
-//
-procedure TTerrainRenderer.RenderTile(const tilePos : TAffineVector;
-                                      eyeDistance : Single; texFactor : Single);
-var
-   i, hash : Integer;
-   hd, tile : THeightData;
-   xLeft, yTop : Integer;
-   listHandle : TGLListHandle;
-begin
-   xLeft:=Round(tilePos[0]/(TileSize-3)-0.5)*(TileSize-3);
-   yTop:=Round(tilePos[1]/(TileSize-3)-0.5)*(TileSize-3);
-   // is the tile already in our list?
-   hash:=( xLeft+(xLeft shr 8)+(xLeft shr 16)
-          +yTop+(yTop shr 8)+(yTop shr 16)) and 255;
-   tile:=nil;
-   with FTilesHash[hash] do begin
-      for i:=0 to Count-1 do begin
-         hd:=THeightData(List[i]);
-         if (hd.XLeft=xLeft) and (hd.YTop=yTop) then begin
-            tile:=hd;
-            Break;
-         end;
-      end;
-   end;
-   // if not, request it
-   if not Assigned(tile) then begin
-      tile:=HeightDataSource.GetData(xLeft, yTop, TileSize, hdtByte);
-      tile.RegisterUse;
-      tile.OnDestroy:=OnTileDestroyed;
-      FTilesHash[hash].Add(tile);
-   end;
-   // build/rebuild list
-   if (QualityDistance>0) and (tile.Tag<>0) then begin
-      if (((eyeDistance<QualityDistance) and (tile.Tag2=0))
-          or ((eyeDistance>=QualityDistance) and (tile.Tag2=1))) then begin
-         glDeleteLists(tile.Tag, 1);
-         tile.Tag:=0;
-      end;
-   end;
-   if tile.Tag=0 then begin
-      listHandle:=TGLListHandle.Create;
-      listHandle.AllocateHandle;
-      tile.Tag:=Integer(listHandle);
-      glNewList(listHandle.Handle, GL_COMPILE);
-      if (eyeDistance<QualityDistance) or (QualityDistance<=0) then begin
-         tile.Tag2:=1;
-         RenderTileAsTriangleStrip(tile,
-            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1),
-            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1), texFactor);
-      end else begin
-         tile.Tag2:=0;
-         RenderTileAsTriangleFan(tile,
-            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1),
-            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1), texFactor);
-      end;
-      glEndList;
-   end else listHandle:=TGLListHandle(tile.Tag);
-   // start rendering
-   glCallList(listHandle.Handle);
-   if tile.Tag2=1 then
-      Inc(FLastTriangleCount, 2*(tile.Size-3)*(tile.Size-3))
-   else Inc(FLastTriangleCount, 4*(tile.Size-2)-2);
-   // mark tile as used
-   tile.ObjectTag:=Pointer(1);
-end;
-
-// RenderTileAsTriangleStrip
-//
-procedure TTerrainRenderer.RenderTileAsTriangleStrip(aTile : THeightData;
-              const leftTop, scale, texLeftTop, texScale : TAffineVector;
-              texFactor : Single);
-var
-   x, y, dx, ex : Integer;
-   pTop, pBottom : TAffineVector;
-   bottomRow, topRow : PSmallIntArray;
-   raster : PSmallIntRaster;
-
-   procedure IssueVertex(const n, v : TAffineVector);
-   begin
-      xglTexCoord2f(v[0]*texFactor, -v[1]*texFactor);
-      glVertex3fv(@v);
-   end;
-
-begin
-   raster:=aTile.SmallIntRaster;
-   for y:=1 to aTile.Size-3 do begin
-      pTop[1]:=leftTop[1]+y*scale[1];
-      pBottom[1]:=leftTop[1]+(y+1)*scale[1];
-      bottomRow:=raster[y+1];
-      topRow:=raster[y];
-      if (y and 1)=0 then begin
-         x:=aTile.Size-2;
-         ex:=0;
-         dx:=-1;
-      end else begin
-         x:=1;
-         ex:=aTile.Size-1;
-         dx:=1;
-      end;
-      // Strips direction is reversed from one strip to another,
-      // this increases vertex coherency (10% faster on GeForce)
-      glBegin(GL_TRIANGLE_STRIP);
-      while x<>ex do begin
-         pTop[0]:=leftTop[0]+x*scale[0];
-         pBottom[0]:=pTop[0];
-         pBottom[2]:=(bottomRow[x]-128)*scale[2];
-         pTop[2]:=(topRow[x]-128)*scale[2];
-         if dx=1 then begin
-            IssueVertex(aTile.Normal(x, y+1, scale), pBottom);
-            IssueVertex(aTile.Normal(x, y, scale), pTop);
-            Inc(x);
-         end else begin
-            IssueVertex(aTile.Normal(x, y, scale), pTop);
-            IssueVertex(aTile.Normal(x, y+1, scale), pBottom);
-            Dec(x);
-         end;
-      end;
-      glEnd;
-   end;
-end;
-
-// RenderTileAsTriangleFan
-//
-procedure TTerrainRenderer.RenderTileAsTriangleFan(aTile : THeightData;
-              const leftTop, scale, texLeftTop, texScale : TAffineVector;
-              texFactor : Single);
-var
-   x, y : Integer;
-   p : TAffineVector;
-   n : TAffineVector;
-   row : GLHeightData.PByteArray;
-begin
-   // to optimize : normals calculation is slooooowwww
-   // the cacheing takes care of it, but still...
-   x:=(aTile.Size-2) div 2;
-   p[0]:=leftTop[0]+x*scale[0];
-   p[1]:=leftTop[1]+x*scale[1];
-   p[2]:=(aTile.ByteRaster[x][x]-128)*scale[2];
-   n:=aTile.Normal(x, x, scale);
-   glBegin(GL_TRIANGLE_FAN);
-      glNormal3fv(@n);
-      xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
-      glVertex3fv(@p);
-      p[1]:=leftTop[1]+1*scale[0];
-      row:=aTile.ByteRaster[1];
-      for x:=1 to aTile.Size-2 do begin
-         p[0]:=leftTop[0]+x*scale[0];
-         p[2]:=(row[x]-128)*scale[2];
-         n:=aTile.Normal(x, 1, scale);
-         glNormal3fv(@n);
-         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
-         glVertex3fv(@p);
-      end;
-      for y:=2 to aTile.Size-2 do begin
-         p[1]:=leftTop[1]+y*scale[1];
-         p[2]:=(aTile.ByteRaster[y][aTile.Size-2]-128)*scale[2];
-         n:=aTile.Normal(aTile.Size-2, y, scale);
-         glNormal3fv(@n);
-         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
-         glVertex3fv(@p);
-      end;
-      row:=aTile.ByteRaster[aTile.Size-2];
-      for x:=aTile.Size-3 downto 1 do begin
-         p[0]:=leftTop[0]+x*scale[0];
-         p[2]:=(row[x]-128)*scale[2];
-         n:=aTile.Normal(x, aTile.Size-2, scale);
-         glNormal3fv(@n);
-         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
-         glVertex3fv(@p);
-      end;
-      for y:=aTile.Size-3 downto 1 do begin
-         p[1]:=leftTop[1]+y*scale[1];
-         p[2]:=(aTile.ByteRaster[y][1]-128)*scale[2];
-         n:=aTile.Normal(1, y, scale);
-         glNormal3fv(@n);
-         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
-         glVertex3fv(@p);
-      end;
-   glEnd;
 end;
 
 // SetHeightDataSource
@@ -613,6 +476,7 @@ begin
       if val<8 then
          FTileSize:=8
       else FTileSize:=RoundUpToPowerOf2(val);
+      FinvTileSize:=1/FTileSize;
       ReleaseAllTiles;
       StructureChanged;
    end;
@@ -628,6 +492,28 @@ begin
    end;
 end;
 
+// SetCLODPrecision
+//
+procedure TTerrainRenderer.SetCLODPrecision(const val : Integer);
+var
+   i, k : Integer;
+   hd : THeightData;
+begin
+   if val<>FCLODPrecision then begin
+      FCLODPrecision:=val;
+      for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
+         for k:=Count-1 downto 0 do begin
+            hd:=THeightData(List[k]);
+            if Assigned(hd.ObjectTag) then begin
+               (hd.ObjectTag as TGLROAMPatch).Free;
+               hd.ObjectTag:=nil;
+            end;
+         end;
+         Clear;
+      end;
+   end;
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -640,4 +526,3 @@ initialization
    RegisterClass(TTerrainRenderer);
 
 end.
-
