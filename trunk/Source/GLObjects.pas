@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/02 - Egg - TPolygon now properly setups normals (filippo)
       <li>17/03/02 - Egg - Support for transparent lines
       <li>02/02/02 - Egg - Fixed TSprite change notification
       <li>26/01/02 - Egg - TPlane & TCube now osDirectDraw
@@ -3790,19 +3791,27 @@ end;
 // BuildList
 //
 procedure TPolygon.BuildList(var rci : TRenderContextInfo);
+var
+   normal : TAffineVector;
+   pNorm : PAffineVector;
 begin
    if (Nodes.Count>1) then begin
-      // tessellate top polygon
+      normal:=Nodes.Normal;
+      if VectorIsNull(normal) then
+         pNorm:=nil
+      else pNorm:=@normal;
       if ppTop in FParts then begin
          if SplineMode=lsmLines then
-            Nodes.RenderTesselatedPolygon(True, nil, 1)
-         else Nodes.RenderTesselatedPolygon(True, nil, FDivision);
+            Nodes.RenderTesselatedPolygon(True, pNorm, 1)
+         else Nodes.RenderTesselatedPolygon(True, pNorm, FDivision);
       end;
       // tessellate bottom polygon
       if ppBottom in FParts then begin
+         if Assigned(pNorm) then
+            NegateVector(normal);
          if SplineMode=lsmLines then
-            Nodes.RenderTesselatedPolygon(True, nil, 1, True)
-         else Nodes.RenderTesselatedPolygon(True, nil, FDivision, True);
+            Nodes.RenderTesselatedPolygon(True, pNorm, 1, True)
+         else Nodes.RenderTesselatedPolygon(True, pNorm, FDivision, True);
       end;
    end;
 end;
