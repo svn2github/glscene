@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>01/04/03 - SG - Fixed TGLBaseMesh.Assign
       <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled
       <li>03/02/03 - EG - Faster PrepareBuildList logic
       <li>31/01/03 - EG - Added MaterialCache logic
@@ -4983,8 +4984,8 @@ begin
       FOverlaySkeleton:=TGLBaseMesh(Source).FOverlaySkeleton;
       FIgnoreMissingTextures:=TGLBaseMesh(Source).FIgnoreMissingTextures;
       FAutoCentering:=TGLBaseMesh(Source).FAutoCentering;
-      FMeshObjects.Assign(TGLBaseMesh(Source).FMeshObjects);
       FSkeleton.Assign(TGLBaseMesh(Source).FSkeleton);
+      FMeshObjects.Assign(TGLBaseMesh(Source).FMeshObjects);
    end;
    inherited Assign(Source);
 end;
