@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/06/03 - EG - Fixed InterpolatedHeight HDS selection
       <li>06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
       <li>24/01/03 - EG - Fixed ByteHeight normalization scaling
       <li>07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
@@ -846,9 +847,9 @@ begin
          // first, lookup data list to find if aHeightData contains our point
          foundHd:=nil;
          for i:=0 to Count-1 do begin
-            hd:=THeightData(Items[i]);
+            hd:=THeightData(List[i]);
             if (hd.XLeft<=x) and (hd.YTop<=y)
-                  and (hd.XLeft+hd.Size-1>x) and (hd.YTop+hd.Size-1>y) then begin
+                  and (hd.XLeft+hd.Size-1>=x+1) and (hd.YTop+hd.Size-1>=y+1) then begin
                foundHd:=hd;
                Break;
             end;
