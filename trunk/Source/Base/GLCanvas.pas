@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/11/02 - EG - Now uses Types/Windows TPoint (D5 & D6 tested only) 
       <li>01/10/02 - EG - Added Polygon & Polyline
       <li>04/03/02 - EG - Added FrameRect and FillRect
       <li>31/01/02 - EG - Texture3D/CubeMap only disabled if supported
@@ -16,16 +17,15 @@ unit GLCanvas;
 
 interface
 
-uses Classes, Geometry;
+{$i GLScene.inc}
+
+uses Classes, Geometry
+   {$ifdef GLS_COMPILER_6_UP}, Types{$endif}
+   {$ifdef WIN32}, Windows{$endif};
 
 type
 
    TColor = Integer;
-
-   TPoint = record
-      X : Integer;
-      Y : Integer;
-   end;
 
 	// TGLCanvas
 	//
