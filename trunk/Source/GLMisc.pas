@@ -437,8 +437,8 @@ type
          procedure Flush;
          procedure Clear;
    end;
-(*
-   // TGLSilhouette
+
+(*   // TGLSilhouette
    //
    {: Standard silhouette class.<p>
       This class introduces helper methods for constructing the indexed
@@ -490,7 +490,7 @@ type
          procedure RenderLines;
          procedure RenderVolume(OldMethod : boolean);
 
-   end;*)
+   end; *)
 
 	TSqrt255Array = array [0..255] of Byte;
 	PSqrt255Array = ^TSqrt255Array;
