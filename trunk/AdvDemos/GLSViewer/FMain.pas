@@ -110,6 +110,9 @@ type
     Optimize1: TMenuItem;
     N5: TMenuItem;
     ACOptimize: TAction;
+    Stripify1: TMenuItem;
+    ACStripify: TAction;
+    N6: TMenuItem;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -149,6 +152,7 @@ type
     procedure ACSaveTexturesExecute(Sender: TObject);
     procedure MIOpenTexLibClick(Sender: TObject);
     procedure ACOptimizeExecute(Sender: TObject);
+    procedure ACStripifyExecute(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
@@ -756,6 +760,31 @@ begin
    end;
    GLMaterialLibrary.Materials.Clear;
    SetupFreeFormShading;
+end;
+
+procedure TMain.ACStripifyExecute(Sender: TObject);
+var
+   i : Integer;
+   mo : TMeshObject;
+   fg : TFGVertexIndexList;
+   strips : TPersistentObjectList;
+begin
+   ACConvertToIndexedTriangles.Execute;
+   mo:=FreeForm.MeshObjects[0];
+   fg:=(mo.FaceGroups[0] as TFGVertexIndexList);
+   strips:=StripifyMesh(fg.VertexIndices, mo.Vertices.Count, True);
+   try
+      fg.Free;
+      for i:=0 to strips.Count-1 do begin
+         fg:=TFGVertexIndexList.CreateOwned(mo.FaceGroups);
+         fg.VertexIndices:=(strips[i] as TIntegerList);
+         if i=0 then
+            fg.Mode:=fgmmTriangles
+         else fg.Mode:=fgmmTriangleStrip;
+      end;
+   finally
+      strips.Free;
+   end;
 end;
 
 procedure TMain.ACOptimizeExecute(Sender: TObject);
