@@ -179,7 +179,7 @@ type
          property DefaultHeight : Single read FDefaultHeight write FDefaultHeight;
 
          {: Interpolates height for the given point. }
-         function InterpolatedHeight(x, y : Single) : Single; virtual;
+         function InterpolatedHeight(x, y : Single; tileSize : Integer) : Single; virtual;
 	end;
 
    // THDTextureCoordinatesMode
@@ -837,7 +837,7 @@ end;
 
 // InterpolatedHeight
 //
-function THeightDataSource.InterpolatedHeight(x, y : Single) : Single;
+function THeightDataSource.InterpolatedHeight(x, y : Single; tileSize : Integer) : Single;
 var
    i : Integer;
    hd, foundHd : THeightData;
@@ -860,7 +860,7 @@ begin
    end;
    if (foundHd=nil) or foundHd.Dirty then begin
       // not found, request one... slowest mode (should be avoided)
-      foundHd:=GetData(Trunc(x)-1, Trunc(y)-1, 4, hdtDefault);
+      foundHd:=GetData(Trunc(x)-1, Trunc(y)-1, tileSize, hdtDefault);
    end else begin
       // request it using "standard" way (takes care of threads)
       foundHd:=GetData(foundHd.XLeft, foundHd.YTop, foundHd.Size, foundHd.DataType);

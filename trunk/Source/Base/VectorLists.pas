@@ -551,7 +551,7 @@ end;
 //
 procedure TBaseList.SetCapacity(newCapacity: Integer);
 begin
-	if newCapacity<>FCapacity then	begin
+	if newCapacity<>FCapacity then begin
       if bloExternalMemory in FOptions then begin
          Exclude(FOptions, bloExternalMemory);
          FBaseList:=nil;

@@ -1330,7 +1330,7 @@ type
 
 	// TActorAnimations
 	//
-   {: Collection of actor anuimations sequences. }
+   {: Collection of actor animations sequences. }
 	TActorAnimations = class (TCollection)
 	   private
 	      { Private Declarations }
@@ -3036,7 +3036,6 @@ var
    i, j, groupID : Integer;
    gotNormals, gotTexCoords, gotColor : Boolean;
    libMat : TGLLibMaterial;
-   ownMaterial : TGLMaterial;
 begin
    FArraysDeclared:=False;
    case Mode of

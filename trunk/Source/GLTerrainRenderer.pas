@@ -320,7 +320,7 @@ var
 begin
    if Assigned(HeightDataSource) then begin
       pLocal:=AbsoluteToLocal(p);
-      Result:=HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1])*Scale.Z*(1/128);
+      Result:=HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1], TileSize+1)*Scale.Z*(1/128);
    end else Result:=0;
 end;
 
