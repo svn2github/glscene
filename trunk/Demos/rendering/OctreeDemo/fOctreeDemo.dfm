@@ -107,6 +107,10 @@ object frmOctreeDemo: TfrmOctreeDemo
       Height = 40.000000000000000000
       Width = 40.000000000000000000
     end
+    object GLLines1: TGLLines
+      Nodes = <>
+      Options = []
+    end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 75.000000000000000000

@@ -447,10 +447,11 @@ begin
         FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]],
         Slack);
 
-      if EdgeList[i].Solid then
-        VerletWorld.AddSolidEdge(
-          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
-          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]]);
+      if cctEdge in VerletWorld.CollisionConstraintTypes then
+        if EdgeList[i].Solid then
+          VerletWorld.AddSolidEdge(
+            FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
+            FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]]);
     end;
   end;
 end;

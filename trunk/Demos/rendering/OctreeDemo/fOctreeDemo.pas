@@ -56,7 +56,7 @@ type
 
     procedure UpdateCachedAABBAndBSphere; override;
 
-    constructor Create(SpacePartition : TBaseSpacePartition; aGLBaseSceneObject : TGLBaseSceneObject);
+    constructor CreateGLOwned(SpacePartition : TBaseSpacePartition; aGLBaseSceneObject : TGLBaseSceneObject);
   end;
 
 var
@@ -119,12 +119,12 @@ begin
   Cube.CubeHeight := randomSize;
   Cube.CubeDepth := randomSize;
 
-  TGLSpacePartitionLeaf.Create(Octree, Cube);
+  TGLSpacePartitionLeaf.CreateGLOwned(Octree, Cube);
 end;
 
 { TGLSpacePartitionLeaf }
 
-constructor TGLSpacePartitionLeaf.Create(SpacePartition : TBaseSpacePartition; aGLBaseSceneObject : TGLBaseSceneObject);
+constructor TGLSpacePartitionLeaf.CreateGLOwned(SpacePartition : TBaseSpacePartition; aGLBaseSceneObject : TGLBaseSceneObject);
 begin
   GLBaseSceneObject := aGLBaseSceneObject;
 
@@ -135,7 +135,7 @@ begin
 
   NormalizeVector(Direction);
 
-  inherited Create(SpacePartition);
+  inherited CreateOwned(SpacePartition);
 end;
 
 procedure TGLSpacePartitionLeaf.UpdateCachedAABBAndBSphere;
@@ -229,7 +229,6 @@ const
 var
   AABB : TAABB;
   BSphere : TBSphere;
-  Cone : TCone;
   Leaf, TestLeaf : TGLSpacePartitionLeaf;
   Cube : TGLCube;
   i, j, CollidingLeafCount : integer;

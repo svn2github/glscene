@@ -235,7 +235,7 @@ type
          partitioning object}
          procedure UpdateCachedAABBAndBSphere; override;
 
-         constructor CreateOwned(aNodeA, aNodeB : TVerletNode);
+         constructor CreateEdgeOwned(aNodeA, aNodeB : TVerletNode);
 
          {: One of the nodes in the edge }
          property NodeA : TVerletNode read FNodeA write FNodeA;
@@ -1048,7 +1048,7 @@ begin
            SatisfyConstraintForNode(node, iteration, maxIterations);
      end;//}
 
-   if cctEdge in Owner.CollisionConstraintTypes then
+   {if cctEdge in Owner.CollisionConstraintTypes then
      for i:=0 to Owner.SolidEdges.Count-1 do begin
          SatisfyConstraintForEdge(Owner.SolidEdges[i], iteration, maxIterations);
    end;//}
@@ -1219,7 +1219,7 @@ begin
    FSolidEdges := TVerletEdgeList.Create;
    FCurrentStepCount := 0;
    FUpdateSpacePartion := uspNever;
-   FCollisionConstraintTypes := [cctEdge, cctNode];
+   FCollisionConstraintTypes := [cctNode];
    FSpacePartition := nil;
 end;
 
@@ -1345,7 +1345,7 @@ procedure TVerletWorld.AddSolidEdge(aNodeA, aNodeB: TVerletNode);
 var
   VerletEdge : TVerletEdge;
 begin
-  VerletEdge := TVerletEdge.CreateOwned(aNodeA, aNodeB);
+  VerletEdge := TVerletEdge.CreateEdgeOwned(aNodeA, aNodeB);
   SolidEdges.Add(VerletEdge);
 end;
 
@@ -2245,7 +2245,7 @@ end;
 
 { TVerletEdge }
 
-constructor TVerletEdge.CreateOwned(aNodeA, aNodeB: TVerletNode);
+constructor TVerletEdge.CreateEdgeOwned(aNodeA, aNodeB: TVerletNode);
 begin
   FNodeA := aNodeA;
   FNodeB := aNodeB;
