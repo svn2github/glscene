@@ -2720,6 +2720,7 @@ begin
    aChild.FParent:=Self;
    aChild.SetScene(FScene);
    TransformationChanged;
+   aChild.TransformationChanged;
 end;
 
 // AddNewChild
