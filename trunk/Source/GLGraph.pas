@@ -3,6 +3,7 @@
 	Graph plotting objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/11/01 - Egg - Color fix in THeightField.BuildList (thx Marc Hull)
       <li>19/07/01 - Egg - THeightField no longer calls OnGetHeight in design mode
       <li>06/03/01 - Egg - Fix in THeightField.BuildList (thx Rene Lindsay)
       <li>25/02/01 - Egg - Minor T&L improvement for THeightField
@@ -441,9 +442,9 @@ begin
          if ColorMode<>hfcmNone then begin
             glEnable(GL_COLOR_MATERIAL);
             glColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
+            ResetGLMaterialColors;
          end;
       end;
-      ResetGLMaterialColors;
       rowBottom:=nil; rowMid:=nil;
       nx:=0;
       y:=YSamplingScale.StepBase;
