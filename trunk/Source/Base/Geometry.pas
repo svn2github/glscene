@@ -714,6 +714,7 @@ function VectorAbs(const v : TVector) : TVector; overload;
 //------------------------------------------------------------------------------
 
 procedure SetMatrix(var dest : THomogeneousDblMatrix; const src : TMatrix); overload;
+procedure SetMatrix(var dest : TAffineMatrix; const src : TMatrix); overload;
 
 //: Creates scale matrix
 function CreateScaleMatrix(const v : TAffineVector) : TMatrix; overload;
@@ -4064,6 +4065,15 @@ begin
       dest[i, Z]:=src[i, Z];
       dest[i, W]:=src[i, W];
    end;
+end;
+
+// SetMatrix (hmg->affine)
+//
+procedure SetMatrix(var dest : TAffineMatrix; const src : TMatrix);
+begin
+   dest[0, 0]:=src[0, 0]; dest[0, 1]:=src[0, 1]; dest[0, 2]:=src[0, 2];
+   dest[1, 0]:=src[1, 0]; dest[1, 1]:=src[1, 1]; dest[1, 2]:=src[1, 2];
+   dest[2, 0]:=src[2, 0]; dest[2, 1]:=src[2, 1]; dest[2, 2]:=src[2, 2];
 end;
 
 // CreateScaleMatrix (affine)
