@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
       <li>29/10/02 - EG - Added MouseEnter/Leave/InControl
       <li>27/09/02 - EG - Added Ability to set display frequency
       <li>22/08/02 - EG - Added TGLSceneViewer.RecreateWnd
@@ -336,7 +337,7 @@ begin
    Height:=100;
    FVSync:=vsmNoSync;
    FBuffer:=TGLSceneBuffer.Create(Self);
-   FBuffer.BeforeRender:=DoBeforeRender;
+   FBuffer.ViewerBeforeRender:=DoBeforeRender;
    FBuffer.OnChange:=DoBufferChange;
    FBuffer.OnStructuralChange:=DoBufferStructuralChange;
 end;
@@ -587,7 +588,7 @@ begin
    FScreenDepth:=sd32bits;
    FVSync:=vsmSync;
    FCursor:=crDefault;
-   Buffer.BeforeRender:=DoBeforeRender;
+   Buffer.ViewerBeforeRender:=DoBeforeRender;
 end;
 
 // Destroy
