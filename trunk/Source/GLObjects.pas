@@ -116,6 +116,11 @@ uses Classes, VectorGeometry, GLScene, GLTexture, GLMisc, OpenGL1x, SysUtils,
 
 type
 
+   // TGLVisibilityDeterminationEvent
+   //
+   TGLVisibilityDeterminationEvent = function (Sender : TObject;
+                              var rci : TRenderContextInfo) : Boolean of object;
+
 	// TGLDummyCube
 	//
 	{: A simple cube, invisible at run-time.<p>
@@ -132,6 +137,7 @@ type
 			FEdgeColor : TGLColor;
 			FVisibleAtRunTime, FAmalgamate : Boolean;
          FGroupList : TGLListHandle;
+         FOnVisibilityDetermination : TGLVisibilityDeterminationEvent;
 
 		protected
 			{ Protected Declarations }
@@ -182,7 +188,11 @@ type
          {: Camera Invariance Options.<p>
             These options allow to "deactivate" sensitivity to camera, f.i. by
             centering the object on the camera or ignoring camera orientation. }
-         property CamInvarianceMode default cimNone; 
+         property CamInvarianceMode default cimNone;
+         {: Event for custom visibility determination.<p>
+            Event handler should return True if the dummycube and its children
+            are to be considered visible for the current render. }
+         property OnVisibilityDetermination : TGLVisibilityDeterminationEvent read FOnVisibilityDetermination write FOnVisibilityDetermination;
 	end;
 
    // TPlaneStyle
@@ -1050,6 +1060,9 @@ end;
 procedure TGLDummyCube.DoRender(var rci : TRenderContextInfo;
                                 renderSelf, renderChildren : Boolean);
 begin
+   if Assigned(FOnVisibilityDetermination) then
+      if not FOnVisibilityDetermination(Self, rci) then
+         Exit;
    if FAmalgamate and (not rci.amalgamating) then begin
       if FGroupList.Handle=0 then begin
          FGroupList.AllocateHandle;
