@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/04/04 - EG - Added TGLOcclusionQueryHandle.Active 
       <li>25/09/03 - EG - Added TGLVBOHandle
       <li>20/09/03 - EG - Added TGLOcclusionQueryHandle
       <li>30/01/02 - EG - Added TGLVirtualHandle
@@ -295,6 +296,7 @@ type
    TGLOcclusionQueryHandle = class (TGLContextHandle)
       private
          { Private Declarations }
+         FActive : Boolean;
 
       protected
          { Protected Declarations }
@@ -306,6 +308,8 @@ type
          procedure BeginOcclusionQuery;
          procedure EndOcclusionQuery;
 
+         {: True if within a Begin/EndOcclusionQuery. }
+         property Active : Boolean read FActive;
          function PixelCount : Integer;
    end;
 
@@ -1004,12 +1008,14 @@ procedure TGLOcclusionQueryHandle.BeginOcclusionQuery;
 begin
    Assert(Handle<>0);
    glBeginOcclusionQueryNV(Handle);
+   Factive:=True;
 end;
 
 // EndOcclusionQuery
 //
 procedure TGLOcclusionQueryHandle.EndOcclusionQuery;
 begin
+   Factive:=False;
    Assert(Handle<>0);
    glEndOcclusionQueryNV;
 end;
