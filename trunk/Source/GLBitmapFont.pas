@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state 
       <li>07/05/03 - EG - TGLFlatText Notification fix, added Options
       <li>30/10/02 - EG - Added TGLFlatText
       <li>29/09/02 - EG - Added TexCoords LUT, faster RenderString,
@@ -895,11 +896,13 @@ procedure TGLCustomBitmapFont.TextOut(x, y : Single; const text : String; const 
 var
    v : TVector;
 begin
+   glPushAttrib(GL_ENABLE_BIT);
    v[0]:=x;
    v[1]:=y;
    v[2]:=0;
    v[3]:=1;
    RenderString(text, taLeftJustify, tlTop, color, @v, True);
+   glPopAttrib;
 end;
 
 // TextOut
