@@ -42,9 +42,9 @@ type
 
        AVI_DPI : integer;
 
-       pfile : IAVIFile;
        asi   : TAVIStreamInfoA;
 
+       pfile : IAVIFile;
        Stream, Stream_c : IAVIStream; // AVI stream and stream to be compressed
 
        BitmapInfo : PBitmapInfoHeader;
@@ -402,8 +402,8 @@ begin
   FreeMem(BitmapInfo);
   FreeMem(BitmapBits);
 
-// The following calls are commented out to avoid AV on exit, which is caused
-// by Delphi cleaning up the interafaces automatically.
+// The following calls (from the original C code) are commented out because
+// Delphi does the cleaning up for the interafaces automatically.
 //  AVIStreamRelease(Stream);
 //  AVIStreamRelease(Stream_c);
 //  AVIFileRelease(pfile);
