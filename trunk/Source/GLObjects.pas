@@ -215,12 +215,11 @@ type
 			{ Public Declarations }
 			constructor Create(AOwner: TComponent); override;
 
-       function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
-		   procedure BuildList(var rci : TRenderContextInfo); override;
-
 		   procedure Assign(Source: TPersistent); override;
 
-//         function AxisAlignedDimensions : TVector; override;
+		   procedure BuildList(var rci : TRenderContextInfo); override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
+
          function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
@@ -1520,41 +1519,35 @@ begin
    end;
 end;
 
+// GenerateSilhouette
+//
 function TGLPlane.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
 var
-  sil : TGLSilhouette;
-  hw, hh : single;
-
-    function MakeVector(x,y,z : single) : TAffineVector;
-    begin
-      result[0] := x;
-      result[1] := y;
-      result[2] := z;
-    end;
+   hw, hh : single;
 begin
-  // Too simple for a connectivity setup
-  sil := TGLSilhouette.Create;
+   Result := TGLBaseSilhouette.Create;
 
-  hw:=FWidth*0.5;
-  hh:=FHeight*0.5;
+   hw:=FWidth*0.5;
+   hh:=FHeight*0.5;
 
-  sil.Vertices.Add( hw,  hh, 0, 1);
-  sil.Vertices.Add( hw, -hh, 0, 1);
-  sil.Vertices.Add(-hw, -hh, 0, 1);
-  sil.Vertices.Add(-hw,  hh, 0, 1);
+   with Result.Vertices do begin
+      AddPoint( hw,  hh);
+      AddPoint( hw, -hh);
+      AddPoint(-hw, -hh);
+      AddPoint(-hw,  hh);
+   end;
 
-  sil.AddIndexedEdgeToSilhouette(0, 1);
-  sil.AddIndexedEdgeToSilhouette(1, 2);
-  sil.AddIndexedEdgeToSilhouette(2, 3);
-  sil.AddIndexedEdgeToSilhouette(3, 0);
+   with Result.Indices do begin
+      Add(0, 1);
+      Add(1, 2);
+      Add(2, 3);
+      Add(3, 0);
+   end;
 
-  if silhouetteParameters.CappingRequired then
-  begin
-    sil.AddIndexedCapToSilhouette(0,1,2);
-    sil.AddIndexedCapToSilhouette(2,3,0);
-  end;
-
-  result := Sil;
+   if silhouetteParameters.CappingRequired then with Result.CapIndices do begin
+      Add(0, 1, 2);
+      Add(2, 3, 0);
+   end;
 end;
 
 // BuildList
