@@ -2,8 +2,6 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>29/11/03 - MF - Added IsVisible for "recursive" testing of visibility,
-                            the function is used when drawing shadows
       <li>26/12/03 - EG - Removed last TList dependencies
       <li>05/12/03 - Dave - Added GLCamera.PointInFront
                    - Dave - Remade Data property to use Tag
@@ -655,9 +653,6 @@ type
 
          procedure StructureChanged; dynamic;
          procedure ClearStructureChanged;
-
-         //: Find out if the object is visible, and if all it's ancestors are too
-         function IsVisible: boolean;
 
          //: Recalculate an orthonormal system
          procedure CoordinateChanged(Sender: TGLCoordinates); virtual;
@@ -3559,34 +3554,6 @@ end;
 procedure TGLBaseSceneObject.ClearStructureChanged;
 begin
    Exclude(FChanges, ocStructure);
-end;
-
-// IsVisible
-//
-function TGLBaseSceneObject.IsVisible: boolean;
-var
-  p : TGLBaseSceneObject;
-begin
-  if not Visible then
-  begin
-    result := False;
-    exit;
-  end;
-
-  p := Parent;
-
-  while Assigned(p) and (p<>self) do
-  begin
-    if not p.Visible then
-    begin
-      result := False;
-      exit;
-    end;
-
-    p := p.Parent;
-  end;
-
-  result := True;
 end;
 
 // RecTransformationChanged

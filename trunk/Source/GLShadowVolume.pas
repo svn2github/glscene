@@ -27,6 +27,9 @@ type
 
    TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
+   TGLShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
+    scmParentVisible, scmParentRecursivelyVisible);
+
    // TGLShadowVolumeCaster
    //
    {: Specifies an individual shadow caster.<p>
@@ -37,6 +40,7 @@ type
          FCaster : TGLBaseSceneObject;
          FEffectiveRadius : Single;
          FCapping : TGLShadowVolumeCapping;
+    FCastingMode: TGLShadowCastingMode;
     function GetGLShadowVolume: TGLShadowVolume;
 
 		protected
@@ -67,6 +71,12 @@ type
          {: Specifies if the shadow volume should be capped.<p>
             Capping helps solve shadowing artefacts, at the cost of performance. }
          property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcDefault;
+
+         {: Determines when an object should cast a shadow or not. Typically, objects
+         should only cast shadows when recursively visible. But if you're using
+         dummy shadow casters which are less complex than their parent objects,
+         you should use scmParentRecursivelyVisible.}
+         property CastingMode: TGLShadowCastingMode read FCastingMode write FCastingMode default scmParentRecursivelyVisible;
    end;
 
    // TGLShadowVolumeOccluder
@@ -128,7 +138,8 @@ type
 
 		public
 			{ Public Declarations }
-         function AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0) : TGLShadowVolumeCaster;
+         function AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0;
+          CastingMode : TGLShadowCastingMode = scmRecursivelyVisible) : TGLShadowVolumeCaster;
          procedure RemoveCaster(obj : TGLBaseSceneObject);
 
          property Items[index : Integer] : TGLShadowVolumeCaster read GetItems; default;
@@ -241,6 +252,7 @@ constructor TGLShadowVolumeCaster.Create(Collection: TCollection);
 begin
    inherited Create(Collection);
    FCapping:=svcDefault;
+   FCastingMode := scmRecursivelyVisible;
 end;
 
 // GetGLShadowVolume
@@ -452,13 +464,15 @@ end;
 
 // AddCaster
 //
-function TGLShadowVolumeCasters.AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0) : TGLShadowVolumeCaster;
+function TGLShadowVolumeCasters.AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0;
+  CastingMode : TGLShadowCastingMode = scmRecursivelyVisible  ) : TGLShadowVolumeCaster;
 var
    newCaster : TGLShadowVolumeCaster;
 begin
    newCaster:=TGLShadowVolumeCaster(Add);
    newCaster.Caster:=obj;
    newCaster.EffectiveRadius:=effectiveRadius;
+   newCaster.CastingMode := CastingMode;
 
    result := newCaster;
 end;
@@ -589,6 +603,42 @@ end;
 //
 procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
                                    renderSelf, renderChildren : Boolean);
+
+  // Function that determines if an object is recursively visible. It halts when
+  // * it finds an invisible ancestor (=> invisible)
+  // * it finds the root (=> visible)
+  // * it finds the shadow volume as an ancestor (=> visible)
+  function DirectHierarchicalVisibility(Obj : TGLBaseSceneObject): boolean;
+  var
+    p : TGLBaseSceneObject;
+  begin
+    if not Assigned(Obj) then
+    begin
+      result := true; 
+      exit;
+    end;
+
+    if not Obj.Visible then
+    begin
+      result := False;
+      exit;
+    end;
+
+    p := Obj.Parent;
+
+    while Assigned(p) and (p<>obj) and (p<>self) do
+    begin
+      if not p.Visible then
+      begin
+        result := False;
+        exit;
+      end;
+
+      p := p.Parent;
+    end;
+
+    result := True;
+  end;
 var
    i, k, n     : Integer;
    lightSource : TGLLightSource;
@@ -602,6 +652,7 @@ var
    mat : TMatrix;
    worldAABB : TAABB;
    pWorldAABB : PAABB;
+
 begin
    if FRendering then Exit;
    if not (renderSelf or renderChildren) then Exit;
@@ -627,7 +678,15 @@ begin
          caster:=Occluders[i];
          obj:=caster.Caster;
          if     Assigned(obj)
-            and obj.IsVisible // <= Was obj.Visible, which drew objects with invisible parents
+            and
+            // Determine when to render this object or not
+            (
+              (Caster.CastingMode = scmAlways) or
+              ((Caster.CastingMode = scmVisible) and obj.Visible) or
+              ((Caster.CastingMode = scmRecursivelyVisible) and DirectHierarchicalVisibility(obj)) or
+              ((Caster.CastingMode = scmParentRecursivelyVisible) and DirectHierarchicalVisibility(obj.Parent)) or
+              ((Caster.CastingMode = scmParentVisible) and (not Assigned(obj.Parent) or obj.Parent.Visible))
+            )
             and ((caster.EffectiveRadius<=0)
                  or (obj.DistanceTo(rci.cameraPosition)<caster.EffectiveRadius)) then begin
             opaques.Add(obj);
