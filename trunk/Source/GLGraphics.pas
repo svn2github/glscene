@@ -202,9 +202,9 @@ type
          procedure DrawPixels(const x, y : Single);
 
          {: Converts a grayscale 'elevation' bitmap to normal map.<p>
-            Actually, only the Green component in the original bitmap is used,
-            and the elevation map is assumed to be wrapping }
-         procedure GrayScaleToNormalMap(const scale : Single);
+            Actually, only the Green component in the original bitmap is used. }
+         procedure GrayScaleToNormalMap(const scale : Single;
+                                        wrapX : Boolean = True; wrapY : Boolean = True);
          {: Assumes the bitmap content is a normal map and normalizes all pixels.<p> }
          procedure NormalizeNormalMap;
 	end;
@@ -1047,7 +1047,64 @@ end;
 
 // TGLBitmap32
 //
-procedure TGLBitmap32.GrayScaleToNormalMap(const scale : Single);
+procedure TGLBitmap32.GrayScaleToNormalMap(const scale : Single;
+                                           wrapX : Boolean = True; wrapY : Boolean = True);
+var
+   x, y : Integer;
+   dcx, dcy : Single;
+   invLen : Single;
+   maskX, maskY : Integer;
+   curRow, nextRow, prevRow : PGLPixel32Array;
+   normalMapBuffer : PGLPixel32Array;
+   p : PGLPixel32;
+begin
+   if Assigned(FData) then begin
+      normalMapBuffer:=AllocMem(DataSize);
+      try
+         maskX:=Width-1;
+         maskY:=Height-1;
+         p:=@normalMapBuffer[0];
+         for y:=0 to Height-1 do begin
+            curRow:=GetScanLine(y);
+            if wrapY then begin
+               prevRow:=GetScanLine((y-1) and maskY);
+               nextRow:=GetScanLine((y+1) and maskY);
+            end else begin
+               if y>0 then
+                  prevRow:=GetScanLine(y-1)
+               else prevRow:=curRow;
+               if y<Height-1 then
+                  nextRow:=GetScanLine(y+1)
+               else nextRow:=curRow;
+            end;
+            for x:=0 to Width-1 do begin
+               if wrapX then
+                  dcx:=scale*(curRow[(x-1) and maskX].g-curRow[(x+1) and maskX].g)
+               else begin
+                  if x=0 then
+                     dcx:=scale*(curRow[x].g-curRow[x+1].g)
+                  else if x<Width-1 then
+                     dcx:=scale*(curRow[x-1].g-curRow[x].g)
+                  else dcx:=scale*(curRow[x-1].g-curRow[x+1].g);
+               end;
+               dcy:=scale*(prevRow[x].g-nextRow[x].g);
+               invLen:=127*RSqrt(dcx*dcx+dcy*dcy+1);
+               with p^ do begin
+                  r:=Round(128+ClampValue(dcx*invLen, -128, 127));
+                  g:=Round(128+ClampValue(dcy*invLen, -128, 127));
+                  b:=Round(128+ClampValue(invLen, -128, 127));
+                  a:=255;
+               end;
+               Inc(p);
+            end;
+         end;
+         Move(normalMapBuffer^, FData^, DataSize);
+      finally
+         FreeMem(normalMapBuffer);
+      end;
+   end;
+end;
+{
 var
    x, y : Integer;
    p1, p2, p3 : Single;
@@ -1091,7 +1148,7 @@ begin
       FreeMem(backupRowZero);
    end;
 end;
-
+}
 // NormalizeNormalMap
 //
 procedure TGLBitmap32.NormalizeNormalMap;

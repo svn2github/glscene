@@ -307,6 +307,8 @@ const
    clrFuchsia             : TColorVector = (1,        0,        1,        1);
    clrAqua                : TColorVector = (0,        1,        1,        1);
 
+   cDefaultNormalMapScale = 0.125;
+
 type
 
 	PRGBColor = ^TRGBColor;
@@ -363,7 +365,7 @@ type
          { Private Properties }
 			FColor : TColorVector;
          FPDefaultColor : PColorVector;
-			procedure SetColor(const aColor : TColorVector);
+			procedure SetColorVector(const aColor : TColorVector); overload;
 			procedure SetColorComponent(index : Integer; value : TGLFloat);
 			procedure SetAsWinColor(const val : TColor);
 			function GetAsWinColor : TColor;
@@ -387,9 +389,11 @@ type
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
 			function AsAddress : PGLFloat;
-         procedure RandomColor;
 
-			property Color : TColorVector read FColor write SetColor;
+         procedure RandomColor;
+         procedure SetColor(red, green, blue : Single; alpha : Single = 1); overload;
+
+			property Color : TColorVector read FColor write SetColorVector;
 			property AsWinColor : TColor read GetAsWinColor write SetAsWinColor;
          property HSVA : TVector read GetHSVA write SetHSVA;
 
@@ -825,11 +829,14 @@ type
       <li>tfLuminance : 8 bits Luminance only
       <li>tfLuminanceAlpha : 16 bits Luminance and Alpha channel (8, 8)
       <li>tfIntensity : 8 bits Intensity only
+      <li>tfNormalMap : 24 bits RGB normal map, which is computed from the
+         original texture (assumed to be an hightmap)
       </ul><br>The actual representation may differ, f.i. old 16bits boards
       may convert everything to 16bit formats, GeForce boards don't have
       a 24 bits format internally and will convert to 32 bits, etc. }
    TGLTextureFormat = (tfDefault, tfRGB, tfRGBA, tfRGB16, tfRGBA16, tfAlpha,
-                       tfLuminance, tfLuminanceAlpha, tfIntensity);
+                       tfLuminance, tfLuminanceAlpha, tfIntensity,
+                       tfNormalMap);
 
    // TGLTextureCompression
    //
@@ -884,10 +891,12 @@ type
          FFilteringQuality    : TGLTextureFilteringQuality;
          FTexWidth, FTexHeight : Integer;
          FEnvColor            : TGLColor;
+         FNormalMapScale      : Single;
 
 		protected
 			{ Protected Declarations }
          procedure NotifyImageChange;
+         procedure NotifyParamsChange;
 
 			procedure SetImage(AValue: TGLTextureImage);
 			procedure SetImageAlpha(const val : TGLTextureImageAlpha);
@@ -911,6 +920,8 @@ type
          procedure SetEnabled(const val : Boolean);
          function GetEnabled : Boolean;
          procedure SetEnvColor(const val : TGLColor);
+         procedure SetNormalMapScale(const val : Single);
+         function StoreNormalMapScale : Boolean;
 
          function StoreImageClassName : Boolean;
 
@@ -1042,6 +1053,12 @@ type
 
          {: If true, the texture is disabled (not used). }
 			property Disabled: Boolean read FDisabled write SetDisabled default True;
+
+         {: Normal Map scaling.<p>
+            Only applies when TextureFormat is tfNormalMap, this property defines
+            the scaling that is applied during normal map generation (ie. controls
+            the intensity of the bumps). }
+         property NormalMapScale : Single read FNormalMapScale write SetNormalMapScale stored StoreNormalMapScale;
 	end;
 
 	TShininess = 0..128;
@@ -1697,9 +1714,9 @@ begin
    end;
 end;
 
-// SetColor
+// SetColorVector
 //
-procedure TGLColor.SetColor(const aColor : TColorVector);
+procedure TGLColor.SetColorVector(const aColor : TColorVector);
 begin
    SetVector(FColor, AColor);
 	NotifyChange(Self);
@@ -1788,6 +1805,17 @@ begin
    Red:=Random;
    Green:=Random;
    Blue:=Random;
+end;
+
+// SetColor
+//
+procedure TGLColor.SetColor(red, green, blue : Single; alpha : Single = 1);
+begin
+   FColor[0]:=red;
+   FColor[1]:=Green;
+   FColor[2]:=blue;
+   FColor[3]:=alpha;
+   NotifyChange(Self);
 end;
 
 // GetHSVA
@@ -2966,6 +2994,7 @@ begin
    FTextureHandle:=TGLTextureHandle.Create;
    FMappingMode:=tmmUser;
    FEnvColor:=TGLColor.CreateInitialized(Self, clrTransparent);
+   FNormalMapScale:=cDefaultNormalMapScale;
 end;
 
 // Destroy
@@ -3022,6 +3051,14 @@ begin
    NotifyChange(Self);
 end;
 
+// NotifyParamsChange
+//
+procedure TGLTexture.NotifyParamsChange;
+begin
+   Include(FChanges, tcParams);
+   NotifyChange(Self);
+end;
+
 // SetImage
 //
 procedure TGLTexture.SetImage(AValue: TGLTextureImage);
@@ -3063,8 +3100,8 @@ end;
 //
 function TGLTexture.TextureImageRequiredMemory : Integer;
 const
-   cTextureFormatToPixelSize : array [tfRGB..tfIntensity] of Integer = (
-                                                     3, 4, 2, 2, 1, 1, 2, 1);
+   cTextureFormatToPixelSize : array [tfRGB..tfNormalMap] of Integer = (
+                                                     3, 4, 2, 2, 1, 1, 2, 1, 3);
 var
    tf : TGLTextureFormat;
 begin
@@ -3130,8 +3167,7 @@ procedure TGLTexture.SetMagFilter(AValue: TGLMagFilter);
 begin
 	if AValue <> FMagFilter then begin
 		FMagFilter:=AValue;
-		Include(FChanges, tcParams);
-		NotifyChange(Self);
+      NotifyParamsChange;
 	end;
 end;
 
@@ -3141,8 +3177,7 @@ procedure TGLTexture.SetMinFilter(AValue: TGLMinFilter);
 begin
 	if AValue <> FMinFilter then begin
 		FMinFilter:=AValue;
-		Include(FChanges,tcParams);
-		NotifyChange(Self);
+      NotifyParamsChange;
 	end;
 end;
 
@@ -3152,8 +3187,7 @@ procedure TGLTexture.SetTextureMode(AValue: TGLTextureMode);
 begin
 	if AValue <> FTextureMode then begin
 		FTextureMode:=AValue;
-		Include(FChanges, tcParams);
-		NotifyChange(Self);
+      NotifyParamsChange;
 	end;
 end;
 
@@ -3188,7 +3222,25 @@ end;
 procedure TGLTexture.SetEnvColor(const val : TGLColor);
 begin
    FEnvColor.Assign(val);
-   NotifyChange(Self);
+   NotifyParamsChange;
+end;
+
+// SetNormalMapScale
+//
+procedure TGLTexture.SetNormalMapScale(const val : Single);
+begin
+   if val<>FNormalMapScale then begin
+      FNormalMapScale:=val;
+      if TextureFormat=tfNormalMap then
+   		NotifyImageChange;
+   end;
+end;
+
+// StoreNormalMapScale
+//
+function TGLTexture.StoreNormalMapScale : Boolean;
+begin
+   Result:=(FNormalMapScale<>cDefaultNormalMapScale);
 end;
 
 // SetTextureWrap
@@ -3197,8 +3249,7 @@ procedure TGLTexture.SetTextureWrap(AValue: TGLTextureWrap);
 begin
 	if AValue <> FTextureWrap then begin
 		FTextureWrap:=AValue;
-		Include(FChanges,tcParams);
-		NotifyChange(Self);
+      NotifyParamsChange;
 	end;
 end;
 
@@ -3208,8 +3259,7 @@ procedure TGLTexture.SetTextureFormat(const val : TGLTextureFormat);
 begin
 	if val <> FTextureFormat then begin
 		FTextureFormat:=val;
-		Include(FChanges, tcParams);
-		NotifyChange(Self);
+      NotifyParamsChange;
 	end;
 end;
 
@@ -3219,8 +3269,7 @@ procedure TGLTexture.SetCompression(const val : TGLTextureCompression);
 begin
 	if val <> FCompression then begin
 		FCompression:=val;
-		Include(FChanges, tcParams);
-		NotifyChange(Self);
+      NotifyParamsChange;
 	end;
 end;
 
@@ -3230,8 +3279,7 @@ procedure TGLTexture.SetFilteringQuality(const val : TGLTextureFilteringQuality)
 begin
 	if val<>FFilteringQuality then begin
 		FFilteringQuality:=val;
-		Include(FChanges, tcParams);
-		NotifyChange(Self);
+      NotifyParamsChange;
 	end;
 end;
 
@@ -3601,13 +3649,14 @@ end;
 //
 function TGLTexture.OpenGLTextureFormat : Integer;
 const
-   cTextureFormatToOpenGL : array [tfRGB..tfIntensity] of Integer =
+   cTextureFormatToOpenGL : array [tfRGB..tfNormalMap] of Integer =
       (GL_RGB8, GL_RGBA8, GL_RGB5, GL_RGBA4, GL_ALPHA8, GL_LUMINANCE8,
-       GL_LUMINANCE8_ALPHA8, GL_INTENSITY8);
-   cCompressedTextureFormatToOpenGL : array [tfRGB..tfIntensity] of Integer =
+       GL_LUMINANCE8_ALPHA8, GL_INTENSITY8, GL_RGB8);
+   cCompressedTextureFormatToOpenGL : array [tfRGB..tfNormalMap] of Integer =
       (GL_COMPRESSED_RGB_ARB, GL_COMPRESSED_RGBA_ARB, GL_COMPRESSED_RGB_ARB,
        GL_COMPRESSED_RGBA_ARB, GL_COMPRESSED_ALPHA_ARB, GL_COMPRESSED_LUMINANCE_ARB,
-       GL_COMPRESSED_LUMINANCE_ALPHA_ARB, GL_COMPRESSED_INTENSITY_ARB);
+       GL_COMPRESSED_LUMINANCE_ALPHA_ARB, GL_COMPRESSED_INTENSITY_ARB,
+       GL_COMPRESSED_RGB_ARB);
 var
    texForm : TGLTextureFormat;
    texComp : TGLTextureCompression;
@@ -3647,6 +3696,11 @@ begin
    if (bitmap32=nil) or bitmap32.IsEmpty then Exit;
    // select targetFormat from texture format & compression options
    targetFormat:=OpenGLTextureFormat;
+   if TextureFormat=tfNormalMap then begin
+      bitmap32.GrayScaleToNormalMap(NormalMapScale,
+                                    TextureWrap in [twBoth, twHorizontal],
+                                    TextureWrap in [twBoth, twVertical]);
+   end;
    // prepare AlphaChannel
    case ImageAlpha of
       tiaDefault : ;// nothing to do
