@@ -132,7 +132,8 @@ begin
          Exit;
       end;
       FHTF:=THeightTileFile.Create(FHTFFileName);
-      Assert(FHTF.TileSize=heightData.Size);
+      Assert(FHTF.TileSize=heightData.Size,
+             'HTF TileSize and HeightData size don''t match');
    end;
 
    // retrieve data and place it in the heightData
