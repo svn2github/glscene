@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
       <li>22/01/02 - EG - Added TGLFullScreenViewer
       <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
 	   <li>12/12/01 - EG - Creation (split from GLScene.pas)
@@ -630,12 +631,17 @@ begin
 
    FForm:=TForm.Create(nil);
    with FForm do begin
-      if StayOnTop then
+      if StayOnTop then begin
          FormStyle:=fsStayOnTop
-      else FormStyle:=fsNormal;
-      WindowState:=wsMaximized;
+         FForm.Width:=Self.Width;
+         FForm.Height:=Self.Height;
+      end else begin
+         FormStyle:=fsNormal;
+         FForm.WindowState:=wsMaximized;
+         FForm.Align:=alClient;
+      end;
+
       BorderStyle:=bsNone;
-      Align:=alClient;
       Cursor:=Self.Cursor;
       PopupMenu:=Self.PopupMenu;
 
