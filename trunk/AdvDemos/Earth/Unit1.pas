@@ -65,6 +65,7 @@ type
     timeMultiplier : Single;
     mx, my, dmx, dmy : Integer;
     highResResourcesLoaded : Boolean;
+    cameraTimeSteps : Single;
   end;
 
 var
@@ -316,9 +317,13 @@ begin
       dmy:=0;
    end;
    // this gives us smoother camera movements
-   GLCamera.Position.AsVector:=VectorLerp(GLCamera.Position.AsVector,
-                                          GLCameraControler.Position.AsVector,
-                                          ClampValue(10*deltaTime, 0.01, 0.05)); 
+   cameraTimeSteps:=cameraTimeSteps+deltaTime;
+   while cameraTimeSteps>0.005 do begin
+      GLCamera.Position.AsVector:=VectorLerp(GLCamera.Position.AsVector,
+                                             GLCameraControler.Position.AsVector,
+                                             0.05);
+      cameraTimeSteps:=cameraTimeSteps-0.005;
+   end;
    // smooth constellation appearance/disappearance
    with ConstellationLines.LineColor do if Alpha<>constellationsAlpha then begin
       Alpha:=ClampValue(Alpha+Sign(constellationsAlpha-Alpha)*deltaTime, 0, 0.5);
