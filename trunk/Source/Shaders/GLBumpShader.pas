@@ -16,10 +16,11 @@
 
    <b>History : </b><font size=-1><ul>
       <li>02/10/04 - SG - Changed render order a little, minimum texture units
-                          is now 2 for dot3 texcombiner bump method,
+                          is now 2 for dot3 texcombiner bump method.
                           Changed vertex programs to accept local program
                           params, now only 1 vertex and 1 fragment program is
                           required for all lights.
+                          Vertex programs now apply the primary texture matrix.
       <li>30/09/04 - SG - Added fragment program logic,
                           Added bmBasicARBFP bump method, bsTangentExternal
                           bump space and associated ARB programs,
@@ -105,6 +106,7 @@ const
       '!!ARBvp1.0'+#13#10+
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
+      'PARAM tex[4] = { state.matrix.texture[0] };'+
       'PARAM lightPos = program.local[0];'+
       'TEMP temp, light, eye;'+
 
@@ -124,10 +126,14 @@ const
       '   MUL temp, 0.5, temp;'+
 
       // Output
-      '   MOV result.texcoord[0], vertex.texcoord[0];'+
-      '   MOV result.texcoord[1], vertex.texcoord[0];'+
       '   MOV result.color, temp;'+
       '   MOV result.color.w, 1.0;'+
+      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
+      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
+      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
+      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
+      '   MOV result.texcoord[0], temp;'+
+      '   MOV result.texcoord[1], temp;'+
 
       'END';
 
@@ -136,6 +142,7 @@ const
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
       'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+
+      'PARAM tex[4] = { state.matrix.texture[0] };'+
       'PARAM lightPos = program.local[0];'+
       'TEMP temp, light, eye;'+
 
@@ -151,7 +158,11 @@ const
       '   MOV eye.w, 0.0;'+
 
       // Output
-      '   MOV result.texcoord[0], vertex.texcoord[0];'+
+      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
+      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
+      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
+      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
+      '   MOV result.texcoord[0], temp;'+
       '   MOV result.texcoord[1], light;'+
       '   MOV result.texcoord[2], eye;'+
 
@@ -168,8 +179,13 @@ const
       'ATTRIB v16 = vertex.position;'+
       'PARAM s18 = program.local[0];'+
       'PARAM s359[4] = { state.matrix.modelview[0].inverse };'+
-      '   MOV result.texcoord[0], v24;'+
-      '   MOV result.texcoord[1], v24;'+
+      'PARAM tex[4] = { state.matrix.texture[0] };'+
+      '   DP4 R0.x, v24, tex[0];'+
+      '   DP4 R0.y, v24, tex[1];'+
+      '   DP4 R0.z, v24, tex[2];'+
+      '   DP4 R0.w, v24, tex[3];'+
+      '   MOV result.texcoord[0], R0;'+
+      '   MOV result.texcoord[1], R0;'+
       '   MOV R1, s18;'+
       '   DP4 R0.x, s359[0], R1;'+
       '   DP4 R0.y, s359[1], R1;'+
@@ -199,6 +215,7 @@ const
       '!!ARBvp1.0'+#13#10+
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
+      'PARAM tex[4] = { state.matrix.texture[0] };'+
       'PARAM lightPos = program.local[0];'+
       'ATTRIB tangent = vertex.texcoord[1];'+
       'ATTRIB binormal = vertex.texcoord[2];'+
@@ -228,10 +245,14 @@ const
       '   MUL temp, 0.5, temp;'+
 
       // Output
-      '   MOV result.texcoord[0], vertex.texcoord[0];'+
-      '   MOV result.texcoord[1], vertex.texcoord[0];'+
       '   MOV result.color, temp;'+
       '   MOV result.color.w, 1.0;'+
+      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
+      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
+      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
+      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
+      '   MOV result.texcoord[0], temp;'+
+      '   MOV result.texcoord[1], temp;'+
 
       'END';
 
@@ -240,6 +261,7 @@ const
       'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
       'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+
+      'PARAM tex[4] = { state.matrix.texture[0] };'+
       'PARAM lightPos = program.local[0];'+
       'ATTRIB tangent = vertex.texcoord[1];'+
       'ATTRIB binormal = vertex.texcoord[2];'+
@@ -270,7 +292,11 @@ const
       '   MOV eye.w, 0.0;'+
 
       // Output
-      '   MOV result.texcoord[0], vertex.texcoord[0];'+
+      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
+      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
+      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
+      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
+      '   MOV result.texcoord[0], temp;'+
       '   MOV result.texcoord[1], light;'+
       '   MOV result.texcoord[2], eye;'+
 
