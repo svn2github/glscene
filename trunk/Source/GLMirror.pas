@@ -234,8 +234,9 @@ begin
          // start rendering self
          if renderSelf then begin
             Material.Apply(rci);
-            BuildList(rci);
-            Material.UnApply(rci);
+            repeat
+               BuildList(rci);
+            until not Material.UnApply(rci);
          end;
          
       end;

@@ -247,9 +247,15 @@ var
    begin
       if (MaterialLibrary<>nil) and (currentMaterialName<>materialName) then begin
          // unapply current
-         if currentMaterialName='' then
-            Material.UnApply(rci)
-         else MaterialLibrary.UnApplyMaterial(rci);
+         if currentMaterialName='' then begin
+            repeat
+               // ... proper multipass support will be implemented later
+            until not Material.UnApply(rci)
+         end else begin
+            repeat
+               // ... proper multipass support will be implemented later
+            until not MaterialLibrary.UnApplyMaterial(rci);
+         end;
          // apply new
          if materialName='' then
             Material.Apply(rci)

@@ -138,44 +138,45 @@ var
 begin
    if rci.ignoreMaterials then Exit;
   	Material.Apply(rci);
-   if AlphaChannel<>1 then
-      SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
-   // Prepare matrices
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix;
-   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-   if rci.renderDPI=96 then
-      f:=1
-   else f:=rci.renderDPI/96;
-   glScalef(f*2/rci.viewPortSize.cx, f*2/rci.viewPortSize.cy, 1);
-   glTranslatef(f*Position.X-rci.viewPortSize.cx*0.5,
-                rci.viewPortSize.cy*0.5-f*Position.Y, Position.Z);
-   if Rotation<>0 then
-      glRotatef(Rotation, 0, 0, 1);
-   glMatrixMode(GL_PROJECTION);
-   glPushMatrix;
-   glLoadIdentity;
-   glPushAttrib(GL_ENABLE_BIT);
-   glDisable(GL_DEPTH_TEST);
-   glDepthMask(False);
-   // precalc coordinates
-   vx:=-Width*0.5;    vx1:=vx+Width;
-   vy:=+Height*0.5;   vy1:=vy-Height;
-   // issue quad
-	glBegin(GL_QUADS);
-      glNormal3fv(@YVector);
-      xglTexCoord2f(0, 0);  glVertex2f( vx, vy1);
-      xglTexCoord2f(1, 0);  glVertex2f(vx1, vy1);
-      xglTexCoord2f(1, 1);  glVertex2f(vx1,  vy);
-      xglTexCoord2f(0, 1);  glVertex2f( vx,  vy);
-	glEnd;
-   // restore state
-   glDepthMask(True);
-   glPopAttrib;
-   glPopMatrix;
-   glMatrixMode(GL_MODELVIEW);
-   glPopMatrix;
-   Material.UnApply(rci);
+   repeat
+      if AlphaChannel<>1 then
+         SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+      // Prepare matrices
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix;
+      glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
+      if rci.renderDPI=96 then
+         f:=1
+      else f:=rci.renderDPI/96;
+      glScalef(f*2/rci.viewPortSize.cx, f*2/rci.viewPortSize.cy, 1);
+      glTranslatef(f*Position.X-rci.viewPortSize.cx*0.5,
+                   rci.viewPortSize.cy*0.5-f*Position.Y, Position.Z);
+      if Rotation<>0 then
+         glRotatef(Rotation, 0, 0, 1);
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix;
+      glLoadIdentity;
+      glPushAttrib(GL_ENABLE_BIT);
+      glDisable(GL_DEPTH_TEST);
+      glDepthMask(False);
+      // precalc coordinates
+      vx:=-Width*0.5;    vx1:=vx+Width;
+      vy:=+Height*0.5;   vy1:=vy-Height;
+      // issue quad
+      glBegin(GL_QUADS);
+         glNormal3fv(@YVector);
+         xglTexCoord2f(0, 0);  glVertex2f( vx, vy1);
+         xglTexCoord2f(1, 0);  glVertex2f(vx1, vy1);
+         xglTexCoord2f(1, 1);  glVertex2f(vx1,  vy);
+         xglTexCoord2f(0, 1);  glVertex2f( vx,  vy);
+      glEnd;
+      // restore state
+      glDepthMask(True);
+      glPopAttrib;
+      glPopMatrix;
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix;
+   until not Material.UnApply(rci);
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
 end;

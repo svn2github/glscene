@@ -4073,10 +4073,11 @@ begin
    if renderSelf then begin
       if not rci.ignoreMaterials then begin
          FMaterial.Apply(rci);
-         if osDirectDraw in ObjectStyle then
-            BuildList(rci)
-         else glCallList(GetHandle(rci));
-         FMaterial.UnApply(rci);
+         repeat
+            if osDirectDraw in ObjectStyle then
+               BuildList(rci)
+            else glCallList(GetHandle(rci));
+         until not FMaterial.UnApply(rci);
       end else begin
          if osDirectDraw in ObjectStyle then
             BuildList(rci)
@@ -5634,7 +5635,6 @@ begin
       NotifyChange(Self);
    end;
 end;
-
 
 // ApplyFog
 //

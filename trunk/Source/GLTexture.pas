@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>08/07/02 - EG - Multipass support
       <li>18/06/02 - EG - Added TGLShader
       <li>26/01/02 - EG - Makes use of new xglBegin/EndUpdate mechanism
       <li>24/01/02 - EG - Added vUseDefaultSets mechanism,
@@ -692,16 +693,17 @@ type
 			{ Protected Declarations }
          {: Invoked once, before the first call to DoApply.<p>
             The call happens with the OpenGL context being active. }
-         procedure DoInitialize; dynamic; abstract;
+         procedure DoInitialize; dynamic;
          {: Request to apply the shader.<p>
             Always followed by a DoUnApply when the shader is no longer needed. }
          procedure DoApply(var rci : TRenderContextInfo); virtual; abstract;
          {: Request to un-apply the shader.<p>
-            Subclasses can assume the shader has been applied previously. }
-         procedure DoUnApply(var rci : TRenderContextInfo); virtual; abstract;
+            Subclasses can assume the shader has been applied previously.<br>
+            Return True to request a multipass. }
+         function DoUnApply(var rci : TRenderContextInfo) : Boolean; virtual; abstract;
          {: Invoked once, before the destruction of context or release of shader.<p>
             The call happens with the OpenGL context being active. }
-         procedure DoFinalize; dynamic; abstract;
+         procedure DoFinalize; dynamic;
 
          function GetShaderInitialized : Boolean;
          procedure InitializeShader;
@@ -725,8 +727,13 @@ type
          procedure BeginUpdate;
          procedure EndUpdate;
 
+         {: Apply shader to OpenGL state machine.}
          procedure Apply(var rci : TRenderContextInfo);
-         procedure UnApply(var rci : TRenderContextInfo);
+         {: UnApply shader.<p>
+            When returning True, the caller is expected to perform a multipass
+            rendering by re-rendering then invoking UnApply again, until a
+            "False" is returned. }
+         function UnApply(var rci : TRenderContextInfo) : Boolean;
 
          {: Shader application style (default is ssLowLevel). }
          property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle;
@@ -1038,8 +1045,9 @@ type
 
          procedure PrepareBuildList;
 			procedure Apply(var rci : TRenderContextInfo);
-         //: Restore non-standard material states that were altered
-         procedure UnApply(var rci : TRenderContextInfo);
+         {: Restore non-standard material states that were altered;<p>
+            A return value of True is a multipass request. }
+         function  UnApply(var rci : TRenderContextInfo) : Boolean;
 			procedure Assign(Source: TPersistent); override;
 			procedure NotifyChange(Sender : TObject); override;
 			procedure NotifyTexMapChange(Sender : TObject);
@@ -1108,7 +1116,7 @@ type
          procedure PrepareBuildList;
 			procedure Apply(var rci : TRenderContextInfo);
          //: Restore non-standard material states that were altered
-         procedure UnApply(var rci : TRenderContextInfo);
+         function  UnApply(var rci : TRenderContextInfo) : Boolean;
 
          procedure RegisterUser(material : TGLMaterial); overload;
 			procedure UnregisterUser(material : TGLMaterial); overload;
@@ -2412,6 +2420,20 @@ begin
       NotifyChange(Self);
 end;
 
+// DoInitialize
+//
+procedure TGLShader.DoInitialize;
+begin
+   // nothing here
+end;
+
+// DoFinalize
+//
+procedure TGLShader.DoFinalize;
+begin
+   // nothing here
+end;
+
 // GetShaderInitialized
 //
 function TGLShader.GetShaderInitialized : Boolean;
@@ -2464,11 +2486,12 @@ end;
 
 // UnApply
 //
-procedure TGLShader.UnApply(var rci : TRenderContextInfo);
+function TGLShader.UnApply(var rci : TRenderContextInfo) : Boolean;
 begin
    Assert(FShaderActive, 'Unbalanced shader application.');
-   FShaderActive:=False;
-   DoUnApply(rci);
+   Result:=DoUnApply(rci);
+   if not Result then
+      FShaderActive:=False;
 end;
 
 // OnVirtualHandleDestroy
@@ -3345,10 +3368,10 @@ end;
 
 // UnApply
 //
-procedure TGLMaterial.UnApply(var rci : TRenderContextInfo);
+function TGLMaterial.UnApply(var rci : TRenderContextInfo) : Boolean;
 begin
 	if Assigned(currentLibMaterial) then
-		currentLibMaterial.UnApply(rci)
+		Result:=currentLibMaterial.UnApply(rci)
    else begin
       if moIgnoreFog in MaterialOptions then begin
          if rci.fogDisabledCounter>0 then begin
@@ -3359,6 +3382,7 @@ begin
       end;
       if not FTexture.Disabled then
          FTexture.UnApply(rci);
+      Result:=False;
    end;
 end;
 
@@ -3539,28 +3563,32 @@ end;
 
 // UnApply
 //
-procedure TGLLibMaterial.UnApply(var rci : TRenderContextInfo);
+function TGLLibMaterial.UnApply(var rci : TRenderContextInfo) : Boolean;
 begin
+   Result:=False;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
-         ssLowLevel : Shader.UnApply(rci);
+         ssLowLevel : Result:=Shader.UnApply(rci);
          ssReplace : begin
-            Shader.UnApply(rci);
+            Result:=Shader.UnApply(rci);
             Exit;
          end;
       end;
    end;
-   if Assigned(libMatTexture2) then begin
-      libMatTexture2.Material.Texture.UnApplyAsTexture2(libMatTexture2);
-      xglMapTexCoordToMain;
-   end;
-   Material.UnApply(rci);
-   if not Material.Texture.Disabled then
-      if not FTextureMatrixIsIdentity then
-         ResetGLTextureMatrix;
-   if Assigned(FShader) then begin
-      case Shader.ShaderStyle of
-         ssHighLevel : Shader.UnApply(rci);
+   if not Result then begin
+      // if multipassing, this will occur upon last pass only
+      if Assigned(libMatTexture2) then begin
+         libMatTexture2.Material.Texture.UnApplyAsTexture2(libMatTexture2);
+         xglMapTexCoordToMain;
+      end;
+      Material.UnApply(rci);
+      if not Material.Texture.Disabled then
+         if not FTextureMatrixIsIdentity then
+            ResetGLTextureMatrix;
+      if Assigned(FShader) then begin
+         case Shader.ShaderStyle of
+            ssHighLevel : Result:=Shader.UnApply(rci);
+         end;
       end;
    end;
 end;

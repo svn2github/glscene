@@ -2656,15 +2656,15 @@ begin
                      libMat:=materials.GetLibMaterialByName(currentMaterialName);
                      if Assigned(libMat) then
                         libMat.Apply(mrci);
-                     for j:=i to FaceGroups.Count-1 do with FaceGroups[j] do begin
-                        if (FRenderGroupID<>groupID)
-                              and (MaterialName=currentMaterialName) then begin
-                           FRenderGroupID:=groupID;
-                           BuildList(mrci);
+                     repeat
+                        for j:=i to FaceGroups.Count-1 do with FaceGroups[j] do begin
+                           if (FRenderGroupID<>groupID)
+                                 and (MaterialName=currentMaterialName) then begin
+                              FRenderGroupID:=groupID;
+                              BuildList(mrci);
+                           end;
                         end;
-                     end;
-                     if Assigned(libMat) then
-                        libMat.UnApply(mrci);
+                     until (not Assigned(libMat)) or (not libMat.UnApply(mrci));
                   end;
                end;
             end else begin
@@ -2674,8 +2674,9 @@ begin
                   libMat:=materials.GetLibMaterialByName(MaterialName);
                   if Assigned(libMat) then begin
                      libMat.Apply(mrci);
-                     BuildList(mrci);
-                     libMat.UnApply(mrci);
+                     repeat
+                        BuildList(mrci);
+                     until not libMat.UnApply(mrci);
                   end else BuildList(mrci);
                end;
             end;
@@ -4476,10 +4477,11 @@ begin
          else rci.materialLibrary:=nil;
          MeshObjects.PrepareBuildList(rci);
          Material.Apply(rci);
-         if osDirectDraw in ObjectStyle then
-            BuildList(rci)
-         else glCallList(GetHandle(rci));
-         Material.UnApply(rci);
+         repeat
+            if osDirectDraw in ObjectStyle then
+               BuildList(rci)
+            else glCallList(GetHandle(rci));
+         until not Material.UnApply(rci);
          rci.materialLibrary:=nil;
       end else begin
          if osDirectDraw in ObjectStyle then

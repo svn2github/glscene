@@ -146,7 +146,7 @@ type
 
          procedure DoInitialize; override;
          procedure DoApply(var rci : TRenderContextInfo); override;
-         procedure DoUnApply(var rci : TRenderContextInfo); override;
+         function  DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
          procedure DoFinalize; override;
 
          property VertexProgram : TCgVertexProgram read FVertexProgram write SetVertexProgram;
@@ -623,12 +623,14 @@ end;
 
 // DoUnApply
 //
-procedure TCustomCgShader.DoUnApply(var rci : TRenderContextInfo);
+function TCustomCgShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
 begin
    if (csDesigning in ComponentState) and (not FDesignEnable) then Exit;
 
    FVertexProgram.UnApply(rci);
    FFragmentProgram.UnApply(rci);
+
+   Result:=False;
 end;
 
 // DoFinalize

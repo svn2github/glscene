@@ -210,8 +210,9 @@ begin
                libMat:=mrci.materialLibrary.Materials.GetLibMaterialByName(MaterialName);
                if Assigned(libMat) then begin
                   libMat.Apply(mrci);
-                  BuildList(mrci);
-                  libMat.UnApply(mrci);
+                  repeat
+                     BuildList(mrci);
+                  until not libMat.UnApply(mrci);
                end else BuildList(mrci);
             end else BuildList(mrci);
          end;
