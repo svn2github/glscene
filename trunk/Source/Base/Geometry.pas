@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/05/03 - EG - Added MakeParallelProjectionMatrix
       <li>13/05/03 - EG - 3DNow! optimization for ClampValue
       <li>30/04/03 - EG - Hyperbolic trig functions (Aaron Hochwimmer)
       <li>14/02/03 - EG - Added ScaleAndRound
@@ -825,6 +826,7 @@ function  MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean
 function PlaneMake(const p1, p2, p3 : TAffineVector) : THmgPlane; overload;
 //: Computes the parameters of a plane defined by a point and a normal.
 function PlaneMake(const point, normal : TAffineVector) : THmgPlane; overload;
+function PlaneMake(const point, normal : TVector) : THmgPlane; overload;
 //: Converts from single to double representation
 procedure SetPlane(var dest : TDoubleHmgPlane; const src : THmgPlane);
 
@@ -1211,9 +1213,14 @@ function IsVolumeClipped(const min, max : TAffineVector;
 
 // misc funcs
 
-// Creates a shadow projection matrix out of the plane equation
-// coefficients and the position of the light. The return value is stored
-// in destMat[][]
+{: Creates a parallel projection matrix.<p>
+   Transformed points will projected on the plane along the specified direction. }
+function MakeParallelProjectionMatrix(const plane : THmgPlane;
+                                      const dir : TVector) : TMatrix;
+
+{: Creates a shadow projection matrix.<p>
+   Shadows will be projected onto the plane defined by planePoint and planeNormal,
+   from lightPos. }
 function MakeShadowMatrix(const planePoint, planeNormal, lightPos : TVector) : TMatrix;
 
 {: Builds a reflection matrix for the given plane.<p>
@@ -5134,12 +5141,20 @@ begin
    NormalizeVector(vr);
 end;
 
-// PlaneMake (point + normal)
+// PlaneMake (point + normal, affine)
 //
 function PlaneMake(const point, normal : TAffineVector) : THmgPlane;
 begin
    PAffineVector(@Result)^:=normal;
    Result[3]:=-VectorDotProduct(point, normal);
+end;
+
+// PlaneMake (point + normal, hmg)
+//
+function PlaneMake(const point, normal : TVector) : THmgPlane;
+begin
+   PAffineVector(@Result)^:=PAffineVector(@normal)^;
+   Result[3]:=-VectorDotProduct(PAffineVector(@point)^, PAffineVector(@normal)^);
 end;
 
 // PlaneMake (3 points)
@@ -7514,6 +7529,43 @@ begin
    Result:=IsVolumeClipped(VectorScale(VectorAdd(min, max), 0.5),
                            VectorDistance(min, max)*0.5, rcci);
 end;
+
+// MakeParallelProjectionMatrix
+//
+function MakeParallelProjectionMatrix(const plane : THmgPlane;
+                                      const dir : TVector) : TMatrix;
+// Based on material from a course by William D. Shoaff (www.cs.fit.edu)
+var
+   dot, invDot : Single;
+begin
+   dot:=plane[0]*dir[0]+plane[1]*dir[1]+plane[2]*dir[2];
+   if Abs(dot)<1e-5 then begin
+      Result:=IdentityHmgMatrix;
+      Exit;
+   end;
+   invDot:=1/dot;
+
+   Result[0][0]:=(plane[1]*dir[1]+plane[2]*dir[2])*invDot;
+   Result[1][0]:=(-plane[1]*dir[0])*invDot;
+   Result[2][0]:=(-plane[2]*dir[0])*invDot;
+   Result[3][0]:=(-plane[3]*dir[0])*invDot;
+
+   Result[0][1]:=(-plane[0]*dir[1])*invDot;
+   Result[1][1]:=(plane[0]*dir[0]+plane[2]*dir[2])*invDot;
+   Result[2][1]:=(-plane[2]*dir[1])*invDot;
+   Result[3][1]:=(-plane[3]*dir[1])*invDot;
+
+   Result[0][2]:=(-plane[0]*dir[2])*invDot;
+   Result[1][2]:=(-plane[1]*dir[2])*invDot;
+   Result[2][2]:=(plane[0]*dir[0]+plane[1]*dir[1])*invDot;
+   Result[3][2]:=(-plane[3]*dir[2])*invDot;
+
+   Result[0][3]:=0;
+   Result[1][3]:=0;
+   Result[2][3]:=0;
+   Result[3][3]:=1;
+end;
+
 
 // MakeShadowMatrix
 //
