@@ -3062,10 +3062,7 @@ var
    sVec, tVec : TAffineVector;
    Segments : integer;
 begin
-   Segments := FStacks;
-
-   if FSlices>FStacks then
-    Segments := FSlices;
+   Segments := MaxInteger(FStacks, FSlices);
 
    r:=BoundingSphereRadiusUnscaled;
    d:=VectorLength(silhouetteParameters.SeenFrom);
@@ -3091,7 +3088,7 @@ begin
    for i:=0 to Segments-1 do begin
       SinCos(i*angleFactor, vr, s, c);
       Result.Vertices.AddPoint(VectorCombine(sVec, tVec, s, c));
-      j:=(i+1) mod FStacks;
+      j:=(i+1) mod Segments;
       Result.Indices.Add(i, j);
       if silhouetteParameters.CappingRequired then
          Result.CapIndices.Add(Segments, i, j)
