@@ -3,3 +3,9 @@ ok... adding a new file...
 and now updating....
 
 Update spécial : La on est dans la branche BCB6 ...
+
+Test pour BCB6
+
+Nous sommes dans la branche principale
+
+et après fusion 
