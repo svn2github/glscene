@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 169
-  Top = 154
-  Width = 557
+  Left = 133
+  Top = 130
+  Width = 591
   Height = 422
   Caption = 'TerrainPack v1.0'
   Color = clBtnFace
@@ -20,12 +20,12 @@ object MainForm: TMainForm
   object StringGrid: TStringGrid
     Left = 0
     Top = 121
-    Width = 549
+    Width = 583
     Height = 232
     Align = alClient
     BorderStyle = bsNone
     ColCount = 4
-    DefaultColWidth = 130
+    DefaultColWidth = 140
     DefaultRowHeight = 19
     FixedCols = 0
     RowCount = 2
@@ -37,10 +37,13 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 0
     Top = 28
-    Width = 549
+    Width = 583
     Height = 93
     Align = alTop
     TabOrder = 1
+    DesignSize = (
+      583
+      93)
     object Label1: TLabel
       Left = 8
       Top = 67
@@ -88,7 +91,7 @@ object MainForm: TMainForm
     object EDHTFName: TEdit
       Left = 72
       Top = 8
-      Width = 441
+      Width = 475
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 0
@@ -96,14 +99,14 @@ object MainForm: TMainForm
     object EDDEMPath: TEdit
       Left = 72
       Top = 64
-      Width = 441
+      Width = 475
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 1
       OnChange = EDDEMPathChange
     end
     object BUDEMPath: TButton
-      Left = 515
+      Left = 549
       Top = 64
       Width = 24
       Height = 21
@@ -113,7 +116,7 @@ object MainForm: TMainForm
       OnClick = BUDEMPathClick
     end
     object Button3: TButton
-      Left = 515
+      Left = 549
       Top = 8
       Width = 24
       Height = 21
@@ -157,7 +160,7 @@ object MainForm: TMainForm
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 549
+    Width = 583
     Height = 28
     AutoSize = True
     BorderWidth = 1
@@ -223,7 +226,7 @@ object MainForm: TMainForm
   object CBType: TComboBox
     Left = 392
     Top = 144
-    Width = 129
+    Width = 139
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
@@ -233,12 +236,14 @@ object MainForm: TMainForm
     Items.Strings = (
       '16 bits (Intel)'
       '16 bits (non-Intel)'
-      'VTP'#39's BT (single)')
+      'VTP'#39's BT (single)'
+      'BMP (Windows)'
+      '32 bits FP ([0; 1], Intel)')
   end
   object CBFile: TComboBox
     Left = 0
     Top = 144
-    Width = 129
+    Width = 139
     Height = 21
     DropDownCount = 24
     ItemHeight = 13
@@ -249,7 +254,7 @@ object MainForm: TMainForm
   object Panel2: TPanel
     Left = 0
     Top = 353
-    Width = 549
+    Width = 583
     Height = 20
     Align = alBottom
     BevelOuter = bvNone
@@ -258,7 +263,7 @@ object MainForm: TMainForm
     object ProgressBar: TProgressBar
       Left = 3
       Top = 3
-      Width = 543
+      Width = 577
       Height = 14
       Align = alClient
       Min = 0
@@ -761,17 +766,6 @@ object MainForm: TMainForm
       8001FF8FF283C43FFFFFFFFFF827E07F00000000000000000000000000000000
       000000000000}
   end
-  object BDDDEMs: TdfsBrowseDirectoryDlg
-    Title = 
-      'Select the directory where your DEMs files are stored (all sourc' +
-      'e DEMs must be in the same directory)'
-    Root = idDrives
-    Options = [bfEditBox, bfNewDialogStyle, bfUseNewUI]
-    Caption = 'DEM Path'
-    ShowSelectionInStatus = False
-    Left = 128
-    Top = 184
-  end
   object SDHTF: TSaveDialog
     DefaultExt = 'htf'
     Filter = 'HTF Files (*.htf)|*.htf|All files (*.*)|*.*'
@@ -804,5 +798,9 @@ object MainForm: TMainForm
     Options = [ofHideReadOnly, ofPathMustExist, ofNoReadOnlyReturn, ofEnableSizing]
     Left = 160
     Top = 216
+  end
+  object ODPath: TOpenDialog
+    Left = 128
+    Top = 184
   end
 end

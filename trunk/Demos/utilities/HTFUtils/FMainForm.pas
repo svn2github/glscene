@@ -1,10 +1,7 @@
 {: Utility to pack on or many DEM sources into a single HTF.<p>
 
    Note: this is a *basic* tool, error messages are unfriendly and there are
-         memory leaks if you do any, I know. So, don't do errors ;)<p>
-
-   Requires Brad Stowers' BrowseDirectoryDialog component<br>
-   (http://www.delphifreestuff.com)
+         memory leaks if you do any, I know. So, don't do errors ;)
 }
 unit FMainForm;
 
@@ -13,14 +10,14 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ValEdit, Grids, Menus, StdCtrls, ComCtrls, ToolWin, ExtCtrls,
-  ActnList, ImgList, HeightTileFile, BrowseDr;
+  ActnList, ImgList, HeightTileFile;
 
 type
    TSrc = record
       fs : TFileStream;
       x, y, w, h : Integer;
-      format : Integer;     
-      
+      format : Integer;
+
    end;
    PSrc = ^TSrc;
 
@@ -55,7 +52,6 @@ type
     ToolButton5: TToolButton;
     AddDEMsource1: TMenuItem;
     RemoveDEMsource1: TMenuItem;
-    BDDDEMs: TdfsBrowseDirectoryDlg;
     SDHTF: TSaveDialog;
     PopupMenu: TPopupMenu;
     AddDEMsource2: TMenuItem;
@@ -85,6 +81,7 @@ type
     N3: TMenuItem;
     HTFViewer1: TMenuItem;
     ToolButton9: TToolButton;
+    ODPath: TOpenDialog;
     procedure ACExitExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BUDEMPathClick(Sender: TObject);
@@ -154,9 +151,10 @@ end;
 
 procedure TMainForm.BUDEMPathClick(Sender: TObject);
 begin
-   BDDDEMs.Selection:=EDDEMPath.Text;
-   if BDDDEMs.Execute then
-      EDDEMPath.Text:=BDDDEMs.Selection;
+   ODPath.InitialDir:=EDDEMPath.Text;
+   ODPath.FileName:=EDDEMPath.Text+'pick a dummy.file';
+   if ODPath.Execute then
+      EDDEMPath.Text:=ExtractFilePath(ODPath.FileName);
 end;
 
 procedure TMainForm.Button3Click(Sender: TObject);
@@ -333,6 +331,10 @@ begin
          sources[i].format:=1
       else if Pos('BT', row[3])>0 then
          sources[i].format:=2
+      else if Pos('FP', row[3])>0 then
+         sources[i].format:=4
+      else if Pos('BMP', row[3])>0 then
+         sources[i].format:=3
       else sources[i].format:=0;
    end;
 end;
@@ -348,9 +350,10 @@ end;
 
 procedure TMainForm.SrcExtract(src : PSrc; relX, relY, len : Integer; dest : PSmallInt);
 var
-   i : Integer;
+   i, c : Integer;
    wd : Word;
    buf : array of Single;
+   bmp : TBitmap;
 begin
    with src^ do begin
       case format of
@@ -372,6 +375,26 @@ begin
             fs.Read(buf[0], len*4);
             for i:=0 to len-1 do
                PSmallInt(Integer(dest)+i*2)^:=Round(buf[i]);
+         end;
+         3 : begin // windows BMP
+            bmp:=TBitmap.Create;
+            try
+               fs.Position:=0;
+               bmp.LoadFromStream(fs);
+               for i:=0 to len-1 do begin
+                  c:=bmp.Canvas.Pixels[relX+i, bmp.Height-relY-1];
+                  PSmallInt(Integer(dest)+i*2)^:=(GetGValue(c)-128) shl 7;
+               end;
+            finally
+               bmp.Free;
+            end;
+         end;
+         4 : begin // 32bits FP Intel
+            fs.Position:=(relX+relY*w)*4;
+            SetLength(buf, len);
+            fs.Read(buf[0], len*4);
+            for i:=0 to len-1 do
+               PSmallInt(Integer(dest)+i*2)^:=Round((buf[i]-0.5)*32000);
          end;
       end;
    end;

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, G32_Image, HeightTileFile, G32, G32_Layers, GR32_Image;
+  Dialogs, GR32_Image, HeightTileFile, GR32, GR32_Layers;
 
 type
   TNavForm = class(TForm)
