@@ -360,6 +360,10 @@ type
          FSortDistList : TSingleList;
          FSortObjList : TList;
 
+       //  FOriginalFiler: TFiler;   //used to allow persistent events in behaviours & effects
+       {If somebody could look at DefineProperties, ReadBehaviours, ReadEffects and verify code
+       is safe to use then it could be uncommented}
+
          function Get(Index : Integer) : TGLBaseSceneObject;
          function GetCount : Integer;
          function GetIndex : Integer;
@@ -397,6 +401,7 @@ type
          procedure NotifyHide; dynamic;
          //: child notification on show. Also notifies children.
          procedure NotifyShow; dynamic;
+
 
          procedure DefineProperties(Filer: TFiler); override;
          procedure WriteBehaviours(stream : TStream);
@@ -2381,12 +2386,15 @@ end;
 procedure TGLBaseSceneObject.DefineProperties(Filer: TFiler);
 begin
    inherited;
+   {FOriginalFiler := Filer;}
+
    Filer.DefineBinaryProperty('BehavioursData',
                               ReadBehaviours, WriteBehaviours,
                               (Assigned(FGLBehaviours) and (FGLBehaviours.Count>0)));
    Filer.DefineBinaryProperty('EffectsData',
                               ReadEffects, WriteEffects,
                               (Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0)));
+   {FOriginalFiler:=nil;}
 end;
 
 // WriteBehaviours
@@ -2410,11 +2418,20 @@ var
    reader : TReader;
 begin
    reader:=TReader.Create(stream, 16384);
-   try
-      Behaviours.ReadFromFiler(reader);
-   finally
-      reader.Free;
-   end;
+   { with TReader(FOriginalFiler) do  }
+    try
+     {  reader.Root                 := Root;
+       reader.OnError              := OnError;
+       reader.OnFindMethod         := OnFindMethod;
+       reader.OnSetName            := OnSetName;
+       reader.OnReferenceName      := OnReferenceName;
+       reader.OnAncestorNotFound   := OnAncestorNotFound;
+       reader.OnCreateComponent    := OnCreateComponent;
+       reader.OnFindComponentClass := OnFindComponentClass;
+       Behaviours.ReadFromFiler(reader); }
+    finally
+       reader.Free;
+    end;
 end;
 
 // WriteEffects
@@ -2438,11 +2455,20 @@ var
    reader : TReader;
 begin
    reader:=TReader.Create(stream, 16384);
-   try
-      Effects.ReadFromFiler(reader);
-   finally
-      reader.Free;
-   end;
+    {with TReader(FOriginalFiler) do }
+    try
+      { reader.Root                 := Root;
+       reader.OnError              := OnError;
+       reader.OnFindMethod         := OnFindMethod;
+       reader.OnSetName            := OnSetName;
+       reader.OnReferenceName      := OnReferenceName;
+       reader.OnAncestorNotFound   := OnAncestorNotFound;
+       reader.OnCreateComponent    := OnCreateComponent;
+       reader.OnFindComponentClass := OnFindComponentClass;   }
+       Effects.ReadFromFiler(reader);
+    finally
+       reader.Free;
+    end;
 end;
 
 // WriteRotations
