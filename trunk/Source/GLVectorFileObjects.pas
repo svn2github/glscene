@@ -426,6 +426,7 @@ type
 
       public
          { Public Declarations }
+         {: Creates, assigns Owner and adds to list. } 
          constructor CreateOwned(AOwner : TMeshObjectList);
          constructor Create; override;
          destructor Destroy; override;
@@ -436,9 +437,6 @@ type
          function ExtractTriangles : TAffineVectorList; override;
          {: Returns number of triangles in the mesh object. }
          function TriangleCount : Integer; dynamic;
-         {: Request for collapsing two vertices
-         procedure CollapseVertices(vertexA, vertexB : Integer); virtual;
-
 
          {: Prepare the texture and materials before rendering.<p>
             Invoked once, before building the list and NOT while building the list. }
