@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/06/02 - EG - VirtualHandle notification fix (Sören Mühlbauer)
       <li>07/03/02 - EG - GetFontBase fix (Sören Mühlbauer)
       <li>30/01/02 - EG - Text Alignment (Sören Mühlbauer),
                           TFontManager now GLContext compliant (RenderToBitmap ok!) 
@@ -16,7 +17,7 @@ interface
 {$i GLScene.inc}
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
-uses Windows, Classes, GLScene, Graphics, OpenGL12, GLTexture, GLContext;
+uses Windows, Messages, Classes, GLScene, Graphics, OpenGL12, GLTexture, GLContext;
 
 type
 
@@ -67,6 +68,7 @@ type
                          allowedDeviation : Single;
                          firstChar, lastChar : Integer;
                          glyphMetrics : array [0..255] of TGlyphMetricsFloat;
+                         FClients  : TList;
                        end;
 
    // TSpaceText
@@ -115,6 +117,9 @@ type
          function TextMaxHeight(const str : String = '') : Single;
          function TextMaxUnder(const str : String = '') : Single;
          procedure TextMetrics(const str : String; var width, maxHeight, maxUnder : Single);
+         procedure NotifyFontChanged;
+         procedure NotifyChange(Sender: TObject); override;
+         procedure DefaultHandler(var Message); override;
 
 		published
 			{ Published Declarations }
@@ -145,6 +150,7 @@ type
 
 	   protected
 			{ Protected Declarations }
+         procedure NotifyClients(Clients:TList);
          procedure VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Integer);
          procedure VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
 
@@ -158,12 +164,15 @@ type
                            FFirstChar, FLastChar : Integer) : PFontEntry;
          function GetFontBase(AName: String; FStyles: TFontStyles; FExtrusion: Single;
                               allowedDeviation : Single;
-                              firstChar, lastChar : Integer) : PFontEntry;
-         procedure Release(entry : PFontEntry);
+                              firstChar, lastChar : Integer; client : TObject) : PFontEntry;
+         procedure Release(entry : PFontEntry; client : TObject);
    end;
 
 function FontManager : TFontManager;
 procedure ReleaseFontManager;
+
+var
+   vFontManagerMsgID : Cardinal;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -175,6 +184,8 @@ implementation
 
 uses SysUtils;
 
+const
+   cFontManagerMsg = 'GLScene FontManagerMessage';
 var
 	vFontManager : TFontManager;
 
@@ -256,7 +267,6 @@ begin
    FFont:=TFont.Create;
    FFont.Name:='Arial';
    FontChanged:=True;
-   FExtrusion:=0;
    CharacterRange:=stcrAll;
    FFont.OnChange:=OnFontChange;
    FAdjust:=TGLTextAdjust.Create;
@@ -271,6 +281,7 @@ begin
    FAdjust.Free;
    FFont.OnChange:=nil;
    FFont.Free;
+   FontManager.Release(FTextFontEntry, Self);
    inherited Destroy;
 end;
 
@@ -380,7 +391,7 @@ end;
 //
 procedure TSpaceText.DestroyHandle;
 begin
-   ReleaseFontManager;
+   FontChanged:=True;
    inherited;
 end;
 
@@ -412,11 +423,14 @@ var
 	firstChar, lastChar : Integer;
 begin
    if FText<>'' then begin
-   	if FontChanged or (FTextFontEntry.FVirtualHandle.Handle=0) then with FFont do begin
-	   	FontManager.Release(FTextFontEntry);
+   	if FontChanged or (Assigned(FTextFontEntry)
+                         and (FTextFontEntry.FVirtualHandle.Handle=0)) then with FFont do begin
+	   	FontManager.Release(FTextFontEntry, Self);
          GetFirstAndLastChar(firstChar, lastChar);
    		FTextFontEntry:=FontManager.GetFontBase(Name, Style, FExtrusion,
-	   					      							 FAllowedDeviation, firstChar, lastChar);
+	   					      							 FAllowedDeviation,
+                                                 firstChar, lastChar,
+                                                 Self);
 		   FontChanged:=False;
    	end;
    end;
@@ -537,6 +551,7 @@ var
 begin
    for i:=0 to Count-1 do begin
       TFontEntry(Items[i]^).FVirtualHandle.Free;
+      NotifyClients(TFontEntry(Items[i]^).FClients);
       FreeMem(Items[i], SizeOf(TFontEntry));
    end;
    inherited Destroy;
@@ -581,7 +596,7 @@ end;
 //
 function TFontManager.GetFontBase(AName: String; FStyles: TFontStyles; FExtrusion: Single;
 											 allowedDeviation : Single;
-											 firstChar, lastChar : Integer) : PFontEntry;
+											 firstChar, lastChar : Integer; client : TObject) : PFontEntry;
 var
    NewEntry : PFontEntry;
 	MemDC    : HDC;
@@ -591,6 +606,8 @@ begin
    NewEntry:=FindFont(AName, FStyles, FExtrusion, allowedDeviation, firstChar, lastChar);
    if Assigned(NewEntry) then begin
 	   Inc(NewEntry^.RefCount);
+      if NewEntry.FClients.IndexOf(Client)<0 then
+         NewEntry.FClients.Add(Client);
       Result:=NewEntry;
    end else Result:=nil;
    if (Result=nil) or (Assigned(Result) and (Result.FVirtualHandle.Handle=0)) then begin
@@ -610,6 +627,8 @@ begin
          NewEntry^.firstChar:=firstChar;
          NewEntry^.lastChar:=lastChar;
          NewEntry^.allowedDeviation:=allowedDeviation;
+         NewEntry^.FClients:=TList.Create;
+         NewEntry^.FClients.Add(Client);
          Add(NewEntry);
       end;
       // create a font to be used while display list creation
@@ -638,16 +657,65 @@ end;
 
 // Release
 //
-procedure TFontManager.Release(entry : PFontEntry);
+procedure TFontManager.Release(entry : PFontEntry; client : TObject);
+var
+   hMsg : TMessage;
 begin
    if Assigned(entry) then begin
       Dec(entry^.RefCount);
+      if Assigned(Client) then begin
+         hMsg.Msg:=vFontManagerMsgID;
+         Client.DefaultHandler(hMsg);
+      end;
+      entry^.FClients.Remove(Client);
       if entry^.RefCount=0 then begin
          entry.FVirtualHandle.Free;
+         NotifyClients(entry.FClients);
+         entry.FClients.Free;
          Remove(entry);
          Dispose(entry)
       end;
    end;
+end;
+
+// NotifyClients
+//
+procedure TFontManager.NotifyClients(Clients:TList);
+var
+   i : Integer;
+   hMsg : TMessage;
+begin
+   hMsg.Msg:=vFontManagerMsgID;
+   for i:=0 to Clients.Count-1 do
+      TObject(Clients[i]).DefaultHandler(hMsg);
+end;
+
+// NotifyFontChanged
+//
+procedure TSpaceText.NotifyFontChanged;
+begin
+   FTextFontEntry:=nil;
+   FontChanged:=True;
+end;
+
+// NotifyChange
+//
+procedure TSpaceText.NotifyChange(sender : TObject);
+begin
+   if Sender is TFontManager then
+      NotifyFontChanged
+   else inherited;
+end;
+
+// DefaultHandler
+//
+procedure TSpaceText.DefaultHandler(var Message);
+begin
+   with TMessage(Message) do begin
+      if Msg=vFontManagerMsgID then
+         NotifyFontChanged
+      else inherited;
+  end;
 end;
 
 //-------------------------------------------------------------
@@ -658,6 +726,7 @@ initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
+   vFontManagerMsgID:=RegisterWindowMessage(cFontManagerMsg);
    RegisterClass(TSpaceText);
 
 finalization
