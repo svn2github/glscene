@@ -2,6 +2,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/09/03 - EG - Can now use occlusion testing/query for AutoZTest
       <li>19/09/03 - EG - Misc. cleanup, added PreRender
       <li>18/08/03 - SG - Added TGLTextureLensFlare (Tobias Peirick)
       <li>26/03/03 - EG - Framerate independant glow transitions (Tobias Peirick)
@@ -59,6 +60,8 @@ type
          FSin20Res, FCos20Res : array of Single;
          FSinRes, FCosRes : array of Single;
          FTexRays : TGLTextureHandle;
+         FFlareIsNotOccluded : Boolean;
+         FOcclusionQuery : TGLOcclusionQueryHandle;
 
       protected
          { Protected Declarations }
@@ -95,6 +98,11 @@ type
             event f.i. }
          procedure PreRender(activeBuffer : TGLSceneBuffer);
 
+         {: Is the LensFlare not occluded?.<p>
+            If false the flare will fade away, if true, it will fade in and stay.
+            This value is automatically updated if AutoZTest is set. }
+         property FlareIsNotOccluded : Boolean read FFlareIsNotOccluded write FFlareIsNotOccluded;
+         
       published
          { Public Declarations }
          //: MaxRadius of the flare.
@@ -111,11 +119,13 @@ type
          property NumSecs : Integer read FNumSecs write SetNumSecs default 8;
          //: Number of segments used when rendering circles.
          property Resolution : Integer read FResolution write SetResolution default 64;
-         //: Automatically turns the flare on/off depending on ZTest occlusion test
+         {: Automatically computes FlareIsNotOccluded depending on ZBuffer test.<p>
+            Not that the automated test may use test result from the previous
+            frame into the next (to avoid a rendering stall). }
          property AutoZTest : Boolean read FAutoZTest write SetAutoZTest default True;
          //: Which elements should be rendered?
          property Elements : TFlareElements read FElements write SetElements default cDefaultFlareElements;
-         
+
          property ObjectsSorting;
          property Position;
          property Visible;
@@ -215,8 +225,11 @@ begin
   FNumStreaks := 4;
   FStreakWidth := 2;
   FNumSecs := 8;
+  FAutoZTest:=True;
+  FlareIsNotOccluded:=True;
+
   SetResolution(64);
-  FAutoZTest := True;
+  
   // Render all elements by default.
   FElements := [feGlow, feRing, feStreaks, feRays, feSecondaries];
   // Setup default gradients:
@@ -234,6 +247,7 @@ end;
 //
 destructor TGLLensFlare.Destroy;
 begin
+   FOcclusionQuery.Free;
    FTexRays.Free;
    inherited;
 end;
@@ -377,7 +391,7 @@ var
    a, s, c, s1, c1, f, rW, rnd, depth : Single;
    posVector, v, rv : TAffineVector;
    screenPos : TAffineVector;
-   flag : Boolean;
+   flareInViewPort : Boolean;
    oldSeed : LongInt;
 begin
    SetVector(v, AbsolutePosition);
@@ -386,54 +400,86 @@ begin
    if VectorDotProduct(rci.cameraDirection, rv)>0 then begin
       // find out where it is on the screen.
       screenPos:=Scene.CurrentBuffer.WorldToScreen(v);
-      if     (screenPos[0]<rci.viewPortSize.cx) and (screenPos[0]>=0)
-         and (screenPos[1]<rci.viewPortSize.cy) and (screenPos[1]>=0) then begin
-         if FAutoZTest then begin
-            depth:=Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),
-                                                     Round(rci.viewPortSize.cy-ScreenPos[1]));
-            // but is it behind something?
-            if screenPos[2]>=1 then
-               flag:=(depth>=1)
-            else flag:=(depth>=screenPos[2]);
-         end else flag:=True;
-      end else flag:=False;
-   end else flag:=False;
+      flareInViewPort:=    (screenPos[0]<rci.viewPortSize.cx) and (screenPos[0]>=0)
+                       and (screenPos[1]<rci.viewPortSize.cy) and (screenPos[1]>=0);
+   end else flareInViewPort:=False;
+
+   // make the glow appear/disappear progressively
+   if flareInViewPort and FlareIsNotOccluded then begin
+      FCurrSize:=FCurrSize+FDeltaTime*500;
+      if FCurrSize>Size then
+         FCurrSize:=Size;
+   end else begin
+      FCurrSize:=FCurrSize-FDeltaTime*500;
+      if FCurrSize<0 then
+         FCurrSize:=0;
+   end;
+
+   // Prepare matrices
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix;
+   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
+
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix;
+   glLoadIdentity;
+   glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
 
    MakeVector(posVector,
               screenPos[0]-rci.viewPortSize.cx*0.5,
               screenPos[1]-rci.viewPortSize.cy*0.5,
               0);
 
-   // make the glow appear/disappear progressively
-   if Flag then begin
-      if FCurrSize<Size then begin
-         FCurrSize:=FCurrSize+FDeltaTime*500;
-         if FCurrSize>Size then
-            FCurrSize:=Size;
-      end;
-   end else begin
-      if FCurrSize>0 then begin
-         FCurrSize:=FCurrSize-FDeltaTime*500;
-         if FCurrSize<0 then
-            FCurrSize:=0;
+   if AutoZTest then begin
+      if GL_HP_occlusion_test or GL_NV_occlusion_query then begin
+         // hardware-based occlusion test is possible
+         FlareIsNotOccluded:=True;
+
+         glColorMask(False, False, False, False);
+         glDepthMask(False);
+
+         if GL_NV_occlusion_query then begin
+            // preferred method, doesn't stall rendering too badly
+            if not Assigned(FOcclusionQuery) then
+               FOcclusionQuery:=TGLOcclusionQueryHandle.Create;
+            if FOcclusionQuery.Handle=0 then
+               FOcclusionQuery.AllocateHandle
+            else FlareIsNotOccluded:=(FOcclusionQuery.PixelCount<>0);
+
+            FOcclusionQuery.BeginOcclusionQuery;
+         end else begin
+            // occlusion_test, stalls rendering a bit
+            glEnable(GL_OCCLUSION_TEST_HP);
+         end;
+
+         glBegin(GL_POINTS);
+         glVertex3f(posVector[0], posVector[1], 1);
+         glEnd;
+
+         if GL_NV_occlusion_query then begin
+            FOcclusionQuery.EndOcclusionQuery
+         end else begin
+            glDisable(GL_OCCLUSION_TEST_HP);
+            glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
+         end;
+
+         glDepthMask(True);
+         glColorMask(True, True, True, True);
+      end else begin
+         // explicit ZTesting, can hurt framerate badly
+         depth:=Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),
+                                                  Round(rci.viewPortSize.cy-ScreenPos[1]));
+         // but is it behind something?
+         FlareIsNotOccluded:=(depth>=1);
       end;
    end;
-   if FCurrSize>0 then begin
+
+   if FCurrSize>=0 then begin
 
       // Random seed must be backed up, could be used for other purposes
       // (otherwise we essentially reset the random generator at each frame)
       oldSeed:=RandSeed;
       RandSeed:=Seed;
-
-      // Prepare matrices
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix;
-      glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix;
-      glLoadIdentity;
-      glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
 
       SetupRenderingOptions;
 
@@ -557,13 +603,13 @@ begin
       // restore state
       RestoreRenderingOptions;
 
-      glPopMatrix;
-      glMatrixMode(GL_MODELVIEW);
-      glPopMatrix;
-
       RandSeed:=oldSeed;
 
-   end else FCurrSize:=0;
+   end;
+
+   glPopMatrix;
+   glMatrixMode(GL_MODELVIEW);
+   glPopMatrix;
 
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
@@ -574,8 +620,7 @@ end;
 procedure TGLLensFlare.DoProgress(const progressTime: TProgressTimes);
 begin
   inherited;
-  if AutoZTest then
-     FDeltaTime := progressTime.deltaTime;
+  FDeltaTime:=progressTime.deltaTime;
 end;
 
 // PreRender
@@ -855,8 +900,7 @@ end;
 //
 procedure TGLTextureLensFlare.DoProgress(const progressTime: TProgressTimes);
 begin
-  if AutoZTest then
-     FDeltaTime := progressTime.deltaTime;
+  FDeltaTime:=progressTime.deltaTime;
   inherited;  
 end;
 
