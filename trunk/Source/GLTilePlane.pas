@@ -87,9 +87,8 @@ type
    {: A tiled textured plane.<p>
       This plane object stores and displays texture tiles that composes it,
       and is optimized to minimize texture switches when rendering.<br>
-      Its bounding dimensions are determined by its painted tile.<p>
-      !!! Currently *NOT* optimized at all, this is work in progress !!! }
-	TGLTilePlane = class (TGLPlane)
+      Its bounding dimensions are determined by its painted tile. }
+	TGLTilePlane = class (TGLImmaterialSceneObject)
 	   private
 			{ Private Declarations }
          FTiles : TGLTiledArea;
@@ -107,6 +106,8 @@ type
 			constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          property Tiles : TGLTiledArea read FTiles write SetTiles;
@@ -225,7 +226,7 @@ end;
 //
 procedure TGLTiledAreaRow.SetColMin(const val : Integer);
 begin
-   if ColMax>=ColMin then begin
+   if ColMax>=val then begin
       if val<ColMin then
          FData.InsertNulls(0, ColMin-val)
       else FData.DeleteItems(0, val-ColMin);
@@ -245,9 +246,21 @@ end;
 // SetCell
 //
 procedure TGLTiledAreaRow.SetCell(col, val : Integer);
+var
+   i : Integer;
 begin
-   if col<ColMin then ColMin:=col;
-   if col>ColMax then ColMax:=col;
+   i:=col-ColMin;
+   if Cardinal(i)>=Cardinal(FData.Count) then begin
+      if ColMin<=ColMax then begin
+         if col<ColMin then ColMin:=col;
+         if col>ColMax then ColMax:=col;
+      end else begin
+         FColMin:=col;
+         FColMax:=col;
+         FData.Add(val);
+         Exit;
+      end;
+   end;
    FData[col-ColMin]:=val;
 end;
 
@@ -391,7 +404,7 @@ end;
 //
 procedure TGLTiledArea.SetRowMin(const val : Integer);
 begin
-   if RowMin<=RowMax then begin
+   if val<=RowMax then begin
       if val<RowMin then
          FRows.InsertNils(0, RowMin-val)
       else FRows.DeleteAndFreeItems(0, val-RowMin);
@@ -457,36 +470,74 @@ begin
    inherited;
 end;
 
+// DoRender
+//
+procedure TGLTilePlane.DoRender(var rci : TRenderContextInfo;
+                                renderSelf, renderChildren : Boolean);
+var
+   i : Integer;
+begin
+   if (not ListHandleAllocated) and Assigned(FMaterialLibrary) then begin
+      for i:=0 to MaterialLibrary.Materials.Count-1 do
+         MaterialLibrary.Materials[i].PrepareBuildList;
+   end;
+   inherited;
+end;
+
 // BuildList
 //
 procedure TGLTilePlane.BuildList(var rci : TRenderContextInfo);
+type
+   TQuadListInfo = packed record
+      x, y : TIntegerList;
+   end;
 var
-   row, col, t : Integer;
+   i, j, row, col, t : Integer;
    r : TGLTiledAreaRow;
    libMat : TGLLibMaterial;
+   quadInfos : array of TQuadListInfo;
 begin
    if MaterialLibrary=nil then Exit;
-   // currently *NOT* optimized at all
-   glBegin(GL_QUADS);
+   // initialize infos
+   SetLength(quadInfos, MaterialLibrary.Materials.Count);
+   for i:=1 to High(quadInfos) do begin
+      quadInfos[i].x:=TIntegerList.Create;
+      quadInfos[i].y:=TIntegerList.Create;
+   end;
+   // collect quads into quadInfos, sorted by material 
    for row:=Tiles.RowMin to Tiles.RowMax do begin
       r:=Tiles.Row[row];
       if Assigned(r) then begin
          for col:=r.ColMin to r.ColMax do begin
             t:=r.Cell[col] and $FFFF;
-            if t<MaterialLibrary.Materials.Count then begin
-               libMat:=MaterialLibrary.Materials[t];
-               libMat.Apply(rci);
-               repeat
-                  xglTexCoord2f(col, row);      glVertex2f(col, row);
-                  xglTexCoord2f(col+1, row);    glVertex2f(col+1, row);
-                  xglTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
-                  xglTexCoord2f(col, row+1);    glVertex2f(col, row+1);
-               until not libMat.UnApply(rci);
+            if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
+               quadInfos[t].x.Add(col);
+               quadInfos[t].y.Add(row);
             end;
          end;
       end;
    end;
-   glEnd;
+   // render and cleanup
+   for i:=1 to High(quadInfos) do begin
+      if quadInfos[i].x.Count>0 then begin
+         libMat:=MaterialLibrary.Materials[i];
+         libMat.Apply(rci);
+         repeat
+            glBegin(GL_QUADS);
+            for j:=0 to quadInfos[i].x.Count-1 do begin
+               col:=quadInfos[i].x[j];
+               row:=quadInfos[i].y[j];
+               xglTexCoord2f(col, row);      glVertex2f(col, row);
+               xglTexCoord2f(col+1, row);    glVertex2f(col+1, row);
+               xglTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
+               xglTexCoord2f(col, row+1);    glVertex2f(col, row+1);
+            end;
+            glEnd;
+         until not libMat.UnApply(rci);
+      end;
+      quadInfos[i].x.Free;
+      quadInfos[i].y.Free;
+   end;
 end;
 
 //-------------------------------------------------------------
