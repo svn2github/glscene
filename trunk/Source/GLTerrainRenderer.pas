@@ -1,11 +1,12 @@
 // GLTerrainRenderer
 {: GLScene's brute-force terrain renderer.<p>
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>12/08/01 - Egg - Completely rewritten handles management
-      <li>21/07/01 - Egg - Added Notication registration in SetHeightDataSource
-      <li>04/03/01 - Egg - Completed for first release
-	   <li>12/02/01 - Egg - Creation
+   <b>History : </b><font size=-1><ul>
+      <li>18/12/01 - EG - Vertex-cache aware stripifier (+10% on GeForce)
+      <li>12/08/01 - EG - Completely rewritten handles management
+      <li>21/07/01 - EG - Added Notication registration in SetHeightDataSource
+      <li>04/03/01 - EG - Completed for first release
+	   <li>12/02/01 - EG - Creation
 	</ul></font>
 }
 unit GLTerrainRenderer;
@@ -300,10 +301,17 @@ procedure TTerrainRenderer.RenderTileAsTriangleStrip(aTile : THeightData;
               const leftTop, scale, texLeftTop, texScale : TAffineVector;
               texFactor : Single);
 var
-   x, y : Integer;
+   x, y, dx, ex : Integer;
    pTop, pBottom : TAffineVector;
-   n : TAffineVector;
    bottomRow, topRow : GLHeightData.PByteArray;
+
+   procedure IssueVertex(const n, v : TAffineVector);
+   begin
+      glNormal3fv(@n);
+      xglTexCoord2f(v[0]*texFactor, -v[1]*texFactor);
+      glVertex3fv(@v);
+   end;
+
 begin
    // to optimize : normals calculation is slooooowwww
    // the cacheing takes care of it, but still...
@@ -312,20 +320,32 @@ begin
       pBottom[1]:=leftTop[1]+(y+1)*scale[1];
       bottomRow:=aTile.ByteRaster[y+1];
       topRow:=aTile.ByteRaster[y];
+      if (y and 1)=0 then begin
+         x:=aTile.Size-2;
+         ex:=0;
+         dx:=-1;
+      end else begin
+         x:=1;
+         ex:=aTile.Size-1;
+         dx:=1;
+      end;
+      // Strips direction is reversed from one strip to another,
+      // this increases vertex coherency (10% faster on GeForce)
       glBegin(GL_TRIANGLE_STRIP);
-      for x:=1 to aTile.Size-2 do begin
+      while x<>ex do begin
          pTop[0]:=leftTop[0]+x*scale[0];
          pBottom[0]:=pTop[0];
          pBottom[2]:=(bottomRow[x]-128)*scale[2];
-         n:=aTile.Normal(x, y+1, scale);
-         glNormal3fv(@n);
-         xglTexCoord2f(pBottom[0]*texFactor, -pBottom[1]*texFactor);
-         glVertex3fv(@pBottom);
          pTop[2]:=(topRow[x]-128)*scale[2];
-         n:=aTile.Normal(x, y, scale);
-         glNormal3fv(@n);
-         xglTexCoord2f(pTop[0]*texFactor, -pTop[1]*texFactor);
-         glVertex3fv(@pTop);
+         if dx=1 then begin
+            IssueVertex(aTile.Normal(x, y+1, scale), pBottom);
+            IssueVertex(aTile.Normal(x, y, scale), pTop);
+            Inc(x);
+         end else begin
+            IssueVertex(aTile.Normal(x, y, scale), pTop);
+            IssueVertex(aTile.Normal(x, y+1, scale), pBottom);
+            Dec(x);
+         end;
       end;
       glEnd;
    end;
