@@ -640,6 +640,7 @@ type
                                   var rci : TRenderContextInfo); virtual;
 
          procedure StructureChanged; dynamic;
+         procedure ClearStructureChanged;
 
          //: Recalculate an orthonormal system
          procedure CoordinateChanged(Sender: TGLCoordinates); virtual;
@@ -2295,7 +2296,7 @@ begin
       Result:=FListHandle.Handle
    else Result:=0;
    if (Result=0) or (ocStructure in FChanges) then begin
-      Exclude(FChanges, ocStructure);
+      ClearStructureChanged;
       if not Assigned(FListHandle) then
          FListHandle:=TGLListHandle.Create;
       DoBuild(rci);
@@ -3537,6 +3538,13 @@ begin
       NotifyChange(Self);
 end;
 
+// ClearStructureChanged
+//
+procedure TGLBaseSceneObject.ClearStructureChanged;
+begin
+   Exclude(FChanges, ocStructure);
+end;
+
 // RecTransformationChanged
 //
 procedure TGLBaseSceneObject.RecTransformationChanged;
@@ -4534,7 +4542,7 @@ begin
                    absPos[2]+v[2],
                    d[0], d[1], d[2]);
       end;
-      Exclude(FChanges, ocStructure);
+      ClearStructureChanged;
    end;
 end;
 
@@ -5081,7 +5089,7 @@ begin
    finally
       FRendering:=False;
    end;
-   Exclude(FChanges, ocStructure);
+   ClearStructureChanged;
 end;
 
 // AxisAlignedDimensions
@@ -7725,7 +7733,7 @@ begin
    finally
       FRendering:=False;
    end;
-   Exclude(FChanges, ocStructure);
+   ClearStructureChanged;
 end;
 
 //------------------------------------------------------------------------------
