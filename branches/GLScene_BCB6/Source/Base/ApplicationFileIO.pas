@@ -126,6 +126,8 @@ type
 
    TDataFileClass = class of TDataFile;
 
+//: Returns true if an ApplicationFileIO has been defined
+function ApplicationFileIODefined : Boolean;
 
 {: Creates a file stream corresponding to the fileName.<p>
    If the file does not exists, an exception will be triggered.<br>
@@ -156,6 +158,14 @@ var
 procedure Register;
 begin
 	RegisterComponents('GLScene Utils', [TApplicationFileIO]);
+end;
+
+// ApplicationFileIODefined
+//
+function ApplicationFileIODefined : Boolean;
+begin
+   Result:=   (Assigned(vAFIOCreateFileStream) and Assigned(vAFIOFileStreamExists))
+           or Assigned(vAFIO);
 end;
 
 // CreateFileStream

@@ -1820,7 +1820,9 @@ type
          {: Creates a VCL bitmap that is a snapshot of current OpenGL content.<p> }
          function CreateSnapShotBitmap : TGLBitmap;
          procedure CopyToTexture(aTexture : TGLTexture); overload;
-         procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer; xDest, yDest : Integer); overload;
+         procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
+                                 xDest, yDest : Integer; target : Integer = 0;
+                                 forceCreateTexture : Boolean = False); overload;
 
          {: Event reserved for viewer-specific uses.<br> }
          property ViewerBeforeRender : TNotifyEvent read FViewerBeforeRender write FViewerBeforeRender;
@@ -2045,7 +2047,7 @@ type
          FCubeMapRotIdx : Integer;
          FCubeMapZNear, FCubeMapZFar : Single;
          FCubeMapTranslation : TAffineVector;
-         FCreateTexture : Boolean;
+         //FCreateTexture : Boolean;
 
       protected
          { Protected Declarations }
@@ -6921,21 +6923,32 @@ end;
 //
 procedure TGLSceneBuffer.CopyToTexture(aTexture : TGLTexture;
                                        xSrc, ySrc, width, height : Integer;
-                                       xDest, yDest : Integer);
+                                       xDest, yDest : Integer;
+                                       target : Integer = 0;
+                                       forceCreateTexture : Boolean = False);
 var
-   target, handle : Integer;
+   handle, bindTarget : Integer;
    buf : PChar;
    createTexture : Boolean;
 begin
    if RenderingContext<>nil then begin
       RenderingContext.Activate;
       try
-         target:=aTexture.Image.NativeTextureTarget;
+         if target<=0 then begin
+            target:=aTexture.Image.NativeTextureTarget;
+            bindTarget:=target;
+         end else begin
+            if     (target>=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB)
+               and (target<GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+6) then
+               bindTarget:=GL_TEXTURE_CUBE_MAP_ARB
+            else bindTarget:=target;
+         end;
          createTexture:=not aTexture.IsHandleAllocated;
          if createTexture then
             handle:=aTexture.AllocateHandle
          else handle:=aTexture.Handle;
-         GLStates.SetGLCurrentTexture(0, target, handle);
+         createTexture:=createTexture or forceCreateTexture;
+         GLStates.SetGLCurrentTexture(0, bindTarget, handle);
          if createTexture then begin
             GetMem(buf, Width*Height*4);
             try
@@ -7931,70 +7944,8 @@ end;
 procedure TGLNonVisualViewer.CopyToTexture(aTexture : TGLTexture;
                                            xSrc, ySrc, width, height : Integer;
                                            xDest, yDest : Integer);
-var
-   target, handle : Integer;
-   buf : PChar;
-
-   procedure CreateNewTexture;
-   begin
-            GetMem(buf, Width*Height*4);
-      try // float_type
-               glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-               case aTexture.MinFilter of
-                  miNearest, miLinear :
-              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
-                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-               else
-                  if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
-                     // hardware-accelerated when supported
-                     glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
-                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-                  end else begin
-                     // slower (software mode)
-                     gluBuild2DMipmaps(target, aTexture.OpenGLTextureFormat, Width, Height,
-                                       GL_RGBA, GL_UNSIGNED_BYTE, buf);
-                  end;
-               end;
-            finally
-               FreeMem(buf);
-            end;
-   end;
-
 begin
-   if Buffer.RenderingContext<>nil then begin
-      Buffer.RenderingContext.Activate;
-      try
-         target:=aTexture.Image.NativeTextureTarget;
-
-         if aTexture.IsFloatType then begin // float_type special treatment
-             FCreateTexture:=false;
-             handle:=aTexture.Handle;
-           end
-         else
-           if (target<>GL_TEXTURE_CUBE_MAP_ARB) or (FCubeMapRotIdx=0) then begin
-                FCreateTexture:=not aTexture.IsHandleAllocated;
-                if FCreateTexture then
-                   handle:=aTexture.AllocateHandle
-                else handle:=aTexture.Handle;
-              end
-           else handle:=aTexture.Handle;
-
-         Buffer.GLStates.SetGLCurrentTexture(0, target, handle);
-
-         if target=GL_TEXTURE_CUBE_MAP_ARB then
-            target:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+FCubeMapRotIdx;
-            
-         if FCreateTexture then
-            CreateNewTexture
-         else
-            glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
-
-         ClearGLError;
-      finally
-         Buffer.RenderingContext.Deactivate;
-      end;
-   end;
+   Buffer.CopyToTexture(aTexture, xSrc, ySrc, width, height, xDest, yDest);
 end;
 
 // SetupCubeMapCamera
@@ -8026,6 +7977,7 @@ procedure TGLNonVisualViewer.RenderCubeMapTextures(cubeMapTexture : TGLTexture;
                                                    zFar : Single = 0);
 var
    oldEvent : TNotifyEvent;
+   forceCreateTexture : Boolean;
 begin
    Assert((Width=Height), 'Memory Viewer must render to a square!');
    Assert(Assigned(FBuffer.FCamera), 'Camera not specified');
@@ -8037,6 +7989,7 @@ begin
    if zNear<=0 then
       zNear:=zFar*0.001;
 
+   forceCreateTexture:=not cubeMapTexture.IsHandleAllocated;
    oldEvent:=FBuffer.FCamera.FDeferredApply;
    FBuffer.FCamera.FDeferredApply:=SetupCubeMapCamera;
    FCubeMapZNear:=zNear;
@@ -8046,7 +7999,9 @@ begin
       FCubeMapRotIdx:=0;
       while FCubeMapRotIdx<6 do begin
          Render;
-         CopyToTexture(cubeMapTexture);
+         Buffer.CopyToTexture(cubeMapTexture, 0, 0, Width, Height, 0, 0,
+                              GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+FCubeMapRotIdx,
+                              forceCreateTexture);
          Inc(FCubeMapRotIdx);
       end;
    finally

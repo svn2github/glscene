@@ -572,10 +572,10 @@ end;
 //
 destructor TGLShadowVolume.Destroy;
 begin
+   inherited;
    FDarkeningColor.Free;
    FLights.Free;
    FOccluders.Free;
-   inherited;
 end;
 
 // Notification

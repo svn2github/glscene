@@ -248,7 +248,8 @@ type
 			property Last : TObject read GetLast write SetLast;
 			procedure Push(item : TObject);
 			function Pop : TObject;
-         
+         procedure PopAndFree;
+
 			function AddObjects(const objectList : TPersistentObjectList) : Integer;
 			procedure RemoveObjects(const objectList : TPersistentObjectList);
          procedure Sort(compareFunc : TObjectListSortCompare);
@@ -1335,6 +1336,13 @@ begin
 		Result:=FList[FCount-1];
       Dec(FCount);
 	end else Result:=nil;
+end;
+
+// PopAndFree
+//
+procedure TPersistentObjectList.PopAndFree;
+begin
+   Pop.Free;
 end;
 
 // POListQuickSort

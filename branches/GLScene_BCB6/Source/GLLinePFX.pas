@@ -144,8 +144,8 @@ begin
    inherited;
    glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
-      Fvx[i]:=matrix[i][0];
-      Fvy[i]:=matrix[i][1];
+      Fvx.Coord[i]:=matrix.Coord[i].Coord[0];
+      Fvy.Coord[i]:=matrix.Coord[i].Coord[1];
    end;
    FNvx:=VectorNormalize(Fvx);
    FNvy:=VectorNormalize(Fvy);
@@ -191,13 +191,13 @@ begin
       glColor4fv(@inner);
       glVertex3fv(@start);
       glColor4fv(@outer);
-      glVertex3f(start[0]+dv[0], start[1]+dv[1], start[2]+dv[2]);
-      glVertex3f(stop[0]+dv[0], stop[1]+dv[1], stop[2]+dv[2]);
+      glVertex3f(start.Coord[0]+dv.Coord[0], start.Coord[1]+dv.Coord[1], start.Coord[2]+dv.Coord[2]);
+      glVertex3f(stop.Coord[0]+dv.Coord[0], stop.Coord[1]+dv.Coord[1], stop.Coord[2]+dv.Coord[2]);
       glColor4fv(@inner);
       glVertex3fv(@stop);
       glColor4fv(@outer);
-      glVertex3f(stop[0]-dv[0], stop[1]-dv[1], stop[2]-dv[2]);
-      glVertex3f(start[0]-dv[0], start[1]-dv[1], start[2]-dv[2]);
+      glVertex3f(stop.Coord[0]-dv.Coord[0], stop.Coord[1]-dv.Coord[1], stop.Coord[2]-dv.Coord[2]);
+      glVertex3f(start.Coord[0]-dv.Coord[0], start.Coord[1]-dv.Coord[1], start.Coord[2]-dv.Coord[2]);
    glEnd;
 end;
 

@@ -182,15 +182,18 @@ function AllocTriangleNode : PROAMTriangleNode;
 var
    nilNode : PROAMTriangleNode;
 begin
-   if vNbTris<vTriangleNodesCapacity then begin
-      Result:=@vTriangleNodes[vNbTris];
-      with Result^ do begin
-         nilNode:=nil;
-         leftChild:=nilNode;
-         rightChild:=nilNode;
-      end;
-      Inc(vNbTris);
-   end else Result:=nil;
+   if vNbTris>=vTriangleNodesCapacity then begin
+      // grow by 50%
+      vTriangleNodesCapacity:=vTriangleNodesCapacity+(vTriangleNodesCapacity shr 1);
+      SetLength(vTriangleNodes, vTriangleNodesCapacity);
+   end;
+   Result:=@vTriangleNodes[vNbTris];
+   with Result^ do begin
+      nilNode:=nil;
+      leftChild:=nilNode;
+      rightChild:=nilNode;
+   end;
+   Inc(vNbTris);
 end;
 
 // Split
@@ -206,31 +209,32 @@ begin
 	   if Assigned(base) and (base.base<>tri) then
          Split(base);
 
-	   // Create children and cross-link them
       n:=vNbTris;
-      if n<vTriangleNodesCapacity then begin
-         t:=@vTriangleNodes[n];
-         leftChild:=t;
-         Inc(t);
-         rightChild:=t;
-         with rightChild^ do begin
-            base:=tri.right;
-            leftChild:=nil;
-            t:=tri.leftChild;
-            rightChild:=t;
-            right:=t;
-         end;
-         with leftChild^ do begin
-            base:=tri.left;
-            leftChild:=nil;
-            rightChild:=tri.leftChild;
-            left:=tri.rightChild;
-         end;
-         Inc(vNbTris, 2);
-      end else begin
-         Result:=False;
-         Exit;
+      if n>=vTriangleNodesCapacity then begin
+         // grow by 50%
+         vTriangleNodesCapacity:=vTriangleNodesCapacity+(vTriangleNodesCapacity shr 1);
+         SetLength(vTriangleNodes, vTriangleNodesCapacity);
       end;
+      
+	   // Create children and cross-link them
+      t:=@vTriangleNodes[n];
+      leftChild:=t;
+      Inc(t);
+      rightChild:=t;
+      with rightChild^ do begin
+         base:=tri.right;
+         leftChild:=nil;
+         t:=tri.leftChild;
+         rightChild:=t;
+         right:=t;
+      end;
+      with leftChild^ do begin
+         base:=tri.left;
+         leftChild:=nil;
+         rightChild:=tri.leftChild;
+         left:=tri.rightChild;
+      end;
+      Inc(vNbTris, 2);
 
 	   // Link our Left Neighbor to the new children
 	   if Assigned(left) then begin

@@ -1,44 +1,45 @@
 {: GLDCEMisc<p>
 
-  Dynamic Collision Engine Miscellaneous functions<p>
+  Miscelaneous functions used by DCE (Dynamic Collision Engine).
 
   <b>History : </b><font size=-1><ul>
-    <li>08/12/04 - LR - BCB corrections: use record instead array  
-    <li>17/11/04 - LucasG. - Axis aligned static box colliders
-    <li>17/11/04 - LucasG. - MultiProxy freeform support (by Roman Ganz)
-    <li>14/11/04 - LucasG. - Proxy freeform support (by Roger Cao)
-    <li>13/11/04 - LucasG. - Fixed triangle gathering (Radius := MaxXYZComponent(N) * 2;)
-    <li>08/10/04 - LR, YHC - BCB corrections: use record instead array 
-    <li>03/09/04 - LucasG. - Creation
+    <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features 
+    <li>03/09/04 - LucasG - First release
+    <li>29/07/04 - LucasG - Creation
   </ul></font>
 }
-
 unit GLDCEMisc;
 
 interface
 
-uses GLVectorFileObjects, GLProxyObjects, GLMultiProxy, GLObjects, GLScene, GLEllipseCollision, VectorGeometry, Octree,GLTerrainRenderer;
+uses GLVectorFileObjects, Octree, GLEllipseCollision, VectorGeometry, VectorLists,
+  GLScene, GLTerrainRenderer,GLProxyObjects, GLMultiProxy;
 
-function AddRotatedVector(obj : TGLBaseSceneObject; V: TAffineVector): TAffineVector;
+//Calculate and set the collision range
+procedure ECSetCollisionRange(var MovePack: TECMovePack);
 
-//Get triangles to ellispe collision only
-procedure AddFreeFormToMovePack(var MovePack: TECMovementPacket; FreeForm:
-  TGLBaseSceneObject; AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
-//procedure AddFreeFormToMovePack(var MovePack: TECMovementPacket; FreeForm: TGLFreeForm;
-//    AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
+//Set the collider lists to null
+procedure ECResetColliders(var MovePack: TECMovePack);
 
-//Add the ellipsoid to the possible colliders list
-procedure AddEllipsoidToMovePack(var MovePack: TECMovementPacket;
-    ePos, eRadius: TAffineVector;
-    AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
+//Add freeform's octree data
+procedure ECAddFreeForm(var MovePack: TECMovePack; FreeForm: TGLBaseSceneObject;
+  Solid: Boolean; ObjectID: Integer);
 
-//Add a terrain to the possible colliders list
-procedure AddTerrainToMovePack(var MovePack: TECMovementPacket; var TerrainRenderer: TGLTerrainRenderer;
-    AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
+//Add a TriMesh box
+procedure ECAddBox(var MovePack: TECMovePack;
+  BoxObj: TGLBaseSceneObject; BoxSize: TAffineVector;
+  Solid: Boolean; ObjectID: Integer);
 
-//Add a box to the possible colliders list
-procedure AddBoxToMovePack(var MovePack: TECMovementPacket; BoxObj: TGLBaseSceneObject; BoxSize: TAffineVector;
-    AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
+//Add the terrain as a TriMesh
+procedure ECAddTerrain(var MovePack: TECMovePack;
+  TerrainRenderer: TGLTerrainRenderer; Resolution: Single;
+  Solid: Boolean; ObjectID: Integer);
+
+//Add a static ellipsoid
+procedure ECAddEllipsoid(var MovePack: TECMovePack;
+  ePos, eRadius: TAffineVector;
+  Solid: Boolean; ObjectID: Integer);
+
 
 const
     DCEBox: array [0..35] of TAffineVector = (
@@ -61,165 +62,201 @@ const
       (X: 1; Y:-1; Z:-1),  (X:-1; Y:-1; Z:-1),  (X:-1; Y: 1; Z:-1)
 
     );
-
+  
 implementation
 
-function AddRotatedVector(obj : TGLBaseSceneObject; V: TAffineVector): TAffineVector;
-var Dir, Up, Left: TAffineVector;
+procedure ECSetCollisionRange(var MovePack: TECMovePack);
+var  N: TAffineVector;
 begin
-  Dir := obj.Direction.AsAffineVector;
-  Up := obj.Up.AsAffineVector;
-  Left := AffineVectorMake(obj.LeftVector);
-  result.Coord[0] := (Left.Coord[0] * v.Coord[0]) + (Up.Coord[0] * v.Coord[1]) + (Dir.Coord[0] * v.Coord[2]);
-  result.Coord[1] := (Left.Coord[1] * v.Coord[0]) + (Up.Coord[1] * v.Coord[1]) + (Dir.Coord[1] * v.Coord[2]);
-  result.Coord[2] := (Left.Coord[2] * v.Coord[0]) + (Up.Coord[2] * v.Coord[1]) + (Dir.Coord[2] * v.Coord[2]);
+  N.Coord[0] := Abs(MovePack.Velocity.Coord[0]) + Abs(MovePack.Gravity.Coord[0]) + (MovePack.Radius.Coord[0]);
+  N.Coord[1] := Abs(MovePack.Velocity.Coord[1]) + Abs(MovePack.Gravity.Coord[1]) + (MovePack.Radius.Coord[1]);
+  N.Coord[2] := Abs(MovePack.Velocity.Coord[2]) + Abs(MovePack.Gravity.Coord[2]) + (MovePack.Radius.Coord[2]);
+  MovePack.CollisionRange := MaxXYZComponent(N);
 end;
 
-procedure AddFreeFormToMovePack(var MovePack: TECMovementPacket; FreeForm:
-  TGLBaseSceneObject; AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
-var Radius: Single;
-  i, t, k, count : Integer;
-  p: POctreeNode;
-  p1, p2, p3: PAffineVector;
+procedure ECResetColliders(var MovePack: TECMovePack);
+begin
+  SetLength(MovePack.TriMeshes,0);
+  SetLength(MovePack.Freeforms,0);
+  SetLength(MovePack.Colliders,0);
+end;
+
+procedure ECAddFreeForm(var MovePack: TECMovePack; FreeForm: TGLBaseSceneObject;
+  Solid: Boolean; ObjectID: Integer);
+var
+  i, count : Integer;
   Pos: TVector;
-  N: TAffineVector;
   Master: TGLBaseSceneObject;
+  d1,d2: Single;
 begin
   Master := FreeForm;
-  while Master is TGLFreeFormProxy do
+  if Master is TGLFreeFormProxy then
     Master := TGLFreeFormProxy(Master).MasterObject;
-  while Master is TGLMultiProxy do
-    if TGLMultiProxy(Master).Count > 0 then
+  if Master is TGLMultiProxy then
+    if TGLMultiProxy(Master).MasterObjects.Count > 0 then
       Master := TGLMultiProxy(Master).MasterObjects[0].MasterObject;
-
   Assert((Master is TGLFreeForm), 'Object must be freeform, freeformproxy or freeformbased Multiproxy.');
   Assert(Assigned(TGLFreeForm(Master).Octree), 'Octree must have been prepared and setup before use.');
-
   SetVector(Pos,  FreeForm.AbsoluteToLocal(MovePack.Position));
-  N := VectorNormalize(MovePack.Radius);
-  N.Coord[0] := N.Coord[0] * (Abs(MovePack.Velocity.Coord[0]) + Abs(MovePack.Gravity.Coord[0]) + MovePack.Radius.Coord[0]);
-  N.Coord[1] := N.Coord[1] * (Abs(MovePack.Velocity.Coord[1]) + Abs(MovePack.Gravity.Coord[1]) + MovePack.Radius.Coord[1]);
-  N.Coord[2] := N.Coord[2] * (Abs(MovePack.Velocity.Coord[2]) + Abs(MovePack.Gravity.Coord[2]) + MovePack.Radius.Coord[2]);
-  Radius := MaxXYZComponent(N) * 2;
 
-  count := Length(MovePack.Triangles);
+  //Is in boundingsphere?
+  d1 := VectorDistance2(MovePack.Position,AffineVectorMake(FreeForm.AbsolutePosition));
+  d2 := sqr(MovePack.CollisionRange + Freeform.BoundingSphereRadius);
+  if d1 > d2 then exit;
+
+  count := Length(MovePack.Freeforms);
   with TGLFreeForm(Master).Octree do
   begin
-    WalkSphereToLeaf(RootNode, Pos, Radius);
+    WalkSphereToLeaf(RootNode, Pos, MovePack.CollisionRange);
 
-    if not Assigned(resultarray) then
-      exit;
-
-    for i:=0 to High(resultarray) do
-    begin
-      p:=ResultArray[i];
-      for t:=0 to High(p.TriArray) do
-      begin
-        k:=p.triarray[t];
-        //These are the vertices of the triangle to check
-        p1:=@trianglefiler.List[k];
-        p2:=@trianglefiler.List[k+1];
-        p3:=@trianglefiler.List[k+2];
-        count := count + 1;
-        SetLength(MovePack.Triangles,count);
-        with MovePack do
-        begin
-          SetVector(Triangles[count-1].p1, FreeForm.LocalToAbsolute(p1^));
-          SetVector(Triangles[count-1].p2, FreeForm.LocalToAbsolute(p2^));
-          SetVector(Triangles[count-1].p3, FreeForm.LocalToAbsolute(p3^));
-          Triangles[count-1].ObjectIndex := AObjectIndex;
-          Triangles[count-1].Friction := AFriction;
-          Triangles[count-1].Solid := ASolid;
-          //Triangles[count-1].Collided := False; //Debug
-        end;
-      end;
-    end;
+    if not Assigned(resultarray) then exit;
+    //Copy the result array
+    SetLength(MovePack.Freeforms,count+1);
+    SetLength(MovePack.Freeforms[count].OctreeNodes, Length(resultarray));
+    for i := 0 to High(resultarray) do
+      MovePack.Freeforms[count].OctreeNodes[i] := resultarray[i];
+    //Reference to this octree
+    MovePack.Freeforms[count].triangleFiler := @triangleFiler;
+    MovePack.Freeforms[count].ObjectInfo.AbsoluteMatrix := Freeform.AbsoluteMatrix;
+    MovePack.Freeforms[count].ObjectInfo.Solid := Solid;
+    MovePack.Freeforms[count].ObjectInfo.ObjectID := ObjectID;
+    MovePack.Freeforms[count].InvertedNormals := TGLFreeForm(Master).NormalsOrientation = mnoInvert;
   end;
 end;
 
-procedure AddEllipsoidToMovePack(var MovePack: TECMovementPacket;
-    ePos, eRadius: TAffineVector;
-    AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
-var count : Integer;
+procedure ECAddBox(var MovePack: TECMovePack;
+  BoxObj: TGLBaseSceneObject; BoxSize: TAffineVector;
+  Solid: Boolean; ObjectID: Integer);
+var t,count,i : Integer;
+    p1, p2, p3: TAffineVector;
+    BoxRadius,d1,d2: Single;
 begin
+
+  BoxRadius := MaxXYZComponent(BoxSize)*MaxXYZComponent(BoxObj.Scale.AsAffineVector);
+  d1 := VectorDistance2(MovePack.Position,AffineVectorMake(BoxObj.AbsolutePosition));
+  d2 := sqr(MovePack.CollisionRange + BoxRadius);
+  if d1 > d2 then exit;
+
+  //Add the box to the triangle list
+  t := Length(MovePack.TriMeshes);
+  SetLength(MovePack.TriMeshes,t+1);
+  ScaleVector(BoxSize,0.5);
+  count := 0;
+  i := 0;
+  while i < 36 do
+  begin
+
+    count := count + 1;
+    SetLength(MovePack.TriMeshes[t].Triangles,count);
+
+    with MovePack.TriMeshes[t] do
+    begin
+      p1 := DCEBox[i]; ScaleVector(p1,BoxSize); p1 := BoxObj.LocalToAbsolute(p1);
+      p2 := DCEBox[i+1]; ScaleVector(p2,BoxSize); p2 := BoxObj.LocalToAbsolute(p2);
+      p3 := DCEBox[i+2]; ScaleVector(p3,BoxSize); p3 := BoxObj.LocalToAbsolute(p3);
+      i := i + 3;
+      SetVector(Triangles[count-1].p1, p1);
+      SetVector(Triangles[count-1].p2, p2);
+      SetVector(Triangles[count-1].p3, p3);
+      ObjectInfo.Solid := Solid;
+      ObjectInfo.ObjectID := ObjectID;
+    end;
+
+  end;
+end;
+
+procedure ECAddTerrain(var MovePack: TECMovePack;
+  TerrainRenderer: TGLTerrainRenderer; Resolution: Single;
+  Solid: Boolean; ObjectID: Integer);
+
+
+  function intvec(x,z: Single): TAffineVector;
+  begin
+    result.Coord[0] := x + MovePack.Position.Coord[0];
+    result.Coord[1] := 0 + MovePack.Position.Coord[1];
+    result.Coord[2] := z + MovePack.Position.Coord[2];
+  end;
+
+  function locabs(x,y,z: Single): TAffineVector;
+  begin
+    //result := TerrainRenderer.LocalToAbsolute(AffineVectorMake(x,y,z));
+    //result := AffineVectorMake(x,y,z);
+    result.Coord[0] := x + MovePack.Position.Coord[0];
+    result.Coord[1] := y + TerrainRenderer.AbsolutePosition.Coord[1];
+    result.Coord[2] := z + MovePack.Position.Coord[2];
+  end;
+
+
+var count,t : Integer;
+    x,y,z: Single;
+begin
+  //Add the terrain to the list
+  count := Length(MovePack.TriMeshes);
+  SetLength(MovePack.TriMeshes,count+1);
+  with MovePack.TriMeshes[count] do
+  begin
+    ObjectInfo.Solid := Solid;
+    ObjectInfo.ObjectID := ObjectID;
+    t := 0;
+    x := - MovePack.CollisionRange;
+    while x < MovePack.CollisionRange do
+    begin
+
+      z := - MovePack.CollisionRange;
+      while z < MovePack.CollisionRange do
+      begin
+        //Add 2 triangles
+        t := t + 2;
+        SetLength(Triangles, t);
+
+        //Tri 1
+        y := TerrainRenderer.InterpolatedHeight(intvec(x,z));
+        Triangles[t-2].p1 := locabs(x,y,z);
+        y := TerrainRenderer.InterpolatedHeight(intvec(x,z+Resolution));
+        Triangles[t-2].p2 := locabs(x,y,z+Resolution);
+        y := TerrainRenderer.InterpolatedHeight(intvec(x+Resolution,z));
+        Triangles[t-2].p3 := locabs(x+Resolution,y,z);
+
+        //Tri 2
+        y := TerrainRenderer.InterpolatedHeight(intvec(x+Resolution,z+Resolution));
+        Triangles[t-1].p1 := locabs(x+Resolution,y,z+Resolution);
+        y := TerrainRenderer.InterpolatedHeight(intvec(x+Resolution,z));
+        Triangles[t-1].p2 := locabs(x+Resolution,y,z);
+        y := TerrainRenderer.InterpolatedHeight(intvec(x,z+Resolution));
+        Triangles[t-1].p3 := locabs(x,y,z+Resolution);
+
+        z := z + Resolution;
+      end;
+
+      x := x + Resolution;
+    end;
+
+  end;
+end;
+
+
+procedure ECAddEllipsoid(var MovePack: TECMovePack; ePos, eRadius: TAffineVector;
+  Solid: Boolean; ObjectID: Integer);
+var count : Integer;
+    d1, d2, r: single;
+begin
+  r := MaxXYZComponent(eRadius);
+  d1 := VectorDistance2(MovePack.Position,ePos);
+  d2 := sqr(MovePack.CollisionRange + r);
+  if d1 > d2 then exit;
+
   //Add possible collider
   count := Length(MovePack.Colliders);
   SetLength(MovePack.Colliders,count+1);
   with MovePack.Colliders[count] do
   begin
     Position := ePos;
-    Size := eRadius;
-    ObjectIndex := AObjectIndex;
-    Friction := AFriction;
-    Solid := ASolid;
-    Shape := csEllipsoid;
+    Radius := eRadius;
+    ObjectInfo.Solid := Solid;
+    ObjectInfo.ObjectID := ObjectID;
   end;
 
 end;
 
-procedure AddTerrainToMovePack(var MovePack: TECMovementPacket; var TerrainRenderer: TGLTerrainRenderer;
-    AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
-var count : Integer;
-begin
-  //Add the terrain to the list
-  count := Length(MovePack.Terrains);
-  SetLength(MovePack.Terrains,count+1);
-  with MovePack.Terrains[count] do
-  begin
-    Terrain := TerrainRenderer;
-    Collider.ObjectIndex := AObjectIndex;
-    Collider.Friction := AFriction;
-    Collider.Solid := ASolid;
-  end;
-
-end;
-
-procedure AddBoxToMovePack(var MovePack: TECMovementPacket; BoxObj: TGLBaseSceneObject; BoxSize: TAffineVector;
-    AObjectIndex: Integer; AFriction: Single; ASolid: Boolean);
-var count,i : Integer;
-    p1, p2, p3, BoxPos: TAffineVector;
-    Radius, BoxRadius: Single;
-    N: TAffineVector;
-begin
-
-  N := VectorNormalize(MovePack.Radius);
-  N.Coord[0] := N.Coord[0] * (Abs(MovePack.Velocity.Coord[0]) + Abs(MovePack.Gravity.Coord[0]) + MovePack.Radius.Coord[0]);
-  N.Coord[1] := N.Coord[1] * (Abs(MovePack.Velocity.Coord[1]) + Abs(MovePack.Gravity.Coord[1]) + MovePack.Radius.Coord[1]);
-  N.Coord[2] := N.Coord[2] * (Abs(MovePack.Velocity.Coord[2]) + Abs(MovePack.Gravity.Coord[2]) + MovePack.Radius.Coord[2]);
-  Radius := MaxXYZComponent(N);
-  BoxRadius := MaxXYZComponent(BoxSize);
-  BoxPos := AffineVectorMake(BoxObj.AbsolutePosition);
-  N := VectorAdd(MovePack.Position, MovePack.Velocity);
-  if VectorDistance(N,BoxPos) > Radius + BoxRadius then
-    exit;
-
-  //Add the box to the triangle list
-  count := Length(MovePack.Triangles);
-  ScaleVector(BoxSize,0.5);
-  i := 0;
-  while i < 36 do
-  begin
-
-    count := count + 1;
-    SetLength(MovePack.Triangles,count);
-
-    with MovePack do
-    begin
-      p1 := DCEBox[i]; ScaleVector(p1,BoxSize); p1 := AddRotatedVector(BoxObj, p1); AddVector(p1,BoxPos);
-      p2 := DCEBox[i+1]; ScaleVector(p2,BoxSize); p2 := AddRotatedVector(BoxObj, p2); AddVector(p2,BoxPos);
-      p3 := DCEBox[i+2]; ScaleVector(p3,BoxSize); p3 := AddRotatedVector(BoxObj, p3); AddVector(p3,BoxPos);
-
-      i := i + 3;
-
-      SetVector(Triangles[count-1].p1, p1);
-      SetVector(Triangles[count-1].p2, p2);
-      SetVector(Triangles[count-1].p3, p3);
-      Triangles[count-1].ObjectIndex := AObjectIndex;
-      Triangles[count-1].Friction := AFriction;
-      Triangles[count-1].Solid := ASolid;
-    end;
-
-  end;
-end;
 
 end.

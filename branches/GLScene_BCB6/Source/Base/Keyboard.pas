@@ -75,6 +75,14 @@ const
    cLBUTTON = 'LBUTTON';
    cMBUTTON = 'MBUTTON';
    cRBUTTON = 'RBUTTON';
+   cUP = 'UP';
+   cDOWN = 'DOWN';
+   cRIGHT = 'RIGHT';
+   cLEFT = 'LEFT';
+   cPAGEUP = 'PAGE UP';
+   cPAGEDOWN = 'PAGE DOWN';
+   cHOME = 'HOME';
+   cEND = 'END';
 
 // IsKeyDown
 //
@@ -126,6 +134,14 @@ begin
       VK_LBUTTON : Result:=cLBUTTON;
       VK_MBUTTON : Result:=cMBUTTON;
       VK_RBUTTON : Result:=cRBUTTON;
+      VK_UP : Result:=cUP;
+      VK_DOWN : Result:=cDOWN;
+      VK_LEFT : Result:=cLEFT;
+      VK_RIGHT : Result:=cRIGHT;
+      VK_PRIOR : Result:=cPAGEUP;
+      VK_NEXT : Result:=cPAGEDOWN;
+      VK_HOME : Result:=cHOME;
+      VK_END : Result:=cEND;
    else
       nSize:=32; // should be enough
       SetLength(Result, nSize);

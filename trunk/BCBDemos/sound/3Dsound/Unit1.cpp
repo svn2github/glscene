@@ -22,9 +22,9 @@ TForm1 *Form1;
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
 // Load our sound sample
-  GLSoundLibrary->Samples->AddFile("..\\..\\media\\drumloop.wav");
-  GLSoundLibrary->Samples->AddFile("..\\..\\media\\chimes.wav");
-  GLSoundLibrary->Samples->AddFile("..\\..\\media\\howl.mp3");
+  GLSoundLibrary->Samples->AddFile("..\\..\\media\\drumloop.wav","");
+  GLSoundLibrary->Samples->AddFile("..\\..\\media\\chimes.wav","");
+  GLSoundLibrary->Samples->AddFile("..\\..\\media\\howl.mp3","");
 }
 
 //---------------------------------------------------------------------------

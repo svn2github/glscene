@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>27/01/05 - Mathx - BuildOctree can now specify an (optional) TreeDepth.
       <li>11/01/05 - SG - Another fix for TGLBaseMesh.Assign (dikoe Kenguru)
       <li>11/01/05 - SG - Fix for TGLBaseMesh.Assign when assigning actors
       <li>26/11/04 - MRQZZZ - by Uwe Raabe : fixed TBaseMeshObject.BuildNormals
@@ -549,7 +550,8 @@ type
          function BoneByID(anID : Integer) : TSkeletonBone;
          function BoneByName(const aName : String) : TSkeletonBone;
 
-         procedure MorphTo(frameIndex : Integer);
+         procedure MorphTo(frameIndex : Integer); overload;
+         procedure MorphTo(frame : TSkeletonFrame); overload;
          procedure Lerp(frameIndex1, frameIndex2 : Integer;
                         lerpFactor : Single);
          procedure BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
@@ -1205,8 +1207,6 @@ type
          FAutoScaling: TGLCoordinates;
          FMaterialLibraryCachesPrepared : Boolean;
          FConnectivity : TObject;
-         FRendered: Boolean;
-
 
       protected
          { Protected Declarations }
@@ -1218,7 +1218,6 @@ type
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
          procedure SetAutoScaling(const Value: TGLCoordinates);
-	 procedure SetRendered(const Value: Boolean);
          procedure DestroyHandle; override;
 
          {: Invoked after creating a TVectorFile and before loading.<p>
@@ -1354,9 +1353,6 @@ type
          {: Request rendering of skeleton bones over the mesh. }
          property OverlaySkeleton : Boolean read FOverlaySkeleton write SetOverlaySkeleton default False;
 
-         {: If False, Prevents rendering of self but not of children }
-         property Rendered : Boolean read FRendered write SetRendered;
-
    end;
 
    // TGLFreeForm
@@ -1398,8 +1394,8 @@ type
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
          property Octree : TOctree read GetOctree;
-         procedure BuildOctree;
-
+         procedure BuildOctree(TreeDepth: integer = 3);
+                                                
       published
          { Published Declarations }
          property AutoCentering;
@@ -1408,7 +1404,6 @@ type
          property LightmapLibrary;
          property UseMeshMaterials;
          property NormalsOrientation;
-	 property Rendered;
    end;
 
    // TGLActorOption
@@ -1604,9 +1599,10 @@ type
          has been reached, switches to aamBounceBackward
       <li>aamBounceBackward : play from current frame to StartFrame, once start
          frame has been reached, switches to aamBounceForward
+      <li>aamExternal : Allows for external animation control
       </ul> }
    TActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward,
-                          aamBounceBackward,aamLoopBackward);
+                          aamBounceBackward,aamLoopBackward, aamExternal);
 
    // TGLActor
    //
@@ -3061,6 +3057,13 @@ begin
    CurrentFrame:=Frames[frameIndex];
 end;
 
+// MorphTo
+//
+procedure TSkeleton.MorphTo(frame: TSkeletonFrame);
+begin
+   CurrentFrame:=frame;
+end;
+
 // Lerp
 //
 procedure TSkeleton.Lerp(frameIndex1, frameIndex2 : Integer; lerpFactor : Single);
@@ -3072,7 +3075,7 @@ begin
    with FCurrentFrame do begin
       Position.Lerp(Frames[frameIndex1].Position,
                     Frames[frameIndex2].Position, lerpFactor);
-      case TransformMode of 
+      case TransformMode of
          sftRotation   : Rotation.AngleLerp(Frames[frameIndex1].Rotation,
                                           Frames[frameIndex2].Rotation, lerpFactor);
          sftQuaternion : Quaternion.Lerp(Frames[frameIndex1].Quaternion,
@@ -5795,7 +5798,6 @@ begin
    FAutoCentering:=[];
    FAxisAlignedDimensionsCache.Coord[0]:=-1;
    FAutoScaling:=TGLCoordinates.CreateInitialized(Self, XYZWHmgVector, csPoint);   
-   FRendered := True;
 end;
 
 // Destroy
@@ -6042,25 +6044,12 @@ begin
    end;
 end;
 
-// SetRendered
-//
-procedure TGLBaseMesh.SetRendered(const Value: Boolean);
-begin
-  if FRendered<>Value then
-  begin
-     FRendered := Value;
-     StructureChanged;
-  end;
-end;
-
-
 // SetAutoScaling
 //
 procedure TGLBaseMesh.SetAutoScaling(const Value: TGLCoordinates);
 begin
-  FAutoScaling.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
+   FAutoScaling.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
 end;
-
 
 // Notification
 //
@@ -6228,7 +6217,7 @@ procedure TGLBaseMesh.DoRender(var rci : TRenderContextInfo;
 begin
    if Assigned(LightmapLibrary) then
       xglForbidSecondTextureUnit;
-   if renderSelf and Rendered then begin
+   if renderSelf then begin
       // set winding
       case FNormalsOrientation of
          mnoDefault : ;// nothing
@@ -6408,7 +6397,7 @@ end;
 
 // BuildOctree
 //
-procedure TGLFreeForm.BuildOctree;
+procedure TGLFreeForm.BuildOctree(TreeDepth: integer = 3);
 var
    emin, emax : TAffineVector;
    tl : TAffineVectorList;
@@ -6421,7 +6410,7 @@ begin
    try
       with Octree do begin
          DisposeTree;
-         InitializeTree(emin, emax, tl, 3);
+         InitializeTree(emin, emax, tl, TreeDepth);
       end;
    finally
       tl.Free;
@@ -7199,6 +7188,7 @@ begin
             end;
          end;
       end;
+      aamExternal : Result:=CurrentFrame; // Do nothing
    else
       Result:=CurrentFrame;
       Assert(False);
@@ -7256,7 +7246,7 @@ begin
          end;
       end;
       aarSkeleton : if Skeleton.Frames.Count>0 then begin
-         if Assigned(FControlers) then begin
+         if Assigned(FControlers) and (AnimationMode<>aamExternal) then begin
             // Blended Skeletal Lerping
             SetLength(lerpInfos, FControlers.Count+1);
             if nextFrameIdx>=0 then begin
@@ -7289,7 +7279,7 @@ begin
                   Inc(k);
             SetLength(lerpInfos, k);
             Skeleton.BlendedLerps(lerpInfos);
-         end else if nextFrameIdx>=0 then begin
+         end else if (nextFrameIdx>=0) and (AnimationMode<>aamExternal) then begin
             // Single Skeletal Lerp
             case FrameInterpolation of
                afpLinear :
@@ -7453,8 +7443,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

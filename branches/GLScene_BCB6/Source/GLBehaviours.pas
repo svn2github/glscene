@@ -151,12 +151,48 @@ type
 			property RotationDamping : TGLDamping read FRotationDamping write SetRotationDamping;
 	end;
 
+	// TGLBAcceleration
+	//
+	{: Applies a constant acceleration to a TGLBInertia.<p> }
+	TGLBAcceleration = class (TGLBehaviour)
+		private
+			{ Private Declarations }
+         FAcceleration : TGLCoordinates;
+
+		protected
+			{ Protected Declarations }
+         procedure SetAcceleration(const val : TGLCoordinates);
+
+			procedure WriteToFiler(writer : TWriter); override;
+         procedure ReadFromFiler(reader : TReader); override;
+
+		public
+			{ Public Declarations }
+			constructor Create(aOwner : TXCollection); override;
+			destructor Destroy; override;
+
+         procedure Assign(Source: TPersistent); override;
+
+			class function FriendlyName : String; override;
+			class function FriendlyDescription : String; override;
+			class function UniqueItem : Boolean; override;
+
+			procedure DoProgress(const progressTime : TProgressTimes); override;
+
+		published
+			{ Published Declarations }
+			property Acceleration : TGLCoordinates read FAcceleration write FAcceleration;
+	end;
+
 {: Returns or creates the TGLBInertia within the given behaviours.<p>
 	This helper function is convenient way to access a TGLBInertia. }
 function GetOrCreateInertia(behaviours : TGLBehaviours) : TGLBInertia; overload;
-{: Returns or creates the TGLBInertia within the given object's behaviours.<p>
-	This helper function is convenient way to access a TGLBInertia. }
 function GetOrCreateInertia(obj : TGLBaseSceneObject) : TGLBInertia; overload;
+
+{: Returns or creates the TGLBAcceleration within the given behaviours.<p>
+	This helper function is convenient way to access a TGLBAcceleration. }
+function GetOrCreateAcceleration(behaviours : TGLBehaviours) : TGLBAcceleration; overload;
+function GetOrCreateAcceleration(obj : TGLBaseSceneObject) : TGLBAcceleration; overload;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -185,6 +221,25 @@ end;
 function GetOrCreateInertia(obj : TGLBaseSceneObject) : TGLBInertia;
 begin
 	Result:=GetOrCreateInertia(obj.Behaviours);
+end;
+
+// GetOrCreateAcceleration (TGLBehaviours)
+//
+function GetOrCreateAcceleration(behaviours : TGLBehaviours) : TGLBAcceleration;
+var
+	i : Integer;
+begin
+	i:=behaviours.IndexOfClass(TGLBAcceleration);
+	if i>=0 then
+		Result:=TGLBAcceleration(behaviours[i])
+	else Result:=TGLBAcceleration.Create(behaviours);
+end;
+
+// GetOrCreateAcceleration (TGLBaseSceneObject)
+//
+function GetOrCreateAcceleration(obj : TGLBaseSceneObject) : TGLBAcceleration;
+begin
+	Result:=GetOrCreateAcceleration(obj.Behaviours);
 end;
 
 // ------------------
@@ -507,6 +562,93 @@ begin
    end;
 end;
 
+// ------------------
+// ------------------ TGLBAcceleration ------------------
+// ------------------
+
+// Create
+//
+constructor TGLBAcceleration.Create(aOwner : TXCollection);
+begin
+   inherited;
+   FAcceleration:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
+end;
+
+// Destroy
+//
+destructor TGLBAcceleration.Destroy;
+begin
+   inherited;
+   FAcceleration.Free;
+end;
+
+// Assign
+//
+procedure TGLBAcceleration.Assign(Source: TPersistent);
+begin
+   if Source.ClassType=Self.ClassType then begin
+		FAcceleration.Assign(TGLBAcceleration(Source).FAcceleration);
+   end;
+   inherited Assign(Source);
+end;
+
+// WriteToFiler
+//
+procedure TGLBAcceleration.WriteToFiler(writer : TWriter);
+begin
+   inherited;
+   with writer do begin
+      WriteInteger(0); // Archive Version 0
+      FAcceleration.WriteToFiler(writer);
+   end;
+end;
+
+// ReadFromFiler
+//
+procedure TGLBAcceleration.ReadFromFiler(reader : TReader);
+begin
+   inherited;
+   with reader do begin
+      ReadInteger; // ignore archiveVersion
+      FAcceleration.ReadFromFiler(reader);
+   end;
+end;
+
+// SetAcceleration
+//
+procedure TGLBAcceleration.SetAcceleration(const val : TGLCoordinates);
+begin
+   FAcceleration.Assign(val);
+end;
+
+// FriendlyName
+//
+class function TGLBAcceleration.FriendlyName : String;
+begin
+	Result:='Simple Acceleration';
+end;
+
+// FriendlyDescription
+//
+class function TGLBAcceleration.FriendlyDescription : String;
+begin
+	Result:='A simple and constant acceleration'; 
+end;
+
+// UniqueBehaviour
+//
+class function TGLBAcceleration.UniqueItem : Boolean;
+begin
+	Result:=False;
+end;
+
+// DoProgress
+//
+procedure TGLBAcceleration.DoProgress(const progressTime : TProgressTimes);
+begin
+   GetOrCreateInertia(OwnerBaseSceneObject).ApplyTranslationAcceleration(progressTime.deltaTime, FAcceleration.DirectVector);
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -517,6 +659,7 @@ initialization
 
 	// class registrations
 	RegisterXCollectionItemClass(TGLBInertia);
+	RegisterXCollectionItemClass(TGLBAcceleration);
 
 end.
 

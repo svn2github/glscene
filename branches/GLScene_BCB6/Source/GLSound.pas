@@ -79,7 +79,7 @@ type
 	      property Items[index : Integer] : TGLSoundSample read GetItems write SetItems; default;
          function GetByName(const aName : String) : TGLSoundSample;
 
-         function AddFile(const fileName : String) : TGLSoundSample;
+         function AddFile(const fileName : String; const sampleName : String = '') : TGLSoundSample;
    end;
 
 	// TGLSoundLibrary
@@ -481,6 +481,8 @@ type
 
 			procedure DoProgress(const progressTime : TProgressTimes); override;
 
+         property PlayingSource : TGLSoundSource read FPlayingSource;
+
 		published
 			{ Published Declarations }
          property Source : TGLBaseSoundSource read FSource write SetSource;
@@ -798,10 +800,12 @@ end;
 
 // AddFile
 //
-function TGLSoundSamples.AddFile(const fileName : String) : TGLSoundSample;
+function TGLSoundSamples.AddFile(const fileName : String; const sampleName : String = '') : TGLSoundSample;
 begin
    Result:=Add;
    Result.LoadFromFile(fileName);
+   if sampleName<>'' then
+      Result.Name:=sampleName;
 end;
 
 // ------------------

@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/01/05 - JAJ - Can now operate with a GLFullScreenViewer
       <li>22/10/04 - EG - Can now operate without a SceneViewer
       <li>13/05/04 - EG - Added irmBitBlt mode (now the default mode)
       <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap,
@@ -21,7 +22,7 @@ interface
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 uses Windows, Classes, Controls, Forms, Extctrls, Graphics, vfw, GLScene,
-   GLWin32Viewer;
+   GLWin32Viewer, GLWin32FullScreenViewer;
 
 {$NOINCLUDE vfw}
 {$ifdef GLS_DELPHI_6_UP}
@@ -36,6 +37,11 @@ type
 
    PAVIStream = ^IAVIStream;
 
+   // TAVISizeRestriction
+   //
+   {: Frame size restriction.<p>
+      Forces frame dimensions to be a multiple of 2, 4, or 8. Some compressors
+      require this. e.g. DivX 5.2.1 requires mutiples of 2. }
    TAVISizeRestriction = ( srNoRestriction, srForceBlock2x2,
                            srForceBlock4x4, srForceBlock8x8);
 
@@ -85,10 +91,14 @@ type
        FImageRetrievalMode : TAVIImageRetrievalMode;
        RecorderState : TAVIRecorderState;
        FOnPostProcessEvent : TAVIRecorderPostProcessEvent;
+       FGLFullScreenViewer : TGLFullScreenViewer;
+       FBuffer : TGLSceneBuffer;
 
        procedure SetHeight(const val : integer);
        procedure SetWidth(const val : integer);
        procedure SetSizeRestriction(const val : TAVISizeRestriction);
+    procedure SetGLFullScreenViewer(const Value: TGLFullScreenViewer);
+    procedure SetGLSceneViewer(const Value: TGLSceneViewer);
 
      protected
        { Protected Declarations }
@@ -124,7 +134,8 @@ type
      published
        { Published Declarations }
        property FPS : byte read FFPS write FFPS default 25;
-       property GLSceneViewer : TGLSceneViewer read FGLSceneViewer write FGLSceneViewer;
+       property GLSceneViewer : TGLSceneViewer read FGLSceneViewer write SetGLSceneViewer;
+       property GLFullScreenViewer : TGLFullScreenViewer read FGLFullScreenViewer write SetGLFullScreenViewer;
        property Width : integer read FWidth write SetWidth;
        property Height : integer read FHeight write SetHeight;
        property Filename : String read FAVIFilename write FAVIFilename;
@@ -282,9 +293,9 @@ begin
    if RecorderState<>rsRecording then
       raise Exception.create('Cannot add frame to AVI. AVI file not created.');
 
-   if GLSceneViewer<>nil then case ImageRetrievalMode of
+   if FBuffer<>nil then case ImageRetrievalMode of
       irmSnapShot : begin
-         bmp32:=GLSceneViewer.Buffer.CreateSnapShot;
+         bmp32:=FBuffer.CreateSnapShot;
          try
             bmp:=bmp32.Create32BitsBitmap;
             try
@@ -297,7 +308,7 @@ begin
          end;
       end;
       irmBitBlt : begin
-         GLSceneViewer.Buffer.RenderingContext.Activate;
+         FBuffer.RenderingContext.Activate;
          try
             BitBlt(AVIBitmap.Canvas.Handle, 0, 0, AVIBitmap.Width, AVIBitmap.Height,
                    wglGetCurrentDC, 0, 0, SRCCOPY);
@@ -306,7 +317,7 @@ begin
          end;
       end;
       irmRenderToBitmap : begin
-         GLSceneViewer.Buffer.RenderToBitmap(AVIBitmap, AVI_DPI);
+         FBuffer.RenderToBitmap(AVIBitmap, AVI_DPI);
       end;
    else
       Assert(False);
@@ -496,6 +507,24 @@ end;
 function TAVIRecorder.Recording : Boolean;
 begin
    Result:=(RecorderState=rsRecording);
+end;
+
+procedure TAVIRecorder.SetGLFullScreenViewer(const Value: TGLFullScreenViewer);
+begin
+  FGLFullScreenViewer := Value;
+  if Assigned(FGLFullScreenViewer) then
+    FBuffer := FGLFullScreenViewer.Buffer
+  else
+    FBuffer := nil;
+end;
+
+procedure TAVIRecorder.SetGLSceneViewer(const Value: TGLSceneViewer);
+begin
+  FGLSceneViewer := Value;
+  if Assigned(FGLSceneViewer) then
+    FBuffer := FGLSceneViewer.Buffer
+  else
+    FBuffer := nil;
 end;
 
 end.

@@ -99,14 +99,19 @@ type
          {: Current Pen Width. }
          property PenWidth : Integer read FPenWidth write SetPenWidth;
 
-         {: Updates the current position. }
+         {: Updates the current position (absolute coords). }
 	      procedure MoveTo(const x, y : Integer); overload;
 	      procedure MoveTo(const x, y : Single); overload;
+         {: Updates the current position (relative coords). }
+	      procedure MoveToRel(const x, y : Integer); overload;
+	      procedure MoveToRel(const x, y : Single); overload;
 
          {: Draws a line from current position to given coordinate.<p>
             Current position is updated. }
 	      procedure LineTo(const x, y : Integer); overload;
 	      procedure LineTo(const x, y : Single); overload;
+	      procedure LineToRel(const x, y : Integer); overload;
+	      procedure LineToRel(const x, y : Single); overload;
          {: Draws a line from (x1, y1) to (x2, y2).<p>
             The current position is NOT updated. }
 	      procedure Line(const x1, y1, x2, y2 : Integer); overload;
@@ -359,6 +364,22 @@ begin
    FCurrentPos.Coord[1]:=y;
 end;
 
+// MoveToRel
+//
+procedure TGLCanvas.MoveToRel(const x, y : Integer);
+begin
+   FCurrentPos.Coord[0]:=FCurrentPos.Coord[0]+x;
+   FCurrentPos.Coord[1]:=FCurrentPos.Coord[1]+y;
+end;
+
+// MoveToRel
+//
+procedure TGLCanvas.MoveToRel(const x, y : Single);
+begin
+   FCurrentPos.Coord[0]:=FCurrentPos.Coord[0]+x;
+   FCurrentPos.Coord[1]:=FCurrentPos.Coord[1]+y;
+end;
+
 // LineTo
 //
 procedure TGLCanvas.LineTo(const x, y : Integer);
@@ -377,6 +398,20 @@ begin
    glVertex2fv(@FCurrentPos);
    MoveTo(x, y);
    glVertex2fv(@FCurrentPos);
+end;
+
+// LineToRel
+//
+procedure TGLCanvas.LineToRel(const x, y : Integer);
+begin
+   LineTo(FCurrentPos.Coord[0]+x, FCurrentPos.Coord[1]+y);
+end;
+
+// LineToRel
+//
+procedure TGLCanvas.LineToRel(const x, y : Single);
+begin
+   LineTo(FCurrentPos.Coord[0]+x, FCurrentPos.Coord[1]+y);
 end;
 
 // Line

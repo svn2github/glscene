@@ -1100,6 +1100,8 @@ begin
 
   FChildCount := 0;
 
+  FChildCount := 0;
+
   FLeaves.Clear;
 end;
 
@@ -1403,9 +1405,6 @@ begin
 
   // Fore / Back
   if Location.Coord[0]>FBSphere.Center.Coord[0] then ChildNodeIndex := ChildNodeIndex or 1;
-
-  Assert((ChildNodeIndex>=0) and (ChildNodeIndex<=8),
-    Format('ChildNodeIndex is out of range (%d)!',[ChildNodeIndex]));
 
   Assert((ChildNodeIndex>=0) and (ChildNodeIndex<=8),
     Format('ChildNodeIndex is out of range (%d)!',[ChildNodeIndex]));

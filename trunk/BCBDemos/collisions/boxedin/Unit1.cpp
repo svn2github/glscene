@@ -36,7 +36,7 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
   FreeForm1->LoadFromFile("..\\..\\media\\BoxedIn.3ds");
 
-  FreeForm1->BuildOctree();
+  FreeForm1->BuildOctree(3);
   Label1->Caption =
     "Octree Nodes    : " + IntToStr(FreeForm1->Octree->NodeCount);
   Label2->Caption =

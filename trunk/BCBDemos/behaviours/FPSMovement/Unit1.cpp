@@ -37,11 +37,11 @@ bool WireFrame;
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
   Map1->LoadFromFile("..\\..\\media\\map.3ds");
-  Map1->BuildOctree();
+  Map1->BuildOctree(3);
   Map1->Up->SetVector(0, 1, 0);
 
   Map2->LoadFromFile("..\\..\\media\\beer.3ds");
-  Map2->BuildOctree();
+  Map2->BuildOctree(3);
 
   ShowCursor(false);
   SetCursorPos(Screen->Width / 2, Screen->Height / 2);

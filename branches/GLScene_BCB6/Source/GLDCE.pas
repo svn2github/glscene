@@ -3,27 +3,35 @@
   How to use:
   - Add a DCEManager to you form and configure its properties
   - Add a Dynamic Collision Behavior to you object
-  - Choose the shape of your object (csEllipsoid, csBox, csFreeform, csTerrain)
-    - csEllipsoid can be any glscene object, and is the only that can be dynamic
-      By dynamic I mean that it can move in the world.
-    - csBox can be any object, can't be dynamic.
+  - Add a Static Collision behaviour to objects which yours will collide
+  - You can choose the shape of your static object
+    - csEllipsoid, csBox
     - csFreeform MUST BE A TGLFreeform, otherwise will raise errors
     - csTerrain MUST BE A TGLTerrainRenderer, same condition above
-  - Friction is a value aprox. between 0 (no friction) and 500 (no movement)
-  - IsDynamic can be True if the object has an ellipsoid shape
-  - Layer = An object collides only with lower or equal layers
-  - Size is used for Ellipsoids (Radius) / Boxes (Dimensions)
-  - Solid = An object can still get the collision event but it "walks-thru"
+  - Active: Disable or enable the behaviour for this object
+  - Friction: is a value aprox. between 0 (no friction) and 100 (no movement)
+  - Layer: An object collides only with lower or equal layers
+  - Size: is used for Ellipsoids (Radius) / Boxes (Dimensions)
+  - Solid: Object still generate collision events but it doesn't "block" the dynamic object
+  - UseGravity: You can disable the gravity for that object
+  - SlideOrBounce: The object can bounce like a ball or slide like an FPS
+  - BounceFactor: Restituition factor, 1 means that it will bounce forever
 
   <b>History : </b><font size=-1><ul>
-    <li>17/11/04 - LucasG. - Added support for static box colliders
-    <li>17/11/04 - LucasG. - Added UseGravity property to behaviour
-    <li>14/11/04 - LucasG. - Fixed average friction calculation
-    <li>14/11/04 - LucasG. - Added AirFriction property to DCEManager
-    <li>13/11/04 - LucasG. - Added Active property to behaviour
-    <li>08/10/04 - LR, YHC - BCB corrections: use record instead array 
-    <li>03/09/04 - LucasG. - First release
-    <li>29/07/04 - LucasG. - Creation
+    <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features 
+    <li>19/11/04 - GAK - Added standardised collision selection (optionally use same selection criteria as other collision system)
+    <li>17/11/04 - LucasG - Added support for static box colliders
+    <li>17/11/04 - LucasG - Added UseGravity property to behaviour
+    <li>14/11/04 - LucasG - Fixed average friction calculation
+    <li>14/11/04 - LucasG - Added AirFriction property to DCEManager
+    <li>13/11/04 - LucasG - Added Active property to behaviour
+    <li>17/11/04 - LucasG - Added support for static box colliders
+    <li>17/11/04 - LucasG - Added UseGravity property to behaviour
+    <li>14/11/04 - LucasG - Fixed average friction calculation
+    <li>14/11/04 - LucasG - Added AirFriction property to DCEManager
+    <li>13/11/04 - LucasG - Added Active property to behaviour
+    <li>03/09/04 - LucasG - First release
+    <li>29/07/04 - LucasG - Creation
   </ul></font>
 }
 
@@ -37,15 +45,19 @@ uses Classes, GLScene, XCollection, VectorGeometry, VectorLists, GLVectorFileObj
 type
   {Only csEllipsoid can have dynamic behaviour}
   TDCEShape = (csEllipsoid, csBox, csFreeform, csTerrain);
+  TDCECollisionSelection = (ccsDCEStandard, ccsCollisionStandard, ccsHybrid); // gak:20041119
 
   TDCECollision = record
-    Point: TAffineVector;
+    Position: TAffineVector;
     Normal: TAffineVector; //Surface normal
     Bounce: TAffineVector; //Surface reflection
     Nearest: Boolean;
+    RootCollision:boolean;//gak:20041119
+    Distance:single;//gak:20041119
   end;
 
-  TGLBDCEBody = class;
+  TGLDCEStatic = class;
+  TGLDCEDynamic = class;
 
   TDCECollisionEvent = procedure (Sender : TObject; object1, object2 : TGLBaseSceneObject;
                                        CollisionInfo: TDCECollision) of object;
@@ -55,59 +67,64 @@ type
   TGLDCEManager = class (TComponent)
   private
     { Private Declarations }
-    FClients : TList;
-    FOnCollision : TDCECollisionEvent;
-    FGravity: TGLCoordinates;
-    FAirFriction: Single;
+    FStatics : TList;
+    FDynamics : TList;
+    FGravity: Single;
+    FWorldDirection: TGLCoordinates; //Used to calculate jumps f.i.
+    FWorldScale: Single;
     FMovimentScale: Single;
-    procedure SetGravity(const Value: TGLCoordinates);
+    FStandardiseLayers : TDCECollisionSelection;
+    FManualStep: Boolean;
+    FOnCollision : TDCECollisionEvent;
+    procedure SetWorldDirection(const Value: TGLCoordinates);
+    procedure SetWorldScale(const Value: Single);
+    function GetDynamicCount: Integer;
+    function GetStaticCount: Integer;
   protected
     { Protected Declarations }
-    procedure RegisterClient(aClient : TGLBDCEBody);
-    procedure DeRegisterClient(aClient : TGLBDCEBody);
-    procedure DeRegisterAllClients;
+    procedure RegisterStatic(aClient : TGLDCEStatic);
+    procedure DeRegisterStatic(aClient : TGLDCEStatic);
+    procedure DeRegisterAllStatics;
+    procedure RegisterDynamic(aClient : TGLDCEDynamic);
+    procedure DeRegisterDynamic(aClient : TGLDCEDynamic);
+    procedure DeRegisterAllDynamics;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function MoveByDistance(var Body: TGLBDCEBody;
-       deltaDistance: TAffineVector; deltaTime: Double): Single;
+    //Moves the body by the distance and returns the average friction
+    function MoveByDistance(var Body: TGLDCEDynamic; deltaS, deltaAbsS: TAffineVector): Single;
+    procedure Step(deltaTime: Double);
+    property DynamicCount: Integer read GetDynamicCount;
+    property StaticCount: Integer read GetStaticCount;
   published
     { Published Declarations }
-    property OnCollision : TDCECollisionEvent read FOnCollision write FOnCollision;
-    property Gravity : TGLCoordinates read FGravity write SetGravity;
+    property Gravity : Single read FGravity write FGravity;
+    property WorldDirection : TGLCoordinates read FWorldDirection write SetWorldDirection;
+    property WorldScale : Single read FWorldScale write SetWorldScale;
     property MovimentScale : Single read FMovimentScale write FMovimentScale;
-    property AirFriction : Single read FAirFriction write FAirFriction;
+    Property StandardiseLayers: TDCECollisionSelection read FStandardiseLayers write FStandardiseLayers; //gak:20041119
+    Property ManualStep: Boolean read FManualStep write FManualStep;
+    property OnCollision : TDCECollisionEvent read FOnCollision write FOnCollision;
 	end;
 
-  TGLBDCEBody = class (TGLBehaviour)
+  TGLDCEStatic = class (TGLBehaviour)
 	private
 		{ Private Declarations }
     FManager : TGLDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
-    FUseGravity: Boolean;
     FShape: TDCEShape;
     FLayer: Integer; //Collides only with lower or equal layers
-    FDynamic: Boolean; //Only ellipsoid shape can be dynamic
     FSolid: Boolean; //Collide and slide if true, otherwise it "walk thru walls"
-    FFriction: Single; //aprox. 0 to 100
+    FFriction: Single; //0 (no friction); 100 (no movement)
+    FBounceFactor: Single; //0 (don't bounce); 1 (bounce forever)
     FSize: TGLCoordinates;
-    FTerrainRenderer: TGLTerrainRenderer;
-    //Movement
-    FForce: TAffineVector; //Current acceleration
-    FSpeed: TAffineVector; //Current speed
-    FInGround: Boolean;
-    FGroundNormal: TAffineVector;
-    FGroundBounce: TAffineVector;
-    FJumpPos, FJumpHeight, FJumpForce: Single;
-    FJumpSpeed: TAffineVector;
-    FJumping: Boolean;
     //Events
     FOnCollision : TDCEObjectCollisionEvent;
     procedure SetShape(const Value: TDCEShape);
-    procedure SetDynamic(const Value: Boolean);
     procedure SetFriction(const Value: Single);
+    procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TGLCoordinates);
   protected
     { Protected Declarations }
@@ -122,34 +139,100 @@ type
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
     class function FriendlyDescription : String; override;
-    procedure AddForce(NewForce: TAffineVector);
+  published
+    { Published Declarations }
+    property Active : Boolean read FActive write FActive;
+    property Manager : TGLDCEManager read FManager write SetManager;
+    property Shape : TDCEShape read FShape write SetShape;
+    property Layer : Integer read FLayer write FLayer;
+    property Solid : Boolean read FSolid write FSolid;
+    property Friction : Single read FFriction write SetFriction;
+    property BounceFactor : Single read FBounceFactor write SetBounceFactor;
+    property Size : TGLCoordinates read FSize write SetSize;
+    property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
+  end;
+
+  TDCESlideOrBounce = (csbSlide,csbBounce);
+
+  TGLDCEDynamic = class (TGLBehaviour)
+	private
+		{ Private Declarations }
+    FManager : TGLDCEManager;
+    FManagerName : String; // NOT persistent, temporarily used for persistence
+    FActive: Boolean;
+    FUseGravity: Boolean;
+    FLayer: Integer; //Collides only with lower or equal layers
+    FSolid: Boolean; //Collide and slide if true, otherwise it "walk thru walls"
+    FFriction: Single; //0 (no friction); 100 (no movement)
+    FBounceFactor: Single; //0 (don't bounce); 1 (bounce forever)
+    FSize: TGLCoordinates;
+    FMaxRecursionDepth:byte;//gak20041119 //Number of iterations of the collision method
+    FSlideOrBounce:TDCESlideOrBounce;//gak20041122
+    //Movement
+    FAccel: TAffineVector; //Current acceleration
+    FSpeed: TAffineVector; //Current speed
+    FAbsAccel: TAffineVector; //Current absolute accel
+    FAbsSpeed: TAffineVector; //Current absolute speed
+    FGravSpeed: TAffineVector; //Current gravity speed
+    FTotalFriction: Single; //Current sum of all contatcs friction
+    FInGround: Boolean;
+    FGroundNormal: TAffineVector;
+    FJumpHeight, FJumpForce,FJumpSpeed: Single;
+    FJumping: Boolean;
+    //Events
+    FOnCollision : TDCEObjectCollisionEvent;
+    procedure SetFriction(const Value: Single);
+    procedure SetBounceFactor(const Value: Single);
+    procedure SetSize(const Value: TGLCoordinates);
+  protected
+    { Protected Declarations }
+    procedure SetManager(const val : TGLDCEManager);
+    procedure WriteToFiler(writer : TWriter); override;
+    procedure ReadFromFiler(reader : TReader); override;
+    procedure Loaded; override;
+  public
+    { Public Declarations }
+    constructor Create(aOwner : TXCollection); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+    class function FriendlyName : String; override;
+    class function FriendlyDescription : String; override;
+    procedure ApplyAccel(NewAccel: TAffineVector); overload;
+    procedure ApplyAccel(x,y,z: Single); overload;
+    procedure ApplyAbsAccel(NewAccel: TAffineVector); overload;
+    procedure ApplyAbsAccel(x,y,z: Single); overload;
+    procedure StopAccel;
+    procedure StopAbsAccel;
     procedure Jump(jHeight, jSpeed: Single);
-    procedure Move(Distance: TAffineVector; deltaTime: Double);
+    procedure Move(deltaS: TAffineVector; deltaTime: Double);
+    procedure MoveTo(Position: TAffineVector; Amount: Single); // gak:20041119
     procedure DoMove(deltaTime: Double);
     procedure DoProgress(const progressTime : TProgressTimes); override;
     //Runtime only
     property Speed : TAffineVector read FSpeed write FSpeed;
     property InGround : Boolean read FInGround;
+    property MaxRecursionDepth:byte read FMaxRecursionDepth write FMaxRecursionDepth;//gak20041119
   published
     { Published Declarations }
     property Active : Boolean read FActive write FActive;
     property Manager : TGLDCEManager read FManager write SetManager;
     property UseGravity : Boolean read FUseGravity write FUseGravity;
-    property Shape : TDCEShape read FShape write SetShape;
     property Layer : Integer read FLayer write FLayer;
-    property IsDynamic : Boolean read FDynamic write SetDynamic;
     property Solid : Boolean read FSolid write FSolid;
     property Friction : Single read FFriction write SetFriction;
+    property BounceFactor : Single read FBounceFactor write SetBounceFactor;
     property Size : TGLCoordinates read FSize write SetSize;
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
+    property SlideOrBounce:TDCESlideOrBounce read FSlideOrBounce write FSlideOrBounce;//gak20041122
   end;
 
-function GetOrCreateDCECollision(behaviours : TGLBehaviours) : TGLBDCEBody; overload;
-function GetOrCreateDCECollision(obj : TGLBaseSceneObject) : TGLBDCEBody; overload;
+function GetOrCreateDCEStatic(behaviours : TGLBehaviours) : TGLDCEStatic; overload;
+function GetOrCreateDCEStatic(obj : TGLBaseSceneObject) : TGLDCEStatic; overload;
+
+function GetOrCreateDCEDynamic(behaviours : TGLBehaviours) : TGLDCEDynamic; overload;
+function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic; overload;
 
 procedure Register;
-
-var d_TriList: TECTriangleList;
 
 implementation
 
@@ -160,13 +243,24 @@ begin
   RegisterComponents('GLScene Utils', [TGLDCEManager]);
 end;
 
+function RotateVectorByObject(Obj: TGLBaseSceneObject; v: TAffineVector): TAffineVector;
+var v2: TVector;
+begin
+  SetVector(v2,v);
+  SetVector(result,VectorTransform(v2, Obj.Matrix));
+end;
+
 constructor TGLDCEManager.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
-  FClients:=TList.Create;
-  FGravity:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
+  FStatics:=TList.Create;
+  FDynamics:=TList.Create;
+  FGravity:=0;
+  FWorldDirection:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
+  FWorldScale := 1;
   FMovimentScale := 1;
-  FAirFriction := 0;
+  FStandardiseLayers := ccsDCEStandard;
+  FManualStep := False;
   RegisterManager(Self);
 end;
 
@@ -174,216 +268,347 @@ end;
 //
 destructor TGLDCEManager.Destroy;
 begin
-	DeRegisterAllClients;
+	DeRegisterAllStatics;
+	DeRegisterAllDynamics;
   DeRegisterManager(Self);
-  FClients.Free;
-  FGravity.Free;
+  FStatics.Free;
+  FDynamics.Free;
+  FWorldDirection.Free;
 	inherited Destroy;
 end;
 
-function TGLDCEManager.MoveByDistance(var Body: TGLBDCEBody;
-   deltaDistance: TAffineVector; deltaTime: Double): Single;
+function TGLDCEManager.GetDynamicCount: Integer;
+begin
+  result := FDynamics.Count;
+end;
+
+function TGLDCEManager.GetStaticCount: Integer;
+begin
+  result := FStatics.Count;
+end;
+
+function TGLDCEManager.MoveByDistance(var Body: TGLDCEDynamic; deltaS, deltaAbsS: TAffineVector): Single;
 var NewPosition: TVector;
-    AbsGravity, AbsDistance: TAffineVector;
-    TotalFriction, NumFrictions: Single;
+    //Friction and bounce
+    TotalFriction, bounce,f,m,restitution: Single;
+    ContactList: TIntegerList;
+    //Temporary properties (Static or Dynamic)
+    tFriction, tBounceFactor: Single;
+    tObject: TGLBaseSceneObject;
+    //Collision results
     ColInfo: TDCECollision;
+    lastobj:integer;//gak:20041119
+    i,j, oi: Integer;
+    MP: TECMovePack;
+    CanCollide,GravCollided: boolean;
+    //Vars used to calculate high velocities
+    ColRange,MaxRange: Single;
+    dCR,dT,deltaCR: Double;
+begin
+  //Set collider parameters
+  MP.Radius := Body.Size.AsAffineVector;
+  MP.Position := AffineVectorMake(Body.OwnerBaseSceneObject.AbsolutePosition);
+  MP.Velocity := deltaS;
+  MP.Gravity := deltaAbsS;
+  MP.ObjectInfo.Solid := Body.Solid;
+  MP.UnitScale := FWorldScale;
+  MP.MaxRecursionDepth := Body.MaxRecursionDepth; //gak://20041119
+  //Get collision range, if it is too big separate into small pieces
+  ECSetCollisionRange(MP);
+  ColRange := MP.CollisionRange;
+  deltaCR := ColRange;
+  MaxRange := MaxXYZComponent(MP.Radius)*2.1;
+  SetLength(MP.Contacts,0);
+  GravCollided := False; //Is colliding with the ground
+  Body.FGroundNormal := NullVector;
+  while deltaCR>0 do begin
+    if deltaCR>MaxRange then begin
+      dCR:=MaxRange;
+      deltaCR:=deltaCR-MaxRange;
+    end else begin
+      dCR:=deltaCR;
+      deltaCR:=0;
+    end;
+    dT := dCR / ColRange;
+    MP.Velocity := VectorScale(deltaS,dT);
+    MP.Gravity := VectorScale(deltaAbsS, dT);
 
-  function MoveEllipsoid: TVector;
-  var i, oi : Integer;
-     MovePack: TECMovementPacket;
-  begin
-    MovePack.Radius := Body.Size.AsAffineVector;
-    MovePack.Position := AffineVectorMake(Body.OwnerBaseSceneObject.AbsolutePosition);
-    MovePack.Velocity := AbsDistance;
-    if Body.UseGravity then MovePack.Gravity := AbsGravity
-    else MovePack.Gravity := NullVector;
-    MovePack.Solid := Body.Solid;
-    MovePack.InGround := Body.InGround;
-    SetLength(MovePack.Triangles,0);
-    SetLength(MovePack.Colliders,0);
-    SetLength(MovePack.Terrains,0);
+    ECSetCollisionRange(MP);
+    ECResetColliders(MP);
 
-    for i:=0 to FClients.Count-1 do
-    with TGLBDCEBody(FClients[i]) do begin
+    //For each static collider
+    for i:=0 to FStatics.Count-1 do
+    with TGLDCEStatic(FStatics[i]) do
+    begin
 
-      if (Layer <= Body.Layer)
-      and (TGLBDCEBody(FClients[i]) <> Body)
-      and (TGLBDCEBody(FClients[i]).Active) then
+      CanCollide := False;
+      if (Active) then
+      case FStandardiseLayers of
+        ccsDCEStandard: CanCollide := (Layer <= Body.Layer);
+        ccsCollisionStandard: CanCollide := (layer = 0) or (body.layer = 0) or (layer <> body.layer);
+        ccsHybrid: CanCollide := ( (layer = 0) or (body.layer = 0) or (Layer <= Body.Layer) ) and (layer>=0) and (body.layer>=0);
+      end;
+
+      //Add colliders to move pack
+      if CanCollide then
       begin
         case Shape of
-          csFreeform: AddFreeFormToMovePack(MovePack,
-                        TGLFreeform(OwnerBaseSceneObject),i,Friction,Solid);
-          csEllipsoid: AddEllipsoidToMovePack(MovePack,
-                        AffineVectorMake(OwnerBaseSceneObject.AbsolutePosition),
-                        Size.AsAffineVector,i,Friction,Solid);
-          csBox: AddBoxToMovePack(MovePack,OwnerBaseSceneObject,
-                        Size.AsAffineVector,i,Friction,Solid);
-          csTerrain:
-            begin
-              FTerrainRenderer := TGLTerrainRenderer(OwnerBaseSceneObject);
-              AddTerrainToMovePack(MovePack,
-                        FTerrainRenderer,i,Friction,Solid);
-            end;
-
+          csFreeform: ECAddFreeForm(MP,OwnerBaseSceneObject,Solid,i);
+          csEllipsoid: ECAddEllipsoid(MP,AffineVectorMake(OwnerBaseSceneObject.AbsolutePosition),
+                        Size.AsAffineVector,Solid,i);
+          csBox: ECAddBox(MP,OwnerBaseSceneObject,Size.AsAffineVector,Solid,i);
+          csTerrain: ECAddTerrain(MP,TGLTerrainRenderer(OwnerBaseSceneObject),FWorldScale*2,Solid,i);
         end;
       end;
 
     end;
 
-    CollideAndSlide(MovePack);
-    d_TriList := MovePack.Triangles;
-    result := VectorMake(MovePack.ResultPos);
-    Body.FInGround := MovePack.InGround;
-    Body.FGroundNormal := MovePack.ColNormal;
-    Body.FGroundBounce := MovePack.ColBounce;
-
-    //Get friction
-    {if MovePack.FoundCollision then
-      AvgFriction := TGLBDCEBody(FClients[MovePack.ColObjectIndex]).Friction
-    else
-      AvgFriction := -1;}
-
-    //Generate events and calc average friction
-    NumFrictions := 0;
-    for i := 0 to High(MovePack.CollisionList) do
+    //For each dynamic collider add a static ellipsoid
+    for i:=0 to FDynamics.Count-1 do
+    with TGLDCEDynamic(FDynamics[i]) do
     begin
-      TotalFriction := TotalFriction + MovePack.CollisionList[i].Friction;
-      NumFrictions := NumFrictions + 1;
-      ColInfo.Point := MovePack.CollisionList[i].Point;
-      ColInfo.Normal := MovePack.CollisionList[i].Normal;
-      ColInfo.Bounce := MovePack.CollisionList[i].Bounce;
-      ColInfo.Nearest := MovePack.CollisionList[i].ObjectIndex = MovePack.ColObjectIndex;
-      oi := MovePack.CollisionList[i].ObjectIndex;
-      if Assigned(FOnCollision) then
-        FOnCollision(Self,Body.OwnerBaseSceneObject,
-                     TGLBDCEBody(FClients[oi]).OwnerBaseSceneObject,ColInfo);
-      if Assigned(Body.FOnCollision) then
-        Body.FOnCollision(Self,TGLBDCEBody(FClients[oi]).OwnerBaseSceneObject,ColInfo);
+      CanCollide := False;
+      if (Active) and (TGLDCEDynamic(FDynamics[i]) <> Body) then
+      case FStandardiseLayers of
+        ccsDCEStandard: CanCollide := (Layer <= Body.Layer);
+        ccsCollisionStandard: CanCollide := (layer = 0) or (body.layer = 0) or (layer <> body.layer);
+        ccsHybrid: CanCollide := ( (layer = 0) or (body.layer = 0) or (Layer <= Body.Layer) ) and (layer>=0) and (body.layer>=0);
+      end;
+      //Add collider to move pack
+      //To differ from static it is added with a negative ID (id < 0)
+      if CanCollide then
+        ECAddEllipsoid(MP,AffineVectorMake(OwnerBaseSceneObject.AbsolutePosition),
+                        Size.AsAffineVector,Solid,-1-i);
     end;
+
+
+    CollideAndSlide(MP);
+    if MP.GravityCollided then
+    begin
+      GravCollided := True;
+      Body.FGroundNormal := Mp.GroundNormal;
+    end;
+    MP.Position := MP.ResultPos;
   end;
 
-begin
-  AbsGravity := VectorScale(FGravity.AsAffineVector,deltaTime * FMovimentScale);
-  AbsDistance := VectorScale(deltaDistance,FMovimentScale);
-  with Body do
+  //Set the result
+  Body.OwnerBaseSceneObject.AbsolutePosition := VectorMake(MP.ResultPos);
+  Body.FInGround := GravCollided;
+
+  //Generate events and calculate average friction
+  lastobj := -1;//gak:20041119
+  TotalFriction := Body.Friction;
+  ContactList := TIntegerList.Create;
+
+  for i := 0 to High(MP.Contacts) do
+  with MP do
   begin
-    case Shape of
-      csEllipsoid: NewPosition := MoveEllipsoid;
+    oi := Contacts[i].ObjectInfo.ObjectID;
+
+    //Don't repeat objects with same ID
+    if ContactList.IndexOf(oi) >= 0 then Continue
+    else ContactList.Add(oi);
+
+    //Check if it is static or dynamic
+    if oi < 0 then
+    begin
+      tFriction := TGLDCEDynamic(FDynamics[abs(oi) - 1]).Friction;
+      tBounceFactor := TGLDCEDynamic(FDynamics[abs(oi) - 1]).BounceFactor;
+      tObject := TGLDCEDynamic(FDynamics[abs(oi) - 1]).OwnerBaseSceneObject;
+    end else
+    begin
+      tFriction := TGLDCEStatic(FStatics[oi]).Friction;
+      tBounceFactor := TGLDCEStatic(FStatics[oi]).BounceFactor;
+      tObject := TGLDCEStatic(FStatics[oi]).OwnerBaseSceneObject;
     end;
-    OwnerBaseSceneObject.AbsolutePosition := NewPosition;
-    //Calc the average fricition, 2 = Air and Body friction
-    result := (TotalFriction + FAirFriction + Body.Friction) / (NumFrictions + 2);
+
+    TotalFriction := TotalFriction + tFriction;
+    ColInfo.Position := Contacts[i].Position;
+    ColInfo.Normal := Contacts[i].SurfaceNormal;
+    ColInfo.Bounce := VectorNormalize(VectorReflect(VectorAdd(deltaS,deltaAbsS), ColInfo.Normal));
+    ColInfo.Nearest := oi = MP.NearestObject;
+
+    //Calculate bounce
+    if (Body.SlideOrBounce = csbBounce) and ColInfo.Nearest then
+    begin
+      bounce:=VectorDotProduct(Body.FSpeed, ColInfo.Normal);
+      if bounce<0 then begin
+        restitution := (Body.BounceFactor + tBounceFactor) / 2;
+        m := VectorLength(Body.FSpeed);
+        f := -bounce/VectorNorm(ColInfo.Normal)*(1+restitution);
+        CombineVector(Body.FSpeed,ColInfo.Normal,f);
+        //Limit bounce speed
+        if VectorLength(Body.FSpeed) > m * 2 then
+           Body.FSpeed := NullVector;
+      end;
+
+      bounce:=VectorDotProduct(Body.FAbsSpeed, ColInfo.Normal);
+      if bounce<0 then begin
+        restitution := (Body.BounceFactor + tBounceFactor) / 2;
+        m := VectorLength(Body.FAbsSpeed);
+        f := -bounce/VectorNorm(ColInfo.Normal)*(1+restitution);
+        CombineVector(Body.FAbsSpeed,ColInfo.Normal,f);
+        //Limit
+        if VectorLength(Body.FAbsSpeed) > m * 2 then
+          Body.FAbsSpeed := NullVector;
+      end;
+
+      bounce:=VectorDotProduct(Body.FGravSpeed, ColInfo.Normal);
+      if bounce<0 then begin
+        restitution := (Body.BounceFactor + tBounceFactor) / 2;
+        m := VectorLength(Body.FGravSpeed);
+        f := -bounce/VectorNorm(ColInfo.Normal)*(1+restitution);
+        CombineVector(Body.FGravSpeed,ColInfo.Normal,f);
+        //Limit
+        if VectorLength(Body.FGravSpeed) > m * 2 then
+          Body.FGravSpeed := NullVector;
+      end;
+
+    end;
+
+    //gak:20041119 start
+    colinfo.RootCollision := (lastobj <> oi);
+    colInfo.Distance := Contacts[i].Distance;
+    lastobj := oi;
+    //gak:20041119 end
+
+    if Assigned(FOnCollision) then
+        FOnCollision(Self,Body.OwnerBaseSceneObject,tObject,ColInfo);
+    if Assigned(Body.FOnCollision) then
+        Body.FOnCollision(Self,tObject,ColInfo);
+    if Assigned(Body.FOnCollision) then
+        Body.FOnCollision(Self,tObject,ColInfo);
+    //If the collided object is static trigger its event
+    if (oi >= 0) and Assigned(TGLDCEStatic(FStatics[oi]).FOnCollision) then
+      TGLDCEStatic(FStatics[oi]).FOnCollision(Self,Body.OwnerBaseSceneObject,ColInfo);
   end;
+  result := TotalFriction;
 end;
 
-procedure TGLDCEManager.SetGravity(const Value: TGLCoordinates);
+procedure TGLDCEManager.Step(deltaTime: Double);
+var i: Integer;
 begin
-  FGravity := Value;
+  if deltaTime > 0.1 then deltaTime := 0.1;
+  for i := 0 to FDynamics.Count-1 do
+    with TGLDCEDynamic(FDynamics[i]) do
+      if Active then DoMove(deltaTime);
 end;
 
-// RegisterClient
-//
-procedure TGLDCEManager.RegisterClient(aClient : TGLBDCEBody);
+procedure TGLDCEManager.SetWorldDirection(const Value: TGLCoordinates);
+begin
+  FWorldDirection := Value;
+  FWorldDirection.Normalize;
+end;
+
+procedure TGLDCEManager.SetWorldScale(const Value: Single);
+begin
+  if Value = 0 then FWorldScale := 0.001
+  else if Value < 0 then FWorldScale := abs(Value)
+  else FWorldScale := Value;
+end;
+
+procedure TGLDCEManager.RegisterStatic(aClient : TGLDCEStatic);
 begin
    if Assigned(aClient) then
-      if FClients.IndexOf(aClient)<0 then begin
-         FClients.Add(aClient);
+      if FStatics.IndexOf(aClient)<0 then begin
+         FStatics.Add(aClient);
          aClient.FManager:=Self;
       end;
 end;
 
-// DeRegisterClient
-//
-procedure TGLDCEManager.DeRegisterClient(aClient : TGLBDCEBody);
+procedure TGLDCEManager.DeRegisterStatic(aClient : TGLDCEStatic);
 begin
    if Assigned(aClient) then begin
       aClient.FManager:=nil;
-      FClients.Remove(aClient);
+      FStatics.Remove(aClient);
    end;
 end;
 
-// DeRegisterAllClients
-//
-procedure TGLDCEManager.DeRegisterAllClients;
+procedure TGLDCEManager.DeRegisterAllStatics;
 var
    i : Integer;
 begin
    // Fast deregistration
-   for i:=0 to FClients.Count-1 do
-      TGLBDCEBody(FClients[i]).FManager:=nil;
-   FClients.Clear;
+   for i:=0 to FStatics.Count-1 do
+      TGLDCEStatic(FStatics[i]).FManager:=nil;
+   FStatics.Clear;
 end;
 
-{ TGLBDCEBody }
+//Register Dynamics
 
-constructor TGLBDCEBody.Create(aOwner : TXCollection);
+procedure TGLDCEManager.RegisterDynamic(aClient : TGLDCEDynamic);
+begin
+   if Assigned(aClient) then
+      if FDynamics.IndexOf(aClient)<0 then begin
+         FDynamics.Add(aClient);
+         aClient.FManager:=Self;
+      end;
+end;
+
+procedure TGLDCEManager.DeRegisterDynamic(aClient : TGLDCEDynamic);
+begin
+   if Assigned(aClient) then begin
+      aClient.FManager:=nil;
+      FDynamics.Remove(aClient);
+   end;
+end;
+
+procedure TGLDCEManager.DeRegisterAllDynamics;
+var
+   i : Integer;
+begin
+   // Fast deregistration
+   for i:=0 to FStatics.Count-1 do
+      TGLDCEDynamic(FDynamics[i]).FManager:=nil;
+   FDynamics.Clear;
+end;
+
+{ TGLDCEStatic }
+
+procedure TGLDCEStatic.Assign(Source: TPersistent);
+begin
+   if Source is TGLDCEStatic then begin
+      Active := TGLDCEStatic(Source).Active;
+      Manager:=TGLDCEStatic(Source).Manager;
+      Shape := TGLDCEStatic(Source).Shape;
+      Layer := TGLDCEStatic(Source).Layer;
+      Solid := TGLDCEStatic(Source).Solid;
+      Size.Assign(TGLDCEStatic(Source).Size);
+      Friction := TGLDCEStatic(Source).Friction;
+      BounceFactor := TGLDCEStatic(Source).BounceFactor;
+   end;
+   inherited Assign(Source);
+end;
+
+constructor TGLDCEStatic.Create(aOwner: TXCollection);
 begin
    inherited Create(aOwner);
    FActive := True;
-   FUseGravity := True;
    FSize:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csVector);
    FShape := csEllipsoid;
    FSolid := True;
    FFriction := 1;
-   FForce := NullVector;
+   FBounceFactor := 0;
 end;
 
-destructor TGLBDCEBody.Destroy;
+destructor TGLDCEStatic.Destroy;
 begin
    Manager:=nil;
    FSize.Free;
    inherited Destroy;
 end;
 
-class function TGLBDCEBody.FriendlyName : String;
+class function TGLDCEStatic.FriendlyDescription: String;
 begin
-   Result:='Dynamic Collision';
+   Result:='Static Collision-detection registration';
 end;
 
-class function TGLBDCEBody.FriendlyDescription : String;
+class function TGLDCEStatic.FriendlyName: String;
 begin
-   Result:='Dynamic Collision-detection registration';
+   Result:='DCE Static Collider';
 end;
 
-procedure TGLBDCEBody.WriteToFiler(writer : TWriter);
-begin
-   with writer do begin
-      WriteInteger(0); // ArchiveVersion 0
-      if Assigned(FManager) then
-         WriteString(FManager.GetNamePath)
-      else WriteString('');
-      WriteInteger(Integer(FShape));
-      WriteInteger(FLayer);
-      WriteBoolean(FDynamic);
-      WriteBoolean(FSolid);
-      WriteSingle(FFriction);
-      FSize.WriteToFiler(writer);
-   end;
-end;
-
-// ReadFromFiler
-//
-procedure TGLBDCEBody.ReadFromFiler(reader : TReader);
-var
-   archiveVersion : Integer;
-begin
-   with reader do begin
-      archiveVersion:=ReadInteger;
-      Assert(archiveVersion = 0);
-      FManagerName:=ReadString;
-      Manager:=nil;
-      FShape := TDCEShape(ReadInteger);
-      FLayer := ReadInteger;
-      FDynamic := ReadBoolean;
-      FSolid := ReadBoolean;
-      Friction := ReadSingle;
-      FSize.ReadFromFiler(reader);
-   end;
-end;
-
-// Loaded
-//
-procedure TGLBDCEBody.Loaded;
+procedure TGLDCEStatic.Loaded;
 var
    mng : TComponent;
 begin
@@ -396,160 +621,425 @@ begin
    end;
 end;
 
-// Assign
-//
-procedure TGLBDCEBody.Assign(Source: TPersistent);
+procedure TGLDCEStatic.WriteToFiler(writer: TWriter);
 begin
-   if Source is TGLBDCEBody then begin
-      Manager:=TGLBDCEBody(Source).Manager;
-      Shape := TGLBDCEBody(Source).Shape;
-      Layer := TGLBDCEBody(Source).Layer;
-      IsDynamic := TGLBDCEBody(Source).IsDynamic;
-      Solid := TGLBDCEBody(Source).Solid;
-      Size.Assign(TGLBDCEBody(Source).Size);
-      Friction := TGLBDCEBody(Source).Friction;
+   with writer do begin
+      WriteInteger(0); // ArchiveVersion 0
+      if Assigned(FManager) then
+         WriteString(FManager.GetNamePath)
+      else WriteString('');
+      WriteInteger(Integer(FShape));
+      WriteInteger(FLayer);
+      WriteBoolean(FSolid);
+      WriteBoolean(FActive);
+      WriteSingle(FFriction);
+      WriteSingle(FBounceFactor);
+      FSize.WriteToFiler(writer);
    end;
-   inherited Assign(Source);
 end;
 
-// SetManager
-//
-procedure TGLBDCEBody.SetManager(const val : TGLDCEManager);
+procedure TGLDCEStatic.ReadFromFiler(reader: TReader);
+var
+   archiveVersion : Integer;
+begin
+   with reader do begin
+      archiveVersion:=ReadInteger;
+      Assert(archiveVersion in [0]);
+      FManagerName:=ReadString;
+      Manager:=nil;
+      FShape := TDCEShape(ReadInteger);
+      FLayer := ReadInteger;
+      FSolid := ReadBoolean;
+      FActive := ReadBoolean;
+      FFriction := ReadSingle;
+      FBounceFactor := ReadSingle;
+      FSize.ReadFromFiler(reader);
+   end;
+end;
+
+procedure TGLDCEStatic.SetBounceFactor(const Value: Single);
+begin
+  FBounceFactor := Value;
+  if FBounceFactor < 0 then FBounceFactor := 0;
+  if FBounceFactor > 1 then FBounceFactor := 1;
+end;
+
+procedure TGLDCEStatic.SetFriction(const Value: Single);
+begin
+  FFriction := Value;
+  if FFriction < 0 then FFriction := 0;
+  if FFriction > 100 then FFriction := 100;
+end;
+
+procedure TGLDCEStatic.SetManager(const val: TGLDCEManager);
 begin
    if val<>FManager then begin
       if Assigned(FManager) then
-         FManager.DeRegisterClient(Self);
+         FManager.DeRegisterStatic(Self);
       if Assigned(val) then
-         val.RegisterClient(Self);
+         val.RegisterStatic(Self);
    end;
 end;
 
-procedure TGLBDCEBody.AddForce(NewForce: TAffineVector);
+procedure TGLDCEStatic.SetShape(const Value: TDCEShape);
 begin
-  AddVector(FForce,NewForce);
+  FShape := Value;
 end;
 
-procedure TGLBDCEBody.Jump(jHeight, jSpeed: Single);
+procedure TGLDCEStatic.SetSize(const Value: TGLCoordinates);
 begin
-  if (not FJumping) and (FInGround) then
-  begin
-    FJumpPos := OwnerBaseSceneObject.AbsolutePosition.Coord[1];
-    FJumpHeight := OwnerBaseSceneObject.AbsolutePosition.Coord[1] + jHeight;
-    FJumpForce := jSpeed;
-    FJumpSpeed.Coord[0] := 0;//jSpeed * FGroundBounce.Coord[0];
-    FJumpSpeed.Coord[1] := jSpeed * FGroundNormal.Coord[1];
-    FJumpSpeed.Coord[2] := 0;//jSpeed * FGroundBounce.Coord[2];
-    FJumping := True;
+  FSize.Assign(Value);
+  if FSize.X <= 0 then FSize.X := 0.1;
+  if FSize.Y <= 0 then FSize.Y := 0.1;
+  if FSize.Z <= 0 then FSize.Z := 0.1;
+end;
+
+{ TGLDCEDynamic }
+
+procedure TGLDCEDynamic.ApplyAccel(NewAccel: TAffineVector);
+begin
+  AddVector(FAccel, NewAccel);
+end;
+
+procedure TGLDCEDynamic.ApplyAccel(x,y,z: Single);
+begin
+  AddVector(FAccel, AffineVectorMake(x,y,z));
+end;
+
+procedure TGLDCEDynamic.ApplyAbsAccel(NewAccel: TAffineVector);
+begin
+  AddVector(FAbsAccel, NewAccel);
+end;
+
+procedure TGLDCEDynamic.ApplyAbsAccel(x,y,z: Single);
+begin
+  AddVector(FAbsAccel, AffineVectorMake(x,y,z));
+end;
+
+procedure TGLDCEDynamic.StopAccel;
+begin
+  SetVector(FAccel, NullVector);
+end;
+
+procedure TGLDCEDynamic.StopAbsAccel;
+begin
+  SetVector(FAbsAccel, NullVector);
+end;
+
+procedure TGLDCEDynamic.Assign(Source: TPersistent);
+begin
+  if Source is TGLDCEDynamic then begin
+    Manager:=TGLDCEDynamic(Source).Manager;
+    Active := TGLDCEDynamic(Source).Active;
+    UseGravity := TGLDCEDynamic(Source).UseGravity;
+    Layer := TGLDCEDynamic(Source).Layer;
+    Solid := TGLDCEDynamic(Source).Solid;
+    Size.Assign(TGLDCEDynamic(Source).Size);
+    Friction := TGLDCEDynamic(Source).Friction;
+    BounceFactor := TGLDCEDynamic(Source).BounceFactor;
+    SlideOrBounce := TGLDCEDynamic(Source).SlideOrBounce;
+    MaxRecursionDepth := TGLDCEDynamic(Source).MaxRecursionDepth;
   end;
+  inherited Assign(Source);
 end;
 
-procedure TGLBDCEBody.Move(Distance: TAffineVector; deltaTime: Double);
+constructor TGLDCEDynamic.Create(aOwner: TXCollection);
 begin
-  ScaleVector(Distance, deltaTime);
-  FManager.MoveByDistance(Self, Distance, deltaTime);
+  inherited Create(aOwner);
+  FActive := True;
+  FUseGravity := True;
+  FSize:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csVector);
+  FSolid := True;
+  FFriction := 1;
+  FBounceFactor := 0;
+  FMaxRecursionDepth := 5;  //gak:20041119
+  FSlideOrBounce := csbSlide; // gak:20041122
+  FInGround := False;
+
+  FAccel := NullVector;
+  FAbsAccel := NullVector;
+  FSpeed := NullVector;
+  FAbsSpeed := NullVector;
+  FGravSpeed := NullVector;
 end;
 
-procedure TGLBDCEBody.DoMove(deltaTime: Double);
-var Fat,fAvg: Single;
-    Distance: TAffineVector;
+destructor TGLDCEDynamic.Destroy;
 begin
-  FSpeed.Coord[0] := (FSpeed.Coord[0]) + (FForce.Coord[0] * deltaTime);
-  FSpeed.Coord[1] := (FSpeed.Coord[1]) + (FForce.Coord[1] * deltaTime);
-  FSpeed.Coord[2] := (FSpeed.Coord[2]) + (FForce.Coord[2] * deltaTime);
+  Manager:=nil;
+  FSize.Free;
+  inherited Destroy;
+end;
 
-  //Do jump according to the ground normal
+procedure TGLDCEDynamic.DoMove(deltaTime: Double);
+var fGround,fAir, G: Single;
+    v, deltaS, deltaAbsS: TAffineVector;
+
+    procedure Accel(var aSpeed: TAffineVector; aFric: Single; aForce: TAffineVector);
+    begin
+      ScaleVector(aForce, deltaTime);
+      ScaleVector(aSpeed, aFric);
+      aSpeed := VectorAdd(aForce, aSpeed);
+    end;
+
+begin
+
+  if (FSlideOrBounce = csbBounce) then
+    FAccel := RotateVectorByObject(OwnerBaseSceneObject, FAccel);
+
+  //Ground friction
+  fGround := 1 - deltaTime * FTotalFriction;
+  if fGround < 0 then fGround := 0;
+
+  //Air friction
+  fAir := 1 - deltaTime * FFriction;
+  if fAir < 0 then fAir := 0;
+
+  if FUseGravity and (not FInGround) then ScaleVector(FAccel,0.01);
+
+  //v = TIME * force + max(1-TIME*Friction,0) * v;
+  Accel(FSpeed, fGround, FAccel);
+  Accel(FAbsSpeed, fGround, FAbsAccel);
+  {FSpeed[0] := deltaTime * FAccel[0] + fGround * FSpeed[0];
+  FSpeed[1] := deltaTime * FAccel[1] + fGround * FSpeed[1];
+  FSpeed[2] := deltaTime * FAccel[2] + fGround * FSpeed[2];
+
+  FAbsSpeed[0] := deltaTime * FAbsAccel[0] + fGround * FAbsSpeed[0];
+  FAbsSpeed[1] := deltaTime * FAbsAccel[1] + fGround * FAbsSpeed[1];
+  FAbsSpeed[2] := deltaTime * FAbsAccel[2] + fGround * FAbsSpeed[2];}
+
+  if FUseGravity then
+  begin
+    //Calculate gravity acceleration
+
+    if FInGround then
+      G := FManager.Gravity * abs(1-VectorDotProduct(FGroundNormal,FManager.WorldDirection.AsAffineVector))
+    else G := FManager.Gravity;
+
+    if FJumping then G := 0;
+    v := VectorScale(FManager.WorldDirection.AsAffineVector,g);
+
+    Accel(FGravSpeed, fAir, v);
+    {FGravSpeed[0] := deltaTime * v[0] + fAir * FGravSpeed[0];
+    FGravSpeed[1] := deltaTime * v[1] + fAir * FGravSpeed[1];
+    FGravSpeed[2] := deltaTime * v[2] + fAir * FGravSpeed[2];}
+  end else
+    FGravSpeed := NullVector;
+
   if FJumping then
   begin
-    FJumpPos := FJumpPos + ((FJumpForce+FManager.Gravity.Y) * deltaTime);
-    FJumping := FJumpPos < FJumpHeight;
+    FJumpSpeed := FJumpForce;
+    FJumpHeight := FJumpHeight - (FJumpSpeed * deltaTime);
+    FJumping := FJumpHeight > 0;
+    if FJumping then FGravSpeed := NullVector
+    else begin
+      v := VectorScale(FManager.WorldDirection.AsAffineVector,FJumpSpeed);
+      AddVector(FGravSpeed, v);
+      FJumpForce := 0;
+      FJumpSpeed := 0;
+    end;
   end;
+  //s = s0 + vt (add relative speed)
+  if FSlideOrBounce = csbBounce then
+    deltaS := FSpeed
+  else
+    deltaS := RotateVectorByObject(OwnerBaseSceneObject, FSpeed);
+  //Add absolute speed
+  AddVector(deltaS, FAbsSpeed);
+  //Add jump speed
+  v := VectorScale(FManager.WorldDirection.AsAffineVector,FJumpSpeed);
+  AddVector(deltaS, v);
+  //The absolute space must be only the gravity so it can calculate when it is in the ground
+  deltaAbsS := FGravSpeed;
 
-  Distance := AddRotatedVector(OwnerBaseSceneObject, FSpeed);
-  //Add jump vector
-  AddVector(Distance,FJumpSpeed);
+  ScaleVector(deltaS,deltaTime);
+  ScaleVector(deltaAbsS,deltaTime);
 
-  ScaleVector(Distance,deltaTime);
+  //Returns the friction of all collided objects
+  FTotalFriction := FManager.MoveByDistance(Self, deltaS, deltaAbsS);
 
-  //Returns the friction average of all collided objects
-  fAvg := FManager.MoveByDistance(Self, Distance, deltaTime);
-
-  //Apply friction
-  if fAvg < 0 then fAvg := 0;
-  Fat := 1 - (deltaTime * fAvg);
-  if Fat < 0 then Fat := 0;
-  ScaleVector(FSpeed,Fat);
-  if not FJumping then ScaleVector(FJumpSpeed,Fat);
-
-  FForce := NullVector;
+  FAccel := NullVector;
+  FAbsAccel := NullVector;
 end;
 
-procedure TGLBDCEBody.DoProgress(const progressTime : TProgressTimes);
+procedure TGLDCEDynamic.DoProgress(const progressTime: TProgressTimes);
 begin
   inherited doProgress(progressTime);
   assert(assigned(manager), 'DCE Manager not assigned to behaviour.');
 
-  if not FActive then Exit;
-
-  if FDynamic then
-    DoMove(progressTime.deltaTime);
+  if (not FManager.ManualStep) and FActive then
+  begin
+    if progressTime.deltaTime > 0.1 then DoMove(0.1)
+    else DoMove(progressTime.deltaTime);
+  end;
 end;
 
-procedure TGLBDCEBody.SetSize(const Value: TGLCoordinates);
+class function TGLDCEDynamic.FriendlyDescription: String;
 begin
-  FSize := Value;
+  Result:='Dynamic Collision-detection registration';
 end;
 
-procedure TGLBDCEBody.SetDynamic(const Value: Boolean);
+class function TGLDCEDynamic.FriendlyName: String;
 begin
-  if not ((FShape <> csEllipsoid) and Value) then
-    FDynamic := Value;
+  Result:='DCE Dynamic Collider';
 end;
 
-procedure TGLBDCEBody.SetFriction(const Value: Single);
+procedure TGLDCEDynamic.Jump(jHeight, jSpeed: Single);
 begin
-  if Value >= 0 then FFriction := Value
-  else FFriction := 0;
+  if (not FJumping) and (FInGround)
+  and (VectorDotProduct(FGroundNormal,FManager.WorldDirection.AsAffineVector) > 0.5) then
+  begin
+    FJumpHeight := jHeight;
+    FJumpForce := jSpeed;
+    FJumpSpeed := FJumpForce;
+    FJumping := True;
+    FInGround := False;
+    AddVector(FAbsSpeed, RotateVectorByObject(OwnerBaseSceneObject, FSpeed));
+    FSpeed := NullVector;
+  end;
 end;
 
-procedure TGLBDCEBody.SetShape(const Value: TDCEShape);
+procedure TGLDCEDynamic.Loaded;
+var
+   mng : TComponent;
 begin
-  if not ((Value <> csEllipsoid) and FDynamic) then
-    FShape := Value;
-
+   inherited;
+   if FManagerName<>'' then begin
+      mng:=FindManager(TGLDCEManager, FManagerName);
+      if Assigned(mng) then
+         Manager:=TGLDCEManager(mng);
+      FManagerName:='';
+   end;
 end;
 
+procedure TGLDCEDynamic.Move(deltaS: TAffineVector; deltaTime: Double);
+begin
+  ScaleVector(deltaS, deltaTime);
+  FManager.MoveByDistance(Self, NullVector, deltaS);
+end;
+
+procedure TGLDCEDynamic.MoveTo(Position: TAffineVector; Amount: Single);
+begin
+  SubtractVector(Position, AffineVectorMake(OwnerBaseSceneObject.AbsolutePosition));
+
+  Move(position,Amount);
+end;
+
+procedure TGLDCEDynamic.WriteToFiler(writer: TWriter);
+begin
+   with writer do begin
+      WriteInteger(0); // ArchiveVersion 0
+      if Assigned(FManager) then
+         WriteString(FManager.GetNamePath)
+      else WriteString('');
+      WriteInteger(FLayer);
+      WriteBoolean(FSolid);
+      WriteBoolean(FActive);
+      WriteBoolean(FUseGravity);
+      WriteSingle(FFriction);
+      WriteSingle(FBounceFactor);
+      //gak:20041122 - start
+      writeinteger(FMaxRecursionDepth);
+      writeinteger(ord(FSlideOrBounce));
+      //gak:20041122 - end
+      FSize.WriteToFiler(writer);
+   end;
+end;
+
+procedure TGLDCEDynamic.ReadFromFiler(reader: TReader);
+var
+   archiveVersion : Integer;
+begin
+   with reader do begin
+      archiveVersion:=ReadInteger;
+      Assert(archiveVersion in [0]);
+      FManagerName:=ReadString;
+      Manager:=nil;
+      FLayer := ReadInteger;
+      FSolid := ReadBoolean;
+      FActive := ReadBoolean;
+      FUseGravity := ReadBoolean;
+      FFriction := ReadSingle;
+      FBounceFactor := ReadSingle;
+      //gak:20041122 - start
+      FMaxRecursionDepth := readinteger;
+      FSlideOrBounce := TDCESlideOrBounce(readinteger);
+      //gak:20041122 - end
+      FSize.ReadFromFiler(reader);
+   end;
+end;
+
+procedure TGLDCEDynamic.SetBounceFactor(const Value: Single);
+begin
+  FBounceFactor := Value;
+  if FBounceFactor < 0 then FBounceFactor := 0;
+  if FBounceFactor > 1 then FBounceFactor := 1;
+end;
+
+procedure TGLDCEDynamic.SetFriction(const Value: Single);
+begin
+  FFriction := Value;
+  if FFriction < 0 then FFriction := 0;
+  if FFriction > 100 then FFriction := 100;
+end;
+
+procedure TGLDCEDynamic.SetManager(const val: TGLDCEManager);
+begin
+   if val<>FManager then begin
+      if Assigned(FManager) then
+         FManager.DeRegisterDynamic(Self);
+      if Assigned(val) then
+         val.RegisterDynamic(Self);
+   end;
+end;
+
+procedure TGLDCEDynamic.SetSize(const Value: TGLCoordinates);
+begin
+  FSize.Assign(Value);
+  if FSize.X <= 0 then FSize.X := 0.1;
+  if FSize.Y <= 0 then FSize.Y := 0.1;
+  if FSize.Z <= 0 then FSize.Z := 0.1;
+end;
 
 // ----------------------------------------------------------------
-// ----------------------------------------------------------------
-// ----------------------------------------------------------------
 
-// GetOrCreateCollision (TGLBehaviours)
-//
-function GetOrCreateDCECollision(behaviours : TGLBehaviours) : TGLBDCEBody;
+function GetOrCreateDCEStatic(behaviours : TGLBehaviours) : TGLDCEStatic;
 var
 	i : Integer;
 begin
-	i:=behaviours.IndexOfClass(TGLBDCEBody);
+	i:=behaviours.IndexOfClass(TGLDCEStatic);
 	if i>=0 then
-		Result:=TGLBDCEBody(behaviours[i])
-	else Result:=TGLBDCEBody.Create(behaviours);
+		Result:=TGLDCEStatic(behaviours[i])
+	else Result:=TGLDCEStatic.Create(behaviours);
 end;
 
-// GetOrCreateCollision (TGLBaseSceneObject)
-//
-function GetOrCreateDCECollision(obj : TGLBaseSceneObject) : TGLBDCEBody;
+function GetOrCreateDCEStatic(obj : TGLBaseSceneObject) : TGLDCEStatic;
 begin
-	Result:=GetOrCreateDCECollision(obj.Behaviours);
+	Result:=GetOrCreateDCEStatic(obj.Behaviours);
+end;
+
+function GetOrCreateDCEDynamic(behaviours : TGLBehaviours) : TGLDCEDynamic;
+var
+	i : Integer;
+begin
+	i:=behaviours.IndexOfClass(TGLDCEDynamic);
+	if i>=0 then
+		Result:=TGLDCEDynamic(behaviours[i])
+	else Result:=TGLDCEDynamic.Create(behaviours);
+end;
+
+function GetOrCreateDCEDynamic(obj : TGLBaseSceneObject) : TGLDCEDynamic;
+begin
+	Result:=GetOrCreateDCEDynamic(obj.Behaviours);
 end;
 
 
 initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+
 // ------------------------------------------------------------------
 
 	// class registrations
-	RegisterXCollectionItemClass(TGLBDCEBody);
+	RegisterXCollectionItemClass(TGLDCEStatic);
+	RegisterXCollectionItemClass(TGLDCEDynamic);
 
 
 end.

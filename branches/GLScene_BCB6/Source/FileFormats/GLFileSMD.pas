@@ -134,7 +134,7 @@ begin
          raise Exception.Create('skeleton not found');
       Inc(i);
       // read animation time frames
-      nbBones:=Owner.Skeleton.RootBones.BoneCount;
+      nbBones:=Owner.Skeleton.RootBones.BoneCount-1;
       firstFrame:=Owner.Skeleton.Frames.Count;
       while sl[i]<>'end' do begin
          if Copy(sl[i], 1, 5)<>'time ' then
@@ -246,7 +246,10 @@ begin
             for j:=0 to Owner.Skeleton.Frames[i].Position.Count-1 do begin
                p:=Owner.Skeleton.Frames[i].Position[j];
                r:=Owner.Skeleton.Frames[i].Rotation[j];
-               str.Add(Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',[j,p.Coord[0],p.Coord[1],p.Coord[2],r.Coord[0],r.Coord[1],r.Coord[2]]));
+               str.Add(StringReplace(
+                 Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',
+                        [j,p.Coord[0],p.Coord[1],p.Coord[2],r.Coord[0],r.Coord[1],r.Coord[2]]),
+                 ',', '.', [rfReplaceAll]));
             end;
          end;
          str.Add('end');
@@ -267,8 +270,10 @@ begin
                      n:=Normals[NormalIndices[3*k+l]];
                      t:=TexCoords[TexCoordIndices[3*k+l]];
                      b:=VerticesBonesWeights[VertexIndices[3*k+l]][0].BoneID;
-                     str.Add(Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',
-                       [b,v.Coord[0],v.Coord[1],v.Coord[2],n.Coord[0],n.Coord[1],n.Coord[2],t.Coord[0],t.Coord[1]]));
+                     str.Add(StringReplace(
+                       Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',
+                              [b,v.Coord[0],v.Coord[1],v.Coord[2],n.Coord[0],n.Coord[1],n.Coord[2],t.Coord[0],t.Coord[1]]),
+                       ',', '.', [rfReplaceAll]));
                   end;
                end;
             end;

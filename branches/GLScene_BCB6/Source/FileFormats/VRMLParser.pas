@@ -6,6 +6,7 @@
    VRML file format parser.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>25/01/05 - SG - Added ShapeHints (creaseAngle), Normal and TexCoord support
       <li>14/01/05 - SG - Added to CVS
    </ul></font>
 }
@@ -101,6 +102,13 @@ type
       property Value : String read FValue write FValue;
   end;
 
+  TVRMLShapeHints = class (TVRMLNode)
+    private
+      FCreaseAngle : Single;
+    public
+      property CreaseAngle : Single read FCreaseAngle write FCreaseAngle;
+  end;
+
   TVRMLTransform = class (TVRMLNode)
     private
       FCenter : TVector3f;
@@ -134,10 +142,15 @@ type
       procedure ReadUnknown(unknown_token : String; defname : String = '');
       procedure ReadPointArray(defname : String = '');
       procedure ReadCoordIndexArray(defname : String = '');
+      procedure ReadNormalIndexArray(defname : String = '');
+      procedure ReadTextureCoordIndexArray(defname : String = '');
       procedure ReadCoordinate3(defname : String = '');
+      procedure ReadNormal(defname : String = '');
+      procedure ReadTextureCoordinate2(defname : String = '');
       procedure ReadMaterial(defname : String = '');
       procedure ReadIndexedFaceSet(defname : String = '');
       procedure ReadTransform(defname : String = '');
+      procedure ReadShapeHints(defname : String = '');
       procedure ReadSeparator(defname : String = '');
       procedure ReadGroup(defname : String = '');
       procedure ReadDef;
@@ -155,6 +168,48 @@ type
   end;
 
 implementation
+
+function CreateVRMLTokenList(Text : String) : TStringList;
+const
+  cSymbols : array[0..3] of char = ( '{','}','[',']' );
+var
+  i,j,p : Integer;
+  str, token : String;
+begin
+  Result:=TStringList.Create;
+
+  Result.Text:=Text;
+  for i:=0 to Result.Count-1 do begin
+    p:=Pos('#', Result[i]);
+    if p>0 then
+      Result[i]:=Copy(Result[i], 1, p-1);
+  end;
+
+  Result.CommaText:=Result.Text;
+  for j:=0 to Length(cSymbols)-1 do begin
+    i:=0;
+    repeat
+      token:=Result[i];
+      p:=Pos(cSymbols[j], token);
+      if (p>0) and (token<>cSymbols[j]) then begin
+        str:=Copy(token, p+1, Length(token)-p);
+
+        if (p = 1) then begin
+          Result.Delete(i);
+          Result.Insert(i, trim(str));
+          Result.Insert(i, cSymbols[j]);
+        end else begin
+          Result.Delete(i);
+          if Length(str)>0 then
+            Result.Insert(i, trim(str));
+          Result.Insert(i, cSymbols[j]);
+          Result.Insert(i, trim(Copy(token, 1, p-1)));
+        end;
+      end;
+      Inc(i);
+    until i >= Result.Count-1;
+  end;
+end;
 
 // ---------------
 // --------------- TVRMLNode ---------------
@@ -307,9 +362,9 @@ end;
 constructor TVRMLTransform.Create;
 begin
   inherited;
-  FScaleFactor[0]:=1;
-  FScaleFactor[1]:=1;
-  FScaleFactor[2]:=1;
+  FScaleFactor.Coord[0]:=1;
+  FScaleFactor.Coord[1]:=1;
+  FScaleFactor.Coord[2]:=1;
 end;
 
 
@@ -411,19 +466,19 @@ end;
 //
 function TVRMLParser.ReadVector3f : TVector3f;
 begin
-  Result[0]:=ReadSingle;
-  Result[1]:=ReadSingle;
-  Result[2]:=ReadSingle;
+  Result.Coord[0]:=ReadSingle;
+  Result.Coord[1]:=ReadSingle;
+  Result.Coord[2]:=ReadSingle;
 end;
 
 // ReadVector4f
 //
 function TVRMLParser.ReadVector4f : TVector4f;
 begin
-  Result[0]:=ReadSingle;
-  Result[1]:=ReadSingle;
-  Result[2]:=ReadSingle;
-  Result[3]:=ReadSingle;
+  Result.Coord[0]:=ReadSingle;
+  Result.Coord[1]:=ReadSingle;
+  Result.Coord[2]:=ReadSingle;
+  Result.Coord[3]:=ReadSingle;
 end;
 
 // ReadPointArray
@@ -459,6 +514,58 @@ var
 begin
   FCurrentNode:=TVRMLIntegerArray.CreateOwned(FCurrentNode);
   FCurrentNode.Name:='CoordIndexArray';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '[';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token <> ']' then
+      TVRMLIntegerArray(FCurrentNode).Values.Add(StrToInt(token));
+  until token = ']';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
+// ReadNormalIndexArray
+//
+procedure TVRMLParser.ReadNormalIndexArray(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLIntegerArray.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='NormalIndexArray';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '[';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token <> ']' then
+      TVRMLIntegerArray(FCurrentNode).Values.Add(StrToInt(token));
+  until token = ']';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
+// ReadTextureCoordIndexArray
+//
+procedure TVRMLParser.ReadTextureCoordIndexArray(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLIntegerArray.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='TextureCoordIndexArray';
   FCurrentNode.DefName:=defname;
 
   repeat
@@ -551,6 +658,62 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
+// ReadNormal
+//
+procedure TVRMLParser.ReadNormal(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLNode.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='Normal';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '{';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token = 'vector' then
+      ReadPointArray
+    else if token<>'}' then
+      ReadUnknown(token);
+  until token = '}';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
+// ReadTextureCoordinate2
+//
+procedure TVRMLParser.ReadTextureCoordinate2(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLNode.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='TextureCoordinate2';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '{';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token = 'point' then
+      ReadPointArray
+    else if token<>'}' then
+      ReadUnknown(token);
+  until token = '}';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
 // ReadIndexedFaceSet
 //
 procedure TVRMLParser.ReadIndexedFaceSet(defname : String = '');
@@ -572,6 +735,10 @@ begin
       exit
     else if token = 'coordindex' then
       ReadCoordIndexArray
+    else if token = 'normalindex' then
+      ReadNormalIndexArray
+    else if token = 'texturecoordindex' then
+      ReadTextureCoordIndexArray
     else if token<>'}' then
       ReadUnknown(token);
   until token = '}';
@@ -613,6 +780,34 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
+// ReadShapeHints
+//
+procedure TVRMLParser.ReadShapeHints(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLShapeHints.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='ShapeHints';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '{';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token = 'creaseangle' then
+      TVRMLShapeHints(FCurrentNode).CreaseAngle:=ReadSingle
+    else if token<>'}' then
+      ReadUnknown(token);
+  until token = '}';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
 // ReadSeparator
 //
 procedure TVRMLParser.ReadSeparator(defname : String = '');
@@ -634,18 +829,24 @@ begin
       exit
     else if token = 'def' then
       ReadDef
-    else if token = 'group' then
+    else if (token = 'group') or (token = 'switch') then
       ReadGroup
     else if token = 'separator' then
       ReadSeparator
     else if token = 'use' then
       ReadUse
+    else if token = 'shapehints' then
+      ReadShapeHints
     else if token = 'transform' then
       ReadTransform
     else if token = 'material' then
       ReadMaterial
     else if token = 'coordinate3' then
       ReadCoordinate3
+    else if token = 'normal' then
+      ReadNormal
+    else if token = 'texturecoordinate2' then
+      ReadTextureCoordinate2
     else if token = 'indexedfaceset' then
       ReadIndexedFaceSet
     else if token<>'}' then
@@ -676,12 +877,14 @@ begin
       exit
     else if token = 'def' then
       ReadDef
-    else if token = 'group' then
+    else if (token = 'group') or (token = 'switch') then
       ReadGroup
     else if token = 'separator' then
       ReadSeparator
     else if token = 'use' then
       ReadUse
+    else if token = 'shapehints' then
+      ReadShapeHints
     else if token = 'transform' then
       ReadTransform
     else if token = 'material' then
@@ -705,7 +908,7 @@ var
 begin
   defname:=ReadToken;
   token:=ReadToken;
-  if token = 'group' then
+  if (token = 'group') or (token = 'switch') then
     ReadGroup(defname)
   else if token = 'separator' then
     ReadSeparator(defname)
@@ -737,8 +940,7 @@ procedure TVRMLParser.Parse(Text : String);
 var
   token : String;
 begin
-  FTokens:=TStringList.Create;
-  FTokens.CommaText:=Text;
+  FTokens:=CreateVRMLTokenList(Text);
   FCursor:=0;
   FCurrentNode:=FRootNode;
   try
@@ -746,12 +948,14 @@ begin
       token:=ReadToken;
       if token = 'def' then
         ReadDef
-      else if token = 'group' then
+      else if (token = 'group') or (token = 'switch') then
         ReadGroup
       else if token = 'separator' then
         ReadSeparator
       else if token = 'use' then
         ReadUse
+      else if token = 'shapehints' then
+        ReadShapeHints
       else if token = 'transform' then
         ReadTransform
       else if token = 'material' then

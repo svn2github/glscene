@@ -150,7 +150,8 @@ uses
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
-   GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin, GLScriptBase,
+   GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin, GLLinePFX,
+   GLScriptBase,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1768,7 +1769,7 @@ begin
                        TGLCustomPFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLCustomSpritePFXManager,
-                       TGLPerlinPFXManager,
+                       TGLPerlinPFXManager, TGLLinePFXManager,
                        TGLFireFXManager, TGLThorFXManager
                       ]);
 

@@ -26,7 +26,7 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 
   t = StartPrecisionTimer();
 
-  FreeForm1->BuildOctree();
+  FreeForm1->BuildOctree(3);
 
   LABuild->Caption =
     Format("Build time: %.3f ms", ARRAYOFCONST((StopPrecisionTimer(t) * 1000)));
