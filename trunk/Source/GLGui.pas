@@ -169,6 +169,7 @@ End;
 Destructor  TGLGuiLayout.Destroy;
 
 Begin
+  Clear;
   FGuiComponentList.Free;
   inherited;
 End;
