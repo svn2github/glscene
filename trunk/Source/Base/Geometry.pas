@@ -670,6 +670,8 @@ function VectorIsNull(const v : TVector) : Boolean; overload;
 //: True if x=y=z=0, w ignored
 function VectorIsNull(const v : TAffineVector) : Boolean; overload;
 
+{: Calculates Abs(v1[x]-v2[x])+Abs(v1[y]-v2[y]), also know as "Norm1".<p> }
+function VectorSpacing(const v1, v2 : TTexPoint): Single; overload;
 {: Calculates Abs(v1[x]-v2[x])+Abs(v1[y]-v2[y])+..., also know as "Norm1".<p> }
 function VectorSpacing(const v1, v2 : TAffineVector): Single; overload;
 {: Calculates Abs(v1[x]-v2[x])+Abs(v1[y]-v2[y])+..., also know as "Norm1".<p> }
@@ -3843,6 +3845,22 @@ end;
 function VectorIsNull(const v : TAffineVector) : Boolean; overload;
 begin
    Result:=((v[0]=0) and (v[1]=0) and (v[2]=0));
+end;
+
+// VectorSpacing (texpoint)
+//
+function VectorSpacing(const v1, v2 : TTexPoint): Single; overload;
+// EAX contains address of v1
+// EDX contains highest of v2
+// Result  is passed on the stack
+asm
+      FLD  DWORD PTR [EAX]
+      FSUB DWORD PTR [EDX]
+      FABS
+      FLD  DWORD PTR [EAX+4]
+      FSUB DWORD PTR [EDX+4]
+      FABS
+      FADD
 end;
 
 // VectorSpacing (affine)
