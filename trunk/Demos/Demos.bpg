@@ -17,7 +17,7 @@ PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe \
   expolygon.exe keymap.exe objmove.exe splines.exe customquad.exe PathControl.exe \
   Multitexture.exe texformat.exe terrain.exe Recorder.exe bmpfont.exe boom.exe \
   candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering.exe \
-  warping.exe raycast.exe memviewer.exe
+  warping.exe raycast.exe memviewer.exe volcano.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -167,4 +167,7 @@ raycast.exe: collisions\raycast\raycast.dpr
   $(DCC)
 
 memviewer.exe: rendering\memviewer\memviewer.dpr
+  $(DCC)
+
+volcano.exe: bench\volcano\volcano.dpr
   $(DCC)
