@@ -2,26 +2,28 @@
 
    Handles all the color and texture stuff.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>31/06/03 - EG - Cosmetic changes, form position/state now saved to the
+                          registry 
       <li>21/06/03 - DanB - Added behaviours/effects listviews
-      <li>22/01/02 - Egg - Fixed controls state after drag/drop (Anton Zhuchkov)
-      <li>06/08/00 - Egg - Added basic Clipboard support
-      <li>14/05/00 - Egg - Added workaround for VCL DesignInfo bug (thx Nelson Chu)
-      <li>28/04/00 - Egg - Fixed new objects not being immediately reco by IDE
-      <li>26/04/00 - Egg - Added support for objects categories
-		<li>17/04/00 - Egg - Added access to TInfoForm
-		<li>16/04/00 - Egg - Fixed occasionnal crash when rebuilding GLScene dpk
+      <li>22/01/02 - EG - Fixed controls state after drag/drop (Anton Zhuchkov)
+      <li>06/08/00 - EG - Added basic Clipboard support
+      <li>14/05/00 - EG - Added workaround for VCL DesignInfo bug (thx Nelson Chu)
+      <li>28/04/00 - EG - Fixed new objects not being immediately reco by IDE
+      <li>26/04/00 - EG - Added support for objects categories
+		<li>17/04/00 - EG - Added access to TInfoForm
+		<li>16/04/00 - EG - Fixed occasionnal crash when rebuilding GLScene dpk
 									while GLSceneEdit is visible
-      <li>10/04/00 - Egg - Minor Create/Release change
-      <li>24/03/00 - Egg - Fixed SetScene not updating enablings
-		<li>13/03/00 - Egg - Object names (ie. node text) is now properly adjusted
+      <li>10/04/00 - EG - Minor Create/Release change
+      <li>24/03/00 - EG - Fixed SetScene not updating enablings
+		<li>13/03/00 - EG - Object names (ie. node text) is now properly adjusted
 									when a GLScene object is renamed,
 									Added Load/Save whole scene
-      <li>07/02/00 - Egg - Fixed notification logic
-      <li>06/02/00 - Egg - DragDrop now starts after moving the mouse a little,
+      <li>07/02/00 - EG - Fixed notification logic
+      <li>06/02/00 - EG - DragDrop now starts after moving the mouse a little,
                            Form is now auto-creating, fixed Notification,
                            Added actionlist and moveUp/moveDown
-      <li>05/02/00 - Egg - Fixed DragDrop, added root nodes auto-expansion
+      <li>05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
    </ul></font>
 }
 unit GLSceneEdit;
@@ -32,7 +34,7 @@ interface
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 uses
-   XCollection,
+   XCollection, Registry,
    {$IFDEF GLS_CLX}
    QDialogs, QImgList, QActnList, QForms, QMenus, QTypes, QComCtrls, QControls, Types,
    {$ELSE}
@@ -81,7 +83,6 @@ type
     ToolButton2: TToolButton;
     ToolButton8: TToolButton;
     ToolButton9: TToolButton;
-    ToolButton10: TToolButton;
     ToolButton11: TToolButton;
     ACInfo: TAction;
     ACCopy: TAction;
@@ -93,13 +94,12 @@ type
     ToolButton12: TToolButton;
     ToolButton13: TToolButton;
     ToolButton14: TToolButton;
-    Panel1: TPanel;
+    PABehaviours: TPanel;
     BehavioursListView: TListView;
     Splitter3: TSplitter;
     EffectsListView: TListView;
-    Splitter1: TSplitter;
+    Splitter: TSplitter;
     PMBehavioursToolbar: TPopupMenu;
-    ToolButton17: TToolButton;
     ACAddBehaviour: TAction;
     MIAddBehaviour: TMenuItem;
     MIAddEffect: TMenuItem;
@@ -117,7 +117,7 @@ type
     ToolBar1: TToolBar;
     TBAddBehaviours: TToolButton;
     TBAddEffects: TToolButton;
-    ToolButton15: TToolButton;
+    TBEffectsPanel: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
@@ -150,7 +150,7 @@ type
       Item: TListItem; Selected: Boolean);
     procedure ACAddEffectExecute(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
-    procedure ToolButton15Click(Sender: TObject);
+    procedure TBEffectsPanelClick(Sender: TObject);
 
   private
     FSelectedItems:Integer; //
@@ -205,6 +205,9 @@ uses GLSceneRegister, GLStrings, Info, OpenGL12, ClipBrd, GLWin32Viewer;
 resourcestring
    cGLSceneEditor = 'GLScene Editor';
 
+const
+   cRegistryKey = 'Software/GLScene.org/GLSceneEdit';
+
 var
 	vGLSceneEditorForm : TGLSceneEditorForm;
 
@@ -221,6 +224,14 @@ begin
 		vGLSceneEditorForm.Free;
       vGLSceneEditorForm:=nil;
    end;
+end;
+
+function ReadRegistryInteger(reg : TRegistry; const name : String;
+                             defaultValue : Integer) : Integer;
+begin
+   if reg.ValueExists(name) then
+      Result:=reg.ReadInteger(name)
+   else Result:=defaultValue;
 end;
 
 // FindNodeByData
@@ -315,6 +326,7 @@ end;
 procedure TGLSceneEditorForm.FormCreate(Sender: TObject);
 var
    CurrentNode: TTreeNode;
+   reg : TRegistry;
 begin
 	RegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
    Tree.Images:=ObjectManager.ObjectIcons;
@@ -352,13 +364,42 @@ begin
    SetEffectsSubItems(MIAddEffect,nil);
    SetEffectsSubItems(PMEffectsToolBar.Items,nil);
 
+   reg:=TRegistry.Create;
+   try
+      if reg.OpenKey(cRegistryKey, True) then begin
+         if reg.ValueExists('EffectsPanel') then
+            TBEffectsPanel.Down:=reg.ReadBool('EffectsPanel');
+         TBEffectsPanelClick(Self);
+         Left:=ReadRegistryInteger(reg, 'Left', Left);
+         Top:=ReadRegistryInteger(reg, 'Top', Top);
+         Width:=ReadRegistryInteger(reg, 'Width', Width);
+         Height:=ReadRegistryInteger(reg, 'Height', Height);
+      end;
+   finally
+      reg.Free;
+   end;
 end;
 
 // FormDestroy
 //
 procedure TGLSceneEditorForm.FormDestroy(Sender: TObject);
+var
+   reg : TRegistry;
 begin
 	DeRegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
+
+   reg:=TRegistry.Create;
+   try
+      if reg.OpenKey(cRegistryKey, True) then begin
+         reg.WriteBool('EffectsPanel', TBEffectsPanel.Down);
+         reg.WriteInteger('Left', Left);
+         reg.WriteInteger('Top', Top);
+         reg.WriteInteger('Width', Width);
+         reg.WriteInteger('Height', Height);
+      end;
+   finally
+      reg.Free;
+   end;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1287,9 +1328,13 @@ begin
    end;
 end;
 
-procedure TGLSceneEditorForm.ToolButton15Click(Sender: TObject);
+procedure TGLSceneEditorForm.TBEffectsPanelClick(Sender: TObject);
 begin
-  Panel1.Visible:= not Panel1.Visible;
+   PABehaviours.Visible:=TBEffectsPanel.Down;
+   Splitter.Visible:=TBEffectsPanel.Down;
+   if PABehaviours.Visible then
+      Width:=Width+PABehaviours.Width
+   else Width:=Width-PABehaviours.Width;
 end;
 
 initialization
