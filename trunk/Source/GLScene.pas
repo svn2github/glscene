@@ -595,6 +595,7 @@ type
                                   var rci : TRenderContextInfo); virtual;
 
          procedure StructureChanged; dynamic;
+
          //: Recalculate an orthonormal system
          procedure CoordinateChanged(Sender: TGLCoordinates); virtual;
          procedure TransformationChanged;
@@ -607,7 +608,7 @@ type
          property TransformationMode: TTransformationMode read FTransMode write FTransMode default tmLocal;
 
          property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
-         property Changes: TObjectChanges read FChanges write FChanges;
+         property Changes: TObjectChanges read FChanges;
          property Parent: TGLBaseSceneObject read FParent write SetParent;
          property Position: TGLCoordinates read FPosition write SetPosition;
          property Direction: TGLCoordinates read FDirection write SetDirection;
@@ -621,6 +622,7 @@ type
          property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
          property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
          property RecursiveVisible : Boolean read FRecursiveVisible;
+         
       published
          { Published Declarations }
          property TagFloat: Single read FTagFloat write FTagFloat;
