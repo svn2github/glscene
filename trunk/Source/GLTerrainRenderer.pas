@@ -81,12 +81,11 @@ type
          {: Interpolates height for the given point.<p>
             Expects a point expressed in absolute coordinates. }
          function InterpolatedHeight(const p : TVector) : Single; virtual;
-
+         {: Triangle count for the last render. }
          property LastTriangleCount : Integer read FLastTriangleCount;
 
 	   published
 	      { Published Declarations }
-
          {: Specifies the HeightData provider component. }
          property HeightDataSource : THeightDataSource read FHeightDataSource write SetHeightDataSource;
          {: Size of the terrain tiles.<p>
@@ -273,15 +272,15 @@ begin
    // first project eye position into heightdata coordinates
    vEye:=VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
    SetVector(observer, vEye);
-   vEye[0]:=Round(vEye[0]/TileSize-0.5)*TileSize+TileSize*0.5;
-   vEye[1]:=Round(vEye[1]/TileSize-0.5)*TileSize+TileSize*0.5;
+   vEye[0]:=Round(vEye[0]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
+   vEye[1]:=Round(vEye[1]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
    tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(256*Scale.Z))*1.3;
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
    delta:=TileSize;
    tilePos[2]:=0;
    f:=(rci.rcci.farClippingDistance+tileRadius)/Scale.X;
-   f:=Round(f/TileSize+1.0)*TileSize;
+   f:=Round(f*FinvTileSize+1.0)*TileSize;
    maxTilePosX:=vEye[0]+f;
    texFactor:=1/(TilesPerTexture*TileSize);
    rcci:=rci.rcci;
@@ -312,6 +311,7 @@ begin
    prevRow:=TList.Create;
 
    MarkAllTilesAsUnused;
+   AbsoluteMatrix; // makes sure it is available
 
    tilePos[1]:=vEye[1]-f;
    while tilePos[1]<=vEye[1]+f do begin
@@ -334,6 +334,7 @@ begin
                if prevRow.Count>n then
                   if (prevRow.List[n]<>nil) then
                      patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
+
                prevPatch:=patch;
                rowList.Add(patch);
 
@@ -404,10 +405,15 @@ end;
 //
 procedure TTerrainRenderer.MarkAllTilesAsUnused;
 var
-   i, j : Integer;
+   i, j, zero : Integer;
+   pList : PPointerList;
 begin
-   for i:=Low(FTilesHash) to High(FTilesHash) do with FTilesHash[i] do
-      for j:=Count-1 downto 0 do THeightData(List[j]).Tag:=0;
+   for i:=Low(FTilesHash) to High(FTilesHash) do with FTilesHash[i] do begin
+      pList:=List;
+      zero:=0;
+      for j:=Count-1 downto 0 do
+         THeightData(pList[j]).Tag:=zero;
+   end;
 end;
 
 // ReleaseAllUnusedTiles
@@ -415,13 +421,19 @@ end;
 procedure TTerrainRenderer.ReleaseAllUnusedTiles;
 var
    i, j : Integer;
+   hashList : TList;
+   hd : THeightData;
 begin
-   for i:=Low(FTilesHash) to High(FTilesHash) do with FTilesHash[i] do
-      for j:=Count-1 downto 0 do with THeightData(List[j]) do
-         if Tag=0 then begin
-            Delete(j);
-            Release;
+   for i:=Low(FTilesHash) to High(FTilesHash) do begin
+      hashList:=FTilesHash[i];
+      for j:=hashList.Count-1 downto 0 do begin
+         hd:=THeightData(hashList.List[j]);
+         if hd.Tag=0 then begin
+            hashList.Delete(j);
+            hd.Release;
          end;
+      end;
+   end;
 end;
 
 // MarkHashedTileAsUsed
@@ -440,8 +452,8 @@ function TTerrainRenderer.HashedTile(const tilePos : TAffineVector; canAllocate 
 var
    xLeft, yTop : Integer;
 begin
-   xLeft:=Round(tilePos[0]/(TileSize)-0.5)*(TileSize);
-   yTop:=Round(tilePos[1]/(TileSize)-0.5)*(TileSize);
+   xLeft:=Round(tilePos[0]*FinvTileSize-0.5)*(TileSize);
+   yTop:=Round(tilePos[1]*FinvTileSize-0.5)*(TileSize);
    Result:=HashedTile(xLeft, yTop, canAllocate);
 end;
 
@@ -451,29 +463,30 @@ function TTerrainRenderer.HashedTile(const xLeft, yTop : Integer; canAllocate : 
 var
    i, hash : Integer;
    hd : THeightData;
+   hashList : TList;
+   pList : PPointerList;
 begin
    // is the tile already in our list?
    hash:=( xLeft+(xLeft shr 8)+(xLeft shr 16)
           +yTop+(yTop shr 8)+(yTop shr 16)) and 255;
-   Result:=nil;
-   with FTilesHash[hash] do begin
-      for i:=0 to Count-1 do begin
-         hd:=THeightData(List[i]);
-         if (hd.XLeft=xLeft) and (hd.YTop=yTop) then begin
-            Result:=hd;
-            Break;
-         end;
+   hashList:=FTilesHash[hash];
+   pList:=hashList.List;
+   for i:=hashList.Count-1 downto 0 do begin
+      hd:=THeightData(pList[i]);
+      if (hd.XLeft=xLeft) and (hd.YTop=yTop) then begin
+         Result:=hd;
+         Exit;
       end;
    end;
    // if not, request it
-   if canAllocate and (not Assigned(Result)) then begin
+   if canAllocate then begin
       Result:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtByte);
       Result.RegisterUse;
       Result.OnDestroy:=OnTileDestroyed;
       if Result.DataState<>hdsNone then
          Result.DataType:=hdtSmallInt;
       FTilesHash[hash].Add(Result);
-   end;
+   end else Result:=nil;
 end;
 
 // GetPreparedPatch
