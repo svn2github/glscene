@@ -1,4 +1,4 @@
-package GL_SDL5;
+package GLS_SDL5;
 
 {$R *.res}
 {$R '..\Source\GameAPIs\SDLWindow.dcr'}
