@@ -632,6 +632,7 @@ type
 	TGLPicFileImage = class(TGLPictureImage)
 		private
 			FPictureFileName : String;
+         FAlreadyWarnedAboutMissingFile : Boolean;
 
 		protected
 			procedure SetPictureFileName(const val : String);
@@ -2451,6 +2452,7 @@ procedure TGLPicFileImage.SetPictureFileName(const val : String);
 begin
 	if val<>FPictureFileName then begin
 		FPictureFileName:=val;
+      FAlreadyWarnedAboutMissingFile:=False;
 		Invalidate;
 	end;
 end;
@@ -2484,9 +2486,11 @@ begin
          if FileExists(buf) then
    			Picture.LoadFromFile(buf)
          else begin
-            FPictureFileName:='';
             Picture.Graphic:=nil;
-            Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
+            if not FAlreadyWarnedAboutMissingFile then begin
+               FAlreadyWarnedAboutMissingFile:=True;
+               Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
+            end;
          end;
          Result:=inherited GetBitmap32(target);
          Picture.Graphic:=nil;
