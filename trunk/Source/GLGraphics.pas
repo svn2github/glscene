@@ -183,6 +183,7 @@ type
          procedure DrawPixels(const x, y : Single);
 	end;
 
+procedure BGR24ToRGB24(src, dest : Pointer; pixelCount : Integer);
 procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
 procedure RGB24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
 procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer);
@@ -190,7 +191,7 @@ procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer);
 procedure GammaCorrectRGBArray(base : Pointer; pixelCount : Integer;
                                gamma : Single);
 procedure BrightenRGBArray(base : Pointer; pixelCount : Integer;
-                           percent : Single);
+                           factor : Single);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -221,27 +222,44 @@ begin
    for i:=0 to 255 do
       vGammaLUT[i]:=Round(255*Power(i*(1/255), InvGamma));
    // perform correction
-   for i:=Integer(base) to Integer(base)+(pixelCount-1)*3 do
+   for i:=Integer(base) to Integer(base)+pixelCount*3-1 do
       PByte(i)^:=vGammaLUT[PByte(i)^];
 end;
 
 // BrightenRGBArray
 //
 procedure BrightenRGBArray(base : Pointer; pixelCount : Integer;
-                           percent : Single);
+                           factor : Single);
 type
    PByte = ^Byte;
 var
    vBrightnessLUT : array [0..255] of Byte;
-   i : Integer;
+   i, k : Integer;
 begin
-   Assert((percent>=0) and (percent<=100));
+   Assert(factor>=0);
    // build LUT
-   for i:=0 to 255 do
-      vBrightnessLUT[i]:=Round((255*percent+i*(100-percent))*0.01);
+   for i:=0 to 255 do begin
+      k:=Round(factor*i);
+      if k>255 then k:=255;
+      vBrightnessLUT[i]:=k;
+   end;
    // perform correction
-   for i:=Integer(base) to Integer(base)+(pixelCount-1)*3 do
+   for i:=Integer(base) to Integer(base)+pixelCount*3-1 do
       PByte(i)^:=vBrightnessLUT[PByte(i)^];
+end;
+
+// BGR24ToRGB24
+//
+procedure BGR24ToRGB24(src, dest : Pointer; pixelCount : Integer); register;
+begin
+   while pixelCount>0 do begin
+      PChar(dest)[0]:=PChar(src)[2];
+      PChar(dest)[1]:=PChar(src)[1];
+      PChar(dest)[2]:=PChar(src)[0];
+      dest:=Pointer(Integer(dest)+3);
+      src:=Pointer(Integer(src)+3);
+      Dec(pixelCount);
+   end;
 end;
 
 // BGR24ToRGBA32
