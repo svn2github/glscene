@@ -1585,6 +1585,11 @@ procedure RegisterVectorFileFormat(const aExtension, aDescription: String;
                                    aClass : TVectorFileClass);
 procedure UnregisterVectorFileClass(aClass : TVectorFileClass);
 
+
+var
+   vGLVectorFileObjectsAllocateMaterials : boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
+
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -4928,7 +4933,7 @@ begin
          // now go for each material group
          // if there's no face to material assignment then just copy the
          // face definitions and rely on the default texture of the scene object
-         if NMats = 0 then begin
+         if (NMats = 0) or (not vGLVectorFileObjectsAllocateMaterials) then begin
             aFaceGroup:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
             with aFaceGroup do begin
                MaterialName:='';
