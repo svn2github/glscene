@@ -8,9 +8,10 @@
       <li>sound cones
    </ul><p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>13/01/01 - Egg - Updated for API 3.3 compatibility
-	   <li>09/06/00 - Egg - Creation
+	<b>History : </b><font size=-1><ul>
+      <li>05/02/02 - EG - Updated to FMOD 3.4, now uses DSound by default
+      <li>13/01/01 - EG - Updated for API 3.3 compatibility
+	   <li>09/06/00 - EG - Creation
 	</ul></font>
 }
 unit GLSMFMOD;
@@ -108,7 +109,7 @@ end;
 //
 function TGLSMFMOD.DoActivate : Boolean;
 begin
-   if not FSOUND_SetOutput(FSOUND_OUTPUT_WINMM) then Assert(False);
+   if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then Assert(False);
    if not FSOUND_SetDriver(0) then Assert(False);
    if not FSOUND_Init(OutputFrequency, MaxChannels, 0) then Assert(False);
    Result:=True;

@@ -1380,6 +1380,7 @@ end;
 //
 procedure TGLSoundManager.DoProgress(const progressTime : TProgressTimes);
 begin
+   if not Active then Exit; 
    with progressTime do if newTime-FLastUpdateTime>1/FUpdateFrequency then begin
       FLastDeltaTime:=newTime-FLastUpdateTime;
       FLastUpdateTime:=newTime;

@@ -1,7 +1,7 @@
 ====================================================
 FMOD Sound/Music API for Windows 95/98/NT
-VERSION 3.2
-Copyright (c) FireLight Multimedia 1999-2000
+VERSION 3.4
+Copyright (c) FireLight Multimedia 1999-2002
 See http://www.fmod.org for more information
 ====================================================
 
