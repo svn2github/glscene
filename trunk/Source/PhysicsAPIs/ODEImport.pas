@@ -22,7 +22,7 @@
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.7.1                                        *
+ * ODE Delphi Import unit : 0.7.2                                        *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -78,8 +78,9 @@
   2003.02.01 Christophe removed dGeomGroup and all it's procedures / functions
     due to deprecation
   2003.02.11 John Villar added syntax enforcement on some enumerated types
-  2003.06.10 MAttias Fagerlund removed GeomTransformGroup as they're not in
+  2003.06.10 Mattias Fagerlund removed GeomTransformGroup as they're not in
     the DLL.
+  2003.06.12 Mattias Fagerlund fixed Single support, which was slightly broken
  }
 
 unit ODEImport;
@@ -113,7 +114,13 @@ type
   //   Determine what precision your dll uses!
   //   COULD BE SINGLE _OR_ DOUBLE - DEPENDS ON COMPILE!
   // typedef double dReal;
+  {define cSINGLE} // Add a "$" before "define" to make DelphiODE single based
+
+  {$ifdef cSINGLE}
+  TdReal = single;
+  {$else}
   TdReal = double;
+  {$endif}
   PdReal = ^TdReal;
 
   // Pointers to internal ODE structures. These I haven't been able to reproduce
@@ -126,7 +133,8 @@ type
   PdRealArray = ^TdRealArray;
 
   // typedef dReal dVector3[4];
-  // This is very strange, why isn't TdVector3 = array[0..2] of TdReal?
+  // Q: Why isn't TdVector3 = array[0..2] of TdReal?
+  // A: Because of SIMD alignment.
   TdVector3 = array[0..3] of TdReal;
   PdVector3 = ^TdVector3;
 
@@ -239,6 +247,10 @@ struct dObject : public dBase {
   PdxBody = ^TdxBody;
   TdxBody = record
     BaseObject : TdObject;
+
+    {$ifdef cSINGLE}
+    Padding : byte;
+    {$endif}
 
     firstjoint : TdJointID;	// list of attached joints
     flags : integer;			  // some dxBodyFlagXXX flags
@@ -621,6 +633,13 @@ struct dxHashSpace : public dxSpace {
 
   TdxGeom = record // a dGeomID is a pointer to this
     _class : PdxGeomClass;	// class of this object
+
+    {$ifdef cSINGLE}
+    Padding : array [0..4] of byte;
+    {$else}
+    Padding : array [0..2] of pointer;
+    {$endif}
+
     data : pointer;		// user data pointer
     Body : PdxBody ;		// dynamics body associated with this object (if any)
     Pos : PdVector3;		// pointer to object's position vector
@@ -836,7 +855,7 @@ dWtoDQ}
   function dBodyGetGravityMode(const Body: PdxBody): Integer; cdecl; external ODEDLL;
   function dBodyGetJoint(const Body: PdxBody; const index: Integer): TdJointID; cdecl; external ODEDLL;
   function dBodyGetLinearVel(const Body: PdxBody): PdVector3; cdecl; external ODEDLL;
-  procedure dBodyGetMass(const Body: PdxBody; mass: Pointer); cdecl; external ODEDLL;
+  procedure dBodyGetMass(const Body: PdxBody; var mass: TdMass); cdecl; external ODEDLL;
   function dBodyGetNumJoints(const Body: PdxBody): Integer; cdecl; external ODEDLL;
   procedure dBodyGetPointVel(const Body: PdxBody; px, py, pz: TdReal; result: TdVector3); cdecl; external ODEDLL;
   procedure dBodyGetPosRelPoint(const Body: PdxBody; px, py, pz: TdReal; result: TdVector3); cdecl; external ODEDLL;
@@ -1113,14 +1132,16 @@ dWtoDQ}
   procedure dMULTIPLY0_333(var A : TdMatrix3; const B,C : TdMatrix3);
   procedure dMULTIPLY0_331(var A : TdVector3; const B : TdMatrix3; const C : TdVector3);
 
-  function Vector3ScalarMul(a : TdVector3; Scalar : single) : TdVector3;
+  function Vector3ScalarMul(a : TdVector3; Scalar : TdReal) : TdVector3;
   function Vector3ADD(a, b : TdVector3) : TdVector3;
   function Vector3SUB(a, b : TdVector3) : TdVector3;
   function Vector3Length(a : TdVector3) : TdReal;
   function Vector3Cross(V1, V2 : TdVector3) : TdVector3;
   function Vector3Make(x,y,z : TdReal) : TdVector3;
 
-  procedure DisableStillBodies(World : PdxWorld; Threshold : single=0.0001);
+  procedure DisableStillBodies(World : PdxWorld; Threshold : TdReal=0.0001);
+
+  procedure VerifyDelphiODE(Body : PdxBody; Geom : PdxGeom);
 
 var
   // These must be set up, so I catch the first time a user creates a new
@@ -1272,7 +1293,7 @@ begin
   A[10] := dDOT14(PdRealArray(@(B[8])),PdRealArray(@(C[2])));
 end;
 
-function Vector3ScalarMul(a : TdVector3; Scalar : single) : TdVector3;
+function Vector3ScalarMul(a : TdVector3; Scalar : TdReal) : TdVector3;
 begin
   result[0] := a[0]*Scalar;
   result[1] := a[1]*Scalar;
@@ -1385,7 +1406,7 @@ begin
     dGeomTransformGroupClass := dGeomGetClass(result);
 end;//}
 
-procedure DisableStillBodies(World : PdxWorld; Threshold : single=0.0001);
+procedure DisableStillBodies(World : PdxWorld; Threshold : TdReal=0.0001);
 var
   Body : PdxBody;
   TempList : TList;
@@ -1424,5 +1445,25 @@ begin
   TempList := WasStillBeforeOld;
   WasStillBeforeOld := WasStillBefore;
   WasStillBefore := TempList;
+end;
+
+procedure VerifyDelphiODE(Body : PdxBody; Geom : PdxGeom);
+var
+  m : TdMass;
+begin
+  // Verify Body
+  dBodySetData(Body, pointer(-1));
+  Assert(dBodyGetData(Body)=pointer(-1), 'Body test 1 fails');
+  Assert(Body.BaseObject.userdata=pointer(-1), 'Body test 2 fails');
+
+  dBodyGetMass(Body, m);
+
+  Assert(Body.mass.mass = m.mass, 'Body test 3 fails');
+
+  // Verify Geom
+  dGeomSetData(Geom, pointer(-1));
+  Assert(dGeomGetData(Geom)=pointer(-1), 'Geom test 1 fails');
+  Assert(dGeomGetBody(Geom)=Geom.Body, 'Geom test 2 fails');
+  Assert(Geom.Data=pointer(-1), 'Geom test 3 fails');
 end;
 end.

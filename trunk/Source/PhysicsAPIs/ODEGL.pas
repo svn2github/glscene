@@ -44,6 +44,8 @@ uses
   function ConvertdVector3ToAffineVector(R : PdVector3) : TAffineVector; overload;
   function ConvertdVector3ToAffineVector(R : TdVector3) : TAffineVector; overload;
 
+  function GetBodyPositionAsAffineVector(Body : PdxBody) : TAffineVector;
+
   // Converting between GLScene and ODE formats
   function ConvertVector3fTodVector3(R : TVector3f) : TdVector3;
   function ConvertVector3fToPdVector3(R : TVector3f) : PdVector3;
@@ -267,7 +269,13 @@ begin
   result[2] := R[2];
   result[3] := 0;
 end;
+
 (*$WARNINGS ON*)
+
+function GetBodyPositionAsAffineVector(Body : PdxBody) : TAffineVector;
+begin
+  result := ConvertdVector3ToVector3f(dBodyGetPosition(Body));
+end;
 
 procedure PositionSceneObjectForGeom(Geom : PdxGeom);
 begin
@@ -457,4 +465,6 @@ function RandomColorVector : TVector;
 begin
   result := VectorMake(Random, Random, Random, 0);
 end;
+
+
 end.
