@@ -39,6 +39,7 @@ contains
   dws2Classes in '..\Source\ScriptingAPIs\dws2Classes.pas',
   dws2VectorGeometry in '..\Source\ScriptingAPIs\dws2VectorGeometry.pas',
   dws2GLScene in '..\Source\ScriptingAPIs\dws2GLScene.pas',
-  dws2OpenGL1x in '..\Source\ScriptingAPIs\dws2OpenGL1x.pas';
+  dws2OpenGL1x in '..\Source\ScriptingAPIs\dws2OpenGL1x.pas',
+  GLScriptDWS2 in '..\Source\GLScriptDWS2.pas';
 
 end.
