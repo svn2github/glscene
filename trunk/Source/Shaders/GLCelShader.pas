@@ -122,6 +122,7 @@ end;
 //
 destructor TGLCelShader.Destroy;
 begin
+   DestroyVertexProgram;
    FShadeTexture.Free;
    FOutlineColor.Free;
    inherited;
@@ -308,6 +309,7 @@ begin
    if val<>FCelShaderOptions then begin
       FCelShaderOptions:=val;
       BuildShadeTexture;
+      DestroyVertexProgram;
       NotifyChange(Self);
    end;
 end;
