@@ -292,4 +292,22 @@ begin
    TISound.Enabled:=True;
 end;
 
+// Test Code for InterpolatedHeight, use as a Button1's click event
+{
+procedure TForm1.Button1Click(Sender: TObject);
+var
+   x, y : Integer;
+   sph : TGLSphere;
+begin
+   for x:=-5 to 5 do begin
+      for y:=-5 to 5 do begin
+         sph:=TGLSphere(GLScene1.Objects.AddNewChild(TGLSphere));
+         sph.Position.X:=DummyCube1.Position.X+X*2;
+         sph.Position.Z:=DummyCube1.Position.Z+Y*2;
+         sph.Position.Y:=TerrainRenderer1.InterpolatedHeight(sph.Position.AsVector);
+         sph.Radius:=0.5;
+      end;
+   end;
+end; }
+
 end.
