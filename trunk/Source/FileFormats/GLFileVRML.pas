@@ -46,6 +46,7 @@ procedure TessellatePolygon(PolyVerts : TAffineVectorList;
     det : Single;
     mat : TAffineMatrix;
   begin
+    det:=0;
     for i:=0 to PolyIndices.Count-1 do begin
       mat[0]:=PolyVerts[PolyIndices[i]];
       mat[1]:=PolyVerts[PolyIndices[i+1]];
@@ -91,7 +92,9 @@ begin
     temp.Assign(PolyIndices);
     while temp.Count>3 do begin
       min_dist:=10e7;
+      min_prev:=-1;
       min_vert:=-1;
+      min_next:=-1;
       for i:=0 to temp.Count-1 do begin
         prev:=i-1;
         next:=i+1;
@@ -217,7 +220,7 @@ var
 
   procedure RecursNodes(node : TVRMLNode);
   var
-    i,j,n : Integer;
+    i,j : Integer;
     points : TSingleList;
     indices : TIntegerList;
     fg : TFGVertexIndexList;
@@ -272,7 +275,6 @@ var
         fg.MaterialName:=currentMaterial.Name;
       indices:=TVRMLIntegerArray(node[0]).Values;
       i:=0;
-      n:=0;
       while i<indices.Count do begin
         if indices[i] = -1 then begin
           if face.Count<=4 then begin
