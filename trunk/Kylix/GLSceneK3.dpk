@@ -178,14 +178,21 @@ contains
   GLFileMDC in '../Source/FileFormats/GLFileMDC.pas',
   GLCelShader in '../Source/Shaders/GLCelShader.pas',
   GLFPSMovement in '../Source/GLFPSMovement.pas',
-  GLPerlin in '../Source/GLPerlin.pas',
   GLCanvas in '../Source/Base/GLCanvas.pas',
   BumpMapping in '../Source/Base/BumpMapping.pas',
-  GLPerlinBase in '../Source/GLPerlinBase.pas',  
   GLBumpShader in '../Source/Shaders/GLBumpShader.pas',
   GLAnimatedSprite in '../Source/GLAnimatedSprite.pas',
   GLFeedback in '../Source/GLFeedback.pas',
-  DDS in '../Source/FileFormats/DDS.pas';  
+  DDS in '../Source/FileFormats/DDS.pas',
+  DXTC in '../Source/FileFormats/DXTC.pas',
+  GLMaterialScript in '../Source/GLMaterialScript.pas',
+  GLDCEMisc in '../Source/GLDCEMisc.pas',
+  GLEllipseCollision in '../Source/GLEllipseCollision.pas',
+  GLDCE in '../Source/GLDCE.pas',
+  GLProjectedTextures in '../Source/GLProjectedTextures.pas',
+  GLBlur in '../Source/GLBlur.pas',
+  GLPerlinBase in '../Source/GLPerlinBase.pas',
+  GLPerlin in '../Source/GLPerlin.pas';
 
 {%File '../Source/GLScene.inc'}
 
