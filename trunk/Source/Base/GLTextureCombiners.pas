@@ -3,12 +3,22 @@
    Texture combiners setup utility functions.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/05/03 - EG - Fixed GL_ADD_SIGNED_ARB parsing, better error reporting
       <li>16/05/03 - EG - Creation
    </ul></font>
 }
 unit GLTextureCombiners;
 
 interface
+
+uses SysUtils;
+
+type
+
+   // ETextureCombinerError
+   //
+   ETextureCombinerError = class (Exception)
+   ;
 
 {: Parses a TC text description and setups combiners accordingly.<p>
    *experimental*<br>
@@ -41,7 +51,15 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Classes, SysUtils, GLContext, OpenGL12;
+uses Classes, GLContext, OpenGL12;
+
+// TCAssertCheck
+//
+procedure TCAssertCheck(const b : Boolean; const errMsg : String);
+begin
+   if not b then
+      raise ETextureCombinerError(errMsg);
+end;
 
 // RemoveSpaces
 //
@@ -68,7 +86,7 @@ end;
 procedure ProcessTextureCombinerArgument(const arg : String; sourceEnum, operandEnum : Integer;
                                          const dest : String);
 var
-   sourceValue, operandValue : Integer;
+   sourceValue, operandValue, n : Integer;
 begin
    sourceValue:=0;
    operandValue:=GL_SRC_COLOR;
@@ -82,11 +100,13 @@ begin
    else if (arg='envcol') or (arg='constcol') or (arg='constantcolor') then
       sourceValue:=GL_CONSTANT_COLOR_ARB
    else if Copy(arg, 1, 3)='tex' then begin
-      Assert(GL_ARB_texture_env_crossbar or GL_NV_texture_env_combine4,
+      TCAssertCheck(GL_ARB_texture_env_crossbar or GL_NV_texture_env_combine4,
              'Requires GL_ARB_texture_env_crossbar or NV_texture_env_combine4');
-      sourceValue:=GL_TEXTURE0_ARB+StrToInt(Copy(arg, 4, MaxInt));
+      n:=StrToIntDef(Copy(arg, 4, MaxInt), -1);
+      if n in [0..7] then
+         sourceValue:=GL_TEXTURE0_ARB+n;
    end;
-   Assert(sourceValue>0, 'invalid argument : "'+arg+'"');
+   TCAssertCheck(sourceValue>0, 'invalid argument : "'+arg+'"');
    glTexEnvf(GL_TEXTURE_ENV, sourceEnum , sourceValue);
    glTexEnvf(GL_TEXTURE_ENV, operandEnum, operandValue);
    CheckOpenGLError;
@@ -130,7 +150,7 @@ begin
       glActiveTextureARB(GL_TEXTURE0_ARB)
    else if dest='tex1' then
       glActiveTextureARB(GL_TEXTURE1_ARB)
-   else Assert(False, 'invalid destination texture unit');
+   else TCAssertCheck(False, 'invalid destination texture unit');
    // parse combiner operator
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
    CheckOpenGLError;
@@ -139,9 +159,10 @@ begin
    p:=Pos('+', line);
    if p>0 then begin
       // ADD & ADD_SIGNED operators
-      if Copy(line, Length(line)-4, 4)='-0.5' then
-         operEnum:=GL_ADD
-      else operEnum:=GL_ADD_SIGNED_ARB;
+      if Copy(line, Length(line)-3, 4)='-0.5' then begin
+         operEnum:=GL_ADD_SIGNED_ARB;
+         SetLength(line, Length(line)-4);
+      end else operEnum:=GL_ADD;
       arg1:=Copy(line, 1, p-1);
       arg2:=Copy(line, p+1, MaxInt);
    end;
@@ -165,19 +186,19 @@ begin
          sl.CommaText:=Copy(line, 1, p-1);
          if funcName='interpolate' then begin
             // INTERPOLATE operator
-            Assert(sl.Count=3, 'Invalid parameter count');
+            TCAssertCheck(sl.Count=3, 'Invalid parameter count');
             operEnum:=GL_INTERPOLATE_ARB;
             arg1:=sl[0];
             arg2:=sl[1];
             arg3:=sl[2];
          end else if funcName='dot3' then begin
             // DOT3 operator
-            Assert(sl.Count=2, 'Invalid parameter count');
-            Assert(GL_ARB_texture_env_dot3, 'Requires GL_ARB_texture_env_dot3');
+            TCAssertCheck(sl.Count=2, 'Invalid parameter count');
+            TCAssertCheck(GL_ARB_texture_env_dot3, 'Requires GL_ARB_texture_env_dot3');
             operEnum:=GL_DOT3_RGB_ARB;
             arg1:=sl[0];
             arg2:=sl[1];
-         end;
+         end else TCAssertCheck(False, 'Invalid function "'+funcName+'"');
       finally
          sl.Free;
       end;
@@ -217,7 +238,7 @@ var
    i : Integer;
    sl : TStringList;
 begin
-   Assert(GL_ARB_texture_env_combine, 'Requires GL_ARB_texture_env_combine support');
+   TCAssertCheck(GL_ARB_texture_env_combine, 'Requires GL_ARB_texture_env_combine support');
    sl:=TStringList.Create;
    try
       sl.Text:=tcCode;
