@@ -2,6 +2,7 @@
 {: In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/11/02 - EG - TGLGuiLayout.Clear fix (Sternas Stefanos)
       <li>06/09/02 - JAJ - Updated and added to CVS..
       <li>01/06/02 - JAJ - Base Unit built..
 	</ul></font>
@@ -237,6 +238,7 @@ Begin
   Begin
     FGuiComponents.Delete(XC);
   End;
+  FGuiComponentList.Clear;
   NotifyChange(Self);
 end;
 
