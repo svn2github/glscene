@@ -5,10 +5,10 @@
 {*  Files:    cgGL.h                                                          *}
 {*  Content:  NVIDIA Cg OpenGL interface include files                        *}
 {*                                                                            *}
-{*  NVIDIA "Cg" Release 1.1 ObjectPascal adaptation by Alexey Barkovoy        *}
-{*  E-Mail: clootie@reactor.ru                                                *}
+{*  NVIDIA "Cg" Release 1.2 ObjectPascal adaptation by Alexey Barkovoy        *}
+{*  E-Mail: clootie@ixbt.com                                                  *}
 {*                                                                            *}
-{*  Modified: 21-Mar-2003                                                     *}
+{*  Modified: 14-Mar-2004                                                     *}
 {*                                                                            *}
 {*  Latest version can be downloaded from:                                    *}
 {*     http://clootie.narod.ru                                                *}
@@ -93,6 +93,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+// 04-Mar-04 - Alexey Barkovoy:
+//   - Updated to Release 1.2 of Cg toolkit (published 25-Feb-2004)
 // 21-Mar-03 - Alexey Barkovoy:
 //   - Updated to Release 1.1 of Cg toolkit (published 04-Mar-2003)
 // 11-Jan-03 - Alexey Barkovoy:
@@ -100,7 +102,7 @@
 
 unit cgGL;
 
-{$Include GLScene.inc}
+{$Include JEDI.inc}
 
 interface
 
@@ -111,8 +113,6 @@ uses
 
 const
   CgGLlibrary = 'cgGL.dll';
-
-{$IFNDEF CG_DEPRECATED_API}
 
 (*****************************************************************************)
 (*** cgGL Type Definitions                                                 ***)
@@ -172,8 +172,14 @@ procedure cgGLSetOptimalOptions(profile: TCGprofile); cdecl; external CgGLlibrar
 
 procedure cgGLLoadProgram(_program: PCGprogram); cdecl; external CgGLlibrary;
 {$EXTERNALSYM cgGLLoadProgram}
+function cgGLIsProgramLoaded(_program: PCGprogram): TCGbool; cdecl; external CgGLlibrary;
+{$EXTERNALSYM cgGLIsProgramLoaded}
 procedure cgGLBindProgram(_program: PCGprogram); cdecl; external CgGLlibrary;
 {$EXTERNALSYM cgGLBindProgram}
+procedure cgGLUnbindProgram(profile: TCGprofile); cdecl; external CgGLlibrary;
+{$EXTERNALSYM cgGLUnbindProgram}
+function cgGLGetProgramID(_program: PCGprogram): GLuint; cdecl; external CgGLlibrary;
+{$EXTERNALSYM cgGLGetProgramID}
 
 (******************************************************************************
  *** Parameter Managment Functions
@@ -316,7 +322,7 @@ procedure cgGLGetParameterArray4d(param: PCGparameter;
 {$EXTERNALSYM cgGLGetParameterArray4d}
 
 procedure cgGLSetParameterPointer(param: PCGparameter; fsize: GLint;
-    _type: TGLenum; stride: GLsizei; _pointer: Pointer); cdecl; external CgGLlibrary;
+    _type: TGLenum; stride: GLsizei; const _pointer: Pointer); cdecl; external CgGLlibrary;
 {$EXTERNALSYM cgGLSetParameterPointer}
 
 procedure cgGLEnableClientState(param: PCGparameter); cdecl; external CgGLlibrary;
@@ -396,21 +402,11 @@ procedure cgGLDisableTextureParameter(param: PCGparameter); cdecl; external CgGL
 {$EXTERNALSYM cgGLDisableTextureParameter}
 function cgGLGetTextureEnum(param: PCGparameter): TGLenum; cdecl; external CgGLlibrary;
 {$EXTERNALSYM cgGLGetTextureEnum}
-
-{$ELSE}
-
-{
-#define cgGLLoadProgram cgGLDEPRECATEDAPI_LoadProgram
-#define cgGLBindProgram cgGLDEPRECATEDAPI_BindProgram
-#define cgGLEnableClientState cgGL_DEPRECATEDAPI_EnableClientState
-#define cgGLDisableClientState cgGL_DEPRECATEDAPI_DisableClientState
-}
-{$Include cgGL_deprecated_api.inc}
-
-{$ENDIF}
-
+procedure cgGLSetManageTextureParameters(ctx: PCGcontext; flag: TCGbool); cdecl; external CgGLlibrary;
+{$EXTERNALSYM cgGLSetManageTextureParameters}
+function cgGLGetManageTextureParameters(ctx: PCGcontext): TCGbool; cdecl; external CgGLlibrary;
+{$EXTERNALSYM cgGLGetManageTextureParameters}
 
 implementation
 
 end.
-

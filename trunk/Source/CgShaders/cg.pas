@@ -6,10 +6,10 @@
 {*            cgGL_profiles.h, cg_bindlocations.h                             *}
 {*  Content:  NVIDIA Cg core include files                                    *}
 {*                                                                            *}
-{*  NVIDIA "Cg" Release 1.1 ObjectPascal adaptation by Alexey Barkovoy        *}
-{*  E-Mail: clootie@reactor.ru                                                *}
+{*  NVIDIA "Cg" Release 1.2 ObjectPascal adaptation by Alexey Barkovoy        *}
+{*  E-Mail: clootie@ixbt.com                                                  *}
 {*                                                                            *}
-{*  Modified: 21-Mar-2003                                                     *}
+{*  Modified: 14-Mar-2004                                                     *}
 {*                                                                            *}
 {*  Latest version can be downloaded from:                                    *}
 {*     http://clootie.narod.ru                                                *}
@@ -94,6 +94,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+// 04-Mar-04 - Alexey Barkovoy:
+//   - Updated to Release 1.2 of Cg toolkit (published 25-Feb-2004)
 // 21-Mar-03 - Alexey Barkovoy:
 //   - Updated to Release 1.1 of Cg toolkit (published 04-Mar-2003)
 // 11-Jan-03 - Alexey Barkovoy:
@@ -105,7 +107,7 @@ interface
 
 uses Windows;
 
-{$Include GLScene.inc}
+{$Include JEDI.inc}
 {$MINENUMSIZE 4}
 
 (*$HPPEMIT '#include "cg.h"' *)
@@ -113,7 +115,15 @@ uses Windows;
 const
   CgLibrary = 'cg.dll';
 
-{$IFNDEF CG_DEPRECATED_API}
+const
+  CG_VERSION_1_2                = 1;
+  CG_VERSION_NUM                = 1200;
+
+//
+// This #define foreces the old API for now.  This will be removed soon, but
+// the user will still have the ability to enable it.
+//
+{.$DEFINE CG_DEPRECATED_1_1_API}
 
 (*************************************************************************)
 (*** CG Run-Time Library API                                          ***)
@@ -258,7 +268,50 @@ type
     CG_FIXED4x4,  // CG_DATATYPE_MACRO(Fixed4x4,fixed4x4,CG_FIXED4x4,4,4)
     CG_HALF1,     // CG_DATATYPE_MACRO(Half1,half1,CG_HALF1,0,0)
     CG_FLOAT1,    // CG_DATATYPE_MACRO(Float1,float1,CG_FLOAT1,0,0)
-    CG_FIXED1     // CG_DATATYPE_MACRO(Fixed1,fixed1,CG_FIXED1,0,0)
+    CG_FIXED1,    // CG_DATATYPE_MACRO(Fixed1,fixed1,CG_FIXED1,0,0)
+    CG_INT,       // CG_DATATYPE_MACRO(Int,int,CG_INT,0,1)
+    CG_INT1,      // CG_DATATYPE_MACRO(Int1,int1,CG_INT1,0,1)
+    CG_INT2,      // CG_DATATYPE_MACRO(Int2,int2,CG_INT2,0,2)
+    CG_INT3,      // CG_DATATYPE_MACRO(Int3,int3,CG_INT3,0,3)
+    CG_INT4,      // CG_DATATYPE_MACRO(Int4,int4,CG_INT4,0,4)
+    CG_INT1x1,    // CG_DATATYPE_MACRO(Int1x1,int1x1,CG_INT1x1,1,1)
+    CG_INT1x2,    // CG_DATATYPE_MACRO(Int1x2,int1x2,CG_INT1x2,1,2)
+    CG_INT1x3,    // CCG_DATATYPE_MACRO(Int1x3,int1x3,CG_INT1x3,1,3)
+    CG_INT1x4,    // CCG_DATATYPE_MACRO(Int1x4,int1x4,CG_INT1x4,1,4)
+    CG_INT2x1,    // CCG_DATATYPE_MACRO(Int2x1,int2x1,CG_INT2x1,2,1)
+    CG_INT2x2,    // CCG_DATATYPE_MACRO(Int2x2,int2x2,CG_INT2x2,2,2)
+    CG_INT2x3,    // CCG_DATATYPE_MACRO(Int2x3,int2x3,CG_INT2x3,2,3)
+    CG_INT2x4,    // CCG_DATATYPE_MACRO(Int2x4,int2x4,CG_INT2x4,2,4)
+    CG_INT3x1,    // CCG_DATATYPE_MACRO(Int3x1,int3x1,CG_INT3x1,3,1)
+    CG_INT3x2,    // CCG_DATATYPE_MACRO(Int3x2,int3x2,CG_INT3x2,3,2)
+    CG_INT3x3,    // CCG_DATATYPE_MACRO(Int3x3,int3x3,CG_INT3x3,3,3)
+    CG_INT3x4,    // CCG_DATATYPE_MACRO(Int3x4,int3x4,CG_INT3x4,3,4)
+    CG_INT4x1,    // CCG_DATATYPE_MACRO(Int4x1,int4x1,CG_INT4x1,4,1)
+    CG_INT4x2,    // CCG_DATATYPE_MACRO(Int4x2,int4x2,CG_INT4x2,4,2)
+    CG_INT4x3,    // CCG_DATATYPE_MACRO(Int4x3,int4x3,CG_INT4x3,4,3)
+    CG_INT4x4,    // CCG_DATATYPE_MACRO(Int4x4,int4x4,CG_INT4x4,4,4)
+    CG_BOOL,      // CG_DATATYPE_MACRO(Bool,bool,CG_BOOL,0,1)
+    CG_BOOL1,     // CG_DATATYPE_MACRO(Bool1,bool1,CG_BOOL1,0,1)
+    CG_BOOL2,     // CG_DATATYPE_MACRO(Bool2,bool2,CG_BOOL2,0,2)
+    CG_BOOL3,     // CG_DATATYPE_MACRO(Bool3,bool3,CG_BOOL3,0,3)
+    CG_BOOL4,     // CG_DATATYPE_MACRO(Bool4,bool4,CG_BOOL4,0,4)
+    CG_BOOL1x1,   // CG_DATATYPE_MACRO(Bool1x1,bool1x1,CG_BOOL1x1,1,1)
+    CG_BOOL1x2,   // CG_DATATYPE_MACRO(Bool1x2,bool1x2,CG_BOOL1x2,1,2)
+    CG_BOOL1x3,   // CG_DATATYPE_MACRO(Bool1x3,bool1x3,CG_BOOL1x3,1,3)
+    CG_BOOL1x4,   // CG_DATATYPE_MACRO(Bool1x4,bool1x4,CG_BOOL1x4,1,4)
+    CG_BOOL2x1,   // CG_DATATYPE_MACRO(Bool2x1,bool2x1,CG_BOOL2x1,2,1)
+    CG_BOOL2x2,   // CG_DATATYPE_MACRO(Bool2x2,bool2x2,CG_BOOL2x2,2,2)
+    CG_BOOL2x3,   // CG_DATATYPE_MACRO(Bool2x3,bool2x3,CG_BOOL2x3,2,3)
+    CG_BOOL2x4,   // CG_DATATYPE_MACRO(Bool2x4,bool2x4,CG_BOOL2x4,2,4)
+    CG_BOOL3x1,   // CG_DATATYPE_MACRO(Bool3x1,bool3x1,CG_BOOL3x1,3,1)
+    CG_BOOL3x2,   // CG_DATATYPE_MACRO(Bool3x2,bool3x2,CG_BOOL3x2,3,2)
+    CG_BOOL3x3,   // CG_DATATYPE_MACRO(Bool3x3,bool3x3,CG_BOOL3x3,3,3)
+    CG_BOOL3x4,   // CG_DATATYPE_MACRO(Bool3x4,bool3x4,CG_BOOL3x4,3,4)
+    CG_BOOL4x1,   // CG_DATATYPE_MACRO(Bool4x1,bool4x1,CG_BOOL4x1,4,1)
+    CG_BOOL4x2,   // CG_DATATYPE_MACRO(Bool4x2,bool4x2,CG_BOOL4x2,4,2)
+    CG_BOOL4x3,   // CG_DATATYPE_MACRO(Bool4x3,bool4x3,CG_BOOL4x3,4,3)
+    CG_BOOL4x4    // CG_DATATYPE_MACRO(Bool4x4,bool4x4,CG_BOOL4x4,4,4)
+
   {$ENDIF}
   );
 {$ELSE}
@@ -1031,7 +1084,7 @@ type
     CG_PROFILE_PS_2_0 = 6162, // CG_PROFILE_MACRO(DX9Pixel20,ps_2_0,PS_2_0,"ps_2_0",6162,0)
     CG_PROFILE_PS_2_X = 6163, // CG_PROFILE_MACRO(DX9Pixel2x,ps_2_x,PS_2_X,"ps_2_x",6163,0)
 
-    CG_PROFILE_MAX
+    CG_PROFILE_MAX = 7100
   {$ENDIF}
   );
 {$ELSE}  
@@ -1075,7 +1128,7 @@ const
   CG_PROFILE_PS_2_X = 6163; // CG_PROFILE_MACRO(DX9Pixel2x,ps_2_x,PS_2_X,"ps_2_x",6163,0)
   {$EXTERNALSYM CG_PROFILE_PS_2_X}
 
-  CG_PROFILE_MAX    = 6164;
+  CG_PROFILE_MAX    = 7100;
   {$EXTERNALSYM CG_PROFILE_MAX}
 
 type
@@ -1096,12 +1149,11 @@ type
   *   CG_ERROR_MACRO(code, enum_name, message)
   *
   *     code      : The integer error code associated with the error.
-  *     enum_name : The name of enumerant of the error code.
-  *                  (Note : the prefix "cg" will be added to the name).
-  *     new_enum_name : The name of enumerant of the error code in the new API.
+  *     enum_name : The name of enumerant of the error code in the API.
   *     message   : A description string associated with the error.
   *
   *)
+  PCGerror = ^TCGerror;
   TCGerror = DWORD;
   CGerror = TCGerror;
   {$NODEFINE CGerror}
@@ -1160,10 +1212,44 @@ const
   {$EXTERNALSYM CG_ARRAY_PARAM_ERROR}
   CG_OUT_OF_ARRAY_BOUNDS_ERROR      = 23; // "Index into the array is out of bounds."
   {$EXTERNALSYM CG_OUT_OF_ARRAY_BOUNDS_ERROR}
+  CG_CONFLICTING_TYPES_ERROR        = 24; // "A type being added to the context conflicts with an existing type."
+  {$EXTERNALSYM CG_CONFLICTING_TYPES_ERROR}
+  CG_CONFLICTING_PARAMETER_TYPES_ERROR = 25; // "The parameters being bound have conflicting types."
+  {$EXTERNALSYM CG_CONFLICTING_PARAMETER_TYPES_ERROR}
+  CG_PARAMETER_IS_NOT_SHARED_ERROR  = 26; // "The parameter must be global."
+  {$EXTERNALSYM CG_PARAMETER_IS_NOT_SHARED_ERROR}
+  CG_INVALID_PARAMETER_VARIABILITY_ERROR = 27; // "The parameter could not be changed to the given variability."
+  {$EXTERNALSYM CG_INVALID_PARAMETER_VARIABILITY_ERROR}
+  CG_CANNOT_DESTROY_PARAMETER_ERROR = 28; // "Cannot destroy the parameter.  It is bound to other parameters or is not a root parameter."
+  {$EXTERNALSYM CG_CANNOT_DESTROY_PARAMETER_ERROR}
+  CG_NOT_ROOT_PARAMETER_ERROR       = 29; // "The parameter is not a root parameter."
+  {$EXTERNALSYM CG_NOT_ROOT_PARAMETER_ERROR}
+  CG_PARAMETERS_DO_NOT_MATCH_ERROR  = 30; // "The two parameters being bound do not match."
+  {$EXTERNALSYM CG_PARAMETERS_DO_NOT_MATCH_ERROR}
+  CG_IS_NOT_PROGRAM_PARAMETER_ERROR = 31; // "The parameter is not a program parameter."
+  {$EXTERNALSYM CG_IS_NOT_PROGRAM_PARAMETER_ERROR}
+  CG_INVALID_PARAMETER_TYPE_ERROR   = 32; // "The type of the parameter is invalid."
+  {$EXTERNALSYM CG_INVALID_PARAMETER_TYPE_ERROR}
+  CG_PARAMETER_IS_NOT_RESIZABLE_ARRAY_ERROR = 33; // "The parameter must be a resizable array."
+  {$EXTERNALSYM CG_PARAMETER_IS_NOT_RESIZABLE_ARRAY_ERROR}
+  CG_INVALID_SIZE_ERROR             = 34; // "The size value is invalid."
+  {$EXTERNALSYM CG_INVALID_SIZE_ERROR}
+  CG_BIND_CREATES_CYCLE_ERROR       = 35; // "Cannot bind the given parameters.  Binding will form a cycle."
+  {$EXTERNALSYM CG_BIND_CREATES_CYCLE_ERROR}
+  CG_ARRAY_TYPES_DO_NOT_MATCH_ERROR = 36; // "Cannot bind the given parameters.  Array types do not match."
+  {$EXTERNALSYM CG_ARRAY_TYPES_DO_NOT_MATCH_ERROR}
+  CG_ARRAY_DIMENSIONS_DO_NOT_MATCH_ERROR = 37; // "Cannot bind the given parameters.  Array dimensions do not match."
+  {$EXTERNALSYM CG_ARRAY_DIMENSIONS_DO_NOT_MATCH_ERROR}
+  CG_ARRAY_HAS_WRONG_DIMENSION_ERROR = 38; // "The array is has the wrong dimension."
+  {$EXTERNALSYM CG_ARRAY_HAS_WRONG_DIMENSION_ERROR}
+  CG_TYPE_IS_NOT_DEFINED_IN_PROGRAM_ERROR = 39; // "Connecting the parameters failed because The type of the source parameter is not defined within the given program or does not match the type with the same name in the program."
+  {$EXTERNALSYM CG_TYPE_IS_NOT_DEFINED_IN_PROGRAM_ERROR}
 
 {$IFDEF COMPILER6_UP}
 type
   TCGenum = (
+  //todo: Insert code from here: # include <Cg/cg_enums.h>
+  //todo: FIX BCB6 issues with {$IFDEF BCB}
   {$IFDEF BCB}
     CG_Enum_Dummy
   {$ELSE}
@@ -1187,7 +1273,14 @@ type
     CG_ERROR,
 
     CG_SOURCE,
-    CG_OBJECT
+    CG_OBJECT,
+
+    CG_COMPILE_MANUAL,
+    CG_COMPILE_IMMEDIATE,
+    CG_COMPILE_LAZY,
+    CG_CURRENT,
+    CG_LITERAL,
+    CG_VERSION
   {$ENDIF}
   );
 {$ELSE}
@@ -1232,6 +1325,19 @@ const
   CG_OBJECT              = 4113;
   {$EXTERNALSYM CG_OBJECT}
 
+  CG_COMPILE_MANUAL      = 4114;
+  {$EXTERNALSYM CG_COMPILE_MANUAL}
+  CG_COMPILE_IMMEDIATE   = 4115;
+  {$EXTERNALSYM CG_COMPILE_IMMEDIATE}
+  CG_COMPILE_LAZY        = 4116;
+  {$EXTERNALSYM CG_COMPILE_LAZY}
+  CG_CURRENT             = 4117;
+  {$EXTERNALSYM CG_CURRENT}
+  CG_LITERAL             = 4118;
+  {$EXTERNALSYM CG_LITERAL}
+  CG_VERSION             = 4119;
+  {$EXTERNALSYM CG_VERSION}
+
 type
   TCGenum = DWORD;
 {$ENDIF}
@@ -1253,6 +1359,8 @@ type
 (*** Functions                                                         ***)
 (*************************************************************************)
 
+//{$IFNDEF CG_EXPLICIT}
+
 (*** Context functions ***)
 
 function cgCreateContext: PCGcontext; cdecl; external CgLibrary;
@@ -1263,6 +1371,8 @@ function cgIsContext(ctx: PCGcontext): TCGbool; cdecl; external CgLibrary;
 {$EXTERNALSYM cgIsContext}
 function cgGetLastListing(ctx: PCGcontext): PChar{ const }; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetLastListing}
+procedure cgSetAutoCompile(ctx: PCGcontext; flag: TCGenum); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetAutoCompile}
 
 type
   PPChar = ^PChar; //Clootie: It's actually pointer to array of PChar strings
@@ -1302,20 +1412,50 @@ function cgGetProgramProfile(prog: PCGprogram): TCGprofile; cdecl; external CgLi
 {$EXTERNALSYM cgGetProgramProfile}
 
 (*** Parameter functions ***)
+
+function cgCreateParameter(ctx: PCGcontext; type_: TCGtype): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgCreateParameter}
+function cgCreateParameterArray(ctx: PCGcontext; type_: TCGtype; length: Integer): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgCreateParameterArray}
+function cgCreateParameterMultiDimArray(ctx: PCGcontext; type_: TCGtype; dim: Integer; const lengths: PInteger): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgCreateParameterMultiDimArray}
+procedure cgDestroyParameter(param: PCGparameter); cdecl; external CgLibrary;
+{$EXTERNALSYM cgDestroyParameter}
+procedure cgConnectParameter(from, to_: PCGparameter); cdecl; external CgLibrary;
+{$EXTERNALSYM cgConnectParameter}
+procedure cgDisconnectParameter(param: PCGparameter); cdecl; external CgLibrary;
+{$EXTERNALSYM cgDisconnectParameter}
+function cgGetConnectedParameter(param: PCGparameter): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetConnectedParameter}
+
+function cgGetNumConnectedToParameters(param: PCGparameter): Integer; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNumConnectedToParameters}
+function cgGetConnectedToParameter(param: PCGparameter; index: Integer): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetConnectedToParameter}
+
 function cgGetNamedParameter(prog: PCGprogram; const name: PChar): PCGparameter; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetNamedParameter}
+function cgGetNamedProgramParameter(prog: PCGprogram; name_space: TCGenum; const name: PChar): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNamedProgramParameter}
+
 function cgGetFirstParameter(prog: PCGprogram; name_space: TCGenum): PCGparameter; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetFirstParameter}
+{$IFNDEF CG_DEPRECATED_1_1_API}
 function cgGetNextParameter(current: PCGparameter): PCGparameter; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetNextParameter}
+{$ENDIF}
 function cgGetFirstLeafParameter(prog: PCGprogram; name_space: TCGenum): PCGparameter; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetFirstLeafParameter}
+{$IFNDEF CG_DEPRECATED_1_1_API}
 function cgGetNextLeafParameter(current: PCGparameter): PCGparameter; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetNextLeafParameter}
-
+{$ENDIF}
 
 function cgGetFirstStructParameter(param: PCGparameter): PCGparameter; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetFirstStructParameter}
+function cgGetNamedStructParameter(param: PCGparameter; const name: PChar): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNamedStructParameter}
+
 function cgGetFirstDependentParameter(param: PCGparameter): PCGparameter; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetFirstDependentParameter}
 
@@ -1323,17 +1463,27 @@ function cgGetArrayParameter(aparam: PCGparameter; index: Integer): PCGparameter
 {$EXTERNALSYM cgGetArrayParameter}
 function cgGetArrayDimension(param: PCGparameter): Integer; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetArrayDimension}
+function cgGetArrayType(param: PCGparameter): TCGtype; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetArrayType}
 function cgGetArraySize(param: PCGparameter; dimension: Integer): Integer; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetArraySize}
+procedure cgSetArraySize(param: PCGparameter; size: Integer); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetArraySize}
+procedure cgSetMultiDimArraySize(param: PCGparameter; const sizes: PInteger); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetMultiDimArraySize}
 
-function cgGetParameterProgram(prog: PCGparameter): PCGprogram; cdecl; external CgLibrary;
+function cgGetParameterProgram(param: PCGparameter): PCGprogram; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetParameterProgram}
+function cgGetParameterContext(param: PCGparameter): PCGcontext; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetParameterContext}
 function cgIsParameter(param: PCGparameter): TCGbool; cdecl; external CgLibrary;
 {$EXTERNALSYM cgIsParameter}
 function cgGetParameterName(param: PCGparameter): PChar{ const }; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetParameterName}
 function cgGetParameterType(param: PCGparameter): TCGtype; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetParameterType}
+function cgGetParameterNamedType(param: PCGparameter): TCGtype; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetParameterNamedType}
 function cgGetParameterSemantic(param: PCGparameter): PChar{ const }; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetParameterSemantic}
 function cgGetParameterResource(param: PCGparameter): TCGresource; cdecl; external CgLibrary;
@@ -1353,6 +1503,61 @@ function cgGetParameterValues(param: PCGparameter; value_type: TCGenum;
 {$EXTERNALSYM cgGetParameterValues}
 function cgGetParameterOrdinalNumber(param: PCGparameter): Integer; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetParameterOrdinalNumber}
+function cgIsParameterGlobal(param: PCGparameter): TCGbool; cdecl; external CgLibrary;
+{$EXTERNALSYM cgIsParameterGlobal}
+function cgGetParameterIndex(param: PCGparameter): Integer; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetParameterIndex}
+
+procedure cgSetParameterVariability(param: PCGparameter; vary: TCGenum); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameterVariability}
+procedure cgSetParameterSemantic(param: PCGparameter; const semantic: PChar); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameterSemantic}
+
+
+procedure cgSetParameter1f(param: PCGparameter; x: Single); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter1f}
+procedure cgSetParameter2f(param: PCGparameter; x, y: Single); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter2f}
+procedure cgSetParameter3f(param: PCGparameter; x, y, z: Single); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter3f}
+procedure cgSetParameter4f(param: PCGparameter; x, y, z, w: Single); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter4f}
+procedure cgSetParameter1d(param: PCGparameter; x: Double); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter1d}
+procedure cgSetParameter2d(param: PCGparameter; x, y: Double); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter2d}
+procedure cgSetParameter3d(param: PCGparameter; x, y, z: Double); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter3d}
+procedure cgSetParameter4d(param: PCGparameter; x, y, z, w: Double); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter4d}
+
+
+procedure cgSetParameter1fv(param: PCGparameter; const v: PSingle); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter1fv}
+procedure cgSetParameter2fv(param: PCGparameter; const v: PSingle); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter2fv}
+procedure cgSetParameter3fv(param: PCGparameter; const v: PSingle); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter3fv}
+procedure cgSetParameter4fv(param: PCGparameter; const v: PSingle); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter4fv}
+procedure cgSetParameter1dv(param: PCGparameter; const x: PDouble); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter1dv}
+procedure cgSetParameter2dv(param: PCGparameter; const x: PDouble); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter2dv}
+procedure cgSetParameter3dv(param: PCGparameter; const x: PDouble); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter3dv}
+procedure cgSetParameter4dv(param: PCGparameter; const x: PDouble); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetParameter4dv}
+
+procedure cgSetMatrixParameterdr(param: PCGparameter; const matrix: PDouble); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetMatrixParameterdr}
+procedure cgSetMatrixParameterfr(param: PCGparameter; const matrix: PSingle); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetMatrixParameterfr}
+procedure cgSetMatrixParameterdc(param: PCGparameter; const matrix: PDouble); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetMatrixParameterdc}
+procedure cgSetMatrixParameterfc(param: PCGparameter; const matrix: PSingle); cdecl; external CgLibrary;
+{$EXTERNALSYM cgSetMatrixParameterfc}
+
 
 (*** Type Functions ***)
 
@@ -1361,12 +1566,37 @@ function cgGetTypeString(_type: TCGtype): PChar{ const }; cdecl; external CgLibr
 function cgGetType(const type_string: PChar): TCGtype; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetType}
 
+function cgGetNamedUserType(program_: CGprogram; const name: PChar): TCGtype; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNamedUserType}
+
+function cgGetNumUserTypes(program_: CGprogram): Integer; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNumUserTypes}
+function cgGetUserType(program_: CGprogram; index: Integer): TCGtype; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetUserType}
+
+function cgGetNumParentTypes(type_: TCGtype): Integer; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNumParentTypes}
+function cgGetParentType(type_: TCGtype; index: Integer): TCGtype; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetParentType}
+
+function cgIsParentType(parent, child: TCGtype): TCGbool; cdecl; external CgLibrary;
+{$EXTERNALSYM cgIsParentType}
+function cgIsInterfaceType(type_: TCGtype): TCGbool; cdecl; external CgLibrary;
+{$EXTERNALSYM cgIsInterfaceType}
+
 (*** Resource Functions ***)
 
 function cgGetResourceString(resource: TCGresource): PChar{ const }; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetResourceString}
 function cgGetResource(const resource_string: PChar): TCGresource; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetResource}
+
+{*** Enum Functions ***}
+
+function cgGetEnumString(en: TCGenum): PChar{ const }; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetEnumString}
+function cgGetEnum(const enum_string: PChar): TCGenum; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetEnum}
 
 (*** Profile Functions ***)
 
@@ -1376,29 +1606,42 @@ function cgGetProfile(const profile_string: PChar): TCGprofile; cdecl; external 
 {$EXTERNALSYM cgGetProfile}
 
 (*** Error Functions ***)
+
 function cgGetError: TCGerror; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetError}
 function cgGetErrorString(error: TCGerror): PChar{ const }; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetErrorString}
+function cgGetLastErrorString(error: PCGerror): PChar{ const }; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetLastErrorString}
 procedure cgSetErrorCallback(func: TCGerrorCallbackFunc); cdecl; external CgLibrary;
 {$EXTERNALSYM cgSetErrorCallback}
 function cgGetErrorCallback: TCGerrorCallbackFunc; cdecl; external CgLibrary;
 {$EXTERNALSYM cgGetErrorCallback}
 
 
-{$ELSE}
+{*** Misc Functions ***}
 
-{
-#define cgCreateContext cgGL_DEPRECATEDAPI_CreateContext
-#define cgGetNextProgram cgGL_DEPRECATEDAPI_GetNextProgram
-#define cgGetLastListing cgGL_DEPRECATEDAPI_GetLastListing
-#define cgGetProgramProfile cgGL_DEPRECATEDAPI_ProgramProfile
-}
-{$Include cg_deprecated_api.inc}
+function cgGetString(sname: TCGenum): PChar{ const }; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetString}
+
+
+{*** Support for deprecated Cg 1.1 API ***}
+
+function cgGetNextParameter_depr1_1(current: PCGparameter): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNextParameter_depr1_1}
+function cgGetNextLeafParameter_depr1_1(current: PCGparameter): PCGparameter; cdecl; external CgLibrary;
+{$EXTERNALSYM cgGetNextLeafParameter_depr1_1}
+
+{$IFDEF CG_DEPRECATED_1_1_API}
+
+
+function cgGetNextParameter(current: PCGparameter): PCGparameter; cdecl; external CgLibrary name 'cgGetNextParameter_depr1_1';
+{$EXTERNALSYM cgGetNextParameter}
+function cgGetNextLeafParameter(current: PCGparameter): PCGparameter; cdecl; external CgLibrary name 'cgGetNextLeafParameter_depr1_1';
+{$EXTERNALSYM cgGetNextLeafParameter}
 
 {$ENDIF}
 
 implementation
 
 end.
-
