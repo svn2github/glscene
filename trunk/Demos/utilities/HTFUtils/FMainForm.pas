@@ -450,7 +450,7 @@ end;
 
 procedure TMainForm.ACProcessExecute(Sender: TObject);
 var
-   x, y, wx, wy, ts, tx, ty, i, overlap : Integer;
+   x, y, wx, wy, ts, tx, ty, i, j, overlap : Integer;
    n, maxN : Cardinal;
    htf : THeightTileFile;
    buf : array of SmallInt;
@@ -478,9 +478,24 @@ begin
          if tx>ts then tx:=ts;
          Inc(n);
          ProgressBar.Position:=(n*1000) div maxN;
-         for i:=0 to ty-1 do
-            WorldExtract(x, y+i, tx, @buf[i*tx]);
-         htf.CompressTile(x, y, tx, ty, @buf[0]);
+         for i:=0 to ty-1 do begin
+            WorldExtract(x, y+i, tx, @buf[i*ts]);
+            if overlap>0 then begin
+               for j:=tx to ts-1 do
+                  buf[i*ts+j]:=buf[i*ts+tx-1];
+            end else begin
+               for j:=tx to ts-1 do
+                  buf[i*ts+j]:=defaultZ;
+            end;
+         end;
+         if overlap>0 then begin
+            for i:=ty to ts-1 do for j:=0 to ts-1 do
+               buf[i*ts+j]:=buf[(i-1)*ts+j];
+         end else begin
+            for i:=ty to ts-1 do for j:=0 to ts-1 do
+               buf[i*ts+j]:=defaultZ;
+         end;
+         htf.CompressTile(x, y, ts, ts, @buf[0]);
          Inc(x, ts-overlap);
          if (n and 15)=0 then begin
             Application.ProcessMessages;

@@ -170,6 +170,10 @@ object MainForm: TMainForm
       Top = 56
       Width = 49
       Height = 21
+      Hint = 
+        'Tile overlap in samples'#13#10'When overlap is 1, righternmost and bot' +
+        'tommost undefined samples '#13#10'will be filled completed with last r' +
+        'ow value in place of default value'
       TabOrder = 8
       Text = '0'
     end
