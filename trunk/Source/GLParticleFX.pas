@@ -320,6 +320,10 @@ type
    end;
    PPFXRegion = ^TPFXRegion;
 
+   // TPFXSortAccuracy
+   //
+   TPFXSortAccuracy = (saLow, saOneTenth, saOneThird, saOneHalf, saHigh);
+
    // TGLParticleFXRenderer
    //
    {: Rendering interface for scene-wide particle FX.<p>
@@ -334,13 +338,18 @@ type
          { Private Declarations }
          FManagerList : TList;
          FLastSortTime : Double;
-         FZWrite, FZTest, FZCull, FZAccurateSort : Boolean;
+         FLastParticleCount : Integer;
+         FZWrite, FZTest, FZCull : Boolean;
+         FZSortAccuracy : TPFXSortAccuracy;
+         FZMaxDistance : Single;
 			FBlendingMode : TBlendingMode;
          FCurrentRCI : PRenderContextInfo;
          FRegions : array [0..cPFXNbRegions-1] of TPFXRegion;
 
       protected
          { Protected Declarations }
+         function StoreZMaxDistance : Boolean;
+
          {: Register a manager }
          procedure RegisterManager(aManager : TGLParticleFXManager);
          {: UnRegister a manager }
@@ -359,6 +368,8 @@ type
          property CurrentRCI : PRenderContextInfo read FCurrentRCI;
          {: Time (in msec) spent sorting the particles for last render. }
          property LastSortTime : Double read FLastSortTime;
+         {: Amount of particles during the last render. }
+         property LastParticleCount : Integer read FLastParticleCount;
 
 		published
    		{ Published Declarations }
@@ -374,7 +385,10 @@ type
          {: If true particles will be accurately sorted back to front.<p>
             When false, only a rough ordering is used, which can result in
             visual glitches but may be faster. } 
-         property ZAccurateSort : Boolean read FZAccurateSort write FZAccurateSort default True;
+         property ZSortAccuracy : TPFXSortAccuracy read FZSortAccuracy write FZSortAccuracy default saHigh;
+         {: Maximum distance for rendering PFX particles.<p>
+            If zero, camera's DepthOfView is used. }
+         property ZMaxDistance : Single read FZMaxDistance write FZMaxDistance stored StoreZMaxDistance;
          {: Default blending mode for particles.<p>
             "Additive" blending is the usual mode (increases brightness and
             saturates), "transparency" may be used for smoke or systems that
@@ -416,15 +430,12 @@ type
          FDisabledIfOwnerInvisible: Boolean;
          FTimeRemainder : Double;
          FRotationDispersion: Single;
-         procedure SetRotationDispersion(const Value: Single);
 
       protected
          { Protected Declarations }
          procedure SetInitialVelocity(const val : TGLCoordinates);
          procedure SetInitialPosition(const val : TGLCoordinates);
          procedure SetPositionDispersionRange(const val : TGLCoordinates);
-         procedure SetVelocityDispersion(const val : Single);
-         procedure SetPositionDispersion(const val : Single);
          procedure SetParticleInterval(const val : Single);
          procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
@@ -450,15 +461,15 @@ type
 		published
 			{ Published Declarations }
          property InitialVelocity : TGLCoordinates read FInitialVelocity write SetInitialVelocity;
-         property VelocityDispersion : Single read FVelocityDispersion write SetVelocityDispersion;
+         property VelocityDispersion : Single read FVelocityDispersion write FVelocityDispersion;
          property InitialPosition : TGLCoordinates read FInitialPosition write SetInitialPosition;
-         property PositionDispersion : Single read FPositionDispersion write SetPositionDispersion;
+         property PositionDispersion : Single read FPositionDispersion write FPositionDispersion;
          property PositionDispersionRange : TGLCoordinates read FPositionDispersionRange write SetPositionDispersionRange;
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
          property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
          property PositionMode : TGLSourcePFXPositionMode read FPositionMode write FPositionMode default spmAbsoluteOffset;
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
-         property RotationDispersion : Single read FRotationDispersion write SetRotationDispersion;
+         property RotationDispersion : Single read FRotationDispersion write FRotationDispersion;
          property Enabled : boolean read FEnabled write FEnabled;
          property DisabledIfOwnerInvisible : boolean read FDisabledIfOwnerInvisible write FDisabledIfOwnerInvisible;
    end;
@@ -531,8 +542,6 @@ type
          procedure SetSizeScale(const val : Single);
          procedure SetRotateAngle(const Value: Single);  // indirectly persistent
 
-         procedure OnChanged(Sender : TObject);
-
       public
 	      { Public Declarations }
 	      constructor Create(Collection : TCollection); override;
@@ -595,7 +604,6 @@ type
 
       protected
          { Protected Declarations }
-         procedure SetParticleSize(const val : Single);
          procedure SetLifeColors(const val : TPFXLifeColors);
          procedure SetColorInner(const val : TGLColor);
          procedure SetColorOuter(const val : TGLColor);
@@ -619,7 +627,7 @@ type
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
-         property ParticleSize : Single read FParticleSize write SetParticleSize;
+         property ParticleSize : Single read FParticleSize write FParticleSize;
          property ColorInner : TGLColor read FColorInner write SetColorInner;
          property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
          property LifeColors : TPFXLifeColors read FLifeColors write SetLifeColors;
@@ -1171,7 +1179,7 @@ begin
    Result:=ParticlesClass.Create;
    Result.FID:=FNextID;
    if Assigned(cadencer) then
-      Result.FCreationTime:=Cadencer.GetCurrentTime;
+      Result.FCreationTime:=Cadencer.CurrentTime;
    Inc(FNextID);
    FParticles.AddItem(Result);
    if Assigned(FOnCreateParticle) then
@@ -1383,7 +1391,7 @@ begin
    ObjectStyle:=ObjectStyle+[osNoVisibilityCulling, osDirectDraw];
    FZTest:=True;
    FZCull:=True;
-   FZAccurateSort:=True;
+   FZSortAccuracy:=saHigh;
    FManagerList:=TList.Create;
    FBlendingMode:=bmAdditive;
 end;
@@ -1500,7 +1508,7 @@ var
    end;
 
 var
-   minDist, maxDist : Integer;
+   minDist, maxDist, sortMaxRegion : Integer;
    curManager : TGLParticleFXManager;
    curList : PGLParticleArray;
    curParticle : TGLParticle;
@@ -1517,8 +1525,13 @@ begin
    // precalcs
    with Scene.CurrentGLCamera do begin
       PSingle(@minDist)^:=NearPlane+1;
-      PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
-      invRegionSize:=(cPFXNbRegions-2)/DepthOfView;
+      if ZMaxDistance<=0 then begin
+         PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
+         invRegionSize:=(cPFXNbRegions-2)/DepthOfView;
+      end else begin
+         PSingle(@maxDist)^:=NearPlane+ZMaxDistance+1;
+         invRegionSize:=(cPFXNbRegions-2)/ZMaxDistance;
+      end;
       distDelta:=NearPlane+1+0.49999/invRegionSize
    end;
    SetVector(cameraPos, rci.cameraPosition);
@@ -1526,9 +1539,11 @@ begin
    try
       // Collect particles
       // only depth-clipping performed as of now.
+      FLastParticleCount:=0;
       for managerIdx:=0 to FManagerList.Count-1 do begin
          curManager:=TGLParticleFXManager(FManagerList[managerIdx]);
          curList:=curManager.FParticles.List;
+         Inc(FLastParticleCount, curManager.ParticleCount);
          for particleIdx:=0 to curManager.ParticleCount-1 do begin
             curParticle:=curList[particleIdx];
             dist:=PointProject(curParticle.FPosition, cameraPos, cameraVector)+1;
@@ -1554,6 +1569,14 @@ begin
          end;
       end;
       // Sort regions
+      case ZSortAccuracy of
+         saLow : sortMaxRegion:=0;
+         saOneTenth : sortMaxRegion:=cPFXNbRegions div 10;
+         saOneThird : sortMaxRegion:=cPFXNbRegions div 3;
+         saOneHalf : sortMaxRegion:=cPFXNbRegions div 2;
+      else
+         sortMaxRegion:=cPFXNbRegions;
+      end;
       for regionIdx:=0 to cPFXNbRegions-1 do begin
          curRegion:=@FRegions[regionIdx];
          if curRegion.count>1 then begin
@@ -1561,7 +1584,7 @@ begin
             with curRegion^ do for particleIdx:=0 to count-1 do
                particleOrder[particleIdx]:=@particleRef[particleIdx];
             // QuickSort
-            if FZAccurateSort and (FBlendingMode<>bmAdditive) then
+            if (regionIdx<sortMaxRegion) and (FBlendingMode<>bmAdditive) then
                QuickSortRegion(0, curRegion.count-1, curRegion);
          end else if curRegion.Count=1 then begin
             // Prepare order table
@@ -1648,6 +1671,13 @@ begin
       for regionIdx:=cPFXNbRegions-1 downto 0 do
          FRegions[regionIdx].count:=0;
    end;
+end;
+
+// StoreZMaxDistance
+//
+function TGLParticleFXRenderer.StoreZMaxDistance : Boolean;
+begin
+   Result:=(FZMaxDistance<>0);
 end;
 
 // ------------------
@@ -1761,14 +1791,6 @@ begin
    FInitialVelocity.Assign(val);
 end;
 
-// SetVelocityDispersion
-//
-procedure TGLSourcePFXEffect.SetVelocityDispersion(const val : Single);
-begin
-   FVelocityDispersion:=val;
-   OwnerBaseSceneObject.NotifyChange(Self);
-end;
-
 // SetInitialPosition
 //
 procedure TGLSourcePFXEffect.SetInitialPosition(const val : TGLCoordinates);
@@ -1778,25 +1800,9 @@ end;
 
 // SetPositionDispersionRange
 //
-{!EK_start }
-procedure TGLSourcePFXEffect.SetRotationDispersion(const Value: Single);
-begin
-  FRotationDispersion := Value;
-  OwnerBaseSceneObject.NotifyChange(Self);
-end;
-{!EK_end }
-
 procedure TGLSourcePFXEffect.SetPositionDispersionRange(const val : TGLCoordinates);
 begin
    FPositionDispersionRange.Assign(val);
-end;
-
-// SetPositionDispersion
-//
-procedure TGLSourcePFXEffect.SetPositionDispersion(const val : Single);
-begin
-   FPositionDispersion:=val;
-   OwnerBaseSceneObject.NotifyChange(Self);
 end;
 
 // SetParticleInterval
@@ -1808,7 +1814,6 @@ begin
       if FParticleInterval<0 then FParticleInterval:=0;
       if FTimeRemainder>FParticleInterval then
          FTimeRemainder:=FParticleInterval;
-      OwnerBaseSceneObject.NotifyChange(Self);
    end;
 end;
 
@@ -1914,8 +1919,8 @@ end;
 constructor TPFXLifeColor.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
-   FColorInner:=TGLColor.CreateInitialized(Self, NullHmgVector, OnChanged);
-   FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector, OnChanged);
+   FColorInner:=TGLColor.CreateInitialized(Self, NullHmgVector);
+   FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector);
    FLifeTime:=1;
    FInvLifeTime:=1;
    FSizeScale:=1;
@@ -1956,13 +1961,6 @@ begin
                    ColorOuter.Red, ColorOuter.Green, ColorOuter.Blue, ColorOuter.Alpha]);
 end;
 
-// OnChanged
-//
-procedure TPFXLifeColor.OnChanged(Sender : TObject);
-begin
-   ((Collection as TPFXLifeColors).GetOwner as TGLParticleFXManager).NotifyChange(Self);
-end;
-
 // SetColorInner
 //
 procedure TPFXLifeColor.SetColorInner(const val : TGLColor);
@@ -1985,7 +1983,6 @@ begin
       FLifeTime:=val;
       if FLifeTime<=0 then FLifeTime:=1e-6;
       FInvLifeTime:=1/FLifeTime;
-      OnChanged(Self);
    end;
 end;
 
@@ -2203,16 +2200,6 @@ begin
    FColorInner.Free;
    FColorOuter.Free;
    inherited Destroy;
-end;
-
-// SetParticleSize
-//
-procedure TGLLifeColoredPFXManager.SetParticleSize(const val : Single);
-begin
-   if FParticleSize<>val then begin
-      FParticleSize:=val;
-      NotifyChange(Self);
-   end;
 end;
 
 // SetColorInner
