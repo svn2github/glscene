@@ -13,7 +13,7 @@
    have to add a sample at design-time and this removes the need for an external
    file, but for our samples, we share a single wav files among all demos.
    Sound libraries are used to store sound samples, you may only play a sample
-   that is available in library (you can add/remove sample dynamically).<p>
+   that is available in library (you can add/remove samples dynamically).<p>
 
    We also have sound manager. There can only be one *active* sound manager in
    any app at any time, it serves as an interface to a low-level sound API.
@@ -31,12 +31,12 @@
    amy or may not be available, but you don't need to worry about that, if
    a feature is unavailable on a particular driver, it will just be ignored.<p>
 
-   Raw performance comparisons between FMOD and BASS on this sample would be
-   unfair because:<ul>
-   <li>BASS 3D sound quality is higher (and BASS support sound cones)
-   <li>BASS uses DirectSound, while FMOD uses WinMM output (couldn't get FMOD
-       to work reliably in DirectSound mode)
-   </ul>However, CPU use stays extremely low in both cases.
+   For the sake of the demo, all three samples are using different formats,
+   the APIs take care of the conversions: "drumloop.wav" is a 44kHz ADPCM,
+   "howl.mp3" a 16kHz MP3, and "chimes.wav" a 22kHz ADPCM... All three files
+   however are mono, because stereo sounds cannot go 3D... Remember that only
+   3D sounds are required to be mono, if you have some background music or ambient
+   soundtrack, it can be stereo (use the BASS or FMOD API directly to play it).
 }
 unit Unit1;
 
@@ -73,6 +73,7 @@ type
     RBBass: TRadioButton;
     RBFMOD: TRadioButton;
     Button1: TButton;
+    Button2: TButton;
     procedure SphereProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure TimerTimer(Sender: TObject);
@@ -81,6 +82,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure RBFMODClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -100,7 +102,8 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
    // Load our sound sample
    GLSoundLibrary.Samples.AddFile('..\..\media\drumloop.wav');
-   GLSoundLibrary.Samples.AddFile('..\..\media\chimes.wav');
+   GLSoundLibrary.Samples.AddFile('..\..\media\chimes2.wav');
+   GLSoundLibrary.Samples.AddFile('..\..\media\howl.mp3');
 end;
 
 procedure TForm1.SphereProgress(Sender: TObject; const deltaTime,
@@ -167,7 +170,16 @@ procedure TForm1.Button1Click(Sender: TObject);
 begin
    with TGLBSoundEmitter.Create(Mickey.Behaviours) do begin
       Source.SoundLibrary:=GLSoundLibrary;
-      Source.SoundName:='chimes.wav';
+      Source.SoundName:='chimes2.wav';
+      Playing:=True;
+   end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+   with TGLBSoundEmitter.Create(Mickey.Behaviours) do begin
+      Source.SoundLibrary:=GLSoundLibrary;
+      Source.SoundName:='howl.mp3';
       Playing:=True;
    end;
 end;
