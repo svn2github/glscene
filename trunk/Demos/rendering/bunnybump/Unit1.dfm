@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 192
   Top = 107
-  Width = 400
-  Height = 400
+  Width = 475
+  Height = 466
   Caption = 'GLBumpShader Demo'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,9 +19,10 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 57
-    Width = 392
-    Height = 309
+    Width = 467
+    Height = 382
     Camera = Camera
+    BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBlack
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
@@ -30,7 +31,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 392
+    Width = 467
     Height = 57
     Align = alTop
     TabOrder = 1
@@ -41,6 +42,13 @@ object Form1: TForm1
       Height = 13
       Caption = 'Shade Method'
     end
+    object Label2: TLabel
+      Left = 384
+      Top = 8
+      Width = 72
+      Height = 13
+      Caption = 'Specular Mode'
+    end
     object ComboBox1: TComboBox
       Left = 8
       Top = 24
@@ -48,14 +56,12 @@ object Form1: TForm1
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      ItemIndex = 2
+      ItemIndex = 0
       TabOrder = 0
-      Text = 'Basic Fragment Program'
+      Text = 'Per-Vertex'
       OnChange = ComboBox1Change
       Items.Strings = (
-        'Per-Vertex'
-        'Dot3 Texture Combiner'
-        'Basic Fragment Program')
+        'Per-Vertex')
     end
     object GroupBox1: TGroupBox
       Left = 160
@@ -124,6 +130,22 @@ object Form1: TForm1
       State = cbChecked
       TabOrder = 2
     end
+    object ComboBox2: TComboBox
+      Left = 384
+      Top = 24
+      Width = 73
+      Height = 21
+      Style = csDropDownList
+      ItemHeight = 13
+      ItemIndex = 0
+      TabOrder = 3
+      Text = 'smOff'
+      OnChange = ComboBox2Change
+      Items.Strings = (
+        'smOff'
+        'smBlinn'
+        'smPhong')
+    end
   end
   object GLScene1: TGLScene
     Left = 8
@@ -160,6 +182,7 @@ object Form1: TForm1
       Material.FrontProperties.Shininess = 64
       Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
+      Material.TextureEx = <>
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
     end
     object Camera: TGLCamera
@@ -182,6 +205,7 @@ object Form1: TForm1
         Material.FrontProperties.Shininess = 64
         Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.Disabled = False
+        Material.TextureEx = <>
         Tag = 0
         Shader = GLBumpShader1
       end>
@@ -192,6 +216,7 @@ object Form1: TForm1
     BumpMethod = bmDot3TexCombiner
     BumpSpace = bsObject
     BumpOptions = []
+    SpecularMode = smOff
     DesignTimeEnabled = False
     Left = 40
     Top = 96

@@ -19,6 +19,11 @@
    Diffuse textures are supported through the secondary
    texture and can be enabled using the boDiffuseTexture2
    bump option.<p>
+
+   Specular textures are supported through the tertiary
+   texture and can be enabled using the boSpecularTexture3
+   bump option and setting the SpecularMode to smBlinn or
+   smPhong (smOff will disable specular in the shader).<p>
 }
 unit Unit1;
 
@@ -56,6 +61,8 @@ type
     DCLights: TGLDummyCube;
     AsyncTimer1: TAsyncTimer;
     CheckBox4: TCheckBox;
+    ComboBox2: TComboBox;
+    Label2: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -69,11 +76,15 @@ type
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormResize(Sender: TObject);
+    procedure GLSceneViewer1BeforeRender(Sender: TObject);
+    procedure ComboBox2Change(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
     mx, my, dx, dy : Integer;
+    IsInitialized : Boolean;
+    StartHeight : Integer;
   end;
 
 var
@@ -83,7 +94,7 @@ implementation
 
 {$R *.dfm}
 
-uses VectorGeometry;
+uses VectorGeometry, OpenGL1x;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -107,6 +118,8 @@ begin
 
   ComboBox1.ItemIndex:=0;
   ComboBox1Change(nil);
+
+  StartHeight:=Height;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -146,16 +159,14 @@ end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
-  case ComboBox1.ItemIndex of
-    0 : Bunny.Material.LibMaterialName:='';
-    1 : begin
-      Bunny.Material.LibMaterialName:='Bump';
-      GLBumpShader1.BumpMethod:=bmDot3TexCombiner;
-    end;
-    2 : begin
-      Bunny.Material.LibMaterialName:='Bump';
-      GLBumpShader1.BumpMethod:=bmBasicARBFP;
-    end;
+  if ComboBox1.Text = 'Per-Vertex' then
+    Bunny.Material.LibMaterialName:=''
+  else if ComboBox1.Text = 'Dot3 Texture Combiner' then begin
+    Bunny.Material.LibMaterialName:='Bump';
+    GLBumpShader1.BumpMethod:=bmDot3TexCombiner;
+  end else if ComboBox1.Text = 'Basic Fragment Program' then begin
+    Bunny.Material.LibMaterialName:='Bump';
+    GLBumpShader1.BumpMethod:=bmBasicARBFP;
   end;
 end;
 
@@ -190,7 +201,35 @@ end;
 
 procedure TForm1.FormResize(Sender: TObject);
 begin
-  Camera.SceneScale:=Height/400;
+  Camera.SceneScale:=Height/StartHeight;
+end;
+
+procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
+begin
+  if IsInitialized then exit;
+
+  if  GL_ARB_multitexture
+  and GL_ARB_vertex_program
+  and GL_ARB_texture_env_dot3 then
+    ComboBox1.Items.Add('Dot3 Texture Combiner');
+  if  GL_ARB_multitexture
+  and GL_ARB_vertex_program
+  and GL_ARB_fragment_program then begin
+    ComboBox1.Items.Add('Basic Fragment Program');
+    if GLSceneViewer1.Buffer.LimitOf[limNbTextureUnits]<3 then
+      GLBumpShader1.SpecularMode:=smOff;
+  end;
+
+  IsInitialized:=True;
+end;
+
+procedure TForm1.ComboBox2Change(Sender: TObject);
+begin
+  case ComboBox2.ItemIndex of
+    0 : GLBumpShader1.SpecularMode:=smOff;
+    1 : GLBumpShader1.SpecularMode:=smBlinn;
+    2 : GLBumpShader1.SpecularMode:=smPhong;
+  end;
 end;
 
 end.
