@@ -109,6 +109,18 @@ implementation
 
 {$R *.dfm}
 
+procedure TfrmClothify.FormCreate(Sender: TObject);
+begin
+  SetCurrentDir('..\..\Media\');
+
+  ComboBox_MeshName.ItemIndex:=0;
+  ComboBox_ConstraintType.ItemIndex:=0;
+  ComboBox_Collider.ItemIndex:=3;
+
+  Button_LoadMesh.Click;
+  TrackBar_IterationsChange(nil);
+end;
+
 procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
@@ -230,7 +242,7 @@ begin
   FreeAndNil(VerletWorld);
   FreeAndNil(EdgeDetector);
 
-  s := ComboBox_MeshName.Text;
+  s := ComboBox_MeshName.Items[MaxInteger(ComboBox_MeshName.ItemIndex, 0)];
 
   DecimalSeparator := '.';
 
@@ -431,14 +443,6 @@ procedure TfrmClothify.Timer1Timer(Sender: TObject);
 begin
   Label1.Caption := Format('%2.1f FPS',[GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
-end;
-
-procedure TfrmClothify.FormCreate(Sender: TObject);
-begin
-  SetCurrentDir('..\..\Media\');
-
-  Button_LoadMesh.Click;
-  TrackBar_IterationsChange(nil);
 end;
 
 procedure TfrmClothify.TrackBar_SlackChange(Sender: TObject);

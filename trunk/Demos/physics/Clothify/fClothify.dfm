@@ -14,9 +14,6 @@ object frmClothify: TfrmClothify
   Position = poScreenCenter
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
-  DesignSize = (
-    742
-    553)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -94,9 +91,9 @@ object frmClothify: TfrmClothify
       Top = 32
       Width = 137
       Height = 21
+      Style = csDropDownList
       ItemHeight = 13
       TabOrder = 0
-      Text = 'Trinityrage.smd, 0.15'
       Items.Strings = (
         'Trinityrage.smd, 0.15'
         'HalfSphere.ms3d, 2'
@@ -112,10 +109,9 @@ object frmClothify: TfrmClothify
       Top = 32
       Width = 89
       Height = 21
+      Style = csDropDownList
       ItemHeight = 13
-      ItemIndex = 0
       TabOrder = 1
-      Text = 'Constraints'
       Items.Strings = (
         'Constraints'
         'Forces')
@@ -125,10 +121,9 @@ object frmClothify: TfrmClothify
       Top = 32
       Width = 73
       Height = 21
+      Style = csDropDownList
       ItemHeight = 13
-      ItemIndex = 3
       TabOrder = 2
-      Text = 'Stairs'
       Items.Strings = (
         'Sphere'
         'Infinite Cylinder'
