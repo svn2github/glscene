@@ -2,6 +2,8 @@
 {: Information sur le driver OpenGL courant<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/06/03 - EG - Double-clicking an extension will no go to its OpenGL
+                          registry webpage 
       <li>22/05/03 - EG - Added Texture Units info
       <li>21/07/02 - EG - No longer modal
       <li>03/02/02 - EG - InfoForm registration mechanism
@@ -78,20 +80,21 @@ type
     UnderlayLabel: TLabel;
     Label20: TLabel;
     TabSheet1: TTabSheet;
-    Extensions: TMemo;
     Label4: TLabel;
     TexUnitsLabel: TLabel;
+    Extensions: TListBox;
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ExtensionsDblClick(Sender: TObject);
   public
     procedure GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
   end;
 
 implementation
 
-uses OpenGL12, SysUtils;
+uses OpenGL12, SysUtils, ShellAPI;
 
 {$R *.dfm}
 {$R Info.res}
@@ -151,7 +154,7 @@ begin
       while Length(ExtStr) > 0 do begin
         I:=Pos(' ',ExtStr);
         if I = 0 then I:=255;
-        Extensions.Lines.Add(Copy(ExtStr,1,I-1));
+        Extensions.Items.Add(Copy(ExtStr,1,I-1));
         Delete(ExtStr,1,I);
       end;
       if DoubleBuffered then begin
@@ -254,6 +257,26 @@ end;
 procedure TInfoForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
    Release;
+end;
+
+procedure TInfoForm.ExtensionsDblClick(Sender: TObject);
+var
+   p : Integer;
+   url, buf : String;
+begin
+   with Extensions do begin
+      if ItemIndex<0 then Exit;
+      url:=Items[ItemIndex];
+   end;
+   p:=Pos('_', url);
+   buf:=Copy(url, 1, p-1);
+   url:=Copy(url, p+1, 255);
+   if (buf<>'GL') and (buf<>'WGL') and (buf<>'GLX') then Exit;
+   p:=Pos('_', url);
+   buf:=Copy(url, 1, p-1);
+   url:= 'http://oss.sgi.com/projects/ogl-sample/registry/'
+        +buf+'/'+Copy(url, p+1, 255)+'.txt';
+   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOW);
 end;
 
 //------------------------------------------------------------------------------

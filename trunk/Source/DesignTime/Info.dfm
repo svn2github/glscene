@@ -1,20 +1,21 @@
 object InfoForm: TInfoForm
-  Left = 233
-  Top = 108
-  BorderIcons = [biHelp]
+  Left = 375
+  Top = 105
+  BorderIcons = [biSystemMenu, biHelp]
   BorderStyle = bsToolWindow
   BorderWidth = 3
-  Caption = 'OpenGL implementation info'
+  Caption = 'OpenGL Driver Info'
   ClientHeight = 256
   ClientWidth = 405
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -10
-  Font.Name = 'MS Sans Serif'
+  Font.Name = 'Arial'
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = True
+  ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
@@ -50,7 +51,6 @@ object InfoForm: TInfoForm
     Height = 225
     ActivePage = Sheet1
     HotTrack = True
-    TabIndex = 0
     TabOrder = 0
     object Sheet1: TTabSheet
       Caption = 'Common'
@@ -813,24 +813,26 @@ object InfoForm: TInfoForm
     object TabSheet1: TTabSheet
       Caption = 'Supported extensions'
       ImageIndex = 3
-      object Extensions: TMemo
+      object Extensions: TListBox
         Left = 0
         Top = 0
         Width = 396
         Height = 197
+        Hint = 
+          'Double-click and extension to go to its OpenGL Extension registr' +
+          'y page'
         Align = alClient
         BorderStyle = bsNone
-        Color = clBtnFace
+        Color = clBtnHighlight
         Font.Charset = DEFAULT_CHARSET
-        Font.Color = clTeal
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Color = cl3DDkShadow
+        Font.Height = -12
+        Font.Name = 'Arial'
         Font.Style = [fsBold]
+        ItemHeight = 15
         ParentFont = False
-        ReadOnly = True
-        ScrollBars = ssBoth
         TabOrder = 0
-        WordWrap = False
+        OnDblClick = ExtensionsDblClick
       end
     end
   end
