@@ -297,6 +297,8 @@ type
 
 	   protected
 	      { Protected Declarations }
+         FGlobalMatrix : TMatrix;
+         
          function GetSkeletonBone(Index: Integer) : TSkeletonBone;
          procedure AfterObjectCreatedByReader(Sender : TObject); override;
 
@@ -340,6 +342,8 @@ type
 
          //: Render skeleton wireframe
          procedure BuildList(var mrci : TRenderContextInfo); override;
+
+         property GlobalMatrix : TMatrix read FGlobalMatrix write FGlobalMatrix;
    end;
 
 	// TSkeletonBone
@@ -355,7 +359,6 @@ type
          FBoneID : Integer;
          FName : String;
          FColor : Cardinal;
-         FGlobalMatrix : TMatrix;
 
 	   protected
 	      { Protected Declarations }
@@ -2341,6 +2344,7 @@ end;
 constructor TSkeletonBoneList.Create;
 begin
 	inherited;
+   FGlobalMatrix:=IdentityHmgMatrix;
 end;
 
 // Destroy
@@ -2603,10 +2607,8 @@ end;
 //
 procedure TSkeletonBone.PrepareGlobalMatrices;
 begin
-   if Owner is TSkeletonBone then
-      FGlobalMatrix:=MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList[BoneID],
-                                    TSkeletonBone(Owner).FGlobalMatrix)
-   else FGlobalMatrix:=Skeleton.CurrentFrame.LocalMatrixList[BoneID];
+   FGlobalMatrix:=MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList[BoneID],
+                                 TSkeletonBoneList(Owner).FGlobalMatrix);
    inherited;
 end;
 
@@ -6346,20 +6348,20 @@ var
    lerpInfos : array of TBlendedLerpInfo;
 begin
    nextFrameIdx:=NextFrameIndex;
-   if nextFrameIdx>=0 then begin
-      case Reference of
-         aarMorph : begin
-            case FrameInterpolation of
-               afpLinear :
-                  MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
-            else
-               MeshObjects.MorphTo(CurrentFrame);
-            end;
+   case Reference of
+      aarMorph : if nextFrameIdx>=0 then begin
+         case FrameInterpolation of
+            afpLinear :
+               MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
+         else
+            MeshObjects.MorphTo(CurrentFrame);
          end;
-         aarSkeleton : if Skeleton.Frames.Count>0 then begin
-            if Assigned(FControlers) then begin
-               // Blended Skeletal Lerping
-               SetLength(lerpInfos, FControlers.Count+1);
+      end;
+      aarSkeleton : if Skeleton.Frames.Count>0 then begin
+         if Assigned(FControlers) then begin
+            // Blended Skeletal Lerping
+            SetLength(lerpInfos, FControlers.Count+1);
+            if nextFrameIdx>=0 then begin
                case FrameInterpolation of
                   afpLinear : with lerpInfos[0] do begin
                      frameIndex1:=CurrentFrame;
@@ -6375,25 +6377,32 @@ begin
                      weight:=1;
                   end;
                end;
-               k:=1;
-               for i:=0 to FControlers.Count-1 do
-                  if TGLAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
-                     Inc(k);
-               SetLength(lerpInfos, k);
-               Skeleton.BlendedLerps(lerpInfos);
             end else begin
-               // Single Skeletal Lerp
-               case FrameInterpolation of
-                  afpLinear :
-                     Skeleton.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta);
-               else
-                  Skeleton.SetCurrentFrame(Skeleton.Frames[CurrentFrame]);
+               with lerpInfos[0] do begin
+                  frameIndex1:=CurrentFrame;
+                  frameIndex2:=CurrentFrame;
+                  lerpFactor:=0;
+                  weight:=1;
                end;
             end;
-            Skeleton.MorphMesh(aoSkeletonNormalizeNormals in Options);
+            k:=1;
+            for i:=0 to FControlers.Count-1 do
+               if TGLAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
+                  Inc(k);
+            SetLength(lerpInfos, k);
+            Skeleton.BlendedLerps(lerpInfos);
+         end else if nextFrameIdx>=0 then begin
+            // Single Skeletal Lerp
+            case FrameInterpolation of
+               afpLinear :
+                  Skeleton.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta);
+            else
+               Skeleton.SetCurrentFrame(Skeleton.Frames[CurrentFrame]);
+            end;
          end;
-         aarNone : ; // do nothing
+         Skeleton.MorphMesh(aoSkeletonNormalizeNormals in Options);
       end;
+      aarNone : ; // do nothing
    end;
    inherited;
    if OverlaySkeleton then begin
