@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>27/01/03 - EG - Assign support, fixed MorphableMeshObjects persistence
       <li>16/01/03 - EG - Updated multiples Bones per vertex transformation code,
                           now makes use of CVAs 
       <li>14/01/03 - EG - Added DisableOpenGLArrays
@@ -1049,6 +1050,7 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure Assign(Source: TPersistent); override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
          function AxisAlignedDimensions : TVector; override;
@@ -1387,6 +1389,7 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure Assign(Source: TPersistent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
 
@@ -3188,6 +3191,7 @@ procedure TMeshMorphTarget.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       //nothing
@@ -3628,11 +3632,6 @@ begin
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
-
-
-
-
-
 end;
 
 // WriteToFiler
@@ -4708,6 +4707,24 @@ begin
    inherited Destroy;
 end;
 
+// Assign
+//
+procedure TGLBaseMesh.Assign(Source: TPersistent);
+begin
+   if Source is TGLBaseMesh then begin
+      FNormalsOrientation:=TGLBaseMesh(Source).FNormalsOrientation;
+      FMaterialLibrary:=TGLBaseMesh(Source).FMaterialLibrary;
+      FAxisAlignedDimensionsCache:=TGLBaseMesh(Source).FAxisAlignedDimensionsCache;
+      FUseMeshMaterials:=TGLBaseMesh(Source).FUseMeshMaterials;
+      FOverlaySkeleton:=TGLBaseMesh(Source).FOverlaySkeleton;
+      FIgnoreMissingTextures:=TGLBaseMesh(Source).FIgnoreMissingTextures;
+      FAutoCentering:=TGLBaseMesh(Source).FAutoCentering;
+      FMeshObjects.Assign(TGLBaseMesh(Source).FMeshObjects);
+      FSkeleton.Assign(TGLBaseMesh(Source).FSkeleton);
+   end;
+   inherited Assign(Source);
+end;
+
 // LoadFromFile
 //
 procedure TGLBaseMesh.LoadFromFile(const filename : String);
@@ -5626,6 +5643,18 @@ begin
    inherited Destroy;
    FControlers.Free;
    FAnimations.Free;
+end;
+
+// Assign
+//
+procedure TGLActor.Assign(Source: TPersistent);
+begin
+   inherited Assign(Source);
+   if Source is TGLActor then begin
+      FAnimations.Assign(TGLActor(Source).FAnimations);
+      FAnimationMode:=TGLActor(Source).FAnimationMode;
+      Synchronize(TGLActor(Source));
+   end;
 end;
 
 // RegisterControler
