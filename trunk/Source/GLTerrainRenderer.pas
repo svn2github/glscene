@@ -203,7 +203,7 @@ procedure TTerrainRenderer.BuildList(var rci : TRenderContextInfo);
 var
    vEye : TVector;
    tilePos, absTilePos, observer : TAffineVector;
-   delta, i, k, n : Integer;
+   delta, n : Integer;
    f, tileRadius, texFactor : Single;
    patch, prevPatch : TGLROAMPatch;
    vertices : TAffineVectorList;
@@ -326,13 +326,13 @@ end;
 
 function TTerrainRenderer.RenderTile2(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
 var
-   i, k, hash : Integer;
+   i, hash : Integer;
    hd, tile : THeightData;
    xLeft, yTop : Integer;
    patch : TGLROAMPatch;
-   vertices : TAffineVectorList;
-   vertexIndices : TIntegerList;
-   texPoints : TTexPointList;
+//   vertices : TAffineVectorList;
+//   vertexIndices : TIntegerList;
+//   texPoints : TTexPointList;
 begin
    xLeft:=Round(tilePos[0]/(TileSize)-0.5)*(TileSize);
    yTop:=Round(tilePos[1]/(TileSize)-0.5)*(TileSize);
