@@ -12,6 +12,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.
 
   History:<ul>
+    <li>25/07/03 - SG - Fixed Manager property persistence, other minor changes.
     <li>24/07/03 - SG - ReadFromFiler and WriteToFiler routines added,
                         improved object and joint initialization system.
                         Manager properties not persitent in joints and behaviours.
@@ -96,8 +97,6 @@ type
       procedure RegisterJoint(aJoint : TODEBaseJoint);
       procedure UnregisterJoint(aJoint : TODEBaseJoint);
 
-      procedure InitializeDynamicObjects;
-      procedure InitializeJoints;
       property DynamicObjectRegister : TPersistentObjectList read FDynamicObjectRegister;
       property JointRegister : TPersistentObjectList read FJointRegister;
     public
@@ -569,7 +568,6 @@ type
     protected
       procedure Initialize; override;
     public
-      constructor Create(AOwner:TComponent); override;
       procedure NotifyChange(Sender:TObject); override;
   end;
 
@@ -621,6 +619,7 @@ type
       procedure DefineProperties(Filer: TFiler); override;
       procedure WriteJoints(stream : TStream);
       procedure ReadJoints(stream : TStream);
+      procedure Loaded; override;
     public
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
@@ -641,8 +640,6 @@ type
       FObject1,
       FObject2 : TObject;
       FManager : TGLODEManager;
-      FObject1Index,
-      FObject2Index : Integer;
       FManagerName : String;
       FAnchor,
       FAxis,
@@ -1041,6 +1038,8 @@ begin
   FRFContactList:=TList.Create;
 
   dWorldSetCFM(FWorld,1e-5);
+
+  RegisterManager(Self);
 end;
 
 // Destroy
@@ -1055,6 +1054,7 @@ begin
   dJointGroupDestroy(FContactGroup);
   dSpaceDestroy(FSpace);
   dWorldDestroy(FWorld);
+  DeregisterManager(Self);
   inherited Destroy;
 end;
 
@@ -1084,37 +1084,6 @@ end;
 procedure TGLODEManager.UnregisterJoint(aJoint : TODEBaseJoint);
 begin
   FJointRegister.Remove(aJoint);
-end;
-
-// InitializeDynamicObjects
-//
-procedure TGLODEManager.InitializeDynamicObjects;
-var
-  i : integer;
-begin
-  for i:=0 to FDynamicObjectRegister.Count-1 do begin
-    if FDynamicObjectRegister[i] is TGLODEDynamicObject then begin
-      if not TGLODEDynamicObject(FDynamicObjectRegister[i]).Initialized then
-        TGLODEDynamicObject(FDynamicObjectRegister[i]).Initialize;
-      if FDynamicObjectRegister[i] is TGLODEDummy then
-        TGLODEDummy(FDynamicObjectRegister[i]).Elements.Initialize
-    end;
-    if FDynamicObjectRegister[i] is TGLODEDynamicBehaviour then
-      if not TGLODEDynamicBehaviour(FDynamicObjectRegister[i]).Initialized then
-        TGLODEDynamicBehaviour(FDynamicObjectRegister[i]).Initialize;
-      TGLODEDynamicBehaviour(FDynamicObjectRegister[i]).Elements.Initialize
-  end;
-end;
-
-// IntializeJoints
-//
-procedure TGLODEManager.InitializeJoints;
-var
-  i : integer;
-begin
-  for i:=0 to FJointRegister.Count-1 do
-    if not TODEBaseJoint(FJointRegister[i]).Initialized then
-      TODEBaseJoint(FJointRegister[i]).Initialize;
 end;
 
 // SetGravity
@@ -1246,13 +1215,6 @@ var
   body  : PdxBody;
   Coeff : Single;
 begin
-  { These procedures shouldn't need to be called more than once but 
-    it will do fo now. It's really only necessary for objects created
-    at design-time, run-time objects should initialize when a manager
-    is assigned. }
-  InitializeDynamicObjects;
-  InitializeJoints;
-
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace,Self,nearCallback);
   dWorldStep(FWorld,deltaTime);
@@ -1822,7 +1784,9 @@ begin
   inherited;
   with writer do begin
     WriteInteger(0); // Archive version
-    WriteString(FManager.GetNamePath);
+    if Assigned(FManager) then
+      WriteString(FManager.GetNamePath)
+    else WriteString('');
   end;
 end;
 
@@ -3009,12 +2973,6 @@ begin
   dGeomPlaneSetParams(Geom,Dir[0],Dir[1],Dir[2],d);
 end;
 
-constructor TGLODEPlane.Create(AOwner: TComponent);
-begin
-  inherited;
-  Direction.SetVector(0,1,0);
-end;
-
 procedure TGLODEPlane.Initialize;
 begin
   if not Assigned(Manager) then exit;
@@ -3192,6 +3150,17 @@ begin
   end;
 end;
 
+// Loaded
+//
+procedure TGLODEJointList.Loaded;
+var
+  i : integer;
+begin
+  inherited;
+  for i:=0 to FJoints.Count-1 do
+    FJoints[i].Loaded;
+end;
+
 
 // ------------------------------------------------------------------
 // TODEBaseJoint
@@ -3245,9 +3214,9 @@ begin
   inherited;
   with writer do begin
     WriteInteger(0); // Archive version
-    WriteString(Manager.GetNamePath);
-    WriteInteger(FObject1Index);
-    WriteInteger(FObject2Index);
+    if Assigned(FManager) then
+      WriteString(FManager.GetNamePath)
+    else WriteString('');
     FAnchor.WriteToFiler(writer);
     FAxis.WriteToFiler(writer);
     FAxis2.WriteToFiler(writer);
@@ -3262,8 +3231,6 @@ begin
   with reader do begin
     Assert(ReadInteger = 0); // Archive version
     FManagerName:=ReadString;
-    FObject1Index:=ReadInteger;
-    FObject2Index:=ReadInteger;
     FAnchor.ReadFromFiler(reader);
     FAxis.ReadFromFiler(reader);
     FAxis2.ReadFromFiler(reader);
