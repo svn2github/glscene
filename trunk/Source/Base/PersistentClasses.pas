@@ -9,6 +9,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/02/03 - EG - Added IPersistentObject
       <li>09/09/01 - EG - Optimized Pack (x2.5)
       <li>14/08/01 - EG - Added AfterObjectCreatedByReader
       <li>03/08/01 - EG - Big update with addition of Virtual filers
@@ -82,6 +83,17 @@ type
    TVirtualReaderClass = class of TVirtualReader;
    TVirtualWriterClass = class of TVirtualWriter;
 
+   // IPersistentObject
+   //
+   {: Interface for persistent objects.<p>
+      This interface does not really allow polymorphic persistence,
+      but is rather intended as a way to unify persistence calls
+      for iterators. }
+   IPersistentObject = interface (IUnknown)
+      procedure WriteToFiler(writer : TVirtualWriter);
+	   procedure ReadFromFiler(reader : TVirtualReader);
+   end;
+
 	// TPersistentObject
 	//
    {: Base class for persistent objects.<p>
@@ -89,8 +101,10 @@ type
       in sub-classes, the immediate benefits are support of streaming (to stream,
       file or string), assignment and cloning.<br>
       The other requirement being the use of a virtual constructor, which allows
-      polymorphic construction (don't forget to register your subclasses). }
-	TPersistentObject = class (TPersistent)
+      polymorphic construction (don't forget to register your subclasses).<p>
+      Note that TPersistentObject implements IUnknown, but does *not* implement
+      reference counting. }
+	TPersistentObject = class (TPersistent, IPersistentObject)
 	   private
 	      { Private Declarations }
 
@@ -98,6 +112,10 @@ type
 	      { Protected Declarations }
    	   procedure RaiseFilerException(const archiveVersion : Integer);
 
+         function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+         function _AddRef: Integer; stdcall;
+         function _Release: Integer; stdcall;
+         
 	   public
 	      { Public Declarations }
 	      constructor Create; virtual;
@@ -338,6 +356,8 @@ type
 	EFilerException = Class(Exception)
 	end;
 
+procedure RaiseFilerException(aClass : TClass; archiveVersion : Integer);
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -368,6 +388,13 @@ const
 
    cTrue    = 'True';
    cFalse   = 'False';
+
+// RaiseFilerException
+//
+procedure RaiseFilerException(aClass : TClass; archiveVersion : Integer);
+begin
+   raise EFilerException.Create(aClass.ClassName+cUnknownArchiveVersion+IntToStr(archiveVersion));
+end;
 
 // ------------------
 // ------------------ TVirtualReader ------------------
@@ -521,6 +548,31 @@ end;
 procedure TPersistentObject.RaiseFilerException(const archiveVersion : Integer);
 begin
 	raise EFilerException.Create(ClassName+cUnknownArchiveVersion+IntToStr(archiveVersion)); //:IGNORE
+end;
+
+// QueryInterface
+//
+function TPersistentObject.QueryInterface(const IID: TGUID; out Obj): HResult;
+const
+   E_NOINTERFACE = HResult($80004002);
+begin
+   if GetInterface(IID, Obj) then Result := 0 else Result := E_NOINTERFACE;
+end;
+
+// _AddRef
+//
+function TPersistentObject._AddRef: Integer;
+begin
+   // ignore
+   Result:=1;
+end;
+
+// _Release
+//
+function TPersistentObject._Release: Integer;
+begin
+   // ignore
+   Result:=0;
 end;
 
 // SaveToStream
