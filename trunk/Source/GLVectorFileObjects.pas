@@ -3775,6 +3775,7 @@ end;
 //
 procedure TFGVertexIndexList.BuildList(var mrci : TRenderContextInfo);
 begin
+   if VertexIndices.Count=0 then Exit;
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin
          Owner.Owner.DeclareArraysToOpenGL(mrci, False);

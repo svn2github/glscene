@@ -28,7 +28,7 @@ unit VectorLists;
 
 interface
 
-uses Classes, Geometry, PersistentClasses;
+uses Classes, VectorTypes, Geometry, PersistentClasses;
 
 type
 
@@ -165,6 +165,7 @@ type
 			function  Add(const item : TAffineVector) : Integer; overload;
 			procedure Add(const i1, i2 : TAffineVector); overload;
 			procedure Add(const i1, i2, i3 : TAffineVector); overload;
+			function  Add(const item : TVector2f) : Integer; overload;
 			function  Add(const item : TTexPoint) : Integer; overload;
 			function  Add(const x, y : Single) : Integer; overload;
 			function  Add(const x, y, z : Single) : Integer; overload;
@@ -876,6 +877,13 @@ begin
 	FList[FCount-3] := i1;
 	FList[FCount-2] := i2;
 	FList[FCount-1] := i3;
+end;
+
+// Add (vector2f)
+//
+function TAffineVectorList.Add(const item : TVector2f) : Integer;
+begin
+   Result:=Add(AffineVectorMake(item[0], item[1], 0))
 end;
 
 // Add (texpoint)

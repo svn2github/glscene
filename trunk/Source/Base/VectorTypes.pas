@@ -24,6 +24,10 @@ interface
 
 type
 
+   TVector2i = array [0..1] of Longint;
+   TVector2f = array [0..1] of Single;
+   TVector2d = array [0..1] of Double;
+
    TVector3i = array [0..2] of Longint;
    TVector3f = array [0..2] of Single;
    TVector3d = array [0..2] of Double;
