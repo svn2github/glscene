@@ -77,7 +77,7 @@ type
 
       public
          { Public Declarations }
-	      constructor Create(AOwner: TPersistent);
+	      constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
 
          procedure PlayOnWaveOut; dynamic;

@@ -963,7 +963,7 @@ type
 
       public
          { Public Declarations }
-         constructor Create(AOwner: TPersistent); virtual;
+         constructor Create(AOwner: TPersistent); override;
 
          function Owner : TGLBaseMesh;
 

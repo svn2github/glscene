@@ -94,7 +94,7 @@ type
 
       public
          { Public Declarations }
-	      constructor Create(AOwner: TPersistent);
+	      constructor Create(AOwner: TPersistent); virtual;
          destructor Destroy; override;
 
          {: Describes what the TDataFile is capable of.<p>
