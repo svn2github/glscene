@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/05/03 - EG - TGLFlatText Notification fix, added Options
       <li>30/10/02 - EG - Added TGLFlatText
       <li>29/09/02 - EG - Added TexCoords LUT, faster RenderString,
                           removed TBitmapFontRange.Widths
@@ -226,6 +227,11 @@ type
          property GlyphsAlpha;
 	end;
 
+   // TGLFlatTextOptions
+   //
+   TGLFlatTextOption = (ftoTwoSided);
+   TGLFlatTextOptions = set of TGLFlatTextOption;
+
    // TGLFlatText
    //
    {: A 2D text displayed and positionned in 3D coordinates.<p>
@@ -239,6 +245,7 @@ type
          FAlignment : TAlignment;
          FLayout : TTextLayout;
          FModulateColor : TGLColor;
+         FOptions : TGLFlatTextOptions;
 
 	   protected
 	      { Protected Declarations }
@@ -247,6 +254,7 @@ type
          procedure SetAlignment(const val : TAlignment);
          procedure SetLayout(const val : TTextLayout);
          procedure SetModulateColor(const val : TGLColor);
+         procedure SetOptions(const val : TGLFlatTextOptions);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
@@ -276,6 +284,11 @@ type
          property Layout : TTextLayout read FLayout write SetLayout;
          {: Color modulation, can be used for fade in/out too.}
          property ModulateColor : TGLColor read FModulateColor write SetModulateColor;
+         {: Flat text options.<p>
+            <ul><li>ftoTwoSided : when set the text will be visible from its two
+            sides even if faceculling is on (at the scene-level).
+            </ul> }
+         property Options : TGLFlatTextOptions read FOptions write SetOptions;
    end;
 
 // ------------------------------------------------------------------
@@ -1043,6 +1056,16 @@ begin
    FModulateColor.Assign(val);
 end;
 
+// SetOptions
+//
+procedure TGLFlatText.SetOptions(const val : TGLFlatTextOptions);
+begin
+   if val<>FOptions then begin
+      FOptions:=val;
+      StructureChanged;
+   end;
+end;
+
 // DoRender
 //
 procedure TGLFlatText.DoRender(var rci : TRenderContextInfo;
@@ -1055,6 +1078,8 @@ begin
          glEnable(GL_BLEND);
          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       end;
+      if ftoTwoSided in FOptions then
+         glDisable(GL_CULL_FACE);
       FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
       glPopAttrib;
    end;
