@@ -146,7 +146,7 @@ uses
    GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
-   AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS,
+   AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1900,6 +1900,7 @@ initialization
       RegisterSceneObject(TGLMultiProxy, 'MultiProxy', '');
       RegisterSceneObject(TGLRenderPoint, 'Render Point', '');
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
+      RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', '');
    end;
 
 finalization
