@@ -154,6 +154,7 @@ type
          FOnMouseUp : TMouseEvent;
          FOnMouseMove : TMouseMoveEvent;
          FOnMouseWheel : TMouseWheelEvent;
+         FOnClick, FOnDblClick : TNotifyEvent;
          FOnKeyDown : TKeyEvent;
          FOnKeyUp : TKeyEvent;
          FOnKeyPress : TKeyPressEvent;
@@ -173,6 +174,8 @@ type
          procedure SetOnMouseUp(const val : TMouseEvent);
          procedure SetOnMouseMove(const val : TMouseMoveEvent);
          procedure SetOnMouseWheel(const val : TMouseWheelEvent);
+         procedure SetOnClick(const val : TNotifyEvent);
+         procedure SetOnDblClick(const val : TNotifyEvent);
          procedure SetOnCloseQuery(const val : TCloseQueryEvent);
          procedure SetOnClose(const val : TCloseEvent);
          procedure SetOnKeyUp(const val : TKeyEvent);
@@ -240,6 +243,8 @@ type
          property OnKeyDown : TKeyEvent read FOnKeyDown write SetOnKeyDown;
          property OnKeyPress : TKeyPressEvent read FOnKeyPress write SetOnKeyPress;
          property OnCloseQuery : TCloseQueryEvent read FOnCloseQuery write SetOnCloseQuery;
+         property OnClick : TNotifyEvent read FOnClick write SetOnClick;
+         property OnDblClick : TNotifyEvent read FOnDblClick write SetOnDblClick;
          property OnMouseDown : TMouseEvent read FOnMouseDown write SetOnMouseDown;
          property OnMouseUp : TMouseEvent read FOnMouseUp write SetOnMouseUp;
          property OnMouseMove : TMouseMoveEvent read FOnMouseMove write SetOnMouseMove;
@@ -677,6 +682,8 @@ begin
       OnMouseUp:=FOnMouseUp;
       OnMouseMove:=FOnMouseMove;
       OnMouseWheel:=FOnMouseWheel;
+      OnClick:=FOnClick;
+      OnDblClick:=FOnDblClick;
       OnPaint:=DoPaint;
       OnCloseQuery:=DoCloseQuery;
       OnClose:=FOnClose;
@@ -797,6 +804,22 @@ end;
 procedure TGLFullScreenViewer.SetOnMouseWheel(const val : TMouseWheelEvent);
 begin
    FOnMouseWheel:=val;
+   BindFormEvents;
+end;
+
+// SetOnClick
+//
+procedure TGLFullScreenViewer.SetOnClick(const val : TNotifyEvent);
+begin
+   FOnClick:=val;
+   BindFormEvents;
+end;
+
+// SetOnDblClick
+//
+procedure TGLFullScreenViewer.SetOnDblClick(const val : TNotifyEvent);
+begin
+   FOnDblClick:=val;
    BindFormEvents;
 end;
 

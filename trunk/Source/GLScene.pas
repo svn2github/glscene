@@ -6561,8 +6561,7 @@ end;
 //
 procedure TGLNonVisualViewer.DoBufferChange(Sender : TObject);
 begin
-   if Assigned(FForm) then
-      FForm.Invalidate;
+   // nothing, reserved for subclasses
 end;
 
 // DoBufferStructuralChange
