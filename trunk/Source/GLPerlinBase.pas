@@ -11,13 +11,9 @@ unit GLPerlinBase;
 
 interface
 
-uses
-  sysutils;
-Type
-  T1DPerlinArray = array of Double;
-  T2DPerlinArray = array of T1DPerlinArray;
-
-
+type
+   T1DPerlinArray = array of Double;
+   T2DPerlinArray = array of T1DPerlinArray;
 
 // Useless for final output! Usefull for after interpolation, as its FAST!
 function Linear_Interpolate(const a, b, x : Double) : Double;
@@ -42,8 +38,8 @@ Function ExponateCrap(root, exponant : Integer) : Integer;
 
 implementation
 
-uses
-  math;
+type
+   PDouble = ^Double;
 
 Function ExponateCrap(root, exponant : Integer) : Integer;
 
@@ -237,4 +233,3 @@ end;
 
 
 end.
- 

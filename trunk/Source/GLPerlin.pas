@@ -13,7 +13,7 @@ unit GLPerlin;
 interface
 
 uses
-  classes, sysutils, Graphics, Geometry, GLPerlinBase, GLHeightData;
+  Classes, SysUtils, Graphics, Geometry, GLPerlinBase, GLHeightData;
 
 Type
   TGLPerlinInterpolation = (pi_none, pi_simple, pi_linear,pi_Smoothed, pi_Cosine, pi_cubic);
@@ -134,6 +134,9 @@ Type
 procedure Register;
 
 implementation
+
+type
+   PSmallInt = ^SmallInt;
 
 procedure Register;
 begin
