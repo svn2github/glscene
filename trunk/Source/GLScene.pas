@@ -1008,7 +1008,7 @@ type
          procedure SetShining(AValue: Boolean);
          procedure SetSpotDirection(AVector: TGLCoordinates);
          procedure SetSpotExponent(AValue: Single);
-         procedure SetSpotCutOff(AValue: Single);
+         procedure SetSpotCutOff(const val : Single);
          procedure SetLightStyle(const val : TLightStyle);
 
       public
@@ -4906,12 +4906,14 @@ end;
 
 // SetSpotCutOff
 //
-procedure TGLLightSource.SetSpotCutOff(AValue: Single);
+procedure TGLLightSource.SetSpotCutOff(const val : Single);
 begin
-   if FSpotCutOff <> AValue then begin
-      FSpotCutOff:=AValue;
-      Include(FChanges, ocSpot);
-      NotifyChange(Self);
+   if FSpotCutOff<>val then begin
+      if ((val>=0) and (val<=90)) or (val=180) then begin
+         FSpotCutOff:=val;
+         Include(FChanges, ocSpot);
+         NotifyChange(Self);
+      end;
    end;
 end;
 
