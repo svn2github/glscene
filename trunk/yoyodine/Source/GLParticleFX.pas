@@ -7,6 +7,9 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
+      <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
+   
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                                Replace direct access of some properties by
                                a getter and a setter.
@@ -1805,7 +1808,11 @@ begin
    if Manager=nil then Exit;
 
    SetVector(pos, OwnerBaseSceneObject.AbsolutePosition);
+   if VelocityMode=svmRelative then
+        AddVector(pos, VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(InitialPosition.AsAffineVector),OwnerBaseSceneObject.LocalToAbsolute(NullVector)))
+   else
    AddVector(pos, InitialPosition.AsAffineVector);
+
 
    if FManager is TGLDynamicPFXManager then
    begin
@@ -1820,7 +1827,7 @@ begin
       RndVector(DispersionMode, av, FVelocityDispersion, nil);
       VectorAdd(InitialVelocity.AsAffineVector, av, @particle.Velocity);
       if VelocityMode=svmRelative then
-         particle.FVelocity:=OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity);
+           particle.FVelocity:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity),OwnerBaseSceneObject.LocalToAbsolute(NullVector));
       particle.CreationTime:=time;
       if FRotationDispersion <> 0 then
         particle.FRotation := Random * FRotationDispersion
