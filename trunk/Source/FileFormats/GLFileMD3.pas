@@ -102,13 +102,13 @@ begin
             with MeshData[i].Triangles[j] do begin
               Add(vertexIndices[0],
                   MeshData[i].TexCoords[vertexIndices[0]].textureCoord[0],
-                  -MeshData[i].TexCoords[vertexIndices[0]].textureCoord[1]);
+                  1-MeshData[i].TexCoords[vertexIndices[0]].textureCoord[1]);
               Add(vertexIndices[2],
                   MeshData[i].TexCoords[vertexIndices[2]].textureCoord[0],
-                  -MeshData[i].TexCoords[vertexIndices[2]].textureCoord[1]);
+                  1-MeshData[i].TexCoords[vertexIndices[2]].textureCoord[1]);
               Add(vertexIndices[1],
                   MeshData[i].TexCoords[vertexIndices[1]].textureCoord[0],
-                  -MeshData[i].TexCoords[vertexIndices[1]].textureCoord[1]);
+                  1-MeshData[i].TexCoords[vertexIndices[1]].textureCoord[1]);
             end;
           end;
         end;

@@ -1822,6 +1822,8 @@ begin
    if FColors.Count>1 then
       glDisableClientState(GL_COLOR_ARRAY);
    glPopAttrib;
+   // restore default GLScene AlphaFunc
+   glAlphaFunc(GL_GREATER, 0);
 end;
 
 // StoreSize

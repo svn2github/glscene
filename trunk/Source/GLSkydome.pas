@@ -683,6 +683,8 @@ begin
 
    glPointSize(1);
    glPopAttrib;
+   // restore default GLScene AlphaFunc
+   glAlphaFunc(GL_GREATER, 0);
 end;
 
 // AddRandomStars

@@ -5606,6 +5606,8 @@ begin
          TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
    UnSetGLState(rci.currentStates, stBlend);
    UnSetGLState(rci.currentStates, stTexture2D);
+   SetGLState(rci.currentStates, stAlphaTest);
+   glAlphaFunc(GL_GREATER, 0);
 end;
 
 // Progress

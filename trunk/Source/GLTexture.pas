@@ -1058,8 +1058,12 @@ type
    {: Simplified blending options.<p>
       bmOpaque : disable blending<br>
       bmTransparency : uses standard alpha blending<br>
-      bmAdditive : activates additive blending (with saturation) }
-   TBlendingMode = (bmOpaque, bmTransparency, bmAdditive);
+      bmAdditive : activates additive blending (with saturation)<br>
+      bmAlphaTest50 : uses opaque blending, with alpha-testing at 50% (full
+         transparency if alpha is below 0.5, full opacity otherwise)<br>
+      bmAlphaTest100 : uses opaque blending, with alpha-testing at 100% }
+   TBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
+                    bmAlphaTest50, bmAlphaTest100);
 
    // TFaceCulling
    //
@@ -3714,16 +3718,30 @@ begin
       end;
       // Apply Blending mode
       if not rci.ignoreBlendingRequests then case FBlendingMode of
-			bmOpaque :
+			bmOpaque : begin
             UnSetGLState(rci.currentStates, stBlend);
+            UnSetGLState(rci.currentStates, stAlphaTest);
+         end;
 			bmTransparency : begin
 				SetGLState(rci.currentStates, stBlend);
+            SetGLState(rci.currentStates, stAlphaTest);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			end;
 			bmAdditive : begin
 				SetGLState(rci.currentStates, stBlend);
+            SetGLState(rci.currentStates, stAlphaTest);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			end;
+         bmAlphaTest50 : begin
+            UnSetGLState(rci.currentStates, stBlend);
+            SetGLState(rci.currentStates, stAlphaTest);
+            glAlphaFunc(GL_GEQUAL, 0.5);
+         end;
+         bmAlphaTest100 : begin
+            UnSetGLState(rci.currentStates, stBlend);
+            SetGLState(rci.currentStates, stAlphaTest);
+            glAlphaFunc(GL_GEQUAL, 1.0);
+         end;
       else
          Assert(False);
 		end;
@@ -3746,6 +3764,8 @@ begin
 	if Assigned(currentLibMaterial) then
 		Result:=currentLibMaterial.UnApply(rci)
    else begin
+      if BlendingMode in [bmAlphaTest50, bmAlphaTest100] then
+         glAlphaFunc(GL_GREATER, 0);
       if moNoLighting in MaterialOptions then begin
          if rci.lightingDisabledCounter>0 then begin
             Dec(rci.lightingDisabledCounter);
@@ -3823,7 +3843,7 @@ function TGLMaterial.Blended : Boolean;
 begin
    if Assigned(currentLibMaterial) then
       Result:=currentLibMaterial.Material.Blended
-   else Result:=(BlendingMode<>bmOpaque)
+   else Result:=not (BlendingMode in [bmOpaque, bmAlphaTest50, bmAlphaTest100]);
 end;
 
 // HasSecondaryTexture
