@@ -42,7 +42,7 @@ interface
 
 uses
    Classes, SysUtils, GLTexture, GLContext, GLGraphics, GLUtils,
-   VectorGeometry, OpenGL1x, VectorLists;
+   VectorGeometry, OpenGL1x, VectorLists, ARBProgram;
 
 type
    TBumpMethod = (bmDot3TexCombiner, bmBasicARBFP);
@@ -416,28 +416,6 @@ end;
 // DoApply
 //
 procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
-
-   procedure LoadARBProgram(target : GLenum; programText : String; var vphandle : cardinal);
-   var
-      errPos : Integer;
-      errString : String;
-   begin
-      if (target = GL_VERTEX_PROGRAM_ARB) and not GL_ARB_vertex_program then
-         raise Exception.Create('GL_ARB_vertex_program required!');
-      if (target = GL_FRAGMENT_PROGRAM_ARB) and not GL_ARB_fragment_program then
-         raise Exception.Create('GL_ARB_fragment_program required!');
-      glGenProgramsARB(1, @vphandle);
-      glBindProgramARB(target, vphandle);
-      glProgramStringARB(target, GL_PROGRAM_FORMAT_ASCII_ARB,
-         Length(programText), PChar(programText));
-      glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
-      if errPos>-1 then begin
-         errString:=glGetString(GL_PROGRAM_ERROR_STRING_ARB);
-         raise Exception.CreateFmt('ARB Program Error - [Handle: %d][Pos: %d][Error %s]', [vphandle, errPos, errString]);
-      end;
-      CheckOpenGLError;
-   end;
-
 var
    maxLights, maxTextures, i : Integer;
    lightEnabled : GLboolean;
