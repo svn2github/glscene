@@ -49,6 +49,8 @@ type
          procedure MuteSource(aSource : TGLBaseSoundSource; muted : Boolean); override;
          procedure PauseSource(aSource : TGLBaseSoundSource; paused : Boolean); override;
 
+         function GetDefaultFrequency(aSource : TGLBaseSoundSource) : Integer;
+         
       public
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent); override;
@@ -229,6 +231,8 @@ begin
                                 MaxChannels, i);
       Assert(p.sample<>0, 'BASS Error '+IntToStr(Integer(BASS_ErrorGetCode)));
       aSource.ManagerTag:=Integer(p);
+      if aSource.Frequency<=0 then
+         aSource.Frequency:=-1;
    end;
    if aSource.Origin<>nil then begin
       objPos:=aSource.Origin.AbsolutePosition;
@@ -252,7 +256,7 @@ begin
                                   Round(aSource.ConeOutsideVolume*100));
    end else BASS_ChannelSet3DPosition(p.channel, position, orientation, velocity);
    if p.channel<>0 then begin
-      if not BASS_ChannelSetAttributes(p.channel, -1, Round(aSource.Volume*100), -101) then
+      if not BASS_ChannelSetAttributes(p.channel, aSource.Frequency, Round(aSource.Volume*100), -101) then
          Assert(False);
    end else aSource.Free;
 end;
@@ -321,6 +325,22 @@ var
    s : Single;
 begin
    Result:=BASS_GetEAXParameters(c, s, s, s);
+end;
+
+// GetDefaultFrequency
+//
+function TGLSMBASS.GetDefaultFrequency(aSource : TGLBaseSoundSource): integer;
+var
+   p : PBASSInfo;
+   sampleInfo : BASS_Sample;
+begin
+   try
+      p:=PBASSInfo(aSource.ManagerTag);
+      BASS_SampleGetInfo(p.sample, sampleInfo);
+      Result:=sampleInfo.freq;
+   except
+      Result:=-1;
+   end;
 end;
 
 end.

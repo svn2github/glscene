@@ -49,6 +49,8 @@ type
          procedure MuteSource(aSource : TGLBaseSoundSource; muted : Boolean); override;
          procedure PauseSource(aSource : TGLBaseSoundSource; paused : Boolean); override;
 
+         function GetDefaultFrequency(aSource : TGLBaseSoundSource) : Integer;
+
       public
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent); override;
@@ -269,6 +271,8 @@ begin
    if p.channel<>-1 then begin
       FSOUND_SetVolume(p.channel, Round(aSource.Volume*255));
       FSOUND_SetPriority(p.channel, aSource.Priority);
+      if aSource.Frequency>0 then
+         FSOUND_SetFrequency(p.channel, aSource.Frequency);
    end else aSource.Free;
 end;
 
@@ -329,6 +333,22 @@ end;
 function TGLSMFMOD.EAXSupported : Boolean;
 begin
    Result:=FEAXCapable;
+end;
+
+// GetDefaultFrequency
+//
+function TGLSMFMOD.GetDefaultFrequency(aSource : TGLBaseSoundSource): integer;
+var
+   p : PFMODInfo;
+   dfreq, dVol, dPan, dPri : Integer;
+begin
+   try
+      p:=PFMODInfo(aSource.ManagerTag);
+      FSOUND_Sample_GetDefaults(p.pfs, dFreq, dVol, dPan, dPri);
+      Result:=dFreq;
+   except
+      Result:=-1;
+   end;
 end;
 
 end.

@@ -133,6 +133,7 @@ type
          FChanges : TGLSoundSourceChanges; // NOT persistent, not assigned
          FNbLoops : Integer;
          FTag : Integer;                   // NOT persistent, not assigned
+         FFrequency : Integer;
 
 	   protected
 	      { Protected Declarations }
@@ -148,12 +149,13 @@ type
          procedure SetInsideConeAngle(const val : Single);
          procedure SetOutsideConeAngle(const val : Single);
          procedure SetConeOutsideVolume(const val : Single);
-         function GetSoundLibrary : TGLSoundLibrary;
+         function  GetSoundLibrary : TGLSoundLibrary;
          procedure SetSoundLibrary(const val : TGLSoundLibrary);
          procedure SetSoundName(const val : String);
          procedure SetMute(const val : Boolean);
          procedure SetPause(const val : Boolean);
          procedure SetNbLoops(const val : Integer);
+         procedure SetFrequency(const val : Integer);
 
       public
 	      { Public Declarations }
@@ -216,6 +218,9 @@ type
          {: Cone outside volume, [0.0; 1.0] range.<p>
             See DirectX SDK for details. }
          property ConeOutsideVolume : Single read FConeOutsideVolume write SetConeOutsideVolume;
+         {: Sample custom playback frequency.<p>
+            Values null or negative are interpreted as 'default frequency'. }
+         property Frequency : Integer read FFrequency write SetFrequency default -1;
 	end;
 
 	// TGLSoundSource
@@ -308,12 +313,12 @@ type
          procedure SetMaxChannels(const val : Integer);
          procedure SetOutputFrequency(const val : Integer);
          procedure SetUpdateFrequency(const val : Single);
-         function StoreUpdateFrequency : Boolean;
+         function  StoreUpdateFrequency : Boolean;
          procedure SetCadencer(const val : TGLCadencer);
          procedure SetDistanceFactor(const val : Single);
-         function StoreDistanceFactor : Boolean;
+         function  StoreDistanceFactor : Boolean;
          procedure SetRollOffFactor(const val : Single);
-         function StoreRollOffFactor : Boolean;
+         function  StoreRollOffFactor : Boolean;
          procedure SetDopplerFactor(const val : Single);
          procedure SetSoundEnvironment(const val : TGLSoundEnvironment);
 
@@ -521,6 +526,10 @@ function GetSoundLibraryByName(const aName : String) : TGLSoundLibrary;
 
 function GetOrCreateSoundEmitter(behaviours : TGLBehaviours) : TGLBSoundEmitter; overload;
 function GetOrCreateSoundEmitter(obj : TGLBaseSceneObject) : TGLBSoundEmitter; overload;
+
+var
+   // If this variable is true, errors in GLSM may be displayed to the user
+   vVerboseGLSMErrors : Boolean = True;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -841,6 +850,7 @@ begin
    FOutsideConeAngle:=360;
    FConeOutsideVolume:=0.0;
    FNbLoops:=1;
+   FFrequency:=-1;
 end;
 
 // Destroy
@@ -877,6 +887,7 @@ begin
       FPause:=TGLBaseSoundSource(Source).FPause;
       FChanges:=[sscTransformation, sscSample, sscStatus];
       FNbLoops:=TGLBaseSoundSource(Source).FNbLoops;
+      FFrequency:=TGLBaseSoundSource(Source).FFrequency;
    end else inherited Assign(Source);
 end;
 
@@ -901,6 +912,7 @@ begin
       WriteBoolean(FMute);
       WriteBoolean(FPause);
       WriteInteger(FNbLoops);
+      WriteInteger(FFrequency);
    end;
 end;
 
@@ -925,6 +937,7 @@ begin
       FPause:=ReadBoolean;
       FChanges:=[sscTransformation, sscSample, sscStatus];
       FNbLoops:=ReadInteger;
+      FFrequency:=ReadInteger;
    end;
 end;
 
@@ -1067,6 +1080,16 @@ begin
    if val<>FNbLoops then begin
       FNbLoops:=val;
       Include(FChanges, sscSample);
+   end;
+end;
+
+// SetFrequency
+//
+procedure TGLBaseSoundSource.SetFrequency(const val : integer);
+begin
+   if val<>FFrequency then begin
+      FFrequency:=val;
+      Include(FChanges, sscStatus);
    end;
 end;
 
@@ -1694,7 +1717,8 @@ begin
             FPlayingSource.Origin:=OwnerBaseSceneObject;
          end else FPlayingSource.Free;
       end;
-   end else InformationDlg('No Active Sound Manager.'#13#10'Make sure manager is created before emitter');
+   end else if vVerboseGLSMErrors then
+      InformationDlg('No Active Sound Manager.'#13#10'Make sure manager is created before emitter');
 end;
 
 // GetPlaying
