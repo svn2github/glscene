@@ -100,7 +100,9 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
    if Shift<>[] then begin
-      GLCamera1.MoveAroundTarget(my-y, mx-x);
+      if ssLeft in Shift then
+         GLCamera1.MoveAroundTarget(my-y, mx-x)
+      else GLCamera1.RotateTarget(my-y, mx-x);
       mx:=x;
       my:=y;
    end;
