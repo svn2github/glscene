@@ -36,7 +36,7 @@ unit VectorLists;
 
 interface
 
-{$i GLScene.inc}
+{$i ..\GLScene.inc}
 
 uses Classes, VectorTypes, VectorGeometry, PersistentClasses, SysUtils;
 
@@ -857,7 +857,7 @@ begin
       Assert(Cardinal(curIndex)<Cardinal(Count));
 {$ENDIF}
       if FItemSize=4 then
-         PInteger(@BufferItem[0])^:=PInteger(FBaseList[curIndex*FItemSize])^
+         PInteger(@BufferItem)^:=PInteger(FBaseList[curIndex*FItemSize])^
       else System.Move(FBaseList[curIndex*FItemSize], BufferItem[0], FItemSize);
       if curIndex<newIndex then begin
          // curIndex+1 necessarily exists since curIndex<newIndex and newIndex<Count
@@ -869,7 +869,7 @@ begin
                      (curIndex-newIndex-1)*FItemSize);
       end;
       if FItemSize=4 then
-         PInteger(FBaseList[newIndex*FItemSize])^:=PInteger(@BufferItem[0])^
+         PInteger(@FBaseList[newIndex*FItemSize])^:=PInteger(@BufferItem)^
       else System.Move(BufferItem[0], FBaseList[newIndex*FItemSize], FItemSize);
    end;
 end;
@@ -1396,7 +1396,7 @@ begin
       FCount:=list1.Count;
       VectorArrayLerp(TAffineVectorList(list1).List, TAffineVectorList(list2).List,
                       lerpFactor, FCount, List);
-   end else inherited;
+   end;
 end;
 
 // Scale (scalar)
@@ -1599,7 +1599,7 @@ begin
       FCount:=list1.Count;
       VectorArrayLerp(TVectorList(list1).List, TVectorList(list2).List,
                       lerpFactor, FCount, List);
-   end else inherited;
+   end;
 end;
 
 // ------------------
@@ -2605,7 +2605,7 @@ begin
       FCount:=list1.Count;
       for i:=0 to FCount-1 do
          Put(i,QuaternionSlerp(TQuaternionList(list1)[i],TQuaternionList(list2)[i],lerpFactor));
-   end else inherited;
+   end;
 end;
 
 // Combine
