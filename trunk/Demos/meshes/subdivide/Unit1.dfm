@@ -126,6 +126,12 @@ object Form1: TForm1
       Up.Coordinates = {0000000000000000000080BF00000000}
       Material.Texture.TextureMode = tmReplace
       Interval = 100
+      AutoCentering = [macCenterX, macCenterY, macCenterZ]
+    end
+    object GLLightSource1: TGLLightSource
+      ConstAttenuation = 1
+      Position.Coordinates = {0000204100002041000020410000803F}
+      SpotCutOff = 180
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100

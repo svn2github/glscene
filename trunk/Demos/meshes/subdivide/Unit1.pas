@@ -31,6 +31,7 @@ type
     GLActor1: TGLActor;
     Label1: TLabel;
     LASubdivideTime: TLabel;
+    GLLightSource1: TGLLightSource;
     procedure BULoadClick(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -69,10 +70,15 @@ begin
 //   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\mushroom.3ds');
 //   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\trinityrage.smd');
 
+{   GLActor1.LoadFromFile('e:\sf\glscene\demos\media\trinityrage.smd');
+   GLActor1.AddDataFromFile('e:\sf\glscene\demos\media\run.smd');
+   GLActor1.Animations[1].MakeSkeletalTranslationStatic;
+   GLActor1.SwitchToAnimation(GLActor1.Animations[1]);}
+
    GLActor1.LoadFromFile('..\..\media\waste.md2');
    GLActor1.Material.Texture.Image.LoadFromFile('..\..\media\waste.jpg');
    GLActor1.Material.Texture.Enabled:=True;
-   GLActor1.SwitchToAnimation(GLActor1.Animations[0]);
+   GLActor1.SwitchToAnimation(GLActor1.Animations[0]); 
 
 //   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\HighPolyObject.3ds');
 
@@ -179,6 +185,7 @@ begin
          end;
       end;
 
+      texIndices.Free;
       subdivideRemap.Free;
       firstRemap.Free;
       tex.Free;
@@ -187,9 +194,12 @@ begin
       tris.Free;
    end;
 
+//   (GLActor1.MeshObjects[0] as TSkeletonMeshObject).PrepareBoneMatrixInvertedMeshes;
+
    LASubdivideTime.Caption:=Format('%f.1 ms', [StopPrecisionTimer(t)*1000]);
    // Initial perf: 1412 ms
-   // Basic Edges Hash: 478 ms
+   // Basic Edges Hash: 464 ms
+   // Several transfer optims: 377 ms
    Screen.Cursor:=crDefault;
 
    GLActor1.StructureChanged;
