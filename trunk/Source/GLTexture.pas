@@ -1230,7 +1230,7 @@ type
          {: Un-applies the last applied material.<p>
             Use this function in conjunction with ApplyMaterial.<br>
             If no material was applied, an assertion will be triggered. }
-         procedure UnApplyMaterial(var rci : TRenderContextInfo);
+         function UnApplyMaterial(var rci : TRenderContextInfo) : Boolean;
 
       published
 	      { Published Declarations }
@@ -4114,12 +4114,14 @@ end;
 
 // UnApplyMaterial
 //
-procedure TGLMaterialLibrary.UnApplyMaterial(var rci : TRenderContextInfo);
+function TGLMaterialLibrary.UnApplyMaterial(var rci : TRenderContextInfo) : Boolean;
 begin
    if Assigned(FLastAppliedMaterial) then begin
-      FLastAppliedMaterial.UnApply(rci);
-      FLastAppliedMaterial:=nil;
-   end;// else Assert(False, 'Unbalanced material un-application');
+      Result:=FLastAppliedMaterial.UnApply(rci);
+      if not Result then
+         FLastAppliedMaterial:=nil;
+   end else Result:=False;
+   // else Assert(False, 'Unbalanced material un-application');
 end;
 
 // ------------------
