@@ -15,6 +15,7 @@
    <li>Wheel scroll will zoom in/out
    </ul><p>
    Bernd Klaiber.
+   (modified by DanB 08/07/2003)
 }
 unit Unit1;
 
@@ -23,7 +24,8 @@ interface
 uses
   Windows, Forms, GLScene, GLObjects, GLMisc, Classes, Controls, SysUtils, Graphics,
   GLWin32Viewer, ExtCtrls, Geometry, StdCtrls, GLSpaceText,
-  ComCtrls, GLCollision, GLVectorFileObjects, GLCrossPlatform, VectorLists;
+  ComCtrls, GLCollision, GLVectorFileObjects, GLCrossPlatform, VectorLists,
+  Grids, GLFile3DS;
 
 type
   TForm1 = class(TForm)
@@ -42,14 +44,25 @@ type
     Bar: TGLCube;
     Teapot1: TGLFreeForm;
     Teapot2: TGLFreeForm;
-    GLLightSource2: TGLLightSource;
-    GLLightSource3: TGLLightSource;
     Shape1: TShape;
-    Cube1: TGLCube;
     Cube2: TGLCube;
-    rgObjects: TRadioGroup;
     Label1: TLabel;
     LATime: TLabel;
+    Label2: TLabel;
+    GLSphere1: TGLSphere;
+    CubePoint1: TGLCube;
+    GLSphere2: TGLSphere;
+    Panel2: TPanel;
+    StringGrid1: TStringGrid;
+    Memo1: TMemo;
+    GLSphereEllipsoid1: TGLSphere;
+    GLSphereEllipsoid2: TGLSphere;
+    CubePoint2: TGLCube;
+    GLLightSource2: TGLLightSource;
+    GLCube1: TGLCube;
+    GLCamera1: TGLCamera;
+    GLCamera3: TGLCamera;
+    Splitter1: TSplitter;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -62,7 +75,6 @@ type
       object2: TGLBaseSceneObject);
     procedure cbCollisionModeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure rgObjectsClick(Sender: TObject);
   private
     { Déclarations privées }
     mdx, mdy : Integer;
@@ -74,13 +86,18 @@ type
 var
   Form1: TForm1;
 
+const
+  StringNames:array[0..Ord(cbmFaces)] of String = ('Point','Sphere','Ellipsoid','Cube','Faces');
+
 implementation
 
 {$R *.DFM}
 
-uses Math, GLFile3DS;
+uses Math;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  i:integer;
 begin
    TeaPot1.LoadFromFile('..\..\media\TeaPot.3ds');
    TeaPot1.BuildOctree;
@@ -88,7 +105,46 @@ begin
    TeaPot2.LoadFromFile('..\..\media\TeaPot.3ds');
    TeaPot2.BuildOctree;
 
-   rgObjectsClick(nil);
+//   rgObjectsClick(nil);
+
+   //Fill StringGrid1 with current state of collisions
+   for i:=0 to Ord(cbmFaces) do
+   begin
+     StringGrid1.Cells[0,i+1]:=StringNames[i];
+     StringGrid1.Cells[i+1,0]:=StringNames[i];
+   end;
+   //point
+   StringGrid1.Cells[1,1]:='complete';      //Point-Point
+   StringGrid1.Cells[1,2]:='complete';      //Sphere-Point
+   StringGrid1.Cells[1,3]:='complete';      //Ellipsoid-Point
+   StringGrid1.Cells[1,4]:='complete';      //Cube-Point
+   StringGrid1.Cells[1,5]:='Cube-Point';    //Faces-Point
+   //sphere
+   StringGrid1.Cells[2,1]:='complete';      //Point-Sphere
+   StringGrid1.Cells[2,2]:='complete';      //Sphere-Sphere
+   StringGrid1.Cells[2,3]:='complete';      //Ellipsoid-Sphere
+   StringGrid1.Cells[2,4]:='complete';      //Cube-Sphere
+   StringGrid1.Cells[2,5]:='Cube-Sphere';   //Faces-Sphere
+   //ellipsoid
+   StringGrid1.Cells[3,1]:='complete';      //Point-Ellipsoid
+   StringGrid1.Cells[3,2]:='complete';      //Sphere-Ellipsoid
+   StringGrid1.Cells[3,3]:='incorrect';     //Ellipsoid-Ellipsoid
+   StringGrid1.Cells[3,4]:='Cube-Sphere';   //Cube-Ellipsoid
+   StringGrid1.Cells[3,5]:='Cube-Ellipsoid';//Faces-Ellipsoid
+   //cube
+   StringGrid1.Cells[4,1]:='complete';      //Point-Cube
+   StringGrid1.Cells[4,2]:='complete';      //Sphere-Cube
+   StringGrid1.Cells[4,3]:='Sphere-Cube';   //Ellipsoid-Cube
+   StringGrid1.Cells[4,4]:='complete';      //Cube-Cube
+   StringGrid1.Cells[4,5]:='experimental';  //Faces-Cube
+   //Faces
+   StringGrid1.Cells[5,1]:='Point-Cube';    //Point-Faces
+   StringGrid1.Cells[5,2]:='Sphere-Cube';   //Sphere-Faces
+   StringGrid1.Cells[5,3]:='Ellipsoid-Cube';//Ellipsoid-Faces
+   StringGrid1.Cells[5,4]:='experimental';  //Cube-Faces
+   StringGrid1.Cells[5,5]:='complete';      //Faces-Faces
+
+
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -109,7 +165,10 @@ begin
 
    t:=StartPrecisionTimer;
 
+   Memo1.Lines.Clear;
+   Memo1.Lines.BeginUpdate;
    CollisionManager1.CheckCollisions;
+   Memo1.Lines.EndUpdate;
 
    LATime.Caption:=Format('%.1f ms', [StopPrecisionTimer(t)*1000]);
 
@@ -120,7 +179,18 @@ end;
 procedure TForm1.CollisionManager1Collision(Sender: TObject; object1,
   object2: TGLBaseSceneObject);
 begin
+   if Sender=CollisionManager1 then
+   begin
    CollisionDetected:=True;
+   Memo1.Lines.Add(object1.Name+'('+StringNames[Ord(TGLBCollision(object1.Behaviours.GetByClass(TGLBCollision)).BoundingMode)]+')' +
+            '  -  '+Object2.Name+'('+StringNames[Ord(TGLBCollision(object2.Behaviours.GetByClass(TGLBCollision)).BoundingMode)]+')');
+   end
+   else
+   begin
+   Memo1.Lines.Add(object1.Name+'('+StringNames[Ord(TGLBCollision(object1.Behaviours.GetByClass(TGLBCollision)).BoundingMode)]+')' +
+            '  -  '+Object2.Name+'('+StringNames[Ord(TGLBCollision(object2.Behaviours.GetByClass(TGLBCollision)).BoundingMode)]+') ** BB collision **');
+
+   end;
 end;
 
 procedure TForm1.cbCollisionModeClick(Sender: TObject);
@@ -128,21 +198,6 @@ begin
    TGLBCollision(TeaPot1.Behaviours[0]).BoundingMode:=TCollisionBoundingMode(cbCollisionMode.ItemIndex);
    TGLBCollision(TeaPot2.Behaviours[0]).BoundingMode:=TCollisionBoundingMode(cbCollisionMode.ItemIndex);
    TGLBCollision(Bar.Behaviours[0]).BoundingMode:=cbmCube;
-end;
-
-procedure TForm1.rgObjectsClick(Sender: TObject);
-var
-   teapots : Boolean;
-begin
-   teapots:=(rgObjects.ItemIndex<=0);
-
-   Teapot1.Visible:=teapots;
-   Teapot2.Visible:=teapots;
-
-   cbCollisionMode.Visible:=teapots;
-
-   Cube1.Visible:=not teapots;
-   Cube2.Visible:=not teapots;
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
