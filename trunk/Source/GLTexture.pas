@@ -2624,6 +2624,8 @@ begin
    		end;
       end else if (Source is TGLGraphic) then begin
          Image.Assign(Source);
+      end else if (Source is TPicture) then begin
+         Image.Assign(TPicture(Source).Graphic);
       end;
 	end else inherited Assign(Source);
 end;
@@ -3165,7 +3167,6 @@ end;
 //
 procedure TGLTexture.PrepareImage(target : TGLUInt);
 var
-	alphaChannelRequired : Boolean;
    bitmap32 : TGLBitmap32;
    targetFormat : Integer;
 begin
@@ -3174,26 +3175,24 @@ begin
    // select targetFormat from texture format & compression options
    targetFormat:=OpenGLTextureFormat;
    // prepare AlphaChannel
-	alphaChannelRequired:=(ImageAlpha<>tiaDefault);
-   if alphaChannelRequired then begin
-      case ImageAlpha of
-         tiaAlphaFromIntensity :
-            bitmap32.SetAlphaFromIntensity;
-         tiaSuperBlackTransparent :
-            bitmap32.SetAlphaTransparentForColor($000000);
-         tiaLuminance :
-            bitmap32.SetAlphaFromIntensity;
-         tiaLuminanceSqrt : begin
-            bitmap32.SetAlphaFromIntensity;
-            bitmap32.SqrtAlpha;
-         end;
-         tiaOpaque :
-            bitmap32.SetAlphaToValue(255);
-         tiaTopLeftPointColorTransparent :
-            bitmap32.SetAlphaTransparentForColor(bitmap32.Data[0]);
-      else
-         Assert(False);
+   case ImageAlpha of
+      tiaDefault : ;// nothing to do
+      tiaAlphaFromIntensity :
+         bitmap32.SetAlphaFromIntensity;
+      tiaSuperBlackTransparent :
+         bitmap32.SetAlphaTransparentForColor($000000);
+      tiaLuminance :
+         bitmap32.SetAlphaFromIntensity;
+      tiaLuminanceSqrt : begin
+         bitmap32.SetAlphaFromIntensity;
+         bitmap32.SqrtAlpha;
       end;
+      tiaOpaque :
+         bitmap32.SetAlphaToValue(255);
+      tiaTopLeftPointColorTransparent :
+         bitmap32.SetAlphaTransparentForColor(bitmap32.Data[0]);
+   else
+      Assert(False);
    end;
    CheckOpenGLError;
    bitmap32.RegisterAsOpenGLTexture(target, MinFilter, targetFormat, FTexWidth, FTexHeight);
