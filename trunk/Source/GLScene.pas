@@ -1311,7 +1311,7 @@ type
 
          procedure NotifyChange(Sender : TObject); override;
 
-         procedure CreateRC(deviceHandle : Integer; memoryContext : Boolean);
+         procedure CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
          procedure ClearBuffers;
          procedure DestroyRC;
          procedure Resize(newWidth, newHeight : Integer);
@@ -5199,7 +5199,7 @@ end;
 
 // CreateRC
 //
-procedure TGLSceneBuffer.CreateRC(deviceHandle : Integer; memoryContext : Boolean);
+procedure TGLSceneBuffer.CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
 var
    backColor: TColorVector;
    locOptions: TGLRCOptions;
