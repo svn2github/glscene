@@ -24,9 +24,17 @@
       <li>The Borland MM is currently used internally by the RMM for its own
          needs, it is strongly recommended (for efficiency reasons) to let RMM
          be its sole user.
+      <li>Use of the Delphi 7 SP1 is *NOT* recommended, not because it won't work,
+         but because bugs introduced in the SP1 register allocator will generate
+         sub-optimal code. If you really need SP1, apply the patch first then
+         manually revert DCC32.EXE and DCC70.DLL to their original state
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/07/04 - EG - Introduced TSMBInfo and related changes,
+                          Move16 now uses movaps and movntps,
+                          LGB Managers now allocated via RMM (and not Borland MM),
+                          Smaller EXE footprint (Snapshot code off by default)
       <li>14/06/04 - EG - Secured AllocateRMMChunkBatch vs OutOfMemory (Pierre le Riche),
                           Fixed FindNonFullSMBManager skip of 1st block (Pierre le Riche)
       <li>29/01/04 - EG - Added RAISE_EXCEPTION_ON_INVALID_RELEASE logic,
@@ -74,11 +82,15 @@ uses Windows;
 // Activating it incurs a small performance penalty.
 {.$define SECURE_MEMORYMAP}
 
-// if set the (possible) BPLs won't be patched, only the jump table will
+// If set the (possible) BPLs won't be patched, only the jump table will
 {.$define NO_BPL_PATCHING}
 
-// if set SSE code for Move16/Clear16 will be allowed
-{$define ALLOW_SSE}
+// If set SSE code for Move16/Clear16 will be allowed
+// Mileage on the efficiency of SSE over the FPU-based transfer may vary,
+// you may want to test it and figure out which is best in your case. Typically,
+// the FPU approach will be good for lots of small or scattered blocks on AMD
+// CPUs, while SSE shines on large blocks with a P4 
+{.$define ALLOW_SSE}
 
 // if set and exception will be explicitly raised if your code attempts
 // to release a block that isn't allocated. By default, RMM only detects
@@ -90,11 +102,15 @@ uses Windows;
 // only be used for testing or if memory integrity is of primary importance
 {.$define RAISE_EXCEPTION_ON_INVALID_RELEASE}
 
-// if set invalid pointers free/realloc will be defered to SysFreeMem
+// If set invalid pointers free/realloc will be defered to SysFreeMem
 // This allows a mixed mode where the RecyclerMM can replace the default
 // after it has started allocating, but also means the RMM cannot be unbound.
 {$define DEFER_INVALIDATE_POINTERS}
 {$ifdef PATCH_ALLOCMEM}{$define DEFER_INVALIDATE_POINTERS}{$endif}
+
+// If set RMMUsageSnapShot functions will be available.
+// These functions allow generating a diagnostic and memory map report
+{.$define ALLOW_USAGE_SNAPSHOT}
 
 // compile options implicit dependency rules
 
@@ -233,8 +249,10 @@ function Allocated(const P : Pointer) : Boolean;
 
 {: Generates a memory map of RMM memory usage.<p>
    While the map is generated, all RMM activity is freezed. }
+{$ifdef ALLOW_USAGE_SNAPSHOT}
 function RMMUsageSnapShot : TRMMUsageSnapShot; overload;
 procedure RMMUsageSnapShot(var result : TRMMUsageSnapShot); overload;
+{$endif}
 
 procedure BindRMM;
 procedure UnBindRMM;
@@ -252,7 +270,7 @@ var
 
 resourcestring
    // Unused, this is just to have it in clear in the DCU 
-   cRecyclerMMCopyright = 'RecyclerMM - ©2003 Creative IT';
+   cRecyclerMMCopyright = 'RecyclerMM - ©2004 Creative IT';
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -300,18 +318,30 @@ type
       Chunks : array [0..cRMMChunkBatchAllocSize-1] of Pointer;
    end;
 
+   PSMBManager = ^TSMBManager;
+
+   // TSMBInfo
+   //
+   {: SmallBlock management info for a given size.<p> }
+   TSMBInfo = packed record
+      Lock : TRTLCriticalSection;
+      Index, Size : Cardinal;
+      First, Last : PSMBManager;
+      padding : array [1..24] of Byte; // pad to 64 bytes size
+   end;
+   PSMBInfo = ^TSMBInfo;
+
    // TSMBManager
    //
    {: Manages a Small Blocks chunk.<p>
       Small blocks manage many user blocks of constant (BlockSize) size,
       which are allocated/freed in a stack-like fashion. }
-   PSMBManager = ^TSMBManager;
    TSMBManager = packed record
       Signature : Integer;       // 'SMB'#0
       BlockStart : Pointer;      // 64 kB aligned base address for the chunk
       ChunkSize : Cardinal;      // Size of block
       Next, Prev : PSMBManager;  // pointer to the next/prev managers
-      SMBIndex : Cardinal;
+      SMBInfo : PSMBInfo;        // pointer to the SMBInfo (size related) 
       NbFreeBlockOffset : Cardinal;
       MaxFreeBlockOffset : Cardinal;
       ReasonnablyFreeTreshold : Cardinal;
@@ -347,7 +377,9 @@ type
       MemoryManager : TMemoryManager;
       AllocMem : function(Size : Cardinal) : Pointer;
       Allocated : function(const P : Pointer) : Boolean;
+{$ifdef ALLOW_USAGE_SNAPSHOT}
       RMMUsageSnapShot : function : TRMMUsageSnapShot;
+{$endif}
    end;
    PSharedMemoryManager = ^TSharedMemoryManager;
 
@@ -366,7 +398,9 @@ var
    vAllocMemPatch : TRedirectPatch;
    {$endif}
    vAllocatedPatch : TRedirectPatch;
+   {$ifdef ALLOW_USAGE_SNAPSHOT}
    vRMMUsageSnapShotPatch : TRedirectPatch;
+   {$endif}
    vRMMBound : Integer;
    {$ifdef ALLOW_SSE}
    vSSESupported : Integer;
@@ -380,10 +414,9 @@ var
    vSharedMemory_InUse : Boolean;
    {$endif}
 
-   // Pointers to the topmost/last SmallBlocks managers and accompanying CS
-   vFirstSMBs : array [0..cSMBMaxSizeIndex] of PSMBManager;
-   vLastSMBs : array [0..cSMBMaxSizeIndex] of PSMBManager;
-   vSMBLocks : array [0..cSMBMaxSizeIndex] of TRTLCriticalSection;
+   // SMB information array by size class (index)
+   vSMBs : array [0..cSMBMaxSizeIndex] of TSMBInfo;
+
    // Head of the ChunkBatches chained list
    vRMMChunkBatches : PRMMChunkBatch;
    vRMMBatchesLock : TRTLCriticalSection;
@@ -565,7 +598,7 @@ var
    head : PLGBManager;
 begin
    // Spawn manager, allocate block
-   Result:=SysGetMem(SizeOf(TLGBManager));
+   Result:=RGetMem(SizeOf(TLGBManager));
    if Result=nil then Exit;
    Result.Signature:=cLGBSignature;
    blkSize:=(Size and $FFFF0000);
@@ -578,7 +611,7 @@ begin
       Result.ChunkBatch:=nil;
    end;
    if Result.BlockStart=nil then begin
-      SysFreeMem(Result);
+      RFreeMem(Result);
       Result:=nil;
       Exit;
    end;
@@ -632,7 +665,7 @@ begin
    if IsMultiThread then
       LeaveCriticalSection(vLGBLock);
       
-   SysFreeMem(manager);
+   RFreeMem(manager);
 end;
 
 // SMBIndexToSize
@@ -707,13 +740,15 @@ end;
 // Move16SSE
 //
 procedure Move16SSE(const Source; var Dest; Count: Integer); register;
+// eax : Source
+// edx : Dest
+// ecx : Count
 asm
    or       ecx, ecx
    jz       @@End
 
 @@Copy:
-   // round to 16
-   add      ecx, 15
+   add      ecx, 15 // round up ecx (Count) to 16
    and      cl, $F0
 
    lea      eax, [eax+ecx]
@@ -722,29 +757,39 @@ asm
    neg      ecx
 
    test     ecx, 16
-   jz       @@Loop
+   jz       @@Batch32
 
-   db $0F,$6F,$34,$08       /// movq     mm6, [eax+ecx]
-   db $0F,$6F,$7C,$08,$08   /// movq     mm7, [eax+ecx+8]
-   db $0F,$E7,$34,$0A       /// movntq   [edx+ecx], mm6
-   db $0F,$E7,$7C,$0A,$08   /// movntq   [edx+ecx+8], mm7
+   movaps   xmm2, [eax+ecx]
+   movaps   [edx+ecx], xmm2
+   
    add      ecx, 16
-   jz       @@End
+   jnz      @@Batch32
+   ret
+
+@@Batch32:
+   cmp      ecx, -192*1024    // beyond 192 kb, use uncached transfer
+   jl       @@HugeLoop
 
 @@Loop:
-   db $0F,$6F,$04,$08       /// movq     mm0, [eax+ecx]
-   db $0F,$6F,$4C,$08,$08   /// movq     mm1, [eax+ecx+8]
-   db $0F,$6F,$54,$08,$10   /// movq     mm2, [eax+ecx+16]
-   db $0F,$6F,$5C,$08,$18   /// movq     mm3, [eax+ecx+24]
-   db $0F,$E7,$04,$0A       /// movntq   [edx+ecx], mm0
-   db $0F,$E7,$4C,$0A,$08   /// movntq   [edx+ecx+8], mm1
-   db $0F,$E7,$54,$0A,$10   /// movntq   [edx+ecx+16], mm2
-   db $0F,$E7,$5C,$0A,$18   /// movntq   [edx+ecx+24], mm3
+   movaps   xmm0, [eax+ecx]
+   movaps   xmm1, [eax+ecx+16]
+   movaps   [edx+ecx], xmm0
+   movaps   [edx+ecx+16], xmm1
+
    add      ecx, 32
    jnz      @@Loop
+   ret
+
+@@HugeLoop:
+   movaps   xmm0, [eax+ecx]
+   movaps   xmm1, [eax+ecx+16]
+   movntps   [edx+ecx], xmm0
+   movntps   [edx+ecx+16], xmm1
+   
+   add      ecx, 32
+   jnz      @@HugeLoop
 
 @@End:
-   db $0F,$77               /// emms
 end;
 
 // Move16FPU
@@ -866,7 +911,7 @@ end; //}
 
 // AllocateSMB
 //
-function AllocateSMB(smbIndex : Integer) : PSMBManager;
+function AllocateSMB(smbInfo : PSMBInfo) : PSMBManager;
 
    procedure FillOffsetArray(wa : PWordArray; n : Integer);
    asm
@@ -895,7 +940,7 @@ var
    head : PSMBManager;
 begin
    // Determine ChunkSize
-   blkSize:=SMBIndexToSize(smbIndex);
+   blkSize:=smbInfo.Size;
    chunkSize:=cSMBBlocksPerChunk*blkSize;
    if chunkSize<64*1024 then
       chunkSize:=64*1024
@@ -940,19 +985,19 @@ begin
    if i<=0 then
       i:=1;
    Result.ReasonnablyFreeTreshold:=i;
-   Result.SMBIndex:=smbIndex;
+   Result.SMBInfo:=smbInfo;
    FillOffsetArray(Result.BlockOffsets, n);
    k:=n*SizeOf(Word);
    if (k and 15)=0 then
       MemClear16(Result.BlockSizes[0], k)
    else FillChar(Result.BlockSizes[0], k, 0);
-   head:=vFirstSMBs[smbIndex];
+   head:=smbInfo.First;
    Result.Next:=head;
    if Assigned(head) then
       head.Prev:=Result
-   else vLastSMBs[smbIndex]:=Result;
+   else smbInfo.Last:=Result;
    Result.Prev:=nil;
-   vFirstSMBs[smbIndex]:=Result;
+   smbInfo.First:=Result;
 end;
 
 // ReleaseSMB
@@ -963,12 +1008,12 @@ begin
       manager.Next.Prev:=manager.Prev;
       if manager.Prev<>nil then
          manager.Prev.Next:=manager.Next
-      else vFirstSMBs[manager.SMBIndex]:=manager.Next;
+      else manager.SMBInfo.First:=manager.Next;
    end else begin
-      vLastSMBs[manager.SMBIndex]:=manager.Prev;
+      manager.SMBInfo.Last:=manager.Prev;
       if manager.Prev<>nil then
          manager.Prev.Next:=manager.Next
-      else vFirstSMBs[manager.SMBIndex]:=nil;
+      else manager.SMBInfo.First:=nil;
    end;
 
    UpdateMemoryMap(manager.BlockStart, manager.ChunkSize, nil);
@@ -981,18 +1026,18 @@ end;
 //
 procedure MakeSMBTopMost(manager : PSMBManager); register;
 var
-   smbIndex : Integer;
+   smbInfo : PSMBInfo;
 begin
    if manager.Prev<>nil then begin
-      smbIndex:=manager.SMBIndex;
+      smbInfo:=manager.SMBInfo;
       manager.Prev.Next:=manager.Next;
       if manager.Next<>nil then
          manager.Next.Prev:=manager.Prev
-      else vLastSMBs[smbIndex]:=manager.Prev;
-      vFirstSMBs[smbIndex].Prev:=manager;
-      manager.Next:=vFirstSMBs[smbIndex];
+      else smbInfo.Last:=manager.Prev;
+      smbInfo.First.Prev:=manager;
+      manager.Next:=smbInfo.First;
       manager.Prev:=nil;
-      vFirstSMBs[smbIndex]:=manager;
+      smbInfo.First:=manager;
    end;
 end;
 
@@ -1000,36 +1045,36 @@ end;
 //
 procedure MakeSMBLast(manager : PSMBManager); register; 
 var
-   smbIndex : Integer;
+   smbInfo : PSMBInfo;
 begin
    if manager.Next<>nil then begin
-      smbIndex:=manager.SMBIndex;
+      smbInfo:=manager.SMBInfo;
       manager.Next.Prev:=manager.Prev;
       if manager.Prev<>nil then
          manager.Prev.Next:=manager.Next
-      else vFirstSMBs[smbIndex]:=manager.Next;
-      vLastSMBs[smbIndex].Next:=manager;
-      manager.Prev:=vLastSMBs[smbIndex];
+      else smbInfo.First:=manager.Next;
+      smbInfo.Last.Next:=manager;
+      manager.Prev:=smbInfo.Last;
       manager.Next:=nil;
-      vLastSMBs[smbIndex]:=manager;
+      smbInfo.Last:=manager;
    end;
 end;
 
 // FindNonFullSMBManager
 //
-function FindNonFullSMBManager(smbIndex : Integer) : PSMBManager;
+function FindNonFullSMBManager(smbInfo : PSMBInfo) : PSMBManager;
 var
    manager, candidate : PSMBManager;
    candidateFree : Cardinal;
 begin
-   manager:=vFirstSMBs[smbIndex];
+   manager:=smbInfo.First;
    candidate:=nil;
    candidateFree:=0;
    while True do begin
       manager:=manager.next;
       if manager=nil then begin
          if candidateFree=0 then
-            Result:=AllocateSMB(smbIndex)
+            Result:=AllocateSMB(smbInfo)
          else begin
             MakeSMBTopMost(candidate);
             Result:=candidate;
@@ -1078,22 +1123,25 @@ end;
 //
 function RGetMem(Size: Integer): Pointer;
 var
-   smbIndex, offset, blkID : Cardinal;
-   n : Integer;
+   blkID : Cardinal;
+   n, smbIndex : Integer;
    manager : PSMBManager;
    lgbManager : PLGBManager;
+   smbInfo : PSMBInfo;
 label
    lblExitWhenOutOfMemory;    // t'was that or a try..finally (can't afford here)
 begin
    if Size<=cSMBMaxSize then begin
       // Small Blocks logic
       smbIndex:=SMBSizeToIndex(Size);
+      smbInfo:=@vSMBs[smbIndex];
+      
       if System.IsMultiThread then
-         EnterCriticalSection(vSMBLocks[smbIndex]);
+         EnterCriticalSection(smbInfo.Lock);
 
-      manager:=vFirstSMBs[smbIndex];
+      manager:=smbInfo.First;
       if manager=nil then begin
-         manager:=AllocateSMB(smbIndex);
+         manager:=AllocateSMB(smbInfo);
          if manager=nil then begin
             Result:=nil;
             goto lblExitWhenOutOfMemory;
@@ -1104,7 +1152,7 @@ begin
          n:=manager.NbFreeBlockOffset;
          if n=0 then begin
             MakeSMBLast(manager);
-            manager:=FindNonFullSMBManager(smbIndex);
+            manager:=FindNonFullSMBManager(smbInfo);
             if manager=nil then begin
                Result:=nil;
                goto lblExitWhenOutOfMemory;
@@ -1116,12 +1164,11 @@ begin
       manager.NbFreeBlockOffset:=n;
       blkID:=manager.BlockOffsets[n];
       manager.BlockSizes[blkID]:=Size;
-      offset:=blkID*manager.BlockSize;
-      Result:=Pointer(Cardinal(manager.BlockStart)+offset);
+      Result:=Pointer(Cardinal(manager.BlockStart)+blkID*manager.BlockSize);
 
 lblExitWhenOutOfMemory:
       if System.IsMultiThread then
-         LeaveCriticalSection(vSMBLocks[smbIndex]);
+         LeaveCriticalSection(smbInfo.Lock);
    end else begin
       // Large blocks
       lgbManager:=AllocateLGB(Size);
@@ -1139,8 +1186,9 @@ var
    i : Integer;
    {$endif}
    n, blkID, locBlkID : Cardinal;
-   smbIndex : Integer;
-   manager : PSMBManager;
+   smbInfo : PSMBInfo;
+   manager, firstManager : PSMBManager;
+   lgbManager : PLGBManager;
 label
    lblRFreeMemExit;
 begin
@@ -1155,9 +1203,10 @@ begin
    if manager<>nil then begin
       if manager.Signature=cSMBSignature then begin
          // Small block release logic
-         smbIndex:=manager.SMBIndex;
+         smbInfo:=manager.SMBInfo;
+
          if System.IsMultiThread then
-            EnterCriticalSection(vSMBLocks[smbIndex]);
+            EnterCriticalSection(smbInfo.Lock);
 
          BlockOffsetToBlockIndex(P, manager, blkID);
          locBlkID:=blkID;  // hints compiler it can place blkID in a register!
@@ -1167,7 +1216,7 @@ begin
             for i:=n-1 downto 0 do begin
                if manager.BlockOffsets[i]=locBlkID then begin
                   if System.IsMultiThread then
-                     LeaveCriticalSection(vSMBLocks[smbIndex]);
+                     LeaveCriticalSection(smbInfo.Lock);
                   Result:=-1;
                   goto lblRFreeMemExit;
                end;
@@ -1178,23 +1227,25 @@ begin
             Inc(n);
             manager.NbFreeBlockOffset:=n;
             if n<manager.MaxFreeBlockOffset then begin
-               if n>=vFirstSMBs[smbIndex].NbFreeBlockOffset then
-                  if vFirstSMBs[smbIndex].NbFreeBlockOffset<manager.ReasonnablyFreeTreshold then
+               firstManager:=smbInfo.First;
+               if n>=firstManager.NbFreeBlockOffset then
+                  if firstManager.NbFreeBlockOffset<manager.ReasonnablyFreeTreshold then
                      MakeSMBTopMost(manager);
             end else begin
                // topmost manager can't die
-               if (manager.Prev<>nil) or (smbIndex>cSMBRange1Offset) then
+               if (manager.Prev<>nil) or (smbInfo.Index>cSMBRange1Offset) then
                   ReleaseSMB(manager);
             end;
 
             if System.IsMultiThread then
-               LeaveCriticalSection(vSMBLocks[smbIndex]);
+               LeaveCriticalSection(smbInfo.Lock);
             Result:=0;
          end else Result:=-1;
       end else if manager.Signature=cLGBSignature then begin
          // Large block
-         if P=PLGBManager(manager).BlockStart then begin
-            ReleaseLGB(PLGBManager(manager));
+         lgbManager:=PLGBManager(manager);
+         if P=lgbManager.BlockStart then begin
+            ReleaseLGB(lgbManager);
             Result:=0;
          end else Result:=-1;
       end else Result:=-1;
@@ -1391,14 +1442,19 @@ end;
 procedure InitializeRMM;
 var
    i : Integer;
+   smbInfo : PSMBInfo;
 begin
    InitializeCriticalSection(vLGBLock);
    {$ifdef SECURE_MEMORYMAP}
    vMemoryMap:=VirtualAlloc(nil, SizeOf(TPointerArray32k), MEM_COMMIT,
                             PAGE_READWRITE);
    {$endif}
-   for i:=Low(vSMBLocks) to High(vSMBLocks) do
-      InitializeCriticalSection(vSMBLocks[i]);
+   for i:=Low(vSMBs) to High(vSMBs) do begin
+      smbInfo:=@vSMBs[i];
+      smbInfo.Index:=i;
+      smbInfo.Size:=SMBIndexToSize(i);
+      InitializeCriticalSection(smbInfo.Lock);
+   end;
 
    InitializeCriticalSection(vRMMBatchesLock);
    vRMMChunkBatches:=AllocateRMMChunkBatch;
@@ -1410,18 +1466,18 @@ procedure FinalizeRMM;
 var
    i : Integer;
 begin
-   for i:=Low(vFirstSMBs) to High(vFirstSMBs) do
-      while vFirstSMBs[i]<>nil do
-         ReleaseSMB(vFirstSMBs[i]);
    for i:=Low(vLGBManagers) to High(vLGBManagers) do
       while vLGBManagers[i]<>nil do
          ReleaseLGB(vLGBManagers[i]);
+   for i:=Low(vSMBs) to High(vSMBs) do
+      while vSMBs[i].First<>nil do
+         ReleaseSMB(vSMBs[i].First);
    ReleaseRMMChunkBatch(vRMMChunkBatches);
    {$ifdef SECURE_MEMORYMAP}
    VirtualFree(vMemoryMap, 0, MEM_RELEASE);
    {$endif}
-   for i:=Low(vSMBLocks) to High(vSMBLocks) do
-      DeleteCriticalSection(vSMBLocks[i]);
+   for i:=Low(vSMBs) to High(vSMBs) do
+      DeleteCriticalSection(vSMBs[i].Lock);
    DeleteCriticalSection(vLGBLock);
    DeleteCriticalSection(vRMMBatchesLock);
 end;
@@ -1432,8 +1488,8 @@ procedure LockRMM;
 var
    i : Integer;
 begin
-   for i:=Low(vSMBLocks) to High(vSMBLocks) do
-      EnterCriticalSection(vSMBLocks[i]);
+   for i:=Low(vSMBs) to High(vSMBs) do
+      EnterCriticalSection(vSMBs[i].Lock);
    EnterCriticalSection(vLGBLock);
    EnterCriticalSection(vRMMBatchesLock);
 end;
@@ -1446,8 +1502,8 @@ var
 begin
    LeaveCriticalSection(vRMMBatchesLock);
    LeaveCriticalSection(vLGBLock);
-   for i:=High(vSMBLocks) downto Low(vSMBLocks) do
-      LeaveCriticalSection(vSMBLocks[i]);
+   for i:=High(vSMBs) downto Low(vSMBs) do
+      LeaveCriticalSection(vSMBs[i].Lock);
 end;
 
 // BindRMM
@@ -1489,7 +1545,9 @@ begin
          smm.MemoryManager.ReallocMem:=@RReallocMem;
          smm.AllocMem:=@RAllocMem;
          smm.Allocated:=@Allocated;
+         {$ifdef ALLOW_USAGE_SNAPSHOT}
          smm.RMMUsageSnapShot:=@RMMUsageSnapShot;
+         {$endif}
          // Setup structure data for shared memory
          {$ifdef SHARE_MEM}
          vSharedMemory_Data:=CreateWindow('STATIC',
@@ -1517,7 +1575,9 @@ begin
       vAllocMemPatch:=RedirectPatch(@SysUtils.AllocMem, @smm.AllocMem);
       {$endif}
       vAllocatedPatch:=RedirectPatch(@Allocated, @smm.Allocated);
+      {$ifdef ALLOW_USAGE_SNAPSHOT}
       vRMMUsageSnapShotPatch:=RedirectPatch(@RMMUsageSnapShot, @smm.RMMUsageSnapShot);
+      {$endif}
    end;
 end;
 
@@ -1533,7 +1593,9 @@ begin
       {$ifndef DEFER_INVALIDATE_POINTERS}
       RestorePatch(vAllocMemPatch);
       RestorePatch(vAllocatedPatch);
+      {$ifdef ALLOW_USAGE_SNAPSHOT}
       RestorePatch(vRMMUsageSnapShotPatch);
+      {$endif}
       SetMemoryManager(vOldMemoryManager);
       {$ifdef SHARE_MEM}
       if not vSharedMemory_InUse then begin
@@ -1555,6 +1617,7 @@ begin
    Result:=(vRMMBound>0);
 end;
 
+{$ifdef ALLOW_USAGE_SNAPSHOT}
 // RMMUsageSnapShot (func)
 //
 function RMMUsageSnapShot : TRMMUsageSnapShot;
@@ -1709,11 +1772,11 @@ begin
       if 32768-k>kp then kp:=32767-k;
       Result.LargestFreeVM:=kp shl 16;
       // Build SMBStats
-      for i:=Low(vFirstSMBs) to High(vFirstSMBs) do begin
+      for i:=Low(vSMBs) to High(vSMBs) do begin
          nbBlocks:=0;
          userSize:=0;
          k:=0;
-         psmb:=vFirstSMBs[i];
+         psmb:=vSMBs[i].First;
          while Assigned(psmb) do begin
             Inc(nbBlocks, psmb.MaxFreeBlockOffset-psmb.NbFreeBlockOffset);
             for j:=0 to psmb.MaxFreeBlockOffset-1 do
@@ -1732,6 +1795,7 @@ begin
       UnLockRMM;
    end;
 end;
+{$endif} // ALLOW_USAGE_SNAPSHOT
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1788,7 +1852,7 @@ initialization
 
 finalization
 
-   UnBindRMM; //}
+   UnBindRMM;
 {$endif}
 
 end.
