@@ -758,7 +758,7 @@ type
          FTopCap, FBottomCap : TCapType;
          procedure SetBottom(AValue: TAngleLimit1);
          procedure SetBottomCap(AValue: TCapType);
-         procedure SetRadius(AValue: TGLFloat);
+         procedure SetRadius(const aValue : TGLFloat);
          procedure SetSlices(AValue: TGLInt);
          procedure SetStart(AValue: TAngleLimit2);
          procedure SetStop(AValue: TAngleLimit2);
@@ -3259,7 +3259,7 @@ var
    uTexCoord, uTexFactor, vTexFactor, vTexCoord0, vTexCoord1 : Single;
    I, J: Integer;
    DoReverse: Boolean;
-begin
+begin         
    DoReverse:=(FNormalDirection=ndInside);
    glPushAttrib(GL_POLYGON_BIT);
    if DoReverse then
@@ -3442,16 +3442,14 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.SetRadius(AValue:TGLFloat);
-
+// SetRadius
+//
+procedure TGLSphere.SetRadius(const aValue : TGLFloat);
 begin
-  if AValue<>FRadius then
-  begin
-    FRadius:=AValue;
-    StructureChanged;
-  end;
+   if aValue<>FRadius then begin
+      FRadius:=aValue;
+      StructureChanged;
+   end;
 end;
 
 //------------------------------------------------------------------------------

@@ -330,7 +330,8 @@ begin
    FIsOpenGLAvailable:=InitOpenGL;
    inherited Create(AOwner);
    ControlStyle:=[csClickEvents, csDoubleClicks, csOpaque, csCaptureMouse];
-   if csDesigning in ComponentState then ControlStyle:=ControlStyle + [csFramed];
+   if csDesigning in ComponentState then
+      ControlStyle:=ControlStyle+[csFramed];
    Width:=100;
    Height:=100;
    FVSync:=vsmNoSync;
