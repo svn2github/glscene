@@ -6,10 +6,10 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
-  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLWin32Viewer, VectorGeometry, GLLensFlare, GLBumpmapHDS;
+  GLCadencer, StdCtrls, GLTexture, GLSkydome, GLWin32Viewer, VectorGeometry,
+  GLLensFlare, GLBumpmapHDS, GLTexCombineShader, OpenGL1x, ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -26,6 +26,8 @@ type
     SPSun: TGLSprite;
     GLLensFlare: TGLLensFlare;
     GLDummyCube1: TGLDummyCube;
+    GLTexCombineShader1: TGLTexCombineShader;
+    GLBumpmapHDS1: TGLBumpmapHDS;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -36,12 +38,12 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
+    procedure GLBumpmapHDS1NewTilePrepared(Sender: TGLBumpmapHDS;
+      heightData: THeightData; normalMapMaterial: TGLLibMaterial);
   private
     { Déclarations privées }
   public
     { Déclarations publiques }
-    bumpmapHDS : TGLBumpmapHDS;
-
     mx, my : Integer;
     fullScreen : Boolean;
     FCamHeight : Single;
@@ -54,7 +56,7 @@ implementation
 
 {$R *.DFM}
 
-uses Keyboard, OpenGL1x;
+uses Keyboard;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -67,10 +69,6 @@ begin
    // specify height map data
    GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
 
-   bumpmapHDS:=TGLBumpmapHDS.Create(Self);
-   bumpmapHDS.ElevationHDS:=GLBitmapHDS1;
-   bumpmapHDS.BumpmapLibrary:=GLMaterialLibrary1;
-
    // load the texture maps
    GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('detailmap.jpg');
    GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('detailmap.jpg');
@@ -78,13 +76,29 @@ begin
 
    // apply texture map scale (our heightmap size is 256)
    TerrainRenderer1.TilesPerTexture:=1;//256/TerrainRenderer1.TileSize;
-   TerrainRenderer1.HeightDataSource:=bumpmapHDS;
    TerrainRenderer1.MaterialLibrary:=GLMaterialLibrary1;
 
    // Could've been done at design time, but then it hurts the eyes ;)
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    // Initial camera height offset (controled with pageUp/pageDown)
    FCamHeight:=10;
+end;
+
+procedure TForm1.GLBumpmapHDS1NewTilePrepared(Sender: TGLBumpmapHDS;
+  heightData: THeightData; normalMapMaterial: TGLLibMaterial);
+var
+   n : TVector;
+begin
+   heightData.MaterialName:=normalMapMaterial.Name;
+   normalMapMaterial.Texture2Name:='details';
+   normalMapMaterial.Shader:=GLTexCombineShader1;
+   normalMapMaterial.Material.MaterialOptions:=[moNoLighting];
+   n:=VectorNormalize(SPSun.AbsolutePosition);
+   ScaleVector(n, 0.5);
+   n[1]:=-n[1];
+   n[2]:=-n[2];
+   AddVector(n , 0.5);
+   normalMapMaterial.Material.FrontProperties.Diffuse.Color:=n;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 118
-  Top = 77
+  Left = 157
+  Top = 105
   BorderStyle = bsDialog
   Caption = 'Form1'
   ClientHeight = 405
@@ -63,7 +63,6 @@ object Form1: TForm1
       Stars = <>
       Options = [sdoTwinkle]
       object SPSun: TGLSprite
-        Position.Coordinates = {00000C430000C842000096420000803F}
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.BlendingMode = bmAdditive
@@ -72,6 +71,7 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
+        Position.Coordinates = {00000C430000C842000096420000803F}
         Width = 60
         Height = 60
         NoZWrite = True
@@ -93,12 +93,12 @@ object Form1: TForm1
       end
     end
     object TerrainRenderer1: TGLTerrainRenderer
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'ground'
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {00008040000080400000803E00000000}
       Up.Coordinates = {00000000000000000000803F00000000}
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'ground'
-      HeightDataSource = GLBitmapHDS1
+      HeightDataSource = GLBumpmapHDS1
       TileSize = 32
       TilesPerTexture = 1
       QualityDistance = 150
@@ -147,9 +147,25 @@ object Form1: TForm1
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
         Tag = 0
-        TextureScale.Coordinates = {00000043000000430000004300000000}
+        TextureScale.Coordinates = {00000042000000420000004200000000}
       end>
     Left = 16
     Top = 56
+  end
+  object GLTexCombineShader1: TGLTexCombineShader
+    Combiners.Strings = (
+      'Tex0:=Dot3(Tex0, Col);'
+      'Tex1:=Tex0*Tex1;')
+    DesignTimeEnabled = False
+    Left = 96
+    Top = 56
+  end
+  object GLBumpmapHDS1: TGLBumpmapHDS
+    ElevationHDS = GLBitmapHDS1
+    BumpmapLibrary = GLMaterialLibrary1
+    OnNewTilePrepared = GLBumpmapHDS1NewTilePrepared
+    MaxPoolSize = 0
+    Left = 96
+    Top = 16
   end
 end

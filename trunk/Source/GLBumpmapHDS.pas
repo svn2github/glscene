@@ -18,6 +18,13 @@ uses Classes, GLHeightData, GLGraphics, VectorGeometry, GLTexture;
 
 type
 
+   TGLBumpmapHDS = class;
+
+   // TNewTilePreparedEvent
+   //
+   TNewTilePreparedEvent = procedure (Sender : TGLBumpmapHDS; heightData : THeightData;
+                                      normalMapMaterial : TGLLibMaterial) of object;
+
 	// TGLBumpmapHDS
 	//
    {: An Height Data Source that generates elevation bumpmaps automatically.<p>
@@ -28,11 +35,15 @@ type
 	      { Private Declarations }
          FElevationHDS : THeightDataSource;
          FBumpmapLibrary : TGLMaterialLibrary;
+         FOnNewTilePrepared : TNewTilePreparedEvent;
+         FBumpScale : Single;
 
 	   protected
 	      { Protected Declarations }
          procedure SetElevationHDS(const val : THeightDataSource);
          procedure SetBumpmapLibrary(const val : TGLMaterialLibrary);
+         procedure SetBumpScale(const val : Single);
+         function StoreBumpScale : Boolean;
 
          procedure StartPreparingData(heightData : THeightData); override;
 
@@ -51,6 +62,8 @@ type
 	      { Published Declarations }
          property ElevationHDS : THeightDataSource read FElevationHDS write SetElevationHDS;
          property BumpmapLibrary : TGLMaterialLibrary read FBumpmapLibrary write SetBumpmapLibrary;
+         property OnNewTilePrepared : TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;
+         property BumpScale : Single read FBumpScale write SetBumpScale stored StoreBumpScale;
 
          property MaxPoolSize;
 	end;
@@ -65,6 +78,9 @@ implementation
 
 uses SysUtils, OpenGL1x;
 
+const
+   cDefaultBumpScale = 0.1;
+
 // ------------------
 // ------------------ TGLBumpmapHDS ------------------
 // ------------------
@@ -74,6 +90,7 @@ uses SysUtils, OpenGL1x;
 constructor TGLBumpmapHDS.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
+   FBumpScale:=cDefaultBumpScale;
 end;
 
 // Destroy
@@ -135,10 +152,12 @@ begin
          TextureMode:=tmReplace;
          TextureWrap:=twNone;
          bmp32:=(Image as TGLBlankImage).GetBitmap32(GL_TEXTURE_2D);
-         GenerateNormalMap(heightData, bmp32, 0.1);
+         GenerateNormalMap(heightData, bmp32, FBumpScale);
       end;
-      heightData.MaterialName:=libMat.Name;
-   end;
+   end else libMat:=nil;
+   if Assigned(FOnNewTilePrepared) then
+      FOnNewTilePrepared(Self, heightData, libMat)
+   else heightData.MaterialName:=libMat.Name;
 end;
 
 // Release
@@ -182,6 +201,23 @@ begin
    end;
 end;
 
+// SetBumpScale
+//
+procedure TGLBumpmapHDS.SetBumpScale(const val : Single);
+begin
+   if FBumpScale<>val then begin
+      FBumpScale:=val;
+      MarkDirty;
+   end;
+end;
+
+// StoreBumpScale
+//
+function TGLBumpmapHDS.StoreBumpScale : Boolean;
+begin
+   Result:=(FBumpScale<>cDefaultBumpScale); 
+end;
+
 // GenerateNormalMap
 //
 procedure TGLBumpmapHDS.GenerateNormalMap(heightData : THeightData;
@@ -189,30 +225,25 @@ procedure TGLBumpmapHDS.GenerateNormalMap(heightData : THeightData;
                                           scale : Single);
 var
    x, y : Integer;
-   p1, p2, p3 : Single;
    dcx, dcy : Single;
    invLen, scaleDiv255 : Single;
-   curRow, nextRow : PSmallIntArray;
+   prevRow, curRow, nextRow : PSmallIntArray;
    nmRow : PGLPixel32Array;
 begin
    heightData.DataType:=hdtSmallInt;
-   nextRow:=heightData.SmallIntRaster[0];
 
-   normalMap.Height:=heightData.Size-1;
-   normalMap.Width:=heightData.Size-1;
+   normalMap.Height:=heightData.Size-2;
+   normalMap.Width:=heightData.Size-2;
 
    scaleDiv255:=scale*(1/255);
    for y:=0 to normalMap.Height-1 do begin
-      curRow:=nextRow;
-      nextRow:=heightData.SmallIntRaster[y+1];
+      prevRow:=heightData.SmallIntRaster[y];
+      curRow:=heightData.SmallIntRaster[y+1];
+      nextRow:=heightData.SmallIntRaster[y+2];
       nmRow:=normalMap.ScanLine[normalMap.Height-1-y];
       for x:=0 to normalMap.Width-1 do begin
-         p1:=curRow[x];
-         p2:=nextRow[x];
-         p3:=curRow[x+1];
-
-         dcx:=scaleDiv255*(p3-p1);
-         dcy:=scaleDiv255*(p1-p2);
+         dcx:=scaleDiv255*(curRow[x+2]-curRow[x]);
+         dcy:=scaleDiv255*(prevRow[x+1]-nextRow[x+1]);
 
          invLen:=RSqrt(Sqr(dcx)+Sqr(dcy)+1);
 
