@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>24/11/04 - MF - Added OctreePointInMesh
       <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
       <li>24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
                           Added TexCoordsEx, Binormals, Tangents,
@@ -6428,35 +6429,47 @@ end;
 function TGLFreeForm.OctreePointInMesh(const Point: TVector): boolean;
 var
   rayStart, rayVector, hitPoint, hitNormal : TVector;
-  BRad : single;
+  BRad : double;
   HitCount : integer;
+  hitDot : double;
 begin
   Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
 
   result := false;
 
+  // Makes calculations sligthly faster by ignoring cases that are guaranteed
+  // to be outside the object
+  if not PointInObject(Point) then
+    exit;
+
   BRad := BoundingSphereRadius;
 
   // This could be a fixed vector, but a fixed vector could have a systemic
-  // bug on an non-closed mesh
+  // bug on an non-closed mesh, making it fail constantly for one or several
+  // faces.
   rayVector := VectorMake(2*random-1, 2*random-1, 2*random-1);
   rayStart := VectorAdd(VectorScale(rayVector, -BRad), Point);
 
   HitCount := 0;
 
-  while OctreeRayCastIntersect(rayStart, rayVector, @hitPoint, @hitNormal) do
-  begin
+  while OctreeRayCastIntersect(rayStart, rayVector, @hitPoint, @hitNormal) do begin
     // Are we past our taget?
-    if VectorDotProduct(rayVector, VectorSubtract(Point, hitPoint))<0 then
-    begin
+    if VectorDotProduct(rayVector, VectorSubtract(Point, hitPoint))<0 then begin
       result := HitCount>0;
       exit;
     end;
 
-    if VectorDotProduct(hitNormal, rayVector)<0 then
+    hitDot := VectorDotProduct(hitNormal, rayVector);
+    if hitDot<0 then
       inc(HitCount)
-    else
+    else if hitDot>0 then
       dec(HitCount);
+
+    // ditDot = 0 is a tricky special case where the ray is just gracing the
+    // side of a face - this case means that it doesn't necessarily actually
+    // enter the mesh - but it _could_ enter the mesh. If this situation occurs,
+    // we should restart the run using a new rayVector.
+
 
     rayStart := VectorAdd(hitPoint, VectorScale(rayVector, BRad/1000));
   end;
