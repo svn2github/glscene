@@ -1924,7 +1924,7 @@ begin
       {$ifdef SECURE_MEMORYMAP}
       // mark vMemoryMap as 100% used
       k:=Cardinal(vMemoryMap) shr 16;
-      for i:=k to k+(SizeOf(TPointerArray32k) shr 16)-1 do begin
+      for i:=k to k+(SizeOf(TPointerArrayMap) shr 16)-1 do begin
          mapEntry:=@Result.Map[i];
          Assert(mapEntry.Status=rmmsUnallocated);
          mapEntry.Status:=rmmsAllocated;
