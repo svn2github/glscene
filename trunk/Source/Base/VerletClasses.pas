@@ -560,6 +560,10 @@ type
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
 
+         // Broken and very slow!
+         {procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
+                        const iteration, maxIterations : Integer); override;//}
+
          property Direction : TAffineVector read FDirection write FDirection;
          property Location : TAffineVector read FLocation write FLocation;
          property Sides : TAffineVector read FSides write SetSides;
@@ -1617,6 +1621,95 @@ end;
 // ------------------
 // ------------------ TVCCube ------------------
 // ------------------
+
+// BROKEN AND VERY SLOW!
+(*procedure TVCCube.SatisfyConstraintForEdge(aEdge: TVerletEdge;
+  const iteration, maxIterations: Integer);
+var
+  Corners : array[0..7] of TAffineVector;
+
+  procedure AddCorner(CornerID : integer; x,y,z : single);
+  begin
+    x := (x-0.5)*2;
+    y := (y-0.5)*2;
+    z := (z-0.5)*2;
+    MakeVector(Corners[CornerID], FHalfSides[0]*x, FHalfSides[1]*y, FHalfSides[2]*z);
+  end;
+
+  procedure TryEdge(Corner0, Corner1 : integer);
+  var
+    CubeEdgeClosest, aEdgeClosest : TAffineVector;
+    CenterCubeEdge, CenteraEdge, move, contactNormal : TAffineVector;
+    deltaLength : single;
+  begin
+    SegmentSegmentClosestPoint(
+      Corners[Corner0],
+      Corners[Corner1],
+      aEdge.NodeA.FLocation,
+      aEdge.NodeB.FLocation,
+      CubeEdgeClosest,
+      aEdgeClosest);
+
+    CenterCubeEdge := VectorSubtract(CubeEdgeClosest, FLocation);
+    CenteraEdge := VectorSubtract(aEdgeClosest, FLocation);
+
+    // Should be updated with a not sqrting version
+    if (CenteraEdge[0]<FHalfSides[0]) and
+       (CenteraEdge[1]<FHalfSides[1]) and
+       (CenteraEdge[2]<FHalfSides[2]) then
+    begin
+      // The distance to move the edge is the difference between CenterCubeEdge and
+      // CenteraEdge
+
+      move := VectorSubtract(CenteraEdge, CenterCubeEdge);
+
+      deltaLength := VectorLength(move);
+
+      if deltaLength>0 then begin
+         contactNormal := VectorScale(move, 1/deltaLength);
+         aEdge.NodeA.ApplyFriction(FFrictionRatio, deltaLength, contactNormal);
+         aEdge.NodeB.ApplyFriction(FFrictionRatio, deltaLength, contactNormal);
+
+        AddVector(aEdge.NodeA.FLocation, move);
+        AddVector(aEdge.NodeB.FLocation, move);
+      end;
+    end;
+  end;
+begin
+  // This is extremely slow! Ther must be a faster way to determine if an edge
+  // is even close to a cube. Bounding spheres?
+  exit;
+
+  // For each cube edge:
+  //   find closest positions between CubeEdge and aEdge
+  //   if aEdgeClosestPosition within cube then
+  //     move nodes until closest position is outside cube
+  //     exit
+  AddCorner(0, 0, 0, 0);
+  AddCorner(1, 1, 0, 0);
+  AddCorner(2, 1, 1, 0);
+  AddCorner(3, 0, 1, 0);
+
+  AddCorner(4, 0, 0, 1);
+  AddCorner(5, 1, 0, 1);
+  AddCorner(6, 1, 1, 1);
+  AddCorner(7, 0, 1, 1);
+
+  TryEdge(0,1);
+  TryEdge(1,2);
+  TryEdge(2,3);
+  TryEdge(3,0);
+
+  TryEdge(4,5);
+  TryEdge(5,6);
+  TryEdge(6,7);
+  TryEdge(7,4);
+
+  TryEdge(0,3);
+  TryEdge(1,5);
+  TryEdge(2,6);
+  TryEdge(3,7);
+end;*)
 
 procedure TVCCube.SatisfyConstraintForNode(aNode: TVerletNode;
   const iteration, maxIterations: Integer);
