@@ -79,18 +79,18 @@ object Form1: TForm1
     object DummyCube1: TGLDummyCube
       CubeSize = 2
       object Cube2: TGLCube
-        Position.Coordinates = {0000404000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8786063F8786063F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {0000000000000000A1A0203F0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+        Position.Coordinates = {0000404000000000000000000000803F}
         CubeSize = {0000003F0000003F0000003F}
         object DummyCube2: TGLDummyCube
           Direction.Coordinates = {00000000F304353FF304353F00000000}
           Up.Coordinates = {00000000F304353FF30435BF00000000}
           CubeSize = 1
           object Cube3: TGLCube
-            Position.Coordinates = {000000000000803F000000000000803F}
             Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
+            Position.Coordinates = {000000000000803F000000000000803F}
             CubeSize = {CDCC4C3ECDCC4C3ECDCC4C3E}
           end
         end
@@ -117,7 +117,7 @@ object Form1: TForm1
     Width = 320
     Height = 200
     Compressor = acShowDialog
-    ImageRetrievalMode = irmSnapShot
+    ImageRetrievalMode = irmBitBlt
     OnPostProcessEvent = AVIRecorder1PostProcessEvent
     Left = 16
     Top = 128
