@@ -1,4 +1,4 @@
-// AVIRecorder
+// GLAVIRecorder
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
@@ -9,7 +9,7 @@
       <li>24/02/01 - NelC - Creation and initial code
 	</ul></font>
 }
-unit AVIRecorder;
+unit GLAVIRecorder;
 
 interface
 
