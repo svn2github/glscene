@@ -1069,10 +1069,12 @@ function MaxAbsXYZComponent(v : TVector) : Single;
 function MinAbsXYZComponent(v : TVector) : Single;
 {: Replace components of v with the max of v or v1 component.<p>
    Maximum is computed per component. }
-procedure MaxVector(var v : TVector; const v1 : TVector);
+procedure MaxVector(var v : TVector; const v1 : TVector); overload;
+procedure MaxVector(var v : TAffineVector; const v1 : TAffineVector); overload;
 {: Replace components of v with the min of v or v1 component.<p>
    Minimum is computed per component. }
-procedure MinVector(var v : TVector; const v1 : TVector);
+procedure MinVector(var v : TVector; const v1 : TVector); overload;
+procedure MinVector(var v : TAffineVector; const v1 : TAffineVector); overload;
 
 {: Sorts given array in ascending order.<p>
    NOTE : current implementation is a slow bubble sort... }
@@ -6692,7 +6694,7 @@ begin
    Result:=MinXYZComponent(v);
 end;
 
-// MaxVector
+// MaxVector (hmg)
 //
 procedure MaxVector(var v : TVector; const v1 : TVector);
 begin
@@ -6702,7 +6704,16 @@ begin
    if v1[3]>v[3] then v[3]:=v1[3];
 end;
 
-// MinVector
+// MaxVector (affine)
+//
+procedure MaxVector(var v : TAffineVector; const v1 : TAffineVector); overload;
+begin
+   if v1[0]>v[0] then v[0]:=v1[0];
+   if v1[1]>v[1] then v[1]:=v1[1];
+   if v1[2]>v[2] then v[2]:=v1[2];
+end;
+
+// MinVector (hmg)
 //
 procedure MinVector(var v : TVector; const v1 : TVector);
 begin
@@ -6710,6 +6721,15 @@ begin
    if v1[1]<v[1] then v[1]:=v1[1];
    if v1[2]<v[2] then v[2]:=v1[2];
    if v1[3]<v[3] then v[3]:=v1[3];
+end;
+
+// MinVector (affine)
+//
+procedure MinVector(var v : TAffineVector; const v1 : TAffineVector);
+begin
+   if v1[0]<v[0] then v[0]:=v1[0];
+   if v1[1]<v[1] then v[1]:=v1[1];
+   if v1[2]<v[2] then v[2]:=v1[2];
 end;
 
 // SortArrayAscending (extended)

@@ -72,6 +72,9 @@ function RemapIndicesToIndicesMap(remapIndices : TIntegerList) : TIntegerList;
 {: Remaps a list of triangles vertex indices and remove degenerate triangles.<p>
    The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
 procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
+{: Remaps a list of indices.<p>
+   The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
+procedure RemapIndices(indices, indicesMap : TIntegerList);
 
 {: Attempts to unify triangle winding.<p>
    Depending on topology, this may or may not be successful (some topologies
@@ -514,6 +517,19 @@ begin
       Inc(i, 3);
    end;
    indices.Count:=k;
+end;
+
+// RemapIndices
+//
+procedure RemapIndices(indices, indicesMap : TIntegerList);
+var
+   i : Integer;
+   map, ind : PIntegerArray;
+begin
+   ind:=indices.List;
+   map:=indicesMap.List;
+   for i:=0 to indices.Count-1 do
+      ind[i]:=map[ind[i]];
 end;
 
 // UnifyTrianglesWinding
