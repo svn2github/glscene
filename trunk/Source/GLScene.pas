@@ -1745,6 +1745,9 @@ type
          //: Indicates hardware acceleration support
          function Acceleration : TGLContextAcceleration;
 
+         //: ViewPort for current/last render
+         property ViewPort : TRectangle read FViewPort;
+         
          //: Fills the PickList with objects in Rect area
          procedure PickObjects(const rect : TGLRect; pickList : TGLPickList;
                                objectCountGuess : Integer);
@@ -5215,6 +5218,7 @@ var
    mvMat : TMatrix;
 begin
    if CamInvarianceMode<>cimNone then begin
+      glPushMatrix;
       // prepare
       case CamInvarianceMode of
          cimPosition : begin
@@ -5245,6 +5249,7 @@ begin
       finally
          Scene.CurrentBuffer.PopModelViewMatrix;
       end;
+      glPopMatrix;
    end else inherited;
 end;
 
@@ -5950,7 +5955,6 @@ procedure TGLScene.RenderScene(aBuffer : TGLSceneBuffer;
    var
       projMat, mvMat : TMatrix;
    begin
-      // Die Matrizen mit Hilfe von OpenGL in Arrays sichern
       glGetFloatv(GL_PROJECTION_MATRIX, @projMat);
       glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
       Result:=MatrixMultiply(mvMat, projMat);
