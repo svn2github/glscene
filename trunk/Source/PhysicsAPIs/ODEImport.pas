@@ -22,7 +22,7 @@
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.1                                        *
+ * ODE Delphi Import unit : 0.8.6                                        *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -61,8 +61,8 @@
 
   Change history
 
-  2003.09.01 - EG - TriCollider bindings now dynamic to allow use of unit in Delphi5
-                    (compatibility with other platforms unknow)
+  2004.02.18 - CH - New single and double dll
+  2003.09.08 - CH - New single and double dll. Now handles cones and terrain
   2003.07.23 - CH - New single dll, now handles Plane2D
   2003.07.18 - CH - Added set and get UniversalParam, new dll deployed
   2003.07.07 - MF - DelphiODE now defaults to Single precision, because TriMesh
@@ -147,9 +147,9 @@ type
 
   {$ifdef cSINGLE}
     {$define cTRILIST} // Use TriList (currently only exists in single dll)
-    TdReal = Single;
+    TdReal = single;
   {$else}
-    TdReal = Double;
+    TdReal = double;
   {$endif}
 
   PdReal = ^TdReal;
@@ -590,7 +590,17 @@ type
   virtual int query (dGeomID)=0;
 };*)
   TdxSpace = record
-    _Garbage : integer; // I don't know where this comes from!
+    _Garbage : integer;
+// * Explaining _Garbage *
+// That member first appears in the TdxSpace record.  This is
+// because the dxSpace struct declares its functions as virtual.  Since the
+// class (a struct in C++ is considered a public class) now contains virtual
+// functions (functions in dxBase are not virtual), it needs a vtable to know
+// what functions to call in what class.  Visual C++ places the pointer to the
+// vtable at offset 0, which is what your _Garbage field caters for.
+//
+// Steve 'Sly' Williams
+
     SpaceType : integer;
   end;
 
@@ -607,7 +617,7 @@ type
 	void Build(const void* Vertices, int VertexStide, int VertexCount, const void* Indices, int IndexCount, int TriStride);
 };*)
   TdxTriMeshData = record
-    unknown : byte; // 
+    unknown : byte; //
   end;
 
   PdxTriMeshData = ^TdxTriMeshData;
@@ -817,12 +827,18 @@ enum {
     dParamGroup: TJointParams = $100;
 
   type
+    TdRealHugeArray = array[0..65535] of TdReal;
+    PdRealHugeArray = ^TdRealHugeArray;
+  
+  //{$ifdef cTRILIST}
+  type
     // Tri-list collider
     TdIntegerArray = array[0..65535] of Integer;
     PdIntegerArray = ^TdIntegerArray;
 
     TdVector3Array = array[0..65535] of TdVector3;
     PdVector3Array = ^TdVector3Array;
+  //{$endif}
 
 { TODO :
 // How does one import integers?
@@ -831,49 +847,28 @@ dCCylinderClass
 dGeomTransformClass
 dSphereClass
 dPlaneClass
+...
 
 // Functions
 dBoxBox
-dClearUpperTriangle
+dDebug
 dError
+dMessage
 dFactorCholesky
 dFactorLDLT
-dInfiniteAABB
+dPlaneSpace
+dInfinityValue
 dInvertPDMatrix
 dIsPositiveDefinite
 dLDLTAddTL
 dLDLTRemove
-dMultiply0
-dMultiply1
-dMultiply2
-dNormalize3
-dNormalize4
-dPlaneSpace
-dQFromAxisAndAngle
-dQMultiply0
-dQMultiply1
-dQMultiply2
-dQMultiply3
-dQSetIdentity
-dQtoR
-dRFrom2Axes
-dRFromAxisAndAngle
-dRFromEulerAngles
-dRSetIdentity
-dRandInt
-dRandReal
-dRandSetSeed
 dRemoveRowCol
-dRtoQ
+dSetDebugHandler
+dSetErrorHandler
 dSetMessageHandler
 dSetZero
 dSolveCholesky
-dSolveLDLT
-dSpaceCollide
-dTestMatrixComparison
-dTestRand
-dTestSolveLCP
-dWtoDQ}
+dSolveLDLT}
 
   // ***************************************************************************
   // ***************************************************************************
@@ -890,12 +885,12 @@ dWtoDQ}
   procedure dWorldSetERP(const World: PdxWorld; erp: TdReal); cdecl; external ODEDLL;
   procedure dWorldSetGravity(const World: PdxWorld; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dWorldStep(const World: PdxWorld; const stepsize: TdReal); cdecl; external ODEDLL;
+  // Stepfast
+  procedure dWorldStepFast1(const World: PdxWorld; const stepsize: TdReal; const iterations: Integer); cdecl; external ODEDLL;
+  procedure dWorldSetAutoEnableDepthSF1(const World: PdxWorld; autodepth: Integer); cdecl; external ODEDLL;
+  function dWorldGetAutoEnableDepthSF1(const World: PdxWorld): Integer; cdecl; external ODEDLL;
   procedure dCloseODE; cdecl; external ODEDLL;
 
-  // Stepfast
-  procedure dWorldStepFast(const World: PdxWorld; const stepsize: TdReal; const iterations: Integer); cdecl; external ODEDLL;
-  procedure dWorldSetAutoEnableDepth(const World: PdxWorld; autodepth: Integer); cdecl; external ODEDLL;
-  function dWorldGetAutoEnableDepth(const World: PdxWorld): Integer; cdecl; external ODEDLL;
 
   //----- dBody -----
   procedure dBodyAddForce(const Body: PdxBody; const fx, fy, fz: TdReal); cdecl; external ODEDLL;
@@ -1085,7 +1080,6 @@ dWtoDQ}
   function dGeomPlanePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
   function dGeomCCylinderPointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
 
-
   // A strange fix, so the class ids can be updated
   // ***************
   // Deprecated
@@ -1094,6 +1088,10 @@ dWtoDQ}
   function dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl;
   function dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl;
   function dCreateCCylinder(const Space : PdxSpace; const radius, length: TdReal): PdxGeom; cdecl;
+  function dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl;
+  function dCreateCone(const Space : PdxSpace; radius, length: TdReal): PdxGeom; cdecl;
+  function dCreateTerrain(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer): PdxGeom; cdecl;
+  function dCreateRay(const Space : PdxSpace; length: TdReal) : PdxGeom; cdecl;
   function dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl;
 
   // Deprecated
@@ -1102,34 +1100,30 @@ dWtoDQ}
   function EXT_dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateBox';
   function EXT_dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreatePlane';
   function EXT_dCreateCCylinder(const Space : PdxSpace; const radius, length: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateCCylinder';
+  function EXT_dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateCylinder';
+  function EXT_dCreateCone(const Space : PdxSpace; radius, length: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateCone';
+  function EXT_dCreateTerrain(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer): PdxGeom; cdecl; external ODEDLL name 'dCreateTerrain';
+  function EXT_dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateRay';
   function EXT_dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl; external ODEDLL name 'dCreateGeomTransform';
   // ***************
 
-  // New geom - dGeomTransformGroupClass, transforms several geoms...?
-  // REMOVED DUE TO THE FACT THAT THEY'RE NOT IN THE DLL!
-  {function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
-  function EXT_dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl; external ODEDLL name 'dCreateGeomTransformGroup';
+  // dCone
+  procedure dGeomConeSetParams(const Geom: PdxGeom; radius, length: TdReal); cdecl; external ODEDLL;
+  procedure dGeomConeGetParams(const Geom: PdxGeom; var radius, length: TdReal); cdecl; external ODEDLL;
+  function dGeomConePointDepth(const Geom: PdxGeom; const x, y, z: TdReal): TdReal; cdecl; external ODEDLL;
 
-  procedure dGeomTransformGroupSetRelativePosition (Geom : PdxGeom; x, y, z : TdReal); cdecl; external ODEDLL;
-  procedure dGeomTransformGroupSetRelativeRotation (Geom : PdxGeom; const R : TdMatrix3); cdecl; external ODEDLL;
-  function dGeomTransformGroupGetRelativePosition (Geom : PdxGeom) : PdVector3; cdecl; external ODEDLL;
-  function dGeomTransformGroupGetRelativeRotation (Geom : PdxGeom) : PdVector3; cdecl; external ODEDLL;
-  procedure dGeomTransformGroupAddGeom (Geom : PdxGeom; Obj : PdxGeom); cdecl; external ODEDLL;
-  procedure dGeomTransformGroupRemoveGeom (Geom : PdxGeom; Obj : PdxGeom); cdecl; external ODEDLL;
-  function dGeomTransformGroupGetGeom (Geom : PdxGeom; i : integer) : PdxGeom; cdecl; external ODEDLL;
-  function dGeomTransformGroupGetNumGeoms (Geom : PdxGeom) : integer; cdecl; external ODEDLL;//}
+  // dTerrain
+  function dGeomTerrainPointDepth(const Geom: PdxGeom; const x, y, z: TdReal): TdReal; cdecl; external ODEDLL;
 
-  // New geom - dCylinder (not a capped cylinder).
-  function dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl;
-  function EXT_dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateCylinder';
+  // dCylinder (not a capped cylinder).
   procedure dGeomCylinderSetParams (const Geom : PdxGeom; radius, length : TdReal); cdecl; external ODEDLL;
   procedure dGeomCylinderGetParams (const Geom : PdxGeom; var radius, length : TdReal); cdecl; external ODEDLL;
 
   //dRay
-  function dCreateRay(const Space : PdxSpace; length: TdReal) : PdxGeom; cdecl;
-  function EXT_dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateRay';
   procedure dGeomRaySetLength(const Geom : PdxGeom; length: TdReal); cdecl; external ODEDLL;
   function dGeomRayGetLength(const Geom : PdxGeom) : TdReal; cdecl; external ODEDLL;
+  procedure dGeomRaySetClosestHit(const Geom : PdxGeom; closestHit: Integer); cdecl; external ODEDLL;
+  function dGeomRayGetClosestHit(const Geom : PdxGeom) : Integer; cdecl; external ODEDLL;
   procedure dGeomRaySet(const Geom : PdxGeom; px, py, pz, dx, dy, dz: TdReal); cdecl; external ODEDLL;
   procedure dGeomRayGet(const Geom : PdxGeom; var start, dir: TdVector3); cdecl; external ODEDLL;
 
@@ -1137,20 +1131,42 @@ dWtoDQ}
   function dGeomGetClassData(o : PdxGeom) : Pointer; cdecl; external ODEDLL;
   function dCreateGeom (classnum : Integer) : PdxGeom; cdecl; external ODEDLL;    
 
+  //----- dTrilistCollider -----
+  {$ifdef cTRILIST}
+  function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
+  function EXT_dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl; external ODEDLL name 'dCreateTriMesh';
+  procedure dGeomTriMeshDataBuildSimple(g: PdxTriMeshData; const Vertices: PdVector3Array; VertexCount: Integer; const Indices: PdIntegerArray; IndexCount: Integer); cdecl; external ODEDLL;
+  procedure dGeomTriMeshDataBuildDouble(g: PdxTriMeshData; const Vertices: PdVector3Array; VertexStride, VertexCount: Integer; const Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl; external ODEDLL;
+  procedure dGeomTriMeshDataBuildSingle(g: PdxTriMeshData; const Vertices: PdVector3Array; VertexStride, VertexCount: Integer; const Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl; external ODEDLL;
+  function dGeomTriMeshDataCreate: PdxTriMeshData; cdecl; external ODEDLL;
+  procedure dGeomTriMeshDataDestroy(g: PdxTriMeshData); cdecl; external ODEDLL;
+  procedure dGeomTriMeshGetTriangle(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl; external ODEDLL;
+  procedure dGeomTriMeshGetPoint(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl; external ODEDLL;
+  procedure dGeomTriMeshClearTCCache(g: PdxGeom); cdecl; external ODEDLL;
+  procedure dGeomTriMeshEnableTC(g: PdxGeom; geomClass, enable: Integer); cdecl; external ODEDLL;
+  function dGeomTriMeshIsTCEnabled(g: PdxGeom; geomClass: Integer): Integer; cdecl; external ODEDLL;
+  function dGeomTriMeshGetArrayCallback(g: PdxGeom): Pointer; cdecl; external ODEDLL;
+  function dGeomTriMeshGetCallback(g: PdxGeom): Pointer; cdecl; external ODEDLL;
+  function dGeomTriMeshGetRayCallback(g: PdxGeom): Pointer; cdecl; external ODEDLL;
+  procedure dGeomTriMeshSetArrayCallback(g: PdxGeom; ArrayCallback: Pointer); cdecl; external ODEDLL;
+  procedure dGeomTriMeshSetCallback(g: PdxGeom; Callback: Pointer); cdecl; external ODEDLL;
+  procedure dGeomTriMeshSetRayCallback(g: PdxGeom; RayCallback: Pointer); cdecl; external ODEDLL;
+  procedure GeomTriMeshSetData(g: PdxGeom; Data: PdxTriMeshData); cdecl; external ODEDLL;
+  {$endif}
 
   //----- dSpace -----
+  procedure dSpaceAdd(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
+  procedure dSpaceDestroy(const Space: PdxSpace); cdecl; external ODEDLL;
+  procedure dSpaceClean (const Space : PdxSpace); cdecl; external ODEDLL;
+  function dSpaceQuery (const Space : PdxSpace; const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
+  procedure dSpaceRemove(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
   function dSimpleSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external ODEDLL;
   function dHashSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external ODEDLL;
   function dQuadTreeSpaceCreate(Space : PdxSpace; Center, Extents : TdVector3; Depth : Integer): PdxSpace; cdecl; external ODEDLL;
-
-  procedure dSpaceDestroy(const Space: PdxSpace); cdecl; external ODEDLL;
-  procedure dSpaceAdd(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
-  function dSpaceQuery (const Space : PdxSpace; const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
-  procedure dSpaceRemove(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
   procedure dHashSpaceSetLevels(const Space: PdxSpace; const minlevel, maxlevel: Integer); cdecl; external ODEDLL;
   procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external ODEDLL;
   function dSpaceGetNumGeoms (const Space: PdxSpace) : integer; cdecl; external ODEDLL;
-
+  function dSpaceGetGeom (const Space: PdxSpace; const i: Integer) : PdxGeom; cdecl; external ODEDLL;
 
 
   procedure dSpaceSetCleanup (space : PdxSpace; const mode : integer); cdecl; external ODEDLL;
@@ -1161,45 +1177,37 @@ dWtoDQ}
   procedure dMassAdjust(var m: TdMass; newmass: TdReal); cdecl; external ODEDLL;
   procedure dMassRotate(var m: TdMass; R: TdMatrix3); cdecl; external ODEDLL;
   procedure dMassSetBox(var m: TdMass; density, lx, ly, lz: TdReal); cdecl; external ODEDLL;
-  procedure dMassSetCappedCylinder(var m: TdMass; density: TdReal; direction: Integer; a, b: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetBoxTotal(var m: TdMass; total_mass, lx, ly, lz: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetCylinder(var m: TdMass; density: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetCappedCylinder(var m: TdMass; density: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetCappedCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
   procedure dMassSetParameters(var m: TdMass; themass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23: TdReal); cdecl; external ODEDLL;
   procedure dMassSetSphere(var m: TdMass; density, radius: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetSphereTotal(var m: TdMass; total_mass, radius: TdReal); cdecl; external ODEDLL;
   procedure dMassSetZero(var m: TdMass); cdecl; external ODEDLL;
   procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external ODEDLL;
-  procedure dMassSetCylinder(var m: TdMass; density: TdReal; direction: Integer; a, b: TdReal); cdecl; external ODEDLL;
-  procedure dMassSetBoxTotal(var m: TdMass; total_mass, lx, ly, lz: TdReal); cdecl; external ODEDLL;
-  procedure dMassSetSphereTotal(var m: TdMass; total_mass, radius: TdReal); cdecl; external ODEDLL;
-  procedure dMassSetCappedCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
-  procedure dMassSetCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
-
-  //----- dTrilistCollider -----
-  function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
-var
-   EXT_dCreateTriMesh : function(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;// external ODEDLL name 'dCreateTriMesh';
-
-   dGeomTriMeshDataBuild : procedure(g: PdxTriMeshData; Vertices: pointer; VertexStride : integer; VertexCount : integer; Indices: pointer; IndexCount, TriStride : integer) cdecl;
-   dGeomTriMeshDataBuildSimple : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
-
-   dGeomTriMeshDataCreate: function : PdxTriMeshData; cdecl;
-   dGeomTriMeshDataDestroy : procedure(g: PdxTriMeshData); cdecl;
-
-   dGeomTriMeshGetTriangle : procedure(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl;
-   dGeomTriMeshGetPoint : procedure(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl;
 
   //----- Rotation.h -----
-  procedure dQFromAxisAndAngle (var q : TdQuaternion; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
-  procedure dRFromAxisAndAngle (var R : TdMatrix3; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
-  procedure dRSetIdentity (R : TdMatrix3); cdecl; external ODEDLL;
-  procedure dRFromEulerAngles (R : TdMatrix3; phi, theta, psi : TdReal); cdecl; external ODEDLL;
-  procedure dRFrom2Axes (R: TdMatrix3; ax, ay, az, bx, by, bz : TdReal); cdecl; external ODEDLL;
+  procedure dQFromAxisAndAngle (var q : TdQuaternion; const ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
+  procedure dRFromAxisAndAngle (var R : TdMatrix3; const ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
+  procedure dRSetIdentity (var R : TdMatrix3); cdecl; external ODEDLL;
+  procedure dQSetIdentity (var Q : TdQuaternion); cdecl; external ODEDLL;
+  procedure dRFromEulerAngles (var R : TdMatrix3; const phi, theta, psi : TdReal); cdecl; external ODEDLL;
+  procedure dRFrom2Axes (var R: TdMatrix3; const ax, ay, az, bx, by, bz : TdReal); cdecl; external ODEDLL;
+  procedure dRFromZAxis (var R: TdMatrix3; const ax, ay, az : TdReal); cdecl; external ODEDLL;
+
 
   procedure dMultiply0 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
   procedure dMultiply1 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
   procedure dMultiply2 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
-  procedure dMultiply3 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
-  procedure dQtoR (const q : TdQuaternion; const R : TdMatrix3); cdecl; external ODEDLL;
-  procedure dRtoQ (const R : TdMatrix3; q : TdQuaternion); cdecl; external ODEDLL;
-  procedure WtoDQ (const w : TdVector3; q: TdQuaternion; dq : TdVector4); cdecl; external ODEDLL;
+  procedure dQMultiply0 (var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl; external ODEDLL;
+  procedure dQMultiply1 (var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl; external ODEDLL;
+  procedure dQMultiply2 (var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl; external ODEDLL;
+  procedure dQMultiply3 (var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl; external ODEDLL;
+  procedure dQtoR (const q : TdQuaternion; var R : TdMatrix3); cdecl; external ODEDLL;
+  procedure dRtoQ (const R : TdMatrix3; var q : TdQuaternion); cdecl; external ODEDLL;
+  procedure dWtoDQ (const w : TdVector3; const q: TdQuaternion; var dq : TdVector4); cdecl; external ODEDLL;
 
   //----- Math -----
   procedure dNormalize3 (var a : TdVector3); cdecl; external ODEDLL;
@@ -1223,6 +1231,16 @@ var
   procedure dMakeRandomMatrix (A : PdRealArray; n, m : integer; range :  TdReal); cdecl; external ODEDLL;
   procedure dClearUpperTriangle (A : PdRealArray; n : integer); cdecl; external ODEDLL;
   function dMaxDifferenceLowerTriangle (A : PdRealArray;  var B : TdReal;  n : integer) : TdReal; cdecl; external ODEDLL;
+
+  function dRandGetSeed: Cardinal; cdecl; external ODEDLL;
+  procedure dRandSetSeed (const s: Cardinal); cdecl; external ODEDLL;
+  function dRandInt (const n: Integer): Integer; cdecl; external ODEDLL;
+  function dRandReal: TdReal; cdecl; external ODEDLL;
+  // return 1 if the random number generator is working.
+  function dTestRand: Integer; cdecl; external ODEDLL;
+
+  procedure dTestMatrixComparison; cdecl; external ODEDLL;
+  procedure dTestSolveLCP; cdecl; external ODEDLL;
 
   // How can this be imported? I can't find it in the source!
   //function dInfinityValue : TdReal; cdecl; external ODEDLL;
@@ -1263,6 +1281,8 @@ var
   dRayClass : integer=-1;
   dGeomTransformGroupClass : integer=-1;
   dTriMeshClass : integer=-1;
+  dConeClass : integer=-1;
+  dTerrainClass : integer=-1;
 
   DisabledDebugGeom : boolean = False ;
 
@@ -1511,6 +1531,40 @@ begin
 {$ENDIF}
 end;
 
+function dCreateCone(const Space : PdxSpace; radius, length: TdReal): PdxGeom; cdecl;
+begin
+  result := EXT_dCreateCone(Space, radius, length);
+
+  if dConeClass=-1 then
+    dConeClass := dGeomGetClass(result);
+
+{$IFDEF cODEDEDUGENABLED}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
+end;
+
+function dCreateTerrain(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer): PdxGeom; cdecl;
+begin
+  result := EXT_dCreateTerrain(Space, pHeights, vLength, nNumNodesPerSide);
+
+  if dTerrainClass=-1 then
+    dTerrainClass := dGeomGetClass(result);
+
+{$IFDEF cODEDEDUGENABLED}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
+end;
+
 function dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl;
 begin
   result := EXT_dCreateGeomTransform(Space);
@@ -1559,13 +1613,17 @@ begin
 {$ENDIF}
 end;
 
+{$ifdef cTRILIST}
 function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
+
 begin
   result := EXT_dCreateTriMesh(Space, Data, Callback, ArrayCallback, RayCallback);
 
   if dTriMeshClass=-1 then
     dTriMeshClass := dGeomGetClass(result);
 end;
+{$endif}
+
 
 {function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
 begin
@@ -1635,43 +1693,4 @@ begin
   Assert(dGeomGetBody(Geom)=Geom.Body, 'Geom test 2 fails');
   Assert(Geom.Data=pointer(-1), 'Geom test 3 fails');
 end;
-
-var
-   vODEHandle : Integer;
-
-procedure InitODE;
-begin
-  {$ifdef Win32}
-   vODEHandle:=LoadLibrary(ODEDLL);
-  {$endif}
-
-  {$ifdef LINUX}
-   vODEHandle:=dlopen(ODEDLL, RTLD_GLOBAL or RTLD_LAZY); // UNTESTED
-  {$endif}
-
-   EXT_dCreateTriMesh:=GetProcAddress(vODEHandle, 'dCreateTriMesh');
-
-   dGeomTriMeshDataBuild:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataBuild');
-   dGeomTriMeshDataBuildSimple:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataBuildSimple');
-
-   dGeomTriMeshDataCreate:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataCreate');
-   dGeomTriMeshDataDestroy:=GetProcAddress(vODEHandle, 'dGeomTriMeshDataDestroy');
-
-   dGeomTriMeshGetTriangle:=GetProcAddress(vODEHandle, 'dGeomTriMeshGetTriangle');
-   dGeomTriMeshGetPoint:=GetProcAddress(vODEHandle, 'dGeomTriMeshGetPoint');
-end;
-
-procedure CloseODE;
-begin
-   FreeLibrary(vODEHandle);
-end;
-
-initialization
-
-   InitODE;
-
-finalization
-
-   CloseODE;
-
 end.
