@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/06/03 - MF - Added TVCCapsule
       <li>17/06/03 - MF - Added TVFAirResistance
       <li>17/06/03 - MF - Added TVCCube collider
       <li>16/06/03 - MF - Fixed TVFSpring.SetRestlengthToCurrent
