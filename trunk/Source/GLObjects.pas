@@ -9,6 +9,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/09/03 - EG - Introduced TGLNodedLines
       <li>18/08/03 - SG - Added MirrorU and MirrorV to TGLSprite for mirroring textures
       <li>21/07/03 - EG - TGLTeapot moved to new GLTeapot unit,
                           TGLDodecahedron moved to new GLPolyhedron unit,
@@ -523,47 +524,26 @@ type
          property Visible;
    end;
 
-   // TLinesOptions
+   // TGLNodedLines
    //
-   TLinesOption = (loUseNodeColorForLines);
-   TLinesOptions = set of TLinesOption;
-
-   // TGLLines
-   //
-   {: Set of 3D line segments.<p>
-      You define a 3D Line by adding its nodes in the "Nodes" property. The line
-      may be rendered as a set of segment or as a curve (nodes then act as spline
-      control points).<p>
-      Alternatively, you can also use it to render a set of spacial nodes (points
-      in space), just make the lines transparent and the nodes visible by picking
-      the node aspect that suits you. }
-   TGLLines = class(TGLLineBase)
+   {: Class that defines lines via a series of nodes.<p>
+      Base class, does not render anything. }
+   TGLNodedLines = class(TGLLineBase)
       private
 			{ Private Declarations }
          FNodes : TGLLinesNodes;
          FNodesAspect : TLineNodesAspect;
          FNodeColor : TGLColor;
-         FDivision : Integer;
-         FSplineMode : TLineSplineMode;
-         FOptions : TLinesOptions;
          FNodeSize : Single;
          FOldNodeColor : TColorVector;
-         FNURBSOrder : Integer;
-         FNURBSTolerance : Single;
-         FNURBSKnots : TSingleList;
 
 		protected
 			{ Protected Declarations }
-         procedure SetSplineMode(const val : TLineSplineMode);
          procedure SetNodesAspect(const value : TLineNodesAspect);
          procedure SetNodeColor(const value: TGLColor);
          procedure OnNodeColorChanged(sender : TObject);
-         procedure SetDivision(const value: Integer);
          procedure SetNodes(const aNodes : TGLLinesNodes);
-         procedure SetOptions(const val : TLinesOptions);
          procedure SetNodeSize(const val : Single);
-         procedure SetNURBSOrder(const val : Integer);
-         procedure SetNURBSTolerance(const val : Single);
          function StoreNodeSize : Boolean;
 
          procedure DrawNode(var rci : TRenderContextInfo; X, Y, Z: Single; Color: TGLColor);
@@ -575,16 +555,11 @@ type
          procedure Assign(Source: TPersistent); override;
 
          function AxisAlignedDimensionsUnscaled : TVector; override;
-         procedure BuildList(var rci : TRenderContextInfo); override;
 
          procedure AddNode(const coords : TGLCoordinates); overload;
          procedure AddNode(const X, Y, Z: TGLfloat); overload;
          procedure AddNode(const value : TVector); overload;
          procedure AddNode(const value : TAffineVector); overload;
-
-         property NURBSKnots : TSingleList read FNURBSKnots;
-         property NURBSOrder : Integer read FNURBSOrder write SetNURBSOrder;
-         property NURBSTolerance : Single read FNURBSTolerance write SetNURBSTolerance;
 
       published
 			{ Published Declarations }
@@ -599,7 +574,54 @@ type
          property NodesAspect: TLineNodesAspect read FNodesAspect write SetNodesAspect default lnaAxes;
          {: Size for the various node aspects. }
          property NodeSize : Single read FNodeSize write SetNodeSize stored StoreNodeSize;
+   end;
 
+   // TLinesOptions
+   //
+   TLinesOption = (loUseNodeColorForLines);
+   TLinesOptions = set of TLinesOption;
+
+   // TGLLines
+   //
+   {: Set of 3D line segments.<p>
+      You define a 3D Line by adding its nodes in the "Nodes" property. The line
+      may be rendered as a set of segment or as a curve (nodes then act as spline
+      control points).<p>
+      Alternatively, you can also use it to render a set of spacial nodes (points
+      in space), just make the lines transparent and the nodes visible by picking
+      the node aspect that suits you. }
+   TGLLines = class(TGLNodedLines)
+      private
+			{ Private Declarations }
+         FDivision : Integer;
+         FSplineMode : TLineSplineMode;
+         FOptions : TLinesOptions;
+         FNURBSOrder : Integer;
+         FNURBSTolerance : Single;
+         FNURBSKnots : TSingleList;
+
+		protected
+			{ Protected Declarations }
+         procedure SetSplineMode(const val : TLineSplineMode);
+         procedure SetDivision(const value: Integer);
+         procedure SetOptions(const val : TLinesOptions);
+         procedure SetNURBSOrder(const val : Integer);
+         procedure SetNURBSTolerance(const val : Single);
+
+      public
+			{ Public Declarations }
+         constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
+         procedure Assign(Source: TPersistent); override;
+
+         procedure BuildList(var rci : TRenderContextInfo); override;
+
+         property NURBSKnots : TSingleList read FNURBSKnots;
+         property NURBSOrder : Integer read FNURBSOrder write SetNURBSOrder;
+         property NURBSTolerance : Single read FNURBSTolerance write SetNURBSTolerance;
+
+      published
+			{ Published Declarations }
          {: Number of divisions for each segment in spline modes.<p>
             Minimum 1 (disabled), ignored in lsmLines mode. }
          property Division: Integer read FDivision write SetDivision default 10;
@@ -2100,12 +2122,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLLines ------------------
+// ------------------ TGLNodedLines ------------------
 // ------------------
 
 // Create
 //
-constructor TGLLines.Create(AOwner: TComponent);
+constructor TGLNodedLines.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FNodes:=TGLLinesNodes.Create(Self);
@@ -2113,28 +2135,22 @@ begin
    FNodeColor.Initialize(clrBlue);
    FNodeColor.OnNotifyChange:=OnNodeColorChanged;
    FOldNodeColor:=clrBlue;
-   FDivision:=10;
    FNodesAspect:=lnaAxes;
-   FSplineMode:=lsmLines;
    FNodeSize:=1;
-   FNURBSKnots:=TSingleList.Create;
-   FNURBSOrder:=0;
-   FNURBSTolerance:=50;
 end;
 
 // Destroy
 //
-destructor TGLLines.Destroy;
+destructor TGLNodedLines.Destroy;
 begin
    FNodes.Free;
    FNodeColor.Free;
-   FNURBSKnots.Free;
    inherited Destroy;
 end;
 
 // SetNodesAspect
 //
-procedure TGLLines.SetNodesAspect(const value : TLineNodesAspect);
+procedure TGLNodedLines.SetNodesAspect(const value : TLineNodesAspect);
 begin
    if Value<>FNodesAspect then begin
       FNodesAspect:=value;
@@ -2144,7 +2160,7 @@ end;
 
 // SetNodeColor
 //
-procedure TGLLines.SetNodeColor(const value: TGLColor);
+procedure TGLNodedLines.SetNodeColor(const value: TGLColor);
 begin
    FNodeColor.Color:=Value.Color;
    StructureChanged;
@@ -2152,7 +2168,7 @@ end;
 
 // OnNodeColorChanged
 //
-procedure TGLLines.OnNodeColorChanged(sender : TObject);
+procedure TGLNodedLines.OnNodeColorChanged(sender : TObject);
 var
    i : Integer;
 begin
@@ -2163,37 +2179,17 @@ begin
    SetVector(FOldNodeColor, FNodeColor.Color);
 end;
 
-// SetDivision
-//
-procedure TGLLines.SetDivision(const value: Integer);
-begin
-   if Value<>FDivision then begin
-      if value<1 then
-         FDivision:=1
-      else FDivision:=value;
-      StructureChanged;
-   end;
-end;
-
 // SetNodes
 //
-procedure TGLLines.SetNodes(const aNodes : TGLLinesNodes);
+procedure TGLNodedLines.SetNodes(const aNodes : TGLLinesNodes);
 begin
    FNodes.Assign(aNodes);
    StructureChanged;
 end;
 
-// SetOptions
-//
-procedure TGLLines.SetOptions(const val : TLinesOptions);
-begin
-   FOptions:=val;
-   StructureChanged;
-end;
-
 // SetNodeSize
 //
-procedure TGLLines.SetNodeSize(const val : Single);
+procedure TGLNodedLines.SetNodeSize(const val : Single);
 begin
    if val<=0 then
       FNodeSize:=1
@@ -2203,56 +2199,26 @@ end;
 
 // StoreNodeSize
 //
-function TGLLines.StoreNodeSize : Boolean;
+function TGLNodedLines.StoreNodeSize : Boolean;
 begin
    Result:=FNodeSize<>1;
 end;
 
-// SetSplineMode
-//
-procedure TGLLines.SetSplineMode(const val : TLineSplineMode);
-begin
-   if FSplineMode<>val then begin
-      FSplineMode:=val;
-      StructureChanged;
-   end;
-end;
-
-// SetNURBSOrder
-procedure TGLLines.SetNURBSOrder(const val : Integer);
-begin
-   if val<>FNURBSOrder then begin
-      FNURBSOrder:=val;
-      StructureChanged;
-   end;
-end;
-
-// SetNURBSTolerance
-procedure TGLLines.SetNURBSTolerance(const val : Single);
-begin
-   if val<>FNURBSTolerance then begin
-      FNURBSTolerance:=val;
-      StructureChanged;
-   end;
-end;
-
 // Assign
 //
-procedure TGLLines.Assign(Source: TPersistent);
+procedure TGLNodedLines.Assign(Source: TPersistent);
 begin
-   if Source is TGLLines then begin
-      SetNodes(TGLLines(Source).FNodes);
-      FNodesAspect:=TGLLines(Source).FNodesAspect;
-      FNodeColor.Color:=TGLLines(Source).FNodeColor.Color;
-      FDivision:=TGLLines(Source).FDivision;
-      FSplineMode:=TGLLines(Source).FSplineMode;
+   if Source is TGLNodedLines then begin
+      SetNodes(TGLNodedLines(Source).FNodes);
+      FNodesAspect:=TGLNodedLines(Source).FNodesAspect;
+      FNodeColor.Color:=TGLNodedLines(Source).FNodeColor.Color;
    end;
    inherited Assign(Source);
 end;
 
 // DrawNode
 //
-procedure TGLLines.DrawNode(var rci : TRenderContextInfo; X, Y, Z: Single; Color: TGLColor);
+procedure TGLNodedLines.DrawNode(var rci : TRenderContextInfo; X, Y, Z: Single; Color: TGLColor);
 begin
    glPushMatrix;
    glTranslatef(x, y, z);
@@ -2281,7 +2247,7 @@ end;
 
 // AxisAlignedDimensionsUnscaled
 //
-function TGLLines.AxisAlignedDimensionsUnscaled : TVector;
+function TGLNodedLines.AxisAlignedDimensionsUnscaled : TVector;
 var
    i : Integer;
 begin
@@ -2291,6 +2257,136 @@ begin
    // EG: commented out, line below looks suspicious, since scale isn't taken
    //     into account in previous loop, must have been hiding another bug... somewhere...
    //DivideVector(Result, Scale.AsVector);     //DanB ?
+end;
+
+// AddNode (coords)
+//
+procedure TGLNodedLines.AddNode(const coords : TGLCoordinates);
+var
+   n : TGLNode;
+begin
+   n:=Nodes.Add;
+   if Assigned(coords) then
+      n.AsVector:=coords.AsVector;
+   StructureChanged;
+end;
+
+// AddNode (xyz)
+//
+procedure TGLNodedLines.AddNode(const X, Y, Z: TGLfloat);
+var
+   n : TGLNode;
+begin
+   n:=Nodes.Add;
+   n.AsVector:=VectorMake(X, Y, Z, 1);
+   StructureChanged;
+end;
+
+// AddNode (vector)
+//
+procedure TGLNodedLines.AddNode(const value : TVector);
+var
+   n : TGLNode;
+begin
+   n:=Nodes.Add;
+   n.AsVector:=value;
+   StructureChanged;
+end;
+
+// AddNode (affine vector)
+//
+procedure TGLNodedLines.AddNode(const value : TAffineVector);
+var
+   n : TGLNode;
+begin
+   n:=Nodes.Add;
+   n.AsVector:=VectorMake(value);
+   StructureChanged;
+end;
+
+// ------------------
+// ------------------ TGLLines ------------------
+// ------------------
+
+// Create
+//
+constructor TGLLines.Create(AOwner: TComponent);
+begin
+   inherited Create(AOwner);
+   FDivision:=10;
+   FSplineMode:=lsmLines;
+   FNURBSKnots:=TSingleList.Create;
+   FNURBSOrder:=0;
+   FNURBSTolerance:=50;
+end;
+
+// Destroy
+//
+destructor TGLLines.Destroy;
+begin
+   FNURBSKnots.Free;
+   inherited Destroy;
+end;
+
+// SetDivision
+//
+procedure TGLLines.SetDivision(const value: Integer);
+begin
+   if Value<>FDivision then begin
+      if value<1 then
+         FDivision:=1
+      else FDivision:=value;
+      StructureChanged;
+   end;
+end;
+
+// SetOptions
+//
+procedure TGLLines.SetOptions(const val : TLinesOptions);
+begin
+   FOptions:=val;
+   StructureChanged;
+end;
+
+// SetSplineMode
+//
+procedure TGLLines.SetSplineMode(const val : TLineSplineMode);
+begin
+   if FSplineMode<>val then begin
+      FSplineMode:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetNURBSOrder
+//
+procedure TGLLines.SetNURBSOrder(const val : Integer);
+begin
+   if val<>FNURBSOrder then begin
+      FNURBSOrder:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetNURBSTolerance
+//
+procedure TGLLines.SetNURBSTolerance(const val : Single);
+begin
+   if val<>FNURBSTolerance then begin
+      FNURBSTolerance:=val;
+      StructureChanged;
+   end;
+end;
+
+// Assign
+//
+procedure TGLLines.Assign(Source: TPersistent);
+begin
+   if Source is TGLLines then begin
+      FDivision:=TGLLines(Source).FDivision;
+      FSplineMode:=TGLLines(Source).FSplineMode;
+   end;
+   inherited Assign(Source);
 end;
 
 // BuildList
@@ -2405,51 +2501,6 @@ begin
          glPopAttrib;
       end;
    end;
-end;
-
-// AddNode (coords)
-//
-procedure TGLLines.AddNode(const coords : TGLCoordinates);
-var
-   n : TGLNode;
-begin
-   n:=Nodes.Add;
-   if Assigned(coords) then
-      n.AsVector:=coords.AsVector;
-   StructureChanged;
-end;
-
-// AddNode (xyz)
-//
-procedure TGLLines.AddNode(const X, Y, Z: TGLfloat);
-var
-   n : TGLNode;
-begin
-   n:=Nodes.Add;
-   n.AsVector:=VectorMake(X, Y, Z, 1);
-   StructureChanged;
-end;
-
-// AddNode (vector)
-//
-procedure TGLLines.AddNode(const value : TVector);
-var
-   n : TGLNode;
-begin
-   n:=Nodes.Add;
-   n.AsVector:=value;
-   StructureChanged;
-end;
-
-// AddNode (affine vector)
-//
-procedure TGLLines.AddNode(const value : TAffineVector);
-var
-   n : TGLNode;
-begin
-   n:=Nodes.Add;
-   n.AsVector:=VectorMake(value);
-   StructureChanged;
 end;
 
 // ------------------
