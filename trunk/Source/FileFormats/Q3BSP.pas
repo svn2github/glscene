@@ -82,10 +82,12 @@ type
       flags    : Integer;                    // The surface flags (unknown)
       contents : Integer;                    // The content flags (unknown)
    end;
+   PBSPTexture = ^TBSPTexture;
 
    TBSPLightmap = record
-      imageBits : array [0..127, 0..127, 0..2] of Byte;   // The RGB data in a 128x128 image
+      imageBits : array [0..49151] of Byte;     // The RGB data in a 128x128 image
    end;
+   PBSPLightmap = ^TBSPLightmap;
 
    // TQ3BSP
    //
@@ -107,6 +109,7 @@ type
          Leaves         : array of TBSPLeaf;
          Faces          : array of TBSPFace;
          Textures       : array of TBSPTexture; // texture names (without extension)
+         Lightmaps      : array of TBSPLightmap;
 
          constructor Create(bspStream : TStream);
    end;
@@ -180,10 +183,15 @@ begin
    bspStream.Position:=lumps[kFaces].offset;
    bspStream.Read(Faces[0], numOfFaces*SizeOf(TBSPFace));
 
-   numOfTextures:=Round(lumps[kTextures].length/SizeOf(TBSPTexture));
-   SetLength(Textures, numOfTextures);
+   NumOfTextures:=Round(lumps[kTextures].length/SizeOf(TBSPTexture));
+   SetLength(Textures, NumOfTextures);
    bspStream.Position:=lumps[kTextures].offset;
-   bspStream.Read(Textures[0], numOfTextures*sizeOf(TBSPTexture));
+   bspStream.Read(Textures[0], NumOfTextures*SizeOf(TBSPTexture));
+
+   NumOfLightmaps:=Round(lumps[kLightmaps].length/SizeOf(TBSPLightmap));
+   SetLength(Lightmaps, NumOfLightmaps);
+   bspStream.Position:=lumps[kLightmaps].offset;
+   bspStream.Read(Lightmaps[0], NumOfLightmaps*SizeOf(TBSPLightmap));
 end;
 
 end.

@@ -2932,6 +2932,7 @@ begin
          if LighmapTexCoords.Count>0 then begin
             glClientActiveTextureARB(GL_TEXTURE1_ARB);
             glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LighmapTexCoords.List);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
          end;
       end else begin
@@ -2950,6 +2951,7 @@ end;
 procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
 begin
    if FArraysDeclared then begin
+      DisableLightMapArray(mrci);
       if GL_EXT_compiled_vertex_array then
          glUnLockArraysEXT;
       if Vertices.Count>0 then
@@ -2961,11 +2963,15 @@ begin
             glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then
             xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         if LighmapTexCoords.Count>0 then begin
+            glClientActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            glClientActiveTextureARB(GL_TEXTURE0_ARB);
+         end;
       end else begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
-      DisableLightMapArray(mrci);
       FArraysDeclared:=False;
    end;
 end;
@@ -2977,12 +2983,9 @@ begin
    if not mrci.ignoreMaterials then begin
       Assert(FArraysDeclared);
       if not FLightMapArrayEnabled then begin
-         glClientActiveTextureARB(GL_TEXTURE1_ARB);
          glActiveTextureARB(GL_TEXTURE1_ARB);
-         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
          glEnable(GL_TEXTURE_2D);
          glActiveTextureARB(GL_TEXTURE0_ARB);
-         glClientActiveTextureARB(GL_TEXTURE0_ARB);
          FLightMapArrayEnabled:=True;
       end;
    end;
@@ -2992,17 +2995,11 @@ end;
 //
 procedure TMeshObject.DisableLightMapArray(var mrci : TRenderContextInfo);
 begin
-   if not mrci.ignoreMaterials then begin
-      Assert(FArraysDeclared);
-      if FLightMapArrayEnabled then begin
-         glClientActiveTextureARB(GL_TEXTURE1_ARB);
-         glActiveTextureARB(GL_TEXTURE1_ARB);
-         glDisable(GL_TEXTURE_2D);
-         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-         glActiveTextureARB(GL_TEXTURE0_ARB);
-         glClientActiveTextureARB(GL_TEXTURE0_ARB);
-         FLightMapArrayEnabled:=False;
-      end;
+   if FLightMapArrayEnabled then begin
+      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+      FLightMapArrayEnabled:=False;
    end;
 end;
 
@@ -3851,10 +3848,12 @@ begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
 
       SetGLCurrentTexture(1, GL_TEXTURE_2D, Handle);
-//      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+                             
+      glEnable(GL_TEXTURE_2D);
 
-      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
 end;
 
@@ -5266,6 +5265,8 @@ end;
 procedure TGLBaseMesh.DoRender(var rci : TRenderContextInfo;
                              renderSelf, renderChildren : Boolean);
 begin
+   if Assigned(LightmapLibrary) then
+      xglForbidSecondTextureUnit;
    if renderSelf then begin
       // set winding
       case FNormalsOrientation of
@@ -5299,6 +5300,8 @@ begin
       if FNormalsOrientation<>mnoDefault then
          InvertGLFrontFace;
    end;
+   if Assigned(LightmapLibrary) then
+      xglAllowSecondTextureUnit;
    if renderChildren and (Count>0) then
       Self.RenderChildren(0, Count-1, rci);
 end;

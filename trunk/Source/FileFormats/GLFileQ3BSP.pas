@@ -28,6 +28,11 @@ type
          procedure LoadFromStream(aStream: TStream); override;
    end;
 
+var
+   // Q3 lightmaps are quite dark, we brighten them a lot by default
+   vQ3BSPLightmapGammaCorrection : Single = 2.0;
+   vQ3BSPLightmapBrightness : Single = 0;   // in percent, 100 = white everywhere
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -36,7 +41,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Q3BSP, Geometry, VectorLists, SysUtils, GLBSP, GLTexture, ApplicationFileIO;
+uses Q3BSP, Geometry, VectorLists, SysUtils, GLBSP, GLTexture, GLGraphics,
+   ApplicationFileIO, Graphics;
 
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
@@ -83,7 +89,7 @@ procedure TGLQ3BSPVectorFile.LoadFromStream(aStream : TStream);
                      texName:=LocateTextureFile(Copy(matName, LastDelimiter('\/', matName)+1, MaxInt));
                end else texName:=matName;
                with matLib.AddTextureMaterial(matName, texName) do begin
-//                  Material.Texture.TextureMode:=tmModulate;
+                  Material.Texture.TextureMode:=tmModulate;
                end;
             end;
          end else Result:='';
@@ -94,16 +100,56 @@ var
    bsp : TQ3BSP;
    mo : TBSPMeshObject;
    fg, lastfg : TFGBSPNode;
-   i, j, n : Integer;
+   i, j, n, y : Integer;
    facePtr : PBSPFace;
+   lightmapLib : TGLMaterialLibrary;
+   lightmapBmp : TBitmap;
+   libMat : TGLLibMaterial;
+   bspLightMap : PBSPLightmap;
 begin
    bsp:=TQ3BSP.Create(aStream);
    try
       mo:=TBSPMeshObject.CreateOwned(Owner.MeshObjects);
+
       // import all materials
       for i:=0 to High(bsp.Textures) do begin
          GetOrAllocateMaterial(Trim(StrPas(bsp.Textures[i].TextureName)));
       end;
+
+      // import all lightmaps
+      lightmapLib:=Owner.LightmapLibrary;
+      if Assigned(lightmapLib) then begin
+         // import lightmaps
+         n:=bsp.NumOfLightmaps;
+         lightmapBmp:=TBitmap.Create;
+         try
+            lightmapBmp.PixelFormat:=pf24bit;
+            lightmapBmp.Width:=128;
+            lightmapBmp.Height:=128;
+            for i:=0 to n-1 do begin
+               bspLightMap:=@bsp.Lightmaps[i];
+               // apply brightness correction if ant
+               if vQ3BSPLightmapBrightness<>0 then
+                  BrightenRGBArray(@bspLightMap.imageBits[0], 128*128,
+                                   vQ3BSPLightmapBrightness);
+               // apply gamma correction if any
+               if vQ3BSPLightmapGammaCorrection<>1 then
+                  GammaCorrectRGBArray(@bspLightMap.imageBits[0], 128*128,
+                                       vQ3BSPLightmapGammaCorrection);
+               // convert RAW RGB to BMP
+               for y:=0 to 127 do
+                  Move(bspLightMap.imageBits[y*128*3], lightmapBmp.ScanLine[127-y]^, 128*3);
+               // spawn lightmap
+               libMat:=lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
+               with libMat.Material.Texture do begin
+                  TextureWrap:=twNone;
+               end;
+            end;
+         finally
+            lightmapBmp.Free;
+         end;
+      end;
+
       // import all geometry
       mo.Vertices.AdjustCapacityToAtLeast(bsp.NumOfVerts);
       mo.Normals.AdjustCapacityToAtLeast(bsp.NumOfVerts);
@@ -112,6 +158,8 @@ begin
          mo.Vertices.Add(bsp.Vertices[i].Position);
          mo.Normals.Add(bsp.Vertices[i].Normal);
          mo.TexCoords.Add(bsp.Vertices[i].TextureCoord);
+         if Assigned(lightMapLib) then
+            mo.LighmapTexCoords.Add(bsp.Vertices[i].LightmapCoord)
       end;
       mo.RenderSort:=rsBackToFront;
       // Q3 BSP separates tree nodes from leafy nodes, we don't,
@@ -150,6 +198,8 @@ begin
                // check for BSP corruption
                if Cardinal(facePtr.textureID)<=Cardinal(bsp.NumOfTextures) then
                   fg.MaterialName:=Trim(StrPas(bsp.Textures[facePtr.textureID].TextureName));
+               if Assigned(lightmapLib) then
+                  fg.LightMapIndex:=facePtr.lightmapID;
                lastfg:=fg;
                // Q3 Polygon Faces are actually fans, but winded the other way around!
                fg.Mode:=fgmmTriangleFan;
