@@ -14,8 +14,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, ComCtrls, GLMisc, ExtCtrls, StdCtrls,
-  AsyncTimer, Classes, Controls, GLCadencer, GLAVIRecorder, GLWin32Viewer;
+  Classes, Windows, Forms, Graphics, GLScene, GLObjects, ComCtrls, GLMisc, ExtCtrls, StdCtrls,
+  AsyncTimer, Controls, GLCadencer, GLAVIRecorder, GLWin32Viewer;
 
 type
   TForm1 = class(TForm)
@@ -27,7 +27,6 @@ type
     Cube2: TGLCube;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    CBPlay: TCheckBox;
     StaticText1: TStaticText;
     DummyCube1: TGLDummyCube;
     DummyCube2: TGLDummyCube;
@@ -36,11 +35,10 @@ type
     AVIRecorder1: TAVIRecorder;
     procedure TrackBarChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
     procedure Button1Click(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure AVIRecorder1PostProcessEvent(Sender: TObject;
+      frame: TBitmap);
   private
     { Déclarations privées }
      UserAbort : boolean;
@@ -74,28 +72,11 @@ begin
    StaticText1.Caption:=IntToStr(Trunc(GLSceneViewer1.FramesPerSecond))+' FPS';
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
-begin
-	if CBPlay.Checked and Visible then begin
-		// simulate a user action on the trackbar...
-		TrackBar.Position:=((TrackBar.Position+1) mod 360);
-   end;
-end;
-
 procedure TForm1.FormResize(Sender: TObject);
 begin
 	GLSceneViewer1.ResetPerformanceMonitor;
-        AVIRecorder1.Width:=GLSceneViewer1.Width;
-        AVIRecorder1.Height:=GLSceneViewer1.Height;
-end;
-
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-	// We need to stop playing here :
-	// 	since the timer is asynchronous, if we don't stop play,
-	// 	it may get triggered during the form's destruction
-	CBPlay.Checked:=False;
+   AVIRecorder1.Width:=GLSceneViewer1.Width;
+   AVIRecorder1.Height:=GLSceneViewer1.Height;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -118,8 +99,7 @@ begin
    TrackBar.enabled:=false;
 
    try
-      while (i<360) and not UserAbort do
-      begin
+      while (i<360) and not UserAbort do begin
          TrackBar.Position:=i;
          TrackBarChange(self);
 
@@ -140,6 +120,21 @@ begin
       TrackBar.enabled:=true;
    end;
 
+end;
+
+procedure TForm1.AVIRecorder1PostProcessEvent(Sender: TObject;
+  frame: TBitmap);
+begin
+   // PostProcess event is used to add a "watermark"
+   // that will be in the AVI, but isn't visible on-screen
+   with frame.Canvas do begin
+      Font.Color:=clAqua;
+      Font.Name:='Courrier New';
+      Font.Size:=24;
+      Font.Style:=[fsBold];
+      Brush.Style:=bsClear;
+      TextOut(20, 20, Format('GLScene %.3d', [TrackBar.Position]));
+   end;
 end;
 
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);

@@ -13,9 +13,11 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnCloseQuery = FormCloseQuery
   OnKeyPress = FormKeyPress
   OnResize = FormResize
+  DesignSize = (
+    461
+    327)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -28,9 +30,9 @@ object Form1: TForm1
     Anchors = [akLeft, akTop, akRight, akBottom]
   end
   object TrackBar: TTrackBar
-    Left = 56
+    Left = 8
     Top = 301
-    Width = 277
+    Width = 325
     Height = 25
     Anchors = [akLeft, akRight, akBottom]
     Max = 360
@@ -46,15 +48,6 @@ object Form1: TForm1
     TickStyle = tsAuto
     OnChange = TrackBarChange
   end
-  object CBPlay: TCheckBox
-    Left = 8
-    Top = 305
-    Width = 41
-    Height = 17
-    Anchors = [akLeft, akBottom]
-    Caption = 'Play'
-    TabOrder = 2
-  end
   object StaticText1: TStaticText
     Left = 16
     Top = 16
@@ -62,7 +55,7 @@ object Form1: TForm1
     Height = 17
     BorderStyle = sbsSingle
     Caption = '??? FPS'
-    TabOrder = 3
+    TabOrder = 2
   end
   object Button1: TButton
     Left = 346
@@ -71,7 +64,7 @@ object Form1: TForm1
     Height = 25
     Anchors = [akRight, akBottom]
     Caption = 'Record to AVI...'
-    TabOrder = 4
+    TabOrder = 3
     OnClick = Button1Click
   end
   object GLScene1: TGLScene
@@ -116,7 +109,6 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
-    OnProgress = GLCadencer1Progress
     Left = 16
     Top = 88
   end
@@ -126,6 +118,7 @@ object Form1: TForm1
     Height = 200
     Compressor = acShowDialog
     ImageRetrievalMode = irmSnapShot
+    OnPostProcessEvent = AVIRecorder1PostProcessEvent
     Left = 16
     Top = 128
   end
