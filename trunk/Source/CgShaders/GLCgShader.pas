@@ -2,29 +2,26 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
-      <li>01/02/04 - NelC - Now reports which CgProgram or CgParameter error is
-                            coming from.
-      <li>20/01/04 - NelC - Updated shader event handlers with Sender object.
-                            Fixed dynamic array passing bug in CheckValueType.
-      <li>03/01/04 - NelC - Shortened event handlers using 'VP' and 'FP'. Added
-                            TCustomCgShader.LoadShaderPrograms and TCgProgram.
-                            SetParam. Minor change in texture type checking.
-      <li>01/08/03 - NelC - Simplified type checking in SetAsStateMatrix and minor
-                            changes.
-      <li>04/07/03 - NelC - TCustomCgShader.OnInitialize. Moved properties
-                            VertexProgram & FragmentProgram of TCustomCgShader
-                            to published so that we can acccess them easily from
-                            OnInitialize.
-      <li>02/07/03 - NelC - More value-setting functions for TCgParameter.
-                            OnUnApply for shader programs.
-      <li>01/07/03 - NelC - TCgProgram.ListCompilation now outputs line breaks.
-      <li>27/06/03 - NelC - Value-setting functions for TCgParameter,
-                            TCgProgram.DirectParamByName & DirectProfile,
-                            Profile property for TCgVertexProgram &
-                            TCgFragmentProgram, and some minor adjustments.
+      <li>05/02/04 - NelC - Fixed type checking for Half and Fixed,
+                            Added TCgParameter.SetToTextureOf
+      <li>01/02/04 - NelC - Now reports source CgProgram or CgParameter of errors
+      <li>20/01/04 - NelC - Updated shader event handlers with Sender object,
+                            Fixed dynamic array passing bug in CheckValueType
+      <li>03/01/04 - NelC - Shortened event handler names using 'VP' and 'FP',
+                            Added TCustomCgShader.LoadShaderPrograms, TCgProgram.SetParam,
+                            Minor change in texture type checking
+      <li>01/08/03 - NelC - Simplified type checking in SetAsStateMatrix
+      <li>04/07/03 - NelC - Added TCustomCgShader.OnInitialize,
+                            Moved VertexProgram & FragmentProgram of TCustomCgShader
+                            to published for easy acccess from OnInitialize
+      <li>02/07/03 - NelC - Added more value-setting methods
+      <li>01/07/03 - NelC - TCgProgram.ListCompilation now outputs line breaks
+      <li>27/06/03 - NelC - Added value-setting functions for TCgParameter,
+                            TCgProgram.DirectParamByName & DirectProfile, and
+                            Profile property for TCgVertexProgram & TCgFragmentProgram
       <li>24/06/03 - NelC - Initial adoptation to Cg 1.1 Final. Now automatically
                             uses latest hardware-supported profile and use callback
-                            to show error message.
+                            to show error message
       <li>29/05/03 - RoC - Cg 1.1 Depreciated_api compatible
       <li>25/09/02 - EG - Cg Beta 2/2.1 compatible, now uses ARBVP
       <li>19/06/02 - EG - Improved OO wrapper
@@ -182,6 +179,8 @@ type
     procedure SetAsTexture3D(TextureID : Cardinal);
     procedure SetAsTextureCUBE(TextureID : Cardinal);
     procedure SetAsTextureRECT(TextureID : Cardinal);
+    
+    procedure SetToTextureOf(LibMaterial  : TGLLibMaterial);
 
     procedure EnableTexture;
     procedure DisableTexture;
@@ -336,7 +335,7 @@ procedure ErrorCallBack; cdecl;
 var  Msg : string;
 begin
   with CurCgProgram do
-    Msg:= '[' + LongName + '] ' + cgGetErrorString(cgGetError) + cgGetLastListing(FCgContext);
+    Msg:= #10'[' + LongName + '] ' + cgGetErrorString(cgGetError) + #10 + cgGetLastListing(FCgContext);
   raise Exception.Create(Msg);
 end;
 
@@ -702,9 +701,8 @@ end;
 // SetAsScalar
 //
 procedure TCgParameter.SetAsScalar(const val : Single);
-// assumes a float
 begin
-  CheckValueType(CG_FLOAT);
+  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED]);
   cgGLSetParameter1f(FHandle, val);
 end;
 
@@ -712,19 +710,19 @@ end;
 //
 procedure TCgParameter.SetAsVector2f(const val: TVector2f);
 begin
-  CheckValueType(CG_FLOAT2);
+  CheckValueType([CG_FLOAT2, CG_HALF2, CG_FIXED2]);
   cgGLSetParameter2fv(FHandle, @val);
 end;
 
 procedure TCgParameter.SetAsVector3f(const val: TVector3f);
 begin
-  CheckValueType(CG_FLOAT3);
+  CheckValueType([CG_FLOAT3, CG_HALF3, CG_FIXED3]);
   cgGLSetParameter3fv(FHandle, @val);
 end;
 
 procedure TCgParameter.SetAsVector4f(const val: TVector4f);
 begin
-  CheckValueType(CG_FLOAT4);
+  CheckValueType([CG_FLOAT4, CG_HALF4, CG_FIXED4]);
   cgGLSetParameter4fv(FHandle, @val);
 end;
 
@@ -775,6 +773,26 @@ begin
   cgGLSetTextureParameter(FHandle, TextureID);
 end;
 
+// SetToTextureOf
+//
+procedure TCgParameter.SetToTextureOf(LibMaterial: TGLLibMaterial);
+var TexType : TCGtype;
+begin
+  case LibMaterial.Material.Texture.Image.NativeTextureTarget of
+    GL_TEXTURE_2D : TexType:=CG_SAMPLER2D;
+    GL_TEXTURE_CUBE_MAP_ARB : TexType:=CG_SAMPLER2D;
+    GL_TEXTURE_RECTANGLE_NV : TexType:=CG_SAMPLERRECT;
+    GL_TEXTURE_1D : TexType:=CG_SAMPLER1D;
+    GL_TEXTURE_3D : TexType:=CG_SAMPLER3D;
+  else
+    TexType:=CG_SAMPLER2D;
+  end;
+
+  CheckValueType(TexType);
+
+  cgGLSetTextureParameter(FHandle, LibMaterial.Material.Texture.Handle);
+end;
+
 // DisableTexture
 //
 procedure TCgParameter.DisableTexture;
@@ -795,10 +813,14 @@ end;
 //
 procedure TCgParameter.SetAsStateMatrix(matrix, Transform : Cardinal);
 // Assuming values of matrix types are contiguous to simplify the type checking
-const MinTypeConst = CG_FLOAT1x1;
-      MaxTypeConst = CG_FLOAT4x4;
+const
+  MinFloatA = CG_FLOAT1x1; MaxFloatA = CG_FLOAT4x4;
+  MinHalfA  = CG_HALF1x1;  MaxHalfA  = CG_HALF4x4;
+  MinFixedA = CG_FIXED1x1; MaxFixedA = CG_FIXED4x4;
 begin
-  Assert( (FValueType>=MinTypeConst) and (FValueType<=MaxTypeConst), TypeMismatchMessage);
+  Assert( ( (FValueType>=MinFloatA) and (FValueType<=MaxFloatA) or
+            (FValueType>=MinHalfA) and (FValueType<=MaxHalfA) or
+            (FValueType>=MinFixedA) and (FValueType<=MaxFixedA) ), TypeMismatchMessage);
   cgGLSetStateMatrixParameter( Fhandle, matrix, Transform);
 end;
 
