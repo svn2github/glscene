@@ -247,6 +247,7 @@ procedure TGLHUDText.Notification(AComponent: TComponent; Operation: TOperation)
 begin
    if (Operation=opRemove) and (AComponent=FBitmapFont) then
       BitmapFont:=nil;
+   inherited;
 end;
 
 // SetBitmapFont
