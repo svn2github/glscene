@@ -10,7 +10,9 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>08/07/04 - LR - Change case for Linux	
+      <li>04/10/04 - NC - Added GL_ATI_texture_float, WGL_ATI_pixel_format_float,
+                          WGL_NV_float_buffer, GL_NV_float_buffer
+      <li>08/07/04 - LR - Change case for Linux
       <li>05/07/04 - LR - Corrections for Linux. Now glX function are directly load
                           by external action (like for Windows). So i suppress
                           the function LoadLinuxOpenGL.
@@ -19,7 +21,7 @@
       <li>17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
       <li>06/04/04 - EG - Added GL_ARB_shader_objects, GL_ARB_vertex_shader
                           and GL_ARB_fragment_shader, dropped a few oldies
-      <li>13/02/04 - EG - Added GL_NV_texture_rectangle 
+      <li>13/02/04 - EG - Added GL_NV_texture_rectangle
       <li>18/11/03 - EG - Fixed binding of core extensions, added GL_ARB_depth_texture
                           and GL_ARB_shadow support
       <li>20/09/03 - EG - Added GL_NV_occlusion_query, dropped some more oldies
@@ -243,6 +245,8 @@ var
    GL_NV_occlusion_query,
    GL_NV_texture_rectangle,
 
+   GL_ATI_texture_float,
+
    GL_SGI_color_matrix,
 
    GL_SGIS_generate_mipmap,
@@ -265,6 +269,7 @@ var
    WGL_ARB_pixel_format,
    WGL_ARB_pbuffer,
    WGL_ARB_buffer_region,
+   WGL_ATI_pixel_format_float,
 
    // Extensions (glu)
    GLU_EXT_Texture,
@@ -1988,6 +1993,53 @@ var
    WGL_SWAP_UNDEFINED_ARB                           = $202A;
    WGL_TYPE_RGBA_ARB                                = $202B;
    WGL_TYPE_COLORINDEX_ARB                          = $202C;
+
+   // WGL_NV_float_buffer
+   WGL_FLOAT_COMPONENTS_NV                          = $20B0;
+   WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_R_NV         = $20B1;
+   WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RG_NV        = $20B2;
+   WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGB_NV       = $20B3;
+   WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV      = $20B4;
+   WGL_TEXTURE_FLOAT_R_NV                           = $20B5;
+   WGL_TEXTURE_FLOAT_RG_NV                          = $20B6;
+   WGL_TEXTURE_FLOAT_RGB_NV                         = $20B7;
+   WGL_TEXTURE_FLOAT_RGBA_NV                        = $20B8;
+
+   // GL_NV_float_buffer
+   GL_FLOAT_R_NV                                    = $8880;
+   GL_FLOAT_RG_NV                                   = $8881;
+   GL_FLOAT_RGB_NV                                  = $8882;
+   GL_FLOAT_RGBA_NV                                 = $8883;
+   GL_FLOAT_R16_NV                                  = $8884;
+   GL_FLOAT_R32_NV                                  = $8885;
+   GL_FLOAT_RG16_NV                                 = $8886;
+   GL_FLOAT_RG32_NV                                 = $8887;
+   GL_FLOAT_RGB16_NV                                = $8888;
+   GL_FLOAT_RGB32_NV                                = $8889;
+   GL_FLOAT_RGBA16_NV                               = $888A;
+   GL_FLOAT_RGBA32_NV                               = $888B;
+   GL_TEXTURE_FLOAT_COMPONENTS_NV                   = $888C;
+   GL_FLOAT_CLEAR_COLOR_VALUE_NV                    = $888D;
+   GL_FLOAT_RGBA_MODE_NV                            = $888E;
+
+   // WGL_ATI_pixel_format_float
+   WGL_TYPE_RGBA_FLOAT_ATI                          = $21A0;
+   GL_TYPE_RGBA_FLOAT_ATI                           = $8820;
+   GL_COLOR_CLEAR_UNCLAMPED_VALUE_ATI               = $8835;
+
+   // GL_ATI_texture_float
+   GL_RGBA_FLOAT32_ATI                              = $8814;
+   GL_RGB_FLOAT32_ATI                               = $8815;
+   GL_ALPHA_FLOAT32_ATI                             = $8816;
+   GL_INTENSITY_FLOAT32_ATI                         = $8817;
+   GL_LUMINANCE_FLOAT32_ATI                         = $8818;
+   GL_LUMINANCE_ALPHA_FLOAT32_ATI                   = $8819;
+   GL_RGBA_FLOAT16_ATI                              = $881A;
+   GL_RGB_FLOAT16_ATI                               = $881B;
+   GL_ALPHA_FLOAT16_ATI                             = $881C;
+   GL_INTENSITY_FLOAT16_ATI                         = $881D;
+   GL_LUMINANCE_FLOAT16_ATI                         = $881E;
+   GL_LUMINANCE_ALPHA_FLOAT16_ATI                   = $881F;
 
    // WGL_ARB_pbuffer
 type
@@ -4004,6 +4056,8 @@ begin
    GL_NV_occlusion_query := CheckExtension('GL_NV_occlusion_query');
    GL_NV_texture_rectangle := CheckExtension('GL_NV_texture_rectangle');
 
+   GL_ATI_texture_float := CheckExtension('GL_ATI_texture_float');
+
    GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
 
    GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
@@ -4057,6 +4111,7 @@ begin
    WGL_ARB_extensions_string:=CheckExtension('WGL_ARB_extensions_string');
    WGL_ARB_pbuffer:=CheckExtension('WGL_ARB_pbuffer ');
    WGL_ARB_pixel_format:=CheckExtension('WGL_ARB_pixel_format');
+   WGL_ATI_pixel_format_float:=CheckExtension('WGL_ATI_pixel_format_float');
 end;
 {$endif}
 
