@@ -2,6 +2,7 @@
 {: Information sur le driver OpenGL courant<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/07/02 - EG - No longer modal
       <li>03/02/02 - EG - InfoForm registration mechanism
       <li>24/08/01 - EG - Compatibility with new Buffer classes
 		<li>17/04/00 - EG - Creation of header, minor layout changes
@@ -80,6 +81,7 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   public
     procedure GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
   end;
@@ -100,18 +102,18 @@ begin
    infoForm:=TInfoForm.Create(nil);
    try
       infoForm.GetInfoFrom(aSceneBuffer);
-      infoForm.ShowModal;
-   finally
+      infoForm.Show;
+   except
       infoForm.Free;
+      raise;
    end;
 end;
 
-//------------------------------------------------------------------------------
-
+// CloseButtonClick
+//
 procedure TInfoForm.CloseButtonClick(Sender: TObject);
-
 begin
-  Close;
+   Close;
 end;
 
 // GetInfoFrom
@@ -242,6 +244,11 @@ procedure TInfoForm.FormKeyPress(Sender: TObject; var Key: Char);
 
 begin
   if Key = #27 then Close;
+end;
+
+procedure TInfoForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+   Release;
 end;
 
 //------------------------------------------------------------------------------
