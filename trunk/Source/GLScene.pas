@@ -982,10 +982,25 @@ type
    //
    {: Base class for standard scene objects.<p>
       Publishes the Material property. }
-   TGLSceneObject = class(TGLImmaterialSceneObject)
+   TGLSceneObject = class(TGLCustomSceneObject)
       published
          { Published Declarations }
          property Material;
+         property ObjectsSorting;
+         property VisibilityCulling;
+         property Direction;
+         property PitchAngle;
+         property Position;
+         property RollAngle;
+         property Scale;
+         property ShowAxes;
+         property TurnAngle;
+         property Up;
+         property Visible;
+         property OnProgress;
+         property Behaviours;
+         property Effects;
+         property Hint;
    end;
 
    // TDirectRenderEvent
