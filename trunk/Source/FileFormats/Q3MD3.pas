@@ -2,7 +2,8 @@
   Q3MD3 - Helper classes and methods for Quake3 MD3 actors
   
   History :
-    01/04/03 - Mrqzzz -  "LEGS_" animations read from .CFG fixed
+    03/04/03 - SG - Added LoadQ3Skin procedure
+    01/04/03 - Mrqzzz - "LEGS_" animations read from .CFG fixed
     17/02/03 - SG - Creation
 }
 
@@ -12,7 +13,7 @@ interface
 
 uses
   Classes,SysUtils,ApplicationFileIO,Geometry,GLVectorFileObjects,
-  VectorLists,FileMD3;
+  VectorLists,GLTexture,FileMD3;
 
 type
   // This class is used to extract the tag transform information
@@ -41,6 +42,10 @@ procedure LoadQ3Anims(Animations:TActorAnimations;
             FileName:string; NamePrefix:string); overload;
 procedure LoadQ3Anims(Animations:TActorAnimations;
             Strings:TStrings; NamePrefix:string); overload;
+
+// Quake3 Skin loading procedure. Use this procedure to apply textures
+// to preloaded materials through the Quake3 skin files
+procedure LoadQ3Skin(FileName:string; MaterialLibrary:TGLMaterialLibrary);
 
 implementation
 
@@ -125,7 +130,7 @@ begin
         // Fix frame value for Legs
         if Uppercase(NamePrefix)='LEGS' then
              val[0] := val[0]-LegsStartFrame+TorsoStartFrame;
-             
+
         Name:=str1;
         StartFrame:=val[0];
         EndFrame:=val[0]+val[1]-1;
@@ -138,6 +143,49 @@ begin
     end;
   end;
   anim.Free;
+end;
+
+// LoadQ3Skin
+//
+procedure LoadQ3Skin(FileName:string; MaterialLibrary:TGLMaterialLibrary);
+var
+  SkinStrings,temp : TStrings;
+  i                : integer;
+  libmat           : TGLLibMaterial;
+  textureNoDir     : string;
+begin
+  if (not FileExists(FileName)) or (not Assigned(MaterialLibrary)) then exit;
+
+  // Load the skin file into a temp stringlist
+  SkinStrings:=TStringList.Create;
+  temp:=TStringList.Create;
+  temp.LoadFromFile(FileName);
+
+  // Step through each line in the file
+  for i:=0 to temp.Count-1 do begin
+    // Apply the line to SkinStrings through the CommaText property for parsing
+    SkinStrings.CommaText:=temp.Strings[i];
+    if SkinStrings.Count>1 then begin
+      libmat:=MaterialLibrary.Materials.GetLibMaterialByName(SkinStrings.Strings[0]);
+      if Assigned(libmat) then begin
+        if FileExists(SkinStrings.Strings[1]) then begin
+          // If the file with the full path exists use it for the texture
+          libmat.Material.Texture.Image.LoadFromFile(SkinStrings.Strings[1]);
+        end else begin
+          // Else look for the file in the current directory
+          textureNoDir:=SkinStrings.Strings[1];
+          if Pos('/',textureNoDir)>0 then
+            textureNoDir:=StringReplace(textureNoDir,'/','\',[rfReplaceAll]);
+          textureNoDir:=ExtractFileName(textureNoDir);
+          if FileExists(textureNoDir) then
+            libmat.Material.Texture.Image.LoadFromFile(textureNoDir);
+        end;
+      end;
+    end;
+  end;
+
+  temp.Free;
+  SkinStrings.Free;
 end;
 
 // ------------------
