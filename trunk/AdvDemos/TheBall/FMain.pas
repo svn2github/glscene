@@ -451,8 +451,8 @@ begin
       AdjustTable;
    end else if gameStatus=gsLevelPreview then begin
       Camera.MoveAroundTarget(0, deltaTime*8);
-      
-      ALStart.Move(Sin(newTime*10)*0.01);
+
+      ALStart.Position.Y:=3+Sin(newTime*10)*0.2;
    end else if gameStatus=gsWarmup then begin
       spawnTime:=spawnTime-deltaTime;
       if spawnTime>=1 then
@@ -465,7 +465,7 @@ begin
       Camera.Position.AsVector:=VectorLerp(cCameraPos, cameraRefPos, d);
 
       ALStart.Material.FrontProperties.Diffuse.Alpha:=d;
-      ALStart.Move(Sin(newTime*10)*0.01);
+      ALStart.Position.Y:=3+Sin(newTime*10)*0.2;
       if spawnTime<=0 then begin
          DCBallLag.Position.AsVector:=SPHBall.AbsolutePosition;
          Camera.Position.AsVector:=cCameraPos;
