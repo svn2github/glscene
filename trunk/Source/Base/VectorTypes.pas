@@ -10,14 +10,16 @@
    (and only the *base* types).<p>
 
    Conventions:<ul>
-      <li><b>i</b> is used for 32 bits signed integers
-      <li><b>f</b> is used for Single precision floating points values (32 bits)
       <li><b>d</b> is used for Double precision floating points values (64 bits)
+      <li><b>f</b> is used for Single precision floating points values (32 bits)
+      <li><b>i</b> is used for 32 bits signed integers (longint)
+      <li><b>s</b> is uses for 16 bits signed integers (smallint)
    </ul>
 
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/08/03 - PP - Added smallint vectors
       <li>04/07/01 - EG - Creation
    </ul>
 }
@@ -26,47 +28,49 @@ unit VectorTypes;
 interface
 
 type
+  TVector2d = array[0..1] of double;
+  TVector2f = array[0..1] of single;
+  TVector2i = array[0..1] of longint;
+  TVector2s = array[0..1] of smallint;
 
-   TVector2i = array [0..1] of Longint;
-   TVector2f = array [0..1] of Single;
-   TVector2d = array [0..1] of Double;
+  TVector3d = array[0..2] of double;
+  TVector3f = array[0..2] of single;
+  TVector3i = array[0..2] of longint;
+  TVector3s = array[0..2] of smallint;
 
-   TVector3i = array [0..2] of Longint;
-   TVector3f = array [0..2] of Single;
-   TVector3d = array [0..2] of Double;
+  TVector4d = array[0..3] of double;
+  TVector4f = array[0..3] of single;
+  TVector4i = array[0..3] of longint;
+  TVector4s = array[0..3] of smallint;
 
-   TVector4i = array [0..3] of Longint;
-   TVector4f = array [0..3] of Single;
-   TVector4d = array [0..3] of Double;
+  TMatrix3d = array[0..2] of TVector3d;
+  TMatrix3f = array[0..2] of TVector3f;
+  TMatrix3i = array[0..2] of TVector3i;
+  TMatrix3s = array[0..2] of TVector3s;
 
-   TMatrix3i = array [0..2] of TVector3i;
-   TMatrix3f = array [0..2] of TVector3f;
-   TMatrix3d = array [0..2] of TVector3d;
+  TMatrix4d = array[0..3] of TVector4d;
+  TMatrix4f = array[0..3] of TVector4f;
+  TMatrix4i = array[0..3] of TVector4i;
+  TMatrix4s = array[0..3] of TVector4s;
 
-   TMatrix4i = array [0..3] of TVector4i;
-   TMatrix4f = array [0..3] of TVector4f;
-   TMatrix4d = array [0..3] of TVector4d;
+  TD3DVector = packed record
+    case Integer of
+      0 : (X: single;
+           Y: single;
+           Z: single);
+      1 : (V: TVector3f);
+  end;
 
-   TD3DVector = packed record
-      case Integer of
-         0 : ( x : Single;
-               y : Single;
-               z : Single);
-         1 : ( v : TVector3f);
-   end;
-
-   TD3DMatrix = packed record
-      case Integer of
-         0 : (_11, _12, _13, _14: Single;
-              _21, _22, _23, _24: Single;
-              _31, _32, _33, _34: Single;
-              _41, _42, _43, _44: Single);
-         1 : (m : TMatrix4f);
-   end;
+  TD3DMatrix = packed record
+    case Integer of
+      0 : (_11, _12, _13, _14: single;
+           _21, _22, _23, _24: single;
+           _31, _32, _33, _34: single;
+           _41, _42, _43, _44: single);
+      1 : (M : TMatrix4f);
+  end;
 
 implementation
-
-   // nothing implemented in this unit
 
 end.
  
