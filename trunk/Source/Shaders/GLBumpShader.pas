@@ -106,7 +106,6 @@ const
       'ATTRIB v18 = vertex.normal;'+
       'ATTRIB v16 = vertex.position;'+
       'PARAM s18 = state.light[%d].position;'+
-      'PARAM s259[4] = { state.matrix.mvp };'+
       'PARAM s359[4] = { state.matrix.modelview[0].inverse };'+
       '   MOV result.texcoord[0].xy, v24;'+
       '   MOV R1, s18;'+
