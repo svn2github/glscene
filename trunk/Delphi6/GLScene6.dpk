@@ -156,6 +156,12 @@ contains
   FileMD3 in '..\Source\FileFormats\FileMD3.pas',
   GLWindows in '..\Source\GLWindows.pas',
   GLFileNMF in '..\Source\FileFormats\GLFileNMF.pas',
-  FileNMF in '..\Source\FileFormats\FileNMF.pas';
+  FileNMF in '..\Source\FileFormats\FileNMF.pas',
+  GLFileSMD in '..\Source\FileFormats\GLFileSMD.pas',
+  GLFileMD2 in '..\Source\FileFormats\GLFileMD2.pas',
+  GLFile3DS in '..\Source\FileFormats\GLFile3DS.pas',
+  GLFilePLY in '..\Source\FileFormats\GLFilePLY.pas',
+  GLFileTIN in '..\Source\FileFormats\GLFileTIN.pas',
+  GLFileGTS in '..\Source\FileFormats\GLFileGTS.pas';
 
 end.
