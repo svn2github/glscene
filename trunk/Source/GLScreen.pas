@@ -251,6 +251,7 @@ var
    deviceMode : TDevMode;
 begin
    ReadVideoModes;
+   FillChar(deviceMode, SizeOf(deviceMode), 0);
    with deviceMode do begin
       dmSize:=SizeOf(DeviceMode);
       dmBitsPerPel:=vVideoModes[ModeIndex].ColorDepth;
