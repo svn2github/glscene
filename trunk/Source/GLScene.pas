@@ -4651,6 +4651,7 @@ begin
    finally
       FRendering:=False;
    end;
+   Exclude(FChanges, ocStructure);
 end;
 
 // AxisAlignedDimensions
