@@ -5,6 +5,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
       <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
       <li>24/08/01 - EG - Fixed PropagateSharedContext
       <li>12/08/01 - EG - Handles management completed
@@ -272,6 +273,7 @@ type
          { Protected Declarations }
          procedure ClearIAttribs;
          procedure AddIAttrib(attrib, value : Integer);
+         procedure ChangeIAttrib(attrib, newValue : Integer);
          procedure ClearFAttribs;
          procedure AddFAttrib(attrib, value : Single);
 
@@ -1018,6 +1020,23 @@ begin
    FiAttribs[n+1]:=0;
 end;
 
+// ChangeIAttrib
+//
+procedure TGLWin32Context.ChangeIAttrib(attrib, newValue : Integer);
+var
+   i : Integer;
+begin
+   i:=0;
+   while i<Length(FiAttribs) do begin
+      if FiAttribs[i]=attrib then begin
+         FiAttribs[i+1]:=newValue;
+         Exit;
+      end;
+      Inc(i, 2);
+   end;
+   AddIAttrib(attrib, newValue);
+end;
+
 // ClearFAttribs
 //
 procedure TGLWin32Context.ClearFAttribs;
@@ -1175,6 +1194,12 @@ begin
             ClearFAttribs;
             wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
                                     32, @iFormats, @nbFormats);
+            if nbFormats=0 then begin
+               // couldn't find 24 bits depth buffer, 16 bits one available?
+               ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
+               wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
+                                       32, @iFormats, @nbFormats);
+            end;
             if nbFormats=0 then
                raise Exception.Create('Format not supported for pbuffer operation.');
             iPBufferAttribs[0]:=0;

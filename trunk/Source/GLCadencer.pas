@@ -450,7 +450,7 @@ begin
          for i:=0 to FSubscribedCadenceableComponents.Count-1 do
             with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
                DoProgress(deltaTime, newTime);
-			if Assigned(FOnProgress) then
+			if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
 				FOnProgress(Self, deltaTime, newTime);
 		end;
 	finally

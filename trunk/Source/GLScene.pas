@@ -1517,15 +1517,15 @@ type
 
          {: Triggered before the scene's objects get rendered.<p>
             You may use this event to execute your own OpenGL rendering. }
-         property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender;
+         property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender stored False;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering.<p> }
-         property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
+         property PostRender : TNotifyEvent read GetPostRender write SetPostRender stored False;
          {: Called after rendering.<p>
             You cannot issue OpenGL calls in this event, if you want to do your own
             OpenGL stuff, use the PostRender event. }
-         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
+         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender stored False;
 
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
@@ -1604,15 +1604,15 @@ type
 
          {: Triggered before the scene's objects get rendered.<p>
             You may use this event to execute your own OpenGL rendering. }
-         property BeforeRender : TNotifyEvent read FBeforeRender write FBeforeRender;
+         property BeforeRender : TNotifyEvent read FBeforeRender write FBeforeRender stored False;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering.<p> }
-         property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
+         property PostRender : TNotifyEvent read GetPostRender write SetPostRender stored False;
          {: Called after rendering.<p>
             You cannot issue OpenGL calls in this event, if you want to do your own
             OpenGL stuff, use the PostRender event. }
-         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
+         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender stored False;
 
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
@@ -5165,6 +5165,8 @@ begin
       else locStencilBits:=0;
       // will be freed in DestroyWindowHandle
       FRenderingContext:=GLContextManager.CreateContext;
+      if not Assigned(FRenderingContext) then
+         raise Exception.Create('Failed to create RenderingContext.');
       with FRenderingContext do begin
          Options:=locOptions;
          ColorBits:=24;
@@ -5524,7 +5526,10 @@ begin
    finally
       FRendering:=False;
    end;
-   if Assigned(FAfterRender) then FAfterRender(Self);
+   if Assigned(FAfterRender) then
+      if Owner is TComponent then
+         if not (csDesigning in TComponent(Owner).ComponentState) then
+            FAfterRender(Self);
 end;
 
 // ShowInfo
@@ -5533,6 +5538,7 @@ procedure TGLSceneBuffer.ShowInfo;
 var
    infoForm: TInfoForm;
 begin
+   if not Assigned(FRenderingContext) then Exit;
    Application.CreateForm(TInfoForm, infoForm);
    try
       FRenderingContext.Activate;
@@ -5954,7 +5960,10 @@ procedure TGLSceneBuffer.DoBaseRender(const aViewPort : TRectangle; resolution :
 begin
    if (not Assigned(FCamera)) or (not Assigned(FCamera.FScene)) then Exit;
    PrepareRenderingMatrices(aViewPort, resolution);
-   if Assigned(FBeforeRender) then FBeforeRender(Self);
+   if Assigned(FBeforeRender) then
+      if Owner is TComponent then
+         if not (csDesigning in TComponent(Owner).ComponentState) then
+            FBeforeRender(Self);
    with FCamera.FScene do begin
       SetupLights(LimitOf[limLights]);
       if FogEnable then begin
@@ -5963,7 +5972,10 @@ begin
       end else glDisable(GL_FOG);
       RenderScene(Self, FViewPort.Width, FViewPort.Height, drawState);
    end;
-   if Assigned(FPostRender) then FPostRender(Self);
+   if Assigned(FPostRender) then
+      if Owner is TComponent then
+         if not (csDesigning in TComponent(Owner).ComponentState) then
+            FPostRender(Self);
 end;
 
 // Render
@@ -6014,7 +6026,10 @@ begin
       FRendering:=False;
       FRenderingContext.Deactivate;
    end;
-   if Assigned(FAfterRender) then FAfterRender(Self);
+   if Assigned(FAfterRender) then
+      if Owner is TComponent then
+         if not (csDesigning in TComponent(Owner).ComponentState) then
+            FAfterRender(Self);
 end;
 
 // SetBackgroundColor
@@ -6494,7 +6509,7 @@ begin
          Assert(False);
       end;
    end;
-   if Assigned(FBeforeRender) then
+   if Assigned(FBeforeRender) and (not (csDesigning in ComponentState)) then
       FBeforeRender(Self);
 end;
 
