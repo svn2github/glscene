@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/07/04 - Orlando - added custom shapes
       <li>13/02/03 - DanB - added TGLMirror.AxisAlignedDimensionsUnscaled
       <li>13/11/02 - EG - Fixed TGLMirror.DoRender transform
       <li>06/11/02 - EG - Fixed Stencil setup
@@ -33,6 +34,9 @@ const
 
 type
 
+   // TMirrorShapes  ORL
+   TMirrorShapes = (msRect, msDisk);
+
    // TGLMirror
    //
    {: A simple plane mirror.<p>
@@ -52,6 +56,10 @@ type
          FMirrorOptions : TMirrorOptions;
          FOnBeginRenderingMirrors, FOnEndRenderingMirrors : TNotifyEvent;
 
+      FShape : TMirrorShapes; //ORL
+      FRadius : TGLFloat; //ORL
+      FSlices : TGLInt; //ORL
+
 		protected
 			{ Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -61,6 +69,12 @@ type
 
 		   procedure SetHeight(AValue: TGLFloat);
 		   procedure SetWidth(AValue: TGLFloat);
+
+       procedure SetRadius(const aValue : Single);  //ORL
+       procedure SetSlices(const aValue : TGLInt);  //ORL
+   		 procedure SetShape(aValue : TMirrorShapes);  //ORL
+       function GetRadius : single;                 //ORL
+       function GetSlices : TGLInt;                 //ORL
 
 		public
 			{ Public Declarations }
@@ -102,6 +116,10 @@ type
          property OnBeginRenderingMirrors : TNotifyEvent read FOnBeginRenderingMirrors write FOnBeginRenderingMirrors;
          {: Fired after the object's mirror images are rendered. }
          property OnEndRenderingMirrors : TNotifyEvent read FOnEndRenderingMirrors write FOnEndRenderingMirrors;
+
+      property Radius : TGLFloat read FRadius write SetRadius; //ORL
+      property Slices : TGLInt read FSlices write SetSlices default 16; //ORL
+			property Shape : TMirrorShapes read FShape write SetShape default msRect; //ORL
    end;
 
 //-------------------------------------------------------------
@@ -129,6 +147,10 @@ begin
    ObjectStyle:=ObjectStyle+[osDirectDraw];
    Material.FrontProperties.Diffuse.Initialize(VectorMake(1, 1, 1, 0.1));
    Material.BlendingMode:=bmTransparency;
+
+   FRadius:=1; //ORL
+   FSlices:=16; //ORL
+   Shape:=msRect; //ORL
 end;
 
 // DoRender
@@ -268,16 +290,25 @@ end;
 procedure TGLMirror.BuildList(var rci : TRenderContextInfo);
 var
    hw, hh : TGLFloat;
+   quadric : PGLUquadricObj;
 begin
-   hw:=FWidth*0.5;
-   hh:=FHeight*0.5;
-   glNormal3fv(@ZVector);
-   glBegin(GL_QUADS);
+  if msRect = FShape then
+  begin
+    hw:=FWidth*0.5;
+    hh:=FHeight*0.5;
+    glNormal3fv(@ZVector);
+    glBegin(GL_QUADS);
       glVertex3f( hw,  hh, 0);
       glVertex3f(-hw,  hh, 0);
       glVertex3f(-hw, -hh, 0);
       glVertex3f( hw, -hh, 0);
-   glEnd;
+    glEnd;
+  end
+  else
+  begin
+	  quadric:=gluNewQuadric;
+  	gluDisk(Quadric, 0, FRadius, FSlices, 1);  //radius. slices, loops
+  end;
 end;
 
 // BuildList
@@ -401,6 +432,57 @@ begin
    if FMirrorOptions<>val then begin
       FMirrorOptions:=val;
       NotifyChange(Self);
+   end;
+end;
+
+//ORL add-ons
+
+// SetRadius
+//
+procedure TGLMirror.SetRadius(const aValue : Single);
+begin
+   if aValue<>FRadius then begin
+      FRadius:=aValue;
+      StructureChanged;
+   end;
+end;
+
+// GetRadius
+//
+function TGLMirror.GetRadius: single;
+begin
+  result := FRadius;
+end;
+
+// SetSlices
+//
+procedure TGLMirror.SetSlices(const aValue : TGLInt);
+begin
+  if aValue<>FSlices then
+  begin
+    if aValue>2 then
+      FSlices:=aValue;
+      StructureChanged;
+   end
+   else
+   begin
+   end;
+end;
+
+// GetSlices
+//
+function TGLMirror.GetSlices: TGLInt;
+begin
+  result := FSlices;
+end;
+
+// SetShape
+//
+procedure TGLMirror.SetShape(aValue: TMirrorShapes);
+begin
+   if aValue<>FShape then begin
+      FShape:=aValue;
+      StructureChanged;
    end;
 end;
 
