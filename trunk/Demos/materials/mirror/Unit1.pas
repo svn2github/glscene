@@ -9,14 +9,12 @@
    reflected (each reflected object must be rendered twice). If no MirrorObject
    is specified, the whole scene will be mirrored.<p>
 
-   First, make sure to have a look at the hierarchy, it is not random: first
-   non reflected objects, then mirror, and finally reflecting objects. This
-   order must be respected if you want your mirror to be transparent, otherwise,
-   you have more flexibility in the scene organization (reordering stuff and
-   seeing for yourself is recommended).<br>
-   Also note that some of the options (stenciling)
-   <b>require</b> a stencil buffer (must be enabled in the viewer's buffer),
-   stenciling may not always be hardware accelerated.<p>
+   If you want your mirror to be transparent, you must respect a rendering order
+   and have the non-transparent objects rendered last (this includes the mirror,
+   like any other blended object, see materials/transparency for an explanation).<br>
+   Also note that some of the options (stenciling, clearZBuffer) <b>require</b>
+   a stencil buffer (must be enabled in the viewer's buffer), but stenciling may
+   not always be hardware accelerated (modern boards will support it).<p>
 
    There is also a variety of settings to the right of the screen, those adjust
    internal options that have a direct impact of what the mirror will be able
@@ -32,17 +30,15 @@
       is in wall (opaque on all sides around the mirror), you may not care about
       stenciling.
    <li>lone inclined gray cylinder: this one is a don't, it's an object that is
-      reflecting but that goes through the mirror. If your mirror is transparent,
-      that object's part that is on the other side of the mirror will not be visible
-      (if you want it visible, duplicate it as second non-reflecting object).
-      It also allows to show what happens if PlaneClip is not enabled and you
-      have reflecting objects on the other side of the mirror: they get reflected
-      on the "wrong" side... so PlaneClip, or better avoid (PlaneClip can make
-      your FPS drop on some hardware).
+      reflecting but that goes through the mirror... well, you can do it,
+      then you have to activate PlaneClip, otherwise objects on the other side
+      of the mirror get reflected on the "wrong" side... (uncheck the option
+      and see for yourself). PlaneClip is better avoided, it can make your FPS
+      drop significantly on some 3D boards.
    </ul><p>
 
    In addition to being opaque, transparent or semi-transparent, the mirror
-   can also be textured as usual.
+   can also be textured as usual.<p>
 }
 unit Unit1;
 
@@ -59,13 +55,13 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    Sphere1: TSphere;
+    Sphere: TSphere;
     ReflectingObjects: TDummyCube;
-    NonReflectingStuff: TTorus;
+    Cylinder: TTorus;
     Teapot1: TTeapot;
     Cylinder1: TCylinder;
     GLMirror: TGLMirror;
-    ExtrusionSolid1: TExtrusionSolid;
+    Cadre: TExtrusionSolid;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
     Panel1: TPanel;
@@ -74,8 +70,9 @@ type
     CBStencil: TCheckBox;
     Cylinder2: TCylinder;
     CBClearZ: TCheckBox;
-    Cylinder3: TCylinder;
+    CylinderThroughMirror: TCylinder;
     CBPlaneClip: TCheckBox;
+    DCNonReflectingStuff: TDummyCube;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
