@@ -59,7 +59,6 @@ type
    TVerletNode = class(TSpacePartitionLeaf)
       private
 			{ Private Declarations }
-         FLocation, FOldLocation : TAffineVector;
          FForce : TAffineVector;
          FOwner : TVerletWorld;
          FWeight, FInvWeight : Single;
@@ -67,10 +66,13 @@ type
          FNailedDown : Boolean;
          FFriction: single;
          FChangedOnStep: integer;
-         procedure SetLocation(const Value: TAffineVector);
          function GetSpeed: TAffineVector;
 		protected
 			{ Protected Declarations }
+         FLocation, FOldLocation : TAffineVector;
+
+         procedure SetLocation(const Value: TAffineVector);virtual;
+
          procedure SetWeight(const value : Single);
 
          procedure AfterProgress; virtual;
@@ -474,6 +476,7 @@ type
          FUpdateSpacePartion: TUpdateSpacePartion;
          FCollisionConstraintTypes: TCollisionConstraintTypesSet;
     FConstraintsWithBeforeIterations: TVerletConstraintList;
+    FVerletNodeClass: TVerletNodeClass;
 
 		protected
 			{ Protected Declarations }
@@ -481,7 +484,6 @@ type
          procedure Verlet(const deltaTime, newTime : Double); virtual;
          procedure SatisfyConstraints(const deltaTime, newTime : Double); virtual;
 
-         function VerletNodeClass : TVerletNodeClass; virtual;
          procedure DoUpdateSpacePartition;
 
       public
@@ -533,6 +535,8 @@ type
          property UpdateSpacePartion : TUpdateSpacePartion read FUpdateSpacePartion write FUpdateSpacePartion;
 
          property CollisionConstraintTypes : TCollisionConstraintTypesSet read FCollisionConstraintTypes write FCollisionConstraintTypes;
+
+         property VerletNodeClass : TVerletNodeClass read FVerletNodeClass write FVerletNodeClass;
    end;
 
    // TVFGravity
@@ -1216,6 +1220,7 @@ begin
    FUpdateSpacePartion := uspNever;
    FCollisionConstraintTypes := [cctNode, cctEdge];
    FSpacePartition := nil;
+   FVerletNodeClass := TVerletNode;
 end;
 
 // Destroy
@@ -1503,7 +1508,7 @@ begin
     DoUpdateSpacePartition;
 end;
 
-// VerletNodeClass
+{// VerletNodeClass
 //
 function TVerletWorld.VerletNodeClass : TVerletNodeClass;
 begin
@@ -1512,7 +1517,7 @@ begin
    // override this method if that's the only difference between the
    // base CreateOwnedNode and your CreateOwnedNode.
    Result:=TVerletNode;
-end;
+end;//}
 
 // ------------------
 // ------------------ TVFGravity ------------------
@@ -2375,5 +2380,4 @@ begin
 
   inherited;
 end;
-
 end.
