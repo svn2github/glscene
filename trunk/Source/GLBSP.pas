@@ -4,9 +4,8 @@
 
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
-   *T-junctions currently not handled by the polygon splitting*
-
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/03/03 - EG - T-junctions now properly supported and repaired 
       <li>05/03/03 - EG - Preliminary BSP splitting support
 	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
                           MaterialCache support 
@@ -94,6 +93,7 @@ type
 	   protected
 	      { Protected Declarations }
          function AddLerp(iA, iB : Integer; fB, fA : Single) : Integer;
+         function AddLerpIfDistinct(iA, iB, iMid : Integer) : Integer;
 
 	   public
 	      { Public Declarations }
@@ -575,6 +575,51 @@ begin
    end;
 end;
 
+// AddLerp
+//
+function TFGBSPNode.AddLerpIfDistinct(iA, iB, iMid : Integer) : Integer;
+var
+   midNormal : TAffineVector;
+   midColor : TColorVector;
+   midTexCoord : TAffineVector;
+   midLightmapTexCoord : TTexPoint;
+   f : Single;
+   spawn : Boolean;
+begin
+   with Owner.Owner do begin
+      with Vertices do
+         f:=VectorDistance(List[iA], List[iMid])/VectorDistance(List[iA], List[iB]);
+      spawn:=False;
+      with Normals do if Count>0 then begin
+         midNormal:=VectorLerp(List[iA], List[iB], f);
+         spawn:=(VectorSpacing(midNormal, List[iMid])>cTJunctionEpsilon);
+      end;
+      with Colors do if Count>0 then begin
+         midColor:=VectorLerp(List[iA], List[iB], f);
+         spawn:=spawn or (VectorSpacing(midColor, List[iMid])>cTJunctionEpsilon);
+      end;
+      with TexCoords do if Count>0 then begin
+         midTexCoord:=VectorLerp(List[iA], List[iB], f);
+         spawn:=spawn or (VectorSpacing(midTexCoord, List[iMid])>cTJunctionEpsilon);
+      end;
+      with LighmapTexCoords do if Count>0 then begin
+         midLightmapTexCoord:=TexPointLerp(List[iA], List[iB], f);
+         spawn:=spawn or (VectorSpacing(midLightmapTexCoord, List[iMid])>cTJunctionEpsilon);
+      end;
+      if spawn then begin
+         with Vertices do Result:=Add(List[iMid]);
+         with Normals do if Count>0 then
+            Add(midNormal);
+         with Colors do if Count>0 then
+            Add(midColor);
+         with TexCoords do if Count>0 then
+            Add(midTexCoord);
+         with LighmapTexCoords do if Count>0 then
+            Add(midLightmapTexCoord);
+      end else Result:=iMid;
+   end;
+end;
+
 // PerformSplit
 //
 procedure TFGBSPNode.PerformSplit(const splitPlane : THmgPlane;
@@ -771,7 +816,7 @@ procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates : TIntegerList);
             ScaleVector(f, invVector);
             if     (Abs(f[0]-f[1])<cTJunctionEpsilon) and (Abs(f[0]-f[2])<cTJunctionEpsilon)
                and (Abs(f[1]-f[2])<cTJunctionEpsilon) then begin
-               Result:=k;
+               Result:=AddLerpIfDistinct(iA, iB, k);
                Break;
             end;
          end;
