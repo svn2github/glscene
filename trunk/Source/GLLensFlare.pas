@@ -131,11 +131,10 @@ constructor TGLLensFlare.Create;
 
 begin
   inherited;
-  Randomize;
   // Set default parameters:
   ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
   FSize := 50;
-  FSeed := Random(2000)+465;
+  FSeed := 1465;
   FSqueeze := 1;
   FNumStreaks := 4;
   FStreakWidth := 2;
@@ -268,8 +267,9 @@ begin
    end else flag:=False;
 
    MakeVector(posVector,
-              screenPos[0]-rci.viewPortSize.cx/2,
-              screenPos[1]-rci.viewPortSize.cy/2,0);
+              screenPos[0]-rci.viewPortSize.cx*0.5,
+              screenPos[1]-rci.viewPortSize.cy*0.5,
+              0);
 
    // make the glow appear/disappear progressively
    if Flag then begin
@@ -365,17 +365,16 @@ begin
       glScalef(0.6, 0.6, 1);
       glBegin(GL_QUADS);
       for i:=0 to Resolution - 1 do begin
+         SinCos(2*i*pi/Resolution, s, c);
          glColor4fv(@Gradients[feGlow].CTo);
-         glVertex2f((FCurrSize-rW) * cos(2*i*pi/Resolution),
-                    Squeeze * (FCurrSize-rW) * sin(2*i*pi/Resolution));
+         glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
          glColor4fv(@Gradients[feRing].CFrom);
-         glVertex2f(FCurrSize * cos(2*i*pi/Resolution),
-                    Squeeze * FCurrSize * sin(2*i*pi/Resolution));
-         glVertex2f(FCurrSize * cos(2*(i+1)*pi/Resolution),
-                    Squeeze * FCurrSize * sin(2*(i+1)*pi/Resolution));
+         glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+
+         SinCos(2*(i+1)*pi/Resolution, s, c);
+         glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
          glColor4fv(@Gradients[feGlow].CTo);
-         glVertex2f((FCurrSize-rW) * cos(2*(i+1)*pi/Resolution),
-                    Squeeze * (FCurrSize-rW) * sin(2*(i+1)*pi/Resolution));
+         glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
 
          glColor4fv(@Gradients[feRing].CFrom);
          glVertex2f(FCurrSize * cos(2*i*pi/Resolution),
@@ -434,10 +433,10 @@ begin
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix;
 
+   RandSeed:=oldSeed;
+   
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
-      
-   RandSeed:=oldSeed;
 end;
 
 // DoProgress
