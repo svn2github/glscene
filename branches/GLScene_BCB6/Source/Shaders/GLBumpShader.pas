@@ -61,7 +61,7 @@ type
 
    TBumpOption = (boDiffuseTexture2, boSpecularTexture3, boUseSecondaryTexCoords);
    TBumpOptions = set of TBumpOption;
-   
+
    TSpecularMode = (smOff, smBlinn, smPhong);
 
    // TGLBumpShader

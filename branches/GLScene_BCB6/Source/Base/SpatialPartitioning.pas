@@ -1076,6 +1076,8 @@ begin
 
   FChildCount := 0;
 
+  FChildCount := 0;
+
   FLeaves.Clear;
 end;
 

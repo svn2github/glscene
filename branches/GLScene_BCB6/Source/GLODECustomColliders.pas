@@ -44,8 +44,7 @@ type
   //
   {: The custom collider is designed for generic contact handling. There is a
      contact point generator for sphere, box, capped cylinder, cylinder and
-     cone geoms. The ContactResolution defines the number of contact points
-     generated, 1 being the lowest amount.<p>
+     cone geoms.<p>
 
      Once the contact points for a collision are generated the abstract Collide
      function is called to generate the depth and the contact position and
@@ -799,23 +798,6 @@ end;
 function TGLODEHeightField.Collide(aPos : TAffineVector;
   var Depth : Single; var cPos, cNorm : TAffineVector) : Boolean;
 
-  function GetHeight(pos : TVector; var height : Single) : Boolean;
-  var
-    dummy1 : TVector;
-    dummy2 : TTexPoint;
-  begin
-    Result:=False;
-    if Owner.Owner is TGLTerrainRenderer then begin
-      height:=TGLTerrainRenderer(Owner.Owner).InterpolatedHeight(pos);
-      Result:=True;
-    end else if Owner.Owner is TGLHeightField then begin
-      if Assigned(TGLHeightField(Owner.Owner).OnGetHeight) then begin
-        TGLHeightField(Owner.Owner).OnGetHeight(pos.Coord[0], pos.Coord[1], height, dummy1, dummy2);
-        Result:=True;
-      end;
-    end;
-  end;
-
   function AbsoluteToLocal(vec : TVector) : TVector;
   var
     mat : TMatrix;
@@ -843,6 +825,23 @@ function TGLODEHeightField.Collide(aPos : TAffineVector;
       Result:=VectorTransform(vec, mat);
     end else
       Assert(False);
+  end;
+
+  function GetHeight(pos : TVector; var height : Single) : Boolean;
+  var
+    dummy1 : TVector;
+    dummy2 : TTexPoint;
+  begin
+    Result:=False;
+    if Owner.Owner is TGLTerrainRenderer then begin
+      height:=TGLTerrainRenderer(Owner.Owner).InterpolatedHeight(LocalToAbsolute(pos));
+      Result:=True;
+    end else if Owner.Owner is TGLHeightField then begin
+      if Assigned(TGLHeightField(Owner.Owner).OnGetHeight) then begin
+        TGLHeightField(Owner.Owner).OnGetHeight(pos.Coord[0], pos.Coord[1], height, dummy1, dummy2);
+        Result:=True;
+      end;
+    end;
   end;
 
 const
