@@ -455,11 +455,13 @@ begin
       if VerticalReverseOnAssignFromBitmap then begin
          pSrc:=aBitmap.ScanLine[Height-1];
          if Height>1 then
-            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc)
+         else rowOffset:=0;
       end else begin
          pSrc:=aBitmap.ScanLine[0];
          if Height>1 then
-            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc)
+         else rowOffset:=0;
       end;
       for y:=0 to Height-1 do begin
          BGRA32ToRGBA32(pSrc, pDest, Width);
