@@ -7,6 +7,8 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/04/04 - EG - Added friction, Life sizes, multiple sprites per texture
+                          and sprites sharing
       <li>24/04/04 - Mrqzzz - Added property "enabled" to TGLSourcePFXEffect
       <li>15/04/04 - EG - AspectRatio and Rotation added to sprite PFX,
                           improved texturing mode switches 
@@ -631,6 +633,7 @@ type
          FVertBuf : TAffineVectorList;    // NOT persistent
          FAspectRatio : Single;
          FRotation : Single;
+         FShareSprites : TGLBaseSpritePFXManager;
 
          FSpritesPerTexture : TSpritesPerTexture;
          FColorMode : TSpriteColorMode;
@@ -646,6 +649,7 @@ type
          procedure SetAspectRatio(const val : Single);
          function StoreAspectRatio : Boolean;
          procedure SetRotation(const val : Single);
+         procedure SetShareSprites(const val : TGLBaseSpritePFXManager);
 
          function TexturingMode : Cardinal; override;
          procedure InitializeRendering; override;
@@ -672,7 +676,47 @@ type
          property AspectRatio : Single read FAspectRatio write SetAspectRatio stored StoreAspectRatio;
          {: Particle sprites rotation (in degrees).<p>
             All particles of the PFX manager share this rotation. }
-         property Rotation : Single read FRotation write SetRotation; 
+         property Rotation : Single read FRotation write SetRotation;
+         {: If specified the manager will reuse the other manager's sprites.<p>
+            Sharing sprites between PFX managers can help at the rendering stage
+            if particles of the managers are mixed by helping reduce the number
+            of texture switches. Note that only the texture is shared, not the
+            colors, sizes or other dynamic parameters.<br> }
+         property ShareSprites : TGLBaseSpritePFXManager read FShareSprites write FShareSprites;
+   end;
+
+   // TPFXPrepareTextureImageEvent
+   //
+   TPFXPrepareTextureImageEvent = procedure (Sender : TObject; destBmp32 : TGLBitmap32; var texFormat : Integer) of object;
+
+   // TGLPointLightPFXManager
+   //
+   {: A sprite-based particles FX managers using user-specified code to prepare the texture.<p> }
+   TGLCustomSpritePFXManager = class (TGLBaseSpritePFXManager)
+      private
+         { Private Declarations }
+         FOnPrepareTextureImage : TPFXPrepareTextureImageEvent;
+
+      protected
+         { Protected Declarations }
+         procedure PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer); override;
+
+      public
+         { Public Declarations }
+         constructor Create(aOwner : TComponent); override;
+         destructor Destroy; override;
+
+	   published
+	      { Published Declarations }
+         {: Place your texture rendering code in this event.<p> }
+         property OnPrepareTextureImage : TPFXPrepareTextureImageEvent read FOnPrepareTextureImage write FOnPrepareTextureImage;
+
+         property ColorMode default scmInner;
+         property SpritesPerTexture default sptOne;
+         property ParticleSize;
+         property ColorInner;
+         property ColorOuter;
+         property LifeColors;
    end;
 
    // TGLPointLightPFXManager
@@ -2094,7 +2138,7 @@ begin
          else
             lck:=LifeColors[k];
             lck1:=LifeColors[k-1];
-            Result:=lck.FDoScale and lck1.FDoScale;
+            Result:=lck.FDoScale or lck1.FDoScale;
             if Result then begin
                f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
                sizeScale:=Lerp(lck1.SizeScale, lck.SizeScale, f);
@@ -2283,6 +2327,7 @@ end;
 destructor TGLBaseSpritePFXManager.Destroy;
 begin
    FTexHandle.Free;
+   FShareSprites:=nil;
    inherited Destroy;
 end;
 
@@ -2334,6 +2379,19 @@ begin
    end;
 end;
 
+// SetShareSprites
+//
+procedure TGLBaseSpritePFXManager.SetShareSprites(const val : TGLBaseSpritePFXManager);
+begin
+   if FShareSprites<>val then begin
+      if Assigned(FShareSprites) then
+         FShareSprites.RemoveFreeNotification(Self);
+      FShareSprites:=val;
+      if Assigned(FShareSprites) then
+         FShareSprites.FreeNotification(Self);
+   end;
+end;
+
 // BindTexture
 //
 procedure TGLBaseSpritePFXManager.BindTexture;
@@ -2341,31 +2399,37 @@ var
    bmp32 : TGLBitmap32;
    tw, th, tf : Integer;
 begin
-   if FTexHandle.Handle=0 then begin
-      FTexHandle.AllocateHandle;
-      glBindTexture(GL_TEXTURE_2D, FTexHandle.Handle);
+   if Assigned(FShareSprites) then
+      FShareSprites.BindTexture
+   else begin
+      if FTexHandle.Handle=0 then begin
+         FTexHandle.AllocateHandle;
+         glBindTexture(GL_TEXTURE_2D, FTexHandle.Handle);
 
-   	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	   glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-   	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	   glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-   	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+         glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 
-	   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-      bmp32:=TGLBitmap32.Create;
-      try
-         tf:=GL_RGBA;
-         PrepareImage(bmp32, tf);
-         tw:=bmp32.Width;
-         th:=bmp32.Height;
-         bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinearMipmapLinear,
-                                       tf, tw, th);
-      finally
-         bmp32.Free;
+         bmp32:=TGLBitmap32.Create;
+         try
+            tf:=GL_RGBA;
+            PrepareImage(bmp32, tf);
+            tw:=bmp32.Width;
+            th:=bmp32.Height;
+            bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinearMipmapLinear,
+                                          tf, tw, th);
+         finally
+            bmp32.Free;
+         end;
+      end else begin
+         Renderer.CurrentRCI.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
       end;
-   end else glBindTexture(GL_TEXTURE_2D, FTexHandle.Handle);
+   end;
 end;
 
 // TexturingMode
@@ -2442,6 +2506,7 @@ var
    vertexList : PAffineVectorArray;
    i : Integer;
    tcs : PTexCoordsSet;
+   spt : TSpritesPerTexture;
 
    procedure IssueVertices;
    begin
@@ -2458,7 +2523,10 @@ var
 begin
    lifeTime:=FCurrentTime-aParticle.CreationTime;
 
-   case SpritesPerTexture of
+   if Assigned(ShareSprites) then
+      spt:=ShareSprites.SpritesPerTexture
+   else spt:=SpritesPerTexture;
+   case spt of
       sptFour : tcs:=@cTexCoordsSets[(aParticle.ID and 3)];
    else
       tcs:=@cBaseTexCoordsSet;
@@ -2478,11 +2546,11 @@ begin
          ComputeColors(lifeTime, inner, outer);
          glBegin(GL_TRIANGLE_FAN);
             glColor4fv(@inner);
-            glTexCoord2f(0.5, 0.5);
+            glTexCoord2f((tcs[0].S+tcs[2].S)*0.5, (tcs[0].T+tcs[2].T)*0.5);
             glVertex3fv(@pos);
             glColor4fv(@outer);
             IssueVertices;
-            glTexCoord2fv(@XYTexPoint);
+            glTexCoord2fv(@tcs[0]);
             glVertex3fv(@vertexList[0]);
          glEnd;
       end;
@@ -2520,6 +2588,34 @@ begin
    FVertBuf.Free;
    FVertices.Free;
    inherited;
+end;
+
+// ------------------
+// ------------------ TGLCustomSpritePFXManager ------------------
+// ------------------
+
+// Create
+//
+constructor TGLCustomSpritePFXManager.Create(aOwner : TComponent);
+begin
+   inherited;
+   FColorMode:=scmInner;
+   FSpritesPerTexture:=sptOne;
+end;
+
+// Destroy
+//
+destructor TGLCustomSpritePFXManager.Destroy;
+begin
+   inherited Destroy;
+end;
+
+// BindTexture
+//
+procedure TGLCustomSpritePFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer);
+begin
+   if Assigned(FOnPrepareTextureImage) then
+      FOnPrepareTextureImage(Self, bmp32, texFormat);
 end;
 
 // ------------------
@@ -2602,6 +2698,7 @@ initialization
                     TGLParticleFXEffect, TGLParticleFXRenderer,
                     TGLCustomPFXManager,
                     TGLPolygonPFXManager,
+                    TGLCustomSpritePFXManager,
                     TGLPointLightPFXManager]);
    RegisterXCollectionItemClass(TGLSourcePFXEffect);
 
