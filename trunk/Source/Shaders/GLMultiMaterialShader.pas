@@ -44,7 +44,10 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('GLScene Shaders', [TGLMultiMaterialShader]);
+   // EG: no longer registers by default, unstable at design-time
+   //
+//  RegisterComponents('GLScene Shaders', [TGLMultiMaterialShader]);
+   RegisterClass(TGLMultiMaterialShader);
 end;
 
 // ------------------
