@@ -79,9 +79,14 @@ procedure TFaceGroupConnectivity.Clear;
 begin
   if Assigned(FVertices) then
   begin
-    FVertices := nil;
+    if FOwnsVertices then
+      FVertices.Clear
+    else
+      FVertices := nil;
+
     inherited;
-    if FMeshObject<>nil then
+
+    if not FOwnsVertices and Assigned(FMeshObject) then
       FVertices := FMeshObject.Vertices;
   end else
     inherited;
