@@ -29,7 +29,9 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1")
+      <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1"),
+                          3DNow optims for vector mormalizations (affine),
+                          Added RSqrt
       <li>04/01/02 - EG - Updated/fixed RayCastTriangleIntersect
       <li>13/12/01 - EG - Fixed MakeReflectionMatrix
       <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)  
@@ -848,6 +850,9 @@ function  CoTan(const X : Single) : Single; overload;
 // Miscellanious math functions
 //------------------------------------------------------------------------------
 
+{: Computes 1/Sqrt(v).<p> }
+function RSqrt(v : Single) : Single;
+
 function Trunc(v : Extended) : Int64; overload;
 function Trunc(v : Single) : Integer; overload;
 function Int(v : Extended) : Extended; overload;
@@ -1061,6 +1066,7 @@ const
   Z = 2;
   W = 3;
 
+  cZero : Single = 0.0;
   cOne : Single = 1.0;
 
 type
@@ -1241,7 +1247,7 @@ end;
 //
 procedure SetVector(var v : TVector; const vSrc : TVector);
 begin
-   // faster than memcpy or move...
+   // faster than memcpy, move or ':=' on the TVector...
 	v[0]:=vSrc[0];
 	v[1]:=vSrc[1];
 	v[2]:=vSrc[2];
@@ -1255,7 +1261,7 @@ begin
 	v[0]:=x;
 	v[1]:=y;
 	v[2]:=z;
-	v[3]:=1.0;
+	v[3]:=cOne;
 end;
 
 // MakePoint
@@ -1265,7 +1271,7 @@ begin
 	v[0]:=av[0];
 	v[1]:=av[1];
 	v[2]:=av[2];
-	v[3]:=1.0;
+	v[3]:=cOne;
 end;
 
 // MakeVector
@@ -1284,7 +1290,7 @@ begin
 	v[0]:=x;
 	v[1]:=y;
 	v[2]:=z;
-	v[3]:=0.0;
+	v[3]:=cZero;
 end;
 
 // MakeVector
@@ -1294,7 +1300,7 @@ begin
 	v[0]:=av[0];
 	v[1]:=av[1];
 	v[2]:=av[2];
-	v[3]:=0.0;
+	v[3]:=cZero;
 end;
 
 // VectorAdd (func, affine)
@@ -2415,6 +2421,36 @@ procedure NormalizeVector(var v : TAffineVector); register;
 //   Result:=VectorLength(v);
 //   ScaleVector(v, 1/Result);
 asm
+      test vSIMD, 1
+      jz @@FPU
+@@3DNow:
+      db $0F,$6F,$00           /// movq        mm0,[eax]
+      db $0F,$6E,$48,$08       /// movd        mm1,[eax+8]
+      db $0F,$6F,$E0           /// movq        mm4,mm0
+      db $0F,$6F,$D9           /// movq        mm3,mm1
+      db $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
+      db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
+      db $0F,$7E,$C2           /// movd        edx,mm0
+      db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
+      db $0F,$6F,$D1           /// movq        mm2,mm1
+      cmp  edx, $0038D1B717    // = 1.0 / 10000.0
+      jl   @@norm_end
+
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
+      db $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
+      db $0F,$62,$C9           /// punpckldq   mm1,mm1
+      db $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
+      db $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
+      db $0F,$7E,$58,$08       /// movd        [eax+8],mm3
+      db $0F,$7F,$20           /// movq        [eax],mm4
+@@norm_end:
+      db $0F,$0E               /// femms
+      ret
+
+@@FPU:
       FLD  DWORD PTR [EAX]
       FMUL ST, ST
       FLD  DWORD PTR [EAX+4]
@@ -2442,6 +2478,36 @@ function VectorNormalize(const v : TAffineVector) : TAffineVector; register;
 //   Result:=VectorLength(v);
 //   ScaleVector(v, 1/Result);
 asm
+      test vSIMD, 1
+      jz @@FPU
+@@3DNow:
+      db $0F,$6F,$00           /// movq        mm0,[eax]
+      db $0F,$6E,$48,$08       /// movd        mm1,[eax+8]
+      db $0F,$6F,$E0           /// movq        mm4,mm0
+      db $0F,$6F,$D9           /// movq        mm3,mm1
+      db $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
+      db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
+      db $0F,$7E,$C1           /// movd        ecx,mm0
+      db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
+      db $0F,$6F,$D1           /// movq        mm2,mm1
+      cmp  ecx, $0038D1B717    // = 1.0 / 10000.0
+      jl   @@norm_end
+
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
+      db $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
+      db $0F,$62,$C9           /// punpckldq   mm1,mm1
+      db $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
+      db $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
+      db $0F,$7E,$5A,$08       /// movd        [edx+8],mm3
+      db $0F,$7F,$22           /// movq        [edx],mm4
+@@norm_end:
+      db $0F,$0E               /// femms
+      ret
+
+@@FPU:
       FLD  DWORD PTR [EAX]
       FMUL ST, ST
       FLD  DWORD PTR [EAX+4]
@@ -2471,7 +2537,40 @@ procedure NormalizeVectorArray(list : PAffineVectorArray; n : Integer);
 asm
       OR    EDX, EDX
       JZ    @@End
-@@Loop:
+      test vSIMD, 1
+      jz @@FPULoop
+@@3DNowLoop:
+      db $0F,$6F,$00           /// movq        mm0,[eax]
+      db $0F,$6E,$48,$08       /// movd        mm1,[eax+8]
+      db $0F,$6F,$E0           /// movq        mm4,mm0
+      db $0F,$6F,$D9           /// movq        mm3,mm1
+      db $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
+      db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
+      db $0F,$7E,$C1           /// movd        ecx,mm0
+      db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
+      db $0F,$6F,$D1           /// movq        mm2,mm1
+      cmp  ecx, $0038D1B717    // = 1.0 / 10000.0
+      jl   @@norm_end
+
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
+      db $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
+      db $0F,$62,$C9           /// punpckldq   mm1,mm1
+      db $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
+      db $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
+      db $0F,$7E,$58,$08       /// movd        [eax+8],mm3
+      db $0F,$7F,$20           /// movq        [eax],mm4
+@@norm_end:
+      db $0F,$0E               /// femms
+      add   eax, 12
+      db $0F,$0D,$40,$60       /// PREFETCH    [EAX+96]
+      dec   edx
+      jnz   @@3DNowLOOP
+      ret
+
+@@FPULoop:
       FLD   DWORD PTR [EAX]
       FMUL  ST, ST
       FLD   DWORD PTR [EAX+4]
@@ -2492,12 +2591,8 @@ asm
       FMUL  DWORD PTR [EAX+8]
       FSTP  DWORD PTR [EAX+8]
       ADD   EAX, 12
-      TEST  vSIMD, 1           // performance impact is negligible on ATHLON
-      JZ @@FPU
-      db $0F,$0D,$40,$60       /// PREFETCH    [EAX+96]
-@@FPU:
       DEC   EDX
-      JNZ   @@LOOP
+      JNZ   @@FPULOOP
 @@End:
 end;
 
@@ -3822,7 +3917,7 @@ begin
 
   // compute X scale factor and normalize first row
   Tran[ttScaleX]:=VectorNorm(row0);
-  VectorScale(row0, 1/sqrt(Tran[ttScaleX]));
+  VectorScale(row0, RSqrt(Tran[ttScaleX]));
 
   // compute XY shear factor and make 2nd row orthogonal to 1st
   Tran[ttShearXY]:=VectorDotProduct(row0, row1);
@@ -3831,7 +3926,7 @@ begin
 
   // now, compute Y scale and normalize 2nd row
   Tran[ttScaleY]:=VectorNorm(row1);
-  VectorScale(row1, 1/sqrt(Tran[ttScaleY]));
+  VectorScale(row1, RSqrt(Tran[ttScaleY]));
   Tran[ttShearXY]:=Tran[ttShearXY]/Tran[ttScaleY];
 
   // compute XZ and YZ shears, orthogonalize 3rd row
@@ -3844,7 +3939,7 @@ begin
 
   // next, get Z scale and normalize 3rd row
   Tran[ttScaleZ]:=VectorNorm(row2);
-  VectorScale(row2, 1/sqrt(Tran[ttScaleZ]));
+  VectorScale(row2, RSqrt(Tran[ttScaleZ]));
   Tran[ttShearXZ]:=Tran[ttShearXZ] / tran[ttScaleZ];
   Tran[ttShearYZ]:=Tran[ttShearYZ] / Tran[ttScaleZ];
 
@@ -4184,11 +4279,11 @@ end;
 //
 function Power(const Base, Exponent: Single): Single;
 begin
-  if Exponent = 0.0 then
-    Result:=1.0               { n**0 = 1 }
-  else if (Base = 0.0) and (Exponent > 0.0) then
-    Result:=0.0               { 0**n = 0, n > 0 }
-  else Result:=Exp(Exponent * Ln(Base));
+   if Exponent=cZero then
+      Result:=cOne                { n**0 = 1 }
+   else if (Base=cZero) and (Exponent>cZero) then
+      Result:=cZero               { 0**n = 0, n > 0 }
+   else Result:=Exp(Exponent * Ln(Base));
 end;
 
 // Power (int exponent)
@@ -4483,6 +4578,35 @@ asm
       FLD  X
       FPTAN
       FDIVRP
+end;
+
+// RSqrt
+//
+function RSqrt(v : Single) : Single;
+asm
+      test vSIMD, 1
+      jz @@FPU
+@@3DNow:
+      lea eax, [ebp+8]
+      db $0F,$6E,$00           /// movd mm0, [eax]
+      db $0F,$0F,$C8,$97       /// pfrsqrt  mm1, mm0
+
+      db $0F,$6F,$D1           /// movq     mm2, mm1
+      db $0F,$0F,$C9,$B4       /// pfmul    mm1, mm1
+      db $0F,$0F,$C8,$A7       /// pfrsqit1 mm1, mm0
+      db $0F,$0F,$CA,$B6       /// pfrcpit2 mm1, mm2
+
+      db $0F,$7E,$08           /// movd [eax], mm1
+      db $0F,$0E               /// femms
+      fld dword ptr [eax]
+      jmp @@End
+
+@@FPU:
+      fld dword ptr [ebp+8]
+      fsqrt
+      fld1
+      fdivr
+@@End:
 end;
 
 // Trunc (extended)
@@ -5270,7 +5394,7 @@ begin
       Result:=False;
       Exit;
    end;
-   invDet:=1.0/det;
+   invDet:=cOne/det;
    VectorSubtract(rayStart, p1, tvec);
    u:=VectorDotProduct(tvec, pvec)*invDet;
    if (u<0) or (u>1) then
