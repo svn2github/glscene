@@ -1889,7 +1889,9 @@ Begin
       UnBlockRender;
     end;
 
+    If FPressed then
     if Assigned(FOnButtonClick) then FOnButtonClick(Self);
+    
     NotifyChange(Self);
   End;
 End;
