@@ -49,9 +49,7 @@ begin
       dwFlags:=(STARTF_USESHOWWINDOW or STARTF_FORCEONFEEDBACK);
       wShowWindow:=visibility;
    end;
-   //ShowMessage(cmdLine);
    app:=Copy(cmdLine, 1, Pos(' ', cmdLine)-1);
-   cmdLine:=Copy(cmdLine, Pos(' ', cmdLine)+1, MaxInt);
    if CreateProcess(PChar(app), PChar(cmdLine), nil, nil, False, NORMAL_PRIORITY_CLASS, nil, nil,
               		  startupInfo, processInfo) then begin
       try

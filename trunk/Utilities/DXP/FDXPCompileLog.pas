@@ -13,6 +13,8 @@ type
     TSRaw: TTabSheet;
     MERaw: TMemo;
     LVMessages: TListView;
+    TSConfigFile: TTabSheet;
+    MECfgFile: TMemo;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure LVMessagesDblClick(Sender: TObject);
   private
@@ -22,7 +24,7 @@ type
   public
     { Déclarations publiques }
     DXPExpertModule : TDMDXPExpertModule;
-    procedure ExecuteOnFPC(const logFileName : String;
+    procedure ExecuteOnFPC(const prjFileName, logFileName : String;
                            expertModule : TDMDXPExpertModule);
   end;
 
@@ -91,7 +93,7 @@ end;
 
 // ExecuteOnFPC
 //
-procedure TDXPCompileLog.ExecuteOnFPC(const logFileName : String;
+procedure TDXPCompileLog.ExecuteOnFPC(const prjFileName, logFileName : String;
                                       expertModule : TDMDXPExpertModule);
 var
    i, pOpen, pClose, pComma, pDots, colNb, lineNb : Integer;
@@ -110,40 +112,48 @@ begin
    end else begin
       MERaw.Lines.Text:='No compiler error output.';
       AddMessage('', MERaw.Lines.Text, 0);
+      msgServices.AddCompilerMessage(prjFileName, 'No compiler output', 'FPC',
+                                     otamkFatal, 0, 0, nil, lineRef);
    end;
+   if FileExists(vFPC_BinaryPath+'\fpc.cfg') then
+      MECfgFile.Lines.LoadFromFile(vFPC_BinaryPath+'\fpc.cfg')
+   else MECfgFile.Clear;
    MERaw.Lines.Insert(0, DateTimeToStr(Now));
    // parse
-   for i:=3 to MERaw.Lines.Count-1 do begin
+   for i:=0 to MERaw.Lines.Count-1 do begin
       line:=MERaw.Lines[i];
       pOpen:=Pos('(', line);
       pClose:=Pos(') ', line);
       pComma:=Pos(',', line);
-      if (pOpen<=0) or (pClose<=0) or (pComma<=pOpen) or (pComma>=pClose) then continue;
+      if (pOpen>0) and (pClose>0) and (pComma>pOpen) and (pComma<pClose) then begin
+         fName:=Copy(line, 1, pOpen-1);
+         location:=Copy(line, pOpen+1, pClose-pOpen-1);
+         msgText:=Copy(line, pClose+2, MaxInt);
 
-      fName:=Copy(line, 1, pOpen-1);
-      location:=Copy(line, pOpen+1, pClose-pOpen-1);
-      msgText:=Copy(line, pClose+2, MaxInt);
+         pDots:=Pos(':', msgText);
+         msgType:=LowerCase(Copy(msgText, 1, pDots-1));
 
-      pDots:=Pos(':', msgText);
-      msgType:=LowerCase(Copy(msgText, 1, pDots-1));
+         if msgType='hint' then msgKind:=otamkHint
+         else if msgType='warn' then msgKind:=otamkWarn
+         else if msgType='error' then msgKind:=otamkError
+         else if msgType='fatal' then msgKind:=otamkFatal
+         else msgKind:=otamkInfo;
 
-      if msgType='hint' then msgKind:=otamkHint
-      else if msgType='warn' then msgKind:=otamkWarn
-      else if msgType='error' then msgKind:=otamkError
-      else if msgType='fatal' then msgKind:=otamkFatal
-      else msgKind:=otamkInfo;
+         pComma:=Pos(',', location);
+         lineNb:=StrToIntDef(Copy(location, 1, pComma-1), 1);
+         colNb:=StrToIntDef(Copy(location, pComma+1, MaxInt), 1);
 
-      pComma:=Pos(',', location);
-      lineNb:=StrToIntDef(Copy(location, 1, pComma-1), 1);
-      colNb:=StrToIntDef(Copy(location, pComma+1, MaxInt), 1);
-
-      with LVMessages.Items.Add do begin
-         Caption:=fName;
-         SubItems.Add(location);
-         SubItems.Add(msgText);
+         with LVMessages.Items.Add do begin
+            Caption:=fName;
+            SubItems.Add(location);
+            SubItems.Add(msgText);
+         end;
+         msgServices.AddCompilerMessage(fName, msgText, 'FPC',
+                                        msgKind, lineNb, colNb, nil, lineRef);
+      end else if CompareText(Copy(line, 1, 6), 'Fatal:')=0 then begin
+         msgServices.AddCompilerMessage(prjFileName, line, 'FPC',
+                                        otamkFatal, 0, 0, nil, lineRef);
       end;
-      msgServices.AddCompilerMessage(fName, msgText, 'FPC',
-                                     msgKind, lineNb, colNb, nil, lineRef);
    end;
    msgServices.ShowMessageView(nil);
    if vFPC_ShowCompileLog then

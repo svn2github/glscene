@@ -89,6 +89,8 @@ begin
       BBReplace.Enabled:=sel and (EDPath.Text<>'') and (EDPath.Text<>Items[ItemIndex]);
       BBAdd.Enabled:=(EDPath.Text<>'') and (Items.IndexOf(EDPath.Text)<0);
       BBRemove.Enabled:=sel;
+      if (Sender<>nil) and sel then
+         EDPath.Text:=Items[ItemIndex];
    end;
 end;
 
@@ -141,7 +143,7 @@ end;
 
 procedure TDXPPathsDialog.EDPathChange(Sender: TObject);
 begin
-   LBPathsClick(Self);
+   LBPathsClick(nil);
 end;
 
 end.

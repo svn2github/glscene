@@ -19,7 +19,7 @@ object DXPCompileLog: TDXPCompileLog
     Top = 0
     Width = 560
     Height = 308
-    ActivePage = TSCooked
+    ActivePage = TSRaw
     Align = alClient
     TabOrder = 0
     object TSCooked: TTabSheet
@@ -59,8 +59,31 @@ object DXPCompileLog: TDXPCompileLog
       object MERaw: TMemo
         Left = 0
         Top = 0
-        Width = 512
-        Height = 281
+        Width = 552
+        Height = 280
+        Align = alClient
+        BorderStyle = bsNone
+        Color = clBtnFace
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Courier New'
+        Font.Style = []
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssBoth
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object TSConfigFile: TTabSheet
+      Caption = 'fpc.cfg'
+      ImageIndex = 2
+      object MECfgFile: TMemo
+        Left = 0
+        Top = 0
+        Width = 552
+        Height = 280
         Align = alClient
         BorderStyle = bsNone
         Color = clBtnFace

@@ -49,6 +49,7 @@ type
     { Déclarations privées }
     FFPCConfig : TDXPFPCConfig;
     FFPCConfigFileName : String;
+    FFPCCFGBackedUp : Boolean;
 
     procedure AddMenuInIDE(popup : TPopupMenu; const aDelphiMenu : String);
     function GetProjectGroup : IOTAProjectGroup;
@@ -58,6 +59,8 @@ type
 
     function FPCConfig : TDXPFPCConfig;
     function FPCCommandLine(const extraOptions : String = '') : String;
+    procedure BackupFPCConfigFile;
+    procedure RestoreFPCConfigFile;
     function FPCErrorFile : String;
     //: Returns True if compilation succeeded
     function FPCCompile(const extraOptions : String = '') : Boolean;
@@ -224,11 +227,48 @@ begin
    Result:=FFPCConfig;
 end;
 
+procedure TDMDXPExpertModule.BackupFPCConfigFile;
+var
+   cfgFile, cfgFileBkp : String;
+   sl : TStringList;
+begin
+   FFPCCFGBackedUp:=False;
+   cfgFile:=vFPC_BinaryPath+'\fpc.cfg';
+   if FileExists(cfgFile) then begin
+      sl:=TStringList.Create;
+      try
+         sl.LoadFromFile(cfgFile);
+         if (sl.Count>0) and (sl[0]<>'# DXP') then begin
+            cfgFileBkp:=vFPC_BinaryPath+'\fpc.cfg.bak';
+            DeleteFile(cfgFileBkp);
+            RenameFile(cfgFile, cfgFileBkp);
+            FFPCCFGBackedUp:=True;
+         end;
+      finally
+         sl.Free;
+      end;
+   end;
+end;
+
+procedure TDMDXPExpertModule.RestoreFPCConfigFile;
+var
+   cfgFile, cfgFileBkp : String;
+begin
+   if FFPCCFGBackedUp then begin
+      FFPCCFGBackedUp:=False;
+      cfgFile:=vFPC_BinaryPath+'\fpc.cfg';
+      cfgFileBkp:=vFPC_BinaryPath+'\fpc.cfg.bak';
+      DeleteFile(cfgFile);
+      RenameFile(cfgFileBkp, cfgFile);
+   end;
+end;
+
 function TDMDXPExpertModule.FPCCommandLine(const extraOptions : String = '') : String;
 var
    i : Integer;
    prj : IOTAProject;
    paths : TStringList;
+   cfgFile : TStringList;
    configOptions : String;
    config : TDXPFPCConfig;
 begin
@@ -237,56 +277,78 @@ begin
    if not Assigned(prj) then Exit;
    configOptions:='';
    config:=FPCConfig;
-   for i:=0 to config.Options.Count-1 do
-      configOptions:=configOptions+' '+config.Options[i];
-   Result:= vFPC_BinaryPath+'\fpc.exe '+extraOptions
-           +' -Sd'+configOptions
-           +' -Fe'+FPCErrorFile;
-   paths:=TStringList.Create;
+   cfgFile:=TStringList.Create;
    try
-      paths.Delimiter:=';';
-      paths.CommaText:=vFPC_SourcePaths;
-      for i:=0 to paths.Count-1 do
-         Result:=Result+' -Fu"'+paths[i]+'"';
+      for i:=0 to config.Options.Count-1 do
+         configOptions:=configOptions+' '+config.Options[i];
+      cfgFile.CommaText:=configOptions;
+      cfgFile.Insert(0, '# DXP');
+      cfgFile.Insert(1, '-Sd');
+      cfgFile.Insert(2, '-l');
+      Result:= vFPC_BinaryPath+'\fpc.exe '+extraOptions
+              +' -Fe'+FPCErrorFile;
+      cfgFile.Add('-Fud:\FreePascal/units/$TARGET');
+      cfgFile.Add('-Fud:\FreePascal/units/$TARGET/*');
+      cfgFile.Add('-Fud:\FreePascal/units/$TARGET/rtl');
+      paths:=TStringList.Create;
+      try
+         paths.Delimiter:=';';
+         paths.CommaText:=vFPC_SourcePaths;
+         for i:=0 to paths.Count-1 do begin
+            cfgFile.Add('-Fu'+paths[i]);
+            cfgFile.Add('-Fi'+paths[i]);
+         end;
+      finally
+         paths.Free;
+      end;
+      Result:=Result+' "'+prj.FileName+'"';
+      cfgFile.SaveToFile(vFPC_BinaryPath+'\fpc.cfg');
    finally
-      paths.Free;
+      cfgFile.Free;
    end;
-   Result:=Result+' "'+prj.FileName+'"';
 end;
 
 function TDMDXPExpertModule.FPCErrorFile : String;
 begin
-   Result:='c:\dxp.tmp';//GetTemporaryFilesPath+'dxp.tmp';
+   Result:='c:\dxp.tmp';
 end;
 
 function TDMDXPExpertModule.FPCCompile(const extraOptions : String = '') : Boolean;
 var
    res : Integer;
    cmdLine, verbose : String;
+   prj : IOTAProject;
 begin
    Result:=False;
+   prj:=GetProject;
+   if prj=nil then Exit;
    LoadDXPGlobals;
-   cmdLine:=FPCCommandLine(extraOptions);
-   if cmdLine='' then Exit;
-   Screen.Cursor:=crHourGlass;
+   BackupFPCConfigFile;
    try
-      verbose:=FPCErrorFile;
-      DeleteFile(verbose);
-      res:=ExecuteAndWait(cmdLine, SW_SHOW, vFPC_TimeOut, True);
-      if res=-1 then
-         ShowMessage('Failed to start compiler'#13#10+cmdLine)
-      else begin
-         if res=0 then
-            Result:=True;
-         DXPCompileLog.ExecuteOnFPC(verbose, Self);
-         with DXPCompileLog.MERaw.Lines do begin
-            Insert(0, cmdLine);
-            Insert(1, '');
+      cmdLine:=FPCCommandLine(extraOptions);
+      if cmdLine='' then Exit;
+      Screen.Cursor:=crHourGlass;
+      try
+         verbose:=FPCErrorFile;
+         DeleteFile(verbose);
+         res:=ExecuteAndWait(cmdLine, SW_SHOW, vFPC_TimeOut, True);
+         if res=-1 then
+            ShowMessage('Failed to start compiler'#13#10+cmdLine)
+         else begin
+            if res=0 then
+               Result:=True;
+            DXPCompileLog.ExecuteOnFPC(prj.FileName, verbose, Self);
+            with DXPCompileLog.MERaw.Lines do begin
+               Insert(0, cmdLine);
+               Insert(1, '');
+            end;
          end;
+      finally
+         DeleteFile(verbose);
+         Screen.Cursor:=crDefault;
       end;
    finally
-      DeleteFile(verbose);
-      Screen.Cursor:=crDefault;
+      RestoreFPCConfigFile;
    end;
 end;
 
