@@ -7,6 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>05/11/02 - EG - Enable per-manager blending mode control
       <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
                           and TGLPointLightPFXManager. 
       <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
@@ -135,6 +136,7 @@ type
    TGLParticleFXManager = class (TGLCadencedComponent)
       private
          { Private Declarations }
+			FBlendingMode : TBlendingMode;
          FRenderer : TGLParticleFXRenderer;
          FParticles : TGLParticleList;
 
@@ -168,6 +170,14 @@ type
          procedure EndParticles; virtual; abstract;
          {: Invoked when rendering of particles for this manager is done. }
          procedure FinalizeRendering; dynamic; abstract;
+
+         {: Blending mode for the particles.<p>
+            Protected and unused in the base class. }
+			property BlendingMode : TBlendingMode read FBlendingMode write FBlendingMode;
+         {: Apply BlendingMode relatively to the renderer's blending mode. }
+         procedure ApplyBlendingMode;
+         {: Unapply BlendingMode relatively by restoring the renderer's blending mode. }
+         procedure UnapplyBlendingMode;
 
       public
          { Public Declarations }
@@ -456,6 +466,10 @@ type
          property ColorInner : TGLColor read FColorInner write SetColorInner;
          property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
          property LifeColors : TPFXLifeColors read FLifeColors write SetLifeColors;
+
+	   published
+	      { Published Declarations }
+         property BlendingMode default bmAdditive;
    end;
 
    // TGLPolygonPFXManager
@@ -543,6 +557,9 @@ type
          destructor Destroy; override;
 
          property ColorMode : TSpriteColorMode read FColorMode write SetColorMode;
+         
+	   published
+	      { Published Declarations }
    end;
 
    // TGLPointLightPFXManager
@@ -819,6 +836,7 @@ begin
    inherited;
    FParticles:=TGLParticleList.Create;
    FParticles.Owner:=Self;
+   FBlendingMode:=bmAdditive;
    RegisterManager(Self);
 end;
 
@@ -866,6 +884,70 @@ end;
 procedure TGLParticleFXManager.SetParticles(const aParticles : TGLParticleList);
 begin
    FParticles.Assign(aParticles);
+end;
+
+// ApplyBlendingMode
+//
+procedure TGLParticleFXManager.ApplyBlendingMode;
+begin
+   if Renderer.BlendingMode<>BlendingMode then begin
+      // case disjunction to minimize OpenGL State changes
+      if Renderer.BlendingMode in [bmAdditive, bmTransparency] then begin
+         case BlendingMode of
+            bmAdditive :
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            bmTransparency :
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         else // bmOpaque
+            glDisable(GL_BLEND);
+         end;
+      end else begin
+         case BlendingMode of
+            bmAdditive : begin
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+               glEnable(GL_BLEND);
+            end;
+            bmTransparency : begin
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+               glEnable(GL_BLEND);
+            end;
+         else
+            // bmOpaque, do nothing
+         end;
+      end;
+   end;
+end;
+
+// ApplyBlendingMode
+//
+procedure TGLParticleFXManager.UnapplyBlendingMode;
+begin
+   if Renderer.BlendingMode<>BlendingMode then begin
+      // case disjunction to minimize OpenGL State changes
+      if BlendingMode in [bmAdditive, bmTransparency] then begin
+         case Renderer.BlendingMode of
+            bmAdditive :
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            bmTransparency :
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         else // bmOpaque
+            glDisable(GL_BLEND);
+         end;
+      end else begin
+         case Renderer.BlendingMode of
+            bmAdditive : begin
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+               glEnable(GL_BLEND);
+            end;
+            bmTransparency : begin
+               glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+               glEnable(GL_BLEND);
+            end;
+         else
+            // bmOpaque, do nothing
+         end;
+      end;
+   end;
 end;
 
 // ------------------
@@ -1330,9 +1412,13 @@ end;
 //
 procedure TGLSourcePFXEffect.SetParticleInterval(const val : Single);
 begin
-   FParticleInterval:=val;
-   if FParticleInterval<0 then FParticleInterval:=0;
-   OwnerBaseSceneObject.NotifyChange(Self);
+   if FParticleInterval<>val then begin
+      FParticleInterval:=val;
+      if FParticleInterval<0 then FParticleInterval:=0;
+      if FTimeRemainder>FParticleInterval then
+         FTimeRemainder:=FParticleInterval;
+      OwnerBaseSceneObject.NotifyChange(Self);
+   end;
 end;
 
 // DoProgress
@@ -1831,7 +1917,7 @@ end;
 //
 procedure TGLPolygonPFXManager.BeginParticles;
 begin
-   // nothing
+   ApplyBlendingMode;
 end;
 
 // RenderParticle
@@ -1865,7 +1951,7 @@ end;
 //
 procedure TGLPolygonPFXManager.EndParticles;
 begin
-   // nothing
+   UnapplyBlendingMode;
 end;
 
 // FinalizeRendering
@@ -1973,6 +2059,7 @@ begin
    else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
    if ColorMode<>scmFade then
       glBegin(GL_QUADS);
+   ApplyBlendingMode;
 end;
 
 // RenderParticle
@@ -2038,6 +2125,7 @@ end;
 //
 procedure TGLBaseSpritePFXManager.EndParticles;
 begin
+   UnapplyBlendingMode;
    if ColorMode<>scmFade then
       glEnd;
    glDisable(GL_TEXTURE_2D);
