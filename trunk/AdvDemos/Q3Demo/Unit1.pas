@@ -235,7 +235,7 @@ begin
   Legs.LoadFromFile('.\model\lower.md3');
   Torso.LoadFromFile('.\model\upper.md3');
   Head.LoadFromFile('.\model\head.md3');
-  Weapon.LoadFromFile('.\model\railgun.md3');
+  Weapon.LoadFromFile('.\model\plasma.md3');
 
   // Load the required tag lists
   // These are used to loacally transform the separate
@@ -252,7 +252,7 @@ begin
   // a smoke like effect
   //
   WeaponTags:=TMD3TagList.Create;
-  WeaponTags.LoadFromFile('.\model\railgun.md3');
+  WeaponTags.LoadFromFile('.\model\plasma.md3');
   GunSmoke.Matrix:=WeaponTags.GetTransform('tag_flash',0);
 
   // Apply textures to preloaded materials
@@ -271,18 +271,11 @@ begin
   //LoadQ3Skin('.\model\upper_default.skin',Torso);
   //LoadQ3Skin('.\model\head_default.skin',Head);
 
-
   // Load the weapon textures
   //
   with MatLib.Materials do begin
-    with GetLibMaterialByName('w_railcase').Material.Texture do
-      Image.LoadFromFile('.\model\railgun.jpg');
-    with GetLibMaterialByName('w_railgrip').Material.Texture do
-      Image.LoadFromFile('.\model\railgun2.jpg');
-    with GetLibMaterialByName('w_railrear').Material.Texture do
-      Image.LoadFromFile('.\model\railgun3.jpg');
-    with GetLibMaterialByName('w_raillcd').Material.Texture do
-      Image.LoadFromFile('.\model\railgun4.jpg');
+    with GetLibMaterialByName('plasma2').Material.Texture do
+      Image.LoadFromFile('.\model\plasma2.jpg');
   end;
 
   // Load the animation data from the cfg file
