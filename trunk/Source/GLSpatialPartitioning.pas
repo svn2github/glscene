@@ -12,7 +12,8 @@ unit GLSpatialPartitioning;
 interface
 
 uses
-  SpatialPartitioning, GLScene, VectorGeometry, OpenGL1x, GeometryBB;
+  GLWin32Viewer, SpatialPartitioning, GLScene, VectorGeometry, OpenGL1x,
+  GeometryBB;
 
 type
   {: Object for holding glscene objects in a spatial partitioning }
@@ -28,8 +29,15 @@ type
   (octree and quadtree) as a grid - great for debugging and visualisation }
   procedure RenderSpatialPartitioning(const Space : TSectoredSpacePartition);
 
+  {: Create an extended frustum from a GLSceneViewer - this makes the unit
+  specific to the windows platform!}
+  function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
+    const AGLSceneViewer : TGLSceneViewer) : TExtendedFrustum;
+
 implementation
 
+// RenderSpatialPartitioning
+//
 procedure RenderSpatialPartitioning(const Space : TSectoredSpacePartition);
 
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
@@ -68,8 +76,7 @@ procedure RenderSpatialPartitioning(const Space : TSectoredSpacePartition);
     i : integer;
     AABB : TAABB;
   begin
-    if Node.NoChildren then
-    begin
+    if Node.NoChildren then begin
       AABB := Node.AABB;
 
       if Node.RecursiveLeafCount > 0 then
@@ -77,8 +84,7 @@ procedure RenderSpatialPartitioning(const Space : TSectoredSpacePartition);
       else
         RenderAABB(AABB, 1, 0.8, 0.8, 0.8)//}
 
-    end else
-    begin
+    end else begin
       for i := 0 to Node.ChildCount-1 do
         RenderSectorNode(Node.Children[i]);
     end;
@@ -88,6 +94,18 @@ begin
   glDisable(GL_LIGHTING);
   RenderSectorNode(Space.RootNode);
   glPopAttrib;
+end;
+
+function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
+  const AGLSceneViewer : TGLSceneViewer) : TExtendedFrustum;
+begin
+  Assert(Assigned(AGLSceneViewer.Camera),'GLSceneViewer must have camera specified!');
+  result := ExtendedFrustumMake(AFrustum,
+    AGLSceneViewer.Camera.NearPlane,
+    AGLSceneViewer.Camera.DepthOfView,
+    AGLSceneViewer.FieldOfView,
+    AGLSceneViewer.Camera.Position.AsAffineVector,
+    AGLSceneViewer.Camera.Direction.AsAffineVector);
 end;
 
 { TSceneObj }

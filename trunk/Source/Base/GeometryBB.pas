@@ -151,6 +151,8 @@ function FrustumContainsBSphere(const Frustum : TFrustum; const testBSphere : TB
 function FrustumContainsAABB(const Frustum : TFrustum; const testAABB : TAABB) : TSpaceContains;
 {: Clips a position to an AABB }
 function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector;
+{: Determines if one BSphere intersects another BSphere}
+function BSphereIntersectsBSphere(const mainBSphere, testBSphere : TBSphere) : boolean;
 
 {: Extend the clip rect to include given coordinate. }
 procedure IncludeInClipRect(var clipRect : TClipRect; x, y : Single);
@@ -970,6 +972,13 @@ begin
       result := scContainsPartially;
   end else
     result := scNoOverlap;
+end;
+
+//  BSphereIntersectsBSphere
+//
+function BSphereIntersectsBSphere(const mainBSphere, testBSphere : TBSphere) : boolean;
+begin
+  result := VectorDistance2(mainBSphere.Center, testBSphere.Center)<sqr(mainBSphere.Radius+testBSphere.Radius);
 end;
 
 //  ClipToAABB

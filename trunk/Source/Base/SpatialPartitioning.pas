@@ -55,6 +55,12 @@ type
     Length : single;
   end;
 
+  {: Extended frustum, used for fast intersection testing }
+  TExtendedFrustum = record
+    Frustum : TFrustum;
+    BSphere : TBSphere;
+  end;
+
   {: Used to store the actual objects in the SpacePartition }
   TSpacePartitionLeaf = class(TPersistentObject)
   private
@@ -151,6 +157,9 @@ type
     {: Query space for Leaves that intersect a Frustum. Result is returned through
     QueryResult}
     function QueryFrustum(const Frustum : TFrustum) : integer; virtual;
+    {: Query space for Leaves that intersect an extended frustum. Result is
+    returned through QueryResult}
+    function QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum) : integer; virtual;
 
     {: Once a query has been run, this number tells of how many inter object
     tests that were run. This value must be set by all that override the
@@ -320,17 +329,21 @@ type
     this node has too few leaves after the delete, it may be collapsed }
     procedure RemoveLeaf(aLeaf : TSpacePartitionLeaf; OwnerByThis : boolean);
 
-    {: Query the node and it's children for leaves that match the AABB }
+    {: Query the node and its children for leaves that match the AABB }
     procedure QueryAABB(const aAABB : TAABB; const QueryResult : TSpacePartitionLeafList);
 
-    {: Query the node and it's children for leaves that match the BSphere }
+    {: Query the node and its children for leaves that match the BSphere }
     procedure QueryBSphere(const aBSphere : TBSphere; const QueryResult : TSpacePartitionLeafList);
 
-    {: Query the node and it's children for leaves that match the plane }
+    {: Query the node and its children for leaves that match the plane }
     procedure QueryPlane(const Location, Normal: TAffineVector; const QueryResult : TSpacePartitionLeafList);
 
-    {: Query the node and it's children for leaves that match the Frustum. }
+    {: Query the node and its children for leaves that match the Frustum. }
     procedure QueryFrustum(const Frustum : TFrustum; const QueryResult : TSpacePartitionLeafList);
+
+    {: Query the node and its children for leaves that match the extended
+    frustum. }
+    function QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum; const QueryResult : TSpacePartitionLeafList) : integer;
 
     {: Adds all leaves to query result without testing if they intersect, and
     then do the same for all children. This is used when QueryAABB or
@@ -407,6 +420,10 @@ type
     {: Query space for Leaves that intersect a Frustum. Result is returned through
     QueryResult}
     function QueryFrustum(const Frustum : TFrustum) : integer; override;
+
+    {: Query space for Leaves that intersect an extended frustum. Result is
+    returned through QueryResult}
+    function QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum) : integer; override;
 
     {: After a query has been run, this value will contain the number of nodes
     that were checked during the query }
@@ -528,6 +545,10 @@ type
   {: Determines to which extent one Cone contains an BSphere}
   function ConeContainsBSphere(const Cone : TSPCone; BSphere : TBSphere) : TSpaceContains;
 
+  {: Create an extended frustum from a number of values }
+  function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
+    AFarDist, AFieldOfViewRadians : single; const ACameraPosition, ALookVector : TAffineVector ) : TExtendedFrustum;
+
 implementation
 
 // This was copied from Octree.pas!
@@ -615,6 +636,46 @@ begin
   end else
     result := scNoOverlap;
 end;//}
+
+
+function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
+  AFarDist, AFieldOfViewRadians : single; const ACameraPosition, ALookVector : TAffineVector ) : TExtendedFrustum;
+var
+  ViewLen : single;
+  Height, Width : single;
+  P, Q, vDiff : TAffineVector;
+begin
+  // See http://www.flipcode.com/articles/article_frustumculling.shtml for
+  // details calculate the radius of the frustum sphere
+
+  result.Frustum := AFrustum;
+
+  // ************
+  // Create a bounding sphere for the entire frustum - only bspheres that
+  // intersect this bounding sphere can in turn intersect the frustum
+  ViewLen := AFarDist - ANearDist;
+
+  // use some trig to find the height of the frustum at the far plane
+  Height := ViewLen * sin(AFieldOfViewRadians/2); // was tan( !?
+
+  // with an aspect ratio of 1, the width will be the same
+  Width := Height;
+
+  // halfway point between near/far planes starting at the origin and extending along the z axis
+  P := AffineVectorMake(0,0, ANearDist + ViewLen / 2);
+
+  // the calculate far corner of the frustum
+  Q := AffineVectorMake(Width, Height, ViewLen);
+
+  // the vector between P and Q
+  vDiff := VectorSubtract(P, Q);
+
+  // the radius becomes the length of this vector
+  result.BSphere.Radius := VectorLength(vDiff);
+
+  // calculate the center of the sphere
+  result.BSphere.Center := VectorAdd(ACameraPosition, VectorScale(ALookVector, ViewLen/2 + ANearDist));
+end;
 
 { TSpacePartitionLeaf }
 
@@ -767,6 +828,13 @@ end;
 
 function TBaseSpacePartition.QueryFrustum(
   const Frustum: TFrustum): integer;
+begin
+  // Virtual
+  result := 0;
+end;
+
+function TBaseSpacePartition.QueryFrustumEx(
+  const ExtendedFrustum: TExtendedFrustum): integer;
 begin
   // Virtual
   result := 0;
@@ -1290,9 +1358,6 @@ begin
   result := FBSphere.Center;
 end;
 
-// I'd like to introduce a frustum bsphere and a cone as per
-// http://www.flipcode.com/articles/article_frustumculling.shtml , but it
-// requires a number of values that I don't currently have access to!?
 procedure TSectorNode.QueryFrustum(const Frustum: TFrustum;
   const QueryResult: TSpacePartitionLeafList);
 var
@@ -1336,6 +1401,51 @@ end;
 procedure TSectorNode.ChildrenChanged;
 begin
   // Do nothing in the basic case
+end;
+
+function TSectorNode.QueryFrustumEx(
+  const ExtendedFrustum: TExtendedFrustum;
+  const QueryResult: TSpacePartitionLeafList): integer;
+var
+  SpaceContains : TSpaceContains;
+  i : integer;
+begin
+  inc(FSectoredSpacePartition.FQueryNodeTests);
+
+  // Test if the bounding sphere of the node intersect the bounding sphere of the
+  // frustum? This test is exremely fast
+  if not BSphereIntersectsBSphere(BSphere, ExtendedFrustum.BSphere) then
+    SpaceContains := scNoOverlap
+
+  // Test if the bsphere of the node intersects the frustum
+  else if IsVolumeClipped(BSphere.Center, BSphere.Radius, ExtendedFrustum.Frustum) then
+    SpaceContains := scNoOverlap
+
+  else
+  // Test if the bounding frustum intersects the AABB of the node
+    SpaceContains := FrustumContainsAABB(ExtendedFrustum.Frustum, AABB);
+
+  // If the frustum fully contains the leaf, then we need not check every piece,
+  // just add them all
+  if SpaceContains=scContainsFully then begin
+    AddAllLeavesRecursive(QueryResult);
+  end else
+
+  // If the frustum partiall contains the leaf, then we should add the leaves
+  // that intersect the frustum and recurse for all children
+  if SpaceContains=scContainsPartially then begin
+    for i := 0 to FLeaves.Count-1 do begin
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+
+      if BSphereIntersectsBSphere(FLeaves[i].FCachedBSphere, ExtendedFrustum.BSphere) and
+         not IsVolumeClipped(FLeaves[i].FCachedBSphere.Center,FLeaves[i].FCachedBSphere.Radius,ExtendedFrustum.Frustum) then
+        QueryResult.Add(FLeaves[i]);
+    end;
+
+    // Recursively let the children add their leaves
+    for i := 0 to FChildCount-1 do
+      FChildren[i].QueryFrustumEx(ExtendedFrustum, QueryResult);
+  end;
 end;
 
 { TSectoredSpacePartition }
@@ -1582,6 +1692,14 @@ function TSectoredSpacePartition.QueryFrustum(
 begin
   FlushQueryResult;
   FRootNode.QueryFrustum(Frustum, FQueryResult);
+  result := FQueryResult.Count;
+end;
+
+function TSectoredSpacePartition.QueryFrustumEx(
+  const ExtendedFrustum: TExtendedFrustum): integer;
+begin
+  FlushQueryResult;
+  FRootNode.QueryFrustumEx(ExtendedFrustum, FQueryResult);
   result := FQueryResult.Count;
 end;
 
