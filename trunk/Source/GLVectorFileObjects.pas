@@ -2966,7 +2966,7 @@ begin
             xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
             xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
          end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-         if LighmapTexCoords.Count>0 then begin
+         if GL_ARB_multitexture and (LighmapTexCoords.Count>0) then begin
             glClientActiveTextureARB(GL_TEXTURE1_ARB);
             glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LighmapTexCoords.List);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -3001,7 +3001,7 @@ begin
             glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then
             xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-         if LighmapTexCoords.Count>0 then begin
+         if GL_ARB_multitexture and (LighmapTexCoords.Count>0) then begin
             glClientActiveTextureARB(GL_TEXTURE1_ARB);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
