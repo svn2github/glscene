@@ -12,7 +12,7 @@ unit FXCollectionEditor;
 
 interface
 
-{$i GLScene.inc}
+{$i ../GLScene.inc}
 
 uses
   Windows, Forms, XCollection, Messages, ImgList, Controls, Classes,

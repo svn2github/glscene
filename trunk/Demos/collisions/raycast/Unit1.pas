@@ -19,7 +19,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLMisc, StdCtrls, ExtCtrls, GLTexture, GLCadencer,
-  GLWin32Viewer;
+  GLWin32Viewer, ComCtrls;
 
 type
   TForm1 = class(TForm)
@@ -41,6 +41,7 @@ type
     Label3: TLabel;
     Torus1: TTorus;
     Button1: TButton;
+    TrackBar1: TTrackBar;
     procedure BUCastClick(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

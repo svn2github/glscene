@@ -13,15 +13,15 @@
    (up to 800% faster than function equivalents), due to reduced return value
    duplication overhead (the exception being the matrix operations).<p>
 
-   For better performance, it is recommended not to use the "Math" unit that
-   comes with Delphi, and only use functions/procedures from this unit
+   For better performance, it is recommended <b>not</b> to use the "Math" unit
+   that comes with Delphi, and only use functions/procedures from this unit
    (the single-based functions have been optimized and are up to 100% faster,
    than extended-based ones from "Math").<p>
 
    3DNow! SIMD instructions are automatically detected and used in *some* of the
    functions/procedures, typical gains (over FPU implementation) are approx a
    100% speed increase on K6-2/3, and 20-60% on K7, and sometimes more
-   (f.i. 650% on 4x4 matrix multiplication for the K6).<p>
+   (f.i. 650% on 4x4 matrix multiplication for the K6, 300% for RSqrt on K7).<p>
 
    Cyrix, NexGen and other "exotic" CPUs may fault in the 3DNow! detection
    (initialization section), comment out or replace with your own detection
@@ -29,12 +29,13 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>11/01/02 - Eg - 3DNow Optim for VectorAdd (hmg)
       <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1"),
                           3DNow optims for vector mormalizations (affine),
                           Added RSqrt
       <li>04/01/02 - EG - Updated/fixed RayCastTriangleIntersect
       <li>13/12/01 - EG - Fixed MakeReflectionMatrix
-      <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)  
+      <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)
       <li>22/08/01 - EG - Some new overloads
       <li>19/08/01 - EG - Added sphere raycasting functions
       <li>08/08/01 - EG - Added MaxFloat overloads
@@ -45,7 +46,7 @@
       <li>15/03/01 - EG - Added Int, Ceil and Floor, faster "Frac"
       <li>06/03/01 - EG - Fix in PointInPolygon by Pavel Vassiliev
       <li>04/03/01 - EG - Added NormalizeVectorArray
-      <li>03/03/01 - EG - Added MakeReflectionMatrix 
+      <li>03/03/01 - EG - Added MakeReflectionMatrix
       <li>02/03/01 - EG - New PointInPolygon code by Pavel Vassiliev
       <li>25/02/01 - EG - Fixed 'VectorSubstract', added VectorArrayLerp and a few minors
       <li>22/02/01 - EG - Added MinXYZ/MaxXYZ variants and Plane-Line intersection
@@ -720,6 +721,7 @@ procedure TransposeMatrix(var M: TMatrix); overload;
 
 //: Finds the inverse of a 4x4 matrix
 procedure InvertMatrix(var M: TMatrix);
+
 {: Decompose a non-degenerated 4x4 transformation matrix into the sequence of transformations that produced it.<p>
    Modified by ml then eg, original Author: Spencer W. Thomas, University of Michigan<p>
    The coefficient of each transformation is returned in the corresponding
@@ -728,7 +730,7 @@ procedure InvertMatrix(var M: TMatrix);
 function  MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean;
 
 //------------------------------------------------------------------------------
-// Matrix functions
+// Plane functions
 //------------------------------------------------------------------------------
 
 //: Computes the parameters of a plane defined by three points.
@@ -1346,6 +1348,19 @@ function VectorAdd(const V1, V2: TVector): TVector; register;
 // EDX contains address of V2
 // ECX contains the result
 asm
+         test vSIMD, 1
+         jz @@FPU
+@@3DNow:
+         movq  mm0, [eax]
+         pfadd mm0, [edx]
+         movq  [ecx], mm0
+         movq  mm1, [eax+8]
+         pfadd mm1, [edx+8]
+         movq  [ecx+8], mm1
+         femms
+         ret
+
+@@FPU:
          FLD  DWORD PTR [EAX]
          FADD DWORD PTR [EDX]
          FSTP DWORD PTR [ECX]
@@ -4490,7 +4505,7 @@ end;
 //
 function ArcCos(const x : Extended): Extended;
 begin
-   Result:=ArcTan2(Sqrt(1 - X * X), X);
+   Result:=ArcTan2(Sqrt(1 - Sqr(X)), X);
 end;
 
 // ArcCos (Single)
@@ -4510,7 +4525,7 @@ end;
 //
 function ArcSin(const x : Extended) : Extended;
 begin
-   Result:=ArcTan2(X, Sqrt(1 - X * X))
+   Result:=ArcTan2(X, Sqrt(1 - Sqr(X)))
 end;
 
 // ArcSin (Single)

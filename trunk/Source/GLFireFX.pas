@@ -445,7 +445,7 @@ begin
       // okay, ain't exactly and "isotropic" ring...
       fx:=Random-0.5;
       fy:=Random-0.5;
-      d:=1/Sqrt(Sqr(fx)+Sqr(fy));
+      d:=RSqrt(Sqr(fx)+Sqr(fy));
       PAffineVector(@tmp)^:=VectorCombine(ringVectorX, ringVectorY, fx*d, fy*d);
       tmp[3]:=1;
       ScaleVector(tmp, minInitialSpeed+Random*(maxInitialSpeed-minInitialSpeed));

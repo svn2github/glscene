@@ -66,6 +66,7 @@ begin
    //  uses top-left as origin, hence the Y inversion)
    SetVector(rayStart, GLCamera1.AbsolutePosition);
    SetVector(rayVector, GLSceneViewer1.Buffer.ScreenToVector(AffineVectorMake(x, GLSceneViewer1.Height-y, 0)));
+   NormalizeVector(rayVector);
    // Here we require RauCast intersection
    if FreeForm1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then begin
       // got one, move the sphere there and orient it appropriately
@@ -90,6 +91,7 @@ var
 begin
    SetVector(rayStart, GLCamera2.AbsolutePosition);
    SetVector(rayVector, GLSceneViewer2.Buffer.ScreenToVector(AffineVectorMake(x, GLSceneViewer2.Height-y, 0)));
+   NormalizeVector(rayVector);
    if FreeForm1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then begin
       Sphere1.Position.AsAffineVector:=iPoint;
       Sphere1.Direction.AsAffineVector:=VectorNormalize(iNormal);

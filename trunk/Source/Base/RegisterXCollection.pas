@@ -11,7 +11,7 @@ unit RegisterXCollection;
 
 interface
 
-{$i GLScene.inc}
+{$i ../GLScene.inc}
 
 uses Classes, XCollection,
    {$ifdef GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$else} DsgnIntf {$endif};

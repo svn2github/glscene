@@ -437,7 +437,8 @@ type
             Default value is based on AxisAlignedDimension and a cube bounding. }
          function PointInObject(const point : TVector) : Boolean; virtual;
          {: Request to determine an intersection with a casted ray.<p>
-            Given coordinates & vector are in absolute coordinates.<bR>
+            Given coordinates & vector are in absolute coordinates, rayVector
+            must be normalized.<br>
             rayStart may be a point inside the object, allowing retrieval of
             the multiple intersects of the ray.<p>
             When intersectXXX parameters are nil (default) implementation should
