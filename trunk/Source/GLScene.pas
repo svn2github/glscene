@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/06/02 - Egg - TGLSceneBuffer.DestroyRC now removes buffer from scene's list
       <li>30/05/02 - Egg - Fixed light movements not triggering viewer redraw issue,
                            lights no longer 'invisible' (sub objects get rendered)
       <li>05/04/02 - Egg - Fixed XOpenGL initialization/reinitialization
@@ -5804,6 +5805,8 @@ begin
    if Assigned(FRenderingContext) then begin
       // for some obscure reason, Mesa3D doesn't like this call... any help welcome
       FreeAndNil(FRenderingContext);
+      if Assigned(FCamera) and Assigned(FCamera.FScene) then
+         FCamera.FScene.RemoveBuffer(Self);
    end;
 end;
 
