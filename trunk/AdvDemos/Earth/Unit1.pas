@@ -75,7 +75,9 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, OpenGL12, Geometry, GLContext, USolarSystem;
+uses Jpeg, OpenGL12, Geometry, GLContext;
+   // accurate movements left for later... or the astute reader
+   // USolarSystem;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -307,22 +309,22 @@ var
    d : Double;
    p : TAffineVector;
 begin
-   d:=GMTDateTimeToJulianDay(Now-2+newTime*timeMultiplier);
+//   d:=GMTDateTimeToJulianDay(Now-2+newTime*timeMultiplier);
    // make earth rotate
-//   SPEarth.TurnAngle:=SPEarth.TurnAngle+deltaTime*timeMultiplier;
+   SPEarth.TurnAngle:=SPEarth.TurnAngle+deltaTime*timeMultiplier;
 
-   p:=ComputePlanetPosition(cSunOrbitalElements, d);
+{   p:=ComputePlanetPosition(cSunOrbitalElements, d);
    ScaleVector(p, 0.5*cAUToKilometers*(1/cEarthRadius));
-   LSSun.Position.AsAffineVector:=p;
+   LSSun.Position.AsAffineVector:=p; }
 
    // moon rotates on itself and around earth (not sure about the rotation direction!)
 
-   p:=ComputePlanetPosition(cMoonOrbitalElements, d);
-   ScaleVector(p, 0.5*cAUToKilometers*(1/cEarthRadius));
+{   p:=ComputePlanetPosition(cMoonOrbitalElements, d);
+   ScaleVector(p, 0.5*cAUToKilometers*(1/cEarthRadius)); }
 
+   DCMoon.TurnAngle:=DCMoon.TurnAngle+deltaTime*timeMultiplier/29.5;
+   SPMoon.TurnAngle:=180-DCMoon.TurnAngle;
 
-//   DCMoon.TurnAngle:=DCMoon.TurnAngle+deltaTime*timeMultiplier/29.5;
-//   SPMoon.TurnAngle:=180-DCMoon.TurnAngle;
    // honour camera movements
    if (dmy<>0) or (dmx<>0) then begin
       GLCameraControler.MoveAroundTarget(ClampValue(dmy*0.3, -5, 5),
