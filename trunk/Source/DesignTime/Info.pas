@@ -1,9 +1,10 @@
 // Info
 {: Information sur le driver OpenGL courant<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>24/08/01 - Egg - Compatibility with new Buffer classes
-		<li>17/04/00 - Egg - Creation of header, minor layout changes
+	<b>History : </b><font size=-1><ul>
+      <li>03/02/02 - EG - InfoForm registration mechanism
+      <li>24/08/01 - EG - Compatibility with new Buffer classes
+		<li>17/04/00 - EG - Creation of header, minor layout changes
 	</ul></font>
 }
 unit Info;
@@ -87,8 +88,23 @@ implementation
 
 uses OpenGL12, SysUtils;
 
-{$R *.DFM}
+{$R *.dfm}
 {$R Info.res}
+
+// ShowInfoForm
+//
+procedure ShowInfoForm(aSceneBuffer : TGLSceneBuffer);
+var
+   infoForm: TInfoForm;
+begin
+   infoForm:=TInfoForm.Create(nil);
+   try
+      infoForm.GetInfoFrom(aSceneBuffer);
+      infoForm.ShowModal;
+   finally
+      infoForm.Free;
+   end;
+end;
 
 //------------------------------------------------------------------------------
 
@@ -229,6 +245,14 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+initialization
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+   RegisterInfoForm(ShowInfoForm);
 
 end.
 

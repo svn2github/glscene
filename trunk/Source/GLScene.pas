@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/02/02 - Egg - InfoForm registration mechanism
       <li>27/01/02 - Egg - Added TGLCamera.RotateObject, fixed SetMatrix,
                            added RotateAbsolute, ResetRotations
       <li>21/01/02 - Egg - More graceful recovery for ICDs without pbuffer support
@@ -187,8 +188,10 @@ interface
 {$i GLScene.inc}
 
 uses
-   Classes, GLMisc, GLTexture, SysUtils, Graphics, Geometry, XCollection,
-   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists;
+   Classes, GLMisc, GLTexture, SysUtils, Geometry, XCollection,
+   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,
+   {$ifdef GLS_VCL}Graphics{$else}QGraphics{$endif}
+   ;
 
 type
 
@@ -1752,6 +1755,8 @@ type
 
    EOpenGLError = class(Exception);
 
+   TInvokeInfoForm  = procedure (aSceneBuffer : TGLSceneBuffer);
+
 {: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
 procedure CheckOpenGLError;
 {: Clears all pending OpenGL errors. }
@@ -1777,6 +1782,10 @@ procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent : TNotifyEvent);
 {: Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
 procedure AxesBuildList(Pattern: Word; AxisLen: Single);
 
+{: Registers the procedure call used to invoke the info form. }
+procedure RegisterInfoForm(infoForm : TInvokeInfoForm);
+procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer);
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1786,7 +1795,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   GLStrings, Info, XOpenGL, VectorTypes, OpenGL12;
+   GLStrings, XOpenGL, VectorTypes, OpenGL12;
 
 var
    vCounterFrequency : Int64;
@@ -1850,6 +1859,24 @@ begin
    glPopAttrib;
    // clear fpu exception flag (sometime raised by the call to glEnd)
    asm fclex end;
+end;
+
+// RegisterInfoForm
+//
+var
+   vInfoForm : TInvokeInfoForm = nil;
+procedure RegisterInfoForm(infoForm : TInvokeInfoForm);
+begin
+   vInfoForm:=infoForm;
+end;
+
+// InvokeInfoForm
+//
+procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer);
+begin
+   if Assigned(vInfoForm) then
+      vInfoForm(aSceneBuffer)
+   else InformationDlg('InfoForm not available.');
 end;
 
 //------------------ internal global routines ----------------------------------
@@ -5945,59 +5972,17 @@ end;
 // ShowInfo
 //
 procedure TGLSceneBuffer.ShowInfo;
-var
-   infoForm: TInfoForm;
 begin
    if not Assigned(FRenderingContext) then Exit;
-   infoForm:=TInfoForm.Create(nil);
+   // most info is available with active context only
+   FRenderingContext.Activate;
    try
-      FRenderingContext.Activate;
-      // most info is available with active context only
-      try
-//         infoForm.GetInfoFrom(Self);
-      finally
-         FRenderingContext.Deactivate;
-      end;
-      infoForm.ShowModal;
+      InvokeInfoForm(Self);
    finally
-      infoForm.Free;
-   end;
-end;
-(*
-// RequestedState
-//
-procedure TGLSceneBuffer.RequestedState(States: TGLStates);
-var
-   neededStates: TGLStates;
-begin
-   // create window and rendering context if not yet done
-   HandleNeeded;
-   // get all states, which are requested but not yet set
-   NeededStates:=States-FCurrentStates;
-   if NeededStates<>[] then begin
-      SetStates(NeededStates);
-      FCurrentStates:=FCurrentStates+NeededStates;
+      FRenderingContext.Deactivate;
    end;
 end;
 
-// UnnecessaryState
-//
-procedure TGLSceneBuffer.UnnecessaryState(States: TGLStates);
-var
-   takeOutStates: TGLStates;
-begin
-   { TODO : Better and faster version }
-   // create window and rendering context if not yet done
-   HandleNeeded;
-   // get all states, which are to be taken out, but still set
-   takeOutStates:=States * FCurrentStates;
-   if takeOutStates <> [] then begin
-      // now reset all these states
-      ResetStates(takeOutStates);
-      FCurrentStates:=FCurrentStates-takeOutStates;
-   end;
-end;
-*)
 // ResetPerformanceMonitor
 //
 procedure TGLSceneBuffer.ResetPerformanceMonitor;

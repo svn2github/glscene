@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/02/02 - Egg - Fixed TSprite change notification
       <li>26/01/02 - Egg - TPlane & TCube now osDirectDraw
       <li>20/01/02 - Egg - TSpaceText moved to GLSpaceText
       <li>22/08/01 - Egg - TTorus.RayCastIntersect fixes
@@ -1334,7 +1335,7 @@ procedure TSprite.SetWidth(const val : TGLFloat);
 begin
 	if FWidth<>val then begin
 		FWidth:=val;
-		StructureChanged;
+		NotifyChange(Self);
 	end;
 end;
 
@@ -1344,7 +1345,7 @@ procedure TSprite.SetHeight(const val : TGLFloat);
 begin
 	if FHeight<>val then begin
 		FHeight:=val;
-		StructureChanged;
+		NotifyChange(Self);
 	end;
 end;
 
@@ -1354,7 +1355,7 @@ procedure TSprite.SetRotation(const val : TGLFloat);
 begin
 	if FRotation<>val then begin
 		FRotation:=val;
-		StructureChanged;
+		NotifyChange(Self);
 	end;
 end;
 
@@ -1368,7 +1369,7 @@ begin
       else if val>1 then
          FAlphaChannel:=1
       else FAlphaChannel:=val;
-		StructureChanged;
+		NotifyChange(Self);
    end;
 end;
 
@@ -1384,7 +1385,7 @@ end;
 procedure TSprite.SetNoZWrite(const val : Boolean);
 begin
    FNoZWrite:=val;
-	StructureChanged;
+   NotifyChange(Self);
 end;
 
 // SetSize
@@ -1393,7 +1394,7 @@ procedure TSprite.SetSize(const width, height : TGLFloat);
 begin
 	FWidth:=width;
 	FHeight:=height;
-	StructureChanged;
+   NotifyChange(Self);
 end;
 
 // SetSquareSize
@@ -1402,7 +1403,7 @@ procedure TSprite.SetSquareSize(const size : TGLFloat);
 begin
 	FWidth:=size;
 	FHeight:=size;
-	StructureChanged;
+   NotifyChange(Self);
 end;
 
 // ------------------

@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/02/02 - EG - Added experimental Hook-based window tracking
       <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support 
       <li>21/01/02 - EG - More graceful recovery for ICDs without pbuffer support
       <li>07/01/02 - EG - DoCreateMemoryContext now retrieved topDC when needed
@@ -44,6 +45,8 @@ type
          procedure ClearFAttribs;
          procedure AddFAttrib(attrib, value : Single);
 
+         procedure DestructionEarlyWarning(sender : TObject);
+
          procedure DoCreateContext(outputDevice : Integer); override;
          procedure DoCreateMemoryContext(outputDevice, width, height : Integer); override;
          procedure DoShareLists(aContext : TGLContext); override;
@@ -60,6 +63,13 @@ type
          procedure SwapBuffers; override;
    end;
 
+var
+   { This boolean controls a hook-based tracking of top-level forms destruction,
+     with the purpose of being able to properly release OpenGL contexts before
+     they are (improperly) released by some drivers upon top-level form
+     destruction. }
+   vUseWindowTrackingHook : Boolean = True;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -68,7 +78,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Forms, OpenGL12, Windows, GLCrossPlatform;
+uses Forms, OpenGL12, Windows, GLCrossPlatform, Messages;
 
 resourcestring
    cIncompatibleContexts =       'Incompatible contexts';
@@ -76,6 +86,72 @@ resourcestring
    cContextActivationFailed =    'Context activation failed: %X';
    cContextDeactivationFailed =  'Context deactivation failed';
    cUnableToCreateMemoryContext= 'Unable to create memory context, pbuffer probably not supported';
+
+var
+   vTrackingCount : Integer;
+   vTrackedHwnd : array of HWND;
+   vTrackedEvents : array of TNotifyEvent;
+   vTrackingHook : HHOOK;
+
+// TrackHookProc
+//
+function TrackHookProc(nCode : Integer; wParam : wParam; lParam : LPARAM) : Integer; stdcall;
+var
+   i : Integer;
+   p : PCWPStruct;
+begin
+   p:=PCWPStruct(lParam);
+//   if (p.message=WM_DESTROY) or (p.message=WM_CLOSE) then begin // destroy & close variant
+   if p.message=WM_DESTROY then begin
+      // special care must be taken by this loop, items may go away unexpectedly
+      i:=vTrackingCount-1;
+      while i>=0 do begin
+         if IsChild(p.hwnd, vTrackedHwnd[i]) then begin
+            // got one, send notification
+            vTrackedEvents[i](nil);
+         end;
+         Dec(i);
+         while i>=vTrackingCount do Dec(i);
+      end;
+   end;
+   CallNextHookEx(vTrackingHook, nCode, wParam, lParam);
+   Result:=0;
+end;
+
+// TrackWindow
+//
+procedure TrackWindow(h : HWND; notifyEvent : TNotifyEvent);
+begin
+   if not IsWindow(h) then Exit;
+   if vTrackingCount=0 then
+      vTrackingHook:=SetWindowsHookEx(WH_CALLWNDPROC, @TrackHookProc, 0, GetCurrentThreadID);
+   Inc(vTrackingCount);
+   SetLength(vTrackedHwnd, vTrackingCount);
+   vTrackedHwnd[vTrackingCount-1]:=h;
+   SetLength(vTrackedEvents, vTrackingCount);
+   vTrackedEvents[vTrackingCount-1]:=notifyEvent;
+end;
+
+// UnTrackWindows
+//
+procedure UnTrackWindow(h : HWND);
+var
+   i, k : Integer;
+begin
+   if not IsWindow(h) then Exit;
+   k:=0;
+   for i:=0 to vTrackingCount-1 do if vTrackedHwnd[i]<>h then begin
+      vTrackedHwnd[k]:=vTrackedHwnd[i];
+      vTrackedEvents[k]:=vTrackedEvents[i];
+      Inc(k);
+   end;
+   Dec(vTrackingCount);
+   SetLength(vTrackedHwnd, vTrackingCount);
+   SetLength(vTrackedEvents, vTrackingCount);
+   if vTrackingCount=0 then
+      UnhookWindowsHookEx(vTrackingHook);
+end;
+
 
 // ------------------
 // ------------------ TGLWin32Context ------------------
@@ -186,6 +262,13 @@ begin
    FfAttribs[n+1]:=0;
 end;
 
+// DestructionEarlyWarning
+//
+procedure TGLWin32Context.DestructionEarlyWarning(sender : TObject);
+begin
+   DestroyContext;
+end;
+
 // DoCreateContext
 //
 procedure TGLWin32Context.DoCreateContext(outputDevice : Integer);
@@ -199,8 +282,10 @@ var
 {  iFormats, iValues : array of Integer;
    nbFormats, rc, i : Integer;
    chooseResult : LongBool; }
-
 begin
+   if vUseWindowTrackingHook then
+      TrackWindow(WindowFromDC(outputDevice), DestructionEarlyWarning);
+
    // Just in case it didn't happen already.
    if not InitOpenGL then RaiseLastOSError;
    // *UNDER CONSTRUCTION... ENABLE BACK ONLY IF YOU UNDERSTAND THAT STUFF*
@@ -435,6 +520,9 @@ end;
 //
 procedure TGLWin32Context.DoDestroyContext;
 begin
+   if vUseWindowTrackingHook then
+      UnTrackWindow(WindowFromDC(FDC));
+
    if FRC<>0 then
       if not wglDeleteContext(FRC) then
          raise EGLContext.Create(cDeleteContextFailed);
@@ -504,5 +592,5 @@ initialization
 // ------------------------------------------------------------------
 
    RegisterGLContextClass(TGLWin32Context);
-
+   
 end.

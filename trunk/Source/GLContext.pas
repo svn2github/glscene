@@ -347,7 +347,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Forms, OpenGL12, GLCrossPlatform;
+uses OpenGL12, GLCrossPlatform;
 
 resourcestring
    cCannotAlterAnActiveContext = 'Cannot alter an active context';
@@ -642,9 +642,10 @@ begin
       try
          DoActivate;
       except
-         if True then // ApplicationTerminated?
-            vIgnoreContextActivationFailures:=True
-         else raise;
+//         if True then // ApplicationTerminated?
+//            vIgnoreContextActivationFailures:=True
+//         else
+         raise;
       end;
       vCurrentGLContext:=Self;
    end else Assert(vCurrentGLContext=Self);
