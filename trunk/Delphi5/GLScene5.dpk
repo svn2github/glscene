@@ -152,6 +152,7 @@ contains
   GLVerletClothify in '..\Source\GLVerletClothify.pas',
   GLTree in '..\Source\GLTree.pas',
   GLMeshCSG in '..\Source\GLMeshCSG.pas',
-  GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas';
+  GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas',
+  GLBSP in '..\Source\GLBSP.pas';
 
 end.
