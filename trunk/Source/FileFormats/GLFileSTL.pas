@@ -5,6 +5,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/11/02 - EG - Write capability now properly declared
       <li>17/10/02 - EG - Created from split of GLVectorFileObjects,
                           ASCII STL support (Adem)
    </ul><p>
@@ -13,7 +14,7 @@ unit GLFileSTL;
 
 interface
 
-uses Classes, GLVectorFileObjects;
+uses Classes, GLVectorFileObjects, GLMisc;
 
 type
 
@@ -28,6 +29,8 @@ type
    TGLSTLVectorFile = class(TVectorFile)
       public
          { Public Declarations }
+         class function Capabilities : TDataFileCapabilities; override;
+
          procedure LoadFromStream(aStream: TStream); override;
          procedure SaveToStream(aStream: TStream); override;
    end;
@@ -40,7 +43,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses TypesSTL, Geometry, VectorLists, GLMisc, SysUtils;
+uses TypesSTL, Geometry, VectorLists, SysUtils;
 
 const
   cSOLID_LABEL       = 'SOLID';
@@ -55,6 +58,13 @@ const
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
 // ------------------
+
+// Capabilities
+//
+class function TGLSTLVectorFile.Capabilities : TDataFileCapabilities;
+begin
+   Result:=[dfcRead, dfcWrite];
+end;
 
 // LoadFromStream
 //
@@ -209,7 +219,7 @@ var
    dataFace : TSTLFace;
    list : TAffineVectorList;
 const
-   cHeaderTag='GLScene STL export';
+   cHeaderTag = 'GLScene STL export';
 begin
    list:=Owner.MeshObjects.ExtractTriangles;
    try
