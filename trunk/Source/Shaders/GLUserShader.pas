@@ -3,11 +3,8 @@
    A shader that passes control of the DoApply and DoUnApply
    methods through published events. This component is 
    designed to make it a little easier to implement a 
-   customized shader.<p>
-
-   Note:
-   Users must make sure the shader is balanced and keep the
-   OpenGL stack happy by popping any push calls.
+   customized shader. Be sure to keep the shader balanced
+   by returning the OpenGL state to how you found it.<p>
 
    <b>History : </b><font size=-1><ul>
       <li>05/08/03 - SG - Creation
@@ -54,7 +51,7 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLMultiMaterialShader ------------------
+// ------------------ TGLUserShader ------------------
 // ------------------
 
 // DoApply
