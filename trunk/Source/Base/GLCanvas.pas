@@ -36,6 +36,7 @@ type
 	TGLCanvas = class
 	   private
 	      { Private Declarations }
+         FBufferSizeY : Integer;
          FColorBackup : TVector;
          FPointSizeBackup, FLineWidthBackup : Single;
 
@@ -64,6 +65,11 @@ type
                             const baseTransform : TMatrix); overload;
 	      constructor Create(bufferSizeX, bufferSizeY : Integer); overload;
 	      destructor Destroy; override;
+
+         {: Inverts the orientation of the Y Axis.<p>
+            If (0, 0) was in the top left corner, it will move to the bottom
+            left corner or vice-versa. }
+         procedure InvertYAxis;
 
          {: Current Pen Color. }
          property PenColor : TColor read FPenColor write SetPenColor;
@@ -151,6 +157,8 @@ end;
 constructor TGLCanvas.Create(bufferSizeX, bufferSizeY : Integer;
                              const baseTransform : TMatrix);
 begin
+   FBufferSizeY:=bufferSizeY;
+   
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
@@ -249,6 +257,20 @@ end;
 procedure TGLCanvas.StopPrimitive;
 begin
    StartPrimitive(cNoPrimitive);
+end;
+
+// InvertYAxis
+//
+procedure TGLCanvas.InvertYAxis;
+var
+   mat : TMatrix;
+begin
+   mat:=IdentityHmgMatrix;
+   mat[1][1]:=-1;
+   mat[3][1]:=FBufferSizeY;
+   glMultMatrixf(@mat);
+//   glTranslatef(0, FBufferSizeY, 0);
+//   glScalef(0, -1, 0);
 end;
 
 // SetPenColor
