@@ -7,6 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>26/05/03 - EG - Improved TGLParticleFXRenderer.BuildList
       <li>05/11/02 - EG - Enable per-manager blending mode control
       <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
                           and TGLPointLightPFXManager. 
@@ -440,6 +441,8 @@ type
       private
          { Private Declarations }
          FLifeColors : TPFXLifeColors;
+         FLifeColorsLookup : TList;
+         FLifeColorsInvTimeDiff : TSingleList;
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
          FParticleSize : Double;
@@ -450,6 +453,9 @@ type
          procedure SetLifeColors(const val : TPFXLifeColors);
          procedure SetColorInner(const val : TGLColor);
          procedure SetColorOuter(const val : TGLColor);
+
+         procedure InitializeRendering; override;
+         procedure FinalizeRendering; override;
 
          function MaxParticleAge : Double; override;
 
@@ -614,9 +620,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils, OpenGL12, GLCrossPlatform;
-
-var
-   vCounterFrequency : Int64;
 
 // GetOrCreateSourcePFX
 //
@@ -1079,7 +1082,7 @@ procedure TGLParticleFXRenderer.BuildList(var rci : TRenderContextInfo);
    by the distance calculation and a fixed offset of 1.
 }
 const
-   cNbRegions = 64;      // number of distance regions
+   cNbRegions = 128;     // number of distance regions
    cGranularity = 128;   // granularity of particles per region
 
 type
@@ -1095,7 +1098,7 @@ type
    TRegion = record
       count, capacity : Integer;
       particleRef : PParticleReferenceArray;
-      particleOrder : array of PParticleReference
+      particleOrder : PPointerList;
    end;
    PRegion = ^TRegion;
 var
@@ -1159,11 +1162,11 @@ var
    curRegion : PRegion;
    curParticleOrder : PPointerArray;
    cameraPos, cameraVector : TAffineVector;
-   timerStart, timerStop : Int64;
+   timer : Int64;
    oldDepthMask : TGLboolean;
 begin
    if csDesigning in ComponentState then Exit;
-   QueryPerformanceCounter(timerStart);
+   timer:=StartPrecisionTimer;
    // precalcs
    with Scene.CurrentGLCamera do begin
       PSingle(@minDist)^:=NearPlane+1;
@@ -1173,14 +1176,7 @@ begin
    end;
    SetVector(cameraPos, rci.cameraPosition);
    SetVector(cameraVector, rci.cameraDirection);
-   for regionIdx:=0 to cNbRegions-1 do begin
-      with regions[regionIdx] do begin
-         count:=0;
-         capacity:=0;
-         particleRef:=nil;
-         SetLength(particleOrder, 0);
-      end;
-   end;
+   FillChar(regions[0], cNbRegions*SizeOf(TRegion), 0);
    try
       // Collect particles
       // only depth-clipping performed as of now.
@@ -1189,8 +1185,7 @@ begin
          curList:=curManager.FParticles.List;
          for particleIdx:=0 to curManager.FParticles.ItemCount-1 do begin
             curParticle:=curList[particleIdx];
-            dist:=VectorDotProduct(VectorSubtract(curParticle.FPosition, cameraPos),
-                                   cameraVector)+1;
+            dist:=PointProject(curParticle.FPosition, cameraPos, cameraVector)+1;
             if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
                DistToRegionIdx;
                curRegion:=@regions[regionIdx];
@@ -1212,19 +1207,19 @@ begin
          curRegion:=@regions[regionIdx];
          if curRegion.count>1 then begin
             // Prepare order table
-            SetLength(curRegion.particleOrder, curRegion.Count);
+            GetMem(curRegion.particleOrder, curRegion.Count*SizeOf(Pointer));
             with curRegion^ do for particleIdx:=0 to Count-1 do
                particleOrder[particleIdx]:=@particleRef[particleIdx];
             // QuickSort
-            QuickSortRegion(0, curRegion.count-1, curRegion);
+            if FBlendingMode<>bmAdditive then
+               QuickSortRegion(0, curRegion.count-1, curRegion);
          end else if curRegion.Count=1 then begin
             // Prepare order table
-            SetLength(curRegion.particleOrder, 1);
+            GetMem(curRegion.particleOrder, SizeOf(Pointer));
             curRegion.particleOrder[0]:=@curRegion.particleRef[0];
          end;
       end;
-      QueryPerformanceCounter(timerStop);
-      FLastSortTime:=(timerStop-timerStart)*(1000/vCounterFrequency);
+      FLastSortTime:=StopPrecisionTimer(timer)*1000;
 
       glPushMatrix;
       glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
@@ -1294,7 +1289,7 @@ begin
       for regionIdx:=cNbRegions-1 downto 0 do begin
          curRegion:=@regions[regionIdx];
          FreeMem(curRegion.particleRef);
-         SetLength(curRegion.particleOrder, 0);
+         Freemem(curRegion.particleOrder);
       end;
    end;
 end;
@@ -1745,6 +1740,36 @@ begin
    FLifeColors.Assign(Self);
 end;
 
+// InitializeRendering
+//
+procedure TGLLifeColoredPFXManager.InitializeRendering;
+var
+   i, n : Integer;
+   lt, ct : Single;
+begin
+   n:=LifeColors.Count;
+   FLifeColorsLookup:=TList.Create;
+   FLifeColorsLookup.Capacity:=n;
+   for i:=0 to n-1 do
+      FLifeColorsLookup.Add(LifeColors[i]);
+   FLifeColorsInvTimeDiff:=TSingleList.Create;
+   FLifeColorsInvTimeDiff.Capacity:=n;
+   lt:=0;
+   for i:=0 to n-1 do begin
+      ct:=LifeColors[i].LifeTime;
+      FLifeColorsInvTimeDiff.Add(1/(ct-lt));
+      lt:=ct;
+   end;
+end;
+
+// FinalizeRendering
+//
+procedure TGLLifeColoredPFXManager.FinalizeRendering;
+begin
+   FLifeColorsLookup.Free;
+   FLifeColorsInvTimeDiff.Free;
+end;
+
 // MaxParticleAge
 //
 function TGLLifeColoredPFXManager.MaxParticleAge : Double;
@@ -1774,15 +1799,15 @@ begin
          end else k:=0;
          case k of
             0 : begin
-               lck:=LifeColors[k];
+               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
                f:=lifeTime*lck.InvLifeTime;
                VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
                VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
             end;
          else
-            lck:=LifeColors[k];
-            lck1:=LifeColors[k-1];
-            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
+            f:=(lifeTime-lck1.LifeTime)*FLifeColorsInvTimeDiff.List[k];
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
@@ -1898,6 +1923,7 @@ var
    matrix : TMatrix;
    s, c : Single;
 begin
+   inherited;
    glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
       Fvx[i]:=matrix[i][0]*FParticleSize;
@@ -1960,6 +1986,7 @@ procedure TGLPolygonPFXManager.FinalizeRendering;
 begin
    FVertBuf.Free;
    FVertices.Free;
+   inherited;
 end;
 
 // ------------------
@@ -2034,6 +2061,7 @@ var
    matrix : TMatrix;
    s, c : Single;
 begin
+   inherited;
    glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
       Fvx[i]:=matrix[i][0]*FParticleSize;
@@ -2137,6 +2165,7 @@ procedure TGLBaseSpritePFXManager.FinalizeRendering;
 begin
    FVertBuf.Free;
    FVertices.Free;
+   inherited;
 end;
 
 // ------------------
@@ -2220,7 +2249,4 @@ initialization
                     TGLPointLightPFXManager]);
    RegisterXCollectionItemClass(TGLSourcePFXEffect);
 
-   // preparation for high resolution timer
-   QueryPerformanceFrequency(vCounterFrequency);
-   
 end.
