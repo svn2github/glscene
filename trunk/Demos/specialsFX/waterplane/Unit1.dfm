@@ -68,9 +68,9 @@ object Form1: TForm1
       Scale.Coordinates = {000070410000803F0000704100000000}
       RainForce = 5000
       Viscosity = 0.990000009536743
-      MaxWaveAmp = 900000
       Elastic = 10
       Resolution = 128
+      Options = []
       SimulationFrequency = 100
     end
     object GLLightSource1: TGLLightSource
@@ -105,7 +105,7 @@ object Form1: TForm1
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureWrap = twNone
-        Material.Texture.MappingMode = tmmCubeMapNormal
+        Material.Texture.MappingMode = tmmCubeMapReflection
         Material.Texture.Disabled = False
         Tag = 0
         Shader = GLUserShader1
