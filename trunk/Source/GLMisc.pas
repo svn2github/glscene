@@ -1312,6 +1312,7 @@ end;
 procedure TGLCoordinates.Rotate(const Axis : TAffineVector; Angle : Single);
 begin
    RotateVector(FCoords, Axis, Angle);
+   NotifyChange(Self);
 end;
 
 // Normalize
@@ -1319,6 +1320,7 @@ end;
 procedure TGLCoordinates.Normalize;
 begin
    NormalizeVector(FCoords);
+   NotifyChange(Self);
 end;
 
 // Invert
@@ -1326,6 +1328,7 @@ end;
 procedure TGLCoordinates.Invert;
 begin
    NegateVector(FCoords);
+   NotifyChange(Self);
 end;
 
 // Scale
@@ -1333,6 +1336,7 @@ end;
 procedure TGLCoordinates.Scale(factor : Single);
 begin
    ScaleVector(PAffineVector(@FCoords)^, factor);
+   NotifyChange(Self);
 end;
 
 // VectorLength
