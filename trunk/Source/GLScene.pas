@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/12/01 - Egg - Added TGLBaseSceneObject.PointTo
       <li>06/12/01 - Egg - Published OnDblClik and misc. events (Chris S),
                            Some cross-platform cleanups
       <li>05/12/01 - Egg - MoveAroundTarget fix (Phil Scadden)
@@ -465,6 +466,8 @@ type
          procedure Turn(Angle: Single);
          //: Moves camera along the right vector (move left and right)
          procedure Slide(ADistance: Single);
+         procedure PointTo(const targetObject : TGLBaseSceneObject; const upVector : TVector); overload;
+         procedure PointTo(const absolutePosition, upVector : TVector); overload;
 
          procedure Render(var rci : TRenderContextInfo);
          procedure DoRender(var rci : TRenderContextInfo;
@@ -1567,9 +1570,9 @@ type
       This component delimits the area where OpenGL renders the scene,
       it represents the 3D scene viewed from a camera (specified in the
       camera property). This component can also render to a file or to a bitmap.<p>
-      Even if it is primarily a windowed component, it can handle full-screen
-      operations : adjust display resolution with DisplayOptions, and simply
-      make this component fit the whole screen (use a borderless form).<p>
+      It is primarily a windowed component, but it can handle full-screen
+      operations : simply make this component fit the whole screen (use a
+      borderless form).<p>
       This viewer also allows to define rendering options such a fog, face culling,
       depth testing, etc. and can take care of framerate calculation.<p> }
    TGLSceneViewer = class(TWinControl)
@@ -2754,6 +2757,36 @@ end;
 function TGLBaseSceneObject.GetRollAngle : Single;
 begin
   Result:=FRotation.Z;
+end;
+
+// PointTo
+//
+procedure TGLBaseSceneObject.PointTo(const targetObject : TGLBaseSceneObject; const upVector : TVector);
+begin
+   PointTo(targetObject.AbsolutePosition, upVector);
+end;
+
+// PointTo
+//
+procedure TGLBaseSceneObject.PointTo(const absolutePosition, upVector : TVector);
+var
+   absDir, absRight, absUp : TVector;
+begin
+   // first compute absolute attitude for pointing
+   absDir:=VectorSubtract(absolutePosition, Self.AbsolutePosition);
+   NormalizeVector(absDir);
+   absRight:=VectorCrossProduct(absDir, upVector);
+   NormalizeVector(absRight);
+   absUp:=VectorCrossProduct(absRight, absDir);
+   // convert absolute to local and adjust object
+   if Parent<>nil then begin
+      FDirection.AsVector:=Parent.AbsoluteToLocal(absDir);
+      FUp.AsVector:=Parent.AbsoluteToLocal(absUp);
+   end else begin
+      FDirection.AsVector:=absDir;
+      FUp.AsVector:=absUp;
+   end;
+   TransformationChanged
 end;
 
 // SetShowAxes
