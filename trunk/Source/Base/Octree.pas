@@ -4,6 +4,7 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
       <li>29/11/02 - EG - Added triangleInfo
       <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
       <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
@@ -14,7 +15,7 @@ unit Octree;
 
 interface
 
-uses Classes, Geometry, VectorLists;
+uses Classes, Geometry, VectorLists, GeometryBB;
 
 type
 
@@ -34,13 +35,13 @@ type
    //
    POctreeNode = ^TOctreeNode;
    TOctreeNode = record
-      MinExtent: TAffineFLTVector;
-      MaxExtent: TAffineFLTVector;
+      MinExtent : TAffineFLTVector;
+      MaxExtent : TAffineFLTVector;
 
       //Duplicates possible?
       TriArray : array of Integer;  // array of triangle references
 
-      ChildArray: array [0..7] of POctreeNode;  //Octree's 8 children
+      ChildArray : array [0..7] of POctreeNode;  //Octree's 8 children
    end;
 
    // TOctree
@@ -52,6 +53,7 @@ type
 {$ifdef DEBUG}
          intersections: integer;    //for debugging  - number of triangles intersecting an AABB plane
 {$endif}
+         triangleFiler : TAffineVectorList;
 
       protected
          { Protected Declarations }
@@ -92,12 +94,10 @@ type
          WorldMinExtent, WorldMaxExtent: TAffineFLTVector;
          RootNode: POctreeNode;      //always points to root node
          MaxOlevel: integer;   //max depth level of TOctreeNode
-         NodeCount: integer;  //number of nodes (ex: 8 for level 1, 72 for level 2 etc).
-         TriCountMesh: integer;   //total number of triangles in the mesh
-         TriCountOctree: integer; //total number of triangles cut into the octree
-         MeshCount: integer;  //number of meshes currently cut into the Octree
-
-         triangleFiler : TAffineVectorList;
+         NodeCount : Integer;  //number of nodes (ex: 8 for level 1, 72 for level 2 etc).
+         TriCountMesh : Integer;   //total number of triangles in the mesh
+         TriCountOctree : Integer; //total number of triangles cut into the octree
+         MeshCount : Integer;  //number of meshes currently cut into the Octree
 
          ResultArray : array of POctreeNode;  //holds the result nodes of various calls
 
@@ -120,6 +120,9 @@ type
                                       intersectPoint : PVector = nil;
                                       intersectNormal : PVector = nil) : Boolean;
          function TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+         {: Returns all triangles in the AABB. }
+         function GetTrianglesInCube(const objAABB : TAABB;
+                                     const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
    end;
 
 // ------------------------------------------------------------------
@@ -1224,6 +1227,67 @@ begin
          end;
       end;  //end for t triangles
    end; //end for i nodes
+end;
+
+// GetTrianglesInCube
+//
+function TOctree.GetTrianglesInCube(const objAABB : TAABB;
+                                    const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
+var
+  AABB1 : TAABB;
+  M1To2, M2To1 : TMatrix;
+
+   procedure HandleNode(Onode: POctreeNode);
+   var
+      AABB2: TAABB;
+      i: integer;
+   begin
+      AABB2.min:=Onode.MinExtent;
+      AABB2.max:=Onode.MaxExtent;
+
+      if IntersectAABBs(AABB1, AABB2, M1To2, M2To1) then begin
+         if Assigned(Onode.ChildArray[0]) then begin
+            for i:=0 to 7 do
+               HandleNode(Onode.ChildArray[i])
+         end else begin
+            SetLength(ResultArray, Length(ResultArray)+1);
+            ResultArray[High(ResultArray)]:=Onode;
+         end;
+      end;
+   end;
+
+var
+   i, k : Integer;
+   p : POctreeNode;
+   triangleIndices : TIntegerList;
+begin
+   //Calc AABBs
+   AABB1:=objAABB;
+   // Calc Conversion Matrixes
+   M1To2:=objToSelf;
+   M2To1:=selfToObj;
+
+   SetLength(ResultArray, 0);
+   if Assigned(RootNode) then
+      HandleNode(RootNode);
+
+   Result:=TAffineVectorList.Create;
+   triangleIndices:=TIntegerList.Create;
+   try
+      //fill the triangles from all nodes in the resultarray to AL
+      for i:=0 to High(ResultArray) do begin
+         p:=ResultArray[i];
+         triangleIndices.AddIntegers(p.TriArray);
+      end;
+      triangleIndices.SortAndRemoveDuplicates;
+      Result.Capacity:=triangleIndices.Count*3;
+      for i:=0 to triangleIndices.Count-1 do begin
+         k:=triangleIndices[i];
+         Result.Add(triangleFiler.List[k], triangleFiler.List[k+1], triangleFiler.List[k+2]);
+      end;
+   finally
+      triangleIndices.Free;
+   end;
 end;
 
 end.
