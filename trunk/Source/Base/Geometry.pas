@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/10/03 - EG - Optimized Min/MaxInteger, some of the Min/MaxFloat
       <li>13/08/03 - SG - Added TQuaternionArray, PQuaternionArray and PQuaternion
       <li>21/07/03 - EG - Added RoundInt, faster Round/Round64, updated Power
       <li>04/07/03 - EG - New VectorCombine overload, some optimizations
@@ -7336,16 +7337,7 @@ begin
    end else Result:=0;
 end;
 
-// MinFloat (single 2)
-//
-function MinFloat(const v1, v2 : Single) : Single;
-begin
-   if v1<v2 then
-      Result:=v1
-   else Result:=v2;
-end;
-
-// MinFloat
+// MinFloat (array)
 //
 function MinFloat(const v : array of Single) : Single;
 var
@@ -7358,27 +7350,64 @@ begin
    end else Result:=0;
 end;
 
-// MinFloat (double 2)
+// MinFloat (single 2)
 //
-function MinFloat(const v1, v2 : Double) : Double;
+function MinFloat(const v1, v2 : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1<v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   ffree   st(1)
+{$endif}
+end;
+
+// MinFloat (double 2)
+//
+function MinFloat(const v1, v2 : Double) : Double;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   if v1<v2 then
+      Result:=v1
+   else Result:=v2;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   ffree   st(1)
+{$endif}
 end;
 
 // MinFloat (extended 2)
 //
 function MinFloat(const v1, v2 : Extended) : Extended;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1<v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   ffree   st(1)
+{$endif}
 end;
 
 // MinFloat
 //
 function MinFloat(const v1, v2, v3 : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1<=v2 then
       if v1<=v3 then
@@ -7391,11 +7420,24 @@ begin
    else if v3<=v1 then
       Result:=v3
    else result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DB,$C2                 /// fcmovnb st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
 end;
 
 // MinFloat (double)
 //
 function MinFloat(const v1, v2, v3 : Double) : Double;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1<=v2 then
       if v1<=v3 then
@@ -7408,11 +7450,24 @@ begin
    else if v3<=v1 then
       Result:=v3
    else result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DB,$C2                 /// fcmovnb st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
 end;
 
 // MinFloat
 //
 function MinFloat(const v1, v2, v3 : Extended) : Extended;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1<=v2 then
       if v1<=v3 then
@@ -7425,6 +7480,18 @@ begin
    else if v3<=v1 then
       Result:=v3
    else result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DB,$C2                 /// fcmovnb st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
 end;
 
 // MaxFloat (single)
@@ -7485,33 +7552,61 @@ end;
 // MaxFloat
 //
 function MaxFloat(const v1, v2 : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   ffree   st(1)
+{$endif}
 end;
 
 // MaxFloat
 //
 function MaxFloat(const v1, v2 : Double) : Double;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   ffree   st(1)
+{$endif}
 end;
 
 // MaxFloat
 //
 function MaxFloat(const v1, v2 : Extended) : Extended;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   ffree   st(1)
+{$endif}
 end;
 
 // MaxFloat
 //
 function MaxFloat(const v1, v2, v3 : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>=v2 then
       if v1>=v3 then
@@ -7523,12 +7618,25 @@ begin
       Result:=v2
    else if v3>=v1 then
       Result:=v3
-   else result:=v1;
+   else Result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DA,$C2                 /// fcmovb  st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
 end;
 
 // MaxFloat
 //
 function MaxFloat(const v1, v2, v3 : Double) : Double;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>=v2 then
       if v1>=v3 then
@@ -7540,12 +7648,25 @@ begin
       Result:=v2
    else if v3>=v1 then
       Result:=v3
-   else result:=v1;
+   else Result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DA,$C2                 /// fcmovb  st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
 end;
 
 // MaxFloat
 //
 function MaxFloat(const v1, v2, v3 : Extended) : Extended;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>=v2 then
       if v1>=v3 then
@@ -7557,43 +7678,79 @@ begin
       Result:=v2
    else if v3>=v1 then
       Result:=v3
-   else result:=v1;
+   else Result:=v1;
+{$else}
+asm
+   fld     v1
+   fld     v2
+   fld     v3
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   db $DB,$F2                 /// fcomi   st(0), st(2)
+   db $DA,$C2                 /// fcmovb  st(0), st(2)
+   ffree   st(2)
+   ffree   st(1)
+{$endif}
 end;
 
 // MinInteger (2 int)
 //
 function MinInteger(const v1, v2 : Integer) : Integer;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1<v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   cmp   eax, edx
+   db $0F,$4F,$C2             /// cmovg eax, edx
+ {$endif}
 end;
 
 // MinInteger (2 card)
 //
 function MinInteger(const v1, v2 : Cardinal) : Cardinal;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1<v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   cmp   eax, edx
+   db $0F,$47,$C2             /// cmova eax, edx
+ {$endif}
 end;
 
 // MaxInteger (2 int)
 //
 function MaxInteger(const v1, v2 : Integer) : Integer;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   cmp   eax, edx
+   db $0F,$4C,$C2             /// cmovl eax, edx
+ {$endif}
 end;
 
 // MaxInteger (2 card)
 //
 function MaxInteger(const v1, v2 : Cardinal) : Cardinal;
+{$ifdef GEOMETRY_NO_ASM}
 begin
    if v1>v2 then
       Result:=v1
    else Result:=v2;
+{$else}
+asm
+   cmp   eax, edx
+   db $0F,$42,$C2             /// cmovb eax, edx
+ {$endif}
 end;
 
 // TriangleArea
