@@ -16,6 +16,7 @@ package GLScene6;
 {$R '..\Source\GLBitmapFont.dcr'}
 {$R '..\Source\AVIRecorder.dcr'}
 {$R '..\Source\GLThorFX.dcr'}
+{$R '..\Source\GLzBuffer.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -116,6 +117,9 @@ contains
   GLContext in '..\Source\GLContext.pas',
   Polynomials in '..\Source\Base\Polynomials.pas',
   GLWin32Context in '..\Source\Platform\GLWin32Context.pas',
-  GLCrossPlatform in '..\Source\Platform\GLCrossPlatform.pas';
+  GLCrossPlatform in '..\Source\Platform\GLCrossPlatform.pas',
+  GLParticleFX in '..\Source\GLParticleFX.pas',
+  GLzBuffer in '..\Source\GLzBuffer.pas',
+  GLMirror in '..\Source\GLMirror.pas';
 
 end.
