@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 3
   Width = 624
   Height = 611
-  Caption = 'Form1'
+  Caption = 'Constructive Solid Geometry Demo'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
