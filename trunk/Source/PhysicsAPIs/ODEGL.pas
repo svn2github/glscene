@@ -1,4 +1,12 @@
-// 03/02/03 - EG - Fixed CopyPosFromGeomToGL
+{
+  ***********************************************************************
+
+  Change history
+
+  2003.02.03 - EG - Fixed CopyPosFromGeomToGL
+  2003.02.11 - MF - Added a couple of vector functions for copying between
+    ODE formats and GLScene formats
+}
 
 unit ODEGL;
 
@@ -26,8 +34,18 @@ uses
   procedure ODERToGLSceneMatrix(var m : TMatrix; R : PdMatrix3; pos : PdVector3); overload;
   procedure ODERToGLSceneMatrix(var m : TMatrix; R : TdMatrix3_As3x4; pos : TdVector3); overload;
 
+
+  // Converting between ODE and GLScene formats
   function ConvertdVector3ToVector3f(R : TdVector3) : TVector3f; overload;
   function ConvertdVector3ToVector3f(R : PdVector3) : TVector3f; overload;
+  function ConvertdVector3ToVector4f(R : TdVector3) : TVector4f; overload;
+  function ConvertdVector3ToVector4f(R : PdVector3) : TVector4f; overload;
+
+  // Converting between GLScene and ODE formats
+  function ConvertVector3fTodVector3(R : TVector3f) : TdVector3;
+  function ConvertVector3fToPdVector3(R : TVector3f) : PdVector3;
+  function ConvertVector4fTodVector3(R : TVector4f) : TdVector3;
+  function ConvertVector4fToPdVector3(R : TVector4f) : PdVector3;
 
   function dVector3Length(R : TdVector3) : single; overload;
   function dVector3Length(R : PdVector3) : single; overload;
@@ -52,6 +70,7 @@ uses
   procedure RenderGeomList(GeomList : TGeomList);
 
   function RandomColorVector : TVector;
+
   // { $ EXTERNALSYM GL_ZERO} ?
 
 implementation
@@ -171,6 +190,7 @@ begin
   glMultMatrixf (@matrix);
 end;
 
+(*$WARNINGS OFF*)
 function ConvertdVector3ToVector3f(R : TdVector3) : TVector3f;
 begin
   result[0] := R[0];
@@ -184,6 +204,53 @@ begin
   result[1] := R[1];
   result[2] := R[2];
 end;
+
+function ConvertdVector3ToVector4f(R : TdVector3) : TVector4f; overload;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+  result[3] := 0;
+end;
+
+function ConvertdVector3ToVector4f(R : PdVector3) : TVector4f; overload;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+  result[3] := 0;
+end;
+
+function ConvertVector3fTodVector3(R : TVector3f) : TdVector3;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+end;
+
+function ConvertVector3fToPdVector3(R : TVector3f) : PdVector3;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+end;
+
+function ConvertVector4fTodVector3(R : TVector4f) : TdVector3;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+  result[3] := 0;
+end;
+
+function ConvertVector4fToPdVector3(R : TVector4f) : PdVector3;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+  result[3] := 0;
+end;
+(*$WARNINGS ON*)
 
 procedure PositionSceneObjectForGeom(Geom : PdxGeom);
 begin
@@ -304,9 +371,14 @@ var
   Body : PdxBody;
 begin
   Body := dBodyCreate(World);
-  dBodySetLinearVel(Body, 0, 0, 0);
 
-  CopyBodyFromCube(Body, Geom, Cube, Space);
+  try
+    dBodySetLinearVel(Body, 0, 0, 0);
+
+    CopyBodyFromCube(Body, Geom, Cube, Space);
+  finally
+    result := Body;
+  end;
 end;
 
 procedure CopyBodyFromCube(Body : PdxBody; var Geom : PdxGeom; Cube : TGLCube; Space : PdxSpace);

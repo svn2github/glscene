@@ -74,9 +74,10 @@
   2002.10.31 Chroma compiled a new dll version, with some minor updates to
     friction among other things
   2003.01.20 Christophe compiled a new DLL and added the new functions.
-  2003.03.01 Added a few new functions
-  2003.03.01 dGeomGroup and all it's procedures / functions have been removed
+  2003.02.01 Mattias added a few new functions
+  2003.02.01 Christophe removed dGeomGroup and all it's procedures / functions
     due to deprecation
+  2003.02.11 John Villar added syntax enforcement on some enumerated types 
  }
 
 unit ODEImport;
@@ -167,11 +168,15 @@ type
     dxBodyDisabled = 4,			          // body is disabled
     dxBodyNoGravity = 8);             // body is not influenced by gravity*)
 
+(* Change: New Type added, syntax enforcement *)
+  TBodyFlags = Integer;
+
+(* These consts now have defined types *)
 const
-  dxBodyFlagFiniteRotation = 1;		  // use finite rotations
-  dxBodyFlagFiniteRotationAxis = 2;	// use finite rotations only along axis
-  dxBodyDisabled = 4;			          // body is disabled
-  dxBodyNoGravity = 8;              // body is not influenced by gravity
+  dxBodyFlagFiniteRotation: TBodyFlags = 1;		  // use finite rotations
+  dxBodyFlagFiniteRotationAxis: TBodyFlags = 2;	// use finite rotations only along axis
+  dxBodyDisabled: TBodyFlags = 4;			          // body is disabled
+  dxBodyNoGravity: TBodyFlags = 8;              // body is not influenced by gravity
 
 (*typedef struct dMass {
   dReal mass;   // total mass of the rigid body
@@ -252,6 +257,7 @@ struct dObject : public dBase {
     procedure SetItems(i: integer; const Value: PdxBody);
   public
     property Items[i : integer] : PdxBody read GetItems write SetItems; default;
+    procedure DeleteAllBodies;
   end;
 
 
@@ -349,10 +355,16 @@ enum {
   dJOINT_TWOBODIES = 4
 };*)
   //TJointFlag = (
+
+(* Change: New Type added, syntax enforcement *)
+  type
+    TJointFlag = Integer;
+
+(* These consts now have defined types *)
   const
-    dJOINT_INGROUP = 1;
-    dJOINT_REVERSE = 2;
-    dJOINT_TWOBODIES = 4;
+    dJOINT_INGROUP: TJointFlag = 1;
+    dJOINT_REVERSE: TJointFlag = 2;
+    dJOINT_TWOBODIES: TJointFlag = 4;
 
   // Space constants
   const
@@ -377,21 +389,26 @@ enum {
   dContactApprox1	= 0x3000
 };*)
 //  TdContactType = (
-  const
-    dContactMu2		  = $0001;
-    dContactFDir1		= $0002;
-    dContactBounce	= $0004;
-    dContactSoftERP	= $0008;
-    dContactSoftCFM	= $0010;
-    dContactMotion1	= $0020;
-    dContactMotion2	= $0040;
-    dContactSlip1		= $0080;
-    dContactSlip2		= $0100;
+(* Change: New Type added, syntax enforcement *)
+  type
+    TdContactType = Integer;
 
-    dContactApprox0	= $00000;
-    dContactApprox1_1	= $1000;
-    dContactApprox1_2	= $2000;
-    dContactApprox1	= $3000;
+(* These consts now have defined types *)
+  const
+    dContactMu2: TdContactType		    = $0001;
+    dContactFDir1: TdContactType	  	= $0002;
+    dContactBounce: TdContactType   	= $0004;
+    dContactSoftERP: TdContactType  	= $0008;
+    dContactSoftCFM: TdContactType  	= $0010;
+    dContactMotion1: TdContactType  	= $0020;
+    dContactMotion2: TdContactType	  = $0040;
+    dContactSlip1: TdContactType		  = $0080;
+    dContactSlip2: TdContactType		  = $0100;
+
+    dContactApprox0: TdContactType	  = $00000;
+    dContactApprox1_1: TdContactType	= $1000;
+    dContactApprox1_2: TdContactType	= $2000;
+    dContactApprox1: TdContactType	  = $3000;
 
 
 (*  typedef struct dSurfaceParameters {
@@ -454,7 +471,7 @@ type
     fdir1 : TdVector3;
   end;
 
-  // Collsission callback structure
+  // Collission callback structure
   TdNearCallback = procedure(data : pointer; o1, o2 : PdxGeom); cdecl;
 
   TdColliderFn = function(o1, o2 : PdxGeom; flags : Integer;
@@ -618,6 +635,7 @@ struct dxHashSpace : public dxSpace {
     procedure SetItems(i: integer; const Value: PdxGeom);
   public
     property Items[i : integer] : PdxGeom read GetItems write SetItems; default;
+    procedure DeleteAllGeoms(DeleteDataAsObject : boolean=false);
   end;
 (*
 /* standard joint parameter names. why are these here? - because we don't want
@@ -670,53 +688,62 @@ enum {
 
 //  TJointParams = (
     // parameters for limits and motors
+(* Change: New Type added, sintax enforcement *)
+  type
+    TJointParams = Integer;
+
+(* These consts now have defined types *)
   const
-    dParamLoStop = 0;
-    dParamHiStop = dParamLoStop + 1;
-    dParamVel = dParamLoStop + 2;
-    dParamFMax = dParamLoStop + 3;
-    dParamFudgeFactor = dParamLoStop + 4;
-    dParamBounce = dParamLoStop + 5;
-    dParamCFM = dParamLoStop + 6;
-    dParamStopERP = dParamLoStop + 7;
-    dParamStopCFM = dParamLoStop + 8;
+    _priv_dParamLoStop  = 0;
+    _priv_dParamLoStop2 = $100;
+    _priv_dParamLoStop3 = $200;
+  const
+    dParamLoStop: TJointParams = _priv_dParamLoStop;
+    dParamHiStop: TJointParams = _priv_dParamLoStop + 1;
+    dParamVel: TJointParams = _priv_dParamLoStop + 2;
+    dParamFMax: TJointParams = _priv_dParamLoStop + 3;
+    dParamFudgeFactor: TJointParams = _priv_dParamLoStop + 4;
+    dParamBounce: TJointParams = _priv_dParamLoStop + 5;
+    dParamCFM: TJointParams = _priv_dParamLoStop + 6;
+    dParamStopERP: TJointParams = _priv_dParamLoStop + 7;
+    dParamStopCFM: TJointParams = _priv_dParamLoStop + 8;
     // parameters for suspension
-    dParamSuspensionERP = dParamLoStop + 9;
-    dParamSuspensionCFM = dParamLoStop + 10;
+    dParamSuspensionERP: TJointParams = _priv_dParamLoStop + 9;
+    dParamSuspensionCFM: TJointParams = _priv_dParamLoStop + 10;
 
     // SECOND AXEL
     // parameters for limits and motors
-    dParamLoStop2 = $100;
-    dParamHiStop2 = dParamLoStop2 + 1;
-    dParamVel2 = dParamLoStop2 + 2;
-    dParamFMax2 = dParamLoStop2 + 3;
-    dParamFudgeFactor2 = dParamLoStop2 + 4;
-    dParamBounce2 = dParamLoStop2 + 5;
-    dParamCFM2 = dParamLoStop2 + 6;
-    dParamStopERP2 = dParamLoStop2 + 7;
-    dParamStopCFM2 = dParamLoStop2 + 8;
+    dParamLoStop2: TJointParams = _priv_dParamLoStop2;
+    dParamHiStop2: TJointParams = _priv_dParamLoStop2 + 1;
+    dParamVel2: TJointParams = _priv_dParamLoStop2 + 2;
+    dParamFMax2: TJointParams = _priv_dParamLoStop2 + 3;
+    dParamFudgeFactor2: TJointParams = _priv_dParamLoStop2 + 4;
+    dParamBounce2: TJointParams = _priv_dParamLoStop2 + 5;
+    dParamCFM2: TJointParams = _priv_dParamLoStop2 + 6;
+    dParamStopERP2: TJointParams = _priv_dParamLoStop2 + 7;
+    dParamStopCFM2: TJointParams = _priv_dParamLoStop2 + 8;
     // parameters for suspension
-    dParamSuspensionERP2 = dParamLoStop2 + 9;
-    dParamSuspensionCFM2 = dParamLoStop2 + 10;
+    dParamSuspensionERP2: TJointParams = _priv_dParamLoStop2 + 9;
+    dParamSuspensionCFM2: TJointParams = _priv_dParamLoStop2 + 10;
 
     // THIRD AXEL
     // parameters for limits and motors
-    dParamLoStop3 = $200;
-    dParamHiStop3 = dParamLoStop3 + 1;
-    dParamVel3 = dParamLoStop3 + 2;
-    dParamFMax3 = dParamLoStop3 + 3;
-    dParamFudgeFactor3 = dParamLoStop3 + 4;
-    dParamBounce3 = dParamLoStop3 + 5;
-    dParamCFM3 = dParamLoStop3 + 6;
-    dParamStopERP3 = dParamLoStop3 + 7;
-    dParamStopCFM3 = dParamLoStop3 + 8;
+    dParamLoStop3: TJointParams = _priv_dParamLoStop3;
+    dParamHiStop3: TJointParams = _priv_dParamLoStop3 + 1;
+    dParamVel3: TJointParams = _priv_dParamLoStop3 + 2;
+    dParamFMax3: TJointParams = _priv_dParamLoStop3 + 3;
+    dParamFudgeFactor3: TJointParams = _priv_dParamLoStop3 + 4;
+    dParamBounce3: TJointParams = _priv_dParamLoStop3 + 5;
+    dParamCFM3: TJointParams = _priv_dParamLoStop3 + 6;
+    dParamStopERP3: TJointParams = _priv_dParamLoStop3 + 7;
+    dParamStopCFM3: TJointParams = _priv_dParamLoStop3 + 8;
     // parameters for suspension
-    dParamSuspensionERP3 = dParamLoStop3 + 9;
-    dParamSuspensionCFM3 = dParamLoStop3 + 10;
+    dParamSuspensionERP3: TJointParams = _priv_dParamLoStop3 + 9;
+    dParamSuspensionCFM3: TJointParams = _priv_dParamLoStop3 + 10;
 
     // AGAIN!
     // dParamGroup * 2 + dParamBounce = dParamBounce2
-    dParamGroup=$100;
+    dParamGroup: TJointParams = $100;
 
 { TODO :
 // How does one import integers?
@@ -846,12 +873,12 @@ dWtoDQ}
   function dJointCreateUniversal(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external ODEDLL;
   procedure dJointDestroy(const dJointID : TdJointID); cdecl; external ODEDLL;
   function dJointGetAMotorAngle(const dJointID : TdJointID; const anum: Integer): TdReal; cdecl; external ODEDLL;
-  function dJointGetAMotorAngleRate(const dJointID : TdJointID; const anum: Integer): TdReal; cdecl; external ODEDLL; 
+  function dJointGetAMotorAngleRate(const dJointID : TdJointID; const anum: Integer): TdReal; cdecl; external ODEDLL;
   procedure dJointGetAMotorAxis(const dJointID : TdJointID; const anum: Integer; result: TdVector3); cdecl; external ODEDLL;
   function dJointGetAMotorAxisRel(const dJointID : TdJointID; const anum: Integer): Integer; cdecl; external ODEDLL;
   function dJointGetAMotorMode(const dJointID : TdJointID): Integer; cdecl; external ODEDLL;
   function dJointGetAMotorNumAxes(const dJointID : TdJointID): Integer; cdecl; external ODEDLL;
-  function dJointGetAMotorParam(const dJointID : TdJointID; const parameter: Integer): TdReal; cdecl; external ODEDLL;
+  function dJointGetAMotorParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external ODEDLL;
   procedure dJointGetBallAnchor(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
   function dJointGetBody(const dJointID : TdJointID; const index: Integer): PdxBody; cdecl; external ODEDLL;
   procedure dJointGetHinge2Anchor(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
@@ -860,14 +887,14 @@ dWtoDQ}
   function dJointGetHinge2Angle2Rate(const dJointID : TdJointID): TdReal; cdecl; external ODEDLL;
   procedure dJointGetHinge2Axis1(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
   procedure dJointGetHinge2Axis2(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
-  function dJointGetHinge2Param(const dJointID : TdJointID; const parameter: Integer): TdReal; cdecl; external ODEDLL;
+  function dJointGetHinge2Param(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external ODEDLL;
   procedure dJointGetHingeAnchor(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
   function dJointGetHingeAngle(const dJointID : TdJointID): TdReal; cdecl; external ODEDLL;
   function dJointGetHingeAngleRate(const dJointID : TdJointID): TdReal; cdecl; external ODEDLL;
   procedure dJointGetHingeAxis(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
-  function dJointGetHingeParam(const dJointID : TdJointID; const parameter: Integer): TdReal; cdecl; external ODEDLL;
+  function dJointGetHingeParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external ODEDLL;
   procedure dJointGetSliderAxis(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
-  function dJointGetSliderParam(const dJointID : TdJointID; const parameter: Integer): TdReal; cdecl; external ODEDLL;
+  function dJointGetSliderParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external ODEDLL;
   function dJointGetSliderPosition(const dJointID : TdJointID): TdReal; cdecl; external ODEDLL;
   function dJointGetSliderPositionRate(const dJointID : TdJointID): TdReal; cdecl; external ODEDLL;
   function dJointGetType(const dJointID : TdJointID): Integer; cdecl; external ODEDLL;
@@ -881,18 +908,18 @@ dWtoDQ}
   procedure dJointSetAMotorAxis(const dJointID : TdJointID; const anum, rel: Integer; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetAMotorMode(const dJointID : TdJointID; const mode: TdAngularMotorModeNumbers); cdecl; external ODEDLL;
   procedure dJointSetAMotorNumAxes(const dJointID : TdJointID; const num: Integer); cdecl; external ODEDLL;
-  procedure dJointSetAMotorParam(const dJointID : TdJointID; const parameter: integer; const value: TdReal); cdecl; external ODEDLL;
+  procedure dJointSetAMotorParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external ODEDLL;
   procedure dJointSetBallAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetFixed(const dJointID : TdJointID); cdecl; external ODEDLL;
   procedure dJointSetHinge2Anchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetHinge2Axis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetHinge2Axis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
-  procedure dJointSetHinge2Param(const dJointID : TdJointID; const parameter: integer; const value: TdReal); cdecl; external ODEDLL;
+  procedure dJointSetHinge2Param(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external ODEDLL;
   procedure dJointSetHingeAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetHingeAxis(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
-  procedure dJointSetHingeParam(const dJointID : TdJointID; const parameter: integer; const value: TdReal); cdecl; external ODEDLL;
+  procedure dJointSetHingeParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external ODEDLL;
   procedure dJointSetSliderAxis(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
-  procedure dJointSetSliderParam(const dJointID : TdJointID; const parameter: integer; const value: TdReal); cdecl; external ODEDLL;
+  procedure dJointSetSliderParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external ODEDLL;
   procedure dJointSetUniversalAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetUniversalAxis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetUniversalAxis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
@@ -914,7 +941,9 @@ dWtoDQ}
   function dGeomGetClass(const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
   function dGeomGetPosition(const Geom : PdxGeom): PdVector3; cdecl; external ODEDLL;
   function dGeomGetRotation(const Geom : PdxGeom): PdMatrix3; cdecl; external ODEDLL;
-  function dGeomGetSpaceAABB(const Geom : PdxGeom): TdReal; cdecl; external ODEDLL;
+
+  // Deprecated!
+  //function dGeomGetSpaceAABB(const Geom : PdxGeom): TdReal; cdecl; external ODEDLL;
 
   // Deprecated!
   //procedure dGeomGroupAdd (const GeomGroup, Geom : PdxGeom); cdecl; external ODEDLL;
@@ -1013,6 +1042,8 @@ dWtoDQ}
   function dHashSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external ODEDLL;
   procedure dHashSpaceSetLevels(const Space: PdxSpace; const minlevel, maxlevel: Integer); cdecl; external ODEDLL;
   procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external ODEDLL;
+  function dSpaceGetNumGeoms (const Space: PdxSpace) : integer; cdecl; external ODEDLL;
+
 
   procedure dSpaceSetCleanup (space : PdxSpace; const mode : integer); cdecl; external ODEDLL;
   function dSpaceGetCleanup(Space : PdxSpace): integer; cdecl; external ODEDLL;
@@ -1029,23 +1060,23 @@ dWtoDQ}
   procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external ODEDLL;
 
   //----- Rotation.h -----
-  procedure dQFromAxisAndAngle (var q : TdQuaternion; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;    
-  procedure dRFromAxisAndAngle (var R : TdMatrix3; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;    
-  procedure dRSetIdentity (R : TdMatrix3); cdecl; external ODEDLL;    
-  procedure dRFromEulerAngles (R : TdMatrix3; phi, theta, psi : TdReal); cdecl; external ODEDLL;    
+  procedure dQFromAxisAndAngle (var q : TdQuaternion; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
+  procedure dRFromAxisAndAngle (var R : TdMatrix3; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
+  procedure dRSetIdentity (R : TdMatrix3); cdecl; external ODEDLL;
+  procedure dRFromEulerAngles (R : TdMatrix3; phi, theta, psi : TdReal); cdecl; external ODEDLL;
   procedure dRFrom2Axes (R: TdMatrix3; ax, ay, az, bx, by, bz : TdReal); cdecl; external ODEDLL;
 
-  procedure dMultiply0 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
-  procedure dMultiply1 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
-  procedure dMultiply2 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
-  procedure dMultiply3 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
-  procedure dQtoR (const q : TdQuaternion; const R : TdMatrix3); cdecl; external ODEDLL;    
+  procedure dMultiply0 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
+  procedure dMultiply1 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
+  procedure dMultiply2 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
+  procedure dMultiply3 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;
+  procedure dQtoR (const q : TdQuaternion; const R : TdMatrix3); cdecl; external ODEDLL;
   procedure dRtoQ (const R : TdMatrix3; q : TdQuaternion); cdecl; external ODEDLL;
   procedure WtoDQ (const w : TdVector3; q: TdQuaternion; dq : TdVector4); cdecl; external ODEDLL;
 
   //----- Math -----
-  procedure dNormalize3 (var a : TdVector3); cdecl; external ODEDLL;    
-  procedure dNormalize4 (var a : TdVector4); cdecl; external ODEDLL;    
+  procedure dNormalize3 (var a : TdVector3); cdecl; external ODEDLL;
+  procedure dNormalize4 (var a : TdVector4); cdecl; external ODEDLL;
 
   //----- Misc -----
   procedure dClosestLineSegmentPoints (const a1, a2, b1, b2 : TdVector3; var cp1, cp2 : TdVector3); cdecl; external ODEDLL;
@@ -1062,7 +1093,7 @@ dWtoDQ}
   function dCollide (o1, o2 : PdxGeom; flags : integer; var Contact : TdContactGeom; Skip : integer) : integer; cdecl; external ODEDLL;
   procedure dSpaceCollide (const Space : PdxSpace; data : pointer; callback : TdNearCallback); cdecl; external ODEDLL;
   procedure dSpaceCollide2 (o1, o2 : PdxGeom; data : pointer; callback : TdNearCallback); cdecl; external ODEDLL;
-  procedure dMakeRandomMatrix (A : PdRealArray; n, m : integer; range :  TdReal); cdecl; external ODEDLL;    
+  procedure dMakeRandomMatrix (A : PdRealArray; n, m : integer; range :  TdReal); cdecl; external ODEDLL;
   procedure dClearUpperTriangle (A : PdRealArray; n : integer); cdecl; external ODEDLL;
   function dMaxDifferenceLowerTriangle (A : PdRealArray;  var B : TdReal;  n : integer) : TdReal; cdecl; external ODEDLL;
 
@@ -1083,7 +1114,7 @@ dWtoDQ}
   function Vector3ADD(a, b : TdVector3) : TdVector3;
   function Vector3SUB(a, b : TdVector3) : TdVector3;
   function Vector3Length(a : TdVector3) : TdReal;
-
+  function Vector3Cross(V1, V2 : TdVector3) : TdVector3;
 
 var
   // These must be set up, so I catch the first time a user creates a new
@@ -1102,7 +1133,25 @@ var
 
 implementation
 
+
+const
+  // to be used as descriptive indices (from GLScene)
+  X = 0;
+  Y = 1;
+  Z = 2;
+  W = 3;
+
 { TBodyList }
+
+procedure TBodyList.DeleteAllBodies;
+var
+  i : integer;
+begin
+  for i := 0 to Count-1 do
+    dBodyDestroy(Items[i]);
+
+  Clear;
+end;
 
 function TBodyList.GetItems(i: integer): PdxBody;
 begin
@@ -1115,6 +1164,21 @@ begin
 end;
 
 { TGeomList }
+
+procedure TGeomList.DeleteAllGeoms(DeleteDataAsObject : boolean=false);
+var
+  i : integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    dGeomDestroy(Items[i]);
+
+    if DeleteDataAsObject and (Items[i].data<>nil) then
+      TObject(Items[i].data).Free;
+  end;
+
+  Clear;
+end;
 
 function TGeomList.GetItems(i: integer): PdxGeom;
 begin
@@ -1226,6 +1290,20 @@ begin
   result := sqrt(sqr(a[0])+sqr(a[1])+sqr(a[2]));
 end;
 
+function Vector3Cross(V1, V2 : TdVector3) : TdVector3;
+begin
+   Result[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
+   Result[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
+   Result[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+end;
+
+function Vector3Make(x,y,z : TdReal) : TdVector3;
+begin
+  result[0] := x;
+  result[1] := y;
+  result[2] := z;
+end;
+
 // Deprecated
 {function dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl;
 begin
@@ -1298,4 +1376,5 @@ begin
   if dGeomTransformGroupClass=-1 then
     dGeomTransformGroupClass := dGeomGetClass(result);
 end;
+
 end.
