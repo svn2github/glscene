@@ -97,6 +97,10 @@ function AABBToBB(const anAABB : TAABB) : THmgBoundingBox; overload;
 {: Transforms an AABB to a BB. }
 function AABBToBB(const anAABB : TAABB; const m : TMatrix) : THmgBoundingBox; overload;
 
+{: Adds delta to min and max of the AABB. }
+procedure OffsetAABB(var aabb : TAABB; const delta : TAffineVector); overload;
+procedure OffsetAABB(var aabb : TAABB; const delta : TVector); overload;
+
 {: Determines if two AxisAlignedBoundingBoxes intersect.<p>
    The matrices are the ones that convert one point to the other's AABB system }
 function IntersectAABBs(const aabb1, aabb2 : TAABB; const m1To2, m2To1 : TMatrix) : Boolean; overload;
@@ -460,6 +464,22 @@ function AABBToBB(const anAABB : TAABB; const m : TMatrix) : THmgBoundingBox;
 begin
    Result:=AABBToBB(anAABB);
    BBTransform(Result, m);
+end;
+
+// OffsetAABB
+//
+procedure OffsetAABB(var aabb : TAABB; const delta : TAffineVector);
+begin
+   AddVector(aabb.min, delta);
+   AddVector(aabb.max, delta);
+end;
+
+// OffsetAABB
+//
+procedure OffsetAABB(var aabb : TAABB; const delta : TVector);
+begin
+   AddVector(aabb.min, delta);
+   AddVector(aabb.max, delta);
 end;
 
 // IntersectCubes (AABBs)
