@@ -5762,7 +5762,7 @@ begin
          FreeMem(Buffer);
       end;
    finally
-      FRendering:=True;
+      FRendering:=False;
       FRenderingContext.Deactivate;
    end;
 end;
