@@ -2910,7 +2910,7 @@ var
    min, max : TAffineVector;
 begin
    GetExtents(min, max);
-   Result:=(aPoint[0]>=min[0]) and (aPoint[1]>=min[1]) and (aPoint[2]>=min[2])
+   Result:=    (aPoint[0]>=min[0]) and (aPoint[1]>=min[1]) and (aPoint[2]>=min[2])
            and (aPoint[0]<=max[0]) and (aPoint[1]<=max[1]) and (aPoint[2]<=max[2]);
 end;
 
@@ -2944,11 +2944,11 @@ begin
          glEnableClientState(GL_VERTEX_ARRAY);
          glVertexPointer(3, GL_FLOAT, 0, Vertices.List);
       end else glDisableClientState(GL_VERTEX_ARRAY);
-      if Normals.Count>0 then begin
-         glEnableClientState(GL_NORMAL_ARRAY);
-         glNormalPointer(GL_FLOAT, 0, Normals.List);
-      end else glDisableClientState(GL_NORMAL_ARRAY);
       if not mrci.ignoreMaterials then begin
+         if Normals.Count>0 then begin
+            glEnableClientState(GL_NORMAL_ARRAY);
+            glNormalPointer(GL_FLOAT, 0, Normals.List);
+         end else glDisableClientState(GL_NORMAL_ARRAY);
          if (Colors.Count>0) and (not mrci.ignoreMaterials) then begin
             glEnableClientState(GL_COLOR_ARRAY);
             glColorPointer(4, GL_FLOAT, 0, Colors.List);
@@ -2964,6 +2964,7 @@ begin
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
          end;
       end else begin
+         glDisableClientState(GL_NORMAL_ARRAY);
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
@@ -2985,9 +2986,9 @@ begin
          glUnLockArraysEXT;
       if Vertices.Count>0 then
          glDisableClientState(GL_VERTEX_ARRAY);
-      if Normals.Count>0 then
-         glDisableClientState(GL_NORMAL_ARRAY);
       if not mrci.ignoreMaterials then begin
+         if Normals.Count>0 then
+            glDisableClientState(GL_NORMAL_ARRAY);
          if (Colors.Count>0) and (not mrci.ignoreMaterials) then
             glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then
@@ -2997,9 +2998,6 @@ begin
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
          end;
-      end else begin
-         glDisableClientState(GL_COLOR_ARRAY);
-         xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
       FArraysDeclared:=False;
    end;
@@ -4093,10 +4091,13 @@ end;
 procedure TFGVertexIndexList.AddToTriangles(aList : TAffineVectorList;
                                             aTexCoords : TAffineVectorList = nil;
                                             aNormals : TAffineVectorList = nil);
+var
+   mo : TMeshObject;
 begin
-   AddToList(Owner.Owner.Vertices,  aList,      VertexIndices);
-   AddToList(Owner.Owner.TexCoords, aTexCoords, VertexIndices);
-   AddToList(Owner.Owner.Normals,   aNormals,   VertexIndices);
+   mo:=Owner.Owner;
+   AddToList(mo.Vertices,  aList,      VertexIndices);
+   AddToList(mo.TexCoords, aTexCoords, VertexIndices);
+   AddToList(mo.Normals,   aNormals,   VertexIndices);
 end;
 
 // TriangleCount
@@ -4507,10 +4508,14 @@ end;
 procedure TFaceGroups.Clear;
 var
    i : Integer;
+   fg : TFaceGroup;
 begin
-   for i:=0 to Count-1 do with GetFaceGroup(i) do begin
-      FOwner:=nil;
-      Free;
+   for i:=0 to Count-1 do begin
+      fg:=GetFaceGroup(i);
+      if Assigned(fg) then begin
+         fg.FOwner:=nil;
+         fg.Free;
+      end;
    end;
    inherited;
 end;
