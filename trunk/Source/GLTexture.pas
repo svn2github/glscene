@@ -3106,7 +3106,8 @@ begin
                SetGLState(rci.currentStates, stFog);
          end;
       end;
-      FTexture.UnApply(rci);
+      if not FTexture.Disabled then
+         FTexture.UnApply(rci);
    end;
 end;
 

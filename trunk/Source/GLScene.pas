@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/02/02 - Egg - ValidateTransformations phased out
       <li>05/02/02 - Egg - Added roNoColorBuffer
       <li>03/02/02 - Egg - InfoForm registration mechanism,
                            AbsolutePosition promoted to read/write property
@@ -368,6 +369,8 @@ type
          procedure SetAbsolutePosition(const v : TVector);
          function GetAbsolutePosition : TVector;
 
+         procedure RecTransformationChanged;
+
          procedure DrawAxes(Pattern: Word);
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
          function  GetHandle(var rci : TRenderContextInfo) : TObjectHandle; virtual;
@@ -552,8 +555,6 @@ type
          procedure CoordinateChanged(Sender: TGLCoordinates); virtual;
          procedure TransformationChanged;
          procedure NotifyChange(Sender : TObject); override;
-         //: Calculate matrix and let the children do the same with their's
-         procedure ValidateTransformation; virtual;
 
          property Rotation: TGLCoordinates Read FRotation Write SetRotation;
          property PitchAngle: single Read GetPitchAngle Write SetPitchAngle stored False;
@@ -781,8 +782,6 @@ type
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
-
-         procedure ValidateTransformation; override;
    end;
 
    // TGLImmaterialSceneObject
@@ -1165,7 +1164,7 @@ type
          FCameras : TGLBaseSceneObject;
          FBaseContext : TGLContext; //reference, not owned!
          FLights, FBuffers : TList;
-         FLastGLCamera, FCurrentGLCamera : TGLCamera;
+         FCurrentGLCamera : TGLCamera;
          FCurrentBuffer : TGLSceneBuffer;
          FObjectsSorting : TGLObjectsSorting;
          FVisibilityCulling : TGLVisibilityCulling;
@@ -1204,7 +1203,6 @@ type
                                const viewPortSizeX, viewPortSizeY : Integer;
                                drawState : TDrawState);
          procedure NotifyChange(Sender : TObject); override;
-         procedure ValidateTransformation(ACamera: TGLCamera);
          procedure Progress(const deltaTime, newTime : Double);
 
          function FindSceneObject(const name : String) : TGLBaseSceneObject;
@@ -2287,21 +2285,6 @@ begin
       AProc(FChildren[I]);
 end;
 
-// RebuildMatrix
-//
-procedure TGLBaseSceneObject.RebuildMatrix;
-begin
-   if ocTransformation in Changes then begin
-      VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix[0]);
-      ScaleVector(FLocalMatrix[0], Scale.X);
-      VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix[1]);
-      VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix[2]);
-      SetVector(FLocalMatrix[3], FPosition.AsVector);
-      Include(FChanges, ocAbsoluteMatrix);
-      Include(FChanges, ocInvAbsoluteMatrix);
-   end;
-end;
-
 // Get
 //
 function TGLBaseSceneObject.Get(Index: Integer): TGLBaseSceneObject;
@@ -2342,6 +2325,20 @@ function TGLBaseSceneObject.AddNewChildFirst(AChild: TGLSceneObjectClass): TGLBa
 begin
    Result:=AChild.Create(Self);
    Insert(0, Result);
+end;
+
+// RebuildMatrix
+//
+procedure TGLBaseSceneObject.RebuildMatrix;
+begin
+   if ocTransformation in Changes then begin
+      VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix[0]);
+      ScaleVector(FLocalMatrix[0], Scale.X);
+      VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix[1]);
+      VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix[2]);
+      SetVector(FLocalMatrix[3], FPosition.AsVector);
+      Exclude(FChanges, ocTransformation);
+   end;
 end;
 
 // AbsoluteMatrix
@@ -2591,8 +2588,7 @@ begin
       FDirection.Assign(TGLBaseSceneObject(Source).FDirection);
       FUp.Assign(TGLBaseSceneObject(Source).FUp);
       FScaling.Assign(TGLBaseSceneObject(Source).FScaling);
-      FChanges:=[ocTransformation, ocStructure, 
-                 ocAbsoluteMatrix, ocInvAbsoluteMatrix];
+      FChanges:=[ocStructure];
       FVisible:=TGLBaseSceneObject(Source).FVisible;
       FLocalMatrix:=TGLBaseSceneObject(Source).FLocalMatrix;
       FAbsoluteMatrix:=TGLBaseSceneObject(Source).FAbsoluteMatrix;
@@ -2617,6 +2613,7 @@ begin
       Effects.Assign(TGLBaseSceneObject(Source).Effects);
       Tag:=TGLBaseSceneObject(Source).Tag;
       FTagFloat:=TGLBaseSceneObject(Source).FTagFloat;
+      TransformationChanged;
    end else inherited Assign(Source);
 end;
 
@@ -2730,7 +2727,6 @@ end;
 //
 procedure TGLBaseSceneObject.ResetRotations;
 begin
-   FChanges:=FChanges-[ocTransformation]+[ocAbsoluteMatrix, ocInvAbsoluteMatrix];
    FLocalMatrix:=IdentityHmgMatrix;
    FLocalMatrix[0][0]:=Scale.DirectX;
    FLocalMatrix[1][1]:=Scale.DirectY;
@@ -2738,6 +2734,8 @@ begin
    FRotation.DirectVector:=NullHmgPoint;
    FDirection.DirectVector:=ZHmgVector;
    FUp.DirectVector:=YHmgVector;
+   TransformationChanged;
+   Exclude(FChanges, ocTransformation);
 end;
 
 // RotateAbsolute
@@ -3105,14 +3103,29 @@ begin
    end;
 end;
 
+// RecTransformationChanged
+//
+procedure TGLBaseSceneObject.RecTransformationChanged;
+var
+   i : Integer;
+   list : PPointerList;
+begin
+   if not (ocAbsoluteMatrix in FChanges) then begin
+      Include(FChanges, ocAbsoluteMatrix);
+      Include(FChanges, ocInvAbsoluteMatrix);
+      list:=FChildren.List;
+      for i:=0 to FChildren.Count-1 do
+         TGLBaseSceneObject(list[i]).RecTransformationChanged;
+   end;
+end;
+
 // TransformationChanged
 //
 procedure TGLBaseSceneObject.TransformationChanged;
 begin
-   Include(FChanges, ocAbsoluteMatrix);
-   Include(FChanges, ocInvAbsoluteMatrix);
    if not (ocTransformation in FChanges) then begin
       Include(FChanges, ocTransformation);
+      RecTransformationChanged;
       if not (csLoading in ComponentState) then
          NotifyChange(Self);
    end;
@@ -3318,6 +3331,8 @@ begin
       end;
       // Prepare Matrix and PickList stuff
       glPushMatrix;
+      if ocTransformation in FChanges then
+         RebuildMatrix;
       glMultMatrixf(@FLocalMatrix);
       if rci.drawState=dsPicking then
          if rci.proxySubObject then
@@ -3332,7 +3347,7 @@ begin
             FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
             glPushMatrix;
-            if Scene.CurrentBuffer.DepthTest and (osIgnoreDepthBuffer in ObjectStyle) then begin
+            if osIgnoreDepthBuffer in ObjectStyle then begin
                UnSetGLState(rci.currentStates, stDepthTest);
                DoRender(rci, True, shouldRenderChildren);
                SetGLState(rci.currentStates, stDepthTest);
@@ -3346,7 +3361,7 @@ begin
             FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
          end else begin
-            if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentBuffer.DepthTest then begin
+            if osIgnoreDepthBuffer in ObjectStyle then begin
                UnSetGLState(rci.currentStates, stDepthTest);
                DoRender(rci, True, shouldRenderChildren);
                SetGLState(rci.currentStates, stDepthTest);
@@ -3471,30 +3486,6 @@ procedure TGLBaseSceneObject.NotifyChange(Sender : TObject);
 begin
    if Assigned(FScene) and (not IsUpdating) then
       FScene.NotifyChange(Self);
-end;
-
-// ValidateTransformation
-//
-procedure TGLBaseSceneObject.ValidateTransformation;
-var
-   i : Integer;
-   list : PPointerList;
-begin
-   if ocTransformation in Changes then begin
-      RebuildMatrix;
-      Exclude(FChanges, ocTransformation);
-   end else begin
-      if not (ocAbsoluteMatrix in FChanges) then begin
-         if ocAbsoluteMatrix in FParent.FChanges then begin
-            Include(FChanges, ocAbsoluteMatrix);
-            Include(FChanges, ocInvAbsoluteMatrix);
-         end;
-      end;
-   end;
-   // validate for children
-   list:=FChildren.List;
-   for i:=FChildren.Count-1 downto 0 do
-      TGLBaseSceneObject(list[i]).ValidateTransformation;
 end;
 
 // GetMatrix
@@ -3920,23 +3911,6 @@ constructor TGLSceneRootObject.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw];
-end;
-
-// ValidateTransformation
-//
-procedure TGLSceneRootObject.ValidateTransformation;
-var
-   i : Integer;
-   list : PPointerList;
-begin
-   if ocTransformation in Changes then begin
-      RebuildMatrix;
-      Exclude(FChanges, ocTransformation);
-   end;
-   // validate for children
-   list:=FChildren.List;
-   for i:=Count-1 downto 0 do
-      TGLBaseSceneObject(list[i]).ValidateTransformation;
 end;
 
 // ------------------
@@ -5119,17 +5093,6 @@ begin
          TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
    UnSetGLState(rci.currentStates, stBlend);
    UnSetGLState(rci.currentStates, stTexture2D);
-end;
-
-// ValidateTransformation
-//
-procedure TGLScene.ValidateTransformation(ACamera: TGLCamera);
-begin
-   FCurrentGLCamera:=ACamera;
-   FCameras.ValidateTransformation;
-   FObjects.ValidateTransformation;
-   ACamera.Apply;
-   FLastGLCamera:=FCurrentGLCamera;
 end;
 
 // Progress
@@ -6386,7 +6349,8 @@ begin
    // setup model view matrix
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity;
-   FCamera.FScene.ValidateTransformation(FCamera);
+   FCamera.Scene.FCurrentGLCamera:=FCamera;
+   FCamera.Apply;
    glGetFloatv(GL_MODELVIEW_MATRIX, @FModelViewMatrix);
    FCameraAbsolutePosition:=FCamera.AbsolutePosition;
 end;
