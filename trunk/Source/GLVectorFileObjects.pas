@@ -6758,7 +6758,8 @@ begin
       if referenceActor.FTargetSmoothAnimation<>nil then
          FTargetSmoothAnimation:=Animations.FindName(referenceActor.FTargetSmoothAnimation.Name)
       else FTargetSmoothAnimation:=nil;
-      Skeleton.Synchronize(referenceActor.Skeleton);
+      if (Skeleton.Frames.Count>0) and (referenceActor.Skeleton.Frames.Count>0) then
+         Skeleton.Synchronize(referenceActor.Skeleton);
    end;
 end;
 
