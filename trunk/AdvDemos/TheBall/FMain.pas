@@ -217,7 +217,7 @@ begin
       ALStart.Position.AsAffineVector:=sp.Position;
       ALStart.Move(1);
    end;
-   DCBallAbsolute.Position.AsAffineVector:=SPHBall.AbsolutePosition;
+   DCBallAbsolute.Position.AsVector:=SPHBall.AbsolutePosition;
    Camera.TargetObject:=DCTable;
    HUDText.Visible:=True;
    HUDText.Text:='Level '+IntToStr(currentLevelIdx)+#13#10#13#10+currentLevelName;
