@@ -1,4 +1,4 @@
-// Example using GLSkybox. Use the W,A,S,D keys to move
+// Example using GLSkybox. Use the W,A,S,D keys (or Z,Q,S,D) to move
 // and the mouse to look around.
 // The scene contains two GLSkyBox objects: GLSkyBox1 and GLSkyBox2 :
 // GLSkyBox1 renders the 6 faces of the skybox cube showing
@@ -22,9 +22,6 @@ uses
   Dialogs, ExtCtrls,GLScene, GLMisc, GLTexture,
   GLCadencer, GLNavigator, GLWin32Viewer, Keyboard, GLLensFlare, GLObjects,
   JPeg,GLSkyBox;
-
-
-
 
 type
   TForm1 = class(TForm)
@@ -73,18 +70,15 @@ implementation
 
 function mediaPath : string;
 begin
-     Result := ExtractFilePath(Paramstr(0))+'..\..\media\';
+   Result := ExtractFilePath(Paramstr(0))+'..\..\media\';
 end;
-
 
 function TForm1.LoadTexture(Matname,Filename : string) : TGLLibMaterial;
 begin
-     Result := GLMaterialLibrary1.AddTextureMaterial(Matname,mediaPath + Filename);
-     Result.Material.Texture.Disabled := false;
-     Result.Material.Texture.TextureMode := tmDecal;
+   Result := GLMaterialLibrary1.AddTextureMaterial(Matname,mediaPath + Filename);
+   Result.Material.Texture.Disabled := false;
+   Result.Material.Texture.TextureMode := tmDecal;
 end;
-
-
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -176,11 +170,11 @@ end;
 
 procedure TForm1.HandleKeys(d: double);
 begin
-      if IsKeyDown('W') then
+      if IsKeyDown('W') or IsKeyDown('Z') then
            GLCamera1.Move(d);
       if IsKeyDown('S') then
            GLCamera1.Move(-d);
-      if IsKeyDown('A') then
+      if IsKeyDown('A') or IsKeyDown('A') then
            GLCamera1.Slide(-d);
       if IsKeyDown('D') then
            GLCamera1.Slide(d);
