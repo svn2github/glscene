@@ -1059,6 +1059,11 @@ type
 			procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
          procedure StructureChanged; override;
+         {: Notifies that geometry data changed, but no re-preparation is needed.<p>
+            Using this method will usually be faster, but may result in incorrect
+            rendering, reduced performance and/or invalid bounding box data
+            (ie. invalid collision detection). Use with caution. } 
+         procedure StructureChangedNoPrepare;
 
          {: BEWARE! Utterly inefficient implementation! }
          function RayCastIntersect(const rayStart, rayVector : TVector;
@@ -3680,13 +3685,6 @@ begin
    // nothing
 end;
 
-
-
-
-
-
-
-
 // ------------------
 // ------------------ TFGVertexIndexList ------------------
 // ------------------
@@ -5055,6 +5053,13 @@ begin
    FAxisAlignedDimensionsCache[0]:=-1;
    MeshObjects.Prepare;
    inherited;
+end;
+
+// StructureChangedNoPrepare
+//
+procedure TGLBaseMesh.StructureChangedNoPrepare;
+begin
+   inherited StructureChanged;
 end;
 
 // RayCastIntersect
