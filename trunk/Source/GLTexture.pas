@@ -2557,8 +2557,13 @@ begin
          glMatrixMode(GL_TEXTURE);
          m:=rci.modelViewMatrix^;
          NormalizeMatrix(m);
-         TransposeMatrix(m);  // = Matrix inversion (matrix is now orthonormal)
-         glLoadMatrixf(@m);
+         // Transposition = Matrix inversion (matrix is now orthonormal)
+         if GL_ARB_transpose_matrix then
+            glLoadTransposeMatrixfARB(@m)
+         else begin
+            TransposeMatrix(m);
+            glLoadMatrixf(@m);
+         end;
          glMatrixMode(GL_MODELVIEW);
       end;
    	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
