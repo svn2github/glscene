@@ -23,7 +23,7 @@ unit odeimport;
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.11                                       *
+ * ODE Delphi Import unit : 0.8.12                                       *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -64,6 +64,7 @@ unit odeimport;
 
   Change history
 
+  2004.04.22 - MF - Fixes to make DelphiODE behave better when used as dynamic
   2004.04.21 - CH - New single and double dll. Now handles Capped Cylinder vs Trimesh collision
                     Added dJointGetUniversalAngle and dJointGetUniversalAngleRate, ...
   2004.04.08 - DL - Changed calling convention of dJointCreateContact and
@@ -208,6 +209,7 @@ type
   PdMatrix3 = ^TdMatrix3;
 
   TdMatrix3_As3x4 = array[0..2, 0..3] of TdReal;
+  PdMatrix3_As3x4 = ^TdMatrix3_As3x4;
 
   // typedef dReal dMatrix4[4*4];
   TdMatrix4 = array[0..4*4-1] of TdReal;
@@ -1390,6 +1392,7 @@ var
   dTerrainZClass : integer=-1;
   dConeClass : integer=-1;
 
+  IsODEInitialized : boolean = False;
   DisabledDebugGeom : boolean = False;
   DisabledDebugCollision : boolean = False;
 
@@ -1816,49 +1819,57 @@ end;
 var
   vODEHandle : TModuleHandle;
 
-procedure InitODE;
+function InitODE(ADllName : PChar) : boolean;
 begin
-  LoadModule( vODEHandle, ODEDLL );
+  if ADllName = '' then
+    ADllName := ODEDLL;
 
-  EXT_dCreateTriMesh := GetModuleSymbol( vODEHandle, 'dCreateTriMesh' );
-  dGeomTriMeshDataBuildSimple := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple' );
-  dGeomTriMeshDataBuildSimple1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple1' );
-  dGeomTriMeshDataBuildDouble := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble' );
-  dGeomTriMeshDataBuildDouble1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble1' );
-  dGeomTriMeshDataBuildSingle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle' );
-  dGeomTriMeshDataBuildSingle1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle1' );
+  IsODEInitialized := LoadModule( vODEHandle, ADllName );
+  result := IsODEInitialized;
 
-  dGeomTriMeshDataCreate := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataCreate' );
-  dGeomTriMeshDataSet := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataSet' );
-  dGeomTriMeshDataDestroy := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataDestroy' );
+  if IsODEInitialized then
+  begin
+    EXT_dCreateTriMesh := GetModuleSymbol( vODEHandle, 'dCreateTriMesh' );
+    dGeomTriMeshDataBuildSimple := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple' );
+    dGeomTriMeshDataBuildSimple1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple1' );
+    dGeomTriMeshDataBuildDouble := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble' );
+    dGeomTriMeshDataBuildDouble1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble1' );
+    dGeomTriMeshDataBuildSingle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle' );
+    dGeomTriMeshDataBuildSingle1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle1' );
 
-  dGeomTriMeshGetTriangle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetTriangle' );
-  dGeomTriMeshGetPoint := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetPoint' );
+    dGeomTriMeshDataCreate := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataCreate' );
+    dGeomTriMeshDataSet := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataSet' );
+    dGeomTriMeshDataDestroy := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataDestroy' );
 
-  dGeomTriMeshClearTCCache := GetModuleSymbol( vODEHandle, 'dGeomTriMeshClearTCCache' );
-  dGeomTriMeshEnableTC := GetModuleSymbol( vODEHandle, 'dGeomTriMeshEnableTC' );
-  dGeomTriMeshIsTCEnabled := GetModuleSymbol( vODEHandle, 'dGeomTriMeshIsTCEnabled' );
+    dGeomTriMeshGetTriangle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetTriangle' );
+    dGeomTriMeshGetPoint := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetPoint' );
 
-  dGeomTriMeshGetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetArrayCallback' );
-  dGeomTriMeshGetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetCallback' );
-  dGeomTriMeshGetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetRayCallback' );
-  dGeomTriMeshSetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetArrayCallback' );
-  dGeomTriMeshSetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetCallback' );
-  dGeomTriMeshSetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetRayCallback' );
+    dGeomTriMeshClearTCCache := GetModuleSymbol( vODEHandle, 'dGeomTriMeshClearTCCache' );
+    dGeomTriMeshEnableTC := GetModuleSymbol( vODEHandle, 'dGeomTriMeshEnableTC' );
+    dGeomTriMeshIsTCEnabled := GetModuleSymbol( vODEHandle, 'dGeomTriMeshIsTCEnabled' );
 
-  dGeomTriMeshSetData := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetData' );
+    dGeomTriMeshGetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetArrayCallback' );
+    dGeomTriMeshGetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetCallback' );
+    dGeomTriMeshGetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetRayCallback' );
+    dGeomTriMeshSetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetArrayCallback' );
+    dGeomTriMeshSetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetCallback' );
+    dGeomTriMeshSetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetRayCallback' );
 
-  {DynamicLoadMarker}
+    dGeomTriMeshSetData := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetData' );
+
+    {DynamicLoadMarker}
+  end;
 end;
 
 procedure CloseODE;
 begin
+  IsODEInitialized := false;
   UnLoadModule( vODEHandle );
 end;
 
 initialization
 
-   InitODE;
+   InitODE(ODEDLL);
 
 finalization
 
