@@ -18,6 +18,7 @@
       <li>25/01/05 - AX - Corrected AlphaChannel default value, must be 1
                           TGLButton, TGLForm - AlphaChannel behaviour text.
                           Added events OnMouseEnter/OnMouseLeave for all controls
+      <li>05/02/05 - AX - TGLLabel correct layout depending on Aligment and TextLayout.
 	</ul></font>
 }
 
@@ -136,6 +137,7 @@ type
     Procedure SetActiveControl(NewControl : TGLBaseControl);
     Procedure SetFocusedControl(NewControl : TGLFocusControl);
     Function  FindFirstGui : TGLBaseControl;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     procedure DoMouseEnter;
     procedure DoMouseLeave;
@@ -445,6 +447,7 @@ type
     procedure SetTextLayout(const Value: TGLTextLayout);
   protected
   public
+    Constructor Create(AOwner : TComponent); override;
     procedure InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
   published
     property Alignment : TAlignment read FAlignment write SetAlignment;
@@ -1016,6 +1019,21 @@ Begin
   End;
   Result := tmpFirst;
 End;
+
+procedure TGLBaseControl.Notification(AComponent: TComponent;
+  Operation: TOperation);
+begin
+  If Operation = opRemove then
+  Begin
+    if FEnteredControl <> nil then
+    begin
+      FEnteredControl.DoMouseLeave;
+      FEnteredControl := nil;
+    end;
+  End;
+
+  inherited;
+end;
 
 Function  TGLBaseControl.MouseDown(Sender: TObject; Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer) : Boolean;
 Var
@@ -2649,6 +2667,12 @@ End;
 
 
 
+constructor TGLLabel.Create(AOwner: TComponent);
+begin
+  inherited;
+  FTextLayout := tlCenter;
+end;
+
 procedure TGLLabel.InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
 Var
@@ -2658,9 +2682,33 @@ Var
 Begin
   If Assigned(BitmapFont) then
   Begin
-    SetVector(TekstPos,8,-((Height-GetFontHeight) / 2)+1,0);
-//    SetVector(TekstPos, 0, 0, 0);
-    
+    case Alignment of
+      taLeftJustify  : begin
+                         TekstPos[0] := 0;
+                       end;
+      taCenter       : begin
+                         TekstPos[0] := Width / 2;
+                       end;
+      taRightJustify : begin
+                         TekstPos[0] := Width;
+                       end;
+    end;
+
+    case TextLayout of
+      tlTop    : begin
+                   TekstPos[1] := 0;
+                 end;
+      tlCenter : begin
+                   TekstPos[1] := Round(-Height / 2);
+                 end;
+      tlBottom : begin
+                   TekstPos[1] := -Height;
+                 end;
+    end;
+
+    TekstPos[2] := 0;
+    TekstPos[3] := 0;
+
     Tekst := Caption;
 
     TextColor := FDefaultColor;
