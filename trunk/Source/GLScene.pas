@@ -7641,9 +7641,9 @@ end;
 
 // Create
 //
-constructor TGLColorProxyObject.Create;
+constructor TGLColorProxyObject.Create(AOwner: TComponent);
 begin
-  inherited;
+  inherited Create(AOwner);
   FFrontColor:=TGLFaceProperties.Create(Self);
 end;
 
