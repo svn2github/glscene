@@ -139,7 +139,7 @@ begin
                glClearStencil(1);
                glEnable(GL_STENCIL_TEST);
                glStencilFunc(GL_ALWAYS, 0, 0);
-               glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+               glStencilOp(GL_ZERO, GL_KEEP, GL_ZERO);
             end;
             if (moOpaque in MirrorOptions) then begin
                bgColor:=ConvertWinColor(Scene.CurrentBuffer.BackgroundColor);
@@ -269,7 +269,6 @@ begin
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity;
       glDepthFunc(GL_ALWAYS);
-      SetGLMaterialColors(GL_FRONT, @clrWhite, @clrBlack, @clrBlack, @clrBlack, 0);
 
       glBegin(GL_QUADS);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(Self.Width*0.5, Self.Height*0.5, 0), worldMat));

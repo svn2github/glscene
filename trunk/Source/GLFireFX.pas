@@ -3,15 +3,16 @@
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>12/08/01 - Egg - Fixed leak (color objects)
-      <li>09/03/01 - Egg - Fixed MaxParticles change, added RingExplosion 
-      <li>08/03/01 - Egg - Revisited the effect and added new parameters,
-                           dropped/renamed some, started documentation (just started)
-      <li>13/01/01 - Egg - Another matrix compatibility update
-      <li>22/12/00 - Egg - Compatibility for new Matrix rules, and sometime
-                           ago, added in all new props from Danjel Grosar 
-      <li>11/08/00 - Egg - A few speedups/enhancements
-	   <li>08/08/00 - Egg - Creation, based on Roger Cao's "FireEffectUnit"
+      <li>09/12/01 - EG - Added NoZWrite property
+      <li>12/08/01 - EG - Fixed leak (color objects)
+      <li>09/03/01 - EG - Fixed MaxParticles change, added RingExplosion
+      <li>08/03/01 - EG - Revisited the effect and added new parameters,
+                          dropped/renamed some, started documentation (just started)
+      <li>13/01/01 - EG - Another matrix compatibility update
+      <li>22/12/00 - EG - Compatibility for new Matrix rules, and sometime
+                          ago, added in all new props from Danjel Grosar
+      <li>11/08/00 - EG - A few speedups/enhancements
+	   <li>08/08/00 - EG - Creation, based on Roger Cao's "FireEffectUnit"
 	</ul></font>
 }
 unit GLFireFX;
@@ -55,6 +56,7 @@ type
          FFireBurst, FFireRadius : Single;
          FDisabled, FPaused, FUseInterval : Boolean;
          FReference : TGLBaseSceneObject;
+         FNoZWrite : Boolean;
 
 	   protected
 	      { Protected Declarations }
@@ -144,6 +146,8 @@ type
             to maintain a particle count of MaxParticles, by spawning new
             particles to replace the dead ones ASAP. }
          property UseInterval : Boolean read FUseInterval write FUseInterval;
+         {: Particle's render won't write to Z-Buffer }
+         property NoZWrite : Boolean read FNoZWrite write FNoZWrite default True;
 
          {: Specifies an optional object whose position to use as reference.<p>
             This property allows switching between static/shared fires (for
@@ -230,6 +234,7 @@ begin
    FDisabled:=false;
    Fpaused:=false;
    FUseInterval:=True;
+   FNoZWrite:=True;
    IntervalDelta:=0;
    FireInit;
 end;
@@ -667,6 +672,8 @@ begin
    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
    glEnable(GL_BLEND);
    glDepthFunc(GL_LEQUAL);
+   if Manager.NoZWrite then
+      glDepthMask(False);
 
    n := Manager.NP;
 
@@ -707,6 +714,8 @@ begin
       distList.Free;
    end;
 
+   if Manager.NoZWrite then
+      glDepthMask(True);
    glDepthFunc(GL_LESS);
    glPopMatrix;
    glPopAttrib;
