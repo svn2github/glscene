@@ -3,6 +3,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/01/03 - EG - Added TIntegerList.SortAndRemoveDuplicates
       <li>22/10/02 - EG - Added TransformXxxx to TAffineVectorList
       <li>04/07/02 - EG - Fixed TIntegerList.Add( 2 at once )
       <li>15/06/02 - EG - Added TBaseListOption stuff
@@ -316,6 +317,11 @@ type
          function MaxInteger : Integer;
          {: Sort items in ascending order. }
          procedure Sort;
+         {: Sort items in ascending order and remove duplicated integers. }
+         procedure SortAndRemoveDuplicates;
+
+         {: Adds delta to all items in the list. }
+         procedure Offset(delta : Integer);
 	end;
 
    TSingleArray = array [0..MaxInt shr 4] of Single;
@@ -350,6 +356,7 @@ type
 			property Items[Index: Integer] : Single read Get write Put; default;
 			property List: PSingleArray read FList;
 
+         {: Adds delta to all items in the list. }
 	      procedure Offset(delta : Single);
 	      procedure Scale(factor : Single);
          function  Sum : Single;
@@ -1686,8 +1693,41 @@ end;
 //
 procedure TIntegerList.Sort;
 begin
-	if (FList <> nil) and (Count > 1) then
-		IntegerQuickSort(FList, 0, Count - 1);
+	if (FList<>nil) and (Count>1) then
+		IntegerQuickSort(FList, 0, Count-1);
+end;
+
+// SortAndRemoveDuplicates
+//
+procedure TIntegerList.SortAndRemoveDuplicates;
+var
+	i, j, lastVal : Integer;
+   localList : PIntegerArray;
+begin
+	if (FList<>nil) and (Count>1) then begin
+		IntegerQuickSort(FList, 0, Count-1);
+      j:=0;
+      localList:=FList;
+      lastVal:=localList^[j];
+      for i:=1 to Count-1 do begin
+         if localList^[i]<>lastVal then begin
+            lastVal:=localList^[i];
+            Inc(j);
+            localList^[j]:=lastVal;
+         end;
+      end;
+      FCount:=j+1;
+   end;
+end;
+
+// Offset
+//
+procedure TIntegerList.Offset(delta : Integer);
+var
+   i : Integer;
+begin
+   for i:=0 to FCount-1 do
+      FList[i]:=FList[i]+delta;
 end;
 
 // ------------------
