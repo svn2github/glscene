@@ -24,14 +24,14 @@
       there are no particular issues with non-reflecting objects in front of a
       mirror (except objects not reflecting...), but by playing with the settings
       (ClearZBuffer especially) you'll notice they cause some artifacts if improperly
-      handle.
-   <li>teapot group those are reflected. See how disabling stencil will cause
+      handled.
+   <li>teapot group: those are reflected. See how disabling stencil will cause
       the reflected teapot to be visible outside of the mirror. If your mirror
-      is in wall (opaque on all sides around the mirror), you may not care about
-      stenciling.
+      is in a wall (opaque on all sides around the mirror), you may not have to
+      care about stenciling (the wall will overdraw mirror images).
    <li>lone inclined gray cylinder: this one is a don't, it's an object that is
       reflecting but that goes through the mirror... well, you can do it,
-      then you have to activate PlaneClip, otherwise objects on the other side
+      but you have to activate PlaneClip, otherwise objects on the other side
       of the mirror get reflected on the "wrong" side... (uncheck the option
       and see for yourself). PlaneClip is better avoided, it can make your FPS
       drop significantly on some 3D boards.
