@@ -178,7 +178,7 @@ begin
   	Material.Apply(rci);
    repeat
       if AlphaChannel<>1 then
-         SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+         rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
       // Prepare matrices
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix;
@@ -313,7 +313,7 @@ var
    f : Single;
 begin
    if Assigned(FBitmapFont) and (Text<>'') then begin
-      SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       // Prepare matrices
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix;
@@ -333,7 +333,7 @@ begin
       glPushAttrib(GL_ENABLE_BIT);
       glDisable(GL_DEPTH_TEST);
       // render text
-      FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
+      FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
       // restore state
       glPopAttrib;
       glPopMatrix;

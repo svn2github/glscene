@@ -14,7 +14,7 @@ unit FRTextureEdit;
 interface
 
 uses
-  Forms, StdCtrls, Buttons, Controls, Classes, GLTexture;
+  Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLUtils;
 
 type
   TRTextureEdit = class(TFrame)

@@ -143,8 +143,8 @@ type
     procedure SetDefaultColor(value : TColor);
     Procedure SetBitmapFont(NewFont : TGLCustomBitmapFont);
     Function  GetBitmapFont : TGLCustomBitmapFont;
-    Procedure WriteTextAt(Const X,Y : TGLFloat; Const Data : String; const Color : TColorVector); overload;
-    Procedure WriteTextAt(Const X1,Y1,X2,Y2 : TGLFloat; Const Data : String; const Color : TColorVector); overload;
+    Procedure WriteTextAt(var rci : TRenderContextInfo; Const X,Y : TGLFloat; Const Data : String; const Color : TColorVector); overload;
+    Procedure WriteTextAt(var rci : TRenderContextInfo; Const X1,Y1,X2,Y2 : TGLFloat; Const Data : String; const Color : TColorVector); overload;
     Function  GetFontHeight : Integer;
   public
     Constructor Create(AOwner : TComponent); override;
@@ -610,7 +610,7 @@ Var
 Begin
    FGuiLayout.Material.Apply(rci);
    if AlphaChannel<>1 then
-      SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+      rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
    // Prepare matrices
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
@@ -1444,7 +1444,7 @@ Begin
   GuiRedraw := True;
 End;
 
-Procedure TGLBaseFontControl.WriteTextAt(Const X,Y : TGLFloat; Const Data : String; Const Color : TColorVector);
+Procedure TGLBaseFontControl.WriteTextAt(var rci : TRenderContextInfo; Const X,Y : TGLFloat; Const Data : String; Const Color : TColorVector);
 
 Var
   Position : TVector;
@@ -1455,11 +1455,11 @@ Begin
     Position[1] := Round(Y);
     Position[2] := 0;
     Position[3] := 0;
-    BitmapFont.RenderString(Data,taLeftJustify,tlTop,Color, @Position);
+    BitmapFont.RenderString(rci, Data,taLeftJustify,tlTop,Color, @Position);
   End;
 End;
 
-Procedure TGLBaseFontControl.WriteTextAt(Const X1,Y1,X2,Y2 : TGLFloat; Const Data : String; const Color : TColorVector);
+Procedure TGLBaseFontControl.WriteTextAt(var rci : TRenderContextInfo; Const X1,Y1,X2,Y2 : TGLFloat; Const Data : String; const Color : TColorVector);
 var
   Position : TVector;
 Begin
@@ -1469,7 +1469,7 @@ Begin
     Position[1] := Round(-((Y2+Y1-GetFontHeight)*0.5))+2;
     Position[2] := 0;
     Position[3] := 0;
-    BitmapFont.RenderString(Data,taLeftJustify,tlTop,Color,@Position);
+    BitmapFont.RenderString(rci, Data,taLeftJustify,tlTop,Color,@Position);
   End;
 End;
 
@@ -1724,9 +1724,9 @@ Begin
       For XC := 0 to FMenuItems.count-1 do
       Begin
         If FSelIndex = XC then
-          WriteTextAt(XPos,YPos,FMenuItems[XC],FFocusedColor)
+          WriteTextAt(rci, XPos,YPos,FMenuItems[XC],FFocusedColor)
         else
-          WriteTextAt(XPos,YPos,FMenuItems[XC],FDefaultColor);
+          WriteTextAt(rci, XPos,YPos,FMenuItems[XC],FDefaultColor);
         YPos := YPos - BitmapFont.CharHeight;
       End;
     End;
@@ -1898,7 +1898,7 @@ Begin
   If Assigned(FGuiComponent) then
   Begin
     FGuiComponent.RenderToArea(0,0,Width,Height, FRenderStatus, FReBuildGui);
-    WriteTextAt(FRenderStatus[GLALTop].X1,FRenderStatus[GLALTop].Y1,FRenderStatus[GLALTop].X2,FRenderStatus[GLALTop].Y2,Caption,FTitleColor);
+    WriteTextAt(rci, FRenderStatus[GLALTop].X1,FRenderStatus[GLALTop].Y1,FRenderStatus[GLALTop].X2,FRenderStatus[GLALTop].Y2,Caption,FTitleColor);
   End;
 End;
 
@@ -2290,10 +2290,10 @@ Begin
    Begin
      If FFocused then
      Begin
-       WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FFocusedColor);
+       WriteTextAt(rci, FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FFocusedColor);
      End else
      Begin
-       WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FDefaultColor);
+       WriteTextAt(rci, FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FDefaultColor);
      End;
    End;
 End;
@@ -2474,11 +2474,11 @@ Begin
 
     If FFocused then
       Begin
-        WriteTextAt(FRenderStatus[GLAlLeft].X1,FRenderStatus[GLAlCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,FFocusedColor);
+        WriteTextAt(rci, FRenderStatus[GLAlLeft].X1,FRenderStatus[GLAlCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,FFocusedColor);
       End
     else
       Begin
-        WriteTextAt(FRenderStatus[GLAlLeft].X1,FRenderStatus[GLAlCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,FDefaultColor);
+        WriteTextAt(rci, FRenderStatus[GLAlLeft].X1,FRenderStatus[GLAlCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,FDefaultColor);
       End;
   End;
 End;
@@ -2496,7 +2496,7 @@ Begin
   Begin
     SetVector(TekstPos,8,-((Height-GetFontHeight) / 2)+1,0);
     Tekst := Caption;
-    BitmapFont.RenderString(Tekst,taLeftJustify,tlTop, FDefaultColor, @TekstPos);
+    BitmapFont.RenderString(rci, Tekst,taLeftJustify,tlTop, FDefaultColor, @TekstPos);
   End;
 End;
 
@@ -2507,10 +2507,10 @@ Begin
    Begin
      If Focused then
      Begin
-       WriteTextAt(8,-((Height-GetFontHeight) / 2)+1,Caption,FFocusedColor);
+       WriteTextAt(rci, 8,-((Height-GetFontHeight) / 2)+1,Caption,FFocusedColor);
      End else
      Begin
-       WriteTextAt(8,-((Height-GetFontHeight) / 2)+1,Caption,FDefaultColor);
+       WriteTextAt(rci, 8,-((Height-GetFontHeight) / 2)+1,Caption,FDefaultColor);
      End;
    End;
 End;
@@ -3136,15 +3136,15 @@ Begin
       YPos := -ClientRect.Top;
       If FDrawHeader then
       Begin
-        WriteTextAt(XPos,YPos,Columns[XC],FHeaderColor);
+        WriteTextAt(rci, XPos,YPos,Columns[XC],FHeaderColor);
         YPos := YPos - RowHeight;
       End;
       For YC := From to Till do
       Begin
         If CellSelected(XC,YC) then
-          WriteTextAt(XPos,YPos,CellText(XC,YC),FFocusedColor)
+          WriteTextAt(rci, XPos,YPos,CellText(XC,YC),FFocusedColor)
         else
-          WriteTextAt(XPos,YPos,CellText(XC,YC),FDefaultColor);
+          WriteTextAt(rci, XPos,YPos,CellText(XC,YC),FDefaultColor);
         YPos := YPos - RowHeight;
       End;
       XPos := XPos + Integer(Columns.Objects[XC]);

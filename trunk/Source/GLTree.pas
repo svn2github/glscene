@@ -348,13 +348,13 @@ begin
          libMat.Apply(rci);
    end;
 
-   InvertGLFrontFace;
+   rci.GLStates.InvertGLFrontFace;
    for i:=0 to (FVertices.Count div 4)-1 do begin
       n:=VectorNegate(FNormals[i]);
       glNormal3fv(@n);
       glDrawArrays(GL_QUADS, 4*i, 4);
    end;
-   InvertGLFrontFace;
+   rci.GLStates.InvertGLFrontFace;
 
    glDisableClientState(GL_VERTEX_ARRAY);
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);

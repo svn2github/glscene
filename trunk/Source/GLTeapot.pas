@@ -110,7 +110,7 @@ begin
    glRotatef(-90, 1, 0, 0);
    glScalef(0.15, 0.15, 0.15);
    glPushAttrib(GL_POLYGON_BIT or GL_ENABLE_BIT or GL_EVAL_BIT);
-   InvertGLFrontFace;
+   rci.GLStates.InvertGLFrontFace;
    glEnable(GL_AUTO_NORMAL);
    glEnable(GL_MAP2_VERTEX_3);
    glEnable(GL_MAP2_TEXTURE_COORD_2);
@@ -143,7 +143,7 @@ begin
          glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
       end;
    end;
-   InvertGLFrontFace;
+   rci.GLStates.InvertGLFrontFace;
    glPopAttrib;
    glPopMatrix;
 end;

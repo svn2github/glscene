@@ -842,7 +842,7 @@ begin
    glDisable(GL_CULL_FACE);
    glDepthMask(False);
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+   rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    // compensate camera
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
    with Scene.CurrentGLCamera do

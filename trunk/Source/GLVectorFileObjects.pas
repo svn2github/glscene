@@ -3385,7 +3385,7 @@ begin
       glPushAttrib(GL_ENABLE_BIT);
       glEnable(GL_COLOR_MATERIAL);
       glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-      ResetGLMaterialColors;
+      mrci.GLStates.ResetGLMaterialColors;
    end;
    case Mode of
       momTriangles, momTriangleStrip : if Vertices.Count>0 then begin
@@ -3451,12 +3451,12 @@ begin
                end;
             end;
             // restore faceculling
-            if (stCullFace in mrci.currentStates) then begin
+            if (stCullFace in mrci.GLStates.States) then begin
                if not mrci.bufferFaceCull then
-                  UnSetGLState(mrci.currentStates, stCullFace);
+                  mrci.GLStates.UnSetGLState(stCullFace);
             end else begin
                if mrci.bufferFaceCull then
-                  SetGLState(mrci.currentStates, stCullFace);
+                  mrci.GLStates.SetGLState(stCullFace);
             end;
          end else for i:=0 to FaceGroups.Count-1 do
             FaceGroups[i].BuildList(mrci);
@@ -4242,7 +4242,7 @@ begin
       Assert(Image.NativeTextureTarget=GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE1_ARB);
 
-      SetGLCurrentTexture(1, GL_TEXTURE_2D, Handle);
+      mrci.GLStates.SetGLCurrentTexture(1, GL_TEXTURE_2D, Handle);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -5428,7 +5428,7 @@ begin
       // set winding
       case FNormalsOrientation of
          mnoDefault : ;// nothing
-         mnoInvert : InvertGLFrontFace;
+         mnoInvert : rci.GLStates.InvertGLFrontFace;
       else
          Assert(False);
       end;
@@ -5457,7 +5457,7 @@ begin
          else glCallList(GetHandle(rci));
       end;
       if FNormalsOrientation<>mnoDefault then
-         InvertGLFrontFace;
+         rci.GLStates.InvertGLFrontFace;
    end;
    if Assigned(LightmapLibrary) then
       xglAllowSecondTextureUnit;

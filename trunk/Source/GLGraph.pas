@@ -465,7 +465,7 @@ begin
          if ColorMode<>hfcmNone then begin
             glEnable(GL_COLOR_MATERIAL);
             glColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
-            ResetGLMaterialColors;
+            rci.GLStates.ResetGLMaterialColors;
          end;
       end;
       rowBottom:=nil; rowMid:=nil;

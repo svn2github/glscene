@@ -123,10 +123,12 @@ var
 begin
    if FMaterialLibrary=nil then Exit;
 
-   oldStates:=rci.currentStates;
-   UnSetGLState(rci.currentStates, stDepthTest);
-   UnSetGLState(rci.currentStates, stLighting);
-   UnSetGLState(rci.currentStates, stFog);
+   with rci.GLStates do begin
+      oldStates:=States;
+      UnSetGLState(stDepthTest);
+      UnSetGLState(stLighting);
+      UnSetGLState(stFog);
+   end;
    glDepthMask(False);
 
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
@@ -234,9 +236,9 @@ begin
 
       glDepthMask(True); // restore
       if stLighting in oldStates then
-         SetGLState(rci.currentStates, stLighting);
+         rci.GLStates.SetGLState(stLighting);
       if stFog in oldStates then
-         SetGLState(rci.currentStates, stFog);
+         rci.GLStates.SetGLState(stFog);
 
       // process children
       if renderChildren then begin
@@ -246,7 +248,7 @@ begin
       end;
 
       if stDepthTest in oldStates then
-         SetGLState(rci.currentStates, stDepthTest);
+         rci.GLStates.SetGLState(stDepthTest);
 
 
    finally

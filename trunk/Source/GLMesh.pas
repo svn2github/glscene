@@ -612,7 +612,7 @@ begin
    if FVertexMode in [vmVNC, vmVNCT] then begin
       glEnable(GL_COLOR_MATERIAL);
       glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-      ResetGLMaterialColors;
+      rci.GLStates.ResetGLMaterialColors;
    end;
    VertexCount := FVertices.Count;
    case FMode of

@@ -26,6 +26,16 @@ uses Windows, Forms, Messages, Classes, GLScene, Controls, Menus;
 
 type
 
+{$ifdef FPC}
+   TWMPaint = packed record
+      Msg: Cardinal;
+      DC: HDC;
+      Unused: Longint;
+      Result: Longint;
+   end;
+  TWMDestroy = TWMNoParams;
+{$endif}
+
    // TVSyncMode
    //
    TVSyncMode = (vsmSync, vsmNoSync);

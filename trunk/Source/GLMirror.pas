@@ -163,8 +163,8 @@ begin
             end;
             if (moOpaque in MirrorOptions) then begin
                bgColor:=ConvertWinColor(Scene.CurrentBuffer.BackgroundColor);
-               SetGLMaterialColors(GL_FRONT, @bgColor, @clrBlack, @clrBlack, @clrBlack, 0);
-               UnSetGLState(rci.currentStates, stTexture2D);
+               rci.GLStates.SetGLMaterialColors(GL_FRONT, bgColor, clrBlack, clrBlack, clrBlack, 0);
+               rci.GLStates.UnSetGLState(stTexture2D);
             end else begin
                glColorMask(False, False, False, False);
             end;
@@ -238,8 +238,8 @@ begin
 
          glPopMatrix;
          glPopAttrib;
-         ResetGLMaterialColors;
-         ResetGLCurrentTexture;
+         rci.GLStates.ResetGLMaterialColors;
+         rci.GLStates.ResetGLCurrentTexture;
 
          rci.proxySubObject:=oldProxySubObject;
 

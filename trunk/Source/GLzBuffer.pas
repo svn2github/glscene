@@ -768,7 +768,7 @@ begin
    //-----------------------
    CalcShadowTexture(rci);
    //-----------------------
-   SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
+   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTexHandle.Handle);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 

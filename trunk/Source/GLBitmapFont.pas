@@ -25,7 +25,7 @@ unit GLBitmapFont;
 interface
 
 uses Classes, GLScene, VectorGeometry, GLMisc, StdCtrls, GLContext, GLCrossPlatform,
-   GLTexture, GLState;
+   GLTexture, GLState, GLUtils;
 
 type
 
@@ -190,14 +190,15 @@ type
             The current matrix is blindly used, meaning you can render all kinds
             of rotated and linear distorted text with this method, OpenGL
             Enable states are also possibly altered. }
-	      procedure RenderString(const aString : String; alignment : TAlignment;
+	      procedure RenderString(var rci : TRenderContextInfo;
+                                const aString : String; alignment : TAlignment;
                                 layout : TTextLayout; const color : TColorVector;
                                 position : PVector = nil; reverseY : Boolean = False);
          {: A simpler canvas-style TextOut helper for RenderString.<p>
             The rendering is reversed along Y by default, to allow direct use
             with TGLCanvas }
-         procedure TextOut(x, y : Single; const text : String; const color : TColorVector); overload;
-         procedure TextOut(x, y : Single; const text : String; const color : TColor); overload;
+         procedure TextOut(var rci : TRenderContextInfo; x, y : Single; const text : String; const color : TColorVector); overload;
+         procedure TextOut(var rci : TRenderContextInfo; x, y : Single; const text : String; const color : TColor); overload;
 
          {: Get the actual width for this char. }
          function GetCharWidth(ch : Char) : Integer;
@@ -300,7 +301,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLGraphics, XOpenGL, GLUtils;
+uses SysUtils, OpenGL1x, GLGraphics, XOpenGL;
 
 // ------------------
 // ------------------ TBitmapFontRange ------------------
@@ -772,7 +773,8 @@ end;
 
 // RenderString
 //
-procedure TGLCustomBitmapFont.RenderString(const aString : String; alignment : TAlignment;
+procedure TGLCustomBitmapFont.RenderString(var rci : TRenderContextInfo;
+            const aString : String; alignment : TAlignment;
             layout : TTextLayout; const color : TColorVector; position : PVector = nil;
             reverseY : Boolean = False);
 
@@ -822,7 +824,7 @@ begin
          FTextureHandle.AllocateHandle;
          Assert(FTextureHandle.Handle<>0);
       end;
-      SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
+      rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
       // texture registration
       if Glyphs.Width<>0 then begin
          PrepareImage;
@@ -846,7 +848,7 @@ begin
    glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
+   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
    // start rendering
    glColor4fv(@color);
@@ -892,7 +894,8 @@ end;
 
 // TextOut
 //
-procedure TGLCustomBitmapFont.TextOut(x, y : Single; const text : String; const color : TColorVector);
+procedure TGLCustomBitmapFont.TextOut(var rci : TRenderContextInfo;
+               x, y : Single; const text : String; const color : TColorVector);
 var
    v : TVector;
 begin
@@ -901,15 +904,16 @@ begin
    v[1]:=y;
    v[2]:=0;
    v[3]:=1;
-   RenderString(text, taLeftJustify, tlTop, color, @v, True);
+   RenderString(rci, text, taLeftJustify, tlTop, color, @v, True);
    glPopAttrib;
 end;
 
 // TextOut
 //
-procedure TGLCustomBitmapFont.TextOut(x, y : Single; const text : String; const color : TColor);
+procedure TGLCustomBitmapFont.TextOut(var rci : TRenderContextInfo;
+            x, y : Single; const text : String; const color : TColor);
 begin
-   TextOut(x, y, text, ConvertWinColor(color));
+   TextOut(rci, x, y, text, ConvertWinColor(color));
 end;
 
 // CharactersPerRow
@@ -1072,10 +1076,10 @@ end;
 // DoRender
 //
 procedure TGLFlatText.DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean);
+                               renderSelf, renderChildren : Boolean);
 begin
    if Assigned(FBitmapFont) and (Text<>'') then begin
-      SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       glPushAttrib(GL_ENABLE_BIT);
       if FModulateColor.Alpha<>1 then begin
          glEnable(GL_BLEND);
@@ -1083,7 +1087,7 @@ begin
       end;
       if ftoTwoSided in FOptions then
          glDisable(GL_CULL_FACE);
-      FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
+      FBitmapFont.RenderString(rci, Text, FAlignment, FLayout, FModulateColor.Color);
       glPopAttrib;
    end;
    if Count>0 then

@@ -781,7 +781,7 @@ begin
             glColorMask(False, False, False, False);
             glDisable(GL_BLEND);
          end;
-         SetGLState(rci.currentStates, stCullFace);
+         rci.GLStates.SetGLState(stCullFace);
 
          glDisable(GL_LIGHTING);
          glEnableClientState(GL_VERTEX_ARRAY);

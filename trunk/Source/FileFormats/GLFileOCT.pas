@@ -44,7 +44,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLTexture, GLGraphics, GLCrossPlatform, GLState;
+uses SysUtils, GLTexture, GLGraphics, GLCrossPlatform, GLState, GLUtils;
 
 // ------------------
 // ------------------ TGLOCTVectorFile ------------------
