@@ -22,7 +22,7 @@ unit GLSkydome;
 
 interface
 
-uses Classes, GLScene, GLMisc, GLTexture, VectorGeometry;
+uses Classes, GLScene, GLMisc, GLTexture, VectorGeometry, GLGraphics;
 
 type
 
