@@ -5,7 +5,9 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>07/12/01 - Egg - Creation
+      <li>22/02/01 - EG - Fixed change notification,
+                          Fixed special effects support (PFX, etc.) 
+      <li>07/12/01 - EG - Creation
    </ul></font>
 }
 unit GLMirror;
@@ -73,7 +75,8 @@ type
          {: Controls rendering options.<p>
             <ul>
             <li>moUseStencil: mirror area is stenciled, prevents reflected
-               objects to be visible on the sides of the mirror
+               objects to be visible on the sides of the mirror (stencil buffer
+               must be active in the viewer)
             <li>moOpaque: mirror is opaque (ie. painted with background color)
             <li>moMirrorPlaneClip: a ClipPlane is defined when reflecting objects
                to prevent reflections from popping out of the mirror
@@ -119,9 +122,10 @@ procedure TGLMirror.DoRender(var rci : TRenderContextInfo;
                           renderSelf, renderChildren : Boolean);
 var
    oldProxySubObject : Boolean;
-   refMat : TMatrix;
+   refMat, curMat : TMatrix;
    clipPlane : TDoubleHmgPlane;
    bgColor : TColorVector;
+   cameraPosBackup, cameraDirectionBackup : TVector;
 begin
    if FRendering then Exit;
    FRendering:=True;
@@ -130,7 +134,7 @@ begin
       rci.proxySubObject:=True;
 
       if VectorDotProduct(VectorSubtract(rci.cameraPosition, AbsolutePosition), AbsoluteDirection)>0 then begin
-      
+
          glPushAttrib(GL_ENABLE_BIT);
 
          // "Render" stencil mask
@@ -175,7 +179,9 @@ begin
          Scene.SetupLights(Scene.CurrentBuffer.LimitOf[limLights]);
 
          // mirror geometry and render master
+         glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
          glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+         Scene.CurrentBuffer.PushModelViewMatrix(curMat);
 
          glDisable(GL_CULL_FACE);
          glEnable(GL_NORMALIZE);
@@ -187,15 +193,23 @@ begin
             glClipPlane(GL_CLIP_PLANE0, @clipPlane);
          end;
 
+         cameraPosBackup:=rci.cameraPosition;
+         cameraDirectionBackup:=rci.cameraDirection;
+         rci.cameraPosition:=VectorTransform(rci.cameraPosition, refMat);
+         rci.cameraDirection:=VectorTransform(rci.cameraDirection, refMat);
+
          if Assigned(FMirrorObject) then begin
             if FMirrorObject.Parent<>nil then
                glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
             glMultMatrixf(@refMat);
-            FMirrorObject.DoRender(rci, renderSelf, RenderChildren);
+            FMirrorObject.DoRender(rci, renderSelf, renderChildren);
          end else begin
             glMultMatrixf(@refMat);
-            Scene.Objects.DoRender(rci, renderSelf, RenderChildren);
+            Scene.Objects.DoRender(rci, renderSelf, renderChildren);
          end;
+
+         rci.cameraPosition:=cameraPosBackup;
+         rci.cameraDirection:=cameraDirectionBackup;
 
          if moMirrorPlaneClip in MirrorOptions then begin
             glDisable(GL_CLIP_PLANE0);
@@ -206,11 +220,12 @@ begin
          end;
 
          // Restore to "normal"
+         Scene.CurrentBuffer.PopModelViewMatrix;
          glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
          Scene.SetupLights(Scene.CurrentBuffer.LimitOf[limLights]);
 
-         glPopAttrib;
          glPopMatrix;
+         glPopAttrib;
          ResetGLMaterialColors;
          ResetGLCurrentTexture;
 
@@ -308,7 +323,7 @@ begin
       FMirrorObject:=val;
       if Assigned(FMirrorObject) then
          FMirrorObject.FreeNotification(Self);
-      StructureChanged;
+      NotifyChange(Self);
    end;
 end;
 
@@ -318,7 +333,7 @@ procedure TGLMirror.SetWidth(AValue : TGLFloat);
 begin
    if AValue<>FWidth then begin
       FWidth:=AValue;
-	   StructureChanged;
+      NotifyChange(Self);
    end;
 end;
 
@@ -328,7 +343,7 @@ procedure TGLMirror.SetHeight(AValue : TGLFloat);
 begin
    if AValue<>FHeight then begin
       FHeight:=AValue;
-      StructureChanged;
+      NotifyChange(Self);
    end;
 end;
 
@@ -359,7 +374,7 @@ procedure TGLMirror.SetMirrorOptions(const val : TMirrorOptions);
 begin
    if FMirrorOptions<>val then begin
       FMirrorOptions:=val;
-      StructureChanged;
+      NotifyChange(Self);
    end;
 end;
 
