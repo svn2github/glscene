@@ -24,7 +24,11 @@ uses Windows, Classes, Controls, Forms, Extctrls, Graphics, vfw, GLScene,
    GLWin32Viewer;
 
 {$NOINCLUDE vfw}
-{$HPPEMIT '#include <vfw_BCB.hpp>'}
+{$ifdef GLS_DELPHI_6_UP}
+  {$HPPEMIT '#include <vfw_BCB.hpp>'}
+{$else}
+  {$HPPEMIT '#include <vfw_BCB5.hpp>'}
+{$endif}  
 
 
 type
