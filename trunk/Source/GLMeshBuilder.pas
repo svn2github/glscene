@@ -14,7 +14,7 @@
       <li>29/11/03 - JAJ - Created and Submitted to GLScene.
 	</ul></font>
 }
-unit GLBuildMesh;
+unit GLMeshBuilder;
 
 interface
 
