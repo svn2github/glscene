@@ -234,7 +234,7 @@ type
          {: Specifies if the refresh should be synchronized with the VSync signal.<p>
             If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
             extension, this property is ignored.  }
-         property VSync : TVSyncMode read FVSync write FVSync default vsmNoSync;
+         property VSync : TVSyncMode read FVSync write FVSync default vsmSync;
 
          property Cursor : TCursor read FCursor write SetCursor default crDefault;
          property PopupMenu : TPopupMenu read FPopupMenu write SetPopupMenu;
@@ -507,7 +507,7 @@ begin
    Width:=800;
    Height:=600;
    FScreenDepth:=sd32bits;
-   FVSync:=vsmNoSync;
+   FVSync:=vsmSync;
    FCursor:=crDefault;
    Buffer.BeforeRender:=DoBeforeRender;
 end;
