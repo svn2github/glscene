@@ -1,3 +1,5 @@
+... OpenGL12 has now been obsoleted, use OpenGL1x...
+
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
