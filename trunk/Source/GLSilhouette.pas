@@ -38,12 +38,16 @@ type
             silhouettes, because it's much slower. }
          procedure AddEdgeToSilhouette(const v0, v1 : TAffineVector;
                                        tightButSlow : Boolean);
+         procedure AddIndexedEdgeToSilhouette(const Vi0, Vi1 : integer);
+
          {: Adds a capping triangle to the silhouette.<p>
             If TightButSlow is true, no vertices will be doubled in the
             silhouette list. This should only be used when creating re-usable
             silhouettes, because it's much slower. }
          procedure AddCapToSilhouette(const v0, v1, v2 : TAffineVector;
                                       tightButSlow : Boolean);
+
+         procedure AddIndexedCapToSilhouette(const vi0, vi1, vi2 : Integer);
    end;
 
    // TBaseConnectivity
@@ -181,6 +185,14 @@ begin
                     Vertices.Add(v1, 1));
 end;
 
+// AddIndexedEdgeToSilhouette
+//
+procedure TGLSilhouette.AddIndexedEdgeToSilhouette(const Vi0, Vi1 : integer);
+
+begin
+   Indices.Add(Vi0, Vi1);
+end;
+
 // AddCapToSilhouette
 //
 procedure TGLSilhouette.AddCapToSilhouette(const v0, v1, v2 : TAffineVector;
@@ -193,6 +205,13 @@ begin
    else CapIndices.Add(Vertices.Add(v0, 1),
                        Vertices.Add(v1, 1),
                        Vertices.Add(v2, 1));
+end;
+
+// AddIndexedCapToSilhouette
+//
+procedure TGLSilhouette.AddIndexedCapToSilhouette(const vi0, vi1, vi2 : Integer);
+begin
+  CapIndices.Add(vi0, vi1, vi2);
 end;
 
 // ------------------

@@ -11,7 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
-      <li>19/06/03 - MF - Added TGLCube.GenerateSilhouette
+      <li>19/06/03 - MF - Added GenerateSilhouette to TGLCube and TGLPlane.
       <li>13/06/03 - EG - Fixed TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
       <li>03/06/03 - EG - Added TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
       <li>01/05/03 - SG - Added NURBS Curve to TGLLines (color not supported yet)
@@ -1521,8 +1521,40 @@ begin
 end;
 
 function TGLPlane.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+var
+  sil : TGLSilhouette;
+  hw, hh : single;
+
+    function MakeVector(x,y,z : single) : TAffineVector;
+    begin
+      result[0] := x;
+      result[1] := y;
+      result[2] := z;
+    end;
 begin
-  inherited GenerateSilhouette(silhouetteParameters);
+  // Too simple for a connectivity setup
+  sil := TGLSilhouette.Create;
+
+  hw:=FWidth*0.5;
+  hh:=FHeight*0.5;
+
+  sil.Vertices.Add( hw,  hh, 0, 1);
+  sil.Vertices.Add( hw, -hh, 0, 1);
+  sil.Vertices.Add(-hw, -hh, 0, 1);
+  sil.Vertices.Add(-hw,  hh, 0, 1);
+
+  sil.AddIndexedEdgeToSilhouette(0, 1);
+  sil.AddIndexedEdgeToSilhouette(1, 2);
+  sil.AddIndexedEdgeToSilhouette(2, 3);
+  sil.AddIndexedEdgeToSilhouette(3, 0);
+
+  if silhouetteParameters.CappingRequired then
+  begin
+    sil.AddIndexedCapToSilhouette(0,1,2);
+    sil.AddIndexedCapToSilhouette(2,3,0);
+  end;
+
+  result := Sil;
 end;
 
 // BuildList
