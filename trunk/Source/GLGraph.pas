@@ -3,6 +3,7 @@
 	Graph plotting objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>16/07/02 - Egg - Fixed THeightField backface polygon mode
       <li>29/01/02 - Egg - Fixed THeightField.BuildList when field is empty
       <li>10/01/02 - Egg - Added OnGetHeight2
       <li>30/11/01 - Egg - Color fix in THeightField.BuildList (thx Marc Hull)
@@ -394,6 +395,7 @@ type
 const
    cHFCMtoEnum : array [hfcmEmission..hfcmAmbientAndDiffuse] of TGLEnum =
       (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
+   cPolygonMode : array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
 
 var
    nx, m, k : Integer;
@@ -455,8 +457,10 @@ begin
          glPushAttrib(GL_ENABLE_BIT);
          // if we're not two-sided, we doesn't have to enable face-culling, it's
          // controled at the sceneviewer level
-         if hfoTwoSided in Options then
+         if hfoTwoSided in Options then begin
             glDisable(GL_CULL_FACE);
+            glPolygonMode(GL_FRONT_AND_BACK, cPolygonMode[Material.FrontProperties.PolygonMode]);
+         end;
          if ColorMode<>hfcmNone then begin
             glEnable(GL_COLOR_MATERIAL);
             glColorMaterial(GL_FRONT_AND_BACK, cHFCMtoEnum[ColorMode]);
