@@ -8,6 +8,8 @@
 	Results :
 
 	Size	 Triangles     FPS	    CPU      OpenGL     ColorDepth
+	  5      15972      80.1     K7-1066    GF2 Pro       32Bits
+   --- 04/09/01 --- Internal changes (buffers, contexts...)
 	  5      15972      64.1     K7-1066    GF2 Pro       32Bits
    --- 11/08/01 --- GLScene v0.8.3wip
 	  5      15972      20.1     Du-800     V3 2000       16Bits

@@ -6,6 +6,8 @@
 	child Sprite (untextured, unblended). Depth test is disabled.<p>
 
 	CPU	 	 OS		Renderer				Colors 	 Particles	 FPS		Rating
+   K7-1Ghz  Win98    GF2 Pro-12.41     32 bits      360    120.5      43200
+	------ 04/09/01 : Long time no bench
 	K7-500   Win98    GeForce-5.33      32 bits      255    120.2      30600
 	------ 13/01/00 : Another Matrix setup change
 	K6-400 	NT4	   V3-2000           16 bits		 151	  125.6      18965
