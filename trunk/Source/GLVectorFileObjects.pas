@@ -2949,7 +2949,7 @@ begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
-      if GL_EXT_compiled_vertex_array then
+      if GL_EXT_compiled_vertex_array and (LighmapTexCoords.Count=0) then
          glLockArraysEXT(0, vertices.Count);
       FArraysDeclared:=True;
       FLightMapArrayEnabled:=False;
@@ -2962,7 +2962,7 @@ procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
 begin
    if FArraysDeclared then begin
       DisableLightMapArray(mrci);
-      if GL_EXT_compiled_vertex_array then
+      if GL_EXT_compiled_vertex_array and (LighmapTexCoords.Count=0) then
          glUnLockArraysEXT;
       if Vertices.Count>0 then
          glDisableClientState(GL_VERTEX_ARRAY);
@@ -3858,8 +3858,6 @@ begin
       SetGLCurrentTexture(1, GL_TEXTURE_2D, Handle);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 //      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-                             
-      glEnable(GL_TEXTURE_2D);
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
@@ -3876,8 +3874,8 @@ begin
          // attach and activate lightmap
          Assert(lightMapIndex<mrci.lightmapLibrary.Materials.Count);
          libMat:=mrci.lightmapLibrary.Materials[lightMapIndex];
-         AttachLightmap(libMat.Material.Texture, mrci);
          Owner.Owner.EnableLightMapArray(mrci);
+         AttachLightmap(libMat.Material.Texture, mrci);
       end else begin
          // desactivate lightmap
          Owner.Owner.DisableLightMapArray(mrci);
