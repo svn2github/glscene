@@ -1,0 +1,4 @@
+All source files in this directory are Copyright 2005 Eric Grange
+and released under Mozilla Public License.
+
+http://www.mozilla.org/MPL/
