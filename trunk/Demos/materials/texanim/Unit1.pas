@@ -23,7 +23,7 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLCamera1: TGLCamera;
-    Cube1: TCube;
+    Cube1: TGLCube;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;

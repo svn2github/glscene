@@ -49,7 +49,7 @@ object Form1: TForm1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object Pipe1: TPipe
+    object Pipe1: TGLPipe
       Position.Coordinates = {00000000000080BF000000000000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Nodes = <
@@ -65,7 +65,7 @@ object Form1: TForm1
       Parts = [ppOutside, ppStartDisk, ppStopDisk]
       Radius = 0.200000002980232
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
     end
     object GLCamera1: TGLCamera

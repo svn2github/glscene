@@ -1,11 +1,11 @@
 {: Dynamic sample for the ExtrusionSolid.<p>
 
    In this sample we extrude a complex solid made of an outer star-like contour
-   and an inner square cutout that is moves around. The TExtrusionSolid takes
+   and an inner square cutout that is moves around. The TGLExtrusionSolid takes
    care of the calculations, so all that is left is defining the contours
    (one in the FormCreate event, and the other in the Cadencer.Progress event).<p>
 
-   Be aware that for TExtrusionSolid, like TMultiPolygon, the way you describe
+   Be aware that for TGLExtrusionSolid, like TGLMultiPolygon, the way you describe
    your polygons IS important:<ul>
    <li>the polygons must be in the X, Y plane
    <li>if all your polygons are defined in a counterclockwise manner, the first
@@ -27,7 +27,7 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    ExtrusionSolid: TExtrusionSolid;
+    ExtrusionSolid: TGLExtrusionSolid;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,

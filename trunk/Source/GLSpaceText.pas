@@ -57,7 +57,7 @@ type
          property Vert: TGLTextVertAdjust read FVert write SetVert default vaBaseLine;
    end;
 
-   // holds an entry in the font manager list (used in TSpaceText)
+   // holds an entry in the font manager list (used in TGLSpaceText)
    PFontEntry        = ^TFontEntry;
    TFontEntry        = record
                          Name      : String;
@@ -71,10 +71,10 @@ type
                          FClients  : TList;
                        end;
 
-   // TSpaceText
+   // TGLSpaceText
    //
    {: Renders a text in 3D. }
-   TSpaceText = class (TGLSceneObject)
+   TGLSpaceText = class (TGLSceneObject)
       private
 			{ Private Declarations }
          FFont       : TFont;
@@ -256,12 +256,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TSpaceText ------------------
+// ------------------ TGLSpaceText ------------------
 // ------------------
 
 // Create
 //
-constructor TSpaceText.Create(AOwner:TComponent);
+constructor TGLSpaceText.Create(AOwner:TComponent);
 begin
    inherited Create(AOwner);
    FFont:=TFont.Create;
@@ -275,7 +275,7 @@ end;
 
 // Destroy
 //
-destructor TSpaceText.Destroy;
+destructor TGLSpaceText.Destroy;
 begin
    FAdjust.OnChange:=nil;
    FAdjust.Free;
@@ -287,7 +287,7 @@ end;
 
 // TextMetrics
 //
-procedure TSpaceText.TextMetrics(const str : String; var width, maxHeight, maxUnder : Single);
+procedure TGLSpaceText.TextMetrics(const str : String; var width, maxHeight, maxUnder : Single);
 var
    i, firstChar, lastChar : Integer;
    buf : String;
@@ -314,7 +314,7 @@ end;
 
 // TextWidth
 //
-function TSpaceText.TextWidth(const str : String = '') : Single;
+function TGLSpaceText.TextWidth(const str : String = '') : Single;
 var
    mh, mu : Single;
 begin
@@ -323,7 +323,7 @@ end;
 
 // TextMaxHeight
 //
-function TSpaceText.TextMaxHeight(const str : String = '') : Single;
+function TGLSpaceText.TextMaxHeight(const str : String = '') : Single;
 var
    w, mu : Single;
 begin
@@ -332,7 +332,7 @@ end;
 
 // TextMaxUnder
 //
-function TSpaceText.TextMaxUnder(const str : String = '') : Single;
+function TGLSpaceText.TextMaxUnder(const str : String = '') : Single;
 var
    w, mh : Single;
 begin
@@ -341,7 +341,7 @@ end;
 
 // BuildList
 //
-procedure TSpaceText.BuildList(var rci : TRenderContextInfo);
+procedure TGLSpaceText.BuildList(var rci : TRenderContextInfo);
 var
    textL, maxUnder, maxHeight : Single;
    charScale : Single;
@@ -389,7 +389,7 @@ end;
 
 // DestroyHandle
 //
-procedure TSpaceText.DestroyHandle;
+procedure TGLSpaceText.DestroyHandle;
 begin
    FontChanged:=True;
    inherited;
@@ -397,7 +397,7 @@ end;
 
 // GetFirstAndLastChar
 //
-procedure TSpaceText.GetFirstAndLastChar(var firstChar, lastChar : Integer);
+procedure TGLSpaceText.GetFirstAndLastChar(var firstChar, lastChar : Integer);
 begin
    case FCharacterRange of
       stcrAlphaNum : begin
@@ -417,7 +417,7 @@ end;
 
 // DoRender
 //
-procedure TSpaceText.DoRender(var rci : TRenderContextInfo;
+procedure TGLSpaceText.DoRender(var rci : TRenderContextInfo;
                               renderSelf, renderChildren : Boolean);
 var
 	firstChar, lastChar : Integer;
@@ -439,7 +439,7 @@ end;
 
 // SetExtrusion
 //
-procedure TSpaceText.SetExtrusion(AValue: Single);
+procedure TGLSpaceText.SetExtrusion(AValue: Single);
 begin
    Assert(AValue>=0, 'Extrusion must be >=0');
 	if FExtrusion<>AValue then begin
@@ -450,7 +450,7 @@ end;
 
 // SetAllowedDeviation
 //
-procedure TSpaceText.SetAllowedDeviation(const val : Single);
+procedure TGLSpaceText.SetAllowedDeviation(const val : Single);
 begin
 	if FAllowedDeviation<>val then begin
       if val>0 then
@@ -462,7 +462,7 @@ end;
 
 // SetCharacterRange
 //
-procedure TSpaceText.SetCharacterRange(const val : TSpaceTextCharRange);
+procedure TGLSpaceText.SetCharacterRange(const val : TSpaceTextCharRange);
 begin
 	if FCharacterRange<>val then begin
 		FCharacterRange:=val;
@@ -472,7 +472,7 @@ end;
 
 // SetFont
 //
-procedure TSpaceText.SetFont(AFont: TFont);
+procedure TGLSpaceText.SetFont(AFont: TFont);
 begin
    FFont.Assign(AFont);
    OnFontChange(nil);
@@ -480,7 +480,7 @@ end;
 
 // OnFontChange
 //
-procedure TSpaceText.OnFontChange(sender : TObject);
+procedure TGLSpaceText.OnFontChange(sender : TObject);
 begin
    FontChanged:=True;
    StructureChanged;
@@ -488,7 +488,7 @@ end;
 
 // SetText
 //
-procedure TSpaceText.SetText(AText: String);
+procedure TGLSpaceText.SetText(AText: String);
 begin
    if FText<>AText then begin
       FText:=AText;
@@ -498,7 +498,7 @@ end;
 
 // SetAdjust
 //
-procedure TSpaceText.SetAdjust(const value : TGLTextAdjust);
+procedure TGLSpaceText.SetAdjust(const value : TGLTextAdjust);
 begin
    FAdjust.Assign(Value);
    StructureChanged;
@@ -506,7 +506,7 @@ end;
 
 // SetAspectRatio
 //
-procedure TSpaceText.SetAspectRatio(const value : Single);
+procedure TGLSpaceText.SetAspectRatio(const value : Single);
 begin
    if FAspectRatio<>value then begin
       FAspectRatio:=value;
@@ -516,7 +516,7 @@ end;
 
 // SetOblique
 //
-procedure TSpaceText.SetOblique(const value : Single);
+procedure TGLSpaceText.SetOblique(const value : Single);
 begin
    if FOblique<>Value then begin
       FOblique:=value;
@@ -526,7 +526,7 @@ end;
 
 // SetTextHeight
 //
-procedure TSpaceText.SetTextHeight(const value : Single);
+procedure TGLSpaceText.SetTextHeight(const value : Single);
 begin
    if value<>FTextHeight then begin
       FTextHeight:=value;
@@ -694,7 +694,7 @@ end;
 
 // NotifyFontChanged
 //
-procedure TSpaceText.NotifyFontChanged;
+procedure TGLSpaceText.NotifyFontChanged;
 begin
    FTextFontEntry:=nil;
    FontChanged:=True;
@@ -702,7 +702,7 @@ end;
 
 // NotifyChange
 //
-procedure TSpaceText.NotifyChange(sender : TObject);
+procedure TGLSpaceText.NotifyChange(sender : TObject);
 begin
    if Sender is TFontManager then
       NotifyFontChanged
@@ -711,7 +711,7 @@ end;
 
 // DefaultHandler
 //
-procedure TSpaceText.DefaultHandler(var Message);
+procedure TGLSpaceText.DefaultHandler(var Message);
 begin
    with TMessage(Message) do begin
       if Msg=vFontManagerMsgID then
@@ -729,7 +729,7 @@ initialization
 //-------------------------------------------------------------
 
    vFontManagerMsgID:=RegisterWindowMessage(cFontManagerMsg);
-   RegisterClass(TSpaceText);
+   RegisterClass(TGLSpaceText);
 
 finalization
 

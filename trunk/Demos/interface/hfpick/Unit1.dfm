@@ -98,7 +98,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 40
-    object HeightField: THeightField
+    object HeightField: TGLHeightField
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {9A99193F9A99193F0000003F00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}

@@ -35,7 +35,7 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLParticles1: TGLParticles;
-    Sprite1: TSprite;
+    Sprite1: TGLSprite;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
     procedure GLParticles1ActivateParticle(Sender: TObject;
@@ -69,7 +69,7 @@ procedure TForm1.GLParticles1ActivateParticle(Sender: TObject;
 begin
    // this event is called when a particle is activated,
    // ie. just before it will be rendered
-   with TSprite(particle) do begin
+   with TGLSprite(particle) do begin
       with Material.FrontProperties do begin
          // we pick a random color
          Emission.Color:=PointMake(Random, Random, Random);
@@ -86,12 +86,12 @@ procedure TForm1.Sprite1Progress(Sender: TObject; const deltaTime,
 var
    life : Double;
 begin
-   with TSprite(Sender) do begin
+   with TGLSprite(Sender) do begin
       // calculate for how long we've been living
       life:=(newTime-TagFloat);
       if life>10 then
          // old particle to kill
-         GLParticles1.KillParticle(TSprite(Sender))
+         GLParticles1.KillParticle(TGLSprite(Sender))
       else if life<1 then
          // baby particles become brighter in their 1st second of life...
          Material.FrontProperties.Diffuse.Alpha:=life
@@ -103,7 +103,7 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    // every timer, we create a particle at a random position
-   with TSprite(GLParticles1.CreateParticle).Position do begin
+   with TGLSprite(GLParticles1.CreateParticle).Position do begin
       X:=3*(Random-0.5);
       Y:=3*(Random-0.5);
       Z:=3*(Random-0.5);

@@ -104,7 +104,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 48
     Top = 32
-    object Plane1: TPlane
+    object Plane1: TGLPlane
       Position.Coordinates = {0000000000000000000080BF0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Base'

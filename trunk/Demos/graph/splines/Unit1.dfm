@@ -28,7 +28,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object Lines1: TLines
+    object Lines1: TGLLines
       AntiAliased = True
       LineWidth = 6
       Nodes = <

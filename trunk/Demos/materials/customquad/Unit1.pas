@@ -1,9 +1,9 @@
-{: Using materials in a TDirectOpenGL OnRender.<p>
+{: Using materials in a TGLDirectOpenGL OnRender.<p>
 
    This demo shows how to dynamically create materials in a material library
-   and use them in a TDirectOpenGL to render your own stuff.<br>
+   and use them in a TGLDirectOpenGL to render your own stuff.<br>
    The render is quite simple: two quads, each with its own texture. The
-   TDirectOpenGL is placed in a small hierarchy with a torus and dummy cube,
+   TGLDirectOpenGL is placed in a small hierarchy with a torus and dummy cube,
    and the rotation animation are handled by those two object to show that
    the OnRender code uses the hierarchy.
 }
@@ -22,9 +22,9 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLMaterialLibrary: TGLMaterialLibrary;
     GLCamera1: TGLCamera;
-    DummyCube1: TDummyCube;
-    Torus1: TTorus;
-    DirectOpenGL1: TDirectOpenGL;
+    DummyCube1: TGLDummyCube;
+    Torus1: TGLTorus;
+    DirectOpenGL1: TGLDirectOpenGL;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
     procedure DirectOpenGL1Render(var rci: TRenderContextInfo);

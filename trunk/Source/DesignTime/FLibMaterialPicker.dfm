@@ -59,19 +59,19 @@ object LibMaterialPicker: TLibMaterialPicker
     Top = 22
     TabOrder = 3
     inherited GLScene1: TGLScene
-      inherited Cube: TCube
+      inherited Cube: TGLCube
         Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
         Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
-      inherited Sphere: TSphere
+      inherited Sphere: TGLSphere
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
       inherited LightSource: TGLLightSource
         Position.Coordinates = {0000000000004040000020410000803F}
         Specular.Color = {0000803F0000803F0000803F0000803F}
       end
-      inherited PlanePattern: TPlane
+      inherited PlanePattern: TGLPlane
         Position.Coordinates = {0000000000000000000040C00000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end

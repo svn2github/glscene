@@ -1,6 +1,6 @@
-{: This is a quick demo for the TLines object and spline functionality.<p>
+{: This is a quick demo for the TGLLines object and spline functionality.<p>
 
-   TLines can handle normal lines and cubic splines, each node can have a
+   TGLLines can handle normal lines and cubic splines, each node can have a
    different color, and the line can be color-interpolated.<p>
 
    Note that the camera in this sample is in <i>orthogonal</i> mode, this makes
@@ -20,7 +20,7 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
-    Lines1: TLines;
+    Lines1: TGLLines;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;

@@ -18,8 +18,8 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
-    RotationSolid1: TRevolutionSolid;
+    DummyCube1: TGLDummyCube;
+    RotationSolid1: TGLRevolutionSolid;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     CheckBox3: TCheckBox;

@@ -23,10 +23,10 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
-    FreeForm1: TFreeForm;
-    Sphere1: TSphere;
-    ArrowLine1: TArrowLine;
+    DummyCube1: TGLDummyCube;
+    FreeForm1: TGLFreeForm;
+    Sphere1: TGLSphere;
+    ArrowLine1: TGLArrowLine;
     GLSceneViewer2: TGLSceneViewer;
     GLCamera2: TGLCamera;
     GLCadencer1: TGLCadencer;

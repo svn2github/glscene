@@ -1,4 +1,4 @@
-{: A demo for THUDText using the WindowsBitmapFont component.<p>
+{: A demo for TGLHUDText using the WindowsBitmapFont component.<p>
 
    The WindowsBitmapFont can automatically generate a font texture based on
    one of the standard windows fonts. The texture dimensions are automatically
@@ -27,12 +27,12 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLLightSource1: TGLLightSource;
     GLCamera1: TGLCamera;
-    HUDText1: THUDText;
+    HUDText1: TGLHUDText;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
-    HUDText2: THUDText;
-    HUDText3: THUDText;
-    Teapot1: TTeapot;
+    HUDText2: TGLHUDText;
+    HUDText3: TGLHUDText;
+    Teapot1: TGLTeapot;
     WindowsBitmapFont1: TWindowsBitmapFont;
     MainMenu1: TMainMenu;
     MIPickFont: TMenuItem;

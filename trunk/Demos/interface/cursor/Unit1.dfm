@@ -47,7 +47,7 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 8
     Top = 16
-    object HSBitmap: THUDSprite
+    object HSBitmap: TGLHUDSprite
       Position.Coordinates = {0000484200004842000000000000803F}
       Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -59,7 +59,7 @@ object Form1: TForm1
     object GLParticles1: TGLParticles
       CubeSize = 1
       OnActivateParticle = GLParticles1ActivateParticle
-      object HSParticle: THUDSprite
+      object HSParticle: TGLHUDSprite
         OnProgress = HSParticleProgress
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'cursor'
@@ -68,7 +68,7 @@ object Form1: TForm1
         NoZWrite = False
       end
     end
-    object HSCursor: THUDSprite
+    object HSCursor: TGLHUDSprite
       Position.Coordinates = {0000484200004842000000000000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'cursor'

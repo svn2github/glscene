@@ -38,11 +38,11 @@ type
     GLMaterialLibrary1: TGLMaterialLibrary;
     BBProcess: TButton;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     GLCamera1: TGLCamera;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
-    Portal1: TPortal;
+    Portal1: TGLPortal;
     Label3: TLabel;
     CBAuto: TCheckBox;
     CBFog: TCheckBox;

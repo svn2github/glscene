@@ -26,10 +26,10 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object DCBase: TDummyCube
+    object DCBase: TGLDummyCube
       Position.Coordinates = {00000000000000C0000000000000803F}
       CubeSize = 1
-      object Sphere1: TSphere
+      object Sphere1: TGLSphere
         Scale.Coordinates = {000000400000003F0000004000000000}
         Material.FrontProperties.Ambient.Color = {00000000CDCC4C3E000000000000803F}
         Material.FrontProperties.Diffuse.Color = {938C0C3E938E0E3F938C0C3E0000803F}
@@ -39,27 +39,27 @@ object Form1: TForm1
         Slices = 32
         Stacks = 8
       end
-      object Pipe1: TPipe
+      object Pipe1: TGLPipe
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
         Radius = 1
       end
-      object Pipe2: TPipe
+      object Pipe2: TGLPipe
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
         Radius = 1
       end
-      object Pipe3: TPipe
+      object Pipe3: TGLPipe
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
         Radius = 1
       end
-      object Pipe4: TPipe
+      object Pipe4: TGLPipe
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
         Radius = 1
       end
-      object Pipe5: TPipe
+      object Pipe5: TGLPipe
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Nodes = <>
         Radius = 1
@@ -70,7 +70,7 @@ object Form1: TForm1
       Position.Coordinates = {00004842000020420000F0410000803F}
       SpotCutOff = 180
     end
-    object DCTarget: TDummyCube
+    object DCTarget: TGLDummyCube
       CubeSize = 1
     end
     object GLCamera1: TGLCamera

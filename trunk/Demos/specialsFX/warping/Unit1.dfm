@@ -134,7 +134,7 @@ object Form1: TForm1
   object GLScene: TGLScene
     Left = 8
     Top = 56
-    object HeightField: THeightField
+    object HeightField: TGLHeightField
       Direction.Coordinates = {00000000000000800000803F00000000}
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace

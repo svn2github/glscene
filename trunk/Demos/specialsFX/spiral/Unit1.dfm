@@ -60,7 +60,7 @@ object Form1: TForm1
   object GLScene: TGLScene
     Left = 16
     Top = 16
-    object DCBase: TDummyCube
+    object DCBase: TGLDummyCube
       CubeSize = 1
       BehavioursData = {
         0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -70,7 +70,7 @@ object Form1: TForm1
         0201061254474C536F757263655046584566666563740200060750465852696E
         6702010200080200090000000000002040000000000000000005000000000000
         0000000005000000000000000000000500000000000000FA074002000201}
-      object DCSrc: TDummyCube
+      object DCSrc: TGLDummyCube
         Position.Coordinates = {0000803F00000040000000000000803F}
         CubeSize = 1
         EffectsData = {

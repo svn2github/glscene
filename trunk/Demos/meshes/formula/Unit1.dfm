@@ -65,9 +65,9 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 32
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 10
-      object Mesh1: TMesh
+      object Mesh1: TGLMesh
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Mode = mmTriangles
         VertexMode = vmVNC
@@ -94,9 +94,9 @@ object Form1: TForm1
   object GLScene2: TGLScene
     Left = 560
     Top = 40
-    object DummyCube2: TDummyCube
+    object DummyCube2: TGLDummyCube
       CubeSize = 10
-      object Mesh2: TMesh
+      object Mesh2: TGLMesh
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Mode = mmTriangles
         VertexMode = vmVNC

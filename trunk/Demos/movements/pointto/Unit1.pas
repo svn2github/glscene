@@ -20,17 +20,17 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
-    DCSphere: TDummyCube;
-    ArrowLine: TArrowLine;
+    DCSphere: TGLDummyCube;
+    ArrowLine: TGLArrowLine;
     GLLightSource1: TGLLightSource;
-    Sphere: TSphere;
-    DCArrow: TDummyCube;
+    Sphere: TGLSphere;
+    DCArrow: TGLDummyCube;
     GLCadencer1: TGLCadencer;
-    Disk1: TDisk;
-    Disk2: TDisk;
-    Lines1: TLines;
-    Plane1: TPlane;
-    Lines2: TLines;
+    Disk1: TGLDisk;
+    Disk2: TGLDisk;
+    Lines1: TGLLines;
+    Plane1: TGLPlane;
+    Lines2: TGLLines;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private

@@ -21,16 +21,16 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
-    FreeForm1: TFreeForm;
-    Sphere1: TSphere;
-    ArrowLine1: TArrowLine;
+    DummyCube1: TGLDummyCube;
+    FreeForm1: TGLFreeForm;
+    Sphere1: TGLSphere;
+    ArrowLine1: TGLArrowLine;
     GLSceneViewer2: TGLSceneViewer;
     GLCamera2: TGLCamera;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
-    DummyCube2: TDummyCube;
-    Sphere2: TSphere;
+    DummyCube2: TGLDummyCube;
+    Sphere2: TGLSphere;
     GLLightSource2: TGLLightSource;
     Panel1: TPanel;
     Label1: TLabel;
@@ -39,7 +39,7 @@ type
     Label4: TLabel;
     TrackBar1: TTrackBar;
     Button1: TButton;
-    Lines1: TLines;
+    Lines1: TGLLines;
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

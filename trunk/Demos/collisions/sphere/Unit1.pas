@@ -21,9 +21,9 @@ type
     CollisionManager1: TCollisionManager;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
-    Sphere1: TSphere;
-    Sphere2: TSphere;
+    DummyCube1: TGLDummyCube;
+    Sphere1: TGLSphere;
+    Sphere2: TGLSphere;
     TrackBar1: TTrackBar;
     Button1: TButton;
     procedure TrackBar1Change(Sender: TObject);

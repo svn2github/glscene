@@ -28,39 +28,39 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 40
-    object Plane1: TPlane
+    object Plane1: TGLPlane
       Position.Coordinates = {0000000000000000000000BF0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Mat'
       Height = 10
       Width = 15
-      object Cube2: TCube
+      object Cube2: TGLCube
         Position.Coordinates = {0000F0C0000000000000803E0000803F}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Edge'
         CubeSize = {0000003F000020410000003F}
       end
-      object Cube1: TCube
+      object Cube1: TGLCube
         Position.Coordinates = {000000000000A0400000803E0000803F}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Edge'
         CubeSize = {000078410000003F0000003F}
       end
-      object Cube3: TCube
+      object Cube3: TGLCube
         Position.Coordinates = {0000F040000000000000803E0000803F}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Edge'
         CubeSize = {0000003F000020410000003F}
       end
     end
-    object Ball: TSphere
+    object Ball: TGLSphere
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Ball'
       Radius = 0.400000005960464
       Slices = 12
       Stacks = 9
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
       object GLCamera1: TGLCamera
         DepthOfView = 100
@@ -77,13 +77,13 @@ object Form1: TForm1
       Specular.Color = {0000803F0000803F0000803F0000803F}
       SpotCutOff = 180
     end
-    object Pad: TCube
+    object Pad: TGLCube
       Position.Coordinates = {00000000666696C0000080BE0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'Pad'
       CubeSize = {000000400000003F0000003F}
     end
-    object SpaceText1: TSpaceText
+    object SpaceText1: TGLSpaceText
       Direction.Coordinates = {00000000EA4677BFEE83843E00000000}
       Position.Coordinates = {0000C0BF00000000000060400000803F}
       Scale.Coordinates = {000000400000803F0000803F00000000}

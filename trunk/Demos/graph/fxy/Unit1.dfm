@@ -62,7 +62,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object HeightField1: THeightField
+    object HeightField1: TGLHeightField
       Direction.Coordinates = {0044F4970000803F2EBD3BB300000000}
       ShowAxes = True
       Up.Coordinates = {0000803F583DAF262EBD3B3300000000}
@@ -74,7 +74,7 @@ object Form1: TForm1
       YSamplingScale.Max = 1
       YSamplingScale.Step = 0.0199999995529652
       OnGetHeight = HeightField1GetHeight
-      object YZGrid: TXYZGrid
+      object YZGrid: TGLXYZGrid
         LineColor.Color = {0000803F00000000000000000000803F}
         XSamplingScale.Min = -1
         XSamplingScale.Max = 1
@@ -88,7 +88,7 @@ object Form1: TForm1
         Parts = [gpY, gpZ]
         LinesSmoothing = False
       end
-      object XZGrid: TXYZGrid
+      object XZGrid: TGLXYZGrid
         LineColor.Color = {000000000000803F000000000000803F}
         XSamplingScale.Min = -1
         XSamplingScale.Max = 1
@@ -102,7 +102,7 @@ object Form1: TForm1
         Parts = [gpX, gpZ]
         LinesSmoothing = False
       end
-      object XYGrid: TXYZGrid
+      object XYGrid: TGLXYZGrid
         LineColor.Color = {00000000000000000000803F0000803F}
         XSamplingScale.Min = -1
         XSamplingScale.Max = 1

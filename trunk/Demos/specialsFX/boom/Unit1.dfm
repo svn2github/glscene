@@ -37,7 +37,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 64
     Top = 8
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000007041000000000000803F}
       CubeSize = 1
     end
@@ -46,7 +46,7 @@ object Form1: TForm1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Radius = 0.5
       Slices = 9

@@ -24,7 +24,7 @@ type
     GLScene1: TGLScene;
     Camera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    mesh: TFreeForm;
+    mesh: TGLFreeForm;
     MaxStepsBar: TTrackBar;
     Label1: TLabel;
     StepBar: TProgressBar;

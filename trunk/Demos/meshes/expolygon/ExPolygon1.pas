@@ -1,6 +1,6 @@
 {: TGLMultiPolygon Sample, contributed by Uwe Raabe.<p>
 
-   Note: this sample has been partly obsoleted/superseded by the TExtrusionSolid
+   Note: this sample has been partly obsoleted/superseded by the TGLExtrusionSolid
    (by Uwe Raabe), which allows building such solids directly.
 }
 unit ExPolygon1;
@@ -22,8 +22,8 @@ type
     GLScene1: TGLScene;
     GLLightSource1: TGLLightSource;
     GLLightSource2: TGLLightSource;
-    Container: TDummyCube;
-    CameraTarget: TDummyCube;
+    Container: TGLDummyCube;
+    CameraTarget: TGLDummyCube;
     Camera: TGLCamera;
     GLMaterialLibrary1: TGLMaterialLibrary;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
@@ -33,11 +33,11 @@ type
     procedure FormShow(Sender: TObject);
   private
     mx,my : Integer;
-    FPlane : array[0..5] of TMultiPolygon;
+    FPlane : array[0..5] of TGLMultiPolygon;
     FDY: Double;
     FDX: Double;
     FDZ: Double;
-    function GetPlane(Side: Integer): TMultiPolygon;
+    function GetPlane(Side: Integer): TGLMultiPolygon;
     procedure SetDX(const Value: Double);
     procedure SetDY(const Value: Double);
     procedure SetDZ(const Value: Double);
@@ -49,7 +49,7 @@ type
   public
     { Public-Deklarationen }
     procedure MakeHole(Side:Integer; X,Y,Z,D,T:Double; Phi:Double=0; Rho:Double=0);
-    property Plane[Side:Integer]:TMultiPolygon read GetPlane;
+    property Plane[Side:Integer]:TGLMultiPolygon read GetPlane;
     property DX:Double read FDX write SetDX;
     property DY:Double read FDY write SetDY;
     property DZ:Double read FDZ write SetDZ;
@@ -86,11 +86,11 @@ var
   end;
 
 var
-  Dum : TDummyCube;
-  Cyl : TCylinder;
+  Dum : TGLDummyCube;
+  Cyl : TGLCylinder;
   through : Boolean;
 begin
-  Dum := TDummyCube.Create(nil);
+  Dum := TGLDummyCube.Create(nil);
   Dum.Position.x := X;
   Dum.Position.y := Y;
   Dum.Position.z := Z;
@@ -114,7 +114,7 @@ begin
     4 : if (Y-T)<=0 then T := Y else through := false;
     5 : if (Z+T)>=DZ then T := DZ-Z else through := false;
   end;
-  Cyl := TCylinder.Create(nil);
+  Cyl := TGLCylinder.Create(nil);
   AddMaterial(Cyl);
   Cyl.Position.x := 0;
   Cyl.Position.y := - 0.5*T;
@@ -137,9 +137,9 @@ procedure TForm1.CreatePanel;
 var
   I : Integer;
 
-  function MakePlane(X,Y,Z,P,T,W,H:Double):TMultiPolygon;
+  function MakePlane(X,Y,Z,P,T,W,H:Double):TGLMultiPolygon;
   begin
-    result := TMultiPolygon.Create(nil);
+    result := TGLMultiPolygon.Create(nil);
     result.Material.MaterialLibrary := GLMaterialLibrary1;
     result.Material.LibMaterialName := 'MatSurface';
     result.Parts := [ppTop];
@@ -165,7 +165,7 @@ begin
   for I:=0 to 5 do Container.AddChild(FPlane[I]);
 end;
 
-function TForm1.GetPlane(Side: Integer): TMultiPolygon;
+function TForm1.GetPlane(Side: Integer): TGLMultiPolygon;
 begin
   result := FPlane[Side];
 end;

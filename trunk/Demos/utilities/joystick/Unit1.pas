@@ -22,15 +22,15 @@ type
     Joystick1: TJoystick;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
-    Cube1: TCube;
-    Cylinder1: TCylinder;
-    Sphere1: TSphere;
-    DummyCube2: TDummyCube;
-    Sphere2: TSphere;
-    Sphere3: TSphere;
-    Sphere4: TSphere;
-    DummyCube3: TDummyCube;
+    DummyCube1: TGLDummyCube;
+    Cube1: TGLCube;
+    Cylinder1: TGLCylinder;
+    Sphere1: TGLSphere;
+    DummyCube2: TGLDummyCube;
+    Sphere2: TGLSphere;
+    Sphere3: TGLSphere;
+    Sphere4: TGLSphere;
+    DummyCube3: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     procedure Joystick1JoystickButtonChange(Sender: TObject;
       JoyID: TJoystickID; Buttons: TJoystickButtons; XDeflection,
@@ -84,7 +84,7 @@ begin
    // child of a single dummycube)
    i:=0;
    for button:=jbButton1 to jbButton4 do begin
-      with TSphere(DummyCube2.Children[i]).Material.FrontProperties.Diffuse do
+      with TGLSphere(DummyCube2.Children[i]).Material.FrontProperties.Diffuse do
          AsWinColor:=cPressedColor[button in buttons];
       Inc(i);
    end;

@@ -25,11 +25,11 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
 	 GLLightSource1: TGLLightSource;
-	 SpaceText4: TSpaceText;
+	 SpaceText4: TGLSpaceText;
 	 Button1: TButton;
-    DummyCube1: TDummyCube;
-    Torus1: TTorus;
-	 Torus2: TTorus;
+    DummyCube1: TGLDummyCube;
+    Torus1: TGLTorus;
+	 Torus2: TGLTorus;
 	 GLCadencer1: TGLCadencer;
     Button2: TButton;
 	 procedure FormCreate(Sender: TObject);

@@ -23,7 +23,7 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     GLPoints1: TGLPoints;
     GLCadencer1: TGLCadencer;
     GLPoints2: TGLPoints;

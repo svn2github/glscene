@@ -14,7 +14,7 @@
 
    TODO : 3rd person view with quaternion interpolation (smoother mvt)
           More mvt options (duck, jump...)
-          Smooth animation transition for TActor
+          Smooth animation transition for TGLActor
           HUD in 1st person view
 
    Carlos Arteaga Rivero <carteaga@superele.gov.bo>
@@ -32,23 +32,23 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
-    DummyCube1: TDummyCube;
-    Disk1: TDisk;
+    DummyCube1: TGLDummyCube;
+    Disk1: TGLDisk;
     GLSceneViewer1: TGLSceneViewer;
-    Actor1: TActor;
-    Actor2: TActor;
+    Actor1: TGLActor;
+    Actor2: TGLActor;
     GLCadencer1: TGLCadencer;
     Panel1: TPanel;
     Timer1: TTimer;
     GLCamera2: TGLCamera;
     Label3: TLabel;
     Label4: TLabel;
-    DummyCube2: TDummyCube;
-    FreeForm1: TFreeForm;
+    DummyCube2: TGLDummyCube;
+    FreeForm1: TGLFreeForm;
     GLLightSource2: TGLLightSource;
-    DummyCube3: TDummyCube;
+    DummyCube3: TGLDummyCube;
     Label1: TLabel;
-    SkyDome1: TSkyDome;
+    SkyDome1: TGLSkyDome;
     GLNavigator1: TGLNavigator;
     GLUserInterface1: TGLUserInterface;
     CBMouseLook: TCheckBox;

@@ -28,9 +28,9 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    Torus1: TTorus;
+    Torus1: TGLTorus;
     BUBind: TButton;
-    Sphere1: TSphere;
+    Sphere1: TGLSphere;
     GLMaterialLibrary1: TGLMaterialLibrary;
     procedure BUBindClick(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;

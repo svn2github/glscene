@@ -26,15 +26,15 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object DCSphere: TDummyCube
+    object DCSphere: TGLDummyCube
       CubeSize = 1
-      object Sphere: TSphere
+      object Sphere: TGLSphere
         Position.Coordinates = {0000804000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {000000000000803F000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Radius = 0.5
       end
-      object Lines2: TLines
+      object Lines2: TGLLines
         LineColor.Color = {000000000000803F000000000000803F}
         Nodes = <
           item
@@ -55,9 +55,9 @@ object Form1: TForm1
       Position.Coordinates = {0000A04100007041000040410000803F}
       SpotCutOff = 180
     end
-    object DCArrow: TDummyCube
+    object DCArrow: TGLDummyCube
       CubeSize = 1
-      object ArrowLine: TArrowLine
+      object ArrowLine: TGLArrowLine
         Position.Coordinates = {000080BF00000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {C9C8C83EC9C8C83E0000803F0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -68,7 +68,7 @@ object Form1: TForm1
         TopArrowHeadRadius = 0.200000002980232
         BottomArrowHeadHeight = 0.5
         BottomArrowHeadRadius = 0.200000002980232
-        object Lines1: TLines
+        object Lines1: TGLLines
           LineColor.Color = {D6D5553FD6D5553F0000803F0000803F}
           Nodes = <
             item
@@ -80,7 +80,7 @@ object Form1: TForm1
           NodesAspect = lnaInvisible
           Options = []
         end
-        object Plane1: TPlane
+        object Plane1: TGLPlane
           Direction.Coordinates = {000000800000803F0000000000000000}
           Position.Coordinates = {0000000000000000CDCC4CBE0000803F}
           Up.Coordinates = {0000803F000000000000000000000000}
@@ -91,7 +91,7 @@ object Form1: TForm1
         end
       end
     end
-    object Disk1: TDisk
+    object Disk1: TGLDisk
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Material.FrontProperties.Diffuse.Color = {00000000000000008180003F0000803F}
@@ -102,7 +102,7 @@ object Form1: TForm1
       OuterRadius = 1
       SweepAngle = 360
     end
-    object Disk2: TDisk
+    object Disk2: TGLDisk
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Material.FrontProperties.Diffuse.Color = {000000008180003F000000000000803F}

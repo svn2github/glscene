@@ -28,8 +28,8 @@ type
     GLCadencer1: TGLCadencer;
     GLFireFXManager1: TGLFireFXManager;
     GLCamera1: TGLCamera;
-    Sphere1: TSphere;
-    Torus1: TTorus;
+    Sphere1: TGLSphere;
+    Torus1: TGLTorus;
     GLLightSource2: TGLLightSource;
     Timer1: TTimer;
     procedure GLSceneViewer1MouseDown(Sender: TObject;

@@ -56,9 +56,9 @@ object Form1: TForm1
       Position.Coordinates = {0000FA4400409C4500007A450000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
-      object Disk1: TDisk
+      object Disk1: TGLDisk
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         Material.FrontProperties.Diffuse.Color = {938C0C3E938E0E3F938C0C3E0000803F}
@@ -74,7 +74,7 @@ object Form1: TForm1
         Slices = 9
         SweepAngle = 360
       end
-      object FreeForm1: TFreeForm
+      object FreeForm1: TGLFreeForm
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {0000000000004040000000000000803F}
         Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}

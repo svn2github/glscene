@@ -58,7 +58,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 40
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
       object GLPoints1: TGLPoints
         NoZWrite = True

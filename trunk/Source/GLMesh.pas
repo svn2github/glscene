@@ -14,7 +14,7 @@
       <li>11/07/00 - EG - Just discovered and made use of "fclex" :)
 	   <li>18/06/00 - EG - Creation from split of GLObjects,
                           TVertexList now uses TVertexData,
-                          Rewrite of TMesh.CalcNormals (smaller & faster)
+                          Rewrite of TGLMesh.CalcNormals (smaller & faster)
 	</ul></font>
 }
 unit GLMesh;
@@ -141,12 +141,12 @@ type
          procedure LeaveLockSection;
    end;
 
-   // TMesh
+   // TGLMesh
    //
    {: Basic mesh object.<p>
       Each mesh holds a set of vertices and a Mode value defines how they make
       up the mesh (triangles, strips...) }
-   TMesh = class(TGLSceneObject)
+   TGLMesh = class(TGLSceneObject)
       private
 			{ Private Declarations }
          FVertices   : TVertexList;
@@ -559,11 +559,11 @@ begin
    end else inherited Assign(Source);
 end;
 
-//----------------- TMesh ------------------------------------------------------
+//----------------- TGLMesh ------------------------------------------------------
 
 // Create
 //
-constructor TMesh.Create(AOwner:TComponent);
+constructor TGLMesh.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
 //  ObjectStyle:=ObjectStyle+[osDirectDraw];
@@ -577,7 +577,7 @@ end;                     //change GLMeshPropform so that it greys out unused ver
 
 // Destroy
 //
-destructor TMesh.Destroy;
+destructor TGLMesh.Destroy;
 begin
    FVertices.Free;
    inherited Destroy;
@@ -585,14 +585,14 @@ end;
 
 // VerticesChanged
 //
-procedure TMesh.VerticesChanged(Sender : TObject);
+procedure TGLMesh.VerticesChanged(Sender : TObject);
 begin
    StructureChanged;
 end;
 
 // BuildList
 //
-procedure TMesh.BuildList(var rci : TRenderContextInfo);
+procedure TGLMesh.BuildList(var rci : TRenderContextInfo);
 var
    VertexCount : Longint;
 begin
@@ -631,7 +631,7 @@ end;
 
 // SetMode
 //
-procedure TMesh.SetMode(AValue: TMeshMode);
+procedure TGLMesh.SetMode(AValue: TMeshMode);
 begin
    if AValue <> FMode then begin
       FMode := AValue;
@@ -641,7 +641,7 @@ end;
 
 // SetVertices
 //
-procedure TMesh.SetVertices(AValue: TVertexList);
+procedure TGLMesh.SetVertices(AValue: TVertexList);
 begin
    if AValue <> FVertices then begin
       FVertices.Assign(AValue);
@@ -651,7 +651,7 @@ end;
 
 // SetVertexMode
 //
-procedure TMesh.SetVertexMode(AValue: TVertexMode);
+procedure TGLMesh.SetVertexMode(AValue: TVertexMode);
 begin
    if AValue<>FVertexMode then begin
       FVertexMode := AValue;
@@ -661,7 +661,7 @@ end;
 
 // CalcNormals
 //
-procedure TMesh.CalcNormals(Frontface: TFaceWinding);
+procedure TGLMesh.CalcNormals(Frontface: TFaceWinding);
 var
    vn  : TAffineFltVector;
    i, j : Integer;
@@ -713,12 +713,12 @@ end;
 
 // Assign
 //
-procedure TMesh.Assign(Source:TPersistent);
+procedure TGLMesh.Assign(Source:TPersistent);
 begin
-   if Assigned(Source) and (Source is TMesh) then begin
-      FVertices.Assign(TMesh(Source).Vertices);
-      FMode := TMesh(Source).FMode;
-      FVertexMode := TMesh(Source).FVertexMode;
+   if Assigned(Source) and (Source is TGLMesh) then begin
+      FVertices.Assign(TGLMesh(Source).Vertices);
+      FMode := TGLMesh(Source).FMode;
+      FVertexMode := TGLMesh(Source).FVertexMode;
    end else inherited Assign(Source);
 end;
 
@@ -731,7 +731,7 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClasses([TMesh]);
+   RegisterClasses([TGLMesh]);
 
 end.
 

@@ -86,20 +86,20 @@ object Form1: TForm1
       Specular.Color = {B072083FB072083FB072083F0000803F}
       SpotCutOff = 180
     end
-    object HUDSprite1: THUDSprite
+    object HUDSprite1: TGLHUDSprite
       Material.Texture.Disabled = False
       Width = 16
       Height = 16
       NoZWrite = True
     end
-    object Plane1: TPlane
+    object Plane1: TGLPlane
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Disabled = False
       Height = 6
       Width = 6
-      object SpaceText1: TSpaceText
+      object SpaceText1: TGLSpaceText
         Position.Coordinates = {000020C000000000CDCC4C3D0000803F}
         Up.Coordinates = {0000803F000000800000000000000000}
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
@@ -119,7 +119,7 @@ object Form1: TForm1
         Adjust.Vert = vaCenter
       end
     end
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       OnProgress = Sphere1Progress
       Material.FrontProperties.Diffuse.Color = {9A99393F9A99393F0000803F0000803F}
       Material.Texture.TextureMode = tmModulate
@@ -128,7 +128,7 @@ object Form1: TForm1
       Radius = 1
       Slices = 24
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000040000000000000803F}
       CubeSize = 1
     end

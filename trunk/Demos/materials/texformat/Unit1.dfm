@@ -178,7 +178,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 16
-    object HUDSprite1: THUDSprite
+    object HUDSprite1: TGLHUDSprite
       Material.Texture.MinFilter = miLinear
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Material.Texture.Disabled = False

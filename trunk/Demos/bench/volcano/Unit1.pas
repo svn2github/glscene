@@ -34,15 +34,15 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
-    DCVolcano: TDummyCube;
+    DCVolcano: TGLDummyCube;
     PFXVolcano: TGLPolygonPFXManager;
     GLCadencer1: TGLCadencer;
     PFXRenderer: TGLParticleFXRenderer;
     Timer1: TTimer;
-    Sphere1: TSphere;
+    Sphere1: TGLSphere;
     GLLightSource1: TGLLightSource;
     PFXBlue: TGLPolygonPFXManager;
-    DCCamera: TDummyCube;
+    DCCamera: TGLDummyCube;
     RadioGroup1: TRadioGroup;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

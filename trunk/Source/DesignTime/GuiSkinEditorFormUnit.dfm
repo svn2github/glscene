@@ -327,7 +327,7 @@ object GUISkinEditor: TGUISkinEditor
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object HUDSprite1: THUDSprite
+    object HUDSprite1: TGLHUDSprite
       Position.Coordinates = {0000804300008043000000000000803F}
       Visible = False
       Material.FrontProperties.Ambient.Color = {938C0C3E938E0E3F938C0C3E0000803F}

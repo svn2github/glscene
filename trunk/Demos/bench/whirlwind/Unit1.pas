@@ -50,9 +50,9 @@ type
 	 GLCadencer1: TGLCadencer;
 	 GLCamera1: TGLCamera;
 	 GLParticles1: TGLParticles;
-    Sprite1: TSprite;
+    Sprite1: TGLSprite;
     Timer1: TTimer;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     procedure GLParticles1ActivateParticle(Sender: TObject;
       particle: TGLBaseSceneObject);
     procedure Timer1Timer(Sender: TObject);

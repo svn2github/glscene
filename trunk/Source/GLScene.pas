@@ -857,17 +857,17 @@ type
 
    // TDirectRenderEvent
    //
-   {: Event for user-specific rendering in a TDirectOpenGL object. }
+   {: Event for user-specific rendering in a TGLDirectOpenGL object. }
    TDirectRenderEvent = procedure (var rci : TRenderContextInfo) of object;
 
-   // TDirectOpenGL
+   // TGLDirectOpenGL
    //
    {: Provides a way to issue direct OpenGL calls during the rendering.<p>
       You can use this object to do your specific rendering task in its OnRender
       event. The OpenGL calls shall restore the OpenGL states they found when
       entering, or exclusively use the GLMisc utility functions to alter the
       states.<br> }
-   TDirectOpenGL = class (TGLImmaterialSceneObject)
+   TGLDirectOpenGL = class (TGLImmaterialSceneObject)
       private
          { Private Declarations }
          FUseBuildList : Boolean;
@@ -4602,12 +4602,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TDirectOpenGL ------------------
+// ------------------ TGLDirectOpenGL ------------------
 // ------------------
 
 // Create
 //
-constructor TDirectOpenGL.Create(AOwner: TComponent);
+constructor TGLDirectOpenGL.Create(AOwner: TComponent);
 begin
    inherited;
    ObjectStyle:=ObjectStyle+[osDirectDraw, osDoesTemperWithColorsOrFaceWinding];
@@ -4615,17 +4615,17 @@ end;
 
 // Assign
 //
-procedure TDirectOpenGL.Assign(Source: TPersistent);
+procedure TGLDirectOpenGL.Assign(Source: TPersistent);
 begin
-   if Source is TDirectOpenGL then begin
-      UseBuildList:=TDirectOpenGL(Source).UseBuildList;
+   if Source is TGLDirectOpenGL then begin
+      UseBuildList:=TGLDirectOpenGL(Source).UseBuildList;
    end;
    inherited Assign(Source);
 end;
 
 // BuildList
 //
-procedure TDirectOpenGL.BuildList(var rci : TRenderContextInfo);
+procedure TGLDirectOpenGL.BuildList(var rci : TRenderContextInfo);
 begin
    if Assigned(FOnRender) then begin
       xglMapTexCoordToMain;   // single texturing by default 
@@ -4635,7 +4635,7 @@ end;
 
 // SetUseBuildList
 //
-procedure TDirectOpenGL.SetUseBuildList(const val : Boolean);
+procedure TGLDirectOpenGL.SetUseBuildList(const val : Boolean);
 begin
    if val<>FUseBuildList then begin
       FUseBuildList:=val;
@@ -7243,7 +7243,7 @@ initialization
 //------------------------------------------------------------------------------
 
    RegisterClasses([TGLLightSource, TGLCamera, TGLProxyObject,
-                    TGLScene, TDirectOpenGL, TGLMemoryViewer]);
+                    TGLScene, TGLDirectOpenGL, TGLMemoryViewer]);
 
    // preparation for high resolution timer
    QueryPerformanceFrequency(vCounterFrequency);

@@ -109,9 +109,9 @@ object Form1: TForm1
       Position.Coordinates = {0000C8420000B4420000A0420000803F}
       SpotCutOff = 180
     end
-    object DCNonReflectingStuff: TDummyCube
+    object DCNonReflectingStuff: TGLDummyCube
       CubeSize = 1
-      object Cylinder: TTorus
+      object Cylinder: TGLTorus
         ObjectsSorting = osNone
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000000080BF000000000000803F}
@@ -124,7 +124,7 @@ object Form1: TForm1
         MinorRadius = 0.5
         Rings = 24
         Sides = 12
-        object Cylinder2: TCylinder
+        object Cylinder2: TGLCylinder
           Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Diffuse.Color = {000000008180003F000000000000803F}
           Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -136,10 +136,10 @@ object Form1: TForm1
         end
       end
     end
-    object ReflectingObjects: TDummyCube
+    object ReflectingObjects: TGLDummyCube
       ObjectsSorting = osNone
       CubeSize = 1
-      object CylinderThroughMirror: TCylinder
+      object CylinderThroughMirror: TGLCylinder
         Position.Coordinates = {0000000000000000000000C00000803F}
         Up.Coordinates = {F404353FF204353F0000000000000000}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -149,7 +149,7 @@ object Form1: TForm1
         Stacks = 1
         TopRadius = 0.200000002980232
       end
-      object Sphere: TSphere
+      object Sphere: TGLSphere
         ObjectsSorting = osNone
         Position.Coordinates = {000000000000803F000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -158,7 +158,7 @@ object Form1: TForm1
         Stacks = 6
         Top = 0
         TopCap = ctCenter
-        object Cylinder1: TCylinder
+        object Cylinder1: TGLCylinder
           Direction.Coordinates = {000000000000803F2EBD3BB300000000}
           Position.Coordinates = {00000000CDCCCCBD6666663F0000803F}
           Up.Coordinates = {000000002EBD3BB3000080BF00000000}
@@ -169,7 +169,7 @@ object Form1: TForm1
           Stacks = 1
           TopRadius = 0.100000001490116
         end
-        object Teapot1: TTeapot
+        object Teapot1: TGLTeapot
           Position.Coordinates = {000000000000003F000000000000803F}
           Scale.Coordinates = {00000040000000400000004000000000}
           Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
@@ -189,7 +189,7 @@ object Form1: TForm1
       MirrorOptions = [moUseStencil, moMirrorPlaneClip, moClearZBuffer]
       Height = 6
       Width = 6
-      object Cadre: TExtrusionSolid
+      object Cadre: TGLExtrusionSolid
         Direction.Coordinates = {00000000000000800000803F00000000}
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}

@@ -24,7 +24,7 @@
    (with the Allocate method), and then fill it using one of the various properties
    (see THeightData).<br>
    The material is specified by the MaterialName property (the material library
-   being linked at the TTerrainRenderer level). Materials used can be dynamic
+   being linked at the TGLTerrainRenderer level). Materials used can be dynamic
    between frames, but must remain coherent throughout a frame, and for as long
    as the THeightData where you specified the material remains alive.
 }
@@ -42,8 +42,8 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
-    DummyCube1: TDummyCube;
-    TerrainRenderer1: TTerrainRenderer;
+    DummyCube1: TGLDummyCube;
+    TerrainRenderer1: TGLTerrainRenderer;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
     GLMaterialLibrary1: TGLMaterialLibrary;

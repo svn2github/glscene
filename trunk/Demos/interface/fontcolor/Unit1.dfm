@@ -31,10 +31,10 @@ object Form1: TForm1
       Position.Coordinates = {0000004000000040000000400000803F}
       SpotCutOff = 180
     end
-    object Teapot1: TTeapot
+    object Teapot1: TGLTeapot
       Material.FrontProperties.Diffuse.Color = {9D9C1C3FB3B2323F0000803F0000803F}
     end
-    object HUDText1: THUDText
+    object HUDText1: TGLHUDText
       Position.Coordinates = {000034430000F042000000000000803F}
       BitmapFont = BitmapFont
       Text = 'FADING OUT'
@@ -42,7 +42,7 @@ object Form1: TForm1
       Layout = tlTop
       ModulateColor.Color = {0000803F0000803F0000803F3333333F}
     end
-    object HUDText2: THUDText
+    object HUDText2: TGLHUDText
       Position.Coordinates = {000034430000DC42000000000000803F}
       BitmapFont = BitmapFont
       Text = 'THE END'
@@ -50,7 +50,7 @@ object Form1: TForm1
       Layout = tlTop
       ModulateColor.Color = {0000803FF8FEFE3E000000003333333F}
     end
-    object HUDText3: THUDText
+    object HUDText3: TGLHUDText
       Position.Coordinates = {000034430000A041000000000000803F}
       BitmapFont = BitmapFont
       Text = 'RED RED'
@@ -58,7 +58,7 @@ object Form1: TForm1
       Layout = tlTop
       ModulateColor.Color = {0000803F00000000000000000000803F}
     end
-    object HUDText4: THUDText
+    object HUDText4: TGLHUDText
       Position.Coordinates = {0000344300002043000000000000803F}
       BitmapFont = BitmapFont
       Text = 'TRANSPARENT'

@@ -15,15 +15,15 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
-    Cube2: TCube;
+    Cube2: TGLCube;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     CBPlay: TCheckBox;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     MoveBtn: TBitBtn;
     Timer1: TTimer;
-    Sphere1: TSphere;
+    Sphere1: TGLSphere;
     procedure FormResize(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormActivate(Sender: TObject);

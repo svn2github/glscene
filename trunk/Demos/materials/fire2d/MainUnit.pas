@@ -43,7 +43,7 @@ type
     GLCamera1: TGLCamera;
     Timer1: TTimer;
     PaintBox32: TPaintBox32;
-    Cube1: TCube;
+    Cube1: TGLCube;
     GLCadencer1: TGLCadencer;
     Label1: TLabel;
     Label2: TLabel;

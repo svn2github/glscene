@@ -1,6 +1,6 @@
 {: This sample is basicly a bench for GLScene.<p>
 
-	A fair number of TCube are created and rendered (for cSize=5, that's about
+	A fair number of TGLCube are created and rendered (for cSize=5, that's about
 	1331 cubes, 7986 polygons or 15972 triangles). Only one light and basic
    shading is used, no texture here, the aim is to test the performance of
    GLScene and T&L, not	the fillrate.<p>
@@ -53,7 +53,7 @@ type
 	 GLSceneViewer1: TGLSceneViewer;
 	 GLScene1: TGLScene;
 	 GLCamera1: TGLCamera;
-	 DummyCube1: TDummyCube;
+	 DummyCube1: TGLDummyCube;
 	 GLLightSource1: TGLLightSource;
 	 Timer1: TTimer;
     GLCadencer1: TGLCadencer;
@@ -80,14 +80,14 @@ const
 procedure TForm1.FormCreate(Sender: TObject);
 var
 	x, y, z : Integer;
-	cube : TCube;
+	cube : TGLCube;
 	factor, cubeSize : Single;
 begin
 	// bench only creation and 1st render (with lists builds, etc...)
 	factor:=70/(cSize*2+1);
 	cubeSize:=0.4*factor;
 	for x:=-cSize to cSize do for y:=-cSize to cSize do for z:=-cSize to cSize do begin
-		cube:=TCube(DummyCube1.AddNewChild(TCube));
+		cube:=TGLCube(DummyCube1.AddNewChild(TGLCube));
 		cube.Position.AsVector:=PointMake(factor*x, factor*y, factor*z);
 		cube.CubeWidth:=cubeSize;
 		cube.CubeHeight:=cubeSize;

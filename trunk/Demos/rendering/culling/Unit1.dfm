@@ -121,7 +121,7 @@ object Form1: TForm1
       Position.Coordinates = {0000C8420000A042000070420000803F}
       SpotCutOff = 180
     end
-    object DCTarget: TDummyCube
+    object DCTarget: TGLDummyCube
       CubeSize = 1
       object GLCamera1: TGLCamera
         DepthOfView = 100
@@ -132,10 +132,10 @@ object Form1: TForm1
         Top = 144
       end
     end
-    object DCSpheres: TDummyCube
+    object DCSpheres: TGLDummyCube
       CubeSize = 1
     end
-    object DCActors: TDummyCube
+    object DCActors: TGLDummyCube
       Visible = False
       CubeSize = 1
     end

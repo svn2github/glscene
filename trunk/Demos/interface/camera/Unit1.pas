@@ -26,9 +26,9 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
-    Teapot1: TTeapot;
+    Teapot1: TGLTeapot;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 	 procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;

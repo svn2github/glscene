@@ -29,7 +29,7 @@ type
 
   TOnGetTerrainBounds = procedure(var l, t, r, b : Single) of object;
 
-	// TTerrainRenderer
+	// TGLTerrainRenderer
 	//
    {: Basic terrain renderer.<p>
       This renderer uses no sophisticated meshing, it just builds and maintains
@@ -38,7 +38,7 @@ type
       terrain renderers.<p>
       The Terrain heightdata is retrieved directly from a THeightDataSource, and
       expressed as z=f(x, y) data. }
-	TTerrainRenderer = class (TGLSceneObject)
+	TGLTerrainRenderer = class (TGLSceneObject)
 	   private
 	      { Private Declarations }
          FHeightDataSource : THeightDataSource;
@@ -142,12 +142,12 @@ implementation
 uses SysUtils, OpenGL12, GLMisc, XOpenGL;
 
 // ------------------
-// ------------------ TTerrainRenderer ------------------
+// ------------------ TGLTerrainRenderer ------------------
 // ------------------
 
 // Create
 //
-constructor TTerrainRenderer.Create(AOwner: TComponent);
+constructor TGLTerrainRenderer.Create(AOwner: TComponent);
 var
    i : Integer;
 begin
@@ -167,7 +167,7 @@ end;
 
 // Destroy
 //
-destructor TTerrainRenderer.Destroy;
+destructor TGLTerrainRenderer.Destroy;
 var
    i : Integer;
 begin
@@ -182,7 +182,7 @@ end;
 
 // Notification
 //
-procedure TTerrainRenderer.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLTerrainRenderer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if Operation=opRemove then begin
       if AComponent=FHeightDataSource then
@@ -195,7 +195,7 @@ end;
 
 // DestroyHandle
 //
-procedure TTerrainRenderer.DestroyHandle;
+procedure TGLTerrainRenderer.DestroyHandle;
 begin
    inherited;
    ReleaseAllTiles;
@@ -205,7 +205,7 @@ end;
 
 // RayCastIntersect
 //
-function TTerrainRenderer.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLTerrainRenderer.RayCastIntersect(const rayStart, rayVector : TVector;
                                            intersectPoint : PVector = nil;
                                            intersectNormal : PVector = nil) : Boolean;
 var
@@ -250,7 +250,7 @@ end;
 
 // ReleaseAllTiles
 //
-procedure TTerrainRenderer.ReleaseAllTiles;
+procedure TGLTerrainRenderer.ReleaseAllTiles;
 var
    i, k : Integer;
    hd : THeightData;
@@ -266,7 +266,7 @@ end;
 
 // OnTileDestroyed
 //
-procedure TTerrainRenderer.OnTileDestroyed(sender : TObject);
+procedure TGLTerrainRenderer.OnTileDestroyed(sender : TObject);
 var
    i : Integer;
 begin
@@ -280,7 +280,7 @@ end;
 
 // InterpolatedHeight
 //
-function TTerrainRenderer.InterpolatedHeight(const p : TVector) : Single;
+function TGLTerrainRenderer.InterpolatedHeight(const p : TVector) : Single;
 var
    pLocal : TVector;
 begin
@@ -292,7 +292,7 @@ end;
 
 // BuildList
 //
-procedure TTerrainRenderer.BuildList(var rci : TRenderContextInfo);
+procedure TGLTerrainRenderer.BuildList(var rci : TRenderContextInfo);
 var
    vEye : TVector;
    tilePos, absTilePos, observer : TAffineVector;
@@ -489,7 +489,7 @@ end;
 
 // MarkAllTilesAsUnused
 //
-procedure TTerrainRenderer.MarkAllTilesAsUnused;
+procedure TGLTerrainRenderer.MarkAllTilesAsUnused;
 var
    i, j, zero : Integer;
    pList : PPointerList;
@@ -504,7 +504,7 @@ end;
 
 // ReleaseAllUnusedTiles
 //
-procedure TTerrainRenderer.ReleaseAllUnusedTiles;
+procedure TGLTerrainRenderer.ReleaseAllUnusedTiles;
 var
    i, j : Integer;
    hashList : TList;
@@ -524,7 +524,7 @@ end;
 
 // MarkHashedTileAsUsed
 //
-procedure TTerrainRenderer.MarkHashedTileAsUsed(const tilePos : TAffineVector);
+procedure TGLTerrainRenderer.MarkHashedTileAsUsed(const tilePos : TAffineVector);
 var
    hd : THeightData;
 begin
@@ -534,7 +534,7 @@ end;
 
 // HashedTile
 //
-function TTerrainRenderer.HashedTile(const tilePos : TAffineVector; canAllocate : Boolean = True) : THeightData;
+function TGLTerrainRenderer.HashedTile(const tilePos : TAffineVector; canAllocate : Boolean = True) : THeightData;
 var
    xLeft, yTop : Integer;
 begin
@@ -545,7 +545,7 @@ end;
 
 // HashedTile
 //
-function TTerrainRenderer.HashedTile(const xLeft, yTop : Integer; canAllocate : Boolean = True) : THeightData;
+function TGLTerrainRenderer.HashedTile(const xLeft, yTop : Integer; canAllocate : Boolean = True) : THeightData;
 var
    i, hash : Integer;
    hd : THeightData;
@@ -577,7 +577,7 @@ end;
 
 // GetPreparedPatch
 //
-function TTerrainRenderer.GetPreparedPatch(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
+function TGLTerrainRenderer.GetPreparedPatch(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
 var
    tile : THeightData;
    patch : TGLROAMPatch;
@@ -612,7 +612,7 @@ end;
 
 // SetHeightDataSource
 //
-procedure TTerrainRenderer.SetHeightDataSource(const val : THeightDataSource);
+procedure TGLTerrainRenderer.SetHeightDataSource(const val : THeightDataSource);
 begin
    if FHeightDataSource<>val then begin
       if Assigned(FHeightDataSource) then begin
@@ -629,7 +629,7 @@ end;
 
 // SetTileSize
 //
-procedure TTerrainRenderer.SetTileSize(const val : Integer);
+procedure TGLTerrainRenderer.SetTileSize(const val : Integer);
 begin
    if val<>FTileSize then begin
       if val<8 then
@@ -643,7 +643,7 @@ end;
 
 // SetTilesPerTexture
 //
-procedure TTerrainRenderer.SetTilesPerTexture(const val : Single);
+procedure TGLTerrainRenderer.SetTilesPerTexture(const val : Single);
 begin
    if val<>FTilesPerTexture then begin
       FTilesPerTexture:=val;
@@ -653,7 +653,7 @@ end;
 
 // SetCLODPrecision
 //
-procedure TTerrainRenderer.SetCLODPrecision(const val : Integer);
+procedure TGLTerrainRenderer.SetCLODPrecision(const val : Integer);
 var
    i, k : Integer;
    hd : THeightData;
@@ -676,7 +676,7 @@ end;
 
 // SetMaterialLibrary
 //
-procedure TTerrainRenderer.SetMaterialLibrary(const val : TGLMaterialLibrary);
+procedure TGLTerrainRenderer.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if val<>FMaterialLibrary then begin
       FMaterialLibrary:=val;
@@ -693,6 +693,6 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClass(TTerrainRenderer);
+   RegisterClass(TGLTerrainRenderer);
 
 end.

@@ -64,31 +64,31 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 56
-    object DummyCube3: TDummyCube
+    object DummyCube3: TGLDummyCube
       Position.Coordinates = {000000C000000000000000000000803F}
       ShowAxes = True
       CubeSize = 1
       VisibleAtRunTime = True
-      object FreeForm3: TFreeForm
+      object FreeForm3: TGLFreeForm
         Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
     end
-    object DummyCube2: TDummyCube
+    object DummyCube2: TGLDummyCube
       ShowAxes = True
       CubeSize = 1
       VisibleAtRunTime = True
-      object FreeForm2: TFreeForm
+      object FreeForm2: TGLFreeForm
         Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000004000000000000000000000803F}
       ShowAxes = True
       CubeSize = 1
       VisibleAtRunTime = True
-      object FreeForm1: TFreeForm
+      object FreeForm1: TGLFreeForm
         Material.FrontProperties.Diffuse.Color = {0000803F8180003F8180803E0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
@@ -98,7 +98,7 @@ object Form1: TForm1
       Position.Coordinates = {00004040000020410000A0400000803F}
       SpotCutOff = 180
     end
-    object DCCamera: TDummyCube
+    object DCCamera: TGLDummyCube
       CubeSize = 1
       object GLCamera1: TGLCamera
         DepthOfView = 100

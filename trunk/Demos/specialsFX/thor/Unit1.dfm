@@ -271,7 +271,7 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 8
     Top = 8
-    object SkyDome1: TSkyDome
+    object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000803F000000800000000000000000}
       Bands = <
@@ -311,7 +311,7 @@ object Form1: TForm1
         end>
       Stars = <>
     end
-    object HeightField1: THeightField
+    object HeightField1: TGLHeightField
       Direction.Coordinates = {000000000000803F0000000000000000}
       Position.Coordinates = {00000000000040C0000000000000803F}
       Scale.Coordinates = {00002041000020410000803F00000000}
@@ -329,16 +329,16 @@ object Form1: TForm1
       Options = [hfoTextureCoordinates]
       OnGetHeight = HeightField1GetHeight
     end
-    object Objects: TDummyCube
+    object Objects: TGLDummyCube
       ObjectsSorting = osRenderBlendedLast
       CubeSize = 1
-      object TargetCube: TCube
+      object TargetCube: TGLCube
         Position.Coordinates = {0000404000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8180803E8180803E0000803F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000008180003E0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
-      object ThorCube: TCube
+      object ThorCube: TGLCube
         Position.Coordinates = {000040C000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8180803E8180803E0000803F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000008180003E0000803F}

@@ -154,7 +154,7 @@ object Form1: TForm1
       Position.Coordinates = {000048420000C8420000C8420000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {00000000000000000000C0400000803F}
       CubeSize = 1
       object GLCamera1: TGLCamera
@@ -166,7 +166,7 @@ object Form1: TForm1
         Top = 144
       end
     end
-    object Portal1: TPortal
+    object Portal1: TGLPortal
       Position.Coordinates = {00000000000000BF000000000000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       MaterialLibrary = GLMaterialLibrary1

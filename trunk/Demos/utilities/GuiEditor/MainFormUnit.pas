@@ -54,7 +54,7 @@ type
     Load1: TMenuItem;
     OpenPictureDialog: TOpenPictureDialog;
     GLMaterialLibrary1: TGLMaterialLibrary;
-    HUDSprite1: THUDSprite;
+    HUDSprite1: TGLHUDSprite;
     Edit3: TEdit;
     procedure Open1Click(Sender: TObject);
     procedure Save1Click(Sender: TObject);

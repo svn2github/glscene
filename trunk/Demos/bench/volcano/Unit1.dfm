@@ -44,7 +44,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object DCVolcano: TDummyCube
+    object DCVolcano: TGLDummyCube
       CubeSize = 1
       BehavioursData = {
         0201060B54474C42496E657274696102000200050000000000000080FF3F0200
@@ -55,7 +55,7 @@ object Form1: TForm1
         63616E6F02010200090000000000004040000000000000000002000805000000
         0000000080FF3F050000000000CDCCCCFC3F0500000000008FC2F5F83F020002
         00}
-      object Sphere1: TSphere
+      object Sphere1: TGLSphere
         Position.Coordinates = {0000000000000040000000400000803F}
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000008180003F0000803F}
@@ -75,7 +75,7 @@ object Form1: TForm1
       Position.Coordinates = {0000204100002041000000000000803F}
       SpotCutOff = 180
     end
-    object DCCamera: TDummyCube
+    object DCCamera: TGLDummyCube
       Position.Coordinates = {0000000000004040000000000000803F}
       CubeSize = 1
       object GLCamera1: TGLCamera

@@ -30,7 +30,7 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 8
     Top = 8
-    object Torus1: TTorus
+    object Torus1: TGLTorus
       Material.FrontProperties.Ambient.Color = {9A99193E9A99193E9A99193E0000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       MajorRadius = 3
@@ -42,7 +42,7 @@ object Form1: TForm1
         08050000000000000000000005000000000000000000000500000000000000F0
         034009020008020008}
     end
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Radius = 0.300000011920929
       Slices = 6

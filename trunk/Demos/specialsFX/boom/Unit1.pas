@@ -30,11 +30,11 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     FireFX: TGLFireFXManager;
     GLCadencer1: TGLCadencer;
-    Sphere1: TSphere;
+    Sphere1: TGLSphere;
     Timer1: TTimer;
     Button1: TButton;
     SmokeFX: TGLFireFXManager;

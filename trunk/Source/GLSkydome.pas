@@ -5,13 +5,13 @@
       <li>26/02/02 - EG - Enhanced star support (generation and twinkle),
                           Skydome now 'exports' its coordinate system to children 
       <li>21/01/02 - EG - Skydome position now properly ignored
-      <li>23/09/01 - EG - Fixed and improved TEarthSkyDome
+      <li>23/09/01 - EG - Fixed and improved TGLEarthSkyDome
       <li>26/08/01 - EG - Added SkyDomeStars
       <li>12/08/01 - EG - DepthMask no set to False during rendering
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
       <li>12/03/01 - EG - Reversed polar caps orientation
       <li>28/01/01 - EG - Fixed TSkyDomeBand rendering (vertex coordinates)
-      <li>18/01/01 - EG - First working version of TEarthSkyDome
+      <li>18/01/01 - EG - First working version of TGLEarthSkyDome
 	   <li>14/01/01 - EG - Creation
 	</ul></font>
 }
@@ -153,7 +153,7 @@ type
    TSkyDomeOption = (sdoTwinkle);
    TSkyDomeOptions = set of TSkyDomeOption;
 
-	// TSkyDome
+	// TGLSkyDome
 	//
    {: Renders a sky dome always centered on the camera.<p>
       If you use this object make sure it is rendered *first*, as it ignores
@@ -165,7 +165,7 @@ type
       <li>800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
       <li>Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
       </ul> }
-	TSkyDome = class (TGLImmaterialSceneObject)
+	TGLSkyDome = class (TGLImmaterialSceneObject)
 	   private
 	      { Private Declarations }
          FOptions : TSkyDomeOptions;
@@ -195,7 +195,7 @@ type
          property Options : TSkyDomeOptions read FOptions write SetOptions default [];
 	end;
 
-   // TEarthSkyDome
+   // TGLEarthSkyDome
    //
    {: Render a skydome like what can be seen on earth.<p>
       Color is based on sun position and turbidity, to "mimic" atmospheric
@@ -204,8 +204,8 @@ type
       The default slices/stacks values make for an average quality rendering,
       for a very clean rendering, use 64/64 (more is overkill in most cases).
       The complexity is quite high though, making a T&L 3D board a necessity
-      for using TEarthSkyDome. }
-	TEarthSkyDome = class (TSkyDome)
+      for using TGLEarthSkyDome. }
+	TGLEarthSkyDome = class (TGLSkyDome)
 	   private
 	      { Private Declarations }
          FSunElevation : Single;
@@ -683,12 +683,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TSkyDome ------------------
+// ------------------ TGLSkyDome ------------------
 // ------------------
 
 // CreateOwned
 //
-constructor TSkyDome.Create(AOwner: TComponent);
+constructor TGLSkyDome.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
@@ -711,7 +711,7 @@ end;
 
 // Destroy
 //
-destructor TSkyDome.Destroy;
+destructor TGLSkyDome.Destroy;
 begin
    FStars.Free;
    FBands.Free;
@@ -720,18 +720,18 @@ end;
 
 // Assign
 //
-procedure TSkyDome.Assign(Source: TPersistent);
+procedure TGLSkyDome.Assign(Source: TPersistent);
 begin
-   if Source is TSkyDome then begin
-      FBands.Assign(TSkyDome(Source).FBands);
-      FStars.Assign(TSkyDome(Source).FStars);
+   if Source is TGLSkyDome then begin
+      FBands.Assign(TGLSkyDome(Source).FBands);
+      FStars.Assign(TGLSkyDome(Source).FStars);
    end;
    inherited;
 end;
 
 // SetBands
 //
-procedure TSkyDome.SetBands(const val : TSkyDomeBands);
+procedure TGLSkyDome.SetBands(const val : TSkyDomeBands);
 begin
    FBands.Assign(val);
    StructureChanged;
@@ -739,7 +739,7 @@ end;
 
 // SetStars
 //
-procedure TSkyDome.SetStars(const val : TSkyDomeStars);
+procedure TGLSkyDome.SetStars(const val : TSkyDomeStars);
 begin
    FStars.Assign(val);
    StructureChanged;
@@ -747,7 +747,7 @@ end;
 
 // SetOptions
 //
-procedure TSkyDome.SetOptions(const val : TSkyDomeOptions);
+procedure TGLSkyDome.SetOptions(const val : TSkyDomeOptions);
 begin
    if val<>FOptions then begin
       FOptions:=val;
@@ -763,7 +763,7 @@ end;
 
 // BuildList
 //
-procedure TSkyDome.BuildList(var rci : TRenderContextInfo);
+procedure TGLSkyDome.BuildList(var rci : TRenderContextInfo);
 begin
    Bands.BuildList(rci);
    Stars.BuildList(rci, (sdoTwinkle in FOptions));
@@ -771,7 +771,7 @@ end;
 
 // DoRender
 //
-procedure TSkyDome.DoRender(var rci : TRenderContextInfo;
+procedure TGLSkyDome.DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean);
 var
    f : Single;
@@ -808,12 +808,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TEarthSkyDome ------------------
+// ------------------ TGLEarthSkyDome ------------------
 // ------------------
 
 // CreateOwned
 //
-constructor TEarthSkyDome.Create(AOwner: TComponent);
+constructor TGLEarthSkyDome.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    Bands.Clear;
@@ -831,7 +831,7 @@ end;
 
 // Destroy
 //
-destructor TEarthSkyDome.Destroy;
+destructor TGLEarthSkyDome.Destroy;
 begin
    FSunZenithColor.Free;
    FSunDawnColor.Free;
@@ -843,18 +843,18 @@ end;
 
 // Assign
 //
-procedure TEarthSkyDome.Assign(Source: TPersistent);
+procedure TGLEarthSkyDome.Assign(Source: TPersistent);
 begin
-   if Source is TSkyDome then begin
-      FSunElevation:=TEarthSkyDome(Source).SunElevation;
-      FTurbidity:=TEarthSkyDome(Source).Turbidity;
-      FSunZenithColor.Assign(TEarthSkyDome(Source).FSunZenithColor);
-      FSunDawnColor.Assign(TEarthSkyDome(Source).FSunDawnColor);
-      FHazeColor.Assign(TEarthSkyDome(Source).FHazeColor);
-      FSkyColor.Assign(TEarthSkyDome(Source).FSkyColor);
-      FNightColor.Assign(TEarthSkyDome(Source).FNightColor);
-      FSlices:=TEarthSkyDome(Source).FSlices;
-      FStacks:=TEarthSkyDome(Source).FStacks;
+   if Source is TGLSkyDome then begin
+      FSunElevation:=TGLEarthSkyDome(Source).SunElevation;
+      FTurbidity:=TGLEarthSkyDome(Source).Turbidity;
+      FSunZenithColor.Assign(TGLEarthSkyDome(Source).FSunZenithColor);
+      FSunDawnColor.Assign(TGLEarthSkyDome(Source).FSunDawnColor);
+      FHazeColor.Assign(TGLEarthSkyDome(Source).FHazeColor);
+      FSkyColor.Assign(TGLEarthSkyDome(Source).FSkyColor);
+      FNightColor.Assign(TGLEarthSkyDome(Source).FNightColor);
+      FSlices:=TGLEarthSkyDome(Source).FSlices;
+      FStacks:=TGLEarthSkyDome(Source).FStacks;
       PreCalculate;
    end;
    inherited;
@@ -862,7 +862,7 @@ end;
 
 // SetSunElevation
 //
-procedure TEarthSkyDome.SetSunElevation(const val : Single);
+procedure TGLEarthSkyDome.SetSunElevation(const val : Single);
 begin
    FSunElevation:=ClampValue(val, -90, 90);
    PreCalculate;
@@ -870,7 +870,7 @@ end;
 
 // SetTurbidity
 //
-procedure TEarthSkyDome.SetTurbidity(const val : Single);
+procedure TGLEarthSkyDome.SetTurbidity(const val : Single);
 begin
    FTurbidity:=ClampValue(val, 1, 120);
    PreCalculate;
@@ -878,7 +878,7 @@ end;
 
 // SetSunZenithColor
 //
-procedure TEarthSkyDome.SetSunZenithColor(const val : TGLColor);
+procedure TGLEarthSkyDome.SetSunZenithColor(const val : TGLColor);
 begin
    FSunZenithColor.Assign(val);
    PreCalculate;
@@ -886,7 +886,7 @@ end;
 
 // SetSunDawnColor
 //
-procedure TEarthSkyDome.SetSunDawnColor(const val : TGLColor);
+procedure TGLEarthSkyDome.SetSunDawnColor(const val : TGLColor);
 begin
    FSunDawnColor.Assign(val);
    PreCalculate;
@@ -894,7 +894,7 @@ end;
 
 // SetHazeColor
 //
-procedure TEarthSkyDome.SetHazeColor(const val : TGLColor);
+procedure TGLEarthSkyDome.SetHazeColor(const val : TGLColor);
 begin
    FHazeColor.Assign(val);
    PreCalculate;
@@ -902,7 +902,7 @@ end;
 
 // SetSkyColor
 //
-procedure TEarthSkyDome.SetSkyColor(const val : TGLColor);
+procedure TGLEarthSkyDome.SetSkyColor(const val : TGLColor);
 begin
    FSkyColor.Assign(val);
    PreCalculate;
@@ -910,7 +910,7 @@ end;
 
 // SetNightColor
 //
-procedure TEarthSkyDome.SetNightColor(const val : TGLColor);
+procedure TGLEarthSkyDome.SetNightColor(const val : TGLColor);
 begin
    FNightColor.Assign(val);
    PreCalculate;
@@ -918,7 +918,7 @@ end;
 
 // SetSlices
 //
-procedure TEarthSkyDome.SetSlices(const val : Integer);
+procedure TGLEarthSkyDome.SetSlices(const val : Integer);
 begin
    if val>6 then
       FSlices:=val
@@ -928,7 +928,7 @@ end;
 
 // SetStacks
 //
-procedure TEarthSkyDome.SetStacks(const val : Integer);
+procedure TGLEarthSkyDome.SetStacks(const val : Integer);
 begin
    if val>1 then
       FStacks:=val
@@ -938,7 +938,7 @@ end;
 
 // BuildList
 //
-procedure TEarthSkyDome.BuildList(var rci : TRenderContextInfo);
+procedure TGLEarthSkyDome.BuildList(var rci : TRenderContextInfo);
 begin
    RenderDome;
    inherited;
@@ -946,14 +946,14 @@ end;
 
 // OnColorChanged
 //
-procedure TEarthSkyDome.OnColorChanged(Sender : TObject);
+procedure TGLEarthSkyDome.OnColorChanged(Sender : TObject);
 begin
    PreCalculate;
 end;
 
 // PreCalculate
 //
-procedure TEarthSkyDome.PreCalculate;
+procedure TGLEarthSkyDome.PreCalculate;
 var
    ts : Single;
    fts : Single;
@@ -973,7 +973,7 @@ end;
 
 // CalculateColor
 //
-function TEarthSkyDome.CalculateColor(const theta, cosGamma : Single) : TColorVector;
+function TGLEarthSkyDome.CalculateColor(const theta, cosGamma : Single) : TColorVector;
 var
    t : Single;
 begin
@@ -986,7 +986,7 @@ end;
 
 // SetSunElevation
 //
-procedure TEarthSkyDome.RenderDome;
+procedure TGLEarthSkyDome.RenderDome;
 var
    ts : Single;
    steps : Integer;
@@ -1094,7 +1094,7 @@ initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-   RegisterClasses([TSkyDome, TEarthSkyDome]);
+   RegisterClasses([TGLSkyDome, TGLEarthSkyDome]);
 
 end.
 

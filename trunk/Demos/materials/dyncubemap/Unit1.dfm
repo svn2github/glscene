@@ -46,7 +46,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 32
-    object SkyDome1: TSkyDome
+    object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Bands = <
@@ -83,7 +83,7 @@ object Form1: TForm1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object Torus1: TTorus
+    object Torus1: TGLTorus
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000803F000000000000000000000000}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -91,7 +91,7 @@ object Form1: TForm1
       MinorRadius = 0.300000011920929
       Rings = 32
       Sides = 12
-      object Cylinder1: TCylinder
+      object Cylinder1: TGLCylinder
         Direction.Coordinates = {000000800000803F0000000000000000}
         Position.Coordinates = {0000A04000000000000000000000803F}
         Up.Coordinates = {00000000000000000000803F00000000}
@@ -103,7 +103,7 @@ object Form1: TForm1
         Stacks = 1
         TopRadius = 0.300000011920929
       end
-      object Sphere1: TSphere
+      object Sphere1: TGLSphere
         Position.Coordinates = {0000A0C000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {1283003F0000803F000000000000803F}
         Material.FrontProperties.Emission.Color = {00000000448B0C3FBA490C3E0000803F}
@@ -112,7 +112,7 @@ object Form1: TForm1
         Slices = 12
         Stacks = 12
       end
-      object Cube1: TCube
+      object Cube1: TGLCube
         Position.Coordinates = {000000000000A040000000000000803F}
         Material.FrontProperties.Diffuse.Color = {AE47613EAE47613EAE47613E0000803F}
         Material.FrontProperties.Emission.Color = {1283003F00000000000000000000803F}
@@ -120,7 +120,7 @@ object Form1: TForm1
         CubeSize = {0000C03F0000C03F0000C03F}
       end
     end
-    object Teapot1: TTeapot
+    object Teapot1: TGLTeapot
       Direction.Coordinates = {F404353F00000000F204353F00000000}
       Scale.Coordinates = {00000041000000410000004100000000}
       Visible = False

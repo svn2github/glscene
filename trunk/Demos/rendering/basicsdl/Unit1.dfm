@@ -13,7 +13,7 @@ object DataModule1: TDataModule1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object Teapot1: TTeapot
+    object Teapot1: TGLTeapot
       Material.Texture.ImageClassName = 'TGLCubeMapImage'
       Material.Texture.TextureMode = tmReplace
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}

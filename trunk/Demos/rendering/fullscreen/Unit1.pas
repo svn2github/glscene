@@ -20,9 +20,9 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    Teapot1: TTeapot;
+    Teapot1: TGLTeapot;
     GLFullScreenViewer1: TGLFullScreenViewer;
-    DCBlueLight: TDummyCube;
+    DCBlueLight: TGLDummyCube;
     GLLightSource2: TGLLightSource;
     procedure DataModuleCreate(Sender: TObject);
     procedure GLFullScreenViewer1KeyPress(Sender: TObject; var Key: Char);

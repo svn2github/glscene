@@ -30,17 +30,17 @@ type
     Panel1: TPanel;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    Plane1: TPlane;
-    Sphere1: TSphere;
+    Plane1: TGLPlane;
+    Sphere1: TGLSphere;
     GLCadencer1: TGLCadencer;
-    DummyCube1: TDummyCube;
-    HUDSprite1: THUDSprite;
+    DummyCube1: TGLDummyCube;
+    HUDSprite1: TGLHUDSprite;
     BUSnapShot: TButton;
     BURenderToBitmap: TButton;
     BUBitmapx2: TButton;
     BUBitmap600: TButton;
     BUBitmap300: TButton;
-    SpaceText1: TSpaceText;
+    SpaceText1: TGLSpaceText;
     procedure Sphere1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);

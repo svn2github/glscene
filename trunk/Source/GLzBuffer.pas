@@ -21,7 +21,7 @@
                            texture directly to OpenGL. This increased speed by almost 20%
       <li>25/09/01 - Lin - Add Optimise property to specify faster rastering methods
       <li>07/09/01 - Lin - Restructure zBuffer code, to support the new TGLMemoryViewer
-      <li>06/09/01 - Lin - Created TZShadows object, for casting shadows
+      <li>06/09/01 - Lin - Created TGLZShadows object, for casting shadows
       <li>30/08/01 - Lin - More speed + bugfixes
       <li>24/07/01 - Lin - Greatly improved speed
       <li>07/07/01 - Lin - Added PixelToWorld, WorldToPixel, and PixelToDistance
@@ -132,9 +132,9 @@ type
     function OrthWorldToPixelZ(const aPoint :TAffineVector;out pixX,pixY:single;out pixZ:single):boolean;
   end;
 
-   // TZShadows
+   // TGLZShadows
    //
-   TZShadows = class (TGLBaseSceneObject)
+   TGLZShadows = class (TGLBaseSceneObject)
         private
          FViewer      :TGLSceneViewer;
          FCaster      :TGLMemoryViewer;
@@ -655,12 +655,12 @@ end;
 
 
 // ------------------
-// ------------------ TZShadows ------------------
+// ------------------ TGLZShadows ------------------
 // ------------------
 
 // Create
 //
-constructor TZShadows.Create(AOwner : TComponent);
+constructor TGLZShadows.Create(AOwner : TComponent);
 begin
    inherited;
 //   ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling, osIgnoreDepthBuffer];
@@ -674,7 +674,7 @@ begin
 end;
 
 //---Destroy---
-destructor TzShadows.Destroy;
+destructor TGLZShadows.Destroy;
 begin
  ViewerZBuf.Free;
  CasterZBuf.Free;
@@ -686,7 +686,7 @@ end;
 
 // BindTexture
 //
-procedure TzShadows.BindTexture;
+procedure TGLZShadows.BindTexture;
 //var
 //   bmp32 : TGLBitmap32;
 begin
@@ -725,7 +725,7 @@ begin
    end else glBindTexture(GL_TEXTURE_2D, FTexHandle.Handle);
 end;
 
-procedure TzShadows.PrepareAlphaMemory;
+procedure TGLZShadows.PrepareAlphaMemory;
 var i : Integer;
 begin
 //   ShowMessage(IntToStr(FWidth)+'  '+IntToStr(FXRes));
@@ -742,7 +742,7 @@ end;
 
 // DoRender
 //
-procedure TZShadows.DoRender(var rci : TRenderContextInfo;
+procedure TGLZShadows.DoRender(var rci : TRenderContextInfo;
                               renderSelf, renderChildren : Boolean);
 var vx, vy, vx1, vy1 : Single;
     xtex, ytex :single;
@@ -822,7 +822,7 @@ begin
    if Count>0 then Self.RenderChildren(0, Count-1, rci);
 end;
 
-Procedure TZShadows.CalcShadowTexture(var rci : TRenderContextInfo);
+Procedure TGLZShadows.CalcShadowTexture(var rci : TRenderContextInfo);
 var pix,p0,p1,p2,p3,p4:Byte;
     pM,pL,pT, OpM, OpL:Byte;
     pixa : PAArray;
@@ -1022,7 +1022,7 @@ begin
  end;
 end;
 
-function TZShadows.HardSet(const x,y :integer):Byte;
+function TGLZShadows.HardSet(const x,y :integer):Byte;
 
 var  pix :Byte;
     coord:TAffineVector;
@@ -1142,7 +1142,7 @@ begin
 end;
 
 {
-function TZShadows.OrthHardSet(const x,y :integer):Byte;
+function TGLZShadows.OrthHardSet(const x,y :integer):Byte;
 var  pix :Byte;
     coord:TAffineVector;
 //    pixX,pixY :integer;
@@ -1192,7 +1192,7 @@ begin
 end;
 }
 
-function TZShadows.Trnc(v : Single) : Integer; register;     //Same as Trunc
+function TGLZShadows.Trnc(v : Single) : Integer; register;     //Same as Trunc
 const half :single = 0.5;
 asm
    SUB     ESP,4
@@ -1202,36 +1202,36 @@ asm
    POP     EAX
 end;
 
-function TZShadows.SoftTest(const x,y:integer):Byte;
+function TGLZShadows.SoftTest(const x,y:integer):Byte;
 begin
    result:=FDataInvIdx[y][x];
 end;
 
 
-function TZShadows.GetViewer :TGLSceneViewer;
+function TGLZShadows.GetViewer :TGLSceneViewer;
 begin
  result:=FViewer;
 end;
 
-procedure TZShadows.SetViewer(const val :TGLSceneViewer);
+procedure TGLZShadows.SetViewer(const val :TGLSceneViewer);
 begin
  FViewer:=Val;
  Width:=FViewer.Width;
  Height:=FViewer.Height;
 end;
 
-function TZShadows.GetCaster :TGLMemoryViewer;
+function TGLZShadows.GetCaster :TGLMemoryViewer;
 begin
  result:=FCaster;
 end;
 
-procedure TZShadows.SetCaster(const val :TGLMemoryViewer);
+procedure TGLZShadows.SetCaster(const val :TGLMemoryViewer);
 begin
  FCaster:=Val;
 end;
 
 
-Function TZShadows.CastShadow :Boolean;
+Function TGLZShadows.CastShadow :Boolean;
 begin
    if Caster<>nil then begin
       if not assigned(CasterZBuf) then begin
@@ -1263,19 +1263,19 @@ begin
    end else Result:=True;
 end;
 
-procedure TZShadows.SetWidth(const val :integer);
+procedure TGLZShadows.SetWidth(const val :integer);
 begin
  FWidth:=val;
  SetXRes(val);
 end;
 
-procedure TZShadows.SetHeight(const val :integer);
+procedure TGLZShadows.SetHeight(const val :integer);
 begin
  FHeight:=val;
  SetYRes(val);
 end;
 
-procedure TZShadows.SetXRes(const val :integer);
+procedure TGLZShadows.SetXRes(const val :integer);
 var i :integer;
 begin
  i:=2; While val>i do i:=i*2;    //
@@ -1284,7 +1284,7 @@ begin
  PrepareAlphaMemory;
 end;
 
-procedure TZShadows.SetYRes(const val :integer);
+procedure TGLZShadows.SetYRes(const val :integer);
 var i :integer;
 begin
  i:=2; While val>i do i:=i*2;    //
@@ -1293,7 +1293,7 @@ begin
  PrepareAlphaMemory;
 end;
 
-procedure TZShadows.SetSoft(const val :boolean);
+procedure TGLZShadows.SetSoft(const val :boolean);
 begin
  FSoft:=val;
  NotifyChange(Self);
@@ -1311,5 +1311,5 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // class registrations
-   RegisterClasses([TZShadows]);
+   RegisterClasses([TGLZShadows]);
 end.

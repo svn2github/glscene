@@ -1,10 +1,10 @@
-{: Advenced for the THeightField object.<p>
+{: Advenced for the TGLHeightField object.<p>
 
    Check the fxy sample first.<p>
 
    This sample shows a few more tricks : how to switch formulas at run-time,
    effects of base grid extents and resolution change as well as color and
-   lighting options of the THeightField.<p>
+   lighting options of the TGLHeightField.<p>
 
    Note that maxed out grid size and minimum step (high resolution) will bring
    most of todays cards to their knees (if they do not just crash, that is).<p>
@@ -35,7 +35,7 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    HeightField1: THeightField;
+    HeightField1: TGLHeightField;
     TrackBar1: TTrackBar;
     TrackBar2: TTrackBar;
     Label1: TLabel;
@@ -47,9 +47,9 @@ type
     Timer1: TTimer;
     Label4: TLabel;
     ComboBox1: TComboBox;
-    Sphere1: TSphere;
+    Sphere1: TGLSphere;
     GLCadencer1: TGLCadencer;
-    Lines1: TLines;
+    Lines1: TGLLines;
     CheckBox2: TCheckBox;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

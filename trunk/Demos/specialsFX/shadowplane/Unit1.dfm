@@ -56,18 +56,18 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 344
     Top = 8
-    object DCShadowing: TDummyCube
+    object DCShadowing: TGLDummyCube
       CubeSize = 1
-      object Cube1: TCube
+      object Cube1: TGLCube
         Position.Coordinates = {000000000000003F000000000000803F}
         Up.Coordinates = {00000000FFFF7F3F1AF6953100000000}
         CubeSize = {00000040CDCC4C3E3333333F}
       end
-      object Sphere1: TSphere
+      object Sphere1: TGLSphere
         Position.Coordinates = {000000000000803F0000C0BF0000803F}
         Radius = 0.200000002980232
       end
-      object Torus1: TTorus
+      object Torus1: TGLTorus
         Direction.Coordinates = {00000000B28F703F441DAF3E00000000}
         Position.Coordinates = {000000000000803F0000C03F0000803F}
         Up.Coordinates = {00000000441DAF3EB28F70BF00000000}
@@ -77,13 +77,13 @@ object Form1: TForm1
         Sides = 12
       end
     end
-    object DCLight: TDummyCube
+    object DCLight: TGLDummyCube
       CubeSize = 1
       object GLLightSource1: TGLLightSource
         ConstAttenuation = 1
         Position.Coordinates = {0000000000004040000000000000803F}
         SpotCutOff = 180
-        object Sphere2: TSphere
+        object Sphere2: TGLSphere
           Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
@@ -93,7 +93,7 @@ object Form1: TForm1
         end
       end
     end
-    object DCCameraTarget: TDummyCube
+    object DCCameraTarget: TGLDummyCube
       Position.Coordinates = {000000003333333F000000000000803F}
       CubeSize = 1
       object GLCamera1: TGLCamera

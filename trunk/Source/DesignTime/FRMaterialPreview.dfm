@@ -45,12 +45,12 @@ object RMaterialPreview: TRMaterialPreview
   object GLScene1: TGLScene
     Left = 160
     Top = 32
-    object Cube: TCube
+    object Cube: TGLCube
       Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}
       Up.Coordinates = {D7B35DBFFFFF7F3ED7B3DDBE00000000}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
     end
-    object Sphere: TSphere
+    object Sphere: TGLSphere
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Radius = 0.800000011920929
     end
@@ -60,7 +60,7 @@ object RMaterialPreview: TRMaterialPreview
       Specular.Color = {0000803F0000803F0000803F0000803F}
       SpotCutOff = 180
     end
-    object PlanePattern: TPlane
+    object PlanePattern: TGLPlane
       Position.Coordinates = {0000000000000000000040C00000803F}
       Material.Texture.Image.Picture.Data = {
         07544269746D617076080000424D760800000000000076000000280000004000

@@ -20,7 +20,7 @@ uses
 
 type
 
-   // THUDSprite
+   // TGLHUDSprite
    //
 	{: A rectangular area, NOT perspective projected.<p>
       (x, y) coordinates map directly to the viewport (in pixels) and refer
@@ -28,8 +28,8 @@ type
       The coordinate system is that of an equivalent TCanvas, ie. top-left
       point is the origin (0, 0).<p>
       The z component is ignored and Z-Buffer is disabled when rendering.<p>
-      <b>Using THUDSprite in 2D only scenes :</b><br>
-      The most convenient way to use a THUDSprite as a simple 2D sprite with
+      <b>Using TGLHUDSprite in 2D only scenes :</b><br>
+      The most convenient way to use a TGLHUDSprite as a simple 2D sprite with
       blending capabilities (transparency or additive), is to set the texture
       mode to tmModulate, in FrontProperties, to use the Emission color to
       control coloring/intensity, and finally use the Diffuse color's alpha
@@ -37,9 +37,9 @@ type
       You can also control aplha-blending by defining a <1 value in the sprite's
       AlphaChannel field. This provides you with hardware accelerated,
       alpha-blended blitting.<p>
-      Note : since THUDSprite works in absolute coordinates, TGLProxyObject
+      Note : since TGLHUDSprite works in absolute coordinates, TGLProxyObject
       can't be used to duplicate an hud sprite. }
-	THUDSprite = class (TSprite)
+	TGLHUDSprite = class (TGLSprite)
 		public
 			{ Public Declarations }
 			constructor Create(AOwner: TComponent); override;
@@ -48,13 +48,13 @@ type
                             renderSelf, renderChildren : Boolean); override;
    end;
 
-   // THUDText
+   // TGLHUDText
    //
    {: A 2D text displayed and positionned in 2D coordinates.<p>
       The HUDText uses a character font defined and stored by a TBitmapFont
       component. The text can be scaled and rotated (2D), the layout and
       alignment can also be controled. }
-	THUDText = class (TGLImmaterialSceneObject)
+	TGLHUDText = class (TGLImmaterialSceneObject)
 	   private
 	      { Private Declarations }
          FBitmapFont : TGLCustomBitmapFont;
@@ -116,12 +116,12 @@ implementation
 uses SysUtils, OpenGL12, GLGraphics, XOpenGL;
 
 // ------------------
-// ------------------ THUDSprite ------------------
+// ------------------ TGLHUDSprite ------------------
 // ------------------
 
 // Create
 //
-constructor THUDSprite.Create(AOwner : TComponent);
+constructor TGLHUDSprite.Create(AOwner : TComponent);
 begin
    inherited;
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
@@ -131,7 +131,7 @@ end;
 
 // DoRender
 //
-procedure THUDSprite.DoRender(var rci : TRenderContextInfo;
+procedure TGLHUDSprite.DoRender(var rci : TRenderContextInfo;
                               renderSelf, renderChildren : Boolean);
 var
 	vx, vy, vx1, vy1, f : Single;
@@ -182,12 +182,12 @@ begin
 end;
 
 // ------------------
-// ------------------ THUDText ------------------
+// ------------------ TGLHUDText ------------------
 // ------------------
 
 // Create
 //
-constructor THUDText.Create(AOwner : TComponent);
+constructor TGLHUDText.Create(AOwner : TComponent);
 begin
    inherited;
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
@@ -196,7 +196,7 @@ end;
 
 // Destroy
 //
-destructor THUDText.Destroy;
+destructor TGLHUDText.Destroy;
 begin
    FModulateColor.Free;
    BitmapFont:=nil;
@@ -205,7 +205,7 @@ end;
 
 // Notification
 //
-procedure THUDText.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLHUDText.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if (Operation=opRemove) and (AComponent=FBitmapFont) then
       BitmapFont:=nil;
@@ -213,7 +213,7 @@ end;
 
 // SetBitmapFont
 //
-procedure THUDText.SetBitmapFont(const val : TGLCustomBitmapFont);
+procedure TGLHUDText.SetBitmapFont(const val : TGLCustomBitmapFont);
 begin
    if val<>FBitmapFont then begin
       if Assigned(FBitmapFont) then
@@ -229,7 +229,7 @@ end;
 
 // SetText
 //
-procedure THUDText.SetText(const val : String);
+procedure TGLHUDText.SetText(const val : String);
 begin
    FText:=val;
    StructureChanged;
@@ -237,7 +237,7 @@ end;
 
 // SetRotation
 //
-procedure THUDText.SetRotation(const val : Single);
+procedure TGLHUDText.SetRotation(const val : Single);
 begin
    FRotation:=val;
    StructureChanged;
@@ -245,7 +245,7 @@ end;
 
 // SetAlignment
 //
-procedure THUDText.SetAlignment(const val : TAlignment);
+procedure TGLHUDText.SetAlignment(const val : TAlignment);
 begin
    FAlignment:=val;
    StructureChanged;
@@ -253,7 +253,7 @@ end;
 
 // SetLayout
 //
-procedure THUDText.SetLayout(const val : TTextLayout);
+procedure TGLHUDText.SetLayout(const val : TTextLayout);
 begin
    FLayout:=val;
    StructureChanged;
@@ -261,14 +261,14 @@ end;
 
 // SetModulateColor
 //
-procedure THUDText.SetModulateColor(const val: TGLColor);
+procedure TGLHUDText.SetModulateColor(const val: TGLColor);
 begin
    FModulateColor.Assign(val);
 end;
 
 // DoRender
 //
-procedure THUDText.DoRender(var rci : TRenderContextInfo;
+procedure TGLHUDText.DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean);
 begin
    if (not Assigned(FBitmapFont)) or (Text='') then Exit;
@@ -308,7 +308,7 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClasses([THUDText, THUDSprite]);
+   RegisterClasses([TGLHUDText, TGLHUDSprite]);
 
 end.
 

@@ -99,7 +99,7 @@ type
 
   TGLMovementPath = class(TCollectionItem)
   private
-    FPathLine: TLines;
+    FPathLine: TGLLines;
     FShowPath: Boolean;
     FPathSplineMode: TLineSplineMode;
 
@@ -608,7 +608,7 @@ end;
 procedure TGLMovementPath.SetShowPath(Value: Boolean);
 var
   OwnerObj: TGLBaseSceneObject;
-  LineObj: TLines;
+  LineObj: TGLLines;
 begin
   if FShowPath<>Value then
   begin
@@ -618,7 +618,7 @@ begin
     if FShowPath then
     begin
       //allways add the line object to the root
-      LineObj := OwnerObj.Scene.Objects.AddNewChild(TLines) as TLines;
+      LineObj := OwnerObj.Scene.Objects.AddNewChild(TGLLines) as TGLLines;
       //set the link
       FPathLine := LineObj;
       FPathLine.SplineMode := FPathSplineMode;

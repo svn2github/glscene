@@ -93,9 +93,9 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
-      object Cube1: TCube
+      object Cube1: TGLCube
         Material.Texture.ImageClassName = 'TGLBlankImage'
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmModulate

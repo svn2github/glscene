@@ -1,4 +1,46 @@
 This document lists the class/unit name changes since v0.9:
 
+04/10/02
+TDummyCube -> TGLDummyCube
+TPlane -> TGLPlane
+TSprite -> TGLSprite
+TLineBase -> TGLLineBase
+TLines -> TGLLines
+TCube -> TGLCube
+TFrustrum -> TGLFrustrum
+TQuadricObject -> TGLQuadricObject
+TSphere -> TGLSphere
+TDisk -> TGLDisk
+TCylinderBase -> TGLCylinderBase
+TCone -> TGLCone
+TCylinder -> TGLCylinder
+TAnnulus -> TGLAnnulus
+TTorus -> TGLTorus
+TTeapot -> TGLTeapot
+TArrowLine -> TGLArrowLine
+TDodecahedron -> TGLDodecahedron
+TPolygonBase -> TGLPolygonBase
+TPolygon -> TGLPolygon
+TExtrusionSolid -> TGLExtrusionSolid
+TMultiPolygon -> TGLMultiPolygon
+TPipe -> TGLPipe
+TRevolutionSolid -> TGLRevolutionSolid
+TActor -> TGLActor
+TFreeForm -> TGLFreeForm
+TMesh -> TGLMesh
+TPortal -> TGLPortal
+THeightField -> TGLHeightField
+TEarthSkyDome -> TGLEarthSkyDome
+TSkyDome -> TGLSkyDome
+TSpaceText -> TGLSpaceText
+TTerrainRenderer -> TGLTerrainRenderer
+TXYZGrid -> TGLXYZGrid
+TZShadows -> TGLZShadows
+THUDSprite -> TGLHUDSprite
+THUDText -> TGLHUDText
+TDirectOpenGL -> TGLDirectOpenGL
 
-none yet.
+27/09/02
+- All DFMs converted to Text DFMs to simplify class name changes
+
+

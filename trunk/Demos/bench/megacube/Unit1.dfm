@@ -27,7 +27,7 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 8
     Top = 8
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       ObjectsSorting = osNone
       CubeSize = 10
     end

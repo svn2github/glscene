@@ -41,10 +41,10 @@ type
     GLCadencer: TGLCadencer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    DCTarget: TDummyCube;
+    DCTarget: TGLDummyCube;
     Timer1: TTimer;
-    DCSpheres: TDummyCube;
-    DCActors: TDummyCube;
+    DCSpheres: TGLDummyCube;
+    DCActors: TGLDummyCube;
     Label2: TLabel;
     Panel1: TPanel;
     RBSpheres: TRadioButton;
@@ -73,13 +73,13 @@ uses Jpeg;
 procedure TForm1.FormCreate(Sender: TObject);
 var
    i, j : Integer;
-   newSphere : TSphere;
-   newActor : TActor;
+   newSphere : TGLSphere;
+   newActor : TGLActor;
 begin
    // Spheres are used as standalone, high-polycount objects
    // that are highly T&L friendly
    for i:=-4 to 4 do for j:=-4 to 4 do begin
-      newSphere:=(DCSpheres.AddNewChild(TSphere) as TSphere);
+      newSphere:=(DCSpheres.AddNewChild(TGLSphere) as TGLSphere);
       newSphere.Position.SetPoint(i*5, 0, j*5);
       newSphere.Slices:=32;
       newSphere.Stacks:=32;
@@ -88,7 +88,7 @@ begin
    // that aren't T&L friendly (all geometry must be sent to
    // the hardware at each frame)
    for i:=-2 to 2 do for j:=-2 to 2 do begin
-      newActor:=(DCActors.AddNewChild(TActor) as TActor);
+      newActor:=(DCActors.AddNewChild(TGLActor) as TGLActor);
       newActor.Position.SetPoint(i*10, 0, j*10);
       newActor.Scale.SetVector(0.05, 0.05, 0.05);
       newActor.PitchAngle:=90;

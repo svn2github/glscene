@@ -11,13 +11,13 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
     Camera1: TGLCamera;
-    Cube1: TCube;
+    Cube1: TGLCube;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
     GLTimeEventsMGR1: TGLTimeEventsMGR;
-    Cube2: TCube;
-    DummyCube1: TDummyCube;
-    Cube3: TCube;
+    Cube2: TGLCube;
+    DummyCube1: TGLDummyCube;
+    Cube3: TGLCube;
     procedure Timer1Timer(Sender: TObject);
     procedure GLTimeEventsMGR1Events0Event(event: TTimeEvent);
     procedure GLTimeEventsMGR1Events1Event(event: TTimeEvent);

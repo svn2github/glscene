@@ -39,8 +39,8 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    Actor1: TActor;
-    DummyCube1: TDummyCube;
+    Actor1: TGLActor;
+    DummyCube1: TGLDummyCube;
     GLMaterialLibrary1: TGLMaterialLibrary;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
@@ -49,7 +49,7 @@ type
     CheckBox1: TCheckBox;
     Label1: TLabel;
     BUHighJump: TButton;
-    XYZGrid1: TXYZGrid;
+    XYZGrid1: TGLXYZGrid;
     RBWalk: TRadioButton;
     RBRun: TRadioButton;
     AnimationControler1: TAnimationControler;

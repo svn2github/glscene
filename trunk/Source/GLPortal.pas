@@ -106,10 +106,10 @@ type
          property DestinationSectorIndex : Integer read FDestinationSectorIndex write FDestinationSectorIndex;
 	end;
 
-   // TPortal
+   // TGLPortal
    //
    {: Portal Renderer class. }
-   TPortal = class(TBaseMesh)
+   TGLPortal = class(TBaseMesh)
       private
          { Private Declarations }
 
@@ -305,12 +305,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TPortal ------------------
+// ------------------ TGLPortal ------------------
 // ------------------
 
 // Create
 //
-constructor TPortal.Create(AOwner: TComponent);
+constructor TGLPortal.Create(AOwner: TComponent);
 begin
    FMeshObjects:=TPortalMeshObjectList.CreateOwned(Self);
    inherited;
@@ -320,7 +320,7 @@ end;
 
 // Destroy
 //
-destructor TPortal.Destroy;
+destructor TGLPortal.Destroy;
 begin
    inherited;
 end;
@@ -334,7 +334,7 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClass(TPortal);
+   RegisterClass(TGLPortal);
 
 end.
 

@@ -40,7 +40,7 @@ object Form1: TForm1
       Position.Coordinates = {00002041000000410000E0400000803F}
       SpotCutOff = 180
     end
-    object Torus1: TTorus
+    object Torus1: TGLTorus
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
       Material.MaterialLibrary = GLMaterialLibrary1
@@ -48,7 +48,7 @@ object Form1: TForm1
       MajorRadius = 2.5
       MinorRadius = 1.5
     end
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       ShowAxes = True
       Radius = 0.5
     end

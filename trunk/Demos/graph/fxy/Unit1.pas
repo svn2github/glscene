@@ -1,4 +1,4 @@
-{: Basic demo for the THeightField and TXYZGrid objects.<p>
+{: Basic demo for the TGLHeightField and TGLXYZGrid objects.<p>
 
    HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
    render anything from math formulas to statistics. Most important properties
@@ -32,10 +32,10 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    HeightField1: THeightField;
-    YZGrid: TXYZGrid;
-    XZGrid: TXYZGrid;
-    XYGrid: TXYZGrid;
+    HeightField1: TGLHeightField;
+    YZGrid: TGLXYZGrid;
+    XZGrid: TGLXYZGrid;
+    XYGrid: TGLXYZGrid;
     CBCentered: TCheckBox;
     TBXYPosition: TTrackBar;
     Label1: TLabel;

@@ -19,10 +19,10 @@ type
     GLCamera1: TGLCamera;
     Timer1: TTimer;
     GLThorFXManager1: TGLThorFXManager;
-    ThorCube: TCube;
-    TargetCube: TCube;
+    ThorCube: TGLCube;
+    TargetCube: TGLCube;
     Panel1: TPanel;
-    SkyDome1: TSkyDome;
+    SkyDome1: TGLSkyDome;
     Label1: TLabel;
     DistanceBar: TTrackBar;
     Label5: TLabel;
@@ -35,9 +35,9 @@ type
     VibBar: TTrackBar;
     SpinBox: TCheckBox;
     CoreBox: TCheckBox;
-    Objects: TDummyCube;
+    Objects: TGLDummyCube;
     GLLightSource1: TGLLightSource;
-    HeightField1: THeightField;
+    HeightField1: TGLHeightField;
     Memo1: TMemo;
     PauseBox: TCheckBox;
     procedure GLSceneViewer1MouseDown(Sender: TObject;

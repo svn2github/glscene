@@ -18,10 +18,10 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    DummyCube1: TDummyCube;
-    FreeForm1: TFreeForm;
-    Sphere1: TSphere;
-    ArrowLine1: TArrowLine;
+    DummyCube1: TGLDummyCube;
+    FreeForm1: TGLFreeForm;
+    Sphere1: TGLSphere;
+    ArrowLine1: TGLArrowLine;
     GLSceneViewer2: TGLSceneViewer;
     GLCamera2: TGLCamera;
     procedure FormCreate(Sender: TObject);

@@ -140,7 +140,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 184
     Top = 88
-    object HUDSprite1: THUDSprite
+    object HUDSprite1: TGLHUDSprite
       Position.Coordinates = {0000164300001643000000000000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'

@@ -33,27 +33,27 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 8
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
       BehavioursData = {
         0201060B54474C42496E657274696102000200050000000000000080FF3F0200
         0805000000000000008404C005000000000000009002400500000000000000C0
         004008020008020008}
-      object DummyCube2: TDummyCube
+      object DummyCube2: TGLDummyCube
         Position.Coordinates = {0000000000000000000040400000803F}
         CubeSize = 1
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
           080500000000000000C000400500000000000000000000050000000000000098
           034008020008020008}
-        object DummyCube3: TDummyCube
+        object DummyCube3: TGLDummyCube
           Position.Coordinates = {000000000000803F000000000000803F}
           CubeSize = 1
           BehavioursData = {
             0201060B54474C42496E657274696102000200050000000000000080FF3F0200
             08050000000000000080FF3F0500000000000000C00040050000000000000080
             034008020008020008}
-          object Torus1: TTorus
+          object Torus1: TGLTorus
             Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
             MajorRadius = 1
             MinorRadius = 0.300000011920929
@@ -67,7 +67,7 @@ object Form1: TForm1
         end
       end
     end
-    object DummyCube4: TDummyCube
+    object DummyCube4: TGLDummyCube
       CubeSize = 1
       BehavioursData = {
         0201060B54474C42496E657274696102000200050000000000000080FF3F0200

@@ -3,19 +3,19 @@
 	Graph plotting objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>16/07/02 - Egg - Fixed THeightField backface polygon mode
-      <li>29/01/02 - Egg - Fixed THeightField.BuildList when field is empty
+      <li>16/07/02 - Egg - Fixed TGLHeightField backface polygon mode
+      <li>29/01/02 - Egg - Fixed TGLHeightField.BuildList when field is empty
       <li>10/01/02 - Egg - Added OnGetHeight2
-      <li>30/11/01 - Egg - Color fix in THeightField.BuildList (thx Marc Hull)
-      <li>19/07/01 - Egg - THeightField no longer calls OnGetHeight in design mode
-      <li>06/03/01 - Egg - Fix in THeightField.BuildList (thx Rene Lindsay)
-      <li>25/02/01 - Egg - Minor T&L improvement for THeightField
+      <li>30/11/01 - Egg - Color fix in TGLHeightField.BuildList (thx Marc Hull)
+      <li>19/07/01 - Egg - TGLHeightField no longer calls OnGetHeight in design mode
+      <li>06/03/01 - Egg - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
+      <li>25/02/01 - Egg - Minor T&L improvement for TGLHeightField
       <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
       <li>29/01/01 - Egg - Changed SamplingScale "Min" and "Max" default value
                            to workaround the float property default value bug.
       <li>05/11/00 - Egg - Fixed "property ZSamplingScale" (thx Davide Prade)
       <li>15/07/00 - Egg - Added TXYGrid
-	   <li>06/07/00 - Egg - Creation (TGLSamplingScale & THeightField)
+	   <li>06/07/00 - Egg - Creation (TGLSamplingScale & TGLHeightField)
 	</ul></font>
 }
 unit GLGraph;
@@ -90,7 +90,7 @@ type
    THeightFieldColorMode = (hfcmNone, hfcmEmission, hfcmAmbient, hfcmDiffuse,
                             hfcmAmbientAndDiffuse);
 
-	// THeightField
+	// TGLHeightField
 	//
    {: Renders a sampled height-field.<p>
       HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
@@ -101,7 +101,7 @@ type
       The component will then invoke it OnGetHeight event to retrieve Z values for
       all of the grid points (values are retrieved only once for each point). Each
       point may have an additionnal color and texture coordinate. }
-	THeightField = class (TGLSceneObject)
+	TGLHeightField = class (TGLSceneObject)
 	   private
 	      { Private Declarations }
          FOnGetHeight : THeightFieldGetHeightEvent;
@@ -170,11 +170,11 @@ type
          power. }
    TXYZGridLinesStyle = (glsLine, glsSegments);
 
-   // TXYZGrid
+   // TGLXYZGrid
    //
    {: An XYZ Grid object.<p>
       Renders an XYZ grid using lines. }
-   TXYZGrid = class(TLineBase)
+   TGLXYZGrid = class(TGLLineBase)
       private
 			{ Private Declarations }
          FXSamplingScale : TGLSamplingScale;
@@ -337,10 +337,10 @@ begin
 end;
 
 // ------------------
-// ------------------ THeightField ------------------
+// ------------------ TGLHeightField ------------------
 // ------------------
 
-constructor THeightField.Create(AOwner: TComponent);
+constructor TGLHeightField.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDoesTemperWithColorsOrFaceWinding];
@@ -351,7 +351,7 @@ end;
 
 // Destroy
 //
-destructor THeightField.Destroy;
+destructor TGLHeightField.Destroy;
 begin
    FXSamplingScale.Free;
    FYSamplingScale.Free;
@@ -360,20 +360,20 @@ end;
 
 // Assign
 //
-procedure THeightField.Assign(Source: TPersistent);
+procedure TGLHeightField.Assign(Source: TPersistent);
 begin
-   if Source is THeightField then begin
-      XSamplingScale:=THeightField(Source).XSamplingScale;
-      YSamplingScale:=THeightField(Source).YSamplingScale;
-      FOnGetHeight:=THeightField(Source).FOnGetHeight;
-      FOptions:=THeightField(Source).FOptions;
-      FColorMode:=THeightField(Source).FColorMode;
+   if Source is TGLHeightField then begin
+      XSamplingScale:=TGLHeightField(Source).XSamplingScale;
+      YSamplingScale:=TGLHeightField(Source).YSamplingScale;
+      FOnGetHeight:=TGLHeightField(Source).FOnGetHeight;
+      FOptions:=TGLHeightField(Source).FOptions;
+      FColorMode:=TGLHeightField(Source).FColorMode;
    end else inherited Assign(Source);
 end;
 
 // NotifyChange
 //
-procedure THeightField.NotifyChange(Sender : TObject);
+procedure TGLHeightField.NotifyChange(Sender : TObject);
 begin
    if Sender is TGLSamplingScale then
       StructureChanged;
@@ -382,7 +382,7 @@ end;
 
 // BuildList
 //
-procedure THeightField.BuildList(var rci : TRenderContextInfo);
+procedure TGLHeightField.BuildList(var rci : TRenderContextInfo);
 type
    TRowData = record
       z : Single;
@@ -525,21 +525,21 @@ end;
 
 // SetXSamplingScale
 //
-procedure THeightField.SetXSamplingScale(const val : TGLSamplingScale);
+procedure TGLHeightField.SetXSamplingScale(const val : TGLSamplingScale);
 begin
    FXSamplingScale.Assign(val);
 end;
 
 // SetYSamplingScale
 //
-procedure THeightField.SetYSamplingScale(const val : TGLSamplingScale);
+procedure TGLHeightField.SetYSamplingScale(const val : TGLSamplingScale);
 begin
    FYSamplingScale.Assign(val);
 end;
 
 // SetOptions
 //
-procedure THeightField.SetOptions(const val : THeightFieldOptions);
+procedure TGLHeightField.SetOptions(const val : THeightFieldOptions);
 begin
    if FOptions<>val then begin
       FOptions:=val;
@@ -549,7 +549,7 @@ end;
 
 // SetOnGetHeight
 //
-procedure THeightField.SetOnGetHeight(const val : THeightFieldGetHeightEvent);
+procedure TGLHeightField.SetOnGetHeight(const val : THeightFieldGetHeightEvent);
 begin
    FOnGetHeight:=val;
    StructureChanged;
@@ -557,7 +557,7 @@ end;
 
 // SetOnGetHeight2
 //
-procedure THeightField.SetOnGetHeight2(const val : THeightFieldGetHeight2Event);
+procedure TGLHeightField.SetOnGetHeight2(const val : THeightFieldGetHeight2Event);
 begin
    FOnGetHeight2:=val;
    StructureChanged;
@@ -565,7 +565,7 @@ end;
 
 // SetColorMode
 //
-procedure THeightField.SetColorMode(const val : THeightFieldColorMode);
+procedure TGLHeightField.SetColorMode(const val : THeightFieldColorMode);
 begin
    if val<>FColorMode then begin
       FColorMode:=val;
@@ -575,7 +575,7 @@ end;
 
 // DefaultHeightField
 //
-procedure THeightField.DefaultHeightField(const x, y : Single;
+procedure TGLHeightField.DefaultHeightField(const x, y : Single;
             var z : Single; var color : TColorVector; var texPoint : TTexPoint);
 begin
    z:=VectorNorm(x, y);
@@ -584,19 +584,19 @@ end;
 
 // Height2Field
 //
-procedure THeightField.Height2Field(const x, y : Single;
+procedure TGLHeightField.Height2Field(const x, y : Single;
             var z : Single; var color : TColorVector; var texPoint : TTexPoint);
 begin
    FOnGetHeight2(Self, x, y, z, color, texPoint);
 end;
 
 // ------------------
-// ------------------ TXYZGrid ------------------
+// ------------------ TGLXYZGrid ------------------
 // ------------------
 
 // Create
 //
-constructor TXYZGrid.Create(AOwner: TComponent);
+constructor TGLXYZGrid.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    FXSamplingScale:=TGLSamplingScale.Create(Self);
@@ -608,7 +608,7 @@ end;
 
 // Destroy
 //
-destructor TXYZGrid.Destroy;
+destructor TGLXYZGrid.Destroy;
 begin
    FXSamplingScale.Free;
    FYSamplingScale.Free;
@@ -618,42 +618,42 @@ end;
 
 // Assign
 //
-procedure TXYZGrid.Assign(Source: TPersistent);
+procedure TGLXYZGrid.Assign(Source: TPersistent);
 begin
-   if Source is TXYZGrid then begin
-      XSamplingScale:=TXYZGrid(Source).XSamplingScale;
-      YSamplingScale:=TXYZGrid(Source).YSamplingScale;
-      ZSamplingScale:=TXYZGrid(Source).ZSamplingScale;
-      FParts:=TXYZGrid(Source).FParts;
-      FLinesStyle:=TXYZGrid(Source).FLinesStyle;
+   if Source is TGLXYZGrid then begin
+      XSamplingScale:=TGLXYZGrid(Source).XSamplingScale;
+      YSamplingScale:=TGLXYZGrid(Source).YSamplingScale;
+      ZSamplingScale:=TGLXYZGrid(Source).ZSamplingScale;
+      FParts:=TGLXYZGrid(Source).FParts;
+      FLinesStyle:=TGLXYZGrid(Source).FLinesStyle;
    end;
    inherited Assign(Source);
 end;
 
 // SetXSamplingScale
 //
-procedure TXYZGrid.SetXSamplingScale(const val : TGLSamplingScale);
+procedure TGLXYZGrid.SetXSamplingScale(const val : TGLSamplingScale);
 begin
    FXSamplingScale.Assign(val);
 end;
 
 // SetYSamplingScale
 //
-procedure TXYZGrid.SetYSamplingScale(const val : TGLSamplingScale);
+procedure TGLXYZGrid.SetYSamplingScale(const val : TGLSamplingScale);
 begin
    FYSamplingScale.Assign(val);
 end;
 
 // SetZSamplingScale
 //
-procedure TXYZGrid.SetZSamplingScale(const val : TGLSamplingScale);
+procedure TGLXYZGrid.SetZSamplingScale(const val : TGLSamplingScale);
 begin
    FZSamplingScale.Assign(val);
 end;
 
 // SetParts
 //
-procedure TXYZGrid.SetParts(const val : TXYZGridParts);
+procedure TGLXYZGrid.SetParts(const val : TXYZGridParts);
 begin
    if FParts<>val then begin
       FParts:=val;
@@ -663,7 +663,7 @@ end;
 
 // SetLinesStyle
 //
-procedure TXYZGrid.SetLinesStyle(const val : TXYZGridLinesStyle);
+procedure TGLXYZGrid.SetLinesStyle(const val : TXYZGridLinesStyle);
 begin
    if FLinesStyle<>val then begin
       FLinesStyle:=val;
@@ -673,7 +673,7 @@ end;
 
 // SetLinesSmoothing
 //
-procedure TXYZGrid.SetLinesSmoothing(const val : Boolean);
+procedure TGLXYZGrid.SetLinesSmoothing(const val : Boolean);
 begin
    if FLinesSmoothing<>val then begin
       FLinesSmoothing:=val;
@@ -683,7 +683,7 @@ end;
 
 // NotifyChange
 //
-procedure TXYZGrid.NotifyChange(Sender : TObject);
+procedure TGLXYZGrid.NotifyChange(Sender : TObject);
 begin
    if Sender is TGLSamplingScale then
       StructureChanged;
@@ -692,7 +692,7 @@ end;
 
 // BuildList
 //
-procedure TXYZGrid.BuildList(var rci : TRenderContextInfo);
+procedure TGLXYZGrid.BuildList(var rci : TRenderContextInfo);
 var
    xBase, x, xStep, xMax, yBase, y, yStep, yMax, zBase, z, zStep, zMax : Single;
 begin
@@ -781,7 +781,7 @@ initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-   RegisterClasses([THeightField, TXYZGrid]);
+   RegisterClasses([TGLHeightField, TGLXYZGrid]);
 
 end.
 

@@ -43,7 +43,7 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 56
     Top = 56
-    object SkyDome1: TSkyDome
+    object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       Bands = <
@@ -62,7 +62,7 @@ object Form1: TForm1
         end>
       Stars = <>
       Options = [sdoTwinkle]
-      object SPMoon: TSprite
+      object SPMoon: TGLSprite
         Position.Coordinates = {00000C430000C842000096420000803F}
         Visible = False
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
@@ -78,7 +78,7 @@ object Form1: TForm1
         Height = 30
         NoZWrite = True
       end
-      object SPSun: TSprite
+      object SPSun: TGLSprite
         Position.Coordinates = {00000C430000C842000096420000803F}
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
@@ -93,7 +93,7 @@ object Form1: TForm1
         NoZWrite = True
       end
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000041000000000000803F}
       CubeSize = 1
       object GLCamera1: TGLCamera
@@ -105,7 +105,7 @@ object Form1: TForm1
         Top = 160
       end
     end
-    object TerrainRenderer1: TTerrainRenderer
+    object TerrainRenderer1: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {00008040000080400000803E00000000}
       Up.Coordinates = {00000000000000000000803F00000000}
@@ -116,13 +116,13 @@ object Form1: TForm1
       TilesPerTexture = 1
       QualityDistance = 150
     end
-    object HUDText1: THUDText
+    object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
       BitmapFont = BitmapFont1
       Alignment = taLeftJustify
       Layout = tlTop
     end
-    object DCSound: TDummyCube
+    object DCSound: TGLDummyCube
       CubeSize = 1
     end
   end

@@ -42,7 +42,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 56
-    object Cube1: TCube
+    object Cube1: TGLCube
     end
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1

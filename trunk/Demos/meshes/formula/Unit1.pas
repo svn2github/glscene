@@ -38,8 +38,8 @@ type
   TForm1 = class(TForm)
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
-    Mesh1: TMesh;
-    DummyCube1: TDummyCube;
+    Mesh1: TGLMesh;
+    DummyCube1: TGLDummyCube;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     Timer1: TTimer;
@@ -47,8 +47,8 @@ type
     Panel1: TPanel;
     Label1: TLabel;
     GLScene2: TGLScene;
-    DummyCube2: TDummyCube;
-    Mesh2: TMesh;
+    DummyCube2: TGLDummyCube;
+    Mesh2: TGLMesh;
     GLLightSource2: TGLLightSource;
     GLCamera2: TGLCamera;
     Label2: TLabel;

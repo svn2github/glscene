@@ -71,7 +71,7 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 40
     Top = 32
-    object SkyDome1: TSkyDome
+    object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Bands = <
@@ -92,7 +92,7 @@ object Form1: TForm1
         end>
       Stars = <>
     end
-    object Disk1: TDisk
+    object Disk1: TGLDisk
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
       Material.Texture.MinFilter = miLinear
@@ -109,10 +109,10 @@ object Form1: TForm1
       LightStyle = lsOmni
       SpotCutOff = 360
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Direction.Coordinates = {00000000000000800000803F00000000}
       CubeSize = 1
-      object FreeForm1: TFreeForm
+      object FreeForm1: TGLFreeForm
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {0000803F0000803F000000000000803F}
         Scale.Coordinates = {0AD7A33CCDCCCC3C4260E53C00000000}
@@ -122,7 +122,7 @@ object Form1: TForm1
         NormalsOrientation = mnoInvert
       end
     end
-    object DummyCube2: TDummyCube
+    object DummyCube2: TGLDummyCube
       Direction.Coordinates = {00000000000000800000803F00000000}
       Position.Coordinates = {000000000000803F000000000000803F}
       CubeSize = 0.100000001490116
@@ -134,7 +134,7 @@ object Form1: TForm1
         Left = 320
         Top = 192
       end
-      object Actor1: TActor
+      object Actor1: TGLActor
         Direction.Coordinates = {000000800000803F0000000000000000}
         Up.Coordinates = {0000803F000000000000000000000000}
         Visible = False
@@ -148,7 +148,7 @@ object Form1: TForm1
         Interval = 100
         Animations = <>
         OverlaySkeleton = False
-        object Actor2: TActor
+        object Actor2: TGLActor
           Direction.Coordinates = {00000080000000000000803F00000000}
           Material.Texture.MinFilter = miLinear
           Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -161,7 +161,7 @@ object Form1: TForm1
           OverlaySkeleton = False
         end
       end
-      object DummyCube3: TDummyCube
+      object DummyCube3: TGLDummyCube
         CubeSize = 1
         object GLCamera1: TGLCamera
           DepthOfView = 1000

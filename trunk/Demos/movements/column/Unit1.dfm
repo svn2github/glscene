@@ -39,7 +39,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 8
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
     end
     object GLCamera1: TGLCamera

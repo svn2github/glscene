@@ -36,7 +36,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 8
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 0.800000011920929
       VisibleAtRunTime = True
     end
@@ -45,7 +45,7 @@ object Form1: TForm1
       Position.Coordinates = {0000E0400000A040000040400000803F}
       SpotCutOff = 180
     end
-    object Teapot1: TTeapot
+    object Teapot1: TGLTeapot
       Material.Texture.TextureMode = tmReplace
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
     end

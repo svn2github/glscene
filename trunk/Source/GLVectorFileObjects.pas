@@ -11,7 +11,7 @@
       <li>13/03/02 - EG - Octree support (experimental)
       <li>18/02/02 - EG - Fixed persistence of skeletal meshes
       <li>04/01/02 - EG - Added basic RayCastIntersect implementation
-      <li>17/12/01 - EG - Upgraded TActor.Synchronize (smooth transitions support)
+      <li>17/12/01 - EG - Upgraded TGLActor.Synchronize (smooth transitions support)
       <li>30/11/01 - EG - Added smooth transitions (based on Mrqzzz code)
       <li>14/09/01 - EG - Use of vFileStreamClass
       <li>18/08/01 - EG - Added TriangleCount methods, STL export, PLY import
@@ -39,7 +39,7 @@
       <li>15/01/01 - EG - Added Translate methods
       <li>10/01/01 - EG - Fixed in TBaseMesh.DoRender for RenderChildren states
       <li>08/01/01 - EG - Fixed TBaseMesh.BuildList messup of attrib states
-      <li>22/12/00 - EG - Fixed non-interpolated TActor animation (was freezing),
+      <li>22/12/00 - EG - Fixed non-interpolated TGLActor animation (was freezing),
                           Fixed TBaseMesh.DoRender messup of attrib states
       <li>18/12/00 - EG - TFGIndexTexCoordList now supports normals (automatically),
                           NormalsOrientation code moved to TBaseMesh
@@ -49,7 +49,7 @@
       <li>13/08/00 - EG - Enhancements for Portal Rendering support,
                           Added utility methods & triangle fans
       <li>10/08/00 - EG - Added CurrentAnimation, fixed TMeshObject.GetExtents
-      <li>21/07/00 - EG - Vastly improved memory use and mechanisms for MD2/TActor
+      <li>21/07/00 - EG - Vastly improved memory use and mechanisms for MD2/TGLActor
       <li>19/07/00 - EG - Introduced enhanced mesh structure
       <li>16/07/00 - EG - Made use of new TDataFile class
       <li>15/07/00 - EG - FreeForm can now handle 3DS files with multiple textures,
@@ -57,15 +57,15 @@
       <li>28/06/00 - EG - Support for "ObjectStyle"
       <li>23/06/00 - EG - Reversed "t" texture coord for MD2,
                           TActorAnimations can now load/save
-      <li>21/06/00 - EG - Added frame change events to TActor,
+      <li>21/06/00 - EG - Added frame change events to TGLActor,
                           Added TActorAnimations collection
-      <li>19/06/00 - EG - Completed smooth movement interpolation for TActor
-      <li>07/06/00 - EG - TVectorFile now longers assumes a TFreeForm as Owner,
+      <li>19/06/00 - EG - Completed smooth movement interpolation for TGLActor
+      <li>07/06/00 - EG - TVectorFile now longers assumes a TGLFreeForm as Owner,
                           Added generic TVectorFile.LoadFromFile
       <li>26/05/00 - EG - Removed dependency to GLObjects,
-                          TFreeForm now may use InterleavedArrays instead of
+                          TGLFreeForm now may use InterleavedArrays instead of
                           IndexedArrays (better BuildList compatibility)
-      <li>22/04/00 - EG - Fixed Material handlings in TFreeForm, inverted CCW/CW
+      <li>22/04/00 - EG - Fixed Material handlings in TGLFreeForm, inverted CCW/CW
                           convention for 3DS Release3
 		<li>11/04/00 - EG - Removed unnecessary code in finalization (thanks Uwe)
 	   <li>09/02/00 - EG - Creation from split of GLObjects,
@@ -892,7 +892,7 @@ type
    //
    {: The MD2 vector file (Quake2 actor file).<p>
       Stores a set of "frames" describing the different postures of the actor,
-      it may be animated by TActor. The "Skin" must be loaded indepentendly
+      it may be animated by TGLActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap).<p>
       Based on code by Roger Cao. }
    TGLMD2VectorFile = class(TVectorFile)
@@ -1075,7 +1075,7 @@ type
          property OverlaySkeleton : Boolean read FOverlaySkeleton write SetOverlaySkeleton;
    end;
 
-   // TFreeForm
+   // TGLFreeForm
    //
    {: Container objects for a vector file mesh.<p>
       FreeForms allows loading and rendering vector files (like 3DStudio
@@ -1083,7 +1083,7 @@ type
       method.<p>
       A FreeForm may contain more than one mesh, but they will all be handled
       as a single object in a scene. }
-   TFreeForm = class (TBaseMesh)
+   TGLFreeForm = class (TBaseMesh)
       private
          { Private Declarations }
          FOctree : TOctree;
@@ -1122,7 +1122,7 @@ type
    //
    TActorAnimationReference = (aarMorph, aarSkeleton);
 
-   TActor = class;
+   TGLActor = class;
 
 	// TActorAnimation
 	//
@@ -1158,7 +1158,7 @@ type
 
          property AsString : String read GetAsString write SetAsString;
 
-         function OwnerActor : TActor;
+         function OwnerActor : TGLActor;
          
          {: Linearly removes the translation component between skeletal frames.<p>
             This function will compute the translation of the first bone (index 0)
@@ -1192,7 +1192,7 @@ type
 	TActorAnimations = class (TCollection)
 	   private
 	      { Private Declarations }
-	      owner : TActor;
+	      owner : TGLActor;
 
 	   protected
 	      { Protected Declarations }
@@ -1202,7 +1202,7 @@ type
 
       public
 	      { Public Declarations }
-	      constructor Create(AOwner : TActor);
+	      constructor Create(AOwner : TGLActor);
          function Add: TActorAnimation;
 	      function FindItemID(ID: Integer): TActorAnimation;
 	      function FindName(const aName : String) : TActorAnimation;
@@ -1222,13 +1222,13 @@ type
    {: Controls the blending of an additionnal skeletal animation into an actor.<p>
       The animation controler allows animating an actor with several animations
       at a time, for instance, you could use a "run" animation as base animation
-      (in TActor), blend an animation that makes the arms move differently
+      (in TGLActor), blend an animation that makes the arms move differently
       depending on what the actor is carrying, along with an animation that will
       make the head turn toward a target. }
    TAnimationControler = class (TComponent)
 	   private
 	      { Private Declarations }
-         FActor : TActor;
+         FActor : TGLActor;
          FAnimationName : TActorAnimationName;
          FRatio : Single;
 
@@ -1236,7 +1236,7 @@ type
 	      { Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          procedure DoChange;
-         procedure SetActor(const val : TActor);
+         procedure SetActor(const val : TGLActor);
          procedure SetAnimationName(const val : TActorAnimationName);
          procedure SetRatio(const val : Single);
 
@@ -1249,7 +1249,7 @@ type
 
       published
          { Published Declarations }
-         property Actor : TActor read FActor write SetActor;
+         property Actor : TGLActor read FActor write SetActor;
          property AnimationName : String read FAnimationName write SetAnimationName;
          property Ratio : Single read FRatio write SetRatio;
 	end;
@@ -1278,13 +1278,13 @@ type
    TActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward,
                           aamBounceBackward);
 
-   // TActor
+   // TGLActor
    //
    {: Mesh class specialized in animated meshes.<p>
-      The TActor provides a quick interface to animated meshes based on morph
+      The TGLActor provides a quick interface to animated meshes based on morph
       or skeleton frames, it is capable of performing frame interpolation and
       animation blending (via TAnimationControler components). }
-   TActor = class (TBaseMesh)
+   TGLActor = class (TBaseMesh)
       private
          { Private Declarations }
          FStartFrame, FEndFrame : Integer;
@@ -1329,7 +1329,7 @@ type
          {: Synchronize self animation with an other actor.<p>
             Copies Start/Current/End Frame values, CurrentFrameDelta,
             AnimationMode and FrameInterpolation. }
-         procedure Synchronize(referenceActor : TActor);
+         procedure Synchronize(referenceActor : TGLActor);
 
          function  NextFrameIndex : Integer;
 
@@ -4665,12 +4665,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TFreeForm ------------------
+// ------------------ TGLFreeForm ------------------
 // ------------------
 
 // Create
 //
-constructor TFreeForm.Create(AOwner:TComponent);
+constructor TGLFreeForm.Create(AOwner:TComponent);
 begin
    inherited;
    FUseMeshMaterials:=True;
@@ -4678,7 +4678,7 @@ end;
 
 // Destroy
 //
-destructor TFreeForm.Destroy;
+destructor TGLFreeForm.Destroy;
 begin
    FOctree.Free;
    inherited Destroy;
@@ -4686,7 +4686,7 @@ end;
 
 // GetOctree
 //
-function TFreeForm.GetOctree : TOctree;
+function TGLFreeForm.GetOctree : TOctree;
 begin
    if not Assigned(FOctree) then
       FOctree:=TOctree.Create;
@@ -4695,7 +4695,7 @@ end;
 
 // BuildOctree
 //
-procedure TFreeForm.BuildOctree;
+procedure TGLFreeForm.BuildOctree;
 var
    emin, emax : TAffineVector;
    tl : TAffineVectorList;
@@ -4714,7 +4714,7 @@ end;
 
 // OctreeRayCastIntersect
 //
-function TFreeForm.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
+function TGLFreeForm.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
                                           intersectPoint : PVector = nil;
                                           intersectNormal : PVector = nil) : Boolean;
 var
@@ -4738,7 +4738,7 @@ end;
 
 // OctreeSphereIntersect
 //
-function TFreeForm.OctreeSphereIntersect(const rayStart, rayVector : TVector;
+function TGLFreeForm.OctreeSphereIntersect(const rayStart, rayVector : TVector;
                                          const velocity, radius: Single;
                                          intersectPoint : PVector = nil;
                                          intersectNormal : PVector = nil) : Boolean;
@@ -4901,9 +4901,9 @@ end;
 
 // OwnerActor
 //
-function TActorAnimation.OwnerActor : TActor;
+function TActorAnimation.OwnerActor : TGLActor;
 begin
-   Result:=((Collection as TActorAnimations).GetOwner as TActor);
+   Result:=((Collection as TActorAnimations).GetOwner as TGLActor);
 end;
 
 // MakeSkeletalTranslationStatic
@@ -4926,7 +4926,7 @@ end;
 
 // Create
 //
-constructor TActorAnimations.Create(AOwner : TActor);
+constructor TActorAnimations.Create(AOwner : TGLActor);
 begin
 	Owner:=AOwner;
 	inherited Create(TActorAnimation);
@@ -5101,7 +5101,7 @@ end;
 
 // SetActor
 //
-procedure TAnimationControler.SetActor(const val : TActor);
+procedure TAnimationControler.SetActor(const val : TGLActor);
 begin
    if FActor<>val then begin
       if Assigned(FActor) then
@@ -5166,12 +5166,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TActor ------------------
+// ------------------ TGLActor ------------------
 // ------------------
 
 // Create
 //
-constructor TActor.Create(AOwner:TComponent);
+constructor TGLActor.Create(AOwner:TComponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw];
@@ -5184,7 +5184,7 @@ end;
 
 // Destroy
 //
-destructor TActor.Destroy;
+destructor TGLActor.Destroy;
 begin
    inherited Destroy;
    FControlers.Free;
@@ -5193,7 +5193,7 @@ end;
 
 // RegisterControler
 //
-procedure TActor.RegisterControler(aControler : TAnimationControler);
+procedure TGLActor.RegisterControler(aControler : TAnimationControler);
 begin
    if not Assigned(FControlers) then
       FControlers:=TList.Create;
@@ -5203,7 +5203,7 @@ end;
 
 // UnRegisterControler
 //
-procedure TActor.UnRegisterControler(aControler : TAnimationControler);
+procedure TGLActor.UnRegisterControler(aControler : TAnimationControler);
 begin
    Assert(Assigned(FControlers));
    FControlers.Remove(aControler);
@@ -5214,7 +5214,7 @@ end;
 
 // SetCurrentFrame
 //
-procedure TActor.SetCurrentFrame(val : Integer);
+procedure TGLActor.SetCurrentFrame(val : Integer);
 begin
    if val<>CurrentFrame then begin
       if val>FrameCount-1 then
@@ -5238,7 +5238,7 @@ end;
 
 // SetStartFrame
 //
-procedure TActor.SetStartFrame(val : Integer);
+procedure TGLActor.SetStartFrame(val : Integer);
 begin
    if (val>=0) and (val<FrameCount) and (val<>StartFrame) then
       FStartFrame:=val;
@@ -5250,7 +5250,7 @@ end;
 
 // SetEndFrame
 //
-procedure TActor.SetEndFrame(val : Integer);
+procedure TGLActor.SetEndFrame(val : Integer);
 begin
    if (val>=0) and (val<FrameCount) and (val<>EndFrame) then
       FEndFrame:=val;
@@ -5260,7 +5260,7 @@ end;
 
 // SetReference
 //
-procedure TActor.SetReference(val : TActorAnimationReference);
+procedure TGLActor.SetReference(val : TActorAnimationReference);
 begin
    if val<>Reference then begin
       FReference:=val;
@@ -5273,14 +5273,14 @@ end;
 
 // SetAnimations
 //
-procedure TActor.SetAnimations(const val : TActorAnimations);
+procedure TGLActor.SetAnimations(const val : TActorAnimations);
 begin
    FAnimations.Assign(val);
 end;
 
 // NextFrameIndex
 //
-function TActor.NextFrameIndex : Integer;
+function TGLActor.NextFrameIndex : Integer;
 begin
    case AnimationMode of
       aamNone, aamPlayOnce, aamLoop, aamBounceForward : begin
@@ -5315,7 +5315,7 @@ end;
 
 // NextFrame
 //
-procedure TActor.NextFrame(nbSteps : Integer = 1);
+procedure TGLActor.NextFrame(nbSteps : Integer = 1);
 var
    n : Integer;
 begin
@@ -5332,7 +5332,7 @@ end;
 
 // PrevFrame
 //
-procedure TActor.PrevFrame(nbSteps : Integer = 1);
+procedure TGLActor.PrevFrame(nbSteps : Integer = 1);
 var
    value : Integer;
 begin
@@ -5347,7 +5347,7 @@ end;
 
 // BuildList
 //
-procedure TActor.BuildList(var rci : TRenderContextInfo);
+procedure TGLActor.BuildList(var rci : TRenderContextInfo);
 var
    i, k : Integer;
    nextFrameIdx : Integer;
@@ -5413,7 +5413,7 @@ end;
 
 // PrepareMesh
 //
-procedure TActor.PrepareMesh;
+procedure TGLActor.PrepareMesh;
 begin
    FStartFrame:=0;
    FEndFrame:=FrameCount-1;
@@ -5424,7 +5424,7 @@ end;
 
 // FrameCount
 //
-function TActor.FrameCount : Integer;
+function TGLActor.FrameCount : Integer;
 begin
    case Reference of
       aarMorph :
@@ -5439,7 +5439,7 @@ end;
 
 // DoProgress
 //
-procedure TActor.DoProgress(const progressTime : TProgressTimes);
+procedure TGLActor.DoProgress(const progressTime : TProgressTimes);
 var
    fDelta : Single;
 begin
@@ -5465,14 +5465,14 @@ end;
 
 // SwitchToAnimation
 //
-procedure TActor.SwitchToAnimation(const animationName : String; smooth : Boolean = False);
+procedure TGLActor.SwitchToAnimation(const animationName : String; smooth : Boolean = False);
 begin
    SwitchToAnimation(Animations.FindName(animationName), smooth);
 end;
 
 // SwitchToAnimation
 //
-procedure TActor.SwitchToAnimation(animationIndex : Integer; smooth : Boolean = False);
+procedure TGLActor.SwitchToAnimation(animationIndex : Integer; smooth : Boolean = False);
 begin
    if (animationIndex>=0) and (animationIndex<Animations.Count) then
       SwitchToAnimation(Animations[animationIndex], smooth);
@@ -5480,7 +5480,7 @@ end;
 
 // SwitchToAnimation
 //
-procedure TActor.SwitchToAnimation(anAnimation : TActorAnimation; smooth : Boolean = False);
+procedure TGLActor.SwitchToAnimation(anAnimation : TActorAnimation; smooth : Boolean = False);
 begin
    if Assigned(anAnimation) then begin
       if smooth then begin
@@ -5497,7 +5497,7 @@ end;
 
 // CurrentAnimation
 //
-function TActor.CurrentAnimation : String;
+function TGLActor.CurrentAnimation : String;
 var
    aa : TActorAnimation;
 begin
@@ -5509,7 +5509,7 @@ end;
 
 // Synchronize
 //
-procedure TActor.Synchronize(referenceActor : TActor);
+procedure TGLActor.Synchronize(referenceActor : TGLActor);
 begin
    if Assigned(referenceActor) then begin
       if referenceActor.StartFrame<FrameCount then
@@ -5574,7 +5574,7 @@ begin
             end;
          end;
       end;
-      if GetOwner is TActor then with TActor(GetOwner).Animations do begin
+      if GetOwner is TGLActor then with TGLActor(GetOwner).Animations do begin
          Clear;
          with MD2File do for i:=0 to frameNames.Count-1 do with Add do begin
             Name:=frameNames[i];
@@ -5851,7 +5851,7 @@ begin
             Inc(i);
          end;
       end;
-      if Owner is TActor then with TActor(Owner).Animations.Add do begin
+      if Owner is TGLActor then with TGLActor(Owner).Animations.Add do begin
          k:=Pos('.', ResourceName);
          if k>0 then
             Name:=Copy(ResourceName, 1, k-1)
@@ -5908,7 +5908,7 @@ initialization
    RegisterVectorFileFormat('smd', 'Half-Life SMD files', TGLSMDVectorFile);
    RegisterVectorFileFormat('ply', 'Stanford triangle format', TGLPLYVectorFile);
 
-   RegisterClasses([TFreeForm, TActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
+   RegisterClasses([TGLFreeForm, TGLActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
                     TSkeletonMeshObject, TMeshObject, TSkeletonFrame,
                     TMorphableMeshObject, TFaceGroup, TFGVertexIndexList,
                     TFGVertexNormalTexIndexList, TAnimationControler]);

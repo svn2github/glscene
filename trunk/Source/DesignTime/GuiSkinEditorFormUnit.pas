@@ -29,7 +29,7 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLPanel1: TGLPanel;
-    HUDSprite1: THUDSprite;
+    HUDSprite1: TGLHUDSprite;
     GLMemoryViewer1: TGLMemoryViewer;
     Image1: TImage;
     Button3: TButton;

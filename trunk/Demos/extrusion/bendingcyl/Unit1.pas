@@ -1,6 +1,6 @@
-{: A very simple demo of the TPipe object, to show what it can do.<p>
+{: A very simple demo of the TGLPipe object, to show what it can do.<p>
 
-   The TPipe objects extrudes a circle along a trajectory (given by its node).
+   The TGLPipe objects extrudes a circle along a trajectory (given by its node).
    You can specify a radius factor for each node and use spline smoothing.<p>
 
    Here we only use 3 control points, the top ones moves horizontally, and the
@@ -25,10 +25,10 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    Pipe1: TPipe;
+    Pipe1: TGLPipe;
     GLCadencer1: TGLCadencer;
     CBSpline: TCheckBox;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     CBFat: TCheckBox;
     Timer1: TTimer;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,

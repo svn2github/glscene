@@ -24,9 +24,9 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     TrackBar: TTrackBar;
-    Cube1: TCube;
-    Cube3: TCube;
-    Cube2: TCube;
+    Cube1: TGLCube;
+    Cube3: TGLCube;
+    Cube2: TGLCube;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     CBPlay: TCheckBox;

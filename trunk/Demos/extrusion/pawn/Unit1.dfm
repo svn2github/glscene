@@ -166,9 +166,9 @@ object Form1: TForm1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
-      object RotationSolid1: TRevolutionSolid
+      object RotationSolid1: TGLRevolutionSolid
         Material.Texture.MinFilter = miLinear
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False

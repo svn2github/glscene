@@ -51,21 +51,21 @@ type
     GLScene: TGLScene;
     GLSceneViewer: TGLSceneViewer;
     GLCamera1: TGLCamera;
-    DummyCube: TDummyCube;
-    Sphere: TSphere;
+    DummyCube: TGLDummyCube;
+    Sphere: TGLSphere;
     GLLightSource: TGLLightSource;
     GLSMFMOD: TGLSMFMOD;
     GLSoundLibrary: TGLSoundLibrary;
     GLCadencer1: TGLCadencer;
     Timer: TTimer;
-    Mickey: TSphere;
-    Sphere2: TSphere;
-    Sphere3: TSphere;
-    Cone1: TCone;
+    Mickey: TGLSphere;
+    Sphere2: TGLSphere;
+    Sphere3: TGLSphere;
+    Cone1: TGLCone;
     TrackBar: TTrackBar;
-    Plane1: TPlane;
-    Disk1: TDisk;
-    Torus1: TTorus;
+    Plane1: TGLPlane;
+    Disk1: TGLDisk;
+    Torus1: TGLTorus;
     TrackBar1: TTrackBar;
     GLSMBASS: TGLSMBASS;
     Panel1: TPanel;
@@ -113,7 +113,7 @@ var
 begin
    // Move the red sphere (sound source) along an elliptic path
    alpha:=60*DegToRad(newTime);
-   TSphere(Sender).Position.SetPoint(sin(alpha)*2, 0.5, cos(alpha)*5);
+   TGLSphere(Sender).Position.SetPoint(sin(alpha)*2, 0.5, cos(alpha)*5);
 end;
 
 procedure TForm1.TrackBarChange(Sender: TObject);

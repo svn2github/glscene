@@ -42,7 +42,7 @@ type
     Label5: TLabel;
     RBDefault: TRadioButton;
     RBDouble: TRadioButton;
-    HUDSprite1: THUDSprite;
+    HUDSprite1: TGLHUDSprite;
     LAUsedMemory: TLabel;
     RBQuad: TRadioButton;
     LARGB32: TLabel;

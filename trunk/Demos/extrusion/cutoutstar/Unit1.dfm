@@ -30,7 +30,7 @@ object Form1: TForm1
       Position.Coordinates = {0000484200002042000070420000803F}
       SpotCutOff = 180
     end
-    object ExtrusionSolid: TExtrusionSolid
+    object ExtrusionSolid: TGLExtrusionSolid
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Contours = <>
       Parts = [espOutside, espStartPolygon, espStopPolygon]

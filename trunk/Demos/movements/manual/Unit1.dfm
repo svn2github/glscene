@@ -67,20 +67,20 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 48
-    object Cube1: TCube
+    object Cube1: TGLCube
       Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
     end
-    object Cube2: TCube
+    object Cube2: TGLCube
       Position.Coordinates = {0000404000000000000000000000803F}
       Material.FrontProperties.Diffuse.Color = {8786063F8786063F0000803F0000803F}
       Material.FrontProperties.Emission.Color = {0000000000000000A1A0203F0000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       CubeSize = {0000003F0000003F0000003F}
     end
-    object Cube3: TCube
+    object Cube3: TGLCube
       Position.Coordinates = {000040400000803F000000000000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       CubeSize = {CDCC4C3ECDCC4C3ECDCC4C3E}

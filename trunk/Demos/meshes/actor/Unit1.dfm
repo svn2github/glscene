@@ -162,7 +162,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 40
     Top = 48
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
       object GLLightSource1: TGLLightSource
         Ambient.Color = {0000803F0000803F0000803F0000803F}
@@ -179,7 +179,7 @@ object Form1: TForm1
         Direction.Coordinates = {2EF964BF2EF9E43E0000000000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
       end
-      object Disk1: TDisk
+      object Disk1: TGLDisk
         Position.Coordinates = {0000000000000000000080BF0000803F}
         Material.Texture.MinFilter = miLinear
         Material.Texture.Disabled = False
@@ -189,7 +189,7 @@ object Form1: TForm1
         SweepAngle = 360
       end
     end
-    object Actor1: TActor
+    object Actor1: TGLActor
       Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmModulate
@@ -201,7 +201,7 @@ object Form1: TForm1
       OnFrameChanged = Actor1FrameChanged
       Animations = <>
       OverlaySkeleton = False
-      object Actor2: TActor
+      object Actor2: TGLActor
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.Texture.MinFilter = miLinear
         Material.Texture.Disabled = False

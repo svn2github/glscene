@@ -126,7 +126,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 190
     Top = 6
-    object Floor: TCube
+    object Floor: TGLCube
       Position.Coordinates = {00000000000000005C8F82BF0000803F}
       Material.FrontProperties.Diffuse.Color = {C5C4C43ECDCCCC3E8382023FE3A53B3F}
       CubeSize = {00000040000000400AD7233C}
@@ -138,7 +138,7 @@ object Form1: TForm1
       Position.Coordinates = {0000804100005041000040410000803F}
       SpotCutOff = 180
     end
-    object Cube1: TCube
+    object Cube1: TGLCube
       Direction.Coordinates = {0000803F000000000000000000000000}
       Position.Coordinates = {CDCCCC3DCDCCCC3D666666BF0000803F}
       Scale.Coordinates = {CDCC4C3ECDCC4C3ECDCC4C3E00000000}
@@ -148,17 +148,17 @@ object Form1: TForm1
       Material.Texture.ImageAlpha = tiaAlphaFromIntensity
       Material.Texture.TextureMode = tmModulate
     end
-    object Cube2: TCube
+    object Cube2: TGLCube
       Position.Coordinates = {CDCCCCBECDCCCC3E000000BF0000803F}
       CubeSize = {0000803E0000803E0000803E}
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000803F0000803F0000003F0000803F}
       TransformationMode = tmParentWithPos
       CubeSize = 0.200000002980232
       EdgeColor.Color = {DEDD5D3FDEDD5D3FE9E8683F0000803F}
     end
-    object XArrow: TArrowLine
+    object XArrow: TGLArrowLine
       Direction.Coordinates = {0000803F000000000000000000000000}
       Position.Coordinates = {CDCCCC3D000080BF000080BF0000803F}
       Up.Coordinates = {000000002EBD3BB30000803F00000000}
@@ -170,7 +170,7 @@ object Form1: TForm1
       BottomArrowHeadHeight = 0.5
       BottomArrowHeadRadius = 0.0500000007450581
     end
-    object YArrow: TArrowLine
+    object YArrow: TGLArrowLine
       Direction.Coordinates = {24DE4C320000803F2CBD3B3300000000}
       Position.Coordinates = {000080BFCDCCCC3D000080BF0000803F}
       Up.Coordinates = {2EBD3BB32CBD3BB30000803F00000000}
@@ -182,7 +182,7 @@ object Form1: TForm1
       BottomArrowHeadHeight = 0.5
       BottomArrowHeadRadius = 0.200000002980232
     end
-    object ZArrow: TArrowLine
+    object ZArrow: TGLArrowLine
       Position.Coordinates = {000080BF000080BF000000BF0000803F}
       BottomRadius = 0.00999999977648258
       Height = 1
@@ -192,7 +192,7 @@ object Form1: TForm1
       BottomArrowHeadHeight = 0.5
       BottomArrowHeadRadius = 0.0500000007450581
     end
-    object TxtX: TSpaceText
+    object TxtX: TGLSpaceText
       Direction.Coordinates = {F30435BFF30435BF0000000000000000}
       Position.Coordinates = {CDCCCC3F000080BF000080BF0000803F}
       Scale.Coordinates = {9A99993E9A99993E9A99993E00000000}
@@ -206,7 +206,7 @@ object Form1: TForm1
       Text = 'X'
       CharacterRange = stcrAlphaNum
     end
-    object TxtY: TSpaceText
+    object TxtY: TGLSpaceText
       Direction.Coordinates = {F40435BFF20435BF0000000000000000}
       Position.Coordinates = {000080BF9A99D93F000080BF0000803F}
       Scale.Coordinates = {9A99993E9A99993E9A99993E00000000}
@@ -220,7 +220,7 @@ object Form1: TForm1
       Text = 'Y'
       CharacterRange = stcrAlphaNum
     end
-    object TxtZ: TSpaceText
+    object TxtZ: TGLSpaceText
       Direction.Coordinates = {F304353FF304353F0000000000000000}
       Position.Coordinates = {9A99193ECDCCCCBD0000803F0000803F}
       Scale.Coordinates = {9A99993E9A99993E9A99993E00000000}

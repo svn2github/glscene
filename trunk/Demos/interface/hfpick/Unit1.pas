@@ -36,7 +36,7 @@ type
     GLScene1: TGLScene;
     GLSceneViewer: TGLSceneViewer;
     GLCamera1: TGLCamera;
-    HeightField: THeightField;
+    HeightField: TGLHeightField;
     GLLightSource1: TGLLightSource;
     Panel1: TPanel;
     RBPaint: TRadioButton;

@@ -28,22 +28,22 @@ type
   TForm1 = class(TForm)
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
-    Sphere1: TSphere;
+    Sphere1: TGLSphere;
     GLLightSource1: TGLLightSource;
     GLCamera1: TGLCamera;
     BUCast: TButton;
     Bevel1: TBevel;
     Bevel2: TBevel;
     GLCadencer1: TGLCadencer;
-    DummyCube1: TDummyCube;
+    DummyCube1: TGLDummyCube;
     Panel1: TPanel;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
-    Torus1: TTorus;
+    Torus1: TGLTorus;
     PaintBox1: TPaintBox;
-    Plane1: TPlane;
-    Cylinder1: TCylinder;
+    Plane1: TGLPlane;
+    Cylinder1: TGLCylinder;
     procedure BUCastClick(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

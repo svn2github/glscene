@@ -20,11 +20,11 @@ type
     SceneViewer: TGLSceneViewer;
     CBObject: TComboBox;
     Camera: TGLCamera;
-    Cube: TCube;
-    Sphere: TSphere;
+    Cube: TGLCube;
+    Sphere: TGLSphere;
     LightSource: TGLLightSource;
     CBBackground: TComboBox;
-    PlanePattern: TPlane;
+    PlanePattern: TGLPlane;
     procedure CBObjectChange(Sender: TObject);
     procedure CBBackgroundChange(Sender: TObject);
 

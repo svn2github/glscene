@@ -18,7 +18,7 @@ uses
 
 type
 
-  TGLBaseComponent = class(THUDSprite)
+  TGLBaseComponent = class(TGLHUDSprite)
   private
     FGUIRedraw : Boolean;
     FGuiLayout     : TGLGuiLayout;

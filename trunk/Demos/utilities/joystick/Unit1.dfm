@@ -32,7 +32,7 @@ object Form1: TForm1
       Position.Coordinates = {0000A0C000002041000070410000803F}
       SpotCutOff = 180
     end
-    object Cube1: TCube
+    object Cube1: TGLCube
       Direction.Coordinates = {D9B35D3FEE83043EE646F7BE00000000}
       Position.Coordinates = {000080BF000000C0000000000000803F}
       Scale.Coordinates = {00000040000000400000004000000000}
@@ -41,10 +41,10 @@ object Form1: TForm1
       Material.FrontProperties.Diffuse.Color = {A9A5253FB1A8283EB1A8283E0000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       CubeSize = {000000400000003F00000040}
-      object DummyCube1: TDummyCube
+      object DummyCube1: TGLDummyCube
         Position.Coordinates = {000000000000803E000000000000803F}
         CubeSize = 1
-        object Cylinder1: TCylinder
+        object Cylinder1: TGLCylinder
           Position.Coordinates = {000000000000803F000000000000803F}
           Material.FrontProperties.Ambient.Color = {8D8C0C3F8A89093FD1D0D03D0000803F}
           Material.FrontProperties.Diffuse.Color = {F9F8783FE1E0E03DC1C0403C0000803F}
@@ -56,31 +56,31 @@ object Form1: TForm1
         end
       end
     end
-    object DummyCube2: TDummyCube
+    object DummyCube2: TGLDummyCube
       Position.Coordinates = {0000904000000000000000000000803F}
       CubeSize = 1
-      object Sphere1: TSphere
+      object Sphere1: TGLSphere
         Position.Coordinates = {0000000000004040000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Radius = 0.5
       end
-      object Sphere2: TSphere
+      object Sphere2: TGLSphere
         Position.Coordinates = {000000000000803F000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Radius = 0.5
       end
-      object Sphere3: TSphere
+      object Sphere3: TGLSphere
         Position.Coordinates = {00000000000080BF000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Radius = 0.5
       end
-      object Sphere4: TSphere
+      object Sphere4: TGLSphere
         Position.Coordinates = {00000000000040C0000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Radius = 0.5
       end
     end
-    object DummyCube3: TDummyCube
+    object DummyCube3: TGLDummyCube
       CubeSize = 1
     end
     object GLCamera1: TGLCamera

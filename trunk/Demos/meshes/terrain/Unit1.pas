@@ -3,7 +3,7 @@
    This demo showcases the TerrainRenderer, some of the SkyDome features
    and bits of 3D sound 'cause I got carried over ;)<br>
    The terrain HeightData is provided by a TGLBitmapHDS (HDS stands for
-   "Height Data Source"), and displayed by a TTerrainRenderer.<p>
+   "Height Data Source"), and displayed by a TGLTerrainRenderer.<p>
 
    The base terrain renderer uses a hybrid ROAM/brute-force approach to
    rendering terrain, by requesting height data tiles, then rendering them
@@ -47,17 +47,17 @@ type
     GLBitmapHDS1: TGLBitmapHDS;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
-    DummyCube1: TDummyCube;
-    TerrainRenderer1: TTerrainRenderer;
+    DummyCube1: TGLDummyCube;
+    TerrainRenderer1: TGLTerrainRenderer;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
     GLMaterialLibrary1: TGLMaterialLibrary;
     BitmapFont1: TBitmapFont;
-    HUDText1: THUDText;
-    SkyDome1: TSkyDome;
-    SPMoon: TSprite;
-    SPSun: TSprite;
-    DCSound: TDummyCube;
+    HUDText1: TGLHUDText;
+    SkyDome1: TGLSkyDome;
+    SPMoon: TGLSprite;
+    SPSun: TGLSprite;
+    DCSound: TGLDummyCube;
     GLSMBASS1: TGLSMBASS;
     TISound: TTimer;
     GLSoundLibrary: TGLSoundLibrary;

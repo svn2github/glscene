@@ -103,15 +103,15 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 64
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       Material.FrontProperties.Diffuse.Color = {8D8C0C3F8D8C0C3F0000803F0000803F}
       Radius = 0.200000002980232
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Direction.Coordinates = {00000000000080330000803F00000000}
       Up.Coordinates = {EE8384BEEA46773FEA4677B300000000}
       CubeSize = 1
-      object Torus1: TTorus
+      object Torus1: TGLTorus
         Direction.Coordinates = {5D1C7C3F02004032CED0313E00000000}
         Position.Coordinates = {000000BF00000000000000000000803F}
         Up.Coordinates = {00C02FB20000803F0000403200000000}
@@ -120,13 +120,13 @@ object Form1: TForm1
         MajorRadius = 0.400000005960464
         MinorRadius = 0.100000001490116
       end
-      object Plane1: TPlane
+      object Plane1: TGLPlane
         Material.FrontProperties.Diffuse.Color = {1283003F0000803F1283003F0000803F}
         Material.FaceCulling = fcNoCull
         Height = 0.699999988079071
         Width = 0.300000011920929
       end
-      object Cylinder1: TCylinder
+      object Cylinder1: TGLCylinder
         Direction.Coordinates = {00000000010000BFD6B35D3F00000000}
         Position.Coordinates = {0000003F00000000000000000000803F}
         Up.Coordinates = {00000000D6B35D3F0100003F00000000}

@@ -31,8 +31,8 @@ type
   TForm1 = class(TForm)
     GLScene: TGLScene;
     GLSceneViewer: TGLSceneViewer;
-    DCBase: TDummyCube;
-    DCSrc: TDummyCube;
+    DCBase: TGLDummyCube;
+    DCSrc: TGLDummyCube;
     PFXSpiral: TGLPolygonPFXManager;
     GLCadencer: TGLCadencer;
     PFXRenderer: TGLParticleFXRenderer;

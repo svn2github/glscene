@@ -403,9 +403,9 @@ object MainFm: TMainFm
   object GLScene1: TGLScene
     Left = 16
     Top = 32
-    object Objects: TDummyCube
+    object Objects: TGLDummyCube
       CubeSize = 1
-      object HeightField1: THeightField
+      object HeightField1: TGLHeightField
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000000020C0000000000000803F}
         Scale.Coordinates = {00002041000020410000004000000000}
@@ -420,13 +420,13 @@ object MainFm: TMainFm
         YSamplingScale.Step = 0.0700000002980232
         Options = [hfoTextureCoordinates]
       end
-      object Cube1: TCube
+      object Cube1: TGLCube
         Position.Coordinates = {CDCCCC3F00000000000000000000803F}
         Scale.Coordinates = {CDCCCC3D000020400000404000000000}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'PlaneMat'
       end
-      object Torus1: TTorus
+      object Torus1: TGLTorus
         Material.Texture.TextureMode = tmModulate
         MajorRadius = 1.10000002384186
         MinorRadius = 0.150000005960464
@@ -437,7 +437,7 @@ object MainFm: TMainFm
           08050000000000000000000005000000000000000000000500000000000000A0
           034009020008020008}
       end
-      object Teapot1: TTeapot
+      object Teapot1: TGLTeapot
         Scale.Coordinates = {9A99D93F9A99D93F9A99D93F00000000}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'BeigeMarble'
@@ -447,7 +447,7 @@ object MainFm: TMainFm
           000008020008020008}
       end
     end
-    object Shadows1: TZShadows
+    object Shadows1: TGLZShadows
       Viewer = Viewer
       Caster = MemView
       FrustShadow = True

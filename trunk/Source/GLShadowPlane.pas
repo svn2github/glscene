@@ -44,7 +44,7 @@ type
       low quality objects, use it as shadowing object. Apply the same movements
       to the low-quality objects that you apply to the visible, high-quality ones.
       }
-	TGLShadowPlane = class (TPlane)
+	TGLShadowPlane = class (TGLPlane)
 	   private
 			{ Private Declarations }
          FRendering : Boolean;

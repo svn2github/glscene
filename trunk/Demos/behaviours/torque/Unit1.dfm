@@ -72,18 +72,18 @@ object Form1: TForm1
       Position.Coordinates = {0000704100002041000020C10000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
-      object Cube: TCube
+      object Cube: TGLCube
         Position.Coordinates = {0000000000000000000000400000803F}
         Material.FrontProperties.Diffuse.Color = {F8FEFE3E0000803F000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
-      object Dodecahedron: TDodecahedron
+      object Dodecahedron: TGLDodecahedron
         Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
-      object Octahedron: TSphere
+      object Octahedron: TGLSphere
         Position.Coordinates = {0000000000000000000000C00000803F}
         Material.FrontProperties.Diffuse.Color = {ABAA2A3FABAA2A3F0000803F0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}

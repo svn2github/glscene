@@ -7,79 +7,79 @@
    units where they can grow and prosper untammed.<p>
 
    TODO : Classe(s) on the move :<ul>
-      <li>TTeapot will move to a 'doodad objects' unit
+      <li>TGLTeapot will move to a 'doodad objects' unit
    </ul>
 
 	<b>History : </b><font size=-1><ul>
       <li>27/09/02 - EG - Added TGLPointParameters
-      <li>24/07/02 - EG - Added TCylinder.Alignment
+      <li>24/07/02 - EG - Added TGLCylinder.Alignment
       <li>23/07/02 - EG - Added TGLPoints (experimental)
-      <li>20/07/02 - EG - TCylinder.RayCastIntersect and TPlane.RayCastIntersect
-      <li>18/07/02 - EG - Added TCylinder.Align methods
-      <li>07/07/02 - EG - Added TPlane.Style
-      <li>03/07/02 - EG - TPolygon now properly setups normals (filippo)
+      <li>20/07/02 - EG - TGLCylinder.RayCastIntersect and TGLPlane.RayCastIntersect
+      <li>18/07/02 - EG - Added TGLCylinder.Align methods
+      <li>07/07/02 - EG - Added TGLPlane.Style
+      <li>03/07/02 - EG - TGLPolygon now properly setups normals (filippo)
       <li>17/03/02 - EG - Support for transparent lines
-      <li>02/02/02 - EG - Fixed TSprite change notification
-      <li>26/01/02 - EG - TPlane & TCube now osDirectDraw
-      <li>20/01/02 - EG - TSpaceText moved to GLSpaceText
-      <li>22/08/01 - EG - TTorus.RayCastIntersect fixes
+      <li>02/02/02 - EG - Fixed TGLSprite change notification
+      <li>26/01/02 - EG - TGLPlane & TGLCube now osDirectDraw
+      <li>20/01/02 - EG - TGLSpaceText moved to GLSpaceText
+      <li>22/08/01 - EG - TGLTorus.RayCastIntersect fixes
       <li>30/07/01 - EG - Updated AxisAlignedDimensions implems
-      <li>16/03/01 - EG - TCylinderBase, changed default Stacks from 8 to 4
-      <li>27/02/01 - EG - Fix in TCube texcoords, added TFrustrum (thx Robin Gerrets)
+      <li>16/03/01 - EG - TGLCylinderBase, changed default Stacks from 8 to 4
+      <li>27/02/01 - EG - Fix in TGLCube texcoords, added TGLFrustrum (thx Robin Gerrets)
       <li>22/02/01 - EG - Added AxisAlignedDimensions overrides by Uwe Raabe
-      <li>05/02/01 - EG - Minor changes to TCube.BuildList
-      <li>21/01/01 - EG - BaseProjectionMatrix fix for THUDSprite (picking issue),
-                          THUDSprite moved to GLHUDObjects
-      <li>14/01/01 - EG - Fixed TSphere texture coordinates
-      <li>13/01/01 - EG - TSprite matrix compatibility update
-      <li>09/01/01 - EG - TSpaceText now handles its TFont.OnFontChange
+      <li>05/02/01 - EG - Minor changes to TGLCube.BuildList
+      <li>21/01/01 - EG - BaseProjectionMatrix fix for TGLHUDSprite (picking issue),
+                          TGLHUDSprite moved to GLHUDObjects
+      <li>14/01/01 - EG - Fixed TGLSphere texture coordinates
+      <li>13/01/01 - EG - TGLSprite matrix compatibility update
+      <li>09/01/01 - EG - TGLSpaceText now handles its TFont.OnFontChange
       <li>08/01/01 - EG - Added TGLLinesNode (color support) and Node size control
       <li>22/12/00 - EG - Sprites are no longer texture enabled by default,
-                          updated TSprite.BuildList to work with new matrices
-      <li>14/11/00 - EG - Added TDummyCube.Destroy (thx Airatz)
+                          updated TGLSprite.BuildList to work with new matrices
+      <li>14/11/00 - EG - Added TGLDummyCube.Destroy (thx Airatz)
       <li>08/10/00 - EG - Fixed call to wglUseFontOutlines
-      <li>06/08/00 - EG - TRotationSolid renamed to TRevolutionSolid & moved to GLExtrusion
+      <li>06/08/00 - EG - TRotationSolid renamed to TGLRevolutionSolid & moved to GLExtrusion
       <li>04/08/00 - EG - Fixed sphere main body texture coords + slight speedup
-      <li>02/08/00 - EG - Added TPolygonBase
-      <li>19/07/00 - EG - Added THUDSprite
-      <li>18/07/00 - EG - Added TRevolutionSolid
+      <li>02/08/00 - EG - Added TGLPolygonBase
+      <li>19/07/00 - EG - Added TGLHUDSprite
+      <li>18/07/00 - EG - Added TGLRevolutionSolid
       <li>15/07/00 - EG - Code reduction and minor speedup for all quadric objects,
-                          Added TLineBase (split of TLines),
-                          TDummyCube now uses osDirectDraw instead of special behaviour
-      <li>13/07/00 - EG - Added TArrowLine (code by Aaron Hochwimmer)
+                          Added TGLLineBase (split of TGLLines),
+                          TGLDummyCube now uses osDirectDraw instead of special behaviour
+      <li>13/07/00 - EG - Added TGLArrowLine (code by Aaron Hochwimmer)
       <li>28/06/00 - EG - Support for "ObjectStyle"
-      <li>23/06/00 - EG - Reduced default Loop count for TDisk
-      <li>18/06/00 - EG - TMesh and accompanying stuff moved to GLMesh
+      <li>23/06/00 - EG - Reduced default Loop count for TGLDisk
+      <li>18/06/00 - EG - TGLMesh and accompanying stuff moved to GLMesh
       <li>14/06/00 - EG - Added Capacity to TVertexList
       <li>09/06/00 - EG - First row of Geometry-related upgrades
-      <li>08/06/00 - EG - Added ReleaseFontManager, fixed TSpaceText DestroyList,
-      <li>01/06/00 - EG - Added TAnnulus (code by Aaron Hochwimmer)
-      <li>29/05/00 - EG - TLines now uses TGLNode/TGLNodes
-      <li>28/05/00 - EG - Added persistence ability to TLines,
-                          Added defaults for all TLines properties
-      <li>27/05/00 - EG - Moved in RogerCao's TLines object, added a TLineNode
+      <li>08/06/00 - EG - Added ReleaseFontManager, fixed TGLSpaceText DestroyList,
+      <li>01/06/00 - EG - Added TGLAnnulus (code by Aaron Hochwimmer)
+      <li>29/05/00 - EG - TGLLines now uses TGLNode/TGLNodes
+      <li>28/05/00 - EG - Added persistence ability to TGLLines,
+                          Added defaults for all TGLLines properties
+      <li>27/05/00 - EG - Moved in RogerCao's TGLLines object, added a TLineNode
                           class (currently private) and various enhancements + fixes,
                           DodecahedronBuildList now available as a procedure,
                           CubeWireframeBuildList now available as a procedure
-      <li>26/05/00 - RoC - Added division property to TLines, and Spline supported
+      <li>26/05/00 - RoC - Added division property to TGLLines, and Spline supported
       <li>26/05/00 - EG - Moved vectorfile remnants to GLVectorFiles
-      <li>14/05/00 - EG - Removed Top/Bottom checks for TSphere,
+      <li>14/05/00 - EG - Removed Top/Bottom checks for TGLSphere,
                           Added mmTriangleStrip support in CalcNormals
-      <li>08/05/00 - EG - Uncommented DisableAutoTexture in TSpaceText.BuildList
-      <li>07/05/00 - RoC - TLines added, to show a list of vertex
+      <li>08/05/00 - EG - Uncommented DisableAutoTexture in TGLSpaceText.BuildList
+      <li>07/05/00 - RoC - TGLLines added, to show a list of vertex
 		<li>26/04/00 - EG - Reactivated stuff in SetupQuadricParams (thanks Nelson Chu)
-		<li>18/04/00 - EG - Overriden TDummyCube.Render
+		<li>18/04/00 - EG - Overriden TGLDummyCube.Render
 		<li>16/04/00 - EG - FontManager now published and auto-creating
-		<li>12/04/00 - EG - Added TCylinderBase.Loops (fixes a bug, thanks Uwe)
-      <li>24/03/00 - EG - Added Rotation to TSprite, fixed sprite size
+		<li>12/04/00 - EG - Added TGLCylinderBase.Loops (fixes a bug, thanks Uwe)
+      <li>24/03/00 - EG - Added Rotation to TGLSprite, fixed sprite size
 		<li>20/03/00 - EG - Enhanced FontManager
 		<li>17/03/00 - EG - Fixed SpaceText glBaseList bug,
-								  TSprite now uses a transposition of the globalmatrix
+								  TGLSprite now uses a transposition of the globalmatrix
 		<li>16/03/00 - EG - Enhanced TFontManager to allow lower quality
-		<li>14/03/00 - EG - Added subobjects Barycenter support for TDummyCube
+		<li>14/03/00 - EG - Added subobjects Barycenter support for TGLDummyCube
       <li>09/02/00 - EG - ObjectManager stuff moved to GLSceneRegister,
                           FreeForm and vector file stuff moved to new GLVectorFileObjects
-      <li>08/02/00 - EG - Added TDummyCube
+      <li>08/02/00 - EG - Added TGLDummyCube
       <li>05/02/00 - EG - Javadocisation, fixes and enhancements :
                           TVertexList.AddVertex, "default"s to properties
    </ul></font>
@@ -102,14 +102,14 @@ uses Classes, Geometry, GLScene, GLTexture, GLMisc, OpenGL12, SysUtils,
 
 type
 
-	// TDummyCube
+	// TGLDummyCube
 	//
 	{: A simple cube, invisible at run-time.<p>
       This is a usually non-visible object -except at design-time- used for
       constructing hierarchies or groups, when some kind of joint or movement
       mechanism needs be described, you can use DummyCubes.<br>
 		DummyCube's barycenter is its children's barycenter. }
-	TDummyCube = class (TGLImmaterialSceneObject)
+	TGLDummyCube = class (TGLImmaterialSceneObject)
 		private
 			{ Private Declarations }
 			FCubeSize : TGLFloat;
@@ -154,7 +154,7 @@ type
    {: A simple plane object.<p>
       Note that a plane is always made of a single quad (two triangles) and the
       tiling is only applied to texture coordinates. }
-	TPlane = class (TGLSceneObject)
+	TGLPlane = class (TGLSceneObject)
 	   private
 			{ Private Declarations }
 	      FXOffset, FYOffset : TGLFloat;
@@ -199,12 +199,12 @@ type
          property Style : TPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
    end;
 
-	// TSprite
+	// TGLSprite
 	//
 	{: A rectangular area, perspective projected, but always facing the camera.<p>
-      A TSprite is perspective projected and as such is scaled with distance,
-      if you want a 2D sprite that does not get scaled, see THUDSprite. }
-	TSprite = class (TGLSceneObject)
+      A TGLSprite is perspective projected and as such is scaled with distance,
+      if you want a 2D sprite that does not get scaled, see TGLHUDSprite. }
+	TGLSprite = class (TGLSceneObject)
 		private
 			{ Private Declarations }
 			FWidth : TGLFloat;
@@ -367,7 +367,7 @@ type
 
    // TGLLinesNode
    //
-   {: Specialized Node for use in a TLines objects.<p>
+   {: Specialized Node for use in a TGLLines objects.<p>
       Adds a Color property (TGLColor). }
    TGLLinesNode = class(TGLNode)
       private
@@ -391,13 +391,13 @@ type
 
          {: The node color.<p>
             Can also defined the line color (interpolated between nodes) if
-            loUseNodeColorForLines is set (in TLines). }
+            loUseNodeColorForLines is set (in TGLLines). }
          property Color : TGLColor read FColor write SetColor stored StoreColor;
    end;
 
    // TGLLinesNodes
    //
-   {: Specialized collection for Nodes in a TLines objects.<p>
+   {: Specialized collection for Nodes in a TGLLines objects.<p>
       Stores TGLLinesNode items. }
    TGLLinesNodes = class(TGLNodes)
       public
@@ -407,11 +407,11 @@ type
          procedure NotifyChange; override;
    end;
 
-   // TLineBase
+   // TGLLineBase
    //
    {: Base class for line objects.<p>
       Introduces line style properties (width, color...). }
-   TLineBase = class(TGLImmaterialSceneObject)
+   TGLLineBase = class(TGLImmaterialSceneObject)
       private
 			{ Private Declarations }
          FLineColor : TGLColor;
@@ -462,7 +462,7 @@ type
    TLinesOption = (loUseNodeColorForLines);
    TLinesOptions = set of TLinesOption;
 
-   // TLines
+   // TGLLines
    //
    {: Set of 3D line segments.<p>
       You define a 3D Line by adding its nodes in the "Nodes" property. The line
@@ -471,7 +471,7 @@ type
       Alternatively, you can also use it to render a set of spacial nodes (points
       in space), just make the lines transparent and the nodes visible by picking
       the node aspect that suits you. }
-   TLines = class(TLineBase)
+   TGLLines = class(TGLLineBase)
       private
 			{ Private Declarations }
          FNodes : TGLLinesNodes;
@@ -543,13 +543,13 @@ type
 	TCubePart  = (cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight);
 	TCubeParts = set of TCubePart;
 
-   // TCube
+   // TGLCube
    //
    {: A simple cube object.<p>
       This cube use the same material for each of its faces, ie. all faces look
       the same. If you want a multi-material cube, use a mesh in conjunction
-      with a TFreeForm and a material library. }
-   TCube = class (TGLSceneObject)
+      with a TGLFreeForm and a material library. }
+   TGLCube = class (TGLSceneObject)
 		private
 			{ Private Declarations }
          FCubeWidth, FCubeHeight, FCubeDepth : TGLFloat;
@@ -594,14 +594,14 @@ const
 	cAllFrustrumParts = [fpTop, fpBottom, fpFront, fpBack, fpLeft, fpRight];
 
 type
-   // TFrustrum
+   // TGLFrustrum
    //
    { A frustrum is a pyramid with the top chopped off.<p>
       The height of the imaginary pyramid is ApexHeight, the height of the
       frustrum is Height. If ApexHeight and Height are the same, the frustrum
       degenerates into a pyramid.<br>
       Height cannot be greater than ApexHeight. }
-   TFrustrum = class(TGLSceneObject)
+   TGLFrustrum = class(TGLSceneObject)
       private
 			{ Private Declarations }
          FApexHeight, FBaseDepth, FBaseWidth, FHeight: TGLFloat;
@@ -647,12 +647,12 @@ type
       - nsNone : unlighted rendering, usefull for decla texturing }
    TNormalSmoothing = (nsFlat, nsSmooth, nsNone);
 
-   // TQuadricObject
+   // TGLQuadricObject
    //
    {: Base class for quadric objects.<p>
       Introduces some basic Quadric interaction functions (the actual quadric
       math is part of the GLU library). }
-   TQuadricObject = class(TGLSceneObject)
+   TGLQuadricObject = class(TGLSceneObject)
       private
          { Private Declarations }
          FNormals : TNormalSmoothing;
@@ -681,12 +681,12 @@ type
    TAngleLimit2 = 0..360;
    TCapType = (ctNone, ctCenter, ctFlat);
 
-   // TSphere
+   // TGLSphere
    //
    {: A sphere object.<p>
       The sphere can have to and bottom caps, as well as being just a slice
       of sphere. }
-   TSphere = class (TQuadricObject)
+   TGLSphere = class (TGLQuadricObject)
       private
          { Private Declarations }
          FRadius  : TGLFloat;
@@ -730,13 +730,13 @@ type
          property TopCap: TCapType read FTopCap write SetTopCap default ctNone;
    end;
 
-   // TDisk
+   // TGLDisk
    //
    {: A Disk object.<p>
       The disk may not be complete, it can have a hole (controled by the
       InnerRadius property) and can only be a slice (controled by the StartAngle
       and SweepAngle properties). }
-   TDisk = class(TQuadricObject)
+   TGLDisk = class(TGLQuadricObject)
       private
          { Private Declarations }
          FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius : TGLFloat;
@@ -775,14 +775,14 @@ type
          property SweepAngle : TGLFloat read FSweepAngle write SetSweepAngle;
    end;
 
-	// TCylinderBase
+	// TGLCylinderBase
    //
    {: Base class to cylinder-like objects.<p>
       Introduces the basic cylinder description properties.<p>
       Be aware teh default slices and stacks make up for a high-poly cylinder,
       unless you're after high-quality lighting it is recommended to reduce the
       Stacks property to 1. }
-	TCylinderBase = class (TQuadricObject)
+	TGLCylinderBase = class (TGLQuadricObject)
 		private
 			{ Private Declarations }
 			FBottomRadius : TGLFloat;
@@ -818,10 +818,10 @@ type
 	TConePart  = (coSides, coBottom);
 	TConeParts = set of TConePart;
 
-	// TCone
+	// TGLCone
 	//
    {: A cone object. }
-	TCone = class (TCylinderBase)
+	TGLCone = class (TGLCylinderBase)
 		private
 			{ Private Declarations }
 			FParts : TConeParts;
@@ -852,10 +852,10 @@ type
    //
    TCylinderAlignment = (caCenter, caTop, caBottom);
 
-	// TCylinder
+	// TGLCylinder
 	//
    {: Cylinder object, can also be used to make truncated cones }
-	TCylinder = class(TCylinderBase)
+	TGLCylinder = class(TGLCylinderBase)
 		private
 			{ Private Declarations }
 			FParts     : TCylinderparts;
@@ -895,10 +895,10 @@ type
    TAnnulusPart = (anInnerSides, anOuterSides, anBottom, anTop);
 	TAnnulusParts = set of TAnnulusPart;
 
-   // TAnnulus
+   // TGLAnnulus
    //
    {: An annulus is a cylinder that can be made hollow (pipe-like). }
-   TAnnulus = class(TCylinderBase)
+   TGLAnnulus = class(TGLCylinderBase)
       private
 			{ Private Declarations }
          FParts : TAnnulusParts;
@@ -929,10 +929,10 @@ type
          property Parts: TAnnulusParts read FParts Write SetParts default [anInnerSides, anOuterSides, anBottom, anTop];
    end;
 
-   // TTorus
+   // TGLTorus
    //
    {: A Torus object. }
-   TTorus = class(TGLSceneObject)
+   TGLTorus = class(TGLSceneObject)
       private
 			{ Private Declarations }
          FRings, FSides : Cardinal;
@@ -963,11 +963,11 @@ type
          property Sides: Cardinal read FSides write SetSides default 15;
    end;
 
-   // TTeapot
+   // TGLTeapot
    //
    {: The age old teapot.<p>
       The only use of this object is testing... }
-   TTeapot = class(TGLSceneObject)
+   TGLTeapot = class(TGLSceneObject)
       private
 			{ Private Declarations }
          FGrid : Cardinal;
@@ -987,7 +987,7 @@ type
    //
    TArrowHeadStackingStyle = (ahssStacked, ahssCentered, ahssIncluded);
 
-   // TArrowLine
+   // TGLArrowLine
    //
    {: Draws an arrowhead (cylinder + cone).<p>
       The arrow head is a cone that shares the attributes of the cylinder
@@ -995,7 +995,7 @@ type
       This is useful for displaying a vector based field (eg velocity) or
       other arrows that might be required.<br>
       By default the bottom arrow is off }
-   TArrowLine = class(TCylinderBase)
+   TGLArrowLine = class(TGLCylinderBase)
       private
          { Private Declarations}
          fParts: TArrowLineParts;
@@ -1033,21 +1033,21 @@ type
          property BottomArrowHeadRadius : TGLFloat read fBottomArrowHeadRadius write SetBottomArrowHeadRadius;
    end;
 
-   // TDodecahedron
+   // TGLDodecahedron
    //
    {: A Dodecahedron.<p>
       The dodecahedron has no texture coordinates defined, ie. without using
       a texture generation mode, no texture will be mapped. }
-   TDodecahedron = class(TGLSceneObject)
+   TGLDodecahedron = class(TGLSceneObject)
       public
 			{ Public Declarations }
          procedure BuildList(var rci : TRenderContextInfo); override;
    end;
 
-   // TPolygonBase
+   // TGLPolygonBase
    //
    {: Base class for objects based on a polygon. }
-   TPolygonBase = class(TGLSceneObject)
+   TGLPolygonBase = class(TGLSceneObject)
       private
 			{ Private Declarations }
          FDivision : Integer;
@@ -1091,7 +1091,7 @@ type
    TPolygonPart = (ppTop, ppBottom);
    TPolygonParts = set of TPolygonPart;
 
-   // TPolygon
+   // TGLPolygon
    //
    {: A basic polygon object.<p>
       The curve is described by the Nodes and SplineMode properties, should be
@@ -1099,7 +1099,7 @@ type
       Texture coordinates are deduced from X and Y coordinates only.<p>
       This object allows only for polygons described by a single curve, if you
       need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
-   TPolygon = class(TPolygonBase)
+   TGLPolygon = class(TGLPolygonBase)
       private
 			{ Private Declarations }
          FParts : TPolygonParts;
@@ -1188,12 +1188,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TDummyCube ------------------
+// ------------------ TGLDummyCube ------------------
 // ------------------
 
 // Create
 //
-constructor TDummyCube.Create(AOwner : TComponent);
+constructor TGLDummyCube.Create(AOwner : TComponent);
 begin
 	inherited;
    ObjectStyle:=ObjectStyle+[osDirectDraw];
@@ -1204,7 +1204,7 @@ end;
 
 // Destroy
 //
-destructor TDummyCube.Destroy;
+destructor TGLDummyCube.Destroy;
 begin
    FEdgeColor.Free;
    inherited;
@@ -1212,12 +1212,12 @@ end;
 
 // Assign
 //
-procedure TDummyCube.Assign(Source: TPersistent);
+procedure TGLDummyCube.Assign(Source: TPersistent);
 begin
-	if Source is TDummyCube then begin
-		FCubeSize:=TDummyCube(Source).FCubeSize;
-		FEdgeColor.Color:=TDummyCube(Source).FEdgeColor.Color;
-		FVisibleAtRunTime:=TDummyCube(Source).FVisibleAtRunTime;
+	if Source is TGLDummyCube then begin
+		FCubeSize:=TGLDummyCube(Source).FCubeSize;
+		FEdgeColor.Color:=TGLDummyCube(Source).FEdgeColor.Color;
+		FVisibleAtRunTime:=TGLDummyCube(Source).FVisibleAtRunTime;
 		NotifyChange(Self);
 	end;
 	inherited Assign(Source);
@@ -1225,14 +1225,14 @@ end;
 
 // AxisAlignedDimensions
 //
-function TDummyCube.AxisAlignedDimensions : TVector;
+function TGLDummyCube.AxisAlignedDimensions : TVector;
 begin
    VectorScale(Scale.AsVector, 0.5*Abs(FCubeSize), Result);
 end;
 
 // RayCastIntersect
 //
-function TDummyCube.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLDummyCube.RayCastIntersect(const rayStart, rayVector : TVector;
                                      intersectPoint : PVector = nil;
                                      intersectNormal : PVector = nil) : Boolean;
 begin
@@ -1241,7 +1241,7 @@ end;
 
 // BuildList
 //
-procedure TDummyCube.BuildList(var rci : TRenderContextInfo);
+procedure TGLDummyCube.BuildList(var rci : TRenderContextInfo);
 begin
  	if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
       CubeWireframeBuildList(FCubeSize, True, EdgeColor.Color);
@@ -1249,7 +1249,7 @@ end;
 
 // BarycenterAbsolutePosition
 //
-function TDummyCube.BarycenterAbsolutePosition : TVector;
+function TGLDummyCube.BarycenterAbsolutePosition : TVector;
 var
 	i : Integer;
 begin
@@ -1263,7 +1263,7 @@ end;
 
 // SetCubeSize
 //
-procedure TDummyCube.SetCubeSize(const val : TGLFloat);
+procedure TGLDummyCube.SetCubeSize(const val : TGLFloat);
 begin
 	if val<>FCubeSize then begin
 		FCubeSize:=val;
@@ -1273,7 +1273,7 @@ end;
 
 // SetEdgeColor
 //
-procedure TDummyCube.SetEdgeColor(const val : TGLColor);
+procedure TGLDummyCube.SetEdgeColor(const val : TGLColor);
 begin
 	if val<>FEdgeColor then begin
 		FEdgeColor.Assign(val);
@@ -1283,7 +1283,7 @@ end;
 
 // SetVisibleAtRunTime
 //
-procedure TDummyCube.SetVisibleAtRunTime(const val : Boolean);
+procedure TGLDummyCube.SetVisibleAtRunTime(const val : Boolean);
 begin
 	if val<>FVisibleAtRunTime then begin
 		FVisibleAtRunTime:=val;
@@ -1292,12 +1292,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TPlane ------------------
+// ------------------ TGLPlane ------------------
 // ------------------
 
 // Create
 //
-constructor TPlane.Create(AOwner:Tcomponent);
+constructor TGLPlane.Create(AOwner:Tcomponent);
 begin
    inherited Create(AOwner);
    FWidth:=1;
@@ -1310,18 +1310,18 @@ end;
 
 // Assign
 //
-procedure TPlane.Assign(Source: TPersistent);
+procedure TGLPlane.Assign(Source: TPersistent);
 begin
-   if Assigned(Source) and (Source is TPlane) then begin
-      FWidth:=TPlane(Source).FWidth;
-      FHeight:=TPlane(Source).FHeight;
+   if Assigned(Source) and (Source is TGLPlane) then begin
+      FWidth:=TGLPlane(Source).FWidth;
+      FHeight:=TGLPlane(Source).FHeight;
    end;
    inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
 //
-function TPlane.AxisAlignedDimensions: TVector;
+function TGLPlane.AxisAlignedDimensions: TVector;
 begin
    Result:=VectorMake(0.5*Abs(FWidth)*Scale.DirectX,
                       0.5*Abs(FHeight)*Scale.DirectY, 0);
@@ -1329,7 +1329,7 @@ end;
 
 // RayCastIntersect
 //
-function TPlane.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLPlane.RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean;
 var
@@ -1371,7 +1371,7 @@ end;
 
 // BuildList
 //
-procedure TPlane.BuildList(var rci : TRenderContextInfo);
+procedure TGLPlane.BuildList(var rci : TRenderContextInfo);
 var
    hw, hh, posXFact, posYFact, pX, pY0, pY1 : TGLFloat;
    tx0, tx1, ty0, ty1, texSFact, texTFact : TGLFloat;
@@ -1434,7 +1434,7 @@ end;
 
 // SetWidth
 //
-procedure TPlane.SetWidth(AValue : TGLFloat);
+procedure TGLPlane.SetWidth(AValue : TGLFloat);
 begin
    if AValue<>FWidth then begin
       FWidth:=AValue;
@@ -1444,7 +1444,7 @@ end;
 
 // ScreenRect
 //
-function TPlane.ScreenRect : TGLRect;
+function TGLPlane.ScreenRect : TGLRect;
 var
    v : array [0..3] of TVector;
    buf : TGLSceneBuffer;
@@ -1468,7 +1468,7 @@ end;
 
 // SetHeight
 //
-procedure TPlane.SetHeight(AValue:TGLFloat);
+procedure TGLPlane.SetHeight(AValue:TGLFloat);
 begin
    if AValue<>FHeight then begin
       FHeight:=AValue;
@@ -1478,7 +1478,7 @@ end;
 
 // SetXOffset
 //
-procedure TPlane.SetXOffset(const Value: TGLFloat);
+procedure TGLPlane.SetXOffset(const Value: TGLFloat);
 begin
    if Value<>FXOffset then begin
       FXOffset:=Value;
@@ -1488,7 +1488,7 @@ end;
 
 // SetXTiles
 //
-procedure TPlane.SetXTiles(const Value: Cardinal);
+procedure TGLPlane.SetXTiles(const Value: Cardinal);
 begin
    if Value<>FXTiles then begin
       FXTiles:=Value;
@@ -1498,7 +1498,7 @@ end;
 
 // SetYOffset
 //
-procedure TPlane.SetYOffset(const Value: TGLFloat);
+procedure TGLPlane.SetYOffset(const Value: TGLFloat);
 begin
    if Value<>FYOffset then begin
       FYOffset:=Value;
@@ -1508,7 +1508,7 @@ end;
 
 // SetYTiles
 //
-procedure TPlane.SetYTiles(const Value: Cardinal);
+procedure TGLPlane.SetYTiles(const Value: Cardinal);
 begin
    if Value<>FYTiles then begin
       FYTiles:=Value;
@@ -1518,7 +1518,7 @@ end;
 
 // SetStyle
 //
-procedure TPlane.SetStyle(const val : TPlaneStyles);
+procedure TGLPlane.SetStyle(const val : TPlaneStyles);
 begin
    if val<>FStyle then begin
       FStyle:=val;
@@ -1527,12 +1527,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TSprite ------------------
+// ------------------ TGLSprite ------------------
 // ------------------
 
 // Create
 //
-constructor TSprite.Create(AOwner : TComponent);
+constructor TGLSprite.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
@@ -1543,21 +1543,21 @@ end;
 
 // Assign
 //
-procedure TSprite.Assign(Source : TPersistent);
+procedure TGLSprite.Assign(Source : TPersistent);
 begin
-	if Source is TSprite then begin
-		FWidth:=TSprite(Source).FWidth;
-		FHeight:=TSprite(Source).FHeight;
-		FRotation:=TSprite(Source).FRotation;
-      FAlphaChannel:=TSprite(Source).FAlphaChannel;
-      FNoZWrite:=TSprite(Source).FNoZWrite;
+	if Source is TGLSprite then begin
+		FWidth:=TGLSprite(Source).FWidth;
+		FHeight:=TGLSprite(Source).FHeight;
+		FRotation:=TGLSprite(Source).FRotation;
+      FAlphaChannel:=TGLSprite(Source).FAlphaChannel;
+      FNoZWrite:=TGLSprite(Source).FNoZWrite;
 	end;
 	inherited Assign(Source);
 end;
 
 // BuildList
 //
-procedure TSprite.BuildList(var rci : TRenderContextInfo);
+procedure TGLSprite.BuildList(var rci : TRenderContextInfo);
 var
 	vx, vy, vx1, vy1 : TAffineVector;
 	i : Integer;
@@ -1605,7 +1605,7 @@ end;
 
 // SetWidth
 //
-procedure TSprite.SetWidth(const val : TGLFloat);
+procedure TGLSprite.SetWidth(const val : TGLFloat);
 begin
 	if FWidth<>val then begin
 		FWidth:=val;
@@ -1615,7 +1615,7 @@ end;
 
 // SetHeight
 //
-procedure TSprite.SetHeight(const val : TGLFloat);
+procedure TGLSprite.SetHeight(const val : TGLFloat);
 begin
 	if FHeight<>val then begin
 		FHeight:=val;
@@ -1625,7 +1625,7 @@ end;
 
 // SetRotation
 //
-procedure TSprite.SetRotation(const val : TGLFloat);
+procedure TGLSprite.SetRotation(const val : TGLFloat);
 begin
 	if FRotation<>val then begin
 		FRotation:=val;
@@ -1635,7 +1635,7 @@ end;
 
 // SetAlphaChannel
 //
-procedure TSprite.SetAlphaChannel(const val : Single);
+procedure TGLSprite.SetAlphaChannel(const val : Single);
 begin
    if val<>FAlphaChannel then begin
       if val<0 then
@@ -1649,14 +1649,14 @@ end;
 
 // StoreAlphaChannel
 //
-function TSprite.StoreAlphaChannel : Boolean;
+function TGLSprite.StoreAlphaChannel : Boolean;
 begin
 	Result:=(FAlphaChannel<>1);
 end;
 
 // SetNoZWrite
 //
-procedure TSprite.SetNoZWrite(const val : Boolean);
+procedure TGLSprite.SetNoZWrite(const val : Boolean);
 begin
    FNoZWrite:=val;
    NotifyChange(Self);
@@ -1664,7 +1664,7 @@ end;
 
 // SetSize
 //
-procedure TSprite.SetSize(const width, height : TGLFloat);
+procedure TGLSprite.SetSize(const width, height : TGLFloat);
 begin
 	FWidth:=width;
 	FHeight:=height;
@@ -1673,7 +1673,7 @@ end;
 
 // SetSquareSize
 //
-procedure TSprite.SetSquareSize(const size : TGLFloat);
+procedure TGLSprite.SetSquareSize(const size : TGLFloat);
 begin
 	FWidth:=size;
 	FHeight:=size;
@@ -1999,12 +1999,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TLineBase ------------------
+// ------------------ TGLLineBase ------------------
 // ------------------
 
 // Create
 //
-constructor TLineBase.Create(AOwner: TComponent);
+constructor TGLLineBase.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FLineColor:=TGLColor.Create(Self);
@@ -2016,7 +2016,7 @@ end;
 
 // Destroy
 //
-destructor TLineBase.Destroy;
+destructor TGLLineBase.Destroy;
 begin
    FLineColor.Free;
    inherited Destroy;
@@ -2024,7 +2024,7 @@ end;
 
 // SetLineColor
 //
-procedure TLineBase.SetLineColor(const value: TGLColor);
+procedure TGLLineBase.SetLineColor(const value: TGLColor);
 begin
    FLineColor.Color:=Value.Color;
    StructureChanged;
@@ -2032,7 +2032,7 @@ end;
 
 // SetLinePattern
 //
-procedure TLineBase.SetLinePattern(const value: TGLushort);
+procedure TGLLineBase.SetLinePattern(const value: TGLushort);
 begin
    if FLinePattern<>value then begin
       FLinePattern:=Value;
@@ -2042,7 +2042,7 @@ end;
 
 // SetLineWidth
 //
-procedure TLineBase.SetLineWidth(const val : Single);
+procedure TGLLineBase.SetLineWidth(const val : Single);
 begin
    if FLineWidth<>val then begin
       FLineWidth:=val;
@@ -2052,14 +2052,14 @@ end;
 
 // StoreLineWidth
 //
-function TLineBase.StoreLineWidth : Boolean;
+function TGLLineBase.StoreLineWidth : Boolean;
 begin
    Result:=(FLineWidth<>1.0);
 end;
 
 // SetAntiAliased
 //
-procedure TLineBase.SetAntiAliased(const val : Boolean);
+procedure TGLLineBase.SetAntiAliased(const val : Boolean);
 begin
    if FAntiAliased<>val then begin
       FAntiAliased:=val;
@@ -2069,19 +2069,19 @@ end;
 
 // Assign
 //
-procedure TLineBase.Assign(Source: TPersistent);
+procedure TGLLineBase.Assign(Source: TPersistent);
 begin
-   if Source is TLineBase then begin
-      FLineColor:=TLineBase(Source).FLineColor;
-      FLinePattern:=TLineBase(Source).FLinePattern;
-      FLineWidth:=TLineBase(Source).FLineWidth;
-      FAntiAliased:=TLineBase(Source).FAntiAliased;
+   if Source is TGLLineBase then begin
+      FLineColor:=TGLLineBase(Source).FLineColor;
+      FLinePattern:=TGLLineBase(Source).FLinePattern;
+      FLineWidth:=TGLLineBase(Source).FLineWidth;
+      FAntiAliased:=TGLLineBase(Source).FAntiAliased;
    end else inherited Assign(Source);
 end;
 
 // SetupLineStyle
 //
-procedure TLineBase.SetupLineStyle;
+procedure TGLLineBase.SetupLineStyle;
 begin
    glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
    glDisable(GL_LIGHTING);
@@ -2104,7 +2104,7 @@ end;
 
 // RestoreLineStyle
 //
-procedure TLineBase.RestoreLineStyle;
+procedure TGLLineBase.RestoreLineStyle;
 begin
    glPopAttrib;
 end;
@@ -2119,7 +2119,7 @@ constructor TGLLinesNode.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
    FColor:=TGLColor.Create(Self);
-   FColor.Initialize((TGLLinesNodes(Collection).GetOwner as TLines).NodeColor.Color);
+   FColor.Initialize((TGLLinesNodes(Collection).GetOwner as TGLLines).NodeColor.Color);
    FColor.OnNotifyChange:=OnColorChange;
 end;
 
@@ -2158,7 +2158,7 @@ end;
 //
 function TGLLinesNode.StoreColor : Boolean;
 begin
-   Result:=not VectorEquals((TGLLinesNodes(Collection).GetOwner as TLines).NodeColor.Color,
+   Result:=not VectorEquals((TGLLinesNodes(Collection).GetOwner as TGLLines).NodeColor.Color,
                             FColor.Color);
 end;
 
@@ -2182,12 +2182,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TLines ------------------
+// ------------------ TGLLines ------------------
 // ------------------
 
 // Create
 //
-constructor TLines.Create(AOwner: TComponent);
+constructor TGLLines.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FNodes:=TGLLinesNodes.Create(Self);
@@ -2203,7 +2203,7 @@ end;
 
 // Destroy
 //
-destructor TLines.Destroy;
+destructor TGLLines.Destroy;
 begin
    FNodes.Free;
    FNodeColor.Free;
@@ -2212,7 +2212,7 @@ end;
 
 // SetNodesAspect
 //
-procedure TLines.SetNodesAspect(const value : TLineNodesAspect);
+procedure TGLLines.SetNodesAspect(const value : TLineNodesAspect);
 begin
    if Value<>FNodesAspect then begin
       FNodesAspect:=value;
@@ -2222,7 +2222,7 @@ end;
 
 // SetNodeColor
 //
-procedure TLines.SetNodeColor(const value: TGLColor);
+procedure TGLLines.SetNodeColor(const value: TGLColor);
 begin
    FNodeColor.Color:=Value.Color;
    StructureChanged;
@@ -2230,7 +2230,7 @@ end;
 
 // OnNodeColorChanged
 //
-procedure TLines.OnNodeColorChanged(sender : TObject);
+procedure TGLLines.OnNodeColorChanged(sender : TObject);
 var
    i : Integer;
 begin
@@ -2243,7 +2243,7 @@ end;
 
 // SetDivision
 //
-procedure TLines.SetDivision(const value: Integer);
+procedure TGLLines.SetDivision(const value: Integer);
 begin
    if Value<>FDivision then begin
       if value<1 then
@@ -2255,7 +2255,7 @@ end;
 
 // SetNodes
 //
-procedure TLines.SetNodes(const aNodes : TGLLinesNodes);
+procedure TGLLines.SetNodes(const aNodes : TGLLinesNodes);
 begin
    FNodes.Assign(aNodes);
    StructureChanged;
@@ -2263,7 +2263,7 @@ end;
 
 // SetOptions
 //
-procedure TLines.SetOptions(const val : TLinesOptions);
+procedure TGLLines.SetOptions(const val : TLinesOptions);
 begin
    FOptions:=val;
    StructureChanged;
@@ -2271,7 +2271,7 @@ end;
 
 // SetNodeSize
 //
-procedure TLines.SetNodeSize(const val : Single);
+procedure TGLLines.SetNodeSize(const val : Single);
 begin
    if val<=0 then
       FNodeSize:=1
@@ -2281,14 +2281,14 @@ end;
 
 // StoreNodeSize
 //
-function TLines.StoreNodeSize : Boolean;
+function TGLLines.StoreNodeSize : Boolean;
 begin
    Result:=FNodeSize<>1;
 end;
 
 // SetSplineMode
 //
-procedure TLines.SetSplineMode(const val : TLineSplineMode);
+procedure TGLLines.SetSplineMode(const val : TLineSplineMode);
 begin
    if FSplineMode<>val then begin
       FSplineMode:=val;
@@ -2298,21 +2298,21 @@ end;
 
 // Assign
 //
-procedure TLines.Assign(Source: TPersistent);
+procedure TGLLines.Assign(Source: TPersistent);
 begin
-   if Source is TLines then begin
-      SetNodes(TLines(Source).FNodes);
-      FNodesAspect:=TLines(Source).FNodesAspect;
-      FNodeColor.Color:=TLines(Source).FNodeColor.Color;
-      FDivision:=TLines(Source).FDivision;
-      FSplineMode:=TLines(Source).FSplineMode;
+   if Source is TGLLines then begin
+      SetNodes(TGLLines(Source).FNodes);
+      FNodesAspect:=TGLLines(Source).FNodesAspect;
+      FNodeColor.Color:=TGLLines(Source).FNodeColor.Color;
+      FDivision:=TGLLines(Source).FDivision;
+      FSplineMode:=TGLLines(Source).FSplineMode;
    end;
    inherited Assign(Source);
 end;
 
 // DrawNode
 //
-procedure TLines.DrawNode(X, Y, Z: Single; Color: TGLColor);
+procedure TGLLines.DrawNode(X, Y, Z: Single; Color: TGLColor);
 begin
    glPushMatrix;
    glTranslatef(x, y, z);
@@ -2341,7 +2341,7 @@ end;
 
 // AxisAlignedDimensions
 //
-function TLines.AxisAlignedDimensions : TVector;
+function TGLLines.AxisAlignedDimensions : TVector;
 var
    i : Integer;
 begin
@@ -2352,7 +2352,7 @@ end;
 
 // BuildList
 //
-procedure TLines.BuildList(var rci : TRenderContextInfo);
+procedure TGLLines.BuildList(var rci : TRenderContextInfo);
 var
    i, n : Integer;
    a, b, c : TGLFloat;
@@ -2415,7 +2415,7 @@ end;
 
 // AddNode (coords)
 //
-procedure TLines.AddNode(const coords : TGLCoordinates);
+procedure TGLLines.AddNode(const coords : TGLCoordinates);
 var
    n : TGLNode;
 begin
@@ -2427,7 +2427,7 @@ end;
 
 // AddNode (xyz)
 //
-procedure TLines.AddNode(const X, Y, Z: TGLfloat);
+procedure TGLLines.AddNode(const X, Y, Z: TGLfloat);
 var
    n : TGLNode;
 begin
@@ -2438,7 +2438,7 @@ end;
 
 // AddNode (vector)
 //
-procedure TLines.AddNode(const value : TVector);
+procedure TGLLines.AddNode(const value : TVector);
 var
    n : TGLNode;
 begin
@@ -2449,7 +2449,7 @@ end;
 
 // AddNode (affine vector)
 //
-procedure TLines.AddNode(const value : TAffineVector);
+procedure TGLLines.AddNode(const value : TAffineVector);
 var
    n : TGLNode;
 begin
@@ -2459,12 +2459,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TCube ------------------
+// ------------------ TGLCube ------------------
 // ------------------
 
 // Create
 //
-constructor TCube.Create(AOwner:Tcomponent);
+constructor TGLCube.Create(AOwner:Tcomponent);
 begin
   inherited Create(AOwner);
   FCubeWidth:=1;
@@ -2477,7 +2477,7 @@ end;
 
 // BuildList
 //
-procedure TCube.BuildList(var rci : TRenderContextInfo);
+procedure TGLCube.BuildList(var rci : TRenderContextInfo);
 var
 	hw, hh, hd, nd  : TGLFloat;
 begin
@@ -2536,7 +2536,7 @@ end;
 
 // SetCubeWidth
 //
-procedure TCube.SetCubeWidth(AValue : TGLFloat);
+procedure TGLCube.SetCubeWidth(AValue : TGLFloat);
 begin
    if AValue<>FCubeWidth then begin
       FCubeWidth:=AValue;
@@ -2546,7 +2546,7 @@ end;
 
 // SetCubeHeight
 //
-procedure TCube.SetCubeHeight(AValue:TGLFloat);
+procedure TGLCube.SetCubeHeight(AValue:TGLFloat);
 begin
    if AValue<>FCubeHeight then begin
       FCubeHeight:=AValue;
@@ -2556,7 +2556,7 @@ end;
 
 // SetCubeDepth
 //
-procedure TCube.SetCubeDepth(AValue: TGLFloat);
+procedure TGLCube.SetCubeDepth(AValue: TGLFloat);
 begin
    if AValue<>FCubeDepth then begin
       FCubeDepth:=AValue;
@@ -2566,7 +2566,7 @@ end;
 
 // SetParts
 //
-procedure TCube.SetParts(AValue:TCubeParts);
+procedure TGLCube.SetParts(AValue:TCubeParts);
 begin
    if AValue<>FParts then begin
       FParts:=AValue;
@@ -2576,7 +2576,7 @@ end;
 
 // SetNormalDirection
 //
-procedure TCube.SetNormalDirection(AValue: TNormalDirection);
+procedure TGLCube.SetNormalDirection(AValue: TNormalDirection);
 begin
    if AValue<>FNormalDirection then begin
       FNormalDirection:=AValue;
@@ -2586,21 +2586,21 @@ end;
 
 // Assign
 //
-procedure TCube.Assign(Source: TPersistent);
+procedure TGLCube.Assign(Source: TPersistent);
 begin
-   if Assigned(Source) and (Source is TCube) then begin
-      FCubeWidth:=TCube(Source).FCubewidth;
-      FCubeHeight:=TCube(Source).FCubeHeight;
-      FCubeDepth:=TCube(Source).FCubeDepth;
-      FParts:=TCube(Source).FParts;
-      FNormalDirection:=TCube(Source).FNormalDirection;
+   if Assigned(Source) and (Source is TGLCube) then begin
+      FCubeWidth:=TGLCube(Source).FCubewidth;
+      FCubeHeight:=TGLCube(Source).FCubeHeight;
+      FCubeDepth:=TGLCube(Source).FCubeDepth;
+      FParts:=TGLCube(Source).FParts;
+      FNormalDirection:=TGLCube(Source).FNormalDirection;
    end;
    inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
 //
-function TCube.AxisAlignedDimensions : TVector;
+function TGLCube.AxisAlignedDimensions : TVector;
 begin
    Result[0]:= FCubeWidth*Scale.DirectX*0.5;
    Result[1]:=FCubeHeight*Scale.DirectY*0.5;
@@ -2610,7 +2610,7 @@ end;
 
 // DefineProperties
 //
-procedure TCube.DefineProperties(Filer: TFiler);
+procedure TGLCube.DefineProperties(Filer: TFiler);
 begin
    inherited;
    Filer.DefineBinaryProperty('CubeSize', ReadData, WriteData,
@@ -2619,7 +2619,7 @@ end;
 
 // ReadData
 //
-procedure TCube.ReadData(Stream: TStream);
+procedure TGLCube.ReadData(Stream: TStream);
 begin
    with Stream do begin
       Read(FCubeWidth, SizeOf(FCubeWidth));
@@ -2630,7 +2630,7 @@ end;
 
 // WriteData
 //
-procedure TCube.WriteData(Stream: TStream);
+procedure TGLCube.WriteData(Stream: TStream);
 begin
    with Stream do begin
       Write(FCubeWidth, SizeOf(FCubeWidth));
@@ -2639,9 +2639,9 @@ begin
    end;
 end;
 
-//----------------- TFrustrum --------------------------------------------------
+//----------------- TGLFrustrum --------------------------------------------------
 
-constructor TFrustrum.Create(AOwner: TComponent);
+constructor TGLFrustrum.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FApexHeight := 1;
@@ -2652,7 +2652,7 @@ begin
   FNormalDirection := ndOutside;
 end;
 
-procedure TFrustrum.BuildList(var rci: TRenderContextInfo);
+procedure TGLFrustrum.BuildList(var rci: TRenderContextInfo);
 var
   HBW, HBD: TGLFloat; // half of width, half of depth at base
   HTW, HTD: TGLFloat; // half of width, half of depth at top of frustrum
@@ -2735,7 +2735,7 @@ begin
   glEnd;
 end;
 
-procedure TFrustrum.SetApexHeight(AValue: TGLFloat);
+procedure TGLFrustrum.SetApexHeight(AValue: TGLFloat);
 begin
   if (AValue <> FApexHeight) and (AValue >= 0) then
   begin
@@ -2746,7 +2746,7 @@ begin
   end;
 end;
 
-procedure TFrustrum.SetBaseDepth(AValue: TGLFloat);
+procedure TGLFrustrum.SetBaseDepth(AValue: TGLFloat);
 begin
   if (AValue <> FBaseDepth) and (AValue >= 0) then
   begin
@@ -2755,7 +2755,7 @@ begin
   end;
 end;
 
-procedure TFrustrum.SetBaseWidth(AValue: TGLFloat);
+procedure TGLFrustrum.SetBaseWidth(AValue: TGLFloat);
 begin
   if (AValue <> FBaseWidth) and (AValue >= 0) then
   begin
@@ -2764,7 +2764,7 @@ begin
   end;
 end;
 
-procedure TFrustrum.SetHeight(AValue: TGLFloat);
+procedure TGLFrustrum.SetHeight(AValue: TGLFloat);
 begin
   if (AValue <> FHeight) and (AValue >= 0) then
   begin
@@ -2775,7 +2775,7 @@ begin
   end;
 end;
 
-procedure TFrustrum.SetParts(AValue: TFrustrumParts);
+procedure TGLFrustrum.SetParts(AValue: TFrustrumParts);
 begin
   if AValue <> FParts then
   begin
@@ -2784,7 +2784,7 @@ begin
   end;
 end;
 
-procedure TFrustrum.SetNormalDirection(AValue: TNormalDirection);
+procedure TGLFrustrum.SetNormalDirection(AValue: TNormalDirection);
 begin
   if AValue <> FNormalDirection then
   begin
@@ -2793,31 +2793,31 @@ begin
   end;
 end;
 
-procedure TFrustrum.Assign(Source: TPersistent);
+procedure TGLFrustrum.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) and (Source is TFrustrum) then
+  if Assigned(Source) and (Source is TGLFrustrum) then
   begin
-    FApexHeight := TFrustrum(Source).FApexHeight;
-    FBaseDepth := TFrustrum(Source).FBaseDepth;
-    FBaseWidth := TFrustrum(Source).FBaseWidth;
-    FHeight := TFrustrum(Source).FHeight;
-    FParts := TFrustrum(Source).FParts;
-    FNormalDirection := TFrustrum(Source).FNormalDirection;
+    FApexHeight := TGLFrustrum(Source).FApexHeight;
+    FBaseDepth := TGLFrustrum(Source).FBaseDepth;
+    FBaseWidth := TGLFrustrum(Source).FBaseWidth;
+    FHeight := TGLFrustrum(Source).FHeight;
+    FParts := TGLFrustrum(Source).FParts;
+    FNormalDirection := TGLFrustrum(Source).FNormalDirection;
   end;
   inherited Assign(Source);
 end;
 
-function TFrustrum.TopDepth: TGLFloat;
+function TGLFrustrum.TopDepth: TGLFloat;
 begin
   Result := FBaseDepth * (FApexHeight - FHeight) / FApexHeight;
 end;
 
-function TFrustrum.TopWidth: TGLFloat;
+function TGLFrustrum.TopWidth: TGLFloat;
 begin
   Result := FBaseWidth * (FApexHeight - FHeight) / FApexHeight;
 end;
 
-procedure TFrustrum.DefineProperties(Filer: TFiler);
+procedure TGLFrustrum.DefineProperties(Filer: TFiler);
 begin
   inherited;
   Filer.DefineBinaryProperty('FrustrumSize', ReadData, WriteData,
@@ -2825,7 +2825,7 @@ begin
     (FHeight <> 0.5));
 end;
 
-procedure TFrustrum.ReadData(Stream: TStream);
+procedure TGLFrustrum.ReadData(Stream: TStream);
 begin
   with Stream do
   begin
@@ -2836,7 +2836,7 @@ begin
   end;
 end;
 
-procedure TFrustrum.WriteData(Stream: TStream);
+procedure TGLFrustrum.WriteData(Stream: TStream);
 begin
   with Stream do
   begin
@@ -2847,11 +2847,11 @@ begin
   end;
 end;
 
-//----------------- TQuadricObject ---------------------------------------------
+//----------------- TGLQuadricObject ---------------------------------------------
 
 // Create
 //
-constructor TQuadricObject.Create(AOwner : TComponent);
+constructor TGLQuadricObject.Create(AOwner : TComponent);
 begin
   inherited;
   FNormals:=nsSmooth;
@@ -2860,7 +2860,7 @@ end;
 
 // SetNormals
 //
-procedure TQuadricObject.SetNormals(aValue : TNormalSmoothing);
+procedure TGLQuadricObject.SetNormals(aValue : TNormalSmoothing);
 begin
 	if AValue<>FNormals then begin
 		FNormals:=AValue;
@@ -2870,7 +2870,7 @@ end;
 
 // SetNormalDirection
 //
-procedure TQuadricObject.SetNormalDirection(aValue : TNormalDirection);
+procedure TGLQuadricObject.SetNormalDirection(aValue : TNormalDirection);
 begin
 	if AValue<>FNormalDirection then begin
 		FNormalDirection:=AValue;
@@ -2880,7 +2880,7 @@ end;
 
 // SetupQuadricParams
 //
-procedure TQuadricObject.SetupQuadricParams(quadric : PGLUquadricObj);
+procedure TGLQuadricObject.SetupQuadricParams(quadric : PGLUquadricObj);
 const
    cNormalSmoothinToEnum : array [nsFlat..nsNone] of TGLEnum = (
          GLU_FLAT, GLU_SMOOTH, GLU_NONE );
@@ -2899,7 +2899,7 @@ end;
 
 // SetNormalQuadricOrientation
 //
-procedure TQuadricObject.SetNormalQuadricOrientation(quadric : PGLUquadricObj);
+procedure TGLQuadricObject.SetNormalQuadricOrientation(quadric : PGLUquadricObj);
 const
    cNormalDirectionToEnum : array [ndInside..ndOutside] of TGLEnum =
       (GLU_INSIDE, GLU_OUTSIDE);
@@ -2909,7 +2909,7 @@ end;
 
 // SetInvertedQuadricOrientation
 //
-procedure TQuadricObject.SetInvertedQuadricOrientation(quadric : PGLUquadricObj);
+procedure TGLQuadricObject.SetInvertedQuadricOrientation(quadric : PGLUquadricObj);
 const
    cNormalDirectionToEnum : array [ndInside..ndOutside] of TGLEnum =
       (GLU_OUTSIDE, GLU_INSIDE);
@@ -2919,20 +2919,20 @@ end;
 
 // Assign
 //
-procedure TQuadricObject.Assign(Source:TPersistent);
+procedure TGLQuadricObject.Assign(Source:TPersistent);
 begin
-   if Assigned(Source) and (Source is TQuadricObject) then begin
-      FNormals:=TQuadricObject(Source).FNormals;
-      FNormalDirection:=TQuadricObject(Source).FNormalDirection;
+   if Assigned(Source) and (Source is TGLQuadricObject) then begin
+      FNormals:=TGLQuadricObject(Source).FNormals;
+      FNormalDirection:=TGLQuadricObject(Source).FNormalDirection;
    end;
    inherited Assign(Source);
 end;
 
-//----------------- TSphere ----------------------------------------------------
+//----------------- TGLSphere ----------------------------------------------------
 
 // Create
 //
-constructor TSphere.Create(AOwner:TComponent);
+constructor TGLSphere.Create(AOwner:TComponent);
 begin
    inherited Create(AOwner);
    FRadius:=0.5;
@@ -2946,7 +2946,7 @@ end;
 
 // BuildList
 //
-procedure TSphere.BuildList(var rci : TRenderContextInfo);
+procedure TGLSphere.BuildList(var rci : TRenderContextInfo);
 var
    V1, V2, N1 : TAffineVector;
    AngTop, AngBottom, AngStart, AngStop, StepV, StepH : Extended;
@@ -3093,7 +3093,7 @@ end;
 
 // RayCastIntersect
 //
-function TSphere.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLSphere.RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean;
 var
@@ -3117,7 +3117,7 @@ end;
 
 // SetBottom
 //
-procedure TSphere.SetBottom(AValue: TAngleLimit1);
+procedure TGLSphere.SetBottom(AValue: TAngleLimit1);
 begin
    if FBottom<>AValue then begin
       FBottom:=AValue;
@@ -3127,7 +3127,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetBottomCap(AValue: TCapType);
+procedure TGLSphere.SetBottomCap(AValue: TCapType);
 
 begin
   if FBottomCap<>AValue then
@@ -3139,7 +3139,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetRadius(AValue:TGLFloat);
+procedure TGLSphere.SetRadius(AValue:TGLFloat);
 
 begin
   if AValue<>FRadius then
@@ -3151,7 +3151,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetSlices(AValue:TGLInt);
+procedure TGLSphere.SetSlices(AValue:TGLInt);
 
 begin
   if AValue<>FSlices then
@@ -3164,7 +3164,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetStacks(AValue:TGLInt);
+procedure TGLSphere.SetStacks(AValue:TGLInt);
 
 begin
   if AValue<>FStacks then
@@ -3177,7 +3177,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetStart(AValue: TAngleLimit2);
+procedure TGLSphere.SetStart(AValue: TAngleLimit2);
 begin
    if FStart<>AValue then begin
       Assert(AValue <= FStop);
@@ -3188,7 +3188,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetStop(AValue: TAngleLimit2);
+procedure TGLSphere.SetStop(AValue: TAngleLimit2);
 begin
    if FStop<>AValue then begin
       Assert(AValue >= FStart);
@@ -3199,7 +3199,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetTop(AValue: TAngleLimit1);
+procedure TGLSphere.SetTop(AValue: TAngleLimit1);
 begin
    if FTop<>AValue then begin
       FTop:=AValue;
@@ -3209,7 +3209,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.SetTopCap(AValue: TCapType);
+procedure TGLSphere.SetTopCap(AValue: TCapType);
 
 begin
   if FTopCap<>AValue then
@@ -3221,35 +3221,35 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TSphere.Assign(Source:TPersistent);
+procedure TGLSphere.Assign(Source:TPersistent);
 
 begin
-  if assigned(Source) and (Source is TSphere) then
+  if assigned(Source) and (Source is TGLSphere) then
   begin
-    FRadius:=TSphere(Source).FRadius;
-    FSlices:=TSphere(Source).FSlices;
-    FStacks:=TSphere(Source).FStacks;
-    FBottom:=TSphere(Source).FBottom;
-    FTop:=TSphere(Source).FTop;
-    FStart:=TSphere(Source).FStart;
-    FStop:=TSphere(Source).FStop;
+    FRadius:=TGLSphere(Source).FRadius;
+    FSlices:=TGLSphere(Source).FSlices;
+    FStacks:=TGLSphere(Source).FStacks;
+    FBottom:=TGLSphere(Source).FBottom;
+    FTop:=TGLSphere(Source).FTop;
+    FStart:=TGLSphere(Source).FStart;
+    FStop:=TGLSphere(Source).FStop;
   end;
   inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
 //
-function TSphere.AxisAlignedDimensions : TVector;
+function TGLSphere.AxisAlignedDimensions : TVector;
 // ToDo: take bottom and top into account
 begin
    VectorScale(Scale.AsVector, Abs(FRadius), Result);
 end;
 
-//----------------- TDisk ------------------------------------------------------
+//----------------- TGLDisk ------------------------------------------------------
 
 // Create
 //
-constructor TDisk.Create(AOwner:TComponent);
+constructor TGLDisk.Create(AOwner:TComponent);
 begin
   inherited Create(AOwner);
   FOuterRadius:=0.5;
@@ -3262,7 +3262,7 @@ end;
 
 // BuildList
 //
-procedure TDisk.BuildList(var rci : TRenderContextInfo);
+procedure TGLDisk.BuildList(var rci : TRenderContextInfo);
 var
    quadric : PGLUquadricObj;
 begin
@@ -3274,7 +3274,7 @@ end;
 
 // SetOuterRadius
 //
-procedure TDisk.SetOuterRadius(AValue:TGLFloat);
+procedure TGLDisk.SetOuterRadius(AValue:TGLFloat);
 begin
    if AValue<>FOuterRadius then begin
       FOuterRadius:=AValue;
@@ -3284,7 +3284,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TDisk.SetInnerRadius(AValue:TGLFloat);
+procedure TGLDisk.SetInnerRadius(AValue:TGLFloat);
 
 begin
   if AValue<>FInnerRadius then
@@ -3296,7 +3296,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TDisk.SetSlices(AValue:TGLInt);
+procedure TGLDisk.SetSlices(AValue:TGLInt);
 
 begin
   if AValue<>FSlices then
@@ -3308,7 +3308,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TDisk.SetLoops(AValue:TGLInt);
+procedure TGLDisk.SetLoops(AValue:TGLInt);
 
 begin
   if AValue<>FLoops then
@@ -3320,7 +3320,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TDisk.SetStartAngle(AValue:TGLFloat);
+procedure TGLDisk.SetStartAngle(AValue:TGLFloat);
 
 begin
   if AValue<>FStartAngle then
@@ -3332,7 +3332,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TDisk.SetSweepAngle(AValue:TGLFloat);
+procedure TGLDisk.SetSweepAngle(AValue:TGLFloat);
 
 begin
   if AValue<>FSweepAngle then
@@ -3344,22 +3344,22 @@ end;
 
 // Assign
 //
-procedure TDisk.Assign(Source:TPersistent);
+procedure TGLDisk.Assign(Source:TPersistent);
 begin
-   if Assigned(Source) and (Source is TDisk) then begin
-      FOuterRadius:=TDisk(Source).FOuterRadius;
-      FInnerRadius:=TDisk(Source).FInnerRadius;
-      FSlices:=TDisk(Source).FSlices;
-      FLoops:=TDisk(Source).FLoops;
-      FStartAngle:=TDisk(Source).FStartAngle;
-      FSweepAngle:=TDisk(Source).FSweepAngle;
+   if Assigned(Source) and (Source is TGLDisk) then begin
+      FOuterRadius:=TGLDisk(Source).FOuterRadius;
+      FInnerRadius:=TGLDisk(Source).FInnerRadius;
+      FSlices:=TGLDisk(Source).FSlices;
+      FLoops:=TGLDisk(Source).FLoops;
+      FStartAngle:=TGLDisk(Source).FStartAngle;
+      FSweepAngle:=TGLDisk(Source).FSweepAngle;
    end;
    inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
 //
-function TDisk.AxisAlignedDimensions : TVector;
+function TGLDisk.AxisAlignedDimensions : TVector;
 var
   r : TGLFloat;
 begin
@@ -3369,7 +3369,7 @@ end;
 
 // RayCastIntersect
 //
-function TDisk.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLDisk.RayCastIntersect(const rayStart, rayVector : TVector;
                                 intersectPoint : PVector = nil;
                                 intersectNormal : PVector = nil) : Boolean;
 var
@@ -3389,11 +3389,11 @@ begin
    end else Result:=False;
 end;
 
-//----------------- TCylinderBase ----------------------------------------------
+//----------------- TGLCylinderBase ----------------------------------------------
 
 // Create
 //
-constructor TCylinderBase.Create(AOwner : TComponent);
+constructor TGLCylinderBase.Create(AOwner : TComponent);
 begin
   inherited Create(AOwner);
   FBottomRadius:=0.5;
@@ -3405,7 +3405,7 @@ end;
 
 // SetBottomRadius
 //
-procedure TCylinderBase.SetBottomRadius(AValue : TGLFloat);
+procedure TGLCylinderBase.SetBottomRadius(AValue : TGLFloat);
 begin
 	if AValue<>FBottomRadius then begin
 		FBottomRadius:=AValue;
@@ -3415,7 +3415,7 @@ end;
 
 // SetHeight
 //
-procedure TCylinderBase.SetHeight(AValue:TGLFloat);
+procedure TGLCylinderBase.SetHeight(AValue:TGLFloat);
 begin
 	if AValue<>FHeight then begin
 		FHeight:=AValue;
@@ -3425,7 +3425,7 @@ end;
 
 // SetSlices
 //
-procedure TCylinderBase.SetSlices(AValue : TGLInt);
+procedure TGLCylinderBase.SetSlices(AValue : TGLInt);
 begin
 	if AValue<>FSlices then begin
 		FSlices:=AValue;
@@ -3435,7 +3435,7 @@ end;
 
 // SetStack
 //
-procedure TCylinderBase.SetStacks(AValue : TGLInt);
+procedure TGLCylinderBase.SetStacks(AValue : TGLInt);
 begin
 	if AValue<>FStacks then begin
 		FStacks:=AValue;
@@ -3445,7 +3445,7 @@ end;
 
 // SetLoops
 //
-procedure TCylinderBase.SetLoops(AValue : TGLInt);
+procedure TGLCylinderBase.SetLoops(AValue : TGLInt);
 begin
 	if (AValue>=1) and (AValue<>FLoops) then begin
 		FLoops:=AValue;
@@ -3455,23 +3455,23 @@ end;
 
 // Assign
 //
-procedure TCylinderBase.Assign(Source : TPersistent);
+procedure TGLCylinderBase.Assign(Source : TPersistent);
 begin
-	if assigned(Source) and (Source is TCylinderBase) then begin
-		FBottomRadius:=TCylinderBase(Source).FBottomRadius;
-		FSlices:=TCylinderBase(Source).FSlices;
-		FStacks:=TCylinderBase(Source).FStacks;
-		FLoops :=TCylinderBase(Source).FLoops;
-		FHeight:=TCylinderBase(Source).FHeight;
+	if assigned(Source) and (Source is TGLCylinderBase) then begin
+		FBottomRadius:=TGLCylinderBase(Source).FBottomRadius;
+		FSlices:=TGLCylinderBase(Source).FSlices;
+		FStacks:=TGLCylinderBase(Source).FStacks;
+		FLoops :=TGLCylinderBase(Source).FLoops;
+		FHeight:=TGLCylinderBase(Source).FHeight;
 	end;
 	inherited Assign(Source);
 end;
 
-//----------------- TCone ------------------------------------------------------
+//----------------- TGLCone ------------------------------------------------------
 
 // Create
 //
-constructor TCone.Create(AOwner:TComponent);
+constructor TGLCone.Create(AOwner:TComponent);
 begin
 	inherited Create(AOwner);
 	FParts:=[coSides, coBottom];
@@ -3479,7 +3479,7 @@ end;
 
 // BuildList
 //
-procedure TCone.BuildList(var rci : TRenderContextInfo);
+procedure TGLCone.BuildList(var rci : TRenderContextInfo);
 var
 	quadric : PGLUquadricObj;
 begin
@@ -3501,7 +3501,7 @@ end;
 
 // SetParts
 //
-procedure TCone.SetParts(AValue : TConeParts);
+procedure TGLCone.SetParts(AValue : TConeParts);
 begin
 	if AValue<>FParts then begin
 		FParts:=AValue;
@@ -3511,17 +3511,17 @@ end;
 
 // Assign
 //
-procedure TCone.Assign(Source: TPersistent);
+procedure TGLCone.Assign(Source: TPersistent);
 begin
-	if Assigned(Source) and (Source is TCone) then begin
-		FParts:=TCone(Source).FParts;
+	if Assigned(Source) and (Source is TGLCone) then begin
+		FParts:=TGLCone(Source).FParts;
 	end;
   	inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
 //
-function TCone.AxisAlignedDimensions : TVector;
+function TGLCone.AxisAlignedDimensions : TVector;
 var
    r : TGLFloat;
 begin
@@ -3529,11 +3529,11 @@ begin
    Result:=VectorMake(r*Scale.DirectX, 0.5*FHeight*Scale.DirectY, r*Scale.DirectZ);
 end;
 
-//----------------- TCylinder --------------------------------------------------
+//----------------- TGLCylinder --------------------------------------------------
 
 // Create
 //
-constructor TCylinder.Create(AOwner:TComponent);
+constructor TGLCylinder.Create(AOwner:TComponent);
 begin
    inherited Create(AOwner);
    FTopRadius:=0.5;
@@ -3543,7 +3543,7 @@ end;
 
 // BuildList
 //
-procedure TCylinder.BuildList(var rci : TRenderContextInfo);
+procedure TGLCylinder.BuildList(var rci : TRenderContextInfo);
 var
 	quadric : PGLUquadricObj;
 begin
@@ -3576,7 +3576,7 @@ end;
 
 // SetTopRadius
 //
-procedure TCylinder.SetTopRadius(AValue: TGLFloat);
+procedure TGLCylinder.SetTopRadius(AValue: TGLFloat);
 begin
    if AValue<>FTopRadius then begin
       FTopRadius:=AValue;
@@ -3586,7 +3586,7 @@ end;
 
 // SetParts
 //
-procedure TCylinder.SetParts(AValue: TCylinderParts);
+procedure TGLCylinder.SetParts(AValue: TCylinderParts);
 begin
    if AValue<>FParts then begin
       FParts:=AValue;
@@ -3596,7 +3596,7 @@ end;
 
 // SetAlignment
 //
-procedure TCylinder.SetAlignment(val : TCylinderAlignment);
+procedure TGLCylinder.SetAlignment(val : TCylinderAlignment);
 begin
    if val<>FAlignment then begin
       FAlignment:=val;
@@ -3606,18 +3606,18 @@ end;
 
 // Assign
 //
-procedure TCylinder.Assign(Source: TPersistent);
+procedure TGLCylinder.Assign(Source: TPersistent);
 begin
-   if Assigned(SOurce) and (Source is TCylinder) then begin
-      FParts:=TCylinder(Source).FParts;
-      FTopRadius:=TCylinder(Source).FTopRadius;
+   if Assigned(SOurce) and (Source is TGLCylinder) then begin
+      FParts:=TGLCylinder(Source).FParts;
+      FTopRadius:=TGLCylinder(Source).FTopRadius;
    end;
    inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
 //
-function TCylinder.AxisAlignedDimensions: TVector;
+function TGLCylinder.AxisAlignedDimensions: TVector;
 var
   r, r1 : TGLFloat;
 begin
@@ -3630,7 +3630,7 @@ end;
 
 // RayCastIntersect
 //
-function TCylinder.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLCylinder.RayCastIntersect(const rayStart, rayVector : TVector;
                                     intersectPoint : PVector = nil;
                                     intersectNormal : PVector = nil) : Boolean;
 const
@@ -3736,7 +3736,7 @@ end;
 
 // Align
 //
-procedure TCylinder.Align(const startPoint, endPoint : TVector);
+procedure TGLCylinder.Align(const startPoint, endPoint : TVector);
 var
    dir : TAffineVector;
 begin
@@ -3752,23 +3752,23 @@ end;
 
 // Align
 //
-procedure TCylinder.Align(const startObj, endObj : TGLBaseSceneObject);
+procedure TGLCylinder.Align(const startObj, endObj : TGLBaseSceneObject);
 begin
    Align(startObj.AbsolutePosition, endObj.AbsolutePosition);
 end;
 
 // Align
 //
-procedure TCylinder.Align(const startPoint, endPoint : TAffineVector);
+procedure TGLCylinder.Align(const startPoint, endPoint : TAffineVector);
 begin
    Align(PointMake(startPoint), PointMake(endPoint));
 end;
 
-//----------------- TAnnulus ---------------------------------------------------
+//----------------- TGLAnnulus ---------------------------------------------------
 
 // Create
 //
-constructor TAnnulus.Create(AOwner:TComponent);
+constructor TGLAnnulus.Create(AOwner:TComponent);
 begin
    inherited Create(AOwner);
    fBottomInnerRadius:=0.3;
@@ -3779,7 +3779,7 @@ end;
 
 // SetBottomInnerRadius
 //
-procedure TAnnulus.SetBottomInnerRadius(AValue : TGLFloat);
+procedure TGLAnnulus.SetBottomInnerRadius(AValue : TGLFloat);
 begin
 	if AValue<>FBottomInnerRadius then begin
 		FBottomInnerRadius:=AValue;
@@ -3789,7 +3789,7 @@ end;
 
 // SetTopRadius
 //
-procedure TAnnulus.SetTopRadius(AValue : TGLFloat);
+procedure TGLAnnulus.SetTopRadius(AValue : TGLFloat);
 begin
 	if AValue<>FTopRadius then begin
 		FTopRadius:=AValue;
@@ -3799,7 +3799,7 @@ end;
 
 // SetTopInnerRadius
 //
-procedure TAnnulus.SetTopInnerRadius(AValue : TGLFloat);
+procedure TGLAnnulus.SetTopInnerRadius(AValue : TGLFloat);
 begin
 	if AValue<>FTopInnerRadius then begin
 		FTopInnerRadius:=AValue;
@@ -3809,7 +3809,7 @@ end;
 
 // SetParts
 //
-procedure TAnnulus.SetParts(AValue: TAnnulusParts);
+procedure TGLAnnulus.SetParts(AValue: TAnnulusParts);
 begin
    if AValue<>FParts then begin
       FParts:=AValue;
@@ -3819,7 +3819,7 @@ end;
 
 // BuildList
 //
-procedure TAnnulus.BuildList(var rci : TRenderContextInfo);
+procedure TGLAnnulus.BuildList(var rci : TRenderContextInfo);
 var
 	quadric : PGLUquadricObj;
 begin
@@ -3850,21 +3850,21 @@ end;
 
 // Assign
 //
-procedure TAnnulus.Assign(Source: TPersistent);
+procedure TGLAnnulus.Assign(Source: TPersistent);
 begin
-   if assigned(SOurce) and (Source is TAnnulus) then begin
-      FParts:=TAnnulus(Source).FParts;
-      FTopRadius:=TAnnulus(Source).FTopRadius;
-      FTopInnerRadius:=TAnnulus(Source).fTopInnerRadius;
-      FBottomRadius:=TAnnulus(Source).fBottomRadius;
-      FBottomInnerRadius:=TAnnulus(Source).fbottomInnerRadius;
+   if assigned(SOurce) and (Source is TGLAnnulus) then begin
+      FParts:=TGLAnnulus(Source).FParts;
+      FTopRadius:=TGLAnnulus(Source).FTopRadius;
+      FTopInnerRadius:=TGLAnnulus(Source).fTopInnerRadius;
+      FBottomRadius:=TGLAnnulus(Source).fBottomRadius;
+      FBottomInnerRadius:=TGLAnnulus(Source).fbottomInnerRadius;
    end;
    inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
 //
-function TAnnulus.AxisAlignedDimensions : TVector;
+function TGLAnnulus.AxisAlignedDimensions : TVector;
 var
    r, r1 : TGLFloat;
 begin
@@ -3876,12 +3876,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TTorus ------------------
+// ------------------ TGLTorus ------------------
 // ------------------
 
 // Create
 //
-constructor TTorus.Create(AOwner:TComponent);
+constructor TGLTorus.Create(AOwner:TComponent);
 begin
    inherited Create(AOwner);
    FRings:=25;
@@ -3892,7 +3892,7 @@ end;
 
 // BuildList
 //
-procedure TTorus.BuildList(var rci : TRenderContextInfo);
+procedure TGLTorus.BuildList(var rci : TRenderContextInfo);
 var
    I, J         : Integer;
    Theta, Phi, Theta1, cosPhi, sinPhi, dist : TGLFloat;
@@ -3934,7 +3934,7 @@ end;
 
 // SetMajorRadius
 //
-procedure TTorus.SetMajorRadius(const AValue: Single);
+procedure TGLTorus.SetMajorRadius(const AValue: Single);
 begin
    if FMajorRadius<>AValue then begin
       FMajorRadius:=AValue;
@@ -3944,7 +3944,7 @@ end;
 
 // SetMinorRadius
 //
-procedure TTorus.SetMinorRadius(const AValue : Single);
+procedure TGLTorus.SetMinorRadius(const AValue : Single);
 begin
    if FMinorRadius<>AValue then begin
       FMinorRadius:=AValue;
@@ -3954,7 +3954,7 @@ end;
 
 // SetRings
 //
-procedure TTorus.SetRings(AValue: Cardinal);
+procedure TGLTorus.SetRings(AValue: Cardinal);
 begin
    if FRings<>AValue then begin
       FRings:=AValue;
@@ -3965,7 +3965,7 @@ end;
 
 // SetSides
 //
-procedure TTorus.SetSides(aValue : Cardinal);
+procedure TGLTorus.SetSides(aValue : Cardinal);
 begin
    if FSides<>aValue then begin
       FSides:=aValue;
@@ -3976,7 +3976,7 @@ end;
 
 // AxisAlignedDimensions
 //
-function TTorus.AxisAlignedDimensions : TVector;
+function TGLTorus.AxisAlignedDimensions : TVector;
 var
    r, r1 : TGLFloat;
 begin
@@ -3988,7 +3988,7 @@ end;
 
 // RayCastIntersect
 //
-function TTorus.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLTorus.RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean;
 var
@@ -4047,11 +4047,11 @@ begin
    end;
 end;
 
-//----------------- TTeapot ----------------------------------------------------
+//----------------- TGLTeapot ----------------------------------------------------
 
 // Create
 //
-constructor TTeapot.Create(AOwner: TComponent);
+constructor TGLTeapot.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FGrid:=5;
@@ -4059,7 +4059,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TTeapot.BuildList(var rci : TRenderContextInfo);
+procedure TGLTeapot.BuildList(var rci : TRenderContextInfo);
 
 const PatchData : array[0..9, 0..15] of Integer =
       ((102, 103, 104, 105,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15), // rim
@@ -4153,7 +4153,7 @@ begin
   glPopMatrix;
 end;
 
-//----------------- TDodecahedron ----------------------------------------------
+//----------------- TGLDodecahedron ----------------------------------------------
 
 procedure DodecahedronBuildList;
 const
@@ -4214,15 +4214,15 @@ end;
 
 // BuildList
 //
-procedure TDodecahedron.BuildList(var rci : TRenderContextInfo);
+procedure TGLDodecahedron.BuildList(var rci : TRenderContextInfo);
 begin
    DodecahedronBuildList;
 end;
 
-//----------------- TArrowLine -------------------------------------------------
+//----------------- TGLArrowLine -------------------------------------------------
 
 // Create
-constructor TArrowLine.Create(AOwner:TComponent);
+constructor TGLArrowLine.Create(AOwner:TComponent);
 begin
    inherited;
    fTopRadius:=0.1;
@@ -4240,7 +4240,7 @@ end;
 
 // SetTopRadius
 //
-procedure TArrowLine.SetTopRadius(AValue:TGLFloat);
+procedure TGLArrowLine.SetTopRadius(AValue:TGLFloat);
 begin
    if AValue<>fTopRadius then begin
       fTopRadius:=AValue;
@@ -4250,7 +4250,7 @@ end;
 
 // SetTopArrowHeadHeight
 //
-procedure TArrowLine.SetTopArrowHeadHeight(AValue:TGLFloat);
+procedure TGLArrowLine.SetTopArrowHeadHeight(AValue:TGLFloat);
 begin
    if AValue<>fTopArrowHeadHeight then begin
       fTopArrowHeadHeight:=AValue;
@@ -4260,7 +4260,7 @@ end;
 
 // SetTopArrowHeadRadius
 //
-procedure TArrowLine.SetTopArrowHeadRadius(AValue:TGLFloat);
+procedure TGLArrowLine.SetTopArrowHeadRadius(AValue:TGLFloat);
 begin
    if AValue<>fTopArrowHeadRadius then begin
       fTopArrowHeadRadius:=AValue;
@@ -4270,7 +4270,7 @@ end;
 
 // SetBottomArrowHeadHeight
 //
-procedure TArrowLine.SetBottomArrowHeadHeight(AValue:TGLFloat);
+procedure TGLArrowLine.SetBottomArrowHeadHeight(AValue:TGLFloat);
 begin
    if AValue<>fBottomArrowHeadHeight then begin
       fBottomArrowHeadHeight:=AValue;
@@ -4280,7 +4280,7 @@ end;
 
 // SetBottomArrowHeadRadius
 //
-procedure TArrowLine.SetBottomArrowHeadRadius(AValue:TGLFloat);
+procedure TGLArrowLine.SetBottomArrowHeadRadius(AValue:TGLFloat);
 begin
    if AValue<>fBottomArrowHeadRadius then begin
       fBottomArrowHeadRadius:=AValue;
@@ -4290,7 +4290,7 @@ end;
 
 // SetParts
 //
-procedure TArrowLine.SetParts(AValue: TArrowLineParts);
+procedure TGLArrowLine.SetParts(AValue: TArrowLineParts);
 begin
    if AValue<>FParts then begin
       FParts:=AValue;
@@ -4300,7 +4300,7 @@ end;
 
 // SetHeadStackingStyle
 //
-procedure TArrowLine.SetHeadStackingStyle(const val : TArrowHeadStackingStyle);
+procedure TGLArrowLine.SetHeadStackingStyle(const val : TArrowHeadStackingStyle);
 begin
    if val<>FHeadStackingStyle then begin
       FHeadStackingStyle:=val;
@@ -4310,7 +4310,7 @@ end;
 
 // BuildList
 //
-procedure TArrowLine.BuildList(var rci : TRenderContextInfo);
+procedure TGLArrowLine.BuildList(var rci : TRenderContextInfo);
 var
 	quadric : PGLUquadricObj;
    cylHeight, cylOffset, headInfluence : Single;
@@ -4380,27 +4380,27 @@ end;
 
 // Assign
 //
-procedure TArrowLine.Assign(Source: TPersistent);
+procedure TGLArrowLine.Assign(Source: TPersistent);
 begin
-   if assigned(SOurce) and (Source is TArrowLine) then begin
-      FParts:=TArrowLine(Source).FParts;
-      FTopRadius:=TArrowLine(Source).FTopRadius;
-      fTopArrowHeadHeight:=TArrowLine(Source).fTopArrowHeadHeight;
-      fTopArrowHeadRadius:=TArrowLine(Source).fTopArrowHeadRadius;
-      fBottomArrowHeadHeight:=TArrowLine(Source).fBottomArrowHeadHeight;
-      fBottomArrowHeadRadius:=TArrowLine(Source).fBottomArrowHeadRadius;
-      FHeadStackingStyle:=TArrowLine(Source).FHeadStackingStyle;
+   if assigned(SOurce) and (Source is TGLArrowLine) then begin
+      FParts:=TGLArrowLine(Source).FParts;
+      FTopRadius:=TGLArrowLine(Source).FTopRadius;
+      fTopArrowHeadHeight:=TGLArrowLine(Source).fTopArrowHeadHeight;
+      fTopArrowHeadRadius:=TGLArrowLine(Source).fTopArrowHeadRadius;
+      fBottomArrowHeadHeight:=TGLArrowLine(Source).fBottomArrowHeadHeight;
+      fBottomArrowHeadRadius:=TGLArrowLine(Source).fBottomArrowHeadRadius;
+      FHeadStackingStyle:=TGLArrowLine(Source).FHeadStackingStyle;
    end;
    inherited Assign(Source);
 end;
 
 // ------------------
-// ------------------ TPolygonBase ------------------
+// ------------------ TGLPolygonBase ------------------
 // ------------------
 
 // Create
 //
-constructor TPolygonBase.Create(AOwner: TComponent);
+constructor TGLPolygonBase.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    CreateNodes;
@@ -4410,14 +4410,14 @@ end;
 
 // CreateNodes
 //
-procedure TPolygonBase.CreateNodes;
+procedure TGLPolygonBase.CreateNodes;
 begin
    FNodes:=TGLNodes.Create(Self);
 end;
 
 // Destroy
 //
-destructor TPolygonBase.Destroy;
+destructor TGLPolygonBase.Destroy;
 begin
    FNodes.Free;
    inherited Destroy;
@@ -4425,18 +4425,18 @@ end;
 
 // Assign
 //
-procedure TPolygonBase.Assign(Source: TPersistent);
+procedure TGLPolygonBase.Assign(Source: TPersistent);
 begin
-   if Source is TPolygonBase then begin
-      SetNodes(TPolygonBase(Source).FNodes);
-      FDivision:=TPolygonBase(Source).FDivision;
-      FSplineMode:=TPolygonBase(Source).FSplineMode;
+   if Source is TGLPolygonBase then begin
+      SetNodes(TGLPolygonBase(Source).FNodes);
+      FDivision:=TGLPolygonBase(Source).FDivision;
+      FSplineMode:=TGLPolygonBase(Source).FSplineMode;
    end else inherited Assign(Source);
 end;
 
 // NotifyChange
 //
-procedure TPolygonBase.NotifyChange(Sender : TObject);
+procedure TGLPolygonBase.NotifyChange(Sender : TObject);
 begin
    if Sender=Nodes then StructureChanged;
    inherited;
@@ -4444,7 +4444,7 @@ end;
 
 // SetDivision
 //
-procedure TPolygonBase.SetDivision(const value: Integer);
+procedure TGLPolygonBase.SetDivision(const value: Integer);
 begin
    if Value<>FDivision then begin
       if value<1 then
@@ -4456,7 +4456,7 @@ end;
 
 // SetNodes
 //
-procedure TPolygonBase.SetNodes(const aNodes : TGLNodes);
+procedure TGLPolygonBase.SetNodes(const aNodes : TGLNodes);
 begin
    FNodes.Assign(aNodes);
    StructureChanged;
@@ -4464,7 +4464,7 @@ end;
 
 // SetSplineMode
 //
-procedure TPolygonBase.SetSplineMode(const val : TLineSplineMode);
+procedure TGLPolygonBase.SetSplineMode(const val : TLineSplineMode);
 begin
    if FSplineMode<>val then begin
       FSplineMode:=val;
@@ -4474,7 +4474,7 @@ end;
 
 // AddNode (coords)
 //
-procedure TPolygonBase.AddNode(const coords : TGLCoordinates);
+procedure TGLPolygonBase.AddNode(const coords : TGLCoordinates);
 var
    n : TGLNode;
 begin
@@ -4486,7 +4486,7 @@ end;
 
 // AddNode (xyz)
 //
-procedure TPolygonBase.AddNode(const X, Y, Z: TGLfloat);
+procedure TGLPolygonBase.AddNode(const X, Y, Z: TGLfloat);
 var
    n : TGLNode;
 begin
@@ -4497,7 +4497,7 @@ end;
 
 // AddNode (vector)
 //
-procedure TPolygonBase.AddNode(const value : TVector);
+procedure TGLPolygonBase.AddNode(const value : TVector);
 var
    n : TGLNode;
 begin
@@ -4508,7 +4508,7 @@ end;
 
 // AddNode (affine vector)
 //
-procedure TPolygonBase.AddNode(const value : TAffineVector);
+procedure TGLPolygonBase.AddNode(const value : TAffineVector);
 var
    n : TGLNode;
 begin
@@ -4518,12 +4518,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TPolygon ------------------
+// ------------------ TGLPolygon ------------------
 // ------------------
 
 // Create
 //
-constructor TPolygon.Create(AOwner: TComponent);
+constructor TGLPolygon.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FParts:=[ppTop, ppBottom];
@@ -4531,14 +4531,14 @@ end;
 
 // Destroy
 //
-destructor TPolygon.Destroy;
+destructor TGLPolygon.Destroy;
 begin
    inherited Destroy;
 end;
 
 // SetParts
 //
-procedure TPolygon.SetParts(const val : TPolygonParts);
+procedure TGLPolygon.SetParts(const val : TPolygonParts);
 begin
    if FParts<>val then begin
       FParts:=val;
@@ -4548,17 +4548,17 @@ end;
 
 // Assign
 //
-procedure TPolygon.Assign(Source: TPersistent);
+procedure TGLPolygon.Assign(Source: TPersistent);
 begin
-   if Source is TPolygon then begin
-      FParts:=TPolygon(Source).FParts;
+   if Source is TGLPolygon then begin
+      FParts:=TGLPolygon(Source).FParts;
    end;
    inherited Assign(Source);
 end;
 
 // BuildList
 //
-procedure TPolygon.BuildList(var rci : TRenderContextInfo);
+procedure TGLPolygon.BuildList(var rci : TRenderContextInfo);
 var
    normal : TAffineVector;
    pNorm : PAffineVector;
@@ -4592,8 +4592,8 @@ initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-   RegisterClasses([TSphere, TCube, TFrustrum, TCylinder, TCone, TTorus,
-                    TTeapot, TDodecahedron, TDisk, TPlane, TSprite, TGLPoints,
-                    TDummyCube, TLines, TAnnulus, TArrowLine, TPolygon]);
+   RegisterClasses([TGLSphere, TGLCube, TGLFrustrum, TGLCylinder, TGLCone, TGLTorus,
+                    TGLTeapot, TGLDodecahedron, TGLDisk, TGLPlane, TGLSprite, TGLPoints,
+                    TGLDummyCube, TGLLines, TGLAnnulus, TGLArrowLine, TGLPolygon]);
 
 end.

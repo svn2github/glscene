@@ -7,7 +7,7 @@
       <li>28/12/01 - Egg - Added registration (Philipp Pammler)
       <li>19/12/01 - Egg - Removed dependency to contnrs (D4 compatibility,
                            TObjectList replaced with TPersistentObjectList)
-      <li>29/03/01 - Uwe - Fixes and improvements to TMultiPolygon
+      <li>29/03/01 - Uwe - Fixes and improvements to TGLMultiPolygon
       <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
       <li>08/01/01 - Egg - Compatibility fix (TGLLineNodes change),
                            Delphi 4 compatibility (removed TVectorPool) and
@@ -183,12 +183,12 @@ type
          property Contours : TGLContours read FContours write SetContours;
    end;
 
-   // TMultiPolygon
+   // TGLMultiPolygon
    //
    {: A polygon that can have holes and multiple contours.<p>
       Use the Path property to access a contour or one of the AddNode methods
       to add a node to a contour (contours are allocated automatically). }
-   TMultiPolygon = class (TMultiPolygonBase)
+   TGLMultiPolygon = class (TMultiPolygonBase)
       private
          { Private Declarations }
          FParts: TPolygonParts;
@@ -724,12 +724,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TMultiPolygon ------------------
+// ------------------ TGLMultiPolygon ------------------
 // ------------------
 
 // Create
 //
-constructor TMultiPolygon.Create(AOwner: TComponent);
+constructor TGLMultiPolygon.Create(AOwner: TComponent);
 begin
    inherited;
    FParts:=[ppTop, ppBottom];
@@ -737,17 +737,17 @@ end;
 
 // Assign
 //
-procedure TMultiPolygon.Assign(Source: TPersistent);
+procedure TGLMultiPolygon.Assign(Source: TPersistent);
 begin
-  if Source is TMultiPolygon then begin
-    FParts:=TMultiPolygon(Source).FParts;
+  if Source is TGLMultiPolygon then begin
+    FParts:=TGLMultiPolygon(Source).FParts;
   end;
   inherited;
 end;
 
 // BuildList
 //
-procedure TMultiPolygon.BuildList(var rci: TRenderContextInfo);
+procedure TGLMultiPolygon.BuildList(var rci: TRenderContextInfo);
 var
   normal : TAffineVector;
 begin
@@ -766,7 +766,7 @@ end;
 
 // SetParts
 //
-procedure TMultiPolygon.SetParts(const value : TPolygonParts);
+procedure TGLMultiPolygon.SetParts(const value : TPolygonParts);
 begin
    if FParts<>value then begin
       FParts:=value;
@@ -801,7 +801,7 @@ initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-   RegisterClass(TMultiPolygon);
+   RegisterClass(TGLMultiPolygon);
 
 end.
 

@@ -34,12 +34,12 @@ object Form1: TForm1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
-      object Bolt: TDummyCube
+      object Bolt: TGLDummyCube
         Position.Coordinates = {000000009A9999BE0000803F0000803F}
         CubeSize = 1
-        object RSBoltHead: TRevolutionSolid
+        object RSBoltHead: TGLRevolutionSolid
           Position.Coordinates = {000000001F856B3F000000000000803F}
           Scale.Coordinates = {9A99193E9A99193E9A99193E00000000}
           Nodes = <
@@ -69,12 +69,12 @@ object Form1: TForm1
           Slices = 6
           Normals = nsSmooth
         end
-        object CYBoltShaft: TCylinder
+        object CYBoltShaft: TGLCylinder
           BottomRadius = 0.5
           Height = 1.54999995231628
           TopRadius = 0.5
         end
-        object RSBoltThreads: TRevolutionSolid
+        object RSBoltThreads: TGLRevolutionSolid
           Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}
           Nodes = <
             item
@@ -94,12 +94,12 @@ object Form1: TForm1
           Slices = 24
         end
       end
-      object Nut: TDummyCube
+      object Nut: TGLDummyCube
         Direction.Coordinates = {F304353FF30435BF33BF0D2800000000}
         Position.Coordinates = {0000000000000000000080BF0000803F}
         Up.Coordinates = {F404353FF304353F64C084B300000000}
         CubeSize = 1
-        object RSNutThreads: TRevolutionSolid
+        object RSNutThreads: TGLRevolutionSolid
           Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}
           Nodes = <
             item
@@ -119,7 +119,7 @@ object Form1: TForm1
           YOffsetPerTurn = 1.45000004768372
           Slices = 24
         end
-        object RSNutPans: TRevolutionSolid
+        object RSNutPans: TGLRevolutionSolid
           Scale.Coordinates = {9A99193E9A99193E9A99193E00000000}
           Nodes = <
             item
@@ -148,7 +148,7 @@ object Form1: TForm1
             end>
           Slices = 6
         end
-        object Annulus1: TAnnulus
+        object Annulus1: TGLAnnulus
           BottomRadius = 0.699999988079071
           Height = 0.449999988079071
           BottomInnerRadius = 0.550000011920929

@@ -36,7 +36,7 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 56
     Top = 56
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000000000000041000000000000803F}
       CubeSize = 1
       object GLCamera1: TGLCamera
@@ -48,7 +48,7 @@ object Form1: TForm1
         Top = 160
       end
     end
-    object TerrainRenderer1: TTerrainRenderer
+    object TerrainRenderer1: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {00008040000080400000003F00000000}
       Up.Coordinates = {00000000000000000000803F00000000}

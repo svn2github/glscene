@@ -1,12 +1,12 @@
-{: A bare-bones sample for THUDText.<p>
+{: A bare-bones sample for TGLHUDText.<p>
 
-   To use a THUDText, you must first place a TBitmapFont component and specify
+   To use a TGLHUDText, you must first place a TBitmapFont component and specify
    a font bitmap and it character ranges (ie. which tile represents which
    character). The component allows for a wide variety of fixed-width font
    bitmaps, and you can reuse many of the old bitmap fonts sets that were
    written for Atari, Amiga etc.<p>
 
-   The THUDText can then be placed in the hierarchy: just link it to the
+   The TGLHUDText can then be placed in the hierarchy: just link it to the
    TBitmapFont, specify a text, alignment, layout, scale and position to
    whatever suits your need and that's all.<p>
 
@@ -30,12 +30,12 @@ type
     BitmapFont1: TBitmapFont;
     GLLightSource1: TGLLightSource;
     GLCamera1: TGLCamera;
-    HUDText1: THUDText;
+    HUDText1: TGLHUDText;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
-    HUDText2: THUDText;
-    HUDText3: THUDText;
-    Teapot1: TTeapot;
+    HUDText2: TGLHUDText;
+    HUDText3: TGLHUDText;
+    Teapot1: TGLTeapot;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);

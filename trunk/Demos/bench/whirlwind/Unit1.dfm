@@ -31,14 +31,14 @@ object Form1: TForm1
       CubeSize = 1
       ParticlePoolSize = 10
       OnActivateParticle = GLParticles1ActivateParticle
-      object DummyCube1: TDummyCube
+      object DummyCube1: TGLDummyCube
         OnProgress = DummyCube1Progress
         CubeSize = 1
         BehavioursData = {
           0201060B54474C42496E657274696102000200050000000000000080FF3F0200
           0805000000000000000000000500000000000000000000050000000000000000
           000008020008020008}
-        object Sprite1: TSprite
+        object Sprite1: TGLSprite
           Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
           Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}

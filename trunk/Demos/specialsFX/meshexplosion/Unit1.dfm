@@ -109,7 +109,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object mesh: TFreeForm
+    object mesh: TGLFreeForm
       Scale.Coordinates = {CDCCCC3ECDCCCC3ECDCCCC3E00000000}
       NormalsOrientation = mnoInvert
       EffectsData = {0201060F54474C424578706C6F73696F6E46580200}

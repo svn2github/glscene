@@ -106,7 +106,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 288
     Top = 48
-    object Cube1: TCube
+    object Cube1: TGLCube
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Compression = tcNone

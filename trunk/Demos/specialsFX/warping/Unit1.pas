@@ -6,7 +6,7 @@
    somewhere in the image to define the warp point.<br>
    You may use the menu to adjust or choose the effect.<p>
 
-   This sample displays an image with the help of a single THeightField used
+   This sample displays an image with the help of a single TGLHeightField used
    as a convenient way to specify texture coordinates. The camera is in
    orthogonal mode and adjusted along with the viewer to a ratio of 1:1.<p>
 
@@ -35,7 +35,7 @@ type
     GLSceneViewer: TGLSceneViewer;
     GLScene: TGLScene;
     GLCamera: TGLCamera;
-    HeightField: THeightField;
+    HeightField: TGLHeightField;
     MIQuality: TMenuItem;
     N1toomuch1: TMenuItem;
     N4highquality1: TMenuItem;

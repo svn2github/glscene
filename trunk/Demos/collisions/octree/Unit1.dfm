@@ -108,16 +108,16 @@ object Form1: TForm1
       Specular.Color = {0000803F00000000000000000000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
-      object FreeForm1: TFreeForm
+      object FreeForm1: TGLFreeForm
         Direction.Coordinates = {000000000000803F0000000000000000}
         Scale.Coordinates = {CDCCCC3DCDCCCC3DCDCCCC3D00000000}
         Up.Coordinates = {00000000000000000000803F00000000}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       end
     end
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
@@ -125,7 +125,7 @@ object Form1: TForm1
       Radius = 0.300000011920929
       Slices = 6
       Stacks = 6
-      object ArrowLine1: TArrowLine
+      object ArrowLine1: TGLArrowLine
         Position.Coordinates = {0000000000000000CDCCCC3D0000803F}
         Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3F9A99193F}
         Material.FrontProperties.Emission.Color = {1283803E1283803E000000000000803F}

@@ -25,20 +25,20 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 8
     Top = 8
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
       BehavioursData = {
         0201060B54474C42496E657274696102000200050000000000000080FF3F0200
         080500000000000000B405400500000000000000000000050000000000000000
         000009020008020008}
-      object DirectOpenGL1: TDirectOpenGL
+      object DirectOpenGL1: TGLDirectOpenGL
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         UseBuildList = False
         OnRender = DirectOpenGL1Render
       end
     end
-    object Torus1: TTorus
+    object Torus1: TGLTorus
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}

@@ -33,7 +33,7 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
-    Plane1: TPlane;
+    Plane1: TGLPlane;
     GLCamera1: TGLCamera;
     GLMaterialLibrary1: TGLMaterialLibrary;
     Image1: TImage;

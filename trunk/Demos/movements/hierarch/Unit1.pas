@@ -1,12 +1,12 @@
 {: This Form demonstrates basic "hierarchical" movements.<p>
 
-	Our visible (cube) objects are children of TDummyCube object and we move
+	Our visible (cube) objects are children of TGLDummyCube object and we move
 	them through rotations of the DummyCubes.<br>
 	Movements in this demo differs from the "manual" demo : "earth" now spins,
 	"moon" has an inclined orbit and spins too.<p>
 
 	You may use any GLScene object when building hierarchical scenes, but it
-	is recommended to use TDummyCube for structural (regroupment only) objects,
+	is recommended to use TGLDummyCube for structural (regroupment only) objects,
 	since dummycube are just "virtual" at run-time and cost no OpenGL setup or
 	rendering time.
 }
@@ -23,15 +23,15 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     TrackBar: TTrackBar;
-    Cube1: TCube;
-    Cube3: TCube;
-    Cube2: TCube;
+    Cube1: TGLCube;
+    Cube3: TGLCube;
+    Cube2: TGLCube;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     CBPlay: TCheckBox;
     StaticText1: TStaticText;
-    DummyCube1: TDummyCube;
-    DummyCube2: TDummyCube;
+    DummyCube1: TGLDummyCube;
+    DummyCube2: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     procedure TrackBarChange(Sender: TObject);
     procedure FormResize(Sender: TObject);

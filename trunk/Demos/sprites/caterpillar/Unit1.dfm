@@ -30,10 +30,10 @@ object Form1: TForm1
     ObjectsSorting = osRenderFarthestFirst
     Left = 8
     Top = 24
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       ObjectsSorting = osNone
       CubeSize = 1
-      object Sprite2: TSprite
+      object Sprite2: TGLSprite
         Position.Coordinates = {0000A04000000000000000000000803F}
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'BlueBall'
@@ -42,7 +42,7 @@ object Form1: TForm1
         NoZWrite = True
       end
     end
-    object Sprite1: TSprite
+    object Sprite1: TGLSprite
       Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
       Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}

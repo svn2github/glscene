@@ -55,11 +55,11 @@ object Form1: TForm1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       Position.Coordinates = {000000000000803F000000000000803F}
       CubeSize = 1
     end
-    object RevolutionSolid1: TRevolutionSolid
+    object RevolutionSolid1: TGLRevolutionSolid
       Direction.Coordinates = {2EBDFBB3000000000000803F00000000}
       Material.FrontProperties.Diffuse.Color = {0000803F8180003FC9C8C83E0000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -85,7 +85,7 @@ object Form1: TForm1
       Division = 9
       SplineMode = lsmCubicSpline
       Slices = 19
-      object Candle: TCylinder
+      object Candle: TGLCylinder
         Position.Coordinates = {000000000000A03F9A99993F0000803F}
         Material.FrontProperties.Diffuse.Color = {F1F0703FCBCA4A3FCBCA4A3F0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -94,7 +94,7 @@ object Form1: TForm1
         Slices = 12
         Stacks = 1
         TopRadius = 0.200000002980232
-        object Lines1: TLines
+        object Lines1: TGLLines
           Position.Coordinates = {000000006666663F000000000000803F}
           LineColor.Color = {A9A5253FB1A8283EB1A8283E0000803F}
           LineWidth = 2
@@ -117,10 +117,10 @@ object Form1: TForm1
             0201060A54474C4246697265465802000610474C4669726546584D616E616765
             7231}
         end
-        object DummyCube2: TDummyCube
+        object DummyCube2: TGLDummyCube
           Direction.Coordinates = {F204353F00000000F40435BF00000000}
           CubeSize = 1
-          object Plane1: TPlane
+          object Plane1: TGLPlane
             Direction.Coordinates = {000000000000803F2CBD3BB300000000}
             Position.Coordinates = {0000C03FA4703DBF000000000000803F}
             Up.Coordinates = {000000B32FBD3BB3000080BF00000000}

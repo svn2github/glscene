@@ -26,7 +26,7 @@ type
     GLSDLViewer1: TGLSDLViewer;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    Teapot1: TTeapot;
+    Teapot1: TGLTeapot;
     procedure DataModuleCreate(Sender: TObject);
     procedure GLSDLViewer1EventPollDone(Sender: TObject);
     procedure GLSDLViewer1Resize(Sender: TObject);

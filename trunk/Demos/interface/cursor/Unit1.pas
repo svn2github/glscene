@@ -3,7 +3,7 @@
    This sample is a very basic picture viewer, using OpenGL for displaying
    images and maintaining a cursor with alpha-blended trail.<p>
 
-   THUDSprite objects are used to display the bitmap and the cursor/trail. The
+   TGLHUDSprite objects are used to display the bitmap and the cursor/trail. The
    cursor/trail bitmaps share a single material stored in the material library.<p>
 
    The trail uses a particle-system component to track trail bitmaps, each time
@@ -31,16 +31,16 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLParticles1: TGLParticles;
-    HSBitmap: THUDSprite;
+    HSBitmap: TGLHUDSprite;
     StatusBar1: TStatusBar;
     MainMenu1: TMainMenu;
     MIFile: TMenuItem;
     MILoadImage: TMenuItem;
     OpenPictureDialog1: TOpenPictureDialog;
-    HSCursor: THUDSprite;
+    HSCursor: TGLHUDSprite;
     GLCadencer1: TGLCadencer;
     Bevel1: TBevel;
-    HSParticle: THUDSprite;
+    HSParticle: TGLHUDSprite;
     GLMaterialLibrary1: TGLMaterialLibrary;
     Timer1: TTimer;
     O1: TMenuItem;
@@ -140,7 +140,7 @@ end;
 procedure TForm1.HSParticleProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-   with (Sender as THUDSprite) do begin
+   with (Sender as TGLHUDSprite) do begin
       // decrease life time / alpha
       TagFloat:=TagFloat-deltaTime;
       // update alpha channel, but if no more life is left, then suicide
@@ -153,7 +153,7 @@ end;
 procedure TForm1.GLParticles1ActivateParticle(Sender: TObject;
   particle: TGLBaseSceneObject);
 begin
-   with (particle as THUDSprite) do begin
+   with (particle as TGLHUDSprite) do begin
       // we are cadencing real-time, so these are 5 seconds
       TagFloat:=5;
       // new particle stands where cursor is

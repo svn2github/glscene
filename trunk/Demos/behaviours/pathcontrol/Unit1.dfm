@@ -50,10 +50,10 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 40
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 2
       VisibleAtRunTime = True
-      object Cube2: TCube
+      object Cube2: TGLCube
         Position.Coordinates = {0000404000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {8786063F8786063F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {0000000000000000A1A0203F0000803F}
@@ -66,7 +66,7 @@ object Form1: TForm1
       Position.Coordinates = {0000204100000000000020410000803F}
       SpotCutOff = 180
     end
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       Position.Coordinates = {0000004500002042008009450000803F}
       Scale.Coordinates = {0000A0400000A0400000A04000000000}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}

@@ -38,10 +38,10 @@ object Form1: TForm1
       Position.Coordinates = {0000FA430000FAC3000048440000803F}
       SpotCutOff = 180
     end
-    object Container: TDummyCube
+    object Container: TGLDummyCube
       CubeSize = 100
     end
-    object CameraTarget: TDummyCube
+    object CameraTarget: TGLDummyCube
       CubeSize = 1
     end
     object Camera: TGLCamera

@@ -1,6 +1,6 @@
-{: Sample showing use of TSprite for "caterpillar" effect.<p>
+{: Sample showing use of TGLSprite for "caterpillar" effect.<p>
 
-	A bunch of TSprite is created in FormCreate, all copied from Sprite2 (used
+	A bunch of TGLSprite is created in FormCreate, all copied from Sprite2 (used
 	as "template"), then we move and resize them as they orbit a pulsating "star".<br>
 	Textures are loaded from a "flare1.bmp" file that is expected to be in the
 	same directory as the compiled EXE.<p>
@@ -31,10 +31,10 @@ type
   TForm1 = class(TForm)
 	 GLScene1: TGLScene;
 	 GLSceneViewer1: TGLSceneViewer;
-	 DummyCube1: TDummyCube;
+	 DummyCube1: TGLDummyCube;
     GLCamera1: TGLCamera;
-    Sprite1: TSprite;
-    Sprite2: TSprite;
+    Sprite1: TGLSprite;
+    Sprite2: TGLSprite;
     GLMaterialLibrary1: TGLMaterialLibrary;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
@@ -62,7 +62,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
 	picName : String;
 	i : Integer;
-	spr : TSprite;
+	spr : TGLSprite;
 begin
 	// Load texture for sprite2, this is the hand-coded way using a PersistentImage
 	// Sprite1 uses a PicFileImage, and so the image is automagically loaded by
@@ -72,7 +72,7 @@ begin
 	GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile(picName);
 	// New sprites are created by duplicating the template "sprite2"
 	for i:=1 to 9 do begin
-		spr:=TSprite(DummyCube1.AddNewChild(TSprite));
+		spr:=TGLSprite(DummyCube1.AddNewChild(TGLSprite));
 		spr.Assign(sprite2);
 	end;
 end;
@@ -91,7 +91,7 @@ begin
 	// rotate the sprites around the yellow "star"
 	for i:=0 to DummyCube1.Count-1 do begin
 		a:=DegToRad(aBase+i*8);
-		with (DummyCube1.Children[i] as TSprite) do begin
+		with (DummyCube1.Children[i] as TGLSprite) do begin
          // rotation movement
 			Position.X:=4*cos(a);
 			Position.Z:=4*sin(a);

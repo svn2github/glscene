@@ -54,10 +54,10 @@ object Form1: TForm1
       Position.Coordinates = {0000A0410000A0410000A0410000803F}
       SpotCutOff = 180
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
     end
-    object Sphere1: TSphere
+    object Sphere1: TGLSphere
       Position.Coordinates = {0000000000000000000000400000803F}
       Material.FrontProperties.Diffuse.Color = {8A8F0F3FBEBC3C3F8A8F0F3F0000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -66,7 +66,7 @@ object Form1: TForm1
         0201060D54474C42436F6C6C6973696F6E02010611436F6C6C6973696F6E4D61
         6E616765723102010200}
     end
-    object Sphere2: TSphere
+    object Sphere2: TGLSphere
       Material.FrontProperties.Diffuse.Color = {00000000F8FEFE3E0000803F0000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       Radius = 0.5

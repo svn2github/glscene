@@ -27,16 +27,16 @@ type
   TForm1 = class(TForm)
     GLSceneViewer1: TGLSceneViewer;
     GLScene1: TGLScene;
-    DCShadowing: TDummyCube;
+    DCShadowing: TGLDummyCube;
     GLLightSource1: TGLLightSource;
-    Cube1: TCube;
-    Sphere1: TSphere;
+    Cube1: TGLCube;
+    Sphere1: TGLSphere;
     GLCamera1: TGLCamera;
     GLCadencer1: TGLCadencer;
-    DCLight: TDummyCube;
-    Sphere2: TSphere;
-    Torus1: TTorus;
-    DCCameraTarget: TDummyCube;
+    DCLight: TGLDummyCube;
+    Sphere2: TGLSphere;
+    Torus1: TGLTorus;
+    DCCameraTarget: TGLDummyCube;
     GLShadowPlane1: TGLShadowPlane;
     Timer1: TTimer;
     Panel1: TPanel;

@@ -34,7 +34,7 @@ type
 	 GLScene1: TGLScene;
 	 GLSceneViewer1: TGLSceneViewer;
 	 GLCamera1: TGLCamera;
-	 DummyCube1: TDummyCube;
+	 DummyCube1: TGLDummyCube;
 	 StaticText1: TStaticText;
 	 Timer1: TTimer;
     GLCadencer1: TGLCadencer;
@@ -64,12 +64,12 @@ const
 procedure TForm1.FormCreate(Sender: TObject);
 var
 	i : Integer;
-	plane : TPlane;
+	plane : TGLPlane;
 begin
 	// our column is just a stack of planes
 	for i:=0 to cNbPlanes-1 do begin
 		// create planes as child of the dummycube
-		plane:=TPlane(DummyCube1.AddNewChild(TPlane));
+		plane:=TGLPlane(DummyCube1.AddNewChild(TGLPlane));
 		// default plane size is 1x1, we want bigger planes !
 		plane.Width:=2;
 		plane.Height:=2;
@@ -90,7 +90,7 @@ begin
 	// for all planes (all childs of the dummycube)
 	for i:=0 to DummyCube1.Count-1 do
 		// roll them accordingly to our time reference and position in the stack
-		(DummyCube1.Children[i] as TPlane).RollAngle:=90*cos(newTime+i*PI/cNbPlanes);
+		(DummyCube1.Children[i] as TGLPlane).RollAngle:=90*cos(newTime+i*PI/cNbPlanes);
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);

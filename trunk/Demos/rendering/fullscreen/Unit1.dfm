@@ -13,11 +13,11 @@ object DataModule1: TDataModule1
       Position.Coordinates = {0000484200004842000048420000803F}
       SpotCutOff = 180
     end
-    object Teapot1: TTeapot
+    object Teapot1: TGLTeapot
       Material.Texture.ImageClassName = 'TGLBlankImage'
       Material.Texture.TextureMode = tmReplace
     end
-    object DCBlueLight: TDummyCube
+    object DCBlueLight: TGLDummyCube
       Direction.Coordinates = {3ACD133F3ACD133F3ACD133F00000000}
       Up.Coordinates = {EB05D1BEEB05513FEB05D1BE00000000}
       CubeSize = 1

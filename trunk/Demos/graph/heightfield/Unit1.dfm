@@ -159,7 +159,7 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 16
-    object HeightField1: THeightField
+    object HeightField1: TGLHeightField
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
@@ -169,7 +169,7 @@ object Form1: TForm1
       YSamplingScale.Min = -1
       YSamplingScale.Max = 1
       YSamplingScale.Step = 0.0799999982118607
-      object Sphere1: TSphere
+      object Sphere1: TGLSphere
         Position.Coordinates = {0000803F0000803F000000000000803F}
         Visible = False
         OnProgress = Sphere1Progress
@@ -178,7 +178,7 @@ object Form1: TForm1
         Radius = 0.100000001490116
         Slices = 12
         Stacks = 9
-        object Lines1: TLines
+        object Lines1: TGLLines
           Nodes = <
             item
             end

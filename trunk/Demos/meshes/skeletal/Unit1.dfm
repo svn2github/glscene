@@ -149,7 +149,7 @@ object Form1: TForm1
       Position.Coordinates = {0000C8420000C8420000C8420000803F}
       SpotCutOff = 180
     end
-    object Actor1: TActor
+    object Actor1: TGLActor
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {0000003F0000003F0000003F00000000}
       Up.Coordinates = {0000000000000080000080BF00000000}
@@ -163,10 +163,10 @@ object Form1: TForm1
       MaterialLibrary = GLMaterialLibrary1
       OverlaySkeleton = False
     end
-    object DummyCube1: TDummyCube
+    object DummyCube1: TGLDummyCube
       CubeSize = 1
     end
-    object XYZGrid1: TXYZGrid
+    object XYZGrid1: TGLXYZGrid
       Position.Coordinates = {00000000000090C1000000000000803F}
       LineColor.Color = {1283803E1283003F1283003F0000803F}
       XSamplingScale.Min = -12
