@@ -837,7 +837,7 @@ type
 
       db $0F,$6F,$0A           /// movq        mm1, [edx]
       db $0F,$6F,$11           /// movq        mm2, [ecx]
-
+{
       db $0F,$6F,$D9           /// movq        mm3, mm1
       db $0F,$6F,$E2           /// movq        mm4, mm2
 
@@ -854,7 +854,7 @@ type
       db $0F,$71,$D1,$02       /// psrlw       mm1, 2            // divide by 4
       db $0F,$67,$C9           /// packuswb    mm1, mm1          // reduce to 8 bits and store point
       db $0F,$7E,$08           /// movd        [eax], mm1
-
+}
       add         edx, 8
       add         ecx, 8
       add         eax, 4
