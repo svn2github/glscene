@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/07/03 - EG - Style changes and cleanups
       <li>19/06/03 - MF - Added GenerateSilhouette to TGLCube and TGLPlane.
       <li>13/06/03 - EG - Fixed TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
       <li>03/06/03 - EG - Added TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
@@ -199,8 +200,8 @@ type
 
 		protected
 			{ Protected Declarations }
-		   procedure SetHeight(AValue: TGLFloat);
-		   procedure SetWidth(AValue: TGLFloat);
+		   procedure SetHeight(const aValue : Single);
+		   procedure SetWidth(const aValue : Single);
 		   procedure SetXOffset(const Value: TGLFloat);
 		   procedure SetXScope(const Value: TGLFloat);
          function  StoreXScope : Boolean;
@@ -621,11 +622,11 @@ type
          FCubeSize : TAffineVector;
          FParts : TCubeParts;
          FNormalDirection : TNormalDirection;
-         procedure SetCubeWidth(AValue: TGLFloat);
-         procedure SetCubeHeight(AValue: TGLFloat);
-         procedure SetCubeDepth(AValue: TGLFloat);
-         procedure SetParts(AValue: TCubeParts);
-         procedure SetNormalDirection(AValue: TNormalDirection);
+         procedure SetCubeWidth(const aValue : Single);
+         procedure SetCubeHeight(const aValue : Single);
+         procedure SetCubeDepth(const aValue : Single);
+         procedure SetParts(aValue: TCubeParts);
+         procedure SetNormalDirection(aValue: TNormalDirection);
 
       protected
 			{ Protected Declarations }
@@ -678,12 +679,12 @@ type
          FApexHeight, FBaseDepth, FBaseWidth, FHeight: TGLFloat;
          FParts: TFrustrumParts;
          FNormalDirection: TNormalDirection;
-         procedure SetApexHeight(AValue: TGLFloat);
-         procedure SetBaseDepth(AValue: TGLFloat);
-         procedure SetBaseWidth(AValue: TGLFloat);
-         procedure SetHeight(AValue: TGLFloat);
-         procedure SetParts(AValue: TFrustrumParts);
-         procedure SetNormalDirection(AValue: TNormalDirection);
+         procedure SetApexHeight(const aValue : Single);
+         procedure SetBaseDepth(const aValue : Single);
+         procedure SetBaseWidth(const aValue : Single);
+         procedure SetHeight(const aValue : Single);
+         procedure SetParts(aValue: TFrustrumParts);
+         procedure SetNormalDirection(aValue: TNormalDirection);
 
       protected
 			{ Protected Declarations }
@@ -767,15 +768,15 @@ type
          FStart   : TAngleLimit2;
          FStop    : TAngleLimit2;
          FTopCap, FBottomCap : TCapType;
-         procedure SetBottom(AValue: TAngleLimit1);
-         procedure SetBottomCap(AValue: TCapType);
+         procedure SetBottom(aValue: TAngleLimit1);
+         procedure SetBottomCap(aValue: TCapType);
          procedure SetRadius(const aValue : TGLFloat);
-         procedure SetSlices(AValue: TGLInt);
-         procedure SetStart(AValue: TAngleLimit2);
-         procedure SetStop(AValue: TAngleLimit2);
-         procedure SetStacks(AValue: TGLInt);
-         procedure SetTop(AValue: TAngleLimit1);
-         procedure SetTopCap(AValue: TCapType);
+         procedure SetSlices(aValue: TGLInt);
+         procedure SetStart(aValue: TAngleLimit2);
+         procedure SetStop(aValue: TAngleLimit2);
+         procedure SetStacks(aValue : TGLInt);
+         procedure SetTop(aValue: TAngleLimit1);
+         procedure SetTopCap(aValue: TCapType);
 
       public
          { Public Declarations }
@@ -813,12 +814,12 @@ type
          { Private Declarations }
          FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius : TGLFloat;
          FSlices, FLoops : TGLInt;
-         procedure SetOuterRadius(AValue: TGLFloat);
-         procedure SetInnerRadius(AValue: TGLFloat);
-         procedure SetSlices(AValue: TGLInt);
-         procedure SetLoops(AValue: TGLInt);
-         procedure SetStartAngle(AValue: TGLFloat);
-         procedure SetSweepAngle(AValue: TGLFloat);
+         procedure SetOuterRadius(const aValue : Single);
+         procedure SetInnerRadius(const aValue : Single);
+         procedure SetSlices(aValue: TGLInt);
+         procedure SetLoops(aValue: TGLInt);
+         procedure SetStartAngle(const aValue : Single);
+         procedure SetSweepAngle(const aValue : Single);
 
       public
          { Public Declarations }
@@ -864,11 +865,11 @@ type
 
 		protected
 			{ Protected Declarations }
-			procedure SetBottomRadius(AValue: TGLFloat);
-			procedure SetHeight(AValue: TGLFloat);
-			procedure SetSlices(AValue: TGLInt);
-			procedure SetStacks(AValue: TGLInt);
-			procedure SetLoops(AValue: TGLInt);
+			procedure SetBottomRadius(const aValue : Single);
+			procedure SetHeight(const aValue : Single);
+			procedure SetSlices(aValue: TGLInt);
+			procedure SetStacks(aValue: TGLInt);
+			procedure SetLoops(aValue: TGLInt);
 
 		public
 			{ Public Declarations }
@@ -901,7 +902,7 @@ type
 
 		protected
 			{ Protected Declarations }
-			procedure SetParts(AValue: TConeParts);
+			procedure SetParts(aValue: TConeParts);
 
 		public
 			{ Public Declarations }
@@ -938,7 +939,7 @@ type
 
 		protected
 			{ Protected Declarations }
-			procedure SetTopRadius(aValue : TGLFloat);
+			procedure SetTopRadius(const aValue : Single);
 			procedure SetParts(aValue : TCylinderParts);
          procedure SetAlignment(val : TCylinderAlignment);
 
@@ -982,10 +983,10 @@ type
 
       protected
 			{ Protected Declarations }
-         procedure SetTopRadius(AValue: TGLFloat);
-         procedure SetTopInnerRadius(AValue: TGLFloat);
-         procedure SetBottomInnerRadius(AValue: TGLFloat);
-         procedure SetParts(AValue:TAnnulusParts);
+         procedure SetTopRadius(const aValue : Single);
+         procedure SetTopInnerRadius(const aValue : Single);
+         procedure SetBottomInnerRadius(const aValue : Single);
+         procedure SetParts(aValue:TAnnulusParts);
 
       public
 			{ Public Declarations }
@@ -1017,9 +1018,9 @@ type
 
       protected
 			{ Protected Declarations }
-         procedure SetMajorRadius(const AValue: Single);
-         procedure SetMinorRadius(const AValue: Single);
-         procedure SetRings(AValue: Cardinal);
+         procedure SetMajorRadius(const aValue: Single);
+         procedure SetMinorRadius(const aValue: Single);
+         procedure SetRings(aValue: Cardinal);
          procedure SetSides(aValue : Cardinal);
 
       public
@@ -1076,21 +1077,21 @@ type
       private
          { Private Declarations}
          fParts: TArrowLineParts;
-         fTopRadius:TGLFloat;
-         fTopArrowHeadHeight:TGLFloat;
-         fTopArrowHeadRadius:TGLFloat;
-         fBottomArrowHeadHeight:TGLFloat;
-         fBottomArrowHeadRadius:TGLFloat;
+         fTopRadius: Single;
+         fTopArrowHeadHeight: Single;
+         fTopArrowHeadRadius: Single;
+         fBottomArrowHeadHeight: Single;
+         fBottomArrowHeadRadius: Single;
          FHeadStackingStyle : TArrowHeadStackingStyle;
 
       protected
          { Protected Declarations}
-         procedure SetTopRadius(AValue:TGLFloat);
-         procedure SetTopArrowHeadHeight(AValue:TGLFloat);
-         procedure SetTopArrowHeadRadius(AValue:TGLFloat);
-         procedure SetBottomArrowHeadHeight(AValue:TGLFloat);
-         procedure SetBottomArrowHeadRadius(AValue:TGLFloat);
-         procedure SetParts(AValue:TArrowLineParts);
+         procedure SetTopRadius(const aValue : Single);
+         procedure SetTopArrowHeadHeight(const aValue : Single);
+         procedure SetTopArrowHeadRadius(const aValue : Single);
+         procedure SetBottomArrowHeadHeight(const aValue : Single);
+         procedure SetBottomArrowHeadRadius(const aValue : Single);
+         procedure SetParts(aValue:TArrowLineParts);
          procedure SetHeadStackingStyle(const val : TArrowHeadStackingStyle);
 
       public
@@ -1616,10 +1617,10 @@ end;
 
 // SetWidth
 //
-procedure TGLPlane.SetWidth(AValue : TGLFloat);
+procedure TGLPlane.SetWidth(const aValue : Single);
 begin
-   if AValue<>FWidth then begin
-      FWidth:=AValue;
+   if aValue<>FWidth then begin
+      FWidth:=aValue;
 	   StructureChanged;
    end;
 end;
@@ -1658,10 +1659,10 @@ end;
 
 // SetHeight
 //
-procedure TGLPlane.SetHeight(AValue:TGLFloat);
+procedure TGLPlane.SetHeight(const aValue : Single);
 begin
-   if AValue<>FHeight then begin
-      FHeight:=AValue;
+   if aValue<>FHeight then begin
+      FHeight:=aValue;
       StructureChanged;
    end;
 end;
@@ -2922,50 +2923,50 @@ end;
 
 // SetCubeWidth
 //
-procedure TGLCube.SetCubeWidth(AValue : TGLFloat);
+procedure TGLCube.SetCubeWidth(const aValue : Single);
 begin
-   if AValue<>FCubeSize[0] then begin
-      FCubeSize[0]:=AValue;
+   if aValue<>FCubeSize[0] then begin
+      FCubeSize[0]:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetCubeHeight
 //
-procedure TGLCube.SetCubeHeight(AValue:TGLFloat);
+procedure TGLCube.SetCubeHeight(const aValue : Single);
 begin
-   if AValue<>FCubeSize[1] then begin
-      FCubeSize[1]:=AValue;
+   if aValue<>FCubeSize[1] then begin
+      FCubeSize[1]:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetCubeDepth
 //
-procedure TGLCube.SetCubeDepth(AValue: TGLFloat);
+procedure TGLCube.SetCubeDepth(const aValue : Single);
 begin
-   if AValue<>FCubeSize[2] then begin
-      FCubeSize[2]:=AValue;
+   if aValue<>FCubeSize[2] then begin
+      FCubeSize[2]:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetParts
 //
-procedure TGLCube.SetParts(AValue:TCubeParts);
+procedure TGLCube.SetParts(aValue:TCubeParts);
 begin
-   if AValue<>FParts then begin
-      FParts:=AValue;
+   if aValue<>FParts then begin
+      FParts:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetNormalDirection
 //
-procedure TGLCube.SetNormalDirection(AValue: TNormalDirection);
+procedure TGLCube.SetNormalDirection(aValue: TNormalDirection);
 begin
-   if AValue<>FNormalDirection then begin
-      FNormalDirection:=AValue;
+   if aValue<>FNormalDirection then begin
+      FNormalDirection:=aValue;
       StructureChanged;
    end;
 end;
@@ -3160,60 +3161,60 @@ begin
   glEnd;
 end;
 
-procedure TGLFrustrum.SetApexHeight(AValue: TGLFloat);
+procedure TGLFrustrum.SetApexHeight(const aValue : Single);
 begin
-  if (AValue <> FApexHeight) and (AValue >= 0) then
+  if (aValue <> FApexHeight) and (aValue >= 0) then
   begin
-    FApexHeight := AValue;
-    if FHeight > AValue then
-      FHeight := AValue;
+    FApexHeight := aValue;
+    if FHeight > aValue then
+      FHeight := aValue;
     StructureChanged;
   end;
 end;
 
-procedure TGLFrustrum.SetBaseDepth(AValue: TGLFloat);
+procedure TGLFrustrum.SetBaseDepth(const aValue : Single);
 begin
-  if (AValue <> FBaseDepth) and (AValue >= 0) then
+  if (aValue <> FBaseDepth) and (aValue >= 0) then
   begin
-    FBaseDepth := AValue;
+    FBaseDepth := aValue;
     StructureChanged;
   end;
 end;
 
-procedure TGLFrustrum.SetBaseWidth(AValue: TGLFloat);
+procedure TGLFrustrum.SetBaseWidth(const aValue : Single);
 begin
-  if (AValue <> FBaseWidth) and (AValue >= 0) then
+  if (aValue <> FBaseWidth) and (aValue >= 0) then
   begin
-    FBaseWidth := AValue;
+    FBaseWidth := aValue;
     StructureChanged;
   end;
 end;
 
-procedure TGLFrustrum.SetHeight(AValue: TGLFloat);
+procedure TGLFrustrum.SetHeight(const aValue : Single);
 begin
-  if (AValue <> FHeight) and (AValue >= 0) then
+  if (aValue <> FHeight) and (aValue >= 0) then
   begin
-    FHeight := AValue;
-    if FApexHeight < AValue then
-      FApexHeight := AValue;
+    FHeight := aValue;
+    if FApexHeight < aValue then
+      FApexHeight := aValue;
     StructureChanged;
   end;
 end;
 
-procedure TGLFrustrum.SetParts(AValue: TFrustrumParts);
+procedure TGLFrustrum.SetParts(aValue: TFrustrumParts);
 begin
-  if AValue <> FParts then
+  if aValue <> FParts then
   begin
-    FParts := AValue;
+    FParts := aValue;
     StructureChanged;
   end;
 end;
 
-procedure TGLFrustrum.SetNormalDirection(AValue: TNormalDirection);
+procedure TGLFrustrum.SetNormalDirection(aValue: TNormalDirection);
 begin
-  if AValue <> FNormalDirection then
+  if aValue <> FNormalDirection then
   begin
-    FNormalDirection := AValue;
+    FNormalDirection := aValue;
     StructureChanged;
   end;
 end;
@@ -3272,23 +3273,25 @@ begin
   end;
 end;
 
-//----------------- TGLQuadricObject ---------------------------------------------
+// ------------------
+// ------------------ TGLQuadricObject ------------------
+// ------------------
 
 // Create
 //
 constructor TGLQuadricObject.Create(AOwner : TComponent);
 begin
-  inherited;
-  FNormals:=nsSmooth;
-  FNormalDirection:=ndOutside;
+   inherited;
+   FNormals:=nsSmooth;
+   FNormalDirection:=ndOutside;
 end;
 
 // SetNormals
 //
 procedure TGLQuadricObject.SetNormals(aValue : TNormalSmoothing);
 begin
-	if AValue<>FNormals then begin
-		FNormals:=AValue;
+	if aValue<>FNormals then begin
+		FNormals:=aValue;
 		StructureChanged;
 	end;
 end;
@@ -3297,8 +3300,8 @@ end;
 //
 procedure TGLQuadricObject.SetNormalDirection(aValue : TNormalDirection);
 begin
-	if AValue<>FNormalDirection then begin
-		FNormalDirection:=AValue;
+	if aValue<>FNormalDirection then begin
+		FNormalDirection:=aValue;
 		StructureChanged;
   	end;
 end;
@@ -3309,17 +3312,11 @@ procedure TGLQuadricObject.SetupQuadricParams(quadric : PGLUquadricObj);
 const
    cNormalSmoothinToEnum : array [nsFlat..nsNone] of TGLEnum = (
          GLU_FLAT, GLU_SMOOTH, GLU_NONE );
-var
-	withTexture : Boolean;
 begin
 	gluQuadricDrawStyle(Quadric, GLU_FILL);
 	gluQuadricNormals(Quadric, cNormalSmoothinToEnum[FNormals]);
    SetNormalQuadricOrientation(Quadric);
-{ TODO : things don't look that good here... we'll have to check it. }
-	{WithTexture:=(stTexture1D in Scene.CurrentStates) or
-					(stTexture2D in Scene.CurrentStates);}
-	WithTexture:=True;
-	gluQuadricTexture(Quadric, WithTexture);
+	gluQuadricTexture(Quadric, True);
 end;
 
 // SetNormalQuadricOrientation
@@ -3353,7 +3350,9 @@ begin
    inherited Assign(Source);
 end;
 
-//----------------- TGLSphere ----------------------------------------------------
+// ------------------
+// ------------------ TGLSphere ------------------
+// ------------------
 
 // Create
 //
@@ -3542,22 +3541,22 @@ end;
 
 // SetBottom
 //
-procedure TGLSphere.SetBottom(AValue: TAngleLimit1);
+procedure TGLSphere.SetBottom(aValue: TAngleLimit1);
 begin
-   if FBottom<>AValue then begin
-      FBottom:=AValue;
+   if FBottom<>aValue then begin
+      FBottom:=aValue;
       StructureChanged;
    end;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TGLSphere.SetBottomCap(AValue: TCapType);
+procedure TGLSphere.SetBottomCap(aValue: TCapType);
 
 begin
-  if FBottomCap<>AValue then
+  if FBottomCap<>aValue then
   begin
-    FBottomCap:=AValue;
+    FBottomCap:=aValue;
     StructureChanged;
   end;
 end;
@@ -3572,114 +3571,101 @@ begin
    end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.SetSlices(AValue:TGLInt);
-
-begin
-  if AValue<>FSlices then
-  begin
-    FSlices:=AValue;
-    if FSlices = 0 then FSlices:=1;
-    StructureChanged;
-  end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.SetStacks(AValue:TGLInt);
-
-begin
-  if AValue<>FStacks then
-  begin
-    FStacks:=AValue;
-    if FStacks = 0 then FStacks:=1;
-    StructureChanged;
-  end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.SetStart(AValue: TAngleLimit2);
-begin
-   if FStart<>AValue then begin
-      Assert(AValue <= FStop);
-      FStart:=AValue;
-      StructureChanged;
-   end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.SetStop(AValue: TAngleLimit2);
-begin
-   if FStop<>AValue then begin
-      Assert(AValue >= FStart);
-      FStop:=AValue;
-      StructureChanged;
-   end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.SetTop(AValue: TAngleLimit1);
-begin
-   if FTop<>AValue then begin
-      FTop:=AValue;
-      StructureChanged;
-   end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.SetTopCap(AValue: TCapType);
-
-begin
-  if FTopCap<>AValue then
-  begin
-    FTopCap:=AValue;
-    StructureChanged;
-  end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLSphere.Assign(Source:TPersistent);
-
-begin
-  if assigned(Source) and (Source is TGLSphere) then
-  begin
-    FRadius:=TGLSphere(Source).FRadius;
-    FSlices:=TGLSphere(Source).FSlices;
-    FStacks:=TGLSphere(Source).FStacks;
-    FBottom:=TGLSphere(Source).FBottom;
-    FTop:=TGLSphere(Source).FTop;
-    FStart:=TGLSphere(Source).FStart;
-    FStop:=TGLSphere(Source).FStop;
-  end;
-  inherited Assign(Source);
-end;
-
-// AxisAlignedDimensions
+// SetSlices
 //
-{function TGLSphere.AxisAlignedDimensions : TVector;
-// ToDo: take bottom and top into account
+procedure TGLSphere.SetSlices(aValue : Integer);
 begin
-   VectorScale(Scale.AsVector, Abs(FRadius), Result);
+   if aValue<>FSlices then begin
+      if aValue<=0 then
+         FSlices:=1
+      else FSlices:=aValue;
+      StructureChanged;
+  end;
 end;
-}
+
+// SetStacks
+//
+procedure TGLSphere.SetStacks(aValue : TGLInt);
+begin
+   if aValue<>FStacks then begin
+      if aValue<=0 then
+         FStacks:=1
+      else FStacks:=aValue;
+      StructureChanged;
+   end;
+end;
+
+// SetStart
+//
+procedure TGLSphere.SetStart(aValue: TAngleLimit2);
+begin
+   if FStart<>aValue then begin
+      Assert(aValue <= FStop);
+      FStart:=aValue;
+      StructureChanged;
+   end;
+end;
+
+// SetStop
+//
+procedure TGLSphere.SetStop(aValue: TAngleLimit2);
+begin
+   if FStop<>aValue then begin
+      Assert(aValue >= FStart);
+      FStop:=aValue;
+      StructureChanged;
+   end;
+end;
+
+// SetTop
+//
+procedure TGLSphere.SetTop(aValue: TAngleLimit1);
+begin
+   if FTop<>aValue then begin
+      FTop:=aValue;
+      StructureChanged;
+   end;
+end;
+
+// SetTopCap
+//
+procedure TGLSphere.SetTopCap(aValue: TCapType);
+begin
+   if FTopCap<>aValue then begin
+      FTopCap:=aValue;
+      StructureChanged;
+   end;
+end;
+
+// Assign
+//
+procedure TGLSphere.Assign(Source:TPersistent);
+begin
+   if Assigned(Source) and (Source is TGLSphere) then begin
+      FRadius:=TGLSphere(Source).FRadius;
+      FSlices:=TGLSphere(Source).FSlices;
+      FStacks:=TGLSphere(Source).FStacks;
+      FBottom:=TGLSphere(Source).FBottom;
+      FTop:=TGLSphere(Source).FTop;
+      FStart:=TGLSphere(Source).FStart;
+      FStop:=TGLSphere(Source).FStop;
+   end;
+   inherited Assign(Source);
+end;
+
 // AxisAlignedDimensions
 //
 function TGLSphere.AxisAlignedDimensionsUnscaled : TVector;
 begin
    Result[0]:=Abs(FRadius);
-   Result[1]:=Abs(FRadius);
-   Result[2]:=Abs(FRadius);
+   Result[1]:=Result[0];
+   Result[2]:=Result[0];
    Result[3]:=0;
 end;
 
-
-//----------------- TGLDisk ------------------------------------------------------
+// ------------------
+// ------------------ TGLDisk ------------------
+// ------------------
 
 // Create
 //
@@ -3708,72 +3694,62 @@ end;
 
 // SetOuterRadius
 //
-procedure TGLDisk.SetOuterRadius(AValue:TGLFloat);
+procedure TGLDisk.SetOuterRadius(const aValue : Single);
 begin
-   if AValue<>FOuterRadius then begin
-      FOuterRadius:=AValue;
+   if aValue<>FOuterRadius then begin
+      FOuterRadius:=aValue;
       StructureChanged;
    end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLDisk.SetInnerRadius(AValue:TGLFloat);
-
+// SetInnerRadius
+//
+procedure TGLDisk.SetInnerRadius(const aValue : Single);
 begin
-  if AValue<>FInnerRadius then
-  begin
-    FInnerRadius:=AValue;
-    StructureChanged;
-  end;
+   if aValue<>FInnerRadius then begin
+      FInnerRadius:=aValue;
+      StructureChanged;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLDisk.SetSlices(AValue:TGLInt);
-
+// SetSlices
+//
+procedure TGLDisk.SetSlices(aValue : Integer);
 begin
-  if AValue<>FSlices then
-  begin
-    FSlices:=AValue;
-    StructureChanged;
-  end;
+   if aValue<>FSlices then begin
+      FSlices:=aValue;
+      StructureChanged;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLDisk.SetLoops(AValue:TGLInt);
-
+// SetLoops
+//
+procedure TGLDisk.SetLoops(aValue : Integer);
 begin
-  if AValue<>FLoops then
-  begin
-    FLoops:=AValue;
-    StructureChanged;
-  end;
+   if aValue<>FLoops then begin
+      FLoops:=aValue;
+      StructureChanged;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLDisk.SetStartAngle(AValue:TGLFloat);
-
+// SetStartAngle
+//
+procedure TGLDisk.SetStartAngle(const aValue : Single);
 begin
-  if AValue<>FStartAngle then
-  begin
-    FStartAngle:=AValue;
-    StructureChanged;
-  end;
+   if aValue<>FStartAngle then begin
+      FStartAngle:=aValue;
+      StructureChanged;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLDisk.SetSweepAngle(AValue:TGLFloat);
-
+// SetSweepAngle
+//
+procedure TGLDisk.SetSweepAngle(const aValue : Single);
 begin
-  if AValue<>FSweepAngle then
-  begin
-    FSweepAngle:=AValue;
-    StructureChanged;
-  end;
+   if aValue<>FSweepAngle then begin
+      FSweepAngle:=aValue;
+      StructureChanged;
+   end;
 end;
 
 // Assign
@@ -3793,23 +3769,12 @@ end;
 
 // AxisAlignedDimensions
 //
-{function TGLDisk.AxisAlignedDimensions : TVector;
-var
-  r : TGLFloat;
-begin
-   r:=Abs(FOuterRadius);
-   Result:=VectorMake(r*Scale.DirectX, r*Scale.DirectY, 0);
-end;
-}
-
-// AxisAlignedDimensions
-//
 function TGLDisk.AxisAlignedDimensionsUnscaled : TVector;
 var
-  r : TGLFloat;
+   r : TGLFloat;
 begin
    r:=Abs(FOuterRadius);
-   Result:=VectorMake(r{*Scale.DirectX}, r{*Scale.DirectY}, 0);
+   Result:=VectorMake(r, r, 0);
 end;
 
 // RayCastIntersect
@@ -3834,66 +3799,68 @@ begin
    end else Result:=False;
 end;
 
-//----------------- TGLCylinderBase ----------------------------------------------
+// ------------------
+// ------------------ TGLCylinderBase ------------------
+// ------------------
 
 // Create
 //
 constructor TGLCylinderBase.Create(AOwner : TComponent);
 begin
-  inherited Create(AOwner);
-  FBottomRadius:=0.5;
-  FHeight:=1;
-  FSlices:=16;
-  FStacks:=4;
-  FLoops:=1;
+   inherited Create(AOwner);
+   FBottomRadius:=0.5;
+   FHeight:=1;
+   FSlices:=16;
+   FStacks:=4;
+   FLoops:=1;
 end;
 
 // SetBottomRadius
 //
-procedure TGLCylinderBase.SetBottomRadius(AValue : TGLFloat);
+procedure TGLCylinderBase.SetBottomRadius(const aValue : Single);
 begin
-	if AValue<>FBottomRadius then begin
-		FBottomRadius:=AValue;
+	if aValue<>FBottomRadius then begin
+		FBottomRadius:=aValue;
 		StructureChanged;
 	end;
 end;
 
 // SetHeight
 //
-procedure TGLCylinderBase.SetHeight(AValue:TGLFloat);
+procedure TGLCylinderBase.SetHeight(const aValue : Single);
 begin
-	if AValue<>FHeight then begin
-		FHeight:=AValue;
+	if aValue<>FHeight then begin
+		FHeight:=aValue;
 		StructureChanged;
 	end;
 end;
 
 // SetSlices
 //
-procedure TGLCylinderBase.SetSlices(AValue : TGLInt);
+procedure TGLCylinderBase.SetSlices(aValue : TGLInt);
 begin
-	if AValue<>FSlices then begin
-		FSlices:=AValue;
+	if aValue<>FSlices then begin
+		FSlices:=aValue;
 		StructureChanged;
   	end;
 end;
 
 // SetStack
 //
-procedure TGLCylinderBase.SetStacks(AValue : TGLInt);
+procedure TGLCylinderBase.SetStacks(aValue : TGLInt);
 begin
-	if AValue<>FStacks then begin
-		FStacks:=AValue;
+	if aValue<>FStacks then begin
+		FStacks:=aValue;
 		StructureChanged;
 	end;
 end;
 
 // SetLoops
 //
-procedure TGLCylinderBase.SetLoops(AValue : TGLInt);
+procedure TGLCylinderBase.SetLoops(aValue : TGLInt);
 begin
-	if (AValue>=1) and (AValue<>FLoops) then begin
-		FLoops:=AValue;
+	if (aValue>=1) and (aValue<>FLoops) then begin
+		FLoops:=aValue;
 		StructureChanged;
 	end;
 end;
@@ -3912,7 +3879,9 @@ begin
 	inherited Assign(Source);
 end;
 
-//----------------- TGLCone ------------------------------------------------------
+// ------------------
+// ------------------ TGLCone ------------------
+// ------------------
 
 // Create
 //
@@ -3946,10 +3915,10 @@ end;
 
 // SetParts
 //
-procedure TGLCone.SetParts(AValue : TConeParts);
+procedure TGLCone.SetParts(aValue : TConeParts);
 begin
-	if AValue<>FParts then begin
-		FParts:=AValue;
+	if aValue<>FParts then begin
+		FParts:=aValue;
 		StructureChanged;
 	end;
 end;
@@ -3966,16 +3935,6 @@ end;
 
 // AxisAlignedDimensions
 //
-{function TGLCone.AxisAlignedDimensions : TVector;
-var
-   r : TGLFloat;
-begin
-   r:=Abs(FBottomRadius);
-   Result:=VectorMake(r*Scale.DirectX, 0.5*FHeight*Scale.DirectY, r*Scale.DirectZ);
-end;
-}
-// AxisAlignedDimensions
-//
 function TGLCone.AxisAlignedDimensionsUnscaled : TVector;
 var
    r : TGLFloat;
@@ -3984,8 +3943,9 @@ begin
    Result:=VectorMake(r{*Scale.DirectX}, 0.5*FHeight{*Scale.DirectY}, r{*Scale.DirectZ});
 end;
 
-
-//----------------- TGLCylinder --------------------------------------------------
+// ------------------
+// ------------------ TGLCylinder ------------------
+// ------------------
 
 // Create
 //
@@ -4032,20 +3992,20 @@ end;
 
 // SetTopRadius
 //
-procedure TGLCylinder.SetTopRadius(AValue: TGLFloat);
+procedure TGLCylinder.SetTopRadius(const aValue : Single);
 begin
-   if AValue<>FTopRadius then begin
-      FTopRadius:=AValue;
+   if aValue<>FTopRadius then begin
+      FTopRadius:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetParts
 //
-procedure TGLCylinder.SetParts(AValue: TCylinderParts);
+procedure TGLCylinder.SetParts(aValue: TCylinderParts);
 begin
-   if AValue<>FParts then begin
-      FParts:=AValue;
+   if aValue<>FParts then begin
+      FParts:=aValue;
       StructureChanged;
    end;
 end;
@@ -4071,19 +4031,6 @@ begin
    inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-{function TGLCylinder.AxisAlignedDimensions: TVector;
-var
-  r, r1 : TGLFloat;
-begin
-  r:=Abs(FBottomRadius);
-  r1:=Abs(FTopRadius);
-  if r1>r then r:=r1;
-  Result:=VectorMake(r, 0.5*FHeight, r);
-  ScaleVector(Result, Scale.AsVector);
-end;
-}
 // AxisAlignedDimensions
 //
 function TGLCylinder.AxisAlignedDimensionsUnscaled: TVector;
@@ -4233,7 +4180,9 @@ begin
    Align(PointMake(startPoint), PointMake(endPoint));
 end;
 
-//----------------- TGLAnnulus ---------------------------------------------------
+// ------------------
+// ------------------ TGLAnnulus ------------------
+// ------------------
 
 // Create
 //
@@ -4248,40 +4197,40 @@ end;
 
 // SetBottomInnerRadius
 //
-procedure TGLAnnulus.SetBottomInnerRadius(AValue : TGLFloat);
+procedure TGLAnnulus.SetBottomInnerRadius(const aValue : Single);
 begin
-	if AValue<>FBottomInnerRadius then begin
-		FBottomInnerRadius:=AValue;
+	if aValue<>FBottomInnerRadius then begin
+		FBottomInnerRadius:=aValue;
 		StructureChanged;
 	end;
 end;
 
 // SetTopRadius
 //
-procedure TGLAnnulus.SetTopRadius(AValue : TGLFloat);
+procedure TGLAnnulus.SetTopRadius(const aValue : Single);
 begin
-	if AValue<>FTopRadius then begin
-		FTopRadius:=AValue;
+	if aValue<>FTopRadius then begin
+		FTopRadius:=aValue;
 		StructureChanged;
 	end;
 end;
 
 // SetTopInnerRadius
 //
-procedure TGLAnnulus.SetTopInnerRadius(AValue : TGLFloat);
+procedure TGLAnnulus.SetTopInnerRadius(const aValue : Single);
 begin
-	if AValue<>FTopInnerRadius then begin
-		FTopInnerRadius:=AValue;
+	if aValue<>FTopInnerRadius then begin
+		FTopInnerRadius:=aValue;
 		StructureChanged;
 	end;
 end;
 
 // SetParts
 //
-procedure TGLAnnulus.SetParts(AValue: TAnnulusParts);
+procedure TGLAnnulus.SetParts(aValue: TAnnulusParts);
 begin
-   if AValue<>FParts then begin
-      FParts:=AValue;
+   if aValue<>FParts then begin
+      FParts:=aValue;
       StructureChanged;
    end;
 end;
@@ -4333,19 +4282,6 @@ end;
 
 // AxisAlignedDimensions
 //
-{function TGLAnnulus.AxisAlignedDimensions : TVector;
-var
-   r, r1 : TGLFloat;
-begin
-   r:=Abs(FBottomRadius);
-   r1:=Abs(FTopRadius);
-   if r1>r then r:=r1;
-   Result:=VectorMake(r, 0.5*FHeight, r);
-   ScaleVector(Result, Scale.AsVector);
-end;
-}
-// AxisAlignedDimensions
-//
 function TGLAnnulus.AxisAlignedDimensionsUnscaled : TVector;
 var
    r, r1 : TGLFloat;
@@ -4383,16 +4319,15 @@ begin
    hTop:=Height*0.5;
    hBot:=-hTop;
    if locRayVector[1]<0 then begin // Sort the planes according to the direction of view
-     h1:=hTop;   // Height of the 1st plane
-     h2:=hBot;   // Height of the 2nd plane
-     Draw1:=(anTop in Parts);    // 1st "cap" Must be drawn?
-     Draw2:=(anBottom in Parts);
-     end
-   else begin
-     h1:=hBot;
-     h2:=hTop;
-     Draw1:=(anBottom in Parts);
-     Draw2:=(anTop in Parts);
+      h1:=hTop;   // Height of the 1st plane
+      h2:=hBot;   // Height of the 2nd plane
+      Draw1:=(anTop in Parts);    // 1st "cap" Must be drawn?
+      Draw2:=(anBottom in Parts);
+   end else begin
+      h1:=hBot;
+      h2:=hTop;
+      Draw1:=(anBottom in Parts);
+      Draw2:=(anTop in Parts);
    end;//if
 
    if locRayVector[1]=0 then begin
@@ -4451,65 +4386,65 @@ begin
    end;
 
    try
-     SetLength(Roots,4);
-     Roots[0]:=-1; Roots[1]:=-1; Roots[2]:=-1; Roots[3]:=-1; // By default, side is behind rayStart
+      SetLength(Roots,4);
+      Roots[0]:=-1; Roots[1]:=-1; Roots[2]:=-1; Roots[3]:=-1; // By default, side is behind rayStart
 
-     {Compute roots for outer cylinder}
-     if anOuterSides in Parts then begin
-        // intersect against infinite cylinder, will be cut by tPlaneMine and tPlaneMax
-        poly[0]:=Sqr(locRayStart[0])+Sqr(locRayStart[2])-Sqr(TopRadius);
-        poly[1]:=2*(locRayStart[0]*locRayVector[0]+locRayStart[2]*locRayVector[2]);
-        poly[2]:=Sqr(locRayVector[0])+Sqr(locRayVector[2]);
-        tmpRoots:=SolveQuadric(@poly);  // Intersect coordinates on rayVector (rayStart=0)
-        if (High(tmproots)>=0)and  // Does root exist?
-           ((tmpRoots[0]>tPlaneMin) and not FirstIntersected) and // In the annulus and not masked by first cap
-           ((tmpRoots[0]<tPlaneMax) )  // In the annulus
-        then Roots[0]:=tmpRoots[0];
-        if (High(tmproots)>=1)and
-           ((tmpRoots[1]>tPlaneMin) and not FirstIntersected) and
-           ((tmpRoots[1]<tPlaneMax) )
-        then Roots[1]:=tmpRoots[1];
+      {Compute roots for outer cylinder}
+      if anOuterSides in Parts then begin
+         // intersect against infinite cylinder, will be cut by tPlaneMine and tPlaneMax
+         poly[0]:=Sqr(locRayStart[0])+Sqr(locRayStart[2])-Sqr(TopRadius);
+         poly[1]:=2*(locRayStart[0]*locRayVector[0]+locRayStart[2]*locRayVector[2]);
+         poly[2]:=Sqr(locRayVector[0])+Sqr(locRayVector[2]);
+         tmpRoots:=SolveQuadric(@poly);  // Intersect coordinates on rayVector (rayStart=0)
+         if (High(tmproots)>=0)and  // Does root exist?
+            ((tmpRoots[0]>tPlaneMin) and not FirstIntersected) and // In the annulus and not masked by first cap
+            ((tmpRoots[0]<tPlaneMax) )  // In the annulus
+         then Roots[0]:=tmpRoots[0];
+         if (High(tmproots)>=1)and
+            ((tmpRoots[1]>tPlaneMin) and not FirstIntersected) and
+            ((tmpRoots[1]<tPlaneMax) )
+         then Roots[1]:=tmpRoots[1];
       end;//if
 
-     {Compute roots for inner cylinder}
-     if anInnerSides in Parts then begin
-        // intersect against infinite cylinder
-        poly[0]:=Sqr(locRayStart[0])+Sqr(locRayStart[2])-Sqr(TopInnerRadius);
-        poly[1]:=2*(locRayStart[0]*locRayVector[0]+locRayStart[2]*locRayVector[2]);
-        poly[2]:=Sqr(locRayVector[0])+Sqr(locRayVector[2]);
-        tmproots:=SolveQuadric(@poly);
-        if (High(tmproots)>=0)and
-           ((tmpRoots[0]>tPlaneMin) and not FirstIntersected) and
-           ((tmpRoots[0]<tPlaneMax) )
-        then Roots[2]:=tmpRoots[0];
-        if (High(tmproots)>=1)and
-           ((tmpRoots[1]>tPlaneMin) and not FirstIntersected) and
-           ((tmpRoots[1]<tPlaneMax) )
-        then Roots[3]:=tmpRoots[1];
-     end;//if
+      {Compute roots for inner cylinder}
+      if anInnerSides in Parts then begin
+         // intersect against infinite cylinder
+         poly[0]:=Sqr(locRayStart[0])+Sqr(locRayStart[2])-Sqr(TopInnerRadius);
+         poly[1]:=2*(locRayStart[0]*locRayVector[0]+locRayStart[2]*locRayVector[2]);
+         poly[2]:=Sqr(locRayVector[0])+Sqr(locRayVector[2]);
+         tmproots:=SolveQuadric(@poly);
+         if (High(tmproots)>=0)and
+            ((tmpRoots[0]>tPlaneMin) and not FirstIntersected) and
+            ((tmpRoots[0]<tPlaneMax) )
+         then Roots[2]:=tmpRoots[0];
+         if (High(tmproots)>=1)and
+            ((tmpRoots[1]>tPlaneMin) and not FirstIntersected) and
+            ((tmpRoots[1]<tPlaneMax) )
+         then Roots[3]:=tmpRoots[1];
+      end;//if
 
-    {Find the first intersection point and compute its coordinates and normal}
-    if MinPositiveCoef(Roots, Root) then begin
-       t:=Root;
-       if (t>=tPlaneMin) and (t<tPlaneMax) then begin
-          if Assigned(intersectPoint) or Assigned(intersectNormal) then begin
-             ip:=VectorCombine(locRayStart, locRayVector, 1, t);
-             if Assigned(intersectPoint) then
-                intersectPoint^:=LocalToAbsolute(ip);
-             if Assigned(intersectNormal) then begin
-                ip[1]:=0;
-                ip[3]:=0;
-                intersectNormal^:=LocalToAbsolute(ip);
-             end;
-          end;
-          Result:=True;
-       end;
-    end;
+      {Find the first intersection point and compute its coordinates and normal}
+      if MinPositiveCoef(Roots, Root) then begin
+         t:=Root;
+         if (t>=tPlaneMin) and (t<tPlaneMax) then begin
+            if Assigned(intersectPoint) or Assigned(intersectNormal) then begin
+               ip:=VectorCombine(locRayStart, locRayVector, 1, t);
+               if Assigned(intersectPoint) then
+                  intersectPoint^:=LocalToAbsolute(ip);
+               if Assigned(intersectNormal) then begin
+                  ip[1]:=0;
+                  ip[3]:=0;
+                  intersectNormal^:=LocalToAbsolute(ip);
+               end;
+            end;
+            Result:=True;
+         end;
+      end;
 
-  finally
-    Roots:=nil;
-    tmpRoots:=nil;
-  end;//finally
+   finally
+      Roots:=nil;
+      tmpRoots:=nil;
+   end;//finally
 end;
 
 // ------------------
@@ -4531,7 +4466,7 @@ end;
 //
 procedure TGLTorus.BuildList(var rci : TRenderContextInfo);
 var
-   I, J         : Integer;
+   I, J : Integer;
    Theta, Phi, Theta1, cosPhi, sinPhi, dist : TGLFloat;
    cosTheta, sinTheta: TGLFloat;
    cosTheta1, sinTheta1: TGLFloat;
@@ -4571,30 +4506,30 @@ end;
 
 // SetMajorRadius
 //
-procedure TGLTorus.SetMajorRadius(const AValue: Single);
+procedure TGLTorus.SetMajorRadius(const aValue: Single);
 begin
-   if FMajorRadius<>AValue then begin
-      FMajorRadius:=AValue;
+   if FMajorRadius<>aValue then begin
+      FMajorRadius:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetMinorRadius
 //
-procedure TGLTorus.SetMinorRadius(const AValue : Single);
+procedure TGLTorus.SetMinorRadius(const aValue : Single);
 begin
-   if FMinorRadius<>AValue then begin
-      FMinorRadius:=AValue;
+   if FMinorRadius<>aValue then begin
+      FMinorRadius:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetRings
 //
-procedure TGLTorus.SetRings(AValue: Cardinal);
+procedure TGLTorus.SetRings(aValue: Cardinal);
 begin
-   if FRings<>AValue then begin
-      FRings:=AValue;
+   if FRings<>aValue then begin
+      FRings:=aValue;
       if FRings<2 then FRings:=2;
       StructureChanged;
    end;
@@ -4885,60 +4820,60 @@ end;
 
 // SetTopRadius
 //
-procedure TGLArrowLine.SetTopRadius(AValue:TGLFloat);
+procedure TGLArrowLine.SetTopRadius(const aValue : Single);
 begin
-   if AValue<>fTopRadius then begin
-      fTopRadius:=AValue;
+   if aValue<>fTopRadius then begin
+      fTopRadius:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetTopArrowHeadHeight
 //
-procedure TGLArrowLine.SetTopArrowHeadHeight(AValue:TGLFloat);
+procedure TGLArrowLine.SetTopArrowHeadHeight(const aValue : Single);
 begin
-   if AValue<>fTopArrowHeadHeight then begin
-      fTopArrowHeadHeight:=AValue;
+   if aValue<>fTopArrowHeadHeight then begin
+      fTopArrowHeadHeight:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetTopArrowHeadRadius
 //
-procedure TGLArrowLine.SetTopArrowHeadRadius(AValue:TGLFloat);
+procedure TGLArrowLine.SetTopArrowHeadRadius(const aValue : Single);
 begin
-   if AValue<>fTopArrowHeadRadius then begin
-      fTopArrowHeadRadius:=AValue;
+   if aValue<>fTopArrowHeadRadius then begin
+      fTopArrowHeadRadius:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetBottomArrowHeadHeight
 //
-procedure TGLArrowLine.SetBottomArrowHeadHeight(AValue:TGLFloat);
+procedure TGLArrowLine.SetBottomArrowHeadHeight(const aValue : Single);
 begin
-   if AValue<>fBottomArrowHeadHeight then begin
-      fBottomArrowHeadHeight:=AValue;
+   if aValue<>fBottomArrowHeadHeight then begin
+      fBottomArrowHeadHeight:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetBottomArrowHeadRadius
 //
-procedure TGLArrowLine.SetBottomArrowHeadRadius(AValue:TGLFloat);
+procedure TGLArrowLine.SetBottomArrowHeadRadius(const aValue : Single);
 begin
-   if AValue<>fBottomArrowHeadRadius then begin
-      fBottomArrowHeadRadius:=AValue;
+   if aValue<>fBottomArrowHeadRadius then begin
+      fBottomArrowHeadRadius:=aValue;
       StructureChanged;
    end;
 end;
 
 // SetParts
 //
-procedure TGLArrowLine.SetParts(AValue: TArrowLineParts);
+procedure TGLArrowLine.SetParts(aValue: TArrowLineParts);
 begin
-   if AValue<>FParts then begin
-      FParts:=AValue;
+   if aValue<>FParts then begin
+      FParts:=aValue;
       StructureChanged;
    end;
 end;
@@ -5233,8 +5168,6 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-
-
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
