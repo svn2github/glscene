@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/12/10 - MF - Changed FieldOfView to work with degrees (not radians)
       <li>04/12/04 - MF - Added GLCamera.SetFieldOfView and GLCamera.GetFieldOfView,
                           formula by Ivan Sivak Jr.
       <li>04/10/04 - NelC - Added support for 64bit and 128bit color depth (float pbuffer)
@@ -1361,11 +1362,11 @@ type
          function ScreenDeltaToVectorYZ(deltaX, deltaY : Integer; ratio : Single) : TVector;
          {: Returns true if a point is in front of the camera. }
          function PointInFront(const point: TVector): boolean; overload;
-         {: Calculates the field of view given a viewport dimension (width or
-         height). F.i. you may wish to use the minimum of the two.}
+         {: Calculates the field of view in degrees, given a viewport dimension
+         (width or height). F.i. you may wish to use the minimum of the two. }
          function GetFieldOfView(const AViewportDimension : single) : single;
-         {: Sets the FocalLength given a field of view and a viewport dimension
-         (width or height). }
+         {: Sets the FocalLength in degrees, given a field of view and a viewport
+         dimension (width or height). }
          procedure SetFieldOfView(const AFieldOfView, AViewportDimension : single);
       published
          { Published Declarations }
@@ -5141,7 +5142,7 @@ begin
   if FFocalLength=0 then
     result := 0
   else
-    result := 2 * ArcTan2(AViewportDimension * 0.5, FFocalLength);
+    result := RadToDeg(2 * ArcTan2(AViewportDimension * 0.5, FFocalLength));
 end;
 
 // SetFieldOfView
@@ -5149,7 +5150,7 @@ end;
 procedure TGLCamera.SetFieldOfView(const AFieldOfView,
   AViewportDimension: single);
 begin
-  FocalLength := AViewportDimension / (2 * Tan(AFieldOfView/2));
+  FocalLength := AViewportDimension / (2 * Tan(DegToRad(AFieldOfView/2)));
 end;
 
 // SetCameraStyle

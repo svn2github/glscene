@@ -14,6 +14,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/12/04 - MF - Renamed TQuadSpacePartition to TQuadtreeSpacePartition
       <li>08/12/04 - LR - BCB corrections: use record instead array
       <li>08/12/04 - MF - Fixed AV error reported by DanB
       <li>03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
@@ -510,14 +511,14 @@ type
 
   // ** QUADTREE
   {: Implements sector node that handles quadtrees.}
-  TSPQuadNode = class(TSPOctreeNode)
+  TSPQuadtreeNode = class(TSPOctreeNode)
   protected
     {: Executed whenever the children of the node has changed. In the quadtree,
      we want to make sure the Y value of the AABB is correct up and down and that
      the bounding sphere is correct}
     procedure ChildrenChanged; override;
   public
-    {: Create 4 TSPQuadNode children }
+    {: Create 4 TSPQuadtreeNode children }
     procedure CreateChildren; override;
 
     {: Checks if an AABB fits completely inside this node }
@@ -542,7 +543,7 @@ type
     to determine positioning.<p>
     This means that they're well suited for 2d-ish situations (landscapes with
     trees for instance) but not for fully 3d situations (space fighting).}
-  TQuadSpacePartition = class(TSectoredSpacePartition)
+  TQuadtreeSpacePartition = class(TSectoredSpacePartition)
   public
     {: Set size updates the size of the Octree }
     procedure SetSize(const Min, Max : TAffineVector);
@@ -553,6 +554,9 @@ type
 
   {: Determines to which extent one Cone contains an BSphere}
   function ConeContainsBSphere(const Cone : TSPCone; BSphere : TBSphere) : TSpaceContains;
+
+  {: Determines if a extended frustum intersects an BSphere}
+  function ExtendedFrustumIntersectsBSphere(const AExtendedFrustum : TExtendedFrustum; ABSphere : TBSphere) : boolean;
 
   {: Create an extended frustum from a number of values }
   function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
@@ -648,6 +652,20 @@ begin
     result := scNoOverlap;
 end;//}
 
+function ExtendedFrustumIntersectsBSphere(const AExtendedFrustum : TExtendedFrustum; ABSphere : TBSphere) : boolean;
+begin
+   // Test if the bounding sphere of the node intersect the bounding sphere of the
+  // frustum? This test is exremely fast
+  if not BSphereIntersectsBSphere(ABSphere, AExtendedFrustum.BSphere) then
+    result := false
+
+  // Test if the bsphere of the node intersects the frustum
+  else if IsVolumeClipped(ABSphere.Center, ABSphere.Radius, AExtendedFrustum.Frustum) then
+    result := false
+
+  else
+    result := true;
+end;
 
 function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
   AFarDist, AFieldOfViewRadians : single;
@@ -1078,6 +1096,8 @@ begin
 
   FChildCount := 0;
 
+  FChildCount := 0;
+
   FLeaves.Clear;
 end;
 
@@ -1385,6 +1405,9 @@ begin
   Assert((ChildNodeIndex>=0) and (ChildNodeIndex<=8),
     Format('ChildNodeIndex is out of range (%d)!',[ChildNodeIndex]));
 
+  Assert((ChildNodeIndex>=0) and (ChildNodeIndex<=8),
+    Format('ChildNodeIndex is out of range (%d)!',[ChildNodeIndex]));
+
   ChildNode := FChildren.Child[ChildNodeIndex];
 
   Assert(Assigned(ChildNode),'ChildNode not assigned');
@@ -1450,16 +1473,11 @@ var
 begin
   inc(FSectoredSpacePartition.FQueryNodeTests);
 
-   // Test if the bounding sphere of the node intersect the bounding sphere of the
-  // frustum? This test is exremely fast
-  if not BSphereIntersectsBSphere(BSphere, ExtendedFrustum.BSphere) then
+  // Does the extended frustum intersect the bsphere at all?
+  if not ExtendedFrustumIntersectsBSphere(ExtendedFrustum, BSphere) then
     SpaceContains := scNoOverlap
 
-  // Test if the bsphere of the node intersects the frustum
-  else if IsVolumeClipped(BSphere.Center, BSphere.Radius, ExtendedFrustum.Frustum) then
-    SpaceContains := scNoOverlap
-
-  else//}
+  else
   // Test if the bounding frustum intersects the AABB of the node
     SpaceContains := FrustumContainsAABB(ExtendedFrustum.Frustum, AABB);//}
 
@@ -1825,9 +1843,9 @@ begin
   RebuildTree(AABB);
 end;
 
-{ TSPQuadNode }
+{ TSPQuadtreeNode }
 
-function TSPQuadNode.AABBFitsInNode(const aAABB: TAABB): boolean;
+function TSPQuadtreeNode.AABBFitsInNode(const aAABB: TAABB): boolean;
 begin
   result :=
     (aAABB.min.Coord[0]>=FAABB.min.Coord[0]) and
@@ -1837,26 +1855,26 @@ begin
     (aAABB.max.Coord[2]<=FAABB.max.Coord[2]);
 end;
 
-function TSPQuadNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
+function TSPQuadtreeNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
 begin
   Assert(false,Format('AABBIntersectsNode not implemented on %s',[ClassName]));
   result := false;
 end;
 
-function TSPQuadNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
+function TSPQuadtreeNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
 begin
   Assert(false,Format('BSphereFitsInNode not implemented on %s',[ClassName]));
   result := false;
 end;
 
-function TSPQuadNode.BSphereIntersectsNode(
+function TSPQuadtreeNode.BSphereIntersectsNode(
   const BSphere: TBSphere): boolean;
 begin
   Assert(false,Format('BSphereIntersectsNode not implemented on %s',[ClassName]));
   result := false;
 end;
 
-procedure TSPQuadNode.ChildrenChanged;
+procedure TSPQuadtreeNode.ChildrenChanged;
 var
   i : integer;
   newMin, newMax : single;
@@ -1898,7 +1916,7 @@ begin
   end;
 end;
 
-procedure TSPQuadNode.CreateChildren;
+procedure TSPQuadtreeNode.CreateChildren;
 var
   ChildNodeIndex : integer;
   AABB : TAABB;
@@ -1942,7 +1960,7 @@ begin
   FChildCount := 4;
 end;
 
-function TSPQuadNode.GetChildForAABB(AABB: TAABB): TSectorNode;
+function TSPQuadtreeNode.GetChildForAABB(AABB: TAABB): TSectorNode;
 var
   Location : TAffineVector;
   ChildNode : TSectorNode;
@@ -1972,15 +1990,15 @@ begin
   result := nil;
 end;
 
-{ TQuadSpacePartition }
+{ TQuadtreeSpacePartition }
 
-function TQuadSpacePartition.CreateNewNode(
+function TQuadtreeSpacePartition.CreateNewNode(
   aParent: TSectorNode): TSectorNode;
 begin
-  result := TSPQuadNode.Create(self, aParent);
+  result := TSPQuadtreeNode.Create(self, aParent);
 end;
 
-procedure TQuadSpacePartition.SetSize(const Min, Max: TAffineVector);
+procedure TQuadtreeSpacePartition.SetSize(const Min, Max: TAffineVector);
 var
   AABB : TAABB;
 begin

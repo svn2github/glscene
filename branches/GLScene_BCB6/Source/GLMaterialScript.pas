@@ -1105,6 +1105,7 @@ begin
    XMaterialOptions;
    XLibMaterialName;
    XBlendingMode;
+   XFacingCulling;
    XMaterialLibrary;
 end;
 

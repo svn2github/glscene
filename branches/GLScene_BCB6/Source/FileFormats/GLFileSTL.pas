@@ -47,7 +47,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses TypesSTL, VectorGeometry, VectorLists, SysUtils;
+uses TypesSTL, VectorGeometry, VectorLists, SysUtils, GLUtils;
 
 const
   cSOLID_LABEL       = 'SOLID';

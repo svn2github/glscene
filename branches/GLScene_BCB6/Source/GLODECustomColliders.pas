@@ -145,11 +145,28 @@ type
 
   end;
 
+function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+
 implementation
 
 var
   vCustomColliderClass : TdGeomClass;
   vCustomColliderClassNum : Integer;
+
+// GetODEHeightField
+//
+function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+begin
+     result:= TGLODEHeightField(obj.Behaviours.GetByClass(TGLODEHeightField));
+end;
+
+// GetOrCreateODEHeightField
+//
+function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+begin
+     result:= TGLODEHeightField(obj.GetOrCreateBehaviour(TGLODEHeightField));
+end;
 
 // GetColliderFromGeom
 //
@@ -437,17 +454,17 @@ begin
   if res<8 then res:=8;
 
   with Collider do begin
-    AddContact(0, 0, -0.5*len);
-    AddContact(0, 0, 0.5*len);
+    AddContact(0, 0, 0);
+    AddContact(0, 0, len);
     for i:=0 to res-1 do begin
       SinCos(2*Pi*i/res, rad, dy, dx);
-      AddContact(dx, dy, -0.5*len);
+      AddContact(dx, dy, 0);
 
       for j:=1 to (res div 2)-1 do begin
         SinCos(2*Pi*i/res, rad*j/(res div 2), dy, dx);
-        AddContact(dx, dy, len*(0.5-j/(res div 2)));
+        AddContact(dx, dy, len*(1-j/(res div 2)));
         if (j and 1) = 0 then
-          AddContact(dx, dy, -0.5*len);
+          AddContact(dx, dy, 0);
       end;
     end;
   end;

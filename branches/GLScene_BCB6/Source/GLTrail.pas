@@ -4,6 +4,7 @@
         Based on Jason Lanford's demo. <p>
 
 	<b>History : </b><font size=-1><ul>
+	<li>09/12/04 - LR - Suppress windows uses
         <li>12/10/2004 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
    </ul></font>
 }
@@ -90,8 +91,6 @@ TGLTrail = class(TGlMesh)
 
 
 implementation
-
-uses windows;
 
 
 constructor TGLTrail.Create(AOwner: TComponent);
