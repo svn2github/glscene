@@ -5,6 +5,7 @@
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/02/02 - EG  - Fixed glTex[Sub]Image calls 
       <li>20/11/01 - EG  - Removed warnings (axed out... hope I didn't broke anything)
       <li>17/10/01 - Lin - Added Xres and Yres...makes shadow texture size independent from viewer.
                            Calculations now use z-depth in stead of world distance
@@ -134,6 +135,8 @@ type
          SCol :TGLPixel32;
 
          stepX, stepY :single;
+
+         FTexturePrepared : Boolean;
 
         protected
          function  GetViewer : TGLSceneViewer;
@@ -662,16 +665,18 @@ begin
    //-----------------------
    CalcShadowTexture(rci);
    //-----------------------
+   if not Material.Texture.IsHandleAllocated then
+      FTexturePrepared:=False;
    Material.Apply(rci);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
    glTexParameteri(GL_Texture_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-   glTexParameteri(GL_Texture_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+   glTexParameteri(GL_Texture_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST); //GL_LINEAR
 //   glTexImage2D(GL_TEXTURE_2D,0,1,FXRes,FYRes,0,GL_ALPHA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
-   if Tag=0 then begin
+   if not FTexturePrepared then begin
       glTexImage2D(GL_TEXTURE_2D,0,4,FXRes,FYRes,0,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
-      Tag:=1;
+      FTexturePrepared:=True;
    end else
       glTexSubImage2D(GL_TEXTURE_2D,0,0,0,FXRes,FYRes,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
 {
@@ -1028,6 +1033,7 @@ var dst :integer;
 begin
  dst:=2; While val>=dst do dst:=dst*2;
  FXRes:=dst div 2;
+ FTexturePrepared:=False;
 // FXRes:=val;
 
 {
@@ -1043,6 +1049,7 @@ var dst :integer;
 begin
  dst:=2; While val>=dst do dst:=dst*2;
  FYRes:=dst div 2;
+ FTexturePrepared:=False;
 // FYRes:=val;
 
 
