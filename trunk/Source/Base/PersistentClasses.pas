@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/12/03 - EG - Added sorting support to TPersistentObjectList + misc. changes
       <li>04/09/03 - EG - Improved some TPersistentObjectList methods
       <li>12/02/03 - EG - Added IPersistentObject
       <li>09/09/01 - EG - Optimized Pack (x2.5)
@@ -127,7 +128,7 @@ type
          
 	   public
 	      { Public Declarations }
-	      constructor Create; virtual;
+	      constructor Create; overload; virtual;
          constructor CreateFromFiler(reader : TVirtualReader);
          destructor Destroy; override;
 
@@ -153,6 +154,7 @@ type
 
 	TPointerObjectList = array [0..MaxInt shr 3] of TObject;
 	PPointerObjectList = ^TPointerObjectList;
+   TObjectListSortCompare = function (item1, item2 : TObject) : Integer;
 
    // TPersistentObjectList
    //
@@ -187,6 +189,7 @@ type
 
          //: Default event for ReadFromFiler
          procedure AfterObjectCreatedByReader(Sender : TObject); virtual;
+         procedure DoClean;
 
 		public
 	      { Public Declarations }
@@ -198,7 +201,7 @@ type
 			procedure ReadFromFilerWithEvent(reader : TVirtualReader;
 													   afterSenderObjectCreated : TNotifyEvent);
 
-			function Add(const Item: TObject) : Integer;
+			function Add(const item : TObject) : Integer;
 			procedure Delete(Index: Integer);
 			procedure Exchange(Index1, Index2: Integer);
 			procedure Insert(Index: Integer; Item: TObject);
@@ -238,6 +241,7 @@ type
 			function Pop : TObject;
 			function AddObjects(const objectList : TPersistentObjectList) : Integer;
 			procedure RemoveObjects(const objectList : TPersistentObjectList);
+         procedure Sort(compareFunc : TObjectListSortCompare);
 	end;
 
    // TBinaryReader
@@ -706,14 +710,14 @@ begin
 	inherited Destroy;
 end;
 
-// Add
+// Add (
 //
-function TPersistentObjectList.Add(const Item: TObject): Integer;
+function TPersistentObjectList.Add(const item : TObject): Integer;
 begin
-	Result := FCount;
-	if Result = FCapacity then
-		SetCapacity(FCapacity + FGrowthDelta);
-	FList^[Result] := Item;
+	Result:=FCount;
+	if Result=FCapacity then
+		SetCapacity(FCapacity+FGrowthDelta);
+	FList[Result]:=Item;
 	Inc(FCount);
 end;
 
@@ -1014,9 +1018,9 @@ begin
    end;
 end;
 
-// Clean
+// DoClean
 //
-procedure TPersistentObjectList.Clean;
+procedure TPersistentObjectList.DoClean;
 var
 	i : Integer;
 begin
@@ -1025,6 +1029,14 @@ begin
 		if i<FCount then FList[i].Free;
 		Dec(i);
 	end;
+end;
+
+
+// Clean
+//
+procedure TPersistentObjectList.Clean;
+begin
+   DoClean;
 	Clear;
 end;
 
@@ -1176,6 +1188,43 @@ begin
 		Result:=FList[FCount-1];
       Dec(FCount);
 	end else Result:=nil;
+end;
+
+// POListQuickSort
+//
+procedure POListQuickSort(SortList : PPointerObjectList; L, R : Integer;
+                          compareFunc : TObjectListSortCompare);
+var
+   I, J : Integer;
+   P, T : Pointer;
+begin
+   repeat
+      I:=L;
+      J:=R;
+      P:=SortList[(L+R) shr 1];
+      repeat
+         while compareFunc(SortList[I], P)<0 do Inc(I);
+         while compareFunc(SortList[J], P)>0 do Dec(J);
+         if I<=J then begin
+            T := SortList^[I];
+            SortList^[I] := SortList^[J];
+            SortList^[J] := T;
+            Inc(I);
+            Dec(J);
+         end;
+      until I > J;
+      if L<J then
+         POListQuickSort(SortList, L, J, compareFunc);
+      L:=I;
+   until I>=R;
+end;
+
+// Sort
+//
+procedure TPersistentObjectList.Sort(compareFunc : TObjectListSortCompare);
+begin
+   if Count>1 then
+      POListQuickSort(FList, 0, Count-1, compareFunc);
 end;
 
 // ------------------
