@@ -628,7 +628,7 @@ type
    TVCFloor = class (TVerletGlobalFrictionConstraintSP)
       private
 			{ Private Declarations }
-         FBounceRatio : Single;
+         FBounceRatio, FFloorLevel : Single;
          FNormal : TAffineVector;
 
       protected
@@ -644,6 +644,7 @@ type
                         const iteration, maxIterations : Integer); override;
 
          property BounceRatio : Single read FBounceRatio write FBounceRatio;
+         property FloorLevel : Single read FFloorLevel write FFloorLevel;
          property Normal : TAffineVector read FNormal write SetNormal;
    end;
 
@@ -683,6 +684,24 @@ type
 
          property Slack : Single read FSlack write FSlack;
          property RestLength : Single read FRestLength write FRestLength;
+   end;
+
+   // TVCRigidBody
+   //
+   {: Rigid body constraint.<p>
+      Regroups several nodes in a rigid body conformation, somewhat similar
+      to a stick but for multiple nodes. <p>
+      EXPERIMENTAL, DOES NOT WORK!
+      }
+   TVCRigidBody = class (TVerletGroupConstraint)
+      private
+			{ Private Declarations }
+         FNodeParams : array of TAffineVector;
+
+      public
+			{ Public Declarations }
+         procedure ComputeRigidityParameters;
+         procedure SatisfyConstraint(const iteration, maxIterations : Integer); override;
    end;
 
    // TVCSlider
@@ -1815,7 +1834,8 @@ var
    d : TAffineVector;
    correction : TAffineVector;
 begin
-   currentPenetrationDepth:=-PointPlaneDistance(aNode.Location, FLocation, FNormal)+aNode.Radius;
+   currentPenetrationDepth:=-PointPlaneDistance(aNode.Location, FLocation, FNormal)
+                            +aNode.Radius+FFloorLevel;
 
    // Record how far down the node goes
    penetrationDepth:=currentPenetrationDepth;
@@ -1935,6 +1955,81 @@ end;
 procedure TVCStick.SetRestLengthToCurrent;
 begin
    FRestLength:=VectorDistance(NodeA.Location, NodeB.Location);
+end;
+
+// ------------------
+// ------------------ TVCRigidBody ------------------
+// ------------------
+
+// ComputeRigidityParameters
+//
+procedure TVCRigidBody.ComputeRigidityParameters;
+var
+   i : Integer;
+   barycenter : TAffineVector;
+   totWeight : Single;
+begin
+   // first we compute the barycenter
+   totWeight:=0;
+   barycenter:=NullVector;
+   for i:=0 to Nodes.Count-1 do with Nodes[i] do begin
+      CombineVector(barycenter, Location, @Weight);
+      totWeight:=totWeight+Weight;
+   end;
+   if totWeight>0 then
+      ScaleVector(barycenter, 1/totWeight);
+   // next the parameters (which are distances from barycenter to node)
+   SetLength(FNodeParams, Nodes.Count);
+   for i:=0 to Nodes.Count-1 do
+      FNodeParams[i]:=VectorSubtract(Nodes[i].Location, barycenter);
+end;
+
+// SatisfyConstraint
+//
+procedure TVCRigidBody.SatisfyConstraint(const iteration, maxIterations : Integer);
+var
+   i, j : Integer;
+   barycenter, delta : TAffineVector;
+   totWeight, f : Single;
+   natural : array [0..2] of TAffineVector;
+   vectNorm : array [0..2] of Single;
+begin
+   Assert(Nodes.Count=Length(FNodeParams), 'You forgot to call ComputeRigidityParameters!');
+   // compute the barycenter
+   totWeight:=0;
+   barycenter:=NullVector;
+   for i:=0 to Nodes.Count-1 do with Nodes[i] do begin
+      CombineVector(barycenter, Location, @Weight);
+      totWeight:=totWeight+Weight;
+   end;
+   if totWeight>0 then
+      ScaleVector(barycenter, 1/totWeight);
+   // compute the natural axises
+   for i:=0 to 2 do
+      natural[i]:=NullVector;
+   for i:=0 to Nodes.Count-1 do begin
+      delta:=VectorSubtract(Nodes[i].Location, barycenter);
+      for j:=0 to 2 do begin
+         f:=FNodeParams[i][j]*Nodes[i].Weight;
+         CombineVector(natural[j], delta, f);
+      end;
+   end;
+   // make the natural axises orthonormal, by picking the longest two
+   for i:=0 to 2 do
+      vectNorm[i]:=VectorNorm(natural[i]);
+   if (vectNorm[0]<vectNorm[1]) and (vectNorm[0]<vectNorm[2]) then
+      natural[0]:=VectorCrossProduct(natural[1], natural[2])
+   else if (vectNorm[1]<vectNorm[0]) and (vectNorm[1]<vectNorm[2]) then
+      natural[1]:=VectorCrossProduct(natural[2], natural[0])
+   else natural[2]:=VectorCrossProduct(natural[0], natural[1]);
+   for i:=0 to 2 do
+      NormalizeVector(natural[i]);
+   // now the axises are back, recompute the position of all points
+   for i:=0 to Nodes.Count-1 do begin
+      delta:=VectorCombine3(natural[0], natural[1], natural[2],
+                            FNodeParams[i][0], FNodeParams[i][1], FNodeParams[i][2]);
+      Nodes[i].Location:=VectorAdd(barycenter, delta);
+   end;
 end;
 
 // ------------------
