@@ -102,7 +102,7 @@ uses Forms, OpenGL12, GLCrossPlatform, Messages;
 resourcestring
    cIncompatibleContexts =       'Incompatible contexts';
    cDeleteContextFailed =        'Delete context failed';
-   cContextActivationFailed =    'Context activation failed: %X';
+   cContextActivationFailed =    'Context activation failed: %X, %s';
    cContextDeactivationFailed =  'Context deactivation failed';
    cUnableToCreateLegacyContext= 'Unable to create legacy context';
 
@@ -707,7 +707,8 @@ var
    pixelFormat : Integer;
 begin
    if not wglMakeCurrent(Cardinal(FDC), Cardinal(FRC)) then
-      raise EGLContext.Create(Format(cContextActivationFailed, [GetLastError]));
+      raise EGLContext.Create(Format(cContextActivationFailed,
+                                     [GetLastError, SysErrorMessage(GetLastError)]));
 
    // The extension function addresses are unique for each pixel format. All rendering
    // contexts of a given pixel format share the same extension function addresses.
