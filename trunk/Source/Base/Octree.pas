@@ -2,6 +2,7 @@
 {: Octree management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/11/02 - EG - Added triangleInfo
       <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
       <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
 	   <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
@@ -17,6 +18,15 @@ type
 
    TProcInt = procedure(i: integer) of object;
    TProcAffineAffineAffine = procedure(v1, v2, v3: TAffineFLTVector) of object;
+
+   // TOctreeTriangleInfo
+   //
+   {: Stores information about an intersected triangle. }
+   TOctreeTriangleInfo = record
+      index : Integer;
+      vertex : array [0..2] of TAffineVector;
+   end;
+   POctreeTriangleInfo = ^TOctreeTriangleInfo;
 
    // TOctreeNode
    //
@@ -100,7 +110,8 @@ type
 
          function RayCastIntersectAABB(const rayStart, rayVector : TVector;
                                        intersectPoint : PVector = nil;
-                                       intersectNormal : PVector = nil) : Boolean;
+                                       intersectNormal : PVector = nil;
+                                       triangleInfo : POctreeTriangleInfo = nil) : Boolean;
          function SphereIntersectAABB(const rayStart, rayVector : TVector;
                                       const velocity, radius : single;
                                       intersectPoint : PVector = nil;
@@ -982,7 +993,8 @@ end;
 //
 function TOctree.RayCastIntersectAABB(const rayStart, rayVector : TVector;
                                       intersectPoint : PVector = nil;
-                                      intersectNormal : PVector = nil) : Boolean;
+                                      intersectNormal : PVector = nil;
+                                      triangleInfo : POctreeTriangleInfo = nil) : Boolean;
 const
    cInitialMinD : Single = 1e40;
 var
@@ -1015,6 +1027,12 @@ begin
                   intersectPoint^:=iPoint;
                if intersectNormal<>nil then
                   intersectNormal^:=iNormal;
+               if triangleInfo<>nil then begin
+                  triangleInfo.index:=k;
+                  triangleInfo.vertex[0]:=triangleFiler.List[k];
+                  triangleInfo.vertex[1]:=triangleFiler.List[k+1];
+                  triangleInfo.vertex[2]:=triangleFiler.List[k+2];
+               end;
             end;
          end;
       end;
