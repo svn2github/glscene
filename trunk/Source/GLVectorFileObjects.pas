@@ -568,6 +568,7 @@ type
          FRenderingOptions : TMeshObjectRenderingOptions;
          FArraysDeclared : Boolean; // not persistent
          FLightMapArrayEnabled : Boolean; // not persistent
+         FLastLightMapIndex : Integer; // not persistent
 
       protected
          { Protected Declarations }
@@ -3292,9 +3293,10 @@ begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
-      // with lightmap texcoords units active, wee seem to actually lose performance...
+      // with lightmap texcoords units active, we seem to actually lose performance...
       if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
-         glLockArraysEXT(0, vertices.Count); 
+         glLockArraysEXT(0, vertices.Count);
+      FLastLightMapIndex:=-1;
       FArraysDeclared:=True;
       FLightMapArrayEnabled:=False;
    end;
@@ -4242,15 +4244,18 @@ var
 begin
    if GL_ARB_multitexture then begin
       if (not mrci.ignoreMaterials) and Assigned(mrci.lightmapLibrary) then begin
-         if lightMapIndex>=0 then begin
-            // attach and activate lightmap
-            Assert(lightMapIndex<mrci.lightmapLibrary.Materials.Count);
-            libMat:=mrci.lightmapLibrary.Materials[lightMapIndex];
-            AttachLightmap(libMat.Material.Texture, mrci);
-            Owner.Owner.EnableLightMapArray(mrci);
-         end else begin
-            // desactivate lightmap
-            Owner.Owner.DisableLightMapArray(mrci);
+         if Owner.Owner.FLastLightMapIndex<>lightMapIndex then begin
+            Owner.Owner.FLastLightMapIndex:=lightMapIndex;
+            if lightMapIndex>=0 then begin
+               // attach and activate lightmap
+               Assert(lightMapIndex<mrci.lightmapLibrary.Materials.Count);
+               libMat:=mrci.lightmapLibrary.Materials[lightMapIndex];
+               AttachLightmap(libMat.Material.Texture, mrci);
+               Owner.Owner.EnableLightMapArray(mrci);
+            end else begin
+               // desactivate lightmap
+               Owner.Owner.DisableLightMapArray(mrci);
+            end;
          end;
       end;
    end;
@@ -4910,46 +4915,40 @@ begin
    Result:=nil;
 end;
 
-// SortByMaterial
-//
-procedure TFaceGroups.SortByMaterial;
-var
-   i, j : Integer;
-   cur : String;
-   curIsOpaque, isOpaque : Boolean;
-   curIdx : Integer;
-   matLib : TGLMaterialLibrary;
+function CompareMaterials(item1, item2 : TObject) : Integer;
 
-   function MaterialIsOpaque(const materialName : String) : Boolean;
+   function MaterialIsOpaque(fg : TFaceGroup) : Boolean;
    var
       libMat : TGLLibMaterial;
    begin
-      if Assigned(matLib) then begin
-         libMat:=matLib.Materials.GetLibMaterialByName(materialName);
-         if Assigned(libMat) then begin
-            Result:=not libMat.Material.Blended;
-            Exit;
-         end;
-      end;
-      Result:=True;
+      libMat:=fg.MaterialCache;
+      Result:=(not Assigned(libMat)) or (not libMat.Material.Blended);
    end;
 
+var
+   opaque1, opaque2 : Boolean;
 begin
-   matLib:=MaterialLibrary;
-   // slow but simple sort, we are not supposed to do this every frame
-   for i:=0 to Count-2 do begin
-      curIdx:=i;
-      cur:=Items[i].MaterialName;
-      curIsOpaque:=MaterialIsOpaque(cur);
-      for j:=i+1 to Count-1 do begin
-         isOpaque:=MaterialIsOpaque(Items[j].MaterialName);
-         if (Items[j].MaterialName<cur) and (isOpaque or (not curIsOpaque)) then begin
-            cur:=Items[j].MaterialName;
-            curIdx:=j;
-         end;
+   opaque1:=MaterialIsOpaque(TFaceGroup(item1));
+   opaque2:=MaterialIsOpaque(TFaceGroup(item2));
+   if opaque1=opaque2 then begin
+      Result:=CompareStr(TFaceGroup(item1).MaterialName, TFaceGroup(item2).MaterialName);
+      if Result=0 then begin
+         if TFaceGroup(item1).LightMapIndex<TFaceGroup(item2).LightMapIndex then
+            Result:=-1
+         else if TFaceGroup(item1).LightMapIndex>TFaceGroup(item2).LightMapIndex then
+            Result:=1
       end;
-      Exchange(curIdx, i);
-   end;
+   end else if opaque1 then
+      Result:=-1
+   else Result:=1;
+end;
+
+// SortByMaterial
+//
+procedure TFaceGroups.SortByMaterial;
+begin
+   PrepareMaterialLibraryCache(Owner.Owner.Owner.MaterialLibrary);
+   Sort(CompareMaterials);
 end;
 
 // ------------------
@@ -5378,6 +5377,8 @@ end;
 procedure TGLBaseMesh.PrepareBuildList(var mrci : TRenderContextInfo);
 begin
    MeshObjects.PrepareBuildList(mrci);
+   if LightmapLibrary<>nil then
+      LightmapLibrary.Materials.PrepareBuildList
 end;
 
 // SetUseMeshMaterials
