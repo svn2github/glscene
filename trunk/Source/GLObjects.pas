@@ -930,7 +930,8 @@ type
    // TDodecahedron
    //
    {: A Dodecahedron.<p>
-      The dodecahedron has no texture coordinates defined. }
+      The dodecahedron has no texture coordinates defined, ie. without using
+      a texture generation mode, no texture will be mapped. }
    TDodecahedron = class(TGLSceneObject)
       public
 			{ Public Declarations }
