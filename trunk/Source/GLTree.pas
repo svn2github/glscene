@@ -118,108 +118,118 @@ type
       property BranchNoise : Single read FBranchNoise;
   end;
 
-  TGLTree = class (TGLImmaterialSceneObject)
-    private
-      FDepth,
-      FBranchFacets : Integer;
-      FLeafSize,
-      FBranchSize,
-      FBranchNoise,
-      FBranchAngleBias,
-      FBranchAngle,
-      FBranchTwist,
-      FBranchRadius,
-      FLeafThreshold,
-      FCentralLeaderBias : Single;
-      FCentralLeader : Boolean;
-      FSeed : Integer;
+   // TGLTree
+   //
+   TGLTree = class (TGLImmaterialSceneObject)
+      private
+         { Private Declarations }
+         FDepth : Integer;
+         FBranchFacets : Integer;
+         FLeafSize : Single;
+         FBranchSize : Single;
+         FBranchNoise : Single;
+         FBranchAngleBias : Single;
+         FBranchAngle : Single;
+         FBranchTwist : Single;
+         FBranchRadius : Single;
+         FLeafThreshold : Single;
+         FCentralLeaderBias : Single;
+         FCentralLeader : Boolean;
+         FSeed : Integer;
 
-      FLeaves : TGLTreeLeaves;
-      FBranches : TGLTreeBranches;
-      FNoise : TGLTreeBranchNoise;
+         FLeaves : TGLTreeLeaves;
+         FBranches : TGLTreeBranches;
+         FNoise : TGLTreeBranchNoise;
 
-      FMaterialLibrary : TGLMaterialLibrary;
-      FLeafMaterialName,
-      FLeafBackMaterialName,
-      FBranchMaterialName : TGLLibMaterialName;
-      FLeafMaterial,
-      FLeafBackMaterial,
-      FBranchMaterial : TGLLibMaterial;
+         FMaterialLibrary : TGLMaterialLibrary;
+         FLeafMaterialName : TGLLibMaterialName;
+         FLeafMaterial : TGLLibMaterial;
+         FLeafBackMaterialName : TGLLibMaterialName;
+         FLeafBackMaterial : TGLLibMaterial;
+         FBranchMaterialName : TGLLibMaterialName;
+         FBranchMaterial : TGLLibMaterial;
 
-      FRebuildTree : Boolean;
+         FRebuildTree : Boolean;
 
-      procedure SetDepth(const Value : Integer);
-      procedure SetBranchFacets(const Value : Integer);
-      procedure SetLeafSize(const Value : Single);
-      procedure SetBranchSize(const Value : Single);
-      procedure SetBranchNoise(const Value : Single);
-      procedure SetBranchAngleBias(const Value : Single);
-      procedure SetBranchAngle(const Value : Single);
-      procedure SetBranchTwist(const Value : Single);
-      procedure SetBranchRadius(const Value : Single);
-      procedure SetLeafThreshold(const Value : Single);
-      procedure SetCentralLeaderBias(const Value : Single);
-      procedure SetCentralLeader(const Value : Boolean);
-      procedure SetSeed(const Value : Integer);
+      protected
+         { Protected Declarations }
+         procedure SetDepth(const Value : Integer);
+         procedure SetBranchFacets(const Value : Integer);
+         procedure SetLeafSize(const Value : Single);
+         procedure SetBranchSize(const Value : Single);
+         procedure SetBranchNoise(const Value : Single);
+         procedure SetBranchAngleBias(const Value : Single);
+         procedure SetBranchAngle(const Value : Single);
+         procedure SetBranchTwist(const Value : Single);
+         procedure SetBranchRadius(const Value : Single);
+         procedure SetLeafThreshold(const Value : Single);
+         procedure SetCentralLeaderBias(const Value : Single);
+         procedure SetCentralLeader(const Value : Boolean);
+         procedure SetSeed(const Value : Integer);
 
-      procedure SetMaterialLibrary(const Value : TGLMaterialLibrary);
-      procedure SetLeafMaterialName(const Value : TGLLibMaterialName);
-      procedure SetLeafBackMaterialName(const Value : TGLLibMaterialName);
-      procedure SetBranchMaterialName(const Value : TGLLibMaterialName);
+         procedure SetMaterialLibrary(const Value : TGLMaterialLibrary);
+         procedure SetLeafMaterialName(const Value : TGLLibMaterialName);
+         procedure SetLeafBackMaterialName(const Value : TGLLibMaterialName);
+         procedure SetBranchMaterialName(const Value : TGLLibMaterialName);
 
-    public
-      constructor Create(AOwner : TComponent); override;
-      destructor Destroy; override;
-      procedure BuildList(var rci : TRenderContextInfo); override;
-      procedure BuildMesh(GLBaseMesh : TGLBaseMesh);
-      procedure RebuildTree;
-      procedure ForceTotalRebuild;
-      procedure Clear;
+      public
+         { Public Declarations }
+         constructor Create(AOwner : TComponent); override;
+         destructor Destroy; override;
 
-      procedure LoadFromStream(aStream : TStream);
-      procedure SaveToStream(aStream : TStream);
-      procedure LoadFromFile(aFileName : String);
-      procedure SaveToFile(aFileName : String);
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
+         procedure BuildList(var rci : TRenderContextInfo); override;
+      
+         procedure BuildMesh(GLBaseMesh : TGLBaseMesh);
+         procedure RebuildTree;
+         procedure ForceTotalRebuild;
+         procedure Clear;
 
-      property Leaves : TGLTreeLeaves read FLeaves;
-      property Branches : TGLTreeBranches read FBranches;
-      property Noise : TGLTreeBranchNoise read FNoise;
+         procedure LoadFromStream(aStream : TStream);
+         procedure SaveToStream(aStream : TStream);
+         procedure LoadFromFile(aFileName : String);
+         procedure SaveToFile(aFileName : String);
 
-    published
-      {: The depth of tree branch recursion. }
-      property Depth : Integer read FDepth write SetDepth;
-      {: The number of facets for each branch in the tree. }
-      property BranchFacets : Integer read FBranchFacets write SetBranchFacets;
-      {: Leaf size modifier. Leaf size is also influenced by branch recursion
-         scale. }
-      property LeafSize : Single read FLeafSize write SetLeafSize;
-      {: Branch length modifier. }
-      property BranchSize : Single read FBranchSize write SetBranchSize;
-      {: Overall branch noise influence. Relates to the 'fullness' of the tree. }
-      property BranchNoise : Single read FBranchNoise write SetBranchNoise;
-      {: Effects the habit of the tree. Values from 0 to 1 refer to Upright to
-         Spreading respectively. }
-      property BranchAngleBias : Single read FBranchAngleBias write SetBranchAngleBias;
-      {: Effects the balance of the tree. }
-      property BranchAngle : Single read FBranchAngle write SetBranchAngle;
-      {: Effects the rotation of each sub branch in recursion. }
-      property BranchTwist : Single read FBranchTwist write SetBranchTwist;
-      {: Effects the thickness of the branches. }
-      property BranchRadius : Single read FBranchRadius write SetBranchRadius;
-      {: Determines how thin a branch can get before a leaf is substituted. }
-      property LeafThreshold : Single read FLeafThreshold write SetLeafThreshold;
-      {: Determines how BranchAngle effects the central leader (CentralLeader must = True). }
-      property CentralLeaderBias : Single read FCentralLeaderBias write SetCentralLeaderBias;
-      {: Does this tree have a central leader? }
-      property CentralLeader : Boolean read FCentralLeader write SetCentralLeader;
-      property Seed : Integer read FSeed write SetSeed;
+         property Leaves : TGLTreeLeaves read FLeaves;
+         property Branches : TGLTreeBranches read FBranches;
+         property Noise : TGLTreeBranchNoise read FNoise;
 
-      property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-      property LeafMaterialName : TGLLibMaterialName read FLeafMaterialName write SetLeafMaterialName;
-      property LeafBackMaterialName : TGLLibMaterialName read FLeafBackMaterialName write SetLeafBackMaterialName;
-      property BranchMaterialName : TGLLibMaterialName read FBranchMaterialName write SetBranchMaterialName;
+      published
+         { Published Declarations }
+         {: The depth of tree branch recursion. }
+         property Depth : Integer read FDepth write SetDepth;
+         {: The number of facets for each branch in the tree. }
+         property BranchFacets : Integer read FBranchFacets write SetBranchFacets;
+         {: Leaf size modifier. Leaf size is also influenced by branch recursion
+            scale. }
+         property LeafSize : Single read FLeafSize write SetLeafSize;
+         {: Branch length modifier. }
+         property BranchSize : Single read FBranchSize write SetBranchSize;
+         {: Overall branch noise influence. Relates to the 'fullness' of the tree. }
+         property BranchNoise : Single read FBranchNoise write SetBranchNoise;
+         {: Effects the habit of the tree. Values from 0 to 1 refer to Upright to
+            Spreading respectively. }
+         property BranchAngleBias : Single read FBranchAngleBias write SetBranchAngleBias;
+         {: Effects the balance of the tree. }
+         property BranchAngle : Single read FBranchAngle write SetBranchAngle;
+         {: Effects the rotation of each sub branch in recursion. }
+         property BranchTwist : Single read FBranchTwist write SetBranchTwist;
+         {: Effects the thickness of the branches. }
+         property BranchRadius : Single read FBranchRadius write SetBranchRadius;
+         {: Determines how thin a branch can get before a leaf is substituted. }
+         property LeafThreshold : Single read FLeafThreshold write SetLeafThreshold;
+         {: Determines how BranchAngle effects the central leader (CentralLeader must = True). }
+         property CentralLeaderBias : Single read FCentralLeaderBias write SetCentralLeaderBias;
+         {: Does this tree have a central leader? }
+         property CentralLeader : Boolean read FCentralLeader write SetCentralLeader;
+         property Seed : Integer read FSeed write SetSeed;
 
-  end;
+         property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+         property LeafMaterialName : TGLLibMaterialName read FLeafMaterialName write SetLeafMaterialName;
+         property LeafBackMaterialName : TGLLibMaterialName read FLeafBackMaterialName write SetLeafBackMaterialName;
+         property BranchMaterialName : TGLLibMaterialName read FBranchMaterialName write SetBranchMaterialName;
+   end;
 
 procedure Register;
 
@@ -231,99 +241,16 @@ implementation
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+uses XOpenGL;
+
 procedure Register;
 begin
-  RegisterClasses([TGLTree]);
+   RegisterClasses([TGLTree]);
 end;
 
 // -----------------------------------------------------------------------------
 // TGLTreeLeaves
 // -----------------------------------------------------------------------------
-
-// AddNew
-//
-procedure TGLTreeLeaves.AddNew(Matrix: TMatrix);
-var
-  Radius : Single;
-  pos : TVector;
-begin
-  Radius:=Owner.LeafSize;
-  Inc(FCount);
-
-  pos:=Matrix[3];
-  Matrix[3]:=NullHMGPoint;
-  Matrix:=Roll(Matrix,FCount/10);
-  NormalizeMatrix(Matrix);
-  Matrix[3]:=pos;
-
-  FVertices.Add(VectorTransform(PointMake(0,-Radius,0),Matrix));
-  FVertices.Add(VectorTransform(PointMake(0,Radius,0),Matrix));
-  FVertices.Add(VectorTransform(PointMake(0,Radius,2*Radius),Matrix));
-  FVertices.Add(VectorTransform(PointMake(0,-Radius,2*Radius),Matrix));
-  FNormals.Add(VectorTransform(XHmgVector,Matrix));
-  FTexCoords.Add(1,0);
-  FTexCoords.Add(0,0);
-  FTexCoords.Add(0,1);
-  FTexCoords.Add(1,1);
-end;
-
-// BuildList
-//
-procedure TGLTreeLeaves.BuildList(var rci: TRenderContextInfo);
-var
-  i : integer;
-  n : TAffineVector;
-begin
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-  if Assigned(Owner.FLeafMaterial) then
-    Owner.FLeafMaterial.Apply(rci);
-
-  glVertexPointer(3,GL_FLOAT,0,@FVertices.List[0]);
-  glTexCoordPointer(3,GL_FLOAT,0,@FTexCoords.List[0]);
-
-  glPushAttrib(GL_CURRENT_BIT);
-  for i:=0 to (FVertices.Count div 4) - 1 do begin
-    glNormal3fv(@FNormals.List[i]);
-    glDrawArrays(GL_QUADS,4*i,4);
-  end;
-  glPopAttrib;
-
-  if Assigned(Owner.FLeafMaterial) then
-    Owner.FLeafMaterial.UnApply(rci);
-
-  InvertGLFrontFace;
-
-  if Assigned(Owner.FLeafBackMaterial) then
-    Owner.FLeafBackMaterial.Apply(rci);
-
-  glPushAttrib(GL_CURRENT_BIT);
-  for i:=0 to (FVertices.Count div 4) - 1 do begin
-    n:=VectorNegate(FNormals[i]);
-    glNormal3fv(@n[0]);
-    glDrawArrays(GL_QUADS,4*i,4);
-  end;
-  glPopAttrib;
-
-  if Assigned(Owner.FLeafBackMaterial) then
-    Owner.FLeafBackMaterial.UnApply(rci);
-
-  InvertGLFrontFace;
-
-  glDisableClientState(GL_VERTEX_ARRAY);
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-end;
-
-// Clear
-//
-procedure TGLTreeLeaves.Clear;
-begin
-  FVertices.Clear;
-  FNormals.Clear;
-  FTexCoords.Clear;
-  FCount:=0;
-end;
 
 // Create
 //
@@ -346,6 +273,85 @@ begin
   inherited;
 end;
 
+// AddNew
+//
+procedure TGLTreeLeaves.AddNew(Matrix: TMatrix);
+var
+   radius : Single;
+   pos : TVector;
+begin
+   radius:=Owner.LeafSize;
+   Inc(FCount);
+
+   pos:=Matrix[3];
+   Matrix[3]:=NullHMGPoint;
+   Matrix:=Roll(Matrix, FCount/10);
+   NormalizeMatrix(Matrix);
+   Matrix[3]:=pos;
+
+   FVertices.Add(VectorTransform(PointMake(0, -radius, 0), Matrix));
+   FVertices.Add(VectorTransform(PointMake(0, radius, 0), Matrix));
+   FVertices.Add(VectorTransform(PointMake(0, radius, 2*radius), Matrix));
+   FVertices.Add(VectorTransform(PointMake(0, -radius, 2*radius), Matrix));
+   FNormals.Add(VectorTransform(XHmgVector, Matrix));
+   FTexCoords.Add(1, 0);
+   FTexCoords.Add(0, 0);
+   FTexCoords.Add(0, 1);
+   FTexCoords.Add(1, 1);
+end;
+
+// BuildList
+//
+procedure TGLTreeLeaves.BuildList(var rci: TRenderContextInfo);
+var
+   i : integer;
+   n : TAffineVector;
+begin
+   if Assigned(Owner.FLeafMaterial) then
+     Owner.FLeafMaterial.Apply(rci);
+
+   glEnableClientState(GL_VERTEX_ARRAY);
+   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+   glVertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
+   xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
+
+   for i:=0 to (FVertices.Count div 4)-1 do begin
+      glNormal3fv(@FNormals.List[i]);
+      glDrawArrays(GL_QUADS, 4*i, 4);
+   end;
+
+   with Owner do if FLeafMaterial<>FLeafBackMaterial then begin
+      if Assigned(FLeafMaterial) then
+         FLeafMaterial.UnApply(rci);
+      if Assigned(FLeafBackMaterial) then
+         FLeafBackMaterial.Apply(rci);
+   end;
+
+   InvertGLFrontFace;
+   for i:=0 to (FVertices.Count div 4)-1 do begin
+      n:=VectorNegate(FNormals[i]);
+      glNormal3fv(@n);
+      glDrawArrays(GL_QUADS, 4*i, 4);
+   end;
+   InvertGLFrontFace;
+
+   glDisableClientState(GL_VERTEX_ARRAY);
+   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+   if Assigned(Owner.FLeafBackMaterial) then
+      Owner.FLeafBackMaterial.UnApply(rci);
+end;
+
+// Clear
+//
+procedure TGLTreeLeaves.Clear;
+begin
+  FVertices.Clear;
+  FNormals.Clear;
+  FTexCoords.Clear;
+  FCount:=0;
+end;
 
 // -----------------------------------------------------------------------------
 // TGLTreeBranch
@@ -530,77 +536,9 @@ begin
 
 end;
 
-
 // -----------------------------------------------------------------------------
 // TGLTreeBranches
 // -----------------------------------------------------------------------------
-
-// BuildBranches
-//
-procedure TGLTreeBranches.BuildBranches;
-var
-  i : Integer;
-  u : Single;
-begin
-  RandSeed:=Owner.FSeed;
-
-  for i:=0 to Owner.BranchFacets do begin
-    u:=1/Owner.BranchFacets*i;
-    SinList.Add(Sin(PI*2*u));
-    CosList.Add(Cos(PI*2*u));
-  end;
-
-  Inc(FCount);
-  FRoot:=TGLTreeBranch.Create(Self,nil);
-  FRoot.FCentralLeader:=Owner.CentralLeader;
-  FRoot.BuildBranch(Owner.Noise,IdentityHMGMatrix,0,0,0);
-end;
-
-// BuildList
-//
-procedure TGLTreeBranches.BuildList(var rci: TRenderContextInfo);
-var
-  i,stride : integer;
-begin
-  stride:=(Owner.BranchFacets+1)*2;
-
-  if Assigned(Owner.FBranchMaterial) then
-    Owner.FBranchMaterial.Apply(rci);
-
-  glVertexPointer(3,GL_FLOAT,0,@FVertices.List[0]);
-  glNormalPointer(GL_FLOAT,0,@FNormals.List[0]);
-  glTexCoordPointer(3,GL_FLOAT,0,@FTexCoords.List[0]);
-
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-  for i:=0 to (FIndices.Count div stride)-1 do
-    glDrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
-
-  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  glDisableClientState(GL_NORMAL_ARRAY);
-  glDisableClientState(GL_VERTEX_ARRAY);
-
-  if Assigned(Owner.FBranchMaterial) then
-    Owner.FBranchMaterial.UnApply(rci);
-end;
-
-// Clear
-//
-procedure TGLTreeBranches.Clear;
-begin
-  FRoot.Free;
-  FSinList.Clear;
-  FCosList.Clear;
-  FVertices.Clear;
-  FNormals.Clear;
-  FTexCoords.Clear;
-  FIndices.Clear;
-  FBranchCache.Clear;
-  FBranchIndices.Clear;
-  FCount:=0;
-end;
 
 // Create
 //
@@ -634,6 +572,72 @@ begin
   inherited;
 end;
 
+// BuildBranches
+//
+procedure TGLTreeBranches.BuildBranches;
+var
+  i : Integer;
+  u : Single;
+begin
+  RandSeed:=Owner.FSeed;
+
+  for i:=0 to Owner.BranchFacets do begin
+    u:=1/Owner.BranchFacets*i;
+    SinList.Add(Sin(PI*2*u));
+    CosList.Add(Cos(PI*2*u));
+  end;
+
+  Inc(FCount);
+  FRoot:=TGLTreeBranch.Create(Self,nil);
+  FRoot.FCentralLeader:=Owner.CentralLeader;
+  FRoot.BuildBranch(Owner.Noise,IdentityHMGMatrix,0,0,0);
+end;
+
+// BuildList
+//
+procedure TGLTreeBranches.BuildList(var rci: TRenderContextInfo);
+var
+   i, stride : integer;
+begin
+   stride:=(Owner.BranchFacets+1)*2;
+
+   if Assigned(Owner.FBranchMaterial) then
+      Owner.FBranchMaterial.Apply(rci);
+
+   glVertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
+   glNormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
+   xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
+
+   glEnableClientState(GL_VERTEX_ARRAY);
+   glEnableClientState(GL_NORMAL_ARRAY);
+   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+   for i:=0 to (FIndices.Count div stride)-1 do
+      glDrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
+
+   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+   glDisableClientState(GL_NORMAL_ARRAY);
+   glDisableClientState(GL_VERTEX_ARRAY);
+
+   if Assigned(Owner.FBranchMaterial) then
+      Owner.FBranchMaterial.UnApply(rci);
+end;
+
+// Clear
+//
+procedure TGLTreeBranches.Clear;
+begin
+  FRoot.Free;
+  FSinList.Clear;
+  FCosList.Clear;
+  FVertices.Clear;
+  FNormals.Clear;
+  FTexCoords.Clear;
+  FIndices.Clear;
+  FBranchCache.Clear;
+  FBranchIndices.Clear;
+  FCount:=0;
+end;
 
 // -----------------------------------------------------------------------------
 // TGLTreeBranchNoise
@@ -678,16 +682,66 @@ end;
 // TGLTree
 // -----------------------------------------------------------------------------
 
+// Create
+//
+constructor TGLTree.Create(AOwner: TComponent);
+begin
+   inherited;
+   // Default tree setting
+   FDepth:=7;
+   FLeafThreshold:=0.02;
+   FBranchAngleBias:=0.6;
+   FBranchAngle:=0.4;
+   FBranchTwist:=45;
+   FBranchNoise:=0.7;
+   FBranchSize:=1.0;
+   FLeafSize:=0.1;
+   FBranchRadius:=0.12;
+   FBranchFacets:=6;
+   FCentralLeader:=False;
+   FSeed:=0;
+
+   FLeaves:=TGLTreeLeaves.Create(Self);
+   FBranches:=TGLTreeBranches.Create(Self);
+   FNoise:=TGLTreeBranchNoise.Create;
+
+   FRebuildTree:=True;
+end;
+
+// Destroy
+//
+destructor TGLTree.Destroy;
+begin
+   FLeaves.Free;
+   FBranches.Free;
+   FNoise.Free;
+   inherited;
+end;
+
+// DoRender
+//
+procedure TGLTree.DoRender(var rci : TRenderContextInfo;
+                           renderSelf, renderChildren : Boolean);
+begin
+   if Assigned(FBranchMaterial) then
+      FBranchMaterial.PrepareBuildList;
+   if Assigned(FLeafMaterial) then
+      FLeafMaterial.PrepareBuildList;
+   if Assigned(FLeafBackMaterial) then
+      FLeafBackMaterial.PrepareBuildList;
+   inherited;
+end;
+
 // BuildList
 //
 procedure TGLTree.BuildList(var rci: TRenderContextInfo);
 begin
-  if FRebuildTree then begin
-    FBranches.BuildBranches;
-    FRebuildTree:=False;
-  end;
-  Branches.BuildList(rci);
-  Leaves.BuildList(rci);
+   if FRebuildTree then begin
+      FBranches.BuildBranches;
+      FRebuildTree:=False;
+   end;
+   Branches.BuildList(rci);
+   Leaves.BuildList(rci);
 end;
 
 // BuildMesh
@@ -840,43 +894,6 @@ procedure TGLTree.Clear;
 begin
   FLeaves.Clear;
   FBranches.Clear;
-end;
-
-// Create
-//
-constructor TGLTree.Create(AOwner: TComponent);
-begin
-  inherited;
-
-  // Default tree setting
-  FDepth:=7;
-  FLeafThreshold:=0.02;
-  FBranchAngleBias:=0.6;
-  FBranchAngle:=0.4;
-  FBranchTwist:=45;
-  FBranchNoise:=0.7;
-  FBranchSize:=1.0;
-  FLeafSize:=0.1;
-  FBranchRadius:=0.12;
-  FBranchFacets:=6;
-  FCentralLeader:=False;
-  FSeed:=0;
-
-  FLeaves:=TGLTreeLeaves.Create(Self);
-  FBranches:=TGLTreeBranches.Create(Self);
-  FNoise:=TGLTreeBranchNoise.Create;
-
-  FRebuildTree:=True;
-end;
-
-// Destroy
-//
-destructor TGLTree.Destroy;
-begin
-  FLeaves.Free;
-  FBranches.Free;
-  FNoise.Free;
-  inherited;
 end;
 
 // SetBranchAngle
@@ -1056,23 +1073,23 @@ end;
 //
 procedure TGLTree.RebuildTree;
 begin
-  if not FRebuildTree then begin
-    Clear;
-    FRebuildTree:=True;
-    StructureChanged;
-  end;
+   if not FRebuildTree then begin
+      Clear;
+      FRebuildTree:=True;
+      StructureChanged;
+   end;
 end;
 
 // ForceTotalRebuild
 //
 procedure TGLTree.ForceTotalRebuild;
 begin
-  Clear;
-  FNoise.Free;
-  RandSeed:=FSeed;
-  FNoise:=TGLTreeBranchNoise.Create;
-  FRebuildTree:=True;
-  StructureChanged;
+   Clear;
+   FNoise.Free;
+   RandSeed:=FSeed;
+   FNoise:=TGLTreeBranchNoise.Create;
+   FRebuildTree:=True;
+   StructureChanged;
 end;
 
 // LoadFromStream
