@@ -1363,10 +1363,6 @@ const
   cOne : Single = 1.0;
   cOneDotFive : Single = 0.5;
 
-type
-
-   TProcVarVectConstVect = procedure (var v1 : TVector; const v2 : TVector);
-
 // OptimizationMode
 //
 function GeometryOptimizationMode : String;
@@ -7281,12 +7277,13 @@ end;
 //
 function MinFloat(values : PSingleArray; nbItems : Integer) : Single;
 var
-   i : Integer;
+   i, k : Integer;
 begin
    if nbItems>0 then begin
-      Result:=values[0];
+      k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]<Result then Result:=values[i];
+         if values[i]<values[k] then k:=i;
+      Result:=values[k];
    end else Result:=0;
 end;
 
@@ -7294,12 +7291,13 @@ end;
 //
 function MinFloat(values : PDoubleArray; nbItems : Integer) : Double;
 var
-   i : Integer;
+   i, k : Integer;
 begin
    if nbItems>0 then begin
-      Result:=values[0];
+      k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]<Result then Result:=values[i];
+         if values[i]<values[k] then k:=i;
+      Result:=values[k];
    end else Result:=0;
 end;
 
@@ -7307,12 +7305,13 @@ end;
 //
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended;
 var
-   i : Integer;
+   i, k : Integer;
 begin
    if nbItems>0 then begin
-      Result:=values[0];
+      k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]<Result then Result:=values[i];
+         if values[i]<values[k] then k:=i;
+      Result:=values[k];
    end else Result:=0;
 end;
 
@@ -7411,12 +7410,13 @@ end;
 //
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 var
-   i : Integer;
+   i, k : Integer;
 begin
    if nbItems>0 then begin
-      Result:=values[0];
+      k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]>Result then Result:=values[i];
+         if values[i]>values[k] then k:=i;
+      Result:=values[k];
    end else Result:=0;
 end;
 
@@ -7424,12 +7424,13 @@ end;
 //
 function MaxFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
 var
-   i : Integer;
+   i, k : Integer;
 begin
    if nbItems>0 then begin
-      Result:=values[0];
+      k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]>Result then Result:=values[i];
+         if values[i]>values[k] then k:=i;
+      Result:=values[k];
    end else Result:=0;
 end;
 
@@ -7437,12 +7438,13 @@ end;
 //
 function MaxFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
 var
-   i : Integer;
+   i, k : Integer;
 begin
    if nbItems>0 then begin
-      Result:=values[0];
+      k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]>Result then Result:=values[i];
+         if values[i]>values[k] then k:=i;
+      Result:=values[k];
    end else Result:=0;
 end;
 
