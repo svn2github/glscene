@@ -168,6 +168,7 @@ type
   private
     FLeaves : TSpacePartitionLeafList;
     FAABB : TAABB;
+    FCenter : TAffineVector;
     FSectoredSpacePartition : TSectoredSpacePartition;
     FRecursiveLeafCount: integer;
     FParent: TSectorNode;
@@ -175,6 +176,7 @@ type
     FChildCount : integer;
     FChildren: TSectorNodeArray;
     function GetNoChildren: boolean;
+    procedure SetAABB(const Value: TAABB);
   protected
     {: Recursively counts the RecursiveLeafCount, this should only be used in
     debugging purposes, because the proprtyu RecursiveLeafCount is always up to
@@ -195,7 +197,9 @@ type
 
     {: The Axis Aligned Bounding Box for this node. All leaves MUST fit inside
     this box. }
-    property AABB : TAABB read FAABB;
+    property AABB : TAABB read FAABB write SetAABB;
+    {: Center of the AABB for this node.}
+    property Center : TAffineVector read FCenter;
     {: NoChildren is true if the node has no children.}
     property NoChildren : boolean read GetNoChildren;
     {: A list of the children for this node, only ChildCount children are none
@@ -203,6 +207,10 @@ type
     property Children : TSectorNodeArray read FChildren;
     {: The number of child sectors that have been created }
     property ChildCount : integer read FChildCount;
+
+    {: Computes which child the location is located in. Base version does this
+    by comparing the center of the node to the location }
+    function GetChildForLocation(Location : TAffineVector) : TSectorNode; virtual;
 
     {: The leaves that are stored in this node }
     property Leaves : TSpacePartitionLeafList read FLeaves;
@@ -797,17 +805,16 @@ end;
 
 function TSectorNode.PlaceLeafInChild(aLeaf: TSpacePartitionLeaf)  : TSectorNode;
 var
-  i : integer;
+  ChildNode : TSectorNode;
 begin
-  for i := 0 to FChildCount-1 do
+  // Which child does it fit in?
+  ChildNode := GetChildForLocation(aLeaf.FCachedAABB.min);
+  if ChildNode.AABBFitsInNode(aLeaf.FCachedAABB) then
   begin
-    if FChildren[i].AABBFitsInNode(aLeaf.FCachedAABB) then
-    begin
-      result := FChildren[i].AddLeaf(aLeaf);
-      exit;
-    end;
+    result := ChildNode.AddLeaf(aLeaf);
+    exit;
   end;
-
+  
   // Doesn't fit the any child
   aLeaf.FPartitionTag := self;
   FLeaves.Add(aLeaf);
@@ -922,6 +929,37 @@ function TSectorNode.ContainsBSphere(
   const aBSphere: TBSphere): TSpaceContains;
 begin
   result := AABBContainsBSphere(FAABB, aBSphere);
+end;
+
+procedure TSectorNode.SetAABB(const Value: TAABB);
+begin
+  FAABB := Value;
+  FCenter := VectorScale(VectorAdd(FAABB.min,FAABB.max), 0.5);
+end;
+
+function TSectorNode.GetChildForLocation(
+  Location: TAffineVector): TSectorNode;
+type
+  TCompareSet = set of (cUpper, cLower, cBack, cFore, cLeft, cRight);
+var
+  i : integer;
+  CompareResult : TCompareSet;
+  ChildNodeIndex : integer;
+begin
+  // Instead of looping through all children, we simply determine on which
+  // side of the center node the child is located
+  ChildNodeIndex := 0;
+
+  // Upper / Lower
+  if Location[1]<FCenter[1] then  ChildNodeIndex := 4;
+
+  // Left / Right
+  if Location[2]<FCenter[2] then ChildNodeIndex := ChildNodeIndex or 2;
+
+  // Fore / Back
+  if Location[0]>FCenter[0] then ChildNodeIndex := ChildNodeIndex or 1;
+
+  result := FChildren[ChildNodeIndex];
 end;
 
 { TSectoredSpacePartition }
@@ -1161,6 +1199,7 @@ end;
 procedure TSPOctreeNode.CreateChildren;
 var
   i : integer;
+  AABB : TAABB;
   function GetExtent(const flags: array of byte): TAffineVector;
   var
     n: integer;
@@ -1168,7 +1207,7 @@ var
      for n:=0 to 2 do begin
        case flags[n] of
          cMIN: result[n]:=FAABB.min[n];
-         cMID: result[n]:=FAABB.min[n]/2+FAABB.max[n]/2;
+         cMID: result[n]:=(FAABB.max[n]+FAABB.min[n])/2;
          cMAX: result[n]:=FAABB.max[n];
        end;
      end;
@@ -1179,8 +1218,9 @@ begin
     FChildren[i] := FSectoredSpacePartition.CreateNewNode(self);
 
     //Generate new extents based on parent's extents
-    FChildren[i].FAABB.min:=GetExtent(cFlagMin[i]);
-    FChildren[i].FAABB.max:=GetExtent(cFlagMax[i]);
+    AABB.min :=GetExtent(cFlagMin[i]);
+    AABB.max :=GetExtent(cFlagMax[i]);
+    FChildren[i].AABB := AABB;
   end;
 
   FChildCount := 8;
