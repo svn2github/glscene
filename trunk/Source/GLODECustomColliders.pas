@@ -42,8 +42,7 @@ type
   //
   {: The custom collider is designed for generic contact handling. There is a
      contact point generator for sphere, box, capped cylinder, cylinder and
-     cone geoms. The ContactResolution defines the number of contact points
-     generated, 1 being the lowest amount.<p>
+     cone geoms.<p>
 
      Once the contact points for a collision are generated the abstract Collide
      function is called to generate the depth and the contact position and
