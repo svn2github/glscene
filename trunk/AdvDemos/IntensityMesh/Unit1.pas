@@ -23,7 +23,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
   GLVectorFileObjects, GLWin32Viewer, GLMisc, GLMesh, GLTexture, GLUserShader,
   StdCtrls, GLHUDObjects, VectorGeometry, OpenGL1x, ComCtrls, GLObjects,
-  ExtCtrls, GLBitmapFont, GLWindowsFont;
+  ExtCtrls, GLBitmapFont, GLWindowsFont, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -158,7 +158,7 @@ begin
       // restore states or mark them dirty
       if CBWireFrame.Checked then
          glPopAttrib;
-      ResetGLPolygonMode;
+      rci.GLStates.ResetGLPolygonMode;
       Continue:=False;
    end;
 end;
