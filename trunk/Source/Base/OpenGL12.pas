@@ -3946,10 +3946,8 @@ procedure ActivateRenderingContext(DC: HDC; RC: HGLRC);
 function CreateRenderingContext(DC: HDC; Options: TRCOptions;
                   ColorBits, StencilBits, AccumBits, AuxBuffers: Integer;
                   Layer: Integer): HGLRC;
-procedure DeactivateRenderingContext;
+procedure DoDeactivateRenderingContext;
 procedure DestroyRenderingContext(RC: HGLRC);
-function CurrentRenderingContextRC: HGLRC;
-function CurrentRenderingContextDC: HDC;
 procedure ClearExtensions;
 function HasActiveContext: Boolean;
 procedure ReadExtensions;
@@ -6622,7 +6620,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure DeactivateRenderingContext;
+procedure DoDeactivateRenderingContext;
 
 begin
   Assert(ActivationRefCount > 0, 'Unbalanced deactivation.'); 
@@ -6665,26 +6663,6 @@ begin
     ContextList.UnlockList;
   end;
 
-end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-function CurrentRenderingContextDC: HDC;
-
-// Returns the device context which is used for the current rendering context of the caller thread.
-
-begin
-  Result := wglGetCurrentDC;
-end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-function CurrentRenderingContextRC: HGLRC;
-
-// Returns the device context which is used for the current rendering context of the caller thread.
-
-begin
-  Result := wglGetCurrentContext;
 end;
 
 {$ENDIF}

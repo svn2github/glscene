@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>12/08/01 - Egg - Completely rewritten handles management
       <li>27/07/01 - Egg - TGLLibMaterials now a TOwnedCollection
       <li>19/07/01 - Egg - Added "Enabled" to TGLTexture
       <li>28/06/01 - Egg - Added AddTextureMaterial TGraphic variant
@@ -91,7 +92,8 @@ unit GLTexture;
 interface
 
 uses
-  Windows, Classes, OpenGL12, Graphics, Geometry, SysUtils, GLMisc, GLGraphics;
+  Windows, Classes, OpenGL12, Graphics, Geometry, SysUtils, GLMisc, GLGraphics,
+  GLContext;
 
 type
 
@@ -591,7 +593,7 @@ type
       Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
 	TGLTexture = class (TGLUpdateAbleObject)
 		private
-			FHandle      : TGLuint;
+			FTextureHandle : TGLTextureHandle;
 			FTextureMode : TGLTextureMode;
 			FTextureWrap : TGLTextureWrap;
          FTextureFormat : TGLTextureFormat;
@@ -602,7 +604,6 @@ type
 			FImage       : TGLTextureImage;
 			FImageAlpha  : TGLTextureImageAlpha;
          FOnTextureNeeded : TTextureNeededEvent;
-         FLastRC, FLastDC : Integer;
          FCompression : TGLTextureCompression;
          FRequiredMemorySize : Integer;
          FFilteringQuality : TGLTextureFilteringQuality;
@@ -642,7 +643,7 @@ type
 
 			procedure Assign(Source: TPersistent); override;
 
-			procedure DestroyHandle(glsceneOnly : Boolean);
+			procedure DestroyHandles;
 			procedure DisableAutoTexture;
 			procedure InitAutoTexture(const texRep : TTexPoint); overload;
 			procedure InitAutoTexture(texRep : PTexPoint); overload;
@@ -798,7 +799,7 @@ type
          procedure UnApply(var rci : TRenderContextInfo);
 			procedure Assign(Source: TPersistent); override;
 			procedure NotifyChange(Sender : TObject); override;
-         procedure DestroyHandle(glsceneOnly : Boolean);
+         procedure DestroyHandles;
 
 		published
 			{ Published Declarations }
@@ -843,7 +844,7 @@ type
          procedure SetTexture2Name(const val : TGLLibMaterialName);
 
          procedure CalculateTextureMatrix;
-         procedure DestroyHandle(glsceneOnly : Boolean);
+         procedure DestroyHandles;
          procedure OnNotifyChange(Sender : TObject);
          procedure DoOnTextureNeeded(Sender : TObject; var textureFileName : String);
 
@@ -899,7 +900,7 @@ type
 
          procedure SetItems(index : Integer; const val : TGLLibMaterial);
 	      function GetItems(index : Integer) : TGLLibMaterial;
-         procedure DestroyHandles(glsceneOnly : Boolean);
+         procedure DestroyHandles;
 
       public
 	      { Public Declarations }
@@ -942,7 +943,7 @@ type
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
-         procedure DestroyHandles(glsceneOnly : Boolean);
+         procedure DestroyHandles;
 
 	      procedure SaveToStream(aStream : TStream); dynamic;
 	      procedure LoadFromStream(aStream : TStream); dynamic;
@@ -1815,13 +1816,15 @@ begin
 	FMinFilter:=miNearest;
    FFilteringQuality:=tfIsotropic;
    FRequiredMemorySize:=-1;
+   FTextureHandle:=TGLTextureHandle.Create;
 end;
 
 // Destroy
 //
 destructor TGLTexture.Destroy;
 begin
-	DestroyHandle(False);
+	DestroyHandles;
+   FTextureHandle.Free;
 	FImage.Free;
 	inherited Destroy;
 end;
@@ -2078,41 +2081,27 @@ end;
 //
 function TGLTexture.GetHandle : TGLuint;
 begin
-	if (FHandle = 0) or (FChanges <> []) then begin
-		if FHandle = 0 then begin
-			glGenTextures(1, @FHandle);
-			Assert(FHandle<>0);
+	if (FTextureHandle.Handle = 0) or (FChanges <> []) then begin
+		if FTextureHandle.Handle = 0 then begin
+         FTextureHandle.AllocateHandle;
+			Assert(FTextureHandle.Handle<>0);
 		end;
-      // used for last ditch attempt to free texture library
-      FLastDC:=CurrentRenderingContextDC;
-      FLastRC:=CurrentRenderingContextRC;
       // bind texture
-		glBindTexture(GL_TEXTURE_2D, FHandle);
+		glBindTexture(GL_TEXTURE_2D, FTextureHandle.Handle);
 		PrepareParams;
 		PrepareImage;
 		FChanges:=[];
 	end;
-	Result:=FHandle;
+	Result:=FTextureHandle.Handle;
 end;
 
-// DestroyHandle
+// DestroyHandles
 //
-procedure TGLTexture.DestroyHandle(glsceneOnly : Boolean);
+procedure TGLTexture.DestroyHandles;
 begin
-	if FHandle <> 0 then begin
-      if not glsceneOnly then begin
-         if CurrentRenderingContextDC<=0 then begin
-            // attempt to restore DC/RC
-            ActivateRenderingContext(FLastDC, FLastRC);
-            Assert(CurrentRenderingContextDC>0);
-   	   	glDeleteTextures(1, @FHandle);
-            DeactivateRenderingContext;
-	   	end else glDeleteTextures(1, @FHandle);
-      end;
-      FHandle:=0;
-		FChanges:=[tcParams,tcImage];
-      FRequiredMemorySize:=-1;
-	end;
+   FTextureHandle.DestroyHandle;
+   FChanges:=[tcParams,tcImage];
+   FRequiredMemorySize:=-1;
 end;
 
 // PrepareImage
@@ -2457,13 +2446,13 @@ begin
          TGLLibMaterial(Owner).NotifyUsers;
 end;
 
-// DestroyHandle
+// DestroyHandles
 //
-procedure TGLMaterial.DestroyHandle(glsceneOnly : Boolean);
+procedure TGLMaterial.DestroyHandles;
 begin
 	if Assigned(currentLibMaterial) then
-		currentLibMaterial.DestroyHandle(glsceneOnly);
-   Texture.DestroyHandle(glsceneOnly);
+		currentLibMaterial.DestroyHandles;
+   Texture.DestroyHandles;
 end;
 
 // ------------------
@@ -2688,17 +2677,17 @@ begin
    NotifyUsers;
 end;
 
-// DestroyHandle
+// DestroyHandles
 //
-procedure TGLLibMaterial.DestroyHandle(glsceneOnly : Boolean);
+procedure TGLLibMaterial.DestroyHandles;
 var
    libMat : TGLLibMaterial;
 begin
-	FMaterial.DestroyHandle(glsceneOnly);
+	FMaterial.DestroyHandles;
    if FTexture2Name<>'' then begin
       libMat:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
       if Assigned(libMat) then
-         libMat.DestroyHandle(glsceneOnly);
+         libMat.DestroyHandles;
    end;
 end;
 
@@ -2772,12 +2761,12 @@ end;
 
 // DestroyHandles
 //
-procedure TGLLibMaterials.DestroyHandles(glsceneOnly : Boolean);
+procedure TGLLibMaterials.DestroyHandles;
 var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      Items[i].DestroyHandle(glsceneOnly);
+      Items[i].DestroyHandles;
 end;
 
 // Owner
@@ -2875,10 +2864,10 @@ end;
 
 // DestroyHandles
 //
-procedure TGLMaterialLibrary.DestroyHandles(glsceneOnly : Boolean);
+procedure TGLMaterialLibrary.DestroyHandles;
 begin
    if Assigned(FMaterials) then
-      FMaterials.DestroyHandles(glsceneOnly);
+      FMaterials.DestroyHandles;
 end;
 
 // Loaded

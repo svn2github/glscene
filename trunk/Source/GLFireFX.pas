@@ -680,22 +680,25 @@ begin
       glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
 
       FHandle:=glGenLists(1);
-      glNewList(FHandle, GL_COMPILE);
-         Manager.AffParticle3d(Manager.FOuterColor.Color, mat);
-      glEndList;
-      glPushMatrix;
-      lastTr:=NullVector;
-      SetVector(innerColor, Manager.FInnerColor.Color);
-      for i:=n-1 downto 0 do begin
-         fp:=PFireParticle(objList[i]);
-         glTranslatef(fp.Position[0]-lastTr[0], fp.Position[1]-lastTr[1], fp.Position[2]-lastTr[2]);
-         SetVector(lastTr, fp.Position);
-         innerColor[3]:=fp.Alpha*fp.TimeToLive/Sqr(fp.LifeLength);
-         glColor4fv(@innerColor);
-         glCallList(FHandle);
+      try
+         glNewList(FHandle, GL_COMPILE);
+            Manager.AffParticle3d(Manager.FOuterColor.Color, mat);
+         glEndList;
+         glPushMatrix;
+         lastTr:=NullVector;
+         SetVector(innerColor, Manager.FInnerColor.Color);
+         for i:=n-1 downto 0 do begin
+            fp:=PFireParticle(objList[i]);
+            glTranslatef(fp.Position[0]-lastTr[0], fp.Position[1]-lastTr[1], fp.Position[2]-lastTr[2]);
+            SetVector(lastTr, fp.Position);
+            innerColor[3]:=fp.Alpha*fp.TimeToLive/Sqr(fp.LifeLength);
+            glColor4fv(@innerColor);
+            glCallList(FHandle);
+         end;
+         glPopMatrix;
+      finally
+         glDeleteLists(FHandle, 1);
       end;
-      glPopMatrix;
-      glDeleteLists(FHandle, 1);
 
       objList.Free;
       distList.Free;

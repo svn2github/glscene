@@ -4,13 +4,14 @@
 	Fonction utilitaires graphiques<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>20/02/01 - Egg - Fixed SetHeight & SetWidth (thx Nelson Chu)
-      <li>14/02/01 - Egg - Simplified RegisterAsOpenGLTexture
-      <li>15/01/01 - Egg - Fixed RegisterAsOpenGLTexture (clamping) 
-      <li>14/01/01 - Egg - Fixed isEmpty (was invalid for rectangles)
-      <li>08/10/00 - Egg - Fixed RegisterAsOpenGLTexture and Assign(nil)
-      <li>25/09/00 - Egg - First operational code
-	   <li>19/08/00 - Egg - Creation
+      <li>12/08/01 - EG - Now detects and uses GL_SGIS_generate_mipmap
+      <li>20/02/01 - EG - Fixed SetHeight & SetWidth (thx Nelson Chu)
+      <li>14/02/01 - EG - Simplified RegisterAsOpenGLTexture
+      <li>15/01/01 - EG - Fixed RegisterAsOpenGLTexture (clamping)
+      <li>14/01/01 - EG - Fixed isEmpty (was invalid for rectangles)
+      <li>08/10/00 - EG - Fixed RegisterAsOpenGLTexture and Assign(nil)
+      <li>25/09/00 - EG - First operational code
+	   <li>19/08/00 - EG - Creation
 	</ul></font>
 }
 unit GLGraphics;
@@ -442,8 +443,16 @@ begin
 		   		glTexImage2d(GL_TEXTURE_2D, 0, texFormat, w2, h2, 0,
 	   							 GL_RGBA, GL_UNSIGNED_BYTE, buffer)
    		else
-		   	gluBuild2DMipmaps(GL_TEXTURE_2D, texFormat, w2, h2,
-	   								GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            if GL_SGIS_generate_mipmap then begin
+               // hardware-accelerated when supported
+               glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+		   		glTexImage2d(GL_TEXTURE_2D, 0, texFormat, w2, h2, 0,
+	   							 GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            end else begin
+               // slower (software mode)
+   		   	gluBuild2DMipmaps(GL_TEXTURE_2D, texFormat, w2, h2,
+	      								GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            end;
    		end;
 		finally
          if buffer<>Pointer(FData) then

@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>12/08/01 - Egg - Completely rewritten handles management
       <li>21/07/01 - Egg - Added Notication registration in SetHeightDataSource
       <li>04/03/01 - Egg - Completed for first release
 	   <li>12/02/01 - Egg - Creation
@@ -11,7 +12,7 @@ unit GLTerrainRenderer;
 
 interface
 
-uses Classes, GLScene, GLHeightData, GLTexture, Geometry;
+uses Classes, GLScene, GLHeightData, GLTexture, Geometry, GLContext;
 
 type
 
@@ -42,7 +43,7 @@ type
          procedure SetTilesPerTexture(const val : Single);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-			procedure DoDestroyList(glsceneOnly : Boolean); override;
+			procedure DestroyHandles; override;
 
          procedure ReleaseAllTiles; dynamic;
          procedure OnTileDestroyed(sender : TObject); virtual;
@@ -135,9 +136,9 @@ begin
    inherited;
 end;
 
-// DoDestroyList
+// DestroyHandles
 //
-procedure TTerrainRenderer.DoDestroyList(glsceneOnly : Boolean);
+procedure TTerrainRenderer.DestroyHandles;
 begin
    inherited;
    ReleaseAllTiles;
@@ -163,26 +164,10 @@ end;
 // OnTileDestroyed
 //
 procedure TTerrainRenderer.OnTileDestroyed(sender : TObject);
-var
-   activated : Boolean;
 begin
-   if CurrentRenderingContextRC=0 then begin
-      try
-         Scene.ActivateDefaultRenderingContext;
-         activated:=True;
-      except
-         activated:=False;
-      end;
-   end else activated:=False;
-   try
-      with sender as THeightData do if Tag>0 then begin
-         if CurrentRenderingContextRC<>0 then
-            glDeleteLists(Tag, 1);
-         Tag:=0;
-      end;
-   finally
-      if activated and (CurrentRenderingContextRC<>0) then
-         DeactivateRenderingContext;
+   with sender as THeightData do if Tag<>0 then begin
+      TGLListHandle(Tag).Free;
+      Tag:=0;
    end;
 end;
 
@@ -253,6 +238,7 @@ var
    i : Integer;
    hd, tile : THeightData;
    xLeft, yTop : Integer;
+   listHandle : TGLListHandle;
 begin
    xLeft:=Round(tilePos[0]/(TileSize-3)-0.5)*(TileSize-3);
    yTop:=Round(tilePos[1]/(TileSize-3)-0.5)*(TileSize-3);
@@ -280,8 +266,10 @@ begin
       end;
    end;
    if tile.Tag=0 then begin
-      tile.Tag:=glGenLists(1);
-      glNewList(tile.Tag, GL_COMPILE);
+      listHandle:=TGLListHandle.Create;
+      listHandle.AllocateHandle;
+      tile.Tag:=Integer(listHandle);
+      glNewList(listHandle.Handle, GL_COMPILE);
       if (eyeDistance<QualityDistance) or (QualityDistance<=0) then begin
          tile.Tag2:=1;
          RenderTileAsTriangleStrip(tile,
@@ -294,10 +282,9 @@ begin
             AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1));
       end;
       glEndList;
-      glCallList(tile.Tag);
-   end;
+   end else listHandle:=TGLListHandle(tile.Tag);
    // start rendering
-   glCallList(tile.Tag);
+   glCallList(listHandle.Handle);
    if tile.Tag2=1 then
       Inc(FLastTriangleCount, 2*(tile.Size-3)*(tile.Size-3))
    else Inc(FLastTriangleCount, 4*(tile.Size-2)-2);

@@ -818,7 +818,7 @@ type
 			{ Protected Declarations }
          BaseList    : TGLuint;
          FontChanged : Boolean;
-         procedure DoDestroyList(glsceneOnly : Boolean); override;
+         procedure DestroyHandles; override;
          procedure OnFontChange(sender : TObject);
 
 		public
@@ -3523,7 +3523,7 @@ end;
 
 // DoDestroyList
 //
-procedure TSpaceText.DoDestroyList(glsceneOnly : Boolean);
+procedure TSpaceText.DestroyHandles;
 begin
    ReleaseFontManager;
    inherited;

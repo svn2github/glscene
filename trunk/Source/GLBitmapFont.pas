@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/08/01 - Egg - Completely rewritten handles management
       <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
 	   <li>15/01/01 - EG - Creation
 	</ul></font>
@@ -10,7 +11,7 @@ unit GLBitmapFont;
 
 interface
 
-uses Classes, GLScene, Graphics, Geometry, GLMisc, StdCtrls;
+uses Classes, GLScene, Graphics, Geometry, GLMisc, StdCtrls, GLContext;
 
 type
 
@@ -88,7 +89,7 @@ type
          FGlyphsIntervalX, FGlyphsIntervalY : Integer;
          FHSpace, FVSpace : Integer;
          FUsers : TList;
-         FHandle : Integer;
+         FTextureHandle : TGLTextureHandle;
          FHandleIsDirty : Boolean;
 			FMinFilter : TGLMinFilter;
 			FMagFilter : TGLMagFilter;
@@ -121,8 +122,6 @@ type
 
 	      procedure RegisterUser(anObject : TGLBaseSceneObject);
 	      procedure UnRegisterUser(anObject : TGLBaseSceneObject);
-         {: Invoke to free all OpenGL list and handles eventually allocated. }
-	      procedure FreeList(glsceneOnly : Boolean);
 
          {: Renders the given string at current position.<p>
             The current matrix is blindly used, meaning you can render all kinds
@@ -312,6 +311,7 @@ begin
    FHandleIsDirty:=True;
    FMinFilter:=miLinear;
    FMagFilter:=maLinear;
+   FTextureHandle:=TGLTextureHandle.Create;
 end;
 
 // Destroy
@@ -319,7 +319,7 @@ end;
 destructor TBitmapFont.Destroy;
 begin
 	inherited Destroy;
-   FreeList(True);
+   FTextureHandle.Free;
    FRanges.Free;
    FGlyphs.Free;
    Assert(FUsers.Count=0);
@@ -444,20 +444,6 @@ begin
    FUsers.Remove(anObject);
 end;
 
-// FreeList
-//
-procedure TBitmapFont.FreeList(glsceneOnly : Boolean);
-begin
-	if FHandle<>0 then begin
-      if not glsceneOnly then begin
-         Assert(CurrentRenderingContextDC>0);
- 	   	glDeleteTextures(1, @FHandle);
-      end;
-      FHandle:=0;
-      FHandleIsDirty:=True;
-   end;
-end;
-
 // PrepareImage
 //
 procedure TBitmapFont.PrepareImage;
@@ -554,11 +540,11 @@ begin
    // prepare texture if necessary
    if FHandleIsDirty then begin
       // prepare handle
-      if FHandle = 0 then begin
-         glGenTextures(1, @FHandle);
-         Assert(FHandle<>0);
+      if FTextureHandle.Handle = 0 then begin
+         FTextureHandle.AllocateHandle;
+         Assert(FTextureHandle.Handle<>0);
       end;
-      glBindtexture(GL_TEXTURE_2D, FHandle);
+      glBindtexture(GL_TEXTURE_2D, FTextureHandle.Handle);
       // texture registration
       if Glyphs.Width<>0 then begin
          PrepareImage;
@@ -576,7 +562,7 @@ begin
    glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   glBindTexture(GL_TEXTURE_2D, FHandle);
+   glBindTexture(GL_TEXTURE_2D, FTextureHandle.Handle);
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
    // start rendering
    glBegin(GL_QUADS);

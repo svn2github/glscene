@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>12/08/01 - Egg - Completely rewritten handles management
       <li>08/08/01 - Egg - Added TBaseMesh.AxisAlignedDimensions
       <li>19/07/01 - Egg - AutoCentering is now a property of TBaseMesh,
                            3DS loader no longer auto-centers,
@@ -836,7 +837,7 @@ type
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
 
-         procedure DoDestroyList(glsceneOnly : Boolean); override;
+         procedure DestroyHandles; override;
 
          {: Invoked after creating a TVectorFile and before loading.<p>
             Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
@@ -3869,7 +3870,7 @@ procedure TBaseMesh.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if FMaterialLibrary<>val then begin
       if Assigned(FMaterialLibrary) then begin
-         FreeList(False);
+         DestroyHandles;
          FMaterialLibrary.RemoveFreeNotification(Self);
       end;
       FMaterialLibrary:=val;
@@ -3924,12 +3925,12 @@ begin
    ScaleVector(Result, Scale.DirectVector);
 end;
 
-// DoDestroyList
+// DestroyHandles
 //
-procedure TBaseMesh.DoDestroyList(glsceneOnly : Boolean);
+procedure TBaseMesh.DestroyHandles;
 begin
    if Assigned(FMaterialLibrary) then
-      MaterialLibrary.DestroyHandles(glsceneOnly);
+      MaterialLibrary.DestroyHandles;
    inherited;
 end;
 

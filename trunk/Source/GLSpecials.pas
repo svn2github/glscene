@@ -180,42 +180,6 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-(*
-function SetupTexture(FileName: String; MinFilter, MaxFilter: TGLuint): Integer;
-
-var buf : Pointer;
-    Width,
-    Height     : Integer;
-    Loader     : TSGIGraphic;
-
-begin
-  glGenTextures(1,@Result);
-  glBindTexture(GL_TEXTURE_2D,Result);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,4);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
-  glPixelStorei(GL_UNPACK_SKIP_ROWS,0);
-  glPixelStorei(GL_UNPACK_SKIP_PIXELS,0);
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE);
-  glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,MinFilter);
-  glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,MaxFilter);
-  buf:=nil;
-  Loader:=TSGIGraphic.Create;
-  try
-    buf:=Loader.LoadRaw(FileName,Width,Height);
-  {  if (useMipmaps)
-      gluBuild2DMipmaps(GL_TEXTURE_2D, 1, width, height,
-        GL_LUMINANCE, GL_UNSIGNED_BYTE, buf);
-    else}
-    glTexImage2D(GL_TEXTURE_2D,0,1,Width,Height,0,GL_LUMINANCE,GL_UNSIGNED_BYTE,buf);
-  finally
-    Loader.Free;
-    FreeMem(buf);
-  end;
-end;
-*)
-
-//------------------------------------------------------------------------------
 //The stream contains a bitmap file
 function SetupTextureFromStream(Stream: TStream; MinFilter, MaxFilter: TGLuint): Integer;
 type

@@ -5,6 +5,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>12/08/01 - EG - Handles management completed
       <li>22/07/01 - EG - Creation (glcontext.omm)
    </ul></font>
 }
@@ -44,6 +45,8 @@ type
          FOnDestroyContext : TNotifyEvent;
          FManager : TGLContextManager;
          FActivationCount : Integer;
+         FSharedContexts : TList;
+         FOwnedHandles : TList;
 
       protected
          { Protected Declarations }
@@ -54,8 +57,10 @@ type
          procedure SetOptions(const aOptions : TGLRCOptions);
          function GetActive : Boolean;
          procedure SetActive(const aActive : Boolean);
+         procedure PropagateSharedContext;
 
          procedure DoCreateContext(outputDevice : Integer); virtual; abstract;
+         procedure DoShareLists(aContext : TGLContext); virtual; abstract;
          procedure DoDestroyContext; virtual; abstract;
          procedure DoActivate; virtual; abstract;
          procedure DoDeactivate; virtual; abstract;
@@ -93,6 +98,9 @@ type
             The class will monitor the outputDevice, and if itbecomes
             invalid, attempt to destroy the context. }
          procedure CreateContext(outputDevice : Integer);
+         {: Setup display list sharing between two rendering contexts.<p>
+            Both contexts must have the same pixel format. }
+         procedure ShareLists(aContext : TGLContext);
          {: Destroy the context.<p>
             Will fail if no context has been created.<br>
             The method will first invoke the OnDestroyContext
@@ -113,9 +121,74 @@ type
             created to the time of its destruction. }
          function IsValid : Boolean; virtual; abstract;
 
+         {: Returns the first compatible context that isn't self in the shares. }
+         function FindCompatibleContext : TGLContext;
+         procedure DestroyAllHandles;
    end;
 
    TGLContextClass = class of TGLContext;
+
+   // TGLContextHandle
+   //
+   {: Wrapper around an OpenGL context handle.<p>
+      This wrapper also takes care of context registrations and data releases
+      related to context releases an cleanups. This is an abstract class,
+      use the TGLListHandle and TGLTextureHandle subclasses. }
+   TGLContextHandle = class
+      private
+         { Private Declarations }
+         FRenderingContext : TGLContext;
+         FHandle : Integer;
+
+      protected
+         { Protected Declarations }
+         //: Invoked by when there is no compatible context left for relocation
+         procedure ContextDestroying;
+
+         function DoAllocateHandle : Integer; virtual; abstract;
+         procedure DoDestroyHandle; virtual; abstract;
+
+      public
+         { Public Declarations }
+         constructor Create; virtual;
+         destructor Destroy; override;
+
+         property Handle : Integer read FHandle;
+         property RenderingContext : TGLContext read FRenderingContext;
+
+         procedure AllocateHandle;
+         procedure DestroyHandle;
+   end;
+
+   // TGLListHandle
+   //
+   TGLListHandle = class (TGLContextHandle)
+      private
+         { Private Declarations }
+
+      protected
+         { Protected Declarations }
+         function DoAllocateHandle : Integer; override;
+         procedure DoDestroyHandle; override;
+
+      public
+         { Public Declarations }
+   end;
+
+   // TGLTextureHandle
+   //
+   TGLTextureHandle = class (TGLContextHandle)
+      private
+         { Private Declarations }
+
+      protected
+         { Protected Declarations }
+         function DoAllocateHandle : Integer; override;
+         procedure DoDestroyHandle; override;
+
+      public
+         { Public Declarations }
+   end;
 
    // TGLContextNotification
    //
@@ -170,6 +243,8 @@ type
          //: Marks the context manager for termination
          procedure Terminate;
 
+         {: Request all contexts to destroy all their handles. }
+         procedure DestroyAllHandles;
    end;
 
    EGLContext = class (Exception)
@@ -186,6 +261,7 @@ type
       protected
          { Protected Declarations }
          procedure DoCreateContext(outputDevice : Integer); override;
+         procedure DoShareLists(aContext : TGLContext); override;
          procedure DoDestroyContext; override;
          procedure DoActivate; override;
          procedure DoDeactivate; override;
@@ -198,10 +274,14 @@ type
          function IsValid : Boolean; override;
    end;
 
+  EOpenGLError = class(Exception);
+
 // RegisterGLContextClass
 //
 {: Drivers should register themselves via this function. }
 procedure RegisterGLContextClass(aGLContextClass : TGLContextClass);
+
+function CurrentGLContext : TGLContext;
 
 var
    GLContextManager : TGLContextManager;
@@ -226,10 +306,20 @@ resourcestring
    cContextActivationFailed =    'Context activation failed';
    cContextDeactivationFailed =  'Context deactivation failed';
    cUnbalancedContexActivations= 'Unbalanced context activations';
+   cIncompatibleContexts =       'Incompatible contexts';
 
 var
    vContextClasses : TList = nil;
 
+threadvar
+   vCurrentGLContext : TGLContext;
+
+// CurrentGLContext
+//
+function CurrentGLContext : TGLContext;
+begin
+   Result:=vCurrentGLContext;
+end;
 
 {$IFNDEF VER140}
 procedure RaiseLastOSError;
@@ -237,6 +327,27 @@ begin
    RaiseLastWin32Error;
 end;
 {$ENDIF}
+
+// CheckOpenGLError
+//
+procedure CheckOpenGLError;
+var
+   GLError: UINT;
+	Count: Word;
+begin
+	GLError:=glGetError;
+	if GLError <> GL_NO_ERROR then begin
+		Count:=0;
+      // Because under some circumstances reading the error code creates a new error
+      // and thus hanging up the thread, we limit the loop to 6 reads.
+      try
+         while (glGetError <> GL_NO_ERROR) and (Count < 6) do Inc(Count);
+      except
+         // Egg : ignore exceptions here, will perhaps avoid problem expressed before
+		end;
+		raise EOpenGLError.Create(gluErrorString(GLError));
+	end;
+end;
 
 // RegisterGLContextClass
 //
@@ -261,6 +372,8 @@ begin
    FAccumBits:=0;
    FAuxBuffers:=0;
    FOptions:=[];
+   FSharedContexts:=TList.Create;
+   FOwnedHandles:=TList.Create;
    GLContextManager.RegisterContext(Self);
 end;
 
@@ -268,7 +381,10 @@ end;
 //
 destructor TGLContext.Destroy;
 begin
+   DestroyContext;
    GLContextManager.UnRegisterContext(Self);
+   FOwnedHandles.Free;
+   FSharedContexts.Free;
    inherited Destroy;
 end;
 
@@ -343,17 +459,96 @@ begin
    if IsValid then
       raise EGLContext.Create(cContextAlreadyCreated);
    DoCreateContext(outputDevice);
+   FSharedContexts.Add(Self);
    Manager.ContextCreatedBy(Self);
+end;
+
+// PropagateSharedContext
+//
+procedure TGLContext.PropagateSharedContext;
+var
+   i, j : Integer;
+begin
+   for i:=0 to FSharedContexts.Count-1 do begin
+      with TGLContext(FSharedContexts[i]).FSharedContexts do begin
+         Clear;
+         for j:=0 to FSharedContexts.Count-1 do
+            Add(FSharedContexts[j]);
+      end;
+   end;
+end;
+
+// ShareLists
+//
+procedure TGLContext.ShareLists(aContext : TGLContext);
+begin
+   if IsValid then begin
+      DoShareLists(aContext);
+      if FSharedContexts.IndexOf(aContext)<0 then begin
+         FSharedContexts.Add(aContext);
+         PropagateSharedContext;
+      end;
+   end else raise EGLContext.Create(cContextNotCreated);
+end;
+
+// DestroyAllHandles
+//
+procedure TGLContext.DestroyAllHandles;
+var
+   i : Integer;
+begin
+   Activate;
+   try
+      for i:=FSharedContexts.Count-1 downto 0 do
+         TGLContextHandle(FSharedContexts[i]).DestroyHandle;
+   finally
+      Deactivate;
+   end;
 end;
 
 // DestroyContext
 //
 procedure TGLContext.DestroyContext;
+var
+   i : Integer;
+   oldContext, compatContext : TGLContext;
 begin
    if IsValid then begin
-      Manager.DestroyingContextBy(Self);
-      Active:=False;
-      DoDestroyContext;
+      if vCurrentGLContext<>Self then begin
+         oldContext:=vCurrentGLContext;
+         if Assigned(oldContext) then
+            oldContext.Deactivate;
+      end else oldContext:=nil;
+      Activate;
+      try
+         compatContext:=FindCompatibleContext;
+         if Assigned(compatContext) then begin
+            // transfer handle owner ship to a compat context
+            for i:=FOwnedHandles.Count-1 downto 0 do begin
+               compatContext.FOwnedHandles.Add(FOwnedHandles[i]);
+               TGLContextHandle(FOwnedHandles).FRenderingContext:=compatContext;
+            end;
+         end else begin
+            // no compat context, release handles
+            for i:=FOwnedHandles.Count-1 downto 0 do begin
+               with TGLContextHandle(FOwnedHandles[i]) do begin
+                  DoDestroyHandle;
+                  FHandle:=0;
+                  FRenderingContext:=nil;
+               end;
+            end;
+         end;
+         FOwnedHandles.Clear;
+         Manager.DestroyingContextBy(Self);
+         FSharedContexts.Remove(Self);
+         PropagateSharedContext;
+         FSharedContexts.Clear;
+         Active:=False;
+         DoDestroyContext;
+      finally
+         if Assigned(oldContext) then
+            oldContext.Activate;
+      end;
    end else raise EGLContext.Create(cContextNotCreated);
 end;
 
@@ -365,21 +560,163 @@ begin
       if not IsValid then
          raise EGLContext.Create(cContextNotCreated);
       DoActivate;
-      Inc(FActivationCount);
-   end;
+      vCurrentGLContext:=Self;
+   end else Assert(vCurrentGLContext=Self);
+   Inc(FActivationCount);
 end;
 
 // Deactivate
 //
 procedure TGLContext.Deactivate;
 begin
+   Assert(vCurrentGLContext=Self);
    Dec(FActivationCount);
    if FActivationCount=0 then begin
       if not IsValid then
          raise EGLContext.Create(cContextNotCreated);
       DoDeactivate;
+      vCurrentGLContext:=nil;
    end else if FActivationCount<0 then
       raise EGLContext.Create(cUnbalancedContexActivations);
+end;
+
+// FindCompatibleContext
+//
+function TGLContext.FindCompatibleContext : TGLContext;
+var
+   i : Integer;
+begin
+   Result:=nil;
+   for i:=0 to FSharedContexts.Count-1 do
+      if FSharedContexts[i]<>Self then begin
+         Result:=TGLContext(FSharedContexts[i]);
+         Break;
+      end;
+end;
+
+// ------------------
+// ------------------ TGLContextHandle ------------------
+// ------------------
+
+// Create
+//
+constructor TGLContextHandle.Create;
+begin
+   inherited Create;
+end;
+
+// Destroy
+//
+destructor TGLContextHandle.Destroy;
+begin
+   DestroyHandle;
+   inherited Destroy;
+end;
+
+// AllocateHandle
+//
+procedure TGLContextHandle.AllocateHandle;
+begin
+   Assert(FHandle=0);
+   Assert(vCurrentGLContext<>nil);
+   FHandle:=DoAllocateHandle;
+   if FHandle<>0 then begin
+      FRenderingContext:=vCurrentGLContext;
+      vCurrentGLContext.FOwnedHandles.Add(Self);
+   end;
+end;
+
+// DestroyHandle
+//
+procedure TGLContextHandle.DestroyHandle;
+var
+   oldContext : TGLContext;
+begin
+   if FHandle<>0 then begin
+      FRenderingContext.FOwnedHandles.Remove(Self);
+      if (vCurrentGLContext=FRenderingContext)
+            or ((vCurrentGLContext<>nil)
+                and (vCurrentGLContext.FSharedContexts.IndexOf(FRenderingContext)>=0)) then begin
+         // current context is ours or compatible one
+         DoDestroyHandle;
+         FHandle:=0;
+         FRenderingContext:=nil;
+      end else begin
+         // some other context (or none)
+         oldContext:=vCurrentGLContext;
+         if Assigned(oldContext) then
+            oldContext.Deactivate;
+         FRenderingContext.Activate;
+         try
+            DoDestroyHandle;
+            FHandle:=0;
+            FRenderingContext:=nil;
+         finally
+            FRenderingContext.Deactivate;
+            if Assigned(oldContext) then
+               oldContext.Activate;
+         end;
+         Assert(False, cIncompatibleContexts);
+      end;
+   end;
+end;
+
+// ContextDestroying
+//
+procedure TGLContextHandle.ContextDestroying;
+begin
+   if FHandle<>0 then begin
+      // we are always in the original context or a compatible context
+      DoDestroyHandle;
+      FHandle:=0;
+      FRenderingContext:=nil;
+   end;
+end;
+
+// ------------------
+// ------------------ TGLListHandle ------------------
+// ------------------
+
+// DoAllocateHandle
+//
+function TGLListHandle.DoAllocateHandle : Integer;
+begin
+   Result:=glGenLists(1);
+end;
+
+// DoDestroyHandle
+//
+procedure TGLListHandle.DoDestroyHandle;
+begin
+   // reset error status
+   glGetError;
+   // delete
+   glDeleteLists(FHandle, 1);
+   // check for error
+   CheckOpenGLError;
+end;
+
+// ------------------
+// ------------------ TGLTextureHandle ------------------
+// ------------------
+
+// DoAllocateHandle
+//
+function TGLTextureHandle.DoAllocateHandle : Integer;
+begin
+   glGenTextures(1, @Result);
+end;
+
+// DoDestroyHandle
+//
+procedure TGLTextureHandle.DoDestroyHandle;
+begin
+   // reset error status
+   glGetError;
+   // delete
+ 	glDeleteTextures(1, @FHandle);
+   // check for error
+   CheckOpenGLError;
 end;
 
 // ------------------
@@ -409,6 +746,7 @@ begin
    if Assigned(vContextClasses) and (vContextClasses.Count>0) then
       Result:=TGLContextClass(vContextClasses[0]).Create
    else Result:=nil;
+   Result.FManager:=Self;
 end;
 
 // Lock
@@ -554,6 +892,20 @@ begin
    end;
 end;
 
+// DestroyAllHandles
+//
+procedure TGLContextManager.DestroyAllHandles;
+var
+   i : Integer;
+begin
+   with FList.LockList do try
+      for i:=Count-1 downto 0 do
+         TGLContext(Items[i]).DestroyAllHandles;
+   finally
+      FList.UnLockList;
+   end;
+end;
+
 // ------------------
 // ------------------ TGLWin32Context ------------------
 // ------------------
@@ -663,6 +1015,15 @@ begin
 
 end;
 
+// DoShareLists
+//
+procedure TGLWin32Context.DoShareLists(aContext : TGLContext);
+begin
+   if aContext is TGLWin32Context then
+      wglShareLists(FRC, TGLWin32Context(aContext).FRC)
+   else raise Exception.Create(cIncompatibleContexts);
+end;
+
 // DoDestroyContext
 //
 procedure TGLWin32Context.DoDestroyContext;
@@ -716,6 +1077,7 @@ initialization
 // ------------------------------------------------------------------
 
    GLContextManager:=TGLContextManager.Create;
+   RegisterGLContextClass(TGLWin32Context);
 
 finalization
 

@@ -1,3 +1,5 @@
+//    12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX) 
+//
 unit GLThorFX;       //--René Lindsay 09/03/2001--
 
 interface
@@ -561,7 +563,6 @@ var
    distList : TSingleList;
    objList : TList;
    fp : PThorpoint;
-   FHandle : Integer;
    mat : TMatrix;
 
    vx, vy : TVector;
@@ -602,13 +603,6 @@ begin
           vy[m]:=mat[m][1]*Manager.GlowSize;
       end;
 
-
-      FHandle:=glGenLists(1);
-      //-----------------------------------
-      //glNewList(FHandle, GL_COMPILE);
-           //Manager.Affpoint3d(Manager.FOuterColor.Color, mat);
-      //glEndList;
-      //-----------------------------------
       glPushMatrix;
       lastTr:=NullVector;
       SetVector(innerColor, Manager.FInnerColor.Color);
@@ -667,7 +661,6 @@ begin
 
       glPopAttrib;//(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
       glPopMatrix;
-      glDeleteLists(FHandle, 1);
 
       objList.Free;
       distList.Free;
