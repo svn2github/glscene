@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/04/02 - EG - Added verb to TGLSceneEditor
       <li>26/01/02 - EG - Color property drawing in D6 too now
       <li>22/08/01 - EG - D6 related changes
       <li>08/07/01 - EG - Register for TExtrusionSolid (Uwe Raabe)
@@ -163,6 +164,10 @@ type
       public
          { Public Declarations }
          procedure Edit; override;
+
+			procedure ExecuteVerb(Index: Integer); override;
+			function GetVerb(Index: Integer): String; override;
+			function GetVerbCount: Integer; override;
    end;
 
 (*   // TPlugInProperty
@@ -618,6 +623,31 @@ begin
       SetScene(Self.Component as TGLScene, Self.Designer);
       Show;
    end;
+end;
+
+// ExecuteVerb
+//
+procedure TGLSceneEditor.ExecuteVerb(Index : Integer);
+begin
+   case Index of
+      0 : Edit;
+   end;
+end;
+
+// GetVerb
+//
+function TGLSceneEditor.GetVerb(Index : Integer) : String;
+begin
+   case Index of
+      0 : Result:='Show Scene Editor';
+   end;
+end;
+
+// GetVerbCount
+//
+function TGLSceneEditor.GetVerbCount: Integer;
+begin
+   Result:=1;
 end;
 
 //----------------- TPlugInProperty ------------------------------------------------------------------------------------
