@@ -10,6 +10,7 @@
    CPU               Graphics          Colors      FPS         Sort Time
 
    TBird 1.1GHz      GeForce2 Pro      32 bits     91.7        2.86 msec
+   Duron 800MHz      TNT2 M64          32 bits     12.2        4.45 msec
    --- 20/01/02 - Optimized PFX (sort) and TGLPolygonPFXManager (rendering)
    Duron 800MHz      Voodoo3 NT4       16 bits      7.4        5.52 msec
    TBird 1.1Ghz      GeForce2 Pro      32 bits     65.5        3.66 msec
