@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/03/02 - EG - aaDefault now prefers non-AA when possible
       <li>03/03/02 - EG - Fixed aaNone mode (AA specifically off)
       <li>01/03/02 - EG - Fixed CurrentPixelFormatIsHardwareAccelerated
       <li>22/02/02 - EG - Unified ChooseWGLFormat for visual & non-visual
@@ -427,6 +428,8 @@ var
       Result:=((localPFD.dwFlags and PFD_GENERIC_FORMAT)=0);
    end;
 
+var
+   i, iAttrib, iValue : Integer;
 begin
    outputDC:=HDC(outputDevice);
    if vUseWindowTrackingHook then
@@ -486,7 +489,17 @@ begin
                   AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
                   ChooseWGLFormat(outputDC, 32, @iFormats, nbFormats);
                   if nbFormats>0 then begin
-                     pixelFormat:=iFormats[0];
+                     if WGL_ARB_multisample and (AntiAliasing in [aaNone, aaDefault]) then begin
+                        // Pick first non AntiAliased for aaDefault and aaNone modes
+                        iAttrib:=WGL_SAMPLE_BUFFERS_ARB;
+                        for i:=0 to nbFormats-1 do begin
+                           pixelFormat:=iFormats[i];
+                           iValue:=GL_FALSE;
+                           wglGetPixelFormatAttribivARB(outputDC, pixelFormat, 0, 1,
+                                                        @iAttrib, @iValue);
+                           if iValue=GL_FALSE then Break;
+                        end;
+                     end else pixelFormat:=iFormats[0];
                      if GetPixelFormat(outputDC)<>pixelFormat then begin
                         if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
                            RaiseLastOSError;
