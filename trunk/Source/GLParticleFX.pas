@@ -1121,6 +1121,8 @@ function TGLParticleFXManager.CreateParticle : TGLParticle;
 begin
    Result:=TGLParticle.Create;
    Result.FID:=FNextID;
+   if assigned(cadencer) then
+     Result.FCreationTime:= Cadencer.GetCurrentTime;   
    Inc(FNextID);
    FParticles.AddItem(Result);
    if Assigned(FOnCreateParticle) then
