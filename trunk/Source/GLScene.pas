@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/06/03 - Egg - Fixed issue with SetXxxxAngle (Domin)
       <li>07/06/03 - Egg - Added Buffer.AmbientColor
       <li>06/06/03 - Egg - Added roNoColorBufferClear
       <li>21/05/03 - Egg - RenderToBitmap RC setup fixes (Yurik)
@@ -3214,17 +3215,22 @@ var
 begin
    if AValue<>FRotation.X then begin
       if not (csLoading in ComponentState) then begin
-         GetOrientationVectors(Up, Dir);
-         Diff:=DegToRad(FRotation.X-AValue);
-         RightVector:=VectorCrossProduct(Dir, Up);
-         rotMatrix:=CreateRotationMatrix(RightVector, Diff);
-         FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
-         FUp.Normalize;
-         FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
-         FDirection.Normalize;
-         if FTransMode=tmParentWithPos then
-            FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
-         TransformationChanged;
+         FIsCalculating:=True;
+         try
+            GetOrientationVectors(Up, Dir);
+            Diff:=DegToRad(FRotation.X-AValue);
+            RightVector:=VectorCrossProduct(Dir, Up);
+            rotMatrix:=CreateRotationMatrix(RightVector, Diff);
+            FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
+            FUp.Normalize;
+            FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
+            FDirection.Normalize;
+            if FTransMode=tmParentWithPos then
+               FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
+            TransformationChanged;
+         finally
+            FIsCalculating:=False;
+         end;
       end;
       FRotation.DirectX:=NormalizeDegAngle(AValue);
    end;
@@ -3273,19 +3279,24 @@ var
 begin
    if AValue <> FRotation.Z then begin
       if not (csLoading in ComponentState) then begin
-         GetOrientationVectors(Up, Dir);
-         Diff:=DegToRad(FRotation.Z - AValue);
-         rotMatrix:=CreateRotationMatrix(Dir, Diff);
-         FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
-         FUp.Normalize;
-         FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
-         FDirection.Normalize;
-         if FTransMode = tmParentWithPos then
-            FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
-         TransformationChanged;
+         FIsCalculating:=True;
+         try
+            GetOrientationVectors(Up, Dir);
+            Diff:=DegToRad(FRotation.Z - AValue);
+            rotMatrix:=CreateRotationMatrix(Dir, Diff);
+            FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
+            FUp.Normalize;
+            FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
+            FDirection.Normalize;
+            if FTransMode = tmParentWithPos then
+               FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
+            TransformationChanged;
+         finally
+            FIsCalculating:=False;
+         end;
       end;
       FRotation.DirectZ:=NormalizeDegAngle(AValue);
-  end;
+   end;
 end;
 
 // Turn
@@ -3327,16 +3338,21 @@ var
 begin
    if AValue<>FRotation.Y then begin
       if not (csLoading in ComponentState) then begin
-         GetOrientationVectors(Up, Dir);
-         Diff:=DegToRad(FRotation.Y-AValue);
-         rotMatrix:=CreateRotationMatrix(Up, Diff);
-         FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
-         FUp.Normalize;
-         FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
-         FDirection.Normalize;
-         if FTransMode = tmParentWithPos then
-            FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
-         TransformationChanged;
+         FIsCalculating:=True;
+         try
+            GetOrientationVectors(Up, Dir);
+            Diff:=DegToRad(FRotation.Y-AValue);
+            rotMatrix:=CreateRotationMatrix(Up, Diff);
+            FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
+            FUp.Normalize;
+            FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
+            FDirection.Normalize;
+            if FTransMode = tmParentWithPos then
+               FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
+            TransformationChanged;
+         finally
+            FIsCalculating:=False;
+         end;
       end;
       FRotation.DirectY:=NormalizeDegAngle(AValue);
    end;
