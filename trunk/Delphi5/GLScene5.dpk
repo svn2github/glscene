@@ -170,6 +170,7 @@ contains
   GLCelShader in '..\Source\Shaders\GLCelShader.pas',
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
-  GLFeedback in '..\Source\GLFeedback.pas';
+  GLFeedback in '..\Source\GLFeedback.pas',
+  DDS in '..\Source\FileFormats\DDS.pas';
 
 end.
