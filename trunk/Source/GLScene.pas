@@ -3359,9 +3359,9 @@ begin
          rightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
          // Rightvector is zero if direction changed exactly by 90 degrees,
          // in this case assume a default vector
-         if VectorLength(rightVector)<1e-20 then begin
+         if VectorLength(rightVector)<1e-5 then begin
             rightVector:=VectorCrossProduct(ZHmgVector, FUp.AsVector);
-            if VectorLength(rightVector)<1e-20 then
+            if VectorLength(rightVector)<1e-5 then
                rightVector:=VectorCrossProduct(XHmgVector, FUp.AsVector);
          end;
          FUp.DirectVector:=VectorCrossProduct(rightVector, FDirection.AsVector);
@@ -3374,9 +3374,9 @@ begin
          rightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
          // Rightvector is zero if direction changed exactly by 90 degrees,
          // in this case assume a default vector
-         if VectorLength(rightVector)<1e-20 then begin
+         if VectorLength(rightVector)<1e-5 then begin
             rightVector:=VectorCrossProduct(ZHmgVector, FUp.AsVector);
-            if VectorLength(rightVector)<1e-20 then
+            if VectorLength(rightVector)<1e-5 then
                rightVector:=VectorCrossProduct(XHmgVector, FUp.AsVector);
          end;
          FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, RightVector);
