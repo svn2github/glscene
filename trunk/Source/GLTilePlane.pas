@@ -2,6 +2,7 @@
 {: Implements a tiled texture plane.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/04 - EG - Added NoZWrite
       <li>09/01/04 - EG - Creation
    </ul></font>
 }
@@ -100,12 +101,14 @@ type
 	TGLTilePlane = class (TGLImmaterialSceneObject)
 	   private
 			{ Private Declarations }
+         FNoZWrite : Boolean;
          FTiles : TGLTiledArea;
          FMaterialLibrary : TGLMaterialLibrary;
          FSortByMaterials : Boolean;
 
 		protected
 			{ Protected Declarations }
+         procedure SetNoZWrite(const val : Boolean);
          procedure SetTiles(const val : TGLTiledArea);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure SetSortByMaterials(const val : Boolean);
@@ -132,6 +135,8 @@ type
 		published
 			{ Public Declarations }
 
+         {: If True the tiles are rendered without writing to the ZBuffer. }
+         property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
          {: Material library where tiles materials will be stored/retrieved.<p>
             The lower 16 bits of the tile integer value is understood as being
             the index of the tile's material in the library (material of
@@ -502,6 +507,16 @@ begin
    inherited;
 end;
 
+// SetNoZWrite
+//
+procedure TGLTilePlane.SetNoZWrite(const val : Boolean);
+begin
+   if FNoZWrite<>val then begin
+      FNoZWrite:=val;
+      StructureChanged;
+   end;
+end;
+
 // SetTiles
 //
 procedure TGLTilePlane.SetTiles(const val : TGLTiledArea);
@@ -586,6 +601,8 @@ begin
    if MaterialLibrary=nil then Exit;
    // initialize infos
    glNormal3fv(@ZVector);
+   if FNoZWrite then
+      glDepthMask(False);
    if SortByMaterials then begin
       SetLength(quadInfos, MaterialLibrary.Materials.Count);
       for i:=1 to High(quadInfos) do begin
@@ -640,6 +657,8 @@ begin
          end;
       end;
    end;
+   if FNoZWrite then
+      glDepthMask(True);
 end;
 
 //-------------------------------------------------------------
