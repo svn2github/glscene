@@ -348,7 +348,7 @@ begin
       FMaxDepth:=FMaxDepth shl 2;
       Inc(p);
    until FMaxDepth>=s;
-   maxVarianceDepth:=FMaxDepth shr 1;
+   maxVarianceDepth:=FMaxDepth;
    SetLength(FTLVariance, maxVarianceDepth);
    SetLength(FBRVariance, maxVarianceDepth);
 
