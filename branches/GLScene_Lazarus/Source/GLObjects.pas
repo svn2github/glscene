@@ -2988,10 +2988,10 @@ begin
       rci.GLStates.InvertGLFrontFace;
 
    // common settings
-   AngTop:=DegToRad(Single(FTop));
-   AngBottom:=DegToRad(Single(FBottom));
-   AngStart:=DegToRad(Single(FStart));
-   AngStop:=DegToRad(Single(FStop));
+   AngTop:=FTop*(Pi/180);
+   AngBottom:=FBottom*(Pi/180);
+   AngStart:=FStart*(Pi/180);
+   AngStop:=FStop*(Pi/180);
    StepH:=(AngStop - AngStart) / FSlices;
    StepV:=(AngTop - AngBottom) / FStacks;
    glPushMatrix;
