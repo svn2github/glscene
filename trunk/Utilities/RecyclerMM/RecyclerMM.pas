@@ -31,6 +31,8 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/10/04 - EG - Added ALLOW_BENCHMARKING and cReallocUpSizing,
+                          + bug fix when ReallocMem can't GetMem (David Christensen)
       <li>30/08/04 - EG - 3GB support contributed by David Christensen
       <li>12/08/04 - EG - Replace SysGet/FreeMem with HeapAlloc/Free (thx David Christensen)
       <li>02/08/04 - EG - Added ASSUME_MULTI_THREADED option
@@ -121,6 +123,14 @@ uses Windows;
 // These functions allow generating a diagnostic and memory map report
 {.$define ALLOW_USAGE_SNAPSHOT}
 
+// If set benchmarking will happen and track number of call and their duration
+// This has a performance penalty though, and may inflate memory management
+// costs (especially for short and simple calls), and to minimize impact
+// the methods relies on CPU ticks, and thus can be incorrect for CPUs with
+// varying frequency (mobile CPUs typically, A64 with Cool'n Quiet enabled...).
+// CURRENT BENCHMARKING ONLY WORKS IN SINGLE-THREADED APPS!
+{.$define ALLOW_BENCHMARK}
+
 // compile options implicit dependency rules
 
 {$ifdef PATCH_ALLOCMEM}
@@ -163,6 +173,11 @@ const
    // Ratio for ReallocDownSizing (4 = downsizing will happen if only 1/4 used)
    cSMBReallocDownSizing   = 4;
    cLGBReallocDownSizing   = 4;
+   // Ratio for upsizing (1 = allocate only what's needed, 2 = allocate twice the
+   //                     needed space, etc. Must be >= 1.0 or things will go banana )
+   cReallocUpSizing        = 1.1;
+   cReallocUpSizing256     = Round(cReallocUpSizing*256); // what's actualy used internally
+   cReallocUpSizingLimit   = Cardinal(1 shl 31) div cReallocUpSizing256;
 
    // Size of chunk allocation batches (max 30)
    cRMMChunkBatchAllocSize = 8;
@@ -222,6 +237,13 @@ const
    cMemMapUpper3GB = 49151;
 
 type
+   // TRMMUsageBench
+   //
+   TRMMUsageBench = packed record
+      TotalTime : Int64;      // in CPU ticks!
+      NbCalls : Cardinal;
+   end;
+
    // TRMMUsageSnapShot
    //
    {: RMM usage diagnostic snapshot, returned by RMMUsageSnapShot. }
@@ -239,15 +261,17 @@ type
       NbMapItems : Cardinal;
       Map : packed array [0..cMemMapUpperMax] of TRMMMemoryMap;
       SMBStats : packed array [0..cSMBMaxSizeIndex] of TRMMSMBStat;
+      // Usage
+      BenchRGetMem : TRMMUsageBench;
+      BenchRReallocMem : TRMMUsageBench;
+      BenchRFreeMem : TRMMUsageBench;
    end;
    PRMMUsageSnapShot = ^TRMMUsageSnapShot;
 
-   // TRMMUsageBench
-   //
-   TRMMUsageBench = record
-      TotalTime : Int64;
-      NbCalls : Cardinal;
-   end;
+var // this will be filled up only if ALLOW_BENCHMARK
+   vBenchRGetMem : TRMMUsageBench;
+   vBenchRReallocMem : TRMMUsageBench; // may include RGetMem/RFreeMem time
+   vBenchRFreeMem : TRMMUsageBench;     
 
 {: Fast 16 bytes-based move.<p>
    Copies blocks of 16 bytes only, ie. Count is rounded up to the nearest
@@ -471,6 +495,25 @@ procedure RaiseRMMInvalidPointerException;
 begin
    RaiseRMMException('Invalid Pointer');
 end;
+
+{$ifdef ALLOW_BENCHMARK}
+procedure EnterBench(var bench : TRMMUsageBench);
+asm
+   mov   ecx, eax
+   rdtsc
+   sub   [ecx], eax
+   sbb   [ecx+4], edx
+end;
+
+procedure LeaveBench(var bench : TRMMUsageBench);
+asm
+   mov   ecx, eax
+   rdtsc
+   add   [ecx], eax
+   adc   [ecx+4], edx
+   inc   dword ptr [ecx+8]
+end;
+{$endif ALLOW_BENCHMARK}
 
 // UpdateMemoryMap
 //
@@ -1161,6 +1204,8 @@ var
 label
    lblExitWhenOutOfMemory;    // t'was that or a try..finally (can't afford here)
 begin
+   {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRGetMem); {$endif}
+
    if Size<=cSMBMaxSize then begin
       // Small Blocks logic
       smbIndex:=SMBSizeToIndex(Size);
@@ -1206,6 +1251,8 @@ lblExitWhenOutOfMemory:
          Result:=lgbManager.BlockStart
       else Result:=nil;
    end;
+   
+   {$ifdef ALLOW_BENCHMARK} LeaveBench(vBenchRGetMem); {$endif}
 end;
 
 // RFreeMem
@@ -1222,6 +1269,8 @@ var
 label
    lblRFreeMemExit;
 begin
+   {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRFreeMem); {$endif}
+   
    {$ifdef SECURE_MEMORYMAP}
    if Integer(P)>0 then
       manager:=vMemoryMap[Cardinal(P) shr 16]
@@ -1291,6 +1340,8 @@ lblRFreeMemExit:
    if Result=-1 then
       raise Exception.Create('RecyclerMM: attempt to free an unallocated block!');
    {$endif}
+   
+   {$ifdef ALLOW_BENCHMARK} LeaveBench(vBenchRFreeMem); {$endif}
 end;
 
 // RReallocMem
@@ -1301,6 +1352,8 @@ var
    manager : PSMBManager;
    lgm : PLGBManager;
 begin
+   {$ifdef ALLOW_BENCHMARK} EnterBench(vBenchRReallocMem); {$endif}
+
    {$ifdef SECURE_MEMORYMAP}
    if Integer(P)>0 then
       manager:=vMemoryMap[Cardinal(P) shr 16]
@@ -1317,11 +1370,15 @@ begin
                manager.BlockSizes[blkID]:=Size;
                Result:=P;
             end else begin
-               Result:=RGetMem(Size);
-               copySize:=manager.BlockSizes[blkID];
-               if copySize>Size then copySize:=Size;
-               Move16(P^, Result^, copySize);
-               RFreeMem(P);
+               if Size<cReallocUpSizingLimit then
+                  Result:=RGetMem((Size*cReallocUpSizing256) shr 8)
+               else Result:=RGetMem(Size);
+               if Result<>nil then begin
+                  copySize:=manager.BlockSizes[blkID];
+                  if copySize>Size then copySize:=Size;
+                  Move16(P^, Result^, copySize);
+                  RFreeMem(P);
+               end;
             end;
          end else begin
             RaiseRMMInvalidPointerException;
@@ -1336,10 +1393,12 @@ begin
                Result:=P;
             end else begin
                Result:=RGetMem(Size);
-               copySize:=lgm.DataSize;
-               if copySize>Size then copySize:=Size;
-               Move16(P^, Result^, copySize);
-               RFreeMem(P);
+               if Result<>nil then begin
+                  copySize:=lgm.DataSize;
+                  if copySize>Size then copySize:=Size;
+                  Move16(P^, Result^, copySize);
+                  RFreeMem(P);
+               end;
             end;
          end else begin
             RaiseRMMInvalidPointerException;
@@ -1357,6 +1416,8 @@ begin
       Result:=nil;
       {$endif}
    end;
+
+   {$ifdef ALLOW_BENCHMARK} LeaveBench(vBenchRReallocMem); {$endif}
 end;
 
 // RAllocMem
@@ -1694,6 +1755,10 @@ begin
    // we're not allowed to use any kind of dynamic allocation here
    LockRMM;
    try
+      Result.BenchRGetMem:=vBenchRGetMem;
+      Result.BenchRReallocMem:=vBenchRReallocMem;
+      Result.BenchRFreeMem:=vBenchRFreeMem;
+
       Result.NbMapItems:=vMemMapUpper +1;
       Result.TotalVirtualAllocated:=vTotalVirtualAllocated;
       nbBlocks:=0;
