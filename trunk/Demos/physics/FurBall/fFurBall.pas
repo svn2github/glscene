@@ -296,7 +296,7 @@ var
     Hair := TVerletHair.Create(VerletWorld, FurBall.Radius * cRootDepth,
       FurBall.Radius*cRadiusMultiplier, cSegmentCount,
       VectorAdd(AffineVectorMake(FurBall.AbsolutePosition), VectorScale(Dir, FurBall.Radius)),
-      Dir, [vhsSkip1Node, vhsSkip2Node]);
+      Dir, [vhsSkip1Node]);
 
     //GLLines := TGLLines(GLScene1.Objects.AddNewChild(TGLLines));
     GLLines := TGLLines(DCShadowCaster.AddNewChild(TGLLines));
