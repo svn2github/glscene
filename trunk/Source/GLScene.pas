@@ -2059,6 +2059,8 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
 
+         procedure InstantiateRenderingContext;
+
          procedure Render(baseObject : TGLBaseSceneObject = nil); override;
 
       published
@@ -5831,6 +5833,7 @@ procedure TGLScene.RenderScene(aBuffer : TGLSceneBuffer;
 var
    i : Integer;
    rci : TRenderContextInfo;
+   rightVector : TVector;
 begin
    FRenderedObject := nil;
    aBuffer.FAfterRenderEffects.Clear;
@@ -5847,6 +5850,10 @@ begin
       rci.cameraDirection:=FLastDirection;
       NormalizeVector(rci.cameraDirection);
       rci.cameraDirection[3]:=0;
+      rightVector:=VectorCrossProduct(rci.cameraDirection, Up.AsVector);
+      rci.cameraUp:=VectorCrossProduct(rightVector, rci.cameraDirection);
+      NormalizeVector(rci.cameraUp);
+
       with rci.rcci do begin
          origin:=rci.cameraPosition;
          clippingDirection:=rci.cameraDirection;
@@ -7936,14 +7943,21 @@ begin
    Height:=256;
 end;
 
-// Render
+// InstantiateRenderingContext
 //
-procedure TGLMemoryViewer.Render(baseObject : TGLBaseSceneObject = nil);
+procedure TGLMemoryViewer.InstantiateRenderingContext;
 begin
    if FBuffer.RenderingContext=nil then begin
       FBuffer.SetViewPort(0, 0, Width, Height);
       FBuffer.CreateRC(0, True);
    end;
+end;
+
+// Render
+//
+procedure TGLMemoryViewer.Render(baseObject : TGLBaseSceneObject = nil);
+begin
+   InstantiateRenderingContext;
    FBuffer.Render(baseObject);
 end;
 
