@@ -2978,18 +2978,18 @@ var
    libMat : TGLLibMaterial;
 begin
    FArraysDeclared:=False;
+   gotColor:=(Vertices.Count=Colors.Count);
+   if gotColor then begin
+      glPushAttrib(GL_ENABLE_BIT);
+      glEnable(GL_COLOR_MATERIAL);
+      glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+      ResetGLMaterialColors;
+   end;
    case Mode of
       momTriangles, momTriangleStrip : if Vertices.Count>0 then begin
          DeclareArraysToOpenGL(mrci);
          gotNormals:=(Vertices.Count=Normals.Count);
          gotTexCoords:=(Vertices.Count=TexCoords.Count);
-         gotColor:=(Vertices.Count=Colors.Count);
-         if gotColor then begin
-            glPushAttrib(GL_ENABLE_BIT);
-            glEnable(GL_COLOR_MATERIAL);
-            glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-            ResetGLMaterialColors;
-         end;
          if Mode=momTriangles then
             glBegin(GL_TRIANGLES)
          else glBegin(GL_TRIANGLE_STRIP);
@@ -3000,7 +3000,6 @@ begin
             glVertex3fv(@Vertices.List[i]);
          end;
          glEnd;
-         if gotColor then glPopAttrib;
       end;
       momFaceGroups : begin
          if Assigned(mrci.materialLibrary) then begin
@@ -3043,6 +3042,7 @@ begin
    else
       Assert(False);
    end;
+   if gotColor then glPopAttrib;
    DisableOpenGLArrays(mrci);
 end;
 
