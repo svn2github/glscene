@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
       <li>16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
                           THeightData now has a MaterialName property
       <li>24/02/02 - EG - Faster Cleanup & cache management
@@ -175,8 +176,9 @@ type
       <li>hdsQueued : the data has been queued for loading
       <li>hdsPreparing : the data is currently loading or being prepared for use
       <li>hdsReady : the data is fully loaded and ready for use
+      <li>hdsNone : the height data does not exist for this tile
       </ul> }
-   THeightDataState = ( hdsQueued, hdsPreparing, hdsReady);
+   THeightDataState = ( hdsQueued, hdsPreparing, hdsReady, hdsNone);
 
    THeightDataThread = class;
    TOnHeightDataDirtyEvent = procedure (sender : THeightData) of object;
@@ -374,11 +376,13 @@ type
          FScanLineCache : array of PByteArray;
          FBitmap : Graphics.TBitmap;
          FPicture : TPicture;
+         FInfiniteWrap : Boolean;
 
 	   protected
 	      { Protected Declarations }
          procedure SetPicture(const val : TPicture);
          procedure OnPictureChanged(Sender : TObject);
+         procedure SetInfiniteWrap(val : Boolean);
 
          procedure CreateMonochromeBitmap(size : Integer);
          procedure FreeMonochromeBitmap;
@@ -400,6 +404,8 @@ type
             bitmap (grayscale). For better performance and to save memory,
             feed it this format! }
          property Picture : TPicture read FPicture write SetPicture;
+         {: If true the height field is wrapped indefinetely. }
+         property InfiniteWrap : Boolean read FInfiniteWrap write SetInfiniteWrap default True;
 
          property MaxPoolSize;
 	end;
@@ -627,7 +633,7 @@ begin
       end;
    end;
    // got one... can be used ?
-   while Result.DataState<>hdsReady do Sleep(1);
+   while not (Result.DataState in [hdsReady, hdsNone]) do Sleep(1);
 end;
 
 // PreLoad
@@ -907,7 +913,7 @@ end;
 procedure THeightData.SetDataType(const val : THeightDataType);
 begin
    if val<>FDataType then begin
-      case FDataType of
+      if DataState<>hdsNone then case FDataType of
          hdtByte : case val of
                hdtSmallInt : ConvertByteToSmallInt;
                hdtSingle : ConvertByteToSingle;
@@ -1099,20 +1105,24 @@ var
    ix, iy : Integer;
    h1, h2, h3 : Single;
 begin
-   ix:=Trunc(x);  x:=Frac(x);
-   iy:=Trunc(y);  y:=Frac(y);
-   if x+y<=1 then begin
-      // top-left triangle
-      h1:=Height(ix,    iy);
-      h2:=Height(ix+1,  iy);
-      h3:=Height(ix,    iy+1);
-      Result:=h1+(h2-h1)*x+(h3-h1)*y;
-   end else begin
-      // bottom-right triangle
-      h1:=Height(ix+1,  iy+1);
-      h2:=Height(ix,    iy+1);
-      h3:=Height(ix+1,  iy);
-      Result:=h1+(h2-h1)*(1-x)+(h3-h1)*(1-y);
+   if FDataState=hdsNone then
+      Result:=0
+   else begin
+      ix:=Trunc(x);  x:=Frac(x);
+      iy:=Trunc(y);  y:=Frac(y);
+      if x+y<=1 then begin
+         // top-left triangle
+         h1:=Height(ix,    iy);
+         h2:=Height(ix+1,  iy);
+         h3:=Height(ix,    iy+1);
+         Result:=h1+(h2-h1)*x+(h3-h1)*y;
+      end else begin
+         // bottom-right triangle
+         h1:=Height(ix+1,  iy+1);
+         h2:=Height(ix,    iy+1);
+         h3:=Height(ix+1,  iy);
+         Result:=h1+(h2-h1)*(1-x)+(h3-h1)*(1-y);
+      end;
    end;
 end;
 
@@ -1184,6 +1194,7 @@ begin
 	inherited Create(AOwner);
    FPicture:=TPicture.Create;
    FPicture.OnChange:=OnPictureChanged;
+   FInfiniteWrap:=True;
 end;
 
 // Destroy
@@ -1218,6 +1229,16 @@ begin
    size:=Picture.Width;
    if size>0 then
       CreateMonochromeBitmap(size);
+end;
+
+// SetInfiniteWrap
+//
+procedure TGLBitmapHDS.SetInfiniteWrap(val : Boolean);
+begin
+   if FInfiniteWrap<>val then begin
+      FInfiniteWrap:=val;
+      MarkDirty;
+   end;
 end;
 
 // MarkDirty
@@ -1311,6 +1332,12 @@ begin
    wrapMask:=bmpSize-1;
    // retrieve data
    with heightData do begin
+      if (not InfiniteWrap)
+         and ((XLeft>=bmpSize) or (XLeft+Size<0)
+              or (YTop>=wrapMask) or (YTop+Size<0)) then begin
+         heightData.FDataState:=hdsNone;
+         Exit;
+      end;
       oldType:=DataType;
       Allocate(hdtByte);
       for y:=YTop to YTop+Size-1 do begin

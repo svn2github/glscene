@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>10/07/02 - EG - Added support for "holes" in the elevation data
       <li>16/06/02 - EG - Added support for multi-material terrains
       <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
       <li>18/12/01 - EG - Vertex-cache aware stripifier (+10% on GeForce)
@@ -322,26 +323,35 @@ begin
          if not IsVolumeClipped(absTilePos, tileRadius, rcci) then begin
             patch:=GetPreparedPatch(tilePos, observer, texFactor);
 
-            tileDist:=VectorDistance(PAffineVector(@rcci.origin)^, absTilePos);
-            patch.HighRes:=(tileDist<qDist);
-//            patch.NoDetails:=trackDetails and (tileDist>QualityDistance);
+            if patch<>nil then begin
 
-            if Assigned(prevPatch) then
-               patch.ConnectToTheWest(prevPatch);
-            if prevRow.Count>n then
-               if (prevRow.List[n]<>nil) then
-                  patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
-            prevPatch:=patch;
-            rowList.Add(patch);
+               tileDist:=VectorDistance(PAffineVector(@rcci.origin)^, absTilePos);
+               patch.HighRes:=(tileDist<qDist);
+   //            patch.NoDetails:=trackDetails and (tileDist>QualityDistance);
 
-            if patch.HighRes then begin
-               // high-res patches are issued immediately
-               ApplyMaterial(patch.HeightData.MaterialName);
-               patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
-               FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+               if Assigned(prevPatch) then
+                  patch.ConnectToTheWest(prevPatch);
+               if prevRow.Count>n then
+                  if (prevRow.List[n]<>nil) then
+                     patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
+               prevPatch:=patch;
+               rowList.Add(patch);
+
+               if patch.HighRes then begin
+                  // high-res patches are issued immediately
+                  ApplyMaterial(patch.HeightData.MaterialName);
+                  patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
+                  FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+               end else begin
+                  // CLOD patches are issued after tesselation
+                  patchList.Add(patch);
+               end;
+               
             end else begin
-               // CLOD patches are issued after tesselation
-               patchList.Add(patch);
+
+               prevPatch:=nil;
+               rowList.Add(nil);
+               
             end;
          end else begin
             MarkHashedTileAsUsed(tilePos);
@@ -363,13 +373,16 @@ begin
    for n:=0 to patchList.Count-1+rpIdxDelta do begin
       if n<patchList.Count then begin
          patch:=TGLROAMPatch(patchList[n]);
-         patch.Tesselate;
+         if Assigned(patch) then
+            patch.Tesselate;
       end;
       if n>=rpIdxDelta then begin
          patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
-         ApplyMaterial(patch.HeightData.MaterialName);
-         patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
-         FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+         if Assigned(patch) then begin
+            ApplyMaterial(patch.HeightData.MaterialName);
+            patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
+            FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+         end;
       end;
    end;
 
@@ -457,7 +470,8 @@ begin
       Result:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtByte);
       Result.RegisterUse;
       Result.OnDestroy:=OnTileDestroyed;
-      Result.DataType:=hdtSmallInt;
+      if Result.DataState<>hdsNone then
+         Result.DataType:=hdtSmallInt;
       FTilesHash[hash].Add(Result);
    end;
 end;
@@ -473,24 +487,28 @@ begin
    xLeft:=Round(tilePos[0]*FinvTileSize-0.5)*TileSize;
    yTop:=Round(tilePos[1]*FinvTileSize-0.5)*TileSize;
    tile:=HashedTile(xLeft, yTop);
-   tile.Tag:=1;
-   patch:=TGLROAMPatch(tile.ObjectTag);
-   if not Assigned(patch) then begin
-      // spawn ROAM patch
-      patch:=TGLROAMPatch.Create;
-      tile.ObjectTag:=patch;
-      patch.HeightData:=tile;
-      patch.VertexScale:=XYZVector;
-      patch.VertexOffset:=tilePos;
-      patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
-      patch.TextureOffset:=AffineVectorMake(xLeft*texFactor, 1-yTop*texFactor, 0);
-      patch.ComputeVariance(FCLODPrecision);
+   if tile.DataState=hdsNone then begin
+      Result:=nil;
+   end else begin
+      tile.Tag:=1;
+      patch:=TGLROAMPatch(tile.ObjectTag);
+      if not Assigned(patch) then begin
+         // spawn ROAM patch
+         patch:=TGLROAMPatch.Create;
+         tile.ObjectTag:=patch;
+         patch.HeightData:=tile;
+         patch.VertexScale:=XYZVector;
+         patch.VertexOffset:=tilePos;
+         patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
+         patch.TextureOffset:=AffineVectorMake(xLeft*texFactor, 1-yTop*texFactor, 0);
+         patch.ComputeVariance(FCLODPrecision);
+      end;
+      PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-tilePos[0]);
+      PAffineIntVector(@patch.ObserverPosition)[1]:=Round(eyePos[1]-tilePos[1]);
+      PAffineIntVector(@patch.ObserverPosition)[2]:=Round(eyePos[2]-tilePos[2]);
+      patch.ResetTessellation;
+      Result:=patch;
    end;
-   PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-tilePos[0]);
-   PAffineIntVector(@patch.ObserverPosition)[1]:=Round(eyePos[1]-tilePos[1]);
-   PAffineIntVector(@patch.ObserverPosition)[2]:=Round(eyePos[2]-tilePos[2]);
-   patch.ResetTessellation;
-   Result:=patch;
 end;
 
 // SetHeightDataSource

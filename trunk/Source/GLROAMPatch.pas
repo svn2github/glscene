@@ -248,24 +248,28 @@ end;
 //
 procedure TGLROAMPatch.ConnectToTheWest(westPatch : TGLROAMPatch);
 begin
-   if not (westPatch.HighRes or HighRes) then begin
-      FTLNode.left:=westPatch.FBRNode;
-      westPatch.FBRNode.left:=FTLNode;
+   if Assigned(westPatch) then begin
+      if not (westPatch.HighRes or HighRes) then begin
+         FTLNode.left:=westPatch.FBRNode;
+         westPatch.FBRNode.left:=FTLNode;
+      end;
+      FWest:=westPatch;
+      westPatch.FEast:=Self;
    end;
-   FWest:=westPatch;
-   westPatch.FEast:=Self;
 end;
 
 // ConnectToTheNorth
 //
 procedure TGLROAMPatch.ConnectToTheNorth(northPatch : TGLROAMPatch);
 begin
-   if not (northPatch.HighRes or HighRes) then begin
-      FTLNode.right:=northPatch.FBRNode;
-      northPatch.FBRNode.right:=FTLNode;
+   if Assigned(northPatch) then begin
+      if not (northPatch.HighRes or HighRes) then begin
+         FTLNode.right:=northPatch.FBRNode;
+         northPatch.FBRNode.right:=FTLNode;
+      end;
+      FNorth:=northPatch;
+      northPatch.FSouth:=Self;
    end;
-   FNorth:=northPatch;
-   northPatch.FSouth:=Self;
 end;
 
 // ComputeVariance
