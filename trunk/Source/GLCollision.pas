@@ -4,6 +4,7 @@
 	Collision-detection management for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>09/05/03 - DanB - fixed for collisions with bounding-box unproperly defined (min>max)
       <li>09/05/03 - DanB - Added FastCheckCubeVsFace (Matheus Degiovani)
       <li>13/02/03 - DanB - New collision code, and support for scaled objects
       <li>22/02/01 - Egg - Included new collision code by Uwe Raabe
@@ -584,11 +585,7 @@ var
 begin
    // Calc AABBs
    aabb1:=Obj1.AxisAlignedBoundingBoxUnscaled;
-//   ScaleVector(aabb1.min,obj1.Scale.AsAffineVector);   //by DanB
-//   ScaleVector(aabb1.max,obj1.Scale.AsAffineVector);   //by DanB
    aabb2:=Obj2.AxisAlignedBoundingBoxUnscaled;
-//   ScaleVector(aabb2.min,obj2.Scale.AsAffineVector);   //by DanB
-//   ScaleVector(aabb2.max,obj2.Scale.AsAffineVector);   //by DanB
 
    // Calc Conversion Matrixes
    MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m1To2);
@@ -935,7 +932,7 @@ begin
          obj2:=cli2.OwnerBaseSceneObject;
          grp2:=cli2.GroupIndex;
          // if either one GroupIndex=0 or both are different, check for collision
-         if ((grp1=0) or (grp2=0) or (grp1<>grp2)) and (obj1.Visible) and (obj2.Visible) then begin
+         if ((grp1=0) or (grp2=0) or (grp1<>grp2)) then begin
            if cFastCollisionChecker[cli1.BoundingMode, cli2.BoundingMode](obj1, obj2) then
               FOnCollision(Self, obj1, obj2);
          end;
@@ -943,7 +940,7 @@ begin
    end;
 end;
 
- }
+}
 
 
 // [---- new CheckCollisions / Dan Bartlett
@@ -953,7 +950,7 @@ end;
 //  Some comments:  Much faster than original, especially when objects are spread out.
 //                  TODO:
 //                  Try to make faster when objects are close
-//                  Still more improvements can be made, better method
+//                  Still more improvements can be made, better method (dynamic octree?)
 //                  Faster sorting? (If a faster way than Delphi's QuickSort is available)
 //                  Another Event called OnNoCollisionEvent could be added
 //                  Fit bounding box methods into GLScene "Grand Scheme Of Things"
@@ -963,11 +960,13 @@ end;
 //     any other object *** WARNING:  THIS IS DIFFERENT FROM PREVIOUS VERSION ***
 //
 //   If GroupIndex = 0 then object will be tested against all objects with GroupIndex >= 0
-//   Collision Testing will only be performed on objects from different groups that are both visible
+//   Collision Testing will only be performed on objects from different groups
+//   Collision testing occurs even when an object is not visible, allowing low-triangle count
+//      collision shapes to be used to model complex objects (Different to previous version)
 
 type
-   //only add collision node to list if visible, GroupIndex>=0
-   TCollisionNode = class(TObject)
+   //only add collision node to list if GroupIndex>=0
+   TCollisionNode = class
       Collision:TGLBCollision;
       AABB:TAABB;
       constructor Create(const Collision:TGLBCollision;const AABB:TAABB);
@@ -980,17 +979,16 @@ begin
   Self.AABB:=AABB;
 end;
 
-procedure TCollisionManager.CheckCollisions;
-
    function CompareDistance(Item1, Item2: Pointer): Integer;
    var
-      d : Single;
+      d : Extended;
    begin
       //  Z-axis sort
-      d:=TCollisionNode(Item2).AABB.min[2]-TCollisionNode(Item1).AABB.min[2];
+      d:=(TCollisionNode(Item2).AABB.min[2]-TCollisionNode(Item1).AABB.min[2]);
       if d>0 then Result:=-1 else if d<0 then Result:=1 else Result:=0;
    end;
-
+   
+procedure TCollisionManager.CheckCollisions;
 var
   NodeList:TList;
   CollisionNode1, CollisionNode2:TCollisionNode;
@@ -1004,6 +1002,7 @@ begin
 
   //this next bit of code would be faster if bounding box was stored
   NodeList:=TList.Create;
+  NodeList.Count:=0;
 
   for i:=0 to FClients.Count-1 do begin
     cli1:=TGLBCollision(FClients[i]);
@@ -1011,17 +1010,16 @@ begin
     if grp1<0 then        //if groupindex is negative don't add to list
       Continue;
     obj1:=cli1.OwnerBaseSceneObject;
-    // commented out by EG
-//    if obj1.Visible=false then
-//      Continue;           //if object is not visible, don't add to list
-    //TODO:  need to do different things for different objects, especially points
+    //TODO:  need to do different things for different objects, especially points (to improve speed)
     box1:=obj1.AxisAlignedBoundingBoxUnscaled;         //get obj1 axis-aligned bounding box
+    if box1.min[0]>box1.max[0] then continue;          //check for case where no bb exists
     AABBTransform(box1,obj1.AbsoluteMatrix);           //& transform it to world axis
     CollisionNode1:=TCollisionNode.Create(cli1,box1);
     NodeList.Add(CollisionNode1);
   end;
 
-  NodeList.Sort(@CompareDistance);       //depth-sort bounding boxes
+  if NodeList.Count<2 then Exit;
+  NodeList.Sort(@CompareDistance);       //depth-sort bounding boxes (min bb.z values)
 
    for i:=0 to NodeList.Count-2 do
    begin
@@ -1061,7 +1059,6 @@ begin
 end;
 
 // new CheckCollisions / Dan Bartlett -----]
-
 
 
 
