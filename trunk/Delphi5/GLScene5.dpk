@@ -152,6 +152,8 @@ contains
   GLStarRecord in '..\Source\FileFormats\GLStarRecord.pas',
   GLGeomObjects in '..\Source\GLGeomObjects.pas',
   GLPolyhedron in '..\Source\GLPolyhedron.pas',
-  GLTeapot in '..\Source\GLTeapot.pas';
+  GLTeapot in '..\Source\GLTeapot.pas',
+  GLTextureImageEditors in '..\Source\DesignTime\GLTextureImageEditors.pas',
+  GLWin32FullScreenViewer in '..\Source\Platform\GLWin32FullScreenViewer.pas';
 
 end.
