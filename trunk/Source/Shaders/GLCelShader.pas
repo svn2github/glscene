@@ -4,6 +4,7 @@
    and shade definition texture.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>09/06/04 - SG - Added OutlineColor, vertex programs now use GL state.
       <li>28/05/04 - SG - Creation.
    </ul></font>
 }
@@ -42,14 +43,14 @@ type
          FVertexProgram2Handle : cardinal;
          FShadeTexture : TGLTexture;
          FOnGetIntensity : TGLCelShaderGetIntensity;
-         FLightPosition : TVector;
          FOutlinePass,
          FUnApplyShadeTexture : Boolean;
-    procedure SetLightPosition(const Value: TVector);
+         FOutlineColor : TGLColor;
 
       protected
          procedure SetCelShaderOptions(const val : TGLCelShaderOptions);
          procedure SetOutlineWidth(const val : Single);
+         procedure SetOutlineColor(const val : TGLColor);
          procedure BuildShadeTexture;
          procedure Loaded; override;
 
@@ -60,11 +61,11 @@ type
          procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
          function DoUnApply(var rci: TRenderContextInfo) : Boolean; override;
 
-         property LightPosition : TVector read FLightPosition write SetLightPosition;
          property ShadeTexture : TGLTexture read FShadeTexture;
 
       published
          property CelShaderOptions : TGLCelShaderOptions read FCelShaderOptions write SetCelShaderOptions;
+         property OutlineColor : TGLColor read FOutlineColor write SetOutlineColor;
          property OutlineWidth : Single read FOutlineWidth write SetOutlineWidth;
          property OnGetIntensity : TGLCelShaderGetIntensity read FOnGetIntensity write FOnGetIntensity;
    end;
@@ -82,42 +83,71 @@ implementation
 const
    cDotToTex1DVertexProgram =
       '!!ARBvp1.0'+#13#10+
-      'TEMP R0, R1;'+#13#10+
-      'ATTRIB v19 = vertex.color;'+#13#10+
-      'ATTRIB v18 = vertex.normal;'+#13#10+
-      'ATTRIB v16 = vertex.position;'+#13#10+
-      'PARAM c4 = program.local[4];'+#13#10+
-      'PARAM c0[4] = { program.local[0..3] };'+#13#10+
-      '  MOV result.color.front.primary, v19;'+#13#10+
-      '  DP4 result.position.x, c0[0], v16;'+#13#10+
-      '  DP4 result.position.y, c0[1], v16;'+#13#10+
-      '  DP4 result.position.z, c0[2], v16;'+#13#10+
-      '  DP4 result.position.w, c0[3], v16;'+#13#10+
-      '  ADD R1, c4, -v16;'+#13#10+
-      '  DP4 R0.x, R1, R1;'+#13#10+
-      '  RSQ R0.x, R0.x;'+#13#10+
-      '  MUL R0, R0.x, R1;'+#13#10+
-      '  DP4 result.texcoord[0].x, v18, R0;'+#13#10+
+      'PARAM mvproj[4] = { state.matrix.mvp };'+#13#10+
+      'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+#13#10+
+      'PARAM mv[4] = { state.matrix.modelview };'+#13#10+
+      'PARAM lightPos = state.light[0].position;'+#13#10+
+      'PARAM diffuse = state.material.diffuse;'+#13#10+
+      'TEMP R0, light, norm;'+#13#10+
+
+      '   DP4 result.position.x, mvproj[0], vertex.position;'+#13#10+
+      '   DP4 result.position.y, mvproj[1], vertex.position;'+#13#10+
+      '   DP4 result.position.z, mvproj[2], vertex.position;'+#13#10+
+      '   DP4 result.position.w, mvproj[3], vertex.position;'+#13#10+
+
+      '   MOV result.color, diffuse;'+#13#10+
+
+      '   DP3 norm.x, mvit[0], vertex.normal;'+#13#10+
+      '   DP3 norm.y, mvit[1], vertex.normal;'+#13#10+
+      '   DP3 norm.z, mvit[2], vertex.normal;'+#13#10+
+      '   DP3 R0.x, norm, norm;'+#13#10+
+      '   RSQ R0.x, R0.x;'+#13#10+
+      '   MUL norm, R0.x, norm;'+#13#10+
+
+      '   DP4 R0.x, mv[0], vertex.position;'+#13#10+
+      '   DP4 R0.y, mv[1], vertex.position;'+#13#10+
+      '   DP4 R0.z, mv[2], vertex.position;'+#13#10+
+      '   DP4 R0.w, mv[3], vertex.position;'+#13#10+
+      '   ADD light, lightPos, -R0;'+#13#10+
+      '   DP3 R0.x, light, light;'+#13#10+
+      '   RSQ R0.x, R0.x;'+#13#10+
+      '   MUL light, R0.x, light;'+#13#10+
+
+      '   DP3 result.texcoord.x, norm, light;'+#13#10+
       'END';
 
    cDotToTex1DVertexProgramWithTexture =
       '!!ARBvp1.0'+#13#10+
-      'TEMP R0, R1;'+#13#10+
-      'ATTRIB v24 = vertex.texcoord[0];'+#13#10+
-      'ATTRIB v18 = vertex.normal;'+#13#10+
-      'ATTRIB v16 = vertex.position;'+#13#10+
-      'PARAM c4 = program.local[4];'+#13#10+
-      'PARAM c0[4] = { program.local[0..3] };'+#13#10+
-      '  MOV result.texcoord[0].xyz, v24;'+#13#10+
-      '  DP4 result.position.x, c0[0], v16;'+#13#10+
-      '  DP4 result.position.y, c0[1], v16;'+#13#10+
-      '  DP4 result.position.z, c0[2], v16;'+#13#10+
-      '  DP4 result.position.w, c0[3], v16;'+#13#10+
-      '  ADD R1, c4, -v16;'+#13#10+
-      '  DP4 R0.x, R1, R1;'+#13#10+
-      '  RSQ R0.x, R0.x;'+#13#10+
-      '  MUL R0, R0.x, R1;'+#13#10+
-      '  DP4 result.texcoord[1].x, v18, R0;'+#13#10+
+      'PARAM mvproj[4] = { state.matrix.mvp };'+#13#10+
+      'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+#13#10+
+      'PARAM mv[4] = { state.matrix.modelview };'+#13#10+
+      'PARAM lightPos = state.light[0].position;'+#13#10+
+      'TEMP R0, light, norm;'+#13#10+
+
+      '   DP4 result.position.x, mvproj[0], vertex.position;'+#13#10+
+      '   DP4 result.position.y, mvproj[1], vertex.position;'+#13#10+
+      '   DP4 result.position.z, mvproj[2], vertex.position;'+#13#10+
+      '   DP4 result.position.w, mvproj[3], vertex.position;'+#13#10+
+
+      '   MOV result.texcoord[0], vertex.texcoord[0];'+#13#10+
+
+      '   DP3 norm.x, mvit[0], vertex.normal;'+#13#10+
+      '   DP3 norm.y, mvit[1], vertex.normal;'+#13#10+
+      '   DP3 norm.z, mvit[2], vertex.normal;'+#13#10+
+      '   DP3 R0.x, norm, norm;'+#13#10+
+      '   RSQ R0.x, R0.x;'+#13#10+
+      '   MUL norm, R0.x, norm;'+#13#10+
+
+      '   DP4 R0.x, mv[0], vertex.position;'+#13#10+
+      '   DP4 R0.y, mv[1], vertex.position;'+#13#10+
+      '   DP4 R0.z, mv[2], vertex.position;'+#13#10+
+      '   DP4 R0.w, mv[3], vertex.position;'+#13#10+
+      '   ADD light, lightPos, -R0;'+#13#10+
+      '   DP3 R0.x, light, light;'+#13#10+
+      '   RSQ R0.x, R0.x;'+#13#10+
+      '   MUL light, R0.x, light;'+#13#10+
+
+      '   DP3 result.texcoord[1].x, norm, light;'+#13#10+
       'END';
 
 // Register
@@ -129,7 +159,7 @@ end;
 
 
 // ------------------
-// ------------------ TGLUserShader ------------------
+// ------------------ TGLCelShader ------------------
 // ------------------
 
 // Create
@@ -140,7 +170,6 @@ begin
 
    FOutlineWidth:=3;
    FCelShaderOptions:=[csoOutlines];
-   FLightPosition:=NullHMGPoint;
    FShadeTexture:=TGLTexture.Create(Self);
    with FShadeTexture do begin
       Enabled:=True;
@@ -149,6 +178,10 @@ begin
       TextureWrap:=twNone;
       TextureMode:=tmModulate;
    end;
+
+   FOutlineColor:=TGLColor.Create(Self);
+   FOutlineColor.OnNotifyChange:=NotifyChange;
+   FOutlineColor.Initialize(clrBlack);
 
    ShaderStyle:=ssLowLevel;
 end;
@@ -160,6 +193,7 @@ begin
    if FVertexProgramHandle > 0 then
       glDeleteProgramsARB(1, @FVertexProgramHandle);
    FShadeTexture.Free;
+   FOutlineColor.Free;
    inherited;
 end;
 
@@ -180,7 +214,7 @@ var
    intensity : Byte;
 begin
    if csoNoBuildShadeTexture in FCelShaderOptions then exit;
-   
+
    with FShadeTexture do begin
       ImageClassName:='TGLBlankImage';
       TGLBlankImage(Image).Width:=128;
@@ -200,10 +234,10 @@ begin
          else intensity:=150;
       end;
 
-      bmp32.ScanLine[0][i].r:=intensity;
-      bmp32.ScanLine[0][i].g:=intensity;
-      bmp32.ScanLine[0][i].b:=intensity;
-      bmp32.ScanLine[0][i].a:=1;
+      bmp32.Data[i].r:=intensity;
+      bmp32.Data[i].g:=intensity;
+      bmp32.Data[i].b:=intensity;
+      bmp32.Data[i].a:=1;
    end;
 end;
 
@@ -233,8 +267,6 @@ procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
    end;
 
 var
-   mat,modelview,projection : TMatrix;
-   light : TVector;
    VertexProgram : Cardinal;
 begin
    if (csDesigning in ComponentState) then exit;
@@ -253,35 +285,13 @@ begin
       or GL_HINT_BIT or GL_LINE_BIT or GL_POLYGON_BIT or GL_DEPTH_BUFFER_BIT);
 
    glDisable(GL_LIGHTING);
-
    glEnable(GL_VERTEX_PROGRAM_ARB);
    glBindProgramARB(GL_VERTEX_PROGRAM_ARB,VertexProgram);
 
-   glGetFloatv(GL_MODELVIEW_MATRIX,@modelview[0][0]);
-   glGetFloatv(GL_PROJECTION_MATRIX,@projection[0][0]);
-
-   mat:=MatrixMultiply(modelview, projection);
-   TransposeMatrix(mat);
-   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB,0,@mat[0][0]);
-   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB,1,@mat[1][0]);
-   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB,2,@mat[2][0]);
-   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB,3,@mat[3][0]);
-
-   mat:=rci.modelViewMatrix^;
-   InvertMatrix(mat);
-   mat:=MatrixMultiply(modelview, mat);
-   InvertMatrix(Mat);
-   light:=VectorTransform(FLightPosition, mat);
-   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB,4,@light[0]);
-
    if (csoTextured in FCelShaderOptions) then
       FShadeTexture.ApplyAsTexture2(rci, nil)
-   else begin
+   else
       FShadeTexture.Apply(rci);
-      if Assigned(Sender) then
-         if Sender is TGLLibMaterial then
-            glColor4fv(TGLLibMaterial(Sender).Material.FrontProperties.Diffuse.AsAddress);
-   end;
 
    FOutlinePass:=csoOutlines in FCelShaderOptions;
    FUnApplyShadeTexture:=True;
@@ -316,7 +326,7 @@ begin
       glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       glDepthFunc(GL_LEQUAL);
-      glColor4f(0,0,0,1);
+      glColor4fv(FOutlineColor.AsAddress);
       glLineWidth(FOutlineWidth);
 
       Result:=True;
@@ -348,11 +358,14 @@ begin
    end;
 end;
 
-// SetLightPosition
+// SetOutlineColor
 //
-procedure TGLCelShader.SetLightPosition(const Value: TVector);
+procedure TGLCelShader.SetOutlineColor(const val: TGLColor);
 begin
-  FLightPosition := Value;
+  if val<>FOutlineColor then begin
+    FOutlineColor.Assign(val);
+    NotifyChange(Self);
+  end;
 end;
 
 end.
