@@ -3,9 +3,8 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLMisc, GLTexture,  ExtCtrls,
-  GLCadencer, StdCtrls,jpeg, ComCtrls, GLWin32Viewer, GLTimeEventsMGR;
+  Classes, Graphics, Controls, Forms, GLScene, GLObjects, GLMisc, GLTexture,
+  GLCadencer, StdCtrls, ComCtrls, GLWin32Viewer, GLTimeEventsMgr, ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -38,6 +37,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses SysUtils;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
