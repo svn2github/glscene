@@ -128,7 +128,7 @@ var
    i: integer;
 begin
    with ActiveVfsPAK do
-   for i:=0 to FStreamList.Count-1 do begin
+   for i:=FStreamList.Count-1 downto 0 do begin
       FFiles:=TStrings(FFilesLists[i]);
       if FileExists(BackToSlash(fileName)) then begin
          FHeader:=FHeaderList[i];
@@ -145,7 +145,7 @@ var
    i: integer;
 begin
    with ActiveVfsPAK do
-   for i:=0 to FStreamList.Count-1 do begin
+   for i:=FStreamList.Count-1 downto 0 do begin
       FFiles:=TStrings(FFilesLists[i]);
       if FileExists(BackToSlash(fileName)) then begin
          Result:=True;
@@ -247,7 +247,6 @@ begin
    // Objects are automatically freed by TObjectList
    FStreamList.Clear;
    FFilesLists.Clear;
-   ActiveVfsPAK := nil;
 end;
 
 function TGLVfsPAK.GetFile(index: integer): TStream;
