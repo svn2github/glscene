@@ -64,7 +64,7 @@ object Form1: TForm1
     end
     object Terrain: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Position.Coordinates = {0000204500008242000020C50000803F}
+      Position.Coordinates = {0000204500008442000020C50000803F}
       Scale.Coordinates = {00002041000020410000204000000000}
       Up.Coordinates = {00000000000000800000803F00000000}
       HeightDataSource = GLBitmapHDS1
@@ -73,7 +73,7 @@ object Form1: TForm1
       MaterialLibrary = MLTerrain
       QualityDistance = 500
       QualityStyle = hrsTesselated
-      CLODPrecision = 30
+      CLODPrecision = 15
       OnGetTerrainBounds = TerrainGetTerrainBounds
     end
     object DOClassicWaterPlane: TGLDirectOpenGL

@@ -207,7 +207,7 @@ begin
       aParticle.PosY:=0;
       aParticle.PosZ:=(0.5-(1-v))*Terrain.Scale.Y*cMapHeight;
       aParticle.PosY:=Terrain.InterpolatedHeight(aParticle.Position);
-   until True;//aParticle.PosY>0;
+   until aParticle.PosY>=0;
    aParticle.Tag:=Random(360);
 
    // Remove probablility for current location
@@ -215,7 +215,7 @@ begin
       RGB(0, GetRValue(densityBitmap.Canvas.Pixels[pixelX, pixelY]) div 2, 0);
 
    // Blob shadow beneath tree
-   with MLTerrain.Materials[0].Material.Texture do begin
+{   with MLTerrain.Materials[0].Material.Texture do begin
       with Image.GetBitmap32(GL_TEXTURE_2D) do begin
          x:=Round(u*(Image.Width-1));
          y:=Round((1-v)*(Image.Height-1));
@@ -227,7 +227,7 @@ begin
                b:=MaxInteger(b-dark,0);
             end;
       end;
-   end;     
+   end;}
 end;
 
 procedure TForm1.PFXTreesBeginParticles(Sender: TObject;
@@ -289,6 +289,8 @@ begin
       glTranslatef(particle.PosX, particle.PosY, particle.PosZ);
       glScalef(10, 10, 10);
       glRotatef(-particle.Tag, 0, 1, 0);
+      glRotatef(Cos(GLCadencer.CurrentTime+particle.ID*15)*0.2, 1, 0, 0);
+      glRotatef(Cos(GLCadencer.CurrentTime*1.3+particle.ID*15)*0.2, 0, 0, 1);
       TestTree.Render(rci);
       glPopMatrix;
    end;
@@ -326,7 +328,7 @@ begin
 
    z:=Terrain.InterpolatedHeight(Camera.Position.AsVector);
    if z<0 then z:=0;
-   z:=z+3;
+   z:=z+10;
    if Camera.Position.Y<z then
       Camera.Position.Y:=z;
 
@@ -558,7 +560,7 @@ begin
    glFrontFace(GL_CW);
 
    glEnable(GL_CLIP_PLANE0);
-   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 5, 0), VectorNegate(YVector)));
+   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 1, 0), VectorNegate(YVector)));
    glClipPlane(GL_CLIP_PLANE0, @clipPlane); 
 
    cameraPosBackup:=rci.cameraPosition;
