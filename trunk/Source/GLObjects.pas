@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/07/02 - Egg - Added TCylinder.Alignment
       <li>23/07/02 - Egg - Added TGLPoints (experimental)
       <li>20/07/02 - Egg - TCylinder.RayCastIntersect and TPlane.RayCastIntersect
       <li>18/07/02 - Egg - Added TCylinder.Align methods
@@ -782,6 +783,10 @@ type
 	TCylinderPart = (cySides, cyBottom, cyTop);
 	TCylinderParts = set of TCylinderPart;
 
+   // TCylinderAlignment
+   //
+   TCylinderAlignment = (caCenter, caTop, caBottom);
+
 	// TCylinder
 	//
    {: Cylinder object, can also be used to make truncated cones }
@@ -790,11 +795,13 @@ type
 			{ Private Declarations }
 			FParts     : TCylinderparts;
 			FTopRadius : TGLFloat;
+         FAlignment : TCylinderAlignment;
 
 		protected
 			{ Protected Declarations }
-			procedure SetTopRadius(AValue: TGLFloat);
-			procedure SetParts(AValue: TCylinderParts);
+			procedure SetTopRadius(aValue : TGLFloat);
+			procedure SetParts(aValue : TCylinderParts);
+         procedure SetAlignment(val : TCylinderAlignment);
 
 		public
 			{ Public Declarations }
@@ -814,7 +821,8 @@ type
 		published
 			{ Published Declarations }
 			property TopRadius : TGLFloat read FTopRadius write SetTopRadius;
-			property Parts : TCylinderParts read FParts Write SetParts default [cySides, cyBottom, cyTop];
+			property Parts : TCylinderParts read FParts write SetParts default [cySides, cyBottom, cyTop];
+         property Alignment : TCylinderAlignment read FAlignment write SetAlignment default caCenter;
 	end;
 
    // TAnnulusPart
@@ -3221,6 +3229,7 @@ begin
    inherited Create(AOwner);
    FTopRadius:=0.5;
    FParts:=[cySides, cyBottom, cyTop];
+   FAlignment:=caCenter;
 end;
 
 // BuildList
@@ -3233,7 +3242,12 @@ begin
 	quadric:=gluNewQuadric;
 	SetupQuadricParams(Quadric);
 	glRotatef(-90, 1, 0, 0);
-	glTranslatef(0, 0, -FHeight*0.5);
+   case Alignment of
+      caTop : glTranslatef(0, 0, -FHeight);
+      caBottom : ;
+   else // caCenter
+   	glTranslatef(0, 0, -FHeight*0.5);
+   end;
 	if cySides in FParts then
 		gluCylinder(Quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
 	if cyTop in FParts then begin
@@ -3267,6 +3281,16 @@ procedure TCylinder.SetParts(AValue: TCylinderParts);
 begin
    if AValue<>FParts then begin
       FParts:=AValue;
+      StructureChanged;
+   end;
+end;
+
+// SetAlignment
+//
+procedure TCylinder.SetAlignment(val : TCylinderAlignment);
+begin
+   if val<>FAlignment then begin
+      FAlignment:=val;
       StructureChanged;
    end;
 end;
@@ -3307,32 +3331,47 @@ var
    poly : array [0..2] of Double;
    roots : TDoubleArray;
    minRoot : Double;
-   t, hDiv2, tr2, invRayVector1 : Single;
+   t, tr2, invRayVector1, hTop, hBottom : Single;
    tPlaneMin, tPlaneMax : Single;
 begin
    Result:=False;
    locRayStart:=AbsoluteToLocal(rayStart);
    locRayVector:=AbsoluteToLocal(rayVector);
 
-   hDiv2:=Height*0.5;
+   case Alignment of
+      caTop : begin
+         hTop:=0;
+         hBottom:=-Height;
+      end;
+      caBottom : begin
+         hTop:=Height;
+         hBottom:=0;
+      end;
+   else
+      // caCenter
+      hTop:=Height*0.5;
+      hBottom:=-hTop;
+   end;
+
    if locRayVector[1]=0 then begin
       // intersect if ray shot through the top/bottom planes
-      if (locRayStart[0]>hDiv2) or (locRayStart[0]<-hDiv2) then
+      if (locRayStart[0]>hTop) or (locRayStart[0]<hBottom) then
          Exit;
       tPlaneMin:=-1e99;
       tPlaneMax:=1e99;
    end else begin
       invRayVector1:=cOne/locRayVector[1];
       tr2:=Sqr(TopRadius);
+
       // compute intersection with topPlane
-      t:=(hDiv2-locRayStart[1])*invRayVector1;
+      t:=(hTop-locRayStart[1])*invRayVector1;
       if (t>0) and (cyTop in Parts) then begin
          ip[0]:=locRayStart[0]+t*locRayVector[0];
          ip[2]:=locRayStart[2]+t*locRayVector[2];
          if Sqr(ip[0])+Sqr(ip[2])<=tr2 then begin
             // intersect with top plane
             if Assigned(intersectPoint) then
-               intersectPoint^:=LocalToAbsolute(VectorMake(ip[0], hDiv2, ip[2], 1));
+               intersectPoint^:=LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
             if Assigned(intersectNormal) then
                intersectNormal^:=LocalToAbsolute(YHmgVector);
             Result:=True;
@@ -3341,7 +3380,7 @@ begin
       tPlaneMin:=t;
       tPlaneMax:=t;
       // compute intersection with bottomPlane
-      t:=(-hDiv2-locRayStart[1])*invRayVector1;
+      t:=(hBottom-locRayStart[1])*invRayVector1;
       if (t>0) and (cyBottom in Parts) then begin
          ip[0]:=locRayStart[0]+t*locRayVector[0];
          ip[2]:=locRayStart[2]+t*locRayVector[2];
@@ -3349,7 +3388,7 @@ begin
             if Sqr(ip[0])+Sqr(ip[2])<=tr2 then begin
                // intersect with top plane
                if Assigned(intersectPoint) then
-                  intersectPoint^:=LocalToAbsolute(VectorMake(ip[0], -hDiv2, ip[2], 1));
+                  intersectPoint^:=LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2], 1));
                if Assigned(intersectNormal) then
                   intersectNormal^:=LocalToAbsolute(VectorNegate(YHmgVector));
                Result:=True;
@@ -3399,6 +3438,7 @@ begin
    Up.AsAffineVector:=dir;
    Height:=VectorLength(dir);
    Lift(Height*0.5);
+   Alignment:=caCenter;
 end;
 
 // Align

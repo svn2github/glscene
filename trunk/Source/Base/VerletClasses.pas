@@ -4,13 +4,12 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/07/02 - EG - Added TVCCylinder
       <li>18/07/02 - EG - Improved forces & constraints
       <li>23/06/02 - EG - Stricter encapsulation, fixed some leaks,
                           Various optimizations (+25%) 
       <li>21/06/02 - EG - Creation (original code by Mattias Fagerlund)
    </ul>
-
-   TODO: a "universal" force class
 }
 unit VerletClasses;
 
@@ -342,6 +341,8 @@ type
 
    // TVCFloor
    //
+   {: Floor collision constraint.<p>
+      The floor is in the XZ plane with a Y+ normal. }
    TVCFloor = class (TVerletGlobalConstraint)
       private
 			{ Private Declarations }
@@ -371,6 +372,8 @@ type
 
    // TVCStick
    //
+   {: Stick constraint.<p>
+      Imposes a fixed distance between two nodes. }
    TVCStick = class (TVCStickBase)
       private
 			{ Private Declarations }
@@ -391,6 +394,7 @@ type
 
    // TVCSphere
    //
+   {: Sphere collision constraint. }
    TVCSphere = class (TVerletGlobalConstraint)
       private
 			{ Private Declarations }
@@ -404,6 +408,37 @@ type
 
          property Location : TAffineVector read FLocation write FLocation;
          property Radius : Single read FRadius write FRadius;
+   end;
+
+   // TVCCylinder
+   //
+   {: Cylinder collision constraint.<p>
+      The cylinder is considered infinite by this constraint. }
+   TVCCylinder = class (TVerletGlobalConstraint)
+      private
+			{ Private Declarations }
+         FBase, FAxis : TAffineVector;
+         FRadius, FRadius2  : Single;
+
+      protected
+			{ Protected Declarations }
+         procedure SetRadius(const val : Single);
+
+      public
+			{ Public Declarations }
+         procedure SatisfyConstraintForNode(aNode : TVerletNode;
+                           const iteration, maxIterations : Integer); override;
+
+         {: A base point on the cylinder axis.<p>
+            Can theoretically be anywhere, however, to reduce floating point
+            precision issues, choose it in the area where collision detection
+            will occur. }
+         property Base : TAffineVector read FBase write FBase;
+         {: Cylinder axis vector.<p>
+            Must be normalized. }
+         property Axis : TAffineVector read FAxis write FAxis;
+         {: Cylinder radius. }
+         property Radius : Single read FRadius write SetRadius;
    end;
 
 // ------------------------------------------------------------------
@@ -1187,6 +1222,39 @@ begin
       VectorScale(delta, diff, move);
 
       AddVector(aNode.FLocation, move);
+   end;
+end;
+
+// ------------------
+// ------------------ TVCCylinder ------------------
+// ------------------
+
+// SetRadius
+//
+procedure TVCCylinder.SetRadius(const val : Single);
+begin
+   FRadius:=val;
+   FRadius2:=Sqr(val);
+end;
+
+// SatisfyConstraintForNode
+//
+procedure TVCCylinder.SatisfyConstraintForNode(aNode : TVerletNode;
+                                    const iteration, maxIterations : Integer);
+var
+   proj : TAffineVector;
+   f, dist2 : Single;
+begin
+   // Compute projection of node position on the axis
+   VectorSubtract(aNode.Location, Base, proj);
+   f:=VectorDotProduct(Axis, proj);
+   proj:=VectorCombine(Base, Axis, 1, f);
+
+   // Sqr distance
+   dist2:=VectorDistance2(proj, aNode.Location);
+   if dist2<FRadius2 then begin
+      // move out of the cylinder
+      VectorLerp(proj, aNode.Location, FRadius*RSqrt(dist2), aNode.FLocation);
    end;
 end;
 
