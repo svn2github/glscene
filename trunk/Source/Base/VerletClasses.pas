@@ -11,6 +11,7 @@
    It's a matter of leverage. <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/04/04 - EG - Added TVCHeightField, fixed TVCFloor
       <li>06/03/04 - MF - Small updates to accomodate hair
       <li>11/07/03 - EG - Optimized TVCCube collider
       <li>11/07/03 - MF - A bit of a documentation effort
@@ -65,9 +66,10 @@ type
          FWeight, FInvWeight : Single;
          FRadius : Single;
          FNailedDown : Boolean;
-         FFriction: single;
-         FChangedOnStep: integer;
+         FFriction : Single;
+         FChangedOnStep : Integer;
          function GetSpeed: TAffineVector;
+
 		protected
 			{ Protected Declarations }
          FLocation, FOldLocation : TAffineVector;
@@ -119,8 +121,7 @@ type
          {: The radius of the verlet node - this has been more or less deprecated }
          property Radius : Single read FRadius write FRadius;
 
-         {: A sum of all forces that has been applied to this verlet node during
-         a step }
+         {: A sum of all forces that has been applied to this verlet node during a step }
          property Force : TAffineVector read FForce write FForce;
 
          {: If the node is nailed down, it can't be moved by either force,
@@ -161,11 +162,12 @@ type
 
    // TVerletConstraint
    //
-   TVerletConstraint = class
+   TVerletConstraint = class (TObject)
       private
 			{ Private Declarations }
          FOwner : TVerletWorld;
          FEnabled : Boolean;
+         FTag : Integer;
 
       public
 			{ Public Declarations }
@@ -173,20 +175,19 @@ type
          destructor Destroy; override;
 
          {: Updates the position of one or several nodes to make sure that they
-         don't violate the constraint }
+            don't violate the constraint }
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); virtual; abstract;
-
          {: Notifies removal of a node }
          procedure RemoveNode(const aNode : TVerletNode); virtual; abstract;
-
          {: Method that's fired before the physics iterations are performed}
          procedure BeforeIterations; virtual;
 
          {: Onwer of the constraint }
          property Owner : TVerletWorld read FOwner;
-
          {: Determines if the constraint should be enforced or not }
          property Enabled : Boolean read FEnabled write FEnabled;
+         {: Tag field reserved for the user. }
+         property Tag : Integer read FTag write FTag;
    end;
 
    // TVerletDualConstraint
@@ -455,12 +456,13 @@ type
    TVCStick = class;
    TVFSpring = class;
 
-   // TVerletWorld
-   //
    TUpdateSpacePartion = (uspEveryIteration, uspEveryFrame, uspNever);
    TCollisionConstraintTypes = (cctEdge, cctNode);
    TCollisionConstraintTypesSet = set of TCollisionConstraintTypes;
-   TVerletWorld = class
+   
+   // TVerletWorld
+   //
+   TVerletWorld = class (TObject)
       private
 			{ Private Declarations }
          FIterations : Integer;
@@ -476,10 +478,10 @@ type
          FCurrentStepCount: integer;
          FUpdateSpacePartion: TUpdateSpacePartion;
          FCollisionConstraintTypes: TCollisionConstraintTypesSet;
-    FConstraintsWithBeforeIterations: TVerletConstraintList;
-    FVerletNodeClass: TVerletNodeClass;
-    FInertia: boolean;
-    FInertaPauseSteps : integer;
+         FConstraintsWithBeforeIterations: TVerletConstraintList;
+         FVerletNodeClass: TVerletNodeClass;
+         FInertia: Boolean;
+         FInertaPauseSteps : Integer;
 
 		protected
 			{ Protected Declarations }
@@ -506,10 +508,11 @@ type
 
          function CreateOwnedNode(const location : TAffineVector;
                                   const aRadius : Single = 0;
-                                  const aWeight : Single=1) : TVerletNode;
-         function CreateStick(const aNodeA, aNodeB : TVerletNode; const Slack : single = 0) : TVCStick;
+                                  const aWeight : Single = 1) : TVerletNode;
+         function CreateStick(const aNodeA, aNodeB : TVerletNode;
+                              const Slack : Single = 0) : TVCStick;
          function CreateSpring(const aNodeA, aNodeB : TVerletNode;
-           const Strength, Dampening : single; const Slack : single=0) : TVFSpring;
+                                const Strength, Dampening : single; const Slack : Single = 0) : TVFSpring;
 
          procedure Initialize; dynamic;
          procedure CreateOctree(const OctreeMin, OctreeMax : TAffineVector;
@@ -572,6 +575,7 @@ type
          FWindMagnitude: single;
          FWindChaos: single;
          procedure SetWindDirection(const Value: TAffineVector);
+
       public
 			{ Public Declarations }
          constructor Create(const aOwner : TVerletWorld); override;
@@ -608,18 +612,40 @@ type
 			{ Private Declarations }
          FBounceRatio : Single;
          FNormal : TAffineVector;
-         procedure SetNormal(const Value: TAffineVector);
+
+      protected
+         { Protected Declarations }
+         procedure SetNormal(const value : TAffineVector);
+
       public
 			{ Public Declarations }
+         constructor Create(const aOwner : TVerletWorld); override;
+
          procedure PerformSpaceQuery; override;
          procedure SatisfyConstraintForNode(const aNode : TVerletNode;
                         const iteration, maxIterations : Integer); override;
 
          property BounceRatio : Single read FBounceRatio write FBounceRatio;
-
          property Normal : TAffineVector read FNormal write SetNormal;
+   end;
 
-         constructor Create(const aOwner : TVerletWorld); override;
+   TVCHeightField = class;
+   TVCHeightFieldOnNeedHeight = function (hfConstraint : TVCHeightField; node : TVerletNode) : Single of object;
+
+   // TVCHeightField
+   //
+   {: HeightField collision constraint (punctual!) }
+   TVCHeightField = class (TVCFloor)
+      private
+			{ Private Declarations }
+         FOnNeedHeight : TVCHeightFieldOnNeedHeight;
+
+      public
+			{ Public Declarations }
+         procedure SatisfyConstraintForNode(const aNode : TVerletNode;
+                        const iteration, maxIterations : Integer); override;
+
+         property OnNeedHeight : TVCHeightFieldOnNeedHeight read FOnNeedHeight write FOnNeedHeight;
    end;
 
    // TVCStick
@@ -944,11 +970,6 @@ end;
 
 // Create
 //
-procedure TVerletConstraint.BeforeIterations;
-begin
-  // NADA!
-end;
-
 constructor TVerletConstraint.Create(const aOwner : TVerletWorld);
 begin
    inherited Create;
@@ -964,6 +985,13 @@ begin
    if Assigned(FOwner) then
       FOwner.RemoveConstraint(Self);
    inherited;
+end;
+
+// Create
+//
+procedure TVerletConstraint.BeforeIterations;
+begin
+  // NADA!
 end;
 
 // ------------------
@@ -1674,9 +1702,8 @@ end;
 // ------------------ TVCFloor ------------------
 // ------------------
 
-// SatisfyConstraintForNode
+// Create
 //
-
 constructor TVCFloor.Create(const aOwner: TVerletWorld);
 begin
   inherited;
@@ -1684,52 +1711,47 @@ begin
   MakeVector(FLocation, 0, 0, 0);
 end;
 
+// PerformSpaceQuery
+//
 procedure TVCFloor.PerformSpaceQuery;
 begin
-  Owner.SpacePartition.QueryPlane(FLocation, FNormal);
+   Owner.SpacePartition.QueryPlane(FLocation, FNormal);
 end;
 
+// SatisfyConstraintForNode
+//
 procedure TVCFloor.SatisfyConstraintForNode(const aNode : TVerletNode;
-                                       const iteration, maxIterations : Integer);
+                                            const iteration, maxIterations : Integer);
 var
    penetrationDepth : Single;
-   currentPenetrationDepth : single;
+   currentPenetrationDepth : Single;
    d : TAffineVector;
-   move : TAffineVector;
+   correction : TAffineVector;
 begin
-   //currentPenetrationDepth:=floorLevel-(aNode.Location[1]-aNode.Radius);
-   currentPenetrationDepth := -PointPlaneDistance(aNode.Location, FLocation, FNormal)-aNode.Radius;
+   currentPenetrationDepth:=-PointPlaneDistance(aNode.Location, FLocation, FNormal)+aNode.Radius;
 
    // Record how far down the node goes
    penetrationDepth:=currentPenetrationDepth;
    // Correct the node location
-   if currentPenetrationDepth>0 then
-   begin
-      Move := VectorScale(FNormal, currentPenetrationDepth);
-
-      if BounceRatio>0 then
-      begin
-         d:= VectorSubtract(aNode.FLocation, aNode.FOldLocation);
-
-         //aNode.FLocation[1]:=floorLevel+aNode.Radius;
-
+   if currentPenetrationDepth>0 then begin
+      correction:=VectorScale(FNormal, currentPenetrationDepth);
+      if BounceRatio>0 then begin
+         d:=VectorSubtract(aNode.FLocation, aNode.FOldLocation);
          if FrictionRatio>0 then
             aNode.ApplyFriction(FrictionRatio, penetrationDepth, FNormal);
-
-         // aNode.FOldLocation[1]:=aNode.FLocation[1]+d*BounceRatio;
-
-         aNode.FOldLocation := VectorAdd(aNode.FLocation, VectorScale(d, BounceRatio));
+         AddVector(aNode.FLocation, correction);
+         aNode.FOldLocation:=VectorAdd(aNode.FLocation, VectorScale(d, BounceRatio));
       end else begin
-         //aNode.FLocation[1]:=floorLevel+aNode.Radius;
-         AddVector(aNode.FLocation, Move);
+         AddVector(aNode.FLocation, correction);
          if FrictionRatio>0 then
             aNode.ApplyFriction(FrictionRatio, penetrationDepth, FNormal);
-
-         aNode.FChangedOnStep := Owner.CurrentStepCount;
+         aNode.FChangedOnStep:=Owner.CurrentStepCount;
       end;
    end;
 end;
 
+// SetNormal
+//
 procedure TVCFloor.SetNormal(const Value: TAffineVector);
 begin
   FNormal := Value;
@@ -1737,11 +1759,42 @@ begin
 end;
 
 // ------------------
-// ------------------ TVCStickBase ------------------
+// ------------------ TVCHeightField ------------------
 // ------------------
 
-// StickConstraint
+// SatisfyConstraintForNode
 //
+procedure TVCHeightField.SatisfyConstraintForNode(const aNode : TVerletNode;
+                                            const iteration, maxIterations : Integer);
+var
+   penetrationDepth : Single;
+   currentPenetrationDepth : Single;
+   d : TAffineVector;
+   correction : TAffineVector;
+begin
+   currentPenetrationDepth:=-PointPlaneDistance(aNode.Location, FLocation, FNormal)+aNode.Radius;
+   if Assigned(FOnNeedHeight) then
+      currentPenetrationDepth:=currentPenetrationDepth+FOnNeedHeight(Self, aNode);
+
+   // Record how far down the node goes
+   penetrationDepth:=currentPenetrationDepth;
+   // Correct the node location
+   if currentPenetrationDepth>0 then begin
+      correction:=VectorScale(FNormal, currentPenetrationDepth);
+      if BounceRatio>0 then begin
+         d:=VectorSubtract(aNode.FLocation, aNode.FOldLocation);
+         if FrictionRatio>0 then
+            aNode.ApplyFriction(FrictionRatio, penetrationDepth, FNormal);
+         AddVector(aNode.FLocation, correction);
+         aNode.FOldLocation:=VectorAdd(aNode.FLocation, VectorScale(d, BounceRatio));
+      end else begin
+         AddVector(aNode.FLocation, correction);
+         if FrictionRatio>0 then
+            aNode.ApplyFriction(FrictionRatio, penetrationDepth, FNormal);
+         aNode.FChangedOnStep:=Owner.CurrentStepCount;
+      end;
+   end;
+end;
 
 // ------------------
 // ------------------ TVCStick ------------------
@@ -2332,6 +2385,12 @@ begin
     FUpdateSpacePartion := uspEveryFrame;
 end;
 
+procedure TVerletWorld.PauseInertia(const IterationSteps: integer);
+begin
+  FInertaPauseSteps := IterationSteps+1;
+  Inertia := false;
+end;
+
 { TVerletGlobalFrictionConstraintSP }
 
 procedure TVerletGlobalFrictionConstraintSP.SatisfyConstraint(
@@ -2432,9 +2491,4 @@ begin
   inherited;
 end;
 
-procedure TVerletWorld.PauseInertia(const IterationSteps: integer);
-begin
-  FInertaPauseSteps := IterationSteps+1;
-  Inertia := false;
-end;
 end.
