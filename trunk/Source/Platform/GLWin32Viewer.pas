@@ -113,7 +113,7 @@ type
          property MouseInControl : Boolean read FMouseInControl;
 
       published
-         { Public Declarations }
+         { Published Declarations }
          {: Camera from which the scene is rendered. }
          property Camera : TGLCamera read GetCamera write SetCamera;
 
