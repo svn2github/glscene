@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/05/02 - Egg - Fixed light movements not triggering viewer redraw issue,
+                           lights no longer 'invisible' (sub objects get rendered)
       <li>05/04/02 - Egg - Fixed XOpenGL initialization/reinitialization
       <li>13/03/02 - Egg - Fixed camera-switch loss of "reactivity"
       <li>08/03/02 - Egg - Fixed InvAbsoluteMatrix/AbsoluteMatrix decoupling
@@ -4725,7 +4727,6 @@ begin
   FDiffuse:=TGLColor.Create(Self);
   FDiffuse.Initialize(clrWhite);
   FSpecular:=TGLColor.Create(Self);
-  FVisible:=False;
 end;
 
 // Destroy
@@ -4744,8 +4745,10 @@ end;
 procedure TGLLightSource.DoRender(var rci : TRenderContextInfo;
                                   renderSelf, renderChildren : Boolean);
 begin
-   if renderSelf and (Count>0) then
-      Self.RenderChildren(0, Count-1, rci);
+   if renderChildren then begin
+      if FChildren.Count>0 then
+         Self.RenderChildren(0, Count-1, rci);
+   end;
 end;
 
 // RayCastIntersect
@@ -5462,6 +5465,7 @@ begin
             glEnable(FLightID);
             glPopMatrix;
             glPushMatrix;
+            RebuildMatrix;
             if LightStyle=lsParallel then begin
                glMultMatrixf(PGLFloat(AbsoluteMatrixAsAddress));
                glLightfv(FLightID, GL_POSITION, SpotDirection.AsAddress)
