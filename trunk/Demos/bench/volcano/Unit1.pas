@@ -8,7 +8,8 @@
    Benchmark results (default win size, "Inferno" mode, ie. approx 7000 particles):<p>
 
    CPU               Graphics          Colors      FPS         Sort Time
-
+   AXP 2200+         GF3 Ti200         32 bits    126.0        0.82 msec
+   --- 26/05/04 - Long time no bench
    TBird 1.1GHz      GeForce2 Pro      32 bits    103.8        2.60 msec
    Duron 800MHz      TNT2 M64          32 bits     16.7        3.92 msec
    --- 27/01/02 - ZWrite=False in the PFX Renderer, minor optims

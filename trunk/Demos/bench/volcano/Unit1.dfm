@@ -52,20 +52,20 @@ object Form1: TForm1
         000009020008020008}
       EffectsData = {
         0201061254474C536F757263655046584566666563740200060A504658566F6C
-        63616E6F02010200090000000000004040000000000000000002000805000000
-        0000000080FF3F050000000000CDCCCCFC3F0500000000008FC2F5F83F020002
-        00}
+        63616E6F02030200090000000000004040000000000000000002000802000805
+        0000000000000080FF3F050000000000CDCCCCFC3F0500000000008FC2F5F83F
+        0200020009}
       object Sphere1: TGLSphere
-        Position.Coordinates = {0000000000000040000000400000803F}
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Emission.Color = {00000000000000008180003F0000803F}
+        Position.Coordinates = {0000000000000040000000400000803F}
         Radius = 0.300000011920929
         Slices = 12
         Stacks = 12
         EffectsData = {
           0201061254474C536F7572636550465845666665637402000607504658426C75
-          650201020008020008050000000000CDCCCCFB3F050000000000CDCCCCFB3F05
-          0000000000CDCCCCFB3F02000200}
+          650203020008020008020008050000000000CDCCCCFB3F050000000000CDCCCC
+          FB3F050000000000CDCCCCFB3F0200020009}
       end
     end
     object PFXRenderer: TGLParticleFXRenderer
@@ -90,6 +90,7 @@ object Form1: TForm1
     Cadencer = GLCadencer1
     Renderer = PFXRenderer
     Acceleration.Coordinates = {00000000000080BF0000000000000000}
+    Friction = 1
     NbSides = 7
     ParticleSize = 0.25
     ColorOuter.Color = {0000803F000000000000000000000000}
@@ -97,6 +98,7 @@ object Form1: TForm1
       item
         ColorInner.Color = {0000803F000000000000000000000000}
         LifeTime = 7
+        SizeScale = 1
       end>
     Left = 56
     Top = 16
@@ -115,13 +117,15 @@ object Form1: TForm1
   object PFXBlue: TGLPolygonPFXManager
     Cadencer = GLCadencer1
     Renderer = PFXRenderer
-    ParticleSize = 0.55
+    Friction = 1
+    ParticleSize = 0.550000011920929
     ColorInner.Color = {00000000000000000000803F0000803F}
     ColorOuter.Color = {00000000000000001283203F00000000}
     LifeColors = <
       item
         ColorInner.Color = {0000803F0000803F0000803F00000000}
         LifeTime = 3
+        SizeScale = 1
       end>
     Left = 56
     Top = 56
