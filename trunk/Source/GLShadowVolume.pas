@@ -13,8 +13,7 @@ unit GLShadowVolume;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLObjects,
-   GLCrossPlatform;
+uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLCrossPlatform;
 
 type
 
@@ -354,7 +353,7 @@ end;
 procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
                                    renderSelf, renderChildren : Boolean);
 var
-   i, j, k, n : Integer;
+   i, j, k, n, nv : Integer;
    lightSource : TGLLightSource;
    sil : TGLBaseSilhouette;
    lightID : Cardinal;
@@ -362,7 +361,6 @@ var
    caster : TGLShadowVolumeCaster;
    lights, opaques, opaqueCapping : TList;
    silParams : TGLSilhouetteParameters;
-   extrudedVertices : TVectorList;
    mat : TMatrix;
 begin
    if FRendering then Exit;
@@ -374,7 +372,6 @@ begin
    lights:=TList.Create;
    opaques:=TList.Create;
    opaqueCapping:=TList.Create;
-   extrudedVertices:=TVectorList.Create;
    FRendering:=True;
    try
       // collect visible/shining casters
@@ -450,8 +447,9 @@ begin
             glDisable(GL_BLEND);
          end;
          SetGLState(rci.currentStates, stCullFace);
-         
+
          glDisable(GL_LIGHTING);
+         glEnableClientState(GL_VERTEX_ARRAY);
 
          // for all opaque shadow casters
          for k:=0 to opaques.Count-1 do begin
@@ -467,85 +465,47 @@ begin
                glMultMatrixf(@mat);
 
                // extrude vertices to infinity
-               extrudedVertices.Count:=sil.Vertices.Count;
-               for n:=0 to extrudedVertices.Count-1 do begin
-                  VectorSubtract(sil.Vertices.List[n], silParams.SeenFrom,
-                                 extrudedVertices.List[n]);
-                  extrudedVertices.List[n][3]:=0;
-               end;
+               sil.ExtrudeVerticesToInfinity(silParams.SeenFrom);
+
+               glVertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
                if Boolean(opaqueCapping[k]) then begin
                   // z-fail
                   glCullFace(GL_FRONT);
                   glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
 
-                  glBegin(GL_QUADS);
-                  n:=0; while n<sil.Indices.Count do begin
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n]]);
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n]]);
-                     Inc(n, 2);
+                  with sil do begin
+                     glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT, Indices.List);
+                     glDrawElements(GL_TRIANGLES, CapIndices.Count, GL_UNSIGNED_INT, CapIndices.List);
                   end;
-                  glEnd;
-                  glBegin(GL_TRIANGLES);
-                  for n:=sil.CapIndices.Count-1 downto 0 do
-                     glVertex3fv(@sil.Vertices.List[sil.CapIndices[n]]);
-                  glEnd;
-                  glBegin(GL_TRIANGLES);
-                  for n:=0 to sil.CapIndices.Count-1 do
-                     glVertex4fv(@extrudedVertices.List[sil.CapIndices[n]]);
-                  glEnd;
 
                   glCullFace(GL_BACK);
                   glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
 
-                  glBegin(GL_QUADS);
-                  n:=0; while n<sil.Indices.Count do begin
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n]]);
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n]]);
-                     Inc(n, 2);
+                  with sil do begin
+                     glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT, Indices.List);
+                     glDrawElements(GL_TRIANGLES, CapIndices.Count, GL_UNSIGNED_INT, CapIndices.List);
                   end;
-                  glEnd;
-                  glBegin(GL_TRIANGLES);
-                  for n:=sil.CapIndices.Count-1 downto 0 do
-                     glVertex3fv(@sil.Vertices.List[sil.CapIndices[n]]);
-                  glEnd;
                end else begin
                   // z-pass
                   glCullFace(GL_BACK);
                   glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 
-                  glBegin(GL_QUADS);
-                  n:=0; while n<sil.Indices.Count do begin
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n]]);
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n]]);
-                     Inc(n, 2);
-                  end;
-                  glEnd;
+                  glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT, sil.Indices.List);
 
                   glCullFace(GL_FRONT);
                   glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
 
-                  glBegin(GL_QUADS);
-                  n:=0; while n<sil.Indices.Count do begin
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n]]);
-                     glVertex3fv(@sil.Vertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n+1]]);
-                     glVertex4fv(@extrudedVertices.List[sil.Indices[n]]);
-                     Inc(n, 2);
-                  end;
-                  glEnd;
+                  glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT, sil.Indices.List); 
                end;
+               
                glPopMatrix;
             finally
                sil.Free;
             end;
          end;
+
+         glDisableClientState(GL_VERTEX_ARRAY);
 
          // re-enable light's diffuse and specular, but no ambient
          glEnable(lightID);
@@ -600,11 +560,10 @@ begin
       glPopAttrib;
       glDepthMask(True);
       glDepthFunc(GL_LESS);
-//      glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @rci.sceneAmbientColor);
+      glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @rci.sceneAmbientColor);
       rci.ignoreBlendingRequests:=False;
    finally
       FRendering:=False;
-      extrudedVertices.Free;
       opaques.Free;
       opaqueCapping.Free;
       lights.Free;
