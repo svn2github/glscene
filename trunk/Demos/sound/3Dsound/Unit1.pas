@@ -44,7 +44,7 @@ interface
 
 uses
   Classes, Forms, ExtCtrls, GLCadencer, GLScene, GLObjects, GLMisc,
-  GLSound, GLSMFMOD, ComCtrls, Controls, GLSMBASS, StdCtrls;
+  GLSound, GLSMFMOD, ComCtrls, Controls, GLSMBASS, StdCtrls, GLWin32Viewer;
 
 type
   TForm1 = class(TForm)

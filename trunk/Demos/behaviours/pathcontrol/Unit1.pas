@@ -8,7 +8,8 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, ComCtrls, GLMisc, ExtCtrls, StdCtrls,
-  Classes, Controls, GLCadencer, GLBehaviours, Buttons, GLGraph, GLMovement;
+  Classes, Controls, GLCadencer, GLBehaviours, Buttons, GLGraph, GLMovement,
+  GLWin32Viewer;
 
 type
   TForm1 = class(TForm)

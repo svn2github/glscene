@@ -10,7 +10,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLMisc, GLObjects, StdCtrls, ComCtrls, GLTexture, ExtCtrls,
-  GLExtrusion;
+  GLExtrusion, GLWin32Viewer;
 
 type
   TForm1 = class(TForm)

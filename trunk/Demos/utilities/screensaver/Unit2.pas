@@ -17,7 +17,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Graphics, Controls, Forms, GLMisc, GLScene,
-  GLObjects, StdCtrls, GLTexture, GLCadencer;
+  GLObjects, StdCtrls, GLTexture, GLCadencer, GLWin32Viewer;
 
 type
   TForm2 = class(TForm)

@@ -23,7 +23,7 @@ interface
 
 uses
   Forms, GLObjects, GLScene, GLMisc, StdCtrls, ExtCtrls, Controls, Classes,
-  GLCadencer;
+  GLCadencer, GLWin32Viewer;
 
 type
   TForm1 = class(TForm)

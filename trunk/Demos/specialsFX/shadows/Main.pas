@@ -11,7 +11,7 @@ uses
   ComCtrls,jpeg, glgraphics, VectorTypes, geometry, GLHUDObjects,
   GLzBuffer, OpenGL12,
   //GLBehaviours,
-  GLCadencer, AsyncTimer, Spin;
+  GLCadencer, AsyncTimer, Spin, GLWin32Viewer;
 
 type
   TMainFm = class(TForm)
