@@ -7,7 +7,8 @@
    fire and smoke particle systems for instance).<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer
+      <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
+                          minor sort and render optims 
       <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
       <li>20/01/02 - EG - Several optimization (35% faster on Volcano bench)
       <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
@@ -909,7 +910,6 @@ type
    TParticleReference = record
       particle : TGLParticle;
       distance : Integer;  // stores an IEEE single!
-      manager : TGLParticleFXManager;
    end;
    PParticleReference = ^TParticleReference;
    TParticleReferenceArray = array [0..MaxInt shr 4] of TParticleReference;
@@ -925,8 +925,8 @@ type
    var
       I, J : Integer;
       P : Integer;
-      buf : Pointer;
       poptr : PPointerArray;
+      buf : Pointer;
    begin
       if endIndex-startIndex>1 then begin
          poptr:=@region.particleOrder[0];
@@ -938,9 +938,9 @@ type
                while PParticleReference(poptr[I]).distance<P do Inc(I);
                while PParticleReference(poptr[J]).distance>P do Dec(J);
                if I<=J then begin
-                  buf:=poptr[J];
-                  poptr[J]:=poptr[I];
-                  poptr[I]:=buf;
+                  buf:=poptr[I];
+                  poptr[I]:=poptr[J];
+                  poptr[J]:=buf;
                   Inc(I); Dec(J);
                end;
             until I>J;
@@ -960,13 +960,15 @@ type
 
 var
    regions : array [0..cNbRegions-1] of TRegion;
-   dist, minDist, maxDist, invRegionSize, distDelta : Single;
+   dist, invRegionSize, distDelta : Single;
+   minDist, maxDist : Integer;
    managerIdx, particleIdx, regionIdx : Integer;
    curManager : TGLParticleFXManager;
+   curManagerList : TGLParticleList;
    curList : PGLParticleArray;
    curParticle : TGLParticle;
    curRegion : PRegion;
-   curParticleRef : PParticleReference;
+   curParticleOrder : PPointerArray;
    cameraPos, cameraVector : TAffineVector;
    timerStart, timerStop : Int64;
    oldDepthMask : TGLboolean;
@@ -975,10 +977,10 @@ begin
    QueryPerformanceCounter(timerStart);
    // precalcs
    with Scene.CurrentGLCamera do begin
-      minDist:=NearPlane+1;
-      maxDist:=NearPlane+DepthOfView+1;
-      invRegionSize:=cNbRegions/(maxDist-minDist);
-      distDelta:=minDist+0.49999/invRegionSize
+      PSingle(@minDist)^:=NearPlane+1;
+      PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
+      invRegionSize:=cNbRegions/DepthOfView;
+      distDelta:=NearPlane+1+0.49999/invRegionSize
    end;
    SetVector(cameraPos, rci.cameraPosition);
    SetVector(cameraVector, rci.cameraDirection);
@@ -1000,7 +1002,7 @@ begin
             curParticle:=curList[particleIdx];
             dist:=VectorDotProduct(VectorSubtract(curParticle.FPosition, cameraPos),
                                    cameraVector)+1;
-            if (dist>=minDist) and (dist<=maxDist) then begin
+            if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
                // Round(x-0.5)=Trunc(x) and Round is faster (significantly faster)
                regionIdx:=Geometry.Round((dist-distDelta)*invRegionSize);
                if regionIdx>=cNbRegions then
@@ -1014,7 +1016,6 @@ begin
                with curRegion.particleRef[curRegion.count] do begin
                   particle:=curParticle;
                   distance:=PInteger(@dist)^;
-                  manager:=curManager;
                end;
                Inc(curRegion.count);
             end;
@@ -1071,17 +1072,20 @@ begin
          // Start Rendering... at last ;)
          try
             curManager:=nil;
+            curManagerList:=nil;
             for regionIdx:=cNbRegions-1 downto 0 do begin
                curRegion:=@regions[regionIdx];
+               curParticleOrder:=@curRegion.particleOrder[0];
                for particleIdx:=curRegion.count-1 downto 0 do begin
-                  curParticleRef:=curRegion.particleOrder[particleIdx];
-                  if curParticleRef.manager<>curManager then begin
+                  curParticle:=PParticleReference(curParticleOrder[particleIdx]).particle;
+                  if curParticle.Owner<>curManagerList then begin
                      if Assigned(curManager) then
                         curManager.EndParticles;
-                     curManager:=curParticleRef.manager;
+                     curManagerList:=curParticle.Owner;
+                     curManager:=curManagerList.Owner;
                      curManager.BeginParticles;
                   end;
-                  curManager.RenderParticle(curParticleRef.particle);
+                  curManager.RenderParticle(curParticle);
                end;
             end;
             if Assigned(curManager) then
@@ -1604,6 +1608,7 @@ var
    inner, outer : TColorVector;
    pos : TAffineVector;
    lck, lck1 : TPFXLifeColor;
+   vertexList : PAffineVectorArray;
 begin
    lifeTime:=FCurrentTime-aParticle.CreationTime;
    with LifeColors do begin
@@ -1612,10 +1617,12 @@ begin
          inner:=ColorInner.Color;
          outer:=ColorOuter.Color;
       end else begin
-         k:=-1;
-         for i:=0 to n do
-            if Items[i].LifeTime<lifeTime then k:=i;
-         if k<n then Inc(k);
+         if n>0 then begin
+            k:=-1;
+            for i:=0 to n do
+               if Items[i].LifeTime<lifeTime then k:=i;
+            if k<n then Inc(k);
+         end else k:=0;
          case k of
             0 : begin
                lck:=LifeColors[k];
@@ -1635,13 +1642,14 @@ begin
 
    pos:=aParticle.Position;
 
-   VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, FVertBuf.List);
+   vertexList:=FVertBuf.List;
+   VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
    glBegin(GL_TRIANGLE_FAN);
       glColor4fv(@inner);
       glVertex3fv(@pos);
       glColor4fv(@outer);
-      with FVertBuf do for i:=0 to Count-1 do
-         glVertex3fv(@List[i]);
+      for i:=0 to FVertBuf.Count-1 do
+         glVertex3fv(@vertexList[i]);
    glEnd;
 end;
 
