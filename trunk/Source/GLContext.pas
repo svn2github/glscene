@@ -348,6 +348,10 @@ type
             that is re-specified very often.<p>
             Valid only if the buffer has been bound. }
          procedure BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+         {: Updates part of an already existing buffer.<p>
+            offset and size indicate which part of the data in the buffer is
+            to bo modified and p where the data should be taken from. }
+         procedure BufferSubData(offset, size : Integer; p : Pointer);
          {: Map buffer content to memory.<p>
             Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
             GL_READ_WRITE_ARB.<p>
@@ -1109,6 +1113,13 @@ end;
 procedure TGLVBOHandle.BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
 begin
    glBufferDataARB(FVBOTarget, size, p, bufferUsage);
+end;
+
+// BufferSubData
+//
+procedure TGLVBOHandle.BufferSubData(offset, size : Integer; p : Pointer);
+begin
+   glBufferSubDataARB(FVBOTarget, offset, size, p);
 end;
 
 // MapBuffer
