@@ -394,6 +394,8 @@ type
          procedure ReadBehaviours(stream : TStream);
          procedure WriteEffects(stream : TStream);
          procedure ReadEffects(stream : TStream);
+         procedure WriteRotations(stream : TStream);
+         procedure ReadRotations(stream : TStream);
 
          procedure SetAbsolutePosition(const v : TVector);
          function GetAbsolutePosition : TVector;
@@ -601,11 +603,12 @@ type
          procedure TransformationChanged;
          procedure NotifyChange(Sender : TObject); override;
 
-         property Rotation: TGLCoordinates Read FRotation Write SetRotation;
-         property PitchAngle: single Read GetPitchAngle Write SetPitchAngle stored False;
-         property RollAngle: single Read GetRollAngle Write SetRollAngle stored False;
-         property TurnAngle: single Read GetTurnAngle Write SetTurnAngle stored False;
-         property TransformationMode: TTransformationMode read FTransMode write FTransMode default tmLocal;
+         property Rotation : TGLCoordinates read FRotation write SetRotation;
+         property PitchAngle : Single read GetPitchAngle write SetPitchAngle;
+         property RollAngle : Single read GetRollAngle write SetRollAngle;
+         property TurnAngle : Single read GetTurnAngle write SetTurnAngle;
+
+         property TransformationMode : TTransformationMode read FTransMode write FTransMode default tmLocal;
 
          property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
          property Changes: TObjectChanges read FChanges;
@@ -858,6 +861,7 @@ type
       Subclassing should be reserved to structural objects. }
    TGLImmaterialSceneObject = class(TGLCustomSceneObject)
       published
+         { Published Declarations }
          property ObjectsSorting;
          property VisibilityCulling;
          property Direction;
@@ -2437,6 +2441,20 @@ begin
    finally
       reader.Free;
    end;
+end;
+
+// WriteRotations
+//
+procedure TGLBaseSceneObject.WriteRotations(stream : TStream);
+begin
+   stream.Write(FRotation.AsAddress^, 3*SizeOf(TGLFloat));
+end;
+
+// ReadRotations
+//
+procedure TGLBaseSceneObject.ReadRotations(stream : TStream);
+begin
+   stream.Read(FRotation.AsAddress^, 3*SizeOf(TGLFloat));
 end;
 
 // DrawAxes
