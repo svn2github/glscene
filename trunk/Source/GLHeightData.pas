@@ -1116,23 +1116,6 @@ begin
    else begin
       ix:=Trunc(x);  x:=Frac(x);
       iy:=Trunc(y);  y:=Frac(y);
-
-{
-// Old TopLeft/BottomRight code...
-     if x+y<=1 then begin
-         // top-left triangle
-         h1:=Height(ix,    iy);
-         h2:=Height(ix+1,  iy);
-         h3:=Height(ix,    iy+1);
-         Result:=h1+(h2-h1)*x+(h3-h1)*y;
-      end else begin
-         // bottom-right triangle
-         h1:=Height(ix+1,  iy+1);
-         h2:=Height(ix,    iy+1);
-         h3:=Height(ix+1,  iy);
-         Result:=h1+(h2-h1)*(1-x)+(h3-h1)*(1-y);
-      end;{}
-// New TopRight/BottomLeft code...
       if x > y then begin
          // top-right triangle
          h1:=Height(ix+1,  iy);
@@ -1145,9 +1128,7 @@ begin
          h2:=Height(ix+1,  iy+1);
          h3:=Height(ix,    iy);
          Result:=h1+(h2-h1)*(x)+(h3-h1)*(1-y);
-      end;{}
-
-
+      end;
    end;
 end;
 
