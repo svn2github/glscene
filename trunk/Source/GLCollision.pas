@@ -834,6 +834,8 @@ begin
    FClients.Clear;
 end;
 
+// Reference code
+
 // CheckCollisions
 //
 procedure TCollisionManager.CheckCollisions;
@@ -845,7 +847,7 @@ var
 begin
    if not Assigned(FOnCollision) then Exit;
    // if you know a code slower than current one, call me ;)
-   { TODO : speed improvements & distance cacheing }
+   // TODO : speed improvements & distance cacheing
    for i:=0 to FClients.Count-2 do begin
       cli1:=TGLBCollision(FClients[i]);
       obj1:=cli1.OwnerBaseSceneObject;
@@ -862,6 +864,121 @@ begin
       end;
    end;
 end;
+
+{
+// [---- new CheckCollisions / Dan Bartlett
+
+// CheckCollisions  (By Dan Bartlett) - sort according to Z axis
+//
+//  Some comments:  Much faster than original, especially when objects are spread out.
+//                  TODO:
+//                  Still more improvements can be made, better method
+//                  Faster sorting? (If a faster way than Delphi's QuickSort is available)
+//                  Another Event called OnNoCollisionEvent could be added
+//                  Fit bounding box methods into GLScene "Grand Scheme Of Things"
+//
+//  Behaviour:
+//   If GroupIndex < 0 then it will not be checked for collisions against
+//     any other object *** WARNING:  THIS IS DIFFERENT FROM PREVIOUS VERSION ***
+//
+//   If GroupIndex = 0 then object will be tested against all objects with GroupIndex >= 0
+//   Collision Testing will only be performed on objects from different groups that are both visible
+
+type
+   //only add collision node to list if visible, GroupIndex>=0
+   TCollisionNode = class(TObject)
+      Collision:TGLBCollision;
+      AABB:TAABB;
+      constructor Create(const Collision:TGLBCollision;const AABB:TAABB);
+   end;
+
+constructor TCollisionNode.Create(const Collision:TGLBCollision;const AABB:TAABB);
+begin
+  Self.Collision:=Collision;
+  Self.AABB:=AABB;
+end;
+
+procedure TCollisionManager.CheckCollisions;
+
+   function CompareDistance(Item1, Item2: Pointer): Integer;
+   var
+      d : Single;
+   begin
+      //  Z-axis sort
+      d:=TCollisionNode(Item2).AABB.min[2]-TCollisionNode(Item1).AABB.min[2];
+      if d>0 then Result:=1 else if d<0 then Result:=-1 else Result:=0;
+   end;
+
+var
+  NodeList:TList;
+  CollisionNode1, CollisionNode2:TCollisionNode;
+  obj1, obj2 : TGLBaseSceneObject;
+  cli1, cli2 : TGLBCollision;
+  grp1, grp2 : Integer;   // GroupIndex of collisions
+  i, j : Integer;
+  box1,box2:TAABB;
+begin
+  if not Assigned(FOnCollision) then Exit;
+
+  //this next bit of code would be faster if bounding box was stored
+  NodeList:=TList.Create;
+
+  for i:=0 to FClients.Count-1 do begin
+    cli1:=TGLBCollision(FClients[i]);
+    grp1:=cli1.GroupIndex;
+    if grp1<0 then        //if groupindex is negative don't add to list
+      Continue;
+    obj1:=cli1.OwnerBaseSceneObject;
+    // commented out by EG
+//    if obj1.Visible=false then
+//      Continue;           //if object is not visible, don't add to list
+    //TODO:  need to do different things for different objects, especially points
+    box1:=obj1.AxisAlignedBoundingBox;         //get obj1 axis-aligned bounding box
+    AABBTransform(box1,obj1.Matrix);           //& transform it to world axis
+    CollisionNode1:=TCollisionNode.Create(cli1,box1);
+    NodeList.Add(CollisionNode1);
+  end;
+
+  NodeList.Sort(@CompareDistance);       //depth-sort bounding boxes
+
+   for i:=0 to NodeList.Count-2 do
+   begin
+     CollisionNode1:=TCollisionNode(NodeList[i]);
+     cli1:=CollisionNode1.Collision;
+     grp1:=cli1.GroupIndex;
+     obj1:=cli1.OwnerBaseSceneObject;
+
+      //Get bounding box for obj1
+      box1:=CollisionNode1.AABB;
+
+      for j:=i+1 to NodeList.Count-1 do begin
+       CollisionNode2:=TCollisionNode(NodeList[j]);
+       cli2:=CollisionNode2.Collision;
+       grp2:=cli2.GroupIndex;
+       // if either one GroupIndex=0 or both are different, check for collision
+       if ((grp1=0) or (grp2=0) or (grp1<>grp2))=false then Break;
+
+      //Get bounding box for obj2
+       box2:=CollisionNode2.AABB;
+
+       //Check box1 and box2 intersect in the z-direction
+       if (box2.min[2]>box1.max[2]) then Break;
+
+       //check whether box1 and box2 overlap in the XY Plane
+         if IntersectAABBsAbsoluteXY(box1,box2) then
+         begin
+          obj2:=cli2.OwnerBaseSceneObject;
+          if cFastCollisionChecker[cli1.BoundingMode, cli2.BoundingMode](obj1, obj2) then
+              FOnCollision(Self, obj1, obj2);
+         end;
+      end;
+   end;
+
+   NodeList.Free;
+end;
+
+// new CheckCollisions / Dan Bartlett -----]
+}
 
 // ------------------
 // ------------------ TGLBCollision ------------------

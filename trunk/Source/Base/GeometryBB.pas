@@ -3,6 +3,7 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/02/03 - EG - Added IntersectAABBsAbsoluteXY (Dan Bartlett) 
       <li>22/01/03 - EG - IntersectAABBs moved in (Bernd Klaiber)
       <li>04/09/03 - EG - New AABB functions
       <li>17/08/01 - EG - Removed "math" dependency
@@ -59,6 +60,8 @@ function AABBToBB(const anAABB : TAABB; const m : TMatrix) : THmgBoundingBox; ov
 {: Determines if two AxisAlignedBoundingBoxes intersect.<p>
    The matrices are the ones that convert one point to the other's AABB system }
 function IntersectAABBs(const aabb1, aabb2 : TAABB; const m1To2, m2To1 : TMatrix) : Boolean; overload;
+{: Checks whether two Bounding boxes aligned with the world axes collide in the XY plane.<p> }
+function IntersectAABBsAbsoluteXY(const aabb1, aabb2 : TAABB) : Boolean;
 
 type
    TPlanIndices = array [0..3] of Integer;
@@ -420,6 +423,56 @@ begin
       end;
     end;
   end;
+end;
+
+// IntersectAABBsAbsoluteXY (AABBs)
+//
+function IntersectAABBsAbsoluteXY(const aabb1, aabb2 : TAABB) : Boolean;
+
+   procedure MakeAABBPoints(const AABB : TAABB; var pt : array of TVertex);
+   begin
+      with AABB do begin
+         SetVector(pt[0], min[0], min[1], min[2]);
+         SetVector(pt[1], max[0], min[1], min[2]);
+         SetVector(pt[2], max[0], max[1], min[2]);
+         SetVector(pt[3], min[0], max[1], min[2]);
+      end;
+   end;
+
+var
+  pt1, pt2: array[0..3] of TVertex;
+  pt:TVertex;
+  i: integer;
+begin
+  result:= false;
+
+  //Build Points
+  MakeAABBPoints(AABB1, pt1);
+  MakeAABBPoints(AABB2, pt2);
+  for i:=0 to 3 do
+  begin
+    pt:= pt2[i];
+    //check for inclusion (points of Obj2 in Obj1)
+    if IsInRange(pt[0], AABB1.Min[0], AABB1.Max[0]) and
+      IsInRange(pt[1], AABB1.Min[1], AABB1.Max[1]) then
+    begin
+      result:= true;
+      exit;
+    end;
+  end;
+
+  for i:=0 to 3 do
+  begin
+    pt:=pt1[i];
+    //check for inclusion (points of Obj1 in Obj2)
+    if IsInRange(pt[0], AABB2.Min[0], AABB2.Max[0]) and
+      IsInRange(pt[1], AABB2.Min[1], AABB2.Max[1]) then
+    begin
+      result:= true;
+      exit;
+    end;
+  end;
+
 end;
 
 end.
