@@ -1584,8 +1584,7 @@ type
 
    ETexture = class (Exception);
 
-
-
+   
 function ColorManager: TGLColorManager;
 
 //: Converts a color vector (containing float values)
@@ -1637,7 +1636,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLStrings, XOpenGL, ApplicationFileIO;
+uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats;
 
 {$Q-} // no range checking
 
@@ -1675,24 +1674,32 @@ var
    i : Integer;
    ext : String;
    fs : TStream;
+   graphicClass : TGraphicClass;
 begin
    Result:=nil;
    if FileStreamExists(fileName) then begin
+      graphicClass:=nil;
       ext:=LowerCase(ExtractFileExt(fileName));
       for i:=0 to High(vTGraphicFileExtension) do begin
          if vTGraphicFileExtension[i]=ext then begin
-            Result:=TGraphicClass(vTGraphicClass[i]).Create;
+            graphicClass:=TGraphicClass(vTGraphicClass[i]);
+            Break;
+         end;
+      end;
+      if graphicClass=nil then
+         graphicClass:=GraphicClassForExtension(ExtractFileExt(fileName));
+      if graphicClass<>nil then begin
+         Result:=TGraphicClass(vTGraphicClass[i]).Create;
+         try
+            fs:=CreateFileStream(fileName, fmOpenRead);
             try
-               fs:=CreateFileStream(fileName, fmOpenRead);
-               try
-                  Result.LoadFromStream(fs);
-               finally
-                  fs.Free;
-               end;
-            except
-               FreeAndNil(Result);
-               raise;
+               Result.LoadFromStream(fs);
+            finally
+               fs.Free;
             end;
+         except
+            FreeAndNil(Result);
+            raise;
          end;
       end;
    end;
@@ -6229,7 +6236,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
