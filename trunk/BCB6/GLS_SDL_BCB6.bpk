@@ -14,7 +14,7 @@
     <LIBFILES value="..\Source\GameAPIs\msvcrt.lib ..\Source\GameAPIs\sdl_lib.lib"/>
     <LIBRARIES value=""/>
     <SPARELIBS value="rtl.lib"/>
-    <PACKAGES value="GLSceneBCB6.bpi vcl.bpi rtl.bpi"/>
+    <PACKAGES value="vcl.bpi rtl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;..\Source\Platform;..\Source\GameAPIs"/>
     <PATHRC value=".;"/>

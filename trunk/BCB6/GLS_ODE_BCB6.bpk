@@ -14,11 +14,9 @@
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES)"/>
     <LIBFILES value=""/>
-    <LIBRARIES value="GLSS_FMOD_BCB6.lib GLSS_BASS_BCB6.lib Plot300_Full.lib Misc300_Full.lib 
-      GR32_CB6.lib GR32_DSGN_CB6.lib dclocx.lib bcbsmp.lib"/>
-    <SPARELIBS value="rtl.lib bcbsmp.lib dclocx.lib GR32_DSGN_CB6.lib GR32_CB6.lib 
-      Misc300_Full.lib Plot300_Full.lib GLSS_BASS_BCB6.lib GLSS_FMOD_BCB6.lib"/>
-    <PACKAGES value="rtl.bpi GLSceneBCB6.bpi"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="rtl.lib"/>
+    <PACKAGES value="rtl.bpi vcl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;..\Source;..\Source\DesignTime;..\Source\PhysicsAPIs"/>
     <PATHRC value=".;"/>

@@ -13,7 +13,7 @@
     <RESDEPEN value="$(RESFILES)"/>
     <LIBFILES value="..\Source\CgShaders\cg_lib.lib ..\Source\CgShaders\cgGL_lib.lib"/>
     <LIBRARIES value=""/>
-    <SPARELIBS value=""/>
+    <SPARELIBS value="rtl.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;..\Source\CgShaders"/>
