@@ -1,5 +1,6 @@
-{
-  GLODEManager - An ODE Manager for GLScene
+{: GLODEManager.<p>
+
+   An ODE Manager for GLScene.<p>
 
   Where can I find ... ?
   GLScene              (http://glscene.org)
@@ -10,22 +11,24 @@
   This code is still being developed so any part of it may change at anytime.
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.
 
-  History:
-
-    23/06/03 - SG - Added GLODETerrainCollider, an implementation from DelphiODE
-                    terrain demo (buggy caused assertion error in GLHeightData.pas).
-    13/06/03 - SG - Added more joints.
-    11/06/03 - SG - Base joint classes implemented and added hinge joint.
-    09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
-    08/06/03 - SG - Added rolling friction (experimental).
-    06/06/03 - SG - Added cylinder element (experimental).
-    04/06/03 - SG - Changes to structures, added TGLODEDynamicBehaviour.
-    30/05/03 - SG - Added capsule element and plane object,
-                    Fixed problems with Collision callback method.
-    29/05/03 - SG - Better GetCollisionSurface code (thanks to Mattias Fagerlund).
-    28/05/03 - SG - Some fixes to ODE Elements (thanks to Mattias Fagerlund).
-                    Added TGLODEDummy.CalibrateCenterOfMass
-    01/03/03 - SG - Creation.
+  History:<ul>
+    <li>26/06/03 - EG - Replaced TObjectList with TPersistentObjectList,
+                        dropped Contnrs dependency (D5 compatibility)
+    <li>23/06/03 - SG - Added GLODETerrainCollider, an implementation from DelphiODE
+                        terrain demo (buggy caused assertion error in GLHeightData.pas).
+    <li>13/06/03 - SG - Added more joints.
+    <li>11/06/03 - SG - Base joint classes implemented and added hinge joint.
+    <li>09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
+    <li>08/06/03 - SG - Added rolling friction (experimental).
+    <li>06/06/03 - SG - Added cylinder element (experimental).
+    <li>04/06/03 - SG - Changes to structures, added TGLODEDynamicBehaviour.
+    <li>30/05/03 - SG - Added capsule element and plane object,
+                        Fixed problems with Collision callback method.
+    <li>29/05/03 - SG - Better GetCollisionSurface code (thanks to Mattias Fagerlund).
+    <li>28/05/03 - SG - Some fixes to ODE Elements (thanks to Mattias Fagerlund).
+                        Added TGLODEDummy.CalibrateCenterOfMass
+    <li>01/03/03 - SG - Creation.
+  </ul>
 }
 
 unit GLODEManager;
@@ -33,8 +36,8 @@ unit GLODEManager;
 interface
 
 uses
-  Classes,ODEImport,ODEGL,GLScene,GLMisc,Geometry,GLTexture,OpenGL12,
-  XOpenGL,SysUtils,GLObjects,XCollection,Contnrs,GLTerrainRenderer;
+  Classes, ODEImport, ODEGL, GLScene, GLMisc, Geometry, GLTexture, OpenGL12,
+  XOpenGL, SysUtils, GLObjects, XCollection, GLTerrainRenderer, PersistentClasses;
 
 type
 
@@ -66,7 +69,7 @@ type
       FOnCollision       : TODECollisionEvent;
       FContactJointCount,
       FNumContactJoints  : integer;
-      FDynamicObjectRegister : TObjectList;
+      FDynamicObjectRegister : TPersistentObjectList;
       FRFContactList     : TList; // Rolling friction list
       procedure SetGravity(value:TGLCoordinates);
       procedure GravityChange(Sender:TObject);
@@ -977,8 +980,7 @@ begin
   FWorld:=dWorldCreate;
   FSpace:=dHashSpaceCreate(nil);
   FContactGroup:=dJointGroupCreate(100);
-  FDynamicObjectRegister:=TObjectList.Create;
-  FDynamicObjectRegister.OwnsObjects:=False;
+  FDynamicObjectRegister:=TPersistentObjectList.Create;
   FRFContactList:=TList.Create;
 
   GravityChange(nil);
@@ -989,7 +991,6 @@ end;
 //
 destructor TGLODEManager.Destroy;
 begin
-  FDynamicObjectRegister.Clear;
   FDynamicObjectRegister.Free;
   FGravity.Free;
   FRFContactList.Free;
