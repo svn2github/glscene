@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>23/08/02 - EG - Added TBaseMesh.Visible
       <li>23/07/02 - EG - TBaseMesh.LoadFromStream fix (D. Angilella)
       <li>13/07/02 - EG - AutoCenter on barycenter
       <li>22/03/02 - EG - TAnimationControler basics now functional
@@ -102,6 +103,7 @@ type
          FName : String;
          FVertices : TAffineVectorList;
          FNormals : TAffineVectorList;
+         FVisible : Boolean;
 
       protected
          { Protected Declarations }
@@ -141,6 +143,7 @@ type
          function ExtractTriangles : TAffineVectorList; dynamic;
 
          property Name : String read FName write FName;
+         property Visible : Boolean read FVisible write FVisible;
          property Vertices : TAffineVectorList read FVertices write SetVertices;
          property Normals : TAffineVectorList read FNormals write SetNormals;
    end;
@@ -1584,6 +1587,7 @@ constructor TBaseMeshObject.Create;
 begin
    FVertices:=TAffineVectorList.Create;
    FNormals:=TAffineVectorList.Create;
+   FVisible:=True;
    inherited Create;
 end;
 
@@ -1602,10 +1606,11 @@ procedure TBaseMeshObject.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
-      WriteInteger(0);  // Archive Version 0
+      WriteInteger(1);  // Archive Version 1, added FVisible
       WriteString(FName);
       FVertices.WriteToFiler(writer);
       FNormals.WriteToFiler(writer);
+      WriteBoolean(FVisible);
    end;
 end;
 
@@ -1617,10 +1622,13 @@ var
 begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
-   if archiveVersion=0 then with reader do begin
+   if archiveVersion in [0..1] then with reader do begin
       FName:=ReadString;
       FVertices.ReadFromFiler(reader);
       FNormals.ReadFromFiler(reader);
+      if archiveVersion>=1 then
+         FVisible:=ReadBoolean
+      else FVisible:=True;
    end else RaiseFilerException(archiveVersion);
 end;
 
@@ -2805,8 +2813,9 @@ procedure TMeshObjectList.PrepareBuildList(var mrci : TRenderContextInfo);
 var
    i : Integer;
 begin
-   for i:=0 to Count-1 do
-      Items[i].PrepareBuildList(mrci);
+   for i:=0 to Count-1 do with Items[i] do
+      if Visible then
+         PrepareBuildList(mrci);
 end;
 
 // BuildList
@@ -2815,8 +2824,9 @@ procedure TMeshObjectList.BuildList(var mrci : TRenderContextInfo);
 var
    i : Integer;
 begin
-   for i:=0 to Count-1 do
-      Items[i].BuildList(mrci);
+   for i:=0 to Count-1 do with Items[i] do
+      if Visible then
+         BuildList(mrci);
 end;
 
 // MorphTo
