@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
       <li>10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
       <li>16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
                           THeightData now has a MaterialName property
@@ -862,8 +863,8 @@ end;
 //
 procedure THeightData.Release;
 begin
-   Dec(FUseCounter);
-   Assert(FUseCounter>=0);
+   if FUseCounter>0 then
+      Dec(FUseCounter);
    if FUseCounter=0 then begin
       FReleaseTimeStamp:=Now;
       Owner.Release(Self);
@@ -877,7 +878,7 @@ begin
    if not Dirty then begin
       FDirty:=True;
       FUseCounter:=0;
-      FOwner.Release(Self);
+      Owner.Release(Self);
    end;
 end;
 
