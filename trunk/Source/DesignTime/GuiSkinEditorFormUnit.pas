@@ -92,11 +92,7 @@ implementation
 {$R *.dfm}
 
 procedure TGUISkinEditor.FormCreate(Sender: TObject);
-Var
-  ACanvas : TCanvas;
 begin
-  ACanvas := Image2.Canvas;
-  ACanvas := Image1.Canvas;
   Tex := TGLTexture.Create(Self);
   Tex.SetImageClassName('TGLPersistentImage');
   GLPanel1.RedrawAtOnce := True;
@@ -180,8 +176,6 @@ end;
 procedure TGUISkinEditor.Render;
 Var
   BitMap : TBitmap;
-  Canvas : TCanvas;
-
 begin
   if CheckBox1.Checked then
   Begin
@@ -260,7 +254,6 @@ end;
 procedure TGUISkinEditor.HeightEditChange(Sender: TObject);
 Var
   Val : Integer;
-  sp : Integer;
 begin
   If TryStrToInt(HeightEdit.Text,Val) then
   If Val > 0 then
