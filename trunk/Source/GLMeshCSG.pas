@@ -2,7 +2,7 @@
 
    The CSG system uses BSP to optimize what triangles it considers.
    Its kept on a mesh basis to simplyfy things, it allways generates new BSP's,
-   even the meshes allready had BSP optimization.
+   even if the meshes allready had BSP optimization.
 
    Author: Joen Joensen.
    Contributed to the GLScene community.
@@ -10,6 +10,7 @@
    Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/07/04 - JAJ - Bug fix, causing triangles to dissapear, once in a while.
       <li>29/11/03 - JAJ - Created and Submitted to GLScene.
 	</ul></font>
 }
@@ -31,8 +32,10 @@ uses Math;
 
 const
    cOwnTriangleEpsilon = 1e-5;
-   cTJunctionEpsilon = 1e-4;
 
+var
+  DebugPlace : Integer;
+  DebugPlace1 : Integer;
 
 function IntersectPointToPointLinePlane(const point1, point2 : TAffineVector; const plane : THmgPlane; intersectPoint : PAffineVector = nil) : Boolean;
 var
@@ -143,7 +146,7 @@ Begin
   b3 := False;
 // This have no effect, however it removes a warning...
 
-
+  inc(libmatid);
 // normally we use the Node.SplitPlane, however on the last branch this is a NullPlane, so we have to calculate it.
   If VectorEquals(Node.SplitPlane,NullHmgVector) then
     plane := PlaneMake(BSP.Vertices[Node.VertexIndices[0]],BSP.Vertices[Node.VertexIndices[1]],BSP.Vertices[Node.VertexIndices[2]])
@@ -161,7 +164,7 @@ Begin
 // based on points placement determine action
   Case MustSplit(d[0],d[1],d[2]) of
     0 : // no split
-    If (d[0] >= 0) then
+    If (d[0]+d[1]+d[2] >= 0) then
     Begin
       // check for sub node, and either iterate them or stop if none.
       If Node.PositiveSubNodeIndex = 0 then
@@ -200,7 +203,7 @@ Begin
           i := intersect_lines[0];
           i1 := (i+2) mod 3;
 
-          // cannot be 0 as then there would be no intersection
+          // cannot be 0, as then intersect_lines[0] would have other value
           if (d[i] > 0) then
             If Node.PositiveSubNodeIndex = 0 then
             Begin
@@ -222,8 +225,8 @@ Begin
 
 
           i := (intersect_lines[0]+1) mod 3;
-          i1 := (i+2) mod 3;
-          // cannot be 0 as then there would be no intersection
+          i1 := (i+1) mod 3;
+          // cannot be 0, as then intersect_lines[0] would have other value
           if (d[i] > 0) then
             If Node.PositiveSubNodeIndex = 0 then
             Begin
@@ -247,6 +250,7 @@ Begin
           Begin
             If B1 then
             Begin
+              inc(libmatid);
               i := intersect_lines[0];
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
@@ -269,11 +273,12 @@ Begin
             End else
             If B2 then
             Begin
+              inc(libmatid);
               i := (intersect_lines[0]+1) mod 3;
-              i1 := (i+2) mod 3;
+              i1 := (i+1) mod 3;
               vertex_offset := ResMesh.Vertices.count;
-              ResMesh.Vertices.Add(Vec[i]^,intersect_points[0],Vec[i1]^);
-              ResMesh.TexCoords.Add(Vec[i]^,intersect_points[0],Vec[i1]^);
+              ResMesh.Vertices.Add(Vec[i]^,Vec[i1]^,intersect_points[0]);
+              ResMesh.TexCoords.Add(Vec[i]^,Vec[i1]^,intersect_points[0]);
 
               If inverttriangle then
               Begin
@@ -370,6 +375,7 @@ Begin
           Begin
             If B1 then
             Begin
+              inc(libmatid);
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(Vec[i]^,intersect_points[p0],Vec[i1]^);
@@ -390,6 +396,7 @@ Begin
             End;
             If B2 then
             Begin
+              inc(libmatid);
               i1 := (i+1) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(intersect_points[p0],Vec[i1]^,intersect_points[p1]);
@@ -411,6 +418,7 @@ Begin
             End;
             If B3 then
             Begin
+              inc(libmatid);
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(intersect_points[p0],intersect_points[p1],Vec[i1]^);
@@ -540,6 +548,7 @@ Begin
 
 //  should be obj1.FaceGroups iteration for perfection and multiple materials!
 
+  DebugPlace := 0;      DebugPlace1 := -1;
 
 //  First iterate all triangles of object 1, one at a time,  down through the BSP tree of Object 2, the last booleans are the key to what actuelly happends.
   i := 0;
@@ -562,12 +571,14 @@ Begin
     inc(i,3);
   End;
 
+  DebugPlace := 1;
 //  Then iterate all triangles of object 2, one at a time, down through the BSP tree of Object 1, the last booleans are the key to what actuelly happends.
   FGR := TFGVertexNormalTexIndexList.CreateOwned(Res.FaceGroups);
   FGR.MaterialName := MaterialName2;
   i := 0;
   while i < v2.Count-2 do
   Begin
+    DebugPlace1 := i;
     Case Operation of
       CSG_Union :
       Begin
