@@ -139,10 +139,12 @@ begin
       mngName:='BASS'
    else if ActiveSoundManager is TGLSMFMOD then
       mngName:='FMOD'
-   else mngName:='DSound';
-   Caption:=Format('%.2f FPS, %s CPU use : %.2f%%',
-                   [GLSceneViewer.FramesPerSecond, mngName,
-                    ActiveSoundManager.CPUUsagePercent]);
+   else mngName:='';
+   if ActiveSoundManager<>nil then
+      Caption:=Format('%.2f FPS, %s CPU use : %.2f%%',
+                      [GLSceneViewer.FramesPerSecond, mngName,
+                       ActiveSoundManager.CPUUsagePercent])
+   else Caption:='No active sound manager.';
    GLSceneViewer.ResetPerformanceMonitor;
 end;
 
@@ -158,11 +160,12 @@ begin
    else newManager:=GLSMBASS;
    if newManager<>ActiveSoundManager then begin
       // shut down current one, and activate the new one
-      if ActiveSoundManager<>nil then
+      if ActiveSoundManager<>nil then begin
          ActiveSoundManager.Active:=False;
-      newManager.Active:=True;
-      // restart sound
-      GetOrCreateSoundEmitter(Sphere).Playing:=True;
+         newManager.Active:=True;
+         // restart sound
+         GetOrCreateSoundEmitter(Sphere).Playing:=True;
+      end;
    end;
 end;
 

@@ -18,7 +18,7 @@ object Form1: TForm1
     Left = 0
     Top = 66
     Width = 435
-    Height = 260
+    Height = 265
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.AntiAliasing = aaNone
@@ -26,17 +26,22 @@ object Form1: TForm1
   end
   object TrackBar: TTrackBar
     Left = 0
-    Top = 326
+    Top = 331
     Width = 435
     Height = 27
     Align = alBottom
     Max = 180
     Min = -180
+    Orientation = trHorizontal
     PageSize = 45
     Frequency = 45
+    Position = 0
+    SelEnd = 0
+    SelStart = 0
     TabOrder = 1
     ThumbLength = 10
     TickMarks = tmBoth
+    TickStyle = tsAuto
     OnChange = TrackBarChange
   end
   object TrackBar1: TTrackBar
@@ -47,11 +52,16 @@ object Form1: TForm1
     Align = alTop
     Max = 50
     Min = -50
+    Orientation = trHorizontal
     PageSize = 45
     Frequency = 10
+    Position = 0
+    SelEnd = 0
+    SelStart = 0
     TabOrder = 2
     ThumbLength = 10
     TickMarks = tmBoth
+    TickStyle = tsAuto
     OnChange = TrackBar1Change
   end
   object Panel1: TPanel
@@ -114,7 +124,7 @@ object Form1: TForm1
     end
   end
   object GLSMFMOD: TGLSMFMOD
-    MasterVolume = 1.000000000000000000
+    MasterVolume = 1
     Listener = Mickey
     Sources = <>
     Cadencer = GLCadencer1
@@ -124,7 +134,7 @@ object Form1: TForm1
   object GLSMBASS: TGLSMBASS
     Active = True
     MaxChannels = 32
-    MasterVolume = 1.000000000000000000
+    MasterVolume = 1
     Listener = Mickey
     Sources = <>
     Cadencer = GLCadencer1
@@ -141,7 +151,7 @@ object Form1: TForm1
     Left = 8
     Top = 64
     object DummyCube: TGLDummyCube
-      CubeSize = 1.000000000000000000
+      CubeSize = 1
       object Torus1: TGLTorus
         Direction.Coordinates = {000000000000803F2EBD3BB300000000}
         Position.Coordinates = {00000000000000BF000000000000803F}
@@ -150,28 +160,28 @@ object Form1: TForm1
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Emission.Color = {000000008180803E8180003F0000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        MajorRadius = 5.000000000000000000
-        MinorRadius = 0.100000001490116100
+        MajorRadius = 5
+        MinorRadius = 0.100000001490116
         Rings = 16
         Sides = 3
       end
       object Mickey: TGLSphere
         Position.Coordinates = {000000000000003F000000000000803F}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Radius = 0.500000000000000000
+        Radius = 0.5
         Slices = 9
         Stacks = 9
         object Sphere2: TGLSphere
           Position.Coordinates = {CDCCCC3ECDCC4C3E000000000000803F}
           Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          Radius = 0.300000011920929000
+          Radius = 0.300000011920929
           Slices = 6
           Stacks = 6
         end
         object Sphere3: TGLSphere
           Position.Coordinates = {CDCCCCBECDCC4C3E000000000000803F}
           Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          Radius = 0.300000011920929000
+          Radius = 0.300000011920929
           Slices = 6
           Stacks = 6
         end
@@ -180,8 +190,8 @@ object Form1: TForm1
           Position.Coordinates = {00000000000000000000003F0000803F}
           Up.Coordinates = {00000000000000000000803F00000000}
           Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-          BottomRadius = 0.300000011920929000
-          Height = 0.500000000000000000
+          BottomRadius = 0.300000011920929
+          Height = 0.5
           Slices = 8
           Stacks = 2
           Parts = [coSides]
@@ -192,8 +202,8 @@ object Form1: TForm1
         Position.Coordinates = {00000000000000BF000000000000803F}
         Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        Height = 10.000000000000000000
-        Width = 0.500000000000000000
+        Height = 10
+        Width = 0.5
       end
     end
     object Sphere: TGLSphere
@@ -202,7 +212,7 @@ object Form1: TForm1
       Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
       Material.FrontProperties.Emission.Color = {8180003F00000000000000000000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      Radius = 0.500000000000000000
+      Radius = 0.5
       Slices = 9
       Stacks = 9
       BehavioursData = {
@@ -216,19 +226,19 @@ object Form1: TForm1
         Position.Coordinates = {00000000000080BF000000000000803F}
         Up.Coordinates = {000000002EBD3BB3000080BF00000000}
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        OuterRadius = 0.500000000000000000
+        OuterRadius = 0.5
         Slices = 12
-        SweepAngle = 360.000000000000000000
+        SweepAngle = 360
       end
     end
     object GLLightSource: TGLLightSource
-      ConstAttenuation = 1.000000000000000000
+      ConstAttenuation = 1
       Position.Coordinates = {0000204100002041000020410000803F}
-      SpotCutOff = 180.000000000000000000
+      SpotCutOff = 180
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 50.000000000000000000
+      DepthOfView = 100
+      FocalLength = 50
       TargetObject = Plane1
       Position.Coordinates = {000000400000A040000020410000803F}
       Left = 256
