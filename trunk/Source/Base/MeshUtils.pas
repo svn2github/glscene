@@ -657,8 +657,7 @@ end;
    sorted in ascending order.<br>
    If not nil, triangleEdges is filled with the 3 indices of the 3 edges
    of the triangle, the edges ordering respecting the original triangle
-   orientation.<p>
-   *NOT* optimized, lacks a hash in ProcessEdge }
+   orientation. }
 // BuildNonOrientedEdgesList
 //
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
