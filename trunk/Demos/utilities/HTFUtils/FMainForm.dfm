@@ -1,8 +1,8 @@
 object MainForm: TMainForm
-  Left = 133
-  Top = 130
+  Left = 138
+  Top = 100
   Width = 591
-  Height = 422
+  Height = 473
   Caption = 'TerrainPack v1.0'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,9 +19,9 @@ object MainForm: TMainForm
   TextHeight = 13
   object StringGrid: TStringGrid
     Left = 0
-    Top = 121
+    Top = 137
     Width = 583
-    Height = 232
+    Height = 267
     Align = alClient
     BorderStyle = bsNone
     ColCount = 4
@@ -38,15 +38,17 @@ object MainForm: TMainForm
     Left = 0
     Top = 28
     Width = 583
-    Height = 93
+    Height = 109
     Align = alTop
+    BevelInner = bvRaised
+    BevelOuter = bvLowered
     TabOrder = 1
     DesignSize = (
       583
-      93)
+      109)
     object Label1: TLabel
       Left = 8
-      Top = 67
+      Top = 83
       Width = 48
       Height = 13
       Caption = 'DEM path'
@@ -88,6 +90,13 @@ object MainForm: TMainForm
       Height = 13
       Caption = 'Tile Size'
     end
+    object Label7: TLabel
+      Left = 192
+      Top = 59
+      Width = 55
+      Height = 13
+      Caption = 'Tile overlap'
+    end
     object EDHTFName: TEdit
       Left = 72
       Top = 8
@@ -98,7 +107,7 @@ object MainForm: TMainForm
     end
     object EDDEMPath: TEdit
       Left = 72
-      Top = 64
+      Top = 80
       Width = 475
       Height = 21
       Anchors = [akLeft, akTop, akRight]
@@ -107,7 +116,7 @@ object MainForm: TMainForm
     end
     object BUDEMPath: TButton
       Left = 549
-      Top = 64
+      Top = 80
       Width = 24
       Height = 21
       Anchors = [akTop, akRight]
@@ -155,6 +164,14 @@ object MainForm: TMainForm
       Height = 21
       TabOrder = 7
       Text = '256'
+    end
+    object EDTileOverlap: TEdit
+      Left = 256
+      Top = 56
+      Width = 49
+      Height = 21
+      TabOrder = 8
+      Text = '0'
     end
   end
   object ToolBar: TToolBar
@@ -225,7 +242,7 @@ object MainForm: TMainForm
   end
   object CBType: TComboBox
     Left = 392
-    Top = 144
+    Top = 168
     Width = 139
     Height = 21
     Style = csDropDownList
@@ -242,7 +259,7 @@ object MainForm: TMainForm
   end
   object CBFile: TComboBox
     Left = 0
-    Top = 144
+    Top = 168
     Width = 139
     Height = 21
     DropDownCount = 24
@@ -253,7 +270,7 @@ object MainForm: TMainForm
   end
   object Panel2: TPanel
     Left = 0
-    Top = 353
+    Top = 404
     Width = 583
     Height = 20
     Align = alBottom
@@ -276,7 +293,7 @@ object MainForm: TMainForm
   object MainMenu: TMainMenu
     Images = ImageList
     Left = 8
-    Top = 200
+    Top = 296
     object File1: TMenuItem
       Caption = 'File'
       object Open1: TMenuItem
@@ -322,7 +339,7 @@ object MainForm: TMainForm
     Images = ImageList
     OnUpdate = ActionListUpdate
     Left = 40
-    Top = 200
+    Top = 296
     object ACOpen: TAction
       Caption = 'Open...'
       ImageIndex = 1
@@ -772,12 +789,12 @@ object MainForm: TMainForm
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Title = 'HTF output'
     Left = 160
-    Top = 184
+    Top = 280
   end
   object PopupMenu: TPopupMenu
     Images = ImageList
     Left = 8
-    Top = 152
+    Top = 248
     object AddDEMsource2: TMenuItem
       Action = ACNewDEM
     end
@@ -790,17 +807,17 @@ object MainForm: TMainForm
     Filter = 'TerrainPack Configuration (*.tpcfg)|*.tpcfg|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 128
-    Top = 216
+    Top = 312
   end
   object SDTerrainPack: TSaveDialog
     DefaultExt = 'tpcfg'
     Filter = 'TerrainPack Configuration (*.tpcfg)|*.tpcfg|All files (*.*)|*.*'
     Options = [ofHideReadOnly, ofPathMustExist, ofNoReadOnlyReturn, ofEnableSizing]
     Left = 160
-    Top = 216
+    Top = 312
   end
   object ODPath: TOpenDialog
     Left = 128
-    Top = 184
+    Top = 280
   end
 end

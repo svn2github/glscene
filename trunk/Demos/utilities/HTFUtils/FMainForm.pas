@@ -82,6 +82,8 @@ type
     HTFViewer1: TMenuItem;
     ToolButton9: TToolButton;
     ODPath: TOpenDialog;
+    Label7: TLabel;
+    EDTileOverlap: TEdit;
     procedure ACExitExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BUDEMPathClick(Sender: TObject);
@@ -251,6 +253,7 @@ begin
          Values['WorldSizeX']:=EDSizeX.Text;
          Values['WorldSizeY']:=EDSizeY.Text;
          Values['TileSize']:=EDTileSize.Text;
+         Values['TileOverlap']:=EDTileOverlap.Text;
          Values['DefaultZ']:=EDDefaultZ.Text;
          Values['DEMPath']:=EDDEMPath.Text;
          sg:=TStringList.Create;
@@ -277,6 +280,7 @@ begin
          EDSizeX.Text:=Values['WorldSizeX'];
          EDSizeY.Text:=Values['WorldSizeY'];
          EDTileSize.Text:=Values['TileSize'];
+         EDTileOverlap.Text:=Values['TileOverlap'];
          EDDefaultZ.Text:=Values['DefaultZ'];
          EDDEMPath.Text:=Values['DEMPath'];
          sg:=TStringList.Create;
@@ -436,17 +440,18 @@ end;
 
 procedure TMainForm.ACProcessExecute(Sender: TObject);
 var
-   x, y, wx, wy, ts, tx, ty, i : Integer;
+   x, y, wx, wy, ts, tx, ty, i, overlap : Integer;
    n, maxN : Cardinal;
    htf : THeightTileFile;
    buf : array of SmallInt;
    f : file of Byte;
 begin
    Screen.Cursor:=crHourGlass;
-   
+
    wx:=StrToInt(EDSizeX.Text);
    wy:=StrToInt(EDSizeY.Text);
    ts:=StrToInt(EDTileSize.Text);
+   overlap:=StrToInt(EDTileOverlap.Text);
    Parse;
    SetLength(buf, ts*ts);
    htf:=THeightTileFile.CreateNew(EDHTFName.Text, wx, wy, ts);
@@ -466,12 +471,12 @@ begin
          for i:=0 to ty-1 do
             WorldExtract(x, y+i, tx, @buf[i*tx]);
          htf.CompressTile(x, y, tx, ty, @buf[0]);
-         Inc(x, ts);
+         Inc(x, ts-overlap);
          if (n and 15)=0 then begin
             Application.ProcessMessages;
          end;
       end;
-      Inc(y, ts);
+      Inc(y, ts-overlap);
    end;
    htf.Free;
    Cleanup;
