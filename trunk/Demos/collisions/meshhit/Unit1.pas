@@ -67,7 +67,7 @@ begin
    SetVector(rayStart, GLCamera1.AbsolutePosition);
    SetVector(rayVector, GLSceneViewer1.Buffer.ScreenToVector(AffineVectorMake(x, GLSceneViewer1.Height-y, 0)));
    NormalizeVector(rayVector);
-   // Here we require RauCast intersection
+   // Here we require RayCast intersection
    if FreeForm1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then begin
       // got one, move the sphere there and orient it appropriately
       Sphere1.Position.AsVector:=iPoint;
