@@ -388,7 +388,7 @@ begin
    if Assigned(b1) and Assigned(b2) and (dAreConnected(b1, b2)<>0) then Exit;
 
    for i:=0 to 2 do begin
-     contact[i].surface.mode:=dContactBounce;
+     contact[i].surface.mode:=dContactBounce or dContactApprox1;
      contact[i].surface.mu:=1000;
      contact[i].surface.mu2:=0;
      contact[i].surface.bounce:=0.5;
