@@ -5,6 +5,7 @@
   FileMD3 - File loading methods for the MD3 file format
 
   History :
+    19/12/04 - PhP - Replaced array definitions with predefined VectorTypes
     09/03/04 - SG - Small structure fixes (Osman Turan)
     28/02/03 - SG - Creation
 }
@@ -12,15 +13,15 @@ unit FileMD3;
 
 interface
 
-uses Classes,VectorTypes;
+uses Classes, VectorTypes;
 
 type
   // Quake3 MD3 structure types
 
   TMD3Tag = record
-    strName   : array[0..63] of char;
-    vPosition : TVector3f;
-    rotation  : TMatrix3f;
+    strName: array[0..63] of char;
+    vPosition: TVector3f;
+    rotation: TMatrix3f;
   end;
 
   // I've seen this part of the MD3 structure called 2 things:
@@ -33,22 +34,22 @@ type
   end;}
   TMD3Bone = record
     mins,maxs,
-    position  : TVector3f;
-    scale     : single;
-    creator   : array[0..15] of char;
+    position: TVector3f;
+    scale: single;
+    creator: array[0..15] of char;
   end;
 
   TMD3Triangle = record
-    vertex : array[0..2] of SmallInt; // value/64 to get real number position
-    normal : array[0..1] of Byte;     // Latitude,Longitude
+    vertex: TVector3s; // value/64 to get real number position
+    normal: TVector2b;     // Latitude,Longitude
   end;
 
   TMD3Face = record
-    vertexIndices : array[0..2] of integer;
+    vertexIndices: TVector3i;
   end;
 
   TMD3TexCoord = record
-    textureCoord : array[0..1] of single;
+    textureCoord: TVector2f;
   end;
 
   TMD3Skin = record
