@@ -134,18 +134,19 @@ Type
 Const
   GuiNullRect : TGUIRect =(X1:0.0;Y1:0.0;X2:0.0;Y2:0.0);
 
-Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
+Function IsInRect(Const R : TGUIRect; X,Y : Single) : Boolean;
 
-procedure Register;
+Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
 
 implementation
 
 uses GuiSkinEditorFormUnit;
 
-procedure Register;
-begin
-  RegisterComponents('GLScene', [TGLGuiLayout]);
-end;
+Function IsInRect(Const R : TGUIRect; X,Y : Single) : Boolean;
+
+Begin
+  Result := (R.X1 <= X) and (R.X2 >= X) and (R.Y1 <= Y) and (R.Y2 >= Y);
+End;
 
 Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
 
@@ -170,8 +171,8 @@ Destructor  TGLGuiLayout.Destroy;
 
 Begin
   Clear;
-  FGuiComponentList.Free;
   inherited;
+  FGuiComponentList.Free;
 End;
 
 Procedure   TGLGuiLayout.SetFileName(newName : String);
@@ -220,7 +221,7 @@ End;
 Procedure   TGLGuiLayout.AddGuiComponent(Component : TGLUpdateableComponent);
 
 Begin
-  Component.FreeNotification(Self);
+  FreeNotification(Component);
   FGuiComponentList.Add(Component);
 End;
 
@@ -228,7 +229,7 @@ Procedure   TGLGuiLayout.RemoveGuiComponent(Component : TGLUpdateableComponent);
 
 Begin
   FGuiComponentList.Remove(Component);
-  Component.RemoveFreeNotification(Self);
+  RemoveFreeNotification(Component);
 End;
 
 Procedure   TGLGuiLayout.Clear;
@@ -241,7 +242,6 @@ Begin
   Begin
     FGuiComponents.Delete(XC);
   End;
-  FGuiComponentList.Clear;
   NotifyChange(Self);
 end;
 
@@ -391,6 +391,7 @@ Var
   gc : TGLGuiComponent;
 Begin
   Result := Nil;
+  If Name = '' then Exit;
   For XC := 0 to Count-1 do
   Begin
     gc := Items[xc];
@@ -400,6 +401,8 @@ Begin
       Break;
     End;
   End;
+  If Result = nil then
+  raise Exception.Create('Layout not found: " '+Name+'" ');
 End;
 
 
@@ -464,8 +467,6 @@ Var
   XTileSize, YTileSize : TGLFloat;
   tx3,ty3 : TGLFloat;
   tx,ty : TGLFloat;
-
-
 
 Begin
   If (ARect.XTiles = 1) and (ARect.YTiles = 1) then
@@ -796,7 +797,6 @@ Begin
           Res[AlignCount].XTiles  := ((Res[AlignCount].X2-Res[AlignCount].X1)/(ThisElement.FBottomRight.X-ThisElement.FTopLeft.X))/ThisElement.Scale.X;
           Res[AlignCount].YTiles  := ((Res[AlignCount].Y2-Res[AlignCount].Y1)/(ThisElement.FBottomRight.Y-ThisElement.FTopLeft.Y))/ThisElement.Scale.Y;
         End;
-//        if AlignCount <> GLAlLeft then
         RenderIt(Res[AlignCount],ThisElement);
       End;
       If (GLALBorder = ThisElement.Align) then
