@@ -124,7 +124,7 @@ type
 		DummyCube's barycenter is its children's barycenter.<br>
       The DummyCube can optionnally amalgamate all its children into a single
       display list (see Amalgamate property). }
-	TGLDummyCube = class (TGLImmaterialSceneObject)
+	TGLDummyCube = class (TGLCameraInvariantObject)
 		private
 			{ Private Declarations }
 			FCubeSize : TGLFloat;
@@ -178,6 +178,10 @@ type
             geometry, or when the point of view won't change over a large
             number of frames. }
          property Amalgamate : Boolean read FAmalgamate write SetAmalgamate default False;
+         {: Camera Invariance Options.<p>
+            These options allow to "deactivate" sensitivity to camera, f.i. by
+            centering the object on the camera or ignoring camera orientation. }
+         property CamInvarianceMode default cimNone; 
 	end;
 
    // TPlaneStyle
@@ -945,6 +949,7 @@ begin
 	FEdgeColor:=TGLColor.Create(Self);
 	FEdgeColor.Initialize(clrWhite);
    FGroupList:=TGLListHandle.Create;
+   CamInvarianceMode:=cimNone;
 end;
 
 // Destroy
@@ -1013,9 +1018,8 @@ begin
             rci.amalgamating:=False;
             glEndList;
          end;
-      end else begin
-         glCallList(FGroupList.Handle);
       end;
+      glCallList(FGroupList.Handle);
    end else begin
       // proceed as usual
       inherited;
