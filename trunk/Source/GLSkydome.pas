@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/08/03 - SG - Fixed small bug with random star creation
       <li>17/06/03 - EG - Fixed PolygonMode (Carlos Ferreira)
       <li>26/02/02 - EG - Enhanced star support (generation and twinkle),
                           Skydome now 'exports' its coordinate system to children 
@@ -700,8 +701,8 @@ begin
          coord[2]:=Random
       else coord[2]:=Random*2-1;
       // calculate RA and Dec
-      star.RA:=ArcSin(coord[2])*c180divPI;
-      star.Dec:=Random*360-180;
+      star.Dec:=ArcSin(coord[2])*c180divPI;
+      star.Ra:=Random*360-180;
       // pick a color
       star.Color:=color;
       // pick a magnitude
