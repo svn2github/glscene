@@ -507,26 +507,26 @@ begin
    end;
 end;
 
-// RndHalf
-//
-function RndHalf(var f : Single) : Single;
-begin
-   Result:=(Random-0.5)*(2*f);
-end;
-
 // RndVector
 //
 procedure RndVector(const dispersion : TGLSourcePFXDispersionMode; var v : TAffineVector; var f : Single);
 var
-   f2 : Single;
+   f2, fsq : Single;
 begin
+   f2:=2*f;
    case dispersion of
-      sdmFast : SetVector(v, RndHalf(f), RndHalf(f), RndHalf(f));
+      sdmFast : begin
+         v[0]:=(Random-0.5)*f2;
+         v[1]:=(Random-0.5)*f2;
+         v[2]:=(Random-0.5)*f2;
+      end;
    else
-      f2:=Sqr(f);
+      fsq:=Sqr(f);
       repeat
-         SetVector(v, RndHalf(f), RndHalf(f), RndHalf(f));
-      until VectorNorm(v)<=f2;
+         v[0]:=(Random-0.5)*f2;
+         v[1]:=(Random-0.5)*f2;
+         v[2]:=(Random-0.5)*f2;
+      until VectorNorm(v)<=fsq;
    end;
 end;
 
@@ -1261,7 +1261,6 @@ end;
 procedure TGLSourcePFXEffect.Burst(time : Double; nb : Integer);
 var
    particle : TGLParticle;
-   v : TVector;
    av, pos : TAffineVector;
 begin
    if Manager=nil then Exit;
@@ -1270,14 +1269,11 @@ begin
    while nb>0 do begin
       particle:=Manager.CreateParticle;
       RndVector(DispersionMode, av, FPositionDispersion);
-      particle.Position:=VectorAdd(pos, av);
+      VectorAdd(pos, av, @particle.Position);
       RndVector(DispersionMode, av, FVelocityDispersion);
-      particle.Velocity:=VectorAdd(InitialVelocity.AsAffineVector, av);
-      if VelocityMode=svmRelative then begin
-         SetVector(v, particle.Velocity);
-         v:=OwnerBaseSceneObject.LocalToAbsolute(v);
-         SetVector(particle.FVelocity, v);
-      end;
+      VectorAdd(InitialVelocity.AsAffineVector, av, @particle.Velocity);
+      if VelocityMode=svmRelative then
+         particle.FVelocity:=OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity);
       particle.CreationTime:=time;
       Dec(nb);
    end;
@@ -1304,16 +1300,18 @@ begin
       // okay, ain't exactly an "isotropic" ring...
       fx:=Random-0.5;
       fy:=Random-0.5;
-      d:=RSqrt(Sqr(fx)+Sqr(fy));
+      d:=RLength(fx, fy);
       tmp:=VectorCombine(ringVectorX, ringVectorY, fx*d, fy*d);
       ScaleVector(tmp, minInitialSpeed+Random*(maxInitialSpeed-minInitialSpeed));
-      AddVector(tmp, InitialVelocity.AsAffineVector);
+      AddVector(tmp, InitialVelocity.AsVector);
       particle:=Manager.CreateParticle;
       with particle do begin
          RndVector(DispersionMode, av, FPositionDispersion);
-         Position:=VectorAdd(pos, av);
+         VectorAdd(pos, av, @Position);
          RndVector(DispersionMode, av, FVelocityDispersion);
-         Velocity:=VectorAdd(tmp, av);
+         VectorAdd(tmp, av, @Velocity);
+         if VelocityMode=svmRelative then
+            Velocity:=OwnerBaseSceneObject.LocalToAbsolute(Velocity);
          particle.CreationTime:=time;
       end;
       Dec(nbParticles);
@@ -1473,18 +1471,19 @@ procedure TGLDynamicPFXManager.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
    curParticle : TGLParticle;
-   particleAge, maxAge : Double;
+   maxAge : Double;
    accelVector : TAffineVector;
    dt : Single;
+   list : PGLParticleArray;
 begin
    maxAge:=MaxParticleAge;
    accelVector:=Acceleration.AsAffineVector;
    dt:=progressTime.deltaTime;
    FCurrentTime:=progressTime.newTime;
+   list:=Particles.List;
    for i:=0 to Particles.ItemCount-1 do begin
-      curParticle:=Particles.List[i];
-      particleAge:=progressTime.newTime-curParticle.CreationTime;
-      if particleAge<maxAge then begin
+      curParticle:=list[i];
+      if (progressTime.newTime-curParticle.CreationTime)<maxAge then begin
          // particle alive, just update velocity and position
          with curParticle do begin
             CombineVector(FPosition, FVelocity, dt);

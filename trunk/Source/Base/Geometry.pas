@@ -435,6 +435,7 @@ procedure MakeVector(var v : TVector; const av : TVector); overload;
 function VectorAdd(const V1, V2 : TAffineVector) : TAffineVector; overload;
 //: Adds two vectors and places result in vr
 procedure VectorAdd(const V1, V2 : TAffineVector; var vr : TAffineVector); overload;
+procedure VectorAdd(const V1, V2 : TAffineVector; vr : PAffineVector); overload;
 //: Returns the sum of two homogeneous vectors
 function VectorAdd(const V1, V2 : TVector) : TVector; overload;
 //: Sums up f to each component of the vector
@@ -443,6 +444,8 @@ function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector; o
 function VectorAdd(const v : TVector; const f : Single) : TVector; overload;
 //: Adds V2 to V1, result is placed in V1
 procedure AddVector(var V1 : TAffineVector; const V2 : TAffineVector); overload;
+//: Adds V2 to V1, result is placed in V1
+procedure AddVector(var V1 : TAffineVector; const V2 : TVector); overload;
 //: Adds V2 to V1, result is placed in V1
 procedure AddVector(var V1 : TVector; const V2 : TVector); overload;
 //: Sums up f to each component of the vector
@@ -873,6 +876,8 @@ function  CoTan(const X : Single) : Single; overload;
 
 {: Computes 1/Sqrt(v).<p> }
 function RSqrt(v : Single) : Single;
+{: Computes 1/Sqrt(Sqr(x)+Sqr(y)). }
+function RLength(x, y : Single) : Single;
 
 function Trunc(v : Single) : Integer; overload;
 function Trunc64(v : Extended) : Int64; overload;
@@ -1396,6 +1401,24 @@ asm
          FSTP DWORD PTR [ECX+8]
 end;
 
+// VectorAdd (proc, affine)
+//
+procedure VectorAdd(const V1, V2 : TAffineVector; vr : PAffineVector); overload;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+asm
+         FLD  DWORD PTR [EAX]
+         FADD DWORD PTR [EDX]
+         FSTP DWORD PTR [ECX]
+         FLD  DWORD PTR [EAX+4]
+         FADD DWORD PTR [EDX+4]
+         FSTP DWORD PTR [ECX+4]
+         FLD  DWORD PTR [EAX+8]
+         FADD DWORD PTR [EDX+8]
+         FSTP DWORD PTR [ECX+8]
+end;
+
 // VectorAdd (hmg)
 //
 function VectorAdd(const V1, V2: TVector): TVector; register;
@@ -1466,7 +1489,23 @@ asm
       FSTP DWORD PTR [EAX+8]
 end;
 
+// AddVector (affine)
 //
+procedure AddVector(var V1 : TAffineVector; const V2 : TVector); register;
+// EAX contains address of V1
+// EDX contains address of V2
+asm
+      FLD  DWORD PTR [EAX]
+      FADD DWORD PTR [EDX]
+      FSTP DWORD PTR [EAX]
+      FLD  DWORD PTR [EAX+4]
+      FADD DWORD PTR [EDX+4]
+      FSTP DWORD PTR [EAX+4]
+      FLD  DWORD PTR [EAX+8]
+      FADD DWORD PTR [EDX+8]
+      FSTP DWORD PTR [EAX+8]
+end;
+
 // AddVector (hmg)
 //
 procedure AddVector(var v1 : TVector; const v2 : TVector); register;
@@ -4889,7 +4928,22 @@ asm
       jmp @@End
 
 @@FPU:
-      fld dword ptr [ebp+8]
+      fld v
+      fsqrt
+      fld1
+      fdivr
+@@End:
+end;
+
+// RLength
+//
+function RLength(x, y : Single) : Single;
+asm
+      fld  x
+      fmul x
+      fld  y
+      fmul y
+      fadd
       fsqrt
       fld1
       fdivr
