@@ -1,3 +1,10 @@
+{: GLSViewer main form.<p>
+
+   Requires RxLib to compile
+   (go to http://sourceforge.net/projects/rxlib for Delphi6 version)
+   and Mike Lischke's GraphicEx
+   (http://www.delphi-gems.com/)
+}
 unit FMain;
 
 interface
