@@ -3,7 +3,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>15/01/03 - EG - Added ConvertStripToList, improved subdivision
+      <li>15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
       <li>13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
                           SubdivideTriangles 
       <li>10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
@@ -22,8 +22,16 @@ uses PersistentClasses, VectorLists, Geometry;
 {: Converts a triangle strips into a triangle list.<p>
    Vertices are added to list, based on the content of strip. Both non-indexed
    and indexed variants are available, the output is *always* non indexed. }
-procedure ConvertStripToList(strip, list : TAffineVectorList); overload;
-procedure ConvertStripToList(strip, list : TAffineVectorList; indices : TIntegerList); overload;
+procedure ConvertStripToList(const strip : TAffineVectorList;
+                             list : TAffineVectorList); overload;
+procedure ConvertStripToList(const strip : TAffineVectorList;
+                             const indices : TIntegerList;
+                             list : TAffineVectorList); overload;
+
+{: Expands an indexed structure into a non-indexed structure. }
+procedure ConvertIndexedListToList(const data : TAffineVectorList;
+                                   const  indices : TIntegerList;
+                                   list : TAffineVectorList);
 
 {: Builds a vector-count optimized indices list.<p>
    The returned list (to be freed by caller) contains an "optimized" indices
@@ -32,14 +40,23 @@ procedure ConvertStripToList(strip, list : TAffineVectorList; indices : TInteger
    The vertices list is left untouched, to remap/cleanup, you may use the
    RemapAndCleanupReferences function. }
 function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
+                                          const normals : TAffineVectorList = nil;
                                           const texCoords : TAffineVectorList = nil) : TIntegerList;
 
+{: Alters a reference array pair and removes unused reference values.<p>
+   This functions scans the reference list and removes all values that aren't
+   referred in the indices list, the indices list is *not* remapped. }
+procedure RemapReferences(reference : TAffineVectorList;
+                          const indices : TIntegerList); overload;
+procedure RemapReferences(reference : TIntegerList;
+                          const indices : TIntegerList); overload;
 {: Alters a reference/indice pair and removes unused reference values.<p>
    This functions scans the reference list and removes all values that aren't
    referred in the indices list, and the indices list is remapped so as to remain
    coherent. }
 procedure RemapAndCleanupReferences(reference : TAffineVectorList;
                                     indices : TIntegerList);
+
 {: Remaps a list of triangles vertex indices and remove degenerate triangles.<p>
    The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
 procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
@@ -124,7 +141,8 @@ uses SysUtils;
 
 // ConvertStripToList (non-indexed variant)
 //
-procedure ConvertStripToList(strip, list : TAffineVectorList);
+procedure ConvertStripToList(const strip : TAffineVectorList;
+                             list : TAffineVectorList);
 var
    i : Integer;
    stripList : PAffineVectorArray;
@@ -140,7 +158,9 @@ end;
 
 // ConvertStripToList (indexed variant)
 //
-procedure ConvertStripToList(strip, list : TAffineVectorList; indices : TIntegerList);
+procedure ConvertStripToList(const strip : TAffineVectorList;
+                             const indices : TIntegerList;
+                             list : TAffineVectorList);
 var
    i : Integer;
    stripList : PAffineVectorArray;
@@ -158,9 +178,26 @@ begin
    end;
 end;
 
+// ConvertIndexedListToList
+//
+procedure ConvertIndexedListToList(const data : TAffineVectorList;
+                                   const indices : TIntegerList;
+                                   list : TAffineVectorList);
+var
+   i : Integer;
+   indicesList : PIntegerArray;
+begin
+   Assert(data<>list); // this is not allowed
+   list.AdjustCapacityToAtLeast(indices.Count);
+   indicesList:=indices.List;
+   for i:=0 to indices.Count-1 do
+      list.Add(data[indicesList[i]]);
+end;
+
 // BuildVectorCountOptimizedIndices
 //
 function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
+                                          const normals : TAffineVectorList = nil;
                                           const texCoords : TAffineVectorList = nil) : TIntegerList;
 var
    i, j, k : Integer;
@@ -168,7 +205,7 @@ var
    hashSize : Integer;
    hashTable : array of TIntegerlist;
    list : TIntegerList;
-   verticesList, texCoordsList : PAffineVectorArray;
+   verticesList, normalsList, texCoordsList : PAffineVectorArray;
 const
    cVerticesPerHashKey = 48;
 
@@ -183,6 +220,10 @@ begin
    Result:=TIntegerList.Create;
    Result.Capacity:=vertices.Count;
 
+   if Assigned(normals) then begin
+      Assert(normals.Count>=vertices.Count);
+      normalsList:=normals.List
+   end else normalsList:=nil;
    if Assigned(texCoords) then begin
       Assert(texCoords.Count>=vertices.Count);
       texCoordsList:=texCoords.List
@@ -210,14 +251,28 @@ begin
       // Check each vertex against its hashkey siblings
       if list.Count>0 then begin
          if Assigned(texCoords) then begin
-            for j:=0 to list.Count-1 do begin
-               k:=list.List[j];
-               if     VectorEquals(verticesList[k], verticesList[i])
-                  and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
-                  // vertex known, just store its index
-                  Result.Add(k);
-                  found:=True;
-                  Break;
+            if Assigned(normals) then begin
+               for j:=0 to list.Count-1 do begin
+                  k:=list.List[j];
+                  if     VectorEquals(verticesList[k], verticesList[i])
+                     and VectorEquals(normalsList[k], normalsList[i])
+                     and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
+                     // vertex known, just store its index
+                     Result.Add(k);
+                     found:=True;
+                     Break;
+                  end;
+               end;
+            end else begin
+               for j:=0 to list.Count-1 do begin
+                  k:=list.List[j];
+                  if     VectorEquals(verticesList[k], verticesList[i])
+                     and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
+                     // vertex known, just store its index
+                     Result.Add(k);
+                     found:=True;
+                     Break;
+                  end;
                end;
             end;
          end else begin
@@ -242,6 +297,66 @@ begin
    for i:=0 to hashSize do
       hashTable[i].Free;
    SetLength(hashTable, 0);
+end;
+
+// RemapReferences (vectors)
+//
+procedure RemapReferences(reference : TAffineVectorList;
+                          const indices : TIntegerList);
+var
+   i, n : Integer;
+   tag : array of Integer;
+   refList : PAffineVectorArray;
+   indicesList : PIntegerArray;
+begin
+   Assert(reference.Count=indices.Count);
+   SetLength(tag, reference.Count);
+   indicesList:=indices.List;
+   // 1st step, tag all used references
+   for i:=0 to indices.Count-1 do
+      tag[indicesList[i]]:=1;
+   // 2nd step, build remap indices and cleanup references
+   n:=0;
+   refList:=reference.List;
+   for i:=0 to High(tag) do begin
+      if tag[i]<>0 then begin
+         tag[i]:=n;
+         if n<>i then
+            refList[n]:=refList[i];
+         Inc(n);
+      end;
+   end;
+   reference.Count:=n;
+end;
+
+// RemapReferences (integers)
+//
+procedure RemapReferences(reference : TIntegerList;
+                          const indices : TIntegerList);
+var
+   i, n : Integer;
+   tag : array of Integer;
+   refList : PIntegerArray;
+   indicesList : PIntegerArray;
+begin
+   Assert(reference.Count=indices.Count);
+   SetLength(tag, reference.Count);
+   indicesList:=indices.List;
+   // 1st step, tag all used references
+   for i:=0 to indices.Count-1 do
+      tag[indicesList[i]]:=1;
+   // 2nd step, build remap indices and cleanup references
+   n:=0;
+   refList:=reference.List;
+   for i:=0 to High(tag) do begin
+      if tag[i]<>0 then begin
+         tag[i]:=n;
+         if n<>i then
+            refList[n]:=refList[i];
+         Inc(n);
+      end;
+   end;
+   reference.Count:=n;
 end;
 
 // RemapAndCleanupReferences
