@@ -6,6 +6,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/01/02 - EG - Added OpenPictureDialog, ApplicationTerminated
       <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog,
                           Added PrecisionTimer funcs 
       <li>06/12/01 - EG - Added several abstraction calls
@@ -65,6 +66,8 @@ function QuestionDlg(const msg : String) : Boolean;
 function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
 {: Pops up a simple save picture dialog. }
 function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+{: Pops up a simple open picture dialog. }
+function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
 
 {: Returns True if the application has been terminated. }
 function ApplicationTerminated : Boolean;
@@ -78,6 +81,8 @@ procedure FreeAndNil(var anObject);
 {: Number of pixels per logical inch along the screen width for the device.<p>
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
+{: Number of bits per pixel for the current desktop resolution. }
+function GetCurrentColorDepth : Integer;
 
 {: Suspends thread execution for length milliseconds.<p>
    If length is zero, only the remaining time in the current thread's time
@@ -201,6 +206,28 @@ begin
    end;
 end;
 
+// OpenPictureDialog
+//
+function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+var
+   openDialog : TOpenPictureDialog;
+begin
+   openDialog:=TOpenPictureDialog.Create(Application);
+   try
+      with openDialog do begin
+         Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
+         if aTitle<>'' then
+            Title:=aTitle;
+         FileName:=aFileName;
+         Result:=Execute;
+         if Result then
+            aFileName:=FileName;
+      end;
+   finally
+      openDialog.Free;
+   end;
+end;
+
 // ApplicationTerminated
 //
 function ApplicationTerminated : Boolean;
@@ -237,6 +264,20 @@ end;
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 begin
    Result:=GetDeviceCaps(device, LOGPIXELSX);
+end;
+
+// GetCurrentColorDepth
+//
+function GetCurrentColorDepth : Integer;
+var
+   topDC : HDC;
+begin
+   topDC:=GetDC(0);
+   try
+      Result:=GetDeviceCaps(topDC, BITSPIXEL)*GetDeviceCaps(topDC, PLANES);
+  finally
+      ReleaseDC(0, topDC);
+  end;
 end;
 
 // Sleep

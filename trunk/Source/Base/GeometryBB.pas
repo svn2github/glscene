@@ -31,12 +31,12 @@ type
 function AddBB(var c1 : THmgBoundingBox; const c2 : THmgBoundingBox ) : THmgBoundingBox;
 procedure SetBB(var c : THmgBoundingBox; const v : TVector );
 procedure BBTransform(var c : THmgBoundingBox; const m : TMatrix );
-function BBMinX(c : THmgBoundingBox) : Single;
-function BBMaxX(c : THmgBoundingBox) : Single;
-function BBMinY(c : THmgBoundingBox) : Single;
-function BBMaxY(c : THmgBoundingBox) : Single;
-function BBMinZ(c : THmgBoundingBox) : Single;
-function BBMaxZ(c : THmgBoundingBox) : Single;
+function BBMinX(const c : THmgBoundingBox) : Single;
+function BBMaxX(const c : THmgBoundingBox) : Single;
+function BBMinY(const c : THmgBoundingBox) : Single;
+function BBMaxY(const c : THmgBoundingBox) : Single;
+function BBMinZ(const c : THmgBoundingBox) : Single;
+function BBMaxZ(const c : THmgBoundingBox) : Single;
 
 {: Extract AABB information from a BB. }
 function BBToAABB(const aBB : THmgBoundingBox) : TAABB;
@@ -147,7 +147,7 @@ end;
 
 //BBMinX
 //
-function BBMinX( c : THmgBoundingBox ) : Single;
+function BBMinX(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
@@ -158,7 +158,7 @@ end;
 
 //BBMaxX
 //
-function BBMaxX( c : THmgBoundingBox ) : Single;
+function BBMaxX(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
@@ -169,7 +169,7 @@ end;
 
 //BBMinY
 //
-function BBMinY( c : THmgBoundingBox ) : Single;
+function BBMinY(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
@@ -180,7 +180,7 @@ end;
 
 //BBMaxY
 //
-function BBMaxY( c : THmgBoundingBox ) : Single;
+function BBMaxY(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
@@ -191,7 +191,7 @@ end;
 
 //BBMinZ
 //
-function BBMinZ( c : THmgBoundingBox ) : Single;
+function BBMinZ(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
@@ -202,7 +202,7 @@ end;
 
 //BBMaxZ
 //
-function BBMaxZ( c : THmgBoundingBox ) : Single;
+function BBMaxZ(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin

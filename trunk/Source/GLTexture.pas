@@ -107,7 +107,8 @@ unit GLTexture;
 interface
 
 uses
-  Classes, OpenGL12, Geometry, SysUtils, GLMisc, GLGraphics, GLContext, GLCrossPlatform;
+  Classes, OpenGL12, Geometry, SysUtils, GLMisc, GLGraphics, GLContext,
+  GLCrossPlatform;
 
 type
 
@@ -330,7 +331,7 @@ type
    TGLColor = class(TGLUpdateAbleObject)
       private
 			FColor, FDefaultColor : TColorVector;
-			procedure SetColor(AColor: TColorVector);
+			procedure SetColor(const aColor: TColorVector);
 			procedure SetColorComponent(Index: Integer; Value: TGLFloat);
 			procedure SetAsWinColor(const val : TColor);
 			function GetAsWinColor : TColor;
@@ -1143,14 +1144,14 @@ type
      TGLColorManager = class(TList)
      public
        destructor Destroy; override;
-       procedure AddColor(AName: String; AColor: TColorVector);
+       procedure AddColor(const aName: String; const aColor: TColorVector);
        procedure EnumColors(Proc: TGetStrProc);
-       function  FindColor(AName: String): TColorVector;
+       function  FindColor(const aName: String): TColorVector;
        {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
-		 function  GetColor(AName: String): TColorVector;
-       function  GetColorName(AColor: TColorVector): String;
+		 function  GetColor(const aName: String): TColorVector;
+       function  GetColorName(const aColor: TColorVector): String;
        procedure RegisterDefaultColors;
-       procedure RemoveColor(AName: String);
+       procedure RemoveColor(const aName: String);
      end;
 
 function ColorManager: TGLColorManager;
@@ -1161,11 +1162,11 @@ function ConvertColorVector(const AColor : TColorVector) : TColor; overload;
    intensity is in [0..1] }
 function ConvertColorVector(const AColor: TColorVector; intensity : Single) : TColor; overload;
 //: Converts RGB components into a color vector with correct range
-function ConvertRGBColor(AColor: array of Byte) : TColorVector;
+function ConvertRGBColor(const aColor: array of Byte) : TColorVector;
 //: Converts a delphi color into its RGB fragments and correct range
 function ConvertWinColor(aColor: TColor; alpha : Single = 1) : TColorVector;
-procedure RegisterColor(AName: String; AColor: TColorVector);
-procedure UnregisterColor(AName: String);
+procedure RegisterColor(const aName: String; AColor: TColorVector);
+procedure UnregisterColor(const aName: String);
 
 //: Register a TGLTextureImageClass (used for persistence and IDE purposes)
 procedure RegisterGLTextureImageClass(textureImageClass : TGLTextureImageClass);
@@ -1193,7 +1194,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLScreen, GLStrings, ExtDlgs, XOpenGL, Graphics;
+uses GLScene, GLStrings, XOpenGL, Graphics;
 
 var
 	vGLTextureImageClasses : TList;
@@ -1315,7 +1316,7 @@ begin
    OnNotifyChange:=changeEvent;
 end;
 
-procedure TGLColor.SetColor(AColor: TColorVector);
+procedure TGLColor.SetColor(const aColor: TColorVector);
 begin
    FColor:=AColor;
 	NotifyChange(Self);
@@ -1860,17 +1861,13 @@ end;
 //
 function TGLPersistentImage.Edit : Boolean;
 var
-	opd : TOpenPictureDialog;
+   fName : String;
 begin
-	opd:=TOpenPictureDialog.Create(nil);
-	try
-		Result:=opd.Execute;
-		if Result then begin
-			LoadFromFile(opd.FileName);
-			NotifyChange(Self);
-		end;
-	finally
-		opd.Free;
+   fName:='';
+   Result:=OpenPictureDialog(fName);
+   if Result then begin
+   	LoadFromFile(fName);
+		NotifyChange(Self);
 	end;
 end;
 
@@ -3727,7 +3724,7 @@ end;
 
 // Find Color
 //
-function TGLColorManager.FindColor(AName: String): TColorVector;
+function TGLColorManager.FindColor(const aName: String): TColorVector;
 var
    i : Integer;
 begin
@@ -3741,7 +3738,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-function TGLColorManager.GetColor(AName: String): TColorVector;
+function TGLColorManager.GetColor(const aName: String): TColorVector;
 var
    WorkCopy  : String;
    Delimiter : Integer;
@@ -3787,7 +3784,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-function TGLColorManager.GetColorName(AColor: TColorVector): String;
+function TGLColorManager.GetColorName(const aColor: TColorVector): String;
 
 const MinDiff = 1e-6;
 
@@ -3818,7 +3815,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TGLColorManager.AddColor(AName: String; AColor: TColorVector);
+procedure TGLColorManager.AddColor(const aName: String; const aColor: TColorVector);
 
 var NewEntry : PColorEntry;
 
@@ -4007,7 +4004,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TGLColorManager.RemoveColor(AName: String);
+procedure TGLColorManager.RemoveColor(const aName: String);
 var
   I : Integer;
 begin
@@ -4055,7 +4052,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-function ConvertRGBColor(AColor: array of Byte): TColorVector;
+function ConvertRGBColor(const aColor: array of Byte): TColorVector;
 begin
   // convert 0..255 range into 0..1 range
   Result[0] := AColor[0] / 255;
@@ -4096,12 +4093,12 @@ begin
   clrInfoBk:=ConvertWinColor(clInfoBk);
 end;
 
-procedure RegisterColor(AName: String; AColor: TColorVector);
+procedure RegisterColor(const aName: String; AColor: TColorVector);
 begin
   ColorManager.AddColor(AName,AColor);
 end;
 
-procedure UnregisterColor(AName: String);
+procedure UnregisterColor(const aName: String);
 begin
   ColorManager.RemoveColor(AName);
 end;

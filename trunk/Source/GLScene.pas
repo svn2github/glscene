@@ -185,8 +185,8 @@ interface
 {$i GLScene.inc}
 
 uses
-   Classes, GLScreen, GLMisc, GLTexture, SysUtils, Graphics, Geometry,
-   XCollection, GLGraphics, GeometryBB, GLContext, GLCrossPlatform;
+   Classes, GLMisc, GLTexture, SysUtils, Graphics, Geometry, XCollection,
+   GLGraphics, GeometryBB, GLContext, GLCrossPlatform;
 
 type
 
@@ -320,7 +320,7 @@ type
          procedure SetDirection(AVector : TGLCoordinates);
          procedure SetUp(AVector : TGLCoordinates);
          function GetMatrix : TMatrix;
-         procedure SetMatrix(AValue : TMatrix);
+         procedure SetMatrix(const aValue : TMatrix);
          procedure SetPosition(APosition : TGLCoordinates);
 
          procedure SetPitchAngle(AValue : Single);
@@ -1011,7 +1011,8 @@ type
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
 
-         procedure ApplyPerspective(Viewport: TRectangle; Width, Height: Integer; DPI: Integer);
+         procedure ApplyPerspective(const viewport : TRectangle;
+                                    width, height : Integer; DPI : Integer);
          procedure AutoLeveling(Factor: Single);
          procedure Reset;
          //: Position the camera so that the whole scene can be seen
@@ -1220,7 +1221,7 @@ type
          { Public Declarations }
          constructor Create(aSortType : TPickSortType);
          destructor Destroy; override;
-         procedure AddHit(obj : TGLBaseSceneObject; subObj : TPickSubObjects;
+         procedure AddHit(obj : TGLBaseSceneObject; const subObj : TPickSubObjects;
                           zMin, zMax : Single);
          procedure Clear; override;
          function FindObject(AObject: TGLBaseSceneObject): Integer;
@@ -1886,7 +1887,7 @@ end;
 
 // AddHit
 //
-procedure TGLPickList.AddHit(obj : TGLBaseSceneObject; subObj : TPickSubObjects;
+procedure TGLPickList.AddHit(obj : TGLBaseSceneObject; const subObj : TPickSubObjects;
                              zMin, zMax : Single);
 var
    newRecord : PPickRecord;
@@ -3321,9 +3322,9 @@ end;
 
 // SetMatrix
 //
-procedure TGLBaseSceneObject.SetMatrix(AValue: TMatrix);
+procedure TGLBaseSceneObject.SetMatrix(const aValue : TMatrix);
 var
-   Temp: TAffineVector;
+   temp : TAffineVector;
 begin
    FLocalMatrix:=AValue;
    FDirection.DirectVector:=FLocalMatrix[2];
@@ -3772,7 +3773,8 @@ begin
    end;
 end;
 
-procedure TGLCamera.ApplyPerspective(Viewport: TRectangle; Width, Height: Integer; DPI: Integer);
+procedure TGLCamera.ApplyPerspective(const viewport : TRectangle;
+                                     width, height : Integer; DPI : Integer);
 var
    Left, Right, Top, Bottom, zFar, MaxDim, Ratio, f: Double;
 begin
@@ -5625,7 +5627,7 @@ begin
    try
       case ABitmap.PixelFormat of
          pfCustom, pfDevice :  // use current color depth
-            aColorBits:=VideoModes[CurrentVideoMode].ColorDepth;
+            aColorBits:=GetCurrentColorDepth;
          pf1bit, pf4bit : // OpenGL needs at least 4 bits
             aColorBits:=4;
          pf8bit : aColorBits:=8;
