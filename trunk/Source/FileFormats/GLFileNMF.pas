@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {
   GLFileNMF - NormalMapper loading into GLScene FreeForms/Actors
   

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileMD2<p>
 
 	Quake2 MD2 vector file format implementation.<p>

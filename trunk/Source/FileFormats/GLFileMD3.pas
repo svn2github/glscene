@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {
   GLFileMD3 - Code for loading animated MD3 files into GLScene 
               FreeForms and Actors.

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileTIN<p>
 
 	TIN (Triangular Irregular Network) vector file format implementation.<p>

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // 14/11/02 - EG - Fixed warnings
 // 16/11/02 - BJ - Replaced TLWChunkList.FindChunk search mechanism
 //          - BJ - Added v. method  TLWChunk.Loaded. Called on Loading complete.

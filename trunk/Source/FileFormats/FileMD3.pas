@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {
   FileMD3 - File loading methods for the MD3 file format
 

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // 20/07/00 - Egg - Fixed array declarations (non null range to allow bound checks),
 //                  Renamed "TIntegerList" to "TIntegerArray" 
 

@@ -1,14 +1,17 @@
-{
-  Q3MD3 - Helper classes and methods for Quake3 MD3 actors
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: Q3MD3<p>
 
-  History :
+   Helper classes and methods for Quake3 MD3 actors<p>
+
+   History :
     14/04/03 - SG - Streamlined the TMD3TagList.LoadFromStream a little
     04/04/03 - SG - Changes made to LoadQ3Skin procedure (as suggested by Mrqzzz)
     03/04/03 - SG - Added LoadQ3Skin procedure
     01/04/03 - Mrqzzz - "LEGS_" animations read from .CFG fixed
     17/02/03 - SG - Creation
 }
-
 unit Q3MD3;
 
 interface

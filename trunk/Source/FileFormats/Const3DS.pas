@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 unit Const3DS;
 
 // All 3DS constant definitions used by the various routines (mainly in Utils3DS.pas). About one thousand

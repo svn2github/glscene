@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: Q3BSP<p>
 
 	Simple Quake III BSP file loader.<p>

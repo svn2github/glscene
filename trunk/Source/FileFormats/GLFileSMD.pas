@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileSMD<p>
 
 	SMD vector file format implementation.<p>

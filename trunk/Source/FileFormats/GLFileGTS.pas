@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileGTS<p>
 
 	GTS (GNU Triangulated Surface) vector file format implementation.<p>

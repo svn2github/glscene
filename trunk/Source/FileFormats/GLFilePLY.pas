@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFilePLY<p>
 
 	PLY (Stanford Triangle Format) vector file format implementation.<p>

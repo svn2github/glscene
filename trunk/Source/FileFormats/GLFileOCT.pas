@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileOCT<p>
 
     Support-code to load OCT Files into TGLFreeForm-Components in GLScene.<br>

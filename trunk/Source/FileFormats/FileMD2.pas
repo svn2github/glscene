@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: FileMD2<p>
 
 	MD2 file loader<p>

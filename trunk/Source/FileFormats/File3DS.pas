@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // 08/06/00 - Egg - LoadFromStream no longer free the stream it was passed,
 //                  further fixing of the streaming mechanism is needed
 //

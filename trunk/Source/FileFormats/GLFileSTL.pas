@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileSTL<p>
 
     Support-code to load STL Files into TGLFreeForm-Components in GLScene.<p>

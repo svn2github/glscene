@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {
   FileNMF - NormalMapper vector file format loading/saving structures
   

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // 12/08/02 - EG - ReadMatEntryChunk fix / COLOR_F chunk (coerni)
 unit Utils3DS;
 

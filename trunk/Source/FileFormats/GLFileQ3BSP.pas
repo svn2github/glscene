@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLFileQ3BSP<p>
 
     Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene.<p>
