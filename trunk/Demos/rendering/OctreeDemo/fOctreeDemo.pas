@@ -26,6 +26,7 @@ type
     Label3: TLabel;
     GLSphere1: TGLSphere;
     Label2: TLabel;
+    Button_ResetOctreeSize: TButton;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
@@ -35,6 +36,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure TrackBar_LeafThresholdChange(Sender: TObject);
+    procedure Button_ResetOctreeSizeClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -357,4 +359,10 @@ begin
   Assert(AABBContainsAABB(AABBmajor, AABBpartial) = scContainsPartially,'AABBContainsAABB failed!');
   Assert(AABBContainsAABB(AABBpartial, AABBmajor) = scContainsPartially,'AABBContainsAABB failed!');
 end;
+
+procedure TfrmOctreeDemo.Button_ResetOctreeSizeClick(Sender: TObject);
+begin
+  Octree.UpdateStructureSize(0.05);
+end;
+
 end.

@@ -67,6 +67,15 @@ object frmOctreeDemo: TfrmOctreeDemo
     TickStyle = tsNone
     OnChange = TrackBar_LeafThresholdChange
   end
+  object Button_ResetOctreeSize: TButton
+    Left = 160
+    Top = 24
+    Width = 105
+    Height = 21
+    Caption = 'Reset Octree Size'
+    TabOrder = 2
+    OnClick = Button_ResetOctreeSizeClick
+  end
   object GLScene1: TGLScene
     Left = 96
     Top = 64

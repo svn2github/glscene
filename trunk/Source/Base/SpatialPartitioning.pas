@@ -352,6 +352,8 @@ type
     {: Create 8 TSPOctreeNode children }
     procedure CreateChildren; override;
 
+    // It may seem wasteful to force users to override all these function
+
     {: Checks if an AABB fits completely inside this node }
     function AABBFitsInNode(const aAABB : TAABB) : boolean; override;
 
@@ -674,7 +676,7 @@ end;
 
 function TSectorNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
 begin
-  Assert(false,'You must override BSphereFitsInNode!');
+  Assert(false,'You must override BSphereIntersectsNode!');
 end;
 
 function TSectorNode.BSphereIntersectsNode(const BSphere: TBSphere): boolean;
@@ -1172,5 +1174,4 @@ begin
 
   RebuildTree(AABB);
 end;
-
 end.
