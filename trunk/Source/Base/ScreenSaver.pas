@@ -92,7 +92,7 @@ type
 			FInPreviewMode : Boolean;
          mouseTimer : TTimer; // alocated only if necessary
          lastMousePosition : TPoint;
-
+      FMutex: THandle;
 		protected
 			{ Protected Declarations }
 			procedure Loaded; override;
@@ -219,6 +219,7 @@ begin
 	mouseEventsToIgnore:=5;
 	FOptions:=cDefaultScreenSaverOptions;
 	FHonourWindowsPassword:=True;
+  FMutex := 0;
 end;
 
 // Destroy
@@ -226,6 +227,8 @@ end;
 destructor TScreenSaver.Destroy;
 begin
    // mouseTimer is owned, it'll be automatically destroyed if created
+
+  CloseHandle(FMutex);
 	inherited;
 end;
 
@@ -305,6 +308,8 @@ procedure TScreenSaver.ExecuteSaver;
 var
 	frm : TForm;
 begin
+  FMutex := CreateMutex(nil, True, 'GLScene::ScreenSaver');
+  if (FMutex <> 0) and (GetLastError = 0) then begin
 	frm:=(Owner as TForm);
 	if Assigned(frm) then begin
    	if ssoAutoAdjustFormProperties in FOptions then begin
@@ -329,6 +334,9 @@ begin
 	if Assigned(FOnExecute) then
 		FOnExecute(Self);
 	ShowCursor(False);
+  end
+  else
+    Application.Terminate;
 end;
 
 // CloseSaver
