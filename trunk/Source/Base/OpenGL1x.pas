@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/10/04 - NC - Added GL_ATI_draw_buffers
       <li>08/10/04 - LR - Added const in the prototype of the following function for compatibility :
       TGLUTessCombineProc, TGLUTessCombineDataProc, gluPickMatrix
       gluProject, gluUnProject, gluTessVertex, gluLoadSamplingMatrices
@@ -249,6 +250,7 @@ var
    GL_NV_texture_rectangle,
 
    GL_ATI_texture_float,
+   GL_ATI_draw_buffers,
 
    GL_SGI_color_matrix,
 
@@ -279,14 +281,14 @@ var
    GLU_EXT_object_space_tess,
    GLU_EXT_nurbs_tessellator: Boolean;
 
- const
+const
 {$ifdef MSWINDOWS}
     opengl32 = 'OpenGL32.dll';
     glu32 = 'GLU32.dll';
 {$endif}
 
 {$ifdef LINUX}
-    opengl32 = 'libGL.so'; 
+    opengl32 = 'libGL.so';
     glu32 = 'libGLU.so'; 
 {$endif} 
 
@@ -2044,6 +2046,25 @@ var
    GL_LUMINANCE_FLOAT16_ATI                         = $881E;
    GL_LUMINANCE_ALPHA_FLOAT16_ATI                   = $881F;
 
+   // GL_ATI_draw_buffers
+   GL_MAX_DRAW_BUFFERS_ATI                          = $8824;
+   GL_DRAW_BUFFER0_ATI                              = $8825;
+   GL_DRAW_BUFFER1_ATI                              = $8826;
+   GL_DRAW_BUFFER2_ATI                              = $8827;
+   GL_DRAW_BUFFER3_ATI                              = $8828;
+   GL_DRAW_BUFFER4_ATI                              = $8829;
+   GL_DRAW_BUFFER5_ATI                              = $882A;
+   GL_DRAW_BUFFER6_ATI                              = $882B;
+   GL_DRAW_BUFFER7_ATI                              = $882C;
+   GL_DRAW_BUFFER8_ATI                              = $882D;
+   GL_DRAW_BUFFER9_ATI                              = $882E;
+   GL_DRAW_BUFFER10_ATI                             = $882F;
+   GL_DRAW_BUFFER11_ATI                             = $8830;
+   GL_DRAW_BUFFER12_ATI                             = $8831;
+   GL_DRAW_BUFFER13_ATI                             = $8832;
+   GL_DRAW_BUFFER14_ATI                             = $8833;
+   GL_DRAW_BUFFER15_ATI                             = $8834;
+
    // WGL_ARB_pbuffer
 type
    HPBUFFERARB= Integer;
@@ -3347,6 +3368,9 @@ var
    glVertexAttribs4svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glVertexAttribs4ubvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLubyte); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
 
+   // GL_ATI_draw_buffers
+   glDrawBuffersATI: procedure(n: GLsizei; const bufs: PGLenum); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+
 //------------------------------------------------------------------------------
 
 procedure CloseOpenGL;
@@ -3368,6 +3392,10 @@ procedure ReadImplementationProperties;
 procedure ReadWGLExtensions;
 procedure ReadWGLImplementationProperties;
 {$endif}
+
+// Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
+const
+  MRT_BUFFERS: array [0..3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -3450,7 +3478,7 @@ begin
    glCopyConvolutionFilter2D := GLGetProcAddress('glCopyConvolutionFilter2D');
    glGetConvolutionFilter := GLGetProcAddress('glGetConvolutionFilter'); 
    glSeparableFilter2D := GLGetProcAddress('glSeparableFilter2D'); 
-   glGetSeparableFilter := GLGetProcAddress('glGetSeparableFilter'); 
+   glGetSeparableFilter := GLGetProcAddress('glGetSeparableFilter');
    glConvolutionParameteri := GLGetProcAddress('glConvolutionParameteri'); 
    glConvolutionParameteriv := GLGetProcAddress('glConvolutionParameteriv');
    glConvolutionParameterf := GLGetProcAddress('glConvolutionParameterf');
@@ -3501,7 +3529,7 @@ begin
    glMultiTexCoord1dARB := GLGetProcAddress('glMultiTexCoord1dARB');
    glMultiTexCoord1dVARB := GLGetProcAddress('glMultiTexCoord1dVARB');
    glMultiTexCoord1fARB := GLGetProcAddress('glMultiTexCoord1fARB');
-   glMultiTexCoord1fVARB := GLGetProcAddress('glMultiTexCoord1fVARB'); 
+   glMultiTexCoord1fVARB := GLGetProcAddress('glMultiTexCoord1fVARB');
    glMultiTexCoord1iARB := GLGetProcAddress('glMultiTexCoord1iARB'); 
    glMultiTexCoord1iVARB := GLGetProcAddress('glMultiTexCoord1iVARB'); 
    glMultiTexCoord1sARB := GLGetProcAddress('glMultiTexCoord1sARB'); 
@@ -3521,9 +3549,9 @@ begin
    glMultiTexCoord3iARB := GLGetProcAddress('glMultiTexCoord3iARB'); 
    glMultiTexCoord3ivARB := GLGetProcAddress('glMultiTexCoord3ivARB'); 
    glMultiTexCoord3sARB := GLGetProcAddress('glMultiTexCoord3sARB'); 
-   glMultiTexCoord3svARB := GLGetProcAddress('glMultiTexCoord3svARB'); 
+   glMultiTexCoord3svARB := GLGetProcAddress('glMultiTexCoord3svARB');
    glMultiTexCoord4dARB := GLGetProcAddress('glMultiTexCoord4dARB'); 
-   glMultiTexCoord4dvARB := GLGetProcAddress('glMultiTexCoord4dvARB'); 
+   glMultiTexCoord4dvARB := GLGetProcAddress('glMultiTexCoord4dvARB');
    glMultiTexCoord4fARB := GLGetProcAddress('glMultiTexCoord4fARB');
    glMultiTexCoord4fvARB := GLGetProcAddress('glMultiTexCoord4fvARB'); 
    glMultiTexCoord4iARB := GLGetProcAddress('glMultiTexCoord4iARB');
@@ -3691,14 +3719,14 @@ begin
    glTexImage3DEXT := GLGetProcAddress('glTexImage3DEXT');
 
    // GL_SGIS_multisample
-   glSampleMaskSGIS := GLGetProcAddress('glSampleMaskSGIS'); 
-   glSamplePatternSGIS := GLGetProcAddress('glSamplePatternSGIS'); 
+   glSampleMaskSGIS := GLGetProcAddress('glSampleMaskSGIS');
+   glSamplePatternSGIS := GLGetProcAddress('glSamplePatternSGIS');
 
    // GL_EXT_blend_minmax
-   glBlendEquationEXT := GLGetProcAddress('glBlendEquationEXT'); 
+   glBlendEquationEXT := GLGetProcAddress('glBlendEquationEXT');
 
    // GL_EXT_paletted_texture
-   glGetColorTableParameterivEXT := GLGetProcAddress('glGetColorTableParameterivEXT'); 
+   glGetColorTableParameterivEXT := GLGetProcAddress('glGetColorTableParameterivEXT');
    glGetColorTableParameterfvEXT := GLGetProcAddress('glGetColorTableParameterfvEXT');
 
    // GL_EXT_draw_range_elements
@@ -3725,7 +3753,7 @@ begin
 
    // GL_EXT_multi_draw_arrays
    glMultiDrawArraysEXT := GLGetProcAddress('glMultiDrawArraysEXT'); 
-   glMultiDrawElementsEXT := GLGetProcAddress('glMultiDrawElementsEXT'); 
+   glMultiDrawElementsEXT := GLGetProcAddress('glMultiDrawElementsEXT');
 
    // GL_EXT_fog_coord
    glFogCoordfEXT := GLGetProcAddress('glFogCoordfEXT'); 
@@ -3827,37 +3855,40 @@ begin
    glVertexAttrib1sNV := GLGetProcAddress('glVertexAttrib1sNV'); 
    glVertexAttrib1svNV := GLGetProcAddress('glVertexAttrib1svNV'); 
    glVertexAttrib2dNV := GLGetProcAddress('glVertexAttrib2dNV');
-   glVertexAttrib2dvNV := GLGetProcAddress('glVertexAttrib2dvNV'); 
+   glVertexAttrib2dvNV := GLGetProcAddress('glVertexAttrib2dvNV');
    glVertexAttrib2fNV := GLGetProcAddress('glVertexAttrib2fNV'); 
-   glVertexAttrib2fvNV := GLGetProcAddress('glVertexAttrib2fvNV'); 
+   glVertexAttrib2fvNV := GLGetProcAddress('glVertexAttrib2fvNV');
    glVertexAttrib2sNV := GLGetProcAddress('glVertexAttrib2sNV'); 
    glVertexAttrib2svNV := GLGetProcAddress('glVertexAttrib2svNV'); 
    glVertexAttrib3dNV := GLGetProcAddress('glVertexAttrib3dNV'); 
    glVertexAttrib3dvNV := GLGetProcAddress('glVertexAttrib3dvNV');
-   glVertexAttrib3fNV := GLGetProcAddress('glVertexAttrib3fNV'); 
+   glVertexAttrib3fNV := GLGetProcAddress('glVertexAttrib3fNV');
    glVertexAttrib3fvNV := GLGetProcAddress('glVertexAttrib3fvNV');
    glVertexAttrib3sNV := GLGetProcAddress('glVertexAttrib3sNV');
    glVertexAttrib3svNV := GLGetProcAddress('glVertexAttrib3svNV');
    glVertexAttrib4dNV := GLGetProcAddress('glVertexAttrib4dNV');
-   glVertexAttrib4dvNV := GLGetProcAddress('glVertexAttrib4dvNV'); 
-   glVertexAttrib4fNV := GLGetProcAddress('glVertexAttrib4fNV'); 
-   glVertexAttrib4fvNV := GLGetProcAddress('glVertexAttrib4fvNV'); 
-   glVertexAttrib4sNV := GLGetProcAddress('glVertexAttrib4sNV'); 
-   glVertexAttrib4svNV := GLGetProcAddress('glVertexAttrib4svNV'); 
-   glVertexAttrib4ubvNV := GLGetProcAddress('glVertexAttrib4ubvNV'); 
-   glVertexAttribs1dvNV := GLGetProcAddress('glVertexAttribs1dvNV'); 
-   glVertexAttribs1fvNV := GLGetProcAddress('glVertexAttribs1fvNV'); 
-   glVertexAttribs1svNV := GLGetProcAddress('glVertexAttribs1svNV'); 
-   glVertexAttribs2dvNV := GLGetProcAddress('glVertexAttribs2dvNV'); 
-   glVertexAttribs2fvNV := GLGetProcAddress('glVertexAttribs2fvNV'); 
+   glVertexAttrib4dvNV := GLGetProcAddress('glVertexAttrib4dvNV');
+   glVertexAttrib4fNV := GLGetProcAddress('glVertexAttrib4fNV');
+   glVertexAttrib4fvNV := GLGetProcAddress('glVertexAttrib4fvNV');
+   glVertexAttrib4sNV := GLGetProcAddress('glVertexAttrib4sNV');
+   glVertexAttrib4svNV := GLGetProcAddress('glVertexAttrib4svNV');
+   glVertexAttrib4ubvNV := GLGetProcAddress('glVertexAttrib4ubvNV');
+   glVertexAttribs1dvNV := GLGetProcAddress('glVertexAttribs1dvNV');
+   glVertexAttribs1fvNV := GLGetProcAddress('glVertexAttribs1fvNV');
+   glVertexAttribs1svNV := GLGetProcAddress('glVertexAttribs1svNV');
+   glVertexAttribs2dvNV := GLGetProcAddress('glVertexAttribs2dvNV');
+   glVertexAttribs2fvNV := GLGetProcAddress('glVertexAttribs2fvNV');
    glVertexAttribs2svNV := GLGetProcAddress('glVertexAttribs2svNV');
    glVertexAttribs3dvNV := GLGetProcAddress('glVertexAttribs3dvNV');
    glVertexAttribs3fvNV := GLGetProcAddress('glVertexAttribs3fvNV');
    glVertexAttribs3svNV := GLGetProcAddress('glVertexAttribs3svNV');
-   glVertexAttribs4dvNV := GLGetProcAddress('glVertexAttribs4dvNV'); 
-   glVertexAttribs4fvNV := GLGetProcAddress('glVertexAttribs4fvNV'); 
-   glVertexAttribs4svNV := GLGetProcAddress('glVertexAttribs4svNV'); 
+   glVertexAttribs4dvNV := GLGetProcAddress('glVertexAttribs4dvNV');
+   glVertexAttribs4fvNV := GLGetProcAddress('glVertexAttribs4fvNV');
+   glVertexAttribs4svNV := GLGetProcAddress('glVertexAttribs4svNV');
    glVertexAttribs4ubvNV := GLGetProcAddress('glVertexAttribs4ubvN');
+
+   // GL_ATI_draw_buffers
+   glDrawBuffersATI := GLGetProcAddress('glDrawBuffersATI');
 
    {$ifdef MSWINDOWS}
    ReadWGLExtensions;
@@ -3919,9 +3950,9 @@ begin
       Separator := Pos('.', Buffer) + 1;
       // Find first non-numeric character after version number
       while (Separator <= Length(Buffer)) and (Buffer[Separator] in ['0'..'9']) do
-        Inc(Separator); 
+        Inc(Separator);
       // delete trailing characters not belonging to the version string
-      Delete(Buffer, Separator, 255); 
+      Delete(Buffer, Separator, 255);
       // Now translate the numbers.
       Separator := Pos('.', Buffer); // This is necessary because the buffer length might have changed.
       Max := StrToInt(Copy(Buffer, 1, Separator - 1));
@@ -4032,26 +4063,26 @@ begin
    GL_EXT_texture_edge_clamp := CheckExtension('GL_EXT_texture_edge_clamp');
    GL_EXT_texture_env_add := CheckExtension('GL_EXT_texture_env_add');
    GL_EXT_texture_env_combine := CheckExtension('GL_EXT_texture_env_combine');
-   GL_EXT_texture_filter_anisotropic := CheckExtension('GL_EXT_texture_filter_anisotropic'); 
-   GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
-   GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
+   GL_EXT_texture_filter_anisotropic := CheckExtension('GL_EXT_texture_filter_anisotropic');
+   GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias');
+   GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object');
    GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
    GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
 
-   GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test'); 
+   GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test');
 
    GL_IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip');
 
    GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region');
 
-   GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers'); 
+   GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers');
 
-   GL_NV_blend_square := CheckExtension('GL_NV_blend_square'); 
-   GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance'); 
+   GL_NV_blend_square := CheckExtension('GL_NV_blend_square');
+   GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance');
    GL_NV_light_max_exponent := CheckExtension('GL_NV_light_max_exponent');
-   GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners'); 
-   GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection'); 
-   GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4'); 
+   GL_NV_register_combiners := CheckExtension('GL_NV_register_combiners');
+   GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection');
+   GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4');
    GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
    GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
    GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
@@ -4060,6 +4091,7 @@ begin
    GL_NV_texture_rectangle := CheckExtension('GL_NV_texture_rectangle');
 
    GL_ATI_texture_float := CheckExtension('GL_ATI_texture_float');
+   GL_ATI_draw_buffers := CheckExtension('GL_ATI_draw_buffers');
 
    GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
 
@@ -4068,7 +4100,7 @@ begin
    GL_SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp');
    GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask');
    GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp');
-   GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
+   GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod');
 
    GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture');
    GL_SGIX_shadow := CheckExtension('GL_SGIX_shadow'); 
