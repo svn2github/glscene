@@ -310,7 +310,7 @@ begin
 			particlePool.Delete(particlePool.Count-1);
 			Result.Assign(Children[0]);
 		end else begin
-			Result:=TGLSceneObjectClass(Children[0].ClassType).Create(Self);
+         Result:=TGLSceneObjectClass(Children[0].ClassType).Create(Self);
 			Result.Assign(Children[0]);
 			if Assigned(FOnCreateParticle) then
 				FOnCreateParticle(Self, Result);

@@ -2277,7 +2277,6 @@ begin
    FRequiredMemorySize:=-1;
    FTextureHandle:=TGLTextureHandle.Create;
    FMappingMode:=tmmUser;
-//   FMappingTCoordinates:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
 end;
 
 // Destroy
@@ -3120,7 +3119,9 @@ end;
 procedure TGLMaterial.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLMaterial) then begin
-      BackProperties.Assign(TGLMaterial(Source).BackProperties);
+      if Assigned(TGLMaterial(Source).FGLBackProperties) then
+         BackProperties.Assign(TGLMaterial(Source).BackProperties)
+      else FreeAndNil(FGLBackProperties);
       FFrontProperties.Assign(TGLMaterial(Source).FFrontProperties);
 		FBlendingMode:=TGLMaterial(Source).FBlendingMode;
       FMaterialOptions:=TGLMaterial(Source).FMaterialOptions;

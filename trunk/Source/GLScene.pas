@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/04/02 - Egg - Fixed XOpenGL initialization/reinitialization
       <li>13/03/02 - Egg - Fixed camera-switch loss of "reactivity"
       <li>08/03/02 - Egg - Fixed InvAbsoluteMatrix/AbsoluteMatrix decoupling
       <li>05/03/02 - Egg - Added MoveObjectAround
@@ -2670,15 +2671,7 @@ var
 begin
    if Source is TGLBaseSceneObject then begin
       DestroyHandles;
-      FPosition.Assign(TGLBaseSceneObject(Source).FPosition);
-      FDirection.Assign(TGLBaseSceneObject(Source).FDirection);
-      FUp.Assign(TGLBaseSceneObject(Source).FUp);
-      FScaling.Assign(TGLBaseSceneObject(Source).FScaling);
-      FChanges:=[ocStructure];
       FVisible:=TGLBaseSceneObject(Source).FVisible;
-      FLocalMatrix:=TGLBaseSceneObject(Source).FLocalMatrix;
-      FAbsoluteMatrix:=TGLBaseSceneObject(Source).FAbsoluteMatrix;
-      FInvAbsoluteMatrix:=TGLBaseSceneObject(Source).FInvAbsoluteMatrix;
       SetMatrix(TGLCustomSceneObject(Source).FLocalMatrix);
       FShowAxes:=TGLBaseSceneObject(Source).FShowAxes;
       FObjectsSorting:=TGLBaseSceneObject(Source).FObjectsSorting;
@@ -2695,11 +2688,14 @@ begin
       end;
       if Assigned(Scene) then Scene.EndUpdate;
       OnProgress:=TGLBaseSceneObject(Source).OnProgress;
-      Behaviours.Assign(TGLBaseSceneObject(Source).Behaviours);
-      Effects.Assign(TGLBaseSceneObject(Source).Effects);
+      if Assigned(TGLBaseSceneObject(Source).FGLBehaviours) then
+         Behaviours.Assign(TGLBaseSceneObject(Source).Behaviours)
+      else FreeAndNil(FGLBehaviours);
+      if Assigned(TGLBaseSceneObject(Source).FGLObjectEffects) then
+         Effects.Assign(TGLBaseSceneObject(Source).Effects)
+      else FreeAndNil(FGLObjectEffects);
       Tag:=TGLBaseSceneObject(Source).Tag;
       FTagFloat:=TGLBaseSceneObject(Source).FTagFloat;
-      TransformationChanged;
    end else inherited Assign(Source);
 end;
 
@@ -5681,7 +5677,6 @@ end;
 //
 constructor TGLSceneBuffer.Create(AOwner: TPersistent);
 begin
-   xglMapTexCoordToMain;
    inherited Create(AOwner);
 
    // initialize private state variables
@@ -6562,6 +6557,8 @@ procedure TGLSceneBuffer.DoBaseRender(const aViewPort : TRectangle; resolution :
 begin
    if (not Assigned(FCamera)) or (not Assigned(FCamera.FScene)) then Exit;
    PrepareRenderingMatrices(aViewPort, resolution);
+   xglMapTexCoordToNull; // force XGL rebind
+   xglMapTexCoordToMain;
    if Assigned(FBeforeRender) then
       if Owner is TComponent then
          if not (csDesigning in TComponent(Owner).ComponentState) then
