@@ -759,9 +759,9 @@ asm
    test     ecx, 16
    jz       @@Batch32
 
-   movaps   xmm2, [eax+ecx]
-   movaps   [edx+ecx], xmm2
-   
+   db $0F,$28,$14,$08         /// movaps   xmm2, [eax+ecx]
+   db $0F,$29,$14,$0A         /// movaps   [edx+ecx], xmm2
+
    add      ecx, 16
    jnz      @@Batch32
    ret
@@ -771,21 +771,21 @@ asm
    jl       @@HugeLoop
 
 @@Loop:
-   movaps   xmm0, [eax+ecx]
-   movaps   xmm1, [eax+ecx+16]
-   movaps   [edx+ecx], xmm0
-   movaps   [edx+ecx+16], xmm1
+   db $0F,$28,$04,$08         /// movaps   xmm0, [eax+ecx]
+   db $0F,$28,$4C,$08,$10     /// movaps   xmm1, [eax+ecx+16]
+   db $0F,$29,$04,$0A         /// movaps   [edx+ecx], xmm0
+   db $0F,$29,$4C,$0A,$10     /// movaps   [edx+ecx+16], xmm1
 
    add      ecx, 32
    jnz      @@Loop
    ret
 
 @@HugeLoop:
-   movaps   xmm0, [eax+ecx]
-   movaps   xmm1, [eax+ecx+16]
-   movntps   [edx+ecx], xmm0
-   movntps   [edx+ecx+16], xmm1
-   
+   db $0F,$28,$04,$08         /// movaps   xmm0, [eax+ecx]
+   db $0F,$28,$4C,$08,$10     /// movaps   xmm1, [eax+ecx+16]
+   db $0F,$2B,$04,$0A         /// movntps   [edx+ecx], xmm0
+   db $0F,$2B,$4C,$0A,$10     /// movntps   [edx+ecx+16], xmm1
+
    add      ecx, 32
    jnz      @@HugeLoop
 
