@@ -38,3 +38,4 @@ TGLFPSMovementManager BITMAP vcl\glscene_icon_TGLFPSMovementManager.bmp
 TGLBumpShader BITMAP vcl\glscene_icon_TGLBumpShader.bmp
 TGLMaterialScripter BITMAP vcl\glscene_icon_TGLMaterialScripter.bmp
 TGLDCEManager BITMAP vcl\glscene_icon_TGLDCEManager.bmp
+TGLPerlinHDS BITMAP vcl\glscene_icon_TGLPerlinHDS.bmp

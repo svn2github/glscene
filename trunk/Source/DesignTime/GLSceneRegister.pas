@@ -147,7 +147,7 @@ uses
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
-   GLFeedback, GLProjectedTextures,GLBlur,
+   GLFeedback, GLProjectedTextures, GLBlur, GLPerlin,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1772,7 +1772,7 @@ begin
                       [TAsyncTimer,
                        TGLStaticImposterBuilder,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
-                       TGLBumpmapHDS,
+                       TGLBumpmapHDS, TGLPerlinHDS,
                        TCollisionManager, TGLAnimationControler
                       ]);
 
