@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/01/03 - RC - Added TGLPlane.XScope and YScope, to use just a part of the texture
       <li>27/09/02 - EG - Added TGLPointParameters
       <li>24/07/02 - EG - Added TGLCylinder.Alignment
       <li>23/07/02 - EG - Added TGLPoints (experimental)
@@ -181,6 +182,7 @@ type
 	   private
 			{ Private Declarations }
 	      FXOffset, FYOffset : TGLFloat;
+	      FXScope, FYScope : TGLFloat;
 			FWidth, FHeight : TGLFloat;
 		   FXTiles, FYTiles : Cardinal;
          FStyle : TPlaneStyles;
@@ -190,8 +192,12 @@ type
 		   procedure SetHeight(AValue: TGLFloat);
 		   procedure SetWidth(AValue: TGLFloat);
 		   procedure SetXOffset(const Value: TGLFloat);
+		   procedure SetXScope(const Value: TGLFloat);
+         function  StoreXScope : Boolean;
 		   procedure SetXTiles(const Value: Cardinal);
 		   procedure SetYOffset(const Value: TGLFloat);
+		   procedure SetYScope(const Value: TGLFloat);
+         function  StoreYScope : Boolean;
 		   procedure SetYTiles(const Value: Cardinal);
          procedure SetStyle(const val : TPlaneStyles);
 
@@ -220,8 +226,10 @@ type
 			property Height : TGLFloat read FHeight write SetHeight;
          property Width : TGLFloat read FWidth write SetWidth;
          property XOffset : TGLFloat read FXOffset write SetXOffset;
+         property XScope : TGLFloat read FXScope write SetXScope stored StoreXScope;
          property XTiles : Cardinal read FXTiles write SetXTiles default 1;
          property YOffset : TGLFloat read FYOffset write SetYOffset;
+         property YScope : TGLFloat read FYScope write SetYScope stored StoreYScope;
          property YTiles : Cardinal read FYTiles write SetYTiles default 1;
          property Style : TPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
    end;
@@ -1384,6 +1392,8 @@ begin
    FHeight:=1;
    FXTiles:=1;
    FYTiles:=1;
+   FXScope:=1;
+   FYScope:=1;
    ObjectStyle:=ObjectStyle+[osDirectDraw];
    FStyle:=[psSingleQuad, psTileTexture];
 end;
@@ -1464,14 +1474,14 @@ begin
    // determine tex coords extents
    if psTileTexture in FStyle then begin
       tx0:=FXOffset;
-      tx1:=FXTiles+FXOffset;
+      tx1:=FXTiles*FXScope+FXOffset;
       ty0:=FYOffset;
-      ty1:=FYTiles+FYOffset;
+      ty1:=FYTiles*FYScope+FYOffset;
    end else begin
       tx0:=0;
       ty0:=tx0;
-      tx1:=1;
-      ty1:=tx1;
+      tx1:=FXScope;
+      ty1:=FYScope;
    end;
    if psSingleQuad in FStyle then begin
       // single quad plane
@@ -1574,6 +1584,25 @@ begin
    end;
 end;
 
+// SetXScope
+//
+procedure TGLPlane.SetXScope(const Value: TGLFloat);
+begin
+   if Value<>FXScope then begin
+      FXScope:=Value;
+      if FXScope>1 then
+         FXScope:=1;
+      StructureChanged;
+   end;
+end;
+
+// StoreXScope
+//
+function TGLPlane.StoreXScope : Boolean;
+begin
+   Result:=(FXScope<>1);
+end;
+
 // SetXTiles
 //
 procedure TGLPlane.SetXTiles(const Value: Cardinal);
@@ -1592,6 +1621,25 @@ begin
       FYOffset:=Value;
       StructureChanged;
    end;
+end;
+
+// SetYScope
+//
+procedure TGLPlane.SetYScope(const Value: TGLFloat);
+begin
+   if Value<>FYScope then begin
+      FYScope:=Value;
+      if FYScope>1 then
+         FYScope:=1;
+      StructureChanged;
+   end;
+end;
+
+// StoreYScope
+//
+function TGLPlane.StoreYScope : Boolean;
+begin
+   Result:=(FYScope<>1);
 end;
 
 // SetYTiles
