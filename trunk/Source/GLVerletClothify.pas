@@ -26,6 +26,8 @@ type
     MeshObject : TMeshObject;
 
     procedure UpdateNormal;
+
+    constructor Create(aMeshObject : TMeshObject);
   end;
 
   TFaceList = class(TList)
@@ -45,7 +47,12 @@ type
     FEdgeDoublesSkipped : integer;
 
     procedure SetWeldDistance(const Value: single);
+  protected
+    procedure ProcessMeshObject(const MeshObject : TMeshObject); virtual;
   public
+    procedure ExtractFacesFromVertexIndexList(
+      const FaceGroup : TFGVertexIndexList; const MeshObject : TMeshObject);
+
     property FaceList : TFaceList read FFaceList;
 
     procedure Clear; virtual;
@@ -56,9 +63,9 @@ type
 
     property GLBaseMesh : TGLBaseMesh read FGLBaseMesh;
 
-    function AddFace(Vi0, Vi1, Vi2 : integer; MeshObject : TMeshObject) : TFace; virtual;
+    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; virtual;
 
-    constructor Create(aGLBaseMesh : TGLBaseMesh); virtual;
+    constructor Create(const aGLBaseMesh : TGLBaseMesh); virtual;
     destructor Destroy; override;
   end;
 
@@ -90,18 +97,22 @@ type
     property Items[i : integer] : TVertexStat read GetItems write SetItems; default;
   end;
 
+  { Doesn't work at all right now! }
   TFaceSmoother = class(TFaceExtractor)
   private
     FVertextStatsList: TVertextStatsList;
+    FTempList : TVertextStatsList;
   public
     property VertextStatsList : TVertextStatsList read FVertextStatsList;
     procedure UpdateNormals;
 
+    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; override;
+
     procedure Clear; override;
 
-    procedure ProcessMesh; override;
+    procedure ProcessMeshObject(const MeshObject : TMeshObject); override;
 
-    constructor Create(aGLBaseMesh : TGLBaseMesh); override;
+    constructor Create(const aGLBaseMesh : TGLBaseMesh); override;
     destructor Destroy; override;
   end;
 
@@ -138,9 +149,9 @@ type
     procedure Clear; override;
     procedure ProcessMesh; override;
 
-    function AddEdge(Vi0, Vi1 : integer; Face : TFace; MeshObject : TMeshObject) : TEdge;
-    function AddFace(Vi0, Vi1, Vi2 : integer; MeshObject : TMeshObject) : TFace; override;
-    function AddNode(VerletAssembly : TVerletAssembly; MeshObject : TMeshObject; VertexIndex : integer) : TVerletNode; virtual;
+    function AddEdge(const Vi0, Vi1 : integer; const Face : TFace; const MeshObject : TMeshObject) : TEdge;
+    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; override;
+    function AddNode(const VerletAssembly : TVerletAssembly; const MeshObject : TMeshObject; const VertexIndex : integer) : TVerletNode; virtual;
 
     function CreateVAEmpty : TVerletAssembly;
     function CreateVAWithSticks(Slack : single) : TVerletAssembly;
@@ -148,7 +159,7 @@ type
 
     procedure RenderEdges(var rci : TRenderContextInfo);
 
-    constructor Create(aGLBaseMesh : TGLBaseMesh); override;
+    constructor Create(const aGLBaseMesh : TGLBaseMesh); override;
     destructor Destroy; override;
   end;
 
@@ -176,7 +187,7 @@ begin
   FaceList.Clear;
 end;
 
-constructor TFaceExtractor.Create(aGLBaseMesh : TGLBaseMesh);
+constructor TFaceExtractor.Create(const aGLBaseMesh : TGLBaseMesh);
 begin
   FFaceList := TFaceList.Create;
   FGLBaseMesh := aGLBaseMesh;
@@ -194,76 +205,84 @@ begin
   inherited;
 end;
 
+procedure TFaceExtractor.ExtractFacesFromVertexIndexList(
+  const FaceGroup : TFGVertexIndexList; const MeshObject : TMeshObject);
+var
+  List : PIntegerArray;
+  iFace, iVertex  : integer;
+begin
+  case FaceGroup.Mode of
+
+    fgmmTriangles, fgmmFlatTriangles :
+    begin
+      for iFace := 0 to FaceGroup.TriangleCount - 1 do
+      begin
+        List := @FaceGroup.VertexIndices.List[iFace * 3 + 0];
+        AddFace(List[0], List[1], List[2], MeshObject);
+      end;
+    end;
+
+    fgmmTriangleStrip :
+    begin
+      for iFace:=0 to FaceGroup.VertexIndices.Count-3 do
+      begin
+        List := @FaceGroup.VertexIndices.List[iFace];
+        if (iFace and 1)=0 then
+           AddFace(List[0], List[1], List[2], MeshObject)
+        else
+           AddFace(List[2], List[1], List[0], MeshObject);
+      end;
+    end;
+
+    fgmmTriangleFan :
+    begin
+      List := @FaceGroup.VertexIndices.List;
+
+      for iVertex:=2 to FaceGroup.VertexIndices.Count-1 do
+        AddFace(List[0], List[iVertex-1], List[iVertex], MeshObject)
+    end;
+    else
+      Assert(false,'Not supported');
+  end;
+end;
+
 procedure TFaceExtractor.ProcessMesh;
 var
-  iMeshObject, iFaceGroup : integer;
+  iMeshObject : integer;
   MeshObject : TMeshObject;
-
-  procedure ExtractEdgesFromVertexIndexList(FaceGroup : TFGVertexIndexList);
-  var
-    List : PIntegerArray;
-    iFace, iVertex  : integer;
-  begin
-    case FaceGroup.Mode of
-    
-      fgmmTriangles, fgmmFlatTriangles :
-      begin
-        for iFace := 0 to FaceGroup.TriangleCount - 1 do
-        begin
-          List := @FaceGroup.VertexIndices.List[iFace * 3 + 0];
-          AddFace(List[0], List[1], List[2], MeshObject);
-        end;
-      end;
-
-      fgmmTriangleStrip :
-      begin
-        for iFace:=0 to FaceGroup.VertexIndices.Count-3 do
-        begin
-          List := @FaceGroup.VertexIndices.List[iFace];
-          if (iFace and 1)=0 then
-             AddFace(List[0], List[1], List[2], MeshObject)
-          else
-             AddFace(List[2], List[1], List[0], MeshObject);
-        end;
-      end;
-
-      fgmmTriangleFan :
-      begin
-        List := @FaceGroup.VertexIndices.List;
-
-        for iVertex:=2 to FaceGroup.VertexIndices.Count-1 do
-          AddFace(List[0], List[iVertex-1], List[iVertex], MeshObject)
-      end;
-      else
-        Assert(false,'Not supported');
-    end;
-  end;
 begin
   for iMeshObject := 0 to FGLBaseMesh.MeshObjects.Count - 1 do
   begin
     MeshObject := FGLBaseMesh.MeshObjects[iMeshObject];
 
-    if MeshObject.Mode = momFaceGroups then
-    begin
-      for iFaceGroup := 0 to MeshObject.FaceGroups.Count - 1 do
-      begin
-        if MeshObject.FaceGroups[iFaceGroup] is TFGVertexIndexList then
-        begin
-          ExtractEdgesFromVertexIndexList(MeshObject.FaceGroups[iFaceGroup] as TFGVertexIndexList);
-        end else
-          Assert(false);
-      end;
-    end else
-      Assert(false);
+    ProcessMeshObject(MeshObject);
   end;
 end;
 
-function TFaceExtractor.AddFace(Vi0, Vi1, Vi2: integer; MeshObject : TMeshObject) : TFace;
+procedure TFaceExtractor.ProcessMeshObject(const MeshObject : TMeshObject);
+var
+ iFaceGroup : integer;
+begin
+  if MeshObject.Mode = momFaceGroups then
+  begin
+    for iFaceGroup := 0 to MeshObject.FaceGroups.Count - 1 do
+    begin
+      if MeshObject.FaceGroups[iFaceGroup] is TFGVertexIndexList then
+      begin
+        ExtractFacesFromVertexIndexList(MeshObject.FaceGroups[iFaceGroup] as TFGVertexIndexList, MeshObject);
+      end else
+        Assert(false);
+    end;
+  end else
+    Assert(false);
+end;
+
+function TFaceExtractor.AddFace(const Vi0, Vi1, Vi2: integer; const MeshObject : TMeshObject) : TFace;
 var
   Face : TFace;
   V0, V1, V2 : TAffineVector;
 begin
-  Face := TFace.Create;
+  Face := TFace.Create(MeshObject);
 
   FaceList.Add(Face);
 
@@ -278,6 +297,7 @@ procedure TFaceExtractor.SetWeldDistance(const Value: single);
 begin
   FWeldDistance := Value;
 end;
+
 
 { TFaceList }
 
@@ -347,7 +367,7 @@ begin
   EdgeList.Clear;
 end;
 
-constructor TEdgeDetector.Create(aGLBaseMesh: TGLBaseMesh);
+constructor TEdgeDetector.Create(const aGLBaseMesh: TGLBaseMesh);
 begin
   FEdgeList := TEdgeList.Create;
 
@@ -361,7 +381,7 @@ begin
   FreeAndNil(FEdgeList);
 end;
 
-function TEdgeDetector.AddEdge(Vi0, Vi1: integer; Face: TFace; MeshObject : TMeshObject): TEdge;
+function TEdgeDetector.AddEdge(const Vi0, Vi1: integer; const Face: TFace; const MeshObject : TMeshObject): TEdge;
 var
   i : integer;
   Edge : TEdge;
@@ -394,20 +414,20 @@ begin
 
   result := Edge;
 end;
-function TEdgeDetector.AddFace(Vi0, Vi1, Vi2: integer;
-  MeshObject: TMeshObject): TFace;
+
+function TEdgeDetector.AddFace(const Vi0, Vi1, Vi2: integer;
+  const MeshObject: TMeshObject): TFace;
 var
   Face : TFace;
   V0, V1, V2 : TAffineVector;
 begin
-  Face := TFace.Create;
+  Face := TFace.Create(MeshObject);
 
   FaceList.Add(Face);
 
   Face.Vertices[0] := Vi0;
   Face.Vertices[1] := Vi1;
   Face.Vertices[2] := Vi2;
-  Face.MeshObject := MeshObject;
 
   AddEdge(Vi0, Vi1, Face, MeshObject);
   AddEdge(Vi1, Vi2, Face, MeshObject);
@@ -578,8 +598,8 @@ begin
   end;
 end;
 
-function TEdgeDetector.AddNode(VerletAssembly : TVerletAssembly; MeshObject: TMeshObject;
-  VertexIndex: integer): TVerletNode;
+function TEdgeDetector.AddNode(const VerletAssembly : TVerletAssembly; const MeshObject: TMeshObject;
+  const VertexIndex: integer): TVerletNode;
 var
   Location : TAffineVector;
   aNode : TMeshObjectVerletNode;
@@ -632,10 +652,35 @@ begin
 end;
 
 procedure TVertexStat.UpdateNormal;
+var
+  Normal : TAffineVector;
+  i : integer;
 begin
+  Normal := NullVector;
+
+  for i := 0 to FaceList.Count-1 do
+    AddVector(Normal, FaceList[i].Normal);//}
+
+  NormalizeVector(Normal);
+
+  MeshObject.Normals[VertexIndex] := Normal;
 end;
 
 { TFaceSmoother }
+
+function TFaceSmoother.AddFace(const Vi0, Vi1, Vi2: integer;
+  const MeshObject: TMeshObject): TFace;
+var
+  Face : TFace;
+begin
+  Face := inherited AddFace(Vi0, Vi1, Vi2, MeshObject);
+
+  FTempList[Vi0].FaceList.Add(Face);
+  FTempList[Vi1].FaceList.Add(Face);
+  FTempList[Vi2].FaceList.Add(Face);
+
+  result := Face;
+end;
 
 procedure TFaceSmoother.Clear;
 var
@@ -647,12 +692,14 @@ begin
     VertextStatsList[i].Free;
 
   VertextStatsList.Clear;
+  FTempList.Clear;
 end;
 
-constructor TFaceSmoother.Create(aGLBaseMesh: TGLBaseMesh);
+constructor TFaceSmoother.Create(const aGLBaseMesh: TGLBaseMesh);
 begin
   inherited;
   FVertextStatsList := TVertextStatsList.Create;
+  FTempList := TVertextStatsList.Create;
 end;
 
 destructor TFaceSmoother.Destroy;
@@ -660,28 +707,26 @@ begin
   inherited;
 
   FreeAndNil(FVertextStatsList);
+  FreeAndNil(FTempList);
 end;
 
-procedure TFaceSmoother.ProcessMesh;
+procedure TFaceSmoother.ProcessMeshObject(const MeshObject : TMeshObject); 
 var
-  iMeshObject, iVertice : integer;
-  MeshObject : TMeshObject;
+  iVertice : integer;
   VertexStat : TVertexStat;
 begin
-  inherited;
-
-  for iMeshObject := 0 to GLBaseMesh.MeshObjects.Count-1 do
+  FTempList.Clear;
+  for iVertice := 0 to MeshObject.Vertices.Count-1 do
   begin
-    MeshObject := GLBaseMesh.MeshObjects[iMeshObject];
+    VertexStat := TVertexStat.Create(MeshObject, iVertice);
+    VertextStatsList.Add(VertexStat);
 
-    for iVertice := 0 to MeshObject.Vertices.Count-1 do
-    begin
-      VertexStat := TVertexStat.Create(MeshObject, iVertice);
-      VertextStatsList.Add(VertexStat);
-    end;
+    // A sorted list where the indexes are the same as the original vertex
+    // indices
+    FTempList.Add(VertexStat);
   end;
 
-  UpdateNormals;
+  inherited;
 end;
 
 procedure TFaceSmoother.UpdateNormals;
@@ -690,13 +735,24 @@ var
 begin
   for i := 0 to FaceList.Count-1 do
     FaceList[i].UpdateNormal;
+
+  for i := 0 to VertextStatsList.Count-1 do
+    VertextStatsList[i].UpdateNormal;
 end;
 
 { TFace }
 
+constructor TFace.Create(aMeshObject: TMeshObject);
+begin
+  MeshObject := aMeshObject;
+end;
+
 procedure TFace.UpdateNormal;
 begin
-  // Normal := Vector
+  CalcPlaneNormal(
+    MeshObject.Vertices[Vertices[0]],
+    MeshObject.Vertices[Vertices[1]],
+    MeshObject.Vertices[Vertices[2]], Normal);
 end;
 
 { TVertextStatsList }

@@ -97,7 +97,6 @@ object frmClothify: TfrmClothify
     Width = 137
     Height = 21
     ItemHeight = 13
-    ItemIndex = 0
     TabOrder = 2
     Text = 'Trinityrage.smd, 0.15'
     Items.Strings = (
@@ -106,7 +105,10 @@ object frmClothify: TfrmClothify
       'Cylinder.ms3d, 0.3'
       'lgrid.3ds, 6'
       'BigHoleBox2.ms3d, 0.5'
-      'lgrid2.3ds,6')
+      'lgrid2.3ds,6'
+      'mushroom.3ds, 0.15'
+      'polyhedron.3ds, 2'
+      'teapot.3ds, 0.2')
   end
   object ComboBox_ConstraintType: TComboBox
     Left = 152
@@ -194,6 +196,14 @@ object frmClothify: TfrmClothify
     Top = 32
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
+      object GLDummyCube_Light: TGLDummyCube
+        CubeSize = 1.000000000000000000
+        object GLLightSource1: TGLLightSource
+          ConstAttenuation = 1.000000000000000000
+          Position.Coordinates = {0000404000000041000040400000803F}
+          SpotCutOff = 180.000000000000000000
+        end
+      end
       object GL_Capsule: TGLCylinder
         Direction.Coordinates = {F304353FF304353F0000000000000000}
         Up.Coordinates = {F30435BFF304353F0000000000000000}
@@ -222,11 +232,6 @@ object frmClothify: TfrmClothify
           Interval = 100
           MaterialLibrary = GLMaterialLibrary1
         end
-      end
-      object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1.000000000000000000
-        Position.Coordinates = {0000404000000041000040400000803F}
-        SpotCutOff = 180.000000000000000000
       end
       object GLSphere1: TGLSphere
         Position.Coordinates = {00000000000000C0000000000000803F}

@@ -49,6 +49,7 @@ type
     GLSphere3: TGLSphere;
     TrackBar_Friction: TTrackBar;
     Label7: TLabel;
+    GLDummyCube_Light: TGLDummyCube;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
@@ -309,4 +310,5 @@ begin
     if VerletAssembly.Constraints[i] is TVerletGlobalFrictionConstraint then
       TVerletGlobalFrictionConstraint(VerletAssembly.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
 end;
+
 end.
