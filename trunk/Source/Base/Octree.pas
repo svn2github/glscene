@@ -1283,7 +1283,7 @@ begin
                if not CheckPointInTriangle(AffineVectorMake(piPoint),p1^,p2^,p3^) then
                SetVector(polyIPoint,
                          ClosestPointOnTriangleEdge(p1^, p2^, p3^,
-                                                PAffineVector(@pIPoint)^))
+                                                PAffineVector(@pIPoint)^),1)
                else
                  polyIPoint:=piPoint;
 
