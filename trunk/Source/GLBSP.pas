@@ -5,6 +5,7 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>05/03/03 - EG - Preliminary BSP splitting support
 	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
                           MaterialCache support 
 	   <li>30/01/03 - EG - Creation
@@ -97,6 +98,26 @@ type
          procedure CollectFrontToBack(var bsprci : TBSPRenderContextInfo);
          procedure CollectBackToFront(var bsprci : TBSPRenderContextInfo);
 
+         {: Try to find a 'decent' split plane for the node.<p>
+            Use this function to build a BSP tree, on leafy nodes. The split
+            plane is chosen among the polygon planes, the coefficient are used
+            to determine what a 'good' split plane is by assigning a cost
+            to splitted triangles (cut by the split plane) and tree imbalance. }
+         function FindSplitPlane(triangleSplitCost : Single = 1;
+                                 triangleImbalanceCost : Single = 0.5) : THmgPlane;
+         {: Evaluates a split plane.<p>
+            Used by FindSplitPlane. For splitted triangles, the extra spawned
+            triangles required are accounted for in the nbXxxTriangles values. }
+         procedure EvaluateSplitPlane(const splitPlane : THmgPlane;
+                                      var nbTriangleSplit : Integer;
+                                      var nbPositiveTriangles : Integer;
+                                      var nbNegativeTriangles : Integer);
+         {: Splits a leafy node along the specified plane.<p>
+            Will trigger an exception if the node already has subnodes. Currently
+            also changes the mode from strips/fan to list. }
+         procedure PerformSplit(const splitPlane : THmgPlane;
+                                const maxTrianglesPerLeaf : Integer = MaxInt);
+
          {: BSP node split plane.<p>
             Divides space between positive and negative half-space, positive
             half-space being the one were the evaluation of an homogeneous
@@ -118,7 +139,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses VectorLists;
+uses VectorLists, SysUtils;
+
+const
+   cOwnTriangleEpsilon = 1e-5;
 
 // ------------------
 // ------------------ TBSPMeshObject ------------------
@@ -213,11 +237,12 @@ begin
                end;
             end;
             i:=j;
-         end;   
+         end;
       finally
          faceGroupList.Free;
       end;
    end;
+   DisableOpenGLArrays(mrci);
 end;
 
 // CleanupUnusedNodes
@@ -387,6 +412,274 @@ begin
          bsprci.faceGroups.Add(Self);
       if NegativeSubNodeIndex>0 then
          TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectBackToFront(bsprci);
+   end;
+end;
+
+// FindSplitPlane
+//
+function TFGBSPNode.FindSplitPlane(triangleSplitCost : Single = 1;
+                                   triangleImbalanceCost : Single = 0.5) : THmgPlane;
+var
+   i, k, n : Integer;
+   ns, np, nn : Integer;
+   evalPlane : THmgPlane;
+   bestEval, eval : Single;
+   vertices : TAffineVectorList;
+begin
+   Result:=NullHmgVector;
+   bestEval:=1e30;
+   n:=VertexIndices.Count;
+   vertices:=Owner.Owner.Vertices;
+   if n>0 then for k:=0 to n div 4 do begin
+      case Mode of
+         fgmmTriangles, fgmmFlatTriangles : begin
+            i:=Random((n div 3)-1)*3;
+            evalPlane:=PlaneMake(vertices[VertexIndices[i]],
+                                 vertices[VertexIndices[i+1]],
+                                 vertices[VertexIndices[i+2]]);
+         end;
+         fgmmTriangleStrip : begin
+            i:=Random(n-2);
+            evalPlane:=PlaneMake(vertices[VertexIndices[i]],
+                                 vertices[VertexIndices[i+1]],
+                                 vertices[VertexIndices[i+2]]);
+         end;
+      else
+         // fgmmTriangleFan
+         i:=Random(n-2);
+         evalPlane:=PlaneMake(vertices[VertexIndices[0]],
+                              vertices[VertexIndices[i]],
+                              vertices[VertexIndices[i+1]]);
+      end;
+      EvaluateSplitPlane(evalPlane, ns, np, nn);
+      eval:=ns*triangleSplitCost+Abs(np-nn)*0.5*triangleImbalanceCost;
+      if eval<bestEval then begin
+         bestEval:=eval;
+         Result:=evalPlane;
+      end;
+   end;
+end;
+
+// EvaluateSplitPlane
+//
+procedure TFGBSPNode.EvaluateSplitPlane(const splitPlane : THmgPlane;
+                                        var nbTriangleSplit : Integer;
+                                        var nbPositiveTriangles : Integer;
+                                        var nbNegativeTriangles : Integer);
+var
+   i, n, inci, lookupIdx : Integer;
+   a, b, c : Boolean;
+   vertices : TAffineVectorList;
+const
+   // case resolution lookup tables (node's tris unaccounted for)
+   cTriangleSplit : array [0..7] of Integer = (0, 1, 1, 1, 1, 1, 1, 0);
+   cPositiveTris  : array [0..7] of Integer = (0, 1, 1, 2, 1, 2, 2, 1);
+   cNegativeTris  : array [0..7] of Integer = (1, 2, 2, 1, 2, 1, 1, 0);
+begin
+   nbTriangleSplit:=0;
+   nbPositiveTriangles:=0;
+   nbNegativeTriangles:=0;
+   n:=VertexIndices.Count;
+   if n<3 then Exit;
+   vertices:=Owner.Owner.Vertices;
+   case Mode of
+      fgmmTriangleStrip, fgmmTriangleFan : begin
+         n:=n-2;
+         inci:=1;
+      end;
+   else
+      inci:=3;
+   end;
+   i:=0; while i<n do begin
+      case Mode of
+         fgmmTriangleFan : begin
+            a:=PlaneEvaluatePoint(splitPlane, vertices[VertexIndices[0]])>0;
+            b:=PlaneEvaluatePoint(splitPlane, vertices[VertexIndices[i]])>0;
+            c:=PlaneEvaluatePoint(splitPlane, vertices[VertexIndices[i+1]])>0;
+         end;
+      else
+         // fgmmTriangles, fgmmFlatTriangles, fgmmTriangleStrip
+         a:=PlaneEvaluatePoint(splitPlane, vertices[VertexIndices[i]])>0;
+         b:=PlaneEvaluatePoint(splitPlane, vertices[VertexIndices[i+1]])>0;
+         c:=PlaneEvaluatePoint(splitPlane, vertices[VertexIndices[i+2]])>0;
+      end;
+      lookupIdx:=(Integer(a) shl 2)+(Integer(b) shl 1)+Integer(c);
+      Inc(nbTriangleSplit, cTriangleSplit[lookupIdx]);
+      Inc(nbPositiveTriangles, cPositiveTris[lookupIdx]);
+      Inc(nbNegativeTriangles, cNegativeTris[lookupIdx]);
+      Inc(i, inci);
+   end;
+end;
+
+// PerformSplit
+//
+procedure TFGBSPNode.PerformSplit(const splitPlane : THmgPlane;
+                                  const maxTrianglesPerLeaf : Integer = MaxInt);
+var
+   fgPos, fgNeg : TFGBSPNode;
+   fgPosIndices, fgNegIndices : TIntegerList;
+   indices : TIntegerList;
+
+   function AddLerp(iA, iB : Integer; fB, fA : Single) : Integer;
+   begin
+      with Owner.Owner do begin
+         with Vertices do Result:=Add(VectorCombine(List[iA], List[iB], fA, fB));
+         with Normals do if Count>0 then
+            Add(VectorCombine(List[iA], List[iB], fA, fB));
+         with Colors do if Count>0 then
+            Add(VectorCombine(List[iA], List[iB], fA, fB));
+         with TexCoords do if Count>0 then
+            Add(VectorCombine(List[iA], List[iB], fA, fB));
+         with LighmapTexCoords do if Count>0 then
+            Add(TexPointCombine(List[iA], List[iB], fA, fB));
+      end;
+   end;
+
+   procedure SplitTriangleMid(strayID, strayNext, strayPrev : Integer;
+                              eNext, ePrev : Single);
+   var
+      iOpp : Integer;
+      invSum : Single;
+   begin
+      invSum:=1/(Abs(eNext)+Abs(ePrev));
+      iOpp:=AddLerp(strayNext, strayPrev, Abs(eNext)*invSum, Abs(ePrev)*invSum);
+      if eNext>0 then begin
+         fgPosIndices.Add(strayID, strayNext, iOpp);
+         fgNegIndices.Add(iOpp, strayPrev, strayID);
+      end else begin
+         fgNegIndices.Add(strayID, strayNext, iOpp);
+         fgPosIndices.Add(iOpp, strayPrev, strayID);
+      end;
+   end;
+
+   procedure SplitTriangle(strayID, strayNext, strayPrev : Integer;
+                           eStray, eNext, ePrev : Single);
+   var
+      iNext, iPrev : Integer;
+      invSum : Single;
+   begin
+      invSum:=1/(Abs(eNext)+Abs(eStray));
+      iNext:=AddLerp(strayNext, strayID, Abs(eNext)*invSum, Abs(eStray)*invSum);
+      invSum:=1/(Abs(ePrev)+Abs(eStray));
+      iPrev:=AddLerp(strayPrev, strayID, Abs(ePrev)*invSum, Abs(eStray)*invSum);
+      if eStray>0 then begin
+         fgPos.VertexIndices.Add(strayID, iNext, iPrev);
+         fgNeg.VertexIndices.Add(strayNext, strayPrev, iPrev);
+         fgNeg.VertexIndices.Add(iPrev, iNext, strayNext);
+      end else if eStray<0 then begin
+         fgNeg.VertexIndices.Add(strayID, iNext, iPrev);
+         fgPos.VertexIndices.Add(strayNext, strayPrev, iPrev);
+         fgPos.VertexIndices.Add(iPrev, iNext, strayNext);
+      end;
+   end;
+
+var
+   i, i1, i2, i3, se1, se2, se3 : Integer;
+   e1, e2, e3 : Single;
+   vertices : TAffineVectorList;
+   subSplitPlane : THmgPlane;
+begin
+   Assert((PositiveSubNodeIndex=0) and (NegativeSubNodeIndex=0));
+   ConvertToList;
+   // prepare sub nodes
+   FPositiveSubNodeIndex:=Owner.Count;
+   fgPos:=TFGBSPNode.CreateOwned(Owner);
+   fgPosIndices:=fgPos.VertexIndices;
+   FNegativeSubNodeIndex:=Owner.Count;
+   fgNeg:=TFGBSPNode.CreateOwned(Owner);
+   fgNegIndices:=fgNeg.VertexIndices;
+   // initiate split
+   Self.FSplitPlane:=splitPlane;
+   indices:=TIntegerList.Create;
+   vertices:=Owner.Owner.Vertices;
+   i:=0; while i<VertexIndices.Count do begin
+      // evaluate all points
+      i1:=VertexIndices[i];
+      e1:=PlaneEvaluatePoint(splitPlane, vertices.List[i1]);
+      i2:=VertexIndices[i+1];
+      e2:=PlaneEvaluatePoint(splitPlane, vertices.List[i2]);
+      i3:=VertexIndices[i+2];
+      e3:=PlaneEvaluatePoint(splitPlane, vertices.List[i3]);
+      if Abs(e1)<cOwnTriangleEpsilon then begin
+         e1:=0;
+         se1:=0;
+      end else se1:=Sign(e1);
+      if Abs(e2)<cOwnTriangleEpsilon then begin
+         e2:=0;
+         se2:=0;
+      end else se2:=Sign(e2);
+      if Abs(e3)<cOwnTriangleEpsilon then begin
+         e3:=0;
+         se3:=0;
+      end else se3:=Sign(e3);
+      // case disjunction
+      case se1 of
+         -1 : case se2 of
+            -1 : case se3 of
+               -1, 0 : fgNegIndices.Add(i1, i2, i3);
+               +1 : SplitTriangle(i3, i1, i2, e3, e1, e2);
+            end;
+            0 : case se3 of
+               -1, 0 : fgNegIndices.Add(i1, i2, i3);
+               +1 : SplitTriangleMid(i2, i3, i1, e3, e1);
+            end;
+            +1 : case se3 of
+               -1 : SplitTriangle(i2, i3, i1, e2, e3, e1);
+               0  : SplitTriangleMid(i3, i1, i2, e1, e2);
+               +1 : SplitTriangle(i1, i2, i3, e1, e2, e3);
+            end;
+         end;
+         0 : case se2 of
+            -1 : case se3 of
+               -1, 0 : fgNegIndices.Add(i1, i2, i3);
+               +1 : SplitTriangleMid(i1, i2, i3, e2, e3);
+            end;
+            0 : case se3 of
+               -1 : fgNegIndices.Add(i1, i2, i3);
+               0  : indices.Add(i1, i2, i3);
+               +1 : fgPosIndices.Add(i1, i2, i3);
+            end;
+            +1 : case se3 of
+               -1 : SplitTriangleMid(i1, i2, i3, e2, e3);
+               0, +1 : fgPosIndices.Add(i1, i2, i3);
+            end;
+         end;
+         +1 : case se2 of
+            -1 : case se3 of
+               -1 : SplitTriangle(i1, i2, i3, e1, e2, e3);
+               0  : SplitTriangleMid(i3, i1, i2, e1, e2);
+               +1 : SplitTriangle(i2, i3, i1, e2, e3, e1);
+            end;
+            0 : case se3 of
+               -1 : SplitTriangleMid(i2, i3, i1, e3, e1);
+               0, +1 : fgPosIndices.Add(i1, i2, i3);
+            end;
+            +1 : case se3 of
+               -1 : SplitTriangle(i3, i1, i2, e3, e1, e2);
+               0, +1 : fgPosIndices.Add(i1, i2, i3);
+            end;
+         end;
+      end;
+      Inc(i, 3);
+   end;
+   VertexIndices:=indices;
+   indices.Free;
+   if fgPos.TriangleCount=0 then begin
+      FPositiveSubNodeIndex:=0;
+      FNegativeSubNodeIndex:=FNegativeSubNodeIndex-1;
+      FreeAndNil(fgPos);
+   end;
+   if fgNeg.TriangleCount=0 then begin
+      FNegativeSubNodeIndex:=0;
+      FreeAndNil(fgNeg);
+   end;
+   if Assigned(fgPos) and (fgPos.TriangleCount>maxTrianglesPerLeaf) then begin
+      subSplitPlane:=fgPos.FindSplitPlane;
+      fgPos.PerformSplit(subSplitPlane, maxTrianglesPerLeaf);
+   end;
+   if Assigned(fgNeg) and (fgNeg.TriangleCount>maxTrianglesPerLeaf) then begin
+      subSplitPlane:=fgNeg.FindSplitPlane;
+      fgNeg.PerformSplit(subSplitPlane, maxTrianglesPerLeaf);
    end;
 end;
 
