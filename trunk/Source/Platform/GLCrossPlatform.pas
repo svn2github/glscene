@@ -18,7 +18,7 @@ unit GLCrossPlatform;
 
 interface
 
-{$include GLScene.inc}
+{$include ../GLScene.inc}
 
 {$ifdef WIN32}
 uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;
@@ -42,6 +42,16 @@ type
    TGLPicture = TPicture;
    TGLGraphic = TGraphic;
    TGLBitmap = TBitmap;
+
+{$ifdef GLS_DELPHI5}
+   EGLOSError = EWin32Error;
+{$else}
+   {$ifdef FPC}
+      EGLOSError = EWin32Error;
+   {$else}
+      EGLOSError = EOSError;
+   {$endif}
+{$endif}
 
 const
 {$ifdef WIN32}
@@ -340,12 +350,11 @@ end;
 // RaiseLastOSError
 //
 procedure RaiseLastOSError;
+var
+   e : EGLOSError;
 begin
-   {$ifdef GLS_DELPHI_6_UP}
-   SysUtils.RaiseLastOSError;
-   {$else}
-   RaiseLastWin32Error;
-   {$endif}
+   e:=EGLOSError.Create('OS Error : '+SysErrorMessage(GetLastError));
+   raise e;
 end;
 
 {$IFNDEF GLS_DELPHI5_UP}
