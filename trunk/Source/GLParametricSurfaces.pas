@@ -6,15 +6,23 @@
    The MOParametricSurface is a TMeshObject descendant that can be used
    to render parametric surfaces. The Renderer property defines if the
    surface should be rendered using OpenGL mesh evaluators (through GLU 
-   Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas 
-   routines to generate the mesh vertices and then rendered through the 
+   Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas
+   routines to generate the mesh vertices and then rendered through the
    standard TMeshObject render routine. Please note that BSplines aren't 
-   correctly handled yet in the CurvesAndSurfaces unit so the output mesh 
+   correctly handled yet in the CurvesAndSurfaces unit so the output mesh
    in GLScene rendering mode is wrong. I'll have it fixed when I know 
    what's going wrong. The GLU Nurbs and glMeshEval Beziers work well 
    though.<p>
    
+   The FGBezierSurface is a face group decendant that renders the surface
+   using mesh evaluators. The ControlPointIndices point to the mesh object
+   vertices much the same as vertex indices for other face group flavours.
+   The MinU, MaxU, MinV and MaxV properties allow for drawing specific
+   parts of the bezier surface, which can be used to blend a patch with
+   other patches.<p>
+
    <b>History : </b><font size=-1><ul>
+      <li>05/09/04 - SG - Added FGBezierSurface facegroup descendant.
       <li>20/08/03 - SG - Weighted control points.
       <li>18/07/03 - SG - Creation.
    </ul></font>
@@ -25,7 +33,7 @@ interface
 
 uses
   GLVectorFileObjects, CurvesAndSurfaces, VectorGeometry, VectorLists,
-  PersistentClasses, GLTexture, OpenGL1x;
+  PersistentClasses, GLTexture, OpenGL1x, GLState;
 
 type
 
@@ -70,7 +78,7 @@ type
       procedure BuildList(var mrci : TRenderContextInfo); override;
       procedure Prepare; override;
       procedure Clear; override;
-      {: Generates a mesh approximation of the surface defined by the 
+      {: Generates a mesh approximation of the surface defined by the
          properties below. This is used to construct the mesh when using
          Renderer = psrGLScene. If you want to render using OpenGL calls
          but would like to obtain the mesh data also use this call to
@@ -80,7 +88,7 @@ type
       //: Control points define the parametric surface.
       property ControlPoints : TAffineVectorList read FControlPoints write SetControlPoints;
       {: KnotsU and KnotsV are the knot vectors in the U and V direction. Knots
-         define the continuity of curves and how control points influence the 
+         define the continuity of curves and how control points influence the
          parametric values to build the surface. }
       property KnotsU : TSingleList read FKnotsU write SetKnotsU;
       property KnotsV : TSingleList read FKnotsV write SetKnotsV;
@@ -89,7 +97,7 @@ type
       //: OrderU and OrderV defines the curve order in the U and V direction
       property OrderU : Integer read FOrderU write FOrderU;
       property OrderV : Integer read FOrderV write FOrderV;
-      {: CountU and CountV describe the number of control points in the 
+      {: CountU and CountV describe the number of control points in the
          U and V direciton. Basically a control point width and height 
          in (u,v) space. }
       property CountU : Integer read FCountU write FCountU;
@@ -111,7 +119,63 @@ type
       property Basis : TParametricSurfaceBasis read FBasis write FBasis;
   end;
 
+  // TFGBezierSurface
+  //
+  {: A 3d bezier surface implemented through facegroups. The ControlPointIndices
+     is an index to control points stored in the MeshObject.Vertices affine
+     vector list. Similarly the TexCoordIndices point to the owner 
+     MeshObject.TexCoords, one for each control point. 
+     CountU and CountV define the width and height of the surface.
+     Resolution sets the detail level of the mesh evaluation. 
+     MinU, MaxU, MinV and MaxV define the region of the surface to be rendered, 
+     this is especially useful for blending with neighbouring patches. }
+  TFGBezierSurface = class(TFaceGroup)
+    private
+      FCountU, FCountV : Integer;
+      FControlPointIndices,
+      FTexCoordIndices : TIntegerList;
+      FResolution : Integer;
+      FMinU, FMaxU,
+      FMinV, FMaxV : Single;
+      FTempControlPoints,
+      FTempTexCoords : TAffineVectorList;
+
+    protected
+      procedure SetControlPointIndices(const Value : TIntegerList);
+      procedure SetTexCoordIndices(const Value : TIntegerList);
+
+    public
+      constructor Create; override;
+      destructor Destroy; override;
+      procedure WriteToFiler(writer : TVirtualWriter); override;
+      procedure ReadFromFiler(reader : TVirtualReader); override;
+      procedure BuildList(var mrci : TRenderContextInfo); override;
+      procedure Prepare; override;
+
+      property CountU : Integer read FCountU write FCountU;
+      property CountV : Integer read FCountV write FCountV;
+      property Resolution : Integer read FResolution write FResolution;
+      property MinU : Single read FMinU write FMinU;
+      property MaxU : Single read FMaxU write FMaxU;
+      property MinV : Single read FMinV write FMinV;
+      property MaxV : Single read FMaxV write FMaxV;
+      property ControlPointIndices : TIntegerList read FControlPointIndices write SetControlPointIndices;
+      property TexCoordIndices : TIntegerList read FTexCoordIndices write SetTexCoordIndices;
+
+  end;
+
+
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
 implementation
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// ----------------------------------------------------------------------
+
+// ------------------
+// ------------------ TMOParametricSurface ------------------
+// ------------------
 
 // Create
 //
@@ -196,7 +260,7 @@ begin
   case FRenderer of
     psrGLScene : inherited;
     psrOpenGL : begin
-      glPushAttrib(GL_ALL_ATTRIB_BITS);
+      glPushAttrib(GL_ENABLE_BIT or GL_EVAL_BIT);
       //glEnable(GL_MAP2_TEXTURE_COORD_3);
       glEnable(GL_MAP2_VERTEX_3);
       glEnable(GL_AUTO_NORMAL);
@@ -204,8 +268,8 @@ begin
 
       case FBasis of
         psbBezier : begin
-          glMapGrid2f(FResolution,0,1,FResolution,0,1);
-          //glMap2f(GL_MAP2_TEXTURE_COORD_3,0,1,3,2,0,1,6,2,@TexCoords.List[0]);
+          glMapGrid2f(FResolution,1,0,FResolution,0,1);
+          //glMap2f(GL_MAP2_TEXTURE_COORD_3,1,0,3,2,0,1,6,2,@TexCoords.List[0]);
           glMap2f(GL_MAP2_VERTEX_3,0,1,3,FCountU,0,1,3*FCountU,FCountV,@FWeightedControlPoints.List[0]);
           glEvalMesh2(GL_FILL,0,FResolution,0,FResolution);
         end;
@@ -349,5 +413,148 @@ procedure TMOParametricSurface.SetWeights(Value : TSingleList);
 begin
   FWeights.Assign(Value);
 end;
+
+
+// ------------------
+// ------------------ TFGBezierSurface ------------------
+// ------------------
+
+// Create
+//
+constructor TFGBezierSurface.Create;
+begin
+  inherited;
+  FControlPointIndices:=TIntegerList.Create;
+  FTexCoordIndices:=TIntegerList.Create;
+  FTempControlPoints:=TAffineVectorList.Create;
+  FTempTexCoords:=TAffineVectorList.Create;
+
+  // Default values
+  FCountU:=4;
+  FCountV:=4;
+  FResolution:=20;
+  FMinU:=0;
+  FMaxU:=1;
+  FMinV:=0;
+  FMaxV:=1;
+end;
+
+// Destroy
+//
+destructor TFGBezierSurface.Destroy;
+begin
+  FControlPointIndices.Free;
+  FTexCoordIndices.Free;
+  FTempControlPoints.Free;
+  FTempTexCoords.Free;
+  inherited;
+end;
+
+// WriteToFiler
+//
+procedure TFGBezierSurface.WriteToFiler(writer : TVirtualWriter);
+begin
+  inherited WriteToFiler(writer);
+  with writer do begin
+    WriteInteger(0);  // Archive Version 0
+    FControlPointIndices.WriteToFiler(writer);
+    FTexCoordIndices.WriteToFiler(writer);
+    WriteInteger(FCountU);
+    WriteInteger(FCountV);
+    WriteInteger(FResolution);
+    WriteFloat(FMinU);
+    WriteFloat(FMaxU);
+    WriteFloat(FMinV);
+    WriteFloat(FMaxV);
+  end;
+end;
+
+// ReadFromFiler
+//
+procedure TFGBezierSurface.ReadFromFiler(reader : TVirtualReader);
+var
+  archiveVersion : Integer;
+begin
+  inherited ReadFromFiler(reader);
+  archiveVersion:=reader.ReadInteger;
+  if archiveVersion=0 then with reader do begin
+    FControlPointIndices.ReadFromFiler(reader);
+    FTexCoordIndices.ReadFromFiler(reader);
+    FCountU:=ReadInteger;
+    FCountV:=ReadInteger;
+    FResolution:=ReadInteger;
+    FMinU:=ReadFloat;
+    FMaxU:=ReadFloat;
+    FMinV:=ReadFloat;
+    FMaxV:=ReadFloat;
+  end else RaiseFilerException(archiveVersion);
+end;
+
+// BuildList
+//
+procedure TFGBezierSurface.BuildList(var mrci : TRenderContextInfo);
+begin
+  if (FTempControlPoints.Count = 0)
+  or (FTempControlPoints.Count <> FControlPointIndices.Count) then
+    Exit;
+
+  AttachOrDetachLightmap(mrci);
+
+  glPushAttrib(GL_ENABLE_BIT or GL_EVAL_BIT);
+  glEnable(GL_AUTO_NORMAL);
+  glEnable(GL_NORMALIZE);
+
+  glMapGrid2f(FResolution,MaxU,MinU,FResolution,MinV,MaxV);
+
+  if FTempTexCoords.Count>0 then begin
+    glEnable(GL_MAP2_TEXTURE_COORD_3);
+    glMap2f(GL_MAP2_TEXTURE_COORD_3,
+            0,1,3,FCountU,
+            0,1,3*FCountU,FCountV,
+            @FTempTexCoords.List[0]);
+  end;
+
+  glEnable(GL_MAP2_VERTEX_3);
+  glMap2f(GL_MAP2_VERTEX_3,
+          0,1,3,FCountU,
+          0,1,3*FCountU,FCountV,
+          @FTempControlPoints.List[0]);
+
+  glEvalMesh2(GL_FILL,0,FResolution,0,FResolution);
+
+  glPopAttrib;
+end;
+
+// SetControlPointIndices
+//
+procedure TFGBezierSurface.SetControlPointIndices(const Value : TIntegerList);
+begin
+  FControlPointIndices.Assign(Value);
+end;
+
+// SetTexCoordIndices
+//
+procedure TFGBezierSurface.SetTexCoordIndices(const Value : TIntegerList);
+begin
+  FTexCoordIndices.Assign(Value);
+end;
+
+// Prepare
+//
+procedure TFGBezierSurface.Prepare;
+var
+  i,j : Integer;
+begin
+  inherited;
+  FTempControlPoints.Clear;
+  FTempTexCoords.Clear;
+  for j:=0 to CountV-1 do
+    for i:=CountU-1 downto 0 do begin
+      FTempControlPoints.Add(Owner.Owner.Vertices[ControlPointIndices[i+CountU*j]]);
+      if TexCoordIndices.Count = ControlPointIndices.Count then
+        FTempTexCoords.Add(Owner.Owner.TexCoords[TexCoordIndices[i+CountU*j]]);
+    end;
+end;
+
 
 end.
