@@ -1743,11 +1743,13 @@ type
          {: Renders to bitmap of given size, then saves it to a file.<p>
             DPI is adjusted to make the bitmap similar to the viewer. }
          procedure RenderToFile(const AFile: String; bmpWidth, bmpHeight : Integer); overload;
-         {: Create a TGLBitmap32 that is a snapshot of current OpenGL content.<p>
+         {: Creates a TGLBitmap32 that is a snapshot of current OpenGL content.<p>
             When possible, use this function instead of RenderToBitmap, it won't
             request a redraw and will be significantly faster.<p>
             The returned TGLBitmap32 should be freed by calling code. }
          function CreateSnapShot : TGLBitmap32;
+         {: Creates a VCL bitmap that is a snapshot of current OpenGL content.<p> }
+         function CreateSnapShotBitmap : TGLBitmap;
          procedure CopyToTexture(aTexture : TGLTexture); overload;
          procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer; xDest, yDest : Integer); overload;
 
@@ -6657,6 +6659,20 @@ begin
       finally
          FRenderingContext.DeActivate;
       end;
+   end;
+end;
+
+// CreateSnapShotBitmap
+//
+function TGLSceneBuffer.CreateSnapShotBitmap : TGLBitmap;
+var
+   bmp32 : TGLBitmap32;
+begin
+   bmp32:=CreateSnapShot;
+   try
+      Result:=bmp32.Create32BitsBitmap;
+   finally
+      bmp32.Free;
    end;
 end;
 

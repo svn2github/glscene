@@ -312,7 +312,7 @@ begin
 
    // Initialize data structures for a hash table
    // (each vertex will only be compared to vertices of similar hash value)
-   hashSize:=(1 shl Trunc(log2(vertices.Count*cInvVerticesPerHashKey)))-1;
+   hashSize:=(1 shl MaxInteger(0, Trunc(log2(vertices.Count*cInvVerticesPerHashKey))))-1;
    if hashSize<7 then hashSize:=7;
    if hashSize>65535 then hashSize:=65535;
    SetLength(hashTable, hashSize+1);
