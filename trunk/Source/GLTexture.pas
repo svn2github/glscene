@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/06/04 - SG - Added bmModulate blending mode
       <li>08/04/04 - EG - Added AddMaterialsFromXxxx logic
       <li>04/09/03 - EG - Added TGLShader.Enabled
       <li>02/09/03 - EG - Added TGLColor.HSVA
@@ -1117,9 +1118,10 @@ type
       bmAdditive : activates additive blending (with saturation)<br>
       bmAlphaTest50 : uses opaque blending, with alpha-testing at 50% (full
          transparency if alpha is below 0.5, full opacity otherwise)<br>
-      bmAlphaTest100 : uses opaque blending, with alpha-testing at 100% }
+      bmAlphaTest100 : uses opaque blending, with alpha-testing at 100%<br>
+      bmAlphaTest100 : uses modulation blending }
    TBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
-                    bmAlphaTest50, bmAlphaTest100);
+                    bmAlphaTest50, bmAlphaTest100, bmModulate);
 
    // TFaceCulling
    //
@@ -4052,6 +4054,11 @@ begin
             rci.GLStates.UnSetGLState(stBlend);
             rci.GLStates.SetGLState(stAlphaTest);
             glAlphaFunc(GL_GEQUAL, 1.0);
+         end;
+         bmModulate : begin
+            rci.GLStates.SetGLState(stBlend);
+            rci.GLStates.SetGLState(stAlphaTest);
+            glBlendFunc(GL_DST_COLOR, GL_ZERO);
          end;
       else
          Assert(False);
