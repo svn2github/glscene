@@ -137,10 +137,7 @@ object Form1: TForm1
       end
       item
         Name = '2'
-        Material.FrontProperties.Ambient.Color = {CDCC0C3FD7A3F03E295C0F3E0000803F}
-        Material.FrontProperties.Diffuse.Color = {7572723FF2EDED3E8B87873E0000803F}
-        Material.FrontProperties.Emission.Color = {EC51B83ECDCC4C3EEC51B83D0000803F}
-        Material.FrontProperties.Specular.Color = {EC51B83ECDCC4C3EEC51B83D0000803F}
+        Material.FrontProperties.Diffuse.Color = {6666E63E6666E63E6666E63E0000803F}
         Tag = 0
       end>
     Left = 48
