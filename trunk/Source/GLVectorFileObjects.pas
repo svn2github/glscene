@@ -90,7 +90,7 @@
                           IndexedArrays (better BuildList compatibility)
       <li>22/04/00 - EG - Fixed Material handlings in TGLFreeForm, inverted CCW/CW
                           convention for 3DS Release3
-		<li>11/04/00 - EG - Removed unnecessary code in finalization (thanks Uwe)
+		 <li>11/04/00 - EG - Removed unnecessary code in finalization (thanks Uwe)
 	   <li>09/02/00 - EG - Creation from split of GLObjects,
                           fixed class registrations and formats unregistration
 	</ul></font>
@@ -1528,7 +1528,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, GLSilhouette;
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, GLSilhouette,
+  GLBaseMeshSilhouette;
 
 var
    vVectorFileFormats : TVectorFileFormatsList;

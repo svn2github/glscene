@@ -3,6 +3,16 @@
 	Spatial Partitioning speeds up geometrical queries, like what objects does A
   overlap.<p>
 
+  Nota that the class TOctreeSpacePartition is optimized for dynamic scenes with
+  objects that are small in relation to the size of the Octree space. This from
+  Eric;
+
+  <i>The non-duplicating octree shouldn't really be used if  you have big objects,
+  and this especially if you have lots of big objects (the more objects you have
+  the less efficient the partitionning, due to the "magnifying glass" effect of
+  the non-discriminating volume).</i><p>
+
+
 	<b>History : </b><font size=-1><ul>
       <li>23/06/03 - MF - Separated functionality for Octrees and general
                           sectored space partitions so Quadtrees will be easy
