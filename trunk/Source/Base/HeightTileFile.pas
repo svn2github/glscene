@@ -57,6 +57,12 @@ type
       DefaultZ : SmallInt;
    end;
 
+const
+   cHTFHashTableSize = 1023;
+   cHTFQuadTableSize = 31;
+
+type
+
    // THeightTileFile
    //
    {: Interfaces a Tiled file }
@@ -65,14 +71,21 @@ type
          { Private Declarations }
          FFile : TFileStream;
          FHeader : THTFHeader;
-         FTileIndex : array of THeightTileInfo;
-         FHashTable : array [0..1023] of array of Integer;
+         FTileIndex : packed array of THeightTileInfo;
+         FTileMark : array of Cardinal;
+         FLastMark : Cardinal;
+         FHashTable : array [0..cHTFHashTableSize] of array of Integer;
+         FQuadTable : array [0..cHTFQuadTableSize, 0..cHTFQuadTableSize] of array of Integer;
          FCreating : Boolean;
          FHeightTile : THeightTile;
          FInBuf : array of ShortInt;
 
       protected
          { Protected Declarations }
+         function GetTiles(index : Integer) : PHeightTileInfo;
+         function QuadTableX(x : Integer) : Integer;
+         function QuadTableY(y : Integer) : Integer;
+
          procedure PackTile(aWidth, aHeight : Integer; src : PSmallIntArray);
          procedure UnPackTile(source : PShortIntArray);
 
@@ -99,15 +112,25 @@ type
                                 aData : PSmallIntArray);
 
          {: Extract a single row from the HTF file.<p>
-            This is NOT the fastest way to access HTF data. All of the row must
-            be contained in the world, otherwise result is undefined. }
+            This is NOT the fastest way to access HTF data.<br>
+            All of the row must be contained in the world, otherwise result
+            is undefined. }
          procedure ExtractRow(x, y, len : Integer; dest : PSmallIntArray);
          {: Returns the tile that contains x and y. }
          function XYTileInfo(anX, anY : Integer) : PHeightTileInfo;
+         {: Returns the height at given coordinates.<p>
+            This is definetely NOT the fastest way to access HTF data and should
+            only be used as utility function. }
+         function XYHeight(anX, anY : Integer) : SmallInt;
 
          {: Clears the list then add all tiles that overlap the rectangular area. }
          procedure TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
                                destList : TList);
+
+	      function TileCount : Integer;
+         property Tiles[index : Integer] : PHeightTileInfo read GetTiles;
+         function IndexOfTile(aTile : PHeightTileInfo) : Integer;
+         function TileCompressedSize(tileIndex : Integer) : Integer;
 
          property SizeX : Integer read FHeader.SizeX;
          property SizeY : Integer read FHeader.SizeY;
@@ -130,6 +153,31 @@ uses SysUtils, Dialogs;
 
 const
    cFileVersion = 'HTF100';
+
+// FillSmallInt
+//
+procedure FillSmallInt(p : PSmallInt; count : Integer; v : SmallInt); register;
+// EAX contains p
+// EDX contains count
+// ECX contains v
+asm
+   push edi
+   mov edi, p
+   mov ax, cx     // expand v to 32 bits
+   shl eax, 16
+   mov ax, cx
+   mov ecx, edx   // the "odd" case is handled by issueing a lone stosw
+   shr ecx, 1
+   test dl, 1
+   jz @even_nb
+   stosw
+   or ecx, ecx
+   je @fill_done
+@even_nb:
+   rep stosd
+@fill_done:
+   pop edi
+end;
 
 // ------------------
 // ------------------ THeightTileFile ------------------
@@ -156,7 +204,7 @@ end;
 //
 constructor THeightTileFile.Create(const fileName : String);
 var
-   n, i, key : Integer;
+   n, i, key, qx, qy : Integer;
 begin
    FFile:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyNone);
    // Read Header
@@ -168,19 +216,28 @@ begin
    FFile.Read(n, 4);
    SetLength(FTileIndex, n);
    FFile.Read(FTileIndex[0], SizeOf(THeightTileInfo)*n);
-   // Prepare HasTable
+   // Prepare HashTable & QuadTable
    for n:=0 to High(FTileIndex) do begin
       with FTileIndex[n] do begin
          key:=Left+(Top shl 4);
-         key:=((key and 1023)+(key shr 10)+(key shr 20)) and 1023;
+         key:=((key and cHTFHashTableSize)+(key shr 10)+(key shr 20))
+              and cHTFHashTableSize;
+         i:=Length(FHashTable[key]);
+         SetLength(FHashTable[key], i+1);
+         FHashTable[key][i]:=n;
+         for qx:=QuadTableX(left) to QuadTableX(left+width) do begin
+            for qy:=QuadTableY(top) to QuadTableY(top+height) do begin
+               i:=Length(FQuadTable[qx, qy]);
+               SetLength(FQuadTable[qx, qy], i+1);
+               FQuadTable[qx, qy][i]:=n;
+            end;
+         end;
       end;
-      i:=Length(FHashTable[key]);
-      SetLength(FHashTable[key], i+1);
-      FHashTable[key][i]:=n;
    end;
    FHeightTile.info.left:=MaxInt; // mark as not loaded
    SetLength(FHeightTile.data, TileSize*TileSize);
    SetLength(FInBuf, TileSize*(TileSize+1)*2);
+   SetLength(FTileMark, Length(FTileIndex));
 end;
 
 // Destroy
@@ -201,6 +258,20 @@ begin
    end;
    FFile.Free;
    inherited Destroy;
+end;
+
+// QuadTableX
+//
+function THeightTileFile.QuadTableX(x : Integer) : Integer;
+begin
+   Result:=(x*(cHTFQuadTableSize+1)) div (SizeX+1);
+end;
+
+// QuadTableY
+//
+function THeightTileFile.QuadTableY(y : Integer) : Integer;
+begin
+   Result:=(y*(cHTFQuadTableSize+1)) div (SizeY+1);
 end;
 
 // PackTile
@@ -427,36 +498,33 @@ var
    end;
 
 var
-   y, n : Integer;
+   y : Integer;
+   n : Byte;
    method : Byte;
 begin
-   src:=PShortInt(source);
    dest:=@FHeightTile.Data[0];
-   n:=0;
 
    with FHeightTile.info do begin
-      tileWidth:=width;
       if min=max then begin
-         for y:=0 to width*height-1 do
-            PSmallIntArray(dest)[y]:=min;
+         FillSmallInt(dest, width*height, min);
          Exit;
       end;
+      tileWidth:=width;
    end;
 
+   src:=PShortInt(source);
+   n:=0;
    for y:=0 to FHeightTile.info.height-1 do begin
       method:=src^;
       Inc(src);
       unpackWidth:=tileWidth;
       // Process left pack if any
       if (method and $80)<>0 then begin
-         PByte(@n)^:=PByte(src)^;
+         n:=PByte(src)^;
          Inc(src);
+         FillSmallInt(dest, n, DefaultZ);
          Dec(unpackWidth, n);
-         while n>0 do begin ;
-            dest^:=DefaultZ;
-            Inc(dest);
-            Dec(n);
-         end;
+         Inc(dest, n);
       end;
       // Read right pack if any
       if (method and $40)<>0 then begin
@@ -474,10 +542,9 @@ begin
          Inc(dest, unpackWidth);
       end;
       // Process right pack if any
-      while n>0 do begin ;
-         dest^:=DefaultZ;
-         Inc(dest);
-         Dec(n);
+      if n>0 then begin
+         FillSmallInt(dest, n, DefaultZ);
+         Inc(dest, n);
       end;
    end;
 end;
@@ -486,16 +553,18 @@ end;
 //
 function THeightTileFile.GetTileIndex(aLeft, aTop : Integer) : Integer;
 var
-   i, n, key : Integer;
+   i, key : Integer;
+   p : PIntegerArray;
 begin
    Result:=-1;
    key:=aLeft+(aTop shl 4);
-   key:=((key and 1023)+(key shr 10)+(key shr 20)) and 1023;
-   for i:=0 to High(FHashTable[key]) do begin
-      n:=FHashTable[key][i];
-      with FTileIndex[n] do begin
+   key:=((key and cHTFHashTableSize)+(key shr 10)+(key shr 20))
+        and cHTFHashTableSize;
+   p:=@FHashTable[key][0];
+   for i:=0 to Length(FHashTable[key])-1 do begin
+      with FTileIndex[p[i]] do begin
          if (left=aLeft) and (top=aTop) then begin
-            Result:=n;
+            Result:=p[i];
             Break;
          end;
       end;
@@ -573,15 +642,39 @@ end;
 //
 function THeightTileFile.XYTileInfo(anX, anY : Integer) : PHeightTileInfo;
 var
-   i : Integer;
+   tileList : TList;
 begin
-   Result:=nil;
-   for i:=Low(FTileIndex) to High(FTileIndex) do with FTileIndex[i] do begin
-      if (left<=anX) and (top<=anY) and (anX<left+width) and (anY<top+height) then begin
-         Result:=@FTileIndex[i];
-         Break;
+   tileList:=TList.Create;
+   try
+      TilesInRect(anX, anY, anX+1, anY+1, tileList);
+      if tileList.Count>0 then
+         Result:=PHeightTileInfo(tileList.First)
+      else Result:=nil;
+   finally
+      tileList.Free;
+   end;
+end;
+
+// XYHeight
+//
+function THeightTileFile.XYHeight(anX, anY : Integer) : SmallInt;
+var
+   tileInfo : PHeightTileInfo;
+   tile : PHeightTile;
+begin
+   // Current tile per chance?
+   with FHeightTile.info do begin
+      if (left<=anX) and (left+width>anX) and (top<=anY) and (top+height>anY) then begin
+         Result:=FHeightTile.Data[(anX-left)+(anY-top)*width];
+         Exit;
       end;
    end;
+   // Find corresponding tile if any
+   tileInfo:=XYTileInfo(anX, anY);
+   if Assigned(tileInfo) then with tileInfo^ do begin
+      tile:=GetTile(left, top);
+      Result:=tile.Data[(anX-left)+(anY-top)*width];
+   end else Result:=DefaultZ;
 end;
 
 // TilesInRect
@@ -589,13 +682,73 @@ end;
 procedure THeightTileFile.TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
                                       destList : TList);
 var
-   i : Integer;
+   i, n, qx, qy, idx : Integer;
+   p : PIntegerArray;
+   tileInfo : PHeightTileInfo;
 begin
    destList.Count:=0;
-   for i:=Low(FTileIndex) to High(FTileIndex) do with FTileIndex[i] do begin
-      if (left<=aRight) and (top<=aBottom) and (aLeft<left+width) and (aTop<top+height) then
-         destList.Add(@FTileIndex[i]);
+   // Clamp to world
+   if (aLeft>SizeX) or (aRight<0) or (aTop>SizeY) or (aBottom<0) then Exit;
+   if aLeft<0 then aLeft:=0;
+   if aRight>SizeX then aRight:=SizeX;
+   if aTop<0 then aTop:=0;
+   if aBottom>SizeY then aBottom:=SizeY;
+   // Collect tiles on quads
+   Inc(FLastMark);
+   for qy:=QuadTableY(aTop) to QuadTableY(aBottom) do begin
+      for qx:=QuadTableX(aLeft) to QuadTableX(aRight) do begin
+         n:=High(FQuadTable[qx, qy]);
+         p:=@FQuadTable[qx, qy][0];
+         for i:=0 to n do begin
+            idx:=p[i];
+            if FTileMark[idx]<>FLastMark then begin
+               FTileMark[idx]:=FLastMark;
+               tileInfo:=@FTileIndex[idx];
+               with tileInfo^ do begin
+                  if (left<=aRight) and (top<=aBottom) and (aLeft<left+width) and (aTop<top+height) then
+                     destList.Add(tileInfo);
+               end;
+            end;
+         end;
+      end;
    end;
+end;
+
+// TileCount
+//
+function THeightTileFile.TileCount : Integer;
+begin
+	Result:=Length(FTileIndex);
+end;
+
+// GetTiles
+//
+function THeightTileFile.GetTiles(index : Integer) : PHeightTileInfo;
+begin
+   Result:=@FTileIndex[index];
+end;
+
+// IndexOfTile
+//
+function THeightTileFile.IndexOfTile(aTile : PHeightTileInfo) : Integer;
+var
+   c : Cardinal;
+begin
+   c:=Cardinal(aTile)-Cardinal(@FTileIndex[0]);
+   if (c mod SizeOf(THeightTileInfo))=0 then begin
+      Result:=(c div SizeOf(THeightTileInfo));
+      if (Result<0) or (Result>High(FTileIndex)) then
+         Result:=-1;
+   end else Result:=-1;
+end;
+
+// TileCompressedSize
+//
+function THeightTileFile.TileCompressedSize(tileIndex : Integer) : Integer;
+begin
+   if tileIndex<High(FTileIndex) then
+      Result:=FTileIndex[tileIndex+1].fileOffset-FTileIndex[tileIndex].fileOffset
+   else Result:=TileIndexOffset-FTileIndex[tileIndex].fileOffset;
 end;
 
 end.
