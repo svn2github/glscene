@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/02/02 - EG - Added AnglePreservingMatrixInvert
       <li>30/01/02 - EG - New Quaternion<->Matrix code (Alex Grigny de Castro)
       <li>29/01/02 - EG - Fixed AngleLerp, added DistanceBetweenAngles (Alex Grigny de Castro)
       <li>20/01/02 - EG - Added VectorArrayAdd, ScaleFloatArray, OffsetFloatArray
@@ -752,6 +753,10 @@ procedure TransposeMatrix(var M: TMatrix); overload;
 
 //: Finds the inverse of a 4x4 matrix
 procedure InvertMatrix(var M: TMatrix);
+{: Finds the inverse of an angle preserving matrix.<p>
+   Angle preserving matrices can combine translation, rotation and isotropic
+   scaling, other matrices won't be properly inverted by this function. }  
+function AnglePreservingMatrixInvert(const mat : TMatrix) : TMatrix;
 
 {: Decompose a non-degenerated 4x4 transformation matrix into the sequence of transformations that produced it.<p>
    Modified by ml then eg, original Author: Spencer W. Thomas, University of Michigan<p>
@@ -4187,6 +4192,94 @@ begin
       AdjointMatrix(M);
       ScaleMatrix(M, 1 / det);
    end;
+end;
+
+// transpose_scale_m33
+//
+procedure transpose_scale_m33(const src : TMatrix; var dest : TMatrix; var scale : Single);
+// EAX src
+// EDX dest
+// ECX scale
+begin
+   asm
+      //   dest[0][0]:=scale*src[0][0];
+      fld   dword ptr [ecx]
+      fld   st(0)
+      fmul  dword ptr [eax]
+      fstp  dword ptr [edx]
+      //   dest[1][0]:=scale*src[0][1];
+      fld   st(0)
+      fmul  dword ptr [eax+4]
+      fstp  dword ptr [edx+16]
+      //   dest[2][0]:=scale*src[0][2];
+      fmul  dword ptr [eax+8]
+      fstp  dword ptr [edx+32]
+
+      //   dest[0][1]:=scale*src[1][0];
+      fld   dword ptr [ecx]
+      fld   st(0)
+      fmul  dword ptr [eax+16]
+      fstp  dword ptr [edx+4]
+      //   dest[1][1]:=scale*src[1][1];
+      fld   st(0)
+      fmul  dword ptr [eax+20]
+      fstp  dword ptr [edx+20]
+      //   dest[2][1]:=scale*src[1][2];
+      fmul  dword ptr [eax+24]
+      fstp  dword ptr [edx+36]
+
+      //   dest[0][2]:=scale*src[2][0];
+      fld   dword ptr [ecx]
+      fld   st(0)
+      fmul  dword ptr [eax+32]
+      fstp  dword ptr [edx+8]
+      //   dest[1][2]:=scale*src[2][1];
+      fld   st(0)
+      fmul  dword ptr [eax+36]
+      fstp  dword ptr [edx+24]
+      //   dest[2][2]:=scale*src[2][2];
+      fmul  dword ptr [eax+40]
+      fstp  dword ptr [edx+40]
+   end;
+end;
+
+// AnglePreservingMatrixInvert
+//
+function AnglePreservingMatrixInvert(const mat : TMatrix) : TMatrix; register;
+var
+   scale : Single;
+begin
+   scale:=VectorNorm(mat[0]);
+
+   // Is the submatrix A singular?
+   if Abs(scale)<EPSILON then begin
+      // Matrix M has no inverse
+      Result:=IdentityHmgMatrix;
+      Exit;
+   end else begin
+      // Calculate the inverse of the square of the isotropic scale factor
+      scale:=1.0/scale;
+   end;
+
+   // Fill in last row while CPU is busy with the division
+   Result[0][3]:=0.0;
+   Result[1][3]:=0.0;
+   Result[2][3]:=0.0;
+   Result[3][3]:=1.0;
+
+   // Transpose and scale the 3 by 3 upper-left submatrix
+   transpose_scale_m33(mat, Result, scale);
+
+   // Calculate -(transpose(A) / s*s) C
+   Result[3][0]:=-( Result[0][0]*mat[3][0]
+                   +Result[1][0]*mat[3][1]
+                   +Result[2][0]*mat[3][2]);
+   Result[3][1]:=-( Result[0][1]*mat[3][0]
+                   +Result[1][1]*mat[3][1]
+                   +Result[2][1]*mat[3][2]);
+   Result[3][2]:=-( Result[0][2]*mat[3][0]
+                   +Result[1][2]*mat[3][1]
+                   +Result[2][2]*mat[3][2]);
 end;
 
 // MatrixDecompose

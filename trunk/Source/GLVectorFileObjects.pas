@@ -1256,7 +1256,6 @@ type
          procedure PrevFrame(nbSteps : Integer = 1);
 
          function FrameCount : Integer;
-    procedure AddChild(AChild: TGLBaseSceneObject); override;
 
       published
          { Published Declarations }

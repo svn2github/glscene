@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/02/02 - Egg - Faster InvAbsoluteMatrix computation
       <li>06/02/02 - Egg - ValidateTransformations phased out
       <li>05/02/02 - Egg - Added roNoColorBuffer
       <li>03/02/02 - Egg - InfoForm registration mechanism,
@@ -412,6 +413,8 @@ type
             The current implem uses transposition(AbsoluteMatrix), which is true
             unless you're using some scaling... }
          function InvAbsoluteMatrix : TMatrix;
+         {: See InvAbsoluteMatrix. }
+         function InvAbsoluteMatrixAsAddress : PMatrix;
          {: Calculate the direction vector in absolute coordinates. }
          function AbsoluteDirection : TVector;
          {: Calculate the up vector in absolute coordinates. }
@@ -2078,8 +2081,7 @@ end;
 destructor TGLBaseSceneObject.Destroy;
 begin
    DeleteChildCameras;
-   Dispose(FInvAbsoluteMatrix);
-   Dispose(FAbsoluteMatrix);
+   FreeMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);
    FGLObjectEffects.Free;
    FGLBehaviours.Free;
    FListHandle.Free;
@@ -2354,8 +2356,10 @@ function TGLBaseSceneObject.AbsoluteMatrixAsAddress : PMatrix;
 begin
    if ocAbsoluteMatrix in FChanges then begin
       RebuildMatrix;
-      if not Assigned(FAbsoluteMatrix) then
-         New(FAbsoluteMatrix);
+      if not Assigned(FAbsoluteMatrix) then begin
+         GetMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);
+         FInvAbsoluteMatrix:=PMatrix(Integer(FAbsoluteMatrix)+SizeOf(TMatrix));
+      end;
       if Assigned(Parent) and (not (Parent is TGLSceneRootObject)) then begin
          MatrixMultiply(FLocalMatrix, TGLBaseSceneObject(Parent).AbsoluteMatrixAsAddress^,
                         FAbsoluteMatrix^);
@@ -2370,28 +2374,44 @@ end;
 //
 function TGLBaseSceneObject.InvAbsoluteMatrix : TMatrix;
 begin
+   Result:=InvAbsoluteMatrixAsAddress^;
+end;
+
+// InvAbsoluteMatrix
+//
+function TGLBaseSceneObject.InvAbsoluteMatrixAsAddress : PMatrix;
+begin
    if ocInvAbsoluteMatrix in FChanges then begin
-      if not Assigned(FInvAbsoluteMatrix) then
-         New(FInvAbsoluteMatrix);
-      FInvAbsoluteMatrix^:=AbsoluteMatrixAsAddress^;
-      InvertMatrix(FInvAbsoluteMatrix^);
+      if VectorEquals(Scale.DirectVector, XYZHmgVector) then begin
+         if not Assigned(FAbsoluteMatrix) then begin
+            GetMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);
+            FInvAbsoluteMatrix:=PMatrix(Integer(FAbsoluteMatrix)+SizeOf(TMatrix));
+         end;
+         if Parent<>nil then
+            FInvAbsoluteMatrix^:=MatrixMultiply(Parent.InvAbsoluteMatrixAsAddress^,
+                                                AnglePreservingMatrixInvert(FLocalMatrix))
+         else FInvAbsoluteMatrix^:=AnglePreservingMatrixInvert(FLocalMatrix);
+      end else begin
+         FInvAbsoluteMatrix^:=AbsoluteMatrixAsAddress^;
+         InvertMatrix(FInvAbsoluteMatrix^);
+      end;
       Exclude(FChanges, ocInvAbsoluteMatrix);
    end;
-   Result:=FInvAbsoluteMatrix^;
+   Result:=FInvAbsoluteMatrix;
 end;
 
 // AbsoluteDirection
 //
 function TGLBaseSceneObject.AbsoluteDirection : TVector;
 begin
-   Result:=VectorNormalize(AbsoluteMatrix[2]);
+   Result:=VectorNormalize(AbsoluteMatrixAsAddress^[2]);
 end;
 
 // AbsoluteUp
 //
 function TGLBaseSceneObject.AbsoluteUp : TVector;
 begin
-   Result:=VectorNormalize(AbsoluteMatrix[1]);
+   Result:=VectorNormalize(AbsoluteMatrixAsAddress^[1]);
 end;
 
 // GetAbsolutePosition
@@ -2445,14 +2465,14 @@ end;
 //
 function TGLBaseSceneObject.AbsoluteToLocal(const v : TVector) : TVector;
 begin
-   Result:=VectorTransform(v, InvAbsoluteMatrix);
+   Result:=VectorTransform(v, InvAbsoluteMatrixAsAddress^);
 end;
 
 // AbsoluteToLocal (affine)
 //
 function TGLBaseSceneObject.AbsoluteToLocal(const v : TAffineVector) : TAffineVector;
 begin
-   Result:=VectorTransform(v, InvAbsoluteMatrix);
+   Result:=VectorTransform(v, InvAbsoluteMatrixAsAddress^);
 end;
 
 // LocalToAbsolute (hmg)
@@ -2466,7 +2486,7 @@ end;
 //
 function TGLBaseSceneObject.LocalToAbsolute(const v : TAffineVector) : TAffineVector;
 begin
-   Result:=VectorTransform(v, AbsoluteMatrix);
+   Result:=VectorTransform(v, AbsoluteMatrixAsAddress^);
 end;
 
 // BarycenterAbsolutePosition
