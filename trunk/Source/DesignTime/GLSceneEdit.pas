@@ -3,6 +3,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/01/02 - Egg - Fixed controls state after drag/drop (Anton Zhuchkov)
       <li>06/08/00 - Egg - Added basic Clipboard support
       <li>14/05/00 - Egg - Added workaround for VCL DesignInfo bug (thx Nelson Chu)
       <li>28/04/00 - Egg - Fixed new objects not being immediately reco by IDE
@@ -416,6 +417,7 @@ begin
          DestinationObject:=DestinationNode.Data;
          DestinationObject.Insert(0, SourceObject);
          SourceNode.MoveTo(DestinationNode, naAddChildFirst);
+         TreeChange(Self, nil);
          FCurrentDesigner.Modified;
       end;
    end;
