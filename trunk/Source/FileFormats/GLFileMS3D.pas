@@ -1,3 +1,11 @@
+{: GLVectorFileObjects<p>
+
+	Vector File related objects for GLScene<p>
+
+	<b>History :</b><font size=-1><ul>
+	   <li>09/02/00 - EG - Added header, now self-registers
+	</ul></font>
+}
 unit GLFileMS3D;
 
 interface
@@ -20,8 +28,6 @@ implementation
 
 uses
   TypesMS3D;
-
-
 
 // FOR DEBUGGING!
 {procedure AddString(s : string);
@@ -323,4 +329,15 @@ begin
     GroupList.Free;
   end;
 end;
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+initialization
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+   RegisterVectorFileFormat('ms3d', 'MilkShape3D files', TGLMS3DVectorFile);
+
 end.
