@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 191
-  Top = 107
+  Left = 248
+  Top = 104
   Width = 438
   Height = 369
   Caption = 'Form1'
@@ -28,7 +28,7 @@ object Form1: TForm1
     Top = 8
     Width = 75
     Height = 25
-    Caption = 'Bind Shader'
+    Caption = 'Bind Shaders'
     TabOrder = 1
     OnClick = BUBindClick
   end
@@ -52,17 +52,59 @@ object Form1: TForm1
       ShowAxes = True
       Radius = 0.5
     end
+    object GLAnnulus1: TGLAnnulus
+      Position.Coordinates = {0000E04000000000000000000000803F}
+      Scale.Coordinates = {00000040000000400000004000000000}
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'LibMaterial1'
+      BottomRadius = 0.5
+      Height = 1
+      BottomInnerRadius = 0.300000011920929
+      TopInnerRadius = 0.300000011920929
+      TopRadius = 0.5
+    end
+    object GLAnnulus2: TGLAnnulus
+      Position.Coordinates = {0000E0C000000000000000000000803F}
+      Scale.Coordinates = {00000040000000400000004000000000}
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'LibMaterial2'
+      BottomRadius = 0.5
+      Height = 1
+      BottomInnerRadius = 0.300000011920929
+      TopInnerRadius = 0.300000011920929
+      TopRadius = 0.5
+    end
+    object GLCube1: TGLCube
+      Position.Coordinates = {00000000000000000000E0400000803F}
+      Scale.Coordinates = {00000040000000400000004000000000}
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'LibMaterial2'
+    end
+    object GLSphere1: TGLSphere
+      Position.Coordinates = {00000000000000000000E0C00000803F}
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'LibMaterial1'
+      Radius = 1.5
+    end
     object GLCamera1: TGLCamera
       DepthOfView = 100
       FocalLength = 50
       TargetObject = Torus1
-      Position.Coordinates = {0000E0400000A040000040400000803F}
+      Position.Coordinates = {00006041000020410000C0400000803F}
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
     Materials = <
       item
         Name = 'LibMaterial'
+        Tag = 0
+      end
+      item
+        Name = 'LibMaterial1'
+        Tag = 0
+      end
+      item
+        Name = 'LibMaterial2'
         Tag = 0
       end>
     Left = 16

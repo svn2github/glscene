@@ -1,8 +1,8 @@
 {: Simple TGLShader based multipass demo.<p>
 
    This demo uses a custom TGLShader subclass to implement the classic
-   multipass hidden lines rendering technique: first pass renders model
-   with filled triangles, second pass does the wireframe.<p>
+   multipass hidden lines rendering technique on a torus: first pass renders
+   model with filled triangles, second pass does the wireframe.<p>
 
    You'll also note the glPolygonOffset call, it displaces fragments depths
    value a little "farther away" so that surface fill depth values do not
@@ -11,7 +11,11 @@
    The axis and sphere allow you to see the limit of that simple technique:
    it actually "paints" between the lines, so you cannot use it to make
    transparent wireframed objects with hidden lines - if that thought ever
-   blossomed in your mind ;)
+   blossomed in your mind ;)<p>
+
+   Additionnal objects around the show a glow/toon edges effect achieved in two
+   passes too: the 1st pass activate lines and gives them a width, the second
+   is used to fill the surface (and clear the lines that aren't on edges). 
 }
 unit Unit1;
 
@@ -32,6 +36,10 @@ type
     BUBind: TButton;
     Sphere1: TGLSphere;
     GLMaterialLibrary1: TGLMaterialLibrary;
+    GLAnnulus1: TGLAnnulus;
+    GLAnnulus2: TGLAnnulus;
+    GLCube1: TGLCube;
+    GLSphere1: TGLSphere;
     procedure BUBindClick(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -56,6 +64,17 @@ type
    THiddenLineShader = class (TGLShader)
       private
          BackgroundColor, LineColor : TColorVector;
+         PassCount : Integer;
+      public
+         procedure DoApply(var rci : TRenderContextInfo); override;
+         function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
+   end;
+
+   TOutLineShader = class (TGLShader)
+      private
+         BackgroundColor, LineColor : TColorVector;
+         OutlineSmooth, Lighting : Boolean;
+         OutlineWidth, Oldlinewidth : Single;
          PassCount : Integer;
       public
          procedure DoApply(var rci : TRenderContextInfo); override;
@@ -108,19 +127,89 @@ begin
    end;
 end;
 
+procedure TOutLineShader.DoApply(var rci : TRenderContextInfo);
+begin
+   PassCount:=1;
+   glPushAttrib(GL_ENABLE_BIT);
+   glDisable(GL_LIGHTING);
+
+   if outlineSmooth then begin
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+      glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+      glEnable(GL_LINE_SMOOTH);
+   end else glDisable(GL_LINE_SMOOTH);
+
+   glGetFloatv(GL_LINE_WIDTH,@oldlinewidth);
+   glLineWidth(OutLineWidth);
+   glPolygonMode(GL_BACK, GL_LINE);
+   glCullFace(GL_FRONT);
+   glDepthFunc(GL_LEQUAL);
+   glColor3fv(@lineColor);
+end;
+
+function TOutLineShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
+begin
+   case PassCount of
+      1 : begin
+         PassCount:=2;
+         if lighting then
+           glEnable(GL_LIGHTING)
+         else glColor3fv(@backGroundColor);
+         glDepthFunc(GL_LESS);
+         glCullFace(GL_BACK);
+         glPolygonMode(GL_BACK, GL_FILL);
+
+         Result:=True;
+      end;
+      2 : begin
+         glPopAttrib;
+         glLineWidth(oldLineWidth);
+         Result:=False;
+      end;
+   else
+      Assert(False);
+      Result:=False;
+   end;
+end;
+
 procedure TForm1.BUBindClick(Sender: TObject);
 var
-   shader : THiddenLineShader;
+   shader1 : THiddenLineShader;
+   shader2 ,shader3: TOutLineShader;
+
 begin
    BUBind.Enabled:=False;
 
-   // instantiates our shader, adjusts colors
-   shader:=THiddenLineShader.Create(Self);
-   shader.BackgroundColor:=ConvertWinColor(GLSceneViewer1.Buffer.BackgroundColor);
-   shader.LineColor:=clrBlue;
+   // instantiate our shaders
+   
+   shader1:=THiddenLineShader.Create(Self);
+   shader1.BackgroundColor:=ConvertWinColor(GLSceneViewer1.Buffer.BackgroundColor);
+   shader1.LineColor:=clrBlue;
 
-   // binds the shader to the 1st material (the one used by the torus)
-   GLMaterialLibrary1.Materials[0].Shader:=shader;
+   shader2:=TOutLineShader.Create(Self);
+   with shader2 do begin
+      BackgroundColor:=ConvertWinColor(GLSceneViewer1.Buffer.BackgroundColor);
+      Outlinesmooth:=true;
+      OutLineWidth:=2;
+      Lighting:=false;
+      LineColor:=clrBlack;
+   end;
+
+   shader3:=TOutLineShader.Create(Self);
+   with shader3 do begin
+      BackgroundColor:=ConvertWinColor(GLSceneViewer1.Buffer.BackgroundColor);
+      Outlinesmooth:=false;
+      OutLineWidth:=4;
+      Lighting:=true;
+      LineColor:=clrRed;
+   end;
+
+   // binds the shaders to the materials
+   GLMaterialLibrary1.Materials[0].Shader:=shader1;
+   GLMaterialLibrary1.Materials[1].Shader:=shader2;
+   GLMaterialLibrary1.Materials[2].Shader:=shader3;
+
 end;
 
 //
