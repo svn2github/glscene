@@ -3953,7 +3953,7 @@ begin
                         obj:=TGLBaseSceneObject(FChildren.List[i]);
                         if obj.Visible then begin
                            objList.Add(obj);
-                           distList.Add(obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                           distList.Add(1+obj.BarycenterSqrDistanceTo(rci.cameraPosition));
                         end;
                      end;
                   osRenderNearestFirst :
@@ -3961,7 +3961,7 @@ begin
                         obj:=TGLBaseSceneObject(FChildren.List[i]);
                         if obj.Visible then begin
                            objList.Add(obj);
-                           distList.Add(-obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                           distList.Add(-1-obj.BarycenterSqrDistanceTo(rci.cameraPosition));
                         end;
                      end;
                else
