@@ -147,6 +147,14 @@ begin
       if renderSelf and (VectorDotProduct(VectorSubtract(rci.cameraPosition, AbsolutePosition), AbsoluteDirection)>0) then begin
 
          // "Render" stencil mask
+         if spoScissor in ShadowOptions then begin
+            sr:=ScreenRect;
+            InflateGLRect(sr, 1, 1);
+            IntersectGLRect(sr, GLRect(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy));
+            glScissor(sr.Left, sr.Top, sr.Right-sr.Left, sr.Bottom-sr.Top);
+            glEnable(GL_SCISSOR_TEST);
+         end;
+
          if (spoUseStencil in ShadowOptions) then begin
             glClearStencil(0);
             glEnable(GL_STENCIL_TEST);
@@ -164,17 +172,6 @@ begin
             glPushAttrib(GL_ENABLE_BIT);
             glPushMatrix;
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-
-            if spoScissor in ShadowOptions then begin
-               sr:=ScreenRect;
-               InflateGLRect(sr, 1, 1);
-               if sr.Left<0 then sr.Left:=0;
-               if sr.Top<0 then sr.Top:=0;
-               if sr.Right>rci.viewPortSize.cx then sr.Right:=rci.viewPortSize.cx;
-               if sr.Bottom>rci.viewPortSize.cy then sr.Bottom:=rci.viewPortSize.cy;
-               glScissor(sr.Left, sr.Top, sr.Right, sr.Bottom);
-               glEnable(GL_SCISSOR_TEST);
-            end;
 
             shadowMat:=MakeShadowMatrix(AbsolutePosition, AbsoluteDirection,
                                         ShadowedLight.AbsolutePosition);
@@ -228,6 +225,9 @@ begin
 
          if spoUseStencil in ShadowOptions then begin
             glDisable(GL_STENCIL_TEST);
+         end;
+         if spoScissor in ShadowOptions then begin
+            glDisable(GL_SCISSOR_TEST);
          end;
 
       end;
