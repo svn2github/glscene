@@ -5480,8 +5480,6 @@ begin
    rci.renderDPI:=aBuffer.RenderDPI;
    rci.modelViewMatrix:=@aBuffer.FModelViewMatrix;
    rci.currentStates:=aBuffer.FCurrentStates;
-   rci.materialLibrary:=nil;
-   rci.fogDisabledCounter:=0;
    rci.proxySubObject:=False;
    rci.ignoreMaterials:=(roNoColorBuffer in aBuffer.ContextOptions);
    if rci.ignoreMaterials then
