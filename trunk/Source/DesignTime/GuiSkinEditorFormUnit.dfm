@@ -5,7 +5,7 @@ object GUISkinEditor: TGUISkinEditor
   BorderStyle = bsToolWindow
   Caption = 'Skin Editor'
   ClientHeight = 351
-  ClientWidth = 854
+  ClientWidth = 804
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

@@ -942,7 +942,6 @@ Var
   Host : TGLBaseComponent;
   Index : Integer;
   IndexedChild : TGLBaseComponent;
-  CurrentHostStartIndex : Integer;
   RestartedLoop : Boolean;
 
 Begin
