@@ -13,6 +13,7 @@ package GLScene6;
 {$R '..\Source\GLFireFX.dcr'}
 {$R '..\Source\GLNavigator.dcr'}
 {$R '..\Source\GLHeightData.dcr'}
+{$R '..\Source\GLTerrainRenderer.dcr'}
 {$R '..\Source\GLBitmapFont.dcr'}
 {$R '..\Source\AVIRecorder.dcr'}
 {$R '..\Source\GLThorFX.dcr'}

@@ -12,6 +12,7 @@ package GLScene4;
 {$R '..\Source\GLExtrusion.dcr'}
 {$R '..\Source\GLFireFX.dcr'}
 {$R '..\Source\GLNavigator.dcr'}
+{$R '..\Source\GLTerrainRenderer.dcr'}
 {$R '..\Source\GLHeightData.dcr'}
 {$R '..\Source\GLBitmapFont.dcr'}
 {$R '..\Source\AVIRecorder.dcr'}
