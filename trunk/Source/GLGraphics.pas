@@ -828,46 +828,44 @@ type
    T2Pixel32 = packed array [0..1] of TGLPixel32;
    P2Pixel32 = ^T2Pixel32;
 
-   procedure ProcessRow(pDest : PGLPixel32; pLineA, pLineB : P2Pixel32; n : Integer);
-{   asm     // MMX version slightly faster, but not by much...
-      push        ebx
-
-      mov         ebx, n
-
-      pxor        mm0, mm0
+   procedure ProcessRow3DNow(pDest : PGLPixel32; pLineA, pLineB : P2Pixel32; n : Integer);
+   asm     // 3DNow! version 30% faster
+      db $0F,$EF,$C0           /// pxor        mm0, mm0          // set mm0 to [0, 0, 0, 0]
 
 @@Loop:
-      movq        mm1, [edx]
-      movq        mm3, mm1
-      movq        mm2, [ecx]
-      movq        mm4, mm2
+      db $0F,$0D,$81,$00,$01,$00,$00/// prefetch    [ecx+256]
 
-      punpcklbw   mm1, mm0
-      punpckhbw   mm3, mm0
+      db $0F,$6F,$0A           /// movq        mm1, [edx]
+      db $0F,$6F,$11           /// movq        mm2, [ecx]
 
-      punpcklbw   mm2, mm0
-      punpckhbw   mm4, mm0
+      db $0F,$6F,$D9           /// movq        mm3, mm1
+      db $0F,$6F,$E2           /// movq        mm4, mm2
 
-      paddw       mm3, mm4
-      paddw       mm1, mm2
-      paddw       mm1, mm3
+      db $0F,$60,$C8           /// punpcklbw   mm1, mm0          // promote to 16 bits and add LineA pixels
+      db $0F,$68,$D8           /// punpckhbw   mm3, mm0
+      db $0F,$FD,$CB           /// paddw       mm1, mm3
+
+      db $0F,$60,$D0           /// punpcklbw   mm2, mm0          // promote to 16 bits and add LineB pixels
+      db $0F,$68,$E0           /// punpckhbw   mm4, mm0
+      db $0F,$FD,$D4           /// paddw       mm2, mm4
+
+      db $0F,$FD,$CA           /// paddw       mm1, mm2          // add LineA and LineB pixels
+
+      db $0F,$71,$D1,$02       /// psrlw       mm1, 2            // divide by 4
+      db $0F,$67,$C9           /// packuswb    mm1, mm1          // reduce to 8 bits and store point
+      db $0F,$7E,$08           /// movd        [eax], mm1
 
       add         edx, 8
       add         ecx, 8
-
-      psrlw       mm1, 2
-      packuswb    mm1, mm1
-      movd        [eax], mm1
-
       add         eax, 4
 
-      dec         ebx
+      dec         [n]
       jnz         @@Loop
 
-      emms
+      db $0F,$0E               /// femms
+   end;
 
-      pop         ebx
-   end;//}
+   procedure ProcessRowPascal(pDest : PGLPixel32; pLineA, pLineB : P2Pixel32; n : Integer);
    var
       i : Integer;
    begin
@@ -893,11 +891,20 @@ begin
    pDest:=@FData[0];
    pLineA:=@FData[0];
    pLineB:=@FData[Width];
-   for y:=0 to h2-1 do begin
-      ProcessRow(pDest, pLineA, pLineB, w2);
-      Inc(pDest, w2);
-      Inc(pLineA, Width);
-      Inc(pLineB, Width);
+   if vSIMD=1 then begin
+      for y:=0 to h2-1 do begin
+         ProcessRow3DNow(pDest, pLineA, pLineB, w2);
+         Inc(pDest, w2);
+         Inc(pLineA, Width);
+         Inc(pLineB, Width);
+      end;
+   end else begin
+      for y:=0 to h2-1 do begin
+         ProcessRowPascal(pDest, pLineA, pLineB, w2);
+         Inc(pDest, w2);
+         Inc(pLineA, Width);
+         Inc(pLineB, Width);
+      end;
    end;
    FWidth:=w2;
    FHeight:=h2;
