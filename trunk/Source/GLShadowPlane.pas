@@ -126,6 +126,8 @@ procedure TGLShadowPlane.DoRender(var rci : TRenderContextInfo;
 var
    oldProxySubObject, oldIgnoreMaterials : Boolean;
    curMat, shadowMat : TMatrix;
+   x, y, d : Single;
+   i : Integer;
 begin
    if FRendering then Exit;
    FRendering:=True;
@@ -137,10 +139,10 @@ begin
 
          // "Render" stencil mask
          if (spoUseStencil in ShadowOptions) then begin
-            glClearStencil(1);
+            glClearStencil(0);
             glEnable(GL_STENCIL_TEST);
-            glStencilFunc(GL_ALWAYS, 0, 0);
-            glStencilOp(GL_ZERO, GL_KEEP, GL_ZERO);
+            glStencilFunc(GL_ALWAYS, 1, 1);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
          end;
 
          Material.Apply(rci);
@@ -172,13 +174,14 @@ begin
             glEnable(GL_POLYGON_OFFSET_FILL);
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_LIGHTING);
+
             glColor4fv(ShadowColor.AsAddress);
 
             if (spoUseStencil in ShadowOptions) then begin
                glEnable(GL_BLEND);
                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-               glStencilFunc(GL_NOTEQUAL, 1, 1);
-               glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+               glStencilFunc(GL_EQUAL, 1, 1);
+               glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
             end;
 
             if Assigned(FShadowingObject) then begin
