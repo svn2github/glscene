@@ -1,0 +1,125 @@
+package GLScene4;
+
+{$R *.RES}
+{$R '..\Source\GLScene.dcr'}
+{$R '..\Source\Base\AsyncTimer.dcr'}
+{$R '..\Source\Base\Joystick.dcr'}
+{$R '..\Source\Base\ScreenSaver.dcr'}
+{$R '..\Source\GLCadencer.dcr'}
+{$R '..\Source\GLObjects.dcr'}
+{$R '..\Source\GLCollision.dcr'}
+{$R '..\Source\GLSound.dcr'}
+{$R '..\Source\GLExtrusion.dcr'}
+{$R '..\Source\GLFireFX.dcr'}
+{$R '..\Source\GLNavigator.dcr'}
+{$R '..\Source\GLTerrainRenderer.dcr'}
+{$R '..\Source\GLHeightData.dcr'}
+{$R '..\Source\GLBitmapFont.dcr'}
+{$R '..\Source\AVIRecorder.dcr'}
+{$R '..\Source\GLThorFX.dcr'}
+{$R '..\Source\GLzBuffer.dcr'}
+{$R '..\Source\GLTimeEventsMGR.dcr'}
+{$ALIGN ON}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'GLScene - OpenGL 3D library'}
+{$IMPLICITBUILD ON}
+
+requires
+  Vcl40;
+
+contains
+  GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
+  GLMisc in '..\Source\GLMisc.pas',
+  GLScene in '..\Source\GLScene.pas',
+  GLStrings in '..\Source\GLStrings.pas',
+  GLTexture in '..\Source\GLTexture.pas',
+  GLScreen in '..\Source\GLScreen.pas',
+  Geometry in '..\Source\Base\Geometry.pas',
+  GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
+  PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
+  PlugInManager in '..\Source\PlugIn\PlugInManager.pas',
+  Info in '..\Source\DesignTime\Info.pas' {InfoForm},
+  PlugInManagerPropEditor in '..\Source\PlugIn\PlugInManagerPropEditor.pas' {PlugInManagerPropForm},
+  Utils3DS in '..\Source\FileFormats\Utils3DS.pas',
+  File3DS in '..\Source\FileFormats\File3DS.pas',
+  FileMD2 in '..\Source\FileFormats\FileMD2.pas',
+  TypesMD2 in '..\Source\FileFormats\TypesMD2.pas',
+  Types3DS in '..\Source\FileFormats\Types3DS.pas',
+  Const3DS in '..\Source\FileFormats\Const3DS.pas',
+  AsyncTimer in '..\Source\Base\AsyncTimer.pas',
+  FVectorEditor in '..\Source\DesignTime\FVectorEditor.pas' {VectorEditorForm},
+  OpenGL12 in '..\Source\Base\OpenGL12.pas',
+  GLVectorFileObjects in '..\Source\GLVectorFileObjects.pas',
+  Joystick in '..\Source\Base\Joystick.pas',
+  GLBehaviours in '..\Source\GLBehaviours.pas',
+  ScreenSaver in '..\Source\Base\ScreenSaver.pas',
+  GLCadencer in '..\Source\GLCadencer.pas',
+  RegisterXCollection in '..\Source\Base\RegisterXCollection.pas',
+  FXCollectionEditor in '..\Source\DesignTime\FXCollectionEditor.pas' {XCollectionEditor},
+  XCollection in '..\Source\Base\XCollection.pas',
+  GLParticles in '..\Source\GLParticles.pas',
+  GLObjects in '..\Source\GLObjects.pas',
+  GLCollision in '..\Source\GLCollision.pas',
+  Spline in '..\Source\Base\Spline.pas',
+  GLSoundFileObjects in '..\Source\GLSoundFileObjects.pas',
+  GLSound in '..\Source\GLSound.pas',
+  GLMesh in '..\Source\GLMesh.pas',
+  GLGraph in '..\Source\GLGraph.pas',
+  VectorLists in '..\Source\Base\VectorLists.pas',
+  TypesSTL in '..\Source\FileFormats\TypesSTL.pas',
+  Keyboard in '..\Source\Base\Keyboard.pas',
+  GLExtrusion in '..\Source\GLExtrusion.pas',
+  GLFireFX in '..\Source\GLFireFX.pas',
+  GLPortal in '..\Source\GLPortal.pas',
+  GLGraphics in '..\Source\GLGraphics.pas',
+  GLMultiPolygon in '..\Source\GLMultiPolygon.pas',
+  GLFileOBJ in '..\Source\FileFormats\GLFileOBJ.pas',
+  GLNavigator in '..\Source\GLNavigator.pas',
+  GLMovement in '..\Source\GLMovement.pas',
+  GLSkydome in '..\Source\GLSkydome.pas',
+  GLHUDObjects in '..\Source\GLHUDObjects.pas',
+  XOpenGL in '..\Source\Base\XOpenGL.pas',
+  GLHeightData in '..\Source\GLHeightData.pas',
+  GLBitmapFont in '..\Source\GLBitmapFont.pas',
+  GLTerrainRenderer in '..\Source\GLTerrainRenderer.pas',
+  AVIRecorder in '..\Source\AVIRecorder.pas',
+  VFW in '..\Source\VideoAPIs\vfw.pas',
+  GLThorFX in '..\Source\GLThorFX.pas',
+  PersistentClasses in '..\Source\Base\PersistentClasses.pas',
+  VectorTypes in '..\Source\Base\VectorTypes.pas',
+  GeometryBB in '..\Source\Base\GeometryBB.pas',
+  Polynomials in '..\Source\Base\Polynomials.pas',
+  GLContext in '..\Source\GLContext.pas',
+  GLWin32Context in '..\Source\Platform\GLWin32Context.pas',
+  GLCrossPlatform in '..\Source\Platform\GLCrossPlatform.pas',
+  GLParticleFX in '..\Source\GLParticleFX.pas',
+  GLzBuffer in '..\Source\GLzBuffer.pas',
+  GLMirror in '..\Source\GLMirror.pas',
+  GLWin32Viewer in '..\Source\Platform\GLWin32Viewer.pas',
+  GLROAMPatch in '..\Source\GLROAMPatch.pas',
+  HeightTileFile in '..\Source\Base\HeightTileFile.pas',
+  GLSpaceText in '..\Source\GLSpaceText.pas',
+  GLTimeEventsMGR in '..\Source\GLTimeEventsMGR.pas',
+  Octree in '..\Source\Base\Octree.pas',
+  GLExplosionFX in '..\Source\GLExplosionFX.pas';
+
+end.
