@@ -3019,7 +3019,7 @@ end;
 //
 procedure TMeshObject.EnableLightMapArray(var mrci : TRenderContextInfo);
 begin
-   if not mrci.ignoreMaterials then begin
+   if GL_ARB_multitexture and (not mrci.ignoreMaterials) then begin
       Assert(FArraysDeclared);
       if not FLightMapArrayEnabled then begin
          glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -3034,7 +3034,7 @@ end;
 //
 procedure TMeshObject.DisableLightMapArray(var mrci : TRenderContextInfo);
 begin
-   if FLightMapArrayEnabled then begin
+   if GL_ARB_multitexture and FLightMapArrayEnabled then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
       glDisable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE0_ARB);
