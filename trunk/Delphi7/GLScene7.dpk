@@ -208,6 +208,7 @@ contains
   GLPhongShader in '..\Source\Shaders\GLPhongShader.pas',
   GLTrail in '..\Source\GLTrail.pas',
   GLScriptBase in '..\Source\GLScriptBase.pas',
-  GLFileMD5 in '..\Source\FileFormats\GLFileMD5.pas';
+  GLFileMD5 in '..\Source\FileFormats\GLFileMD5.pas',
+  GLSpatialPartitioning in '..\Source\GLSpatialPartitioning.pas';
 
 end.
