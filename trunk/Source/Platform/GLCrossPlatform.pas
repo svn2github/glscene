@@ -44,9 +44,9 @@ procedure InformationDlg(const msg : String);
 
 procedure RaiseLastOSError;
 
-{$IFNDEF DELPHI5_UP}
+{$IFNDEF GLS_DELPHI5_UP}
 procedure FreeAndNil(var anObject);
-{$ENDIF DELPHI5_UP}
+{$ENDIF GLS_DELPHI5_UP}
 
 {: Number of pixels per logical inch along the screen width for the device.<p>
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
@@ -122,7 +122,7 @@ begin
    {$endif}
 end;
 
-{$IFNDEF DELPHI5_UP}
+{$IFNDEF GLS_DELPHI5_UP}
 // FreeAndNil
 //
 procedure FreeAndNil(var anObject);
@@ -133,7 +133,7 @@ begin
   TObject(anObject):=nil;  // clear the reference before destroying the object
   buf.Free;
 end;
-{$ENDIF DELPHI5_UP}
+{$ENDIF GLS_DELPHI5_UP}
 
 // GetDeviceLogicalPixelsX
 //
