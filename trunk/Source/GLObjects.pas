@@ -1508,8 +1508,8 @@ end;
 //
 procedure TGLSprite.BuildList(var rci : TRenderContextInfo);
 var
-	vx, vy, vx1, vy1 : TAffineVector;
-	i : Integer;
+   vx, vy : TAffineVector;
+   i : Integer;
    w, h, c, s : Single;
    mat : TMatrix;
    u0, v0, u1, v1 : Integer;
@@ -1519,50 +1519,43 @@ begin
    if NoZWrite then
       glDepthMask(False);
    glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
-	glBegin(GL_QUADS);
-		// extraction of the "vecteurs directeurs de la matrice"
-		// (dunno how they are named in english)
-      w:=FWidth*0.5;
-      h:=FHeight*0.5;
-   	vx[0]:=mat[0][0];  vy[0]:=mat[0][1];
-   	vx[1]:=mat[1][0];  vy[1]:=mat[1][1];
-   	vx[2]:=mat[2][0];  vy[2]:=mat[2][1];
-      ScaleVector(vx, w/VectorLength(vx));
-      ScaleVector(vy, h/VectorLength(vy));
-      if FMirrorU then begin
-        u0:=1;
-        u1:=0;
-      end else begin
-        u0:=0;
-        u1:=1;
-      end;
-      if FMirrorV then begin
-        v0:=1;
-        v1:=0;
-      end else begin
-        v0:=0;
-        v1:=1;
-      end;
-      if FRotation=0 then begin
-         // no rotation, use fast, direct projection
-   		xglTexCoord2f(u1, v1);  glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
-	   	xglTexCoord2f(u0, v1);  glVertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
-		   xglTexCoord2f(u0, v0);  glVertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
-   		xglTexCoord2f(u1, v0);  glVertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
-      end else begin
-         // we need to compose main vectors...
-         SinCos(FRotation*cPIdiv180, s, c);
-   		for i:=0 to 2 do begin
-            vx1[i]:=vx[i]+vy[i];
-            vy1[i]:=vy[i]-vx[i];
-         end;
-         // ...and apply rotation... way slower
-   		xglTexCoord2f(u1, v1);  glVertex3f( c*vx1[0]+s*vy1[0], c*vx1[1]+s*vy1[1], c*vx1[2]+s*vy1[2]);
-	   	xglTexCoord2f(u0, v1);  glVertex3f(-s*vx1[0]+c*vy1[0],-s*vx1[1]+c*vy1[1],-s*vx1[2]+c*vy1[2]);
-		   xglTexCoord2f(u0, v0);  glVertex3f(-c*vx1[0]-s*vy1[0],-c*vx1[1]-s*vy1[1],-c*vx1[2]-s*vy1[2]);
-   		xglTexCoord2f(u1, v0);  glVertex3f( s*vx1[0]-c*vy1[0], s*vx1[1]-c*vy1[1], s*vx1[2]-c*vy1[2]);
-      end;
-	glEnd;
+   // extraction of the "vecteurs directeurs de la matrice"
+   // (dunno how they are named in english)
+   w:=FWidth*0.5;
+   h:=FHeight*0.5;
+   vx[0]:=mat[0][0];  vy[0]:=mat[0][1];
+   vx[1]:=mat[1][0];  vy[1]:=mat[1][1];
+   vx[2]:=mat[2][0];  vy[2]:=mat[2][1];
+   ScaleVector(vx, w/VectorLength(vx));
+   ScaleVector(vy, h/VectorLength(vy));
+   if FMirrorU then begin
+      u0:=1;
+      u1:=0;
+   end else begin
+      u0:=0;
+      u1:=1;
+   end;
+   if FMirrorV then begin
+      v0:=1;
+      v1:=0;
+   end else begin
+      v0:=0;
+      v1:=1;
+   end;
+
+   if FRotation <> 0 then begin
+     glPushMatrix;
+     glRotatef(FRotation,mat[0][2],mat[1][2],mat[2][2]);
+   end;
+   glBegin(GL_QUADS);
+      xglTexCoord2f(u1, v1);  glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
+      xglTexCoord2f(u0, v1);  glVertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
+      xglTexCoord2f(u0, v0);  glVertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
+      xglTexCoord2f(u1, v0);  glVertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
+   glEnd;
+   if FRotation <> 0 then
+     glPopMatrix;
+
    if NoZWrite then
       glDepthMask(True);
 end;
