@@ -5706,7 +5706,7 @@ var
    i, n : Integer;
 begin
    Clear;
-   Assert(ReadCRLFString(aStream)=cAAFHeader);
+   if ReadCRLFString(aStream)<>cAAFHeader then Assert(False);
    n:=StrToInt(ReadCRLFString(aStream));
    for i:=0 to n-1 do
       Add.AsString:=ReadCRLFString(aStream);
