@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/06/03 - MF - Fixed TVFSpring.SetRestlengthToCurrent
       <li>24/07/02 - EG - Added TVCCylinder
       <li>18/07/02 - EG - Improved forces & constraints
       <li>23/06/02 - EG - Stricter encapsulation, fixed some leaks,
@@ -258,6 +259,7 @@ type
    end;
 
    TVCStick = class;
+   TVFSpring = class;
 
    // TVerletAssembly
    //
@@ -295,6 +297,7 @@ type
                                   const aRadius : Single = 0;
                                   const aWeight : Single=1) : TVerletNode;
          function CreateStick(aNodeA, aNodeB : TVerletNode) : TVCStick;
+         function CreateSpring(aNodeA, aNodeB : TVerletNode; Strength, Dampening : single) : TVFSpring;
 
          procedure Initialize; dynamic;
          function Progress(const deltaTime, newTime : Double) : Integer; virtual;
@@ -967,6 +970,20 @@ begin
    Result.SetRestLengthToCurrent;
 end;
 
+// CreateSpring
+//
+function TVerletAssembly.CreateSpring(aNodeA, aNodeB: TVerletNode;
+  Strength, Dampening: single): TVFSpring;
+begin
+   Result:=TVFSpring.Create(Self);
+   Result.NodeA:=aNodeA;
+   Result.NodeB:=aNodeB;
+   Result.Strength := Strength;
+   Result.Damping := Dampening;
+   Result.SetRestLengthToCurrent;
+end;
+
+
 // Initialize
 //
 procedure TVerletAssembly.Initialize;
@@ -1094,7 +1111,7 @@ end;
 //
 procedure TVFSpring.SetRestLengthToCurrent;
 begin
-   RestLength:=VectorDistance(NodeA.Location, NodeA.Location);
+   RestLength:=VectorDistance(NodeA.Location, NodeB.Location);
 end;
 
 // ------------------
@@ -1260,5 +1277,4 @@ begin
       VectorLerp(proj, aNode.Location, FRadius*RSqrt(dist2), aNode.FLocation);
    end;
 end;
-
 end.
