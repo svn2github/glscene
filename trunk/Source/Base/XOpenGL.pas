@@ -57,6 +57,13 @@ procedure xglPushState;
 {: Restores XOpenGL State from the stack. }
 procedure xglPopState;
 
+{: Whenever called, 2nd texture units changes will be forbidden to xgl.<p>
+   Use this function when you're using the 2nd texture unit for your own
+   purposes and don't want XOpenGL to alter it. }
+procedure xglForbidSecondTextureUnit;
+{: Allow XOpenGL to use the second texture unit again. } 
+procedure xglAllowSecondTextureUnit;
+
 {$ifdef MULTITHREADOPENGL}
 threadvar
 {$else}
@@ -64,6 +71,7 @@ var
 {$endif}
 
    xglMapTexCoordMode : TMapTexCoordMode;
+   vSecondTextureUnitForbidden : Boolean;
 
    // Explicit texture coordinates specification
    xglTexCoord2f: procedure(s, t: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -418,6 +426,20 @@ begin
    SetLength(vStateStack, i);
 end;
 
+// xglForbidSecondTextureUnit
+//
+procedure xglForbidSecondTextureUnit;
+begin
+   vSecondTextureUnitForbidden:=True;
+end;
+
+// xglAllowSecondTextureUnit
+//
+procedure xglAllowSecondTextureUnit;
+begin
+   vSecondTextureUnitForbidden:=False;
+end;
+
 // xglMapTexCoordToNull
 //
 procedure xglMapTexCoordToNull;
@@ -482,6 +504,10 @@ end;
 //
 procedure xglMapTexCoordToSecond;
 begin
+   if vSecondTextureUnitForbidden then begin
+      xglMapTexCoordToNull;
+      Exit;
+   end;
    if vUpdCount<>0 then
       vUpdNewMode:=mtcmSecond
    else if xglMapTexCoordMode<>mtcmSecond then begin
@@ -513,6 +539,10 @@ end;
 //
 procedure xglMapTexCoordToDual;
 begin
+   if vSecondTextureUnitForbidden then begin
+      xglMapTexCoordToMain;
+      Exit;
+   end;
    if vUpdCount<>0 then
       vUpdNewMode:=mtcmDual
    else if xglMapTexCoordMode<>mtcmDual then begin
