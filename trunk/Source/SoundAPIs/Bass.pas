@@ -1,24 +1,15 @@
 {
-  BASS 1.6a Multimedia Library
-  -----------------------------
-  (c) 1999-2002 Ian Luck.
+  BASS 2.0 Multimedia Library
+  ---------------------------
+  (c) 1999-2003 Ian Luck.
   Please report bugs/suggestions/etc... to bass@un4seen.com
 
-  Questions, suggestions, etc. regarding the Delphi API
-  can be sent to magicrt@hotmail.com
-
   See the BASS.CHM file for more complete documentation
-
-  NOTE: This unit will only work with BASS.DLL version 1.6
-  Check http://www.un4seen.com/music/ for any later
-  versions of BASS.PAS
 
 
   How to install
   ----------------
-  Copy BASS.PAS to the \LIB subdirectory of your Delphi path
-  e.g. to C:\Program Files\Borland\Delphi 3\Lib
-  Now you should be able to run the demo projects.
+  Copy BASS.PAS to the \LIB subdirectory of your Delphi path or your project dir
 }
 unit Bass;
 
@@ -28,6 +19,13 @@ uses
   Windows;
 
 const
+  // Use these to test for error from functions that return a DWORD or QWORD
+
+  BASS_DLL = 'bass.dll';
+
+  DW_ERROR = Cardinal(-1); // -1 (DWORD)
+  QW_ERROR = Int64(-1);    // -1 (QWORD)
+
   // Error codes returned by BASS_GetErrorCode()
   BASS_OK                 = 0;    // all is OK
   BASS_ERROR_MEM          = 1;    // memory error
@@ -35,16 +33,11 @@ const
   BASS_ERROR_DRIVER       = 3;    // can't find a free sound driver
   BASS_ERROR_BUFLOST      = 4;    // the sample buffer was lost - please report this!
   BASS_ERROR_HANDLE       = 5;    // invalid handle
-  BASS_ERROR_FORMAT       = 6;    // unsupported format
+  BASS_ERROR_FORMAT       = 6;    // unsupported sample format
   BASS_ERROR_POSITION     = 7;    // invalid playback position
   BASS_ERROR_INIT         = 8;    // BASS_Init has not been successfully called
   BASS_ERROR_START        = 9;    // BASS_Start has not been successfully called
-  BASS_ERROR_INITCD       = 10;   // can't initialize CD
-  BASS_ERROR_CDINIT       = 11;   // BASS_CDInit has not been successfully called
-  BASS_ERROR_NOCD         = 12;   // no CD in drive
-  BASS_ERROR_CDTRACK      = 13;   // can't play the selected CD track
   BASS_ERROR_ALREADY      = 14;   // already initialized
-  BASS_ERROR_CDVOL        = 15;   // CD has no volume control
   BASS_ERROR_NOPAUSE      = 16;   // not paused
   BASS_ERROR_NOTAUDIO     = 17;   // not an audio track
   BASS_ERROR_NOCHAN       = 18;   // can't get a free channel
@@ -55,11 +48,10 @@ const
   BASS_ERROR_DEVICE       = 23;   // illegal device number
   BASS_ERROR_NOPLAY       = 24;   // not playing
   BASS_ERROR_FREQ         = 25;   // illegal sample rate
-  BASS_ERROR_NOA3D        = 26;   // A3D.DLL is not installed
-  BASS_ERROR_NOTFILE      = 27;   // the stream is not a file stream (WAV/MP3/MP2/MP1/OGG)
+  BASS_ERROR_NOTFILE      = 27;   // the stream is not a file stream
   BASS_ERROR_NOHW         = 29;   // no hardware voices available
-  BASS_ERROR_EMPTY        = 31;	  // the MOD music has no sequence data
-  BASS_ERROR_NONET        = 32;	  // no internet connection could be opened
+  BASS_ERROR_EMPTY        = 31;   // the MOD music has no sequence data
+  BASS_ERROR_NONET        = 32;   // no internet connection could be opened
   BASS_ERROR_CREATE       = 33;   // couldn't create the file
   BASS_ERROR_NOFX         = 34;   // effects are not enabled
   BASS_ERROR_PLAYING      = 35;   // the channel is playing
@@ -67,9 +59,11 @@ const
   BASS_ERROR_DECODE       = 38;   // the channel is a "decoding channel"
   BASS_ERROR_DX           = 39;   // a sufficient DirectX version is not installed
   BASS_ERROR_TIMEOUT      = 40;   // connection timedout
+  BASS_ERROR_FILEFORM     = 41;   // unsupported file format
+  BASS_ERROR_SPEAKER      = 42;   // unavailable speaker
   BASS_ERROR_UNKNOWN      = -1;   // some other mystery error
 
-  // Device setup flags
+  // Initialization flags
   BASS_DEVICE_8BITS       = 1;    // use 8 bit resolution, else 16 bit
   BASS_DEVICE_MONO        = 2;    // use mono, else stereo
   BASS_DEVICE_3D          = 4;    // enable 3D functionality
@@ -79,10 +73,8 @@ const
     and BASS_MUSIC_3D) are ignored when loading/creating
     a sample/stream/music.
   }
-  BASS_DEVICE_LEAVEVOL	  = 32;	  // leave the volume as it is
-  BASS_DEVICE_NOTHREAD    = 128;  // update buffers manually (using BASS_Update)
   BASS_DEVICE_LATENCY     = 256;  // calculate device latency (BASS_INFO struct)
-  BASS_DEVICE_VOL1000     = 512;  // 0-1000 volume range (else 0-100)
+  BASS_DEVICE_SPEAKERS    = 2048; // force enabling of speaker assignment
 
   // DirectSound interfaces (for use with BASS_GetDSoundObject)
   BASS_OBJECT_DS          = 1;   // IDirectSound
@@ -125,51 +117,67 @@ const
   WAVE_FORMAT_4M16       = $00000400;      // 44.1   kHz, Mono,   16-bit
   WAVE_FORMAT_4S16       = $00000800;      // 44.1   kHz, Stereo, 16-bit
 
-  // Music flags
-  BASS_MUSIC_RAMP         = 1;   // normal ramping
-  BASS_MUSIC_RAMPS        = 2;   // sensitive ramping
-  {
-    Ramping doesn't take a lot of extra processing and
-    improves the sound quality by removing "clicks".
-    Sensitive ramping will leave sharp attacked samples,
-    unlike normal ramping.
-  }
-  BASS_MUSIC_LOOP         = 4;   // loop music
-  BASS_MUSIC_FT2MOD       = 16;  // play .MOD as FastTracker 2 does
-  BASS_MUSIC_PT1MOD       = 32;  // play .MOD as ProTracker 1 does
-  BASS_MUSIC_MONO         = 64;  // force mono mixing (less CPU usage)
-  BASS_MUSIC_3D           = 128; // enable 3D functionality
-  BASS_MUSIC_POSRESET     = 256; // stop all notes when moving position
-  BASS_MUSIC_SURROUND	  = 512; // surround sound
-  BASS_MUSIC_SURROUND2	  = 1024;// surround sound (mode 2)
-  BASS_MUSIC_STOPBACK	  = 2048;// stop the music on a backwards jump effect
-  BASS_MUSIC_FX           = 4096;// enable DX8 effects
-  BASS_MUSIC_CALCLEN      = 8192;// calculate playback length
-  BASS_MUSIC_DECODE       = $200000;// don't play the music, only decode (BASS_ChannelGetData)
-  BASS_MUSIC_NOSAMPLE     = $400000;// don't load the samples
-
   // Sample info flags
-  BASS_SAMPLE_8BITS       = 1;   // 8 bit, else 16 bit
+  BASS_SAMPLE_8BITS       = 1;   // 8 bit
+  BASS_SAMPLE_FLOAT       = 256; // 32-bit floating-point
   BASS_SAMPLE_MONO        = 2;   // mono, else stereo
   BASS_SAMPLE_LOOP        = 4;   // looped
   BASS_SAMPLE_3D          = 8;   // 3D functionality enabled
   BASS_SAMPLE_SOFTWARE    = 16;  // it's NOT using hardware mixing
   BASS_SAMPLE_MUTEMAX     = 32;  // muted at max distance (3D only)
   BASS_SAMPLE_VAM         = 64;  // uses the DX7 voice allocation & management
-  BASS_SAMPLE_FX          = 128;     // the DX8 effects are enabled
+  BASS_SAMPLE_FX          = 128; // old implementation of DX8 effects are enabled
   BASS_SAMPLE_OVER_VOL    = $10000; // override lowest volume
   BASS_SAMPLE_OVER_POS    = $20000; // override longest playing
   BASS_SAMPLE_OVER_DIST   = $30000; // override furthest from listener (3D only)
 
-  BASS_MP3_HALFRATE       = $10000; // reduced quality MP3/MP2/MP1 (half sample rate)
-  BASS_MP3_SETPOS         = $20000; // enable pin-point seeking on the MP3/MP2/MP1/OGG
+  BASS_MP3_SETPOS         = $20000; // enable pin-point seeking on the MP3/MP2/MP1
 
-  BASS_STREAM_AUTOFREE	  = $40000;// automatically free the stream when it stop/ends
-  BASS_STREAM_RESTRATE	  = $80000;// restrict the download rate of internet file streams
+  BASS_STREAM_AUTOFREE	  = $40000; // automatically free the stream when it stop/ends
+  BASS_STREAM_RESTRATE	  = $80000; // restrict the download rate of internet file streams
   BASS_STREAM_BLOCK       = $100000;// download & play internet
                                     // file stream (MPx/OGG) in small blocks
   BASS_STREAM_DECODE      = $200000;// don't play the stream, only decode (BASS_ChannelGetData)
   BASS_STREAM_META        = $400000;// request metadata from a Shoutcast stream
+
+  BASS_MUSIC_FLOAT        = BASS_SAMPLE_FLOAT; // 32-bit floating-point
+  BASS_MUSIC_MONO         = BASS_SAMPLE_MONO; // force mono mixing (less CPU usage)
+  BASS_MUSIC_LOOP         = BASS_SAMPLE_LOOP; // loop music
+  BASS_MUSIC_3D           = BASS_SAMPLE_3D; // enable 3D functionality
+  BASS_MUSIC_FX           = BASS_SAMPLE_FX; // enable old implementation of DX8 effects
+  BASS_MUSIC_AUTOFREE     = BASS_STREAM_AUTOFREE; // automatically free the music when it stop/ends
+  BASS_MUSIC_DECODE       = BASS_STREAM_DECODE; // don't play the music, only decode (BASS_ChannelGetData)
+  BASS_MUSIC_RAMP         = $200;  // normal ramping
+  BASS_MUSIC_RAMPS        = $400;  // sensitive ramping
+  BASS_MUSIC_SURROUND     = $800;  // surround sound
+  BASS_MUSIC_SURROUND2    = $1000; // surround sound (mode 2)
+  BASS_MUSIC_FT2MOD       = $2000; // play .MOD as FastTracker 2 does
+  BASS_MUSIC_PT1MOD       = $4000; // play .MOD as ProTracker 1 does
+  BASS_MUSIC_CALCLEN      = $8000; // calculate playback length
+  BASS_MUSIC_NONINTER     = $10000; // non-interpolated mixing
+  BASS_MUSIC_POSRESET     = $20000; // stop all notes when moving position
+  BASS_MUSIC_STOPBACK     = $80000; // stop the music on a backwards jump effect
+  BASS_MUSIC_NOSAMPLE     = $100000; // don't load the samples
+
+  // Speaker assignment flags
+  BASS_SPEAKER_FRONT      = $1000000;  // front speakers
+  BASS_SPEAKER_REAR       = $2000000;  // rear/side speakers
+  BASS_SPEAKER_CENLFE     = $3000000;  // center & LFE speakers (5.1)
+  BASS_SPEAKER_REAR2      = $4000000;  // rear center speakers (7.1)
+  BASS_SPEAKER_LEFT       = $10000000; // modifier: left
+  BASS_SPEAKER_RIGHT      = $20000000; // modifier: right
+  BASS_SPEAKER_FRONTLEFT  = BASS_SPEAKER_FRONT or BASS_SPEAKER_LEFT;
+  BASS_SPEAKER_FRONTRIGHT = BASS_SPEAKER_FRONT or BASS_SPEAKER_RIGHT;
+  BASS_SPEAKER_REARLEFT   = BASS_SPEAKER_REAR or BASS_SPEAKER_LEFT;
+  BASS_SPEAKER_REARRIGHT  = BASS_SPEAKER_REAR or BASS_SPEAKER_RIGHT;
+  BASS_SPEAKER_CENTER     = BASS_SPEAKER_CENLFE or BASS_SPEAKER_LEFT;
+  BASS_SPEAKER_LFE        = BASS_SPEAKER_CENLFE or BASS_SPEAKER_RIGHT;
+  BASS_SPEAKER_REAR2LEFT  = BASS_SPEAKER_REAR2 or BASS_SPEAKER_LEFT;
+  BASS_SPEAKER_REAR2RIGHT = BASS_SPEAKER_REAR2 or BASS_SPEAKER_RIGHT;
+
+  BASS_UNICODE            = $80000000;
+
+  BASS_RECORD_PAUSE       = $8000; // start recording paused
 
   // DX7 voice allocation flags
   BASS_VAM_HARDWARE       = 1;
@@ -209,6 +217,22 @@ const
     If there are no free hardware voices, the buffer to be terminated will be
     the one with the lowest priority.
   }
+
+  // BASS_CHANNELINFO types
+  BASS_CTYPE_SAMPLE       = 1;
+  BASS_CTYPE_RECORD       = 2;
+  BASS_CTYPE_STREAM       = $10000;
+  BASS_CTYPE_STREAM_WAV   = $10001;
+  BASS_CTYPE_STREAM_OGG   = $10002;
+  BASS_CTYPE_STREAM_MP1   = $10003;
+  BASS_CTYPE_STREAM_MP2   = $10004;
+  BASS_CTYPE_STREAM_MP3   = $10005;
+  BASS_CTYPE_MUSIC_MOD    = $20000;
+  BASS_CTYPE_MUSIC_MTM    = $20001;
+  BASS_CTYPE_MUSIC_S3M    = $20002;
+  BASS_CTYPE_MUSIC_XM     = $20003;
+  BASS_CTYPE_MUSIC_IT     = $20004;
+  BASS_CTYPE_MUSIC_MO3    = $00100; // mo3 flag
 
   // 3D channel modes
   BASS_3DMODE_NORMAL      = 0;
@@ -330,6 +354,24 @@ const
     param: not used
     data : pointer to the metadata
   }
+  BASS_SYNC_SLIDE                   = 5;
+  {
+    Sync when an attribute slide is completed.
+    param: not used
+    data : the type of slide completed (one of the BASS_SLIDE_xxx values)
+  }
+  BASS_SYNC_STALL                   = 6;
+  {
+    Sync when playback has stalled.
+    param: not used
+    data : 0=stalled, 1=resumed
+  }
+  BASS_SYNC_DOWNLOAD                = 7;
+  {
+    Sync when downloading of an internet (or "buffered" user file) stream has ended.
+    param: not used
+    data : not used
+  }
   BASS_SYNC_MESSAGE                 = $20000000;
   { FLAG: post a Windows message (instead of callback)
     When using a window message "callback", the message to post is given in the "proc"
@@ -341,28 +383,25 @@ const
   BASS_SYNC_ONETIME                 = $80000000;
   { FLAG: sync only once, else continuously }
 
-  CDCHANNEL           = 0; // CD channel, for use with BASS_Channel functions
-  RECORDCHAN          = 1; // Recording channel, for use with BASS_Channel functions
-
   // BASS_ChannelIsActive return values
   BASS_ACTIVE_STOPPED = 0;
   BASS_ACTIVE_PLAYING = 1;
   BASS_ACTIVE_STALLED = 2;
   BASS_ACTIVE_PAUSED  = 3;
 
-  // CD ID flags, use with BASS_CDGetID
-  BASS_CDID_IDENTITY  = 0;
-  BASS_CDID_UPC       = 1;
-  BASS_CDID_CDDB      = 2;
-  BASS_CDID_CDDB2     = 3;
+  // BASS_ChannelIsSliding return flags
+  BASS_SLIDE_FREQ     = 1;
+  BASS_SLIDE_VOL      = 2;
+  BASS_SLIDE_PAN      = 4;
 
   // BASS_ChannelGetData flags
+  BASS_DATA_AVAILABLE = 0;        // query how much data is buffered
   BASS_DATA_FFT512   = $80000000; // 512 sample FFT
   BASS_DATA_FFT1024  = $80000001; // 1024 FFT
   BASS_DATA_FFT2048  = $80000002; // 2048 FFT
-  BASS_DATA_FFT512S  = $80000010; // stereo 512 sample FFT
-  BASS_DATA_FFT1024S = $80000011; // stereo 1024 FFT
-  BASS_DATA_FFT2048S = $80000012; // stereo 2048 FFT
+  BASS_DATA_FFT4096  = $80000003; // 4096 FFT
+  BASS_DATA_FFT_INDIVIDUAL = $10; // FFT flag: FFT for each channel, else all combined
+  BASS_DATA_FFT_NOWINDOW = $20;   // FFT flag: no Hanning window
 
   // BASS_StreamGetTags flags : what's returned
   BASS_TAG_ID3   = 0; // ID3v1 tags : 128 byte block
@@ -393,16 +432,62 @@ const
   BASS_INPUT_ON     = $20000;
   BASS_INPUT_LEVEL  = $40000;
 
+  BASS_INPUT_TYPE_MASK    = $ff000000;
+  BASS_INPUT_TYPE_UNDEF   = $00000000;
+  BASS_INPUT_TYPE_DIGITAL = $01000000;
+  BASS_INPUT_TYPE_LINE    = $02000000;
+  BASS_INPUT_TYPE_MIC     = $03000000;
+  BASS_INPUT_TYPE_SYNTH   = $04000000;
+  BASS_INPUT_TYPE_CD      = $05000000;
+  BASS_INPUT_TYPE_PHONE   = $06000000;
+  BASS_INPUT_TYPE_SPEAKER = $07000000;
+  BASS_INPUT_TYPE_WAVE    = $08000000;
+  BASS_INPUT_TYPE_AUX     = $09000000;
+  BASS_INPUT_TYPE_ANALOG  = $0a000000;
+
+  // BASS_SetNetConfig flags
+  BASS_NET_TIMEOUT  = 0;
+  BASS_NET_BUFFER   = 1;
+
+  // BASS_StreamGetFilePosition modes
+  BASS_FILEPOS_DECODE     = 0;
+  BASS_FILEPOS_DOWNLOAD   = 1;
+  BASS_FILEPOS_END        = 2;
+
+  // STREAMFILEPROC actions
+  BASS_FILE_CLOSE   = 0;
+  BASS_FILE_READ    = 1;
+  BASS_FILE_QUERY   = 2;
+  BASS_FILE_LEN     = 3;
+  BASS_FILE_SEEK    = 4;
+
+  BASS_STREAMPROC_END = $80000000; // end of user stream flag
+
+  // BASS_Set/GetConfig options
+  BASS_CONFIG_BUFFER        = 0;
+  BASS_CONFIG_UPDATEPERIOD  = 1;
+  BASS_CONFIG_MAXVOL        = 3;
+  BASS_CONFIG_GVOL_SAMPLE   = 4;
+  BASS_CONFIG_GVOL_STREAM   = 5;
+  BASS_CONFIG_GVOL_MUSIC    = 6;
+  BASS_CONFIG_CURVE_VOL     = 7;
+  BASS_CONFIG_CURVE_PAN     = 8;
+  BASS_CONFIG_FLOATDSP      = 9;
+  BASS_CONFIG_3DALGORITHM   = 10;
+  BASS_CONFIG_NET_TIMEOUT   = 11;
+  BASS_CONFIG_NET_BUFFER    = 12;
+
 type
   DWORD = cardinal;
   BOOL = LongBool;
   FLOAT = Single;
-  QWORD = int64;
+  QWORD = int64;        // 64-bit (replace "int64" with "comp" if using Delphi 3)
 
   HMUSIC = DWORD;       // MOD music handle
   HSAMPLE = DWORD;      // sample handle
   HCHANNEL = DWORD;     // playing sample's channel handle
   HSTREAM = DWORD;      // sample stream handle
+  HRECORD = DWORD;      // recording handle
   HSYNC = DWORD;        // synchronizer handle
   HDSP = DWORD;         // DSP handle
   HFX = DWORD;          // DX8 effect handle
@@ -410,11 +495,6 @@ type
   BASS_INFO = record
     size: DWORD;        // size of this struct (set this before calling the function)
     flags: DWORD;       // device capabilities (DSCAPS_xxx flags)
-    {
-      The following values are irrelevant if the device
-      doesn't have hardware support
-      (DSCAPS_EMULDRIVER is specified in flags)
-    }
     hwsize: DWORD;      // size of total device hardware memory
     hwfree: DWORD;      // size of free device hardware memory
     freesam: DWORD;     // number of free sample slots in the hardware
@@ -422,9 +502,12 @@ type
     minrate: DWORD;     // min sample rate supported by the hardware
     maxrate: DWORD;     // max sample rate supported by the hardware
     eax: BOOL;          // device supports EAX? (always FALSE if BASS_DEVICE_3D was not used)
-    a3d: DWORD;         // unused
-    dsver: DWORD;       // DirectSound version (use to check for DX5/7 functions)
+    minbuf: DWORD;      // recommended minimum buffer length in ms (requires BASS_DEVICE_LATENCY)
+    dsver: DWORD;       // DirectSound version
     latency: DWORD;     // delay (in ms) before start of playback (requires BASS_DEVICE_LATENCY)
+    initflags: DWORD;   // "flags" parameter of BASS_Init call
+    speakers: DWORD;    // number of speakers available
+	driver: PChar;      // driver
   end;
 
   BASS_RECORDINFO = record
@@ -433,6 +516,14 @@ type
     formats: DWORD;     // supported standard formats (WAVE_FORMAT_xxx flags)
     inputs: DWORD;      // number of inputs
     singlein: BOOL;     // only 1 input can be set at a time
+	driver: PChar;      // driver
+  end;
+
+  BASS_CHANNELINFO = record
+	freq: DWORD;        // default playback rate
+	chans: DWORD;       // channels
+	flags: DWORD;       // BASS_SAMPLE/STREAM/MUSIC/SPEAKER flags
+	ctype: DWORD;       // type of channel
   end;
 
   // Sample info structure
@@ -550,15 +641,33 @@ type
   // callback function types
   STREAMPROC = function(handle: HSTREAM; buffer: Pointer; length: DWORD; user: DWORD): DWORD; stdcall;
   {
-    Stream callback function. NOTE: A stream function should obviously be as
+    User stream callback function. NOTE: A stream function should obviously be as
     quick as possible, other streams (and MOD musics) can't be mixed until
     it's finished.
     handle : The stream that needs writing
     buffer : Buffer to write the samples in
     length : Number of bytes to write
     user   : The 'user' parameter value given when calling BASS_StreamCreate
-    RETURN : Number of bytes written. If less than "length" then the
-             stream is assumed to be at the end, and is stopped.
+    RETURN : Number of bytes written. Set the BASS_STREAMPROC_END flag to end
+             the stream.
+  }
+
+  STREAMFILEPROC = function(action, param1, param2, user: DWORD): DWORD; stdcall;
+  {  
+    User file stream callback function.
+    action : The action to perform, one of BASS_FILE_xxx values.
+    param1 : Depends on "action"
+    param2 : Depends on "action"
+    user   : The 'user' parameter value given when calling BASS_StreamCreate
+    RETURN : Depends on "action"
+  }
+
+  DOWNLOADPROC = procedure(buffer: Pointer; length: DWORD; user: DWORD); stdcall;
+  {
+    Internet stream download callback function.
+    buffer : Buffer containing the downloaded data... NULL=end of download
+    length : Number of bytes in the buffer
+    user   : The 'user' parameter value given when calling BASS_StreamCreateURL
   }
 
   SYNCPROC = procedure(handle: HSYNC; channel, data: DWORD; user: DWORD); stdcall;
@@ -585,813 +694,130 @@ type
     user   : The 'user' parameter given when calling BASS_ChannelSetDSP
   }
 
-  RECORDPROC = function(buffer: Pointer; length: DWORD; user: DWORD): BOOL; stdcall;
+  RECORDPROC = function(handle: HRECORD; buffer: Pointer; length: DWORD; user: DWORD): BOOL; stdcall;
   {
     Recording callback function.
+    handle : The recording handle
     buffer : Buffer containing the recorded sample data
     length : Number of bytes
     user   : The 'user' parameter value given when calling BASS_RecordStart
     RETURN : TRUE = continue recording, FALSE = stop
   }
 
+  TBASSModuleHandle = HINST;
+
 
 // Functions
-function BASS_GetVersion: DWORD; stdcall; external 'bass.dll' name 'BASS_GetVersion';
-{
-  Retrieve the version number of BASS that is loaded.
-  RETURN : The BASS version (LOWORD.HIWORD)
-}
-function BASS_GetDeviceDescription(devnum: DWORD): PChar; stdcall; external 'bass.dll' name 'BASS_GetDeviceDescription';
-{
-  Get the text description of a device. This function can
-  be used to enumerate the available devices.
-  devnum : The device (0=first)
-  RETURN : The text description of the device (NULL=error)
-}
-function BASS_SetBufferLength(length: FLOAT): FLOAT; stdcall; external 'bass.dll' name 'BASS_SetBufferLength';
-{
-  Set the amount that BASS mixes ahead new musics/streams.
-  Changing this setting does not affect musics/streams
-  that have already been loaded/created. Increasing the
-  buffer length, decreases the chance of the sound
-  possibly breaking-up on slower computers, but also
-  requires more memory. The default length is 0.5 secs.
-  length : The buffer length in seconds
-  RETURN : The actual new buffer length
-}
-procedure BASS_SetGlobalVolumes(musvol, samvol, strvol: Integer); stdcall; external 'bass.dll' name 'BASS_SetGlobalVolumes';
-{
-  Set the global music/sample/stream volume levels.
-  musvol : MOD music global volume level (0-100, -1=leave current)
-  samvol : Sample global volume level (0-100, -1=leave current)
-  strvol : Stream global volume level (0-100, -1=leave current)
-}
-procedure BASS_GetGlobalVolumes(var musvol, samvol, strvol: DWORD); stdcall; external 'bass.dll' name 'BASS_GetGlobalVolumes';
-{
-  Retrive the global music/sample/stream volume levels.
-  musvol : MOD music global volume level (NULL=don't retrieve it)
-  samvol : Sample global volume level (NULL=don't retrieve it)
-  strvol : Stream global volume level (NULL=don't retrieve it)
-}
-procedure BASS_SetLogCurves(volume, pan: BOOL); stdcall; external 'bass.dll' name 'BASS_SetLogCurves';
-{
-  Make the volume/panning values translate to a logarithmic curve,
-  or a linear "curve" (the default).
-  volume : volume curve (FALSE=linear, TRUE=log)
-  pan    : panning curve (FALSE=linear, TRUE=log)
-}
-procedure BASS_Set3DAlgorithm(algo: DWORD); stdcall; external 'bass.dll' name 'BASS_Set3DAlgorithm';
-{
-  Set the 3D algorithm for software mixed 3D channels (does not affect
-  hardware mixed channels). Changing the mode only affects subsequently
-  created or loaded samples/streams/musics, not those that already exist.
-  Requires DirectX 7 or above.
-  algo   : algorithm flag (BASS_3DALG_xxx)
-}
-function BASS_ErrorGetCode: DWORD; stdcall; external 'bass.dll' name 'BASS_ErrorGetCode';
-{
-  Get the BASS_ERROR_xxx error code. Use this function to
-  get the reason for an error.
-}
-procedure BASS_SetCLSID(clsid: TGUID); stdcall; external 'bass.dll' name 'BASS_SetCLSID';
-{
-  Set the class identifier of the object to create, that will be used
-  to initialize DirectSound.
-  clsid  : Class identifier of the object to create (NULL=use default)
-}
-function BASS_Init(device: Integer; freq, flags: DWORD; win: HWND): BOOL; stdcall; external 'bass.dll' name 'BASS_Init';
-{
-  Initialize the digital output. This must be called
-  before all following BASS functions (except CD functions).
-  The volume is initially set to 100 (the maximum),
-  use BASS_SetVolume() to adjust it.
-  device : Device to use (0=first, -1=default, -2=no sound)
-  freq   : Output sample rate
-  flags  : BASS_DEVICE_xxx flags (optional HIWORD=update period)
-  win    : Owner window (0=current foreground window)
+var BASS_SetConfig: function(option, value: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_SetConfig';
+var BASS_GetConfig: function(option: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_GetConfig';
+var BASS_GetVersion: function:DWORD; stdcall; // external 'bass20.dll' name 'BASS_GetVersion';
+var BASS_GetDeviceDescription: function(device: DWORD): PChar; stdcall; // external 'bass20.dll' name 'BASS_GetDeviceDescription';
+var BASS_ErrorGetCode: function : DWORD; stdcall; // external 'bass20.dll' name 'BASS_ErrorGetCode';
+var BASS_Init: function(device: Integer; freq, flags: DWORD; win: HWND; clsid: PGUID): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Init';
+var BASS_SetDevice: function(device: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SetDevice';
+var BASS_GetDevice: function : DWORD; stdcall; // external 'bass20.dll' name 'BASS_GetDevice';
+var BASS_Free: function : BOOL; stdcall; // external 'bass20.dll' name 'BASS_Free';
+var BASS_GetDSoundObject: function(obj: DWORD): Pointer; stdcall; // external 'bass20.dll' name 'BASS_GetDSoundObject';
+var BASS_GetInfo: function(var info: BASS_INFO): BOOL; stdcall; // external 'bass20.dll' name 'BASS_GetInfo';
+var BASS_Update: function : BOOL; stdcall; // external 'bass20.dll' name 'BASS_Update';
+var BASS_GetCPU: function : FLOAT; stdcall; // external 'bass20.dll' name 'BASS_GetCPU';
+var BASS_Start: function : BOOL; stdcall; // external 'bass20.dll' name 'BASS_Start';
+var BASS_Stop: function : BOOL; stdcall; // external 'bass20.dll' name 'BASS_Stop';
+var BASS_Pause: function : BOOL; stdcall; // external 'bass20.dll' name 'BASS_Pause';
+var BASS_SetVolume: function(volume: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SetVolume';
+var BASS_GetVolume: function : Integer; stdcall; // external 'bass20.dll' name 'BASS_GetVolume';
 
-  NOTE: The "no sound" device (device=-2), allows loading
-  and "playing" of MOD musics only (all sample/stream
-  functions and most other functions fail). This is so
-  that you can still use the MOD musics as synchronizers
-  when there is no soundcard present. When using device -2,
-  you should still set the other arguments as you would do
-  normally.
-}
-procedure BASS_Free; stdcall; external 'bass.dll' name 'BASS_Free';
-{
-  Free all resources used by the digital output, including
-  all musics and samples.
-}
-function BASS_GetDSoundObject(obj: DWORD): Pointer; stdcall; external 'bass.dll' name 'BASS_GetDSoundObject';
-{
-  Retrieve a pointer to a DirectSound interface. This can be used by
-  advanced users to "plugin" external functionality.
-  object : The interface to retrieve (BASS_OBJECT_xxx)
-  RETURN : A pointer to the requested interface (NULL=error)
-}
-procedure BASS_GetInfo(var info: BASS_INFO); stdcall; external 'bass.dll' name 'BASS_GetInfo';
-{
-  Retrieve some information on the device being used.
-  info   : Pointer to store info at
-}
-function BASS_Update: BOOL; stdcall; external 'bass.dll' name 'BASS_Update';
-{
-  Update the HMUSIC/HSTREAM channel buffers.
-}
-function BASS_GetCPU: FLOAT; stdcall; external 'bass.dll' name 'BASS_GetCPU';
-{
-  Get the current CPU usage of BASS. This includes the
-  time taken to mix the MOD musics and sample streams.
-  It does not include plain sample mixing which is done
-  by the output device (hardware accelerated) or
-  DirectSound (emulated). Audio CD playback requires no
-  CPU usage.
-  RETURN : The CPU usage percentage
-}
-function BASS_Start: BOOL; stdcall; external 'bass.dll' name 'BASS_Start';
-{
-  Start the digital output.
-}
-function BASS_Stop: BOOL; stdcall; external 'bass.dll' name 'BASS_Stop';
-{
-  Stop the digital output, stopping all musics/samples/
-  streams.
-}
-function BASS_Pause: BOOL; stdcall; external 'bass.dll' name 'BASS_Pause';
-{
-  Stop the digital output, pausing all musics/samples/
-  streams. Use BASS_Start to resume the digital output.
-}
-function BASS_SetVolume(volume: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_SetVolume';
-{
-  Set the digital output master volume.
-  volume : Desired volume level (0-100)
-}
-function BASS_GetVolume: Integer; stdcall; external 'bass.dll' name 'BASS_GetVolume';
-{
-  Get the digital output master volume.
-  RETURN : The volume level (0-100, -1=error)
-}
-function BASS_Set3DFactors(distf, rollf, doppf: FLOAT): BOOL; stdcall; external 'bass.dll' name 'BASS_Set3DFactors';
-{
-  Set the factors that affect the calculations of 3D sound.
-  distf  : Distance factor (0.0-10.0, 1.0=use meters, 0.3=use feet, <0.0=leave current)
-           By default BASS measures distances in meters, you can change this
-           setting if you are using a different unit of measurement.
-  roolf  : Rolloff factor, how fast the sound quietens with distance
-           (0.0=no rolloff, 1.0=real world, 2.0=2x real... 10.0=max, <0.0=leave current)
-  doppf  : Doppler factor (0.0=no doppler, 1.0=real world, 2.0=2x real... 10.0=max, <0.0=leave current)
-           The doppler effect is the way a sound appears to change frequency when it is
-           moving towards or away from you. The listener and sound velocity settings are
-           used to calculate this effect, this "doppf" value can be used to lessen or
-           exaggerate the effect.
-}
-function BASS_Get3DFactors(var distf, rollf, doppf: FLOAT): BOOL; stdcall; external 'bass.dll' name 'BASS_Get3DFactors';
-{
-  Get the factors that affect the calculations of 3D sound.
-  distf  : Distance factor (NULL=don't get it)
-  roolf  : Rolloff factor (NULL=don't get it)
-  doppf  : Doppler factor (NULL=don't get it)
-}
-function BASS_Set3DPosition(var pos, vel, front, top: BASS_3DVECTOR): BOOL; stdcall; external 'bass.dll' name 'BASS_Set3DPosition';
-{
-  Set the position/velocity/orientation of the listener (ie. the player/viewer).
-  pos    : Position of the listener (NULL=leave current)
-  vel    : Listener's velocity, used to calculate doppler effect (NULL=leave current)
-  front  : Direction that listener's front is pointing (NULL=leave current)
-  top    : Direction that listener's top is pointing (NULL=leave current)
-         NOTE: front & top must both be set in a single call
-}
-function BASS_Get3DPosition(var pos, vel, front, top: BASS_3DVECTOR): BOOL; stdcall; external 'bass.dll' name 'BASS_Get3DPosition';
-{
-  Get the position/velocity/orientation of the listener.
-  pos    : Position of the listener (NULL=don't get it)
-  vel    : Listener's velocity (NULL=don't get it)
-  front  : Direction that listener's front is pointing (NULL=don't get it)
-  top    : Direction that listener's top is pointing (NULL=don't get it)
-         NOTE: front & top must both be retrieved in a single call
-}
-function BASS_Apply3D: BOOL; stdcall; external 'bass.dll' name 'BASS_Apply3D';
-{
-  Apply changes made to the 3D system. This must be called to apply any changes
-  made with BASS_Set3DFactors, BASS_Set3DPosition, BASS_ChannelSet3DAttributes or
-  BASS_ChannelSet3DPosition. It improves performance to have DirectSound do all the
-  required recalculating at the same time like this, rather than recalculating after
-  every little change is made. NOTE: This is automatically called when starting a 3D
-  sample with BASS_SamplePlay3D/Ex.
-}
-function BASS_SetEAXParameters(env: Integer; vol, decay, damp: FLOAT): BOOL; stdcall; external 'bass.dll' name 'BASS_SetEAXParameters';
-{
-  Set the type of EAX environment and it's parameters. Obviously, EAX functions
-  have no effect if no EAX supporting device (ie. SB Live) is used.
-  env    : Reverb environment (EAX_ENVIRONMENT_xxx, -1=leave current)
-  vol    : Volume of the reverb (0.0=off, 1.0=max, <0.0=leave current)
-  decay  : Time in seconds it takes the reverb to diminish by 60dB (0.1-20.0, <0.0=leave current)
-  damp   : The damping, high or low frequencies decay faster (0.0=high decays quickest,
-           1.0=low/high decay equally, 2.0=low decays quickest, <0.0=leave current)
-}
-function BASS_GetEAXParameters(var env: DWORD; var vol, decay, damp: FLOAT): BOOL; stdcall; external 'bass.dll' name 'BASS_GetEAXParameters';
-{
-  Get the current EAX parameters.
-  env    : Reverb environment (NULL=don't get it)
-  vol    : Reverb volume (NULL=don't get it)
-  decay  : Decay duration (NULL=don't get it)
-  damp   : The damping (NULL=don't get it)
-}
-function BASS_MusicLoad(mem: BOOL; f: Pointer; offset, length, flags: DWORD): HMUSIC; stdcall; external 'bass.dll' name 'BASS_MusicLoad';
-{
-  Load a music (XM/MOD/S3M/IT/MTM). The amplification and pan
-  seperation are initially set to 50, use BASS_MusicSetAmplify()
-  and BASS_MusicSetPanSep() to adjust them.
-  mem    : TRUE = Load music from memory
-  f      : Filename (mem=FALSE) or memory location (mem=TRUE)
-  offset : File offset to load the music from (only used if mem=FALSE)
-  length : Data length (only used if mem=FALSE, 0=use to end of file)
-  flags  : BASS_MUSIC_xxx flags
-  RETURN : The loaded music's handle (NULL=error)
-}
-procedure BASS_MusicFree(handle: HMUSIC); stdcall; external 'bass.dll' name 'BASS_MusicFree';
-{
-  Free a music's resources.
-  handle : Music handle
-}
-function BASS_MusicGetName(handle: HMUSIC): PChar; stdcall; external 'bass.dll' name 'BASS_MusicGetName';
-{
-  Retrieves a music's name.
-  handle : Music handle
-  RETURN : The music's name (NULL=error)
-}
-function BASS_MusicGetLength(handle: HMUSIC; playlen: BOOL): DWORD; stdcall; external 'bass.dll' name 'BASS_MusicGetLength';
-{
-  Retrieves the length of a music in patterns (how many "orders" there are)
-  or in output bytes (requires BASS_MUSIC_CALCLEN was used with BASS_MusicLoad).
-  handle : Music handle
-  playlen: TRUE=get the playback length, FALSE=get the pattern length
-  RETURN : The length of the music (-1=error)
-}
-function BASS_MusicPreBuf(handle: HMUSIC): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicPreBuf';
-{
-  Pre-buffer initial sample data ready for playback.
-  handle : Handle of music
-}
-function BASS_MusicPlay(handle: HMUSIC): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicPlay';
-{
-  Play a music. Playback continues from where it was last stopped/paused.
-  Multiple musics may be played simultaneously.
-  handle : Handle of music to play
-}
-function BASS_MusicPlayEx(handle: HMUSIC; pos: DWORD; flags: Integer; reset: BOOL): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicPlayEx';
-{
-  Play a music, specifying start position and playback flags.
-  handle : Handle of music to play
-  pos    : Position to start playback from, LOWORD=order HIWORD=row
-  flags  : BASS_MUSIC_xxx flags. These flags overwrite the defaults
-           specified when the music was loaded. (-1=use current flags)
-  reset  : TRUE = Stop all current playing notes and reset bpm/etc...
-}
-function BASS_MusicSetAmplify(handle: HMUSIC; amp: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicSetAmplify';
-{
-  Set a music's amplification level.
-  handle : Music handle
-  amp    : Amplification level (0-100)
-}
-function BASS_MusicSetPanSep(handle: HMUSIC; pan: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicSetPanSep';
-{
-  Set a music's pan seperation.
-  handle : Music handle
-  pan    : Pan seperation (0-100, 50=linear)
-}
-function BASS_MusicSetPositionScaler(handle: HMUSIC; scale: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicSetPositionScaler';
-{
-  Set a music's "GetPosition" scaler
-  When you call BASS_ChannelGetPosition, the "row" (HIWORD) will be
-  scaled by this value. By using a higher scaler, you can get a more
-  precise position indication.
-  handle : Music handle
-  scale  : The scaler (1-256)
-}
-function BASS_MusicSetChannelVol(handle: HMUSIC; channel,volume: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicSetChannelVol';
-{
-  Set the volume level of a channel in a music
-  handle : Music handle
-  channel: Channel number (0=first)
-  volume : Volume level (0-100)
-}
-function BASS_MusicGetChannelVol(handle: HMUSIC; channel: DWORD): Integer; stdcall; external 'bass.dll' name 'BASS_MusicGetChannelVol';
-{
-  Get the volume level of a channel in a music
-  handle : Music handle
-  channel: Channel number (0=first)
-  RETURN : The channel's volume (-1=error)
-}
-function BASS_SampleLoad(mem: BOOL; f: Pointer; offset, length, max, flags: DWORD): HSAMPLE; stdcall; external 'bass.dll' name 'BASS_SampleLoad';
-{
-  Load a WAV/MP3/MP2/MP1 sample. If you're loading a sample with 3D
-  functionality, then you should use BASS_GetInfo and BASS_SetInfo to set
-  the default 3D parameters. You can also use these two functions to set
-  the sample's default frequency/volume/pan/looping.
-  mem    : TRUE = Load sample from memory
-  f      : Filename (mem=FALSE) or memory location (mem=TRUE)
-  offset : File offset to load the sample from (only used if mem=FALSE)
-  length : Data length (only used if mem=FALSE, 0=use to end of file)
-  max    : Maximum number of simultaneous playbacks (1-65535)
-  flags  : BASS_SAMPLE_xxx flags (only the LOOP/3D/SOFTWARE/OVER_xxx flags are used)
-  RETURN : The loaded sample's handle (NULL=error)
-}
-function BASS_SampleCreate(length, freq, max, flags: DWORD): Pointer; stdcall; external 'bass.dll' name 'BASS_SampleCreate';
-{
-  Create a sample. This function allows you to generate custom samples, or
-  load samples that are not in the WAV format. A pointer is returned to the
-  memory location at which you should write the sample's data. After writing
-  the data, call BASS_SampleCreateDone to get the new sample's handle.
-  length : The sample's length (in samples, NOT bytes)
-  freq   : default sample rate
-  max    : Maximum number of simultaneous playbacks (1-65535)
-  flags  : BASS_SAMPLE_xxx flags
-  RETURN : Memory location to write the sample's data (NULL=error)
-}
-function BASS_SampleCreateDone: HSAMPLE; stdcall; external 'bass.dll' name 'BASS_SampleCreateDone';
-{
-  Finished creating a new sample.
-  RETURN : The new sample's handle (NULL=error)
-}
-procedure BASS_SampleFree(handle: HSAMPLE); stdcall; external 'bass.dll' name 'BASS_SampleFree';
-{
-  Free a sample's resources.
-  handle : Sample handle
-}
-function BASS_SampleGetInfo(handle: HSAMPLE; var info: BASS_SAMPLE): BOOL; stdcall; external 'bass.dll' name 'BASS_SampleGetInfo';
-{
-  Retrieve a sample's current default attributes.
-  handle : Sample handle
-  info   : Pointer to store sample info
-}
-function BASS_SampleSetInfo(handle: HSAMPLE; var info: BASS_SAMPLE): BOOL; stdcall; external 'bass.dll' name 'BASS_SampleSetInfo';
-{
-  Set a sample's default attributes.
-  handle : Sample handle
-  info   : Sample info, only the freq/volume/pan/3D attributes and
-           looping/override method flags are used
-}
-function BASS_SamplePlay(handle: HSAMPLE): HCHANNEL; stdcall; external 'bass.dll' name 'BASS_SamplePlay';
-{
-  Play a sample, using the sample's default attributes.
-  handle : Handle of sample to play
-  RETURN : Handle of channel used to play the sample (NULL=error)
-}
-function BASS_SamplePlayEx(handle: HSAMPLE; start: DWORD; freq, volume, pan: Integer; loop: BOOL): HCHANNEL; stdcall; external 'bass.dll' name 'BASS_SamplePlayEx';
-{
-  Play a sample, using specified attributes.
-  handle : Handle of sample to play
-  start  : Playback start position (in samples, not bytes)
-  freq   : Playback rate (-1=default)
-  volume : Volume (-1=default, 0=silent, 100=max)
-  pan    : Pan position (-101=default, -100=left, 0=middle, 100=right)
-  loop   : TRUE = Loop sample (-1=default)
-  RETURN : Handle of channel used to play the sample (NULL=error)
-}
-function BASS_SamplePlay3D(handle: HSAMPLE; var pos, orient, vel: BASS_3DVECTOR): HCHANNEL; stdcall; external 'bass.dll' name 'BASS_SamplePlay3D';
-{
-  Play a 3D sample, setting it's 3D position, orientation and velocity.
-  handle : Handle of sample to play
-  pos    : position of the sound (NULL = x/y/z=0.0)
-  orient : orientation of the sound, this is irrelevant if it's an
-           omnidirectional sound source (NULL = x/y/z=0.0)
-  vel    : velocity of the sound (NULL = x/y/z=0.0)
-  RETURN : Handle of channel used to play the sample (NULL=error)
-}
-function BASS_SamplePlay3DEx(handle: HSAMPLE; var pos, orient, vel: BASS_3DVECTOR; start: DWORD; freq, volume: Integer; loop: BOOL): HCHANNEL; stdcall; external 'bass.dll' name 'BASS_SamplePlay3DEx';
-{
-  Play a 3D sample, using specified attributes.
-  handle : Handle of sample to play
-  pos    : position of the sound (NULL = x/y/z=0.0)
-  orient : orientation of the sound, this is irrelevant if it's an
-           omnidirectional sound source (NULL = x/y/z=0.0)
-  vel    : velocity of the sound (NULL = x/y/z=0.0)
-  start  : Playback start position (in samples, not bytes)
-  freq   : Playback rate (-1=default)
-  volume : Volume (-1=default, 0=silent, 100=max)
-  loop   : TRUE = Loop sample (-1=default)
-  RETURN : Handle of channel used to play the sample (NULL=error)
-}
-function BASS_SampleStop(handle: HSAMPLE): BOOL; stdcall; external 'bass.dll' name 'BASS_SampleStop';
-{
-  Stops all instances of a sample. For example, if a sample is playing
-  simultaneously 3 times, calling this function will stop all 3 of them,
-  which is obviously simpler than calling BASS_ChannelStop() 3 times.
-  handle : Handle of sample to stop
-}
+var BASS_Set3DFactors: function(distf, rollf, doppf: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Set3DFactors';
+var BASS_Get3DFactors: function(var distf, rollf, doppf: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Get3DFactors';
+var BASS_Set3DPosition: function(var pos, vel, front, top: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Set3DPosition';
+var BASS_Get3DPosition: function(var pos, vel, front, top: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Get3DPosition';
+var BASS_Apply3D:procedure; stdcall; // external 'bass20.dll' name 'BASS_Apply3D';
+var BASS_SetEAXParameters: function(env: Integer; vol, decay, damp: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SetEAXParameters';
+var BASS_GetEAXParameters: function(var env: DWORD; var vol, decay, damp: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_GetEAXParameters';
 
-function BASS_StreamCreate(freq, flags: DWORD; proc: STREAMPROC; user: DWORD): HSTREAM; stdcall; external 'bass.dll' name 'BASS_StreamCreate';
-{
-  Create a user sample stream.
-  freq   : Stream playback rate
-  flags  : BASS_SAMPLE_xxx flags (only the 8BITS/MONO/3D flags are used)
-  proc   : User defined stream writing function
-  user   : The 'user' value passed to the callback function
-  RETURN : The created stream's handle (NULL=error)
-}
-function BASS_StreamCreateFile(mem: BOOL; f: Pointer; offset, length, flags: DWORD): HSTREAM; stdcall; external 'bass.dll' name 'BASS_StreamCreateFile';
-{
-  Create a sample stream from an MP3/MP2/MP1/OGG or WAV file.
-  mem    : TRUE = Stream file from memory
-  f      : Filename (mem=FALSE) or memory location (mem=TRUE)
-  offset : File offset of the stream data
-  length : File length (0=use whole file if mem=FALSE)
-  flags  : Flags
-  RETURN : The created stream's handle (NULL=error)
-}
-function BASS_StreamCreateURL(URL: PChar; offset: DWORD; flags: DWORD; save: PChar):HSTREAM;stdcall;external 'bass.dll' name 'BASS_StreamCreateURL';
-{
-  Create a sample stream from an MP3/MP2/MP1/OGG or WAV file on the internet.
-  url    : The URL (beginning with "http://" or "ftp://")
-  offset : File offset of start streaming from
-  flags  : Flags
-  save   : Filename to save the streamed file as locally (NULL=don't save)
-  RETURN : The created stream's handle (NULL=error)
-}
-procedure BASS_StreamFree(handle: HSTREAM); stdcall; external 'bass.dll' name 'BASS_StreamFree';
-{
-  Free a sample stream's resources.
-  stream : Stream handle
-}
-function BASS_StreamGetLength(handle: HSTREAM): QWORD; stdcall; external 'bass.dll' name 'BASS_StreamGetLength';
-{
-  Retrieves the playback length (in bytes) of a file stream. It's not
-  always possible to 100% accurately guess the length of a stream, so
-  the length returned may be only an approximation when using some WAV
-  codecs.
-  handle : Stream handle
-  RETURN : The length (-1=error)
-}
-function BASS_StreamGetTags(handle: HSTREAM; tags : DWORD): PChar; stdcall; external 'bass.dll' name 'BASS_StreamGetTags';
-{
-  Retrieves the requested tags/headers, if available.
-  handle : Stream handle
-  tags   : A BASS_TAG_xxx flag
-  RETURN : Pointer to the tags (NULL=error)
-}
-function BASS_StreamPreBuf(handle: HMUSIC): BOOL; stdcall; external 'bass.dll' name 'BASS_StreamPreBuf';
-{
-  Pre-buffer initial sample data ready for playback.
-  handle : Handle of stream
-}
-function BASS_StreamPlay(handle: HSTREAM; flush: BOOL; flags: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_StreamPlay';
-{
-  Play a sample stream, optionally flushing the buffer first.
-  handle : Handle of stream to play
-  flush  : Flush buffer contents. If you stop a stream and then want to
-           continue it from where it stopped, don't flush it. Flushing
-           a file stream causes it to restart from the beginning.
-  flags  : BASS_SAMPLE_xxx flags (only affects file streams, and only the
-          LOOP flag is used)
-}
-Function BASS_StreamGetFilePosition(handle:HSTREAM; mode:DWORD) : DWORD;stdcall;external 'bass.dll' name 'BASS_StreamGetFilePosition';
-{
-  Retrieves the file position of the decoding, the download (if streaming from
-  the internet), or the end (total length). Obviously only works with file streams.
-  handle : Stream handle
-  mode   : The position to retrieve (0=decoding, 1=download, 2=end)
-  RETURN : The position (-1=error)
-}
+var BASS_MusicLoad: function(mem: BOOL; f: Pointer; offset, length, flags, freq: DWORD): HMUSIC; stdcall; // external 'bass20.dll' name 'BASS_MusicLoad';
+var BASS_MusicFree: procedure(handle: HMUSIC); stdcall; // external 'bass20.dll' name 'BASS_MusicFree';
+var BASS_MusicGetName: function(handle: HMUSIC): PChar; stdcall; // external 'bass20.dll' name 'BASS_MusicGetName';
+var BASS_MusicGetLength: function(handle: HMUSIC; playlen: BOOL): DWORD; stdcall; // external 'bass20.dll' name 'BASS_MusicGetLength';
+var BASS_MusicPreBuf: function(handle: HMUSIC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicPreBuf';
+var BASS_MusicPlay: function(handle: HMUSIC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicPlay';
+var BASS_MusicPlayEx: function(handle: HMUSIC; pos: DWORD; flags: Integer; reset: BOOL): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicPlayEx';
+var BASS_MusicSetAmplify: function(handle: HMUSIC; amp: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetAmplify';
+var BASS_MusicSetPanSep: function(handle: HMUSIC; pan: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetPanSep';
+var BASS_MusicSetPositionScaler: function(handle: HMUSIC; scale: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetPositionScaler';
+var BASS_MusicSetVolume: function(handle: HMUSIC; chanins,volume: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetVolume';
+var BASS_MusicGetVolume: function(handle: HMUSIC; chanins: DWORD): Integer; stdcall; // external 'bass20.dll' name 'BASS_MusicGetVolume';
 
-function BASS_CDInit(drive: PChar; flags: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_CDInit';
-{
-  Initialize the CD functions, must be called before any other CD
-  functions. The volume is initially set to 100 (the maximum), use
-  BASS_ChannelSetAttributes() to adjust it.
-  drive  : The CD drive, for example: "d:" (NULL=use default drive)
-  flags  : BASS_DEVICE_LEAVEVOL = leave the volume as it is
-}
-procedure BASS_CDFree; stdcall; external 'bass.dll' name 'BASS_CDFree';
-{
-  Free resources used by the CD
-}
-function BASS_CDInDrive: BOOL; stdcall; external 'bass.dll' name 'BASS_CDInDrive';
-{
-  Check if there is a CD in the drive.
-}
-function BASS_CDDoor(open:BOOL): BOOL; stdcall; external 'bass.dll' name 'BASS_CDDoor';
-{
-  Opens or closes the CD door.
-  open   : TRUE=open the door
-}
-function BASS_CDGetID(id: DWORD):PChar; stdcall; external 'bass.dll' name 'BASS_CDGetID';
-{
-  Retrieves identification info from the CD in the drive.
-  id     : BASS_CDID_xxx flag
-  RETURN : ID string (NULL=error)
-}
-Function BASS_CDGetTracks:DWORD;stdcall;external 'bass.dll' name 'BASS_CDGetTracks';
-{
-  Retrieves the number of tracks on the CD
-  RETURN : The number of tracks (-1=error)
-}
-function BASS_CDPlay(track: DWORD; loop: BOOL; wait: BOOL): BOOL; stdcall; external 'bass.dll' name 'BASS_CDPlay';
-{
-  Play a CD track.
-  track  : Track number to play (1=first)
-  loop   : TRUE = Loop the track
-  wait   : TRUE = don't return until playback has started (some drives
-           will always wait anyway)
-}
-Function BASS_CDGetTrackLength(track:DWORD):DWORD;stdcall;external 'bass.dll' name 'BASS_CDGetTrackLength';
-{
-  Retrieves the playback length (in milliseconds) of a cd track.
-  track  : The CD track (1=first)
-  RETURN : The length (-1=error)
-}
+var BASS_SampleLoad: function(mem: BOOL; f: Pointer; offset, length, max, flags: DWORD): HSAMPLE; stdcall; // external 'bass20.dll' name 'BASS_SampleLoad';
+var BASS_SampleCreate: function(length, freq, max, flags: DWORD): Pointer; stdcall; // external 'bass20.dll' name 'BASS_SampleCreate';
+var BASS_SampleCreateDone: function : HSAMPLE; stdcall; // external 'bass20.dll' name 'BASS_SampleCreateDone';
+var BASS_SampleFree: procedure(handle: HSAMPLE); stdcall; // external 'bass20.dll' name 'BASS_SampleFree';
+var BASS_SampleGetInfo: function(handle: HSAMPLE; var info: BASS_SAMPLE): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SampleGetInfo';
+var BASS_SampleSetInfo: function(handle: HSAMPLE; var info: BASS_SAMPLE): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SampleSetInfo';
+var BASS_SamplePlay: function(handle: HSAMPLE): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlay';
+var BASS_SamplePlayEx: function(handle: HSAMPLE; start: DWORD; freq, volume, pan: Integer; loop: BOOL): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlayEx';
+var BASS_SamplePlay3D: function(handle: HSAMPLE; var pos, orient, vel: BASS_3DVECTOR): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlay3D';
+var BASS_SamplePlay3DEx: function(handle: HSAMPLE; var pos, orient, vel: BASS_3DVECTOR; start: DWORD; freq, volume: Integer; loop: BOOL): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlay3DEx';
+var BASS_SampleStop: function(handle: HSAMPLE): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SampleStop';
 
-Function BASS_RecordGetDeviceDescription(devnum: DWORD):PChar;stdcall;external 'bass.dll' name 'BASS_RecordGetDeviceDescription';
-{
-  Get the text description of a recording device. This function can be
-  used to enumerate the available devices.
-  devnum : The device (0=first)
-  RETURN : The text description of the device (NULL=error)
-}
-Function BASS_RecordInit(device: Integer):BOOL;stdcall;external 'bass.dll' name 'BASS_RecordInit';
-{
-  Initialize a recording device.
-  device : Device to use (0=first, -1=default)
-}
-procedure BASS_RecordFree;stdcall;external 'bass.dll' name 'BASS_RecordFree';
-{
-  Free all resources used by the recording device.
-}
-procedure BASS_RecordGetInfo(var info:BASS_RECORDINFO);stdcall;external 'bass.dll' name 'BASS_RecordGetInfo';
-{
-  Retrieve some information on the recording device being used.
-  info   : Pointer to store info at
-}
-Function BASS_RecordGetInputName(input:DWORD):PChar;stdcall;external 'bass.dll' name 'BASS_RecordGetInputName';
-{
-  Get the text description of a recording input.
-  input  : Input number (0=first)
-  RETURN : The text description (NULL=error)
-}
-Function BASS_RecordSetInput(input:DWORD; setting:DWORD):BOOL;stdcall;external 'bass.dll' name 'BASS_RecordSetInput';
-{
-  Adjust the setting of a recording input.
-  input  : Input number (0=first)
-  setting: BASS_INPUT flags (if BASS_INPUT_LEVEL used, LOWORD=volume)
-}
-Function BASS_RecordGetInput(input:DWORD):DWORD;stdcall;external 'bass.dll' name 'BASS_RecordGetInput';
-{
-  Retrieve the setting of a recording input.
-  input  : Input number (0=first)
-  RETURN : The setting (LOWORD=volume, with BASS_INPUT_OFF flag if off, -1=error)
-}
-Function BASS_RecordStart(freq,flags:DWORD; proc:RECORDPROC; user:DWORD):BOOL;stdcall;external 'bass.dll' name 'BASS_RecordStart';
-{
-  Start recording. Use BASS_ChannelStop to stop recording.
-  freq   : Sampling rate
-  flags  : BASS_SAMPLE_8BITS/MONO flags (optional HIWORD=update period)
-  proc   : User defined function to receive the recorded data
-  user   : The 'user' value passed to the callback function
-}
+var BASS_StreamCreate: function(freq, chans, flags: DWORD; proc: Pointer; user: DWORD): HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreate';
+var BASS_StreamCreateFile: function(mem: BOOL; f: Pointer; offset, length, flags: DWORD): HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreateFile';
+var BASS_StreamCreateURL: function(URL:PChar; offset:DWORD; flags:DWORD; proc:DOWNLOADPROC; user:DWORD):HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreateURL';
+var BASS_StreamCreateFileUser: function(buffered: BOOL; flags: DWORD; proc:STREAMFILEPROC; user:DWORD): HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreateFileUser';
+var BASS_StreamFree: procedure(handle: HSTREAM); stdcall; // external 'bass20.dll' name 'BASS_StreamFree';
+var BASS_StreamGetLength: function(handle: HSTREAM): QWORD; stdcall; // external 'bass20.dll' name 'BASS_StreamGetLength';
+var BASS_StreamGetTags: function(handle: HSTREAM; tags : DWORD): PChar; stdcall; // external 'bass20.dll' name 'BASS_StreamGetTags';
+var BASS_StreamPreBuf: function(handle: HMUSIC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_StreamPreBuf';
+var BASS_StreamPlay: function(handle: HSTREAM; flush: BOOL; flags: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_StreamPlay';
+var BASS_StreamGetFilePosition: function(handle:HSTREAM; mode:DWORD) : DWORD;stdcall;// external 'bass20.dll' name 'BASS_StreamGetFilePosition';
 
-{
-  A "channel" can be a playing sample (HCHANNEL), a MOD music (HMUSIC), a
-  sample stream (HSTREAM), the CD (CDCHANNEL), or recording (RECORDCHAN). The
-  following functions can be used with one or more of these channel types.
-}
+var BASS_RecordGetDeviceDescription: function(devnum: DWORD):PChar;stdcall;// external 'bass20.dll' name 'BASS_RecordGetDeviceDescription';
+var BASS_RecordInit: function(device: Integer):BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordInit';
+var BASS_RecordSetDevice: function(device: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_RecordSetDevice';
+var BASS_RecordGetDevice: function : DWORD; stdcall; // external 'bass20.dll' name 'BASS_RecordGetDevice';
+var BASS_RecordFree: function :BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordFree';
+var BASS_RecordGetInfo: function(var info:BASS_RECORDINFO):BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordGetInfo';
+var BASS_RecordGetInputName: function(input:DWORD):PChar;stdcall;// external 'bass20.dll' name 'BASS_RecordGetInputName';
+var BASS_RecordSetInput: function(input:DWORD; setting:DWORD):BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordSetInput';
+var BASS_RecordGetInput: function(input:DWORD):DWORD;stdcall;// external 'bass20.dll' name 'BASS_RecordGetInput';
+var BASS_RecordStart: function(freq,flags:DWORD; proc:RECORDPROC; user:DWORD):HRECORD;stdcall;// external 'bass20.dll' name 'BASS_RecordStart';
 
-Function BASS_ChannelBytes2Seconds(handle: DWORD; pos: QWORD): FLOAT; stdcall;external 'bass.dll' name 'BASS_ChannelBytes2Seconds';
-{
-  Translate a byte position into time (seconds)
-  handle : Handle of channel (HCHANNEL/HMUSIC/HSTREAM, or RECORDCHAN, also HSAMPLE)
-  pos    : The position to translate
-  RETURN : The millisecond position (<0=error)
-}
-Function BASS_ChannelSeconds2Bytes(handle: DWORD; pos: FLOAT): QWORD; stdcall;external 'bass.dll' name 'BASS_ChannelSeconds2Bytes';
-{
-  Translate a time (seconds) position into bytes
-  handle : Handle of channel (HCHANNEL/HMUSIC/HSTREAM, or RECORDCHAN, also HSAMPLE)
-  pos    : The position to translate
-  RETURN : The byte position (-1=error)
-}
-Function BASS_ChannelIsActive(handle: DWORD): DWORD; stdcall;external 'bass.dll' name 'BASS_ChannelIsActive';
-{
-  Check if a channel is active (playing) or stalled.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
-  RETURN : One of the BASS_ACTIVE_xxx values
-}
-function BASS_ChannelGetFlags(handle: DWORD): DWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetFlags';
-{
-  Get some info about a channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM)
-  RETURN : BASS_SAMPLE_xxx flags (-1=error)
-}
-function BASS_ChannelStop(handle: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelStop';
-{
-  Stop a channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
-}
-function BASS_ChannelPause(handle: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelPause';
-{
-  Pause a channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
-}
-function BASS_ChannelResume(handle: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelResume';
-{
-  Resume a paused channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
-}
-function BASS_ChannelSetAttributes(handle: DWORD; freq, volume, pan: Integer): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSetAttributes';
-{
-  Update a channel's attributes. The actual setting may not be exactly
-  as specified, depending on the accuracy of the device and drivers.
-  NOTE: Only the volume can be adjusted for the CD "channel", but not all
-  soundcards allow controlling of the CD volume level.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
-  freq   : Playback rate (-1=leave current)
-  volume : Volume (-1=leave current, 0=silent, 100=max)
-  pan    : Pan position (-101=current, -100=left, 0=middle, 100=right)
-           panning has no effect on 3D channels
-}
-function BASS_ChannelGetAttributes(handle: DWORD; var freq, volume: DWORD; var pan: Integer): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelGetAttributes';
-{
-  Retrieve a channel's attributes. Only the volume is available for
-  the CD "channel" (if allowed by the soundcard/drivers).
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
-  freq   : Pointer to store playback rate (NULL=don't retrieve it)
-  volume : Pointer to store volume (NULL=don't retrieve it)
-  pan    : Pointer to store pan position (NULL=don't retrieve it)
-}
-function BASS_ChannelSet3DAttributes(handle: DWORD; mode: Integer; min, max: FLOAT; iangle, oangle, outvol: Integer): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSet3DAttributes';
-{
-  Set a channel's 3D attributes.
-  handle : Channel handle (HCHANNEL/HSTREAM/HMUSIC)
-  mode   : BASS_3DMODE_xxx mode (-1=leave current setting)
-  min    : minimum distance, volume stops increasing within this distance (<0.0=leave current)
-  max    : maximum distance, volume stops decreasing past this distance (<0.0=leave current)
-  iangle : angle of inside projection cone in degrees (360=omnidirectional, -1=leave current)
-  oangle : angle of outside projection cone in degrees (-1=leave current)
-           NOTE: iangle & oangle must both be set in a single call
-  outvol : delta-volume outside the projection cone (0=silent, 100=same as inside)
-  The iangle/oangle angles decide how wide the sound is projected around the
-  orientation angle. Within the inside angle the volume level is the channel
-  level as set with BASS_ChannelSetAttributes, from the inside to the outside
-  angles the volume gradually changes by the "outvol" setting.
-}
-function BASS_ChannelGet3DAttributes(handle: DWORD; var mode: DWORD; var min, max: FLOAT; var iangle, oangle, outvol: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelGet3DAttributes';
-{
-  Retrieve a channel's 3D attributes.
-  handle : Channel handle (HCHANNEL/HSTREAM/HMUSIC)
-  mode   : BASS_3DMODE_xxx mode (NULL=don't retrieve it)
-  min    : minumum distance (NULL=don't retrieve it)
-  max    : maximum distance (NULL=don't retrieve it)
-  iangle : angle of inside projection cone (NULL=don't retrieve it)
-  oangle : angle of outside projection cone (NULL=don't retrieve it)
-           NOTE: iangle & oangle must both be retrieved in a single call
-  outvol : delta-volume outside the projection cone (NULL=don't retrieve it)
-}
-function BASS_ChannelSet3DPosition(handle: DWORD; var pos, orient, vel: BASS_3DVECTOR): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSet3DPosition';
-{
-  Update a channel's 3D position, orientation and velocity. The velocity
-  is only used to calculate the doppler effect.
-  handle : Channel handle (HCHANNEL/HSTREAM/HMUSIC)
-  pos    : position of the sound (NULL=leave current)
-  orient : orientation of the sound, this is irrelevant if it's an
-           omnidirectional sound source (NULL=leave current)
-  vel    : velocity of the sound (NULL=leave current)
-}
-function BASS_ChannelGet3DPosition(handle: DWORD; var pos, orient, vel: BASS_3DVECTOR): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelGet3DPosition';
-{
-  Retrieve a channel's current 3D position, orientation and velocity.
-  handle : Channel handle (HCHANNEL/HSTREAM/HMUSIC)
-  pos    : position of the sound (NULL=don't retrieve it)
-  orient : orientation of the sound, this is irrelevant if it's an
-           omnidirectional sound source (NULL=don't retrieve it)
-  vel    : velocity of the sound (NULL=don't retrieve it)
-}
-function BASS_ChannelSetPosition(handle: DWORD; pos: QWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSetPosition';
-{
-  Set the current playback position of a channel.
-  handle : Channel handle (HCHANNEL/HMUSIC, or CDCHANNEL)
-  pos    : the position
-           if HCHANNEL: position in bytes
-           if HMUSIC: LOWORD=order HIWORD=row ... use MAKELONG(order,row)
-           if HSTREAM: position in bytes, file streams only
-           if CDCHANNEL: position in milliseconds from start of track
-}
-function BASS_ChannelGetPosition(handle: DWORD): QWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetPosition';
-{
-  Get the current playback position of a channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
-  RETURN : the position (-1=error)
-           if HCHANNEL: position in bytes
-           if HMUSIC: LOWORD=order HIWORD=row (see BASS_MusicSetPositionScaler)
-           if HSTREAM: total bytes played since the stream was last flushed
-           if CDCHANNEL: position in milliseconds from start of track
-}
-function BASS_ChannelGetLevel(handle: DWORD): DWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetLevel';
-{
-  Calculate a channel's current output level.
-  handle : Channel handle (HMUSIC/HSTREAM, or RECORDCHAN)
-  RETURN : LOWORD=left level (0-128) HIWORD=right level (0-128) (-1=error)
-}
-function BASS_ChannelGetData(handle: DWORD; buffer: Pointer; length: DWORD): DWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetData';
-{
-  Retrieves upto "length" bytes of the channel's current sample data.
-  This is useful if you wish to "visualize" the sound.
-  handle : Channel handle (HMUSIC/HSTREAM, or RECORDCHAN)
-  buffer : Location to write the data
-  length : Number of bytes wanted, or a BASS_DATA_xxx flag
-  RETURN : Number of bytes actually written to the buffer (-1=error)
-}
-function BASS_ChannelSetSync(handle: DWORD; atype: DWORD; param: QWORD; proc: SYNCPROC; user: DWORD): HSYNC; stdcall; external 'bass.dll' name 'BASS_ChannelSetSync';
-{
-  Setup a sync on a channel. Multiple syncs may be used per channel.
-  handle : Channel handle
-  atype  : Sync type (BASS_SYNC_xxx type & flags)
-  param  : Sync parameters (see the BASS_SYNC_xxx type description)
-  proc   : User defined callback function
-  user   : The 'user' value passed to the callback function
-  RETURN : Sync handle (NULL=error)
-}
-function BASS_ChannelRemoveSync(handle: DWORD; sync: HSYNC): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelRemoveSync';
-{
-  Remove a sync from a channel
-  handle : Channel handle (HMUSIC)
-  sync   : Handle of sync to remove
-}
-function BASS_ChannelSetDSP(handle: DWORD; proc: DSPPROC; user: DWORD): HDSP; stdcall; external 'bass.dll' name 'BASS_ChannelSetDSP';
-{
-  Setup a user DSP function on a channel. When multiple DSP functions
-  are used on a channel, they are called in the order that they were added.
-  handle : Channel handle (HMUSIC/HSTREAM)
-  proc   : User defined callback function
-  user   : The 'user' value passed to the callback function
-  RETURN : DSP handle (NULL=error)
-}
-function BASS_ChannelRemoveDSP(handle: DWORD; dsp: HDSP): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelRemoveDSP';
-{
-  Remove a DSP function from a channel
-  handle : Channel handle (HMUSIC/HSTREAM)
-  dsp    : Handle of DSP to remove
-}
-function BASS_ChannelSetEAXMix(handle: DWORD; mix: FLOAT): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSetEAXMix';
-{
-  Set the wet(reverb)/dry(no reverb) mix ratio on the channel. By default
-  the distance of the sound from the listener is used to calculate the mix.
-  NOTE: The channel must have 3D functionality enabled for the EAX environment
-  to have any affect on it.
-  handle : Channel handle (HCHANNEL/HSTREAM/HMUSIC)
-  mix    : The ratio (0.0=reverb off, 1.0=max reverb, -1.0=let EAX calculate
-           the reverb mix based on the distance)
-}
-function BASS_ChannelGetEAXMix(handle: DWORD; var mix: FLOAT): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelGetEAXMix';
-{
-  Get the wet(reverb)/dry(no reverb) mix ratio on the channel.
-  handle : Channel handle (HCHANNEL/HSTREAM/HMUSIC)
-  mix    : Pointer to store the ratio at
-}
-function BASS_ChannelSetLink(handle, chan: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSetLink';
-{
-  Set a link between 2 channels. When the 1st is played/stopped/paused/resumed
-  the 2nd channel is also played/stopped/paused/resumed.
-  handle : Handle of channel to link "chan" to (HMUSIC/HSTREAM)
-  chan   : Handle of channel to link to "handle" (HMUSIC/HSTREAM)
-}
-function BASS_ChannelRemoveLink(handle, chan: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelRemoveLink';
-{
-  Remove a link from a channel.
-  handle : Handle of channel to unlink with "chan" (HMUSIC/HSTREAM)
-  chan   : Handle of channel to unlink from "handle" (HMUSIC/HSTREAM)
-}
-function BASS_ChannelSetFX(handle, etype: DWORD): HFX; stdcall; external 'bass.dll' name 'BASS_ChannelSetFX';
-{
-  Setup a DX8 effect on a channel. Can only be used when the channel
-  is not playing. Use BASS_FXSetParameters to set the effect parameters.
-  Obviously requires DX8.
-  handle : Channel handle (HMUSIC/HSTREAM)
-  etype  : Type of effect to setup (BASS_FX_xxx)
-  RETURN : FX handle (NULL=error)
-}
-function BASS_ChannelRemoveFX(handle: DWORD; fx: HFX): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelRemoveFX';
-{
-  Remove a DX8 effect from a channel. Can only be used when the
-  channel is not playing.
-  handle : Channel handle (HMUSIC/HSTREAM)
-  fx     : Handle of FX to remove
-}
+var BASS_ChannelBytes2Seconds: function(handle: DWORD; pos: QWORD): FLOAT; stdcall;// external 'bass20.dll' name 'BASS_ChannelBytes2Seconds';
+var BASS_ChannelSeconds2Bytes: function(handle: DWORD; pos: FLOAT): QWORD; stdcall;// external 'bass20.dll' name 'BASS_ChannelSeconds2Bytes';
+var BASS_ChannelGetDevice: function(handle: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetDevice';
+var BASS_ChannelIsActive: function(handle: DWORD): DWORD; stdcall;// external 'bass20.dll' name 'BASS_ChannelIsActive';
+var BASS_ChannelGetInfo: function(handle: DWORD; var info:BASS_CHANNELINFO):BOOL;stdcall;// external 'bass20.dll' name 'BASS_ChannelGetInfo';
+var BASS_ChannelStop: function(handle: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelStop';
+var BASS_ChannelPause: function(handle: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelPause';
+var BASS_ChannelResume: function(handle: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelResume';
+var BASS_ChannelSetAttributes: function(handle: DWORD; freq, volume, pan: Integer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetAttributes';
+var BASS_ChannelGetAttributes: function(handle: DWORD; var freq, volume: DWORD; var pan: Integer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetAttributes';
+var BASS_ChannelSlideAttributes: function(handle: DWORD; freq, volume, pan: Integer; time: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSlideAttributes';
+var BASS_ChannelIsSliding: function(handle: DWORD): DWORD; stdcall;// external 'bass20.dll' name 'BASS_ChannelIsSliding';
+var BASS_ChannelSet3DAttributes: function(handle: DWORD; mode: Integer; min, max: FLOAT; iangle, oangle, outvol: Integer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSet3DAttributes';
+var BASS_ChannelGet3DAttributes: function(handle: DWORD; var mode: DWORD; var min, max: FLOAT; var iangle, oangle, outvol: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGet3DAttributes';
+var BASS_ChannelSet3DPosition: function(handle: DWORD; var pos, orient, vel: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSet3DPosition';
+var BASS_ChannelGet3DPosition: function(handle: DWORD; var pos, orient, vel: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGet3DPosition';
+var BASS_ChannelSetPosition: function(handle: DWORD; pos: QWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetPosition';
+var BASS_ChannelGetPosition: function(handle: DWORD): QWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetPosition';
+var BASS_ChannelGetLevel: function(handle: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetLevel';
+var BASS_ChannelGetData: function(handle: DWORD; buffer: Pointer; length: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetData';
+var BASS_ChannelSetSync: function(handle: DWORD; stype: DWORD; param: QWORD; proc: SYNCPROC; user: DWORD): HSYNC; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetSync';
+var BASS_ChannelRemoveSync: function(handle: DWORD; sync: HSYNC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveSync';
+var BASS_ChannelSetDSP: function(handle: DWORD; proc: DSPPROC; user: DWORD; priority: Integer): HDSP; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetDSP';
+var BASS_ChannelRemoveDSP: function(handle: DWORD; dsp: HDSP): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveDSP';
+var BASS_ChannelSetEAXMix: function(handle: DWORD; mix: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetEAXMix';
+var BASS_ChannelGetEAXMix: function(handle: DWORD; var mix: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetEAXMix';
+var BASS_ChannelSetLink: function(handle, chan: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetLink';
+var BASS_ChannelRemoveLink: function(handle, chan: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveLink';
+var BASS_ChannelSetFX: function(handle, etype: DWORD): HFX; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetFX';
+var BASS_ChannelRemoveFX: function(handle: DWORD; fx: HFX): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveFX';
 
-function BASS_FXSetParameters(handle: HFX; par: Pointer): BOOL; stdcall; external 'bass.dll' name 'BASS_FXSetParameters';
-{
-  Set the parameters of a DX8 effect.
-  handle : FX handle
-  par    : Pointer to the parameter structure
-}
-function BASS_FXGetParameters(handle: HFX; par: Pointer): BOOL; stdcall; external 'bass.dll' name 'BASS_FXGetParameters';
-{
-  Retrieve the parameters of a DX8 effect.
-  handle : FX handle
-  par    : Pointer to the parameter structure
-}
+var BASS_FXSetParameters: function(handle: HFX; par: Pointer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_FXSetParameters';
+var BASS_FXGetParameters: function(handle: HFX; par: Pointer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_FXGetParameters';
 
-procedure BASS_EAXPreset(env: Integer);
+
+function BASS_SetEAXPreset(env: Integer): BOOL;
 {
   This function is defined in the implementation part of this unit.
   It is not part of BASS.DLL but an extra function which makes it easier
@@ -1399,68 +825,231 @@ procedure BASS_EAXPreset(env: Integer);
   env    : a EAX_ENVIRONMENT_xxx constant
 }
 
+function BASS_Load(LibName: PChar ): Boolean;
+procedure BASS_UnLoad;
+Function BASS_IsLoaded:boolean;
+
 
 implementation
+const
+  INVALID_MODULEHANDLE_VALUE = TBASSModuleHandle(0);
 
-procedure BASS_EAXPreset(env: Integer);
+var
+  BASSHandle: TBASSModuleHandle;
+
+
+function BASS_SetEAXPreset(env: Integer): BOOL;
 begin
   case (env) of
     EAX_ENVIRONMENT_GENERIC:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_GENERIC, 0.5, 1.493, 0.5);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_GENERIC, 0.5, 1.493, 0.5);
     EAX_ENVIRONMENT_PADDEDCELL:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_PADDEDCELL, 0.25, 0.1, 0);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_PADDEDCELL, 0.25, 0.1, 0);
     EAX_ENVIRONMENT_ROOM:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_ROOM, 0.417, 0.4, 0.666);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_ROOM, 0.417, 0.4, 0.666);
     EAX_ENVIRONMENT_BATHROOM:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_BATHROOM, 0.653, 1.499, 0.166);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_BATHROOM, 0.653, 1.499, 0.166);
     EAX_ENVIRONMENT_LIVINGROOM:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_LIVINGROOM, 0.208, 0.478, 0);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_LIVINGROOM, 0.208, 0.478, 0);
     EAX_ENVIRONMENT_STONEROOM:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_STONEROOM, 0.5, 2.309, 0.888);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_STONEROOM, 0.5, 2.309, 0.888);
     EAX_ENVIRONMENT_AUDITORIUM:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_AUDITORIUM, 0.403, 4.279, 0.5);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_AUDITORIUM, 0.403, 4.279, 0.5);
     EAX_ENVIRONMENT_CONCERTHALL:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_CONCERTHALL, 0.5, 3.961, 0.5);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_CONCERTHALL, 0.5, 3.961, 0.5);
     EAX_ENVIRONMENT_CAVE:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_CAVE, 0.5, 2.886, 1.304);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_CAVE, 0.5, 2.886, 1.304);
     EAX_ENVIRONMENT_ARENA:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_ARENA, 0.361, 7.284, 0.332);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_ARENA, 0.361, 7.284, 0.332);
     EAX_ENVIRONMENT_HANGAR:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_HANGAR, 0.5, 10.0, 0.3);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_HANGAR, 0.5, 10.0, 0.3);
     EAX_ENVIRONMENT_CARPETEDHALLWAY:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_CARPETEDHALLWAY, 0.153, 0.259, 2.0);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_CARPETEDHALLWAY, 0.153, 0.259, 2.0);
     EAX_ENVIRONMENT_HALLWAY:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_HALLWAY, 0.361, 1.493, 0);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_HALLWAY, 0.361, 1.493, 0);
     EAX_ENVIRONMENT_STONECORRIDOR:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_STONECORRIDOR, 0.444, 2.697, 0.638);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_STONECORRIDOR, 0.444, 2.697, 0.638);
     EAX_ENVIRONMENT_ALLEY:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_ALLEY, 0.25, 1.752, 0.776);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_ALLEY, 0.25, 1.752, 0.776);
     EAX_ENVIRONMENT_FOREST:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_FOREST, 0.111, 3.145, 0.472);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_FOREST, 0.111, 3.145, 0.472);
     EAX_ENVIRONMENT_CITY:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_CITY, 0.111, 2.767, 0.224);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_CITY, 0.111, 2.767, 0.224);
     EAX_ENVIRONMENT_MOUNTAINS:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_MOUNTAINS, 0.194, 7.841, 0.472);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_MOUNTAINS, 0.194, 7.841, 0.472);
     EAX_ENVIRONMENT_QUARRY:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_QUARRY, 1, 1.499, 0.5);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_QUARRY, 1, 1.499, 0.5);
     EAX_ENVIRONMENT_PLAIN:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_PLAIN, 0.097, 2.767, 0.224);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_PLAIN, 0.097, 2.767, 0.224);
     EAX_ENVIRONMENT_PARKINGLOT:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_PARKINGLOT, 0.208, 1.652, 1.5);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_PARKINGLOT, 0.208, 1.652, 1.5);
     EAX_ENVIRONMENT_SEWERPIPE:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_SEWERPIPE, 0.652, 2.886, 0.25);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_SEWERPIPE, 0.652, 2.886, 0.25);
     EAX_ENVIRONMENT_UNDERWATER:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_UNDERWATER, 1, 1.499, 0);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_UNDERWATER, 1, 1.499, 0);
     EAX_ENVIRONMENT_DRUGGED:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_DRUGGED, 0.875, 8.392, 1.388);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_DRUGGED, 0.875, 8.392, 1.388);
     EAX_ENVIRONMENT_DIZZY:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_DIZZY, 0.139, 17.234, 0.666);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_DIZZY, 0.139, 17.234, 0.666);
     EAX_ENVIRONMENT_PSYCHOTIC:
-      BASS_SetEAXParameters(EAX_ENVIRONMENT_PSYCHOTIC, 0.486, 7.563, 0.806);
+      Result := BASS_SetEAXParameters(EAX_ENVIRONMENT_PSYCHOTIC, 0.486, 7.563, 0.806);
     else
-      BASS_SetEAXParameters(-1, 0, -1, -1);
+      Result := FALSE;
   end;
 end;
+
+
+function BASS_Load(LibName: PChar ): Boolean;
+begin
+  Result := False;
+
+  { Make sure the previous library is unloaded }
+  BASS_Unload;
+
+  { If no library name given, use the default library names }
+  if LibName = nil then
+    LibName := BASS_DLL;
+
+  { Load the library }
+  BASSHandle := LoadLibrary(LibName);
+  if BASSHandle = INVALID_MODULEHANDLE_VALUE then
+    Exit;
+
+  { Get all the function addresses from the library }
+//  FSOUND_SetOutput                      := GetAddress(FMODHandle, '_FSOUND_SetOutput@4');
+
+BASS_SetConfig := getprocaddress(basshandle,'BASS_SetConfig');//(option, value: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_SetConfig';
+BASS_GetConfig := getprocaddress(basshandle,'BASS_GetConfig');//(option: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_GetConfig';
+BASS_GetVersion := getprocaddress(basshandle,'BASS_GetVersion');//:DWORD; stdcall; // external 'bass20.dll' name 'BASS_GetVersion';
+BASS_GetDeviceDescription := getprocaddress(basshandle,'BASS_GetDeviceDescription');//(device: DWORD): PChar; stdcall; // external 'bass20.dll' name 'BASS_GetDeviceDescription';
+BASS_ErrorGetCode := getprocaddress(basshandle,'BASS_ErrorGetCode');//: DWORD; stdcall; // external 'bass20.dll' name 'BASS_ErrorGetCode';
+BASS_Init := getprocaddress(basshandle,'BASS_Init');//(device: Integer; freq, flags: DWORD; win: HWND; clsid: PGUID): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Init';
+BASS_SetDevice := getprocaddress(basshandle,'BASS_SetDevice');//(device: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SetDevice';
+BASS_GetDevice := getprocaddress(basshandle,'BASS_GetDevice');//: DWORD; stdcall; // external 'bass20.dll' name 'BASS_GetDevice';
+BASS_Free := getprocaddress(basshandle,'BASS_Free');//: BOOL; stdcall; // external 'bass20.dll' name 'BASS_Free';
+BASS_GetDSoundObject := getprocaddress(basshandle,'BASS_GetDSoundObject');//(obj: DWORD): Pointer; stdcall; // external 'bass20.dll' name 'BASS_GetDSoundObject';
+BASS_GetInfo := getprocaddress(basshandle,'BASS_GetInfo');//(info: BASS_INFO): BOOL; stdcall; // external 'bass20.dll' name 'BASS_GetInfo';
+BASS_Update := getprocaddress(basshandle,'BASS_Update');//: BOOL; stdcall; // external 'bass20.dll' name 'BASS_Update';
+BASS_GetCPU := getprocaddress(basshandle,'BASS_GetCPU');//: FLOAT; stdcall; // external 'bass20.dll' name 'BASS_GetCPU';
+BASS_Start := getprocaddress(basshandle,'BASS_Start');//: BOOL; stdcall; // external 'bass20.dll' name 'BASS_Start';
+BASS_Stop := getprocaddress(basshandle,'BASS_Stop');//: BOOL; stdcall; // external 'bass20.dll' name 'BASS_Stop';
+BASS_Pause := getprocaddress(basshandle,'BASS_Pause');//: BOOL; stdcall; // external 'bass20.dll' name 'BASS_Pause';
+BASS_SetVolume := getprocaddress(basshandle,'BASS_SetVolume');//(volume: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SetVolume';
+BASS_GetVolume := getprocaddress(basshandle,'BASS_GetVolume');//: Integer; stdcall; // external 'bass20.dll' name 'BASS_GetVolume';
+
+BASS_Set3DFactors := getprocaddress(basshandle,'BASS_Set3DFactors');//(distf, rollf, doppf: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Set3DFactors';
+BASS_Get3DFactors := getprocaddress(basshandle,'BASS_Get3DFactors');//(distf, rollf, doppf: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Get3DFactors';
+BASS_Set3DPosition := getprocaddress(basshandle,'BASS_Set3DPosition');//(pos, vel, front, top: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Set3DPosition';
+BASS_Get3DPosition := getprocaddress(basshandle,'BASS_Get3DPosition');//(pos, vel, front, top: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_Get3DPosition';
+BASS_Apply3D := getprocaddress(basshandle,'BASS_Apply3D');//; stdcall; // external 'bass20.dll' name 'BASS_Apply3D';
+BASS_SetEAXParameters := getprocaddress(basshandle,'BASS_SetEAXParameters');//(env: Integer; vol, decay, damp: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SetEAXParameters';
+BASS_GetEAXParameters := getprocaddress(basshandle,'BASS_GetEAXParameters');//(env: DWORD; vol, decay, damp: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_GetEAXParameters';
+
+BASS_MusicLoad := getprocaddress(basshandle,'BASS_MusicLoad');//(mem: BOOL; f: Pointer; offset, length, flags, freq: DWORD): HMUSIC; stdcall; // external 'bass20.dll' name 'BASS_MusicLoad';
+BASS_MusicFree := getprocaddress(basshandle,'BASS_MusicFree');//(handle: HMUSIC); stdcall; // external 'bass20.dll' name 'BASS_MusicFree';
+BASS_MusicGetName := getprocaddress(basshandle,'BASS_MusicGetName');//(handle: HMUSIC): PChar; stdcall; // external 'bass20.dll' name 'BASS_MusicGetName';
+BASS_MusicGetLength := getprocaddress(basshandle,'BASS_MusicGetLength');//(handle: HMUSIC; playlen: BOOL): DWORD; stdcall; // external 'bass20.dll' name 'BASS_MusicGetLength';
+BASS_MusicPreBuf := getprocaddress(basshandle,'BASS_MusicPreBuf');//(handle: HMUSIC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicPreBuf';
+BASS_MusicPlay := getprocaddress(basshandle,'BASS_MusicPlay');//(handle: HMUSIC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicPlay';
+BASS_MusicPlayEx := getprocaddress(basshandle,'BASS_MusicPlayEx');//(handle: HMUSIC; pos: DWORD; flags: Integer; reset: BOOL): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicPlayEx';
+BASS_MusicSetAmplify := getprocaddress(basshandle,'BASS_MusicSetAmplify');//(handle: HMUSIC; amp: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetAmplify';
+BASS_MusicSetPanSep := getprocaddress(basshandle,'BASS_MusicSetPanSep');//(handle: HMUSIC; pan: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetPanSep';
+BASS_MusicSetPositionScaler := getprocaddress(basshandle,'BASS_MusicSetPositionScaler');//(handle: HMUSIC; scale: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetPositionScaler';
+BASS_MusicSetVolume := getprocaddress(basshandle,'BASS_MusicSetVolume');//(handle: HMUSIC; chanins,volume: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_MusicSetVolume';
+BASS_MusicGetVolume := getprocaddress(basshandle,'BASS_MusicGetVolume');//(handle: HMUSIC; chanins: DWORD): Integer; stdcall; // external 'bass20.dll' name 'BASS_MusicGetVolume';
+
+BASS_SampleLoad := getprocaddress(basshandle,'BASS_SampleLoad');//(mem: BOOL; f: Pointer; offset, length, max, flags: DWORD): HSAMPLE; stdcall; // external 'bass20.dll' name 'BASS_SampleLoad';
+BASS_SampleCreate := getprocaddress(basshandle,'BASS_SampleCreate');//(length, freq, max, flags: DWORD): Pointer; stdcall; // external 'bass20.dll' name 'BASS_SampleCreate';
+BASS_SampleCreateDone := getprocaddress(basshandle,'BASS_SampleCreateDone');//: HSAMPLE; stdcall; // external 'bass20.dll' name 'BASS_SampleCreateDone';
+BASS_SampleFree := getprocaddress(basshandle,'BASS_SampleFree');//(handle: HSAMPLE); stdcall; // external 'bass20.dll' name 'BASS_SampleFree';
+BASS_SampleGetInfo := getprocaddress(basshandle,'BASS_SampleGetInfo');//(handle: HSAMPLE; info: BASS_SAMPLE): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SampleGetInfo';
+BASS_SampleSetInfo := getprocaddress(basshandle,'BASS_SampleSetInfo');//(handle: HSAMPLE; info: BASS_SAMPLE): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SampleSetInfo';
+BASS_SamplePlay := getprocaddress(basshandle,'BASS_SamplePlay');//(handle: HSAMPLE): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlay';
+BASS_SamplePlayEx := getprocaddress(basshandle,'BASS_SamplePlayEx');//(handle: HSAMPLE; start: DWORD; freq, volume, pan: Integer; loop: BOOL): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlayEx';
+BASS_SamplePlay3D := getprocaddress(basshandle,'BASS_SamplePlay3D');//(handle: HSAMPLE; pos, orient, vel: BASS_3DVECTOR): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlay3D';
+BASS_SamplePlay3DEx := getprocaddress(basshandle,'BASS_SamplePlay3DEx');//(handle: HSAMPLE; pos, orient, vel: BASS_3DVECTOR; start: DWORD; freq, volume: Integer; loop: BOOL): HCHANNEL; stdcall; // external 'bass20.dll' name 'BASS_SamplePlay3DEx';
+BASS_SampleStop := getprocaddress(basshandle,'BASS_SampleStop');//(handle: HSAMPLE): BOOL; stdcall; // external 'bass20.dll' name 'BASS_SampleStop';
+
+BASS_StreamCreate := getprocaddress(basshandle,'BASS_StreamCreate');//(freq, chans, flags: DWORD; proc: Pointer; user: DWORD): HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreate';
+BASS_StreamCreateFile := getprocaddress(basshandle,'BASS_StreamCreateFile');//(mem: BOOL; f: Pointer; offset, length, flags: DWORD): HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreateFile';
+BASS_StreamCreateURL := getprocaddress(basshandle,'BASS_StreamCreateURL');//(URL:PChar; offset:DWORD; flags:DWORD; proc:DOWNLOADPROC; user:DWORD):HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreateURL';
+BASS_StreamCreateFileUser := getprocaddress(basshandle,'BASS_StreamCreateFileUser');//(buffered: BOOL; flags: DWORD; proc:STREAMFILEPROC; user:DWORD): HSTREAM; stdcall; // external 'bass20.dll' name 'BASS_StreamCreateFileUser';
+BASS_StreamFree := getprocaddress(basshandle,'BASS_StreamFree');//(handle: HSTREAM); stdcall; // external 'bass20.dll' name 'BASS_StreamFree';
+BASS_StreamGetLength := getprocaddress(basshandle,'BASS_StreamGetLength');//(handle: HSTREAM): QWORD; stdcall; // external 'bass20.dll' name 'BASS_StreamGetLength';
+BASS_StreamGetTags := getprocaddress(basshandle,'BASS_StreamGetTags');//(handle: HSTREAM; tags : DWORD): PChar; stdcall; // external 'bass20.dll' name 'BASS_StreamGetTags';
+BASS_StreamPreBuf := getprocaddress(basshandle,'BASS_StreamPreBuf');//(handle: HMUSIC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_StreamPreBuf';
+BASS_StreamPlay := getprocaddress(basshandle,'BASS_StreamPlay');//(handle: HSTREAM; flush: BOOL; flags: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_StreamPlay';
+BASS_StreamGetFilePosition := getprocaddress(basshandle,'BASS_StreamGetFilePosition');//(handle:HSTREAM; mode:DWORD) : DWORD;stdcall;// external 'bass20.dll' name 'BASS_StreamGetFilePosition';
+
+BASS_RecordGetDeviceDescription := getprocaddress(basshandle,'BASS_RecordGetDeviceDescription');//(devnum: DWORD):PChar;stdcall;// external 'bass20.dll' name 'BASS_RecordGetDeviceDescription';
+BASS_RecordInit := getprocaddress(basshandle,'BASS_RecordInit');//(device: Integer):BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordInit';
+BASS_RecordSetDevice := getprocaddress(basshandle,'BASS_RecordSetDevice');//(device: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_RecordSetDevice';
+BASS_RecordGetDevice := getprocaddress(basshandle,'BASS_RecordGetDevice');//: DWORD; stdcall; // external 'bass20.dll' name 'BASS_RecordGetDevice';
+BASS_RecordFree := getprocaddress(basshandle,'BASS_RecordFree');//:BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordFree';
+BASS_RecordGetInfo := getprocaddress(basshandle,'BASS_RecordGetInfo');//(info:BASS_RECORDINFO):BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordGetInfo';
+BASS_RecordGetInputName := getprocaddress(basshandle,'BASS_RecordGetInputName');//(input:DWORD):PChar;stdcall;// external 'bass20.dll' name 'BASS_RecordGetInputName';
+BASS_RecordSetInput := getprocaddress(basshandle,'BASS_RecordSetInput');//(input:DWORD; setting:DWORD):BOOL;stdcall;// external 'bass20.dll' name 'BASS_RecordSetInput';
+BASS_RecordGetInput := getprocaddress(basshandle,'BASS_RecordGetInput');//(input:DWORD):DWORD;stdcall;// external 'bass20.dll' name 'BASS_RecordGetInput';
+BASS_RecordStart := getprocaddress(basshandle,'BASS_RecordStart');//(freq,flags:DWORD; proc:RECORDPROC; user:DWORD):HRECORD;stdcall;// external 'bass20.dll' name 'BASS_RecordStart';
+
+BASS_ChannelBytes2Seconds := getprocaddress(basshandle,'BASS_ChannelBytes2Seconds');//(handle: DWORD; pos: QWORD): FLOAT; stdcall;// external 'bass20.dll' name 'BASS_ChannelBytes2Seconds';
+BASS_ChannelSeconds2Bytes := getprocaddress(basshandle,'BASS_ChannelSeconds2Bytes');//(handle: DWORD; pos: FLOAT): QWORD; stdcall;// external 'bass20.dll' name 'BASS_ChannelSeconds2Bytes';
+BASS_ChannelGetDevice := getprocaddress(basshandle,'BASS_ChannelGetDevice');//(handle: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetDevice';
+BASS_ChannelIsActive := getprocaddress(basshandle,'BASS_ChannelIsActive');//(handle: DWORD): DWORD; stdcall;// external 'bass20.dll' name 'BASS_ChannelIsActive';
+BASS_ChannelGetInfo := getprocaddress(basshandle,'BASS_ChannelGetInfo');//(handle: DWORD; info:BASS_CHANNELINFO):BOOL;stdcall;// external 'bass20.dll' name 'BASS_ChannelGetInfo';
+BASS_ChannelStop := getprocaddress(basshandle,'BASS_ChannelStop');//(handle: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelStop';
+BASS_ChannelPause := getprocaddress(basshandle,'BASS_ChannelPause');//(handle: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelPause';
+BASS_ChannelResume := getprocaddress(basshandle,'BASS_ChannelResume');//(handle: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelResume';
+BASS_ChannelSetAttributes := getprocaddress(basshandle,'BASS_ChannelSetAttributes');//(handle: DWORD; freq, volume, pan: Integer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetAttributes';
+BASS_ChannelGetAttributes := getprocaddress(basshandle,'BASS_ChannelGetAttributes');//(handle: DWORD; freq, volume: DWORD; pan: Integer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetAttributes';
+BASS_ChannelSlideAttributes := getprocaddress(basshandle,'BASS_ChannelSlideAttributes');//(handle: DWORD; freq, volume, pan: Integer; time: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSlideAttributes';
+BASS_ChannelIsSliding := getprocaddress(basshandle,'BASS_ChannelIsSliding');//(handle: DWORD): DWORD; stdcall;// external 'bass20.dll' name 'BASS_ChannelIsSliding';
+BASS_ChannelSet3DAttributes := getprocaddress(basshandle,'BASS_ChannelSet3DAttributes');//(handle: DWORD; mode: Integer; min, max: FLOAT; iangle, oangle, outvol: Integer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSet3DAttributes';
+BASS_ChannelGet3DAttributes := getprocaddress(basshandle,'BASS_ChannelGet3DAttributes');//(handle: DWORD; mode: DWORD; min, max: FLOAT; iangle, oangle, outvol: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGet3DAttributes';
+BASS_ChannelSet3DPosition := getprocaddress(basshandle,'BASS_ChannelSet3DPosition');//(handle: DWORD; pos, orient, vel: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSet3DPosition';
+BASS_ChannelGet3DPosition := getprocaddress(basshandle,'BASS_ChannelGet3DPosition');//(handle: DWORD; pos, orient, vel: BASS_3DVECTOR): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGet3DPosition';
+BASS_ChannelSetPosition := getprocaddress(basshandle,'BASS_ChannelSetPosition');//(handle: DWORD; pos: QWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetPosition';
+BASS_ChannelGetPosition := getprocaddress(basshandle,'BASS_ChannelGetPosition');//(handle: DWORD): QWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetPosition';
+BASS_ChannelGetLevel := getprocaddress(basshandle,'BASS_ChannelGetLevel');//(handle: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetLevel';
+BASS_ChannelGetData := getprocaddress(basshandle,'BASS_ChannelGetData');//(handle: DWORD; buffer: Pointer; length: DWORD): DWORD; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetData';
+BASS_ChannelSetSync := getprocaddress(basshandle,'BASS_ChannelSetSync');//(handle: DWORD; stype: DWORD; param: QWORD; proc: SYNCPROC; user: DWORD): HSYNC; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetSync';
+BASS_ChannelRemoveSync := getprocaddress(basshandle,'BASS_ChannelRemoveSync');//(handle: DWORD; sync: HSYNC): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveSync';
+BASS_ChannelSetDSP := getprocaddress(basshandle,'BASS_ChannelSetDSP');//(handle: DWORD; proc: DSPPROC; user: DWORD; priority: Integer): HDSP; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetDSP';
+BASS_ChannelRemoveDSP := getprocaddress(basshandle,'BASS_ChannelRemoveDSP');//(handle: DWORD; dsp: HDSP): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveDSP';
+BASS_ChannelSetEAXMix := getprocaddress(basshandle,'BASS_ChannelSetEAXMix');//(handle: DWORD; mix: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetEAXMix';
+BASS_ChannelGetEAXMix := getprocaddress(basshandle,'BASS_ChannelGetEAXMix');//(handle: DWORD; mix: FLOAT): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelGetEAXMix';
+BASS_ChannelSetLink := getprocaddress(basshandle,'BASS_ChannelSetLink');//(handle, chan: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetLink';
+BASS_ChannelRemoveLink := getprocaddress(basshandle,'BASS_ChannelRemoveLink');//(handle, chan: DWORD): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveLink';
+BASS_ChannelSetFX := getprocaddress(basshandle,'BASS_ChannelSetFX');//(handle, etype: DWORD): HFX; stdcall; // external 'bass20.dll' name 'BASS_ChannelSetFX';
+BASS_ChannelRemoveFX := getprocaddress(basshandle,'BASS_ChannelRemoveFX');//(handle: DWORD; fx: HFX): BOOL; stdcall; // external 'bass20.dll' name 'BASS_ChannelRemoveFX';
+
+BASS_FXSetParameters := getprocaddress(basshandle,'BASS_FXSetParameters');//(handle: HFX; par: Pointer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_FXSetParameters';
+BASS_FXGetParameters := getprocaddress(basshandle,'BASS_FXGetParameters');//(handle: HFX; par: Pointer): BOOL; stdcall; // external 'bass20.dll' name 'BASS_FXGetParameters';
+
+  Result := True;
+end;
+
+procedure BASS_Unload;
+begin
+  { Only free the library if it was already loaded }
+  if BASSHandle <> INVALID_MODULEHANDLE_VALUE then
+    FreeLibrary(BASSHandle);
+  BASSHandle := INVALID_MODULEHANDLE_VALUE;
+end;
+
+Function BASS_IsLoaded:boolean;
+begin
+  result := BASSHandle <> INVALID_MODULEHANDLE_VALUE;
+end;
+
+
+initialization
+  BASSHandle := INVALID_MODULEHANDLE_VALUE;
+
+finalization
+  { Make sure the library is unloaded }
+  BASS_Unload;
+
 
 end.
 // END OF FILE /////////////////////////////////////////////////////////////////

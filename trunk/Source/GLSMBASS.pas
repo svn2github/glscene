@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/05/04 - GAK - Updated to BASS Version 2.0, and swapped to Dynamic DLL loading
       <li>24/09/02 - EG - BASS activation errors no longer result in Asserts (ignored)
       <li>27/02/02 - EG - Added 3D Factors and Environment support
       <li>05/02/02 - EG - BASS 1.4 compatibility
@@ -110,6 +111,7 @@ end;
 constructor TGLSMBASS.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
+  BASS_Load(BASS_DLL);
    MaxChannels:=32;
 end;
 
@@ -118,6 +120,7 @@ end;
 destructor TGLSMBASS.Destroy;
 begin
 	inherited Destroy;
+  BASS_UnLoad;
 end;
 
 // DoActivate
@@ -127,7 +130,9 @@ const
    c3DAlgo : array [algDefault..algLight] of Integer =
       (BASS_3DALG_DEFAULT, BASS_3DALG_OFF, BASS_3DALG_FULL, BASS_3DALG_LIGHT);
 begin
-   if not BASS_Init(0, OutputFrequency, BASS_DEVICE_3D, Application.Handle) then begin
+   assert(bass_isloaded,'BASS DLL is not present');
+
+   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, Application.Handle,nil) then begin
       Result:=False;
       Exit;
    end;
@@ -136,7 +141,7 @@ begin
       Exit;
    end;
    FActivated:=True;
-   BASS_Set3DAlgorithm(c3DAlgo[FAlgorithm3D]);
+   BASS_SetConfig(BASS_CONFIG_3DALGORITHM, c3DAlgo[FAlgorithm3D]);
    NotifyMasterVolumeChange;
    Notify3DFactorsChanged;
    if Environment<>seDefault then
@@ -185,7 +190,7 @@ const
       EAX_ENVIRONMENT_DIZZY, EAX_ENVIRONMENT_PSYCHOTIC);
 begin
    if FActivated and EAXSupported then
-      BASS_EAXPreset(cEnvironmentToBASSConstant[Environment]);
+      BASS_SetEAXParameters(cEnvironmentToBASSConstant[Environment],-1,-1,-1);
 end;
 
 // KillSource
@@ -308,7 +313,7 @@ begin
    if not BASS_Set3DPosition(position, velocity, fwd, top) then Assert(False);
    // update sources
    inherited;
-   if not BASS_Apply3D then Assert(False);
+   {if not }BASS_Apply3D;{ then Assert(False);}
 end;
 
 // CPUUsagePercent
