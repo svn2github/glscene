@@ -401,6 +401,9 @@ const
   XVector :    TAffineVector = (1, 0, 0);
   YVector :    TAffineVector = (0, 1, 0);
   ZVector :    TAffineVector = (0, 0, 1);
+  XYVector :   TAffineVector = (1, 1, 0);
+  XZVector :   TAffineVector = (1, 0, 1);
+  YZVector :   TAffineVector = (0, 1, 1);
   XYZVector :  TAffineVector = (1, 1, 1);
   NullVector : TAffineVector = (0, 0, 0);
   // standard homogeneous vectors
