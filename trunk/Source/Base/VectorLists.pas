@@ -3,6 +3,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/06/03 - EG - Added TIntegerList.BinarySearch and AddSorted (Mattias Fagerlund)
       <li>22/01/03 - EG - Added AddIntegers
       <li>20/01/03 - EG - Added TIntegerList.SortAndRemoveDuplicates
       <li>22/10/02 - EG - Added TransformXxxx to TAffineVectorList
@@ -336,6 +337,20 @@ type
          procedure Sort;
          {: Sort items in ascending order and remove duplicated integers. }
          procedure SortAndRemoveDuplicates;
+
+         {: Locate a value in a sorted list. }
+         function BinarySearch(const value : Integer) : Integer; overload;
+         {: Locate a value in a sorted list.<p>
+            If ReturnBestFit is set to true, the routine will return the position
+            of the largest value that's smaller than the sought value. Found will
+            be set to True if the exact value was found, False if a "BestFit"
+            was found. }
+         function BinarySearch(const value : Integer; returnBestFit : Boolean; var found : Boolean) : Integer; overload;
+
+         {: Add integer to a sorted list.<p>
+            Maintains the list sorted. If you have to add "a lot" of integers
+            at once, use the Add method then Sort the list for better performance. }
+         function AddSorted(const Value: integer; const IgnoreDuplicates : boolean = false) : integer;
 
          {: Adds delta to all items in the list. }
          procedure Offset(delta : Integer);
@@ -1815,6 +1830,75 @@ begin
          end;
       end;
       FCount:=j+1;
+   end;
+end;
+
+// BinarySearch
+//
+function TIntegerList.BinarySearch(const value : Integer) : Integer;
+var
+   found : Boolean;
+begin
+   Result:=BinarySearch(value, False, found);
+end;
+
+// BinarySearch
+//
+function TIntegerList.BinarySearch(const value : Integer; returnBestFit : Boolean;
+                                   var found : Boolean) : Integer;
+var
+   index : Integer;
+   min, max, mid : Integer;
+   intList : PIntegerArray;
+begin
+   // Assume we won't find it
+   found:=False;
+   // If the list is empty, we won't find the sought value!
+   if Count=0 then begin
+      Result:=-1;
+      Exit;
+   end;
+
+   min:=-1; // ONE OFF!
+   max:=Count; // ONE OFF!
+
+   // We now know that Min and Max AREN'T the values!
+   index:=-1;
+   intList:=List;
+   repeat
+      // Find the middle of the current scope
+      mid:=(min+max) shr 1;
+      // Reduce the search scope by half
+      if intList[mid]<=value then begin
+         // Is this the one?
+         if intList[mid]=value then begin
+            index:=mid;
+            found:=True;
+            Break;
+         end else min:=mid;
+      end else max:=mid;
+   until min>=max;
+
+   if returnBestFit then begin
+      if index>=0 then
+         Result:=index
+      else Result:=min;
+   end else Result:=index;
+end;
+
+// AddSorted
+//
+function TIntegerList.AddSorted(const value : Integer; const ignoreDuplicates : Boolean = False) : Integer;
+var
+   index : Integer;
+   found : Boolean;
+begin
+   index:=BinarySearch(value, True, found);
+   if ignoreDuplicates and Found then
+      Result:=-1
+   else begin
+      Insert(index+1, Value);
+      Result:=index+1;
    end;
 end;
 
