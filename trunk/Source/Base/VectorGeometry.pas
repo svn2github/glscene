@@ -1780,9 +1780,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   vr[0]:=v1[0]+v2[0];
-   vr[1]:=v1[1]+v2[1];
-   vr[2]:=v1[2]+v2[2];
+   vr^[0]:=v1[0]+v2[0];
+   vr^[1]:=v1[1]+v2[1];
+   vr^[2]:=v1[2]+v2[2];
 {$endif}
 end;
 
@@ -2050,8 +2050,8 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do begin
-      dest[i].S:=src[i].S+delta.S;
-      dest[i].T:=src[i].T+delta.T;
+      dest^[i].S:=src^[i].S+delta.S;
+      dest^[i].T:=src^[i].T+delta.T;
    end;
 {$endif}
 end;
@@ -2117,8 +2117,8 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do begin
-      dest[i].S:=src[i].S*scale.S+delta.S;
-      dest[i].T:=src[i].T*scale.T+delta.T;
+      dest^[i].S:=src^[i].S*scale.S+delta.S;
+      dest^[i].T:=src^[i].T*scale.T+delta.T;
    end;
 {$endif}
 end;
@@ -2183,9 +2183,9 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do begin
-      dest[i][0]:=src[i][0]+delta[0];
-      dest[i][1]:=src[i][1]+delta[1];
-      dest[i][2]:=src[i][2]+delta[2];
+      dest^[i][0]:=src^[i][0]+delta[0];
+      dest^[i][1]:=src^[i][1]+delta[1];
+      dest^[i][2]:=src^[i][2]+delta[2];
    end;
 {$endif}
 end;
@@ -3299,10 +3299,10 @@ begin
       VectorArrayLerp_3DNow(src1, src2, t, n, dest)
    else {$endif} begin
       for i:=0 to n-1 do begin
-         dest[i][0]:=src1[i][0]+(src2[i][0]-src1[i][0])*t;
-         dest[i][1]:=src1[i][1]+(src2[i][1]-src1[i][1])*t;
-         dest[i][2]:=src1[i][2]+(src2[i][2]-src1[i][2])*t;
-         dest[i][3]:=src1[i][3]+(src2[i][3]-src1[i][3])*t;
+         dest^[i][0]:=src1^[i][0]+(src2^[i][0]-src1^[i][0])*t;
+         dest^[i][1]:=src1^[i][1]+(src2^[i][1]-src1^[i][1])*t;
+         dest^[i][2]:=src1^[i][2]+(src2^[i][2]-src1^[i][2])*t;
+         dest^[i][3]:=src1^[i][3]+(src2^[i][3]-src1^[i][3])*t;
       end;
    end;
 end;
@@ -3382,9 +3382,9 @@ begin
       VectorArrayLerp_3DNow(src1, src2, t, n, dest)
    else {$endif} begin
       for i:=0 to n-1 do begin
-         dest[i][0]:=src1[i][0]+(src2[i][0]-src1[i][0])*t;
-         dest[i][1]:=src1[i][1]+(src2[i][1]-src1[i][1])*t;
-         dest[i][2]:=src1[i][2]+(src2[i][2]-src1[i][2])*t;
+         dest^[i][0]:=src1^[i][0]+(src2^[i][0]-src1^[i][0])*t;
+         dest^[i][1]:=src1^[i][1]+(src2^[i][1]-src1^[i][1])*t;
+         dest^[i][2]:=src1^[i][2]+(src2^[i][2]-src1^[i][2])*t;
       end;
    end;
 end;
@@ -3763,7 +3763,7 @@ var
    i : Integer;
 begin
    for i:=0 to n-1 do
-      NormalizeVector(list[i]);
+      NormalizeVector(list^[i]);
 {$endif}
 end;
 
@@ -7423,8 +7423,8 @@ begin
    if nbItems>0 then begin
       k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]<values[k] then k:=i;
-      Result:=values[k];
+         if values^[i]<values^[k] then k:=i;
+      Result:=values^[k];
    end else Result:=0;
 end;
 
@@ -7437,8 +7437,8 @@ begin
    if nbItems>0 then begin
       k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]<values[k] then k:=i;
-      Result:=values[k];
+         if values^[i]<values^[k] then k:=i;
+      Result:=values^[k];
    end else Result:=0;
 end;
 
@@ -7451,8 +7451,8 @@ begin
    if nbItems>0 then begin
       k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]<values[k] then k:=i;
-      Result:=values[k];
+         if values^[i]<values^[k] then k:=i;
+      Result:=values^[k];
    end else Result:=0;
 end;
 
@@ -7622,8 +7622,8 @@ begin
    if nbItems>0 then begin
       k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]>values[k] then k:=i;
-      Result:=values[k];
+         if values^[i]>values^[k] then k:=i;
+      Result:=values^[k];
    end else Result:=0;
 end;
 
@@ -7636,8 +7636,8 @@ begin
    if nbItems>0 then begin
       k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]>values[k] then k:=i;
-      Result:=values[k];
+         if values^[i]>values^[k] then k:=i;
+      Result:=values^[k];
    end else Result:=0;
 end;
 
@@ -7650,8 +7650,8 @@ begin
    if nbItems>0 then begin
       k:=0;
       for i:=1 to nbItems-1 do
-         if values[i]>values[k] then k:=i;
-      Result:=values[k];
+         if values^[i]>values^[k] then k:=i;
+      Result:=values^[k];
    end else Result:=0;
 end;
 
@@ -7920,12 +7920,12 @@ var
 begin
    Result:=0;
    if nSides>2 then begin
-      p1:=@p[0];
-      p2:=@p[1];
+      p1:=@(p^[0]);
+      p2:=@(p^[1]);
       for i:=2 to nSides-1 do begin
-         p3:=@p[i];
-         Result:=Result+(p2[0]-p1[0])*(p3[1]-p1[1])
-                       -(p3[0]-p1[0])*(p2[1]-p1[1]);
+         p3:=@(p^[i]);
+         Result:=Result+(p2^[0]-p1^[0])*(p3^[1]-p1^[1])
+                       -(p3^[0]-p1^[0])*(p2^[1]-p1^[1]);
          p2:=p3;
       end;
       Result:=Result*0.5;
@@ -7999,7 +7999,7 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do
-      values[i]:=values[i]*factor;
+      values^[i]:=values^[i]*factor;
 {$endif}
 end;
 
@@ -8079,7 +8079,7 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do
-      values[i]:=values[i]+delta;
+      values^[i]:=values^[i]+delta;
 {$endif}
 end;
 
@@ -8113,7 +8113,7 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do
-      valuesDest[i]:=valuesDest[i]+valuesDelta[i];
+      valuesDest^[i]:=valuesDest^[i]+valuesDelta^[i];
 {$endif}
 end;
 
