@@ -3,6 +3,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/03 - EG - Added AddIntegers
       <li>20/01/03 - EG - Added TIntegerList.SortAndRemoveDuplicates
       <li>22/10/02 - EG - Added TransformXxxx to TAffineVectorList
       <li>04/07/02 - EG - Fixed TIntegerList.Add( 2 at once )
@@ -313,6 +314,13 @@ type
          {: Adds count items in an arithmetic serie.<p>
             Items are (aBase), (aBase+aDelta) ... (aBase+(aCount-1)*aDelta) }
          procedure AddSerie(aBase, aDelta, aCount : Integer);
+         {: Add n integers at the address starting at (and including) first. }
+         procedure AddIntegers(const first : PInteger; n : Integer); overload;
+         {: Add all integers from aList into the list. }
+         procedure AddIntegers(const aList : TIntegerList); overload;
+         {: Add all integers from anArray into the list. }
+         procedure AddIntegers(const anArray : array of Integer); overload;
+
          {: Returns the maximum integer item, zero if list is empty. }
          function MaxInteger : Integer;
          {: Sort items in ascending order. }
@@ -1082,7 +1090,7 @@ procedure TAffineVectorList.TranslateItems(index : Integer; const delta : TAffin
 begin
    nb:=index+nb;
 {$IFOPT R+}
-   Assert(Cardinal(index) < Cardinal(FCount));
+   Assert(Cardinal(index)<Cardinal(FCount));
    if nb>FCount then
       nb:=FCount;
 {$ENDIF}
@@ -1617,6 +1625,35 @@ begin
       aBase:=aBase+aDelta;
    end;
    FCount:=Count+aCount;
+end;
+
+// AddIntegers (pointer & n)
+//
+procedure TIntegerList.AddIntegers(const first : PInteger; n : Integer);
+begin
+   if n<1 then Exit;
+   AdjustCapacityToAtLeast(Count+n);
+   System.Move(first^, FList[FCount], n*SizeOf(Integer));
+   FCount:=FCount+n;
+end;
+
+// AddIntegers (TIntegerList)
+//
+procedure TIntegerList.AddIntegers(const aList : TIntegerList);
+begin
+   if not Assigned(aList) then Exit;
+   AddIntegers(@aList.List[0], aList.Count)
+end;
+
+// AddIntegers (array)
+//
+procedure TIntegerList.AddIntegers(const anArray : array of Integer);
+var
+   n : Integer;
+begin
+   n:=Length(anArray);
+   if n>0 then
+      AddIntegers(@anArray[0], n);
 end;
 
 // IndexOf
