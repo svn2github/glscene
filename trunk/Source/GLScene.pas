@@ -475,6 +475,8 @@ type
          function LocalToAbsolute(const v : TVector) : TVector; overload;
          {: Converts a vector from local coordinates to absolute coordinates.<p> }
          function LocalToAbsolute(const v : TAffineVector) : TAffineVector; overload;
+         {: Returns the Right vector (based on Up and Direction) }
+         function Right : TVector;
 
          {: Calculates the object's square distance to a point/object.<p>
             pt is assumed to be in absolute coordinates,
@@ -2659,6 +2661,13 @@ end;
 function TGLBaseSceneObject.LocalToAbsolute(const v : TAffineVector) : TAffineVector;
 begin
    Result:=VectorTransform(v, AbsoluteMatrixAsAddress^);
+end;
+
+// Right
+//
+function TGLBaseSceneObject.Right : TVector;
+begin
+   Result:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
 end;
 
 // BarycenterAbsolutePosition
