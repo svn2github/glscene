@@ -7,15 +7,16 @@
 	It is implemented here using a shared field, "currentPick" (by shared,
 	I mean it's a form field used in more than one event) indicating the
 	object the mouse is currently hovering, a classic timer and the "Progress"
-	chain of events.<p>
+	chain of events.<br>
+   When a mouse move is detected, it activates a timer, and when this timer
+   is fired, the picking is performed. The "direct" approach would perform
+   picking in the mousemove event, however, if the picking takes more time
+   to be completed than the next mousemove event takes time to arrive,
+   the interface will seem to "freeze".<p>
 
-	Using a timer is convenient and, in this case, serves the sample well,
-	but be aware this is no "perfect" solution : if the cpu is not able to
-	keep up with the timer, your interface will lag, if the cpu/3Ddevice is
-	faster, you'll have an interface that is not as smooth as it could be.<br>
-	Alas, it keeps the code simple and allows me to drop a line on this
-	commonly seen problem ;).<br>
-	Check other samples for better framerate independance techniques
+   The other timer is used to provide basic color animation, limited to about
+   20 FPS (resolution of the timer isn't high enough to allow much higher
+   framerates). Check other samples for better framerate independance techniques
    (and use the TGLCadencer !).<p>
 
 	Note that all objects (sphere, torus...) share the same event.
@@ -25,7 +26,7 @@ unit Unit1;
 interface
 
 uses
-  Forms, GLScene, GLObjects, GLMisc, GLTexture, Classes, Controls, Dialogs,
+  Windows, Forms, GLScene, GLObjects, GLMisc, GLTexture, Classes, Controls,
   ExtCtrls, SysUtils, VectorGeometry, GLWin32Viewer, GLGeomObjects;
 
 type
@@ -40,6 +41,7 @@ type
     Torus: TGLTorus;
     Cone: TGLCone;
 	 Timer1: TTimer;
+    TIPickTimer: TTimer;
 	 procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
 		X, Y: Integer);
 	 procedure GLSceneViewer1MouseDown(Sender: TObject;
@@ -47,6 +49,7 @@ type
 	 procedure Timer1Timer(Sender: TObject);
 	 procedure SphereProgress(Sender: TObject; const deltaTime,
 		newTime: Double);
+    procedure TIPickTimerTimer(Sender: TObject);
   private
 	 { Déclarations privées }
 	 currentPick : TGLCustomSceneObject;
@@ -61,11 +64,23 @@ implementation
 
 {$R *.DFM}
 
+uses Dialogs;
+
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
+   TIPickTimer.Enabled:=True;
+end;
+
+procedure TForm1.TIPickTimerTimer(Sender: TObject);
+var
+   cp : TPoint;
+begin
 	// get what is under the mouse
-	currentPick:=(GLSceneViewer1.Buffer.GetPickedObject(x, y) as TGLCustomSceneObject);
+   GetCursorPos(cp);
+   cp:=GLSceneViewer1.ScreenToClient(cp);
+	currentPick:=(GLSceneViewer1.Buffer.GetPickedObject(cp.x, cp.y) as TGLCustomSceneObject);
+   TIPickTimer.Enabled:=False;
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;

@@ -80,4 +80,11 @@ object Form1: TForm1
     Left = 16
     Top = 16
   end
+  object TIPickTimer: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = TIPickTimerTimer
+    Left = 128
+    Top = 16
+  end
 end
