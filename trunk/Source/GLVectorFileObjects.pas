@@ -5158,8 +5158,8 @@ end;
 //
 function TGLFreeForm.GetOctree : TOctree;
 begin
-   if not Assigned(FOctree) then
-      FOctree:=TOctree.Create;
+//   if not Assigned(FOctree) then     //If auto-created, can never use "if Assigned(GLFreeform1.Octree)"
+//     FOctree:=TOctree.Create;        //moved this code to BuildOctree
    Result:=FOctree;
 end;
 
@@ -5170,6 +5170,9 @@ var
    emin, emax : TAffineVector;
    tl : TAffineVectorList;
 begin
+   if not Assigned(FOctree) then        //moved here from GetOctree
+      FOctree:=TOctree.Create;
+
    GetExtents(emin, emax);
    tl:=MeshObjects.ExtractTriangles;
    try
@@ -5238,11 +5241,11 @@ function TGLFreeForm.OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): b
 var
   t1, t2, t3: TAffineVector;
 begin
+   Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
    SetVector(t1, AbsoluteToLocal(v1));
    SetVector(t2, AbsoluteToLocal(v2));
    SetVector(t3, AbsoluteToLocal(v3));
 
-   Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
    Result:= Octree.TriangleIntersect(t1, t2, t3);
 end;
 
