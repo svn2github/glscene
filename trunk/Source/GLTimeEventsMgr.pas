@@ -202,7 +202,7 @@ begin
       if FreeEventOnEnd and
            ( ((EventType<>etOneShot) and (newTime>EndTime) and (EndTime>=0)) or
              ((EventType=etOneShot) and (TickCount>0)) ) then
-         Events.Delete(i)
+         Events[i].Free
       else begin
          // if we delete current event, the next will have same index
          // so increment only if we don't delete
