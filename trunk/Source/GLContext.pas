@@ -42,10 +42,6 @@ type
    //
    TGLAntiAliasing = (aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ);
 
-   // TGLDepthPrecision
-   //
-   TGLDepthPrecision = (dpDefault, dp16bits, dp24bits, dp32bits);
-
    // TGLContext
    //
    {: Wrapper around an OpenGL rendering context.<p>

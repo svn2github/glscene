@@ -682,10 +682,14 @@ procedure RotateVector(var vector : TVector; const axis : TVector; angle : Singl
 
 //: Rotate given vector around the Y axis (alpha is in rad)
 procedure RotateVectorAroundY(var v : TAffineVector; alpha : Single);
+//: Returns given vector rotated around the X axis (alpha is in rad)
+function VectorRotateAroundX(const v : TAffineVector; alpha : Single) : TAffineVector; overload;
 //: Returns given vector rotated around the Y axis (alpha is in rad)
 function VectorRotateAroundY(const v : TAffineVector; alpha : Single) : TAffineVector; overload;
 //: Returns given vector rotated around the Y axis in vr (alpha is in rad)
 procedure VectorRotateAroundY(const v : TAffineVector; alpha : Single; var vr : TAffineVector); overload;
+//: Returns given vector rotated around the Z axis (alpha is in rad)
+function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineVector; overload;
 
 //: Vector components are replaced by their Abs() value. }
 procedure AbsVector(var v : TVector); overload;
@@ -3654,6 +3658,18 @@ begin
    v[2]:=c*v[2]-s*v0;
 end;
 
+// VectorRotateAroundX (func)
+//
+function VectorRotateAroundX(const v : TAffineVector; alpha : Single) : TAffineVector;
+var
+   c, s : Single;
+begin
+   SinCos(alpha, s, c);
+   Result[0]:=v[0];
+   Result[1]:=c*v[1]+s*v[2];
+   Result[2]:=c*v[2]-s*v[1];
+end;
+
 // VectorRotateAroundY (func)
 //
 function VectorRotateAroundY(const v : TAffineVector; alpha : Single) : TAffineVector;
@@ -3676,6 +3692,18 @@ begin
    vr[1]:=v[1];
    vr[0]:=c*v[0]+s*v[2];
    vr[2]:=c*v[2]-s*v[0];
+end;
+
+// VectorRotateAroundZ (func)
+//
+function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineVector;
+var
+   c, s : Single;
+begin
+   SinCos(alpha, s, c);
+   Result[0]:=c*v[0]+s*v[1];
+   Result[1]:=c*v[1]-s*v[0];
+   Result[2]:=v[2];
 end;
 
 // AbsVector (hmg)

@@ -520,7 +520,7 @@ begin
             PFDescriptor.cColorBits:=16;
             pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
          end;
-         // I'm outta options, raise an error
+         // I'm out of options, raise an error
          if pixelFormat=0 then RaiseLastOSError;
       end;
       ClearGLError;
@@ -576,77 +576,65 @@ var
    iPBufferAttribs : array [0..0] of Integer;
    localHPBuffer, localDC, localRC, tempDC : Integer;
    tempWnd : HWND;
-   topDC : Integer;
 begin
    localHPBuffer:=0;
    localDC:=0;
    localRC:=0;
-   // if outputDevice is null, assume TopDC needs be used
-   if outputDevice=0 then begin
-      topDC:=GetDC(0);
-      outputDevice:=topDC;
-   end else topDC:=0;
+   // the WGL mechanism is a little awkward: we first create a dummy context
+   // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
+   // our stuff, etc.
+   tempWnd:=CreateTempWnd;
+   tempDC:=GetDC(tempWnd);
    try
-      // the WGL mechanism is a little awkward: we first create a dummy context
-      // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
-      // our stuff, etc.
-      tempWnd:=CreateTempWnd;
-      tempDC:=GetDC(tempWnd);
+      SpawnLegacyContext(tempDC);
       try
-         SpawnLegacyContext(tempDC);
+         DoActivate;
          try
-            DoActivate;
-            try
-               ClearGLError;
-               if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
-                  ClearIAttribs;
-                  AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
-                  ChooseWGLFormat(Cardinal(outputDevice), 32, @iFormats, nbFormats);
-                  if nbFormats=0 then
-                     raise Exception.Create('Format not supported for pbuffer operation.');
-                  iPBufferAttribs[0]:=0;
+            ClearGLError;
+            if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
+               ClearIAttribs;
+               AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
+               ChooseWGLFormat(Cardinal(tempDC), 32, @iFormats, nbFormats);
+               if nbFormats=0 then
+                  raise Exception.Create('Format not supported for pbuffer operation.');
+               iPBufferAttribs[0]:=0;
 
-                  localHPBuffer:=wglCreatePbufferARB(outputDevice, iFormats[0], width, height,
-                                                     @iPBufferAttribs[0]);
-                  if localHPBuffer=0 then
-                     raise Exception.Create('Unabled to create pbuffer.');
+               localHPBuffer:=wglCreatePbufferARB(tempDC, iFormats[0], width, height,
+                                                  @iPBufferAttribs[0]);
+               if localHPBuffer=0 then
+                  raise Exception.Create('Unabled to create pbuffer.');
+               try
+                  localDC:=wglGetPbufferDCARB(localHPBuffer);
+                  if localDC=0 then
+                     raise Exception.Create('Unabled to create pbuffer''s DC.');
                   try
-                     localDC:=wglGetPbufferDCARB(localHPBuffer);
-                     if localDC=0 then
-                        raise Exception.Create('Unabled to create pbuffer''s DC.');
-                     try
-                        localRC:=wglCreateContext(localDC);
-                        if localRC=0 then
-                           raise Exception.Create('Unabled to create pbuffer''s RC.');
-                     except
-                        wglReleasePBufferDCARB(localHPBuffer, localDC);
-                        raise;
-                     end;
+                     localRC:=wglCreateContext(localDC);
+                     if localRC=0 then
+                        raise Exception.Create('Unabled to create pbuffer''s RC.');
                   except
-                     wglDestroyPBufferARB(localHPBuffer);
+                     wglReleasePBufferDCARB(localHPBuffer, localDC);
                      raise;
                   end;
-               end else raise Exception.Create('WGL_ARB_pbuffer support required.');
-               CheckOpenGLError;
-            finally
-               DoDeactivate;
-            end;
+               except
+                  wglDestroyPBufferARB(localHPBuffer);
+                  raise;
+               end;
+            end else raise Exception.Create('WGL_ARB_pbuffer support required.');
+            CheckOpenGLError;
          finally
-            DoDestroyContext;
+            DoDeactivate;
          end;
       finally
-         ReleaseDC(0, tempDC);
-         DestroyWindow(tempWnd);
-         FHPBUFFER:=localHPBuffer;
-         FDC:=localDC;
-         FRC:=localRC;
+         DoDestroyContext;
       end;
-      FAcceleration:=chaHardware;
-
    finally
-      if topDC<>0 then
-         ReleaseDC(0, topDC);
+      ReleaseDC(0, tempDC);
+      DestroyWindow(tempWnd);
+      FHPBUFFER:=localHPBuffer;
+      FDC:=localDC;
+      FRC:=localRC;
    end;
+   FAcceleration:=chaHardware;
 end;
 
 // DoShareLists

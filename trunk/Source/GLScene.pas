@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>27/02/02 - Egg - Added DepthPrecision and ColorDepth to buffer,
+                           ResetAndPitchTurnRoll, ShadeModel (Chris Strahm)
       <li>26/02/02 - Egg - DestroyHandle/DestroyHandles split,
                            Fixed PickObjects guess count (Steffen Xonna)
       <li>22/02/02 - Egg - Push/pop ModelView matrix for buffer
@@ -237,7 +239,7 @@ type
      roStereo: enables stereo support in the driver (dunno if it works,
          I don't have a stereo device to test...)<br>
      roDestinationAlpha: request an Alpha channel for the rendered output<br>
-     roNoColorBuffer: don't request a color buffer }
+     roNoColorBuffer: don't request a color buffer (color depth setting ignored) }
   TContextOption = (roDoubleBuffer, roStencilBuffer,
                     roRenderToWindow, roTwoSideLighting, roStereo,
                     roDestinationAlpha, roNoColorBuffer);
@@ -543,6 +545,8 @@ type
             (they are still applied locally though).<br>
             Scale and Position are not affected. }
          procedure ResetRotations;
+         {: Reset rotations and applies them back in the specified order. }
+         procedure ResetAndPitchTurnRoll(const degX, degY, degZ : Single);
 
          {: Applies rotations around absolute X, Y and Z axis.<p> }
          procedure RotateAbsolute(const rx, ry, rz : Single); overload;
@@ -1374,8 +1378,17 @@ type
          property FogDistance : TFogDistance read FFogDistance write SetFogDistance default fdDefault;
    end;
 
-   TSpecial = (spLensFlares, spLandScape);
-   TSpecials = set of TSpecial;
+   // TGLDepthPrecision
+   //
+   TGLDepthPrecision = (dpDefault, dp16bits, dp24bits, dp32bits);
+
+   // TGLColorDepth
+   //
+   TGLColorDepth = (cdDefault, cd8bits, cd16bits, cd24bits);
+
+   // TGLShadeModel
+   //
+   TGLShadeModel = (smDefault, smSmooth, smFlat);
 
    // TGLSceneBuffer
    //
@@ -1399,12 +1412,14 @@ type
          FDepthTest : Boolean;
          FBackgroundColor: TColor;
          FAntiAliasing : TGLAntiAliasing;
-
-         FRenderDPI : Integer;
+         FDepthPrecision : TGLDepthPrecision;
+         FColorDepth : TGLColorDepth;
          FContextOptions : TContextOptions;
-         FCamera : TGLCamera;
-
+         FShadeModel : TGLShadeModel;
+         FRenderDPI : Integer;
          FFogEnvironment : TGLFogEnvironment;
+
+         FCamera : TGLCamera;
 
          // Monitoring
          FFrames : Longint;
@@ -1431,6 +1446,9 @@ type
          procedure SetFaceCulling(AValue: Boolean);
          procedure SetLighting(AValue: Boolean);
          procedure SetAntiAliasing(const val : TGLAntiAliasing);
+         procedure SetDepthPrecision(const val : TGLDepthPrecision);
+         procedure SetColorDepth(const val : TGLColorDepth);
+         procedure SetShadeModel(const val : TGLShadeModel);
          procedure SetFogEnable(AValue: Boolean);
          procedure SetGLFogEnvironment(AValue: TGLFogEnvironment);
          function  StoreFog : Boolean;
@@ -1652,6 +1670,15 @@ type
          {: AntiAliasing option.<p>
             Ignored if not hardware supported, currently based on ARB_multisample. }
          property AntiAliasing : TGLAntiAliasing read FAntiAliasing write SetAntiAliasing default aaDefault;
+         {: Depth buffer precision.<p>
+            Default is highest available (below and including 24 bits) }
+         property DepthPrecision : TGLDepthPrecision read FDepthPrecision write SetDepthPrecision default dpDefault;
+         {: Color buffer depth.<p>
+            Default depth buffer is highest available (below and including 24 bits) }
+         property ColorDepth : TGLColorDepth read FColorDepth write SetColorDepth default cdDefault;
+         {: Shade model.<p>
+            Default is "Smooth".<p> }
+         property ShadeModel : TGLShadeModel read FShadeModel write SetShadeModel default smDefault;
 
          {: Indicates a change in the scene or buffer options.<p>
             A simple re-render is enough to take into account the changes. }
@@ -2786,6 +2813,53 @@ begin
    Exclude(FChanges, ocTransformation);
 end;
 
+// ResetAndPitchTurnRoll
+//
+procedure TGLBaseSceneObject.ResetAndPitchTurnRoll(const degX, degY, degZ : Single);
+var
+   rightVector, up, dir : TAffineVector;
+   diff : Single;
+   rotMatrix : TMatrix;
+begin
+   ResetRotations;
+   // set DegX (Pitch)
+   GetOrientationVectors(Up, Dir);
+   Diff:=DegToRad(DegX);
+   RightVector:=VectorCrossProduct(Dir, Up);
+   rotMatrix:=CreateRotationMatrix(RightVector, Diff);
+   FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
+   FUp.Normalize;
+   FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
+   FDirection.Normalize;
+   if FTransMode=tmParentWithPos then
+       FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
+   FRotation.DirectX:=NormalizeDegAngle(DegX);
+   // set DegY (Turn)
+   GetOrientationVectors(Up, Dir);
+   Diff:=DegToRad(DegY);
+   rotMatrix:=CreateRotationMatrix(Up, Diff);
+   FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
+   FUp.Normalize;
+   FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
+   FDirection.Normalize;
+   if FTransMode = tmParentWithPos then
+       FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
+   FRotation.DirectY:=NormalizeDegAngle(DegY);
+   // set DegZ (Roll)
+   GetOrientationVectors(Up, Dir);
+   Diff:=DegToRad(DegZ);
+   rotMatrix:=CreateRotationMatrix(Dir, Diff);
+   FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
+   FUp.Normalize;
+   FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
+   FDirection.Normalize;
+   if FTransMode = tmParentWithPos then
+       FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
+   FRotation.DirectZ:=NormalizeDegAngle(DegZ);
+   TransformationChanged;
+   NotifyChange(self);
+end;
+
 // RotateAbsolute
 //
 procedure TGLBaseSceneObject.RotateAbsolute(const rx, ry, rz : Single);
@@ -3224,9 +3298,9 @@ procedure TGLBaseSceneObject.CoordinateChanged(Sender: TGLCoordinates);
 var
    rightVector : TVector;
 begin
-  if FIsCalculating then Exit;
-  FIsCalculating:=True;
-  try
+   if FIsCalculating then Exit;
+   FIsCalculating:=True;
+   try
       if Sender = FDirection then begin
          if FDirection.VectorLength = 0 then
             FDirection.DirectVector:=ZHmgVector;
@@ -3237,7 +3311,7 @@ begin
          // in this case assume a default vector
          if VectorLength(rightVector) = 0 then with FDirection do
             Geometry.SetVector(rightVector, X+1, Y+2, Z+3);
-         FUp.DirectVector:=VectorCrossProduct(RightVector, FDirection.AsVector);
+         FUp.DirectVector:=VectorCrossProduct(rightVector, FDirection.AsVector);
          FUp.Normalize;
       end else if Sender = FUp then begin
          if FUp.VectorLength = 0 then
@@ -5592,7 +5666,10 @@ begin
    FDepthTest:=True;
    FFaceCulling:=True;
    FLighting:=True;
-   FAntiAliasing:=aaNone;
+   FAntiAliasing:=aaDefault;
+   FDepthPrecision:=dpDefault;
+   FColorDepth:=cdDefault;
+   FShadeModel:=smDefault;
    FFogEnable:=False;
    FAfterRenderEffects:=TList.Create;
 
@@ -5627,6 +5704,11 @@ end;
 // CreateRC
 //
 procedure TGLSceneBuffer.CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
+const
+   cColorDepthToColorBits : array [cdDefault..cd24bits] of Integer =
+                                    (24, 8, 16, 24);
+   cDepthPrecisionToDepthBits : array [dpDefault..dp32bits] of Integer =
+                                    (24, 16, 24, 32);
 var
    backColor: TColorVector;
    locOptions: TGLRCOptions;
@@ -5642,7 +5724,7 @@ begin
          locOptions:=locOptions+[rcoStereo];
       if roNoColorBuffer in ContextOptions then
          locColorBits:=0
-      else locColorBits:=24;
+      else locColorBits:=cColorDepthToColorBits[ColorDepth];
       if roStencilBuffer in ContextOptions then
          locStencilBits:=8
       else locStencilBits:=0;
@@ -5656,6 +5738,7 @@ begin
       with FRenderingContext do begin
          Options:=locOptions;
          ColorBits:=locColorBits;
+         DepthBits:=cDepthPrecisionToDepthBits[DepthPrecision];
          StencilBits:=locStencilBits;
          AlphaBits:=locAlphaBits;
          AccumBits:=0;
@@ -5762,6 +5845,12 @@ begin
    end else glDisable(GL_DITHER);
    glDepthFunc(GL_LESS);
    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+   case ShadeModel of
+      smDefault, smSmooth : glShadeModel(GL_SMOOTH);
+      smFlat : glShadeModel(GL_FLAT);
+   else
+      Assert(False);
+   end;
 end;
 
 // GetLimit
@@ -6598,6 +6687,36 @@ procedure TGLSceneBuffer.SetAntiAliasing(const val : TGLAntiAliasing);
 begin
    if FAntiAliasing<>val then begin
       FAntiAliasing:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetDepthPrecision
+//
+procedure TGLSceneBuffer.SetDepthPrecision(const val : TGLDepthPrecision);
+begin
+   if FDepthPrecision<>val then begin
+      FDepthPrecision:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetColorDepth
+//
+procedure TGLSceneBuffer.SetColorDepth(const val : TGLColorDepth);
+begin
+   if FColorDepth<>val then begin
+      FColorDepth:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetShadeModel
+//
+procedure TGLSceneBuffer.SetShadeModel(const val : TGLShadeModel);
+begin
+   if FShadeModel<>val then begin
+      FShadeModel:=val;
       NotifyChange(Self);
    end;
 end;
