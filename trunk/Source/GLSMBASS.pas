@@ -181,7 +181,7 @@ begin
       p.sample:=BASS_SampleLoad(True, aSource.Sample.Data.WAVData, 0,
                                 aSource.Sample.Data.WAVDataSize,
                                 MaxChannels, i);
-      Assert(p.sample<>0, 'BASS Error '+IntToStr(BASS_ErrorGetCode));
+      Assert(p.sample<>0, 'BASS Error '+IntToStr(Integer(BASS_ErrorGetCode)));
       aSource.ManagerTag:=Integer(p);
    end;
    if aSource.Origin<>nil then begin
