@@ -2,6 +2,8 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>01/02/04 - NelC - Now reports which CgProgram or CgParameter error is
+                            coming from.
       <li>20/01/04 - NelC - Updated shader event handlers with Sender object.
                             Fixed dynamic array passing bug in CheckValueType.
       <li>03/01/04 - NelC - Shortened event handlers using 'VP' and 'FP'. Added
@@ -122,6 +124,9 @@ type
     procedure SetParam(ParamName: string; matrix, Transform: Cardinal); overload;
     procedure SetParam(ParamName: string; TextureID : Cardinal); overload;
 
+    // retruns ShaderName.[program type].ProgramName
+    function LongName : string;
+
     {: Direct access to the profile. <p>
        Set Profile of the sub-classes to any but DetectLatest if you want to
        specify the profile directly. }
@@ -152,6 +157,7 @@ type
     FVariability : TCGenum; // e.g. CG_UNIFORM
   protected
     { Protected Declarations }
+    function TypeMismatchMessage : string;
     procedure CheckValueType(aType : TCGtype); overload;
     procedure CheckValueType(const types : array of TCGtype); overload;
 
@@ -179,6 +185,9 @@ type
 
     procedure EnableTexture;
     procedure DisableTexture;
+
+    // retruns ShaderName.[program type].ProgramName.ParamName
+    function LongName : string;
 
     property Owner : TCgProgram read FOwner;
     property Name : String read FName;
@@ -316,7 +325,7 @@ const
 
 var
   vCgContextCount : Integer;
-  CurCgContent    : PcgContext; // for reporting error line number
+  CurCgProgram    : TCgProgram; // for reporting error
 
 procedure Register;
 begin
@@ -326,7 +335,8 @@ end;
 procedure ErrorCallBack; cdecl;
 var  Msg : string;
 begin
-  Msg:= cgGetErrorString(cgGetError) + #10#13 + cgGetLastListing(CurCgContent);
+  with CurCgProgram do
+    Msg:= '[' + LongName + '] ' + cgGetErrorString(cgGetError) + cgGetLastListing(FCgContext);
   raise Exception.Create(Msg);
 end;
 
@@ -351,7 +361,7 @@ end;
 destructor TCgProgram.Destroy;
 begin
   inherited Destroy;
-  Assert(FParams.Count=0, ClassName+': bug! params unbound!');
+  Assert(FParams.Count=0, '[' + LongName + ']: bug! params unbound!');
   FParams.Free;
   FCode.Free;
 end;
@@ -431,7 +441,7 @@ end;
 function TCgProgram.GetParam(index : String) : TCgParameter;
 begin
   Result := ParamByName(index);
-  Assert(Result<>nil, ClassName+': Invalid parameter name "'+index+'"');
+  Assert(Result<>nil, '['+LongName+']: Invalid parameter name "'+index+'"');
 end;
 
 // ParamByName
@@ -479,7 +489,9 @@ begin
 
   // get a new context
   FCgContext := cgCreateContext;
-  CurCgContent := FCgContext;
+
+  CurCgProgram:=self;
+
   Inc(vCgContextCount);
 
   try
@@ -527,7 +539,7 @@ begin
   if not Assigned(FHandle) then exit;
   if not FEnabled then exit;
 
-  CurCgContent := FCgContext;
+  CurCgProgram:=self;
 
   cgGLBindProgram(FHandle);
   cgGLEnableProfile(FProfile);
@@ -621,6 +633,14 @@ begin
   ParamByName(ParamName).SetAsVector4f(Vector4fVal);
 end;
 
+// LongName
+//
+function TCgProgram.LongName: string;
+const ProTypeStr : array[ptVertex..ptFragment] of string = ('VP', 'FP');
+begin
+ result:=(Owner as TCgShader).Name + '.' + ProTypeStr[FProgramType] + '.' + ProgramName;
+end;
+
 // ------------------
 // ------------------ TCgParameter ------------------
 // ------------------
@@ -639,11 +659,25 @@ begin
    inherited;
 end;
 
+// LongName
+//
+function TCgParameter.LongName: string;
+begin
+  result:=Owner.LongName + '.' + FName;
+end;
+
+// TypeMismatchMessage
+//
+function TCgParameter.TypeMismatchMessage: string;
+begin
+  result:='[' + LongName + ']: Parameter type mismatch.';
+end;
+
 // CheckValueType
 //
 procedure TCgParameter.CheckValueType(aType : TCGtype);
 begin
-  Assert(aType=FValueType, ClassName+': Parameter type mismatch.');
+  Assert(aType=FValueType, TypeMismatchMessage);
 end;
 
 // CheckValueType
@@ -660,9 +694,9 @@ procedure TCgParameter.CheckValueType(const types : array of TCGtype);
         Result := True;
         Break;
       end;
-  end;                     
+  end;
 begin
-  Assert(DoCheck, ClassName+': Parameter type mismatch.');
+  Assert(DoCheck, TypeMismatchMessage);
 end;
 
 // SetAsScalar
@@ -760,12 +794,11 @@ end;
 // SetAsStateMatrix
 //
 procedure TCgParameter.SetAsStateMatrix(matrix, Transform : Cardinal);
-// Assuming matrix types are contiguous to simplify the type checking
+// Assuming values of matrix types are contiguous to simplify the type checking
 const MinTypeConst = CG_FLOAT1x1;
       MaxTypeConst = CG_FLOAT4x4;
 begin
-  Assert( (FValueType>=MinTypeConst) and (FValueType<=MaxTypeConst),
-          ClassName+': Parameter type mismatch.');
+  Assert( (FValueType>=MinTypeConst) and (FValueType<=MaxTypeConst), TypeMismatchMessage);
   cgGLSetStateMatrixParameter( Fhandle, matrix, Transform);
 end;
 
