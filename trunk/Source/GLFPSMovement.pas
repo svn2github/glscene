@@ -5,7 +5,8 @@
 
    FPS-like movement behaviour and manager.<p>
 
-	<b>History : </b><font size=-1><ul>	
+	<b>History : </b><font size=-1><ul>
+      <li>02/12/04 - DB - Fixed memory leak, spotted by dikoe Kenguru
       <li>03/07/04 - LR - Corrections for Linux compatibility
                           Replace GetTickCount by GLGetTickCount
       <li>19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
@@ -613,11 +614,22 @@ begin
 end;
 
 destructor TGLBFPSMovement.destroy;
+var
+  i:integer;
 begin
-     if assigned(collisionStates) then
-          freeAndNil(collisionStates);
-
-     inherited destroy;
+  // remove all states
+  for i:= 0 to CollisionStates.Count-1 do
+    TCollisionState(CollisionStates[i]).Free;
+  FreeAndNil(collisionStates);
+  // remove all objects used to display graphical results of collisions
+  FreeAndNil(ArrowLine1);
+  FreeAndNil(ArrowLine2);
+  FreeAndNil(ArrowLine3);
+  FreeAndNil(ArrowLine4);
+  FreeAndNil(ArrowLine5);
+  FreeAndNil(ArrowLine6);
+  FreeAndNil(dirGl);
+  inherited destroy;
 end;
 
 class function TGLBFPSMovement.FriendlyName : String;
