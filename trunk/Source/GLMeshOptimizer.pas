@@ -2,6 +2,7 @@
 {: Mesh optimization for GLScene.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/08/03 - EG - Added basic mooStandardize support
       <li>03/06/03 - EG - Creation
 	</ul></font>
 }
@@ -9,7 +10,7 @@ unit GLMeshOptimizer;
 
 interface
 
-uses Geometry, GLVectorFileObjects, MeshUtils;
+uses Geometry, GLVectorFileObjects;
 
 type
 
@@ -31,11 +32,11 @@ procedure OptimizeMesh(aMeshObject : TMeshObject); overload;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
-uses PersistentClasses;
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+uses PersistentClasses, VectorLists, MeshUtils;
 
 // OptimizeMesh (list, default options)
 //
@@ -50,8 +51,17 @@ procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions)
 var
    i : Integer;
 begin
-   for i:=0 to aList.Count-1 do
+   // optimize all mesh objects
+   for i:=0 to aList.Count-1 do begin
       OptimizeMesh(aList[i], options);
+   end;
+   if (mooStandardize in options) then begin
+      // drop mesh objects that have become empty
+      for i:=aList.Count-1 downto 0 do begin
+         if (aList[i].Mode=momFaceGroups) and (aList[i].FaceGroups.Count=0) then
+            aList[i].Free;
+      end;
+   end;
 end;
 
 // OptimizeMesh (object, default options)
@@ -67,9 +77,42 @@ procedure OptimizeMesh(aMeshObject : TMeshObject; options : TMeshOptimizerOption
 var
    i : Integer;
    fg : TFaceGroup;
+   coords, texCoords, normals : TAffineVectorList;
+   il : TIntegerList;
+   materialName : String;
 begin
-   if mooStandardize in options then
-      Assert(False, 'not supported.. yet.');
+   if (mooStandardize in options) then begin
+      if (aMeshObject.Mode<>momFaceGroups) or (aMeshObject.FaceGroups.Count<=1) then begin
+         if aMeshObject.FaceGroups.Count=1 then
+            materialName:=aMeshObject.FaceGroups[0].MaterialName;
+         texCoords:=TAffineVectorList.Create;
+         normals:=TAffineVectorList.Create;
+         coords:=aMeshObject.ExtractTriangles(texCoords, normals);
+         try
+            il:=BuildVectorCountOptimizedIndices(coords, normals, texCoords);
+            try
+               aMeshObject.Clear;
+               if il.Count>0 then begin
+                  RemapReferences(normals, il);
+                  RemapReferences(texCoords, il);
+                  RemapAndCleanupReferences(coords, il);
+                  aMeshObject.Vertices:=coords;
+                  aMeshObject.Normals:=normals;
+                  aMeshObject.TexCoords:=texCoords;
+                  fg:=TFGVertexIndexList.CreateOwned(aMeshObject.FaceGroups);
+                  fg.MaterialName:=materialName;
+                  TFGVertexIndexList(fg).VertexIndices:=il;
+               end;
+            finally
+               il.Free;
+            end;
+         finally
+            coords.Free;
+            normals.Free;
+            texCoords.Free;
+         end;
+      end else Assert(False, 'Standardization with multiple facegroups not supported... yet.');
+   end;
 
    if (mooVertexCache in options) and (aMeshObject.Mode=momFaceGroups) then begin
        for i:=0 to aMeshObject.FaceGroups.Count-1 do begin
