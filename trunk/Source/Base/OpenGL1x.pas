@@ -3339,9 +3339,6 @@ implementation
 
 uses SysUtils;
 
-type                                   
-  EOpenGLException= class(Exception);
-  
 {$ifdef MSWINDOWS}
 const
    INVALID_MODULEHANDLE = 0;
@@ -3361,9 +3358,6 @@ var
 {$endif}
 
 resourcestring
-  SMakeCurrentFailed= 'wglMakeCurrent failed';
-  SDeleteContextFailed= 'wglDeleteContext failed'; 
-
 {$ifdef MSWINDOWS}
   SDefaultGLLibrary= 'OpenGL32.dll';
   SDefaultGLULibrary= 'GLU32.dll';
@@ -3372,17 +3366,6 @@ resourcestring
 {$ifdef LINUX}
   SDefaultGLLibrary= 'libGL.so'; 
   SDefaultGLULibrary= 'libGLU.so'; 
-{$endif}
-
-{$ifndef GLS_DELPHI_6_UP}
-procedure RaiseLastOSError;
-begin
-   {$ifndef FPC}
-   RaiseLastWin32Error;
-   {$else}
-   raise Exception.Create('OSError : '+IntToStr(GetLastError));
-   {$endif}
-end;
 {$endif}
 
 // ReadExtensions
