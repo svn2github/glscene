@@ -8,6 +8,7 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)	
       <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
       <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
       <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
