@@ -13,6 +13,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/01/05 - SG - Added color support for bezier style TGLLines
       <li>03/12/04 - MF - Added TGLSprite.AxisAlignedDimensionsUnscaled override
       <li>06/07/04 - SG - TGLCube.RayCastIntersect fix (Eric Pascual)
       <li>20/01/04 - SG - Added IcosahedronBuildList
@@ -2471,6 +2472,7 @@ var
    spline : TCubicSpline;
    vertexColor : TVector;
    nodeBuffer : array of TAffineVector;
+   colorBuffer : array of TVector;
    nurbsRenderer : PGLUNurbs;
 begin
    if Nodes.Count>1 then begin
@@ -2481,15 +2483,21 @@ begin
       // If required this could be optimized by storing a cached node buffer.
       if (FSplineMode=lsmBezierSpline) or (FSplineMode=lsmNURBSCurve) then begin
          SetLength(nodeBuffer, Nodes.Count);
-         for i:=0 to Nodes.Count-1 do
-            nodeBuffer[i]:=Nodes[i].AsAffineVector;
+         SetLength(colorBuffer, Nodes.Count);
+         for i:=0 to Nodes.Count-1 do with TGLLinesNode(Nodes[i]) do begin
+            nodeBuffer[i]:=AsAffineVector;
+            colorBuffer[i]:=Color.Color;
+         end;
       end;
 
       if FSplineMode=lsmBezierSpline then begin
          // map evaluator
          glPushAttrib(GL_EVAL_BIT);
-         glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
          glEnable(GL_MAP1_VERTEX_3);
+         glEnable(GL_MAP1_COLOR_4);
+
+         glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
+         glMap1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
       end;
 
       // start drawing the line
@@ -2559,6 +2567,10 @@ begin
 
       if FSplineMode=lsmBezierSpline then
          glPopAttrib;
+      if Length(nodeBuffer)>0 then begin
+        SetLength(nodeBuffer, 0);
+        SetLength(colorBuffer, 0);
+      end;
 
       RestoreLineStyle;
 
