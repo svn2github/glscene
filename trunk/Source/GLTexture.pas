@@ -3047,7 +3047,7 @@ begin
          glEnable(Image.NativeTextureTarget);
          SetGLCurrentTexture(1, Image.NativeTextureTarget, Handle);
 
-         if not libMaterial.FTextureMatrixIsIdentity then begin
+         if Assigned(libMaterial) and (not libMaterial.FTextureMatrixIsIdentity) then begin
             glMatrixMode(GL_TEXTURE);
             glLoadMatrixf(PGLFloat(@libMaterial.FTextureMatrix[0][0]));
             glMatrixMode(GL_MODELVIEW);
@@ -3083,8 +3083,8 @@ procedure TGLTexture.UnApplyAsTexture2(var rci : TRenderContextInfo; libMaterial
 begin
    glActiveTextureARB(GL_TEXTURE1_ARB);
    UnApplyMappingMode;
-   if (Image.NativeTextureTarget<>GL_TEXTURE_2D)
-      or (not libMaterial.FTextureMatrixIsIdentity) then begin
+   if    (Image.NativeTextureTarget<>GL_TEXTURE_2D)
+      or (Assigned(libMaterial) and (not libMaterial.FTextureMatrixIsIdentity)) then begin
       glMatrixMode(GL_TEXTURE);
       glLoadIdentity;
       glMatrixMode(GL_MODELVIEW);
