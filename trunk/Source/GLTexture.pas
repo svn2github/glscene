@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
       <li>20/01/02 - EG - Fixed texture memory use report error
       <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
                           are now Linear/MipMap 
@@ -1695,7 +1696,7 @@ var
    buf : String;
 begin
    buf:=fileName;
-   if Assigned(FOnTextureNeeded) then;
+   if Assigned(FOnTextureNeeded) then
       FOnTextureNeeded(Self, buf);
    if FileExists(buf) then begin
       sl:=TStringList.Create;
@@ -1887,7 +1888,7 @@ var
    buf : String;
 begin
    buf:=fileName;
-   if Assigned(FOnTextureNeeded) then;
+   if Assigned(FOnTextureNeeded) then
       FOnTextureNeeded(Self, buf);
    if FileExists(buf) then
       Picture.LoadFromFile(buf)
@@ -1973,7 +1974,7 @@ begin
 		Picture.OnChange:=nil;
 		try
          buf:=PictureFileName;
-         if Assigned(FOnTextureNeeded) then;
+         if Assigned(FOnTextureNeeded) then
             FOnTextureNeeded(Self, buf);
          if FileExists(buf) then
    			Picture.LoadFromFile(buf)
