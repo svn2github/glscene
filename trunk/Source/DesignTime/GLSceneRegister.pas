@@ -135,7 +135,7 @@ uses
 {$endif}
    ;
 
-{$ifdef GL_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_5_UP}
 resourcestring
    { OpenGL property category }
    sOpenGLCategoryName = 'OpenGL';
@@ -1398,7 +1398,7 @@ end;
 
 {$endif}
 
-{$ifdef GL_DELPHI_5_UP}
+{$ifdef GLS_DELPHI_5_UP}
 procedure GLRegisterPropertiesInCategories;
 {$ifdef GLS_DELPHI_5}
   { The first parameter of RegisterPropertiesInCategory is of type
