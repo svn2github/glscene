@@ -98,6 +98,7 @@ contains
   GLGraph in '..\Source\GLGraph.pas',
   VectorLists in '..\Source\Base\VectorLists.pas',
   TypesSTL in '..\Source\FileFormats\TypesSTL.pas',
+  GLFileSTL in '..\Source\FileFormats\GLFileSTL.pas',
   Keyboard in '..\Source\Base\Keyboard.pas',
   GLExtrusion in '..\Source\GLExtrusion.pas',
   GLFireFX in '..\Source\GLFireFX.pas',
