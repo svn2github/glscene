@@ -3877,26 +3877,23 @@ var
    aabb : TAABB;
 begin
    // visibility culling determination
-   case rci.visibilityCulling of
-      vcNone, vcInherited : begin
-         shouldRenderSelf:=True;
-         shouldRenderChildren:=Assigned(FChildren);
-      end;
-      vcObjectBased : begin
+   if rci.visibilityCulling in [vcObjectBased, vcHierarchical] then begin
+      if rci.visibilityCulling=vcObjectBased then begin
          shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
                            or (not IsVolumeClipped(AbsolutePosition,
-                                                   BoundingSphereRadius*Scale.VectorLength,
+                                                   BoundingSphereRadius,
                                                    rci.rcci));
          shouldRenderChildren:=Assigned(FChildren);
-      end;
-      vcHierarchical : begin
+      end else begin // vcHierarchical
          aabb:=AxisAlignedBoundingBox;
          shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
                            or (not IsVolumeClipped(aabb.min, aabb.max, rci.rcci));
          shouldRenderChildren:=shouldRenderSelf and Assigned(FChildren);
       end;
-   else
-      Assert(False, 'Unknown visibility culling option');
+      if not (shouldRenderSelf or shouldRenderChildren) then Exit;
+   end else begin
+      Assert(rci.visibilityCulling in [vcNone, vcInherited],
+             'Unknown visibility culling option');
       shouldRenderSelf:=True;
       shouldRenderChildren:=Assigned(FChildren);
    end;
