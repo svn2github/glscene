@@ -3233,7 +3233,8 @@ begin
    if not (ocStructure in FChanges) then begin
       Include(FChanges, ocStructure);
       NotifyChange(Self);
-   end;
+   end else if osDirectDraw in ObjectStyle then
+      NotifyChange(Self);
 end;
 
 // RecTransformationChanged

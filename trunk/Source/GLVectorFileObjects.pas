@@ -374,6 +374,8 @@ type
                         lerpFactor : Single);
          procedure BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
 
+         procedure MakeSkeletalTranslationStatic(startFrame, endFrame : Integer);
+
          {: Applies current frame to morph all mesh objects. }
          procedure MorphMesh;
 
@@ -1091,6 +1093,8 @@ type
    //
    TActorAnimationReference = (aarMorph, aarSkeleton);
 
+   TActor = class;
+
 	// TActorAnimation
 	//
    {: An actor animation sequence.<p>
@@ -1125,6 +1129,9 @@ type
 
          property AsString : String read GetAsString write SetAsString;
 
+         function OwnerActor : TActor;
+         procedure MakeSkeletalTranslationStatic;
+
 	   published
 	      { Published Declarations }
          property Name : String read FName write FName;
@@ -1134,7 +1141,6 @@ type
 	end;
 
    TActorAnimationName = String;
-   TActor = class;
 
 	// TActorAnimations
 	//
@@ -2315,6 +2321,22 @@ begin
          end;
       end;
    end;
+end;
+
+// MakeSkeletalTranslationStatic
+//
+procedure TSkeleton.MakeSkeletalTranslationStatic(startFrame, endFrame : Integer);
+var
+   delta : TAffineVector;
+   i : Integer;
+   f : Single;
+begin
+   if endFrame<=startFrame then Exit;
+   delta:=VectorSubtract(Frames[endFrame].Position[0], Frames[startFrame].Position[0]);
+   f:=-1/(endFrame-startFrame);
+   for i:=startFrame to endFrame do
+      Frames[i].Position[0]:=VectorCombine(Frames[i].Position[0], delta,
+                                           1, (i-startFrame)*f);
 end;
 
 // MorphMesh
@@ -4727,6 +4749,20 @@ const
 begin
    Result:=Format('"%s",%d,%d,%s',
                   [FName, FStartFrame, FEndFrame, cAARToString[Reference]]);
+end;
+
+// OwnerActor
+//
+function TActorAnimation.OwnerActor : TActor;
+begin
+   Result:=((Collection as TActorAnimations).GetOwner as TActor);
+end;
+
+// MakeSkeletalTranslationStatic
+//
+procedure TActorAnimation.MakeSkeletalTranslationStatic;
+begin
+   OwnerActor.Skeleton.MakeSkeletalTranslationStatic(StartFrame, EndFrame);
 end;
 
 // ------------------
