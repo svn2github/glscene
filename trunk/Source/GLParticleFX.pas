@@ -64,7 +64,7 @@ type
       private
          { Private Declarations }
          FID, FTag : Integer;
-         FOwner : TGLParticleList;  // NOT persistent
+         FManager : TGLParticleFXManager; // NOT persistent
          FPosition : TAffineVector;
          FVelocity : TAffineVector;
          FRotation : Single;
@@ -81,8 +81,8 @@ type
          procedure WriteToFiler(writer : TVirtualWriter); override;
          procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         {: Refers owner list }
-         property Owner : TGLParticleList read FOwner write FOwner;
+         property Manager : TGLParticleFXManager read FManager write FManager;
+         
          {: Particle's ID, given at birth.<p>
             ID is a value unique per manager. }
          property ID : Integer read FID;
@@ -313,7 +313,7 @@ type
    PParticleReference = ^TParticleReference;
    TParticleReferenceArray = packed array [0..MaxInt shr 4] of TParticleReference;
    PParticleReferenceArray = ^TParticleReferenceArray;
-   TPFXRegion = packed record
+   TPFXRegion = record
       count, capacity : Integer;
       particleRef : PParticleReferenceArray;
       particleOrder : PPointerList;
@@ -334,7 +334,7 @@ type
          { Private Declarations }
          FManagerList : TList;
          FLastSortTime : Double;
-         FZWrite, FZTest, FZCull : Boolean;
+         FZWrite, FZTest, FZCull, FZAccurateSort : Boolean;
 			FBlendingMode : TBlendingMode;
          FCurrentRCI : PRenderContextInfo;
          FRegions : array [0..cPFXNbRegions-1] of TPFXRegion;
@@ -371,6 +371,10 @@ type
          property ZTest : Boolean read FZTest write FZTest default True;
          {: If true the renderer will cull particles that are behind the camera. }
          property ZCull : Boolean read FZCull write FZCull default True;
+         {: If true particles will be accurately sorted back to front.<p>
+            When false, only a rough ordering is used, which can result in
+            visual glitches but may be faster. } 
+         property ZAccurateSort : Boolean read FZAccurateSort write FZAccurateSort default True;
          {: Default blending mode for particles.<p>
             "Additive" blending is the usual mode (increases brightness and
             saturates), "transparency" may be used for smoke or systems that
@@ -954,7 +958,7 @@ end;
 //
 constructor TGLParticle.Create;
 begin
-   FEffectScale :=1;
+   FEffectScale:=1;
    inherited Create;
 end;
 
@@ -1060,7 +1064,7 @@ end;
 //
 procedure TGLParticleList.AfterItemCreated(Sender : TObject);
 begin
-   (Sender as TGLParticle).Owner:=Self;
+   (Sender as TGLParticle).Manager:=Self.Owner;
 end;
 
 // ItemCount
@@ -1074,7 +1078,7 @@ end;
 //
 function  TGLParticleList.AddItem(aItem : TGLParticle) : Integer;
 begin
-   aItem.Owner:=Self;
+   aItem.Manager:=Self.Owner;
    Result:=FItemList.Add(aItem);
    FDirectList:=PGLParticleArray(FItemList.List);
 end;
@@ -1087,8 +1091,8 @@ var
 begin
    i:=FItemList.IndexOf(aItem);
    if i>=0 then begin
-      if aItem.Owner=Self then
-         aItem.Owner:=nil;
+      if aItem.Manager=Self.Owner then
+         aItem.Manager:=nil;
       aItem.Free;
       FItemList.List[i]:=nil;
    end;
@@ -1164,7 +1168,7 @@ begin
    Result:=ParticlesClass.Create;
    Result.FID:=FNextID;
    if Assigned(cadencer) then
-      Result.FCreationTime:=Cadencer.GetCurrentTime;   
+      Result.FCreationTime:=Cadencer.GetCurrentTime;
    Inc(FNextID);
    FParticles.AddItem(Result);
    if Assigned(FOnCreateParticle) then
@@ -1376,6 +1380,7 @@ begin
    ObjectStyle:=ObjectStyle+[osNoVisibilityCulling, osDirectDraw];
    FZTest:=True;
    FZCull:=True;
+   FZAccurateSort:=True;
    FManagerList:=TList.Create;
    FBlendingMode:=bmAdditive;
 end;
@@ -1484,7 +1489,7 @@ var
    asm
 //   begin
       // fast version of
-      //regionIdx := Trunc((dist - distDelta) * invRegionSize);
+//      regionIdx := Trunc((dist - distDelta) * invRegionSize);
       FLD     dist
       FSUB    distDelta
       FMUL    invRegionSize
@@ -1494,7 +1499,6 @@ var
 var
    minDist, maxDist : Integer;
    curManager : TGLParticleFXManager;
-   curManagerList : TGLParticleList;
    curList : PGLParticleArray;
    curParticle : TGLParticle;
    curRegion : PPFXRegion;
@@ -1554,7 +1558,7 @@ begin
             with curRegion^ do for particleIdx:=0 to count-1 do
                particleOrder[particleIdx]:=@particleRef[particleIdx];
             // QuickSort
-            if FBlendingMode<>bmAdditive then
+            if FZAccurateSort and (FBlendingMode<>bmAdditive) then
                QuickSortRegion(0, curRegion.count-1, curRegion);
          end else if curRegion.Count=1 then begin
             // Prepare order table
@@ -1594,22 +1598,20 @@ begin
       try
          // Initialize managers
          for managerIdx:=0 to FManagerList.Count-1 do
-            TGLParticleFXManager(FManagerList[managerIdx]).InitializeRendering;
+            TGLParticleFXManager(FManagerList.List[managerIdx]).InitializeRendering;
          // Start Rendering... at last ;)
          try
             curManager:=nil;
-            curManagerList:=nil;
             for regionIdx:=cPFXNbRegions-1 downto 0 do begin
                curRegion:=@FRegions[regionIdx];
                if curRegion.count>0 then begin
                   curParticleOrder:=@curRegion.particleOrder[0];
                   for particleIdx:=curRegion.count-1 downto 0 do begin
                      curParticle:=PParticleReference(curParticleOrder[particleIdx]).particle;
-                     if curParticle.Owner<>curManagerList then begin
+                     if curParticle.Manager<>curManager then begin
                         if Assigned(curManager) then
                            curManager.EndParticles;
-                        curManagerList:=curParticle.Owner;
-                        curManager:=curManagerList.Owner;
+                        curManager:=curParticle.Manager;
                         if curManager.TexturingMode<>currentTexturingMode then begin
                            if currentTexturingMode<>0 then
                               glDisable(currentTexturingMode);
@@ -1628,7 +1630,7 @@ begin
          finally
             // Finalize managers
             for managerIdx:=0 to FManagerList.Count-1 do
-               TGLParticleFXManager(FManagerList[managerIdx]).FinalizeRendering;
+               TGLParticleFXManager(FManagerList.List[managerIdx]).FinalizeRendering;
          end;
       finally
          if FZWrite then
@@ -2929,8 +2931,7 @@ begin
       if ComputeSizeScale(lifeTime, sizeScale) then begin
          for i:=0 to FVertBuf.Count-1 do
             vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
-      end;
-      VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+      end else VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
    end;
 
    if FLifeRotations then
