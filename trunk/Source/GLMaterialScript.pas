@@ -38,7 +38,8 @@ unit GLMaterialScript;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, jpeg, tga, StdCtrls, GLTexture, GLMisc, ExtCtrls, Variants, GLUtils;
+  Windows, Messages, SysUtils, Classes, StdCtrls, GLTexture, GLMisc,
+  ExtCtrls, GLUtils;
 
 type
    TGLShaderItem = class (TCollectionItem)
