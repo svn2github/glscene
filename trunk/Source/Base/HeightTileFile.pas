@@ -567,19 +567,22 @@ end;
 //
 function THeightTileFile.GetTileIndex(aLeft, aTop : Integer) : Integer;
 var
-   i, key : Integer;
+   i, key, n : Integer;
    p : PIntegerArray;
 begin
    Result:=-1;
    key:=aLeft+(aTop shl 4);
    key:=((key and cHTFHashTableSize)+(key shr 10)+(key shr 20))
         and cHTFHashTableSize;
-   p:=@FHashTable[key][0];
-   for i:=0 to Length(FHashTable[key])-1 do begin
-      with FTileIndex[p[i]] do begin
-         if (left=aLeft) and (top=aTop) then begin
-            Result:=p[i];
-            Break;
+   n:=Length(FHashTable[key]);
+   if n>0 then begin
+      p:=@FHashTable[key][0];
+      for i:=0 to n-1 do begin
+         with FTileIndex[p[i]] do begin
+            if (left=aLeft) and (top=aTop) then begin
+               Result:=p[i];
+               Break;
+            end;
          end;
       end;
    end;
