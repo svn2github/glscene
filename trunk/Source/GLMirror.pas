@@ -200,13 +200,12 @@ begin
          rci.cameraPosition:=VectorTransform(rci.cameraPosition, refMat);
          rci.cameraDirection:=VectorTransform(rci.cameraDirection, refMat);
 
+         glMultMatrixf(@refMat);
          if Assigned(FMirrorObject) then begin
             if FMirrorObject.Parent<>nil then
                glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
-            glMultMatrixf(@refMat);
             FMirrorObject.DoRender(rci, renderSelf, renderChildren);
          end else begin
-            glMultMatrixf(@refMat);
             Scene.Objects.DoRender(rci, renderSelf, renderChildren);
          end;
 
