@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 249
-  Top = 100
+  Left = 408
+  Top = 164
   Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
@@ -82,10 +82,10 @@ object Form1: TForm1
       TileSize = 32
       TilesPerTexture = 32
       MaterialLibrary = MLTerrain
-      QualityDistance = 250
+      QualityDistance = 750
       QualityStyle = hrsTesselated
       MaxCLODTriangles = 165536
-      CLODPrecision = 10
+      CLODPrecision = 15
       OnGetTerrainBounds = TerrainGetTerrainBounds
     end
     object DOClassicWaterPlane: TGLDirectOpenGL

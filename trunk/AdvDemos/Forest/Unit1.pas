@@ -465,7 +465,7 @@ var
    clipPlane : TDoubleHmgPlane;
 begin
    supportsGLSL:=GL_ARB_shader_objects and GL_ARB_fragment_shader and GL_ARB_vertex_shader;
-   enableRectReflection:=GL_NV_texture_rectangle;
+   enableRectReflection:=GL_NV_texture_rectangle and ((not enableGLSL) or GL_EXT_Cg_shader);
 
    if not enableTex2DReflection then Exit;
 
