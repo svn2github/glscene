@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/12/03 - EG - TGLColorProxy moved to new GLProxyObjects unit,
+                          GLVectorFileObjects dependency cut. 
       <li>06/12/03 - EG - New FramesPerSecond logic
       <li>04/12/03 - Dave - Added ProxyObject.OctreeRayCastIntersect
       <li>26/12/03 - EG - Removed last TList dependencies
@@ -992,14 +994,15 @@ type
    TGLProxyObject = class (TGLBaseSceneObject)
       private
          { Private Declarations }
-         FRendering : Boolean;
          FMasterObject : TGLBaseSceneObject;
          FProxyOptions : TGLProxyObjectOptions;
 
       protected
          { Protected Declarations }
+         FRendering : Boolean;
+
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure SetMasterObject(const val : TGLBaseSceneObject);
+         procedure SetMasterObject(const val : TGLBaseSceneObject); virtual;
          procedure SetProxyOptions(const val : TGLProxyObjectOptions);
 
       public
@@ -1015,11 +1018,6 @@ type
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean; override;
-         {:If the MasterObject is a FreeForm, you can raycast against the Octree,
-           which is alot faster.  You must build the octree before using. :}
-         function OctreeRayCastIntersect(const rayStart, rayVector : TVector;
-                                 intersectPoint : PVector = nil;
-                                 intersectNormal : PVector = nil) : Boolean;
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
       published
@@ -1041,30 +1039,6 @@ type
          property Visible;
          property OnProgress;
          property Behaviours;
-   end;
-
-   // TGLColorProxyObject
-   //
-   {: A proxy object with its own color.<p>
-      This proxy object can have a unique color. Note that multi-material
-      objects (Freeforms linked to a material library f.i.) won't honour
-      the color. }
-   TGLColorProxyObject = class (TGLProxyObject)
-      private
-         { Private Declarations }
-         FFrontColor: TGLFaceProperties;
-
-      public
-         { Public Declarations }
-         constructor Create(AOwner: TComponent); override;
-         destructor Destroy; override;
-
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
-      published
-         { Published Declarations }
-
-         property FrontColor: TGLFaceProperties read FFrontColor;
    end;
 
    // TLightStyle
@@ -2032,8 +2006,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO,
-   GLVectorFileObjects;
+   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO;
 
 var
    vCounterFrequency : Int64;
@@ -5199,38 +5172,6 @@ begin
    end else Result:=False;
 end;
 
-// OctreeRayCastIntersect
-//
-function TGLProxyObject.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
-                                 intersectPoint : PVector = nil;
-                                 intersectNormal : PVector = nil) : Boolean;
-var
-   localRayStart, localRayVector : TVector;
-begin
-   if Assigned(MasterObject)
-    and (MasterObject is TGLFreeForm)
-    then begin
-      SetVector(localRayStart, AbsoluteToLocal(rayStart));
-      SetVector(localRayStart, MasterObject.LocalToAbsolute(localRayStart));
-      SetVector(localRayVector, AbsoluteToLocal(rayVector));
-      SetVector(localRayVector, MasterObject.LocalToAbsolute(localRayVector));
-      NormalizeVector(localRayVector);
-
-      Result:=TGLFreeForm(MasterObject).OctreeRayCastIntersect(localRayStart, localRayVector,
-                                            intersectPoint, intersectNormal);
-      if Result then begin
-         if Assigned(intersectPoint) then begin
-            SetVector(intersectPoint^, MasterObject.AbsoluteToLocal(intersectPoint^));
-            SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
-         end;
-         if Assigned(intersectNormal) then begin
-            SetVector(intersectNormal^, MasterObject.AbsoluteToLocal(intersectNormal^));
-            SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
-         end;
-      end;
-   end else Result:=False;
-end;
-
 // GenerateSilhouette
 //
 function TGLProxyObject.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
@@ -7733,62 +7674,6 @@ begin
       FBuffer.CreateRC(0, True);
    end;
    FBuffer.Render;
-end;
-
-// ------------------
-// ------------------ TGLColorProxyObject ------------------
-// ------------------
-
-// Create
-//
-constructor TGLColorProxyObject.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FFrontColor:=TGLFaceProperties.Create(Self);
-end;
-
-// Destroy
-//
-destructor TGLColorProxyObject.Destroy;
-begin
-   FFrontColor.Free;
-
-   inherited Destroy;
-end;
-
-// Render
-//
-procedure TGLColorProxyObject.DoRender(var rci : TRenderContextInfo;
-                                  renderSelf, renderChildren : Boolean);
-var
-   gotMaster, masterGotEffects, oldProxySubObject : Boolean;
-begin
-   if FRendering then Exit;
-   FRendering:=True;
-   try
-      gotMaster:=Assigned(FMasterObject);
-      masterGotEffects:=gotMaster and (pooEffects in FProxyOptions)
-                        and (FMasterObject.Effects.Count>0);
-      if gotMaster then begin
-         if pooObjects in FProxyOptions then begin
-            oldProxySubObject:=rci.proxySubObject;
-            rci.proxySubObject:=True;
-            if pooTransformation in FProxyOptions then
-               glMultMatrixf(PGLFloat(FMasterObject.FLocalMatrix));
-            TGLCustomSceneObject(FMasterObject).Material.FrontProperties.Assign(FFrontColor);
-            FMasterObject.DoRender(rci, renderSelf, RenderChildren);
-            rci.proxySubObject:=oldProxySubObject;
-         end;
-      end;
-      // now render self stuff (our children, our effects, etc.)
-      if renderChildren and (Count>0) then
-         Self.RenderChildren(0, Count-1, rci);
-      if masterGotEffects then
-         FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
-   finally
-      FRendering:=False;
-   end;
-   ClearStructureChanged;
 end;
 
 //------------------------------------------------------------------------------
