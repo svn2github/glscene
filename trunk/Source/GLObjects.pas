@@ -2269,7 +2269,7 @@ end;
 //
 procedure TGLLineBase.SetupLineStyle;
 begin
-   glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT or GL_EVAL_BIT);
+   glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
    glDisable(GL_LIGHTING);
    if FLinePattern<>$FFFF then begin
       glEnable(GL_LINE_STIPPLE);
@@ -2547,18 +2547,7 @@ begin
    glPopMatrix;
 end;
 
-// AxisAlignedDimensions
-//
-{function TGLLines.AxisAlignedDimensions : TVector;
-var
-   i : Integer;
-begin
-   RstVector(Result);
-   for i:=0 to Nodes.Count-1 do
-      MaxVector(Result, VectorAbs(Nodes[i].AsVector));
-end;
-}
-// AxisAlignedDimensions
+// AxisAlignedDimensionsUnscaled
 //
 function TGLLines.AxisAlignedDimensionsUnscaled : TVector;
 var
@@ -2567,9 +2556,10 @@ begin
    RstVector(Result);
    for i:=0 to Nodes.Count-1 do
       MaxVector(Result, VectorAbs(Nodes[i].AsVector));
-   DivideVector(Result,Scale.AsVector);     //DanB ?
+   // EG: commented out, line below looks suspicious, since scale isn't taken
+   //     into account in previous loop, must have been hiding another bug... somewhere...
+   //DivideVector(Result, Scale.AsVector);     //DanB ?
 end;
-
 
 // BuildList
 //
@@ -2590,17 +2580,39 @@ begin
       // Set up the control point buffer for Bezier splines and NURBS curves.
       // If required this could be optimized by storing a cached node buffer.
       if (FSplineMode=lsmBezierSpline) or (FSplineMode=lsmNURBSCurve) then begin
-         SetLength(nodeBuffer,Nodes.Count);
+         SetLength(nodeBuffer, Nodes.Count);
          for i:=0 to Nodes.Count-1 do
             nodeBuffer[i]:=Nodes[i].AsAffineVector;
       end;
-      if (FSplineMode=lsmBezierSpline) then begin
-         glMap1f(GL_MAP1_VERTEX_3,0,1,3,Nodes.Count,@nodeBuffer[0]);
+
+      if FSplineMode=lsmBezierSpline then begin
+         // map evaluator
+         glPushAttrib(GL_EVAL_BIT);
+         glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
          glEnable(GL_MAP1_VERTEX_3);
       end;
 
       // start drawing the line
-      glBegin(GL_LINE_STRIP);
+      if (FSplineMode=lsmNURBSCurve) and (FDivision>=2) then begin
+         if (FNURBSOrder>0) and (FNURBSKnots.Count>0) then begin
+            nurbsRenderer:=gluNewNurbsRenderer;
+            try
+               gluNurbsProperty(nurbsRenderer, GLU_SAMPLING_TOLERANCE, FNURBSTolerance);
+               gluNurbsProperty(nurbsRenderer, GLU_DISPLAY_MODE, GLU_FILL);
+               gluBeginCurve(nurbsRenderer);
+                  gluNurbsCurve(nurbsRenderer,
+                                FNURBSKnots.Count, @FNURBSKnots.List[0],
+                                3, @nodeBuffer[0],
+                                FNURBSOrder,
+                                GL_MAP1_VERTEX_3);
+               gluEndCurve(nurbsRenderer);
+            finally
+               gluDeleteNurbsRenderer(nurbsRenderer);
+            end;
+         end;
+      end else begin
+         // lines, cubic splines or bezier
+         glBegin(GL_LINE_STRIP);
          if (FDivision<2) or (FSplineMode=lsmLines) then begin
             // standard line(s), draw directly
             if loUseNodeColorForLines in Options then begin
@@ -2614,7 +2626,7 @@ begin
                for i:=0 to Nodes.Count-1 do with Nodes[i] do
                   glVertex3f(X, Y, Z);
             end;
-         end else if (FSplineMode=lsmCubicSpline) then begin
+         end else if FSplineMode=lsmCubicSpline then begin
             // cubic spline
             spline:=Nodes.CreateNewCubicSpline;
             try
@@ -2633,31 +2645,21 @@ begin
                   glVertex3f(a, b, c);
                end;
             finally
-               Spline.Free;
+               spline.Free;
             end;
-         end else if (FSplineMode=lsmBezierSpline) then begin
+         end else if FSplineMode=lsmBezierSpline then begin
+            f:=1/FDivision;
             for i:=0 to FDivision do
-               glEvalCoord1f(i/FDivision);
+               glEvalCoord1f(i*f);
          end;
-      glEnd;
-
-      if (FSplineMode=lsmNURBSCurve) then begin
-         if (FNURBSOrder>0) and (FNURBSKnots.Count>0) then begin
-            nurbsRenderer:=gluNewNurbsRenderer;
-            gluNurbsProperty(nurbsRenderer,GLU_SAMPLING_TOLERANCE,FNURBSTolerance);
-            gluNurbsProperty(nurbsRenderer,GLU_DISPLAY_MODE,GLU_FILL);
-            gluBeginCurve(nurbsRenderer);
-               gluNurbsCurve(nurbsRenderer,
-                             FNURBSKnots.Count,@FNURBSKnots.List[0],
-                             3,@nodeBuffer[0],
-                             FNURBSOrder,
-                             GL_MAP1_VERTEX_3);
-            gluEndCurve(nurbsRenderer);
-            gluDeleteNurbsRenderer(nurbsRenderer);
-         end;
+         glEnd;
       end;
 
+      if FSplineMode=lsmBezierSpline then
+         glPopAttrib;
+
       RestoreLineStyle;
+
       if FNodesAspect<>lnaInvisible then begin
          glPushAttrib(GL_ENABLE_BIT);
          glEnable(GL_BLEND);
