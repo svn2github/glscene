@@ -38,7 +38,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorTypes, VectorGeometry, PersistentClasses;
+uses Classes, VectorTypes, VectorGeometry, PersistentClasses, SysUtils;
 
 type
 
@@ -410,9 +410,22 @@ type
 			property Items[Index: Integer] : Single read Get write Put; default;
 			property List: PSingleArray read FList;
 
+         procedure AddSerie(aBase, aDelta : Single; aCount : Integer);
+         
          {: Adds delta to all items in the list. }
-	      procedure Offset(delta : Single);
+	      procedure Offset(delta : Single); overload;
+         {: Adds to each item the corresponding item in the delta list.<p>
+            Performs 'Items[i]:=Items[i]+delta[i]'.<br>
+            If both lists don't have the same item count, an exception is raised. }
+         procedure Offset(const delta : TSingleList); overload;
+         {: Multiplies all items by factor. }
 	      procedure Scale(factor : Single);
+         {: Square all items. }
+         procedure Sqr;
+         {: SquareRoot all items. }
+         procedure Sqrt;
+
+         {: Computes the sum of all elements. }
          function  Sum : Single;
 	end;
 
@@ -1987,14 +2000,17 @@ asm
       mov edx, ecx;
       repne scasd;
       je @@FoundIt
+
 @@NotFound:
       xor eax, eax
       dec eax
       jmp @@End;
+
 @@FoundIt:
       sub edx, ecx;
       dec edx;
       mov eax, edx;
+
 @@End:
       pop edi;
 end;
@@ -2281,11 +2297,38 @@ begin
 	end else Result:=0;
 end;
 
-// Offset
+// AddSerie
+//
+procedure TSingleList.AddSerie(aBase, aDelta : Single; aCount : Integer);
+var
+   list : PSingle;
+   i : Integer;
+begin
+   if aCount<=0 then Exit;
+   AdjustCapacityToAtLeast(Count+aCount);
+   list:=@FList[Count];
+   for i:=Count to Count+aCount-1 do begin
+      list^:=aBase;
+      Inc(list);
+      aBase:=aBase+aDelta;
+   end;
+   FCount:=Count+aCount;
+end;
+
+// Offset (single)
 //
 procedure TSingleList.Offset(delta : Single);
 begin
    OffsetFloatArray(PFloatVector(FList), FCount, delta);
+end;
+
+// Offset (list)
+//
+procedure TSingleList.Offset(const delta : TSingleList);
+begin
+   if FCount=delta.FCount then
+      OffsetFloatArray(PFloatVector(FList), PFloatVector(delta.FList), FCount)
+   else raise Exception.Create('SingleList count do not match');
 end;
 
 // Scale
@@ -2295,14 +2338,47 @@ begin
    ScaleFloatArray(PFloatVector(FList), FCount, factor);
 end;
 
+// Sqr
+//
+procedure TSingleList.Sqr;
+var
+   i : Integer;
+   locList : PSingleArray;
+begin
+   locList:=FList;
+   for i:=0 to Count-1 do
+      locList[i]:=locList[i]*locList[i];
+end;
+
+// Sqrt
+//
+procedure TSingleList.Sqrt;
+var
+   i : Integer;
+   locList : PSingleArray;
+begin
+   locList:=FList;
+   for i:=0 to Count-1 do
+      locList[i]:=System.Sqrt(locList[i]);
+end;
+
 // Sum
 //
 function TSingleList.Sum : Single;
-var
-   i : Integer;
+
+   function ComputeSum(list : PSingleArray; nb : Integer) : Single; register;
+   asm
+         fld   dword ptr [eax]
+   @@Loop:
+         dec   edx
+         fadd  dword ptr [eax+edx*4]
+         jnz   @@Loop
+   end;
+
 begin
-   Result:=0;
-   for i:=0 to FCount-1 do Result:=Result+FList[i];
+   if FCount>0 then
+      Result:=ComputeSum(FList, FCount)
+   else Result:=0;
 end;
 
 // ------------------
