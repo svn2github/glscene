@@ -2,8 +2,7 @@ program OctreeDemo;
 
 uses
   Forms,
-  fOctreeDemo in 'fOctreeDemo.pas' {frmOctreeDemo},
-  SpatialPartitioning in 'SpatialPartitioning.pas';
+  fOctreeDemo in 'fOctreeDemo.pas' {frmOctreeDemo};
 
 {$R *.res}
 
