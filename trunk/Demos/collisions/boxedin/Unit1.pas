@@ -4,35 +4,10 @@ Robert Hayes, March 2002.
 
 This demo uses the new Octree class to quickly detect triangle-level collisions with a sphere.
 
- **** This function is the result of a LOT of work and experimentation with both Paul Nettle's method
- (www.fluidstudios.com) and Telemachos' method (www.peroxide.dk) over a period of about 2 months. If
- you find ways to optimize the general structure (or bugs), please let me know at rmch@cadvision.com. ****
-
- TO DO:
- ======
-
-- Response based on tangent plane
-- R4 conversion (routine already exists for this in Octree) for ellipsoid space.
-- Various optimizations.
-
-  My method for caclulating sphere CD vs polygon:
- ...for each triangle:
- 1. cast a ray from sphere origin to triangle's plane (normal scaled to sphere radius).
-    If distance < 0 then skip checking this triangle.
- 2. if the distance is =< the sphere radius, the plane is embedded in the sphere.
-    Calculate poly intersection point and go to step 8.
- 3. if the distance > sphere radius, calculate the sphere intersection point to this plane by
-    subtracting the plane's normal from the sphere's origin
- 4. cast a new ray from the sphere intersection point to the plane; this is the new plane intersection point
- 6. determine if the plane intersection point lies within the triangle itself; if yes then the polygon
-    intersection point = the plane intersection point
- 7. else, find the point on the triangle that is closest to the plane intersection point; this becomes
-    the polygon intersection point (ie: edge detection)
- 8. cast a ray from the polygon intersection point back along the negative velocity vector of the sphere
- 9. if there is no intersection, the sphere cannot possibly collide with this triangle
- 10. else, save the distance from step 8 if, and only if, it is the shortest collision distance so far
+See Octree.SphereIntersect() for detailed comments.
 
 }
+
 unit Unit1;
 
 interface
@@ -113,7 +88,7 @@ var
 begin
    if IsKeyDown(VK_ESCAPE) then close;
 
-   Velocity:=Trackbar1.Position*deltaTime;
+   Velocity:=Trackbar1.Position*deltaTime*50;
 
    t:=StartPrecisionTimer;
 
@@ -121,18 +96,24 @@ begin
       SetVector(rayStart, Sphere2.AbsolutePosition);
       SetVector(rayVector, Sphere2.AbsoluteDirection);
       NormalizeVector(rayVector);
-      //Note: since collision may be performed on multiple meshes, we need to know which hit
+      //Note: since collision may be performed on multiple meshes, we might need to know which hit
       //      is closest (ie: d:=raystart - pPoint).
-      if OctreeSphereIntersect(raystart, rayvector, velocity, Sphere2.Radius*10,  //why 10? I don't know.
+      if OctreeSphereIntersect(raystart, rayvector, velocity, Sphere2.Radius,
                                @pPoint, @pNormal) then begin
          // Show the polygon intersection point
+         NormalizeVector(pNormal);
          Sphere1.Position.AsVector:=pPoint;
-         Sphere1.Direction.AsVector:=VectorNormalize(pNormal);
+         Sphere1.Direction.AsVector:=pNormal;
 
          // Make it rebound...
          with Sphere2.Direction do
             AsAffineVector:=VectorReflect(AsAffineVector, AffineVectorMake(pNormal));
-
+         // Add some "english"...
+         with Sphere2.Direction do begin
+            X:=x+random/10;
+            Y:=y+random/10;
+            Z:=z+random/10;
+         end;
          // Add intersect point to trail
          AddToTrail(pPoint);
       end else begin
@@ -179,13 +160,17 @@ end;
 procedure TForm1.Button1Click(Sender: TObject);
 begin
    //If the ball gets stuck in a pattern, hit the reset button.
-   Sphere2.Position.X:=0+random;
-   Sphere2.Position.Y:=0+random;
-   Sphere2.Position.Z:=0+random;
+   With Sphere2.Position do begin
+     X:=random;
+     Y:=random;
+     Z:=random;
+   end;
 
-   Sphere2.Direction.X:=0+random;
-   Sphere2.Direction.Y:=0+random;
-   Sphere2.Direction.Z:=0+random;
+   With Sphere2.Direction do begin
+     X:=random;  if random > 0.5 then x:=-x;
+     Y:=random;  if random > 0.5 then y:=-y;
+     Z:=random;  if random > 0.5 then z:=-z;
+   end;
 end;
 
 end.
