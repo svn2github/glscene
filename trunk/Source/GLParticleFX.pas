@@ -7,6 +7,9 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
+      <li>08/07/04 - Eugene Kryukov - Added rotation for particles, RotateAngle in
+                        LifeColor. And added AbsoluteRotation for TGLDynamicPFXManager
       <li>25/04/04 - EG - Added friction, Life sizes, multiple sprites per texture
                           and sprites sharing
       <li>24/04/04 - Mrqzzz - Added property "enabled" to TGLSourcePFXEffect
@@ -17,7 +20,7 @@
       <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
                           and TGLPointLightPFXManager. 
       <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
-                          minor sort and render optims 
+                          minor sort and render optims
       <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
       <li>20/01/02 - EG - Several optimization (35% faster on Volcano bench)
       <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
@@ -49,10 +52,13 @@ type
    TGLParticle = class (TPersistentObject)
       private
          { Private Declarations }
-         FID, FTag : Integer;             
+         FID, FTag : Integer;
          FOwner : TGLParticleList;  // NOT persistent
          FPosition : TAffineVector;
          FVelocity : TAffineVector;
+         
+         FRotation: single;
+         
          FCreationTime : Double;
 
       protected
@@ -373,8 +379,12 @@ type
          FVelocityMode : TGLSourcePFXVelocityMode;
          FDispersionMode : TGLSourcePFXDispersionMode;
          FEnabled : Boolean;
-         FTimeRemainder : Double; // NOT persistent
-         
+         FTimeRemainder : Double;
+         {!EK_start }
+         FRotationDispersion: Single;
+         procedure SetRotationDispersion(const Value: Single); // NOT persistent
+         {!EK_end }
+
       protected
          { Protected Declarations }
          procedure SetInitialVelocity(const val : TGLCoordinates);
@@ -385,7 +395,7 @@ type
          procedure SetParticleInterval(const val : Single);
          procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
-         
+
       public
          { Public Declarations }
          constructor Create(aOwner : TXCollection); override;
@@ -412,6 +422,7 @@ type
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
          property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
+         property RotationDispersion : Single read FRotationDispersion write SetRotationDispersion;
          property Enabled : boolean read FEnabled write FEnabled;
    end;
 
@@ -425,7 +436,10 @@ type
          { Private Declarations }
          FAcceleration : TGLCoordinates;
          FFriction : Single;
-         FCurrentTime : Double;           // NOT persistent
+         FCurrentTime : Double;
+         
+         FRotationCenter: TAffineVector;
+         
 
       protected
          { Protected Declarations }
@@ -452,6 +466,7 @@ type
             will triple speed over 1 second, and a friction of 1 (default
             value) will have no effect. }
          property Friction : Single read FFriction write FFriction;
+         {: Rotation applied to the particle's velocity. }
    end;
 
 	// TPFXLifeColor
@@ -463,8 +478,11 @@ type
          FColorOuter : TGLColor;
          FLifeTime, FInvLifeTime : Single;
          FSizeScale : Single;
-         FDoScale : Boolean;  // indirectly persistent
-
+         FDoScale : Boolean;
+         FDoRotate: boolean;
+         
+         FRotateAngle: Single;
+         
 	   protected
 	      { Protected Declarations }
          function GetDisplayName : String; override;
@@ -472,6 +490,7 @@ type
          procedure SetColorOuter(const val : TGLColor);
          procedure SetLifeTime(const val : Single);
          procedure SetSizeScale(const val : Single);
+         procedure SetRotateAngle(const Value: Single);  // indirectly persistent
 
          procedure OnChanged(Sender : TObject);
 
@@ -491,6 +510,9 @@ type
          property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
          property LifeTime : Single read FLifeTime write SetLifeTime;
          property SizeScale : Single read FSizeScale write SetSizeScale;
+         
+         property RotateAngle : Single read FRotateAngle write SetRotateAngle;
+         
 	end;
 
 	// TPFXLifeColors
@@ -544,6 +566,9 @@ type
          procedure ComputeInnerColor(var lifeTime : Single; var inner : TColorVector);
          procedure ComputeOuterColor(var lifeTime : Single; var outer : TColorVector);
          function ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
+         
+         function ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
+         
 
       public
          { Public Declarations }
@@ -1375,13 +1400,14 @@ var
    end;
 
    procedure DistToRegionIdx; register;
-   asm
+   begin
+//   asm
       // fast version of
-      // regionIdx:=Round((dist-distDelta)*invRegionSize);
-      FLD     dist
+      regionIdx := Trunc((dist - distDelta) * invRegionSize);
+{      FLD     dist
       FSUB    distDelta
       FMUL    invRegionSize
-      FISTP   regionIdx
+      FISTP   regionIdx}
    end;
 
 var
@@ -1412,7 +1438,8 @@ begin
    try
       // Collect particles
       // only depth-clipping performed as of now.
-      for managerIdx:=0 to FManagerList.Count-1 do begin
+      for managerIdx:=0 to FManagerList.Count-1 do
+      begin
          curManager:=TGLParticleFXManager(FManagerList[managerIdx]);
          curList:=curManager.FParticles.List;
          for particleIdx:=0 to curManager.ParticleCount-1 do begin
@@ -1422,7 +1449,8 @@ begin
                if PInteger(@dist)^<minDist then
                   PInteger(@dist)^:=minDist;
             end;
-            if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
+            if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then
+            begin
                DistToRegionIdx;
                curRegion:=@FRegions[regionIdx];
                // add particle to region
@@ -1585,7 +1613,8 @@ procedure TGLSourcePFXEffect.WriteToFiler(writer : TWriter);
 begin
    inherited;
    with writer do begin
-      WriteInteger(3);  // ArchiveVersion 3, added FEnabled
+      WriteInteger(4);  // ArchiveVersion 4, added FRotationDispersion
+                        // ArchiveVersion 3, added FEnabled
                         // ArchiveVersion 2, added FPositionDispersionRange
                         // ArchiveVersion 1, added FDispersionMode
       FInitialVelocity.WriteToFiler(writer);
@@ -1597,6 +1626,7 @@ begin
       WriteInteger(Integer(FVelocityMode));
       WriteInteger(Integer(FDispersionMode));
       WriteBoolean(FEnabled);
+      WriteFloat(FRotationDispersion);
    end;
 end;
 
@@ -1609,7 +1639,7 @@ begin
    inherited;
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0..3]);
+      Assert(archiveVersion in [0..4]);
       FInitialVelocity.ReadFromFiler(reader);
       FInitialPosition.ReadFromFiler(reader);
       if archiveVersion>=2 then
@@ -1622,6 +1652,8 @@ begin
          FDispersionMode:=TGLSourcePFXDispersionMode(ReadInteger);
       if archiveVersion>=3 then
          FEnabled:=ReadBoolean;
+      if archiveVersion>=4 then
+         FRotationDispersion := ReadFloat;
    end;
 end;
 
@@ -1649,6 +1681,14 @@ end;
 
 // SetPositionDispersionRange
 //
+{!EK_start }
+procedure TGLSourcePFXEffect.SetRotationDispersion(const Value: Single);
+begin
+  FRotationDispersion := Value;
+  OwnerBaseSceneObject.NotifyChange(Self);
+end;
+{!EK_end }
+
 procedure TGLSourcePFXEffect.SetPositionDispersionRange(const val : TGLCoordinates);
 begin
    FPositionDispersionRange.Assign(val);
@@ -1698,12 +1738,20 @@ end;
 procedure TGLSourcePFXEffect.Burst(time : Double; nb : Integer);
 var
    particle : TGLParticle;
-   av, pos : TAffineVector;
+   av, pos: TAffineVector;
 begin
    if Manager=nil then Exit;
+
    SetVector(pos, OwnerBaseSceneObject.AbsolutePosition);
    AddVector(pos, InitialPosition.AsAffineVector);
-   while nb>0 do begin
+
+   if FManager is TGLDynamicPFXManager then
+   begin
+     TGLDynamicPFXManager(FManager).FRotationCenter := pos;
+   end;
+
+   while nb>0 do
+   begin
       particle:=Manager.CreateParticle;
       RndVector(DispersionMode, av, FPositionDispersion, FPositionDispersionRange);
       VectorAdd(pos, av, @particle.Position);
@@ -1712,6 +1760,10 @@ begin
       if VelocityMode=svmRelative then
          particle.FVelocity:=OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity);
       particle.CreationTime:=time;
+      if FRotationDispersion <> 0 then
+        particle.FRotation := Random * FRotationDispersion
+      else
+        particle.FRotation := 0;
       Dec(nb);
    end;
 end;
@@ -1769,6 +1821,7 @@ begin
    FLifeTime:=1;
    FInvLifeTime:=1;
    FSizeScale:=1;
+   FRotateAngle:=0;
 end;
 
 // Destroy
@@ -1784,11 +1837,15 @@ end;
 //
 procedure TPFXLifeColor.Assign(Source: TPersistent);
 begin
-	if Source is TPFXLifeColor then begin
+	if Source is TPFXLifeColor then
+  begin
       FColorInner.Assign(TPFXLifeColor(Source).ColorInner);
       FColorOuter.Assign(TPFXLifeColor(Source).ColorOuter);
-      FLifeTime:=TPFXLifeColor(Source).LifeTime;
-	end else inherited;
+      FLifeTime := TPFXLifeColor(Source).LifeTime;
+      FRotateAngle := TPFXLifeColor(Source).RotateAngle;
+	end
+  else
+    inherited;
 end;
 
 // GetDisplayName
@@ -1842,6 +1899,15 @@ begin
       FSizeScale:=val;
       FDoScale:=(FSizeScale<>1);
    end;
+end;
+
+procedure TPFXLifeColor.SetRotateAngle(const Value: Single);
+begin
+  if FRotateAngle <> Value then
+  begin
+    FRotateAngle := Value;
+    FDoRotate := (FRotateAngle <> 0);
+  end;
 end;
 
 // ------------------
@@ -1918,11 +1984,12 @@ var
    i : Integer;
    curParticle : TGLParticle;
    maxAge : Double;
-   accelVector : TAffineVector;
-   dt : Single;
+   pos, pos1, axis, accelVector : TAffineVector;
+   ff, dt : Single;
    list : PGLParticleArray;
    doFriction, doPack : Boolean;
    frictionScale : Single;
+   pos4: TVector;
 begin
    maxAge:=MaxParticleAge;
    accelVector:=Acceleration.AsAffineVector;
@@ -1937,10 +2004,37 @@ begin
    list:=Particles.List;
    for i:=0 to Particles.ItemCount-1 do begin
       curParticle:=list[i];
-      if (progressTime.newTime-curParticle.CreationTime)<maxAge then begin
+      if (progressTime.newTime-curParticle.CreationTime)<maxAge then
+      begin
          // particle alive, just update velocity and position
-         with curParticle do begin
+         with curParticle do
+         begin
             CombineVector(FPosition, FVelocity, dt);
+            
+            if (FRotation <> 0) and (Renderer <> nil) then
+            begin
+              pos := FPosition;
+              pos1 := FPosition;
+              ff := 1;
+              CombineVector(pos1, FVelocity, ff);
+
+              SetVector(axis, Renderer.Scene.CurrentGLCamera.AbsolutePosition);
+              SetVector(axis, VectorSubtract(axis, FRotationCenter));
+              NormalizeVector(axis);
+              MakeVector(pos4, pos1);
+              pos4[0] := pos4[0] - FRotationCenter[0];
+              pos4[1] := pos4[1] - FRotationCenter[1];
+              pos4[2] := pos4[2] - FRotationCenter[2];
+              RotateVector(pos4, axis, FRotation * dt);
+              pos4[0] := pos4[0] + FRotationCenter[0];
+              pos4[1] := pos4[1] + FRotationCenter[1];
+              pos4[2] := pos4[2] + FRotationCenter[2];
+              MakeVector(pos1, pos4[0], pos4[1], pos4[2]);
+
+              FVelocity := VectorSubtract(pos1, pos);
+              CombineVector(FPosition, FVelocity, dt);
+            end;
+            
             CombineVector(FVelocity, accelVector, dt);
             if doFriction then
                ScaleVector(FVelocity, frictionScale);
@@ -2206,6 +2300,51 @@ begin
    end;
 end;
 
+// ComputeSize
+//
+
+function TGLLifeColoredPFXManager.ComputeRotateAngle(var lifeTime : Single; var rotateAngle : Single) : Boolean;
+var
+   i, k, n : Integer;
+   f : Single;
+   lck, lck1 : TPFXLifeColor;
+begin
+   with LifeColors do begin
+      n:=Count-1;
+      if n<0 then
+         Result:=False
+      else begin
+         if n>0 then begin
+            k:=-1;
+            for i:=0 to n do
+               if Items[i].LifeTime<lifeTime then k:=i;
+            if k<n then Inc(k);
+         end else k:=0;
+         case k of
+            0 : begin
+               lck:=LifeColors[k];
+               Result:=lck.FDoRotate;
+               if Result then
+               begin
+                  f := lifeTime*lck.InvLifeTime;
+                  rotateAngle := Lerp(1, lck.rotateAngle, f);
+               end;
+            end;
+         else
+            lck:=LifeColors[k];
+            lck1:=LifeColors[k-1];
+            Result:=lck.FDoScale or lck1.FDoRotate;
+            if Result then
+            begin
+               f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+               rotateAngle := Lerp(lck1.rotateAngle, lck.rotateAngle, f);
+            end;
+         end;
+      end;
+   end;
+end;
+
+
 // ------------------
 // ------------------ TGLCustomPFXManager ------------------
 // ------------------
@@ -2374,10 +2513,13 @@ end;
 procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
 var
    i : Integer;
-   lifeTime, sizeScale : Single;
+   lifeTime, sizeScale, rotateAngle : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
+   axis, p : TAffineVector;
+   rotMatrix : TMatrix;
+   diff : Single;
 begin
    lifeTime:=FCurrentTime-aParticle.CreationTime;
    ComputeColors(lifeTime, inner, outer);
@@ -2386,6 +2528,23 @@ begin
 
    vertexList:=FVertBuf.List;
    VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+   
+   if ComputeRotateAngle(lifeTime, rotateAngle) and (Renderer <> nil) then
+   begin
+      MakeVector(axis, 0, 0, 1);
+      axis := VectorTransform(axis, Renderer.Scene.CurrentBuffer.ModelViewMatrix);
+      NormalizeVector(axis);
+
+      diff := DegToRad(rotateAngle);
+      rotMatrix := CreateRotationMatrix(axis, diff);
+      p[0] := -pos[0];
+      p[1] := -pos[1];
+      p[2] := -pos[2];
+      FVertBuf.Translate(p);
+      FVertBuf.TransformAsVectors(rotMatrix);
+      FVertBuf.Translate(pos);
+   end;
+   
    if ComputeSizeScale(lifeTime, sizeScale) then
       FVertBuf.Scale(sizeScale);
 
@@ -2607,13 +2766,16 @@ const
                        ((S: 1.0; T: 0.5), (S: 0.5; T: 0.5), (S: 0.5; T: 0.0), (S: 1.0; T: 0.0)),
                        ((S: 0.5; T: 0.5), (S: 0.0; T: 0.5), (S: 0.0; T: 0.0), (S: 0.5; T: 0.0)));
 var
-   lifeTime, sizeScale : Single;
+   lifeTime, sizeScale, rotateAngle : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
    i : Integer;
    tcs : PTexCoordsSet;
    spt : TSpritesPerTexture;
+   axis, p : TAffineVector;
+   rotMatrix : TMatrix;
+   diff : Single;
 
    procedure IssueVertices;
    begin
@@ -2641,12 +2803,31 @@ begin
 
    pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
-   if ComputeSizeScale(lifeTime, sizeScale) then begin
+   if ComputeSizeScale(lifeTime, sizeScale) then
+   begin
       for i:=0 to FVertBuf.Count-1 do
          vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
-   end else begin
+   end
+   else
+   begin
       VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
    end;
+
+   if ComputeRotateAngle(lifeTime, rotateAngle) then
+   begin
+      SetVector(axis, Renderer.Scene.CurrentGLCamera.AbsolutePosition);
+      SetVector(axis, VectorSubtract(axis, pos));
+      NormalizeVector(axis);
+      diff := DegToRad(rotateAngle);
+      rotMatrix := CreateRotationMatrix(axis, diff);
+      p[0] := -pos[0];
+      p[1] := -pos[1];
+      p[2] := -pos[2];
+      FVertBuf.Translate(p);
+      FVertBuf.TransformAsVectors(rotMatrix);
+      FVertBuf.Translate(pos);
+   end;
+
 
    case ColorMode of
       scmFade : begin
