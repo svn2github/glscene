@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
       <li>14/09/01 - EG - Use of vFileStreamClass
       <li>06/09/01 - EG - No longers depends on 'Windows'
       <li>04/09/01 - EG - Texture binding cache
@@ -2449,13 +2450,13 @@ end;
 //
 function TGLTexture.GetHandle : TGLuint;
 begin
-	if (FTextureHandle.Handle = 0) or (FChanges <> []) then begin
-		if FTextureHandle.Handle = 0 then begin
+	if (FTextureHandle.Handle=0) or (FChanges<>[]) then begin
+		if FTextureHandle.Handle=0 then begin
          FTextureHandle.AllocateHandle;
 			Assert(FTextureHandle.Handle<>0);
 		end;
       // bind texture
-		SetGLCurrentTexture(0, FTextureHandle.Handle);
+      glBindTexture(GL_TEXTURE_2D, FTextureHandle.Handle);
 		PrepareParams;
 		PrepareImage;
 		FChanges:=[];
@@ -2538,10 +2539,12 @@ begin
       end;
    end;
    bitmap32.RegisterAsOpenGLTexture(MinFilter, targetFormat, FTexWidth, FTexHeight);
-   if texComp<>tcNone then
+   if texComp<>tcNone then begin
+      CheckOpenGLError; // ignore compression-related errors
       glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB,
-                               @FRequiredMemorySize)
-   else FRequiredMemorySize:=-1;
+                               @FRequiredMemorySize);
+      ClearGLError;
+   end else FRequiredMemorySize:=-1;
    image.ReleaseBitmap32;
 end;
 
