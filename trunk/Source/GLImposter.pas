@@ -2,6 +2,7 @@
 {: Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/05/04 - EG - Fixes, improvements, clean ups
       <li>04/05/04 - EG - Reworked architecture
       <li>14/04/04 - SG - Fixed texture clamping for old cards and 
                           switched to GL_NEAREST texture sampling.
@@ -14,7 +15,7 @@ interface
 
 uses
   Classes, GLScene, GLContext, GLTexture, VectorTypes, VectorGeometry,
-  GeometryBB, GLMisc, PersistentClasses, GLCrossPlatform;
+  GeometryBB, GLMisc, PersistentClasses, GLCrossPlatform, GLGraphics;
 
 type
    // TImposterOptions
@@ -76,6 +77,13 @@ type
          property Modulated : Boolean read FModulated write FModulated;
    end;
 
+   // Imposter loading events
+   //
+   TLoadingImposterEvent = function (Sender : TObject; impostoredObject : TGLBaseSceneObject;
+                                     destImposter : TImposter) : TGLBitmap32 of object;
+   TImposterLoadedEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject;
+                                     destImposter : TImposter) of object;
+
    // TImposterReference
    //
    TImposterReference = (irCenter, irTop, irBottom);  
@@ -93,6 +101,8 @@ type
          FImposterOptions : TImposterOptions;
          FAlphaTreshold : Single;
          FImposterReference : TImposterReference;
+         FOnLoadingImposter : TLoadingImposterEvent;
+         FOnImposterLoaded : TImposterLoadedEvent;
 
       protected
 			{ Protected Declarations }
@@ -108,7 +118,12 @@ type
          procedure UnregisterImposter(imposter : TImposter);
 
          function CreateNewImposter : TImposter; virtual;
-         procedure PrepareImposters(Sender : TObject; var rci : TRenderContextInfo); virtual; abstract;
+         procedure PrepareImposters(Sender : TObject; var rci : TRenderContextInfo); virtual;
+         procedure DoPrepareImposter(var rci : TRenderContextInfo;
+                                     impostoredObject : TGLBaseSceneObject;
+                                     destImposter : TImposter); virtual; abstract;
+         procedure DoUserSpecifiedImposter(destImposter : TImposter;
+                                           bmp32 : TGLBitmap32); virtual;
 
       public
 	      { Public Declarations }
@@ -128,16 +143,42 @@ type
 
       published
 	      { Published Declarations }
+         {: Specifies the render point at which the impostor texture(s) can be prepared.<p>
+            For best result, the render point should happen in viewer that has
+            a destination alpha (otherwise, impostors will be opaque). }
          property RenderPoint : TGLRenderPoint read FRenderPoint write SetRenderPoint;
+         {: Background color for impostor rendering.<p>
+            Typically, you'll want to leave the alpha channel to zero, and pick
+            as RGB as color that matches the impostor'ed objects edge colors most.}
          property BackColor : TGLColor read FBackColor write SetBackColor;
+         {: Offset applied to the impostor'ed object during imposter construction.<p>
+            Can be used to manually tune the centering of objects. }
          property BuildOffset : TGLCoordinates read FBuildOffset write SetBuildOffset;
+         {: Imposter rendering options. }
          property ImposterOptions : TImposterOptions read FImposterOptions write FImposterOptions default cDefaultImposterOptions;
+         {: Determines how the imposter are handled.<p>
+            This is the reference point for imposters, impostor'ed objects that
+            are centered should use irCenter, those whose bottom is the origin
+            should use irBottom, etc. }
          property ImposterReference : TImposterReference read FImposterReference write SetImposterReference default irCenter;
+         {: Alpha testing teshold.<p> }
          property AlphaTreshold : Single read FAlphaTreshold write FAlphaTreshold;
+
+         {: Event fired before preparing/loading an imposter.<p>
+            If an already prepared version of the importer is available, place
+            it in the TGLBitmap32 the event shall return (the bitmap will be
+            freed by the imposter builder). If a bitmap is specified, it will
+            be used in place of what automatic generation could have generated. }
+         property OnLoadingImposter : TLoadingImposterEvent read FOnLoadingImposter write FOnLoadingImposter;
+         {: Event fired after preparing/loading an imposter.<p>
+            This events gives an opportunity to save the imposter after it has
+            been loaded or prepared. }
+         property OnImposterLoaded : TImposterLoadedEvent read FOnImposterLoaded write FOnImposterLoaded;
    end;
 
 	// TGLStaticImposterBuilderCorona
 	//
+   {: Describes a set of orientation in a corona fashion. }
 	TGLStaticImposterBuilderCorona = class (TCollectionItem)
 	   private
 	      { Private Declarations }
@@ -232,13 +273,17 @@ type
          FInvSamplesPerAxis : TVector2f;
          FSamplingRatioBias, FInvSamplingRatioBias : Single;
          FLighting : TSIBLigthing;
+         FSamplesAlphaScale : Single;
 
       protected
 			{ Protected Declarations }
          procedure SetCoronas(val : TGLStaticImposterBuilderCoronas);
          procedure SetSampleSize(val : Integer);
          procedure SetSamplingRatioBias(val : Single);
+         function  StoreSamplingRatioBias : Boolean;
          procedure SetLighting(val : TSIBLigthing);
+         procedure SetSamplesAlphaScale(val : Single);
+         function  StoreSamplesAlphaScale : Boolean;
 
          function GetTextureSizeInfo : String;
          procedure SetTextureSizeInfo(const texSize : String);
@@ -247,7 +292,12 @@ type
          function ComputeOptimalTextureSize : TGLPoint;
 
          function CreateNewImposter : TImposter; override;
-         procedure PrepareImposters(Sender : TObject; var rci : TRenderContextInfo); override;
+         procedure DoPrepareImposter(var rci : TRenderContextInfo;
+                                     impostoredObject : TGLBaseSceneObject;
+                                     destImposter : TImposter); override;
+         procedure DoUserSpecifiedImposter(destImposter : TImposter;
+                                           bmp32 : TGLBitmap32); override;
+         procedure ComputeStaticParams(destImposter : TImposter);
 
       public
 	      { Public Declarations }
@@ -270,11 +320,28 @@ type
 
       published
 	      { Published Declarations }
+         {: Description of the samples looking orientations. }
          property Coronas : TGLStaticImposterBuilderCoronas read FCoronas write SetCoronas;
+         {: Size of the imposter samples (square). }
          property SampleSize : Integer read FSampleSize write SetSampleSize default 32;
-         property SamplingRatioBias : Single read FSamplingRatioBias write SetSamplingRatioBias;
+         {: Size ratio applied to the impostor'ed objects during sampling.<p>
+            Values greater than one can be used to "fill" the samples more
+            by scaling up the object. This is especially useful when the impostor'ed
+            object doesn't fill its bounding sphere, and/or if the outer details
+            are not relevant for impostoring. }
+         property SamplingRatioBias : Single read FSamplingRatioBias write SetSamplingRatioBias stored StoreSamplingRatioBias;
+         {: Scale factor apply to the sample alpha channel.<p>
+            Main use is to saturate the samples alpha channel, and make fully
+            opaque what would have been partially transparent, while leaving
+            fully transparent what was fully transparent. }
+         property SamplesAlphaScale : Single read FSamplesAlphaScale write SetSamplesAlphaScale stored StoreSamplesAlphaScale;
+         {: Lighting mode to apply during samples construction. }
          property Lighting : TSIBLigthing read FLighting write FLighting default siblStaticLighting;
-         property TextureSizeInfo : String read GetTextureSizeInfo write SetTextureSizeInfo;
+         {: Dummy property that returns the size of the imposter texture.<p>
+            This property is essentially here as a helper at design time,
+            to give you the requirements your coronas and samplesize parameters
+            imply. } 
+         property TextureSizeInfo : String read GetTextureSizeInfo write SetTextureSizeInfo stored False;
    end;
 
    // TGLDynamicImposterBuilder
@@ -320,9 +387,6 @@ type
          procedure SetBuilder(const val : TGLImposterBuilder);
          procedure SetImpostoredObject(const val : TGLBaseSceneObject);
 
-{         function CalcError(NewMatrix : TMatrix) : Single;
-         function GetTextureHandle : Cardinal;}
-
       public
 	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
@@ -330,8 +394,6 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
-{         procedure Invalidate;
-         function AxisAlignedDimensionsUnscaled : TVector; override; }
 
       published
 	      { Published Declarations }
@@ -555,6 +617,41 @@ end;
 function TGLImposterBuilder.CreateNewImposter : TImposter;
 begin
    Result:=TImposter.Create(Self);
+end;
+
+// PrepareImposters
+//
+procedure TGLImposterBuilder.PrepareImposters(Sender : TObject; var rci : TRenderContextInfo);
+var
+   i : Integer;
+   imp : TImposter;
+   bmp32 : TGLBitmap32;
+begin
+   for i:=0 to ImposterRegister.Count-1 do begin
+      imp:=TImposter(ImposterRegister[i]);
+      if (imp.ImpostoredObject<>nil) and (imp.Texture.Handle=0) then begin
+         if Assigned(FOnLoadingImposter) then
+            bmp32:=FOnLoadingImposter(Self, imp.ImpostoredObject, imp)
+         else bmp32:=nil;
+         if not Assigned(bmp32) then
+            DoPrepareImposter(rci, imp.ImpostoredObject, imp)
+         else begin
+            DoUserSpecifiedImposter(imp, bmp32);
+            bmp32.Free;
+         end;
+         if Assigned(FOnImposterLoaded) then
+            FOnImposterLoaded(Self, imp.ImpostoredObject, imp);
+      end;
+   end;
+end;
+
+// DoUserSpecifiedImposter
+//
+procedure TGLImposterBuilder.DoUserSpecifiedImposter(destImposter : TImposter;
+                                                     bmp32 : TGLBitmap32);
+begin
+   destImposter.PrepareTexture;
+   bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinear, GL_RGBA);
 end;
 
 // NotifyChange
@@ -940,6 +1037,7 @@ begin
    FSamplingRatioBias:=1;
    FInvSamplingRatioBias:=1;
    FLighting:=siblStaticLighting;
+   FSamplesAlphaScale:=1;
 end;
 
 // Destroy
@@ -990,6 +1088,13 @@ begin
    end;
 end;
 
+// StoreSamplingRatioBias
+//
+function TGLStaticImposterBuilder.StoreSamplingRatioBias : Boolean;
+begin
+   Result:=(FSamplingRatioBias<>1);
+end;
+
 // SetLighting
 //
 procedure TGLStaticImposterBuilder.SetLighting(val : TSIBLigthing);
@@ -1000,14 +1105,35 @@ begin
    end;
 end;
 
+// SetSamplesAlphaScale
+//
+procedure TGLStaticImposterBuilder.SetSamplesAlphaScale(val : Single);
+begin
+   if FSamplesAlphaScale<>val then begin
+      FSamplesAlphaScale:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// StoreSamplesAlphaScale
+//
+function TGLStaticImposterBuilder.StoreSamplesAlphaScale : Boolean;
+begin
+   Result:=(FSamplesAlphaScale<>1);
+end;
+
 // GetTextureSizeInfo
 //
 function TGLStaticImposterBuilder.GetTextureSizeInfo : String;
 var
    t : TGLPoint;
+   fill : Integer;
 begin
    t:=ComputeOptimalTextureSize;
    Result:=Format('%d x %d', [t.X, t.Y]);
+   fill:=Coronas.SampleCount*SampleSize*SampleSize;
+   if fill<t.X*t.Y then
+      Result:=Result+Format(' (%.1f%%)', [(100*fill)/(t.X*t.Y)]);
 end;
 
 // SetTextureSizeInfo
@@ -1015,6 +1141,49 @@ end;
 procedure TGLStaticImposterBuilder.SetTextureSizeInfo(const texSize : String);
 begin
    // do nothing, this is a dummy property!
+end;
+
+// DoPrepareImposter
+//
+procedure TGLStaticImposterBuilder.DoPrepareImposter(var rci : TRenderContextInfo;
+                  impostoredObject : TGLBaseSceneObject; destImposter : TImposter);
+begin
+   Render(rci, impostoredObject, destImposter);
+end;
+
+// DoUserSpecifiedImposter
+//
+procedure TGLStaticImposterBuilder.DoUserSpecifiedImposter(destImposter : TImposter;
+                                                           bmp32 : TGLBitmap32);
+begin
+   inherited;
+   FTextureSize.X:=bmp32.Width;
+   FTextureSize.Y:=bmp32.Height;
+   ComputeStaticParams(destImposter);
+end;
+
+// ComputeStaticParams
+//
+procedure TGLStaticImposterBuilder.ComputeStaticParams(destImposter : TImposter);
+var
+   radius : Single;
+begin
+   Coronas.PrepareCoronaTangentLookup;
+   Coronas.PrepareSampleBaseIndices;
+
+   FSamplesPerAxis.X:=FTextureSize.X div SampleSize;
+   FSamplesPerAxis.Y:=FTextureSize.Y div SampleSize;
+   FInvSamplesPerAxis[0]:=1/FSamplesPerAxis.X;
+   FInvSamplesPerAxis[1]:=1/FSamplesPerAxis.Y;
+   Assert(FSamplesPerAxis.X*FSamplesPerAxis.Y>=Coronas.SampleCount,
+          'User specified bitmap and imposter parameters don''t match');
+
+   radius:=destImposter.ImpostoredObject.BoundingSphereRadius/SamplingRatioBias;
+   
+   if ImposterReference=irCenter then
+      destImposter.FStaticScale:=radius
+   else destImposter.FStaticScale:=radius*0.5;
+   destImposter.FStaticOffset:=FBuildOffset.DirectVector;
 end;
 
 // Render
@@ -1030,24 +1199,18 @@ var
    fx, fy, yOffset : Single;
    viewPort : TVector4i;
 begin
-   Coronas.PrepareCoronaTangentLookup;
-   Coronas.PrepareSampleBaseIndices;
-
    FTextureSize:=ComputeOptimalTextureSize;
    if (FTextureSize.X<=0) and (FTextureSize.Y<=0) then begin
       SampleSize:=SampleSize shr 1;
-      Assert(False, 'Too many samples, can''t fit in a texture!');
+      Assert(False, 'Too many samples, can''t fit in a texture! Reduce SampleSize.');
    end;
 
-   FSamplesPerAxis.X:=FTextureSize.X div SampleSize;
-   FSamplesPerAxis.Y:=FTextureSize.Y div SampleSize;
-   FInvSamplesPerAxis[0]:=1/FSamplesPerAxis.X;
-   FInvSamplesPerAxis[1]:=1/FSamplesPerAxis.Y;
+   ComputeStaticParams(destImposter);
 
    radius:=impostoredObject.BoundingSphereRadius/SamplingRatioBias;
+
    glGetIntegerv(GL_MAX_LIGHTS, @maxLight);
    glGetIntegerv(GL_VIEWPORT, @viewPort);
-
    Assert((viewPort[2]>=SampleSize) and (viewPort[3]>=SampleSize),
           'ViewPort too small to render imposter samples!');
 
@@ -1067,10 +1230,6 @@ begin
    glOrtho(-fx, fx, yOffset-fy, yOffset+fy, radius*0.5, radius*5);
    xSrc:=(viewPort[2]-SampleSize) div 2;
    ySrc:=(viewPort[3]-SampleSize) div 2;
-   if ImposterReference=irCenter then
-      destImposter.FStaticScale:=radius
-   else destImposter.FStaticScale:=radius*0.5;
-   destImposter.FStaticOffset:=FBuildOffset.DirectVector;
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
@@ -1081,6 +1240,8 @@ begin
       InitializeImpostorTexture(FTextureSize);
       rci.GLStates.ResetGLCurrentTexture;
    end;
+
+   glPixelTransferf(GL_ALPHA_SCALE, FSamplesAlphaScale);
 
    // Now render each sample
    curSample:=0;
@@ -1115,6 +1276,7 @@ begin
    end;
 
    // Restore buffer stuff
+   glPixelTransferf(GL_ALPHA_SCALE, 1);
    glPopAttrib;
    glPopMatrix;
    glMatrixMode(GL_PROJECTION);
@@ -1170,21 +1332,6 @@ begin
    Assert(bestSurface<>MaxInt);
 
    Result:=bestTexDim;
-end;
-
-// PrepareImposters
-//
-procedure TGLStaticImposterBuilder.PrepareImposters(Sender : TObject; var rci : TRenderContextInfo);
-var
-   i : Integer;
-   imp : TStaticImposter;
-begin
-   for i:=0 to ImposterRegister.Count-1 do begin
-      imp:=TStaticImposter(ImposterRegister[i]);
-      if (imp.ImpostoredObject<>nil) and (imp.Texture.Handle=0) then begin
-         Render(rci, imp.ImpostoredObject, imp);
-      end;
-   end;
 end;
 
 // TextureFillRatio
