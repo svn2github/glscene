@@ -25,7 +25,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLParticleFX, GLCadencer, GLScene, GLObjects, GLWin32Viewer,
-  GLMisc, GLBehaviours, ExtCtrls, Geometry;
+  GLMisc, GLBehaviours, ExtCtrls, Geometry, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -82,7 +82,7 @@ begin
       end;
    end else begin
       // Ring explosion
-      GetOrCreateSourcePFX(DCBase).RingExplosion(GLCadencer.CurrentTime, 1, 1.2, 100);
+      GetOrCreateSourcePFX(DCBase).RingExplosion(GLCadencer.CurrentTime, 1, 1.2, 150);
    end;
 end;
 
@@ -98,12 +98,16 @@ begin
    // If you uncomment the line below, it will switch to 800x600x32
    GLFullScreenViewer.UseCurrentResolution;
    GLFullScreenViewer.Active:=True;
+   // Hide the windows viewer so it is no longer updated
+   GLSceneViewer.Visible:=False;
    // Apply proper scale
    GLCamera.SceneScale:=GLFullScreenViewer.Height/350;
 end;
 
 procedure TForm1.GLFullScreenViewerDblClick(Sender: TObject);
 begin
+   // Make the windows viewer visible again
+   GLSceneViewer.Visible:=True;
    // Deactivate full-screen mode
    GLFullScreenViewer.Active:=False;
    // And apply back the adequate scale for the SceneViewer
