@@ -3,6 +3,8 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
+                          StripifyMesh slightly faster
 	   <li>18/08/01 - EG - Creation
 	</ul></font>
 }
@@ -60,49 +62,61 @@ uses SysUtils;
 function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList) : TIntegerList;
 var
    i, j : Integer;
+   found : Boolean;
    hashSize : Integer;
    hashTable : array of TIntegerlist;
    list : TIntegerList;
+const
+   cVerticesPerHashKey = 48;
 
    function HashKey(const v : TAffineVector) : Integer;
-   var
-      i : Integer;
    begin
-      Result:=0;
-      for i:=0 to (SizeOf(TAffineVector) shr 1)-1 do
-         Result:=Result+Integer(PWordArray(@v)[i]);
-      Result:=Result and hashSize;
+      Result:=(( Integer(PIntegerArray(@v)[0])
+                +Integer(PIntegerArray(@v)[1])
+                +Integer(PIntegerArray(@v)[2])) shr 8) and hashSize;
    end;
 
 begin
+   Result:=TIntegerList.Create;
+   Result.Capacity:=vertices.Count;
+
    if vertices.Count<128 then begin
       // not a lot of stuff, we can go brute force
       // (this method is sluggish when there are thousandth of vertices)
-      Result:=TIntegerList.Create;
-      Result.Capacity:=vertices.Count;
       for i:=0 to vertices.Count-1 do
           Result.Add(vertices.IndexOf(vertices[i]));
    end else begin
       // That may be a big one, prep up the artillery, just in case...
-      // (this method can be very fast... at the price of memory requirement)
-      hashSize:=Trunc(Power(2, Trunc(log2(vertices.Count/48))))-1;
+      // This method is very fast, at the price of memory requirement its
+      // complexity is only O(n) (it's a kind of bucket-sort hellspawn)
+
+      // Initialize data structures for a hash table
+      // (each vertex will only be compared to vertices of similar hash value)
+      hashSize:=Trunc(Power(2, Trunc(log2(vertices.Count/cVerticesPerHashKey))))-1;
       if hashSize>65535 then hashSize:=65535;
       SetLength(hashTable, hashSize+1);
-      // allocate and fill our hashtable
-      for i:=0 to hashSize do
+      // allocate and fill our hashtable (will store "reference" vertex indices)
+      for i:=0 to hashSize do begin
          hashTable[i]:=TIntegerList.Create;
-      for i:=0 to vertices.Count-1 do
-         hashTable[HashKey(vertices.List[i])].Add(i);
-      // calculate
-      Result:=TIntegerList.Create;
-      Result.Capacity:=vertices.Count;
+         hashTable[i].GrowthDelta:=cVerticesPerHashKey div 2;
+      end;
+      // here we go for all vertices
       for i:=0 to vertices.Count-1 do begin
          list:=hashTable[HashKey(vertices.List[i])];
+         found:=False;
+         // Check each vertex against its hashkey siblings
          for j:=0 to list.Count-1 do begin
-            if VectorEquals(vertices.List[list[j]], vertices.List[i]) then begin
-               Result.Add(list[j]);
+            if VectorEquals(vertices.List[list.List[j]], vertices.List[i]) then begin
+               // vertex known, just store its index
+               Result.Add(list.List[j]);
+               found:=True;
                Break;
             end;
+         end;
+         if not found then begin
+            // vertex unknown, store index and add to the hashTable's list
+            list.Add(i);
+            Result.Add(i);
          end;
       end;
       // free hash data
@@ -182,35 +196,34 @@ var
    indicesList : PIntegerArray;
    indicesCount : Integer;
    currentStrip : TIntegerList;
+   nextTriangle, nextVertex : Integer;
 
-   function FindTriangleWithEdge(vertA, vertB : Integer; var triangle, vertC : Integer) : Boolean;
+   function FindTriangleWithEdge(vertA, vertB : Integer) : Boolean;
    var
       i, n : Integer;
       p : PIntegerArray;
       list : TIntegerList;
    begin
       Result:=False;
-      if vertexTris[vertA].Count<vertexTris[vertB].Count then
-         list:=vertexTris[vertA]
-      else list:=vertexTris[vertB];
+      list:=vertexTris[vertA];
       for n:=0 to list.Count-1 do begin
-         i:=list[n];
+         i:=list.List[n];
          if not (accountedTriangles[i]) then begin
             p:=@indicesList[i];
             if (p[0]=vertA) and (p[1]=vertB) then begin
                Result:=True;
-               vertC:=p[2];
-               triangle:=i;
+               nextVertex:=p[2];
+               nextTriangle:=i;
                Break;
             end else if (p[1]=vertA) and (p[2]=vertB) then begin
                Result:=True;
-               vertC:=p[0];
-               triangle:=i;
+               nextVertex:=p[0];
+               nextTriangle:=i;
                Break;
             end else if (p[2]=vertA) and (p[0]=vertB) then begin
                Result:=True;
-               vertC:=p[1];
-               triangle:=i;
+               nextVertex:=p[1];
+               nextTriangle:=i;
                Break;
             end;
          end;
@@ -220,19 +233,19 @@ var
 
    procedure BuildStrip(vertA, vertB : Integer);
    var
-      vertC, nextTriangle : Integer;
+      vertC : Integer;
    begin
-      currentStrip.Add(vertA);
-      currentStrip.Add(vertB);
-      while FindTriangleWithEdge(vertB, vertA, nextTriangle, vertC) do begin
+      currentStrip.Add(vertA, vertB);
+      repeat
+         vertC:=nextVertex;
          currentStrip.Add(vertC);
          accountedTriangles[nextTriangle]:=True;
-         if not FindTriangleWithEdge(vertB, vertC, nextTriangle, vertA) then Break;
-         currentStrip.Add(vertA);
+         if not FindTriangleWithEdge(vertB, vertC) then Break;
+         currentStrip.Add(nextVertex);
          accountedTriangles[nextTriangle]:=True;
-         vertB:=vertA;
+         vertB:=nextVertex;
          vertA:=vertC;
-      end;
+      until not FindTriangleWithEdge(vertB, vertA);
    end;
 
 var
@@ -266,15 +279,15 @@ begin
    i:=0; while i<indicesCount do begin
       if not accountedTriangles[i] then begin
          accountedTriangles[i]:=True;
-         if FindTriangleWithEdge(indicesList[i+1], indicesList[i], triangle, n) then begin
+         if FindTriangleWithEdge(indicesList[i+1], indicesList[i]) then begin
             currentStrip:=TIntegerList.Create;
             currentStrip.Add(indicesList[i+2]);
             BuildStrip(indicesList[i], indicesList[i+1]);
-         end else if FindTriangleWithEdge(indicesList[i+2], indicesList[i+1], triangle, n) then begin
+         end else if FindTriangleWithEdge(indicesList[i+2], indicesList[i+1]) then begin
             currentStrip:=TIntegerList.Create;
             currentStrip.Add(indicesList[i]);
             BuildStrip(indicesList[i+1], indicesList[i+2]);
-         end else if FindTriangleWithEdge(indicesList[i], indicesList[i+2], triangle, n) then begin
+         end else if FindTriangleWithEdge(indicesList[i], indicesList[i+2]) then begin
             currentStrip:=TIntegerList.Create;
             currentStrip.Add(indicesList[i+1]);
             BuildStrip(indicesList[i+2], indicesList[i]);

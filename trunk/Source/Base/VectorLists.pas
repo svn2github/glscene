@@ -132,6 +132,7 @@ type
 			procedure Assign(Src: TPersistent); override;
 
 			function  Add(const item : TAffineVector) : Integer; overload;
+			procedure Add(const i1, i2 : TAffineVector); overload;
 			procedure Add(const i1, i2, i3 : TAffineVector); overload;
 			function  Add(const item : TTexPoint) : Integer; overload;
 			function  Add(const x, y, z : Single) : Integer; overload;
@@ -241,6 +242,7 @@ type
 			procedure Assign(Src: TPersistent); override;
 
 			function  Add(const item : Integer) : Integer; overload;
+         procedure Add(const i1, i2 : Integer); overload;
          procedure Add(const i1, i2, i3 : Integer); overload;
          procedure Add(const list : TIntegerList); overload;
 			procedure Push(const val : Integer);
@@ -692,6 +694,16 @@ begin
   	Inc(FCount);
 end;
 
+// Add (2 affine)
+//
+procedure TAffineVectorList.Add(const i1, i2 : TAffineVector);
+begin
+  	Inc(FCount, 2);
+   while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
+	FList[FCount-2] := i1;
+	FList[FCount-1] := i2;
+end;
+
 // Add (3 affine)
 //
 procedure TAffineVectorList.Add(const i1, i2, i3 : TAffineVector);
@@ -1108,6 +1120,16 @@ begin
 	if Result=FCapacity then SetCapacity(FCapacity+FGrowthDelta);
 	FList[Result]:=Item;
   	Inc(FCount);
+end;
+
+// Add (two at once)
+//
+procedure TIntegerList.Add(const i1, i2 : Integer);
+begin
+  	Inc(FCount, 2);
+   while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
+	FList[FCount-2]:=i1;
+	FList[FCount-1]:=i2;
 end;
 
 // Add (three at once)
