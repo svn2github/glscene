@@ -167,17 +167,17 @@ object Form1: TForm1
       end
     end
     object GLShadowVolume: TGLShadowVolume
-      Casters = <
+      Lights = <
         item
-          Caster = GLLightSource1
-          Capping = svcAlways
+          LightSource = GLLightSource1
         end
         item
-          Caster = GLLightSource2
+          LightSource = GLLightSource2
         end
         item
-          Caster = GLLightSource3
+          LightSource = GLLightSource3
         end>
+      Occluders = <>
       object GLPlane1: TGLPlane
         Position.Coordinates = {000000000000A040000020C10000803F}
         Material.FrontProperties.Ambient.Color = {00000000000000001283003F0000803F}
@@ -200,13 +200,13 @@ object Form1: TForm1
       end
       object GLPlane3: TGLPlane
         Direction.Coordinates = {000000000000803F0000000000000000}
-        Position.Coordinates = {000000000000A0C0000000000000803F}
+        Position.Coordinates = {00000000295C9FC0000000000000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
         Material.FrontProperties.Ambient.Color = {000000001283803E000000000000803F}
         Height = 20
         Width = 20
-        XTiles = 9
-        YTiles = 9
+        XTiles = 20
+        YTiles = 20
         Style = [psTileTexture]
       end
       object GLFreeForm: TGLFreeForm
@@ -217,9 +217,9 @@ object Form1: TForm1
       end
     end
     object DCLight2: TGLDummyCube
-      Direction.Coordinates = {00000000431DAF3EB28F703F00000000}
-      PitchAngle = 10
-      Up.Coordinates = {00000000B38F703F441DAFBE00000000}
+      Direction.Coordinates = {000000006C61D83ECA03683F00000000}
+      PitchAngle = 15
+      Up.Coordinates = {00000000CA03683F6B61D8BE00000000}
       CubeSize = 1
       object GLLightSource2: TGLLightSource
         ConstAttenuation = 1
@@ -239,15 +239,15 @@ object Form1: TForm1
       end
     end
     object DCLight3: TGLDummyCube
-      Direction.Coordinates = {00000000D3D031BE5D1C7C3F00000000}
-      PitchAngle = -5
-      Up.Coordinates = {000000005C1C7C3FD3D0313E00000000}
+      Direction.Coordinates = {00000000421DAFBEB28F703F00000000}
+      PitchAngle = -15
+      Up.Coordinates = {00000000B28F703F431DAF3E00000000}
       CubeSize = 1
       object GLLightSource3: TGLLightSource
         ConstAttenuation = 1
         Diffuse.Color = {0000803F00000000000000000000803F}
         QuadraticAttenuation = 0.00999999977648258
-        Position.Coordinates = {000000000000A040000000000000803F}
+        Position.Coordinates = {0000000000008040000000000000803F}
         Shining = False
         SpotCutOff = 180
         object GLSphere3: TGLSphere

@@ -93,14 +93,15 @@ begin
    for x:=-cNb to cNb do
       for y:=-cNb to cNb do
          for z:=-cNb to cNb do if (x and y and z)<>0 then begin
-{            sphere:=TGLSphere(DCSpheres.AddNewChild(TGLSphere));
+            sphere:=TGLSphere(DCSpheres.AddNewChild(TGLSphere));
             sphere.Position.SetPoint(x*cSpacing, y*cSpacing, z*cSpacing);
             sphere.Radius:=cRadius;
-            GLShadowVolume.Casters.AddCaster(sphere);}
+            GLShadowVolume.Occluders.AddCaster(sphere); 
          end;
    DCSpheres.MoveTo(GLShadowVolume);
    GLFreeForm.LoadFromFile('trinityrage.smd');
-   GLShadowVolume.Casters.AddCaster(GLFreeForm);
+   GLFreeForm.BuildSilhouetteConnectivityData;
+   GLShadowVolume.Occluders.AddCaster(GLFreeForm);
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
