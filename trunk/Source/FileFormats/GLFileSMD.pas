@@ -6,6 +6,7 @@
 	SMD vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>30/03/04 - EG - Basic Half-Life2/XSI support
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
 }
@@ -84,7 +85,7 @@ procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
    end;
 
 var
-   i, k, nVert, nTex, firstFrame : Integer;
+   i, k, nVert, nTex, firstFrame, nbBones : Integer;
    mesh : TSkeletonMeshObject;
    sl, tl : TStringList;
    bone : TSkeletonBone;
@@ -131,6 +132,7 @@ begin
          raise Exception.Create('skeleton not found');
       Inc(i);
       // read animation time frames
+      nbBones:=Owner.Skeleton.RootBones.BoneCount;
       firstFrame:=Owner.Skeleton.Frames.Count;
       while sl[i]<>'end' do begin
          if Copy(sl[i], 1, 5)<>'time ' then
@@ -140,12 +142,21 @@ begin
          Inc(i);
          while Pos(Copy(sl[i], 1, 1), ' 1234567890')>0 do begin
             tl.CommaText:=sl[i];
-            Assert(StrToInt(tl[0])=frame.Position.Count, 'Invalid vertex count: '+tl[0]+' vs '+IntToStr(frame.Position.Count));
+            while StrToInt(tl[0])>frame.Position.Count do begin
+               frame.Position.Add(NullVector);
+               frame.Rotation.Add(NullVector);
+            end;
             frame.Position.Add(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3]));
             v:=AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6]));
             frame.Rotation.Add(v);
             Inc(i);
          end;
+         while frame.Position.Count<nbBones do begin
+            frame.Position.Add(NullVector);
+            frame.Rotation.Add(NullVector);
+         end;
+         Assert(frame.Position.Count=nbBones,
+                'Invalid number of bones in frame '+IntToStr(Owner.Skeleton.Frames.Count));
       end;
       if Owner is TGLActor then with TGLActor(Owner).Animations.Add do begin
          k:=Pos('.', ResourceName);
