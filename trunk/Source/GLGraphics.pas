@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/07/03 - EG - Added RGBA brightness/gamma correction support
       <li>13/05/03 - EG - Added GrayScaleToNormalMap
       <li>26/08/02 - EG - Fixed loading of 1D horiz textures from 24 bits bitmaps
       <li>16/06/02 - EG - AssignFrom32BitsBitmap fix for single-line bitmaps
@@ -155,6 +156,11 @@ type
          {: AlphaChannel components are replaced by their sqrt.<p> }
          procedure SqrtAlpha;
 
+         {: Apply a brightness (scaled saturating) correction to the RGB components. }
+         procedure BrightnessCorrection(const factor : Single);
+         {: Apply a gamma correction to the RGB components. }
+         procedure GammaCorrection(const gamma : Single);
+
          {: Registers the bitmap's content as an OpenGL texture map.<p>
             Legal values for bytesPerPixel are :<ul>
             <li>4 : RGB+A (32 bits)
@@ -220,6 +226,7 @@ var
    invGamma : Single;
    i : Integer;
 begin
+   if pixelCount<1 then Exit;
    Assert(gamma>0);
    // build LUT
    if gamma<0.1 then
@@ -232,6 +239,37 @@ begin
       PByte(i)^:=vGammaLUT[PByte(i)^];
 end;
 
+// GammaCorrectRGBAArray
+//
+procedure GammaCorrectRGBAArray(base : Pointer; pixelCount : Integer;
+                               gamma : Single);
+type
+   PByte = ^Byte;
+var
+   vGammaLUT : array [0..255] of Byte;
+   pLUT : PByteArray;
+   invGamma : Single;
+   i, n : Integer;
+begin
+   if pixelCount<1 then Exit;
+   Assert(gamma>0);
+   // build LUT
+   if gamma<0.1 then
+      invGamma:=10
+   else invGamma:=1/gamma;
+   for i:=0 to 255 do
+      vGammaLUT[i]:=Round(255*Power(i*(1/255), InvGamma));
+   // perform correction
+   n:=Integer(base)+pixelCount*4;
+   i:=Integer(base);
+   pLUT:=@vGammaLUT[0];
+   while i<n do begin
+      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT[PByte(i)^]; Inc(i, 2);
+   end;
+end;
+
 // BrightenRGBArray
 //
 procedure BrightenRGBArray(base : Pointer; pixelCount : Integer;
@@ -242,6 +280,7 @@ var
    vBrightnessLUT : array [0..255] of Byte;
    i, k : Integer;
 begin
+   if pixelCount<1 then Exit;
    Assert(factor>=0);
    // build LUT
    for i:=0 to 255 do begin
@@ -252,6 +291,36 @@ begin
    // perform correction
    for i:=Integer(base) to Integer(base)+pixelCount*3-1 do
       PByte(i)^:=vBrightnessLUT[PByte(i)^];
+end;
+
+// BrightenRGBAArray
+//
+procedure BrightenRGBAArray(base : Pointer; pixelCount : Integer;
+                           factor : Single);
+type
+   PByte = ^Byte;
+var
+   vBrightnessLUT : array [0..255] of Byte;
+   pLUT : PByteArray;
+   i, n, k : Integer;
+begin
+   if pixelCount<1 then Exit;
+   Assert(factor>=0);
+   // build LUT
+   for i:=0 to 255 do begin
+      k:=Round(factor*i);
+      if k>255 then k:=255;
+      vBrightnessLUT[i]:=k;
+   end;
+   // perform correction
+   n:=Integer(base)+pixelCount*4;
+   i:=Integer(base);
+   pLUT:=@vBrightnessLUT[0];
+   while i<n do begin
+      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT[PByte(i)^]; Inc(i);
+      PByte(i)^:=pLUT[PByte(i)^]; Inc(i, 2);
+   end;
 end;
 
 // BGR24ToRGB24
@@ -729,6 +798,22 @@ begin
    sqrt255Array:=GetSqrt255Array;
    for i:=0 to (FDataSize div 4)-1 do with FData[i] do
       a:=sqrt255Array[(Integer(r)+Integer(g)+Integer(b)) div 3];
+end;
+
+// BrightnessCorrection
+//
+procedure TGLBitmap32.BrightnessCorrection(const factor : Single);
+begin
+   if Assigned(FData) then
+      BrightenRGBAArray(FData, FDataSize div 4, factor);
+end;
+
+// GammaCorrection
+//
+procedure TGLBitmap32.GammaCorrection(const gamma : Single);
+begin
+   if Assigned(FData) then
+      GammaCorrectRGBAArray(FData, FDataSize div 4, gamma);
 end;
 
 // RegisterAsOpenGLTexture
