@@ -701,13 +701,13 @@ function CreateTranslationMatrix(const V : TVector): TMatrix; overload;
 {: Creates a scale+translation matrix.<p>
    Scale is applied BEFORE applying offset }
 function CreateScaleAndTranslationMatrix(const scale, offset : TVector): TMatrix; overload;
-//: Creates matrix for rotation about x-axis
+//: Creates matrix for rotation about x-axis (angle in rad)
 function CreateRotationMatrixX(const sine, cosine: Single) : TMatrix; overload;
 function CreateRotationMatrixX(const angle: Single) : TMatrix; overload;
-//: Creates matrix for rotation about y-axis
+//: Creates matrix for rotation about y-axis (angle in rad)
 function CreateRotationMatrixY(const sine, cosine: Single) : TMatrix; overload;
 function CreateRotationMatrixY(const angle: Single) : TMatrix; overload;
-//: Creates matrix for rotation about z-axis
+//: Creates matrix for rotation about z-axis (angle in rad)
 function CreateRotationMatrixZ(const sine, cosine: Single) : TMatrix; overload;
 function CreateRotationMatrixZ(const angle: Single) : TMatrix; overload;
 //: Creates a rotation matrix along the given Axis by the given Angle in radians.
