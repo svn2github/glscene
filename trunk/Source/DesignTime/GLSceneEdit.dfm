@@ -21,6 +21,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Top = 26
     Width = 4
     Height = 287
+    Cursor = crHSplit
     Align = alRight
   end
   object Tree: TTreeView
@@ -179,6 +180,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Height = 287
     Align = alRight
     Caption = 'Panel1'
+    Constraints.MinWidth = 1
     TabOrder = 2
     object Splitter3: TSplitter
       Left = 1
