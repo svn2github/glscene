@@ -107,10 +107,8 @@ type
     function WorldToPixelZ(aPoint :TAffineVector;var pixX,pixY:integer;var pixZ:single):boolean;
   end;
 
-
-
-//-------ZShadows--------
-//   TZShadows = class (TSprite)
+   // TZShadows
+   //
    TZShadows = class (TGLCustomSceneObject)
         private
          FViewer      :TGLSceneViewer;
