@@ -2,6 +2,8 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>01/08/03 - NelC - Simplified type checking in SetAsStateMatrix and minor
+                            changes.
       <li>04/07/03 - NelC - TCustomCgShader.OnInitialize. Moved properties
                             VertexProgram & FragmentProgram of TCustomCgShader
                             to published so that we can acccess them easily from
@@ -603,6 +605,7 @@ begin
 end;
 
 procedure TCgParameter.SetAsScalar(const val : Single);
+// assuming a float
 begin
   CheckValueType(CG_FLOAT);
   cgGLSetParameter1f(FHandle, val);
@@ -681,11 +684,11 @@ procedure TCgParameter.DisableTexture;
 var
   ValueTypes: array[0..4] of TCGtype;
 begin
-  ValueTypes[0] := CG_SAMPLER1D;
-  ValueTypes[1] := CG_SAMPLER2D;
-  ValueTypes[2] := CG_SAMPLER3D;
-  ValueTypes[3] := CG_SAMPLERRECT;
-  ValueTypes[4] := CG_SAMPLERCUBE;
+  ValueTypes[0] := CG_SAMPLER2D; // most common first
+  ValueTypes[1] := CG_SAMPLER1D;
+  ValueTypes[2] := CG_SAMPLERRECT;
+  ValueTypes[3] := CG_SAMPLERCUBE;
+  ValueTypes[4] := CG_SAMPLER3D;
   CheckValueType(@ValueTypes);
 
   cgGLDisableTextureParameter(FHandle);
@@ -697,31 +700,25 @@ procedure TCgParameter.EnableTexture;
 var
   ValueTypes: array[0..4] of TCGtype;
 begin
-  ValueTypes[0] := CG_SAMPLER1D;
-  ValueTypes[1] := CG_SAMPLER2D;
-  ValueTypes[2] := CG_SAMPLER3D;
-  ValueTypes[3] := CG_SAMPLERRECT;
-  ValueTypes[4] := CG_SAMPLERCUBE;
+  ValueTypes[0] := CG_SAMPLER2D;
+  ValueTypes[1] := CG_SAMPLER1D;
+  ValueTypes[2] := CG_SAMPLERRECT;
+  ValueTypes[3] := CG_SAMPLERCUBE;
+  ValueTypes[4] := CG_SAMPLER3D;
   CheckValueType(@ValueTypes);
-  
+
   cgGLEnableTextureParameter(FHandle);
 end;
 
 // SetAsStateMatrix
 //
 procedure TCgParameter.SetAsStateMatrix(matrix, Transform : Cardinal);
-var
-  ValueTypes: array[0..3] of TCGtype;
+// Assuming matrix types are contiguous to simplify the type checking
+const MinTypeConst = CG_FLOAT1x1;
+      MaxTypeConst = CG_FLOAT4x4;
 begin
-  // Currently, I only include these most common ones. There're more types of
-  // smaller dimensions. Can we assume the types range is contigous and use do a
-  // range check of [CG_FLOAT1x1..CG_FLOAT4x4] instead?
-  ValueTypes[0] := CG_FLOAT4x4;
-  ValueTypes[1] := CG_FLOAT4x3;
-  ValueTypes[2] := CG_FLOAT3x4;
-  ValueTypes[3] := CG_FLOAT3x3;
-  CheckValueType(@ValueTypes);
-  
+  Assert( (FValueType>=MinTypeConst) and (FValueType<=MaxTypeConst),
+          ClassName+': Parameter type mismatch.');
   cgGLSetStateMatrixParameter( Fhandle, matrix, Transform);
 end;
 
