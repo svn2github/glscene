@@ -4,6 +4,8 @@
 
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
+   *T-junctions currently not handled by the polygon splitting*
+
 	<b>Historique : </b><font size=-1><ul>
       <li>05/03/03 - EG - Preliminary BSP splitting support
 	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
@@ -15,7 +17,7 @@ unit GLBSP;
 
 interface
 
-uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, Geometry;
+uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, Geometry, VectorLists;
 
 type
 
@@ -63,6 +65,11 @@ type
             An unused node is a node that renders nothing and whose children
             render nothing. Indices are remapped in the process. }
          procedure CleanupUnusedNodes;
+         {: Returns the average BSP tree depth of end nodes.<br>
+            Sums up the depth each end node (starting at 1 for root node),
+            divides by the number of end nodes. This is a simple estimator
+            of tree balancing (structurally speaking, not polygon-wise). }
+         function AverageDepth : Single;
 
          {: Rendering sort mode.<p>
             This sort mode can currently *not* blend with the sort by materials
@@ -86,6 +93,7 @@ type
 
 	   protected
 	      { Protected Declarations }
+         function AddLerp(iA, iB : Integer; fB, fA : Single) : Integer;
 
 	   public
 	      { Public Declarations }
@@ -117,6 +125,9 @@ type
             also changes the mode from strips/fan to list. }
          procedure PerformSplit(const splitPlane : THmgPlane;
                                 const maxTrianglesPerLeaf : Integer = MaxInt);
+         {: Goes through all triangle edges, looking for tjunctions.<p>
+            The candidates are indices of points to lookup a tjunction vertices. }
+         procedure FixTJunctions(const tJunctionsCandidates : TIntegerList);
 
          {: BSP node split plane.<p>
             Divides space between positive and negative half-space, positive
@@ -139,10 +150,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses VectorLists, SysUtils;
+uses SysUtils;
 
 const
    cOwnTriangleEpsilon = 1e-5;
+   cTJunctionEpsilon = 1e-4;
 
 // ------------------
 // ------------------ TBSPMeshObject ------------------
@@ -313,6 +325,41 @@ begin
       FaceGroups.Pack;
    finally
       indicesToCheck.Free;
+   end;
+end;
+
+// AverageDepth
+//
+function TBSPMeshObject.AverageDepth : Single;
+var
+   depthSum, endNodesCount : Integer;
+
+   procedure RecurseEstimate(nodeIdx, depth : Integer);
+   var
+      node : TFGBSPNode;
+   begin
+      node:=TFGBSPNode(FaceGroups[nodeIdx]);
+      if node.PositiveSubNodeIndex>0 then begin
+         RecurseEstimate(node.PositiveSubNodeIndex, depth+1);
+         if node.NegativeSubNodeIndex>0 then
+            RecurseEstimate(node.NegativeSubNodeIndex, depth+1);
+      end else if node.NegativeSubNodeIndex>0 then
+         RecurseEstimate(node.NegativeSubNodeIndex, depth+1)
+      else begin
+         Inc(depthSum, depth);
+         Inc(endNodesCount);
+      end;
+   end;
+
+begin
+   if FaceGroups.Count=0 then
+      Result:=1
+   else begin
+      depthSum:=0;
+      endNodesCount:=0;
+      RecurseEstimate(0, 1);
+      Assert(endNodesCount>0);
+      Result:=depthSum/endNodesCount;
    end;
 end;
 
@@ -511,6 +558,23 @@ begin
    end;
 end;
 
+// AddLerp
+//
+function TFGBSPNode.AddLerp(iA, iB : Integer; fB, fA : Single) : Integer;
+begin
+   with Owner.Owner do begin
+      with Vertices do Result:=Add(VectorCombine(List[iA], List[iB], fA, fB));
+      with Normals do if Count>0 then
+         Add(VectorCombine(List[iA], List[iB], fA, fB));
+      with Colors do if Count>0 then
+         Add(VectorCombine(List[iA], List[iB], fA, fB));
+      with TexCoords do if Count>0 then
+         Add(VectorCombine(List[iA], List[iB], fA, fB));
+      with LighmapTexCoords do if Count>0 then
+         Add(TexPointCombine(List[iA], List[iB], fA, fB));
+   end;
+end;
+
 // PerformSplit
 //
 procedure TFGBSPNode.PerformSplit(const splitPlane : THmgPlane;
@@ -519,21 +583,6 @@ var
    fgPos, fgNeg : TFGBSPNode;
    fgPosIndices, fgNegIndices : TIntegerList;
    indices : TIntegerList;
-
-   function AddLerp(iA, iB : Integer; fB, fA : Single) : Integer;
-   begin
-      with Owner.Owner do begin
-         with Vertices do Result:=Add(VectorCombine(List[iA], List[iB], fA, fB));
-         with Normals do if Count>0 then
-            Add(VectorCombine(List[iA], List[iB], fA, fB));
-         with Colors do if Count>0 then
-            Add(VectorCombine(List[iA], List[iB], fA, fB));
-         with TexCoords do if Count>0 then
-            Add(VectorCombine(List[iA], List[iB], fA, fB));
-         with LighmapTexCoords do if Count>0 then
-            Add(TexPointCombine(List[iA], List[iB], fA, fB));
-      end;
-   end;
 
    procedure SplitTriangleMid(strayID, strayNext, strayPrev : Integer;
                               eNext, ePrev : Single);
@@ -681,6 +730,100 @@ begin
       subSplitPlane:=fgNeg.FindSplitPlane;
       fgNeg.PerformSplit(subSplitPlane, maxTrianglesPerLeaf);
    end;
+end;
+
+// FixTJunctions
+//
+procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates : TIntegerList);
+
+   function FindTJunction(iA, iB, iC : Integer; candidatesList : TIntegerList) : Integer;
+   var
+      i, k : Integer;
+      vertices : PAffineVectorArray;
+      candidate, vA, vB : PAffineVector;
+      boxMin, boxMax, vector, invVector : TAffineVector;
+      f : TAffineVector;
+   begin
+      Result:=-1;
+      vertices:=Owner.Owner.Vertices.List;
+      vA:=@vertices[iA];
+      vB:=@vertices[iB];
+      // compute bounding box of the segment
+      boxMin:=vA^;
+      MinVector(boxMin, vB^);
+      boxMax:=vA^;
+      MaxVector(boxMax, vB^);
+      // compute extent and its inversion
+      vector:=VectorSubtract(vB^, vA^);
+      for i:=0 to 2 do
+         if vector[i]<>0 then
+            invVector[i]:=1/vector[i]
+         else invVector[i]:=0;
+      // lookup all candidates
+      for i:=0 to candidatesList.Count-1 do begin
+         k:=candidatesList.List[i];
+         if (k=iA) or (k=iB) or (k=iC) then Continue;
+         candidate:=@vertices[k];
+         if     (candidate[0]>boxMin[0]) and (candidate[1]>boxMin[1]) and (candidate[2]>boxMin[2])
+            and (candidate[0]<boxMax[0]) and (candidate[1]<boxMax[1]) and (candidate[2]<boxMax[2]) then begin
+            f:=candidate^;
+            SubtractVector(f, vA^);
+            ScaleVector(f, invVector);
+            if     (Abs(f[0]-f[1])<cTJunctionEpsilon) and (Abs(f[0]-f[2])<cTJunctionEpsilon)
+               and (Abs(f[1]-f[2])<cTJunctionEpsilon) then begin
+               Result:=k;
+               Break;
+            end;
+         end;
+      end;
+   end;
+
+var
+   i, tj : Integer;
+   indices : PIntegerArray;
+   mark : TIntegerList;
+begin
+   Assert(Mode in [fgmmTriangles, fgmmFlatTriangles]);
+   mark:=TIntegerList.Create;
+   mark.AddSerie(1, 0, VertexIndices.Count);
+   indices:=VertexIndices.List;
+   i:=0; while i<VertexIndices.Count do begin
+      if mark[i]<>0 then begin
+         tj:=FindTJunction(indices[i], indices[i+1], indices[i+2], tJunctionsCandidates);
+         if tj>=0 then begin
+            VertexIndices.Add(tj, VertexIndices[i+1], VertexIndices[i+2]);
+            mark.Add(1, 1, 0);
+            indices:=VertexIndices.List;
+            indices[i+1]:=tj;
+            mark[i+1]:=0;
+            Continue;
+         end;
+      end;
+      if mark[i+1]<>0 then begin
+         tj:=FindTJunction(indices[i+1], indices[i+2], indices[i], tJunctionsCandidates);
+         if tj>=0 then begin
+            VertexIndices.Add(tj, VertexIndices[i+2], VertexIndices[i]);
+            mark.Add(1, 1, 0);
+            indices:=VertexIndices.List;
+            indices[i+2]:=tj;
+            mark[i+2]:=0;
+            Continue;
+         end;
+      end;
+      if mark[i+2]<>0 then begin
+         tj:=FindTJunction(indices[i+2], indices[i], indices[i+1], tJunctionsCandidates);
+         if tj>=0 then begin
+            VertexIndices.Add(tj, VertexIndices[i], VertexIndices[i+1]);
+            mark.Add(1, 1, 0);
+            indices:=VertexIndices.List;
+            indices[i]:=tj;
+            mark[i]:=0;
+            Continue;
+         end;
+      end;
+      Inc(i, 3);
+   end;
+   mark.Free;
 end;
 
 // ------------------------------------------------------------------
