@@ -46,6 +46,7 @@ type
     ColorDialog1: TColorDialog;
     DCLights: TGLDummyCube;
     AsyncTimer1: TAsyncTimer;
+    CheckBox4: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -58,6 +59,7 @@ type
     procedure CheckBoxClick(Sender: TObject);
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
+    procedure FormResize(Sender: TObject);
   private
     { Private declarations }
   public
@@ -72,6 +74,8 @@ implementation
 
 {$R *.dfm}
 
+uses VectorGeometry;
+
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
@@ -83,6 +87,8 @@ begin
   // Load the normal map
   with GLMaterialLibrary1.Materials[0].Material.Texture.Image do
     LoadFromFile('bunnynormals.jpg');
+  with GLMaterialLibrary1.Materials[1].Material.Texture.Image do
+    LoadFromFile('glscene.bmp');
 
   // Link the lights to their toggles
   CheckBox1.Tag:=Integer(WhiteLight);
@@ -91,6 +97,10 @@ begin
   Shape1.Tag:=Integer(WhiteLight);
   Shape2.Tag:=Integer(RedLight);
   Shape3.Tag:=Integer(BlueLight);
+
+  ComboBox1.ItemIndex:=0;
+  ComboBox1Change(nil);
+  //GLMaterialLibrary1.Materials[0].Texture2Name:='';
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -104,7 +114,10 @@ begin
   end;
 
   // Rotate the light sources
-  DCLights.Turn(deltaTime*10);
+  if CheckBox4.Checked then
+    DCLights.Turn(deltaTime*20);
+
+  GLSceneViewer1.Invalidate;
 end;
 
 procedure TForm1.CheckBoxClick(Sender: TObject);
@@ -127,10 +140,17 @@ end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
-  if ComboBox1.ItemIndex = 0 then
-    Bunny.Material.LibMaterialName:=''
-  else
-    Bunny.Material.LibMaterialName:='Bump';
+  case ComboBox1.ItemIndex of
+    0 : Bunny.Material.LibMaterialName:='';
+    1 : begin
+      Bunny.Material.LibMaterialName:='Bump';
+      GLBumpShader1.BumpMethod:=bmDot3TexCombiner;
+    end;
+    2 : begin
+      Bunny.Material.LibMaterialName:='Bump';
+      GLBumpShader1.BumpMethod:=bmBasicARBFP;
+    end;
+  end;
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -160,6 +180,11 @@ procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
   Form1.Caption:='GLBumpShader Demo - '+GLSceneViewer1.FramesPerSecondText;
   GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+procedure TForm1.FormResize(Sender: TObject);
+begin
+  Camera.SceneScale:=Height/400;
 end;
 
 end.

@@ -1,8 +1,8 @@
 object Form1: TForm1
   Left = 192
   Top = 107
-  Width = 462
-  Height = 439
+  Width = 400
+  Height = 400
   Caption = 'GLBumpShader Demo'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,14 +13,16 @@ object Form1: TForm1
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 57
-    Width = 454
-    Height = 355
+    Width = 392
+    Height = 309
     Camera = Camera
+    Buffer.BackgroundColor = clBlack
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -28,7 +30,7 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 454
+    Width = 392
     Height = 57
     Align = alTop
     TabOrder = 1
@@ -42,20 +44,21 @@ object Form1: TForm1
     object ComboBox1: TComboBox
       Left = 8
       Top = 24
-      Width = 121
+      Width = 145
       Height = 21
       Style = csDropDownList
       ItemHeight = 13
-      ItemIndex = 1
+      ItemIndex = 2
       TabOrder = 0
-      Text = 'Dot3 Per-Pixel'
+      Text = 'Basic Fragment Program'
       OnChange = ComboBox1Change
       Items.Strings = (
         'Per-Vertex'
-        'Dot3 Per-Pixel')
+        'Dot3 Texture Combiner'
+        'Basic Fragment Program')
     end
     object GroupBox1: TGroupBox
-      Left = 136
+      Left = 160
       Top = 8
       Width = 169
       Height = 41
@@ -111,43 +114,57 @@ object Form1: TForm1
         OnClick = CheckBoxClick
       end
     end
+    object CheckBox4: TCheckBox
+      Left = 336
+      Top = 24
+      Width = 49
+      Height = 17
+      Caption = 'Spin'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 64
     object DCLights: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object WhiteLight: TGLLightSource
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Position.Coordinates = {0000404000000040000000000000803F}
         LightStyle = lsOmni
-        SpotCutOff = 180
+        Specular.Color = {0000803F0000803F0000803F0000803F}
+        SpotCutOff = 180.000000000000000000
       end
       object RedLight: TGLLightSource
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Diffuse.Color = {0000803F00000000000000000000803F}
         Position.Coordinates = {0000C0BF00000040666626C00000803F}
         LightStyle = lsOmni
         Shining = False
-        SpotCutOff = 180
+        Specular.Color = {0000803F0000003F0000003F0000803F}
+        SpotCutOff = 180.000000000000000000
       end
       object BlueLight: TGLLightSource
-        ConstAttenuation = 1
+        ConstAttenuation = 1.000000000000000000
         Diffuse.Color = {00000000000000000000803F0000803F}
         Position.Coordinates = {0000C0BF00000040666626400000803F}
         LightStyle = lsOmni
         Shining = False
-        SpotCutOff = 180
+        Specular.Color = {0000003F0000003F0000803F0000803F}
+        SpotCutOff = 180.000000000000000000
       end
     end
     object Bunny: TGLFreeForm
+      Material.FrontProperties.Shininess = 64
+      Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'Bump'
       AutoCentering = [macCenterX, macCenterY, macCenterZ]
     end
     object Camera: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Bunny
       Position.Coordinates = {000080400000803F000000000000803F}
     end
@@ -162,10 +179,17 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'Bump'
-        Material.Texture.TextureMode = tmReplace
+        Material.FrontProperties.Shininess = 64
+        Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.Disabled = False
         Tag = 0
+        Texture2Name = 'Texture'
         Shader = GLBumpShader1
+      end
+      item
+        Name = 'Texture'
+        Material.Texture.Disabled = False
+        Tag = 0
       end>
     Left = 40
     Top = 64
@@ -173,12 +197,12 @@ object Form1: TForm1
   object GLBumpShader1: TGLBumpShader
     BumpMethod = bmDot3TexCombiner
     BumpSpace = bsObject
+    BumpOptions = []
     Left = 40
     Top = 96
   end
   object ColorDialog1: TColorDialog
-    Ctl3D = True
-    Left = 312
+    Left = 216
     Top = 16
   end
   object AsyncTimer1: TAsyncTimer
