@@ -1402,7 +1402,7 @@ Begin
   If Assigned(BitmapFont) then
   Begin
     Position[0] := Round(((X2+X1-BitmapFont.CalcStringWidth(Data))*0.5));
-    Position[1] := Round(-((Y2+Y1-GetFontHeight)*0.5));
+    Position[1] := Round(-((Y2+Y1-GetFontHeight)*0.5))+2;
     Position[2] := 0;
     Position[3] := 0;
     BitmapFont.RenderString(Data,taLeftJustify,tlTop,Color,@Position);
