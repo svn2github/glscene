@@ -1,3 +1,4 @@
+Hello from Lionel : un test de plus !
 hello !EG added this!
 world
 Testing writing -DanB 13-Feb/2003
