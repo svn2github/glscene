@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
       <li>06/02/03 - EG - Fixed speculative range computation, better hashkey
       <li>14/01/03 - EG - RayCastIntersect normals fix (Stuart Gooding)
       <li>24/09/02 - EG - Added RayCastIntersect (Stuart Gooding)
@@ -240,7 +241,7 @@ begin
       step:=100; //Initial step size should be guessed. This is the reason for inaccuracy
       i:=step;
       d:=VectorNormalize(rayVector);
-      startedAbove:=((InterpolatedHeight(p1)-p1[1])<0);
+      startedAbove:=((InterpolatedHeight(rayStart)-rayStart[1])<0);
       failSafe:=0;
       while True do begin
          p1:=rayStart;
