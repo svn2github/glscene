@@ -15,11 +15,18 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 8
+    Top = 8
+    Width = 99
+    Height = 13
+    Caption = 'Layouts in collection:'
+  end
   object ListBox: TListBox
     Left = 8
-    Top = 40
+    Top = 56
     Width = 233
-    Height = 297
+    Height = 281
     ItemHeight = 13
     PopupMenu = ListPopup
     TabOrder = 0
@@ -35,12 +42,31 @@ object Form1: TForm1
   end
   object Edit3: TEdit
     Left = 8
-    Top = 8
-    Width = 233
+    Top = 24
+    Width = 153
     Height = 21
     TabOrder = 2
     Text = 'Newly Added'
     OnChange = Edit3Change
+    OnKeyPress = Edit3KeyPress
+  end
+  object Button1: TButton
+    Left = 168
+    Top = 24
+    Width = 33
+    Height = 25
+    Caption = 'Add'
+    TabOrder = 3
+    OnClick = Button1Click
+  end
+  object Button2: TButton
+    Left = 208
+    Top = 24
+    Width = 33
+    Height = 25
+    Caption = 'Edit'
+    TabOrder = 4
+    OnClick = Button2Click
   end
   object MainMenu1: TMainMenu
     Left = 24
@@ -149,14 +175,14 @@ object Form1: TForm1
       NoZWrite = False
     end
     object GLPanel1: TGLPanel
-      Position.Coordinates = {0000484200004842000000000000803F}
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'LibMaterial'
-      Width = 200
-      Height = 200
-      NoZWrite = False
       RedrawAtOnce = False
       GuiLayout = GLGuiLayout1
+      NoZWrite = False
+      Width = 200
+      Height = 200
+      Left = 50
+      Top = 50
+      Position.Coordinates = {0000484200004842000000000000803F}
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100

@@ -56,6 +56,9 @@ type
     GLMaterialLibrary1: TGLMaterialLibrary;
     HUDSprite1: TGLHUDSprite;
     Edit3: TEdit;
+    Label1: TLabel;
+    Button1: TButton;
+    Button2: TButton;
     procedure Open1Click(Sender: TObject);
     procedure Save1Click(Sender: TObject);
     procedure Close1Click(Sender: TObject);
@@ -69,6 +72,9 @@ type
     procedure Edit3Change(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Edit3KeyPress(Sender: TObject; var Key: Char);
+    procedure Button2Click(Sender: TObject);
   private
   public
     Procedure UpdateLayoutList;
@@ -146,12 +152,14 @@ end;
 
 procedure TForm1.EditLayout1Click(Sender: TObject);
 begin
+  Hide;
   GLScene1.BeginUpdate;
   try
     If ListBox.ItemIndex >= 0 then
     GLGui.GUIComponentDialog((ListBox.Items.Objects[ListBox.ItemIndex] as TGLGuiComponent).Elements)
   finally
     GLScene1.EndUpdate;
+    Show;
   end;
 end;
 
@@ -162,6 +170,7 @@ begin
   ListBox.Clear;
   With GLGuiLayout1.GuiComponents do for i:=0 to Count-1 do
     ListBox.Items.AddObject(Items[i].Name, Items[i]);
+  ListBox.Selected[GLGuiLayout1.GuiComponents.Count-1] := True;
 End;
 
 procedure TForm1.Add1Click(Sender: TObject);
@@ -176,10 +185,12 @@ begin
     GuiComp.Name := 'Newly Added';
   end else GuiComp.Name := Edit3.Text;
 
-  ListBox.Items.AddObject(GuiComp.Name, GuiComp);
+  UpdateLayoutList;
 end;
 
 procedure TForm1.Remove1Click(Sender: TObject);
+Var
+  S : String;
 begin
   If ListBox.ItemIndex >= 0 then
   Begin
@@ -187,6 +198,9 @@ begin
     try
       GLGuiLayout1.GUIComponents.Delete(ListBox.ItemIndex);
       ListBox.Items.Delete(ListBox.ItemIndex);
+      S := GLPanel1.GuiLayoutName;
+      GLPanel1.GuiLayoutName := '';
+      GLPanel1.GuiLayoutName := S;
     finally
       GLScene1.EndUpdate;
     end;
@@ -234,7 +248,6 @@ begin
         GLMaterialLibrary1.AddTextureMaterial(MatName,OpenPictureDialog.FileName).Material.Texture.TextureMode := tmReplace;
       End;
       GLGuiLayout1.Material.LibMaterialName := MatName;
-      GLPanel1.Material.LibMaterialName := MatName;
       HUDSprite1.Material.LibMaterialName := MatName;
     finally
       GLScene1.EndUpdate;
@@ -254,6 +267,21 @@ end;
 procedure TForm1.Exit1Click(Sender: TObject);
 begin
    Application.Terminate;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  Add1Click(Sender);
+end;
+
+procedure TForm1.Edit3KeyPress(Sender: TObject; var Key: Char);
+begin
+  If Key = #13 then Add1Click(Sender);
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+begin
+  Edit2Click(Sender);
 end;
 
 end.
