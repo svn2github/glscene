@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>17/10/02 - EG - TGLSTLVectorFile moved to new GLFileSTL unit
       <li>04/09/02 - EG - Fixed TBaseMesh.AxisAlignedDimensions 
       <li>23/08/02 - EG - Added TBaseMesh.Visible
       <li>23/07/02 - EG - TBaseMesh.LoadFromStream fix (D. Angilella)
@@ -926,21 +927,6 @@ type
          procedure LoadFromStream(aStream: TStream); override;
    end;
 
-   // TGLSTLVectorFile
-   //
-   {: The STL vector file (stereolithography format).<p>
-      It is a list of the triangular surfaces that describe a computer generated
-      solid model. This is the standard input for most rapid prototyping machines.<p>
-      There are two flavors of STL, the "text" and the "binary", this reader
-      supports only the "binary" version.<p>
-      Original code by Paul M. Bearne. }
-   TGLSTLVectorFile = class(TVectorFile)
-      public
-         { Public Declarations }
-         procedure LoadFromStream(aStream: TStream); override;
-         procedure SaveToStream(aStream: TStream); override;
-   end;
-
    // TGLSMDVectorFile
    //
    {: The SMD vector file is Half-life's skeleton format.<p>
@@ -1422,8 +1408,6 @@ implementation
 uses GLStrings, consts, XOpenGL, GLCrossPlatform,
      // 3DS Support
 	  File3DS, Types3DS,
-     // STL Support
-     TypesSTL,
      // MD2 Support
 	  FileMD2, TypesMD2;
 
@@ -5695,68 +5679,6 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLSTLVectorFile ------------------
-// ------------------
-
-// LoadFromStream
-//
-procedure TGLSTLVectorFile.LoadFromStream(aStream : TStream);
-var
-   i : Integer;
-   mesh : TMeshObject;
-   header : TSTLHeader;
-   dataFace : TSTLFace;
-   calcNormal : TAffineVector;
-begin
-   mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
-   mesh.Mode:=momTriangles;
-   aStream.Read(header, SizeOf(TSTLHeader));
-   for i:=0 to header.nbFaces-1 do begin
-      aStream.Read(dataFace, SizeOf(TSTLFace));
-      with dataFace, mesh do begin
-         // STL faces have a normal, but do not necessarily follow the winding rule,
-         // so we must first determine if the triangle is properly oriented
-         // and rewind it properly if not...
-         calcNormal:=CalcPlaneNormal(v1, v2, v3);
-         if VectorDotProduct(calcNormal, normal)>0 then
-            Vertices.Add(v1, v2, v3)
-         else Vertices.Add(v3, v2, v1);
-         Normals.Add(normal, normal, normal);
-      end;
-   end;
-end;
-
-// SaveToStream
-//
-procedure TGLSTLVectorFile.SaveToStream(aStream: TStream);
-var
-   i : Integer;
-   header : TSTLHeader;
-   dataFace : TSTLFace;
-   list : TAffineVectorList;
-const
-   cHeaderTag = 'GLScene STL export';
-begin
-   list:=Owner.MeshObjects.ExtractTriangles;
-   try
-      FillChar(header.dummy[0], SizeOf(header.dummy), 0);
-      Move(cHeaderTag, header.dummy[0], Length(cHeaderTag));
-      header.nbFaces:=list.Count div 3;
-      aStream.Write(header, SizeOf(header));
-      i:=0; while i<list.Count do begin
-         dataFace.normal:=CalcPlaneNormal(list[i], list[i+1], list[i+2]);
-         dataFace.v1:=list[i];
-         dataFace.v2:=list[i+1];
-         dataFace.v3:=list[i+2];
-         aStream.Write(dataFace, SizeOf(dataFace));
-         Inc(i, 3);
-      end;
-   finally
-      list.Free;
-   end;
-end;
-
-// ------------------
 // ------------------ TGLSMDVectorFile ------------------
 // ------------------
 
@@ -5904,7 +5826,6 @@ initialization
    RegisterVectorFileFormat('3ds', '3D Studio files', TGL3DSVectorFile);
    RegisterVectorFileFormat('prj', '3D Studio project files', TGL3DSVectorFile);
    RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);
-   RegisterVectorFileFormat('stl', 'Stereolithography files', TGLSTLVectorFile);
    RegisterVectorFileFormat('smd', 'Half-Life SMD files', TGLSMDVectorFile);
    RegisterVectorFileFormat('ply', 'Stanford triangle format', TGLPLYVectorFile);
 
