@@ -2,6 +2,7 @@
 {: In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/11/04 - DB - Fixed memory leaks (thanks dikoe Kenguru)
       <li>16/07/03 - EG - TGLBaseGuiObject moved in along with RecursiveVisible mechanism
       <li>25/11/02 - EG - TGLGuiLayout.Clear fix (Sternas Stefanos)
       <li>06/09/02 - JAJ - Updated and added to CVS..
@@ -80,6 +81,7 @@ Type
     procedure SetName(const val : TGLGuiElementName);
   public
     constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
     procedure   AssignTo(Dest: TPersistent); override;
   published
     property TopLeft      : TGLCoordinates read FTopLeft       write FTopLeft;
@@ -117,6 +119,7 @@ Type
     procedure SetName(const val : TGLGuiComponentName);
   public
     constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
     procedure   AssignTo(Dest: TPersistent); override;
     Procedure RenderToArea(X1,Y1,X2,Y2 : TGLFloat; Var Res : TGUIDrawResult; Refresh : Boolean = True; Scale : TGLFloat = 1);
     Function GetOwnerList : TGLGuiComponentList;
@@ -359,6 +362,8 @@ Destructor  TGLGuiLayout.Destroy;
 
 Begin
   Clear;
+  FMaterial.Free;
+  FGuiComponents.Free;
   inherited;
   FGuiComponentList.Free;
 End;
@@ -1019,6 +1024,12 @@ Begin
   FElements := TGLGuiElementList.Create(Self);
 End;
 
+destructor TGLGuiComponent.Destroy;
+Begin
+  FElements.Free;
+  inherited;
+End;
+
 Constructor TGLGuiElementList.Create(AOwner : TGLGuiComponent);
 
 Begin
@@ -1066,6 +1077,14 @@ Begin
   FScale.X := 1;
   FScale.Y := 1;
 End;
+
+destructor TGLGuiElement.Destroy;
+begin
+  FTopLeft.Free;
+  FBottomRight.Free;
+  FScale.Free;
+  inherited;
+end;
 
 procedure TGLGuiLayout.Notification(AComponent: TComponent;
   Operation: TOperation);

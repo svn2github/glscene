@@ -13,9 +13,14 @@
   the non-discriminating volume).</i><p>
 
 
-  <b>History : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>08/12/04 - LR - BCB corrections: use record instead array
+      <li>03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
+      <li>02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
+                          streamlined frustum culling.
+      <li>01/12/04 - HRLI - Added rcci/frustum culling
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-                               Change TSectorNodeArray definition
+                               Change TSectorNodeArray definition      
       <li>23/06/03 - MF - Separated functionality for Octrees and general
                           sectored space partitions so Quadtrees will be easy
                           to add.
@@ -28,7 +33,7 @@ unit SpatialPartitioning;
 interface
 
 uses
-  Classes, VectorGeometry, SysUtils, GeometryBB, PersistentClasses;
+  Classes, VectorGeometry, SysUtils, GeometryBB, PersistentClasses, Math;
 
 const
   cOctree_LEAF_TRHESHOLD = 30;
@@ -51,6 +56,13 @@ type
 
     {: Length of the cone }
     Length : single;
+  end;
+
+  {: Extended frustum, used for fast intersection testing }
+  TExtendedFrustum = record
+    Frustum : TFrustum;
+    BSphere : TBSphere;
+    // SPCone : TSPCone;
   end;
 
   {: Used to store the actual objects in the SpacePartition }
@@ -146,6 +158,12 @@ type
     {: Query space for Leaves that intersect a plane. Result is returned through
     QueryResult}
     function QueryPlane(const Location, Normal: TAffineVector) : integer; virtual;
+    {: Query space for Leaves that intersect a Frustum. Result is returned through
+    QueryResult}
+    function QueryFrustum(const Frustum : TFrustum) : integer; virtual;
+    {: Query space for Leaves that intersect an extended frustum. Result is
+    returned through QueryResult}
+    function QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum) : integer; virtual;
 
     {: Once a query has been run, this number tells of how many inter object
     tests that were run. This value must be set by all that override the
@@ -239,6 +257,9 @@ type
     {: Debug method that checks that FRecursiveLeafCount and
     CalcRecursiveLeafCount actually agree }
     function VerifyRecursiveLeafCount : string;
+
+    {: Executed whenever the children of the node has changed}
+    procedure ChildrenChanged; virtual;
   public
     {: Clear deletes all children and empties the leaves. It doesn't destroy
     the leaves, as they belong to the SpacePartition}
@@ -265,6 +286,7 @@ type
 
     {: The leaves that are stored in this node }
     property Leaves : TSpacePartitionLeafList read FLeaves;
+
 
     {: The Structure that owns this node }
     property SectoredSpacePartition : TSectoredSpacePartition read FSectoredSpacePartition;
@@ -313,14 +335,21 @@ type
     this node has too few leaves after the delete, it may be collapsed }
     procedure RemoveLeaf(aLeaf : TSpacePartitionLeaf; OwnerByThis : boolean);
 
-    {: Query the node and it's children for leaves that match the AABB }
+    {: Query the node and its children for leaves that match the AABB }
     procedure QueryAABB(const aAABB : TAABB; const QueryResult : TSpacePartitionLeafList);
 
-    {: Query the node and it's children for leaves that match the BSphere }
+    {: Query the node and its children for leaves that match the BSphere }
     procedure QueryBSphere(const aBSphere : TBSphere; const QueryResult : TSpacePartitionLeafList);
 
-    {: Query the node and it's children for leaves that match the plane }
+    {: Query the node and its children for leaves that match the plane }
     procedure QueryPlane(const Location, Normal: TAffineVector; const QueryResult : TSpacePartitionLeafList);
+
+    {: Query the node and its children for leaves that match the Frustum. }
+    procedure QueryFrustum(const Frustum : TFrustum; const QueryResult : TSpacePartitionLeafList);
+
+    {: Query the node and its children for leaves that match the extended
+    frustum. }
+    procedure QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum; const QueryResult : TSpacePartitionLeafList);
 
     {: Adds all leaves to query result without testing if they intersect, and
     then do the same for all children. This is used when QueryAABB or
@@ -340,6 +369,7 @@ type
     function GetNodeCount : integer;
 
     constructor Create(aSectoredSpacePartition : TSectoredSpacePartition; aParent : TSectorNode);
+
     destructor Destroy; override;
   end;
 
@@ -393,6 +423,14 @@ type
     QueryResult}
     function QueryPlane(const Location, Normal: TAffineVector) : integer; override;
 
+    {: Query space for Leaves that intersect a Frustum. Result is returned through
+    QueryResult}
+    function QueryFrustum(const Frustum : TFrustum) : integer; override;
+
+    {: Query space for Leaves that intersect an extended frustum. Result is
+    returned through QueryResult}
+    function QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum) : integer; override;
+
     {: After a query has been run, this value will contain the number of nodes
     that were checked during the query }
     property QueryNodeTests : integer read FQueryNodeTests;
@@ -437,6 +475,7 @@ type
     property GrowGravy : single read FGrowGravy write FGrowGravy;
   end;
 
+  // ** OCTTREE
   {: Implements sector node that handles octrees}
   TSPOctreeNode = class(TSectorNode)
   public
@@ -466,8 +505,57 @@ type
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; override;
   end;
 
+  // ** QUADTREE
+  {: Implements sector node that handles quadtrees.}
+  TSPQuadNode = class(TSPOctreeNode)
+  protected
+    {: Executed whenever the children of the node has changed. In the quadtree,
+     we want to make sure the Y value of the AABB is correct up and down and that
+     the bounding sphere is correct}
+    procedure ChildrenChanged; override;
+  public
+    {: Create 4 TSPQuadNode children }
+    procedure CreateChildren; override;
+
+    {: Checks if an AABB fits completely inside this node }
+    function AABBFitsInNode(const aAABB : TAABB) : boolean; override;
+
+    {: Checks if an AABB intersects this node }
+    function AABBIntersectsNode(const aAABB : TAABB) : boolean; override;
+
+    {: Checks if a BSphere fits completely inside this node }
+    function BSphereFitsInNode(const BSphere : TBSphere) : boolean; override;
+
+    {: Checks if a BSphere intersects this node }
+    function BSphereIntersectsNode(const BSphere : TBSphere) : boolean; override;
+
+    {: Computes which child the AABB should go in. Returns nil if no such child
+    exists }
+    function GetChildForAABB(AABB : TAABB) : TSectorNode; override;
+  end;
+
+  {: Implements quadtrees.<p>
+    Quadtrees are hardcoded to completely ignore the Y axis, only using X and Z
+    to determine positioning.<p>
+    This means that they're well suited for 2d-ish situations (landscapes with
+    trees for instance) but not for fully 3d situations (space fighting).}
+  TQuadSpacePartition = class(TSectoredSpacePartition)
+  public
+    {: Set size updates the size of the Octree }
+    procedure SetSize(const Min, Max : TAffineVector);
+
+    {: CreateNewNode creates a new TSPOctreeNode }
+    function CreateNewNode(aParent : TSectorNode) : TSectorNode; override;
+  end;
+
   {: Determines to which extent one Cone contains an BSphere}
   function ConeContainsBSphere(const Cone : TSPCone; BSphere : TBSphere) : TSpaceContains;
+
+  {: Create an extended frustum from a number of values }
+  function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
+    AFarDist, AFieldOfViewRadians : single;
+    const ACameraPosition, ALookVector : TAffineVector{;
+    const AScreenWidth, AScreenHeight : integer {}) : TExtendedFrustum;
 
 implementation
 
@@ -489,19 +577,8 @@ const
   cMIN = 0;
   cMID = 1;
   cMAX = 2;
-   cFlagMAX: array[0..7] of array [0..2] of byte = (
-      (cMID,cMAX,cMAX), //Upper Fore Left
-      (cMAX,cMAX,cMAX), //Upper Fore Right
-      (cMID,cMAX,cMID), //Upper Back Left
-      (cMAX,cMAX,cMID), //Upper Back Right
 
-      (cMID,cMID,cMAX), //Lower Fore Left   (similar to above except height/2)
-      (cMAX,cMID,cMAX), //Lower Fore Right
-      (cMID,cMID,cMID), //Lower Back Left
-      (cMAX,cMID,cMID)  //Lower Back Right
-    );
-
-   cFlagMIN: array[0..7] of array [0..2] of byte = (
+   cOctFlagMIN: array[0..7] of array [0..2] of byte = (
       (cMIN,cMID,cMID), //Upper Fore Left
       (cMID,cMID,cMID), //Upper Fore Right
       (cMIN,cMID,cMIN), //Upper Back Left
@@ -511,6 +588,18 @@ const
       (cMID,cMIN,cMID), //Lower Fore Right
       (cMIN,cMIN,cMIN), //Lower Back Left
       (cMID,cMIN,cMIN)  //Lower Back Right
+    );
+
+   cOctFlagMax: array[0..7] of array [0..2] of byte = (
+      (cMID,cMAX,cMAX), //Upper Fore Left
+      (cMAX,cMAX,cMAX), //Upper Fore Right
+      (cMID,cMAX,cMID), //Upper Back Left
+      (cMAX,cMAX,cMID), //Upper Back Right
+
+      (cMID,cMID,cMAX), //Lower Fore Left   (similar to above except height/2)
+      (cMAX,cMID,cMAX), //Lower Fore Right
+      (cMID,cMID,cMID), //Lower Back Left
+      (cMAX,cMID,cMID)  //Lower Back Right
     );
 
 function ConeContainsBSphere(const Cone : TSPCone; BSphere : TBSphere) : TSpaceContains;
@@ -555,6 +644,65 @@ begin
   end else
     result := scNoOverlap;
 end;//}
+
+
+function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
+  AFarDist, AFieldOfViewRadians : single;
+  const ACameraPosition, ALookVector : TAffineVector{;
+  const AScreenWidth, AScreenHeight : integer{}) : TExtendedFrustum;
+var
+  ViewLen : single;
+  Height, Width : single;
+  // Depth, Corner, NewFov : single;
+  P, Q, vDiff : TAffineVector;//}
+begin
+  // See http://www.flipcode.com/articles/article_frustumculling.shtml for
+  // details calculate the radius of the frustum sphere
+
+  result.Frustum := AFrustum;
+
+  // ************
+  // Create a bounding sphere for the entire frustum - only bspheres that
+  // intersect this bounding sphere can in turn intersect the frustum
+  ViewLen := AFarDist - ANearDist;
+
+  // use some trig to find the height of the frustum at the far plane
+  Height := ViewLen * sin(AFieldOfViewRadians / 2); // was tan( !?
+
+  // with an aspect ratio of 1, the width will be the same
+  Width := Height;
+
+  // halfway point between near/far planes starting at the origin and extending along the z axis
+  P := AffineVectorMake(0,0, ANearDist + ViewLen / 2);
+
+  // the calculate far corner of the frustum
+  Q := AffineVectorMake(Width, Height, ViewLen);
+
+  // the vector between P and Q
+  vDiff := VectorSubtract(P, Q);
+
+  // the radius becomes the length of this vector
+  result.BSphere.Radius := VectorLength(vDiff);
+
+  // calculate the center of the sphere
+  result.BSphere.Center := VectorAdd(ACameraPosition, VectorScale(ALookVector, ViewLen/2 + ANearDist));
+
+  // ************
+  // Create a cone
+  // calculate the length of the fov triangle
+  {Depth  := AScreenHeight / tan(AFieldOfViewRadians / 2);
+
+  // calculate the corner of the screen
+  Corner := sqrt(AScreenHeight * AScreenHeight + AScreenWidth * AScreenWidth);
+
+  // now calculate the new fov
+  NewFov := ArcTan2(Corner, Depth);
+
+  // apply to the cone
+  result.SPCone.Axis := ALookVector;
+  result.SPCone.Base := ACameraPosition;
+  result.SPCone.Angle := NewFov; //}
+end;
 
 { TSpacePartitionLeaf }
 
@@ -703,6 +851,20 @@ end;
 procedure TBaseSpacePartition.RemoveLeaf(aLeaf: TSpacePartitionLeaf);
 begin
   // Virtual
+end;
+
+function TBaseSpacePartition.QueryFrustum(
+  const Frustum: TFrustum): integer;
+begin
+  // Virtual
+  result := 0;
+end;
+
+function TBaseSpacePartition.QueryFrustumEx(
+  const ExtendedFrustum: TExtendedFrustum): integer;
+begin
+  // Virtual
+  result := 0;
 end;
 
 { TLeavedSpacePartition }
@@ -872,6 +1034,7 @@ begin
   if NoChildren then
   begin
     FLeaves.Add(aLeaf);
+    ChildrenChanged;
     aLeaf.FPartitionTag := self;
     result := self;
   end else
@@ -936,11 +1099,12 @@ begin
   // we can
   OldLeaves := FLeaves;
   FLeaves := TSpacePartitionLeafList.Create;
-
-  for i := 0 to OldLeaves.Count-1 do
-    PlaceLeafInChild(OldLeaves[i]);
-
-  OldLeaves.Free;
+  try
+    for i := 0 to OldLeaves.Count-1 do
+      PlaceLeafInChild(OldLeaves[i]);
+  finally
+    OldLeaves.Free;
+  end;
 end;
 
 procedure TSectorNode.CollapseNode;
@@ -1003,6 +1167,7 @@ begin
   // Doesn't fit the any child
   aLeaf.FPartitionTag := self;
   FLeaves.Add(aLeaf);
+  ChildrenChanged;
   result := self;
 end;
 
@@ -1064,19 +1229,18 @@ begin
     if FSectoredSpacePartition.CullingMode = cmFineCulling then
     begin
       for i := 0 to FLeaves.Count-1 do
+      begin
+        inc(FSectoredSpacePartition.FQueryInterObjectTests);
         if BSphereContainsAABB(aBSphere, FLeaves[i].FCachedAABB) <> scNoOverlap then
           QueryResult.Add(FLeaves[i]);
+      end;
     end else
       for i := 0 to FLeaves.Count-1 do
         QueryResult.Add(FLeaves[i]);
 
     // Recursively let the children add their leaves
     for i := 0 to FChildCount-1 do
-    begin
-      inc(FSectoredSpacePartition.FQueryInterObjectTests);
-
       FChildren.Child[i].QueryBSphere(aBSphere, QueryResult);
-    end;
   end;
 end;
 
@@ -1221,6 +1385,94 @@ begin
   result := FBSphere.Center;
 end;
 
+procedure TSectorNode.QueryFrustum(const Frustum: TFrustum;
+  const QueryResult: TSpacePartitionLeafList);
+var
+  SpaceContains : TSpaceContains;
+  i : integer;
+begin
+  inc(FSectoredSpacePartition.FQueryNodeTests);
+
+  // Check if the frustum contains the bsphere of the node
+  if not IsVolumeClipped(BSphere.Center, BSphere.Radius, Frustum) then
+    SpaceContains := FrustumContainsAABB(frustum, AABB)
+  else
+    SpaceContains := scNoOverlap;
+
+  // If the frustum fully contains the leaf, then we need not check every piece,
+  // just add them all
+  if SpaceContains=scContainsFully then begin
+    AddAllLeavesRecursive(QueryResult);
+  end else
+
+  // If the frustum partiall contains the leaf, then we should add the leaves
+  // that intersect the frustum and recurse for all children
+  if SpaceContains=scContainsPartially then begin
+    for i := 0 to FLeaves.Count-1 do begin
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+
+      if not IsVolumeClipped(FLeaves[i].FCachedBSphere.Center,FLeaves[i].FCachedBSphere.Radius,Frustum) then
+        QueryResult.Add(FLeaves[i]);
+    end;
+
+    // Recursively let the children add their leaves
+    for i := 0 to FChildCount-1 do
+      FChildren.Child[i].QueryFrustum(Frustum,QueryResult);
+  end;
+end;
+
+procedure TSectorNode.ChildrenChanged;
+begin
+  // Do nothing in the basic case
+end;
+
+procedure TSectorNode.QueryFrustumEx(
+  const ExtendedFrustum: TExtendedFrustum;
+  const QueryResult: TSpacePartitionLeafList);
+var
+  SpaceContains : TSpaceContains;
+  i : integer;
+begin
+  inc(FSectoredSpacePartition.FQueryNodeTests);
+
+   // Test if the bounding sphere of the node intersect the bounding sphere of the
+  // frustum? This test is exremely fast
+  if not BSphereIntersectsBSphere(BSphere, ExtendedFrustum.BSphere) then
+    SpaceContains := scNoOverlap
+
+  // Test if the bsphere of the node intersects the frustum
+  else if IsVolumeClipped(BSphere.Center, BSphere.Radius, ExtendedFrustum.Frustum) then
+    SpaceContains := scNoOverlap
+
+  else//}
+  // Test if the bounding frustum intersects the AABB of the node
+    SpaceContains := FrustumContainsAABB(ExtendedFrustum.Frustum, AABB);//}
+
+  // If the frustum fully contains the leaf, then we need not check every piece,
+  // just add them all
+  if SpaceContains=scContainsFully then begin
+    AddAllLeavesRecursive(QueryResult);
+  end else
+
+  // If the frustum partially contains the leaf, then we should add the leaves
+  // that intersect the frustum and recurse for all children
+  if SpaceContains=scContainsPartially then begin
+    for i := 0 to FLeaves.Count-1 do begin
+      // Early out 1
+      if not BSphereIntersectsBSphere(FLeaves[i].FCachedBSphere, ExtendedFrustum.BSphere) then continue;
+
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+
+      if not IsVolumeClipped(FLeaves[i].FCachedBSphere.Center, FLeaves[i].FCachedBSphere.Radius, ExtendedFrustum.Frustum) then
+        QueryResult.Add(FLeaves[i]);
+    end;
+
+    // Recursively let the children add their leaves
+    for i := 0 to FChildCount-1 do
+      FChildren.Child[i].QueryFrustumEx(ExtendedFrustum, QueryResult);
+  end;
+end;
+
 { TSectoredSpacePartition }
 
 procedure TSectoredSpacePartition.AddLeaf(aLeaf: TSpacePartitionLeaf);
@@ -1301,10 +1553,12 @@ begin
     begin
       Node.FLeaves.Remove(aLeaf);
       Node.PlaceLeafInChild(aLeaf);
+      Node.ChildrenChanged;
     end;
   end else
   begin
     Node.RemoveLeaf(aLeaf, true);
+    Node.ChildrenChanged;
 
     // Does this leaf still fit in the Octree?
     if not FRootNode.AABBFitsInNode(aLeaf.FCachedAABB) then
@@ -1422,6 +1676,7 @@ begin
   for i := 0 to OldLeaves.Count-1 do
     AddLeaf(OldLeaves[i]);
 
+  OldLeaves.Free;  
   FGrowMethod := tempGrowMethod;
 end;
 
@@ -1455,6 +1710,22 @@ begin
   inherited;
 
   FQueryNodeTests := 0;
+end;
+
+function TSectoredSpacePartition.QueryFrustum(
+  const Frustum: TFrustum): integer;
+begin
+  FlushQueryResult;
+  FRootNode.QueryFrustum(Frustum, FQueryResult);
+  result := FQueryResult.Count;
+end;
+
+function TSectoredSpacePartition.QueryFrustumEx(
+  const ExtendedFrustum: TExtendedFrustum): integer;
+begin
+  FlushQueryResult;
+  FRootNode.QueryFrustumEx(ExtendedFrustum, FQueryResult);
+  result := FQueryResult.Count;
 end;
 
 { TSPOctreeNode }
@@ -1512,8 +1783,8 @@ begin
     FChildren.Child[i] := FSectoredSpacePartition.CreateNewNode(self);
 
     //Generate new extents based on parent's extents
-    AABB.min :=GetExtent(cFlagMin[i]);
-    AABB.max :=GetExtent(cFlagMax[i]);
+    AABB.min :=GetExtent(cOctFlagMIN[i]);
+    AABB.max :=GetExtent(cOctFlagMax[i]);
     FChildren.Child[i].AABB := AABB;
   end;
 
@@ -1529,6 +1800,178 @@ begin
 end;
 
 procedure TOctreeSpacePartition.SetSize(const Min, Max : TAffineVector);
+var
+  AABB : TAABB;
+begin
+  AABB.Min := Min;
+  AABB.Max := Max;
+
+  RebuildTree(AABB);
+end;
+
+{ TSPQuadNode }
+
+function TSPQuadNode.AABBFitsInNode(const aAABB: TAABB): boolean;
+begin
+  result :=
+    (aAABB.min.Coord[0]>=FAABB.min.Coord[0]) and
+    (aAABB.min.Coord[2]>=FAABB.min.Coord[2]) and
+
+    (aAABB.max.Coord[0]<=FAABB.max.Coord[0]) and
+    (aAABB.max.Coord[2]<=FAABB.max.Coord[2]);
+end;
+
+function TSPQuadNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
+begin
+  Assert(false,Format('AABBIntersectsNode not implemented on %s',[ClassName]));
+  result := false;
+end;
+
+function TSPQuadNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
+begin
+  Assert(false,Format('BSphereFitsInNode not implemented on %s',[ClassName]));
+  result := false;
+end;
+
+function TSPQuadNode.BSphereIntersectsNode(
+  const BSphere: TBSphere): boolean;
+begin
+  Assert(false,Format('BSphereIntersectsNode not implemented on %s',[ClassName]));
+  result := false;
+end;
+
+procedure TSPQuadNode.ChildrenChanged;
+var
+  i : integer;
+  newMin, newMax : single;
+begin
+  inherited;
+
+  // Establish a baseline
+
+  if Leaves.Count>0 then
+  begin
+    newMin := Leaves[0].FCachedAABB.Min.Coord[1];
+    newMax := Leaves[0].FCachedAABB.Max.Coord[1];
+  end else
+
+  if FChildCount>0 then
+  begin
+    newMin := FChildren.Child[0].AABB.Min.Coord[1];
+    newMax := FChildren.Child[0].AABB.Max.Coord[1];
+  end else
+  begin
+    // This should never happen!
+    newMin := 1e9;
+    newMax := -1e9;
+  end;
+
+  for i := 0 to Leaves.Count-1 do
+  begin
+    newMin := min(newMin, Leaves[i].FCachedAABB.Min.Coord[1]);
+    newMax := max(newMax, Leaves[i].FCachedAABB.Max.Coord[1]);
+  end;
+
+  for i := 0 to FChildCount-1 do
+  begin
+    newMin := min(newMin, FChildren.Child[i].AABB.Min.Coord[1]);
+    newMax := max(newMax, FChildren.Child[i].AABB.Max.Coord[1]);
+  end;
+
+  if (AABB.max.Coord[1] <> newMax) and (AABB.min.Coord[1] <> newMin) then
+  begin
+    FAABB.max.Coord[1] := newMax;
+    FAABB.min.Coord[1] := newMin;
+
+    // Make sure the parent updates it's bounds as well
+    if Assigned(Parent) then
+      Parent.ChildrenChanged;
+  end;
+end;
+
+procedure TSPQuadNode.CreateChildren;
+var
+  ChildNodeIndex : integer;
+  AABB : TAABB;
+  X, Z : integer;
+begin
+  for ChildNodeIndex := 0 to 3 do
+  begin
+    FChildren.Child[ChildNodeIndex] := FSectoredSpacePartition.CreateNewNode(self);
+
+    // Y is ignored so it's set to a very large number
+    AABB.min.Coord[1] := FAABB.min.Coord[1];
+    AABB.max.Coord[1] := FAABB.max.Coord[1];
+
+    //Generate new extents based on parent's extents
+    if ((ChildNodeIndex and 1)>0) then X := 1 else X := 0;
+    if ((ChildNodeIndex and 2)>0) then Z := 1 else Z := 0;
+
+    if X = 0 then
+    begin
+      AABB.min.Coord[0] := FAABB.min.Coord[0] + (FAABB.max.Coord[0]+FAABB.min.Coord[0])/2 * X;
+      AABB.max.Coord[0] := (FAABB.max.Coord[0]+FAABB.min.Coord[0])/2 * (1+X);
+    end else
+    begin
+      AABB.min.Coord[0] := (FAABB.max.Coord[0]+FAABB.min.Coord[0])/2;
+      AABB.max.Coord[0] := FAABB.max.Coord[0];
+    end;
+
+    if Z = 0 then
+    begin
+      AABB.min.Coord[2] := FAABB.min.Coord[2];
+      AABB.max.Coord[2] := (FAABB.max.Coord[2]+FAABB.min.Coord[2])/2;
+    end else
+    begin
+      AABB.min.Coord[2] := (FAABB.max.Coord[2]+FAABB.min.Coord[2])/2;
+      AABB.max.Coord[2] := FAABB.max.Coord[2];
+    end;
+
+    FChildren.Child[ChildNodeIndex].AABB := AABB;
+  end;
+
+  FChildCount := 4;
+end;
+
+function TSPQuadNode.GetChildForAABB(AABB: TAABB): TSectorNode;
+var
+  Location : TAffineVector;
+  ChildNode : TSectorNode;
+  ChildNodeIndex : integer;
+begin
+  // Instead of looping through all children, we simply determine on which
+  // side of the center node the child is located
+  ChildNodeIndex := 0;
+
+  Location := AABB.min;
+
+  // Fore / Back
+  if Location.Coord[0]>FBSphere.Center.Coord[0] then ChildNodeIndex := ChildNodeIndex or 1;
+
+  // Left / Right
+  if Location.Coord[2]>FBSphere.Center.Coord[2] then ChildNodeIndex := ChildNodeIndex or 2;
+
+  Assert(ChildNodeIndex<ChildCount,'Bad ChildNodeIndex!');
+  ChildNode := FChildren.Child[ChildNodeIndex];
+
+  if ChildNode.AABBFitsInNode(AABB) then
+  begin
+    result := ChildNode;
+    exit;
+  end;
+
+  result := nil;
+end;
+
+{ TQuadSpacePartition }
+
+function TQuadSpacePartition.CreateNewNode(
+  aParent: TSectorNode): TSectorNode;
+begin
+  result := TSPQuadNode.Create(self, aParent);
+end;
+
+procedure TQuadSpacePartition.SetSize(const Min, Max: TAffineVector);
 var
   AABB : TAABB;
 begin

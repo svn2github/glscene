@@ -171,6 +171,7 @@ begin
   FreeAndNil(FClients);
   FreeAndNil(FInnerColor);
   FreeAndNil(FOuterColor);
+  FreeAndNil(FCoreColor);  
   FreeAndNil(FTarget);
 	inherited Destroy;
 end;
@@ -395,6 +396,7 @@ end;
 destructor TGLBThorFX.Destroy;
 begin
   Manager:=nil;
+  FreeAndNil(FTarget);
   inherited Destroy;
 end;
 

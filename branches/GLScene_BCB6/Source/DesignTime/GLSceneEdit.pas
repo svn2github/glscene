@@ -857,7 +857,7 @@ end;
 procedure TGLSceneEditorForm.TreeEnter(Sender: TObject);
 begin
    if Assigned(FCurrentDesigner) and Assigned(Tree.Selected) then
-      FCurrentDesigner.SelectComponent(Tree.Selected.Data);
+      FCurrentDesigner.SelectComponent(TGLBaseSceneObject(Tree.Selected.Data));
    FSelectedItems:=SCENE_SELECTED;
    EnableAndDisableActions();
 end;
@@ -890,13 +890,13 @@ begin
   if FSelectedItems=BEHAVIOURS_SELECTED then
   begin
     DeleteBaseBehaviour(BehavioursListView);
-    FCurrentDesigner.SelectComponent(Tree.Selected.data);
+    FCurrentDesigner.SelectComponent(TGLBaseSceneObject(Tree.Selected.data));
     ShowBehaviours(TGLBaseSceneObject(Tree.Selected.data));
   end
   else if FSelectedItems=EFFECTS_SELECTED then
   begin
     DeleteBaseBehaviour(EffectsListView);
-    FCurrentDesigner.SelectComponent(Tree.Selected.data);
+    FCurrentDesigner.SelectComponent(TGLBaseSceneObject(Tree.Selected.data));
     ShowEffects(TGLBaseSceneObject(Tree.Selected.data));
   end
   else if FSelectedItems=SCENE_SELECTED then
@@ -1289,7 +1289,7 @@ end;
 procedure TGLSceneEditorForm.BehavioursListViewEnter(Sender: TObject);
 begin
    if Assigned(FCurrentDesigner) and Assigned(BehavioursListView.Selected) then
-      FCurrentDesigner.SelectComponent(BehavioursListView.Selected.Data);
+      FCurrentDesigner.SelectComponent(TGLBaseBehaviour(BehavioursListView.Selected.Data));
    FSelectedItems:=BEHAVIOURS_SELECTED;
    EnableAndDisableActions();
 end;
@@ -1297,7 +1297,7 @@ end;
 procedure TGLSceneEditorForm.EffectsListViewEnter(Sender: TObject);
 begin
    if Assigned(FCurrentDesigner) and Assigned(EffectsListView.Selected) then
-      FCurrentDesigner.SelectComponent(EffectsListView.Selected.Data);
+      FCurrentDesigner.SelectComponent(TGLBaseBehaviour(EffectsListView.Selected.Data));
    FSelectedItems:=EFFECTS_SELECTED;
    EnableAndDisableActions();   
 end;
@@ -1370,7 +1370,7 @@ begin
       if Assigned(selNode) then
       begin
          if Assigned(selNode.Data) then
-            FCurrentDesigner.SelectComponent(selNode.Data)
+            FCurrentDesigner.SelectComponent(TGLBaseSceneObject(selNode.Data))
          else FCurrentDesigner.SelectComponent(FScene);
          // enablings
          ACAddCamera.Enabled:=(selNode=FCameraNode);
@@ -1404,7 +1404,7 @@ begin
   begin
     if (BehavioursListView.Selected<>nil) then
     begin
-         FCurrentDesigner.SelectComponent(BehavioursListView.Selected.Data);
+         FCurrentDesigner.SelectComponent(TGLBaseBehaviour(BehavioursListView.Selected.Data));
          ACDeleteObject.Enabled:=True;
          ACMoveUp.Enabled:=(BehavioursListView.Selected.Index>0);
          ACMoveDown.Enabled:=(BehavioursListView.Selected.Index<BehavioursListView.Selected.Owner.Count-1);
@@ -1426,7 +1426,7 @@ begin
   begin
     if (EffectsListView.Selected<>nil)then
     begin
-         FCurrentDesigner.SelectComponent(EffectsListView.Selected.Data);
+         FCurrentDesigner.SelectComponent(TGLBaseBehaviour(EffectsListView.Selected.Data));
          ACDeleteObject.Enabled:=True;
          ACMoveUp.Enabled:=(EffectsListView.Selected.Index>0);
          ACMoveDown.Enabled:=(EffectsListView.Selected.Index<EffectsListView.Selected.Owner.Count-1);

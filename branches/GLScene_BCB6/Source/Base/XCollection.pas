@@ -6,6 +6,7 @@
 	A polymorphism-enabled TCollection-like set of classes<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/12/04 - SG - Added TXCollectionItem.CanAddTo class function
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                                Add dummy method for the abstract problem
       <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
@@ -100,6 +101,9 @@ type
 				Attempting to break the unicity rules will not be possible at
 				design-time (in Delphi IDE) and will trigger an exception at run-time. }
 			class function UniqueItem : Boolean; virtual;
+			{: Allows the XCollectionItem class to determine if it should be allowed
+         to be added to the given collection. }
+      class function CanAddTo(collection : TXCollection) : Boolean; virtual;
 
 		published
 			{ Published Declarations }
@@ -426,6 +430,14 @@ begin
 	Result:=False;
 end;
 
+// CanAddTo
+//
+class function TXCollectionItem.CanAddTo(collection : TXCollection) : Boolean;
+begin
+  Result:=True;
+end;
+
+
 // ------------------
 // ------------------ TXCollection ------------------
 // ------------------
@@ -706,6 +718,13 @@ var
 	XCollectionItemClass : TXCollectionItemClass;
 begin
 	Result:=True;
+
+  // Test if the class allows itself to be added to this collection
+  if not aClass.CanAddTo(Self) then begin
+    Result:=False;
+    Exit;
+  end;  
+  
 	// is the given class compatible with owned ones ?
 	if aClass.UniqueItem then for i:=0 to Count-1 do begin
 		if Items[i] is aClass then begin

@@ -239,6 +239,7 @@ begin
       Image1.Canvas.StretchDraw(Rect(0,0,Round(((Tex.Image as TGLPersistentImage).Width)*Zoom),Round(((Tex.Image as TGLPersistentImage).Height)*Zoom)),Bitmap);{}
     finally
       Bitmap.Free;
+      Image.Free;
     end;
 
 //    Image1.Canvas.StretchDraw(Rect(Round((1-ScrollBar2.position)*Zoom),Round((1-ScrollBar1.position)*Zoom),Round((1-ScrollBar2.position+(Tex.Image as TGLPersistentImage).Width)*Zoom),Round((1-ScrollBar1.position+(Tex.Image as TGLPersistentImage).Height)*Zoom)),Bitmap);{}

@@ -175,6 +175,7 @@ begin
           exit;
      end;
 
+     FTriList.Free;
      //get all the triangles of all the meshObjects
      FTriList:= TGLBaseMesh(OwnerBaseSceneObject).MeshObjects.ExtractTriangles;
      FaceCount:= FTriList.Count div 3;

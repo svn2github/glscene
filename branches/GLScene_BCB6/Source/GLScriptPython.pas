@@ -221,6 +221,7 @@ begin
   if Assigned(Engine) then begin
     Engine.ExecStrings(Text);
     FCompiled:=True;
+    FStarted:=False;
   end else
     raise Exception.Create('No engine assigned!');
 end;
@@ -236,6 +237,7 @@ end;
 //
 procedure TGLScriptPython.Invalidate;
 begin
+  FStarted:=False;
   FCompiled:=False;
 end;
 
@@ -244,7 +246,7 @@ end;
 procedure TGLScriptPython.Start;
 begin
   Compile;
-  FStarted:=True;;
+  FStarted:=True;
 end;
 
 // Stop
@@ -263,6 +265,8 @@ var
   args : array of TVarRec;
   i : Integer;
 begin
+  if State = ssUncompiled then
+    Start;
   if State = ssRunning then begin
     func:=Engine.FindFunction('__main__', aName);
     if Assigned(func) then

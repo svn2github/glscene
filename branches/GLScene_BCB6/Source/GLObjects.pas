@@ -9,6 +9,8 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/12/04 - LR - BCB corrections: use record instead array        
+      <li>03/12/04 - MF - Added TGLSprite.AxisAlignedDimensionsUnscaled override
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
                                Replace direct access of some properties by
                                a getter and a setter
@@ -301,6 +303,8 @@ type
 
 			procedure Assign(Source: TPersistent); override;
 			procedure BuildList(var rci : TRenderContextInfo); override;
+
+      function AxisAlignedDimensionsUnscaled : TVector; override;
 
 			procedure SetSize(const width, height : TGLFloat);
 			//: Set width and height to "size"
@@ -1505,6 +1509,15 @@ begin
       FNoZWrite:=TGLSprite(Source).FNoZWrite;
 	end;
 	inherited Assign(Source);
+end;
+
+function TGLSprite.AxisAlignedDimensionsUnscaled: TVector;
+begin
+   Result.Coord[0]:=0.5*Abs(FWidth);
+   Result.Coord[1]:=0.5*Abs(FHeight);
+   // Sprites turn with the camera and can be considered to have the same depth
+   // as width
+   Result.Coord[2]:=0.5*Abs(FWidth);
 end;
 
 // BuildList

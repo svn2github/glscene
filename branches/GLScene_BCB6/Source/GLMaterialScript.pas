@@ -364,7 +364,7 @@ end;
 procedure TGLMaterialScripter.SetScript(const Value: TStrings);
 begin
   if assigned(value) then
-  FScript := Value;
+  FScript.Assign(Value);
 end;
 
 procedure TGLMaterialScripter.CheckError;
@@ -449,6 +449,7 @@ destructor TGLMaterialScripter.Destroy;
 begin
   FShaderItems.Free;
   FMaterialLibraryItems.Free;
+  FScript.Free;
   inherited Destroy;
 end;
 

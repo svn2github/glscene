@@ -8,9 +8,11 @@
     http://www.peroxide.dk
 
   Known bugs:
-  - Need to check if the point is embedded in the ellipsoid (procedure CheckPoint)
+  - High speed objects may cross ellipsoids
 
   <b>History : </b><font size=-1><ul>
+    <li>13/11/04 - LucasG. - Improved Ellipsoid vs Point collision, not 100% yet
+    <li>13/11/04 - LucasG. - Fixed precision bug in CheckTriangle (if abs(normalDotVelocity) < 0.00001 then)
     <li>11/10/04 - LR - Restore the GLScene.inc with the good case
     <li>08/10/04 - LR, YHC - BCB corrections: use record instead array     
     <li>03/09/04 - LucasG. - Creation and addons to support events and terrains
@@ -42,6 +44,7 @@ type
     ObjectIndex: Integer;
     Friction: Single;
     Solid: Boolean;
+    //Collided: boolean; //*** Just for debug
   end;
 
   TECTriangleList = Array of TECTriangle;
@@ -298,11 +301,13 @@ begin
   embeddedInPlane := false;
   // Calculate the signed distance from sphere
   // position to triangle plane
+  //V := VectorAdd(colPackage.basePoint,colPackage.velocity);
+  //signedDistToTrianglePlane := trianglePlane.signedDistanceTo(v);
   signedDistToTrianglePlane := trianglePlane.signedDistanceTo(colPackage.basePoint);
   // cache this as we’re going to use it a few times below:
   normalDotVelocity := VectorDotProduct(trianglePlane.normal,colPackage.velocity);
   // if sphere is travelling parrallel to the plane:
-  if (normalDotVelocity = 0) then
+  if normalDotVelocity = 0 then
   begin
     if (abs(signedDistToTrianglePlane) >= 1) then
     begin
@@ -323,6 +328,7 @@ begin
     // N dot D is not 0. Calculate intersection interval:
     t0 := (-1 - signedDistToTrianglePlane)/normalDotVelocity;
     t1 := ( 1 - signedDistToTrianglePlane)/normalDotVelocity;
+
     // Swap so t0 < t1
     if (t0 > t1) then
     begin
@@ -330,8 +336,8 @@ begin
       t1 := t0;
       t0 := temp;
     end;
-    // Check that at least one result is within range:
 
+    // Check that at least one result is within range:
     if (t0 > 1) or (t1 < 0) then
     begin
       trianglePlane.Free;
@@ -416,7 +422,7 @@ begin
       collisionPoint := p3;
     end;
 
-    // Check agains edges:
+    // Check against edges:
     // p1 -> p2:
     edge := VectorSubtract(p2,p1);
     baseToVertex := VectorSubtract(p1, base);
@@ -526,7 +532,6 @@ begin
       colPackage.intersectionNormal := trianglePlane.Normal;
       colPackage.foundCollision := true;
       colPackage.objectIndex := Intersection.ObjectIndex;
-      //Intersection.Nearest := True;
     end;
   end;
   trianglePlane.Free;
@@ -539,14 +544,19 @@ var newPos: TAffineVector;
     Distance: Single;
     FoundCollision: Boolean;
 begin
+  //newPos := colPackage.basePoint;
   newPos := VectorAdd(colPackage.basePoint, colPackage.Velocity);
 
   //*** Need to check if the ellipsoid is embedded ***
-  Distance := VectorDistance(pPos,newPos) - 1;
-  if Distance < 0 then
-    Distance := 0;
+  Distance := VectorDistance(pPos,newPos) - 1; //1 is the sphere radius
 
-  FoundCollision := Distance <= 0.0001; //Very small distance
+  //If the collision point is close to the line
+  if (VectorLength(colPackage.Velocity) >= VectorDistance(colPackage.basePoint,pPos)) then
+     Distance := 0;
+
+  if Distance < 0 then Distance := 0;
+
+  FoundCollision := (Distance <= 0.0001); //Very small distance
 
   Result := FoundCollision;
 
@@ -556,8 +566,7 @@ begin
     //Get the intersection values
     Intersection.Point := pPos;
     Intersection.Normal := pNormal;
-    Intersection.Bounce := VectorNormalize(VectorReflect(colPackage.velocity, pNormal));
-    //Intersection.Nearest := False;
+    Intersection.Bounce := VectorReflect(colPackage.normalizedVelocity, pNormal);
 
     // Does this point qualify for the closest hit?
     // it does if it’s the first hit or the closest
@@ -572,7 +581,6 @@ begin
       colPackage.intersectionNormal := pNormal;
       colPackage.foundCollision := true;
       colPackage.objectIndex := Intersection.ObjectIndex;
-      //Intersection.Nearest := True;
     end;
   end;
 
@@ -583,6 +591,7 @@ function CheckEllipsoid(ePos, eRadius: TAffineVector;
                         var colPackage: TECCollisionPacket;
                         var Intersection: TECIntersection): Boolean;
 var newPos, nA, rA, nB, rB, iPoint, iNormal: TAffineVector;
+    dist: single;
 begin
   newPos := VectorAdd(colPackage.basePoint, colPackage.Velocity);
 
@@ -598,8 +607,38 @@ begin
   iPoint := rB;
   iNormal := VectorNormalize(VectorDivide(VectorSubtract(newPos,ePos),eRadius));
 
-  Result := CheckPoint(iPoint,iNormal,colPackage,Intersection);
+  //if is embedded
+  dist := VectorDistance(newPos, ePos) - 1;
+  if (dist < VectorDistance(ePos, iPoint)) then
+  begin
+    nA := VectorNormalize(VectorDivide(VectorSubtract(ePos,newPos),eRadius));
+    rA := VectorAdd(newPos,nA);
+    iPoint := rA;
 
+    //Get the intersection values
+    Intersection.Point := iPoint;
+    Intersection.Normal := iNormal;
+    Intersection.Bounce := VectorReflect(colPackage.normalizedVelocity, iNormal);
+
+    // Does this point qualify for the closest hit?
+    // it does if it’s the first hit or the closest
+    // and check if it is solid
+    if Intersection.Solid and colPackage.Solid
+    and (colPackage.foundCollision = false) then
+    begin
+      // Collision information nessesary for sliding
+      colPackage.nearestDistance := 0;
+      colPackage.intersectionPoint := iPoint;
+      colPackage.intersectionNormal := iNormal;
+      colPackage.foundCollision := true;
+      colPackage.objectIndex := Intersection.ObjectIndex;
+    end;
+
+    Result := True;
+    Exit;
+  end;
+
+  Result := CheckPoint(iPoint,iNormal,colPackage,Intersection);
 end;
 
 
@@ -625,9 +664,10 @@ begin
     isection.ObjectIndex := MovePack.Triangles[i].ObjectIndex;
     isection.Friction := MovePack.Triangles[i].Friction;
     isection.Solid := MovePack.Triangles[i].Solid;
+
     if CheckTriangle(collisionPackage,p1,p2,p3,isection) then
     begin
-
+      //MovePack.Triangles[i].Collided := True; //Debug
       //Add or update the ObjectIndex with less distance
       iindex := -1;
       for j := 0 to High(ilist) do
@@ -678,8 +718,7 @@ begin
 
     Collided := False;
     case Colliders[i].Shape of
-      csEllipsoid, csBox:
-         Collided := CheckEllipsoid(p1,p2,MovePack,collisionPackage,isection);
+      csEllipsoid: Collided := CheckEllipsoid(p1,p2,MovePack,collisionPackage,isection);
       csPoint: Collided := CheckPoint(p1,p2,collisionPackage,isection);
     end;
 
@@ -700,7 +739,7 @@ procedure CheckTerrainCollision(var MovePack: TECMovementPacket;
                                 var collisionPackage: TECCollisionPacket);
 var
    i,count,j : Integer;
-   x,y: Extended;
+   x,y, deg_rad: Extended;
    v, closest: TAffineVector;
    p: array [0..7] of TAffineVector;
    ang,rang: Real;
@@ -719,6 +758,7 @@ begin
   unitScale := unitsPerMeter / 100;
   veryCloseDistance := 0.1 * unitScale;
 
+  deg_rad := (3.1415926535897932385 / 180);
   for i := 0 to High(MovePack.Terrains) do
   with MovePack.Terrains[i] do begin
     //Origin
@@ -731,7 +771,7 @@ begin
     ang := 0;
     for j := 0 to 7 do
     begin
-      rang := ang * (3.1415926535897932385 / 180);  //Degree to Rad
+      rang := ang * deg_rad;  //Degree to Rad
       SinCos(rang,x,y);
       v.Coord[0] := x;
       v.Coord[1] := 0;
@@ -790,12 +830,16 @@ begin
 
   // Add gravity pull:
   // Set the new R3 position (convert back from eSpace to R3
-  eSpaceVelocity := VectorDivide(MovePack.Gravity,Radius);
-  eSpacePosition := MovePack.ResultPos;
-  MovePack.collisionRecursionDepth := 0;
-  MovePack.FoundCollision := False;
-  collideWithWorld(MovePack, eSpacePosition,eSpaceVelocity);
-  MovePack.InGround := MovePack.FoundCollision;
+  if (VectorLength(MovePack.Gravity) <> 0) then
+  begin
+    eSpaceVelocity := VectorDivide(MovePack.Gravity,Radius);
+    eSpacePosition := MovePack.ResultPos;
+    MovePack.collisionRecursionDepth := 0;
+    MovePack.FoundCollision := False;
+    collideWithWorld(MovePack, eSpacePosition,eSpaceVelocity);
+    MovePack.InGround := MovePack.FoundCollision;
+  end;
+
   // Convert final result back to R3:
   ScaleVector(Movepack.ResultPos, Radius);
 
@@ -804,7 +848,7 @@ end;
 procedure CollideWithWorld(var MovePack: TECMovementPacket; pos, vel: TAffineVector);
 var
   collisionPackage: TECCollisionPacket;
-  unitScale, veryCloseDistance: Single;
+  {unitScale, }veryCloseDistance, signedDistance: Single;
   destinationPoint, newBasePoint, V : TAffineVector;
 
   slidePlaneOrigin,slidePlaneNormal : TAffineVector;
@@ -814,8 +858,9 @@ var
 begin
   // All hard-coded distances in this function is
   // scaled to fit the setting above..
-  unitScale := unitsPerMeter / 100;
-  veryCloseDistance := 0.005 * unitScale;
+  //unitScale := unitsPerMeter / 100;
+  //veryCloseDistance := 0.01 * unitScale;
+  veryCloseDistance := 0.025;
 
   MovePack.ResultPos := pos;
   // do we need to worry?
@@ -848,15 +893,12 @@ begin
 
   with Movepack do
   begin
-    //if collisionPackage.nearestDistance < Distance then
-    //begin
-      ColPoint := collisionPackage.intersectionPoint;
-      ColNormal := collisionPackage.intersectionNormal;
-      ColBounce := VectorNormalize(VectorReflect(collisionPackage.velocity, ColNormal));
-      ColObjectIndex := collisionPackage.objectIndex;
-      Distance := collisionPackage.nearestDistance;
-      FoundCollision := True;
-    //end;
+    ColPoint := collisionPackage.intersectionPoint;
+    ColNormal := collisionPackage.intersectionNormal;
+    ColBounce := VectorNormalize(VectorReflect(collisionPackage.velocity, ColNormal));
+    ColObjectIndex := collisionPackage.objectIndex;
+    Distance := collisionPackage.nearestDistance;
+    FoundCollision := True;
   end;
 
   // If not solid show the collision but move on
@@ -891,11 +933,21 @@ begin
   NormalizeVector(slidePlaneNormal);
   slidingPlane := TECPlane.Create;
   slidingPlane.MakePlane(slidePlaneOrigin,slidePlaneNormal);
-  V := VectorScale(slidePlaneNormal, slidingPlane.signedDistanceTo(destinationPoint));
+
+  signedDistance := slidingPlane.signedDistanceTo(destinationPoint);
+  V := VectorScale(slidePlaneNormal, signedDistance);
   newDestinationPoint := VectorSubtract( destinationPoint , V );
   // Generate the slide vector, which will become our new
   // velocity vector for the next iteration
   newVelocityVector := VectorSubtract( newDestinationPoint , collisionPackage.intersectionPoint);
+
+  if (collisionPackage.nearestDistance = 0) then
+  begin
+    V := VectorNormalize(VectorSubtract(newBasePoint,collisionPackage.intersectionPoint));
+    V := VectorScale(V, veryCloseDistance * 0.5);
+    AddVector(newVelocityVector, v);
+  end;
+
   // Recurse:
   // dont recurse if the new velocity is very small
   if (VectorLength(newVelocityVector) < veryCloseDistance) then
@@ -904,6 +956,7 @@ begin
     slidingPlane.Free;
     Exit;
   end;
+
   slidingPlane.Free;
   Inc(MovePack.collisionRecursionDepth);
   collideWithWorld(MovePack, newBasePoint,newVelocityVector);

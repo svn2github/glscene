@@ -199,7 +199,7 @@ begin
 		ACMoveDown.Enabled:=sel and (ListView.Selected.Index<ListView.Items.Count-1);
       if Assigned(FDesigner) then
          if sel then
-            FDesigner.SelectComponent(ListView.Selected.Data)
+            FDesigner.SelectComponent(TXCollectionItem(ListView.Selected.Data))
 {$ifndef GLS_DELPHI_4}
          else FDesigner.NoSelection;
 {$else}

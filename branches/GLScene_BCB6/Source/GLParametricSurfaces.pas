@@ -204,6 +204,7 @@ begin
   FKnotsU.Free;
   FKnotsV.Free;
   FWeights.Free;
+  inherited;
 end;
 
 // WriteToFiler

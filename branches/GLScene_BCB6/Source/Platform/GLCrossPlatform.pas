@@ -99,11 +99,17 @@ const
    // standard colors
 {$ifdef WIN32}
    clBtnFace = Graphics.clBtnFace;
+   (*$NODEFINE clBtnFace*)
    clRed = Graphics.clRed;
+   (*$NODEFINE clRed*)
    clGreen = Graphics.clGreen;
+   (*$NODEFINE clGreen*)
    clBlue = Graphics.clBlue;
+   (*$NODEFINE clBlue*)
    clSilver = Graphics.clSilver;
+   (*$NODEFINE clSilver*)
    clBlack = Graphics.clBlack;
+   (*$NODEFINE clBlack*)
 {$endif}
 {$ifdef LINUX}
    clBtnFace = QGraphics.clBtnFace;

@@ -3,6 +3,7 @@
    Object with support for complex polygons.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/11/04 - SG - Fixed TGLMultiPolygonBase.Destroy memory leak (Neil)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array 
       <li>05/09/03 - EG - TNotifyCollection moved to GLMisc
       <li>14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
@@ -401,7 +402,7 @@ end;
 //
 destructor TMultiPolygonBase.Destroy;
 begin
-   FOutline.Free;
+   FOutline.CleanFree;
    FContours.Free;
    inherited;
 end;

@@ -6,7 +6,7 @@
   - Choose the shape of your object (csEllipsoid, csBox, csFreeform, csTerrain)
     - csEllipsoid can be any glscene object, and is the only that can be dynamic
       By dynamic I mean that it can move in the world.
-    - csBox isn't implemented yet and works like an Ellipsoid
+    - csBox can be any object, can't be dynamic.
     - csFreeform MUST BE A TGLFreeform, otherwise will raise errors
     - csTerrain MUST BE A TGLTerrainRenderer, same condition above
   - Friction is a value aprox. between 0 (no friction) and 500 (no movement)
@@ -16,7 +16,12 @@
   - Solid = An object can still get the collision event but it "walks-thru"
 
   <b>History : </b><font size=-1><ul>
-    <li>08/10/04 - LR, YHC - BCB corrections: use record instead array    
+    <li>17/11/04 - LucasG. - Added support for static box colliders
+    <li>17/11/04 - LucasG. - Added UseGravity property to behaviour
+    <li>14/11/04 - LucasG. - Fixed average friction calculation
+    <li>14/11/04 - LucasG. - Added AirFriction property to DCEManager
+    <li>13/11/04 - LucasG. - Added Active property to behaviour
+    <li>08/10/04 - LR, YHC - BCB corrections: use record instead array 
     <li>03/09/04 - LucasG. - First release
     <li>29/07/04 - LucasG. - Creation
   </ul></font>
@@ -53,6 +58,7 @@ type
     FClients : TList;
     FOnCollision : TDCECollisionEvent;
     FGravity: TGLCoordinates;
+    FAirFriction: Single;
     FMovimentScale: Single;
     procedure SetGravity(const Value: TGLCoordinates);
   protected
@@ -71,6 +77,7 @@ type
     property OnCollision : TDCECollisionEvent read FOnCollision write FOnCollision;
     property Gravity : TGLCoordinates read FGravity write SetGravity;
     property MovimentScale : Single read FMovimentScale write FMovimentScale;
+    property AirFriction : Single read FAirFriction write FAirFriction;
 	end;
 
   TGLBDCEBody = class (TGLBehaviour)
@@ -78,11 +85,13 @@ type
 		{ Private Declarations }
     FManager : TGLDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
+    FActive: Boolean;
+    FUseGravity: Boolean;
     FShape: TDCEShape;
     FLayer: Integer; //Collides only with lower or equal layers
     FDynamic: Boolean; //Only ellipsoid shape can be dynamic
     FSolid: Boolean; //Collide and slide if true, otherwise it "walk thru walls"
-    FFriction: Single; //aprox. 0 to 10
+    FFriction: Single; //aprox. 0 to 100
     FSize: TGLCoordinates;
     FTerrainRenderer: TGLTerrainRenderer;
     //Movement
@@ -115,6 +124,7 @@ type
     class function FriendlyDescription : String; override;
     procedure AddForce(NewForce: TAffineVector);
     procedure Jump(jHeight, jSpeed: Single);
+    procedure Move(Distance: TAffineVector; deltaTime: Double);
     procedure DoMove(deltaTime: Double);
     procedure DoProgress(const progressTime : TProgressTimes); override;
     //Runtime only
@@ -122,7 +132,9 @@ type
     property InGround : Boolean read FInGround;
   published
     { Published Declarations }
+    property Active : Boolean read FActive write FActive;
     property Manager : TGLDCEManager read FManager write SetManager;
+    property UseGravity : Boolean read FUseGravity write FUseGravity;
     property Shape : TDCEShape read FShape write SetShape;
     property Layer : Integer read FLayer write FLayer;
     property IsDynamic : Boolean read FDynamic write SetDynamic;
@@ -136,6 +148,8 @@ function GetOrCreateDCECollision(behaviours : TGLBehaviours) : TGLBDCEBody; over
 function GetOrCreateDCECollision(obj : TGLBaseSceneObject) : TGLBDCEBody; overload;
 
 procedure Register;
+
+var d_TriList: TECTriangleList;
 
 implementation
 
@@ -152,6 +166,7 @@ begin
   FClients:=TList.Create;
   FGravity:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
   FMovimentScale := 1;
+  FAirFriction := 0;
   RegisterManager(Self);
 end;
 
@@ -170,7 +185,7 @@ function TGLDCEManager.MoveByDistance(var Body: TGLBDCEBody;
    deltaDistance: TAffineVector; deltaTime: Double): Single;
 var NewPosition: TVector;
     AbsGravity, AbsDistance: TAffineVector;
-    AvgFriction: Single;
+    TotalFriction, NumFrictions: Single;
     ColInfo: TDCECollision;
 
   function MoveEllipsoid: TVector;
@@ -180,7 +195,8 @@ var NewPosition: TVector;
     MovePack.Radius := Body.Size.AsAffineVector;
     MovePack.Position := AffineVectorMake(Body.OwnerBaseSceneObject.AbsolutePosition);
     MovePack.Velocity := AbsDistance;
-    MovePack.Gravity := AbsGravity;
+    if Body.UseGravity then MovePack.Gravity := AbsGravity
+    else MovePack.Gravity := NullVector;
     MovePack.Solid := Body.Solid;
     MovePack.InGround := Body.InGround;
     SetLength(MovePack.Triangles,0);
@@ -190,13 +206,17 @@ var NewPosition: TVector;
     for i:=0 to FClients.Count-1 do
     with TGLBDCEBody(FClients[i]) do begin
 
-      if (Layer <= Body.Layer) and (TGLBDCEBody(FClients[i]) <> Body) then
+      if (Layer <= Body.Layer)
+      and (TGLBDCEBody(FClients[i]) <> Body)
+      and (TGLBDCEBody(FClients[i]).Active) then
       begin
         case Shape of
           csFreeform: AddFreeFormToMovePack(MovePack,
                         TGLFreeform(OwnerBaseSceneObject),i,Friction,Solid);
           csEllipsoid: AddEllipsoidToMovePack(MovePack,
                         AffineVectorMake(OwnerBaseSceneObject.AbsolutePosition),
+                        Size.AsAffineVector,i,Friction,Solid);
+          csBox: AddBoxToMovePack(MovePack,OwnerBaseSceneObject,
                         Size.AsAffineVector,i,Friction,Solid);
           csTerrain:
             begin
@@ -209,21 +229,26 @@ var NewPosition: TVector;
       end;
 
     end;
+
     CollideAndSlide(MovePack);
+    d_TriList := MovePack.Triangles;
     result := VectorMake(MovePack.ResultPos);
     Body.FInGround := MovePack.InGround;
     Body.FGroundNormal := MovePack.ColNormal;
     Body.FGroundBounce := MovePack.ColBounce;
 
     //Get friction
-    if MovePack.FoundCollision then
+    {if MovePack.FoundCollision then
       AvgFriction := TGLBDCEBody(FClients[MovePack.ColObjectIndex]).Friction
     else
-      AvgFriction := -1;
+      AvgFriction := -1;}
 
-    //Generate events
+    //Generate events and calc average friction
+    NumFrictions := 0;
     for i := 0 to High(MovePack.CollisionList) do
     begin
+      TotalFriction := TotalFriction + MovePack.CollisionList[i].Friction;
+      NumFrictions := NumFrictions + 1;
       ColInfo.Point := MovePack.CollisionList[i].Point;
       ColInfo.Normal := MovePack.CollisionList[i].Normal;
       ColInfo.Bounce := MovePack.CollisionList[i].Bounce;
@@ -239,7 +264,6 @@ var NewPosition: TVector;
 
 begin
   AbsGravity := VectorScale(FGravity.AsAffineVector,deltaTime * FMovimentScale);
-  //AbsGravity := VectorScale(FGravity.AsAffineVector,0.1*FMovimentScale);
   AbsDistance := VectorScale(deltaDistance,FMovimentScale);
   with Body do
   begin
@@ -247,7 +271,8 @@ begin
       csEllipsoid: NewPosition := MoveEllipsoid;
     end;
     OwnerBaseSceneObject.AbsolutePosition := NewPosition;
-    result := AvgFriction;
+    //Calc the average fricition, 2 = Air and Body friction
+    result := (TotalFriction + FAirFriction + Body.Friction) / (NumFrictions + 2);
   end;
 end;
 
@@ -294,6 +319,8 @@ end;
 constructor TGLBDCEBody.Create(aOwner : TXCollection);
 begin
    inherited Create(aOwner);
+   FActive := True;
+   FUseGravity := True;
    FSize:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csVector);
    FShape := csEllipsoid;
    FSolid := True;
@@ -416,12 +443,16 @@ begin
   end;
 end;
 
-procedure TGLBDCEBody.DoMove(deltaTime: Double);
-var Fat,fAvg, fAbs: Single;
-    Dir, Up, Left, Distance: TAffineVector;
+procedure TGLBDCEBody.Move(Distance: TAffineVector; deltaTime: Double);
 begin
-  //if not FInGround then ScaleVector(FForce, 0.5);
+  ScaleVector(Distance, deltaTime);
+  FManager.MoveByDistance(Self, Distance, deltaTime);
+end;
 
+procedure TGLBDCEBody.DoMove(deltaTime: Double);
+var Fat,fAvg: Single;
+    Distance: TAffineVector;
+begin
   FSpeed.Coord[0] := (FSpeed.Coord[0]) + (FForce.Coord[0] * deltaTime);
   FSpeed.Coord[1] := (FSpeed.Coord[1]) + (FForce.Coord[1] * deltaTime);
   FSpeed.Coord[2] := (FSpeed.Coord[2]) + (FForce.Coord[2] * deltaTime);
@@ -433,24 +464,18 @@ begin
     FJumping := FJumpPos < FJumpHeight;
   end;
 
-  Dir := OwnerBaseSceneObject.Direction.AsAffineVector;
-  Up := OwnerBaseSceneObject.Up.AsAffineVector;
-  Left := AffineVectorMake(OwnerBaseSceneObject.LeftVector);
-  Distance.Coord[0] := (Left.Coord[0] * FSpeed.Coord[0]) + (Up.Coord[0] * FSpeed.Coord[1]) + (Dir.Coord[0] * FSpeed.Coord[2]);
-  Distance.Coord[1] := (Left.Coord[1] * FSpeed.Coord[0]) + (Up.Coord[1] * FSpeed.Coord[1]) + (Dir.Coord[1] * FSpeed.Coord[2]);
-  Distance.Coord[2] := (Left.Coord[2] * FSpeed.Coord[0]) + (Up.Coord[2] * FSpeed.Coord[1]) + (Dir.Coord[2] * FSpeed.Coord[2]);
+  Distance := AddRotatedVector(OwnerBaseSceneObject, FSpeed);
   //Add jump vector
   AddVector(Distance,FJumpSpeed);
 
   ScaleVector(Distance,deltaTime);
 
   //Returns the friction average of all collided objects
-  //** The average is wrong, but is simpler and returns an aproximated result
   fAvg := FManager.MoveByDistance(Self, Distance, deltaTime);
+
   //Apply friction
   if fAvg < 0 then fAvg := 0;
-  fAbs := (fAvg + FFriction); //Sum of all friction
-  Fat := 1 - (deltaTime * fAbs);
+  Fat := 1 - (deltaTime * fAvg);
   if Fat < 0 then Fat := 0;
   ScaleVector(FSpeed,Fat);
   if not FJumping then ScaleVector(FJumpSpeed,Fat);
@@ -462,6 +487,9 @@ procedure TGLBDCEBody.DoProgress(const progressTime : TProgressTimes);
 begin
   inherited doProgress(progressTime);
   assert(assigned(manager), 'DCE Manager not assigned to behaviour.');
+
+  if not FActive then Exit;
+
   if FDynamic then
     DoMove(progressTime.deltaTime);
 end;
@@ -513,6 +541,7 @@ function GetOrCreateDCECollision(obj : TGLBaseSceneObject) : TGLBDCEBody;
 begin
 	Result:=GetOrCreateDCECollision(obj.Behaviours);
 end;
+
 
 initialization
 // ------------------------------------------------------------------

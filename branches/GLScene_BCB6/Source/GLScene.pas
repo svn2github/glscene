@@ -2,7 +2,9 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/10/04 - NelC - Added support for 64bit and 128bit color depth (float pbuffer)   
+      <li>04/12/04 - MF - Added GLCamera.SetFieldOfView and GLCamera.GetFieldOfView,
+                          formula by Ivan Sivak Jr.
+      <li>04/10/04 - NelC - Added support for 64bit and 128bit color depth (float pbuffer)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>07/07/04 - Mrqzzz - TGLbaseSceneObject.Remove checks if removed object is actually a child (Uffe Hammer)
       <li>25/02/04 - Mrqzzz - Added TGLSCene.RenderedObject
@@ -1359,7 +1361,12 @@ type
          function ScreenDeltaToVectorYZ(deltaX, deltaY : Integer; ratio : Single) : TVector;
          {: Returns true if a point is in front of the camera. }
          function PointInFront(const point: TVector): boolean; overload;
-
+         {: Calculates the field of view given a viewport dimension (width or
+         height). F.i. you may wish to use the minimum of the two.}
+         function GetFieldOfView(const AViewportDimension : single) : single;
+         {: Sets the FocalLength given a field of view and a viewport dimension
+         (width or height). }
+         procedure SetFieldOfView(const AFieldOfView, AViewportDimension : single);
       published
          { Published Declarations }
          {: Depth of field/view.<p>
@@ -4861,7 +4868,7 @@ begin
          Extent:=FViewport.Height*0.25
       else Extent:=FViewport.Width*0.25;
    end;
-   FPosition.SetVector(0, 0, FNearPlane*Extent, 1);
+   FPosition.SetPoint(0, 0, FNearPlane*Extent);
    FDirection.SetVector(0, 0, -1, 0);
    TransformationChanged;
 end;
@@ -5125,6 +5132,24 @@ begin
       if not (csLoading in ComponentState) then
          TransformationChanged;
    end;
+end;
+
+// GetFieldOfView
+//
+function TGLCamera.GetFieldOfView(const AViewportDimension: single): single;
+begin
+  if FFocalLength=0 then
+    result := 0
+  else
+    result := 2 * ArcTan2(AViewportDimension * 0.5, FFocalLength);
+end;
+
+// SetFieldOfView
+//
+procedure TGLCamera.SetFieldOfView(const AFieldOfView,
+  AViewportDimension: single);
+begin
+  FocalLength := AViewportDimension / (2 * Tan(AFieldOfView/2));
 end;
 
 // SetCameraStyle
@@ -8171,6 +8196,7 @@ end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
 initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

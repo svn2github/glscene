@@ -29,7 +29,7 @@ uses Windows, Classes, Controls, Forms, Extctrls, Graphics, vfw, GLScene,
 
 
 type
-   TAVICompressor = (acDefault, acShowDialog);
+   TAVICompressor = (acDefault, acShowDialog, acDivX);
 
    PAVIStream = ^IAVIStream;
 
@@ -68,9 +68,9 @@ type
        pfile : IAVIFile;
        Stream, Stream_c : IAVIStream; // AVI stream and stream to be compressed
 
-       BitmapInfo : PBitmapInfoHeader;
-       BitmapBits : Pointer;
-       BitmapSize : Dword;
+       FBitmapInfo : PBitmapInfoHeader;
+       FBitmapBits : Pointer;
+       FBitmapSize : Dword;
 
        FTempName : String; // so that we know the filename to delete case of user abort
 
@@ -157,8 +157,7 @@ var
   BM: Windows.TBitmap;
 begin
   GetObject(Bitmap, SizeOf(BM), @BM);
-  with BI do
-  begin
+  with BI do begin
     biSize := SizeOf(BI);
     biWidth := BM.bmWidth;
     biHeight := BM.bmHeight;
@@ -178,31 +177,36 @@ var
   BI: TBitmapInfoHeader;
 begin
   InitializeBitmapInfoHeader(Bitmap, BI);
-  with BI do
-    InfoHeaderSize:=SizeOf(TBitmapInfoHeader);
+  InfoHeaderSize:=SizeOf(TBitmapInfoHeader);
   ImageSize:=BI.biSizeImage;
 end;
 
-function InternalGetDIB(Bitmap: HBITMAP; var BitmapInfo; var Bits): Boolean;
+// InternalGetDIB
+//
+function InternalGetDIB(bitmap : HBITMAP; var bitmapInfo; var bits) : Boolean;
 var
-  Focus: HWND;
-  DC: HDC;
+   focus : HWND;
+   dc : HDC;
+   errCode : Integer;
 begin
-  InitializeBitmapInfoHeader(Bitmap, TBitmapInfoHeader(BitmapInfo));
-  Focus := GetFocus;
-  DC := GetDC(Focus);
-  try
-    Result := GetDIBits(DC, Bitmap, 0, TBitmapInfoHeader(BitmapInfo).biHeight, @Bits,
-      TBitmapInfo(BitmapInfo), DIB_RGB_COLORS) <> 0;
-  finally
-    ReleaseDC(Focus, DC);
-  end;
+   InitializeBitmapInfoHeader(bitmap, TBitmapInfoHeader(bitmapInfo));
+   focus:=GetFocus;
+   dc:=GetDC(focus);
+   try
+      errCode:=GetDIBits(dc, bitmap, 0, TBitmapInfoHeader(bitmapInfo).biHeight,
+                         @bits, TBitmapInfo(bitmapInfo), DIB_RGB_COLORS);
+      Result:=(errCode<>0);
+   finally
+      ReleaseDC(focus, dc);
+   end;
 end;
 
 // ------------------
 // ------------------ TAVIRecorder ------------------
 // ------------------
 
+// Create
+//
 constructor TAVIRecorder.Create(AOwner : TComponent);
 begin
    inherited;
@@ -215,45 +219,53 @@ begin
    FImageRetrievalMode:=irmBitBlt;
 end;
 
+// Destroy
+//
 destructor TAVIRecorder.Destroy;
 begin
-     inherited;
+   // if still open here, abort it
+   if RecorderState=rsRecording then
+      CloseAVIFile(True);
+   inherited;
 end;
 
-function TAVIRecorder.Restricted(s:integer):integer;
+// Restricted
+//
+function TAVIRecorder.Restricted(s : Integer) : Integer;
 begin
-  case FSizeRestriction of
-    srForceBlock2x2: result:=(s div 2) * 2;
-    srForceBlock4x4: result:=(s div 4) * 4;
-    srForceBlock8x8: result:=(s div 8) * 8;
-  else
-    result:=s;
+   case FSizeRestriction of
+      srForceBlock2x2 : Result:=(s div 2)*2;
+      srForceBlock4x4 : Result:=(s div 4)*4;
+      srForceBlock8x8 : Result:=(s div 8)*8;
+   else
+      Result:=s;
   end;
 end;
 
-procedure TAVIRecorder.SetHeight(const val : integer);
+// SetHeight
+//
+procedure TAVIRecorder.SetHeight(const val : Integer);
 begin
-  if RecorderState=rsRecording then exit;
-
-  if val<>FHeight then
-   if val>0 then FHeight:=Restricted(val);
+   if (RecorderState<>rsRecording) and (val<>FHeight) and (val>0) then
+      FHeight:=Restricted(val);
 end;
 
-procedure TAVIRecorder.SetWidth(const val : integer);
+// SetWidth
+//
+procedure TAVIRecorder.SetWidth(const val : Integer);
 begin
-  if RecorderState=rsRecording then exit;
-
-  if val<>FWidth then
-   if val>0 then FWidth:=Restricted(val);
+   if (RecorderState<>rsRecording) and (val<>FWidth) and (val>0) then
+      FWidth:=Restricted(val);
 end;
 
+// SetSizeRestriction
+//
 procedure TAVIRecorder.SetSizeRestriction(const val : TAVISizeRestriction);
 begin
-  if val<>FSizeRestriction then
-   begin
-     FSizeRestriction:=val;
-     FHeight:=Restricted(FHeight);
-     FWidth:=Restricted(FWidth);
+   if val<>FSizeRestriction then begin
+      FSizeRestriction:=val;
+      FHeight:=Restricted(FHeight);
+      FWidth:=Restricted(FWidth);
    end;
 end;
 
@@ -318,8 +330,8 @@ begin
    if Assigned(FOnPostProcessEvent) then
       FOnPostProcessEvent(Self, AVIBitmap);
    with AVIBitmap do begin
-      InternalGetDIB( Handle, BitmapInfo^, BitmapBits^);
-      if AVIStreamWrite(Stream_c, AVIFrameIndex, 1, BitmapBits, BitmapSize,
+      InternalGetDIB(Handle, FBitmapInfo^, FBitmapBits^);
+      if AVIStreamWrite(Stream_c, AVIFrameIndex, 1, FBitmapBits, FBitmapSize,
                         AVIIF_KEYFRAME, nil, nil)<>AVIERR_OK then
          raise Exception.Create('Add Frame Error');
       Inc(AVIFrameIndex);
@@ -331,7 +343,7 @@ var
    SaveDialog     : TSaveDialog;
    gaAVIOptions   : TAVICOMPRESSOPTIONS;
    galpAVIOptions : PAVICOMPRESSOPTIONS;
-   BitmapInfoSize : Integer;
+   bitmapInfoSize : Integer;
    AVIResult      : Cardinal;
    ResultString   : String;
 begin
@@ -383,43 +395,49 @@ begin
          raise Exception.Create('Cannot create AVI file. Disk full or file in use?');
 
       with AVIBitmap do begin
-        InternalGetDIBSizes( Handle, BitmapInfoSize, BitmapSize);
-        BitmapInfo:=AllocMem(BitmapInfoSize);
-        BitmapBits:=AllocMem(BitmapSize);
-        InternalGetDIB(Handle, BitmapInfo^, BitmapBits^);
+        InternalGetDIBSizes(Handle, bitmapInfoSize, FBitmapSize);
+        FBitmapInfo:=AllocMem(bitmapInfoSize);
+        FBitmapBits:=AllocMem(FBitmapSize);
+        InternalGetDIB(Handle, FBitmapInfo^, FBitmapBits^);
       end;
 
       FillChar(asi,sizeof(asi),0);
 
       with asi do begin
-        fccType   := streamtypeVIDEO; //  Now prepare the stream
-        fccHandler:= 0;
-        dwScale   := 1;         // dwRate / dwScale = frames/second
-        dwRate    := FFPS;
-        dwSuggestedBufferSize:=BitmapSize;
-        rcFrame.Right  := BitmapInfo^.biWidth;
-        rcFrame.Bottom := BitmapInfo^.biHeight;
+        fccType   :=streamtypeVIDEO; //  Now prepare the stream
+        fccHandler:=0;
+        dwScale   :=1;         // dwRate / dwScale = frames/second
+        dwRate    :=FFPS;
+        dwSuggestedBufferSize:=FBitmapSize;
+        rcFrame.Right :=FBitmapInfo.biWidth;
+        rcFrame.Bottom:=FBitmapInfo.biHeight;
       end;
 
       if AVIFileCreateStream(pfile, Stream, asi)<>AVIERR_OK then
          raise Exception.Create('Cannot create AVI stream.');
 
       with AVIBitmap do
-        InternalGetDIB( Handle, BitmapInfo^, BitmapBits^);
+        InternalGetDIB( Handle, FBitmapInfo^, FBitmapBits^);
 
       galpAVIOptions:=@gaAVIOptions;
-      fillchar(gaAVIOptions, sizeof(gaAVIOptions), 0);
+      fillchar(gaAVIOptions, SizeOf(gaAVIOptions), 0);
+      gaAVIOptions.fccType:=streamtypeVIDEO;
 
-      if (FCompressor=acShowDialog) and
-         // the following line will call a dialog box for the user to choose the compressor options
-         AVISaveOptions(0, ICMF_CHOOSE_KEYFRAME or ICMF_CHOOSE_DATARATE, 1, Stream, galpAVIOptions) then
-      else begin
+      case FCompressor of
+         acShowDialog : begin
+            // call a dialog box for the user to choose the compressor options
+            AVISaveOptions(0, ICMF_CHOOSE_KEYFRAME or ICMF_CHOOSE_DATARATE, 1, Stream, galpAVIOptions);
+         end;
+         acDivX : with gaAVIOptions do begin
+            // ask for generic divx, using current default settings
+            fccHandler:=mmioFOURCC('d','i','v','x');
+         end;
+      else
          with gaAVIOptions do begin // or, you may want to fill the compression options yourself
-            fccType:=streamtypeVIDEO;
             fccHandler:=mmioFOURCC('M','S','V','C'); // User MS video 1 as default.
                                                      // I guess it is installed on every Win95 or later.
-            dwQuality:=7500;     // compress quality 0-10,000
-            dwFlags:=0;          // setting dwFlags to 0 would lead to some default settings
+            dwQuality:=7500; // compress quality 0-10,000
+            dwFlags:=0;      // setting dwFlags to 0 would lead to some default settings
          end;
       end;
 
@@ -432,39 +450,42 @@ begin
          raise Exception.Create('Cannot make compressed stream. '+ResultString);
       end;
 
-      if AVIStreamSetFormat(Stream_c, 0, BitmapInfo, BitmapInfoSize) <> AVIERR_OK then
-        raise Exception.Create('AVIStreamSetFormat Error'); // no error description found in MSDN.
+      if AVIStreamSetFormat(Stream_c, 0, FBitmapInfo, bitmapInfoSize)<>AVIERR_OK then
+         raise Exception.Create('AVIStreamSetFormat Error'); // no error description found in MSDN.
 
       AVI_DPI:=DPI;
 
    except
-     CloseAVIFile(true);
+      CloseAVIFile(true);
+      raise;
    end;
 
 end;
 
-procedure TAVIRecorder.CloseAVIFile(UserAbort:boolean=false);
-// if UserAbort, CloseAVIFile will also delete the unfinished file.
+procedure TAVIRecorder.CloseAVIFile(UserAbort : boolean =False);
 begin
-   if RecorderState<>rsRecording then
-      raise Exception.create('Cannot close AVI file. AVI file not created.');
+   // if UserAbort, CloseAVIFile will also delete the unfinished file.
+   try
+      if RecorderState<>rsRecording then
+         raise Exception.create('Cannot close AVI file. AVI file not created.');
 
-   AVIBitmap.Free;
+      AVIBitmap.Free;
 
-   FreeMem(BitmapInfo);
-   FreeMem(BitmapBits);
+      FreeMem(FBitmapInfo);
+      FreeMem(FBitmapBits);
 
-   AVIFileExit; // finalize the AVI lib.
+      AVIFileExit; // finalize the AVI lib.
 
-   // release the interfaces explicitly (can't rely on automatic release)
-   Stream:=nil;
-   Stream_c:=nil;
-   pfile:=nil;
+      // release the interfaces explicitly (can't rely on automatic release)
+      Stream:=nil;
+      Stream_c:=nil;
+      pfile:=nil;
 
-   if UserAbort then
-      DeleteFile(FTempName);
-
-   RecorderState:=rsNone;
+      if UserAbort then
+         DeleteFile(FTempName);
+   finally
+      RecorderState:=rsNone;
+   end;
 end;
 
 // Recording

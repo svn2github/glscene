@@ -3,6 +3,10 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>26/11/04 - MRQZZZ - by Uwe Raabe : fixed TBaseMeshObject.BuildNormals
+      <li>26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order to prevent rendering of the GLBaseMesh but allowing the rendering of it's children
+      <li>25/11/04 - SG - Fixed memory leak in TMeshObject (kenguru)
+      <li>24/11/04 - MF - Added OctreePointInMesh
       <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
       <li>24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
                           Added TexCoordsEx, Binormals, Tangents,
@@ -1199,6 +1203,7 @@ type
          FAutoScaling: TGLCoordinates;
          FMaterialLibraryCachesPrepared : Boolean;
          FConnectivity : TObject;
+         FRendered: Boolean;
 
 
       protected
@@ -1211,7 +1216,7 @@ type
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
          procedure SetAutoScaling(const Value: TGLCoordinates);
-
+	 procedure SetRendered(const Value: Boolean);
          procedure DestroyHandle; override;
 
          {: Invoked after creating a TVectorFile and before loading.<p>
@@ -1346,6 +1351,10 @@ type
 
          {: Request rendering of skeleton bones over the mesh. }
          property OverlaySkeleton : Boolean read FOverlaySkeleton write SetOverlaySkeleton default False;
+
+         {: If False, Prevents rendering of self but not of children }
+         property Rendered : Boolean read FRendered write SetRendered;
+
    end;
 
    // TGLFreeForm
@@ -1378,8 +1387,11 @@ type
                                         intersectPoint : PVector = nil;
                                         intersectNormal : PVector = nil) : Boolean;
          function OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+         {: Returns true if Point is inside the free form - this will only work
+         properly on closed meshes. Requires that Octree has been prepared.}
+         function OctreePointInMesh(const Point : TVector) : boolean;
          function OctreeAABBIntersect(const AABB: TAABB; objMatrix,invObjMatrix: TMatrix; triangles:TAffineVectorList=nil): boolean;
-//         TODO:  function OctreeSphereIntersect         
+//         TODO:  function OctreeSphereIntersect
 
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
@@ -1394,6 +1406,7 @@ type
          property LightmapLibrary;
          property UseMeshMaterials;
          property NormalsOrientation;
+	 property Rendered;
    end;
 
    // TGLActorOption
@@ -2036,18 +2049,19 @@ procedure TBaseMeshObject.BuildNormals(vertexIndices : TIntegerList; mode : TMes
 var
    i, base : Integer;
    n : TAffineVector;
-   newNormals : TList;
+   newNormals : TIntegerList;
 
-   procedure TranslateNewNormal(vertexIndex : Integer; const delta : TAffineVector);
+   function TranslateNewNormal(vertexIndex : Integer; const delta :
+       TAffineVector): Integer;
    var
       pv : PAffineVector;
    begin
-      pv:=PAffineVector(newNormals[vertexIndex]);
-      if not Assigned(pv) then begin
-         Normals.Add(NullVector);
-         pv:=@Normals.List[Normals.Count-1];
-         newNormals[vertexIndex]:=pv;
+      result := newNormals[vertexIndex];
+      if result < base then begin
+         result := Normals.Add(NullVector);
+         newNormals[vertexIndex]:=result;
       end;
+      pv:=@Normals.List[result];
       AddVector(pv^, delta);
    end;
 
@@ -2095,8 +2109,8 @@ begin
    end else begin
       // add new normals
       base:=Normals.Count;
-      newNormals:=TList.Create;
-      newNormals.Count:=Vertices.Count;
+      newNormals:=TIntegerList.Create;
+      newNormals.AddSerie(-1, 0, Vertices.Count);
       case mode of
          momTriangles : begin
             i:=0; while i<=vertexIndices.Count-3 do begin
@@ -2104,11 +2118,9 @@ begin
                   CalcPlaneNormal(Items[vertexIndices[i+0]], Items[vertexIndices[i+1]],
                                   Items[vertexIndices[i+2]], n);
                end;
-               with Normals do begin
-                  TranslateNewNormal(vertexIndices[i+0], n);
-                  TranslateNewNormal(vertexIndices[i+1], n);
-                  TranslateNewNormal(vertexIndices[i+2], n);
-               end;
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+0], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+1], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+2], n));
                Inc(i, 3);
             end;
          end;
@@ -2121,11 +2133,9 @@ begin
                   else CalcPlaneNormal(Items[vertexIndices[i+0]], Items[vertexIndices[i+2]],
                                        Items[vertexIndices[i+1]], n);
                end;
-               with Normals do begin
-                  TranslateNewNormal(vertexIndices[i+0], n);
-                  TranslateNewNormal(vertexIndices[i+1], n);
-                  TranslateNewNormal(vertexIndices[i+2], n);
-               end;
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+0], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+1], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+2], n));
                Inc(i, 1);
             end;
          end;
@@ -2137,6 +2147,7 @@ begin
       newNormals.Free;
    end;
 end;
+
 
 // ExtractTriangles
 //
@@ -3276,6 +3287,7 @@ begin
    FLightMapTexCoords.Free;
    for i:=0 to FTexCoordsEx.Count-1 do
       TVectorList(FTexCoordsEx[i]).Free;
+   FTexCoordsEx.Free;
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
@@ -5781,6 +5793,7 @@ begin
    FAutoCentering:=[];
    FAxisAlignedDimensionsCache.Coord[0]:=-1;
    FAutoScaling:=TGLCoordinates.CreateInitialized(Self, XYZWHmgVector, csPoint);   
+   FRendered := True;
 end;
 
 // Destroy
@@ -5808,7 +5821,7 @@ begin
       FOverlaySkeleton:=TGLBaseMesh(Source).FOverlaySkeleton;
       FIgnoreMissingTextures:=TGLBaseMesh(Source).FIgnoreMissingTextures;
       FAutoCentering:=TGLBaseMesh(Source).FAutoCentering;
-      FAutoScaling:=TGLBaseMesh(Source).FAutoScaling;
+      FAutoScaling.Assign(TGLBaseMesh(Source).FAutoScaling);
       FSkeleton.Assign(TGLBaseMesh(Source).FSkeleton);
       FMeshObjects.Assign(TGLBaseMesh(Source).FMeshObjects);
    end;
@@ -6025,6 +6038,18 @@ begin
    end;
 end;
 
+// SetRendered
+//
+procedure TGLBaseMesh.SetRendered(const Value: Boolean);
+begin
+  if FRendered<>Value then
+  begin
+     FRendered := Value;
+     StructureChanged;
+  end;
+end;
+
+
 // SetAutoScaling
 //
 procedure TGLBaseMesh.SetAutoScaling(const Value: TGLCoordinates);
@@ -6199,7 +6224,7 @@ procedure TGLBaseMesh.DoRender(var rci : TRenderContextInfo;
 begin
    if Assigned(LightmapLibrary) then
       xglForbidSecondTextureUnit;
-   if renderSelf then begin
+   if renderSelf and Rendered then begin
       // set winding
       case FNormalsOrientation of
          mnoDefault : ;// nothing
@@ -6421,6 +6446,61 @@ begin
             NegateVector(intersectNormal^);
       end;
    end;
+end;
+
+// OctreePointInMesh
+//
+function TGLFreeForm.OctreePointInMesh(const Point: TVector): boolean;
+const
+  cPointRadiusStep = 10000;
+var
+  rayStart, rayVector, hitPoint, hitNormal : TVector;
+  BRad : double;
+  HitCount : integer;
+  hitDot : double;
+begin
+  Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
+
+  result := false;
+
+  // Makes calculations sligthly faster by ignoring cases that are guaranteed
+  // to be outside the object
+  if not PointInObject(Point) then
+    exit;
+
+  BRad := BoundingSphereRadius;
+
+  // This could be a fixed vector, but a fixed vector could have a systemic
+  // bug on an non-closed mesh, making it fail constantly for one or several
+  // faces.
+  rayVector := VectorMake(2*random-1, 2*random-1, 2*random-1);
+  rayStart := VectorAdd(VectorScale(rayVector, -BRad), Point);
+
+  HitCount := 0;
+
+  while OctreeRayCastIntersect(rayStart, rayVector, @hitPoint, @hitNormal) do begin
+    // Are we past our taget?
+    if VectorDotProduct(rayVector, VectorSubtract(Point, hitPoint))<0 then begin
+      result := HitCount>0;
+      exit;
+    end;
+
+    hitDot := VectorDotProduct(hitNormal, rayVector);
+    if hitDot<0 then
+      inc(HitCount)
+    else if hitDot>0 then
+      dec(HitCount);
+
+    // ditDot = 0 is a tricky special case where the ray is just grazing the
+    // side of a face - this case means that it doesn't necessarily actually
+    // enter the mesh - but it _could_ enter the mesh. If this situation occurs,
+    // we should restart the run using a new rayVector - but this implementation
+    // currently doesn't.
+
+    // Restart the ray slightly beyond the point it hit the previous face. Note
+    // that this step introduces a possible issue with faces that are very close
+    rayStart := VectorAdd(hitPoint, VectorScale(rayVector, BRad/cPointRadiusStep));
+  end;
 end;
 
 // OctreeSphereIntersect
@@ -7369,6 +7449,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 
 initialization
 // ------------------------------------------------------------------

@@ -228,6 +228,10 @@ end;
 //
 procedure TGLScriptDWS2.Execute;
 begin
+  if (State = ssUncompiled) then
+    Compile
+  else if (State = ssRunning) then
+    Stop;
   if (State = ssCompiled) then
     FDWS2Program.Execute;
 end;
@@ -237,8 +241,7 @@ end;
 procedure TGLScriptDWS2.Invalidate;
 begin
   if (State <> ssUncompiled) or Assigned(FDWS2Program) then begin
-    if State = ssRunning then
-      FDWS2Program.EndProgram;
+    Stop;
     FreeAndNil(FDWS2Program);
   end;
 end;
@@ -247,6 +250,8 @@ end;
 //
 procedure TGLScriptDWS2.Start;
 begin
+  if (State = ssUncompiled) then
+    Compile;
   if (State = ssCompiled) then
     FDWS2Program.BeginProgram(False);
 end;
@@ -267,6 +272,8 @@ var
   Symbol : TSymbol;
   Output : IInfo;
 begin
+  if (State <> ssRunning) then
+    Start;
   if State = ssRunning then begin
     Symbol:=FDWS2Program.Table.FindSymbol(aName);
     if Assigned(Symbol) then begin
@@ -308,7 +315,6 @@ begin
           Result:=ssRunningErrors;
         Errors.Text:=FDWS2Program.Msgs.AsInfo;
       end;
-
     end;
   end;
 end;
