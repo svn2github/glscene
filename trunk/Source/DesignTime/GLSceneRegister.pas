@@ -1384,10 +1384,10 @@ end;
 procedure TGLAnimationNameProperty.GetValues(proc: TGetStrProc);
 var
 	i : Integer;
-   animControler : TAnimationControler;
+   animControler : TGLAnimationControler;
    actor : TGLActor;
 begin
-   animControler:=(GetComponent(0) as TAnimationControler);
+   animControler:=(GetComponent(0) as TGLAnimationControler);
    if Assigned(animControler) then begin
       actor:=animControler.Actor;
       if Assigned(actor) then with actor.Animations do begin
@@ -1559,10 +1559,10 @@ begin
   // TGLFreeForm
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFreeForm,
     ['UseMeshmaterials']);
-  // TAnimationControler
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TAnimationControler,
+  // TGLAnimationControler
+  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLAnimationControler,
     ['AnimationName']);
-  RegisterPropertiesInCategory(sLinkageCategoryName, TAnimationControler,
+  RegisterPropertiesInCategory(sLinkageCategoryName, TGLAnimationControler,
     ['AnimationName']);
   // TGLActor
   RegisterPropertiesInCategory(sOpenGLCategoryName, TActorAnimation,
@@ -1734,7 +1734,7 @@ begin
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLBitmapFont, TGLWindowsBitmapFont,
                        TGLBitmapHDS, TGLCustomHDS,
-                       TAnimationControler]);
+                       TGLAnimationControler]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);
@@ -1756,7 +1756,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterial, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterial, '', TGLLibMaterialNameProperty);
-	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TAnimationControler, '', TGLAnimationNameProperty);
+	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
    RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
 

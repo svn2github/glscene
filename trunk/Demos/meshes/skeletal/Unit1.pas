@@ -52,7 +52,7 @@ type
     XYZGrid1: TGLXYZGrid;
     RBWalk: TRadioButton;
     RBRun: TRadioButton;
-    AnimationControler1: TAnimationControler;
+    AnimationControler1: TGLAnimationControler;
     Panel2: TPanel;
     TrackBar1: TTrackBar;
     CBBlend: TCheckBox;

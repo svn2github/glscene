@@ -8,11 +8,11 @@
       <li>21/10/02 - EG - Read support for .GTS (GNU Triangulated Surface library) 
       <li>18/10/02 - EG - FindExtByIndex (Adem)
       <li>17/10/02 - EG - TGLSTLVectorFile moved to new GLFileSTL unit
-      <li>04/09/02 - EG - Fixed TBaseMesh.AxisAlignedDimensions 
-      <li>23/08/02 - EG - Added TBaseMesh.Visible
-      <li>23/07/02 - EG - TBaseMesh.LoadFromStream fix (D. Angilella)
+      <li>04/09/02 - EG - Fixed TGLBaseMesh.AxisAlignedDimensions 
+      <li>23/08/02 - EG - Added TGLBaseMesh.Visible
+      <li>23/07/02 - EG - TGLBaseMesh.LoadFromStream fix (D. Angilella)
       <li>13/07/02 - EG - AutoCenter on barycenter
-      <li>22/03/02 - EG - TAnimationControler basics now functional
+      <li>22/03/02 - EG - TGLAnimationControler basics now functional
       <li>13/03/02 - EG - Octree support (experimental)
       <li>18/02/02 - EG - Fixed persistence of skeletal meshes
       <li>04/01/02 - EG - Added basic RayCastIntersect implementation
@@ -28,26 +28,26 @@
       <li>12/08/01 - EG - Completely rewritten handles management,
                           Fixed TActorAnimation.Assign,
                           Fixed persistence
-      <li>08/08/01 - EG - Added TBaseMesh.AxisAlignedDimensions
-      <li>19/07/01 - EG - AutoCentering is now a property of TBaseMesh,
+      <li>08/08/01 - EG - Added TGLBaseMesh.AxisAlignedDimensions
+      <li>19/07/01 - EG - AutoCentering is now a property of TGLBaseMesh,
                           3DS loader no longer auto-centers,
                           Added ExtractTriangles and related methods
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
       <li>19/06/01 - EG - StrToFloat outlawed and replaced by StrToFloatDef
-      <li>25/03/01 - EG - Added TAnimationControler
+      <li>25/03/01 - EG - Added TGLAnimationControler
       <li>18/03/01 - EG - Added basic Skeleton structures & SMD importer
       <li>16/03/01 - EG - Introduced new PersistentClasses
       <li>15/03/01 - EG - Fix in TActorAnimation.SetEndFrame (thx David Costa)
-      <li>08/03/01 - EG - TGL3DSVectorFile now loads materials for TBaseMesh
+      <li>08/03/01 - EG - TGL3DSVectorFile now loads materials for TGLBaseMesh
       <li>26/02/01 - EG - Added TBaseMeshObject & BuildNormals, MD2 normals auto-builded
       <li>21/02/01 - EG - Now XOpenGL based (multitexture)
       <li>15/01/01 - EG - Added Translate methods
-      <li>10/01/01 - EG - Fixed in TBaseMesh.DoRender for RenderChildren states
-      <li>08/01/01 - EG - Fixed TBaseMesh.BuildList messup of attrib states
+      <li>10/01/01 - EG - Fixed in TGLBaseMesh.DoRender for RenderChildren states
+      <li>08/01/01 - EG - Fixed TGLBaseMesh.BuildList messup of attrib states
       <li>22/12/00 - EG - Fixed non-interpolated TGLActor animation (was freezing),
-                          Fixed TBaseMesh.DoRender messup of attrib states
+                          Fixed TGLBaseMesh.DoRender messup of attrib states
       <li>18/12/00 - EG - TFGIndexTexCoordList now supports normals (automatically),
-                          NormalsOrientation code moved to TBaseMesh
+                          NormalsOrientation code moved to TGLBaseMesh
       <li>11/12/00 - EG - Fix for NormalOrientation (3DS importer)
       <li>06/12/00 - EG - Added PrepareBuildList mechanism
       <li>08/10/00 - EG - Removed TGLOBJVectorFile, use GLFileOBJ instead
@@ -58,7 +58,7 @@
       <li>19/07/00 - EG - Introduced enhanced mesh structure
       <li>16/07/00 - EG - Made use of new TDataFile class
       <li>15/07/00 - EG - FreeForm can now handle 3DS files with multiple textures,
-                          Added TBaseMesh.GetExtents
+                          Added TGLBaseMesh.GetExtents
       <li>28/06/00 - EG - Support for "ObjectStyle"
       <li>23/06/00 - EG - Reversed "t" texture coord for MD2,
                           TActorAnimations can now load/save
@@ -337,7 +337,7 @@ type
          procedure Clean; override;
 	end;
 
-   TBaseMesh = class;
+   TGLBaseMesh = class;
 
    // TBlendedLerpInfo
    //
@@ -357,7 +357,7 @@ type
 	TSkeleton = class (TPersistentObject)
 	   private
 	      { Private Declarations }
-         FOwner : TBaseMesh;
+         FOwner : TGLBaseMesh;
          FRootBones : TSkeletonRootBoneList;
          FFrames : TSkeletonFrameList;
          FCurrentFrame : TSkeletonFrame; // not persistent
@@ -372,14 +372,14 @@ type
 
 	   public
 	      { Public Declarations }
-         constructor CreateOwned(AOwner : TBaseMesh);
+         constructor CreateOwned(AOwner : TGLBaseMesh);
 	      constructor Create; override;
          destructor Destroy; override;
 
 	      procedure WriteToFiler(writer : TVirtualWriter); override;
 	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         property Owner : TBaseMesh read FOwner;
+         property Owner : TGLBaseMesh read FOwner;
          property RootBones : TSkeletonRootBoneList read FRootBones write SetRootBones;
          property Frames : TSkeletonFrameList read FFrames write SetFrames;
          property CurrentFrame : TSkeletonFrame read GetCurrentFrame write SetCurrentFrame;
@@ -490,7 +490,7 @@ type
    TMeshObjectList = class (TPersistentObjectList)
       private
          { Private Declarations }
-         FOwner : TBaseMesh;
+         FOwner : TGLBaseMesh;
 
       protected
          { Protected Declarations }
@@ -498,7 +498,7 @@ type
 
       public
          { Public Declarations }
-         constructor CreateOwned(aOwner : TBaseMesh);
+         constructor CreateOwned(aOwner : TGLBaseMesh);
          destructor Destroy; override;
 
 			procedure ReadFromFiler(reader : TVirtualReader); override;
@@ -523,7 +523,7 @@ type
          //: Precalculate whatever is needed for rendering, called once
          procedure Prepare; dynamic;
 
-         property Owner : TBaseMesh read FOwner;
+         property Owner : TGLBaseMesh read FOwner;
          procedure Clear; override;
          property Items[Index: Integer] : TMeshObject read GetMeshObject; default;
    end;
@@ -873,7 +873,7 @@ type
          { Public Declarations }
          constructor Create(AOwner: TPersistent); virtual;
 
-         function Owner : TBaseMesh;
+         function Owner : TGLBaseMesh;
 
          property NormalsOrientation : TMeshNormalsOrientation read FNormalsOrientation write SetNormalsOrientation;
    end;
@@ -960,10 +960,10 @@ type
          procedure LoadFromStream(aStream: TStream); override;
    end;
 
-   // TBaseMesh
+   // TGLBaseMesh
    //
    {: Base class for mesh objects. }
-   TBaseMesh = class(TGLSceneObject)
+   TGLBaseMesh = class(TGLSceneObject)
       private
          { Private Declarations }
          FNormalsOrientation : TMeshNormalsOrientation;
@@ -1088,7 +1088,7 @@ type
       method.<p>
       A FreeForm may contain more than one mesh, but they will all be handled
       as a single object in a scene. }
-   TGLFreeForm = class (TBaseMesh)
+   TGLFreeForm = class (TGLBaseMesh)
       private
          { Private Declarations }
          FOctree : TOctree;
@@ -1152,7 +1152,7 @@ type
       for animating an actor. The referred frames can be either morph or skeletal
       frames (choose which via the Reference property).<p>
       An animation can be directly "played" by the actor by selecting it with
-      SwitchAnimation, and can also be "blended" via a TAnimationControler. }
+      SwitchAnimation, and can also be "blended" via a TGLAnimationControler. }
 	TActorAnimation = class (TCollectionItem)
 	   private
 	      { Private Declarations }
@@ -1238,7 +1238,7 @@ type
 	      property Items[index : Integer] : TActorAnimation read GetItems write SetItems; default;
    end;
 
-	// TAnimationControler
+	// TGLAnimationControler
 	//
    {: Controls the blending of an additionnal skeletal animation into an actor.<p>
       The animation controler allows animating an actor with several animations
@@ -1246,7 +1246,7 @@ type
       (in TGLActor), blend an animation that makes the arms move differently
       depending on what the actor is carrying, along with an animation that will
       make the head turn toward a target. }
-   TAnimationControler = class (TComponent)
+   TGLAnimationControler = class (TComponent)
 	   private
 	      { Private Declarations }
          FActor : TGLActor;
@@ -1304,8 +1304,8 @@ type
    {: Mesh class specialized in animated meshes.<p>
       The TGLActor provides a quick interface to animated meshes based on morph
       or skeleton frames, it is capable of performing frame interpolation and
-      animation blending (via TAnimationControler components). }
-   TGLActor = class (TBaseMesh)
+      animation blending (via TGLAnimationControler components). }
+   TGLActor = class (TGLBaseMesh)
       private
          { Private Declarations }
          FStartFrame, FEndFrame : Integer;
@@ -1332,8 +1332,8 @@ type
          procedure SetOptions(const val : TGLActorOptions);
 
          procedure PrepareMesh; override;
-         procedure RegisterControler(aControler : TAnimationControler);
-         procedure UnRegisterControler(aControler : TAnimationControler);
+         procedure RegisterControler(aControler : TGLAnimationControler);
+         procedure UnRegisterControler(aControler : TGLAnimationControler);
 
       public
          { Public Declarations }
@@ -2281,7 +2281,7 @@ end;
 
 // CreateOwned
 //
-constructor TSkeleton.CreateOwned(AOwner : TBaseMesh);
+constructor TSkeleton.CreateOwned(AOwner : TGLBaseMesh);
 begin
    FOwner:=aOwner;
    Create;
@@ -2822,7 +2822,7 @@ end;
 
 // CreateOwned
 //
-constructor TMeshObjectList.CreateOwned(aOwner : TBaseMesh);
+constructor TMeshObjectList.CreateOwned(aOwner : TGLBaseMesh);
 begin
    FOwner:=AOwner;
    Create;
@@ -3976,15 +3976,15 @@ end;
 //
 constructor TVectorFile.Create(AOwner: TPersistent);
 begin
-   Assert(AOwner is TBaseMesh);
+   Assert(AOwner is TGLBaseMesh);
    inherited;
 end;
 
 // Owner
 //
-function TVectorFile.Owner : TBaseMesh;
+function TVectorFile.Owner : TGLBaseMesh;
 begin
-   Result:=TBaseMesh(GetOwner);
+   Result:=TGLBaseMesh(GetOwner);
 end;
 
 // SetNormalsOrientation
@@ -4022,8 +4022,8 @@ var
    begin
       material:=Materials.MaterialByName[Name];
       Assert(Assigned(material));
-      if GetOwner is TBaseMesh then begin
-         matLib:=TBaseMesh(GetOwner).MaterialLibrary;
+      if GetOwner is TGLBaseMesh then begin
+         matLib:=TGLBaseMesh(GetOwner).MaterialLibrary;
          if Assigned(matLib) then begin
             Result:=name;
             libMat:=matLib.Materials.GetLibMaterialByName(name);
@@ -4306,11 +4306,11 @@ begin
    end;
 end;
 
-//----------------- TBaseMesh --------------------------------------------------
+//----------------- TGLBaseMesh --------------------------------------------------
 
 // Create
 //
-constructor TBaseMesh.Create(AOwner:TComponent);
+constructor TGLBaseMesh.Create(AOwner:TComponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDoesTemperWithColorsOrFaceWinding];
@@ -4325,7 +4325,7 @@ end;
 
 // Destroy
 //
-destructor TBaseMesh.Destroy;
+destructor TGLBaseMesh.Destroy;
 begin
    FSkeleton.Free;
    FMeshObjects.Free;
@@ -4334,7 +4334,7 @@ end;
 
 // LoadFromFile
 //
-procedure TBaseMesh.LoadFromFile(const filename : String);
+procedure TGLBaseMesh.LoadFromFile(const filename : String);
 var
    fs : TFileStream;
 begin
@@ -4350,7 +4350,7 @@ end;
 
 // LoadFromStream
 //
-procedure TBaseMesh.LoadFromStream(const fileName : String; aStream : TStream);
+procedure TGLBaseMesh.LoadFromStream(const fileName : String; aStream : TStream);
 var
    newVectorFile : TVectorFile;
    vectorFileClass : TVectorFileClass;
@@ -4379,7 +4379,7 @@ end;
 
 // SaveToFile
 //
-procedure TBaseMesh.SaveToFile(const filename : String);
+procedure TGLBaseMesh.SaveToFile(const filename : String);
 var
    fs : TFileStream;
 begin
@@ -4395,7 +4395,7 @@ end;
 
 // SaveToStream
 //
-procedure TBaseMesh.SaveToStream(const fileName : String; aStream : TStream);
+procedure TGLBaseMesh.SaveToStream(const fileName : String; aStream : TStream);
 var
    newVectorFile : TVectorFile;
    vectorFileClass : TVectorFileClass;
@@ -4415,7 +4415,7 @@ end;
 
 // AddDataFromFile
 //
-procedure TBaseMesh.AddDataFromFile(const filename : String);
+procedure TGLBaseMesh.AddDataFromFile(const filename : String);
 var
    fs : TFileStream;
 begin
@@ -4431,7 +4431,7 @@ end;
 
 // AddDataFromStream
 //
-procedure TBaseMesh.AddDataFromStream(const filename : String; aStream : TStream);
+procedure TGLBaseMesh.AddDataFromStream(const filename : String; aStream : TStream);
 var
    newVectorFile : TVectorFile;
    vectorFileClass : TVectorFileClass;
@@ -4454,7 +4454,7 @@ end;
 
 // GetExtents
 //
-procedure TBaseMesh.GetExtents(var min, max : TAffineVector);
+procedure TGLBaseMesh.GetExtents(var min, max : TAffineVector);
 var
    i, k : Integer;
    lMin, lMax : TAffineVector;
@@ -4475,7 +4475,7 @@ end;
 
 // GetBarycenter
 //
-function TBaseMesh.GetBarycenter : TAffineVector;
+function TGLBaseMesh.GetBarycenter : TAffineVector;
 var
    i, nb : Integer;
 begin
@@ -4489,7 +4489,7 @@ end;
 
 // SetMaterialLibrary
 //
-procedure TBaseMesh.SetMaterialLibrary(const val : TGLMaterialLibrary);
+procedure TGLBaseMesh.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if FMaterialLibrary<>val then begin
       if Assigned(FMaterialLibrary) then begin
@@ -4505,7 +4505,7 @@ end;
 
 // SetNormalsOrientation
 //
-procedure TBaseMesh.SetNormalsOrientation(const val : TMeshNormalsOrientation);
+procedure TGLBaseMesh.SetNormalsOrientation(const val : TMeshNormalsOrientation);
 begin
    if val<>FNormalsOrientation then begin
       FNormalsOrientation:=val;
@@ -4515,7 +4515,7 @@ end;
 
 // SetOverlaySkeleton
 //
-procedure TBaseMesh.SetOverlaySkeleton(const val : Boolean);
+procedure TGLBaseMesh.SetOverlaySkeleton(const val : Boolean);
 begin
    if FOverlaySkeleton<>val then begin
       FOverlaySkeleton:=val;
@@ -4525,7 +4525,7 @@ end;
 
 // Notification
 //
-procedure TBaseMesh.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLBaseMesh.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if (Operation=opRemove) and (AComponent=FMaterialLibrary) then
       MaterialLibrary:=nil;
@@ -4534,7 +4534,7 @@ end;
 
 // AxisAlignedDimensions
 //
-function TBaseMesh.AxisAlignedDimensions : TVector;
+function TGLBaseMesh.AxisAlignedDimensions : TVector;
 var
    dMin, dMax : TAffineVector;
 begin
@@ -4549,7 +4549,7 @@ end;
 
 // DestroyHandle
 //
-procedure TBaseMesh.DestroyHandle;
+procedure TGLBaseMesh.DestroyHandle;
 begin
    if Assigned(FMaterialLibrary) then
       MaterialLibrary.DestroyHandles;
@@ -4558,14 +4558,14 @@ end;
 
 // PrepareVectorFile
 //
-procedure TBaseMesh.PrepareVectorFile(aFile : TVectorFile);
+procedure TGLBaseMesh.PrepareVectorFile(aFile : TVectorFile);
 begin
    aFile.NormalsOrientation:=NormalsOrientation;
 end;
 
 // PerformAutoCentering
 //
-procedure TBaseMesh.PerformAutoCentering;
+procedure TGLBaseMesh.PerformAutoCentering;
 var
    delta, min, max : TAffineVector;
 begin
@@ -4588,14 +4588,14 @@ end;
 
 // PrepareMesh
 //
-procedure TBaseMesh.PrepareMesh;
+procedure TGLBaseMesh.PrepareMesh;
 begin
    StructureChanged;
 end;
 
 // SetUseMeshMaterials
 //
-procedure TBaseMesh.SetUseMeshMaterials(const val : Boolean);
+procedure TGLBaseMesh.SetUseMeshMaterials(const val : Boolean);
 begin
    if val<>FUseMeshMaterials then begin
       FUseMeshMaterials:=val;
@@ -4605,7 +4605,7 @@ end;
 
 // BuildList
 //
-procedure TBaseMesh.BuildList(var rci : TRenderContextInfo);
+procedure TGLBaseMesh.BuildList(var rci : TRenderContextInfo);
 var
    states : TGLStates;
 begin
@@ -4620,7 +4620,7 @@ end;
 
 // DoRender
 //
-procedure TBaseMesh.DoRender(var rci : TRenderContextInfo;
+procedure TGLBaseMesh.DoRender(var rci : TRenderContextInfo;
                              renderSelf, renderChildren : Boolean);
 begin
    if renderSelf then begin
@@ -4657,7 +4657,7 @@ end;
 
 // StructureChanged
 //
-procedure TBaseMesh.StructureChanged;
+procedure TGLBaseMesh.StructureChanged;
 begin
    FAxisAlignedDimensionsCache[0]:=-1;
    MeshObjects.Prepare;
@@ -4666,7 +4666,7 @@ end;
 
 // RayCastIntersect
 //
-function TBaseMesh.RayCastIntersect(const rayStart, rayVector : TVector;
+function TGLBaseMesh.RayCastIntersect(const rayStart, rayVector : TVector;
                                     intersectPoint : PVector = nil;
                                     intersectNormal : PVector = nil) : Boolean;
 var
@@ -5112,19 +5112,19 @@ begin
 end;
 
 // ------------------
-// ------------------ TAnimationControler ------------------
+// ------------------ TGLAnimationControler ------------------
 // ------------------
 
 // Create
 //
-constructor TAnimationControler.Create(AOwner: TComponent);
+constructor TGLAnimationControler.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
 end;
 
 // Destroy
 //
-destructor TAnimationControler.Destroy;
+destructor TGLAnimationControler.Destroy;
 begin
    SetActor(nil);
 	inherited Destroy;
@@ -5132,7 +5132,7 @@ end;
 
 // Notification
 //
-procedure TAnimationControler.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLAnimationControler.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if (AComponent=FActor) and (Operation=opRemove) then
       SetActor(nil); 
@@ -5140,7 +5140,7 @@ end;
 
 // DoChange
 //
-procedure TAnimationControler.DoChange;
+procedure TGLAnimationControler.DoChange;
 begin
    if Assigned(FActor) and (AnimationName<>'') then
       FActor.NotifyChange(Self);
@@ -5148,7 +5148,7 @@ end;
 
 // SetActor
 //
-procedure TAnimationControler.SetActor(const val : TGLActor);
+procedure TGLAnimationControler.SetActor(const val : TGLActor);
 begin
    if FActor<>val then begin
       if Assigned(FActor) then
@@ -5163,7 +5163,7 @@ end;
 
 // SetAnimationName
 //
-procedure TAnimationControler.SetAnimationName(const val : TActorAnimationName);
+procedure TGLAnimationControler.SetAnimationName(const val : TActorAnimationName);
 begin
    if FAnimationName<>val then begin
       FAnimationName:=val;
@@ -5173,7 +5173,7 @@ end;
 
 // SetRatio
 //
-procedure TAnimationControler.SetRatio(const val : Single);
+procedure TGLAnimationControler.SetRatio(const val : Single);
 begin
    if FRatio<>val then begin
       FRatio:=ClampValue(val, 0, 1);
@@ -5183,7 +5183,7 @@ end;
 
 // Apply
 //
-function TAnimationControler.Apply(var lerpInfo : TBlendedLerpInfo) : Boolean;
+function TGLAnimationControler.Apply(var lerpInfo : TBlendedLerpInfo) : Boolean;
 var
    anim : TActorAnimation;
    baseDelta : Integer;
@@ -5241,7 +5241,7 @@ end;
 
 // RegisterControler
 //
-procedure TGLActor.RegisterControler(aControler : TAnimationControler);
+procedure TGLActor.RegisterControler(aControler : TGLAnimationControler);
 begin
    if not Assigned(FControlers) then
       FControlers:=TList.Create;
@@ -5251,7 +5251,7 @@ end;
 
 // UnRegisterControler
 //
-procedure TGLActor.UnRegisterControler(aControler : TAnimationControler);
+procedure TGLActor.UnRegisterControler(aControler : TGLAnimationControler);
 begin
    Assert(Assigned(FControlers));
    FControlers.Remove(aControler);
@@ -5443,7 +5443,7 @@ begin
                end;
                k:=1;
                for i:=0 to FControlers.Count-1 do
-                  if TAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
+                  if TGLAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
                      Inc(k);
                SetLength(lerpInfos, k);
                Skeleton.BlendedLerps(lerpInfos);
@@ -5814,8 +5814,8 @@ procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
    var
       matLib : TGLMaterialLibrary;
    begin
-      if Owner is TBaseMesh then begin
-         matLib:=TBaseMesh(GetOwner).MaterialLibrary;
+      if Owner is TGLBaseMesh then begin
+         matLib:=TGLBaseMesh(GetOwner).MaterialLibrary;
          if Assigned(matLib) then begin
             if matLib.Materials.GetLibMaterialByName(name)=nil then begin
                if CompareText(name, 'null.bmp')<>0 then begin
@@ -5957,7 +5957,8 @@ initialization
    RegisterClasses([TGLFreeForm, TGLActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
                     TSkeletonMeshObject, TMeshObject, TSkeletonFrame,
                     TMorphableMeshObject, TFaceGroup, TFGVertexIndexList,
-                    TFGVertexNormalTexIndexList, TAnimationControler]);
+                    TFGVertexNormalTexIndexList, TGLAnimationControler,
+                    TFGIndexTexCoordList]);
 
 finalization
 

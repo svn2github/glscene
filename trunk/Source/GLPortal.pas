@@ -30,7 +30,7 @@ type
 
       public
          { Public Declarations }
-         constructor CreateOwned(AOwner : TBaseMesh);
+         constructor CreateOwned(AOwner : TGLBaseMesh);
          destructor Destroy; override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
@@ -109,7 +109,7 @@ type
    // TGLPortal
    //
    {: Portal Renderer class. }
-   TGLPortal = class(TBaseMesh)
+   TGLPortal = class(TGLBaseMesh)
       private
          { Private Declarations }
 
@@ -142,7 +142,7 @@ uses SysUtils;
 
 // CreateOwned
 //
-constructor TPortalMeshObjectList.CreateOwned(AOwner : TBaseMesh);
+constructor TPortalMeshObjectList.CreateOwned(AOwner : TGLBaseMesh);
 begin
    inherited CreateOwned(AOwner);
 end;

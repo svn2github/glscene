@@ -19,7 +19,7 @@ triangle, with a little random addition so things look better.
 Pretty neat :)
 
 Note: the owner of this behaviour should be any class that derives
-from TBaseMesh class or any other class derived from TBaseMesh.
+from TGLBaseMesh class or any other class derived from TGLBaseMesh.
 Also, the structure of the mesh is lost after the caching of information,
 so if you'll need the mesh after exploding it, you'll have to save the
 MeshObjects property of the mesh, OR load it again.
@@ -163,13 +163,13 @@ p1, p2, p3, v1, v2, posi: TAffineVector;
 normal: TVector;
 begin
      //make sure we can explode this object
-     if not OwnerBaseSceneObject.InheritsFrom(TBaseMesh) then begin
+     if not OwnerBaseSceneObject.InheritsFrom(TGLBaseMesh) then begin
           enabled:= false;
           exit;
      end;
 
      //get all the triangles of all the meshObjects
-     FTriList:= TBaseMesh(OwnerBaseSceneObject).MeshObjects.ExtractTriangles;
+     FTriList:= TGLBaseMesh(OwnerBaseSceneObject).MeshObjects.ExtractTriangles;
      FaceCount:= FTriList.Count div 3;
 
      //set initial direction, rotation and position
@@ -211,8 +211,8 @@ begin
      end;
 
      //Dispose the struture of the mesh
-     TBaseMesh(OwnerBaseSceneObject).MeshObjects.Clear;
-     TBaseMesh(OwnerBaseSceneObject).StructureChanged;
+     TGLBaseMesh(OwnerBaseSceneObject).MeshObjects.Clear;
+     TGLBaseMesh(OwnerBaseSceneObject).StructureChanged;
 end;
 
 procedure TGLBExplosionFX.Render(sceneBuffer : TGLSceneBuffer; var rci : TRenderContextInfo);

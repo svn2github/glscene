@@ -1,5 +1,9 @@
 This document lists the class/unit name changes since v0.9:
 
+06/11/02
+TBaseMesh -> TGLBaseMesh
+TAnimationControler -> TGLAnimationControler
+
 30/10/02
 TBitmapFont -> TGLBitmapFont
 TWindowsBitmapFont -> TGLWindowsBitmapFont

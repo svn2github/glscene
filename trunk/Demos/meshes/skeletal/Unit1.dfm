@@ -206,7 +206,7 @@ object Form1: TForm1
     Left = 56
     Top = 40
   end
-  object AnimationControler1: TAnimationControler
+  object AnimationControler1: TGLAnimationControler
     Left = 40
     Top = 80
   end
