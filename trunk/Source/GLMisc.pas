@@ -245,6 +245,7 @@ type
          procedure SetVector(const x, y, z : Single); overload;
          procedure SetVector(const x, y, z, w : Single); overload;
          procedure SetPoint(const x, y, z : Single);
+         procedure SetToZero;
 
          function AsAddress : PGLFloat;
 
@@ -1360,6 +1361,17 @@ procedure TGLCoordinates.SetVector(const x, y, z, w : Single);
 begin
    Assert(FStyle<>csPoint);
    Geometry.SetVector(FCoords, x, y, z, w);
+	NotifyChange(Self);
+end;
+
+// SetToZero
+//
+procedure TGLCoordinates.SetToZero;
+begin
+   FCoords[0] := 0;
+   FCoords[1] := 0;
+   FCoords[2] := 0;
+   FCoords[3] := 0;
 	NotifyChange(Self);
 end;
 
