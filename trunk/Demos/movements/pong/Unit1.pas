@@ -2,7 +2,9 @@
 
 	Aim of the game is to prevent the ball from bouncing out of the board,
 	each time the ball bumps on your pad you score a frag (er... point ;).<br>
-	Move the pad with your mouse.
+	Move the pad with your mouse.<p>
+
+   The demo makes use of stencil-based shadow volumes.
 }
 unit Unit1;
 
@@ -10,7 +12,8 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, GLMisc, GLTexture, Geometry, ExtCtrls,
-  Classes, Controls, GLCadencer, GLWin32Viewer, GLSpaceText;
+  Classes, Controls, GLCadencer, GLWin32Viewer, GLSpaceText, GLShadowPlane,
+  GLShadowVolume;
 
 type
   TForm1 = class(TForm)
@@ -29,6 +32,7 @@ type
     SpaceText1: TGLSpaceText;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
+    GLShadowVolume: TGLShadowVolume;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
@@ -87,7 +91,7 @@ begin
 	else if px>cPadMinMax then
 		px:=cPadMinMax;
 	Pad.Position.X:=px;
-   GLCadencer1.Reset;
+//   GLCadencer1.Reset;
    // update the whole stuff now!
    GLCadencer1.Progress;
 end;

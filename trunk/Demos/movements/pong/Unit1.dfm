@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 210
-  Top = 112
+  Left = 117
+  Top = 93
   Width = 500
   Height = 246
   BorderWidth = 5
@@ -22,43 +22,65 @@ object Form1: TForm1
     Height = 207
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
   end
   object GLScene1: TGLScene
     Left = 8
     Top = 40
-    object Plane1: TGLPlane
-      Position.Coordinates = {0000000000000000000000BF0000803F}
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'Mat'
-      Height = 10
-      Width = 15
-      object Cube2: TGLCube
-        Position.Coordinates = {0000F0C0000000000000803E0000803F}
+    object GLShadowVolume: TGLShadowVolume
+      Lights = <
+        item
+          LightSource = GLLightSource1
+        end>
+      Occluders = <
+        item
+          Caster = Ball
+        end
+        item
+          Caster = Pad
+        end>
+      Options = [svoCacheSilhouettes, svoWorldScissorClip, svoDesignVisible]
+      object Plane1: TGLPlane
+        Position.Coordinates = {0000000000000000000000BF0000803F}
         Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'Edge'
-        CubeSize = {0000003F000020410000003F}
+        Material.LibMaterialName = 'Mat'
+        Height = 10
+        Width = 15
+        NoZWrite = False
+        object Cube1: TGLCube
+          Position.Coordinates = {000000000000A0400000803E0000803F}
+          Material.MaterialLibrary = GLMaterialLibrary1
+          Material.LibMaterialName = 'Edge'
+          CubeSize = {000078410000003F0000003F}
+        end
+        object Cube2: TGLCube
+          Position.Coordinates = {0000F0C0000000000000803E0000803F}
+          Material.MaterialLibrary = GLMaterialLibrary1
+          Material.LibMaterialName = 'Edge'
+          CubeSize = {0000003F000020410000003F}
+        end
+        object Cube3: TGLCube
+          Position.Coordinates = {0000F040000000000000803E0000803F}
+          Material.MaterialLibrary = GLMaterialLibrary1
+          Material.LibMaterialName = 'Edge'
+          CubeSize = {0000003F000020410000003F}
+        end
       end
-      object Cube1: TGLCube
-        Position.Coordinates = {000000000000A0400000803E0000803F}
+      object Ball: TGLSphere
         Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'Edge'
-        CubeSize = {000078410000003F0000003F}
+        Material.LibMaterialName = 'Ball'
+        Radius = 0.400000005960464
+        Slices = 12
+        Stacks = 9
       end
-      object Cube3: TGLCube
-        Position.Coordinates = {0000F040000000000000803E0000803F}
+      object Pad: TGLCube
+        Position.Coordinates = {00000000666696C0000080BE0000803F}
         Material.MaterialLibrary = GLMaterialLibrary1
-        Material.LibMaterialName = 'Edge'
-        CubeSize = {0000003F000020410000003F}
+        Material.LibMaterialName = 'Pad'
+        CubeSize = {000000400000003F0000003F}
       end
-    end
-    object Ball: TGLSphere
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'Ball'
-      Radius = 0.400000005960464
-      Slices = 12
-      Stacks = 9
     end
     object DummyCube1: TGLDummyCube
       CubeSize = 1
@@ -76,12 +98,6 @@ object Form1: TForm1
       Position.Coordinates = {00004040000080BF0000A0400000803F}
       Specular.Color = {0000803F0000803F0000803F0000803F}
       SpotCutOff = 180
-    end
-    object Pad: TGLCube
-      Position.Coordinates = {00000000666696C0000080BE0000803F}
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'Pad'
-      CubeSize = {000000400000003F0000003F}
     end
     object SpaceText1: TGLSpaceText
       Direction.Coordinates = {00000000EA4677BFEE83843E00000000}
