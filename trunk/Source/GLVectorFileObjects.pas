@@ -3013,7 +3013,6 @@ begin
                Position.AngleCombine(blendPositions, 1);
             end else
                Position.Combine(lerpInfos[i].externalPositions, 1);
-            Position.Combine(Frames[0].Position, -1);
             Inc(i);
          end;
          blendPositions.Free;
@@ -3036,7 +3035,6 @@ begin
                      Rotation.AngleCombine(blendRotations, 1);
                   end else
                      Rotation.AngleCombine(lerpInfos[i].externalRotations, 1);
-                  Rotation.AngleCombine(Frames[0].Rotation, -1);
                   Inc(i);
                end;
                blendRotations.Free;
