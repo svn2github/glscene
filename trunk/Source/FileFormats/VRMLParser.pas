@@ -6,6 +6,7 @@
    VRML file format parser.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>25/01/05 - SG - Added ShapeHints (creaseAngle), Normal and TexCoord support
       <li>14/01/05 - SG - Added to CVS
    </ul></font>
 }
@@ -101,6 +102,13 @@ type
       property Value : String read FValue write FValue;
   end;
 
+  TVRMLShapeHints = class (TVRMLNode)
+    private
+      FCreaseAngle : Single;
+    public
+      property CreaseAngle : Single read FCreaseAngle write FCreaseAngle;
+  end;
+
   TVRMLTransform = class (TVRMLNode)
     private
       FCenter : TVector3f;
@@ -134,10 +142,15 @@ type
       procedure ReadUnknown(unknown_token : String; defname : String = '');
       procedure ReadPointArray(defname : String = '');
       procedure ReadCoordIndexArray(defname : String = '');
+      procedure ReadNormalIndexArray(defname : String = '');
+      procedure ReadTextureCoordIndexArray(defname : String = '');
       procedure ReadCoordinate3(defname : String = '');
+      procedure ReadNormal(defname : String = '');
+      procedure ReadTextureCoordinate2(defname : String = '');
       procedure ReadMaterial(defname : String = '');
       procedure ReadIndexedFaceSet(defname : String = '');
       procedure ReadTransform(defname : String = '');
+      procedure ReadShapeHints(defname : String = '');
       procedure ReadSeparator(defname : String = '');
       procedure ReadGroup(defname : String = '');
       procedure ReadDef;
@@ -477,6 +490,58 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
+// ReadNormalIndexArray
+//
+procedure TVRMLParser.ReadNormalIndexArray(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLIntegerArray.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='NormalIndexArray';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '[';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token <> ']' then
+      TVRMLIntegerArray(FCurrentNode).Values.Add(StrToInt(token));
+  until token = ']';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
+// ReadTextureCoordIndexArray
+//
+procedure TVRMLParser.ReadTextureCoordIndexArray(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLIntegerArray.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='TextureCoordIndexArray';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '[';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token <> ']' then
+      TVRMLIntegerArray(FCurrentNode).Values.Add(StrToInt(token));
+  until token = ']';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
 // ReadMaterial
 //
 procedure TVRMLParser.ReadMaterial(defname : String);
@@ -551,6 +616,62 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
+// ReadNormal
+//
+procedure TVRMLParser.ReadNormal(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLNode.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='Normal';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '{';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token = 'vector' then
+      ReadPointArray
+    else if token<>'}' then
+      ReadUnknown(token);
+  until token = '}';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
+// ReadTextureCoordinate2
+//
+procedure TVRMLParser.ReadTextureCoordinate2(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLNode.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='TextureCoordinate2';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '{';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token = 'point' then
+      ReadPointArray
+    else if token<>'}' then
+      ReadUnknown(token);
+  until token = '}';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
 // ReadIndexedFaceSet
 //
 procedure TVRMLParser.ReadIndexedFaceSet(defname : String = '');
@@ -572,6 +693,10 @@ begin
       exit
     else if token = 'coordindex' then
       ReadCoordIndexArray
+    else if token = 'normalindex' then
+      ReadNormalIndexArray
+    else if token = 'texturecoordindex' then
+      ReadTextureCoordIndexArray
     else if token<>'}' then
       ReadUnknown(token);
   until token = '}';
@@ -613,6 +738,34 @@ begin
   FCurrentNode:=FCurrentNode.Parent;
 end;
 
+// ReadShapeHints
+//
+procedure TVRMLParser.ReadShapeHints(defname : String = '');
+var
+  token : String;
+begin
+  FCurrentNode:=TVRMLShapeHints.CreateOwned(FCurrentNode);
+  FCurrentNode.Name:='ShapeHints';
+  FCurrentNode.DefName:=defname;
+
+  repeat
+    token:=ReadToken;
+    if token = '' then exit;
+  until token = '{';
+
+  repeat
+    token:=ReadToken;
+    if token = '' then
+      exit
+    else if token = 'creaseangle' then
+      TVRMLShapeHints(FCurrentNode).CreaseAngle:=ReadSingle
+    else if token<>'}' then
+      ReadUnknown(token);
+  until token = '}';
+
+  FCurrentNode:=FCurrentNode.Parent;
+end;
+
 // ReadSeparator
 //
 procedure TVRMLParser.ReadSeparator(defname : String = '');
@@ -640,12 +793,18 @@ begin
       ReadSeparator
     else if token = 'use' then
       ReadUse
+    else if token = 'shapehints' then
+      ReadShapeHints
     else if token = 'transform' then
       ReadTransform
     else if token = 'material' then
       ReadMaterial
     else if token = 'coordinate3' then
       ReadCoordinate3
+    else if token = 'normal' then
+      ReadNormal
+    else if token = 'texturecoordinate2' then
+      ReadTextureCoordinate2
     else if token = 'indexedfaceset' then
       ReadIndexedFaceSet
     else if token<>'}' then
@@ -682,6 +841,8 @@ begin
       ReadSeparator
     else if token = 'use' then
       ReadUse
+    else if token = 'shapehints' then
+      ReadShapeHints
     else if token = 'transform' then
       ReadTransform
     else if token = 'material' then
@@ -752,6 +913,8 @@ begin
         ReadSeparator
       else if token = 'use' then
         ReadUse
+      else if token = 'shapehints' then
+        ReadShapeHints
       else if token = 'transform' then
         ReadTransform
       else if token = 'material' then
