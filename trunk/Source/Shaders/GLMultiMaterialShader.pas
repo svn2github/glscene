@@ -4,6 +4,8 @@
    its assigned MaterialLibrary.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/05/04 - Mrqzzz - Re-added design-time rendering option
+                          (seems stable now)
       <li>29/07/03 - SG - Removed design-time rendering option
                           (shader unstable at design-time)
       <li>29/07/03 - SG - Creation
@@ -21,6 +23,9 @@ type
       private
          FPass : Integer;
          FMaterialLibrary : TGLMaterialLibrary;
+         FVisibleAtDesignTime: boolean;
+         FShaderActiveAtDesignTime : boolean;
+    procedure SetVisibleAtDesignTime(const Value: boolean);
       protected
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
@@ -29,6 +34,7 @@ type
          constructor Create(aOwner : TComponent); override;
       published
          property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+         property VisibleAtDesignTime : boolean read FVisibleAtDesignTime write SetVisibleAtDesignTime;
    end;
 
 procedure Register;
@@ -56,6 +62,7 @@ constructor TGLMultiMaterialShader.Create(aOwner : TComponent);
 begin
    inherited;
    ShaderStyle:=ssReplace;
+   FVisibleAtDesignTime := False;
 end;
 
 // DoApply
@@ -64,8 +71,10 @@ procedure TGLMultiMaterialShader.DoApply(var rci: TRenderContextInfo; Sender : T
 begin
    if not Assigned(FMaterialLibrary) then exit;
 
+   FShaderActiveAtDesignTime := FVisibleAtDesignTime;
+
    FPass:=1;
-   if not (csDesigning in ComponentState) then begin
+   if (not (csDesigning in ComponentState)) or FShaderActiveAtDesignTime then begin
       glPushAttrib(GL_ALL_ATTRIB_BITS);
       glEnable(GL_DEPTH_TEST);
       glDepthFunc(GL_LEQUAL);
@@ -81,7 +90,7 @@ function TGLMultiMaterialShader.DoUnApply(
 begin
    Result:=False;
    if not Assigned(FMaterialLibrary) then exit;
-   if not (csDesigning in ComponentState) then begin
+   if (not (csDesigning in ComponentState)) or FShaderActiveAtDesignTime then begin
       if FMaterialLibrary.Materials.Count>0 then
          FMaterialLibrary.Materials[FPass-1].UnApply(rci);
       if (FPass >= FMaterialLibrary.Materials.Count) then begin
@@ -104,6 +113,14 @@ begin
       FMaterialLibrary:=val;
       NotifyChange(Self);
    end;
+end;
+
+procedure TGLMultiMaterialShader.SetVisibleAtDesignTime(
+  const Value: boolean);
+begin
+  FVisibleAtDesignTime := Value;
+  if csDesigning in ComponentState then
+     NotifyChange(Self);
 end;
 
 end.
