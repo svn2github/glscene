@@ -17,7 +17,7 @@ PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe \
   expolygon.exe keymap.exe objmove.exe splines.exe customquad.exe PathControl.exe \
   Multitexture.exe texformat.exe terrain.exe Recorder.exe bmpfont.exe boom.exe \
   candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering.exe \
-  warping.exe
+  warping.exe raycast.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -161,4 +161,7 @@ centering.exe: meshes\centering\centering.dpr
   $(DCC)
 
 warping.exe: specialsFX\warping\warping.dpr
+  $(DCC)
+
+raycast.exe: collisions\raycast\raycast.dpr
   $(DCC)
