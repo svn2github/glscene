@@ -25,7 +25,7 @@ type
    //
    THeightTileInfo = packed record
       left, top, width, height : Integer;
-      seaTile : Boolean;      // true if contains exclusively sea
+      min, max, average : SmallInt;
       fileOffset : Integer;   // offset to tile data in the file
    end;
    PHeightTileInfo = ^THeightTileInfo;
@@ -87,11 +87,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils;
+uses SysUtils, Dialogs;
 
 const
    cFileVersion = 'HTF1.0';
-   cHeaderSize = 10;
+   cHeaderSize = 18;
 
 // ------------------
 // ------------------ THeightTileFile ------------------
@@ -160,7 +160,7 @@ procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArr
       i : Integer;
       v, delta : SmallInt;
    begin
-      Result:=2;
+      Result:=Integer(dest);
       v:=src[0];
       PSmallIntArray(dest)[0]:=v;
       dest:=PShortIntArray(Integer(dest)+2);
@@ -171,16 +171,15 @@ procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArr
          if Abs(delta)<=127 then begin
             dest[0]:=ShortInt(delta);
             dest:=PShortIntArray(Integer(dest)+1);
-            Inc(Result);
          end else begin
             dest[0]:=-128;
             dest:=PShortIntArray(Integer(dest)+1);
             PSmallIntArray(dest)[0]:=v;
             dest:=PShortIntArray(Integer(dest)+2);
-            Inc(Result, 3);
          end;
          Inc(i);
       end;
+      Result:=Integer(dest)-Result;
    end;
 
    function RLEEncode(src : PSmallIntArray; dest : PChar) : Integer;
@@ -188,32 +187,29 @@ procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArr
       v : SmallInt;
       i, n : Integer;
    begin
-      i:=1;
-      n:=0;
-      v:=src[0];
-      PSmallIntArray(dest)[0]:=v;
-      dest:=PChar(Integer(dest)+2);
-      Result:=3;
+      i:=0;
+      Result:=Integer(dest);
       while (i<aWidth) do begin
-         if src[i]=v then begin
+         v:=src[i];
+         Inc(i);
+         n:=0;
+         PSmallIntArray(dest)[0]:=v;
+         Inc(dest, 2);
+         while (src[i]=v) and (i<aWidth) do begin
             Inc(n);
             if n=255 then begin
-               dest[0]:=Char(n);
-               dest:=PChar(Integer(dest)+1);
+               dest[0]:=#255;
+               Inc(dest);
                n:=0;
-               Inc(Result);
             end;
-         end else begin
-            dest[0]:=Char(n);
-            dest:=PChar(Integer(dest)+1);
-            n:=0;
-            PSmallIntArray(dest)[0]:=v;
-            dest:=PChar(Integer(dest)+2);
-            Inc(Result, 3);
+            Inc(i);
          end;
-         Inc(i);
+         if (i<aWidth) or (n>0) then begin
+            dest[0]:=Char(n);
+            Inc(dest);
+         end;
       end;
-      dest[0]:=Char(n);
+      Result:=Integer(dest)-Result;
    end;
 
 var
@@ -222,32 +218,46 @@ var
    buf, bestBuf : array of Byte;
    bestLength, len : Integer;
    bestMethod : Byte;   // 0=RAW, 1=Diff, 2=RLE
+   av : Int64;
+   v : SmallInt;
 begin
    SetLength(buf, FTileSize*4);     // worst case situation
-   SetLength(bestBuf, FTileSize*2); // worst case situation
+   SetLength(bestBuf, FTileSize*4); // worst case situation
 
    with FHeightTile.info do begin
-      seaTile:=False;
+      min:=src[0];
+      max:=src[0];
+      av:=src[0];
+      for y:=1 to FTileSize*FTileSize-1 do begin
+         v:=Src[y];
+         if v<min then min:=v else if v>max then max:=v;
+         average:=average+v;
+      end;
+      average:=av div (FTileSize*FTileSize);
+
+      if min=max then Exit; // no need to store anything
+
    end;
 
-   bestLength:=FTileSize*2;
-   Move(src[0], bestBuf[0], bestLength);
-   bestMethod:=0;
    for y:=0 to FTileSize-1 do begin
       p:=@src[FTileSize*y];
+      // Default encoding = RAW
+      bestLength:=FTileSize*2;
+      bestMethod:=0;
+      Move(src[0], bestBuf[0], bestLength);
       // Diff encoding
       len:=DiffEncode(p, PShortIntArray(@buf[0]));
       if len<bestLength then begin
          bestLength:=len;
          bestMethod:=1;
-         Move(p[0], bestBuf[0], bestLength);
+         Move(buf[0], bestBuf[0], bestLength);
       end;
       // RLE encoding
       len:=RLEEncode(p, PChar(@buf[0]));
       if len<bestLength then begin
          bestLength:=len;
          bestMethod:=2;
-         Move(p[0], bestBuf[0], bestLength);
+         Move(buf[0], bestBuf[0], bestLength);
       end;
       // Write to file
       FFile.Write(bestMethod, 1);
@@ -260,7 +270,7 @@ end;
 //
 procedure THeightTileFile.UnPackTile(src : PShortIntArray);
 var
-   width : Integer;
+   aWidth : Integer;
 
    procedure DiffDecode(var src : PShortIntArray; dest : PSmallIntArray);
    var
@@ -270,44 +280,47 @@ var
    begin
       i:=0;
       k:=0;
-      while i<width do begin
+      while i<aWidth do begin
          v:=PSmallIntArray(@src[k])[0];
          Inc(k, 2);
          dest[i]:=v;
          Inc(i);
-         while (i<width) and (src[k]<>-128) do begin
+         while (i<aWidth) and (src[k]<>-128) do begin
             delta:=src[k];
             Inc(k);
             v:=v+delta;
             dest[i]:=v;
             Inc(i);
          end;
+         if i<aWidth then Inc(k);
       end;
       src:=@src[k];
    end;
 
    procedure RLEDecode(var src : PShortIntArray; dest : PSmallIntArray);
    var
-      i, k, n, j : Integer;
+      i, n, j : Integer;
       v : SmallInt;
    begin
       i:=0;
-      k:=0;
-      while i<width do begin
-         v:=PSmallIntArray(@src[k])[0];
-         Inc(k, 2);
-         dest[i]:=v;
-         Inc(i);
+      while i<aWidth do begin
+         v:=PSmallIntArray(@src[0])[0];
+         src:=PShortIntArray(Integer(src)+2);
          repeat
-            n:=Integer(src[k]);
-            Inc(k);
-            for j:=1 to n do begin
+            if i=aWidth-1 then begin
                dest[i]:=v;
                Inc(i);
+               n:=0;
+            end else begin
+               n:=Integer(src[0] and 255);
+               src:=PShortIntArray(Integer(src)+1);
+               for j:=0 to n do begin
+                  dest[i]:=v;
+                  Inc(i);
+               end;
             end;
-         until n<>255;
+         until (n<255) or (i>=aWidth);
       end;
-      src:=@src[k];
    end;
 
 var
@@ -315,9 +328,17 @@ var
    method : Byte;
    dest : PSmallIntArray;
 begin
-   width:=FHeightTile.info.width;
-   SetLength(FHeightTile.Data, width*FHeightTile.info.height);
-   dest:=@FHeightTile.Data[0];
+   with FHeightTile.info do begin
+      aWidth:=width;
+      dest:=@FHeightTile.Data[0];
+
+      if min=max then begin
+         for y:=0 to width*height-1 do
+            dest[y]:=min;
+         Exit;
+      end;
+   end;
+
    s2:=FHeightTile.info.width*2;
    for y:=0 to FHeightTile.info.height-1 do begin
       method:=src[0];
