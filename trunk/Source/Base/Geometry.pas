@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/01/02 - EG - New Quaternion<->Matrix code (Alex Grigny de Castro)
       <li>29/01/02 - EG - Fixed AngleLerp, added DistanceBetweenAngles (Alex Grigny de Castro)
       <li>20/01/02 - EG - Added VectorArrayAdd, ScaleFloatArray, OffsetFloatArray
       <li>11/01/02 - EG - 3DNow Optim for VectorAdd (hmg)
@@ -805,7 +806,7 @@ function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
    Assumes matrix is used to multiply column vector on the left:<br>
    vnew = mat vold.<p>
    Works correctly for right-handed coordinate system and right-handed rotations. }
-function QuaternionToMatrix(const Q: TQuaternion): TMatrix;
+function QuaternionToMatrix(quat : TQuaternion) : TMatrix;
 //: Constructs quaternion from angle (in deg) and axis
 function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVector) : TQuaternion;
 //: Constructs quaternion from Euler angles
@@ -4491,37 +4492,36 @@ end;
 function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
 // the matrix must be a rotation matrix!
 var
-  traceMat, s : Extended;
+   traceMat, s: Extended;
 begin
    traceMat := 1 + mat[0,0] + mat[1,1] + mat[2,2];
    if traceMat > EPSILON2 then begin
-      s := Sqrt(traceMat);
-      Result.RealPart := 0.5 * s;
-      s := 0.5/s;
-      Result.ImagPart[0] := ( mat[2,1] - mat[1,2] ) * s;
-      Result.ImagPart[1] := ( mat[0,2] - mat[2,0] ) * s;
-      Result.ImagPart[2] := ( mat[1,0] - mat[0,1] ) * s;
-   end else if (mat[0,0] > mat[1,1]) and (mat[0,0] > mat[2,2]) then begin  // Row 0:
+      s := Sqrt(traceMat) * 2;
+      Result.ImagPart[0] := ( mat[1,2] - mat[2,1] ) / s;
+      Result.ImagPart[1] := ( mat[2,0] - mat[0,2] ) / s;
+      Result.ImagPart[2] := ( mat[0,1] - mat[1,0] ) / s;
+      Result.RealPart := 0.25 * s;
+   end else if (mat[0,0] > mat[1,1]) and (mat[0,0] > mat[2,2]) then
+   begin  // Row 0:
       s := Sqrt(MaxFloat(EPSILON2, 1.0 + mat[0,0] - mat[1,1] - mat[2,2])) * 2;
       Result.ImagPart[0] := 0.25 * s;
-      s := 1/s;
-      Result.ImagPart[1] := (mat[1,0] + mat[0,1]) * s;
-      Result.ImagPart[2] := (mat[0,2] + mat[2,0]) * s;
-      Result.RealPart :=    (mat[2,1] - mat[1,2]) * s;
-   end else if (mat[1,1] > mat[2,2]) then begin  // Row 1:
-      s := Sqrt(MaxFloat(EPSILON2, 1.0 + mat[1,1] - mat[0,0] - mat[2,2])) * 2;
+      Result.ImagPart[1] := (mat[0,1] + mat[1,0]) / s;
+      Result.ImagPart[2] := (mat[2,0] + mat[0,2]) / s;
+      Result.RealPart := (mat[1,2] - mat[2,1]) / s;
+   end else if (mat[1,1] > mat[2,2]) then
+   begin  // Row 1:
+      s := sqrt(MaxFloat(EPSILON2, 1.0 + mat[1,1] - mat[0,0] - mat[2,2])) * 2;
+      Result.ImagPart[0] := (mat[0,1] + mat[1,0]) / s;
       Result.ImagPart[1] := 0.25 * s;
-      s := 1/s;
-      Result.ImagPart[0] := (mat[1,0] + mat[0,1]) * s;
-      Result.ImagPart[2] := (mat[2,1] + mat[1,2]) * s;
-      Result.RealPart :=    (mat[0,2] - mat[2,0]) * s;
-   end else begin  // Row 2:
-      s := Sqrt(MaxFloat(EPSILON2, 1.0 + mat[2,2] - mat[0,0] - mat[1,1])) * 2;
+      Result.ImagPart[2] := (mat[1,2] + mat[2,1]) / s;
+      Result.RealPart := (mat[2,0] - mat[0,2]) / s;
+   end else
+   begin  // Row 2:
+      s := sqrt(MaxFloat(EPSILON2, 1.0 + mat[2,2] - mat[0,0] - mat[1,1])) * 2;
+      Result.ImagPart[0] := (mat[2,0] + mat[0,2] ) / s;
+      Result.ImagPart[1] := (mat[1,2] + mat[2,1] ) / s;
       Result.ImagPart[2] := 0.25 * s;
-      s := 1/s;
-      Result.ImagPart[0] := (mat[0,2] + mat[2,0] ) * s;
-      Result.ImagPart[1] := (mat[2,1] + mat[1,2] ) * s;
-      Result.RealPart :=    (mat[1,0] - mat[0,1] ) * s;
+      Result.RealPart := (mat[0,1] - mat[1,0] ) / s;
    end;
    NormalizeQuaternion(Result);
 end;
@@ -4545,32 +4545,40 @@ end;
 
 // QuaternionToMatrix
 //
-function QuaternionToMatrix(const Q: TQuaternion): TMatrix;
+function QuaternionToMatrix(quat : TQuaternion) : TMatrix;
 var
-  V: TAffineVector;
-  SinA, CosA,
-  A, B, C: Extended;
-
+   w, x, y, z, xx, xy, xz, xw, yy, yz, yw, zz, zw: Single;
 begin
-  V:=Q.ImagPart;
-  NormalizeVector(V);
-  SinCos(Q.RealPart * 0.5, SinA, CosA);
-  A:=V[X] * SinA;
-  B:=V[Y] * SinA;
-  C:=V[Z] * SinA;
-
-  Result:=IdentityHmgMatrix;
-  Result[X, X]:=1 - 2 * B * B - 2 * C * C;
-  Result[X, Y]:=2 * A * B - 2 * CosA * C;
-  Result[X, Z]:=2 * A * C + 2 * CosA * B;
-
-  Result[Y, X]:=2 * A * B + 2 * CosA * C;
-  Result[Y, Y]:=1 - 2 * A * A - 2 * C * C;
-  Result[Y, Z]:=2 * B * C - 2 * CosA * A;
-
-  Result[Z, X]:=2 * A * C - 2 * CosA * B;
-  Result[Z, Y]:=2 * B * C + 2 * CosA * A;
-  Result[Z, Z]:=1 - 2 * A * A - 2 * B * B;
+   NormalizeQuaternion(quat);
+   w := quat.RealPart;
+   x := quat.ImagPart[0];
+   y := quat.ImagPart[1];
+   z := quat.ImagPart[2];
+   xx := x * x;
+   xy := x * y;
+   xz := x * z;
+   xw := x * w;
+   yy := y * y;
+   yz := y * z;
+   yw := y * w;
+   zz := z * z;
+   zw := z * w;
+   Result[0, 0] := 1 - 2 * ( yy + zz );
+   Result[1, 0] :=     2 * ( xy - zw );
+   Result[2, 0] :=     2 * ( xz + yw );
+   Result[3, 0] := 0;
+   Result[0, 1] :=     2 * ( xy + zw );
+   Result[1, 1] := 1 - 2 * ( xx + zz );
+   Result[2, 1] :=     2 * ( yz - xw );
+   Result[3, 1] := 0;
+   Result[0, 2] :=     2 * ( xz - yw );
+   Result[1, 2] :=     2 * ( yz + xw );
+   Result[2, 2] := 1 - 2 * ( xx + yy );
+   Result[3, 2] := 0;
+   Result[0, 3] := 0;
+   Result[1, 3] := 0;
+   Result[2, 3] := 0;
+   Result[3, 3] := 1;
 end;
 
 // QuaternionFromAngleAxis
