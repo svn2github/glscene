@@ -3,6 +3,7 @@
 	Graph plotting objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>29/01/02 - Egg - Fixed THeightField.BuildList when field is empty
       <li>10/01/02 - Egg - Added OnGetHeight2
       <li>30/11/01 - Egg - Color fix in THeightField.BuildList (thx Marc Hull)
       <li>19/07/01 - Egg - THeightField no longer calls OnGetHeight in design mode
@@ -506,7 +507,8 @@ begin
          if Assigned(rowMid) then dy:=(rowMid[k].z-rowBottom[k].z)*invYStep else dy:=0;
          rowBottom[k].normal:=VectorNormalize(AffineVectorMake(dx, dy, 1));
       end;
-      RenderRow(rowMid, rowBottom);
+      if Assigned(rowMid) and Assigned(rowBottom) then
+         RenderRow(rowMid, rowBottom);
       FTriangleCount:=2*(nx-1)*(m-1);
       if (hfoTwoSided in Options) or (ColorMode<>hfcmNone) then
          glPopAttrib;
