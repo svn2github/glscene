@@ -21,10 +21,13 @@ type
 	   protected
 	      { Protected Declarations }
          function GetItems(index : Integer) : TTheBallStructure;
+         procedure SetItems(index : Integer; val : TTheBallStructure);
 
 	   public
 	      { Public Declarations }
-         property Items[index : Integer] : TTheBallStructure read GetItems; default;
+         property Items[index : Integer] : TTheBallStructure read GetItems write SetItems; default;
+
+
 
          function StructureByName(const aName : String) : TTheBallStructure;
    end;
@@ -302,6 +305,13 @@ end;
 function TTheBallStructures.GetItems(index : Integer) : TTheBallStructure;
 begin
    Result:=TTheBallStructure(inherited Items[index]);
+end;
+
+// SetItems
+//
+procedure TTheBallStructures.SetItems(index : Integer; val : TTheBallStructure);
+begin
+   inherited Items[index]:=val;
 end;
 
 // StructureByName
@@ -736,7 +746,7 @@ begin
       if FDisk.DistanceTo(Main.DCBallAbsolute)<VectorLength(FSize)*0.7 then begin
          FActionStartTime:=progressTime.newTime;
          FDisk.Position.Y:=FDisk.Position.Y-0.05;
-         if FSound<>'' then begin
+         if (FSound<>'') and Main.GLSMBass.Active then begin
             with GetOrCreateSoundEmitter(FDisk) do begin
                Source.SoundLibrary:=Main.SoundLibrary;
                Source.SoundName:=FSound;
@@ -753,7 +763,7 @@ begin
             if (d>=0) and (d<=3) then
                trg.SetTransparency(Sqr(d)*0.5)
             else begin
-               Owner.Remove(trg);
+               Owner.Items[Owner.IndexOf(trg)]:=nil;
                trg.Release;
                FActionStartTime:=-2;
             end;

@@ -36,5 +36,7 @@ MarbleBlock:X=-2,Y=0.2,Z=0,SX=0.4,SY=0.4,SZ=4
 MarbleBlock:X=0,Y=0.2,Z=-2.3,SX=0.4,SY=0.4,SZ=5
 // maze mid bottom
 MarbleBlock:X=2,Y=0.2,Z=-0.7,SX=0.4,SY=0.4,SZ=5
+
 // maze trigger
 Trigger:X=3.5,Y=0.1,Z=0.5,SX=1,SY=0.5,SZ=1,Target=Door,Action=Vanish,Sound=pop.wav
+

@@ -146,7 +146,7 @@ begin
    if dBoxClass=-1 then
       dBoxClass:=dGeomGetClass(planeGeom);
 
-   currentLevelIdx:=5;
+   currentLevelIdx:=1;
    LoadLevel(ExtractFilePath(Application.ExeName)+Format('Level%.2d.txt', [currentLevelIdx]));
 end;
 
@@ -284,10 +284,12 @@ begin
    SPHBall.Visible:=True;
    spawnTime:=Now;
 
-   with GetOrCreateSoundEmitter(Camera) do begin
-      Source.SoundLibrary:=SoundLibrary;
-      Source.SoundName:='thump1.wav';
-      Playing:=True;
+   if GLSMBass.Active then begin
+      with GetOrCreateSoundEmitter(Camera) do begin
+         Source.SoundLibrary:=SoundLibrary;
+         Source.SoundName:='thump1.wav';
+         Playing:=True;
+      end;
    end;
 
    gameStatus:=gsPlaying;
@@ -315,10 +317,12 @@ begin
       HUDText.Text:='Level won!';
       HUDText2.Text:='Level won!';
       HUDText.Visible:=True;
-      with GetOrCreateSoundEmitter(Camera) do begin
-         Source.SoundLibrary:=SoundLibrary;
-         Source.SoundName:='applause.wav';
-         Playing:=True;
+      if GLSMBass.Active then begin
+         with GetOrCreateSoundEmitter(Camera) do begin
+            Source.SoundLibrary:=SoundLibrary;
+            Source.SoundName:='applause.wav';
+            Playing:=True;
+         end;
       end;
       gameStatus:=gsLevelWon;
    end;
@@ -407,6 +411,7 @@ var
    mp : TPoint;
    dmx, dmy : Single;
    d : Single;
+   struc : TTheBallStructure;
 begin
    // table movement
    if gameStatus=gsPlaying then begin
@@ -464,10 +469,11 @@ begin
    pt.deltaTime:=deltaTime;
    pt.newTime:=newTime;
    for i:=0 to currentLevelStrucs.Count-1 do begin
-      with currentLevelStrucs[i] do begin
-         Progress(pt);
-      end;
+      struc:=currentLevelStrucs[i];
+      if Assigned(struc) then
+         struc.Progress(pt);
    end;
+   currentLevelStrucs.Pack;
 
    if gameStatus=gsPlaying then begin
       // perform collision detection
