@@ -2104,7 +2104,7 @@ begin
     SinCos(Angle, ASin, ACos);
     if fpLeft in FParts then
     begin
-      glNormal3f(-Sign * ACos, Sign * ACos, 0);
+      glNormal3f(-Sign * ASin, Sign * ACos, 0);
       xglTexCoord2fv(@XYTexPoint);    glVertex3f(-HTW, FHeight,  HTD);
       xglTexCoord2fv(@YTexPoint);     glVertex3f(-HTW, FHeight, -HTD);
       xglTexCoord2fv(@NullTexPoint);  glVertex3f(-HBW, 0, -HBD);
@@ -2112,7 +2112,7 @@ begin
     end;
     if fpRight in FParts then
     begin
-      glNormal3f(Sign * ACos, Sign * ACos, 0);
+      glNormal3f(Sign * ASin, Sign * ACos, 0);
       xglTexCoord2fv(@YTexPoint);     glVertex3f(HTW, FHeight, HTD);
       xglTexCoord2fv(@NullTexPoint);  glVertex3f(HBW, 0,  HBD);
       xglTexCoord2fv(@XTexPoint);     glVertex3f(HBW, 0, -HBD);
