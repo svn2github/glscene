@@ -83,7 +83,6 @@ type
          {: Specifies if the shadow volume should be capped.<p>
             Capping helps solve shadowing artefacts, at the cost of performance. }
          property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcDefault;
-
          {: Determines when an object should cast a shadow or not. Typically, objects
          should only cast shadows when recursively visible. But if you're using
          dummy shadow casters which are less complex than their parent objects,

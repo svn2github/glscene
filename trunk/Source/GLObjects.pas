@@ -3058,22 +3058,15 @@ end;
 function TGLSphere.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 var
    i, j : Integer;
-   d, r, vr, s, c, angleFactor : Single;
+   d, s, c, angleFactor : Single;
    sVec, tVec : TAffineVector;
    Segments : integer;
 begin
    Segments := MaxInteger(FStacks, FSlices);
 
-   r:=BoundingSphereRadiusUnscaled;
+   //r:=BoundingSphereRadiusUnscaled;
    d:=VectorLength(silhouetteParameters.SeenFrom);
-   // determine visible radius
-   case silhouetteParameters.Style of
-      ssOmni     : vr:=SphereVisibleRadius(d, r);
-      ssParallel : vr:=r;
-   else
-      Assert(False);
-      vr:=r;
-   end;
+
    // determine a local orthonormal matrix, viewer-oriented
    sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
    if VectorLength(sVec)<1e-3 then
@@ -3084,9 +3077,8 @@ begin
    // generate the silhouette (outline and capping)
    Result:=TGLSilhouette.Create;
    angleFactor:=(2*PI)/Segments;
-   vr:=vr*0.98;
    for i:=0 to Segments-1 do begin
-      SinCos(i*angleFactor, vr, s, c);
+      SinCos(i*angleFactor, FRadius, s, c);
       Result.Vertices.AddPoint(VectorCombine(sVec, tVec, s, c));
       j:=(i+1) mod Segments;
       Result.Indices.Add(i, j);
