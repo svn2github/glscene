@@ -431,6 +431,7 @@ procedure SetVector(var v : TAffineDblVector; const vSrc : TVector); overload;
 function VectorMake(const v : TAffineVector; w : Single = 0) : TVector; overload;
 function VectorMake(const x, y, z: Single; w : Single = 0) : TVector; overload;
 function PointMake(const x, y, z: Single) : TVector; overload;
+function PointMake(const v : TAffineVector) : TVector; overload;
 procedure SetVector(var v : TVector; const x, y, z : Single; w : Single = 0); overload;
 procedure SetVector(var v : TVector; const av : TAffineVector; w : Single = 0); overload;
 procedure SetVector(var v : TVector; const vSrc : TVector); overload;
@@ -1324,11 +1325,21 @@ end;
 
 // PointMake
 //
-function PointMake(const x, y, z: Single) : TVector;
+function PointMake(const x, y, z: Single) : TVector; overload;
 begin
 	Result[0]:=x;
 	Result[1]:=y;
 	Result[2]:=z;
+   Result[3]:=1;
+end;
+
+// PointMake
+//
+function PointMake(const v : TAffineVector) : TVector; overload;
+begin
+	Result[0]:=v[0];
+	Result[1]:=v[1];
+	Result[2]:=v[2];
    Result[3]:=1;
 end;
 
