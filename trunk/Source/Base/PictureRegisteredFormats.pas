@@ -17,6 +17,7 @@ uses Classes, Graphics;
 {$ifdef VER130} {$define PRF_HACK_PASSES} {$endif} // Delphi 5
 {$ifdef VER140} {$define PRF_HACK_PASSES} {$endif} // Delphi 6
 {$ifdef VER150} {$define PRF_HACK_PASSES} {$endif} // Delphi 7
+{$ifdef VER170} {$define PRF_HACK_PASSES} {$endif} // Delphi 2005
 
 {$ifndef PRF_HACK_PASSES} Error: hack not tested for this Delphi version! {$endif}
 
