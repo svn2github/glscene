@@ -2915,14 +2915,14 @@ begin
    vr:=vr*0.98;
    for i:=0 to cNbSegments-1 do begin
       SinCos(i*angleFactor, vr, s, c);
-      Result.Vertices.Add(VectorCombine(sVec, tVec, s, c));
+      Result.Vertices.AddPoint(VectorCombine(sVec, tVec, s, c));
       j:=(i+1) mod cNbSegments;
       Result.Indices.Add(i, j);
       if silhouetteParameters.CappingRequired then
          Result.CapIndices.Add(cNbSegments, i, j)
    end;
    if silhouetteParameters.CappingRequired then
-      Result.Vertices.Add(NullVector);
+      Result.Vertices.Add(NullHmgPoint);
 end;
 
 // Assign
