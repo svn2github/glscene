@@ -161,7 +161,7 @@ begin
                 +'W : wireframe on/off'#13#10
                 +'S : sea surface on/off'#13#10
                 +'B : sailboat visible on/off'#13#10
-                +'Num4 & Num8 : steer the sailboat'#13#10
+                +'Num4 & Num6 : steer the sailboat'#13#10
                 +'F1: show this help';
    HTHelp.Position.SetPoint(Screen.Width div 2 - 100,
                             Screen.Height div 2 - 150, 0);
@@ -387,15 +387,19 @@ var
 begin
    alpha:=WaterPhase(px+TerrainRenderer.TileSize*0.5,
                      py+TerrainRenderer.TileSize*0.5);
-   Result:=(cWaterLevel+Sin(alpha)*cWaveAmplitude)*(TerrainRenderer.Scale.Z/128);
+   Result:=(cWaterLevel+Sin(alpha)*cWaveAmplitude)*(TerrainRenderer.Scale.Z*(1/128));
 end;
 
 procedure TForm1.TerrainRendererHeightDataPostRender(
   var rci: TRenderContextInfo; const heightDatas: TList);
 var
    i, x, y, s, s2 : Integer;
-   r, g, b, t : Single;
+   t : Single;
    hd : THeightData;
+const
+   r = 0.75;
+   g = 0.75;
+   b = 1;
 
    procedure IssuePoint(rx, ry : Integer);
    var
@@ -413,15 +417,12 @@ var
       SinCos(WaterPhase(px, py), sa, ca);
       colorRatio:=1-alpha*0.1;
       glColor4f(r*colorRatio, g*colorRatio, b, alpha);
-      glTexCoord2f(px*1e-2+0.002*sa, py*1e-2+0.002*ca-t*0.002);
+      glTexCoord2f(px*0.01+0.002*sa, py*0.01+0.0022*ca-t*0.002);
       glVertex3f(px, py, cWaterLevel+cWaveAmplitude*sa);
    end;
 
 begin
    if not WaterPlane then Exit;
-   r:=0.75;
-   g:=0.75;
-   b:=1;
    t:=GLCadencer.CurrentTime;
    MaterialLibrary.ApplyMaterial('water', rci);
    repeat
@@ -430,11 +431,13 @@ begin
       glPushAttrib(GL_ENABLE_BIT);
 
       glDisable(GL_LIGHTING);
+      glDisable(GL_NORMALIZE);
 
       glStencilFunc(GL_ALWAYS, 1, 255);
       glStencilMask(255);
       glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
       glEnable(GL_STENCIL_TEST);
+      glNormal3f(0, 0, 1);
 
       for i:=0 to heightDatas.Count-1 do begin
          hd:=THeightData(heightDatas.List[i]);
@@ -443,7 +446,6 @@ begin
          y:=hd.YTop;
          s:=hd.Size-1;
          s2:=s div 2;
-         glNormal3f(0, 0, 1);
          glBegin(GL_TRIANGLE_FAN);
             IssuePoint(s2, s2);
             IssuePoint(0, 0);
