@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/07/03 - EG - New VectorCombine overload, some optimizations
       <li>18/06/03 - MF - Added PointSegmentClosestPoint, PointSegmentDistance,
                           PointLineClosestPoint and PointLineDistance.
       <li>26/05/03 - EG - NO_ASM variant creation completed
@@ -538,6 +539,8 @@ function VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2
 procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single; var vr : TVector); overload;
 //: Makes a linear combination of two vectors and place result in vr
 procedure VectorCombine(const V1, V2: TVector; const F1, F2: Single; var vr : TVector); overload;
+//: Makes a linear combination of two vectors and place result in vr, F1=1.0
+procedure VectorCombine(const V1, V2: TVector; const F2: Single; var vr : TVector); overload;
 //: Makes a linear combination of three vectors and return the result
 function VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single): TVector; overload;
 //: Makes a linear combination of three vectors and return the result
@@ -557,7 +560,8 @@ function VectorDotProduct(const V1 : TVector; const V2 : TAffineVector) : Single
    Performs VectorDotProduct(VectorSubtract(p, origin), direction), which,
    if direction is normalized, computes the distance between origin and the
    projection of p on the (origin, direction) line. }
-function PointProject(const p, origin, direction : TAffineVector) : Single;
+function PointProject(const p, origin, direction : TAffineVector) : Single; overload;
+function PointProject(const p, origin, direction : TVector) : Single; overload;
 
 //: Calculates the cross product between vector 1 and 2
 function VectorCrossProduct(const V1, V2 : TAffineVector): TAffineVector; overload;
@@ -2625,6 +2629,68 @@ begin
 {$endif}
 end;
 
+// VectorCombine (F1=1.0)
+//
+procedure VectorCombine(const V1, V2: TVector; const F2: Single; var vr : TVector); overload;
+// EAX contains address of v1
+// EDX contains address of v2
+// ECX contains address of vr
+// ebp+$8 points to f2
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      test vSIMD, 1
+      jz @@FPU
+@@3DNow:    // 121559
+      db $0F,$6E,$55,$08       /// MOVD  MM2, [EBP+$08]
+      db $0F,$62,$D2           /// PUNPCKLDQ MM2, MM2
+
+      db $0F,$6F,$22           /// MOVQ  MM4, [EDX]
+      db $0F,$6F,$72,$08       /// MOVQ  MM6, [EDX+8]
+
+      db $0F,$0F,$E2,$B4       /// PFMUL MM4, MM2
+      db $0F,$0F,$F2,$B4       /// PFMUL MM6, MM2
+
+      db $0F,$0F,$20,$9E       /// PFADD MM4, [EAX]
+      db $0F,$0F,$70,$08,$9E   /// PFADD MM6, [EAX+8]
+
+      db $0F,$7F,$21           /// MOVQ  [ECX], MM4
+      db $0F,$7F,$71,$08       /// MOVQ  [ECX+8], MM6
+
+      db $0F,$0E               /// FEMMS
+      pop ebp
+      ret $04
+
+@@FPU:      // 171379
+      FLD  DWORD PTR [EBP+$08]
+
+      FLD  DWORD PTR [EDX]
+      FMUL ST, ST(1)
+      FADD DWORD PTR [EAX]
+      FSTP DWORD PTR [ECX]
+
+      FLD  DWORD PTR [EDX+4]
+      FMUL ST, ST(1)
+      FADD DWORD PTR [EAX+4]
+      FSTP DWORD PTR [ECX+4]
+
+      FLD  DWORD PTR [EDX+8]
+      FMUL ST, ST(1)
+      FADD DWORD PTR [EAX+8]
+      FSTP DWORD PTR [ECX+8]
+
+      FLD  DWORD PTR [EDX+12]
+      FMULP
+      FADD DWORD PTR [EAX+12]
+      FSTP DWORD PTR [ECX+12]
+{$else}
+begin      // 201283
+   vr[0]:=V1[0] + (F2 * V2[0]);
+   vr[1]:=V1[1] + (F2 * V2[1]);
+   vr[2]:=V1[2] + (F2 * V2[2]);
+   vr[3]:=V1[3] + (F2 * V2[3]);
+{$endif}
+end;
+
 // VectorCombine
 //
 procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single; var vr : TVector);
@@ -2770,9 +2836,34 @@ begin
 {$endif}
 end;
 
-// PointProject
+// PointProject (affine)
 //
 function PointProject(const p, origin, direction : TAffineVector) : Single;
+// EAX -> p, EDX -> origin, ECX -> direction
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      fld   dword ptr [eax]
+      fsub  dword ptr [edx]
+      fmul  dword ptr [ecx]
+      fld   dword ptr [eax+4]
+      fsub  dword ptr [edx+4]
+      fmul  dword ptr [ecx+4]
+      fadd
+      fld   dword ptr [eax+8]
+      fsub  dword ptr [edx+8]
+      fmul  dword ptr [ecx+8]
+      fadd
+{$else}
+begin
+   Result:= direction[0]*(p[0]-origin[0])
+           +direction[1]*(p[1]-origin[1])
+           +direction[2]*(p[2]-origin[2]);
+{$endif}
+end;
+
+// PointProject (vector)
+//
+function PointProject(const p, origin, direction : TVector) : Single;
 // EAX -> p, EDX -> origin, ECX -> direction
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -8092,7 +8183,7 @@ begin
       d:=1/d; // will keep one FPU unit busy during dot product calculation
       t:=VectorDotProduct(sp, planeNormal)*d;
       if t>0 then
-         VectorCombine(rayStart, rayVector, 1, t, intersectPoint^)
+         VectorCombine(rayStart, rayVector, t, intersectPoint^)
       else Result:=False;
    end;
 end;
@@ -8111,7 +8202,7 @@ begin
       t:=(rayStart[1]-planeY)/rayVector[1];
       if t<0 then begin
          if Assigned(intersectPoint) then
-            intersectPoint^:=VectorCombine(rayStart, rayVector, 1, t);
+            VectorCombine(rayStart, rayVector, t, intersectPoint^);
          Result:=True;
       end else Result:=False;
    end;
@@ -8149,9 +8240,9 @@ begin
          t:=VectorDotProduct(v2, qvec)*invDet;
          if t>0 then begin
             if intersectPoint<>nil then
-               intersectPoint^:=VectorCombine(rayStart, rayVector, 1, t);
+               VectorCombine(rayStart, rayVector, t, intersectPoint^);
             if intersectNormal<>nil then
-               intersectNormal^:=VectorCrossProduct(v1, v2);
+               VectorCrossProduct(v1, v2, intersectNormal^);
          end else Result:=False;
       end;
    end;
@@ -8164,7 +8255,7 @@ function RayCastMinDistToPoint(const rayStart, rayVector : TVector;
 var
    proj : Single;
 begin
-   proj:=VectorDotProduct(rayVector, VectorSubtract(point, rayStart));
+   proj:=PointProject(point, rayStart, rayVector);
    if proj<=0 then proj:=0; // rays don't go backward!
    Result:=VectorDistance(point, VectorCombine(rayStart, rayVector, 1, proj));
 end;
@@ -8177,7 +8268,7 @@ function RayCastIntersectsSphere(const rayStart, rayVector : TVector;
 var
    proj : Single;
 begin
-   proj:=VectorDotProduct(rayVector, VectorSubtract(sphereCenter, rayStart));
+   proj:=PointProject(sphereCenter, rayStart, rayVector);
    if proj<=0 then proj:=0; // rays don't go backward!
    Result:=(VectorDistance2(sphereCenter, VectorCombine(rayStart, rayVector, 1, proj))<=Sqr(sphereRadius));
 end;
@@ -8185,30 +8276,38 @@ end;
 // RayCastSphereIntersect
 //
 function RayCastSphereIntersect(const rayStart, rayVector : TVector;
-                                 const sphereCenter : TVector;
-                                 const sphereRadius : Single;
-                                 var i1, i2 : TVector) : Integer;
+                                const sphereCenter : TVector;
+                                const sphereRadius : Single;
+                                var i1, i2 : TVector) : Integer;
 var
    proj, d2 : Single;
+   id2 : Integer;
 begin
-   proj:=VectorDotProduct(rayVector, VectorSubtract(sphereCenter, rayStart));
+   proj:=PointProject(sphereCenter, rayStart, rayVector);
    d2:=Sqr(sphereRadius)-VectorDistance2(sphereCenter, VectorCombine(rayStart, rayVector, 1, proj));
-   if d2>=0 then begin
-      if (d2=0) and (proj>0) then begin
-         Result:=1;
-         i1:=VectorCombine(rayStart, rayVector, 1, proj);
-      end else if (d2>0) then begin
-         d2:=Sqrt(d2);
-         if proj-d2>=0 then begin
-            Result:=2;
-            i1:=VectorCombine(rayStart, rayVector, 1, proj-d2);
-            i2:=VectorCombine(rayStart, rayVector, 1, proj+d2);
-         end else if proj+d2>=0 then begin
+   id2:=PInteger(@d2)^;
+   if id2>=0 then begin
+      if id2=0 then begin
+         if PInteger(@proj)^>0 then begin
+            VectorCombine(rayStart, rayVector, proj, i1);
             Result:=1;
-            i1:=VectorCombine(rayStart, rayVector, 1, proj+d2);
-         end else Result:=0;
-      end else Result:=0;
-   end else Result:=0;
+            Exit;
+         end;
+      end else if id2>0 then begin
+         d2:=Sqrt(d2);
+         if proj>=d2 then begin
+            VectorCombine(rayStart, rayVector, proj-d2, i1);
+            VectorCombine(rayStart, rayVector, proj+d2, i2);
+            Result:=2;
+            Exit;
+         end else if proj+d2>=0 then begin
+            VectorCombine(rayStart, rayVector, proj+d2, i1);
+            Result:=1;
+            Exit;
+         end;
+      end;
+   end;
+   Result:=0;
 end;
 
 // IntersectLinePlane
