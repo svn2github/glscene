@@ -331,8 +331,9 @@ type
          FParticleInterval : Single;
          FVelocityMode : TGLSourcePFXVelocityMode;
          FDispersionMode : TGLSourcePFXDispersionMode;
+         FEnabled : Boolean;
          FTimeRemainder : Double; // NOT persistent
-         FEnabled: boolean;
+         
       protected
          { Protected Declarations }
          procedure SetInitialVelocity(const val : TGLCoordinates);
@@ -341,9 +342,9 @@ type
          procedure SetVelocityDispersion(const val : Single);
          procedure SetPositionDispersion(const val : Single);
          procedure SetParticleInterval(const val : Single);
-         procedure SetEnabled(const Value: boolean);
          procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
+         
       public
          { Public Declarations }
          constructor Create(aOwner : TXCollection); override;
@@ -370,7 +371,7 @@ type
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
          property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
-         property Enabled : boolean read FEnabled write SetEnabled;
+         property Enabled : boolean read FEnabled write FEnabled;
    end;
 
    // TGLDynamicPFXManager
@@ -1616,14 +1617,14 @@ procedure TGLSourcePFXEffect.DoProgress(const progressTime : TProgressTimes);
 var
    n : Integer;
 begin
-   if (not FEnabled) or (not Assigned(Manager)) then Exit;
-   if FParticleInterval=0 then Exit;
-   with progressTime do begin
-      FTimeRemainder:=FTimeRemainder+deltaTime;
-      if FTimeRemainder>FParticleInterval then begin
-         n:=Trunc((FTimeRemainder-FParticleInterval)/FParticleInterval);
-         Burst(newTime, n);
-         FTimeRemainder:=FTimeRemainder-n*FParticleInterval;
+   if Enabled and Assigned(Manager) and (ParticleInterval>0) then begin
+      with progressTime do begin
+         FTimeRemainder:=FTimeRemainder+deltaTime;
+         if FTimeRemainder>FParticleInterval then begin
+            n:=Trunc((FTimeRemainder-FParticleInterval)/FParticleInterval);
+            Burst(newTime, n);
+            FTimeRemainder:=FTimeRemainder-n*FParticleInterval;
+         end;
       end;
    end;
 end;
@@ -1689,13 +1690,6 @@ begin
       Dec(nbParticles);
    end;
 end;
-
-
-procedure TGLSourcePFXEffect.SetEnabled(const Value: boolean);
-begin
-  FEnabled := Value;
-end;
-
 
 // ------------------
 // ------------------ TPFXLifeColor ------------------
