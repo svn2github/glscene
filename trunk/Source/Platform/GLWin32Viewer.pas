@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/08/02 - EG - Added TGLSceneViewer.RecreateWnd
       <li>19/08/02 - EG - Added GetHandle
       <li>14/03/02 - EG - No longer invalidates while rendering
       <li>11/02/02 - EG - Fixed BeforeRender
@@ -36,7 +37,7 @@ type
       borderless form).<p>
       This viewer also allows to define rendering options such a fog, face culling,
       depth testing, etc. and can take care of framerate calculation.<p> }
-   TGLSceneViewer = class(TWinControl)
+   TGLSceneViewer = class (TWinControl)
       private
          { Private Declarations }
          FIsOpenGLAvailable : Boolean;
@@ -75,6 +76,11 @@ type
          destructor  Destroy; override;
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+         {: Makes TWinControl's RecreateWnd public.<p>
+            This procedure allows to work around limitations in some OpenGL
+            drivers (like MS Software OpenGL) that are not able to share lists
+            between RCs that already have display lists. }
+         procedure RecreateWnd;
 
          property IsOpenGLAvailable : Boolean read FIsOpenGLAvailable;
 
@@ -328,6 +334,13 @@ begin
    inherited;
    if (Operation = opRemove) and (AComponent = Camera) then
       Camera:=nil;
+end;
+
+// RecreateWnd
+//
+procedure TGLSceneViewer.RecreateWnd;
+begin
+   inherited;
 end;
 
 // SetBeforeRender
