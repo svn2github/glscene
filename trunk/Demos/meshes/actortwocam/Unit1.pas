@@ -12,10 +12,10 @@
    GLScene :), a fair share of rendering power is lost in projecting
    objects that are out of the viewing frustum.<p>
 
-   TODO : 3rd person view with quaternion interpolation (smoother mvt)<br>
-          More mvt options (duck, jump...)<br>
-          Smooth animation transition for TActor<br>
-          HUD in 1st person view<p>
+   TODO : 3rd person view with quaternion interpolation (smoother mvt)
+          More mvt options (duck, jump...)
+          Smooth animation transition for TActor
+          HUD in 1st person view
 
    Carlos Arteaga Rivero <carteaga@superele.gov.bo>
 }
@@ -26,7 +26,7 @@ interface
 uses
   Windows, GLCadencer, GLVectorFileObjects, GLScene, GLObjects, GLMisc,
   StdCtrls, Buttons, Controls, ExtCtrls, ComCtrls, Classes, Forms, Graphics,
-  GLSkydome, GLWin32Viewer;
+  GLSkydome, GLWin32Viewer, GLNavigator;
 
 type
   TForm1 = class(TForm)
@@ -49,24 +49,28 @@ type
     DummyCube3: TDummyCube;
     Label1: TLabel;
     SkyDome1: TSkyDome;
+    GLNavigator1: TGLNavigator;
+    GLUserInterface1: TGLUserInterface;
+    CBMouseLook: TCheckBox;
+
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure HandleKeys(const deltaTime: Double);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
+    procedure CBMouseLookClick(Sender: TObject);
   private
     procedure AddMushrooms;
+
   public
     { Déclarations privées }
-    mx, my : Integer;
+
   end;
 
 var
   Form1: TForm1;
+
+
 
 implementation
 
@@ -110,12 +114,26 @@ begin
    Disk1.Material.Texture.Image.LoadFromFile('..\..\media\clover.jpg');
 end;
 
+procedure TForm1.CBMouseLookClick(Sender: TObject);
+begin
+   GLUserInterface1.MouseLookActive:=CBMouseLook.Checked;
+end;
+
 procedure TForm1.HandleKeys(const deltaTime: Double);
 var
    moving : String;
    boost : Single;
 begin
    // This function uses asynchronous keyboard check (see Keyboard.pas)
+   if IsKeyDown(VK_ESCAPE) then Close;
+   if IsKeyDown('A') then begin
+      CBMouseLook.Checked:=True;
+      CBMouseLookClick(Self);
+   end;
+   if IsKeyDown('D') then begin
+      CBMouseLook.Checked:=False;
+      CBMouseLookClick(Self);
+   end;
 
    //Change Cameras
    if IsKeyDown(VK_F7) then begin
@@ -148,25 +166,25 @@ begin
 
    // are we advaning/backpedaling ?
    if IsKeyDown(VK_UP) then begin
-      DummyCube2.Move(cWalkStep*boost);
+      GLNavigator1.MoveForward(cWalkStep*boost);
       moving:='run';
    end;
    if IsKeyDown(VK_DOWN) then begin
-      DummyCube2.Move(-cWalkStep*boost);
+      GLNavigator1.MoveForward(-cWalkStep*boost);
       moving:='run';
    end;
 
    // slightly more complex, depending on CTRL key, we either turn or strafe
    if IsKeyDown(VK_LEFT) then begin
       if IsKeyDown(VK_CONTROL) then
-          DummyCube2.Slide(-cStrafeStep*boost)
-      else DummyCube2.Turn(-cRotAngle*boost);
+          GLNavigator1.StrafeHorizontal(-cStrafeStep*boost)
+      else GLNavigator1.TurnHorizontal(-cRotAngle*boost);
       moving:='run';
    end;
    if IsKeyDown(VK_RIGHT) then begin
       if IsKeyDown(VK_CONTROL) then
-          DummyCube2.Slide(cStrafeStep*boost)
-      else DummyCube2.turn(cRotAngle*boost);
+          GLNavigator1.StrafeHorizontal(cStrafeStep*boost)
+      else GLNavigator1.TurnHorizontal(cRotAngle*boost);
       moving:='run';
    end;
 
@@ -183,7 +201,10 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
    HandleKeys(deltaTime);
+   GLUserInterface1.Mouselook(deltaTime);
+
    GLSceneViewer1.Invalidate;
+   GLUserInterface1.MouseUpdate;
 end;
 
 // add a few mushrooms to make the "landscape"
@@ -225,23 +246,6 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    Caption:=Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
-end;
-
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-   mx:=x; my:=y;
-end;
-
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
-begin
-   if GLSceneViewer1.Camera=GLCamera1 then begin
-      if Shift<>[] then begin
-         GLCamera1.MoveAroundTarget(my-y, mx-x);
-      end;
-      mx:=x; my:=y;
-   end;
 end;
 
 end.

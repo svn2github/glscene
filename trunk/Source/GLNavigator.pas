@@ -3,6 +3,9 @@
    Unit for navigating TGLBaseObjects.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>18/03/02 - EG - Added MouseLookActive property
+      <li>15/03/02 - JAJ - Structure Change - Mouselook moved to newly created TGLUserInterface.
+      <li>15/03/02 - RMCH - Added Mouselook capability.
       <li>09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
 	</ul></font>
 
@@ -11,7 +14,7 @@ unit GLNavigator;
 
 interface
 
-uses SysUtils, Classes, Geometry, GLScene, GLMisc;
+uses SysUtils, Classes, Geometry, GLScene, GLMisc, Windows, Forms;
 
 type
 
@@ -61,6 +64,9 @@ type
          Procedure   StrafeHorizontal(Distance : Single);
          Procedure   StrafeVertical(Distance : Single);
          Procedure   Straighten;
+
+         Procedure   LoadState(Stream : TStream);
+         Procedure   SaveState(Stream : TStream);
       published
          property    VirtualUp    : TGLCoordinates read FVirtualUp write SetVirtualUp;
          property    MovingObject : TGLBaseSceneObject read FObject write SetObject;
@@ -71,13 +77,65 @@ type
          property    AngleLock    : Boolean read FAngleLock write FAngleLock;
    end;
 
+	// TGLUserInterface
+	//
+	{: TGLUserInterface is the component which reads the userinput and transform it into action.<p>
+
+	   The four calls to get you started is
+      <ul>
+  	   <li>MouseLookActivate : set us up the bomb.
+  	   <li>MouseLookDeActivate : defuses it.
+	   <li>Mouselook(deltaTime: double) : handles mouse look... Should be called in the Cadencer event. (Though it works every where!)
+	   <li>MouseUpdate : Resets mouse position so that you don't notice that the mouse is limited to the screen should be called after Mouselook.
+      </ul>
+	   The two properties to get you started is
+      <ul>
+	   <li>MouseSpeed      : Also known as mouse sensitivity.
+	   <li>GLNavigator     : The Navigator which receives the user movement.
+	   <li>GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....
+      </ul>
+   }
+
+   TGLUserInterface = class(TComponent)
+   private
+     point1: TPoint;
+     midScreenX, midScreenY: integer;
+     FMouseActive       : Boolean;
+     FMouseSpeed       : Single;
+     FGLNavigator      : TGLNavigator;
+     FGLVertNavigator  : TGLNavigator;
+
+     procedure   MouseInitialize;
+     procedure   SetMouseLookActive(const val : Boolean);
+
+   public
+     constructor Create(AOwner : TComponent); override;
+     destructor  Destroy; override;
+     
+     procedure   MouseUpdate;
+     function    MouseLook(deltaTime: double) : Boolean;
+     procedure   MouseLookActiveToggle(q: Boolean);
+     procedure   MouseLookActivate;
+     procedure   MouseLookDeactivate;
+     function    IsMouseLookOn: Boolean;
+     procedure   TurnHorizontal(Angle : Double);
+     procedure   TurnVertical(Angle : Double);
+
+     property    MouseLookActive : Boolean read FMouseActive write SetMouseLookActive;
+
+   published
+     property    MouseSpeed      : Single read FMouseSpeed write FMouseSpeed;
+     property    GLNavigator     : TGLNavigator read FGLNavigator write FGLNavigator;
+     property    GLVertNavigator : TGLNavigator read FGLVertNavigator write FGLVertNavigator;
+   End;
+
 procedure Register;
 
 implementation
 
 procedure Register;
 begin
-  RegisterComponents('GLScene', [TGLNavigator]);
+  RegisterComponents('GLScene', [TGLNavigator, TGLUserInterface]);
 end;
 
 Constructor TGLNavigator.Create(AOwner : TComponent);
@@ -94,8 +152,8 @@ Begin
   inherited;
 End;
 
-Procedure   TGLNavigator.SetObject(NewObject : TGLBaseSceneObject);
 
+Procedure   TGLNavigator.SetObject(NewObject : TGLBaseSceneObject);
 Begin
   FObject := NewObject;
   If not Assigned(FObject) then Exit;
@@ -172,9 +230,9 @@ Begin
 
   Angle := DegToRad(Angle); {make it ready for Cos and Sin }
   SinCos(Angle,SinAngle,CosAngle);
-  Direction := VectorCombine(FObject.Direction.AsVector,FObject.Up.AsVector,CosAngle,SinAngle);
-  FObject.Up.AsVector := VectorCombine(FObject.Direction.AsVector,FObject.Up.AsVector,SinAngle,CosAngle);
-  FObject.Direction.AsVector := Direction;
+  Direction := VectorCombine(MovingObject.Direction.AsVector,MovingObject.Up.AsVector,CosAngle,SinAngle);
+  MovingObject.Up.AsVector := VectorCombine(MovingObject.Direction.AsVector,MovingObject.Up.AsVector,SinAngle,CosAngle);
+  MovingObject.Direction.AsVector := Direction;
 End;
 
 Procedure   TGLNavigator.MoveForward(Distance : Single);
@@ -238,5 +296,164 @@ Begin
   If FUseVirtualUp then FVirtualRight := CalcRight;
 End;
 
+Procedure   TGLNavigator.LoadState(Stream : TStream);
+
+Var
+  Vector : TAffineVector;
+  B : ByteBool;
+  S : Single;
+
+Begin
+  Stream.Read(Vector,SizeOf(TAffineVector));
+  FObject.Position.AsAffineVector := Vector;
+  Stream.Read(Vector,SizeOf(TAffineVector));
+  FObject.Direction.AsAffineVector := Vector;
+  Stream.Read(Vector,SizeOf(TAffineVector));
+  FObject.Up.AsAffineVector := Vector;
+  Stream.Read(B,SizeOf(ByteBool));
+  UseVirtualUp := B;
+  Stream.Read(B,SizeOf(ByteBool));
+  FAngleLock := B;
+  Stream.Read(S,SizeOf(Single));
+  FMaxAngle := S;
+  Stream.Read(S,SizeOf(Single));
+  FMinAngle := S;
+  Stream.Read(S,SizeOf(Single));
+  FCurrentAngle := S;
+End;
+
+Procedure   TGLNavigator.SaveState(Stream : TStream);
+
+Var
+  Vector : TAffineVector;
+  B : ByteBool;
+  S : Single;
+
+Begin
+  Vector := FObject.Position.AsAffineVector;
+  Stream.Write(Vector,SizeOf(TAffineVector));
+  Vector := FObject.Direction.AsAffineVector;
+  Stream.Write(Vector,SizeOf(TAffineVector));
+  Vector := FObject.Up.AsAffineVector;
+  Stream.Write(Vector,SizeOf(TAffineVector));
+  B := UseVirtualUp;
+  Stream.Write(B,SizeOf(ByteBool));
+  B := FAngleLock;
+  Stream.Write(B,SizeOf(ByteBool));
+  S := FMaxAngle;
+  Stream.Write(S,SizeOf(Single));
+  S := FMinAngle;
+  Stream.Write(S,SizeOf(Single));
+  S := FCurrentAngle;
+  Stream.Write(S,SizeOf(Single));
+End;
+
+function TGLUserInterface.IsMouseLookOn: Boolean;
+begin
+   Result:=FMouseActive;
+end;
+
+Procedure   TGLUserInterface.TurnHorizontal(Angle : Double);
+
+Begin
+  GLNavigator.TurnHorizontal(Angle);
+End;
+
+Procedure   TGLUserInterface.TurnVertical(Angle : Double);
+
+Begin
+  If Assigned(GLVertNavigator) then GLVertNavigator.TurnVertical(Angle)
+  else GLNavigator.TurnVertical(Angle);
+End;
+
+procedure TGLUserInterface.MouseLookActiveToggle;
+begin
+   if FMouseActive then
+      MouseLookDeactivate
+   else MouseLookActivate;
+end;
+
+procedure TGLUserInterface.MouseLookActivate;
+begin
+   if not FMouseActive then begin
+      FMouseActive := True;
+      MouseInitialize;
+      ShowCursor(False);
+   end;
+end;
+
+procedure TGLUserInterface.MouseLookDeactivate;
+begin
+   if FMouseActive then begin
+      FMouseActive := False;
+      ShowCursor(True);
+   end;
+end;
+
+procedure TGLUserInterface.MouseInitialize;
+begin
+   midScreenX:=Screen.Width div 2;
+   midScreenY:=Screen.Height div 2;
+
+   point1.x:=midScreenX; point1.Y:=midScreenY;
+   SetCursorPos(midScreenX, midScreenY);
+end;
+
+// SetMouseLookActive
+//
+procedure TGLUserInterface.SetMouseLookActive(const val : Boolean);
+begin
+   if val<>FMouseActive then
+      if val then
+         MouseLookActivate
+      else MouseLookDeactivate;
+end;
+
+procedure TGLUserInterface.Mouseupdate;
+begin
+   if FMouseActive then GetCursorPos(point1);
+end;
+
+Function  TGLUserInterface.Mouselook(deltaTime: double) : Boolean;
+var deltaX: single;
+    deltaY: single;
+begin
+   result := False;
+   if not FMouseActive then exit;
+
+   deltax:=(point1.x-midscreenX)*mousespeed;
+   deltay:=-(point1.y-midscreenY)*mousespeed;
+
+   if deltax <> 0 then
+   Begin
+     TurnHorizontal(deltax*deltaTime);
+     result := True;
+   End;
+   if deltay <> 0 then
+   Begin
+     TurnVertical(deltay*deltaTime);
+     result := True;
+   End;
+
+   if (point1.x <> midScreenX) or (point1.y <> midScreenY) then
+      SetCursorPos(midScreenX, midScreenY);
+end;
+
+Constructor TGLUserInterface.Create(AOwner : TComponent);
+Begin
+  inherited;
+  FMouseSpeed :=0;
+  FMouseActive:=False;
+  midScreenX:=Screen.Width div 2;
+  midScreenY:=Screen.Height div 2;
+  point1.x:=midScreenX; point1.Y:=midScreenY;
+End;
+
+Destructor  TGLUserInterface.Destroy;
+
+Begin
+  if FMouseActive then MouseLookDeactivate; // added by JAJ
+  inherited;
+End;
 
 end.
