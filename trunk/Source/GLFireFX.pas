@@ -197,7 +197,7 @@ type
 
 {: Returns or creates the TGLBFireFX within the given behaviours.<p>
 	This helper function is convenient way to access a TGLBFireFX. }
-function GetOrCreateFireFX(behaviours : TGLBehaviours) : TGLBFireFX; overload;
+function GetOrCreateFireFX(effects : TGLObjectEffects) : TGLBFireFX; overload;
 {: Returns or creates the TGLBFireFX within the given object's behaviours.<p>
 	This helper function is convenient way to access a TGLBFireFX. }
 function GetOrCreateFireFX(obj : TGLBaseSceneObject) : TGLBFireFX; overload;
@@ -212,23 +212,23 @@ implementation
 
 uses SysUtils, OpenGL12, VectorLists;
 
-// GetOrCreateFireFX (TGLBehaviours)
+// GetOrCreateFireFX (TGLObjectEffects)
 //
-function GetOrCreateFireFX(behaviours : TGLBehaviours) : TGLBFireFX;
+function GetOrCreateFireFX(effects : TGLObjectEffects) : TGLBFireFX;
 var
 	i : Integer;
 begin
-	i:=behaviours.IndexOfClass(TGLBFireFX);
+	i:=effects.IndexOfClass(TGLBFireFX);
 	if i>=0 then
-		Result:=TGLBFireFX(behaviours[i])
-	else Result:=TGLBFireFX.Create(behaviours);
+		Result:=TGLBFireFX(effects[i])
+	else Result:=TGLBFireFX.Create(effects);
 end;
 
 // GetOrCreateFireFX (TGLBaseSceneObject)
 //
 function GetOrCreateFireFX(obj : TGLBaseSceneObject) : TGLBFireFX;
 begin
-	Result:=GetOrCreateFireFX(obj.Behaviours);
+	Result:=GetOrCreateFireFX(obj.Effects);
 end;
 
 // ------------------
