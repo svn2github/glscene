@@ -20,6 +20,8 @@ uses
   Geometry, GLTexture, OpenGL12, SysUtils;
 
 type
+  {: Class that represents a face. This structure is not used for rendering, but
+  for extracting info from meshes }
   TFace = class
   public
     Vertices : array[0..2] of integer;
@@ -31,6 +33,7 @@ type
     constructor Create(aMeshObject : TMeshObject);
   end;
 
+  {: List of faces }
   TFaceList = class(TList)
   private
     function GetItems(i: integer): TFace;
@@ -39,6 +42,7 @@ type
     property Items[i : integer] : TFace read GetItems write SetItems; default;
   end;
 
+  {: Class that extracts faces from a GLBaseMesh}
   TFaceExtractor = class
   private
     FFaceList : TFaceList;
@@ -67,53 +71,6 @@ type
     function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; virtual;
 
     constructor Create(const aGLBaseMesh : TGLBaseMesh); virtual;
-    destructor Destroy; override;
-  end;
-
-  // ************ FACE SMOOTHER
-
-  TVertexStat = class
-  private
-    FFaceList: TFaceList;
-    FMeshObject : TMeshObject;
-    FVertexIndex : integer;
-  public
-    property VertexIndex : integer read FVertexIndex;
-    property MeshObject : TMeshObject read FMeshObject;
-
-    property FaceList : TFaceList read FFaceList write FFaceList;
-
-    procedure UpdateNormal;
-
-    constructor Create(const aMeshObject : TMeshObject; const aVertexIndex : integer);
-    destructor Destroy; override;
-  end;
-
-  TVertextStatsList = class(TList)
-  private
-    function GetItems(i: integer): TVertexStat;
-    procedure SetItems(i: integer; const Value: TVertexStat);
-
-  public
-    property Items[i : integer] : TVertexStat read GetItems write SetItems; default;
-  end;
-
-  { Doesn't work at all right now! }
-  TFaceSmoother = class(TFaceExtractor)
-  private
-    FVertextStatsList: TVertextStatsList;
-    FTempList : TVertextStatsList;
-  public
-    property VertextStatsList : TVertextStatsList read FVertextStatsList;
-    procedure UpdateNormals;
-
-    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; override;
-
-    procedure Clear; override;
-
-    procedure ProcessMeshObject(const MeshObject : TMeshObject); override;
-
-    constructor Create(const aGLBaseMesh : TGLBaseMesh); override;
     destructor Destroy; override;
   end;
 
@@ -637,109 +594,6 @@ begin
   BuildOpposingEdges;
 end;
 
-{ TVertexStat }
-
-constructor TVertexStat.Create(const aMeshObject : TMeshObject; const aVertexIndex : integer);
-begin
-  FFaceList := TFaceList.Create;
-  FMeshObject := aMeshObject;
-  FVertexIndex := aVertexIndex;
-end;
-
-destructor TVertexStat.Destroy;
-begin
-  FreeAndNil(FFaceList);
-end;
-
-procedure TVertexStat.UpdateNormal;
-var
-  Normal : TAffineVector;
-  i : integer;
-begin
-  Normal := NullVector;
-
-  for i := 0 to FaceList.Count-1 do
-    AddVector(Normal, FaceList[i].Normal);//}
-
-  NormalizeVector(Normal);
-
-  MeshObject.Normals[VertexIndex] := Normal;
-end;
-
-{ TFaceSmoother }
-
-function TFaceSmoother.AddFace(const Vi0, Vi1, Vi2: integer;
-  const MeshObject: TMeshObject): TFace;
-var
-  Face : TFace;
-begin
-  Face := inherited AddFace(Vi0, Vi1, Vi2, MeshObject);
-
-  FTempList[Vi0].FaceList.Add(Face);
-  FTempList[Vi1].FaceList.Add(Face);
-  FTempList[Vi2].FaceList.Add(Face);
-
-  result := Face;
-end;
-
-procedure TFaceSmoother.Clear;
-var
-  i : integer;
-begin
-  inherited;
-
-  for i := 0 to VertextStatsList.Count-1 do
-    VertextStatsList[i].Free;
-
-  VertextStatsList.Clear;
-  FTempList.Clear;
-end;
-
-constructor TFaceSmoother.Create(const aGLBaseMesh: TGLBaseMesh);
-begin
-  inherited;
-  FVertextStatsList := TVertextStatsList.Create;
-  FTempList := TVertextStatsList.Create;
-end;
-
-destructor TFaceSmoother.Destroy;
-begin
-  inherited;
-
-  FreeAndNil(FVertextStatsList);
-  FreeAndNil(FTempList);
-end;
-
-procedure TFaceSmoother.ProcessMeshObject(const MeshObject : TMeshObject); 
-var
-  iVertice : integer;
-  VertexStat : TVertexStat;
-begin
-  FTempList.Clear;
-  for iVertice := 0 to MeshObject.Vertices.Count-1 do
-  begin
-    VertexStat := TVertexStat.Create(MeshObject, iVertice);
-    VertextStatsList.Add(VertexStat);
-
-    // A sorted list where the indexes are the same as the original vertex
-    // indices
-    FTempList.Add(VertexStat);
-  end;
-
-  inherited;
-end;
-
-procedure TFaceSmoother.UpdateNormals;
-var
-  i : integer;
-begin
-  for i := 0 to FaceList.Count-1 do
-    FaceList[i].UpdateNormal;
-
-  for i := 0 to VertextStatsList.Count-1 do
-    VertextStatsList[i].UpdateNormal;
-end;
-
 { TFace }
 
 constructor TFace.Create(aMeshObject: TMeshObject);
@@ -753,18 +607,5 @@ begin
     MeshObject.Vertices[Vertices[0]],
     MeshObject.Vertices[Vertices[1]],
     MeshObject.Vertices[Vertices[2]], Normal);
-end;
-
-{ TVertextStatsList }
-
-function TVertextStatsList.GetItems(i: integer): TVertexStat;
-begin
-  result := Get(i);
-end;
-
-procedure TVertextStatsList.SetItems(i: integer;
-  const Value: TVertexStat);
-begin
-  put(i, Value);
 end;
 end.
