@@ -26,6 +26,10 @@ type
          procedure LoadFromStream(aStream: TStream); override;
    end;
 
+var
+   vGLFileOCTAllocateMaterials : boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
+
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -67,7 +71,7 @@ begin
       mo.Mode:=momFaceGroups;
 
       lightmapLib:=Owner.LightmapLibrary;
-      if Assigned(lightmapLib) then begin
+      if (Assigned(lightmapLib)) and (vGLFileOCTAllocateMaterials) then begin
          // import lightmaps
          n:=oct.Header.numLightmaps;
          lightmapBmp:=TBitmap.Create;
@@ -111,7 +115,7 @@ begin
          fg:=TFGVertexIndexList.CreateOwned(mo.FaceGroups);
          fg.Mode:=fgmmTriangleFan;
          fg.VertexIndices.AddSerie(octFace.start, 1, octFace.num);
-         if Assigned(lightmapLib) then
+         if (Assigned(lightmapLib)) and (vGLFileOCTAllocateMaterials) then
             fg.LightMapIndex:=octFace.lid;
       end;
 
