@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
       <li>21/08/03 - EG - Fixed Application.OnIdle reset bug (Solerman Kaplon)
       <li>04/07/03 - EG - Improved TimeMultiplier transitions (supports zero)
       <li>06/06/03 - EG - Added cmApplicationIdle Mode
@@ -85,7 +86,7 @@ type
 			FTimeReference : TGLCadencerTimeReference;
 			FCurrentTime : Double;
 			FOriginTime : Double;
-         FMaxDeltaTime : Double;
+         FMaxDeltaTime, FMinDeltaTime, FFixedDeltaTime : Double;
 			FOnProgress : TGLProgressEvent;
 			FProgressing : Integer;
 
@@ -158,6 +159,22 @@ type
             This option allows to limit progression rate in simulations where
             high values would result in errors/random behaviour. }
          property MaxDeltaTime : Double read FMaxDeltaTime write FMaxDeltaTime;
+         {: Minimum value for deltaTime in progression events.<p>
+            If superior to zero, this value specifies the minimum time step
+            between two progression events.<br>
+            This option allows to limit progression rate in simulations where
+            low values would result in errors/random behaviour. }
+         property MinDeltaTime : Double read FMinDeltaTime write FMinDeltaTime;
+         {: Fixed time-step value for progression events.<p>
+            If superior to zero, progression steps will happen with that fixed
+            delta time. The progression remains time based, so zero to N events
+            may be fired depending on the actual deltaTime (if deltaTime is
+            inferior to FixedDeltaTime, no event will be fired, if it is superior
+            to two times FixedDeltaTime, two events will be fired, etc.).<br>
+            This option allows to use fixed time steps in simulations (while the
+            animation and rendering itself may happen at a lower or higher
+            framerate). }
+         property FixedDeltaTime : Double read FFixedDeltaTime write FFixedDeltaTime;
 			{: Adjusts how progression events are triggered.<p>
 				See TGLCadencerMode. }
 			property Mode : TGLCadencerMode read FMode write SetMode default cmASAP;
@@ -546,7 +563,7 @@ end;
 //
 procedure TGLCadencer.Progress;
 var
-	deltaTime, newTime : Double;
+	deltaTime, newTime, totalDelta : Double;
    i : Integer;
    pt : TProgressTimes;
 begin
@@ -568,30 +585,38 @@ begin
             // ...and progress !
             newTime:=GetCurrentTime;
             deltaTime:=newTime-lastTime;
-            if FMaxDeltaTime>0 then begin
-               if deltaTime>FMaxDeltaTime then begin
-                  FOriginTime:=FOriginTime+(deltaTime-FMaxDeltaTime)/FTimeMultiplier;
-                  deltaTime:=FMaxDeltaTime;
-                  newTime:=lastTime+deltaTime;
+            if (deltaTime>=MinDeltaTime) and (deltaTime>=FixedDeltaTime) then begin
+               if FMaxDeltaTime>0 then begin
+                  if deltaTime>FMaxDeltaTime then begin
+                     FOriginTime:=FOriginTime+(deltaTime-FMaxDeltaTime)/FTimeMultiplier;
+                     deltaTime:=FMaxDeltaTime;
+                     newTime:=lastTime+deltaTime;
+                  end;
+               end;
+               totalDelta:=deltaTime;
+               if FixedDeltaTime>0 then
+                  deltaTime:=FixedDeltaTime;
+               while totalDelta>=deltaTime do begin
+                  lastTime:=lastTime+deltaTime;
+                  if Assigned(FScene) and (deltaTime<>0) then begin
+                     FProgressing:=-FProgressing;
+                     try
+                        FScene.Progress(deltaTime, lastTime);
+                     finally
+                        FProgressing:=-FProgressing;
+                     end;
+                  end;
+                  pt.deltaTime:=deltaTime;
+                  pt.newTime:=lastTime;
+                  if Assigned(FSubscribedCadenceableComponents) then
+                     for i:=0 to FSubscribedCadenceableComponents.Count-1 do
+                        with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
+                           DoProgress(pt);
+                  if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
+                     FOnProgress(Self, deltaTime, newTime);
+                  totalDelta:=totalDelta-deltaTime;
                end;
             end;
-            if Assigned(FScene) and (deltaTime<>0) then begin
-               FProgressing:=-FProgressing;
-               try
-                  FScene.Progress(deltaTime, newTime);
-               finally
-                  FProgressing:=-FProgressing;
-                  lastTime:=newTime;
-               end;
-            end;
-            pt.deltaTime:=deltaTime;
-            pt.newTime:=newTime;
-            if Assigned(FSubscribedCadenceableComponents) then
-               for i:=0 to FSubscribedCadenceableComponents.Count-1 do
-                  with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
-                     DoProgress(pt);
-            if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
-               FOnProgress(Self, deltaTime, newTime);
          end;
 		end;
 	finally
