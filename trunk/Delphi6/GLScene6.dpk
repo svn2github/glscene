@@ -177,6 +177,9 @@ contains
   GLState in '..\Source\GLState.pas',
   GLUtils in '..\Source\GLUtils.pas',
   GLTilePlane in '..\Source\GLTilePlane.pas',
-  GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas';
+  GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas',
+  GLVerletClasses in '..\Source\GLVerletClasses.pas',
+  VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
+  GLImposter in '..\Source\GLImposter.pas';
 
 end.
