@@ -3,6 +3,8 @@
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>24/07/03 - EG - Video modes now read on request only, removed
+                          the non-standard low-res video modes
       <li>27/09/02 - EG - Added Ability to set display frequency
       <li>27/07/01 - EG - Removed the "absolute" in RestoreDefaultMode
       <li>08/02/00 - EG - TLowResMode & TVideoMode packed (wins 5 kb)
@@ -61,6 +63,7 @@ type
    end;
    PVideoMode = ^TVideoMode;
 
+procedure ReadVideoModes;
 function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
 //: Changes to the video mode given by 'Index'
 function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer = 0) : Boolean;
@@ -69,13 +72,17 @@ procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRecta
 procedure RestoreDefaultMode;
 
 var
-   VideoModes        : array [0..MaxVideoModes] of TVideoMode;
-   NumberVideomodes  : Integer = 1;
-   CurrentVideoMode  : Integer = 0;
+   vVideoModes        : array of TVideoMode;
+   vNumberVideoModes  : Integer = 0;
+   vCurrentVideoMode  : Integer = 0;
 
 //------------------------------------------------------------------------------
-
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 uses Forms, GLScene, SysUtils;
 
@@ -85,47 +92,27 @@ type TLowResMode = packed record
                      ColorDepth : Byte;
                    end;
 
-const NumberLowResModes = 60;
-      LowResModes       : array[0..NumberLowResModes-1] of TLowResMode =
-      ((Width:320;Height:200;ColorDepth: 8),(Width:320;Height:200;ColorDepth:15),(Width:320;Height:200;ColorDepth:16),
+const NumberLowResModes = 15;
+      LowResModes       : array [0..NumberLowResModes-1] of TLowResMode =
+      (
+       (Width:320;Height:200;ColorDepth: 8),(Width:320;Height:200;ColorDepth:15),(Width:320;Height:200;ColorDepth:16),
        (Width:320;Height:200;ColorDepth:24),(Width:320;Height:200;ColorDepth:32),
-       (Width:320;Height:240;ColorDepth: 8),(Width:320;Height:240;ColorDepth:15),(Width:320;Height:240;ColorDepth:16),
-       (Width:320;Height:240;ColorDepth:24),(Width:320;Height:240;ColorDepth:32),
-       (Width:320;Height:350;ColorDepth: 8),(Width:320;Height:350;ColorDepth:15),(Width:320;Height:350;ColorDepth:16),
-       (Width:320;Height:350;ColorDepth:24),(Width:320;Height:350;ColorDepth:32),
-       (Width:320;Height:400;ColorDepth: 8),(Width:320;Height:400;ColorDepth:15),(Width:320;Height:400;ColorDepth:16),
-       (Width:320;Height:400;ColorDepth:24),(Width:320;Height:400;ColorDepth:32),
-       (Width:320;Height:480;ColorDepth: 8),(Width:320;Height:480;ColorDepth:15),(Width:320;Height:480;ColorDepth:16),
-       (Width:320;Height:480;ColorDepth:24),(Width:320;Height:480;ColorDepth:32),
-       (Width:360;Height:200;ColorDepth: 8),(Width:360;Height:200;ColorDepth:15),(Width:360;Height:200;ColorDepth:16),
-       (Width:360;Height:200;ColorDepth:24),(Width:360;Height:200;ColorDepth:32),
-       (Width:360;Height:240;ColorDepth: 8),(Width:360;Height:240;ColorDepth:15),(Width:360;Height:240;ColorDepth:16),
-       (Width:360;Height:240;ColorDepth:24),(Width:360;Height:240;ColorDepth:32),
-       (Width:360;Height:350;ColorDepth: 8),(Width:360;Height:350;ColorDepth:15),(Width:360;Height:350;ColorDepth:16),
-       (Width:360;Height:350;ColorDepth:24),(Width:360;Height:350;ColorDepth:32),
-       (Width:360;Height:400;ColorDepth: 8),(Width:360;Height:400;ColorDepth:15),(Width:360;Height:400;ColorDepth:16),
-       (Width:360;Height:400;ColorDepth:24),(Width:360;Height:400;ColorDepth:32),
-       (Width:360;Height:480;ColorDepth: 8),(Width:360;Height:480;ColorDepth:15),(Width:360;Height:480;ColorDepth:16),
-       (Width:360;Height:480;ColorDepth:24),(Width:360;Height:480;ColorDepth:32),
        (Width:400;Height:300;ColorDepth: 8),(Width:400;Height:300;ColorDepth:15),(Width:400;Height:300;ColorDepth:16),
        (Width:400;Height:300;ColorDepth:24),(Width:400;Height:300;ColorDepth:32),
        (Width:512;Height:384;ColorDepth: 8),(Width:512;Height:384;ColorDepth:15),(Width:512;Height:384;ColorDepth:16),
        (Width:512;Height:384;ColorDepth:24),(Width:512;Height:384;ColorDepth:32)
       );
 
-//------------------------------------------------------------------------------
-
+// Assign
+//
 procedure TDisplayOptions.Assign(Source: TPersistent);
-
 begin
-  if Source is TDisplayOptions then
-  begin
-    FFullScreen       :=TDisplayOptions(Source).FFullScreen;
-    FScreenResolution :=TDisplayOptions(Source).FScreenResolution;
-    FWindowAttributes :=TDisplayOptions(Source).FWindowAttributes;
-    FWindowFitting    :=TDisplayOptions(Source).FWindowFitting;
-  end
-  else inherited Assign(Source);
+   if Source is TDisplayOptions then begin
+      FFullScreen       :=TDisplayOptions(Source).FFullScreen;
+      FScreenResolution :=TDisplayOptions(Source).FScreenResolution;
+      FWindowAttributes :=TDisplayOptions(Source).FWindowAttributes;
+      FWindowFitting    :=TDisplayOptions(Source).FWindowFitting;
+   end else inherited Assign(Source);
 end;
 
 // TryToAddToList
@@ -138,8 +125,8 @@ var
 begin
    // See if this is a duplicate mode (can happen because of refresh
    // rates, or because we explicitly try all the low-res modes)
-   for i:=1 to NumberVideomodes-1 do with DeviceMode do begin
-      vm:=@VideoModes[i];
+   for i:=1 to vNumberVideoModes-1 do with DeviceMode do begin
+      vm:=@vVideoModes[i];
       if (    (dmBitsPerPel=vm.ColorDepth)
           and (dmPelsWidth =vm.Width)
           and (dmPelsHeight=vm.Height)) then begin
@@ -151,10 +138,10 @@ begin
    end;
 
    // do a mode set test (doesn't actually do the mode set, but reports whether it would have succeeded).
-   if ChangeDisplaySettings(DeviceMode,CDS_TEST or CDS_FULLSCREEN) <> DISP_CHANGE_SUCCESSFUL then Exit;
+   if ChangeDisplaySettings(DeviceMode, CDS_TEST or CDS_FULLSCREEN)<>DISP_CHANGE_SUCCESSFUL then Exit;
 
    // it's a new, valid mode, so add this to the list
-   vm:=@VideoModes[NumberVideomodes];
+   vm:=@vVideoModes[vNumberVideomodes];
    with DeviceMode do begin
       vm.ColorDepth:=dmBitsPerPel;
       vm.Width:=dmPelsWidth;
@@ -163,53 +150,52 @@ begin
       vm.Description:=Format('%d x %d, %d bpp',
                              [dmPelsWidth, dmPelsHeight, dmBitsPerPel]);
    end;
-   Inc(NumberVideomodes);
+   Inc(vNumberVideomodes);
 end;
 
-
-//------------------------------------------------------------------------------
-
+// ReadVideoModes
+//
 procedure ReadVideoModes;
-
-var I, ModeNumber : Integer;
-    done          : Boolean;
-    DeviceMode    : TDevMode;
-    DeskDC        : HDC;
-
+var
+   I, ModeNumber : Integer;
+   done          : Boolean;
+   DeviceMode    : TDevMode;
+   DeskDC        : HDC;
 begin
-  // prepare 'default' entry
-  DeskDC:=GetDC(0);
-  with VideoModes[0] do
-  try
-    ColorDepth:=GetDeviceCaps(DeskDC,BITSPIXEL)*GetDeviceCaps(DeskDC,PLANES);
-    Width:=Screen.Width;
-    Height:=Screen.Height;
-    Description:='default';
-  finally
-    ReleaseDC(0,DeskDC);
-  end;
+   if vNumberVideoModes>0 then Exit;
 
-  // enumerate all available video modes
-  ModeNumber:=0;
-  repeat
-    done:=not EnumDisplaySettings(nil,ModeNumber,DeviceMode);
-    TryToAddToList(DeviceMode);
-    Inc(ModeNumber);
-  until (done or (NumberVideomodes >= MaxVideoModes));
+   SetLength(vVideoModes, MaxVideoModes);
+   vNumberVideoModes:=1;
+
+   // prepare 'default' entry
+   DeskDC:=GetDC(0);
+   with vVideoModes[0] do try
+      ColorDepth:=GetDeviceCaps(DeskDC, BITSPIXEL)*GetDeviceCaps(DeskDC,PLANES);
+      Width:=Screen.Width;
+      Height:=Screen.Height;
+      Description:='default';
+   finally
+      ReleaseDC(0, DeskDC);
+   end;
+
+   // enumerate all available video modes
+   ModeNumber:=0;
+   repeat
+      done:=not EnumDisplaySettings(nil,ModeNumber,DeviceMode);
+      TryToAddToList(DeviceMode);
+      Inc(ModeNumber);
+   until (done or (vNumberVideoModes >= MaxVideoModes));
 
   // low-res modes don't always enumerate, ask about them explicitly
-  with DeviceMode do
-  begin
+  with DeviceMode do begin
     dmBitsPerPel:=8;
     dmPelsWidth:=42;
     dmPelsHeight:=37;
     dmFields:=DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
     // make sure the driver doesn't just answer yes to all tests
-    if ChangeDisplaySettings(DeviceMode,CDS_TEST or CDS_FULLSCREEN) <> DISP_CHANGE_SUCCESSFUL then
-    begin
+    if ChangeDisplaySettings(DeviceMode,CDS_TEST or CDS_FULLSCREEN) <> DISP_CHANGE_SUCCESSFUL then begin
       I:=0;
-      while (I < NumberLowResModes-1) and (NumberVideoModes < MaxVideoModes) do
-      begin
+      while (I < NumberLowResModes-1) and (vNumberVideoModes < MaxVideoModes) do begin
         dmSize:=Sizeof(DeviceMode);
         with LowResModes[I] do begin
            dmBitsPerPel:=ColorDepth;
@@ -224,8 +210,8 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------------
-
+// GetIndexFromResolution
+//
 function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
 
 // Determines the index of a screen resolution nearest to the
@@ -233,26 +219,26 @@ function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
 // or equal than XRes and YRes or, in case the resolution isn't
 // supported, the value 0, which indicates the default mode.
 
-var I : Integer;
-    XDiff, YDiff, CDiff : Integer;
+var
+   I : Integer;
+   XDiff, YDiff, CDiff : Integer;
 
 begin
-  // prepare result in case we don't find a valid mode
-  Result:=0;
-  // set differences to maximum
-  XDiff:=9999; YDiff:=9999; CDiff:=99;
-  for I:=1 to NumberVideomodes-1 do
-  with VideoModes[I] do
-    if (Width  >= XRes) and ((Width-XRes)  <= XDiff) and
-       (Height >= YRes) and ((Height-YRes) <= YDiff) and
-       (ColorDepth >= BPP) and ((ColorDepth-BPP) <= CDiff)
-    then
-    begin
-      XDiff:=Width-XRes;
-      YDiff:=Height-YRes;
-      CDiff:=ColorDepth-BPP;
-      Result:=I;
-    end;
+   ReadVideoModes;
+   // prepare result in case we don't find a valid mode
+   Result:=0;
+   // set differences to maximum
+   XDiff:=9999; YDiff:=9999; CDiff:=99;
+   for I:=1 to vNumberVideomodes-1 do with vVideoModes[I] do begin
+     if     (Width  >= XRes) and ((Width-XRes)  <= XDiff)
+        and (Height >= YRes) and ((Height-YRes) <= YDiff)
+        and (ColorDepth >= BPP) and ((ColorDepth-BPP) <= CDiff) then begin
+         XDiff:=Width-XRes;
+         YDiff:=Height-YRes;
+         CDiff:=ColorDepth-BPP;
+         Result:=I;
+     end;
+   end;
 end;
 
 // SetFullscreenMode
@@ -261,38 +247,38 @@ function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer =
 var
    deviceMode : TDevMode;
 begin
+   ReadVideoModes;
    with deviceMode do begin
       dmSize:=SizeOf(DeviceMode);
-      dmBitsPerPel:=VideoModes[ModeIndex].ColorDepth;
-      dmPelsWidth:=VideoModes[ModeIndex].Width;
-      dmPelsHeight:=VideoModes[ModeIndex].Height;
+      dmBitsPerPel:=vVideoModes[ModeIndex].ColorDepth;
+      dmPelsWidth:=vVideoModes[ModeIndex].Width;
+      dmPelsHeight:=vVideoModes[ModeIndex].Height;
       dmFields:=DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
       if displayFrequency>0 then begin
          dmFields:=dmFields or DM_DISPLAYFREQUENCY;
-         if displayFrequency>VideoModes[ModeIndex].MaxFrequency then
-            displayFrequency:=VideoModes[ModeIndex].MaxFrequency;
+         if displayFrequency>vVideoModes[ModeIndex].MaxFrequency then
+            displayFrequency:=vVideoModes[ModeIndex].MaxFrequency;
          dmDisplayFrequency:=displayFrequency;
       end;
    end;
    Result:=ChangeDisplaySettings(deviceMode, CDS_FULLSCREEN) = DISP_CHANGE_SUCCESSFUL;
    if Result then
-      CurrentVideoMode:=ModeIndex;
+      vCurrentVideoMode:=ModeIndex;
 end;
 
-//------------------------------------------------------------------------------
-
+// ReadScreenImage
+//
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
-
-var ScreenDC : HDC;
-
+var
+   screenDC : HDC;
 begin
-  ScreenDC:=GetDC(0);
-  try
-    GDIFlush;
-    BitBlt(Dest,DestLeft,DestTop,SrcRect.Width,SrcRect.Height,ScreenDC,SrcRect.Left,SrcRect.Top,SRCCOPY);
-  finally
-    ReleaseDC(0,ScreenDC);
-  end;
+   screenDC:=GetDC(0);
+   try
+      GDIFlush;
+      BitBlt(Dest,DestLeft,DestTop,SrcRect.Width,SrcRect.Height,ScreenDC,SrcRect.Left,SrcRect.Top,SRCCOPY);
+   finally
+      ReleaseDC(0,ScreenDC);
+   end;
 end;
 
 // RestoreDefaultMode
@@ -305,10 +291,17 @@ begin
    ChangeDisplaySettings(t^, CDS_FULLSCREEN);
 end;
 
-//------------------------------------------------------------------------------
-
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
-  ReadVideoModes;
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
 finalization
-  if CurrentVideoMode <> 0 then RestoreDefaultMode;  // set default video mode
+
+   if vCurrentVideoMode<>0 then
+      RestoreDefaultMode;  // set default video mode
+
 end.
