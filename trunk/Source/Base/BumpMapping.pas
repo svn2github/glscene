@@ -5,6 +5,7 @@
 {: Some useful methods for setting up bump maps.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/03/04 - SG - Minor optimizations
       <li>22/09/03 - SG - Partially fixed tangent space normal map creation,
                           Fixed normal blending coefficients
       <li>18/09/03 - SG - Added methods for creating normal maps,
@@ -53,10 +54,10 @@ var
   i   : Integer;
   vec : TAffineVector;
 begin
-  Colors.Clear;
+  Colors.Count:=Vertices.Count;
   for i:=0 to Vertices.Count-1 do begin
     vec:=VectorNormalize(VectorSubtract(Light,Vertices[i]));
-    Colors.Add(VectorAdd(VectorScale(vec,0.5),0.5),1);
+    Colors[i]:=VectorMake(VectorAdd(VectorScale(vec,0.5),0.5),1);
   end;
 end;
 
@@ -145,7 +146,7 @@ var
   mat : TAffineMatrix;
   vec : TAffineVector;
 begin
-  Colors.Clear;
+  Colors.Count:=Vertices.Count;
   for i:=0 to Vertices.Count-1 do begin
     mat[0]:=Tangents[i];
     mat[1]:=BiNormals[i];
@@ -153,7 +154,7 @@ begin
     TransposeMatrix(mat);
     vec:=VectorNormalize(VectorTransform(VectorSubtract(Light,Vertices[i]),mat));
     vec[0]:=-vec[0];
-    Colors.Add(VectorAdd(VectorScale(vec,0.5),0.5),1);
+    Colors[i]:=VectorMake(VectorAdd(VectorScale(vec,0.5),0.5),1);
   end;
 end;
 
