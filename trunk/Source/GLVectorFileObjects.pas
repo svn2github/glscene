@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>01/09/03 - SG - Added skeleton frame conversion methods to convert between
+                          Rotations and Quaternions.
       <li>27/08/03 - SG - Fixed AddWeightedBone for multiple bones per vertex
       <li>13/08/03 - SG - Added quaternion transforms for skeletal animation
       <li>12/08/03 - SG - Fixed a tiny bug in TSkeleton.MorphMesh
@@ -240,6 +242,9 @@ type
          {: Flushes (frees) then LocalMatrixList data.<p>
             Call this function to allow a recalculation of local matrices. }
          procedure FlushLocalMatrixList;
+         //: As the name states; Convert Quaternions to Rotations or vice-versa.
+         procedure ConvertQuaternionsToRotations(KeepQuaternions : Boolean = True);
+         procedure ConvertRotationsToQuaternions(KeepRotations : Boolean = True);
 	end;
 
    // TSkeletonFrameList
@@ -260,6 +265,10 @@ type
          destructor Destroy; override;
 
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
+         //: As the name states; Convert Quaternions to Rotations or vice-versa.
+         procedure ConvertQuaternionsToRotations(KeepQuaternions : Boolean = True);
+         procedure ConvertRotationsToQuaternions(KeepRotations : Boolean = True);
 
          property Owner : TPersistent read FOwner;
          procedure Clear; override;
@@ -2107,6 +2116,52 @@ begin
    end;
 end;
 
+// ConvertQuaternionsToRotations
+//
+procedure TSkeletonFrame.ConvertQuaternionsToRotations(KeepQuaternions : Boolean = True);
+var
+  i : integer;
+  t : TTransformations;
+  m : TMatrix;
+begin
+  Rotation.Clear;
+  for i:=0 to Quaternion.Count-1 do begin
+    m:=QuaternionToMatrix(Quaternion[i]);
+    if MatrixDecompose(m,t) then
+      Rotation.Add(t[ttRotateX],t[ttRotateY],t[ttRotateZ])
+    else
+      Rotation.Add(NullVector);
+  end;
+  if not KeepQuaternions then
+    Quaternion.Clear;
+end;
+
+// ConvertRotationsToQuaternions
+//
+procedure TSkeletonFrame.ConvertRotationsToQuaternions(KeepRotations : Boolean = True);
+var
+  i : integer;
+  mat,rmat : TMatrix;
+  s,c : Single;
+begin
+  Quaternion.Clear;
+  for i:= 0 to Rotation.Count-1 do begin
+    mat:=IdentityHmgMatrix;
+    SinCos(Rotation[i][0], s, c);
+    rmat:=CreateRotationMatrixX(s, c);
+    mat:=MatrixMultiply(mat, rmat);
+    SinCos(Rotation[i][1], s, c);
+    rmat:=CreateRotationMatrixY(s, c);
+    mat:=MatrixMultiply(mat, rmat);
+    SinCos(Rotation[i][2], s, c);
+    rmat:=CreateRotationMatrixZ(s, c);
+    mat:=MatrixMultiply(mat, rmat);
+    Quaternion.Add(QuaternionFromMatrix(mat));
+  end;
+  if not KeepRotations then
+    Rotation.Clear;
+end;
+
 // ------------------
 // ------------------ TSkeletonFrameList ------------------
 // ------------------
@@ -2155,6 +2210,26 @@ end;
 function TSkeletonFrameList.GetSkeletonFrame(Index: Integer): TSkeletonFrame;
 begin
    Result:=TSkeletonFrame(List^[Index]);
+end;
+
+// ConvertQuaternionsToRotations
+//
+procedure TSkeletonFrameList.ConvertQuaternionsToRotations(KeepQuaternions : Boolean = True);
+var
+  i : integer;
+begin
+  for i:=0 to Count-1 do
+    Items[i].ConvertQuaternionsToRotations(KeepQuaternions);
+end;
+
+// ConvertRotationsToQuaternions
+//
+procedure TSkeletonFrameList.ConvertRotationsToQuaternions(KeepRotations : Boolean = True);
+var
+  i : integer;
+begin
+  for i:=0 to Count-1 do
+    Items[i].ConvertRotationsToQuaternions(KeepRotations);
 end;
 
 // ------------------
