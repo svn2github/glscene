@@ -556,7 +556,7 @@ type
    TGLCube = class (TGLSceneObject)
 		private
 			{ Private Declarations }
-         FCubeWidth, FCubeHeight, FCubeDepth : TGLFloat;
+         FCubeSize : TAffineVector;
          FParts : TCubeParts;
          FNormalDirection : TNormalDirection;
          procedure SetCubeWidth(AValue: TGLFloat);
@@ -582,9 +582,9 @@ type
 
       published
 			{ Published Declarations }
-         property CubeWidth: TGLFloat read FCubeWidth write SetCubeWidth stored False;
-         property CubeHeight: TGLFloat read FCubeHeight write SetCubeHeight stored False;
-         property CubeDepth: TGLFloat read FCubeDepth write SetCubeDepth stored False;
+         property CubeWidth: TGLFloat read FCubeSize[0] write SetCubeWidth stored False;
+         property CubeHeight: TGLFloat read FCubeSize[1] write SetCubeHeight stored False;
+         property CubeDepth: TGLFloat read FCubeSize[2] write SetCubeDepth stored False;
          property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
          property Parts: TCubeParts read FParts write SetParts default [cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
    end;
@@ -2479,9 +2479,7 @@ end;
 constructor TGLCube.Create(AOwner:Tcomponent);
 begin
   inherited Create(AOwner);
-  FCubeWidth:=1;
-  FCubeHeight:=1;
-  FCubeDepth:=1;
+  FCubeSize:=XYZVector;
   FParts:=[cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   FNormalDirection:=ndOutside;
   ObjectStyle:=ObjectStyle+[osDirectDraw];
@@ -2496,9 +2494,9 @@ begin
    if FNormalDirection=ndInside then
       nd:=-1
    else nd:=1;
-   hw:=FCubeWidth*0.5;
-   hh:=FCubeHeight*0.5;
-   hd:=FCubeDepth*0.5;
+   hw:=FCubeSize[0]*0.5;
+   hh:=FCubeSize[1]*0.5;
+   hd:=FCubeSize[2]*0.5;
 
    glBegin(GL_QUADS);
    if cpFront in FParts then begin
@@ -2550,8 +2548,8 @@ end;
 //
 procedure TGLCube.SetCubeWidth(AValue : TGLFloat);
 begin
-   if AValue<>FCubeWidth then begin
-      FCubeWidth:=AValue;
+   if AValue<>FCubeSize[0] then begin
+      FCubeSize[0]:=AValue;
       StructureChanged;
    end;
 end;
@@ -2560,8 +2558,8 @@ end;
 //
 procedure TGLCube.SetCubeHeight(AValue:TGLFloat);
 begin
-   if AValue<>FCubeHeight then begin
-      FCubeHeight:=AValue;
+   if AValue<>FCubeSize[1] then begin
+      FCubeSize[1]:=AValue;
       StructureChanged;
    end;
 end;
@@ -2570,8 +2568,8 @@ end;
 //
 procedure TGLCube.SetCubeDepth(AValue: TGLFloat);
 begin
-   if AValue<>FCubeDepth then begin
-      FCubeDepth:=AValue;
+   if AValue<>FCubeSize[2] then begin
+      FCubeSize[2]:=AValue;
       StructureChanged;
    end;
 end;
@@ -2601,9 +2599,7 @@ end;
 procedure TGLCube.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLCube) then begin
-      FCubeWidth:=TGLCube(Source).FCubewidth;
-      FCubeHeight:=TGLCube(Source).FCubeHeight;
-      FCubeDepth:=TGLCube(Source).FCubeDepth;
+      FCubeSize:=TGLCube(Source).FCubeSize;
       FParts:=TGLCube(Source).FParts;
       FNormalDirection:=TGLCube(Source).FNormalDirection;
    end;
@@ -2614,9 +2610,9 @@ end;
 //
 function TGLCube.AxisAlignedDimensions : TVector;
 begin
-   Result[0]:= FCubeWidth*Scale.DirectX*0.5;
-   Result[1]:=FCubeHeight*Scale.DirectY*0.5;
-   Result[2]:= FCubeDepth*Scale.DirectZ*0.5;
+   Result[0]:=FCubeSize[0]*Scale.DirectX*0.5;
+   Result[1]:=FCubeSize[1]*Scale.DirectY*0.5;
+   Result[2]:=FCubeSize[2]*Scale.DirectZ*0.5;
    Result[3]:=0;
 end;
 
@@ -2626,7 +2622,7 @@ procedure TGLCube.DefineProperties(Filer: TFiler);
 begin
    inherited;
    Filer.DefineBinaryProperty('CubeSize', ReadData, WriteData,
-                              (FCubeWidth<>1) or (FCubeHeight<>1) or (FCubeDepth<>1));
+                              (FCubeSize[0]<>1) or (FCubeSize[1]<>1) or (FCubeSize[2]<>1));
 end;
 
 // ReadData
@@ -2634,9 +2630,7 @@ end;
 procedure TGLCube.ReadData(Stream: TStream);
 begin
    with Stream do begin
-      Read(FCubeWidth, SizeOf(FCubeWidth));
-      Read(FCubeHeight, SizeOf(FCubeHeight));
-      Read(FCubeDepth, SizeOf(FCubeDepth));
+      Read(FCubeSize, SizeOf(TAffineVector));
    end;
 end;
 
@@ -2645,13 +2639,13 @@ end;
 procedure TGLCube.WriteData(Stream: TStream);
 begin
    with Stream do begin
-      Write(FCubeWidth, SizeOf(FCubeWidth));
-      Write(FCubeHeight, SizeOf(FCubeHeight));
-      Write(FCubeDepth, SizeOf(FCubeDepth));
+      Write(FCubeSize, SizeOf(TAffineVector));
    end;
 end;
 
-//----------------- TGLFrustrum --------------------------------------------------
+// ------------------
+// ------------------ TGLFrustrum ------------------
+// ------------------
 
 constructor TGLFrustrum.Create(AOwner: TComponent);
 begin
