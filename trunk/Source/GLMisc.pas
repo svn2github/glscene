@@ -5,6 +5,8 @@
 	<b>History : </b><font size=-1><ul>
       <li>10/25/03 - Dave - Added TGLCoordinates.SetVector (TAffineVector)
                             Added TGLCoordinates.SetVector (TVector)
+                            Added TGLCoordinates.SetPoint (TAffineVector)
+                            Added TGLCoordinates.SetPoint (TVector)
       <li>05/09/03 - EG - TNotifyCollection moved in from GLMultiPolygon
       <li>21/08/03 - EG - Added osRenderNearestFirst
       <li>17/06/03 - EG - New TryStrToFloat, updated StrToFloatDef
@@ -261,7 +263,9 @@ type
          procedure SetVector(const x, y, z, w : Single); overload;
          procedure SetVector(const v : TAffineVector); overload;
          procedure SetVector(const v : TVector); overload;
-         procedure SetPoint(const x, y, z : Single);
+         procedure SetPoint(const x, y, z : Single); overload;
+         procedure SetPoint(const v : TAffineVector); overload;
+         procedure SetPoint(const v : TVector); overload;
          procedure SetToZero;
 
          function AsAddress : PGLFloat;
@@ -1460,6 +1464,24 @@ procedure TGLCoordinates.SetPoint(const x, y, z : Single);
 begin
    Assert(FStyle<>csVector);
    Geometry.MakePoint(FCoords, x, y, z);
+	NotifyChange(Self);
+end;
+
+// SetPoint (TAffineVector)
+//
+procedure TGLCoordinates.SetPoint(const v : TAffineVector);
+begin
+   Assert(FStyle<>csVector);
+   Geometry.MakePoint(FCoords, v);
+	NotifyChange(Self);
+end;
+
+// SetPoint (TVector)
+//
+procedure TGLCoordinates.SetPoint(const v : TVector);
+begin
+   Assert(FStyle<>csVector);
+   Geometry.MakePoint(FCoords, v);
 	NotifyChange(Self);
 end;
 
