@@ -7206,7 +7206,7 @@ begin
             end;
          end;
       end;
-      aamExternal : ; // Do nothing
+      aamExternal : Result:=CurrentFrame; // Do nothing
    else
       Result:=CurrentFrame;
       Assert(False);
