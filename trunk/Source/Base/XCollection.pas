@@ -280,6 +280,8 @@ begin
 	inherited Create;
 	FOwner:=aOwner;
 	if Assigned(aOwner) then begin
+      Assert(aOwner.CanAdd(TXCollectionItemClass(Self.ClassType)),
+             'Addition of '+Self.ClassName+' to '+aOwner.ClassName+' rejected.');
 		aOwner.FList.Add(Self);
       aOwner.FCount:=aOwner.FList.Count;
    end;
