@@ -1,7 +1,7 @@
 object frmClothify: TfrmClothify
-  Left = 94
-  Top = 124
-  Width = 774
+  Left = 7
+  Top = 2
+  Width = 750
   Height = 582
   Caption = 'Clothify'
   Color = clBtnFace
@@ -15,12 +15,12 @@ object frmClothify: TfrmClothify
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   DesignSize = (
-    766
+    742
     553)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 722
+    Left = 698
     Top = 0
     Width = 38
     Height = 13
@@ -29,30 +29,30 @@ object frmClothify: TfrmClothify
   end
   object Label3: TLabel
     Left = 8
-    Top = 8
+    Top = 0
     Width = 27
     Height = 13
     Caption = 'Slack'
   end
   object Label6: TLabel
     Left = 104
-    Top = 8
+    Top = 0
     Width = 43
     Height = 13
     Caption = 'Iterations'
   end
   object Label7: TLabel
     Left = 184
-    Top = 8
+    Top = 0
     Width = 34
     Height = 13
     Caption = 'Friction'
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 48
-    Width = 766
-    Height = 537
+    Top = 40
+    Width = 742
+    Height = 545
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
@@ -185,8 +185,8 @@ object frmClothify: TfrmClothify
     end
   end
   object Button_OpenLoadForm: TButton
-    Left = 376
-    Top = 24
+    Left = 352
+    Top = 11
     Width = 75
     Height = 21
     Caption = 'Load'
@@ -196,7 +196,7 @@ object frmClothify: TfrmClothify
   end
   object TrackBar_Slack: TTrackBar
     Left = 0
-    Top = 22
+    Top = 14
     Width = 97
     Height = 25
     Max = 100
@@ -206,7 +206,7 @@ object frmClothify: TfrmClothify
   end
   object TrackBar_Iterations: TTrackBar
     Left = 96
-    Top = 22
+    Top = 14
     Width = 81
     Height = 25
     Max = 30
@@ -218,7 +218,7 @@ object frmClothify: TfrmClothify
   end
   object TrackBar_Friction: TTrackBar
     Left = 176
-    Top = 22
+    Top = 14
     Width = 81
     Height = 25
     Max = 100
@@ -228,8 +228,8 @@ object frmClothify: TfrmClothify
     OnChange = TrackBar_FrictionChange
   end
   object CheckBox_ShowOctree: TCheckBox
-    Left = 272
-    Top = 28
+    Left = 264
+    Top = 15
     Width = 81
     Height = 17
     Caption = 'Show Octree'
