@@ -107,6 +107,17 @@ var
    il : TIntegerList;
    materialName : String;
 begin
+   if (mooMergeObjects in options) then begin
+      if aMeshObject.Mode=momFaceGroups then begin
+         // remove empty facegroups
+         for i:=aMeshObject.FaceGroups.Count-1 downto 0 do begin
+            fg:=aMeshObject.FaceGroups[i];
+            if fg.TriangleCount=0 then
+               fg.Free;
+         end;
+      end;
+   end;
+
    if (mooStandardize in options) then begin
       if (aMeshObject.Mode<>momFaceGroups) or (aMeshObject.FaceGroups.Count<=1) then begin
          if aMeshObject.FaceGroups.Count=1 then
