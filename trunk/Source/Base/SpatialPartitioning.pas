@@ -98,11 +98,15 @@ type
     procedure SetItems(i: integer; const Value: TSpacePartitionLeaf);
   public
     property Items[i : integer] : TSpacePartitionLeaf read GetItems write SetItems; default;
+    constructor Create; override;
   end;
+
+  TCullingMode = (cmFineCulling, cmGrossCulling);
 
   {: Basic space partition, does not implement any actual space partitioning }
   TBaseSpacePartition = class(TPersistentObject)
   private
+    FCullingMode: TCullingMode;
     {: Query space for Leaves that intersect a cone, result is returned through
     QueryResult}
     function QueryCone(const aCone : TCone) : integer; virtual;
@@ -137,6 +141,9 @@ type
     {: Query space for Leaves that intersect the bounding sphere or box
     of a leaf. Result is returned through QueryResult}
     function QueryLeaf(const aLeaf : TSpacePartitionLeaf) : integer; virtual;
+    {: Query space for Leaves that intersect a plane. Result is returned through
+    QueryResult}
+    function QueryPlane(const Location, Normal: TAffineVector) : integer; virtual;
 
     {: Once a query has been run, this number tells of how many inter object
     tests that were run. This value must be set by all that override the
@@ -147,6 +154,10 @@ type
     been made. ProcessUpdated should be called when all changes have been
     performed. }
     procedure ProcessUpdated; virtual;
+
+    {: Determines if the spatial structure should do very simple preliminary
+    culling (gross culling) or a more detailed form of culling (fine culling)}
+    property CullingMode : TCullingMode read FCullingMode write FCullingMode;
 
     constructor Create; override;
     destructor Destroy; override;
@@ -180,6 +191,9 @@ type
     returned through QueryResult. This override scans _all_ leaves
     in the list, so it's far from optimal.}
     function QueryBSphere(const aBSphere : TBSphere) : integer; override;
+    {: Query space for Leaves that intersect a plane. Result is returned through
+    QueryResult}
+    function QueryPlane(const FLocation, FNormal: TAffineVector) : integer; override;
 
     constructor Create; override;
     destructor Destroy; override;
@@ -198,15 +212,16 @@ type
   private
     FLeaves : TSpacePartitionLeafList;
     FAABB : TAABB;
-    FCenter : TAffineVector;
     FSectoredSpacePartition : TSectoredSpacePartition;
     FRecursiveLeafCount: integer;
     FParent: TSectorNode;
     FNodeDepth : integer;
     FChildCount : integer;
     FChildren: TSectorNodeArray;
+    FBSphere: TBSphere;
     function GetNoChildren: boolean;
     procedure SetAABB(const Value: TAABB);
+    function GetCenter: TAffineVector;
   protected
     {: Recursively counts the RecursiveLeafCount, this should only be used in
     debugging purposes, because the proprtyu RecursiveLeafCount is always up to
@@ -228,8 +243,10 @@ type
     {: The Axis Aligned Bounding Box for this node. All leaves MUST fit inside
     this box. }
     property AABB : TAABB read FAABB write SetAABB;
+    {: BSphere for this node }
+    property BSphere : TBSphere read FBSphere;
     {: Center of the AABB for this node.}
-    property Center : TAffineVector read FCenter;
+    property Center : TAffineVector read GetCenter;
     {: NoChildren is true if the node has no children.}
     property NoChildren : boolean read GetNoChildren;
     {: A list of the children for this node, only ChildCount children are none
@@ -298,6 +315,9 @@ type
     {: Query the node and it's children for leaves that match the BSphere }
     procedure QueryBSphere(const aBSphere : TBSphere; const QueryResult : TSpacePartitionLeafList);
 
+    {: Query the node and it's children for leaves that match the plane }
+    procedure QueryPlane(const Location, Normal: TAffineVector; const QueryResult : TSpacePartitionLeafList);
+
     {: Adds all leaves to query result without testing if they intersect, and
     then do the same for all children. This is used when QueryAABB or
     QueryBSphere determines that a node fits completely in the searched space}
@@ -364,6 +384,10 @@ type
     {: Query space for Leaves that intersect the bounding sphere or box
     of a leaf. Result is returned through QueryResult}
     function QueryLeaf(const aLeaf : TSpacePartitionLeaf) : integer; override;
+
+    {: Query space for Leaves that intersect a plane. Result is returned through
+    QueryResult}
+    function QueryPlane(const Location, Normal: TAffineVector) : integer; override;
 
     {: After a query has been run, this value will contain the number of nodes
     that were checked during the query }
@@ -553,7 +577,9 @@ begin
   inherited Create;
   
   FSpacePartition := SpacePartition;
-  SpacePartition.AddLeaf(self);
+
+  if SpacePartition <> nil then
+    SpacePartition.AddLeaf(self);
 end;
 
 destructor TSpacePartitionLeaf.Destroy;
@@ -577,6 +603,12 @@ begin
 end;
 
 { TSpacePartitionLeafList }
+
+constructor TSpacePartitionLeafList.Create;
+begin
+  inherited;
+  GrowthDelta := 128;
+end;
 
 function TSpacePartitionLeafList.GetItems(i: integer): TSpacePartitionLeaf;
 begin
@@ -644,6 +676,13 @@ begin
 end;
 
 function TBaseSpacePartition.QueryCone(const aCone: TCone): integer;
+begin
+  // Virtual
+  result := 0;
+end;
+
+function TBaseSpacePartition.QueryPlane(
+  const Location, Normal: TAffineVector): integer;
 begin
   // Virtual
   result := 0;
@@ -762,6 +801,32 @@ begin
     if ConeContainsBSphere(aCone, Leaves[i].FCachedBSphere)<>scNoOverlap then
       FQueryResult.Add(Leaves[i]);
   end;
+
+  result := FQueryResult.Count;
+end;
+
+function TLeavedSpacePartition.QueryPlane(
+  const FLocation, FNormal: TAffineVector): integer;
+var
+  i : integer;
+  currentPenetrationDepth : single;
+  Leaf : TSpacePartitionLeaf;
+begin
+  // Very brute force!
+  FlushQueryResult;
+
+  for i := 0 to Leaves.Count-1 do
+  begin
+    inc(FQueryInterObjectTests);
+
+    Leaf := Leaves[i];
+
+    currentPenetrationDepth := -(PointPlaneDistance(Leaf.FCachedBSphere.Center, FLocation, FNormal)-Leaf.FCachedBSphere.Radius);
+
+    // Correct the node location
+    if currentPenetrationDepth>0 then
+      FQueryResult.Add(Leaves[i]);
+  end;//}
 
   result := FQueryResult.Count;
 end;
@@ -955,11 +1020,18 @@ begin
   if SpaceContains = scContainsPartially then
   begin
     // Add all leaves that overlap
-    for i := 0 to FLeaves.Count-1 do
+    if FSectoredSpacePartition.CullingMode = cmFineCulling then
     begin
-      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+      for i := 0 to FLeaves.Count-1 do
+      begin
+        inc(FSectoredSpacePartition.FQueryInterObjectTests);
 
-      if IntersectAABBsAbsolute(FLeaves[i].FCachedAABB, aAABB) then
+        if IntersectAABBsAbsolute(FLeaves[i].FCachedAABB, aAABB) then
+          QueryResult.Add(FLeaves[i]);
+      end;
+    end else
+    begin
+      for i := 0 to FLeaves.Count-1 do
         QueryResult.Add(FLeaves[i]);
     end;
 
@@ -986,8 +1058,13 @@ begin
   if SpaceContains = scContainsPartially then
   begin
     // Add all leaves that overlap
-    for i := 0 to FLeaves.Count-1 do
-      if BSphereContainsAABB(aBSphere, FLeaves[i].FCachedAABB) <> scNoOverlap then
+    if FSectoredSpacePartition.CullingMode = cmFineCulling then
+    begin
+      for i := 0 to FLeaves.Count-1 do
+        if BSphereContainsAABB(aBSphere, FLeaves[i].FCachedAABB) <> scNoOverlap then
+          QueryResult.Add(FLeaves[i]);
+    end else
+      for i := 0 to FLeaves.Count-1 do
         QueryResult.Add(FLeaves[i]);
 
     // Recursively let the children add their leaves
@@ -998,6 +1075,42 @@ begin
       FChildren[i].QueryBSphere(aBSphere, QueryResult);
     end;
   end;
+end;
+
+procedure TSectorNode.QueryPlane(const Location, Normal: TAffineVector;
+  const QueryResult: TSpacePartitionLeafList);
+var
+  i : integer;
+  SpaceContains : TSpaceContains;
+begin
+  inc(FSectoredSpacePartition.FQueryNodeTests);
+
+  SpaceContains := PlaneContainsBSphere(Location, Normal, FBSphere);
+
+  if SpaceContains = scContainsFully then
+  begin
+    AddAllLeavesRecursive(QueryResult);
+  end else
+  if SpaceContains = scContainsPartially then
+  begin
+    // Add all leaves that overlap
+    if FSectoredSpacePartition.CullingMode = cmFineCulling then
+    begin
+      for i := 0 to FLeaves.Count-1 do
+        if PlaneContainsBSphere(Location, Normal, FLeaves[i].FCachedBSphere) <> scNoOverlap then
+          QueryResult.Add(FLeaves[i]);
+    end else
+      for i := 0 to FLeaves.Count-1 do
+        QueryResult.Add(FLeaves[i]);
+
+    // Recursively let the children add their leaves
+    for i := 0 to FChildCount-1 do
+    begin
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+
+      FChildren[i].QueryPlane(Location, Normal, QueryResult);
+    end;
+  end;//}
 end;
 
 procedure TSectorNode.RemoveLeaf(aLeaf: TSpacePartitionLeaf; OwnerByThis : boolean);
@@ -1063,7 +1176,8 @@ end;
 procedure TSectorNode.SetAABB(const Value: TAABB);
 begin
   FAABB := Value;
-  FCenter := VectorScale(VectorAdd(FAABB.min,FAABB.max), 0.5);
+
+  AABBToBSphere(FAABB, FBSphere);
 end;
 
 function TSectorNode.GetChildForAABB(
@@ -1080,13 +1194,13 @@ begin
   Location := AABB.min;
 
   // Upper / Lower
-  if Location[1]<FCenter[1] then  ChildNodeIndex := 4;
+  if Location[1]<FBSphere.Center[1] then  ChildNodeIndex := 4;
 
   // Left / Right
-  if Location[2]<FCenter[2] then ChildNodeIndex := ChildNodeIndex or 2;
+  if Location[2]<FBSphere.Center[2] then ChildNodeIndex := ChildNodeIndex or 2;
 
   // Fore / Back
-  if Location[0]>FCenter[0] then ChildNodeIndex := ChildNodeIndex or 1;
+  if Location[0]>FBSphere.Center[0] then ChildNodeIndex := ChildNodeIndex or 1;
 
   ChildNode := FChildren[ChildNodeIndex];
 
@@ -1097,6 +1211,11 @@ begin
   end;
 
   result := nil;
+end;
+
+function TSectorNode.GetCenter: TAffineVector;
+begin
+  result := FBSphere.Center;
 end;
 
 { TSectoredSpacePartition }
@@ -1208,6 +1327,14 @@ function TSectoredSpacePartition.QueryBSphere(
 begin
   FlushQueryResult;
   FRootNode.QueryBSphere(aBSphere, FQueryResult);
+  result := FQueryResult.Count;
+end;
+
+function TSectoredSpacePartition.QueryPlane(const Location,
+  Normal: TAffineVector): integer;
+begin
+  FlushQueryResult;
+  FRootNode.QueryPlane(Location, Normal, FQueryResult);
   result := FQueryResult.Count;
 end;
 

@@ -11,6 +11,9 @@
    It's a matter of leverage. <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/07/03 - MF - A bit of a documentation effort
+      <li>10/07/03 - MF - Verlets now use spatial partitioning objects to speed
+                          up space queries
       <li>10/07/03 - MF - Renaming TVerletAssembly to TVerletWorld
       <li>24/06/03 - MF - Added force kickbacks for integration with external
                           physics. Needs to be split into force+torque and add
@@ -51,6 +54,7 @@ type
 
    // TVerletNode
    //
+   {: Basic verlet node }
    TVerletNode = class(TSpacePartitionLeaf)
       private
 			{ Private Declarations }
@@ -164,14 +168,20 @@ type
          constructor Create(aOwner : TVerletWorld); virtual;
          destructor Destroy; override;
 
+         {: Updates the position of one or several nodes to make sure that they
+         don't violate the constraint }
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); virtual; abstract;
 
-         //: Notifies removal of a node
+         {: Notifies removal of a node }
          procedure RemoveNode(aNode : TVerletNode); virtual; abstract;
 
+         {: Method that's fired before the physics iterations are performed}
          procedure BeforeIterations; virtual;
 
+         {: Onwer of the constraint }
          property Owner : TVerletWorld read FOwner;
+
+         {: Determines if the constraint should be enforced or not }
          property Enabled : Boolean read FEnabled write FEnabled;
    end;
 
@@ -206,6 +216,7 @@ type
 
          procedure RemoveNode(aNode : TVerletNode); override;
 
+         {: The list of nodes that this constraint will effect}
          property Nodes : TVerletNodeList read FNodes;
    end;
 
@@ -219,11 +230,17 @@ type
 
       public
 			{ Public Declarations }
+         {: The TVerletEdge inherits from TSpacePartitionLeaf, and it needs to
+         know how to publish itself. The owner ( a TVerletWorld ) has a spatial
+         partitioning object}
          procedure UpdateCachedAABBAndBSphere; override;
 
          constructor Create(aNodeA, aNodeB : TVerletNode);
 
+         {: One of the nodes in the edge }
          property NodeA : TVerletNode read FNodeA write FNodeA;
+
+         {: One of the nodes in the edge }
          property NodeB : TVerletNode read FNodeB write FNodeB;
    end;
 
@@ -563,17 +580,16 @@ type
 
    // TVCFloor
    //
-   {: Floor collision constraint.<p>
-      The floor is in the XZ plane with a Y+ normal. Highly un-pretty.}
-   TVCFloor = class (TVerletGlobalFrictionConstraint)
+   {: Floor collision constraint }
+   TVCFloor = class (TVerletGlobalFrictionConstraintSP)
       private
 			{ Private Declarations }
          FBounceRatio : Single;
          FNormal : TAffineVector;
-    procedure SetNormal(const Value: TAffineVector);
-
+         procedure SetNormal(const Value: TAffineVector);
       public
 			{ Public Declarations }
+         procedure PerformSpaceQuery; override;
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                         const iteration, maxIterations : Integer); override;
 
@@ -743,6 +759,7 @@ implementation
 //
 constructor TVerletNode.Create(aOwner : TVerletWorld);
 begin
+
    inherited Create(aOwner.SpacePartition);
    if Assigned(aOwner) then
       aOwner.AddNode(Self);
@@ -1200,10 +1217,10 @@ begin
    FMaxDeltaTime:=0.02;
    FIterations:=3;
    FSolidEdges := TVerletEdgeList.Create;
-   FSpacePartition := TLeavedSpacePartition.Create;
    FCurrentStepCount := 0;
    FUpdateSpacePartion := uspNever;
    FCollisionConstraintTypes := [cctEdge, cctNode];
+   FSpacePartition := nil;
 end;
 
 // Destroy
@@ -1431,14 +1448,17 @@ procedure TVerletWorld.DoUpdateSpacePartition;
 var
   i : integer;
 begin
-  for i:=0 to FSolidEdges.Count-1 do
-    if (FSolidEdges[i].FNodeA.FChangedOnStep=FCurrentStepCount) or
-       (FSolidEdges[i].FNodeB.FChangedOnStep=FCurrentStepCount) then
-      FSolidEdges[i].Changed;
+  if Assigned(SpacePartition) then
+  begin
+    for i:=0 to FSolidEdges.Count-1 do
+      if (FSolidEdges[i].FNodeA.FChangedOnStep=FCurrentStepCount) or
+         (FSolidEdges[i].FNodeB.FChangedOnStep=FCurrentStepCount) then
+        FSolidEdges[i].Changed;
 
-  for i:=0 to FNodes.Count-1 do
-    if (FNodes[i].FChangedOnStep=FCurrentStepCount) then
-      FNodes[i].Changed;
+    for i:=0 to FNodes.Count-1 do
+      if (FNodes[i].FChangedOnStep=FCurrentStepCount) then
+        FNodes[i].Changed;
+  end;
 end;
 
 // SatisfyConstraints
@@ -1607,6 +1627,11 @@ begin
   inherited;
   MakeVector(FNormal, 0, 1, 0);
   MakeVector(FLocation, 0, 0, 0);
+end;
+
+procedure TVCFloor.PerformSpaceQuery;
+begin
+  Owner.SpacePartition.QueryPlane(FLocation, FNormal);
 end;
 
 procedure TVCFloor.SatisfyConstraintForNode(aNode : TVerletNode;
@@ -2282,6 +2307,7 @@ begin
   Octree.SetSize(OctreeMin, OctreeMax);
   Octree.MaxTreeDepth := MaxTreeDepth;
   Octree.LeafThreshold := LeafThreshold;
+  Octree.CullingMode := cmGrossCulling;
 
   FSpacePartition := Octree;
 
@@ -2300,6 +2326,12 @@ var
    SP : TBaseSpacePartition;
    Leaf : TSpacePartitionLeaf;
 begin
+  if Owner.SpacePartition=nil then
+  begin
+    inherited;
+    exit;
+  end;
+
   PerformSpaceQuery;
   SP := Owner.SpacePartition;
 

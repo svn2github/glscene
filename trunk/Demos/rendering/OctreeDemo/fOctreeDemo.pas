@@ -27,6 +27,7 @@ type
     GLSphere1: TGLSphere;
     Label2: TLabel;
     Button_ResetOctreeSize: TButton;
+    GLPlane1: TGLPlane;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
@@ -257,6 +258,7 @@ begin
     Leaf := TGLSpacePartitionLeaf(Octree.Leaves[i]);
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Red := 0;
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Green := 0;
+    TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Blue := 0;
   end;//}
 
   // AABB collision
@@ -283,6 +285,18 @@ begin
     Leaf := TGLSpacePartitionLeaf(Octree.QueryResult[i]);
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Red := 1;
   end;//}
+
+  // Plane collision
+  if GLPlane1.Visible then
+  begin
+    Octree.QueryPlane(GLPlane1.Position.AsAffineVector, GLPlane1.Direction.AsAffineVector);
+
+    for i := 0 to Octree.QueryResult.Count-1 do
+    begin
+      Leaf := TGLSpacePartitionLeaf(Octree.QueryResult[i]);
+      TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Blue := 1;
+    end;//}
+  end;
 
   // Leaf - leaf collision
   CollidingLeafCount := 0;

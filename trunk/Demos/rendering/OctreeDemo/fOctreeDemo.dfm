@@ -97,6 +97,16 @@ object frmOctreeDemo: TfrmOctreeDemo
       Material.BlendingMode = bmTransparency
       Radius = 2.500000000000000000
     end
+    object GLPlane1: TGLPlane
+      Direction.Coordinates = {0000000000000080000080BF00000000}
+      Position.Coordinates = {0000000000000000000020410000803F}
+      Up.Coordinates = {6A41323FD9BD373F0000000000000000}
+      Visible = False
+      Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCC4C3E}
+      Material.BlendingMode = bmTransparency
+      Height = 40.000000000000000000
+      Width = 40.000000000000000000
+    end
     object GLCamera1: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 75.000000000000000000

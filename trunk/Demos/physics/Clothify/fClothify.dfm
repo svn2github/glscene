@@ -1,5 +1,5 @@
 object frmClothify: TfrmClothify
-  Left = 17
+  Left = 9
   Top = 1
   Width = 774
   Height = 582
@@ -140,21 +140,13 @@ object frmClothify: TfrmClothify
       'ODE Sphere'
       '(none)')
   end
-  object CheckBox_Pause: TCheckBox
-    Left = 624
-    Top = 16
-    Width = 57
-    Height = 17
-    Caption = 'Pause'
-    TabOrder = 5
-  end
   object TrackBar_Slack: TTrackBar
     Left = 320
     Top = 14
     Width = 57
     Height = 25
     Max = 100
-    TabOrder = 6
+    TabOrder = 5
     TickStyle = tsNone
     OnChange = TrackBar_SlackChange
   end
@@ -166,7 +158,7 @@ object frmClothify: TfrmClothify
     Max = 30
     Min = 1
     Position = 4
-    TabOrder = 7
+    TabOrder = 6
     TickStyle = tsNone
     OnChange = TrackBar_IterationsChange
   end
@@ -178,7 +170,7 @@ object frmClothify: TfrmClothify
     Caption = 'Weld'
     Checked = True
     State = cbChecked
-    TabOrder = 8
+    TabOrder = 7
   end
   object TrackBar_Friction: TTrackBar
     Left = 568
@@ -187,16 +179,26 @@ object frmClothify: TfrmClothify
     Height = 25
     Max = 100
     Position = 60
-    TabOrder = 9
+    TabOrder = 8
     TickStyle = tsNone
     OnChange = TrackBar_FrictionChange
   end
   object CheckBox_ShowOctree: TCheckBox
     Left = 624
-    Top = 0
+    Top = 20
     Width = 81
     Height = 17
     Caption = 'Show Octree'
+    TabOrder = 9
+  end
+  object CheckBox_UseOctree: TCheckBox
+    Left = 624
+    Top = 4
+    Width = 81
+    Height = 17
+    Caption = 'Use Octree'
+    Checked = True
+    State = cbChecked
     TabOrder = 10
   end
   object GLScene1: TGLScene

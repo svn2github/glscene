@@ -119,6 +119,8 @@ function BSphereContainsAABB(const mainBSphere : TBSphere; const testAABB : TAAB
 function BSphereContainsBSphere(const mainBSphere, testBSphere : TBSphere) : TSpaceContains;
 {: Determines to which extent an AABB contains a BSpher}
 function AABBContainsBSphere(const mainAABB : TAABB; const testBSphere : TBSphere) : TSpaceContains;
+{: Determines to which extent a plane contains a BSphere}
+function PlaneContainsBSphere(const Location, Normal : TAffineVector; const testBSphere : TBSphere) : TSpaceContains;
 {: Clips a position to an AABB }
 function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector;
 
@@ -704,6 +706,20 @@ var
 begin
   BSphereToAABB(testBSphere, testAABB);
   result := AABBContainsAABB(mainAABB, testAABB);
+end;
+
+function PlaneContainsBSphere(const Location, Normal : TAffineVector; const testBSphere : TBSphere) : TSpaceContains;
+var
+  Dist : single;
+begin
+  Dist := PointPlaneDistance(testBSphere.Center, Location, Normal);
+
+  if Dist > testBSphere.Radius then
+    result := scNoOverlap
+  else if abs(Dist)<= testBSphere.Radius then
+    result := scContainsPartially
+  else
+    result := scContainsFully;
 end;
 
 //  BSphereContainsAABB

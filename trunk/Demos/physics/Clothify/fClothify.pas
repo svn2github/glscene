@@ -1,7 +1,7 @@
 {: Clothify demo.<p>
 
    Caution: this demo mixes several experimental thingies, and will probably be
-            cleaned-up/splitted to be easier to follow, ad interim, you enter
+            cleaned-up/split to be easier to follow, ad interim, you enter
             the jungle below at your own risks :)
 }
 unit fClothify;
@@ -37,7 +37,6 @@ type
     GLShadowPlane1: TGLShadowPlane;
     GLCube1: TGLCube;
     ComboBox_Collider: TComboBox;
-    CheckBox_Pause: TCheckBox;
     Label4: TLabel;
     Label5: TLabel;
     TrackBar_Slack: TTrackBar;
@@ -60,6 +59,7 @@ type
     GLActor2: TGLActor;
     GLDirectOpenGL1: TGLDirectOpenGL;
     CheckBox_ShowOctree: TCheckBox;
+    CheckBox_UseOctree: TCheckBox;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -199,13 +199,11 @@ begin
   EdgeDetector.ProcessMesh;
 
   VerletWorld := TVerletWorld.Create;
-  VerletWorld.CreateOctree(
-    AffineVectorMake(-20, -5.5,-20),
-    AffineVectorMake( 20, 20, 20), 20, 5);//}
 
-  {VerletWorld.CreateOctree(
-    AffineVectorMake( 0, 0, 0),
-    AffineVectorMake( 0, 0, 0), 30, 3);//}
+  if CheckBox_UseOctree.Checked then
+    VerletWorld.CreateOctree(
+      AffineVectorMake( 0, 0, 0),
+      AffineVectorMake( 0, 0, 0), 25, 5);//}
 
   if ComboBox_ConstraintType.ItemIndex=0 then
     EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack)
@@ -220,7 +218,7 @@ begin
   Floor.Location := VectorAdd(GLShadowPlane1.Position.AsAffineVector, AffineVectorMake(0,0.1,0));
   Floor.Normal := GLShadowPlane1.Direction.AsAffineVector;
 
-  Floor.FrictionRatio := 0.6;
+  Floor.FrictionRatio := 0.6;//}
 
   if GLSphere1.Visible then begin
      VCSphere := TVCSphere.Create(VerletWorld);
@@ -260,7 +258,6 @@ begin
   VerletWorld.SimTime := GLCadencer1.GetCurrentTime;
   VerletWorld.MaxDeltaTime := 0.01;
   VerletWorld.Iterations := TrackBar_Iterations.Position;
-  VerletWorld.UpdateSpacePartion := uspEveryFrame;
 
   // DEBUG MULTIPLE OBJECTS IN VERLETWORLD!
   {GLActor2.LoadFromFile('mushroom.3ds');
@@ -342,9 +339,10 @@ var
    fg : TFGVertexIndexList;
    n : TAffineVector;
 begin
-   if CheckBox_Pause.Checked then
+   {if CheckBox_Pause.Checked then
       VerletWorld.SimTime := newTime
-   else begin
+   else//}
+   begin
       if world <> nil then begin
          PositionSceneObjectForGeom(ODESphere);
          VCSphere.Location := GLSphere1.Position.AsAffineVector;
