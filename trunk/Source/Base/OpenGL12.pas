@@ -212,7 +212,7 @@ interface
 
 // Deactived by Eric Grange - GLScene is not thread-safe, so get best performance
 {.$define MULTITHREADOPENGL}
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 uses
    VectorTypes, // Added by Eric Grange for GLScene Compatibility
