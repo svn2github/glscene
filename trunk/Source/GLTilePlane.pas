@@ -93,11 +93,13 @@ type
 			{ Private Declarations }
          FTiles : TGLTiledArea;
          FMaterialLibrary : TGLMaterialLibrary;
+         FSortByMaterials : Boolean;
 
 		protected
 			{ Protected Declarations }
          procedure SetTiles(const val : TGLTiledArea);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
+         procedure SetSortByMaterials(const val : Boolean);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
@@ -110,7 +112,13 @@ type
                             renderSelf, renderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
+         //: Access to the TiledArea data
          property Tiles : TGLTiledArea read FTiles write SetTiles;
+         {: Controls the sorting of tiles by material.<p>
+            This property should ideally be left always at its default, True,
+            except for debugging and performance measurement, which is why
+            it's only public and not published. }
+         property SortByMaterials : Boolean read FSortByMaterials write SetSortByMaterials;
 
 		published
 			{ Public Declarations }
@@ -422,6 +430,7 @@ constructor TGLTilePlane.Create(AOwner:Tcomponent);
 begin
    inherited Create(AOwner);
    FTiles:=TGLTiledArea.Create;
+   FSortByMaterials:=True;
 end;
 
 // Destroy
@@ -459,6 +468,14 @@ begin
    end;
 end;
 
+// SetSortByMaterials
+//
+procedure TGLTilePlane.SetSortByMaterials(const val : Boolean);
+begin
+   FSortByMaterials:=val;
+	StructureChanged;
+end;
+
 // Notification
 //
 procedure TGLTilePlane.Notification(AComponent: TComponent; Operation: TOperation);
@@ -491,6 +508,15 @@ type
    TQuadListInfo = packed record
       x, y : TIntegerList;
    end;
+
+   procedure IssueQuad(col, row : Integer);
+   begin
+      xglTexCoord2f(col, row);      glVertex2f(col, row);
+      xglTexCoord2f(col+1, row);    glVertex2f(col+1, row);
+      xglTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
+      xglTexCoord2f(col, row+1);    glVertex2f(col, row+1);
+   end;
+
 var
    i, j, row, col, t : Integer;
    r : TGLTiledAreaRow;
@@ -499,44 +525,59 @@ var
 begin
    if MaterialLibrary=nil then Exit;
    // initialize infos
-   SetLength(quadInfos, MaterialLibrary.Materials.Count);
-   for i:=1 to High(quadInfos) do begin
-      quadInfos[i].x:=TIntegerList.Create;
-      quadInfos[i].y:=TIntegerList.Create;
-   end;
-   // collect quads into quadInfos, sorted by material 
-   for row:=Tiles.RowMin to Tiles.RowMax do begin
-      r:=Tiles.Row[row];
-      if Assigned(r) then begin
-         for col:=r.ColMin to r.ColMax do begin
-            t:=r.Cell[col] and $FFFF;
-            if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
-               quadInfos[t].x.Add(col);
-               quadInfos[t].y.Add(row);
+   if SortByMaterials then begin
+      SetLength(quadInfos, MaterialLibrary.Materials.Count);
+      for i:=1 to High(quadInfos) do begin
+         quadInfos[i].x:=TIntegerList.Create;
+         quadInfos[i].y:=TIntegerList.Create;
+      end;
+      // collect quads into quadInfos, sorted by material
+      for row:=Tiles.RowMin to Tiles.RowMax do begin
+         r:=Tiles.Row[row];
+         if Assigned(r) then begin
+            for col:=r.ColMin to r.ColMax do begin
+               t:=r.Cell[col] and $FFFF;
+               if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
+                  quadInfos[t].x.Add(col);
+                  quadInfos[t].y.Add(row);
+               end;
             end;
          end;
       end;
-   end;
-   // render and cleanup
-   for i:=1 to High(quadInfos) do begin
-      if quadInfos[i].x.Count>0 then begin
-         libMat:=MaterialLibrary.Materials[i];
-         libMat.Apply(rci);
-         repeat
-            glBegin(GL_QUADS);
-            for j:=0 to quadInfos[i].x.Count-1 do begin
-               col:=quadInfos[i].x[j];
-               row:=quadInfos[i].y[j];
-               xglTexCoord2f(col, row);      glVertex2f(col, row);
-               xglTexCoord2f(col+1, row);    glVertex2f(col+1, row);
-               xglTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
-               xglTexCoord2f(col, row+1);    glVertex2f(col, row+1);
-            end;
-            glEnd;
-         until not libMat.UnApply(rci);
+      // render and cleanup
+      for i:=1 to High(quadInfos) do begin
+         if quadInfos[i].x.Count>0 then begin
+            libMat:=MaterialLibrary.Materials[i];
+            libMat.Apply(rci);
+            repeat
+               glBegin(GL_QUADS);
+               with quadInfos[i] do for j:=0 to x.Count-1 do
+                  IssueQuad(x[j], y[j]);
+               glEnd;
+            until not libMat.UnApply(rci);
+         end;
+         quadInfos[i].x.Free;
+         quadInfos[i].y.Free;
       end;
-      quadInfos[i].x.Free;
-      quadInfos[i].y.Free;
+   end else begin
+      // process all quads in order
+      for row:=Tiles.RowMin to Tiles.RowMax do begin
+         r:=Tiles.Row[row];
+         if Assigned(r) then begin
+            for col:=r.ColMin to r.ColMax do begin
+               t:=r.Cell[col] and $FFFF;
+               if (t>0) and (t<MaterialLibrary.Materials.Count) then begin
+                  libMat:=MaterialLibrary.Materials[t];
+                  libMat.Apply(rci);
+                  repeat
+                     glBegin(GL_QUADS);
+                     IssueQuad(col, row);
+                     glEnd;
+                  until not libMat.UnApply(rci);
+               end;
+            end;
+         end;
+      end;
    end;
 end;
 
