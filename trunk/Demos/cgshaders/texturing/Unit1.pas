@@ -3,7 +3,7 @@
 
   Shows how to do texture coordinate shifting with a VP and blending with a FP.
 
-  Last update: 02/01/04
+  Last update: 09/02/04
   Nelson Chu
 }
 unit Unit1;
@@ -152,14 +152,15 @@ end;
 procedure TForm1.CgShader1Initialize(CgShader: TCustomCgShader);
 begin
   // Due to parameter shadowing (ref. Cg Manual), parameters that doesn't change
-  // can be assigned for once only. You can set those parameters on Initialize.
+  // once set can be assigned for once in the OnInitialize event. 
   with CgShader.FragmentProgram, GLMatLib do begin
-    ParamByName('Map0').SetAsTexture2D(Materials[0].Material.Texture.Handle);
-    ParamByName('Map1').SetAsTexture2D(Materials[1].Material.Texture.Handle);
-    ParamByName('Map2').SetAsTexture2D(Materials[2].Material.Texture.Handle);
-    ParamByName('Map3').SetAsTexture2D(Materials[3].Material.Texture.Handle);
-    // Alternatively, you can set the parameters using SetParam, like:
-    // SetParam('Map0', Materials[3].Material.Texture.Handle);
+    ParamByName('Map0').SetToTextureOf(Materials[0]);
+    ParamByName('Map1').SetToTextureOf(Materials[1]);
+    ParamByName('Map2').SetToTextureOf(Materials[2]);
+    ParamByName('Map3').SetToTextureOf(Materials[3]);
+    // Alternatively, you can set texture parameters using two other methods:
+    // SetTexture('Map0', Materials[0].Material.Texture.Handle);
+    // ParamByName('Map0').SetAsTexture2D(Materials[0].Material.Texture.Handle);
   end;
 
   // Display profiles used
@@ -181,7 +182,7 @@ begin
   with CgProgram.ParamByName('ModelViewProj') do
     SetAsStateMatrix( CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 // Alternatively, you can set it using:
-//  CgProgram.SetParam('ModelViewProj', CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+// CgProgram.SetStateMatrix('ModelViewProj', CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 
   v:= vectormake( conv(TrackBar1), conv(TrackBar2), conv(TrackBar3), conv(TrackBar4) );
 
