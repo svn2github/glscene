@@ -163,7 +163,7 @@ begin
       if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
          Result:=vAFIO.FOnFileStream(fileName, mode);
       if not Assigned(Result) then begin
-         if FileExists(fileName) then
+         if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
             Result:=TFileStream.Create(fileName, mode)
          else raise Exception.Create('File not found: "'+fileName+'"');
       end;
