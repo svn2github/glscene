@@ -763,6 +763,7 @@ begin
       rci.ignoreBlendingRequests:=True;
       //rci.ignoreMaterials := true;
       glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+      glDisable(GL_ALPHA_TEST);
       glEnable(GL_STENCIL_TEST);
       glEnable(GL_DEPTH_TEST);
 
