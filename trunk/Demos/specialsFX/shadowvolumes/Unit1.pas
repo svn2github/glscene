@@ -217,13 +217,9 @@ begin
   Target := GLSphere4;
 
   silhouetteParameters.CappingRequired := false;
-  silhouetteParameters.LightDirection :=
-    AffineVectorMake(
-      VectorSubtract(
-        Target.AbsolutePosition,
-        GLCamera.AbsolutePosition));
-  NormalizeVector(silhouetteParameters.LightDirection);
-  silhouetteParameters.SeenFrom := AffineVectorMake(GLCamera.AbsolutePosition);
+  SetVector(silhouetteParameters.SeenFrom,
+    GLLines1.AbsoluteToLocal(GLCamera.AbsolutePosition));
+
   silhouetteParameters.Style := ssOmni;
 
   Silhouette := Target.GenerateSilhouette(silhouetteParameters);
@@ -231,7 +227,7 @@ begin
   GLLines1.Nodes.Clear;
 
   for i := 0 to Silhouette.Indices.Count-1 do
-    GLLines1.Nodes.AddNode(Target.LocalToAbsolute(Silhouette.Vertices[Silhouette.Indices[i]]));
+    GLLines1.Nodes.AddNode(GLLines1.AbsoluteToLocal(Target.LocalToAbsolute(Silhouette.Vertices[Silhouette.Indices[i]])));
 
   FreeAndNil(Silhouette);
 end;
