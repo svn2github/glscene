@@ -217,6 +217,7 @@ begin
    if aSource.ManagerTag<>0 then begin
       p:=PBASSInfo(aSource.ManagerTag);
       if BASS_ChannelIsActive(p.channel)=0 then begin
+         p.channel:=0;
          aSource.Free;
          Exit;
       end;
