@@ -9,7 +9,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLWin32Viewer, GLScene, GLObjects, GLMisc, GLCadencer, ODEImport,
   StdCtrls, GLTexture, GLExtrusion, VectorGeometry, GLShadowPlane, GLNavigator,
-  VerletClasses, VerletHairClasses, jpeg, Keyboard;
+  VerletClasses, VerletHairClasses, jpeg, Keyboard, ExtCtrls;
 
 type
   TfrmFurBall = class(TForm)
@@ -33,6 +33,9 @@ type
     GLShadowPlane_Wall2: TGLShadowPlane;
     GLShadowPlane_Wall3: TGLShadowPlane;
     CheckBox_Bald: TCheckBox;
+    Label_FPS: TLabel;
+    Timer1: TTimer;
+    CheckBox_Shadows: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -46,6 +49,8 @@ type
     procedure CheckBox_FurGravityClick(Sender: TObject);
     procedure CheckBox_WindResistenceClick(Sender: TObject);
     procedure CheckBox_BaldClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure CheckBox_ShadowsClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -119,6 +124,8 @@ begin
   end;
 end;
 
+const
+  cOffset = 0.03;
 procedure TfrmFurBall.FormCreate(Sender: TObject);
 begin
   Show;
@@ -144,11 +151,11 @@ begin
   CheckBox_FurGravityClick(Sender);
   CheckBox_WindResistenceClick(Sender);
 
-  CreateVCPlaneFromGLPlane(GLShadowPlane_Floor, VerletWorld);
-  CreateVCPlaneFromGLPlane(GLShadowPlane_Floor2, VerletWorld);
-  CreateVCPlaneFromGLPlane(GLShadowPlane_Wall, VerletWorld);
-  CreateVCPlaneFromGLPlane(GLShadowPlane_Wall2, VerletWorld);
-  CreateVCPlaneFromGLPlane(GLShadowPlane_Wall3, VerletWorld);
+  CreateVCPlaneFromGLPlane(GLShadowPlane_Floor, VerletWorld, cOffset);
+  CreateVCPlaneFromGLPlane(GLShadowPlane_Floor2, VerletWorld, cOffset);
+  CreateVCPlaneFromGLPlane(GLShadowPlane_Wall, VerletWorld, cOffset);
+  CreateVCPlaneFromGLPlane(GLShadowPlane_Wall2, VerletWorld, cOffset);
+  CreateVCPlaneFromGLPlane(GLShadowPlane_Wall3, VerletWorld, cOffset);
 
   HairList := TList.Create;
 
@@ -270,7 +277,7 @@ end;
 
 const
   cRadiusMultiplier = 5;
-  cSegmentCount = 6;
+  cSegmentCount = 4;
   cHairCount = 200;
   cRootDepth = 4;
 procedure TfrmFurBall.CreateFur;
@@ -304,6 +311,9 @@ procedure TfrmFurBall.CreateFur;
 
     for i := 0 to GLLines.Nodes.Count-1 do
       TGLLinesNode(GLLines.Nodes[i]).Color.Color := clrBlack;
+
+    GLLines.ObjectStyle:=GLLines.ObjectStyle+[osDirectDraw];
+    GLLines.SplineMode := lsmCubicSpline;
 
     Hair.Data := GLLines;
     HairList.Add(Hair);
@@ -373,4 +383,25 @@ begin
   end;
 end;
 
+procedure TfrmFurBall.Timer1Timer(Sender: TObject);
+begin
+  Label_FPS.Caption := GLSceneViewer1.FramesPerSecondText;
+  GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+procedure TfrmFurBall.CheckBox_ShadowsClick(Sender: TObject);
+var
+  light : TGLLightSource;
+begin
+  if CheckBox_Shadows.Checked then
+    light := GLLightSource1
+  else
+    light := nil;
+
+  GLShadowPlane_Floor.ShadowedLight := light;
+  GLShadowPlane_Floor2.ShadowedLight := light;
+  GLShadowPlane_Wall.ShadowedLight := light;
+  GLShadowPlane_Wall2.ShadowedLight := light;
+  GLShadowPlane_Wall3.ShadowedLight := light;
+end;
 end.

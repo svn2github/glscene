@@ -37,17 +37,18 @@ type
     property RelativePosition : TAffineVector read FRelativePosition write FRelativePosition;
   end;
 
-  function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld) : TVCFloor;
+  function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
 
 implementation
 
-function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld) : TVCFloor;
+function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
 begin
   result := TVCFloor.Create(VerletWorld);
   with result do
   begin
-    Location := VectorAdd(Plane.Position.AsAffineVector, AffineVectorMake(0,0.1,0));
-    Normal := Plane.Direction.AsAffineVector;
+    Normal := VectorNormalize(Plane.Direction.AsAffineVector);
+
+    Location := VectorAdd(Plane.Position.AsAffineVector, VectorScale(Normal, Offset));
   end;
 end;
 
