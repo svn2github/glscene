@@ -300,11 +300,6 @@ var
    flag      : Boolean;
    oldSeed : LongInt;
 begin
-   // Random seed must be backed up, could be used for other purposes
-   // (otherwise we essentially reset the random generator at each frame)
-   oldSeed:=RandSeed;
-   RandSeed:=Seed;
-
    SetVector(v, AbsolutePosition);
    // are we looking towards the flare?
    rv:=VectorSubtract(v, PAffineVector(@rci.cameraPosition)^);
@@ -341,6 +336,11 @@ begin
       FCurrSize:=0;
       Exit;
    end;
+
+   // Random seed must be backed up, could be used for other purposes
+   // (otherwise we essentially reset the random generator at each frame)
+   oldSeed:=RandSeed;
+   RandSeed:=Seed;
 
    // Prepare matrices
    glMatrixMode(GL_MODELVIEW);
