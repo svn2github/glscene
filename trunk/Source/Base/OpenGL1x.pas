@@ -10,6 +10,8 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/11/03 - EG - Fixed binding of core extensions, added GL_ARB_depth_texture
+                          and GL_ARB_shadow support
       <li>20/09/03 - EG - Added GL_NV_occlusion_query, dropped some more oldies
       <li>09/09/03 - EG - Added GL_ARB_vertex_buffer_object, dropped some oldies
       <li>04/09/03 - EG - Added GL_ARB_vertex_program
@@ -133,6 +135,8 @@ var
    GL_ARB_imaging,
    GL_ARB_multisample,
    GL_ARB_multitexture,
+   GL_ARB_depth_texture,
+   GL_ARB_shadow,
    GL_ARB_texture_border_clamp,
    GL_ARB_texture_compression,
    GL_ARB_texture_cube_map,
@@ -1519,6 +1523,18 @@ var
    GLX_SAMPLES_ARB                                   = 100001;
    WGL_SAMPLE_BUFFERS_ARB                            = $2041;
    WGL_SAMPLES_ARB                                   = $2042;
+
+   // GL_ARB_depth_texture
+   GL_DEPTH_COMPONENT16_ARB                          = $81A5;
+   GL_DEPTH_COMPONENT24_ARB                          = $81A6;
+   GL_DEPTH_COMPONENT32_ARB                          = $81A7;
+   GL_TEXTURE_DEPTH_SIZE_ARB                         = $884A;
+   GL_DEPTH_TEXTURE_MODE_ARB                         = $884B;
+
+   // GL_ARB_shadow
+   GL_TEXTURE_COMPARE_MODE_ARB                       = $884C;
+   GL_TEXTURE_COMPARE_FUNC_ARB                       = $884D;
+   GL_COMPARE_R_TO_TEXTURE_ARB                       = $884E;
 
    // GL_ARB_texture_cube_map
    GL_NORMAL_MAP_ARB                                 = $8511;
@@ -3992,6 +4008,8 @@ begin
    GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
    GL_ARB_multisample := CheckExtension(' GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
    GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture');
+   GL_ARB_depth_texture := CheckExtension('GL_ARB_depth_texture');
+   GL_ARB_shadow := CheckExtension('GL_ARB_shadow');
    GL_ARB_texture_border_clamp := CheckExtension('GL_ARB_texture_border_clamp');
    GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression');
    GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
