@@ -19,6 +19,7 @@ package GLScene5;
 {$R '..\Source\GLThorFX.dcr'}
 {$R '..\Source\GLzBuffer.dcr'}
 {$R '..\Source\GLTimeEventsMGR.dcr'}
+{$R '..\Source\GLWindows.dcr'}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -137,6 +138,10 @@ contains
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
   TGA in '..\Source\FileFormats\TGA.pas',
   GLLensFlare in '..\Source\GLLensFlare.pas',
-  MeshUtils in '..\Source\Base\MeshUtils.pas';
+  MeshUtils in '..\Source\Base\MeshUtils.pas',
+  GLHeightTileFileHDS in '..\Source\GLHeightTileFileHDS.pas',
+  GLProcTextures in '..\Source\GLProcTextures.pas',
+  TypesMS3D in '..\Source\FileFormats\TypesMS3D.pas',
+  GLFileMS3D in '..\Source\FileFormats\GLFileMS3D.pas';
 
 end.

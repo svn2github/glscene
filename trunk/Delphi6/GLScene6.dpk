@@ -19,6 +19,7 @@ package GLScene6;
 {$R '..\Source\GLThorFX.dcr'}
 {$R '..\Source\GLzBuffer.dcr'}
 {$R '..\Source\GLTimeEventsMGR.dcr'}
+{$R '..\Source\GLWindows.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -133,7 +134,6 @@ contains
   Octree in '..\Source\Base\Octree.pas',
   GLExplosionFX in '..\Source\GLExplosionFX.pas',
   GLGui in '..\Source\GLGui.pas',
-  GLWindows in '..\Source\GLWindows.pas',
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
   GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas' {GUISkinEditor},
   GLShadowPlane in '..\Source\GLShadowPlane.pas',
@@ -152,6 +152,7 @@ contains
   TypesMS3D in '..\Source\FileFormats\TypesMS3D.pas',
   Q3MD3 in '..\Source\FileFormats\Q3MD3.pas',
   GLFileMD3 in '..\Source\FileFormats\GLFileMD3.pas',
-  FileMD3 in '..\Source\FileFormats\FileMD3.pas';
+  FileMD3 in '..\Source\FileFormats\FileMD3.pas',
+  GLWindows in '..\Source\GLWindows.pas';
 
 end.

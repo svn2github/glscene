@@ -19,6 +19,7 @@ package GLScene7;
 {$R '..\Source\GLThorFX.dcr'}
 {$R '..\Source\GLzBuffer.dcr'}
 {$R '..\Source\GLTimeEventsMGR.dcr'}
+{$R '..\Source\GLWindows.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
