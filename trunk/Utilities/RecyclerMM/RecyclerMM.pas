@@ -7,12 +7,16 @@
    and a virtual heap (large blocks).<br>
    Supports Shared Memory (like ShareMem, but no DLL required).<p>
 
-   Copyright 2003 - Creative IT<p>
+   Copyright 2003 - Creative IT / Eric Grange<br>
+   Default licensing is GPL, use under MPL can be granted (on request, for free)
+   for users/companies "supporting" Open Source (purely subjective decision by us)<p>
 
    Implementation Notes:<ul>
+      <li>To use this unit ideally place the unit as first unit in your project's
+         'uses' clause (this is a requirement is DEFER_INVALIDATE_POINTERS isn't set).
       <li>Shared Memory support is implemented through the creation of a Local
          Atom and a (never visible) window, which allow main EXE/DLLs modules
-         to be aware of each others RecyclerMM support and thus, reuse a single
+         to be aware of each other's RecyclerMM support and thus, reuse a single
          manager instance (which may be one from the main exe, or the one of
          the statically linked DLLs, depending on initialization order).
       <li>Small blocks chunks and batches are allocated at the top of the address
@@ -39,7 +43,7 @@ interface
 {$WRITEABLECONST OFF}
 {$BOOLEVAL OFF}
 
-{$ifdef VER150}   // of course it's unsafe, so no warnings plz
+{$ifdef VER150}   // of course it's "unsafe", so no warnings plz
    {$WARN UNSAFE_CODE OFF}
    {$WARN UNSAFE_TYPE OFF}
 {$endif}
@@ -49,10 +53,11 @@ uses Windows;
 // If set, RecyclerMM will automatically locate and share memory with other
 // RecyclerMMs in DLL modules (same functionality as Borland's ShareMem unit).
 // Sharing will only happen with compatible RMMs.
+// This option is NOT compatible with PATCH_ALLOCMEM
 {$define SHARE_MEM}
 
 // If set, the RMM memorymap will not be writeable by the process, which will
-// ensure wild pointers can't corrupt it, and Allocated() remains accurate.
+// ensure wild pointers can't corrupt it and Allocated() remains accurate.
 // Activating it incurs a small performance penalty.
 {.$define SECURE_MEMORYMAP}
 
@@ -60,8 +65,9 @@ uses Windows;
 {.$define NO_BPL_PATCHING}
 
 // If set SysUtils.AllocMem will be redirected to RAllocMem (*much* faster)
-// however, this may result in crashes if you alter SysUtils variable (due to dependancy)
-// Not that this activates DEFER_INVALIDATE_POINTERS (see below)
+// however, note that this activates DEFER_INVALIDATE_POINTERS (see below)
+// to avoid crashes resulting from alteration of SysUtils variables.
+// This option is NOT compatible with SHARE_MEM
 {.$define PATCH_ALLOCMEM}
 
 // if set SSE code for Move16/Clear16 will be allowed
