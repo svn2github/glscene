@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/07/03 - aidave - Added TGLColorProxyObject
       <li>22/07/03 - EG - LocalMatrix now a PMatrix, FListHandle and FChildren
                           are now autocreating
       <li>17/07/03 - EG - Removed TTransformationMode and related code
@@ -1013,6 +1014,29 @@ type
          property Visible;
          property OnProgress;
          property Behaviours;
+   end;
+
+   // TGLColorProxyObject
+   //
+   {: A proxy object with its own color.<p>
+      This proxy object can have a unique color.
+   }
+   TGLColorProxyObject = class (TGLProxyObject)
+      private
+         { Private Declarations }
+         FFrontColor: TGLFaceProperties;
+
+      public
+         { Public Declarations }
+         constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
+
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
+      published
+         { Published Declarations }
+
+         property FrontColor: TGLFaceProperties read FFrontColor;
    end;
 
    // TLightStyle
@@ -7609,6 +7633,62 @@ begin
       FBuffer.CreateRC(0, True);
    end;
    FBuffer.Render;
+end;
+
+// ------------------
+// ------------------ TGLColorProxyObject ------------------
+// ------------------
+
+// Create
+//
+constructor TGLColorProxyObject.Create;
+begin
+  inherited;
+  FFrontColor:=TGLFaceProperties.Create(Self);
+end;
+
+// Destroy
+//
+destructor TGLColorProxyObject.Destroy;
+begin
+   FFrontColor.Free;
+
+   inherited Destroy;
+end;
+
+// Render
+//
+procedure TGLColorProxyObject.DoRender(var rci : TRenderContextInfo;
+                                  renderSelf, renderChildren : Boolean);
+var
+   gotMaster, masterGotEffects, oldProxySubObject : Boolean;
+begin
+   if FRendering then Exit;
+   FRendering:=True;
+   try
+      gotMaster:=Assigned(FMasterObject);
+      masterGotEffects:=gotMaster and (pooEffects in FProxyOptions)
+                        and (FMasterObject.Effects.Count>0);
+      if gotMaster then begin
+         if pooObjects in FProxyOptions then begin
+            oldProxySubObject:=rci.proxySubObject;
+            rci.proxySubObject:=True;
+            if pooTransformation in FProxyOptions then
+               glMultMatrixf(PGLFloat(FMasterObject.FLocalMatrix));
+            TGLCustomSceneObject(FMasterObject).Material.FrontProperties.Assign(FFrontColor);
+            FMasterObject.DoRender(rci, renderSelf, RenderChildren);
+            rci.proxySubObject:=oldProxySubObject;
+         end;
+      end;
+      // now render self stuff (our children, our effects, etc.)
+      if renderChildren and (Count>0) then
+         Self.RenderChildren(0, Count-1, rci);
+      if masterGotEffects then
+         FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
+   finally
+      FRendering:=False;
+   end;
+   Exclude(FChanges, ocStructure);
 end;
 
 //------------------------------------------------------------------------------
