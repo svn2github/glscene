@@ -112,6 +112,7 @@ contains
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
   VectorTypes in '..\Source\Base\VectorTypes.pas',
   GeometryBB in '..\Source\Base\GeometryBB.pas',
+  Polynomials in '..\Source\Base\Polynomials.pas',
   GLContext in '..\Source\GLContext.pas';
 
 end.
