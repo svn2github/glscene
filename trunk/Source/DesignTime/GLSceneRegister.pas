@@ -1774,6 +1774,7 @@ begin
    {$ifdef WIN32}
    RegisterComponents('GLScene Utils',
                       [TAsyncTimer,
+                       TGLStaticImposterBuilder,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
                        TGLBumpmapHDS,
                        TCollisionManager, TGLAnimationControler
@@ -1904,7 +1905,7 @@ initialization
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
       RegisterSceneObject(TGLMultiProxy, 'MultiProxy', '');
-      RegisterSceneObject(TGLImposterBuilder, 'Imposter Builder', '');
+      RegisterSceneObject(TGLRenderPoint, 'Render Point', '');
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
    end;
 
