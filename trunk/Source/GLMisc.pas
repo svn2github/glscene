@@ -892,6 +892,7 @@ end;
 procedure TGLUpdateAbleComponent.NotifyChange(Sender : TObject);
 begin
    if Assigned(Owner) then
+   if (Owner is TGLUpdateAbleComponent) then
       (Owner as TGLUpdateAbleComponent).NotifyChange(Self);
 end;
 
