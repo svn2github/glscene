@@ -515,6 +515,7 @@ type
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
          FLifeTime, FInvLifeTime : Single;
+         FIntervalRatio : Single;
          FSizeScale : Single;
          FDoScale : Boolean;
          FDoRotate: boolean;
@@ -541,6 +542,8 @@ type
 
          {: Stores 1/LifeTime }
          property InvLifeTime : Single read FInvLifeTime;
+         {: Stores 1/(LifeTime[Next]-LifeTime[Self]) }
+         property InvIntervalRatio : Single read FIntervalRatio;
 
 	   published
 	      { Published Declarations }
@@ -550,7 +553,7 @@ type
          property SizeScale : Single read FSizeScale write SetSizeScale;
          
          property RotateAngle : Single read FRotateAngle write SetRotateAngle;
-         
+
 	end;
 
 	// TPFXLifeColors
@@ -573,6 +576,7 @@ type
 
          function MaxLifeTime : Double;
          function RotationsDefined : Boolean;
+         procedure PrepareIntervalRatios;
    end;
 
    // TGLLifeColoredPFXManager
@@ -584,7 +588,6 @@ type
          { Private Declarations }
          FLifeColors : TPFXLifeColors;
          FLifeColorsLookup : TList;
-         FLifeColorsInvTimeDiff : TSingleList;
          FLifeRotations : Boolean;
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
@@ -605,9 +608,9 @@ type
          procedure ComputeColors(var lifeTime : Single; var inner, outer : TColorVector);
          procedure ComputeInnerColor(var lifeTime : Single; var inner : TColorVector);
          procedure ComputeOuterColor(var lifeTime : Single; var outer : TColorVector);
-         function ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
+         function  ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
+         function  ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
          
-         function ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
          procedure RotateVertexBuf(buf : TAffineVectorList; lifeTime : Single;
                                    const pos : TAffineVector);
 
@@ -1571,10 +1574,12 @@ begin
       glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
 
       glPushAttrib(GL_ALL_ATTRIB_BITS);
+      
       glDisable(GL_CULL_FACE);
       glDisable(GL_TEXTURE_2D);
       currentTexturingMode:=0;
       glDisable(GL_LIGHTING);
+
       case FBlendingMode of
          bmAdditive : begin
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -2056,12 +2061,22 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do begin
-      if Items[Count-1].RotateAngle<>0 then begin
+      if Items[i].RotateAngle<>0 then begin
          Result:=True;
          Exit;
       end;
    end;
    Result:=False;
+end;
+
+// PrepareIntervalRatios
+//
+procedure TPFXLifeColors.PrepareIntervalRatios;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-2 do
+      Items[i].FIntervalRatio:=1/(Items[i+1].LifeTime-Items[i].LifeTime);
 end;
 
 // ------------------
@@ -2226,22 +2241,14 @@ end;
 procedure TGLLifeColoredPFXManager.InitializeRendering;
 var
    i, n : Integer;
-   lt, ct : Single;
 begin
    n:=LifeColors.Count;
    FLifeColorsLookup:=TList.Create;
    FLifeColorsLookup.Capacity:=n;
    for i:=0 to n-1 do
       FLifeColorsLookup.Add(LifeColors[i]);
-   FLifeColorsInvTimeDiff:=TSingleList.Create;
-   FLifeColorsInvTimeDiff.Capacity:=n;
-   lt:=0;
-   for i:=0 to n-1 do begin
-      ct:=LifeColors[i].LifeTime;
-      FLifeColorsInvTimeDiff.Add(1/(ct-lt));
-      lt:=ct;
-   end;
    FLifeRotations:=LifeColors.RotationsDefined;
+   LifeColors.PrepareIntervalRatios;
 end;
 
 // FinalizeRendering
@@ -2249,7 +2256,6 @@ end;
 procedure TGLLifeColoredPFXManager.FinalizeRendering;
 begin
    FLifeColorsLookup.Free;
-   FLifeColorsInvTimeDiff.Free;
 end;
 
 // MaxParticleAge
@@ -2276,7 +2282,7 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
@@ -2289,7 +2295,7 @@ begin
          else
             lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
             lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
-            f:=(lifeTime-lck1.LifeTime)*FLifeColorsInvTimeDiff.List[k];
+            f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
@@ -2304,28 +2310,28 @@ var
    i, k, n : Integer;
    f : Single;
    lck, lck1 : TPFXLifeColor;
+   lifeColorsLookupList : PPointerList;
 begin
    with LifeColors do begin
       n:=Count-1;
       if n<0 then
          inner:=ColorInner.Color
       else begin
+         lifeColorsLookupList:=FLifeColorsLookup.List;
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(lifeColorsLookupList[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
-         case k of
-            0 : begin
-               lck:=LifeColors[k];
-               f:=lifeTime*lck.InvLifeTime;
-               VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
-            end;
-         else
-            lck:=LifeColors[k];
-            lck1:=LifeColors[k-1];
-            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+         if k=0 then begin
+            lck:=TPFXLifeColor(lifeColorsLookupList[k]);
+            f:=lifeTime*lck.InvLifeTime;
+            VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
+         end else begin
+            lck:=TPFXLifeColor(lifeColorsLookupList[k]);
+            lck1:=TPFXLifeColor(lifeColorsLookupList[k-1]);
+            f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
          end;
       end;
@@ -2348,26 +2354,26 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
             0 : begin
-               lck:=LifeColors[k];
+               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
                f:=lifeTime*lck.InvLifeTime;
                VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
             end;
          else
-            lck:=LifeColors[k];
-            lck1:=LifeColors[k-1];
-            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
+            f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
       end;
    end;
 end;
 
-// ComputeSize
+// ComputeSizeScale
 //
 function TGLLifeColoredPFXManager.ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
 var
@@ -2383,12 +2389,12 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
             0 : begin
-               lck:=LifeColors[k];
+               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
                Result:=lck.FDoScale;
                if Result then begin
                   f:=lifeTime*lck.InvLifeTime;
@@ -2396,11 +2402,11 @@ begin
                end;
             end;
          else
-            lck:=LifeColors[k];
-            lck1:=LifeColors[k-1];
+            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
             Result:=lck.FDoScale or lck1.FDoScale;
             if Result then begin
-               f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+               f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
                sizeScale:=Lerp(lck1.SizeScale, lck.SizeScale, f);
             end;
          end;
@@ -2408,9 +2414,8 @@ begin
    end;
 end;
 
-// ComputeSize
+// ComputeRotateAngle
 //
-
 function TGLLifeColoredPFXManager.ComputeRotateAngle(var lifeTime : Single; var rotateAngle : Single) : Boolean;
 var
    i, k, n : Integer;
@@ -2444,7 +2449,7 @@ begin
             Result:=lck.FDoScale or lck1.FDoRotate;
             if Result then
             begin
-               f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+               f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
                rotateAngle := Lerp(lck1.rotateAngle, lck.rotateAngle, f);
             end;
          end;
@@ -2889,13 +2894,12 @@ const
 var
    lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
-   pos : TAffineVector;
    vertexList : PAffineVectorArray;
    i : Integer;
    tcs : PTexCoordsSet;
    spt : TSpritesPerTexture;
 
-   procedure IssueVertices;
+   procedure IssueVertices(tcs : PTexCoordsSet; vertexList : PAffineVectorArray);
    begin
       glTexCoord2fv(@tcs[0]);
       glVertex3fv(@vertexList[0]);
@@ -2919,23 +2923,22 @@ begin
       tcs:=@cBaseTexCoordsSet;
    end;
 
-   pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
    if aParticle.FEffectScale<>1 then begin
       if ComputeSizeScale(lifeTime, sizeScale) then
          sizeScale:=sizeScale*aParticle.FEffectScale
       else sizeScale:=aParticle.FEffectScale;
       for i:=0 to FVertBuf.Count-1 do
-         vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
+         vertexList[i]:=VectorCombine(FVertices.List[i], aParticle.Position, sizeScale, 1);
    end else begin
       if ComputeSizeScale(lifeTime, sizeScale) then begin
          for i:=0 to FVertBuf.Count-1 do
-            vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
-      end else VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+            vertexList[i]:=VectorCombine(FVertices.List[i], aParticle.Position, sizeScale, 1);
+      end else VectorArrayAdd(FVertices.List, aParticle.Position, FVertBuf.Count, vertexList);
    end;
 
    if FLifeRotations then
-      RotateVertexBuf(FVertBuf, lifeTime, pos);
+      RotateVertexBuf(FVertBuf, lifeTime, aParticle.Position);
 
    case ColorMode of
       scmFade : begin
@@ -2943,9 +2946,9 @@ begin
          glBegin(GL_TRIANGLE_FAN);
             glColor4fv(@inner);
             glTexCoord2f((tcs[0].S+tcs[2].S)*0.5, (tcs[0].T+tcs[2].T)*0.5);
-            glVertex3fv(@pos);
+            glVertex3fv(@aParticle.Position);
             glColor4fv(@outer);
-            IssueVertices;
+            IssueVertices(tcs, vertexList);
             glTexCoord2fv(@tcs[0]);
             glVertex3fv(@vertexList[0]);
          glEnd;
@@ -2953,15 +2956,15 @@ begin
       scmInner : begin
          ComputeInnerColor(lifeTime, inner);
          glColor4fv(@inner);
-         IssueVertices;
+         IssueVertices(tcs, vertexList);
       end;
       scmOuter : begin
          ComputeOuterColor(lifeTime, outer);
          glColor4fv(@outer);
-         IssueVertices;
+         IssueVertices(tcs, vertexList);
       end;
       scmNone : begin
-         IssueVertices;
+         IssueVertices(tcs, vertexList);
       end;
    else
       Assert(False);
@@ -2974,7 +2977,7 @@ procedure TGLBaseSpritePFXManager.EndParticles;
 begin
    if ColorMode<>scmFade then
       glEnd;
-   UnapplyBlendingMode;
+   UnApplyBlendingMode;
 end;
 
 // FinalizeRendering
