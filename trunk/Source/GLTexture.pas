@@ -4839,9 +4839,11 @@ var
    bmp : TGLBitmap;
 begin
    with writer do begin
-      WriteInteger(0); // archive version 0, texture persistence only
+      WriteInteger(1); // archive version 0, texture persistence only
+                       // archive version 1, libmat properties
       WriteInteger(Materials.Count);
       for i:=0 to Materials.Count-1 do begin
+         // version 0
          libMat:=Materials[i];
          WriteString(libMat.Name);
          tex:=libMat.Material.Texture;
@@ -4869,6 +4871,26 @@ begin
             Write(Emission.AsAddress^, SizeOf(Single)*3);
             Write(Specular.AsAddress^, SizeOf(Single)*3);
          end;
+
+         //version 1
+         with libMat.Material.FrontProperties do begin
+            Write(FShininess,1);
+            WriteInteger(Integer(PolygonMode));
+         end;
+         with libMat.Material.BackProperties do begin
+            Write(Ambient.AsAddress^, SizeOf(Single)*3);
+            Write(Diffuse.AsAddress^, SizeOf(Single)*4);
+            Write(Emission.AsAddress^, SizeOf(Single)*3);
+            Write(Specular.AsAddress^, SizeOf(Single)*3);
+            Write(Byte(FShininess),1);
+            WriteInteger(Integer(PolygonMode));
+         end;
+         WriteInteger(Integer(libMat.Material.BlendingMode));
+         WriteInteger(SizeOf(TMaterialOptions));
+         Write(libMat.Material.MaterialOptions, SizeOf(TMaterialOptions));
+         Write(libMat.TextureOffset.AsAddress^, SizeOf(Single)*3);
+         Write(libMat.TextureScale.AsAddress^, SizeOf(Single)*3);
+         WriteString(libMat.Texture2Name);
       end;
    end;
 end;
@@ -4879,17 +4901,18 @@ procedure TGLMaterialLibrary.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
    libMat : TGLLibMaterial;
-   i, n : Integer;
+   i, n, size : Integer;
    name : String;
    ss : TStringStream;
    bmp : TGLBitmap;
 begin
    archiveVersion:=reader.ReadInteger;
-   if archiveVersion=0 then with reader do begin
+   if (archiveVersion=0) or (archiveVersion=1) then with reader do begin
       if not FDoNotClearMaterialsOnLoad then
          Materials.Clear;
       n:=ReadInteger;
       for i:=0 to n-1 do begin
+         // version 0
          name:=ReadString;
          if FDoNotClearMaterialsOnLoad then
             libMat:=LibMaterialByName(name)
@@ -4920,6 +4943,28 @@ begin
             Read(Diffuse.AsAddress^, SizeOf(Single)*4);
             Read(Emission.AsAddress^, SizeOf(Single)*3);
             Read(Specular.AsAddress^, SizeOf(Single)*3);
+         end;
+
+         // version 1
+         if archiveVersion = 1 then begin
+            with libMat.Material.FrontProperties do begin
+               Read(FShininess,1);
+               PolygonMode:=TPolygonMode(ReadInteger);
+            end;
+            with libMat.Material.BackProperties do begin
+               Read(Ambient.AsAddress^, SizeOf(Single)*3);
+               Read(Diffuse.AsAddress^, SizeOf(Single)*4);
+               Read(Emission.AsAddress^, SizeOf(Single)*3);
+               Read(Specular.AsAddress^, SizeOf(Single)*3);
+               Read(FShininess,1);
+               PolygonMode:=TPolygonMode(ReadInteger);
+            end;
+            libMat.Material.BlendingMode:=TBlendingMode(ReadInteger);
+            size:=ReadInteger;
+            Read(libMat.Material.FMaterialOptions, size);
+            Read(libMat.TextureOffset.AsAddress^, SizeOf(Single)*3);
+            Read(libMat.TextureScale.AsAddress^, SizeOf(Single)*3);
+            libMat.Texture2Name:=ReadString;
          end;
       end;
    end else RaiseFilerException(Self.ClassType, archiveVersion);
