@@ -1334,8 +1334,9 @@ function ConvertColorVector(const AColor: TColorVector; intensity : Single) : TC
 function ConvertRGBColor(const aColor: array of Byte) : TColorVector;
 //: Converts a delphi color into its RGB fragments and correct range
 function ConvertWinColor(aColor: TColor; alpha : Single = 1) : TColorVector;
-procedure RegisterColor(const aName: String; AColor: TColorVector);
-procedure UnregisterColor(const aName: String);
+
+procedure RegisterColor(const aName : String; const aColor : TColorVector);
+procedure UnRegisterColor(const aName : String);
 
 //: Register a TGLTextureImageClass (used for persistence and IDE purposes)
 procedure RegisterGLTextureImageClass(textureImageClass : TGLTextureImageClass);
@@ -3244,6 +3245,10 @@ const
 							( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT );
 	cTextureTWrap : array [twBoth..twHorizontal] of TGLEnum =
 							( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE );
+	cTextureSWrapARB : array [twBoth..twHorizontal] of TGLEnum =
+							( GL_REPEAT, GL_CLAMP_TO_BORDER_ARB, GL_CLAMP_TO_BORDER_ARB, GL_REPEAT );
+	cTextureTWrapARB : array [twBoth..twHorizontal] of TGLEnum =
+							( GL_REPEAT, GL_CLAMP_TO_BORDER_ARB, GL_REPEAT, GL_CLAMP_TO_BORDER_ARB );
 	cTextureSWrapOld : array [twBoth..twHorizontal] of TGLEnum =
 							( GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT );
 	cTextureTWrapOld : array [twBoth..twHorizontal] of TGLEnum =
@@ -3262,7 +3267,10 @@ begin
 	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 
-   if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
+   if GL_ARB_texture_border_clamp then begin
+   	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapARB[FTextureWrap]);
+	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapARB[FTextureWrap]);
+   end else if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
    	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
 	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
    end else begin
@@ -4559,180 +4567,179 @@ begin
   for I:=0 to Count-1 do Proc(TColorEntry(Items[I]^).Name);
 end;
 
-//------------------------------------------------------------------------------
-
+// RegisterDefaultColors
+//
 procedure TGLColorManager.RegisterDefaultColors;
-
 begin
-  Capacity:=150;
-  AddColor('clrTransparent',clrTransparent);
-  AddColor('clrBlack',clrBlack);
-  AddColor('clrGray05',clrGray05);
-  AddColor('clrGray10',clrGray10);
-  AddColor('clrGray15',clrGray15);
-  AddColor('clrGray20',clrGray20);
-  AddColor('clrGray25',clrGray25);
-  AddColor('clrGray30',clrGray30);
-  AddColor('clrGray35',clrGray35);
-  AddColor('clrGray40',clrGray40);
-  AddColor('clrGray45',clrGray45);
-  AddColor('clrGray50',clrGray50);
-  AddColor('clrGray55',clrGray55);
-  AddColor('clrGray60',clrGray60);
-  AddColor('clrGray65',clrGray65);
-  AddColor('clrGray70',clrGray70);
-  AddColor('clrGray75',clrGray75);
-  AddColor('clrGray80',clrGray80);
-  AddColor('clrGray85',clrGray85);
-  AddColor('clrGray90',clrGray90);
-  AddColor('clrGray95',clrGray95);
-  AddColor('clrWhite',clrWhite);
-  AddColor('clrDimGray',clrDimGray);
-  AddColor('clrGray',clrGray);
-  AddColor('clrLightGray',clrLightGray);
-  AddColor('clrAquamarine',clrAquamarine);
-  AddColor('clrBakersChoc',clrBakersChoc);
-  AddColor('clrBlueViolet',clrBlueViolet);
-  AddColor('clrBrass',clrBrass);
-  AddColor('clrBrightGold',clrBrightGold);
-  AddColor('clrBronze',clrBronze);
-  AddColor('clrBronze2',clrBronze2);
-  AddColor('clrBrown',clrBrown);
-  AddColor('clrCadetBlue',clrCadetBlue);
-  AddColor('clrCoolCopper',clrCoolCopper);
-  AddColor('clrCopper',clrCopper);
-  AddColor('clrCoral',clrCoral);
-  AddColor('clrCornflowerBlue',clrCornflowerBlue);
-  AddColor('clrDarkBrown',clrDarkBrown);
-  AddColor('clrDarkGreen',clrDarkGreen);
-  AddColor('clrDarkOliveGreen',clrDarkOliveGreen);
-  AddColor('clrDarkOrchid',clrDarkOrchid);
-  AddColor('clrDarkPurple',clrDarkPurple);
-  AddColor('clrDarkSlateBlue',clrDarkSlateBlue);
-  AddColor('clrDarkSlateGray',clrDarkSlateGray);
-  AddColor('clrDarkSlateGrey',clrDarkSlateGrey);
-  AddColor('clrDarkTan',clrDarkTan);
-  AddColor('clrDarkTurquoise',clrDarkTurquoise);
-  AddColor('clrDarkWood',clrDarkWood);
-  AddColor('clrDkGreenCopper',clrDkGreenCopper);
-  AddColor('clrDustyRose',clrDustyRose);
-  AddColor('clrFeldspar',clrFeldspar);
-  AddColor('clrFirebrick',clrFirebrick);
-  AddColor('clrFlesh',clrFlesh);
-  AddColor('clrForestGreen',clrForestGreen);
-  AddColor('clrGold',clrGold);
-  AddColor('clrGoldenrod',clrGoldenrod);
-  AddColor('clrGreenCopper',clrGreenCopper);
-  AddColor('clrGreenYellow',clrGreenYellow);
-  AddColor('clrHuntersGreen',clrHuntersGreen);
-  AddColor('clrIndian',clrIndian);
-  AddColor('clrKhaki',clrKhaki);
-  AddColor('clrLightBlue',clrLightBlue);
-  AddColor('clrLightPurple',clrLightPurple);
-  AddColor('clrLightSteelBlue',clrLightSteelBlue);
-  AddColor('clrLightWood',clrLightWood);
-  AddColor('clrLimeGreen',clrLimeGreen);
-  AddColor('clrMandarinOrange',clrMandarinOrange);
-  AddColor('clrMaroon',clrMaroon);
-  AddColor('clrMediumAquamarine',clrMediumAquamarine);
-  AddColor('clrMediumBlue',clrMediumBlue);
-  AddColor('clrMediumForestGreen',clrMediumForestGreen);
-  AddColor('clrMediumGoldenrod',clrMediumGoldenrod);
-  AddColor('clrMediumOrchid',clrMediumOrchid);
-  AddColor('clrMediumPurple',clrMediumPurple);
-  AddColor('clrMediumSeaGreen',clrMediumSeaGreen);
-  AddColor('clrMediumSlateBlue',clrMediumSlateBlue);
-  AddColor('clrMediumSpringGreen',clrMediumSpringGreen);
-  AddColor('clrMediumTurquoise',clrMediumTurquoise);
-  AddColor('clrMediumViolet',clrMediumViolet);
-  AddColor('clrMediumWood',clrMediumWood);
-  AddColor('clrMidnightBlue',clrMidnightBlue);
-  AddColor('clrNavy',clrNavy);
-  AddColor('clrNavyBlue',clrNavyBlue);
-  AddColor('clrNeonBlue',clrNeonBlue);
-  AddColor('clrNeonPink',clrNeonPink);
-  AddColor('clrNewMidnightBlue',clrNewMidnightBlue);
-  AddColor('clrNewTan',clrNewTan);
-  AddColor('clrOldGold',clrOldGold);
-  AddColor('clrOrange',clrOrange);
-  AddColor('clrOrangeRed',clrOrangeRed);
-  AddColor('clrOrchid',clrOrchid);
-  AddColor('clrPaleGreen',clrPaleGreen);
-  AddColor('clrPink',clrPink);
-  AddColor('clrPlum',clrPlum);
-  AddColor('clrQuartz',clrQuartz);
-  AddColor('clrRichBlue',clrRichBlue);
-  AddColor('clrSalmon',clrSalmon);
-  AddColor('clrScarlet',clrScarlet);
-  AddColor('clrSeaGreen',clrSeaGreen);
-  AddColor('clrSemiSweetChoc',clrSemiSweetChoc);
-  AddColor('clrSienna',clrSienna);
-  AddColor('clrSilver',clrSilver);
-  AddColor('clrSkyBlue',clrSkyBlue);
-  AddColor('clrSlateBlue',clrSlateBlue);
-  AddColor('clrSpicyPink',clrSpicyPink);
-  AddColor('clrSpringGreen',clrSpringGreen);
-  AddColor('clrSteelBlue',clrSteelBlue);
-  AddColor('clrSummerSky',clrSummerSky);
-  AddColor('clrTan',clrTan);
-  AddColor('clrThistle',clrThistle);
-  AddColor('clrTurquoise',clrTurquoise);
-  AddColor('clrViolet',clrViolet);
-  AddColor('clrVioletRed',clrVioletRed);
-  AddColor('clrVeryDarkBrown',clrVeryDarkBrown);
-  AddColor('clrVeryLightPurple',clrVeryLightPurple);
-  AddColor('clrWheat',clrWheat);
-  AddColor('clrYellowGreen',clrYellowGreen);
-  AddColor('clrGreen',clrGreen);
-  AddColor('clrOlive',clrOlive);
-  AddColor('clrPurple',clrPurple);
-  AddColor('clrTeal',clrTeal);
-  AddColor('clrRed',clrRed);
-  AddColor('clrLime',clrLime);
-  AddColor('clrYellow',clrYellow);
-  AddColor('clrBlue',clrBlue);
-  AddColor('clrFuchsia',clrFuchsia);
-  AddColor('clrAqua',clrAqua);
+   Capacity:=150;
+   AddColor('clrTransparent',clrTransparent);
+   AddColor('clrBlack',clrBlack);
+   AddColor('clrGray05',clrGray05);
+   AddColor('clrGray10',clrGray10);
+   AddColor('clrGray15',clrGray15);
+   AddColor('clrGray20',clrGray20);
+   AddColor('clrGray25',clrGray25);
+   AddColor('clrGray30',clrGray30);
+   AddColor('clrGray35',clrGray35);
+   AddColor('clrGray40',clrGray40);
+   AddColor('clrGray45',clrGray45);
+   AddColor('clrGray50',clrGray50);
+   AddColor('clrGray55',clrGray55);
+   AddColor('clrGray60',clrGray60);
+   AddColor('clrGray65',clrGray65);
+   AddColor('clrGray70',clrGray70);
+   AddColor('clrGray75',clrGray75);
+   AddColor('clrGray80',clrGray80);
+   AddColor('clrGray85',clrGray85);
+   AddColor('clrGray90',clrGray90);
+   AddColor('clrGray95',clrGray95);
+   AddColor('clrWhite',clrWhite);
+   AddColor('clrDimGray',clrDimGray);
+   AddColor('clrGray',clrGray);
+   AddColor('clrLightGray',clrLightGray);
+   AddColor('clrAquamarine',clrAquamarine);
+   AddColor('clrBakersChoc',clrBakersChoc);
+   AddColor('clrBlueViolet',clrBlueViolet);
+   AddColor('clrBrass',clrBrass);
+   AddColor('clrBrightGold',clrBrightGold);
+   AddColor('clrBronze',clrBronze);
+   AddColor('clrBronze2',clrBronze2);
+   AddColor('clrBrown',clrBrown);
+   AddColor('clrCadetBlue',clrCadetBlue);
+   AddColor('clrCoolCopper',clrCoolCopper);
+   AddColor('clrCopper',clrCopper);
+   AddColor('clrCoral',clrCoral);
+   AddColor('clrCornflowerBlue',clrCornflowerBlue);
+   AddColor('clrDarkBrown',clrDarkBrown);
+   AddColor('clrDarkGreen',clrDarkGreen);
+   AddColor('clrDarkOliveGreen',clrDarkOliveGreen);
+   AddColor('clrDarkOrchid',clrDarkOrchid);
+   AddColor('clrDarkPurple',clrDarkPurple);
+   AddColor('clrDarkSlateBlue',clrDarkSlateBlue);
+   AddColor('clrDarkSlateGray',clrDarkSlateGray);
+   AddColor('clrDarkSlateGrey',clrDarkSlateGrey);
+   AddColor('clrDarkTan',clrDarkTan);
+   AddColor('clrDarkTurquoise',clrDarkTurquoise);
+   AddColor('clrDarkWood',clrDarkWood);
+   AddColor('clrDkGreenCopper',clrDkGreenCopper);
+   AddColor('clrDustyRose',clrDustyRose);
+   AddColor('clrFeldspar',clrFeldspar);
+   AddColor('clrFirebrick',clrFirebrick);
+   AddColor('clrFlesh',clrFlesh);
+   AddColor('clrForestGreen',clrForestGreen);
+   AddColor('clrGold',clrGold);
+   AddColor('clrGoldenrod',clrGoldenrod);
+   AddColor('clrGreenCopper',clrGreenCopper);
+   AddColor('clrGreenYellow',clrGreenYellow);
+   AddColor('clrHuntersGreen',clrHuntersGreen);
+   AddColor('clrIndian',clrIndian);
+   AddColor('clrKhaki',clrKhaki);
+   AddColor('clrLightBlue',clrLightBlue);
+   AddColor('clrLightPurple',clrLightPurple);
+   AddColor('clrLightSteelBlue',clrLightSteelBlue);
+   AddColor('clrLightWood',clrLightWood);
+   AddColor('clrLimeGreen',clrLimeGreen);
+   AddColor('clrMandarinOrange',clrMandarinOrange);
+   AddColor('clrMaroon',clrMaroon);
+   AddColor('clrMediumAquamarine',clrMediumAquamarine);
+   AddColor('clrMediumBlue',clrMediumBlue);
+   AddColor('clrMediumForestGreen',clrMediumForestGreen);
+   AddColor('clrMediumGoldenrod',clrMediumGoldenrod);
+   AddColor('clrMediumOrchid',clrMediumOrchid);
+   AddColor('clrMediumPurple',clrMediumPurple);
+   AddColor('clrMediumSeaGreen',clrMediumSeaGreen);
+   AddColor('clrMediumSlateBlue',clrMediumSlateBlue);
+   AddColor('clrMediumSpringGreen',clrMediumSpringGreen);
+   AddColor('clrMediumTurquoise',clrMediumTurquoise);
+   AddColor('clrMediumViolet',clrMediumViolet);
+   AddColor('clrMediumWood',clrMediumWood);
+   AddColor('clrMidnightBlue',clrMidnightBlue);
+   AddColor('clrNavy',clrNavy);
+   AddColor('clrNavyBlue',clrNavyBlue);
+   AddColor('clrNeonBlue',clrNeonBlue);
+   AddColor('clrNeonPink',clrNeonPink);
+   AddColor('clrNewMidnightBlue',clrNewMidnightBlue);
+   AddColor('clrNewTan',clrNewTan);
+   AddColor('clrOldGold',clrOldGold);
+   AddColor('clrOrange',clrOrange);
+   AddColor('clrOrangeRed',clrOrangeRed);
+   AddColor('clrOrchid',clrOrchid);
+   AddColor('clrPaleGreen',clrPaleGreen);
+   AddColor('clrPink',clrPink);
+   AddColor('clrPlum',clrPlum);
+   AddColor('clrQuartz',clrQuartz);
+   AddColor('clrRichBlue',clrRichBlue);
+   AddColor('clrSalmon',clrSalmon);
+   AddColor('clrScarlet',clrScarlet);
+   AddColor('clrSeaGreen',clrSeaGreen);
+   AddColor('clrSemiSweetChoc',clrSemiSweetChoc);
+   AddColor('clrSienna',clrSienna);
+   AddColor('clrSilver',clrSilver);
+   AddColor('clrSkyBlue',clrSkyBlue);
+   AddColor('clrSlateBlue',clrSlateBlue);
+   AddColor('clrSpicyPink',clrSpicyPink);
+   AddColor('clrSpringGreen',clrSpringGreen);
+   AddColor('clrSteelBlue',clrSteelBlue);
+   AddColor('clrSummerSky',clrSummerSky);
+   AddColor('clrTan',clrTan);
+   AddColor('clrThistle',clrThistle);
+   AddColor('clrTurquoise',clrTurquoise);
+   AddColor('clrViolet',clrViolet);
+   AddColor('clrVioletRed',clrVioletRed);
+   AddColor('clrVeryDarkBrown',clrVeryDarkBrown);
+   AddColor('clrVeryLightPurple',clrVeryLightPurple);
+   AddColor('clrWheat',clrWheat);
+   AddColor('clrYellowGreen',clrYellowGreen);
+   AddColor('clrGreen',clrGreen);
+   AddColor('clrOlive',clrOlive);
+   AddColor('clrPurple',clrPurple);
+   AddColor('clrTeal',clrTeal);
+   AddColor('clrRed',clrRed);
+   AddColor('clrLime',clrLime);
+   AddColor('clrYellow',clrYellow);
+   AddColor('clrBlue',clrBlue);
+   AddColor('clrFuchsia',clrFuchsia);
+   AddColor('clrAqua',clrAqua);
 
-  AddColor('clrScrollBar',clrScrollBar);
-  AddColor('clrBackground',clrBackground);
-  AddColor('clrActiveCaption',clrActiveCaption);
-  AddColor('clrInactiveCaption',clrInactiveCaption);
-  AddColor('clrMenu',clrMenu);
-  AddColor('clrWindow',clrWindow);
-  AddColor('clrWindowFrame',clrWindowFrame);
-  AddColor('clrMenuText',clrMenuText);
-  AddColor('clrWindowText',clrWindowText);
-  AddColor('clrCaptionText',clrCaptionText);
-  AddColor('clrActiveBorder',clrActiveBorder);
-  AddColor('clrInactiveBorder',clrInactiveBorder);
-  AddColor('clrAppWorkSpace',clrAppWorkSpace);
-  AddColor('clrHighlight',clrHighlight);
-  AddColor('clrHighlightText',clrHighlightText);
-  AddColor('clrBtnFace',clrBtnFace);
-  AddColor('clrBtnShadow',clrBtnShadow);
-  AddColor('clrGrayText',clrGrayText);
-  AddColor('clrBtnText',clrBtnText);
-  AddColor('clrInactiveCaptionText',clrInactiveCaptionText);
-  AddColor('clrBtnHighlight',clrBtnHighlight);
-  AddColor('clr3DDkShadow',clr3DDkShadow);
-  AddColor('clr3DLight',clr3DLight);
-  AddColor('clrInfoText',clrInfoText);
-  AddColor('clrInfoBk',clrInfoBk);
+   AddColor('clrScrollBar',clrScrollBar);
+   AddColor('clrBackground',clrBackground);
+   AddColor('clrActiveCaption',clrActiveCaption);
+   AddColor('clrInactiveCaption',clrInactiveCaption);
+   AddColor('clrMenu',clrMenu);
+   AddColor('clrWindow',clrWindow);
+   AddColor('clrWindowFrame',clrWindowFrame);
+   AddColor('clrMenuText',clrMenuText);
+   AddColor('clrWindowText',clrWindowText);
+   AddColor('clrCaptionText',clrCaptionText);
+   AddColor('clrActiveBorder',clrActiveBorder);
+   AddColor('clrInactiveBorder',clrInactiveBorder);
+   AddColor('clrAppWorkSpace',clrAppWorkSpace);
+   AddColor('clrHighlight',clrHighlight);
+   AddColor('clrHighlightText',clrHighlightText);
+   AddColor('clrBtnFace',clrBtnFace);
+   AddColor('clrBtnShadow',clrBtnShadow);
+   AddColor('clrGrayText',clrGrayText);
+   AddColor('clrBtnText',clrBtnText);
+   AddColor('clrInactiveCaptionText',clrInactiveCaptionText);
+   AddColor('clrBtnHighlight',clrBtnHighlight);
+   AddColor('clr3DDkShadow',clr3DDkShadow);
+   AddColor('clr3DLight',clr3DLight);
+   AddColor('clrInfoText',clrInfoText);
+   AddColor('clrInfoBk',clrInfoBk);
 end;
 
-//------------------------------------------------------------------------------
-
+// RemoveColor
+//
 procedure TGLColorManager.RemoveColor(const aName: String);
 var
-  I : Integer;
+   i : Integer;
 begin
-  for I:=0 to Count-1 do
-    if CompareText(TColorEntry(Items[I]^).Name,AName) = 0 then
-    begin
-      Delete(I);
-      Break;
-	 end;
+   for i:=0 to Count-1 do begin
+      if CompareText(TColorEntry(Items[i]^).Name, aName)=0 then begin
+         Delete(i);
+         Break;
+	   end;
+   end;
 end;
 
 // ConvertWinColor
@@ -4754,9 +4761,9 @@ end;
 //
 function ConvertColorVector(const AColor: TColorVector): TColor;
 begin
-  Result := RGB(Round(255 * AColor[0]),
-                Round(255 * AColor[1]),
-                Round(255 * AColor[2]));
+   Result := RGB(Round(255 * AColor[0]),
+                 Round(255 * AColor[1]),
+                 Round(255 * AColor[2]));
 end;
 
 // ConvertColorVector
@@ -4764,62 +4771,74 @@ end;
 function ConvertColorVector(const AColor: TColorVector; intensity : Single) : TColor;
 begin
    intensity:=255*intensity;
-  Result := RGB(Round(intensity * AColor[0]),
-                Round(intensity * AColor[1]),
-                Round(intensity * AColor[2]));
+   Result:=RGB(Round(intensity * AColor[0]),
+               Round(intensity * AColor[1]),
+               Round(intensity * AColor[2]));
 end;
 
-//------------------------------------------------------------------------------
-
-function ConvertRGBColor(const aColor: array of Byte): TColorVector;
+// ConvertRGBColor
+//
+function ConvertRGBColor(const aColor : array of Byte): TColorVector;
+var
+   n : Integer;
 begin
-  // convert 0..255 range into 0..1 range
-  Result[0] := AColor[0] / 255;
-  if High(AColor) > 0 then Result[1] := AColor[1] / 255
-							 else Result[1] := 0;
-  if High(AColor) > 1 then Result[2] := AColor[2] / 255
-							 else Result[2] := 0;
-  if High(AColor) > 2 then Result[3] := AColor[3] / 255
-							 else Result[3] := 1;
+   // convert 0..255 range into 0..1 range
+   n:=High(AColor);
+   Result[0]:=AColor[0]*(1/255);
+   if n>0 then
+      Result[1]:=AColor[1]*(1/255)
+   else Result[1]:=0;
+   if n>1 then
+      Result[2]:=AColor[2]*(1/255)
+   else Result[2]:=0;
+   if n>2 then
+      Result[3]:=AColor[3]*(1/255)
+   else Result[3]:=1;
 end;
 
+// InitWinColors
+//
 procedure InitWinColors;
 begin
-  clrScrollBar:=ConvertWinColor(clScrollBar);
-  clrBackground:=ConvertWinColor(clBackground);
-  clrActiveCaption:=ConvertWinColor(clActiveCaption);
-  clrInactiveCaption:=ConvertWinColor(clInactiveCaption);
-  clrMenu:=ConvertWinColor(clMenu);
-  clrWindow:=ConvertWinColor(clWindow);
-  clrWindowFrame:=ConvertWinColor(clWindowFrame);
-  clrMenuText:=ConvertWinColor(clMenuText);
-  clrWindowText:=ConvertWinColor(clWindowText);
-  clrCaptionText:=ConvertWinColor(clCaptionText);
-  clrActiveBorder:=ConvertWinColor(clActiveBorder);
-  clrInactiveBorder:=ConvertWinColor(clInactiveBorder);
-  clrAppWorkSpace:=ConvertWinColor(clAppWorkSpace);
-  clrHighlight:=ConvertWinColor(clHighlight);
-  clrHighlightText:=ConvertWinColor(clHighlightText);
-  clrBtnFace:=ConvertWinColor(clBtnFace);
-  clrBtnShadow:=ConvertWinColor(clBtnShadow);
-  clrGrayText:=ConvertWinColor(clGrayText);
-  clrBtnText:=ConvertWinColor(clBtnText);
-  clrInactiveCaptionText:=ConvertWinColor(clInactiveCaptionText);
-  clrBtnHighlight:=ConvertWinColor(clBtnHighlight);
-  clr3DDkShadow:=ConvertWinColor(cl3DDkShadow);
-  clr3DLight:=ConvertWinColor(cl3DLight);
-  clrInfoText:=ConvertWinColor(clInfoText);
-  clrInfoBk:=ConvertWinColor(clInfoBk);
+   clrScrollBar:=ConvertWinColor(clScrollBar);
+   clrBackground:=ConvertWinColor(clBackground);
+   clrActiveCaption:=ConvertWinColor(clActiveCaption);
+   clrInactiveCaption:=ConvertWinColor(clInactiveCaption);
+   clrMenu:=ConvertWinColor(clMenu);
+   clrWindow:=ConvertWinColor(clWindow);
+   clrWindowFrame:=ConvertWinColor(clWindowFrame);
+   clrMenuText:=ConvertWinColor(clMenuText);
+   clrWindowText:=ConvertWinColor(clWindowText);
+   clrCaptionText:=ConvertWinColor(clCaptionText);
+   clrActiveBorder:=ConvertWinColor(clActiveBorder);
+   clrInactiveBorder:=ConvertWinColor(clInactiveBorder);
+   clrAppWorkSpace:=ConvertWinColor(clAppWorkSpace);
+   clrHighlight:=ConvertWinColor(clHighlight);
+   clrHighlightText:=ConvertWinColor(clHighlightText);
+   clrBtnFace:=ConvertWinColor(clBtnFace);
+   clrBtnShadow:=ConvertWinColor(clBtnShadow);
+   clrGrayText:=ConvertWinColor(clGrayText);
+   clrBtnText:=ConvertWinColor(clBtnText);
+   clrInactiveCaptionText:=ConvertWinColor(clInactiveCaptionText);
+   clrBtnHighlight:=ConvertWinColor(clBtnHighlight);
+   clr3DDkShadow:=ConvertWinColor(cl3DDkShadow);
+   clr3DLight:=ConvertWinColor(cl3DLight);
+   clrInfoText:=ConvertWinColor(clInfoText);
+   clrInfoBk:=ConvertWinColor(clInfoBk);
 end;
 
-procedure RegisterColor(const aName: String; AColor: TColorVector);
+// RegisterColor
+//
+procedure RegisterColor(const aName : String; const aColor : TColorVector);
 begin
-  ColorManager.AddColor(AName,AColor);
+   ColorManager.AddColor(AName, AColor);
 end;
 
-procedure UnregisterColor(const aName: String);
+// UnregisterColor
+//
+procedure UnregisterColor(const aName : String);
 begin
-  ColorManager.RemoveColor(AName);
+   ColorManager.RemoveColor(AName);
 end;
 
 // ------------------------------------------------------------------
