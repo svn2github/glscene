@@ -2279,7 +2279,7 @@ Begin
     if FFocused then
       begin
         // First put in the edit character where it should be.
-        system.insert('*',Tekst,SelStart);
+        system.insert(FEditChar,Tekst,SelStart);
         // Next figure out if the string is too long.
         if FBitmapFont.CalcStringWidth(Tekst) > Width - 2 then
           begin
