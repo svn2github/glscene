@@ -1289,6 +1289,17 @@ const
    c180 :      Single = 180;
    c360 :      Single = 360;
 
+   // Ranges of the IEEE floating point types, including denormals
+   // with Math.pas compatible name
+   MinSingle   =  1.5e-45;
+   MaxSingle   =  3.4e+38;
+   MinDouble   =  5.0e-324;
+   MaxDouble   =  1.7e+308;
+   MinExtended =  3.4e-4932;
+   MaxExtended =  1.1e+4932;
+   MinComp     = -9.223372036854775807e+18;
+   MaxComp     =  9.223372036854775807e+18;
+
 var
    // this var is adjusted during "initialization", current values are
    // + 0 : use standard optimized FPU code
