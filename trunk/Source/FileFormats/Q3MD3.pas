@@ -2,8 +2,8 @@
   Q3MD3 - Helper classes and methods for Quake3 MD3 actors
   
   History :
+    01/04/03 - Mrqzzz -  "LEGS_" animations read from .CFG fixed
     17/02/03 - SG - Creation
-    01/04/03 - Mrqzzz -  "LEGS_" animations red from .CFG fixed
 }
 
 unit Q3MD3;
