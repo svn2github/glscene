@@ -1687,9 +1687,9 @@ begin
          end;
       end;
       if graphicClass=nil then
-         graphicClass:=GraphicClassForExtension(ExtractFileExt(fileName));
+         graphicClass:=GraphicClassForExtension(ext);
       if graphicClass<>nil then begin
-         Result:=TGraphicClass(vTGraphicClass[i]).Create;
+         Result:=graphicClass.Create;
          try
             fs:=CreateFileStream(fileName, fmOpenRead);
             try
