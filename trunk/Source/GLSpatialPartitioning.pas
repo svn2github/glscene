@@ -34,42 +34,52 @@ type
   function ExtendedFrustumMakeFromSceneViewer(const AFrustum : TFrustum;
     const AGLSceneViewer : TGLSceneViewer) : TExtendedFrustum;
 
+  {: Renders an AABB as a line }
+  procedure RenderAABB(AABB : TAABB; w, r,g,b : single); overload;
+  procedure RenderAABB(AABB : TAABB); overload;
+
 implementation
+
+procedure RenderAABB(AABB : TAABB);
+begin
+  RenderAABB(AABB, 1, 0.8, 0.8, 0.8);
+end;
+
+procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
+begin
+  glColor3f(r,g,b);
+  glLineWidth(w);
+
+  glBegin(GL_LINE_STRIP);
+    glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+    glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+    glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+    glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+    glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+
+    glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+    glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+    glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+    glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+    glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+  glEnd;
+
+  glBegin(GL_LINES);
+    glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+    glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+
+    glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+    glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+
+    glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+    glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+  glEnd;
+end;
 
 // RenderSpatialPartitioning
 //
 procedure RenderSpatialPartitioning(const Space : TSectoredSpacePartition);
 
-  procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
-  begin
-    glColor3f(r,g,b);
-    glLineWidth(w);
-
-    glBegin(GL_LINE_STRIP);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-    glEnd;
-
-    glBegin(GL_LINES);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-    glEnd;
-  end;
 
   procedure RenderSectorNode(Node : TSectorNode);
   var
@@ -105,7 +115,9 @@ begin
     AGLSceneViewer.Camera.DepthOfView,
     AGLSceneViewer.FieldOfView,
     AGLSceneViewer.Camera.Position.AsAffineVector,
-    AGLSceneViewer.Camera.Direction.AsAffineVector);
+    AGLSceneViewer.Camera.Direction.AsAffineVector{,
+    AGLSceneViewer.Width,
+    AGLSceneViewer.Height{});
 end;
 
 { TSceneObj }

@@ -1,8 +1,8 @@
 object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
   Left = 297
   Top = 155
-  Width = 696
-  Height = 497
+  Width = 640
+  Height = 480
   Caption = 'Quadtree Visibility Culling'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,12 +17,12 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
   OnDestroy = FormDestroy
   OnKeyPress = FormKeyPress
   DesignSize = (
-    688
-    463)
+    632
+    446)
   PixelsPerInch = 96
   TextHeight = 13
   object Label2: TLabel
-    Left = 376
+    Left = 288
     Top = 10
     Width = 32
     Height = 13
@@ -30,30 +30,30 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 32
-    Width = 688
-    Height = 433
+    Top = 27
+    Width = 633
+    Height = 430
     Camera = GLCamera1
     Buffer.FogEnvironment.FogStart = 3000.000000000000000000
     Buffer.FogEnvironment.FogEnd = 3950.000000000000000000
     Buffer.BackgroundColor = clWhite
     Buffer.Lighting = False
-    FieldOfView = 2.687657594680786000
+    FieldOfView = 2.684599399566650000
     Anchors = [akLeft, akTop, akRight, akBottom]
   end
   object cbUseQuadtree: TCheckBox
     Left = 8
     Top = 8
-    Width = 89
+    Width = 65
     Height = 17
-    Caption = 'Use Quadtree'
+    Caption = 'Quadtree'
     Checked = True
     State = cbChecked
     TabOrder = 1
   end
   object Panel1: TPanel
-    Left = 264
-    Top = 264
+    Left = 224
+    Top = 216
     Width = 185
     Height = 49
     TabOrder = 2
@@ -73,7 +73,7 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     end
   end
   object cbShowQuadtree: TCheckBox
-    Left = 248
+    Left = 184
     Top = 8
     Width = 97
     Height = 17
@@ -82,11 +82,11 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     OnClick = cbShowQuadtreeClick
   end
   object cbUseExtendedFrustum: TCheckBox
-    Left = 104
+    Left = 72
     Top = 8
-    Width = 137
+    Width = 105
     Height = 17
-    Caption = 'Use E&xtended Frustum'
+    Caption = 'E&xtended Frustum'
     Checked = True
     State = cbChecked
     TabOrder = 4
@@ -155,6 +155,11 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
       UseBuildList = False
       OnRender = GLDirectOpenGL2Render
       Blend = False
+    end
+    object GLSphere1: TGLSphere
+      Position.Coordinates = {00000000000000000000FAC30000803F}
+      Visible = False
+      Radius = 90.000000000000000000
     end
     object GLCamera1: TGLCamera
       DepthOfView = 4000.000000000000000000

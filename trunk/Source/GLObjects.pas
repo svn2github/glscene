@@ -1512,7 +1512,9 @@ function TGLSprite.AxisAlignedDimensionsUnscaled: TVector;
 begin
    Result[0]:=0.5*Abs(FWidth);
    Result[1]:=0.5*Abs(FHeight);
-   Result[2]:=0;
+   // Sprites turn with the camera and can be considered to have the same depth
+   // as width
+   Result[2]:=0.5*Abs(FWidth);
 end;
 
 // BuildList

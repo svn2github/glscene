@@ -894,22 +894,27 @@ begin
   // test all 8 corners against the 6 sides
 	// if all points are behind 1 specific plane, we are out
 	// if we are in with all points, then we are fully in
-  for iPlane := 0 to 5 do begin
+
+  // For each plane
+  for iPlane := Low(TPlaneArray) to High(TPlaneArray) do begin
+    // We're about to test 8 corners
     InCount := 8;
     PointIn := true;
 
-    for iCorner := 0 to 7 do
+    // For each corner
+    for iCorner := Low(AABBCorners) to High(AABBCorners) do begin
       if PlaneEvaluatePoint(TPlaneArray(Frustum)[iPlane], AABBCorners[iCorner])<0 then begin
         PointIn := false;
         dec(InCount);
       end;
+    end;
 
     if InCount=0 then begin
       result := scNoOverlap;
       exit;
-    end;
+    end
 
-    if PointIn then
+    else if PointIn then
       inc(TotalIn);
   end;
 

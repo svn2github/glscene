@@ -41,6 +41,7 @@ type
     GLDirectOpenGL2: TGLDirectOpenGL;
     tree: TGLSprite;
     cbUseExtendedFrustum: TCheckBox;
+    GLSphere1: TGLSphere;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -52,11 +53,13 @@ type
     procedure cbShowQuadtreeClick(Sender: TObject);
     procedure GLDirectOpenGL2Render(Sender: TObject;
       var rci: TRenderContextInfo);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
     cullingMode: string;
     visiblecount,treecount: integer;
     SpacePartition: TSectoredSpacePartition;
+    FCamHeight : single;
     procedure CreateTrees;
   public
 
@@ -79,7 +82,7 @@ begin
   GLUserInterface1.MouseLook;
   GLUserInterface1.MouseUpdate;
    if IsKeyDown(VK_SHIFT) then
-      speed:=3000*deltaTime
+      speed:=6000*deltaTime
    else speed:=1000*deltaTime;
    with GLCamera1.Position do begin
       if IsKeyDown(87) then
@@ -90,10 +93,14 @@ begin
          GLNavigator1.StrafeHorizontal(-speed);
       if IsKeyDown(68) then
          GLNavigator1.StrafeHorizontal(speed);
+      if IsKeyDown('e') then
+         FCamHeight := FCamHeight + 5;
+      if IsKeyDown('c') then
+         FCamHeight := FCamHeight - 5;
       if IsKeyDown(VK_ESCAPE) then Close;
    end;
    with GLCamera1.Position do
-      Y:=glTerrainRenderer1.InterpolatedHeight(AsVector)+80;//+FCamHeight;
+      Y:=glTerrainRenderer1.InterpolatedHeight(AsVector)+80+FCamHeight;
    GLHUDText1.Text := cullingMode+ 'visible tree count: '+inttostr(visiblecount)+' / Total:'+inttostr(treecount)+
      #13#10+ ' press ''V'' to Change quadtree query visible or visiblity culling'+
      #13#10+ ' press ''esc'' to quit';
@@ -104,6 +111,7 @@ begin
   SpacePartition := TQuadSpacePartition.Create;
   SpacePartition.LeafThreshold := 50;
   SpacePartition.MaxTreeDepth := 10;//}
+  SpacePartition.GrowGravy := 0.01;
 
   tree.visible := false;
   trees.ObjectsSorting := osRenderFarthestFirst;
@@ -119,35 +127,37 @@ begin
 end;
 
 procedure TfrmQuadtreeVisCulling.CreateTrees;
+const
+  cRange = 40;//40
 var
   i,j: integer;
   obj: TGLProxyObject;
 begin
   glscene1.BeginUpdate;
 
-  ProgressBar1.Max := 80*80;
+  ProgressBar1.Max := (cRange*2)*(cRange*2);
   Label1.Refresh;
 
-  for i := -40 to 40 do
-  for j := -40 to 40 do
-  begin
-    inc(treecount);
-    ProgressBar1.Position := TreeCount;
-    obj := TGLProxyObject(trees.AddNewChild(TGLProxyObject));
-    obj.MasterObject := tree;
-    obj.Position.AsAffineVector := AffineVectorMake(i*500+random(200),0,j*500+random(200));
-    with obj.Position do
-      y := GLTerrainRenderer1.InterpolatedHeight(obj.AbsolutePosition)+150;
-    TSceneObj.CreateObj(SpacePartition,obj);
+  for i := -cRange to cRange do
+    for j := -cRange to cRange do
+    begin
+      inc(treecount);
+      ProgressBar1.Position := TreeCount;
+      obj := TGLProxyObject(trees.AddNewChild(TGLProxyObject));
+      obj.MasterObject := tree;
+      obj.Position.AsAffineVector := AffineVectorMake(i*500+random(200),0,j*500+random(200));
+      with obj.Position do
+        y := GLTerrainRenderer1.InterpolatedHeight(obj.AbsolutePosition)+150;
+      TSceneObj.CreateObj(SpacePartition,obj);
 
-    Label2.Caption := Format('Leaves = %d, Nodes = %d, NodesInRoot = %d',[
-      SpacePartition.Leaves.Count,
-      SpacePartition.GetNodeCount,
-      SpacePartition.RootNode.Leaves.Count]);
+      Label2.Caption := Format('Leaves = %d, Nodes = %d, NodesInRoot = %d  ',[
+        SpacePartition.Leaves.Count,
+        SpacePartition.GetNodeCount,
+        SpacePartition.RootNode.Leaves.Count]);
 
-    Label2.Refresh;
+      Label2.Refresh;
+    end;
 
-  end;
   Panel1.Free;
   glscene1.EndUpdate;
 end;
@@ -159,8 +169,17 @@ end;
 
 procedure TfrmQuadtreeVisCulling.queryVisibleRender(Sender: TObject;
   var rci: TRenderContextInfo);
+  function PlaneToStr(const APlane : THmgPlane) : string;
+  begin
+    result := Format('(%2.1f, %2.1f, %2.1f, %2.1f)',[
+      APlane[0],
+      APlane[1],
+      APlane[2],
+      APlane[3]]);
+  end;
 var
   i: integer;
+
 begin
   if not cbUseQuadtree.Checked then exit;
 
@@ -174,16 +193,34 @@ begin
       ExtendedFrustumMakeFromSceneViewer(rci.rcci.frustum, GLSceneViewer1))
   else
     SpacePartition.QueryFrustum(rci.rcci.frustum);
+
   visiblecount := SpacePartition.QueryResult.Count;
+
   Label2.Caption := Format('NodeTests = %d (of %d), ObjTests = %d (of %d), Visible = %d',[
     SpacePartition.QueryNodeTests,
     SpacePartition.GetNodeCount,
     SpacePartition.QueryInterObjectTests,
     SpacePartition.Leaves.Count,
-    SpacePartition.QueryResult.Count]);
+    SpacePartition.QueryResult.Count]);//}
+
+  {if rci.rcci.frustum.pNear[3]>=0 then
+    Label3.Caption := 'OK'
+  else
+    Label3.Caption := 'BAD';//}
+
+  {Label3.Caption :=
+    Format('%s, %s, %s, %s, %s, %s',[
+      PlaneToStr(rci.rcci.frustum.pNear),
+      PlaneToStr(rci.rcci.frustum.pFar),
+      PlaneToStr(rci.rcci.frustum.pTop),
+      PlaneToStr(rci.rcci.frustum.pBottom),
+      PlaneToStr(rci.rcci.frustum.pLeft),
+      PlaneToStr(rci.rcci.frustum.pRight)]);//}
 
   for i := 0 to SpacePartition.QueryResult.Count - 1 do begin
     TSceneObj(SpacePartition.QueryResult[i]).Obj.Visible := true;
+    if cbShowQuadtree.Checked then
+      RenderAABB(TSceneObj(SpacePartition.QueryResult[i]).FCachedAABB);
   end;
   glscene1.EndUpdate;
 end;
@@ -193,7 +230,6 @@ begin
   caption := GLSceneViewer1.FramesPerSecondText;
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
-
 
 procedure TfrmQuadtreeVisCulling.FormKeyPress(Sender: TObject; var Key: Char);
 var
@@ -241,7 +277,19 @@ begin
   {ExtendendFrustum := ExtendedFrustumMakeFromSceneViewer(
     rci.rcci.frustum, GLSceneViewer1);
 
-  GLSphere1.Position.AsAffineVector := ExtendendFrustum.BSphere.Center;
+  GLSphere1.Position.AsAffineVector :=
+    VectorCombine(ExtendendFrustum.SPCone.Base, ExtendendFrustum.SPCone.Axis, 1, GLCamera1.DepthOfView * 0.05);
+
+  GLSphere1.Radius := sin(ExtendendFrustum.SPCone.Angle) * GLCamera1.DepthOfView  * 0.05;
+
+  {GLSphere1.Position.AsAffineVector := ExtendendFrustum.BSphere.Center;
   GLSphere1.Radius := ExtendendFrustum.BSphere.Radius / 1.42;//}
 end;
+
+procedure TfrmQuadtreeVisCulling.Button1Click(Sender: TObject);
+begin
+  GLSphere1.Position.AsVector :=
+    VectorCombine(GLCamera1.Position.AsVector, GLCamera1.Direction.AsVector, 1, GLCamera1.NearPlane)
+end;
+
 end.

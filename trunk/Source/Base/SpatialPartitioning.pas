@@ -59,6 +59,7 @@ type
   TExtendedFrustum = record
     Frustum : TFrustum;
     BSphere : TBSphere;
+    // SPCone : TSPCone;
   end;
 
   {: Used to store the actual objects in the SpacePartition }
@@ -547,7 +548,9 @@ type
 
   {: Create an extended frustum from a number of values }
   function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
-    AFarDist, AFieldOfViewRadians : single; const ACameraPosition, ALookVector : TAffineVector ) : TExtendedFrustum;
+    AFarDist, AFieldOfViewRadians : single;
+    const ACameraPosition, ALookVector : TAffineVector{;
+    const AScreenWidth, AScreenHeight : integer {}) : TExtendedFrustum;
 
 implementation
 
@@ -639,11 +642,14 @@ end;//}
 
 
 function ExtendedFrustumMake(const AFrustum : TFrustum; const ANearDist,
-  AFarDist, AFieldOfViewRadians : single; const ACameraPosition, ALookVector : TAffineVector ) : TExtendedFrustum;
+  AFarDist, AFieldOfViewRadians : single;
+  const ACameraPosition, ALookVector : TAffineVector{;
+  const AScreenWidth, AScreenHeight : integer{}) : TExtendedFrustum;
 var
   ViewLen : single;
   Height, Width : single;
-  P, Q, vDiff : TAffineVector;
+  // Depth, Corner, NewFov : single;
+  P, Q, vDiff : TAffineVector;//}
 begin
   // See http://www.flipcode.com/articles/article_frustumculling.shtml for
   // details calculate the radius of the frustum sphere
@@ -656,7 +662,7 @@ begin
   ViewLen := AFarDist - ANearDist;
 
   // use some trig to find the height of the frustum at the far plane
-  Height := ViewLen * sin(AFieldOfViewRadians/2); // was tan( !?
+  Height := ViewLen * sin(AFieldOfViewRadians / 2); // was tan( !?
 
   // with an aspect ratio of 1, the width will be the same
   Width := Height;
@@ -675,6 +681,22 @@ begin
 
   // calculate the center of the sphere
   result.BSphere.Center := VectorAdd(ACameraPosition, VectorScale(ALookVector, ViewLen/2 + ANearDist));
+
+  // ************
+  // Create a cone
+  // calculate the length of the fov triangle
+  {Depth  := AScreenHeight / tan(AFieldOfViewRadians / 2);
+
+  // calculate the corner of the screen
+  Corner := sqrt(AScreenHeight * AScreenHeight + AScreenWidth * AScreenWidth);
+
+  // now calculate the new fov
+  NewFov := ArcTan2(Corner, Depth);
+
+  // apply to the cone
+  result.SPCone.Axis := ALookVector;
+  result.SPCone.Base := ACameraPosition;
+  result.SPCone.Angle := NewFov; //}
 end;
 
 { TSpacePartitionLeaf }
@@ -1366,15 +1388,11 @@ var
 begin
   inc(FSectoredSpacePartition.FQueryNodeTests);
 
-  // Old method that isn't as exact
-  // SpaceContains := FrustumContainsBSphere(frustum, BSphere);
-
-  // This method is supposedly more clever because it uses a very fast method,
-  // then a very exact method
-  if IsVolumeClipped(BSphere.Center, BSphere.Radius, Frustum) then
-    SpaceContains := scNoOverlap
+  // Check if the frustum contains the bsphere of the node
+  if not IsVolumeClipped(BSphere.Center, BSphere.Radius, Frustum) then
+    SpaceContains := FrustumContainsAABB(frustum, AABB)
   else
-    SpaceContains := FrustumContainsAABB(frustum, AABB);
+    SpaceContains := scNoOverlap;
 
   // If the frustum fully contains the leaf, then we need not check every piece,
   // just add them all
@@ -1412,7 +1430,7 @@ var
 begin
   inc(FSectoredSpacePartition.FQueryNodeTests);
 
-  // Test if the bounding sphere of the node intersect the bounding sphere of the
+   // Test if the bounding sphere of the node intersect the bounding sphere of the
   // frustum? This test is exremely fast
   if not BSphereIntersectsBSphere(BSphere, ExtendedFrustum.BSphere) then
     SpaceContains := scNoOverlap
@@ -1421,9 +1439,9 @@ begin
   else if IsVolumeClipped(BSphere.Center, BSphere.Radius, ExtendedFrustum.Frustum) then
     SpaceContains := scNoOverlap
 
-  else
+  else//}
   // Test if the bounding frustum intersects the AABB of the node
-    SpaceContains := FrustumContainsAABB(ExtendedFrustum.Frustum, AABB);
+    SpaceContains := FrustumContainsAABB(ExtendedFrustum.Frustum, AABB);//}
 
   // If the frustum fully contains the leaf, then we need not check every piece,
   // just add them all
@@ -1435,7 +1453,7 @@ begin
   // that intersect the frustum and recurse for all children
   if SpaceContains=scContainsPartially then begin
     for i := 0 to FLeaves.Count-1 do begin
-      // Early out
+      // Early out 1
       if not BSphereIntersectsBSphere(FLeaves[i].FCachedBSphere, ExtendedFrustum.BSphere) then continue;
 
       inc(FSectoredSpacePartition.FQueryInterObjectTests);
