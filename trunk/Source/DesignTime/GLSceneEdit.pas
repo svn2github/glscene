@@ -38,8 +38,8 @@ uses
    {$ELSE}
    Controls, Windows, Forms, ComCtrls, ImgList, Dialogs, Menus, ActnList, ToolWin,
    {$ENDIF}
-   GLScene, Classes, sysutils,
-   {$ifdef GLS_DELPHI_6_UP} DesignIntf, ExtCtrls, StdCtrls {$else} DsgnIntf {$endif};
+   GLScene, Classes, sysutils, ExtCtrls, StdCtrls,
+   {$ifdef GLS_DELPHI_6_UP} DesignIntf {$else} DsgnIntf {$endif};
 
 const
   SCENE_SELECTED=0;
@@ -269,8 +269,8 @@ begin
 	FScene:=Scene;
    FCurrentDesigner:=Designer;
    ResetTree;
-   BehavioursListView.Clear;
-   EffectsListView.Clear;
+   BehavioursListView.Items.Clear;
+   EffectsListView.Items.Clear;
 
    if Assigned(FScene) then begin
       FScene.FreeNotification(Self);
@@ -280,20 +280,29 @@ begin
    TreeChange(Self, nil);
    if Assigned(FScene) then
    begin
-         ActionList.State:=asNormal;
          Tree.Enabled:=true;
          BehavioursListView.Enabled:=true;
          EffectsListView.Enabled:=true;
-         TBAddObjects.Enabled:=true;
+      FSelectedItems:=SCENE_SELECTED;
+      EnableAndDisableActions();
    end
    else begin
-         ActionList.State:=asSuspended;
          Tree.Enabled:=false;
          BehavioursListView.Enabled:=false;
          EffectsListView.Enabled:=false;
-         TBAddObjects.Enabled:=false;
-         TBAddEffects.Enabled:=false;
-         TBAddBehaviours.Enabled:=false;
+         ACLoadScene.Enabled:=False;
+         ACSaveScene.Enabled:=False;
+         ACAddCamera.Enabled:=False;
+         ACAddObject.Enabled:=False;
+         ACAddBehaviour.Enabled:=False;
+         ACAddEffect.Enabled:=False;
+         ACDeleteObject.Enabled:=False;
+         ACMoveUp.Enabled:=False;
+         ACMoveDown.Enabled:=False;
+         ACCut.Enabled:=False;
+         ACCopy.Enabled:=False;
+         ACPaste.Enabled:=False;
+
    end;
    ShowBehavioursAndEffects(nil);
 end;
@@ -486,7 +495,12 @@ begin
 	end;
         end
         else
+{$ifdef GLS_DELPHI_5_UP}
           parent.Clear;
+{$else}
+		for i:=parent.Count-1 downto 0 do parent.Delete(i);
+{$endif}
+
 end;
 
 
@@ -649,13 +663,17 @@ procedure TGLSceneEditorForm.ShowBehaviours(BaseSceneObject:TGLBaseSceneObject);
 var
   i:integer;
 begin
-      BehavioursListView.Clear;
+      BehavioursListView.Items.Clear;
       BehavioursListView.Items.BeginUpdate;
       if Assigned(BaseSceneObject) then
       begin
       for i:=0 to BaseSceneObject.Behaviours.Count-1 do
       begin
-        BehavioursListView.AddItem(IntToStr(i)+' - '+BaseSceneObject.Behaviours[i].Name,BaseSceneObject.Behaviours[i]);
+        with BehavioursListView.Items.Add do
+        begin
+          Caption:=IntToStr(i)+' - '+BaseSceneObject.Behaviours[i].Name;
+          Data:=BaseSceneObject.Behaviours[i];
+        end;
       end;
       end;
       BehavioursListView.Items.EndUpdate;
@@ -665,13 +683,17 @@ procedure TGLSceneEditorForm.ShowEffects(BaseSceneObject:TGLBaseSceneObject);
 var
   i:integer;
 begin
-      EffectsListView.Clear;
+      EffectsListView.Items.Clear;
       EffectsListView.Items.BeginUpdate;
       if Assigned(BaseSceneObject) then
       begin
       for i:=0 to BaseSceneObject.Effects.Count-1 do
       begin
-        EffectsListView.AddItem(IntToStr(i)+' - '+BaseSceneObject.Effects[i].Name,BaseSceneObject.Effects[i]);
+        with EffectsListView.Items.Add do
+        begin
+          caption:=IntToStr(i)+' - '+BaseSceneObject.Effects[i].Name;
+          Data:=BaseSceneObject.Effects[i];
+        end;
       end;
       end;
       EffectsListView.Items.EndUpdate;
