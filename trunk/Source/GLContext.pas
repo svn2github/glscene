@@ -216,6 +216,9 @@ type
          //: Invoked by when there is no compatible context left for relocation
          procedure ContextDestroying;
 
+         //: Specifies if the handle can be transfered across shared contexts
+         class function Transferable : Boolean; virtual;
+
          function DoAllocateHandle : Integer; virtual; abstract;
          procedure DoDestroyHandle; virtual; abstract;
 
@@ -300,6 +303,7 @@ type
 
       protected
          { Protected Declarations }
+         class function Transferable : Boolean; override;
          function DoAllocateHandle : Integer; override;
          procedure DoDestroyHandle; override;
 
@@ -736,6 +740,7 @@ procedure TGLContext.DestroyContext;
 var
    i : Integer;
    oldContext, compatContext : TGLContext;
+   contextHandle : TGLContextHandle;
 begin
    if vCurrentGLContext<>Self then begin
       oldContext:=vCurrentGLContext;
@@ -748,13 +753,18 @@ begin
       if Assigned(compatContext) then begin
          // transfer handle ownerships to the compat context
          for i:=FOwnedHandles.Count-1 downto 0 do begin
-            compatContext.FOwnedHandles.Add(FOwnedHandles[i]);
-            TGLContextHandle(FOwnedHandles[i]).FRenderingContext:=compatContext;
+            contextHandle:=TGLContextHandle(FOwnedHandles[i]);
+            if contextHandle.Transferable then begin
+               compatContext.FOwnedHandles.Add(contextHandle);
+               contextHandle.FRenderingContext:=compatContext;
+            end else contextHandle.ContextDestroying;
          end;
       end else begin
          // no compat context, release handles
-         for i:=FOwnedHandles.Count-1 downto 0 do
-            TGLContextHandle(FOwnedHandles[i]).ContextDestroying;
+         for i:=FOwnedHandles.Count-1 downto 0 do begin
+            contextHandle:=TGLContextHandle(FOwnedHandles[i]);
+            contextHandle.ContextDestroying;
+         end;
       end;
       FOwnedHandles.Clear;
       Manager.DestroyingContextBy(Self);
@@ -898,6 +908,13 @@ begin
    end;
 end;
 
+// Transferable
+//
+class function TGLContextHandle.Transferable : Boolean;
+begin
+   Result:=True;
+end;
+
 // ------------------
 // ------------------ TGLVirtualHandle ------------------
 // ------------------
@@ -980,6 +997,13 @@ end;
 // ------------------
 // ------------------ TGLOcclusionQueryHandle ------------------
 // ------------------
+
+// Transferable
+//
+class function TGLOcclusionQueryHandle.Transferable : Boolean;
+begin
+   Result:=False;
+end;
 
 // DoAllocateHandle
 //
