@@ -3,9 +3,10 @@
    This component is based on ThreadedTimer by Carlos Barbosa.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>20/01/02 - Egg - Simplifications, dropped Win32 dependencies
+      <li>24/09/02 - EG - Fixed ThreadPriority default value (Nelson Chu)
+      <li>20/01/02 - EG - Simplifications, dropped Win32 dependencies
       <li>05/04/00 - GrC - Enabled checks to prevent events after destroy
-      <li>01/04/00 - Egg - Re-Creation, minor changes over Carlos's code
+      <li>01/04/00 - EG - Re-Creation, minor changes over Carlos's code
    </ul></font>
 }
 unit AsyncTimer;
@@ -50,7 +51,7 @@ type
          property Enabled: Boolean read FEnabled write SetEnabled default False;
          property Interval: Word read GetInterval write SetInterval  default cDEFAULT_TIMER_INTERVAL;
          property OnTimer: TNotifyEvent read FOnTimer write FOnTimer;
-         property ThreadPriority: TThreadPriority read GetThreadPriority write SetThreadPriority default tpNormal;
+         property ThreadPriority: TThreadPriority read GetThreadPriority write SetThreadPriority default tpTimeCritical;
   end;
 
 // ------------------------------------------------------------------
@@ -119,12 +120,12 @@ constructor TAsyncTimer.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    // create timer thread
-   FTimerThread := TTimerThread.Create(True);
+   FTimerThread:=TTimerThread.Create(True);
    with TTimerThread(FTimerThread) do begin
-      FOwner := Self;
-      FreeOnTerminate := False;
-      Priority := tpTimeCritical;
-      FInterval := cDEFAULT_TIMER_INTERVAL;
+      FOwner:=Self;
+      FreeOnTerminate:=False;
+      Priority:=tpTimeCritical;
+      FInterval:=cDEFAULT_TIMER_INTERVAL;
    end;
 end;
 
@@ -156,7 +157,7 @@ end;
 procedure TAsyncTimer.SetEnabled(Value: Boolean);
 begin
    if Value <> FEnabled then begin
-      FEnabled := Value;
+      FEnabled:=Value;
       if FEnabled then begin
          // When enabled resume thread
          if TTimerThread(FTimerThread).FInterval > 0 then begin
@@ -171,24 +172,24 @@ end;
 
 function TAsyncTimer.GetInterval: Word;
 begin
-  Result := TTimerThread(FTimerThread).FInterval;
+  Result:=TTimerThread(FTimerThread).FInterval;
 end;
 
 procedure TAsyncTimer.SetInterval(Value: Word);
 begin
-  if Value <> TTimerThread(FTimerThread).FInterval then begin
-    TTimerThread(FTimerThread).FInterval := Value;
+  if Value<>TTimerThread(FTimerThread).FInterval then begin
+    TTimerThread(FTimerThread).FInterval:=Value;
   end;
 end;
 
 function TAsyncTimer.GetThreadPriority: TThreadPriority;
 begin
-  Result := FTimerThread.Priority;
+  Result:=FTimerThread.Priority;
 end;
 
 procedure TAsyncTimer.SetThreadPriority(Value: TThreadPriority);
 begin
-  FTimerThread.Priority := Value;
+  FTimerThread.Priority:=Value;
 end;
 
 end.
