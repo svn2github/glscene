@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/08/02 - EG - Added Area functions
       <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits 
       <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)3
       <li>22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
@@ -443,6 +444,8 @@ procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;
 procedure MakeVector(var v : TVector; const x, y, z: Single); overload;
 procedure MakeVector(var v : TVector; const av : TAffineVector); overload;
 procedure MakeVector(var v : TVector; const av : TVector); overload;
+procedure RstVector(var v : TAffineVector); overload;
+procedure RstVector(var v : TVector); overload;
 
 //: Returns the sum of two affine vectors
 function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector; overload;
@@ -993,6 +996,18 @@ function MaxFloat(const v1, v2, v3 : Single) : Single; overload;
 function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
 function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
 
+{: Computes the triangle's area. }
+function TriangleArea(const p1, p2, p3 : TAffineVector) : Single;
+{: Computes the polygons's area.<p>
+   Points must be coplanar. Polygon needs not be convex. }
+function PolygonArea(const p : PAffineVectorArray; nSides : Integer) : Single;
+{: Computes a 2D triangle's signed area.<p>
+   Only X and Y coordinates are used, Z is ignored. }
+function TriangleSignedArea(const p1, p2, p3 : TAffineVector) : Single;
+{: Computes a 2D polygon's signed area.<p>
+   Only X and Y coordinates are used, Z is ignored. Polygon needs not be convex. }
+function PolygonSignedArea(const p : PAffineVectorArray; nSides : Integer) : Single;
+
 {: Multiplies values in the array by factor.<p>
    This function is especially efficient for large arrays, it is not recommended
    for arrays that have less than 10 items.<br>
@@ -1455,6 +1470,42 @@ begin
 	v[1]:=av[1];
 	v[2]:=av[2];
 	v[3]:=cZero;
+end;
+
+// RstVector (affine)
+//
+procedure RstVector(var v : TAffineVector);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+         xor   edx, edx
+         mov   [eax], edx
+         mov   [eax+4], edx
+         mov   [eax+8], edx
+{$else}
+begin
+   v[0]:=0;
+   v[1]:=0;
+   v[2]:=0;
+{$endif}
+end;
+
+// RstVector (hmg)
+//
+procedure RstVector(var v : TVector);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+         xor   edx, edx
+         mov   [eax], edx
+         mov   [eax+4], edx
+         mov   [eax+8], edx
+         mov   [eax+12], edx
+{$else}
+begin
+   v[0]:=0;
+   v[1]:=0;
+   v[2]:=0;
+   v[3]:=0;
+{$endif}
 end;
 
 // VectorAdd (func, affine)
@@ -6114,6 +6165,66 @@ begin
    else if v3>=v1 then
       Result:=v3
    else result:=v1;
+end;
+
+// TriangleArea
+//
+function TriangleArea(const p1, p2, p3 : TAffineVector) : Single;
+begin
+   Result:=0.5*VectorLength(VectorCrossProduct(VectorSubtract(p2, p1),
+                                               VectorSubtract(p3, p1)));
+end;
+
+// PolygonArea
+//
+function PolygonArea(const p : PAffineVectorArray; nSides : Integer) : Single;
+var
+   r : TAffineVector;
+   i : Integer;
+   p1, p2, p3 : PAffineVector;
+begin
+   Result:=0;
+   if nSides>2 then begin
+      RstVector(r);
+      p1:=@p[0];
+      p2:=@p[1];
+      for i:=2 to nSides-1 do begin
+         p3:=@p[i];
+         AddVector(r, VectorCrossProduct(VectorSubtract(p2^, p1^),
+                                         VectorSubtract(p3^, p1^)));
+         p2:=p3;
+      end;
+      Result:=VectorLength(r)*0.5;
+   end;
+end;
+
+// TriangleSignedArea
+//
+function TriangleSignedArea(const p1, p2, p3 : TAffineVector) : Single;
+begin
+   Result:=0.5*( (p2[0]-p1[0])*(p3[1]-p1[1])
+                -(p3[0]-p1[0])*(p2[1]-p1[1]));
+end;
+
+// PolygonSignedArea
+//
+function PolygonSignedArea(const p : PAffineVectorArray; nSides : Integer) : Single;
+var
+   i : Integer;
+   p1, p2, p3 : PAffineVector;
+begin
+   Result:=0;
+   if nSides>2 then begin
+      p1:=@p[0];
+      p2:=@p[1];
+      for i:=2 to nSides-1 do begin
+         p3:=@p[i];
+         Result:=Result+(p2[0]-p1[0])*(p3[1]-p1[1])
+                       -(p3[0]-p1[0])*(p2[1]-p1[1]);
+         p2:=p3;
+      end;
+      Result:=Result*0.5;
+   end;
 end;
 
 // ScaleFloatArray (raw)
