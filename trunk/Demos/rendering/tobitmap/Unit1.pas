@@ -75,17 +75,17 @@ var
    f : TForm2;
 begin
    Application.CreateForm(TForm2, f);
+   if (aBitmap.Width<Screen.Width) and (aBitmap.Height<Screen.Height) then begin
+      f.ClientWidth:=aBitmap.Width;
+      f.ClientHeight:=aBitmap.Height;
+   end else begin
+      f.ClientWidth:=Round(Screen.Width*0.75);
+      f.ClientHeight:=Round(Screen.Height*0.75);
+   end;
    f.Image1.Picture.Bitmap:=aBitmap;
+   f.Caption:=caption;
    f.Image1.Width:=aBitmap.Width;
    f.Image1.Height:=aBitmap.Height;
-   f.Caption:=caption;
-   if (aBitmap.Width<Screen.Width) and (aBitmap.Height<Screen.Height) then begin
-      f.Width:=aBitmap.Width;
-      f.Height:=aBitmap.Height;
-   end else begin
-      f.Width:=Round(Screen.Width*0.75);
-      f.Height:=Round(Screen.Height*0.75);
-   end;
    f.Show;
 end;
 
