@@ -17,6 +17,7 @@ package GLScene5;
 {$R '..\Source\AVIRecorder.dcr'}
 {$R '..\Source\GLThorFX.dcr'}
 {$R '..\Source\GLzBuffer.dcr'}
+{$R '..\Source\GameAPIs\SDLWindow.dcr'}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -118,6 +119,11 @@ contains
   GLWin32Context in '..\Source\Platform\GLWin32Context.pas',
   GLCrossPlatform in '..\Source\Platform\GLCrossPlatform.pas',
   GLParticleFX in '..\Source\GLParticleFX.pas',
-  GLzBuffer in '..\Source\GLzBuffer.pas';
+  GLzBuffer in '..\Source\GLzBuffer.pas',
+  GLMirror in '..\Source\GLMirror.pas',
+  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
+  GLWin32Viewer in '..\Source\Platform\GLWin32Viewer.pas',
+  SDL in '..\Source\GameAPIs\sdl.pas',
+  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas';
 
 end.
