@@ -1544,6 +1544,9 @@ type
          {: Displays a window with info on current OpenGL ICD and context. }
          procedure ShowInfo;
 
+         {: Currently Rendering? }
+         property Rendering : Boolean read FRendering;
+
          {: Returns the projection matrix in use or used for the last rendering. }
          property ProjectionMatrix : TMatrix read FProjectionMatrix;
          {: Returns the modelview matrix in use or used for the last rendering. }
