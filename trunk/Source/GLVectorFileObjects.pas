@@ -2511,9 +2511,9 @@ begin
          glColorPointer(4, GL_FLOAT, 0, Colors.List);
       end else glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       if TexCoords.Count>0 then begin
-         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+         xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
          xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
-      end else glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       FArraysDeclared:=True;
    end;
 end;

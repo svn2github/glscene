@@ -100,22 +100,24 @@ var
    i : Integer;
    p : PCWPStruct;
 begin
-   p:=PCWPStruct(lParam);
-//   if (p.message=WM_DESTROY) or (p.message=WM_CLOSE) then begin // destroy & close variant
-   if p.message=WM_DESTROY then begin
-      // special care must be taken by this loop, items may go away unexpectedly
-      i:=vTrackingCount-1;
-      while i>=0 do begin
-         if IsChild(p.hwnd, vTrackedHwnd[i]) then begin
-            // got one, send notification
-            vTrackedEvents[i](nil);
+   if nCode=HC_ACTION then begin
+      p:=PCWPStruct(lParam);
+ //   if (p.message=WM_DESTROY) or (p.message=WM_CLOSE) then begin // destroy & close variant
+      if p.message=WM_DESTROY then begin
+         // special care must be taken by this loop, items may go away unexpectedly
+         i:=vTrackingCount-1;
+         while i>=0 do begin
+            if IsChild(p.hwnd, vTrackedHwnd[i]) then begin
+               // got one, send notification
+               vTrackedEvents[i](nil);
+            end;
+            Dec(i);
+            while i>=vTrackingCount do Dec(i);
          end;
-         Dec(i);
-         while i>=vTrackingCount do Dec(i);
       end;
-   end;
-   CallNextHookEx(vTrackingHook, nCode, wParam, lParam);
-   Result:=0;
+      CallNextHookEx(vTrackingHook, nCode, wParam, lParam);
+      Result:=0;
+   end else Result:=CallNextHookEx(vTrackingHook, nCode, wParam, lParam);
 end;
 
 // TrackWindow

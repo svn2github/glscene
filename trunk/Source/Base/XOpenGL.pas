@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>03/01/02 - EG - Added xglDisableClientState
       <li>26/01/02 - EG - Added xglBegin/EndUpdate mechanism
       <li>21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
       <li>18/12/01 - EG - Added xglEnableClientState
@@ -74,6 +75,7 @@ var
    // Vertex Arrays texture coordinates specification
    xglTexCoordPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
    xglEnableClientState: procedure(aarray: TGLEnum); {$ifdef Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglDisableClientState: procedure(aarray: TGLEnum); {$ifdef Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
    // Misc
    xglEnable: procedure(cap: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -183,6 +185,13 @@ begin
    glClientActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
+procedure xglDisableClientState_Second(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+begin
+   glClientActiveTextureARB(GL_TEXTURE1_ARB);
+   glDisableClientState(aArray);
+   glClientActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
 // --------- Dual Texturing
 
 procedure glTexCoord2f_Dual(s, t: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -285,6 +294,14 @@ begin
    glClientActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
+procedure xglDisableClientState_Dual(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+begin
+   glDisableClientState(aArray);
+   glClientActiveTextureARB(GL_TEXTURE1_ARB);
+   glDisableClientState(aArray);
+   glClientActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
 // --------- Null Texturing
 
 procedure glTexCoord2f_Null(s, t: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -327,6 +344,9 @@ procedure xglTexCoordPointer_Null(size: TGLint; atype: TGLEnum; stride: TGLsizei
 begin end;
 
 procedure xglEnableClientState_Null(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+begin end;
+
+procedure xglDisableClientState_Null(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 begin end;
 
 // ------------------------------------------------------------------
@@ -379,6 +399,7 @@ begin
 
       xglTexCoordPointer:=xglTexCoordPointer_Null;
       xglEnableClientState:=xglEnableClientState_Null;
+      xglDisableClientState:=xglDisableClientState_Null;
 
       xglEnable:=glEnable_Null;
       xglDisable:=glDisable_Null;
@@ -408,6 +429,7 @@ begin
 
       xglTexCoordPointer:=glTexCoordPointer;
       xglEnableClientState:=glEnableClientState;
+      xglDisableClientState:=glDisableClientState;
 
       xglEnable:=glEnable;
       xglDisable:=glDisable;
@@ -438,6 +460,7 @@ begin
 
       xglTexCoordPointer:=xglTexCoordPointer_Second;
       xglEnableClientState:=xglEnableClientState_Second;
+      xglDisableClientState:=xglDisableClientState_Second;
 
       xglEnable:=glEnable_Second;
       xglDisable:=glDisable_Second;
@@ -468,6 +491,7 @@ begin
 
       xglTexCoordPointer:=xglTexCoordPointer_Dual;
       xglEnableClientState:=xglEnableClientState_Dual;
+      xglDisableClientState:=xglDisableClientState_Dual;
 
       xglEnable:=glEnable_Dual;
       xglDisable:=glDisable_Dual;

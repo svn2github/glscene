@@ -541,7 +541,7 @@ begin
    glVertexPointer(3, GL_FLOAT, SizeOf(TVertexData)-SizeOf(TAffineVector), FirstVertex);
    glEnableClientState(GL_NORMAL_ARRAY);
    glNormalPointer(GL_FLOAT, SizeOf(TVertexData)-SizeOf(TAffineVector), FirstNormal);
-   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
    xglTexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData)-SizeOf(TTexPoint), FirstTexPoint);
 end;
 
