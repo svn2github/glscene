@@ -2639,7 +2639,7 @@ end;
 //
 function TGLBaseSceneObject.AddNewChild(aChild : TGLSceneObjectClass) : TGLBaseSceneObject;
 begin
-   Result:=aChild.Create(nil);
+   Result:=aChild.Create(Owner);
    AddChild(Result);
 end;
 
@@ -2647,7 +2647,7 @@ end;
 //
 function TGLBaseSceneObject.AddNewChildFirst(aChild : TGLSceneObjectClass) : TGLBaseSceneObject;
 begin
-   Result:=aChild.Create(nil);
+   Result:=aChild.Create(Owner);
    Insert(0, Result);
 end;
 
