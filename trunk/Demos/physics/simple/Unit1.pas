@@ -1,3 +1,27 @@
+{: Setting up simple ODE physics with the GLODEManager.<p>
+   
+   The GLODEDummy is a GLScene heirachal object that is controlled by
+   ODE through the GLODEManager. ODE handles physics through Body, Mass
+   and Geoms. The Body and Mass are used to control the dynamics of 
+   moving objects, and the Geom defines the collision boundary.<p>
+
+   The Elements property allows for a more complex collision boundary 
+   definition. Elements are a list of geoms that combine to form a 
+   'composite' geom, shown with the 'Add composite' button. Just add
+   one element if you only want a single geom for the dummy.<p>
+   
+   The Surface property is used to define how the objects behave when
+   they collide with each other. When 2 objects collide the values in
+   their collision surfaces are averaged to produce a single contact
+   definition that is fed to ODE to let it know how the collision 
+   between the objects should be handled. I'm not sure of the accuracy
+   of averaging the surfaces but it allows for a GLODEDummy object to
+   have a distinct collision surface.<p>
+   
+   The GLODEDynamicBehaviour is the equivalent to a GLODEDummy in a
+   GLScene behaviour. This allows for a GLScene object to be 
+   controlled by ODE.<p>
+}
 unit Unit1;
 
 interface
