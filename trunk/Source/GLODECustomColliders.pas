@@ -12,6 +12,7 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>29/10/03 - SG - Fix for GLODETerrainCollider (Matheus Degiovani)
     <li>30/07/03 - SG - Creation.
   </ul>
 }
@@ -313,8 +314,7 @@ function TGLODETerrainCollider.ColliderFormula(x, y : Single) : Single;
 var
   Pos : TVector;
 begin
-  Pos[0] := x;
-  Pos[1] := y;
+  MakePoint(Pos,x,y,0);
   Result := FTerrainRenderer.InterpolatedHeight(Pos);
 end;
 
