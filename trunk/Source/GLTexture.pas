@@ -337,6 +337,7 @@ type
       bufferFaceCull : Boolean;
       proxySubObject : Boolean;
       ignoreMaterials : Boolean;
+      ignoreBlendingRequests : Boolean;
       amalgamating : Boolean;
    end;
    PRenderContextInfo = ^TRenderContextInfo;
@@ -3543,7 +3544,7 @@ begin
          end;
       end;
       // Apply Blending mode
-		case FBlendingMode of
+      if not rci.ignoreBlendingRequests then case FBlendingMode of
 			bmOpaque :
             UnSetGLState(rci.currentStates, stBlend);
 			bmTransparency : begin

@@ -408,7 +408,7 @@ type
 
          procedure RecTransformationChanged;
 
-         procedure DrawAxes(Pattern: Word);
+         procedure DrawAxes(var rci : TRenderContextInfo; pattern : Word);
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
          function  GetHandle(var rci : TRenderContextInfo) : Cardinal; virtual;
          //: Should the object be considered as blended for sorting purposes?
@@ -1096,7 +1096,8 @@ type
 
    // TGLCameraStyle
    //
-   TGLCameraStyle = (csPerspective, csOrthogonal, csOrtho2D, csCustom);
+   TGLCameraStyle = (csPerspective, csOrthogonal, csOrtho2D, csCustom,
+                     csInfinitePerspective);
 
    // TOnCustomPerspective
    //
@@ -1934,7 +1935,7 @@ procedure RegisterGLBehaviourNameChangeEvent(notifyEvent : TNotifyEvent);
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent : TNotifyEvent);
 
 {: Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
-procedure AxesBuildList(Pattern: Word; AxisLen: Single);
+procedure AxesBuildList(var rci : TRenderContextInfo; pattern: Word; AxisLen: Single);
 
 {: Registers the procedure call used to invoke the info form. }
 procedure RegisterInfoForm(infoForm : TInvokeInfoForm);
@@ -1958,14 +1959,16 @@ var
 
 // AxesBuildList
 //
-procedure AxesBuildList(Pattern: TGLushort; AxisLen: Single);
+procedure AxesBuildList(var rci : TRenderContextInfo; pattern : Word; axisLen : Single);
 begin
    glPushAttrib(GL_ENABLE_BIT or GL_LIGHTING_BIT or GL_LINE_BIT);
    glDisable(GL_LIGHTING);
    glEnable(GL_LINE_STIPPLE);
 //   glEnable(GL_LINE_SMOOTH);
-   glEnable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   if not rci.ignoreBlendingRequests then begin
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   end;
    glLineWidth(1);
    glLineStipple(1, Pattern);
    glBegin(GL_LINES);
@@ -2442,9 +2445,9 @@ end;
 
 // DrawAxes
 //
-procedure TGLBaseSceneObject.DrawAxes(Pattern: TGLushort);
+procedure TGLBaseSceneObject.DrawAxes(var rci : TRenderContextInfo; pattern : Word);
 begin
-   AxesBuildList(Pattern, FScene.CurrentBuffer.FCamera.FDepthOfView);
+   AxesBuildList(rci, Pattern, FScene.CurrentBuffer.FCamera.FDepthOfView);
 end;
 
 // GetChildren
@@ -2895,12 +2898,14 @@ begin
    sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
    if VectorLength(sVec)<1e-3 then
       sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, YVector);
-   tVec:=VectorCrossProduct(sVec, silhouetteParameters.SeenFrom);
+   tVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, sVec);
+//   tVec:=VectorCrossProduct(sVec, silhouetteParameters.SeenFrom);
    NormalizeVector(sVec);
    NormalizeVector(tVec);
    // generate the silhouette (outline and capping)
    Result:=TGLBaseSilhouette.Create;
    angleFactor:=(2*PI)/cNbSegments;
+   vr:=vr*0.98;
    for i:=0 to cNbSegments-1 do begin
       SinCos(i*angleFactor, vr, s, c);
       Result.Vertices.Add(VectorCombine(sVec, tVec, s, c));
@@ -3772,7 +3777,7 @@ begin
       // Start rendering
       if shouldRenderSelf then begin
          if FShowAxes then
-            DrawAxes($CCCC);
+            DrawAxes(rci, $CCCC);
          if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0) then begin
             glPushMatrix;
             FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
@@ -4502,6 +4507,9 @@ procedure TGLCamera.ApplyPerspective(const viewport : TRectangle;
                                      width, height : Integer; DPI : Integer);
 var
    Left, Right, Top, Bottom, zFar, MaxDim, Ratio, f: Double;
+   mat : TMatrix;
+const
+   cEpsilon : Single = 1e-4;
 begin
    if (Width<=0) or (Height<=0) then Exit;
    if CameraStyle=csOrtho2D then begin
@@ -4526,7 +4534,7 @@ begin
       // Note: viewport.top is actually bottom, because the window (and viewport) origin
       // in OGL is the lower left corner
 
-      if CameraStyle=csPerspective then
+      if CameraStyle in [csPerspective, csInfinitePerspective] then
          f:=1/(Width*FSceneScale)
       else f:=100/(focalLength*Width*FSceneScale);
 
@@ -4541,7 +4549,7 @@ begin
       Ratio:=(Width - 2 * Viewport.Left) * f;
       Left:=-Ratio * Width / (2 * MaxDim);
 
-      if CameraStyle=csPerspective then
+      if CameraStyle in [csPerspective, csInfinitePerspective] then
          f:=1/(Height*FSceneScale)
       else f:=100/(focalLength*Height*FSceneScale);
 
@@ -4560,6 +4568,18 @@ begin
       case CameraStyle of
          csPerspective :
             glFrustum(Left, Right, Bottom, Top, FNearPlane, zFar);
+         csInfinitePerspective : begin
+            mat:=IdentityHmgMatrix;
+            mat[0][0]:=2*FNearPlane/(Right-Left);
+            mat[1][1]:=2*FNearPlane/(Top-Bottom);
+            mat[2][0]:=(Right+Left)/(Right-Left);
+            mat[2][1]:=(Top+Bottom)/(Top-Bottom);
+            mat[2][2]:=cEpsilon-1;
+            mat[2][3]:=-1;
+            mat[3][2]:=FNearPlane*(cEpsilon-2);
+            mat[3][3]:=0;
+            glMultMatrixf(@mat);
+         end;
          csOrthogonal :
             glOrtho(Left, Right, Bottom, Top, FNearPlane, zFar);
       else
