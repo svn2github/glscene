@@ -76,7 +76,7 @@ type
 
       public
 			{ Public Declarations }
-         constructor Create(aOwner : TVerletWorld); virtual;
+         constructor CreateOwned(aOwner : TVerletWorld); virtual;
          destructor Destroy; override;
 
          {: Applies friction }
@@ -235,7 +235,7 @@ type
          partitioning object}
          procedure UpdateCachedAABBAndBSphere; override;
 
-         constructor Create(aNodeA, aNodeB : TVerletNode);
+         constructor CreateOwned(aNodeA, aNodeB : TVerletNode);
 
          {: One of the nodes in the edge }
          property NodeA : TVerletNode read FNodeA write FNodeA;
@@ -757,10 +757,10 @@ implementation
 
 // Create
 //
-constructor TVerletNode.Create(aOwner : TVerletWorld);
+constructor TVerletNode.CreateOwned(aOwner : TVerletWorld);
 begin
 
-   inherited Create(aOwner.SpacePartition);
+   inherited CreateOwned(aOwner.SpacePartition);
    if Assigned(aOwner) then
       aOwner.AddNode(Self);
 
@@ -1345,7 +1345,7 @@ procedure TVerletWorld.AddSolidEdge(aNodeA, aNodeB: TVerletNode);
 var
   VerletEdge : TVerletEdge;
 begin
-  VerletEdge := TVerletEdge.Create(aNodeA, aNodeB);
+  VerletEdge := TVerletEdge.CreateOwned(aNodeA, aNodeB);
   SolidEdges.Add(VerletEdge);
 end;
 
@@ -1370,7 +1370,7 @@ end;
 function TVerletWorld.CreateOwnedNode(const location : TAffineVector;
             const aRadius : Single = 0; const aWeight : Single=1) : TVerletNode;
 begin
-   Result:=VerletNodeClass.Create(self);
+   Result:=VerletNodeClass.CreateOwned(self);
    Result.Location:=Location;
    Result.OldLocation:=Location;
    Result.Weight:=aWeight;
@@ -2245,12 +2245,12 @@ end;
 
 { TVerletEdge }
 
-constructor TVerletEdge.Create(aNodeA, aNodeB: TVerletNode);
+constructor TVerletEdge.CreateOwned(aNodeA, aNodeB: TVerletNode);
 begin
   FNodeA := aNodeA;
   FNodeB := aNodeB;
 
-  inherited Create(aNodeA.Owner.SpacePartition);
+  inherited CreateOwned(aNodeA.Owner.SpacePartition);
 end;
 
 // ------------------

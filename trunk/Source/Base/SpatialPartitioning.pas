@@ -86,7 +86,7 @@ type
     in the leaf}
     property PartitionTag : pointer read FPartitionTag;
 
-    constructor Create(SpacePartition : TBaseSpacePartition);
+    constructor CreateOwned(SpacePartition : TBaseSpacePartition);
     destructor Destroy; override;
   published
   end;
@@ -571,8 +571,7 @@ begin
   SpacePartition.LeafChanged(self);
 end;
 
-constructor TSpacePartitionLeaf.Create(
-  SpacePartition: TBaseSpacePartition);
+constructor TSpacePartitionLeaf.CreateOwned(SpacePartition: TBaseSpacePartition);
 begin
   inherited Create;
   

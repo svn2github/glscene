@@ -127,7 +127,7 @@ type
 
     procedure AfterProgress; override;
 
-    constructor Create(aOwner : TVerletWorld); override;
+    constructor CreateOwned(aOwner : TVerletWorld); override;
     destructor Destroy; override;
   end;
 
@@ -282,7 +282,7 @@ end;
 
 { TMeshObjectVerletNode }
 
-constructor TMeshObjectVerletNode.Create(aOwner: TVerletWorld);
+constructor TMeshObjectVerletNode.CreateOwned(aOwner: TVerletWorld);
 begin
   inherited;
   VertexIndices := TIntegerList.Create;
@@ -573,7 +573,7 @@ begin
     end;
   end;//}
 
-  aNode := TMeshObjectVerletNode.Create(VerletWorld);
+  aNode := TMeshObjectVerletNode.CreateOwned(VerletWorld);
   aNode.MeshObject := MeshObject;
   aNode.VertexIndices.Add(VertexIndex);
   aNode.Location := Location;
