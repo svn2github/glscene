@@ -265,6 +265,7 @@ type
 			procedure Assign(Src: TPersistent); override;
 
 			function Add(const item : TTexPoint) : Integer; overload;
+			function Add(const item : TVector2f) : Integer; overload;
 			function Add(const texS, texT : Single) : Integer; overload;
 			function Add(const texS, texT : Integer) : Integer; overload;
 			function AddNC(const texS, texT : Integer) : Integer; overload;
@@ -1340,6 +1341,16 @@ begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
 	FList^[Result] := Item;
+  	Inc(FCount);
+end;
+
+// Add
+//
+function TTexPointList.Add(const item : TVector2f): Integer;
+begin
+	Result:=FCount;
+	if Result=FCapacity then SetCapacity(FCapacity+FGrowthDelta);
+	FList^[Result]:=PTexPoint(@Item)^;
   	Inc(FCount);
 end;
 
