@@ -544,7 +544,7 @@ begin
          FTextureHandle.AllocateHandle;
          Assert(FTextureHandle.Handle<>0);
       end;
-      SetGLCurrentTexture(FTextureHandle.Handle);
+      SetGLCurrentTexture(0, FTextureHandle.Handle);
       // texture registration
       if Glyphs.Width<>0 then begin
          PrepareImage;
@@ -562,7 +562,7 @@ begin
    glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   SetGLCurrentTexture(FTextureHandle.Handle);
+   SetGLCurrentTexture(0, FTextureHandle.Handle);
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
    // start rendering
    glBegin(GL_QUADS);
