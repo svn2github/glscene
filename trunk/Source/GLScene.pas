@@ -2,8 +2,9 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>31/12/02 - JAJ - NotifyHide/NotifyShow implemented. Crucial for the Gui system.
       <li>14/10/02 - Egg - Camera.TargetObject explicitly registered for notifications
-      <li>07/10/02 - Egg - Fixed Remove/Add/Insert (sublights registration bug) 
+      <li>07/10/02 - Egg - Fixed Remove/Add/Insert (sublights registration bug)
       <li>04/09/02 - Egg - BoundingBox computation now based on AABB code,
                            Fixed TGLSceneBuffer.PixelRayToWorld
       <li>27/08/02 - Egg - Added TGLProxyObject.RayCastIntersect (Matheus Degiovani),
@@ -53,7 +54,7 @@
       <li>14/09/01 - Egg - Use of vFileStreamClass
       <li>04/09/01 - Egg - Texture binding cache
       <li>25/08/01 - Egg - Support for WGL_EXT_swap_control (VSync control),
-                           Added TGLMemoryViewer 
+                           Added TGLMemoryViewer
       <li>24/08/01 - Egg - TGLSceneViewer broken, TGLSceneBuffer born
       <li>23/08/01 - Lin - Added PixelDepthToDistance function (Rene Lindsay)
       <li>23/08/01 - Lin - Added ScreenToVector function (Rene Lindsay)
@@ -333,6 +334,7 @@ type
          FScene : TGLScene;
          FChildren : TList;
          FVisible : Boolean;
+         FRecursiveVisible : Boolean;
          FUpdateCount : Integer;
          FShowAxes : Boolean;
          FRotation: TGLCoordinates; // current rotation angles
@@ -381,6 +383,10 @@ type
       protected
          { Protected Declarations }
          procedure Loaded; override;
+         //: self notification on hide. Also notifies children.
+         procedure NotifyHide; dynamic;
+         //: child notification on show. Also notifies children.
+         procedure NotifyShow; dynamic;
 
          procedure DefineProperties(Filer: TFiler); override;
          procedure WriteBehaviours(stream : TStream);
@@ -614,7 +620,7 @@ type
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
          property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
          property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
-
+         property RecursiveVisible : Boolean read FRecursiveVisible;
       published
          { Published Declarations }
          property TagFloat: Single read FTagFloat write FTagFloat;
@@ -2310,13 +2316,45 @@ begin
       FGLObjectEffects.Loaded;
 end;
 
+// NotifyHide
+//
+procedure TGLBaseSceneObject.NotifyHide;
+var
+   child : TGLBaseSceneObject;
+   xc : Integer;
+begin
+  If RecursiveVisible then begin
+     FRecursiveVisible := false;
+     For xc := 0 to FChildren.Count-1 do begin
+        child:=TGLBaseSceneObject(FChildren.Items[xc]);
+        child.NotifyHide;
+     end;
+  end;
+end;
+
+// NotifyShow
+//
+procedure TGLBaseSceneObject.NotifyShow;
+var
+   child : TGLBaseSceneObject;
+   xc : Integer;
+begin
+  If not RecursiveVisible then begin
+     FRecursiveVisible := True;
+     For xc := 0 to FChildren.Count-1 do begin
+        child:=TGLBaseSceneObject(FChildren.Items[xc]);
+        child.NotifyShow;
+     end;
+  end;
+end;
+
 // DefineProperties
 //
 procedure TGLBaseSceneObject.DefineProperties(Filer: TFiler);
 begin
    inherited;
    Filer.DefineBinaryProperty('BehavioursData',
-                              ReadBehaviours, WriteBehaviours, 
+                              ReadBehaviours, WriteBehaviours,
                               (Assigned(FGLBehaviours) and (FGLBehaviours.Count>0)));
    Filer.DefineBinaryProperty('EffectsData',
                               ReadEffects, WriteEffects,
@@ -2420,6 +2458,10 @@ begin
    AChild.FParent:=Self;
    AChild.SetScene(FScene);
    TransformationChanged;
+   if RecursiveVisible then
+      AChild.NotifyShow
+   else
+      AChild.NotifyHide;
 end;
 
 // AddNewChild
@@ -2786,6 +2828,11 @@ begin
    if Assigned(FScene) then
       FScene.AddLights(aChild);
    AChild.TransformationChanged;
+
+   if RecursiveVisible then
+      AChild.NotifyShow
+   else
+      AChild.NotifyHide;
 end;
 
 // IsUpdating
@@ -3780,6 +3827,14 @@ begin
    if FVisible <> AValue then begin
       FVisible:=AValue;
       NotifyChange(Self);
+      If AValue then begin
+         If Parent <> nil then
+            If Parent.RecursiveVisible then
+               NotifyShow;
+      end else begin
+         If RecursiveVisible then
+            NotifyHide;
+      End;
    end;
 end;
 
@@ -4164,6 +4219,7 @@ constructor TGLSceneRootObject.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw];
+   FRecursiveVisible := True;
 end;
 
 // ------------------
