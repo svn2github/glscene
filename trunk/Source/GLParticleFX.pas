@@ -7,6 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
       <li>09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
       <li>08/07/04 - Eugene Kryukov - Added rotation for particles, RotateAngle in
                         LifeColor. And added AbsoluteRotation for TGLDynamicPFXManager
@@ -1758,7 +1759,9 @@ begin
       RndVector(DispersionMode, av, FVelocityDispersion, nil);
       VectorAdd(InitialVelocity.AsAffineVector, av, @particle.Velocity);
       if VelocityMode=svmRelative then
-         particle.FVelocity:=OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity);
+      begin
+           particle.FVelocity:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity),OwnerBaseSceneObject.LocalToAbsolute(NullVector));
+      end;
       particle.CreationTime:=time;
       if FRotationDispersion <> 0 then
         particle.FRotation := Random * FRotationDispersion
