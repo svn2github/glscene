@@ -1766,6 +1766,7 @@ begin
                       [
                        TGLCustomPFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
+                       TGLCustomSpritePFXManager,
                        TGLPerlinPFXManager,
                        TGLFireFXManager, TGLThorFXManager
                       ]);

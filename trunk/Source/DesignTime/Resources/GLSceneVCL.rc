@@ -29,5 +29,6 @@ TGLUserShader BITMAP vcl\glscene_icon_TGLUserShader.bmp
 TGLOutlineShader BITMAP vcl\glscene_icon_TGLOutlineShader.bmp
 TGLHiddenlineShader BITMAP vcl\glscene_icon_TGLHiddenlineShader.bmp
 TGLCustomPFXManager BITMAP vcl\glscene_icon_TGLCustomPFXManager.bmp
+TGLCustomSpritePFXManager BITMAP vcl\glscene_icon_TGLCustomSpritePFXManager.bmp
 TGLPerlinPFXManager BITMAP vcl\glscene_icon_TGLPerlinPFXManager.bmp
 TGLVfsPAK BITMAP vcl\glscene_icon_TGLVfsPAK.bmp
