@@ -6,6 +6,8 @@
    or the casters will be rendered incorrectly.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/11/03 - MF - TGLShadowVolumeCaster now registers with the FCaster
+        for delete notification
       <li>11/06/03 - EG - Added silhouette cache
       <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
@@ -33,6 +35,7 @@ type
          FCaster : TGLBaseSceneObject;
          FEffectiveRadius : Single;
          FCapping : TGLShadowVolumeCapping;
+    function GetGLShadowVolume: TGLShadowVolume;
 
 		protected
 			{ Protected Declarations }
@@ -43,13 +46,16 @@ type
 		public
 			{ Public Declarations }
          constructor Create(Collection: TCollection); override;
+         destructor Destroy; override;
 
          procedure Assign(Source: TPersistent); override;
 
          {: Shadow casting object.<p>
             Can be an opaque object or a lightsource. }
          property Caster : TGLBaseSceneObject read FCaster write SetCaster;
-         
+
+         property GLShadowVolume : TGLShadowVolume read GetGLShadowVolume;
+
 		published
 			{ Published Declarations }
 
@@ -120,7 +126,7 @@ type
 
 		public
 			{ Public Declarations }
-         procedure AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0);
+         function AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0) : TGLShadowVolumeCaster;
          procedure RemoveCaster(obj : TGLBaseSceneObject);
 
          property Items[index : Integer] : TGLShadowVolumeCaster read GetItems; default;
@@ -235,6 +241,22 @@ begin
    FCapping:=svcDefault;
 end;
 
+// GetGLShadowVolume
+//
+function TGLShadowVolumeCaster.GetGLShadowVolume: TGLShadowVolume;
+begin
+  result := TGLShadowVolume(TGLShadowVolumeCasters(Collection).Owner);
+end;
+
+// Destroy
+//
+destructor TGLShadowVolumeCaster.Destroy;
+begin
+  if Assigned(FCaster) then
+    FCaster.RemoveFreeNotification(GLShadowVolume);
+  inherited;
+end;
+
 // Assign
 //
 procedure TGLShadowVolumeCaster.Assign(Source: TPersistent);
@@ -252,8 +274,12 @@ end;
 //
 procedure TGLShadowVolumeCaster.SetCaster(const val : TGLBaseSceneObject);
 begin
+   if FCaster<>nil then
+      FCaster.RemoveFreeNotification(GLShadowVolume);
+
    if FCaster<>val then begin
       FCaster:=val;
+      FCaster.FreeNotification(GLShadowVolume);
       TGLShadowVolume(TGLShadowVolumeCaster(Collection).GetOwner).StructureChanged;
    end;
 end;
@@ -263,7 +289,12 @@ end;
 procedure TGLShadowVolumeCaster.RemoveNotification(aComponent : TComponent);
 begin
    if aComponent=FCaster then
+   begin
+      // No point in keeping the TGLShadowVolumeCaster once the FCaster has been
+      // destroyed.
       FCaster:=nil;
+      Free;
+   end;
 end;
 
 // GetDisplayName
@@ -406,7 +437,7 @@ procedure TGLShadowVolumeCasters.RemoveNotification(aComponent : TComponent);
 var
    i : Integer;
 begin
-   for i:=0 to Count-1 do
+   for i:=Count-1 downto 0 do
       Items[i].RemoveNotification(aComponent);
 end;
 
@@ -419,13 +450,15 @@ end;
 
 // AddCaster
 //
-procedure TGLShadowVolumeCasters.AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0);
+function TGLShadowVolumeCasters.AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0) : TGLShadowVolumeCaster;
 var
    newCaster : TGLShadowVolumeCaster;
 begin
    newCaster:=TGLShadowVolumeCaster(Add);
    newCaster.Caster:=obj;
    newCaster.EffectiveRadius:=effectiveRadius;
+
+   result := newCaster;
 end;
 
 // RemoveCaster
@@ -819,6 +852,8 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
+
+
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
