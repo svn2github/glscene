@@ -97,7 +97,7 @@
       ..\Source\GLProjectedTextures.obj ..\Source\GLBlur.obj 
       ..\Source\GLPerlinBase.obj ..\Source\GLPerlin.obj 
       ..\Source\Base\ARBProgram.obj ..\Source\Shaders\GLPhongShader.obj 
-      ..\Source\GLTrail.obj"/>
+      ..\Source\GLTrail.obj ..\Source\GLScriptBase.obj"/>
     <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
       ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
     <IDLFILES value=""/>
@@ -339,6 +339,7 @@
       <FILE FILENAME="..\Source\Base\ARBProgram.pas" FORMNAME="" UNITNAME="ARBProgram" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Shaders\GLPhongShader.pas" FORMNAME="" UNITNAME="GLPhongShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLTrail.pas" FORMNAME="" UNITNAME="GLTrail" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLScriptBase.pas" FORMNAME="" UNITNAME="GLScriptBase" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
