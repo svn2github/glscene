@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
       <li>25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
       <li>10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
       <li>16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
@@ -55,8 +56,10 @@ type
    //
    {: Determines the type of data stored in a THeightData.<p>
       There are 3 data types (8 bits unsigned, signed 16 bits and 32 bits).<p>
-      Conversions: (128*(ByteValue-128)) = SmallIntValue = Round(SingleValue) }
-   THeightDataType = (hdtByte, hdtSmallInt, hdtSingle);
+      Conversions: (128*(ByteValue-128)) = SmallIntValue = Round(SingleValue).<p>
+      The 'hdtDefault' type is used for request only, and specifies that the
+      default type for the source should be used. }
+   THeightDataType = (hdtByte, hdtSmallInt, hdtSingle, hdtDefault);
 
 	// THeightDataSource
 	//
@@ -792,9 +795,9 @@ begin
          FData.UnlockList;
       end;
    end;
-   if foundHd=nil then begin
+   if (foundHd=nil) or foundHd.Dirty then begin
       // not found, request one... slowest mode (should be avoided)
-      foundHd:=GetData(Trunc(x)-1, Trunc(y)-1, 4, hdtSingle);
+      foundHd:=GetData(Trunc(x)-1, Trunc(y)-1, 4, hdtDefault);
    end else begin
       // request it using "standard" way (takes care of threads)
       foundHd:=GetData(foundHd.XLeft, foundHd.YTop, foundHd.Size, foundHd.DataType);
@@ -846,6 +849,7 @@ begin
          FreeMem(FSingleData);
          FreeMem(FSingleRaster);
       end;
+      hdtDefault : ; // nothing
    else
       Assert(False);
    end;
@@ -913,7 +917,7 @@ end;
 //
 procedure THeightData.SetDataType(const val : THeightDataType);
 begin
-   if val<>FDataType then begin
+   if (val<>FDataType) and (val<>hdtDefault) then begin
       if DataState<>hdsNone then case FDataType of
          hdtByte : case val of
                hdtSmallInt : ConvertByteToSmallInt;
@@ -1356,7 +1360,7 @@ begin
             rasterLine[x-XLeft]:=b;
          end;
       end;
-      if oldType<>hdtByte then
+      if (oldType<>hdtByte) and (oldType<>hdtDefault) then
          DataType:=oldType;
    end;
    inherited;
