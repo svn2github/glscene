@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>12/08/02 - Egg - Fixed Effects persistence 'Assert' issue (David Alcelay) 
+      <li>12/08/02 - Egg - Fixed Effects persistence 'Assert' issue (David Alcelay),
+                           TGLSceneBuffer.PickObjects now preserves ProjMatrix 
       <li>13/07/02 - Egg - Fixed CurrentStates computation
       <li>01/07/02 - Egg - Fixed XOpenGL picking state
       <li>03/06/02 - Egg - TGLSceneBuffer.DestroyRC now removes buffer from scene's list
@@ -6416,6 +6417,7 @@ var
    szmin, szmax : Single;
    subObj : TPickSubObjects;
    subObjIndex : Cardinal;
+   backupProjectionMatrix : TMatrix;
 begin
    if not Assigned(FCamera) then Exit;
    Assert((not FRendering), glsAlreadyRendering);
@@ -6424,6 +6426,7 @@ begin
    FRendering:=True;
    try
       buffer:=nil;
+      backupProjectionMatrix:=FProjectionMatrix;
       try
          xglMapTexCoordToNull; // turn off
          PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
@@ -6472,7 +6475,8 @@ begin
                             subObj, szmin, szmax);
          end;
       finally
-         FreeMem(Buffer);
+         FProjectionMatrix:=backupProjectionMatrix;
+         FreeMem(buffer);
       end;
    finally
       FRendering:=False;
