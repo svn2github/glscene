@@ -1,4 +1,4 @@
-RecyclerMM Public Release 1 - 28/01/03 - Eric Grange
+RecyclerMM Public Release 2 - 26/07/04 - Eric Grange
 egrange@glscene.org
 
 RecyclerMM is an alternative memory manager for Delphi,
