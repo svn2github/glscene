@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/01/02 - EG - Added basic RayCastIntersect implementation
       <li>17/12/01 - EG - Upgraded TActor.Synchronize (smooth transitions support)
       <li>30/11/01 - EG - Added smooth transitions (based on Mrqzzz code)
       <li>14/09/01 - EG - Use of vFileStreamClass
@@ -978,6 +979,11 @@ type
 			procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
          procedure StructureChanged; override;
+
+         {: BEWARE! Utterly inefficient implementation! }
+         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                   intersectPoint : PAffineVector = nil;
+                                   intersectNormal : PAffineVector = nil) : Boolean; override;
 
          property MeshObjects : TMeshObjectList read FMeshObjects;
          property Skeleton : TSkeleton read FSkeleton;
@@ -4408,6 +4414,53 @@ begin
    FAxisAlignedDimensionsCache[0]:=-1;
    MeshObjects.Prepare;
    inherited;
+end;
+
+// RayCastIntersect
+//
+function TBaseMesh.RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                    intersectPoint : PAffineVector = nil;
+                                    intersectNormal : PAffineVector = nil) : Boolean;
+var
+   i : Integer;
+   tris : TAffineVectorList;
+   locRayStart, locRayVector, iPoint, iNormal : TAffineVector;
+   d, minD : Single;
+begin
+   // BEWARE! Utterly inefficient implementation!
+   tris:=MeshObjects.ExtractTriangles;
+   try
+      SetVector(locRayStart,  AbsoluteToLocal(VectorMake(rayStart, 1)));
+      SetVector(locRayVector, AbsoluteToLocal(VectorMake(rayVector, 0)));
+      minD:=-1;
+      i:=0; while i<tris.Count do begin
+         if RayCastTriangleIntersect(locRayStart, locRayVector,
+                                     tris.List[i], tris.List[i+1], tris.List[i+2],
+                                     @iPoint, @iNormal) then begin
+            d:=VectorDistance2(locRayStart, iPoint);
+            if (d<minD) or (minD<0) then begin
+               minD:=d;
+               if intersectPoint<>nil then
+                  intersectPoint^:=iPoint;
+               if intersectNormal<>nil then
+                  intersectNormal^:=iNormal;
+            end;
+         end;
+         Inc(i, 3);
+      end;
+   finally
+      tris.Free;
+   end;
+   Result:=(minD>=0);
+   if Result then begin
+      if intersectPoint<>nil then
+         SetVector(intersectPoint^,  LocalToAbsolute(VectorMake(intersectPoint^, 1)));
+      if intersectNormal<>nil then begin
+         SetVector(intersectNormal^, LocalToAbsolute(VectorMake(intersectNormal^, 0)));
+         if NormalsOrientation=mnoInvert then
+            NegateVector(intersectNormal^);
+      end;
+   end;
 end;
 
 // ------------------

@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/01/02 - EG - Updated/fixed RayCastTriangleIntersect
       <li>13/12/01 - EG - Fixed MakeReflectionMatrix
       <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)  
       <li>22/08/01 - EG - Some new overloads
@@ -5257,30 +5258,32 @@ function RayCastTriangleIntersect(const rayStart, rayVector : TAffineVector;
                                   intersectPoint : PAffineVector = nil;
                                   intersectNormal : PAffineVector = nil) : Boolean;
 var
-   v1, v2, n, s : TAffineVector;
-   d, t, v, x, y : Single;
+   v1, v2, pvec, tvec, qvec : TAffineVector;
+   t, u, v, det, invDet : Single;
 begin
    v1:=VectorSubtract(p2, p1);
    v2:=VectorSubtract(p3, p1);
-   n:=VectorCrossProduct(v1, v2);
-   v:=VectorDotProduct(rayVector, n);
-   if Abs(v)<=1e-7 then begin
+   pvec:=VectorCrossProduct(rayVector, v2);
+   det:=VectorDotProduct(v1, pvec);
+   if ((det<EPSILON2) and (det>-EPSILON2)) then begin // vector is parallel to triangle's plane
       Result:=False;
       Exit;
    end;
-   s:=VectorSubtract(rayStart, p1);
-   d:=VectorDotProduct(s, n);
-   t:=d/v;
-   s:=VectorSubtract(VectorCombine(rayStart, rayVector, 1, t), p1);
-   x:=VectorDotProduct(v1, s);
-   y:=VectorDotProduct(v2, s);
-   Result:=(x>=0) and (y>=0) and (x+y<1);
-   if Result then begin
-      if intersectPoint<>nil then
-         intersectPoint^:=s;
-      if intersectNormal<>nil then begin
-         NormalizeVector(n);
-         intersectNormal^:=n;
+   invDet:=1.0/det;
+   VectorSubtract(rayStart, p1, tvec);
+   u:=VectorDotProduct(tvec, pvec)*invDet;
+   if (u<0) or (u>1) then
+      Result:=False
+   else begin
+      qvec:=VectorCrossProduct(tvec, v1);
+      v:=VectorDotProduct(rayVector, qvec)*invDet;
+      Result:=(v>=0) and (u+v<=1);
+      if Result then begin
+         t:=VectorDotProduct(v2, qvec)*invDet;
+         if intersectPoint<>nil then
+            intersectPoint^:=VectorCombine(rayStart, rayVector, 1, t);
+         if intersectNormal<>nil then
+            intersectNormal^:=VectorCrossProduct(v1, v2);
       end;
    end;
 end;

@@ -427,6 +427,7 @@ type
             When intersectXXX parameters are nil (default) implementation should
             take advantage of this to optimize calculus, if not, and an intersect
             is found, non nil parameters should be defined.<p>
+            The intersectNormal needs NOT be normalized by the implementations.<p>
             Default value is based on bounding sphere. }
          function RayCastIntersect(const rayStart, rayVector : TAffineVector;
                                    intersectPoint : PAffineVector = nil;

@@ -567,7 +567,11 @@ begin
       if Assigned(oldContext) then
          oldContext.Deactivate;
    end else oldContext:=nil;
-   Activate;
+   try
+      Activate;
+   except
+
+   end;
    try
       compatContext:=FindCompatibleContext;
       if Assigned(compatContext) then begin
