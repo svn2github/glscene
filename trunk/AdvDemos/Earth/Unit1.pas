@@ -75,7 +75,9 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, OpenGL1x, VectorGeometry, GLContext;
+{$WARN UNIT_PLATFORM OFF}
+
+uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext;
    // accurate movements left for later... or the astute reader
    // USolarSystem;
 
@@ -390,6 +392,15 @@ begin
 end;
 
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
+
+   procedure LoadHighResTexture(libMat : TGLLibMaterial; const fileName : String);
+   begin
+      if FileExists(fileName) then begin
+         libMat.Material.Texture.Compression:=tcStandard;
+         libMat.Material.Texture.Image.LoadFromFile(fileName);
+      end;
+   end;
+
 begin
    case Key of
       #27 : Close;
@@ -408,21 +419,19 @@ begin
       'h' : if not highResResourcesLoaded then begin
          GLSceneViewer.Cursor:=crHourGlass;
          try
-            GLSceneViewer.Buffer.AntiAliasing:=aa2x;
-            if FileExists('land_ocean_ice_4096.jpg') then
-               with GLMaterialLibrary.Materials[0].Material.Texture.Image do
-                  LoadFromFile('land_ocean_ice_4096.jpg');
-            if FileExists('land_ocean_ice_lights_4096.jpg') then
-               with GLMaterialLibrary.Materials[1].Material.Texture.Image do
-                  LoadFromFile('land_ocean_ice_lights_4096.jpg');
-            if FileExists('moon_2048.jpg') then
-               with GLMaterialLibrary.Materials[2].Material.Texture.Image do
-                  LoadFromFile('moon_2048.jpg');
+            if DirectoryExists('HighResPack') then
+               ChDir('HighResPack');
+            with GLMaterialLibrary do begin
+               LoadHighResTexture(Materials[0], 'land_ocean_ice_4096.jpg');
+               LoadHighResTexture(Materials[1], 'land_ocean_ice_lights_4096.jpg');
+               LoadHighResTexture(Materials[2], 'moon_2048.jpg');
+            end;
             if FileExists('Hipparcos_9.0.stars') then begin
                GLSkyDome.Stars.Clear;
                GLSkyDome.Stars.LoadStarsFile('Hipparcos_9.0.stars');
                GLSkyDome.StructureChanged;
             end;
+            GLSceneViewer.Buffer.AntiAliasing:=aa2x;
          finally
             GLSceneViewer.Cursor:=crDefault;
          end;
