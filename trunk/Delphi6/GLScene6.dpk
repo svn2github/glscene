@@ -165,6 +165,7 @@ contains
   GLFileNurbs in '..\Source\FileFormats\GLFileNurbs.pas',
   GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas',
   GLMultiProxy in '..\Source\GLMultiProxy.pas',
-  GLSkyBox in '..\Source\GLSkyBox.pas';
+  GLSkyBox in '..\Source\GLSkyBox.pas',
+  GLHiddenLineShader in '..\Source\Shaders\GLHiddenLineShader.pas';
 
 end.
