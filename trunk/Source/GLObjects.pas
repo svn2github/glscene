@@ -215,6 +215,7 @@ type
 			{ Public Declarations }
 			constructor Create(AOwner: TComponent); override;
 
+       function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
 		   procedure BuildList(var rci : TRenderContextInfo); override;
 
 		   procedure Assign(Source: TPersistent); override;
@@ -1517,6 +1518,11 @@ begin
       ip[3]:=1;
       intersectPoint^:=LocalToAbsolute(ip);
    end;
+end;
+
+function TGLPlane.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+begin
+  inherited GenerateSilhouette(silhouetteParameters);
 end;
 
 // BuildList
@@ -2884,8 +2890,8 @@ begin
    end;
 
    sil := nil;
-   Connectivity.CreateSilhouetteOmni(
-      silhouetteParameters.SeenFrom, sil, false, silhouetteParameters.CappingRequired);
+   Connectivity.CreateSilhouette(
+      silhouetteParameters, sil, false);
 
    result := sil;
 

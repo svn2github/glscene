@@ -59,7 +59,7 @@ type
           property FaceCount : integer read GetFaceCount;
 
           property PrecomputeFaceNormal : boolean read FPrecomputeFaceNormal;
-          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean); virtual;
+          procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); virtual;
 
           constructor Create(PrecomputeFaceNormal : boolean); virtual;
    end;
@@ -94,7 +94,7 @@ type
           {: Clears out all connectivity information. }
           procedure Clear; virtual;
 
-          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean); override;
+          procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); override;
 
           function AddIndexedEdge(VertexIndex0, VertexIndex1 : integer; FaceID: integer) : integer;
           function AddIndexedFace(Vi0, Vi1, Vi2 : integer) : integer;
@@ -149,7 +149,7 @@ type
           {: Builds the connectivity information. }
           procedure RebuildEdgeList;
 
-          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean); override;
+          procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); override;
 
           constructor Create(aGLBaseMesh : TGLBaseMesh);
           destructor Destroy; override;
@@ -206,8 +206,7 @@ begin
   FPrecomputeFaceNormal := PrecomputeFaceNormal;
 end;
 
-procedure TBaseConnectivity.CreateSilhouetteOmni(SeenFrom: TAffineVector;
-  var aSilhouette: TGLSilhouette; AddToSilhouette, AddCap: boolean);
+procedure TBaseConnectivity.CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean);
 begin
   // Purely virtual!
 end;
@@ -277,8 +276,9 @@ begin
     FVertices.Clear;
 end;
 
-procedure TConnectivity.CreateSilhouetteOmni(
-  SeenFrom: TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean);
+procedure TConnectivity.CreateSilhouette(
+  const silhouetteParameters : TGLSilhouetteParameters;
+  var aSilhouette : TGLSilhouette; AddToSilhouette : boolean);
 var
   i : integer;
   V0, V1, V2 : TAffineVector;
@@ -321,18 +321,18 @@ begin
         CalcPlaneNormal(V0, V1, V2);
     end;
 
-    dot := PointProject(SeenFrom, V0, FaceNormal);
+    dot := PointProject(silhouetteParameters.SeenFrom, V0, FaceNormal);
 
     if (dot>=0) then
       FFaceVisible[i] := 1
     else
       FFaceVisible[i] := 0;
 
-    if AddCap and (dot<0) then
+    if silhouetteParameters.CappingRequired and (dot<0) then
     begin
-      tVi0 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi0);
-      tVi1 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi1);
-      tVi2 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi2);
+      tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi0);
+      tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi1);
+      tVi2 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi2);
 
       aSilhouette.CapIndices.Add(tVi0, tVi1, tVi2);
     end;
@@ -353,16 +353,16 @@ begin
       // mesh. We can remember this information and re-use it for a speedup
       if (FFaceVisible[Face0ID]=0) then
       begin
-        tVi0 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi0);
-        tVi1 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi1);
+        tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi0);
+        tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi1);
 
         aSilhouette.Indices.Add(tVi0, tVi1);
       end
       else
         if Face1ID>-1 then
         begin
-          tVi0 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi0);
-          tVi1 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi1);
+          tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi0);
+          tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi1);
 
           aSilhouette.Indices.Add(tVi1, tVi0);
         end;
@@ -660,7 +660,9 @@ begin
   end;
 end;
 
-procedure TGLBaseMeshConnectivity.CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean);
+procedure TGLBaseMeshConnectivity.CreateSilhouette(
+  const silhouetteParameters : TGLSilhouetteParameters;
+  var aSilhouette : TGLSilhouette; AddToSilhouette : boolean);
 
 var
   i : integer;
@@ -671,7 +673,7 @@ begin
     aSilhouette.Flush;
 
   for i := 0 to ConnectivityCount-1 do
-    FaceGroupConnectivity[i].CreateSilhouetteOmni(SeenFrom, aSilhouette, true, AddCap);
+    FaceGroupConnectivity[i].CreateSilhouette(silhouetteParameters, aSilhouette, true);
 end;
 
 destructor TGLBaseMeshConnectivity.Destroy;
