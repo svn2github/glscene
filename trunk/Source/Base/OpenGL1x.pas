@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/02/04 - EG - Added GL_NV_texture_rectangle 
       <li>18/11/03 - EG - Fixed binding of core extensions, added GL_ARB_depth_texture
                           and GL_ARB_shadow support
       <li>20/09/03 - EG - Added GL_NV_occlusion_query, dropped some more oldies
@@ -213,6 +214,7 @@ var
    GL_NV_multisample_filter_hint,
    GL_NV_fence,
    GL_NV_occlusion_query,
+   GL_NV_texture_rectangle,
 
    GL_SGI_color_matrix,
 
@@ -1316,6 +1318,12 @@ var
    GL_CURRENT_OCCLUSION_QUERY_ID_NV                  = $8865;
    GL_PIXEL_COUNT_NV                                 = $8866;
    GL_PIXEL_COUNT_AVAILABLE_NV                       = $8867;
+
+   // NV_texture_rectangle
+   GL_TEXTURE_RECTANGLE_NV                           = $84F5;
+   GL_TEXTURE_BINDING_RECTANGLE_NV                   = $84F6;
+   GL_PROXY_TEXTURE_RECTANGLE_NV                     = $84F7;
+   GL_MAX_RECTANGLE_TEXTURE_SIZE_NV                  = $84F8;
 
    // EXT_texture_env_combine
    GL_COMBINE_EXT                                    = $8570;
@@ -4028,6 +4036,7 @@ begin
    GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
    GL_NV_fence := CheckExtension('GL_NV_fence');
    GL_NV_occlusion_query := CheckExtension('GL_NV_occlusion_query');
+   GL_NV_texture_rectangle := CheckExtension('GL_NV_texture_rectangle');
 
    GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
 
