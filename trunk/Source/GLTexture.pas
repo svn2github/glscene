@@ -334,6 +334,7 @@ type
       visibilityCulling : TGLVisibilityCulling;
       currentStates : TGLStates;
       rcci : TRenderContextClippingInfo;
+      sceneAmbientColor : TColorVector;
       bufferFaceCull : Boolean;
       proxySubObject : Boolean;
       ignoreMaterials : Boolean;
