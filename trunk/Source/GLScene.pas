@@ -5354,18 +5354,26 @@ end;
 // UnRegisterCallBack
 //
 procedure TGLRenderPoint.UnRegisterCallBack(renderEvent : TDirectRenderEvent);
+type
+   TEventContainer = record
+      event : TDirectRenderEvent;
+   end;
 var
    i, j, n : Integer;
+   refContainer, listContainer : TEventContainer;
 begin
+   refContainer.event:=renderEvent;
    n:=Length(FCallBacks);
-   for i:=0 to n do begin
-      if CompareMem(@FCallBacks[i], @renderEvent, SizeOf(TDirectRenderEvent)) then begin
+   for i:=0 to n-1 do begin
+      listContainer.event:=FCallBacks[i];
+      if CompareMem(@listContainer, @refContainer, SizeOf(TEventContainer)) then begin
          for j:=i+1 to n-1 do begin
             FCallBacks[j-1]:=FCallBacks[j];
             FFreeCallBacks[j-1]:=FFreeCallBacks[j];
          end;
          SetLength(FCallBacks, n-1);
          SetLength(FFreeCallBacks, n-1);
+         Break;
       end;
    end;
 end;
