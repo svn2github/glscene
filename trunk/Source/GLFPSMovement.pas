@@ -1,3 +1,15 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLFPSMovement<p>
+
+   FPS-like movement behaviour and manager.<p>
+
+	<b>History : </b><font size=-1><ul>
+      <li>14/06/04 - MathD - Preventing repeated maps when adding through maps.addMap
+      <li>09/06/04 - MathD - Creation
+	</ul></font>
+}
 unit GLFPSMovement;
 
 interface
@@ -282,6 +294,10 @@ end;
 function TGLMapCollection.addMap(map: TGLFreeForm;
 collisionGroup: integer = 0): TGLMapCollectionItem;
 begin
+     //no repeated maps (would only present delays...)
+     result:= findMap(map);
+     if assigned(result) then exit;
+
      result:= TGLMapCollectionItem.Create(self);
      result.Map:= map;
      result.CollisionGroup:= collisionGroup;
