@@ -427,7 +427,7 @@ begin
    MaterialLibrary.ApplyMaterial('water', rci);
    repeat
       if not WasAboveWater then
-         InvertGLFrontFace;
+         rci.GLStates.InvertGLFrontFace;
       glPushAttrib(GL_ENABLE_BIT);
 
       glDisable(GL_LIGHTING);
@@ -462,7 +462,7 @@ begin
       glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
       glPopAttrib;
       if not WasAboveWater then
-         InvertGLFrontFace;
+         rci.GLStates.InvertGLFrontFace;
       WaterPolyCount:=heightDatas.Count*8;
    until not MaterialLibrary.UnApplyMaterial(rci);
 end;
@@ -538,7 +538,7 @@ begin
       glDisable(GL_DEPTH_TEST);
 
       if not WasAboveWater then
-         InvertGLFrontFace;
+         rci.GLStates.InvertGLFrontFace;
 
       glBegin(GL_TRIANGLE_STRIP);
       n:=WakeVertices.Count;
@@ -555,7 +555,7 @@ begin
       glEnd;
 
       if not WasAboveWater then
-         InvertGLFrontFace;
+         rci.GLStates.InvertGLFrontFace;
       
       glPopAttrib;
    until not MaterialLibrary.UnApplyMaterial(rci);
