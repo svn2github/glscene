@@ -2535,9 +2535,9 @@ function TODEBaseElement.CalculateMass: TdMass;
 var
   R : TdMatrix3;
 begin
-  R[0]:=FLocalMatrix[0][0]; R[1]:=FLocalMatrix[0][1]; R[2]:= FLocalMatrix[0][2]; R[3]:= 0;
-  R[4]:=FLocalMatrix[1][0]; R[5]:=FLocalMatrix[1][1]; R[6]:= FLocalMatrix[1][2]; R[7]:= 0;
-  R[8]:=FLocalMatrix[2][0]; R[9]:=FLocalMatrix[2][1]; R[10]:=FLocalMatrix[2][2]; R[11]:=0;
+  R[0]:=FLocalMatrix[0][0]; R[1]:=FLocalMatrix[1][0]; R[2]:= FLocalMatrix[2][0]; R[3]:= 0;
+  R[4]:=FLocalMatrix[0][1]; R[5]:=FLocalMatrix[1][1]; R[6]:= FLocalMatrix[2][1]; R[7]:= 0;
+  R[8]:=FLocalMatrix[0][2]; R[9]:=FLocalMatrix[1][2]; R[10]:=FLocalMatrix[2][2]; R[11]:=0;
   dMassRotate(FMass,R);
   dMassTranslate(FMass,FLocalMatrix[3][0],FLocalMatrix[3][1],FLocalMatrix[3][2]);
   result:=FMass;
