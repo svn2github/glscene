@@ -158,6 +158,10 @@ contains
   GLTeapot in '..\Source\GLTeapot.pas',
   GLTextureImageEditors in '..\Source\DesignTime\GLTextureImageEditors.pas',
   GLWin32FullScreenViewer in '..\Source\Platform\GLWin32FullScreenViewer.pas',
-  GLMultiMaterialShader in '..\Source\Shaders\GLMultiMaterialShader.pas';
+  GLMultiMaterialShader in '..\Source\Shaders\GLMultiMaterialShader.pas',
+  GLUserShader in '..\Source\Shaders\GLUserShader.pas',
+  CurvesAndSurfaces in '..\Source\Base\CurvesAndSurfaces.pas',
+  GLParametricSurfaces in '..\Source\GLParametricSurfaces.pas',
+  GLFileNurbs in '..\Source\FileFormats\GLFileNurbs.pas';
 
 end.
