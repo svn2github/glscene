@@ -5,6 +5,7 @@
   FileMD3 - File loading methods for the MD3 file format
 
   History :
+    09/03/04 - SG - Small structure fixes (Osman Turan)
     28/02/03 - SG - Creation
 }
 unit FileMD3;
@@ -51,13 +52,15 @@ type
   end;
 
   TMD3Skin = record
-    strName : array[0..67] of char;
+    strName : array[0..63] of char;
+    shaderIndex: Integer;
   end;
 
   TMD3Header = record
     fileID     : array[0..3] of char;
     version    : integer;
-    strFile    : array[0..67] of char;
+    strFile    : array[0..63] of char;
+    flags,
     numFrames,
     numTags,
     numMeshes,
@@ -70,7 +73,8 @@ type
 
   TMD3MeshHeader = record
     meshID        : array[0..3] of char;
-    strName       : array[0..67] of char;
+    strName       : array[0..63] of char;
+    flags,
     numMeshFrames,
     numSkins,
     numVertices,
