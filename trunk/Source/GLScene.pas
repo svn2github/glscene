@@ -418,6 +418,10 @@ type
 
          procedure SetAbsolutePosition(const v : TVector);
          function GetAbsolutePosition : TVector;
+         procedure SetAbsoluteUp(const v : TVector);
+         function GetAbsoluteUp : TVector;
+         procedure SetAbsoluteDirection(const v : TVector);
+         function GetAbsoluteDirection : TVector;
 
          procedure RecTransformationChanged;
 
@@ -427,7 +431,7 @@ type
          //: Should the object be considered as blended for sorting purposes?
          function  Blended : Boolean; virtual;
          //: Returns Up and Direction vectors depending on the transformation mode
-         procedure GetOrientationVectors(var up, direction: TAffineVector);
+         procedure GetOrientationVectors(var up, direction : TAffineVector);
          procedure RebuildMatrix;
          procedure SetName(const NewName: TComponentName); override;
          procedure SetParentComponent(Value: TComponent); override;
@@ -468,10 +472,10 @@ type
          function InvAbsoluteMatrix : TMatrix;
          {: See InvAbsoluteMatrix. }
          function InvAbsoluteMatrixAsAddress : PMatrix;
-         {: Calculate the direction vector in absolute coordinates. }
-         function AbsoluteDirection : TVector;
-         {: Calculate the up vector in absolute coordinates. }
-         function AbsoluteUp : TVector;
+         {: Direction vector in absolute coordinates. }
+         property AbsoluteDirection : TVector read GetAbsoluteDirection write SetAbsoluteDirection;
+         {: Up vector in absolute coordinates. }
+         property AbsoluteUp : TVector read GetAbsoluteUp write SetAbsoluteUp;
          {: Calculate the right vector in absolute coordinates. }
          function AbsoluteRight : TVector;
          {: Computes and allows to set the object's absolute coordinates.<p> }
@@ -2682,18 +2686,36 @@ begin
    Result:=FInvAbsoluteMatrix;
 end;
 
-// AbsoluteDirection
+// GetAbsoluteDirection
 //
-function TGLBaseSceneObject.AbsoluteDirection : TVector;
+function TGLBaseSceneObject.GetAbsoluteDirection : TVector;
 begin
    Result:=VectorNormalize(AbsoluteMatrixAsAddress^[2]);
 end;
 
-// AbsoluteUp
+// SetAbsoluteDirection
 //
-function TGLBaseSceneObject.AbsoluteUp : TVector;
+procedure TGLBaseSceneObject.SetAbsoluteDirection(const v : TVector);
+begin
+   if Parent<>nil then
+      Direction.AsVector:=Parent.AbsoluteToLocal(v)
+   else Direction.AsVector:=v;
+end;
+
+// GetAbsoluteUp
+//
+function TGLBaseSceneObject.GetAbsoluteUp : TVector;
 begin
    Result:=VectorNormalize(AbsoluteMatrixAsAddress^[1]);
+end;
+
+// SetAbsoluteUp
+//
+procedure TGLBaseSceneObject.SetAbsoluteUp(const v : TVector);
+begin
+   if Parent<>nil then
+      Up.AsVector:=Parent.AbsoluteToLocal(v)
+   else Up.AsVector:=v;
 end;
 
 // AbsoluteRight
@@ -2846,10 +2868,10 @@ end;
 //
 function TGLBaseSceneObject.AxisAlignedDimensionsUnscaled : TVector;
 begin
-  Result[0]:=0.5;
-  Result[1]:=0.5;
-  Result[2]:=0.5;
-  Result[3]:=0;
+   Result[0]:=0.5;
+   Result[1]:=0.5;
+   Result[2]:=0.5;
+   Result[3]:=0;
 end;
 
 // AxisAlignedBoundingBox
@@ -2998,7 +3020,6 @@ begin
    if VectorLength(sVec)<1e-3 then
       sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, YVector);
    tVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, sVec);
-//   tVec:=VectorCrossProduct(sVec, silhouetteParameters.SeenFrom);
    NormalizeVector(sVec);
    NormalizeVector(tVec);
    // generate the silhouette (outline and capping)
@@ -3096,7 +3117,7 @@ end;
 
 // GetOrientationVectors
 //
-procedure TGLBaseSceneObject.GetOrientationVectors(var Up, Direction: TAffineVector);
+procedure TGLBaseSceneObject.GetOrientationVectors(var up, direction : TAffineVector);
 begin
    if (FTransMode<>tmLocal) and Assigned(FParent) then begin
       SetVector(Up, FParent.FUp.AsVector);
@@ -3123,14 +3144,14 @@ end;
 
 // Lift
 //
-procedure TGLBaseSceneObject.Lift(ADistance: Single);
+procedure TGLBaseSceneObject.Lift(aDistance: Single);
 var
-   Up, Dir: TAffineVector;
+   up, dir : TAffineVector;
 begin
    if FTransMode = tmParentWithPos then begin
-      GetOrientationVectors(Up, Dir);
-      FPosition.AddScaledVector(ADistance, Up);
-   end else FPosition.AddScaledVector(ADistance, FUp.AsVector);
+      GetOrientationVectors(up, dir);
+      FPosition.AddScaledVector(aDistance, up);
+   end else FPosition.AddScaledVector(aDistance, FUp.AsVector);
    TransformationChanged;
 end;
 
