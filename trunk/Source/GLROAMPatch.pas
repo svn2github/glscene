@@ -2,6 +2,7 @@
 {: Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
       <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
       <li>10/09/01 - EG - Creation
 	</ul></font>
@@ -548,6 +549,8 @@ begin
    renderVertices:=vertices;
    renderTexCoords:=texCoords;
    vertexIndices.AdjustCapacityToAtLeast(Sqr(FPatchSize)*6);
+   // this is required, the actual item count is maintained out of the list scope
+   vertexIndices.SetCountResetsMemory:=False;
    renderIndices:=vertexIndices.List;
 
    renderRaster:=FHeightData.SmallIntRaster;

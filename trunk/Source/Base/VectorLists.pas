@@ -3,6 +3,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/06/02 - EG - Added TBaseListOption stuff
       <li>28/05/02 - EG - TBaseList.SetCount now properly resets new items
       <li>23/02/02 - EG - Added TBaseList.UseMemory
       <li>20/01/02 - EG - Now uses new funcs Add/ScaleVectorArray and VectorArrayAdd
@@ -27,6 +28,11 @@ uses Classes, Geometry, PersistentClasses;
 
 type
 
+   // TBaseListOption
+   //
+   TBaseListOption = (bloExternalMemory, bloSetCountResetsMemory);
+   TBaseListOptions = set of TBaseListOption;
+
    // TBaseList
    //
    {: Base class for lists, introduces common behaviours. }
@@ -37,7 +43,7 @@ type
 			FCapacity : Integer;
 			FGrowthDelta : Integer;
          FBufferItem : PByteArray;
-         FExternalMemory : Boolean;
+         FOptions : TBaseListOptions;
 
 		protected
          { Protected Declarations }
@@ -52,9 +58,12 @@ type
             typed pointer accordingly if any. }
 			procedure SetCapacity(NewCapacity: Integer); virtual;
          function BufferItem : PByteArray;
+         function GetSetCountResetsMemory : Boolean;
+         procedure SetSetCountResetsMemory(const val : Boolean);
 
 		public
          { Public Declarations }
+         constructor Create; override;
 			destructor Destroy; override;
          procedure Assign(Src: TPersistent); override;
 
@@ -83,8 +92,12 @@ type
 			property Capacity: Integer read FCapacity write SetCapacity;
 			{: List growth granularity.<p>
             Not persistent. }
-			property GrowthDelta : integer read FGrowthDelta write FGrowthDelta;
-
+			property GrowthDelta : Integer read FGrowthDelta write FGrowthDelta;
+         {: If true (default value) adjusting count will reset added values.<p>
+            Switching this option to true will turn off this memory reset,
+            which can improve performance is that having empty values isn't
+            required. }
+         property SetCountResetsMemory : Boolean read GetSetCountResetsMemory write SetSetCountResetsMemory;
    end;
 
    // TBaseVectorList
@@ -421,6 +434,14 @@ end;
 // ------------------ TBaseList ------------------
 // ------------------
 
+// Create
+//
+constructor TBaseList.Create;
+begin
+	inherited Create;
+   FOptions:=[bloSetCountResetsMemory];
+end;
+
 // Destroy
 //
 destructor TBaseList.Destroy;
@@ -480,7 +501,7 @@ begin
    Assert(val>=0);
    if val>FCapacity then
       SetCapacity(val);
-   if val>FCount then
+   if (val>FCount) and (bloSetCountResetsMemory in FOptions) then
       FillChar(FBaseList[FItemSize*FCount], (val-FCount)*FItemSize, 0);
    FCount:=val;
 end;
@@ -490,8 +511,8 @@ end;
 procedure TBaseList.SetCapacity(newCapacity: Integer);
 begin
 	if newCapacity<>FCapacity then	begin
-      if FExternalMemory then begin
-         FExternalMemory:=True;
+      if bloExternalMemory in FOptions then begin
+         Exclude(FOptions, bloExternalMemory);
          FBaseList:=nil;
       end;
 		ReallocMem(FBaseList, newCapacity*FItemSize);
@@ -526,6 +547,22 @@ begin
    Result:=FBufferItem;
 end;
 
+// GetSetCountResetsMemory
+//
+function TBaseList.GetSetCountResetsMemory : Boolean;
+begin
+   Result:=(bloSetCountResetsMemory in FOptions);
+end;
+
+// SetSetCountResetsMemory
+//
+procedure TBaseList.SetSetCountResetsMemory(const val : Boolean);
+begin
+   if val then
+      Include(FOptions, bloSetCountResetsMemory)
+   else Exclude(FOptions, bloSetCountResetsMemory);
+end;
+
 // UseMemory
 //
 procedure TBaseList.UseMemory(rangeStart : Pointer; rangeCapacity : Integer);
@@ -534,9 +571,9 @@ begin
    if rangeCapacity<FCount then Exit;
    // transfer data
    Move(FBaseList^, rangeStart^, FCount*FItemSize);
-   if not FExternalMemory then begin
+   if not (bloExternalMemory in FOptions) then begin
       FreeMem(FBaseList);
-      FExternalMemory:=True;
+      Include(FOptions, bloExternalMemory);
    end;
    FBaseList:=rangeStart;
    FCapacity:=rangeCapacity;
