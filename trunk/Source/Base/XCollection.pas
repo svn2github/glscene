@@ -6,6 +6,7 @@
 	A polymorphism-enabled TCollection-like set of classes<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
       <li>19/06/03 - DanB - Added TXCollection.GetOrCreate
       <li>18/02/01 - EG - Fixed TXCollectionItem.Destroy (count decrementation)
       <li>02/02/01 - EG - CanAdd now virtual
@@ -165,6 +166,11 @@ type
 resourcestring
    cUnknownArchiveVersion = 'Unknown archive version : ';
 
+{: Registers an event to be called when an XCollection is destroyed. }
+procedure RegisterXCollectionDestroyEvent(notifyEvent : TNotifyEvent);
+{: DeRegisters event. }
+procedure DeRegisterXCollectionDestroyEvent(notifyEvent : TNotifyEvent);
+
 {: Registers a TXCollectionItem subclass for persistence requirements. }
 procedure RegisterXCollectionItemClass(aClass : TXCollectionItemClass);
 {: Removes a TXCollectionItem subclass from the list. }
@@ -186,6 +192,25 @@ implementation
 
 var
   vXCollectionItemClasses : TList;
+  vXCollectionDestroyEvent : TNotifyEvent;
+
+//---------- internal global routines (used by xcollection editor) -------------
+
+// RegisterXCollectionDestroyEvent
+//
+procedure RegisterXCollectionDestroyEvent(notifyEvent : TNotifyEvent);
+begin
+   vXCollectionDestroyEvent:=notifyEvent;
+end;
+
+// DeRegisterXCollectionDestroyEvent
+//
+procedure DeRegisterXCollectionDestroyEvent(notifyEvent : TNotifyEvent);
+begin
+   vXCollectionDestroyEvent:=nil;
+end;
+
+//------------------------------------------------------------------------------
 
 // RegisterXCollectionItemClass
 //
@@ -405,6 +430,8 @@ end;
 //
 destructor TXCollection.Destroy;
 begin
+        if Assigned(vXCollectionDestroyEvent) then
+                vXCollectionDestroyEvent(Self);
 	Clear;
 	FList.Free;
 	inherited Destroy;
