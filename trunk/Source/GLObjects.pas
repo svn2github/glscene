@@ -3058,14 +3058,11 @@ end;
 function TGLSphere.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 var
    i, j : Integer;
-   d, s, c, angleFactor : Single;
+   s, c, angleFactor : Single;
    sVec, tVec : TAffineVector;
    Segments : integer;
 begin
    Segments := MaxInteger(FStacks, FSlices);
-
-   //r:=BoundingSphereRadiusUnscaled;
-   d:=VectorLength(silhouetteParameters.SeenFrom);
 
    // determine a local orthonormal matrix, viewer-oriented
    sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
