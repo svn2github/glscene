@@ -318,11 +318,12 @@ var
    aType : DWORD;
    iFormats : array [0..31] of Integer;
    tempWnd : HWND;
-   tempDC : HDC;
+   tempDC, outputDC : HDC;
    localDC, localRC : Integer;
 begin
+   outputDC:=HDC(outputDevice);
    if vUseWindowTrackingHook then
-      TrackWindow(WindowFromDC(LongWord(outputDevice)), DestructionEarlyWarning);
+      TrackWindow(WindowFromDC(LongWord(outputDC)), DestructionEarlyWarning);
 
    // Just in case it didn't happen already.
    if not InitOpenGL then RaiseLastOSError;
@@ -333,7 +334,7 @@ begin
       nSize:=SizeOf(PFDescriptor);
       nVersion:=1;
       dwFlags:=PFD_SUPPORT_OPENGL;
-      aType:=GetObjectType(Cardinal(outputDevice));
+      aType:=GetObjectType(outputDC);
       if aType=0 then
          RaiseLastOSError;
       if aType in cMemoryDCs then
@@ -391,18 +392,19 @@ begin
                       AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
                   end;
                   ClearFAttribs;
-                  wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
+                  wglChoosePixelFormatARB(outputDC,
+                                          @FiAttribs[0], @FfAttribs[0],
                                           32, @iFormats, @nbFormats);
                   if nbFormats=0 then begin
                      // couldn't find 24 bits depth buffer, 16 bits one available?
                      ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
-                     wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
+                     wglChoosePixelFormatARB(outputDC, @FiAttribs[0], @FfAttribs[0],
                                              32, @iFormats, @nbFormats);
                   end;
                   if nbFormats>0 then begin
                      pixelFormat:=iFormats[0];
-                     if GetPixelFormat(Cardinal(outputDevice))<>pixelFormat then begin
-                        if not SetPixelFormat(Cardinal(outputDevice), pixelFormat, @PFDescriptor) then
+                     if GetPixelFormat(outputDC)<>pixelFormat then begin
+                        if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
                            RaiseLastOSError;
                      end;
                   end;
@@ -422,12 +424,12 @@ begin
    end;
    if pixelFormat=0 then begin
       // Legacy pixel format selection
-      pixelFormat:=ChoosePixelFormat(Cardinal(outputDevice), @PFDescriptor);
+      pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
 
       if pixelFormat=0 then RaiseLastOSError;
 
-      if GetPixelFormat(Cardinal(outputDevice))<>pixelFormat then begin
-         if not SetPixelFormat(Cardinal(outputDevice), pixelFormat, @PFDescriptor) then
+      if GetPixelFormat(outputDC)<>pixelFormat then begin
+         if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
             RaiseLastOSError;
       end;
 
@@ -435,16 +437,16 @@ begin
    end;
 
    // Check the properties we just set.
-   DescribePixelFormat(Cardinal(outputDevice), pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
+   DescribePixelFormat(outputDC, pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
    with pfDescriptor do
       if (dwFlags and PFD_NEED_PALETTE) <> 0 then
-         SetupPalette(outputDevice, PFDescriptor);
+         SetupPalette(outputDC, PFDescriptor);
 
    if (pfDescriptor.dwFlags and PFD_GENERIC_FORMAT)>0 then
       FAcceleration:=chaSoftware
    else FAcceleration:=chaHardware;
 
-   FRC:=wglCreateContext(Cardinal(outputDevice));
+   FRC:=wglCreateContext(outputDC);
    if FRC=0 then
       RaiseLastOSError
    else vLastPixelFormat:=0;
@@ -458,7 +460,7 @@ begin
    try
       FLegacyContextsOnly:=True;
       try
-         DoCreateContext(aDC);
+         DoCreateContext(Integer(aDC));
       finally
          FLegacyContextsOnly:=False;
       end;

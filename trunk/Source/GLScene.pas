@@ -3475,7 +3475,7 @@ begin
                      end;
                   end;
                end else for i:=firstChildIndex to lastChildIndex do begin
-                  obj:=Get(i);
+                  obj:=TGLBaseSceneObject(FChildren.List[i]);
                   if obj.Visible then begin
                      objList.Add(obj);
                      distList.Add(obj.BarycenterSqrDistanceTo(rci.cameraPosition));
