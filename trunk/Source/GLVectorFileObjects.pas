@@ -843,7 +843,11 @@ type
 
          procedure AddToTriangles(aList : TAffineVectorList);
 
-         //: Sort faces by material, those without material first in list
+         {: Material Library of the owner TGLBaseMesh. }
+         function MaterialLibrary : TGLMaterialLibrary;
+         {: Sort faces by material.<p>
+            Those without material first in list, followed by opaque materials,
+            then transparent materials. }
          procedure SortByMaterial;
    end;
 
@@ -3954,19 +3958,60 @@ begin
       Items[i].AddToTriangles(aList);
 end;
 
+// MaterialLibrary
+//
+function TFaceGroups.MaterialLibrary : TGLMaterialLibrary;
+var
+   mol : TMeshObjectList;
+   bm : TGLBaseMesh;
+begin
+   if Assigned(Owner) then begin
+      mol:=Owner.Owner;
+      if Assigned(mol) then begin
+         bm:=mol.Owner;
+         if Assigned(bm) then begin
+            Result:=bm.MaterialLibrary;;
+            Exit;
+         end;
+      end;
+   end;
+   Result:=nil;
+end;
+
 // SortByMaterial
 //
 procedure TFaceGroups.SortByMaterial;
 var
    i, j : Integer;
    cur : String;
+   curIsOpaque, isOpaque : Boolean;
    curIdx : Integer;
+   matLib : TGLMaterialLibrary;
+
+   function MaterialIsOpaque(const materialName : String) : Boolean;
+   var
+      libMat : TGLLibMaterial;
+   begin
+      if Assigned(matLib) then begin
+         libMat:=matLib.Materials.GetLibMaterialByName(materialName);
+         if Assigned(libMat) then begin
+            Result:=not libMat.Material.Blended;
+            Exit;
+         end;
+      end;
+      Result:=True;
+   end;
+
 begin
+   matLib:=MaterialLibrary;
+   // slow but simple sort, we are not supposed to do this every frame
    for i:=0 to Count-2 do begin
       curIdx:=i;
       cur:=Items[i].MaterialName;
+      curIsOpaque:=MaterialIsOpaque(cur);
       for j:=i+1 to Count-1 do begin
-         if Items[j].MaterialName<cur then begin
+         isOpaque:=MaterialIsOpaque(Items[j].MaterialName);
+         if (Items[j].MaterialName<cur) and (isOpaque or (not curIsOpaque)) then begin
             cur:=Items[j].MaterialName;
             curIdx:=j;
          end;
