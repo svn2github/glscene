@@ -836,7 +836,7 @@ begin
    glDepthMask(False);
 
    with Scene.CurrentGLCamera do
-      f:=(NearPlane+DepthOfView)*0.95;
+      f:=(NearPlane+DepthOfView)*0.90;
    glScalef(f, f, f);
 
    Bands.BuildList(rci);
