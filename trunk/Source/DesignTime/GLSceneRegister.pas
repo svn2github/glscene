@@ -136,7 +136,7 @@ uses
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
    GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
-   GLPerlinPFX,
+   GLPerlinPFX, GLTexLensFlare,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
