@@ -497,7 +497,7 @@ procedure SubtractVector(var V1 : TVector; const V2 : TVector); overload;
 
 //: Combine the first vector with the second : vr:=vr+v*f
 procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; var f : Single); overload;
-procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PSingle); overload;
+procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PFloat); overload;
 //: Makes a linear combination of two vectors and return the result
 function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; overload;
 //: Makes a linear combination of three vectors and return the result
@@ -2046,7 +2046,7 @@ end;
 
 // CombineVector (pointer)
 //
-procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PSingle); register;
+procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PFloat); register;
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
