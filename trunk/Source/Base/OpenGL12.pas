@@ -5923,9 +5923,7 @@ var
   glIndexMaterialEXT: procedure(face: TGLEnum; mode: TGLEnum); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glIndexMaterialEXT}
   glIsTextureEXT: function(texture: TGLuint): TGLboolean; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glIsTextureEXT}
-  glLockArraysEXT: procedure(first: TGLint; count: TGLsizei); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glLockArraysEXT}
+  {$EXTERNALSYM glUnlockArraysEXT}
   glPolygonOffsetEXT: procedure(factor, bias: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glPolygonOffsetEXT}
   glPrioritizeTexturesEXT: procedure(n: TGLsizei; textures: PGLuint; priorities: PGLclampf); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
@@ -5936,8 +5934,12 @@ var
   {$EXTERNALSYM glTexSubImage2DEXT}
   glTexSubImage3DEXT: procedure(target: TGLEnum; level, xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; format, Atype: TGLEnum; pixels: Pointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glTexSubImage3DEXT}
+
+  // EXT_compiled_vertex_array
+  {$EXTERNALSYM glIsTextureEXT}
+  glLockArraysEXT: procedure(first: TGLint; count: TGLsizei); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+  {$EXTERNALSYM glLockArraysEXT}
   glUnlockArraysEXT: procedure; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glUnlockArraysEXT}
 
   // EXT_vertex_array
   glArrayElementEXT: procedure(I: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
@@ -5958,12 +5960,6 @@ var
   {$EXTERNALSYM glTexCoordPointerEXT}
   glVertexPointerEXT: procedure(size: TGLint; AType: TGLenum; stride, count: TGLsizei; P: Pointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glVertexPointerEXT}
-
-  // EXT_compiled_vertex_array
-  glLockArrayEXT: procedure(first: TGLint; count: TGLsizei); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glLockArrayEXT}
-  glUnlockArrayEXT: procedure; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glUnlockArrayEXT}
 
   // EXT_cull_vertex
   glCullParameterdvEXT: procedure(pname: TGLenum; params: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
@@ -7645,33 +7641,35 @@ begin
   glArrayElementArrayEXT := wglGetProcAddress('glArrayElementArrayEXT');
   glColorTableEXT := wglGetProcAddress('glColorTableEXT');
   glColorSubTableEXT := wglGetProcAddress('glColorSubTableEXT');
-  glGetColorTableEXT := wglGetProcAddress('glGetColorTableEXT'); 
+  glGetColorTableEXT := wglGetProcAddress('glGetColorTableEXT');
   glGetColorTablePameterivEXT := wglGetProcAddress('glGetColorTablePameterivEXT');
-  glGetColorTablePameterfvEXT := wglGetProcAddress('glGetColorTablePameterfvEXT'); 
-  glLockArraysEXT := wglGetProcAddress('glLockArraysEXT'); 
-  glUnlockArraysEXT := wglGetProcAddress('glUnlockArraysEXT'); 
-  glCopyTexImage1DEXT := wglGetProcAddress('glCopyTexImage1DEXT'); 
-  glCopyTexSubImage1DEXT := wglGetProcAddress('glCopyTexSubImage1DEXT'); 
-  glCopyTexImage2DEXT := wglGetProcAddress('glCopyTexImage2DEXT'); 
-  glCopyTexSubImage2DEXT := wglGetProcAddress('glCopyTexSubImage2DEXT'); 
-  glCopyTexSubImage3DEXT := wglGetProcAddress('glCopyTexSubImage3DEXT'); 
-  glIndexFuncEXT := wglGetProcAddress('glIndexFuncEXT'); 
+  glGetColorTablePameterfvEXT := wglGetProcAddress('glGetColorTablePameterfvEXT');
+  glCopyTexImage1DEXT := wglGetProcAddress('glCopyTexImage1DEXT');
+  glCopyTexSubImage1DEXT := wglGetProcAddress('glCopyTexSubImage1DEXT');
+  glCopyTexImage2DEXT := wglGetProcAddress('glCopyTexImage2DEXT');
+  glCopyTexSubImage2DEXT := wglGetProcAddress('glCopyTexSubImage2DEXT');
+  glCopyTexSubImage3DEXT := wglGetProcAddress('glCopyTexSubImage3DEXT');
+  glIndexFuncEXT := wglGetProcAddress('glIndexFuncEXT');
   glIndexMaterialEXT := wglGetProcAddress('glIndexMaterialEXT');
-  glPolygonOffsetEXT := wglGetProcAddress('glPolygonOffsetEXT'); 
-  glTexSubImage1dEXT := wglGetProcAddress('glTexSubImage1DEXT'); 
-  glTexSubImage2dEXT := wglGetProcAddress('glTexSubImage2DEXT'); 
-  glTexSubImage3dEXT := wglGetProcAddress('glTexSubImage3DEXT'); 
-  glGenTexturesEXT := wglGetProcAddress('glGenTexturesEXT'); 
-  glDeleteTexturesEXT := wglGetProcAddress('glDeleteTexturesEXT'); 
-  glBindTextureEXT := wglGetProcAddress('glBindTextureEXT'); 
-  glPrioritizeTexturesEXT := wglGetProcAddress('glPrioritizeTexturesEXT'); 
-  glAreTexturesResidentEXT := wglGetProcAddress('glAreTexturesResidentEXT'); 
-  glIsTextureEXT := wglGetProcAddress('glIsTextureEXT'); 
+  glPolygonOffsetEXT := wglGetProcAddress('glPolygonOffsetEXT');
+  glTexSubImage1dEXT := wglGetProcAddress('glTexSubImage1DEXT');
+  glTexSubImage2dEXT := wglGetProcAddress('glTexSubImage2DEXT');
+  glTexSubImage3dEXT := wglGetProcAddress('glTexSubImage3DEXT');
+  glGenTexturesEXT := wglGetProcAddress('glGenTexturesEXT');
+  glDeleteTexturesEXT := wglGetProcAddress('glDeleteTexturesEXT');
+  glBindTextureEXT := wglGetProcAddress('glBindTextureEXT');
+  glPrioritizeTexturesEXT := wglGetProcAddress('glPrioritizeTexturesEXT');
+  glAreTexturesResidentEXT := wglGetProcAddress('glAreTexturesResidentEXT');
+  glIsTextureEXT := wglGetProcAddress('glIsTextureEXT');
 
+  // EXT_compiled_vertex_array
+  glLockArraysEXT := wglGetProcAddress('glLockArraysEXT');
+  glUnlockArraysEXT := wglGetProcAddress('glUnlockArraysEXT');
+  
   // EXT_vertex_array
-  glArrayElementEXT := wglGetProcAddress('glArrayElementEXT'); 
-  glColorPointerEXT := wglGetProcAddress('glColorPointerEXT'); 
-  glDrawArraysEXT := wglGetProcAddress('glDrawArraysEXT'); 
+  glArrayElementEXT := wglGetProcAddress('glArrayElementEXT');
+  glColorPointerEXT := wglGetProcAddress('glColorPointerEXT');
+  glDrawArraysEXT := wglGetProcAddress('glDrawArraysEXT');
   glEdgeFlagPointerEXT := wglGetProcAddress('glEdgeFlagPointerEXT'); 
   glGetPointervEXT := wglGetProcAddress('glGetPointervEXT'); 
   glIndexPointerEXT := wglGetProcAddress('glIndexPointerEXT'); 
@@ -7716,10 +7714,6 @@ begin
   glActiveTextureARB := wglGetProcAddress('glActiveTextureARB');
 //    glActiveTextureARB := GetProcAddress(GLHandle, '_glActiveTextureARB@4');
   glClientActiveTextureARB := wglGetProcAddress('glClientActiveTextureARB');
-
-  // EXT_compiled_vertex_array
-  glLockArrayEXT := wglGetProcAddress('glLockArrayEXT'); 
-  glUnlockArrayEXT := wglGetProcAddress('glUnlockArrayEXT'); 
 
   // EXT_cull_vertex
   glCullParameterdvEXT := wglGetProcAddress('glCullParameterdvEXT'); 
