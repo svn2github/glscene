@@ -26,10 +26,10 @@ implementation
 //
 procedure Register;
 begin
-  RegisterClasses([TGLODEManager, TGLODEJointList,
-                   TGLODEDummy, TGLODEPlane,
-                   TODEJoints, TODEElements]);
-  RegisterComponents('GLScene', [TGLODEManager, TGLODEJointList]);
+  RegisterClasses([TGLODEManager, TGLODEJointList, TGLODEDummy, 
+                   TGLODEPlane, TGLODEStaticDummy, TODEJoints, 
+                   TODEElements]);
+  RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList]);
 end;
 
 // ------------------------------------------------------------------
@@ -48,6 +48,7 @@ initialization
   // commenting this registration out until the problem is resolved.
   with ObjectManager do begin
     RegisterSceneObject(TGLODEDummy,'GLODEDummy','ODE Objects');
+    RegisterSceneObject(TGLODEStaticDummy,'GLODEStaticDummy','ODE Objects');
     RegisterSceneObject(TGLODEPlane,'GLODEPlane','ODE Objects');
   end;
   //}
@@ -64,6 +65,7 @@ finalization
   // See the comments above
   with ObjectManager do begin
     UnregisterSceneObject(TGLODEDummy);
+    UnregisterSceneObject(TGLODEStaticDummy);
     UnregisterSceneObject(TGLODEPlane);
   end;
   //}
