@@ -580,10 +580,10 @@ begin
 	end else if endIndex>startIndex then begin
       ppl:=refInts;
 		if ppl[endIndex]<ppl[startIndex] then begin
+         i:=endIndex; j:=startIndex;
          P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
          ppl:=PIntegerArray(objList.List);
          P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
-         Inc(I); Dec(J);
 		end;
 	end;
 end;
