@@ -31,6 +31,9 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/08/04 - EG - 3GB support contributed by David Christensen
+      <li>12/08/04 - EG - Replace SysGet/FreeMem with HeapAlloc/Free (thx David Christensen)
+      <li>02/08/04 - EG - Added ASSUME_MULTI_THREADED option
       <li>26/07/04 - EG - Introduced TSMBInfo and related changes,
                           Move16 now uses movaps and movntps,
                           LGB Managers now allocated via RMM (and not Borland MM),
@@ -92,7 +95,7 @@ uses Windows;
 // CPUs, while SSE shines on large blocks with a P4 
 {.$define ALLOW_SSE}
 
-// if set and exception will be explicitly raised if your code attempts
+// If set and exception will be explicitly raised if your code attempts
 // to release a block that isn't allocated. By default, RMM only detects
 // that issue reliably for large blocks and signals the issue to the Borland RTL,
 // which may then raise an exception. But in some circumstances, the RTL will
@@ -101,6 +104,12 @@ uses Windows;
 // Doing so incurs a performance penalty on block release, and should preferably
 // only be used for testing or if memory integrity is of primary importance
 {.$define RAISE_EXCEPTION_ON_INVALID_RELEASE}
+
+// If set RecyclerMM will assume that the application is multithreaded and won't
+// check the value of System.IsMultiThread. This may improve performance in
+// purely multi-threaded situations, but will degrade performance in
+// single-threaded applications
+{.$define ASSUME_MULTI_THREADED}
 
 // If set invalid pointers free/realloc will be defered to SysFreeMem
 // This allows a mixed mode where the RecyclerMM can replace the default
@@ -202,6 +211,17 @@ type
    end;
    PRMMSMBStat = ^TRMMSMBStat;
 
+const
+   // As a constant, we make our mem map big enough to support 3GB addressing
+   // If you really need the extra 64 kB and now that your code will never be
+   // run in /3GB mode then you can reduce this to 32767.
+   // The actual limit of the memmap is in vMemMapUpper.
+   cMemMapUpperMax = 49151 ;
+   // Now the two we chose between to use as the actual limit within the array
+   cMemMapUpper2GB = 32767;
+   cMemMapUpper3GB = 49151;
+
+type
    // TRMMUsageSnapShot
    //
    {: RMM usage diagnostic snapshot, returned by RMMUsageSnapShot. }
@@ -217,7 +237,7 @@ type
       LargestFreeVM : Cardinal;
       // Map
       NbMapItems : Cardinal;
-      Map : packed array [0..32767] of TRMMMemoryMap;
+      Map : packed array [0..cMemMapUpperMax] of TRMMMemoryMap;
       SMBStats : packed array [0..cSMBMaxSizeIndex] of TRMMSMBStat;
    end;
    PRMMUsageSnapShot = ^TRMMUsageSnapShot;
@@ -264,9 +284,12 @@ procedure FinalizeRMM;
 function SMBSizeToIndex(s : Integer) : Integer; register;
 function SMBIndexToSize(i : Integer) : Integer; register;
 
+function RunningIn3GBMode : Boolean;
 var
    // Total Virtual Memory Allocated
    vTotalVirtualAllocated : Cardinal;
+   // Number of entries in memmap array
+   vMemMapUpper : Cardinal;
 
 resourcestring
    // Unused, this is just to have it in clear in the DCU 
@@ -292,8 +315,8 @@ const
 
 type
    PPointer = ^Pointer;
-   TPointerArray32k = packed array [0..32767] of Pointer;
-   PPointerArray32k = ^TPointerArray32k;
+   TPointerArrayMap = packed array [0..cMemMapUpperMax] of Pointer;
+   PPointerArrayMap = ^TPointerArrayMap;
 
    TWordArray = packed array [0..MaxInt shr 2] of Word;
    PWordArray = ^TWordArray;
@@ -384,12 +407,14 @@ type
    PSharedMemoryManager = ^TSharedMemoryManager;
 
 var
-   // Only the lower 2 GB are accessible to an application under Win32,
-   // that's a maximum of 32768 blocks which are all mapped by a 128 kB array
+   // Only the lower 2 or 3 GB are accessible to an application under Win32,
+   // that's a maximum of 32768 or 49152 blocks which are all mapped by a 128/192 kB array
+   vRunningIn3GBMode : Boolean;
+
    {$ifdef SECURE_MEMORYMAP}
-   vMemoryMap : PPointerArray32k;
+   vMemoryMap : PPointerArrayMap;
    {$else}
-   vMemoryMap : TPointerArray32k;
+   vMemoryMap : TPointerArrayMap;
    {$endif}
 
    // Binding variables
@@ -424,6 +449,11 @@ var
    vLGBManagers : array [0..255] of PLGBManager;
    vLGBLock : TRTLCriticalSection;
 
+function RunningIn3GBMode : Boolean;
+begin
+  Result := vRunningIn3GBMode;
+end;
+
 // RaiseRMMException
 //
 procedure RaiseRMMException(const msg : String);
@@ -447,7 +477,7 @@ end;
 procedure UpdateMemoryMap(baseAddr : Pointer; size : Cardinal; manager : Pointer);
 var
    i, n : Cardinal;
-   p : PPointerArray32k;
+   p : PPointerArrayMap;
    {$ifdef SECURE_MEMORYMAP}
    oldProtect : Cardinal;
    {$endif}
@@ -469,22 +499,22 @@ end;
 //
 function AllocateRMMChunkBatch : PRMMChunkBatch;
 var
-   i : Integer;
+   i : Cardinal;
    p : Pointer;
 begin
-   Result:=SysGetMem(SizeOf(TRMMChunkBatch));
+   Result:=HeapAlloc(GetProcessHeap, 0, SizeOf(TRMMChunkBatch));
    if Result<>nil then begin
       p:=VirtualAlloc(nil, cRMMChunkBatchSize,
                       MEM_COMMIT+MEM_TOP_DOWN, PAGE_READWRITE);
       if Assigned(p) then begin
          Inc(vTotalVirtualAllocated, cRMMChunkBatchSize);
          for i:=0 to cRMMChunkBatchAllocSize-1 do
-            Result.Chunks[i]:=Pointer(Integer(p)+i*cSMBChunkSize);
+            Result.Chunks[i]:=Pointer(Cardinal(p)+i*cSMBChunkSize);
          Result.ChunkAllocated:=0;
          Result.Next:=nil;
          Result.Prev:=nil;
       end else begin
-         SysFreeMem(Result);
+         HeapFree(GetProcessHeap, 0, Result);
          Result:=nil;
       end;
    end;
@@ -498,7 +528,7 @@ begin
       RaiseRMMException('SMBChunk release detected incoherency');
    Dec(vTotalVirtualAllocated, cRMMChunkBatchSize);
    VirtualFree(batch.Chunks[0], 0, MEM_RELEASE);
-   SysFreeMem(batch);
+   HeapFree(GetProcessHeap, 0, batch);
 end;
 
 // AllocateRMMChunk
@@ -510,7 +540,7 @@ var
 label
    lblExitOnError;
 begin
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       EnterCriticalSection(vRMMBatchesLock);
 
    if chunkSize<=(64*1024) then begin
@@ -557,7 +587,7 @@ begin
          Inc(vTotalVirtualAllocated, chunkSize);
    end;
 lblExitOnError:
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       LeaveCriticalSection(vRMMBatchesLock);
 end;
 
@@ -567,12 +597,12 @@ procedure ReleaseRMMChunk(chunk : Pointer; batch : PRMMChunkBatch; chunkSize : C
 var
    n : Integer;
 begin
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       EnterCriticalSection(vRMMBatchesLock);
 
    if batch<>nil then begin
       // locate the batch containing the chunk
-      n:=(Integer(chunk)-Integer(batch.Chunks[0])) div cSMBChunkSize;
+      n:=(Cardinal(chunk)-Cardinal(batch.Chunks[0])) div cSMBChunkSize;
       batch.ChunkAllocated:=batch.ChunkAllocated-(1 shl n);
       if (batch.ChunkAllocated=0) and (batch.Prev<>nil) then begin
          batch.Prev.Next:=batch.Next;
@@ -585,7 +615,7 @@ begin
       VirtualFree(chunk, 0, MEM_RELEASE);
    end;
 
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       LeaveCriticalSection(vRMMBatchesLock);
 end;
 
@@ -623,7 +653,7 @@ begin
    Result.DataSize:=Size;
    // Add in hash table
    hash:=((Cardinal(Result) shr 2) xor (Cardinal(Result) shr 19)) and $FF;
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       EnterCriticalSection(vLGBLock);
 
    head:=vLGBManagers[hash];
@@ -633,7 +663,7 @@ begin
    Result.Prev:=nil;
    vLGBManagers[hash]:=Result;
 
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       LeaveCriticalSection(vLGBLock);
       
    UpdateMemoryMap(Result.BlockStart, Result.BlockSize, Result);
@@ -653,7 +683,7 @@ begin
    else ReleaseRMMChunk(manager.BlockStart, manager.ChunkBatch, manager.BlockSize);
    // Remove from hash table
    hash:=((Cardinal(manager) shr 2) xor (Cardinal(manager) shr 19)) and $FF;
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       EnterCriticalSection(vLGBLock);
 
    if manager.Prev=nil then
@@ -662,7 +692,7 @@ begin
    if manager.Next<>nil then
       manager.Next.Prev:=manager.Prev;
 
-   if IsMultiThread then
+   {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
       LeaveCriticalSection(vLGBLock);
       
    RFreeMem(manager);
@@ -952,20 +982,20 @@ begin
    n:=(chunkSize div blkSize);
    n:=n and $FFFFFFFE; // round to multiple of 2
 
-   p:=SysGetMem(SizeOf(TSMBManager)+2*n*SizeOf(Word));
+   p:=HeapAlloc(GetProcessHeap, 0, SizeOf(TSMBManager)+2*n*SizeOf(Word));
    Result:=PSMBManager(p);
    if p=nil then Exit;
 
    Result.Signature:=cSMBSignature;
 
-   p:=Pointer(Integer(p)+SizeOf(TSMBManager));
+   p:=Pointer(Cardinal(p)+SizeOf(TSMBManager));
    Result.BlockOffsets:=PWordArray(p);
    Result.BlockSizes:=PWordArray(Cardinal(p)+n*SizeOf(Word));
 
    // allocate our chunk
    Result.BlockStart:=AllocateRMMChunk(chunkSize, Result.ChunkBatch);
    if Result.BlockStart=nil then begin
-      SysFreeMem(Result);
+      HeapFree(GetProcessHeap, 0, Result);
       Result:=nil;
       Exit;
    end;
@@ -1019,7 +1049,7 @@ begin
    UpdateMemoryMap(manager.BlockStart, manager.ChunkSize, nil);
 
    ReleaseRMMChunk(manager.BlockStart, manager.ChunkBatch, manager.ChunkSize);
-   SysFreeMem(manager);
+   HeapFree(GetProcessHeap, 0, manager);
 end;
 
 // MakeSMBTopMost
@@ -1136,7 +1166,7 @@ begin
       smbIndex:=SMBSizeToIndex(Size);
       smbInfo:=@vSMBs[smbIndex];
       
-      if System.IsMultiThread then
+      {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
          EnterCriticalSection(smbInfo.Lock);
 
       manager:=smbInfo.First;
@@ -1167,7 +1197,7 @@ begin
       Result:=Pointer(Cardinal(manager.BlockStart)+blkID*manager.BlockSize);
 
 lblExitWhenOutOfMemory:
-      if System.IsMultiThread then
+      {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
          LeaveCriticalSection(smbInfo.Lock);
    end else begin
       // Large blocks
@@ -1183,7 +1213,7 @@ end;
 function RFreeMem(P: Pointer): Integer;
 var
    {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-   i : Integer;
+   i : Cardinal;
    {$endif}
    n, blkID, locBlkID : Cardinal;
    smbInfo : PSMBInfo;
@@ -1205,7 +1235,7 @@ begin
          // Small block release logic
          smbInfo:=manager.SMBInfo;
 
-         if System.IsMultiThread then
+         {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
             EnterCriticalSection(smbInfo.Lock);
 
          BlockOffsetToBlockIndex(P, manager, blkID);
@@ -1213,9 +1243,9 @@ begin
          if locBlkID<manager.MaxFreeBlockOffset then begin
             n:=manager.NbFreeBlockOffset;
             {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-            for i:=n-1 downto 0 do begin
+            if n>0 then for i:=n-1 downto 0 do begin
                if manager.BlockOffsets[i]=locBlkID then begin
-                  if System.IsMultiThread then
+                  {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
                      LeaveCriticalSection(smbInfo.Lock);
                   Result:=-1;
                   goto lblRFreeMemExit;
@@ -1237,7 +1267,7 @@ begin
                   ReleaseSMB(manager);
             end;
 
-            if System.IsMultiThread then
+            {$ifndef ASSUME_MULTI_THREADED}if System.IsMultiThread then{$endif}
                LeaveCriticalSection(smbInfo.Lock);
             Result:=0;
          end else Result:=-1;
@@ -1395,7 +1425,7 @@ begin
    // patch jump
    VirtualProtect(oldRoutine, 256, PAGE_READWRITE, @oldProtect);
    PByte(oldRoutine)^:=$E9;
-   PInteger(Integer(oldRoutine)+1)^:=Integer(newRoutine)-Integer(oldRoutine)-5;
+   PCardinal(Cardinal(oldRoutine)+1)^:=Cardinal(newRoutine)-Cardinal(oldRoutine)-5;
    VirtualProtect(oldRoutine, 256, oldProtect, @protect);
    // did we patch a BPL jump table?
    Result.bplAddr:=nil;
@@ -1409,7 +1439,7 @@ begin
       // and patch it too
       VirtualProtect(bplAddr, 256, PAGE_READWRITE, @oldProtect);
       PByte(bplAddr)^:=$E9;
-      PInteger(Integer(bplAddr)+1)^:=Integer(newRoutine)-Integer(bplAddr)-5;
+      PCardinal(Cardinal(bplAddr)+1)^:=Cardinal(newRoutine)-Cardinal(bplAddr)-5;
       VirtualProtect(bplAddr, 256, oldProtect, @protect);
    end;
    {$endif}
@@ -1664,13 +1694,13 @@ begin
    // we're not allowed to use any kind of dynamic allocation here
    LockRMM;
    try
-      Result.NbMapItems:=32768;
+      Result.NbMapItems:=vMemMapUpper +1;
       Result.TotalVirtualAllocated:=vTotalVirtualAllocated;
       nbBlocks:=0;
       totalUserSize:=0;
       // Build the memory map
       // first go through the memory map
-      for i:=0 to 32767 do begin
+      for i:=0 to vMemMapUpper do begin
          mapEntry:=@Result.Map[i];
          mapEntry.StartAddr:=Pointer(i shl 16);
          mapEntry.Length:=1 shl 16;
@@ -1747,12 +1777,12 @@ begin
       end;
       {$endif}
       // Collect VM space stats
-      Result.TotalVMSpace:=Cardinal(1) shl 31;
+      Result.TotalVMSpace:=(vMemMapUpper+1) shl 16;
       Result.SystemAllocatedVM:=0;
       Result.SystemReservedVM:=0;
       k:=0; kp:=0;
       // Make a pass through the unallocated chunks and ask about their status
-      for i:=0 to 32767 do begin
+      for i:=0 to vMemMapUpper  do begin
          mapEntry:=@Result.Map[i];
          if mapEntry.Status=rmmsUnallocated then begin
             VirtualQuery(Pointer(i shl 16), mbi, SizeOf(mbi));
@@ -1769,7 +1799,7 @@ begin
             k:=i+1;
          end;
       end;
-      if 32768-k>kp then kp:=32767-k;
+      if vMemMapUpper+1 - k > kp then kp:=vMemMapUpper - k;
       Result.LargestFreeVM:=kp shl 16;
       // Build SMBStats
       for i:=Low(vSMBs) to High(vSMBs) do begin
@@ -1800,10 +1830,22 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+var
+  MemStatus : TMEMORYSTATUS;
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+   // detect if in 3GB mode
+   MemStatus.dwLength := 32;
+   GlobalMemoryStatus(MemStatus);
+   vRunningIn3GBMode:= (MemStatus.dwTotalVirtual>$80000000 );
+   if vRunningIn3GBMode then
+      vMemMapUpper := cMemMapUpper3GB
+   else vMemMapUpper := cMemMapUpper2GB;
 
    {$ifdef ALLOW_SSE}
    try
