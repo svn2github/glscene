@@ -1627,10 +1627,10 @@ end;
 //
 procedure TGLColor.Initialize(const color : TColorVector);
 begin
-	FColor:=color;
+	SetVector(FColor, color);
    if vUseDefaultSets then begin
       New(FPDefaultColor);
-   	FPDefaultColor^:=color;
+   	SetVector(FPDefaultColor^, color);
    end;
 end;
 
@@ -1643,7 +1643,7 @@ end;
 
 procedure TGLColor.SetColor(const aColor: TColorVector);
 begin
-   FColor:=AColor;
+   SetVector(FColor, AColor);
 	NotifyChange(Self);
 end;
 
@@ -4728,7 +4728,7 @@ begin
    Result:=clrBlack;
    for i:=0 to Count-1 do
       if CompareText(TColorEntry(Items[i]^).Name, AName)=0 then begin
-         Result:=TColorEntry(Items[i]^).Color;
+         SetVector(Result, TColorEntry(Items[i]^).Color);
          Break;
       end;
 end;
@@ -4747,7 +4747,7 @@ begin
       if AName[1] in ['(','[','<'] then
          workCopy:=Copy(workCopy, 2, Length(AName)-2);
       if CompareText(Copy(workCopy,1,3),'clr')=0 then
-         Result:=FindColor(workCopy)
+         SetVector(Result, FindColor(workCopy));
       else try
          // initialize result
          Result:=clrBlack;
@@ -4809,21 +4809,20 @@ begin
    inherited Destroy;
 end;
 
-//------------------------------------------------------------------------------
-
+// AddColor
+//
 procedure TGLColorManager.AddColor(const aName: String; const aColor: TColorVector);
-
-var NewEntry : PColorEntry;
-
+var
+   newEntry : PColorEntry;
 begin
-  New(NewEntry);
-  if NewEntry = nil then raise Exception.Create('Could not allocate memory for color registration!');
-  with NewEntry^ do
-  begin
-    Name:=AName;
-    Color:=AColor;
-  end;
-  Add(NewEntry);
+   New(newEntry);
+   if newEntry = nil then
+      raise Exception.Create('Could not allocate memory for color registration!');
+   with newEntry^ do begin
+     Name:=AName;
+     SetVector(Color, aColor);
+   end;
+   Add(newEntry);
 end;
 
 // EnumColors
