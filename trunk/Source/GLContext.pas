@@ -303,7 +303,7 @@ resourcestring
    cContextAlreadyCreated =      'Context already created';
    cContextNotCreated =          'Context not created';
    cDeleteContextFailed =        'Delete context failed';
-   cContextActivationFailed =    'Context activation failed';
+   cContextActivationFailed =    'Context activation failed: %X';
    cContextDeactivationFailed =  'Context deactivation failed';
    cUnbalancedContexActivations= 'Unbalanced context activations';
    cIncompatibleContexts =       'Incompatible contexts';
@@ -1098,7 +1098,7 @@ var
    pixelFormat : Integer;
 begin
    if not wglMakeCurrent(FDC, FRC) then
-      raise EGLContext.Create(cContextActivationFailed);
+      raise EGLContext.Create(Format(cContextActivationFailed, [GetLastError]));
 
    // The extension function addresses are unique for each pixel format. All rendering
    // contexts of a given pixel format share the same extension function addresses.

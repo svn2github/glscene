@@ -5037,10 +5037,9 @@ end;
 //
 procedure TGLSceneViewer.WMDestroy(var Message: TWMDestroy);
 begin
-   if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
+   if Assigned(FCamera) and Assigned(FCamera.FScene) then
       FCamera.FScene.RemoveViewer(Self);
-      DestroyRC;
-   end;
+   DestroyRC;
    inherited;
 end;
 
