@@ -153,6 +153,7 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
+   GLSceneViewer1.SetFocus;
    mx:=x;
    my:=y;
 end;
