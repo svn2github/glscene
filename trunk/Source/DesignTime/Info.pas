@@ -2,6 +2,7 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/07/04 - LR - Display some infos for Linux	
       <li>03/07/04 - LR - Make change for Linux
       <li>21/02/04 - EG - Added extensions popup menu and hyperlink to
                           Delphi3D's hardware registry
@@ -29,7 +30,7 @@ uses
 {$ENDIF}
 {$IFDEF LINUX}
 uses
-  QForms, GLScene, Classes, QControls, QButtons, QStdCtrls, QComCtrls, 
+  XLib, QForms, GLScene, Classes, QControls, QButtons, QStdCtrls, QComCtrls,
   CommCtrl, QExtCtrls, QGraphics, QMenus; 
 {$ENDIF}
 
@@ -159,10 +160,14 @@ procedure TInfoForm.GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
 {$IFDEF MSWINDOWS}
 const
    DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
+{$ENDIF}
 var
+{$IFDEF MSWINDOWS}
    pfd            : TPixelformatDescriptor;
-	i, pixelFormat : Integer;
-	extStr         : String;
+   pixelFormat    : Integer;
+{$ENDIF}
+   i              : Integer;
+   ExtStr         : String;
 
    procedure IntLimitToLabel(const aLabel : TLabel; const aLimit : TLimitType);
    begin
@@ -175,12 +180,14 @@ begin
       // common properties
       VendorLabel.Caption:=StrPas(PChar(glGetString(GL_VENDOR)));
       RendererLabel.Caption:=StrPas(PChar(glGetString(GL_RENDERER)));
+      {$IFDEF MSWINDOWS}
       PixelFormat:=GetPixelFormat(Canvas.Handle);
       DescribePixelFormat(Canvas.Handle,PixelFormat,SizeOf(pfd), PFD);
       // figure out the driver type
       if (DRIVER_MASK and pfd.dwFlags) = 0 then AccLabel.Caption:='Installable Client Driver'
         else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
           else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
+      {$ENDIF}
       VersionLabel.Caption:=StrPas(PChar(glGetString(GL_VERSION)));
       ExtStr:=PChar(glGetString(GL_EXTENSIONS));
       Extensions.Clear;
@@ -190,6 +197,7 @@ begin
         Extensions.Items.Add(Copy(ExtStr,1,I-1));
         Delete(ExtStr,1,I);
       end;
+      {$IFDEF MSWINDOWS}
       if DoubleBuffered then begin
         DoubleLabel.Caption:='yes';
         CopyLabel.Caption:='';
@@ -204,6 +212,7 @@ begin
       if (pfd.dwFlags and PFD_STEREO) > 0 then
          StereoLabel.Caption:='yes'
       else StereoLabel.Caption:='no';
+      {$ENDIF}
       // buffer and pixel depths
       ColorLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
                                  [LimitOf[limRedBits], LimitOf[limGreenBits],
@@ -215,8 +224,10 @@ begin
                                   LimitOf[limAccumBlueBits],LimitOf[limAccumAlphaBits]]);
       IntLimitToLabel(AuxLabel, limAuxBuffers);
       IntLimitToLabel(SubLabel, limSubpixelBits);
+      {$IFDEF MSWINDOWS}
       OverlayLabel.Caption:=IntToStr(pfd.bReserved and 7);
       UnderlayLabel.Caption:=IntToStr(pfd.bReserved shr 3);
+      {$ENDIF}
 
       // Maximum values
       IntLimitToLabel(ClipLabel, limClipPlanes);
@@ -234,11 +245,6 @@ begin
       IntLimitToLabel(TexUnitsLabel, limNbTextureUnits);
    end;
 end;
-{$ENDIF}
-{$IFDEF LINUX}
-begin
-end;
-{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -252,7 +258,9 @@ var I         : Integer;
 	 NewG,
     NewB      : Integer;
     r,g,b     : Byte;
+    {$IFDEF MSWINDOWS}
     X, Y      : Integer;
+    {$ENDIF}
     BM        : TBitmap;
 	 OldColors,
     NewColors  : array[Byte] of TColor;
