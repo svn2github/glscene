@@ -2563,7 +2563,7 @@ var
    I, J: Integer;
    DoReverse: Boolean;
 begin
-   DoReverse:=FNormalDirection = ndInside;
+   DoReverse:=(FNormalDirection=ndInside);
    glPushAttrib(GL_POLYGON_BIT);
    if DoReverse then
       InvertGLFrontFace;
@@ -3404,8 +3404,8 @@ function TTorus.RayCastIntersect(const rayStart, rayVector : TAffineVector;
 var
    i : Integer;
    fRo2, fRi2, fDE, fVal, r, nearest : Double;
-   polynom : array [0..4] of Extended;
-   polyComplexRoots : TComplexArray;
+   polynom : array [0..4] of Double;
+   polyRoots : TDoubleArray;
    localStart, localVector : TAffinevector;
    vi, vc : TAffineVector;
 begin
@@ -3425,19 +3425,18 @@ begin
    polynom[4] := 1;
 
    // solve the quartic
-   polyComplexRoots:=qtcrt(@polynom[0]);
+   polyRoots:=SolveQuartic(@polynom[0]);
 
    // search for closest point
    Result:=False;
    nearest:=1e20;
-   for i:=Low(polyComplexRoots) to High(polyComplexRoots) do
-      if polyComplexRoots[i].Imag=0 then begin
-         r:=polyComplexRoots[i].Real;
-         if (r>=0) and (r<nearest) then begin
-            nearest:=r;
-            Result:=True;
-         end;
+   for i:=0 to High(polyRoots) do begin
+      r:=polyRoots[i];
+      if (r>=0) and (r<nearest) then begin
+         nearest:=r;
+         Result:=True;
       end;
+   end;
    if Result then begin
       vi:=VectorCombine(localStart, localVector, 1, nearest);
       if Assigned(intersectPoint) then
