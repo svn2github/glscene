@@ -1069,6 +1069,10 @@ type
          function OctreeRayCastIntersect(const rayStart, rayVector : TVector;
                                          intersectPoint : PVector = nil;
                                          intersectNormal : PVector = nil) : Boolean;
+         function OctreeSphereIntersect(const rayStart, rayVector : TVector;
+                                        const velocity, radius: Single;
+                                        intersectPoint : PVector = nil;
+                                        intersectNormal : PVector = nil) : Boolean;
 
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
@@ -4538,7 +4542,7 @@ begin
    end;
 end;
 
-// RayCastIntersectAABB
+// OctreeRayCastIntersect
 //
 function TFreeForm.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
                                           intersectPoint : PVector = nil;
@@ -4551,6 +4555,32 @@ begin
    SetVector(locRayVector, AbsoluteToLocal(rayVector));
    Result:=Octree.RayCastIntersectAABB(locRayStart, locRayVector,
                                        intersectPoint, intersectNormal);
+   if Result then begin
+      if intersectPoint<>nil then
+         SetVector(intersectPoint^,  LocalToAbsolute(intersectPoint^));
+      if intersectNormal<>nil then begin
+         SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
+         if NormalsOrientation=mnoInvert then
+            NegateVector(intersectNormal^);
+      end;
+   end;
+end;
+
+// OctreeSphereIntersect
+//
+function TFreeForm.OctreeSphereIntersect(const rayStart, rayVector : TVector;
+                                         const velocity, radius: Single;
+                                         intersectPoint : PVector = nil;
+                                         intersectNormal : PVector = nil) : Boolean;
+var
+   locRayStart, locRayVector : TVector;
+begin
+   Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
+   SetVector(locRayStart,  AbsoluteToLocal(rayStart));
+   SetVector(locRayVector, AbsoluteToLocal(rayVector));
+   Result:=Octree.SphereIntersectAABB(locRayStart, locRayVector,
+                                      velocity, radius,
+                                      intersectPoint, intersectNormal);
    if Result then begin
       if intersectPoint<>nil then
          SetVector(intersectPoint^,  LocalToAbsolute(intersectPoint^));

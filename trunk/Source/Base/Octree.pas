@@ -2,6 +2,7 @@
 {: Octree management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/02 - Egg - Added SphereIntersectAABB from Robert Hayes
 	   <li>13/03/02 - Egg - Made in a standalone unit, based on Robert Hayes code
 	</ul></font>
 }
@@ -47,13 +48,14 @@ type
          //Check if a point lies within the AABB specified by min and max entents
          function PointInNode(const min, max, aPoint : TAffineFLTVector): Boolean;
          //Check if a triangle (vertices v1, v2, v3) lies within the AABB specified by min and max entents
-         function TriIntersectNode(MinExtent, MaxExtent, v1, v2, v3: TAffineFLTVector): BOOLEAN;
+         function TriIntersectNode(const minExtent, maxExtent, v1, v2, v3: TAffineFLTVector): BOOLEAN;
          //Check if a sphere (at point C with radius) lies within the AABB specified by min and max entents
-         function SphereInNode(MinExtent, MaxExtent, C: TAffineFLTVector; radius: single): BOOLEAN;
+         function SphereInNode(const minExtent, maxExtent : TAffineVector;
+                               const c: TVector; radius: Single): Boolean;
 
          procedure WalkTriToLeafx(Onode: POctreeNode; const v1, v2, v3 : TAffineFLTVector);
-         procedure WalkPointToLeafx(ONode: POctreeNode; p: TAffineFLTVector);
-         procedure WalkSphereToLeafx(Onode: POctreeNode; p: TAffineFLTVector; radius: single);
+         procedure WalkPointToLeafx(ONode: POctreeNode; const p : TAffineVector);
+         procedure WalkSphereToLeafx(Onode: POctreeNode; const p : TVector; radius : Single);
          procedure WalkRayToLeafx(Onode: POctreeNode; const p, v: TVector);
 
          function GetExtent (const flags: array of byte; ParentNode: POctreeNode): TAffineFLTVector;
@@ -62,10 +64,10 @@ type
          procedure Refine(ParentNode: POctreeNode; level: integer);
 
          //Main "walking" routines.  Walks the item through the Octree down to a leaf node.
-         procedure WalkPointToLeaf(ONode: POctreeNode; p: TAffineFLTVector);
-         procedure WalkTriToLeaf(Onode: POctreeNode; const v1, v2, v3: TAffineFLTVector);
-         procedure WalkSphereToLeaf(Onode: POctreeNode; p: TAffineFLTVector; radius: single);
-         procedure WalkRayToLeaf(Onode: POctreeNode; const p, v: TVector);
+         procedure WalkPointToLeaf(ONode: POctreeNode; const p : TAffineVector);
+         procedure WalkTriToLeaf(Onode: POctreeNode; const v1, v2, v3 : TAffineVector);
+         procedure WalkSphereToLeaf(Onode: POctreeNode; const p : TVector; radius : Single);
+         procedure WalkRayToLeaf(Onode: POctreeNode; const p, v : TVector);
 
          //: Example of how to process each node in the tree
          procedure ConvertR4(ONode: POctreeNode; const scale : TAffineFLTVector);
@@ -98,6 +100,10 @@ type
          function RayCastIntersectAABB(const rayStart, rayVector : TVector;
                                        intersectPoint : PVector = nil;
                                        intersectNormal : PVector = nil) : Boolean;
+         function SphereIntersectAABB(const rayStart, rayVector : TVector;
+                                      const velocity, radius : single;
+                                      intersectPoint : PVector = nil;
+                                      intersectNormal : PVector = nil) : Boolean;
    end;
 
 // ------------------------------------------------------------------
@@ -109,6 +115,76 @@ implementation
 // ------------------------------------------------------------------
 
 uses GLVectorFileObjects;
+
+// ----------------------------------------------------------------------
+// Name  : ClosestPointOnLine()
+// Input : a - first end of line segment
+//         b - second end of line segment
+//         p - point we wish to find closest point on line from
+// Notes : Helper function for closestPointOnTriangle()
+// Return: closest point on line segment
+// -----------------------------------------------------------------------
+
+function ClosestPointOnLine(const a, b, p : TAffineVector): TAffineVector;
+var d, t: double;
+    c, v: TAffineFLTVector;
+begin
+    VectorSubtract(p, a, c);
+    VectorSubtract(b, a, v);
+
+    d:=VectorLength(v);
+    NormalizeVector(v);
+    t:=VectorDotProduct(v,c);
+
+    //Check to see if t is beyond the extents of the line segment
+    if (t < 0.0) then result:=a
+    else if (t > d) then result:=b
+    else begin
+      v[0]:=v[0]*t;
+      v[1]:=v[1]*t;
+      v[2]:=v[2]*t;
+      result:=VectorAdd(a, v);
+    end;
+end;
+
+// ----------------------------------------------------------------------
+// Name  : ClosestPointOnTriangle()
+// Input : a - first vertex in triangle
+//         b - second vertex in triangle
+//         c - third vertex in triangle
+//         p - point we wish to find closest point on triangle from
+// Notes :
+// Return: closest point on line triangle edge
+// -----------------------------------------------------------------------
+
+function ClosestPointOnTriangle(const a, b, c, p: TAffineVector): TAffineVector;
+var dAB, dBC, dCA, min: double;
+    sAB, sBC, sCA: TAffineFLTVector;
+    Rab, Rbc, Rca: TAffineFLTVector;
+begin
+    Rab:=closestPointOnLine(a, b, p);
+    Rbc:=closestPointOnLine(b, c, p);
+    Rca:=closestPointOnLine(c, a, p);
+
+    VectorSubtract(p, Rab, sAB);
+    dAB:=VectorLength(sAB);
+
+    VectorSubtract(p, Rbc, sBC);
+    dBC:=VectorLength(sBC);
+
+    VectorSubtract(p, Rca, sCA);
+    dCA:=VectorLength(sCA);
+
+    min:=dAB;
+    result:=Rab;
+
+    if (dBC < min) then begin
+      min:=dBC;
+      result:=Rbc;
+    end;
+
+    if (dCA < min) then result:= Rca;
+end;
 
 // HitBoundingBox
 //
@@ -725,30 +801,39 @@ begin
            and (aPoint[0]<=max[0]) and (aPoint[1]<=max[1]) and (aPoint[2]<=max[2]);
 end;
 
-procedure TOctree.WalkPointToLeaf(Onode: POctreeNode; p: TAffineFLTVector);
+// WalkPointToLeaf
+//
+procedure TOctree.WalkPointToLeaf(Onode: POctreeNode; const p : TAffineVector);
 begin
-   finalize(resultarray);
+   Finalize(resultarray);
    WalkPointToLeafx(Onode, p);
 end;
 
-procedure TOctree.WalkPointToLeafx(Onode: POctreeNode; p: TAffineFLTVector);
-var n: integer;
+// WalkPointToLeafx
+//
+procedure TOctree.WalkPointToLeafx(Onode: POctreeNode; const p : TAffineVector);
+var
+   n : integer;
 begin
-if PointInNode(Onode.MinExtent, Onode.MaxExtent, p) then begin
-   if Onode.ChildArray[0] <> NIL then
-     for n:=0 to 7 do
-       WalkPointToLeafx(Onode.ChildArray[n], p)
-   else begin
-   SetLength(resultarray, Length(resultarray)+1);
-   resultarray[High(resultarray)]:=Onode;
+   if PointInNode(Onode.MinExtent, Onode.MaxExtent, p) then begin
+      if Assigned(Onode.ChildArray[0]) then
+        for n:=0 to 7 do
+          WalkPointToLeafx(Onode.ChildArray[n], p)
+      else begin
+         SetLength(resultarray, Length(resultarray)+1);
+         resultarray[High(resultarray)]:=Onode;
+      end;
    end;
 end;
-end; //end Walk
 
+// SphereInNode
+//
+function TOctree.SphereInNode(const minExtent, maxExtent : TAffineVector;
+                              const c : TVector; radius : Single): Boolean;
 //Sphere-AABB intersection by Miguel Gomez
-function TOctree.SphereInNode(MinExtent, MaxExtent, C: TAffineFLTVector; radius: single): BOOLEAN;
-var s, d: single;
-    i: integer;
+var
+   s, d : Single;
+   i : Integer;
 begin
 //find the square of the distance
 //from the sphere to the box
@@ -773,26 +858,32 @@ else
    result:=FALSE;
 end;
 
-procedure TOctree.WalkSphereToLeaf(Onode: POctreeNode; p: TAffineFLTVector; radius: single);
+// WalkSphereToLeaf
+//
+procedure TOctree.WalkSphereToLeaf(Onode : POctreeNode; const p : TVector;
+                                   radius : Single);
 begin
-   finalize(resultarray);
+   Finalize(resultarray);
    WalkSphereToLeafx(Onode, p, radius);
 end;
 
-procedure TOctree.WalkSphereToLeafx(Onode: POctreeNode; p: TAffineFLTVector; radius: single);
-var n: integer;
+// WalkSphereToLeafx
+//
+procedure TOctree.WalkSphereToLeafx(Onode : POctreeNode; const p : TVector;
+                                    radius : Single);
+var
+   n : integer;
 begin
-if SphereInNode(Onode.MinExtent, Onode.MaxExtent, p, radius) then begin
-   if Onode.ChildArray[0] <> NIL then
-     for n:=0 to 7 do
-       WalkSphereToLeafx(Onode.ChildArray[n], p, radius)
-   else begin
-   SetLength(resultarray, Length(resultarray)+1);
-   resultarray[High(resultarray)]:=Onode;
+   if SphereInNode(Onode.MinExtent, Onode.MaxExtent, p, radius) then begin
+      if Assigned(Onode.ChildArray[0]) then
+        for n:=0 to 7 do
+          WalkSphereToLeafx(Onode.ChildArray[n], p, radius)
+      else begin
+         SetLength(resultarray, Length(resultarray)+1);
+         resultarray[High(resultarray)]:=Onode;
+      end;
    end;
 end;
-end; //end Walk
-
 
 //Cast a ray (point p, vector v) into the Octree (ie: ray-box intersect).
 procedure TOctree.WalkRayToLeaf(Onode: POctreeNode; const p, v: TVector);
@@ -822,7 +913,7 @@ end;
 
 //Check triangle intersect with any of the node's faces.
 //Could be replaced with a tri-box check.
-function TOctree.TriIntersectNode(MinExtent, MaxExtent, v1, v2, v3: TAffineFLTVector): BOOLEAN;
+function TOctree.TriIntersectNode(const minExtent, maxExtent, v1, v2, v3 : TAffineVector) : Boolean;
 var
   f0, f1, f2, f3:  TAffineFLTVector;
   n, o, p: integer;
@@ -922,6 +1013,178 @@ begin
       end;
    end;
    Result:=(minD<>cInitialMinD);
+end;
+
+// SphereIntersectAABB -- Walk a sphere through an Octree, given a velocity, and return the nearest polygon
+// intersection point on that sphere, and its plane normal.
+//
+// **** This function is the result of a LOT of work and experimentation with both Paul Nettle's method
+// (www.fluidstudios.com) and Telemachos' method (www.peroxide.dk) over a period of about 2 months. If
+// you find ways to optimize the general structure, please let me know at rmch@cadvision.com. ****
+//
+// TO DO: R4 conversion (routine already exists for this) for ellipsoid space.
+// Various optimizations.
+//
+//  Method for caclulating CD vs polygon: (Robert Hayes method)
+// ...for each triangle:
+// 1. cast a ray from sphere origin to triangle's plane (normal scaled to sphere radius).
+//    If distance < 0 then skip checking this triangle.
+// 2. if the distance is =< the sphere radius, the plane is embedded in the sphere.
+//    Calculate poly intersection point and go to step 8.
+// 3. if the distance > sphere radius, calculate the sphere intersection point to this plane by
+//    subtracting the plane's normal from the sphere's origin
+// 4. cast a new ray from the sphere intersection point to the plane; this is the new plane intersection point
+// 6. determine if the plane intersection point lies within the triangle itself; if yes then the polygon
+//    intersection point = the plane intersection point
+// 7. else, find the point on the triangle that is closest to the plane intersection point; this becomes
+//    the polygon intersection point (ie: edge detection)
+// 8. cast a ray from the polygon intersection point back along the negative velocity vector of the sphere
+// 9. if there is no intersection, the sphere cannot possibly collide with this triangle
+// 10. else, save the distance from step 8 if, and only if, it is the shortest collision distance so far
+//
+//
+function TOctree.SphereIntersectAABB(const rayStart, rayVector : TVector;
+                                     const velocity, radius: single;
+                                     intersectPoint : PVector = nil;
+                                     intersectNormal : PVector = nil) : Boolean;
+const
+   cInitialMinD : Single = 1e40;
+
+var
+   i, t, k : Integer;
+   minD : Double;
+   sd: Double;
+   si1, si2: TVector;
+   p: POctreeNode;
+   pNormal: TAffineVector;
+   pNormal4: TVector;
+   sIPoint: TVector;     //sphere intersection point
+   pIPoint: TVector;     //plane intersection point
+   polyIPoint: TVector;  //polygon intersection point
+   normalizedVelocity: TAffineVector;
+   NEGnormalizedVelocity: TAffineFLTVector;
+   distanceToTravel: Double;
+   velocityVector: TAffineVector;
+
+   p1, p2, p3: TAffineVector;
+
+   //response identifiers (for future use)
+   //destinationPoint, newdestinationPoint: TVector;
+   //slidePlaneOrigin, slidePlaneNormal: TVector;
+   //newvelocityVector: TVector;
+   //v: single;
+   //L: double;
+
+
+begin
+   result:=FALSE;  //default: no collision
+
+   //Set up a velocity vector of correct length
+   SetVector(normalizedVelocity, RayVector);
+   SetVector(velocityVector, normalizedVelocity);
+   ScaleVector(velocityVector, velocity);
+
+   //How far ahead to check for collisions
+   distanceToTravel := VectorLength(velocityVector);
+
+   //The reverse velocity vector for ray-sphere intersection checks
+   NEGnormalizedVelocity := Velocityvector;
+   NegateVector(VelocityVector);
+
+   //Determine all the octree nodes this sphere intersects with.
+   //NOTE: may be more efficient to find the bounding box that includes the
+   //startpoint and endpoint rather than the sphere origin + distance (?)
+   WalkSphereToLeaf(RootNode, RayStart, distanceToTravel);
+
+   if resultarray = NIL then begin
+      exit;
+   end;
+
+   sd:=cInitialMinD;
+   minD:=cInitialMinD;
+   for i:=0 to High(resultarray) do begin
+     p:=ResultArray[i];
+     for t:=0 to High(p.TriArray) do begin
+         k:=p.triarray[t];
+         //these are the vertices of the triangle we are checking
+         p1:=trianglefiler.List[k];
+         p2:=trianglefiler.List[k+1];
+         p3:=trianglefiler.List[k+2];
+
+         //create the normal for this triangle
+         pNormal:=CalcPlaneNormal(p1, p2, p3);
+         //set the normal to the radius of the sphere
+         ScaleVector(pNormal, radius);
+         MakeVector(pNormal4, pNormal);
+
+         //ignore backfacing planes
+         if VectorDotProduct(pNormal4, RayVector) > 0.0 then continue;
+
+         //calculate the plane intersection point (sphere origin to plane)
+         if RayCastPlaneIntersect(RayStart, RayVector, VectorMake(p1),
+                                  pNormal4, @pIPoint) then
+         begin
+            sd:=VectorDistance2(RayStart, pIPoint);
+            if sd < 0 then continue;  //plane is behind, forget it
+            if sd <= radius then
+/////////////// Case 1: Plane is embedded within Sphere ////////////////////////////////////
+            begin
+              if not RayCastTriangleIntersect(RayStart, RayVector,
+                                 p1, p2, p3, @polyIPoint, @pNormal) then begin
+                SetVector(polyIPoint,
+                          ClosestPointOnTriangle(p1, p2, p3, AffineVectorMake(pIPoint)));
+                //Now cast a ray from the poly intersection point back towards the sphere along
+                //the negative velocity vector of travel.
+                if RayCastSphereIntersect(polyIPoint, VectorMake(NEGnormalizedVelocity),
+                                          RayStart, radius, si1, si2) = 1 then
+                   sd:=VectorDistance2(polyIPoint, si1)
+                else
+                   sd:=-1;
+              end
+                else sd:=VectorDistance2(RayStart, polyIPoint);
+            end
+            else begin
+/////////////// Case 2: Plane is ahead of and outside the bounding Sphere ///////////////////
+              // calculate sphere intersection point (ie: point on sphere that hits plane)
+              SetVector(sIPoint, VectorSubtract(RayStart, pNormal4));
+
+              //calculate the polygon intersection point (sphere intersection to triangle)
+              if RayCastTriangleIntersect(sIPoint, RayVector,
+                                  p1, p2, p3, @polyIPoint, @pNormal) then begin
+                 sd:=VectorDistance2(sIPoint, polyIPoint);
+                 if sd < 0 then continue;  //should not happen but catch anyways
+              end
+              else begin
+/////////////// Case 3: Sphere velocity vector does not directly collide with triangle, BUT //
+///////////////         possible that it "nicks" the triangles edge!                        //
+              //(following raycast may be needed for more accuracy)
+              //RayCastPlaneIntersect(sIPoint, locRayVector, VectorMake(p1), pNormal4, @pIPoint);
+                 SetVector(polyIPoint, ClosestPointOnTriangle(p1, p2, p3, AffineVectorMake(pIPoint)));
+              //Now cast a ray from the poly intersection point back towards the sphere along
+              //the negative velocity vector of travel.
+                 if RayCastSphereIntersect(polyIPoint, VectorMake(NEGnormalizedVelocity),
+                                           RayStart, radius, si1, si2) = 1 then
+                    sd:=VectorDistance2(polyIPoint, si1)
+                 else
+                    sd:=-1;
+              end
+            end //end else
+         end //end if raycast hit triangle's plane
+         else begin
+             continue; //if the first ray cast didn't hit the plane, forget it.
+         end;
+
+         if (sd >= 0) and (sd <= distanceToTravel) then begin
+            result:=TRUE; //flag a collision
+            if (sd<minD) or (minD<0) then begin
+                minD:=sd;
+
+                if intersectPoint<>nil then intersectPoint^:=polyIPoint;
+                if intersectNormal<>nil then intersectNormal^:=pNormal4;
+            end;
+         end;
+     end;  //end for t triangles
+   end; //end for i nodes
 end;
 
 end.
