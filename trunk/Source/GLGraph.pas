@@ -3,6 +3,7 @@
 	Graph plotting objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>10/01/02 - Egg - Added OnGetHeight2
       <li>30/11/01 - Egg - Color fix in THeightField.BuildList (thx Marc Hull)
       <li>19/07/01 - Egg - THeightField no longer calls OnGetHeight in design mode
       <li>06/03/01 - Egg - Fix in THeightField.BuildList (thx Rene Lindsay)
@@ -71,6 +72,11 @@ type
                                            var   z : Single;
                                            var   color : TColorVector;
                                            var   texPoint : TTexPoint) of object;
+   THeightFieldGetHeight2Event = procedure (Sender : TObject;
+                                            const x, y : Single;
+                                            var   z : Single;
+                                            var   color : TColorVector;
+                                            var   texPoint : TTexPoint) of object;
 
    // THeightFieldOptions
    //
@@ -97,6 +103,7 @@ type
 	   private
 	      { Private Declarations }
          FOnGetHeight : THeightFieldGetHeightEvent;
+         FOnGetHeight2 : THeightFieldGetHeight2Event;
          FXSamplingScale : TGLSamplingScale;
          FYSamplingScale : TGLSamplingScale;
          FOptions : THeightFieldOptions;
@@ -109,11 +116,15 @@ type
          procedure SetYSamplingScale(const val : TGLSamplingScale);
          procedure SetOptions(const val : THeightFieldOptions);
          procedure SetOnGetHeight(const val : THeightFieldGetHeightEvent);
+         procedure SetOnGetHeight2(const val : THeightFieldGetHeight2Event);
          procedure SetColorMode(const val : THeightFieldColorMode);
 
          procedure DefaultHeightField(const x, y : Single;
                                       var z : Single; var color : TColorVector;
                                       var texPoint : TTexPoint);
+         procedure Height2Field(const x, y : Single;
+                                var z : Single; var color : TColorVector;
+                                var texPoint : TTexPoint);
 
 	   public
 	      { Public Declarations }
@@ -134,8 +145,12 @@ type
          property ColorMode : THeightFieldColorMode read FColorMode write SetColorMode default hfcmNone;
          property Options : THeightFieldOptions read FOptions write SetOptions default [hfoTwoSided];
 
-         {: Use this event to return heights. }
+         {: Primary event to return heights. }
          property OnGetHeight : THeightFieldGetHeightEvent read FOnGetHeight write SetOnGetHeight;
+         {: Alternate this event to return heights.<p>
+            This events passes an extra "Sender" parameter, it will be invoked
+            only if OnGetHeight isn't defined. }
+         property OnGetHeight2 : THeightFieldGetHeight2Event read FOnGetHeight2 write SetOnGetHeight2;
 	end;
 
    // TXYZGridParts
@@ -420,6 +435,8 @@ begin
    if not (XSamplingScale.IsValid and YSamplingScale.IsValid) then Exit;
    if Assigned(FOnGetHeight) and (not (csDesigning in ComponentState)) then
       func:=FOnGetHeight
+   else if Assigned(FOnGetHeight2) and (not (csDesigning in ComponentState)) then
+      func:=Height2Field
    else func:=DefaultHeightField;
    // allocate row cache
    nx:=(XSamplingScale.MaxStepCount+1)*SizeOf(TRowData);
@@ -532,6 +549,14 @@ begin
    StructureChanged;
 end;
 
+// SetOnGetHeight2
+//
+procedure THeightField.SetOnGetHeight2(const val : THeightFieldGetHeight2Event);
+begin
+   FOnGetHeight2:=val;
+   StructureChanged;
+end;
+
 // SetColorMode
 //
 procedure THeightField.SetColorMode(const val : THeightFieldColorMode);
@@ -549,6 +574,14 @@ procedure THeightField.DefaultHeightField(const x, y : Single;
 begin
    z:=VectorNorm(x, y);
    z:=cos(z*12)/(2*(z*6.28+1));
+end;
+
+// Height2Field
+//
+procedure THeightField.Height2Field(const x, y : Single;
+            var z : Single; var color : TColorVector; var texPoint : TTexPoint);
+begin
+   FOnGetHeight2(Self, x, y, z, color, texPoint);
 end;
 
 // ------------------
