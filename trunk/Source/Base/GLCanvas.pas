@@ -65,6 +65,8 @@ type
 
 	      procedure StartPrimitive(const primitiveType : Integer);
 
+         procedure EllipseVertices(x, y, xRadius, yRadius : Single);
+
          procedure SetPenColor(const val : TColor);
          procedure SetPenAlpha(const val : Single);
          procedure SetPenWidth(const val : Integer);
@@ -141,6 +143,8 @@ type
          {: Draws and ellipse centered at (x, y) with given radiuses. }
 	      procedure Ellipse(const x, y : Integer; const xRadius, yRadius : Single); overload;
 	      procedure Ellipse(x, y, xRadius, yRadius : Single); overload;
+         {: Draw a filled ellipse. }
+	      procedure FillEllipse(const x, y : Integer; const xRadius, yRadius : Single); overload;
 	end;
 
 //-------------------------------------------------------------
@@ -511,6 +515,34 @@ begin
    glVertex2f(x2, y2);  glVertex2f(x1, y2);
 end;
 
+// EllipseVertices
+//
+procedure TGLCanvas.EllipseVertices(x, y, xRadius, yRadius : Single);
+var
+   i, n : Integer;
+   s, c : TSingleArray;
+begin
+   n:=Round(MaxFloat(xRadius, yRadius)*0.1)+5;
+   SetLength(s, n);
+   SetLength(c, n);
+   Dec(n);
+   PrepareSinCosCache(s, c, 0, 90);
+   ScaleFloatArray(s, yRadius);
+   ScaleFloatArray(c, xRadius);
+   // first quadrant (top right)
+   for i:=0 to n do
+      glVertex2f(x+c[i], y-s[i]);
+   // second quadrant (top left)
+   for i:=n-1 downto 0 do
+      glVertex2f(x-c[i], y-s[i]);
+   // third quadrant (bottom left)
+   for i:=1 to n do
+      glVertex2f(x-c[i], y+s[i]);
+   // fourth quadrant (bottom right)
+   for i:=n-1 downto 0 do
+      glVertex2f(x+c[i], y+s[i]);
+end;
+
 // Ellipse
 //
 procedure TGLCanvas.Ellipse(const x1, y1, x2, y2 : Integer);
@@ -531,30 +563,19 @@ end;
 // Ellipse
 //
 procedure TGLCanvas.Ellipse(x, y, xRadius, yRadius : Single);
-var
-   i, n : Integer;
-   s, c : TSingleArray;
 begin
-   n:=Round(MaxFloat(xRadius, yRadius)*0.1)+5;
-   SetLength(s, n);
-   SetLength(c, n);
-   Dec(n);
-   PrepareSinCosCache(s, c, 0, 90);
-   ScaleFloatArray(s, yRadius);
-   ScaleFloatArray(c, xRadius);
    StartPrimitive(GL_LINE_STRIP);
-   // first quadrant (top right)
-   for i:=0 to n do
-      glVertex2f(x+c[i], y-s[i]);
-   // second quadrant (top left)
-   for i:=n-1 downto 0 do
-      glVertex2f(x-c[i], y-s[i]);
-   // third quadrant (bottom left)
-   for i:=1 to n do
-      glVertex2f(x-c[i], y+s[i]);
-   // fourth quadrant (bottom right)
-   for i:=n-1 downto 0 do
-      glVertex2f(x+c[i], y+s[i]);
+   EllipseVertices(x, y, xRadius, yRadius);
+   StopPrimitive;
+end;
+
+// FillEllipse
+//
+procedure TGLCanvas.FillEllipse(const x, y : Integer; const xRadius, yRadius : Single);
+begin
+   StartPrimitive(GL_TRIANGLE_FAN);
+   glVertex2f(x, y); // not really necessary, but may help with memory stride
+   EllipseVertices(x, y, xRadius, yRadius);
    StopPrimitive;
 end;
 
