@@ -486,22 +486,9 @@ constructor TGLMovementPath.Create(Collection: TCollection);
 begin
   //This object can only be added to a TGLMovement class
   inherited Create(Collection);
-  FNodes         := TGLPathNodes.Create(Self);
-  FStartTime     := 0;
-  FEstimateTime  := 0;
-  FCurrentNode   := nil;
-  FInTravel      := False;
-  FOnTravelStart := nil;
-  FOnTravelStop  := nil;
-  FLooped        := False;
+  FNodes := TGLPathNodes.Create(Self);
   FCurrentNodeIndex := -1;
-  FCurrentNode   := nil;
 
-  MotionSplineControl   := nil;
-  RotationSplineControl := nil;
-  ScaleSplineControl    := nil;
-  FShowPath := False;
-  FPathLine := nil;
   FPathSplineMode := lsmCubicSpline;
 end;
 
