@@ -29,6 +29,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/09/03 - EG - New Abs/Max functions, VectorTransform(affine, hmgMatrix)
+                          now considers the matrix as 4x3 (was 3x3)
       <li>21/08/02 - EG - Added Pack/UnPackRotationMatrix
       <li>13/08/02 - EG - Added Area functions
       <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits 
@@ -707,6 +709,8 @@ function VectorRotateAroundZ(const v : TAffineVector; alpha : Single) : TAffineV
 procedure AbsVector(var v : TVector); overload;
 //: Vector components are replaced by their Abs() value. }
 procedure AbsVector(var v : TAffineVector); overload;
+//: Returns a vector with components replaced by their Abs value. }
+function VectorAbs(const v : TVector) : TVector; overload;
 
 //------------------------------------------------------------------------------
 // Matrix functions
@@ -1035,6 +1039,12 @@ function MinXYZComponent(const v : TVector) : Single;
 function MaxAbsXYZComponent(v : TVector) : Single;
 {: Returns the min of the Abs(X), Abs(Y) and Abs(Z) components of a vector (W is ignored). }
 function MinAbsXYZComponent(v : TVector) : Single;
+{: Replace components of v with the max of v or v1 component.<p>
+   Maximum is computed per component. }
+procedure MaxVector(var v : TVector; const v1 : TVector);
+{: Replace components of v with the min of v or v1 component.<p>
+   Minimum is computed per component. }
+procedure MinVector(var v : TVector; const v1 : TVector);
 
 {: Sorts given array in ascending order.<p>
    NOTE : current implementation is a slow bubble sort... }
@@ -4033,6 +4043,16 @@ begin
   v[2]:=Abs(v[2]);
 end;
 
+// VectorAbs (hmg)
+//
+function VectorAbs(const v : TVector) : TVector;
+begin
+   Result[0]:=Abs(v[0]);
+   Result[1]:=Abs(v[1]);
+   Result[2]:=Abs(v[2]);
+   Result[3]:=Abs(v[3]);
+end;
+
 // SetMatrix (single->double)
 //
 procedure SetMatrix(var dest : THomogeneousDblMatrix; const src : TMatrix);
@@ -4518,9 +4538,9 @@ end;
 //
 function VectorTransform(const V: TAffineVector; const M: TMatrix): TAffineVector; register;
 begin
-   Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X];
-   Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y];
-   Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z];
+   Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X] + M[W, X];
+   Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y] + M[W, Y];
+   Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z] + M[W, Z];
 end;
 
 // VectorTransform
@@ -6423,6 +6443,26 @@ function MinAbsXYZComponent(v : TVector) : Single;
 begin
    AbsVector(v);
    Result:=MinXYZComponent(v);
+end;
+
+// MaxVector
+//
+procedure MaxVector(var v : TVector; const v1 : TVector);
+begin
+   if v1[0]>v[0] then v[0]:=v1[0];
+   if v1[1]>v[1] then v[1]:=v1[1];
+   if v1[2]>v[2] then v[2]:=v1[2];
+   if v1[3]>v[3] then v[3]:=v1[3];
+end;
+
+// MinVector
+//
+procedure MinVector(var v : TVector; const v1 : TVector);
+begin
+   if v1[0]<v[0] then v[0]:=v1[0];
+   if v1[1]<v[1] then v[1]:=v1[1];
+   if v1[2]<v[2] then v[2]:=v1[2];
+   if v1[3]<v[3] then v[3]:=v1[3];
 end;
 
 // SortArrayAscending (extended)
