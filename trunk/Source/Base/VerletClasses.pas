@@ -518,6 +518,7 @@ type
          FBase : TAffineVector;
          FAxis : TAffineVector;
          FRadius, FRadius2, FLength, FLengthDiv2 : Single;
+         FFriction: single;
 
       protected
 			{ Protected Declarations }
@@ -534,6 +535,9 @@ type
          property Axis : TAffineVector read FAxis write SetAxis;
          property Radius : single read FRadius write SetRadius;
          property Length : single read FLength write SetLength;
+         property Friction : single read FFriction write FFriction;
+
+         constructor Create(aOwner : TVerletAssembly); override;
    end;
 
 
@@ -1561,8 +1565,10 @@ end;
 procedure TVCCapsule.SatisfyConstraintForNode(aNode : TVerletNode;
                                               const iteration, maxIterations : Integer);
 var
-   p, n2  : Single;
+   p, n2, penetrationDepth  : Single;
    closest, v : TAffineVector;
+   newLocation : TAffineVector;
+
 begin
    // Find the closest point to location on the capsule axis
    p:=ClampValue(PointProject(aNode.Location, FBase, FAxis),
@@ -1574,8 +1580,22 @@ begin
 
    // should it be altered?
    n2:=VectorNorm(v);
+
    if n2<FRadius2 then
-      aNode.FLocation:=VectorCombine(closest, v, 1, Sqrt(FRadius2/n2));
+   begin
+      newLocation := VectorCombine(closest, v, 1, Sqrt(FRadius2/n2));
+
+      // Do friction calculations
+      penetrationDepth := VectorLength(VectorSubtract(newLocation,aNode.FLocation));
+      aNode.OldApplyFriction(FFriction, penetrationDepth);
+
+      aNode.FLocation:=newLocation;
+   end;
 end;
 
+constructor TVCCapsule.Create(aOwner: TVerletAssembly);
+begin
+  inherited;
+  FFriction := 0.05;
+end;
 end.
