@@ -7,6 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
       <li>20/01/02 - EG - Several optimization (35% faster on Volcano bench)
       <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
       <li>08/09/01 - EG - Creation (GLParticleFX.omm)
@@ -1531,9 +1532,9 @@ begin
          else
             lck:=LifeColors[k];
             lck1:=LifeColors[k-1];
-            f:=(lifeTime-lck1.LifeTime)*lck.InvLifeTime;
-            VectorLerp(lck1.ColorInner.Color, lck1.ColorInner.Color, f, inner);
-            VectorLerp(lck.ColorOuter.Color,  lck.ColorOuter.Color, f, outer);
+            f:=(lifeTime-lck1.LifeTime)*(lck.LifeTime-lck1.LifeTime);
+            VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
+            VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
       end;
    end;
