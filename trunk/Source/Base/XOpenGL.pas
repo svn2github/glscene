@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>18/12/01 - EG - Added xglEnableClientState
       <li>24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL12)
       <li>17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall) 
       <li>16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
@@ -63,6 +64,7 @@ var
 
    // Vertex Arrays texture coordinates specification
    xglTexCoordPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglEnableClientState: procedure(aarray: TGLEnum); {$ifdef Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
    // Misc
    xglEnable: procedure(cap: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -161,6 +163,13 @@ begin
    glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
+procedure xglEnableClientState_Second(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glEnableClientState(aArray);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
 // --------- Dual Texturing
 
 procedure glTexCoord2f_Dual(s, t: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -255,6 +264,14 @@ begin
    glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
+procedure xglEnableClientState_Dual(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+begin
+   glEnableClientState(aArray);
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glEnableClientState(aArray);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
 // --------- Null Texturing
 
 procedure glTexCoord2f_Null(s, t: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
@@ -296,6 +313,9 @@ begin end;
 procedure xglTexCoordPointer_Null(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 begin end;
 
+procedure xglEnableClientState_Null(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+begin end;
+
 // ------------------------------------------------------------------
 // Redirections management functions
 // ------------------------------------------------------------------
@@ -320,6 +340,7 @@ begin
       xglTexGeniv:=glTexGeniv_Null;
 
       xglTexCoordPointer:=xglTexCoordPointer_Null;
+      xglEnableClientState:=xglEnableClientState_Null;
 
       xglEnable:=glEnable_Null;
       xglDisable:=glDisable_Null;
@@ -346,6 +367,7 @@ begin
       xglTexGeniv:=glTexGeniv;
 
       xglTexCoordPointer:=glTexCoordPointer;
+      xglEnableClientState:=glEnableClientState;
 
       xglEnable:=glEnable;
       xglDisable:=glDisable;
@@ -373,6 +395,7 @@ begin
       xglTexGeniv:=glTexGeniv_Second;
 
       xglTexCoordPointer:=xglTexCoordPointer_Second;
+      xglEnableClientState:=xglEnableClientState_Second;
 
       xglEnable:=glEnable_Second;
       xglDisable:=glDisable_Second;
@@ -400,6 +423,7 @@ begin
       xglTexGeniv:=glTexGeniv_Dual;
 
       xglTexCoordPointer:=xglTexCoordPointer_Dual;
+      xglEnableClientState:=xglEnableClientState_Dual;
 
       xglEnable:=glEnable_Dual;
       xglDisable:=glDisable_Dual;
