@@ -200,14 +200,14 @@ type
          FPosition : TAffineVectorList;
          FRotation : TAffineVectorList;
          FLocalMatrixList : PMatrixArray;
-         FQuaternion : TVectorList;
+         FQuaternion : TQuaternionList;
          FTransformMode : TSkeletonFrameTransform;
 
 	   protected
 	      { Protected Declarations }
          procedure SetPosition(const val : TAffineVectorList);
          procedure SetRotation(const val : TAffineVectorList);
-         procedure SetQuaternion(const val : TVectorList);
+         procedure SetQuaternion(const val : TQuaternionList);
 
 	   public
 	      { Public Declarations }
@@ -226,7 +226,7 @@ type
          property Rotation : TAffineVectorList read FRotation write SetRotation;
          {: Quaternions are an alternative to Euler rotations to build the
             global matrices for the skeleton bones. }
-         property Quaternion : TVectorList read FQuaternion write SetQuaternion;
+         property Quaternion : TQuaternionList read FQuaternion write SetQuaternion;
          {: TransformMode indicates whether to use Rotation or Quaternion to build
             the local transform matrices. }
          property TransformMode : TSkeletonFrameTransform read FTransformMode write FTransformMode;
@@ -1978,7 +1978,7 @@ begin
 	inherited Create;
    FPosition:=TAffineVectorList.Create;
    FRotation:=TAffineVectorList.Create;
-   FQuaternion:=TVectorList.Create;
+   FQuaternion:=TQuaternionList.Create;
    FTransformMode:=sftRotation;
 end;
 
@@ -2044,7 +2044,7 @@ end;
 
 // SetQuaternion
 //
-procedure TSkeletonFrame.SetQuaternion(const val : TVectorList);
+procedure TSkeletonFrame.SetQuaternion(const val : TQuaternionList);
 begin
    FQuaternion.Assign(val);
 end;
@@ -2082,7 +2082,7 @@ begin
          sftQuaternion : begin
             FLocalMatrixList:=AllocMem(SizeOf(TMatrix)*Quaternion.Count);
             for i:=0 to Quaternion.Count-1 do begin
-               quat.Vector:=Quaternion[i];
+               quat:=Quaternion[i];
                mat:=QuaternionToMatrix(quat);
                mat[3][0]:=Position[i][0];
                mat[3][1]:=Position[i][1];
