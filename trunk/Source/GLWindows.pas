@@ -86,20 +86,20 @@ type
 
   TGLBaseFontControl = class(TGLBaseControl)
   private
-    FBitmapFont: TBitmapFont;
+    FBitmapFont: TGLCustomBitmapFont;
     FDefaultColor    : TColorVector;
   protected
     Function  GetDefaultColor : TColor;
     procedure SetDefaultColor(value : TColor);
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    Procedure SetBitmapFont(NewFont : TBitmapFont);
+    Procedure SetBitmapFont(NewFont : TGLCustomBitmapFont);
     Procedure WriteTextAt(Const X,Y : TGLFloat; Const Data : String; const Color : TColorVector); overload;
     Procedure WriteTextAt(Const X1,Y1,X2,Y2 : TGLFloat; Const Data : String; const Color : TColorVector); overload;
     Function  GetFontHeight : Integer;
   public
     Destructor Destroy; override;
   published
-    property BitmapFont : TBitmapFont read FBitmapFont write SetBitmapFont;
+    property BitmapFont : TGLCustomBitmapFont read FBitmapFont write SetBitmapFont;
     property DefaultColor : TColor read GetDefaultColor write SetDefaultColor;
   end;
 
@@ -822,7 +822,7 @@ Begin
   inherited;
 End;
 
-Procedure TGLBaseFontControl.SetBitmapFont(NewFont : TBitmapFont);
+Procedure TGLBaseFontControl.SetBitmapFont(NewFont : TGLCustomBitmapFont);
 
 Begin
    if NewFont<>FBitmapFont then begin
