@@ -11,7 +11,7 @@
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES)"/>
-    <LIBFILES value="..\Source\CgShaders\cg_lib.lib ..\Source\CgShaders\cgGL_lib.lib"/>
+    <LIBFILES value="..\Source\CgShaders\cg.lib ..\Source\CgShaders\cgGL.lib"/>
     <LIBRARIES value=""/>
     <SPARELIBS value="rtl.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi GLSceneBCB6.bpi"/>
@@ -56,8 +56,8 @@
       <FILE FILENAME="..\Source\CgShaders\cgGL.pas" FORMNAME="" UNITNAME="cgGL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\GLSceneVCLCg.dcr" FORMNAME="" UNITNAME="GLSceneVCLCg" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\GLCgShader.pas" FORMNAME="" UNITNAME="GLCgShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\CgShaders\cg_lib.lib" FORMNAME="" UNITNAME="cg_lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\CgShaders\cgGL_lib.lib" FORMNAME="" UNITNAME="cgGL_lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\CgShaders\cg.lib" FORMNAME="" UNITNAME="cg" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\CgShaders\cgGL.lib" FORMNAME="" UNITNAME="cgGL" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

@@ -11,7 +11,7 @@
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES)"/>
-    <LIBFILES value="..\Source\GameAPIs\msvcrt.lib ..\Source\GameAPIs\sdl_lib.lib"/>
+    <LIBFILES value="..\Source\GameAPIs\msvcrt.lib ..\Source\GameAPIs\sdl.lib"/>
     <LIBRARIES value=""/>
     <SPARELIBS value="rtl.lib"/>
     <PACKAGES value="vcl.bpi rtl.bpi GLSceneBCB6.bpi"/>
@@ -59,7 +59,7 @@
       <FILE FILENAME="..\Source\GameAPIs\sdl.pas" FORMNAME="" UNITNAME="SDL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GameAPIs\SDLWindow.pas" FORMNAME="" UNITNAME="SDLWindow" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GameAPIs\msvcrt.lib" FORMNAME="" UNITNAME="msvcrt" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\GameAPIs\sdl_lib.lib" FORMNAME="" UNITNAME="sdl_lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GameAPIs\sdl.lib" FORMNAME="" UNITNAME="sdl" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
