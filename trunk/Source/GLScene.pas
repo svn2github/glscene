@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/09/03 - Egg - BoundingBox computation now based on AABB code
       <li>27/08/02 - Egg - Added TGLProxyObject.RayCastIntersect (Matheus Degiovani),
                            Fixed PixelRayToWorld
       <li>22/08/02 - Egg - Fixed src LocalMatrix computation on Assign
@@ -2633,23 +2634,23 @@ end;
 // AxisAlignedBoundingBox
 //
 function TGLBaseSceneObject.AxisAlignedBoundingBox : TAABB;
+var
+   i : Integer;
+   aabb : TAABB;
 begin
-   Result:=BBToAABB(BoundingBox);
+   SetAABB(Result, AxisAlignedDimensions);
+   for i:=0 to FChildren.Count-1 do begin
+      aabb:=TGLBaseSceneObject(FChildren[i]).AxisAlignedBoundingBox;
+      AABBTransform(aabb, TGLBaseSceneObject(FChildren[i]).Matrix);
+      AddAABB(Result, aabb);
+   end;
 end;
 
 // BoundingBox
 //
 function TGLBaseSceneObject.BoundingBox : THmgBoundingBox;
-var
-   i : Integer;
-   bb : THmgBoundingBox;
 begin
-   SetBB(Result, AxisAlignedDimensions);
-   for i:=0 to FChildren.Count-1 do begin
-      bb:=TGLBaseSceneObject(FChildren[i]).BoundingBox;
-      BBTransform(bb, TGLBaseSceneObject(FChildren[i]).Matrix);
-      AddBB(Result, bb);
-   end;
+   Result:=AABBToBB(AxisAlignedBoundingBox);
 end;
 
 // BoundingSphereRadius
