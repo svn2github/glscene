@@ -5,10 +5,11 @@
 
 	Vector File related objects for GLScene<p>
 
-	<b>History :</b><font size=-1><ul>
-	   <li>28/10/03 - SG - Partly implemented skeletal animation,
-                           asynchronous animations will fail however.
-	   <li>03/06/03 - EG - Added header, now self-registers
+  <b>History :</b><font size=-1><ul>
+    <li>19/12/04 - PhP - Added capabilities function
+    <li>28/10/03 - SG - Partly implemented skeletal animation,
+                        asynchronous animations will fail however.
+    <li>03/06/03 - EG - Added header, now self-registers
 	</ul></font>
 }
 unit GLFileMS3D;
@@ -17,18 +18,18 @@ interface
 
 uses
   Classes, SysUtils, GLVectorFileObjects,  VectorTypes, GLTexture, VectorGeometry,
-  VectorLists;
+  VectorLists, ApplicationFileIO;
 
 type
-   // TGLMS3DVectorFile
-   //
-   {: The MilkShape vector file.<p>
-      By Mattias Fagerlund, mattias@cambrianlabs.com. Yada yada. Eric rules! }
-   TGLMS3DVectorFile = class (TVectorFile)
-      public
-         { Public Declarations }
-         procedure LoadFromStream(aStream : TStream); override;
-   end;
+  // TGLMS3DVectorFile
+  //
+  {: The MilkShape vector file.<p>
+     By Mattias Fagerlund, mattias@cambrianlabs.com. Yada yada. Eric rules! }
+  TGLMS3DVectorFile = class(TVectorFile)
+  public
+    class function Capabilities: TDataFileCapabilities; override;
+    procedure LoadFromStream(aStream : TStream); override;
+  end;
 
 implementation
 
@@ -36,6 +37,13 @@ uses
   TypesMS3D;
 
 { TGLMS3DVectorFile }
+
+// capabilities
+//
+class function TGLMS3DVectorFile.Capabilities: TDataFileCapabilities;
+begin
+  Result := [dfcRead];
+end;
 
 // loadfromstream
 //
