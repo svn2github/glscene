@@ -39,6 +39,7 @@ procedure SetAABB(var bb : TAABB; const v : TVector);
 
 procedure BBTransform(var c : THmgBoundingBox; const m : TMatrix);
 procedure AABBTransform(var bb : TAABB; const m : TMatrix);
+procedure AABBScale(var bb : TAABB; const v : TAffineVector);
 
 function BBMinX(const c : THmgBoundingBox) : Single;
 function BBMaxX(const c : THmgBoundingBox) : Single;
@@ -195,6 +196,14 @@ begin
    AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMin[1], oldMax[2]), m));
    AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMax[1], oldMin[2]), m));
    AABBInclude(bb, VectorTransform(oldMax , m));
+end;
+
+//AABBScale
+//
+procedure AABBScale(var bb : TAABB; const v : TAffineVector);
+begin
+  ScaleVector(bb.min,v);
+  ScaleVector(bb.max,v);
 end;
 
 //BBMinX
