@@ -180,6 +180,7 @@ contains
   GLTilePlane in '..\Source\GLTilePlane.pas',
   GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas',
   GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas',
-  GLImposter in '..\Source\GLImposter.pas';
+  GLImposter in '..\Source\GLImposter.pas',
+  GLWaterPlane in '..\Source\GLWaterPlane.pas';
 
 end.
