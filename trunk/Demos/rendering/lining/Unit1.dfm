@@ -288,7 +288,6 @@ object Form1: TForm1
   object GLOutlineShader1: TGLOutlineShader
     LineColor.Color = {0000803F00000000000000000000803F}
     LineSmooth = True
-    BlendLine = True
     LineWidth = 4.000000000000000000
     Left = 8
     Top = 72
@@ -299,7 +298,6 @@ object Form1: TForm1
     FrontLine.Pattern = 10101
     BackLine.Width = 2.000000000000000000
     LineSmooth = True
-    BlendLine = True
     Solid = True
     Left = 40
     Top = 8
@@ -310,7 +308,6 @@ object Form1: TForm1
     BackLine.Color.Color = {000000000000003F000000000000803F}
     BackLine.Pattern = 65280
     LineSmooth = True
-    BlendLine = True
     SurfaceLit = False
     Left = 40
     Top = 40
@@ -321,7 +318,6 @@ object Form1: TForm1
     BackLine.Width = 5.000000000000000000
     BackLine.Color.Color = {0000003F0000003F0000003F9A99993E}
     LineSmooth = True
-    BlendLine = True
     Left = 40
     Top = 72
   end
@@ -331,7 +327,6 @@ object Form1: TForm1
     BackLine.Width = 1.000000000000000000
     BackLine.Color.Color = {E4DB5B3FEBE0E03E9A93133F0000803F}
     LineSmooth = True
-    BlendLine = True
     Left = 72
     Top = 8
   end
@@ -342,7 +337,6 @@ object Form1: TForm1
     BackLine.Color.Color = {000000000000003F000000000000803F}
     BackLine.Pattern = 65280
     LineSmooth = True
-    BlendLine = True
     Solid = True
     BackgroundColor.Color = {938C0C3E938E0E3F938C0C3E3333333F}
     SurfaceLit = False
