@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>23/07/02 - EG - TBaseMesh.LoadFromStream fix (D. Angilella)
       <li>13/07/02 - EG - AutoCenter on barycenter
       <li>22/03/02 - EG - TAnimationControler basics now functional
       <li>13/03/02 - EG - Octree support (experimental)
@@ -4267,8 +4268,11 @@ begin
          newVectorFile.ResourceName:=filename;
          PrepareVectorFile(newVectorFile);
          if Assigned(Scene) then Scene.BeginUpdate;
-         newVectorFile.LoadFromStream(aStream);
-         if Assigned(Scene) then Scene.EndUpdate;
+         try
+            newVectorFile.LoadFromStream(aStream);
+         finally
+            if Assigned(Scene) then Scene.EndUpdate;
+         end;
       finally
          newVectorFile.Free;
       end;
