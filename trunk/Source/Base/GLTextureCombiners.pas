@@ -43,7 +43,7 @@ type
    Accepted tokens:<ul>
    <li>Tex0, Tex1, etc. : texture unit
    <li>PrimaryColor, Col : the primary color
-   <li>ConstantColor, EnvCol : texture environement constant color
+   <li>ConstantColor, EnvCol : texture environment constant color
    </ul><br>
    Tokens can be qualified with '.a' or '.alpha' to specify the alpha channel
    explicitly, and '.rgb' to specify color channels (default). You cannot mix

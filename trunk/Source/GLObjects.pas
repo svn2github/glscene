@@ -2979,9 +2979,9 @@ begin
          glVertex3f(0, 0, 0)
       else begin
          glVertex3f(0, SinP, 0);
+         N1:=YVector;
          if DoReverse then
-            MakeVector(N1, 0, -1, 0)
-         else N1:=YVector;
+            N1[1]:=-N1[1];
       end;
       V1[1]:=SinP;
       Theta:=AngStart;
@@ -2993,7 +2993,7 @@ begin
             N1:=VectorPerpendicular(YVector, V1);
             if DoReverse then NegateVector(N1);
          end;
-         xglTexCoord2f(SinT / 2 + 0.5, CosT / 2 + 0.5);
+         xglTexCoord2f(SinT*0.5+0.5, CosT*0.5+0.5);
          glNormal3fv(@N1);
          glVertex3fv(@V1);
          Theta:=Theta + StepH;
