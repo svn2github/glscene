@@ -45,7 +45,7 @@ type
    TGLParticle = class (TPersistentObject)
       private
          { Private Declarations }
-         FID : Integer;             
+         FID, FTag : Integer;             
          FOwner : TGLParticleList;  // NOT persistent
          FPosition : TAffineVector;
          FVelocity : TAffineVector;
@@ -84,6 +84,7 @@ type
          property VelX : Single read FVelocity[0] write FVelocity[0];
          property VelY : Single read FVelocity[1] write FVelocity[1];
          property VelZ : Single read FVelocity[2] write FVelocity[2];
+         property Tag : Integer read FTag write FTag;
    end;
 
    TGLParticleArray = array [0..MaxInt shr 4] of TGLParticle;
@@ -139,6 +140,7 @@ type
    end;
 
    TGLParticleFXRenderer = class;
+   TPFXCreateParticleEvent = procedure (Sender : TObject; aParticle : TGLParticle) of object;
 
    // TGLParticleFXManager
    //
@@ -156,6 +158,7 @@ type
          FRenderer : TGLParticleFXRenderer;
          FParticles : TGLParticleList;
          FNextID : Integer;
+         FOnCreateParticle : TPFXCreateParticleEvent;
 
       protected
          { Protected Declarations }
@@ -214,9 +217,16 @@ type
 
          {: Creates a new particle controled by the manager. }
          function CreateParticle : TGLParticle; virtual;
+         {: Create several particles at once. }
+         procedure CreateParticles(nbParticles : Integer);
 
          {: A TGLParticleList property. }
          property Particles : TGLParticleList read FParticles write SetParticles;
+         {: Return the number of particles.<p>
+            Note that subclasses may decide to return a particle count inferior
+            to Particles.ItemCount, and the value returned by this method will
+            be the one honoured at render time. } 
+         function ParticleCount : Integer; virtual;
 
 		published
 			{ Published Declarations }
@@ -224,6 +234,8 @@ type
             The renderer takes care of ordering the particles of the manager
             (and other managers linked to it) and rendering them all depth-sorted. }
          property Renderer : TGLParticleFXRenderer read FRenderer write SetRenderer;
+         {: Event triggered after standard particle creation and initialization. }
+         property OnCreateParticle : TPFXCreateParticleEvent read FOnCreateParticle write FOnCreateParticle;
 
          property Cadencer;
    end;
@@ -271,7 +283,7 @@ type
          { Private Declarations }
          FManagerList : TList;
          FLastSortTime : Double;
-         FZWrite, FZTest : Boolean;
+         FZWrite, FZTest, FZCull : Boolean;
 			FBlendingMode : TBlendingMode;
          FCurrentRCI : PRenderContextInfo;
 
@@ -305,6 +317,8 @@ type
          property ZWrite : Boolean read FZWrite write FZWrite default False;
          {: Specifies if particles should write to test ZBuffer.<p> }
          property ZTest : Boolean read FZTest write FZTest default True;
+         {: If true the renderer will cull particles that are behind the camera. }
+         property ZCull : Boolean read FZCull write FZCull default True;
          {: Default blending mode for particles.<p>
             "Additive" blending is the usual mode (increases brightness and
             saturates), "transparency" may be used for smoke or systems that
@@ -531,6 +545,7 @@ type
                                   var defaultProgress : Boolean) of object;
    TPFXParticleProgress = procedure (Sender : TObject; const progressTime : TProgressTimes;
                                      aParticle : TGLParticle; var killParticle : Boolean) of object;
+   TPFXGetParticleCountEvent = function (Sender : TObject) : Integer of object;
 
    // TGLCustomPFXManager
    //
@@ -550,6 +565,7 @@ type
          FOnFinalizeRendering : TDirectRenderEvent;
          FOnProgress : TPFXProgressEvent;
          FOnParticleProgress : TPFXParticleProgress;
+         FOnGetParticleCountEvent : TPFXGetParticleCountEvent;
 
       protected
          { Protected Declarations }
@@ -563,6 +579,7 @@ type
       public
          { Public Declarations }
          procedure DoProgress(const progressTime : TProgressTimes); override;
+         function ParticleCount : Integer; override;
 
 	   published
 	      { Published Declarations }
@@ -573,6 +590,7 @@ type
          property OnFinalizeRendering : TDirectRenderEvent read FOnFinalizeRendering write FOnFinalizeRendering;
          property OnProgress : TPFXProgressEvent read FOnProgress write FOnProgress;
          property OnParticleProgress : TPFXParticleProgress read FOnParticleProgress write FOnParticleProgress;
+         property OnGetParticleCountEvent : TPFXGetParticleCountEvent read FOnGetParticleCountEvent write FOnGetParticleCountEvent; 
 
          property ParticleSize;
          property ColorInner;
@@ -1048,6 +1066,19 @@ begin
    Result.FID:=FNextID;
    Inc(FNextID);
    FParticles.AddItem(Result);
+   if Assigned(FOnCreateParticle) then
+      FOnCreateParticle(Self, Result);
+end;
+
+// CreateParticles
+//
+procedure TGLParticleFXManager.CreateParticles(nbParticles : Integer);
+var
+   i : Integer;
+begin
+   FParticles.FItemList.RequiredCapacity(FParticles.ItemCount+nbParticles);
+   for i:=1 to nbParticles do
+      CreateParticle;
 end;
 
 // SetRenderer
@@ -1068,6 +1099,13 @@ end;
 procedure TGLParticleFXManager.SetParticles(const aParticles : TGLParticleList);
 begin
    FParticles.Assign(aParticles);
+end;
+
+// ParticleCount
+//
+function TGLParticleFXManager.ParticleCount : Integer;
+begin
+   Result:=FParticles.FItemList.Count;
 end;
 
 // ApplyBlendingMode
@@ -1210,6 +1248,7 @@ begin
    inherited;
    ObjectStyle:=ObjectStyle+[osNoVisibilityCulling, osDirectDraw];
    FZTest:=True;
+   FZCull:=True;
    FManagerList:=TList.Create;
    FBlendingMode:=bmAdditive;
 end;
@@ -1367,9 +1406,12 @@ begin
       for managerIdx:=0 to FManagerList.Count-1 do begin
          curManager:=TGLParticleFXManager(FManagerList[managerIdx]);
          curList:=curManager.FParticles.List;
-         for particleIdx:=0 to curManager.FParticles.ItemCount-1 do begin
+         for particleIdx:=0 to curManager.ParticleCount-1 do begin
             curParticle:=curList[particleIdx];
             dist:=PointProject(curParticle.FPosition, cameraPos, cameraVector)+1;
+            if not FZCull then begin
+               if PInteger(@dist)^<minDist then PInteger(@dist)^:=minDist;
+            end;
             if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
                DistToRegionIdx;
                curRegion:=@regions[regionIdx];
@@ -2242,6 +2284,15 @@ begin
    if Assigned(FOnFinalizeRendering) then
       FOnFinalizeRendering(Self, Renderer.CurrentRCI^);
    inherited;
+end;
+
+// ParticleCount
+//
+function TGLCustomPFXManager.ParticleCount : Integer;
+begin
+   if Assigned(FOnGetParticleCountEvent) then
+      Result:=FOnGetParticleCountEvent(Self)
+   else Result:=FParticles.FItemList.Count;
 end;
 
 // ------------------
