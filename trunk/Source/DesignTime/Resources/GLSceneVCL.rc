@@ -32,3 +32,4 @@ TGLCustomPFXManager BITMAP vcl\glscene_icon_TGLCustomPFXManager.bmp
 TGLCustomSpritePFXManager BITMAP vcl\glscene_icon_TGLCustomSpritePFXManager.bmp
 TGLPerlinPFXManager BITMAP vcl\glscene_icon_TGLPerlinPFXManager.bmp
 TGLVfsPAK BITMAP vcl\glscene_icon_TGLVfsPAK.bmp
+TGLStaticImposterBuilder BITMAP vcl\glscene_icon_TGLStaticImposterBuilder.bmp
