@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>30/03/04 - EG - Added TSkeletonBoneList.BoneCount
       <li>23/03/04 - SG - External positions added to skeleton blended lerps.
                           AutoUpdate flag added to skeleton collider list.
       <li>09/03/04 - SG - TFGIndexTexCoordList.BuildList can now use per vertex color
@@ -319,6 +320,8 @@ type
 
          {: Returns a bone by its BoneID, nil if not found. }
          function BoneByID(anID : Integer) : TSkeletonBone; virtual;
+         {: Number of bones (including all children and self). }
+         function BoneCount : Integer;
 
          //: Render skeleton wireframe
          procedure BuildList(var mrci : TRenderContextInfo); virtual; abstract;
@@ -2439,6 +2442,17 @@ begin
       Result:=Items[i].BoneByID(anID);
       if Assigned(Result) then Break;
    end;
+end;
+
+// BoneCount
+//
+function TSkeletonBoneList.BoneCount : Integer;
+var
+   i : Integer;
+begin
+   Result:=1;
+   for i:=0 to Count-1 do
+      Inc(Result, Items[i].BoneCount);
 end;
 
 // PrepareGlobalMatrices
