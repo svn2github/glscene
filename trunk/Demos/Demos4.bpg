@@ -9,9 +9,9 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = GLScene4.bpl Camera.exe Caterpillar.exe Column.exe Fading.exe \
-  Hierarchy.exe Joystick.exe Manual.exe Megacube.exe Particles.exe Pick.exe \
-  Pong.exe Screensaver.scr Torque.exe Whirlwind.exe Formula.exe Mushroom.exe \
+PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe \
+  Hierarchy.exe JoystickDemo.exe Manual.exe Megacube.exe Particles.exe Pick.exe \
+  Pong.exe ScreensaverDemo.scr Torque.exe Whirlwind.exe Formula.exe Mushroom.exe \
   Transparency.exe Actor.exe sphere.exe nutsnbolts.exe pawn.exe fxy.exe \
   heightfield.exe actortwocam.exe bendingcyl.exe fire.exe cursor.exe portal.exe \
   expolygon.exe keymap.exe objmove.exe splines.exe customquad.exe PathControl.exe \
@@ -21,9 +21,6 @@ PROJECTS = GLScene4.bpl Camera.exe Caterpillar.exe Column.exe Fading.exe \
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
-
-GLScene4.bpl: ..\GLScene4.dpk
-  $(DCC)
 
 Torque.exe: behaviours\torque\Torque.dpr
   $(DCC)
@@ -61,10 +58,10 @@ Caterpillar.exe: sprites\caterpillar\Caterpillar.dpr
 Particles.exe: sprites\particles\Particles.dpr
   $(DCC)
 
-Joystick.exe: utilities\joystick\Joystick.dpr
+JoystickDemo.exe: utilities\joystick\JoystickDemo.dpr
   $(DCC)
 
-Screensaver.scr: utilities\screensaver\Screensaver.dpr
+ScreensaverDemo.scr: utilities\screensaver\ScreensaverDemo.dpr
   $(DCC)
 
 Formula.exe: meshes\formula\Formula.dpr

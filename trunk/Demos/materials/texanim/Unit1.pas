@@ -100,9 +100,6 @@ procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
    // stop animation
    CBAnimate.Checked:=False;
-   // destroy texture handles before the viewer is gone
-   // (won't be explicitly required in future GLScene versions)
-   GLMaterialLibrary1.DestroyHandles(False);
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);

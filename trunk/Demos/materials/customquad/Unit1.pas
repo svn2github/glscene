@@ -5,10 +5,7 @@
    The render is quite simple: two quads, each with its own texture. The
    TDirectOpenGL is placed in a small hierarchy with a torus and dummy cube,
    and the rotation animation are handled by those two object to show that
-   the OnRender code uses the hierarchy.<p>
-
-   Pay attention to the need to free the materials we allocated *before* the
-   TGLSceneViewer (here, in FormCloseQuery).
+   the OnRender code uses the hierarchy.
 }
 unit Unit1;
 
@@ -31,7 +28,6 @@ type
     GLCadencer1: TGLCadencer;
     procedure DirectOpenGL1Render(var rci: TRenderContextInfo);
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Déclarations privées }
   public
@@ -87,16 +83,6 @@ begin
    material.Material.UnApply(rci);
    // enable face culling again
    glEnable(GL_CULL_FACE);
-end;
-
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-   // This is required to allow proper cleanup of the materials
-   // (texture handles etc.) since the library and its material is never
-   // referred by GLScene objects, only our code.
-   // Whenever you happen to use a library in similar conditions, make sure
-   // the library materials are freed *before* the TGLSceneViewer
-   GLMaterialLibrary.DestroyHandles(False);
 end;
 
 end.
