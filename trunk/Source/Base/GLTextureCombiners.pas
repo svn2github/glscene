@@ -87,13 +87,19 @@ end;
 
 // ProcessTextureCombinerArgument
 //
-procedure ProcessTextureCombinerArgument(const arg : String; sourceEnum, operandEnum : Integer;
+procedure ProcessTextureCombinerArgument(arg : String; sourceEnum, operandEnum : Integer;
                                          const dest : String);
 var
    sourceValue, operandValue, n : Integer;
 begin
    sourceValue:=0;
-   operandValue:=GL_SRC_COLOR;
+   if Copy(arg, 1, 1)='~' then begin
+      operandValue:=GL_ONE_MINUS_SRC_COLOR;
+      arg:=Copy(arg, 2, MaxInt);
+   end else if Copy(arg, 1, 2)='1-' then begin
+      operandValue:=GL_ONE_MINUS_SRC_COLOR;
+      arg:=Copy(arg, 3, MaxInt);
+   end else operandValue:=GL_SRC_COLOR;
    if (arg='tex') or (arg=dest) then
       sourceValue:=GL_TEXTURE
    else if ((arg='tex0') and (dest='tex1')) or ((arg='tex1') and (dest='tex2'))
