@@ -31,7 +31,7 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
-    procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -149,7 +149,8 @@ begin
   FCachedBSphere.Center := GLBaseSceneObject.Position.AsAffineVector;
 end;
 
-procedure TfrmOctreeDemo.GLDirectOpenGL1Render(var rci: TRenderContextInfo);
+procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderContextInfo);
+
   procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
   begin
     glColor3f(r,g,b);

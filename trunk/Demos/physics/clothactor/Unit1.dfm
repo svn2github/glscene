@@ -43,10 +43,10 @@ object Form1: TForm1
     Top = 8
     object GLLightSource1: TGLLightSource
       Ambient.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
-      ConstAttenuation = 1.000000000000000000
+      ConstAttenuation = 1
       Position.Coordinates = {000048420000C842000048C20000803F}
       Specular.Color = {0000803F0000803F0000803F0000803F}
-      SpotCutOff = 180.000000000000000000
+      SpotCutOff = 180
     end
     object GLShadowVolume1: TGLShadowVolume
       Lights = <
@@ -63,7 +63,7 @@ object Form1: TForm1
         end>
       Options = [svoScissorClips]
       object ActorDummy: TGLDummyCube
-        CubeSize = 1.000000000000000000
+        CubeSize = 1
         object GLActor1: TGLActor
           Direction.Coordinates = {000000000000803F0000000000000000}
           Up.Coordinates = {00000000000000000000803F00000000}
@@ -92,8 +92,8 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Direction.Coordinates = {000000000000803F0000000000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
-        Height = 500.000000000000000000
-        Width = 500.000000000000000000
+        Height = 500
+        Width = 500
         XTiles = 4
         YTiles = 4
         NoZWrite = False
@@ -104,16 +104,16 @@ object Form1: TForm1
       OnRender = OctreeRendererRender
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 1000.000000000000000000
-      FocalLength = 50.000000000000000000
+      DepthOfView = 1000
+      FocalLength = 50
       TargetObject = GLActor1
       Position.Coordinates = {00004842000048420000A0C20000803F}
       Direction.Coordinates = {00000000000000800000803F00000000}
       object GLLightSource2: TGLLightSource
-        ConstAttenuation = 1.000000000000000000
+        ConstAttenuation = 1
         Diffuse.Color = {9A99193F9A99193F9A99193F0000803F}
         Specular.Color = {0000803F0000803F0000803F0000803F}
-        SpotCutOff = 180.000000000000000000
+        SpotCutOff = 180
       end
     end
   end

@@ -36,43 +36,43 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00002041000000410000E0400000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Torus1: TGLTorus
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial'
-      MajorRadius = 2.5
-      MinorRadius = 1.5
+      MajorRadius = 2.500000000000000000
+      MinorRadius = 1.500000000000000000
     end
     object Sphere1: TGLSphere
       ShowAxes = True
-      Radius = 0.5
+      Radius = 0.500000000000000000
     end
     object GLAnnulus1: TGLAnnulus
       Position.Coordinates = {0000E04000000000000000000000803F}
       Scale.Coordinates = {00000040000000400000004000000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial1'
-      BottomRadius = 0.5
-      Height = 1
-      BottomInnerRadius = 0.300000011920929
-      TopInnerRadius = 0.300000011920929
-      TopRadius = 0.5
+      BottomRadius = 0.500000000000000000
+      Height = 1.000000000000000000
+      BottomInnerRadius = 0.300000011920929000
+      TopInnerRadius = 0.300000011920929000
+      TopRadius = 0.500000000000000000
     end
     object GLAnnulus2: TGLAnnulus
       Position.Coordinates = {0000E0C000000000000000000000803F}
       Scale.Coordinates = {00000040000000400000004000000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial2'
-      BottomRadius = 0.5
-      Height = 1
-      BottomInnerRadius = 0.300000011920929
-      TopInnerRadius = 0.300000011920929
-      TopRadius = 0.5
+      BottomRadius = 0.500000000000000000
+      Height = 1.000000000000000000
+      BottomInnerRadius = 0.300000011920929000
+      TopInnerRadius = 0.300000011920929000
+      TopRadius = 0.500000000000000000
     end
     object GLCube1: TGLCube
       Position.Coordinates = {00000000000000000000E0400000803F}
@@ -84,11 +84,11 @@ object Form1: TForm1
       Position.Coordinates = {00000000000000000000E0C00000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'LibMaterial1'
-      Radius = 1.5
+      Radius = 1.500000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Torus1
       Position.Coordinates = {00006041000020410000C0400000803F}
     end

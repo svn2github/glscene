@@ -66,7 +66,7 @@ object Form1: TForm1
     Left = 8
     Top = 32
     object DummyCube1: TGLDummyCube
-      CubeSize = 10
+      CubeSize = 10.000000000000000000
       object Mesh1: TGLMesh
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Mode = mmTriangles
@@ -74,13 +74,13 @@ object Form1: TForm1
       end
     end
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00008C42000048420000F0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 100
+      DepthOfView = 100.000000000000000000
+      FocalLength = 100.000000000000000000
       TargetObject = DummyCube1
       Position.Coordinates = {000048420000F0410000A0410000803F}
     end
@@ -95,7 +95,7 @@ object Form1: TForm1
     Left = 560
     Top = 40
     object DummyCube2: TGLDummyCube
-      CubeSize = 10
+      CubeSize = 10.000000000000000000
       object Mesh2: TGLMesh
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Mode = mmTriangles
@@ -103,13 +103,13 @@ object Form1: TForm1
       end
     end
     object GLLightSource2: TGLLightSource
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00008C42000048420000F0410000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLCamera2: TGLCamera
-      DepthOfView = 100
-      FocalLength = 100
+      DepthOfView = 100.000000000000000000
+      FocalLength = 100.000000000000000000
       TargetObject = DummyCube2
       Position.Coordinates = {000048420000F0410000A0410000803F}
     end
