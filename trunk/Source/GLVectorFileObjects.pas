@@ -600,6 +600,7 @@ type
          FTexCoordsEx : TList;
          FBinormalsTexCoordIndex : Integer;
          FTangentsTexCoordIndex : Integer;
+         FLastXOpenGLTexMapping : Cardinal;
 
       protected
          { Protected Declarations }
@@ -3888,6 +3889,7 @@ end;
 procedure TMeshObject.DeclareArraysToOpenGL(var mrci : TRenderContextInfo; evenIfAlreadyDeclared : Boolean = False);
 var
    i : Integer;
+   currentMapping : Cardinal;
 begin
    if evenIfAlreadyDeclared or (not FArraysDeclared) then begin
       if Vertices.Count>0 then begin
@@ -3932,6 +3934,17 @@ begin
       FLastLightMapIndex:=-1;
       FArraysDeclared:=True;
       FLightMapArrayEnabled:=False;
+      FLastXOpenGLTexMapping:=xglGetBitWiseMapping;
+   end else begin
+      if not mrci.ignoreMaterials then
+         if TexCoords.Count>0 then begin
+         currentMapping:=xglGetBitWiseMapping;
+            if FLastXOpenGLTexMapping<>currentMapping then begin
+               xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+               xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
+               FLastXOpenGLTexMapping:=currentMapping;
+            end;
+         end;
    end;
 end;
 
@@ -4024,6 +4037,7 @@ var
    fg : TFaceGroup;
 begin
    FArraysDeclared:=False;
+   FLastXOpenGLTexMapping:=0;
    gotColor:=(Vertices.Count=Colors.Count);
    if gotColor then begin
       glPushAttrib(GL_ENABLE_BIT);
