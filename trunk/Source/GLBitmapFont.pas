@@ -883,7 +883,7 @@ begin
             glTexCoord2f(bottomRight.S, topLeft.T);
             glVertex2f(vBottomRight[0], vTopLeft[1]);
 
-            vTopLeft[0]:=vTopLeft[0]+deltaH+HSpaceFix;
+            vTopLeft[0]:=vTopLeft[0]+deltaH+HSpace;
          end;
       end;
    end;
