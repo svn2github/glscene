@@ -11,7 +11,7 @@ unit GLCgShader;
 
 interface
 
-uses Classes, Geometry, GLTexture, GLMisc, CgGL;
+uses Classes, Geometry, GLTexture, GLMisc, Cg, CgGL;
 
 type
 
@@ -19,9 +19,9 @@ type
    TCgProgram = class;
    TCgParameter = class;
    
-   TcgValueTypes = set of TcgValueType;
+   TcgValueTypes = array of TCGtype;
 
-   TCgApplyEvent = procedure (Sender : TCgProgram; programIterator : PcgProgramIter) of object;
+   TCgApplyEvent = procedure (Sender : TCgProgram; programIterator : PCGprogram) of object;
 
 	// TCgProgram
 	//
@@ -31,7 +31,7 @@ type
 	      { Private Declarations }
          FCgContext : PcgContext;
          FCode : TStrings;
-         FProgramIter : PcgProgramIter;
+         FProgramIter : PCGprogram;
          FProgramID : Integer;
          FOnProgramChanged : TNotifyEvent;
          FProgramName : String;
@@ -40,7 +40,7 @@ type
 
 	   protected
 	      { Protected Declarations }
-         FProfileType : TcgProfileType;
+         FProfileType : TCGprofile;
 
          procedure SetCode(const val : TStrings);
          procedure SetProgramName(const val : String);
@@ -65,7 +65,7 @@ type
 
          procedure LoadFromFile(const fileName : String);
 
-         property ProgramIter : PcgProgramIter read FProgramIter;
+         property ProgramIter : PCGprogram read FProgramIter;
          property ProgramID : Integer read FProgramID;
          property OnProgramChanged : TNotifyEvent read FOnProgramChanged write FOnProgramChanged;
 
@@ -84,14 +84,14 @@ type
 	      { Private Declarations }
          FOwner : TCgProgram;
          FName : String;
-         FBindIter : PcgBindIter;
-         FParamType : TcgParamType;
-         FValueType : TcgValueType;
+         FBindIter : PCGparameter;
+         FParamType : TCGenum;
+         FValueType : TCGtype;
 
 	   protected
 	      { Protected Declarations }
-         procedure CheckValueType(aType : TcgValueType); overload;
-         procedure CheckValueType(types : TcgValueTypes); overload;
+         procedure CheckValueType(aType : TCGtype); overload;
+         procedure CheckValueType(const types : TcgValueTypes); overload;
          procedure BindAsVector(const val : TVector);
 
          procedure Bind;
@@ -103,11 +103,11 @@ type
 
          property Owner : TCgProgram read FOwner;
          property Name : String read FName;
-         property ParamType : TcgParamType read FParamType;
-         property ValueType : TcgValueType read FValueType;
-         property BindIter : PcgBindIter read FBindIter;
+         property ParamType : TCGenum read FParamType;
+         property ValueType : TCGtype read FValueType;
+         property BindIter : PCGparameter read FBindIter;
 
-         procedure BindStateMatrix(matrixType : TCgGLMatrixType; format : Integer);
+         procedure BindStateMatrix(matrixType : Integer; format : Integer);
          property AsVector : TVector write BindAsVector;
    end;
 
@@ -285,29 +285,25 @@ end;
 //
 procedure TCgProgram.BuildParamsList;
 var
-   bindIter, oldIter : PcgBindIter;
+   bindIter : PCGparameter;
    paramName, paramStart : String;
-   arraySize : Integer;
    newParam : TCgParameter;
 begin
    ClearParams;
    paramStart:=FProgramName+'.';
    // build params list
-   oldIter:=nil;
-   bindIter:=cgGetNextBind(FProgramIter, oldIter);
+   bindIter:=cgGetFirstParameter(FProgramIter, CG_IN);
    while Assigned(bindIter) do begin
-      paramName:=StrPas(cgGetBindParamName(bindIter));
+      paramName:=StrPas(cgGetParameterName(bindIter));
       newParam:=TCgParameter.Create;
       newParam.FOwner:=Self;
       newParam.FName:=paramName;
-      newParam.FParamType:=cgGetBindParamType(bindIter);
-      newParam.FValueType:=cgGetBindValueType(bindIter, arraySize);
+      newParam.FParamType:=cgGetParameterDirection(bindIter);
+      newParam.FValueType:=cgGetParameterType(bindIter);
       newParam.FBindIter:=nil; // late bind
       FParams.Add(newParam);
-      oldIter:=bindIter;
-      bindIter:=cgGetNextBind(FProgramIter, bindIter);
+      bindIter:=cgGetNextParameter(bindIter);
    end;
-   cgFreeBindIter(oldIter);
 end;
 
 // ClearParams
@@ -333,9 +329,9 @@ end;
 //
 function TCgProgram.ParamByName(const name : String) : TCgParameter;
 var
-   i, arraySize : Integer;
+   i : Integer;
    list : PPointerList;
-   bindIter : PcgBindIter;
+   bindIter : PCGparameter;
 begin
    Result:=nil;
    list:=FParams.List;
@@ -346,14 +342,14 @@ begin
       end;
    end;
    // attempt a bind (Cg beta bug workaround)
-   bindIter:=cgGetBindByName(FProgramIter, PChar(FProgramName+'.'+name));
+   bindIter:=cgGetNamedParameter(FProgramIter, PChar(FProgramName+'.'+name));
    if Assigned(bindIter) then begin
       Result:=TCgParameter.Create;
       FParams.Add(Result);
       Result.FBindIter:=bindIter;
       Result.FName:=name;
-      Result.FParamType:=cgGetBindParamType(bindIter);
-      Result.FValueType:=cgGetBindValueType(bindIter, arraySize);
+      Result.FParamType:=cgGetParameterDirection(bindIter);
+      Result.FValueType:=cgGetParameterType(bindIter);
    end;
 end;
 
@@ -370,7 +366,6 @@ procedure TCgProgram.Initialize;
 var
    buf : String;
    ret : TcgError;
-   iter : PcgProgramIter;
 begin
    Assert(FCgContext=nil);
 
@@ -382,33 +377,29 @@ begin
       Inc(vCgContextCount);
       try
          // add the program to it
-         ret:=cgAddProgram(FCgContext, PChar(buf), FProfileType, nil);
-         Assert((ret=cgNoError),
-                ClassName+': Failed to add Program.');
-         // use last prog name as default (previous ones are probably funcs)
-         iter:=nil;
-         FProgramName:='';
-         repeat
-            if Assigned(iter) then
-               FProgramName:=StrPas(cgGetProgramName(iter));
-            iter:=cgGetNextProgram(FCgContext, iter);
-         until iter=nil;
-         Assert((FProgramName<>''),
-                ClassName+': Unable to retrieve Program iterator.');
-         FProgramIter:=cgProgramByName(FCgContext, PChar(FProgramName));
+         FProgramIter:=cgCreateProgram(FCgContext, CG_PROGRAM, PChar(buf),
+                              FProfileType, nil, nil);
+         ret:=cgGetError;
+         Assert((ret=CG_NO_ERROR), ClassName+': Failed to add Program.'+#13#10
+                                  +cgGetErrorString(ret));
+         FProgramName:=StrPas(cgGetProgramString(FProgramIter, CG_PROGRAM));
          // load program
          glGetError;
          FProgramID:=GetCgNextProgID;
-         ret:=cgGLLoadProgram(FProgramIter, FProgramID);
-         Assert((ret=cgNoError), ClassName+': Failed to load VertexProgram.');
+         cgCompileProgram(FProgramIter);
+         ret:=cgGetError;
+         Assert((ret=CG_NO_ERROR), ClassName+': Failed to compile program.'+#13#10
+                                  +cgGetErrorString(ret));
+         cgGLLoadProgram(FProgramIter);
+         ret:=cgGetError;
+         Assert((ret=CG_NO_ERROR), ClassName+': Failed to load program.'+#13#10
+                                  +cgGetErrorString(ret));
          // build parameter list for the selected program
          BuildParamsList;
       except
-         cgFreeContext(FCgContext);
+         cgDestroyContext(FCgContext);
          FCgContext:=nil;
          Dec(vCgContextCount);
-         if vCgContextCount=0 then
-            cgCleanup;
          raise;
       end;
    end;
@@ -420,16 +411,14 @@ procedure TCgProgram.Finalize;
 begin
    if Assigned(FCgContext) then begin
       ClearParams;
-      cgFreeProgramIter(FProgramIter);
+      cgDestroyProgram(FProgramIter);
       FProgramIter:=nil;
       FProgramID:=0;
       FProgramName:='';
       ClearParams;
-      cgFreeContext(FCgContext);
+      cgDestroyContext(FCgContext);
       FCgContext:=nil;
       Dec(vCgContextCount);
-      if vCgContextCount=0 then
-         cgCleanup;
    end;
 end;
 
@@ -440,11 +429,12 @@ var
    ret : TcgError;
 begin
    if Assigned(FProgramIter) then begin
-      ret:=cgGLBindProgram(FProgramIter);
-      Assert(ret=cgNoError);
+      cgGLBindProgram(FProgramIter);
+      ret:=cgGetError;
+      Assert(ret=CG_NO_ERROR);
       if Assigned(FOnApply) then
          FOnApply(Self, FProgramIter);
-      cgGLEnableProgramType(FProfileType);
+      cgGLEnableProfile(FProfileType);
    end;
 end;
 
@@ -453,7 +443,7 @@ end;
 procedure TCgProgram.UnApply(var rci : TRenderContextInfo);
 begin
    if Assigned(FProgramIter) then
-      cgGLDisableProgramType(FProfileType);
+      cgGLDisableProfile(FProfileType);
 end;
 
 // ------------------
@@ -471,23 +461,34 @@ end;
 //
 destructor TCgParameter.Destroy;
 begin
-   if Assigned(FBindIter) then
-      cgFreeBindIter(FBindIter);
    inherited;
 end;
 
 // CheckValueType
 //
-procedure TCgParameter.CheckValueType(aType : TcgValueType);
+procedure TCgParameter.CheckValueType(aType : TCGtype);
 begin
    Assert(aType=FValueType, ClassName+': Parameter type mismatch.');
 end;
 
 // CheckValueType
 //
-procedure TCgParameter.CheckValueType(types : TcgValueTypes);
+procedure TCgParameter.CheckValueType(const types : TcgValueTypes);
+
+   function DoCheck : Boolean;
+   var
+      i : Integer;
+   begin
+      Result:=False;
+      for i:=Low(types) to High(types) do
+         if FValueType=types[i] then begin
+            Result:=True;
+            Break;
+         end;
+   end;
+
 begin
-   Assert(FValueType in types, ClassName+': Parameter type mismatch.');
+   Assert(DoCheck, ClassName+': Parameter type mismatch.');
 end;
 
 // Bind

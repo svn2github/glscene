@@ -1,6 +1,8 @@
 // Octree
 {: Octree management classes and structures<p>
 
+   TODO: move the many public vars/fields to private/protected<p>
+
 	<b>History : </b><font size=-1><ul>
       <li>29/11/02 - EG - Added triangleInfo
       <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
@@ -50,7 +52,6 @@ type
 {$ifdef DEBUG}
          intersections: integer;    //for debugging  - number of triangles intersecting an AABB plane
 {$endif}
-         triangleFiler : TAffineVectorList;
 
       protected
          { Protected Declarations }
@@ -96,7 +97,9 @@ type
          TriCountOctree: integer; //total number of triangles cut into the octree
          MeshCount: integer;  //number of meshes currently cut into the Octree
 
-         resultarray : array of POctreeNode;  //holds the result nodes of various calls
+         triangleFiler : TAffineVectorList;
+
+         ResultArray : array of POctreeNode;  //holds the result nodes of various calls
 
          {: Initializes the tree from the triangle list.<p>
             All triangles must be contained in the world extent to be properly
@@ -116,6 +119,7 @@ type
                                       const velocity, radius : single;
                                       intersectPoint : PVector = nil;
                                       intersectNormal : PVector = nil) : Boolean;
+         function TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
    end;
 
 // ------------------------------------------------------------------
@@ -1195,4 +1199,32 @@ begin
    end; //end for i nodes
 end;
 
+function TOctree.TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+var
+   i, t, k:integer;
+   p: POctreeNode;
+   p1, p2, p3: PAffineVector;
+begin
+   Result:=False;  //default: no collision
+   WalkTriToLeaf(RootNode, v1, v2, v3);
+   if not Assigned(resultarray) then exit;
+
+   for i:=0 to High(resultarray) do begin
+      p:=ResultArray[i];
+      for t:=0 to High(p.TriArray) do begin
+         k:=p.triarray[t];
+         //These are the vertices of the triangle to check
+         p1:=@trianglefiler.List[k];
+         p2:=@trianglefiler.List[k+1];
+         p3:=@trianglefiler.List[k+2];
+         if tri_tri_intersect(v1, v2, v3, p1^, p2^, p3^)<>0 then
+         begin
+            result:= true;
+            exit;
+         end;
+      end;  //end for t triangles
+   end; //end for i nodes
+end;
+
 end.
+
