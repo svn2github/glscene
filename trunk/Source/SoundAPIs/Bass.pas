@@ -1,5 +1,5 @@
 {
-  BASS 1.6 Multimedia Library
+  BASS 1.6a Multimedia Library
   -----------------------------
   (c) 1999-2002 Ian Luck.
   Please report bugs/suggestions/etc... to bass@un4seen.com
@@ -357,9 +357,12 @@ const
   BASS_CDID_CDDB2     = 3;
 
   // BASS_ChannelGetData flags
-  BASS_DATA_FFT512  = $80000000; // 512 sample FFT
-  BASS_DATA_FFT1024	= $80000001; // 1024 FFT
-  BASS_DATA_FFT2048	= $80000002; // 2048 FFT
+  BASS_DATA_FFT512   = $80000000; // 512 sample FFT
+  BASS_DATA_FFT1024  = $80000001; // 1024 FFT
+  BASS_DATA_FFT2048  = $80000002; // 2048 FFT
+  BASS_DATA_FFT512S  = $80000010; // stereo 512 sample FFT
+  BASS_DATA_FFT1024S = $80000011; // stereo 1024 FFT
+  BASS_DATA_FFT2048S = $80000012; // stereo 2048 FFT
 
   // BASS_StreamGetTags flags : what's returned
   BASS_TAG_ID3   = 0; // ID3v1 tags : 128 byte block
@@ -561,9 +564,9 @@ type
   SYNCPROC = procedure(handle: HSYNC; channel, data: DWORD; user: DWORD); stdcall;
   {
     Sync callback function. NOTE: a sync callback function should be very
-    quick (eg. just posting a message) as other syncs cannot be processed
-    until it has finished. If the sync is a "mixtime" sync, then other streams
-    and MOD musics can not be mixed until it's finished either.
+    quick as other syncs cannot be processed until it has finished. If the
+    sync is a "mixtime" sync, then other streams and MOD musics can not be
+    mixed until it's finished either.
     handle : The sync that has occured
     channel: Channel that the sync occured in
     data   : Additional data associated with the sync's occurance
@@ -616,7 +619,7 @@ function BASS_SetBufferLength(length: FLOAT): FLOAT; stdcall; external 'bass.dll
   length : The buffer length in seconds
   RETURN : The actual new buffer length
 }
-procedure BASS_SetGlobalVolumes(musvol, samvol, strvol: Integer); stdcall; external 'bass.dll' name 'BASS_SetGlobalVolumes'
+procedure BASS_SetGlobalVolumes(musvol, samvol, strvol: Integer); stdcall; external 'bass.dll' name 'BASS_SetGlobalVolumes';
 {
   Set the global music/sample/stream volume levels.
   musvol : MOD music global volume level (0-100, -1=leave current)
