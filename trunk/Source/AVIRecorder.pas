@@ -394,25 +394,25 @@ end;
 procedure TAVIRecorder.CloseAVIFile(UserAbort:boolean=false);
 // if UserAbort, CloseAVIFile will also delete the unfinished file.
 begin
-  if RecorderState<>rsRecording then
-     raise Exception.create('Cannot close AVI file. AVI file not created.');
+   if RecorderState<>rsRecording then
+      raise Exception.create('Cannot close AVI file. AVI file not created.');
 
-  AVIBitmap.Free;
+   AVIBitmap.Free;
 
-  FreeMem(BitmapInfo);
-  FreeMem(BitmapBits);
+   FreeMem(BitmapInfo);
+   FreeMem(BitmapBits);
 
-// The following calls (from the original C code) are commented out because
-// Delphi does the cleaning up for the interafaces automatically.
-//  AVIStreamRelease(Stream);
-//  AVIStreamRelease(Stream_c);
-//  AVIFileRelease(pfile);
+   AVIFileExit; // finalize the AVI lib.
 
-  AVIFileExit; // finalize the AVI lib.
+   // release the interfaces explicitly (can't rely on automatic release)
+   Stream:=nil;
+   Stream_c:=nil;
+   pfile:=nil;
 
-  if UserAbort then deleteFile(TempName);
+   if UserAbort then
+      DeleteFile(TempName);
 
-  RecorderState:=rsNone;
+   RecorderState:=rsNone;
 end;
 
 end.
