@@ -17,6 +17,8 @@ unit GLWin32Context;
 
 interface
 
+{$i GLScene.inc}
+
 uses Classes, SysUtils, GLContext;
 
 type

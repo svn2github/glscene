@@ -9,6 +9,8 @@ unit GLWin32Viewer;
 
 interface
 
+{$i GLScene.inc}
+
 uses Windows, Messages, Classes, GLScene, Controls;
 
 type
@@ -110,7 +112,6 @@ type
          property Visible;
 
          property OnClick;
-         property OnContextPopup;
          property OnDblClick;
          property OnDragDrop;
          property OnDragOver;
@@ -119,6 +120,9 @@ type
          property OnMouseDown;
          property OnMouseMove;
          property OnMouseUp;
+{$ifdef GLS_COMPILER_5_UP}
+         property OnContextPopup;
+{$endif}
    end;
 
 // ------------------------------------------------------------------
