@@ -11,6 +11,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>12/11/03 - SG - Fixed bug with TGLODEManager.Collision
     <li>01/09/03 - SG - Changed all relevant floating point types to TdReal,
                         Changed Read/Write Single/Double to Read/Write Float.
     <li>19/08/03 - SG - Added GetBodyFromGLSceneObject (Dan Bartlett),
@@ -1027,17 +1028,17 @@ begin
       end;
       // Fire the OnCollision event for each object
       if TObject(Obj1) is TGLODEBaseObject then
-        if Assigned(TGLODEBaseObject(Obj1).OnCollision) then
-          TGLODEBaseObject(Obj1).OnCollision(Self,Obj2,Contact[i]);
+        if Assigned(TGLODEBaseObject(Obj1).FOnCollision) then
+          TGLODEBaseObject(Obj1).FOnCollision(Self,Obj2,Contact[i]);
       if TObject(Obj2) is TGLODEBaseObject then
-        if Assigned(TGLODEBaseObject(Obj2).OnCollision) then
-          TGLODEBaseObject(Obj2).OnCollision(Self,Obj1,Contact[i]);
+        if Assigned(TGLODEBaseObject(Obj2).FOnCollision) then
+          TGLODEBaseObject(Obj2).FOnCollision(Self,Obj1,Contact[i]);
       if TObject(Obj1) is TGLODEBaseBehaviour then
-        if Assigned(TGLODEBaseBehaviour(Obj1).OnCollision) then
-          TGLODEBaseBehaviour(Obj1).OnCollision(Self,Obj2,Contact[i]);
+        if Assigned(TGLODEBaseBehaviour(Obj1).FOnCollision) then
+          TGLODEBaseBehaviour(Obj1).FOnCollision(Self,Obj2,Contact[i]);
       if TObject(Obj2) is TGLODEBaseBehaviour then
-        if Assigned(TGLODEBaseObject(Obj2).OnCollision) then
-          TGLODEBaseBehaviour(Obj2).OnCollision(Self,Obj1,Contact[i]);
+        if Assigned(TGLODEBaseBehaviour(Obj2).FOnCollision) then
+          TGLODEBaseBehaviour(Obj2).FOnCollision(Self,Obj1,Contact[i]);
     end else begin
       // Default surface values
       contact[i].surface.mu:=1000;
