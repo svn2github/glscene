@@ -7,12 +7,19 @@
    for Delphi.<p>
    
    Note:<br>
-   Does not support DXTn compression and only the main
+   Does not support DXTC compression and only the main
    surface is loaded (mipmap levels, volume textures and
-   cubic environment maps are currently ignored). Only 24
-   and 32 bit surfaces are currently supported.<p>
+   cubic environment maps are currently ignored).<p>
+
+   Supported pixel formats:<ul>
+      <li>16 bit (565, 1555, 4444)
+      <li>24 bit (888)
+      <li>32 bit (8888)
+   </ul>
 
    <b>History : </b><font size=-1><ul>
+      <li>31/08/04 - SG - Added support for 16 bit textures,
+                          it should support most uncompressed files now
       <li>31/08/04 - SG - Creation
    </ul></font>
 }
@@ -118,9 +125,34 @@ type
 // LoadFromStream
 //
 procedure TDDSImage.LoadFromStream(stream : TStream);
+
+   function GetBitsFromMask(Mask : Cardinal) : Byte;
+   var
+      i, temp : Integer;
+   begin
+      if Mask=0 then begin
+        Result:=0;
+        exit;
+      end;
+
+      temp:=Mask;
+      for i:=0 to 31 do begin
+         if (Temp and 1) = 1 then
+            break;
+         temp:=temp shr 1;
+      end;
+      Result:=i;
+   end;
+
 var
    header : TDDSHeader;
-   i, rowSize : Integer;
+   i, j, rowSize, ddsPixelSize, imgPixelSize : Integer;
+   buf : PByteArray;
+   col : PCardinal;
+   RedShift, RedMult,
+   GreenShift, GreenMult,
+   BlueShift, BlueMult,
+   AlphaShift, AlphaMult : Byte;
 begin
    stream.Read(header, Sizeof(TDDSHeader));
 
@@ -128,25 +160,73 @@ begin
       if (ddsCaps.dwCaps1 and DDSCAPS_TEXTURE)=0 then
          raise EDDSException.Create('Unsupported DDSCAPS settings');
       if (ddpfPixelFormat.dwFlags and DDPF_FOURCC)>0 then
-         raise EDDSException.Create('DXTn compression is not yet supported');
+         raise EDDSException.Create('DXTC compression is not yet supported');
 
       case ddpfPixelFormat.dwRGBBitCount of
+         16 : begin
+            if (ddpfPixelFormat.dwFlags and DDPF_ALPHAPIXELS)>0 then begin
+               Transparent:=True;
+               PixelFormat:=glpf32bit;
+            end else begin
+               Transparent:=False;
+               PixelFormat:=glpf24bit;
+            end;
+         end;
          24 : PixelFormat:=glpf24bit;
          32 : begin
             PixelFormat:=glpf32bit;
-            if (ddpfPixelFormat.dwFlags and DDPF_ALPHAPIXELS)>0 then
+            if (ddpfPixelFormat.dwFlags and DDPF_ALPHAPIXELS)>0 then begin
                Transparent:=True;
+               PixelFormat:=glpf32bit;
+            end else begin
+               Transparent:=False;
+               PixelFormat:=glpf24bit;
+            end;
          end;
       else
          raise EDDSException.Create('Unsupported DDS pixel format');
       end;
 
+      case PixelFormat of
+         glpf24bit : imgPixelSize:=3;
+         glpf32bit : imgPixelSize:=4;
+      end;
+
       Width:=dwWidth;
       Height:=dwHeight;
 
-      rowSize:=(ddpfPixelFormat.dwRGBBitCount div 8)*dwWidth;
-      for i:=0 to Height-1 do
-         Stream.Read(ScanLine[i]^, rowSize);
+      ddsPixelSize:=(ddpfPixelFormat.dwRGBBitCount div 8);
+      rowSize:=ddsPixelSize*dwWidth;
+
+      RedShift:=GetBitsFromMask(ddpfPixelFormat.dwRBitMask);
+      GreenShift:=GetBitsFromMask(ddpfPixelFormat.dwGBitMask);
+      BlueShift:=GetBitsFromMask(ddpfPixelFormat.dwBBitMask);
+      if Transparent then
+         AlphaShift:=GetBitsFromMask(ddpfPixelFormat.dwRGBAlphaBitMask);
+
+      RedMult  :=255 div (ddpfPixelFormat.dwRBitMask shr RedShift);
+      GreenMult:=255 div (ddpfPixelFormat.dwGBitMask shr GreenShift);
+      BlueMult :=255 div(ddpfPixelFormat.dwBBitMask shr BlueShift);
+      if Transparent then
+         AlphaMult:=255 div (ddpfPixelFormat.dwRGBAlphaBitMask shr AlphaShift);
+
+      GetMem(buf, rowSize);
+      for j:=0 to Height-1 do begin
+         Stream.Read(buf[0], rowSize);
+         for i:=0 to Width-1 do begin
+            col:=@buf[ddsPixelSize*i];
+            PByteArray(ScanLine[j])^[imgPixelSize*i+0]:=
+               BlueMult*(col^ and ddpfPixelFormat.dwBBitMask) shr BlueShift;
+            PByteArray(ScanLine[j])^[imgPixelSize*i+1]:=
+               GreenMult*(col^ and ddpfPixelFormat.dwGBitMask) shr GreenShift;
+            PByteArray(ScanLine[j])^[imgPixelSize*i+2]:=
+               RedMult*(col^ and ddpfPixelFormat.dwRBitMask) shr RedShift;            if Transparent then begin
+            if Transparent then
+               PByteArray(ScanLine[j])^[imgPixelSize*i+3]:=
+                  AlphaMult*(col^ and ddpfPixelFormat.dwRGBAlphaBitMask) shr AlphaShift;            end;
+         end;
+      end;
+      FreeMem(buf);
    end;
 end;
 
