@@ -1048,7 +1048,6 @@ type
          procedure Assign(Source: TPersistent); override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
-//         function AxisAlignedDimensions : TVector; override;
          function AxisAlignedDimensionsUnscaled : TVector;override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
@@ -1065,6 +1064,7 @@ type
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
 
          property MeshObjects : TMeshObjectList read FMeshObjects;
          property Skeleton : TSkeleton read FSkeleton;
@@ -1526,7 +1526,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils;
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, GLSilhouette;
 
 var
    vVectorFileFormats : TVectorFileFormatsList;
@@ -5083,6 +5083,22 @@ begin
             NegateVector(intersectNormal^);
       end;
    end;
+end;
+
+// GenerateSilhouette
+//
+function TGLBaseMesh.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+var
+   mc : TGLBaseMeshConnectivity;
+   sil : TGLSilhouette;
+begin
+   sil:=nil;
+   mc:=TGLBaseMeshConnectivity.Create(Self);
+   mc.CreateSilhouetteOmni(silhouetteParameters.SeenFrom,
+                           silhouetteParameters.CappingRequired,
+                           sil);
+   mc.Free;
+   Result:=sil;
 end;
 
 // ------------------
