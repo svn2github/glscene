@@ -12,6 +12,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>05/03/04 - SG - SetSurfaceMode fix (Alex)
+    <li>25/02/04 - SG - Added the GLODEStaticBehaviour.
     <li>24/02/04 - SG - Added the static GLODETerrain collider.
     <li>23/02/04 - SG - Fix for design to real time gravity persistence.
                         Added cone, cylinder and tri-mesh elements.
@@ -393,6 +395,28 @@ type
       property Enabled : Boolean read GetEnabled write SetEnabled;
   end;
 
+  // TGLODEStaticBehaviour
+  //
+  {: Static ODE object binding through a behaviour. }
+  TGLODEStaticBehaviour = class (TGLODEBaseBehaviour)
+    private
+      FElements : TODEElements;
+    protected
+      procedure Initialize; override;
+      procedure Deinitialize; override;
+      procedure WriteToFiler(writer : TWriter); override;
+      procedure ReadFromFiler(reader : TReader); override;
+      procedure AlignElementsToMatrix(Mat:TMatrix);
+    public
+      constructor Create(AOwner : TXCollection); override;
+      destructor Destroy; override;
+      class function FriendlyName : String; override;
+      class function UniqueItem : Boolean; override;
+      function AddNewElement(AChild:TODEElementClass):TODEBaseElement; dynamic;
+    published
+      property Elements : TODEElements read FElements;
+  end;
+
   // TODEElements
   //
   {: This is the list class that stores the ODEElements for GLODEDummy
@@ -759,7 +783,7 @@ type
     private
       FJointID : TdJointID;
       FObject1,
-      FObject2 : TObject;
+      FObject2 : TGLBaseSceneObject;
       FManager : TGLODEManager;
       FManagerName : String;
       FAnchor,
@@ -769,7 +793,9 @@ type
       procedure AnchorChange(Sender : TObject);
       procedure AxisChange(Sender : TObject);
       procedure Axis2Change(Sender : TObject);
-      procedure SetManager(Value : TGLODEManager);
+      procedure SetManager(const Value : TGLODEManager);
+      procedure SetObject1(const Value : TGLBaseSceneObject);
+      procedure SetObject2(const Value : TGLBaseSceneObject);
     protected
       procedure Initialize; virtual;
       procedure Deinitialize; virtual;
@@ -785,13 +811,13 @@ type
     public
       constructor Create(aOwner : TXCollection); override;
       destructor Destroy; override;
-      procedure Attach(Obj1, Obj2 : TObject);
+      procedure Attach(Obj1, Obj2 : TGLBaseSceneObject);
       property JointID : TdJointID read FJointID;
-      property Object1 : TObject read FObject1;
-      property Object2 : TObject read FObject2;
       property Initialized : Boolean read FInitialized;
     published
       property Manager : TGLODEManager read FManager write SetManager;
+      property Object1 : TGLBaseSceneObject read FObject1 write SetObject1;
+      property Object2 : TGLBaseSceneObject read FObject2 write SetObject2;
   end;
 
   // TODEJointHinge
@@ -1273,7 +1299,7 @@ end;
 //
 procedure TODECollisionSurface.SetSurfaceMode(value:TSurfaceModes);
 var
-  AMode : Byte;
+  AMode : Integer;
 begin
   AMode := 0;
   if csmSlip2 in value then
@@ -1959,7 +1985,7 @@ begin
     exit;
 
   FBody:=dBodyCreate(Manager.World);
-  AlignBodyToMatrix(TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix);
+  AlignBodyToMatrix(OwnerBaseSceneObject.AbsoluteMatrix);
   dMassSetZero(FMass);
   FElements.Initialize;
   CalculateMass;
@@ -2031,7 +2057,9 @@ begin
   pos:=dBodyGetPosition(Body);
   R:=dBodyGetRotation(Body);
   ODERToGLSceneMatrix(m,R^,pos^);
-  TGLBaseSceneObject(Owner.Owner).Matrix:=m;
+  if OwnerBaseSceneObject.Parent is TGLBaseSceneObject then
+    m:=MatrixMultiply(m, OwnerBaseSceneObject.Parent.InvAbsoluteMatrix);
+  OwnerBaseSceneObject.Matrix:=m;
 end;
 
 // AlignBodyToMatrix
@@ -2186,6 +2214,112 @@ procedure TGLODEDynamicBehaviour.AddRelTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
     dBodyAddRelTorque(FBody,Torque[0],Torque[1],Torque[2]);
+end;
+
+
+// ------------------------------------------------------------------
+// TGLODEDynamicStatic
+// ------------------------------------------------------------------
+
+// Create
+//
+constructor TGLODEStaticBehaviour.Create(AOwner : TXCollection);
+begin
+  inherited;
+  FElements:=TODEElements.Create(Self);
+end;
+
+// Destroy
+//
+destructor TGLODEStaticBehaviour.Destroy;
+begin
+  Deinitialize;
+  FElements.Free;
+  inherited;
+end;
+
+// FriendlyName
+//
+class function TGLODEStaticBehaviour.FriendlyName: String;
+begin
+  Result:='ODE Static';
+end;
+
+// UniqueItem
+//
+class function TGLODEStaticBehaviour.UniqueItem : Boolean;
+begin
+  Result:=True;
+end;
+
+// Initialize
+//
+procedure TGLODEStaticBehaviour.Initialize;
+begin
+  if (not Assigned(Manager)) or (FInitialized) then
+    exit;
+
+  FElements.Initialize;
+  Manager.RegisterObject(self);
+
+  inherited;
+end;
+
+// Deinitialize
+//
+procedure TGLODEStaticBehaviour.Deinitialize;
+begin
+  if not FInitialized then exit;
+  FElements.Deinitialize;
+  if Assigned(FManager) then
+    FManager.UnregisterObject(self);
+
+  inherited;
+end;
+
+// WriteToFiler
+//
+procedure TGLODEStaticBehaviour.WriteToFiler(writer : TWriter);
+begin
+  inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    FElements.WriteToFiler(writer);
+  end;
+end;
+
+// ReadFromFiler
+//
+procedure TGLODEStaticBehaviour.ReadFromFiler(reader : TReader);
+begin
+  inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    FElements.ReadFromFiler(reader);
+  end;
+end;
+
+// AddNewElement
+//
+function TGLODEStaticBehaviour.AddNewElement(AChild:TODEElementClass):TODEBaseElement;
+begin
+  Result:=nil;
+  if not Assigned(Manager) then exit;
+  Result:=AChild.Create(FElements);
+  FElements.Add(Result);
+  Result.Initialize;
+end;
+
+// AlignElementsToMatrix
+//
+procedure TGLODEStaticBehaviour.AlignElementsToMatrix(Mat:TMatrix);
+var
+  i : Integer;
+begin
+  if not FInitialized then exit;
+
+  for i:=0 to FElements.Count-1 do
+    TODEBaseElement(FElements[i]).AlignGeomTransformToMatrix(Mat);
 end;
 
 
@@ -3933,6 +4067,7 @@ end;
 //
 procedure TODEBaseJoint.Initialize;
 begin
+  Attach(FObject1, FObject2);
   FManager.RegisterJoint(Self);
   FInitialized:=True;
 end;
@@ -4018,14 +4153,17 @@ end;
 
 // Attach
 //
-procedure TODEBaseJoint.Attach(Obj1, Obj2: TObject);
+procedure TODEBaseJoint.Attach(Obj1, Obj2: TGLBaseSceneObject);
 var
   Body1, Body2 : PdxBody;
 begin
   if FJointID=0 then exit;
 
-  Body1:=GetBodyFromODEObject(Obj1);
-  Body2:=GetBodyFromODEObject(Obj2);
+  FObject1:=Obj1;
+  FObject2:=Obj2;
+
+  Body1:=GetBodyFromGLSceneObject(Obj1);
+  Body2:=GetBodyFromGLSceneObject(Obj2);
   if Assigned(Body1) or Assigned(Body2) then begin
     dJointAttach(FJointID,Body1,Body2);
   end;
@@ -4054,7 +4192,7 @@ end;
 
 // SetManager
 //
-procedure TODEBaseJoint.SetManager(Value: TGLODEManager);
+procedure TODEBaseJoint.SetManager(const Value: TGLODEManager);
 begin
   if FManager<>Value then begin
     if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
@@ -4062,6 +4200,26 @@ begin
     FManager:=Value;
     if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
       Initialize;
+  end;
+end;
+
+// SetObject1
+//
+procedure TODEBaseJoint.SetObject1(const Value: TGLBaseSceneObject);
+begin
+  if FObject1<>Value then begin
+    FObject1:=Value;
+    Attach(FObject1, FObject2);
+  end;
+end;
+
+// SetObject2
+//
+procedure TODEBaseJoint.SetObject2(const Value: TGLBaseSceneObject);
+begin
+  if FObject2<>Value then begin
+    FObject2:=Value;
+    Attach(FObject1, FObject2);
   end;
 end;
 
@@ -4329,6 +4487,7 @@ initialization
 // ------------------------------------------------------------------
 
   RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
+  RegisterXCollectionItemClass(TGLODEStaticBehaviour);
   RegisterXCollectionItemClass(TODEElementBox);
   RegisterXCollectionItemClass(TODEElementSphere);
   RegisterXCollectionItemClass(TODEElementCapsule);
@@ -4352,6 +4511,7 @@ finalization
 // ------------------------------------------------------------------
 
   UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
+  UnregisterXCollectionItemClass(TGLODEStaticBehaviour);
   UnregisterXCollectionItemClass(TODEElementBox);
   UnregisterXCollectionItemClass(TODEElementSphere);
   UnregisterXCollectionItemClass(TODEElementCapsule);
