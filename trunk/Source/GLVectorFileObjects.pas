@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>23/03/04 - SG - External positions added to skeleton blended lerps.
+                          AutoUpdate flag added to skeleton collider list.
       <li>09/03/04 - SG - TFGIndexTexCoordList.BuildList can now use per vertex color
       <li>29/01/04 - SG - Fix for ApplyCurrentSkeletonFrame with multiple bones per vertex. 
                           Mesh reassembles correctly now (tested up to 4 bones per vertex).
@@ -415,6 +417,7 @@ type
          FBoneID : Integer;
          FLocalMatrix,
          FGlobalMatrix : TMatrix;
+         FAutoUpdate : Boolean;
 
       protected
          { Protected Declarations }
@@ -441,6 +444,7 @@ type
          {: Global offset and orientation of the collider. This
             gets set in the AlignCollider method. }
          property GlobalMatrix : TMatrix read FGlobalMatrix;
+         property AutoUpdate : Boolean read FAutoUpdate write FAutoUpdate;
    end;
 
    // TSkeletonColliderList
@@ -476,6 +480,7 @@ type
       frameIndex1, frameIndex2 : Integer;
       lerpFactor : Single;
       weight : Single;
+      externalPositions : TAffineVectorList;
       externalRotations : TAffineVectorList;
       externalQuaternions : TQuaternionList;
    end;
@@ -2650,6 +2655,7 @@ begin
    inherited;
    FLocalMatrix:=IdentityHMGMatrix;
    FGlobalMatrix:=IdentityHMGMatrix;
+   FAutoUpdate:=True;
 end;
 
 // CreateOwned
@@ -2777,7 +2783,8 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      Items[i].AlignCollider;
+      if Items[i].AutoUpdate then
+         Items[i].AlignCollider;
 end;
 
 // ------------------
@@ -2952,6 +2959,7 @@ end;
 procedure TSkeleton.BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
 var
    i, n : Integer;
+   blendPositions : TAffineVectorList;
    blendRotations : TAffineVectorList;
    blendQuaternions : TQuaternionList;
 begin
@@ -2968,11 +2976,30 @@ begin
       FCurrentFrame:=TSkeletonFrame.Create;
       FCurrentFrame.TransformMode:=Frames[lerpInfos[i].frameIndex1].TransformMode;
       with FCurrentFrame do begin
+         blendPositions:=TAffineVectorList.Create;
+         // lerp first item separately
          Position.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
                        Frames[lerpInfos[i].frameIndex2].Position,
                        lerpInfos[i].lerpFactor);
          if lerpInfos[i].weight<>1 then
             Position.Scale(lerpInfos[i].weight);
+
+         Inc(i);
+         // combine the other items
+         while i<=High(lerpInfos) do begin
+            if not Assigned(lerpInfos[i].externalPositions) then begin
+               blendPositions.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
+                                   Frames[lerpInfos[i].frameIndex2].Position,
+                                   lerpInfos[i].lerpFactor);
+               Position.AngleCombine(blendPositions, 1);
+            end else
+               Position.Combine(lerpInfos[i].externalPositions, 1);
+            Position.Combine(Frames[0].Position, -1);
+            Inc(i);
+         end;
+         blendPositions.Free;
+
+         i:=Low(lerpInfos);
          case TransformMode of
             sftRotation : begin
                blendRotations:=TAffineVectorList.Create;
