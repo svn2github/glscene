@@ -12,6 +12,9 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  DesignSize = (
+    536
+    311)
   PixelsPerInch = 96
   TextHeight = 14
   object Label1: TLabel
@@ -127,7 +130,7 @@ object Form1: TForm1
         DepthOfView = 100
         FocalLength = 50
         TargetObject = DCTarget
-        Position.Coordinates = {0000A04000000040000000400000803F}
+        Position.Coordinates = {0000A04000000040000040400000803F}
         Left = 256
         Top = 144
       end
@@ -139,6 +142,16 @@ object Form1: TForm1
       Visible = False
       CubeSize = 1
     end
+    object ACReference: TGLActor
+      Direction.Coordinates = {000000000000803F2EBD3BB300000000}
+      Position.Coordinates = {CDCC4C3DCDCC4C3DCDCC4C3D0000803F}
+      Scale.Coordinates = {CDCC4C3DCDCC4C3DCDCC4C3D00000000}
+      Up.Coordinates = {000000002EBD3BB3000080BF00000000}
+      Material.MaterialLibrary = GLMaterialLibrary
+      Material.LibMaterialName = 'ActorTexture'
+      AnimationMode = aamLoop
+      Interval = 100
+    end
   end
   object GLCadencer: TGLCadencer
     Scene = GLScene
@@ -149,6 +162,16 @@ object Form1: TForm1
   object Timer1: TTimer
     OnTimer = Timer1Timer
     Left = 16
+    Top = 48
+  end
+  object GLMaterialLibrary: TGLMaterialLibrary
+    Materials = <
+      item
+        Name = 'ActorTexture'
+        Material.Texture.Disabled = False
+        Tag = 0
+      end>
+    Left = 48
     Top = 48
   end
 end

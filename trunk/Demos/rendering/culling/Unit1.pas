@@ -28,7 +28,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLCadencer, GLMisc, GLVectorFileObjects, ExtCtrls,
-  StdCtrls, GLWin32Viewer;
+  StdCtrls, GLWin32Viewer, GLTexture;
 
 type
   TForm1 = class(TForm)
@@ -49,6 +49,8 @@ type
     Panel1: TPanel;
     RBSpheres: TRadioButton;
     RBActors: TRadioButton;
+    ACReference: TGLActor;
+    GLMaterialLibrary: TGLMaterialLibrary;
     procedure GLCadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
@@ -87,17 +89,15 @@ begin
    // Actors are used as standalone, med-polycount objects
    // that aren't T&L friendly (all geometry must be sent to
    // the hardware at each frame)
-   for i:=-2 to 2 do for j:=-2 to 2 do begin
+   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('..\..\media\waste.jpg');
+   ACReference.LoadFromFile('..\..\media\waste.md2');
+   for i:=-3 to 3 do for j:=-3 to 3 do begin
       newActor:=(DCActors.AddNewChild(TGLActor) as TGLActor);
+      newActor.Assign(ACReference);
       newActor.Position.SetPoint(i*10, 0, j*10);
-      newActor.Scale.SetVector(0.05, 0.05, 0.05);
-      newActor.PitchAngle:=90;
-      newActor.Material.Texture.Enabled:=True;
-      newActor.Material.Texture.Image.LoadFromFile('..\..\media\waste.jpg');
-      newActor.LoadFromFile('..\..\media\waste.md2');
       newActor.CurrentFrame:=(i+2)+(j+2)*5;
-      newActor.AnimationMode:=aamLoop;
    end;
+   ACReference.Visible:=False;
 end;
 
 procedure TForm1.RBSpheresClick(Sender: TObject);
