@@ -1,6 +1,7 @@
 package GLCg5;
 
 {$R *.RES}
+{$R '..\Source\CgShaders\GLCgShader.dcr'}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
