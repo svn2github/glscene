@@ -226,7 +226,7 @@ interface
 uses
    Classes, GLMisc, GLTexture, SysUtils, Geometry, XCollection,
    GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,{ dialogs, }
-   {$ifdef GLS_VCL}Graphics{$else}QGraphics{$endif}
+   {$ifdef GLS_VCL}Graphics{$else}QGraphics{$endif},GLSilhouette
    ;
 
 type
@@ -557,7 +557,7 @@ type
             Default implementation assumes the objects is a sphere of
             AxisAlignedDimensionUnscaled size. Subclasses may choose to return
             nil instead, which will be understood as an empty silhouette. }
-         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; virtual;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; virtual;
 
          property Children[Index: Integer]: TGLBaseSceneObject read Get; default;
          property Count: Integer read GetCount;
@@ -1012,7 +1012,7 @@ type
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean; override;
-         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
       published
          { Published Declarations }
@@ -1099,7 +1099,7 @@ type
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
          procedure CoordinateChanged(Sender: TGLCoordinates); override;
-         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
          property LightID : Cardinal read FLightID;
          
@@ -2961,7 +2961,7 @@ end;
 
 // GenerateSilhouette
 //
-function TGLBaseSceneObject.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+function TGLBaseSceneObject.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 const
    cNbSegments = 21;
 var
@@ -3003,7 +3003,7 @@ begin
    NormalizeVector(sVec);
    NormalizeVector(tVec);
    // generate the silhouette (outline and capping)
-   Result:=TGLBaseSilhouette.Create;
+   Result:=TGLSilhouette.Create;
    angleFactor:=(2*PI)/cNbSegments;
    vr:=vr*0.98;
    for i:=0 to cNbSegments-1 do begin
@@ -5224,7 +5224,7 @@ end;
 
 // GenerateSilhouette
 //
-function TGLProxyObject.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+function TGLProxyObject.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 begin
    if Assigned(MasterObject) then
       Result:=MasterObject.GenerateSilhouette(silhouetteParameters)
@@ -5297,7 +5297,7 @@ end;
 
 // GenerateSilhouette
 //
-function TGLLightSource.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+function TGLLightSource.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 begin
    Result:=nil;
 end;

@@ -108,7 +108,7 @@ interface
 {$i GLScene.inc}
 
 uses Classes, Geometry, GLScene, GLTexture, GLMisc, OpenGL12, SysUtils,
-   VectorLists, GLCrossPlatform, GLContext;
+   VectorLists, GLCrossPlatform, GLContext, GLSilhouette;
 
 type
 
@@ -218,7 +218,7 @@ type
 		   procedure Assign(Source: TPersistent); override;
 
 		   procedure BuildList(var rci : TRenderContextInfo); override;
-         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
          function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
@@ -636,7 +636,7 @@ type
 			{ Public Declarations }
          constructor Create(AOwner: TComponent); override;
 
-         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          procedure Assign(Source: TPersistent); override;
@@ -1213,7 +1213,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Consts, GLStrings, Spline, XOpenGL, Polynomials, GLSilhouette;
+uses Consts, GLStrings, Spline, XOpenGL, Polynomials;
 
 const
    cDefaultPointSize : Single = 1.0;
@@ -1521,11 +1521,11 @@ end;
 
 // GenerateSilhouette
 //
-function TGLPlane.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+function TGLPlane.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 var
    hw, hh : single;
 begin
-   Result := TGLBaseSilhouette.Create;
+   Result := TGLSilhouette.Create;
 
    hw:=FWidth*0.5;
    hh:=FHeight*0.5;
@@ -2849,7 +2849,7 @@ end;
 // GenerateSilhouette
 //
 function TGLCube.GenerateSilhouette(
-  const silhouetteParameters: TGLSilhouetteParameters): TGLBaseSilhouette;
+  const silhouetteParameters: TGLSilhouetteParameters): TGLSilhouette;
 var
 	hw, hh, hd : TGLFloat;
    connectivity : TConnectivity;

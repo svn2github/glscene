@@ -14,8 +14,8 @@ unit GLShadowVolume;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLCrossPlatform,
-   PersistentClasses;
+uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLSilhouette, GLTexture,
+  GLCrossPlatform,  PersistentClasses;
 
 type
 
@@ -83,8 +83,8 @@ type
          function GetLightSource : TGLLightSource;
          procedure SetLightSource(const ls : TGLLightSource);
 
-         function GetCachedSilhouette(index : Integer) : TGLBaseSilhouette;
-         procedure StoreCachedSilhouette(index : Integer; sil : TGLBaseSilhouette);
+         function GetCachedSilhouette(index : Integer) : TGLSilhouette;
+         procedure StoreCachedSilhouette(index : Integer; sil : TGLSilhouette);
 
 		public
 			{ Public Declarations }
@@ -308,16 +308,16 @@ end;
 
 // GetCachedSilhouette
 //
-function TGLShadowVolumeLight.GetCachedSilhouette(index : Integer) : TGLBaseSilhouette;
+function TGLShadowVolumeLight.GetCachedSilhouette(index : Integer) : TGLSilhouette;
 begin
    if index<FSilhouettes.Count then
-      Result:=TGLBaseSilhouette(FSilhouettes[index])
+      Result:=TGLSilhouette(FSilhouettes[index])
    else Result:=nil;
 end;
 
 // StoreCachedSilhouette
 //
-procedure TGLShadowVolumeLight.StoreCachedSilhouette(index : Integer; sil : TGLBaseSilhouette);
+procedure TGLShadowVolumeLight.StoreCachedSilhouette(index : Integer; sil : TGLSilhouette);
 begin
    while index>=FSilhouettes.Count do FSilhouettes.Add(nil);
    if sil<>FSilhouettes[index] then begin
@@ -495,7 +495,7 @@ var
    i, j, k, n, nv : Integer;
    lightSource : TGLLightSource;
    lightCaster : TGLShadowVolumeLight;
-   sil : TGLBaseSilhouette;
+   sil : TGLSilhouette;
    lightID : Cardinal;
    obj : TGLBaseSceneObject;
    caster : TGLShadowVolumeCaster;

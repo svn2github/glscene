@@ -101,7 +101,7 @@ interface
 
 uses Classes, GLScene, OpenGL12, Geometry, SysUtils, GLMisc, GLTexture,
    GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
-   ApplicationFileIO;
+   ApplicationFileIO, GLSilhouette;
 
 type
 
@@ -1065,7 +1065,7 @@ type
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
-         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
          procedure BuildSilhouetteConnectivityData;
 
          property MeshObjects : TMeshObjectList read FMeshObjects;
@@ -1528,7 +1528,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, GLSilhouette,
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, 
   GLBaseMeshSilhouette;
 
 var
@@ -5091,7 +5091,7 @@ end;
 
 // GenerateSilhouette
 //
-function TGLBaseMesh.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+function TGLBaseMesh.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
 var
    mc : TGLBaseMeshConnectivity;
    sil : TGLSilhouette;
