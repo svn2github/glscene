@@ -1239,7 +1239,7 @@ type
       bmAlphaTest50 : uses opaque blending, with alpha-testing at 50% (full
          transparency if alpha is below 0.5, full opacity otherwise)<br>
       bmAlphaTest100 : uses opaque blending, with alpha-testing at 100%<br>
-      bmAlphaTest100 : uses modulation blending }
+      bmModulate : uses modulation blending }
    TBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
                     bmAlphaTest50, bmAlphaTest100, bmModulate);
 
