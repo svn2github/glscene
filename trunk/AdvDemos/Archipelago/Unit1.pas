@@ -67,7 +67,7 @@ type
       var rci: TRenderContextInfo; const heightDatas: TList);
     procedure DOWakeProgress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure DOWakeRender(var rci: TRenderContextInfo);
+    procedure DOWakeRender(Sender: TObject; var rci: TRenderContextInfo);
   private
     { Déclarations privées }
   public
@@ -511,7 +511,7 @@ begin
    end;
 end;
 
-procedure TForm1.DOWakeRender(var rci: TRenderContextInfo);
+procedure TForm1.DOWakeRender(Sender: TObject; var rci: TRenderContextInfo);
 var
    i, n : Integer;
    p : PAffineVector;

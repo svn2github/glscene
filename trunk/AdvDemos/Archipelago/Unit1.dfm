@@ -25,8 +25,8 @@ object Form1: TForm1
     Camera = GLCamera
     BeforeRender = GLSceneViewerBeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
-    Buffer.FogEnvironment.FogStart = 500
-    Buffer.FogEnvironment.FogEnd = 1000
+    Buffer.FogEnvironment.FogStart = 500.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 1000.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
@@ -57,7 +57,6 @@ object Form1: TForm1
       Width = 171
       Height = 15
       Align = alClient
-      Min = 0
       Max = 16
       TabOrder = 0
     end
@@ -72,12 +71,12 @@ object Form1: TForm1
       Bands = <
         item
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 25
+          StopAngle = 25.000000000000000000
           Slices = 9
         end
         item
-          StartAngle = 25
-          StopAngle = 90
+          StartAngle = 25.000000000000000000
+          StopAngle = 90.000000000000000000
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Slices = 9
           Stacks = 4
@@ -87,10 +86,10 @@ object Form1: TForm1
     end
     object DCCamera: TGLDummyCube
       Position.Coordinates = {0000000000000041000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera: TGLCamera
-        DepthOfView = 1000
-        FocalLength = 75
+        DepthOfView = 1000.000000000000000000
+        FocalLength = 75.000000000000000000
         TargetObject = DCCamera
         Position.Coordinates = {000000000000803F000040400000803F}
         Left = 264
@@ -103,7 +102,7 @@ object Form1: TForm1
       Up.Coordinates = {00000000000000000000803F00000000}
       HeightDataSource = GLCustomHDS1
       TileSize = 32
-      TilesPerTexture = 1
+      TilesPerTexture = 1.000000000000000000
       MaterialLibrary = MaterialLibrary
       CLODPrecision = 5
       OnHeightDataPostRender = TerrainRendererHeightDataPostRender
@@ -119,11 +118,11 @@ object Form1: TForm1
     end
     object LSSun: TGLLightSource
       Ambient.Color = {9A99993E9A99993E9A99993E0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3F0000803F}
       LightStyle = lsParallel
       Specular.Color = {00000000000000000000000000000000}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
       SpotDirection.Coordinates = {0000803F0000803F0000003F00000000}
     end
     object HTFPS: TGLHUDText
