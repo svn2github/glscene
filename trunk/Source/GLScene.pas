@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/01/02 - Egg - Added some doc, reduced dependencies
       <li>28/12/01 - Egg - Event persistence change (GliGli / Dephi bug),
                            LoadFromStream fix (noeska)
       <li>16/12/01 - Egg - Cube maps support (textures and dynamic rendering)
@@ -180,9 +181,8 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, GLScreen, GLMisc, GLTexture, SysUtils, Graphics,
-   Messages, Geometry, XCollection, GLGraphics, GeometryBB, GLContext,
-   GLCrossPlatform;
+uses Classes, GLScreen, GLMisc, GLTexture, SysUtils, Graphics, Messages,
+   Geometry, XCollection, GLGraphics, GeometryBB, GLContext, GLCrossPlatform;
 
 type
 
@@ -201,6 +201,8 @@ type
   TNormalDirection = (ndInside, ndOutside);
   TTransformationMode = (tmLocal, tmParentNoPos, tmParentWithPos);
 
+  // TObjectChanges
+  //
   // used to decribe only the changes in an object, which have to be reflected in the scene
   TObjectChange = (ocSpot, ocAttenuation, ocTransformation, ocStructure);
   TObjectChanges = set of TObjectChange;
@@ -266,7 +268,19 @@ type
 
    // TGLBaseSceneObject
    //
-   {: Base class for all scene objects.<p> }
+   {: Base class for all scene objects.<p>
+      A scene object is part of scene hierarchy (each scene object can have
+      multiple children), this hierarchy primarily defines transformations
+      (each child coordinates are relative to its parent), but is also used
+      for depth-sorting, bounding and visibility culling purposes.<p>
+      Subclasses implement either visual scene objects (that are made to be
+      visible at runtime, like a Cube) or structural objects (that influence
+      rendering or are used for varied structural manipulations,
+      like the ProxyObject).<p>
+      To add children at runtime, use the AddNewChild method of TGLBaseSceneObject;
+      other children manipulations methods and properties are provided (to browse,
+      move and delete them). Using the regular TComponent methods is not
+      encouraged. }
    TGLBaseSceneObject = class (TGLUpdateAbleComponent)
       private
          { Private Declarations }
@@ -465,17 +479,20 @@ type
          function GetParentComponent: TComponent; override;
          function HasParent: Boolean; override;
          function  IsUpdating: Boolean;
-         //: Moves object along the Up vector (move up/down)
+         //: Moves the object along the Up vector (move up/down)
          procedure Lift(ADistance: Single);
-         //: Moves object along the direction vector
+         //: Moves the object along the direction vector
          procedure Move(ADistance: Single);
+         //: Translates the object
          procedure Translate(tx, ty, tz : Single);
          procedure Pitch(Angle: Single);
          procedure Roll(Angle: Single);
          procedure Turn(Angle: Single);
          //: Moves camera along the right vector (move left and right)
          procedure Slide(ADistance: Single);
+         //: Orients the object toward a target object
          procedure PointTo(const targetObject : TGLBaseSceneObject; const upVector : TVector); overload;
+         //: Orients the object toward a target absolute position
          procedure PointTo(const absolutePosition, upVector : TVector); overload;
 
          procedure Render(var rci : TRenderContextInfo);
@@ -579,7 +596,10 @@ type
    // TGLBehaviours
    //
    {: Holds a list of TGLBehaviour objects.<p>
-      This object expects itself to be owned by a TGLBaseSceneObject.<p> }
+      This object expects itself to be owned by a TGLBaseSceneObject.<p>
+      As a TXCollection (and contrary to a TCollection), this list can contain
+      objects of varying class, the only constraint being that they should all
+      be TGLBehaviour subclasses. }
    TGLBehaviours = class (TXCollection)
       protected
          { Protected Declarations }
@@ -676,7 +696,9 @@ type
 
    // TGLCustomSceneObject
    //
-   {: Extended base class with material and rendering options. }
+   {: Extended base scene object class with a material property.<p>
+      The material allows defining a color and texture for the object,
+      see TGLMaterial. }
    TGLCustomSceneObject = class(TGLBaseSceneObject)
       private
          { Private Declarations }
@@ -741,7 +763,8 @@ type
 
    // TGLSceneObject
    //
-   {: Base class for standard scene objects. }
+   {: Base class for standard scene objects.<p>
+      Publishes the Material property. }
    TGLSceneObject = class(TGLImmaterialSceneObject)
       published
          { Published Declarations }
@@ -750,6 +773,7 @@ type
 
    // TDirectRenderEvent
    //
+   {: Event for user-specific rendering in a TDirectOpenGL object. }
    TDirectRenderEvent = procedure (var rci : TRenderContextInfo) of object;
 
    // TDirectOpenGL
@@ -778,7 +802,18 @@ type
 
       published
          { Published Declarations }
+         {: Specifies if a build list be made.<p>
+            If True, GLScene will generate a build list (OpenGL-side cache),
+            ie. OnRender will only be invoked once for the first render, or after
+            a StructureChanged call. This is suitable for "static" geometry and
+            will usually speed up rendering of things that don't change.<br>
+            If false, OnRender will be invoked for each render. This is suitable
+            for dynamic geometry (things that change often or constantly). }
          property UseBuildList : Boolean read FUseBuildList write SetUseBuildList;
+         {: Place your specific OpenGL code here.<p>
+            The OpenGL calls shall restore the OpenGL states they found when
+            entering, or exclusively use the GLMisc utility functions to alter
+            the states.<br> }
          property OnRender : TDirectRenderEvent read FOnRender write FOnRender;
    end;
 
@@ -814,7 +849,9 @@ type
 
       published
          { Published Declarations }
+         {: Specifies the Master object which will be proxy'ed. }
          property MasterObject : TGLBaseSceneObject read FMasterObject write SetMasterObject;
+         {: Specifies how and what is proxy'ed. }
          property ProxyOptions : TGLProxyObjectOptions read FProxyOptions write SetProxyOptions default cDefaultProxyOptions;
 
          property ObjectsSorting;
@@ -834,12 +871,14 @@ type
    // TLightStyle
    //
    {: Defines the various styles for lightsources.<p>
-      - lsSpot : a spot light, oriented and with a cutoff zone (note that if
-         cutoff is 180, the spot is rendered as an omni source)<br>
-      - lsOmni : an omnidirectionnal source, punctual and sending light in
-         all directions uniformously<br>
-      - lsParallel : a parallel light, oriented as the light source is (this
-         type of light help speed up rendering on non-T&L accelerated cards) }
+      <ul>
+      <li>lsSpot : a spot light, oriented and with a cutoff zone (note that if
+         cutoff is 180, the spot is rendered as an omni source)
+      <li>lsOmni : an omnidirectionnal source, punctual and sending light in
+         all directions uniformously
+      <li>lsParallel : a parallel light, oriented as the light source is (this
+         type of light can help speed up rendering)
+       </ul> }
    TLightStyle = (lsSpot, lsOmni, lsParallel);
 
    // TGLLightSource
@@ -851,7 +890,10 @@ type
       on/off through their Shining property.<p>
       Lightsources are managed in a specific object by the TGLScene for rendering
       purposes. The maximum number of light source in a scene is limited by the
-        OpenGL implementation (8 lights are supported under most ICD). }
+      OpenGL implementation (8 lights are supported under most ICDs), though the
+      more light you use, the slower rendering may get. If you want to render
+      many more light/lightsource, you may have to resort to other techniques
+      like lightmapping. }
    TGLLightSource = class(TGLBaseSceneObject)
       private
          { Private Declarations }
@@ -1023,7 +1065,7 @@ type
             <li>csPerspective, the default value for perspective projection
             <li>csOrthogonal, for orthogonal (or isometric) projection.
             <li>csOrtho2D, setups orthogonal 2D projection in which 1 unit
-               (in x or y) represents 1 pixel. 
+               (in x or y) represents 1 pixel.
             </ul> }
          property CameraStyle : TGLCameraStyle read FCameraStyle write SetCameraStyle default csPerspective;
 
@@ -1035,6 +1077,15 @@ type
 
    // TGLScene
    //
+   {: Scene object.<p>
+      The scene contains the scene description (lights, geometry...), which is
+      basicly a hierarchical scene graph made of TGLBaseSceneObject. It will
+      usually contain one or more TGLCamera object, which can be referred by
+      a Viewer component for rendering purposes.<p>
+      The scene's objects can be accessed directly from Delphi code (as regular
+      components), but those are edited with a specific editor (double-click
+      on the TGLScene component at design-time to invoke it). To add objects
+      at runtime, use the AddNewChild method of TGLBaseSceneObject. }
    TGLScene = class(TGLUpdateAbleComponent)
       private
          { Private Declarations }
@@ -1123,7 +1174,9 @@ type
 
       published
          { Published Declarations }
+         {: Defines default ObjectSorting option for scene objects. }
          property ObjectsSorting : TGLObjectsSorting read FObjectsSorting write SetObjectsSorting default osRenderBlendedLast;
+         {: Defines default VisibilityCulling option for scene objects. }
          property VisibilityCulling : TGLVisibilityCulling read FVisibilityCulling write SetVisibilityCulling default vcNone;
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
 
@@ -1142,7 +1195,8 @@ type
 
    // TGLPickList
    //
-   {: List class for object picking. }
+   {: List class for object picking.<p>
+      This list is used to store the results of a PickObjects call. }
    TGLPickList =  class(TList)
       private
          { Private Declarations }
@@ -1174,6 +1228,14 @@ type
 
    // TFogDistance
    //
+   {: Fog distance calculation mode.<p>
+      <ul>
+      <li>fdDefault: let OpenGL use its default formula
+      <li>fdEyeRadial: uses radial "true" distance (best quality)
+      <li>fdEyePlane: uses the distance to the projection plane
+                  (same as Z-Buffer, faster)
+      </ul>Requires support of GL_NV_fog_distance extension, otherwise,
+      it is ignored. }
    TFogDistance = (fdDefault, fdEyeRadial, fdEyePlane);
 
    // TGLFogEnvironment
@@ -1442,8 +1504,8 @@ type
          property CurrentStates : TGLStates read FCurrentStates;
 
          {: Current FramesPerSecond rendering speed.<p>
-            You must set Monitor to true and keep the renderer busy to get
-            accurate figures from this property.<p>
+            You must keep the renderer busy to get accurate figures from this
+            property.<br>
             This is an average value, to reset the counter, call
             ResetPerfomanceMonitor. }
          property FramesPerSecond : Single read FFramesPerSecond;
@@ -1451,10 +1513,13 @@ type
             See FramesPerSecond. }
          procedure ResetPerformanceMonitor;
 
-         {: Retrieve one the OpenGL limits for the current viewer.<p>
+         {: Retrieve one of the OpenGL limits for the current viewer.<p>
             Limits include max texture size, OpenGL stack depth, etc. }
          property LimitOf[Which : TLimitType] : Integer read GetLimit;
-         {: Current rendering context. }
+         {: Current rendering context.<p>
+            The context is a wrapper around platform-specific contexts
+            (see TGLContext) and takes care of context activation and handle
+            management. }
          property RenderingContext : TGLContext read FRenderingContext;
 
          {: The camera from which the scene is rendered.<p>
@@ -1463,18 +1528,22 @@ type
 
       published
          { Published Declarations }
-         {: Fog environment options. }
+         {: Fog environment options.<p>
+            See TGLFogEnvironment. }
          property FogEnvironment: TGLFogEnvironment read FFogEnvironment write SetGLFogEnvironment stored StoreFog;
          {: Color used for filling the background prior to any rendering. }
          property BackgroundColor: TColor read FBackgroundColor write SetBackgroundColor default clBtnFace;
 
-         {: Context options allows to setup specifics of the rendering context. }
+         {: Context options allows to setup specifics of the rendering context.<p>
+            Not all contexts support all options. }
          property ContextOptions: TContextOptions read FContextOptions write SetContextOptions default [roDoubleBuffer, roRenderToWindow];
          {: DepthTest enabling.<p>
             When DepthTest is enabled, objects closer to the camera will hide
-            farther ones (Z-Buffering is used).<br>
-            When DepthTest is disable, the latest objects drawn/rendered overlap
-            all previous objects, whatever their distance to the camera. }
+            farther ones (via use of Z-Buffering).<br>
+            When DepthTest is disabled, the latest objects drawn/rendered overlap
+            all previous objects, whatever their distance to the camera.<br>
+            Even when DepthTest is enabled, objects may chose to ignore depth
+            testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
          property DepthTest : Boolean read FDepthTest write SetDepthTest default True;
          {: Enable or disable face culling in the renderer.<p>
             Face culling is used in hidden faces removal algorithms : each face
@@ -1494,15 +1563,18 @@ type
             A simple re-render is enough to take into account the changes. }
          property OnChange : TNotifyEvent read FOnChange write FOnChange;
          {: Indicates a structural change in the scene or buffer options.<p>
-            A reconstruction of the RC is necessary to take into account the changes. }
+            A reconstruction of the RC is necessary to take into account the
+            changes (this may lead to a driver switch or lengthy operations). }
          property OnStructuralChange : TNotifyEvent read FOnStructuralChange write FOnStructuralChange;
 
          {: Triggered before the scene's objects get rendered.<p>
-            You may use this event to execute your own OpenGL rendering. }
+            You may use this event to execute your own OpenGL rendering
+            (usually background stuff). }
          property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender stored False;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
-            to execute your own OpenGL rendering.<p> }
+            to execute your own OpenGL rendering (usually for HUD, 2D overlays
+            or after effects).<p> }
          property PostRender: TNotifyEvent read FPostRender write FPostRender stored False;
          {: Called after rendering.<p>
             You cannot issue OpenGL calls in this event, if you want to do your own
@@ -1595,7 +1667,7 @@ type
    //
    {: Component to render a scene to memory only.<p>
       This component curently requires that the OpenGL ICD supports the
-      WGL_ARB_pbuffer extension. }
+      WGL_ARB_pbuffer extension (indirectly). }
    TGLMemoryViewer = class (TGLNonVisualViewer)
       private
          { Private Declarations }
@@ -1618,7 +1690,9 @@ type
 
 {: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
 procedure CheckOpenGLError;
+{: Clears all pending OpenGL errors. }
 procedure ClearGLError;
+{: Raises an EOpenGLError with 'msg' error string. }
 procedure RaiseOpenGLError(const msg : String);
 
 {: Register an event handler triggered by any TGLBaseSceneObject Name change.<p>
@@ -1648,11 +1722,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   Windows, Consts, Dialogs, ExtDlgs, Forms, GLStrings, Info, VectorLists, XOpenGL,
-   VectorTypes, OpenGL12, Controls;
-
-const
-   GLAllStates = [stAlphaTest..stStencilTest];
+   GLStrings, Info, VectorLists, XOpenGL, VectorTypes, OpenGL12;
 
 var
    vCounterFrequency : Int64;
@@ -5419,39 +5489,28 @@ end;
 procedure TGLSceneBuffer.RenderToFile(const aFile : String; DPI : Integer);
 var
    aBitmap : Graphics.TBitmap;
-   saveDialog : TSavePictureDialog;
    saveAllowed : Boolean;
    fileName: String;
 begin
    Assert((not FRendering), glsAlreadyRendering);
-   saveDialog:=nil;
    aBitmap:=Graphics.TBitmap.Create;
    try
       aBitmap.Width:=FViewPort.Width;
       aBitmap.Height:=FViewPort.Height;
       aBitmap.PixelFormat:=pf24Bit;
       RenderToBitmap(ABitmap, DPI);
-      fileName:=AFile;
-      saveAllowed:=True;
-      if fileName='' then begin
-         SaveDialog:=TSavePictureDialog.Create(Application);
-         with SaveDialog do begin
-            Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
-            SaveAllowed:=Execute;
-         end;
-      end;
-      if SaveAllowed then begin
-         if fileName='' then begin
-            fileName:=SaveDialog.FileName;
-            if FileExists(fileName) then
-               saveAllowed:=MessageDlg(Format('Overwrite file %s?', [fileName]), mtConfirmation, [mbYes, mbNo], 0) = mrYes;
-         end;
-         if SaveAllowed then
+      fileName:=aFile;
+      if fileName='' then
+         saveAllowed:=SavePictureDialog(fileName)
+      else saveAllowed:=True;
+      if saveAllowed then begin
+         if FileExists(fileName) then
+            saveAllowed:=QuestionDlg(Format('Overwrite file %s?', [fileName]));
+         if saveAllowed then
             aBitmap.SaveToFile(fileName);
       end;
    finally
-      SaveDialog.Free;
-      ABitmap.Free;
+      aBitmap.Free;
    end;
 end;
 
@@ -5460,38 +5519,27 @@ end;
 procedure TGLSceneBuffer.RenderToFile(const AFile: String; bmpWidth, bmpHeight : Integer);
 var
    aBitmap: Graphics.TBitmap;
-   SaveDialog: TSavePictureDialog;
-   SaveAllowed: Boolean;
-   FName: String;
+   saveAllowed: Boolean;
+   fileName: String;
 begin
    Assert((not FRendering), glsAlreadyRendering);
-   SaveDialog:=nil;
    aBitmap:=Graphics.TBitmap.Create;
    try
-      ABitmap.Width:=bmpWidth;
-      ABitmap.Height:=bmpHeight;
-      ABitmap.PixelFormat:=pf24Bit;
-      RenderToBitmap(ABitmap, (GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle)*bmpWidth) div FViewPort.Width);
-      FName:=AFile;
-      SaveAllowed:=True;
-      if FName = '' then begin
-         SaveDialog:=TSavePictureDialog.Create(Application);
-         with SaveDialog do begin
-            Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
-            SaveAllowed:=Execute;
-         end;
-      end;
-      if SaveAllowed then begin
-         if FName = '' then begin
-            FName:=SaveDialog.FileName;
-            if (FileExists(SaveDialog.FileName)) then
-               SaveAllowed:=MessageDlg(Format('Overwrite file %s?', [SaveDialog.FileName]), mtConfirmation, [mbYes, mbNo], 0) = mrYes;
-         end;
-         if SaveAllowed then ABitmap.SaveToFile(FName);
+      aBitmap.Width:=bmpWidth;
+      aBitmap.Height:=bmpHeight;
+      aBitmap.PixelFormat:=pf24Bit;
+      RenderToBitmap(aBitmap, (GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle)*bmpWidth) div FViewPort.Width);
+      fileName:=AFile;
+      if fileName='' then
+         saveAllowed:=SavePictureDialog(fileName)
+      else saveAllowed:=True;
+      if saveAllowed then begin
+         if FileExists(fileName) then
+            saveAllowed:=QuestionDlg(Format('Overwrite file %s?', [fileName]));
+         if SaveAllowed then aBitmap.SaveToFile(fileName);
       end;
    finally
-      SaveDialog.Free;
-      ABitmap.Free;
+      aBitmap.Free;
    end;
 end;
 
@@ -5624,7 +5672,7 @@ var
    infoForm: TInfoForm;
 begin
    if not Assigned(FRenderingContext) then Exit;
-   Application.CreateForm(TInfoForm, infoForm);
+   infoForm:=TInfoForm.Create(nil);
    try
       FRenderingContext.Activate;
       // most info is available with active context only
@@ -6315,7 +6363,6 @@ begin
          end else begin
             glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
          end;
-CheckOpenGLError;
          ClearGLError;
       finally
          Buffer.RenderingContext.Deactivate;
@@ -6516,17 +6563,10 @@ end;
 // Render
 //
 procedure TGLMemoryViewer.Render;
-var
-   topDC : Integer;
 begin
    if FBuffer.RenderingContext=nil then begin
       FBuffer.SetViewPort(0, 0, Width, Height);
-      topDC:=GetDC(0);
-      try
-         FBuffer.CreateRC(topDC, True);
-      finally
-         ReleaseDC(0, topDC);
-      end;
+      FBuffer.CreateRC(0, True);
    end;
    FBuffer.Render;
 end;
@@ -6543,8 +6583,7 @@ initialization
                     TGLScene, TDirectOpenGL, TGLMemoryViewer]);
 
    // preparation for high resolution timer
-   if not QueryPerformanceFrequency(vCounterFrequency) then
-      vCounterFrequency:=0;
+   QueryPerformanceFrequency(vCounterFrequency);
 
 end.
 

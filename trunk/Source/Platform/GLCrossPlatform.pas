@@ -6,6 +6,7 @@
    in the core GLScene units, and moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog
       <li>06/12/01 - EG - Added several abstraction calls
       <li>31/08/01 - EG - Creation
 	</ul></font>
@@ -17,7 +18,7 @@ interface
 {$include GLScene.inc}
 
 {$ifdef WIN32}
-uses Windows, Graphics, Dialogs, SysUtils;//, GLWin32Context;
+uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;//, GLWin32Context;
 {$endif}
 {$ifdef LINUX}
 
@@ -41,6 +42,11 @@ function GetBValue(rgb: DWORD): Byte;
 
 {: Pops up a simple dialog with msg and an Ok button. }
 procedure InformationDlg(const msg : String);
+{: Pops up a simple question dialog with msg and yes/no buttons.<p>
+   Returns True if answer was "yes". }
+function QuestionDlg(const msg : String) : Boolean;
+{: Pops up a simple save picture dialog. }
+function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
 
 procedure RaiseLastOSError;
 
@@ -53,8 +59,8 @@ procedure FreeAndNil(var anObject);
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 
 {: Returns the current value of the highest-resolution counter.<p>
-   If the platform has none, should return a value derived from the highest-time
-   reference available. }
+   If the platform has none, should return a value derived from the highest
+   precision time reference available. }
 procedure QueryPerformanceCounter(var val : Int64);
 {: Returns the frequency of the counter used by QueryPerformanceCounter.<p>
    Return value is in ticks per second (Hz). }
@@ -109,6 +115,35 @@ end;
 procedure InformationDlg(const msg : String);
 begin
    ShowMessage(msg);
+end;
+
+// QuestionDlg
+//
+function QuestionDlg(const msg : String) : Boolean;
+begin
+   Result:=(MessageDlg(msg, mtConfirmation, [mbYes, mbNo], 0)=mrYes);
+end;
+
+// SavePictureDialog
+//
+function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+var
+   saveDialog : TSavePictureDialog;
+begin
+   saveDialog:=TSavePictureDialog.Create(Application);
+   try
+      with saveDialog do begin
+         Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
+         if aTitle<>'' then
+            Title:=aTitle;
+         FileName:=aFileName;
+         Result:=Execute;
+         if Result then
+            aFileName:=FileName;
+      end;
+   finally
+      saveDialog.Free;
+   end;
 end;
 
 // RaiseLastOSError
