@@ -2,6 +2,9 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
+                            Added TCustomCgShader.IsProfileSupported
+      <li>16/02/04 - NelC - Added TCgParameter.SetParameterPointer
       <li>13/02/04 - NelC - Replaced two overloaded TCgProgram.SetParam's with
                             SetStateMatrix and SetTexture
       <li>05/02/04 - NelC - Fixed type checking for Half and Fixed,
@@ -35,7 +38,7 @@ unit GLCgShader;
 interface
 
 uses
-  Classes, VectorGeometry, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
+  Classes, VectorGeometry, VectorLists, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
 
 type
   TCustomCgShader = class;
@@ -100,10 +103,13 @@ type
     procedure Apply(var rci : TRenderContextInfo; Sender : TObject);
     procedure UnApply(var rci : TRenderContextInfo);
 
+    {: ParamByName returns CgParameter; returns nil if not found. }
+    function ParamByName(const name : String) : TCgParameter;
+    {: Use Param instead of ParamByName if you want implicit check for the
+       existence of your requested parameter. }
     property Param[index : String] : TCgParameter read GetParam;
     property Params : TList read FParams;
 
-    function ParamByName(const name : String) : TCgParameter;
     // Returns a handle to a Cg parameter
     function DirectParamByName(const name : String) : PCGparameter;
 
@@ -168,7 +174,8 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    // These value-setting methods implicitly check for data type.
+    {: Procedures for setting uniform pamareters.<p>
+       Implicitly check for data type. }
     procedure SetAsScalar(const val : Single);
     procedure SetAsVector(const val : TVector2f); overload;
     procedure SetAsVector(const val : TVector3f); overload;
@@ -176,21 +183,29 @@ type
 
     procedure SetAsStateMatrix(matrix, Transform: Cardinal);
 
-    // checks for all texture types
+    {: Procedures for dealing with texture pamareters.}
+    // SetAsTexture checks for all texture types
     procedure SetAsTexture(TextureID : Cardinal);
-    // checks for specific type
+    // SetAsTexture* check for specific type
     procedure SetAsTexture1D(TextureID : Cardinal);
     procedure SetAsTexture2D(TextureID : Cardinal);
     procedure SetAsTexture3D(TextureID : Cardinal);
     procedure SetAsTextureCUBE(TextureID : Cardinal);
     procedure SetAsTextureRECT(TextureID : Cardinal);
-    // for easy use with TGLLibMaterial; determines texture type on-the-fly
+    {: SetToTextureOf determines texture type on-the-fly.}
     procedure SetToTextureOf(LibMaterial  : TGLLibMaterial);
 
     procedure EnableTexture;
     procedure DisableTexture;
 
-    // retruns ShaderName.[program type].ProgramName.ParamName
+    {: Procedures for setting varying parameters with an array of values.}
+    procedure SetParameterPointer(Values : TVectorList); overload;
+    procedure SetParameterPointer(Values : TAffineVectorList); overload;
+
+    procedure EnableClientState;
+    procedure DisableClientState;
+
+    {: LongName retruns ShaderName.[program type].ProgramName.ParamName. }
     function LongName : string;
 
     property Owner : TCgProgram read FOwner;
@@ -224,12 +239,19 @@ type
   TCgFragmentProgram = class (TCgProgram)
   private
     FFPProfile : TCgFPProfile;
+    FManageTexture : boolean;
     procedure SetFPProfile(v : TCgFPProfile);
+    procedure SetManageTexture(const Value: boolean);
+
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
+    procedure Initialize; override;
+
   published
     property Profile : TCgFPProfile read FFPProfile write SetFPProfile default fpDetectLatest;
+    // Switch for auto enabling of texture parameters (Cg 1.2 feature)
+    property ManageTexture : boolean read FManageTexture write SetManageTexture default true;
   end;
 
   // TCustomCgShader
@@ -273,6 +295,8 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
+    function IsProfileSupported(Profile: TcgProfile): boolean;
 
     procedure LoadShaderPrograms(VPFilename, FPFilename : string);
 
@@ -321,11 +345,12 @@ implementation
 
 uses SysUtils, OpenGL1x, Dialogs;
 
-
 const
   // For checking data type
   AllTextureTypes : array[0..4] of TCGtype =
      (CG_SAMPLER2D, CG_SAMPLER1D, CG_SAMPLERRECT, CG_SAMPLERCUBE, CG_SAMPLER3D);
+
+  CgBoolean : array[false..true] of TCGbool = (CG_FALSE, CG_TRUE);
 
 var
   vCgContextCount : Integer;
@@ -445,7 +470,7 @@ end;
 function TCgProgram.GetParam(index : String) : TCgParameter;
 begin
   Result := ParamByName(index);
-  Assert(Result<>nil, '['+LongName+']: Invalid parameter name "'+index+'"');
+  Assert(Result<>nil, '['+LongName+']: Parameter "'+index+'" not found.');
 end;
 
 // ParamByName
@@ -616,7 +641,7 @@ end;
 
 procedure TCgProgram.SetParam(ParamName: string; SingleVal: Single);
 begin
-  ParamByName(ParamName).SetAsScalar(SingleVal);
+  Param[ParamName].SetAsScalar(SingleVal);
 end;
 
 procedure TCgProgram.SetParam(ParamName: string; const Vector4fVal: TVector4f);
@@ -838,6 +863,36 @@ begin
   cgGLSetStateMatrixParameter( Fhandle, matrix, Transform);
 end;
 
+// DisableClientState
+//
+procedure TCgParameter.DisableClientState;
+begin
+  assert(FVariability = CG_VARYING);
+  cgGLDisableClientState(FHandle);
+end;
+
+// EnableClientState
+//
+procedure TCgParameter.EnableClientState;
+begin
+  assert(FVariability = CG_VARYING);
+  cgGLEnableClientState(FHandle);
+end;
+
+// SetParameterPointer
+//
+procedure TCgParameter.SetParameterPointer(Values: TAffineVectorList);
+begin
+  assert(FVariability = CG_VARYING);
+  cgGLSetParameterPointer(FHandle, 3, GL_FLOAT, 0, Values.List);
+end;
+
+procedure TCgParameter.SetParameterPointer(Values: TVectorList);
+begin
+  assert(FVariability = CG_VARYING);
+  cgGLSetParameterPointer(FHandle, 4, GL_FLOAT, 0, Values.List);
+end;
+
 // ------------------
 // ------------------ TCgVertexProgram ------------------
 // ------------------
@@ -875,8 +930,31 @@ begin
   inherited;
   FProgramType := ptFragment;
   FFPProfile:=fpDetectLatest;
+  FManageTexture:=true;
 end;
 
+// SetManageTexture
+//
+procedure TCgFragmentProgram.SetManageTexture(const Value: boolean);
+begin
+  FManageTexture:=Value;
+  if FCgContext<>nil then
+    cgGLSetManageTextureParameters(@FCgContext, CgBoolean[FManageTexture]);
+// If FCgContext = nil (i.e. program not yet initialized), set it in
+// TCgFragmentProgram.Initialize
+end;
+
+// Initialize
+//
+procedure TCgFragmentProgram.Initialize;
+begin
+  inherited;
+  if not FManageTexture then // ManageTexture is on by default
+    cgGLSetManageTextureParameters(@FCgContext, CgBoolean[FManageTexture]);
+end;
+
+// SetFPProfile
+//
 procedure TCgFragmentProgram.SetFPProfile(v: TCgFPProfile);
 begin
   if FFPProfile=v then exit;
@@ -886,8 +964,7 @@ begin
     fp30   : FProfile := CG_PROFILE_fP30;
     arbfp1 : FProfile := CG_PROFILE_ARBFP1;
   end;
-
-  FDetectProfile:=v=fpDetectLatest;
+  FDetectProfile:= v=fpDetectLatest;
 end;
 
 // ------------------
@@ -910,6 +987,13 @@ begin
   inherited Destroy;
   FVertexProgram.Free;
   FFragmentProgram.Free;
+end;
+
+// IsProfileSupported
+//
+function TCustomCgShader.IsProfileSupported(Profile: TcgProfile): boolean;
+begin
+  result:=cgGLIsProfileSupported(Profile)=CG_TRUE;
 end;
 
 // SetVertexProgram
@@ -1050,7 +1134,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
