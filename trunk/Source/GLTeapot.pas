@@ -54,7 +54,8 @@ end;
 //
 procedure TGLTeapot.BuildList(var rci : TRenderContextInfo);
 
-const PatchData : array[0..9, 0..15] of Integer =
+const
+   PatchData : array[0..9, 0..15] of Integer =
       ((102, 103, 104, 105,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15), // rim
        ( 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27), // body
        ( 24, 25, 26, 27, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40), // body
@@ -66,7 +67,7 @@ const PatchData : array[0..9, 0..15] of Integer =
        ( 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83), // spout
        ( 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95));// spout
 
-      CPData : array[0..126, 0..2] of TGLFloat =
+   CPData : array[0..126, 0..2] of TGLFloat =
       ((0.2, 0, 2.7), (0.2, -0.112, 2.7), (0.112, -0.2, 2.7), (0, -0.2, 2.7), (1.3375, 0, 2.53125),
        (1.3375, -0.749, 2.53125), (0.749, -1.3375, 2.53125), (0, -1.3375, 2.53125),
        (1.4375, 0, 2.53125), (1.4375, -0.805, 2.53125), (0.805, -1.4375, 2.53125),
@@ -94,56 +95,57 @@ const PatchData : array[0..9, 0..15] of Integer =
        (0.728, -1.3, 2.4), (0, -1.3, 2.4), (0, 0, 0), (1.425, -0.798, 0), (1.5, 0, 0.075), (1.425, 0, 0),
        (0.798, -1.425, 0), (0, -1.5, 0.075), (0, -1.425, 0), (1.5, -0.84, 0.075), (0.84, -1.5, 0.075));
 
-      Tex : array[0..1, 0..1, 0..1] of TGLFloat = (((0, 0), (1, 0)), ((0, 1), (1, 1)));
+   Tex : array [0..1, 0..1, 0..1] of TGLFloat =
+      (((0, 0), (1, 0)), ((0, 1), (1, 1)));
 
-var P, Q, R, S  : array[0..3, 0..3, 0..2] of TGLFloat;
-    I, J, K, L,
-    GRD      : Integer;
+var
+   P, Q, R, S : array [0..3, 0..3, 0..2] of TGLFloat;
+   I, J, K, L, GRD : Integer;
 
 begin
-  if FGrid < 2 then FGrid:=2;
-  GRD:=FGrid;
-  glPushMatrix;
-  glTranslatef(0, -0.25, 0);
-  glRotatef(-90, 1, 0, 0);
-  glScalef(0.15, 0.15, 0.15);
-  glPushAttrib(GL_POLYGON_BIT or GL_ENABLE_BIT or GL_EVAL_BIT);
-  InvertGLFrontFace;
-  glEnable(GL_AUTO_NORMAL);
-  glEnable(GL_MAP2_VERTEX_3);
-  glEnable(GL_MAP2_TEXTURE_COORD_2);
-  for I:=0 to 9 do begin
-    for J:=0 to 3 do begin
-      for K:=0 to 3 do begin
-        for L:=0 to 2 do begin
-          P[J, K, L]:=CPData[PatchData[I, J*4+K], L];
-          Q[J, K, L]:=CPData[PatchData[I, J*4+(3-K)], L];
-          if L = 1 then Q[J, K, L]:=-Q[J, K, L];
-          if I < 6 then begin
-            R[J, K, L]:=CPData[PatchData[I, J*4+(3-K)], L];
-            if L = 0 then R[J, K, L]:=-R[J, K, L];
-            S[J, K, L]:=CPData[PatchData[I, J*4+K], L];
-            if L < 2 then S[J, K, L]:=-S[J, K, L];
-          end;
-        end;
+   if FGrid < 2 then FGrid:=2;
+   GRD:=FGrid;
+   glPushMatrix;
+   glTranslatef(0, -0.25, 0);
+   glRotatef(-90, 1, 0, 0);
+   glScalef(0.15, 0.15, 0.15);
+   glPushAttrib(GL_POLYGON_BIT or GL_ENABLE_BIT or GL_EVAL_BIT);
+   InvertGLFrontFace;
+   glEnable(GL_AUTO_NORMAL);
+   glEnable(GL_MAP2_VERTEX_3);
+   glEnable(GL_MAP2_TEXTURE_COORD_2);
+   for I:=0 to 9 do begin
+      for J:=0 to 3 do begin
+         for K:=0 to 3 do begin
+            for L:=0 to 2 do begin
+               P[J, K, L]:=CPData[PatchData[I, J*4+K], L];
+               Q[J, K, L]:=CPData[PatchData[I, J*4+(3-K)], L];
+               if L = 1 then Q[J, K, L]:=-Q[J, K, L];
+               if I < 6 then begin
+                  R[J, K, L]:=CPData[PatchData[I, J*4+(3-K)], L];
+                  if L = 0 then R[J, K, L]:=-R[J, K, L];
+                  S[J, K, L]:=CPData[PatchData[I, J*4+K], L];
+                  if L < 2 then S[J, K, L]:=-S[J, K, L];
+               end;
+            end;
+         end;
       end;
-    end;
-    glMapGrid2f(GRD, 0, 1, GRD, 0, 1);
-    glMap2f(GL_MAP2_TEXTURE_COORD_2, 0, 1, 2, 2, 0, 1, 4, 2, @Tex);
-    glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @P);
-    glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
-    glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @Q);
-    glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
-    if I < 6 then begin
-      glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @R);
+      glMapGrid2f(GRD, 0, 1, GRD, 0, 1);
+      glMap2f(GL_MAP2_TEXTURE_COORD_2, 0, 1, 2, 2, 0, 1, 4, 2, @Tex[0, 0, 0]);
+      glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @P[0, 0, 0]);
       glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
-      glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @S);
+      glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @Q[0, 0, 0]);
       glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
-    end;
-  end;
-  InvertGLFrontFace;
-  glPopAttrib;
-  glPopMatrix;
+      if I < 6 then begin
+         glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @R[0, 0, 0]);
+         glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
+         glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @S[0, 0, 0]);
+         glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
+      end;
+   end;
+   InvertGLFrontFace;
+   glPopAttrib;
+   glPopMatrix;
 end;
 
 //-------------------------------------------------------------

@@ -104,7 +104,7 @@ end;
 function RoundDownToPowerOf2(value : Integer) : Integer;
 begin
    if value>0 then begin
-      Result:=1 shl 31;
+      Result:=1 shl 30;
       while Result>value do Result:=Result shr 1;
    end else Result:=1;
 end;
