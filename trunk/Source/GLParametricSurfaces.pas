@@ -22,7 +22,8 @@
    other patches.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>05/09/04 - SG - Added FGBezierSurface facegroup descendant.
+      <li>11/05/04 - SG - Mesh building and texture coord fixes.
+      <li>05/02/04 - SG - Added FGBezierSurface facegroup descendant.
       <li>20/08/03 - SG - Weighted control points.
       <li>18/07/03 - SG - Creation.
    </ul></font>
@@ -70,6 +71,8 @@ type
       procedure SetKnotsU(Value : TSingleList);
       procedure SetKnotsV(Value : TSingleList);
       procedure SetWeights(Value : TSingleList);
+      procedure SetRenderer(Value : TParametricSurfaceRenderer);
+      procedure SetBasis(Value : TParametricSurfaceBasis);
     public
       constructor Create; override;
       destructor Destroy; override;
@@ -98,12 +101,12 @@ type
       property OrderU : Integer read FOrderU write FOrderU;
       property OrderV : Integer read FOrderV write FOrderV;
       {: CountU and CountV describe the number of control points in the
-         U and V direciton. Basically a control point width and height 
+         U and V direciton. Basically a control point width and height
          in (u,v) space. }
       property CountU : Integer read FCountU write FCountU;
       property CountV : Integer read FCountV write FCountV;
       {: Defines how fine the resultant mesh will be. Higher values create
-         finer meshes. Resolution = 50 would produce a 50x50 mesh. 
+         finer meshes. Resolution = 50 would produce a 50x50 mesh.
          The GLU Nurbs rendering uses resolution as the U_STEP and V_STEP
          using the sampling method GLU_DOMAIN_DISTANCE, so the resolution
          works a little differently there. }
@@ -112,11 +115,11 @@ type
          Only applies to BSpline surfaces. }
       property AutoKnots : Boolean read FAutoKnots write FAutoKnots;
       property Continuity : TBSplineContinuity read FContinuity write FContinuity;
-      {: Determines whether to use OpenGL calls (psrOpenGL) or the GLScene 
+      {: Determines whether to use OpenGL calls (psrOpenGL) or the GLScene
          mesh objects (psrGLScene) to render the surface. }
-      property Renderer : TParametricSurfaceRenderer read FRenderer write FRenderer;
+      property Renderer : TParametricSurfaceRenderer read FRenderer write SetRenderer;
       //: Basis determines the style of curve, psbBezier or psbBSpline
-      property Basis : TParametricSurfaceBasis read FBasis write FBasis;
+      property Basis : TParametricSurfaceBasis read FBasis write SetBasis;
   end;
 
   // TFGBezierSurface
@@ -124,7 +127,7 @@ type
   {: A 3d bezier surface implemented through facegroups. The ControlPointIndices
      is an index to control points stored in the MeshObject.Vertices affine
      vector list. Similarly the TexCoordIndices point to the owner 
-     MeshObject.TexCoords, one for each control point. 
+     MeshObject.TexCoords, one for each control point.
      CountU and CountV define the width and height of the surface.
      Resolution sets the detail level of the mesh evaluation. 
      MinU, MaxU, MinV and MaxV define the region of the surface to be rendered, 
@@ -269,7 +272,10 @@ begin
       case FBasis of
         psbBezier : begin
           glMapGrid2f(FResolution,1,0,FResolution,0,1);
-          //glMap2f(GL_MAP2_TEXTURE_COORD_3,1,0,3,2,0,1,6,2,@TexCoords.List[0]);
+          glMap2f(GL_MAP2_TEXTURE_COORD_3,
+            0,1,3,FOrderU,
+            0,1,3*FCountU,FOrderV,
+            @FWeightedControlPoints.List[0]);
           glMap2f(GL_MAP2_VERTEX_3,0,1,3,FCountU,0,1,3*FCountU,FCountV,@FWeightedControlPoints.List[0]);
           glEvalMesh2(GL_FILL,0,FResolution,0,FResolution);
         end;
@@ -283,13 +289,13 @@ begin
           gluNurbsProperty(NurbsRenderer, GLU_V_STEP, FResolution);
 
           gluBeginSurface(NurbsRenderer);
-            {gluNurbsSurface(NurbsRenderer,
+            gluNurbsSurface(NurbsRenderer,
                             FKnotsU.Count, @FKnotsU.List[0],
                             FKnotsV.Count, @FKnotsV.List[0],
                             3, FCountU*3,
                             @FWeightedControlPoints.List[0],
                             FOrderU, FOrderV,
-                            GL_MAP2_TEXTURE_COORD_3);//}
+                            GL_MAP2_TEXTURE_COORD_3);
             gluNurbsSurface(NurbsRenderer,
                             FKnotsU.Count, @FKnotsU.List[0],
                             FKnotsV.Count, @FKnotsV.List[0],
@@ -316,7 +322,7 @@ begin
   // We want to clear everything but the parametric surface
   // data (control points and knot vectors).
   inherited Clear;
-  
+
   // Apply weights to control points
   FWeightedControlPoints.Assign(FControlPoints);
   if FWeights.Count=FControlPoints.Count then
@@ -374,15 +380,15 @@ begin
   Mode:=momFaceGroups;
   fg:=TFGVertexIndexList.CreateOwned(FaceGroups);
   fg.Mode:=fgmmTriangles;
-  for j:=0 to FResolution-1 do with fg do
-    for i:=0 to FResolution-1 do begin
-      VertexIndices.Add(i+(FResolution+1)*j);
-      VertexIndices.Add((i+1)+(FResolution+1)*j);
-      VertexIndices.Add(i+(FResolution+1)*(j+1));
+  for j:=0 to FResolution-2 do with fg do
+    for i:=0 to FResolution-2 do begin
+      VertexIndices.Add(i+FResolution*j);
+      VertexIndices.Add((i+1)+FResolution*j);
+      VertexIndices.Add(i+FResolution*(j+1));
 
-      VertexIndices.Add(i+(FResolution+1)*(j+1));
-      VertexIndices.Add((i+1)+(FResolution+1)*j);
-      VertexIndices.Add((i+1)+(FResolution+1)*(j+1));
+      VertexIndices.Add(i+FResolution*(j+1));
+      VertexIndices.Add((i+1)+FResolution*j);
+      VertexIndices.Add((i+1)+FResolution*(j+1));
     end;
   BuildNormals(fg.VertexIndices,momTriangles);
 
@@ -409,9 +415,32 @@ begin
   FKnotsV.Assign(Value);
 end;
 
+// SetWeights
+//
 procedure TMOParametricSurface.SetWeights(Value : TSingleList);
 begin
   FWeights.Assign(Value);
+end;
+
+// SetRenderer
+//
+procedure TMOParametricSurface.SetRenderer(
+  Value: TParametricSurfaceRenderer);
+begin
+  if Value<>FRenderer then begin
+    FRenderer:=Value;
+    Owner.Owner.StructureChanged;
+  end;
+end;
+
+// SetBasis
+//
+procedure TMOParametricSurface.SetBasis(Value: TParametricSurfaceBasis);
+begin
+  if Value<>FBasis then begin
+    FBasis:=Value;
+    Owner.Owner.StructureChanged;
+  end;
 end;
 
 
