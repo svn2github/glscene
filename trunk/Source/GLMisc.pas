@@ -1759,7 +1759,7 @@ end;
 //
 procedure TDataFile.SaveToStream(stream : TStream);
 begin
-   Assert(False);
+   Assert(False, 'Export for '+ClassName+' not available.');
 end;
 
 //------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>19/08/01 - Egg - Default RayCastIntersect is now Sphere
       <li>16/08/01 - Egg - Dropped Prepare/FinishObject (became obsolete),
                            new CameraStyle (Ortho2D
       <li>12/08/01 - Egg - Completely rewritten handles management,
@@ -339,6 +340,8 @@ type
          function InvAbsoluteMatrix : TMatrix;
          {: Calculate the direction vector in absolute coordinates. }
          function AbsoluteDirection : TVector;
+         {: Calculate the up vector in absolute coordinates. }
+         function AbsoluteUp : TVector;
          {: Calculates the object's absolute coordinates.<p>
             The current implem is probably buggy and slow... }
          function AbsolutePosition : TVector;
@@ -392,7 +395,7 @@ type
             When intersectXXX parameters are nil (default) implementation should
             take advantage of this to optimize calculus, if not, and an intersect
             is found, non nil parameters should be defined.<p>
-            Default value is based on AxisAlignedDimension and a cube bounding. }
+            Default value is based on bounding sphere. }
          function RayCastIntersect(const rayStart, rayVector : TAffineVector;
                                    intersectPoint : PAffineVector = nil;
                                    intersectNormal : PAffineVector = nil) : Boolean; virtual;
@@ -847,6 +850,9 @@ type
          destructor Destroy; override;
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
+         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                   intersectPoint : PAffineVector = nil;
+                                   intersectNormal : PAffineVector = nil) : Boolean; override;
          procedure CoordinateChanged(Sender: TGLCoordinates); override;
 
       published
@@ -910,6 +916,10 @@ type
          procedure Apply;
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
+         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                   intersectPoint : PAffineVector = nil;
+                                   intersectNormal : PAffineVector = nil) : Boolean; override;
+
          procedure ApplyPerspective(Viewport: TRectangle; Width, Height: Integer; DPI: Integer);
          procedure AutoLeveling(Factor: Single);
          procedure Reset;
@@ -1030,6 +1040,14 @@ type
          procedure Progress(const deltaTime, newTime : Double);
 
          function FindSceneObject(const name : String) : TGLBaseSceneObject;
+         {: Calculates, finds and returns the first object intercepted by the ray.<p>
+            Returns nil if no intersection was found. This function will be
+            accurate only for objects that overrided their RayCastIntersect
+            method with accurate code, otherwise, bounding sphere intersections
+            will be returned. }
+         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                   intersectPoint : PAffineVector = nil;
+                                   intersectNormal : PAffineVector = nil) : TGLBaseSceneObject; virtual;
 
          procedure ShutdownAllLights;
 
@@ -2042,7 +2060,16 @@ end;
 //
 function TGLBaseSceneObject.AbsoluteDirection : TVector;
 begin
-   Result:=VectorTransform(Direction.AsVector, AbsoluteMatrix);
+   Result:=AbsoluteMatrix[2];
+   NormalizeVector(Result);
+end;
+
+// AbsoluteUp
+//
+function TGLBaseSceneObject.AbsoluteUp : TVector;
+begin
+   Result:=AbsoluteMatrix[1];
+   NormalizeVector(Result);
 end;
 
 // AbsolutePosition
@@ -2167,18 +2194,20 @@ function TGLBaseSceneObject.RayCastIntersect(const rayStart, rayVector : TAffine
                                  intersectPoint : PAffineVector = nil;
                                  intersectNormal : PAffineVector = nil) : Boolean;
 var
-   localStart, localVector : TAffineVector;
-   m : TMatrix;
+   i1, i2, absPos : TAffineVector;
+
 begin
-   m:=InvAbsoluteMatrix;
-   localStart:=VectorTransform(rayStart, m);
-   localVector:=VectorTransform(rayVector, m);
-   Result:=RayCastTriangleIntersect(rayStart, rayVector,
-                                    NullVector,
-                                    XVector,
-                                    ZVector,
-                                    intersectPoint,
-                                    intersectNormal);
+   SetVector(absPos, AbsolutePosition);
+   if RayCastSphereIntersect(rayStart, rayVector, absPos, BoundingSphereRadius, i1, i2)>0 then begin
+      Result:=True;
+      if Assigned(intersectPoint) then
+         SetVector(intersectPoint^, i1);
+      if Assigned(intersectNormal) then begin
+         SubtractVector(i1, absPos);
+         NormalizeVector(i1);
+         SetVector(intersectNormal^, i1);
+      end;
+   end else Result:=False;
 end;
 
 // Assign
@@ -3763,6 +3792,15 @@ begin
       Self.RenderChildren(0, Count-1, rci);
 end;
 
+// RayCastIntersect
+//
+function TGLCamera.RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                    intersectPoint : PAffineVector = nil;
+                                    intersectNormal : PAffineVector = nil) : Boolean;
+begin
+   Result:=False;
+end;
+
 // ------------------
 // ------------------ TDirectOpenGL ------------------
 // ------------------
@@ -3954,6 +3992,15 @@ procedure TGLLightSource.DoRender(var rci : TRenderContextInfo;
 begin
    if renderSelf and (Count>0) then
       Self.RenderChildren(0, Count-1, rci);
+end;
+
+// RayCastIntersect
+//
+function TGLLightSource.RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                         intersectPoint : PAffineVector = nil;
+                                         intersectNormal : PAffineVector = nil) : Boolean;
+begin
+   Result:=False;
 end;
 
 // CoordinateChanged
@@ -4577,6 +4624,48 @@ begin
    Result:=FObjects.FindChild(name, False);
    if not Assigned(Result) then
        Result:=FCameras.FindChild(name, False);
+end;
+
+// RayCastIntersect
+//
+function TGLScene.RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                   intersectPoint : PAffineVector = nil;
+                                   intersectNormal : PAffineVector = nil) : TGLBaseSceneObject;
+var
+   bestDist2 : Single;
+   bestHit : TGLBaseSceneObject;
+   iPoint, iNormal : TAffineVector;
+   pINormal : PAffineVector;
+
+   function RecursiveDive(baseObject : TGLBaseSceneObject) : TGLBaseSceneObject;
+   var
+      i : Integer;
+      curObj : TGLBaseSceneObject;
+      dist2 : Single;
+   begin
+      Result:=nil;
+      for i:=0 to baseObject.Count-1 do begin
+         curObj:=baseObject.Children[i];
+         if curObj.RayCastIntersect(rayStart, rayVector, @iPoint, pINormal) then begin
+            dist2:=VectorDistance2(rayStart, iPoint);
+            if dist2<bestDist2 then begin
+               bestHit:=curObj;
+               bestDist2:=dist2;
+               if Assigned(intersectPoint) then
+                  intersectPoint^:=iPoint;
+               if Assigned(intersectNormal) then
+                  intersectNormal^:=iNormal;
+            end;
+         end else RecursiveDive(curObj);
+      end;
+   end;
+
+begin
+   bestDist2:=1e20;
+   bestHit:=nil;
+   if Assigned(intersectNormal) then pINormal:=@iNormal else pINormal:=nil;
+   RecursiveDive(Objects);
+   Result:=bestHit;
 end;
 
 // NotifyChange

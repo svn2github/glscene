@@ -3,6 +3,7 @@
 	Lists of vectors<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>18/08/01 - EG - Fixed TAffineVectorList.Add (list)
       <li>03/08/01 - EG - Added TIntegerList.AddSerie
       <li>19/07/01 - EG - Added TAffineVectorList.Add (list variant)
       <li>18/03/01 - EG - Additions and enhancements
@@ -59,6 +60,7 @@ type
 
          procedure Delete(Index : Integer);
          procedure Exchange(Index1, Index2 : Integer);
+         procedure Reverse;
 
          {: Nb of items in the list }
 			property Count: Integer read FCount write SetCount;
@@ -127,16 +129,16 @@ type
 			constructor Create; override;
 			procedure Assign(Src: TPersistent); override;
 
-			function Add(const item : TAffineVector) : Integer; overload;
+			function  Add(const item : TAffineVector) : Integer; overload;
 			procedure Add(const i1, i2, i3 : TAffineVector); overload;
-			function Add(const item : TTexPoint) : Integer; overload;
-			function Add(const x, y, z : Single) : Integer; overload;
+			function  Add(const item : TTexPoint) : Integer; overload;
+			function  Add(const x, y, z : Single) : Integer; overload;
          procedure Add(const list : TAffineVectorList); overload;
 			procedure Push(const val : TAffineVector);
-			function Pop : TAffineVector;
+			function  Pop : TAffineVector;
 			procedure Insert(Index: Integer; const item : TAffineVector);
-         function IndexOf(const item : TAffineVector) : Integer;
-         function FindOrAdd(const item : TAffineVector) : Integer;
+         function  IndexOf(const item : TAffineVector) : Integer;
+         function  FindOrAdd(const item : TAffineVector) : Integer;
 
 			property Items[Index: Integer] : TAffineVector read Get write Put; default;
 			property List : PAffineVectorArray read FList;
@@ -208,7 +210,7 @@ type
 
 			function Add(const item : TTexPoint): Integer;
 			procedure Push(const val : TTexPoint);
-			function Pop : TTexPoint;
+			function  Pop : TTexPoint;
 			procedure Insert(Index: Integer; const item : TTexPoint);
 
 			property Items[Index: Integer] : TTexPoint read Get write Put; default;
@@ -236,10 +238,13 @@ type
 			constructor Create; override;
 			procedure Assign(Src: TPersistent); override;
 
-			function Add(const item : Integer) : Integer;
+			function  Add(const item : Integer) : Integer; overload;
+         procedure Add(const i1, i2, i3 : Integer); overload;
+         procedure Add(const list : TIntegerList); overload;
 			procedure Push(const val : Integer);
 			function Pop : Integer;
 			procedure Insert(Index : Integer; const item : Integer);
+         procedure Remove(const item : Integer);
 
 			property Items[Index: Integer] : Integer read Get write Put; default;
 			property List: PIntegerArray read FList;
@@ -472,6 +477,21 @@ begin
    System.Move(BufferItem[0], FBaseList[Index2*FItemSize], FItemSize);
 end;
 
+// Reverse
+//
+procedure TBaseList.Reverse;
+var
+   s, e : Integer;
+begin
+   s:=0;
+   e:=Count-1;
+   while s<e do begin
+      Exchange(s, e);
+      Inc(s);
+      Dec(e);
+   end;
+end;
+
 // ------------------
 // ------------------ TBaseVectorList ------------------
 // ------------------
@@ -702,7 +722,7 @@ begin
    if Assigned(list) and (list.Count>0) then begin
       if Count+list.Count>Capacity then
          Capacity:=Count+list.Count;
-      System.Move(FList[Count], list.FList[0], list.Count*SizeOf(TAffineVector));
+      System.Move(list.FList[0], FList[Count], list.Count*SizeOf(TAffineVector));
       Inc(FCount, list.Count);
    end;
 end;
@@ -1078,14 +1098,37 @@ begin
 	end else Clear;
 end;
 
-// Add
+// Add (simple)
 //
-function TIntegerList.Add(const item : Integer): Integer;
+function TIntegerList.Add(const item : Integer) : Integer;
 begin
 	Result:=FCount;
-	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-	FList^[Result] := Item;
+	if Result=FCapacity then SetCapacity(FCapacity+FGrowthDelta);
+	FList[Result]:=Item;
   	Inc(FCount);
+end;
+
+// Add (three at once)
+//
+procedure TIntegerList.Add(const i1, i2, i3 : Integer);
+begin
+  	Inc(FCount, 3);
+   while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
+	FList[FCount-3]:=i1;
+	FList[FCount-2]:=i2;
+	FList[FCount-1]:=i3;
+end;
+
+// Add (list)
+//
+procedure TIntegerList.Add(const list : TIntegerList);
+begin
+   if Assigned(list) and (list.Count>0) then begin
+      if Count+list.Count>Capacity then
+         Capacity:=Count+list.Count;
+      System.Move(list.FList[0], FList[Count], list.Count*SizeOf(Integer));
+      Inc(FCount, list.Count);
+   end;
 end;
 
 // Get
@@ -1111,6 +1154,21 @@ begin
 						(FCount - Index) * SizeOf(Integer));
 	FList^[Index] := Item;
 	Inc(FCount);
+end;
+
+// Remove
+//
+procedure TIntegerList.Remove(const item : Integer);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do begin
+      if FList^[i]=item then begin
+         System.Move(FList^[i+1], FList^[i], (FCount-1-i)*SizeOf(Integer));
+         Dec(FCount);
+         Break;
+      end;
+   end;
 end;
 
 // Put

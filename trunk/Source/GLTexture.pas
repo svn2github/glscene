@@ -1045,9 +1045,12 @@ type
 function ColorManager: TGLColorManager;
 
 //: Converts a color vector (containing float values)
-function ConvertColorVector(AColor: TColorVector): TColor;
+function ConvertColorVector(const AColor : TColorVector) : TColor; overload;
+{: Converts a color vector (containing float values) and alter intensity.<p>
+   intensity is in [0..1] }
+function ConvertColorVector(const AColor: TColorVector; intensity : Single) : TColor; overload;
 //: Converts RGB components into a color vector with correct range
-function ConvertRGBColor(AColor: array of Byte): TColorVector;
+function ConvertRGBColor(AColor: array of Byte) : TColorVector;
 //: Converts a delphi color into its RGB fragments and correct range
 function ConvertWinColor(aColor: TColor; alpha : Single = 1) : TColorVector;
 procedure RegisterColor(AName: String; AColor: TColorVector);
@@ -3517,11 +3520,23 @@ begin
    Result[3]:=alpha;
 end;
 
-//------------------------------------------------------------------------------
-
-function ConvertColorVector(AColor: TColorVector): TColor;
+// ConvertColorVector
+//
+function ConvertColorVector(const AColor: TColorVector): TColor;
 begin
-  Result := RGB(Round(255 * AColor[0]), Round(255 * AColor[1]), Round(255 * AColor[2]));
+  Result := RGB(Round(255 * AColor[0]),
+                Round(255 * AColor[1]),
+                Round(255 * AColor[2]));
+end;
+
+// ConvertColorVector
+//
+function ConvertColorVector(const AColor: TColorVector; intensity : Single) : TColor;
+begin
+   intensity:=255*intensity;
+  Result := RGB(Round(intensity * AColor[0]),
+                Round(intensity * AColor[1]),
+                Round(intensity * AColor[2]));
 end;
 
 //------------------------------------------------------------------------------

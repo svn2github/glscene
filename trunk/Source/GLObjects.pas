@@ -112,8 +112,11 @@ type
          destructor Destroy; override;
 
 			procedure Assign(Source: TPersistent); override;
-         function AxisAlignedDimensions : TVector; override;
 
+         function AxisAlignedDimensions : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                   intersectPoint : PAffineVector = nil;
+                                   intersectNormal : PAffineVector = nil) : Boolean; override;
 			procedure BuildList(var rci : TRenderContextInfo); override;
 			function BarycenterAbsolutePosition : TVector; override;
 
@@ -1288,6 +1291,15 @@ end;
 function TDummyCube.AxisAlignedDimensions : TVector;
 begin
    VectorScale(Scale.AsVector, 0.5*Abs(FCubeSize), Result);
+end;
+
+// RayCastIntersect
+//
+function TDummyCube.RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                     intersectPoint : PAffineVector = nil;
+                                     intersectNormal : PAffineVector = nil) : Boolean;
+begin
+   Result:=False;
 end;
 
 // BuildList

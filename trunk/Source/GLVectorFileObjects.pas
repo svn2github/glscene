@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>18/08/01 - Egg - Added TriangleCount methods, STL export, PLY import
       <li>15/08/01 - Egg - FaceGroups can now be rendered by material group
                            (activate with RenderingOption "moroGroupByMaterial")
       <li>14/08/01 - Egg - Added TSkeletonBoneList and support for skeleton with
@@ -419,6 +420,11 @@ type
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
          function ExtractTriangles : TAffineVectorList; override;
+         {: Returns number of triangles in the mesh object. }
+         function TriangleCount : Integer; dynamic;
+         {: Request for collapsing two vertices
+         procedure CollapseVertices(vertexA, vertexB : Integer); virtual;
+
 
          {: Prepare the texture and materials before rendering.<p>
             Invoked once, before building the list and NOT while building the list. }
@@ -476,6 +482,8 @@ type
          procedure GetExtents(var min, max : TAffineVector);
          procedure Translate(const delta : TAffineVector);
          function ExtractTriangles : TAffineVectorList;
+         {: Returns number of triangles in the meshes of the list. }
+         function TriangleCount : Integer;
 
          //: Precalculate whatever is needed for rendering, called once
          procedure Prepare; dynamic;
@@ -644,12 +652,14 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
-         procedure BuildList(var mrci : TRenderContextInfo); virtual;
+         procedure BuildList(var mrci : TRenderContextInfo); virtual; abstract;
 
          {: Add to the list the triangles corresponding to the facegroup.<p>
             This function is used by TMeshObjects ExtractTriangles to retrieve
             all the triangles in a mesh. }
          procedure AddToTriangles(aList : TAffineVectorList); dynamic;
+         {: Returns number of triangles in the facegroup. }
+         function TriangleCount : Integer; dynamic; abstract;
 
          //: Precalculate whatever is needed for rendering, called once
          procedure Prepare; dynamic;
@@ -695,6 +705,7 @@ type
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
          procedure AddToTriangles(aList : TAffineVectorList); override;
+         function TriangleCount : Integer; override;
 
          procedure Add(idx : Integer);
          procedure GetExtents(var min, max : TAffineVector);
@@ -868,6 +879,19 @@ type
          procedure LoadFromStream(aStream: TStream); override;
    end;
 
+   // TGLPLYVectorFile
+   //
+   {: The PLY vector file aka Stanford Triangle Format.<p>
+      This is a format for storing graphical objects that are described as a
+      collection of polygons. The format is extensible, supports variations and
+      subformats. This importer only works for the simplest variant (triangles
+      without specified normals, and will ignore most header specifications. }
+   TGLPLYVectorFile = class(TVectorFile)
+      public
+         { Public Declarations }
+         procedure LoadFromStream(aStream: TStream); override;
+   end;
+
    // TGLSTLVectorFile
    //
    {: The STL vector file (stereolithography format).<p>
@@ -880,6 +904,7 @@ type
       public
          { Public Declarations }
          procedure LoadFromStream(aStream: TStream); override;
+         procedure SaveToStream(aStream: TStream); override;
    end;
 
    // TGLSMDVectorFile
@@ -963,6 +988,14 @@ type
             The filename attribute is required to identify the type data you're
             streaming (3DS, OBJ, etc.) }
          procedure LoadFromStream(const filename : String; aStream : TStream); dynamic;
+         {: Saves to a vector file.<p>
+            Note that only some of the vector files formats can be written to
+            by GLScene. }
+         procedure SaveToFile(const fileName : String); dynamic;
+         {: Saves to a vector file in a stream.<p>
+            Note that only some of the vector files formats can be written to
+            by GLScene. }
+         procedure SaveToStream(const fileName : String; aStream : TStream); dynamic;
 
          {: Loads additionnal data from a file.<p>
             Additionnal data could be more animation frames or morph target.<br>
@@ -2380,6 +2413,30 @@ begin
    end;
 end;
 
+// TriangleCount
+//
+function TMeshObject.TriangleCount : Integer;
+var
+   i : Integer;
+begin
+   case Mode of
+      momTriangles :
+         Result:=(Vertices.Count div 3);
+      momTriangleStrip : begin
+         Result:=Vertices.Count-2;
+         if Result<0 then Result:=0;
+      end;
+      momFaceGroups : begin
+         Result:=0;
+         for i:=0 to FaceGroups.Count-1 do
+            Result:=Result+FaceGroups[i].TriangleCount;
+      end;
+   else
+      Result:=0;
+      Assert(False);
+   end;
+end;
+
 // GetExtents
 //
 procedure TMeshObject.GetExtents(var min, max : TAffineVector);
@@ -2696,6 +2753,17 @@ begin
          objTris.Free;
       end;
    end;
+end;
+
+// TriangleCount
+//
+function TMeshObjectList.TriangleCount : Integer;
+var
+   i : Integer;
+begin
+   Result:=0;
+   for i:=0 to Count-1 do
+      Result:=Result+Items[i].TriangleCount;
 end;
 
 // Prepare
@@ -3177,13 +3245,6 @@ begin
    end else RaiseFilerException(archiveVersion);
 end;
 
-// BuildList
-//
-procedure TFaceGroup.BuildList(var mrci : TRenderContextInfo);
-begin
-   // nothing
-end;
-
 // AddToTriangles
 //
 procedure TFaceGroup.AddToTriangles(aList : TAffineVectorList);
@@ -3281,14 +3342,15 @@ end;
 //
 procedure TFGVertexIndexList.AddToTriangles(aList : TAffineVectorList);
 var
-   i : Integer;
+   i, n : Integer;
    vertexList : TAffineVectorList;
 begin
    vertexList:=Owner.Owner.Vertices;
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin
-         aList.AdjustCapacityToAtLeast(aList.Count+VertexIndices.Count);
-         for i:=0 to VertexIndices.Count-1 do
+         n:=(VertexIndices.Count div 3)*3;
+         aList.AdjustCapacityToAtLeast(aList.Count+n);
+         for i:=0 to n-1 do
             aList.Add(vertexList[VertexIndices[i]]);
       end;
       fgmmTriangleStrip : begin
@@ -3313,6 +3375,23 @@ begin
          end;
       end;
    else
+      Assert(False);
+   end;
+end;
+
+// TriangleCount
+//
+function TFGVertexIndexList.TriangleCount : Integer;
+begin
+   case Mode of
+      fgmmTriangles, fgmmFlatTriangles :
+         Result:=VertexIndices.Count div 3;
+      fgmmTriangleFan, fgmmTriangleStrip : begin
+         Result:=VertexIndices.Count-2;
+         if Result<0 then Result:=0;
+      end;
+   else
+      Result:=0;
       Assert(False);
    end;
 end;
@@ -4057,6 +4136,42 @@ begin
       end;
       PerformAutoCentering;
       PrepareMesh;
+   end;
+end;
+
+// SaveToFile
+//
+procedure TBaseMesh.SaveToFile(const filename : String);
+var
+   fs : TFileStream;
+begin
+   if fileName <> '' then begin
+      fs:=TFileStream.Create(fileName, fmCreate);
+      try
+         SaveToStream(fileName, fs);
+      finally
+         fs.Free;
+      end;
+   end;
+end;
+
+// SaveToStream
+//
+procedure TBaseMesh.SaveToStream(const fileName : String; aStream : TStream);
+var
+   newVectorFile : TVectorFile;
+   vectorFileClass : TVectorFileClass;
+begin
+   if fileName<>'' then begin
+      vectorFileClass:=GetVectorFileFormats.FindFromFileName(filename);
+      newVectorFile:=VectorFileClass.Create(Self);
+      try
+         newVectorFile.ResourceName:=filename;
+         PrepareVectorFile(newVectorFile);
+         newVectorFile.SaveToStream(aStream);
+      finally
+         newVectorFile.Free;
+      end;
    end;
 end;
 
@@ -5008,6 +5123,72 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLPLYVectorFile ------------------
+// ------------------
+
+// LoadFromStream
+//
+procedure TGLPLYVectorFile.LoadFromStream(aStream : TStream);
+var
+   i, nbVertices, nbFaces : Integer;
+   sl, tl : TStringList;
+   mesh : TMeshObject;
+   fg : TFGVertexIndexList;
+begin
+   sl:=TStringList.Create;
+   tl:=TStringList.Create;
+   try
+      sl.LoadFromStream(aStream);
+      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh.Mode:=momFaceGroups;
+      if sl[0]<>'ply' then
+         raise Exception.Create('Not a valid ply file !');
+      nbVertices:=0;
+      nbFaces:=0;
+      i:=0;
+      while i<sl.Count do begin
+         if sl[i]='end_header' then Break;
+         if Copy(sl[i], 1, 14)='element vertex' then
+            nbVertices:=StrToIntDef(Copy(sl[i], 16, MaxInt), 0);
+         if Copy(sl[i], 1, 12)='element face' then
+            nbFaces:=StrToIntDef(Copy(sl[i], 14, MaxInt), 0);
+         Inc(i);
+      end;
+      Inc(i);
+      // vertices
+      mesh.Vertices.Capacity:=nbVertices;
+      while (i<sl.Count) and (nbVertices>0) do begin
+         tl.CommaText:=sl[i];
+         if tl.Count<3 then
+            raise Exception.Create('Unsupported PLY variant.');
+         mesh.Vertices.Add(AffineVectorMake(StrToFloatDef(tl[0]), StrToFloatDef(tl[1]), StrToFloatDef(tl[2])));
+         Dec(nbVertices);
+         Inc(i);
+      end;
+      // faces
+      fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
+      fg.Mode:=fgmmTriangles;
+      fg.VertexIndices.Capacity:=nbFaces*3;
+      while (i<sl.Count) and (nbFaces>0) do begin
+         tl.CommaText:=sl[i];
+         if tl[0]<>'3' then
+            raise Exception.Create('Unsupported PLY variant.');
+         with fg.VertexIndices do begin
+            Add(StrToInt(tl[1]));
+            Add(StrToInt(tl[2]));
+            Add(StrToInt(tl[3]));
+         end;
+         Dec(nbFaces);
+         Inc(i);
+      end;
+      mesh.BuildNormals(fg.VertexIndices, momTriangles);
+   finally
+      tl.Free;
+      sl.Free;
+   end;
+end;
+
+// ------------------
 // ------------------ TGLSTLVectorFile ------------------
 // ------------------
 
@@ -5036,6 +5217,36 @@ begin
          else Vertices.Add(v3, v2, v1);
          Normals.Add(normal, normal, normal);
       end;
+   end;
+end;
+
+// SaveToStream
+//
+procedure TGLSTLVectorFile.SaveToStream(aStream: TStream);
+var
+   i : Integer;
+   header : TSTLHeader;
+   dataFace : TSTLFace;
+   list : TAffineVectorList;
+const
+   cHeaderTag = 'GLScene STL export';
+begin
+   list:=Owner.MeshObjects.ExtractTriangles;
+   try
+      FillChar(header.dummy[0], SizeOf(header.dummy), 0);
+      Move(cHeaderTag, header.dummy[0], Length(cHeaderTag));
+      header.nbFaces:=list.Count div 3;
+      aStream.Write(header, SizeOf(header));
+      i:=0; while i<list.Count do begin
+         dataFace.normal:=CalcPlaneNormal(list[i], list[i+1], list[i+2]);
+         dataFace.v1:=list[i];
+         dataFace.v2:=list[i+1];
+         dataFace.v3:=list[i+2];
+         aStream.Write(dataFace, SizeOf(dataFace));
+         Inc(i, 3);
+      end;
+   finally
+      list.Free;
    end;
 end;
 
@@ -5180,6 +5391,8 @@ initialization
    RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);
    RegisterVectorFileFormat('stl', 'Stereolithography files', TGLSTLVectorFile);
    RegisterVectorFileFormat('smd', 'Half-Life SMD files', TGLSMDVectorFile);
+   RegisterVectorFileFormat('ply', 'Stanford triangle format', TGLPLYVectorFile);
+
    RegisterClasses([TFreeForm, TActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
                     TSkeletonMeshObject, TMeshObject, TSkeletonFrame,
                     TMorphableMeshObject, TFaceGroup, TFGVertexIndexList,

@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>19/08/01 - EG - Added sphere raycasting functions
       <li>08/08/01 - EG - Added MaxFloat overloads
       <li>24/07/01 - EG - VectorAngle renamed to VectorAngleCosine to avoid confusions
       <li>06/07/01 - EG - Added NormalizeDegAngle
@@ -952,6 +953,21 @@ function RayCastTriangleIntersect(const rayStart, rayVector : TAffineVector;
                                   const p1, p2, p3 : TAffineVector;
                                   intersectPoint : PAffineVector = nil;
                                   intersectNormal : PAffineVector = nil) : Boolean;
+{: Calculate the min distance a ray will pass to a point.<p> }
+function RayCastMinDistToPoint(const rayStart, rayVector : TAffineVector;
+                               const point : TAffineVector) : Single;
+{: Determines if a ray will intersect with a given sphere.<p> }
+function RayCastIntersectsSphere(const rayStart, rayVector : TAffineVector;
+                                 const sphereCenter : TAffineVector;
+                                 const sphereRadius : Single) : Boolean;
+{: Calculates the intersections between a sphere and a ray.<p>
+   Returns 0 if no intersection is found (i1 and i2 untouched), 1 if one
+   intersection was found (i1 defined, i2 untouched), and 2 is two intersections
+   were found (i1 and i2 defined). }
+function RayCastSphereIntersect(const rayStart, rayVector : TAffineVector;
+                                const sphereCenter : TAffineVector;
+                                const sphereRadius : Single;
+                                var i1, i2 : TAffineVector) : Integer;
 
 //: Determines if volume is clipped or not
 function IsVolumeClipped(const objPos : TVector; const objRadius : Single;
@@ -5164,6 +5180,60 @@ begin
          intersectNormal^:=n;
       end;
    end;
+end;
+
+// RayCastMinDistToPoint
+//
+function RayCastMinDistToPoint(const rayStart, rayVector : TAffineVector;
+                               const point : TAffineVector) : Single;
+var
+   proj : Single;
+begin
+   proj:=VectorDotProduct(rayVector, VectorSubtract(point, rayStart));
+   if proj<=0 then proj:=0; // rays don't go backward!
+   Result:=VectorDistance(point, VectorCombine(rayStart, rayVector, 1, proj));
+end;
+
+// RayCastIntersectsSphere
+//
+function RayCastIntersectsSphere(const rayStart, rayVector : TAffineVector;
+                                 const sphereCenter : TAffineVector;
+                                 const sphereRadius : Single) : Boolean;
+var
+   proj : Single;
+begin
+   proj:=VectorDotProduct(rayVector, VectorSubtract(sphereCenter, rayStart));
+   if proj<=0 then proj:=0; // rays don't go backward!
+   Result:=(VectorDistance2(sphereCenter, VectorCombine(rayStart, rayVector, 1, proj))<=Sqr(sphereRadius));
+end;
+
+// RayCastSphereIntersect
+//
+function RayCastSphereIntersect(const rayStart, rayVector : TAffineVector;
+                                 const sphereCenter : TAffineVector;
+                                 const sphereRadius : Single;
+                                 var i1, i2 : TAffineVector) : Integer;
+var
+   proj, d2 : Single;
+begin
+   proj:=VectorDotProduct(rayVector, VectorSubtract(sphereCenter, rayStart));
+   d2:=Sqr(sphereRadius)-VectorDistance2(sphereCenter, VectorCombine(rayStart, rayVector, 1, proj));
+   if d2>=0 then begin
+      if (d2=0) and (proj>0) then begin
+         Result:=1;
+         i1:=VectorCombine(rayStart, rayVector, 1, proj);
+      end else if (d2>0) then begin
+         d2:=Sqrt(d2);
+         if proj-d2>=0 then begin
+            Result:=2;
+            i1:=VectorCombine(rayStart, rayVector, 1, proj-d2);
+            i2:=VectorCombine(rayStart, rayVector, 1, proj+d2);
+         end else if proj+d2>=0 then begin
+            Result:=1;
+            i1:=VectorCombine(rayStart, rayVector, 1, proj+d2);
+         end else Result:=0;
+      end else Result:=0;
+   end else Result:=0;
 end;
 
 // IntersectLinePlane
