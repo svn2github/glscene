@@ -2,6 +2,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/04/04 - EG - Fixed occlusion test and pojection matrix stack issues
       <li>16/04/04 - EG - Added StreakAngle
       <li>15/04/04 - EG - Texture-based Lens-flare moved to GLTexLensFlare,
                           replaced gradient arrays with design-time editable colors 
@@ -450,6 +451,7 @@ var
    screenPos : TAffineVector;
    flareInViewPort : Boolean;
    oldSeed : LongInt;
+   projMatrix : TMatrix;
 begin
    SetVector(v, AbsolutePosition);
    // are we looking towards the flare?
@@ -473,14 +475,15 @@ begin
    end;
 
    // Prepare matrices
-   glMatrixMode(GL_PROJECTION);
-   glPushMatrix;
-   glLoadIdentity;
-   glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
-
-   glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
+
+   glMatrixMode(GL_PROJECTION);
+   glPushMatrix;
+   projMatrix:=IdentityHmgMatrix;
+   projMatrix[0][0]:=2/rci.viewPortSize.cx;
+   projMatrix[1][1]:=2/rci.viewPortSize.cy;
+   glLoadMatrixf(@projMatrix);
 
    MakeVector(posVector,
               screenPos[0]-rci.viewPortSize.cx*0.5,
@@ -509,12 +512,14 @@ begin
             glEnable(GL_OCCLUSION_TEST_HP);
          end;
 
+         glDepthFunc(GL_LEQUAL);
          glBegin(GL_QUADS);
-            glVertex3f(posVector[0]+2, posVector[1], 0.99);
-            glVertex3f(posVector[0], posVector[1]+2, 0.99);
-            glVertex3f(posVector[0]-2, posVector[1], 0.99);
-            glVertex3f(posVector[0], posVector[1]-2, 0.99);
+            glVertex3f(posVector[0]+2, posVector[1], 1);
+            glVertex3f(posVector[0], posVector[1]+2, 1);
+            glVertex3f(posVector[0]-2, posVector[1], 1);
+            glVertex3f(posVector[0], posVector[1]-2, 1);
          glEnd;
+         glDepthFunc(GL_LESS);
 
          if GL_NV_occlusion_query then begin
             FOcclusionQuery.EndOcclusionQuery
@@ -544,7 +549,6 @@ begin
       SetupRenderingOptions;
 
       if [feGlow, feStreaks, feRays, feRing]*Elements<>[] then begin
-         glPushMatrix;
          glTranslatef(posVector[0], posVector[1], posVector[2]);
 
          // Glow (a circle with transparent edges):
@@ -583,7 +587,7 @@ begin
          if feRing in Elements then
             RenderRing;
 
-         glPopMatrix;
+         glLoadMatrixf(@projMatrix);
       end;
 
       if feSecondaries in Elements then
@@ -595,7 +599,6 @@ begin
       RandSeed:=oldSeed;
    end;
 
-   glMatrixMode(GL_PROJECTION);
    glPopMatrix;
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix;
