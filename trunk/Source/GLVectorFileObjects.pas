@@ -699,6 +699,9 @@ type
          procedure AddToTriangles(aList : TAffineVectorList); dynamic;
          {: Returns number of triangles in the facegroup. }
          function TriangleCount : Integer; dynamic; abstract;
+         {: Reverses the rendering order of faces.<p>
+            Default implementation does nothing }
+         procedure Reverse; dynamic;
 
          //: Precalculate whatever is needed for rendering, called once
          procedure Prepare; dynamic;
@@ -745,6 +748,7 @@ type
          procedure BuildList(var mrci : TRenderContextInfo); override;
          procedure AddToTriangles(aList : TAffineVectorList); override;
          function TriangleCount : Integer; override;
+         procedure Reverse; override;
 
          procedure Add(idx : Integer);
          procedure GetExtents(var min, max : TAffineVector);
@@ -3543,6 +3547,13 @@ begin
    // nothing
 end;
 
+// Reverse
+//
+procedure TFaceGroup.Reverse;
+begin
+   // nothing
+end;
+
 // Prepare
 //
 procedure TFaceGroup.Prepare;
@@ -3685,6 +3696,13 @@ begin
       Result:=0;
       Assert(False);
    end;
+end;
+
+// Reverse
+//
+procedure TFGVertexIndexList.Reverse;
+begin
+   VertexIndices.Reverse;
 end;
 
 // Add
