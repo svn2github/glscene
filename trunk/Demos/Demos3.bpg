@@ -10,7 +10,8 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
-  shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe
+  shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe texcombine.exe \
+  subdivide.exe machine.exe simple.exe Project1.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -37,6 +38,21 @@ OctreeDemo.exe: rendering\OctreeDemo\OctreeDemo.dpr
   $(DCC)
 
 Clothify.exe: physics\Clothify\Clothify.dpr
+  $(DCC)
+
+texcombine.exe: materials\texcombine\texcombine.dpr
+  $(DCC)
+
+subdivide.exe: meshes\subdivide\subdivide.dpr
+  $(DCC)
+
+machine.exe: physics\machine\machine.dpr
+  $(DCC)
+
+simple.exe: physics\simple\simple.dpr
+  $(DCC)
+
+Project1.exe: sound\3Dsound\Project1.dpr
   $(DCC)
 
 
