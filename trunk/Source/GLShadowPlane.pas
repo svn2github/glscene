@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/10/02 - EG - Added spoScissor
       <li>23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
    </ul></font>
 }
@@ -12,17 +13,18 @@ unit GLShadowPlane;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLObjects;
+uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLObjects,
+   GLCrossPlatform;
 
 type
 
    // TShadowPlaneOptions
    //
-   TShadowPlaneOption = (spoUseStencil);
+   TShadowPlaneOption = (spoUseStencil, spoScissor);
    TShadowPlaneOptions = set of TShadowPlaneOption;
 
 const
-   cDefaultShadowPlaneOptions = [spoUseStencil];
+   cDefaultShadowPlaneOptions = [spoUseStencil, spoScissor];
 
 type
 
@@ -33,9 +35,15 @@ type
       The object is a mix between a plane and a proxy object, in that the plane
       defines where the shadows are cast, while the proxy part is used to reference
       the objects that should be shadowing (it is legal to self-shadow, but no
-      self-shadow visuals will be rendered).<p>
+      self-shadow visuals will be rendered).<br>
       If stenciling isn't used, the shadow will 'paint' the ShadowColor instead
-      of blending it transparently. }
+      of blending it transparently.<p>
+      You can have lower quality shadow geometry: add a dummycube, set it to
+      invisible (so it won't be rendered in the "regular" pass), and under
+      it place another visible dummycube under which you have all your
+      low quality objects, use it as shadowing object. Apply the same movements
+      to the low-quality objects that you apply to the visible, high-quality ones.
+      }
 	TGLShadowPlane = class (TPlane)
 	   private
 			{ Private Declarations }
@@ -81,6 +89,9 @@ type
                objects to be visible on the sides of the mirror (stencil buffer
                must be active in the viewer too). It also allows shadows to
                be partial (blended).
+            <li>spoScissor: plane area is 'scissored', this should improve
+               rendering speed by limiting rendering operations and fill rate,
+               may have adverse effects on old hardware in rare cases
             </ul>
          }
          property ShadowOptions : TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
@@ -125,6 +136,7 @@ procedure TGLShadowPlane.DoRender(var rci : TRenderContextInfo;
 var
    oldProxySubObject, oldIgnoreMaterials : Boolean;
    curMat, shadowMat : TMatrix;
+   sr : TGLRect;
 begin
    if FRendering then Exit;
    FRendering:=True;
@@ -152,6 +164,17 @@ begin
             glPushAttrib(GL_ENABLE_BIT);
             glPushMatrix;
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+
+            if spoScissor in ShadowOptions then begin
+               sr:=ScreenRect;
+               InflateGLRect(sr, 1, 1);
+               if sr.Left<0 then sr.Left:=0;
+               if sr.Top<0 then sr.Top:=0;
+               if sr.Right>rci.viewPortSize.cx then sr.Right:=rci.viewPortSize.cx;
+               if sr.Bottom>rci.viewPortSize.cy then sr.Bottom:=rci.viewPortSize.cy;
+               glScissor(sr.Left, sr.Top, sr.Right, sr.Bottom);
+               glEnable(GL_SCISSOR_TEST);
+            end;
 
             shadowMat:=MakeShadowMatrix(AbsolutePosition, AbsoluteDirection,
                                         ShadowedLight.AbsolutePosition);
