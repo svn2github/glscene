@@ -468,6 +468,13 @@ type
          {: Holds the local transformation (relative to parent).<p>
             If you're not *sure* the local matrix is up-to-date, use Matrix property. }
          property LocalMatrix : PMatrix read FLocalMatrix;
+         {: Forces the local matrix to the specified value.<p>
+            AbsoluteMatrix, InverseMatrix, etc. will honour that change, but
+            may become invalid if the specified matrix isn't orthonormal (can
+            be used for specific rendering or projection effects).<br>
+            The local matrix will be reset by the next TransformationChanged,
+            position or attitude change. }
+         procedure ForceLocalMatrix(const aMatrix : TMatrix);
          {: The object's absolute matrix by composing all local matrices.<p>
             Multiplying a local coordinate with this matrix gives an absolute coordinate. }
          function AbsoluteMatrix : TMatrix;
@@ -1350,7 +1357,8 @@ type
          procedure SetupLights(maxLights : Integer);
          procedure RenderScene(aBuffer : TGLSceneBuffer;
                                const viewPortSizeX, viewPortSizeY : Integer;
-                               drawState : TDrawState);
+                               drawState : TDrawState;
+                               baseObject : TGLBaseSceneObject);
          procedure NotifyChange(Sender : TObject); override;
          procedure Progress(const deltaTime, newTime : Double);
 
@@ -1544,7 +1552,8 @@ type
          // Options & User Properties
          FFaceCulling, FFogEnable, FLighting : Boolean;
          FDepthTest : Boolean;
-         FBackgroundColor: TColor;
+         FBackgroundColor : TColor;
+         FBackgroundAlpha : Single;
          FAmbientColor: TGLColor;
          FAntiAliasing : TGLAntiAliasing;
          FDepthPrecision : TGLDepthPrecision;
@@ -1579,6 +1588,7 @@ type
       protected
          { Protected Declarations }
          procedure SetBackgroundColor(AColor: TColor);
+         procedure SetBackgroundAlpha(alpha : Single);
          procedure SetAmbientColor(AColor: TGLColor);
          function  GetLimit(Which: TLimitType): Integer;
          procedure SetCamera(ACamera: TGLCamera);
@@ -1597,7 +1607,7 @@ type
          procedure PrepareRenderingMatrices(const aViewPort : TRectangle;
                               resolution : Integer; pickingRect : PGLRect = nil);
          procedure DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
-                                drawState : TDrawState);
+                                drawState : TDrawState; baseObject : TGLBaseSceneObject);
 
          procedure SetupRenderingContext;
          procedure SetupRCOptions(context : TGLContext);
@@ -1655,7 +1665,7 @@ type
             You do not need to call this method, unless you explicitly want a
             render at a specific time. If you just want the control to get
             refreshed, use Invalidate instead. }
-         procedure Render;
+         procedure Render(baseObject : TGLBaseSceneObject = nil);
          {: Render the scene to a bitmap at given DPI.<p>
             DPI = "dots per inch".<p>
             The "magic" DPI of the screen is 96 under Windows. }
@@ -1694,6 +1704,8 @@ type
          {: Currently Rendering? }
          property Rendering : Boolean read FRendering;
 
+         {: Adjusts background alpha channel. }
+         property BackgroundAlpha : Single read FBackgroundAlpha write SetBackgroundAlpha;
          {: Returns the projection matrix in use or used for the last rendering. }
          property ProjectionMatrix : TMatrix read FProjectionMatrix;
          {: Returns the modelview matrix in use or used for the last rendering. }
@@ -1911,7 +1923,7 @@ type
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
-         procedure Render; virtual; abstract;
+         procedure Render(baseObject : TGLBaseSceneObject = nil); virtual; abstract;
          procedure CopyToTexture(aTexture : TGLTexture); overload; virtual;
          procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
                                  xDest, yDest : Integer); overload;
@@ -1965,7 +1977,7 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
 
-         procedure Render; override;
+         procedure Render(baseObject : TGLBaseSceneObject = nil); override;
 
       published
          { Public Declarations }
@@ -2589,6 +2601,16 @@ begin
       Include(FChanges, ocAbsoluteMatrix);
       Include(FChanges, ocInvAbsoluteMatrix);
    end;
+end;
+
+// ForceLocalMatrix
+//
+procedure TGLBaseSceneObject.ForceLocalMatrix(const aMatrix : TMatrix);
+begin
+   FLocalMatrix^:=aMatrix;
+   Exclude(FChanges, ocTransformation);
+   Include(FChanges, ocAbsoluteMatrix);
+   Include(FChanges, ocInvAbsoluteMatrix);
 end;
 
 // AbsoluteMatrix
@@ -5596,7 +5618,8 @@ end;
 //
 procedure TGLScene.RenderScene(aBuffer : TGLSceneBuffer;
                                const viewPortSizeX, viewPortSizeY : Integer;
-                               drawState : TDrawState);
+                               drawState : TDrawState;
+                               baseObject : TGLBaseSceneObject);
 var
    i : Integer;
    rci : TRenderContextInfo;
@@ -5637,7 +5660,9 @@ begin
    if rci.ignoreMaterials then
       glColorMask(False, False, False, False)
    else glColorMask(True, True, True, True);
-   FObjects.Render(rci);
+   if baseObject=nil then
+      FObjects.Render(rci)
+   else baseObject.Render(rci);
    glColorMask(True, True, True, True);
    with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
@@ -6081,6 +6106,7 @@ begin
    // initialize private state variables
    FFogEnvironment:=TGLFogEnvironment.Create(Self);
    FBackgroundColor:=clBtnFace;
+   FBackgroundAlpha:=1;
    FAmbientColor:=TGLColor.CreateInitialized(Self, clrGray20);
    FDepthTest:=True;
    FFaceCulling:=True;
@@ -6608,7 +6634,7 @@ begin
             // render
             viewportBackup:=FViewPort;
             FViewport:=viewport;
-            DoBaseRender(viewport, FRenderDPI, dsPrinting);
+            DoBaseRender(viewport, FRenderDPI, dsPrinting, nil);
             FViewport:=viewportBackup;
             glFinish;
          finally
@@ -6966,7 +6992,8 @@ begin
             // render the scene (in select mode, nothing is drawn)
             FRenderDPI:=96;
             if Assigned(FCamera) and Assigned(FCamera.FScene) then
-               FCamera.FScene.RenderScene(Self, FViewPort.Width, FViewPort.Height, dsPicking);
+               FCamera.FScene.RenderScene(Self, FViewPort.Width, FViewPort.Height,
+                                          dsPicking, nil);
             glFlush;
             Hits:=glRenderMode(GL_RENDER);
          until Hits>-1; // try again with larger selection buffer
@@ -7131,7 +7158,7 @@ end;
 // DoBaseRender
 //
 procedure TGLSceneBuffer.DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
-                                      drawState : TDrawState);
+                                      drawState : TDrawState; baseObject : TGLBaseSceneObject);
 var
    maxLights : Integer;
 begin
@@ -7152,7 +7179,7 @@ begin
             glEnable(GL_FOG);
             FogEnvironment.ApplyFog;
          end else glDisable(GL_FOG);
-         RenderScene(Self, aViewPort.Width, aViewPort.Height, drawState);
+         RenderScene(Self, aViewPort.Width, aViewPort.Height, drawState, baseObject);
       end;
    end;
    if Assigned(FPostRender) then
@@ -7165,10 +7192,10 @@ end;
 
 // Render
 //
-procedure TGLSceneBuffer.Render;
+procedure TGLSceneBuffer.Render(baseObject : TGLBaseSceneObject = nil);
 var
    perfCounter : Int64;
-   BackColor : TColorVector;
+   backColor : TColorVector;
 begin
    if FRendering then Exit;
    if not Assigned(FRenderingContext) then Exit;
@@ -7205,12 +7232,12 @@ begin
       ClearGLError;
       SetupRenderingContext;
       // clear the buffers
-      BackColor:=ConvertWinColor(FBackgroundColor);
-      glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
+      backColor:=ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
+      glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
       ClearBuffers;
       CheckOpenGLError;
       // render
-      DoBaseRender(FViewport, RenderDPI, dsRendering);
+      DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
       CheckOpenGLError;
       RenderingContext.SwapBuffers;
 
@@ -7236,6 +7263,16 @@ procedure TGLSceneBuffer.SetBackgroundColor(AColor: TColor);
 begin
    if FBackgroundColor<>AColor then begin
       FBackgroundColor:=AColor;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetBackgroundAlpha
+//
+procedure TGLSceneBuffer.SetBackgroundAlpha(alpha : Single);
+begin
+   if FBackgroundAlpha<>alpha then begin
+      FBackgroundAlpha:=alpha;
       NotifyChange(Self);
    end;
 end;
@@ -7667,13 +7704,13 @@ end;
 
 // Render
 //
-procedure TGLMemoryViewer.Render;
+procedure TGLMemoryViewer.Render(baseObject : TGLBaseSceneObject = nil);
 begin
    if FBuffer.RenderingContext=nil then begin
       FBuffer.SetViewPort(0, 0, Width, Height);
       FBuffer.CreateRC(0, True);
    end;
-   FBuffer.Render;
+   FBuffer.Render(baseObject);
 end;
 
 //------------------------------------------------------------------------------
