@@ -281,14 +281,14 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------------
-
+// RestoreDefaultMode
+//
 procedure RestoreDefaultMode;
 var
-   t : PDevMode; // a little trick to create a nil pointer
+   t : PDevMode;
 begin
-  t:=nil;
-  ChangeDisplaySettings(t^, CDS_FULLSCREEN);
+   t:=nil;
+   ChangeDisplaySettings(t^, CDS_FULLSCREEN);
 end;
 
 //------------------------------------------------------------------------------
