@@ -1251,7 +1251,8 @@ end;
 procedure Register;
 begin
    RegisterComponents('GLScene',
-                      [TGLScene, TGLSceneViewer, TGLMemoryViewer,
+                      [TGLScene,
+                       TGLSceneViewer, TGLMemoryViewer, TGLFullScreenViewer,
                        TGLMaterialLibrary,
                        TGLCadencer, TAsyncTimer,
                        TCollisionManager, TGLFireFXManager, TGLThorFXManager,

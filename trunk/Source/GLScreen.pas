@@ -59,7 +59,7 @@ type
                   end;
 
 function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
-function SetFullscreenMode(ModeIndex: Integer): Boolean;
+function SetFullscreenMode(ModeIndex: TResolution): Boolean;
 
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
 procedure RestoreDefaultMode;
@@ -245,7 +245,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-function SetFullscreenMode(ModeIndex: Integer) : Boolean;
+function SetFullscreenMode(ModeIndex: TResolution) : Boolean;
 
 // changes to the video mode given by 'Index'
 
