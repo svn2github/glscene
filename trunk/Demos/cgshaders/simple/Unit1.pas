@@ -5,7 +5,7 @@
 
   Try to get an ATI feel by editing the vertex shader code. ;)
 
-  08/07/03 - Nelson Chu
+  09/07/03 - Nelson Chu
 }
 unit Unit1;
 
@@ -93,7 +93,7 @@ type
   public
     { Public declarations }
     mx, my : Integer;
-  end;                                         
+  end;
 
 var
   Form1: TForm1;
@@ -113,28 +113,32 @@ begin
 
   Param := Sender.ParamByName('LightVec');
   Param.AsVector:=v;
-// or using plain Cg API: cgGLSetParameter4fv(Param.Handle, @v);
+  // or using plain Cg API: cgGLSetParameter4fv(Param.Handle, @v);
 
   // set uniform parameters that change every frame
   with Sender.ParamByName('ModelViewProj') do
     SetAsStateMatrix( CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+
   with Sender.ParamByName('ModelViewIT') do
     SetAsStateMatrix( CG_GL_MODELVIEW_MATRIX, CG_GL_MATRIX_INVERSE_TRANSPOSE);
-//  Or, using plain Cg API:
-//  Param := Sender.ParamByName('ModelViewIT');
-//  cgGLSetStateMatrixParameter(Param.Handle, CG_GL_MODELVIEW_MATRIX, CG_GL_MATRIX_INVERSE_TRANSPOSE);
+  //  Or, using plain Cg API:
+  //  Param := Sender.ParamByName('ModelViewIT');
+  //  cgGLSetStateMatrixParameter(Param.Handle, CG_GL_MODELVIEW_MATRIX, CG_GL_MATRIX_INVERSE_TRANSPOSE);
 end;
 
 
 procedure TForm1.CgShader1Initialize(Sender: TCustomCgShader);
 begin
+  // Shows the profiles to be used. The latest support profiles would be detected
+  // if you have CgShader1.VertexProgram.Profile set to vpDetectLatest (similarly
+  // for the fragment program).
   LabelVertProfile.Caption:='Using profile: ' + Sender.VertexProgram.GetProfileString;
   LabelFragProfile.Caption:='Using profile: ' + Sender.FragmentProgram.GetProfileString;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   // load Cg proggy
+   // Load Cg proggy
    with CgShader1 do begin
      VertexProgram.LoadFromFile('simple_vp.cg');
      MemoVertCode.Lines.Assign(VertexProgram.Code);
@@ -149,8 +153,13 @@ begin
    ButtonApplyFP.Enabled:=false;
    ButtonApplyVP.Enabled:=false;
 
-   // bind shader to the material
+   // Bind shader to the material
    GLMaterialLibrary1.Materials[0].Shader := CgShader1;
+
+   // Load the teapot model. Note that GLScene will alter the ModelView matrix
+   // internally for GLScene objects like TGLCylinder & TGLSphere, and Cg shader
+   // is not aware of that. If you apply a vertex shader on those objects, they
+   // would appear scaled and/or rotated.
    GLFreeForm1.LoadFromFile('..\..\media\Teapot.3ds');
 end;
 
@@ -232,7 +241,7 @@ end;
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
-  with GLSceneViewer1 do // why GLSceneViewer1.MouseInControl doesn't work?
+  with GLSceneViewer1 do
     if PtInRect(ClientRect, ScreenToClient(MousePos)) then begin
       GLCamera1.SceneScale:=GLCamera1.SceneScale * (1000 - WheelDelta) / 1000;
       Handled:=true;
