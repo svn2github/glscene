@@ -1,5 +1,7 @@
-// Joystick
-{: Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: Joystick<p>
 
 	Component for handling joystick messages<p>
 

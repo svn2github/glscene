@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GeometryCoordinates<p>
 
 	Helper functions to convert between different three dimensional coordinate

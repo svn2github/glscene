@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: Geometry<p>
 
 	Base classes and structures for GLScene.<p>

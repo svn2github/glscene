@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLTextureCombiners<p>
 
    Texture combiners setup utility functions.<p>

@@ -1,5 +1,9 @@
-// HeightTileFile
-{: Access to large tiled height data files.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: HeightTileFile<p>
+
+   Access to large tiled height data files.<p>
 
    Performance vs Raw file accesses (for perfect tile match):<ul>
    <li>Cached data:<ul>

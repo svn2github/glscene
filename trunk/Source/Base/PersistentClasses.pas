@@ -1,5 +1,9 @@
-// PersistentClasses
-{: Base persistence classes.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: PersistentClasses<p>
+
+   Base persistence classes.<p>
 
    These classes are used in GLScene, but are designed for generic purpose.<br>
    They implement a slightly different persistence mechanism than that of the VCL,

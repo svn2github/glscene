@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: VectorLists<p>
 
 	Misc. lists of vectors and entities<p>

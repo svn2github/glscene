@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GeometryBB<p>
 
 	Calculations and manipulations on Bounding Boxes.<p>

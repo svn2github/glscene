@@ -1,8 +1,11 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: MeshUtils.<p>
 
    General utilities for mesh manipulations.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
       <li>05/03/03 - EG - Added RemapIndicesToIndicesMap
       <li>20/01/03 - EG - Added UnifyTrianglesWinding
       <li>15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList

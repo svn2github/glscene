@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 // 07/06/03 - EG - Adde EXT_stencil_two_side
 // 15/05/03 - EG - Added GL_ARB_texture_env_combine, GL_ARB_texture_env_crossbar
 // 13/05/03 - EG - Added GL_ARB_texture_env_dot3

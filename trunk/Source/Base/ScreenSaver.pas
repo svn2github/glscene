@@ -1,5 +1,7 @@
-// ScreenSaver
-{: Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: ScreenSaver<p>
 
 	Component for making screen-savers an easy task<p>
 

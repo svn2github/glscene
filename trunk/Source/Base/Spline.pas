@@ -1,7 +1,11 @@
-// Spline
-{: Cubic spline interpolation functions<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: Spline<p>
 
-	<b>Historique : </b><font size=-1><ul>
+   Cubic spline interpolation functions<p>
+
+	<b>History : </b><font size=-1><ul>
       <li>16/07/02 - Egg - Added methods to access slope per axis
 	   <li>28/05/00 - Egg - Javadocisation, minor changes & optimizations,
                            Renamed TSpline to TCubicSpline, added W component

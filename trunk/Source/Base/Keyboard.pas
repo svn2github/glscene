@@ -1,5 +1,7 @@
-// Keyboard
-{: Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: Keyboard<p>
 
 	Provides on demand state of any key on the keyboard as well as a set of
    utility functions for working with virtual keycodes.<p>

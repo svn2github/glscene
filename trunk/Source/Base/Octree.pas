@@ -1,5 +1,9 @@
-// Octree
-{: Octree management classes and structures<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: Octree<p>
+
+   Octree management classes and structures.<p>
 
    TODO: move the many public vars/fields to private/protected<p>
 

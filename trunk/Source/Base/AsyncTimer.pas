@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: Asynchronous timer component (actual 1 ms resolution).<p>
 
    This component is based on ThreadedTimer by Carlos Barbosa.<p>

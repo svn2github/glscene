@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: VerletClasses<p>
 
    Base Verlet modelling/simulation classes.<p>

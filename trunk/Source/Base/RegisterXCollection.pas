@@ -1,9 +1,11 @@
-// RegisterXCollection
-{: Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: RegisterXCollection<p>
 
 	Register TXCollection property editor<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
 	   <li>16/04/00 - Egg - Creation
 	</ul></font>
 }

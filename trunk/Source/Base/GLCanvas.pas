@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLCanvas<p>
 
 	Implements a basic Canvas-like interface over for OpenGL.<p>

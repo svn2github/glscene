@@ -1,4 +1,7 @@
-{: VectorTypes unit.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: VectorTypes<p>
 
    Defines base vector types for use in Geometry.pas and OpenGL12.pas.<p>
 
@@ -14,7 +17,7 @@
 
    Note : D3D types untested.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
       <li>04/07/01 - EG - Creation
    </ul>
 }
