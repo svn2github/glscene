@@ -653,16 +653,16 @@ begin
    if texSize>maxSize then texSize:=maxSize;
 
    glDisable(GL_BLEND);
-   glColor3f(0, 0, 0);
+   glColor4f(0, 0, 0, 0);
    glBegin(GL_QUADS);
       glVertex2f(0, 0);
-      glVertex2f(texSize+1, 0);
-      glVertex2f(texSize+1, texSize+1);
-      glVertex2f(0, texSize+1);
+      glVertex2f(texSize+4, 0);
+      glVertex2f(texSize+4, texSize+4);
+      glVertex2f(0, texSize+4);
    glEnd;
    glEnable(GL_BLEND);
 
-   glTranslatef(texSize*0.5, texSize*0.5, 0);
+   glTranslatef(texSize*0.5+2, texSize*0.5+2, 0);
    RenderRays(texSize*0.5);
 
    FTexRays.AllocateHandle;
@@ -677,7 +677,7 @@ begin
 
    GetMem(buf, texSize*texSize*4);
    try
-      glReadPixels(0, 0, texSize, texSize, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+      glReadPixels(2, 2, texSize, texSize, GL_RGBA, GL_UNSIGNED_BYTE, buf);
    	glTexImage2d(GL_TEXTURE_2D, 0, GL_RGBA8, texSize, texSize,
                    0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
    finally
