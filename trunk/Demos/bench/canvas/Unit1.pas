@@ -44,7 +44,7 @@ type
     BUPoints: TButton;
     BURects: TButton;
     BUTextOut: TButton;
-    WindowsBitmapFont: TWindowsBitmapFont;
+    WindowsBitmapFont: TGLWindowsBitmapFont;
     procedure GLSceneViewerPostRender(Sender: TObject);
     procedure BULinesClick(Sender: TObject);
     procedure BUEllipsesClick(Sender: TObject);

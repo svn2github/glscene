@@ -50,7 +50,7 @@ type
     GLCamera1: TGLCamera;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
-    WindowsBitmapFont1: TWindowsBitmapFont;
+    WindowsBitmapFont1: TGLWindowsBitmapFont;
     MainMenu1: TMainMenu;
     Font1: TMenuItem;
     WindowsFont1: TMenuItem;

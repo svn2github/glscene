@@ -69,7 +69,7 @@ object Form1: TForm1
       Top = 152
     end
   end
-  object BitmapFont1: TBitmapFont
+  object BitmapFont1: TGLBitmapFont
     GlyphsIntervalX = 1
     GlyphsIntervalY = 1
     Ranges = <

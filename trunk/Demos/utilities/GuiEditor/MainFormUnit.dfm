@@ -163,7 +163,7 @@ object Form1: TForm1
       FocalLength = 50
     end
   end
-  object WindowsBitmapFont1: TWindowsBitmapFont
+  object WindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -16

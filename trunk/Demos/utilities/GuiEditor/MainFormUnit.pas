@@ -49,7 +49,7 @@ type
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
     GLPanel1: TGLPanel;
-    WindowsBitmapFont1: TWindowsBitmapFont;
+    WindowsBitmapFont1: TGLWindowsBitmapFont;
     Image1: TMenuItem;
     Load1: TMenuItem;
     OpenPictureDialog: TOpenPictureDialog;

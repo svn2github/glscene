@@ -23,7 +23,7 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
-    BitmapFont: TBitmapFont;
+    BitmapFont: TGLBitmapFont;
     GLCamera1: TGLCamera;
     HUDText1: TGLHUDText;
     GLLightSource1: TGLLightSource;

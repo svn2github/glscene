@@ -1,13 +1,13 @@
 {: A bare-bones sample for TGLHUDText.<p>
 
-   To use a TGLHUDText, you must first place a TBitmapFont component and specify
+   To use a TGLHUDText, you must first place a TGLBitmapFont component and specify
    a font bitmap and it character ranges (ie. which tile represents which
    character). The component allows for a wide variety of fixed-width font
    bitmaps, and you can reuse many of the old bitmap fonts sets that were
    written for Atari, Amiga etc.<p>
 
    The TGLHUDText can then be placed in the hierarchy: just link it to the
-   TBitmapFont, specify a text, alignment, layout, scale and position to
+   TGLBitmapFont, specify a text, alignment, layout, scale and position to
    whatever suits your need and that's all.<p>
 
    Clicking on the viewer will hide/show the teapot (when teapot is on, the
@@ -27,7 +27,7 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
-    BitmapFont1: TBitmapFont;
+    BitmapFont1: TGLBitmapFont;
     GLLightSource1: TGLLightSource;
     GLCamera1: TGLCamera;
     HUDText1: TGLHUDText;

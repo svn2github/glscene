@@ -164,7 +164,7 @@ object Form1: TForm1
     Left = 16
     Top = 56
   end
-  object BitmapFont1: TBitmapFont
+  object BitmapFont1: TGLBitmapFont
     GlyphsIntervalX = 1
     GlyphsIntervalY = 1
     Ranges = <

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 155
-  Top = 100
+  Left = 151
+  Top = 105
   BorderStyle = bsDialog
   Caption = 'GLCanvas vs GDI'
   ClientHeight = 329
@@ -120,7 +120,7 @@ object Form1: TForm1
       FocalLength = 50
     end
   end
-  object WindowsBitmapFont: TWindowsBitmapFont
+  object WindowsBitmapFont: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -11

@@ -73,7 +73,7 @@ object Form1: TForm1
       Position.Coordinates = {0000803F0000003F0000803F0000803F}
     end
   end
-  object BitmapFont: TBitmapFont
+  object BitmapFont: TGLBitmapFont
     GlyphsIntervalX = 7
     GlyphsIntervalY = 0
     Ranges = <

@@ -33,7 +33,7 @@ type
     HUDText2: TGLHUDText;
     HUDText3: TGLHUDText;
     Teapot1: TGLTeapot;
-    WindowsBitmapFont1: TWindowsBitmapFont;
+    WindowsBitmapFont1: TGLWindowsBitmapFont;
     MainMenu1: TMainMenu;
     MIPickFont: TMenuItem;
     FontDialog1: TFontDialog;

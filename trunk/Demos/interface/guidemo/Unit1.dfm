@@ -120,7 +120,7 @@ object Form1: TForm1
     Left = 16
     Top = 80
   end
-  object WindowsBitmapFont1: TWindowsBitmapFont
+  object WindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -11

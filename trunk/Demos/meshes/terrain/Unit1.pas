@@ -52,7 +52,7 @@ type
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
     GLMaterialLibrary1: TGLMaterialLibrary;
-    BitmapFont1: TBitmapFont;
+    BitmapFont1: TGLBitmapFont;
     HUDText1: TGLHUDText;
     SkyDome1: TGLSkyDome;
     SPMoon: TGLSprite;
