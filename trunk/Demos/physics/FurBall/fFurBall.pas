@@ -9,7 +9,10 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLWin32Viewer, GLScene, GLObjects, GLMisc, GLCadencer, ODEImport,
   StdCtrls, GLTexture, GLExtrusion, VectorGeometry, GLShadowPlane, GLNavigator,
-  VerletClasses, VerletHairClasses, jpeg, Keyboard, ExtCtrls;
+  VerletClasses, VerletHairClasses, jpeg, Keyboard, ExtCtrls, ComCtrls;
+
+const
+  cMaxWindMag = 8;
 
 type
   TfrmFurBall = class(TForm)
@@ -37,6 +40,7 @@ type
     Timer1: TTimer;
     CheckBox_Shadows: TCheckBox;
     CheckBox_Inertia: TCheckBox;
+    TrackBar_WindForce: TTrackBar;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -53,6 +57,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure CheckBox_ShadowsClick(Sender: TObject);
     procedure CheckBox_InertiaClick(Sender: TObject);
+    procedure TrackBar_WindForceChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -362,12 +367,24 @@ begin
   begin
     AirResistance := TVFAirResistance.Create(VerletWorld);
     AirResistance.DragCoeff := 0.01;
+    AirResistance.WindDirection := AffineVectorMake(1,0,0);
+    AirResistance.WindMagnitude := TrackBar_WindForce.Position/100 * cMaxWindMag;
+    AirResistance.WindChaos := 0.4;
   end;
+
+  TrackBar_WindForce.Enabled := CheckBox_WindResistence.Checked;
+end;
+
+procedure TfrmFurBall.TrackBar_WindForceChange(Sender: TObject);
+begin
+
+  if Assigned(AirResistance) then
+    AirResistance.WindMagnitude := TrackBar_WindForce.Position/100 * cMaxWindMag;
 end;
 
 procedure TfrmFurBall.CheckBox_BaldClick(Sender: TObject);
 var
-  i, j : integer;
+  i : integer;
 begin
   for i := 0 to HairList.Count -1 do
   begin

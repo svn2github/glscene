@@ -106,6 +106,18 @@ object frmFurBall: TfrmFurBall
     TabOrder = 6
     OnClick = CheckBox_InertiaClick
   end
+  object TrackBar_WindForce: TTrackBar
+    Left = 160
+    Top = 16
+    Width = 105
+    Height = 17
+    Max = 100
+    Position = 50
+    TabOrder = 7
+    ThumbLength = 10
+    TickStyle = tsNone
+    OnChange = TrackBar_WindForceChange
+  end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     MaxDeltaTime = 0.050000000000000000

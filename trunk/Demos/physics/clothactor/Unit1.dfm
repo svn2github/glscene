@@ -15,7 +15,7 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   DesignSize = (
     626
-    449)
+    447)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -87,11 +87,11 @@ object Form1: TForm1
         Interval = 100
       end
       object GLPlane1: TGLPlane
-        Direction.Coordinates = {000000000000803F0000000000000000}
-        Up.Coordinates = {00000000000000000000803F00000000}
         Material.FrontProperties.Ambient.Color = {0000003F0000003F0000003F0000803F}
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.Texture.TextureMode = tmModulate
+        Direction.Coordinates = {000000000000803F0000000000000000}
+        Up.Coordinates = {00000000000000000000803F00000000}
         Height = 500.000000000000000000
         Width = 500.000000000000000000
         XTiles = 4

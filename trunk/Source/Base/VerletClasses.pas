@@ -569,14 +569,19 @@ type
 			{ Private Declarations }
          FDragCoeff: single;
          FWindDirection: TAffineVector;
+         FWindMagnitude: single;
+         FWindChaos: single;
+         procedure SetWindDirection(const Value: TAffineVector);
       public
 			{ Public Declarations }
          constructor Create(const aOwner : TVerletWorld); override;
-
          procedure AddForceToNode(const aNode : TVerletNode); override;
 
          property DragCoeff : single read FDragCoeff write FDragCoeff;
-         property WindDirection : TAffineVector read FWindDirection write FWindDirection;
+         property WindDirection : TAffineVector read FWindDirection write SetWindDirection;
+         property WindMagnitude : single read FWindMagnitude write FWindMagnitude;
+         {: Measures how chaotic the wind is, as a fraction of the wind magnitude }
+         property WindChaos : single read FWindChaos write FWindChaos;
    end;
 
    // TVFSpring
@@ -1619,14 +1624,23 @@ end;
 
 procedure TVFAirResistance.AddForceToNode(const aNode: TVerletNode);
 var
-  s, F : TAffineVector;
+  s, F, FCurrentWindBurst : TAffineVector;
   sMag : single;
   r : single;
+  Chaos : single;
 begin
-  // CombineVector(aNode.FForce, Gravity, @aNode.Weight);
-
-  // Fd = DragCoefficient * LiquidDensity * Velocity2 * Area / 2
   s := aNode.Speed;
+
+  if FWindMagnitude<>0 then
+  begin
+    Chaos := FWindMagnitude * FWindChaos;
+    FCurrentWindBurst[0] := FWindDirection[0] * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst[1] := FWindDirection[1] * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst[2] := FWindDirection[2] * FWindMagnitude + Chaos * (random-0.5) * 2;
+
+    s := VectorSubtract(s, FCurrentWindBurst);
+  end;
+
   sMag := VectorLength(s);
 
   r := aNode.Radius + 1;
@@ -1647,6 +1661,13 @@ begin
   FWindDirection[0] := 0;
   FWindDirection[1] := 0;
   FWindDirection[2] := 0;
+  FWindMagnitude := 0;
+  FWindChaos := 0;
+end;
+
+procedure TVFAirResistance.SetWindDirection(const Value: TAffineVector);
+begin
+  FWindDirection := VectorNormalize(Value);
 end;
 
 // ------------------
@@ -2416,5 +2437,4 @@ begin
   FInertaPauseSteps := IterationSteps+1;
   Inertia := false;
 end;
-
 end.

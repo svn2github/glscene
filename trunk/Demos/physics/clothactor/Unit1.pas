@@ -64,6 +64,7 @@ type
     mx,my : integer;
     VerletWorld : TVerletWorld;
     EdgeDetector : TEdgeDetector;
+    AirResistance : TVFAirResistance;
   end;
 
 var
@@ -198,6 +199,12 @@ begin
 
   // Add the collider's verlet constraints to the verlet world
   AddSCVerletConstriantsToVerletWorld(GLActor1.Skeleton.Colliders,VerletWorld);
+
+  {AirResistance := TVFAirResistance.Create(VerletWorld);
+  AirResistance.DragCoeff := 0.001;
+  AirResistance.WindDirection := AffineVectorMake(0,0,1);
+  AirResistance.WindMagnitude := 15;
+  AirResistance.WindChaos := 2;//}
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
