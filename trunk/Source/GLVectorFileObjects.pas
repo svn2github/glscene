@@ -879,13 +879,14 @@ type
    // TFaceGroupMeshMode
    //
    {: Known descriptions for face group mesh modes.<p>
-      - fgmmTriangles : issue all vertices with GL_TRIANGLES<br>
-      - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP<br>
+      - fgmmTriangles : issue all vertices with GL_TRIANGLES.<br>
+      - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP.<br>
       - fgmmFlatTriangles : same as fgmmTriangles, but take advantage of having
          the same normal for all vertices of a triangle.<br>
-      - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN }
+      - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN.<br>
+      - fgmmQuads : issue all vertices with GL_QUADS. }
    TFaceGroupMeshMode = (fgmmTriangles, fgmmTriangleStrip, fgmmFlatTriangles,
-                         fgmmTriangleFan);
+                         fgmmTriangleFan, fgmmQuads);
 
    // TFGVertexIndexList
    //
@@ -1123,9 +1124,6 @@ type
             Allows to adjust/transfer subclass-specific features. }
          procedure PrepareVectorFile(aFile : TVectorFile); dynamic;
 
-         {: Invoked after a mesh has been loaded.<p>
-            Should auto-center according to the AutoCentering property. }
-         procedure PerformAutoCentering; dynamic;
          {: Invoked after a mesh has been loaded/added.<p>
             Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
             Allows to adjust/transfer subclass-specific features. }
@@ -1182,6 +1180,9 @@ type
          procedure GetExtents(var min, max : TAffineVector);
          {: Computes the barycenter of the mesh.<p> }
          function GetBarycenter : TAffineVector;
+         {: Invoked after a mesh has been loaded.<p>
+            Should auto-center according to the AutoCentering property. }
+         procedure PerformAutoCentering; dynamic;
 
          {: Loads a vector file.<p>
             A vector files (for instance a ".3DS") stores the definition of
@@ -4369,30 +4370,16 @@ end;
 // BuildList
 //
 procedure TFGVertexIndexList.BuildList(var mrci : TRenderContextInfo);
+const
+   cFaceGroupMeshModeToOpenGL : array [TFaceGroupMeshMode] of Integer =
+         (GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_QUADS);
+
 begin
    if VertexIndices.Count=0 then Exit;
-   case Mode of
-      fgmmTriangles, fgmmFlatTriangles : begin
-         Owner.Owner.DeclareArraysToOpenGL(mrci, False);
-         AttachOrDetachLightmap(mrci);
-         glDrawElements(GL_TRIANGLES, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List);
-      end;
-      fgmmTriangleStrip : begin
-         Owner.Owner.DeclareArraysToOpenGL(mrci, False);
-         AttachOrDetachLightmap(mrci);
-         glDrawElements(GL_TRIANGLE_STRIP, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List);
-      end;
-      fgmmTriangleFan : begin
-         Owner.Owner.DeclareArraysToOpenGL(mrci, False);
-         AttachOrDetachLightmap(mrci);
-         glDrawElements(GL_TRIANGLE_FAN, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List);
-      end;
-   else
-      Assert(False);
-   end;
+   Owner.Owner.DeclareArraysToOpenGL(mrci, False);
+   AttachOrDetachLightmap(mrci);
+   glDrawElements(cFaceGroupMeshModeToOpenGL[Mode], VertexIndices.Count,
+                  GL_UNSIGNED_INT, VertexIndices.List);
 end;
 
 // AddToList
@@ -4428,6 +4415,23 @@ begin
                                source[indices.List[i]]);
             end;
          end else destination.AddNulls(destination.Count+n);
+      end;
+      fgmmQuads : begin
+         n:=indices.Count div 4;
+         if source.Count>0 then begin
+            destination.AdjustCapacityToAtLeast(destination.Count+n*6);
+            i:=0;
+            while n>0 do begin
+               destination.Add(source[indices.List[i]],
+                               source[indices.List[i+1]],
+                               source[indices.List[i+2]]);
+               destination.Add(source[indices.List[i]],
+                               source[indices.List[i+2]],
+                               source[indices.List[i+3]]);
+               Inc(i, 4);
+               Dec(n);
+            end;
+         end else destination.AddNulls(destination.Count+n*6);
       end;
    else
       Assert(False);
