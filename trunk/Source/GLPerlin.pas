@@ -1,10 +1,19 @@
-// Copyright 2003 - Joen Joensen.
+// GLPerlin
+{: Classes for generating perlin noise.<p>
+
+   The components and classes in the unit are a base to generate textures and heightmaps from,
+   A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape <p>
+
+	<b>History : </b><font size=-1><ul>
+      <li>29/01/03 - JaJ - Submitted to GLScene.
+	</ul></font>
+}
 unit GLPerlin;
 
 interface
 
 uses
-  classes, sysutils, Graphics, Geometry, GLPerlinBase, GLHeightData; // would be nice to make a single based version!
+  classes, sysutils, Graphics, Geometry, GLPerlinBase, GLHeightData;
 
 Type
   TGLPerlinInterpolation = (pi_none, pi_simple, pi_linear,pi_Smoothed, pi_Cosine, pi_cubic);
@@ -87,7 +96,7 @@ Type
     Procedure SetHeightData(heightData : THeightData);
   End;
 
-  TPerlinHDS = class(THeightDataSource)
+  TGLPerlinHDS = class(THeightDataSource)
   private
     FInterpolation : TGLPerlinInterpolation;
     FSmoothing     : TGLPerlinInterpolation;
@@ -102,9 +111,9 @@ Type
     Constructor Create(AOwner : TComponent); override;
     procedure  StartPreparingData(heightData : THeightData); override;
     procedure  WaitFor;
-  published
     property  Lines  : TStrings read FLines;
     property  LinesChanged : Boolean read FLinesChanged write FLinesChanged;
+  published
     property  Interpolation : TGLPerlinInterpolation read FInterpolation write FInterpolation;
     property  Smoothing : TGLPerlinInterpolation read FSmoothing write FSmoothing;
     property Persistence : Double read FPersistence write FPersistence;
@@ -112,9 +121,9 @@ Type
     property MaxPoolSize;
   End;
 
-  TPerlinHDSThread = class (THeightDataThread)
+  TGLPerlinHDSThread = class (THeightDataThread)
     Perlin       : TGL2DPerlin;
-    PerlinSource : TPerlinHDS;
+    PerlinSource : TGLPerlinHDS;
     Procedure OpdateOutSide;
     Procedure Execute; override;
   end;
@@ -125,7 +134,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('GLScene',[TPerlinHDS]);
+  RegisterComponents('GLScene',[TGLPerlinHDS]);
 end;
 
 function TGLBasePerlin.PerlinNoise_1D(x : Double) : Double;
@@ -604,7 +613,7 @@ Begin
   End;
 End;
 
-Constructor TPerlinHDS.Create(AOwner : TComponent);
+Constructor TGLPerlinHDS.Create(AOwner : TComponent);
 
 Begin
   inherited;
@@ -618,11 +627,11 @@ Begin
   MaxThreads := 1;
 End;
 
-procedure TPerlinHDS.StartPreparingData(heightData : THeightData);
+procedure TGLPerlinHDS.StartPreparingData(heightData : THeightData);
 
 Var
   Perlin : TGL2DPerlin;
-  Thread : TPerlinHDSThread;
+  Thread : TGLPerlinHDSThread;
 
 Begin
   If Stall then
@@ -642,7 +651,7 @@ Begin
 
   If MaxThreads > 1 then
   Begin
-    Thread := TPerlinHDSThread.Create(True);
+    Thread := TGLPerlinHDSThread.Create(True);
     Thread.FreeOnTerminate := True;
     heightData.Thread := Thread;
     Thread.FHeightData := heightData;
@@ -667,7 +676,7 @@ Begin
   LinesChanged := True;
 End;
 
-procedure  TPerlinHDS.WaitFor;
+procedure  TGLPerlinHDS.WaitFor;
 
 Var
   HDList : TList;
@@ -692,7 +701,7 @@ Begin
   Until False;
 End;
 
-Procedure TPerlinHDSThread.Execute;
+Procedure TGLPerlinHDSThread.Execute;
 
 Begin
   Perlin.Generate;
@@ -707,7 +716,7 @@ Begin
   Perlin.Free;
 end;
 
-Procedure TPerlinHDSThread.OpdateOutSide;
+Procedure TGLPerlinHDSThread.OpdateOutSide;
 
 Begin
 End;
