@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/02 - Egg - Support for transparent lines
       <li>02/02/02 - Egg - Fixed TSprite change notification
       <li>26/01/02 - Egg - TPlane & TCube now osDirectDraw
       <li>20/01/02 - Egg - TSpaceText moved to GLSpaceText
@@ -1510,7 +1511,11 @@ begin
       glEnable(GL_LINE_SMOOTH)
    else glDisable(GL_LINE_SMOOTH);
    glLineWidth(FLineWidth);
-   glColor3f(FLineColor.Red, FLineColor.Green, FLineColor.Blue);
+   if FLineColor.Alpha<>1 then begin
+      glEnable(GL_BLEND);
+   	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glColor4fv(FLineColor.AsAddress);
+   end else glColor3fv(FLineColor.AsAddress);
 end;
 
 // RestoreLineStyle
@@ -1802,9 +1807,14 @@ begin
          end;
       glEnd;
       RestoreLineStyle;
-      if FNodesAspect<>lnaInvisible then
+      if FNodesAspect<>lnaInvisible then begin
+         glPushAttrib(GL_ENABLE_BIT);
+         glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          for i:=0 to Nodes.Count-1 do with TGLLinesNode(Nodes[i]) do
             DrawNode(X, Y, Z, Color);
+         glPopAttrib;
+      end;
    end;
 end;
 
