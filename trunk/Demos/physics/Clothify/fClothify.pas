@@ -277,17 +277,17 @@ begin
       AffineVectorMake( -20, -5.5, -20),
       AffineVectorMake(  20,  20,  20), 25, 5);//}
 
-  if ComboBox_ConstraintType.ItemIndex=0 then
-    EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack)
-  else
-    EdgeDetector.AddEdgesAsSprings(VerletWorld, 1000,100, GetSlack);//}
-
   if CheckBox_SolidEdges.Checked then
   begin
     ColliderGravy := 1;
     EdgeDetector.AddEdgesAsSolidEdges(VerletWorld);
   end else
     ColliderGravy := 1.1;
+
+  if ComboBox_ConstraintType.ItemIndex=0 then
+    EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack)
+  else
+    EdgeDetector.AddEdgesAsSprings(VerletWorld, 1000,100, GetSlack);//}
 
   // VerletWorld.Nodes[0].NailedDown := true;
 

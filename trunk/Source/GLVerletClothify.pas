@@ -97,6 +97,7 @@ type
   private
     FEdgeList : TEdgeList;
     FCurrentNodeOffset : integer;
+    FNodesAdded : boolean;
 
     procedure BuildOpposingEdges;
   public
@@ -118,6 +119,7 @@ type
     procedure RenderEdges(var rci : TRenderContextInfo);
 
     property CurrentNodeOffset : integer read FCurrentNodeOffset;
+    property NodesAdded : boolean read FNodesAdded;
 
     constructor Create(const aGLBaseMesh : TGLBaseMesh); override;
     destructor Destroy; override;
@@ -317,12 +319,16 @@ begin
     EdgeList[i].Free;
 
   EdgeList.Clear;
+
+  FCurrentNodeOffset := 0;
+  FNodesAdded := false;
 end;
 
 constructor TEdgeDetector.Create(const aGLBaseMesh: TGLBaseMesh);
 begin
   FEdgeList := TEdgeList.Create;
   FCurrentNodeOffset := 0;
+  FNodesAdded := false;
 
   inherited;
 end;
@@ -393,6 +399,7 @@ var
   i : integer;
   MO : TMeshObject;
 begin
+  FNodesAdded := true;
   FCurrentNodeOffset := FNodeList.Count;
 
   MO := FGLBaseMesh.MeshObjects[0];
@@ -409,7 +416,8 @@ var
   i : integer;
   Edge : TEdge;
 begin
-  AddNodes(VerletWorld);
+  if not FNodesAdded then
+    AddNodes(VerletWorld);
 
   for i := 0 to EdgeList.Count-1 do
   begin
@@ -431,7 +439,8 @@ var
   i : integer;
   Edge : TEdge;
 begin
-  AddNodes(VerletWorld);
+  if not FNodesAdded then
+    AddNodes(VerletWorld);
 
   for i := 0 to EdgeList.Count-1 do
   begin
@@ -453,6 +462,9 @@ var
   i : integer;
   Edge : TEdge;
 begin
+  if not FNodesAdded then
+    AddNodes(VerletWorld);
+
   for i := 0 to EdgeList.Count-1 do
   begin
     // if not EdgeList[i].SameSame(FNodeList) then
@@ -473,6 +485,9 @@ var
   i : integer;
   Edge : TEdge;
 begin
+  if not FNodesAdded then
+    AddNodes(VerletWorld);
+
   for i := 0 to EdgeList.Count-1 do
   begin
     // if not EdgeList[i].SameSame(FNodeList) then
