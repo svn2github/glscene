@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>31/01/02 - EG - Texture3D/CubeMap only disabled if supported
       <li>24/01/02 - EG - Added PenAlpha
       <li>19/01/02 - EG - Creation
 	</ul></font>
@@ -190,7 +191,10 @@ begin
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_TEXTURE_1D);
    glDisable(GL_TEXTURE_2D);
-   glDisable(GL_TEXTURE_3D);
+   if GL_EXT_texture3D then
+      glDisable(GL_TEXTURE_3D);
+   if GL_ARB_texture_cube_map then
+      glDisable(GL_TEXTURE_CUBE_MAP_ARB);
    glDisable(GL_LINE_SMOOTH);
    glDisable(GL_POINT_SMOOTH);
    glEnable(GL_BLEND);
