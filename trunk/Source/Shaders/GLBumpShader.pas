@@ -9,6 +9,8 @@
    This unit is still experimental so use at your own risk!<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>29/06/04 - SG - Quaternion tangent space fix in tangent bump vertex
+                          program.
       <li>23/06/04 - SG - Added bsTangent option to TBumpSpace,
                           Added tangent space light vector vertex program.
       <li>22/06/04 - SG - Creation.
@@ -73,12 +75,13 @@ const
       'PARAM mvproj[4] = { state.matrix.mvp };'+
       'PARAM mvinv[4] = { state.matrix.modelview[0].inverse };'+
       'PARAM lightPos = state.light[%d].position;'+
-      'PARAM vals = { 1.0, 1.0, 1.0, 0.5 };'+
+      'PARAM vals = { 1.0, 1.0, 0.99999, 0.5 };'+
       'TEMP R0, light;'+
 
       '   DP4 result.position.x, mvproj[0], vertex.position;'+
       '   DP4 result.position.y, mvproj[1], vertex.position;'+
-      '   DP4 result.position.z, mvproj[2], vertex.position;'+
+      '   DP4 R0.z, mvproj[2], vertex.position;'+
+      '   MUL result.position.z, R0.z, vals.z;'+
       '   DP4 result.position.w, mvproj[3], vertex.position;'+
 
       '   MOV result.texcoord[0], vertex.texcoord[0];'+
@@ -101,47 +104,44 @@ const
    cCalcTangentSpaceLightVectorVertexProgram =
       '!!ARBvp1.0'+
       'PARAM c0 = { 0, 0, 1, 0 };'+
-      'PARAM c1 = { 0.5, 2, 0, 0 };'+
-      'TEMP R0, R1, R2, R3, R4;'+
+      'PARAM c1 = { 0.5, 0.99999, 0, 0 };'+
+      'TEMP R0, R1, R2;'+
       'ATTRIB v24 = vertex.texcoord[0];'+
       'ATTRIB v18 = vertex.normal;'+
       'ATTRIB v16 = vertex.position;'+
       'PARAM s18 = state.light[%d].position;'+
       'PARAM s259[4] = { state.matrix.mvp };'+
       'PARAM s359[4] = { state.matrix.modelview[0].inverse };'+
-      '  MOV result.texcoord[0].xy, v24;'+
-      '  DP4 result.position.x, s259[0], v16;'+
-      '  DP4 result.position.y, s259[1], v16;'+
-      '  DP4 result.position.z, s259[2], v16;'+
-      '  DP4 result.position.w, s259[3], v16;'+
-      '  MOV R1, s18;'+
-      '  DP4 R0.x, s359[0], R1;'+
-      '  DP4 R0.y, s359[1], R1;'+
-      '  DP4 R0.z, s359[2], R1;'+
-      '  ADD R0.yzw, R0.xxyz, -v16.xxyz;'+
-      '  DP3 R0.x, R0.yzwy, R0.yzwy;'+
-      '  RSQ R0.x, R0.x;'+
-      '  MUL R0.xyz, R0.x, R0.yzwy;'+
-      '  MUL R1.xyz, v18.zxyz, c0.xzxx;'+
-      '  MAD R4.xyz, v18.yzxy, c0.zxxz, -R1.xyzx;'+
-      '  MUL R1.xyz, R4.zxyz, R0.yzxy;'+
-      '  MAD R3.xyz, R4.yzxy, R0.zxyz, -R1.xyzx;'+
-      '  MUL R2.xyz, -R4.xyzx, R0.xyzx;'+
-      '  MUL R1.xyz, c1.y, R4.xyzx;'+
-      '  MUL R1.yzw, R1.xxyz, R2.xxyz;'+
-      '  ADD R0.w, v18.z, c0.z;'+
-      '  MUL R0.w, R0.w, c1.x;'+
-      '  RSQ R0.w, R0.w;'+
-      '  RCP R0.w, R0.w;'+
-      '  MUL R1.x, c1.y, R0.w;'+
-      '  MAD R0.w, R1.x, R0.w, -c0.z;'+
-      '  MAD R0.xyz, R0.w, R0.xyzx, R1.yzwy;'+
-      '  MAD R0.xyz, R1.x, R3.xyzx, R0.xyzx;'+
-      '  ADD R0.xyz, R0.xyzx, c0.z;'+
-      '  MUL result.color.front.primary.xyz, R0.xyzx, c1.x;'+
-      '  MOV result.color.front.primary.w, c0.zxxz;'+
+      '   MOV result.texcoord[0].xy, v24;'+
+      '   DP4 result.position.x, s259[0], v16;'+
+      '   DP4 result.position.y, s259[1], v16;'+
+      '   DP4 R1.z, s259[2], v16;'+
+      '   MUL result.position.z, R1.z, c1.y;'+
+      '   DP4 result.position.w, s259[3], v16;'+
+      '   MOV R1, s18;'+
+      '   DP4 R0.x, s359[0], R1;'+
+      '   DP4 R0.y, s359[1], R1;'+
+      '   DP4 R0.z, s359[2], R1;'+
+      '   DP4 R0.w, s359[3], R1;'+
+      '   ADD R1, R0, -v16;'+
+      '   DP4 R0.x, R1, R1;'+
+      '   RSQ R0.x, R0.x;'+
+      '   MUL R2.xyz, R0.x, R1;'+
+      '   ADD R1.y, c0.x, -v18.x;'+
+      '   MOV R1.z, c0.x;'+
+      '   MOV R1.x, v18.yzzz;'+
+      '   DP3 R0.x, R1.xyzx, R2.xyzx;'+
+      '   MUL R0.x, R1.y, R2.z;'+
+      '   MAD R0.y, v18.z, R2.x, R0.x;'+
+      '   MUL R0.x, v18.y, R2.z;'+
+      '   MAD R0.z, v18.z, R2.y, -R0.x;'+
+      '   MUL R0.x, v18.y, R2.y;'+
+      '   MAD R0.x, v18.z, R2.z, R0.x;'+
+      '   MAD R0.w, -R1.y, R2.x, R0.x;'+
+      '   ADD R0.xyz, R0.yzwy, c0.z;'+
+      '   MUL result.color.front.primary.xyz, R0.xyzx, c1.x;'+
+      '   MOV result.color.front.primary.w, c0.zxxz;'+
       'END';
-
 // Register
 //
 procedure Register;
