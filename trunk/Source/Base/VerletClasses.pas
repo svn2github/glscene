@@ -655,15 +655,17 @@ var
    frictionMove, move, moveNormal : TAffineVector;
    realFriction : single;
 begin
-   if penetrationDepth>0 then begin
+   if (penetrationDepth>0) then begin
        realFriction := friction*FFriction;
-       VectorSubtract(Location, OldLocation, move);
-       moveNormal:=VectorScale(surfaceNormal, VectorDotProduct(move, surfaceNormal));
-       frictionMove:=VectorSubtract(move, moveNormal);
-       if penetrationDepth>Radius then
-          ScaleVector(frictionMove, realFriction)
-       else ScaleVector(frictionMove, realFriction*Sqrt(penetrationDepth/Radius));
-       VectorAdd(OldLocation, frictionMove, FOldLocation);
+       if realFriction>0 then begin
+           VectorSubtract(Location, OldLocation, move);
+           moveNormal:=VectorScale(surfaceNormal, VectorDotProduct(move, surfaceNormal));
+           frictionMove:=VectorSubtract(move, moveNormal);
+           if penetrationDepth>Radius then
+              ScaleVector(frictionMove, realFriction)
+           else ScaleVector(frictionMove, realFriction*Sqrt(penetrationDepth/Radius));
+           VectorAdd(OldLocation, frictionMove, FOldLocation);
+       end;
    end;
 end;
 
@@ -1514,7 +1516,7 @@ end;
 procedure TVCSphere.SatisfyConstraintForEdge(aEdge: TVerletEdge;
   const iteration, maxIterations: Integer);
 var
-  closestPoint, move, delta : TAffineVector;
+  closestPoint, move, delta, contactNormal : TAffineVector;
   deltaLength, diff : single;
 begin
   // If the edge penetrates the sphere, try pushing the nodes until it no
@@ -1527,6 +1529,12 @@ begin
   deltaLength := VectorLength(delta);
 
   if deltaLength<Radius then  begin
+      if deltaLength>0 then begin
+         contactNormal := VectorScale(delta, 1/deltaLength);
+         aEdge.NodeA.ApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength), contactNormal);
+         aEdge.NodeB.ApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength), contactNormal);
+      end;
+
       // Move it outside the sphere!
       diff:=(Radius-deltaLength)/deltaLength;
       VectorScale(delta, diff, move);
@@ -1764,10 +1772,12 @@ procedure TVCCapsule.SatisfyConstraintForEdge(aEdge: TVerletEdge;
 var
    sphereLocation, closestPoint, dummy, delta, move, contactNormal : TAffineVector;
    Ax0, Ax1 : TAffineVector;
-   deltaLength, diff : Single;
+   deltaLength, diff, penetrationDepth : Single;
 begin
   VectorScale(FAxis, FLengthDiv2, Ax0);
+  AddVector(Ax0, FBase);
   VectorScale(FAxis, -FLengthDiv2, Ax1);
+  AddVector(Ax1, FBase);
 
    SegmentSegmentClosestPoint(
     aEdge.NodeA.FLocation,
@@ -1790,6 +1800,11 @@ begin
       // Move it outside the sphere!
       diff:=(Radius-deltaLength)/deltaLength;
       VectorScale(delta, diff, move);
+
+      penetrationDepth := VectorLength(move);
+      contactNormal := VectorScale(move, 1/penetrationDepth);
+      aEdge.NodeA.ApplyFriction(FFrictionRatio, penetrationDepth, contactNormal);
+      aEdge.NodeB.ApplyFriction(FFrictionRatio, penetrationDepth, contactNormal);
 
       AddVector(aEdge.NodeA.FLocation, move);
       AddVector(aEdge.NodeB.FLocation, move);
@@ -1823,4 +1838,6 @@ procedure TVerletEdgeList.SetItems(i: integer; const Value: TVerletEdge);
 begin
   put(i, Value);
 end;
+
+
 end.
