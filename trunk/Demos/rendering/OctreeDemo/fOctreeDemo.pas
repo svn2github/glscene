@@ -81,8 +81,8 @@ procedure TfrmOctreeDemo.FormCreate(Sender: TObject);
 var
   i : integer;
 begin
-  //Octree := TOctreeSpacePartition.Create(-15, -15, -15, 15, 15, 15);
-  //Octree := TOctreeSpacePartition.Create(-8, -8, -8, 8, 8, 8);
+  randomize;
+
   Octree := TOctreeSpacePartition.Create;
   Octree.SetSize(-15, -15, -15, 15, 15, 15);
   Octree.MaxTreeDepth := 6;
