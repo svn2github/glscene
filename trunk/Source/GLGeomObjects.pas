@@ -649,6 +649,7 @@ var
   PiDivSlices : single;
   a1, a2 : single;
   c1, c2 : TVector3f;
+  cosa1, cosa2, sina1, sina2 : single;
   ShadowTopRadius : single;
 begin
   Connectivity := TConnectivity.Create(true);
@@ -670,17 +671,25 @@ begin
   for i:=0 to ShadowSlices-1 do
   begin
     a2 := a1 + PiDivSlices;
-    MakeVector(p[0], FBottomRadius*sin(a2),-FHeight/2, FBottomRadius*cos(a2));
-    MakeVector(p[1], FBottomRadius*sin(a1),-FHeight/2, FBottomRadius*cos(a1));
 
-    MakeVector(p[2], ShadowTopRadius*sin(a1), FHeight/2, ShadowTopRadius*cos(a1));
-    MakeVector(p[3], ShadowTopRadius*sin(a2), FHeight/2, ShadowTopRadius*cos(a2));//}
+    // Is this a speed improvement or just a waste of code?
+    cosa1 := cos(a1); cosa2 := cos(a2);
+    sina1 := sin(a1); sina2 := sin(a2);
 
-    // Circumpherens (sp?)
+    // Generate the four "corners";
+    // Bottom corners
+    MakeVector(p[0], FBottomRadius*sina2,-FHeight/2, FBottomRadius*cosa2);
+    MakeVector(p[1], FBottomRadius*sina1,-FHeight/2, FBottomRadius*cosa1);
+
+    // Top corners
+    MakeVector(p[2], ShadowTopRadius*sina1, FHeight/2, ShadowTopRadius*cosa1);
+    MakeVector(p[3], ShadowTopRadius*sina2, FHeight/2, ShadowTopRadius*cosa2);//}
+
+    // Skin
     connectivity.AddFace(p[2], p[1], p[0]);
     connectivity.AddFace(p[3], p[2], p[0]);
 
-    // Sides
+    // Sides / caps
     connectivity.AddFace(c1, p[0], p[1]);
     connectivity.AddFace(p[2], p[3], c2);
 
