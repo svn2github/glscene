@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>31/01/03 - EG - Added MaterialCache logic
       <li>30/01/03 - EG - Fixed color array enable/disable (Nelson Chu),
                           Normals extraction and extraction standardization
       <li>27/01/03 - EG - Assign support, fixed MorphableMeshObjects persistence
@@ -480,6 +481,9 @@ type
          {: Returns number of triangles in the mesh object. }
          function TriangleCount : Integer; dynamic;
 
+         procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         
          {: Prepare the texture and materials before rendering.<p>
             Invoked once, before building the list and NOT while building the list. }
          procedure PrepareBuildList(var mrci : TRenderContextInfo); virtual;
@@ -521,6 +525,9 @@ type
          destructor Destroy; override;
 
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
+         procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
 
          {: Prepare the texture and materials before rendering.<p>
             Invoked once, before building the list and NOT while building the list. }
@@ -703,6 +710,7 @@ type
          { Private Declarations }
          FOwner : TFaceGroups;
          FMaterialName : String;
+         FMaterialCache : TGLLibMaterial;
          FRenderGroupID : Integer; // NOT Persistent, internal use only (rendering options)
 
       public
@@ -713,6 +721,9 @@ type
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
+         procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         
          procedure BuildList(var mrci : TRenderContextInfo); virtual; abstract;
 
          {: Add to the list the triangles corresponding to the facegroup.<p>
@@ -732,6 +743,7 @@ type
 
          property Owner : TFaceGroups read FOwner write FOwner;
          property MaterialName : String read FMaterialName write FMaterialName;
+         property MaterialCache : TGLLibMaterial read FMaterialCache; 
    end;
 
    // TFaceGroupMeshMode
@@ -875,6 +887,9 @@ type
 
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
+         procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         
          property Owner : TMeshObject read FOwner;
          procedure Clear; override;
          property Items[Index: Integer] : TFaceGroup read GetFaceGroup; default;
@@ -1034,6 +1049,7 @@ type
          FOverlaySkeleton : Boolean;
          FIgnoreMissingTextures : Boolean;
          FAutoCentering : TMeshAutoCenterings;
+         FMaterialLibraryCachesPrepared : Boolean;
 
       protected
          { Protected Declarations }
@@ -1058,6 +1074,13 @@ type
             Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
             Allows to adjust/transfer subclass-specific features. }
          procedure PrepareMesh; dynamic;
+
+         {: Recursively propagated to mesh object and facegroups.<p>
+            Notifies that they all can establish their material library caches. }
+         procedure PrepareMaterialLibraryCache;
+         {: Recursively propagated to mesh object and facegroups.<p>
+            Notifies that they all should forget their material library caches. }
+         procedure DropMaterialLibraryCache;
 
       public
          { Public Declarations }
@@ -2785,6 +2808,20 @@ begin
    end;
 end;
 
+// PrepareMaterialLibraryCache
+//
+procedure TMeshObject.PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+begin
+   FaceGroups.PrepareMaterialLibraryCache(matLib);
+end;
+
+// DropMaterialLibraryCache
+//
+procedure TMeshObject.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+begin
+   FaceGroups.PrepareMaterialLibraryCache(matLib);
+end;
+
 // GetExtents
 //
 procedure TMeshObject.GetExtents(var min, max : TAffineVector);
@@ -2906,8 +2943,6 @@ var
    i, j, groupID : Integer;
    gotNormals, gotTexCoords, gotColor : Boolean;
    libMat : TGLLibMaterial;
-   currentMaterialName : String;
-   materials : TGLLibMaterials;
 begin
    FArraysDeclared:=False;
    case Mode of
@@ -2941,17 +2976,15 @@ begin
                // but alters rendering order
                groupID:=vNextRenderGroupID;
                Inc(vNextRenderGroupID);
-               materials:=mrci.materialLibrary.Materials;
                for i:=0 to FaceGroups.Count-1 do begin
                   if FaceGroups[i].FRenderGroupID<>groupID then begin
-                     currentMaterialName:=FaceGroups[i].MaterialName;
-                     libMat:=materials.GetLibMaterialByName(currentMaterialName);
+                     libMat:=FaceGroups[i].FMaterialCache;
                      if Assigned(libMat) then
                         libMat.Apply(mrci);
                      repeat
                         for j:=i to FaceGroups.Count-1 do with FaceGroups[j] do begin
                            if (FRenderGroupID<>groupID)
-                                 and (MaterialName=currentMaterialName) then begin
+                                 and (FMaterialCache=libMat) then begin
                               FRenderGroupID:=groupID;
                               BuildList(mrci);
                            end;
@@ -2961,9 +2994,8 @@ begin
                end;
             end else begin
                // canonical rendering
-               materials:=mrci.materialLibrary.Materials;
                for i:=0 to FaceGroups.Count-1 do with FaceGroups[i] do begin
-                  libMat:=materials.GetLibMaterialByName(MaterialName);
+                  libMat:=FMaterialCache;
                   if Assigned(libMat) then begin
                      libMat.Apply(mrci);
                      repeat
@@ -3015,6 +3047,26 @@ begin
       if mesh is TSkeletonMeshObject then
          TSkeletonMeshObject(mesh).PrepareBoneMatrixInvertedMeshes;
    end;
+end;
+
+// PrepareMaterialLibraryCache
+//
+procedure TMeshObjectList.PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      TMeshObject(List[i]).PrepareMaterialLibraryCache(matLib);
+end;
+
+// DropMaterialLibraryCache
+//
+procedure TMeshObjectList.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      TMeshObject(List[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 // PrepareBuildList
@@ -3694,6 +3746,22 @@ begin
    end else RaiseFilerException(archiveVersion);
 end;
 
+// PrepareMaterialLibraryCache
+//
+procedure TFaceGroup.PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+begin
+   if FMaterialName<>'' then
+      FMaterialCache:=matLib.Materials.GetLibMaterialByName(FMaterialName)
+   else FMaterialCache:=nil;
+end;
+
+// DropMaterialLibraryCache
+//
+procedure TFaceGroup.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+begin
+   FMaterialCache:=nil;
+end;
+
 // AddToTriangles
 //
 procedure TFaceGroup.AddToTriangles(aList : TAffineVectorList;
@@ -4222,6 +4290,26 @@ begin
    Result:=TFaceGroup(List^[Index]);
 end;
 
+// PrepareMaterialLibraryCache
+//
+procedure TFaceGroups.PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      TFaceGroup(List[i]).PrepareMaterialLibraryCache(matLib);
+end;
+
+// DropMaterialLibraryCache
+//
+procedure TFaceGroups.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      TFaceGroup(List[i]).PrepareMaterialLibraryCache(matLib);
+end;
+
 // AddToTriangles
 //
 procedure TFaceGroups.AddToTriangles(aList : TAffineVectorList;
@@ -4683,6 +4771,7 @@ end;
 //
 destructor TGLBaseMesh.Destroy;
 begin
+   DropMaterialLibraryCache;
    FSkeleton.Free;
    FMeshObjects.Free;
    inherited Destroy;
@@ -4866,6 +4955,8 @@ end;
 procedure TGLBaseMesh.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if FMaterialLibrary<>val then begin
+      if FMaterialLibraryCachesPrepared then
+         DropMaterialLibraryCache;
       if Assigned(FMaterialLibrary) then begin
          DestroyHandle;
          FMaterialLibrary.RemoveFreeNotification(Self);
@@ -4967,12 +5058,34 @@ begin
    StructureChanged;
 end;
 
+// PrepareMaterialLibraryCache
+//
+procedure TGLBaseMesh.PrepareMaterialLibraryCache;
+begin
+   if FMaterialLibraryCachesPrepared then
+      DropMaterialLibraryCache;
+   MeshObjects.PrepareMaterialLibraryCache(FMaterialLibrary);
+   FMaterialLibraryCachesPrepared:=True;
+end;
+
+// DropMaterialLibraryCache
+//
+procedure TGLBaseMesh.DropMaterialLibraryCache;
+begin
+   if FMaterialLibraryCachesPrepared then begin
+      MeshObjects.DropMaterialLibraryCache(FMaterialLibrary);
+      FMaterialLibraryCachesPrepared:=False;
+   end;
+end;
+
 // SetUseMeshMaterials
 //
 procedure TGLBaseMesh.SetUseMeshMaterials(const val : Boolean);
 begin
    if val<>FUseMeshMaterials then begin
       FUseMeshMaterials:=val;
+      if FMaterialLibraryCachesPrepared and (not val) then
+         DropMaterialLibraryCache;
       StructureChanged;
    end;
 end;
@@ -5006,9 +5119,11 @@ begin
          Assert(False);
       end;
       if not rci.ignoreMaterials then begin
-         if UseMeshMaterials and Assigned(MaterialLibrary) then
-            rci.materialLibrary:=MaterialLibrary
-         else rci.materialLibrary:=nil;
+         if UseMeshMaterials and Assigned(MaterialLibrary) then begin
+            rci.materialLibrary:=MaterialLibrary;
+            if not FMaterialLibraryCachesPrepared then
+               PrepareMaterialLibraryCache;
+         end else rci.materialLibrary:=nil;
          MeshObjects.PrepareBuildList(rci);
          Material.Apply(rci);
          repeat
@@ -5034,6 +5149,7 @@ end;
 procedure TGLBaseMesh.StructureChanged;
 begin
    FAxisAlignedDimensionsCache[0]:=-1;
+   DropMaterialLibraryCache;
    MeshObjects.Prepare;
    inherited;
 end;
