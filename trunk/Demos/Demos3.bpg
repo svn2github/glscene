@@ -9,7 +9,8 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe
+PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
+  shadowvolumes.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -24,4 +25,7 @@ facevsface.exe: collisions\facevsface\facevsface.dpr
   $(DCC)
 
 projection.exe: graph\projection\projection.dpr
+  $(DCC)
+
+shadowvolumes.exe: specialsFX\shadowvolumes\shadowvolumes.dpr
   $(DCC)
