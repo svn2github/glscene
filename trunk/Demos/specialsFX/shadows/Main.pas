@@ -11,7 +11,7 @@ uses
   ComCtrls,jpeg, glgraphics, VectorTypes, geometry, GLHUDObjects,
   GLzBuffer, OpenGL12,
   //GLBehaviours,
-  GLCadencer, AsyncTimer, Spin, GLWin32Viewer;
+  GLCadencer, AsyncTimer, GLWin32Viewer;
 
 type
   TMainFm = class(TForm)
@@ -51,16 +51,13 @@ type
     Label5: TLabel;
     CastBtn: TButton;
     TimeLbl: TLabel;
-    Label6: TLabel;
-    XresBox: TComboBox;
-    Label7: TLabel;
-    YresBox: TComboBox;
     Panel6: TPanel;
     FadeBox: TCheckBox;
     dovBar: TTrackBar;
     Memo1: TMemo;
     AlphaBar: TTrackBar;
     Label9: TLabel;
+    GLCamera3: TGLCamera;
     procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -84,8 +81,6 @@ type
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure RotateBoxClick(Sender: TObject);
     procedure ShadowOnBoxClick(Sender: TObject);
-    procedure XResBoxChange(Sender: TObject);
-    procedure YresBoxChange(Sender: TObject);
     procedure SoftBoxClick(Sender: TObject);
     procedure SkyShadBoxClick(Sender: TObject);
     procedure FocalChange(Sender: TObject);
@@ -134,15 +129,18 @@ end;
 
 procedure TMainFm.CasterMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
+var  vec : TAffineVector;
+     px,py,pz:single;
+     dpt :single;
 begin
    if Shift<>[] then GLCamera2.MoveAroundTarget(my2-y, mx2-x);
    mx2:=x; my2:=y;
    if shift<>[] then begin
       Shadows1.CastShadow;
+      GLCadencer1.Progress;
+      Viewer.Refresh;
+      Caster.Refresh;
    end;
-   GLCadencer1.Progress;
-   Viewer.Refresh;
-   Caster.Refresh;
 end;
 
 procedure TMainFm.DistanceBarChange(Sender: TObject);
@@ -230,16 +228,6 @@ begin
 Shadows1.Visible:=ShadowOnBox.Checked;
 end;
 
-procedure TMainFm.XResBoxChange(Sender: TObject);
-begin
- Shadows1.Xres:=StrToIntDef(TComboBox(sender).text,256);
-end;
-
-procedure TMainFm.YresBoxChange(Sender: TObject);
-begin
- Shadows1.Yres:=StrToIntDef(TComboBox(sender).text,256);
-end;
-
 procedure TMainFm.SoftBoxClick(Sender: TObject);
 begin
  Shadows1.Soft:=SoftBox.Checked;
@@ -276,7 +264,7 @@ end;
 procedure TMainFm.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-Shadows1.CastShadow;
+    Shadows1.CastShadow;
 end;
 
 end.
