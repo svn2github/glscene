@@ -128,7 +128,7 @@ end;
 procedure THUDSprite.DoRender(var rci : TRenderContextInfo;
                               renderSelf, renderChildren : Boolean);
 var
-	vx, vy, vx1, vy1 : Single;
+	vx, vy, vx1, vy1, f : Single;
 begin
   	Material.Apply(rci);
    if AlphaChannel<>1 then
@@ -137,9 +137,12 @@ begin
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-   glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
-   glTranslatef(Position.X-rci.viewPortSize.cx/2,
-                rci.viewPortSize.cy/2-Position.Y, Position.Z);
+   if rci.renderDPI=96 then
+      f:=1
+   else f:=rci.renderDPI/96;
+   glScalef(f*2/rci.viewPortSize.cx, f*2/rci.viewPortSize.cy, 1);
+   glTranslatef(f*Position.X-rci.viewPortSize.cx*0.5,
+                rci.viewPortSize.cy*0.5-f*Position.Y, Position.Z);
    if Rotation<>0 then
       glRotatef(Rotation, 0, 0, 1);
    glMatrixMode(GL_PROJECTION);
@@ -148,8 +151,8 @@ begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_DEPTH_TEST);
    // precalc coordinates
-   vx:=-Width/2;    vx1:=vx+Width;
-   vy:=+Height/2;   vy1:=vy-Height;
+   vx:=-Width*0.5;    vx1:=vx+Width;
+   vy:=+Height*0.5;   vy1:=vy-Height;
    // issue quad
 	glBegin(GL_QUADS);
       glNormal3fv(@YVector);

@@ -2,7 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>07/01/02 - Egg - Added some doc, reduced dependencies
+      <li>07/01/02 - Egg - Added some doc, reduced dependencies, RenderToBitmap fixes
       <li>28/12/01 - Egg - Event persistence change (GliGli / Dephi bug),
                            LoadFromStream fix (noeska)
       <li>16/12/01 - Egg - Cube maps support (textures and dynamic rendering)
@@ -4788,6 +4788,7 @@ begin
    end;
    rci.viewPortSize.cx:=viewPortSizeX;
    rci.viewPortSize.cy:=viewPortSizeY;
+   rci.renderDPI:=aBuffer.RenderDPI;
    rci.modelViewMatrix:=@aBuffer.FModelViewMatrix;
    rci.currentStates:=aBuffer.FCurrentStates;
    rci.materialLibrary:=nil;
@@ -5594,14 +5595,12 @@ var
    bmpContext: TGLContext;
    BackColor: TColorVector;
    aColorBits: Integer;
-   viewport: TRectangle;
+   viewport, viewportBackup: TRectangle;
    LastStates: TGLStates;
-   Resolution: Integer;
 begin
    Assert((not FRendering), glsAlreadyRendering);
    FRendering:=True;
    try
-      FRenderDPI:=DPI;
       case ABitmap.PixelFormat of
          pfCustom, pfDevice :  // use current color depth
             aColorBits:=VideoModes[CurrentVideoMode].ColorDepth;
@@ -5631,7 +5630,7 @@ begin
             BackColor:=ConvertWinColor(FBackgroundColor);
             glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
             // set the desired viewport and limit output to this rectangle
-            with Viewport do begin
+            with viewport do begin
                Left:=0;
                Top:=0;
                Width:=ABitmap.Width;
@@ -5642,11 +5641,14 @@ begin
             ResetGLPolygonMode;
             ResetGLMaterialColors;
             ResetGLCurrentTexture;
-            Resolution:=DPI;
-            if Resolution=0 then
-               Resolution:=GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle);
+            FRenderDPI:=DPI;
+            if FRenderDPI=0 then
+               FRenderDPI:=GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle);
             // render
-            DoBaseRender(viewport, Resolution, dsPrinting);
+            viewportBackup:=FViewPort;
+            FViewport:=viewport;
+            DoBaseRender(viewport, FRenderDPI, dsPrinting);
+            FViewport:=viewportBackup;
             glFinish;
          finally
             bmpContext.Deactivate;
@@ -5930,6 +5932,7 @@ begin
             glInitNames;
             glPushName(0);
             // render the scene (in select mode, nothing is drawn)
+            FRenderDPI:=96;
             if Assigned(FCamera) and Assigned(FCamera.FScene) then
                FCamera.FScene.RenderScene(Self, FViewPort.Width, FViewPort.Height, dsPicking);
             glFlush;
@@ -6103,7 +6106,7 @@ begin
          glEnable(GL_FOG);
          FogEnvironment.ApplyFog;
       end else glDisable(GL_FOG);
-      RenderScene(Self, FViewPort.Width, FViewPort.Height, drawState);
+      RenderScene(Self, aViewPort.Width, aViewPort.Height, drawState);
    end;
    if Assigned(FPostRender) then
       if Owner is TComponent then

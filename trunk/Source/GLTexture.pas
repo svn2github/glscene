@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>07/01/02 - EG - Added renderDPI to rci
       <li>16/12/01 - EG - Added support for cube maps (texture and mappings)
       <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
       <li>14/09/01 - EG - Use of vFileStreamClass
@@ -311,6 +312,7 @@ type
       modelViewMatrix : PMatrix;
       rcci : TRenderContextClippingInfo;
       viewPortSize : TGLSize;
+      renderDPI : Integer;
       currentStates : TGLStates;
       materialLibrary : TGLMaterialLibrary;
       fogDisabledCounter : Integer;

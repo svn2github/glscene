@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/02 - EG - TGLNodes.Barycenter fix (thx Bob)
       <li>15/12/01 - EG - Added support for cube maps
       <li>14/09/01 - EG - Addition of vFileStreamClass
       <li>04/09/01 - EG - SetGLCurrentTexture stuff
@@ -1472,7 +1473,7 @@ begin
    if Count>0 then begin
       for i:=0 to Count-1 do
          AddVector(Result, PAffineVector(Items[i].AsAddress)^);
-      VectorScale(Result, 1/Count);
+      ScaleVector(Result, 1/Count);
    end;
 end;
 
