@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/01/03 - EG - TGLCube.RayCastIntersect fixes (Dan Bartlett)
       <li>10/01/03 - EG - TGLCube.RayCastIntersect (Stuart Gooding)
       <li>08/01/03 - RC - Added TGLPlane.XScope and YScope, to use just a part of the texture
       <li>27/09/02 - EG - Added TGLPointParameters
@@ -2750,8 +2751,8 @@ function TGLCube.RayCastIntersect(const rayStart, rayVector : TVector;
                                   intersectPoint : PVector = nil;
                                   intersectNormal : PVector = nil) : Boolean;
 var
-   p     : array [0..5] of TAffineVector;
-   rv    : TAffineVector;
+   p     : array [0..5] of TVector;
+   rv    : TVector;
    rs, r : TVector;
    i     : Integer;
    t, e  : Single;
@@ -2763,9 +2764,9 @@ begin
    eSize[0]:=FCubeSize[0]*e;
    eSize[1]:=FCubeSize[1]*e;
    eSize[2]:=FCubeSize[2]*e;
-   p[0]:=XVector;
-   p[1]:=YVector;
-   p[2]:=ZVector;
+   p[0]:=XHmgVector;
+   p[1]:=YHmgVector;
+   p[2]:=ZHmgVector;
    SetVector(p[3], -1,  0,  0);
    SetVector(p[4],  0, -1,  0);
    SetVector(p[5],  0,  0, -1);
