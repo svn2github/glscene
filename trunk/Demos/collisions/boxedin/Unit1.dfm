@@ -18,7 +18,7 @@ object Form1: TForm1
     Left = 0
     Top = 65
     Width = 697
-    Height = 480
+    Height = 475
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
     Buffer.ShadeModel = smFlat
@@ -66,14 +66,8 @@ object Form1: TForm1
       Width = 265
       Height = 25
       Max = 50
-      Orientation = trHorizontal
-      Frequency = 1
       Position = 1
-      SelEnd = 0
-      SelStart = 0
       TabOrder = 0
-      TickMarks = tmBottomRight
-      TickStyle = tsAuto
     end
     object Button1: TButton
       Left = 8
@@ -90,15 +84,15 @@ object Form1: TForm1
     Top = 88
     object GLLightSource1: TGLLightSource
       Ambient.Color = {000000001283003F9CC4403F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Diffuse.Color = {1283003F1283003F1283003F0000803F}
       Position.Coordinates = {00004842000016430000C8420000803F}
       LightStyle = lsOmni
       Specular.Color = {0000803F0000803F0000803F0000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object DummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object FreeForm1: TGLFreeForm
         Direction.Coordinates = {000000000000803F0000000000000000}
         Up.Coordinates = {00000000000000000000803F00000000}
@@ -110,7 +104,7 @@ object Form1: TForm1
       Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Material.FrontProperties.Emission.Color = {0000803F0000803F000000000000803F}
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-      Radius = 0.100000001490116
+      Radius = 0.100000001490116100
       Slices = 6
       Stacks = 6
       object ArrowLine1: TGLArrowLine
@@ -119,17 +113,17 @@ object Form1: TForm1
         Material.FrontProperties.Emission.Color = {1283803E1283803E000000000000803F}
         Material.BlendingMode = bmTransparency
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
-        BottomRadius = 0.0500000007450581
-        Height = 1
-        TopRadius = 0.100000001490116
-        TopArrowHeadHeight = 2
-        TopArrowHeadRadius = 0.200000002980232
-        BottomArrowHeadHeight = 0.5
-        BottomArrowHeadRadius = 0.200000002980232
+        BottomRadius = 0.050000000745058060
+        Height = 1.000000000000000000
+        TopRadius = 0.100000001490116100
+        TopArrowHeadHeight = 2.000000000000000000
+        TopArrowHeadRadius = 0.200000002980232200
+        BottomArrowHeadHeight = 0.500000000000000000
+        BottomArrowHeadRadius = 0.200000002980232200
       end
     end
     object DummyCube2: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object Sphere2: TGLSphere
       VisibilityCulling = vcObjectBased
@@ -139,29 +133,29 @@ object Form1: TForm1
       Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
       Material.FrontProperties.Shininess = 128
       Material.FrontProperties.Specular.Color = {0000803F0000803F0000803F0000803F}
-      Radius = 20
+      Radius = 20.000000000000000000
       Slices = 24
       Stacks = 24
     end
     object GLLightSource2: TGLLightSource
       Ambient.Color = {000000001283803E1283003F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Diffuse.Color = {BEC0403FBEC0403FBEC0403F0000803F}
       Specular.Color = {0000803F0000803F0000803F0000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object Lines1: TGLLines
       LineColor.Color = {0000803F0000803F0000003F3333733F}
-      LineWidth = 3
+      LineWidth = 3.000000000000000000
       Nodes = <>
       NodeColor.Color = {0000803F0000803F000000000000803F}
       NodesAspect = lnaCube
-      NodeSize = 10
+      NodeSize = 10.000000000000000000
       Options = [loUseNodeColorForLines]
     end
     object GLCamera2: TGLCamera
-      DepthOfView = 1000
-      FocalLength = 50
+      DepthOfView = 1000.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = Sphere2
       Position.Coordinates = {0000000000008040000040C00000803F}
       Direction.Coordinates = {00000000000000800000803F00000000}

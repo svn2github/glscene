@@ -98,7 +98,7 @@ begin
       NormalizeVector(rayVector);
       //Note: since collision may be performed on multiple meshes, we might need to know which hit
       //      is closest (ie: d:=raystart - pPoint).
-      if OctreeSphereIntersect(raystart, rayvector, velocity, Sphere2.Radius,
+      if OctreeSphereSweepIntersect(raystart, rayvector, velocity, Sphere2.Radius,
                                @pPoint, @pNormal) then begin
          // Show the polygon intersection point
          NormalizeVector(pNormal);
