@@ -10,7 +10,8 @@ unit GLScriptDWS2;
 interface
 
 uses
-  Classes, SysUtils, XCollection, GLMisc, GLScriptBase, dws2Comp, dws2Exprs;
+  Classes, SysUtils, XCollection, GLMisc, GLScriptBase, dws2Comp, dws2Exprs,
+  dws2Symbols;
 
 type
   // TGLDelphiWebScriptII
@@ -261,13 +262,22 @@ end;
 // Call
 //
 function TGLScriptDWS2.Call(aName: String;
-  aParams: array of Variant): Variant;
+  aParams: array of Variant) : Variant;
+var
+  Symbol : TSymbol;
+  Output : IInfo;
 begin
   if State = ssRunning then begin
-    if Length(aParams)>0 then
-      Result:=FDWS2Program.Info.Func[aName].Call(aParams).Value
-    else
-      Result:=FDWS2Program.Info.Func[aName].Call.Value;
+    Symbol:=FDWS2Program.Table.FindSymbol(aName);
+    if Assigned(Symbol) then begin
+      if Symbol is TFuncSymbol then begin
+        Output:=FDWS2Program.Info.Func[aName].Call(aParams);
+        if Assigned(Output) then
+          Result:=Output.Value;
+      end else
+        raise Exception.Create('Expected TFuncSymbol but found '+Symbol.ClassName+' for '+aName);
+    end else
+      raise Exception.Create('Symbol not found for '+aName);
   end;
 end;
 
