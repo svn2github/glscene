@@ -2750,38 +2750,41 @@ function TGLCube.RayCastIntersect(const rayStart, rayVector : TVector;
                                   intersectPoint : PVector = nil;
                                   intersectNormal : PVector = nil) : Boolean;
 var
-   p       : array [0..5] of TVector;
-   rs,rv,r : TVector;
-   i       : Integer;
-   t,e     : Single;
+   p     : array [0..5] of TAffineVector;
+   rv    : TAffineVector;
+   rs, r : TVector;
+   i     : Integer;
+   t, e  : Single;
+   eSize : TAffineVector;
 begin
    rs:=AbsoluteToLocal(rayStart);
-   rv:=VectorNormalize(AbsoluteToLocal(rayVector));
-   e:=0.0001; //Small value for floating point imprecisions
-   p[0]:=VectorMake( 1,  0,  0);
-   p[1]:=VectorMake( 0,  1,  0);
-   p[2]:=VectorMake( 0,  0,  1);
-   p[3]:=VectorMake(-1,  0,  0);
-   p[4]:=VectorMake( 0, -1,  0);
-   p[5]:=VectorMake( 0,  0, -1);
-   Result:=False;
+   SetVector(rv, VectorNormalize(AbsoluteToLocal(rayVector)));
+   e:=0.5+0.0001; //Small value for floating point imprecisions
+   eSize[0]:=FCubeSize[0]*e;
+   eSize[1]:=FCubeSize[1]*e;
+   eSize[2]:=FCubeSize[2]*e;
+   p[0]:=XVector;
+   p[1]:=YVector;
+   p[2]:=ZVector;
+   SetVector(p[3], -1,  0,  0);
+   SetVector(p[4],  0, -1,  0);
+   SetVector(p[5],  0,  0, -1);
    for i:=0 to 5 do begin
-      if (VectorDotProduct(p[i], rv)>0) then begin
+      if VectorDotProduct(p[i], rv)>0 then begin
          t:=- (p[i][0]*rs[0]+p[i][1]*rs[1]+p[i][2]*rs[2]+0.5*FCubeSize[i mod 3])
              /(p[i][0]*rv[0]+p[i][1]*rv[1]+p[i][2]*rv[2]);
-         r:=VectorMake(rs[0]+t*rv[0], rs[1]+t*rv[1], rs[2]+t*rv[2]);
-         if     (Abs(r[0])<=FCubeSize[0]*(0.5+e))
-            and (Abs(r[1])<=FCubeSize[1]*(0.5+e))
-            and (Abs(r[2])<=FCubeSize[2]*(0.5+e)) then begin
+         MakePoint(r, rs[0]+t*rv[0], rs[1]+t*rv[1], rs[2]+t*rv[2]);
+         if (Abs(r[0])<=eSize[0]) and (Abs(r[1])<=eSize[1]) and (Abs(r[2])<=eSize[2]) then begin
             if Assigned(intersectPoint) then
-               intersectPoint^:=VectorMake(LocalToAbsolute(AffineVectorMake(r)));
+               MakePoint(intersectPoint^, LocalToAbsolute(r));
             if Assigned(intersectNormal) then
-               intersectNormal^:=LocalToAbsolute(VectorNegate(p[i]));
-            Result:=true;
+               MakeVector(intersectNormal^, LocalToAbsolute(VectorNegate(p[i])));
+            Result:=True;
             Exit;
          end;
       end;
    end;
+   Result:=False;
 end;
 
 // DefineProperties
