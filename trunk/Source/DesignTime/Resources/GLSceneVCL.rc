@@ -28,3 +28,4 @@ TGLWindowsBitmapFont BITMAP vcl\glscene_icon_TGLWindowsBitmapFont.bmp
 TGLUserShader BITMAP vcl\glscene_icon_TGLUserShader.bmp
 TGLOutlineShader BITMAP vcl\glscene_icon_TGLOutlineShader.bmp
 TGLHiddenlineShader BITMAP vcl\glscene_icon_TGLHiddenlineShader.bmp
+TGLPerlinPFXManager BITMAP vcl\glscene_icon_TGLPerlinPFXManager.bmp

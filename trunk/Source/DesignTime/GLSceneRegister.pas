@@ -136,6 +136,7 @@ uses
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
    GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
+   GLPerlinPFX,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
@@ -1755,6 +1756,7 @@ begin
                        TGLGuiLayout,
                        TGLCadencer,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
+                       TGLPerlinPFXManager,
                        TGLBitmapFont, TGLWindowsBitmapFont,
                        TGLFireFXManager, TGLThorFXManager
                        {$endif}
