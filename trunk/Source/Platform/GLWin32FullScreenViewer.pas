@@ -98,7 +98,7 @@ type
          constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
 
-         procedure Render; override;
+         procedure Render(baseObject : TGLBaseSceneObject = nil); override;
 
          {: Adjusts property so that current resolution will be used.<p>
             Call this method if you want to make sure video mode isn't switched. }
@@ -231,13 +231,13 @@ end;
 
 // Render
 //
-procedure TGLFullScreenViewer.Render;
+procedure TGLFullScreenViewer.Render(baseObject : TGLBaseSceneObject = nil);
 begin
    LoadOpenGL;
    if Buffer.RenderingContext=nil then begin
       Buffer.CreateRC(0, False);
    end;
-   Buffer.Render;
+   Buffer.Render(baseObject);
 end;
 
 // BeginUpdate

@@ -51,7 +51,7 @@ type
          constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
 
-         procedure Render; override;
+         procedure Render(baseObject : TGLBaseSceneObject = nil); override;
 
          function Active : Boolean;
 
@@ -167,13 +167,13 @@ end;
 
 // Render
 //
-procedure TGLSDLViewer.Render;
+procedure TGLSDLViewer.Render(baseObject : TGLBaseSceneObject = nil);
 begin
    LoadOpenGL;
    if Buffer.RenderingContext=nil then begin
       Buffer.CreateRC(0, False);
    end;
-   Buffer.Render;
+   Buffer.Render(baseObject);
 end;
 
 // Active
