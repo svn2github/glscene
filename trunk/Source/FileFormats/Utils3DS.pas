@@ -1,3 +1,4 @@
+// 12/08/02 - EG - ReadMatEntryChunk fix / COLOR_F chunk (coerni)
 unit Utils3DS;
 
 // Utility functions for the universal 3DS file reader and writer (TFile3DS). Essentially, the functions
@@ -3311,12 +3312,21 @@ begin
                 MatColor := @Ambient; // MAT_AMBIENT
               end;
               Color := FindChunk(Current, COLOR_24);
-              Source.ReadChunkData(Color);
-              MatColor.R := Color.Data.Color24.Red / 255;
-              MatColor.G := Color.Data.Color24.Green / 255;
-              MatColor.B := Color.Data.Color24.Blue / 255;
-              FreeChunkData(Color);
-
+              if Assigned(color) then begin
+                 Source.ReadChunkData(Color);
+                 MatColor.R := Color.Data.Color24.Red / 255;
+                 MatColor.G := Color.Data.Color24.Green / 255;
+                 MatColor.B := Color.Data.Color24.Blue / 255;
+                 FreeChunkData(Color);
+              end;
+              Color := FindChunk(Current, COLOR_F);
+              if Assigned(Color) then begin
+                 Source.ReadChunkData(Color);
+                 MatColor.R := Color.Data.Colorf.Red ;
+                 MatColor.G := Color.Data.Colorf.Green ;
+                 MatColor.B := Color.Data.Colorf.Blue ;
+                 FreeChunkData(Color);
+              end;
               Color := FindChunk(Current, LIN_COLOR_24);
               if Assigned(Color) then
               begin
