@@ -7070,15 +7070,39 @@ end;
 
 {$endif VER140}
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// ClearProcAddresses
+//
 procedure ClearProcAddresses;
-
 begin
+   // ignored
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
+{$ifdef Win32}
+// MESAWglGetProcAddress
+//
+function MESAWglGetProcAddress(ProcName: PChar): Pointer; stdcall;
+// work around current MESA wglGetProcAddress bug
+var
+   i : Integer;
+   locProcName : String;
+   p : Pointer;
+begin
+   locProcName:='_'+StrPas(ProcName)+'@';
+   Result:=nil;
+   i:=0;
+   repeat
+      p:=GetProcAddress(GLHandle, PChar(locProcName+IntToStr(i)));
+      if Assigned(p) then begin
+         Result:=p;
+         Break;
+      end;
+      Inc(i, 4);
+   until i>64;
+end;
+{$endif}
 
+// LoadProcAddresses
+//
 procedure LoadProcAddresses;
 var
   Handle: Cardinal;
@@ -7398,7 +7422,7 @@ begin
     glTranslated := GetProcAddress(Handle, 'glTranslated'); 
     glTranslatef := GetProcAddress(Handle, 'glTranslatef'); 
     glVertex2d := GetProcAddress(Handle, 'glVertex2d'); 
-    glVertex2dv := GetProcAddress(Handle, 'glVertex2dv'); 
+    glVertex2dv := GetProcAddress(Handle, 'glVertex2dv');
     glVertex2f := GetProcAddress(Handle, 'glVertex2f'); 
     glVertex2fv := GetProcAddress(Handle, 'glVertex2fv'); 
     glVertex2i := GetProcAddress(Handle, 'glVertex2i'); 
@@ -7421,13 +7445,13 @@ begin
     glVertex4iv := GetProcAddress(Handle, 'glVertex4iv'); 
     glVertex4s := GetProcAddress(Handle, 'glVertex4s'); 
     glVertex4sv := GetProcAddress(Handle, 'glVertex4sv'); 
-    glVertexPointer := GetProcAddress(Handle, 'glVertexPointer'); 
-    glViewport := GetProcAddress(Handle, 'glViewport'); 
+    glVertexPointer := GetProcAddress(Handle, 'glVertexPointer');
+    glViewport := GetProcAddress(Handle, 'glViewport');
 
     // window support routines
     {$ifdef Win32}
-    wglGetProcAddress := GetProcAddress(Handle, 'wglGetProcAddress'); 
-    wglCopyContext := GetProcAddress(Handle, 'wglCopyContext'); 
+    wglGetProcAddress := GetProcAddress(Handle, 'wglGetProcAddress');
+    wglCopyContext := GetProcAddress(Handle, 'wglCopyContext');
     wglCreateContext := GetProcAddress(Handle, 'wglCreateContext'); 
     wglCreateLayerContext := GetProcAddress(Handle, 'wglCreateLayerContext'); 
     wglDeleteContext := GetProcAddress(Handle, 'wglDeleteContext'); 
@@ -7444,7 +7468,7 @@ begin
     wglUseFontBitmapsA := GetProcAddress(Handle, 'wglUseFontBitmapsA'); 
     wglUseFontOutlinesA := GetProcAddress(Handle, 'wglUseFontOutlinesA'); 
     wglUseFontBitmapsW := GetProcAddress(Handle, 'wglUseFontBitmapsW'); 
-    wglUseFontOutlinesW := GetProcAddress(Handle, 'wglUseFontOutlinesW'); 
+    wglUseFontOutlinesW := GetProcAddress(Handle, 'wglUseFontOutlinesW');
     wglUseFontBitmaps := GetProcAddress(Handle, 'wglUseFontBitmapsA'); 
     wglUseFontOutlines := GetProcAddress(Handle, 'wglUseFontOutlinesA');
     {$endif}
@@ -7467,7 +7491,7 @@ begin
     glGetColorTableParameterfv := GetProcAddress(Handle, 'glGetColorTableParameterfv'); 
     glConvolutionFilter1D := GetProcAddress(Handle, 'glConvolutionFilter1D'); 
     glConvolutionFilter2D := GetProcAddress(Handle, 'glConvolutionFilter2D'); 
-    glCopyConvolutionFilter1D := GetProcAddress(Handle, 'glCopyConvolutionFilter1D'); 
+    glCopyConvolutionFilter1D := GetProcAddress(Handle, 'glCopyConvolutionFilter1D');
     glCopyConvolutionFilter2D := GetProcAddress(Handle, 'glCopyConvolutionFilter2D'); 
     glGetConvolutionFilter := GetProcAddress(Handle, 'glGetConvolutionFilter'); 
     glSeparableFilter2D := GetProcAddress(Handle, 'glSeparableFilter2D'); 
@@ -7490,7 +7514,7 @@ begin
     glGetMinmaxParameterfv := GetProcAddress(Handle, 'glGetMinmaxParameterfv'); 
 
     {$ifdef LINUX}
-    glXChooseVisual := GetProcAddress(Handle, 'glXChooseVisual'); 
+    glXChooseVisual := GetProcAddress(Handle, 'glXChooseVisual');
     glXCreateContext := GetProcAddress(Handle, 'glXCreateContext'); 
     glXDestroyContext := GetProcAddress(Handle, 'glXDestroyContext'); 
     glXMakeCurrent := GetProcAddress(Handle, 'glXMakeCurrent'); 
@@ -7513,7 +7537,7 @@ begin
     glXGetCurrentDisplay := GetProcAddress(Handle, 'glXGetCurrentDisplay'); 
     glXChooseFBConfig := GetProcAddress(Handle, 'glXChooseFBConfig');
     glXGetFBConfigAttrib := GetProcAddress(Handle, 'glXGetFBConfigAttrib'); 
-    glXGetFBConfigs := GetProcAddress(Handle, 'glXGetFBConfigs'); 
+    glXGetFBConfigs := GetProcAddress(Handle, 'glXGetFBConfigs');
     glXGetVisualFromFBConfig := GetProcAddress(Handle, 'glXGetVisualFromFBConfig'); 
     glXCreateWindow := GetProcAddress(Handle, 'glXCreateWindow'); 
     glXDestroyWindow := GetProcAddress(Handle, 'glXDestroyWindow'); 
@@ -7559,7 +7583,7 @@ begin
     gluDisk := GetProcAddress(Handle, 'gluDisk'); 
     gluEndCurve := GetProcAddress(Handle, 'gluEndCurve'); 
     gluEndPolygon := GetProcAddress(Handle, 'gluEndPolygon'); 
-    gluEndSurface := GetProcAddress(Handle, 'gluEndSurface'); 
+    gluEndSurface := GetProcAddress(Handle, 'gluEndSurface');
     gluEndTrim := GetProcAddress(Handle, 'gluEndTrim'); 
     gluErrorString := GetProcAddress(Handle, 'gluErrorString');
     gluGetNurbsProperty := GetProcAddress(Handle, 'gluGetNurbsProperty');
@@ -7582,7 +7606,7 @@ begin
     gluProject := GetProcAddress(Handle, 'gluProject'); 
     gluPwlCurve := GetProcAddress(Handle, 'gluPwlCurve'); 
     gluQuadricCallback := GetProcAddress(Handle, 'gluQuadricCallback'); 
-    gluQuadricDrawStyle := GetProcAddress(Handle, 'gluQuadricDrawStyle'); 
+    gluQuadricDrawStyle := GetProcAddress(Handle, 'gluQuadricDrawStyle');
     gluQuadricNormals := GetProcAddress(Handle, 'gluQuadricNormals');
     gluQuadricOrientation := GetProcAddress(Handle, 'gluQuadricOrientation'); 
     gluQuadricTexture := GetProcAddress(Handle, 'gluQuadricTexture'); 
@@ -7623,7 +7647,19 @@ procedure ReadExtensions;
 
 // To be used in an active rendering context only!
 
+{$ifdef Win32}
+var
+   vendor : String;
+{$endif}
 begin
+{$ifdef Win32}
+   vendor:=StrPas(glGetString(GL_VENDOR));
+   if vendor='Brian Paul' then begin
+      // MESA 3D
+      wglGetProcAddress:=MESAWglGetProcAddress;
+   end;
+{$endif}
+
   // GL extensions
   glArrayElementArrayEXT := wglGetProcAddress('glArrayElementArrayEXT');
   glColorTableEXT := wglGetProcAddress('glColorTableEXT');
@@ -7673,10 +7709,11 @@ begin
   glMultiTexCoord1sVARB := wglGetProcAddress('glMultiTexCoord1sVARB'); 
   glMultiTexCoord2dARB := wglGetProcAddress('glMultiTexCoord2dARB'); 
   glMultiTexCoord2dvARB := wglGetProcAddress('glMultiTexCoord2dvARB'); 
-  glMultiTexCoord2fARB := wglGetProcAddress('glMultiTexCoord2fARB'); 
-  glMultiTexCoord2fvARB := wglGetProcAddress('glMultiTexCoord2fvARB'); 
-  glMultiTexCoord2iARB := wglGetProcAddress('glMultiTexCoord2iARB'); 
-  glMultiTexCoord2ivARB := wglGetProcAddress('glMultiTexCoord2ivARB'); 
+  glMultiTexCoord2fARB := wglGetProcAddress('glMultiTexCoord2fARB');
+//     glMultiTexCoord2fARB := GetProcAddress(GLHandle, '_glMultiTexCoord2fARB@12');
+  glMultiTexCoord2fvARB := wglGetProcAddress('glMultiTexCoord2fvARB');
+  glMultiTexCoord2iARB := wglGetProcAddress('glMultiTexCoord2iARB');
+  glMultiTexCoord2ivARB := wglGetProcAddress('glMultiTexCoord2ivARB');
   glMultiTexCoord2sARB := wglGetProcAddress('glMultiTexCoord2sARB'); 
   glMultiTexCoord2svARB := wglGetProcAddress('glMultiTexCoord2svARB'); 
   glMultiTexCoord3dARB := wglGetProcAddress('glMultiTexCoord3dARB'); 
@@ -7693,10 +7730,11 @@ begin
   glMultiTexCoord4fvARB := wglGetProcAddress('glMultiTexCoord4fvARB'); 
   glMultiTexCoord4iARB := wglGetProcAddress('glMultiTexCoord4iARB'); 
   glMultiTexCoord4ivARB := wglGetProcAddress('glMultiTexCoord4ivARB'); 
-  glMultiTexCoord4sARB := wglGetProcAddress('glMultiTexCoord4sARB'); 
+  glMultiTexCoord4sARB := wglGetProcAddress('glMultiTexCoord4sARB');
   glMultiTexCoord4svARB := wglGetProcAddress('glMultiTexCoord4svARB'); 
-  glActiveTextureARB := wglGetProcAddress('glActiveTextureARB'); 
-  glClientActiveTextureARB := wglGetProcAddress('glClientActiveTextureARB'); 
+  glActiveTextureARB := wglGetProcAddress('glActiveTextureARB');
+//    glActiveTextureARB := GetProcAddress(GLHandle, '_glActiveTextureARB@4');
+  glClientActiveTextureARB := wglGetProcAddress('glClientActiveTextureARB');
 
   // EXT_compiled_vertex_array
   glLockArrayEXT := wglGetProcAddress('glLockArrayEXT'); 
