@@ -45,11 +45,12 @@ package GLScene7;
 {$IMAGEBASE $400000}
 {$DESCRIPTION 'GLScene - OpenGL 3D library'}
 {$DESIGNONLY}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,
-  designide;
+  designide,
+  GR32_D7;
 
 {%File '..\Source\GLScene.inc'}
 
