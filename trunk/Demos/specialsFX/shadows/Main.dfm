@@ -1,8 +1,9 @@
 object MainFm: TMainFm
   Left = 132
   Top = 53
-  Width = 566
-  Height = 474
+  Width = 561
+  Height = 470
+  AutoSize = True
   Caption = 'MainFm'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
