@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 210
-  Top = 126
+  Left = 205
+  Top = 112
   Width = 662
   Height = 439
   Caption = 'Cg Shader Demo'
@@ -279,7 +279,7 @@ object Form1: TForm1
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
-            Font.Name = 'Courier New'
+            Font.Name = 'Lucida Console'
             Font.Style = []
             ParentFont = False
             ScrollBars = ssBoth

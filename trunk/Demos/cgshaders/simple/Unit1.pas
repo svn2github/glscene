@@ -5,7 +5,7 @@
 
   Try to get an ATI feel by editing the vertex shader code. ;)
 
-  Last update: 02/01/04
+  Last update: 20/01/04
   Nelson Chu
 }
 unit Unit1;
@@ -72,7 +72,7 @@ type
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure CgShader1ApplyVP(Sender: TCgProgram);
+    procedure CgShader1ApplyVP(CgProgram: TCgProgram; Sender : TObject);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -88,7 +88,7 @@ type
     procedure ButtonApplyVPClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure CgShader1Initialize(Sender: TCustomCgShader);
+    procedure CgShader1Initialize(CgShader: TCustomCgShader);
   private
     { Private declarations }
   public
@@ -103,7 +103,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.CgShader1ApplyVP(Sender: TCgProgram);
+procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender : TObject);
 var
   v : TVector;
   Param: TCgParameter;
@@ -112,29 +112,29 @@ begin
   v := ZHmgVector;
   RotateVector(v, YVector, GLCadencer1.CurrentTime);
 
-  Param := Sender.ParamByName('LightVec');
+  Param := CgProgram.ParamByName('LightVec');
   Param.AsVector:=v;
   // or using plain Cg API: cgGLSetParameter4fv(Param.Handle, @v);
 
   // set uniform parameters that change every frame
-  with Sender.ParamByName('ModelViewProj') do
+  with CgProgram.ParamByName('ModelViewProj') do
     SetAsStateMatrix( CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 
-  with Sender.ParamByName('ModelViewIT') do
+  with CgProgram.ParamByName('ModelViewIT') do
     SetAsStateMatrix( CG_GL_MODELVIEW_MATRIX, CG_GL_MATRIX_INVERSE_TRANSPOSE);
   //  Or, using plain Cg API:
-  //  Param := Sender.ParamByName('ModelViewIT');
+  //  Param := CgProgram.ParamByName('ModelViewIT');
   //  cgGLSetStateMatrixParameter(Param.Handle, CG_GL_MODELVIEW_MATRIX, CG_GL_MATRIX_INVERSE_TRANSPOSE);
 end;
 
 
-procedure TForm1.CgShader1Initialize(Sender: TCustomCgShader);
+procedure TForm1.CgShader1Initialize(CgShader: TCustomCgShader);
 begin
   // Shows the profiles to be used. The latest support profiles would be detected
   // if you have CgShader1.VertexProgram.Profile set to vpDetectLatest (similarly
   // for the fragment program).
-  LabelVertProfile.Caption:='Using profile: ' + Sender.VertexProgram.GetProfileString;
-  LabelFragProfile.Caption:='Using profile: ' + Sender.FragmentProgram.GetProfileString;
+  LabelVertProfile.Caption:='Using profile: ' + CgShader.VertexProgram.GetProfileString;
+  LabelFragProfile.Caption:='Using profile: ' + CgShader.FragmentProgram.GetProfileString;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 203
-  Top = 110
+  Left = 202
+  Top = 112
   Width = 759
   Height = 484
   Caption = 'Cg Shader Demo'

@@ -2,7 +2,8 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
-      <li>20/01/04 - NelC - Fixed dynamic array passing bug in CheckValueType.
+      <li>20/01/04 - NelC - Updated shader event handlers with Sender object.
+                            Fixed dynamic array passing bug in CheckValueType.
       <li>03/01/04 - NelC - Shortened event handlers using 'VP' and 'FP'. Added
                             TCustomCgShader.LoadShaderPrograms and TCgProgram.
                             SetParam. Minor change in texture type checking.
@@ -40,8 +41,9 @@ type
   TCgProgram = class;
   TCgParameter = class;
 
-  TCgApplyEvent = procedure (Sender : TCgProgram) of object;
-  TCgShaderEvent = procedure (Sender : TCustomCgShader) of object;
+  TCgApplyEvent = procedure (CgProgram : TCgProgram; Sender : TObject) of object;
+  TCgUnApplyEvent = procedure (CgProgram : TCgProgram) of object;
+  TCgShaderEvent = procedure (CgShader : TCustomCgShader) of object;
 
   TcgProgramType = (ptVertex, ptFragment);
 
@@ -64,7 +66,7 @@ type
     FParams : TList;
 
     FOnApply : TCgApplyEvent;
-    FOnUnApply : TCgApplyEvent;
+    FOnUnApply : TCgUnApplyEvent;
     FOnProgramChanged : TNotifyEvent;
 
     FEnabled : boolean;
@@ -94,7 +96,7 @@ type
 
     procedure Initialize; dynamic;
     procedure Finalize;
-    procedure Apply(var rci : TRenderContextInfo);
+    procedure Apply(var rci : TRenderContextInfo; Sender : TObject);
     procedure UnApply(var rci : TRenderContextInfo);
 
     property Param[index : String] : TCgParameter read GetParam;
@@ -133,7 +135,7 @@ type
     property ProgramName : String read FProgramName write SetProgramName;
     property Enabled : boolean read FEnabled write FEnabled default True;
     property OnApply : TCgApplyEvent read FOnApply write FOnApply;
-    property OnUnApply : TCgApplyEvent read FOnUnApply write FOnUnApply;
+    property OnUnApply : TCgUnApplyEvent read FOnUnApply write FOnUnApply;
   end;
 
   // TCgParameter
@@ -235,15 +237,15 @@ type
     procedure SetVertexProgram(const val : TCgVertexProgram);
     procedure SetOnApplyVertexProgram(const val : TCgApplyEvent);
     function GetOnApplyVertexProgram : TCgApplyEvent;
-    procedure SetOnUnApplyVertexProgram(const val : TCgApplyEvent);
-    function GetOnUnApplyVertexProgram : TCgApplyEvent;
+    procedure SetOnUnApplyVertexProgram(const val : TCgUnApplyEvent);
+    function GetOnUnApplyVertexProgram : TCgUnApplyEvent;
 
     // Fragment Program
     procedure SetFragmentProgram(const val : TCgFragmentProgram);
     procedure SetOnApplyFragmentProgram(const val : TCgApplyEvent);
     function GetOnApplyFragmentProgram : TCgApplyEvent;
-    procedure SetOnUnApplyFragmentProgram(const val : TCgApplyEvent);
-    function GetOnUnApplyFragmentProgram : TCgApplyEvent;
+    procedure SetOnUnApplyFragmentProgram(const val : TCgUnApplyEvent);
+    function GetOnUnApplyFragmentProgram : TCgUnApplyEvent;
 
     // OnInitialize
     function GetOnInitialize : TCgShaderEvent;
@@ -264,8 +266,8 @@ type
     property OnApplyVP : TCgApplyEvent read GetOnApplyVertexProgram write SetOnApplyVertexProgram;
     property OnApplyFP : TCgApplyEvent read GetOnApplyFragmentProgram write SetOnApplyFragmentProgram;
 
-    property OnUnApplyVP : TCgApplyEvent read GetOnUnApplyVertexProgram write SetOnUnApplyVertexProgram;
-    property OnUnApplyFP : TCgApplyEvent read GetOnUnApplyFragmentProgram write SetOnUnApplyFragmentProgram;
+    property OnUnApplyVP : TCgUnApplyEvent read GetOnUnApplyVertexProgram write SetOnUnApplyVertexProgram;
+    property OnUnApplyFP : TCgUnApplyEvent read GetOnUnApplyFragmentProgram write SetOnUnApplyFragmentProgram;
 
     {: OnInitialize can be use to set parameters that need to be set once only. See demo "Cg Texture" for example.}
     property OnInitialize : TCgShaderEvent read GetOnInitialize write SetOnInitialize;
@@ -520,7 +522,7 @@ end;
 
 // Apply
 //
-procedure TCgProgram.Apply(var rci : TRenderContextInfo);
+procedure TCgProgram.Apply(var rci : TRenderContextInfo; Sender : TObject);
 begin
   if not Assigned(FHandle) then exit;
   if not FEnabled then exit;
@@ -530,7 +532,7 @@ begin
   cgGLBindProgram(FHandle);
   cgGLEnableProfile(FProfile);
 
-  if Assigned(FOnApply) then FOnApply(Self);
+  if Assigned(FOnApply) then FOnApply(Self, Sender);
 end;
 
 // UnApply
@@ -885,28 +887,28 @@ end;
 
 // SetOnUnApplyVertexProgram
 //
-procedure TCustomCgShader.SetOnUnApplyVertexProgram(const val : TCgApplyEvent);
+procedure TCustomCgShader.SetOnUnApplyVertexProgram(const val : TCgUnApplyEvent);
 begin
   FVertexProgram.OnUnApply := val;
 end;
 
 // GetOnUnApplyVertexProgram
 //
-function TCustomCgShader.GetOnUnApplyVertexProgram : TCgApplyEvent;
+function TCustomCgShader.GetOnUnApplyVertexProgram : TCgUnApplyEvent;
 begin
   Result:=FVertexProgram.OnUnApply;
 end;
 
 // SetOnUnApplyFragmentProgram
 //
-procedure TCustomCgShader.SetOnUnApplyFragmentProgram(const val : TCgApplyEvent);
+procedure TCustomCgShader.SetOnUnApplyFragmentProgram(const val : TCgUnApplyEvent);
 begin
   FFragmentProgram.OnUnApply:=val;
 end;
 
 // GetOnUnApplyFragmentProgram
 //
-function TCustomCgShader.GetOnUnApplyFragmentProgram : TCgApplyEvent;
+function TCustomCgShader.GetOnUnApplyFragmentProgram : TCgUnApplyEvent;
 begin
   Result:=FFragmentProgram.OnUnApply;
 end;
@@ -943,8 +945,8 @@ procedure TCustomCgShader.DoApply(var rci : TRenderContextInfo; Sender : TObject
 begin
   if (csDesigning in ComponentState) and (not FDesignEnable) then
     Exit;
-  FVertexProgram.Apply(rci);
-  FFragmentProgram.Apply(rci);
+  FVertexProgram.Apply(rci, Sender);
+  FFragmentProgram.Apply(rci, Sender);
 end;
 
 // DoUnApply

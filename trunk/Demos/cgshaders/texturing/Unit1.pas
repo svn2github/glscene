@@ -96,7 +96,6 @@ type
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure CgShader1ApplyVP(Sender: TCgProgram);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -112,9 +111,10 @@ type
     procedure ButtonApplyVPClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure CgShader1ApplyFP(Sender: TCgProgram);
-    procedure CgShader1UnApplyFP(Sender: TCgProgram);
-    procedure CgShader1Initialize(Sender: TCustomCgShader);
+    procedure CgShader1ApplyVP(CgProgram: TCgProgram; Sender: TObject);
+    procedure CgShader1ApplyFP(CgProgram: TCgProgram; Sender: TObject);
+    procedure CgShader1UnApplyFP(CgProgram: TCgProgram);
+    procedure CgShader1Initialize(CgShader: TCustomCgShader);
     procedure CheckBox2Click(Sender: TObject);
   private
     { Private declarations }
@@ -149,11 +149,11 @@ begin
   end;
 end;
 
-procedure TForm1.CgShader1Initialize(Sender: TCustomCgShader);
+procedure TForm1.CgShader1Initialize(CgShader: TCustomCgShader);
 begin
   // Due to parameter shadowing (ref. Cg Manual), parameters that doesn't change
   // can be assigned for once only. You can set those parameters on Initialize.
-  with Sender.FragmentProgram, GLMatLib do begin
+  with CgShader.FragmentProgram, GLMatLib do begin
     ParamByName('Map0').SetAsTexture2D(Materials[0].Material.Texture.Handle);
     ParamByName('Map1').SetAsTexture2D(Materials[1].Material.Texture.Handle);
     ParamByName('Map2').SetAsTexture2D(Materials[2].Material.Texture.Handle);
@@ -163,11 +163,11 @@ begin
   end;
 
   // Display profiles used
-  LabelVertProfile.Caption:='Using profile: ' + Sender.VertexProgram.GetProfileString;
-  LabelFragProfile.Caption:='Using profile: ' + Sender.FragmentProgram.GetProfileString;
+  LabelVertProfile.Caption:='Using profile: ' + CgShader.VertexProgram.GetProfileString;
+  LabelFragProfile.Caption:='Using profile: ' + CgShader.FragmentProgram.GetProfileString;
 end;
 
-procedure TForm1.CgShader1ApplyVP(Sender: TCgProgram);
+procedure TForm1.CgShader1ApplyVP(CgProgram: TCgProgram; Sender: TObject);
 var v : TVector;
 
   function conv(TrackBar : TTrackBar): single;
@@ -178,17 +178,17 @@ var v : TVector;
   end;
 
 begin
-  with Sender.ParamByName('ModelViewProj') do
+  with CgProgram.ParamByName('ModelViewProj') do
     SetAsStateMatrix( CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 // Alternatively, you can set it using:
-//  Sender.SetParam('ModelViewProj', CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+//  CgProgram.SetParam('ModelViewProj', CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 
   v:= vectormake( conv(TrackBar1), conv(TrackBar2), conv(TrackBar3), conv(TrackBar4) );
 
-  Sender.ParamByName('shifts').SetAsVector(v);
+  CgProgram.ParamByName('shifts').SetAsVector(v);
 end;
 
-procedure TForm1.CgShader1ApplyFP(Sender: TCgProgram);
+procedure TForm1.CgShader1ApplyFP(CgProgram: TCgProgram; Sender: TObject);
 var v : TVector;
 
   function conv(TrackBar : TTrackBar): single;
@@ -199,19 +199,21 @@ var v : TVector;
   end;
 
 begin
-  Sender.ParamByName('Map0').EnableTexture;
-  Sender.ParamByName('Map1').EnableTexture;
-  Sender.ParamByName('Map2').EnableTexture;
-  Sender.ParamByName('Map3').EnableTexture;
+  with CgProgram do begin
+    ParamByName('Map0').EnableTexture;
+    ParamByName('Map1').EnableTexture;
+    ParamByName('Map2').EnableTexture;
+    ParamByName('Map3').EnableTexture;
+  end;
 
   v:= vectormake( conv(TrackBar5), conv(TrackBar6), conv(TrackBar7), conv(TrackBar8) );
 
-  Sender.ParamByName('weights').SetAsVector(v);
+  CgProgram.ParamByName('weights').SetAsVector(v);
 end;
 
-procedure TForm1.CgShader1UnApplyFP(Sender: TCgProgram);
+procedure TForm1.CgShader1UnApplyFP(CgProgram: TCgProgram);
 begin
-  with Sender do begin
+  with CgProgram do begin
     ParamByName('Map0').DisableTexture;
     ParamByName('Map1').DisableTexture;
     ParamByName('Map2').DisableTexture;
