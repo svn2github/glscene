@@ -263,7 +263,7 @@ begin
     mat := MatrixMultiply(mat, CreateRotationMatrixZ(FRotList.Items[face][2]));
     SubtractVector(p1, FPosList.Items[Face]);  // use of procedure is faster: PhP
     SubtractVector(p2, FPosList.Items[Face]);  // -''-
-    SubtractFector(p3, FPosList.Items[Face]);  // -''-
+    SubtractVector(p3, FPosList.Items[Face]);  // -''-
     p1 := VectorTransform(p1, mat);
     p2 := VectorTransform(p2, mat);
     p3 := VectorTransform(p3, mat);
@@ -278,7 +278,7 @@ begin
     AddVector(p2, dir);
     AddVector(p3, dir);
   // also, move the center of the face
-    AddVector(FPosList.Items[face], dir);
+    FPosList.Items[Face] := VectorAdd(FPosList.Items[Face], dir);
 
   // save the changes
     FTrilist.Items[face * 3] := p1;
