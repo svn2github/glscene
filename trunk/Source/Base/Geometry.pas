@@ -770,7 +770,8 @@ function CreateRotationMatrixY(const angle: Single) : TMatrix; overload;
 function CreateRotationMatrixZ(const sine, cosine: Single) : TMatrix; overload;
 function CreateRotationMatrixZ(const angle: Single) : TMatrix; overload;
 //: Creates a rotation matrix along the given Axis by the given Angle in radians.
-function CreateRotationMatrix(const anAxis: TAffineVector; angle: Single): TMatrix;
+function CreateRotationMatrix(const anAxis : TAffineVector; angle : Single) : TMatrix; overload;
+function CreateRotationMatrix(const anAxis : TVector; angle : Single) : TMatrix; overload;
 //: Creates a rotation matrix along the given Axis by the given Angle in radians.
 function CreateAffineRotationMatrix(const anAxis: TAffineVector; angle: Single): TAffineMatrix;
 
@@ -4733,36 +4734,43 @@ begin
    Result:=CreateRotationMatrixZ(s, c);
 end;
 
-// CreateRotationMatrix
+// CreateRotationMatrix (affine)
 //
-function CreateRotationMatrix(const anAxis: TAffineVector; angle: Single): TMatrix; register;
+function CreateRotationMatrix(const anAxis : TAffineVector; angle : Single) : TMatrix; register;
 var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
-   SinCos(Angle, Sine, Cosine);
-   one_minus_cosine:=1 - cosine;
+   SinCos(angle, sine, cosine);
+   one_minus_cosine:=1-cosine;
    axis:=VectorNormalize(anAxis);
 
-   Result[X, X]:=(one_minus_cosine * Sqr(Axis[0])) + Cosine;
-   Result[X, Y]:=(one_minus_cosine * Axis[0] * Axis[1]) - (Axis[2] * Sine);
-   Result[X, Z]:=(one_minus_cosine * Axis[2] * Axis[0]) + (Axis[1] * Sine);
+   Result[X, X]:=(one_minus_cosine * axis[0] * axis[0]) + cosine;
+   Result[X, Y]:=(one_minus_cosine * axis[0] * axis[1]) - (axis[2] * sine);
+   Result[X, Z]:=(one_minus_cosine * axis[2] * axis[0]) + (axis[1] * sine);
    Result[X, W]:=0;
 
-   Result[Y, X]:=(one_minus_cosine * Axis[0] * Axis[1]) + (Axis[2] * Sine);
-   Result[Y, Y]:=(one_minus_cosine * Sqr(Axis[1])) + Cosine;
-   Result[Y, Z]:=(one_minus_cosine * Axis[1] * Axis[2]) - (Axis[0] * Sine);
+   Result[Y, X]:=(one_minus_cosine * axis[0] * axis[1]) + (axis[2] * sine);
+   Result[Y, Y]:=(one_minus_cosine * axis[1] * axis[1]) + cosine;
+   Result[Y, Z]:=(one_minus_cosine * axis[1] * axis[2]) - (axis[0] * sine);
    Result[Y, W]:=0;
 
-   Result[Z, X]:=(one_minus_cosine * Axis[2] * Axis[0]) - (Axis[1] * Sine);
-   Result[Z, Y]:=(one_minus_cosine * Axis[1] * Axis[2]) + (Axis[0] * Sine);
-   Result[Z, Z]:=(one_minus_cosine * Sqr(Axis[2])) + Cosine;
+   Result[Z, X]:=(one_minus_cosine * axis[2] * axis[0]) - (axis[1] * sine);
+   Result[Z, Y]:=(one_minus_cosine * axis[1] * axis[2]) + (axis[0] * sine);
+   Result[Z, Z]:=(one_minus_cosine * axis[2] * axis[2]) + cosine;
    Result[Z, W]:=0;
 
    Result[W, X]:=0;
    Result[W, Y]:=0;
    Result[W, Z]:=0;
    Result[W, W]:=1;
+end;
+
+// CreateRotationMatrix (hmg)
+//
+function CreateRotationMatrix(const anAxis : TVector; angle : Single) : TMatrix; register;
+begin
+   Result:=CreateRotationMatrix(PAffineVector(@anAxis)^, angle);
 end;
 
 // CreateAffineRotationMatrix

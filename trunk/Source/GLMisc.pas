@@ -239,7 +239,8 @@ type
 			procedure Translate(const translationVector : TAffineVector); overload;
 			procedure AddScaledVector(const factor : Single; const translationVector : TVector); overload;
 			procedure AddScaledVector(const factor : Single; const translationVector : TAffineVector); overload;
-         procedure Rotate(const Axis : TAffineVector; Angle: Single);
+         procedure Rotate(const anAxis : TAffineVector; anAngle: Single); overload;
+         procedure Rotate(const anAxis : TVector; anAngle: Single); overload;
          procedure Normalize;
          procedure Invert;
          procedure Scale(factor : Single);
@@ -1307,11 +1308,19 @@ begin
 	NotifyChange(Self);
 end;
 
-// Rotate
+// Rotate (affine)
 //
-procedure TGLCoordinates.Rotate(const Axis : TAffineVector; Angle : Single);
+procedure TGLCoordinates.Rotate(const anAxis : TAffineVector; anAngle : Single);
 begin
-   RotateVector(FCoords, Axis, Angle);
+   RotateVector(FCoords, anAxis, anAngle);
+   NotifyChange(Self);
+end;
+
+// Rotate (hmg)
+//
+procedure TGLCoordinates.Rotate(const anAxis : TVector; anAngle : Single);
+begin
+   RotateVector(FCoords, anAxis, anAngle);
    NotifyChange(Self);
 end;
 
