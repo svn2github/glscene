@@ -2073,7 +2073,6 @@ end;
 function TLines.AxisAlignedDimensions : TVector;
 var
    i : Integer;
-   v : TVector;
 begin
    RstVector(Result);
    for i:=0 to Nodes.Count-1 do
