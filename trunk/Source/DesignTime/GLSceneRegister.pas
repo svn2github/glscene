@@ -1862,6 +1862,7 @@ initialization
       {$endif}
 
       RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
+      RegisterSceneObject(TGLTextureLensFlare, 'TextureLensFlare', glsOCSpecialObjects);
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
