@@ -3628,7 +3628,7 @@ begin
          vcObjectBased : begin
             shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
                               or (not IsVolumeClipped(AbsolutePosition,
-                                                      BoundingSphereRadius,
+                                                      BoundingSphereRadius*Scale.VectorLength,
                                                       rci.rcci));
             shouldRenderChildren:=True;
          end;
