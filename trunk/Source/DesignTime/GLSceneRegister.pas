@@ -1657,9 +1657,9 @@ begin
   RegisterPropertiesInCategory(sLayoutCategoryName,
     [TypeInfo(TTextLayout)]);
   RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TBitmapFont)]);
+    [TypeInfo(TGLBitmapFont)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TBitmapFont), TypeInfo(TTextLayout)]);
+    [TypeInfo(TGLBitmapFont), TypeInfo(TTextLayout)]);
 
   { GLTexture }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
@@ -1706,12 +1706,12 @@ begin
   // TBitmapFontRange
   RegisterPropertiesInCategory(sLocalizableCategoryName, TBitmapFontRange,
     ['*ASCII']);
-  // TBitmapFont
-  RegisterPropertiesInCategory(sLayoutCategoryName, TBitmapFont,
+  // TGLBitmapFont
+  RegisterPropertiesInCategory(sLayoutCategoryName, TGLBitmapFont,
     ['Char*', '*Interval*', '*Space']);
-  RegisterPropertiesInCategory(sLocalizableCategoryName, TBitmapFont,
+  RegisterPropertiesInCategory(sLocalizableCategoryName, TGLBitmapFont,
     ['Glyphs']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TBitmapFont,
+  RegisterPropertiesInCategory(sVisualCategoryName, TGLBitmapFont,
     ['Char*', '*Interval*', '*Space', 'Glyphs']);
 
   { GLHeightData }
@@ -1732,7 +1732,7 @@ begin
                        TGLCadencer, TAsyncTimer,
                        TCollisionManager, TGLFireFXManager, TGLThorFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
-                       TBitmapFont, TWindowsBitmapFont,
+                       TGLBitmapFont, TGLWindowsBitmapFont,
                        TGLBitmapHDS, TGLCustomHDS,
                        TAnimationControler]);
 
@@ -1807,6 +1807,7 @@ initialization
       RegisterSceneObject(TGLParticles, 'Particles', glsOCProceduralObjects);
 
       RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCSpecialObjects);
+      RegisterSceneObject(TGLFlatText, 'FlatText', glsOCSpecialObjects);
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCSpecialObjects);

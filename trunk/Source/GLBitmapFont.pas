@@ -2,10 +2,11 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/10/02 - EG - Added TGLFlatText
       <li>29/09/02 - EG - Added TexCoords LUT, faster RenderString,
                           removed TBitmapFontRange.Widths
       <li>28/09/02 - EG - Introduced TGLCustomBitmapFont
-      <li>06/09/02 - JAJ - Prepared for TWindowsBitmapFont
+      <li>06/09/02 - JAJ - Prepared for TGLWindowsBitmapFont
       <li>28/08/02 - EG - Repaired fixed CharWidth, variable CharWidth not yet repaired
       <li>12/08/02 - JAJ - Merged Dual Development, Alpha Channel and CharWidth are now side by side
       <li>UNKNOWN  - EG - Added Alpha Channel.
@@ -205,11 +206,11 @@ type
          property CharHeight : Integer read FCharHeight write SetCharHeight default 16;
 	end;
 
-	// TBitmapFont
+	// TGLBitmapFont
 	//
    {: See TGLCustomBitmapFont.<p>
       This class only publuishes some of the properties. }
-	TBitmapFont = class (TGLCustomBitmapFont)
+	TGLBitmapFont = class (TGLCustomBitmapFont)
 	   published
 	      { Published Declarations }
          property Glyphs;
@@ -224,6 +225,58 @@ type
 			property MinFilter;
          property GlyphsAlpha;
 	end;
+
+   // TGLFlatText
+   //
+   {: A 2D text displayed and positionned in 3D coordinates.<p>
+      The FlatText uses a character font defined and stored by a TGLBitmapFont
+      component. Default character scale is 1 font pixel = 1 space unit. }
+	TGLFlatText = class (TGLImmaterialSceneObject)
+	   private
+	      { Private Declarations }
+         FBitmapFont : TGLCustomBitmapFont;
+         FText : String;
+         FAlignment : TAlignment;
+         FLayout : TTextLayout;
+         FModulateColor : TGLColor;
+
+	   protected
+	      { Protected Declarations }
+         procedure SetBitmapFont(const val : TGLCustomBitmapFont);
+         procedure SetText(const val : String);
+         procedure SetAlignment(const val : TAlignment);
+         procedure SetLayout(const val : TTextLayout);
+         procedure SetModulateColor(const val : TGLColor);
+
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
+		public
+			{ Public Declarations }
+         constructor Create(AOwner : TComponent); override;
+         destructor Destroy; override;
+
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
+
+	   published
+	      { Published Declarations }
+         {: Refers the bitmap font to use.<p>
+            The referred bitmap font component stores and allows access to
+            individual character bitmaps. }
+         property BitmapFont : TGLCustomBitmapFont read FBitmapFont write SetBitmapFont;
+         {: Text to render.<p>
+            Be aware that only the characters available in the bitmap font will
+            be rendered. CR LF sequences are allowed. }
+         property Text : String read FText write SetText;
+         {: Controls the text alignment (horizontal).<p>
+            Possible values : taLeftJustify, taRightJustify, taCenter }
+         property Alignment : TAlignment read FAlignment write SetAlignment;
+         {: Controls the text layout (vertical).<p>
+            Possible values : tlTop, tlCenter, tlBottom }
+         property Layout : TTextLayout read FLayout write SetLayout;
+         {: Color modulation, can be used for fade in/out too.}
+         property ModulateColor : TGLColor read FModulateColor write SetModulateColor;
+   end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -912,6 +965,98 @@ begin
    Result:=GL_RGBA;
 end;
 
+// ------------------
+// ------------------ TGLFlatText ------------------
+// ------------------
+
+// Create
+//
+constructor TGLFlatText.Create(AOwner : TComponent);
+begin
+   inherited;
+   ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
+   FModulateColor:=TGLColor.CreateInitialized(Self, clrWhite);
+end;
+
+// Destroy
+//
+destructor TGLFlatText.Destroy;
+begin
+   FModulateColor.Free;
+   BitmapFont:=nil;
+   inherited;
+end;
+
+// Notification
+//
+procedure TGLFlatText.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   if (Operation=opRemove) and (AComponent=FBitmapFont) then
+      BitmapFont:=nil;
+end;
+
+// SetBitmapFont
+//
+procedure TGLFlatText.SetBitmapFont(const val : TGLCustomBitmapFont);
+begin
+   if val<>FBitmapFont then begin
+      if Assigned(FBitmapFont) then
+         FBitmapFont.UnRegisterUser(Self);
+      FBitmapFont:=val;
+      if Assigned(FBitmapFont) then begin
+         FBitmapFont.RegisterUser(Self);
+         FBitmapFont.FreeNotification(Self);
+      end;
+      StructureChanged;
+   end;
+end;
+
+// SetText
+//
+procedure TGLFlatText.SetText(const val : String);
+begin
+   FText:=val;
+   StructureChanged;
+end;
+
+// SetAlignment
+//
+procedure TGLFlatText.SetAlignment(const val : TAlignment);
+begin
+   FAlignment:=val;
+   StructureChanged;
+end;
+
+// SetLayout
+//
+procedure TGLFlatText.SetLayout(const val : TTextLayout);
+begin
+   FLayout:=val;
+   StructureChanged;
+end;
+
+// SetModulateColor
+//
+procedure TGLFlatText.SetModulateColor(const val: TGLColor);
+begin
+   FModulateColor.Assign(val);
+end;
+
+// DoRender
+//
+procedure TGLFlatText.DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean);
+begin
+   if Assigned(FBitmapFont) and (Text<>'') then begin
+      SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      glPushAttrib(GL_ENABLE_BIT);
+      FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
+      glPopAttrib;
+   end;
+   if Count>0 then
+      Self.RenderChildren(0, Count-1, rci);
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -921,7 +1066,7 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClasses([TBitmapFont]);
+   RegisterClasses([TGLBitmapFont, TGLFlatText]);
 
 end.
 
