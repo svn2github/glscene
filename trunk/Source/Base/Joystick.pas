@@ -4,6 +4,7 @@
 	Component for handling joystick messages<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>29/01/02 - Egg - Added NoCaptureErrors
       <li>18/12/00 - Egg - Fix for supporting 2 joysticks simultaneously
       <li>14/04/00 - Egg - Various minor to major fixes, the component should
                            now work properly for the 4 first buttons and XY axis
@@ -39,13 +40,12 @@ type
 	   private
 	      { Private Declarations }
          FWindowHandle : HWND;
-         FNumButtons, FLastX, FLastY, FLastZ: Integer;
-         FThreshold, FInterval: Cardinal;
-         FCapture: Boolean;
-         FJoystickID: TJoystickID;
-         FDesignMode: TJoystickDesignMode;
-         FMinMaxInfo: array[TJoyAxis, TJoyPos] of Integer;
-         FXPosInfo, FYPosInfo: array[0..4] of Integer;
+         FNumButtons, FLastX, FLastY, FLastZ : Integer;
+         FThreshold, FInterval : Cardinal;
+         FCapture, FNoCaptureErrors : Boolean;
+         FJoystickID : TJoystickID;
+         FMinMaxInfo : array[TJoyAxis, TJoyPos] of Integer;
+         FXPosInfo, FYPosInfo : array[0..4] of Integer;
          FOnJoystickButtonChange, FOnJoystickMove : TJoystickEvent;
          FXPosition, FYPosition : Integer;
          FJoyButtons : TJoystickButtons;
@@ -82,8 +82,9 @@ type
          {: When set to True, the component attempts to capture the joystick.<p>
             If capture is successfull, retrieving joystick status is possible,
             if not, an error message is triggered. }
-         property Capture: Boolean read FCapture write SetCapture default False;
-         property DesignMode: TJoystickDesignMode read FDesignMode write FDesignMode default jdmInactive;
+         property Capture : Boolean read FCapture write SetCapture default False;
+         {: If true joystick capture errors do not result in exceptions. }
+         property NoCaptureErrors : Boolean read FNoCaptureErrors write FNoCaptureErrors default True;
          {: Polling frequency (milliseconds) }
          property Interval : Cardinal read FInterval write SetInterval default 100;
          property JoystickID: TJoystickID read FJoystickID write SetJoystickID default jidNoJoystick;
@@ -131,11 +132,11 @@ begin
    FWindowHandle := AllocateHWnd(WndProc);
    FInterval := 100;
    FThreshold := 1000;
-   FDesignMode := jdmInactive;
    FJoystickID := jidNoJoystick;
    FLastX := -1;
    FLastY := -1;
    FLastZ := -1;
+   FNoCaptureErrors := True;
 end;
 
 // Destroy
@@ -243,7 +244,7 @@ var
    jc : TJoyCaps;
 begin
    DoJoystickRelease(AJoystick);
-   if FCapture and (not (csDesigning in ComponentState)) or (FDesignMode=jdmActive) then with JC do begin
+   if FCapture and (not (csDesigning in ComponentState)) then with JC do begin
       joyGetDevCaps(cJoystickIDToNative[FJoystickID], @JC, SizeOf(JC));
       FNumButtons := wNumButtons;
       FMinMaxInfo[jaX, jpMin] := DoScale(wXMin);
@@ -260,20 +261,22 @@ end;
 // DoJoystickCapture
 //
 procedure TJoystick.DoJoystickCapture(AHandle: HWND; AJoystick: TJoystickID);
+var
+   res : Cardinal;
 begin
-   try
-      case joySetCapture(AHandle, cJoystickIDToNative[AJoystick], FInterval, True) of
-         MMSYSERR_NODRIVER : raise Exception.Create(glsNoJoystickDriver);
-         JOYERR_UNPLUGGED :  raise Exception.Create(glsConnectJoystick);
-         JOYERR_NOCANDO :    raise Exception.Create(glsJoystickError);
-         JOYERR_NOERROR :    joySetThreshold(cJoystickIDToNative[AJoystick], FThreshold);
-      else
-         raise Exception.Create(glsJoystickError);
-      end
-   except
-      FCapture := False;
-      raise;
-   end;
+   res:=joySetCapture(AHandle, cJoystickIDToNative[AJoystick], FInterval, True);
+   if res<>JOYERR_NOERROR then begin
+      FCapture:=False;
+      if not NoCaptureErrors then begin
+         case res of
+            MMSYSERR_NODRIVER : raise Exception.Create(glsNoJoystickDriver);
+            JOYERR_UNPLUGGED :  raise Exception.Create(glsConnectJoystick);
+            JOYERR_NOCANDO :    raise Exception.Create(glsJoystickError);
+         else
+            raise Exception.Create(glsJoystickError);
+         end;
+      end;
+   end else joySetThreshold(cJoystickIDToNative[AJoystick], FThreshold);
 end;
 
 // DoJoystickRelease
