@@ -117,6 +117,7 @@ var
    mvMat : TMatrix;
    oldStates : TGLStates;
    libMat : TGLLibMaterial;
+   transMat : TMatrix;
 begin
    if FMaterialLibrary=nil then Exit;
 
@@ -127,7 +128,12 @@ begin
    glDepthMask(False);
 
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-   glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
+   SetVector(transMat[0], LeftVector);
+   SetVector(transMat[1], Up.AsVector);
+   SetVector(transMat[2], Direction.AsVector);
+   SetVector(transMat[3], rci.cameraPosition);
+   glMultMatrixf(@transMat);
+   
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.5;
    glScalef(f, f, f);
@@ -224,6 +230,13 @@ begin
          libMat.UnApply(rci);
       end;
 
+      // process childs
+      if renderChildren then begin
+         f:=1/f;
+         glScalef(f, f, f);
+         Self.RenderChildren(0, Count-1, rci);
+      end;
+
       glDepthMask(True); // restore
       if stDepthTest in oldStates then
          SetGLState(rci.currentStates, stDepthTest);
@@ -231,13 +244,6 @@ begin
          SetGLState(rci.currentStates, stLighting);
       if stFog in oldStates then
          SetGLState(rci.currentStates, stFog);
-
-      // process childs
-      if renderChildren then begin
-         f:=1/f;
-         glScalef(f, f, f);
-         Self.RenderChildren(0, Count-1, rci);
-      end;
    finally
       Scene.CurrentBuffer.PopModelViewMatrix;
    end;
