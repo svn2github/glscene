@@ -297,7 +297,7 @@ type
 
    // TGLPointStyle
    //
-   TGLPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive);
+   TGLPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive, psSquareAdditive);
 
 	// TGLPointParameters
 	//
@@ -418,7 +418,8 @@ type
    // TLineSplineMode
    //
    {: Available spline modes for a TLine. }
-   TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve);
+   TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
+                      lsmSegments);
 
    // TGLLinesNode
    //
@@ -2150,6 +2151,10 @@ begin
          glEnable(GL_BLEND);
          glBlendFunc(GL_SRC_ALPHA, GL_ONE);
       end;
+      psSquareAdditive : begin
+         glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+      end;
    else
       Assert(False);
    end;
@@ -2666,8 +2671,10 @@ begin
          end;
       end else begin
          // lines, cubic splines or bezier
-         glBegin(GL_LINE_STRIP);
-         if (FDivision<2) or (FSplineMode=lsmLines) then begin
+         if FSplineMode=lsmSegments then
+            glBegin(GL_LINES)
+         else glBegin(GL_LINE_STRIP);
+         if (FDivision<2) or (FSplineMode in [lsmLines, lsmSegments]) then begin
             // standard line(s), draw directly
             if loUseNodeColorForLines in Options then begin
                // node color interpolation
