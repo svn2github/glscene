@@ -45,6 +45,8 @@ type
 
          procedure Assign(Source: TPersistent); override;
 
+		published
+			{ Published Declarations }
          {: Shadow casting object.<p>
             Can be an opaque object or a lightsource. }
          property Caster : TGLBaseSceneObject read FCaster write SetCaster;
@@ -79,6 +81,11 @@ type
          property Items[index : Integer] : TGLShadowVolumeCaster read GetItems; default;
    end;
 
+   // TGLShadowVolumeOption
+   //
+   TGLShadowVolumeOption = (svoShowVolumes);
+   TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
+
    // TGLShadowVolume
    //
    {: Simple shadow volumes.<p>
@@ -91,10 +98,14 @@ type
          FRendering : Boolean;
          FCasters : TGLShadowVolumeCasters;
          FCapping : TGLShadowVolumeCapping;
+         FOptions : TGLShadowVolumeOptions;
 
 		protected
 			{ Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
+         procedure SetCasters(const val : TGLShadowVolumeCasters);
+         procedure SetOptions(const val : TGLShadowVolumeOptions);
 
 		public
 			{ Public Declarations }
@@ -108,11 +119,13 @@ type
 
 		published
 			{ Public Declarations }
-         property Casters : TGLShadowVolumeCasters read FCasters;
+         property Casters : TGLShadowVolumeCasters read FCasters write SetCasters;
 
          {: Specifies if the shadow volume should be capped.<p>
             Capping helps solve shadowing artefacts, at the cost of performance. }
          property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcAlways;
+         {: Shadow volume rendering options. }
+         property Options : TGLShadowVolumeOptions read FOptions write SetOptions default [];
    end;
 
 //-------------------------------------------------------------
@@ -134,7 +147,7 @@ uses SysUtils, VectorLists;
 constructor TGLShadowVolumeCaster.Create(Collection: TCollection);
 begin
    inherited Create(Collection);
-   FCapping:=svcAlways;
+   FCapping:=svcDefault;
 end;
 
 // Assign
@@ -278,6 +291,23 @@ begin
    inherited Assign(Source);
 end;
 
+// SetCasters
+//
+procedure TGLShadowVolume.SetCasters(const val : TGLShadowVolumeCasters);
+begin
+   FCasters.Assign(val);
+end;
+
+// SetOptions
+//
+procedure TGLShadowVolume.SetOptions(const val : TGLShadowVolumeOptions);
+begin
+   if FOptions<>val then begin
+      FOptions:=val;
+      StructureChanged;
+   end;
+end;
+
 // DoRender
 //
 procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
@@ -296,6 +326,10 @@ var
 begin
    if FRendering then Exit;
    if not (renderSelf or renderChildren) then Exit;
+   if (csDesigning in ComponentState) then begin
+      inherited;
+      Exit;
+   end;
    lights:=TList.Create;
    opaques:=TList.Create;
    opaqueCapping:=TList.Create;
@@ -315,7 +349,9 @@ begin
             end else begin
                if obj.Visible then begin
                   opaques.Add(obj);
-                  opaqueCapping.Add(Pointer(caster.Capping=svcAlways));
+                  opaqueCapping.Add(Pointer(   (caster.Capping=svcAlways)
+                                            or ((caster.Capping=svcDefault)
+                                                and (Capping=svcAlways))));
                end;
             end;
          end;
@@ -334,7 +370,7 @@ begin
 
       glDepthMask(False);
       rci.ignoreBlendingRequests:=True;
-
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
       glEnable(GL_STENCIL_TEST);
       glEnable(GL_DEPTH_TEST);
 
@@ -361,14 +397,14 @@ begin
          glStencilFunc(GL_ALWAYS, 0, 0);
          glDepthFunc(GL_LESS);
 
-{         glColor3f(0, 0, 1);
-         glEnable(GL_BLEND);
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE); }
-
+         if svoShowVolumes in Options then begin
+            glColor3f(0.05*i, 0.1, 0);
+            glEnable(GL_BLEND);
+         end else begin
+            glColorMask(False, False, False, False);
+            glDisable(GL_BLEND);
+         end;
          SetGLState(rci.currentStates, stCullFace);
-
-         glColorMask(False, False, False, False);
-         glDisable(GL_BLEND);
          glDisable(GL_LIGHTING);
 
          // for all opaque shadow casters
@@ -431,13 +467,9 @@ begin
                   for n:=sil.CapIndices.Count-1 downto 0 do
                      glVertex3fv(@sil.Vertices.List[sil.CapIndices[n]]);
                   glEnd;
-                  glBegin(GL_TRIANGLES);
-                  for n:=0 to sil.CapIndices.Count-1 do
-                     glVertex4fv(@extrudedVertices.List[sil.CapIndices[n]]);
-                  glEnd;
                end else begin
                   // z-pass
-                  glCullFace(GL_FRONT);
+                  glCullFace(GL_BACK);
                   glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 
                   glBegin(GL_QUADS);
@@ -450,7 +482,7 @@ begin
                   end;
                   glEnd;
 
-                  glCullFace(GL_BACK);
+                  glCullFace(GL_FRONT);
                   glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
 
                   glBegin(GL_QUADS);
@@ -475,7 +507,6 @@ begin
          glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
          glEnable(GL_BLEND);
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
          // re-enable light's diffuse and specular, but no ambient
          glEnable(lightID);
@@ -488,7 +519,9 @@ begin
 
          Self.RenderChildren(0, Count-1, rci);
 
+         // disable light, but restore its ambient component
          glDisable(lightID);
+         glLightfv(lightID, GL_DIFFUSE, lightSource.Ambient.AsAddress);
       end;
 
       // restore OpenGL state
@@ -504,5 +537,15 @@ begin
       lights.Free;
    end;
 end;
+
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+initialization
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+
+   RegisterClasses([TGLShadowVolume]);
 
 end.
