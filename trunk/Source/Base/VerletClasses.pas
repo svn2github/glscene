@@ -493,6 +493,7 @@ type
          FHalfSides : TAffineVector;
          FSides: TAffineVector;
          FFrictionRatio: Single;
+         FDirection: TAffineVector;
          procedure SetSides(const Value: TAffineVector);
 
       public
@@ -500,6 +501,7 @@ type
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
 
+         property Direction : TAffineVector read FDirection write FDirection;
          property Location : TAffineVector read FLocation write FLocation;
          property Sides : TAffineVector read FSides write SetSides;
          property FrictionRatio : Single read FFrictionRatio write FFrictionRatio;
@@ -1423,6 +1425,9 @@ var
       p[Side]:=FHalfSides[Side]-p[Side];
   end;
 begin
+  // TODO: Direction of Cube should be used to rotate the nodes location, as it
+  // stands, the cube can only face in one direction.
+
   P := VectorSubtract(FLocation, aNode.FLocation);
 
   if (abs(p[0])>FHalfSides[0]) or (abs(p[1])>FHalfSides[1]) or (abs(p[2])>FHalfSides[2]) then
