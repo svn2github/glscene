@@ -45,11 +45,13 @@ type
 
 		protected
 			{ Protected Declarations }
-         FVx, FVy : TAffineVector;
+         FVx, FVy : TVector;
          FStaticOffset : TVector;
-         FQuad : array [0..3] of TAffineVector;
+         FQuad : array [0..3] of TVector;
+         FStaticScale : Single;
 
          procedure PrepareTexture; dynamic;
+         procedure RenderQuad(const texExtents, objPos : TVector; size : Single);
 
       public
 	      { Public Declarations }
@@ -62,11 +64,19 @@ type
                           size : Single); virtual;
          procedure EndRender(var rci : TRenderContextInfo); virtual;
 
+         procedure RenderOnce(var rci : TRenderContextInfo;
+                              const objPos, localCameraPos : TVector;
+                              size : Single);
+
          property AspectRatio : Single read FAspectRatio write FAspectRatio;
          property Builder : TGLImposterBuilder read FBuilder;
          property Texture : TGLTextureHandle read FTexture;
          property ImpostoredObject : TGLBaseSceneObject read FImpostoredObject write FImpostoredObject;
    end;
+
+   // TImposterReference
+   //
+   TImposterReference = (irCenter, irTop, irBottom);  
 
    // TGLImposterBuilder
    //
@@ -80,6 +90,7 @@ type
          FRenderPoint : TGLRenderPoint;
          FImposterOptions : TImposterOptions;
          FAlphaTreshold : Single;
+         FImposterReference : TImposterReference;
 
       protected
 			{ Protected Declarations }
@@ -87,6 +98,7 @@ type
          procedure RenderPointFreed(Sender : TObject);
          procedure SetBackColor(val : TGLColor);
          procedure SetBuildOffset(val : TGLCoordinates);
+         procedure SetImposterReference(val : TImposterReference);
 
          procedure InitializeImpostorTexture(const textureSize : TGLPoint);
 
@@ -118,6 +130,7 @@ type
          property BackColor : TGLColor read FBackColor write SetBackColor;
          property BuildOffset : TGLCoordinates read FBuildOffset write SetBuildOffset;
          property ImposterOptions : TImposterOptions read FImposterOptions write FImposterOptions default cDefaultImposterOptions;
+         property ImposterReference : TImposterReference read FImposterReference write SetImposterReference default irCenter;
          property AlphaTreshold : Single read FAlphaTreshold write FAlphaTreshold;
    end;
 
@@ -330,6 +343,10 @@ implementation
 
 uses SysUtils, OpenGL1x, GLUtils;
 
+const
+   cReferenceToPos : array [Low(TImposterReference)..High(TImposterReference)] of Single =
+                           ( 0, -1, 1 );
+
 // ----------
 // ---------- TImposter ----------
 // ----------
@@ -380,7 +397,7 @@ procedure TImposter.BeginRender(var rci : TRenderContextInfo);
 var
    mat : TMatrix;
    filter : TGLEnum;
-   fx, fy : Single;
+   fx, fy, yOffset : Single;
 begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
@@ -413,13 +430,16 @@ begin
    NormalizeVector(FVx);
    NormalizeVector(FVy);
 
-   fx:=Sqrt(FAspectRatio);
-   fy:=1/fx;
+   fx:=FStaticScale*Sqrt(FAspectRatio);
+   fy:=Sqr(FStaticScale)/fx;
+   yOffset:=cReferenceToPos[Builder.ImposterReference]*FStaticScale;
 
-   FQuad[0]:=VectorCombine(FVx, FVy,  fx,  fy);
-   FQuad[1]:=VectorCombine(FVx, FVy, -fx,  fy);
-   FQuad[2]:=VectorCombine(FVx, FVy, -fx, -fy);
-   FQuad[3]:=VectorCombine(FVx, FVy,  fx, -fy);
+   FQuad[0]:=VectorSubtract(VectorCombine(FVx, FVy,  fx,  fy+yOffset), FStaticOffset);
+   FQuad[1]:=VectorSubtract(VectorCombine(FVx, FVy, -fx,  fy+yOffset), FStaticOffset);
+   FQuad[2]:=VectorSubtract(VectorCombine(FVx, FVy, -fx, -fy+yOffset), FStaticOffset);
+   FQuad[3]:=VectorSubtract(VectorCombine(FVx, FVy,  fx, -fy+yOffset), FStaticOffset);
+
+   glBegin(GL_QUADS);
 end;
 
 // Render
@@ -427,20 +447,45 @@ end;
 procedure TImposter.Render(var rci : TRenderContextInfo;
                            const objPos, localCameraPos : TVector;
                            size : Single);
+const
+   cQuadTexExtents : TVector = (0, 0, 1, 1);
 begin
-   glBegin(GL_QUADS);
-      glTexCoord2f(1, 1);  glVertex3f(FQuad[0][0]*size+objPos[0], FQuad[0][1]*size+objPos[1], FQuad[0][2]*size+objPos[2]);
-      glTexCoord2f(0, 1);  glVertex3f(FQuad[1][0]*size+objPos[0], FQuad[1][1]*size+objPos[1], FQuad[1][2]*size+objPos[2]);
-      glTexCoord2f(0, 0);  glVertex3f(FQuad[2][0]*size+objPos[0], FQuad[2][1]*size+objPos[1], FQuad[2][2]*size+objPos[2]);
-      glTexCoord2f(1, 0);  glVertex3f(FQuad[3][0]*size+objPos[0], FQuad[3][1]*size+objPos[1], FQuad[3][2]*size+objPos[2]);
-   glEnd;
+   RenderQuad(cQuadTexExtents, objPos, size);
+end;
+
+// RenderQuad
+//
+procedure TImposter.RenderQuad(const texExtents, objPos : TVector; size : Single);
+var
+   pos : TVector;
+begin
+   VectorCombine(objPos, FQuad[0], size, pos);
+   glTexCoord2f(texExtents[2], texExtents[3]);  glVertex3fv(@pos);
+   VectorCombine(objPos, FQuad[1], size, pos);
+   glTexCoord2f(texExtents[0], texExtents[3]);  glVertex3fv(@pos);
+   VectorCombine(objPos, FQuad[2], size, pos);
+   glTexCoord2f(texExtents[0], texExtents[1]);  glVertex3fv(@pos);
+   VectorCombine(objPos, FQuad[3], size, pos);
+   glTexCoord2f(texExtents[2], texExtents[1]);  glVertex3fv(@pos);
 end;
 
 // EndRender
 //
 procedure TImposter.EndRender(var rci : TRenderContextInfo);
 begin
+   glEnd;
    glPopAttrib;
+end;
+
+// RenderOnce
+//
+procedure TImposter.RenderOnce(var rci : TRenderContextInfo;
+                               const objPos, localCameraPos : TVector;
+                               size : Single);
+begin
+   BeginRender(rci);
+   Render(rci, objPos, localCameraPos, size);
+   EndRender(rci);
 end;
 
 // ----------
@@ -590,6 +635,16 @@ end;
 procedure TGLImposterBuilder.SetBuildOffset(val : TGLCoordinates);
 begin
    FBuildOffset.Assign(val);
+end;
+
+// SetImposterReference
+//
+procedure TGLImposterBuilder.SetImposterReference(val : TImposterReference);
+begin
+   if FImposterReference<>val then begin
+      FImposterReference:=val;
+      NotifyChange(Self);
+   end;
 end;
 
 // InitializeImpostorTexture
@@ -828,9 +883,9 @@ var
    i : Integer;
    x, y : Word;
    bestCorona : TGLStaticImposterBuilderCorona;
-   tx, ty, tdx, tdy, s : Single;
+   texExtents : TVector;
+   tdx, tdy : Single;
    siBuilder : TGLStaticImposterBuilder;
-   locQuad : array [0..3] of TAffineVector;
 begin                  // inherited; exit;
    siBuilder:=TGLStaticImposterBuilder(Builder);
 
@@ -850,23 +905,13 @@ begin                  // inherited; exit;
    tdx:=siBuilder.FInvSamplesPerAxis[0];
    tdy:=siBuilder.FInvSamplesPerAxis[1];
    DivMod(i, siBuilder.SamplesPerAxis.X, y, x);
-   tx:=tdx*x;
-   ty:=tdy*y;
-   s:=Size*siBuilder.FInvSamplingRatioBias;
-
-   for i:=0 to 3 do begin
-      locQuad[i][0]:=FQuad[i][0]*s+objPos[0]-FStaticOffset[0];
-      locQuad[i][1]:=FQuad[i][1]*s+objPos[1]-FStaticOffset[1];
-      locQuad[i][2]:=FQuad[i][2]*s+objPos[2]-FStaticOffset[2];
-   end;
+   texExtents[0]:=tdx*x;
+   texExtents[1]:=tdy*y;
+   texExtents[2]:=texExtents[0]+tdx;
+   texExtents[3]:=texExtents[1]+tdy;
 
    // then render it
-   glBegin(GL_QUADS);
-      glTexCoord2f(tx+tdx, ty+tdy); glVertex3fv(@locQuad[0]);
-      glTexCoord2f(tx,     ty+tdy); glVertex3fv(@locQuad[1]);
-      glTexCoord2f(tx,     ty);     glVertex3fv(@locQuad[2]);
-      glTexCoord2f(tx+tdx, ty);     glVertex3fv(@locQuad[3]);
-   glEnd;
+   RenderQuad(texExtents, objPos, Size);
 end;
 
 // ----------
@@ -954,7 +999,7 @@ var
    cameraDirection, cameraOffset : TVector;
    xDest, xSrc, yDest, ySrc : Integer;
    corona : TGLStaticImposterBuilderCorona;
-   fx, fy : Single;
+   fx, fy, yOffset : Single;
    viewPort : TVector4i;
 begin
    Coronas.PrepareCoronaTangentLookup;
@@ -988,12 +1033,16 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
-   fx:=viewPort[2]/SampleSize;
-   fy:=viewPort[3]/SampleSize;
-   glOrtho(-radius*fx, radius*fx, -radius*fy, radius*fy, radius*0.5, radius*5);
+   fx:=radius*viewPort[2]/SampleSize;
+   fy:=radius*viewPort[3]/SampleSize;
+   yOffset:=cReferenceToPos[ImposterReference]*radius;
+   glOrtho(-fx, fx, yOffset-fy, yOffset+fy, radius*0.5, radius*5);
    xSrc:=(viewPort[2]-SampleSize) div 2;
    ySrc:=(viewPort[3]-SampleSize) div 2;
-   destImposter.FStaticOffset:=VectorScale(FBuildOffset.DirectVector, 0.5/(radius*SamplingRatioBias));
+   if ImposterReference=irCenter then
+      destImposter.FStaticScale:=radius
+   else destImposter.FStaticScale:=radius*0.5;
+   destImposter.FStaticOffset:=FBuildOffset.DirectVector;
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
@@ -1021,16 +1070,17 @@ begin
          gluLookAt(cameraOffset[0], cameraOffset[1], cameraOffset[2], 0, 0, 0, 0, 1, 0);
          if Lighting=siblStaticLighting then
             (rci.scene as TGLScene).SetupLights(maxLight);
+         if ImposterReference<>irCenter then
+            glScalef(2, 2, 2);
          glTranslatef(FBuildOffset.X, FBuildOffset.Y, FBuildOffset.Z);
          impostoredObject.Render(rci);
 
          xDest:=(curSample mod FSamplesPerAxis.X)*SampleSize;
          yDest:=(curSample div FSamplesPerAxis.X)*SampleSize;
 
-         glBindTexture(GL_TEXTURE_2D, destImposter.Texture.Handle);
+         rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, destImposter.Texture.Handle);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
                              SampleSize, SampleSize);
-         rci.GLStates.ResetGLCurrentTexture;
 
          Inc(curSample);
       end;
