@@ -20,8 +20,6 @@ const
   cOctree_MAX_TREE_DEPTH = 8;
   cOctree_GROW_GRAVY = 0.1;
 
-{define cDEBUG}
-
 type
   TBaseSpacePartition = class;
 
@@ -130,9 +128,6 @@ type
     {: Remove a leaf}
     procedure RemoveLeaf(aLeaf : TSpacePartitionLeaf); override;
 
-    constructor Create; override;
-    destructor Destroy; override;
-
     // ** Query space partition
     {: Query space for Leaves that intersect the axis aligned bounding box,
     result is returned through QueryResult. This override scans _all_ leaves
@@ -143,6 +138,8 @@ type
     in the list, so it's far from optimal.}
     function QueryBSphere(const aBSphere : TBSphere) : integer; override;
 
+    constructor Create; override;
+    destructor Destroy; override;
   published
     property Leaves : TSpacePartitionLeafList read FLeaves;
   end;
@@ -721,10 +718,6 @@ begin
 
     FNoChildren := false;
   end;
-  {$ifdef cDEBUG}
-    if FRecursiveLeafCount <> CalcRecursiveLeafCount then
-      Assert(FRecursiveLeafCount = CalcRecursiveLeafCount, Format('%d <> %d!',[FRecursiveLeafCount, CalcRecursiveLeafCount]));
-  {$endif}
 end;
 
 procedure TSPOctreeNode.DeleteChildren;
@@ -896,11 +889,6 @@ begin
     else
       Assert(False, 'Node is outside Octree!');
   end;
-
-  {$ifdef cDEBUG}
-    if FRootNode.VerifyRecursiveLeafCount<>'' then
-      Assert(false, FRootNode.VerifyRecursiveLeafCount);
-  {$endif}
 end;
 
 constructor TOctreeSpacePartition.Create(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
@@ -957,11 +945,6 @@ begin
 
   Assert(Node<>nil);
 
-  {$ifdef cDEBUG}
-    if FRootNode.VerifyRecursiveLeafCount<>'' then
-      Assert(false, FRootNode.VerifyRecursiveLeafCount);
-  {$endif}
-
   if Node.AABBFitsInNode(aLeaf.FCachedAABB) then
   begin
     // If the node has children, try to add the leaf to them - otherwise just
@@ -985,10 +968,6 @@ begin
     end else
       FRootNode.AddLeaf(aLeaf);
   end;
-  {$ifdef cDEBUG}
-    if FRootNode.VerifyRecursiveLeafCount<>'' then
-      Assert(false, FRootNode.VerifyRecursiveLeafCount);
-  {$endif}
 end;
 
 function TOctreeSpacePartition.QueryAABB(const aAABB: TAABB): integer;

@@ -16,7 +16,7 @@
       <li>04/09/03 - EG - New AABB functions
       <li>17/08/01 - EG - Removed "math" dependency
       <li>09/07/01 - EG - Added AABB types and functions
-	   <li>31/03/01 - EG - Original Unit by Jacques Tur
+	    <li>31/03/01 - EG - Original Unit by Jacques Tur
 	</ul></font>
 }
 unit GeometryBB;
