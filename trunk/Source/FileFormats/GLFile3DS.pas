@@ -6,6 +6,7 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>09/12/04 - LR - Add Integer cast line 94 for Linux
       <li>25/10/04 - SG - Added lightmap (3DS IllumMap) support
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
@@ -91,7 +92,7 @@ var
                   specColor:=VectorMake(material.Specular.R, material.Specular.G, material.Specular.B, 1);
                   ScaleVector(specColor, 1 - material.Shininess);
                   Specular.Color:=specColor;
-                  Shininess:=MaxInteger(0, Round((1 - material.ShinStrength) * 128));
+                  Shininess:=MaxInteger(0, Integer(Round((1 - material.ShinStrength) * 128)));
                end;
                if Trim(material.Texture.Map.NameStr)<>'' then begin
                   try
