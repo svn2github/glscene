@@ -112,7 +112,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, XOpenGL, SysUtils;
+uses{>>GpProfile U} GpProf, {GpProfile U>>} OpenGL1x, XOpenGL, SysUtils;
 
 type
 
@@ -157,6 +157,8 @@ end;
 function Split(tri : PROAMTriangleNode) : Boolean;
 var
    buf : PROAMTriangleNode;
+   n : Integer;
+   t : PROAMTriangleNode;
 begin
    with tri^ do if not Assigned(leftChild) then begin
    	// If this triangle is not in a proper diamond, force split our base neighbor
@@ -164,20 +166,24 @@ begin
          Split(base);
 
 	   // Create children and cross-link them
-      if vNbTris<vTriangleNodesCapacity then begin
-         leftChild:=@vTriangleNodes[vNbTris];
-         rightChild:=PROAMTriangleNode(Integer(leftChild)+SizeOf(TROAMTriangleNode));
+      n:=vNbTris;
+      if n<vTriangleNodesCapacity then begin
+         t:=@vTriangleNodes[n];
+         leftChild:=t;
+         Inc(t);
+         rightChild:=t;
+         with rightChild^ do begin
+            base:=tri.right;
+            leftChild:=nil;
+            t:=tri.leftChild;
+            rightChild:=t;
+            right:=t;
+         end;
          with leftChild^ do begin
             base:=tri.left;
             leftChild:=nil;
             rightChild:=tri.leftChild;
             left:=tri.rightChild;
-         end;
-         with rightChild^ do begin
-            base:=tri.right;
-            leftChild:=nil;
-            rightChild:=tri.leftChild;
-            right:=tri.leftChild;
          end;
          Inc(vNbTris, 2);
       end else begin
@@ -187,29 +193,39 @@ begin
 
 	   // Link our Left Neighbor to the new children
 	   if Assigned(left) then begin
+         t:=leftChild;
          if left.base=tri then
-            left.base:=leftChild
+            left.base:=t
          else if left.left=tri then
-            left.left:=leftChild
-         else left.right:=leftChild
+            left.left:=t
+         else left.right:=t;
       end;
 
 	   // Link our Right Neighbor to the new children
 	   if Assigned(right) then begin
+         t:=rightChild;
          if right.base=tri then
-            right.base:=rightChild
+            right.base:=t
          else if right.left=tri then
-            right.left:=rightChild
-         else right.right:=rightChild
+            right.left:=t
+         else right.right:=t;
       end;
 
       // Link our Base Neighbor to the new children
       if Assigned(base) then begin
          if Assigned(base.leftChild) then begin
-            base.leftChild.right:=rightChild;
-            rightChild.left:=base.leftChild;
-            base.rightChild.left:=leftChild;
-            leftChild.right:=base.rightChild;
+            // base.leftChild.right:=rightChild
+            // rightChild.left:=base.leftChild
+            t:=base.leftChild;
+            buf:=rightChild;
+            t.right:=buf;
+            buf.left:=t;
+            // base.rightChild.left:=leftChild
+            // leftChild.right:=base.rightChild
+            t:=base.rightChild;
+            buf:=leftChild;
+            t.left:=buf;
+            buf.right:=t;
          end else Split(base);
       end else begin
 		   // An edge triangle, trivial case.
@@ -228,32 +244,32 @@ end;
 // Create
 //
 constructor TGLROAMPatch.Create;
-begin
+begin{>>GpProfile} ProfilerEnterProc(1); try {GpProfile>>}
 	inherited Create;
    FListHandle:=TGLListHandle.Create;
-end;
+{>>GpProfile} finally ProfilerExitProc(1); end; {GpProfile>>}end;
 
 // Destroy
 //
 destructor TGLROAMPatch.Destroy;
-begin
+begin{>>GpProfile} ProfilerEnterProc(2); try {GpProfile>>}
    FListHandle.Free;
 	inherited Destroy;
-end;
+{>>GpProfile} finally ProfilerExitProc(2); end; {GpProfile>>}end;
 
 // SetHeightData
 //
 procedure TGLROAMPatch.SetHeightData(val : THeightData);
-begin
+begin{>>GpProfile} ProfilerEnterProc(3); try {GpProfile>>}
    FHeightData:=val;
    FPatchSize:=FHeightData.Size-1;
    FHeightRaster:=val.SmallIntRaster;
-end;
+{>>GpProfile} finally ProfilerExitProc(3); end; {GpProfile>>}end;
 
 // ConnectToTheWest
 //
 procedure TGLROAMPatch.ConnectToTheWest(westPatch : TGLROAMPatch);
-begin
+begin{>>GpProfile} ProfilerEnterProc(4); try {GpProfile>>}
    if Assigned(westPatch) then begin
       if not (westPatch.HighRes or HighRes) then begin
          FTLNode.left:=westPatch.FBRNode;
@@ -262,12 +278,12 @@ begin
       FWest:=westPatch;
       westPatch.FEast:=Self;
    end;
-end;
+{>>GpProfile} finally ProfilerExitProc(4); end; {GpProfile>>}end;
 
 // ConnectToTheNorth
 //
 procedure TGLROAMPatch.ConnectToTheNorth(northPatch : TGLROAMPatch);
-begin
+begin{>>GpProfile} ProfilerEnterProc(5); try {GpProfile>>}
    if Assigned(northPatch) then begin
       if not (northPatch.HighRes or HighRes) then begin
          FTLNode.right:=northPatch.FBRNode;
@@ -276,7 +292,7 @@ begin
       FNorth:=northPatch;
       northPatch.FSouth:=Self;
    end;
-end;
+{>>GpProfile} finally ProfilerExitProc(5); end; {GpProfile>>}end;
 
 // ComputeVariance
 //
@@ -289,11 +305,11 @@ var
    invVariance : Single;
 
    function ROAMVariancePoint(anX, anY : Integer) : TROAMVariancePoint;
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(6); try {GpProfile>>}
       Result.X:=anX;
       Result.Y:=anY;
       Result.Z:=(Integer(FHeightRaster[anY][anX]) shl 8);
-   end;
+   {>>GpProfile} finally ProfilerExitProc(6); end; {GpProfile>>}end;
 
    function RecursComputeVariance(const left, right, apex : TROAMVariancePoint;
                                   node : Integer) : Cardinal;
@@ -301,7 +317,7 @@ var
       half : TROAMVariancePoint;
       v : Cardinal;
       n2 : Integer;
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(7); try {GpProfile>>}
       with half do begin
          X:=(left.X+right.X) shr 1;
          Y:=(left.Y+right.Y) shr 1;
@@ -317,12 +333,12 @@ var
          if v>Result then Result:=v;
       end;
       currentVariance[node]:=Result;
-   end;
+   {>>GpProfile} finally ProfilerExitProc(7); end; {GpProfile>>}end;
 
    procedure ScaleVariance(n, d : Integer);
    var
       newVal : Integer;
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(8); try {GpProfile>>}
       if d>=0 then
          newVal:=(currentVariance[n] shl (d shr 1))
       else newVal:=(currentVariance[n] shr (-d shr 1));
@@ -336,11 +352,11 @@ var
          ScaleVariance(n,   d);
          ScaleVariance(n+1, d);
       end;
-   end;
+   {>>GpProfile} finally ProfilerExitProc(8); end; {GpProfile>>}end;
 
 var
    s, p : Integer;
-begin
+begin{>>GpProfile} ProfilerEnterProc(9); try {GpProfile>>}
    invVariance:=1/variance;
    s:=Sqr(FPatchSize);
    raster:=FHeightRaster;
@@ -369,12 +385,12 @@ begin
    ScaleVariance(1, p);
    FMaxBRVarianceDepth:=maxNonNullIndex+1;
    SetLength(FBRVariance, FMaxBRVarianceDepth);
-end;
+{>>GpProfile} finally ProfilerExitProc(9); end; {GpProfile>>}end;
 
 // ResetTessellation
 //
 procedure TGLROAMPatch.ResetTessellation;
-begin
+begin{>>GpProfile} ProfilerEnterProc(10); try {GpProfile>>}
    FTLNode:=AllocTriangleNode;
    FBRNode:=AllocTriangleNode;
    FTLNode.base:=FBRNode;
@@ -387,7 +403,7 @@ begin
    FSouth:=nil;
    FWest:=nil;
    FEast:=nil;
-end;
+{>>GpProfile} finally ProfilerExitProc(10); end; {GpProfile>>}end;
 
 // Tesselate
 //
@@ -400,7 +416,7 @@ var
 
 procedure RecursTessellate(tri : PROAMTriangleNode;
                            n : Cardinal;
-                           const left, right, apex : Cardinal);
+                           const left, right, apex : Cardinal); register;
 var
    d : Integer;
 begin
@@ -423,33 +439,33 @@ procedure TGLROAMPatch.Tesselate;
       f : Single;
    const
       c1Div100 : Single = 0.01;
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(11); try {GpProfile>>}
       f:=Sqr(x-tessObserverPosX)+Sqr(y-tessObserverPosY)+tessFrameVarianceDelta;
       Result:=Round(Sqrt(f)+f*c1Div100);
-   end;
+   {>>GpProfile} finally ProfilerExitProc(11); end; {GpProfile>>}end;
 
    procedure FullBaseTess(tri : PROAMTriangleNode; n : Cardinal); forward;
 
    procedure FullLeftTess(tri : PROAMTriangleNode; n : Cardinal);
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(12); try {GpProfile>>}
       if Split(tri) then begin
          n:=n shl 1;
          if n<tessMaxDepth then
             FullBaseTess(tri.leftChild, n);
       end;
-   end;
+   {>>GpProfile} finally ProfilerExitProc(12); end; {GpProfile>>}end;
 
    procedure FullRightTess(tri : PROAMTriangleNode; n : Cardinal);
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(13); try {GpProfile>>}
       if Split(tri) then begin
          n:=n shl 1;
          if n<tessMaxDepth then
             FullBaseTess(tri.rightChild, n);
       end;
-   end;
+   {>>GpProfile} finally ProfilerExitProc(13); end; {GpProfile>>}end;
 
    procedure FullBaseTess(tri : PROAMTriangleNode; n : Cardinal);
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(14); try {GpProfile>>}
       if Split(tri) then begin
          n:=n shl 1;
          if n<tessMaxDepth then begin
@@ -457,11 +473,11 @@ procedure TGLROAMPatch.Tesselate;
             FullLeftTess(tri.rightChild, n);
          end;
       end;
-   end;
+   {>>GpProfile} finally ProfilerExitProc(14); end; {GpProfile>>}end;
 
 var
    s : Integer;
-begin
+begin{>>GpProfile} ProfilerEnterProc(15); try {GpProfile>>}
    if HighRes then Exit;
 
    tessMaxDepth:=FMaxDepth;
@@ -486,14 +502,14 @@ begin
    tessCurrentVariance:=@FBRVariance[0];
    tessMaxVariance:=FMaxBRVarianceDepth;
    RecursTessellate(FBRNode, 1, VertexDist(s, 0), VertexDist(0, s), VertexDist(s, s));
-end;
+{>>GpProfile} finally ProfilerExitProc(15); end; {GpProfile>>}end;
 
 // Render
 //
 procedure TGLROAMPatch.Render(vertices : TAffineVectorList;
                               vertexIndices : TIntegerList;
                               texCoords : TTexPointList);
-begin
+begin{>>GpProfile} ProfilerEnterProc(16); try {GpProfile>>}
    if FNoDetails then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
       glDisable(GL_TEXTURE_2D);
@@ -536,7 +552,7 @@ begin
       glEnable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
-end;
+{>>GpProfile} finally ProfilerExitProc(16); end; {GpProfile>>}end;
 
 // RenderROAM
 //
@@ -563,9 +579,9 @@ begin
       RecursRender(tri.rightChild, right, apex, half);
    end else begin
       localIndices:=renderIndices;
-      localIndices[0]:=left.idx;
-      localIndices[1]:=apex.idx;
-      localIndices[2]:=right.idx;
+      localIndices[0]:=left.Idx;
+      localIndices[1]:=apex.Idx;
+      localIndices[2]:=right.Idx;
       renderIndices:=PIntegerArray(Integer(localIndices)+3*SizeOf(Integer));
    end;
 end;
@@ -575,16 +591,16 @@ procedure TGLROAMPatch.RenderROAM(vertices : TAffineVectorList;
                                   texCoords : TTexPointList);
 
    procedure ROAMRenderPoint(var p : TROAMRenderPoint; anX, anY : Integer);
-   begin
+   begin{>>GpProfile} ProfilerEnterProc(17); try {GpProfile>>}
       p.X:=anX;
       p.Y:=anY;
       p.Idx:=vertices.Add(anX, anY, renderRaster[anY][anX]);
       texCoords.Add(anX, anY);
-   end;
+   {>>GpProfile} finally ProfilerExitProc(17); end; {GpProfile>>}end;
 
 var
    rtl, rtr, rbl, rbr : TROAMRenderPoint;
-begin
+begin{>>GpProfile} ProfilerEnterProc(18); try {GpProfile>>}
    vertices.Count:=0;
    texCoords.Count:=0;
    renderVertices:=vertices;
@@ -605,7 +621,7 @@ begin
    RecursRender(FBRNode, rtr, rbl, rbr);
 
    vertexIndices.Count:=(Integer(renderIndices)-Integer(vertexIndices.List)) div SizeOf(Integer);
-end;
+{>>GpProfile} finally ProfilerExitProc(18); end; {GpProfile>>}end;
 
 // RenderAsStrips
 //
@@ -622,7 +638,7 @@ var
    verticesList : PAffineVector;
    texCoordsList : PTexPoint;
    indicesList : PInteger;
-begin
+begin{>>GpProfile} ProfilerEnterProc(19); try {GpProfile>>}
    raster:=FHeightData.SmallIntRaster;
    rowLength:=FPatchSize+1;
    // prepare vertex data
@@ -673,7 +689,7 @@ begin
       Inc(y, 2);
    end;
    vertexIndices.Count:=vertexIndices.Count-1;
-end;
+{>>GpProfile} finally ProfilerExitProc(19); end; {GpProfile>>}end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
