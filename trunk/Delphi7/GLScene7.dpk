@@ -165,6 +165,6 @@ contains
   GLFileNurbs in '..\Source\FileFormats\GLFileNurbs.pas',
   VerletClasses in '..\Source\Base\VerletClasses.pas',
   SpatialPartitioning in '..\Source\Base\SpatialPartitioning.pas',
-  GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas';
-
+  GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas',
+  GLVerletClothify in '..\Source\GLVerletClothify.pas';
 end.
