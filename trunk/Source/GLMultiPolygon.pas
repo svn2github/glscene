@@ -3,6 +3,7 @@
    Object with support for complex polygons.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>28/12/01 - Egg - Added registration (Philipp Pammler)
       <li>19/12/01 - Egg - Removed dependency to contnrs (D4 compatibility,
                            TObjectList replaced with TPersistentObjectList)
       <li>29/03/01 - Uwe - Fixes and improvements to TMultiPolygon
@@ -756,6 +757,16 @@ begin
    if (GetOwner<>nil) then
       (GetOwner as TGLContour).Changed(False);
 end;
+
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+initialization
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+
+   RegisterClass(TMultiPolygon);
 
 end.
 

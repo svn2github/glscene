@@ -2,6 +2,7 @@
 {: GLScene objects that get rendered in 2D coordinates<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/12/01 - EG - PolygonMode properly adjusted for HUDText
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
       <li>20/06/01 - EG - Default hud sprite size is now 16x16
       <li>21/02/01 - EG - Now XOpenGL based (multitexture)
@@ -249,6 +250,7 @@ procedure THUDText.DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean);
 begin
    if (not Assigned(FBitmapFont)) or (Text='') then Exit;
+   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    // Prepare matrices
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;

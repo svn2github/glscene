@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
 	   <li>12/12/01 - EG - Creation (split from GLScene.pas)
 	</ul></font>
 }
@@ -88,15 +89,15 @@ type
 
          {: Triggered before the scene's objects get rendered.<p>
             You may use this event to execute your own OpenGL rendering. }
-         property BeforeRender : TNotifyEvent read FBeforeRender write FBeforeRender stored False;
+         property BeforeRender : TNotifyEvent read FBeforeRender write FBeforeRender;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering.<p> }
-         property PostRender : TNotifyEvent read GetPostRender write SetPostRender stored False;
+         property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
          {: Called after rendering.<p>
             You cannot issue OpenGL calls in this event, if you want to do your own
             OpenGL stuff, use the PostRender event. }
-         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender stored False;
+         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
 
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;

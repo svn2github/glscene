@@ -3,11 +3,23 @@
 //                  by Brad Stowers: bstowers@pobox.com
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 //
+// 28/12/01 - EG - Added GLS_Graphics32_SUPPORT
 // 27/07/01 - EG - Renamed and made GLScene-specific
 // 26/06/01 - EG - Added Delphi6 stuff
 //
 
 {$DEFINE GLSCENE}
+
+//
+// Additionnal support & dependencies
+//
+
+// Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
+{.$DEFINE GLS_Graphics32_SUPPORT}
+
+//
+// Platform Detection
+//
 
 {$IFDEF WIN32}
   {$DEFINE GLS_WIN32}

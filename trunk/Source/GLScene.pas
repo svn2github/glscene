@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/12/01 - Egg - Event persistence change (GliGli / Dephi bug),
+                           LoadFromStream fix (noeska)
       <li>16/12/01 - Egg - Cube maps support (textures and dynamic rendering)
       <li>15/12/01 - Egg - Added support for AlphaBits
       <li>12/12/01 - Egg - Introduced TGLNonVisualViewer,
@@ -1496,15 +1498,15 @@ type
 
          {: Triggered before the scene's objects get rendered.<p>
             You may use this event to execute your own OpenGL rendering. }
-         property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender;
+         property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender stored False;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering.<p> }
-         property PostRender: TNotifyEvent read FPostRender write FPostRender;
+         property PostRender: TNotifyEvent read FPostRender write FPostRender stored False;
          {: Called after rendering.<p>
             You cannot issue OpenGL calls in this event, if you want to do your own
             OpenGL stuff, use the PostRender event. }
-         property AfterRender: TNotifyEvent read FAfterRender write FAfterRender;
+         property AfterRender: TNotifyEvent read FAfterRender write FAfterRender stored False;
    end;
 
    // TGLNonVisualViewer
@@ -1574,15 +1576,15 @@ type
 
          {: Triggered before the scene's objects get rendered.<p>
             You may use this event to execute your own OpenGL rendering. }
-         property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender stored False;
+         property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering.<p> }
-         property PostRender : TNotifyEvent read GetPostRender write SetPostRender stored False;
+         property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
          {: Called after rendering.<p>
             You cannot issue OpenGL calls in this event, if you want to do your own
             OpenGL stuff, use the PostRender event. }
-         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender stored False;
+         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
 
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
@@ -4835,8 +4837,9 @@ var
 begin
    Fixups := TStringList.Create;
    try
-      for i:=0 to FBuffers.Count-1 do begin
-         Fixups.AddObject(TGLSceneBuffer(FBuffers[i]).Camera.Name, FBuffers[i]);
+      if Assigned(FBuffers) then begin
+         for i:=0 to FBuffers.Count-1 do
+            Fixups.AddObject(TGLSceneBuffer(FBuffers[i]).Camera.Name, FBuffers[i]);
       end;
       ShutdownAllLights;
       Cameras.DeleteChildren; // will remove Viewer from FBuffers

@@ -2,7 +2,12 @@
 
 	Fonction utilitaires graphiques<p>
 
+   Nota: TGLBitmap32 has support for Alex Denissov's Graphics32 library
+   (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
+   is active in GLScene.inc and recompile.<p>
+
 	<b>Historique : </b><font size=-1><ul>
+      <li>28/12/01 - EG - Graphics32 support added
       <li>15/12/01 - EG - Texture target support
       <li>14/09/01 - EG - Use of vFileStreamClass
       <li>31/08/01 - EG - 24bits Bitmaps are now made opaque by default
@@ -20,7 +25,13 @@ unit GLGraphics;
 
 interface
 
-uses Classes, Graphics, GLMisc, OpenGL12, GLCrossPlatform;
+{$i GLScene.inc}
+
+uses Classes, Graphics,
+{$ifdef GLS_Graphics32_SUPPORT}
+   G32,
+{$endif}
+   GLMisc, OpenGL12, GLCrossPlatform;
 
 type
 
@@ -67,6 +78,9 @@ type
          function GetScanLine(index : Integer) : PGLPixel32Array;
          procedure AssignFrom24BitsBitmap(aBitmap : TBitmap);
          procedure AssignFrom32BitsBitmap(aBitmap : TBitmap);
+{$ifdef GLS_Graphics32_SUPPORT}
+         procedure AssignFromBitmap32(aBitmap32 : TBitmap32);
+{$endif}
 
 	   public
 	      { Public Declarations }
@@ -224,6 +238,10 @@ begin
             bmp.Free;
          end;
       end;
+{$ifdef GLS_Graphics32_SUPPORT}
+   end else if Source is TBitmap32 then begin
+      AssignFromBitmap32(TBitmap32(Source));
+{$endif}
    end else inherited;
 end;
 
@@ -282,6 +300,35 @@ begin
       Dec(pDest, Width*4);
    end;
 end;
+
+{$ifdef GLS_Graphics32_SUPPORT}
+// AssignFromBitmap32
+//
+procedure TGLBitmap32.AssignFromBitmap32(aBitmap32 : TBitmap32);
+var
+   y, x : Integer;
+   pSrc, pDest : PChar;
+begin
+   Assert((aBitmap32.Width and 3)=0);
+   FWidth:=aBitmap32.Width;
+   FHeight:=aBitmap32.Height;
+   FDataSize:=FWidth*FHeight*4;
+   ReallocMem(FData, FDataSize);
+   pDest:=@PChar(FData)[Width*4*(Height-1)];
+   for y:=0 to Height-1 do begin
+      if VerticalReverseOnAssignFromBitmap then
+         pSrc:=PChar(aBitmap32.ScanLine[Height-1-y])
+      else pSrc:=PChar(aBitmap32.ScanLine[y]);
+      for x:=0 to Width-1 do begin
+         pDest[x*4+0]:=pSrc[x*4+2];
+         pDest[x*4+1]:=pSrc[x*4+1];
+         pDest[x*4+2]:=pSrc[x*4+0];
+         pDest[x*4+3]:=pSrc[x*4+3];
+      end;
+      Dec(pDest, Width*4);
+   end;
+end;
+{$endif}
 
 // Create32BitsBitmap
 //
