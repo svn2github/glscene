@@ -1566,7 +1566,7 @@ end;
 function TGLPlane.PointDistance(const aPoint : TVector) : Single;
 begin
    Result:=VectorDotProduct(VectorSubtract(aPoint, AbsolutePosition),
-                            Up.AsAffineVector);
+                            AbsoluteDirection);
 end;
 
 // SetHeight
