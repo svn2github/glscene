@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/10/02 - EG - Added ParseInteger
       <li>03/07/02 - EG - Added TGLNodes.Normal
       <li>17/03/02 - EG - Added First/Last to TGLNodes
       <li>24/01/02 - EG - Added vUseDefaultSets mechanism
@@ -456,6 +457,10 @@ function ReadCRLFString(aStream : TStream) : String;
 procedure WriteCRLFString(aStream : TStream; const aString : String);
 //: StrToFloatDef
 function StrToFloatDef(strValue : String; defValue : Extended = 0) : Extended;
+{: Parses the next integer in the string.<p>
+   Initial non-numeric characters are skipper, p is altered, returns 0 if none
+   found. '+' and '-' are acknowledged. }
+function ParseInteger(var p : PChar) : Integer;
 
 {: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array : PSqrt255Array;
@@ -1014,6 +1019,33 @@ begin
    if divider>0 then Result:=Result*Exp(-divider*Ln(10));
    if (strValue[1]='-') then Result:=-Result;
 end;
+
+// ParseInteger
+//
+function ParseInteger(var p : PChar) : Integer;
+var
+   neg : Boolean;
+begin
+   Result:=0;
+   if p=nil then Exit;
+   neg:=False;
+   // skip non-numerics
+   while not (p^ in [#0, '0'..'9', '+', '-']) do Inc(p);
+   if (p^='+') then
+      Inc(p)
+   else if (p^='-') then begin
+      neg:=True;
+      Inc(p);
+   end;
+   // Parse numerics
+   while p^ in ['0'..'9'] do begin
+      Result:=Result*10+Integer(p^)-Integer('0');
+      Inc(p);
+   end;
+   if neg then
+      Result:=-Result;
+end;
+
 
 // ------------------
 // ------------------ TGLCoordinates ------------------
