@@ -1714,6 +1714,8 @@ type
          FViewerBeforeRender : TNotifyEvent;
          FPostRender   : TNotifyEvent;
          FAfterRender  : TNotifyEvent;
+         FInitiateRendering : TDirectRenderEvent;
+         FWrapUpRendering : TDirectRenderEvent;
 
       protected
          { Protected Declarations }
@@ -2022,6 +2024,15 @@ type
             You may use this event to execute your own OpenGL rendering
             (usually background stuff). }
          property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender stored False;
+         {: Triggered after BeforeRender, before rendering objects.<p>
+            This one is fired after the rci has been initialized and can be used
+            to alter it or perform early renderings that require an rci,
+            the Sender is the buffer. }
+         property InitiateRendering : TDirectRenderEvent read FInitiateRendering write FInitiateRendering stored False;
+         {: Triggered after rendering all scene objects, before PostRender.<p>
+            This is the last point after which the rci becomes unavailable,
+            the Sender is the buffer. }
+         property WrapUpRendering : TDirectRenderEvent read FWrapUpRendering write FWrapUpRendering stored False;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering (usually for HUD, 2D overlays
@@ -2170,8 +2181,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses
-   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO, GLUtils;
+uses GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO, GLUtils;
 
 var
    vCounterFrequency : Int64;
@@ -6049,6 +6059,7 @@ begin
    FCurrentBuffer:=aBuffer;
    FillChar(rci, SizeOf(rci), 0);
    rci.scene:=Self;
+   rci.buffer:=aBuffer;
    rci.objectsSorting:=FObjectsSorting;
    rci.visibilityCulling:=FVisibilityCulling;
    rci.bufferFaceCull:=aBuffer.FaceCulling;
@@ -6083,6 +6094,8 @@ begin
    if rci.ignoreMaterials then
       glColorMask(False, False, False, False)
    else glColorMask(True, True, True, True);
+   if Assigned(aBuffer.FInitiateRendering) then
+      aBuffer.FInitiateRendering(aBuffer, rci);
    if baseObject=nil then
       FObjects.Render(rci)
    else baseObject.Render(rci);
@@ -6090,6 +6103,8 @@ begin
    with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
          TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
+   if Assigned(aBuffer.FWrapUpRendering) then
+      aBuffer.FWrapUpRendering(aBuffer, rci);
    with rci.GLStates do begin
       UnSetGLState(stBlend);
       UnSetGLState(stTexture2D);
