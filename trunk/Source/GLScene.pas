@@ -1671,7 +1671,7 @@ implementation
 
 uses
    Consts, Dialogs, ExtDlgs, Forms, GLStrings, Info, VectorLists, XOpenGL,
-   VectorTypes, OpenGL12;
+   VectorTypes, OpenGL12, GLCrossPlatform;
 
 const
    GLAllStates = [stAlphaTest..stStencilTest];
@@ -6214,7 +6214,6 @@ begin
       try
          SetGLCurrentTexture(0, aTexture.Handle);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc, width, height);
-         glFinish;
          CheckOpenGLError;
       finally
          Buffer.RenderingContext.Deactivate;

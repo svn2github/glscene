@@ -16,7 +16,7 @@ interface
 {$include GLScene.inc}
 
 {$ifdef WIN32}
-uses Windows, Graphics, Dialogs, SysUtils;
+uses Windows, Graphics, Dialogs, SysUtils, GLWin32Context;
 {$endif}
 {$ifdef LINUX}
 
