@@ -2,6 +2,7 @@
 {: Silhouette classes for GLBaseMesh and FaceGroups.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/02/04 - MF - Fixed bug where vertices weren't freed when owned
       <li>24/06/03 - MF - Created file from parts of GLShilouette
    </ul></font>
 }
