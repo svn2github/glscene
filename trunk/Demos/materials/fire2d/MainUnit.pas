@@ -102,6 +102,12 @@ uses OpenGL12;
 
 { TForm1 }
 
+{$i GLScene.inc}
+
+{$ifndef GLS_Graphics32_SUPPORT}
+   Please rebuild this demo with Graphics32 support (see GLScene.inc)
+{$endif}
+
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
    // Update and animate the 2D Fire, this part is Graphics32 stuff only
