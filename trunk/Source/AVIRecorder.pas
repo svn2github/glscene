@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/12/01 - EG - Minor changes for compatibility with JEDI VfW.pas
       <li<02/03/01 - EG - Added TAVIImageRetrievalMode
       <li>24/02/01 - Creation and initial code by Nelson Chu
 	</ul></font>
@@ -33,10 +34,10 @@ type
 
        AVI_DPI : integer;
 
-       pfile : PAVIFile;
-       asi   : TAVIStreamInfo;
+       pfile : IAVIFile;
+       asi   : TAVIStreamInfoA;
 
-       ps, ps_c : PAVIStream; // AVI stream and stream to be compressed
+       ps, ps_c : IAVIStream; // AVI stream and stream to be compressed
 
        BitmapInfo : PBitmapInfoHeader;
        BitmapBits : Pointer;
@@ -338,7 +339,7 @@ begin
       rcFrame.Bottom := BitmapInfo^.biHeight;
     end;
 
-    if AVIFileCreateStream(pfile, ps, @asi)<>AVIERR_OK then
+    if AVIFileCreateStream(pfile, ps, asi)<>AVIERR_OK then
        raise Exception.Create('Cannot create AVI stream.');
 
     with AVIBitmap do

@@ -1,302 +1,402 @@
-{: Video For Windows SDK import unit.<p>
-
-   Delphi translation by Ronald Dittrich (http://www.swiftsoft.de/).<p>
-
-   01/03/01 - EG - Minor Delphi 5 compatibility changes.
-}
 unit VFW;
 
 interface
 
+{$UNDEF UNICODE}
+
+(****************************************************************************
+ *
+ *      VfW.H - Video for windows include file for WIN32
+ *
+ *      Copyright (c) 1991-1999, Microsoft Corp.  All rights reserved.
+ *
+ *      This include files defines interfaces to the following
+ *      video components
+ *
+ *          COMPMAN         - Installable Compression Manager.
+ *          DRAWDIB         - Routines for drawing to the display.
+ *          VIDEO           - Video Capture Driver Interface
+ *
+ *          AVIFMT          - AVI File Format structure definitions.
+ *          MMREG           - FOURCC and other things
+ *
+ *          AVIFile         - Interface for reading AVI Files and AVI Streams
+ *          MCIWND          - MCI/AVI window class
+ *          AVICAP          - AVI Capture Window class
+ *
+ *          MSACM           - Audio compression manager.
+ *
+ *      The following symbols control inclusion of various parts of this file:
+ *
+ *          NOCOMPMAN       - dont include COMPMAN
+ *          NODRAWDIB       - dont include DRAWDIB
+ *          NOVIDEO         - dont include video capture interface
+ *
+ *          NOAVIFMT        - dont include AVI file format structs
+ *          NOMMREG         - dont include MMREG
+ *
+ *          NOAVIFILE       - dont include AVIFile interface
+ *          NOMCIWND        - dont include AVIWnd class.
+ *          NOAVICAP        - dont include AVICap class.
+ *
+ *          NOMSACM         - dont include ACM stuff.
+ *
+ ****************************************************************************)
+
+(******************************************************************************)
+(*                                                                            *)
+(*  VFW.PAS Conversion by Ronald Dittrich                                     *)
+(*                                                                            *)
+(*  E-Mail: info@swiftsoft.de                                                 *)
+(*  http://www.swiftsoft.de                                                   *)
+(*                                                                            *)
+(******************************************************************************)
+
+(******************************************************************************)
+(*                                                                            *)
+(*  Modyfied: 25.April.2000                                                   *)
+(*                                                                            *)
+(*  E-Mail:                                                                   *)
+(*  Ivo Steinmann: isteinmann@bluewin.ch                                      *)
+(*                                                                            *)
+(*  Please send all messages regarding specific errors and lacks of this unit *)
+(*  to Ivo Steinmann                                                          *)
+(*                                                                            *)
+(******************************************************************************)
+
+(******************************************************************************)
+(*                                                                            *)
+(*  Modyfied: 2000-12-07                                                      *)
+(*                                                                            *)
+(*  E-Mail:                                                                   *)
+(*  Peter Haas: PeterJHaas@t-online.de                                        *)
+(*                                                                            *)
+(*  Only modified line 1380  ( TAVIPALCHANGE.peNew )                          *)
+(*                                                                            *)
+(******************************************************************************)
+
 uses
     Windows,
-    ActiveX,
     MMSystem,
     Messages,
-    CommDlg;
+    CommDlg,
+    ActiveX,
+    Dialogs;
 
-{== General ==================================================================}
+(****************************************************************************
+ *
+ *  types
+ *
+ ***************************************************************************)
 
 type
-    PDWORD  = ^DWORD;
-    PLONG   = PDWORD;
-    UDWORD  = DWORD;
-    PVOID   = Pointer;
-    int     = Integer;
+  PVOID = pointer;
+  LONG  = longint;
+  PLONG = ^LONG;
+  int   = integer;
 
-{-- Returns version of VFW ---------------------------------------------------}
+(****************************************************************************
+ *
+ *  VideoForWindowsVersion() - returns version of VfW
+ *
+ ***************************************************************************)
 
-function    VideoForWindowsVersion: DWord; pascal; 
+function VideoForWindowsVersion: DWORD; pascal;
 
-{-- Call these to start stop using VfW from your app -------------------------}
+(****************************************************************************
+ *
+ *  call these to start stop using VfW from your app.
+ *
+ ***************************************************************************)
+                                {
+function InitVFW: LONG; stdcall;
+function TermVFW: LONG; stdcall;  }
 
-{ TODO: Where are these functions? }
-
-// function    InitVFW: DWORD; stdcall;
-// function    TermVFW: DWORD; stdcall;
-
-{-- Macros -------------------------------------------------------------------}
+(****************************************************************************/
+/*                                                                          */
+/*        Macros                                                            */
+/*                                                                          */
+/*  should we define this??                                                 */
+/*                                                                          */
+/****************************************************************************)
 
 function MKFOURCC(ch0, ch1, ch2, ch3: Char): FOURCC;
 
-{== COMPMAN - Installable Compression Manager ================================}
+(****************************************************************************
+ *
+ *  COMPMAN - Installable Compression Manager.
+ *
+ ****************************************************************************)
 
 const
-    ICVERSION                   = $0104 ;
+  ICVERSION                   = $0104 ;
 
 type
-    HIC                         = THandle;  // Handle to an Installable Compressor
+  HIC                         = THandle;  // Handle to an Installable Compressor
 
 //
 // this code in biCompression means the DIB must be accesed via
 // 48 bit pointers! using *ONLY* the selector given.
 //
 const
-    BI_1632                     = $32333631;    // '1632'
+  BI_1632                     = $32333631;    // '1632'
 
-function    mmioFOURCC(ch0, ch1, ch2, ch3: Char): FOURCC;
+function mmioFOURCC(ch0, ch1, ch2, ch3: Char): FOURCC;
 
 type
-    TWOCC                       = Word;
+  TWOCC                       = word;
 
-function    aviTWOCC(ch0, ch1: Char): TWOCC;
-
-const
-    ICTYPE_VIDEO                = $63646976; // mmioFOURCC('v', 'i', 'd', 'c')
-    ICTYPE_AUDIO                = $63647561; // mmioFOURCC('a', 'u', 'd', 'c')
+function aviTWOCC(ch0, ch1: Char): TWOCC;
 
 const
-    ICERR_OK                    = 0 ;
-    ICERR_DONTDRAW              = 1 ;
-    ICERR_NEWPALETTE            = 2 ;
-    ICERR_GOTOKEYFRAME          = 3 ;
-    ICERR_STOPDRAWING           = 4 ;
+  ICTYPE_VIDEO                = $63646976;  {vidc}
+  ICTYPE_AUDIO                = $63647561;  {audc}
 
-    ICERR_UNSUPPORTED           = -1 ;
-    ICERR_BADFORMAT             = -2 ;
-    ICERR_MEMORY                = -3 ;
-    ICERR_INTERNAL              = -4 ;
-    ICERR_BADFLAGS              = -5 ;
-    ICERR_BADPARAM              = -6 ;
-    ICERR_BADSIZE               = -7 ;
-    ICERR_BADHANDLE             = -8 ;
-    ICERR_CANTUPDATE            = -9 ;
-    ICERR_ABORT                 = -10 ;
-    ICERR_ERROR                 = -100 ;
-    ICERR_BADBITDEPTH           = -200 ;
-    ICERR_BADIMAGESIZE          = -201 ;
+const
+  ICERR_OK                    = 0 ;
+  ICERR_DONTDRAW              = 1 ;
+  ICERR_NEWPALETTE            = 2 ;
+  ICERR_GOTOKEYFRAME          = 3 ;
+  ICERR_STOPDRAWING           = 4 ;
 
-    ICERR_CUSTOM                = -400 ;    // errors less than ICERR_CUSTOM...
+  ICERR_UNSUPPORTED           = -1 ;
+  ICERR_BADFORMAT             = -2 ;
+  ICERR_MEMORY                = -3 ;
+  ICERR_INTERNAL              = -4 ;
+  ICERR_BADFLAGS              = -5 ;
+  ICERR_BADPARAM              = -6 ;
+  ICERR_BADSIZE               = -7 ;
+  ICERR_BADHANDLE             = -8 ;
+  ICERR_CANTUPDATE            = -9 ;
+  ICERR_ABORT                 = -10 ;
+  ICERR_ERROR                 = -100 ;
+  ICERR_BADBITDEPTH           = -200 ;
+  ICERR_BADIMAGESIZE          = -201 ;
+
+  ICERR_CUSTOM                = -400 ;    // errors less than ICERR_CUSTOM...
 
 {-- Values for dwFlags of ICOpen() -------------------------------------------}
 
-    ICMODE_COMPRESS             = 1 ;
-    ICMODE_DECOMPRESS           = 2 ;
-    ICMODE_FASTDECOMPRESS       = 3 ;
-    ICMODE_QUERY                = 4 ;
-    ICMODE_FASTCOMPRESS         = 5 ;
-    ICMODE_DRAW                 = 8 ;
+  ICMODE_COMPRESS             = 1 ;
+  ICMODE_DECOMPRESS           = 2 ;
+  ICMODE_FASTDECOMPRESS       = 3 ;
+  ICMODE_QUERY                = 4 ;
+  ICMODE_FASTCOMPRESS         = 5 ;
+  ICMODE_DRAW                 = 8 ;
 
 {-- Flags for AVI file index -------------------------------------------------}
 
-    AVIIF_LIST                  = $00000001 ;
-    AVIIF_TWOCC                 = $00000002 ;
-    AVIIF_KEYFRAME              = $00000010 ;
+  AVIIF_LIST                  = $00000001 ;
+  AVIIF_TWOCC                 = $00000002 ;
+  AVIIF_KEYFRAME              = $00000010 ;
 
 {-- quality flags ------------------------------------------------------------}
 
-    ICQUALITY_LOW               = 0 ;
-    ICQUALITY_HIGH              = 10000 ;
-    ICQUALITY_DEFAULT           = -1 ;
+  ICQUALITY_LOW               = 0 ;
+  ICQUALITY_HIGH              = 10000 ;
+  ICQUALITY_DEFAULT           = -1 ;
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
-    ICM_USER                    = (DRV_USER+$0000) ;
+  ICM_USER                    = (DRV_USER+$0000) ;
 
-    ICM_RESERVED_LOW            = (DRV_USER+$1000) ;
-    ICM_RESERVED_HIGH           = (DRV_USER+$2000) ;
-    ICM_RESERVED                = ICM_RESERVED_LOW ;
+  ICM_RESERVED_LOW            = (DRV_USER+$1000) ;
+  ICM_RESERVED_HIGH           = (DRV_USER+$2000) ;
+  ICM_RESERVED                = ICM_RESERVED_LOW ;
 
-{-- Messages -----------------------------------------------------------------}
+(************************************************************************
 
-    ICM_GETSTATE                = (ICM_RESERVED+0) ;    // Get compressor state
-    ICM_SETSTATE                = (ICM_RESERVED+1) ;    // Set compressor state
-    ICM_GETINFO                 = (ICM_RESERVED+2) ;    // Query info about the compressor
-                                                   
-    ICM_CONFIGURE               = (ICM_RESERVED+10);    // show the configure dialog
-    ICM_ABOUT                   = (ICM_RESERVED+11);    // show the about box
+    messages.
 
-    ICM_GETDEFAULTQUALITY       = (ICM_RESERVED+30);    // get the default value for quality
-    ICM_GETQUALITY              = (ICM_RESERVED+31);    // get the current value for quality
-    ICM_SETQUALITY              = (ICM_RESERVED+32);    // set the default value for quality
+************************************************************************)
 
-    ICM_SET                     = (ICM_RESERVED+40);    // Tell the driver something
-    ICM_GET                     = (ICM_RESERVED+41);    // Ask the driver something
+  ICM_GETSTATE                = (ICM_RESERVED+0) ;    // Get compressor state
+  ICM_SETSTATE                = (ICM_RESERVED+1) ;    // Set compressor state
+  ICM_GETINFO                 = (ICM_RESERVED+2) ;    // Query info about the compressor
+
+  ICM_CONFIGURE               = (ICM_RESERVED+10);    // show the configure dialog
+  ICM_ABOUT                   = (ICM_RESERVED+11);    // show the about box
+
+  ICM_GETDEFAULTQUALITY       = (ICM_RESERVED+30);    // get the default value for quality
+  ICM_GETQUALITY              = (ICM_RESERVED+31);    // get the current value for quality
+  ICM_SETQUALITY              = (ICM_RESERVED+32);    // set the default value for quality
+
+  ICM_SET                     = (ICM_RESERVED+40);    // Tell the driver something
+  ICM_GET                     = (ICM_RESERVED+41);    // Ask the driver something
 
 {-- Constants for ICM_SET: ---------------------------------------------------}
 
-    ICM_FRAMERATE               = $526D7246; // mmioFOURCC('F','r','m','R')
-    ICM_KEYFRAMERATE            = $5279654B; // mmioFOURCC('K','e','y','R')
+  ICM_FRAMERATE               = $526D7246;  {FrmR}
+  ICM_KEYFRAMERATE            = $5279654B;  {KeyR}
 
-{-- ICM specific messages ----------------------------------------------------}
+(************************************************************************
 
-    ICM_COMPRESS_GET_FORMAT     = (ICM_USER+4)  ;   // get compress format or size
-    ICM_COMPRESS_GET_SIZE       = (ICM_USER+5)  ;   // get output size
-    ICM_COMPRESS_QUERY          = (ICM_USER+6)  ;   // query support for compress
-    ICM_COMPRESS_BEGIN          = (ICM_USER+7)  ;   // begin a series of compress calls.
-    ICM_COMPRESS                = (ICM_USER+8)  ;   // compress a frame
-    ICM_COMPRESS_END            = (ICM_USER+9)  ;   // end of a series of compress calls.
+    ICM specific messages.
 
-    ICM_DECOMPRESS_GET_FORMAT   = (ICM_USER+10) ;   // get decompress format or size
-    ICM_DECOMPRESS_QUERY        = (ICM_USER+11) ;   // query support for dempress
-    ICM_DECOMPRESS_BEGIN        = (ICM_USER+12) ;   // start a series of decompress calls
-    ICM_DECOMPRESS              = (ICM_USER+13) ;   // decompress a frame
-    ICM_DECOMPRESS_END          = (ICM_USER+14) ;   // end a series of decompress calls
-    ICM_DECOMPRESS_SET_PALETTE  = (ICM_USER+29) ;   // fill in the DIB color table
-    ICM_DECOMPRESS_GET_PALETTE  = (ICM_USER+30) ;   // fill in the DIB color table
+************************************************************************)
 
-    ICM_DRAW_QUERY              = (ICM_USER+31) ;   // query support for dempress
-    ICM_DRAW_BEGIN              = (ICM_USER+15) ;   // start a series of draw calls
-    ICM_DRAW_GET_PALETTE        = (ICM_USER+16) ;   // get the palette needed for drawing
-    ICM_DRAW_START              = (ICM_USER+18) ;   // start decompress clock
-    ICM_DRAW_STOP               = (ICM_USER+19) ;   // stop decompress clock
-    ICM_DRAW_END                = (ICM_USER+21) ;   // end a series of draw calls
-    ICM_DRAW_GETTIME            = (ICM_USER+32) ;   // get value of decompress clock
-    ICM_DRAW                    = (ICM_USER+33) ;   // generalized "render" message
-    ICM_DRAW_WINDOW             = (ICM_USER+34) ;   // drawing window has moved or hidden
-    ICM_DRAW_SETTIME            = (ICM_USER+35) ;   // set correct value for decompress clock
-    ICM_DRAW_REALIZE            = (ICM_USER+36) ;   // realize palette for drawing
-    ICM_DRAW_FLUSH              = (ICM_USER+37) ;   // clear out buffered frames
-    ICM_DRAW_RENDERBUFFER       = (ICM_USER+38) ;   // draw undrawn things in queue
+  ICM_COMPRESS_GET_FORMAT     = (ICM_USER+4)  ;   // get compress format or size
+  ICM_COMPRESS_GET_SIZE       = (ICM_USER+5)  ;   // get output size
+  ICM_COMPRESS_QUERY          = (ICM_USER+6)  ;   // query support for compress
+  ICM_COMPRESS_BEGIN          = (ICM_USER+7)  ;   // begin a series of compress calls.
+  ICM_COMPRESS                = (ICM_USER+8)  ;   // compress a frame
+  ICM_COMPRESS_END            = (ICM_USER+9)  ;   // end of a series of compress calls.
 
-    ICM_DRAW_START_PLAY         = (ICM_USER+39) ;   // start of a play
-    ICM_DRAW_STOP_PLAY          = (ICM_USER+40) ;   // end of a play
+  ICM_DECOMPRESS_GET_FORMAT   = (ICM_USER+10) ;   // get decompress format or size
+  ICM_DECOMPRESS_QUERY        = (ICM_USER+11) ;   // query support for dempress
+  ICM_DECOMPRESS_BEGIN        = (ICM_USER+12) ;   // start a series of decompress calls
+  ICM_DECOMPRESS              = (ICM_USER+13) ;   // decompress a frame
+  ICM_DECOMPRESS_END          = (ICM_USER+14) ;   // end a series of decompress calls
+  ICM_DECOMPRESS_SET_PALETTE  = (ICM_USER+29) ;   // fill in the DIB color table
+  ICM_DECOMPRESS_GET_PALETTE  = (ICM_USER+30) ;   // fill in the DIB color table
 
-    ICM_DRAW_SUGGESTFORMAT      = (ICM_USER+50) ;   // Like ICGetDisplayFormat
-    ICM_DRAW_CHANGEPALETTE      = (ICM_USER+51) ;   // for animating palette
+  ICM_DRAW_QUERY              = (ICM_USER+31) ;   // query support for dempress
+  ICM_DRAW_BEGIN              = (ICM_USER+15) ;   // start a series of draw calls
+  ICM_DRAW_GET_PALETTE        = (ICM_USER+16) ;   // get the palette needed for drawing
+  ICM_DRAW_START              = (ICM_USER+18) ;   // start decompress clock
+  ICM_DRAW_STOP               = (ICM_USER+19) ;   // stop decompress clock
+  ICM_DRAW_END                = (ICM_USER+21) ;   // end a series of draw calls
+  ICM_DRAW_GETTIME            = (ICM_USER+32) ;   // get value of decompress clock
+  ICM_DRAW                    = (ICM_USER+33) ;   // generalized "render" message
+  ICM_DRAW_WINDOW             = (ICM_USER+34) ;   // drawing window has moved or hidden
+  ICM_DRAW_SETTIME            = (ICM_USER+35) ;   // set correct value for decompress clock
+  ICM_DRAW_REALIZE            = (ICM_USER+36) ;   // realize palette for drawing
+  ICM_DRAW_FLUSH              = (ICM_USER+37) ;   // clear out buffered frames
+  ICM_DRAW_RENDERBUFFER       = (ICM_USER+38) ;   // draw undrawn things in queue
 
-    ICM_GETBUFFERSWANTED        = (ICM_USER+41) ;   // ask about prebuffering
+  ICM_DRAW_START_PLAY         = (ICM_USER+39) ;   // start of a play
+  ICM_DRAW_STOP_PLAY          = (ICM_USER+40) ;   // end of a play
 
-    ICM_GETDEFAULTKEYFRAMERATE  = (ICM_USER+42) ;   // get the default value for key frames
+  ICM_DRAW_SUGGESTFORMAT      = (ICM_USER+50) ;   // Like ICGetDisplayFormat
+  ICM_DRAW_CHANGEPALETTE      = (ICM_USER+51) ;   // for animating palette
 
-    ICM_DECOMPRESSEX_BEGIN      = (ICM_USER+60) ;   // start a series of decompress calls
-    ICM_DECOMPRESSEX_QUERY      = (ICM_USER+61) ;   // start a series of decompress calls
-    ICM_DECOMPRESSEX            = (ICM_USER+62) ;   // decompress a frame
-    ICM_DECOMPRESSEX_END        = (ICM_USER+63) ;   // end a series of decompress calls
+  ICM_GETBUFFERSWANTED        = (ICM_USER+41) ;   // ask about prebuffering
 
-    ICM_COMPRESS_FRAMES_INFO    = (ICM_USER+70) ;   // tell about compress to come
-    ICM_SET_STATUS_PROC         = (ICM_USER+72) ;   // set status callback
+  ICM_GETDEFAULTKEYFRAMERATE  = (ICM_USER+42) ;   // get the default value for key frames
 
-{-----------------------------------------------------------------------------}
+  ICM_DECOMPRESSEX_BEGIN      = (ICM_USER+60) ;   // start a series of decompress calls
+  ICM_DECOMPRESSEX_QUERY      = (ICM_USER+61) ;   // start a series of decompress calls
+  ICM_DECOMPRESSEX            = (ICM_USER+62) ;   // decompress a frame
+  ICM_DECOMPRESSEX_END        = (ICM_USER+63) ;   // end a series of decompress calls
+
+  ICM_COMPRESS_FRAMES_INFO    = (ICM_USER+70) ;   // tell about compress to come
+  ICM_SET_STATUS_PROC         = (ICM_USER+72) ;   // set status callback
+
+(************************************************************************
+************************************************************************)
 
 type
-    PICOPEN                     = ^TICOPEN;
-    TICOPEN                     = record
-        dwSize                  : DWORD   ; // sizeof(ICOPEN)
-        fccType                 : DWORD   ; // 'vidc'
-        fccHandler              : DWORD   ; //
-        dwVersion               : DWORD   ; // version of compman opening you
-        dwFlags                 : DWORD   ; // LOWORD is type specific
-        dwError                 : DWORD   ; // error return.
-        pV1Reserved             : PVOID   ; // Reserved
-        pV2Reserved             : PVOID   ; // Reserved
-        dnDevNode               : DWORD   ; // Devnode for PnP devices
-    end;
+  PICOPEN = ^TICOPEN;
+  TICOPEN = packed record
+    dwSize                  : DWORD   ; // sizeof(ICOPEN)
+    fccType                 : DWORD   ; // 'vidc'
+    fccHandler              : DWORD   ; //
+    dwVersion               : DWORD   ; // version of compman opening you
+    dwFlags                 : DWORD   ; // LOWORD is type specific
+    dwError                 : DWORD   ; // error return.
+    pV1Reserved             : PVOID   ; // Reserved
+    pV2Reserved             : PVOID   ; // Reserved
+    dnDevNode               : DWORD   ; // Devnode for PnP devices
+  end;
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
-    PICINFO                     = ^TICINFO ;
-    TICINFO                     = record
-        dwSize                  : DWORD;    // sizeof(ICINFO)
-        fccType                 : DWORD;    // compressor type     'vidc' 'audc'
-        fccHandler              : DWORD;    // compressor sub-type 'rle ' 'jpeg' 'pcm '
-        dwFlags                 : DWORD;    // flags LOWORD is type specific
-        dwVersion               : DWORD;    // version of the driver
-        dwVersionICM            : DWORD;    // version of the ICM used
-        //
-        // under Win32, the driver always returns UNICODE strings.
-        //
-        szName                  : array[0..15] of WideChar  ; // short name
-        szDescription           : array[0..127] of WideChar ; // DWORD name
-        szDriver                : array[0..127] of WideChar ; // driver that contains compressor
-    end;
+  PICINFO = ^TICINFO;
+  TICINFO = packed record
+    dwSize                  : DWORD;    // sizeof(ICINFO)
+    fccType                 : DWORD;    // compressor type     'vidc' 'audc'
+    fccHandler              : DWORD;    // compressor sub-type 'rle ' 'jpeg' 'pcm '
+    dwFlags                 : DWORD;    // flags LOWORD is type specific
+    dwVersion               : DWORD;    // version of the driver
+    dwVersionICM            : DWORD;    // version of the ICM used
+    //
+    // under Win32, the driver always returns UNICODE strings.
+    //
+    szName                  : array[0..15] of WChar  ; // short name
+    szDescription           : array[0..127] of WChar ; // DWORD name
+    szDriver                : array[0..127] of WChar ; // driver that contains compressor
+  end;
 
-{-- Flags for the <dwFlags> field of the <ICINFO> structure. -----------------}
+{-- Flags for the <dwFlags> field of the <ICINFO> structure. ------------}
 
 const
-    VIDCF_QUALITY               = $0001 ;  // supports quality
-    VIDCF_CRUNCH                = $0002 ;  // supports crunching to a frame size
-    VIDCF_TEMPORAL              = $0004 ;  // supports inter-frame compress
-    VIDCF_COMPRESSFRAMES        = $0008 ;  // wants the compress all frames message
-    VIDCF_DRAW                  = $0010 ;  // supports drawing
-    VIDCF_FASTTEMPORALC         = $0020 ;  // does not need prev frame on compress
-    VIDCF_FASTTEMPORALD         = $0080 ;  // does not need prev frame on decompress
-    //VIDCF_QUALITYTIME         = $0040 ;  // supports temporal quality
+  VIDCF_QUALITY               = $0001 ;  // supports quality
+  VIDCF_CRUNCH                = $0002 ;  // supports crunching to a frame size
+  VIDCF_TEMPORAL              = $0004 ;  // supports inter-frame compress
+  VIDCF_COMPRESSFRAMES        = $0008 ;  // wants the compress all frames message
+  VIDCF_DRAW                  = $0010 ;  // supports drawing
+  VIDCF_FASTTEMPORALC         = $0020 ;  // does not need prev frame on compress
+  VIDCF_FASTTEMPORALD         = $0080 ;  // does not need prev frame on decompress
+  //VIDCF_QUALITYTIME         = $0040 ;  // supports temporal quality
 
-    //VIDCF_FASTTEMPORAL        = (VIDCF_FASTTEMPORALC or VIDCF_FASTTEMPORALD)
+  //VIDCF_FASTTEMPORAL        = (VIDCF_FASTTEMPORALC or VIDCF_FASTTEMPORALD)
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
-    ICCOMPRESS_KEYFRAME         = $00000001;
+  ICCOMPRESS_KEYFRAME         = $00000001;
 
 type
-    PICCOMPRESS                 = ^TICCOMPRESS;
-    TICCOMPRESS                 = record
-        dwFlags                 : DWORD;                // flags
+  PICCOMPRESS = ^TICCOMPRESS;
+  TICCOMPRESS = packed record
+    dwFlags                 : DWORD;                // flags
 
-        lpbiOutput              : PBITMAPINFOHEADER ;   // output format
-        lpOutput                : PVOID ;               // output data
+    lpbiOutput              : PBITMAPINFOHEADER ;   // output format
+    lpOutput                : PVOID ;               // output data
 
-        lpbiInput               : PBITMAPINFOHEADER ;   // format of frame to compress
-        lpInput                 : PVOID ;               // frame data to compress
+    lpbiInput               : PBITMAPINFOHEADER ;   // format of frame to compress
+    lpInput                 : PVOID ;               // frame data to compress
 
-        lpckid                  : PDWORD ;              // ckid for data in AVI file
-        lpdwFlags               : PDWORD;               // flags in the AVI index.
-        lFrameNum               : DWORD ;                // frame number of seq.
-        dwFrameSize             : DWORD ;               // reqested size in bytes. (if non zero)
+    lpckid                  : PDWORD ;              // ckid for data in AVI file
+    lpdwFlags               : PDWORD;               // flags in the AVI index.
+    lFrameNum               : LONG ;               // frame number of seq.
+    dwFrameSize             : DWORD ;               // reqested size in bytes. (if non zero)
 
-        dwQuality               : DWORD ;               // quality
+    dwQuality               : DWORD ;               // quality
 
-        // these are new fields
+    // these are new fields
 
-        lpbiPrev                : PBITMAPINFOHEADER ;   // format of previous frame
-        lpPrev                  : PVOID ;              // previous frame
-    end;
+    lpbiPrev                : PBITMAPINFOHEADER ;   // format of previous frame
+    lpPrev                  : PVOID ;               // previous frame
+  end;
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
 const
-    ICCOMPRESSFRAMES_PADDING    = $00000001 ;
+  ICCOMPRESSFRAMES_PADDING    = $00000001 ;
 
 type
-    TICCompressProc             = function(lInput: LPARAM; lFrame: DWORD; lpBits: PVOID; len: DWORD): DWORD; stdcall;
+  TICCompressProc    = function(lInputOutput: LPARAM; lFrame: DWORD; lpBits: PVOID; len: LONG): LONG; stdcall;
 
-    PICCOMPRESSFRAMES           = ^TICCOMPRESSFRAMES;
-    TICCOMPRESSFRAMES           = record
-        dwFlags                 : DWORD ;               // flags
+  PICCOMPRESSFRAMES  = ^TICCOMPRESSFRAMES;
+  TICCOMPRESSFRAMES  = packed record
+    dwFlags                 : DWORD ;               // flags
 
-        lpbiOutput              : PBITMAPINFOHEADER ;   // output format
-        lOutput                 : LPARAM ;              // output identifier
+    lpbiOutput              : PBITMAPINFOHEADER ;   // output format
+    lOutput                 : LPARAM ;              // output identifier
 
-        lpbiInput               : PBITMAPINFOHEADER ;   // format of frame to compress
-        lInput                  : LPARAM ;              // input identifier
+    lpbiInput               : PBITMAPINFOHEADER ;   // format of frame to compress
+    lInput                  : LPARAM ;              // input identifier
 
-        lStartFrame             : DWORD ;                // start frame
-        lFrameCount             : DWORD ;                // # of frames
+    lStartFrame             : LONG ;                // start frame
+    lFrameCount             : LONG ;                // # of frames
 
-        lQuality                : DWORD ;                // quality
-        lDataRate               : DWORD ;                // data rate
-        lKeyRate                : DWORD ;                // key frame rate
+    lQuality                : LONG ;                // quality
+    lDataRate               : LONG ;                // data rate
+    lKeyRate                : LONG ;                // key frame rate
 
-        dwRate                  : DWORD ;               // frame rate, as always
-        dwScale                 : DWORD ;
+    dwRate                  : DWORD ;               // frame rate, as always
+    dwScale                 : DWORD ;
 
-        dwOverheadPerFrame      : DWORD ;
-        dwReserved2             : DWORD ;
+    dwOverheadPerFrame      : DWORD ;
+    dwReserved2             : DWORD ;
 
-        GetData                 : TICCompressProc;
-        PutData                 : TICCompressProc;
-    end;
+    GetData                 : TICCompressProc;
+    PutData                 : TICCompressProc;
+  end;
 
 {-- Messages for Status callback ---------------------------------------------}
 
@@ -307,18 +407,19 @@ const
     ICSTATUS_ERROR              = 3 ;   // l = error string (LPSTR)
     ICSTATUS_YIELD              = 4 ;
 
-type    
-    // return nonzero means abort operation in progress
-    TICStatusProc               = function(lParam: LPARAM; message: UINT; l: DWORD): DWORD; stdcall;
+type
+  // return nonzero means abort operation in progress
+  TICStatusProc    = function(lParam: LPARAM; message: UINT; l: LONG): LONG; stdcall;
 
-    PICSETSTATUSPROC            = ^TICSETSTATUSPROC;
-    TICSETSTATUSPROC            = record
-        dwFlags                 : DWORD ;
-        lParam                  : LPARAM ;
-        Status                  : TICStatusProc;
-    end;
+  PICSETSTATUSPROC = ^TICSETSTATUSPROC;
+  TICSETSTATUSPROC = packed record
+    dwFlags                 : DWORD ;
+    lParam                  : LPARAM ;
+    Status                  : TICStatusProc;
+  end;
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
 const
     ICDECOMPRESS_HURRYUP        = $80000000 ;   // don't draw just buffer (hurry up!)
@@ -328,46 +429,47 @@ const
     ICDECOMPRESS_NOTKEYFRAME    = $08000000 ;   // this frame is not a key frame
 
 type
-    PICDECOMPRESS               = ^TICDECOMPRESS;
-    TICDECOMPRESS               = record
-        dwFlags                 : DWORD ;               // flags (from AVI index...)
-        lpbiInput               : PBITMAPINFOHEADER ;   // BITMAPINFO of compressed data
+  PICDECOMPRESS = ^TICDECOMPRESS;
+  TICDECOMPRESS = packed record
+    dwFlags                 : DWORD ;               // flags (from AVI index...)
+    lpbiInput               : PBITMAPINFOHEADER ;   // BITMAPINFO of compressed data
                                                         // biSizeImage has the chunk size
-        lpInput                 : PVOID ;               // compressed data
-        lpbiOutput              : PBITMAPINFOHEADER ;   // DIB to decompress to
-        lpOutput                : PVOID ;
-        ckid                    : DWORD ;               // ckid from AVI file
-    end;
+    lpInput                 : PVOID ;               // compressed data
+    lpbiOutput              : PBITMAPINFOHEADER ;   // DIB to decompress to
+    lpOutput                : PVOID ;
+    ckid                    : DWORD ;               // ckid from AVI file
+  end;
 
-    PICDECOMPRESSEX             = ^TICDECOMPRESSEX;
-    TICDECOMPRESSEX             = record
+  PICDECOMPRESSEX = ^TICDECOMPRESSEX;
+  TICDECOMPRESSEX = packed record
 
-        //
-        // same as ICM_DECOMPRESS
-        //
+    //
+    // same as ICM_DECOMPRESS
+    //
 
-        dwFlags                 : DWORD;
-        lpbiSrc                 : PBITMAPINFOHEADER;    // BITMAPINFO of compressed data
-        lpSrc                   : PVOID;                // compressed data
-        lpbiDst                 : PBITMAPINFOHEADER;    // DIB to decompress to
-        lpDst                   : PVOID;                // output data
+    dwFlags                 : DWORD;
+    lpbiSrc                 : PBITMAPINFOHEADER;    // BITMAPINFO of compressed data
+    lpSrc                   : PVOID;                // compressed data
+    lpbiDst                 : PBITMAPINFOHEADER;    // DIB to decompress to
+    lpDst                   : PVOID;                // output data
 
-        //
-        // new for ICM_DECOMPRESSEX
-        //
+    //
+    // new for ICM_DECOMPRESSEX
+    //
 
-        xDst                    : int ; // destination rectangle
-        yDst                    : int ;
-        dxDst                   : int ;
-        dyDst                   : int ;
+    xDst                    : int; // destination rectangle
+    yDst                    : int;
+    dxDst                   : int;
+    dyDst                   : int;
 
-        xSrc                    : int ; // source rectangle
-        ySrc                    : int ;
-        dxSrc                   : int ;
-        dySrc                   : int ;
-    end;
+    xSrc                    : int; // source rectangle
+    ySrc                    : int;
+    dxSrc                   : int;
+    dySrc                   : int;
+  end;
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
 const
     ICDRAW_QUERY                = $00000001 ; // test for support
@@ -381,32 +483,33 @@ const
     ICDRAW_BUFFER               = $00000100 ; // please buffer this data offscreen, we will need to update it
 
 type
-    PICDRAWBEGIN                = ^TICDRAWBEGIN;
-    TICDRAWBEGIN                = record
-        dwFlags                 : DWORD ;       // flags
+  PICDRAWBEGIN = ^TICDRAWBEGIN;
+  TICDRAWBEGIN = packed record
+    dwFlags                 : DWORD ;       // flags
 
-        hpal                    : HPALETTE ;    // palette to draw with
-        hwnd                    : HWND ;        // window to draw to
-        hdc                     : HDC ;         // HDC to draw to
+    hpal                    : HPALETTE ;    // palette to draw with
+    hwnd                    : HWND ;        // window to draw to
+    hdc                     : HDC ;         // HDC to draw to
 
-        xDst                    : int ;         // destination rectangle
-        yDst                    : int ;
-        dxDst                   : int ;
-        dyDst                   : int ;
+    xDst                    : int ;         // destination rectangle
+    yDst                    : int ;
+    dxDst                   : int ;
+    dyDst                   : int ;
 
-        lpbi                    : PBITMAPINFOHEADER ;
+    lpbi                    : PBITMAPINFOHEADER ;
                                                 // format of frame to draw
 
-        xSrc                    : int ;         // source rectangle
-        ySrc                    : int ;
-        dxSrc                   : int ;
-        dySrc                   : int ;
+    xSrc                    : int ;         // source rectangle
+    ySrc                    : int ;
+    dxSrc                   : int ;
+    dySrc                   : int ;
 
-        dwRate                  : DWORD ;       // frames/second = (dwRate/dwScale)
-        dwScale                 : DWORD ;
-    end;
+    dwRate                  : DWORD ;       // frames/second = (dwRate/dwScale)
+    dwScale                 : DWORD ;
+  end;
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
 const
     ICDRAW_HURRYUP              = $80000000 ;   // don't draw just buffer (hurry up!)
@@ -417,16 +520,16 @@ const
 
 type
     PICDRAW                     = ^TICDRAW;
-    TICDRAW                     = record
+    TICDRAW                     = packed record
         dwFlags                 : DWORD ;   // flags
         lpFormat                : PVOID ;   // format of frame to decompress
         lpData                  : PVOID ;   // frame data to decompress
         cbData                  : DWORD ;
-        lTime                   : DWORD  ;   // time in drawbegin units (see dwRate and dwScale)
+        lTime                   : LONG  ;   // time in drawbegin units (see dwRate and dwScale)
     end;
 
     PICDRAWSUGGEST              = ^TICDRAWSUGGEST;
-    TICDRAWSUGGEST              = record
+    TICDRAWSUGGEST              = packed record
         lpbiIn                  : PBITMAPINFOHEADER ;   // format to be drawn
         lpbiSuggest             : PBITMAPINFOHEADER ;   // location for suggested format (or NULL to get size)
         dxSrc                   : int ;                 // source extent or 0
@@ -436,17 +539,22 @@ type
         hicDecompressor         : HIC ;                 // decompressor you can talk to
     end;
 
-{-----------------------------------------------------------------------------}
+(************************************************************************
+************************************************************************)
 
     PICPALETTE                  = ^TICPALETTE;
-    TICPALETTE                  = record
+    TICPALETTE                  = packed record
         dwFlags                 : DWORD ;           // flags (from AVI index...)
         iStart                  : int ;             // first palette to change
         iLen                    : int ;             // count of entries to change.
         lppe                    : PPALETTEENTRY ;   // palette
     end;
 
-{-- ICM function declarations ------------------------------------------------}
+(************************************************************************
+
+    ICM function declarations
+
+************************************************************************)
 
 function    ICInfo(fccType, fccHandler: DWORD; lpicinfo: PICINFO) : BOOL ; stdcall ;
 function    ICInstall(fccType, fccHandler: DWORD; lParam: LPARAM; szDesc: LPSTR; wFlags: UINT) : BOOL ; stdcall ;
@@ -495,11 +603,18 @@ function    ICGetDefaultKeyFrameRate(hic: HIC): DWORD;
 
 function    ICDrawWindow(hic: HIC; prc: PRECT): DWORD;
 
-{== Compression functions ====================================================}
+(************************************************************************
 
-{-- ICCompress() - compress a single frame -----------------------------------}
+    compression functions
 
-function    ICCompress(
+************************************************************************/
+/*
+ *  ICCompress()
+ *
+ *  compress a single frame
+ *
+ *)
+function ICCompress(
     hic             : HIC;
     dwFlags         : DWORD;                // flags
     lpbiOutput      : PBITMAPINFOHEADER;    // output format
@@ -513,31 +628,61 @@ function    ICCompress(
     dwQuality       : DWORD;                // quality within one frame
     lpbiPrev        : PBITMAPINFOHEADER;    // format of previous frame
     lpPrev          : PVOID                 // previous frame
-    ) : DWORD; cdecl;
+    ): DWORD; cdecl;
 
-{-- ICCompressBegin() - start compression from a source fmt to a dest fmt ----}
+(*
+ *  ICCompressBegin()
+ *
+ *  start compression from a source format (lpbiInput) to a dest
+ *  format (lpbiOuput) is supported.
+ *
+ *)
 
 function    ICCompressBegin(hic: HIC; lpbiInput: PBITMAPINFOHEADER; lpbiOutput: PBITMAPINFOHEADER): DWORD;
 
-{-- ICCompressQuery() - determines if compression from src to dst is supp ----}
+(*
+ *  ICCompressQuery()
+ *
+ *  determines if compression from a source format (lpbiInput) to a dest
+ *  format (lpbiOuput) is supported.
+ *
+ *)
 
 function    ICCompressQuery(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 
-{-- ICCompressGetFormat() - get the output format (fmt of compressed) --------}
-
-// if lpbiOutput is nil return the size in bytes needed for format.
+(*
+ *  ICCompressGetFormat()
+ *
+ *  get the output format, (format of compressed data)
+ *  if lpbiOutput is NULL return the size in bytes needed for format.
+ *
+ *)
 
 function    ICCompressGetFormat(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 function    ICCompressGetFormatSize(hic: HIC; lpbi: PBITMAPINFOHEADER): DWORD;
 
-{-- ICCompressSize() - return the maximal size of a compressed frame ---------}
+(*
+ *  ICCompressSize()
+ *
+ *  return the maximal size of a compressed frame
+ *
+ *)
 
 function    ICCompressGetSize(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 function    ICCompressEnd(hic: HIC): DWORD;
 
-{== Decompression functions ==================================================}
+(************************************************************************
 
-{-- ICDecompress() - decompress a single frame -------------------------------}
+    decompression functions
+
+************************************************************************)
+
+(*
+ *  ICDecompress()
+ *
+ *  decompress a single frame
+ *
+ *)
 
 function    ICDecompress(
     hic             : HIC;
@@ -549,29 +694,54 @@ function    ICDecompress(
     lpBits          : PVOID
     ): DWORD; cdecl;
 
-{-- ICDecompressBegin() - start compression from src fmt to a dest fmt -------}
+(*
+ *  ICDecompressBegin()
+ *
+ *  start compression from a source format (lpbiInput) to a dest
+ *  format (lpbiOutput) is supported.
+ *
+ *)
 
 function    ICDecompressBegin(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 
-{-- ICDecompressQuery() - determines if compression is supported -------------}
+(*
+ *  ICDecompressQuery()
+ *
+ *  determines if compression from a source format (lpbiInput) to a dest
+ *  format (lpbiOutput) is supported.
+ *
+ *)
 
 function    ICDecompressQuery(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 
-{-- ICDecompressGetFormat - get the output fmt (fmt of uncompressed data) ----}
-
-// if lpbiOutput is NULL return the size in bytes needed for format.
+(*
+ *  ICDecompressGetFormat()
+ *
+ *  get the output format, (format of un-compressed data)
+ *  if lpbiOutput is NULL return the size in bytes needed for format.
+ *
+ *)
 
 function    ICDecompressGetFormat(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 function    ICDecompressGetFormatSize(hic: HIC; lpbi: PBITMAPINFOHEADER): DWORD;
 
-{-- ICDecompressGetPalette() - get the output palette ------------------------}
+(*
+ *  ICDecompressGetPalette()
+ *
+ *  get the output palette
+ *
+ *)
 
 function    ICDecompressGetPalette(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 function    ICDecompressSetPalette(hic: HIC; lpbiPalette: PBITMAPINFOHEADER): DWORD;
 
 function    ICDecompressEnd(hic: HIC): DWORD;
 
-{== Decompression(ex) functions ==============================================}
+(************************************************************************
+
+    decompression (ex) functions
+
+************************************************************************)
 
 //
 // on Win16 these functions are macros that call ICMessage. ICMessage will
@@ -579,7 +749,12 @@ function    ICDecompressEnd(hic: HIC): DWORD;
 // them as static inline functions
 //
 
-{-- ICDecompressEx() - decompress a single frame -----------------------------}
+(*
+ *  ICDecompressEx()
+ *
+ *  decompress a single frame
+ *
+ *)
 
 function    ICDecompressEx(
     hic         : HIC;
@@ -598,7 +773,13 @@ function    ICDecompressEx(
     dyDst       : int
     ): DWORD; stdcall;
 
-{-- ICDecompressExBegin() - start compression from a src fmt to a dest fmt ---}
+(*
+ *  ICDecompressExBegin()
+ *
+ *  start compression from a source format (lpbiInput) to a dest
+ *  format (lpbiOutput) is supported.
+ *
+ *)
 
 function    ICDecompressExBegin(
     hic         : HIC;
@@ -617,7 +798,10 @@ function    ICDecompressExBegin(
     dyDst       : int
     ): DWORD; stdcall;
 
-{-- ICDecompressExQuery() ----------------------------------------------------}
+(*
+ *  ICDecompressExQuery()
+ *
+ *)
 
 function    ICDecompressExQuery(
     hic         : HIC;
@@ -636,13 +820,22 @@ function    ICDecompressExQuery(
     dyDst       : int
     ): DWORD; stdcall;
 
-function    ICDecompressExEnd(hic: HIC): DWORD;
+function ICDecompressExEnd(hic: HIC): DWORD;
 
-{== Drawing functions ========================================================}
+(************************************************************************
 
-{-- ICDrawBegin() - start decompressing data with fmt directly to screen -----}
+    drawing functions
 
-// return zero if the decompressor supports drawing.
+************************************************************************)
+
+(*
+ *  ICDrawBegin()
+ *
+ *  start decompressing data with format (lpbiInput) directly to the screen
+ *
+ *  return zero if the decompressor supports drawing.
+ *
+ *)
 
 function    ICDrawBegin(
     hic         : HIC;
@@ -663,7 +856,12 @@ function    ICDrawBegin(
     dwScale     : DWORD
     ): DWORD; cdecl;
 
-{-- ICDraw() - decompress data directly to the screen ------------------------}
+(*
+ *  ICDraw()
+ *
+ *  decompress data directly to the screen
+ *
+ *)
 
 function    ICDraw(
     hic         : HIC;
@@ -676,7 +874,6 @@ function    ICDraw(
 
 // ICMessage is not supported on Win32, so provide a static inline function
 // to do the same job
-
 function    ICDrawSuggestFormat(
     hic         : HIC;
     lpbiIn      : PBITMAPINFOHEADER;
@@ -688,7 +885,12 @@ function    ICDrawSuggestFormat(
     hicDecomp   : HIC
     ): DWORD; stdcall;
 
-{-- ICDrawQuery() - determines if the compressor is willing to render fmt ----}
+(*
+ *  ICDrawQuery()
+ *
+ *  determines if the compressor is willing to render the specified format.
+ *
+ *)
 
 function    ICDrawQuery(hic: HIC; lpbiInput: PBITMAPINFOHEADER): DWORD;
 function    ICDrawChangePalette(hic: HIC; lpbiInput: PBITMAPINFOHEADER): DWORD;
@@ -704,12 +906,21 @@ function    ICDrawRealize(hic: HIC; hdc: HDC; fBackground: BOOL): DWORD;
 function    ICDrawFlush(hic: HIC): DWORD;
 function    ICDrawRenderBuffer(hic: HIC): DWORD;
 
-{== Status callback functions ================================================}
+(************************************************************************
 
-{-- ICSetStatusProc() - Set the status callback function ---------------------}
+    Status callback functions
+
+************************************************************************/
+
+/*
+ *  ICSetStatusProc()
+ *
+ *  Set the status callback function
+ *
+ *)
+
 
 // ICMessage is not supported on NT
-
 function    ICSetStatusProc(
     hic         : HIC;
     dwFlags     : DWORD;
@@ -717,7 +928,11 @@ function    ICSetStatusProc(
     fpfnStatus  : TICStatusProc
     ): DWORD; stdcall;
 
-{== Helper routines for DrawDib and MCIAVI... ================================}
+(************************************************************************
+
+helper routines for DrawDib and MCIAVI...
+
+************************************************************************)
 
 function    ICLocate(fccType, fccHandler: DWORD; lpbiIn, lpbiOut: PBITMAPINFOHEADER; wFlags: WORD): HIC; stdcall;
 function    ICGetDisplayFormat(hic: HIC; lpbiIn, lpbiOut: PBITMAPINFOHEADER; BitDepth: int; dx, dy: int): HIC; stdcall;
@@ -725,7 +940,9 @@ function    ICGetDisplayFormat(hic: HIC; lpbiIn, lpbiOut: PBITMAPINFOHEADER; Bit
 function    ICDecompressOpen(fccType, fccHandler: DWORD; lpbiIn, lpbiOut: PBITMAPINFOHEADER): HIC;
 function    ICDrawOpen(fccType, fccHandler: DWORD; lpbiIn: PBITMAPINFOHEADER): HIC;
 
-{== Higher level functions ===================================================}
+(************************************************************************
+Higher level functions
+************************************************************************)
 
 function    ICImageCompress(
     hic         : HIC;                  // compressor to use
@@ -733,7 +950,7 @@ function    ICImageCompress(
     lpbiIn      : PBITMAPINFO;          // format to compress from
     lpBits      : PVOID;                // data to compress
     lpbiOut     : PBITMAPINFO;          // compress to this (NULL ==> default)
-    lQuality    : DWORD;                 // quality to use
+    lQuality    : LONG;                 // quality to use
     plSize      : PDWORD                 // compress to this size (0=whatever)
     ): THANDLE; stdcall;
 
@@ -746,16 +963,16 @@ function    ICImageDecompress(
     ): THANDLE; stdcall;
 
 {-- TCompVars ----------------------------------------------------------------}
-    
+
 //
 // Structure used by ICSeqCompressFrame and ICCompressorChoose routines
 // Make sure this matches the autodoc in icm.c!
 //
 
 type
-    PCOMPVARS       = ^TCOMPVARS;
-    TCOMPVARS       = record
-        cbSize      : DWORD;             // set to sizeof(COMPVARS) before
+  PCOMPVARS       = ^TCOMPVARS;
+  TCOMPVARS       = packed record
+        cbSize      : DWORD;            // set to sizeof(COMPVARS) before
                                         // calling ICCompressorChoose
         dwFlags     : DWORD;            // see below...
         hic         : HIC;              // HIC of chosen compressor
@@ -766,13 +983,13 @@ type
         lpbiOut     : PBITMAPINFO;      // output format - will compress to this
         lpBitsOut   : PVOID;
         lpBitsPrev  : PVOID;
-        lFrame      : DWORD;
-        lKey        : DWORD;             // key frames how often?
-        lDataRate   : DWORD;             // desired data rate KB/Sec
-        lQ          : DWORD;             // desired quality
-        lKeyCount   : DWORD;
+        lFrame      : LONG;
+        lKey        : LONG;             // key frames how often?
+        lDataRate   : LONG;             // desired data rate KB/Sec
+        lQ          : LONG;             // desired quality
+        lKeyCount   : LONG;
         lpState     : PVOID;            // state of compressor
-        cbState     : DWORD;             // size of the state
+        cbState     : LONG;             // size of the state
     end;
 
 // FLAGS for dwFlags element of COMPVARS structure:
@@ -781,8 +998,9 @@ type
 const
     ICMF_COMPVARS_VALID         = $00000001;    // COMPVARS contains valid data
 
-{-- ICCompressorChoose() - allows user to choose compressor, quality etc... --}
-
+//
+//  allows user to choose compressor, quality etc...
+//
 function    ICCompressorChoose(
     hwnd        : HWND;                     // parent window for dialog
     uiFlags     : UINT;                     // flags
@@ -815,12 +1033,21 @@ function    ICSeqCompressFrame(
 
 procedure   ICCompressorFree(pc: PCOMPVARS); stdcall;
 
-{== DRAWDIB - Routines for drawing to the display ============================}
+
+(**************************************************************************
+ *
+ *  DRAWDIB - Routines for drawing to the display.
+ *
+ *************************************************************************)
 
 type
     HDRAWDIB                    = THandle;  // hdd
 
-{== DrawDib Flags ============================================================}
+(*********************************************************************
+
+  DrawDib Flags
+
+**********************************************************************)
 
 const
     DDF_UPDATE                  = $0002;    // re-draw the last DIB
@@ -840,7 +1067,11 @@ const
     DDF_SAME_DIB                = DDF_SAME_DRAW;
     DDF_SAME_SIZE               = DDF_SAME_DRAW;
 
-{== DrawDib functions ========================================================}
+(*********************************************************************
+
+    DrawDib functions
+
+*********************************************************************)
 
 {-- DrawDibOpen() ------------------------------------------------------------}
 
@@ -852,7 +1083,7 @@ function    DrawDibClose(hdd: HDRAWDIB): BOOL; stdcall;
 
 {-- DrawDibGetBuffer() -------------------------------------------------------}
 
-function    DrawDibGetBuffer(hdd: HDRAWDIB; lpbi: PBITMAPINFOHEADER; dwSize: DWORD; dwFlags: DWORD): PVOID; stdcall; 
+function    DrawDibGetBuffer(hdd: HDRAWDIB; lpbi: PBITMAPINFOHEADER; dwSize: DWORD; dwFlags: DWORD): PVOID; stdcall;
 
 {-- DrawDibGetPalette() - get the palette used for drawing DIBs --------------}
 
@@ -921,14 +1152,14 @@ function    DrawDibEnd(hdd: HDRAWDIB): BOOL; stdcall;
 
 type
     PDRAWDIBTIME        = ^TDRAWDIBTIME;
-    TDRAWDIBTIME        = record
-        timeCount       : DWORD;
-        timeDraw        : DWORD;
-        timeDecompress  : DWORD;
-        timeDither      : DWORD;
-        timeStretch     : DWORD;
-        timeBlt         : DWORD;
-        timeSetDIBits   : DWORD;
+    TDRAWDIBTIME        = packed record
+        timeCount       : LONG;
+        timeDraw        : LONG;
+        timeDecompress  : LONG;
+        timeDither      : LONG;
+        timeStretch     : LONG;
+        timeBlt         : LONG;
+        timeSetDIBits   : LONG;
     end;
 
 function    DrawDibTime(hdd: HDRAWDIB; lpddtime: PDRAWDIBTIME): BOOL; stdcall;
@@ -944,7 +1175,11 @@ const
 
 function    DrawDibProfileDisplay(lpbi: PBITMAPINFOHEADER): DWORD; stdcall;
 
-{== AVIFMT - AVI file format definitions =====================================}
+(****************************************************************************
+ *
+ *  AVIFMT - AVI file format definitions
+ *
+ ****************************************************************************)
 
 //
 // The following is a short description of the AVI file format.  Please
@@ -952,15 +1187,15 @@ function    DrawDibProfileDisplay(lpbi: PBITMAPINFOHEADER): DWORD; stdcall;
 //
 // An AVI file is the following RIFF form:
 //
-//  RIFF('AVI' 
+//  RIFF('AVI'
 //        LIST('hdrl'
 //          avih(<MainAVIHeader>)
 //                  LIST ('strl'
 //                      strh(<Stream header>)
 //                      strf(<Stream format>)
 //                      ... additional header data
-//            LIST('movi'    
-//            { LIST('rec' 
+//            LIST('movi'
+//            { LIST('rec'
 //                    SubChunk...
 //                 )
 //                | SubChunk } ....
@@ -975,7 +1210,7 @@ function    DrawDibProfileDisplay(lpbi: PBITMAPINFOHEADER): DWORD; stdcall;
 //  be a BITMAPINFO structure, including palette.  For an audio stream,
 //  this should be a WAVEFORMAT (or PCMWAVEFORMAT) structure.
 //
-//  The actual data is contained in subchunks within the 'movi' LIST 
+//  The actual data is contained in subchunks within the 'movi' LIST
 //  chunk.  The first two characters of each data chunk are the
 //  stream number with which that data is associated.
 //
@@ -990,10 +1225,10 @@ function    DrawDibProfileDisplay(lpbi: PBITMAPINFOHEADER): DWORD; stdcall;
 //
 // The grouping into LIST 'rec' chunks implies only that the contents of
 //   the chunk should be read into memory at the same time.  This
-//   grouping is used for files specifically intended to be played from 
+//   grouping is used for files specifically intended to be played from
 //   CD-ROM.
 //
-// The index chunk at the end of the file should contain one entry for 
+// The index chunk at the end of the file should contain one entry for
 //   each data chunk in the file.
 //
 // Limitations for the current software:
@@ -1046,7 +1281,12 @@ const
 
     ckidAVIPADDING              = $4B4E554A; // mmioFOURCC('J', 'U', 'N', 'K')
 
-{== Useful macros ============================================================}
+(*
+** Useful macros
+**
+** Warning: These are nasty macro, and MS C 6.0 compiles some of them
+** incorrectly if optimizations are on.  Ack.
+*)
 
 {-- Macro to get stream number out of a FOURCC ckid --------------------------}
 
@@ -1081,7 +1321,7 @@ const
 
 type
     PMainAVIHeader              = ^TMainAVIHeader;
-    TMainAVIHeader              = record
+    TMainAVIHeader              = packed record
         dwMicroSecPerFrame      : DWORD;        // frame display rate (or 0L)
         dwMaxBytesPerSec        : DWORD;        // max. transfer rate
         dwPaddingGranularity    : DWORD;        // pad to multiples of this
@@ -1107,7 +1347,7 @@ const
 
 type
     PAVIStreamHeader            = ^TAVIStreamHeader;
-    TAVIStreamHeader            = record
+    TAVIStreamHeader            = packed record
         fccType                 : FOURCC;
         fccHandler              : FOURCC;
         dwFlags                 : DWORD;        // Contains AVITF_* flags
@@ -1132,7 +1372,7 @@ const
 
 type
     PAVIINDEXENTRY              = ^TAVIINDEXENTRY;
-    TAVIINDEXENTRY              = record
+    TAVIINDEXENTRY              = packed record
         ckid                    : DWORD;
         dwFlags                 : DWORD;
         dwChunkOffset           : DWORD;        // Position of chunk
@@ -1142,15 +1382,18 @@ type
 {-- Palette change chunk (used in video streams) -----------------------------}
 
     PAVIPALCHANGE               = ^TAVIPALCHANGE;
-    TAVIPALCHANGE               = record
+    TAVIPALCHANGE               = packed record
         bFirstEntry             : BYTE;         // first entry to change
         bNumEntries             : BYTE;         // # entries to change (0 if 256)
         wFlags                  : WORD;         // Mostly to preserve alignment...
-        // peNew                : array[0..-1] of PALETTEENTRY ;
-                                                // New color specifications
+        peNew                   : array[0..0] of TPALETTEENTRY; // New color specifications
     end;
 
-{== AVIFile - routines for reading/writing standard AVI files ================}
+(****************************************************************************
+ *
+ *  AVIFile - routines for reading/writing standard AVI files
+ *
+ ***************************************************************************)
 
 //
 // Ansi - Unicode thunking.
@@ -1188,8 +1431,8 @@ const
 // for Unicode/Ansi thunking we need to declare three versions of this!
 
 type
-    PAVISTREAMINFOW             = ^TAVISTREAMINFOW;
-    TAVISTREAMINFOW             = record
+    PAVIStreamInfoW             = ^TAVIStreamInfoW;
+    TAVIStreamInfoW             = packed record
         fccType                 : DWORD;
         fccHandler              : DWORD;
         dwFlags                 : DWORD;        // Contains AVITF_* flags
@@ -1204,14 +1447,14 @@ type
         dwSuggestedBufferSize   : DWORD;
         dwQuality               : DWORD;
         dwSampleSize            : DWORD;
-        rcFrame                 : TRECT ;
+        rcFrame                 : TRECT;
         dwEditCount             : DWORD;
         dwFormatChangeCount     : DWORD;
         szName                  : array[0..63] of WideChar;
     end;
 
-    PAVISTREAMINFOA             = ^TAVISTREAMINFOA;
-    TAVISTREAMINFOA             = record
+    PAVIStreamInfoA             = ^TAVIStreamInfoA;
+    TAVIStreamInfoA             = packed record
         fccType                 : DWORD;
         fccHandler              : DWORD;
         dwFlags                 : DWORD;        // Contains AVITF_* flags
@@ -1226,14 +1469,18 @@ type
         dwSuggestedBufferSize   : DWORD;
         dwQuality               : DWORD;
         dwSampleSize            : DWORD;
-        rcFrame                 : TRECT ;
+        rcFrame                 : TRECT;
         dwEditCount             : DWORD;
         dwFormatChangeCount     : DWORD;
         szName                  : array[0..63] of AnsiChar;
     end;
 
-    TAVISTREAMINFO              = TAVISTREAMINFOA;
-    PAVISTREAMINFO              = PAVISTREAMINFOA;
+  PAVIStreamInfo = ^TAVIStreamInfo;
+{$IFDEF UNICODE}
+  TAVIStreamInfo = TAVIStreamInfoW;
+{$ELSE}
+  TAVIStreamInfo = TAVIStreamInfoA;
+{$ENDIF}
 
 const
     AVISTREAMINFO_DISABLED      = $00000001;
@@ -1242,8 +1489,8 @@ const
 {-- AVIFILEINFO --------------------------------------------------------------}
 
 type
-    PAVIFILEINFOW               = ^TAVIFILEINFOW;
-    TAVIFILEINFOW               = record
+    PAVIFileInfoW               = ^TAVIFileInfoW;
+    TAVIFileInfoW               = packed record
         dwMaxBytesPerSec        : DWORD;        // max. transfer rate
         dwFlags                 : DWORD;        // the ever-present flags
         dwCaps                  : DWORD;
@@ -1263,8 +1510,8 @@ type
                                                 // descriptive string for file type?
     end;
 
-    PAVIFILEINFOA               = ^TAVIFILEINFOA;
-    TAVIFILEINFOA               = record
+    PAVIFileInfoA               = ^TAVIFileInfoA;
+    TAVIFileInfoA               = packed record
         dwMaxBytesPerSec        : DWORD;        // max. transfer rate
         dwFlags                 : DWORD;        // the ever-present flags
         dwCaps                  : DWORD;
@@ -1284,8 +1531,12 @@ type
                                                 // descriptive string for file type?
     end;
 
-    TAVIFILEINFO                    = TAVIFILEINFOA;
-    PAVIFILEINFO                    = PAVIFILEINFOA;
+  PAVIFileInfo = ^TAVIFileInfo;
+{$IFDEF UNICODE}
+  TAVIFileInfo = TAVIFileInfoW;
+{$ELSE}
+  TAVIFileInfo = TAVIFileInfoA;
+{$ENDIF}
 
 {-- Flags for dwFlags --------------------------------------------------------}
 
@@ -1312,7 +1563,7 @@ type
 
 type
     PAVICOMPRESSOPTIONS             = ^TAVICOMPRESSOPTIONS;
-    TAVICOMPRESSOPTIONS             = record
+    TAVICOMPRESSOPTIONS             = packed record
         fccType                     : DWORD;    // stream type, for consistency
         fccHandler                  : DWORD;    // compressor
         dwKeyFrameEvery             : DWORD;    // keyframe rate
@@ -1339,94 +1590,75 @@ const
     AVICOMPRESSF_KEYFRAMES          = $00000004;    // use keyframes
     AVICOMPRESSF_VALID              = $00000008;    // has valid data?
 
-{== AVI interfaces ===========================================================}
+(*	-	-	-	-	-	-	-	-	*/
 
-{-- AVIStream ----------------------------------------------------------------}
+
+/****** AVI Stream Interface *******************************************)
 
 type
-    PAVIStream      = ^IAVIStream;
-    IAVIStream      = interface(IUnknown)
-//    public
-        function    Create(lParam1, lParam2: LPARAM): HResult; stdcall;
-        function    Info(psi: PAVISTREAMINFOW; lSize: DWORD): HResult; stdcall;
-        function    FindSample(lPos: DWORD; lFlags: DWORD): DWORD; stdcall;
-        function    ReadFormat(lPos: DWORD; lpFormat: PVOID; lpcbFormat: PDWORD): HResult; stdcall;
-        function    SetFormat(lPos: DWORD; lpFormat: PVOID; cbFormat: DWORD): HResult; stdcall;
-        function    Read(lStart: DWORD; lSamples: DWORD; lpBuffer: PVOID; cbBuffer: DWORD; plBytes, plSamples: PDWORD): HResult; stdcall;
-        function    Write(lStart: DWORD; lSamples: DWORD; lpBuffer: PVOID; cbBuffer: DWORD; dwFlags: DWORD; plSampWritten, plBytesWritten: PDWORD): HResult; stdcall;
-        function    Delete(lStart: DWORD; lSamples: DWORD): HResult; stdcall;
-        function    ReadData(fcc: DWORD; lp: PVOID; lpcb: PDWORD): HResult; stdcall;
-        function    WriteData(fcc: DWORD; lp: PVOID; cb: DWORD): HResult; stdcall;
-        function    SetInfo(lpInfo: PAVISTREAMINFOW; cbInfo: DWORD): HResult; stdcall;
+    IAVIStream = interface(IUnknown)
+        function Create(lParam1, lParam2: LPARAM): HResult; stdcall;
+        function Info(var psi: TAVIStreamInfoW; lSize: LONG): HResult; stdcall;
+        function FindSample(lPos: LONG; lFlags: LONG): LONG; stdcall;
+        function ReadFormat(lPos: LONG; lpFormat: PVOID; var lpcbFormat: LONG): HResult; stdcall;
+        function SetFormat(lPos: LONG; lpFormat: PVOID; cbFormat: LONG): HResult; stdcall;
+        function Read(lStart: LONG; lSamples: LONG; lpBuffer: PVOID; cbBuffer: LONG; var plBytes, plSamples: LONG): HResult; stdcall;
+        function Write(lStart: LONG; lSamples: LONG; lpBuffer: PVOID; cbBuffer: LONG; dwFlags: DWORD; var plSampWritten, plBytesWritten: LONG): HResult; stdcall;
+        function Delete(lStart: LONG; lSamples: LONG): HResult; stdcall;
+        function ReadData(fcc: DWORD; lp: PVOID; var lpcb: LONG): HResult; stdcall;
+        function WriteData(fcc: DWORD; lp: PVOID; cb: LONG): HResult; stdcall;
+        function SetInfo(var lpInfo: TAVIStreamInfoW; cbInfo: LONG): HResult; stdcall;
     end;
 
-    PAVIStreaming   = ^IAVIStreaming;
-    IAVIStreaming   = interface(IUnknown)
-        function    _Begin(
-                            lStart,         // start of what we expect to play
-                            lEnd  : DWORD;   // expected end, or -1
-                            lRate : DWORD    // Should this be a float?
-                          ): HResult; stdcall;
-        function    _End: HResult; stdcall;
+    IAVIStreaming = interface(IUnknown)
+        function _Begin(lStart, lEnd : LONG; lRate : LONG): HResult; stdcall;
+        function _End: HResult; stdcall;
     end;
 
-    PAVIEditStream  = ^IAVIEditStream;
-    IAVIEditStream  = interface(IUnknown)
-        function    Cut(plStart, plLength: PDWORD; var ppResult: PAVISTREAM): HResult; stdcall;
-        function    Copy(plStart, plLength: PDWORD; var ppResult: PAVISTREAM): HResult; stdcall;
-        function    Paste(plPos: PDWORD; plLength: PDWORD; pstream: PAVISTREAM; lStart, lEnd: DWORD): HResult; stdcall;
-        function    Clone(var ppResult: PAVISTREAM): HResult; stdcall;
-        function    SetInfo(lpInfo: PAVISTREAMINFOW; cbInfo: DWORD): HResult; stdcall;
+    IAVIEditStream = interface(IUnknown)
+        function Cut(var plStart, plLength: LONG; var ppResult: IAVIStream): HResult; stdcall;
+        function Copy(var plStart, plLength: LONG; var ppResult: IAVIStream): HResult; stdcall;
+        function Paste(var plPos: LONG; var plLength: LONG; pstream: IAVIStream; lStart, lEnd: LONG): HResult; stdcall;
+        function Clone(var ppResult: IAVIStream): HResult; stdcall;
+        function SetInfo(var lpInfo: TAVIStreamInfoW; cbInfo: LONG): HResult; stdcall;
     end;
 
 {-- AVIFile ------------------------------------------------------------------}
 
-    PAVIFile        = ^IAVIFile;
-    IAVIFile        = interface(IUnknown)
-        function    Info(pfi: PAVIFILEINFOW; lSize: DWORD): HResult; stdcall;
-        function    GetStream(var ppStream: PAVISTREAM; fccType: DWORD; lParam: DWORD): HResult; stdcall;
-        function    CreateStream(var ppStream: PAVISTREAM; psi: PAVISTREAMINFOW): HResult; stdcall;
-        function    WriteData(ckid: DWORD; lpData: PVOID; cbData: DWORD): HResult; stdcall;
-        function    ReadData(ckid: DWORD; lpData: PVOID; lpcbData: PDWORD): HResult; stdcall;
-        function    EndRecord: HResult; stdcall;
-        function    DeleteStream(fccType: DWORD; lParam: DWORD): HResult; stdcall;
+    IAVIFile = interface(IUnknown)
+        function Info(var pfi: TAVIFileInfoW; iSize: LONG): HResult; stdcall;
+        function GetStream(var ppStream: IAVISTREAM; fccType: DWORD; lParam: LONG): HResult; stdcall;
+        function CreateStream(var ppStream: IAVISTREAM; var psi: TAVIStreamInfoW): HResult; stdcall;
+        function WriteData(ckid: DWORD; lpData: PVOID; cbData: LONG): HResult; stdcall;
+        function ReadData(ckid: DWORD; lpData: PVOID; lpcbData: PLONG): HResult; stdcall;
+        function EndRecord: HResult; stdcall;
+        function DeleteStream(fccType: DWORD; lParam: LONG): HResult; stdcall;
     end;
 
 {-- GetFrame -----------------------------------------------------------------}
 
-    PGetFrame       = ^IGetFrame;
-    IGetFrame       = interface(IUnknown)
-        function    GetFrame(lPos: DWORD): PVOID; stdcall;
+     // The functions 'BeginExtraction' and 'EndExtraction' have actually
+     // the names 'Begin' and 'End', but we cannot use that identifiers for
+     // obvious reasons.
 
-        function    _Begin(lStart, lEnd: DWORD; lRate: DWORD): HResult; stdcall;
-        function    _End: HResult; stdcall;
-
-        function    SetFormat(lpbi: PBITMAPINFOHEADER; lpBits: PVOID; x, y, dx, dy: int): HResult; stdcall;
-
-        // STDMETHOD(DrawFrameStart) (THIS) PURE;
-        // STDMETHOD(DrawFrame) (THIS_ DWORD lPos, HDC hdc, int x, int y, int dx, int dy) PURE;
-        // STDMETHOD(DrawFrameEnd) (THIS) PURE;
-    end;
+     IGetFrame = interface(IUnknown)
+       function GetFrame(lPos: LONG): PBitmapInfoHeader; stdcall;
+       function BeginExtraction(lStart, lEnd, lRate: LONG): HResult; stdcall;
+       function EndExtraction: HResult; stdcall;
+       function SetFormat(var lpbi: TBitmapInfoHeader; lpBits: Pointer; x, y, dx, dy: Integer): HResult; stdcall;
+     end;
 
 {-- GUIDs --------------------------------------------------------------------}
 
 const
-    IID_IAVIFile                : TGUID =
-        (D1: $00020020; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
-    IID_IAVIStream              : TGUID =
-        (D1: $00020021; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
-    IID_IAVIStreaming           : TGUID =
-        (D1: $00020022; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
-    IID_IGetFrame               : TGUID =
-        (D1: $00020023; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
-    IID_IAVIEditStream          : TGUID =
-        (D1: $00020024; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
+    IID_IAVIFile      : TGUID = (D1: $00020020; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
+    IID_IAVIStream    : TGUID = (D1: $00020021; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
+    IID_IAVIStreaming : TGUID = (D1: $00020022; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
+    IID_IGetFrame     : TGUID = (D1: $00020023; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
+    IID_IAVIEditStream: TGUID = (D1: $00020024; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
 
-    CLSID_AVISimpleUnMarshal    : TGUID =
-        (D1: $00020009; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
-
-    CLSID_AVIFile               : TGUID =
-        (D1: $00020000; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
+    CLSID_AVISimpleUnMarshal : TGUID = (D1: $00020009; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
+    CLSID_AVIFile            : TGUID = (D1: $00020000; D2: $0; D3: $0; D4:($C0,$0,$0,$0,$0,$0,$0,$46));
 
     AVIFILEHANDLER_CANREAD          = $0001;
     AVIFILEHANDLER_CANWRITE         = $0002;
@@ -1437,102 +1669,110 @@ const
 procedure   AVIFileInit; stdcall;   // Call this first!
 procedure   AVIFileExit; stdcall;
 
-function    AVIFileAddRef(pfile: PAVIFILE): UDWORD; stdcall;
-function    AVIFileRelease(pfile: PAVIFILE): UDWORD; stdcall;
+function    AVIFileAddRef(pfile: IAVIFile): ULONG; stdcall;
+function    AVIFileRelease(pfile: IAVIFile): ULONG; stdcall;
 
-function    AVIFileOpenA(var ppfile: PAVIFILE; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;
-function    AVIFileOpenW(var ppfile: PAVIFILE; szFile: LPCWSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;
+function    AVIFileOpenA(var ppfile: IAVIFile; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;
+function    AVIFileOpenW(var ppfile: IAVIFile; szFile: LPCWSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;
 
-function    AVIFileOpen(var ppfile: PAVIFILE; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall; // AVIFileOpenA
+{$IFDEF UNICODE}
+function    AVIFileOpen(var ppfile: IAVIFile; szFile: LPCWSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;
+{$ELSE}
+function    AVIFileOpen(var ppfile: IAVIFile; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;
+{$ENDIF}
 
-function    AVIFileInfoW(pfile: PAVIFILE; pfi: PAVIFILEINFOW; lSize: DWORD): HResult; stdcall;
-function    AVIFileInfoA(pfile: PAVIFILE; pfi: PAVIFILEINFOA; lSize: DWORD): HResult; stdcall;
+function    AVIFileInfoW(pfile: IAVIFile; var pfi: TAVIFILEINFOW; lSize: LONG): HResult; stdcall;
+function    AVIFileInfoA(pfile: IAVIFile; var pfi: TAVIFILEINFOA; lSize: LONG): HResult; stdcall;
 
-function    AVIFileInfo(pfile: PAVIFILE; pfi: PAVIFILEINFOA; lSize: DWORD): HResult; stdcall; // AVIFileInfoA
+function    AVIFileInfo(pfile: IAVIFile; var pfi: TAVIFILEINFO; lSize: LONG): HResult; stdcall;
 
-function    AVIFileGetStream(pfile: PAVIFILE; var ppavi: PAVISTREAM; fccType: DWORD; lParam: DWORD): HResult; stdcall;
+function    AVIFileGetStream(pfile: IAVIFile; var ppavi: IAVISTREAM; fccType: DWORD; lParam: LONG): HResult; stdcall;
 
-function    AVIFileCreateStreamW(pfile: PAVIFILE; var ppavi: PAVISTREAM; psi: PAVISTREAMINFOW): HResult; stdcall;
-function    AVIFileCreateStreamA(pfile: PAVIFILE; var ppavi: PAVISTREAM; psi: PAVISTREAMINFOA): HResult; stdcall;
+function    AVIFileCreateStreamW(pfile: IAVIFile; var ppavi: IAVISTREAM; var psi: TAVISTREAMINFOW): HResult; stdcall;
+function    AVIFileCreateStreamA(pfile: IAVIFile; var ppavi: IAVISTREAM; var psi: TAVISTREAMINFOA): HResult; stdcall;
 
-function    AVIFileCreateStream(pfile: PAVIFILE; var ppavi: PAVISTREAM; psi: PAVISTREAMINFOA): HResult; stdcall;    // AVIFileCreateStreamA
+function    AVIFileCreateStream(pfile: IAVIFile; var ppavi: IAVISTREAM; var psi: TAVISTREAMINFO): HResult; stdcall;
 
-function    AVIFileWriteData(pfile: PAVIFILE; ckid: DWORD; lpData: PVOID; cbData: DWORD): HResult; stdcall;
-function    AVIFileReadData(pfile: PAVIFILE; ckid: DWORD; lpData: PVOID; lpcbData: PDWORD): HResult; stdcall;
-function    AVIFileEndRecord(pfile: PAVIFILE): HResult; stdcall;
+function    AVIFileWriteData(pfile: IAVIFile; ckid: DWORD; lpData: PVOID; cbData: LONG): HResult; stdcall;
+function    AVIFileReadData(pfile: IAVIFile; ckid: DWORD; lpData: PVOID; var lpcbData: LONG): HResult; stdcall;
+function    AVIFileEndRecord(pfile: IAVIFile): HResult; stdcall;
 
-function    AVIStreamAddRef(pavi: PAVISTREAM): UDWORD; stdcall;
-function    AVIStreamRelease(pavi: PAVISTREAM): UDWORD; stdcall;
+function    AVIStreamAddRef(pavi: IAVIStream): ULONG; stdcall;
+function    AVIStreamRelease(pavi: IAVIStream): ULONG; stdcall;
 
-function    AVIStreamInfoW (pavi: PAVISTREAM; psi: PAVISTREAMINFOW; lSize: DWORD): HResult; stdcall;
-function    AVIStreamInfoA (pavi: PAVISTREAM; psi: PAVISTREAMINFOA; lSize: DWORD): HResult; stdcall;
+function    AVIStreamInfoW (pavi: IAVIStream; var psi: TAVISTREAMINFOW; lSize: LONG): HResult; stdcall;
+function    AVIStreamInfoA (pavi: IAVIStream; var psi: TAVISTREAMINFOA; lSize: LONG): HResult; stdcall;
 
-function    AVIStreamInfo(pavi: PAVISTREAM; psi: PAVISTREAMINFOA; lSize: DWORD): HResult; stdcall; // AVIStreamInfoA
+function    AVIStreamInfo(pavi: IAVIStream; var psi: TAVISTREAMINFO; lSize: LONG): HResult; stdcall;
 
-function    AVIStreamFindSample(pavi: PAVISTREAM; lPos: DWORD; lFlags: DWORD): DWORD; stdcall;
-function    AVIStreamReadFormat(pavi: PAVISTREAM; lPos: DWORD; lpFormat: PVOID; lpcbFormat: PDWORD): HResult; stdcall;
-function    AVIStreamSetFormat(pavi: PAVISTREAM; lPos: DWORD; lpFormat: PVOID; cbFormat: DWORD): HResult; stdcall;
-function    AVIStreamReadData(pavi: PAVISTREAM; fcc: DWORD; lp: PVOID; lpcb: PDWORD): HResult; stdcall;
-function    AVIStreamWriteData(pavi: PAVISTREAM; fcc: DWORD; lp: PVOID; cb: DWORD): HResult; stdcall;
+function    AVIStreamFindSample(pavi: IAVIStream; lPos: LONG; lFlags: LONG): LONG; stdcall;
+function    AVIStreamReadFormat(pavi: IAVIStream; lPos: LONG; lpFormat: PVOID; lpcbFormat: PLONG): HResult; stdcall;
+function    AVIStreamSetFormat(pavi: IAVIStream; lPos: LONG; lpFormat: PVOID; cbFormat: LONG): HResult; stdcall;
+function    AVIStreamReadData(pavi: IAVIStream; fcc: DWORD; lp: PVOID; lpcb: PLONG): HResult; stdcall;
+function    AVIStreamWriteData(pavi: IAVIStream; fcc: DWORD; lp: PVOID; cb: LONG): HResult; stdcall;
 
 function    AVIStreamRead(
-    pavi            : PAVISTREAM;
-    lStart          : DWORD;
-    lSamples        : DWORD;
+    pavi            : IAVISTREAM;
+    lStart          : LONG;
+    lSamples        : LONG;
     lpBuffer        : PVOID;
-    cbBuffer        : DWORD;
-    plBytes         : PDWORD;
-    plSamples       : PDWORD
+    cbBuffer        : LONG;
+    plBytes         : PLONG;
+    plSamples       : PLONG
     ): HResult; stdcall;
 
 const
     AVISTREAMREAD_CONVENIENT    = -1;
 
 function    AVIStreamWrite(
-    pavi            : PAVISTREAM;
-    lStart,
-    lSamples        : DWORD;
+    pavi            : IAVISTREAM;
+    lStart          : LONG;
+    lSamples        : LONG;
     lpBuffer        : PVOID;
-    cbBuffer        : DWORD;
+    cbBuffer        : LONG;
     dwFlags         : DWORD;
-    plSampWritten   : PDWORD;
-    plBytesWritten  : PDWORD
+    plSampWritten   : PLONG;
+    plBytesWritten  : PLONG
     ): HResult; stdcall;
 
 // Right now, these just use AVIStreamInfo() to get information, then
 // return some of it.  Can they be more efficient?
 
-function    AVIStreamStart(pavi: PAVISTREAM): DWORD; stdcall;
-function    AVIStreamLength(pavi: PAVISTREAM): DWORD; stdcall;
-function    AVIStreamTimeToSample(pavi: PAVISTREAM; lTime: DWORD): DWORD; stdcall;
-function    AVIStreamSampleToTime(pavi: PAVISTREAM; lSample: DWORD): DWORD; stdcall;
+function    AVIStreamStart(pavi: IAVIStream): LONG; stdcall;
+function    AVIStreamLength(pavi: IAVIStream): LONG; stdcall;
+function    AVIStreamTimeToSample(pavi: IAVIStream; lTime: LONG): LONG; stdcall;
+function    AVIStreamSampleToTime(pavi: IAVIStream; lSample: LONG): LONG; stdcall;
 
-function    AVIStreamBeginStreaming(pavi: PAVISTREAM; lStart, lEnd: DWORD; lRate: DWORD): HResult; stdcall;
-function    AVIStreamEndStreaming(pavi: PAVISTREAM): HResult; stdcall;
+function    AVIStreamBeginStreaming(pavi: IAVIStream; lStart, lEnd: LONG; lRate: LONG): HResult; stdcall;
+function    AVIStreamEndStreaming(pavi: IAVIStream): HResult; stdcall;
 
 {-- Helper functions for using IGetFrame -------------------------------------}
 
-function    AVIStreamGetFrameOpen(pavi: PAVISTREAM; lpbiWanted: PBITMAPINFOHEADER): PGETFRAME; stdcall;
-function    AVIStreamGetFrame(pg: PGETFRAME; lPos: DWORD): PVOID; stdcall;
-function    AVIStreamGetFrameClose(pg: PGETFRAME): HResult; stdcall;
+function    AVIStreamGetFrameOpen(pavi: IAVIStream; lpbiWanted: PBitmapInfoHeader): IGetFrame; stdcall;
+function    AVIStreamGetFrame(pg: IGetFrame; lPos: LONG): PBitmapInfoHeader; stdcall;
+function    AVIStreamGetFrameClose(pg: IGetFrame): HResult; stdcall;
 
 // !!! We need some way to place an advise on a stream....
 // STDAPI AVIStreamHasChanged   (PAVISTREAM pavi);
 
 {-- Shortcut function --------------------------------------------------------}
 
-function    AVIStreamOpenFromFileA(var ppavi: PAVISTREAM; szFile: LPCSTR; fccType: DWORD;
-                                   lParam: DWORD; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall;
-function    AVIStreamOpenFromFileW(var ppavi: PAVISTREAM; szFile: LPCWSTR; fccType: DWORD;
-                                   lParam: DWORD; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall;
+function    AVIStreamOpenFromFileA(var ppavi: IAVISTREAM; szFile: LPCSTR; fccType: DWORD;
+                                   lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall;
+function    AVIStreamOpenFromFileW(var ppavi: IAVISTREAM; szFile: LPCWSTR; fccType: DWORD;
+                                   lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall;
 
-function    AVIStreamOpenFromFile(var ppavi: PAVISTREAM; szFile: LPCSTR; fccType: DWORD;
-                                  lParam: DWORD; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; // AVIStreamOpenFromFileA
+{$IFDEF UNICODE}
+   function AVIStreamOpenFromFile(var ppavi: IAVISTREAM; szFile: LPCWSTR; fccType: DWORD;
+     lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall;
+{$ELSE}
+   function AVIStreamOpenFromFile(var ppavi: IAVISTREAM; szFile: LPCSTR; fccType: DWORD;
+     lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall;
+{$ENDIF}
 
 {-- Use to create disembodied streams ----------------------------------------}
 
-function    AVIStreamCreate(var ppavi: PAVISTREAM; lParam1, lParam2: DWORD;
-                            pclsidHandler: PCLSID): HResult; stdcall;
+function    AVIStreamCreate(var ppavi: IAVISTREAM; lParam1, lParam2: LONG; pclsidHandler: PCLSID): HResult; stdcall;
 
 // PHANDLER    AVIAPI AVIGetHandler         (PAVISTREAM pavi, PAVISTREAMHANDLER psh);
 // PAVISTREAM  AVIAPI AVIGetStream          (PHANDLER p);
@@ -1559,13 +1799,13 @@ const
 
 {-- Stuff to support backward compat. ----------------------------------------}
 
-function    AVIStreamFindKeyFrame(pavi: PAVISTREAM; lPos: DWORD; lFlags: DWORD): DWORD; stdcall; // AVIStreamFindSample
+function    AVIStreamFindKeyFrame(var pavi: IAVISTREAM; lPos: LONG; lFlags: LONG): DWORD; stdcall; // AVIStreamFindSample
 
 // Non-portable: this is alias for method name
 // FindKeyFrame FindSample
 
-function    AVIStreamClose(pavi: PAVISTREAM): UDWORD; stdcall; // AVIStreamRelease
-function    AVIFileClose(pfile: PAVIFILE): UDWORD; stdcall; // AVIFileRelease
+function    AVIStreamClose(pavi: IAVISTREAM): ULONG; stdcall; // AVIStreamRelease
+function    AVIFileClose(pfile: IAVIFILE): ULONG; stdcall; // AVIFileRelease
 procedure   AVIStreamInit; stdcall; // AVIFileInit
 procedure   AVIStreamExit; stdcall; // AVIFileExit
 
@@ -1578,27 +1818,27 @@ const
 
 {-- Helper macros ------------------------------------------------------------}
 
-function    AVIStreamSampleToSample(pavi1, pavi2: PAVISTREAM; l: DWORD): DWORD;
-function    AVIStreamNextSample(pavi: PAVISTREAM; l: DWORD): DWORD;
-function    AVIStreamPrevSample(pavi: PAVISTREAM; l: DWORD): DWORD;
-function    AVIStreamNearestSample(pavi: PAVISTREAM; l: DWORD): DWORD;
-function    AVIStreamNextKeyFrame(pavi: PAVISTREAM; l: DWORD): DWORD;
-function    AVIStreamPrevKeyFrame(pavi: PAVISTREAM; l: DWORD): DWORD;
-function    AVIStreamNearestKeyFrame(pavi: PAVISTREAM; l: DWORD): DWORD;
-function    AVIStreamIsKeyFrame(pavi: PAVISTREAM; l: DWORD): BOOL;
-function    AVIStreamPrevSampleTime(pavi: PAVISTREAM; t: DWORD): DWORD;
-function    AVIStreamNextSampleTime(pavi: PAVISTREAM; t: DWORD): DWORD;
-function    AVIStreamNearestSampleTime(pavi: PAVISTREAM; t: DWORD): DWORD;
-function    AVIStreamNextKeyFrameTime(pavi: PAVISTREAM; t: DWORD): DWORD;
-function    AVIStreamPrevKeyFrameTime(pavi: PAVISTREAM; t: DWORD): DWORD;
-function    AVIStreamNearestKeyFrameTime(pavi: PAVISTREAM; t: DWORD): DWORD;
-function    AVIStreamStartTime(pavi: PAVISTREAM): DWORD;
-function    AVIStreamLengthTime(pavi: PAVISTREAM): DWORD;
-function    AVIStreamEnd(pavi: PAVISTREAM): DWORD;
-function    AVIStreamEndTime(pavi: PAVISTREAM): DWORD;
-function    AVIStreamSampleSize(pavi: PAVISTREAM; lPos: DWORD; plSize: PDWORD): DWORD;
-function    AVIStreamFormatSize(pavi: PAVISTREAM; lPos: DWORD; plSize: PDWORD): HResult;
-function    AVIStreamDataSize(pavi: PAVISTREAM; fcc: DWORD; plSize: PDWORD): HResult;
+function    AVIStreamSampleToSample(pavi1, pavi2: IAVISTREAM; l: LONG): LONG;
+function    AVIStreamNextSample(pavi: IAVISTREAM; l: LONG): LONG;
+function    AVIStreamPrevSample(pavi: IAVISTREAM; l: LONG): LONG;
+function    AVIStreamNearestSample(pavi: IAVISTREAM; l: LONG): LONG;
+function    AVIStreamNextKeyFrame(pavi: IAVISTREAM; l: LONG): LONG;
+function    AVIStreamPrevKeyFrame(pavi: IAVISTREAM; l: LONG): LONG;
+function    AVIStreamNearestKeyFrame(pavi: IAVISTREAM; l: LONG): LONG;
+function    AVIStreamIsKeyFrame(pavi: IAVISTREAM; l: LONG): BOOL;
+function    AVIStreamPrevSampleTime(pavi: IAVISTREAM; t: LONG): LONG;
+function    AVIStreamNextSampleTime(pavi: IAVISTREAM; t: LONG): LONG;
+function    AVIStreamNearestSampleTime(pavi: IAVISTREAM; t: LONG): LONG;
+function    AVIStreamNextKeyFrameTime(pavi: IAVISTREAM; t: LONG): LONG;
+function    AVIStreamPrevKeyFrameTime(pavi: IAVISTREAM; t: LONG): LONG;
+function    AVIStreamNearestKeyFrameTime(pavi: IAVISTREAM; t: LONG): LONG;
+function    AVIStreamStartTime(pavi: IAVISTREAM): LONG;
+function    AVIStreamLengthTime(pavi: IAVISTREAM): LONG;
+function    AVIStreamEnd(pavi: IAVISTREAM): LONG;
+function    AVIStreamEndTime(pavi: IAVISTREAM): LONG;
+function    AVIStreamSampleSize(pavi: IAVISTREAM; lPos: LONG; plSize: PLONG): LONG;
+function    AVIStreamFormatSize(pavi: IAVISTREAM; lPos: LONG; plSize: PLONG): HResult;
+function    AVIStreamDataSize(pavi: IAVISTREAM; fcc: DWORD; plSize: PLONG): HResult;
 
 {== AVISave routines and structures ==========================================}
 
@@ -1606,8 +1846,8 @@ const
     comptypeDIB                     = $20424944; // mmioFOURCC('D', 'I', 'B', ' ')
 
 function    AVIMakeCompressedStream(
-    var ppsCompressed   : PAVISTREAM;
-    ppsSource           : PAVISTREAM;
+    var ppsCompressed   : IAVISTREAM;
+    ppsSource           : IAVISTREAM;
     lpOptions           : PAVICOMPRESSOPTIONS;
     pclsidHandler       : PCLSID
     ): HResult; stdcall;
@@ -1626,7 +1866,7 @@ function    AVISaveVA(
     pclsidHandler   : PCLSID;
     lpfnCallback    : TAVISAVECALLBACK;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): HResult; stdcall;
 
@@ -1644,7 +1884,7 @@ function    AVISaveVW(
     pclsidHandler   : PCLSID;
     lpfnCallback    : TAVISAVECALLBACK;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): HResult; stdcall;
 
@@ -1655,7 +1895,7 @@ function    AVISaveV(
     pclsidHandler   : PCLSID;
     lpfnCallback    : TAVISAVECALLBACK;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): HResult; stdcall; // AVISaveVA
 
@@ -1663,7 +1903,7 @@ function    AVISaveOptions(
     hwnd            : HWND;
     uiFlags         : UINT;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): BOOL; stdcall;
 
@@ -1675,40 +1915,40 @@ function    AVISaveOptionsFree(nStreams: int; var plpOptions: PAVICOMPRESSOPTION
 // These determine what the compression options dialog for video streams
 // will look like.
 
-function    AVIBuildFilterW(lpszFilter: LPWSTR; cbFilter: DWORD; fSaving: BOOL): HResult; stdcall;
-function    AVIBuildFilterA(lpszFilter: LPSTR; cbFilter: DWORD; fSaving: BOOL): HResult; stdcall;
+function    AVIBuildFilterW(lpszFilter: LPWSTR; cbFilter: LONG; fSaving: BOOL): HResult; stdcall;
+function    AVIBuildFilterA(lpszFilter: LPSTR; cbFilter: LONG; fSaving: BOOL): HResult; stdcall;
 
-function    AVIBuildFilter(lpszFilter: LPSTR; cbFilter: DWORD; fSaving: BOOL): HResult; stdcall; // AVIBuildFilterA
+function    AVIBuildFilter(lpszFilter: LPSTR; cbFilter: LONG; fSaving: BOOL): HResult; stdcall; // AVIBuildFilterA
 
-function    AVIMakeFileFromStreams(var ppfile: PAVIFILE; nStreams: int; var papStreams: PAVISTREAM): HResult; stdcall;
+function    AVIMakeFileFromStreams(var ppfile: IAVIFILE; nStreams: int; var papStreams: IAVISTREAM): HResult; stdcall;
 
-function    AVIMakeStreamFromClipboard(cfFormat: UINT; hGlobal: THANDLE; var ppstream: PAVISTREAM): HResult; stdcall;
+function    AVIMakeStreamFromClipboard(cfFormat: UINT; hGlobal: THANDLE; var ppstream: IAVISTREAM): HResult; stdcall;
 
 {-- Clipboard routines -------------------------------------------------------}
 
-function    AVIPutFileOnClipboard(pf: PAVIFILE): HResult; stdcall;
-function    AVIGetFromClipboard(var lppf: PAVIFILE): HResult; stdcall;
+function    AVIPutFileOnClipboard(pf: IAVIFILE): HResult; stdcall;
+function    AVIGetFromClipboard(var lppf: IAVIFILE): HResult; stdcall;
 function    AVIClearClipboard: HResult; stdcall;
 
 {-- Editing routines ---------------------------------------------------------}
 
-function    CreateEditableStream(var ppsEditable: PAVISTREAM; psSource: PAVISTREAM): HResult; stdcall;
+function    CreateEditableStream(var ppsEditable: IAVISTREAM; psSource: IAVISTREAM): HResult; stdcall;
 
-function    EditStreamCut(pavi: PAVISTREAM; plStart, plLength: PDWORD; var ppResult: PAVISTREAM): HResult; stdcall;
+function    EditStreamCut(pavi: IAVISTREAM; var plStart, plLength: LONG; var ppResult: IAVISTREAM): HResult; stdcall;
 
-function    EditStreamCopy(pavi: PAVISTREAM; plStart, plLength: PDWORD; var ppResult: PAVISTREAM): HResult; stdcall;
+function    EditStreamCopy(pavi: IAVISTREAM; var plStart, plLength: LONG; var ppResult: IAVISTREAM): HResult; stdcall;
 
-function    EditStreamPaste(pavi: PAVISTREAM; plPos, plLength: PDWORD; pstream: PAVISTREAM; lStart, lEnd: DWORD): HResult; stdcall;
+function    EditStreamPaste(pavi: IAVISTREAM; var plPos, plLength: LONG; pstream: IAVISTREAM; lStart, lEnd: LONG): HResult; stdcall;
 
-function    EditStreamClone(pavi: PAVISTREAM; var ppResult: PAVISTREAM): HResult; stdcall;
+function    EditStreamClone(pavi: IAVISTREAM; var ppResult: IAVISTREAM): HResult; stdcall;
 
-function    EditStreamSetNameA(pavi: PAVISTREAM; lpszName: LPCSTR): HResult; stdcall;
-function    EditStreamSetNameW(pavi: PAVISTREAM; lpszName: LPCWSTR): HResult; stdcall;
-function    EditStreamSetInfoW(pavi: PAVISTREAM; lpInfo: PAVISTREAMINFOW; cbInfo: DWORD): HResult; stdcall;
-function    EditStreamSetInfoA(pavi: PAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: DWORD): HResult; stdcall;
+function    EditStreamSetNameA(pavi: IAVISTREAM; lpszName: LPCSTR): HResult; stdcall;
+function    EditStreamSetNameW(pavi: IAVISTREAM; lpszName: LPCWSTR): HResult; stdcall;
+function    EditStreamSetInfoW(pavi: IAVISTREAM; lpInfo: PAVISTREAMINFOW; cbInfo: LONG): HResult; stdcall;
+function    EditStreamSetInfoA(pavi: IAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: LONG): HResult; stdcall;
 
-function    EditStreamSetInfo(pavi: PAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: DWORD): HResult; stdcall; // EditStreamSetInfoA
-function    EditStreamSetName(pavi: PAVISTREAM; lpszName: LPCSTR): HResult; stdcall; // EditStreamSetNameA
+function    EditStreamSetInfo(pavi: IAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: LONG): HResult; stdcall; // EditStreamSetInfoA
+function    EditStreamSetName(pavi: IAVISTREAM; lpszName: LPCSTR): HResult; stdcall; // EditStreamSetNameA
 
 {-- Error handling -----------------------------------------------------------}
 
@@ -2054,8 +2294,8 @@ const
 
 {-- Special seek values for START and END ------------------------------------}
 
-    MCIWND_START                    = -1 ;
-    MCIWND_END                      = -2 ;
+    MCIWND_START                    = dword(-1) ;
+    MCIWND_END                      = dword(-2) ;
 
 {== VIDEO - Video capture driver interface ===================================}
 
@@ -2672,109 +2912,108 @@ function    GetSaveFileNamePreview(lpofn: POPENFILENAMEA): BOOL; stdcall; // Get
 
 implementation
 
-function    MKFOURCC( ch0, ch1, ch2, ch3: Char ): FOURCC;
+function MKFOURCC( ch0, ch1, ch2, ch3: Char ): FOURCC;
 begin
-    Result := (DWord(Ord(ch0))) or
-              (DWord(Ord(ch1)) shl 8) or
-              (DWord(Ord(ch2)) shl 16) or
-              (DWord(Ord(ch3)) shl 24);
+  Result := (DWord(Ord(ch0))) or
+            (DWord(Ord(ch1)) shl 8) or
+            (DWord(Ord(ch2)) shl 16) or
+            (DWord(Ord(ch3)) shl 24);
 end;
 
-function    mmioFOURCC( ch0, ch1, ch2, ch3: Char ): FOURCC;
+function mmioFOURCC( ch0, ch1, ch2, ch3: Char ): FOURCC;
 begin
-    Result := MKFOURCC(ch0,ch1,ch2,ch3);
+  Result := MKFOURCC(ch0,ch1,ch2,ch3);
 end;
 
-function    aviTWOCC(ch0, ch1: Char): TWOCC;
+function aviTWOCC(ch0, ch1: Char): TWOCC;
 begin
-    Result := (Word(Ord(ch0))) or
-              (Word(Ord(ch1)) shl 8);
+  Result := (Word(Ord(ch0))) or (Word(Ord(ch1)) shl 8);
 end;
 
 {-- Query macros -------------------------------------------------------------}
 
-function    ICQueryAbout(hic: HIC): BOOL;
+function ICQueryAbout(hic: HIC): BOOL;
 begin
-    Result := ICSendMessage(hic, ICM_ABOUT, dword(-1), ICMF_ABOUT_QUERY) = ICERR_OK;
-end; // change from -1 to dword(-1)
-
-function    ICAbout(hic: HIC; hwnd: HWND): DWORD;
-begin
-    Result := ICSendMessage(hic, ICM_ABOUT, hwnd, 0);
+  Result := ICSendMessage(hic, ICM_ABOUT, dword(-1), ICMF_ABOUT_QUERY) = ICERR_OK;
 end;
 
-function    ICQueryConfigure(hic: HIC): BOOL;
+function ICAbout(hic: HIC; hwnd: HWND): DWORD;
 begin
-    Result := ICSendMessage(hic, ICM_CONFIGURE, dword(-1), ICMF_CONFIGURE_QUERY) = ICERR_OK;
-end; // change from -1 to dword(-1)
+  Result := ICSendMessage(hic, ICM_ABOUT, hwnd, 0);
+end;
 
-function    ICConfigure(hic: HIC; hwnd: HWND): DWORD;
+function ICQueryConfigure(hic: HIC): BOOL;
 begin
-    Result := ICSendMessage(hic, ICM_CONFIGURE, hwnd, 0);
+  Result := ICSendMessage(hic, ICM_CONFIGURE, dword(-1), ICMF_CONFIGURE_QUERY) = ICERR_OK;
+end;
+
+function ICConfigure(hic: HIC; hwnd: HWND): DWORD;
+begin
+  Result := ICSendMessage(hic, ICM_CONFIGURE, hwnd, 0);
 end;
 
 {-- Get/Set state macros -----------------------------------------------------}
 
-function    ICGetState(hic: HIC; pv: PVOID; cb: DWORD): DWORD;
+function ICGetState(hic: HIC; pv: PVOID; cb: DWORD): DWORD;
 begin
-    Result := ICSendMessage(hic, ICM_GETSTATE, DWORD(pv), cb);
+  Result := ICSendMessage(hic, ICM_GETSTATE, DWORD(pv), cb);
 end;
 
-function    ICSetState(hic: HIC; pv: PVOID; cb: DWORD): DWORD;
+function ICSetState(hic: HIC; pv: PVOID; cb: DWORD): DWORD;
 begin
-    Result := ICSendMessage(hic, ICM_SETSTATE, DWORD(pv), cb);
+  Result := ICSendMessage(hic, ICM_SETSTATE, DWORD(pv), cb);
 end;
 
-function    ICGetStateSize(hic: HIC): DWORD;
+function ICGetStateSize(hic: HIC): DWORD;
 begin
-    Result := ICGetState(hic, nil, 0);
+  Result := ICGetState(hic, nil, 0);
 end;
 
 {-- Get value macros ---------------------------------------------------------}
 
-function    ICGetDefaultQuality(hic: HIC): DWORD;
+function ICGetDefaultQuality(hic: HIC): DWORD;
 begin
-    ICSendMessage(hic, ICM_GETDEFAULTQUALITY, DWORD(@Result), sizeof(Result));
+  ICSendMessage(hic, ICM_GETDEFAULTQUALITY, DWORD(@Result), sizeof(Result));
 end;
 
-function    ICGetDefaultKeyFrameRate(hic: HIC): DWORD;
+function ICGetDefaultKeyFrameRate(hic: HIC): DWORD;
 begin
-    ICSendMessage(hic, ICM_GETDEFAULTKEYFRAMERATE, DWORD(@Result), sizeof(Result));
+  ICSendMessage(hic, ICM_GETDEFAULTKEYFRAMERATE, DWORD(@Result), sizeof(Result));
 end;
 
 {-- Draw window macro --------------------------------------------------------}
 
-function    ICDrawWindow(hic: HIC; prc: PRECT): DWORD;
+function ICDrawWindow(hic: HIC; prc: PRECT): DWORD;
 begin
-    Result := ICSendMessage(hic, ICM_DRAW_WINDOW, DWORD(prc), sizeof(prc^));
+  Result := ICSendMessage(hic, ICM_DRAW_WINDOW, DWORD(prc), sizeof(prc^));
 end;
 
 {-- ICCompressBegin() - start compression from a source fmt to a dest fmt ----}
 
-function    ICCompressBegin(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
+function ICCompressBegin(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 begin
-    Result := ICSendMessage(hic, ICM_COMPRESS_BEGIN, DWORD(lpbiInput), DWORD(lpbiOutput));
+  Result := ICSendMessage(hic, ICM_COMPRESS_BEGIN, DWORD(lpbiInput), DWORD(lpbiOutput));
 end;
 
 {-- ICCompressQuery() - determines if compression from src to dst is supp ----}
 
-function    ICCompressQuery(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
+function ICCompressQuery(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 begin
-    Result := ICSendMessage(hic, ICM_COMPRESS_QUERY, DWORD(lpbiInput), DWORD(lpbiOutput));
+  Result := ICSendMessage(hic, ICM_COMPRESS_QUERY, DWORD(lpbiInput), DWORD(lpbiOutput));
 end;
 
 {-- ICCompressGetFormat() - get the output format (fmt of compressed) --------}
 
 // if lpbiOutput is nil return the size in bytes needed for format.
 
-function    ICCompressGetFormat(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
+function ICCompressGetFormat(hic: HIC; lpbiInput, lpbiOutput: PBITMAPINFOHEADER): DWORD;
 begin
-    Result := ICSendMessage(hic, ICM_COMPRESS_GET_FORMAT, DWORD(lpbiInput), DWORD(lpbiOutput));
+  Result := ICSendMessage(hic, ICM_COMPRESS_GET_FORMAT, DWORD(lpbiInput), DWORD(lpbiOutput));
 end;
 
-function    ICCompressGetFormatSize(hic: HIC; lpbi: PBITMAPINFOHEADER): DWORD;
+function ICCompressGetFormatSize(hic: HIC; lpbi: PBITMAPINFOHEADER): DWORD;
 begin
-    Result := ICCompressGetFormat(hic, lpbi, nil);
+  Result := ICCompressGetFormat(hic, lpbi, nil);
 end;
 
 {-- ICCompressSize() - return the maximal size of a compressed frame ---------}
@@ -3134,107 +3373,107 @@ end;
 
 {-- Helper macros ------------------------------------------------------------}
 
-function    AVIStreamSampleToSample(pavi1, pavi2: PAVISTREAM; l: DWORD): DWORD;
+function    AVIStreamSampleToSample(pavi1, pavi2: IAVISTREAM; l: LONG): LONG;
 begin
     Result  := AVIStreamTimeToSample(pavi1,AVIStreamSampleToTime(pavi2, l));
 end;
 
-function    AVIStreamNextSample(pavi: PAVISTREAM; l: DWORD): DWORD;
+function    AVIStreamNextSample(pavi: IAVISTREAM; l: LONG): LONG;
 begin
     Result  := AVIStreamFindSample(pavi,l+1,FIND_NEXT or FIND_ANY);
 end;
 
-function    AVIStreamPrevSample(pavi: PAVISTREAM; l: DWORD): DWORD;
+function    AVIStreamPrevSample(pavi: IAVISTREAM; l: LONG): LONG;
 begin
     Result  := AVIStreamFindSample(pavi,l-1,FIND_PREV or FIND_ANY);
 end;
 
-function    AVIStreamNearestSample(pavi: PAVISTREAM; l: DWORD): DWORD;
+function    AVIStreamNearestSample(pavi: IAVISTREAM; l: LONG): LONG;
 begin
     Result  := AVIStreamFindSample(pavi,l,FIND_PREV or FIND_ANY);
 end;
 
-function    AVIStreamNextKeyFrame(pavi: PAVISTREAM; l: DWORD): DWORD;
+function    AVIStreamNextKeyFrame(pavi: IAVISTREAM; l: LONG): LONG;
 begin
     Result  := AVIStreamFindSample(pavi,l+1,FIND_NEXT or FIND_KEY);
 end;
 
-function    AVIStreamPrevKeyFrame(pavi: PAVISTREAM; l: DWORD): DWORD;
+function    AVIStreamPrevKeyFrame(pavi: IAVISTREAM; l: LONG): LONG;
 begin
     Result  := AVIStreamFindSample(pavi,l-1,FIND_PREV or FIND_KEY);
 end;
 
-function    AVIStreamNearestKeyFrame(pavi: PAVISTREAM; l: DWORD): DWORD;
+function    AVIStreamNearestKeyFrame(pavi: IAVISTREAM; l: LONG): LONG;
 begin
     Result  := AVIStreamFindSample(pavi,l,FIND_PREV or FIND_KEY)
 end;
 
-function    AVIStreamIsKeyFrame(pavi: PAVISTREAM; l: DWORD): BOOL;
+function    AVIStreamIsKeyFrame(pavi: IAVISTREAM; l: LONG): BOOL;
 begin
     Result  := AVIStreamNearestKeyFrame(pavi,l) = l;
 end;
 
-function    AVIStreamPrevSampleTime(pavi: PAVISTREAM; t: DWORD): DWORD;
+function    AVIStreamPrevSampleTime(pavi: IAVISTREAM; t: LONG): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamPrevSample(pavi,AVIStreamTimeToSample(pavi,t)));
 end;
 
-function    AVIStreamNextSampleTime(pavi: PAVISTREAM; t: DWORD): DWORD;
+function    AVIStreamNextSampleTime(pavi: IAVISTREAM; t: LONG): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamNextSample(pavi,AVIStreamTimeToSample(pavi,t)));
 end;
 
-function    AVIStreamNearestSampleTime(pavi: PAVISTREAM; t: DWORD): DWORD;
+function    AVIStreamNearestSampleTime(pavi: IAVISTREAM; t: LONG): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamNearestSample(pavi,AVIStreamTimeToSample(pavi,t)));
 end;
 
-function    AVIStreamNextKeyFrameTime(pavi: PAVISTREAM; t: DWORD): DWORD;
+function    AVIStreamNextKeyFrameTime(pavi: IAVISTREAM; t: LONG): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamNextKeyFrame(pavi,AVIStreamTimeToSample(pavi, t)));
 end;
 
-function    AVIStreamPrevKeyFrameTime(pavi: PAVISTREAM; t: DWORD): DWORD;
+function    AVIStreamPrevKeyFrameTime(pavi: IAVISTREAM; t: LONG): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamPrevKeyFrame(pavi,AVIStreamTimeToSample(pavi, t)));
 end;
 
-function    AVIStreamNearestKeyFrameTime(pavi: PAVISTREAM; t: DWORD): DWORD;
+function    AVIStreamNearestKeyFrameTime(pavi: IAVISTREAM; t: LONG): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamNearestKeyFrame(pavi,AVIStreamTimeToSample(pavi, t)));
 end;
 
-function    AVIStreamStartTime(pavi: PAVISTREAM): DWORD;
+function    AVIStreamStartTime(pavi: IAVISTREAM): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamStart(pavi));
 end;
 
-function    AVIStreamLengthTime(pavi: PAVISTREAM): DWORD;
+function    AVIStreamLengthTime(pavi: IAVISTREAM): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamLength(pavi));
 end;
 
-function    AVIStreamEnd(pavi: PAVISTREAM): DWORD;
+function    AVIStreamEnd(pavi: IAVISTREAM): LONG;
 begin
     Result  := AVIStreamStart(pavi) + AVIStreamLength(pavi);
 end;
 
-function    AVIStreamEndTime(pavi: PAVISTREAM): DWORD;
+function    AVIStreamEndTime(pavi: IAVISTREAM): LONG;
 begin
     Result  := AVIStreamSampleToTime(pavi, AVIStreamEnd(pavi));
 end;
 
-function    AVIStreamSampleSize(pavi: PAVISTREAM; lPos: DWORD; plSize: PDWORD): DWORD;
+function    AVIStreamSampleSize(pavi: IAVISTREAM; lPos: LONG; plSize: PLONG): LONG;
 begin
     Result  := AVIStreamRead(pavi,lPos,1,nil,0,plSize,nil);
 end;
 
-function    AVIStreamFormatSize(pavi: PAVISTREAM; lPos: DWORD; plSize: PDWORD): HResult;
+function    AVIStreamFormatSize(pavi: IAVISTREAM; lPos: LONG; plSize: PLONG): HResult;
 begin
     Result  := AVIStreamReadFormat(pavi,lPos,nil,plSize);
 end;
 
-function    AVIStreamDataSize(pavi: PAVISTREAM; fcc: DWORD; plSize: PDWORD): HResult;
+function    AVIStreamDataSize(pavi: IAVISTREAM; fcc: DWORD; plSize: PLONG): HResult;
 begin
     Result  := AVIStreamReadData(pavi,fcc,nil,plSize)
 end;
@@ -3352,12 +3591,12 @@ end;
 
 function    MCIWndHome(hwnd: HWND): DWORD;
 begin
-    Result  := MCIWndSeek(hwnd, dWord(MCIWND_START));
+    Result  := MCIWndSeek(hwnd, MCIWND_START);
 end;
 
 function    MCIWndEnd(hwnd: HWND): DWORD;
 begin
-    Result  := MCIWndSeek(hwnd, dWord(MCIWND_END));
+    Result  := MCIWndSeek(hwnd, MCIWND_END);
 end;
 
 function    MCIWndGetSource(hwnd: HWND; prc: PRECT): DWORD;
@@ -3902,9 +4141,9 @@ function    VideoForWindowsVersion: DWord; pascal; external VFWDLL;
 {-- Call these to start stop using VfW from your app -------------------------}
 
 { TODO: Where are these functions? }
-
-// function    InitVFW: DWORD; stdcall;
-// function    TermVFW: DWORD; stdcall;
+                            {
+ function    InitVFW: LONG; stdcall;
+ function    TermVFW: LONG; stdcall; }
 
 {-- ICM function declarations ------------------------------------------------}
 
@@ -4002,7 +4241,7 @@ function    ICImageCompress(
     lpbiIn      : PBITMAPINFO;          // format to compress from
     lpBits      : PVOID;                // data to compress
     lpbiOut     : PBITMAPINFO;          // compress to this (NULL ==> default)
-    lQuality    : DWORD;                 // quality to use
+    lQuality    : LONG;                 // quality to use
     plSize      : PDWORD                 // compress to this size (0=whatever)
     ): THANDLE; stdcall; external VFWDLL;
 
@@ -4124,98 +4363,125 @@ function    DrawDibProfileDisplay(lpbi: PBITMAPINFOHEADER): DWORD; stdcall; exte
 procedure   AVIFileInit; stdcall; external AVIFILDLL; // Call this first!
 procedure   AVIFileExit; stdcall; external AVIFILDLL;
 
-function    AVIFileAddRef(pfile: PAVIFILE): UDWORD; stdcall; external AVIFILDLL;
-function    AVIFileRelease(pfile: PAVIFILE): UDWORD; stdcall; external AVIFILDLL;
+function    AVIFileAddRef(pfile: IAVIFILE): ULONG; stdcall; external AVIFILDLL;
+function    AVIFileRelease(pfile: IAVIFILE): ULONG; stdcall; external AVIFILDLL;
 
-function    AVIFileOpenA(var ppfile: PAVIFILE; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
-function    AVIFileOpenW(var ppfile: PAVIFILE; szFile: LPCWSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
+function    AVIFileOpenA(var ppfile: IAVIFILE; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
+function    AVIFileOpenW(var ppfile: IAVIFILE; szFile: LPCWSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
 
-function    AVIFileOpen(var ppfile: PAVIFILE; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;  external AVIFILDLL name 'AVIFileOpenA';
+{$IFDEF UNICODE}
+function    AVIFileOpen(var ppfile: IAVIFILE; szFile: LPCWSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;  external AVIFILDLL name 'AVIFileOpenW';
+{$ELSE}
+function    AVIFileOpen(var ppfile: IAVIFILE; szFile: LPCSTR; uMode: UINT; lpHandler: PCLSID): HResult; stdcall;  external AVIFILDLL name 'AVIFileOpenA';
+{$ENDIF}
 
-function    AVIFileInfoW(pfile: PAVIFILE; pfi: PAVIFILEINFOW; lSize: DWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIFileInfoA(pfile: PAVIFILE; pfi: PAVIFILEINFOA; lSize: DWORD): HResult; stdcall; external AVIFILDLL;
+function    AVIFileInfoW(pfile: IAVIFILE; var pfi: TAVIFILEINFOW; lSize: LONG): HResult; stdcall; external AVIFILDLL;
+function    AVIFileInfoA(pfile: IAVIFILE; var pfi: TAVIFILEINFOA; lSize: LONG): HResult; stdcall; external AVIFILDLL;
 
-function    AVIFileInfo(pfile: PAVIFILE; pfi: PAVIFILEINFOA; lSize: DWORD): HResult; stdcall;  external AVIFILDLL name 'AVIFileInfoA';
+{$IFDEF UNICODE}
+function    AVIFileInfo(pfile: IAVIFILE; var pfi: TAVIFILEINFO; lSize: LONG): HResult; stdcall;  external AVIFILDLL name 'AVIFileInfoW';
+{$ELSE}
+function    AVIFileInfo(pfile: IAVIFILE; var pfi: TAVIFILEINFO; lSize: LONG): HResult; stdcall;  external AVIFILDLL name 'AVIFileInfoA';
+{$ENDIF}
 
-function    AVIFileGetStream(pfile: PAVIFILE; var ppavi: PAVISTREAM; fccType: DWORD; lParam: DWORD): HResult; stdcall; external AVIFILDLL;
+function    AVIFileGetStream(pfile: IAVIFILE; var ppavi: IAVISTREAM; fccType: DWORD; lParam: LONG): HResult; stdcall; external AVIFILDLL;
 
-function    AVIFileCreateStreamW(pfile: PAVIFILE; var ppavi: PAVISTREAM; psi: PAVISTREAMINFOW): HResult; stdcall; external AVIFILDLL;
-function    AVIFileCreateStreamA(pfile: PAVIFILE; var ppavi: PAVISTREAM; psi: PAVISTREAMINFOA): HResult; stdcall; external AVIFILDLL;
+function    AVIFileCreateStreamW(pfile: IAVIFILE; var ppavi: IAVISTREAM; var psi: TAVISTREAMINFOW): HResult; stdcall; external AVIFILDLL;
+function    AVIFileCreateStreamA(pfile: IAVIFILE; var ppavi: IAVISTREAM; var psi: TAVISTREAMINFOA): HResult; stdcall; external AVIFILDLL;
 
-function    AVIFileCreateStream(pfile: PAVIFILE; var ppavi: PAVISTREAM; psi: PAVISTREAMINFOA): HResult; stdcall; external AVIFILDLL name 'AVIFileCreateStreamA';
+{$IFDEF UNICODE}
+function    AVIFileCreateStream(pfile: IAVIFILE; var ppavi: IAVISTREAM; var psi: TAVISTREAMINFO): HResult; stdcall; external AVIFILDLL name 'AVIFileCreateStreamW';
+{$ELSE}
+function    AVIFileCreateStream(pfile: IAVIFILE; var ppavi: IAVISTREAM; var psi: TAVISTREAMINFO): HResult; stdcall; external AVIFILDLL name 'AVIFileCreateStreamA';
+{$ENDIF}
 
-function    AVIFileWriteData(pfile: PAVIFILE; ckid: DWORD; lpData: PVOID; cbData: DWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIFileReadData(pfile: PAVIFILE; ckid: DWORD; lpData: PVOID; lpcbData: PDWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIFileEndRecord(pfile: PAVIFILE): HResult; stdcall; external AVIFILDLL;
+function    AVIFileWriteData(pfile: IAVIFILE; ckid: DWORD; lpData: PVOID; cbData: LONG): HResult; stdcall; external AVIFILDLL;
+function    AVIFileReadData(pfile: IAVIFILE; ckid: DWORD; lpData: PVOID; var lpcbData: LONG): HResult; stdcall; external AVIFILDLL;
+function    AVIFileEndRecord(pfile: IAVIFILE): HResult; stdcall; external AVIFILDLL;
 
-function    AVIStreamAddRef(pavi: PAVISTREAM): UDWORD; stdcall; external AVIFILDLL;
-function    AVIStreamRelease(pavi: PAVISTREAM): UDWORD; stdcall; external AVIFILDLL;
+function    AVIStreamAddRef(pavi: IAVISTREAM): ULONG; stdcall; external AVIFILDLL;
+function    AVIStreamRelease(pavi: IAVISTREAM): ULONG; stdcall; external AVIFILDLL;
 
-function    AVIStreamInfoW (pavi: PAVISTREAM; psi: PAVISTREAMINFOW; lSize: DWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIStreamInfoA (pavi: PAVISTREAM; psi: PAVISTREAMINFOA; lSize: DWORD): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamInfoW (pavi: IAVISTREAM; var psi: TAVISTREAMINFOW; lSize: LONG): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamInfoA (pavi: IAVISTREAM; var psi: TAVISTREAMINFOA; lSize: LONG): HResult; stdcall; external AVIFILDLL;
 
-function    AVIStreamInfo(pavi: PAVISTREAM; psi: PAVISTREAMINFOA; lSize: DWORD): HResult; stdcall; external AVIFILDLL name 'AVIStreamInfoA';
+{$IFDEF UNICODE}
+function    AVIStreamInfo(pavi: IAVISTREAM; var psi: TAVISTREAMINFO; lSize: LONG): HResult; stdcall; external AVIFILDLL name 'AVIStreamInfoW';
+{$ELSE}
+function    AVIStreamInfo(pavi: IAVISTREAM; var psi: TAVISTREAMINFO; lSize: LONG): HResult; stdcall; external AVIFILDLL name 'AVIStreamInfoA';
+{$ENDIF}
 
-function    AVIStreamFindSample(pavi: PAVISTREAM; lPos: DWORD; lFlags: DWORD): DWORD; stdcall; external AVIFILDLL;
-function    AVIStreamReadFormat(pavi: PAVISTREAM; lPos: DWORD; lpFormat: PVOID; lpcbFormat: PDWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIStreamSetFormat(pavi: PAVISTREAM; lPos: DWORD; lpFormat: PVOID; cbFormat: DWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIStreamReadData(pavi: PAVISTREAM; fcc: DWORD; lp: PVOID; lpcb: PDWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIStreamWriteData(pavi: PAVISTREAM; fcc: DWORD; lp: PVOID; cb: DWORD): HResult; stdcall; external AVIFILDLL;
+
+function    AVIStreamFindSample(pavi: IAVISTREAM; lPos: LONG; lFlags: LONG): LONG; stdcall; external AVIFILDLL;
+function    AVIStreamReadFormat(pavi: IAVISTREAM; lPos: LONG; lpFormat: PVOID; lpcbFormat: PLONG): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamSetFormat(pavi: IAVISTREAM; lPos: LONG; lpFormat: PVOID; cbFormat: LONG): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamReadData(pavi: IAVISTREAM; fcc: DWORD; lp: PVOID; lpcb: PLONG): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamWriteData(pavi: IAVISTREAM; fcc: DWORD; lp: PVOID; cb: LONG): HResult; stdcall; external AVIFILDLL;
 
 function    AVIStreamRead(
-    pavi            : PAVISTREAM;
-    lStart          : DWORD;
-    lSamples        : DWORD;
+    pavi            : IAVISTREAM;
+    lStart          : LONG;
+    lSamples        : LONG;
     lpBuffer        : PVOID;
-    cbBuffer        : DWORD;
-    plBytes         : PDWORD;
-    plSamples       : PDWORD
+    cbBuffer        : LONG;
+    plBytes         : PLONG;
+    plSamples       : PLONG
     ): HResult; stdcall; external AVIFILDLL;
 
 function    AVIStreamWrite(
-    pavi            : PAVISTREAM;
-    lStart,
-    lSamples        : DWORD;
+    pavi            : IAVISTREAM;
+    lStart          : LONG;
+    lSamples        : LONG;
     lpBuffer        : PVOID;
-    cbBuffer        : DWORD;
+    cbBuffer        : LONG;
     dwFlags         : DWORD;
-    plSampWritten   : PDWORD;
-    plBytesWritten  : PDWORD
+    plSampWritten   : PLONG;
+    plBytesWritten  : PLONG
     ): HResult; stdcall; external AVIFILDLL;
 
 // Right now, these just use AVIStreamInfo() to get information, then
 // return some of it.  Can they be more efficient?
 
-function    AVIStreamStart(pavi: PAVISTREAM): DWORD; stdcall; external AVIFILDLL;
-function    AVIStreamLength(pavi: PAVISTREAM): DWORD; stdcall; external AVIFILDLL;
-function    AVIStreamTimeToSample(pavi: PAVISTREAM; lTime: DWORD): DWORD; stdcall; external AVIFILDLL;
-function    AVIStreamSampleToTime(pavi: PAVISTREAM; lSample: DWORD): DWORD; stdcall; external AVIFILDLL;
+function    AVIStreamStart(pavi: IAVISTREAM): LONG; stdcall; external AVIFILDLL;
+function    AVIStreamLength(pavi: IAVISTREAM): LONG; stdcall; external AVIFILDLL;
+function    AVIStreamTimeToSample(pavi: IAVISTREAM; lTime: LONG): LONG; stdcall; external AVIFILDLL;
+function    AVIStreamSampleToTime(pavi: IAVISTREAM; lSample: LONG): LONG; stdcall; external AVIFILDLL;
 
-function    AVIStreamBeginStreaming(pavi: PAVISTREAM; lStart, lEnd: DWORD; lRate: DWORD): HResult; stdcall; external AVIFILDLL;
-function    AVIStreamEndStreaming(pavi: PAVISTREAM): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamBeginStreaming(pavi: IAVISTREAM; lStart, lEnd: LONG; lRate: LONG): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamEndStreaming(pavi: IAVISTREAM): HResult; stdcall; external AVIFILDLL;
 
 {-- Helper functions for using IGetFrame -------------------------------------}
 
-function    AVIStreamGetFrameOpen(pavi: PAVISTREAM; lpbiWanted: PBITMAPINFOHEADER): PGETFRAME; stdcall; external AVIFILDLL;
-function    AVIStreamGetFrame(pg: PGETFRAME; lPos: DWORD): PVOID; stdcall; external AVIFILDLL;
-function    AVIStreamGetFrameClose(pg: PGETFRAME): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamGetFrameOpen_(pavi: IAVISTREAM; lpbiWanted: PBitmapInfoHeader): pointer; stdcall; external AVIFILDLL name 'AVIStreamGetFrameOpen';
+function    AVIStreamGetFrame(pg: IGETFRAME; lPos: LONG): PBitmapInfoHeader; stdcall; external AVIFILDLL;
+function    AVIStreamGetFrameClose(pg: IGETFRAME): HResult; stdcall; external AVIFILDLL;
+
+function    AVIStreamGetFrameOpen(pavi: IAVIStream; lpbiWanted: PBitmapInfoHeader): IGetFrame; stdcall;
+begin
+  pointer(Result) := AVIStreamGetFrameOpen_(pavi, lpbiWanted);
+end;
 
 // !!! We need some way to place an advise on a stream....
 // STDAPI AVIStreamHasChanged   (PAVISTREAM pavi);
 
 {-- Shortcut function --------------------------------------------------------}
 
-function    AVIStreamOpenFromFileA(var ppavi: PAVISTREAM; szFile: LPCSTR; fccType: DWORD;
-                                   lParam: DWORD; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
-function    AVIStreamOpenFromFileW(var ppavi: PAVISTREAM; szFile: LPCWSTR; fccType: DWORD;
-                                   lParam: DWORD; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamOpenFromFileA(var ppavi: IAVISTREAM; szFile: LPCSTR; fccType: DWORD;
+                                   lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
+function    AVIStreamOpenFromFileW(var ppavi: IAVISTREAM; szFile: LPCWSTR; fccType: DWORD;
+                                   lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
 
-function    AVIStreamOpenFromFile(var ppavi: PAVISTREAM; szFile: LPCSTR; fccType: DWORD;
-                                  lParam: DWORD; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL name 'AVIStreamOpenFromFileA';
+{$IFDEF UNICODE}
+function AVIStreamOpenFromFile(var ppavi: IAVISTREAM; szFile: LPCWSTR; fccType: DWORD;
+  lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL name 'AVIStreamOpenFromFileW';
+{$ELSE}
+function AVIStreamOpenFromFile(var ppavi: IAVISTREAM; szFile: LPCSTR; fccType: DWORD;
+  lParam: LONG; mode: UINT; pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL name 'AVIStreamOpenFromFileA';
+{$ENDIF}
 
 {-- Use to create disembodied streams ----------------------------------------}
 
-function    AVIStreamCreate(var ppavi: PAVISTREAM; lParam1, lParam2: DWORD;
+function    AVIStreamCreate(var ppavi: IAVISTREAM; lParam1, lParam2: LONG;
                             pclsidHandler: PCLSID): HResult; stdcall; external AVIFILDLL;
 
 // PHANDLER    AVIAPI AVIGetHandler         (PAVISTREAM pavi, PAVISTREAMHANDLER psh);
@@ -4223,21 +4489,21 @@ function    AVIStreamCreate(var ppavi: PAVISTREAM; lParam1, lParam2: DWORD;
 
 {-- Stuff to support backward compat. ----------------------------------------}
 
-function    AVIStreamFindKeyFrame(pavi: PAVISTREAM; lPos: DWORD; lFlags: DWORD): DWORD; stdcall; external AVIFILDLL name 'AVIStreamFindSample';
+function    AVIStreamFindKeyFrame(var pavi: IAVISTREAM; lPos: LONG; lFlags: LONG): DWORD; stdcall; external AVIFILDLL name 'AVIStreamFindSample';
 
 // Non-portable: this is alias for method name
 // FindKeyFrame FindSample
 
-function    AVIStreamClose(pavi: PAVISTREAM): UDWORD; stdcall; external AVIFILDLL name 'AVIStreamRelease';
-function    AVIFileClose(pfile: PAVIFILE): UDWORD; stdcall; external AVIFILDLL name 'AVIFileRelease';
+function    AVIStreamClose(pavi: IAVISTREAM): ULONG; stdcall; external AVIFILDLL name 'AVIStreamRelease';
+function    AVIFileClose(pfile: IAVIFILE): ULONG; stdcall; external AVIFILDLL name 'AVIFileRelease';
 procedure   AVIStreamInit; stdcall; external AVIFILDLL name 'AVIFileInit';
 procedure   AVIStreamExit; stdcall; external AVIFILDLL name 'AVIFileExit';
 
 {== AVISave routines and structures ==========================================}
 
 function    AVIMakeCompressedStream(
-    var ppsCompressed   : PAVISTREAM;
-    ppsSource           : PAVISTREAM;
+    var ppsCompressed   : IAVISTREAM;
+    ppsSource           : IAVISTREAM;
     lpOptions           : PAVICOMPRESSOPTIONS;
     pclsidHandler       : PCLSID
     ): HResult; stdcall; external AVIFILDLL;
@@ -4256,7 +4522,7 @@ function    AVISaveVA(
     pclsidHandler   : PCLSID;
     lpfnCallback    : TAVISAVECALLBACK;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): HResult; stdcall; external AVIFILDLL;
 
@@ -4274,7 +4540,7 @@ function    AVISaveVW(
     pclsidHandler   : PCLSID;
     lpfnCallback    : TAVISAVECALLBACK;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): HResult; stdcall; external AVIFILDLL;
 
@@ -4285,7 +4551,7 @@ function    AVISaveV(
     pclsidHandler   : PCLSID;
     lpfnCallback    : TAVISAVECALLBACK;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): HResult; stdcall; external AVIFILDLL name 'AVISaveVA';
 
@@ -4293,7 +4559,7 @@ function    AVISaveOptions(
     hwnd            : HWND;
     uiFlags         : UINT;
     nStreams        : int;
-    var ppavi       : PAVISTREAM;
+    var ppavi       : IAVISTREAM;
     var plpOptions  : PAVICOMPRESSOPTIONS
     ): BOOL; stdcall; external AVIFILDLL;
 
@@ -4301,37 +4567,37 @@ function    AVISaveOptionsFree(nStreams: int; var plpOptions: PAVICOMPRESSOPTION
 
 {-----------------------------------------------------------------------------}
 
-function    AVIBuildFilterW(lpszFilter: LPWSTR; cbFilter: DWORD; fSaving: BOOL): HResult; stdcall; external AVIFILDLL;
-function    AVIBuildFilterA(lpszFilter: LPSTR; cbFilter: DWORD; fSaving: BOOL): HResult; stdcall; external AVIFILDLL;
+function    AVIBuildFilterW(lpszFilter: LPWSTR; cbFilter: LONG; fSaving: BOOL): HResult; stdcall; external AVIFILDLL;
+function    AVIBuildFilterA(lpszFilter: LPSTR; cbFilter: LONG; fSaving: BOOL): HResult; stdcall; external AVIFILDLL;
 
-function    AVIBuildFilter(lpszFilter: LPSTR; cbFilter: DWORD; fSaving: BOOL): HResult; stdcall; external AVIFILDLL name 'AVIBuildFilterA';
+function    AVIBuildFilter(lpszFilter: LPSTR; cbFilter: LONG; fSaving: BOOL): HResult; stdcall; external AVIFILDLL name 'AVIBuildFilterA';
 
-function    AVIMakeFileFromStreams(var ppfile: PAVIFILE; nStreams: int; var papStreams: PAVISTREAM): HResult; stdcall; external AVIFILDLL;
+function    AVIMakeFileFromStreams(var ppfile: IAVIFILE; nStreams: int; var papStreams: IAVISTREAM): HResult; stdcall; external AVIFILDLL;
 
-function    AVIMakeStreamFromClipboard(cfFormat: UINT; hGlobal: THANDLE; var ppstream: PAVISTREAM): HResult; stdcall; external AVIFILDLL;
+function    AVIMakeStreamFromClipboard(cfFormat: UINT; hGlobal: THANDLE; var ppstream: IAVISTREAM): HResult; stdcall; external AVIFILDLL;
 
 {-- Clipboard routines -------------------------------------------------------}
 
-function    AVIPutFileOnClipboard(pf: PAVIFILE): HResult; stdcall; external AVIFILDLL;
-function    AVIGetFromClipboard(var lppf: PAVIFILE): HResult; stdcall; external AVIFILDLL;
+function    AVIPutFileOnClipboard(pf: IAVIFILE): HResult; stdcall; external AVIFILDLL;
+function    AVIGetFromClipboard(var lppf: IAVIFILE): HResult; stdcall; external AVIFILDLL;
 function    AVIClearClipboard: HResult; stdcall; external AVIFILDLL;
 
 {-- Editing routines ---------------------------------------------------------}
 
-function    CreateEditableStream(var ppsEditable: PAVISTREAM; psSource: PAVISTREAM): HResult; stdcall; external AVIFILDLL;
+function    CreateEditableStream(var ppsEditable: IAVISTREAM; psSource: IAVISTREAM): HResult; stdcall; external AVIFILDLL;
 
-function    EditStreamCut(pavi: PAVISTREAM; plStart, plLength: PDWORD; var ppResult: PAVISTREAM): HResult; stdcall; external AVIFILDLL;
-function    EditStreamCopy(pavi: PAVISTREAM; plStart, plLength: PDWORD; var ppResult: PAVISTREAM): HResult; stdcall; external AVIFILDLL;
-function    EditStreamPaste(pavi: PAVISTREAM; plPos, plLength: PDWORD; pstream: PAVISTREAM; lStart, lEnd: DWORD): HResult; stdcall; external AVIFILDLL;
-function    EditStreamClone(pavi: PAVISTREAM; var ppResult: PAVISTREAM): HResult; stdcall; external AVIFILDLL;
+function    EditStreamCut(pavi: IAVISTREAM; var plStart, plLength: LONG; var ppResult: IAVISTREAM): HResult; stdcall; external AVIFILDLL;
+function    EditStreamCopy(pavi: IAVISTREAM; var plStart, plLength: LONG; var ppResult: IAVISTREAM): HResult; stdcall; external AVIFILDLL;
+function    EditStreamPaste(pavi: IAVISTREAM; var plPos, plLength: LONG; pstream: IAVISTREAM; lStart, lEnd: LONG): HResult; stdcall; external AVIFILDLL;
+function    EditStreamClone(pavi: IAVISTREAM; var ppResult: IAVISTREAM): HResult; stdcall; external AVIFILDLL;
 
-function    EditStreamSetNameA(pavi: PAVISTREAM; lpszName: LPCSTR): HResult; stdcall; external AVIFILDLL;
-function    EditStreamSetNameW(pavi: PAVISTREAM; lpszName: LPCWSTR): HResult; stdcall; external AVIFILDLL;
-function    EditStreamSetInfoW(pavi: PAVISTREAM; lpInfo: PAVISTREAMINFOW; cbInfo: DWORD): HResult; stdcall; external AVIFILDLL;
-function    EditStreamSetInfoA(pavi: PAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: DWORD): HResult; stdcall; external AVIFILDLL;
+function    EditStreamSetNameA(pavi: IAVISTREAM; lpszName: LPCSTR): HResult; stdcall; external AVIFILDLL;
+function    EditStreamSetNameW(pavi: IAVISTREAM; lpszName: LPCWSTR): HResult; stdcall; external AVIFILDLL;
+function    EditStreamSetInfoW(pavi: IAVISTREAM; lpInfo: PAVISTREAMINFOW; cbInfo: LONG): HResult; stdcall; external AVIFILDLL;
+function    EditStreamSetInfoA(pavi: IAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: LONG): HResult; stdcall; external AVIFILDLL;
 
-function    EditStreamSetInfo(pavi: PAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: DWORD): HResult; stdcall; external AVIFILDLL name 'EditStreamSetInfoA';
-function    EditStreamSetName(pavi: PAVISTREAM; lpszName: LPCSTR): HResult; stdcall; external AVIFILDLL name 'EditStreamSetNameA';
+function    EditStreamSetInfo(pavi: IAVISTREAM; lpInfo: PAVISTREAMINFOA; cbInfo: LONG): HResult; stdcall; external AVIFILDLL name 'EditStreamSetInfoA';
+function    EditStreamSetName(pavi: IAVISTREAM; lpszName: LPCSTR): HResult; stdcall; external AVIFILDLL name 'EditStreamSetNameA';
 
 {-- MCIWnd -------------------------------------------------------------------}
 
