@@ -183,10 +183,9 @@ begin
          seParkingLot :       FSOUND_Reverb_SetProperties(FSOUND_PRESET_PARKINGLOT);
          seSewerPipe :        FSOUND_Reverb_SetProperties(FSOUND_PRESET_SEWERPIPE);
          seUnderWater :       FSOUND_Reverb_SetProperties(FSOUND_PRESET_UNDERWATER);
-         // unsupported
-         seDrugged :          FSOUND_Reverb_SetProperties(FSOUND_PRESET_GENERIC);
-         seDizzy :            FSOUND_Reverb_SetProperties(FSOUND_PRESET_GENERIC);
-         sePsychotic :        FSOUND_Reverb_SetProperties(FSOUND_PRESET_GENERIC);
+         seDrugged :          FSOUND_Reverb_SetProperties(FSOUND_PRESET_DRUGGED);
+         seDizzy :            FSOUND_Reverb_SetProperties(FSOUND_PRESET_DIZZY);
+         sePsychotic :        FSOUND_Reverb_SetProperties(FSOUND_PRESET_PSYCHOTIC);
       else
          Assert(False);
       end;
