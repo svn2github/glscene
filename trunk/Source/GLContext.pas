@@ -38,6 +38,10 @@ type
    //
    TGLContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
+   // TGLAntiAliasing
+   //
+   TGLAntiAliasing = (aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ);
+
    // TGLContext
    //
    {: Wrapper around an OpenGL rendering context.<p>
@@ -55,6 +59,7 @@ type
          FStencilBits : Integer;
          FAccumBits : Integer;
          FAuxBuffers : Integer;
+         FAntiAliasing : TGLAntiAliasing;
          FOptions : TGLRCOptions;
          FOnDestroyContext : TNotifyEvent;
          FManager : TGLContextManager;
@@ -72,6 +77,7 @@ type
          procedure SetAccumBits(const aAccumBits : Integer);
          procedure SetAuxBuffers(const aAuxBuffers : Integer);
          procedure SetOptions(const aOptions : TGLRCOptions);
+         procedure SetAntiAliasing(const val : TGLAntiAliasing);
          function  GetActive : Boolean;
          procedure SetActive(const aActive : Boolean);
          procedure PropagateSharedContext;
@@ -101,6 +107,9 @@ type
          property AccumBits : Integer read FAccumBits write SetAccumBits;
          {: Auxiliary buffers bits for the rendering context }
          property AuxBuffers : Integer read FAuxBuffers write SetAuxBuffers;
+         {: AntiAliasing option.<p>
+            Ignored if not hardware supported, currently based on ARB_multisample. }
+         property AntiAliasing : TGLAntiAliasing read FAntiAliasing write SetAntiAliasing;
          {: Rendering context options. }
          property Options : TGLRCOptions read FOptions write SetOptions;
          {: Allows reading and defining the activity for the context.<p>
@@ -496,6 +505,15 @@ begin
    if Active then
       raise EGLContext.Create(cCannotAlterAnActiveContext)
    else FOptions:=aOptions;
+end;
+
+// SetAntiAliasing
+//
+procedure TGLContext.SetAntiAliasing(const val : TGLAntiAliasing);
+begin
+   if Active then
+      raise EGLContext.Create(cCannotAlterAnActiveContext)
+   else FAntiAliasing:=val;
 end;
 
 // GetActive

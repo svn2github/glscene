@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/02/02 - EG - AntiAliasing support *experimental* (Chris N. Strahm)
       <li>05/02/02 - EG - Fixed UnTrackWindow
       <li>03/02/02 - EG - Added experimental Hook-based window tracking
       <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support 
@@ -24,7 +25,7 @@ interface
 
 {$i ../GLScene.inc}
 
-uses Classes, SysUtils, GLContext;
+uses Windows, Classes, SysUtils, GLContext;
 
 type
 
@@ -37,6 +38,9 @@ type
          FRC, FDC, FHPBUFFER : Integer;
          FiAttribs : packed array of Integer;
          FfAttribs : packed array of Single;
+         FLegacyContextsOnly : Boolean;
+
+         procedure SpawnLegacyContext(aDC : HDC); // used for WGL_pixel_format soup
 
       protected
          { Protected Declarations }
@@ -79,14 +83,14 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Forms, OpenGL12, Windows, GLCrossPlatform, Messages;
+uses Forms, OpenGL12, GLCrossPlatform, Messages;
 
 resourcestring
    cIncompatibleContexts =       'Incompatible contexts';
    cDeleteContextFailed =        'Delete context failed';
    cContextActivationFailed =    'Context activation failed: %X';
    cContextDeactivationFailed =  'Context deactivation failed';
-   cUnableToCreateMemoryContext= 'Unable to create memory context, pbuffer probably not supported';
+   cUnableToCreateLegacyContext= 'Unable to create legacy context';
 
 var
    vTrackingCount : Integer;
@@ -156,6 +160,34 @@ begin
       UnhookWindowsHookEx(vTrackingHook);
 end;
 
+var
+   vUtilWindowClass: TWndClass = (
+      style: 0;
+      lpfnWndProc: @DefWindowProc;
+      cbClsExtra: 0;
+      cbWndExtra: 0;
+      hInstance: 0;
+      hIcon: 0;
+      hCursor: 0;
+      hbrBackground: 0;
+      lpszMenuName: nil;
+      lpszClassName: 'GLSUtilWindow');
+
+// CreateTempWnd
+//
+function CreateTempWnd : HWND;
+var
+   classRegistered: Boolean;
+   tempClass: TWndClass;
+begin
+   vUtilWindowClass.hInstance:=HInstance;
+   classRegistered:=GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
+                                 tempClass);
+   if not classRegistered then
+      Windows.RegisterClass(vUtilWindowClass);
+   Result:=CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
+                            '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
+end;
 
 // ------------------
 // ------------------ TGLWin32Context ------------------
@@ -279,93 +311,127 @@ procedure TGLWin32Context.DoCreateContext(outputDevice : Integer);
 const
    cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
    cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
+   cAAToSamples : array [aa2x..aa4xHQ] of Integer = (2, 2, 4, 4);
 var
    pfDescriptor : TPixelFormatDescriptor;
-   pixelFormat : Integer;
+   pixelFormat, nbFormats : Integer;
    aType : DWORD;
-{  iFormats, iValues : array of Integer;
-   nbFormats, rc, i : Integer;
-   chooseResult : LongBool; }
+   iFormats : array [0..31] of Integer;
+   tempWnd : HWND;
+   tempDC : HDC;
+   localDC, localRC : Integer;
 begin
    if vUseWindowTrackingHook then
-      TrackWindow(WindowFromDC(outputDevice), DestructionEarlyWarning);
+      TrackWindow(WindowFromDC(LongWord(outputDevice)), DestructionEarlyWarning);
 
    // Just in case it didn't happen already.
    if not InitOpenGL then RaiseLastOSError;
-   // *UNDER CONSTRUCTION... ENABLE BACK ONLY IF YOU UNDERSTAND THAT STUFF*
-   //
-{   if WGL_ARB_pixel_format then begin
-      // New pixel format selection via wglChoosePixelFormatARB
-      ClearIAttribs;
-      AddIAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
-//      AddIAttrib(WGL_DRAW_TO_BITMAP_ARB, GL_TRUE);
-      AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
-//      AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
-//      AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB);
-      AddAttrib(WGL_SUPPORT_OPENGL_ARB, GL_TRUE);
-      AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
-//      AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
-//      AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
-//      AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
-//      AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-//      AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, 4);
-      ClearFAttribs;
-      SetLength(iFormats, 512);
-      nbFormats:=1;
-      outputDevice:=GetDC(0);
-      rc:=CreateRenderingContext(outputDevice, [], 24, 0, 0, 0, 0);
-      wglMakeCurrent(outputDevice, rc);
-      chooseResult:=wglChoosePixelFormatARB(outputDevice, @FiAttribList[0], @FfAttribList[0],
-                                            512, @iFormats[0], @nbFormats);
-      Assert(chooseResult);
-      Assert(nbFormats<>0);
-      for i:=0 to nbFormats-1 do begin
-         SetLength(FiAttribList, 6);
-         FiAttribList[0]:=WGL_ACCELERATION_ARB;
-         FiAttribList[1]:=WGL_SWAP_METHOD_ARB;
-         FiAttribList[2]:=WGL_COLOR_BITS_ARB;
-         FiAttribList[3]:=WGL_DEPTH_BITS_ARB;
-         FiAttribList[4]:=WGL_STENCIL_BITS_ARB;
-         FiAttribList[5]:=WGL_SAMPLES_ARB;
-         SetLength(iValues, 6);
-         wglGetPixelFormatAttribivARB(outputDevice, iFormats[i], 0, 6, @FiAttribList[0], @iValues[0]);
-      end;
 
-   end else begin }
-      // Legacy pixel format selection
-      FillChar(pfDescriptor, SizeOf(pfDescriptor), 0);
-      with PFDescriptor do begin
-         nSize:=SizeOf(PFDescriptor);
-         nVersion:=1;
-         dwFlags:=PFD_SUPPORT_OPENGL;
-         aType:=GetObjectType(Cardinal(outputDevice));
-         if aType=0 then
-            RaiseLastOSError;
-         if aType in cMemoryDCs then
-            dwFlags:=dwFlags or PFD_DRAW_TO_BITMAP
-         else dwFlags:=dwFlags or PFD_DRAW_TO_WINDOW;
-         if rcoDoubleBuffered in Options then
-            dwFlags:=dwFlags or PFD_DOUBLEBUFFER;
-         if rcoStereo in Options then
-            dwFlags:=dwFlags or PFD_STEREO;
-         iPixelType:=PFD_TYPE_RGBA;
-         cColorBits:=ColorBits;
-         cDepthBits:=24;
-         cStencilBits:=StencilBits;
-         cAccumBits:=AccumBits;
-         cAlphaBits:=AlphaBits;
-         cAuxBuffers:=AuxBuffers;
-         iLayerType:=PFD_MAIN_PLANE;
-      end;
-
-      pixelFormat:=ChoosePixelFormat(Cardinal(outputDevice), @PFDescriptor);
-//   end;
-
-   if pixelFormat=0 then RaiseLastOSError;
-
-   if GetPixelFormat(Cardinal(outputDevice))<>pixelFormat then begin
-      if not SetPixelFormat(Cardinal(outputDevice), pixelFormat, @PFDescriptor) then
+   // Prepare PFD
+   FillChar(pfDescriptor, SizeOf(pfDescriptor), 0);
+   with PFDescriptor do begin
+      nSize:=SizeOf(PFDescriptor);
+      nVersion:=1;
+      dwFlags:=PFD_SUPPORT_OPENGL;
+      aType:=GetObjectType(Cardinal(outputDevice));
+      if aType=0 then
          RaiseLastOSError;
+      if aType in cMemoryDCs then
+         dwFlags:=dwFlags or PFD_DRAW_TO_BITMAP
+      else dwFlags:=dwFlags or PFD_DRAW_TO_WINDOW;
+      if rcoDoubleBuffered in Options then
+         dwFlags:=dwFlags or PFD_DOUBLEBUFFER;
+      if rcoStereo in Options then
+         dwFlags:=dwFlags or PFD_STEREO;
+      iPixelType:=PFD_TYPE_RGBA;
+      cColorBits:=ColorBits;
+      cDepthBits:=24;
+      cStencilBits:=StencilBits;
+      cAccumBits:=AccumBits;
+      cAlphaBits:=AlphaBits;
+      cAuxBuffers:=AuxBuffers;
+      iLayerType:=PFD_MAIN_PLANE;
+   end;
+   pixelFormat:=0;
+
+   // WGL_ARB_pixel_format is used if available
+   //
+   if not (FLegacyContextsOnly or (aType in cMemoryDCs)) then begin
+      // the WGL mechanism is a little awkward: we first create a dummy context
+      // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
+      // our stuff, etc.
+      tempWnd:=CreateTempWnd;
+      tempDC:=GetDC(tempWnd);
+      localDC:=0;
+      localRC:=0;
+      try
+         SpawnLegacyContext(tempDC);
+         try
+            DoActivate;
+            try
+               ClearGLError;
+               if WGL_ARB_pixel_format then begin
+                  // New pixel format selection via wglChoosePixelFormatARB
+                  ClearIAttribs;
+                  AddIAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
+                  AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
+                  AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
+                  AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+                  if AlphaBits>0 then
+                     AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
+                  AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
+                  if StencilBits>0 then
+                     AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
+                  if AccumBits>0 then
+                     AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
+                  if AuxBuffers>0 then
+                     AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
+                  if (AntiAliasing<>aaNone) and GL_ARB_multisample then begin
+                      AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_TRUE);
+                      AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
+                  end;
+                  ClearFAttribs;
+                  wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
+                                          32, @iFormats, @nbFormats);
+                  if nbFormats=0 then begin
+                     // couldn't find 24 bits depth buffer, 16 bits one available?
+                     ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
+                     wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
+                                             32, @iFormats, @nbFormats);
+                  end;
+                  if nbFormats>0 then begin
+                     pixelFormat:=iFormats[0];
+                     if GetPixelFormat(Cardinal(outputDevice))<>pixelFormat then begin
+                        if not SetPixelFormat(Cardinal(outputDevice), pixelFormat, @PFDescriptor) then
+                           RaiseLastOSError;
+                     end;
+                  end;
+               end;
+            finally
+               DoDeactivate;
+            end;
+         finally
+            DoDestroyContext;
+         end;
+      finally
+         ReleaseDC(0, tempDC);
+         DestroyWindow(tempWnd);
+         FDC:=localDC;
+         FRC:=localRC;
+      end;
+   end;
+   if pixelFormat=0 then begin
+      // Legacy pixel format selection
+      pixelFormat:=ChoosePixelFormat(Cardinal(outputDevice), @PFDescriptor);
+
+      if pixelFormat=0 then RaiseLastOSError;
+
+      if GetPixelFormat(Cardinal(outputDevice))<>pixelFormat then begin
+         if not SetPixelFormat(Cardinal(outputDevice), pixelFormat, @PFDescriptor) then
+            RaiseLastOSError;
+      end;
+
+      ClearGLError;
    end;
 
    // Check the properties we just set.
@@ -383,21 +449,26 @@ begin
       RaiseLastOSError
    else vLastPixelFormat:=0;
    FDC:=outputDevice;
-
 end;
 
-var
-  vUtilWindowClass: TWndClass = (
-    style: 0;
-    lpfnWndProc: @DefWindowProc;
-    cbClsExtra: 0;
-    cbWndExtra: 0;
-    hInstance: 0;
-    hIcon: 0;
-    hCursor: 0;
-    hbrBackground: 0;
-    lpszMenuName: nil;
-    lpszClassName: 'GLSUtilWindow');
+// SpawnLegacyContext
+//
+procedure TGLWin32Context.SpawnLegacyContext(aDC : HDC);
+begin
+   try
+      FLegacyContextsOnly:=True;
+      try
+         DoCreateContext(aDC);
+      finally
+         FLegacyContextsOnly:=False;
+      end;
+   except
+      on E: Exception do begin
+         raise Exception.Create(cUnableToCreateLegacyContext+#13#10
+                                +E.ClassName+': '+E.Message);
+      end;
+   end;
+end;
 
 // DoCreateMemoryContext
 //
@@ -408,8 +479,6 @@ var
    iPBufferAttribs : array [0..0] of Integer;
    localHPBuffer, localDC, localRC, tempDC : Integer;
    tempWnd : HWND;
-   tempClass: TWndClass;
-   classRegistered: Boolean;
    topDC : Integer;
 begin
    localHPBuffer:=0;
@@ -421,28 +490,13 @@ begin
       outputDevice:=topDC;
    end else topDC:=0;
    try
-
       // the WGL mechanism is a little awkward: we first create a dummy context
       // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
       // our stuff, etc.
-      vUtilWindowClass.hInstance:=HInstance;
-      classRegistered:=GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
-                                    tempClass);
-      if not classRegistered  then begin
-         Windows.RegisterClass(vUtilWindowClass);
-      end;
-      tempWnd:=CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
-                              '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
+      tempWnd:=CreateTempWnd;
       tempDC:=GetDC(tempWnd);
       try
-         try
-            DoCreateContext(tempDC);
-         except
-            on E: Exception do begin
-               raise Exception.Create(cUnableToCreateMemoryContext+#13#10
-                                      +E.ClassName+E.Message); 
-            end;
-         end;
+         SpawnLegacyContext(tempDC);
          try
             DoActivate;
             try
@@ -481,11 +535,11 @@ begin
                         if localRC=0 then
                            raise Exception.Create('Unabled to create pbuffer''s RC.');
                      except
-                        wglReleasePbufferDCARB(localHPBuffer, localDC);
+                        wglReleasePBufferDCARB(localHPBuffer, localDC);
                         raise;
                      end;
                   except
-                     wglDestroyPbufferARB(localHPBuffer);
+                     wglDestroyPBufferARB(localHPBuffer);
                      raise;
                   end;
                end else raise Exception.Create('WGL_ARB_pbuffer support required.');
@@ -561,6 +615,13 @@ begin
          ReadWGLImplementationProperties;
       end;
       vLastPixelFormat:=pixelFormat;
+   end;
+
+   // If we are using AntiAliasing, adjust filtering hints
+   if (AntiAliasing in [aa2xHQ, aa4xHQ]) and GL_ARB_multisample then begin
+      // nVidia HQ modes (Quincunx etc.)
+      if GL_NV_multisample_filter_hint then
+         glHint(GL_MULTISAMPLE_FILTER_HINT_NV,GL_NICEST);
    end;
 end;
 

@@ -418,6 +418,7 @@ var
   GL_NV_texture_env_combine4,
   GL_NV_vertex_array_range,
   GL_NV_vertex_program,
+  GL_NV_multisample_filter_hint,
 
   GL_PGI_misc_hints,
   GL_PGI_vertex_hints,
@@ -4196,6 +4197,9 @@ const
   {$EXTERNALSYM GL_MAP2_VERTEX_ATTRIB14_4_NV}
   GL_MAP2_VERTEX_ATTRIB15_4_NV                      = $867F;
   {$EXTERNALSYM GL_MAP2_VERTEX_ATTRIB15_4_NV}
+
+  // NV_multisample_filter_hint
+  GL_MULTISAMPLE_FILTER_HINT_NV                     = $8534;
 
   // WGL_ARB_pixel_format
   WGL_NUMBER_PIXEL_FORMATS_ARB                      = $2000;
@@ -8309,7 +8313,7 @@ begin
       GLU_VERSION_1_2 := True; 
       if MinorVersion > 2 then
         GLU_VERSION_1_3 := True; 
-    end; 
+    end;
   end; 
 
   // check supported extensions
@@ -8327,7 +8331,7 @@ begin
   GL_ARB_multisample := CheckExtension('GL_ARB_multisample');
   GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture'); 
   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
-  GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map'); 
+  GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
   GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix'); 
   GL_ARB_vertex_blend := CheckExtension('GL_ARB_vertex_blend'); 
 
@@ -8345,7 +8349,7 @@ begin
   GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array');
   GL_EXT_convolution := CheckExtension('GL_EXT_convolution'); 
   GL_EXT_coordinate_frame := CheckExtension('GL_EXT_coordinate_frame'); 
-  GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture'); 
+  GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture');
   GL_EXT_cull_vertex := CheckExtension('GL_EXT_cull_vertex'); 
   GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements'); 
   GL_EXT_fog_coord := CheckExtension('GL_EXT_fog_coord'); 
@@ -8363,7 +8367,7 @@ begin
   GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture');
   GL_EXT_pixel_transform := CheckExtension('GL_EXT_pixel_transform'); 
   GL_EXT_point_parameters := CheckExtension('GL_EXT_point_parameters'); 
-  GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset'); 
+  GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset');
   GL_EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal'); 
   GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker'); 
   GL_EXT_secondary_color := CheckExtension('GL_EXT_secondary_color');
@@ -8381,7 +8385,7 @@ begin
   GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
   GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
   GL_EXT_texture_perturb_normal := CheckExtension('GL_EXT_texture_perturb_normal'); 
-  GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D'); 
+  GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
   GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
   GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting');
 
@@ -8399,7 +8403,7 @@ begin
   GL_INGR_color_clamp := CheckExtension('GL_INGR_color_clamp'); 
   GL_INGR_interlace_read := CheckExtension('GL_INGR_interlace_read');
 
-  GL_INTEL_parallel_arrays := CheckExtension('GL_INTEL_parallel_arrays'); 
+  GL_INTEL_parallel_arrays := CheckExtension('GL_INTEL_parallel_arrays');
 
   GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region'); 
 
@@ -8414,6 +8418,7 @@ begin
   GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection'); 
   GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4'); 
   GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
+  GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
   GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program'); 
 
   GL_PGI_misc_hints := CheckExtension('GL_PGI_misc_hints');
@@ -8453,7 +8458,7 @@ begin
   GL_SGIX_flush_raster := CheckExtension('GL_SGIX_flush_raster'); 
   GL_SGIX_fog_offset := CheckExtension('GL_SGIX_fog_offset'); 
   GL_SGIX_fog_scale := CheckExtension('GL_SGIX_fog_scale'); 
-  GL_SGIX_fragment_lighting := CheckExtension('GL_SGIX_fragment_lighting'); 
+  GL_SGIX_fragment_lighting := CheckExtension('GL_SGIX_fragment_lighting');
   GL_SGIX_framezoom := CheckExtension('GL_SGIX_framezoom'); 
   GL_SGIX_igloo_interface := CheckExtension('GL_SGIX_igloo_interface'); 
   GL_SGIX_instruments := CheckExtension('GL_SGIX_instruments'); 
@@ -8471,7 +8476,7 @@ begin
   GL_SGIX_subsample := CheckExtension('GL_SGIX_subsample'); 
   GL_SGIX_tag_sample_buffer := CheckExtension('GL_SGIX_tag_sample_buffer'); 
   GL_SGIX_texture_add_env := CheckExtension('GL_SGIX_texture_add_env');
-  GL_SGIX_texture_lod_bias := CheckExtension('GL_SGIX_texture_lod_bias'); 
+  GL_SGIX_texture_lod_bias := CheckExtension('GL_SGIX_texture_lod_bias');
   GL_SGIX_texture_multi_buffer := CheckExtension('GL_SGIX_texture_multi_buffer'); 
   GL_SGIX_texture_scale_bias := CheckExtension('GL_SGIX_texture_scale_bias');
   GL_SGIX_vertex_preclip := CheckExtension('GL_SGIX_vertex_preclip'); 
@@ -8561,7 +8566,7 @@ begin
       palPalEntry[I].peGreen := (((I shr cGreenShift) and GreenMask) * 255) div GreenMask; 
       palPalEntry[I].peBlue := (((I shr cBlueShift ) and BlueMask ) * 255) div BlueMask; 
       palPalEntry[I].peFlags := 0; 
-    end; 
+    end;
 
   Result := CreatePalette(PLogPalette(@LogPalette)^); 
   if Result <> 0 then
@@ -8597,7 +8602,7 @@ begin
     dwFlags := PFD_SUPPORT_OPENGL; 
     AType := GetObjectType(DC); 
     if AType = 0 then
-      RaiseLastOSError; 
+      RaiseLastOSError;
       
     if AType in MemoryDCs then
       dwFlags := dwFlags or PFD_DRAW_TO_BITMAP
@@ -8705,7 +8710,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure DeactivateRenderingContext; 
+procedure DeactivateRenderingContext;
 
 begin
   Assert(ActivationRefCount > 0, 'Unbalanced deactivation.'); 
@@ -8831,7 +8836,7 @@ end;
 function IsOpenGLInitialized: Boolean;
 
 begin
-  Result := GLHandle <> INVALID_MODULEHANDLE; 
+  Result := GLHandle <> INVALID_MODULEHANDLE;
 end; 
 
 //----------------------------------------------------------------------------------------------------------------------
