@@ -99,7 +99,8 @@ function BuildNormals(reference : TAffineVectorList;
    of the triangle, the edges ordering respecting the original triangle
    orientation. }
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
-                                   triangleEdges : TIntegerList = nil) : TIntegerList;
+                                   triangleEdges : TIntegerList = nil;
+                                   edgesTriangles : TIntegerList = nil) : TIntegerList;
 
 {: Welds all vertices separated by a distance inferior to weldRadius.<p>
    Any two vertices whose distance is inferior to weldRadius will be merged
@@ -654,16 +655,22 @@ end;
 
 {: Builds a list of non-oriented (non duplicated) edges list.<p>
    Each edge is represented by the two integers of its vertices,
-   sorted in ascending order.<br>
+   sorted in ascending order.<p>
    If not nil, triangleEdges is filled with the 3 indices of the 3 edges
    of the triangle, the edges ordering respecting the original triangle
-   orientation. }
+   orientation.<p>
+   If not nil, edgesTriangles is filled with the indices of the first index
+   of the triangle in triangleIndices that have this edge. A maximum of two
+   triangles can be referred by this list, and its final size will be that
+   of the Result (ie. non oriented edges list). }
 // BuildNonOrientedEdgesList
 //
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
-                                   triangleEdges : TIntegerList = nil) : TIntegerList;
+                                   triangleEdges : TIntegerList = nil;
+                                   edgesTriangles : TIntegerList = nil) : TIntegerList;
 var
    edgesHash : array [0..127] of TIntegerList;
+   curTri : Integer;
 
    function ProcessEdge(a, b : Integer; edges : TIntegerList) : Integer;
    var
@@ -687,48 +694,92 @@ var
       end else Result:=ProcessEdge(b, a, edges);
    end;
 
+   function ProcessEdge2(a, b : Integer; edges : TIntegerList) : Integer;
+   var
+      i, n : Integer;
+      hashKey : Integer;
+   begin
+      if a<=b then begin
+         hashKey:=(a xor b) and 127;
+         with edgesHash[hashKey] do begin
+            for i:=0 to Count-1 do begin
+               n:=List[i];
+               if (edges[n]=a) and (edges[n+1]=b) then begin
+                  edgesTriangles[n+1]:=curTri;
+                  Result:=n;
+                  Exit;
+               end;
+            end;
+            Result:=edges.Count;
+            Add(Result);
+         end;
+         edges.Add(a, b);
+         edgesTriangles.Add(curTri, -1);
+      end else Result:=ProcessEdge(b, a, edges);
+   end;
+
 var
-   i, j : Integer;
+   j, k : Integer;
 begin
    Result:=TIntegerList.Create;
    Result.Capacity:=1024;
    Result.GrowthDelta:=1024;
    if Assigned(triangleEdges) then
       triangleEdges.Count:=triangleIndices.Count;
+   if Assigned(edgesTriangles) then
+      edgesTriangles.Count:=0;
    // Create Hash
-   for i:=0 to High(edgesHash) do
-      edgesHash[i]:=TIntegerList.Create;
+   for j:=0 to High(edgesHash) do
+      edgesHash[j]:=TIntegerList.Create;
    // collect all edges
-   i:=0;
+   curTri:=0;
    if Assigned(triangleEdges) then begin
-      while i<triangleIndices.Count do begin
-         triangleEdges[i  ]:=ProcessEdge(triangleIndices[i  ], triangleIndices[i+1], Result);
-         triangleEdges[i+1]:=ProcessEdge(triangleIndices[i+1], triangleIndices[i+2], Result);
-         triangleEdges[i+2]:=ProcessEdge(triangleIndices[i+2], triangleIndices[i  ], Result);
-         Inc(i, 3);
+      if Assigned(edgesTriangles) then begin
+         while curTri<triangleIndices.Count do begin
+            triangleEdges[curTri  ]:=ProcessEdge2(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
+            triangleEdges[curTri+1]:=ProcessEdge2(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
+            triangleEdges[curTri+2]:=ProcessEdge2(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            Inc(curTri, 3);
+         end;
+      end else begin
+         while curTri<triangleIndices.Count do begin
+            triangleEdges[curTri  ]:=ProcessEdge(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
+            triangleEdges[curTri+1]:=ProcessEdge(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
+            triangleEdges[curTri+2]:=ProcessEdge(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            Inc(curTri, 3);
+         end;
       end;
    end else begin
-      while i<triangleIndices.Count do begin
-         ProcessEdge(triangleIndices[i  ], triangleIndices[i+1], Result);
-         ProcessEdge(triangleIndices[i+1], triangleIndices[i+2], Result);
-         ProcessEdge(triangleIndices[i+2], triangleIndices[i  ], Result);
-         Inc(i, 3);
+      if Assigned(edgesTriangles) then begin
+         while curTri<triangleIndices.Count do begin
+            ProcessEdge(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
+            ProcessEdge(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
+            ProcessEdge(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            Inc(curTri, 3);
+         end;
+      end else begin
+         while curTri<triangleIndices.Count do begin
+            ProcessEdge(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
+            ProcessEdge(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
+            ProcessEdge(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            Inc(curTri, 3);
+         end;
       end;
    end;
    // Cleanup
-   i:=0;
+   k:=0;
    j:=0;
-   while i<=Result.Count-2 do begin
-      if Result[i]<>Result[i+1] then begin
-         Result[j]:=Result[i];
-         Result[j+1]:=Result[i+1];
+   while k<=Result.Count-2 do begin
+      if Result[k]<>Result[k+1] then begin
+         Result[j]:=Result[k];
+         Result[j+1]:=Result[k+1];
          Inc(j, 2);
       end;
-      Inc(i, 2);
+      Inc(k, 2);
    end;
    // Destroy Hash
-   for i:=0 to High(edgesHash) do
-      edgesHash[i].Free;
+   for j:=0 to High(edgesHash) do
+      edgesHash[j].Free;
 end;
 
 // IncreaseCoherency
