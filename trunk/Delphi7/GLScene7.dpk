@@ -209,6 +209,10 @@ contains
   GLTrail in '..\Source\GLTrail.pas',
   GLScriptBase in '..\Source\GLScriptBase.pas',
   GLFileMD5 in '..\Source\FileFormats\GLFileMD5.pas',
-  GLSpatialPartitioning in '..\Source\GLSpatialPartitioning.pas';
+  GLSpatialPartitioning in '..\Source\GLSpatialPartitioning.pas',
+  VRMLParser in '..\Source\FileFormats\VRMLParser.pas',
+  GLFileVRML in '..\Source\FileFormats\GLFileVRML.pas',
+  LWObjects in '..\Source\FileFormats\LWObjects.pas',
+  GLFileLWO in '..\Source\FileFormats\GLFileLWO.pas';
 
 end.
