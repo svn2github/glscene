@@ -142,7 +142,8 @@ type
          {: Adds nb random stars of the given color.<p>
             Stars are homogenously scattered on the complete sphere, not only the
             band defined or visible dome. }
-         procedure AddRandomStars(nb : Integer; color : TColor);
+         procedure AddRandomStars(nb : Integer; color : TColor;
+                                  limitToTopDome : Boolean = False);
    end;
 
 	// TSkyDome
@@ -613,8 +614,8 @@ begin
    if Count=0 then Exit;
    CalculateCartesianCoordinates;
    lastColor:=-1;
-   glPointSize(1.4);
-   glEnable(GL_POINT_SMOOTH);
+   glPointSize(1.2);
+//   glEnable(GL_POINT_SMOOTH);
    for i:=0 to Count-1 do begin
       star:=Items[i];
       if lastColor<>star.FColor then begin
@@ -634,7 +635,8 @@ end;
 
 // AddRandomStars
 //
-procedure TSkyDomeStars.AddRandomStars(nb : Integer; color : TColor);
+procedure TSkyDomeStars.AddRandomStars(nb : Integer; color : TColor;
+                                       limitToTopDome : Boolean = False);
 var
    i : Integer;
    coord : TAffineVector;
@@ -645,7 +647,9 @@ begin
       // pick a point in the half-cube
       coord[0]:=Random-0.5;
       coord[1]:=Random-0.5;
-      coord[2]:=Random-0.5;
+      if limitToTopDome then
+         coord[2]:=Random
+      else coord[2]:=Random-0.5;
       // project it on the sphere
       NormalizeVector(coord);
       // calculate RA and Dec
