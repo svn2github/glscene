@@ -78,6 +78,12 @@ type
          {: Time at which particle was created }
          property CreationTime : Double read FCreationTime write FCreationTime;
 
+         property PosX : Single read FPosition[0] write FPosition[0];
+         property PosY : Single read FPosition[1] write FPosition[1];
+         property PosZ : Single read FPosition[2] write FPosition[2];
+         property VelX : Single read FVelocity[0] write FVelocity[0];
+         property VelY : Single read FVelocity[1] write FVelocity[1];
+         property VelZ : Single read FVelocity[2] write FVelocity[2];
    end;
 
    TGLParticleArray = array [0..MaxInt shr 4] of TGLParticle;
@@ -521,6 +527,10 @@ type
 
    TPFXDirectRenderEvent = procedure (Sender : TObject; aParticle : TGLParticle;
                                       var rci : TRenderContextInfo) of object;
+   TPFXProgressEvent = procedure (Sender : TObject; const progressTime : TProgressTimes;
+                                  var defaultProgress : Boolean) of object;
+   TPFXParticleProgress = procedure (Sender : TObject; const progressTime : TProgressTimes;
+                                     aParticle : TGLParticle; var killParticle : Boolean) of object;
 
    // TGLCustomPFXManager
    //
@@ -538,9 +548,12 @@ type
          FOnRenderParticle : TPFXDirectRenderEvent;
          FOnEndParticles : TDirectRenderEvent;
          FOnFinalizeRendering : TDirectRenderEvent;
+         FOnProgress : TPFXProgressEvent;
+         FOnParticleProgress : TPFXParticleProgress;
 
       protected
          { Protected Declarations }
+         function  TexturingMode : Cardinal; override;
          procedure InitializeRendering; override;
          procedure BeginParticles; override;
          procedure RenderParticle(aParticle : TGLParticle); override;
@@ -549,6 +562,7 @@ type
 
       public
          { Public Declarations }
+         procedure DoProgress(const progressTime : TProgressTimes); override;
 
 	   published
 	      { Published Declarations }
@@ -557,6 +571,8 @@ type
          property OnRenderParticle : TPFXDirectRenderEvent read FOnRenderParticle write FOnRenderParticle;
          property OnEndParticles : TDirectRenderEvent read FOnEndParticles write FOnEndParticles;
          property OnFinalizeRendering : TDirectRenderEvent read FOnFinalizeRendering write FOnFinalizeRendering;
+         property OnProgress : TPFXProgressEvent read FOnProgress write FOnProgress;
+         property OnParticleProgress : TPFXParticleProgress read FOnParticleProgress write FOnParticleProgress;
 
          property ParticleSize;
          property ColorInner;
@@ -1823,7 +1839,7 @@ function TPFXLifeColors.MaxLifeTime : Double;
 var
    i : Integer;
 begin
-   Result:=0;
+   Result:=1e30;
    for i:=0 to Count-1 do
       if Items[i].LifeTime>Result then
          Result:=Items[i].LifeTime;
@@ -1886,7 +1902,7 @@ begin
       end else begin
          // kill particle
          curParticle.Free;
-         Particles.List[i]:=nil;
+         list[i]:=nil;
       end;
    end;
    Particles.Pack;
@@ -2145,6 +2161,43 @@ end;
 // ------------------
 // ------------------ TGLCustomPFXManager ------------------
 // ------------------
+
+// DoProgress
+//
+procedure TGLCustomPFXManager.DoProgress(const progressTime : TProgressTimes);
+var
+   i : Integer;
+   list : PGLParticleArray;
+   curParticle : TGLParticle;
+   defaultProgress, killParticle : Boolean;
+begin
+   if Assigned(FOnProgress) then begin
+      defaultProgress:=False;
+      FOnProgress(Self, progressTime, defaultProgress);
+      if defaultProgress then
+         inherited;
+   end else inherited;
+   if Assigned(FOnParticleProgress) then begin
+      list:=Particles.List;
+      for i:=0 to Particles.ItemCount-1 do begin
+         killParticle:=True;
+         curParticle:=list[i];
+         FOnParticleProgress(Self, progressTime, curParticle, killParticle);
+         if killParticle then begin
+            curParticle.Free;
+            list[i]:=nil;
+         end;
+      end;
+      Particles.Pack;
+   end;
+end;
+
+// TexturingMode
+//
+function TGLCustomPFXManager.TexturingMode : Cardinal;
+begin
+   Result:=0;
+end;
 
 // InitializeRendering
 //
