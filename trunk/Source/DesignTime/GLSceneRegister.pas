@@ -134,7 +134,7 @@ uses
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
-   GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors,
+   GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
@@ -1884,6 +1884,7 @@ initialization
 
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
+      RegisterSceneObject(TGLMultiProxy, 'MultiProxy', '');
    end;
 
 finalization
