@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/03/02 - EG - Added FrameRect and FillRect
       <li>31/01/02 - EG - Texture3D/CubeMap only disabled if supported
       <li>24/01/02 - EG - Added PenAlpha
       <li>19/01/02 - EG - Creation
@@ -89,6 +90,13 @@ type
             The current position is NOT updated. }
   	      procedure PlotPixel(const x, y : Integer); overload;
 	      procedure PlotPixel(const x, y : Single); overload;
+
+         {: Draw the (x1,y1)-(x2, y2) rectangle's frame (border). }
+         procedure FrameRect(const x1, y1, x2, y2 : Integer); overload;
+         procedure FrameRect(const x1, y1, x2, y2 : Single); overload;
+         {: Draw the (x1,y1)-(x2, y2) rectangle (filled with PenColor). }
+         procedure FillRect(const x1, y1, x2, y2 : Integer); overload;
+         procedure FillRect(const x1, y1, x2, y2 : Single); overload;
 
          {: Draws an ellipse with (x1,y1)-(x2, y2) bounding rectangle. }
 	      procedure Ellipse(const x1, y1, x2, y2 : Integer); overload;
@@ -344,6 +352,44 @@ procedure TGLCanvas.PlotPixel(const x, y : Single);
 begin
    StartPrimitive(GL_POINTS);
    glVertex2f(x, y);
+end;
+
+// FrameRect (integer)
+//
+procedure TGLCanvas.FrameRect(const x1, y1, x2, y2 : Integer);
+begin
+   StartPrimitive(GL_LINE_LOOP);
+   glVertex2i(x1, y1);  glVertex2i(x2, y1);
+   glVertex2i(x2, y2);  glVertex2i(x1, y2);
+   StopPrimitive;
+end;
+
+// FrameRect (single)
+//
+procedure TGLCanvas.FrameRect(const x1, y1, x2, y2 : Single);
+begin
+   StartPrimitive(GL_LINE_LOOP);
+   glVertex2f(x1, y1);  glVertex2f(x2, y1);
+   glVertex2f(x2, y2);  glVertex2f(x1, y2);
+   StopPrimitive;
+end;
+
+// FillRect (integer)
+//
+procedure TGLCanvas.FillRect(const x1, y1, x2, y2 : Integer);
+begin
+   StartPrimitive(GL_QUADS);
+   glVertex2i(x1, y1);  glVertex2i(x2, y1);
+   glVertex2i(x2, y2);  glVertex2i(x1, y2);
+end;
+
+// FillRect (single)
+//
+procedure TGLCanvas.FillRect(const x1, y1, x2, y2 : Single);
+begin
+   StartPrimitive(GL_QUADS);
+   glVertex2f(x1, y1);  glVertex2f(x2, y1);
+   glVertex2f(x2, y2);  glVertex2f(x1, y2);
 end;
 
 // Ellipse

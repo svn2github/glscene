@@ -1,9 +1,13 @@
 {: Benchmark for GLCanvas.<p>
 
-   This project pits TGLCanvas against TCanvas in direct mode (no double
-   buffering, and hardware acceleration should be available on both sides).<p>
+   This project pits TGLCanvas against TCanvas in direct mode (hardware
+   acceleration should be available on both sides).<p>
    You may usually bet on TGLCanvas being 3 to 5 times faster, but on fast 3D
    hardware, or when PenWidth is not 1, the performance ratio can reach 1:100.<p>
+   However, this is not really an apples-to-apples comparison, because GDI
+   (or any other software implementations) are useless when it comes to drawing
+   to an OpenGL buffer, so, this is more to show that GLCanvas is far from
+   a "decelerator" if you have 2D stuff to draw on your 3D Scene.<p>
 
    Figures for PenWidth = 1, GLCanvas / GDI<p>
 
@@ -35,10 +39,12 @@ type
     RBPenWidth1: TRadioButton;
     RBPenWidth2: TRadioButton;
     BUPoints: TButton;
+    BURects: TButton;
     procedure GLSceneViewerPostRender(Sender: TObject);
     procedure BULinesClick(Sender: TObject);
     procedure BUEllipsesClick(Sender: TObject);
     procedure BUPointsClick(Sender: TObject);
+    procedure BURectsClick(Sender: TObject);
   private
     { Private declarations }
     procedure PaintTheBox;
@@ -54,10 +60,10 @@ implementation
 
 {$R *.dfm}
 
-uses GLCanvas, GLCrossPlatform;
+uses GLCanvas, GLCrossPlatform, OpenGL12;
 
 type
-   TWhat = (wLines, wEllipses, wPoints);
+   TWhat = (wLines, wEllipses, wRects, wPoints);
 
 var
    vWhat : TWhat;
@@ -66,6 +72,7 @@ var
 const
    cNbLines = 20000;
    cNbEllipses = 20000;
+   cNbRects = 5000;
    cNbPoints = 200000;
 
 procedure TForm1.BULinesClick(Sender: TObject);
@@ -77,6 +84,12 @@ end;
 procedure TForm1.BUEllipsesClick(Sender: TObject);
 begin
    vWhat:=wEllipses;
+   Bench;
+end;
+
+procedure TForm1.BURectsClick(Sender: TObject);
+begin
+   vWhat:=wRects;
    Bench;
 end;
 
@@ -113,6 +126,7 @@ procedure TForm1.GLSceneViewerPostRender(Sender: TObject);
 var
    i : Integer;
    glc : TGLCanvas;
+   r : TRect;
 begin
    glc:=TGLCanvas.Create(256, 256);
    with glc do begin
@@ -132,6 +146,14 @@ begin
                        Random(256), Random(256));
             end;
          end;
+         wRects : begin
+            for i:=1 to cNbRects do begin
+               PenColor:=Random(256*256*256);
+               r:=Rect(Random(256), Random(256),
+                       Random(256), Random(256));
+               FillRect(r.Left, r.Top, r.Right, r.Bottom);
+            end;
+         end;
          wPoints : begin
             for i:=1 to cNbPoints do begin
                PenColor:=Random(256*256*256);
@@ -146,6 +168,7 @@ end;
 procedure TForm1.PaintTheBox;
 var
    i : Integer;
+   r : TRect;
 begin
    with PaintBox.Canvas do begin
       Brush.Style:=bsClear;
@@ -163,6 +186,15 @@ begin
                Pen.Color:=Random(256*256*256);
                Ellipse(Random(256), Random(256),
                        Random(256), Random(256));
+            end;
+         end;
+         wRects : begin
+            Brush.Style:=bsSolid;
+            for i:=1 to cNbRects do begin
+               Brush.Color:=Random(256*256*256);
+               r:=Rect(Random(256), Random(256),
+                       Random(256), Random(256));
+               FillRect(r);
             end;
          end;
          wPoints : begin
