@@ -5,6 +5,7 @@
    http://developer.nvidia.com/object/Procedural_Tree.html<p>
 
    History:<ul>
+     <li>14/04/04 - SG - Added AutoCenter property.
      <li>03/03/04 - SG - Added GetExtents and AxisAlignedDimensionsUnscaled.
      <li>24/11/03 - SG - Creation.
    </ul>
@@ -158,6 +159,7 @@ type
          FCentralLeaderBias : Single;
          FCentralLeader : Boolean;
          FSeed : Integer;
+         FAutoCenter : Boolean;
 
          FLeaves : TGLTreeLeaves;
          FBranches : TGLTreeBranches;
@@ -169,7 +171,7 @@ type
          FBranchMaterialName : TGLLibMaterialName;
 
          FRebuildTree : Boolean;
-         
+
          FAxisAlignedDimensionsCache : TVector;
 
       protected
@@ -187,6 +189,7 @@ type
          procedure SetCentralLeaderBias(const Value : Single);
          procedure SetCentralLeader(const Value : Boolean);
          procedure SetSeed(const Value : Integer);
+         procedure SetAutoCenter(const Value : Boolean);
 
          procedure SetMaterialLibrary(const Value : TGLMaterialLibrary);
          procedure SetLeafMaterialName(const Value : TGLLibMaterialName);
@@ -250,6 +253,8 @@ type
          {: Does this tree have a central leader? }
          property CentralLeader : Boolean read FCentralLeader write SetCentralLeader;
          property Seed : Integer read FSeed write SetSeed;
+         {: Automatically center the tree's vertices after building them. }
+         property AutoCenter : Boolean read FAutoCenter write SetAutoCenter;
 
          property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
          property LeafMaterialName : TGLLibMaterialName read FLeafMaterialName write SetLeafMaterialName;
@@ -606,6 +611,7 @@ procedure TGLTreeBranches.BuildBranches;
 var
    i : Integer;
    u : Single;
+   delta, min, max : TAffineVector;
 begin
    RandSeed:=Owner.FSeed;
 
@@ -619,6 +625,13 @@ begin
    FRoot:=TGLTreeBranch.Create(Self,nil);
    FRoot.FCentralLeader:=Owner.CentralLeader;
    FRoot.BuildBranch(Owner.Noise,IdentityHMGMatrix,0,0,0);
+
+   if Owner.AutoCenter then begin
+      Owner.GetExtents(min, max);
+      delta:=VectorCombine(min,max,-0.5,-0.5);
+      Vertices.Translate(delta);
+      Owner.Leaves.Vertices.Translate(delta);
+   end;
 end;
 
 // BuildList
@@ -730,12 +743,14 @@ begin
    FBranchFacets:=6;
    FCentralLeader:=False;
    FSeed:=0;
+   FAutoCenter:=False;
 
    FLeaves:=TGLTreeLeaves.Create(Self);
    FBranches:=TGLTreeBranches.Create(Self);
    FNoise:=TGLTreeBranchNoise.Create;
 
-   FRebuildTree:=True;
+   FBranches.BuildBranches;
+   FRebuildTree:=False;
    
    FAxisAlignedDimensionsCache[0]:=-1;
 end;
@@ -1268,6 +1283,16 @@ begin
       FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
    end;
    SetVector(Result, FAxisAlignedDimensionsCache);
+end;
+
+// SetAutoCenter
+//
+procedure TGLTree.SetAutoCenter(const Value: Boolean);
+begin
+   if Value<>FAutoCenter then begin
+      FAutoCenter:=Value;
+      RebuildTree;
+   end;
 end;
 
 end.
