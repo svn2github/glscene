@@ -1668,6 +1668,7 @@ type
          FShadeModel : TGLShadeModel;
          FRenderDPI : Integer;
          FFogEnvironment : TGLFogEnvironment;
+         FAccumBufferBits : Integer;
 
          FCamera : TGLCamera;
 
@@ -1710,6 +1711,7 @@ type
          procedure SetFogEnable(AValue: Boolean);
          procedure SetGLFogEnvironment(AValue: TGLFogEnvironment);
          function  StoreFog : Boolean;
+         procedure SetAccumBufferBits(const val : Integer);
 
          procedure PrepareRenderingMatrices(const aViewPort : TRectangle;
                               resolution : Integer; pickingRect : PGLRect = nil);
@@ -1943,6 +1945,9 @@ type
          {: Context options allows to setup specifics of the rendering context.<p>
             Not all contexts support all options. }
          property ContextOptions: TContextOptions read FContextOptions write SetContextOptions default [roDoubleBuffer, roRenderToWindow];
+         {: Number of precision bits for the accumulation buffer. }         
+         property AccumBufferBits : Integer read FAccumBufferBits write SetAccumBufferBits default 0;
+
          {: DepthTest enabling.<p>
             When DepthTest is enabled, objects closer to the camera will hide
             farther ones (via use of Z-Buffering).<br>
@@ -6520,7 +6525,7 @@ begin
       DepthBits:=cDepthPrecisionToDepthBits[DepthPrecision];
       StencilBits:=locStencilBits;
       AlphaBits:=locAlphaBits;
-      AccumBits:=0;
+      AccumBits:=AccumBufferBits;
       AuxBuffers:=0;
       AntiAliasing:=Self.AntiAliasing;
       PrepareGLContext;
@@ -7770,6 +7775,16 @@ end;
 function TGLSceneBuffer.StoreFog : Boolean;
 begin
    Result:=(not FFogEnvironment.IsAtDefaultValues);
+end;
+
+// SetAccumBufferBits
+//
+procedure TGLSceneBuffer.SetAccumBufferBits(const val : Integer);
+begin
+   if FAccumBufferBits<>val then begin
+      FAccumBufferBits:=val;
+      DoStructuralChange;
+   end;
 end;
 
 // DoChange
