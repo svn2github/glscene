@@ -153,7 +153,8 @@ begin
       rci.proxySubObject:=True;
 
       if renderSelf and (VectorDotProduct(VectorSubtract(rci.cameraPosition, AbsolutePosition), AbsoluteDirection)>0) then begin
-
+         glPushAttrib(GL_ENABLE_BIT);
+         
          // "Render" stencil mask
          if spoScissor in ShadowOptions then begin
             sr:=ScreenRect;
@@ -171,6 +172,8 @@ begin
             glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
          end;
 
+         glDisable(GL_ALPHA_TEST);
+
          Material.Apply(rci);
          repeat
             BuildList(rci);
@@ -178,7 +181,6 @@ begin
 
          if Assigned(FShadowedLight) then begin
 
-            glPushAttrib(GL_ENABLE_BIT);
             glPushMatrix;
             glLoadIdentity;
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
@@ -233,17 +235,10 @@ begin
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
 
             glPopMatrix;
-            glPopAttrib;
 
          end;
 
-         if spoUseStencil in ShadowOptions then begin
-            glDisable(GL_STENCIL_TEST);
-         end;
-         if spoScissor in ShadowOptions then begin
-            glDisable(GL_SCISSOR_TEST);
-         end;
-
+         glPopAttrib;
       end;
 
       rci.proxySubObject:=oldProxySubObject;
