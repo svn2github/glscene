@@ -83,7 +83,8 @@ type
             (additions without capacity check). }
          procedure Render(vertices : TAffineVectorList;
                           vertexIndices : TIntegerList;
-                          texCoords : TTexPointList);
+                          texCoords : TTexPointList;
+                          forceROAM : Boolean);
 
          property HeightData : THeightData read FHeightData write SetHeightData;
          property VertexScale : TAffineVector read FVertexScale write FVertexScale;
@@ -141,12 +142,15 @@ end;
 // AllocTriangleNode
 //
 function AllocTriangleNode : PROAMTriangleNode;
+var
+   nilNode : PROAMTriangleNode;
 begin
    if vNbTris<vTriangleNodesCapacity then begin
       Result:=@vTriangleNodes[vNbTris];
       with Result^ do begin
-         leftChild:=nil;
-         rightChild:=nil;
+         nilNode:=nil;
+         leftChild:=nilNode;
+         rightChild:=nilNode;
       end;
       Inc(vNbTris);
    end else Result:=nil;
@@ -408,7 +412,6 @@ end;
 // Tesselate
 //
 var
-   tessFrameVarianceDelta : Integer;
    tessMaxVariance : Cardinal;
    tessMaxDepth : Cardinal;
    tessCurrentVariance : PIntegerArray;
@@ -420,7 +423,7 @@ procedure RecursTessellate(tri : PROAMTriangleNode;
 var
    d : Integer;
 begin
-   d:=((left+right) shr 1);//+tessFrameVarianceDelta;
+   d:=((left+right) shr 1);
    if tessCurrentVariance[n]>d then begin
       if Split(tri) then begin
          n:=n shl 1;
@@ -433,6 +436,8 @@ begin
 end;
 
 procedure TGLROAMPatch.Tesselate;
+var
+   tessFrameVarianceDelta : Integer;
 
    function VertexDist(x, y : Integer) : Cardinal;
    var
@@ -440,7 +445,9 @@ procedure TGLROAMPatch.Tesselate;
    const
       c1Div100 : Single = 0.01;
    begin
-      f:=Sqr(x-tessObserverPosX)+Sqr(y-tessObserverPosY)+tessFrameVarianceDelta;
+      if HighRes then
+         f:=0.2*Sqr(FPatchSize)
+      else f:=Sqr(x-tessObserverPosX)+Sqr(y-tessObserverPosY)+tessFrameVarianceDelta;
       Result:=Round(Sqrt(f)+f*c1Div100);
    end;
 
@@ -478,23 +485,29 @@ procedure TGLROAMPatch.Tesselate;
 var
    s : Integer;
 begin
-   if HighRes then Exit;
-
    tessMaxDepth:=FMaxDepth;
    tessObserverPosX:=Round(FObserverPosition[0]);
    tessObserverPosY:=Round(FObserverPosition[1]);
 
-   if Assigned(FNorth) and FNorth.HighRes then
+   if HighRes then begin
       FullRightTess(FTLNode, 1);
-   if Assigned(FSouth) and FSouth.HighRes then
       FullRightTess(FBRNode, 1);
-   if Assigned(FEast) and FEast.HighRes then
       FullLeftTess(FBRNode, 1);
-   if Assigned(FWest) and FWest.HighRes then
       FullLeftTess(FTLNode, 1);
-   if FObserverPosition[2]>0 then
-      tessFrameVarianceDelta:=Round(Sqr(FObserverPosition[2]*(1/16)))
-   else tessFrameVarianceDelta:=0;
+      tessFrameVarianceDelta:=0;
+   end else begin
+      if Assigned(FNorth) and FNorth.HighRes then
+         FullRightTess(FTLNode, 1);
+      if Assigned(FSouth) and FSouth.HighRes then
+         FullRightTess(FBRNode, 1);
+      if Assigned(FEast) and FEast.HighRes then
+         FullLeftTess(FBRNode, 1);
+      if Assigned(FWest) and FWest.HighRes then
+         FullLeftTess(FTLNode, 1);
+      if FObserverPosition[2]>0 then
+         tessFrameVarianceDelta:=Round(Sqr(FObserverPosition[2]*(1/16)))
+      else tessFrameVarianceDelta:=0;
+   end;
    s:=FPatchSize;
    tessCurrentVariance:=@FTLVariance[0];
    tessMaxVariance:=FMaxTLVarianceDepth;
@@ -508,7 +521,10 @@ end;
 //
 procedure TGLROAMPatch.Render(vertices : TAffineVectorList;
                               vertexIndices : TIntegerList;
-                              texCoords : TTexPointList);
+                              texCoords : TTexPointList;
+                              forceROAM : Boolean);
+var
+   primitive : TGLEnum;
 begin
    if FNoDetails then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -518,18 +534,27 @@ begin
    if HighRes then begin
       // High-res tiles use a brute-force stripifier and display lists
       if FListHandle.Handle=0 then begin
-         RenderAsStrips(vertices, vertexIndices, texCoords);
+         if forceROAM then begin
+            ResetTessellation;
+            Tesselate;
+            RenderROAM(vertices, vertexIndices, texCoords);
+            primitive:=GL_TRIANGLES;
+            FTriangleCount:=vertexIndices.Count div 3;
+         end else begin
+            RenderAsStrips(vertices, vertexIndices, texCoords);
+            primitive:=GL_TRIANGLE_STRIP;
+            FTriangleCount:=vertexIndices.Count-2*FPatchSize;
+         end;
+
          vertices.Translate(VertexOffset);
          texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
                                      PTexPoint(@TextureOffset)^);
 
          FListHandle.AllocateHandle;
          glNewList(FListHandle.Handle, GL_COMPILE);
-         glDrawElements(GL_TRIANGLE_STRIP, vertexIndices.Count,
+         glDrawElements(primitive, vertexIndices.Count,
                         GL_UNSIGNED_INT, vertexIndices.List);
          glEndList;
-
-         FTriangleCount:=vertexIndices.Count-2*FPatchSize;
       end;
       glCallList(FListHandle.Handle);
    end else begin
@@ -568,13 +593,11 @@ var
    half : TROAMRenderPoint;
    localIndices : PIntegerArray;
 begin
-   if Assigned(tri.leftChild) then begin
-      with half do begin
-         X:=(left.X+right.X) shr 1;
-         Y:=(left.Y+right.Y) shr 1;
-         renderTexCoords.AddNC(@X);
-         Idx:=renderVertices.AddNC(@X, renderRaster[Y][X]);
-      end;
+   if Assigned(tri.leftChild) then begin  // = if node is split
+      half.Y:=(left.Y+right.Y) shr 1;
+      half.X:=(left.X+right.X) shr 1;
+      renderTexCoords.AddNC(@half.X);
+      half.Idx:=renderVertices.AddNC(@half.X, renderRaster[half.Y][half.X]);
       RecursRender(tri.leftChild , apex , left, half);
       RecursRender(tri.rightChild, right, apex, half);
    end else begin
@@ -582,7 +605,7 @@ begin
       localIndices[0]:=left.Idx;
       localIndices[1]:=apex.Idx;
       localIndices[2]:=right.Idx;
-      renderIndices:=PIntegerArray(Integer(localIndices)+3*SizeOf(Integer));
+      renderIndices:=PIntegerArray(@localIndices[3]);
    end;
 end;
 

@@ -34,6 +34,7 @@ type
    TGetTerrainBoundsEvent = procedure(var l, t, r, b : Single) of object;
    TPatchPostRenderEvent = procedure (var rci : TRenderContextInfo; const patches : TList) of object;
    THeightDataPostRenderEvent = procedure (var rci : TRenderContextInfo; const heightDatas : TList) of object;
+   TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
 
 	// TGLTerrainRenderer
 	//
@@ -60,6 +61,7 @@ type
          FOnGetTerrainBounds : TGetTerrainBoundsEvent;
          FOnPatchPostRender : TPatchPostRenderEvent;
          FOnHeightDataPostRender : THeightDataPostRenderEvent;
+         FQualityStyle : TTerrainHighResStyle;
 
 	   protected
 	      { Protected Declarations }
@@ -77,6 +79,7 @@ type
          procedure SetTilesPerTexture(const val : Single);
          procedure SetCLODPrecision(const val : Integer);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
+         procedure SetQualityStyle(const val : TTerrainHighResStyle);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 			procedure DestroyHandle; override;
@@ -122,9 +125,16 @@ type
             This parameter gives an hint to the terrain renderer at which distance
             the terrain quality can be degraded to favor speed. The distance is
             expressed in absolute coordinates units.<p>
-            All tiles closer than this distance are rendered without any LOD
-            or mesh simplification. }
+            All tiles closer than this distance are rendered according to
+            QualityStyle and with a static resolution. }
          property QualityDistance : Single read FQualityDistance write FQualityDistance;
+         {: Determines how high-res tiles (closer than QualityDistance) are rendered.<p>
+            hrsFullGeometry (default value) means that the high-res tiles are rendered
+            with full-geometry, and no LOD of any kind, while hrsTesselated means
+            the tiles will be tesselated once, with the best output for the
+            CLODPrecision, and the result of that tesselation will be reused
+            in further frames without any adpative tesselation. }
+         property QualityStyle : TTerrainHighResStyle read FQualityStyle write SetQualityStyle default hrsFullGeometry;
          {: Maximum number of CLOD triangles per scene.<p>
             Triangles in high-resolution tiles (closer than QualityDistance) do
             not count toward this limit. }
@@ -233,22 +243,23 @@ function TGLTerrainRenderer.RayCastIntersect(const rayStart, rayVector : TVector
                                            intersectNormal : PVector = nil) : Boolean;
 var
    p1, d, p2, p3 : TVector;
-   step, i, h : Single;
+   step, i, h, minH, maxH : Single;
    startedAbove : Boolean;
    failSafe : Integer;
 begin
    Result:=False;
    if Assigned(HeightDataSource) then begin
-      step:=100; //Initial step size should be guessed. This is the reason for inaccuracy
+      step:=(Scale.X+Scale.Y); //Initial step size guess
       i:=step;
       d:=VectorNormalize(rayVector);
       startedAbove:=((InterpolatedHeight(rayStart)-rayStart[1])<0);
+      maxH:=Scale.Z*256;
+      minH:=Scale.Z*256;
       failSafe:=0;
       while True do begin
-         p1:=rayStart;
-         CombineVector(p1, d, i);
+         p1:=VectorCombine(rayStart, d, 1, i);
          h:=InterpolatedHeight(p1);
-         if Abs(h-p1[1])<0.001 then begin //Need a tolerance variable here (how close is good enough?)
+         if Abs(h-p1[1])<Scale.Z then begin //Need a tolerance variable here (how close is good enough?)
             Result:=True;
             Break;
          end else begin
@@ -265,7 +276,10 @@ begin
             end;
          end;
          Inc(failSafe);
-         if failSafe>100 then Break;
+         if failSafe>1024 then Break;
+         if d[1]<0 then begin
+            if h<minH then Exit
+         end else if h>maxH then Exit;
       end;
 
       if Result then begin
@@ -381,7 +395,7 @@ begin
    vEye[0]:=Round(vEye[0]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
    vEye[1]:=Round(vEye[1]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
    tileGroundRadius:=Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y);
-   tileRadius:=Sqrt(tileGroundRadius+Sqr(256*Scale.Z))*1.3;
+   tileRadius:=Sqrt(tileGroundRadius+Sqr(256*Scale.Z));
    tileGroundRadius:=Sqrt(tileGroundRadius);
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
@@ -460,6 +474,8 @@ begin
       if minTilePosY<t_b then minTilePosY:=t_b;
    end;
 
+   tileRadius:=tileRadius;
+
    tilePos[1]:=minTilePosY;
    while tilePos[1]<=maxTilePosY do begin
       tilePos[0]:=minTilePosX;
@@ -475,35 +491,33 @@ begin
 
                tileDist:=VectorDistance(PAffineVector(@rcci.origin)^, absTilePos);
                patch.HighRes:=(tileDist<qDist);
-   //            patch.NoDetails:=trackDetails and (tileDist>QualityDistance);
 
+               if not patch.HighRes then
+                  patch.ResetTessellation;
                if Assigned(prevPatch) then
                   patch.ConnectToTheWest(prevPatch);
-               if prevRow.Count>n then
-                  if (prevRow.List[n]<>nil) then
-                     patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
-
-               prevPatch:=patch;
-               rowList.Add(patch);
+               if (prevRow.Count>n) and (prevRow.List[n]<>nil) then
+                  patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
 
                if patch.HighRes then begin
                   // high-res patches are issued immediately
                   ApplyMaterial(patch.HeightData.MaterialName);
-                  patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
+                  patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
+                               (QualityStyle=hrsTesselated));
                   FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
                end else begin
                   // CLOD patches are issued after tesselation
                   patchList.Add(patch);
                end;
 
+               prevPatch:=patch;
+               rowList.Add(patch);
+
                if Assigned(postRenderPatchList) then
                   postRenderPatchList.Add(patch);
-               
             end else begin
-
                prevPatch:=nil;
                rowList.Add(nil);
-               
             end;
          end else begin
             MarkHashedTileAsUsed(tilePos);
@@ -532,8 +546,8 @@ begin
          patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
          if Assigned(patch) then begin
             ApplyMaterial(patch.HeightData.MaterialName);
-            patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
-            FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+            patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints, False);
+            Inc(FLastTriangleCount, patch.TriangleCount);
          end;
       end;
    end;
@@ -709,7 +723,6 @@ begin
          patch.ComputeVariance(FCLODPrecision);
       end;
       patch.ObserverPosition:=VectorSubtract(eyePos, tilePos);
-      patch.ResetTessellation;
       Result:=patch;
    end;
 end;
@@ -764,6 +777,7 @@ var
 begin
    if val<>FCLODPrecision then begin
       FCLODPrecision:=val;
+      if FCLODPrecision<1 then FCLODPrecision:=1;
       // drop all ROAM data (CLOD has changed, rebuild required)
       for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
          for k:=Count-1 downto 0 do begin
@@ -784,6 +798,16 @@ procedure TGLTerrainRenderer.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if val<>FMaterialLibrary then begin
       FMaterialLibrary:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetQualityStyle
+//
+procedure TGLTerrainRenderer.SetQualityStyle(const val : TTerrainHighResStyle);
+begin
+   if val<>FQualityStyle then begin
+      FQualityStyle:=val;
       StructureChanged;
    end;
 end;
