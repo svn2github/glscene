@@ -50,16 +50,19 @@ type
 
          {: Render the best fitting tile for tilePos.<p>
             tilePos is in *local* coordinates }
-         procedure RenderTile(const tilePos : TAffineVector; eyeDistance : Single); virtual;
+         procedure RenderTile(const tilePos : TAffineVector; eyeDistance : Single;
+                              texFactor : Single); virtual;
 
          {: Renders a THeightData as a quad, axis-aligned tile.<p>
             The tile is rendered with a triangle strips. }
          procedure RenderTileAsTriangleStrip(aTile : THeightData;
-                       const leftTop, scale, texLeftTop, texScale : TAffineVector);
+                       const leftTop, scale, texLeftTop, texScale : TAffineVector;
+                       texFactor : Single);
          {: Renders a THeightData as a quad, axis-aligned tile.<p>
             The tile is rendered with a single triangle fans (center to edges). }
          procedure RenderTileAsTriangleFan(aTile : THeightData;
-                       const leftTop, scale, texLeftTop, texScale : TAffineVector);
+                       const leftTop, scale, texLeftTop, texScale : TAffineVector;
+                       texFactor : Single);
 
 	   public
 	      { Public Declarations }
@@ -190,10 +193,9 @@ var
    vEye : TVector;
    tilePos, absTilePos : TAffineVector;
    delta, n : Integer;
-   f, tileRadius : Single;
+   f, tileRadius, texFactor : Single;
 begin
-   f:=1/(TilesPerTexture*TileSize);
-   Material.Texture.InitAutoTexture(TexPointMake(f, -f));
+   texFactor:=1/(TilesPerTexture*TileSize);
    if csDesigning in ComponentState then Exit;
    if HeightDataSource=nil then Exit;
    // first project eye position into heightdata coordinates
@@ -217,7 +219,7 @@ begin
       while tilePos[0]<=vEye[0]+f do begin
          absTilePos:=VectorTransform(tilePos, AbsoluteMatrix);
          if not IsVolumeClipped(absTilePos, tileRadius, rci.rcci) then
-            RenderTile(tilePos, VectorDistance(absTilePos, AffineVectorMake(rci.cameraPosition)));
+            RenderTile(tilePos, VectorDistance(absTilePos, AffineVectorMake(rci.cameraPosition)), texFactor);
          tilePos[0]:=tilePos[0]+delta;
       end;
       tilePos[1]:=tilePos[1]+delta;
@@ -228,12 +230,12 @@ begin
          THeightData(FTiles[n]).Release;
          FTiles.Delete(n);
       end;
-   Material.Texture.DisableAutoTexture;
 end;
 
 // RenderTile
 //
-procedure TTerrainRenderer.RenderTile(const tilePos : TAffineVector; eyeDistance : Single);
+procedure TTerrainRenderer.RenderTile(const tilePos : TAffineVector;
+                                      eyeDistance : Single; texFactor : Single);
 var
    i : Integer;
    hd, tile : THeightData;
@@ -274,12 +276,12 @@ begin
          tile.Tag2:=1;
          RenderTileAsTriangleStrip(tile,
             AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1),
-            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1));
+            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1), texFactor);
       end else begin
          tile.Tag2:=0;
          RenderTileAsTriangleFan(tile,
             AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1),
-            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1));
+            AffineVectorMake(xLeft, yTop, 0), AffineVectorMake(1, 1, 1), texFactor);
       end;
       glEndList;
    end else listHandle:=TGLListHandle(tile.Tag);
@@ -295,7 +297,8 @@ end;
 // RenderTileAsTriangleStrip
 //
 procedure TTerrainRenderer.RenderTileAsTriangleStrip(aTile : THeightData;
-              const leftTop, scale, texLeftTop, texScale : TAffineVector);
+              const leftTop, scale, texLeftTop, texScale : TAffineVector;
+              texFactor : Single);
 var
    x, y : Integer;
    pTop, pBottom : TAffineVector;
@@ -316,10 +319,12 @@ begin
          pBottom[2]:=(bottomRow[x]-128)*scale[2];
          n:=aTile.Normal(x, y+1, scale);
          glNormal3fv(@n);
+         xglTexCoord2f(pBottom[0]*texFactor, -pBottom[1]*texFactor);
          glVertex3fv(@pBottom);
          pTop[2]:=(topRow[x]-128)*scale[2];
          n:=aTile.Normal(x, y, scale);
          glNormal3fv(@n);
+         xglTexCoord2f(pTop[0]*texFactor, -pTop[1]*texFactor);
          glVertex3fv(@pTop);
       end;
       glEnd;
@@ -329,7 +334,8 @@ end;
 // RenderTileAsTriangleFan
 //
 procedure TTerrainRenderer.RenderTileAsTriangleFan(aTile : THeightData;
-              const leftTop, scale, texLeftTop, texScale : TAffineVector);
+              const leftTop, scale, texLeftTop, texScale : TAffineVector;
+              texFactor : Single);
 var
    x, y : Integer;
    p : TAffineVector;
@@ -353,6 +359,7 @@ begin
          p[2]:=(row[x]-128)*scale[2];
          n:=aTile.Normal(x, 1, scale);
          glNormal3fv(@n);
+         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
          glVertex3fv(@p);
       end;
       for y:=2 to aTile.Size-2 do begin
@@ -360,6 +367,7 @@ begin
          p[2]:=(aTile.ByteRaster[y][aTile.Size-2]-128)*scale[2];
          n:=aTile.Normal(aTile.Size-2, y, scale);
          glNormal3fv(@n);
+         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
          glVertex3fv(@p);
       end;
       row:=aTile.ByteRaster[aTile.Size-2];
@@ -368,6 +376,7 @@ begin
          p[2]:=(row[x]-128)*scale[2];
          n:=aTile.Normal(x, aTile.Size-2, scale);
          glNormal3fv(@n);
+         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
          glVertex3fv(@p);
       end;
       for y:=aTile.Size-3 downto 1 do begin
@@ -375,6 +384,7 @@ begin
          p[2]:=(aTile.ByteRaster[y][1]-128)*scale[2];
          n:=aTile.Normal(1, y, scale);
          glNormal3fv(@n);
+         xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
          glVertex3fv(@p);
       end;
    glEnd;

@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/08/01 - Egg - TexGen support (object_linear, eye_linear and sphere_map)
       <li>13/08/01 - Egg - Fixed OnTextureNeeded handling (paths for mat lib)
       <li>12/08/01 - Egg - Completely rewritten handles management
       <li>27/07/01 - Egg - TGLLibMaterials now a TOwnedCollection
@@ -585,6 +586,11 @@ type
    //
    TGLTextureFilteringQuality = (tfIsotropic, tfAnisotropic);
 
+   // TGLTextureMappingMode
+   //
+   TGLTextureMappingMode = (tmmUser, tmmObjectLinear, tmmEyeLinear, tmmSphere);
+   //  tmmCube will be added when cube-map images will be supported
+
 	// TGLTexture
 	//
    {: Defines basic texturing properties.<p>
@@ -594,20 +600,23 @@ type
       Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
 	TGLTexture = class (TGLUpdateAbleObject)
 		private
-			FTextureHandle : TGLTextureHandle;
-			FTextureMode : TGLTextureMode;
-			FTextureWrap : TGLTextureWrap;
-         FTextureFormat : TGLTextureFormat;
-			FMinFilter   : TGLMinFilter;
-			FMagFilter   : TGLMagFilter;
-			FChanges     : TGLTextureChanges;
-			FDisabled    : Boolean;
-			FImage       : TGLTextureImage;
-			FImageAlpha  : TGLTextureImageAlpha;
-         FOnTextureNeeded : TTextureNeededEvent;
-         FCompression : TGLTextureCompression;
-         FRequiredMemorySize : Integer;
-         FFilteringQuality : TGLTextureFilteringQuality;
+			FTextureHandle       : TGLTextureHandle;
+			FTextureMode         : TGLTextureMode;
+			FTextureWrap         : TGLTextureWrap;
+         FTextureFormat       : TGLTextureFormat;
+			FMinFilter           : TGLMinFilter;
+			FMagFilter           : TGLMagFilter;
+			FChanges             : TGLTextureChanges;
+			FDisabled            : Boolean;
+			FImage               : TGLTextureImage;
+			FImageAlpha          : TGLTextureImageAlpha;
+         FMappingMode         : TGLTextureMappingMode;
+         FMappingSCoordinates : TGLCoordinates;
+         FMappingTCoordinates : TGLCoordinates;
+         FOnTextureNeeded     : TTextureNeededEvent;
+         FCompression         : TGLTextureCompression;
+         FRequiredMemorySize  : Integer;
+         FFilteringQuality    : TGLTextureFilteringQuality;
 
 		protected
 			procedure SetImage(AValue: TGLTextureImage);
@@ -619,6 +628,9 @@ type
          procedure SetTextureFormat(const val : TGLTextureFormat);
          procedure SetCompression(const val : TGLTextureCompression);
          procedure SetFilteringQuality(const val : TGLTextureFilteringQuality);
+         procedure SetMappingMode(const val : TGLTextureMappingMode);
+         procedure SetMappingSCoordinates(const val : TGLCoordinates);
+         procedure SetMappingTCoordinates(const val : TGLCoordinates);
 			procedure SetDisabled(AValue: Boolean);
          procedure SetEnabled(const val : Boolean);
          function GetEnabled : Boolean;
@@ -639,16 +651,16 @@ type
 			destructor  Destroy; override;
 
          procedure PrepareBuildList;
+         procedure ApplyMappingMode;
+         procedure UnApplyMappingMode;
 			procedure Apply(var currentStates : TGLStates);
+         procedure UnApply;
          procedure ApplyAsTexture2(libMaterial : TGLLibMaterial);
          procedure UnApplyAsTexture2(libMaterial : TGLLibMaterial);
 
 			procedure Assign(Source: TPersistent); override;
 
 			procedure DestroyHandles;
-			procedure DisableAutoTexture;
-			procedure InitAutoTexture(const texRep : TTexPoint); overload;
-			procedure InitAutoTexture(texRep : PTexPoint); overload;
 
 			procedure SetImageClassName(const val : String);
 			function GetImageClassName : String;
@@ -681,7 +693,9 @@ type
 			property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miNearest;
 
 			property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode default tmDecal;
+
 			property TextureWrap: TGLTextureWrap read FTextureWrap write SetTextureWrap default twBoth;
+
          {: Texture format for use by the renderer.<p>
             See TGLTextureFormat for details. }
          property TextureFormat : TGLTextureFormat read FTextureFormat write SetTextureFormat default tfDefault;
@@ -695,6 +709,18 @@ type
             this property is ignored. }
          property FilteringQuality : TGLTextureFilteringQuality read FFilteringQuality write SetFilteringQuality default tfIsotropic;
 
+         {: Texture mapping mode.<p>
+            This property controls automatic texture coordinates generation. }
+         property MappingMode : TGLTextureMappingMode read FMappingMode write SetMappingMode default tmmUser;
+         {: Texture mapping coordinates mode for S axis.<p>
+            This property stores the coordinates for automatic texture
+            coordinates generation. }
+         property MappingSCoordinates : TGLCoordinates read FMappingSCoordinates write SetMappingSCoordinates;
+         {: Texture mapping coordinates mode for T axis.<p>
+            This property stores the coordinates for automatic texture
+            coordinates generation. }
+         property MappingTCoordinates : TGLCoordinates read FMappingTCoordinates write SetMappingTCoordinates;
+
 			property Disabled: Boolean read FDisabled write SetDisabled default True;
 	end;
 
@@ -707,7 +733,7 @@ type
       The lighting is described with the standard ambient/diffuse/emission/specular
       properties that behave like those of most rendering tools.<br>
       You also have control over shininess (governs specular lighting) and
-      polygon mode (lines / fill). } 
+      polygon mode (lines / fill). }
 	TGLFaceProperties = class (TGLUpdateAbleObject)
 	   private
          FAmbient, FDiffuse, FSpecular, FEmission  : TGLColor;
@@ -1824,12 +1850,17 @@ begin
    FFilteringQuality:=tfIsotropic;
    FRequiredMemorySize:=-1;
    FTextureHandle:=TGLTextureHandle.Create;
+   FMappingMode:=tmmUser;
+   FMappingSCoordinates:=TGLCoordinates.Create(Self);
+   FMappingTCoordinates:=TGLCoordinates.Create(Self);
 end;
 
 // Destroy
 //
 destructor TGLTexture.Destroy;
 begin
+   FMappingSCoordinates.Free;
+   FMappingTCoordinates.Free;
 	DestroyHandles;
    FTextureHandle.Free;
 	FImage.Free;
@@ -1850,6 +1881,9 @@ begin
       		FCompression:=TGLTexture(Source).FCompression;
 		   	FMinFilter:=TGLTexture(Source).FMinFilter;
 			   FMagFilter:=TGLTexture(Source).FMagFilter;
+            FMappingMode:=TGLTexture(Source).FMappingMode;
+            FMappingSCoordinates.Assign(TGLTexture(Source).FMappingSCoordinates);
+            FMappingTCoordinates.Assign(TGLTexture(Source).FMappingTCoordinates);
    			FDisabled:=TGLTexture(Source).FDisabled;
 	   		SetImage(TGLTexture(Source).FImage);
 		   	FChanges:=[tcParams, tcImage];
@@ -2016,11 +2050,35 @@ end;
 //
 procedure TGLTexture.SetFilteringQuality(const val : TGLTextureFilteringQuality);
 begin
-	if val <> FFilteringQuality then begin
+	if val<>FFilteringQuality then begin
 		FFilteringQuality:=val;
 		Include(FChanges, tcParams);
 		NotifyChange(Self);
 	end;
+end;
+
+// SetMappingMode
+//
+procedure TGLTexture.SetMappingMode(const val : TGLTextureMappingMode);
+begin
+   if val<>FMappingMode then begin
+      FMappingMode:=val;
+		NotifyChange(Self);
+   end;
+end;
+
+// SetMappingSCoordinates
+//
+procedure TGLTexture.SetMappingSCoordinates(const val : TGLCoordinates);
+begin
+   FMappingSCoordinates.Assign(val);
+end;
+
+// SetMappingTCoordinates
+//
+procedure TGLTexture.SetMappingTCoordinates(const val : TGLCoordinates);
+begin
+   FMappingTCoordinates.Assign(val);
 end;
 
 // StoreImageClassName
@@ -2037,6 +2095,49 @@ begin
    GetHandle;
 end;
 
+// ApplyMappingMode
+//
+procedure TGLTexture.ApplyMappingMode;
+begin
+   case MappingMode of
+      tmmUser : ; // nothing to do, but checked first (common case)
+      tmmObjectLinear : begin
+         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+         glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+         glTexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
+         glTexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
+         glEnable(GL_TEXTURE_GEN_S);
+         glEnable(GL_TEXTURE_GEN_T);
+      end;
+      tmmEyeLinear : begin
+         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+         glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+         glTexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
+         glTexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
+         glEnable(GL_TEXTURE_GEN_S);
+         glEnable(GL_TEXTURE_GEN_T);
+      end;
+      tmmSphere : begin
+         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+         glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+         glEnable(GL_TEXTURE_GEN_S);
+         glEnable(GL_TEXTURE_GEN_T);
+      end;
+   else
+      Assert(False);
+   end;
+end;
+
+// ApplyMappingMode
+//
+procedure TGLTexture.UnApplyMappingMode;
+begin
+   if MappingMode<>tmmUser then begin
+      glDisable(GL_TEXTURE_GEN_S);
+      glDisable(GL_TEXTURE_GEN_T);
+   end;
+end;
+
 // Apply
 //
 procedure TGLTexture.Apply(var currentStates : TGLStates);
@@ -2045,9 +2146,17 @@ begin
 		SetGLState(currentStates, stTexture2D);
 	   glBindTexture(GL_TEXTURE_2D, Handle);
    	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      ApplyMappingMode;
 	end else begin
       UnSetGLState(currentStates, stTexture2D);
    end;
+end;
+
+// UnApply
+//
+procedure TGLTexture.UnApply;
+begin
+   UnApplyMappingMode;
 end;
 
 // ApplyAsTexture2
@@ -2059,12 +2168,12 @@ begin
       glEnable(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, Handle);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      ApplyMappingMode;
       if not libMaterial.FTextureMatrixIsIdentity then begin
          glMatrixMode(GL_TEXTURE);
          glLoadMatrixf(PGLFloat(@libMaterial.FTextureMatrix[0][0]));
          glMatrixMode(GL_MODELVIEW);
       end;
-      xglMapTexCoordToDual;
       glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
 end;
@@ -2073,15 +2182,15 @@ end;
 //
 procedure TGLTexture.UnApplyAsTexture2(libMaterial : TGLLibMaterial);
 begin
-   xglMapTexCoordToMain;
    glActiveTextureARB(GL_TEXTURE1_ARB);
+   UnApplyMappingMode;
    if not libMaterial.FTextureMatrixIsIdentity then begin
       glMatrixMode(GL_TEXTURE);
       glLoadIdentity;
       glMatrixMode(GL_MODELVIEW);
    end;
    glDisable(GL_TEXTURE_2D);
-   glActiveTextureARB(GL_TEXTURE0_ARB); 
+   glActiveTextureARB(GL_TEXTURE0_ARB);
 end;
 
 // GetHandle
@@ -2223,43 +2332,6 @@ procedure TGLTexture.DoOnTextureNeeded(Sender : TObject; var textureFileName : S
 begin
    if Assigned(FOnTextureNeeded) then
       FOnTextureNeeded(Sender, textureFileName);
-end;
-
-// DisableAutoTexture
-//
-procedure TGLTexture.DisableAutoTexture;
-begin
-	xglDisable(GL_TEXTURE_GEN_S);
-	xglDisable(GL_TEXTURE_GEN_T);
-end;
-
-// InitAutoTexture
-//
-procedure TGLTexture.InitAutoTexture(const texRep : TTexPoint);
-begin
-   InitAutoTexture(@texRep);
-end;
-
-// InitAutoTexture
-//
-procedure TGLTexture.InitAutoTexture(texRep : PTexPoint);
-var
-	sGenParams, tGenParams  : TVector;
-begin
-	sGenParams:=XHmgVector;
-	tGenParams:=YHmgVector;
-
-	xglTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-	if Assigned(TexRep) then
-		sGenparams[0]:=TexRep.S;
-	xglTexGenfv(GL_S, GL_OBJECT_PLANE, @SGenParams);
-	xglTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-	if Assigned(TexRep) then
-		tGenparams[1]:=TexRep.T;
-	xglTexGenfv(GL_T, GL_OBJECT_PLANE, @TGenparams);
-
-	xglEnable(GL_TEXTURE_GEN_S);
-  	xglEnable(GL_TEXTURE_GEN_T);
 end;
 
 //----------------- TGLMaterial --------------------------------------------------
@@ -2496,7 +2568,7 @@ destructor TGLLibMaterial.Destroy;
 var
    i : Integer;
 begin
-   Texture2Name:='';
+   Texture2Name:=''; // drop dependency
    for i:=0 to userList.Count-1 do
       TGLMaterial(userList[i]).NotifyLibMaterialDestruction;
    userList.Free;
@@ -2530,30 +2602,51 @@ end;
 // Apply
 //
 procedure TGLLibMaterial.Apply(var rci : TRenderContextInfo);
+var
+   multitextured : Boolean;
 begin
-   if not FTextureMatrixIsIdentity then
-      SetGLTextureMatrix(FTextureMatrix);
-   Material.Apply(rci);
    if (Texture2Name<>'') and GL_ARB_multitexture then begin
       if not Assigned(libMatTexture2) then begin
          libMatTexture2:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
          libMatTexture2.RegisterUser(Self);
       end;
-      if Assigned(libMatTexture2) then
-         libMatTexture2.Material.Texture.ApplyAsTexture2(libMatTexture2);
+      multitextured:=Assigned(libMatTexture2);
+   end else begin
+      multitextured:=False;
+      if Assigned(libMatTexture2) then begin
+         libMatTexture2.RegisterUser(Self);
+         libMatTexture2:=nil;
+      end;
+   end;
+   if not multitextured then begin
+      // no multitexturing ("standard" mode)
+      if not FTextureMatrixIsIdentity then
+         SetGLTextureMatrix(FTextureMatrix);
+      Material.Apply(rci);
+   end else begin
+      // multitexturing is ON
+      if not FTextureMatrixIsIdentity then
+         SetGLTextureMatrix(FTextureMatrix);
+      Material.Apply(rci);
+      libMatTexture2.Material.Texture.ApplyAsTexture2(libMatTexture2);
+      // calculate and apply appropriate xgl mode
+      if Material.Texture.MappingMode=tmmUser then
+         if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+            xglMapTexCoordToDual
+         else xglMapTexCoordToMain
+      else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+         xglMapTexCoordToSecond
+      else xglMapTexCoordToNull;
    end;
 end;
 
 // UnApply
 //
 procedure TGLLibMaterial.UnApply(var rci : TRenderContextInfo);
-var
-   libMat : TGLLibMaterial;
 begin
-   if (Texture2Name<>'') and GL_ARB_multitexture then begin
-      libMat:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
-      if Assigned(libMat) then
-         libMat.Material.Texture.UnApplyAsTexture2(Self);
+   if Assigned(libMatTexture2) then begin
+      libMatTexture2.Material.Texture.UnApplyAsTexture2(libMatTexture2);
+      xglMapTexCoordToMain;
    end;
    Material.UnApply(rci);
    if not FTextureMatrixIsIdentity then

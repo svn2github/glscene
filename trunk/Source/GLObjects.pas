@@ -773,8 +773,8 @@ type
 
       protected
 			{ Protected Declarations }
-         procedure SetMajorRadius(AValue: Single);
-         procedure SetMinorRadius(AValue: Single);
+         procedure SetMajorRadius(const AValue: Single);
+         procedure SetMinorRadius(const AValue: Single);
          procedure SetRings(AValue: Cardinal);
          procedure SetSides(aValue : Cardinal);
 
@@ -1241,7 +1241,9 @@ begin
   end;
 end;
 
-//----------------- TDummyCube -----------------------------------------------------
+// ------------------
+// ------------------ TDummyCube ------------------
+// ------------------
 
 // Create
 //
@@ -3254,100 +3256,92 @@ begin
    ScaleVector(Result, Scale.AsVector);
 end;
 
-//----------------- TTorus -----------------------------------------------------
+// ------------------
+// ------------------ TTorus ------------------
+// ------------------
 
+// Create
+//
 constructor TTorus.Create(AOwner:TComponent);
-
 begin
-  inherited Create(AOwner);
-  FRings:=25;
-  FSides:=15;
-  FMinorRadius:=0.1;
-  FMajorRadius:=0.4;
+   inherited Create(AOwner);
+   FRings:=25;
+   FSides:=15;
+   FMinorRadius:=0.1;
+   FMajorRadius:=0.4;
 end;
 
-//------------------------------------------------------------------------------
-
+// BuildList
+//
 procedure TTorus.BuildList(var rci : TRenderContextInfo);
-
-var I, J         : Integer;
-    Theta, Phi,
-    Theta1, 
-    cosPhi, sinPhi, dist : TGLFloat;
-    cosTheta, sinTheta: TGLFloat;
-    cosTheta1, sinTheta1: TGLFloat;
-    ringDelta, sideDelta: TGLFloat;
-
+var
+   I, J         : Integer;
+   Theta, Phi, Theta1, cosPhi, sinPhi, dist : TGLFloat;
+   cosTheta, sinTheta: TGLFloat;
+   cosTheta1, sinTheta1: TGLFloat;
+   ringDelta, sideDelta: TGLFloat;
+   iFact, jFact : Single;
 begin
-  // handle texture generation
-  Material.Texture.InitAutoTexture(nil);
-
-  ringDelta:=2*Pi/FRings;
-  sideDelta:=2*Pi/FSides;
-  theta:=0;
-  cosTheta:=1;
-  sinTheta:=0;
-  for I:=FRings-1 downto 0 do
-  begin
-    theta1:=theta+ringDelta;
-    cosTheta1:=cos(theta1);
-    sinTheta1:=sin(theta1);
-    glBegin(GL_QUAD_STRIP);
-    phi:=0;
-    for J:=FSides downto 0 do
-    begin
-      phi:=phi+sideDelta;
-      cosPhi:=cos(phi);
-      sinPhi:=sin(phi);
-      dist:=FMajorRadius+FMinorRadius*cosPhi;
-
-      glNormal3f(cosTheta1*cosPhi, -sinTheta1*cosPhi, sinPhi);
-      glVertex3f(cosTheta1*dist, -sinTheta1*dist, FMinorRadius*sinPhi);
-      glNormal3f(cosTheta*cosPhi, -sinTheta*cosPhi, sinPhi);
-      glVertex3f(cosTheta*dist, -sinTheta*dist, FMinorRadius*sinPhi);
-    end;
-    glEnd;
-    theta:=theta1;
-    cosTheta:=cosTheta1;
-    sinTheta:=sinTheta1;
-  end;
-  Material.Texture.DisableAutoTexture;
+   // handle texture generation
+   ringDelta:=c2PI/FRings;
+   sideDelta:=c2PI/FSides;
+   theta:=0;
+   cosTheta:=1;
+   sinTheta:=0;
+   iFact:=1/FRings;
+   jFact:=1/FSides;
+   for I:=FRings-1 downto 0 do  begin
+      theta1:=theta+ringDelta;
+      SinCos(theta1, sinTheta1, cosTheta1);
+      glBegin(GL_QUAD_STRIP);
+      phi:=0;
+      for J:=FSides downto 0 do begin
+         phi:=phi+sideDelta;
+         SinCos(phi, sinPhi, cosPhi);
+         dist:=FMajorRadius+FMinorRadius*cosPhi;
+         xglTexCoord2f((i+1)*iFact, j*jFact);
+         glNormal3f(cosTheta1*cosPhi, -sinTheta1*cosPhi, sinPhi);
+         glVertex3f(cosTheta1*dist, -sinTheta1*dist, FMinorRadius*sinPhi);
+         xglTexCoord2f(i*iFact, j*jFact);
+         glNormal3f(cosTheta*cosPhi, -sinTheta*cosPhi, sinPhi);
+         glVertex3f(cosTheta*dist, -sinTheta*dist, FMinorRadius*sinPhi);
+      end;
+      glEnd;
+      theta:=theta1;
+      cosTheta:=cosTheta1;
+      sinTheta:=sinTheta1;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TTorus.SetMajorRadius(AValue: Single);
-
+// SetMajorRadius
+//
+procedure TTorus.SetMajorRadius(const AValue: Single);
 begin
-  if FMajorRadius<>AValue then
-  begin
-    FMajorRadius:=AValue;
-    StructureChanged;
-  end;
+   if FMajorRadius<>AValue then begin
+      FMajorRadius:=AValue;
+      StructureChanged;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TTorus.SetMinorRadius(AValue: Single);
-
+// SetMinorRadius
+//
+procedure TTorus.SetMinorRadius(const AValue : Single);
 begin
-  if FMinorRadius<>AValue then
-  begin
-    FMinorRadius:=AValue;
-    StructureChanged;
-  end;
+   if FMinorRadius<>AValue then begin
+      FMinorRadius:=AValue;
+      StructureChanged;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
+// SetRings
+//
 procedure TTorus.SetRings(AValue: Cardinal);
-
 begin
-  if FRings<>AValue then
-  begin
-    FRings:=AValue;
-    StructureChanged;
-  end;
+   if FRings<>AValue then begin
+      FRings:=AValue;
+      if FRings<2 then FRings:=2;
+      StructureChanged;
+   end;
 end;
 
 // SetSides
@@ -3356,6 +3350,7 @@ procedure TTorus.SetSides(aValue : Cardinal);
 begin
    if FSides<>aValue then begin
       FSides:=aValue;
+      if FSides<3 then FSides:=3;
       StructureChanged;
    end;
 end;
@@ -3364,7 +3359,7 @@ end;
 //
 function TTorus.AxisAlignedDimensions : TVector;
 var
-  r, r1 : TGLFloat;
+   r, r1 : TGLFloat;
 begin
    r:=Abs(FMajorRadius);
    r1:=Abs(FMinorRadius);
@@ -3374,11 +3369,12 @@ end;
 
 //----------------- TTeapot ----------------------------------------------------
 
+// Create
+//
 constructor TTeapot.Create(AOwner: TComponent);
-
 begin
-  inherited Create(AOwner);
-  FGrid:=5;
+   inherited Create(AOwner);
+   FGrid:=5;
 end;
 
 //------------------------------------------------------------------------------
@@ -3507,7 +3503,6 @@ begin
 	if Length(FText) > 0 then begin
 		// create texture coordinates if necessary
 		//    if not (Material.Texture.Disabled)  and  not (Material.Texture.IsInherited) then
-		Material.Texture.InitAutoTexture(nil);
 		glPushAttrib(GL_POLYGON_BIT);
 		case FCharacterRange of
 			stcrAlphaNum :	glListBase(BaseList-32);
@@ -3517,7 +3512,6 @@ begin
 		end;
 		glCallLists(Length(FText), GL_UNSIGNED_BYTE, PChar(FText));
 		glPopAttrib;
-		Material.Texture.DisableAutoTexture;
 	end;
 end;
 

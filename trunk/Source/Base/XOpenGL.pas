@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>14/08/01 - EG - Added xglMapTexCoordToSecond
       <li>21/02/01 - EG - Added TexGen and vertex arrays mappings
    </ul>
 }
@@ -22,7 +23,7 @@ interface
 uses OpenGL12;
 
 type
-   TMapTexCoordMode = (mtcmNull, mtcmMain, mtcmDual);
+   TMapTexCoordMode = (mtcmNull, mtcmMain, mtcmDual, mtcmSecond);
 
 var
    xglMapTextCoordMode : TMapTexCoordMode;
@@ -31,7 +32,9 @@ var
 procedure xglMapTexCoordToNull;
 {: xglTexCoord functions will define the main texture coordinates. }
 procedure xglMapTexCoordToMain;
-{: xglTexCoord functions will define the two first texture coordinates. }
+{: xglTexCoord functions will define the second texture unit coordinates. }
+procedure xglMapTexCoordToSecond;
+{: xglTexCoord functions will define the two first texture units coordinates. }
 procedure xglMapTexCoordToDual;
 
 var
@@ -67,6 +70,87 @@ implementation
 // ------------------------------------------------------------------
 // Multitexturing coordinates duplication functions
 // ------------------------------------------------------------------
+
+// --------- Second unit Texturing
+
+procedure glTexCoord2f_Second(s, t: TGLfloat); stdcall;
+begin
+   glMultiTexCoord2fARB(GL_TEXTURE1_ARB, s, t);
+end;
+
+procedure glTexCoord2fv_Second(v: PGLfloat); stdcall;
+begin
+   glMultiTexCoord2fvARB(GL_TEXTURE1_ARB, v);
+end;
+
+procedure glTexCoord3f_Second(s, t, r: TGLfloat); stdcall;
+begin
+   glMultiTexCoord3fARB(GL_TEXTURE1_ARB, s, t, r);
+end;
+
+procedure glTexCoord3fv_Second(v: PGLfloat); stdcall;
+begin
+   glMultiTexCoord3fvARB(GL_TEXTURE1_ARB, v);
+end;
+
+procedure glTexCoord4f_Second(s, t, r, q: TGLfloat); stdcall;
+begin
+   glMultiTexCoord4fARB(GL_TEXTURE1_ARB, s, t, r, q);
+end;
+
+procedure glTexCoord4fv_Second(v: PGLfloat); stdcall;
+begin
+   glMultiTexCoord4fvARB(GL_TEXTURE1_ARB, v);
+end;
+
+procedure glTexGenf_Second(coord, pname: TGLEnum; param: TGLfloat); stdcall;
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glTexGenf(coord, pname, param);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glTexGenfv_Second(coord, pname: TGLEnum; params: PGLfloat); stdcall;
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glTexGenfv(coord, pname, params);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glTexGeni_Second(coord, pname: TGLEnum; param: TGLint); stdcall;
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glTexGeni(coord, pname, param);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glTexGeniv_Second(coord, pname: TGLEnum; params: PGLint); stdcall;
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glTexGeniv(coord, pname, params);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glEnable_Second(cap: TGLEnum); stdcall;
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glEnable(cap);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glDisable_Second(cap: TGLEnum); stdcall;
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glDisable(cap);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure xglTexCoordPointer_Second(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); stdcall;
+begin
+   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glTexCoordPointer(size, atype, stride, data);
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
 
 // --------- Dual Texturing
 
@@ -256,6 +340,33 @@ begin
 
       xglEnable:=glEnable;
       xglDisable:=glDisable;
+   end;
+end;
+
+// xglTexCoordMapToSecond
+//
+procedure xglMapTexCoordToSecond;
+begin
+   if xglMapTextCoordMode<>mtcmSecond then begin
+      xglMapTextCoordMode:=mtcmSecond;
+      Assert(GL_ARB_multitexture);
+
+      xglTexCoord2f:=glTexCoord2f_Second;
+      xglTexCoord2fv:=glTexCoord2fv_Second;
+      xglTexCoord3f:=glTexCoord3f_Second;
+      xglTexCoord3fv:=glTexCoord3fv_Second;
+      xglTexCoord4f:=glTexCoord4f_Second;
+      xglTexCoord4fv:=glTexCoord4fv_Second;
+
+      xglTexGenf:=glTexGenf_Second;
+      xglTexGenfv:=glTexGenfv_Second;
+      xglTexGeni:=glTexGeni_Second;
+      xglTexGeniv:=glTexGeniv_Second;
+
+      xglTexCoordPointer:=xglTexCoordPointer_Second;
+
+      xglEnable:=glEnable_Second;
+      xglDisable:=glDisable_Second;
    end;
 end;
 
