@@ -2,6 +2,7 @@
 {: Implements a multi-proxy objects, useful for discreet LOD.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/11/03 - EG - Added per-master visibility boolean
       <li>24/11/03 - EG - Creation
    </ul></font>
 }
@@ -24,6 +25,7 @@ type
          FMasterObject : TGLBaseSceneObject;
          FDistanceMin, FDistanceMin2 : Single;
          FDistanceMax, FDistanceMax2 : Single;
+         FVisible : Boolean;
 
 	   protected
 	      { Protected Declarations }
@@ -31,6 +33,7 @@ type
          procedure SetMasterObject(const val : TGLBaseSceneObject);
          procedure SetDistanceMin(const val : Single);
          procedure SetDistanceMax(const val : Single);
+         procedure SetVisible(const val : Boolean);
 
       public
 	      { Public Declarations }
@@ -49,6 +52,10 @@ type
          property DistanceMin : Single read FDistanceMin write SetDistanceMin;
          {: Maximum visibility distance (exclusive). }
          property DistanceMax : Single read FDistanceMax write SetDistanceMax;
+         {: Determines if the master object can be visible (proxy'ed).<p>
+            Note: the master object's distance also has to be within DistanceMin
+            and DistanceMax.}
+         property Visible : Boolean read FVisible write SetVisible default True;
    end;
 
 	// TGLMultiProxyMasters
@@ -141,6 +148,7 @@ uses SysUtils,OpenGL1x;
 constructor TGLMultiProxyMaster.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
+   FVisible:=True;
 end;
 
 // Destroy
@@ -161,6 +169,7 @@ begin
       FDistanceMin2:=TGLMultiProxyMaster(Source).FDistanceMin2;
       FDistanceMax:=TGLMultiProxyMaster(Source).FDistanceMax;
       FDistanceMax2:=TGLMultiProxyMaster(Source).FDistanceMax2;
+      FVisible:=TGLMultiProxyMaster(Source).FVisible;
       NotifyChange;
 	end else inherited;
 end;
@@ -187,6 +196,8 @@ begin
       Result:=MasterObject.Name
    else Result:='???';
 	Result:=Result+Format(' [%.2f; %.2f[', [DistanceMin, DistanceMax]);
+   if not Visible then
+      Result:=Result+' (hidden)';
 end;
 
 // SetMasterObject
@@ -221,6 +232,16 @@ begin
    if FDistanceMax<>val then begin
       FDistanceMax:=val;
       FDistanceMax2:=Sqr(val);
+      NotifyChange;
+   end;
+end;
+
+// SetVisible
+//
+procedure TGLMultiProxyMaster.SetVisible(const val : Boolean);
+begin
+   if FVisible<>val then begin
+      FVisible:=val;
       NotifyChange;
    end;
 end;
@@ -369,13 +390,15 @@ begin
       d2:=VectorDistance2(rci.cameraPosition, AbsolutePosition);
       for i:=0 to MasterObjects.Count-1 do begin
          mpMaster:=MasterObjects[i];
-         master:=mpMaster.MasterObject;
-         if (master<>nil) and (d2>=mpMaster.FDistanceMin2) and (d2<mpMaster.FDistanceMax2) then begin
-            oldProxySubObject:=rci.proxySubObject;
-            rci.proxySubObject:=True;
-            glMultMatrixf(PGLFloat(master.MatrixAsAddress));
-            master.DoRender(rci, renderSelf, (master.Count>0));
-            rci.proxySubObject:=oldProxySubObject;
+         if mpMaster.Visible then begin
+            master:=mpMaster.MasterObject;
+            if (master<>nil) and (d2>=mpMaster.FDistanceMin2) and (d2<mpMaster.FDistanceMax2) then begin
+               oldProxySubObject:=rci.proxySubObject;
+               rci.proxySubObject:=True;
+               glMultMatrixf(PGLFloat(master.MatrixAsAddress));
+               master.DoRender(rci, renderSelf, (master.Count>0));
+               rci.proxySubObject:=oldProxySubObject;
+            end;
          end;
       end;
       // now render self stuff (our children, our effects, etc.)
