@@ -10,7 +10,7 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
-  shadowvolumes.exe
+  shadowvolumes.exe motionblur.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -28,4 +28,7 @@ projection.exe: graph\projection\projection.dpr
   $(DCC)
 
 shadowvolumes.exe: specialsFX\shadowvolumes\shadowvolumes.dpr
+  $(DCC)
+
+motionblur.exe: specialsFX\motionblur\motionblur.dpr
   $(DCC)
