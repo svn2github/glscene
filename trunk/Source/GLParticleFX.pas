@@ -393,7 +393,6 @@ type
          FNbSides : Integer;
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
-         FCurrentTime : Double;           // NOT persistent
          Fvx, Fvy : TAffineVector;        // NOT persistent
          FVertices : TAffineVectorList;   // NOT persistent
          FLastPos : TAffineVector;        // NOT persistent
@@ -1426,7 +1425,6 @@ begin
    end;
    FVertices:=TAffineVectorList.Create;
    FVertices.Capacity:=FNbSides+2;
-   FVertices.Add(NullVector);
    for i:=0 to FNbSides do begin
       SinCos(i*c2PI/FNbSides, FParticleSize, s, c);
       FVertices.Add(VectorCombine(FVx, Fvy, c, s));
