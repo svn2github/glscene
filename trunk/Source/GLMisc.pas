@@ -430,7 +430,7 @@ type
    TGLBaseSilhouette = class
       private
          { Private Declarations }
-         FVertices : TAffineVectorList;
+         FVertices : TVectorList;
          FIndices : TIntegerList;
          FCapIndices : TIntegerList;
 
@@ -438,19 +438,21 @@ type
          { Protected Declarations }
          procedure SetIndices(const value : TIntegerList);
          procedure SetCapIndices(const value : TIntegerList);
-         procedure SetVertices(const value : TAffineVectorList);
+         procedure SetVertices(const value : TVectorList);
 
       public
          { Public Declarations }
          constructor Create; virtual;
          destructor Destroy; override;
 
-         property Vertices : TAffineVectorList read FVertices write SetVertices;
+         property Vertices : TVectorList read FVertices write SetVertices;
          property Indices : TIntegerList read FIndices write SetIndices;
          property CapIndices : TIntegerList read FCapIndices write SetCapIndices;
 
          procedure Flush;
          procedure Clear;
+
+         procedure ExtrudeVerticesToInfinity(const origin : TAffineVector);
    end;
 
 (*   // TGLSilhouette
@@ -2039,7 +2041,7 @@ end;
 constructor TGLBaseSilhouette.Create;
 begin
    inherited;
-   FVertices:=TAffineVectorList.Create;
+   FVertices:=TVectorList.Create;
    FIndices:=TIntegerList.Create;
    FCapIndices:=TIntegerList.Create;
 end;
@@ -2070,7 +2072,7 @@ end;
 
 // SetVertices
 //
-procedure TGLBaseSilhouette.SetVertices(const value : TAffineVectorList);
+procedure TGLBaseSilhouette.SetVertices(const value : TVectorList);
 begin
    FVertices.Assign(value);
 end;
@@ -2091,6 +2093,46 @@ begin
    FVertices.Clear;
    FIndices.Clear;
    FCapIndices.Clear;
+end;
+
+// ExtrudeVerticesToInfinity
+//
+procedure TGLBaseSilhouette.ExtrudeVerticesToInfinity(const origin : TAffineVector);
+var
+   i, nv, ni, nc, k : Integer;
+   vList, vListN : PVectorArray;
+   iList, iList2 : PIntegerArray;
+begin
+   // extrude vertices
+   nv:=Vertices.Count;
+   Vertices.Count:=2*nv;
+   vList:=Vertices.List;
+   vListN:=@vList[nv];
+   for i:=0 to nv-1 do begin
+      VectorSubtract(PAffineVector(@vList[i])^, origin, PAffineVector(@vListN[i])^);
+      vListN[i][3]:=0;
+   end;
+   // change silhouette indices to quad indices
+   ni:=Indices.Count;
+   Indices.Count:=2*ni;
+   iList:=Indices.List;
+   i:=ni-2; while i>=0 do begin
+      iList2:=@iList[2*i];
+      iList2[0]:=iList[i];
+      iList2[1]:=iList[i+1];
+      iList2[2]:=iList[i+1]+nv;
+      iList2[3]:=iList[i]+nv;
+      Dec(i, 2);
+   end;
+   // add extruded triangles to capIndices
+   nc:=CapIndices.Count;
+   CapIndices.Capacity:=2*nc;
+   iList:=CapIndices.List;
+   for i:=nc-1 downto 0 do begin
+      k:=iList[i];
+      CapIndices.Add(k);
+      iList[i]:=k+nv;
+   end;
 end;
 
 //------------------------------------------------------------------------------
