@@ -315,7 +315,7 @@ begin
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       glDepthFunc(GL_LEQUAL);
       glColor4f(0,0,0,1);
-      glLineWidth(3);
+      glLineWidth(FOutlineWidth);
 
       Result:=True;
       FOutlinePass:=False;
