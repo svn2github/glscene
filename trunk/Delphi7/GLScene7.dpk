@@ -21,6 +21,7 @@ package GLScene7;
 {$R '..\Source\GLTimeEventsMGR.dcr'}
 {$R '..\Source\GLWindows.dcr'}
 {$R '..\Source\Base\ApplicationFileIO.dcr'}
+{$R '..\Source\Shaders\GLTexCombineShader.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

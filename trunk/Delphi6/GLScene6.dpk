@@ -21,6 +21,7 @@ package GLScene6;
 {$R '..\Source\GLTimeEventsMGR.dcr'}
 {$R '..\Source\GLWindows.dcr'}
 {$R '..\Source\Base\ApplicationFileIO.dcr'}
+{$R '..\Source\Shaders\GLTexCombineShader.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -163,11 +164,11 @@ contains
   GLFilePLY in '..\Source\FileFormats\GLFilePLY.pas',
   GLFileTIN in '..\Source\FileFormats\GLFileTIN.pas',
   GLFileGTS in '..\Source\FileFormats\GLFileGTS.pas',
-  GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
   GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas',
   GLShadowVolume in '..\Source\GLShadowVolume.pas',
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
   GLSilhouette in '..\Source\GLSilhouette.pas',
-  GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas';
+  GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas',
+  GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas';
 
 end.

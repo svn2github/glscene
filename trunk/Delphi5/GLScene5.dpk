@@ -20,6 +20,7 @@ package GLScene5;
 {$R '..\Source\GLzBuffer.dcr'}
 {$R '..\Source\GLTimeEventsMGR.dcr'}
 {$R '..\Source\GLWindows.dcr'}
+{$R '..\Source\Shaders\GLTexCombineShader.dcr'}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
