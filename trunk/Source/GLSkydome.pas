@@ -221,6 +221,7 @@ type
          FHazeColor : TGLColor;
          FSkyColor : TGLColor;
          FNightColor : TGLColor;
+         FDeepColor : TGLColor;
          FSlices, FStacks : Integer;
 
 	   protected
@@ -234,6 +235,7 @@ type
          procedure SetHazeColor(const val : TGLColor);
          procedure SetSkyColor(const val : TGLColor);
          procedure SetNightColor(const val : TGLColor);
+         procedure SetDeepColor(const val : TGLColor);
          procedure SetSlices(const val : Integer);
          procedure SetStacks(const val : Integer);
 
@@ -263,6 +265,7 @@ type
          property HazeColor : TGLColor read FHazeColor write SetHazeColor;
          property SkyColor : TGLColor read FSkyColor write SetSkyColor;
          property NightColor : TGLColor read FNightColor write SetNightColor;
+         property DeepColor : TGLColor read FDeepColor write SetDeepColor;
 
          property Slices : Integer read FSlices write SetSlices default 24;
          property Stacks : Integer read FStacks write SetStacks default 48;
@@ -861,10 +864,11 @@ begin
    FSunElevation:=75;
    FTurbidity:=15;
    FSunZenithColor:=TGLColor.CreateInitialized(Self, clrWhite, OnColorChanged);
-   FSunDawnColor:=TGLColor.CreateInitialized(Self, clrCoral, OnColorChanged);
-   FHazeColor:=TGLColor.CreateInitialized(Self, VectorMake(0.9, 0.95, 1, 1), OnColorChanged);
-   FSkyColor:=TGLColor.CreateInitialized(Self, VectorMake(0.45, 0.6, 0.9, 1), OnColorChanged);
-   FNightColor:=TGLColor.CreateInitialized(Self, clrBlack, OnColorChanged);
+   FSunDawnColor:=TGLColor.CreateInitialized(Self, Vectormake(1, 0.5, 0, 0), OnColorChanged);
+   FHazeColor:=TGLColor.CreateInitialized(Self, VectorMake(0.9, 0.95, 1, 0), OnColorChanged);
+   FSkyColor:=TGLColor.CreateInitialized(Self, VectorMake(0.45, 0.6, 0.9, 0), OnColorChanged);
+   FNightColor:=TGLColor.CreateInitialized(Self, clrTransparent, OnColorChanged);
+   FDeepColor:=TGLColor.CreateInitialized(Self, VectorMake(0, 0.2, 0.4, 0));
    FStacks:=24;
    FSlices:=48;
    PreCalculate;
@@ -965,6 +969,14 @@ begin
    PreCalculate;
 end;
 
+// SetDeepColor
+//
+procedure TGLEarthSkyDome.SetDeepColor(const val : TGLColor);
+begin
+   FDeepColor.Assign(val);
+   PreCalculate;
+end;
+
 // SetSlices
 //
 procedure TGLEarthSkyDome.SetSlices(const val : Integer);
@@ -998,6 +1010,7 @@ begin
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
    glDisable(GL_CULL_FACE);
+   glDisable(GL_ALPHA_TEST);
    glDepthMask(False);
 
    with Scene.CurrentGLCamera do
@@ -1005,6 +1018,7 @@ begin
    glScalef(f, f, f);
 
    RenderDome;
+   Bands.BuildList(rci);
    Stars.BuildList(rci, (sdoTwinkle in FOptions));
 
    // restore
@@ -1070,6 +1084,32 @@ var
       Result:=1-VectorAngleCosine(PAffineVector(@p)^, sunPos);
    end;
 
+   procedure RenderDeepBand(stop : Single);
+   var
+      i : Integer;
+      r, thetaStart : Single;
+      vertex1 : TVector;
+      color : TColorVector;
+   begin
+      r:=0;
+      vertex1[3]:=1;
+      // triangle fan with south pole
+      glBegin(GL_TRIANGLE_FAN);
+         color:=CalculateColor(0, CalculateCosGamma(ZHmgPoint));
+         glColor4fv(DeepColor.AsAddress);
+         glVertex3f(0, 0, -1);
+         SinCos(DegToRad(stop), vertex1[2], r);
+         thetaStart:=DegToRad(90-stop);
+         for i:=0 to steps-1 do begin
+            vertex1[0]:=r*cosTable[i];
+            vertex1[1]:=r*sinTable[i];
+            color:=CalculateColor(thetaStart, CalculateCosGamma(vertex1));
+            glColor4fv(@color);
+            glVertex4fv(@vertex1);
+         end;
+      glEnd;
+   end;
+
    procedure RenderBand(start, stop : Single);
    var
       i : Integer;
@@ -1086,7 +1126,7 @@ var
             glVertex4fv(@ZHmgPoint);
             SinCos(DegToRad(start), vertex1[2], r);
             thetaStart:=DegToRad(90-start);
-            for i:=0 to steps do begin
+            for i:=0 to steps-1 do begin
                vertex1[0]:=r*cosTable[i];
                vertex1[1]:=r*sinTable[i];
                color:=CalculateColor(thetaStart, CalculateCosGamma(vertex1));
@@ -1102,7 +1142,7 @@ var
             SinCos(DegToRad(stop), vertex2[2], r2);
             thetaStart:=DegToRad(90-start);
             thetaStop:=DegToRad(90-stop);
-            for i:=0 to steps do begin
+            for i:=0 to steps-1 do begin
                vertex1[0]:=r*cosTable[i];
                vertex1[1]:=r*sinTable[i];
                color:=CalculateColor(thetaStart, CalculateCosGamma(vertex1));
@@ -1130,14 +1170,15 @@ begin
    GetMem(sinTable, steps*SizeOf(Single));
    GetMem(cosTable, steps*SizeOf(Single));
    for i:=1 to n do begin
-//      p:=i*2*PI/n;
-      p:=(1-sqrt(cos(i/n*PI/2)))*PI;
+      p:=(1-Sqrt(Cos((i/n)*cPIdiv2)))*PI;
       SinCos(p, sinTable[n+i], cosTable[n+i]);
       sinTable[n-i]:=-sinTable[n+i];
       cosTable[n-i]:=cosTable[n+i];
    end;
-   sinTable[n]:=0;
-   cosTable[n]:=1;
+   // these are defined by hand for precision issue: the dome must wrap exactly
+   sinTable[n]:=0;      cosTable[n]:=1;
+   sinTable[0]:=0;      cosTable[0]:=-1;
+   sinTable[steps-1]:=0;  cosTable[steps-1]:=-1;
    fs:=SunElevation/90;
    // start render
    t:=0;
@@ -1151,6 +1192,7 @@ begin
       RenderBand(Lerp(1, 90, t), Lerp(1, 90, t2));
       t:=t2;
    end;
+   RenderDeepBand(1);
    FreeMem(sinTable);
    FreeMem(cosTable);
 end;
