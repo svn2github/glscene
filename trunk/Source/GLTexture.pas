@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/11/02 - EG - Added tmmCubeMapLight0
       <li>18/10/02 - EG - CubeMap texture matrix now setup for 2nd texture unit too
       <li>24/07/02 - EG - Added TGLLibMaterials.DeleteUnusedMaterials
       <li>13/07/02 - EG - Improved materials when lighting is off
@@ -315,6 +316,7 @@ type
    //
    {: Stores contextual info useful during rendering methods. }
    TRenderContextInfo = record
+      scene : TObject;
       cameraPosition : TVector;
       cameraDirection : TVector;
       modelViewMatrix : PMatrix;
@@ -783,7 +785,8 @@ type
    // TGLTextureMappingMode
    //
    TGLTextureMappingMode = (tmmUser, tmmObjectLinear, tmmEyeLinear, tmmSphere,
-                            tmmCubeMapReflection, tmmCubeMapNormal);
+                            tmmCubeMapReflection, tmmCubeMapNormal,
+                            tmmCubeMapLight0);
 
 	// TGLTexture
 	//
@@ -2891,7 +2894,7 @@ begin
          glEnable(GL_TEXTURE_GEN_T);
   	      glEnable(GL_TEXTURE_GEN_R);
       end;
-      tmmCubeMapNormal : if GL_ARB_texture_cube_map then begin
+      tmmCubeMapNormal, tmmCubeMapLight0 : if GL_ARB_texture_cube_map then begin
          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
@@ -2930,14 +2933,37 @@ begin
    	   SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
          // compute model view matrix for proper viewing
          glMatrixMode(GL_TEXTURE);
-         m:=rci.modelViewMatrix^;
-         NormalizeMatrix(m);
-         // Transposition = Matrix inversion (matrix is now orthonormal)
-         if GL_ARB_transpose_matrix then
-            glLoadTransposeMatrixfARB(@m)
-         else begin
-            TransposeMatrix(m);
-            glLoadMatrixf(@m);
+         case MappingMode of
+            tmmCubeMapReflection, tmmCubeMapNormal : begin
+               m:=rci.modelViewMatrix^;
+               NormalizeMatrix(m);
+               // Transposition = Matrix inversion (matrix is now orthonormal)
+               if GL_ARB_transpose_matrix then
+                  glLoadTransposeMatrixfARB(@m)
+               else begin
+                  TransposeMatrix(m);
+                  glLoadMatrixf(@m);
+               end;
+            end;
+            tmmCubeMapLight0 : begin
+               with TGLScene(rci.scene).Lights do if Count>0 then begin
+                  m:=TGLLightSource(Items[0]).AbsoluteMatrix;
+                  NormalizeMatrix(m);
+                  if GL_ARB_transpose_matrix then
+                     glLoadTransposeMatrixfARB(@m)
+                  else begin
+                     TransposeMatrix(m);
+                     glLoadMatrixf(@m);
+                  end;
+
+                  m:=rci.modelViewMatrix^;
+                  NormalizeMatrix(m);
+                  TransposeMatrix(m);
+                  glMultMatrixf(@m);
+               end;
+            end;
+         else
+            Assert(False);
          end;
          glMatrixMode(GL_MODELVIEW);
       end;
