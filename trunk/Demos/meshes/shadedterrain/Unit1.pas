@@ -9,7 +9,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
   GLCadencer, StdCtrls, GLTexture, GLSkydome, GLWin32Viewer, VectorGeometry,
-  GLLensFlare, GLBumpmapHDS, GLTexCombineShader, OpenGL1x, ExtCtrls;
+  GLLensFlare, GLBumpmapHDS, GLTexCombineShader, OpenGL1x, ExtCtrls,
+  ComCtrls;
 
 type
   TForm1 = class(TForm)
@@ -28,6 +29,10 @@ type
     GLDummyCube1: TGLDummyCube;
     GLTexCombineShader1: TGLTexCombineShader;
     GLBumpmapHDS1: TGLBumpmapHDS;
+    Panel1: TPanel;
+    Label1: TLabel;
+    TBSubSampling: TTrackBar;
+    LASubFactor: TLabel;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -40,6 +45,8 @@ type
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
     procedure GLBumpmapHDS1NewTilePrepared(Sender: TGLBumpmapHDS;
       heightData: THeightData; normalMapMaterial: TGLLibMaterial);
+    procedure TBSubSamplingChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -82,6 +89,11 @@ begin
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    // Initial camera height offset (controled with pageUp/pageDown)
    FCamHeight:=10;
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+   TBSubSamplingChange(Self);
 end;
 
 procedure TForm1.GLBumpmapHDS1NewTilePrepared(Sender: TGLBumpmapHDS;
@@ -178,13 +190,9 @@ begin
          end;
       end;
       '*' : with TerrainRenderer1 do
-         if CLODPrecision>20 then CLODPrecision:=Round(CLODPrecision*0.8);
+         if CLODPrecision>10 then CLODPrecision:=Round(CLODPrecision*0.8);
       '/' : with TerrainRenderer1 do
          if CLODPrecision<1000 then CLODPrecision:=Round(CLODPrecision*1.2);
-      '8' : with TerrainRenderer1 do
-         if QualityDistance>40 then QualityDistance:=Round(QualityDistance*0.8);
-      '9' : with TerrainRenderer1 do
-         if QualityDistance<1000 then QualityDistance:=Round(QualityDistance*1.2);
       'l' : with GLLensFlare do Visible:=(not Visible) and SPSun.Visible;
    end;
    Key:=#0;
@@ -193,6 +201,17 @@ end;
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
    GLLensFlare.PreRender(Sender as TGLSceneBuffer);
+end;
+
+procedure TForm1.TBSubSamplingChange(Sender: TObject);
+begin
+   GLBumpmapHDS1.SubSampling:=(1 shl TBSubSampling.Position);
+   LASubFactor.Caption:=Format('(%d) -> BumpMaps are %dx%1:d',
+                               [GLBumpmapHDS1.SubSampling,
+                                TerrainRenderer1.TileSize div GLBumpmapHDS1.SubSampling]);
+   // don't leave the focus to the trackbar, otherwise it'll keep some keystrokes
+   // for itself, like the arrow keys
+   SetFocus;
 end;
 
 end.
