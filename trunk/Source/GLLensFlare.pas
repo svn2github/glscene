@@ -332,167 +332,166 @@ begin
       if FCurrSize>0 then
          FCurrSize:=FCurrSize-FDeltaTime*500;
    end;
-   if FCurrSize<=0 then begin
-      FCurrSize:=0;
-      Exit;
-   end;
+   if FCurrSize>0 then begin
 
-   // Random seed must be backed up, could be used for other purposes
-   // (otherwise we essentially reset the random generator at each frame)
-   oldSeed:=RandSeed;
-   RandSeed:=Seed;
+      // Random seed must be backed up, could be used for other purposes
+      // (otherwise we essentially reset the random generator at each frame)
+      oldSeed:=RandSeed;
+      RandSeed:=Seed;
 
-   // Prepare matrices
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix;
-   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-
-   glMatrixMode(GL_PROJECTION);
-   glPushMatrix;
-   glLoadIdentity;
-   glPushAttrib(GL_ENABLE_BIT);
-   glDisable(GL_LIGHTING);
-   glDisable(GL_DEPTH_TEST);
-   glDepthMask(False);
-   glEnable(GL_BLEND);
-   glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
-
-   glPushMatrix;
-   glTranslatef(posVector[0], posVector[1], posVector[2]);
-
-   // Glow (a circle with transparent edges):
-   if feGlow in Elements then begin
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glBegin(GL_TRIANGLE_FAN);
-      glColor4fv(@Gradients[feGlow].CFrom);
-      glVertex2f(0, 0);
-      glColor4fv(@Gradients[feGlow].CTo);
-      f:=2*pi/Resolution;
-      for i:=0 to Resolution do begin
-         SinCos(i*f, s, c);
-         glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
-      end;
-      glEnd;
-   end;
-
-   // Use additive blending from now on.
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-   // Streaks (randomly oriented, but evenly spaced, antialiased lines from the origin):
-   if feStreaks in Elements then begin
-      glEnable(GL_LINE_SMOOTH);
-      glLineWidth(StreakWidth);
-      a:=2*pi/NumStreaks;
-      rnd:=Random*(pi/NumStreaks);
-      f:=1.5*FCurrSize;
-      glBegin(GL_LINES);
-      for i:=0 to NumStreaks-1 do begin
-         SinCos(rnd+a*i, f, s, c);
-         glColor4fv(@Gradients[feStreaks].CFrom);
-         glVertex2f(0, 0);
-         glColor4fv(@Gradients[feStreaks].CTo);
-         glVertex2f(c, Squeeze*s);
-      end;
-      glEnd;
-      glDisable(GL_LINE_SMOOTH);
-   end;
-
-   // Rays (random-length lines from the origin):
-   if feRays in Elements then begin
-      glLineWidth(1);
-      glBegin(GL_LINES);
-      f:=2*pi/(Resolution*20);
-      for i:=1 to Resolution*20 do begin
-         if Odd(i) then
-            rnd:=1.5*Random
-         else rnd:=Random;
-         SinCos(i*f, FCurrSize*rnd, s, c);
-         glColor4fv(@Gradients[feRays].CFrom);
-         glVertex2f(0, 0);
-         glColor4fv(@Gradients[feRays].CTo);
-         glVertex2f(c, s*Squeeze);
-      end;
-      glEnd;
-   end;
-   glPopMatrix;
-
-   // Ring (Three circles, the outer two are transparent):
-   if feRing in Elements then begin
-      rW := FCurrSize / 15;  // Ring width
+      // Prepare matrices
+      glMatrixMode(GL_MODELVIEW);
       glPushMatrix;
-      glTranslatef(PosVector[0],PosVector[1],PosVector[2]);
-      glScalef(0.6, 0.6, 1);
-      glBegin(GL_QUADS);
-      for i:=0 to Resolution - 1 do begin
-         SinCos(2*i*pi/Resolution, s, c);
-         glColor4fv(@Gradients[feGlow].CTo);
-         glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
-         glColor4fv(@Gradients[feRing].CFrom);
-         glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+      glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
 
-         SinCos(2*(i+1)*pi/Resolution, s, c);
-         glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
-         glColor4fv(@Gradients[feGlow].CTo);
-         glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix;
+      glLoadIdentity;
+      glPushAttrib(GL_ENABLE_BIT);
+      glDisable(GL_LIGHTING);
+      glDisable(GL_DEPTH_TEST);
+      glDepthMask(False);
+      glEnable(GL_BLEND);
+      glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
 
-         glColor4fv(@Gradients[feRing].CFrom);
-         glVertex2f(FCurrSize * cos(2*i*pi/Resolution),
-                    Squeeze * FCurrSize * sin(2*i*pi/Resolution));
-         glVertex2f(FCurrSize * cos(2*(i+1)*pi/Resolution),
-                    Squeeze * FCurrSize * sin(2*(i+1)*pi/Resolution));
-         glColor4fv(@Gradients[feGlow].CTo);
-         glVertex2f((FCurrSize+rW) * cos(2*(i+1)*pi/Resolution),
-                    Squeeze * (FCurrSize+rW) * sin(2*(i+1)*pi/Resolution));
-         glVertex2f((FCurrSize+rW) * cos(2*i*pi/Resolution),
-                    Squeeze * (FCurrSize+rW) * sin(2*i*pi/Resolution));
-      end;
-      glEnd;
-      glPopMatrix;
-   end;
+      glPushMatrix;
+      glTranslatef(posVector[0], posVector[1], posVector[2]);
 
-   if feSecondaries in Elements then begin
-      // Other secondaries (plain gradiented circles, like the glow):
-      for j:=1 to NumSecs do begin
-         rnd := 2 * Random - 1;
-         { If rnd < 0 then the secondary glow will end up on the other side of the
-           origin. In this case, we can push it really far away from the flare. If
-           the secondary is on the flare's side, we pull it slightly towards the
-           origin to avoid it winding up in the middle of the flare. }
-         v:=PosVector;
-         if rnd<0 then
-            ScaleVector(V, rnd)
-         else ScaleVector(V, 0.8*rnd);
-         glPushMatrix;
-         glTranslatef(v[0], v[1],v[2]);
+      // Glow (a circle with transparent edges):
+      if feGlow in Elements then begin
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          glBegin(GL_TRIANGLE_FAN);
-         if j mod 3 = 0 then begin
-            glColor4fv(@Gradients[feGlow].CFrom);
-            glVertex2f(0, 0);
-            glColor4fv(@Gradients[feGlow].CTo);
-         end else begin
-            glColor4fv(@Gradients[feSecondaries].CFrom);
-            glVertex2f(0, 0);
-            glColor4fv(@Gradients[feSecondaries].CTo);
-         end;
-         rnd:=(Random+0.1)*FCurrSize*0.25;
+         glColor4fv(@Gradients[feGlow].CFrom);
+         glVertex2f(0, 0);
+         glColor4fv(@Gradients[feGlow].CTo);
          f:=2*pi/Resolution;
          for i:=0 to Resolution do begin
-            SinCos(i*f, rnd, s, c);
-            glVertex2f(c, s);
+            SinCos(i*f, s, c);
+            glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+         end;
+         glEnd;
+      end;
+
+      // Use additive blending from now on.
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+      // Streaks (randomly oriented, but evenly spaced, antialiased lines from the origin):
+      if feStreaks in Elements then begin
+         glEnable(GL_LINE_SMOOTH);
+         glLineWidth(StreakWidth);
+         a:=2*pi/NumStreaks;
+         rnd:=Random*(pi/NumStreaks);
+         f:=1.5*FCurrSize;
+         glBegin(GL_LINES);
+         for i:=0 to NumStreaks-1 do begin
+            SinCos(rnd+a*i, f, s, c);
+            glColor4fv(@Gradients[feStreaks].CFrom);
+            glVertex2f(0, 0);
+            glColor4fv(@Gradients[feStreaks].CTo);
+            glVertex2f(c, Squeeze*s);
+         end;
+         glEnd;
+         glDisable(GL_LINE_SMOOTH);
+      end;
+
+      // Rays (random-length lines from the origin):
+      if feRays in Elements then begin
+         glLineWidth(1);
+         glBegin(GL_LINES);
+         f:=2*pi/(Resolution*20);
+         for i:=1 to Resolution*20 do begin
+            if Odd(i) then
+               rnd:=1.5*Random
+            else rnd:=Random;
+            SinCos(i*f, FCurrSize*rnd, s, c);
+            glColor4fv(@Gradients[feRays].CFrom);
+            glVertex2f(0, 0);
+            glColor4fv(@Gradients[feRays].CTo);
+            glVertex2f(c, s*Squeeze);
+         end;
+         glEnd;
+      end;
+      glPopMatrix;
+
+      // Ring (Three circles, the outer two are transparent):
+      if feRing in Elements then begin
+         rW := FCurrSize / 15;  // Ring width
+         glPushMatrix;
+         glTranslatef(PosVector[0],PosVector[1],PosVector[2]);
+         glScalef(0.6, 0.6, 1);
+         glBegin(GL_QUADS);
+         for i:=0 to Resolution - 1 do begin
+            SinCos(2*i*pi/Resolution, s, c);
+            glColor4fv(@Gradients[feGlow].CTo);
+            glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
+            glColor4fv(@Gradients[feRing].CFrom);
+            glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+
+            SinCos(2*(i+1)*pi/Resolution, s, c);
+            glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+            glColor4fv(@Gradients[feGlow].CTo);
+            glVertex2f((FCurrSize-rW)*c, Squeeze*(FCurrSize-rW)*s);
+
+            glColor4fv(@Gradients[feRing].CFrom);
+            glVertex2f(FCurrSize * cos(2*i*pi/Resolution),
+                       Squeeze * FCurrSize * sin(2*i*pi/Resolution));
+            glVertex2f(FCurrSize * cos(2*(i+1)*pi/Resolution),
+                       Squeeze * FCurrSize * sin(2*(i+1)*pi/Resolution));
+            glColor4fv(@Gradients[feGlow].CTo);
+            glVertex2f((FCurrSize+rW) * cos(2*(i+1)*pi/Resolution),
+                       Squeeze * (FCurrSize+rW) * sin(2*(i+1)*pi/Resolution));
+            glVertex2f((FCurrSize+rW) * cos(2*i*pi/Resolution),
+                       Squeeze * (FCurrSize+rW) * sin(2*i*pi/Resolution));
          end;
          glEnd;
          glPopMatrix;
       end;
-   end;
 
-   // restore state
-   glDepthMask(True);
-   glPopAttrib;
-   glPopMatrix;
-   glMatrixMode(GL_MODELVIEW);
-   glPopMatrix;
+      if feSecondaries in Elements then begin
+         // Other secondaries (plain gradiented circles, like the glow):
+         for j:=1 to NumSecs do begin
+            rnd := 2 * Random - 1;
+            { If rnd < 0 then the secondary glow will end up on the other side of the
+              origin. In this case, we can push it really far away from the flare. If
+              the secondary is on the flare's side, we pull it slightly towards the
+              origin to avoid it winding up in the middle of the flare. }
+            v:=PosVector;
+            if rnd<0 then
+               ScaleVector(V, rnd)
+            else ScaleVector(V, 0.8*rnd);
+            glPushMatrix;
+            glTranslatef(v[0], v[1],v[2]);
+            glBegin(GL_TRIANGLE_FAN);
+            if j mod 3 = 0 then begin
+               glColor4fv(@Gradients[feGlow].CFrom);
+               glVertex2f(0, 0);
+               glColor4fv(@Gradients[feGlow].CTo);
+            end else begin
+               glColor4fv(@Gradients[feSecondaries].CFrom);
+               glVertex2f(0, 0);
+               glColor4fv(@Gradients[feSecondaries].CTo);
+            end;
+            rnd:=(Random+0.1)*FCurrSize*0.25;
+            f:=2*pi/Resolution;
+            for i:=0 to Resolution do begin
+               SinCos(i*f, rnd, s, c);
+               glVertex2f(c, s);
+            end;
+            glEnd;
+            glPopMatrix;
+         end;
+      end;
 
-   RandSeed:=oldSeed;
-   
+      // restore state
+      glDepthMask(True);
+      glPopAttrib;
+      glPopMatrix;
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix;
+
+      RandSeed:=oldSeed;
+
+   end else FCurrSize:=0;
+
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
 end;
