@@ -2,8 +2,9 @@
 {: Octree management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>17/03/02 - Egg - Added SphereIntersectAABB from Robert Hayes
-	   <li>13/03/02 - Egg - Made in a standalone unit, based on Robert Hayes code
+      <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
+      <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
+	   <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
 	</ul></font>
 }
 unit Octree;
@@ -113,8 +114,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses GLVectorFileObjects;
 
 // ----------------------------------------------------------------------
 // Name  : CheckPointInSphere()
