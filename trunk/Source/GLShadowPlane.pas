@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/10/02 - EG - Added OnBegin/EndRenderingShadows
       <li>25/10/02 - EG - Fixed Stencil cleanup and shadow projection bug
       <li>02/10/02 - EG - Added spoScissor
       <li>23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
@@ -53,6 +54,7 @@ type
          FShadowedLight : TGLLightSource;
          FShadowColor : TGLColor;
          FShadowOptions : TShadowPlaneOptions;
+         FOnBeginRenderingShadows, FOnEndRenderingShadows : TNotifyEvent;
 
 		protected
 			{ Protected Declarations }
@@ -96,6 +98,11 @@ type
             </ul>
          }
          property ShadowOptions : TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
+
+         {: Fired before the shadows are rendered. }
+         property OnBeginRenderingShadows : TNotifyEvent read FOnBeginRenderingShadows write FOnBeginRenderingShadows;
+         {: Fired after the shadows are rendered. }
+         property OnEndRenderingShadows : TNotifyEvent read FOnEndRenderingShadows write FOnEndRenderingShadows;
    end;
 
 //-------------------------------------------------------------
@@ -206,6 +213,8 @@ begin
 
             glMultMatrixf(@shadowMat);
 
+            if Assigned(FOnBeginRenderingShadows) then
+               FOnBeginRenderingShadows(Self);
             if Assigned(FShadowingObject) then begin
                if FShadowingObject.Parent<>nil then
                   glMultMatrixf(PGLFloat(FShadowingObject.Parent.AbsoluteMatrixAsAddress));
@@ -214,6 +223,8 @@ begin
             end else begin
                Scene.Objects.DoRender(rci, renderSelf, renderChildren);
             end;
+            if Assigned(FOnEndRenderingShadows) then
+               FOnEndRenderingShadows(Self);
 
             rci.ignoreMaterials:=oldIgnoreMaterials;
 

@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/10/02 - EG - Added OnBegin/EndRenderingMirrors
       <li>25/10/02 - EG - Fixed Stencil cleanup
       <li>22/02/01 - EG - Fixed change notification,
                           Fixed special effects support (PFX, etc.) 
@@ -46,6 +47,7 @@ type
          FMirrorObject : TGLBaseSceneObject;
 			FWidth, FHeight : TGLFloat;
          FMirrorOptions : TMirrorOptions;
+         FOnBeginRenderingMirrors, FOnEndRenderingMirrors : TNotifyEvent;
 
 		protected
 			{ Protected Declarations }
@@ -90,6 +92,11 @@ type
 
 			property Height: TGLFloat read FHeight write SetHeight;
          property Width: TGLFloat read FWidth write SetWidth;
+
+         {: Fired before the object's mirror images are rendered. }
+         property OnBeginRenderingMirrors : TNotifyEvent read FOnBeginRenderingMirrors write FOnBeginRenderingMirrors;
+         {: Fired after the object's mirror images are rendered. }
+         property OnEndRenderingMirrors : TNotifyEvent read FOnEndRenderingMirrors write FOnEndRenderingMirrors;
    end;
 
 //-------------------------------------------------------------
@@ -201,6 +208,9 @@ begin
          rci.cameraDirection:=VectorTransform(rci.cameraDirection, refMat);
 
          glMultMatrixf(@refMat);
+
+         if Assigned(FOnBeginRenderingMirrors) then
+            FOnBeginRenderingMirrors(Self);
          if Assigned(FMirrorObject) then begin
             if FMirrorObject.Parent<>nil then
                glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
@@ -208,6 +218,8 @@ begin
          end else begin
             Scene.Objects.DoRender(rci, renderSelf, renderChildren);
          end;
+         if Assigned(FOnBeginRenderingMirrors) then
+            FOnBeginRenderingMirrors(Self);
 
          rci.cameraPosition:=cameraPosBackup;
          rci.cameraDirection:=cameraDirectionBackup;
