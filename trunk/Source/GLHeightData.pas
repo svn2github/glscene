@@ -850,7 +850,7 @@ begin
          for i:=0 to Count-1 do begin
             hd:=THeightData(List[i]);
             if (hd.XLeft<=x) and (hd.YTop<=y)
-                  and (hd.XLeft+hd.Size-1>=x) and (hd.YTop+hd.Size-1>=y) then begin
+                  and (hd.XLeft+hd.Size-1>x) and (hd.YTop+hd.Size-1>y) then begin
                foundHd:=hd;
                Break;
             end;
