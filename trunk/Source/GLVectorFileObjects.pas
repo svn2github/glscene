@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>03/12/03 - SG - Added TSkeletonCollider and TSkeletonColliderList
+                          Added Colliders (TSkeletonColliderList) to TSkeleton
       <li>24/10/03 - SG - Various fixes for multiple bones per vertex
       <li>21/09/03 - MRQZZZ - Added "aamLoopBackward" to AnimationMode property
       <li>19/09/03 - EG - "Lighmap" -&gt; "LightMap"
@@ -391,6 +393,74 @@ type
          procedure Clean; override;
 	end;
 
+   TSkeletonColliderList = class;
+
+   // TSkeletonCollider
+   //
+   {: A general class storing the base level info required for skeleton
+      based collision methods. This class is meant to be inherited from
+      to create skeleton driven Verlet Constraints, ODE Geoms, etc.
+      Overriden classes should be named as TSCxxxxx. }
+   TSkeletonCollider = class(TPersistentObject)
+      private
+         { Private Declarations }
+         FOwner : TSkeletonColliderList;
+         FBone : TSkeletonBone;
+         FBoneID : Integer;
+         FLocalMatrix,
+         FGlobalMatrix : TMatrix;
+
+      protected
+         { Protected Declarations }
+         procedure SetBone(const val : TSkeletonBone);
+         procedure SetLocalMatrix(const val : TMatrix);
+
+      public
+         { Public Declarations }
+         constructor Create; override;
+         constructor CreateOwned(AOwner : TSkeletonColliderList);
+         procedure WriteToFiler(writer : TVirtualWriter); override;
+         procedure ReadFromFiler(reader : TVirtualReader); override;
+         {: This method is used to align the colliders and their
+            derived objects to their associated skeleton bone.
+            Override to set up descendant class alignment properties. }
+         procedure AlignCollider; virtual;
+
+         property Owner : TSkeletonColliderList read FOwner;
+         //: The bone that this collider associates with.
+         property Bone : TSkeletonBone read FBone write SetBone;
+         {: Offset and orientation of the collider in the associated
+            bone's space. }
+         property LocalMatrix : TMatrix read FLocalMatrix write SetLocalMatrix;
+         {: Global offset and orientation of the collider. This
+            gets set in the AlignCollider method. }
+         property GlobalMatrix : TMatrix read FGlobalMatrix;
+   end;
+
+   // TSkeletonColliderList
+   //
+   {: List class for storing TSkeletonCollider objects. }
+   TSkeletonColliderList = class(TPersistentObjectList)
+      private
+         { Private Declarations }
+         FOwner : TPersistent;
+
+      protected
+         { Protected Declarations }
+         function GetSkeletonCollider(index : Integer) : TSkeletonCollider;
+
+      public
+         { Public Declarations }
+         constructor CreateOwned(AOwner : TPersistent);
+         procedure ReadFromFiler(reader : TVirtualReader); override;
+         procedure Clear; override;
+         {: Calls AlignCollider for each collider in the list. }
+         procedure AlignColliders;
+
+         property Owner : TPersistent read FOwner;
+         property Items[Index: Integer] : TSkeletonCollider read GetSkeletonCollider; default;
+   end;
+
    TGLBaseMesh = class;
 
    // TBlendedLerpInfo
@@ -416,6 +486,7 @@ type
          FFrames : TSkeletonFrameList;
          FCurrentFrame : TSkeletonFrame; // not persistent
          FBonesByIDCache : TList;
+         FColliders : TSkeletonColliderList;
 
 	   protected
 	      { Protected Declarations }
@@ -423,6 +494,7 @@ type
          procedure SetFrames(const val : TSkeletonFrameList);
          function GetCurrentFrame : TSkeletonFrame;
          procedure SetCurrentFrame(val : TSkeletonFrame);
+         procedure SetColliders(const val : TSkeletonColliderList);
 
 	   public
 	      { Public Declarations }
@@ -437,6 +509,7 @@ type
          property RootBones : TSkeletonRootBoneList read FRootBones write SetRootBones;
          property Frames : TSkeletonFrameList read FFrames write SetFrames;
          property CurrentFrame : TSkeletonFrame read GetCurrentFrame write SetCurrentFrame;
+         property Colliders : TSkeletonColliderList read FColliders write SetColliders;
 
          procedure FlushBoneByIDCache;
          function BoneByID(anID : Integer) : TSkeletonBone;
@@ -2534,6 +2607,147 @@ begin
 end;
 
 // ------------------
+// ------------------ TSkeletonCollider ------------------
+// ------------------
+
+// Create
+//
+constructor TSkeletonCollider.Create;
+begin
+   inherited;
+   FLocalMatrix:=IdentityHMGMatrix;
+   FGlobalMatrix:=IdentityHMGMatrix;
+end;
+
+// CreateOwned
+//
+constructor TSkeletonCollider.CreateOwned(AOwner: TSkeletonColliderList);
+begin
+   Create;
+   FOwner:=AOwner;
+   if Assigned(FOwner) then
+      FOwner.Add(Self);
+end;
+
+// WriteToFiler
+//
+procedure TSkeletonCollider.WriteToFiler(writer: TVirtualWriter);
+begin
+   inherited WriteToFiler(writer);
+   with writer do begin
+      WriteInteger(0); // Archive Version 0
+      if Assigned(FBone) then
+         WriteInteger(FBone.BoneID)
+      else
+         WriteInteger(-1);
+      Write(FLocalMatrix,SizeOf(TMatrix));
+   end;
+end;
+
+// ReadFromFiler
+//
+procedure TSkeletonCollider.ReadFromFiler(reader: TVirtualReader);
+var
+   archiveVersion : integer;
+begin
+   inherited ReadFromFiler(reader);
+   archiveVersion:=reader.ReadInteger;
+   if archiveVersion=0 then with reader do begin
+      FBoneID:=ReadInteger;
+      Read(FLocalMatrix,SizeOf(TMatrix));
+   end else RaiseFilerException(archiveVersion);
+end;
+
+// AlignCollider
+//
+procedure TSkeletonCollider.AlignCollider;
+var
+   mat : TMatrix;
+begin
+   if Assigned(FBone) then begin
+      if Owner.Owner is TSkeleton then
+         if TSkeleton(Owner.Owner).Owner is TGLBaseSceneObject then
+            mat:=MatrixMultiply(FBone.GlobalMatrix,TGLBaseSceneObject(TSkeleton(Owner.Owner).Owner).AbsoluteMatrix)
+         else
+            mat:=FBone.GlobalMatrix;
+         MatrixMultiply(FLocalMatrix,mat,FGlobalMatrix);
+   end else
+      FGlobalMatrix:=FLocalMatrix;
+end;
+
+// SetBone
+//
+procedure TSkeletonCollider.SetBone(const val: TSkeletonBone);
+begin
+   if val<>FBone then
+      FBone:=val;
+end;
+
+// SetMatrix
+//
+procedure TSkeletonCollider.SetLocalMatrix(const val: TMatrix);
+begin
+   FLocalMatrix:=val;
+end;
+
+// ------------------
+// ------------------ TSkeletonColliderList ------------------
+// ------------------
+
+// CreateOwned
+//
+constructor TSkeletonColliderList.CreateOwned(AOwner: TPersistent);
+begin
+   Create;
+   FOwner:=AOwner;
+end;
+
+// GetSkeletonCollider
+//
+function TSkeletonColliderList.GetSkeletonCollider(
+   index: Integer): TSkeletonCollider;
+begin
+   Result:=TSkeletonCollider(inherited Get(index));
+end;
+
+// ReadFromFiler
+//
+procedure TSkeletonColliderList.ReadFromFiler(reader: TVirtualReader);
+var
+   i : Integer;
+begin
+   inherited;
+   for i:=0 to Count-1 do begin
+      Items[i].FOwner:=Self;
+      if (Owner is TSkeleton) and (Items[i].FBoneID<>-1) then
+         Items[i].Bone:=TSkeleton(Owner).BoneByID(Items[i].FBoneID);
+   end;
+end;
+
+// Clear
+//
+procedure TSkeletonColliderList.Clear;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do begin
+      Items[i].FOwner:=nil;
+      Items[i].Free;
+   end;
+   inherited;
+end;
+
+// AlignColliders
+//
+procedure TSkeletonColliderList.AlignColliders;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      Items[i].AlignCollider;
+end;
+
+// ------------------
 // ------------------ TSkeleton ------------------
 // ------------------
 
@@ -2552,6 +2766,7 @@ begin
 	inherited Create;
    FRootBones:=TSkeletonRootBoneList.CreateOwned(Self);
    FFrames:=TSkeletonFrameList.CreateOwned(Self);
+   FColliders:=TSkeletonColliderList.CreateOwned(Self);
 end;
 
 // Destroy
@@ -2562,6 +2777,7 @@ begin
    FCurrentFrame.Free;
    FFrames.Free;
    FRootBones.Free;
+   FColliders.Free;
 	inherited Destroy;
 end;
 
@@ -2571,9 +2787,14 @@ procedure TSkeleton.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
-      WriteInteger(0); // Archive Version 0
+      if FColliders.Count > 0 then
+        WriteInteger(1) // Archive Version 1 : with colliders
+      else
+        WriteInteger(0); // Archive Version 0
       FRootBones.WriteToFiler(writer);
       FFrames.WriteToFiler(writer);
+      if FColliders.Count > 0 then
+        FFrames.WriteToFiler(writer);
    end;
 end;
 
@@ -2585,9 +2806,11 @@ var
 begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
-	if archiveVersion=0 then with reader do begin
+	if (archiveVersion=0) or (archiveVersion=1) then with reader do begin
       FRootBones.ReadFromFiler(reader);
       FFrames.ReadFromFiler(reader);
+      if (archiveVersion=1) then 
+        FColliders.ReadFromFiler(reader);
 	end else RaiseFilerException(archiveVersion);
 end;
 
@@ -2621,6 +2844,13 @@ begin
    if Assigned(FCurrentFrame) then
       FCurrentFrame.Free;
    FCurrentFrame:=TSkeletonFrame(val.CreateClone);
+end;
+
+// SetColliders
+//
+procedure TSkeleton.SetColliders(const val : TSkeletonColliderList);
+begin
+   FColliders.Assign(val);
 end;
 
 // FlushBoneByIDCache
@@ -2813,6 +3043,7 @@ begin
    Frames.Clear;
    FCurrentFrame.Free;
    FCurrentFrame:=nil;
+   FColliders.Clear;
 end;
 
 // ------------------
@@ -6293,10 +6524,10 @@ initialization
    RegisterVectorFileFormat('glsm', 'GLScene Mesh', TGLGLSMVectorFile);
 
    RegisterClasses([TGLFreeForm, TGLActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
-                    TSkeletonMeshObject, TMeshObject, TSkeletonFrame, TMeshMorphTarget,
+                    TSkeletonMeshObject, TMeshObject, TSkeletonFrameList, TMeshMorphTarget,
                     TMorphableMeshObject, TFaceGroup, TFGVertexIndexList,
                     TFGVertexNormalTexIndexList, TGLAnimationControler,
-                    TFGIndexTexCoordList]);
+                    TFGIndexTexCoordList, TSkeletonCollider, TSkeletonColliderList]);
 
 finalization
 
