@@ -94,6 +94,7 @@ type
          FStreaksGradient : TGLFlareGradient;
          FRaysGradient : TGLFlareGradient;
          FSecondariesGradient : TGLFlareGradient;
+         FDynamic : Boolean;
 
       protected
          { Protected Declarations }
@@ -114,6 +115,7 @@ type
          procedure SetResolution(aValue : Integer);
          procedure SetAutoZTest(aValue : Boolean);
          procedure SetElements(aValue : TFlareElements);
+         procedure SetDynamic(aValue : Boolean);
 
          procedure SetupRenderingOptions;
          procedure RestoreRenderingOptions;
@@ -177,6 +179,13 @@ type
          property FlareIsNotOccluded : Boolean read FFlareIsNotOccluded write FFlareIsNotOccluded;
          //: Which elements should be rendered?
          property Elements : TFlareElements read FElements write SetElements default cDefaultFlareElements;
+         {: Is the flare size adjusted dynamically?<p>
+            If true, the flare size will be grown and reduced over a few frames
+            when it switches between occluded and non-occluded states. This
+            requires animation to be active, but results in a smoother appearance.<br>
+            When false, flare will either be at full size or hidden.<p>
+            The flare is always considered non-dynamic at design-time. }
+         property Dynamic : Boolean read FDynamic write FDynamic default True;
 
          property ObjectsSorting;
          property Position;
@@ -264,14 +273,15 @@ begin
   inherited;
   // Set default parameters:
   ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
-  FSize := 50;
-  FSeed := 1465;
-  FSqueeze := 1;
-  FNumStreaks := 4;
-  FStreakWidth := 2;
-  FNumSecs := 8;
+  FSize:=50;
+  FSeed:=1465;
+  FSqueeze:=1;
+  FNumStreaks:=4;
+  FStreakWidth:=2;
+  FNumSecs:=8;
   FAutoZTest:=True;
   FlareIsNotOccluded:=True;
+  FDynamic:=True;
 
   SetResolution(64);
   
@@ -453,7 +463,7 @@ var
    depth : Single;
    posVector, v, rv : TAffineVector;
    screenPos : TAffineVector;
-   flareInViewPort : Boolean;
+   flareInViewPort, usedOcclusionQuery : Boolean;
    oldSeed : LongInt;
    projMatrix : TMatrix;
 begin
@@ -467,15 +477,21 @@ begin
                        and (screenPos[1]<rci.viewPortSize.cy) and (screenPos[1]>=0);
    end else flareInViewPort:=False;
 
-   // make the glow appear/disappear progressively
-   if flareInViewPort and FlareIsNotOccluded then begin
-      FCurrSize:=FCurrSize+FDeltaTime*10*Size;
-      if FCurrSize>Size then
-         FCurrSize:=Size;
+   if Dynamic and (not (csDesigning in ComponentState)) then begin
+      // make the glow appear/disappear progressively
+      if flareInViewPort and FlareIsNotOccluded then begin
+         FCurrSize:=FCurrSize+FDeltaTime*10*Size;
+         if FCurrSize>Size then
+            FCurrSize:=Size;
+      end else begin
+         FCurrSize:=FCurrSize-FDeltaTime*10*Size;
+         if FCurrSize<0 then
+            FCurrSize:=0;
+      end;
    end else begin
-      FCurrSize:=FCurrSize-FDeltaTime*10*Size;
-      if FCurrSize<0 then
-         FCurrSize:=0;
+      if flareInViewPort and FlareIsNotOccluded then
+         FCurrSize:=Size
+      else FCurrSize:=0;
    end;
 
    // Prepare matrices
@@ -502,16 +518,22 @@ begin
          glColorMask(False, False, False, False);
          glDepthMask(False);
 
-         if GL_NV_occlusion_query then begin
+         usedOcclusionQuery:=GL_NV_occlusion_query and (not (csDesigning in ComponentState));
+         if usedOcclusionQuery then begin
             // preferred method, doesn't stall rendering too badly
             if not Assigned(FOcclusionQuery) then
                FOcclusionQuery:=TGLOcclusionQueryHandle.Create;
-            if FOcclusionQuery.Handle=0 then
-               FOcclusionQuery.AllocateHandle
-            else FlareIsNotOccluded:=(FOcclusionQuery.PixelCount<>0);
-
-            FOcclusionQuery.BeginOcclusionQuery;
-         end else begin
+            if FOcclusionQuery.Handle=0 then begin
+               FOcclusionQuery.AllocateHandle;
+               FOcclusionQuery.BeginOcclusionQuery;
+            end else begin
+               if FOcclusionQuery.RenderingContext=CurrentGLContext then begin
+                  FlareIsNotOccluded:=(FOcclusionQuery.PixelCount<>0);
+                  FOcclusionQuery.BeginOcclusionQuery;
+               end else usedOcclusionQuery:=False;
+            end;
+         end;
+         if not usedOcclusionQuery then begin
             // occlusion_test, stalls rendering a bit
             glEnable(GL_OCCLUSION_TEST_HP);
          end;
@@ -525,9 +547,9 @@ begin
          glEnd;
          glDepthFunc(GL_LESS);
 
-         if GL_NV_occlusion_query then begin
+         if usedOcclusionQuery then
             FOcclusionQuery.EndOcclusionQuery
-         end else begin
+         else begin
             glDisable(GL_OCCLUSION_TEST_HP);
             glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
          end;
@@ -829,6 +851,16 @@ begin
    if FElements<>aValue then begin
       FElements:=aValue;
       StructureChanged;
+   end;
+end;
+
+// SetDynamic
+//
+procedure TGLLensFlare.SetDynamic(aValue : Boolean);
+begin
+   if aValue<>FDynamic then begin
+      FDynamic:=aValue;
+      NotifyChange(Self);
    end;
 end;
 
