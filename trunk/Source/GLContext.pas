@@ -352,6 +352,8 @@ type
             that is re-specified very often.<p>
             Valid only if the buffer has been bound. }
          procedure BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+         //: Invokes Bind then BufferData
+         procedure BindBufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
          {: Updates part of an already existing buffer.<p>
             offset and size indicate which part of the data in the buffer is
             to bo modified and p where the data should be taken from. }
@@ -1254,6 +1256,14 @@ end;
 //
 procedure TGLVBOHandle.BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
 begin
+   glBufferDataARB(FVBOTarget, size, p, bufferUsage);
+end;
+
+// BindBufferData
+//
+procedure TGLVBOHandle.BindBufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+begin
+   glBindBufferARB(FVBOTarget, Handle);
    glBufferDataARB(FVBOTarget, size, p, bufferUsage);
 end;
 
