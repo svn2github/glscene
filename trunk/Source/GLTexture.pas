@@ -1676,12 +1676,17 @@ end;
 // GetBitmap32
 //
 function TGLPicFileImage.GetBitmap32 : TGLBitmap32;
+var
+   buf : String;
 begin
 	if (GetWidth<=0) and (PictureFileName<>'') then begin
 		Picture.OnChange:=nil;
 		try
-         if FileExists(PictureFileName) then
-   			Picture.LoadFromFile(PictureFileName)
+         buf:=PictureFileName;
+         if Assigned(FOnTextureNeeded) then;
+            FOnTextureNeeded(Self, buf);
+         if FileExists(buf) then
+   			Picture.LoadFromFile(buf)
          else begin
             Picture.Graphic:=nil;
             FPictureFileName:='';
@@ -2644,8 +2649,9 @@ begin
    end;
    if not multitextured then begin
       // no multitexturing ("standard" mode)
-      if not FTextureMatrixIsIdentity then
-         SetGLTextureMatrix(FTextureMatrix);
+      if not Material.Texture.Disabled then
+         if not FTextureMatrixIsIdentity then
+            SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
    end else begin
       // multitexturing is ON
@@ -2673,8 +2679,9 @@ begin
       xglMapTexCoordToMain;
    end;
    Material.UnApply(rci);
-   if not FTextureMatrixIsIdentity then
-      ResetGLTextureMatrix;
+   if not Material.Texture.Disabled then
+      if not FTextureMatrixIsIdentity then
+         ResetGLTextureMatrix;
 end;
 
 // RegisterUser

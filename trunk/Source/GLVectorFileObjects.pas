@@ -3255,22 +3255,24 @@ end;
 // BuildList
 //
 procedure TFGVertexIndexList.BuildList(var mrci : TRenderContextInfo);
+var
+   i : Integer;
 begin
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin
          Owner.Owner.DeclareArraysToOpenGL(False);
          glDrawElements(GL_TRIANGLES, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List)
+                        GL_UNSIGNED_INT, VertexIndices.List);
       end;
       fgmmTriangleStrip : begin
          Owner.Owner.DeclareArraysToOpenGL(False);
          glDrawElements(GL_TRIANGLE_STRIP, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List)
+                        GL_UNSIGNED_INT, VertexIndices.List);
       end;
       fgmmTriangleFan : begin
          Owner.Owner.DeclareArraysToOpenGL(False);
          glDrawElements(GL_TRIANGLE_FAN, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List)
+                        GL_UNSIGNED_INT, VertexIndices.List);
       end;
    else
       Assert(False);

@@ -52,8 +52,10 @@ type
 			procedure ReadFromFiler(reader : TReader);
 
 			procedure Assign(source : TPersistent); override;
-			//: Calculates constant+linear*value+quadratic*value^2
-			function Calculate(value : Single) : Single;
+			{: Calculates attenuated speed over deltaTime.<p>
+            Integration step is 0.01 sec, and the following formula is applied
+            at each step: constant+linear*speed+quadratic*speed^2 }
+			function Calculate(speed, deltaTime : Double) : Double;
 			//: Returns a "[constant; linear; quadractic]" string
 			function AsString(const damping : TGLDamping) : String;
 			{: Sets all damping parameters in a single call. }
@@ -245,9 +247,21 @@ end;
 
 // Calculate
 //
-function TGLDamping.Calculate(value : Single) : Single;
+function TGLDamping.Calculate(speed, deltaTime : Double) : Double;
+var
+   dt : Double;
 begin
-   Result:=(FQuadratic*value+FLinear)*value+FConstant;
+   while deltaTime>0 do begin
+      if deltaTime>0.01 then begin
+         dt:=0.01;
+         deltaTime:=deltaTime-0.01;
+      end else begin
+         dt:=deltaTime;
+         deltaTime:=0;
+      end;
+      speed:=speed-dt*((FQuadratic*speed+FLinear)*speed+FConstant);
+   end;
+   Result:=speed;
 end;
 
 // DampingAsString
@@ -276,7 +290,7 @@ end;
 constructor TGLBInertia.Create(aOwner : TXCollection);
 begin
 	inherited Create(aOwner);
-	FTranslationSpeed:=TGLCoordinates.CreateInitialized(Self, NullHmgVector);
+	FTranslationSpeed:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
 	FMass:=1;
 	FDampingEnabled:=True;
 	FTranslationDamping:=TGLDamping.Create(Self);
@@ -397,7 +411,7 @@ var
 
 	procedure ApplyRotationDamping(var rotationSpeed : Single);
 	begin
-		rotationSpeed:=rotationSpeed-deltaTime*RotationDamping.Calculate(rotationSpeed);
+		rotationSpeed:=RotationDamping.Calculate(rotationSpeed, deltaTime);
 		if rotationSpeed<=0 then
 			rotationSpeed:=0;
 	end;
@@ -407,23 +421,24 @@ begin
 	if DampingEnabled then begin
 		// Translation damping
 		speed:=TranslationSpeed.VectorLength;
-		newSpeed:=speed-deltaTime*TranslationDamping.Calculate(speed);
-		if newSpeed<=0 then begin
-         trnVector:=NullHmgVector;
-			TranslationSpeed.AsVector:=trnVector;
-		end else begin
-         TranslationSpeed.Scale(newSpeed/Speed);
-         SetVector(trnVector, TranslationSpeed.AsVector);
-      end;
+      if speed>0 then begin
+   		newSpeed:=TranslationDamping.Calculate(speed, deltaTime);
+	   	if newSpeed<=0 then begin
+            trnVector:=NullHmgVector;
+			   TranslationSpeed.AsVector:=trnVector;
+   		end else begin
+            TranslationSpeed.Scale(newSpeed/Speed);
+            SetVector(trnVector, TranslationSpeed.AsVector);
+         end;
+      end else SetVector(trnVector, NullHmgVector);
 		// Rotation damping (yuck!)
 		ApplyRotationDamping(FTurnSpeed);
 		ApplyRotationDamping(FRollSpeed);
 		ApplyRotationDamping(FPitchSpeed);
 	end else SetVector(trnVector, TranslationSpeed.AsVector);
 	// Apply speed to object
-	ScaleVector(trnVector, deltaTime);
 	with OwnerBaseSceneObject do begin
-		Position.Translate(trnVector);
+		Position.AddScaledVector(deltaTime, trnVector);
 		TurnAngle:=TurnAngle+TurnSpeed*deltaTime;
 		RollAngle:=RollAngle+RollSpeed*deltaTime;
 		PitchAngle:=PitchAngle+PitchSpeed*deltaTime;

@@ -975,6 +975,7 @@ const
    cPIdiv180 : Single =  0.017453292;
    c180divPI : Single = 57.29577951;
    c2PI :      Single =  6.283185307;
+   cPIdiv2 :   Single = 1.5707963268;
    cInv2PI :   Single = 1/6.283185307;
    cInv360 :   Single = 1/360;
    c180 :      Single = 180;

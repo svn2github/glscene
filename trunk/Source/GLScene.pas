@@ -1773,7 +1773,7 @@ end;
 //
 function TGLBaseSceneObject.GetHandle(var rci : TRenderContextInfo) : TObjectHandle;
 begin
-   if ocStructure in FChanges then begin
+   if (ocStructure in FChanges) or (FListHandle.Handle=0) then begin
       if FListHandle.Handle=0 then begin
          FListHandle.AllocateHandle;
          Assert(FListHandle.Handle<>0, 'Handle=0 for '+ClassName);
@@ -1784,6 +1784,7 @@ begin
       finally
          glEndList;
       end;
+      FChanges:=FChanges-[ocStructure];
    end;
    Result:=FListHandle.Handle;
 end;
@@ -2911,13 +2912,13 @@ begin
       case rci.objectsSorting of
          osNone : begin
             for i:=firstChildIndex to lastChildIndex do
-               Self[i].Render(rci);
+               Get(i).Render(rci);
          end;
          osRenderFarthestFirst, osRenderBlendedLast : begin
             distList:=TSingleList.Create;
             objList:=TList.Create;
             try
-               if objectsSorting=osRenderBlendedLast then begin
+               if rci.objectsSorting=osRenderBlendedLast then begin
                   // render opaque stuff
                   for i:=firstChildIndex to lastChildIndex do begin
                      obj:=Get(i);

@@ -250,6 +250,8 @@ begin
                            cad.Progress;
                         except
                            Application.HandleException(Self);
+                           // it faulted, stop it
+                           cad.Enabled:=False
                         end
                      end;
                   end;

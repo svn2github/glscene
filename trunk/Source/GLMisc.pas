@@ -910,6 +910,7 @@ var
    c : Char;
 begin
    Result:=0;
+   if strValue='' then Exit;
    divider:=MaxInt;
    strValue:=Trim(StrValue);
    lLen:=length(strValue);

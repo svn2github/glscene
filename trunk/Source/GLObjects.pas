@@ -177,6 +177,7 @@ type
 			FHeight : TGLFloat;
 			FRotation : TGLFloat;
          FAlphaChannel : Single;
+         FNoZWrite : Boolean;
 
 		protected
 			{ Protected Declarations }
@@ -185,6 +186,7 @@ type
          procedure SetRotation(const val : TGLFloat);
          procedure SetAlphaChannel(const val : Single);
          function StoreAlphaChannel : Boolean;
+         procedure SetNoZWrite(const val : Boolean);
 
 		public
 			{ Public Declarations }
@@ -208,6 +210,9 @@ type
          property Rotation : TGLFloat read FRotation write SetRotation;
          {: If different from 1, this value will replace that of Diffuse.Alpha }
          property AlphaChannel : Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
+         {: If True, sprite will not write to Z-Buffer.<p>
+            Sprite will STILL be maskable by ZBuffer test. }
+         property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
 	end;
 
    // TLineNodesAspect
@@ -1502,15 +1507,19 @@ var
 begin
    if FAlphaChannel<>1 then
       SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
+   if NoZWrite then
+      glDepthMask(False);
    glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
 	glBegin(GL_QUADS);
 		// extraction of the "vecteurs directeurs de la matrice"
 		// (dunno how they are named in english)
       w:=FWidth*0.5;
       h:=FHeight*0.5;
-   	vx[0]:=mat[0][0]*w;  vy[0]:=mat[0][1]*h;
-   	vx[1]:=mat[1][0]*w;  vy[1]:=mat[1][1]*h;
-   	vx[2]:=mat[2][0]*w;  vy[2]:=mat[2][1]*h;
+   	vx[0]:=mat[0][0];  vy[0]:=mat[0][1];
+   	vx[1]:=mat[1][0];  vy[1]:=mat[1][1];
+   	vx[2]:=mat[2][0];  vy[2]:=mat[2][1];
+      ScaleVector(vx, w/VectorLength(vx));
+      ScaleVector(vy, h/VectorLength(vy));
       if FRotation=0 then begin
          // no rotation, use fast, direct projection
    		xglTexCoord2f(1, 1);  glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
@@ -1531,6 +1540,8 @@ begin
    		xglTexCoord2f(1, 0);  glVertex3f( s*vx1[0]-c*vy1[0], s*vx1[1]-c*vy1[1], s*vx1[2]-c*vy1[2]);
       end;
 	glEnd;
+   if NoZWrite then
+      glDepthMask(True);
 end;
 
 // SetWidth
@@ -1582,6 +1593,14 @@ end;
 function TSprite.StoreAlphaChannel : Boolean;
 begin
 	Result:=(FAlphaChannel<>1);
+end;
+
+// SetNoZWrite
+//
+procedure TSprite.SetNoZWrite(const val : Boolean);
+begin
+   FNoZWrite:=val;
+	StructureChanged;
 end;
 
 // SetSize
@@ -2067,7 +2086,6 @@ begin
    hh:= FCubeHeight*0.5;
    hd:= FCubeDepth*0.5;
 
-   glEnable(GL_POLYGON_SMOOTH);
    glBegin(GL_QUADS);
    if cpFront in FParts then begin
       glNormal3f(  0,  0, nd);
