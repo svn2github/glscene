@@ -1,0 +1,502 @@
+// GLTilePlane
+{: Implements a tiled texture plane.<p>
+
+	<b>History : </b><font size=-1><ul>
+      <li>09/01/04 - EG - Creation
+   </ul></font>
+}
+unit GLTilePlane;
+
+interface
+
+uses Classes, GLScene, VectorGeometry, OpenGL1x, GLMisc, GLTexture, GLObjects,
+   GLCrossPlatform, PersistentClasses, VectorLists;
+
+type
+
+   // TGLTiledAreaRow
+   //
+   {: Stores row information for a tiled area.<p> }
+   TGLTiledAreaRow = class (TPersistentObject)
+	   private
+			{ Private Declarations }
+         FColMin, FColMax : Integer;
+         FData : TIntegerList;
+
+		protected
+			{ Protected Declarations }
+         procedure SetColMin(const val : Integer);
+         procedure SetColMax(const val : Integer);
+
+         function GetCell(col : Integer) : Integer;
+         procedure SetCell(col, val : Integer);
+
+		public
+			{ Public Declarations }
+			constructor Create; override;
+         destructor Destroy; override;
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
+
+         procedure Pack;
+
+         property Cell[col : Integer] : Integer read GetCell write SetCell; default;
+         property ColMin : Integer read FColMin write SetColMin;
+         property ColMax : Integer read FColMax write SetColMax;
+         property Data : TIntegerList read FData; 
+   end;
+
+   // TGLTiledArea
+   //
+   {: Stores tile information in a tiled area.<p>
+      Each tile stores an integer value with zero the default value,
+      assumed as "empty". }
+   TGLTiledArea = class (TPersistentObject)
+	   private
+			{ Private Declarations }
+         FRowMin, FRowMax : Integer;
+         FRows : TPersistentObjectList;
+
+		protected
+			{ Protected Declarations }
+         procedure SetRowMin(const val : Integer);
+         procedure SetRowMax(const val : Integer);
+
+         function GetTile(col, row : Integer) : Integer;
+         procedure SetTile(col, row, val : Integer);
+         function GetRow(index : Integer) : TGLTiledAreaRow;
+
+		public
+			{ Public Declarations }
+			constructor Create; override;
+         destructor Destroy; override;
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
+
+         procedure Pack;
+
+         property Tile[col, row : Integer] : Integer read GetTile write SetTile; default;
+         property Row[index : Integer] : TGLTiledAreaRow read GetRow;
+
+         property RowMin : Integer read FRowMin write SetRowMin;
+         property RowMax : Integer read FRowMax write SetRowMax;
+   end;
+
+   // TGLTilePlane
+   //
+   {: A tiled textured plane.<p>
+      This plane object stores and displays texture tiles that composes it,
+      and is optimized to minimize texture switches when rendering.<br>
+      Its bounding dimensions are determined by its painted tile.<p>
+      !!! Currently *NOT* optimized at all, this is work in progress !!! }
+	TGLTilePlane = class (TGLPlane)
+	   private
+			{ Private Declarations }
+         FTiles : TGLTiledArea;
+         FMaterialLibrary : TGLMaterialLibrary;
+
+		protected
+			{ Protected Declarations }
+         procedure SetTiles(const val : TGLTiledArea);
+         procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
+
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
+		public
+			{ Public Declarations }
+			constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
+
+         procedure BuildList(var rci : TRenderContextInfo); override;
+
+         property Tiles : TGLTiledArea read FTiles write SetTiles;
+
+		published
+			{ Public Declarations }
+
+         {: Material library where tiles materials will be stored/retrieved.<p>
+            The lower 16 bits of the tile integer value is understood as being
+            the index of the tile's material in the library (material of
+            index zero is thus unused). }
+         property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+   end;
+
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+implementation
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+
+uses XOpenGL;
+
+// ------------------
+// ------------------ TGLTiledAreaRow ------------------
+// ------------------
+
+// Create
+//
+constructor TGLTiledAreaRow.Create;
+begin
+   inherited;
+   FData:=TIntegerList.Create;
+   FColMin:=0;
+   FColMax:=-1;
+end;
+
+// Destroy
+//
+destructor TGLTiledAreaRow.Destroy;
+begin
+   FData.Free;
+   inherited;
+end;
+
+// WriteToFiler
+//
+procedure TGLTiledAreaRow.WriteToFiler(writer : TVirtualWriter);
+begin
+   inherited WriteToFiler(writer);
+   with writer do begin
+      WriteInteger(0); // Archive Version 0
+      WriteInteger(FColMin);
+      FData.WriteToFiler(writer);
+   end;
+end;
+
+// ReadFromFiler
+//
+procedure TGLTiledAreaRow.ReadFromFiler(reader : TVirtualReader);
+var
+	archiveVersion : Integer;
+begin
+   inherited ReadFromFiler(reader);
+   archiveVersion:=reader.ReadInteger;
+	if archiveVersion=0 then with reader do begin
+      FColMin:=ReadInteger;
+      FData.ReadFromFiler(reader);
+      FColMax:=FColMin+FData.Count-1;
+   end;
+end;
+
+// Pack
+//
+procedure TGLTiledAreaRow.Pack;
+var
+   i, startSkip : Integer;
+begin
+   startSkip:=MaxInt;
+   for i:=0 to FData.Count-1 do begin
+      if FData.List[i]<>0 then begin
+         startSkip:=i;
+         Break;
+      end;
+   end;
+   if startSkip=MaxInt then begin
+      FData.Clear;
+      FColMax:=ColMin-1;
+   end else begin
+      for i:=FData.Count-1 downto 0 do begin
+         if FData.List[i]<>0 then begin
+            FData.Count:=i+1;
+            FColMax:=FColMin+FData.Count-1;
+            Break;
+         end;
+      end;
+      if startSkip>0 then begin
+         FData.DeleteItems(0, startSkip);
+         FColMin:=FColMin+startSkip;
+      end;
+   end;
+end;
+
+// SetColMax
+//
+procedure TGLTiledAreaRow.SetColMax(const val : Integer);
+begin
+   if val>=ColMin then
+      FData.Count:=val-ColMin+1
+   else FData.Clear;
+   FColMax:=val;
+end;
+
+// SetColMin
+//
+procedure TGLTiledAreaRow.SetColMin(const val : Integer);
+begin
+   if ColMax>=ColMin then begin
+      if val<ColMin then
+         FData.InsertNulls(0, ColMin-val)
+      else FData.DeleteItems(0, val-ColMin);
+   end else FData.Clear;
+   FColMin:=val;
+end;
+
+// GetCell
+//
+function TGLTiledAreaRow.GetCell(col : Integer) : Integer;
+begin
+   if (col>=ColMin) and (col<=ColMax) then
+      Result:=FData[col-ColMin]
+   else Result:=0;
+end;
+
+// SetCell
+//
+procedure TGLTiledAreaRow.SetCell(col, val : Integer);
+begin
+   if col<ColMin then ColMin:=col;
+   if col>ColMax then ColMax:=col;
+   FData[col-ColMin]:=val;
+end;
+
+// ------------------
+// ------------------ TGLTiledArea ------------------
+// ------------------
+
+// Create
+//
+constructor TGLTiledArea.Create;
+begin
+   inherited;
+   FRows:=TPersistentObjectList.Create;
+   FRowMax:=-1;
+end;
+
+// Destroy
+//
+destructor TGLTiledArea.Destroy;
+begin
+   FRows.CleanFree;
+   inherited;
+end;
+
+// WriteToFiler
+//
+procedure TGLTiledArea.WriteToFiler(writer : TVirtualWriter);
+begin
+   inherited WriteToFiler(writer);
+   with writer do begin
+      WriteInteger(0); // Archive Version 0
+      WriteInteger(FRowMin);
+      FRows.WriteToFiler(writer);
+   end;
+end;
+
+// ReadFromFiler
+//
+procedure TGLTiledArea.ReadFromFiler(reader : TVirtualReader);
+var
+	archiveVersion : Integer;
+begin
+   inherited ReadFromFiler(reader);
+   archiveVersion:=reader.ReadInteger;
+	if archiveVersion=0 then with reader do begin
+      FRowMin:=ReadInteger;
+      FRows.ReadFromFiler(reader);
+      FRowMax:=FRowMin+FRows.Count-1;
+   end;
+end;
+
+// Pack
+//
+procedure TGLTiledArea.Pack;
+var
+   i, firstNonNil, lastNonNil : Integer;
+   r : TGLTiledAreaRow;
+begin
+   // pack all rows, free empty ones, determine 1st and last non-nil
+   lastNonNil:=-1;
+   firstNonNil:=FRows.Count;
+   for i:=0 to FRows.Count-1 do begin
+      r:=TGLTiledAreaRow(FRows.List[i]);
+      if Assigned(r) then begin
+         r.Pack;
+         if r.FData.Count=0 then begin
+            r.Free;
+            FRows.List[i]:=nil;
+         end;
+      end;
+      if Assigned(r) then begin
+         lastNonNil:=i;
+         if i<firstNonNil then firstNonNil:=i;
+      end;
+   end;
+   if lastNonNil>=0 then begin
+      FRows.Count:=lastNonNil+1;
+      FRowMax:=FRowMin+FRows.Count-1;
+      if firstNonNil>0 then begin
+         FRowMin:=FRowMin+firstNonNil;
+         FRows.DeleteItems(0, firstNonNil);
+      end;
+   end else FRows.Clear;
+end;
+
+// GetTile
+//
+function TGLTiledArea.GetTile(col, row : Integer) : Integer;
+var
+   i : Integer;
+   r : TGLTiledAreaRow;
+begin
+   i:=row-RowMin;
+   if Cardinal(i)<Cardinal(FRows.Count) then begin
+      r:=TGLTiledAreaRow(FRows[row-RowMin]);
+      if Assigned(r) then
+         Result:=r.Cell[col]
+      else Result:=0;
+   end else Result:=0;
+end;
+
+// SetTile
+//
+procedure TGLTiledArea.SetTile(col, row, val : Integer);
+var
+   r : TGLTiledAreaRow;
+begin
+   if row<RowMin then RowMin:=row;
+   if row>RowMax then RowMax:=row;
+   r:=TGLTiledAreaRow(FRows[row-RowMin]);
+   if not Assigned(r) then begin
+      r:=TGLTiledAreaRow.Create;
+      FRows[row-RowMin]:=r;
+   end;
+   r.Cell[col]:=val;
+end;
+
+// GetRow
+//
+function TGLTiledArea.GetRow(index : Integer) : TGLTiledAreaRow;
+begin
+   index:=index-RowMin;
+   if Cardinal(index)<Cardinal(FRows.Count) then
+      Result:=TGLTiledAreaRow(FRows[index])
+   else Result:=nil;
+end;
+
+// SetRowMax
+//
+procedure TGLTiledArea.SetRowMax(const val : Integer);
+begin
+   if val>=RowMin then begin
+      if val>RowMax then
+         FRows.AddNils(val-RowMax)
+      else FRows.DeleteAndFreeItems(val-RowMin+1, FRows.Count);
+   end else FRows.Clean;
+   FRowMax:=val;
+end;
+
+// SetRowMin
+//
+procedure TGLTiledArea.SetRowMin(const val : Integer);
+begin
+   if RowMin<=RowMax then begin
+      if val<RowMin then
+         FRows.InsertNils(0, RowMin-val)
+      else FRows.DeleteAndFreeItems(0, val-RowMin);
+   end else FRows.Clean;
+   FRowMin:=val;
+end;
+
+// ------------------
+// ------------------ TGLTilePlane ------------------
+// ------------------
+
+// Create
+//
+constructor TGLTilePlane.Create(AOwner:Tcomponent);
+begin
+   inherited Create(AOwner);
+   FTiles:=TGLTiledArea.Create;
+end;
+
+// Destroy
+//
+destructor TGLTilePlane.Destroy;
+begin
+   MaterialLibrary:=nil;
+   FTiles.Free;
+   inherited;
+end;
+
+// SetTiles
+//
+procedure TGLTilePlane.SetTiles(const val : TGLTiledArea);
+begin
+   if val<>FTiles then begin
+      FTiles.Assign(val);
+      StructureChanged;
+   end;
+end;
+
+// SetMaterialLibrary
+//
+procedure TGLTilePlane.SetMaterialLibrary(const val : TGLMaterialLibrary);
+begin
+   if FMaterialLibrary<>val then begin
+      if Assigned(FMaterialLibrary) then begin
+         DestroyHandle;
+         FMaterialLibrary.RemoveFreeNotification(Self);
+      end;
+      FMaterialLibrary:=val;
+      if Assigned(FMaterialLibrary) then
+         FMaterialLibrary.FreeNotification(Self);
+      StructureChanged;
+   end;
+end;
+
+// Notification
+//
+procedure TGLTilePlane.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   if Operation=opRemove then begin
+      if AComponent=FMaterialLibrary then
+         MaterialLibrary:=nil;
+   end;
+   inherited;
+end;
+
+// BuildList
+//
+procedure TGLTilePlane.BuildList(var rci : TRenderContextInfo);
+var
+   row, col, t : Integer;
+   r : TGLTiledAreaRow;
+   libMat : TGLLibMaterial;
+begin
+   if MaterialLibrary=nil then Exit;
+   // currently *NOT* optimized at all
+   glBegin(GL_QUADS);
+   for row:=Tiles.RowMin to Tiles.RowMax do begin
+      r:=Tiles.Row[row];
+      if Assigned(r) then begin
+         for col:=r.ColMin to r.ColMax do begin
+            t:=r.Cell[col] and $FFFF;
+            if t<MaterialLibrary.Materials.Count then begin
+               libMat:=MaterialLibrary.Materials[t];
+               libMat.Apply(rci);
+               repeat
+                  xglTexCoord2f(col, row);      glVertex2f(col, row);
+                  xglTexCoord2f(col+1, row);    glVertex2f(col+1, row);
+                  xglTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
+                  xglTexCoord2f(col, row+1);    glVertex2f(col, row+1);
+               until not libMat.UnApply(rci);
+            end;
+         end;
+      end;
+   end;
+   glEnd;
+end;
+
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+initialization
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+
+   RegisterClasses([TGLTilePlane]);
+
+end.
