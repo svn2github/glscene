@@ -7424,12 +7424,12 @@ begin
 asm
    fld     v1
    fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   ffree   st(1)
    fld     v3
    db $DB,$F1                 /// fcomi   st(0), st(1)
    db $DB,$C1                 /// fcmovnb st(0), st(1)
-   db $DB,$F2                 /// fcomi   st(0), st(2)
-   db $DB,$C2                 /// fcmovnb st(0), st(2)
-   ffree   st(2)
    ffree   st(1)
 {$endif}
 end;
@@ -7454,12 +7454,12 @@ begin
 asm
    fld     v1
    fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   ffree   st(1)
    fld     v3
    db $DB,$F1                 /// fcomi   st(0), st(1)
    db $DB,$C1                 /// fcmovnb st(0), st(1)
-   db $DB,$F2                 /// fcomi   st(0), st(2)
-   db $DB,$C2                 /// fcmovnb st(0), st(2)
-   ffree   st(2)
    ffree   st(1)
 {$endif}
 end;
@@ -7484,12 +7484,12 @@ begin
 asm
    fld     v1
    fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DB,$C1                 /// fcmovnb st(0), st(1)
+   ffree   st(1)
    fld     v3
    db $DB,$F1                 /// fcomi   st(0), st(1)
    db $DB,$C1                 /// fcmovnb st(0), st(1)
-   db $DB,$F2                 /// fcomi   st(0), st(2)
-   db $DB,$C2                 /// fcmovnb st(0), st(2)
-   ffree   st(2)
    ffree   st(1)
 {$endif}
 end;
@@ -7623,12 +7623,12 @@ begin
 asm
    fld     v1
    fld     v2
+   db $DB,$F1                 /// fcomi   st(0), st(1)
+   db $DA,$C1                 /// fcmovb  st(0), st(1)
+   ffree   st(1)
    fld     v3
    db $DB,$F1                 /// fcomi   st(0), st(1)
    db $DA,$C1                 /// fcmovb  st(0), st(1)
-   db $DB,$F2                 /// fcomi   st(0), st(2)
-   db $DA,$C2                 /// fcmovb  st(0), st(2)
-   ffree   st(2)
    ffree   st(1)
 {$endif}
 end;
