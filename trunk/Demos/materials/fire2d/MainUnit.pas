@@ -23,8 +23,7 @@
 
   In this sample program, a 256 x 256 Graphics32 TByteMap is used to generate a
   "fire" image. At each frame, the fire image is first "visualized" in a
-  Graphics32 Bitmap32. Then, the TBitmap32 is copied to the texture of a GLScene
-  HUDSprite.
+  Graphics32 Bitmap32. Then, the TBitmap32 is copied to the texture of a Cube.
 }
 
 unit MainUnit;
