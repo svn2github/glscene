@@ -334,8 +334,6 @@ type
 			procedure Edit; override;
 	end;
 
-{$endif}
-
 	// TGLAnimationNameProperty
 	//
 	TGLAnimationNameProperty = class(TStringProperty)
@@ -347,6 +345,8 @@ type
 		public
 			{ Public Declarations }
 	end;
+
+{$endif}
 
 //----------------- TObjectManager ---------------------------------------------
 
@@ -1186,8 +1186,6 @@ begin
 end;
 {$endif}
 
-{$endif}
-
 //----------------- TGLLibMaterialNameProperty ---------------------------------
 
 // GetAttributes
@@ -1248,7 +1246,7 @@ begin
 	end;
 end;
 
-//------------------------------------------------------------------------------
+{$endif}
 
 procedure Register;
 begin
@@ -1280,8 +1278,8 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterial, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterial, '', TGLLibMaterialNameProperty);
-{$endif}
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TAnimationControler, '', TGLAnimationNameProperty);
+{$endif}
    RegisterPropertyEditor(TypeInfo(TFileName), TFreeForm, 'FileName', TVectorFileProperty);
 
 end;
