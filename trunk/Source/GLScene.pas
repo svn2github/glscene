@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/03/02 - Egg - Fixed camera-switch loss of "reactivity"
       <li>08/03/02 - Egg - Fixed InvAbsoluteMatrix/AbsoluteMatrix decoupling
       <li>05/03/02 - Egg - Added MoveObjectAround
       <li>04/03/02 - Egg - CoordinateChanged default rightVector based on X, then Y
@@ -1218,8 +1219,8 @@ type
          function  IsUpdating: Boolean;
 
          procedure AddBuffer(aBuffer : TGLSceneBuffer);
+         procedure RemoveBuffer(aBuffer : TGLSceneBuffer);
          procedure SetupLights(Maximum: Integer);
-         procedure RemoveViewer(aBuffer : TGLSceneBuffer);
          procedure RenderScene(aBuffer : TGLSceneBuffer;
                                const viewPortSizeX, viewPortSizeY : Integer;
                                drawState : TDrawState);
@@ -5082,9 +5083,9 @@ begin
    end;
 end;
 
-// RemoveViewer
+// RemoveBuffer
 //
-procedure TGLScene.RemoveViewer(aBuffer : TGLSceneBuffer);
+procedure TGLScene.RemoveBuffer(aBuffer : TGLSceneBuffer);
 var
    i : Integer;
 begin
@@ -5703,7 +5704,7 @@ destructor TGLSceneBuffer.Destroy;
 begin
    // clean up and terminate
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
-      FCamera.FScene.RemoveViewer(Self);
+      FCamera.FScene.RemoveBuffer(Self);
       FCamera:=nil;
    end;
    DestroyRC;
@@ -6649,12 +6650,13 @@ begin
    if FCamera <> ACamera then begin
       if Assigned(FCamera) then begin
          if Assigned(FCamera.FScene) then
-            FCamera.FScene.RemoveViewer(Self);
+            FCamera.FScene.RemoveBuffer(Self);
          FCamera:=nil;
       end;
       if Assigned(ACamera) and Assigned(ACamera.FScene) then begin
          FCamera:=ACamera;
-         Include(FCamera.FChanges, ocTransformation);
+         FCamera.FScene.AddBuffer(Self);
+         FCamera.TransformationChanged;
       end;
       NotifyChange(Self);
    end;
