@@ -2206,24 +2206,25 @@ end;
 //
 function TGLBaseSceneObject.GetHandle(var rci : TRenderContextInfo) : TObjectHandle;
 
-   procedure DoBuild;
+   procedure DoBuild(var rci : TRenderContextInfo);
    begin
-      if FListHandle.Handle=0 then
+      if FListHandle.Handle=0 then begin
          FListHandle.AllocateHandle;
-      Assert(FListHandle.Handle<>0, 'Handle=0 for '+ClassName);
+         Assert(FListHandle.Handle<>0);
+      end;
       glNewList(FListHandle.Handle, GL_COMPILE);
       try
          BuildList(rci);
       finally
          glEndList;
       end;
-      Exclude(FChanges, ocStructure);
    end;
 
 begin
    Result:=FListHandle.Handle;
    if (Result=0) or (ocStructure in FChanges) then begin
-      DoBuild;
+      Exclude(FChanges, ocStructure);
+      DoBuild(rci);
       Result:=FListHandle.Handle;
    end;
 end;
@@ -5573,6 +5574,7 @@ begin
    ResetGLFrontFace;
    aBuffer.FAfterRenderEffects.Clear;
    FCurrentBuffer:=aBuffer;
+   FillChar(rci, SizeOf(rci), 0);
    rci.scene:=Self;
    rci.objectsSorting:=FObjectsSorting;
    rci.visibilityCulling:=FVisibilityCulling;
