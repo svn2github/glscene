@@ -2,7 +2,7 @@
 
 	Standard TGLBehaviour subclasses for GLScene<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
       <li>24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
       <li>02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug) 
       <li>09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
