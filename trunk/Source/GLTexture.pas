@@ -3441,11 +3441,19 @@ end;
 destructor TGLLibMaterial.Destroy;
 var
    i : Integer;
+   matObj : TObject;
 begin
    Shader:=nil; // drop dependency
    Texture2Name:=''; // drop dependency
-   for i:=0 to userList.Count-1 do
-      TGLMaterial(userList[i]).NotifyLibMaterialDestruction;
+   for i:=0 to userList.Count-1 do begin
+      matObj:=TObject(userList[i]);
+      if matObj is TGLMaterial then
+         TGLMaterial(matObj).NotifyLibMaterialDestruction
+      else if matObj is TGLLibMaterial then begin
+         TGLLibMaterial(matObj).libMatTexture2:=nil;
+         TGLLibMaterial(matObj).FTexture2Name:='';
+      end;
+   end;
    userList.Free;
    FMaterial.Free;
    FTextureOffset.Free;
@@ -3492,7 +3500,9 @@ begin
    if (Texture2Name<>'') and GL_ARB_multitexture then begin
       if not Assigned(libMatTexture2) then begin
          libMatTexture2:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
-         libMatTexture2.RegisterUser(Self);
+         if Assigned(libMatTexture2) then
+            libMatTexture2.RegisterUser(Self)
+         else FTexture2Name:='';
       end;
       multitextured:=Assigned(libMatTexture2)
                      and (not libMatTexture2.Material.Texture.Disabled);
