@@ -147,7 +147,7 @@ uses
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
-   GLFeedback, GLProjectedTextures,
+   GLFeedback, GLProjectedTextures,GLBlur,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1890,6 +1890,7 @@ initialization
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
       RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', glsOCSpecialObjects);
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
+      RegisterSceneObject(TGLBlur, 'GLBlur', glsOCSpecialObjects);
 
       {$ifdef WIN32}
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);
