@@ -187,6 +187,11 @@ procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
 procedure RGB24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
 procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer);
 
+procedure GammaCorrectRGBArray(base : Pointer; pixelCount : Integer;
+                               gamma : Single);
+procedure BrightenRGBArray(base : Pointer; pixelCount : Integer;
+                           percent : Single);
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -196,6 +201,48 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils, Geometry;
+
+// GammaCorrectRGBArray
+//
+procedure GammaCorrectRGBArray(base : Pointer; pixelCount : Integer;
+                               gamma : Single);
+type
+   PByte = ^Byte;
+var
+   vGammaLUT : array [0..255] of Byte;
+   invGamma : Single;
+   i : Integer;
+begin
+   Assert(gamma>0);
+   // build LUT
+   if gamma<0.1 then
+      invGamma:=10
+   else invGamma:=1/gamma;
+   for i:=0 to 255 do
+      vGammaLUT[i]:=Round(255*Power(i*(1/255), InvGamma));
+   // perform correction
+   for i:=Integer(base) to Integer(base)+(pixelCount-1)*3 do
+      PByte(i)^:=vGammaLUT[PByte(i)^];
+end;
+
+// BrightenRGBArray
+//
+procedure BrightenRGBArray(base : Pointer; pixelCount : Integer;
+                           percent : Single);
+type
+   PByte = ^Byte;
+var
+   vBrightnessLUT : array [0..255] of Byte;
+   i : Integer;
+begin
+   Assert((percent>=0) and (percent<=100));
+   // build LUT
+   for i:=0 to 255 do
+      vBrightnessLUT[i]:=Round((255*percent+i*(100-percent))*0.01);
+   // perform correction
+   for i:=Integer(base) to Integer(base)+(pixelCount-1)*3 do
+      PByte(i)^:=vBrightnessLUT[PByte(i)^];
+end;
 
 // BGR24ToRGBA32
 //
