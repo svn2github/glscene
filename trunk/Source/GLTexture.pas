@@ -2386,12 +2386,12 @@ begin
       FOnTextureNeeded(Self, buf);
    if Assigned(vAFIOCreateFileStream) then begin
       if FileStreamExists(buf) then begin
-         ext:=LowerCase(ExtractFileExt(fileName));
+         ext:=LowerCase(ExtractFileExt(buf));
          for i:=0 to High(vTGraphicFileExtension) do begin
             if vTGraphicFileExtension[i]=ext then begin
                gr:=TGraphicClass(vTGraphicClass[i]).Create;
                try
-                  fs:=CreateFileStream(fileName, fmOpenRead);
+                  fs:=CreateFileStream(buf, fmOpenRead);
                   try
                      gr.LoadFromStream(fs);
                   finally
@@ -4517,7 +4517,7 @@ begin
    with mLib do begin
       if FTexturePathList<>nil then for i:=0 to FTexturePathList.Count-1 do begin
          tryName:=IncludeTrailingBackslash(FTexturePathList[i])+textureFileName;
-         if FileExists(tryName) then begin
+         if (Assigned(vAFIOCreateFileStream) and FileStreamExists(tryName)) or FileExists(tryName) then begin
             textureFileName:=tryName;
             Break;
          end;
