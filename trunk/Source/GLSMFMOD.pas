@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/08/02 - EG - Fixed EAX capability detection
       <li>27/08/02 - EG - Now uses dynamically linked version by Steve Williams,
                           Added support for EAX environments
       <li>26/08/02 - EG - Updated to FMOD 3.6
@@ -32,6 +33,7 @@ type
 	   private
 	      { Private Declarations }
          FActivated : Boolean;
+         FEAXCapable : Boolean; // not persistent
 
 	   protected
 	      { Protected Declarations }
@@ -116,13 +118,22 @@ end;
 // DoActivate
 //
 function TGLSMFMOD.DoActivate : Boolean;
+var
+   cap : Cardinal;
 begin
    FMOD_Load;
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then Assert(False);
    if not FSOUND_SetDriver(0) then Assert(False);
+   cap:=0;
+   if FSOUND_GetDriverCaps(0, cap) then
+      FEAXCapable:=((cap and (FSOUND_CAPS_EAX2 or FSOUND_CAPS_EAX3))>0)
+   else Assert(False);
    if not FSOUND_Init(OutputFrequency, MaxChannels, 0) then Assert(False);
+   FActivated:=True;
    NotifyMasterVolumeChange;
    Notify3DFactorsChanged;
+   if Environment<>seDefault then
+      NotifyEnvironmentChanged;
    Result:=True;
 end;
 
@@ -133,6 +144,7 @@ begin
    FSOUND_StopSound(FSOUND_ALL);
    FSOUND_Close;
    FMOD_Unload;
+   FEAXCapable:=False;
 end;
 
 // NotifyMasterVolumeChange
@@ -307,12 +319,8 @@ end;
 // EAXSupported
 //
 function TGLSMFMOD.EAXSupported : Boolean;
-var
-   cap : Cardinal;
 begin
-   cap:=0;
-   FSOUND_GetDriverCaps(FSOUND_CAPS_EAX2, cap);
-   Result:=(cap<>0);
+   Result:=FEAXCapable;
 end;
 
 end.
