@@ -44,7 +44,10 @@ type
    <li>Tex0, Tex1, etc. : texture unit
    <li>PrimaryColor, Col : the primary color
    <li>ConstantColor, EnvCol : texture environement constant color
-   </ul>
+   </ul><br>
+   Tokens can be qualified with '.a' or '.alpha' to specify the alpha channel
+   explicitly, and '.rgb' to specify color channels (default). You cannot mix
+   alpha and rgb tokens in the same line.
 }
 procedure SetupTextureCombiners(const tcCode : String);
 
