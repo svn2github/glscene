@@ -3293,7 +3293,7 @@ begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
-      if GL_EXT_compiled_vertex_array then
+      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
          glLockArraysEXT(0, vertices.Count);
       FLastLightMapIndex:=-1;
       FArraysDeclared:=True;
@@ -3307,7 +3307,7 @@ procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
 begin
    if FArraysDeclared then begin
       DisableLightMapArray(mrci);
-      if GL_EXT_compiled_vertex_array then
+      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
          glUnLockArraysEXT;
       if Vertices.Count>0 then
          glDisableClientState(GL_VERTEX_ARRAY);
