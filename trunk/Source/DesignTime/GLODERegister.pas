@@ -10,7 +10,7 @@ unit GLODERegister;
 interface
 
 uses
-  Classes, GLODEManager, GLSceneRegister;
+  Classes, GLSceneRegister, GLODEManager;
 
 procedure Register;
 
@@ -26,9 +26,9 @@ implementation
 //
 procedure Register;
 begin
-  RegisterClasses([TGLODEManager, TGLODEJointList, TGLODEDummy, 
-                   TGLODEPlane, TGLODEStaticDummy, TODEJoints, 
-                   TODEElements]);
+  RegisterClasses([TGLODEManager, TGLODEJointList, TGLODEDummy,
+                   TGLODEPlane, TGLODEStaticDummy, TGLODETerrain,
+                   TODEJoints, TODEElements]);
   RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList]);
 end;
 
@@ -40,34 +40,11 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  {
-  // There is a problem here when the package is installed and then
-  // removed, the scene objects remain in the list without the classes
-  // there to be linked to. Unregistering them fixes this problem but
-  // Delphi7 doesn't seem to like the UnregisterSceneObject. So I'm
-  // commenting this registration out until the problem is resolved.
-  with ObjectManager do begin
+  {with ObjectManager do begin
     RegisterSceneObject(TGLODEDummy,'GLODEDummy','ODE Objects');
     RegisterSceneObject(TGLODEStaticDummy,'GLODEStaticDummy','ODE Objects');
     RegisterSceneObject(TGLODEPlane,'GLODEPlane','ODE Objects');
-  end;
-  //}
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-finalization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-  {
-  // See the comments above
-  with ObjectManager do begin
-    UnregisterSceneObject(TGLODEDummy);
-    UnregisterSceneObject(TGLODEStaticDummy);
-    UnregisterSceneObject(TGLODEPlane);
-  end;
-  //}
+    RegisterSceneObject(TGLODETerrain,'GLODETerrain','ODE Objects');
+  end;//}
 
 end.
