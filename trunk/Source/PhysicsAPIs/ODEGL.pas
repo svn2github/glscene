@@ -1,3 +1,5 @@
+// 03/02/03 - EG - Fixed CopyPosFromGeomToGL
+
 unit ODEGL;
 
 interface
@@ -270,7 +272,7 @@ begin
   R := dGeomGetRotation(Geom);
   pos := dgeomGetPosition(Geom);
 
-  m := GLBaseSceneObject.Matrix;
+  m := GLBaseSceneObject.AbsoluteMatrix;
   R[0] := m[0][0];
   R[4] := m[0][1];
   R[8] := m[0][2];
@@ -283,6 +285,8 @@ begin
   pos[0] := m[3][0];
   pos[1] := m[3][1];
   pos[2] := m[3][2];//}
+
+  dGeomSetRotation(Geom, R^);
 end;
 
 function CreateGeomFromCube(Cube : TGLCube; Space : PdxSpace) : PdxGeom;
