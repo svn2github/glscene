@@ -2,6 +2,9 @@
 {: Implements specific proxying classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/12/03 - Dave - Dropped "Object" from "ProxyObject" class names
+      <li>17/12/03 - Dave - Changed class check in Octree code to Assert
+      <li>17/12/03 - Dave+Dan - Added OctreeSphereSweep
       <li>06/12/03 - EG - Creation from GLScene.pas split
    </ul></font>
 }
@@ -14,13 +17,13 @@ uses Classes, GLScene, VectorGeometry, GLMisc, GLTexture, GLSilhouette,
 
 type
 
-   // TGLColorProxyObject
+   // TGLColorProxy
    //
    {: A proxy object with its own color.<p>
       This proxy object can have a unique color. Note that multi-material
       objects (Freeforms linked to a material library f.i.) won't honour
       the color. }
-   TGLColorProxyObject = class (TGLProxyObject)
+   TGLColorProxy = class (TGLProxyObject)
       private
          { Private Declarations }
          FFrontColor: TGLFaceProperties;
@@ -37,10 +40,10 @@ type
          property FrontColor: TGLFaceProperties read FFrontColor;
    end;
 
-   // TGLFreeFormProxyObject
+   // TGLFreeFormProxy
    //
    {: A proxy object specialized for FreeForms.<p> }
-   TGLFreeFormProxyObject = class (TGLProxyObject)
+   TGLFreeFormProxy = class (TGLProxyObject)
       protected
          { Protected Declarations }
          procedure SetMasterObject(const val : TGLBaseSceneObject); override;
@@ -53,6 +56,11 @@ type
          function OctreeRayCastIntersect(const rayStart, rayVector : TVector;
                                          intersectPoint : PVector = nil;
                                          intersectNormal : PVector = nil) : Boolean;
+         {: WARNING: This function is not yet 100% reliable with scale+rotation. }
+        function OctreeSphereSweepIntersect(const rayStart, rayVector : TVector;
+                                        const velocity, radius, modelscale: Single;
+                                        intersectPoint : PVector = nil;
+                                        intersectNormal : PVector = nil) : Boolean;
    end;
 
 //-------------------------------------------------------------
@@ -66,12 +74,12 @@ implementation
 uses SysUtils,OpenGL1x;
 
 // ------------------
-// ------------------ TGLColorProxyObject ------------------
+// ------------------ TGLColorProxy ------------------
 // ------------------
 
 // Create
 //
-constructor TGLColorProxyObject.Create(AOwner: TComponent);
+constructor TGLColorProxy.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FFrontColor:=TGLFaceProperties.Create(Self);
@@ -79,7 +87,7 @@ end;
 
 // Destroy
 //
-destructor TGLColorProxyObject.Destroy;
+destructor TGLColorProxy.Destroy;
 begin
    FFrontColor.Free;
 
@@ -88,7 +96,7 @@ end;
 
 // Render
 //
-procedure TGLColorProxyObject.DoRender(var rci : TRenderContextInfo;
+procedure TGLColorProxy.DoRender(var rci : TRenderContextInfo;
                                   renderSelf, renderChildren : Boolean);
 var
    gotMaster, masterGotEffects, oldProxySubObject : Boolean;
@@ -122,12 +130,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLFreeFormProxyObject ------------------
+// ------------------ TGLFreeFormProxy ------------------
 // ------------------
 
 // SetMasterObject
 //
-procedure TGLFreeFormProxyObject.SetMasterObject(const val : TGLBaseSceneObject);
+procedure TGLFreeFormProxy.SetMasterObject(const val : TGLBaseSceneObject);
 begin
    if Assigned(val) and not (val is TGLFreeForm) then
       raise Exception.Create(ClassName+' accepts only FreeForms as master!');
@@ -136,15 +144,14 @@ end;
 
 // OctreeRayCastIntersect
 //
-function TGLFreeFormProxyObject.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
+function TGLFreeFormProxy.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean;
 var
    localRayStart, localRayVector : TVector;
 begin
-   if Assigned(MasterObject)
-    and (MasterObject is TGLFreeForm)
-    then begin
+   if Assigned(MasterObject) then begin
+      Assert(MasterObject is TGLFreeForm);
       SetVector(localRayStart, AbsoluteToLocal(rayStart));
       SetVector(localRayStart, MasterObject.LocalToAbsolute(localRayStart));
       SetVector(localRayVector, AbsoluteToLocal(rayVector));
@@ -166,6 +173,45 @@ begin
    end else Result:=False;
 end;
 
+// OctreeSphereSweepIntersect
+//
+function TGLFreeFormProxy.OctreeSphereSweepIntersect(const rayStart, rayVector : TVector;
+                                        const velocity, radius, modelscale: Single;
+                                        intersectPoint : PVector = nil;
+                                        intersectNormal : PVector = nil) : Boolean;
+var
+   localRayStart, localRayVector : TVector;
+   localVelocity, localRadius: single;
+begin
+  Result:=False;
+   if Assigned(MasterObject) then begin
+      Assert(MasterObject is TGLFreeForm);
+      localVelocity := velocity * modelscale;
+      localRadius := radius * modelscale;
+
+      SetVector(localRayStart, AbsoluteToLocal(rayStart));
+      SetVector(localRayStart, MasterObject.LocalToAbsolute(localRayStart));
+      SetVector(localRayVector, AbsoluteToLocal(rayVector));
+      SetVector(localRayVector, MasterObject.LocalToAbsolute(localRayVector));
+      NormalizeVector(localRayVector);
+
+      Result:=TGLFreeForm(MasterObject).OctreeSphereSweepIntersect(localRayStart, localRayVector,
+                                            localVelocity, localRadius,
+                                            intersectPoint, intersectNormal);
+      if Result then begin
+         if Assigned(intersectPoint) then begin
+            SetVector(intersectPoint^, MasterObject.AbsoluteToLocal(intersectPoint^));
+            SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
+         end;
+         if Assigned(intersectNormal) then begin
+            SetVector(intersectNormal^, MasterObject.AbsoluteToLocal(intersectNormal^));
+            SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
+         end;
+      end;
+
+   end;
+end;
+
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -174,6 +220,6 @@ initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-   RegisterClasses([TGLColorProxyObject, TGLFreeFormProxyObject]);
+   RegisterClasses([TGLColorProxy, TGLFreeFormProxy]);
 
 end.
