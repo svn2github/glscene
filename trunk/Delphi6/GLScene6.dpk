@@ -190,6 +190,7 @@ contains
   TypesMDC in '..\Source\FileFormats\TypesMDC.pas',
   GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas',
   GLCelShader in '..\Source\Shaders\GLCelShader.pas',
-  GLFPSMovement in '..\Source\GLFPSMovement.pas';
+  GLFPSMovement in '..\Source\GLFPSMovement.pas',
+  GLBumpShader in '..\Source\Shaders\GLBumpShader.pas';
 
 end.
