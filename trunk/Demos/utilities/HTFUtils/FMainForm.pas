@@ -10,7 +10,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ValEdit, Grids, Menus, StdCtrls, ComCtrls, ToolWin, ExtCtrls,
-  ActnList, ImgList, HeightTileFile;
+  ActnList, ImgList, HeightTileFile, GLUtils;
 
 type
    TSrc = record
@@ -40,7 +40,7 @@ type
     EDHTFName: TEdit;
     EDDEMPath: TEdit;
     BUDEMPath: TButton;
-    Button3: TButton;
+    BUPickHTF: TButton;
     ToolBar: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
@@ -86,10 +86,13 @@ type
     EDTileOverlap: TEdit;
     Label8: TLabel;
     EDZFilter: TEdit;
+    Label9: TLabel;
+    EDZScale: TEdit;
+    CBWholeOnly: TCheckBox;
     procedure ACExitExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BUDEMPathClick(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
+    procedure BUPickHTFClick(Sender: TObject);
     procedure MIAboutClick(Sender: TObject);
     procedure ActionListUpdate(Action: TBasicAction; var Handled: Boolean);
     procedure ACNewDEMExecute(Sender: TObject);
@@ -105,11 +108,13 @@ type
     procedure ACProcessExecute(Sender: TObject);
     procedure ACViewerExecute(Sender: TObject);
     procedure EDZFilterChange(Sender: TObject);
+    procedure EDZScaleChange(Sender: TObject);
   private
     { Private declarations }
     sources : array of TSrc;
     defaultZ : SmallInt;
     filterZ : SmallInt;
+    zScale : Single;
 
     procedure Parse;
     procedure Cleanup;
@@ -163,7 +168,7 @@ begin
       EDDEMPath.Text:=ExtractFilePath(ODPath.FileName);
 end;
 
-procedure TMainForm.Button3Click(Sender: TObject);
+procedure TMainForm.BUPickHTFClick(Sender: TObject);
 begin
    SDHTF.FileName:=EDHTFName.Text;
    if SDHTF.Execute then
@@ -260,7 +265,9 @@ begin
          Values['TileOverlap']:=EDTileOverlap.Text;
          Values['DefaultZ']:=EDDefaultZ.Text;
          Values['FilterZ']:=EDZFilter.Text;
+         Values['ZScale']:=EDZScale.Text;
          Values['DEMPath']:=EDDEMPath.Text;
+         Values['WholeTiles']:=IntToStr(Integer(CBWholeOnly.Checked));
          sg:=TStringList.Create;
          for i:=1 to StringGrid.RowCount-1 do
             sg.Add(StringGrid.Rows[i].CommaText);
@@ -288,7 +295,9 @@ begin
          EDTileOverlap.Text:=Values['TileOverlap'];
          EDDefaultZ.Text:=Values['DefaultZ'];
          EDZFilter.Text:=Values['FilterZ'];
+         EDZScale.Text:=Values['ZScale'];
          EDDEMPath.Text:=Values['DEMPath'];
+         CBWholeOnly.Checked:=(Values['WholeTiles']='1');
          sg:=TStringList.Create;
          sg.CommaText:=Values['DEMs'];
          StringGrid.RowCount:=sg.Count+1;
@@ -326,6 +335,11 @@ end;
 procedure TMainForm.EDZFilterChange(Sender: TObject);
 begin
    filterZ:=StrToIntDef(EDZFilter.Text, defaultZ);
+end;
+
+procedure TMainForm.EDZScaleChange(Sender: TObject);
+begin
+   zScale:=GLUtils.StrToFloatDef(EDZScale.Text, 1.0);
 end;
 
 procedure TMainForm.Parse;
@@ -454,6 +468,10 @@ begin
                if PSmallIntArray(dest)[i]=filterZ then
                   PSmallIntArray(dest)[i]:=defaultZ;
          end;
+         if zScale<>1 then begin
+            for i:=0 to n-1 do
+               PSmallIntArray(dest)[i]:=Round(PSmallIntArray(dest)[i]*zScale);
+         end;
          Dec(len, n);
          Inc(dest, n);
          Inc(x, n);
@@ -490,31 +508,35 @@ begin
    ProgressBar.Position:=0;
    y:=0; while y<wy do begin
       ty:=wy-y;
-      if ty>ts then ty:=ts;
+      if ty>ts then
+         ty:=ts;
       x:=0; while x<wx do begin
          tx:=wx-x;
-         if tx>ts then tx:=ts;
-         Inc(n);
-         ProgressBar.Position:=(n*1000) div maxN;
-         for i:=0 to ty-1 do begin
-            WorldExtract(x, y+i, tx, @buf[i*ts]);
+         if (not CBWholeOnly.Checked) or ((tx>=ts) and ((wy-y)>=ts)) then begin
+            if tx>ts then
+               tx:=ts;
+            for i:=0 to ty-1 do begin
+               WorldExtract(x, y+i, tx, @buf[i*ts]);
+               if overlap>0 then begin
+                  for j:=tx to ts-1 do
+                     buf[i*ts+j]:=buf[i*ts+tx-1];
+               end else begin
+                  for j:=tx to ts-1 do
+                     buf[i*ts+j]:=defaultZ;
+               end;
+            end;
             if overlap>0 then begin
-               for j:=tx to ts-1 do
-                  buf[i*ts+j]:=buf[i*ts+tx-1];
+               for i:=ty to ts-1 do for j:=0 to ts-1 do
+                  buf[i*ts+j]:=buf[(i-1)*ts+j];
             end else begin
-               for j:=tx to ts-1 do
+               for i:=ty to ts-1 do for j:=0 to ts-1 do
                   buf[i*ts+j]:=defaultZ;
             end;
+            htf.CompressTile(x, y, ts, ts, @buf[0]);
          end;
-         if overlap>0 then begin
-            for i:=ty to ts-1 do for j:=0 to ts-1 do
-               buf[i*ts+j]:=buf[(i-1)*ts+j];
-         end else begin
-            for i:=ty to ts-1 do for j:=0 to ts-1 do
-               buf[i*ts+j]:=defaultZ;
-         end;
-         htf.CompressTile(x, y, ts, ts, @buf[0]);
          Inc(x, ts-overlap);
+         Inc(n);
+         ProgressBar.Position:=(n*1000) div maxN;
          if (n and 15)=0 then begin
             Application.ProcessMessages;
          end;

@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 138
-  Top = 100
+  Left = 129
+  Top = 137
   Width = 591
   Height = 473
   Caption = 'TerrainPack v1.0'
@@ -77,7 +77,7 @@ object MainForm: TMainForm
       Caption = 'x'
     end
     object Label5: TLabel
-      Left = 336
+      Left = 320
       Top = 35
       Width = 66
       Height = 13
@@ -98,11 +98,18 @@ object MainForm: TMainForm
       Caption = 'Tile overlap'
     end
     object Label8: TLabel
-      Left = 336
+      Left = 320
       Top = 59
       Width = 72
       Height = 13
       Caption = 'Filter to default:'
+    end
+    object Label9: TLabel
+      Left = 472
+      Top = 35
+      Width = 37
+      Height = 13
+      Caption = 'Z Scale'
     end
     object EDHTFName: TEdit
       Left = 72
@@ -131,7 +138,7 @@ object MainForm: TMainForm
       TabOrder = 2
       OnClick = BUDEMPathClick
     end
-    object Button3: TButton
+    object BUPickHTF: TButton
       Left = 549
       Top = 8
       Width = 24
@@ -139,7 +146,7 @@ object MainForm: TMainForm
       Anchors = [akTop, akRight]
       Caption = '...'
       TabOrder = 3
-      OnClick = Button3Click
+      OnClick = BUPickHTFClick
     end
     object EDSizeX: TEdit
       Left = 72
@@ -156,7 +163,7 @@ object MainForm: TMainForm
       TabOrder = 5
     end
     object EDDefaultZ: TEdit
-      Left = 416
+      Left = 400
       Top = 32
       Width = 49
       Height = 21
@@ -185,13 +192,36 @@ object MainForm: TMainForm
       Text = '0'
     end
     object EDZFilter: TEdit
-      Left = 416
+      Left = 400
       Top = 56
-      Width = 157
+      Width = 49
       Height = 21
+      Hint = 
+        'All samples with this altitude will be replaced by default heigh' +
+        't'
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 9
       OnChange = EDZFilterChange
+    end
+    object EDZScale: TEdit
+      Left = 515
+      Top = 32
+      Width = 57
+      Height = 21
+      Hint = 
+        'Scaling is applied after filtering, and applied to default heigh' +
+        't too'
+      TabOrder = 10
+      Text = '1.0'
+      OnChange = EDZScaleChange
+    end
+    object CBWholeOnly: TCheckBox
+      Left = 472
+      Top = 59
+      Width = 97
+      Height = 17
+      Caption = 'Whole tiles only'
+      TabOrder = 11
     end
   end
   object ToolBar: TToolBar
