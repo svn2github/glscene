@@ -105,7 +105,7 @@ begin
          Sphere1.Position.AsVector:=iPoint;
          Sphere1.Direction.AsVector:=VectorNormalize(iNormal);
       end else Sphere1.Visible:=False;
-      Label4.Caption:='# Nodes hit with raycast: '+inttostr(High(FreeForm1.Octree.ResultArray)+1);
+      Label4.Hint:='# Nodes hit with raycast: '+inttostr(High(FreeForm1.Octree.ResultArray)+1);
    end else begin
       // Brute-Force method (slow)
       if FreeForm1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then begin
@@ -114,7 +114,7 @@ begin
          Sphere1.Direction.AsVector:=VectorNormalize(iNormal);
       end else Sphere1.Visible:=False;
    end;
-   Label5.Caption:=Format('Intersect Time: %.3f ms', [StopPrecisionTimer(t)*1000]);
+   Label5.Hint:=Format('Intersect Time: %.3f ms', [StopPrecisionTimer(t)*1000]);
 end;
 
 procedure TForm1.GLSceneViewer2MouseMove(Sender: TObject;
@@ -135,8 +135,12 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
+   // Show FPS Rating
 	Caption:=Format('%.2f FPS', [GLSceneViewer2.FramesPerSecond]);
 	GLSceneViewer2.ResetPerformanceMonitor;
+   // Not doing so causes ugly flickering and a significant decrease in FPS...
+   with Label4 do Caption:=Hint;
+   with Label5 do Caption:=Hint;
 end;
 
 end.
