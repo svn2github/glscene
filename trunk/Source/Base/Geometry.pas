@@ -844,6 +844,7 @@ function  MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean
 
 //: Computes the parameters of a plane defined by three points.
 function PlaneMake(const p1, p2, p3 : TAffineVector) : THmgPlane; overload;
+function PlaneMake(const p1, p2, p3 : TVector) : THmgPlane;overload;
 //: Computes the parameters of a plane defined by a point and a normal.
 function PlaneMake(const point, normal : TAffineVector) : THmgPlane; overload;
 function PlaneMake(const point, normal : TVector) : THmgPlane; overload;
@@ -5618,9 +5619,17 @@ begin
    Result[3]:=-VectorDotProduct(PAffineVector(@point)^, PAffineVector(@normal)^);
 end;
 
-// PlaneMake (3 points)
+// PlaneMake (3 points, affine)
 //
 function PlaneMake(const p1, p2, p3 : TAffineVector) : THmgPlane;
+begin
+   CalcPlaneNormal(p1, p2, p3, PAffineVector(@Result)^);
+   Result[3]:=-VectorDotProduct(p1, PAffineVector(@Result)^);
+end;
+
+// PlaneMake (3 points, hmg)
+//
+function PlaneMake(const p1, p2, p3 : TVector) : THmgPlane;
 begin
    CalcPlaneNormal(p1, p2, p3, PAffineVector(@Result)^);
    Result[3]:=-VectorDotProduct(p1, PAffineVector(@Result)^);
