@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/11/01 - EG - Added IsBusy (thx Chris S)
       <li>08/09/01 - EG - Added MaxDeltaTime limiter
       <li>23/08/01 - EG - No more "deprecated" warning for Delphi6
       <li>12/08/01 - EG - Protection against "timer flood"
@@ -69,7 +70,7 @@ type
 			FOriginTime : Double;
          FMaxDeltaTime : Double;
 			FOnProgress : TGLProgressEvent;
-			progressing : Integer;
+			FProgressing : Integer;
 
 		protected
 			{ Protected Declarations }
@@ -98,6 +99,11 @@ type
 			procedure Progress;
 			{: Adjusts CurrentTime if necessary and returns its value. }
 			function GetCurrentTime : Double;
+         {: Returns True if a "Progress" is underway.<p>
+            Be aware that as long as IsBusy is True, the Cadencer may be
+            sending messages and progression calls to cadenceable components
+            and scene. }
+         function IsBusy : Boolean;
 
 			{: Value soustracted to current time to obtain progression time. }
 			property OriginTime : Double read FOriginTime write FOriginTime;
@@ -262,7 +268,7 @@ begin
                // Progress
                for i:=vASAPCadencerList.Count-1 downto 0 do begin
                   cad:=TGLCadencer(vASAPCadencerList[i]);
-                  if (cad.Mode=cmASAP) and cad.Enabled and (cad.progressing=0) then begin
+                  if (cad.Mode=cmASAP) and cad.Enabled and (cad.FProgressing=0) then begin
                      if Application.Terminated then begin
                         // force stop
                         cad.Enabled:=False
@@ -434,43 +440,46 @@ var
 begin
 	// basic protection against infinite loops,
    // shall never happen, unless there is a bug in user code
-   if progressing<0 then Exit;
-	Inc(progressing);
+   if FProgressing<0 then Exit;
+	Inc(FProgressing);
 	try
 		if Enabled then begin
 			// avoid stalling everything else...
 			if SleepLength>=0 then
 				Sleep(SleepLength);
 			// in manual mode, the user is supposed to make sure messages are handled
-         if (progressing=1) and (Mode=cmASAP) then
+         if (FProgressing=1) and (Mode=cmASAP) then
    			Application.ProcessMessages;
-			// ...and progress !
-			newTime:=GetCurrentTime;
-			deltaTime:=newTime-lastTime;
-         if FMaxDeltaTime>0 then begin
-            if deltaTime>FMaxDeltaTime then begin
-               FOriginTime:=FOriginTime+(deltaTime-FMaxDeltaTime)/FTimeMultiplier;
-               deltaTime:=FMaxDeltaTime;
-               newTime:=lastTime+deltaTime;
+         // One of the processed messages might have disabled us
+         if Enabled then begin
+            // ...and progress !
+            newTime:=GetCurrentTime;
+            deltaTime:=newTime-lastTime;
+            if FMaxDeltaTime>0 then begin
+               if deltaTime>FMaxDeltaTime then begin
+                  FOriginTime:=FOriginTime+(deltaTime-FMaxDeltaTime)/FTimeMultiplier;
+                  deltaTime:=FMaxDeltaTime;
+                  newTime:=lastTime+deltaTime;
+               end;
             end;
+            if Assigned(FScene) and (deltaTime<>0) then begin
+               FProgressing:=-FProgressing;
+               try
+                  FScene.Progress(deltaTime, newTime);
+               finally
+                  FProgressing:=-FProgressing;
+                  lastTime:=newTime;
+               end;
+            end;
+            for i:=0 to FSubscribedCadenceableComponents.Count-1 do
+               with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
+                  DoProgress(deltaTime, newTime);
+            if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
+               FOnProgress(Self, deltaTime, newTime);
          end;
-			if Assigned(FScene) and (deltaTime<>0) then begin
-            progressing:=-progressing;
-            try
-   				FScene.Progress(deltaTime, newTime);
-            finally
-               progressing:=-progressing;
-		   		lastTime:=newTime;
-            end;
-			end;
-         for i:=0 to FSubscribedCadenceableComponents.Count-1 do
-            with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
-               DoProgress(deltaTime, newTime);
-			if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
-				FOnProgress(Self, deltaTime, newTime);
 		end;
 	finally
-      Dec(progressing);
+      Dec(FProgressing);
 	end;
 end;
 
@@ -501,6 +510,13 @@ function TGLCadencer.GetCurrentTime : Double;
 begin
 	Result:=(GetRawReferenceTime-FOriginTime)*FTimeMultiplier;
 	FCurrentTime:=Result;
+end;
+
+// IsBusy
+//
+function TGLCadencer.IsBusy : Boolean;
+begin
+   Result:=(FProgressing<>0);   
 end;
 
 // ---------------------------------------------------------------------
