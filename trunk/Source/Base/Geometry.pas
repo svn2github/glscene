@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits 
       <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)3
       <li>22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
       <li>12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
@@ -6731,10 +6732,12 @@ begin
       Result:=(v>=0) and (u+v<=1);
       if Result then begin
          t:=VectorDotProduct(v2, qvec)*invDet;
-         if intersectPoint<>nil then
-            intersectPoint^:=VectorCombine(rayStart, rayVector, 1, t);
-         if intersectNormal<>nil then
-            intersectNormal^:=VectorCrossProduct(v1, v2);
+         if t>0 then begin
+            if intersectPoint<>nil then
+               intersectPoint^:=VectorCombine(rayStart, rayVector, 1, t);
+            if intersectNormal<>nil then
+               intersectNormal^:=VectorCrossProduct(v1, v2);
+         end else Result:=False;
       end;
    end;
 end;
