@@ -286,17 +286,19 @@ object GLSceneEditorForm: TGLSceneEditorForm
     object MIAddObject: TMenuItem
       Action = ACAddObject
     end
-    object N3: TMenuItem
+    object MIBehaviourSeparator: TMenuItem
       Caption = '-'
     end
     object MIAddBehaviour: TMenuItem
       Action = ACAddBehaviour
       Caption = 'Add behaviour'
+      ImageIndex = 11
     end
     object MIAddEffect: TMenuItem
       Action = ACAddEffect
       Caption = 'Add effect'
       Hint = 'Add effect'
+      ImageIndex = 11
     end
     object N1: TMenuItem
       Caption = '-'

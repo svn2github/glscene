@@ -103,7 +103,7 @@ type
     ACAddBehaviour: TAction;
     MIAddBehaviour: TMenuItem;
     MIAddEffect: TMenuItem;
-    N3: TMenuItem;
+    MIBehaviourSeparator: TMenuItem;
     ACDeleteBehaviour: TAction;
     BehavioursPopupMenu: TPopupMenu;
     Delete1: TMenuItem;
@@ -359,10 +359,10 @@ begin
    SetObjectsSubItems(PMToolBar.Items);
    PMToolBar.Images:=ObjectManager.ObjectIcons;
 
-   SetBehavioursSubItems(MIAddBehaviour,nil);
-   SetBehavioursSubItems(PMBehavioursToolBar.Items,nil);
-   SetEffectsSubItems(MIAddEffect,nil);
-   SetEffectsSubItems(PMEffectsToolBar.Items,nil);
+   SetBehavioursSubItems(MIAddBehaviour, nil);
+   SetBehavioursSubItems(PMBehavioursToolBar.Items, nil);
+   SetEffectsSubItems(MIAddEffect, nil);
+   SetEffectsSubItems(PMEffectsToolBar.Items, nil);
 
    reg:=TRegistry.Create;
    try
@@ -513,38 +513,30 @@ var
 	XCollectionItemClass : TXCollectionItemClass;
 	mi : TMenuItem;
 begin
-        if Assigned(XCollection) then
-        begin
-	list:=GetXCollectionItemClassesList(XCollection.ItemsClass);
-	try
 {$ifdef GLS_DELPHI_5_UP}
-		parent.Clear;
+   parent.Clear;
 {$else}
-		for i:=parent.Count-1 downto 0 do parent.Delete(i);
+   for i:=parent.Count-1 downto 0 do
+      parent.Delete(i);
 {$endif}
-		for i:=0 to list.Count-1 do begin
-			XCollectionItemClass:=TXCollectionItemClass(list[i]);
-			mi:=TMenuItem.Create(owner);
-			mi.Caption:=XCollectionItemClass.FriendlyName;
-			mi.OnClick:=Event;//AddBehaviourClick;
-			mi.Tag:=Integer(XCollectionItemClass);
-                        if Assigned(XCollection) then
-                          mi.Enabled:=XCollection.CanAdd(XCollectionItemClass)
-                        else
-                          mi.Enabled:=TBAddBehaviours.enabled;
-			parent.Add(mi);
-		end;
-	finally
-		list.Free;
-	end;
-        end
-        else
-{$ifdef GLS_DELPHI_5_UP}
-          parent.Clear;
-{$else}
-		for i:=parent.Count-1 downto 0 do parent.Delete(i);
-{$endif}
-
+   if Assigned(XCollection) then begin
+      list:=GetXCollectionItemClassesList(XCollection.ItemsClass);
+      try
+         for i:=0 to list.Count-1 do begin
+            XCollectionItemClass:=TXCollectionItemClass(list[i]);
+            mi:=TMenuItem.Create(owner);
+            mi.Caption:=XCollectionItemClass.FriendlyName;
+            mi.OnClick:=Event;//AddBehaviourClick;
+            mi.Tag:=Integer(XCollectionItemClass);
+            if Assigned(XCollection) then
+               mi.Enabled:=XCollection.CanAdd(XCollectionItemClass)
+            else mi.Enabled:=TBAddBehaviours.Enabled;
+            parent.Add(mi);
+         end;
+      finally
+         list.Free;
+      end;
+   end;
 end;
 
 
@@ -1323,13 +1315,19 @@ end;
 
 procedure TGLSceneEditorForm.PopupMenuPopup(Sender: TObject);
 var
-  object1:TGLBaseSceneObject;
+   obj : TObject;
+   sceneObj : TGLBaseSceneObject;
 begin
-   if (Tree.Selected)<>nil then
-   begin
-     object1:=TGLBaseSceneObject(Tree.Selected.Data);
-     SetBehavioursSubItems(MIAddBehaviour,object1.Behaviours);
-     SetEffectsSubItems(MIAddEffect,object1.Effects);
+   if (Tree.Selected)<>nil then begin
+      obj:=TObject(Tree.Selected.Data);
+      if Assigned(obj) and (obj is TGLBaseSceneObject) then begin
+         sceneObj:=TGLBaseSceneObject(obj);
+         SetBehavioursSubItems(MIAddBehaviour, sceneObj.Behaviours);
+         SetEffectsSubItems(MIAddEffect, sceneObj.Effects);
+      end else begin
+         SetBehavioursSubItems(MIAddBehaviour, nil);
+         SetEffectsSubItems(MIAddEffect, nil);
+      end;
    end;
 end;
 
