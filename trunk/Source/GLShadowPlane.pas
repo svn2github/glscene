@@ -187,8 +187,15 @@ begin
             glLoadIdentity;
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
 
-            shadowMat:=MakeShadowMatrix(AbsolutePosition, AbsoluteDirection,
-                                        ShadowedLight.AbsolutePosition);
+            case ShadowedLight.LightStyle of
+               lsParallel : begin
+                  shadowMat:=MakeShadowMatrix(AbsolutePosition, AbsoluteDirection,
+                                              VectorScale(ShadowedLight.SpotDirection.AsVector, 1e10));
+               end;
+            else
+               shadowMat:=MakeShadowMatrix(AbsolutePosition, AbsoluteDirection,
+                                           ShadowedLight.AbsolutePosition);
+            end;
 
             glMultMatrixf(@shadowMat);
 
