@@ -82,6 +82,9 @@ type
     ACInvertNormals: TAction;
     MIActions: TMenuItem;
     InvertNormals1: TMenuItem;
+    N4: TMenuItem;
+    Saveas1: TMenuItem;
+    SaveDialog: TSaveDialog;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -110,6 +113,8 @@ type
     procedure MIPickTextureClick(Sender: TObject);
     procedure MIFileClick(Sender: TObject);
     procedure ACInvertNormalsExecute(Sender: TObject);
+    procedure ACSaveAsExecute(Sender: TObject);
+    procedure ACSaveAsUpdate(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
@@ -234,6 +239,7 @@ begin
    if not nthShow then begin
 
       OpenDialog.Filter:=VectorFileFormatsFilter;
+      SaveDialog.Filter:=VectorFileFormatsSaveFilter;
       with ActionList do for i:=0 to ActionCount-1 do
          if Actions[i] is TCustomAction then
             with TCustomAction(Actions[i]) do Hint:=Caption;
@@ -596,6 +602,26 @@ begin
       for i:=0 to Count-1 do
          Items[i].Normals.Scale(-1);
    FreeForm.StructureChanged;
+end;
+
+procedure TMain.ACSaveAsExecute(Sender: TObject);
+var
+   ext : String;
+begin
+   if SaveDialog.Execute then begin
+      ext:=ExtractFileExt(SaveDialog.FileName);
+      if ext='' then
+         SaveDialog.FileName:=ChangeFileExt(SaveDialog.FileName,
+            '.'+GetVectorFileFormats.FindExtByIndex(SaveDialog.FilterIndex, False, True));
+      if GetVectorFileFormats.FindFromFileName(SaveDialog.FileName)=nil then
+         ShowMessage('Unsupported or unspecified file extension.')
+      else FreeForm.SaveToFile(SaveDialog.FileName);
+   end;
+end;
+
+procedure TMain.ACSaveAsUpdate(Sender: TObject);
+begin
+   ACSaveAs.Enabled:=(FreeForm.MeshObjects.Count>0);
 end;
 
 end.
