@@ -991,6 +991,7 @@ end;
 //
 procedure TGLFlatText.Notification(AComponent: TComponent; Operation: TOperation);
 begin
+   inherited;
    if (Operation=opRemove) and (AComponent=FBitmapFont) then
       BitmapFont:=nil;
 end;
