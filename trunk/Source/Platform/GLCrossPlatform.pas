@@ -275,9 +275,9 @@ begin
    topDC:=GetDC(0);
    try
       Result:=GetDeviceCaps(topDC, BITSPIXEL)*GetDeviceCaps(topDC, PLANES);
-  finally
+   finally
       ReleaseDC(0, topDC);
-  end;
+   end;
 end;
 
 // Sleep

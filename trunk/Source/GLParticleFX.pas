@@ -7,6 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer
       <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
       <li>20/01/02 - EG - Several optimization (35% faster on Volcano bench)
       <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
@@ -233,6 +234,8 @@ type
          { Private Declarations }
          FManagerList : TList;
          FLastSortTime : Double;
+         FZWrite : Boolean;
+			FBlendingMode : TBlendingMode;
 
       protected
          { Protected Declarations }
@@ -252,6 +255,20 @@ type
 
          {: Time (in msec) spent sorting the particles for last render. }
          property LastSortTime : Double read FLastSortTime;
+
+		published
+   		{ Published Declarations }
+         {: Specifies if particles should write to ZBuffer.<p>
+            If the PFXRenderer is the last object to be rendered in the scene,
+            it is not necessary to write to the ZBuffer since the particles
+            are depth-sorted. Writing to the ZBuffer has a performance penalty. }
+         property ZWrite : Boolean read FZWrite write FZWrite default False;
+         {: Default blending mode for particles.<p>
+            "Additive" blending is the usual mode (increases brightness and
+            saturates), "transparency" may be used for smoke or systems that
+            opacify view, "opaque" is more rarely used.<p>
+            Note: specific PFX managers may override/ignore this setting. } 
+			property BlendingMode : TBlendingMode read FBlendingMode write FBlendingMode default bmAdditive;
    end;
 
    // TGLSourcePFXVelocityMode
@@ -831,6 +848,7 @@ begin
    inherited;
    ObjectStyle:=ObjectStyle+[osNoVisibilityCulling, osDirectDraw];
    FManagerList:=TList.Create;
+   FBlendingMode:=bmAdditive;
 end;
 
 // Destroy
@@ -951,6 +969,7 @@ var
    curParticleRef : PParticleReference;
    cameraPos, cameraVector : TAffineVector;
    timerStart, timerStop : Int64;
+   oldDepthMask : TGLboolean;
 begin
    if csDesigning in ComponentState then Exit;
    QueryPerformanceCounter(timerStart);
@@ -1027,9 +1046,23 @@ begin
       glDisable(GL_CULL_FACE);
       glDisable(GL_TEXTURE_2D);
       glDisable(GL_LIGHTING);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-      glEnable(GL_BLEND);
+      case FBlendingMode of
+         bmAdditive : begin
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            glEnable(GL_BLEND);
+         end;
+         bmTransparency : begin
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glEnable(GL_BLEND);
+         end;
+      else
+         // bmOpaque, do nothing
+      end;
       glDepthFunc(GL_LEQUAL);
+      if not FZWrite then begin
+         glGetBooleanv(GL_DEPTH_WRITEMASK, @oldDepthMask);
+         glDepthMask(False);
+      end;
 
       try
          // Initialize managers
@@ -1059,6 +1092,8 @@ begin
                TGLParticleFXManager(FManagerList[managerIdx]).FinalizeRendering;
          end;
       finally
+         if FZWrite then
+            glDepthMask(oldDepthMask);
          glPopMatrix;
          glPopAttrib;
       end;
