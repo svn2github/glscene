@@ -811,14 +811,11 @@ end;
 // TGLBitmap32
 //
 function TGLBitmap32.GrayScaleToNormalMap(const scale : Single) : Boolean;
-const
-   cOneDiv255 : Single = 1/255;
 var
    x, y : Integer;
    p1, p2, p3 : Single;
    dcx, dcy : Single;
-   invLen : Single;
-   nx, ny, nz : Single;
+   invLen, scaleDiv255 : Single;
    curRow, nextRow : PGLPixel32Array;
    curRowZeroG : Byte;
    backupRowZero : PGLPixel32Array;
@@ -829,6 +826,7 @@ begin
       nextRow:=FData;
       backupRowZero:=AllocMem(Width*4);
       Move(FData[0], backupRowZero[0], Width*4);
+      scaleDiv255:=scale*(1/255);
       for y:=0 to Height-1 do begin
          curRow:=nextRow;
          if y<Height-1 then
@@ -836,24 +834,21 @@ begin
          else nextRow:=backupRowZero;
          curRowZeroG:=curRow[0].g;
          for x:=0 to Width-1 do begin
-            p1:=curRow[x].g*cOneDiv255;
-            p2:=nextRow[x].g*cOneDiv255;
+            p1:=curRow[x].g;
+            p2:=nextRow[x].g;
             if x<Width-1 then
-               p3:=curRow[x+1].g*cOneDiv255
-            else p3:=curRowZeroG*cOneDiv255;
+               p3:=curRow[x+1].g
+            else p3:=curRowZeroG;
 
-            dcx:=scale*(p2-p1);
-            dcy:=scale*(p1-p3);
+            dcx:=scaleDiv255*(p3-p1);
+            dcy:=scaleDiv255*(p1-p2);
 
             invLen:=RSqrt(Sqr(dcx)+Sqr(dcy)+1);
-            nx:=ClampValue( dcy*invLen, -1, 1);
-            ny:=ClampValue(-dcx*invLen, -1, 1);
-            nz:=ClampValue(     invLen, -1, 1);
 
             with curRow[x] do begin
-               r:=Round(128+127*nx);
-               g:=Round(128+127*ny);
-               b:=Round(128+127*nz);
+               r:=Round(128+127*ClampValue(dcx*invLen, -1, 1));
+               g:=Round(128+127*ClampValue(dcy*invLen, -1, 1));
+               b:=Round(128+127*invLen);
                a:=255;
             end;
          end;
