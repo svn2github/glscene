@@ -559,7 +559,7 @@ begin
       try
          for i:=0 to Count-1 do begin
             hd:=THeightData(Items[i]);
-            if (hd.XLeft=xLeft) and (hd.YTop=yTop) and (hd.Size=size) and (hd.DataType=dataType) then begin
+            if (not hd.Dirty) and (hd.XLeft=xLeft) and (hd.YTop=yTop) and (hd.Size=size) and (hd.DataType=dataType) then begin
                Result:=hd;
                Break;
             end;
