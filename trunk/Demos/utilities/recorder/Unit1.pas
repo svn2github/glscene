@@ -5,8 +5,8 @@
 
    Be aware that if you use default compression, you will likely get a lossless,
    low compression codec (which may be good if you want the highest quality),
-   but you can specify a codec, for instance DiVX if you installed it, for high
-   compression video.<br>
+   but you can specify a codec, for instance DiVX (www.divx.com) if you
+   installed it, for high compression video.<br>
    The codec can be choosed with the Compressor property of TAVIRecorder.
 }
 unit Unit1;
