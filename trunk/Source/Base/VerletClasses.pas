@@ -2364,7 +2364,8 @@ end;
 constructor TVerletGlobalConstraint.Create(const aOwner: TVerletWorld);
 begin
   inherited;
-  aOwner.ConstraintsWithBeforeIterations.Add(self);
+  if Assigned(aOwner) then
+    aOwner.ConstraintsWithBeforeIterations.Add(self);
 end;
 
 destructor TVerletGlobalConstraint.Destroy;
