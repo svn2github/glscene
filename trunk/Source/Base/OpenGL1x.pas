@@ -220,6 +220,7 @@ var
    GL_EXT_texture_lod_bias,
    GL_EXT_texture_object,
    GL_EXT_texture3D,
+   GL_EXT_clip_volume_hint,
 
    GL_HP_occlusion_test,
 
@@ -1842,6 +1843,9 @@ var
    GL_SAMPLE_MASK_VALUE_EXT                         = $80AA;
    GL_SAMPLE_MASK_INVERT_EXT                        = $80AB;
    GL_SAMPLE_PATTERN_EXT                            = $80AC;
+
+   // GL_EXT_clip_volume_hint
+   GL_CLIP_VOLUME_CLIPPING_HINT_EXT                 = $80F0;
 
    // GL_SGIS_texture_color_mask
    GL_TEXTURE_COLOR_WRITEMASK_SGIS                  = $81EF;
@@ -3977,6 +3981,7 @@ begin
    GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
    GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
    GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
+   GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
 
    GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test'); 
 
