@@ -11,6 +11,7 @@
   - Need to check if the point is embedded in the ellipsoid (procedure CheckPoint)
 
   <b>History : </b><font size=-1><ul>
+    <li>11/10/04 - LR - Restore the GLScene.inc with the good case
     <li>03/09/04 - LucasG. - Creation and addons to support events and terrains
   </ul></font>
 }
@@ -18,6 +19,8 @@
 unit GLEllipseCollision;
 
 interface
+
+{$I GLScene.inc}
 
 uses {$IFNDEF GLS_DELPHI_5}Types,{$ENDIF} VectorGeometry, GLTerrainRenderer;
 
