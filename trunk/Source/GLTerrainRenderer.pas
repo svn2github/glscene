@@ -420,6 +420,8 @@ var
    procedure ApplyMaterial(const materialName : String);
    begin
       if (MaterialLibrary<>nil) and (currentMaterialName<>materialName) then begin
+         // flush whatever is in progress
+         TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
          // unapply current
          if currentMaterialName='' then begin
             repeat
@@ -635,8 +637,7 @@ begin
          end;
       end;
    end;
-   if FBufferVertexIndices.Count>0 then
-      TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
+   TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
 
    xglPushState;
    try
