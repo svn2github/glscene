@@ -2087,6 +2087,7 @@ begin
                mat[3][0]:=Position[i][0];
                mat[3][1]:=Position[i][1];
                mat[3][2]:=Position[i][2];
+               mat[3][3]:=1;
                FLocalMatrixList[i]:=mat;
             end;
          end;
