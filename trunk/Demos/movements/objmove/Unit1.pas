@@ -36,6 +36,10 @@ type
     Label1: TLabel;
     TxtX: TSpaceText;
     TxtY: TSpaceText;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    TxtZ: TSpaceText;
     procedure ScnMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 	 procedure ScnMouseMove(Sender: TObject; Shift: TShiftState;
