@@ -4078,7 +4078,8 @@ end;
 //
 procedure TGLLibMaterial.PrepareBuildList;
 begin
-   Material.PrepareBuildList;
+   if Assigned(Self) then
+      Material.PrepareBuildList;
 end;
 
 // Apply
@@ -4835,7 +4836,9 @@ end;
 //
 function TGLMaterialLibrary.LibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
 begin
-   Result:=Materials.GetLibMaterialByName(name);
+   if Assigned(Self) then
+      Result:=Materials.GetLibMaterialByName(name)
+   else Result:=nil;
 end;
 
 // ApplyMaterial
