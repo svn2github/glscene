@@ -605,11 +605,15 @@ begin
 //   Inited:=False;
 
 //   Material.Texture.ImageClassName:='Blank Image';
+
+{
    material.Texture.Disabled:=False;
    Material.Texture.TextureMode:=tmModulate;
    Material.BlendingMode:=bmTransparency;
    Material.Texture.TextureWrap:=twNone;
-   
+}
+
+
    bmp32:=TGLBitmap32.Create;
    FColor:=TGLColor.Create(Self);
 //   FShadowColor.DefaultColor:=
@@ -652,47 +656,50 @@ begin
 
    if FWidth >rci.viewPortSize.cx then Fwidth :=rci.viewPortSize.cx;
    if FHeight>rci.viewPortSize.cy then FHeight:=rci.viewPortSize.cy;
-//   Fheight:=rci.viewPortSize.cy;
-
 
    bmp32.Width:= FXRes;
    bmp32.Height:=FYRes;
-
    //-----------------------
    CalcShadowTexture(rci);
    //-----------------------
    Material.Apply(rci);
-//   glTexImage2D(GL_TEXTURE_2D,0,4,FWidth,FHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
-   glTexImage2D(GL_TEXTURE_2D,0,4,FXRes,FYRes,0,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
-//   glTexImage2D(GL_TEXTURE_2D,0,4,64,64,0,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
-   NotifyChange(Self);
 
-////   if AlphaChannel<>1 then SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+   glTexParameteri(GL_Texture_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+   glTexParameteri(GL_Texture_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+//   glTexImage2D(GL_TEXTURE_2D,0,1,FXRes,FYRes,0,GL_ALPHA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
+   if Tag=0 then begin
+      glTexImage2D(GL_TEXTURE_2D,0,4,FXRes,FYRes,0,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
+      Tag:=1;
+   end else
+      glTexSubImage2D(GL_TEXTURE_2D,0,0,0,FXRes,FYRes,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
+{
+   glEnable(GL_TEXTURE_2D);
+   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);    //Transparency
+   glEnable(GL_BLEND);
+}
+   NotifyChange(Self);
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
    // Prepare matrices
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
    glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
-   glTranslatef(Position.X-rci.viewPortSize.cx/2,
-                rci.viewPortSize.cy/2-Position.Y, Position.Z);
-////   if Rotation<>0 then
-////      glRotatef(Rotation, 0, 0, 1);
+   glTranslatef(Position.X-rci.viewPortSize.cx*0.5,
+                rci.viewPortSize.cy*0.5-Position.Y, Position.Z);
+
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_LIGHTING);
-//   glDepthMask(False);
-
-   // precalc coordinates
-//   vx:=-Width/2;    vx1:=vx+Width;
-//   vy:=+Height/2;   vy1:=vy-Height;
-
    vx:=0;   vx1:=vx+FWidth;
    vy:=0;   vy1:=vy-FHeight;
-
-
    // issue quad
 	glBegin(GL_QUADS);
       glNormal3fv(@YVector);

@@ -276,7 +276,7 @@ end;
 
 procedure TMainFm.AlphaBarChange(Sender: TObject);
 begin
-Shadows1.Color.Alpha:=AlphaBar.Position/256;
+   Shadows1.Color.Alpha:=AlphaBar.Position/256;
 end;
 
 end.
