@@ -381,7 +381,6 @@ object Form1: TForm1
     InnerColor.Color = {0000803F0000803F0000803F9A99993E}
     OuterColor.Color = {00000000000000000000803F00000000}
     Disabled = False
-    Paused = False
     Core = True
     Glow = True
     Wildness = 1
