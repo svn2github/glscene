@@ -20,6 +20,7 @@ package GLScene6;
 {$R '..\Source\GLzBuffer.dcr'}
 {$R '..\Source\GLTimeEventsMGR.dcr'}
 {$R '..\Source\GLWindows.dcr'}
+{$R '..\Source\Base\ApplicationFileIO.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -138,7 +139,6 @@ contains
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
   GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas' {GUISkinEditor},
   GLShadowPlane in '..\Source\GLShadowPlane.pas',
-  ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
   TGA in '..\Source\FileFormats\TGA.pas',
   GLLensFlare in '..\Source\GLLensFlare.pas',
   GLProcTextures in '..\Source\GLProcTextures.pas',
@@ -165,6 +165,8 @@ contains
   GLFileGTS in '..\Source\FileFormats\GLFileGTS.pas',
   GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
   GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas',
-  GLShadowVolume in '..\Source\GLShadowVolume.pas';
+  GLShadowVolume in '..\Source\GLShadowVolume.pas',
+  ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
+  GLSilhouette in '..\Source\GLSilhouette.pas';
 
 end.

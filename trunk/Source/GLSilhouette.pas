@@ -380,7 +380,6 @@ procedure TFaceGroupConnectivity.CreateSilhouetteOmni(
   SeenFrom: TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean);
 var
   i : integer;
-  GLBaseMesh : TGLBaseMesh;
   V0, V1, V2 : TAffineVector;
   Vi0, Vi1, Vi2 : integer;
   tVi0, tVi1, tVi2 : integer;
@@ -395,8 +394,6 @@ begin
 
   if not AddToSilhouette then
     aSilhouette.Flush;
-
-  GLBaseMesh := FMeshObject.Owner.Owner;
 
   // Clear the vertex memory
   FVertexMemory.Flush;
