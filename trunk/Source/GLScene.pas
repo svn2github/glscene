@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/11/03 - EG - Data pointer made optional (GLS_WANT_DATA define),
+                          applications should use VCL's standard (ie. "Tag")
       <li>04/11/03 - Dave - Added Data pointer to GLSceneBaseObject
       <li>24/10/03 - NelC - Fixed texture-flipped bug in cubemap generation 
       <li>21/08/03 - EG - Added osRenderNearestFirst
@@ -353,7 +355,9 @@ type
          FChanges : TObjectChanges;
          FParent : TGLBaseSceneObject;
          FScene : TGLScene;
-         FData : pointer;
+         {$ifdef GLS_WANT_DATA}
+         FData : Pointer;
+         {$endif}
 
          FChildren : TList; // created on 1st use
          FVisible : Boolean;
@@ -669,8 +673,11 @@ type
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
          property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
          property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
-         // a pointer to attach your data to GLScene
-         property Data : pointer read FData write FData;
+         {$ifdef GLS_WANT_DATA}
+         {: A pointer to attach your data to GLScene.<p>
+            Applications should use VCL's standard instead ("Tag"). }
+         property Data : pointer read FData write FData; {$ifdef GLS_COMPILER_7_UP} deprecated; {$endif}
+         {$endif}
 
       published
          { Published Declarations }
