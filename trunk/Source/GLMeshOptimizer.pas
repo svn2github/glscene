@@ -16,12 +16,13 @@ type
 
    // TMeshOptimizerOptions
    //
-   TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials);
+   TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials,
+                           mooMergeObjects);
    TMeshOptimizerOptions = set of TMeshOptimizerOption;
 
 var
    vDefaultMeshOptimizerOptions : TMeshOptimizerOptions =
-      [mooStandardize, mooVertexCache, mooSortByMaterials];
+      [mooStandardize, mooVertexCache, mooSortByMaterials, mooMergeObjects];
 
 procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions); overload;
 procedure OptimizeMesh(aList : TMeshObjectList); overload;
@@ -49,7 +50,10 @@ end;
 //
 procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions);
 var
-   i : Integer;
+   i, k : Integer;
+   mob, mo : TMeshObject;
+   fg : TFaceGroup;
+   fgvi : TFGVertexIndexList;
 begin
    // optimize all mesh objects
    for i:=0 to aList.Count-1 do begin
@@ -61,6 +65,28 @@ begin
          if (aList[i].Mode=momFaceGroups) and (aList[i].FaceGroups.Count=0) then
             aList[i].Free;
       end;
+   end;
+   if (aList.Count>0) and (mooMergeObjects in options) then begin
+      mob:=aList[0];
+      Assert(mob.Mode=momFaceGroups);
+      for i:=1 to aList.Count-1 do begin
+         mo:=aList[i];
+         Assert(mo.Mode=momFaceGroups);
+         k:=mob.Vertices.Count;
+         mob.Vertices.Add(mo.Vertices);
+         mob.Normals.Add(mo.Normals);
+         mob.TexCoords.Add(mo.TexCoords);
+         while mo.FaceGroups.Count>0 do begin
+            fg:=mo.FaceGroups[0];
+            fgvi:=(fg as TFGVertexIndexList);
+            fgvi.Owner:=mob.FaceGroups;
+            mob.FaceGroups.Add(fgvi);
+            mo.FaceGroups.Delete(0);
+            fgvi.VertexIndices.Offset(k);
+         end;
+      end;
+      for i:=aList.Count-1 downto 1 do
+         aList[i].Free;
    end;
 end;
 
