@@ -7293,7 +7293,7 @@ end;
 //
 function Floor64(v : Extended) : Int64; overload;
 begin
-  if Frac(v)<0 then
+  if v<0 then
       Result:=Trunc(v)-1
    else Result:=Trunc(v);
 end;
@@ -7303,7 +7303,7 @@ end;
 function Floor(v : Single) : Integer; overload;
 begin
    {$HINTS OFF}
-  if Frac(v)<0 then
+   if v<0 then
       Result:=Trunc(v)-1
    else Result:=Trunc(v);
    {$HINTS ON}
