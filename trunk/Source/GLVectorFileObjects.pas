@@ -104,6 +104,7 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          {: Translates all the vertices by the given delta. }
          procedure Translate(const delta : TAffineVector); dynamic;
          {: Builds (smoothed) normals for the vertex list.<p>
@@ -417,6 +418,7 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          function ExtractTriangles : TAffineVectorList; override;
          {: Returns number of triangles in the mesh object. }
          function TriangleCount : Integer; dynamic;
@@ -563,6 +565,7 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          procedure Translate(const delta : TAffineVector); override;
 
          procedure MorphTo(morphTargetIndex : Integer);
@@ -650,6 +653,7 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          procedure BuildList(var mrci : TRenderContextInfo); virtual; abstract;
 
          {: Add to the list the triangles corresponding to the facegroup.<p>
@@ -736,6 +740,7 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          procedure BuildList(var mrci : TRenderContextInfo); override;
          procedure AddToTriangles(aList : TAffineVectorList); override;
 
@@ -766,6 +771,7 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          procedure BuildList(var mrci : TRenderContextInfo); override;
          procedure AddToTriangles(aList : TAffineVectorList); override;
 
@@ -3319,7 +3325,7 @@ begin
       fgmmTriangles, fgmmFlatTriangles : begin
          Owner.Owner.DeclareArraysToOpenGL(False);
          glDrawElements(GL_TRIANGLES, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List);
+                        GL_UNSIGNED_INT, VertexIndices.List); 
       end;
       fgmmTriangleStrip : begin
          Owner.Owner.DeclareArraysToOpenGL(False);

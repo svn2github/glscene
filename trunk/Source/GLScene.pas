@@ -1970,6 +1970,7 @@ begin
       finally
          glEndList;
       end;
+      Exclude(FChanges, ocStructure);
    end;
    Result:=FListHandle.Handle;
 end;
@@ -5974,8 +5975,10 @@ var
 begin
    if FRendering then Exit;
    if not Assigned(FRenderingContext) then Exit;
-   if Assigned(FCamera) and Assigned(FCamera.FScene) then
+   if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
+      FCamera.AbsoluteMatrixAsAddress;
       FCamera.FScene.AddBuffer(Self);
+   end;
    FRenderingContext.Activate;
    FRendering:=True;
    try

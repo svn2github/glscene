@@ -137,10 +137,10 @@ type
 
          procedure BuildList(var rci : TRenderContextInfo);
 
-         {: Adds random stars with colors randomly picken in the given range.<p>
+         {: Adds nb random stars of the given color.<p>
             Stars are homogenously scattered on the complete sphere, not only the
             band defined or visible dome. }
-         procedure AddRandomStars(nb : Integer; colorRangeStart, colorRangeEnd : TColorVector);
+         procedure AddRandomStars(nb : Integer; color : TColor);
    end;
 
 	// TSkyDome
@@ -605,28 +605,38 @@ procedure TSkyDomeStars.BuildList(var rci : TRenderContextInfo);
 var
    i : Integer;
    star : TSkyDomeStar;
+   lastColor : TColor;
    color : TColorVector;
 begin
    if Count=0 then Exit;
    CalculateCartesianCoordinates;
-   glBegin(GL_POINTS);
+   lastColor:=-1;
+   glPointSize(1.4);
+   glEnable(GL_POINT_SMOOTH);
    for i:=0 to Count-1 do begin
       star:=Items[i];
-      color:=ConvertWinColor(star.FColor);
-      glColor4fv(@color[0]);
+      if lastColor<>star.FColor then begin
+         color:=ConvertWinColor(star.FColor);
+         if lastColor<>-1 then
+            glEnd;
+         glColor4fv(@color[0]);
+         glBegin(GL_POINTS);
+         lastColor:=star.FColor;
+      end;
       glVertex3fv(@star.FCacheCoord[0]);
    end;
    glEnd;
+   glDisable(GL_POINT_SMOOTH);
+   glPointSize(1);
 end;
 
 // AddRandomStars
 //
-procedure TSkyDomeStars.AddRandomStars(nb : Integer; colorRangeStart, colorRangeEnd : TColorVector);
+procedure TSkyDomeStars.AddRandomStars(nb : Integer; color : TColor);
 var
    i : Integer;
    coord : TAffineVector;
    star : TSkyDomeStar;
-   color : TColorVector;
 begin
    for i:=1 to nb do begin
       star:=Add;
@@ -640,8 +650,7 @@ begin
       star.RA:=ArcSin(coord[2]);
       star.Dec:=ArcTan2(coord[1], coord[0]);
       // pick a random color
-      color:=VectorLerp(colorRangeStart, colorRangeEnd, Random);
-      star.Color:=ConvertColorVector(color);
+      star.Color:=color;
    end;
 end;
 

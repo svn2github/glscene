@@ -54,6 +54,7 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          procedure AddNulls(nbVals : Integer);
          procedure AdjustCapacityToAtLeast(const size : Integer);
          procedure Clear;
@@ -88,6 +89,7 @@ type
          { Public Declarations }
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          procedure GetExtents(var min, max : TAffineVector); dynamic;
          function Sum : TAffineVector; dynamic;
          procedure Normalize; dynamic;
