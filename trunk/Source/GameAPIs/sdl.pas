@@ -121,12 +121,25 @@ unit SDL;
 {  December  11 2001 - DL : Added $WEAKPACKAGEUNIT ON to facilitate useage in  }
 {                           Components                                         }
 {                                                                              }
+{  January   05 2002 - DL : Added SDL_Swap32 function as suggested by Matthias }
+{                           Thoma and also made sure the _getenv from          }
+{                           MSVCRT.DLL uses the right calling convention       }
+{                                                                              }
+{  January   25 2002 - DL : Updated conversion of SDL_AddTimer &               }
+{                           SDL_RemoveTimer as per suggestions from Matthias   }
+{                           Thoma.                                             }
+{                                                                              }
+{  January   27 2002 - DL : Commented out exported function putenv and getenv  }
+{                           So that developers get used to using SDL_putenv    }
+{                           SDL_getenv, as they are more portable              }
+{                                                                              }
+{  March     05 2002 - DL : Added FreeAnNil procedure for Delphi 4 users.      }
+{                                                                              }
 {******************************************************************************}
 
-{$WEAKPACKAGEUNIT ON}
+{.$WEAKPACKAGEUNIT ON}
 
 {$ALIGN ON}
-
 
 {$IFDEF FPC}
 {$PACKRECORDS 4}
@@ -148,8 +161,12 @@ Libc;
 const
 {$IFDEF WIN32}
   LibName = 'SDL.dll';
-{$ELSE}
+{$ENDIF}
+{$IFDEF LINUX}
   LibName = 'libSDL-1.2.so.0';
+{$ENDIF}
+{$IFDEF MACOS}
+  LibName = 'libSDL-1.2.dylib';
 {$ENDIF}
 
   // SDL.h constants
@@ -306,9 +323,9 @@ const
   // Printable format: "%d.%d.%d", MAJOR, MINOR, PATCHLEVEL
   SDL_MAJOR_VERSION = 1;
 {$EXTERNALSYM SDL_MAJOR_VERSION}
-  SDL_MINOR_VERSION = 1;
+  SDL_MINOR_VERSION = 2;
 {$EXTERNALSYM SDL_MINOR_VERSION}
-  SDL_PATCHLEVEL = 8;
+  SDL_PATCHLEVEL = 3;
 {$EXTERNALSYM SDL_PATCHLEVEL}
 
   // SDL_events.h constants
@@ -1367,9 +1384,9 @@ type
   end;
 
   // SDL_keyboard.h types
-  TSDLKey = DWord;
+  TSDLKey = LongWord;
 
-  TSDLMod = DWord;
+  TSDLMod = LongWord;
 
   PSDL_KeySym = ^TSDL_KeySym;
   TSDL_KeySym = record
@@ -1688,18 +1705,20 @@ typedef struct {
   // Useful for determining the video hardware capabilities
   PSDL_VideoInfo = ^TSDL_VideoInfo;
   TSDL_VideoInfo = record
-    hw_available: UInt32; // Flag:UInt32  Can you create hardware surfaces?
-    wm_available: UInt32; // Flag:UInt32  Can you talk to a window manager?
-    UnusedBits1: UInt32;
-    UnusedBits2: UInt32;
-    blit_hw: UInt32; // Flag:UInt32  Accelerated blits HW --> HW
-    blit_hw_CC: UInt32; // Flag:UInt32  Accelerated blits with Colorkey
-    blit_hw_A: UInt32; // Flag:UInt32  Accelerated blits with Alpha
-    blit_sw: UInt32; // Flag:UInt32  Accelerated blits SW --> HW
-    blit_sw_CC: UInt32; // Flag:UInt32  Accelerated blits with Colorkey
-    blit_sw_A: UInt32; // Flag:UInt32  Accelerated blits with Alpha
-    blit_fill: UInt32; // Flag:UInt32  Accelerated color fill
-    UnusedBits3: UInt32;
+    hw_available: UInt8; // Hardware and WindowManager flags in first 2 bits ( see below )
+    {hw_available: 1; // Can you create hardware surfaces
+    wm_available: 1; // Can you talk to a window manager?
+    UnusedBits1: 6;}
+    blit_hw: UInt8; // Blit Hardware flags. See below for which bits do what
+    {UnusedBits2: 1;
+    blit_hw: 1; // Flag:UInt32  Accelerated blits HW --> HW
+    blit_hw_CC: 1; // Flag:UInt32  Accelerated blits with Colorkey
+    blit_hw_A: 1; // Flag:UInt32  Accelerated blits with Alpha
+    blit_sw: 1; // Flag:UInt32  Accelerated blits SW --> HW
+    blit_sw_CC: 1; // Flag:UInt32  Accelerated blits with Colorkey
+    blit_sw_A: 1; // Flag:UInt32  Accelerated blits with Alpha
+    blit_fill: 1; // Flag:UInt32  Accelerated color fill}
+    UnusedBits3: UInt8; // Unused at this point
     video_mem: UInt32; // The total amount of video memory (in K)
     vfmt: PSDL_PixelFormat; // Value: The format of the video surface
   end;
@@ -1924,12 +1943,14 @@ procedure SDL_SetError(fmt: PChar); cdecl; external LibName;
 {$EXTERNALSYM SDL_SetError}
 procedure SDL_ClearError; cdecl; external LibName;
 {$EXTERNALSYM SDL_ClearError}
+
+{$IFNDEF WIN32}
 procedure SDL_Error(Code: TSDL_errorcode); cdecl; external LibName;
 {$EXTERNALSYM SDL_Error}
+{$ENDIF}
 
 // Private error message function - used internally
 procedure SDL_OutOfMemory;
-{$EXTERNALSYM SDL_OutOfMemory}
 
 {------------------------------------------------------------------------------}
 { io handling                                                                  }
@@ -1972,7 +1993,6 @@ function SDL_RWClose(context: PSDL_RWops): Integer;
 
 { Get the number of milliseconds since the SDL library initialization. }
 { Note that this value wraps if the program runs for more than ~49 days. }
-
 function SDL_GetTicks: UInt32; cdecl; external LibName;
 {$EXTERNALSYM SDL_GetTicks}
 
@@ -1983,12 +2003,12 @@ procedure SDL_Delay(msec: UInt32); cdecl; external LibName;
 { Add a new timer to the pool of timers already running. }
 { Returns a timer ID, or NULL when an error occurs.      }
 function SDL_AddTimer(interval: UInt32; callback: TSDL_NewTimerCallback; param
-  : Pointer): TSDL_TimerID; cdecl; external LibName;
+  : Pointer): PSDL_TimerID; cdecl; external LibName;
 {$EXTERNALSYM SDL_AddTimer}
 
 { Remove one of the multiple timers knowing its ID. }
 { Returns a boolean value indicating success. }
-function SDL_RemoveTimer(t: TSDL_TimerID): TSDL_Bool; cdecl; external
+function SDL_RemoveTimer(t: PSDL_TimerID): TSDL_Bool; cdecl; external
 LibName;
 {$EXTERNALSYM SDL_RemoveTimer}
 
@@ -2515,7 +2535,6 @@ function SDL_GetVideoSurface: PSDL_Surface; cdecl; external LibName;
   video hardware.  If this is called before SDL_SetVideoMode(), the 'vfmt'
   member of the returned structure will contain the pixel format of the
   "best" video mode. }
-
 function SDL_GetVideoInfo: PSDL_VideoInfo; cdecl; external LibName;
 {$EXTERNALSYM SDL_GetVideoInfo}
 
@@ -3427,11 +3446,13 @@ function _putenv( const variable : Pchar ): integer; cdecl;
 function SDL_putenv(const variable: PChar): integer;
 {$EXTERNALSYM SDL_putenv}
 
-function putenv(const variable: PChar): integer;
-{$EXTERNALSYM putenv}
+// The following function has been commented out to encourage developers to use
+// SDL_putenv as it it more portable
+//function putenv(const variable: PChar): integer;
+//{$EXTERNALSYM putenv}
 
 {$IFDEF WIN32}
-function _getenv( const name : Pchar ): PChar; stdcall;
+function getenv( const name : Pchar ): PChar; cdecl;
 {$ENDIF}
 
 {* Retrieve a variable named "name" from the environment }
@@ -3439,10 +3460,19 @@ function _getenv( const name : Pchar ): PChar; stdcall;
 function SDL_getenv(const name: PChar): PChar;
 {$EXTERNALSYM SDL_getenv}
 
-function getenv(const name: PChar): PChar;
-{$EXTERNALSYM getenv}
+// The following function has been commented out to encourage developers to use
+// SDL_getenv as it it more portable
+//function getenv(const name: PChar): PChar;
+//{$EXTERNALSYM getenv}
 
 {------------------------------------------------------------------------------}
+
+function SDL_Swap32(D: Uint32): Uint32;
+{$EXTERNALSYM SDL_Swap32}
+
+{ FreeAndNil frees the given TObject instance and sets the variable reference
+  to nil.  Be careful to only pass TObjects to this routine. }
+procedure FreeAndNil(var Obj);
 
 implementation
 
@@ -3453,7 +3483,9 @@ end;
 
 procedure SDL_OutOfMemory;
 begin
+  {$IFNDEF WIN32}
   SDL_Error(SDL_ENOMEM);
+  {$ENDIF}
 end;
 
 function SDL_RWSeek(context: PSDL_RWops; offset: Integer; whence: Integer)
@@ -3593,34 +3625,39 @@ begin
   {$ENDIF}
 end;
 
-function putenv(const variable: PChar): Integer;
-begin
-  Result := SDL_putenv(variable);
-end;
-
 {$IFDEF WIN32}
-function _getenv( const name : Pchar ): PChar; external 'MSVCRT.DLL';
+function getenv( const name : Pchar ): PChar; cdecl; external 'MSVCRT.DLL';
 {$ENDIF}
 
 function SDL_getenv(const name: PChar): PChar;
 begin
   {$IFDEF WIN32}
-  Result := _getenv(name);
+  Result := getenv(name);
   {$ENDIF}
-  
+
   {$IFDEF LINUX}
   Result := libc.getenv(name);
   {$ENDIF}
 end;
 
-function getenv(const name: PChar): PChar;
-begin
-  Result := SDL_getenv(name);
-end;
-
 function SDL_BUTTON( Button : Integer ) : Integer;
 begin
   Result := SDL_PRESSED shl ( Button - 1 );
+end;
+
+function SDL_Swap32(D: Uint32): Uint32;
+begin
+  Result := ((D shl 24) or ((D shl 8) and $00FF0000) or ((D shr 8) and
+$0000FF00) or (D shr 24));
+end;
+
+procedure FreeAndNil(var Obj);
+var
+  Temp: TObject;
+begin
+  Temp := TObject(Obj);
+  Pointer(Obj) := nil;
+  Temp.Free;
 end;
 
 end.
