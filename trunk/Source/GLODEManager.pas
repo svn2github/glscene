@@ -12,6 +12,10 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>24/02/04 - SG - Added the static GLODETerrain collider.
+    <li>23/02/04 - SG - Fix for design to real time gravity persistence.
+                        Added cone, cylinder and tri-mesh elements.
+                        Other various fixes/enhancements.
     <li>28/01/04 - SG - Added TGLODEStaticDummy. Fixed Element alignment code.
                         Other minor fixes/changes.
     <li>13/11/03 - SG - Fixed bug with destroying geoms, manager now forces
@@ -53,8 +57,7 @@ interface
 
 uses
   Classes, ODEImport, ODEGL, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
-  XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses,
-  GLVectorFileObjects;
+  XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists;
 
 type
 
@@ -110,6 +113,8 @@ type
       procedure RegisterJoint(aJoint : TODEBaseJoint);
       procedure UnregisterJoint(aJoint : TODEBaseJoint);
 
+      procedure Loaded; override;
+
       property DynamicObjectRegister : TPersistentObjectList read FDynamicObjectRegister;
       property JointRegister : TPersistentObjectList read FJointRegister;
     public
@@ -131,7 +136,7 @@ type
          is added the Contact Joints. Any 'last minute' changes to the 
          collisions behaviour can be made through the contact parameter. }
       property OnCollision : TODECollisionEvent read FOnCollision write FOnCollision;
-      //: dWorldStepFast properties
+      //: dWorldStepFast1 properties
       property StepFast : Boolean read FStepFast write FStepFast;
       property FastIterations : Integer read FFastIterations write FFastIterations;
   end;
@@ -220,6 +225,7 @@ type
       destructor Destroy; override;
       procedure StructureChanged; override;
       procedure NotifyChange(Sender:TObject); override;
+      procedure Reinitialize;
       property Initialized : Boolean read FInitialized;
     published
       {: The link to the GLODEManager, which houses the ODE collision Space
@@ -332,6 +338,7 @@ type
     public
       constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
+      procedure Reinitialize;
       property Initialized : Boolean read FInitialized;
     published
       property Manager : TGLODEManager read FManager write SetManager;
@@ -539,7 +546,7 @@ type
   // TODEElementCylinder
   //
   {: ODE cylinder implementation. }
-  {TODEElementCylinder = class (TODEBaseElement)
+  TODEElementCylinder = class (TODEBaseElement)
     private
       FRadius,
       FLength : TdReal;
@@ -554,7 +561,7 @@ type
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
     public
-      constructor Create(AOwner:TODEElements); override;
+      constructor Create(AOwner:TXCollection); override;
       procedure BuildList(var rci : TRenderContextInfo); override;
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -562,31 +569,63 @@ type
     published
       property Radius : TdReal read GetRadius write SetRadius;
       property Length : TdReal read GetLength write SetLength;
-  end; //}
+  end;
+
+  // TODEElementCone
+  //
+  {: ODE cone implementation. }
+  TODEElementCone = class (TODEBaseElement)
+    private
+      FRadius,
+      FLength : TdReal;
+      function GetRadius : TdReal;
+      function GetLength : TdReal;
+      procedure SetRadius(const Value: TdReal);
+      procedure SetLength(const Value: TdReal);
+    protected
+      procedure Initialize; override;
+      function CalculateMass : TdMass; override;
+      procedure ODERebuild; override;
+      procedure WriteToFiler(writer : TWriter); override;
+      procedure ReadFromFiler(reader : TReader); override;
+    public
+      constructor Create(AOwner:TXCollection); override;
+      procedure BuildList(var rci : TRenderContextInfo); override;
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
+      class function ItemCategory : String; override;
+    published
+      property Radius : TdReal read GetRadius write SetRadius;
+      property Length : TdReal read GetLength write SetLength;
+  end;
 
   // TODEElementTriMesh
   //
   {: ODE tri-mesh implementation. }
-  {TODEElementTriMesh = class (TODEBaseElement)
+  TODEElementTriMesh = class (TODEBaseElement)
     private
-      FVertices : PdVector3Array;
-      FIndices : PdIntegerArray;
-      FGLBaseMesh : TGLBaseMesh;
-      procedure SetGLBaseMesh(const Value: TGLBaseMesh);
+      FTriMeshData : PdxTriMeshData;
+      FVertices : TAffineVectorList;
+      FIndices : TIntegerList;
     protected
       procedure Initialize; override;
       procedure Deinitialize; override;
       function CalculateMass : TdMass; override;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
+      procedure SetVertices(const Value : TAffineVectorList);
+      procedure SetIndices(const Value : TIntegerList);
     public
+      constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
-    published
-      property GLBaseMesh : TGLBaseMesh read FGLBaseMesh write SetGLBaseMesh;
-  end;//}
+      procedure RefreshTriMeshData;
+
+      property Vertices : TAffineVectorList read FVertices write SetVertices;
+      property Indices : TIntegerList read FIndices write SetIndices;
+  end;
 
   // TGLODEStaticObject
   //
@@ -595,8 +634,10 @@ type
   TGLODEStaticObject = class (TGLODEBaseObject)
     private
       FGeom : PdxGeom;
+
     protected
-      procedure SetGeom(Val : PdxGeom);
+      procedure Deinitialize; override;
+
     public
       property Geom : PdxGeom read FGeom;
   end;
@@ -613,7 +654,44 @@ type
     public
       procedure NotifyChange(Sender:TObject); override;
   end;
-  
+
+  // TGLODETerrain
+  //
+  {: ODE terrain collider implementation. Data is the terrain height data
+     array. The Length property defines the dimensions of the terrain and
+     NumNodesPerSide sets the height data dimensions. The Terrain collider
+     has several limitations: It can't be moved, the data must be square
+     and positive Z is assumed to be up. Also, the terrain data is repeated
+     indefinately. }
+  TGLODETerrain = class (TGLODEStaticObject)
+    private
+      FData : PdRealHugeArray;
+      FLength : TdReal;
+      FNumNodesPerSide : Integer;
+
+    protected
+      procedure Initialize; override;
+      procedure SetLength(const Value : TdReal);
+      procedure SetNumNodesPerSide(const Value : Integer);
+      procedure SetData(index : Integer; const Value : TdReal);
+      procedure SetRaster(x,y : Integer; const Value : TdReal);
+      function GetData(index : Integer) : TdReal;
+      function GetRaster(x,y : Integer) : TdReal;
+
+    public
+      constructor Create(aOwner : TComponent); override;
+      destructor Destroy; override;
+
+      procedure AssignData(aSource : PdRealHugeArray; aNumNodesPerSide : Integer);
+
+      property Data[index : Integer] : TdReal read GetData write SetData;
+      property Raster[x,y : Integer] : TdReal read GetRaster write SetRaster;
+
+    published
+      property Length : TdReal read FLength write SetLength;
+      property NumNodesPerSide : Integer read FNumNodesPerSide write SetNumNodesPerSide;
+  end;
+
   // TGLODEStaticDummy
   //
   //: A static version of the TGLODEDummy.
@@ -897,10 +975,7 @@ end;
 //
 constructor TGLODEManager.Create(AOwner:TComponent);
 begin
-  FGravity:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
-  FGravity.OnNotifyChange:=GravityChange;
-
-  inherited Create(AOwner);
+  inherited;
 
   FWorld:=dWorldCreate;
   FSpace:=dHashSpaceCreate(nil);
@@ -909,8 +984,11 @@ begin
   FJointRegister:=TPersistentObjectList.Create;
   FRFContactList:=TList.Create;
 
+  FGravity:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
+  FGravity.OnNotifyChange:=GravityChange;
+
   dWorldSetCFM(FWorld,1e-5);
-  
+
   FStepFast:=False;
   FFastIterations:=5;
 
@@ -969,6 +1047,13 @@ end;
 procedure TGLODEManager.UnregisterJoint(aJoint : TODEBaseJoint);
 begin
   FJointRegister.Remove(aJoint);
+end;
+
+// Loaded
+//
+procedure TGLODEManager.Loaded;
+begin
+  GravityChange(Self);
 end;
 
 // SetGravity
@@ -1107,9 +1192,9 @@ begin
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace,Self,nearCallback);
   if FStepFast then
-    dWorldStepFast(FWorld, deltaTime, FFastIterations)
+    dWorldStepFast1(FWorld, deltaTime, FFastIterations)
   else
-    dWorldStep (FWorld, deltaTime);
+    dWorldStep(FWorld, deltaTime);
   dJointGroupEmpty(FContactGroup);
 
   // Align dynamic objects to their ODE bodies
@@ -1350,6 +1435,15 @@ begin
   FInitialized:=False;
 end;
 
+// Reinitialize
+//
+procedure TGLODEBaseObject.Reinitialize;
+begin
+  if Initialized then
+    Deinitialize;
+  Initialize;
+end;
+
 // SetVisibleAtRunTime
 //
 procedure TGLODEBaseObject.SetVisibleAtRunTime(Value: Boolean);
@@ -1370,13 +1464,11 @@ end;
 procedure TGLODEBaseObject.SetManager(Value: TGLODEManager);
 begin
   if FManager<>Value then begin
-    if Assigned(FManager) then begin
+    if Assigned(FManager) and not (csDesigning in ComponentState) then
       Deinitialize;
-    end;
     FManager:=Value;
-    if Assigned(FManager) then begin
+    if Assigned(FManager) and not (csDesigning in ComponentState) then
       Initialize;
-    end;
   end;
 end;
 
@@ -1761,6 +1853,15 @@ begin
   FInitialized:=False;
 end;
 
+// Reinitialize
+//
+procedure TGLODEBaseBehaviour.Reinitialize;
+begin
+  if Initialized then
+    Deinitialize;
+  Initialize;
+end;
+
 // WriteToFiler
 //
 procedure TGLODEBaseBehaviour.WriteToFiler(writer : TWriter);
@@ -1805,13 +1906,11 @@ end;
 procedure TGLODEBaseBehaviour.SetManager(Value : TGLODEManager);
 begin
   if FManager<>Value then begin
-    if Assigned(FManager) then begin
+    if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
       Deinitialize;
-    end;
     FManager:=Value;
-    if Assigned(FManager) then begin
+    if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
       Initialize;
-    end;
   end;
 end;
 
@@ -2241,7 +2340,7 @@ begin
 
   FGeomTransform:=dCreateGeomTransform(Manager.Space);
   if FDynamic then dGeomSetBody(FGeomTransform,Body);
-  dGeomTransformSetCleanup(FGeomTransform,1);
+  dGeomTransformSetCleanup(FGeomTransform,0);
   dGeomTransformSetGeom(FGeomTransform,FGeomElement);
   dGeomSetData(FGeomTransform,Owner.Owner);
 
@@ -2260,6 +2359,7 @@ begin
   if not FInitialized then exit;
   if Assigned(FGeomTransform) then begin
     dGeomDestroy(FGeomTransform);
+    dGeomDestroy(FGeomElement);
     FGeomTransform:=nil;
     FGeomElement:=nil;
   end;
@@ -2906,7 +3006,7 @@ end;
 // ------------------------------------------------------------------
 // TODEElementCylinder
 // ------------------------------------------------------------------
-{
+
 // BuildList
 //
 procedure TODEElementCylinder.BuildList(var rci : TRenderContextInfo);
@@ -2957,7 +3057,7 @@ end;
 
 // Create
 //
-constructor TODEElementCylinder.Create(AOwner: TODEElements);
+constructor TODEElementCylinder.Create(AOwner: TXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3023,7 +3123,7 @@ end;
 //
 function TODEElementCylinder.CalculateMass: TdMass;
 begin
-  dMassSetBox(FMass,FDensity,2*FRadius,FLength,2*FRadius);
+  dMassSetCylinder(FMass,FDensity,3,FRadius,FLength);
   result:=inherited CalculateMass;
 end;
 
@@ -3077,17 +3177,202 @@ begin
   FLength:=Value;
   ODERebuild;
 end;
-//}
+
+
+// ------------------------------------------------------------------
+// TODEElementCone
+// ------------------------------------------------------------------
+
+// BuildList
+//
+procedure TODEElementCone.BuildList(var rci : TRenderContextInfo);
+var
+  i,j,
+  //Stacks,
+  Slices : integer;
+begin
+  glPushMatrix;
+
+  glMultMatrixf(@FLocalMatrix);
+
+  //Stacks:=8;
+  Slices:=16;
+
+  // Middle horizontal circles
+  {for j:=0 to Stacks-1 do begin
+    glBegin(GL_LINE_LOOP);
+      for i:=0 to Slices-1 do
+        glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
+    glEnd;
+  end;//}
+
+  // Middle vertical lines
+  glBegin(GL_LINES);
+    for i:=0 to (Slices div 2)-1 do begin
+      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
+      glVertex3f(0,0,FLength/2);
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
+      glVertex3f(0,0,FLength/2);
+    end;
+  glEnd;
+
+  // Cap
+  glPushMatrix;
+  for j:=0 to (Slices div 2)-1 do begin
+    glBegin(GL_LINES);
+      glVertex3f(-FRadius,0,-FLength/2);
+      glVertex3f(FRadius,0,-FLength/2);
+    glEnd;
+    glRotatef(360/Slices,0,0,1);
+  end;
+  glPopMatrix;
+
+  glPopMatrix;
+end;
+
+// Create
+//
+constructor TODEElementCone.Create(AOwner: TXCollection);
+begin
+  inherited;
+  FRadius:=0.5;
+  FLength:=1;
+end;
+
+// Initialize
+//
+procedure TODEElementCone.Initialize;
+begin
+  if FInitialized then exit;
+
+  FGeomElement:=dCreateCone(nil,FRadius,FLength);
+  inherited;
+end;
+
+// WriteToFiler
+//
+procedure TODEElementCone.WriteToFiler(writer : TWriter);
+begin
+  inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    WriteFloat(Radius);
+    WriteFloat(Length);
+  end;
+end;
+
+// ReadFromFiler
+//
+procedure TODEElementCone.ReadFromFiler(reader : TReader);
+begin
+  inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    Radius:=ReadFloat;
+    Length:=ReadFloat;
+  end;
+end;
+
+// FriendlyName
+//
+class function TODEElementCone.FriendlyName : String;
+begin
+  Result:='Cone';
+end;
+
+// FriendlyDescription
+//
+class function TODEElementCone.FriendlyDescription : String;
+begin
+  Result:='The ODE cone element implementation';
+end;
+
+// ItemCategory
+//
+class function TODEElementCone.ItemCategory : String;
+begin
+  Result:='Primitives';
+end;
+
+// CalculateMass
+//
+function TODEElementCone.CalculateMass: TdMass;
+begin
+  dMassSetCylinder(FMass,FDensity,3,FRadius,FLength);
+  result:=inherited CalculateMass;
+end;
+
+// GetRadius
+//
+function TODEElementCone.GetRadius: TdReal;
+var
+  rad, len : TdReal;
+begin
+  if Assigned(FGeomElement) then begin
+    dGeomConeGetParams(Geom,rad,len);
+    FRadius:=rad;
+  end;
+  result:=FRadius;
+end;
+
+// GetLength
+//
+function TODEElementCone.GetLength: TdReal;
+var
+  rad, len : TdReal;
+begin
+  if Assigned(FGeomElement) then begin
+    dGeomConeGetParams(Geom,rad,len);
+    FLength:=len;
+  end;
+  result:=FLength;
+end;
+
+// Rebuild
+//
+procedure TODEElementCone.ODERebuild;
+begin
+  if Assigned(Geom) then
+    dGeomConeSetParams(Geom,FRadius,FLength);
+  inherited;
+end;
+
+// SetRadius
+//
+procedure TODEElementCone.SetRadius(const Value: TdReal);
+begin
+  FRadius:=Value;
+  ODERebuild;
+end;
+
+// SetLength
+//
+procedure TODEElementCone.SetLength(const Value: TdReal);
+begin
+  FLength:=Value;
+  ODERebuild;
+end;
 
 
 // ------------------------------------------------------------------
 // TODEElementTriMesh
 // ------------------------------------------------------------------
-{
+
 // Create
+//
+constructor TODEElementTriMesh.Create(AOwner : TXCollection);
+begin
+  inherited;
+  FVertices:=TAffineVectorList.Create;
+  FIndices:=TIntegerList.Create;
+end;
+
+// Destroy
 //
 destructor TODEElementTriMesh.Destroy;
 begin
+  FVertices.Free;
+  FIndices.Free;
   inherited;
 end;
 
@@ -3095,11 +3380,13 @@ end;
 //
 procedure TODEElementTriMesh.Initialize;
 begin
-  if FInitialized then exit;
-  if not Assigned(FGLBaseMesh) then exit;
+  if FInitialized or not ((FVertices.Count>0) and (FIndices.Count>0)) then exit;
 
-  Assert(SizeOf(TdReal)=SizeOf(Single), 'Tri-mesh element is only available with Single precision ODE.');
-  FGeomElement:=CreateTriMeshFromBaseMesh(FGLBaseMesh, nil, FVertices, FIndices);
+  Assert(SizeOf(TdReal) = SizeOf(Single),'The tri-mesh collider is currently only available with single precision ODE.');
+  FTriMeshData:=dGeomTriMeshDataCreate;
+  dGeomTriMeshDataBuildSimple(FTriMeshData, @FVertices.List[0], FVertices.Count, @FIndices.List[0], FIndices.Count);
+  FGeomElement:=dCreateTriMesh(nil, FTriMeshData, nil, nil, nil);
+
   inherited;
 end;
 
@@ -3108,10 +3395,9 @@ end;
 procedure TODEElementTriMesh.Deinitialize;
 begin
   if not FInitialized then exit;
-  
-  if Assigned(FVertices) then FreeMem(FVertices);
-  if Assigned(FIndices) then FreeMem(FIndices);
-  
+
+  if Assigned(FTriMeshData) then dGeomTriMeshDataDestroy(FTriMeshData);
+
   inherited;
 end;
 
@@ -3160,36 +3446,44 @@ end;
 //
 function TODEElementTriMesh.CalculateMass: TdMass;
 begin
-  if Assigned(FGLBaseMesh) then
-    dMassSetSphere(FMass,FDensity,FGLBaseMesh.BoundingSphereRadius)
-  else
-    dMassSetSphere(FMass,FDensity,0.5);
   result:=inherited CalculateMass;
 end;
 
-// SetGLBaseMesh
+// SetVertices
 //
-procedure TODEElementTriMesh.SetGLBaseMesh(const Value: TGLBaseMesh);
+procedure TODEElementTriMesh.SetVertices(const Value : TAffineVectorList);
 begin
-  if FGLBaseMesh<>Value then begin
-    FGLBaseMesh:=Value;
-    if FInitialized then begin
-      Deinitialize;
-      Initialize;
-    end;
-  end;
+  FVertices.Assign(Value);
 end;
-//}
+
+// SetIndices
+//
+procedure TODEElementTriMesh.SetIndices(const Value : TIntegerList);
+begin
+  FIndices.Assign(Value);
+end;
+
+// RefreshTriMeshData
+//
+procedure TODEElementTriMesh.RefreshTriMeshData;
+begin
+  if FInitialized then
+    Deinitialize;
+  Initialize;
+end;
+
 
 // ------------------------------------------------------------------
 // TGLODEStaticObject
 // ------------------------------------------------------------------
 
-// SetGeom
+// Deinitialize
 //
-procedure TGLODEStaticObject.SetGeom(val : PdxGeom);
+procedure TGLODEStaticObject.Deinitialize;
 begin
-  FGeom:=val;
+  if not FInitialized then exit;
+  dGeomDestroy(FGeom);
+  inherited;
 end;
 
 
@@ -3204,17 +3498,19 @@ var
   Pos, Dir : TVector;
   d : TdReal;
 begin
-  Dir := AbsoluteDirection;
-  Pos := AbsolutePosition;
-  d := (Dir[0]*Pos[0]+Dir[1]*Pos[1]+Dir[2]*Pos[2]);
-  dGeomPlaneSetParams(Geom,Dir[0],Dir[1],Dir[2],d);
+  if Assigned(Geom) then begin
+    Dir := AbsoluteDirection;
+    Pos := AbsolutePosition;
+    d := (Dir[0]*Pos[0]+Dir[1]*Pos[1]+Dir[2]*Pos[2]);
+    dGeomPlaneSetParams(Geom,Dir[0],Dir[1],Dir[2],d);
+  end;
 end;
 
 // Initialize
 //
 procedure TGLODEPlane.Initialize;
 begin
-  if not Assigned(Manager) then exit;
+  if FInitialized or not Assigned(Manager) then exit;
   FGeom:=dCreatePlane(Manager.Space,0,1,0,0);
   dGeomSetData(FGeom,Self);
   AlignODEPlane;
@@ -3226,6 +3522,98 @@ procedure TGLODEPlane.NotifyChange(Sender: TObject);
 begin
   inherited;
   AlignODEPlane;
+end;
+
+
+// ------------------------------------------------------------------
+// TGLODETerrain
+// ------------------------------------------------------------------
+
+// Create
+//
+constructor TGLODETerrain.Create(aOwner: TComponent);
+begin
+  inherited;
+  NumNodesPerSide:=0;
+end;
+
+// Destroy
+//
+destructor TGLODETerrain.Destroy;
+begin
+  if Assigned(FData) then FreeMem(FData);
+  inherited;
+end;
+
+// AssignData
+//
+procedure TGLODETerrain.AssignData(aSource : PdRealHugeArray; aNumNodesPerSide : Integer);
+begin
+  NumNodesPerSide:=aNumNodesPerSide;
+  System.Move(aSource^,FData^,NumNodesPerSide*NumNodesPerSide*SizeOf(TdReal));
+end;
+
+// GetData
+//
+function TGLODETerrain.GetData(index: Integer): TdReal;
+begin
+  Assert((index>NumNodesPerSide*NumNodesPerSide-1) and (index<0),'Invalid data request.');
+  Result:=FData[index];
+end;
+
+// GetRaster
+//
+function TGLODETerrain.GetRaster(x, y: Integer): TdReal;
+begin
+  Result:=GetData(x+y*NumNodesPerSide);
+end;
+
+// Initialize
+//
+procedure TGLODETerrain.Initialize;
+begin
+  if FInitialized or (not Assigned(Manager)) then exit;
+  if NumNodesPerSide<=0 then exit;
+
+  FGeom:=dCreateTerrain(Manager.Space, FData, Length, NumNodesPerSide);
+
+  inherited;
+end;
+
+// SetData
+//
+procedure TGLODETerrain.SetData(index: Integer; const Value: TdReal);
+begin
+  Assert((index>=0) and (index<NumNodesPerSide*NumNodesPerSide),'Invalid data request.');
+  FData[index]:=Value;
+end;
+
+// SetLength
+//
+procedure TGLODETerrain.SetLength(const Value: TdReal);
+begin
+  if Value<>FLength then begin
+    FLength:=Value;
+    Reinitialize;
+  end;
+end;
+
+// SetNumNodesPerSide
+//
+procedure TGLODETerrain.SetNumNodesPerSide(const Value: Integer);
+begin
+  if Value<>FNumNodesPerSide then begin
+    FNumNodesPerSide:=Value;
+    if Assigned(FData) then FreeMem(FData);
+    GetMem(FData, FNumNodesPerSide*FNumNodesPerSide*SizeOf(TdReal));
+  end;
+end;
+
+// SetRaster
+//
+procedure TGLODETerrain.SetRaster(x, y: Integer; const Value: TdReal);
+begin
+  SetData(x+y*NumNodesPerSide, Value);
 end;
 
 
@@ -3661,13 +4049,11 @@ end;
 procedure TODEBaseJoint.SetManager(Value: TGLODEManager);
 begin
   if FManager<>Value then begin
-    if Assigned(FManager) then begin
+    if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
       Deinitialize;
-    end;
     FManager:=Value;
-    if Assigned(FManager) then begin
+    if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
       Initialize;
-    end;
   end;
 end;
 
@@ -3938,7 +4324,9 @@ initialization
   RegisterXCollectionItemClass(TODEElementBox);
   RegisterXCollectionItemClass(TODEElementSphere);
   RegisterXCollectionItemClass(TODEElementCapsule);
-  //RegisterXCollectionItemClass(TODEElementCylinder);
+  RegisterXCollectionItemClass(TODEElementCylinder);
+  RegisterXCollectionItemClass(TODEElementCone);
+  RegisterXCollectionItemClass(TODEElementTriMesh);
 
   RegisterXCollectionItemClass(TODEJointHinge);
   RegisterXCollectionItemClass(TODEJointBall);
@@ -3959,7 +4347,9 @@ finalization
   UnregisterXCollectionItemClass(TODEElementBox);
   UnregisterXCollectionItemClass(TODEElementSphere);
   UnregisterXCollectionItemClass(TODEElementCapsule);
-  //UnregisterXCollectionItemClass(TODEElementCylinder);
+  UnregisterXCollectionItemClass(TODEElementCylinder);
+  UnregisterXCollectionItemClass(TODEElementCone);
+  UnregisterXCollectionItemClass(TODEElementTriMesh);
 
   UnregisterXCollectionItemClass(TODEJointHinge);
   UnregisterXCollectionItemClass(TODEJointBall);
