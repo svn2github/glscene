@@ -1122,7 +1122,7 @@ type
          property NormalsOrientation : TMeshNormalsOrientation read FNormalsOrientation write SetNormalsOrientation default mnoDefault;
 
          {: Request rendering of skeleton bones over the mesh. }
-         property OverlaySkeleton : Boolean read FOverlaySkeleton write SetOverlaySkeleton;
+         property OverlaySkeleton : Boolean read FOverlaySkeleton write SetOverlaySkeleton default False;
    end;
 
    // TGLFreeForm
@@ -1190,7 +1190,7 @@ type
 
    // TActorAnimationReference
    //
-   TActorAnimationReference = (aarMorph, aarSkeleton);
+   TActorAnimationReference = (aarMorph, aarSkeleton, aarNone);
 
 	// TActorAnimation
 	//
@@ -1391,6 +1391,8 @@ type
 
 			procedure DoProgress(const progressTime : TProgressTimes); override;
 
+         procedure LoadFromStream(const filename : String; aStream : TStream); override;
+
 	      procedure SwitchToAnimation(anAnimation : TActorAnimation; smooth : Boolean = False); overload;
 	      procedure SwitchToAnimation(const animationName : String; smooth : Boolean = False); overload;
 	      procedure SwitchToAnimation(animationIndex : Integer; smooth : Boolean = False); overload;
@@ -1410,15 +1412,15 @@ type
 
       published
          { Published Declarations }
-         property StartFrame : Integer read FStartFrame write SetStartFrame;
-         property EndFrame : Integer read FEndFrame write SetEndFrame;
+         property StartFrame : Integer read FStartFrame write SetStartFrame default 0;
+         property EndFrame : Integer read FEndFrame write SetEndFrame default 0;
 
          {: Reference Frame Animation mode.<p>
             Allows specifying if the model is primarily morph or skeleton based. }
          property Reference : TActorAnimationReference read FReference write FReference default aarMorph;
 
          {: Current animation frame. }
-         property CurrentFrame : Integer read FCurrentFrame write SetCurrentFrame;
+         property CurrentFrame : Integer read FCurrentFrame write SetCurrentFrame default 0;
          {: Value in the [0; 1] range expressing the delta to the next frame.<p> }
          property CurrentFrameDelta : Single read FCurrentFrameDelta write FCurrentFrameDelta;
          {: Frame interpolation mode (afpNone/afpLinear). }
@@ -3759,9 +3761,9 @@ begin
          end;
       end;
       fgmmTriangleStrip : begin
-         ConvertStripToList(vertexList, aList, VertexIndices);
+         ConvertStripToList(vertexList, VertexIndices, aList);
          if Assigned(aTexCoords) then
-            ConvertStripToList(aTexCoords, texCoordList, VertexIndices);
+            ConvertStripToList(aTexCoords, VertexIndices, texCoordList);
       end;
       fgmmTriangleFan : begin
          aList.AdjustCapacityToAtLeast(aList.Count+(VertexIndices.Count-2)*3);
@@ -3972,9 +3974,9 @@ begin
          end;
       end;
       fgmmTriangleStrip : begin
-         ConvertStripToList(vertexList, aList, VertexIndices);
+         ConvertStripToList(vertexList, VertexIndices, aList);
          if Assigned(aTexCoords) then
-            ConvertStripToList(aTexCoords, texCoordList, TexCoordIndices);
+            ConvertStripToList(aTexCoords, TexCoordIndices, texCoordList);
       end;
       fgmmTriangleFan : begin
          aList.AdjustCapacityToAtLeast(aList.Count+(VertexIndices.Count-2)*3);
@@ -4121,7 +4123,7 @@ begin
          end;
       end;
       fgmmTriangleStrip : begin
-         ConvertStripToList(vertexList, aList, VertexIndices);
+         ConvertStripToList(vertexList, VertexIndices, aList);
          if Assigned(aTexCoords) then
             ConvertStripToList(aTexCoords, texCoordList);
       end;
@@ -6057,6 +6059,7 @@ begin
             end;
             Skeleton.MorphMesh(aoSkeletonNormalizeNormals in Options);
          end;
+         aarNone : ; // do nothing
       end;
    end;
    inherited;
@@ -6088,6 +6091,8 @@ begin
          Result:=MeshObjects.MorphTargetCount;
       aarSkeleton :
          Result:=Skeleton.Frames.Count;
+      aarNone :
+         Result:=0;
    else
       Result:=0;
       Assert(False);
@@ -6117,6 +6122,16 @@ begin
          end else if FrameInterpolation<>afpNone then
             StructureChanged;
       end;
+   end;
+end;
+
+// LoadFromStream
+//
+procedure TGLActor.LoadFromStream(const fileName : String; aStream : TStream);
+begin
+   if fileName<>'' then begin
+      Animations.Clear;
+      inherited LoadFromStream(fileName, aStream);
    end;
 end;
 
