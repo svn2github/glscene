@@ -3444,7 +3444,7 @@ begin
                      until not libMat.UnApply(mrci);
                      i:=j;
                   end else begin
-                     BuildList(mrci);
+                     FaceGroups[i].BuildList(mrci);
                      Inc(i);
                   end;
                end;
