@@ -148,6 +148,7 @@ begin
       Cells[3, 0]:='Data type';
       Row:=0;
    end;
+   zScale:=1;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
