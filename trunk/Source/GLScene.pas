@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/02/04 - NelC - Added option Modal for ShowInfo
       <li>04/02/04 - SG - Added roNoSwapBuffers option to TContextOptions (Juergen Abel)
       <li>09/01/04 - EG - Added TGLCameraInvariantObject
       <li>06/12/03 - EG - TGLColorProxy moved to new GLProxyObjects unit,
@@ -1767,7 +1768,7 @@ type
          procedure Melt;
 
          {: Displays a window with info on current OpenGL ICD and context. }
-         procedure ShowInfo;
+         procedure ShowInfo(Modal : boolean = false);
 
          {: Currently Rendering? }
          property Rendering : Boolean read FRendering;
@@ -2053,7 +2054,7 @@ type
 
    EOpenGLError = class(Exception);
 
-   TInvokeInfoForm  = procedure (aSceneBuffer : TGLSceneBuffer);
+   TInvokeInfoForm  = procedure (aSceneBuffer : TGLSceneBuffer; Modal : boolean);
 
 {: Register an event handler triggered by any TGLBaseSceneObject Name change.<p>
    *INCOMPLETE*, currently allows for only 1 (one) event, and is used by
@@ -2075,7 +2076,7 @@ procedure AxesBuildList(var rci : TRenderContextInfo; pattern: Word; AxisLen: Si
 
 {: Registers the procedure call used to invoke the info form. }
 procedure RegisterInfoForm(infoForm : TInvokeInfoForm);
-procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer);
+procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer; Modal : boolean);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -2128,10 +2129,10 @@ end;
 
 // InvokeInfoForm
 //
-procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer);
+procedure InvokeInfoForm(aSceneBuffer : TGLSceneBuffer; Modal : boolean);
 begin
    if Assigned(vInfoForm) then
-      vInfoForm(aSceneBuffer)
+      vInfoForm(aSceneBuffer, Modal)
    else InformationDlg('InfoForm not available.');
 end;
 
@@ -6868,7 +6869,7 @@ begin
    // most info is available with active context only
    FRenderingContext.Activate;
    try
-      InvokeInfoForm(Self);
+      InvokeInfoForm(Self, Modal);
    finally
       FRenderingContext.Deactivate;
    end;

@@ -2,6 +2,7 @@
 {: Information sur le driver OpenGL courant<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/02/04 - NelC - Added option for modal
       <li>09/09/03 - NelC - Added Renderer info
       <li>26/06/03 - EG - Double-clicking an extension will no go to its OpenGL
                           registry webpage 
@@ -104,14 +105,14 @@ uses OpenGL1x, SysUtils, ShellAPI;
 
 // ShowInfoForm
 //
-procedure ShowInfoForm(aSceneBuffer : TGLSceneBuffer);
+procedure ShowInfoForm(aSceneBuffer : TGLSceneBuffer; Modal : boolean);
 var
    infoForm: TInfoForm;
 begin
    infoForm:=TInfoForm.Create(nil);
    try
       infoForm.GetInfoFrom(aSceneBuffer);
-      infoForm.Show;
+      with infoForm do if Modal then ShowModal else Show;
    except
       infoForm.Free;
       raise;
