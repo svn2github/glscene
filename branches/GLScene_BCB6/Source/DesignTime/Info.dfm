@@ -10,8 +10,8 @@ object InfoForm: TInfoForm
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -10
-  Font.Name = 'Arial'
+  Font.Height = -9
+  Font.Name = 'Verdana'
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = True
@@ -21,7 +21,7 @@ object InfoForm: TInfoForm
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 12
   object CloseButton: TSpeedButton
     Left = 0
     Top = 232
@@ -50,9 +50,8 @@ object InfoForm: TInfoForm
     Top = 0
     Width = 404
     Height = 225
-    ActivePage = TabSheet1
+    ActivePage = Sheet1
     HotTrack = True
-    TabIndex = 3
     TabOrder = 0
     object Sheet1: TTabSheet
       Caption = 'Common'
@@ -60,19 +59,19 @@ object InfoForm: TInfoForm
         Left = 0
         Top = 0
         Width = 396
-        Height = 197
+        Height = 198
         Align = alClient
       end
       object Label1: TLabel
         Left = 10
         Top = 10
-        Width = 92
-        Height = 14
+        Width = 107
+        Height = 13
         Caption = 'OpenGL vendor :'
-        Font.Charset = ANSI_CHARSET
+        Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -80,13 +79,13 @@ object InfoForm: TInfoForm
       object Label2: TLabel
         Left = 10
         Top = 54
-        Width = 75
-        Height = 14
+        Width = 90
+        Height = 13
         Caption = 'Acceleration :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -94,13 +93,13 @@ object InfoForm: TInfoForm
       object Label3: TLabel
         Left = 10
         Top = 77
-        Width = 74
-        Height = 14
+        Width = 88
+        Height = 13
         Caption = 'Version Info :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -108,13 +107,13 @@ object InfoForm: TInfoForm
       object Label5: TLabel
         Left = 10
         Top = 99
-        Width = 95
-        Height = 14
+        Width = 113
+        Height = 13
         Caption = 'Double buffered :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -122,83 +121,83 @@ object InfoForm: TInfoForm
       object Label6: TLabel
         Left = 10
         Top = 144
-        Width = 115
-        Height = 14
+        Width = 133
+        Height = 13
         Caption = 'Buffer switch mode :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object VendorLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 10
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object AccLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 54
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object VersionLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 77
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object CopyLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 144
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object DoubleLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 99
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -206,27 +205,27 @@ object InfoForm: TInfoForm
       object Label7: TLabel
         Left = 10
         Top = 121
-        Width = 90
-        Height = 14
+        Width = 107
+        Height = 13
         Caption = 'Stereo enabled :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object StereoLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 121
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -234,27 +233,27 @@ object InfoForm: TInfoForm
       object Label13: TLabel
         Left = 10
         Top = 32
-        Width = 58
-        Height = 14
+        Width = 68
+        Height = 13
         Caption = 'Renderer :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object RendererLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 32
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -266,19 +265,19 @@ object InfoForm: TInfoForm
         Left = 0
         Top = 0
         Width = 396
-        Height = 197
+        Height = 198
         Align = alClient
       end
       object Label8: TLabel
         Left = 10
         Top = 10
-        Width = 73
-        Height = 14
+        Width = 86
+        Height = 13
         Caption = 'Color buffer :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -286,13 +285,13 @@ object InfoForm: TInfoForm
       object Label9: TLabel
         Left = 10
         Top = 33
-        Width = 75
-        Height = 14
+        Width = 90
+        Height = 13
         Caption = 'Depth buffer :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -300,13 +299,13 @@ object InfoForm: TInfoForm
       object Label10: TLabel
         Left = 10
         Top = 55
-        Width = 80
-        Height = 14
+        Width = 96
+        Height = 13
         Caption = 'Stencil buffer :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -314,13 +313,13 @@ object InfoForm: TInfoForm
       object Label11: TLabel
         Left = 10
         Top = 78
-        Width = 118
-        Height = 14
+        Width = 140
+        Height = 13
         Caption = 'Accumulation buffer :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -328,97 +327,97 @@ object InfoForm: TInfoForm
       object Label12: TLabel
         Left = 10
         Top = 101
-        Width = 100
-        Height = 14
+        Width = 122
+        Height = 13
         Caption = 'Auxilliary buffers :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object ColorLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 10
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object DepthLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 33
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object StencilLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 55
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object AuxLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 101
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object AccumLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 78
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object SubLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 124
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -426,13 +425,13 @@ object InfoForm: TInfoForm
       object Label37: TLabel
         Left = 10
         Top = 124
-        Width = 60
-        Height = 14
+        Width = 71
+        Height = 13
         Caption = 'Subpixels :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -440,41 +439,41 @@ object InfoForm: TInfoForm
       object Label18: TLabel
         Left = 10
         Top = 146
-        Width = 114
-        Height = 14
+        Width = 135
+        Height = 13
         Caption = 'supported overlays :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object OverlayLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 146
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object UnderlayLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 170
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -482,13 +481,13 @@ object InfoForm: TInfoForm
       object Label20: TLabel
         Left = 10
         Top = 170
-        Width = 122
-        Height = 14
+        Width = 143
+        Height = 13
         Caption = 'supported underlays :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -500,19 +499,19 @@ object InfoForm: TInfoForm
         Left = 0
         Top = 0
         Width = 396
-        Height = 197
+        Height = 198
         Align = alClient
       end
       object Label14: TLabel
         Left = 10
         Top = 10
-        Width = 67
-        Height = 14
+        Width = 79
+        Height = 13
         Caption = 'Clip planes :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -520,13 +519,13 @@ object InfoForm: TInfoForm
       object Label15: TLabel
         Left = 10
         Top = 33
-        Width = 95
-        Height = 14
+        Width = 117
+        Height = 13
         Caption = 'Evaluation order :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -534,13 +533,13 @@ object InfoForm: TInfoForm
       object Label16: TLabel
         Left = 10
         Top = 55
-        Width = 83
-        Height = 14
+        Width = 95
+        Height = 13
         Caption = 'Light sources :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -548,69 +547,69 @@ object InfoForm: TInfoForm
       object Label17: TLabel
         Left = 10
         Top = 78
-        Width = 72
-        Height = 14
+        Width = 83
+        Height = 13
         Caption = 'List nesting :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object ClipLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 10
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object EvalLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 33
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object ListLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 78
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object LightLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 55
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -618,27 +617,27 @@ object InfoForm: TInfoForm
       object Label23: TLabel
         Left = 10
         Top = 101
-        Width = 99
-        Height = 14
+        Width = 115
+        Height = 13
         Caption = 'Modelview stack :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object ModelLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 101
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -646,13 +645,13 @@ object InfoForm: TInfoForm
       object Label25: TLabel
         Left = 195
         Top = 10
-        Width = 70
-        Height = 14
+        Width = 84
+        Height = 13
         Caption = 'Name stack :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -660,13 +659,13 @@ object InfoForm: TInfoForm
       object Label26: TLabel
         Left = 195
         Top = 33
-        Width = 86
-        Height = 14
+        Width = 105
+        Height = 13
         Caption = 'Pixel map table:'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -674,13 +673,13 @@ object InfoForm: TInfoForm
       object Label27: TLabel
         Left = 195
         Top = 55
-        Width = 95
-        Height = 14
+        Width = 114
+        Height = 13
         Caption = 'Projection stack :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -688,13 +687,13 @@ object InfoForm: TInfoForm
       object Label28: TLabel
         Left = 195
         Top = 78
-        Width = 72
-        Height = 14
+        Width = 85
+        Height = 13
         Caption = 'Texture size:'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -702,83 +701,83 @@ object InfoForm: TInfoForm
       object Label29: TLabel
         Left = 195
         Top = 101
-        Width = 82
-        Height = 14
+        Width = 98
+        Height = 13
         Caption = 'Texture stack :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object NameLabel: TLabel
-        Left = 322
+        Left = 338
         Top = 10
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object PixelLabel: TLabel
-        Left = 322
+        Left = 338
         Top = 33
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object ProjLabel: TLabel
-        Left = 322
+        Left = 338
         Top = 55
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object TexStackLabel: TLabel
-        Left = 322
+        Left = 338
         Top = 101
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object TexSizeLabel: TLabel
-        Left = 322
+        Left = 338
         Top = 78
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -786,27 +785,27 @@ object InfoForm: TInfoForm
       object Label35: TLabel
         Left = 10
         Top = 124
-        Width = 126
-        Height = 14
+        Width = 144
+        Height = 13
         Caption = 'Viewport Dimensions :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object ViewLabel: TLabel
-        Left = 137
+        Left = 160
         Top = 124
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -814,27 +813,27 @@ object InfoForm: TInfoForm
       object Label4: TLabel
         Left = 195
         Top = 124
-        Width = 80
-        Height = 14
+        Width = 95
+        Height = 13
         Caption = 'Texture units :'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
       end
       object TexUnitsLabel: TLabel
-        Left = 322
+        Left = 338
         Top = 124
-        Width = 22
+        Width = 21
         Height = 13
         Caption = '???'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clTeal
         Font.Height = -11
-        Font.Name = 'MS Sans Serif'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
         ParentFont = False
         Transparent = True
@@ -847,7 +846,7 @@ object InfoForm: TInfoForm
         Left = 0
         Top = 0
         Width = 396
-        Height = 197
+        Height = 198
         Hint = 
           'Double-click and extension to go to its OpenGL Extension registr' +
           'y page'
@@ -857,9 +856,9 @@ object InfoForm: TInfoForm
         Font.Charset = DEFAULT_CHARSET
         Font.Color = cl3DDkShadow
         Font.Height = -12
-        Font.Name = 'Arial'
+        Font.Name = 'Verdana'
         Font.Style = [fsBold]
-        ItemHeight = 15
+        ItemHeight = 14
         ParentFont = False
         TabOrder = 0
         OnClick = ExtensionsClick

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLParticleFX<p>
 
    Base classes for scene-wide blended particles FX.<p>
@@ -20,16 +23,16 @@
                                fixed undefined TPFXRegion error in BCB          
       <li>09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
       <li>08/07/04 - Eugene Kryukov - Added rotation for particles, RotateAngle in
-                        LifeColor. And added AbsoluteRotation for TGLDynamicPFXManager
+                                      LifeColor. And added AbsoluteRotation for TGLDynamicPFXManager
       <li>25/04/04 - EG - Added friction, Life sizes, multiple sprites per texture
                           and sprites sharing
       <li>24/04/04 - Mrqzzz - Added property "enabled" to TGLSourcePFXEffect
       <li>15/04/04 - EG - AspectRatio and Rotation added to sprite PFX,
-                          improved texturing mode switches 
+                          improved texturing mode switches
       <li>26/05/03 - EG - Improved TGLParticleFXRenderer.BuildList
       <li>05/11/02 - EG - Enable per-manager blending mode control
       <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
-                          and TGLPointLightPFXManager. 
+                          and TGLPointLightPFXManager.
       <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
                           minor sort and render optims
       <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)

@@ -1,5 +1,9 @@
-// GLTerrainRenderer
-{: GLScene's brute-force terrain renderer.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLTerrainRenderer<p>
+
+   GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
       <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)   
@@ -19,7 +23,7 @@
       <li>12/08/01 - EG - Completely rewritten handles management
       <li>21/07/01 - EG - Added Notication registration in SetHeightDataSource
       <li>04/03/01 - EG - Completed for first release
-	   <li>12/02/01 - EG - Creation
+	    <li>12/02/01 - EG - Creation
 	</ul></font><p>
 
    NOTA : multi-materials terrain support is not yet optimized to minimize

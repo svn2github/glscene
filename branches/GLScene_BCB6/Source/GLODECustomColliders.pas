@@ -1,7 +1,11 @@
-// GLODECustomColliders
-{: Custom ODE collider implementations.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLODECustomColliders<p>
 
-   <b>Credits : </b><font size=-1><ul>
+  Custom ODE collider implementations.<p>
+
+  <b>Credits : </b><font size=-1><ul>
      <li>Heightfield collider code originally adapted from Mattias Fagerlund's
          DelphiODE terrain collision demo.
          Website: http://www.cambrianlabs.com/Mattias/DelphiODE

@@ -103,15 +103,15 @@ begin
           // Get the vertex indices and texture coordinates
           for j:=0 to MeshData[i].MeshHeader.numTriangles-1 do begin
             with MeshData[i].Triangles[j] do begin
-              Add(vertexIndices[0],
-                  MeshData[i].TexCoords[vertexIndices[0]].textureCoord[0],
-                  1-MeshData[i].TexCoords[vertexIndices[0]].textureCoord[1]);
-              Add(vertexIndices[2],
-                  MeshData[i].TexCoords[vertexIndices[2]].textureCoord[0],
-                  1-MeshData[i].TexCoords[vertexIndices[2]].textureCoord[1]);
-              Add(vertexIndices[1],
-                  MeshData[i].TexCoords[vertexIndices[1]].textureCoord[0],
-                  1-MeshData[i].TexCoords[vertexIndices[1]].textureCoord[1]);
+              Add(vertexIndices.Coord[0],
+                  MeshData[i].TexCoords[vertexIndices.Coord[0]].textureCoord.Coord[0],
+                  1-MeshData[i].TexCoords[vertexIndices.Coord[0]].textureCoord.Coord[1]);
+              Add(vertexIndices.Coord[2],
+                  MeshData[i].TexCoords[vertexIndices.Coord[2]].textureCoord.Coord[0],
+                  1-MeshData[i].TexCoords[vertexIndices.Coord[2]].textureCoord.Coord[1]);
+              Add(vertexIndices.Coord[1],
+                  MeshData[i].TexCoords[vertexIndices.Coord[1]].textureCoord.Coord[0],
+                  1-MeshData[i].TexCoords[vertexIndices.Coord[1]].textureCoord.Coord[1]);
             end;
           end;
         end;
@@ -124,11 +124,11 @@ begin
           morphTarget.Vertices.Capacity:=numVerts;
           for k:=numVerts*j to numVerts*(j+1)-1 do begin
             morphTarget.Vertices.Add(
-              MeshData[i].Vertices[k].Vertex[0]/64,
-              MeshData[i].Vertices[k].Vertex[1]/64,
-              MeshData[i].Vertices[k].Vertex[2]/64);
+              MeshData[i].Vertices[k].Vertex.Coord[0]/64,
+              MeshData[i].Vertices[k].Vertex.Coord[1]/64,
+              MeshData[i].Vertices[k].Vertex.Coord[2]/64);
             morphTarget.Normals.Add(
-              GetNormalFromMD3Normal(MeshData[i].Vertices[k].normal));
+              GetNormalFromMD3Normal(MeshData[i].Vertices[k].normal.Coord));
           end;
         end;
       end;

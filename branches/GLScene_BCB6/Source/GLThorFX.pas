@@ -1,16 +1,18 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLThorFX<p>
 
-	Thor special effect<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-      <li>06/04/04 - PHP - Removed property Paused use of property Disabled instead
-      <li>04/15/03 - Added initialization to CalcThor, to fix an error
-                     Thanks to Martin Kirsch for this solution
-      <li>12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
-                          Fixed leaks (colors)
-      <li>09/03/01  --René Lindsay --
-	</ul></font>
+  <b>History : </b><font size=-1><ul>
+    <li>23/12/04 - PhP - GLScenestyled Header
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+    <li>06/04/04 - PhP - Removed property Paused use of property Disabled instead
+    <li>04/15/03 - Added initialization to CalcThor, to fix an error
+                   Thanks to Martin Kirsch for this solution
+    <li>12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
+                        Fixed leaks (colors)
+    <li>09/03/01 - René Lindsay - unit created
+  </ul></font>
 }
 unit GLThorFX;
 

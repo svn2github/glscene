@@ -1,5 +1,9 @@
-// GLParametricSurfaces
-{: Parametric surface implementation (like Bezier and BSpline surfaces)
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLParametricSurfaces<p>
+
+   Parametric surface implementation (like Bezier and BSpline surfaces)
    for GLScene.<p>
    
    Notes: 

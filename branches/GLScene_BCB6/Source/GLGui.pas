@@ -1,5 +1,9 @@
-// In GL windows management
-{: In GL windows management classes and structures<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLGui<p>
+
+  In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>30/11/04 - DB - Fixed memory leaks (thanks dikoe Kenguru)

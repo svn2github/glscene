@@ -1,5 +1,9 @@
-// GLODEManager
-{: An ODE Manager for GLScene.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLODEManager<p>
+
+  An ODE Manager for GLScene.<p>
 
   Where can I find ... ?<ul>
     <li>GLScene              (http://glscene.org)
@@ -12,13 +16,14 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>29/12/04 - LR - BCB corrections: revision after the latest change  
     <li>20/12/04 - SG - TGLODEStatic objects now realign geoms on step,
                         Fix for Hinge2 and Universal joints,
                         Fix for TGLODEDynamic.Enabled property persistence.
     <li>10/12/04 - SG - Added TODEElementPlane,
                         Fixed TODEElementCone.Render function.
     <li>09/12/04 - Mathx - Added getX and getOrCreateX functions.
-    <li>08/12/04 - LR, YHC - BCB corrections: use record instead array    
+    <li>08/12/04 - LR, YHC - BCB corrections: use record instead array   
     <li>19/11/04 - SG - Major structural changes/improvements,
                         Dropped TGLBaseSceneObject style object in favour of
                         TGLBehaviour style ones,
@@ -30,7 +35,7 @@
     <li>17/11/04 - SG - Changed Deinitialize to Finalize,
                         Changed TGLODEDummy to TGLODEDynamicDummy.
     <li>09/11/04 - SG - Fixed problems with contact geom generation (k00m).
-    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array   
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array 
     <li>03/05/04 - SG - Tri-mesh and various fixes/enhancements.
     <li>23/04/04 - SG - Fixes for object registration,
                         Exception raised now if ODE fails to initialize at run-time.
@@ -2831,7 +2836,6 @@ begin
   finally
     FIsCalculating:=False;
   end;
-  NotifyChange(Self);
 end;
 
 // NotifyChange
@@ -4956,12 +4960,7 @@ begin
   inherited;
 end;
 
-
-// ---------------
-// --------------- TODEJointBall ---------------
-// ---------------
-
-// Create
+// Initialize
 //
 procedure TODEJointBall.Initialize;
 begin

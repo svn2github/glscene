@@ -3,53 +3,49 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>03/07/04 - LR - Make change for Linux
-      <li>14/12/03 - EG - Paste fix (Mrqzzz)
-      <li>31/06/03 - EG - Cosmetic changes, form position/state now saved to the
-                          registry 
-      <li>21/06/03 - DanB - Added behaviours/effects listviews
-      <li>22/01/02 - EG - Fixed controls state after drag/drop (Anton Zhuchkov)
-      <li>06/08/00 - EG - Added basic Clipboard support
-      <li>14/05/00 - EG - Added workaround for VCL DesignInfo bug (thx Nelson Chu)
-      <li>28/04/00 - EG - Fixed new objects not being immediately reco by IDE
-      <li>26/04/00 - EG - Added support for objects categories
-		<li>17/04/00 - EG - Added access to TInfoForm
-		<li>16/04/00 - EG - Fixed occasionnal crash when rebuilding GLScene dpk
-									while GLSceneEdit is visible
-      <li>10/04/00 - EG - Minor Create/Release change
-      <li>24/03/00 - EG - Fixed SetScene not updating enablings
-		<li>13/03/00 - EG - Object names (ie. node text) is now properly adjusted
-									when a GLScene object is renamed,
-									Added Load/Save whole scene
-      <li>07/02/00 - EG - Fixed notification logic
-      <li>06/02/00 - EG - DragDrop now starts after moving the mouse a little,
-                           Form is now auto-creating, fixed Notification,
-                           Added actionlist and moveUp/moveDown
-      <li>05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
-   </ul></font>
+  <li>18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
+  <li>03/07/04 - LR - Make change for Linux
+  <li>14/12/03 - EG - Paste fix (Mrqzzz)
+  <li>31/06/03 - EG - Cosmetic changes, form position/state now saved to the registry
+  <li>21/06/03 - DanB - Added behaviours/effects listviews
+  <li>22/01/02 - EG - Fixed controls state after drag/drop (Anton Zhuchkov)
+  <li>06/08/00 - EG - Added basic Clipboard support
+  <li>14/05/00 - EG - Added workaround for VCL DesignInfo bug (thx Nelson Chu)
+  <li>28/04/00 - EG - Fixed new objects not being immediately reco by IDE
+  <li>26/04/00 - EG - Added support for objects categories
+  <li>17/04/00 - EG - Added access to TInfoForm
+  <li>16/04/00 - EG - Fixed occasionnal crash when rebuilding GLScene dpk
+                      while GLSceneEdit is visible
+  <li>10/04/00 - EG - Minor Create/Release change
+  <li>24/03/00 - EG - Fixed SetScene not updating enablings
+  <li>13/03/00 - EG - Object names (ie. node text) is now properly adjusted
+                      when a GLScene object is renamed,
+                      Added Load/Save whole scene
+  <li>07/02/00 - EG - Fixed notification logic
+  <li>06/02/00 - EG - DragDrop now starts after moving the mouse a little,
+                      Form is now auto-creating, fixed Notification,
+                      Added actionlist and moveUp/moveDown
+  <li>05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
+  </ul></font>
 }
 unit GLSceneEdit;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
-{$IFDEF MSWINDOWS}
 uses
-   XCollection, Registry,
-  Controls, Windows, Forms, ComCtrls, ImgList, 
-  Dialogs, Menus, ActnList, ToolWin,
-  GLScene, Classes, SysUtils, ExtCtrls,
-  StdCtrls, {$ifdef GLS_DELPHI_6_UP} DesignIntf, VCLEditors {$else} DsgnIntf {$endif};
+  XCollection, GLScene, Classes, SysUtils
+{$IFDEF MSWINDOWS}
+  , Registry, Controls, Windows, Forms, ComCtrls, ImgList,
+  Dialogs, Menus, ActnList, ToolWin, ExtCtrls, StdCtrls,
+  {$IFDEF GLS_DELPHI_6_UP} DesignIntf, VCLEditors {$ELSE} DsgnIntf {$ENDIF}
 {$ENDIF}
 {$IFDEF LINUX}
-uses
-  XCollection,
-  QDialogs, QImgList, QActnList, QForms, QMenus, QTypes, 
-  QComCtrls, QControls, Types,
-  GLScene, Classes, SysUtils, QExtCtrls,
-  QStdCtrls, DesignIntf, VCLEditors; 
-   {$ENDIF}
+  , QDialogs, QImgList, QActnList, QForms, QMenus, QTypes,
+  QComCtrls, QControls, Types, QExtCtrls, QStdCtrls, DesignIntf, VCLEditors
+{$ENDIF}
+;
 
 
 const
@@ -154,24 +150,25 @@ type
     procedure DeleteBaseBehaviour(ListView:TListView);
     procedure PMBehavioursToolbarPopup(Sender: TObject);
     procedure PMEffectsToolbarPopup(Sender: TObject);
-    procedure BehavioursListViewSelectItem(Sender: TObject;
-      Item: TListItem; Selected: Boolean);
+    procedure BehavioursListViewSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
     procedure ACAddEffectExecute(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
     procedure TBEffectsPanelClick(Sender: TObject);
+    procedure TreeKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
 
   private
     FSelectedItems:Integer; //
 
     FScene: TGLScene;
     FObjectNode, FCameraNode: TTreeNode;
-    FCurrentDesigner: {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif};
+    FCurrentDesigner: {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner {$ENDIF};
     FLastMouseDownPos : TPoint;
 
-{$ifdef GLS_DELPHI_6_UP}
+{$IFDEF GLS_DELPHI_6_UP}
     FPasteOwner : TComponent;
     FPasteSelection : IDesignerSelections;
-{$endif}
+{$ENDIF}
 
     procedure ReadScene;
     procedure ResetTree;
@@ -180,7 +177,7 @@ type
     procedure AddBehaviourClick(Sender: TObject);
     procedure AddEffectClick(Sender: TObject);
     procedure SetObjectsSubItems(parent : TMenuItem);
-    procedure SetXCollectionSubItems(parent : TMenuItem ; XCollection: TXCollection; Event:TSetSubItemsEvent);    
+    procedure SetXCollectionSubItems(parent : TMenuItem ; XCollection: TXCollection; Event:TSetSubItemsEvent);
     procedure SetBehavioursSubItems(parent : TMenuItem; XCollection: TXCollection);
     procedure SetEffectsSubItems(parent : TMenuItem; XCollection: TXCollection);
     procedure OnBaseSceneObjectNameChanged(Sender : TObject);
@@ -191,7 +188,7 @@ type
     procedure ShowBehavioursAndEffects(BaseSceneObject:TGLBaseSceneObject);
     procedure EnableAndDisableActions();
 
-{$ifdef GLS_DELPHI_6_UP}
+{$IFDEF GLS_DELPHI_6_UP}
     function CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
     procedure CopyComponents(Root: TComponent; const Components: IDesignerSelections);
    procedure MethodError(Reader: TReader; const MethodName: String; var Address: Pointer; var Error: Boolean);
@@ -199,7 +196,7 @@ type
     procedure ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
     procedure ComponentRead(Component: TComponent);
     function UniqueName(Component: TComponent): string;
-{$endif}
+{$ENDIF}
 
     // We can not use the IDE to define this event because the
     // prototype is not the same between Delphi and Kylix !!
@@ -214,7 +211,7 @@ type
 	 procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
   public
-    procedure SetScene(Scene: TGLScene; Designer: {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif});
+    procedure SetScene(Scene: TGLScene; Designer: {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner {$ENDIF});
 
   end;
 
@@ -239,10 +236,10 @@ implementation
 
 uses
 {$IFDEF MSWINDOWS}
-  GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer; 
+  GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer;
 {$ENDIF}
 {$IFDEF LINUX}
-  GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer; 
+  GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer;
 {$ENDIF}
 
 
@@ -318,14 +315,14 @@ end;
 // SetScene
 //
 procedure TGLSceneEditorForm.SetScene(Scene: TGLScene;
-   Designer: {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif});
+   Designer: {$IFDEF GLS_DELPHI_6_UP} IDesigner {$ELSE} IFormDesigner {$ENDIF});
 begin
    if Assigned(FScene) then
-{$ifdef GLS_DELPHI_5_UP}
+{$IFDEF GLS_DELPHI_5_UP}
 		FScene.RemoveFreeNotification(Self);
-{$else}
+{$ELSE}
 		FScene.Notification(Self, opRemove);
-{$endif}
+{$ENDIF}
 	FScene:=Scene;
    FCurrentDesigner:=Designer;
    ResetTree;
@@ -400,16 +397,16 @@ begin
    end;
    // Build SubMenus
    SetObjectsSubItems(MIAddObject);
-{$ifdef GLS_DELPHI_5_UP}
+{$IFDEF GLS_DELPHI_5_UP}
 {$IFDEF MSWINDOWS}
 	MIAddObject.SubMenuImages:=ObjectManager.ObjectIcons;
 {$ENDIF}
-{$endif}
-{$ifndef GLS_DELPHI_6_UP}
+{$ENDIF}
+{$IFNDEF GLS_DELPHI_6_UP}
    ACCut.Visible:=False;
    ACCopy.Visible:=False;
    ACPaste.Visible:=False;
-{$endif}
+{$ENDIF}
    SetObjectsSubItems(PMToolBar.Items);
    PMToolBar.Images:=ObjectManager.ObjectIcons;
 
@@ -560,7 +557,7 @@ begin
                item.Tag:=Integer(soc);
                currentParent.Add(item);
                objectList[j]:='';
-               if currentCategory='' then Break; 
+               if currentCategory='' then Break;
             end;
          end;
       end;
@@ -576,12 +573,12 @@ var
 	XCollectionItemClass : TXCollectionItemClass;
 	mi : TMenuItem;
 begin
-{$ifdef GLS_DELPHI_5_UP}
+{$IFDEF GLS_DELPHI_5_UP}
    parent.Clear;
-{$else}
+{$ELSE}
    for i:=parent.Count-1 downto 0 do
       parent.Delete(i);
-{$endif}
+{$ENDIF}
    if Assigned(XCollection) then begin
       list:=GetXCollectionItemClassesList(XCollection.ItemsClass);
       try
@@ -1093,7 +1090,7 @@ end;
 // IsPastePossible
 //
 function TGLSceneEditorForm.IsPastePossible : Boolean;
-{$ifdef GLS_DELPHI_6_UP}
+{$IFDEF GLS_DELPHI_6_UP}
 
    function PossibleStream(const S: string): Boolean;
    var
@@ -1132,26 +1129,26 @@ begin
          TmpContainer.Free;
       end;
    end else Result:=False;
-{$else}
+{$ELSE}
 begin
    Result:=False;
-{$endif}
+{$ENDIF}
 end;
 
 // CanPaste
 //
-{$ifdef GLS_DELPHI_6_UP}
+{$IFDEF GLS_DELPHI_6_UP}
 function TGLSceneEditorForm.CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
 begin
    Result:=((obj is TGLCamera) or (destination<>FScene.Cameras))
            and (obj is TGLBaseSceneObject);
 end;
-{$endif}
+{$ENDIF}
 
 // ACCopyExecute
 //
 procedure TGLSceneEditorForm.ACCopyExecute(Sender: TObject);
-{$ifdef GLS_DELPHI_6_UP}
+{$IFDEF GLS_DELPHI_6_UP}
 var
    ComponentList: IDesignerSelections;
 begin
@@ -1159,9 +1156,9 @@ begin
    ComponentList.Add(TGLBaseSceneObject(Tree.Selected.Data));
    CopyComponents(FScene.Owner, ComponentList);
    ACPaste.Enabled:=IsPastePossible;
-{$else}
+{$ELSE}
 begin
-{$endif}
+{$ENDIF}
 end;
 
 // ACCutExecute
@@ -1187,7 +1184,7 @@ end;
 // ACPasteExecute
 //
 procedure TGLSceneEditorForm.ACPasteExecute(Sender: TObject);
-{$ifdef GLS_DELPHI_6_UP}
+{$IFDEF GLS_DELPHI_6_UP}
 var
    selNode : TTreeNode;
 	destination : TGLBaseSceneObject;
@@ -1206,12 +1203,12 @@ begin
       end;
       FCurrentDesigner.Modified;
    end;
-{$else}
+{$ELSE}
 begin
-{$endif}
+{$ENDIF}
 end;
 
-{$ifdef GLS_DELPHI_6_UP}
+{$IFDEF GLS_DELPHI_6_UP}
 // CopyComponents
 //
 procedure TGLSceneEditorForm.CopyComponents(Root: TComponent; const Components: IDesignerSelections);
@@ -1284,7 +1281,7 @@ procedure TGLSceneEditorForm.ComponentRead(Component: TComponent);
 begin
    FPasteSelection.Add(Component);
 end;
-{$endif}
+{$ENDIF}
 
 procedure TGLSceneEditorForm.BehavioursListViewEnter(Sender: TObject);
 begin
@@ -1299,7 +1296,7 @@ begin
    if Assigned(FCurrentDesigner) and Assigned(EffectsListView.Selected) then
       FCurrentDesigner.SelectComponent(TGLBaseBehaviour(EffectsListView.Selected.Data));
    FSelectedItems:=EFFECTS_SELECTED;
-   EnableAndDisableActions();   
+   EnableAndDisableActions();
 end;
 
 procedure TGLSceneEditorForm.ACAddBehaviourExecute(Sender: TObject);
@@ -1313,11 +1310,11 @@ begin
   begin
 
       FCurrentDesigner.Modified;
-{$ifndef GLS_DELPHI_4}
+{$IFNDEF GLS_DELPHI_4}
       FCurrentDesigner.NoSelection;
-{$else}
+{$ELSE}
       FCurrentDesigner.SelectComponent(nil);
-{$endif}
+{$ENDIF}
       TXCollectionItem(ListView.Selected.Data).Free;
       ListView.Selected.Free;
      // ListViewChange(Self, nil, ctState);
@@ -1474,11 +1471,18 @@ begin
    else Width:=Width-PABehaviours.Width;
 end;
 
+procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_DELETE then begin
+    Key := 0;
+    ACDeleteObject.Execute;
+  end;
+end;
+
 initialization
 
 finalization
-
-   ReleaseGLSceneEditorForm;
+  ReleaseGLSceneEditorForm;
 
 end.
 

@@ -1,5 +1,9 @@
-// GLShadowVolumes
-{: Implements basic shadow volumes support.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLShadowVolumes<p>
+
+   Implements basic shadow volumes support.<p>
 
    Be aware that only objects that support silhouette determination have a chance
    to cast correct shadows. Transparent/blended/shader objects among the receivers
@@ -15,7 +19,7 @@
                           for delete notification
       <li>11/06/03 - EG - Added silhouette cache
       <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
-   </ul></font>
+  </ul></font>
 }
 unit GLShadowVolume;
 

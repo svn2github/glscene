@@ -19,13 +19,15 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-                               move PAffineVectorArray, PVectorArray and PMatrixArray
-                               from VectorGeometry to this Unit
-      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
-      <li>24/08/03 - PP - Added smallint vectors
-      <li>04/07/01 - EG - Creation
-   </ul>
+	  <li>29/08/04 - LR - Converted array byte vector to record byte vector
+    <li>19/12/04 - PhP - Added byte vectors
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                             move PAffineVectorArray, PVectorArray and PMatrixArray
+                             from VectorGeometry to this Unit    
+    <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
+    <li>24/08/03 - PhP - Added smallint vectors
+    <li>04/07/01 - EG - Creation
+  </ul>
 }
 unit VectorTypes;
 
@@ -54,6 +56,11 @@ type
       true  : (Coord: array[0..1] of smallint);
       false : (X,Y: smallint);
   end;
+  TVector2b = record
+    case boolean of
+      true  : (Coord: array[0..1] of byte);
+      false : (X,Y: byte);
+  end;
 
   TVector3d = record
     case boolean of
@@ -75,6 +82,11 @@ type
       true  : (Coord: array[0..2] of smallint);
       false : (X,Y,Z: smallint);
   end;
+  TVector3b = record
+    case boolean of
+      true  : (Coord: array[0..2] of byte);
+      false : (X,Y,Z: byte);
+  end;  
 
   TVector4d = record
     case boolean of
@@ -96,6 +108,11 @@ type
       true  : (Coord: array[0..3] of smallint);
       false : (X,Y,Z,W: smallint);
   end;
+  TVector4b = record
+    case boolean of
+      true  : (Coord: array[0..3] of byte);
+      false : (X,Y,Z,W: byte);
+  end;  
 
   TMatrix3d = record
     case boolean of
@@ -117,6 +134,11 @@ type
       true  : (Coord: array[0..2] of TVector3s);
       false : (X,Y,Z: TVector3s);
   end;
+  TMatrix3b = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3b);
+      false : (X,Y,Z: TVector3b);
+  end;  
 
   TMatrix4d = record
     case boolean of
@@ -138,6 +160,11 @@ type
       true  : (Coord: array[0..3] of TVector4s);
       false : (X,Y,Z,W: TVector4s);
   end;
+  TMatrix4b = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4b);
+      false : (X,Y,Z,W: TVector4b);
+  end;  
 
   TD3DVector = packed record
     case Integer of
@@ -169,4 +196,4 @@ type
 implementation
 
 end.
- 
+
