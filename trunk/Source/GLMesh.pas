@@ -584,7 +584,6 @@ begin
    if osDirectDraw in ObjectStyle then
       FVertices.EnterLockSection;
    glPushAttrib(GL_POLYGON_BIT+GL_ENABLE_BIT);
-   glFrontFace(GL_CCW);
    case FVertexMode of
       vmV    : glInterleavedArrays(GL_V3F, SizeOf(TVertexData), FVertices.FirstVertex);
       vmVN   : glInterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData), FVertices.FirstNormal);

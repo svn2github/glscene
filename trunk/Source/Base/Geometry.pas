@@ -304,6 +304,7 @@ type
       homogeneous space coordinates, and this is what we are doing here.<br>
       The typename is just here for easing up data manipulation. }
    THmgPlane = TVector;
+   TDoubleHmgPlane = THomogeneousDblVector;
 
    // q = ([x, y, z], w)
    TQuaternion = record
@@ -718,8 +719,12 @@ function  MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean
 // Matrix functions
 //------------------------------------------------------------------------------
 
-//: Calculates the parameters of a plane defined by three points.
-function PlaneMake(const p1, p2, p3 : TAffineVector) : THmgPlane;
+//: Computes the parameters of a plane defined by three points.
+function PlaneMake(const p1, p2, p3 : TAffineVector) : THmgPlane; overload;
+//: Computes the parameters of a plane defined by a point and a normal.
+function PlaneMake(const point, normal : TAffineVector) : THmgPlane; overload;
+//: Converts from single to double representation
+procedure SetPlane(var dest : TDoubleHmgPlane; const src : THmgPlane);
 
 {: Calculates the cross-product between the plane normal and plane to point vector.<p>
    This functions gives an hint as to were the point is, if the point is in the
@@ -3865,12 +3870,30 @@ begin
    NormalizeVector(vr);
 end;
 
-// PlaneMake
+// PlaneMake (point + normal)
+//
+function PlaneMake(const point, normal : TAffineVector) : THmgPlane;
+begin
+   PAffineVector(@Result)^:=normal;
+   Result[3]:=-VectorDotProduct(point, normal);
+end;
+
+// PlaneMake (3 points)
 //
 function PlaneMake(const p1, p2, p3 : TAffineVector) : THmgPlane;
 begin
    CalcPlaneNormal(p1, p2, p3, PAffineVector(@Result)^);
    Result[3]:=-VectorDotProduct(p1, PAffineVector(@Result)^);
+end;
+
+// SetPlane
+//
+procedure SetPlane(var dest : TDoubleHmgPlane; const src : THmgPlane);
+begin
+   dest[0]:=src[0];
+   dest[1]:=src[1];
+   dest[2]:=src[2];
+   dest[3]:=src[3];
 end;
 
 // PlaneEvaluatePoint

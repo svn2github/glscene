@@ -121,7 +121,7 @@ uses
   TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
   GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
   GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
-  GLParticleFX, GLTerrainRenderer, GLzBuffer,
+  GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror,
 {$ifdef GLS_DELPHI_6_UP} DesignIntf, DesignEditors {$else} DsgnIntf {$endif};
 
 var
@@ -1319,12 +1319,13 @@ initialization
       RegisterSceneObject(THeightField, 'HeightField', glsOCProceduralObjects);
       RegisterSceneObject(TGLParticles, 'Particles', glsOCProceduralObjects);
       RegisterSceneObject(TArrowLine, 'ArrowLine', glsOCSpecialObjects);
-      RegisterSceneObject(TSkyDome, 'SkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TEarthSkyDome, 'EarthSkyDome', glsOCSpecialObjects);
+      RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
+      RegisterSceneObject(TSkyDome, 'SkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCSpecialObjects);
       RegisterSceneObject(TSpaceText, 'SpaceText', glsOCSpecialObjects);
-      RegisterSceneObject(TTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);
       RegisterSceneObject(TTeapot, 'Teapot', glsOCSpecialObjects);
+      RegisterSceneObject(TTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);
       RegisterSceneObject(TXYZGrid, 'XYZGrid', glsOCSpecialObjects);
       RegisterSceneObject(THUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(THUDText, 'HUDText', glsOCHUDObjects);

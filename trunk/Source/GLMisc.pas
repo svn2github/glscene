@@ -479,6 +479,11 @@ procedure SetGLTextureMatrix(const matrix : TMatrix);
    Assumed texture mode is GL_MODELVIEW. }
 procedure ResetGLTextureMatrix;
 
+{: Inverts front face winding (CCW/CW). }
+procedure InvertGLFrontFace;
+{: Reset to default front face winding (CCW). }
+procedure ResetGLFrontFace;
+
 procedure RegisterManager(aManager : TComponent);
 procedure DeRegisterManager(aManager : TComponent);
 function FindManager(classType : TComponentClass; const managerName : String) : TComponent;
@@ -711,6 +716,26 @@ begin
       glMatrixMode(GL_MODELVIEW);
       vTextureMatrixIsIdenty:=True;
    end;
+end;
+
+// InvertGLFrontFace
+//
+var
+   vFrontFaceCCW : Boolean = True;
+procedure InvertGLFrontFace;
+begin
+   vFrontFaceCCW:=not vFrontFaceCCW;
+   if vFrontFaceCCW then
+      glFrontFace(GL_CCW)
+   else glFrontFace(GL_CW);
+end;
+
+// ResetGLFrontFace
+//
+procedure ResetGLFrontFace;
+begin
+   glFrontFace(GL_CCW);
+   vFrontFaceCCW:=True;
 end;
 
 // SetGLState

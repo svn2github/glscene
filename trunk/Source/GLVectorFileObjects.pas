@@ -4378,8 +4378,8 @@ begin
    if renderSelf then begin
       // set winding
       case FNormalsOrientation of
-         mnoDefault : glFrontFace(GL_CCW);
-         mnoInvert : glFrontFace(GL_CW);
+         mnoDefault : ;// nothing
+         mnoInvert : InvertGLFrontFace;
       else
          Assert(False);
       end;
@@ -4394,7 +4394,7 @@ begin
       Material.UnApply(rci);
       rci.materialLibrary:=nil;
       if FNormalsOrientation<>mnoDefault then
-         glFrontFace(GL_CCW);
+         InvertGLFrontFace;
    end;
    if renderChildren and (Count>0) then
       Self.RenderChildren(0, Count-1, rci);

@@ -122,9 +122,9 @@ type
 
    // TMultiPolygonBase
    //
-   {: Multipolygon is defined with multiple contours. The contours have to be
-      in the X-Y plane, otherwise they are projected to it (this is done
-      automatically by the tesselator).<br>
+   {: Multipolygon is defined with multiple contours.<p>
+      The contours have to be in the X-Y plane, otherwise they are projected
+      to it (this is done automatically by the tesselator).<br>
       The plane normal is pointing in +Z. All contours are automatically closed,
       so there is no need to specify the last node equal to the first one.<br>
       Contours should be defined counterclockwise, the first contour (index = 0)

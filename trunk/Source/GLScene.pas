@@ -1042,7 +1042,6 @@ type
       protected
          { Protected Declarations }
          procedure AddLight(ALight: TGLLightSource);
-         procedure SetupLights(Maximum: Integer);
          procedure DoAfterRender;
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
          procedure Loaded; override;
@@ -1067,6 +1066,7 @@ type
          function  IsUpdating: Boolean;
 
          procedure AddBuffer(aBuffer : TGLSceneBuffer);
+         procedure SetupLights(Maximum: Integer);
          procedure RemoveViewer(aBuffer : TGLSceneBuffer);
          procedure RenderScene(aBuffer : TGLSceneBuffer;
                                const viewPortSizeX, viewPortSizeY : Integer;
@@ -3123,6 +3123,7 @@ begin
                ResetGLPolygonMode;
                ResetGLMaterialColors;
                ResetGLCurrentTexture;
+               ResetGLFrontFace;
             end;
             Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
@@ -4166,6 +4167,7 @@ procedure TGLProxyObject.DoRender(var rci : TRenderContextInfo;
                                   renderSelf, renderChildren : Boolean);
 var
    gotMaster, masterGotEffects, oldProxySubObject : Boolean;
+   refMat : TMatrix;
 begin
    if FRendering then Exit;
    FRendering:=True;
@@ -4747,6 +4749,7 @@ begin
    ResetGLPolygonMode;
    ResetGLMaterialColors;
    ResetGLCurrentTexture;
+   ResetGLFrontFace;
    aBuffer.FAfterRenderEffects.Clear;
    FCurrentBuffer:=aBuffer;
    rci.objectsSorting:=FObjectsSorting;

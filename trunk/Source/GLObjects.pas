@@ -11,7 +11,7 @@
       <li>TTeapot will move to a 'doodad objects' unit
    </ul>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
       <li>22/08/01 - Egg - TTorus.RayCastIntersect fixes
       <li>30/07/01 - Egg - Updated AxisAlignedDimensions implems
       <li>16/03/01 - Egg - TCylinderBase, changed default Stacks from 8 to 4
@@ -1369,9 +1369,7 @@ begin
    FWidth:=1;
    FHeight:=1;
    FXTiles:=1;
-   FXOffset:=0;
    FYTiles:=1;
-   FYOffset:=0;
 end;
 
 // BuildList
@@ -1382,8 +1380,8 @@ var
 begin
    hw:=FWidth*0.5;
    hh:=FHeight*0.5;
+   glNormal3fv(@ZVector);
    glBegin(GL_QUADS);
-      glNormal3fv(@ZVector);
       xglTexCoord2f(FXTiles+FXOffset, FYTiles+FYOffset);
       glVertex2f( hw, hh);
       xglTexCoord2f(0, FYTiles+FYOffset);
@@ -1405,28 +1403,24 @@ begin
    end;
 end;
 
-//------------------------------------------------------------------------------
-
+// SetHeight
+//
 procedure TPlane.SetHeight(AValue:TGLFloat);
-
 begin
-  if AValue<>FHeight then
-  begin
-    FHeight:=AValue;
-    StructureChanged;
-  end;
+   if AValue<>FHeight then begin
+      FHeight:=AValue;
+      StructureChanged;
+   end;
 end;
 
-//------------------------------------------------------------------------------
-
+// SetXOffset
+//
 procedure TPlane.SetXOffset(const Value: TGLFloat);
-
 begin
-  if Value<>FXOffset then
-  begin
-    FXOffset:=Value;
-    StructureChanged;
-  end;
+   if Value<>FXOffset then begin
+      FXOffset:=Value;
+      StructureChanged;
+   end;
 end;
 
 //------------------------------------------------------------------------------
@@ -1465,17 +1459,15 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------------
-
+// Assign
+//
 procedure TPlane.Assign(Source: TPersistent);
-
 begin
-  if assigned(Source) and (Source is TCube) then
-  begin
-    FWidth:=TPlane(Source).FWidth;
-    FHeight:=TPlane(Source).FHeight;
-  end;
-  inherited Assign(Source);
+   if Assigned(Source) and (Source is TPlane) then begin
+      FWidth:=TPlane(Source).FWidth;
+      FHeight:=TPlane(Source).FHeight;
+   end;
+   inherited Assign(Source);
 end;
 
 // AxisAlignedDimensions
@@ -2574,8 +2566,7 @@ begin
    DoReverse:=FNormalDirection = ndInside;
    glPushAttrib(GL_POLYGON_BIT);
    if DoReverse then
-      glFrontFace(GL_CW)
-   else glFrontFace(GL_CCW);
+      InvertGLFrontFace;
 
    // common settings
    AngTop:=DegToRad(FTop);
@@ -2700,9 +2691,10 @@ begin
          glVertex3fv(@V1);
          Theta:=Theta - StepH;
       end;
-      // restore face winding
       glEnd;
    end;
+   if DoReverse then
+      InvertGLFrontFace;
    glPopMatrix;
    glPopAttrib;
 end;
@@ -3534,7 +3526,7 @@ begin
   glRotatef(-90, 1, 0, 0);
   glScalef(0.15, 0.15, 0.15);
   glPushAttrib(GL_POLYGON_BIT or GL_ENABLE_BIT or GL_EVAL_BIT);
-  glFrontFace(GL_CW);
+  InvertGLFrontFace;
   glEnable(GL_AUTO_NORMAL);
   glEnable(GL_MAP2_VERTEX_3);
   glEnable(GL_MAP2_TEXTURE_COORD_2);
@@ -3567,6 +3559,7 @@ begin
       glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
     end;
   end;
+  InvertGLFrontFace;
   glPopAttrib;
   glPopMatrix;
 end;
