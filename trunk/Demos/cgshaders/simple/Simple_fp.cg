@@ -1,0 +1,19 @@
+//
+// Simple Fragment Program
+//
+// - Just do a simple remap of RGB
+//
+
+struct FragOut {
+  float4 color : COLOR;
+};
+
+FragOut main(float4 color : COLOR)
+{
+  FragOut OUT;
+
+  OUT.color.rg = color.gg;
+  OUT.color.b  = 0.3;
+
+  return OUT;
+}
