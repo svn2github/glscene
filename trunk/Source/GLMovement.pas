@@ -3,6 +3,7 @@
    Movement path behaviour by Roger Cao<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)  
       <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
       <li>20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
       <li>14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
@@ -842,6 +843,7 @@ begin
   Interpolated := False;
   while I < FNodes.Count do
   begin
+    L := NodeDistance(Nodes[I], Nodes[I - 1]);
     T := L / (Nodes[I - 1].Speed+Nodes[I - 0].Speed)*2;
     if (SumTime + T) >= CurrentTime then
     begin
