@@ -140,7 +140,9 @@ begin
    with heightData do begin
       if InfiniteWrap then begin
          x:=XLeft mod FHTF.SizeX;
+         if x<0 then x:=x+FHTF.SizeX;
          y:=YTop mod FHTF.SizeY;
+         if y<0 then y:=y+FHTF.SizeY;
          htfTile:=FHTF.GetTile(x, y, @htfTileInfo);
       end else begin
          htfTile:=FHTF.GetTile(XLeft, YTop, @htfTileInfo);
