@@ -50,12 +50,11 @@ Function ExponateCrap(root, exponant : Integer) : Integer;
 Var
   D : Extended;
 Begin
-  If root = 0 then
+  if root <= 0 then
     Result := 0
-  else
-  Begin
+  else begin
     D := exp(ln(root)*exponant);
-    If D = Infinity then
+    If D >= 1e30 then //= Infinity then
     D := root*exponant;
 // if you got a better(faster) way of carving some integer value out of a double let me know!
     if D > maxInt then
