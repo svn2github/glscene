@@ -548,45 +548,46 @@ end;
 //
 procedure TGLSceneEditorForm.ACDeleteObjectExecute(Sender: TObject);
 var
-	AObject: TGLBaseSceneObject;
-   Allowed, KeepChildren: Boolean;
-   ConfirmMsg: String;
-   Buttons: TMsgDlgButtons;
+	anObject : TGLBaseSceneObject;
+   allowed, keepChildren : Boolean;
+   confirmMsg : String;
+   buttons : TMsgDlgButtons;
 begin
 	if Assigned(Tree.Selected) and (Tree.Selected.Level > 1) then begin
-      AObject:=TGLBaseSceneObject(Tree.Selected.Data);
+      anObject:=TGLBaseSceneObject(Tree.Selected.Data);
       // ask for confirmation
-      if AObject.Name <> '' then
-         ConfirmMsg:='Delete ' + AObject.Name
+      if anObject.Name<>'' then
+         ConfirmMsg:='Delete '+anObject.Name
       else ConfirmMsg:='Delete the marked object';
-      Buttons:=[mbOK, mbCancel];
+      buttons:=[mbOK, mbCancel];
       // are there children to care for?
-      if AObject.Count > 0 then begin
-         ConfirmMsg:=ConfirmMsg + 'only or with ALL its children ?';
-         Buttons:=[mbAll] + Buttons;
-      end else ConfirmMsg:=ConfirmMsg + '?';
-      case MessageDlg(ConfirmMsg, mtConfirmation, Buttons, 0) of
+      if anObject.Count>0 then begin
+         confirmMsg:=ConfirmMsg+' only or with ALL its children?';
+         buttons:=[mbAll]+Buttons;
+      end else confirmMsg:=confirmMsg+'?';
+      case MessageDlg(confirmMsg, mtConfirmation, buttons, 0) of
          mrAll : begin
-            KeepChildren:=False;
-            Allowed:=True;
+            keepChildren:=False;
+            allowed:=True;
 			end;
          mrOK : begin
-            KeepChildren:=True;
-				Allowed:=True;
+            keepChildren:=True;
+				allowed:=True;
          end;
          mrCancel : begin
-            Allowed:=False;
-            KeepChildren:=True;
+            allowed:=False;
+            keepChildren:=True;
          end;
       else
-         Allowed:=False;
-         KeepChildren:=True;
+         allowed:=False;
+         keepChildren:=True;
       end;
       // deletion allowed?
       if allowed then begin
-         AObject.Parent.Remove(AObject, KeepChildren);
-         AObject.Free;
          Tree.Selected.Free;
+         FCurrentDesigner.SelectComponent(nil);
+         anObject.Parent.Remove(anObject, keepChildren);
+         anObject.Free;
       end
    end;
 end;

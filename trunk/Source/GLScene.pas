@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/09/03 - Egg - BoundingBox computation now based on AABB code,
+      <li>07/10/02 - Egg - Fixed Remove/Add/Insert (sublights registration bug) 
+      <li>04/09/02 - Egg - BoundingBox computation now based on AABB code,
                            Fixed TGLSceneBuffer.PixelRayToWorld
       <li>27/08/02 - Egg - Added TGLProxyObject.RayCastIntersect (Matheus Degiovani),
                            Fixed PixelRayToWorld
@@ -529,8 +530,8 @@ type
          {: Takes a scene object out of the child list, but doesn't destroy it.<p>
             If 'KeepChildren' is true its children will be kept as new children
             in this scene object. }
-         procedure Remove(AChild: TGLBaseSceneObject; KeepChildren: Boolean); dynamic;
-         function IndexOfChild(AChild: TGLBaseSceneObject) : Integer;
+         procedure Remove(aChild : TGLBaseSceneObject; keepChildren: Boolean); dynamic;
+         function IndexOfChild(aChild : TGLBaseSceneObject) : Integer;
          function FindChild(const aName : String; ownChildrenOnly : Boolean) : TGLBaseSceneObject;
          procedure MoveChildUp(anIndex : Integer);
          procedure MoveChildDown(anIndex : Integer);
@@ -1212,11 +1213,16 @@ type
 
       protected
          { Protected Declarations }
-         procedure AddLight(ALight: TGLLightSource);
+         procedure AddLight(aLight : TGLLightSource);
+         procedure RemoveLight(aLight : TGLLightSource);
+         //: Adds all lights in the subtree (anObj included)
+         procedure AddLights(anObj : TGLBaseSceneObject);
+         //: Removes all lights in the subtree (anObj included)
+         procedure RemoveLights(anObj : TGLBaseSceneObject);
+
          procedure DoAfterRender;
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
          procedure Loaded; override;
-         procedure RemoveLight(ALight: TGLLightSource);
          procedure SetChildOrder(AChild: TComponent; Order: Integer); override;
          procedure SetObjectsSorting(const val : TGLObjectsSorting);
          procedure SetVisibilityCulling(const val : TGLVisibilityCulling);
@@ -2268,8 +2274,8 @@ var
    child : TGLBaseSceneObject;
 begin
    DeleteChildCameras;
-    while FChildren.Count>0 do begin
-        child:=TGLBaseSceneObject(FChildren.Items[FChildren.Count-1]);
+   while FChildren.Count>0 do begin
+      child:=TGLBaseSceneObject(FChildren.Items[FChildren.Count-1]);
       child.FParent:=nil;
       FChildren.Delete(FChildren.Count-1);
       child.Free;
@@ -2390,10 +2396,10 @@ end;
 
 // AddChild
 //
-procedure TGLBaseSceneObject.AddChild(AChild: TGLBaseSceneObject);
+procedure TGLBaseSceneObject.AddChild(aChild : TGLBaseSceneObject);
 begin
-   if Assigned(FScene) and (AChild is TGLLightSource) then
-      FScene.AddLight(TGLLightSource(AChild));
+   if Assigned(FScene) then
+      FScene.AddLights(aChild);
    FChildren.Add(AChild);
    AChild.FParent:=Self;
    AChild.SetScene(FScene);
@@ -2761,26 +2767,25 @@ begin
    if AChild.FScene<>FScene then
       AChild.DestroyHandles;
    AChild.SetScene(FScene);
-   if Assigned(FScene) and (AChild is TGLLightSource) then
-      FScene.AddLight(TGLLightSource(AChild));
+   if Assigned(FScene) then
+      FScene.AddLights(aChild);
    TransformationChanged;
 end;
 
-//------------------------------------------------------------------------------
-
-function TGLBaseSceneObject.IsUpdating: Boolean;
-
+// IsUpdating
+//
+function TGLBaseSceneObject.IsUpdating : Boolean;
 begin
-  Result:=(FUpdateCount <> 0) or (csReading in ComponentState);
+   Result:=(FUpdateCount<>0) or (csReading in ComponentState);
 end;
 
-//------------------------------------------------------------------------------
-
-function TGLBaseSceneObject.GetIndex: Integer;
-
+// GetIndex
+//
+function TGLBaseSceneObject.GetIndex : Integer;
 begin
-  Result:=-1;
-  if assigned(FParent) then Result:=FParent.FChildren.IndexOf(Self);
+   Result:=-1;
+   if Assigned(FParent) then
+      Result:=FParent.FChildren.IndexOf(Self);
 end;
 
 // GetOrientationVectors
@@ -3455,15 +3460,15 @@ end;
 
 // Remove
 //
-procedure TGLBaseSceneObject.Remove(AChild: TGLBaseSceneObject; KeepChildren: Boolean);
+procedure TGLBaseSceneObject.Remove(aChild : TGLBaseSceneObject; keepChildren : Boolean);
 begin
-   if Assigned(FScene) and (AChild is TGLLightSource) then
-      FScene.RemoveLight(TGLLightSource(AChild));
-   FChildren.Remove(AChild);
-   AChild.FParent:=nil;
-   if KeepChildren then begin
+   if Assigned(FScene) then
+      FScene.RemoveLights(aChild);
+   FChildren.Remove(aChild);
+   aChild.FParent:=nil;
+   if keepChildren then begin
       BeginUpdate;
-      with AChild do while Count>0 do
+      with aChild do while Count>0 do
          Children[0].MoveTo(Self);
       EndUpdate;
    end else NotifyChange(Self);
@@ -3471,9 +3476,9 @@ end;
 
 // IndexOfChild
 //
-function TGLBaseSceneObject.IndexOfChild(AChild: TGLBaseSceneObject) : Integer;
+function TGLBaseSceneObject.IndexOfChild(aChild: TGLBaseSceneObject) : Integer;
 begin
-   Result:=FChildren.IndexOf(AChild);
+   Result:=FChildren.IndexOf(aChild);
 end;
 
 // FindChild
@@ -5127,12 +5132,47 @@ procedure TGLScene.AddLight(ALight: TGLLightSource);
 var
    i : Integer;
 begin
-   for i:=0 to FLights.Count - 1 do
-      if FLights[i] = nil then begin
+   for i:=0 to FLights.Count-1 do
+      if FLights[i]=nil then begin
          FLights[i]:=ALight;
-         ALight.FLightID:=GL_LIGHT0 + i;
+         ALight.FLightID:=GL_LIGHT0+i;
          Break;
       end;
+end;
+
+// RemoveLight
+//
+procedure TGLScene.RemoveLight(ALight : TGLLightSource);
+var
+   idx : Integer;
+begin
+   idx:=FLights.IndexOf(ALight);
+   if idx>=0 then
+      FLights[idx]:=nil;
+end;
+
+// AddLights
+//
+procedure TGLScene.AddLights(anObj : TGLBaseSceneObject);
+var
+   i : Integer;
+begin
+   if anObj is TGLLightSource then
+      AddLight(TGLLightSource(anObj));
+   for i:=0 to anObj.Count-1 do
+      AddLights(anObj.Children[i]);
+end;
+
+// RemoveLights
+//
+procedure TGLScene.RemoveLights(anObj : TGLBaseSceneObject);
+var
+   i : Integer;
+begin
+   if anObj is TGLLightSource then
+      RemoveLight(TGLLightSource(anObj));
+   for i:=0 to anObj.Count-1 do
+      RemoveLights(anObj.Children[i]);
 end;
 
 // ShutdownAllLights
@@ -5194,17 +5234,6 @@ procedure TGLScene.GetChildren(AProc: TGetChildProc; Root: TComponent);
 begin
    FObjects.GetChildren(AProc, Root);
    FCameras.GetChildren(AProc, Root);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLScene.RemoveLight(ALight: TGLLightSource);
-
-var LIndex: Integer;
-
-begin
-  LIndex:=FLights.IndexOf(ALight);
-  if LIndex > -1 then FLights[LIndex]:=nil;
 end;
 
 //------------------------------------------------------------------------------
