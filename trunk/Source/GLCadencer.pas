@@ -736,4 +736,9 @@ initialization
 	if not QueryPerformanceFrequency(vCounterFrequency) then
 		vCounterFrequency := 0;
 
+finalization
+
+   FreeAndNil(vHandler);
+   FreeAndNil(vASAPCadencerList);
+
 end.
