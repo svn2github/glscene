@@ -100,7 +100,7 @@ begin
       mo.TexCoords.AdjustCapacityToAtLeast(n);
       mo.LighmapTexCoords.AdjustCapacityToAtLeast(n);
       for i:=0 to n-1 do with oct.Vertices[i] do begin
-         mo.Vertices.Add(-pos[0], pos[1], pos[2]);
+         mo.Vertices.Add(pos[0], pos[1], pos[2]);
          mo.TexCoords.Add(tv.s, tv.t);
          mo.LighmapTexCoords.Add(lv.s, lv.t);
       end;
@@ -110,8 +110,7 @@ begin
          octFace:=@oct.Faces[i];
          fg:=TFGVertexIndexList.CreateOwned(mo.FaceGroups);
          fg.Mode:=fgmmTriangleFan;
-         fg.VertexIndices.Add(octFace.start);
-         fg.VertexIndices.AddSerie(octFace.start+octFace.num-1, -1, octFace.num-1);
+         fg.VertexIndices.AddSerie(octFace.start, 1, octFace.num);
          if Assigned(lightmapLib) then
             fg.LightMapIndex:=octFace.lid;
       end;

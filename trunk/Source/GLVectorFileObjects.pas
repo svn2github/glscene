@@ -4018,20 +4018,27 @@ begin
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin
          n:=(indices.Count div 3)*3;
-         destination.AdjustCapacityToAtLeast(destination.Count+n);
-         for i:=0 to n-1 do
-            destination.Add(source[indices.List[i]]);
+         if source.Count>0 then begin
+            destination.AdjustCapacityToAtLeast(destination.Count+n);
+            for i:=0 to n-1 do
+               destination.Add(source[indices.List[i]]);
+         end else destination.AddNulls(destination.Count+n);
       end;
       fgmmTriangleStrip : begin
-         ConvertStripToList(source, indices, destination);
+         if source.Count>0 then
+            ConvertStripToList(source, indices, destination)
+         else destination.AddNulls(destination.Count+(indices.Count-2)*3);
       end;
       fgmmTriangleFan : begin
-         destination.AdjustCapacityToAtLeast(destination.Count+(indices.Count-2)*3);
-         for i:=2 to VertexIndices.Count-1 do begin
-            destination.Add(source[indices.List[0]],
-                            source[indices.List[i-1]],
-                            source[indices.List[i]]);
-         end;
+         n:=(indices.Count-2)*3;
+         if source.Count>0 then begin
+            destination.AdjustCapacityToAtLeast(destination.Count+n);
+            for i:=2 to VertexIndices.Count-1 do begin
+               destination.Add(source[indices.List[0]],
+                               source[indices.List[i-1]],
+                               source[indices.List[i]]);
+            end;
+         end else destination.AddNulls(destination.Count+n);
       end;
    else
       Assert(False);

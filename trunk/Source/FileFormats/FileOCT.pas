@@ -169,6 +169,7 @@ begin
    SetLength(Textures, texIdx+1);
    Move(textureName[1], Textures[texIdx].Name[0], Length(textureName));
    SetLength(Lightmaps, 1);
+   FillChar(Lightmaps[0].map[0], 128*3, 255);
 
    baseIdx:=Length(Vertices);
    SetLength(Vertices, baseIdx+vertexCoords.Count);
@@ -185,7 +186,7 @@ begin
          num:=3;
          id:=texIdx;
          p:=PlaneMake(vertexCoords[i],
-                      CalcPlaneNormal(vertexCoords[i], vertexCoords[i+1], vertexCoords[i+2]));
+                      CalcPlaneNormal(vertexCoords[i+0], vertexCoords[i+1], vertexCoords[i+0]));
       end;
       Inc(i, 3);
    end;
