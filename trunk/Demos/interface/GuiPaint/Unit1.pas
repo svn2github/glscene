@@ -47,7 +47,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLMisc, GLHUDObjects, GLObjects, GLCadencer, ExtCtrls,
   GLBitmapFont, GLWin32Viewer, GLWindowsFont, Menus, GLWindows, GLGui,
-  GLTexture;
+  GLTexture, GLCrossPlatform;
 
 type
   TForm1 = class(TForm)
@@ -96,11 +96,11 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure GLCanvasMouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+      Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLCanvasMouseMove(Sender: TObject;
       Shift: TShiftState; X, Y: Integer);
     procedure GLCanvasMouseUp(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+      Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLCanvasRender(sender: TGLCustomControl; Bitmap: TBitmap);
     procedure FormCreate(Sender: TObject);
     procedure WhiteButtonButtonClick(Sender: TObject);
@@ -111,7 +111,7 @@ type
     procedure PenButtonButtonClick(Sender: TObject);
     procedure BrushButtonButtonClick(Sender: TObject);
     procedure GLCanvasAcceptMouseQuery(Sender: TGLBaseControl;
-      Shift: TShiftState; Action: TGLMouseAction; Button: TMouseButton; X,
+      Shift: TShiftState; Action: TGLMouseAction; Button: TGLMouseButton; X,
       Y: Integer; var accept: Boolean);
     procedure GLForm1Moving(Sender: TGLForm; var Left, Top: Single);
     procedure Open1Click(Sender: TObject);
@@ -160,7 +160,7 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  GuiRoot.MouseDown(Sender,Button,Shift,X,Y);
+  GuiRoot.MouseDown(Sender,TGLMouseButton(Button),Shift,X,Y);
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
@@ -172,7 +172,7 @@ end;
 procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  GuiRoot.MouseUp(Sender,Button,Shift,X,Y);
+  GuiRoot.MouseUp(Sender,TGLMouseButton(Button),Shift,X,Y);
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
@@ -193,7 +193,7 @@ begin
 end;
 
 procedure TForm1.GLCanvasMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+  Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   If Button = mbLeft then
   Begin
@@ -214,7 +214,7 @@ begin
 end;
 
 procedure TForm1.GLCanvasMouseUp(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+  Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   If Button = mbLeft then
   Begin
@@ -282,7 +282,7 @@ begin
 end;
 
 procedure TForm1.GLCanvasAcceptMouseQuery(Sender: TGLBaseControl;
-  Shift: TShiftState; Action: TGLMouseAction; Button: TMouseButton; X,
+  Shift: TShiftState; Action: TGLMouseAction; Button: TGLMouseButton; X,
   Y: Integer; var accept: Boolean);
 begin
 // Sender.KeepMouseEvents is set when drawing,

@@ -90,6 +90,8 @@ implementation
 
 {$R *.DFM}
 
+uses GLCrossPlatform;
+
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
@@ -114,7 +116,7 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  GLForm1.MouseDown(Sender,Button,Shift,X,Y);
+  GLForm1.MouseDown(Sender,TGLMouseButton(Button),Shift,X,Y);
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
@@ -126,7 +128,7 @@ end;
 procedure TForm1.GLSceneViewer1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  GLForm1.MouseUp(Sender,Button,Shift,X,Y);
+  GLForm1.MouseUp(Sender,TGLMouseButton(Button),Shift,X,Y);
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;

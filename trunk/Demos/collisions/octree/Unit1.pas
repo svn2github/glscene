@@ -128,7 +128,7 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
    if CheckBox1.Checked then
-      GLSceneViewer2MouseDown(Sender, mbLeft, [ssShift], mousex, mousey);
+      GLSceneViewer2MouseDown(Sender, TMouseButton(mbLeft), [ssShift], mousex, mousey);
 
    FreeForm1.RollAngle:=5*newTime; // 45° per second
 end;
