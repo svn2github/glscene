@@ -593,6 +593,7 @@ begin
          hd:=THeightData(hashList.List[j]);
          if hd.Tag=0 then begin
             hashList.Delete(j);
+            hd.OnDestroy:=nil;
             hd.Release;
          end;
       end;
