@@ -12,6 +12,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>03/05/04 - SG - Tri-mesh and various fixes/enhancements.
     <li>23/04/04 - SG - Fixes for object registration,
                         Exception raised now if ODE fails to initialize at run-time.
     <li>21/04/04 - SG - Changed to dynamic linking DelphiODE,
@@ -349,6 +350,7 @@ type
       FOwnerBaseSceneObject : TGLBaseSceneObject;
       procedure SetManager(Value : TGLODEManager);
       procedure SetSurface(value:TODECollisionSurface);
+      function GetAbsoluteMatrix : TMatrix;
     protected
       procedure Initialize; virtual;
       procedure Deinitialize; virtual;
@@ -360,6 +362,7 @@ type
       destructor Destroy; override;
       procedure Reinitialize;
       property Initialized : Boolean read FInitialized;
+      property AbsoluteMatrix : TMatrix read GetAbsoluteMatrix;
     published
       property Manager : TGLODEManager read FManager write SetManager;
       property Surface : TODECollisionSurface read FSurface write SetSurface;
@@ -379,7 +382,6 @@ type
       procedure SetMass(const Value : TdMass);
       function GetMass : TdMass;
       procedure AlignBodyToMatrix(Mat: TMatrix);
-      function GetAbsoluteMatrix : TMatrix;
       procedure SetEnabled(const Value : Boolean);
       function GetEnabled : Boolean;
     protected
@@ -406,7 +408,6 @@ type
       procedure AddTorque(Torque : TAffineVector);
       procedure AddRelTorque(Torque : TAffineVector);
 
-      property AbsoluteMatrix : TMatrix read GetAbsoluteMatrix;
       property Body : PdxBody read FBody;
       property Mass : TdMass read GetMass write SetMass;
     published
@@ -444,6 +445,7 @@ type
     private
       function GetElement(index : integer) : TODEBaseElement;
     public
+      destructor Destroy; override;
       class function ItemsClass : TXCollectionItemClass; override;
       procedure Initialize;
       procedure Deinitialize;
@@ -471,7 +473,6 @@ type
       FInitialized : Boolean;
       FDynamic : Boolean;
       procedure AlignGeomElementToMatrix(Mat:TMatrix);
-      procedure AlignGeomTransformToMatrix(Mat:TMatrix);
       procedure SetDensity(const Value: TdReal);
       procedure SetMatrix(const Value: TMatrix);
       function GetMatrix: TMatrix;
@@ -1772,13 +1773,13 @@ function TGLODEDummy.AddNewElement(AChild: TODEElementClass): TODEBaseElement;
 var
   calcmass : TdMass;
 begin
-  Result:=nil;
-  if not Assigned(Manager) then exit;
   Result:=AChild.Create(FElements);
   FElements.Add(Result);
-  Result.Initialize;
-  calcmass:=CalculateMass;
-  dBodySetMass(FBody,@calcmass);
+  if FInitialized then begin
+    Result.Initialize;
+    calcmass:=CalculateMass;
+    dBodySetMass(FBody,@calcmass);
+  end;
 end;
 
 // AlignObject
@@ -1842,9 +1843,9 @@ end;
 //
 destructor TGLODEDummy.Destroy;
 begin
+  inherited;
   FElements.Free;
   FColor.Free;
-  inherited;
 end;
 
 // Initialize
@@ -2080,6 +2081,16 @@ begin
   FSurface.Assign(value);
 end;
 
+// GetAbsoluteMatrix
+//
+function TGLODEBaseBehaviour.GetAbsoluteMatrix;
+begin
+  Result:=IdentityHMGMatrix;
+  if Assigned(Owner.Owner) then
+    if Owner.Owner is TGLBaseSceneObject then
+      Result:=TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
+end;
+
 
 // ------------------------------------------------------------------
 // TGLODEDynamicBehaviour
@@ -2098,8 +2109,8 @@ end;
 //
 destructor TGLODEDynamicBehaviour.Destroy;
 begin
-  FElements.Free;
   inherited;
+  FElements.Free;
 end;
 
 // FriendlyName
@@ -2211,13 +2222,6 @@ begin
   R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
   dBodySetRotation(FBody,R);
   dBodySetPosition(FBody,Mat[3][0],Mat[3][1],Mat[3][2]);
-end;
-
-// GetAbsoluteMatrix
-//
-function TGLODEDynamicBehaviour.GetAbsoluteMatrix;
-begin
-  Result:=TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
 end;
 
 // CalculateMass
@@ -2375,8 +2379,8 @@ end;
 //
 destructor TGLODEStaticBehaviour.Destroy;
 begin
-  FElements.Free;
   inherited;
+  FElements.Free;
 end;
 
 // FriendlyName
@@ -2460,13 +2464,21 @@ begin
   if not FInitialized then exit;
 
   for i:=0 to FElements.Count-1 do
-    TODEBaseElement(FElements[i]).AlignGeomTransformToMatrix(Mat);
+    TODEBaseElement(FElements[i]).AlignGeomElementToMatrix(TODEBaseElement(FElements[i]).AbsoluteMatrix);
 end;
 
 
 // ------------------------------------------------------------------
 // TODEElements Methods
 // ------------------------------------------------------------------
+
+// Destroy
+//
+destructor TODEElements.Destroy;
+begin
+  Deinitialize;
+  inherited;
+end;
 
 // GetElement
 //
@@ -2515,8 +2527,8 @@ begin
   Mat:=IdentityHMGMatrix;
   if Owner.Owner is TGLODEBaseObject then
     Mat:=TGLODEBaseObject(Owner.Owner).AbsoluteMatrix;
-  if Owner.Owner is TGLODEDynamicBehaviour then
-    Mat:=TGLODEDynamicBehaviour(Owner.Owner).AbsoluteMatrix;
+  if Owner.Owner is TGLODEBaseBehaviour then
+    Mat:=TGLODEBaseBehaviour(Owner.Owner).AbsoluteMatrix;
   Result:=MatrixMultiply(Mat,FLocalMatrix);
 end;
 
@@ -2541,21 +2553,6 @@ begin
   FRealignODE:=False;
 end;
 
-// AlignGeomTransformToMatrix
-//
-procedure TODEBaseElement.AlignGeomTransformToMatrix(Mat: TMatrix);
-var
-  R : TdMatrix3;
-begin
-  if not Assigned(FGeomTransform) then exit;
-  dGeomSetPosition(FGeomTransform,Mat[3][0],Mat[3][1],Mat[3][2]);
-  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
-  dGeomSetRotation(FGeomTransform,R);
-  FRealignODE:=False;
-end;
-
 // BuildList
 //
 procedure TODEBaseElement.BuildList(var rci: TRenderContextInfo);
@@ -2577,6 +2574,7 @@ begin
   FDensity:=1;
   FInitialized:=False;
   FDynamic:=IsDynamic(Owner.Owner);
+  FLocalMatrix:=IdentityHMGMatrix;
 end;
 
 // Destroy
@@ -2616,15 +2614,17 @@ begin
 
   if not Assigned(Manager.World) then exit;
 
-  FGeomTransform:=dCreateGeomTransform(Manager.Space);
-  if FDynamic then dGeomSetBody(FGeomTransform,Body);
-  dGeomTransformSetCleanup(FGeomTransform,0);
-  dGeomTransformSetGeom(FGeomTransform,FGeomElement);
-  dGeomSetData(FGeomTransform,Owner.Owner);
-
-  if not FDynamic then begin
-    if Owner.Owner is TGLODEBaseObject then
-      AlignGeomTransformToMatrix(TGLODEBaseObject(Owner.Owner).AbsoluteMatrix);
+  if FDynamic then begin
+    FGeomTransform:=dCreateGeomTransform(Manager.Space);
+    dGeomSetBody(FGeomTransform,Body);
+    dGeomTransformSetCleanup(FGeomTransform,0);
+    dGeomTransformSetGeom(FGeomTransform,FGeomElement);
+    dGeomSetData(FGeomTransform,Owner.Owner);
+    AlignGeomElementToMatrix(FLocalMatrix);
+  end else begin
+    dSpaceAdd(Manager.Space, FGeomElement);
+    dGeomSetData(FGeomElement,Owner.Owner);
+    AlignGeomElementToMatrix(AbsoluteMatrix);
   end;
 
   FInitialized:=True;
@@ -2637,8 +2637,10 @@ begin
   if not FInitialized then exit;
   if Assigned(FGeomTransform) then begin
     dGeomDestroy(FGeomTransform);
-    dGeomDestroy(FGeomElement);
     FGeomTransform:=nil;
+  end;
+  if Assigned(FGeomElement) then begin
+    dGeomDestroy(FGeomElement);
     FGeomElement:=nil;
   end;
   FInitialized:=False;
@@ -2757,8 +2759,11 @@ end;
 procedure TODEBaseElement.ODERebuild;
 begin
   if Initialized then begin
-    AlignGeomElementToMatrix(FLocalMatrix);
-    if FDynamic then CalculateMass;
+    if FDynamic then begin
+      CalculateMass;
+      AlignGeomElementToMatrix(FLocalMatrix);
+    end else
+      AlignGeomElementToMatrix(AbsoluteMatrix);
   end;
 end;
 
@@ -3684,9 +3689,11 @@ begin
   if not IsODEInitialized then exit;
   if FInitialized or not ((FVertices.Count>0) and (FIndices.Count>0)) then exit;
 
-  Assert(SizeOf(TdReal) = SizeOf(Single),'The tri-mesh collider is currently only available with single precision ODE.');
   FTriMeshData:=dGeomTriMeshDataCreate;
-  dGeomTriMeshDataBuildSimple(FTriMeshData, @FVertices.List[0], FVertices.Count, @FIndices.List[0], FIndices.Count);
+  dGeomTriMeshDataBuildSingle(FTriMeshData, @FVertices.List[0],
+                              3*SizeOf(Single), FVertices.Count,
+                              @FIndices.List[0], FIndices.Count,
+                              3*SizeOf(Integer));
   FGeomElement:=dCreateTriMesh(nil, FTriMeshData, nil, nil, nil);
 
   inherited;
@@ -3697,9 +3704,8 @@ end;
 procedure TODEElementTriMesh.Deinitialize;
 begin
   if not FInitialized then exit;
-
-  if Assigned(FTriMeshData) then dGeomTriMeshDataDestroy(FTriMeshData);
-
+  if Assigned(FTriMeshData) then
+    dGeomTriMeshDataDestroy(FTriMeshData);
   inherited;
 end;
 
@@ -3747,7 +3753,16 @@ end;
 // CalculateMass
 //
 function TODEElementTriMesh.CalculateMass: TdMass;
+var
+  r : Single;
+  min, max : TAffineVector;
 begin
+  if Vertices.Count>0 then begin
+    Vertices.GetExtents(min,max);
+    r:=MaxFloat(VectorLength(min), VectorLength(Max));
+  end else
+    r:=1;
+  dMassSetSphere(FMass,FDensity,r);
   result:=inherited CalculateMass;
 end;
 
@@ -3756,6 +3771,7 @@ end;
 procedure TODEElementTriMesh.SetVertices(const Value : TAffineVectorList);
 begin
   FVertices.Assign(Value);
+  RefreshTriMeshData;
 end;
 
 // SetIndices
@@ -3763,6 +3779,7 @@ end;
 procedure TODEElementTriMesh.SetIndices(const Value : TIntegerList);
 begin
   FIndices.Assign(Value);
+  RefreshTriMeshData;
 end;
 
 // RefreshTriMeshData
@@ -3937,11 +3954,10 @@ end;
 //
 function TGLODEStaticDummy.AddNewElement(AChild: TODEElementClass): TODEBaseElement;
 begin
-  Result:=nil;
-  if not Assigned(Manager) then exit;
   Result:=AChild.Create(FElements);
   FElements.Add(Result);
-  Result.Initialize;
+  if FInitialized then
+    Result.Initialize;
 end;
 
 // AlignElementsToMatrix
@@ -3953,7 +3969,7 @@ begin
   if not FInitialized then exit;
 
   for i:=0 to FElements.Count-1 do
-    TODEBaseElement(FElements[i]).AlignGeomTransformToMatrix(Mat);
+    TODEBaseElement(FElements[i]).AlignGeomElementToMatrix(TODEBaseElement(FElements[i]).AbsoluteMatrix);
 end;
 
 // BuildList
@@ -4003,9 +4019,9 @@ end;
 //
 destructor TGLODEStaticDummy.Destroy;
 begin
+  inherited;
   FElements.Free;
   FColor.Free;
-  inherited;
 end;
 
 // Initialize
