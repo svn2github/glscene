@@ -726,6 +726,7 @@ function VectorAbs(const v : TVector) : TVector; overload;
 
 procedure SetMatrix(var dest : THomogeneousDblMatrix; const src : TMatrix); overload;
 procedure SetMatrix(var dest : TAffineMatrix; const src : TMatrix); overload;
+procedure SetMatrix(var dest : TMatrix; const src : TAffineMatrix); overload;
 
 //: Creates scale matrix
 function CreateScaleMatrix(const v : TAffineVector) : TMatrix; overload;
@@ -1075,9 +1076,11 @@ procedure OffsetFloatArray(var values : array of Single;
                            delta : Single); overload;
 
 {: Returns the max of the X, Y and Z components of a vector (W is ignored). }
-function MaxXYZComponent(const v : TVector) : Single;
+function MaxXYZComponent(const v : TVector) : Single; overload;
+function MaxXYZComponent(const v: TAffineVector): single; overload;
 {: Returns the min of the X, Y and Z components of a vector (W is ignored). }
-function MinXYZComponent(const v : TVector) : Single;
+function MinXYZComponent(const v : TVector) : Single;overload;
+function MinXYZComponent(const v: TAffineVector): single; overload;
 {: Returns the max of the Abs(X), Abs(Y) and Abs(Z) components of a vector (W is ignored). }
 function MaxAbsXYZComponent(v : TVector) : Single;
 {: Returns the min of the Abs(X), Abs(Y) and Abs(Z) components of a vector (W is ignored). }
@@ -4153,6 +4156,16 @@ begin
    dest[2, 0]:=src[2, 0]; dest[2, 1]:=src[2, 1]; dest[2, 2]:=src[2, 2];
 end;
 
+// SetMatrix (affine->hmg)
+//
+procedure SetMatrix(var dest : TMatrix; const src : TAffineMatrix);
+begin
+   dest[0, 0]:=src[0, 0]; dest[0, 1]:=src[0, 1]; dest[0, 2]:=src[0, 2]; dest[0, 3]:=0;
+   dest[1, 0]:=src[1, 0]; dest[1, 1]:=src[1, 1]; dest[1, 2]:=src[1, 2]; dest[1, 3]:=0;
+   dest[2, 0]:=src[2, 0]; dest[2, 1]:=src[2, 1]; dest[2, 2]:=src[2, 2]; dest[2, 3]:=0;
+   dest[3, 0]:=0;         dest[3, 1]:=0;         dest[3, 2]:=0;         dest[3, 3]:=1;
+end;
+
 // CreateScaleMatrix (affine)
 //
 function CreateScaleMatrix(const V: TAffineVector): TMatrix; register;
@@ -6776,14 +6789,23 @@ end;
 
 // MaxXYZComponent
 //
-function MaxXYZComponent(const v : TVector) : Single;
+function MaxXYZComponent(const v : TVector) : Single; overload;
 begin
    Result:=MaxFloat(v[0], v[1], v[2]);
 end;
 
 // MaxXYZComponent
 //
-function MinXYZComponent(const v : TVector) : Single;
+function MaxXYZComponent(const v: TAffineVector): single; overload;
+begin
+     result:= v[0];
+     if v[1] > result then result:= v[1];
+     if v[2] > result then result:= v[2];
+end;
+
+// MinXYZComponent
+//
+function MinXYZComponent(const v : TVector) : Single; overload;
 begin
    if v[0]<=v[1] then
       if v[0]<=v[2] then
@@ -6796,6 +6818,15 @@ begin
    else if v[2]<=v[0] then
       Result:=v[2]
    else Result:=v[0];
+end;
+
+// MinXYZComponent
+//
+function MinXYZComponent(const v: TAffineVector): single; overload;
+begin
+     result:= v[0];
+     if v[1] < result then result:= v[1];
+     if v[2] < result then result:= v[2];
 end;
 
 // MaxAbsXYZComponent

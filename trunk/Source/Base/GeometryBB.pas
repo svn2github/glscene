@@ -3,7 +3,8 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>07/02/03 - EG - Added IntersectAABBsAbsoluteXY (Dan Bartlett) 
+      <li>08/05/03 - DanB - Added Plane/Triangle-AABB collisions (Matheus Degiovani)
+      <li>07/02/03 - EG - Added IntersectAABBsAbsoluteXY (Dan Bartlett)
       <li>22/01/03 - EG - IntersectAABBs moved in (Bernd Klaiber)
       <li>04/09/03 - EG - New AABB functions
       <li>17/08/01 - EG - Removed "math" dependency
@@ -63,6 +64,14 @@ function AABBToBB(const anAABB : TAABB; const m : TMatrix) : THmgBoundingBox; ov
 function IntersectAABBs(const aabb1, aabb2 : TAABB; const m1To2, m2To1 : TMatrix) : Boolean; overload;
 {: Checks whether two Bounding boxes aligned with the world axes collide in the XY plane.<p> }
 function IntersectAABBsAbsoluteXY(const aabb1, aabb2 : TAABB) : Boolean;
+
+{: Checks if a point "p" is inside an AABB}
+function PointInAABB(const p: TAffineVector; const aabb: TAABB): boolean;
+
+{: Checks if a plane (given by the normal+d) intersects the AABB}
+function PlaneIntersectAABB(Normal: TAffineVector; d: single; aabb: TAABB): boolean;
+{: Checks if a triangle (given by vertices v1, v2 and v3) intersects an AABB}
+function TriangleIntersectAABB(const aabb: TAABB; v1, v2, v3: TAffineVector): boolean;
 
 type
    TPlanIndices = array [0..3] of Integer;
@@ -444,6 +453,89 @@ begin
   else if (AABB2.max[0]<AABB1.min[0])or (AABB2.max[1]<AABB1.min[1]) then Exit
   else Result:=true;
 
+end;
+
+// PointInAABB
+//
+function PointInAABB(const p: TAffineVector; const aabb: TAABB): boolean;
+begin
+     result:= (p[0] <= aabb.max[0]) and (p[0] >= aabb.min[0]) and
+              (p[1] <= aabb.max[1]) and (p[1] >= aabb.min[1]) and
+              (p[2] <= aabb.max[2]) and (p[2] >= aabb.min[2]);
+end;
+
+// PlaneIntersectAABB
+//
+function PlaneIntersectAABB(Normal: TAffineVector; d: single; aabb: TAABB): boolean;
+var
+vmax, vmin: TAffineVector;
+i: integer;
+begin
+     result:= false;
+     for i:= 0 to 2 do
+          if normal[i] > 0.0 then begin
+               vMin[i]:= aabb.min[i];
+               vMax[i]:= aabb.max[i];
+          end else begin
+               vMin[i]:= aabb.max[i];
+               vMax[i]:= aabb.min[i];
+          end;
+
+     if VectorDotProduct(normal, vmin) + d > 0 then Exit;
+     if VectorDotProduct(normal, vmax) + d >= 0 then result:= true;
+end;
+
+// TriangleIntersectAABB
+//
+function TriangleIntersectAABB(const aabb: TAABB;
+v1, v2, v3: TAffineVector): boolean;
+var
+d, min, max: single;
+a, normal: TAffineVector;
+f, e: array[1..3] of TAffineVector;
+i, j: integer;
+p1, p2, p3, r: single;
+begin
+     result:= false;
+
+     VectorSubtract(v2, v1, f[1]);  //f0 = v1 - v0
+     VectorSubtract(v3, v2, f[2]);  //f1 = v2 - v1
+     VectorSubtract(v1, v3, f[3]);  //f2 = v0 - v2
+
+     e[1]:= XVector;
+     e[2]:= YVector;
+     e[3]:= ZVector;
+
+     //test 3
+     min:= MinXYZComponent(affineVectorMake(v1[0], v2[0], v3[0]));
+     max:= MaxXYZComponent(affineVectorMake(v1[0], v2[0], v3[0]));
+     if (min > aabb.max[0]) or (max < aabb.min[0]) then exit;
+
+     min:= MinXYZComponent(affineVectorMake(v1[1], v2[1], v3[1]));
+     max:= MaxXYZComponent(affineVectorMake(v1[1], v2[1], v3[1]));
+     if (min > aabb.max[1]) or (max < aabb.min[1]) then exit;
+
+     min:= MinXYZComponent(affineVectorMake(v1[2], v2[2], v3[2]));
+     max:= MaxXYZComponent(affineVectorMake(v1[2], v2[2], v3[2]));
+     if (min > aabb.max[2]) or (max < aabb.min[2]) then exit;
+
+     //test 2
+     VectorCrossProduct(f[1], f[2], normal);
+     d:= -VectorDotProduct(normal, v1);
+     if not PlaneIntersectAABB(normal, d, aabb) then exit;
+
+     //test 3
+     for i:= 1 to 3 do
+          for j:= 1 to 3 do begin
+               VectorCrossProduct(e[i], f[j], a);
+               p1:= VectorDotProduct(a, v1);
+               p2:= VectorDotProduct(a, v2);
+               p3:= VectorDotProduct(a, v3);
+               r:= aabb.max[0] * abs(a[0]) + aabb.max[1] * abs(a[1]) + aabb.max[2] * abs(a[2]);
+               if (MinFloat(p1, p2, p3) > r) or (maxFloat(p1, p2, p3) < -r) then exit;
+          end;
+
+     result:= true;
 end;
 
 end.
