@@ -2975,10 +2975,7 @@ begin
             Position.Scale(lerpInfos[i].weight);
          case TransformMode of
             sftRotation : begin
-               if Assigned(lerpInfos[i].externalRotations) then
-                  blendRotations:=lerpInfos[i].externalRotations
-               else
-                  blendRotations:=TAffineVectorList.Create;
+               blendRotations:=TAffineVectorList.Create;
                // lerp first item separately
                Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
                                   Frames[lerpInfos[i].frameIndex2].Rotation,
@@ -2986,23 +2983,21 @@ begin
                Inc(i);
                // combine the other items
                while i<=High(lerpInfos) do begin
-                  if not Assigned(lerpInfos[i].externalRotations) then
+                  if not Assigned(lerpInfos[i].externalRotations) then begin
                      blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
                                               Frames[lerpInfos[i].frameIndex2].Rotation,
                                               lerpInfos[i].lerpFactor);
-                  Rotation.AngleCombine(blendRotations, 1);
-                  //Rotation.AngleCombine(Frames[0].Rotation, -1);
+                     Rotation.AngleCombine(blendRotations, 1);
+                  end else
+                     Rotation.AngleCombine(lerpInfos[i].externalRotations, 1);
+                  Rotation.AngleCombine(Frames[0].Rotation, -1);
                   Inc(i);
                end;
-               if not Assigned(lerpInfos[i].externalRotations) then
-                  blendRotations.Free;
+               blendRotations.Free;
             end;
 
             sftQuaternion : begin
-               if Assigned(lerpInfos[i].externalQuaternions) then
-                  blendQuaternions:=lerpInfos[i].externalQuaternions
-               else
-                  blendQuaternions:=TQuaternionList.Create;
+               blendQuaternions:=TQuaternionList.Create;
                // Initial frame lerp
                Quaternion.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
                                Frames[lerpInfos[i].frameIndex2].Quaternion,
@@ -3010,15 +3005,16 @@ begin
                Inc(i);
                // Combine the lerped frames together
                while i<=High(lerpInfos) do begin
-                  if not Assigned(lerpInfos[i].externalQuaternions) then
+                  if not Assigned(lerpInfos[i].externalQuaternions) then begin
                      blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
                                            Frames[lerpInfos[i].frameIndex2].Quaternion,
                                            lerpInfos[i].lerpFactor);
-                  Quaternion.Combine(blendQuaternions, 1);
+                     Quaternion.Combine(blendQuaternions, 1);
+                  end else
+                     Quaternion.Combine(lerpInfos[i].externalQuaternions, 1);
                   Inc(i);
                end;
-               if not Assigned(lerpInfos[i].externalQuaternions) then
-                  blendQuaternions.Free;
+               blendQuaternions.Free;
             end;
          end;
       end;
