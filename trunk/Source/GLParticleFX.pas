@@ -31,6 +31,10 @@ interface
 uses Classes, PersistentClasses, GLScene, VectorGeometry, XCollection, GLTexture,
      GLCadencer, GLMisc, VectorLists, GLGraphics, GLContext;
 
+const
+   cPFXNbRegions = 128;     // number of distance regions
+   cPFXGranularity = 128;   // granularity of particles per region
+
 type
 
    TGLParticleList = class;
@@ -269,6 +273,22 @@ type
 
    end;
 
+   // PFX region rendering structures
+
+   TParticleReference = packed record
+      particle : TGLParticle;
+      distance : Integer;  // stores an IEEE single!
+   end;
+   PParticleReference = ^TParticleReference;
+   TParticleReferenceArray = packed array [0..MaxInt shr 4] of TParticleReference;
+   PParticleReferenceArray = ^TParticleReferenceArray;
+   TPFXRegion = packed record
+      count, capacity : Integer;
+      particleRef : PParticleReferenceArray;
+      particleOrder : PPointerList;
+   end;
+   PPFXRegion = ^TPFXRegion;
+
    // TGLParticleFXRenderer
    //
    {: Rendering interface for scene-wide particle FX.<p>
@@ -286,6 +306,7 @@ type
          FZWrite, FZTest, FZCull : Boolean;
 			FBlendingMode : TBlendingMode;
          FCurrentRCI : PRenderContextInfo;
+         FRegions : array [0..cPFXNbRegions-1] of TPFXRegion;
 
       protected
          { Protected Declarations }
@@ -1256,7 +1277,14 @@ end;
 // Destroy
 //
 destructor TGLParticleFXRenderer.Destroy;
+var
+   i : Integer;
 begin
+   for i:=0 to cPFXNbRegions-1 do begin
+      FreeMem(FRegions[i].particleRef);
+      FreeMem(FRegions[i].particleOrder);
+   end;
+
    UnRegisterAll;
    FManagerList.Free;
    inherited Destroy;
@@ -1302,31 +1330,14 @@ procedure TGLParticleFXRenderer.BuildList(var rci : TRenderContextInfo);
    in a very efficient manner if all values are superior to 1, which is ensured
    by the distance calculation and a fixed offset of 1.
 }
-const
-   cNbRegions = 128;     // number of distance regions
-   cGranularity = 128;   // granularity of particles per region
-
 type
    PInteger = ^Integer;
    PSingle = ^Single;
-   TParticleReference = record
-      particle : TGLParticle;
-      distance : Integer;  // stores an IEEE single!
-   end;
-   PParticleReference = ^TParticleReference;
-   TParticleReferenceArray = array [0..MaxInt shr 4] of TParticleReference;
-   PParticleReferenceArray = ^TParticleReferenceArray;
-   TRegion = record
-      count, capacity : Integer;
-      particleRef : PParticleReferenceArray;
-      particleOrder : PPointerList;
-   end;
-   PRegion = ^TRegion;
 var
    dist, distDelta, invRegionSize : Single;
    managerIdx, particleIdx, regionIdx : Integer;
 
-   procedure QuickSortRegion(startIndex, endIndex : Integer; region : PRegion);
+   procedure QuickSortRegion(startIndex, endIndex : Integer; region : PPFXRegion);
    var
       I, J : Integer;
       P : Integer;
@@ -1374,13 +1385,12 @@ var
    end;
 
 var
-   regions : array [0..cNbRegions-1] of TRegion;
    minDist, maxDist : Integer;
    curManager : TGLParticleFXManager;
    curManagerList : TGLParticleList;
    curList : PGLParticleArray;
    curParticle : TGLParticle;
-   curRegion : PRegion;
+   curRegion : PPFXRegion;
    curParticleOrder : PPointerArray;
    cameraPos, cameraVector : TAffineVector;
    timer : Int64;
@@ -1394,12 +1404,11 @@ begin
    with Scene.CurrentGLCamera do begin
       PSingle(@minDist)^:=NearPlane+1;
       PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
-      invRegionSize:=(cNbRegions-2)/DepthOfView;
+      invRegionSize:=(cPFXNbRegions-2)/DepthOfView;
       distDelta:=NearPlane+1+0.49999/invRegionSize
    end;
    SetVector(cameraPos, rci.cameraPosition);
    SetVector(cameraVector, rci.cameraDirection);
-   FillChar(regions[0], cNbRegions*SizeOf(TRegion), 0);
    try
       // Collect particles
       // only depth-clipping performed as of now.
@@ -1410,15 +1419,17 @@ begin
             curParticle:=curList[particleIdx];
             dist:=PointProject(curParticle.FPosition, cameraPos, cameraVector)+1;
             if not FZCull then begin
-               if PInteger(@dist)^<minDist then PInteger(@dist)^:=minDist;
+               if PInteger(@dist)^<minDist then
+                  PInteger(@dist)^:=minDist;
             end;
             if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
                DistToRegionIdx;
-               curRegion:=@regions[regionIdx];
+               curRegion:=@FRegions[regionIdx];
                // add particle to region
                if curRegion.count=curRegion.capacity then begin
-                  Inc(curRegion.capacity, cGranularity);
+                  Inc(curRegion.capacity, cPFXGranularity);
                   ReallocMem(curRegion.particleRef, curRegion.capacity*SizeOf(TParticleReference));
+                  ReallocMem(curRegion.particleOrder, curRegion.capacity*SizeOf(Pointer));
                end;
                with curRegion.particleRef[curRegion.count] do begin
                   particle:=curParticle;
@@ -1429,19 +1440,17 @@ begin
          end;
       end;
       // Sort regions
-      for regionIdx:=0 to cNbRegions-1 do begin
-         curRegion:=@regions[regionIdx];
+      for regionIdx:=0 to cPFXNbRegions-1 do begin
+         curRegion:=@FRegions[regionIdx];
          if curRegion.count>1 then begin
             // Prepare order table
-            GetMem(curRegion.particleOrder, curRegion.Count*SizeOf(Pointer));
-            with curRegion^ do for particleIdx:=0 to Count-1 do
+            with curRegion^ do for particleIdx:=0 to count-1 do
                particleOrder[particleIdx]:=@particleRef[particleIdx];
             // QuickSort
             if FBlendingMode<>bmAdditive then
                QuickSortRegion(0, curRegion.count-1, curRegion);
          end else if curRegion.Count=1 then begin
             // Prepare order table
-            GetMem(curRegion.particleOrder, SizeOf(Pointer));
             curRegion.particleOrder[0]:=@curRegion.particleRef[0];
          end;
       end;
@@ -1483,8 +1492,8 @@ begin
          try
             curManager:=nil;
             curManagerList:=nil;
-            for regionIdx:=cNbRegions-1 downto 0 do begin
-               curRegion:=@regions[regionIdx];
+            for regionIdx:=cPFXNbRegions-1 downto 0 do begin
+               curRegion:=@FRegions[regionIdx];
                if curRegion.count>0 then begin
                   curParticleOrder:=@curRegion.particleOrder[0];
                   for particleIdx:=curRegion.count-1 downto 0 do begin
@@ -1521,11 +1530,8 @@ begin
       end;
    finally
       // cleanup
-      for regionIdx:=cNbRegions-1 downto 0 do begin
-         curRegion:=@regions[regionIdx];
-         FreeMem(curRegion.particleRef);
-         Freemem(curRegion.particleOrder);
-      end;
+      for regionIdx:=cPFXNbRegions-1 downto 0 do
+         FRegions[regionIdx].count:=0;
    end;
 end;
 
