@@ -32,6 +32,7 @@ type
     GLLines1: TGLLines;
     GLShadowPlane_Wall2: TGLShadowPlane;
     GLShadowPlane_Wall3: TGLShadowPlane;
+    CheckBox_Bald: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -44,6 +45,7 @@ type
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure CheckBox_FurGravityClick(Sender: TObject);
     procedure CheckBox_WindResistenceClick(Sender: TObject);
+    procedure CheckBox_BaldClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -211,6 +213,7 @@ begin
     end;
 
     PositionSceneObject(FurBall, odeFurBallGeom);
+    VCSphere.Location := FurBall.Position.AsAffineVector;
     VerletWorld.Progress(cTIME_STEP, PhysicsTime);
   end;
 
@@ -271,9 +274,9 @@ begin
 end;
 
 const
-  cRadiusMultiplier = 3;
-  cSegmentCount = 4;
-  cHairCount = 150;
+  cRadiusMultiplier = 5;
+  cSegmentCount = 6;
+  cHairCount = 200;
   cRootDepth = 4;
 procedure TfrmFurBall.CreateFur;
 var
@@ -293,7 +296,7 @@ var
     Hair := TVerletHair.Create(VerletWorld, FurBall.Radius * cRootDepth,
       FurBall.Radius*cRadiusMultiplier, cSegmentCount,
       VectorAdd(AffineVectorMake(FurBall.AbsolutePosition), VectorScale(Dir, FurBall.Radius)),
-      Dir);
+      Dir, [vhsSkip1Node, vhsSkip2Node]);
 
     //GLLines := TGLLines(GLScene1.Objects.AddNewChild(TGLLines));
     GLLines := TGLLines(DCShadowCaster.AddNewChild(TGLLines));
@@ -346,4 +349,19 @@ begin
   end;
 end;
 
+procedure TfrmFurBall.CheckBox_BaldClick(Sender: TObject);
+var
+  i, j : integer;
+begin
+  for i := 0 to HairList.Count -1 do
+  begin
+    with TVerletHair(HairList[i]) do
+    begin
+      Anchor.NailedDown := not CheckBox_Bald.Checked;
+      Anchor.OldLocation := Anchor.Location;
+      Root.NailedDown := not CheckBox_Bald.Checked;
+      Root.OldLocation := Root.Location;
+    end;
+  end;
+end;
 end.

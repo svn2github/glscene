@@ -20,7 +20,7 @@ object frmFurBall: TfrmFurBall
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 287
+    Left = 327
     Top = 2
     Width = 160
     Height = 13
@@ -48,7 +48,7 @@ object frmFurBall: TfrmFurBall
     TabOrder = 1
   end
   object CheckBox_FurGravity: TCheckBox
-    Left = 88
+    Left = 72
     Top = 0
     Width = 81
     Height = 17
@@ -59,7 +59,7 @@ object frmFurBall: TfrmFurBall
     OnClick = CheckBox_FurGravityClick
   end
   object CheckBox_WindResistence: TCheckBox
-    Left = 176
+    Left = 160
     Top = 0
     Width = 105
     Height = 17
@@ -68,6 +68,15 @@ object frmFurBall: TfrmFurBall
     State = cbChecked
     TabOrder = 3
     OnClick = CheckBox_WindResistenceClick
+  end
+  object CheckBox_Bald: TCheckBox
+    Left = 272
+    Top = 0
+    Width = 49
+    Height = 17
+    Caption = 'Bald'
+    TabOrder = 4
+    OnClick = CheckBox_BaldClick
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
@@ -99,7 +108,7 @@ object frmFurBall: TfrmFurBall
     object DCShadowCaster: TGLDummyCube
       CubeSize = 1.000000000000000000
       object FurBall: TGLSphere
-        Material.FrontProperties.Diffuse.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
+        Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Specular.Color = {B1A8A83EB1A8A83EB1A8A83E0000803F}
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D61676593050000FFD8FFE000104A46494600010101004800
@@ -148,6 +157,7 @@ object frmFurBall: TfrmFurBall
           C47F8709E208DF56D26354D5506648C702E00FFD9BD0F7E87DBF63F0FF00C407
           8471CB33397EEF684DFD9FEECBFBBD9FD9F4DBC8C5E1392F529AD3AAFD57EA8F
           FFD9}
+        Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
         Position.Coordinates = {000000000000C0BF000040400000803F}
         Radius = 0.250000000000000000

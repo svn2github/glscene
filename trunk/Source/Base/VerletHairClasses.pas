@@ -15,9 +15,14 @@ unit VerletHairClasses;
 interface
 
 uses
-  Classes, VerletClasses, VectorTypes, VectorLists, VectorGeometry;
+  Classes, SysUtils, VerletClasses, VectorTypes, VectorLists, VectorGeometry;
 
 type
+  TVHStiffness = (vhsFull, vhsSkip1Node, vhsSkip2Node, vhsSkip3Node,
+    vhsSkip4Node, vhsSkip5Node, vhsSkip6Node, vhsSkip7Node, vhsSkip8Node,
+    vhsSkip9Node);
+  TVHStiffnessSet = set of TVHStiffness;
+
   TVerletHair = class
   private
     FNodeList: TVerletNodeList;
@@ -26,17 +31,24 @@ type
     FVerletWorld: TVerletWorld;
     FHairLength: single;
     FData: pointer;
+    FStiffness: TVHStiffnessSet;
+    FStiffnessList : TList;
     function GetAnchor: TVerletNode;
     function GetRoot: TVerletNode;
     function GetLinkLength: single;
-  protected
-    procedure BuildHair(const AAnchorPosition, AHairDirection: TAffineVector);
+    procedure AddStickStiffness(const ANodeSkip : integer);
+    procedure SetStiffness(const Value: TVHStiffnessSet);
   public
+    procedure BuildHair(const AAnchorPosition, AHairDirection: TAffineVector);
+
+    procedure BuildStiffness;
+    procedure ClearStiffness;
     procedure Clear;
 
     constructor Create(const AVerletWorld : TVerletWorld;
       const ARootDepth, AHairLength : single; ALinkCount : integer;
-      const AAnchorPosition, AHairDirection : TAffineVector);
+      const AAnchorPosition, AHairDirection : TAffineVector;
+      const AStiffness : TVHStiffnessSet);
 
     destructor Destroy; override;
 
@@ -47,6 +59,8 @@ type
     property LinkLength : single read GetLinkLength;
     property LinkCount : integer read FLinkCount;
     property HairLength : single read FHairLength;
+
+    property Stiffness : TVHStiffnessSet read FStiffness write SetStiffness;
 
     property Data : pointer read FData write FData;
 
@@ -60,6 +74,14 @@ type
 implementation
 
 { TVerletHair }
+
+procedure TVerletHair.AddStickStiffness(const ANodeSkip: integer);
+var
+  i : integer;
+begin
+  for i := 0 to NodeList.Count-(1+ANodeSkip*2) do
+    FStiffnessList.Add(VerletWorld.CreateStick(NodeList[i], NodeList[i+2*ANodeSkip]));
+end;
 
 procedure TVerletHair.BuildHair(const AAnchorPosition, AHairDirection: TAffineVector);
 var
@@ -98,8 +120,32 @@ begin
   end;
 
   // Now we must stiffen the hair with either sticks or springs
-  for i := 0 to NodeList.Count-3 do
-    VerletWorld.CreateStick(NodeList[i], NodeList[i+2]);
+  BuildStiffness;
+end;
+
+procedure TVerletHair.BuildStiffness;
+var
+  i : integer;
+begin
+  ClearStiffness;
+
+  if vhsFull in FStiffness then
+  begin
+    for i := 1 to 100 do
+      AddStickStiffness(i);
+      
+    exit;
+  end;
+
+  if vhsSkip1Node in FStiffness then AddStickStiffness(1);
+  if vhsSkip2Node in FStiffness then AddStickStiffness(2);
+  if vhsSkip3Node in FStiffness then AddStickStiffness(3);
+  if vhsSkip4Node in FStiffness then AddStickStiffness(4);
+  if vhsSkip5Node in FStiffness then AddStickStiffness(5);
+  if vhsSkip6Node in FStiffness then AddStickStiffness(6);
+  if vhsSkip7Node in FStiffness then AddStickStiffness(7);
+  if vhsSkip8Node in FStiffness then AddStickStiffness(8);
+  if vhsSkip9Node in FStiffness then AddStickStiffness(9);
 end;
 
 procedure TVerletHair.Clear;
@@ -110,11 +156,21 @@ begin
     FNodeList[i].Free;
 
   FNodeList.Clear;
+  FStiffnessList.Clear;
+end;
+
+procedure TVerletHair.ClearStiffness;
+var
+  i : integer;
+begin
+  for i := 0 to FStiffnessList.Count-1 do
+    TVerletConstraint(FStiffnessList[i]).Free;
 end;
 
 constructor TVerletHair.Create(const AVerletWorld : TVerletWorld;
       const ARootDepth, AHairLength : single; ALinkCount : integer;
-      const AAnchorPosition, AHairDirection : TAffineVector);
+      const AAnchorPosition, AHairDirection : TAffineVector;
+      const AStiffness : TVHStiffnessSet);
 begin
   FVerletWorld := AVerletWorld;
   FRootDepth := ARootDepth;
@@ -122,6 +178,8 @@ begin
   FHairLength := AHairLength;
 
   FNodeList := TVerletNodeList.Create;
+  FStiffness := AStiffness;
+  FStiffnessList := TList.Create;
 
   BuildHair(AAnchorPosition, AHairDirection);
 end;
@@ -129,6 +187,8 @@ end;
 destructor TVerletHair.Destroy;
 begin
   Clear;
+  FreeAndNil(FNodeList);
+  FreeAndNil(FStiffnessList);
   inherited;
 end;
 
@@ -148,6 +208,12 @@ end;
 function TVerletHair.GetRoot: TVerletNode;
 begin
   result := NodeList[0];
+end;
+
+procedure TVerletHair.SetStiffness(const Value: TVHStiffnessSet);
+begin
+  FStiffness := Value;
+  BuildStiffness;
 end;
 
 end.
