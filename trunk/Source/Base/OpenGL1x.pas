@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/09/03 - EG - Added GL_NV_occlusion_query, dropped some more oldies
       <li>09/09/03 - EG - Added GL_ARB_vertex_buffer_object, dropped some oldies
       <li>04/09/03 - EG - Added GL_ARB_vertex_program
       <li>23/07/03 - EG - Creation from OpenGL12.pas "morph": classic OpenGL
@@ -178,15 +179,11 @@ type
 
    GL_HP_occlusion_test,
 
-   GL_IBM_cull_vertex,
-   GL_IBM_multimode_draw_arrays,
    GL_IBM_rasterpos_clip,
-   GL_IBM_vertex_array_lists,
 
    GL_KTX_buffer_region,
 
    GL_MESA_resize_buffers,
-   GL_MESA_window_pos,
 
    GL_NV_blend_square,
    GL_NV_fog_distance,
@@ -199,6 +196,7 @@ type
    GL_NV_vertex_program,
    GL_NV_multisample_filter_hint,
    GL_NV_fence,
+   GL_NV_occlusion_query,
 
    GL_SGI_color_matrix,
 
@@ -210,11 +208,9 @@ type
    GL_SGIS_texture_edge_clamp,
    GL_SGIS_texture_lod,
 
-   GL_SGIX_convolution_accuracy,
    GL_SGIX_depth_texture,
    GL_SGIX_shadow,
    GL_SGIX_shadow_ambient,
-   GL_SGIX_subsample,
 
    GL_WIN_swap_hint,
 
@@ -1299,6 +1295,12 @@ type
    GL_FENCE_STATUS_NV                                = $84F3;
    GL_FENCE_CONDITION_NV                             = $84F4;
 
+   // NV_occlusion_query
+   GL_PIXEL_COUNTER_BITS_NV                          = $8864;
+   GL_CURRENT_OCCLUSION_QUERY_ID_NV                  = $8865;
+   GL_PIXEL_COUNT_NV                                 = $8866;
+   GL_PIXEL_COUNT_AVAILABLE_NV                       = $8867;
+
    // EXT_texture_env_combine
    GL_COMBINE_EXT                                    = $8570;
    GL_COMBINE_RGB_EXT                                = $8571;
@@ -1816,34 +1818,6 @@ type
    GL_COMPRESSED_RGBA_S3TC_DXT3_EXT                 = $83F2;
    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT                 = $83F3;
 
-   // GL_IBM_cull_vertex
-   GL_CULL_VERTEX_IBM                               = 103050;
-
-   // GL_IBM_vertex_array_lists
-   GL_VERTEX_ARRAY_LIST_IBM                         = 103070;
-   GL_NORMAL_ARRAY_LIST_IBM                         = 103071;
-   GL_COLOR_ARRAY_LIST_IBM                          = 103072;
-   GL_INDEX_ARRAY_LIST_IBM                          = 103073;
-   GL_TEXTURE_COORD_ARRAY_LIST_IBM                  = 103074;
-   GL_EDGE_FLAG_ARRAY_LIST_IBM                      = 103075;
-   GL_FOG_COORDINATE_ARRAY_LIST_IBM                 = 103076;
-   GL_SECONDARY_COLOR_ARRAY_LIST_IBM                = 103077;
-   GL_VERTEX_ARRAY_LIST_STRIDE_IBM                  = 103080;
-   GL_NORMAL_ARRAY_LIST_STRIDE_IBM                  = 103081;
-   GL_COLOR_ARRAY_LIST_STRIDE_IBM                   = 103082;
-   GL_INDEX_ARRAY_LIST_STRIDE_IBM                   = 103083;
-   GL_TEXTURE_COORD_ARRAY_LIST_STRIDE_IBM           = 103084;
-   GL_EDGE_FLAG_ARRAY_LIST_STRIDE_IBM               = 103085;
-   GL_FOG_COORDINATE_ARRAY_LIST_STRIDE_IBM          = 103086;
-   GL_SECONDARY_COLOR_ARRAY_LIST_STRIDE_IBM         = 103087;
-
-   // GL_SGIX_subsample
-   GL_PACK_SUBSAMPLE_RATE_SGIX                      = $85A0;
-   GL_UNPACK_SUBSAMPLE_RATE_SGIX                    = $85A1;
-   GL_PIXEL_SUBSAMPLE_4444_SGIX                     = $85A2;
-   GL_PIXEL_SUBSAMPLE_2424_SGIX                     = $85A3;
-   GL_PIXEL_SUBSAMPLE_4242_SGIX                     = $85A4;
-
    // GL_3DFX_texture_compression_FXT1
    GL_COMPRESSED_RGB_FXT1_3DFX                      = $86B0;
    GL_COMPRESSED_RGBA_FXT1_3DFX                     = $86B1;
@@ -1871,9 +1845,6 @@ type
    GL_SAMPLE_MASK_VALUE_EXT                         = $80AA;
    GL_SAMPLE_MASK_INVERT_EXT                        = $80AB;
    GL_SAMPLE_PATTERN_EXT                            = $80AC;
-
-   // GL_SGIX_convolution_accuracy
-   GL_CONVOLUTION_HINT_SGIX                         = $8316;
 
    // GL_SGIS_texture_color_mask
    GL_TEXTURE_COLOR_WRITEMASK_SGIS                  = $81EF;
@@ -3149,48 +3120,17 @@ var
    glIsFenceNV: function(fence: TGLuint): TGLboolean; stdcall;
    glGetFenceivNV: procedure(fence: TGLuint; pname: TGLenum; params: PGLint); stdcall;
 
+   // GL_NV_occlusion_query
+   glGenOcclusionQueriesNV: procedure(n: TGLsizei; ids: PGLuint); stdcall;
+   glDeleteOcclusionQueriesNV: procedure(n: TGLsizei; const ids: PGLuint); stdcall;
+   glIsOcclusionQueryNV: function(id: TGLuint): TGLboolean; stdcall;
+   glBeginOcclusionQueryNV: procedure(id: TGLuint); stdcall;
+   glEndOcclusionQueryNV: procedure; stdcall;
+   glGetOcclusionQueryivNV: procedure(id: TGLuint; pname: TGLenum; params: PGLint); stdcall;
+   glGetOcclusionQueryuivNV: procedure(id: TGLuint; pname: TGLenum; params: PGLuint); stdcall;
+
    // GL_MESA_resize_buffers
    glResizeBuffersMESA: procedure; stdcall;
-
-   // GL_MESA_window_pos
-   glWindowPos2dMESA: procedure(x, y: TGLdouble); stdcall;
-   glWindowPos2dvMESA: procedure(v: PGLdouble); stdcall;
-   glWindowPos2fMESA: procedure(x, y: TGLfloat); stdcall;
-   glWindowPos2fvMESA: procedure(v: PGLfloat); stdcall;
-   glWindowPos2iMESA: procedure(x, y: TGLint); stdcall;
-   glWindowPos2ivMESA: procedure(v: PGLint); stdcall;
-   glWindowPos2sMESA: procedure(x, y: TGLshort); stdcall;
-   glWindowPos2svMESA: procedure(v: PGLshort); stdcall;
-   glWindowPos3dMESA: procedure(x, y, z: TGLdouble); stdcall;
-   glWindowPos3dvMESA: procedure(v: PGLdouble); stdcall;
-   glWindowPos3fMESA: procedure(x, y, z: TGLfloat); stdcall;
-   glWindowPos3fvMESA: procedure(v: PGLfloat); stdcall;
-   glWindowPos3iMESA: procedure(x, y, z: TGLint); stdcall;
-   glWindowPos3ivMESA: procedure(v: PGLint); stdcall;
-   glWindowPos3sMESA: procedure(x, y, z: TGLshort); stdcall;
-   glWindowPos3svMESA: procedure(v: PGLshort); stdcall;
-   glWindowPos4dMESA: procedure(x, y, z, w: TGLdouble); stdcall;
-   glWindowPos4dvMESA: procedure(v: PGLdouble); stdcall;
-   glWindowPos4fMESA: procedure(x, y, z, w: TGLfloat); stdcall;
-   glWindowPos4fvMESA: procedure(v: PGLfloat); stdcall;
-   glWindowPos4iMESA: procedure(x, y, z, w: TGLint); stdcall;
-   glWindowPos4ivMESA: procedure(v: PGLint); stdcall;
-   glWindowPos4sMESA: procedure(x, y, z, w: TGLshort); stdcall;
-   glWindowPos4svMESA: procedure(v: PGLshort); stdcall;
-
-   // GL_IBM_multimode_draw_arrays
-   glMultiModeDrawArraysIBM: procedure(mode: TGLenum; First: PGLint; Count: PGLsizei; primcount: TGLsizei; modestride: TGLint); stdcall;
-   glMultiModeDrawElementsIBM: procedure(mode: PGLenum; Count: PGLsizei; Atype: TGLenum; var indices; primcount: TGLsizei; modestride: TGLint); stdcall;
-
-   // GL_IBM_vertex_array_lists
-   glColorPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); stdcall;
-   glSecondaryColorPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); stdcall;
-   glEdgeFlagPointerListIBM: procedure(stride: TGLint; var p: PGLboolean; ptrstride: TGLint); stdcall;
-   glFogCoordPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); stdcall;
-   glIndexPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); stdcall;
-   glNormalPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); stdcall;
-   glTexCoordPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); stdcall;
-   glVertexPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); stdcall;
 
    // GL_3DFX_tbuffer
    glTbufferMask3DFX: procedure(mask: TGLuint); stdcall;
@@ -3798,7 +3738,7 @@ begin
    glFogCoordPointerEXT := wglGetProcAddress('glFogCoordPointerEXT'); 
 
    // GL_EXT_blend_func_separate
-   glBlendFuncSeparateEXT := wglGetProcAddress('glBlendFuncSeparateEXT'); 
+   glBlendFuncSeparateEXT := wglGetProcAddress('glBlendFuncSeparateEXT');
 
    // GL_EXT_vertex_weighting
    glVertexWeightfEXT := wglGetProcAddress('glVertexWeightfEXT'); 
@@ -3821,7 +3761,7 @@ begin
    glFinalCombinerInputNV := wglGetProcAddress('glFinalCombinerInputNV'); 
    glGetCombinerInputParameterfvNV := wglGetProcAddress('glGetCombinerInputParameterfvNV');
    glGetCombinerInputParameterivNV := wglGetProcAddress('glGetCombinerInputParameterivNV'); 
-   glGetCombinerOutputParameterfvNV := wglGetProcAddress('glGetCombinerOutputParameterfvNV'); 
+   glGetCombinerOutputParameterfvNV := wglGetProcAddress('glGetCombinerOutputParameterfvNV');
    glGetCombinerOutputParameterivNV := wglGetProcAddress('glGetCombinerOutputParameterivNV'); 
    glGetFinalCombinerInputParameterfvNV := wglGetProcAddress('glGetFinalCombinerInputParameterfvNV'); 
    glGetFinalCombinerInputParameterivNV := wglGetProcAddress('glGetFinalCombinerInputParameterivNV');
@@ -3835,58 +3775,27 @@ begin
    glIsFenceNV := wglGetProcAddress('glIsFenceNV');
    glGetFenceivNV := wglGetProcAddress('glGetFenceivNV');
 
+   // GL_NV_occlusion_query
+   glGenOcclusionQueriesNV := wglGetProcAddress('glGenOcclusionQueriesNV');
+   glDeleteOcclusionQueriesNV := wglGetProcAddress('glDeleteOcclusionQueriesNV');
+   glIsOcclusionQueryNV := wglGetProcAddress('glIsOcclusionQueryNV');
+   glBeginOcclusionQueryNV := wglGetProcAddress('glBeginOcclusionQueryNV');
+   glEndOcclusionQueryNV := wglGetProcAddress('glEndOcclusionQueryNV');
+   glGetOcclusionQueryivNV := wglGetProcAddress('glGetOcclusionQueryivNV');
+   glGetOcclusionQueryuivNV := wglGetProcAddress('glGetOcclusionQueryuivNV');
+
    // GL_MESA_resize_buffers
    glResizeBuffersMESA := wglGetProcAddress('glResizeBuffersMESA');
-
-   // GL_MESA_window_pos
-   glWindowPos2dMESA := wglGetProcAddress('glWindowPos2dMESA'); 
-   glWindowPos2dvMESA := wglGetProcAddress('glWindowPos2dvMESA'); 
-   glWindowPos2fMESA := wglGetProcAddress('glWindowPos2fMESA'); 
-   glWindowPos2fvMESA := wglGetProcAddress('glWindowPos2fvMESA'); 
-   glWindowPos2iMESA := wglGetProcAddress('glWindowPos2iMESA'); 
-   glWindowPos2ivMESA := wglGetProcAddress('glWindowPos2ivMESA'); 
-   glWindowPos2sMESA := wglGetProcAddress('glWindowPos2sMESA'); 
-   glWindowPos2svMESA := wglGetProcAddress('glWindowPos2svMESA'); 
-   glWindowPos3dMESA := wglGetProcAddress('glWindowPos3dMESA');
-   glWindowPos3dvMESA := wglGetProcAddress('glWindowPos3dvMESA'); 
-   glWindowPos3fMESA := wglGetProcAddress('glWindowPos3fMESA');
-   glWindowPos3fvMESA := wglGetProcAddress('glWindowPos3fvMESA');
-   glWindowPos3iMESA := wglGetProcAddress('glWindowPos3iMESA'); 
-   glWindowPos3ivMESA := wglGetProcAddress('glWindowPos3ivMESA'); 
-   glWindowPos3sMESA := wglGetProcAddress('glWindowPos3sMESA');
-   glWindowPos3svMESA := wglGetProcAddress('glWindowPos3svMESA'); 
-   glWindowPos4dMESA := wglGetProcAddress('glWindowPos4dMESA'); 
-   glWindowPos4dvMESA := wglGetProcAddress('glWindowPos4dvMESA'); 
-   glWindowPos4fMESA := wglGetProcAddress('glWindowPos4fMESA'); 
-   glWindowPos4fvMESA := wglGetProcAddress('glWindowPos4fvMESA'); 
-   glWindowPos4iMESA := wglGetProcAddress('glWindowPos4iMESA'); 
-   glWindowPos4ivMESA := wglGetProcAddress('glWindowPos4ivMESA'); 
-   glWindowPos4sMESA := wglGetProcAddress('glWindowPos4sMESA'); 
-   glWindowPos4svMESA := wglGetProcAddress('glWindowPos4svMESA'); 
-
-   // GL_IBM_multimode_draw_arrays
-   glMultiModeDrawArraysIBM := wglGetProcAddress('glMultiModeDrawArraysIBM');
-   glMultiModeDrawElementsIBM := wglGetProcAddress('glMultiModeDrawElementsIBM'); 
-
-   // GL_IBM_vertex_array_lists
-   glColorPointerListIBM := wglGetProcAddress('glColorPointerListIBM'); 
-   glSecondaryColorPointerListIBM := wglGetProcAddress('glSecondaryColorPointerListIBM'); 
-   glEdgeFlagPointerListIBM := wglGetProcAddress('glEdgeFlagPointerListIBM'); 
-   glFogCoordPointerListIBM := wglGetProcAddress('glFogCoordPointerListIBM'); 
-   glIndexPointerListIBM := wglGetProcAddress('glIndexPointerListIBM'); 
-   glNormalPointerListIBM := wglGetProcAddress('glNormalPointerListIBM'); 
-   glTexCoordPointerListIBM := wglGetProcAddress('glTexCoordPointerListIBM'); 
-   glVertexPointerListIBM := wglGetProcAddress('glVertexPointerListIBM'); 
 
    // GL_3DFX_tbuffer
    glTbufferMask3DFX := wglGetProcAddress('glTbufferMask3DFX');
 
    // GL_EXT_multisample
-   glSampleMaskEXT := wglGetProcAddress('glSampleMaskEXT'); 
+   glSampleMaskEXT := wglGetProcAddress('glSampleMaskEXT');
    glSamplePatternEXT := wglGetProcAddress('glSamplePatternEXT');
 
    // GL_SGIS_texture_color_mask
-   glTextureColorMaskSGIS := wglGetProcAddress('glTextureColorMaskSGIS'); 
+   glTextureColorMaskSGIS := wglGetProcAddress('glTextureColorMaskSGIS');
 
    // GLU extensions
    gluNurbsCallbackDataEXT := wglGetProcAddress('gluNurbsCallbackDataEXT');
@@ -4147,15 +4056,11 @@ begin
 
    GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test'); 
 
-   GL_IBM_cull_vertex := CheckExtension('GL_IBM_cull_vertex');
-   GL_IBM_multimode_draw_arrays := CheckExtension('GL_IBM_multimode_draw_arrays'); 
-   GL_IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip'); 
-   GL_IBM_vertex_array_lists := CheckExtension('GL_IBM_vertex_array_lists'); 
+   GL_IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip');
 
    GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region');
 
    GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers'); 
-   GL_MESA_window_pos := CheckExtension('GL_MESA_window_pos');
 
    GL_NV_blend_square := CheckExtension('GL_NV_blend_square'); 
    GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance'); 
@@ -4168,8 +4073,9 @@ begin
    GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
    GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
    GL_NV_fence := CheckExtension('GL_NV_fence');
+   GL_NV_occlusion_query := CheckExtension('GL_NV_occlusion_query');
 
-   GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix'); 
+   GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
 
    GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
    GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample');
@@ -4179,11 +4085,9 @@ begin
    GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp');
    GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
 
-   GL_SGIX_convolution_accuracy := CheckExtension('GL_SGIX_convolution_accuracy');
    GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture'); 
    GL_SGIX_shadow := CheckExtension('GL_SGIX_shadow'); 
    GL_SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient');
-   GL_SGIX_subsample := CheckExtension('GL_SGIX_subsample');
 
    GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint'); 
 
@@ -4507,7 +4411,7 @@ end;
 function IsOpenGLLoaded: Boolean;
 begin
    // compatibility routine
-  Result := GLHandle <> INVALID_MODULEHANDLE;
+  Result:=(GLHandle<>INVALID_MODULEHANDLE);
 end;
 
 // IsMesaGL
@@ -4524,7 +4428,6 @@ initialization
 finalization
 
    CloseOpenGL;
-   // We don't need to reset the FPU control word as the previous set call is process specific.
-  
+
 end.
 
