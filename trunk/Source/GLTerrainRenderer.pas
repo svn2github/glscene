@@ -61,7 +61,7 @@ type
 
 	   protected
 	      { Protected Declarations }
-         FTilesHash : array [0..511] of TList;
+         FTilesHash : array [0..1023] of TList;
 
          procedure MarkAllTilesAsUnused;
          procedure ReleaseAllUnusedTiles;
@@ -602,7 +602,8 @@ end;
 //
 function TGLTerrainRenderer.HashKey(const xLeft, yTop : Integer) : Integer;
 begin
-   Result:=(xLeft+(xLeft shr 8)+(yTop shl 1)+(yTop shr 7)) and High(FTilesHash);
+   Result:=( xLeft+(xLeft shr 6)+(xLeft shr 12)
+            +(yTop shl 1)+(yTop shr 5)+(yTop shr 11)) and High(FTilesHash);
 end;
 
 // HashedTile
