@@ -446,9 +446,11 @@ begin
    bmp:=SpawnBitmap;
    for y:=0 to sy-1 do begin
       for x:=0 to sx-1 do with bmAlpha.Canvas do begin
-         minNeighbour:=MinInteger(MinInteger(Pixels[x, y-1], Pixels[x, y+1]),
-                                  MinInteger(Pixels[x-1, y], Pixels[x+1, y]));
-         bmp.Canvas.Pixels[x, y]:=minNeighbour;
+         if Pixels[x, y]>0 then begin
+            minNeighbour:=MinInteger(MinInteger(Pixels[x, y-1], Pixels[x, y+1]),
+                                     MinInteger(Pixels[x-1, y], Pixels[x+1, y]));
+            bmp.Canvas.Pixels[x, y]:=MinInteger(minNeighbour, Pixels[x, y]);
+         end else bmp.Canvas.Pixels[x, y]:=0;
       end;
    end;
    IMAlpha.Picture.Bitmap:=bmp;
@@ -470,9 +472,11 @@ begin
    bmp:=SpawnBitmap;
    for y:=0 to sy-1 do begin
       for x:=0 to sx-1 do with bmAlpha.Canvas do begin
-         maxNeighbour:=MaxInteger(MaxInteger(Pixels[x, y-1], Pixels[x, y+1]),
-                                  MaxInteger(Pixels[x-1, y], Pixels[x+1, y]));
-         bmp.Canvas.Pixels[x, y]:=maxNeighbour;
+         if Pixels[x, y]<clWhite then begin
+            maxNeighbour:=MaxInteger(MaxInteger(Pixels[x, y-1], Pixels[x, y+1]),
+                                     MaxInteger(Pixels[x-1, y], Pixels[x+1, y]));
+            bmp.Canvas.Pixels[x, y]:=MaxInteger(maxNeighbour, Pixels[x, y]);
+         end else bmp.Canvas.Pixels[x, y]:=clWhite;
       end;
    end;
    IMAlpha.Picture.Bitmap:=bmp;
