@@ -767,5 +767,4 @@ procedure TVertextStatsList.SetItems(i: integer;
 begin
   put(i, Value);
 end;
-
 end.
