@@ -3254,8 +3254,8 @@ begin
    FColors:=TVectorList.Create;
    FFaceGroups:=TFaceGroups.CreateOwned(Self);
    FTexCoordsEx:=TList.Create;
-   FBinormalsTexCoordIndex:=2;
-   FTangentsTexCoordIndex:=3;
+   FTangentsTexCoordIndex:=2;
+   FBinormalsTexCoordIndex:=3;
    inherited;
 end;
 
