@@ -12,6 +12,9 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>20/12/04 - SG - TGLODEStatic objects now realign geoms on step,
+                        Fix for Hinge2 and Universal joints,
+                        Fix for TGLODEDynamic.Enabled property persistence.
     <li>10/12/04 - SG - Added TODEElementPlane,
                         Fixed TODEElementCone.Render function.
     <li>09/12/04 - Mathx - Added getX and getOrCreateX functions.
@@ -371,7 +374,7 @@ type
       procedure Finalize; override;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
-      procedure AlignElementsToMatrix(Mat:TMatrix);
+      procedure AlignElements;
 
     public
       { Public Declarations }
@@ -786,6 +789,9 @@ type
 
   end;
 
+  TJointOption = (joBothObjectsMustBeAssigned);
+  TJointOptions = set of TJointOption;
+
   // TODEJointBase
   //
   {: Base structures for ODE Joints. }
@@ -801,6 +807,7 @@ type
       FManagerName : String;
       FInitialized,
       FEnabled : Boolean;
+      FJointOptions : TJointOptions;
 
     protected
       { Protected Declarations }
@@ -821,6 +828,10 @@ type
       procedure SetObject1(const Value : TGLBaseSceneObject);
       procedure SetObject2(const Value : TGLBaseSceneObject);
       procedure SetEnabled(const Value : Boolean);
+
+      procedure SetJointOptions(const Value : TJointOptions);
+
+      property JointOptions : TJointOptions read FJointOptions write SetJointOptions;
 
     public
       { Public Declarations }
@@ -1532,6 +1543,12 @@ begin
   // Reset the contact joint counter
   FNumContactJoints:=0;
 
+  // Align static elements to their GLScene parent objects
+  for i:=0 to FODEBehaviours.Count-1 do
+    if ODEBehaviours[i] is TGLODEStatic then
+      if ODEBehaviours[i].Initialized then
+        TGLODEStatic(ODEBehaviours[i]).AlignElements;
+
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace,Self,nearCallback);
   case FSolver of
@@ -1542,11 +1559,10 @@ begin
   dJointGroupEmpty(FContactGroup);
 
   // Align dynamic objects to their ODE bodies
-  for i:=0 to FODEBehaviours.Count-1 do begin
-    if ODEBehaviours[i].Initialized then
-      if ODEBehaviours[i] is TGLODEDynamic then
+  for i:=0 to FODEBehaviours.Count-1 do
+    if ODEBehaviours[i] is TGLODEDynamic then
+      if ODEBehaviours[i].Initialized then
         TGLODEDynamic(ODEBehaviours[i]).AlignObject;
-  end;
 
   // Process rolling friction
   Coeff:=0;
@@ -2173,19 +2189,30 @@ procedure TGLODEDynamic.WriteToFiler(writer : TWriter);
 begin
   inherited;
   with writer do begin
-    WriteInteger(0); // Archive version
+    WriteInteger(1); // Archive version
     FElements.WriteToFiler(writer);
+    writer.WriteBoolean(FEnabled);
   end;
 end;
 
 // ReadFromFiler
 //
 procedure TGLODEDynamic.ReadFromFiler(reader : TReader);
+var
+  archiveVersion : Integer;
 begin
   inherited;
   with reader do begin
-    Assert(ReadInteger = 0); // Archive version
+    archiveVersion:=ReadInteger;
+    Assert((archiveVersion >= 0) and (archiveVersion<=1)); // Archive version
+
+    // version 0
     FElements.ReadFromFiler(reader);
+
+    // version 1
+    if archiveVersion>=1 then begin
+      FEnabled:=ReadBoolean;
+    end;
   end;
 end;
 
@@ -2305,14 +2332,11 @@ end;
 //
 procedure TGLODEDynamic.SetEnabled(const Value : Boolean);
 begin
-  if Assigned(FBody) then
-    if Value <> Enabled then begin
-      FEnabled:=Value;
-      if Assigned(FBody) then begin
-        if FEnabled then dBodyEnable(FBody)
-        else dBodyDisable(FBody);
-      end;
-    end;
+  FEnabled:=Value;
+  if Assigned(FBody) then begin
+    if FEnabled then dBodyEnable(FBody)
+    else dBodyDisable(FBody);
+  end;
 end;
 
 // GetEnabled
@@ -2497,9 +2521,9 @@ begin
   Result.Initialize;
 end;
 
-// AlignElementsToMatrix
+// AlignElements
 //
-procedure TGLODEStatic.AlignElementsToMatrix(Mat:TMatrix);
+procedure TGLODEStatic.AlignElements;
 var
   i : Integer;
 begin
@@ -4313,6 +4337,10 @@ begin
     Body2:=nil;
   end;
 
+  if (joBothObjectsMustBeAssigned in JointOptions) then
+    if not (Assigned(Body1) and Assigned(Body2)) then
+      Exit;
+
   dJointAttach(FJointID,Body1,Body2);
   if Assigned(Body1) or Assigned(Body2) then
     StructureChanged;
@@ -4395,7 +4423,20 @@ begin
   if JointID<>0 then begin
     body1:=dJointGetBody(JointID, 0);
     body2:=dJointGetBody(JointID, 1);
-    Result:=Assigned(body1) or Assigned(body2);
+    if joBothObjectsMustBeAssigned in JointOptions then
+      Result:=Assigned(body1) and Assigned(body2)
+    else
+      Result:=Assigned(body1) or Assigned(body2);
+  end;
+end;
+
+// SetJointOptions
+//
+procedure TODEJointBase.SetJointOptions(const Value : TJointOptions);
+begin
+  if Value<>FJointOptions then begin
+    FJointOptions:=Value;
+    Attach;
   end;
 end;
 
@@ -4915,13 +4956,17 @@ begin
   inherited;
 end;
 
-// Initialize
+
+// ---------------
+// --------------- TODEJointBall ---------------
+// ---------------
+
+// Create
 //
 procedure TODEJointBall.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateBall(FManager.World,0);
+  FJointID:=dJointCreateBall(FManager.World,0);
   inherited;
 end;
 
@@ -5013,8 +5058,7 @@ end;
 procedure TODEJointSlider.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateSlider(FManager.World,0);
+  FJointID:=dJointCreateSlider(FManager.World,0);
   inherited;
 end;
 
@@ -5123,8 +5167,7 @@ end;
 procedure TODEJointFixed.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateFixed(FManager.World,0);
+  FJointID:=dJointCreateFixed(FManager.World,0);
   inherited;
 end;
 
@@ -5184,6 +5227,8 @@ begin
   FAxis2Params:=TODEJointParams.Create(Self);
   FAxis2Params.SetCallback:=SetAxis2Param;
   FAxis2Params.GetCallback:=GetAxis2Param;
+
+  JointOptions:=[joBothObjectsMustBeAssigned];
 end;
 
 // Destroy
@@ -5202,11 +5247,7 @@ end;
 procedure TODEJointHinge2.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateHinge2(FManager.World,0);
-  AnchorChange(nil);
-  Axis1Change(nil);
-  Axis2Change(nil);
+  FJointID:=dJointCreateHinge2(FManager.World,0);
   inherited;
 end;
 
@@ -5400,6 +5441,8 @@ begin
   FAxis2Params:=TODEJointParams.Create(Self);
   FAxis2Params.SetCallback:=SetAxis2Param;
   FAxis2Params.GetCallback:=GetAxis2Param;
+
+  JointOptions:=[joBothObjectsMustBeAssigned];
 end;
 
 // Destroy
@@ -5418,8 +5461,7 @@ end;
 procedure TODEJointUniversal.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
-  if FJointID=0 then
-    FJointID:=dJointCreateUniversal(FManager.World,0);
+  FJointID:=dJointCreateUniversal(FManager.World,0);
   inherited;
 end;
 

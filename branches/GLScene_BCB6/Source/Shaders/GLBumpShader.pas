@@ -22,6 +22,8 @@
    texture lookups.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/12/04 - SG - Added light attenutation support through the 
+                          boLightAttenutation option in the BumpOptions property.
       <li>27/10/04 - SG - Added boUseSecondaryTexCoords option to BumpOptions
       <li>11/10/04 - SG - Added SpecularMode to define the specular highlight equation,
                           Removed the boDisableSpecular bump option (depricated).
@@ -59,7 +61,11 @@ type
 
    TBumpSpace = (bsObject, bsTangentExternal, bsTangentQuaternion);
 
-   TBumpOption = (boDiffuseTexture2, boSpecularTexture3, boUseSecondaryTexCoords);
+   TBumpOption = ( boDiffuseTexture2,       // Use secondary texture as diffuse
+                   boSpecularTexture3,      // Use tertiary texture as specular
+                   boUseSecondaryTexCoords, // Pass through secondary texcoords
+                   boLightAttenuation       // Use light attenuation
+                  );
    TBumpOptions = set of TBumpOption;
 
    TSpecularMode = (smOff, smBlinn, smPhong);
@@ -185,26 +191,55 @@ begin
    VP.Add('!!ARBvp1.0');
    VP.Add('OPTION ARB_position_invariant;');
 
+   VP.Add('PARAM mv[4] = { state.matrix.modelview };');
    VP.Add('PARAM mvinv[4] = { state.matrix.modelview.inverse };');
    VP.Add('PARAM mvit[4] = { state.matrix.modelview.invtrans };');
    VP.Add('PARAM tex[4] = { state.matrix.texture[0] };');
    if boUseSecondaryTexCoords in BumpOptions then
      VP.Add('PARAM tex2[4] = { state.matrix.texture[1] };');
    VP.Add('PARAM lightPos = program.local[0];');
+   VP.Add('PARAM lightAtten = program.local[1];');
    if BumpSpace = bsTangentExternal then begin
       VP.Add('ATTRIB tangent = vertex.texcoord[1];');
       VP.Add('ATTRIB binormal = vertex.texcoord[2];');
       VP.Add('ATTRIB normal = vertex.normal;');
    end;
-   VP.Add('TEMP temp, temp2, light, eye;');
+   VP.Add('TEMP temp, temp2, light, eye, atten;');
 
-   VP.Add('   DP4 light.x, mvinv[0], lightPos;');
-   VP.Add('   DP4 light.y, mvinv[1], lightPos;');
-   VP.Add('   DP4 light.z, mvinv[2], lightPos;');
-   VP.Add('   ADD light, light, -vertex.position;');
+   if (boLightAttenuation in BumpOptions) then begin
+
+      VP.Add('   DP4 temp.x, mv[0], vertex.position;');
+      VP.Add('   DP4 temp.y, mv[1], vertex.position;');
+      VP.Add('   DP4 temp.z, mv[2], vertex.position;');
+      VP.Add('   ADD light, lightPos, -temp;');
+
+      VP.Add('   DP3 atten.y, light, light;');
+      VP.Add('   RSQ atten.y, atten.y;');
+      if BumpMethod = bmDot3TexCombiner then begin
+         VP.Add('   RCP atten.y, atten.y;');
+         VP.Add('   MUL atten.z, atten.y, atten.y;');
+         VP.Add('   MAD atten.x, lightAtten.y, atten.y, lightAtten.x;');
+         VP.Add('   MAD atten.x, lightAtten.z, atten.z, atten.x;');
+         VP.Add('   RCP atten.x, atten.x;');
+      end else if BumpMethod = bmBasicARBFP then begin
+         // Store the distance in atten.x for ARBFP,
+         // fragment program will calculate attenutation
+         VP.Add('   RCP atten.x, atten.y;');
+      end;
+
+      VP.Add('   DP3 temp.x, mvinv[0], light;');
+      VP.Add('   DP3 temp.y, mvinv[1], light;');
+      VP.Add('   DP3 temp.z, mvinv[2], light;');
+      VP.Add('   MOV light, temp;');
+   end else begin
+      VP.Add('   DP4 light.x, mvinv[0], lightPos;');
+      VP.Add('   DP4 light.y, mvinv[1], lightPos;');
+      VP.Add('   DP4 light.z, mvinv[2], lightPos;');
+      VP.Add('   ADD light, light, -vertex.position;');
+   end;
 
    if DoSpecular then
-      VP.Add('   ADD eye, mvit[3], -vertex.position;');
+      VP.Add('   ADD temp, mvit[3], -vertex.position;');
 
    if DoTangent then begin
       if BumpSpace = bsTangentExternal then begin
@@ -262,14 +297,19 @@ begin
          VP.Add('   RSQ temp, temp.x;');
          VP.Add('   MUL light, temp.x, light;');
       end;
-      VP.Add('   ADD temp, light, 1.0;');
-      VP.Add('   MUL temp, 0.5, temp;');
-      VP.Add('   MOV result.color, temp;');
+
+      if boLightAttenuation in BumpOptions then
+         VP.Add('   MUL light, atten.x, light;');
+
+      VP.Add('   MAD result.color, light, 0.5, 0.5;');
       VP.Add('   MOV result.color.w, 1.0;');
 
    end else if BumpMethod = bmBasicARBFP then begin
 
-      VP.Add('   MOV light.w, 0.0;');
+      if boLightAttenuation in BumpOptions then
+         VP.Add('   MOV light.w, atten.x;')
+      else
+         VP.Add('   MOV light.w, 0.0;');
       if DoSpecular then
          VP.Add('   MOV eye.w, 0.0;');
 
@@ -303,7 +343,7 @@ begin
       if DoSpecular then
          VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], eye;');
    end;
-
+   
    VP.Add('END');
 
    FVertexProgram.Assign(VP);
@@ -343,10 +383,11 @@ begin
 
    FP.Add('PARAM lightDiffuse = program.local[0];');
    FP.Add('PARAM lightSpecular = program.local[1];');
+   FP.Add('PARAM lightAtten = program.local[2];');
    FP.Add('PARAM materialDiffuse = state.material.diffuse;');
    FP.Add('PARAM materialSpecular = state.material.specular;');
    FP.Add('PARAM shininess = state.material.shininess;');
-   FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec, textureColor, reflect;');
+   FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec, textureColor, reflect, atten;');
 
    // Get the normalized normal vector
    FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(normalTexCoords)+'], texture[0], 2D;');
@@ -356,7 +397,10 @@ begin
    FP.Add('   MUL normal, normal, temp.x;');
 
    // Get the normalized light vector
-   FP.Add('   DP3 light, fragment.texcoord['+IntToStr(lightTexCoords)+'], fragment.texcoord['+IntToStr(lightTexCoords)+'];');
+   FP.Add('   MOV light, fragment.texcoord['+IntToStr(lightTexCoords)+'];');
+   if boLightAttenuation in BumpOptions then
+      FP.Add('   MOV atten.x, light.w;');
+   FP.Add('   DP3 light, light, light;');
    FP.Add('   RSQ light, light.x;');
    FP.Add('   MUL light, fragment.texcoord['+IntToStr(lightTexCoords)+'], light.x;');
 
@@ -404,9 +448,19 @@ begin
 
    // Output
    if DoSpecular then
-      FP.Add('   ADD_SAT result.color, diff, spec;')
+      FP.Add('   ADD temp, diff, spec;')
    else
-      FP.Add('   MOV result.color, diff;');
+      FP.Add('   MOV temp, diff;');
+
+   if boLightAttenuation in BumpOptions then begin
+      FP.Add('   MUL atten.y, atten.x, atten.x;');
+      FP.Add('   MAD atten.x, lightAtten.y, atten.x, lightAtten.x;');
+      FP.Add('   MAD atten.x, lightAtten.z, atten.y, atten.x;');
+      FP.Add('   RCP atten.x, atten.x;');
+      FP.Add('   MUL temp, temp, atten.x;');
+   end;
+
+   FP.Add('   MOV_SAT result.color, temp;');
    FP.Add('   MOV result.color.w, 1.0;');
 
    FP.Add('END');
@@ -420,14 +474,22 @@ end;
 //
 procedure TGLBumpShader.DoLightPass(lightID : Cardinal);
 var
-   lightDiffuse, materialDiffuse : TColorVector;
    dummyHandle, tempHandle : Integer;
-   light : TVector;
+   lightPos, lightAtten,
+   materialDiffuse, lightDiffuse, lightSpecular : TVector;
 begin
    glEnable(GL_VERTEX_PROGRAM_ARB);
    glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVertexProgramHandles[0]);
-   glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_POSITION, @light.Coord[0]);
-   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @light.Coord[0]);
+
+   // Set the light position to program.local[0]
+   glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_POSITION, @lightPos.Coord[0]);
+   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.Coord[0]);
+
+   // Set the light attenutation to program.local[1]
+   glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_CONSTANT_ATTENUATION, @lightAtten.Coord[0]);
+   glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_LINEAR_ATTENUATION, @lightAtten.Coord[1]);
+   glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_QUADRATIC_ATTENUATION, @lightAtten.Coord[2]);
+   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten.Coord[0]);
 
    case FBumpMethod of
       bmDot3TexCombiner : begin
@@ -464,10 +526,11 @@ begin
       bmBasicARBFP : begin
          glEnable(GL_FRAGMENT_PROGRAM_ARB);
          glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FFragmentProgramHandles[0]);
-         glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_DIFFUSE, @light.Coord[0]);
-         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @light.Coord[0]);
-         glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_SPECULAR, @light.Coord[0]);
-         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @light.Coord[0]);
+         glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_DIFFUSE, @lightDiffuse.Coord[0]);
+         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @lightDiffuse.Coord[0]);
+         glGetLightfv(GL_LIGHT0+FLightIDs[0], GL_SPECULAR, @lightSpecular.Coord[0]);
+         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @lightSpecular.Coord[0]);
+         glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 2, @lightAtten.Coord[0]);
       end;
 
   else
