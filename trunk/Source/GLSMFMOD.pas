@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/10/03 - EG - Dynamic support is back
       <li>18/09/03 - ARH - updated for fmod 3.7
       <li>24/09/02 - EG - FMOD activation errors no longer result in Asserts (ignored)
       <li>28/08/02 - EG - Fixed EAX capability detection
@@ -78,7 +79,7 @@ implementation
 // ---------------------------------------------------------------------
 
 
-uses SysUtils, FMod, Geometry, FModPresets, FModtypes;
+uses SysUtils, FMod, Geometry;
 
 type
    TFMODInfo =  record
@@ -126,8 +127,7 @@ function TGLSMFMOD.DoActivate : Boolean;
 var
    cap : Cardinal;
 begin
-// ARH changed API in 3.7 expects a libname pchar unused?
-   FMOD_Load('fmod');
+   FMOD_Load;
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then begin
       Result:=False;
       Exit;
@@ -225,11 +225,12 @@ var
 begin
    if aSource.ManagerTag<>0 then begin
       p:=PFMODInfo(aSource.ManagerTag);
+      aSource.ManagerTag:=0;
       if p.channel<>-1 then
-         if not FSOUND_StopSound(p.channel) then Assert(False);
+         if not FSOUND_StopSound(p.channel) then
+            Assert(False, IntToStr(Integer(p)));
       FSOUND_Sample_Free(p.pfs);
       FreeMem(p);
-      aSource.ManagerTag:=0;
    end;
 end;
 
@@ -245,18 +246,16 @@ begin
    if aSource.ManagerTag<>0 then begin
       p:=PFMODInfo(aSource.ManagerTag);
       if not FSOUND_IsPlaying(p.channel) then begin
+         p.channel:=-1;
          aSource.Free;
          Exit;
       end;
    end else begin
       p:=AllocMem(SizeOf(TFMODInfo));
       p.channel:=-1;
-// ARH fmod 3.7 changed FSOUND_Sample_Load API to include an offset.
-// Unsure of appropriate value so used a zero offset
       p.pfs:=FSOUND_Sample_Load(FSOUND_FREE, aSource.Sample.Data.WAVData,
                                 FSOUND_HW3D+FSOUND_LOOP_OFF+FSOUND_LOADMEMORY,
-                                0, //offset?
-                                aSource.Sample.Data.WAVDataSize);
+                                0, aSource.Sample.Data.WAVDataSize);
 
       if aSource.NbLoops>1 then
          FSOUND_Sample_SetMode(p.pfs, FSOUND_LOOP_NORMAL);
@@ -274,8 +273,8 @@ begin
    VectorToFMODVector(objVel, velocity);
    if p.channel=-1 then
       p.channel:=FSOUND_PlaySound(FSOUND_FREE, p.pfs);
-   FSOUND_3D_SetAttributes(p.channel, @position, @velocity);
    if p.channel<>-1 then begin
+      FSOUND_3D_SetAttributes(p.channel, @position, @velocity);
       FSOUND_SetVolume(p.channel, Round(aSource.Volume*255));
       FSOUND_SetPriority(p.channel, aSource.Priority);
       if aSource.Frequency>0 then
