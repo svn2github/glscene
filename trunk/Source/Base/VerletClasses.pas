@@ -220,7 +220,18 @@ type
 
          property Location : TAffineVector read FLocation write FLocation;
 
+         {: The force that this collider has experienced while correcting the
+         verlet possitions. This force can be applied to ODE bodies, for
+         instance }
          property KickbackForce : TAffineVector read FKickbackForce write FKickbackForce;
+         {: The torque that this collider has experienced while correcting the
+         verlet possitions, in reference to the center of the collider. The
+         torque  force can be applied to ODE bodies, but it must first be
+         translated. A torque can be trasnalted by <p>
+         <p>
+         EM(b) = EM(a) + EF x VectorSubtract(b, a). <p>
+         <P>
+         Simply adding the torque to the body will NOT work correctly. }
          property KickbackTorque : TAffineVector read FKickbackTorque write FKickbackTorque;
 
          procedure AddKickbackForceAt(const Pos : TAffineVector; const Force : TAffineVector);
