@@ -22,7 +22,9 @@ unit OpenGL1x;
 
 interface
 
-{$i GLScene.inc}
+{$i ..\GLScene.inc}
+
+{.$define MULTITHREADOPENGL}
 
 uses
   VectorTypes,
@@ -102,11 +104,19 @@ type
 
    PPointer = ^Pointer;
 
- {$ifdef MULTITHREADOPENGL}
- threadvar
- {$else}
- var
- {$endif}
+  PWGLSwap = ^TWGLSwap;
+  _WGLSWAP = packed record
+    hdc: HDC;
+    uiFlags: UINT;
+  end;
+  TWGLSwap = _WGLSWAP;
+  WGLSWAP = _WGLSWAP;
+
+{$ifdef MULTITHREADOPENGL}
+threadvar
+{$else}
+var
+{$endif}
    GL_VERSION_1_0,
    GL_VERSION_1_1,
    GL_VERSION_1_2,
@@ -3321,9 +3331,13 @@ uses SysUtils;
 type                                   
   EOpenGLException= class(Exception);
   
+{$ifdef MULTITHREADOPENGL}
 threadvar
-  LastPixelFormat: Integer; 
-  ActivationRefCount: Integer;       
+{$else}
+var
+{$endif}
+   LastPixelFormat: Integer;
+   ActivationRefCount: Integer;       
 
 {$ifdef Win32}
 const
@@ -3370,7 +3384,11 @@ end;
 
 procedure RaiseLastOSError;
 begin
+   {$ifndef FPC}
    RaiseLastWin32Error;
+   {$else}
+   raise Exception.Create('OSError : '+IntToStr(GetLastError));
+   {$endif}
 end;
 
 {$endif}
