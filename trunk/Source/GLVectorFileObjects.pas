@@ -4040,8 +4040,11 @@ var
                end;
                if Trim(material.Texture.Map.Name)<>'' then begin
                   try
-                     libMat.Material.Texture.Image.LoadFromFile(material.Texture.Map.Name);
-                     libMat.Material.Texture.Disabled:=False;
+                     with libMat.Material.Texture do begin
+                        Image.LoadFromFile(material.Texture.Map.Name);
+                        Disabled:=False;
+                        TextureMode:=tmModulate;
+                     end;
                   except
                      on E: ETexture do begin
                         if not Owner.IgnoreMissingTextures then
