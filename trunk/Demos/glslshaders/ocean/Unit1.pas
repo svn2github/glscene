@@ -13,13 +13,13 @@ type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
-    GLCamera1: TGLCamera;
+    GLCamera: TGLCamera;
     MatLib: TGLMaterialLibrary;
     GLLightSource1: TGLLightSource;
     GLCadencer1: TGLCadencer;
     Timer1: TTimer;
     GLSphere1: TGLSphere;
-    GLDirectOpenGL1: TGLDirectOpenGL;
+    DOInitialize: TGLDirectOpenGL;
     GLUserShader1: TGLUserShader;
     GLHeightField1: TGLHeightField;
     GLMemoryViewer1: TGLMemoryViewer;
@@ -29,7 +29,7 @@ type
     GLSphere2: TGLSphere;
     DOOceanPlane: TGLDirectOpenGL;
     procedure FormCreate(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender: TObject;
+    procedure DOInitializeRender(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
@@ -91,7 +91,7 @@ begin
 //   GLHeightField1.ObjectStyle:=GLHeightField1.ObjectStyle+[osDirectDraw];
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
+procedure TForm1.DOInitializeRender(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
    if not (    GL_ARB_shader_objects and GL_ARB_vertex_program and GL_ARB_vertex_shader
@@ -100,8 +100,8 @@ begin
       Halt;
    end;
 
-   if GLDirectOpenGL1.Tag<>0 then Exit;
-   GLDirectOpenGL1.Tag:=1;
+   if DOInitialize.Tag<>0 then Exit;
+   DOInitialize.Tag:=1;
 
    GLMemoryViewer1.Buffer.RenderingContext.ShareLists(GLSceneViewer1.Buffer.RenderingContext);
 
@@ -155,7 +155,7 @@ begin
 
    programObject.Uniform1f['Time']:=GLCadencer1.CurrentTime*0.05;
 
-   camPos:=GLCamera1.AbsolutePosition;
+   camPos:=GLCamera.AbsolutePosition;
    programObject.Uniform4f['EyePos']:=camPos;
 end;
 
@@ -178,7 +178,7 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
    if (dmx<>0) or (dmy<>0) then begin
-      GLCamera1.MoveAroundTarget(dmy*0.3, dmx*0.3);
+      GLCamera.MoveAroundTarget(dmy*0.3, dmx*0.3);
       dmx:=0; dmy:=0;
    end;
    GLSceneViewer1.Invalidate;
@@ -196,6 +196,8 @@ begin
    z:=0;
 end;
 
+const
+   cExtent = 200;
 var
    vbo : TGLVBOArrayBufferHandle;
    nbVerts : Integer;
@@ -207,23 +209,22 @@ var
    cont : Boolean;
 begin
    GLUserShader1DoApply(Self, rci);
+   glEnableClientState(GL_VERTEX_ARRAY);
 
    if not Assigned(vbo) then begin
       v:=TTexPointList.Create;
 
-      v.Capacity:=201*201;
-      y:=-100; while y<100 do begin
-         x:=-100; while x<=100 do begin
+      v.Capacity:=Sqr(cExtent+1);
+      y:=-cExtent; while y<cExtent do begin
+         x:=-cExtent; while x<=cExtent do begin
             v.Add(y, x);
             v.Add(y+2, x);
             Inc(x, 2);
          end;
          Inc(y, 2);
-         v.Add(y, 100);
-         v.Add(y, -100);
+         v.Add(y, cExtent);
+         v.Add(y, -cExtent);
       end;
-
-      glEnableClientState(GL_VERTEX_ARRAY);
 
       vbo:=TGLVBOArrayBufferHandle.CreateAndAllocate();
       vbo.Bind;
@@ -234,25 +235,18 @@ begin
       glDrawArrays(GL_QUAD_STRIP, 0, nbVerts);
 
       vbo.UnBind;
-      glDisableClientState(GL_VERTEX_ARRAY);
-
-{      glBegin(GL_QUAD_STRIP);
-         for x:=0 to v.Count-1 do
-            glVertex2f(v[x][0], v[x][1]);
-      glEnd; }
-
+      
       v.Free;
    end else begin
-      glEnableClientState(GL_VERTEX_ARRAY);
       vbo.Bind;
 
       glVertexPointer(2, GL_FLOAT, 0, nil);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, nbVerts);
 
       vbo.UnBind;
-      glDisableClientState(GL_VERTEX_ARRAY);
    end;
 
+   glDisableClientState(GL_VERTEX_ARRAY);
    GLUserShader1DoUnApply(Self, 0, rci, cont);
 end;
 
