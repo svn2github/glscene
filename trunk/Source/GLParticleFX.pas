@@ -2373,6 +2373,7 @@ end;
 //
 procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
 var
+   i : Integer;
    lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
@@ -2388,14 +2389,14 @@ begin
    if ComputeSizeScale(lifeTime, sizeScale) then
       FVertBuf.Scale(sizeScale);
 
-{   glBegin(GL_TRIANGLE_FAN);
+   glBegin(GL_TRIANGLE_FAN);
       glColor4fv(@inner);
       glVertex3fv(@pos);
       glColor4fv(@outer);
       for i:=0 to FVertBuf.Count-1 do
          glVertex3fv(@vertexList[i]);
       glVertex3fv(@vertexList[0]);
-   glEnd;                 }
+   glEnd;                 
 end;
 
 // EndParticles
