@@ -62,13 +62,8 @@ object frmOctreeDemo: TfrmOctreeDemo
     Height = 25
     Max = 20
     Min = 3
-    Orientation = trHorizontal
-    Frequency = 1
     Position = 10
-    SelEnd = 0
-    SelStart = 0
     TabOrder = 1
-    TickMarks = tmBottomRight
     TickStyle = tsNone
     OnChange = TrackBar_LeafThresholdChange
   end
@@ -85,7 +80,7 @@ object frmOctreeDemo: TfrmOctreeDemo
     Left = 96
     Top = 64
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLDirectOpenGL1: TGLDirectOpenGL
       UseBuildList = False
@@ -100,16 +95,16 @@ object frmOctreeDemo: TfrmOctreeDemo
       Position.Coordinates = {0000C0400000C0400000C0400000803F}
       Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCC4C3E}
       Material.BlendingMode = bmTransparency
-      Radius = 2.5
+      Radius = 2.500000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 75
+      DepthOfView = 100.000000000000000000
+      FocalLength = 75.000000000000000000
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000404100008040000000410000803F}
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1
-        SpotCutOff = 180
+        ConstAttenuation = 1.000000000000000000
+        SpotCutOff = 180.000000000000000000
       end
     end
   end

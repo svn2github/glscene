@@ -84,7 +84,7 @@ begin
   randomize;
 
   Octree := TOctreeSpacePartition.Create;
-  Octree.SetSize(-15, -15, -15, 15, 15, 15);
+  Octree.SetSize(AffineVectorMake(-15, -15, -15), AffineVectorMake(15, 15, 15));
   Octree.MaxTreeDepth := 6;
   Octree.LeafThreshold := 10;
 
@@ -355,7 +355,9 @@ end;
 
 procedure TfrmOctreeDemo.Button_ResetOctreeSizeClick(Sender: TObject);
 begin
+  Octree.GrowMethod := gmBestFit;
   Octree.UpdateStructureSize(0.05);
+  Octree.GrowMethod := gmIncreaseToFitAll;
 end;
 
 end.

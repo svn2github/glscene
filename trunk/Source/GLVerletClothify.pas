@@ -1,4 +1,3 @@
-//
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLVerletClothify<p>
@@ -84,8 +83,6 @@ type
     MeshObject : TMeshObject;
 
     Solid : boolean;
-
-    function SameSame(NodeList : TVerletNodeList) : boolean;
   end;
 
   TEdgeList = class(TList)
@@ -99,6 +96,7 @@ type
   TEdgeDetector = class(TFaceExtractor)
   private
     FEdgeList : TEdgeList;
+    FCurrentNodeOffset : integer;
 
     procedure BuildOpposingEdges;
   public
@@ -109,13 +107,15 @@ type
 
     function AddEdge(const Vi0, Vi1 : integer; const Face : TFace; const MeshObject : TMeshObject) : TEdge;
     function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; override;
-    function AddNode(const VerletAssembly : TVerletAssembly; const MeshObject : TMeshObject; const VertexIndex : integer) : TVerletNode; virtual;
+    function AddNode(const VerletWorld : TVerletWorld; const MeshObject : TMeshObject; const VertexIndex : integer) : TVerletNode; virtual;
 
-    function CreateVAEmpty : TVerletAssembly;
-    function CreateVAWithSticks(Slack : single) : TVerletAssembly;
-    function CreateVAWithForces(Strength, Damping, Slack : single) : TVerletAssembly;
+    procedure AddNodes(const VerletWorld : TVerletWorld);
+    procedure AddEdgesAsSticks(const VerletWorld : TVerletWorld; const Slack : single);
+    procedure AddEdgesAsSprings(const VerletWorld : TVerletWorld; const Strength, Damping, Slack : single);
 
     procedure RenderEdges(var rci : TRenderContextInfo);
+
+    property CurrentNodeOffset : integer read FCurrentNodeOffset;
 
     constructor Create(const aGLBaseMesh : TGLBaseMesh); override;
     destructor Destroy; override;
@@ -125,9 +125,9 @@ type
     MeshObject : TMeshObject;
     VertexIndices : TIntegerList;
 
-    procedure Updated; override;
+    procedure AfterProgress; override;
 
-    constructor Create(aOwner : TVerletAssembly); override;
+    constructor Create(aOwner : TVerletWorld); override;
     destructor Destroy; override;
   end;
 
@@ -282,7 +282,7 @@ end;
 
 { TMeshObjectVerletNode }
 
-constructor TMeshObjectVerletNode.Create(aOwner: TVerletAssembly);
+constructor TMeshObjectVerletNode.Create(aOwner: TVerletWorld);
 begin
   inherited;
   VertexIndices := TIntegerList.Create;
@@ -294,20 +294,13 @@ begin
   inherited;
 end;
 
-procedure TMeshObjectVerletNode.Updated;
+procedure TMeshObjectVerletNode.AfterProgress;
 var
   i : integer;
 begin
   // Update the actual vertex
   for i := 0 to VertexIndices.Count-1 do
     MeshObject.Vertices[VertexIndices[i]] := MeshObject.Owner.Owner.AbsoluteToLocal(Location);
-end;
-
-{ TEdge }
-
-function TEdge.SameSame(NodeList: TVerletNodeList): boolean;
-begin
-  result := NodeList[Vertices[0]] = NodeList[Vertices[1]];
 end;
 
 { TEdgeDetector }
@@ -327,6 +320,7 @@ end;
 constructor TEdgeDetector.Create(const aGLBaseMesh: TGLBaseMesh);
 begin
   FEdgeList := TEdgeList.Create;
+  FCurrentNodeOffset := 0;
 
   inherited;
 end;
@@ -392,71 +386,73 @@ begin
   result := Face;
 end;
 
-function TEdgeDetector.CreateVAEmpty : TVerletAssembly;
+procedure TEdgeDetector.AddNodes(const VerletWorld : TVerletWorld);
 var
   i : integer;
-  VerletAssembly : TVerletAssembly;
   MO : TMeshObject;
 begin
-  VerletAssembly := TVerletAssembly.Create;
+  FCurrentNodeOffset := FNodeList.Count;
 
   MO := FGLBaseMesh.MeshObjects[0];
 
   for i := 0 to MO.Vertices.Count-1 do
-    AddNode(VerletAssembly, MO, i);
+    AddNode(VerletWorld, MO, i);
 
-  Assert(FNodeList.Count = MO.Vertices.Count, Format('%d <> %d',[FNodeList.Count, MO.Vertices.Count]));
-
-  result := VerletAssembly;
+  // Assert(FNodeList.Count = MO.Vertices.Count, Format('%d <> %d',[FNodeList.Count, MO.Vertices.Count]));
 end;
 
-function TEdgeDetector.CreateVAWithForces(Strength,
-  Damping, Slack: single): TVerletAssembly;
+procedure TEdgeDetector.AddEdgesAsSprings(const VerletWorld : TVerletWorld;
+  const Strength, Damping, Slack: single);
 var
   i : integer;
-  VerletAssembly : TVerletAssembly;
+  Edge : TEdge;
 begin
-  VerletAssembly := CreateVAEmpty;
+  AddNodes(VerletWorld);
 
   for i := 0 to EdgeList.Count-1 do
-    if not EdgeList[i].SameSame(FNodeList) then
+  begin
+    // if not EdgeList[i].SameSame(FNodeList) then
+    Edge := EdgeList[i];
+    if FNodeList[FCurrentNodeOffset+Edge.Vertices[0]] <> FNodeList[FCurrentNodeOffset+Edge.Vertices[1]] then
     begin
-      VerletAssembly.CreateSpring(
-        FNodeList[EdgeList[i].Vertices[0]],
-        FNodeList[EdgeList[i].Vertices[1]],
+      VerletWorld.CreateSpring(
+        FNodeList[FCurrentNodeOffset+EdgeList[i].Vertices[0]],
+        FNodeList[FCurrentNodeOffset+EdgeList[i].Vertices[1]],
         Strength, Damping, Slack);
 
       if EdgeList[i].Solid then
-        VerletAssembly.AddSolidEdge(
-          FNodeList[EdgeList[i].Vertices[0]],
-          FNodeList[EdgeList[i].Vertices[1]]);
+        VerletWorld.AddSolidEdge(
+          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
+          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]]);
     end;
-
-  result := VerletAssembly;
+  end;
 end;
 
-function TEdgeDetector.CreateVAWithSticks(Slack : single): TVerletAssembly;
+procedure TEdgeDetector.AddEdgesAsSticks(const VerletWorld : TVerletWorld;
+  const Slack : single);
 var
   i : integer;
-  VerletAssembly : TVerletAssembly;
+  Edge : TEdge;
 begin
-  VerletAssembly := CreateVAEmpty;
+  AddNodes(VerletWorld);
 
   for i := 0 to EdgeList.Count-1 do
-    if not EdgeList[i].SameSame(FNodeList) then
+  begin
+    // if not EdgeList[i].SameSame(FNodeList) then
+    Edge := EdgeList[i];
+    if FNodeList[FCurrentNodeOffset+Edge.Vertices[0]] <> FNodeList[FCurrentNodeOffset+Edge.Vertices[1]] then
     begin
-      VerletAssembly.CreateStick(
-        FNodeList[EdgeList[i].Vertices[0]],
-        FNodeList[EdgeList[i].Vertices[1]],
+      VerletWorld.CreateStick(
+        FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
+        FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]],
         Slack);
 
       if EdgeList[i].Solid then
-        VerletAssembly.AddSolidEdge(
-          FNodeList[EdgeList[i].Vertices[0]],
-          FNodeList[EdgeList[i].Vertices[1]]);
+        VerletWorld.AddSolidEdge(
+          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
+          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]]);
     end;
-
-  result := VerletAssembly;
+  end;
 end;
 
 procedure TEdgeDetector.RenderEdges(var rci: TRenderContextInfo);
@@ -554,7 +550,7 @@ begin
   end;
 end;
 
-function TEdgeDetector.AddNode(const VerletAssembly : TVerletAssembly; const MeshObject: TMeshObject;
+function TEdgeDetector.AddNode(const VerletWorld : TVerletWorld; const MeshObject: TMeshObject;
   const VertexIndex: integer): TVerletNode;
 var
   Location : TAffineVector;
@@ -564,7 +560,7 @@ begin
   // Is there an identical node?
   Location := MeshObject.Owner.Owner.LocalToAbsolute(MeshObject.Vertices[VertexIndex]);
 
-  for i := 0 to FNodeList.Count-1 do
+  for i := FCurrentNodeOffset to FNodeList.Count-1 do
   begin
     aNode := TMeshObjectVerletNode(FNodeList[i]);
 
@@ -577,7 +573,7 @@ begin
     end;
   end;//}
 
-  aNode := TMeshObjectVerletNode.Create(VerletAssembly);
+  aNode := TMeshObjectVerletNode.Create(VerletWorld);
   aNode.MeshObject := MeshObject;
   aNode.VertexIndices.Add(VertexIndex);
   aNode.Location := Location;

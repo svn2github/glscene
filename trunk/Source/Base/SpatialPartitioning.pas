@@ -299,13 +299,14 @@ type
 
   {: Implements sectored space partitioning, sectored space partitions include
   Octrees, Quadtrees and  BSP-trees }
+  TGrowMethod = (gmNever, gmBestFit, gmIncreaseToFitAll);
   TSectoredSpacePartition = class(TLeavedSpacePartition)
   private
     FRootNode : TSectorNode;
     FLeafThreshold: integer;
     FMaxTreeDepth: integer;
-    FAutoGrow: boolean;
     FGrowGravy: single;
+    FGrowMethod: TGrowMethod;
     procedure SetLeafThreshold(const Value: integer);
     procedure SetMaxTreeDepth(const Value: integer);
   protected
@@ -316,8 +317,8 @@ type
   public
     // ** Update space partition
     {: Add a leaf to the structure. If the leaf doesn't fit in the structure, the
-    structure is either grown or an exception is raised. If AutoGrow is set to
-    true, the octree will be grown.}
+    structure is either grown or an exception is raised. If GrowMethod is set to
+    gmBestFit or gmIncreaseToFitAll, the octree will be grown.}
     procedure AddLeaf(aLeaf : TSpacePartitionLeaf); override;
 
     {: Remove a leaf from the structure.}
@@ -378,7 +379,7 @@ type
 
     {: Determines if the structure should grow with new leaves, or if an exception
     should be raised }
-    property AutoGrow : boolean read FAutoGrow write FAutoGrow;
+    property GrowMethod : TGrowMethod read FGrowMethod write FGrowMethod;
 
     {: When the structure is recreated because it's no longer large enough to fit
     all leafs, it will become large enough to safely fit all leafs, plus
@@ -409,7 +410,7 @@ type
   TOctreeSpacePartition = class(TSectoredSpacePartition)
   public
     {: Set size updates the size of the Octree }
-    procedure SetSize(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
+    procedure SetSize(const Min, Max : TAffineVector);
 
     {: CreateNewNode creates a new TSPOctreeNode }
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; override;
@@ -828,8 +829,7 @@ end;
 
 function TSectorNode.PlaceLeafInChild(aLeaf: TSpacePartitionLeaf)  : TSectorNode;
 var
-  TestChildNode, ChildNode : TSectorNode;
-  i : integer;
+  ChildNode : TSectorNode;
 begin
   // Which child does it fit in?
   ChildNode := GetChildForAABB(aLeaf.FCachedAABB);
@@ -1016,7 +1016,7 @@ begin
 
   if not FRootNode.AABBFitsInNode(aLeaf.FCachedAABB) then
   begin
-    if FAutoGrow then
+    if FGrowMethod in [gmBestFit, gmIncreaseToFitAll] then
       UpdateStructureSize(GrowGravy)
     else
       Assert(False, 'Node is outside Octree!');
@@ -1029,7 +1029,7 @@ begin
   FMaxTreeDepth := cOctree_MAX_TREE_DEPTH;
 
   FRootNode := CreateNewNode(nil);
-  FAutoGrow := true;
+  FGrowMethod := gmIncreaseToFitAll;
 
   FGrowGravy := cOctree_GROW_GRAVY;
 
@@ -1083,7 +1083,7 @@ begin
   begin
     // If the node has children, try to add the leaf to them - otherwise just
     // leave it!
-    if not Node.NoChildren then
+    if Node.FChildCount>0 then
     begin
       Node.FLeaves.Remove(aLeaf);
       Node.PlaceLeafInChild(aLeaf);
@@ -1095,7 +1095,7 @@ begin
     // Does this leaf still fit in the Octree?
     if not FRootNode.AABBFitsInNode(aLeaf.FCachedAABB) then
     begin
-      if FAutoGrow then
+      if FGrowMethod in [gmBestFit, gmIncreaseToFitAll] then
         UpdateStructureSize(cOctree_GROW_GRAVY)
       else
         Assert(False, 'Node is outside Octree!');
@@ -1181,7 +1181,7 @@ procedure TSectoredSpacePartition.RebuildTree(const NewAABB : TAABB);
 var
   i : integer;
   OldLeaves : TSpacePartitionLeafList;
-  AABBSize : TAffineVector;
+  tempGrowMethod : TGrowMethod;
 begin
   // Delete ALL nodes in the tree
   FRootNode.Free;
@@ -1195,12 +1195,12 @@ begin
 
   // This will cause an except if the build goes badly, which is better than
   // an infinite loop
-  FAutoGrow := false;
+  tempGrowMethod := FGrowMethod;
 
   for i := 0 to OldLeaves.Count-1 do
     AddLeaf(OldLeaves[i]);
 
-  FAutoGrow := true;
+  FGrowMethod := tempGrowMethod;
 end;
 
 procedure TSectoredSpacePartition.UpdateStructureSize(Gravy: single);
@@ -1212,8 +1212,18 @@ begin
   MaxAABB := GetAABB;
   AABBSize := VectorSubtract(MaxAABB.max, MaxAABB.min);
 
-  NewAABB.min := VectorSubtract(MaxAABB.min, VectorScale(AABBSize, Gravy));
-  NewAABB.max := VectorAdd(MaxAABB.max, VectorScale(AABBSize, Gravy));//}
+  if FGrowMethod=gmBestFit then
+  begin
+    NewAABB.min := VectorSubtract(MaxAABB.min, VectorScale(AABBSize, Gravy));
+    NewAABB.max := VectorAdd(MaxAABB.max, VectorScale(AABBSize, Gravy));//}
+  end else
+  if FGrowMethod=gmIncreaseToFitAll then
+  begin
+    NewAABB.min := VectorSubtract(MaxAABB.min, VectorScale(AABBSize, Gravy));
+    NewAABB.max := VectorAdd(MaxAABB.max, VectorScale(AABBSize, Gravy));//}
+
+    AddAABB(NewAABB, FRootNode.AABB);
+  end;
 
   RebuildTree(NewAABB);
 end;
@@ -1296,13 +1306,12 @@ begin
   result := TSPOctreeNode.Create(self, aParent);
 end;
 
-procedure TOctreeSpacePartition.SetSize(const XMin, YMin, ZMin, XMax, YMax,
-  ZMax: single);
+procedure TOctreeSpacePartition.SetSize(const Min, Max : TAffineVector);
 var
   AABB : TAABB;
 begin
-  MakeVector(AABB.Min, XMin, YMin, ZMin);
-  MakeVector(AABB.Max, XMax, YMax, ZMax);
+  AABB.Min := Min;
+  AABB.Max := Max;
 
   RebuildTree(AABB);
 end;

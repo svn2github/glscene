@@ -2,7 +2,7 @@
 
    Caution: this demo mixes several experimental thingies, and will probably be
             cleaned-up/splitted to be easier to follow, ad interim, you enter
-            the jungle below at your own risks :) 
+            the jungle below at your own risks :)
 }
 unit fClothify;
 
@@ -13,7 +13,8 @@ uses
   GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer, GLMisc,
   GLFileMS3D, VerletClasses, VectorTypes, VectorLists, Geometry, GLTexture,
   OpenGL12, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
-  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL;
+  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL,
+  GeometryBB, SpatialPartitioning;
 
 type
   TfrmClothify = class(TForm)
@@ -56,6 +57,9 @@ type
     TrackBar_Friction: TTrackBar;
     Label7: TLabel;
     GLDummyCube_Light: TGLDummyCube;
+    GLActor2: TGLActor;
+    GLDirectOpenGL1: TGLDirectOpenGL;
+    CheckBox_ShowOctree: TCheckBox;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -69,13 +73,14 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure TrackBar_FrictionChange(Sender: TObject);
+    procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
   private
     { Private declarations }
   public
     { Public declarations }
     mx, my : integer;
 
-    VerletAssembly : TVerletAssembly;
+    VerletWorld : TVerletWorld;
     EdgeDetector : TEdgeDetector;
 
     world : PdxWorld;
@@ -120,7 +125,7 @@ var
 
   procedure CreateCubeFromGLCube(GLCube : TGLCube);
   begin
-    Cube := TVCCube.Create(VerletAssembly);
+    Cube := TVCCube.Create(VerletWorld);
     Cube.Location := myVectorMake(GLCube.AbsolutePosition);
     Cube.FrictionRatio := 0.1;
     Sides[0] := GLCube.CubeWidth * 1.1;
@@ -165,7 +170,7 @@ begin
     GLSphere1.Position.AsAffineVector := NullVector;
   end;
 
-  FreeAndNil(VerletAssembly);
+  FreeAndNil(VerletWorld);
   FreeAndNil(EdgeDetector);
 
   s := ComboBox_MeshName.Text;
@@ -204,26 +209,35 @@ begin
 
   if not CheckBox_Weld.Checked then
     EdgeDetector.WeldDistance := -1;
-      
+
   EdgeDetector.ProcessMesh;
 
+  VerletWorld := TVerletWorld.Create;
+  VerletWorld.CreateOctree(
+    AffineVectorMake(-20, -5.5,-20),
+    AffineVectorMake( 20, 20, 20), 20, 5);//}
+
+  {VerletWorld.CreateOctree(
+    AffineVectorMake( 0, 0, 0),
+    AffineVectorMake( 0, 0, 0), 30, 3);//}
+
   if ComboBox_ConstraintType.ItemIndex=0 then
-    VerletAssembly := EdgeDetector.CreateVAWithSticks(GetSlack)
+    EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack)
   else
-    VerletAssembly := EdgeDetector.CreateVAWithForces(1000,100, GetSlack);//}
+    EdgeDetector.AddEdgesAsSprings(VerletWorld, 1000,100, GetSlack);//}
 
-  // VerletAssembly.Nodes[0].NailedDown := true;
+  // VerletWorld.Nodes[0].NailedDown := true;
 
-  TVFGravity.Create(VerletAssembly);
+  TVFGravity.Create(VerletWorld);
 
-  Floor := TVCFloor.Create(VerletAssembly);
+  Floor := TVCFloor.Create(VerletWorld);
   Floor.Location := VectorAdd(GLShadowPlane1.Position.AsAffineVector, myVectorMake2(0,0.1,0));
   Floor.Normal := GLShadowPlane1.Direction.AsAffineVector;
 
   Floor.FrictionRatio := 0.6;
 
   if GLSphere1.Visible then begin
-     VCSphere := TVCSphere.Create(VerletAssembly);
+     VCSphere := TVCSphere.Create(VerletWorld);
      VCSphere.Radius := GLSphere1.Radius;
      VCSphere.Location := myVectorMake(GLSphere1.AbsolutePosition);
   end;
@@ -233,7 +247,7 @@ begin
   end;
 
   if GLCylinder1.Visible then begin
-     Capsule := TVCCapsule.Create(VerletAssembly);
+     Capsule := TVCCapsule.Create(VerletWorld);
      Capsule.Radius := GLCylinder1.TopRadius;
      Capsule.Location := AffineVectorMake(GLCylinder1.AbsolutePosition);
      Capsule.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
@@ -242,7 +256,7 @@ begin
   end;
 
   if GL_Capsule.Visible then begin
-     Capsule := TVCCapsule.Create(VerletAssembly);
+     Capsule := TVCCapsule.Create(VerletWorld);
      Capsule.Radius := GL_Capsule.TopRadius;
      Capsule.Location := AffineVectorMake(GL_Capsule.AbsolutePosition);
      Capsule.Axis := AffineVectorMake(GL_Capsule.AbsoluteUp);//}
@@ -257,9 +271,27 @@ begin
     CreateCubeFromGLCube(GLCube_Stair4);
   end;
 
-  VerletAssembly.SimTime := GLCadencer1.GetCurrentTime;
-  VerletAssembly.MaxDeltaTime := 0.01;
-  VerletAssembly.Iterations := TrackBar_Iterations.Position;
+  VerletWorld.SimTime := GLCadencer1.GetCurrentTime;
+  VerletWorld.MaxDeltaTime := 0.01;
+  VerletWorld.Iterations := TrackBar_Iterations.Position;
+  VerletWorld.UpdateSpacePartion := uspEveryFrame;
+
+  // DEBUG MULTIPLE OBJECTS IN VERLETWORLD!
+  {GLActor2.LoadFromFile('mushroom.3ds');
+  GLActor2.Scale.AsAffineVector := AffineVectorMake(0.08, 0.08, 0.08);
+
+  FreeAndNil(EdgeDetector);
+
+  EdgeDetector := TEdgeDetector.Create(GLActor2);
+
+  if not CheckBox_Weld.Checked then
+    EdgeDetector.WeldDistance := -1;
+
+  EdgeDetector.ProcessMesh;
+
+  EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack);
+
+  //}
 
   TrackBar_FrictionChange(nil);
 end;
@@ -325,7 +357,7 @@ var
    n : TAffineVector;
 begin
    if CheckBox_Pause.Checked then
-      VerletAssembly.SimTime := newTime
+      VerletWorld.SimTime := newTime
    else begin
       if world <> nil then begin
          PositionSceneObjectForGeom(ODESphere);
@@ -337,11 +369,11 @@ begin
                        VCSphere.KickbackForce[2]);
 
          dSpaceCollide (space,nil,nearCallback);
-         dWorldStep(World, VerletAssembly.MaxDeltaTime);
+         dWorldStep(World, VerletWorld.MaxDeltaTime);
          dJointGroupEmpty (contactgroup);
       end;
 
-      VerletAssembly.Progress(VerletAssembly.MaxDeltaTime, newTime);
+      VerletWorld.Progress(VerletWorld.MaxDeltaTime, newTime);
 
       // update normals
       // (not very efficient, could use some work...)
@@ -387,10 +419,10 @@ procedure TfrmClothify.TrackBar_SlackChange(Sender: TObject);
 var
   i : integer;
 begin
-  for i := 0 to VerletAssembly.Constraints.Count-1 do
+  for i := 0 to VerletWorld.Constraints.Count-1 do
   begin
-    if VerletAssembly.Constraints[i] is TVCStick then
-      TVCStick(VerletAssembly.Constraints[i]).Slack := GetSlack;
+    if VerletWorld.Constraints[i] is TVCStick then
+      TVCStick(VerletWorld.Constraints[i]).Slack := GetSlack;
   end;
 end;
 
@@ -401,7 +433,7 @@ end;
 
 procedure TfrmClothify.TrackBar_IterationsChange(Sender: TObject);
 begin
-  VerletAssembly.Iterations := TrackBar_Iterations.Position;
+  VerletWorld.Iterations := TrackBar_Iterations.Position;
 
   Label6.Caption := Format('Iterations %d',[TrackBar_Iterations.Position]);
 end;
@@ -416,9 +448,71 @@ procedure TfrmClothify.TrackBar_FrictionChange(Sender: TObject);
 var
   i : integer;
 begin
-  for i := 0 to VerletAssembly.Constraints.Count-1 do
-    if VerletAssembly.Constraints[i] is TVerletGlobalFrictionConstraint then
-      TVerletGlobalFrictionConstraint(VerletAssembly.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
+  for i := 0 to VerletWorld.Constraints.Count-1 do
+    if VerletWorld.Constraints[i] is TVerletGlobalFrictionConstraint then
+      TVerletGlobalFrictionConstraint(VerletWorld.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
 end;
 
+procedure TfrmClothify.GLDirectOpenGL1Render(var rci: TRenderContextInfo);
+  procedure RenderAABB(AABB : TAABB; w, r,g,b : single);
+  begin
+    glColor3f(r,g,b);
+    glLineWidth(w);
+
+    glBegin(GL_LINE_STRIP);
+      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+
+      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+    glEnd;
+
+    glBegin(GL_LINES);
+      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
+      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+
+      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
+      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+
+      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
+      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+    glEnd;
+  end;
+
+  procedure RenderOctreeNode(Node : TSectorNode);
+  var
+    i : integer;
+    AABB : TAABB;
+  begin
+    if Node.NoChildren then
+    begin
+      AABB := Node.AABB;
+
+      if Node.RecursiveLeafCount > 0 then
+        RenderAABB(AABB, 1, 0, 0, 0)
+      else
+        RenderAABB(AABB, 1, 0.8, 0.8, 0.8)//}
+
+    end else
+    begin
+      for i := 0 to Node.ChildCount-1 do
+        RenderOctreeNode(Node.Children[i]);
+    end;
+  end;
+begin
+  if CheckBox_ShowOctree.Checked and (VerletWorld.SpacePartition is TOctreeSpacePartition) then
+  begin
+    glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
+    glDisable(GL_LIGHTING);
+
+    RenderOctreeNode(TOctreeSpacePartition(VerletWorld.SpacePartition).RootNode);
+    glPopAttrib;
+  end;
+end;
 end.
