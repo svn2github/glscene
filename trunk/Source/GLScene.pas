@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>27/01/02 - Egg - Added TGLCamera.RotateObject, fixed SetMatrix,
+                           added RotateAbsolute, ResetRotations
       <li>21/01/02 - Egg - More graceful recovery for ICDs without pbuffer support
       <li>10/01/02 - Egg - Fixed init of stCullFace in SetupRenderingContext,
                            MoveAroundTarget/AdjustDistanceToTarget absolute pos fix
@@ -507,6 +509,18 @@ type
          procedure Pitch(Angle: Single);
          procedure Roll(Angle: Single);
          procedure Turn(Angle: Single);
+
+         {: Sets all rotations to zero and restores default Direction/Up.<p>
+            Using this function then applying roll/pitch/turn in the order that
+            suits you, you can give an "absolute" meaning to rotation angles
+            (they are still applied locally though).<br>
+            Scale and Position are not affected. }
+         procedure ResetRotations;
+
+         {: Applies rotations around absolute X, Y and Z axis.<p> }
+         procedure RotateAbsolute(const rx, ry, rz : Single); overload;
+         {: Applies rotations around the absolute given vector (angle in degrees).<p> }
+         procedure RotateAbsolute(const axis: TAffineVector; angle: Single); overload;
          //: Moves camera along the right vector (move left and right)
          procedure Slide(ADistance: Single);
          //: Orients the object toward a target object
@@ -975,7 +989,13 @@ type
 
    // TGLCameraStyle
    //
-   TGLCameraStyle = (csPerspective, csOrthogonal, csOrtho2D);
+   TGLCameraStyle = (csPerspective, csOrthogonal, csOrtho2D, csCustom);
+
+   // TOnCustomPerspective
+   //
+   TOnCustomPerspective = procedure(const viewport : TRectangle;
+                                    width, height : Integer; DPI : Integer;
+                                    var viewPortRadius : Single) of object;
 
    // TGLCamera
    //
@@ -995,6 +1015,7 @@ type
          FCameraStyle : TGLCameraStyle;
          FSceneScale : Single;
          FDeferredApply : TNotifyEvent;
+         FOnCustomPerspective : TOnCustomPerspective;
 
       protected
          { Protected Declarations }
@@ -1031,6 +1052,11 @@ type
          procedure Reset;
          //: Position the camera so that the whole scene can be seen
          procedure ZoomAll;
+
+         procedure RotateObject(obj : TGLBaseSceneObject; pitchDelta, turnDelta : Single;
+                                rollDelta : Single = 0);
+         procedure RotateTarget(pitchDelta, turnDelta : Single; rollDelta : Single = 0);
+
          {: Change camera's position to make it move around its target.<p>
             If TargetObject is nil, nothing happens. This method helps in quickly
             implementing camera controls. Camera's Up and Direction properties
@@ -1047,6 +1073,9 @@ type
          {: Returns the distance from camera to target.<p>
             If TargetObject is nil, returns 1. }
          function DistanceToTarget : Single;
+         {: Computes the absolute normalized vector to the camera target.<p>
+            If no target is defined, AbsoluteDirection is returned. } 
+         function AbsoluteVectorToTarget : TVector;
          {: Calculate an absolute translation vector from a screen vector.<p>
             Ratio is applied to both screen delta, planeNormal should be the
             translation plane's normal. }
@@ -1091,6 +1120,13 @@ type
                (in x or y) represents 1 pixel.
             </ul> }
          property CameraStyle : TGLCameraStyle read FCameraStyle write SetCameraStyle default csPerspective;
+
+         {: Custom perspective event.<p>
+            This event allows you to specify your custom perpective, either
+            with a glFrustrum, a glOrtho or whatever method suits you.<br>
+            You must compute viewPortRadius for culling to work.<br>
+            This event is only called if CameraStyle is csCustom. }
+         property OnCustomPerspective : TOnCustomPerspective read FOnCustomPerspective write FOnCustomPerspective;
 
          property Position;
          property Direction;
@@ -1988,7 +2024,7 @@ constructor TGLBaseSceneObject.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FObjectStyle:=[];
-   FChanges:=[ocTransformation, ocStructure, 
+   FChanges:=[ocTransformation, ocStructure,
               ocAbsoluteMatrix, ocInvAbsoluteMatrix];
    FPosition:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
    FRotation:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
@@ -2643,6 +2679,56 @@ begin
    VectorCrossProduct(Dir, Up, RightVector);
    FPosition.AddScaledVector(ADistance, RightVector);
    TransformationChanged;
+end;
+
+// ResetRotations
+//
+procedure TGLBaseSceneObject.ResetRotations;
+begin
+   FChanges:=FChanges-[ocTransformation]+[ocAbsoluteMatrix, ocInvAbsoluteMatrix];
+   FLocalMatrix:=IdentityHmgMatrix;
+   FLocalMatrix[0][0]:=Scale.DirectX;
+   FLocalMatrix[1][1]:=Scale.DirectY;
+   FLocalMatrix[2][2]:=Scale.DirectZ;
+   FRotation.DirectVector:=NullHmgPoint;
+   FDirection.DirectVector:=ZHmgVector;
+   FUp.DirectVector:=YHmgVector;
+end;
+
+// RotateAbsolute
+//
+procedure TGLBaseSceneObject.RotateAbsolute(const rx, ry, rz : Single);
+var
+   resMat : TMatrix;
+   v : TAffineVector;
+begin
+   resMat:=Matrix;
+   // No we build rotation matrices and use them to rotate the obj
+   if rx<>0 then begin
+      SetVector(v, AbsoluteToLocal(XVector));
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(rx)), resMat);
+   end;
+   if ry<>0 then begin
+      SetVector(v, AbsoluteToLocal(YVector));
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(ry)), resMat);
+   end;
+   if rz<>0 then begin
+      SetVector(v, AbsoluteToLocal(ZVector));
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(rz)), resMat);
+   end;
+   Matrix:=resMat;
+end;
+
+// RotateAbsolute
+//
+procedure TGLBaseSceneObject.RotateAbsolute(const axis: TAffineVector; angle: Single);
+var
+   v : TAffineVector;
+begin
+   if angle<>0 then begin
+      SetVector(v, AbsoluteToLocal(axis));
+      Matrix:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(angle)), Matrix);
+   end;
 end;
 
 // Pitch
@@ -3377,14 +3463,13 @@ end;
 // SetMatrix
 //
 procedure TGLBaseSceneObject.SetMatrix(const aValue : TMatrix);
-var
-   temp : TAffineVector;
 begin
-   FLocalMatrix:=AValue;
-   FDirection.DirectVector:=FLocalMatrix[2];
-   FUp.DirectVector:=FLocalMatrix[1];
-   SetVector(Temp, FLocalMatrix[0]);
-   Scale.SetVector(VectorLength(Temp), FUp.VectorLength, FDirection.VectorLength, 0);
+   FLocalMatrix:=aValue;
+   FDirection.DirectVector:=VectorNormalize(FLocalMatrix[2]);
+   FUp.DirectVector:=VectorNormalize(FLocalMatrix[1]);
+   Scale.SetVector(VectorLength(FLocalMatrix[0]),
+                   VectorLength(FLocalMatrix[1]),
+                   VectorLength(FLocalMatrix[2]), 0);
    FPosition.DirectVector:=FLocalMatrix[3];
    TransformationChanged;
 end;
@@ -3832,6 +3917,16 @@ begin
    inherited;
 end;
 
+// AbsoluteVectorToTarget
+//
+function TGLCamera.AbsoluteVectorToTarget : TVector;
+begin
+   if TargetObject<>nil then begin
+      VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition, Result);
+      NormalizeVector(Result);
+   end else Result:=AbsoluteDirection;
+end;
+
 // Apply
 //
 procedure TGLCamera.Apply;
@@ -3844,7 +3939,6 @@ begin
       FDeferredApply(Self)
    else begin
       if Assigned(FTargetObject) then begin
-         // get our target's absolute coordinates
          v:=TargetObject.AbsolutePosition;
          absPos:=AbsolutePosition;
          VectorSubtract(v, absPos, d);
@@ -3869,6 +3963,8 @@ begin
    end;
 end;
 
+// ApplyPerspective
+//
 procedure TGLCamera.ApplyPerspective(const viewport : TRectangle;
                                      width, height : Integer; DPI : Integer);
 var
@@ -3879,6 +3975,10 @@ begin
       gluOrtho2D (0, Width, 0, Height);
       FNearPlane:=-1;
       FViewPortRadius:=VectorLength(Width, Height)/2;
+   end else if CameraStyle=csCustom then begin
+      FViewPortRadius:=VectorLength(Width, Height)/2;
+      if Assigned(FOnCustomPerspective) then
+         FOnCustomPerspective(viewport, width, height, DPI, FViewPortRadius);
    end else begin
       // determine biggest dimension and resolution (height or width)
       MaxDim:=Width;
@@ -4013,6 +4113,52 @@ begin
      end;
 end;
 
+// RotateObject
+//
+procedure TGLCamera.RotateObject(obj : TGLBaseSceneObject; pitchDelta, turnDelta : Single;
+                                 rollDelta : Single = 0);
+var
+   resMat : TMatrix;
+   vDir, vUp, vRight : TVector;
+   v : TAffineVector;
+begin
+   // First we need to compute the actual camera's vectors, which may not be
+   // directly available if we're in "targeting" mode
+   vUp:=AbsoluteUp;
+   if TargetObject<>nil then begin
+      vDir:=AbsoluteVectorToTarget;
+      vRight:=VectorCrossProduct(vDir, vUp);
+      vUp:=VectorCrossProduct(vRight, vDir);
+   end else begin
+      vDir:=AbsoluteDirection;
+      vRight:=VectorCrossProduct(vDir, vUp);
+   end;
+
+   resMat:=obj.Matrix;
+   // No we build rotation matrices and use them to rotate the obj
+   if rollDelta<>0 then begin
+      SetVector(v, obj.AbsoluteToLocal(vDir));
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(rollDelta)), resMat);
+   end;
+   if turnDelta<>0 then begin
+      SetVector(v, obj.AbsoluteToLocal(vUp));
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(turnDelta)), resMat);
+   end;
+   if pitchDelta<>0 then begin
+      SetVector(v, obj.AbsoluteToLocal(vRight));
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(pitchDelta)), resMat);
+   end;
+   obj.Matrix:=resMat;
+end;
+
+// RotateTarget
+//
+procedure TGLCamera.RotateTarget(pitchDelta, turnDelta : Single; rollDelta : Single = 0);
+begin
+   if Assigned(FTargetObject) then
+      RotateObject(FTargetObject, pitchDelta, turnDelta, rollDelta)
+end;
+
 // MoveAroundTarget
 //
 procedure TGLCamera.MoveAroundTarget(pitchDelta, turnDelta : Single);
@@ -4036,7 +4182,7 @@ begin
       // calculate the current pitch.
       // 0 is looking down and PI is looking up
       pitchNow:=ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
-      pitchNow:=ClampValue(pitchNow+DegToRad(pitchDelta), 0+0.005, PI-0.005);
+      pitchNow:=ClampValue(pitchNow+DegToRad(pitchDelta), 0+0.025, PI-0.025);
       // create a new vector pointing up and then rotate it down
       // into the new position
       SetVector(normalT2C, AbsoluteUp);

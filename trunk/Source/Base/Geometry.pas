@@ -400,6 +400,10 @@ const
                              (0, 0, 0, 0),
                              (0, 0, 0, 0));
 
+  // Quaternions
+
+  IdentityQuaternion: TQuaternion = (ImagPart:(0,0,0); RealPart: 1);
+
   // some very small numbers
   EPSILON  : Single = 1e-40;
   EPSILON2 : Single = 1e-30;
@@ -697,9 +701,9 @@ function CreateRotationMatrixY(const angle: Single) : TMatrix; overload;
 function CreateRotationMatrixZ(const sine, cosine: Single) : TMatrix; overload;
 function CreateRotationMatrixZ(const angle: Single) : TMatrix; overload;
 //: Creates a rotation matrix along the given Axis by the given Angle in radians.
-function CreateRotationMatrix(Axis: TAffineVector; Angle: Single): TMatrix;
+function CreateRotationMatrix(const anAxis: TAffineVector; angle: Single): TMatrix;
 //: Creates a rotation matrix along the given Axis by the given Angle in radians.
-function CreateAffineRotationMatrix(Axis: TAffineVector; Angle: Single): TAffineMatrix;
+function CreateAffineRotationMatrix(const anAxis: TAffineVector; angle: Single): TAffineMatrix;
 
 //: Multiplies two 3x3 matrices
 function MatrixMultiply(const M1, M2 : TAffineMatrix) : TAffineMatrix; overload
@@ -780,26 +784,39 @@ procedure CalcPlaneNormal(const p1, p2, p3 : TVector; var vr : TAffineVector); o
 //: Creates a quaternion from the given values
 function QuaternionMake(Imag: array of Single; Real: Single): TQuaternion;
 //: Returns the conjugate of a quaternion
-function QuaternionConjugate(const Q: TQuaternion): TQuaternion;
+function QuaternionConjugate(const Q : TQuaternion) : TQuaternion;
+//: Returns the magnitude of the quaternion
+function QuaternionMagnitude(const Q : TQuaternion) : Single;
+//: Normalizes the given quaternion
+procedure NormalizeQuaternion(var Q : TQuaternion);
+
 //: Constructs a unit quaternion from two points on unit sphere
 function QuaternionFromPoints(const V1, V2: TAffineVector): TQuaternion;
-{: Returns quaternion product qL * qR.<p>
-   Note: order is important!<p>
-   To combine rotations, use the product QuaternionMuliply(qSecond, qFirst),
-   which gives the effect of rotating by qFirst then qSecond. }
-function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
+//: Converts a unit quaternion into two points on a unit sphere
+procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVector);
+//: Constructs a unit quaternion from a rotation matrix
+function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
 {: Constructs rotation matrix from (possibly non-unit) quaternion.<p>
    Assumes matrix is used to multiply column vector on the left:<br>
    vnew = mat vold.<p>
    Works correctly for right-handed coordinate system and right-handed rotations. }
 function QuaternionToMatrix(const Q: TQuaternion): TMatrix;
+//: Constructs quaternion from angle (in deg) and axis
+function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVector) : TQuaternion;
+//: Constructs quaternion from Euler angles
+function QuaternionFromRollPitchYaw(const r, p, y : Single) : TQuaternion;
+
+{: Returns quaternion product qL * qR.<p>
+   Note: order is important!<p>
+   To combine rotations, use the product QuaternionMuliply(qSecond, qFirst),
+   which gives the effect of rotating by qFirst then qSecond. }
+function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
+
 {: Spherical linear interpolation of unit quaternions with spins.<p>
    QStart, QEnd - start and end unit quaternions<br>
    t            - interpolation parameter (0 to 1)<br>
    Spin         - number of extra spin rotations to involve<br> }
 function QuaternionSlerp(const QStart, QEnd: TQuaternion; Spin: Integer; t: Single): TQuaternion;
-//: Converts a unit quaternion into two points on a unit sphere
-procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVector);
 
 //------------------------------------------------------------------------------
 // Logarithmic and exponential functions
@@ -3614,13 +3631,14 @@ end;
 
 // CreateRotationMatrix
 //
-function CreateRotationMatrix(Axis: TAffineVector; Angle: Single): TMatrix; register;
+function CreateRotationMatrix(const anAxis: TAffineVector; angle: Single): TMatrix; register;
 var
+   axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
    SinCos(Angle, Sine, Cosine);
    one_minus_cosine:=1 - cosine;
-   NormalizeVector(Axis);
+   axis:=VectorNormalize(anAxis);
 
    Result[X, X]:=(one_minus_cosine * Sqr(Axis[0])) + Cosine;
    Result[X, Y]:=(one_minus_cosine * Axis[0] * Axis[1]) - (Axis[2] * Sine);
@@ -3645,13 +3663,14 @@ end;
 
 // CreateAffineRotationMatrix
 //
-function CreateAffineRotationMatrix(Axis: TAffineVector; Angle: Single): TAffineMatrix;
+function CreateAffineRotationMatrix(const anAxis: TAffineVector; angle: Single): TAffineMatrix;
 var
+   axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
 begin
    SinCos(Angle, Sine, Cosine);
    one_minus_cosine:=1 - cosine;
-   NormalizeVector(Axis);
+   axis:=VectorNormalize(anAxis);
 
    Result[X, X]:=(one_minus_cosine * Sqr(Axis[0])) + Cosine;
    Result[X, Y]:=(one_minus_cosine * Axis[0] * Axis[1]) - (Axis[2] * Sine);
@@ -4414,6 +4433,27 @@ asm
       MOV [EDX + 12], EAX
 end;
 
+// QuaternionMagnitude
+//
+function QuaternionMagnitude(const q : TQuaternion) : Single;
+begin
+   Result:=Sqrt(VectorNorm(q.ImagPart)+Sqr(q.RealPart));
+end;
+
+// NormalizeQuaternion
+//
+procedure NormalizeQuaternion(var q : TQuaternion);
+var
+   m, f : Single;
+begin
+   m:=QuaternionMagnitude(q);
+   if m>EPSILON2 then begin
+      f:=1/m;
+      ScaleVector(q.ImagPart, f);
+      q.RealPart:=q.RealPart*f;
+   end else q:=IdentityQuaternion;
+end;
+
 // QuaternionFromPoints
 //
 function QuaternionFromPoints(const V1, V2: TAffineVector): TQuaternion; assembler;
@@ -4425,51 +4465,66 @@ begin
    Result.RealPart:=Sqrt((VectorDotProduct(V1, V2) + 1)/2);
 end;
 
+// QuaternionFromMatrix
+//
+function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
+// the matrix must be a rotation matrix!
+var
+  traceMat, s : Extended;
+begin
+   traceMat := 1 + mat[0,0] + mat[1,1] + mat[2,2];
+   if traceMat > EPSILON2 then begin
+      s := Sqrt(traceMat);
+      Result.RealPart := 0.5 * s;
+      s := 0.5/s;
+      Result.ImagPart[0] := ( mat[2,1] - mat[1,2] ) * s;
+      Result.ImagPart[1] := ( mat[0,2] - mat[2,0] ) * s;
+      Result.ImagPart[2] := ( mat[1,0] - mat[0,1] ) * s;
+   end else if (mat[0,0] > mat[1,1]) and (mat[0,0] > mat[2,2]) then begin  // Row 0:
+      s := Sqrt(MaxFloat(EPSILON2, 1.0 + mat[0,0] - mat[1,1] - mat[2,2])) * 2;
+      Result.ImagPart[0] := 0.25 * s;
+      s := 1/s;
+      Result.ImagPart[1] := (mat[1,0] + mat[0,1]) * s;
+      Result.ImagPart[2] := (mat[0,2] + mat[2,0]) * s;
+      Result.RealPart :=    (mat[2,1] - mat[1,2]) * s;
+   end else if (mat[1,1] > mat[2,2]) then begin  // Row 1:
+      s := Sqrt(MaxFloat(EPSILON2, 1.0 + mat[1,1] - mat[0,0] - mat[2,2])) * 2;
+      Result.ImagPart[1] := 0.25 * s;
+      s := 1/s;
+      Result.ImagPart[0] := (mat[1,0] + mat[0,1]) * s;
+      Result.ImagPart[2] := (mat[2,1] + mat[1,2]) * s;
+      Result.RealPart :=    (mat[0,2] - mat[2,0]) * s;
+   end else begin  // Row 2:
+      s := Sqrt(MaxFloat(EPSILON2, 1.0 + mat[2,2] - mat[0,0] - mat[1,1])) * 2;
+      Result.ImagPart[2] := 0.25 * s;
+      s := 1/s;
+      Result.ImagPart[0] := (mat[0,2] + mat[2,0] ) * s;
+      Result.ImagPart[1] := (mat[2,1] + mat[1,2] ) * s;
+      Result.RealPart :=    (mat[1,0] - mat[0,1] ) * s;
+   end;
+   NormalizeQuaternion(Result);
+end;
+
 // QuaternionMultiply
 //
 function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
 var
    Temp : TQuaternion;
 begin
-  Temp.RealPart:=qL.RealPart * qR.RealPart - qL.ImagPart[X] * qR.ImagPart[X] -
-                   qL.ImagPart[Y] * qR.ImagPart[Y] - qL.ImagPart[Z] * qR.ImagPart[Z];
-  Temp.ImagPart[X]:=qL.RealPart * qR.ImagPart[X] + qL.ImagPart[X] * qR.RealPart +
-                      qL.ImagPart[Y] * qR.ImagPart[Z] - qL.ImagPart[Z] * qR.ImagPart[Y];
-  Temp.ImagPart[Y]:=qL.RealPart * qR.ImagPart[Y] + qL.ImagPart[Y] * qR.RealPart +
-                      qL.ImagPart[Z] * qR.ImagPart[X] - qL.ImagPart[X] * qR.ImagPart[Z];
-  Temp.ImagPart[Z]:=qL.RealPart * qR.ImagPart[Z] + qL.ImagPart[Z] * qR.RealPart +
-                      qL.ImagPart[X] * qR.ImagPart[Y] - qL.ImagPart[Y] * qR.ImagPart[X];
-  Result:=Temp;
+   Temp.RealPart:=qL.RealPart * qR.RealPart - qL.ImagPart[X] * qR.ImagPart[X]
+                  - qL.ImagPart[Y] * qR.ImagPart[Y] - qL.ImagPart[Z] * qR.ImagPart[Z];
+   Temp.ImagPart[X]:=qL.RealPart * qR.ImagPart[X] + qL.ImagPart[X] * qR.RealPart
+                     + qL.ImagPart[Y] * qR.ImagPart[Z] - qL.ImagPart[Z] * qR.ImagPart[Y];
+   Temp.ImagPart[Y]:=qL.RealPart * qR.ImagPart[Y] + qL.ImagPart[Y] * qR.RealPart
+                     + qL.ImagPart[Z] * qR.ImagPart[X] - qL.ImagPart[X] * qR.ImagPart[Z];
+   Temp.ImagPart[Z]:=qL.RealPart * qR.ImagPart[Z] + qL.ImagPart[Z] * qR.RealPart
+                     + qL.ImagPart[X] * qR.ImagPart[Y] - qL.ImagPart[Y] * qR.ImagPart[X];
+   Result:=Temp;
 end;
 
 // QuaternionToMatrix
 //
 function QuaternionToMatrix(const Q: TQuaternion): TMatrix;
-
-// Essentially, this function is the same as CreateRotationMatrix and you can consider it as
-// being for reference here.
-
-{var Norm, S,
-    XS, YS, ZS,
-    WX, WY, WZ,
-    XX, XY, XZ,
-    YY, YZ, ZZ   : Single;
-
-begin
-  Norm:=Q.Vector[X] * Q.Vector[X] + Q.Vector[Y] * Q.Vector[Y] + Q.Vector[Z] * Q.Vector[Z] + Q.RealPart * Q.RealPart;
-  if Norm > 0 then S:=2 / Norm
-              else S:=0;
-
-  XS:=Q.Vector[X] * S;   YS:=Q.Vector[Y] * S;   ZS:=Q.Vector[Z] * S;
-  WX:=Q.RealPart * XS;   WY:=Q.RealPart * YS;   WZ:=Q.RealPart * ZS;
-  XX:=Q.Vector[X] * XS;  XY:=Q.Vector[X] * YS;  XZ:=Q.Vector[X] * ZS;
-  YY:=Q.Vector[Y] * YS;  YZ:=Q.Vector[Y] * ZS;  ZZ:=Q.Vector[Z] * ZS;
-
-  Result[X, X]:=1 - (YY + ZZ); Result[Y, X]:=XY + WZ;       Result[Z, X]:=XZ - WY;       Result[W, X]:=0;
-  Result[X, Y]:=XY - WZ;       Result[Y, Y]:=1 - (XX + ZZ); Result[Z, Y]:=YZ + WX;       Result[W, Y]:=0;
-  Result[X, Z]:=XZ + WY;       Result[Y, Z]:=YZ - WX;       Result[Z, Z]:=1 - (XX + YY); Result[W, Z]:=0;
-  Result[X, W]:=0;             Result[Y, W]:=0;             Result[Z, W]:=0;             Result[W, W]:=1;}
-
 var
   V: TAffineVector;
   SinA, CosA,
@@ -4478,7 +4533,7 @@ var
 begin
   V:=Q.ImagPart;
   NormalizeVector(V);
-  SinCos(Q.RealPart / 2, SinA, CosA);
+  SinCos(Q.RealPart * 0.5, SinA, CosA);
   A:=V[X] * SinA;
   B:=V[Y] * SinA;
   C:=V[Z] * SinA;
@@ -4496,6 +4551,35 @@ begin
   Result[Z, Y]:=2 * B * C + 2 * CosA * A;
   Result[Z, Z]:=1 - 2 * A * A - 2 * B * B;
 end;
+
+// QuaternionFromAngleAxis
+//
+function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVector) : TQuaternion;
+var
+   f, s, c : Single;
+begin
+   SinCos(DegToRad(angle*0.5), s, c);
+	Result.RealPart:=c;
+   f:=s/VectorLength(axis);
+   Result.ImagPart[0]:=axis[0]*f;
+   Result.ImagPart[1]:=axis[1]*f;
+   Result.ImagPart[2]:=axis[2]*f;
+end;
+
+// QuaternionFromRollPitchYaw
+//
+function QuaternionFromRollPitchYaw(const r, p, y : Single) : TQuaternion;
+var
+   qp, qy : TQuaternion;
+begin
+   Result:=QuaternionFromAngleAxis(r, ZVector);
+   qp:=QuaternionFromAngleAxis(p, XVector);
+   qy:=QuaternionFromAngleAxis(y, YVector);
+
+   Result:=QuaternionMultiply(qp, Result);
+   Result:=QuaternionMultiply(qy, Result);
+end;
+
 
 // QuaternionToPoints
 //
