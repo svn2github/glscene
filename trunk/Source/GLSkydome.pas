@@ -130,7 +130,7 @@ type
          procedure SetItems(index : Integer; const val : TSkyDomeStar);
 	      function GetItems(index : Integer) : TSkyDomeStar;
 
-         procedure CalculateCartesianCoordinates;
+         procedure PrecomputeCartesianCoordinates;
 
       public
 	      { Public Declarations }
@@ -147,6 +147,9 @@ type
             band defined or visible dome. }
          procedure AddRandomStars(nb : Integer; color : TColor;
                                   limitToTopDome : Boolean = False);
+         {: Load a 'stars' file, which is made of TGLStarRecord.<p>
+            Not that '.stars' files should already be sorted by magnitude and color. }
+         procedure LoadStarsFile(const starsFileName : String);
    end;
 
    // TSkyDomeOption
@@ -271,7 +274,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL12;
+uses SysUtils, OpenGL12, GLStarRecord;
 
 // ------------------
 // ------------------ TSkyDomeBand ------------------
@@ -595,9 +598,9 @@ begin
 	Result:=(inherited FindItemID(ID)) as TSkyDomeStar;
 end;
 
-// CalculateCartesianCoordinates
+// PrecomputeCartesianCoordinates
 //
-procedure TSkyDomeStars.CalculateCartesianCoordinates;
+procedure TSkyDomeStars.PrecomputeCartesianCoordinates;
 var
    i : Integer;
    star : TSkyDomeStar;
@@ -606,11 +609,11 @@ begin
    // to be enhanced...
    for i:=0 to Count-1 do begin
       star:=Items[i];
-      SinCos(star.RA, raS, raC);
-      SinCos(star.Dec, decS, decC);
-      star.FCacheCoord[0]:=decC*raC;
-      star.FCacheCoord[1]:=decS*raC;
-      star.FCacheCoord[2]:=raS;
+      SinCos(star.DEC*cPIdiv180, decS, decC);
+      SinCos(star.RA*cPIdiv180, decC, raS, raC);
+      star.FCacheCoord[0]:=raC;
+      star.FCacheCoord[1]:=raS;
+      star.FCacheCoord[2]:=decS;
    end;
 end;
 
@@ -621,6 +624,7 @@ var
    i, n : Integer;
    star : TSkyDomeStar;
    lastColor : TColor;
+   lastPointSize10, pointSize10 : Integer;
    color, twinkleColor : TColorVector;
 
    procedure DoTwinkle;
@@ -634,29 +638,50 @@ var
 
 begin
    if Count=0 then Exit;
-   CalculateCartesianCoordinates;
+   PrecomputeCartesianCoordinates;
    lastColor:=-1;
    n:=0;
-   glPointSize(1.2);
+   lastPointSize10:=-1;
+
+   glPushAttrib(GL_ENABLE_BIT);
+   glEnable(GL_POINT_SMOOTH);
+   glEnable(GL_ALPHA_TEST);
+   glAlphaFunc(GL_NOTEQUAL, 0.0);
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+   glBegin(GL_POINTS);
    for i:=0 to Count-1 do begin
       star:=Items[i];
+      pointSize10:=Round((4.5-star.Magnitude)*10);
+      if pointSize10<>lastPointSize10 then begin
+         if pointSize10>15 then begin
+            glEnd;
+            lastPointSize10:=pointSize10;
+            glPointSize(pointSize10*0.1);
+            glBegin(GL_POINTS);
+         end else if lastPointSize10<>15 then begin
+            glEnd;
+            lastPointSize10:=15;
+            glPointSize(1.5);
+            glBegin(GL_POINTS);
+         end;
+      end;
       if lastColor<>star.FColor then begin
          color:=ConvertWinColor(star.FColor);
-         if lastColor<>-1 then
-            glEnd;
          if twinkle then begin
             n:=0;
             DoTwinkle;
-         end else glColor4fv(@color[0]);
-         glBegin(GL_POINTS);
+         end else glColor3fv(@color[0]);
          lastColor:=star.FColor;
-      end;
-      if twinkle then
+      end else if twinkle then
          DoTwinkle;
       glVertex3fv(@star.FCacheCoord[0]);
    end;
    glEnd;
+
    glPointSize(1);
+   glPopAttrib;
 end;
 
 // AddRandomStars
@@ -675,11 +700,39 @@ begin
          coord[2]:=Random
       else coord[2]:=Random*2-1;
       // calculate RA and Dec
-      star.RA:=ArcSin(coord[2]);
-      star.Dec:=Random*c2PI-PI;
-      SinCos(star.Dec, Sqrt(1-Sqr(coord[2])), coord[0], coord[1]);
+      star.RA:=ArcSin(coord[2])*c180divPI;
+      star.Dec:=Random*360-180;
       // pick a color
       star.Color:=color;
+      // pick a magnitude
+      star.Magnitude:=3;
+   end;
+end;
+
+// LoadStarsFile
+//
+procedure TSkyDomeStars.LoadStarsFile(const starsFileName : String);
+var
+   fs : TFileStream;
+   sr : TGLStarRecord;
+   colorVector : TColorVector;
+begin
+   fs:=TFileStream.Create(starsFileName, fmOpenRead+fmShareDenyWrite);
+   try
+      while fs.Position<fs.Size do begin
+         fs.Read(sr, SizeOf(sr));
+         with Add do begin
+            RA:=sr.RA*0.01;
+            DEC:=sr.DEC*0.01;
+            colorVector:=StarRecordColor(sr, 3);
+            Magnitude:=sr.VMagnitude*0.1;
+            if sr.VMagnitude>35 then
+               Color:=ConvertColorVector(colorVector, colorVector[3])
+            else Color:=ConvertColorVector(colorVector);
+         end;
+      end;
+   finally
+      fs.Free;
    end;
 end;
 
