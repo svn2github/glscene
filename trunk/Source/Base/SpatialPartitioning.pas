@@ -1418,6 +1418,7 @@ begin
   for i := 0 to OldLeaves.Count-1 do
     AddLeaf(OldLeaves[i]);
 
+  OldLeaves.Free;  
   FGrowMethod := tempGrowMethod;
 end;
 
