@@ -5717,7 +5717,7 @@ begin
   w := VectorSubtract(Point, linePoint);
 
   c1 := VectorDotProduct(w, LineDirection);
-  c2 := VectorDotProduct(LineDirection, lineDirection);
+  c2 := VectorDotProduct(lineDirection, lineDirection);
   b := c1 / c2;
 
   result := VectorAdd(linePoint, VectorScale(lineDirection, b));
@@ -5725,13 +5725,12 @@ end;
 
 // PointLineDistance
 //
-function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : single;
+function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : Single;
 var
-  Pb : TAffineVector;
+   pb : TAffineVector;
 begin
-  Pb := PointLineClosestPoint(point, linePoint, lineDirection);
-
-  result := VectorLength(VectorSubtract(point, Pb));
+   pb:=PointLineClosestPoint(point, linePoint, lineDirection);
+   Result:=VectorDistance(point, pb);
 end;
 
 // PointSegmentClosestPoint
@@ -5758,13 +5757,12 @@ end;
 
 // PointSegmentDistance
 //
-function PointSegmentDistance(point, segmentStart, segmentStop : TAffineVector) : single;
+function PointSegmentDistance(const point, segmentStart, segmentStop : TAffineVector) : Single;
 var
-  Pb : TAffineVector;
+   pb : TAffineVector;
 begin
-  Pb := PointSegmentClosestPoint(segmentStart, segmentStop, Point);
-
-  result := VectorLength(VectorSubtract(point, Pb));
+   pb:=PointSegmentClosestPoint(point, segmentStart, segmentStop);
+   Result:=VectorDistance(point, pb);
 end;
 
 // http://geometryalgorithms.com/Archive/algorithm_0104/algorithm_0104B.htm
