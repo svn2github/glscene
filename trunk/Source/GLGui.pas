@@ -99,7 +99,7 @@ Type
 
   TGLGuiLayout     = class(TGLUpdateableComponent)
   private
-    FBitmapFont : TBitmapFont;
+    FBitmapFont: TGLCustomBitmapFont;
     FMaterial   : TGLMaterial;
     FGuiComponents : TGLGuiComponentList;
     FFileName   : String;
@@ -124,7 +124,7 @@ Type
 
     procedure NotifyChange(Sender : TObject); override;
   published
-    property BitmapFont : TBitmapFont read FBitmapFont write FBitmapFont;
+    property BitmapFont : TGLCustomBitmapFont read FBitmapFont write FBitmapFont;
     property Material   : TGLMaterial read FMaterial write FMaterial;
     property GuiComponents : TGLGuiComponentList read FGuiComponents write FGuiComponents;
     property FileName   : String read FFileName Write SetFileName;
