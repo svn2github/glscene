@@ -23,6 +23,8 @@ uses VectorGeometry;
 
 type
 
+   TCubicSplineMatrix = array of array [0..3] of Single;
+
    // TCubicSpline
    //
    {: 3D cubic spline handler class.<p>
@@ -34,7 +36,7 @@ type
    TCubicSpline = class (TObject)
       private
          { Private Declarations }
-         matX, matY, matZ, matW : Pointer;
+         matX, matY, matZ, matW : TCubicSplineMatrix;
          FNb : Integer;
 
       public
@@ -45,7 +47,7 @@ type
             used beyond this range.<p>
             Note : "nil" single arrays are accepted, in this case the axis is
             disabled and calculus will return 0 (zero) for this component. }
-         constructor Create(const X, Y, Z, W : PFloatArray; const nb : Integer);
+         constructor Create(const X, Y, Z, W : PFloatArray; const nb : Integer); {$ifdef CLR}unsafe;{$endif}
          destructor Destroy; override;
 
          {: Calculates X component at time t.<p> }
@@ -109,94 +111,75 @@ type
 
 // VECCholeskyTriDiagResol
 //
-function VECCholeskyTriDiagResol(const b : PFloatArray; const nb : Integer) : PFloatArray;
+procedure VECCholeskyTriDiagResol(const b : array of Single; const nb : Integer;
+                                  var Result : array of Single);
 var
-   Y, LDiag, LssDiag : PFloatArray;
+   Y, LDiag, LssDiag : array of Single;
    i, k, Debut, Fin: Integer;
 begin
    Debut:=0;
    Fin:=nb-1;
-   Assert(Assigned(B));
-   GetMem(LDiag, nb*sizeof(Single));
-   GetMem(LssDiag, (nb-1)*sizeof(Single));
-   try
-      LDiag[Debut]:=1.4142135; // = sqrt(2)
-      LssDiag[Debut]:=1.0/1.4142135;
-      for K:=Debut+1 to Fin-1 do begin
-         LDiag[K]:=Sqrt(4-LssDiag[K-1]*LssDiag[K-1]);
-         LssDiag[K]:=1.0/LDiag[K];
-      end;
-      LDiag[Fin]:=Sqrt(2-LssDiag[Fin-1]*LssDiag[Fin-1]);
-      GetMem(Y, nb*sizeof(Single));
-      try
-         Y[Debut]:=B[Debut]/LDiag[Debut];
-         for I:=Debut+1 to Fin do
-            Y[I]:=(B[I]-Y[I-1]*LssDiag[I-1])/LDiag[I];
-         GetMem(Result, nb*sizeof(Single));
-         Result[Fin]:=Y[Fin]/LDiag[Fin];
-         for i:=Fin-1 downto Debut do
-            Result[I]:=(Y[I]-Result[I+1]*LssDiag[I])/LDiag[I];
-      finally
-         FreeMem(Y);
-      end;
-   finally
-      FreeMem(LDiag);
-      FreeMem(LssDiag);
+   Assert(Length(b)>0);
+   SetLength(LDiag, nb);
+   SetLength(LssDiag, nb-1);
+   LDiag[Debut]:=1.4142135; // = sqrt(2)
+   LssDiag[Debut]:=1.0/1.4142135;
+   for K:=Debut+1 to Fin-1 do begin
+      LDiag[K]:=Sqrt(4-LssDiag[K-1]*LssDiag[K-1]);
+      LssDiag[K]:=1.0/LDiag[K];
    end;
+   LDiag[Fin]:=Sqrt(2-LssDiag[Fin-1]*LssDiag[Fin-1]);
+   SetLength(Y, nb);
+   Y[Debut]:=B[Debut]/LDiag[Debut];
+   for I:=Debut+1 to Fin do
+      Y[I]:=(B[I]-Y[I-1]*LssDiag[I-1])/LDiag[I];
+   Assert(Length(Result)=nb);
+   Result[Fin]:=Y[Fin]/LDiag[Fin];
+   for i:=Fin-1 downto Debut do
+      Result[I]:=(Y[I]-Result[I+1]*LssDiag[I])/LDiag[I];
 end;
 
 // MATInterpolationHermite
 //
-function MATInterpolationHermite(const ordonnees : PFloatArray; const nb : Integer): Pointer;
+procedure MATInterpolationHermite(const ordonnees : PFloatArray; const nb : Integer;
+                                  var Result : TCubicSplineMatrix); {$ifdef CLR}unsafe;{$endif}
 var
    a, b, c, d : Single;
-   m : Pointer;
    i, n : Integer;
-   bb, deriv, fa : PFloatArray;
+   bb, deriv : array of Single;
 begin
    Result:=nil;
    if Assigned(Ordonnees) and (nb>0) then begin
       n:=nb-1;
-      GetMem(bb, nb*sizeof(Single));
-      try
-         PFloatArray(bb)[0]:=3*(ordonnees[1]-ordonnees[0]);
-         PFloatArray(bb)[n]:=3*(ordonnees[n]-ordonnees[n-1]);
-         for i:=1 to n-1 do
-            bb[I]:=3*(ordonnees[I+1]-ordonnees[I-1]);
-         deriv:=VECCholeskyTriDiagResol(bb, nb);
-         try
-            GetMem(m, n*SizeOf(PFloatArray));
-            for i:=0 to n-1 do begin
-               GetMem(TSingleMatrix(m)[I], 4*SizeOf(Single));
-               a:=ordonnees[I];
-               b:=deriv[I];
-               c:=3*(ordonnees[I+1]-ordonnees[I])-2*deriv[I]-deriv[I+1];
-               d:=-2*(ordonnees[I+1]-ordonnees[I])+deriv[I]+deriv[I+1];
-               fa:=TSingleMatrix(m)[I];
-               fa[3]:=a+I*(I*(c-I*d)-b);
-               fa[2]:=b+I*(3*I*d-2*c);
-               fa[1]:=c-3*I*d;
-               fa[0]:=d;
-            end;
-         finally
-            FreeMem(Deriv);
-         end;
-      finally
-         FreeMem(BB);
+      SetLength(bb, nb);
+      bb[0]:=3*(ordonnees[1]-ordonnees[0]);
+      bb[n]:=3*(ordonnees[n]-ordonnees[n-1]);
+      for i:=1 to n-1 do
+         bb[I]:=3*(ordonnees[I+1]-ordonnees[I-1]);
+      SetLength(deriv, nb);
+      VECCholeskyTriDiagResol(bb, nb, deriv);
+      SetLength(Result, n);
+      for i:=0 to n-1 do begin
+         a:=ordonnees[I];
+         b:=deriv[I];
+         c:=3*(ordonnees[I+1]-ordonnees[I])-2*deriv[I]-deriv[I+1];
+         d:=-2*(ordonnees[I+1]-ordonnees[I])+deriv[I]+deriv[I+1];
+         Result[I][3]:=a+I*(I*(c-I*d)-b);
+         Result[I][2]:=b+I*(3*I*d-2*c);
+         Result[I][1]:=c-3*I*d;
+         Result[I][0]:=d;
       end;
-      Result:=m;
    end;
 end;
 
 // MATValeurSpline
 //
-function MATValeurSpline(const spline : Pointer; const x : Single;
+function MATValeurSpline(const spline : TCubicSplineMatrix; const x : Single;
                          const nb : Integer) : Single;
 var
    i : Integer;
-   sa : PFloatArray;
 begin
-   if Assigned(Spline) then begin
+   if Length(Spline)>0 then begin
       if x<=0 then
          i:=0
       else if x>nb-1 then
@@ -204,20 +187,18 @@ begin
       else i:=Trunc(x);
       { TODO : the following line looks like a bug... }
       if i=(nb-1) then Dec(i);
-      sa:=PFloatArray(TSingleMatrix(spline)[i]);
-      Result:=((sa[0]*x+sa[1])*x+sa[2])*x+sa[3];
+      Result:=((spline[i][0]*x+spline[i][1])*x+spline[i][2])*x+spline[i][3];
    end else Result:=0;
 end;
 
 // MATValeurSplineSlope
 //
-function MATValeurSplineSlope(const spline : Pointer; const x : Single;
+function MATValeurSplineSlope(const spline : TCubicSplineMatrix; const x : Single;
                               const nb : Integer) : Single;
 var
    i : Integer;
-   sa : PFloatArray;
 begin
-   if Assigned(Spline) then begin
+   if Length(Spline)>0 then begin
       if x<=0 then
          i:=0
       else if x>nb-1 then
@@ -225,8 +206,7 @@ begin
       else i:=Trunc(x);
       { TODO : the following line looks like a bug... }
       if i=(nb-1) then Dec(i);
-      sa:=PFloatArray(TSingleMatrix(spline)[i]);
-      Result:=(3*sa[0]*x+2*sa[1])*x+sa[2];
+      Result:=(3*spline[i][0]*x+2*spline[i][1])*x+spline[i][2];
    end else Result:=0;
 end;
 
@@ -236,35 +216,20 @@ end;
 
 // Create
 //
-constructor TCubicSpline.Create(const X, Y, Z, W: PFloatArray; const nb : Integer);
+constructor TCubicSpline.Create(const X, Y, Z, W: PFloatArray; const nb : Integer); {$ifdef CLR}unsafe;{$endif}
 begin
-   MatX:=MATInterpolationHermite(X, nb);
-   MatY:=MATInterpolationHermite(Y, nb);
-   MatZ:=MATInterpolationHermite(Z, nb);
-   MatW:=MATInterpolationHermite(W, nb);
+   inherited Create;
+   MATInterpolationHermite(X, nb, matX);
+   MATInterpolationHermite(Y, nb, matY);
+   MATInterpolationHermite(Z, nb, matZ);
+   MATInterpolationHermite(W, nb, matW);
    FNb:=nb;
 end;
 
 // Destroy
 //
 destructor TCubicSpline.Destroy;
-
-   procedure FreeMatrix(matrix : Pointer);
-   var
-      i : Integer;
-   begin
-      if Assigned(matrix) then begin
-         for i:=0 to FNb-2 do
-            FreeMem(PFloatArray(TSingleMatrix(matrix)[I]));
-         FreeMem(matrix);
-      end;
-   end;
-
 begin
-   FreeMatrix(MatX);
-   FreeMatrix(MatY);
-   FreeMatrix(MatZ);
-   FreeMatrix(MatW);
    inherited Destroy;
 end;
 
