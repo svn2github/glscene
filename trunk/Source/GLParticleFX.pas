@@ -1202,17 +1202,19 @@ begin
             curManagerList:=nil;
             for regionIdx:=cNbRegions-1 downto 0 do begin
                curRegion:=@regions[regionIdx];
-               curParticleOrder:=@curRegion.particleOrder[0];
-               for particleIdx:=curRegion.count-1 downto 0 do begin
-                  curParticle:=PParticleReference(curParticleOrder[particleIdx]).particle;
-                  if curParticle.Owner<>curManagerList then begin
-                     if Assigned(curManager) then
-                        curManager.EndParticles;
-                     curManagerList:=curParticle.Owner;
-                     curManager:=curManagerList.Owner;
-                     curManager.BeginParticles;
+               if curRegion.count>0 then begin
+                  curParticleOrder:=@curRegion.particleOrder[0];
+                  for particleIdx:=curRegion.count-1 downto 0 do begin
+                     curParticle:=PParticleReference(curParticleOrder[particleIdx]).particle;
+                     if curParticle.Owner<>curManagerList then begin
+                        if Assigned(curManager) then
+                           curManager.EndParticles;
+                        curManagerList:=curParticle.Owner;
+                        curManager:=curManagerList.Owner;
+                        curManager.BeginParticles;
+                     end;
+                     curManager.RenderParticle(curParticle);
                   end;
-                  curManager.RenderParticle(curParticle);
                end;
             end;
             if Assigned(curManager) then

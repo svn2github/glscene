@@ -992,17 +992,17 @@ begin
           pixa[xy-3]:=p4;
           pixa[xy-2]:=p4;
           pixa[xy-1]:=p4;
-         xy:=x+(h-(y-3))*w;
+         xy:=xy-w;//x+(h-(y-3))*w;
           pixa[xy-4]:=p4;
           pixa[xy-3]:=p4;
           pixa[xy-2]:=p4;
           pixa[xy-1]:=p4;
-         xy:=x+(h-(y-2))*w;
+         xy:=xy-w;//x+(h-(y-2))*w;
           pixa[xy-4]:=p4;
           pixa[xy-3]:=p4;
           pixa[xy-2]:=p4;
           pixa[xy-1]:=p4;
-         xy:=x+(h-(y-1))*w;
+         xy:=xy-w;//x+(h-(y-1))*w;
           pixa[xy-4]:=p4;
           pixa[xy-3]:=p4;
           pixa[xy-2]:=p4;
@@ -1017,7 +1017,7 @@ begin
           if (p1=pT) then pixa[xy-3]:=pT else HardSet(x-3,y-4);
           if (p2=pT) then pixa[xy-1]:=pT else HardSet(x-1,y-4);
           xy:=xy-w;        //down
-          if (pL=p1) then pixa[xy-4]:=pL else HardSet(x-4,y-3);
+          if (pL=pL) then pixa[xy-4]:=pL else HardSet(x-4,y-3);
           if (p1=pM) then pixa[xy-3]:=pM else HardSet(x-3,y-3);
           if (p2=pM) then pixa[xy-1]:=pM else HardSet(x-1,y-3); //p2m
           if (pT=pM) then pixa[xy-2]:=pM else HardSet(x-2,y-3);

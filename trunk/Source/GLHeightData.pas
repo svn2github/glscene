@@ -1158,10 +1158,13 @@ end;
 //
 procedure TGLBitmapHDS.CreateMonochromeBitmap(size : Integer);
 type
+   TPaletteEntryArray = array [0..255] of TPaletteEntry;
+   PPaletteEntryArray = ^TPaletteEntryArray;
    TLogPal = record
       lpal : TLogPalette;
-      pe : array [0..255] of TPaletteEntry;
+      pe : TPaletteEntryArray;
    end;
+
 var
    x : Integer;
    logpal : TLogPal;
@@ -1172,7 +1175,7 @@ begin
    FBitmap.PixelFormat:=pf8bit;
    FBitmap.Width:=size;
    FBitmap.Height:=size;
-   for x:=0 to 255 do with logPal.lpal.palPalEntry[x] do begin
+   for x:=0 to 255 do with PPaletteEntryArray(@logPal.lpal.palPalEntry[0])[x] do begin
       peRed:=x;
       peGreen:=x;
       peBlue:=x;

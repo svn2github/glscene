@@ -3887,7 +3887,7 @@ var
 
    //---------------------------------------------------------------------------
 
-   function GetSmoothIndex(ThisIndex, SmoothingGroup: Cardinal; P: Pointer): Cardinal;
+   function GetSmoothIndex(ThisIndex, SmoothingGroup: Cardinal; P: Pointer): Integer;
       // Retrieves the vertex index for the given index and smoothing group.
       // This redirection is necessary because a vertex might have been duplicated.
    asm

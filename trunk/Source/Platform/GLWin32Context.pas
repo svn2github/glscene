@@ -35,7 +35,7 @@ type
    TGLWin32Context = class (TGLContext)
       private
          { Private Declarations }
-         FRC, FDC, FHPBUFFER : Integer;
+         FRC, FDC, FHPBUFFER : Cardinal;
          FiAttribs : packed array of Integer;
          FfAttribs : packed array of Single;
          FLegacyContextsOnly : Boolean;
@@ -450,7 +450,7 @@ begin
    if FRC=0 then
       RaiseLastOSError
    else vLastPixelFormat:=0;
-   FDC:=outputDevice;
+   FDC:=outputDC;
 end;
 
 // SpawnLegacyContext

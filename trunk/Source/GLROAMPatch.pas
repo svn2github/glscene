@@ -280,15 +280,12 @@ function TGLROAMPatch.RecursComputeVariance(const left, right, apex : TROAMVaria
 var
    half : TROAMVariancePoint;
    v : Word;
-   h, hr : SmallInt;
 begin
 	with half do begin
       X:=(left.X+right.X) shr 1;
 	   Y:=(left.Y+right.Y) shr 1;
-      hr:=(left.Z+right.Z) shr 1;
-      h:=FHeightRaster[Y][X];
-      Z:=h;
-      Result:=Abs(hr-h);
+      Z:=FHeightRaster[Y][X];
+      Result:=Abs(((left.Z+right.Z) div 2)-Z);
    end;
 
 	if node<FMaxVariance then begin
