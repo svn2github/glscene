@@ -1,4 +1,4 @@
-{: GLGraphics<p>
+{: GLCrossPlatform<p>
 
 	Cross platform support functions and types for GLScene.<p>
 
@@ -56,6 +56,11 @@ function ColorToRGB(color : TColor) : TColor;
 function GetRValue(rgb: DWORD): Byte;
 function GetGValue(rgb: DWORD): Byte;
 function GetBValue(rgb: DWORD): Byte;
+
+{: Increases or decreases the width and height of the specified rectangle.<p>
+   Adds dx units to the left and right ends of the rectangle and dy units to
+   the top and bottom. }
+procedure InflateGLRect(var aRect : TGLRect; dx, dy : Integer);
 
 {: Pops up a simple dialog with msg and an Ok button. }
 procedure InformationDlg(const msg : String);
@@ -161,6 +166,18 @@ end;
 function GetBValue(rgb: DWORD): Byte;
 begin
    Result:=Byte(rgb shr 16);
+end;
+
+// InflateRect
+//
+procedure InflateGLRect(var aRect : TGLRect; dx, dy : Integer);
+begin
+   aRect.Left:=aRect.Left+dx;
+   aRect.Right:=aRect.Right+dx;
+   if aRect.Right<aRect.Left then aRect.Left:=aRect.Right;
+   aRect.Top:=aRect.Top+dy;
+   aRect.Bottom:=aRect.Bottom+dy;
+   if aRect.Bottom<aRect.Top then aRect.Top:=aRect.Bottom;
 end;
 
 // InformationDlg
