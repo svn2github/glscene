@@ -6,6 +6,7 @@
   Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/03/05 - EG - Fixed space width during rendering
       <li>12/15/04 - Eugene Kryukov - Moved FCharRects to protected declaration in TGLCustomBitmapFont
       <li>18/10/04 - NelC - Fixed a texture reset bug in RenderString
       <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
@@ -853,7 +854,7 @@ begin
    else vBottomRight[1]:=vTopLeft[1]-CharHeight;
    vBottomRight[2]:=0;
    vBottomRight[3]:=1;
-   spaceDeltaH:=GetCharWidth(#32)+HSpaceFix;
+   spaceDeltaH:=GetCharWidth(#32)+HSpaceFix+HSpace;
    // set states
 	glEnable(GL_TEXTURE_2D);
    glDisable(GL_LIGHTING);
