@@ -126,7 +126,7 @@ begin
 
    // create world
    world:=dWorldCreate;
-   space:=dHashSpaceCreate;
+   space:=dHashSpaceCreate(nil);
    contactGroup:=dJointGroupCreate(0);
 
    // initialize world

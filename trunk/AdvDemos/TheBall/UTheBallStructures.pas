@@ -27,8 +27,6 @@ type
 	      { Public Declarations }
          property Items[index : Integer] : TTheBallStructure read GetItems write SetItems; default;
 
-
-
          function StructureByName(const aName : String) : TTheBallStructure;
    end;
 
