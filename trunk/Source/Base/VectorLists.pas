@@ -204,6 +204,7 @@ type
 			property List : PAffineVectorArray read FList;
 
          procedure Translate(const delta : TAffineVector); overload; override;
+         procedure Translate(const delta : TAffineVector; base, nb : Integer); overload;
 
          //: Translates the given item
          procedure TranslateItem(index : Integer; const delta : TAffineVector);
@@ -305,7 +306,9 @@ type
 			property List: PTexPointArray read FList;
 
          procedure Translate(const delta : TTexPoint);
-         procedure ScaleAndTranslate(const scale, delta : TTexPoint);
+         procedure ScaleAndTranslate(const scale, delta : TTexPoint); overload;
+         procedure ScaleAndTranslate(const scale, delta : TTexPoint;
+                                     base, nb : Integer); overload;
 	end;
 
   	// TIntegerList
@@ -379,7 +382,8 @@ type
          procedure RemoveSorted(const value : Integer);
 
          {: Adds delta to all items in the list. }
-         procedure Offset(delta : Integer);
+         procedure Offset(delta : Integer); overload;
+         procedure Offset(delta : Integer; const base, nb : Integer); overload;
 	end;
 
    TSingleArray = array [0..MaxInt shr 4] of Single;
@@ -1375,6 +1379,13 @@ begin
    VectorArrayAdd(FList, delta, Count, FList);
 end;
 
+// Translate (delta, range)
+//
+procedure TAffineVectorList.Translate(const delta : TAffineVector; base, nb : Integer);
+begin
+   VectorArrayAdd(@FList[base], delta, nb, @FList[base]);
+end;
+
 // TranslateItem
 //
 procedure TAffineVectorList.TranslateItem(index : Integer; const delta : TAffineVector);
@@ -1845,6 +1856,17 @@ begin
    TexPointArrayScaleAndAdd(FList, delta, FCount, scale, FList);
 end;
 
+// ScaleAndTranslate
+//
+procedure TTexPointList.ScaleAndTranslate(const scale, delta : TTexPoint;
+                                          base, nb : Integer);
+var
+   p : PTexPointArray;
+begin
+   p:=@FList[base];
+   TexPointArrayScaleAndAdd(p, delta, nb, scale, p);
+end;
+
 // ------------------
 // ------------------ TIntegerList ------------------
 // ------------------
@@ -2252,7 +2274,7 @@ begin
       Delete(index);
 end;
 
-// Offset
+// Offset (all)
 //
 procedure TIntegerList.Offset(delta : Integer);
 var
@@ -2261,6 +2283,18 @@ var
 begin
    locList:=FList;
    for i:=0 to FCount-1 do
+      locList[i]:=locList[i]+delta;
+end;
+
+// Offset (range)
+//
+procedure TIntegerList.Offset(delta : Integer; const base, nb : Integer);
+var
+   i : Integer;
+   locList : PIntegerArray;
+begin
+   locList:=FList;
+   for i:=base to base+nb-1 do
       locList[i]:=locList[i]+delta;
 end;
 
