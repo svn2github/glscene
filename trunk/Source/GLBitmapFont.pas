@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
       <li>01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state 
       <li>07/05/03 - EG - TGLFlatText Notification fix, added Options
       <li>30/10/02 - EG - Added TGLFlatText
@@ -851,6 +852,7 @@ begin
    rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
    // start rendering
+   glPushAttrib(GL_CURRENT_BIT);
    glColor4fv(@color);
    glBegin(GL_QUADS);
    for i:=1 to Length(aString) do begin
@@ -890,6 +892,7 @@ begin
       end;
    end;
    glEnd;
+   glPopAttrib;
 end;
 
 // TextOut
