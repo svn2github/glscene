@@ -5,6 +5,7 @@
    so that there is no z-fighting in rendering the same geometry multiple times.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/12/03 - NelC - Added SurfaceLit
       <li>05/12/03 - NelC - Added ForceMaterial
       <li>03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
                             the multipass demo.
@@ -62,10 +63,13 @@ type
       FFrontLine : TGLLineSettings;
       FBackLine  : TGLLineSettings;
 
+      FLighting : Boolean;
+
       procedure SetlineSmooth(v : boolean);
       procedure SetBlendline(v : boolean);
       procedure SetSolid(v : boolean);
       procedure SetBackgroundColor(AColor: TGLColor);
+      procedure SetLighting(v : boolean);
 
     protected
       procedure DoApply(var rci : TRenderContextInfo); override;
@@ -89,6 +93,8 @@ type
       property Solid : Boolean read FSolid write SetSolid default false;
       {: Color used for solid fill. }
       property BackgroundColor: TGLColor read FBackgroundColor write SetBackgroundColor;
+      {: When Solid is True, determines if lighting or background color is used. }
+      property SurfaceLit : Boolean read FLighting write SetLighting default true;
   end;
 
 procedure Register;
@@ -211,6 +217,7 @@ begin
   FBackgroundColor.Initialize(clrBtnFace);
 
   FLineSmooth:=False;
+  FLighting:=true;
 end;
 
 // Destroy
@@ -231,8 +238,6 @@ begin
    glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_POLYGON_BIT or
                 GL_HINT_BIT or GL_DEPTH_BUFFER_BIT or GL_LINE_BIT);
 
-   glDisable(GL_LIGHTING);
-
    if LineSmooth then begin
       glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
       glEnable(GL_LINE_SMOOTH);
@@ -251,12 +256,15 @@ begin
        // draw filled front faces in first pass
        glPolygonMode(GL_FRONT, GL_FILL);
        glCullFace(GL_BACK);
-       // use background color
-       glColor4fv(FBackgroundColor.AsAddress);
+       if not FLighting then begin
+         glDisable(GL_LIGHTING);
+         glColor4fv(FBackgroundColor.AsAddress); // use background color
+       end;
        // enable and adjust polygon offset
        glEnable(GL_POLYGON_OFFSET_FILL);
      end
    else begin
+       glDisable(GL_LIGHTING);
        // draw back lines in first pass
        FBackLine.Apply(rci);
        glCullFace(GL_FRONT);
@@ -279,6 +287,9 @@ begin
 
             FBackLine.UnApply(rci);
             FFrontLine.Apply(rci);
+
+            if solid and FLighting then
+              glDisable(GL_LIGHTING);
 
             GLPolygonMode(GL_FRONT, GL_LINE);
             glCullFace(GL_BACK);
@@ -325,6 +336,16 @@ procedure TGLHiddenLineShader.SetlineSmooth(v: boolean);
 begin
    if FlineSmooth<>v then begin
       FlineSmooth:=v;
+      NotifyChange(self);
+   end;
+end;
+
+// SetLighting
+//
+procedure TGLHiddenLineShader.SetLighting(v: boolean);
+begin
+   if FLighting<>v then begin
+      FLighting:=v;
       NotifyChange(self);
    end;
 end;
