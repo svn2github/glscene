@@ -344,6 +344,8 @@ begin
          for i:=0 to paths.Count-1 do begin
             cfgFile.Add('-Fu'+paths[i]);
             cfgFile.Add('-Fi'+paths[i]);
+            cfgFile.Add('-Fo'+paths[i]);
+            cfgFile.Add('-Fl'+paths[i]);
          end;
       finally
          paths.Free;
@@ -442,8 +444,10 @@ var
 begin
    gotProject:=(GetProject<>nil);
    ACFPCCompile.Enabled:=gotProject;
+   ACFPCCompile.ShortCut:=ShortCut(VK_F9, [ssCtrl, ssShift]);
    ACFPCBuild.Enabled:=gotProject;
    ACFPCExecute.Enabled:=gotProject;
+   ACFPCExecute.ShortCut:=ShortCut(VK_F9, [ssShift]);
    ACFPCOptions.Enabled:=gotProject;
    ACViewCompilerMessages.Checked:=DXPCompileLogVisible;
    Handled:=True;
