@@ -32,7 +32,7 @@ fragoutput main(
 
   // Get the color from the texture map using the input texture 
   // coordinate and assign to the output color
-  OUT.Color.rgb = f3tex2D(Map0, IN.TexCoord);
+  OUT.Color.rgb = f3tex2D(Map0, IN.TexCoord.xy);
 
   // Multiply output by the clamped intensity value
   OUT.Color.rgb *= i;
