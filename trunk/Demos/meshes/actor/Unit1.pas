@@ -152,7 +152,7 @@ end;
 procedure TForm1.CBAnimationsChange(Sender: TObject);
 begin
    // Change animation
-   Actor1.SwitchToAnimation(CBAnimations.Text);
+   Actor1.SwitchToAnimation(CBAnimations.Text, True);
 
    // Normally actors for Quake II Model have one number of frames
    // for all states 198 for actors and 172 for weapon,

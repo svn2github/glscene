@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/11/01 - EG - Added smooth transitions (based on Mrqzzz code)
       <li>14/09/01 - EG - Use of vFileStreamClass
       <li>18/08/01 - EG - Added TriangleCount methods, STL export, PLY import
       <li>15/08/01 - EG - FaceGroups can now be rendered by material group
@@ -1211,6 +1212,7 @@ type
          FOnFrameChanged : TNotifyEvent;
          FOnEndFrameReached, FOnStartFrameReached : TNotifyEvent;
          FAnimations : TActorAnimations;
+         FTargetSmoothAnimation : TActorAnimation;
 
       protected
          { Protected Declarations }
@@ -1231,9 +1233,9 @@ type
 
 			procedure DoProgress(const deltaTime, newTime : Double); override;
 
-	      procedure SwitchToAnimation(anAnimation : TActorAnimation); overload;
-	      procedure SwitchToAnimation(const animationName : String); overload;
-	      procedure SwitchToAnimation(animationIndex : Integer); overload;
+	      procedure SwitchToAnimation(anAnimation : TActorAnimation; smooth : Boolean = False); overload;
+	      procedure SwitchToAnimation(const animationName : String; smooth : Boolean = False); overload;
+	      procedure SwitchToAnimation(animationIndex : Integer; smooth : Boolean = False); overload;
          function CurrentAnimation : String;
 
          {: Synchronize self animation with an other actor.<p>
@@ -4437,8 +4439,13 @@ begin
 	inherited Create(Collection);
 end;
 
+// Destroy
+//
 destructor TActorAnimation.Destroy;
 begin
+   with (Collection as TActorAnimations).owner do
+      if FTargetSmoothAnimation=Self then
+         FTargetSmoothAnimation:=nil;
 	inherited Destroy;
 end;
 
@@ -4840,19 +4847,27 @@ function TActor.NextFrameIndex : Integer;
 begin
    case AnimationMode of
       aamNone, aamPlayOnce, aamLoop, aamBounceForward : begin
-         Result:=CurrentFrame+1;
-         if Result>EndFrame then begin
-            Result:=StartFrame+(Result-EndFrame-1);
-            if Result>EndFrame then
-               Result:=EndFrame;
+         if FTargetSmoothAnimation<>nil then
+            Result:=FTargetSmoothAnimation.StartFrame
+         else begin
+            Result:=CurrentFrame+1;
+            if Result>EndFrame then begin
+               Result:=StartFrame+(Result-EndFrame-1);
+               if Result>EndFrame then
+                  Result:=EndFrame;
+            end;
          end;
       end;
       aamBounceBackward : begin
-         Result:=CurrentFrame-1;
-         if Result<StartFrame then begin
-            Result:=EndFrame-(StartFrame-Result-1);
-            if Result<StartFrame then
-               Result:=StartFrame;
+         if FTargetSmoothAnimation<>nil then
+            Result:=FTargetSmoothAnimation.StartFrame
+         else begin
+            Result:=CurrentFrame-1;
+            if Result<StartFrame then begin
+               Result:=EndFrame-(StartFrame-Result-1);
+               if Result<StartFrame then
+                  Result:=StartFrame;
+            end;
          end;
       end;
    else
@@ -4896,13 +4911,16 @@ end;
 // BuildList
 //
 procedure TActor.BuildList(var rci : TRenderContextInfo);
+var
+   nextFrameIdx : Integer;
 begin
-   if NextFrameIndex>=0 then begin
+   nextFrameIdx:=NextFrameIndex;
+   if nextFrameIdx>=0 then begin
       case Reference of
          aarMorph : begin
             case FrameInterpolation of
                afpLinear :
-                  MeshObjects.Lerp(CurrentFrame, NextFrameIndex, CurrentFrameDelta)
+                  MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
             else
                MeshObjects.MorphTo(CurrentFrame);
             end;
@@ -4910,7 +4928,7 @@ begin
          aarSkeleton : begin
             case FrameInterpolation of
                afpLinear :
-                  Skeleton.Lerp(CurrentFrame, NextFrameIndex, CurrentFrameDelta);
+                  Skeleton.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta);
             else
                Skeleton.SetCurrentFrame(Skeleton.Frames[CurrentFrame]);
             end;
@@ -4964,6 +4982,10 @@ begin
       if (StartFrame<>EndFrame) and (FrameCount>1)  then begin
          FCurrentFrameDelta:=FCurrentFrameDelta+(deltaTime*1000)/FInterval;
          if FCurrentFrameDelta>1 then begin
+            if Assigned(FTargetSmoothAnimation) then begin
+               SwitchToAnimation(FTargetSmoothAnimation);
+               FTargetSmoothAnimation:=nil;
+            end;
             // we need to step on
             fDelta:=Frac(FCurrentFrameDelta);
             NextFrame(Trunc(FCurrentFrameDelta));
@@ -4977,28 +4999,33 @@ end;
 
 // SwitchToAnimation
 //
-procedure TActor.SwitchToAnimation(const animationName : String);
+procedure TActor.SwitchToAnimation(const animationName : String; smooth : Boolean = False);
 begin
-   SwitchToAnimation(Animations.FindName(animationName));
+   SwitchToAnimation(Animations.FindName(animationName), smooth);
 end;
 
 // SwitchToAnimation
 //
-procedure TActor.SwitchToAnimation(animationIndex : Integer);
+procedure TActor.SwitchToAnimation(animationIndex : Integer; smooth : Boolean = False);
 begin
    if (animationIndex>=0) and (animationIndex<Animations.Count) then
-      SwitchToAnimation(Animations[animationIndex]);
+      SwitchToAnimation(Animations[animationIndex], smooth);
 end;
 
 // SwitchToAnimation
 //
-procedure TActor.SwitchToAnimation(anAnimation : TActorAnimation);
+procedure TActor.SwitchToAnimation(anAnimation : TActorAnimation; smooth : Boolean = False);
 begin
    if Assigned(anAnimation) then begin
-      Reference:=anAnimation.Reference;
-      StartFrame:=anAnimation.StartFrame;
-      EndFrame:=anAnimation.EndFrame;
-      CurrentFrame:=StartFrame;
+      if smooth then begin
+         FTargetSmoothAnimation:=anAnimation;
+         FCurrentFrameDelta:=0;
+      end else begin
+         Reference:=anAnimation.Reference;
+         StartFrame:=anAnimation.StartFrame;
+         EndFrame:=anAnimation.EndFrame;
+         CurrentFrame:=StartFrame;
+      end;
    end;
 end;
 
