@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>09/03/04 - SG - TFGIndexTexCoordList.BuildList can now use per vertex color
       <li>29/01/04 - SG - Fix for ApplyCurrentSkeletonFrame with multiple bones per vertex. 
                           Mesh reassembles correctly now (tested up to 4 bones per vertex).
       <li>03/12/03 - SG - Added TSkeletonCollider and TSkeletonColliderList
@@ -4782,11 +4783,15 @@ var
    vertexPool : PAffineVectorArray;
    normalPool : PAffineVectorArray;
    indicesPool : PIntegerArray;
+   colorPool : PVectorArray;
+   gotColor : Boolean;
 begin
    Assert(VertexIndices.Count=TexCoords.Count);
    texCoordPool:=TexCoords.List;
    vertexPool:=Owner.Owner.Vertices.List;
    indicesPool:=@VertexIndices.List[0];
+   colorPool:=@Owner.Owner.Colors.List[0];
+   gotColor:=(Owner.Owner.Vertices.Count=Owner.Owner.Colors.Count);
    case Mode of
       fgmmTriangles, fgmmFlatTriangles :
          glBegin(GL_TRIANGLES);
@@ -4802,12 +4807,14 @@ begin
       for i:=0 to VertexIndices.Count-1 do begin
          xglTexCoord2fv(@texCoordPool[i]);
          k:=indicesPool[i];
+         if gotColor then glColor4fv(@colorPool[k]);
          glNormal3fv(@normalPool[k]);
          glVertex3fv(@vertexPool[k]);
       end;
    end else begin
       for i:=0 to VertexIndices.Count-1 do begin
          xglTexCoord2fv(@texCoordPool[i]);
+         if gotColor then glColor4fv(@colorPool[indicesPool[i]]);
          glVertex3fv(@vertexPool[indicesPool[i]]);
       end;
    end;
