@@ -1172,7 +1172,7 @@ begin
              continue; //if the first ray cast didn't hit the plane, forget it.
          end;
 
-         if (sd >= 0) and (sd <= distanceToTravel) then begin
+         if (sd >= 0) and (sd <= distanceToTravel+radius) then begin
             result:=TRUE; //flag a collision
             if (sd<minD) or (minD<0) then begin
                 minD:=sd;
