@@ -554,8 +554,8 @@ procedure FastQuickSortLists(startIndex, endIndex : Integer;
 type
    PSingle = ^Single;
 var
-	I, J : Integer;
-	P : Integer;
+	i, j : Integer;
+	p, temp : Integer;
    refInts : PIntegerArray;
    ppl : PIntegerArray;
 begin
@@ -563,30 +563,30 @@ begin
    refInts:=PIntegerArray(@refList.List[0]);
 	if endIndex>startIndex+1 then begin
 		repeat
-			I:=startIndex; J:=endIndex;
-			P:=PInteger(@refList.List[(I + J) shr 1])^;
+			i:=startIndex; j:=endIndex;
+			p:=PInteger(@refList.List[(i+j) shr 1])^;
 			repeat
             ppl:=refInts;
-				while ppl[I]<P do Inc(I);
-				while ppl[J]>P do Dec(J);
-				if I <= J then begin
-               P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
+				while ppl[i]<p do Inc(i);
+				while ppl[j]>p do Dec(j);
+				if i<=j then begin
+               temp:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=temp;
                ppl:=PIntegerArray(objList.List);
-               P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
-					Inc(I); Dec(J);
+               temp:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=temp;
+					Inc(i); Dec(j);
 				end;
-			until I > J;
-			if startIndex < J then
-				FastQuickSortLists(startIndex, J, refList, objList);
-			startIndex:=I;
-		until I >= endIndex;
+			until i>j;
+			if startIndex<j then
+				FastQuickSortLists(startIndex, j, refList, objList);
+			startIndex:=i;
+		until i>=endIndex;
 	end else if endIndex>startIndex then begin
       ppl:=refInts;
 		if ppl[endIndex]<ppl[startIndex] then begin
          i:=endIndex; j:=startIndex;
-         P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
+         temp:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=temp;
          ppl:=PIntegerArray(objList.List);
-         P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
+         temp:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=temp;
 		end;
 	end;
 end;
