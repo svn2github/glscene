@@ -757,6 +757,8 @@ procedure SetMatrix(var dest : THomogeneousDblMatrix; const src : TMatrix); over
 procedure SetMatrix(var dest : TAffineMatrix; const src : TMatrix); overload;
 procedure SetMatrix(var dest : TMatrix; const src : TAffineMatrix); overload;
 
+procedure SetMatrixRow(var dest : TMatrix; rowNb : Integer; const aRow : TVector); overload;
+
 //: Creates scale matrix
 function CreateScaleMatrix(const v : TAffineVector) : TMatrix; overload;
 //: Creates scale matrix
@@ -4643,6 +4645,16 @@ begin
    dest[1, 0]:=src[1, 0]; dest[1, 1]:=src[1, 1]; dest[1, 2]:=src[1, 2]; dest[1, 3]:=0;
    dest[2, 0]:=src[2, 0]; dest[2, 1]:=src[2, 1]; dest[2, 2]:=src[2, 2]; dest[2, 3]:=0;
    dest[3, 0]:=0;         dest[3, 1]:=0;         dest[3, 2]:=0;         dest[3, 3]:=1;
+end;
+
+// SetMatrixRow
+//
+procedure SetMatrixRow(var dest : TMatrix; rowNb : Integer; const aRow : TVector);
+begin
+   dest[0, rowNb]:=aRow[0];
+   dest[1, rowNb]:=aRow[1];
+   dest[2, rowNb]:=aRow[2];
+   dest[3, rowNb]:=aRow[3];
 end;
 
 // CreateScaleMatrix (affine)
