@@ -3,8 +3,10 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>05/10/04 - NC - Added Material.TextureEx (texture extension)
-      <li>04/10/04 - NC - Added TGLFloatDataImage  
+      <li>06/10/04 - NC - Corrected filtering param. setting for float texture, 
+                          Now keep using GL_TEXTURE_RECTANGLE_NV for TGLFloatDataImage
+      <li>05/10/04 - SG - Added Material.TextureEx (texture extension)
+      <li>04/10/04 - NC - Added TGLFloatDataImage
       <li>03/07/04 - LR - Move InitWinColors to GLCrossPlatform
                           Replace TGraphics, TBitmap by TGLGraphics, TGLBitmap
       <li>29/06/04 - SG - Added bmModulate blending mode
@@ -3952,13 +3954,20 @@ begin
 	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapARB[FTextureWrap]);
    end else }
 
-   if target=GL_TEXTURE_RECTANGLE_NV then begin // float_type
+   if IsFloatType then begin // float_type
      // Note: HW accerl. only with GL_CLAMP_TO_EDGE for Nvidia GPUs
      glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
      glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-     // Linear interpolation works with ATI_Float only
-	   glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-     glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+     // Linear filtering works with nv40, 16-bit float only  (via GL_ATI_texture_float)
+     if GL_ATI_texture_float and (TextureFormat = tfRGBAFloat16) then begin
+	      glTexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+       end
+     else
+       begin
+  	     glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+       end;
    end else begin
      if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
        glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
@@ -6156,8 +6165,13 @@ begin
 end;
 
 class function TGLFloatDataImage.NativeTextureTarget: TGLUInt;
+{ Note: We still use GL_TEXTURE_RECTANGLE_NV for GL_ATI_texture_float, so that
+        the same Cg shaders (that use SampleRECT) would run with nv30 and nv40. }
 begin
-   Result:=GL_TEXTURE_RECTANGLE_NV;
+//   if GL_ATI_texture_float then
+//     Result:=GL_TEXTURE_2D
+//   else
+     Result:=GL_TEXTURE_RECTANGLE_NV;
 end;
 
 
