@@ -15,7 +15,7 @@ interface
 
 uses
   Classes, SysUtils, GLVectorFileObjects, Geometry, VectorLists, ApplicationFileIO,
-  GLParametricSurfaces;
+  GLParametricSurfaces, GLMisc;
 
 type
 
