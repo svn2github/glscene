@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>13/08/03 - SG - Added quaternion transforms for skeletal animation
       <li>12/08/03 - SG - Fixed a tiny bug in TSkeleton.MorphMesh
       <li>08/07/03 - EG - Fixed puny bug in skeletal normals transformation 
       <li>05/06/03 - SG - Split SMD, MD2, 3DS, PLY, TIN and GTS code into separate units,
@@ -183,6 +184,8 @@ type
 
    TSkeletonFrameList = class;
 
+   TSkeletonFrameTransform = (sftRotation,sftQuaternion);
+
 	// TSkeletonFrame
 	//
    {: Stores position and rotation for skeleton joints.<p>
@@ -197,11 +200,14 @@ type
          FPosition : TAffineVectorList;
          FRotation : TAffineVectorList;
          FLocalMatrixList : PMatrixArray;
+         FQuaternion : TVectorList;
+         FTransformMode : TSkeletonFrameTransform;
 
 	   protected
 	      { Protected Declarations }
          procedure SetPosition(const val : TAffineVectorList);
          procedure SetRotation(const val : TAffineVectorList);
+         procedure SetQuaternion(const val : TVectorList);
 
 	   public
 	      { Public Declarations }
@@ -218,6 +224,12 @@ type
          property Position : TAffineVectorList read FPosition write SetPosition;
          {: Rotation values for the joints. }
          property Rotation : TAffineVectorList read FRotation write SetRotation;
+         {: Quaternions are an alternative to Euler rotations to build the
+            global matrices for the skeleton bones. }
+         property Quaternion : TVectorList read FQuaternion write SetQuaternion;
+         {: TransformMode indicates whether to use Rotation or Quaternion to build
+            the local transform matrices. }
+         property TransformMode : TSkeletonFrameTransform read FTransformMode write FTransformMode;
 
          {: Calculate or retrieves an array of local bone matrices.<p>
             This array is calculated on the first call after creation, and the
@@ -1966,6 +1978,8 @@ begin
 	inherited Create;
    FPosition:=TAffineVectorList.Create;
    FRotation:=TAffineVectorList.Create;
+   FQuaternion:=TVectorList.Create;
+   FTransformMode:=sftRotation;
 end;
 
 // Destroy
@@ -1975,6 +1989,7 @@ begin
    FlushLocalMatrixList;
    FRotation.Free;
    FPosition.Free;
+   FQuaternion.Free;
 	inherited Destroy;
 end;
 
@@ -1984,10 +1999,12 @@ procedure TSkeletonFrame.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
-      WriteInteger(0); // Archive Version 0
+      WriteInteger(1); // Archive Version 1
       WriteString(FName);
       FPosition.WriteToFiler(writer);
       FRotation.WriteToFiler(writer);
+      FQuaternion.WriteToFiler(writer);
+      WriteInteger(Integer(FTransformMode));
    end;
 end;
 
@@ -1999,10 +2016,14 @@ var
 begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
-	if archiveVersion=0 then with reader do begin
+	if (archiveVersion=0) or (archiveVersion=1) then with reader do begin
       FName:=ReadString;
       FPosition.ReadFromFiler(reader);
       FRotation.ReadFromFiler(reader);
+      if (archiveVersion=1) then begin
+        FQuaternion.ReadFromFiler(reader);
+        FTransformMode:=TSkeletonFrameTransform(ReadInteger);
+      end;
 	end else RaiseFilerException(archiveVersion);
    FlushLocalMatrixList;
 end;
@@ -2021,6 +2042,13 @@ begin
    FRotation.Assign(val);
 end;
 
+// SetQuaternion
+//
+procedure TSkeletonFrame.SetQuaternion(const val : TVectorList);
+begin
+   FQuaternion.Assign(val);
+end;
+
 // LocalMatrixList
 //
 function TSkeletonFrame.LocalMatrixList : PMatrixArray;
@@ -2028,24 +2056,40 @@ var
    i : Integer;
    s, c : Single;
    mat, rmat : TMatrix;
+   quat : TQuaternion;
 begin
    if not Assigned(FLocalMatrixList) then begin
-      FLocalMatrixList:=AllocMem(SizeOf(TMatrix)*Rotation.Count);
-      for i:=0 to Rotation.Count-1 do begin
-         mat:=IdentityHmgMatrix;
-         SinCos(Rotation[i][0], s, c);
-         rmat:=CreateRotationMatrixX(s, c);
-         mat:=MatrixMultiply(mat, rmat);
-         SinCos(Rotation[i][1], s, c);
-         rmat:=CreateRotationMatrixY(s, c);
-         mat:=MatrixMultiply(mat, rmat);
-         SinCos(Rotation[i][2], s, c);
-         rmat:=CreateRotationMatrixZ(s, c);
-         mat:=MatrixMultiply(mat, rmat);
-         mat[3][0]:=Position[i][0];
-         mat[3][1]:=Position[i][1];
-         mat[3][2]:=Position[i][2];
-         FLocalMatrixList[i]:=mat;
+      case FTransformMode of
+         sftRotation : begin
+            FLocalMatrixList:=AllocMem(SizeOf(TMatrix)*Rotation.Count);
+            for i:=0 to Rotation.Count-1 do begin
+               mat:=IdentityHmgMatrix;
+               SinCos(Rotation[i][0], s, c);
+               rmat:=CreateRotationMatrixX(s, c);
+               mat:=MatrixMultiply(mat, rmat);
+               SinCos(Rotation[i][1], s, c);
+               rmat:=CreateRotationMatrixY(s, c);
+               mat:=MatrixMultiply(mat, rmat);
+               SinCos(Rotation[i][2], s, c);
+               rmat:=CreateRotationMatrixZ(s, c);
+               mat:=MatrixMultiply(mat, rmat);
+               mat[3][0]:=Position[i][0];
+               mat[3][1]:=Position[i][1];
+               mat[3][2]:=Position[i][2];
+               FLocalMatrixList[i]:=mat;
+            end;
+         end;
+         sftQuaternion : begin
+            FLocalMatrixList:=AllocMem(SizeOf(TMatrix)*Quaternion.Count);
+            for i:=0 to Quaternion.Count-1 do begin
+               quat.Vector:=Quaternion[i];
+               mat:=QuaternionToMatrix(quat);
+               mat[3][0]:=Position[i][0];
+               mat[3][1]:=Position[i][1];
+               mat[3][2]:=Position[i][2];
+               FLocalMatrixList[i]:=mat;
+            end;
+         end;
       end;
    end;
    Result:=FLocalMatrixList;
@@ -2535,11 +2579,16 @@ begin
    if Assigned(FCurrentFrame) then
       FCurrentFrame.Free;
    FCurrentFrame:=TSkeletonFrame.Create;
+   FCurrentFrame.TransformMode:=Frames[frameIndex1].TransformMode;
    with FCurrentFrame do begin
       Position.Lerp(Frames[frameIndex1].Position,
                     Frames[frameIndex2].Position, lerpFactor);
-      Rotation.AngleLerp(Frames[frameIndex1].Rotation,
-                         Frames[frameIndex2].Rotation, lerpFactor);
+      case TransformMode of 
+         sftRotation   : Rotation.AngleLerp(Frames[frameIndex1].Rotation,
+                                          Frames[frameIndex2].Rotation, lerpFactor);
+         sftQuaternion : Quaternion.Lerp(Frames[frameIndex1].Quaternion,
+                                         Frames[frameIndex2].Quaternion, lerpFactor);
+      end;
    end;
 end;
 
@@ -2549,6 +2598,7 @@ procedure TSkeleton.BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
 var
    i, n : Integer;
    blendRotations : TAffineVectorList;
+   blendQuaternions : TQuaternionList;
 begin
    n:=High(lerpInfos)-Low(lerpInfos)+1;
    Assert(n>=1);
@@ -2561,28 +2611,51 @@ begin
       if Assigned(FCurrentFrame) then
          FCurrentFrame.Free;
       FCurrentFrame:=TSkeletonFrame.Create;
-      blendRotations:=TAffineVectorList.Create;
+      FCurrentFrame.TransformMode:=Frames[lerpInfos[i].frameIndex1].TransformMode;
       with FCurrentFrame do begin
-         // lerp first item separately
          Position.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
                        Frames[lerpInfos[i].frameIndex2].Position,
                        lerpInfos[i].lerpFactor);
          if lerpInfos[i].weight<>1 then
             Position.Scale(lerpInfos[i].weight);
-         Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
-                            Frames[lerpInfos[i].frameIndex2].Rotation,
-                            lerpInfos[i].lerpFactor);
-         Inc(i);
-         // combine the other items
-         while i<=High(lerpInfos) do begin
-            blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
-                                     Frames[lerpInfos[i].frameIndex2].Rotation,
-                                     lerpInfos[i].lerpFactor);
-            Rotation.AngleCombine(blendRotations, 1);
-            Inc(i);
+         case TransformMode of
+            sftRotation : begin
+               blendRotations:=TAffineVectorList.Create;
+               // lerp first item separately
+               Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
+                                  Frames[lerpInfos[i].frameIndex2].Rotation,
+                                  lerpInfos[i].lerpFactor);
+               Inc(i);
+               // combine the other items
+               while i<=High(lerpInfos) do begin
+                  blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
+                                           Frames[lerpInfos[i].frameIndex2].Rotation,
+                                           lerpInfos[i].lerpFactor);
+                  Rotation.AngleCombine(blendRotations, 1);
+                  Inc(i);
+               end;
+               blendRotations.Free;
+            end;
+         
+            sftQuaternion : begin
+               blendQuaternions:=TQuaternionList.Create;
+               // Initial frame lerp
+               Quaternion.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
+                               Frames[lerpInfos[i].frameIndex2].Quaternion,
+                               lerpInfos[i].lerpFactor);
+               Inc(i);
+               // Combine the lerped frames together
+               while i<=High(lerpInfos) do begin
+                  blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
+                                        Frames[lerpInfos[i].frameIndex2].Quaternion,
+                                        lerpInfos[i].lerpFactor);
+                  Quaternion.Combine(blendQuaternions, 1);
+                  Inc(i);
+               end;
+               blendQuaternions.Free;
+            end;
          end;
       end;
-      blendRotations.Free;
    end;
 end;
 
