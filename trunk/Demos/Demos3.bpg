@@ -11,7 +11,7 @@ BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
   shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe texcombine.exe \
-  subdivide.exe machine.exe simple.exe Project1.exe
+  subdivide.exe machine.exe simple.exe Project1.exe CgSimple.exe CgTexture.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -53,6 +53,12 @@ simple.exe: physics\simple\simple.dpr
   $(DCC)
 
 Project1.exe: sound\3Dsound\Project1.dpr
+  $(DCC)
+
+CgSimple.exe: cgshaders\simple\CgSimple.dpr
+  $(DCC)
+
+CgTexture.exe: cgshaders\texturing\CgTexture.dpr
   $(DCC)
 
 
