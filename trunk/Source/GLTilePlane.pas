@@ -38,12 +38,16 @@ type
 	      procedure WriteToFiler(writer : TVirtualWriter); override;
 	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         procedure Pack;
-
          property Cell[col : Integer] : Integer read GetCell write SetCell; default;
          property ColMin : Integer read FColMin write SetColMin;
          property ColMax : Integer read FColMax write SetColMax;
-         property Data : TIntegerList read FData; 
+         property Data : TIntegerList read FData;
+
+         procedure Pack;
+         function Empty : Boolean;
+
+         procedure RemapTiles(remapList : TIntegerList);
+
    end;
 
    // TGLTiledArea
@@ -73,13 +77,18 @@ type
 	      procedure WriteToFiler(writer : TVirtualWriter); override;
 	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         procedure Pack;
-
          property Tile[col, row : Integer] : Integer read GetTile write SetTile; default;
          property Row[index : Integer] : TGLTiledAreaRow read GetRow;
 
          property RowMin : Integer read FRowMin write SetRowMin;
          property RowMax : Integer read FRowMax write SetRowMax;
+
+         procedure Pack;
+         procedure Clear;
+         function Empty : Boolean;
+
+         procedure RemapTiles(remapList : TIntegerList);
+
    end;
 
    // TGLTilePlane
@@ -220,6 +229,27 @@ begin
    end;
 end;
 
+// Empty
+//
+function TGLTiledAreaRow.Empty : Boolean;
+begin
+   Result:=(FData.Count=0);
+end;
+
+// RemapTiles
+//
+procedure TGLTiledAreaRow.RemapTiles(remapList : TIntegerList);
+var
+   i, k : Integer;
+begin
+   for i:=0 to FData.Count-1 do begin
+      k:=FData[i];
+      if Cardinal(k)<Cardinal(remapList.Count) then
+         FData[i]:=remapList[k]
+      else FData[i]:=0;
+   end;
+end;
+
 // SetColMax
 //
 procedure TGLTiledAreaRow.SetColMax(const val : Integer);
@@ -352,6 +382,36 @@ begin
          FRows.DeleteItems(0, firstNonNil);
       end;
    end else FRows.Clear;
+end;
+
+// Clear
+//
+procedure TGLTiledArea.Clear;
+begin
+   FRows.Clean;
+   FRowMin:=0;
+   FRowMax:=-1;
+end;
+
+// Empty
+//
+function TGLTiledArea.Empty : Boolean;
+begin
+   Result:=(FRows.Count=0);
+end;
+
+// RemapTiles
+//
+procedure TGLTiledArea.RemapTiles(remapList : TIntegerList);
+var
+   i : Integer;
+   r : TGLTiledAreaRow;
+begin
+   for i:=0 to FRows.Count-1 do begin
+      r:=TGLTiledAreaRow(FRows[i]);
+      if Assigned(r) then
+         r.RemapTiles(remapList);
+   end;
 end;
 
 // GetTile
@@ -525,6 +585,7 @@ var
 begin
    if MaterialLibrary=nil then Exit;
    // initialize infos
+   glNormal3fv(@ZVector);
    if SortByMaterials then begin
       SetLength(quadInfos, MaterialLibrary.Materials.Count);
       for i:=1 to High(quadInfos) do begin
@@ -589,6 +650,6 @@ initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-   RegisterClasses([TGLTilePlane]);
+   RegisterClasses([TGLTilePlane, TGLTiledAreaRow, TGLTiledArea]);
 
 end.
