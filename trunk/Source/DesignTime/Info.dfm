@@ -1,6 +1,6 @@
 object InfoForm: TInfoForm
-  Left = 375
-  Top = 105
+  Left = 233
+  Top = 113
   BorderIcons = [biSystemMenu, biHelp]
   BorderStyle = bsToolWindow
   BorderWidth = 3
@@ -77,7 +77,7 @@ object InfoForm: TInfoForm
       end
       object Label2: TLabel
         Left = 10
-        Top = 33
+        Top = 54
         Width = 75
         Height = 14
         Caption = 'Acceleration :'
@@ -91,7 +91,7 @@ object InfoForm: TInfoForm
       end
       object Label3: TLabel
         Left = 10
-        Top = 55
+        Top = 77
         Width = 74
         Height = 14
         Caption = 'Version Info :'
@@ -105,7 +105,7 @@ object InfoForm: TInfoForm
       end
       object Label5: TLabel
         Left = 10
-        Top = 78
+        Top = 99
         Width = 95
         Height = 14
         Caption = 'Double buffered :'
@@ -119,7 +119,7 @@ object InfoForm: TInfoForm
       end
       object Label6: TLabel
         Left = 10
-        Top = 120
+        Top = 144
         Width = 115
         Height = 14
         Caption = 'Buffer switch mode :'
@@ -147,7 +147,7 @@ object InfoForm: TInfoForm
       end
       object AccLabel: TLabel
         Left = 137
-        Top = 33
+        Top = 54
         Width = 22
         Height = 13
         Caption = '???'
@@ -161,7 +161,7 @@ object InfoForm: TInfoForm
       end
       object VersionLabel: TLabel
         Left = 137
-        Top = 55
+        Top = 77
         Width = 22
         Height = 13
         Caption = '???'
@@ -175,7 +175,7 @@ object InfoForm: TInfoForm
       end
       object CopyLabel: TLabel
         Left = 137
-        Top = 120
+        Top = 144
         Width = 22
         Height = 13
         Caption = '???'
@@ -189,7 +189,7 @@ object InfoForm: TInfoForm
       end
       object DoubleLabel: TLabel
         Left = 137
-        Top = 78
+        Top = 99
         Width = 22
         Height = 13
         Caption = '???'
@@ -203,7 +203,7 @@ object InfoForm: TInfoForm
       end
       object Label7: TLabel
         Left = 10
-        Top = 99
+        Top = 121
         Width = 90
         Height = 14
         Caption = 'Stereo enabled :'
@@ -217,7 +217,35 @@ object InfoForm: TInfoForm
       end
       object StereoLabel: TLabel
         Left = 137
-        Top = 99
+        Top = 121
+        Width = 22
+        Height = 13
+        Caption = '???'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clTeal
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object Label13: TLabel
+        Left = 10
+        Top = 32
+        Width = 58
+        Height = 14
+        Caption = 'Renderer :'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object RendererLabel: TLabel
+        Left = 137
+        Top = 32
         Width = 22
         Height = 13
         Caption = '???'

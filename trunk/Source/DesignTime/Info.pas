@@ -2,6 +2,7 @@
 {: Information sur le driver OpenGL courant<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/09/03 - NelC - Added Renderer info
       <li>26/06/03 - EG - Double-clicking an extension will no go to its OpenGL
                           registry webpage 
       <li>22/05/03 - EG - Added Texture Units info
@@ -83,6 +84,8 @@ type
     Label4: TLabel;
     TexUnitsLabel: TLabel;
     Extensions: TListBox;
+    Label13: TLabel;
+    RendererLabel: TLabel;
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -142,6 +145,7 @@ begin
 	with aSceneBuffer do begin
       // common properties
       VendorLabel.Caption:=StrPas(PChar(glGetString(GL_VENDOR)));
+      RendererLabel.Caption:=StrPas(PChar(glGetString(GL_RENDERER)));
       PixelFormat:=GetPixelFormat(Canvas.Handle);
       DescribePixelFormat(Canvas.Handle,PixelFormat,SizeOf(pfd), PFD);
       // figure out the driver type
