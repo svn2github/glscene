@@ -2,7 +2,13 @@
 
    This demo is under construction...
 
-   246
+   246 (what?)
+
+   <b>History : </b><font size=-1><ul>
+      <li>29/11/03 - MF - Items now self shadow, and a new oblong sphere, both
+        changes demonstrate the problems of darkening. 
+      <li>?/?/03 - EG - Creation (based on code from Mattias Fagerlund)
+   </ul></font>
 }
 unit Unit1;
 
@@ -49,6 +55,7 @@ type
     GLFreeForm: TGLFreeForm;
     GLCube1: TGLCube;
     GLMaterialLibrary1: TGLMaterialLibrary;
+    GLSphere4: TGLSphere;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

@@ -136,20 +136,20 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object DCLight1Turn: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object DCLight1Pitch: TGLDummyCube
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
         object GLLightSource1: TGLLightSource
           Ambient.Color = {9A99193F9A99193F9A99193F0000803F}
-          ConstAttenuation = 1
+          ConstAttenuation = 1.000000000000000000
           Diffuse.Color = {9A99193F9A99193F9A99193F0000803F}
           Position.Coordinates = {0000000000008040000000000000803F}
-          SpotCutOff = 180
+          SpotCutOff = 180.000000000000000000
           object GLSphere1: TGLSphere
             ShowAxes = True
             Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
             Material.MaterialOptions = [moNoLighting]
-            Radius = 0.150000005960464
+            Radius = 0.150000005960464500
             Slices = 11
             Stacks = 11
           end
@@ -157,13 +157,54 @@ object Form1: TForm1
       end
     end
     object DCCamera: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera: TGLCamera
-        DepthOfView = 1.00000001504747E30
-        FocalLength = 50
+        DepthOfView = 1.000000015047466E30
+        FocalLength = 50.000000000000000000
         TargetObject = DCCamera
         CameraStyle = csInfinitePerspective
         Position.Coordinates = {000020410000E0400000A0400000803F}
+      end
+    end
+    object DCLight2: TGLDummyCube
+      Direction.Coordinates = {000000006C61D83ECA03683F00000000}
+      PitchAngle = 15.000000000000000000
+      Up.Coordinates = {00000000CA03683F6B61D8BE00000000}
+      CubeSize = 1.000000000000000000
+      object GLLightSource2: TGLLightSource
+        ConstAttenuation = 1.000000000000000000
+        Diffuse.Color = {00000000000000000000803F0000803F}
+        QuadraticAttenuation = 0.009999999776482582
+        Position.Coordinates = {00000000000000000000A0C00000803F}
+        LightStyle = lsOmni
+        Shining = False
+        SpotCutOff = 180.000000000000000000
+        object GLSphere2: TGLSphere
+          Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
+          Material.MaterialOptions = [moNoLighting]
+          Radius = 0.150000005960464500
+          Slices = 9
+          Stacks = 9
+        end
+      end
+    end
+    object DCLight3: TGLDummyCube
+      Direction.Coordinates = {00000000421DAFBEB28F703F00000000}
+      PitchAngle = -15.000000000000000000
+      Up.Coordinates = {00000000B28F703F431DAF3E00000000}
+      CubeSize = 1.000000000000000000
+      object GLLightSource3: TGLLightSource
+        ConstAttenuation = 1.000000000000000000
+        Diffuse.Color = {0000803F00000000000000000000803F}
+        QuadraticAttenuation = 0.009999999776482582
+        Position.Coordinates = {0000000000008040000000000000803F}
+        Shining = False
+        SpotCutOff = 180.000000000000000000
+        object GLSphere3: TGLSphere
+          Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
+          Material.MaterialOptions = [moNoLighting]
+          Radius = 0.150000005960464500
+        end
       end
     end
     object GLShadowVolume: TGLShadowVolume
@@ -180,37 +221,44 @@ object Form1: TForm1
       Occluders = <
         item
           Caster = GLCube1
+        end
+        item
+          Caster = GLSphere4
         end>
+      Options = [svoCacheSilhouettes, svoScissorClips, svoDesignVisible]
       object GLPlane1: TGLPlane
         Position.Coordinates = {000000000000A040000020C10000803F}
         Material.FrontProperties.Ambient.Color = {00000000000000001283003F0000803F}
-        Height = 20
-        Width = 20
+        Height = 20.000000000000000000
+        Width = 20.000000000000000000
         XTiles = 9
         YTiles = 9
         Style = [psTileTexture]
+        NoZWrite = False
       end
       object GLPlane2: TGLPlane
         Direction.Coordinates = {0000803F000000000000000000000000}
         Position.Coordinates = {000020C10000A040000000000000803F}
         Up.Coordinates = {00000000FFFF7F3F0000008000000000}
         Material.FrontProperties.Ambient.Color = {D7A3703E00000000000000000000803F}
-        Height = 20
-        Width = 20
+        Height = 20.000000000000000000
+        Width = 20.000000000000000000
         XTiles = 9
         YTiles = 9
         Style = [psTileTexture]
+        NoZWrite = False
       end
       object GLPlane3: TGLPlane
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000295C9FC0000000000000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
         Material.FrontProperties.Ambient.Color = {000000001283803E000000000000803F}
-        Height = 20
-        Width = 20
+        Height = 20.000000000000000000
+        Width = 20.000000000000000000
         XTiles = 20
         YTiles = 20
         Style = [psTileTexture]
+        NoZWrite = False
       end
       object GLFreeForm: TGLFreeForm
         Direction.Coordinates = {000000000000803F0000000000000000}
@@ -222,50 +270,14 @@ object Form1: TForm1
       object GLCube1: TGLCube
         Position.Coordinates = {00004040000000C0000000000000803F}
       end
-    end
-    object DCLight2: TGLDummyCube
-      Direction.Coordinates = {000000006C61D83ECA03683F00000000}
-      PitchAngle = 15
-      Up.Coordinates = {00000000CA03683F6B61D8BE00000000}
-      CubeSize = 1
-      object GLLightSource2: TGLLightSource
-        ConstAttenuation = 1
-        Diffuse.Color = {00000000000000000000803F0000803F}
-        QuadraticAttenuation = 0.00999999977648258
-        Position.Coordinates = {00000000000000000000A0C00000803F}
-        LightStyle = lsOmni
-        Shining = False
-        SpotCutOff = 180
-        object GLSphere2: TGLSphere
-          Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
-          Material.MaterialOptions = [moNoLighting]
-          Radius = 0.150000005960464
-          Slices = 9
-          Stacks = 9
-        end
+      object DCSpheres: TGLDummyCube
+        CubeSize = 1.000000000000000000
       end
-    end
-    object DCLight3: TGLDummyCube
-      Direction.Coordinates = {00000000421DAFBEB28F703F00000000}
-      PitchAngle = -15
-      Up.Coordinates = {00000000B28F703F431DAF3E00000000}
-      CubeSize = 1
-      object GLLightSource3: TGLLightSource
-        ConstAttenuation = 1
-        Diffuse.Color = {0000803F00000000000000000000803F}
-        QuadraticAttenuation = 0.00999999977648258
-        Position.Coordinates = {0000000000008040000000000000803F}
-        Shining = False
-        SpotCutOff = 180
-        object GLSphere3: TGLSphere
-          Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
-          Material.MaterialOptions = [moNoLighting]
-          Radius = 0.150000005960464
-        end
+      object GLSphere4: TGLSphere
+        Position.Coordinates = {00000040000080C0000000000000803F}
+        Scale.Coordinates = {000000400000803F0000803F00000000}
+        Radius = 0.800000011920928900
       end
-    end
-    object DCSpheres: TGLDummyCube
-      CubeSize = 1
     end
   end
   object GLCadencer1: TGLCadencer
