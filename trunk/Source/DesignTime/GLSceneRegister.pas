@@ -1833,6 +1833,7 @@ initialization
       RegisterSceneObject(TGLAdvancedLabel, 'GLAdvancedLabel', glsOCGuiObjects);
       RegisterSceneObject(TGLScrollbar, 'GLScrollbar', glsOCGuiObjects);
       RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects);
+      RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', glsOCGuiObjects);
 
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
