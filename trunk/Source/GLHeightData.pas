@@ -1498,8 +1498,8 @@ begin
    // retrieve data
    with heightData do begin
       if (not InfiniteWrap)
-         and ((XLeft>=bmpSize) or (XLeft+Size<0)
-              or (YTop>=wrapMask) or (YTop+Size<0)) then begin
+         and ((XLeft>=bmpSize) or (XLeft<0)
+              or (YTop>=bmpSize) or (YTop<0)) then begin
          heightData.FDataState:=hdsNone;
          Exit;
       end;
