@@ -47,6 +47,8 @@ type
 
          procedure Updated; virtual;
 
+         function GetSpeed: TAffineVector;
+
       public
 			{ Public Declarations }
          constructor Create(aOwner : TVerletAssembly); virtual;
@@ -57,7 +59,7 @@ type
          procedure OldApplyFriction(const friction, penetrationDepth : Single);
 
          procedure Verlet(const deltaTime, newTime : Double); virtual;
-         
+
          procedure Initialize; dynamic;
 
          function DistanceToNode(const node : TVerletNode) : Single;
@@ -71,6 +73,7 @@ type
          property NailedDown : Boolean read FNailedDown write FNailedDown;
          property Weight : Single read FWeight write SetWeight;
          property InvWeight : Single read FInvWeight;
+         property Speed : TAffineVector read GetSpeed;
    end;
 
    TVerletNodeClass = class of TVerletNode;
@@ -273,6 +276,7 @@ type
          FForces : TVerletForceList;
          FMaxDeltaTime, FSimTime : Single;
          FDrag : Single;
+         FCurrentDeltaTime: single;
 
 		protected
 			{ Protected Declarations }
@@ -313,7 +317,9 @@ type
          property Constraints : TVerletConstraintList read FConstraints;
 
          property SimTime : Single read FSimTime write FSimTime;
-         property MaxDeltaTime : Single read FMaxDeltaTime write FMaxDeltaTime; 
+         property MaxDeltaTime : Single read FMaxDeltaTime write FMaxDeltaTime;
+
+         property CurrentDeltaTime : single read FCurrentDeltaTime;
    end;
 
    // TVFGravity
@@ -330,6 +336,23 @@ type
          procedure AddForceToNode(aNode : TVerletNode); override;
 
          property Gravity : TAffineVector read FGravity write FGravity;
+   end;
+
+   // TVFAirResistance
+   //
+   TVFAirResistance = class(TVerletGlobalForce)
+      private
+			{ Private Declarations }
+         FDragCoeff: single;
+         FWindDirection: TAffineVector;
+      public
+			{ Public Declarations }
+         constructor Create(aOwner : TVerletAssembly); override;
+
+         procedure AddForceToNode(aNode : TVerletNode); override;
+
+         property DragCoeff : single read FDragCoeff write FDragCoeff;
+         property WindDirection : TAffineVector read FWindDirection write FWindDirection;
    end;
 
    // TVFSpring
@@ -1034,6 +1057,7 @@ var
 begin
    ticks:=0;
    myDeltaTime:=FMaxDeltaTime;
+   FCurrentDeltaTime := FMaxDeltaTime;
 
    while FSimTime<newTime do begin
       Inc(ticks);
@@ -1390,6 +1414,45 @@ procedure TVCCube.SetSides(const Value: TAffineVector);
 begin
   FSides := Value;
   FHalfSides := VectorScale(Sides, 0.5);
+end;
+
+{ TVFAirResistance }
+
+procedure TVFAirResistance.AddForceToNode(aNode: TVerletNode);
+var
+  s, F : TAffineVector;
+  sMag : single;
+  r : single;
+begin
+  // CombineVector(aNode.FForce, Gravity, @aNode.Weight);
+
+  // Fd = DragCoefficient * LiquidDensity * Velocity2 * Area / 2
+  s := aNode.Speed;
+  sMag := VectorLength(s);
+
+  r := aNode.Radius + 1;
+
+  if sMag<> 0 then
+  begin
+    F := VectorScale(s, -1000000 * sqr(sMag) * sqr(r) * pi * FDragCoeff);
+
+    VectorAdd(aNode.FForce, F);
+  end;
+end;
+
+constructor TVFAirResistance.Create(aOwner: TVerletAssembly);
+begin
+  inherited;
+
+  FDragCoeff := 0.001;
+  FWindDirection[0] := 0;
+  FWindDirection[1] := 0;
+  FWindDirection[2] := 0;
+end;
+
+function TVerletNode.GetSpeed: TAffineVector;
+begin
+  result := VectorScale(VectorSubtract(FLocation, FOldLocation), 1/Owner.CurrentDeltaTime);
 end;
 
 end.
