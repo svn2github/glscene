@@ -166,7 +166,7 @@ const
       'ATTRIB v24 = vertex.texcoord[0];'+
       'ATTRIB v18 = vertex.normal;'+
       'ATTRIB v16 = vertex.position;'+
-      'PARAM lightPos = program.local[0];'+
+      'PARAM s18 = program.local[0];'+
       'PARAM s359[4] = { state.matrix.modelview[0].inverse };'+
       '   MOV result.texcoord[0], v24;'+
       '   MOV result.texcoord[1], v24;'+
