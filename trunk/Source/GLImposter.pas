@@ -153,6 +153,10 @@ type
                           size : Single); override;
    end;
 
+   // TSIBLigthing
+   //
+   TSIBLigthing = (siblNoLighting, siblStaticLighting, siblLocalLighting);
+
    // TGLStaticImposterBuilder
    //
    {: Builds imposters whose texture is a catalog of prerendered views. }
@@ -164,12 +168,14 @@ type
          FTextureSize : TGLPoint;
          FSamplesPerAxis : TGLPoint;
          FSamplingRatioBias : Single;
+         FLighting : TSIBLigthing;
 
       protected
 			{ Protected Declarations }
          procedure SetCoronas(val : TGLStaticImposterBuilderCoronas);
          procedure SetSampleSize(val : Integer);
          procedure SetSamplingRatioBias(val : Single);
+         procedure SetLighting(val : TSIBLigthing);
 
          {: Computes the optimal texture size that would be able to hold all samples. }
          function ComputeOptimalTextureSize : TGLPoint;
@@ -178,8 +184,9 @@ type
 	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
-         function CreateNewImposter : TImposter; override;
 
+         function CreateNewImposter : TImposter; override;
+         
          {: Render imposter texture.<p>
             Buffer and object must be compatible, RC must have been activated. }
          procedure Render(var rci : TRenderContextInfo;
@@ -200,16 +207,15 @@ type
          property Coronas : TGLStaticImposterBuilderCoronas read FCoronas write SetCoronas;
          property SampleSize : Integer read FSampleSize write SetSampleSize default 32;
          property SamplingRatioBias : Single read FSamplingRatioBias write SetSamplingRatioBias;
-
+         property Lighting : TSIBLigthing read FLighting write FLighting default siblStaticLighting;
    end;
 
-{   // TGLDynamicImposterBuilder
+   // TGLDynamicImposterBuilder
    //
-   TGLDynamicImposterBuilder = class(TGLBaseSceneObject)
+   TGLDynamicImposterBuilder = class (TGLImposterBuilder)
       private
          FMinTexSize, FMaxTexSize : Integer;
          FMinDistance, FTolerance : Single;
-         FImposterRegister : TList;
          FEnabled, FUseMatrixError : Boolean;
 
       protected
@@ -219,10 +225,8 @@ type
       public
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
-         procedure RegisterImposter(anImposter : TGLImposter);
-         procedure UnregisterImposter(anImposter : TGLImposter);
+{         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override; }
 
       published
          property MinTexSize : Integer read FMinTexSize write FMinTexSize;
@@ -232,7 +236,7 @@ type
          property Enabled : Boolean read FEnabled write SetEnabled;
          property UseMatrixError : Boolean read FUseMatrixError write FUseMatrixError;
 
-   end; }
+   end;
 
    // TGLImposter
    //
@@ -652,6 +656,7 @@ begin
    FCoronas.Add;
    FSampleSize:=16;
    FSamplingRatioBias:=1;
+   FLighting:=siblStaticLighting;
 end;
 
 // Destroy
@@ -702,13 +707,23 @@ begin
    end;
 end;
 
+// SetLighting
+//
+procedure TGLStaticImposterBuilder.SetLighting(val : TSIBLigthing);
+begin
+   if val<>FLighting then begin
+      FLighting:=val;
+      NotifyChange(Self);
+   end;
+end;
+
 // Render
 //
 procedure TGLStaticImposterBuilder.Render(var rci : TRenderContextInfo;
             impostoredObject : TGLBaseSceneObject; buffer : TGLSceneBuffer;
             destImposter : TImposter);
 var
-   i, coronaIdx, curSample : Integer;
+   i, coronaIdx, curSample, maxLight : Integer;
    radius : Single;
    cameraDirection, cameraOffset : TVector;
    xDest, xSrc, yDest, ySrc : Integer;
@@ -720,11 +735,13 @@ begin
    FSamplesPerAxis.Y:=FTextureSize.Y div SampleSize;
 
    radius:=impostoredObject.BoundingSphereRadius/SamplingRatioBias;
+   glGetIntegerv(GL_MAX_LIGHTS, @maxLight);
 
    // Setup the buffer in a suitable fashion for our needs
    glPushAttrib(GL_ENABLE_BIT+GL_COLOR_BUFFER_BIT);
    glClearColor(1, 1, 1, 0);
-   //   glDisable(GL_LIGHTING);
+   if Lighting=siblNoLighting then
+      glDisable(GL_LIGHTING);
 
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
@@ -758,6 +775,9 @@ begin
          glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
          glLoadIdentity;
          gluLookAt(cameraOffset[0], cameraOffset[1], cameraOffset[2], 0, 0, 0, 0, 1, 0);
+         if Lighting=siblStaticLighting then
+            (rci.scene as TGLScene).SetupLights(maxLight);
+
          impostoredObject.Render(rci);
 
          xDest:=(curSample mod FSamplesPerAxis.X)*SampleSize;
@@ -777,6 +797,8 @@ begin
    glMatrixMode(GL_MODELVIEW);
 
    glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
+   if Lighting=siblStaticLighting then
+      (rci.scene as TGLScene).SetupLights(maxLight);
 end;
 
 // ComputeOptimalTextureSize
@@ -830,7 +852,7 @@ begin
    Result:=(Coronas.SampleCount*SampleSize*SampleSize)/(texDim.X*texDim.Y);
 end;
 
-{
+
 // ----------
 // ---------- TGLDynamicImposterBuilder ----------
 // ----------
@@ -840,26 +862,19 @@ end;
 constructor TGLDynamicImposterBuilder.Create(AOwner : TComponent);
 begin
   inherited;
-  FImposterRegister:=TList.Create;
   FTolerance:=0.1;
   FUseMatrixError:=True;
   FMinTexSize:=16;
   FMaxTexSize:=64;
-  ObjectStyle:=ObjectStyle+[osDirectDraw];
 end;
 
 // Destroy
 //
 destructor TGLDynamicImposterBuilder.Destroy;
-var
-  i : Integer;
 begin
-  for i:=FImposterRegister.Count-1 downto 0 do
-    TGLImposter(FImposterRegister[i]).Builder:=nil;
-  FImposterRegister.Free;
   inherited;
 end;
-
+{
 // DoRender
 //
 procedure TGLDynamicImposterBuilder.DoRender(var rci : TRenderContextInfo;
@@ -975,29 +990,14 @@ begin
   glClearColor(BackColor[0],BackColor[1],BackColor[2],BackColor[3]);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT);
 end;
-
-// RegisterImposter
-//
-procedure TGLDynamicImposterBuilder.RegisterImposter(anImposter: TGLImposter);
-begin
-  if FImposterRegister.IndexOf(anImposter) = -1 then
-    FImposterRegister.Add(anImposter);
-end;
-
-// UnregisterImposter
-//
-procedure TGLDynamicImposterBuilder.UnregisterImposter(anImposter: TGLImposter);
-begin
-  FImposterRegister.Remove(anImposter);
-end;
-
+}
 // SetMinDistance
 //
 procedure TGLDynamicImposterBuilder.SetMinDistance(const Value : Single);
 begin
   if Value<>FMinDistance then begin
     FMinDistance:=Value;
-    StructureChanged;
+    NotifyChange(Self);
   end;
 end;
 
@@ -1016,7 +1016,6 @@ begin
     end;
   end;
 end;
-}
 
 // ----------
 // ---------- TGLImposter ----------
