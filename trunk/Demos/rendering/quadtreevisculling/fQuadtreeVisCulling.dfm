@@ -22,8 +22,8 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
   PixelsPerInch = 96
   TextHeight = 13
   object Label2: TLabel
-    Left = 240
-    Top = 8
+    Left = 376
+    Top = 10
     Width = 32
     Height = 13
     Caption = 'Label2'
@@ -38,6 +38,7 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     Buffer.FogEnvironment.FogEnd = 3950.000000000000000000
     Buffer.BackgroundColor = clWhite
     Buffer.Lighting = False
+    FieldOfView = 2.687657594680786000
     Anchors = [akLeft, akTop, akRight, akBottom]
   end
   object cbUseQuadtree: TCheckBox
@@ -72,13 +73,23 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     end
   end
   object cbShowQuadtree: TCheckBox
-    Left = 104
+    Left = 248
     Top = 8
     Width = 97
     Height = 17
     Caption = 'Show &Quadtree'
     TabOrder = 3
     OnClick = cbShowQuadtreeClick
+  end
+  object cbUseExtendedFrustum: TCheckBox
+    Left = 104
+    Top = 8
+    Width = 137
+    Height = 17
+    Caption = 'Use E&xtended Frustum'
+    Checked = True
+    State = cbChecked
+    TabOrder = 4
   end
   object GLScene1: TGLScene
     Left = 92
@@ -102,7 +113,6 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
     object GLTerrainRenderer1: TGLTerrainRenderer
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = '1'
-      Material.TextureEx = <>
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {00000042000000420000004000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
@@ -134,7 +144,6 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
       Material.Texture.ImageAlpha = tiaSuperBlackTransparent
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Disabled = False
-      Material.TextureEx = <>
       Width = 280.000000000000000000
       Height = 300.000000000000000000
       NoZWrite = False
@@ -164,7 +173,6 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
         Name = '1'
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Disabled = False
-        Material.TextureEx = <>
         Tag = 0
         Texture2Name = '2'
       end
@@ -172,7 +180,6 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
         Name = '2'
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
-        Material.TextureEx = <>
         Tag = 0
       end>
     Left = 80

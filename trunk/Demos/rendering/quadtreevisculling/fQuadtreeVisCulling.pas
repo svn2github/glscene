@@ -40,6 +40,7 @@ type
     cbShowQuadtree: TCheckBox;
     GLDirectOpenGL2: TGLDirectOpenGL;
     tree: TGLSprite;
+    cbUseExtendedFrustum: TCheckBox;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -168,7 +169,11 @@ begin
     trees.Children[i].Visible := false;
 
   // Query the Quadtree for objects that intersect the frustum
-  SpacePartition.QueryFrustum(rci.rcci.frustum);
+  if cbUseExtendedFrustum.Checked then
+    SpacePartition.QueryFrustumEx(
+      ExtendedFrustumMakeFromSceneViewer(rci.rcci.frustum, GLSceneViewer1))
+  else
+    SpacePartition.QueryFrustum(rci.rcci.frustum);
   visiblecount := SpacePartition.QueryResult.Count;
   Label2.Caption := Format('Visible = %d, ObjTests = %d, NodeTests = %d, TotalNodes = %d',[
     SpacePartition.QueryResult.Count,
@@ -200,11 +205,13 @@ begin
     if cbUseQuadtree.Checked then
     begin
       cullingMode := ' Quadtree';
+      for i := 0 to trees.Count - 1 do
+        trees.Children[i].Visible := true;
       trees.VisibilityCulling := vcNone;
     end else
     begin
       cullingMode := 'visibility culling ';
-      for i := 0 to trees.Count -1 do
+      for i := 0 to trees.Count - 1 do
         trees.Children[i].Visible := true;
       trees.VisibilityCulling := vcObjectBased;
     end;
@@ -218,7 +225,22 @@ end;
 
 procedure TfrmQuadtreeVisCulling.GLDirectOpenGL2Render(
   Sender: TObject; var rci: TRenderContextInfo);
+var
+  ExtendendFrustum : TExtendedFrustum;
 begin
   RenderSpatialPartitioning(SpacePartition);
+
+  {ExtendendFrustum := ExtendedFrustumMake(rci.rcci.frustum,
+    GLCamera1.NearPlane,
+    GLCamera1.DepthOfView,
+    GLSceneViewer1.FieldOfView,
+    GLCamera1.Position.AsAffineVector,
+    GLCamera1.Direction.AsAffineVector);//}
+
+  {ExtendendFrustum := ExtendedFrustumMakeFromSceneViewer(
+    rci.rcci.frustum, GLSceneViewer1);
+
+  GLSphere1.Position.AsAffineVector := ExtendendFrustum.BSphere.Center;
+  GLSphere1.Radius := ExtendendFrustum.BSphere.Radius / 1.42;//}
 end;
 end.
