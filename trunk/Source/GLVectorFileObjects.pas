@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>12/08/03 - SG - Fixed a tiny bug in TSkeleton.MorphMesh
       <li>08/07/03 - EG - Fixed puny bug in skeletal normals transformation 
       <li>05/06/03 - SG - Split SMD, MD2, 3DS, PLY, TIN and GTS code into separate units,
                           FileFormats\GLFile???.pas
@@ -2631,7 +2632,7 @@ begin
    if Owner.MeshObjects.Count>0 then begin
       RootBones.PrepareGlobalMatrices;
       for i:=0 to Owner.MeshObjects.Count-1 do begin
-         mesh:=Owner.MeshObjects.Items[0];
+         mesh:=Owner.MeshObjects.Items[i];
          if mesh is TSkeletonMeshObject then
             TSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
       end;
