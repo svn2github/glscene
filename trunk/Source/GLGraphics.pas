@@ -475,7 +475,7 @@ begin
 		   		glTexImage2d(target, 0, texFormat, w2, h2, 0,
 	   							 GL_RGBA, GL_UNSIGNED_BYTE, buffer)
    		else
-            if GL_SGIS_generate_mipmap then begin
+            if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
                // hardware-accelerated when supported
                glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
 		   		glTexImage2d(target, 0, texFormat, w2, h2, 0,

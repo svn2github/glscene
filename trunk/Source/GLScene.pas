@@ -6288,11 +6288,23 @@ begin
          if FCreateTexture then begin
             GetMem(buf, Width*Height*4);
             try
-               if GL_SGIS_generate_mipmap then
-                  glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
                glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-        	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
-                            0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+               case aTexture.MinFilter of
+                  miNearest, miLinear :
+              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+               else
+                  if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
+                     // hardware-accelerated when supported
+                     glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+                                  0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+                  end else begin
+                     // slower (software mode)
+                     gluBuild2DMipmaps(target, aTexture.OpenGLTextureFormat, Width, Height,
+                                       GL_RGBA, GL_UNSIGNED_BYTE, buf);
+                  end;
+               end;
             finally
                FreeMem(buf);
             end;
