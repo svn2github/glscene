@@ -44,10 +44,12 @@ type
     TrackBar1: TTrackBar;
     Label4: TLabel;
     OpenPictureDialog1: TOpenPictureDialog;
+    CBClampTex2: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure Image2Click(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
+    procedure CBClampTex2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -100,6 +102,14 @@ begin
       X:=TrackBar1.Position/10;
       Y:=TrackBar1.Position/10;
    end;
+end;
+
+procedure TForm1.CBClampTex2Click(Sender: TObject);
+begin
+   with GLMaterialLibrary1.Materials[1].Material.Texture do
+      if CBClampTex2.Checked then
+         TextureWrap:=twNone
+      else TextureWrap:=twBoth;
 end;
 
 end.
