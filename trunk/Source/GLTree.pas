@@ -1267,6 +1267,10 @@ var
   lmin, lmax,
   bmin, bmax : TAffineVector;
 begin
+   if Branches.Vertices.Count = 0 then begin
+      FBranches.BuildBranches;
+      FRebuildTree:=False;
+   end;
    if Leaves.Vertices.Count>0 then
      Leaves.Vertices.GetExtents(lmin, lmax)
    else begin
