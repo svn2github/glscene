@@ -108,6 +108,8 @@ type
    GLhandleARB = Cardinal;
    PGLhandleARB = ^GLhandleARB;
 
+   PPCharArray = ^PChar;
+
    PGLvoid = Pointer;
 
    TVector4p = array[0..3] of Pointer;
@@ -3025,7 +3027,7 @@ var
    glGetHandleARB: function(pname: GLenum): GLhandleARB; stdcall;
    glDetachObjectARB: procedure(containerObj: GLhandleARB; attachedObj: GLhandleARB); stdcall;
    glCreateShaderObjectARB: function(shaderType: GLenum): GLhandleARB; stdcall;
-   glShaderSourceARB: procedure(shaderObj: GLhandleARB; count: GLsizei; const _string: PGLvoid; const length: PGLint); stdcall;
+   glShaderSourceARB: procedure(shaderObj: GLhandleARB; count: GLsizei; const _string: PPCharArray; const length: PGLint); stdcall;
    glCompileShaderARB: procedure(shaderObj: GLhandleARB); stdcall;
    glCreateProgramObjectARB: function(): GLhandleARB; stdcall;
    glAttachObjectARB: procedure(containerObj: GLhandleARB; obj: GLhandleARB); stdcall;
