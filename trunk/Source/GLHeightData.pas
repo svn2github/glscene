@@ -1390,7 +1390,6 @@ procedure TGLCustomHDS.StartPreparingData(heightData : THeightData);
 begin
    if Assigned(FOnStartPreparingData) then
       FOnStartPreparingData(heightData);
-   inherited;
 end;
 
 // ------------------
