@@ -98,7 +98,7 @@ contains
   GLHeightData in '..\Source\GLHeightData.pas',
   GLBitmapFont in '..\Source\GLBitmapFont.pas',
   GLTerrainRenderer in '..\Source\GLTerrainRenderer.pas',
-  AVIRecorder in '..\Source\AVIRecorder.pas',
+  GLAVIRecorder in '..\Source\GLAVIRecorder.pas',
   VFW in '..\Source\VideoAPIs\vfw.pas',
   GLThorFX in '..\Source\GLThorFX.pas',
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
