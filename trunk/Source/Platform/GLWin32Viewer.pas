@@ -385,7 +385,7 @@ begin
    end;
    BeginPaint(Handle, PS);
    try
-      if IsOpenGLAvailable then
+      if IsOpenGLAvailable and (Width>0) and (Height>0) then
          FBuffer.Render;
    finally
       EndPaint(Handle, PS);
