@@ -79,7 +79,7 @@ begin
          n:=oct.Header.numLightmaps;
          lightmapBmp:=TGLBitmap.Create;
          try
-            lightmapBmp.PixelFormat:=pf24bit;
+            lightmapBmp.PixelFormat:=glpf24bit;
             lightmapBmp.Width:=128;
             lightmapBmp.Height:=128;
             for i:=0 to n-1 do begin
