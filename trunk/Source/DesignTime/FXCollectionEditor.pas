@@ -174,7 +174,7 @@ begin
       if Assigned(FDesigner) then
          if sel then
             FDesigner.SelectComponent(ListView.Selected.Data)
-         else FDesigner.SelectComponent(nil);
+         else FDesigner.NoSelection;
 	end;
 end;
 
@@ -283,9 +283,10 @@ procedure TXCollectionEditor.ACRemoveExecute(Sender: TObject);
 begin
 	if ListView.Selected<>nil then begin
       FDesigner.Modified;
-      FDesigner.SelectComponent(nil);
+      FDesigner.NoSelection;
 		TXCollectionItem(ListView.Selected.Data).Free;
       ListView.Selected.Free;
+      ListViewChange(Self, nil, ctState);
 	end;
 end;
 
