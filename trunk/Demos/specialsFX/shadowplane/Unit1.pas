@@ -7,7 +7,12 @@
    Note that stenciling is required for proper operation (it is an option of
    the Viewer.Buffer.ContextOptions), which should be available on all modern
    graphics hardware. When stenciling is not activated, the ShadowPlane will
-   use opaque shadows and you may see shadows appear beyond the plane limits...
+   use opaque shadows and you may see shadows appear beyond the plane limits...<p>
+
+   The higher quality lighting on the marble planes is obtained by specifying
+   Tiles in the plane and removing 'psSingleQuad' from the style. Lighting
+   is computed per-vertex, this changes increase drastically the number of
+   vertices that make up the planes, thus allowing for better lighting.
 }
 unit Unit1;
 
@@ -16,7 +21,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLShadowPlane, GLMisc, GLScene, GLWin32Viewer, GLObjects,
-  GLCadencer, StdCtrls, Geometry, ExtCtrls;
+  GLCadencer, StdCtrls, Geometry, ExtCtrls, GLTexture;
 
 type
   TForm1 = class(TForm)
@@ -37,6 +42,9 @@ type
     Panel1: TPanel;
     CBShadows: TCheckBox;
     CBStencil: TCheckBox;
+    GLShadowPlane2: TGLShadowPlane;
+    GLMaterialLibrary: TGLMaterialLibrary;
+    GLShadowPlane3: TGLShadowPlane;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -59,9 +67,11 @@ implementation
 uses Jpeg;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+   textureFileName : String;
 begin
-   with GLShadowPlane1.Material.Texture.Image do
-      LoadFromFile(ExtractFilePath(Application.ExeName)+'..\..\Media\BeigeMarble.jpg');
+   textureFileName:=ExtractFilePath(Application.ExeName)+'..\..\Media\BeigeMarble.jpg';
+   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile(textureFileName);
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
