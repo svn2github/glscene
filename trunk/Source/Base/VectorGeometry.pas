@@ -1087,6 +1087,10 @@ function Frac(v : Extended) : Extended; overload;
 function Round(v : Single) : Integer; overload;
 function Round64(v : Single) : Int64; overload;
 function Round64(v : Extended) : Int64; overload;
+{$else}
+function Trunc(X: Extended): Int64;
+function Round(X: Extended): Int64;
+function Frac(X: Extended): Extended;
 {$endif}
 
 function Ceil(v : Single) : Integer; overload;
@@ -7293,6 +7297,23 @@ asm
       FLD     v
       FISTP   DWORD PTR [v]     // use v as storage to place the result
       MOV     EAX, [v]
+end;
+
+{$else}
+
+function Trunc(X: Extended): Int64;
+begin
+   Result:=System.Trunc(X);
+end;
+
+function Round(X: Extended): Int64;
+begin
+   Result:=System.Round(X);
+end;
+
+function Frac(X: Extended): Extended;
+begin
+   Result:=System.Frac(X);
 end;
 
 {$endif}
