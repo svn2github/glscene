@@ -104,7 +104,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PChunkListEntry3DS = ^TChunkListEntry3DS;   // cross reference between Name and Chunk
      TChunkListEntry3DS = record
-       Name: String;                             // chunk name list
+       NameStr: String;                             // chunk name list
        Chunk: PChunk3DS;                         // corresponding pos
      end;
      PChunkList = ^TChunkList;
@@ -139,7 +139,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        ID: SmallInt;
        Tag: Word;
        Name,
-       Inst: String;
+       InstStr: String;
        ParentID: SmallInt;
        Next: PNodeList;
      end;
@@ -188,16 +188,13 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        VerAng: Single;                           // Vertical Angle of View
      end;
 
-     PCameraView3DS = ^TCameraView3DS;           // used to describe camera views
-     TCameraView3DS = String;                    // name of the camera used in the view
-
      PViewport3DS = ^TViewport3DS;               // Viewport structure details the kind of View in a viewport
      TViewport3DS = record
        AType: TViewType3DS;                      // top, bottom, left, right, front, back, user and camera, spot
        Size: TViewSize3DS;                       // size of the viewport
        Ortho: TOrthoView3DS;                     // used for top, bottom, left, right, front, and back views
        User: TUserView3DS;                       // Used for User views
-       Camera: TCameraView3DS;                   // used for camera views
+       CameraStr: String;                   // used for camera views
      end;
 
      TShadowStyle3DS = (ssUseShadowMap,
@@ -328,7 +325,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      // Cubic reflection Map defintion
      PBitmap3DS = ^TBitmap3DS;
      TBitmap3DS = record
-       Name: String;                             // Bitmap file name
+       NameStr: String;                             // Bitmap file name
        Percent: Single;                          // Strength percentage
        Tiling: TTileType3DS;                     // Tile/Decal/Both
        IgnoreAlpha: Boolean;
@@ -370,7 +367,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PMaterial3DS = ^TMaterial3DS;
      TMaterial3DS = record
-       Name: String;                             // Name
+       NameStr: String;                             // Name
        Ambient: TFColor3DS;                      // Ambient Light Color
        Diffuse: TFColor3DS;                      // Diffuse Light Color
        Specular: TFColor3DS;                     // Specular Light Color
@@ -426,18 +423,18 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      // Material assignments by face
      PObjMat3DS = ^TObjMat3DS;
      TObjMat3DS = record
-       Name: String;                             // material name
+       NameStr: String;                             // material name
        NFaces: Word;                             // number of faces using material
        FaceIndex: PWordList;                     // list of faces using material
      end;
 
      PObjMatList = ^TObjMatList;
-     TObjMatList = array[0..0] of TObjMat3DS;
+     TObjMatList = array[0..MaxInt shr 4] of TObjMat3DS;
 
      // Mesh object definition
      PMesh3DS = ^TMesh3DS;
      TMesh3DS = record
-       Name: String;                             // object name
+       NameStr: String;                             // object name
        IsHidden: Boolean;                        // hidden object flag
        IsvisLofter: Boolean;                     // lofter visibility flag
        IsMatte: Boolean;                         // matte object flag
@@ -458,13 +455,13 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        FaceArray: PFaceList;                     // list of faces
        SmoothArray: PCardinalArray;              // smoothing group assignment list
        UseBoxMap: Boolean;                       // used to indicate the use of box mapping
-       BoxMap: array[0..5] of String;            // material names used in boxmapping
+       BoxMapStr: array[0..5] of String;            // material names used in boxmapping
        MeshColor: Byte;                          // UI color assigned to the mesh
        NMats: Word;                              // assigned materials count
        MatArray: PObjMatList;                    // material assignment list
        UseProc: Boolean;                         // use animated stand-in flag
        ProcSize: Integer;                        // size of animated stand-in data
-       ProcName: String;                         // name of animated stand-in procedure
+       ProcNameStr: String;                         // name of animated stand-in procedure
        ProcData: Pointer;                        // animated stand-in data
      end;
 
@@ -496,7 +493,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      PSpotProjector3DS = ^TSpotProjector3DS;
      TSpotProjector3DS = record
        Use: Boolean;                             // True if using projector
-       Bitmap: String;                           // name of projector bitmap
+       BitmapStr: String;                           // name of projector bitmap
      end;
 
      // spotlight settings
@@ -523,7 +520,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      // omni and spotlight settings
      PLight3DS = ^TLight3DS;
      TLight3DS = record
-       Name: String;                             // light name
+       NameStr: String;                             // light name
        Pos: TPoint3DS;                           // light position
        Color: TFColor3DS;                        // light color
        Multiplier: Single;                       // light intensity multiplier
@@ -542,7 +539,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PCamera3DS = ^TCamera3DS;
      TCamera3DS = record
-       Name: String;
+       NameStr: String;
        Position: TPoint3DS;
        Target: TPoint3DS;
        Roll: Single;
@@ -572,8 +569,8 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PKFCamera3DS = ^TKFCamera3DS;
      TKFCamera3DS = record
-       Name: String;                             // Name of Camera object
-       Parent: String;                           // Name of Parent object
+       NameStr: String;                             // Name of Camera object
+       ParentStr: String;                           // Name of Parent object
        Flags1: Word;                             // Flags field from node header -fixup later
        Flags2: Word;                             // Flags2 field from node header -fixup later
        NPKeys: Integer;                          // Number of Camera Position keys
@@ -588,7 +585,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        NRFlag: Word;                             // Loop control Flag for Camera Roll keys
        RKeys: PKeyHeaderList;                    // Spline values for Camera Roll keys
        Roll: PSingleList;                        // Camera Roll keys
-       TParent: String;                          // Index of Parent object for Target
+       TParentStr: String;                          // Index of Parent object for Target
        NTKeys: Integer;                          // Number of Target Position keys
        NTFlag: Word;                             // Loop control Flag for Target Position keys
        TKeys: PKeyHeaderList;                    // Spline values for Target Position keys
@@ -611,12 +608,12 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      // used by ObjectMotion3DS
      PKFMesh3DS = ^TKFMesh3DS;
      TKFMesh3DS = record
-       Name: String;                             // Name of mesh
-       Parent: String;                           // Name of Parent object
+       NameStr: String;                             // Name of mesh
+       ParentStr: String;                           // Name of Parent object
        Flags1: Word;                             // Flags field from node header
        Flags2: Word;                             // Flags2 field from node header
        Pivot: TPoint3DS;                         // Object Pivot point
-       Instance: String;                         // Object Instance Name
+       InstanceStr: String;                         // Object Instance Name
        BoundMin: TPoint3DS;                      // Minimum bounding box point for dummy objects
        BoundMax: TPoint3DS;                      // Maximum bounding box point for dummy objects
        NPKeys: Integer;                          // Number of Position keys
@@ -753,8 +750,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      PFloatPercentage = ^TFloatPercentage;
      TFloatPercentage = Single;
 
-     PMatMapname = ^TMatMapname;
-     TMatMapname = String;
+     PMatMapname = PChar;
 
      PMeshVersion = ^TMeshVersion;
      TMeshVersion = Integer;
@@ -786,8 +782,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      POConsts = ^TOConsts;
      TOConsts = TPoint3DS;
 
-     PBitMapName = ^TBitMapName;
-     TBitMapName = String;
+     PBitMapName = PChar;
 
      PVGradient = ^TVGradient;
      TVGradient = Single;
@@ -831,11 +826,9 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        BankAngle: Single;
      end;
 
-     PViewCamera = ^TViewCamera;
-     TViewCamera = String;
+     PViewCamera = PChar;
 
-     PMatName = ^TMatName;
-     TMatName = String;
+     PMatName = PChar;
 
      PMatShading = ^TMatShading;
      TMatShading = SmallInt;
@@ -879,8 +872,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      PMatMapAng = ^TMatMapAng;
      TMatMapAng = Single;
 
-     PNamedObject = ^TNamedObject;
-     TNamedObject = String;
+     PNamedObject = PChar;
 
      PPointArray = ^TPointArray;
      TPointArray = record
@@ -902,7 +894,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PMshMatGroup = ^TMshMatGroup;
      TMshMatGroup = record
-       MatName: String;
+       MatNameStr: String;
        Faces: Word;
        FaceList: PWordList;
      end;
@@ -938,14 +930,12 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        CylIconHeight: Single;
      end;
 
-     PProcName = ^TProcName;
-     TProcName = String;
+     PProcName = PChar;
 
      PNDirectLight = ^TNDirectLight;
      TNDirectLight = TPoint3DS;
 
-     PDlExclude = ^TDlExclude;
-     TDlExclude =String;
+     PDlExclude = PChar;
 
      PDlSpotlight = ^TDlSpotlight;
      TDlSpotlight = record
@@ -969,8 +959,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      PDlSpotAspect = ^TDlSpotAspect;
      TDlSpotAspect = Single;
 
-     PDlSpotProjector = ^TDlSpotProjector;
-     TDlSpotProjector = String;
+     PDlSpotProjector = PChar;
 
      PDlRayBias = ^TDlRayBias;
      TDlRayBias = Single;
@@ -1049,7 +1038,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        Center: TPoint3DS;
        HorizAng: Single;
        VertAng: Single;
-       CamName: String;
+       CamNameStr: String;
      end;
 
      PViewportData3 = ^TViewportData3;
@@ -1076,7 +1065,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
 
      PNodeHdr = ^TNodeHdr;
      TNodeHdr = record
-       ObjName: String;
+       ObjNameStr: String;
        Flags1: Word;
        Flags2: Word;
        ParentIndex: SmallInt;
@@ -1085,8 +1074,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      PPivot = ^TPivot;
      TPivot = TPoint3DS;
 
-     PInstanceName = ^TInstanceName;
-     TInstanceName = String;
+     PInstanceName = PChar;
 
      PMorphSmooth = ^TMorphSmooth;
      TMorphSmooth = Single;
@@ -1172,11 +1160,9 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        Data: Pointer;
      end;
 
-     PXDataAppName = ^TXDataAppName;
-     TXDataAppName = String;
+     PXDataAppName = PChar;
 
-     PXDataString = ^TXDataString;
-     TXDataString = String;
+     PXDataString = PChar;
 
      PXDataFloat = ^TXDataFloat;
      TXDataFloat = Single;

@@ -80,7 +80,7 @@ const // Flags used by the flag field of the Mesh3DS structure
       DefFace3DS        : TFace3DS        = (v1: 0; v2: 1; v3: 2; Flag: 0);
       DefTrackHeader3DS : TTrackHeader3DS = (Flags: 0; nu1: 0; nu2: 0; KeyCount: 1);
       DefKeyHeader3DS   : TKeyHeader3DS   = (Time: 0; RFlags: 0; Tension: 0; Continuity: 0; Bias: 0; EaseTo: 0; EaseFrom: 0);
-      DefObjMat3DS      : TObjMat3DS      = (Name: ''; NFaces: 0; FaceIndex: nil);
+      DefObjMat3DS      : TObjMat3DS      = (NameStr: ''; NFaces: 0; FaceIndex: nil);
       DefKFRotKey3DS    : TKFRotKey3DS    = (Angle: 0; X: 0; Y: 0; Z: 1);
 
 

@@ -91,10 +91,10 @@ var
                   Specular.Color:=specColor;
                   Shininess:=Round((1 - material.ShinStrength) * 128);
                end;
-               if Trim(material.Texture.Map.Name)<>'' then begin
+               if Trim(material.Texture.Map.NameStr)<>'' then begin
                   try
                      with libMat.Material.Texture do begin
-                        Image.LoadFromFile(material.Texture.Map.Name);
+                        Image.LoadFromFile(material.Texture.Map.NameStr);
                         Disabled:=False;
                         TextureMode:=tmModulate;
                      end;
@@ -207,7 +207,7 @@ begin
       for i:=0 to Objects.MeshCount-1 do with PMesh3DS(Objects.Mesh[I])^ do begin
          if IsHidden or (NVertices<3) then Continue;
          mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
-         mesh.Name:=PMesh3DS(Objects.Mesh[I])^.Name;
+         mesh.Name:=PMesh3DS(Objects.Mesh[I])^.NameStr;
          with mesh do begin
             Mode:=momFaceGroups;
             // make a copy of the vertex data, this must always be available
@@ -343,7 +343,7 @@ begin
             for iMaterial:=0 to NMats - 1 do begin
                aFaceGroup:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
                with aFaceGroup do begin
-                  MaterialName:=GetOrAllocateMaterial(Materials, MatArray[iMaterial].Name);
+                  MaterialName:=GetOrAllocateMaterial(Materials, MatArray[iMaterial].NameStr);
                   // copy all vertices belonging to the current face into our index array,
                   // there won't be redundant vertices since this would mean a face has more than one
                   // material

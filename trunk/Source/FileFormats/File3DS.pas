@@ -209,7 +209,7 @@ type TFile3DS = class;
        function  ReadPoint: TPoint3DS;
        function  ReadShort: SmallInt;
        function  ReadSingle: Single;
-       function  ReadString: String;
+       function  ReadString: PChar;
        function  ReadTexVert: TTexVert3DS;
        function  ReadTrackHeader: TTrackHeader3DS;
        function  ReadWord: Word;
@@ -255,6 +255,12 @@ type TFile3DS = class;
 implementation
 
 uses Const3DS, Utils3DS, SysUtils, ApplicationFileIO;
+
+function StrPasFree(p : PAnsiChar) : String;
+begin
+   Result:=StrPas(p);
+   FreeMem(p);
+end;
 
 //----------------- TMaterialList -------------------------------------------------------------------------------------
 
@@ -336,8 +342,7 @@ begin
   begin
     Entry := GetMaterial(Index);
     if Entry = nil then Continue;
-    if CompareText(Entry.Name, Name) = 0 then
-    begin
+    if CompareText(Entry.NameStr, Name) = 0 then begin
       Result := Entry;
       Break;
     end;
@@ -745,12 +750,12 @@ begin
   if HdrChunk = nil then Exit;
 
   // fill in node Data
-  NewNode.Name := HdrChunk.Data.NodeHdr.ObjName;
+  NewNode.Name := HdrChunk.Data.NodeHdr.ObjNameStr;
   NewNode.ID := GetChunkNodeID(Chunk);
   NewNode.Tag := Chunk.Tag;
   NewNode.ParentID := HdrChunk.Data.NodeHdr.ParentIndex;
   NewNode.Next := nil;
-  NewNode.Inst := '';
+  NewNode.InstStr := '';
 
   // check for instance
   if Chunk.Tag = OBJECT_NODE_TAG then
@@ -759,7 +764,7 @@ begin
     if assigned(InstChunk) then
     begin
       ReadChunkData(InstChunk);
-      NewNode.Inst := InstChunk.Data.InstanceName^;
+      NewNode.InstStr := StrPas(InstChunk.Data.InstanceName);
       FreeChunkData(InstChunk);
     end;
   end;
@@ -812,7 +817,7 @@ begin
               if assigned(IDParentNode) then
               begin
                 Name := IDParentNode.Name;
-                Inst := IDParentNode.Inst;
+                Inst := IDParentNode.InstStr;
               end;
 
               if Length(Name) > 0 then
@@ -825,7 +830,10 @@ begin
                 if assigned(NameChunk) then
                 begin
                   ReadChunkData(NameChunk);
-                  if assigned(NameChunk.Data.InstanceName) then NameChunk.Data.InstanceName^ := Name;
+                  if assigned(NameChunk.Data.InstanceName) then begin
+                     NameChunk.Data.InstanceName := AllocMem(Length(Name)+1);
+                     Move(Name[1], NameChunk.Data.InstanceName^, Length(Name)+1);
+                  end;
                 end
                 else KFAddParentName(HdrChunk, Name); // create PARENT_NAME chunk
               end;
@@ -937,16 +945,13 @@ end;
 //---------------------------------------------------------------------------------------------------------------------
 
 procedure TFile3DS.KFAddParentName(Chunk: PChunk3DS; Name: String);
-
-var Temp : PChunk3DS;
-    Data : PInstanceName;
-
+var
+   Temp : PChunk3DS;
 begin
   InitChunk(Temp);
   Temp.Tag := PARENT_NAME;
-  Data := InitChunkData(Temp);
-
-  Data^ := Name;
+  Temp.Data.Dummy:=AllocMem(Length(Name)+1);
+  Move(Name[1], Temp.Data.Dummy^, Length(Name)+1);
   AddChildOrdered(Chunk, Temp);
 end;
 
@@ -1262,7 +1267,7 @@ begin
     FLOAT_PERCENTAGE:
       Chunk.Data.FloatPercentage := AllocMem(SizeOf(TFloatPercentage));
     MAT_MAPNAME:
-      Chunk.Data.MatMapname := AllocMem(SizeOf(TMatMapname));
+      Chunk.Data.MatMapname := nil;//AllocMem(SizeOf(TMatMapname));
     M3D_VERSION:
       Chunk.Data.M3dVersion := AllocMem(SizeOf(TM3dVersion));
     MESH_VERSION:
@@ -1286,7 +1291,7 @@ begin
     O_CONSTS:
       Chunk.Data.OConsts := AllocMem(SizeOf(TOConsts));
     BIT_MAP:
-      Chunk.Data.BitMapName := AllocMem(SizeOf(TBitMapName));
+      Chunk.Data.BitMapName := nil;//AllocMem(SizeOf(TBitMapName));
     V_GRADIENT:
       Chunk.Data.VGradient := AllocMem(SizeOf(TVGradient));
     FOG:
@@ -1305,9 +1310,9 @@ begin
     VIEW_USER:
       Chunk.Data.ViewUser := AllocMem(SizeOf(TViewUser));
     VIEW_CAMERA:
-      Chunk.Data.ViewCamera := AllocMem(SizeOf(TViewCamera));
+      Chunk.Data.ViewCamera := nil;//AllocMem(SizeOf(TViewCamera));
     MAT_NAME:
-      Chunk.Data.MatName := AllocMem(SizeOf(TMatName));
+      Chunk.Data.MatName := nil;//AllocMem(SizeOf(TMatName));
     MAT_SHADING:
       Chunk.Data.MatShading := AllocMem(SizeOf(TMatShading));
     MAT_ACUBIC:
@@ -1358,7 +1363,7 @@ begin
     MAT_BUMP_PERCENT:
       Chunk.Data.MatBumpPercent := AllocMem(SizeOf(TMatBumpPercent));
     NAMED_OBJECT:
-      Chunk.Data.NamedObject := AllocMem(SizeOf(TNamedObject));
+      Chunk.Data.NamedObject := nil;//AllocMem(SizeOf(TNamedObject));
     POINT_ARRAY:
       Chunk.Data.PointArray := AllocMem(SizeOf(TPointArray));
     POINT_FLAG_ARRAY       :
@@ -1380,11 +1385,11 @@ begin
     MESH_TEXTURE_INFO:
       Chunk.Data.MeshTextureInfo := AllocMem(SizeOf(TMeshTextureInfo));
     PROC_NAME:
-      Chunk.Data.ProcName := AllocMem(SizeOf(TProcName));
+      Chunk.Data.ProcName := nil;//AllocMem(SizeOf(TProcName));
     N_DIRECT_LIGHT:
       Chunk.Data.NDirectLight := AllocMem(SizeOf(TNDirectLight));
     DL_EXCLUDE:
-      Chunk.Data.DlExclude := AllocMem(SizeOf(TDlExclude));
+      Chunk.Data.DlExclude := nil;//AllocMem(SizeOf(TDlExclude));
     DL_INNER_RANGE:
       Chunk.Data.DlInnerRange := AllocMem(SizeOf(TDlInnerRange));
     DL_OUTER_RANGE:
@@ -1400,7 +1405,7 @@ begin
     DL_SPOT_ASPECT:
       Chunk.Data.DlSpotAspect := AllocMem(SizeOf(TDlSpotAspect));
     DL_SPOT_PROJECTOR:
-      Chunk.Data.DlSpotProjector := AllocMem(SizeOf(TDlSpotProjector));
+      Chunk.Data.DlSpotProjector := nil;//AllocMem(SizeOf(TDlSpotProjector));
     DL_RAY_BIAS:
       Chunk.Data.DlRayBias := AllocMem(SizeOf(TDlRayBias));
     N_CAMERA:
@@ -1417,9 +1422,9 @@ begin
     XDATA_ENTRY:
       Chunk.Data.XDataEntry := AllocMem(SizeOf(TXDataEntry));
     XDATA_APPNAME:
-      Chunk.Data.XDataAppName := AllocMem(SizeOf(TXDataAppName));
+      Chunk.Data.XDataAppName := nil;//AllocMem(SizeOf(TXDataAppName));
     XDATA_STRING:
-      Chunk.Data.XDataString := AllocMem(SizeOf(TXDataString));
+      Chunk.Data.XDataString := nil;//AllocMem(SizeOf(TXDataString));
     KFHDR:
       Chunk.Data.KFHdr := AllocMem(SizeOf(TKFHdr));
     KFSEG:
@@ -1434,7 +1439,7 @@ begin
       Chunk.Data.Pivot := AllocMem(SizeOf(TPivot));
     INSTANCE_NAME,
     PARENT_NAME:
-      Chunk.Data.InstanceName := AllocMem(SizeOf(TInstanceName));
+      Chunk.Data.InstanceName := nil;//AllocMem(SizeOf(TInstanceName));
     MORPH_SMOOTH:
       Chunk.Data.MorphSmooth := AllocMem(SizeOf(TMorphSmooth));
     BOUNDBOX:
@@ -1671,18 +1676,23 @@ end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-function TFile3DS.ReadString: String;
-
-var Len: Integer;
-    Buffer: array[Byte] of Char;
-
+function TFile3DS.ReadString: PChar;
+var
+   Len, LB: Integer;
+   Buffer: String;
 begin
-  Len := 0;
-  repeat
-    FStream.Read(Buffer[Len], 1);
-    Inc(Len);
-  until Buffer[Len - 1] = #0;
-  SetString(Result, Buffer, Len - 1); // not the null byte
+   Len := 0;
+   LB := 0;
+   repeat
+      if Len>=LB then begin
+         Inc(LB, 50);
+         SetLength(Buffer, LB);
+      end;
+      Inc(Len);
+      FStream.Read(Buffer[Len], 1);
+   until Buffer[Len] = #0;
+   Result:=AllocMem(Len);
+   Move(Buffer[1], Result^, Len);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1893,8 +1903,8 @@ begin
         end;
       MAT_MAPNAME:
         begin
-          Chunk.Data.MatMapname := AllocMem(SizeOf(TMatMapname));
-          Chunk.Data.MatMapname^ := ReadString;
+//          Chunk.Data.MatMapname := AllocMem(SizeOf(TMatMapname));
+          Chunk.Data.MatMapname := ReadString;
         end;
       M3D_VERSION:
         begin
@@ -1953,8 +1963,8 @@ begin
         end;
       BIT_MAP:
         begin
-          Chunk.Data.BitMapName := AllocMem(SizeOf(TBitMapName));
-          Chunk.Data.BitMapName^ := ReadString;
+//          Chunk.Data.BitMapName := AllocMem(SizeOf(TBitMapName));
+          Chunk.Data.BitMapName := ReadString;
         end;
       V_GRADIENT:
         begin
@@ -2022,13 +2032,13 @@ begin
         end;
       VIEW_CAMERA:
         begin
-          Chunk.Data.ViewCamera := AllocMem(SizeOf(TViewCamera));
-          Chunk.Data.ViewCamera^ := ReadString;
+//          Chunk.Data.ViewCamera := AllocMem(SizeOf(TViewCamera));
+          Chunk.Data.ViewCamera := ReadString;
         end;
       MAT_NAME:
         begin
-          Chunk.Data.MatName := AllocMem(SizeOf(TMatName));
-          Chunk.Data.MatName^ := ReadString;
+//          Chunk.Data.MatName := AllocMem(SizeOf(TMatName));
+          Chunk.Data.MatName := ReadString;
         end;
       MAT_SHADING:
         begin
@@ -2170,8 +2180,8 @@ begin
         end;
       NAMED_OBJECT:
         begin
-          Chunk.Data.NamedObject := AllocMem(SizeOf(TNamedObject));
-          Chunk.Data.NamedObject^ := ReadString;
+//          Chunk.Data.NamedObject := AllocMem(SizeOf(TNamedObject));
+          Chunk.Data.NamedObject := ReadString;
         end;
       POINT_ARRAY:
         begin
@@ -2211,7 +2221,7 @@ begin
           Chunk.Data.MshMatGroup := AllocMem(SizeOf(TMshMatGroup));
           with Chunk.Data.MshMatGroup^ do
           begin
-            MatName := ReadString;
+            MatNameStr := StrPasFree(ReadString);
             Faces := ReadWord;
             if Faces > 0 then
             begin
@@ -2277,8 +2287,8 @@ begin
         end;
       PROC_NAME:
         begin
-          Chunk.Data.ProcName := AllocMem(SizeOf(TProcName));
-          Chunk.Data.ProcName^ := ReadString;
+//          Chunk.Data.ProcName := AllocMem(SizeOf(TProcName));
+          Chunk.Data.ProcName := ReadString;
         end;
       N_DIRECT_LIGHT:
         begin
@@ -2287,8 +2297,8 @@ begin
         end;
       DL_EXCLUDE:
         begin
-          Chunk.Data.DlExclude := AllocMem(SizeOf(TDlExclude));
-          Chunk.Data.DlExclude^ := ReadString;
+//          Chunk.Data.DlExclude := AllocMem(SizeOf(TDlExclude));
+          Chunk.Data.DlExclude := ReadString;
         end;
       DL_INNER_RANGE:
         begin
@@ -2337,8 +2347,8 @@ begin
         end;
       DL_SPOT_PROJECTOR:
         begin
-          Chunk.Data.DlSpotProjector := AllocMem(SizeOf(TDlSpotProjector));
-          Chunk.Data.DlSpotProjector^ := ReadString;
+//          Chunk.Data.DlSpotProjector := AllocMem(SizeOf(TDlSpotProjector));
+          Chunk.Data.DlSpotProjector := ReadString;
         end;
       DL_RAY_BIAS:
         begin
@@ -2407,7 +2417,7 @@ begin
             Center := ReadPoint;
             HorizAng := ReadSingle;
             VertAng := ReadSingle;
-            CamName := ReadString;
+            CamNameStr := StrPasFree(ReadString);
           end;
         end;
       XDATA_ENTRY:
@@ -2422,13 +2432,13 @@ begin
         end;
       XDATA_APPNAME:
         begin
-          Chunk.Data.XDataAppName := AllocMem(SizeOf(TXDataAppName));
-          Chunk.Data.XDataAppName^ := ReadString;
+//          Chunk.Data.XDataAppName := AllocMem(SizeOf(TXDataAppName));
+          Chunk.Data.XDataAppName := ReadString;
         end;
       XDATA_STRING:
         begin
-          Chunk.Data.XDataString := AllocMem(SizeOf(TXDataString));
-          Chunk.Data.XDataString^ := ReadString;
+//          Chunk.Data.XDataString := AllocMem(SizeOf(TXDataString));
+          Chunk.Data.XDataString := ReadString;
         end;
       KFHDR:
         begin
@@ -2464,7 +2474,7 @@ begin
           Chunk.Data.NodeHdr := AllocMem(SizeOf(TNodeHdr));
           with Chunk.Data.NodeHdr^ do
           begin
-            ObjName := ReadString;
+            ObjNameStr := StrPasFree(ReadString);
             Flags1 := ReadWord;
             Flags2 := ReadWord;
             ParentIndex := ReadShort;
@@ -2477,8 +2487,8 @@ begin
         end;
       INSTANCE_NAME:
         begin
-          Chunk.Data.InstanceName := AllocMem(SizeOf(TInstanceName));
-          Chunk.Data.InstanceName^ := ReadString;
+//          Chunk.Data.InstanceName := AllocMem(SizeOf(TInstanceName));
+          Chunk.Data.InstanceName := ReadString;
         end;
       PARENT_NAME:
         ; // do nothing
@@ -2710,9 +2720,8 @@ procedure TFile3DS.SeekChild(Chunk: PChunk3DS);
 
 // Function skips to next Chunk on disk by seeking the next file position
 
-var Offset : Integer;
-    Dummy: String;
-
+var
+   Offset : Integer;
 begin
   Offset := 0;
   case Chunk.Tag of
@@ -2776,7 +2785,7 @@ begin
     FLOAT_PERCENTAGE:
       Offset := SizeOf(Single);
     MAT_MAPNAME:
-      Dummy := ReadString;
+      FreeMem(ReadString);
     MESH_VERSION:
       Offset := SizeOf(Integer);
     MASTER_SCALE:
@@ -2794,9 +2803,9 @@ begin
     V_GRADIENT:
       Offset := SizeOf(Single);
     NAMED_OBJECT:
-      Dummy := ReadString;
+      FreeMem(ReadString);
     BIT_MAP:
-      Dummy := ReadString;
+      FreeMem(ReadString);
     FOG:
       Offset := 4 * SizeOf(Single);
     LAYER_FOG         :
@@ -2821,9 +2830,9 @@ begin
     VIEW_USER:
       Offset := 12 + 4 * SizeOf(Single);
     VIEW_CAMERA:
-      Dummy := ReadString;
+      FreeMem(ReadString);
     MAT_NAME:
-      Dummy := ReadString;
+      FreeMem(ReadString);
     MAT_ACUBIC:
       Offset := 2 * SizeOf(Byte) + 2 * SizeOf(Integer) + SizeOf(SmallInt);
     POINT_ARRAY,
@@ -2842,13 +2851,13 @@ begin
     MESH_TEXTURE_INFO:
       Offset := Chunk.Size - 6;
     PROC_NAME:
-      Dummy := ReadString;
+      FreeMem(ReadString);
     DL_LOCAL_SHADOW2:
       Offset := 2 * SizeOf(Single) + SizeOf(SmallInt);
     KFHDR:
       begin
         ReadShort;
-        Dummy := ReadString;
+        FreeMem(ReadString);
         ReadInteger;
       end;
     KFSEG:
@@ -2857,7 +2866,7 @@ begin
       Offset := SizeOf(Integer);
     NODE_HDR:
       begin
-        Dummy := ReadString;
+        FreeMem(ReadString);
         Offset := 2 * SizeOf(SmallInt) + SizeOf(SmallInt);
       end;
     NODE_ID:
@@ -2865,7 +2874,7 @@ begin
     PIVOT:
       Offset := 12;
     INSTANCE_NAME:
-      Dummy := ReadString;
+      FreeMem(ReadString);
     MORPH_SMOOTH:
       Offset := SizeOf(Single);
     BOUNDBOX:

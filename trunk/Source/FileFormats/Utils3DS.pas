@@ -586,7 +586,7 @@ begin
     User.Zoom := 0.7395;
     User.HorAng := 20;
     User.VerAng := 30;
-    Camera := '';
+    CameraStr := '';
     Size.Width := 1000;
     Size.Height := 1000;
   end;
@@ -664,7 +664,7 @@ begin
                 User.Center.z := Chunk.Data.ViewportData.Center.Z;
                 User.HorAng := Chunk.Data.ViewportData.HorizAng;
                 User.VerAng := Chunk.Data.ViewportData.VertAng;
-                Camera := Chunk.Data.ViewportData.CamName;
+                CameraStr := Chunk.Data.ViewportData.CamNameStr;
               end;
               Inc(PortIndex);
             end;
@@ -707,7 +707,7 @@ begin
                 User.Center.z := Chunk.Data.ViewportData.Center.Z;
                 User.HorAng := Chunk.Data.ViewportData.HorizAng;
                 User.VerAng := Chunk.Data.ViewportData.VertAng;
-                Camera := Chunk.Data.ViewportData.CamName;
+                CameraStr := Chunk.Data.ViewportData.CamNameStr;
               end;
               Inc(PortIndex);
             end;
@@ -1713,7 +1713,7 @@ begin
       MSH_MAT_GROUP:
         begin
           Source.ReadChunkData(Chunk);
-          Output := Format('%sMaterial Name of %s', [ID, Chunk.Data.MshMatGroup.MatName]);
+          Output := Format('%sMaterial Name of %s', [ID, Chunk.Data.MshMatGroup.MatNameStr]);
           Strings.Add(Output);
           Output := Format('%sAssigned to %d Faces', [ID, Chunk.Data.MshMatGroup.Faces]);
           Strings.Add(Output);
@@ -1945,7 +1945,7 @@ begin
             Strings.Add(Output);
             Output := Format('%sVertical Angle of  %f', [ID, VertAng]);
             Strings.Add(Output);
-            Output := Format('%sCamera Name of %s', [ID, CamName]);
+            Output := Format('%sCamera Name of %s', [ID, CamNameStr]);
             Strings.Add(Output);
           end;
         end;
@@ -2136,7 +2136,7 @@ begin
       NODE_HDR:
         begin
           Source.ReadChunkData(Chunk);
-          Strings.Add(Format('%sObject Name: %s', [ID, Chunk.Data.NodeHdr.ObjName]));
+          Strings.Add(Format('%sObject Name: %s', [ID, Chunk.Data.NodeHdr.ObjNameStr]));
           //--- Flags 1
           Strings.Add(Format('%sFlags 1: $%x', [ID, Chunk.Data.NodeHdr.Flags1]));
           if DumpLevel = dlMaximumDump then
@@ -2640,7 +2640,7 @@ begin
   if Assigned(List) then
   begin
     // tell the string management that we don't need these strings any longer
-    for I := 0 to List.Count - 1 do List.List[I].Name := '';
+    for I := 0 to List.Count - 1 do List.List[I].NameStr := '';
     if Assigned(List.List) then FreeMem(List.List);
     FreeMem(List);
     List := nil;
@@ -2723,7 +2723,7 @@ begin
       MatName := FindChunk(MatEntry, MAT_NAME);
       Source.ReadChunkData(MatName);
       DB.MatList.List[I].Chunk := MatEntry;
-      DB.MatList.List[I].Name := MatName.Data.MatName^;
+      DB.MatList.List[I].NameStr := StrPas(MatName.Data.MatName);
       MatEntry := FindNextChunk(MatEntry.Sibling, MAT_ENTRY);
       Inc(I);
     end;
@@ -2766,7 +2766,7 @@ begin
     begin
       Source.ReadChunkData(Current);
       DB.ObjList.List[I].Chunk := Current;
-      DB.ObjList.List[I].Name := Current.Data.NamedObject^;
+      DB.ObjList.List[I].NameStr := StrPas(Current.Data.NamedObject);
       Current := FindNextChunk(Current.Sibling, NAMED_OBJECT);
       Inc(I);
     end;
@@ -2831,7 +2831,7 @@ begin
             begin
               Source.ReadChunkData(Chunk);
               DB.NodeList.List[I].Chunk := Current;
-              DB.NodeList.List[I].Name := Chunk.Data.NodeHdr.ObjName;
+              DB.NodeList.List[I].NameStr := Chunk.Data.NodeHdr.ObjNameStr;
               FreeChunkData(Chunk);
             end;
 
@@ -2843,7 +2843,7 @@ begin
               if Assigned(Chunk) then
               begin
                 Source.ReadChunkData(Chunk);
-                DB.NodeList.List[I].Name := DB.NodeList.List[I].Name + '.' + Chunk.Data.InstanceName^;
+                DB.NodeList.List[I].NameStr := DB.NodeList.List[I].NameStr + '.' + StrPas(Chunk.Data.InstanceName);
                 FreeChunkData(Chunk);
               end;
             end;
@@ -2881,7 +2881,8 @@ begin
   UpdateNodeTagList(Source, DB);
   List.Clear;
   for I := 0 to DB.NodeList.Count - 1 do
-    if DB.NodeList.List[I].Chunk.Tag = TagID then List.Add(DB.NodeList.List[I].Name);
+    if DB.NodeList.List[I].Chunk.Tag = TagID then
+      List.Add(DB.NodeList.List[I].NameStr);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -2907,7 +2908,7 @@ begin
     begin
       Source.ReadChunkData(NodeHdrChunk);
       // match name, set pointer (case sensitive comparation!)
-      if CompareStr(Name, NodeHdrChunk.Data.NodeHdr.ObjName) = 0 then
+      if CompareStr(Name, NodeHdrChunk.Data.NodeHdr.ObjNameStr) = 0 then
       begin
         FreeChunkData(NodeHdrChunk);
         Break;
@@ -2951,7 +2952,8 @@ begin
   UpdateNodeTagList(Source, DB);
   for I := 0 to DB.NodeList.Count - 1 do
     if (DB.NodeList.List[I].Chunk.Tag = AType) and
-       (CompareStr(Name, DB.NodeList.List[I].Name) = 0) then Result := DB.NodeList.List[I].Chunk;
+       (CompareStr(Name, DB.NodeList.List[I].NameStr) = 0) then
+       Result := DB.NodeList.List[I].Chunk;
 end;
 
 //----------------- material handling ---------------------------------------------------------------------------------
@@ -3167,7 +3169,7 @@ begin
         MAT_MAPNAME:
           begin
             DataSource.ReadChunkData(Current);
-            Name := Current.Data.MatMapname^;
+            NameStr := StrPas(Current.Data.MatMapname);
             FreeChunkData(Current);
           end;
         MAT_MAP_TILING:
@@ -3299,7 +3301,7 @@ begin
           MAT_NAME:
             begin
               Source.ReadChunkData(Current);
-              Name := Current.Data.MatName^;
+              NameStr := StrPas(Current.Data.MatName);
               FreeChunkData(Current);
             end;
           MAT_AMBIENT,
@@ -3673,8 +3675,9 @@ begin
   FillChar(Result, SizeOf(Result), 0);
 
   Chunk := FindMatEntryByIndex(Source, DB, Index);
-  if Assigned(Chunk) then Result := ReadMatEntryChunk(Source, Chunk)
-                     else ShowErrorFormatted(Error3DS_INVALID_INDEX, [Index]);
+  if Assigned(Chunk) then
+     Result := ReadMatEntryChunk(Source, Chunk)
+  else ShowErrorFormatted(Error3DS_INVALID_INDEX, [Index]);
 end;
 
 //----------------- mesh object handling ------------------------------------------------------------------------------
@@ -4008,7 +4011,7 @@ begin
   begin
     // get the mesh name
     Source.ReadChunkData(Chunk);
-    Name := Chunk.Data.NamedObject^;
+    NameStr := StrPas(Chunk.Data.NamedObject);
 
     Current := NTriChunk.Children;
     while Assigned(Current) do
@@ -4053,7 +4056,7 @@ begin
                 for I := 0 to NMats - 1 do
                 begin
                   Source.ReadChunkData(DataChunk);
-                  MatArray[I].Name := DataChunk.Data.MshMatGroup.MatName;
+                  MatArray[I].NameStr := DataChunk.Data.MshMatGroup.MatNameStr;
                   MatArray[I].NFaces := DataChunk.Data.MshMatGroup.Faces;
                   MatArray[I].FaceIndex := DataChunk.Data.MshMatGroup.FaceList;
                   DataChunk.Data.MshMatGroup.FaceList := nil;
@@ -4075,7 +4078,8 @@ begin
               if Assigned(DataChunk) then
               begin
                 Source.ReadChunkData(DataChunk);
-                for I := 0 to 5 do Boxmap[I] := DataChunk.Data.MshBoxmap[I];
+                for I := 0 to 5 do
+                  BoxMapStr[I] := DataChunk.Data.MshBoxmap[I];
                 UseBoxmap := True;
                 FreeChunkData(DataChunk);
               end;
@@ -4116,7 +4120,7 @@ begin
         PROC_NAME:
           begin
             Source.ReadChunkData(Current);
-            ProcName := Current.Data.ProcName^;
+            ProcNameStr := StrPas(Current.Data.ProcName);
             FreeChunkData(Current);
           end;
         PROC_DATA:
@@ -4258,7 +4262,7 @@ begin
   FillChar(Light, SizeOf(Light), 0);
   with Light do
   begin
-    Name := '';
+    NameStr := '';
     Color.R := 0.708852;
     Color.G := 0.708852;
     Color.B := 0.708852;
@@ -4278,7 +4282,7 @@ begin
   Light.Exclude := nil;
   if Assigned(Light.Spot) then
   begin
-    Light.Spot.Projector.Bitmap := '';
+    Light.Spot.Projector.BitmapStr := '';
     FreeMem(Light.Spot);
   end;
   Dispose(Light);
@@ -4336,7 +4340,7 @@ begin
       
       // read object name 
       Source.ReadChunkData(Chunk);
-      Name := Chunk.Data.NamedObject^;
+      NameStr := StrPas(Chunk.Data.NamedObject);
       FreeChunkData(Chunk);
 
       // read Light postion
@@ -4454,7 +4458,7 @@ begin
             DL_SPOT_PROJECTOR:
               begin
                 Source.ReadChunkData(Current);
-                Spot.Projector.Bitmap := Current.Data.DlSpotProjector^;
+                Spot.Projector.BitmapStr := StrPas(Current.Data.DlSpotProjector);
                 Spot.Projector.Use := True;
                 FreeChunkData(Current);
               end;
@@ -4620,7 +4624,7 @@ begin
     Camera := FindNextChunk(Chunk.Children, N_CAMERA);
 
     Source.ReadChunkData(Chunk);
-    Name := Chunk.Data.NamedObject^;
+    NameStr := StrPas(Chunk.Data.NamedObject);
     FreeChunkData(Chunk);
 
     Source.ReadChunkData(Camera);
@@ -4969,13 +4973,13 @@ begin
     // header Information
     if Assigned(NodeHdrChunk) then
     begin
-      Name := NodeHdrChunk.Data.NodeHdr.ObjName;
+      NameStr := NodeHdrChunk.Data.NodeHdr.ObjNameStr;
       Flags1 := NodeHdrChunk.Data.NodeHdr.Flags1;
       Flags2 := NodeHdrChunk.Data.NodeHdr.Flags2;
     end;
     // parents
-    Parent := GetParentName(Source, NodeHdrChunk);
-    TParent := GetParentName(Source, TargetHdrChunk);
+    ParentStr := GetParentName(Source, NodeHdrChunk);
+    TParentStr := GetParentName(Source, TargetHdrChunk);
 
     // target information
     if TargetKeys <> 0 then
@@ -5472,21 +5476,20 @@ begin
   with Result do
   begin
     //--- header Information
-    Name := NodeHdrChunk.Data.NodeHdr.ObjName;
+    NameStr := NodeHdrChunk.Data.NodeHdr.ObjNameStr;
     Flags1 := NodeHdrChunk.Data.NodeHdr.Flags1;
     Flags2 := NodeHdrChunk.Data.NodeHdr.Flags2;
 
     //--- get parent name if there is one
-    Parent := GetParentName(Source, NodeHdrChunk);
+    ParentStr := GetParentName(Source, NodeHdrChunk);
 
     //--- Instance
     if Assigned(InstData) then
     begin
-      Instance := InstData^;
-      Name := Name + '.' + Instance;
+      InstanceStr := StrPas(InstData);
+      NameStr := NameStr + '.' + InstanceStr;
       FreeMem(InstData);
-    end
-    else Instance := '';
+    end else InstanceStr := '';
 
     //--- Pivot
     if Assigned(PivotData) then
@@ -5759,7 +5762,7 @@ begin
   with Result do
   begin
     //--- Header Information
-    Name := NodeHdrChunk.Data.NodeHdr.ObjName;
+    Name := NodeHdrChunk.Data.NodeHdr.ObjNameStr;
     Flags1 := NodeHdrChunk.Data.NodeHdr.Flags1;
     Flags2 := NodeHdrChunk.Data.NodeHdr.Flags2;
     Parent := GetParentName(Source, NodeHdrChunk);
@@ -6083,7 +6086,7 @@ begin
   with Result do
   begin
     // header Information
-    Name := NodeHdrChunk.Data.NodeHdr.ObjName;
+    Name := NodeHdrChunk.Data.NodeHdr.ObjNameStr;
     Flags1 := NodeHdrChunk.Data.NodeHdr.Flags1;
     Flags2 := NodeHdrChunk.Data.NodeHdr.Flags2;
 
