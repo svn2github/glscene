@@ -34,6 +34,8 @@ unit XOpenGL;
 
 interface
 
+{$i GLScene.inc}
+
 {.$define MULTITHREADOPENGL}
 
 uses OpenGL1x;

@@ -23,6 +23,8 @@ unit GeometryBB;
 
 interface
 
+{$i GLScene.inc}
+
 uses VectorGeometry;
 
 type

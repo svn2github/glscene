@@ -124,6 +124,8 @@ uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
   GLCrossPlatform, PersistentClasses;
 
+{$i GLScene.inc}
+
 type
 
    TColor = TDelphiColor;

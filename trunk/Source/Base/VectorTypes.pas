@@ -27,6 +27,8 @@ unit VectorTypes;
 
 interface
 
+{$i GLScene.inc}
+
 type
   TVector2d = array[0..1] of double;
   TVector2f = array[0..1] of single;

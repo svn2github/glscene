@@ -16,6 +16,8 @@ unit GLSilhouette;
 
 interface
 
+{$i GLScene.inc}
+
 uses Classes, GLMisc, VectorGeometry, VectorLists;
 
 type

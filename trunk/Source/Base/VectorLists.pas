@@ -36,6 +36,8 @@ unit VectorLists;
 
 interface
 
+{$i GLScene.inc}
+
 uses Classes, VectorTypes, VectorGeometry, PersistentClasses;
 
 type

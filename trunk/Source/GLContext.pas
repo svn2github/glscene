@@ -27,6 +27,8 @@ interface
 
 uses Classes, SysUtils, OpenGL1x;
 
+{$i GLScene.inc}
+
 type
 
    // TGLRCOptions

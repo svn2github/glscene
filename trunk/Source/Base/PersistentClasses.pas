@@ -28,6 +28,8 @@ interface
 
 uses Classes, SysUtils;
 
+{$i GLScene.inc}
+
 type
 
    PObject = ^TObject;

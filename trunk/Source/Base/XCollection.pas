@@ -22,6 +22,8 @@ interface
 
 uses Classes, SysUtils;
 
+{$i GLScene.inc}
+
 type
 
    TXCollection = class;

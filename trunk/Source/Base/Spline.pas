@@ -19,6 +19,8 @@ interface
 
 uses VectorGeometry;
 
+{$i GLScene.inc}
+
 type
 
    // TCubicSpline
