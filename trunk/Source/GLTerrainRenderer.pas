@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/09/02 - EG - Added RayCastIntersect (Stuart Gooding)
       <li>28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden),
                           Terrain bounds limiting event (Erazem Polutnik)
       <li>10/07/02 - EG - Added support for "holes" in the elevation data
@@ -82,7 +83,10 @@ type
          destructor Destroy; override;
 
 			procedure BuildList(var rci : TRenderContextInfo); override;
-
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
+                                   
          {: Interpolates height for the given point.<p>
             Expects a point expressed in absolute coordinates. }
          function InterpolatedHeight(const p : TVector) : Single; virtual;
@@ -197,6 +201,51 @@ begin
    ReleaseAllTiles;
    if Assigned(HeightDataSource) then
       HeightDataSource.Clear;
+end;
+
+// RayCastIntersect
+//
+function TTerrainRenderer.RayCastIntersect(const rayStart, rayVector : TVector;
+                                           intersectPoint : PVector = nil;
+                                           intersectNormal : PVector = nil) : Boolean;
+var
+   p1, d : TVector;
+   step, i, h : Single;
+   startedAbove : Boolean;
+   failSafe : Integer;
+begin
+   Result:=False;
+   if Assigned(HeightDataSource) then begin
+      step:=100; //Initial step size should be guessed. This is the reason for inaccuracy
+      i:=step;
+      d:=VectorNormalize(rayVector);
+      startedAbove:=((InterpolatedHeight(p1)-p1[1])<0);
+      failSafe:=0;
+      while True do begin
+         p1:=rayStart;
+         CombineVector(p1, d, i);
+         h:=InterpolatedHeight(p1);
+         if Abs(h-p1[1])<0.001 then begin //Need a tolerance variable here (how close is good enough?)
+            Result:=True;
+            Break;
+         end else begin
+            if startedAbove then begin
+               if h<p1[1] then
+                  i:=i+step;
+               if (h-p1[1])>0 then begin
+                  step:=step*0.5;
+                  i:=i-step;
+               end;
+            end else begin
+               if h>p1[1] then
+                  i:=i+step;
+            end;
+         end;
+         Inc(failSafe);
+         if failSafe>100 then Break;
+      end;
+      intersectPoint^:=p1;
+   end;
 end;
 
 // ReleaseAllTiles
