@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order to prevent rendering of the GLBaseMesh but allowing the rendering of it's children
       <li>25/11/04 - SG - Fixed memory leak in TMeshObject (kenguru)
       <li>24/11/04 - MF - Added OctreePointInMesh
       <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
@@ -1198,6 +1199,7 @@ type
          FAutoScaling: TGLCoordinates;
          FMaterialLibraryCachesPrepared : Boolean;
          FConnectivity : TObject;
+         FRendered: Boolean;
 
 
       protected
@@ -1210,7 +1212,7 @@ type
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
          procedure SetAutoScaling(const Value: TGLCoordinates);
-
+	 procedure SetRendered(const Value: Boolean);
          procedure DestroyHandle; override;
 
          {: Invoked after creating a TVectorFile and before loading.<p>
@@ -1345,6 +1347,10 @@ type
 
          {: Request rendering of skeleton bones over the mesh. }
          property OverlaySkeleton : Boolean read FOverlaySkeleton write SetOverlaySkeleton default False;
+
+         {: If False, Prevents rendering of self but not of children }
+         property Rendered : Boolean read FRendered write SetRendered;
+
    end;
 
    // TGLFreeForm
@@ -1396,6 +1402,7 @@ type
          property LightmapLibrary;
          property UseMeshMaterials;
          property NormalsOrientation;
+	 property Rendered;
    end;
 
    // TGLActorOption
@@ -5784,6 +5791,7 @@ begin
    FAutoCentering:=[];
    FAxisAlignedDimensionsCache[0]:=-1;
    FAutoScaling:=TGLCoordinates.CreateInitialized(Self, XYZWHmgVector, csPoint);   
+   FRendered := True;
 end;
 
 // Destroy
@@ -6028,6 +6036,18 @@ begin
    end;
 end;
 
+// SetRendered
+//
+procedure TGLBaseMesh.SetRendered(const Value: Boolean);
+begin
+  if FRendered<>Value then
+  begin
+     FRendered := Value;
+     StructureChanged;
+  end;
+end;
+
+
 // SetAutoScaling
 //
 procedure TGLBaseMesh.SetAutoScaling(const Value: TGLCoordinates);
@@ -6202,7 +6222,7 @@ procedure TGLBaseMesh.DoRender(var rci : TRenderContextInfo;
 begin
    if Assigned(LightmapLibrary) then
       xglForbidSecondTextureUnit;
-   if renderSelf then begin
+   if renderSelf and Rendered then begin
       // set winding
       case FNormalsOrientation of
          mnoDefault : ;// nothing
