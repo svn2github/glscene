@@ -5,6 +5,7 @@
    lighting.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/04/04 - EG - Fixed hdsNone support (Phil Scadden)
       <li>20/03/04 - EG - Works, reasonnably seamless but still quite inefficient
       <li>20/02/04 - EG - Creation
 	</ul></font>
@@ -153,7 +154,7 @@ begin
       heightData.HeightMin:=htfHD.HeightMin;
       heightData.HeightMax:=htfHD.HeightMax;
    end;
-   if Assigned(FBumpmapLibrary) then begin
+   if Assigned(FBumpmapLibrary) and (heightData.DataState<>hdsNone) then begin
       libMat:=FBumpmapLibrary.Materials.Add;
       libMat.Name:='BumpHDS_'+IntToHex(Int64(heightData), 16);
       with libMat.Material.Texture do begin
@@ -172,9 +173,11 @@ begin
       libMat.TextureScale.SetVector((bmp32.Width-1)/bmp32.Width, (bmp32.Width-1)/bmp32.Width, 1);
    end else libMat:=nil;
    FElevationHDS.Release(htfHD);
-   if Assigned(FOnNewTilePrepared) then
-      FOnNewTilePrepared(Self, heightData, libMat)
-   else heightData.MaterialName:=libMat.Name;
+   if Assigned(libMat) then begin
+      if Assigned(FOnNewTilePrepared) then
+         FOnNewTilePrepared(Self, heightData, libMat)
+      else heightData.MaterialName:=libMat.Name;
+   end;
 end;
 
 // Release
