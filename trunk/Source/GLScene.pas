@@ -1832,6 +1832,11 @@ type
          {: Restore a ModelView matrix previously pushed. }
          procedure PopModelViewMatrix;
 
+         {: Converts a screen pixel coordinate into 3D coordinates for orthogonal projection.<p>
+            This function accepts standard canvas coordinates, with (0,0) being
+            the top left corner, and returns, when the camera is in orthogonal
+            mode, the corresponding 3D world point that is in the camera's plane. }
+         function OrthoScreenToWorld(screenX, screenY : Integer) : TAffineVector; overload;
          {: Converts a screen coordinate into world (3D) coordinates.<p>
             This methods wraps a call to gluUnProject.<p>
             Note that screen coord (0,0) is the lower left corner. }
@@ -7049,6 +7054,33 @@ begin
    SetLength(FModelViewMatrixStack, n);
 end;
 
+// OrthoScreenToWorld
+//
+function TGLSceneBuffer.OrthoScreenToWorld(screenX, screenY : Integer) : TAffineVector;
+var
+   camPos, camUp, camRight : TAffineVector;
+   f : Single;
+begin
+   if Assigned(FCamera) then begin
+      SetVector(camPos, FCameraAbsolutePosition);
+      if Camera.TargetObject<>nil then begin
+         SetVector(camUp, FCamera.AbsoluteUpVectorToTarget);
+         SetVector(camRight, FCamera.AbsoluteRightVectorToTarget);
+      end else begin
+         SetVector(camUp, Camera.AbsoluteUp);
+         SetVector(camRight, Camera.AbsoluteRight);
+      end;
+      f:=FCamera.FocalLength*FCamera.SceneScale;
+      if FViewPort.Width>FViewPort.Height then
+         f:=f/FViewPort.Width
+      else f:=f/FViewPort.Height;
+      SetVector(Result,
+                VectorCombine3(camPos, camUp, camRight, 1,
+                               (screenY-(FViewPort.Height div 2))*f,
+                               (screenX-(FViewPort.Width div 2))*f));
+   end else Result:=NullVector;
+end;
+
 // ScreenToWorld (affine)
 //
 function TGLSceneBuffer.ScreenToWorld(const aPoint : TAffineVector) : TAffineVector;
@@ -7069,18 +7101,8 @@ end;
 // ScreenToWorld (hmg)
 //
 function TGLSceneBuffer.ScreenToWorld(const aPoint : TVector) : TVector;
-var
-   proj, mv : THomogeneousDblMatrix;
-   x, y, z : Double;
 begin
-   if Assigned(FCamera) then begin
-      SetMatrix(proj, ProjectionMatrix);
-      SetMatrix(mv, ModelViewMatrix);
-      gluUnProject(aPoint[0], aPoint[1], aPoint[2],
-                   mv, proj, PHomogeneousIntVector(@FViewPort)^,
-                   @x, @y, @z);
-      SetVector(Result, x, y, z);
-   end else Result:=aPoint;
+   MakePoint(Result, ScreenToWorld(AffineVectorMake(aPoint)));
 end;
 
 // ScreenToWorld (x, y)
@@ -7110,18 +7132,8 @@ end;
 // WorldToScreen
 //
 function TGLSceneBuffer.WorldToScreen(const aPoint : TVector) : TVector;
-var
-   proj, mv : THomogeneousDblMatrix;
-   x, y, z : Double;
 begin
-   if Assigned(FCamera) then begin
-      SetMatrix(proj, ProjectionMatrix);
-      SetMatrix(mv, ModelViewMatrix);
-      gluProject(aPoint[0], aPoint[1], aPoint[2],
-                 mv, proj, PHomogeneousIntVector(@FViewPort)^,
-                 @x, @y, @z);
-      SetVector(Result, x, y, z);
-   end else Result:=aPoint;
+   SetVector(Result, WorldToScreen(AffineVectorMake(aPoint)));
 end;
 
 // WorldToScreen
@@ -7169,20 +7181,19 @@ end;
 //
 function TGLSceneBuffer.ScreenToVector(const x, y : Integer) : TVector;
 var
-   av : TVector;
+   av : TAffineVector;
 begin
    av[0]:=x;
    av[1]:=y;
    av[2]:=0;
-   av[3]:=0;
-   Result:=ScreenToVector(av);
+   SetVector(Result, ScreenToVector(av));
 end;
 
 // VectorToScreen
 //
 function TGLSceneBuffer.VectorToScreen(const VectToCam : TAffineVector) : TAffineVector;
 begin
- Result:=WorldToScreen(VectorAdd(VectToCam,PAffineVector(@FCameraAbsolutePosition)^));
+ Result:=WorldToScreen(VectorAdd(VectToCam, PAffineVector(@FCameraAbsolutePosition)^));
 end;
 
 // ScreenVectorIntersectWithPlane
@@ -7234,7 +7245,6 @@ begin
                                           YHmgVector, intersectPoint);
    intersectPoint[3]:=0;
 end;
-
 
 // PixelRayToWorld
 //
