@@ -507,6 +507,7 @@ type
     FRadius: single;
     FBase: TAffineVector;
     FAxis: TAffineVector;
+    FLength: single;
 			{ Private Declarations }
       public
 			{ Public Declarations }
@@ -516,6 +517,7 @@ type
          property Base : TAffineVector read FBase write FBase;
          property Axis : TAffineVector read FAxis write FAxis;
          property Radius : single read FRadius write FRadius;
+         property Length : single read FLength write FLength;
    end;
 
 
@@ -1500,9 +1502,38 @@ end;
 
 procedure TVCCapsule.SatisfyConstraintForNode(aNode: TVerletNode;
   const iteration, maxIterations: Integer);
-begin
-  inherited;
+var
+  ClosestPosition, SegmentStart, SegmentStop : TAffineVector;
 
+  delta, move : TAffineVector;
+  deltaLength, diff : Single;
+begin
+  // Find the closest location on the capsule axis
+  // This could all be cached!
+  SegmentStart := VectorAdd(FBase, VectorScale(FAxis, FLength / 2));
+  SegmentStop := VectorSubtract(FBase, VectorScale(FAxis, FLength / 2));
+
+  ClosestPosition :=
+    ClosestPointOnSegmentFromPoint(
+      SegmentStart,
+      SegmentStop,
+      aNode.Location);
+
+   // Find the distance between the two
+   VectorSubtract(aNode.Location, ClosestPosition, delta);
+
+   // Is it inside the sphere?
+   deltaLength:=VectorLength(delta)-aNode.Radius;
+   if Abs(deltaLength)<Radius then begin
+      // Slow it down!
+      aNode.OldApplyFriction(0.05, Radius-Abs(DeltaLength));
+
+      // Move it outside the sphere!
+      diff:=(Radius-deltaLength)/deltaLength;
+      VectorScale(delta, diff, move);
+
+      AddVector(aNode.FLocation, move);
+   end;
 end;
 
 end.
