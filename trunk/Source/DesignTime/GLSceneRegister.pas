@@ -143,11 +143,12 @@ uses
    TypInfo, GLCadencer, GLCollision,
    GLSoundFileObjects, GLFireFX, GLThorFX,
    GLHeightData, GLzBuffer, GLGui,
+   GLSpaceText, AsyncTimer,
 
    GLWindows, GLWindowsFont, GLHeightTileFileHDS,
 
    GLSceneEdit, Graphics, Dialogs, ExtDlgs, Forms,
-   GLWin32Viewer, GLSpaceText, AsyncTimer
+   GLWin32Viewer, GLWin32FullScreenViewer
 {$endif}
 {$ifdef LINUX}
    GLLinuxViewer
@@ -725,7 +726,7 @@ end;
 //
 function TResolutionProperty.GetValue : String;
 begin
-   Result:=VideoModes[GetOrdValue].Description;
+   Result:=vVideoModes[GetOrdValue].Description;
 end;
 
 // GetValues
@@ -734,8 +735,8 @@ procedure TResolutionProperty.GetValues(Proc: TGetStrProc);
 var
    i : Integer;
 begin
-   for i:=0 to NumberVideoModes-1 do
-      Proc(VideoModes[i].Description);
+   for i:=0 to vNumberVideoModes-1 do
+      Proc(vVideoModes[i].Description);
 end;
 
 // SetValue
@@ -1800,6 +1801,7 @@ initialization
 // ------------------------------------------------------------------
 
    GLMisc.vUseDefaultSets:=True;
+   ReadVideoModes;
 
    with ObjectManager do begin
       RegisterSceneObject(TGLCamera, 'Camera', '');
