@@ -2573,6 +2573,7 @@ begin
 
    vertexList:=FVertBuf.List;
    VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+
    
    if ComputeRotateAngle(lifeTime, rotateAngle) and (Renderer <> nil) then
    begin
@@ -2591,14 +2592,21 @@ begin
    end;
    
    if ComputeSizeScale(lifeTime, sizeScale) then
-      FVertBuf.Scale(sizeScale);
+   Begin
+        FVertBuf.Scale(sizeScale);
+   end;
+
 
    glBegin(GL_TRIANGLE_FAN);
       glColor4fv(@inner);
       glVertex3fv(@pos);
       glColor4fv(@outer);
       for i:=0 to FVertBuf.Count-1 do
-         glVertex3fv(@vertexList[i]);
+      begin
+           ScaleVector(vertexList[i],aParticle.EffectScale);
+           glVertex3fv(@vertexList[i]);
+      end;
+
       glVertex3fv(@vertexList[0]);
    glEnd;                 
 end;
@@ -2856,7 +2864,9 @@ begin
    end
    else
    begin
-      VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+        VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+        for i:=0 to FVertBuf.Count-1 do
+            ScaleVector(vertexList[i],aParticle.EffectScale);
    end;
 
    if ComputeRotateAngle(lifeTime, rotateAngle) then
