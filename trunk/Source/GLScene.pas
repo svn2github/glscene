@@ -902,6 +902,7 @@ type
 
          procedure SetGLMaterial(AValue: TGLMaterial);
          procedure DestroyHandle; override;
+         procedure Loaded; override;
 
       public
          { Public Declarations }
@@ -4554,6 +4555,14 @@ begin
    Result:=Material.Blended;
 end;
 
+// Loaded
+//
+procedure TGLCustomSceneObject.Loaded;
+begin
+  inherited;
+  FMaterial.Loaded;
+end;
+
 // SetGLMaterial
 //
 procedure TGLCustomSceneObject.SetGLMaterial(AValue: TGLMaterial);
@@ -8161,7 +8170,6 @@ end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-
 initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

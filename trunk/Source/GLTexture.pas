@@ -1166,6 +1166,7 @@ type
       procedure SetItems(index : Integer; const Value : TGLTextureExItem);
       function GetItems(index : Integer) : TGLTextureExItem;
       function GetOwner : TPersistent; override;
+      procedure Loaded;
 
     public
       { Public Decalarations }
@@ -1309,6 +1310,8 @@ type
 			procedure NotifyChange(Sender : TObject); override;
 			procedure NotifyTexMapChange(Sender : TObject);
          procedure DestroyHandles;
+
+         procedure Loaded;
 
          {: Returns True if the material is blended.<p>
             Will return the libmaterial's blending if it is linked to a material
@@ -4234,6 +4237,18 @@ begin
   Result:=TGLTextureExItem(inherited Add);
 end;
 
+// Loaded
+//
+procedure TGLTextureEx.Loaded;
+var
+  i : Integer;
+begin
+  for i:=0 to Count-1 do
+    Items[i].CalculateTextureMatrix;
+end;
+
+// GetOwner
+//
 function TGLTextureEx.GetOwner : TPersistent;
 begin
   Result:=nil;
@@ -4431,6 +4446,13 @@ begin
    FMaterialLibrary:=nil;
    FLibMaterialName:='';
    currentLibMaterial:=nil;
+end;
+
+// Loaded
+//
+procedure TGLMaterial.Loaded;
+begin
+  TextureEx.Loaded;
 end;
 
 // StoreMaterialProps
@@ -4935,6 +4957,7 @@ end;
 procedure TGLLibMaterial.Loaded;
 begin
    CalculateTextureMatrix;
+   Material.Loaded;
 end;
 
 // ComputeNameHashKey
