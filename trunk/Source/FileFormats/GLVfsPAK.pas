@@ -9,6 +9,8 @@
    You can change current PAK file by ActivePak variable.<p> 
 
 	<b>History :</b><font size=-1><ul>
+      <li>04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed. 
+      <li>04/10/2004 - Orchestraman - Fixed bug in Constructor. The inherited constructor of TComponent didn't run when the component was created by the component pallete.
       <li>03/08/2004 - Orchestraman - Add LZRW1 compression.
       <li>19/04/04 - PSz - Creation
 	</ul></font>
@@ -56,7 +58,7 @@ type
    //
    TGLVfsPAK = class (TComponent)
    private
-      FPakFiles: TStrings;
+      FPakFiles: TStringList;
 
       FHeader: TPakHeader;
       FHeaderList: array of TPakHeader;
@@ -79,7 +81,7 @@ type
       procedure SetStreamNumber(i:integer);
 
    public
-      property PakFiles: TStrings read FPakFiles;
+      property PakFiles: TStringList read FPakFiles;
       property Files: TStrings read FFiles;
       property ActivePakNum: integer read GetStreamNumber write SetStreamNumber;
       property FileCount: integer Read GetFileCount;
@@ -87,7 +89,8 @@ type
 
       property Compressed: Boolean read FCompressed;
       property CompressionLevel: TZCompressedMode read FCompressionLevel;
-      constructor Create(AOwner : TComponent; const CbrMode: TZCompressedMode = None); reintroduce;
+      constructor Create(AOwner : TComponent); overload; override;
+      constructor Create(AOwner : TComponent; const CbrMode: TZCompressedMode); reintroduce; overload;
       destructor Destroy; override;
 
       // for Mode value search Delphi Help for "File open mode constants"
@@ -191,7 +194,7 @@ end;
 
 // TGLVfsPAK.Create
 //
-constructor TGLVfsPAK.Create(AOwner : TComponent; const CbrMode: TZCompressedMode = None);
+constructor TGLVfsPAK.Create(AOwner : TComponent);
 begin
    inherited Create(AOwner);
    FPakFiles := TStringList.Create;
@@ -200,6 +203,15 @@ begin
    ActiveVfsPAK := Self;
    vAFIOCreateFileStream := PAKCreateFileStream;
    vAFIOFileStreamExists := PAKFileStreamExists;
+   FCompressionLevel := None;
+   FCompressed := False;
+end;
+
+// TGLVfsPAK.Create
+//
+constructor TGLVfsPAK.Create(AOwner : TComponent; const CbrMode: TZCompressedMode);
+begin
+   Self.Create(AOwner);
 {$IFDEF GLS_LZRW_SUPPORT}
    FCompressor := Tlzrw1.Create(nil);
    FCompressor.UseStream := True;
@@ -253,6 +265,7 @@ var
    l: integer;
 begin
    FFileName := FileName;
+   FPakFiles := TStringList.Create;
    FPakFiles.Add(FileName);
    FFiles := TStringList.Create;
    FStream := TFileStream.Create(FileName, Mode);
@@ -289,6 +302,13 @@ begin
    FCompressed := FHeader.Signature = SIGN_COMPRESSED;
 {$IFDEF GLS_LZRW_SUPPORT}
    FCompressionLevel := FHeader.CbrMode;
+   if FCompressed then
+    if not Assigned(FCompressor) then begin
+      FCompressor := Tlzrw1.Create(nil);
+      FCompressor.UseStream := True;
+      FCompressor.Visible := False; //DONT remove this, it will cause probs!!!!
+      FCompressionLevel := FCompressionLevel;
+    end;
 {$ELSE}
    if FCompressed then begin
     FStream.Free;
@@ -515,5 +535,6 @@ begin
    if Self.FileExists(FileName) then
       Extract(FFiles.IndexOf(FileName), NewName);
 end;
+
 
 end.
