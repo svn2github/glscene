@@ -11,6 +11,8 @@
    It's a matter of leverage. <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/04/04 - MF - Fixed force for springs, was referring to deltaP...
+      <li>13/04/04 - MF - Minor drag changes
       <li>13/04/04 - EG - Added TVCHeightField and TVCSlider, fixed TVCFloor
                           and TVFSpring, altered the way world Drag operates 
       <li>06/03/04 - MF - Small updates to accomodate hair
@@ -1707,11 +1709,11 @@ var
    deltaLength : Single;
 begin
    VectorSubtract(NodeA.Location, NodeB.Location, force);
-   deltaLength:=VectorLength(deltaP);
+   deltaLength:=VectorLength(force);
 
    if deltaLength>FSlack then begin
      hTerm:=(FRestLength-deltaLength)*FForceFactor;
-     force:=VectorScale(deltaP, hTerm/deltaLength);
+     force:=VectorScale(force, hTerm/deltaLength);
    end else force:=NullVector;
    if FDamping<>0 then begin
       VectorSubtract(NodeA.GetMovement, NodeB.GetMovement, deltaV);

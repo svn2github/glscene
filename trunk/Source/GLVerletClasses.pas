@@ -7,6 +7,7 @@
    objects easy.
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/04/04 - MF - Verlet call now uses TVerletProgressTimes
       <li>06/03/04 - MF - Creation
    </ul>
 }
