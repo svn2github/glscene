@@ -4,7 +4,8 @@
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>24/02/05 - Egg - Creation
+      <li>28/02/05 - EG - Added BPL support
+      <li>24/02/05 - EG - Creation
    </ul></font>
 }
 unit PictureRegisteredFormats;
@@ -47,8 +48,8 @@ begin
    Result:=nil;
    if anExtension='' then Exit;
    if anExtension[1]='.' then
-      buf:=anExtension
-   else buf:='.'+anExtension;
+      buf:=Copy(anExtension, 2, MaxInt)
+   else buf:=anExtension;
    sl:=TStringList.Create;
    try
       HackTPictureRegisteredFormats(sl);
@@ -73,13 +74,16 @@ type
 //
 procedure HackTPictureRegisteredFormats(destList : TStrings);
 var
-   pCallGetFileFormat, pGetFileFormats, pFileFormats : PChar;
+   pRegisterFileFormat, pCallGetFileFormat, pGetFileFormats, pFileFormats : PChar;
    iCall : Integer;
    i : Integer;
    list : TList;
    fileFormat : PFileFormat;
 begin
-   pCallGetFileFormat:=@PChar(@TPicture.RegisterFileFormat)[16];
+   pRegisterFileFormat:=PChar(@TPicture.RegisterFileFormat);
+   if pRegisterFileFormat[0]=#$FF then // in case of BPL redirector
+      pRegisterFileFormat:=PChar(PInteger(PInteger(@pRegisterFileFormat[2])^)^);
+   pCallGetFileFormat:=@pRegisterFileFormat[16];
    iCall:=PInteger(pCallGetFileFormat)^;
    pGetFileFormats:=@pCallGetFileFormat[iCall+4];
    pFileFormats:=PChar(PInteger(@pGetFileFormats[2])^);
@@ -93,4 +97,3 @@ begin
 end;
 
 end.
- 
