@@ -5,6 +5,7 @@
    so that there is no z-fighting in rendering the same geometry multiple times.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/02/04 - NelC - Fixed memory leak in TGLHiddenLineShader.Destroy (thx Achim Hammes)
       <li>13/12/03 - NelC - Added SurfaceLit, ShadeModel
       <li>05/12/03 - NelC - Added ForceMaterial
       <li>03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
@@ -227,6 +228,7 @@ destructor TGLHiddenLineShader.Destroy;
 begin
   FFrontLine.Free;
   FBackLine.Free;
+  FBackgroundColor.Free;
   inherited;
 end;
 
