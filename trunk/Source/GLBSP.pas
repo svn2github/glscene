@@ -5,7 +5,8 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes
+	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
+                          MaterialCache support 
 	   <li>30/01/03 - EG - Creation
 	</ul></font>
 }
@@ -138,7 +139,6 @@ var
    i, j, k, n : Integer;
    bsprci : TBSPRenderContextInfo;
    libMat : TGLLibMaterial;
-   materials : TGLLibMaterials;
    faceGroupList : TList;
    bspNodeList : PPointerList;
 begin
@@ -163,15 +163,14 @@ begin
             Assert(False);
          end;
          // render facegroups
-         materials:=mrci.materialLibrary.Materials;
          bspNodeList:=faceGroupList.List;
          n:=bsprci.faceGroups.Count;
          i:=0;
          while i<n do with TFGBSPNode(bspNodeList[i]) do begin
-            libMat:=materials.GetLibMaterialByName(MaterialName);
+            libMat:=MaterialCache;
             if Assigned(libMat) then begin
                j:=i+1;
-               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialName=MaterialName) do
+               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=libMat) do
                   Inc(j);
                libMat.Apply(mrci);
                repeat
@@ -180,13 +179,13 @@ begin
                until not libMat.UnApply(mrci);
             end else begin
                j:=i;
-               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialName=MaterialName) do begin
+               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=nil) do begin
                   TFGBSPNode(bspNodeList[j]).BuildList(mrci);
                   Inc(j);
                end;
             end;
             i:=j;
-         end;
+         end;   
       finally
          faceGroupList.Free;
       end;
