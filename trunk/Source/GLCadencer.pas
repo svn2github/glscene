@@ -600,7 +600,7 @@ begin
             // ...and progress !
             newTime:=GetCurrentTime;
             deltaTime:=newTime-lastTime;
-            if (deltaTime>0) and (deltaTime>=MinDeltaTime) and (deltaTime>=FixedDeltaTime) then begin
+            if (deltaTime>=MinDeltaTime) and (deltaTime>=FixedDeltaTime) then begin
                if FMaxDeltaTime>0 then begin
                   if deltaTime>FMaxDeltaTime then begin
                      FOriginTime:=FOriginTime+(deltaTime-FMaxDeltaTime)/FTimeMultiplier;
@@ -629,6 +629,7 @@ begin
                            DoProgress(pt);
                   if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
                      FOnProgress(Self, deltaTime, newTime);
+                  if deltaTime<=0 then Break;
                   totalDelta:=totalDelta-deltaTime;
                end;
             end;
