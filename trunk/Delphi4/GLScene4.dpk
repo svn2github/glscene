@@ -118,6 +118,7 @@ contains
   HeightTileFile in '..\Source\Base\HeightTileFile.pas',
   GLSpaceText in '..\Source\GLSpaceText.pas',
   GLTimeEventsMGR in '..\Source\GLTimeEventsMGR.pas',
-  Octree in '..\Source\Base\Octree.pas';
+  Octree in '..\Source\Base\Octree.pas',
+  GLExplosionFX in '..\Source\GLExplosionFX.pas';
 
 end.

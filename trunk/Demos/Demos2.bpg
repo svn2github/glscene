@@ -13,7 +13,7 @@ PROJECTS = candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering
   warping.exe raycast.exe memviewer.exe volcano.exe shadows.exe tentacles.exe \
   pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe tobitmap.exe meshhit.exe \
   mirror.exe canvas.exe spiral.exe fullscreen.exe megaglasscube.exe events.exe \
-  fire2d.exe octreedemo.exe boxedin.exe skeletal.exe
+  fire2d.exe octreedemo.exe boxedin.exe skeletal.exe meshexplosion.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -100,4 +100,7 @@ boxedin.exe: collisions\boxedin\boxedin.dpr
   $(DCC)
 
 skeletal.exe: meshes\skeletal\skeletal.dpr
+  $(DCC)
+
+meshexplosion.exe: specialsFX\meshexplosion\meshexplosion.dpr
   $(DCC)
