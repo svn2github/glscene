@@ -8256,6 +8256,7 @@ var
 
   //--------------- local function --------------------------------------------
 
+   // Checks if the given Extension string is in Buffer.
    function CheckExtension(const Extension: string): Boolean;
 
    // Checks if the given Extension string is in Buffer.
@@ -8265,13 +8266,13 @@ var
 
    begin
      // First find the position of the extension string as substring in Buffer.
-     ExtPos := Pos(' '+Extension+' ', Buffer);
+     ExtPos := Pos(Extension, Buffer);
      Result := ExtPos > 0;
      // Now check that it isn't only a substring of another extension.
-{     if Result then
-       Result := ((ExtPos + Length(Extension) - 1) = Length(Buffer)) or
-         not (Buffer[ExtPos + Length(Extension)] in ['_', 'A'..'Z', 'a'..'z']); }
-   end;
+     if Result then
+       Result := ((ExtPos + Length(Extension) - 1) = Length(Buffer))
+                 or (Buffer[ExtPos + Length(Extension)]=' ');
+   end; 
 
   //--------------- end local function ----------------------------------------
 
@@ -8294,7 +8295,7 @@ begin
   end;
 
   // GLU
-  GLU_VERSION_1_1 := False; 
+  GLU_VERSION_1_1 := False;
   GLU_VERSION_1_2 := False; 
   GLU_VERSION_1_3 := False; 
   // gluGetString is valid for version 1.1 or later
@@ -8313,9 +8314,9 @@ begin
 
   // check supported extensions
   // GL
-  Buffer := ' '+glGetString(GL_EXTENSIONS)+' ';
+  Buffer := glGetString(GL_EXTENSIONS);
 
-  GL_3DFX_multisample :=CheckExtension('GL_3DFX_multisample');
+  GL_3DFX_multisample := CheckExtension('GL_3DFX_multisample');
   GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
   GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
 
@@ -8323,7 +8324,7 @@ begin
   GL_APPLE_transform_hint := CheckExtension('GL_APPLE_transform_hint');
 
   GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
-  GL_ARB_multisample := CheckExtension('GL_ARB_multisample'); 
+  GL_ARB_multisample := CheckExtension('GL_ARB_multisample');
   GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture'); 
   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
   GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map'); 
@@ -8338,10 +8339,10 @@ begin
   GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op'); 
   GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax'); 
   GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract');
-  GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint'); 
+  GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint');
   GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka'); 
   GL_EXT_color_subtable := CheckExtension('GL_EXT_color_subtable');
-  GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array'); 
+  GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array');
   GL_EXT_convolution := CheckExtension('GL_EXT_convolution'); 
   GL_EXT_coordinate_frame := CheckExtension('GL_EXT_coordinate_frame'); 
   GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture'); 
@@ -8359,7 +8360,7 @@ begin
   GL_EXT_multi_draw_arrays := CheckExtension('GL_EXT_multi_draw_arrays'); 
   GL_EXT_multisample := CheckExtension('GL_EXT_multisample'); 
   GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels'); 
-  GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture'); 
+  GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture');
   GL_EXT_pixel_transform := CheckExtension('GL_EXT_pixel_transform'); 
   GL_EXT_point_parameters := CheckExtension('GL_EXT_point_parameters'); 
   GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset'); 
@@ -8381,7 +8382,7 @@ begin
   GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
   GL_EXT_texture_perturb_normal := CheckExtension('GL_EXT_texture_perturb_normal'); 
   GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D'); 
-  GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array'); 
+  GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
   GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting');
 
   GL_FfdMaskSGIX := CheckExtension('GL_FfdMaskSGIX'); 
@@ -8403,7 +8404,7 @@ begin
   GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region'); 
 
   GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers'); 
-  GL_MESA_window_pos := CheckExtension('GL_MESA_window_pos'); 
+  GL_MESA_window_pos := CheckExtension('GL_MESA_window_pos');
 
   GL_NV_blend_square := CheckExtension('GL_NV_blend_square'); 
   GL_NV_fog_distance := CheckExtension('GL_NV_fog_distance'); 
@@ -8416,7 +8417,7 @@ begin
   GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program'); 
 
   GL_PGI_misc_hints := CheckExtension('GL_PGI_misc_hints');
-  GL_PGI_vertex_hints := CheckExtension('GL_PGI_vertex_hints'); 
+  GL_PGI_vertex_hints := CheckExtension('GL_PGI_vertex_hints');
 
   GL_REND_screen_coordinates := CheckExtension('GL_REND_screen_coordinates'); 
 
@@ -8424,19 +8425,19 @@ begin
   GL_SGI_color_table := CheckExtension('GL_SGI_color_table'); 
   GL_SGI_depth_pass_instrument := CheckExtension('GL_SGI_depth_pass_instrument'); 
 
-  GL_SGIS_detail_texture := CheckExtension('GL_SGIS_detail_texture'); 
-  GL_SGIS_fog_function := CheckExtension('GL_SGIS_fog_function'); 
-  GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap'); 
+  GL_SGIS_detail_texture := CheckExtension('GL_SGIS_detail_texture');
+  GL_SGIS_fog_function := CheckExtension('GL_SGIS_fog_function');
+  GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
   GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample');
-  GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture'); 
-  GL_SGIS_pixel_texture := CheckExtension('GL_SGIS_pixel_texture'); 
-  GL_SGIS_point_line_texgen := CheckExtension('GL_SGIS_point_line_texgen'); 
-  GL_SGIS_point_parameters := CheckExtension('GL_SGIS_point_parameters'); 
-  GL_SGIS_sharpen_texture := CheckExtension('GL_SGIS_sharpen_texture'); 
-  GL_SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp'); 
-  GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask'); 
-  GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp'); 
-  GL_SGIS_texture_filter4 := CheckExtension('GL_SGIS_texture_filter4'); 
+  GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture');
+  GL_SGIS_pixel_texture := CheckExtension('GL_SGIS_pixel_texture');
+  GL_SGIS_point_line_texgen := CheckExtension('GL_SGIS_point_line_texgen');
+  GL_SGIS_point_parameters := CheckExtension('GL_SGIS_point_parameters');
+  GL_SGIS_sharpen_texture := CheckExtension('GL_SGIS_sharpen_texture');
+  GL_SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp');
+  GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask');
+  GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp');
+  GL_SGIS_texture_filter4 := CheckExtension('GL_SGIS_texture_filter4');
   GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
   GL_SGIS_texture_select := CheckExtension('GL_SGIS_texture_select');
   GL_SGIS_texture4D := CheckExtension('GL_SGIS_texture4D'); 
@@ -8447,7 +8448,7 @@ begin
   GL_SGIX_blend_alpha_minmax := CheckExtension('GL_SGIX_blend_alpha_minmax'); 
   GL_SGIX_calligraphic_fragment := CheckExtension('GL_SGIX_calligraphic_fragment'); 
   GL_SGIX_clipmap := CheckExtension('GL_SGIX_clipmap'); 
-  GL_SGIX_convolution_accuracy := CheckExtension('GL_SGIX_convolution_accuracy'); 
+  GL_SGIX_convolution_accuracy := CheckExtension('GL_SGIX_convolution_accuracy');
   GL_SGIX_depth_texture := CheckExtension('GL_SGIX_depth_texture'); 
   GL_SGIX_flush_raster := CheckExtension('GL_SGIX_flush_raster'); 
   GL_SGIX_fog_offset := CheckExtension('GL_SGIX_fog_offset'); 
@@ -8469,7 +8470,7 @@ begin
   GL_SGIX_sprite := CheckExtension('GL_SGIX_sprite'); 
   GL_SGIX_subsample := CheckExtension('GL_SGIX_subsample'); 
   GL_SGIX_tag_sample_buffer := CheckExtension('GL_SGIX_tag_sample_buffer'); 
-  GL_SGIX_texture_add_env := CheckExtension('GL_SGIX_texture_add_env'); 
+  GL_SGIX_texture_add_env := CheckExtension('GL_SGIX_texture_add_env');
   GL_SGIX_texture_lod_bias := CheckExtension('GL_SGIX_texture_lod_bias'); 
   GL_SGIX_texture_multi_buffer := CheckExtension('GL_SGIX_texture_multi_buffer'); 
   GL_SGIX_texture_scale_bias := CheckExtension('GL_SGIX_texture_scale_bias');
@@ -8493,7 +8494,7 @@ begin
   WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
 
   // GLU
-  Buffer := ' '+gluGetString(GLU_EXTENSIONS)+' ';
+  Buffer := gluGetString(GLU_EXTENSIONS);
   GLU_EXT_TEXTURE := CheckExtension('GLU_EXT_TEXTURE');
   GLU_EXT_object_space_tess := CheckExtension('GLU_EXT_object_space_tess');
   GLU_EXT_nurbs_tessellator := CheckExtension('GLU_EXT_nurbs_tessellator');
