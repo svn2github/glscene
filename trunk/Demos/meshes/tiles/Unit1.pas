@@ -60,7 +60,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
    i, j : Integer;
 begin
-   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+   GLMaterialLibrary.TexturePaths:=ExtractFilePath(Application.ExeName)+'..\..\media';
 
    RandSeed:=0;
    for i:=-20 to 20 do for j:=-20 to 20 do
