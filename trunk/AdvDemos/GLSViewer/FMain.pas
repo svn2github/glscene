@@ -79,6 +79,9 @@ type
     ACFlatLined: TAction;
     ToolButton13: TToolButton;
     FlatShadingwithlines1: TMenuItem;
+    ACInvertNormals: TAction;
+    MIActions: TMenuItem;
+    InvertNormals1: TMenuItem;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -106,6 +109,7 @@ type
     procedure ACTexturingExecute(Sender: TObject);
     procedure MIPickTextureClick(Sender: TObject);
     procedure MIFileClick(Sender: TObject);
+    procedure ACInvertNormalsExecute(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
@@ -134,7 +138,8 @@ implementation
 
 {$R *.dfm}
 
-uses KeyBoard, GraphicEx, Registry, GLFileOBJ, GLFileSTL, GLFileLWO;
+uses KeyBoard, GraphicEx, Registry, GLFileOBJ, GLFileSTL, GLFileLWO,
+  PersistentClasses;
 
 type
 
@@ -581,6 +586,16 @@ begin
       end;
       ApplyTexturing;
    end;
+end;
+
+procedure TMain.ACInvertNormalsExecute(Sender: TObject);
+var
+   i : Integer;
+begin
+   with FreeForm.MeshObjects do
+      for i:=0 to Count-1 do
+         Items[i].Normals.Scale(-1);
+   FreeForm.StructureChanged;
 end;
 
 end.
