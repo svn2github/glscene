@@ -161,7 +161,7 @@ uses VectorTypes;
 const
    cMaxArray = (MaxInt shr 4);
 
-{$i GLScene.inc}
+{$i ../GLScene.inc}
 
 type
    // data types needed for 3D graphics calculation,
@@ -4519,7 +4519,7 @@ end;
 
 // VectorReflect
 //
-function VectorReflect(const V, N: TAffineVector): TAffineVector; assembler; register;
+function VectorReflect(const V, N: TAffineVector): TAffineVector; register;
 begin
    Result:=VectorCombine(V, N, 1, -2*VectorDotProduct(V, N));
 end;
@@ -6062,10 +6062,7 @@ end;
 
 // QuaternionFromPoints
 //
-function QuaternionFromPoints(const V1, V2: TAffineVector): TQuaternion; assembler;
-// EAX contains address of V1
-// ECX contains address to result
-// EDX contains address of V2
+function QuaternionFromPoints(const V1, V2: TAffineVector): TQuaternion;
 begin
    Result.ImagPart:=VectorCrossProduct(V1, V2);
    Result.RealPart:=Sqrt((VectorDotProduct(V1, V2) + 1)/2);
