@@ -499,6 +499,26 @@ type
          constructor Create(aOwner : TVerletAssembly); override;
    end;
 
+   // TVCCapsule
+   //
+   {: Capsule collision constraint. }
+   TVCCapsule = class (TVerletGlobalConstraint)
+      private
+    FRadius: single;
+    FBase: TAffineVector;
+    FAxis: TAffineVector;
+			{ Private Declarations }
+      public
+			{ Public Declarations }
+         procedure SatisfyConstraintForNode(aNode : TVerletNode;
+                           const iteration, maxIterations : Integer); override;
+
+         property Base : TAffineVector read FBase write FBase;
+         property Axis : TAffineVector read FAxis write FAxis;
+         property Radius : single read FRadius write FRadius;
+   end;
+
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -638,6 +658,11 @@ end;
 procedure TVerletNodeList.SetItems(i : Integer; const value : TVerletNode);
 begin
    Put(i, value);
+end;
+
+function TVerletNode.GetSpeed: TAffineVector;
+begin
+  result := VectorScale(VectorSubtract(FLocation, FOldLocation), 1/Owner.CurrentDeltaTime);
 end;
 
 // ------------------
@@ -1451,9 +1476,33 @@ begin
   FWindDirection[2] := 0;
 end;
 
-function TVerletNode.GetSpeed: TAffineVector;
+{ TVCCapsule }
+
+function ClosestPointOnSegmentFromPoint(SegmentStart, SegmentStop, Point : TAffineVector) : TAffineVector;
+var
+  w, LinePoint, LineDirection : TAffineVector;
+  c1, c2, b, mMax : double;
 begin
-  result := VectorScale(VectorSubtract(FLocation, FOldLocation), 1/Owner.CurrentDeltaTime);
+  LineDirection := VectorSubtract(SegmentStop, SegmentStart);
+  w := VectorSubtract(Point, SegmentStart);
+
+  c1 := VectorDotProduct(w, LineDirection);
+  c2 := VectorDotProduct(LineDirection, LineDirection);
+  b := c1 / c2;
+
+  if b>1 then
+    b := 1
+  else if b<0 then
+    b := 0;
+
+  result := VectorAdd(SegmentStart, VectorScale(LineDirection, b));
+end;
+
+procedure TVCCapsule.SatisfyConstraintForNode(aNode: TVerletNode;
+  const iteration, maxIterations: Integer);
+begin
+  inherited;
+
 end;
 
 end.
