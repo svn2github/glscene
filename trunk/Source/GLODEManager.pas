@@ -12,6 +12,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>30/03/04 - SG - Joint objects are now fully persistent.
     <li>05/03/04 - SG - SetSurfaceMode fix (Alex)
     <li>25/02/04 - SG - Added the GLODEStaticBehaviour.
     <li>24/02/04 - SG - Added the static GLODETerrain collider.
@@ -329,6 +330,7 @@ type
       FSurface : TODECollisionSurface;
       FOnCollision : TODEObjectCollisionEvent;
       FInitialized : Boolean;
+      FOwnerBaseSceneObject : TGLBaseSceneObject;
       procedure SetManager(Value : TGLODEManager);
       procedure SetSurface(value:TODECollisionSurface);
     protected
@@ -785,6 +787,8 @@ type
       FObject1,
       FObject2 : TGLBaseSceneObject;
       FManager : TGLODEManager;
+      FObject1Name,
+      FObject2Name,
       FManagerName : String;
       FAnchor,
       FAxis,
@@ -921,6 +925,14 @@ function GetBodyFromODEObject(Obj:TObject):PdxBody;
 function GetSurfaceFromODEObject(Obj:TObject):TODECollisionSurface;
 function GetBodyFromGLSceneObject(Obj:TGLBaseSceneObject):PdxBody;
 
+// GLODEObject register methods (used for joint object persistence)
+procedure RegisterGLODEObject(aGLODEObject : TGLBaseSceneObject);
+procedure UnregisterGLODEObject(aGLODEObject : TGLBaseSceneObject);
+function GetGLODEObject(aObjectName : String) : TGLBaseSceneObject;
+
+var
+  vGLODEObjectRegister : TList;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -984,13 +996,59 @@ begin
   if Assigned(Obj) then begin
     if Obj is TGLODEDynamicObject then
       Result:=TGLODEDynamicObject(Obj).Body
-    else
-    begin
+    else begin
       GLOB:=TGLODEDynamicBehaviour(Obj.Behaviours.GetByClass(TGLODEDynamicBehaviour));
       if GLOB<>nil then
         Result:=GLOB.Body;
     end;
   end;
+end;
+
+// IsGLODEObject
+//
+function IsGLODEObject(Obj:TGLBaseSceneObject):Boolean;
+var
+  GLOB:TGLODEDynamicBehaviour;
+begin
+  Result:=False;
+  if Assigned(Obj) then begin
+    if Obj is TGLODEDynamicObject then
+      Result:=True
+    else begin
+      GLOB:=TGLODEDynamicBehaviour(Obj.Behaviours.GetByClass(TGLODEDynamicBehaviour));
+      if Assigned(GLOB) then
+        Result:=True;
+    end;
+  end;
+end;
+
+// RegisterGLODEObject
+//
+procedure RegisterGLODEObject(aGLODEObject : TGLBaseSceneObject);
+begin
+  if vGLODEObjectRegister.IndexOf(aGLODEObject) = -1 then
+    vGLODEObjectRegister.Add(aGLODEObject);
+end;
+
+// UnregisterGLODEObject
+//
+procedure UnregisterGLODEObject(aGLODEObject : TGLBaseSceneObject);
+begin
+  vGLODEObjectRegister.Remove(aGLODEObject);
+end;
+
+// GetGLODEObject
+//
+function GetGLODEObject(aObjectName : String) : TGLBaseSceneObject;
+var
+  i : Integer;
+begin
+  Result:=nil;
+  for i:=0 to vGLODEObjectRegister.Count-1 do
+    if TGLBaseSceneObject(vGLODEObjectRegister[i]).GetNamePath = aObjectName then begin
+      Result:=vGLODEObjectRegister[i];
+      Exit;
+    end;
 end;
 
 
@@ -1438,12 +1496,15 @@ begin
   FCollisionSurface:=TODECollisionSurface.Create;
   FVisibleAtRuntime:=False;
   FInitialized:=False;
+  RegisterGLODEObject(Self);
 end;
 
 // Destroy
 //
 destructor TGLODEBaseObject.Destroy;
 begin
+  Deinitialize;
+  UnregisterGLODEObject(Self);
   FCollisionSurface.Free;
   inherited;
 end;
@@ -1721,7 +1782,6 @@ end;
 //
 destructor TGLODEDummy.Destroy;
 begin
-  Deinitialize;
   FElements.Free;
   FColor.Free;
   inherited;
@@ -1856,13 +1916,21 @@ begin
   inherited;
   FSurface:=TODECollisionSurface.Create;
   FInitialized:=False;
+  FOwnerBaseSceneObject:=OwnerBaseSceneObject;
+  if Assigned(FOwnerBaseSceneObject) then
+    RegisterGLODEObject(OwnerBaseSceneObject);
 end;
 
 // Destroy
 //
 destructor TGLODEBaseBehaviour.Destroy;
 begin
+  Deinitialize;
   FSurface.Free;
+  // This is a dodgy way to do it but at least
+  // it doesn't crash ;)
+  if Assigned(FOwnerBaseSceneObject) then
+    UnregisterGLODEObject(FOwnerBaseSceneObject);
   inherited;
 end;
 
@@ -1965,7 +2033,6 @@ end;
 //
 destructor TGLODEDynamicBehaviour.Destroy;
 begin
-  Deinitialize;
   FElements.Free;
   inherited;
 end;
@@ -2233,7 +2300,6 @@ end;
 //
 destructor TGLODEStaticBehaviour.Destroy;
 begin
-  Deinitialize;
   FElements.Free;
   inherited;
 end;
@@ -3833,7 +3899,6 @@ end;
 //
 destructor TGLODEStaticDummy.Destroy;
 begin
-  Deinitialize;
   FElements.Free;
   FColor.Free;
   inherited;
@@ -4057,6 +4122,7 @@ end;
 // Destroy
 destructor TODEBaseJoint.Destroy;
 begin
+  Deinitialize;
   FAnchor.Free;
   FAxis.Free;
   FAxis2.Free;
@@ -4067,6 +4133,7 @@ end;
 //
 procedure TODEBaseJoint.Initialize;
 begin
+  if not Assigned(FManager) then exit;
   Attach(FObject1, FObject2);
   FManager.RegisterJoint(Self);
   FInitialized:=True;
@@ -4076,6 +4143,7 @@ end;
 //
 procedure TODEBaseJoint.Deinitialize;
 begin
+  if not Initialized then exit;
   if FJointID<>0 then
     dJointDestroy(FJointID);
   FManager.UnregisterJoint(Self);
@@ -4095,6 +4163,12 @@ begin
     FAnchor.WriteToFiler(writer);
     FAxis.WriteToFiler(writer);
     FAxis2.WriteToFiler(writer);
+    if Assigned(FObject1) then
+      WriteString(FObject1.GetNamePath)
+    else WriteString('');
+    if Assigned(FObject2) then
+      WriteString(FObject2.GetNamePath)
+    else WriteString('');
   end;
 end;
 
@@ -4109,6 +4183,8 @@ begin
     FAnchor.ReadFromFiler(reader);
     FAxis.ReadFromFiler(reader);
     FAxis2.ReadFromFiler(reader);
+    FObject1Name:=ReadString;
+    FObject2Name:=ReadString;
   end;
 end;
 
@@ -4117,6 +4193,7 @@ end;
 procedure TODEBaseJoint.Loaded;
 var
   mng : TComponent;
+  obj : TGLBaseSceneObject;
 begin
   inherited;
   if FManagerName<>'' then begin
@@ -4124,7 +4201,23 @@ begin
     if Assigned(mng) then
       Manager:=TGLODEManager(mng);
     FManagerName:='';
-  end
+  end;
+  if FObject1Name<>'' then begin
+    obj:=GetGLODEObject(FObject1Name);
+    if Assigned(obj) then
+      Object1:=obj;
+    FObject1Name:='';
+  end;
+  if FObject2Name<>'' then begin
+    obj:=GetGLODEObject(FObject2Name);
+    if Assigned(obj) then
+      Object2:=obj;
+    FObject2Name:='';
+  end;
+
+  AnchorChange(Self);
+  AxisChange(Self);
+  Axis2Change(Self);
 end;
 
 // AnchorChange
@@ -4208,7 +4301,11 @@ end;
 procedure TODEBaseJoint.SetObject1(const Value: TGLBaseSceneObject);
 begin
   if FObject1<>Value then begin
-    FObject1:=Value;
+    if Assigned(Value) then
+      if IsGLODEObject(Value) then
+        FObject1:=Value
+      else
+        FObject1:=nil;
     Attach(FObject1, FObject2);
   end;
 end;
@@ -4218,7 +4315,11 @@ end;
 procedure TODEBaseJoint.SetObject2(const Value: TGLBaseSceneObject);
 begin
   if FObject2<>Value then begin
-    FObject2:=Value;
+    if Assigned(Value) then
+      if IsGLODEObject(Value) then
+        FObject2:=Value
+      else
+        FObject2:=nil;
     Attach(FObject1, FObject2);
   end;
 end;
@@ -4486,6 +4587,8 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+  vGLODEObjectRegister:=TList.Create;
+
   RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
   RegisterXCollectionItemClass(TGLODEStaticBehaviour);
   RegisterXCollectionItemClass(TODEElementBox);
@@ -4509,6 +4612,8 @@ finalization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+  vGLODEObjectRegister.Free;
 
   UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
   UnregisterXCollectionItemClass(TGLODEStaticBehaviour);
