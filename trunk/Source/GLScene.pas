@@ -2,7 +2,9 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>21/08/01 - Egg - Fixed ocStructure not being reset for osDirectDraw objects
+      <li>22/08/01 - Egg - Fixed ocStructure not being reset for osDirectDraw objects,
+                           Added Absolute-Local conversion helpers,
+                           glPopName fix (Puthoon)
       <li>20/08/01 - Egg - SetParentComponent now accepts 'nil' (Uwe Raabe)
       <li>19/08/01 - Egg - Default RayCastIntersect is now Sphere
       <li>16/08/01 - Egg - Dropped Prepare/FinishObject (became obsolete),
@@ -353,6 +355,10 @@ type
          function AbsoluteYVector : TVector;
          {: Returns the Absolute Z Vector expressed in local coordinates. }
          function AbsoluteZVector : TVector;
+         {: Converts a vertor/point from absolute coordinates to local coordinates.<p> }
+         function AbsoluteToLocal(const v : TVector) : TVector;
+         {: Converts a vertor/point from local coordinates to absolute coordinates.<p> }
+         function LocalToAbsolute(const v : TVector) : TVector;
 
          {: Calculates the object's square distance to a point.<p>
             pt is assumed to be in absolute coordinates,
@@ -2104,6 +2110,20 @@ begin
    SetVector(Result, PAffineVector(@FAbsoluteMatrix[2])^);
 end;
 
+// AbsoluteToLocal
+//
+function TGLBaseSceneObject.AbsoluteToLocal(const v : TVector) : TVector;
+begin
+   Result:=VectorTransform(v, InvAbsoluteMatrix);
+end;
+
+// LocalToAbsolute
+//
+function TGLBaseSceneObject.LocalToAbsolute(const v : TVector) : TVector;
+begin
+   Result:=VectorTransform(v, AbsoluteMatrix);
+end;
+
 // BarycenterAbsolutePosition
 //
 function TGLBaseSceneObject.BarycenterAbsolutePosition : TVector;
@@ -2902,7 +2922,10 @@ begin
          end else DoRender(rci, False, shouldRenderChildren);
       end;
       FChanges:=[];
-      // Pop Matrix
+      // Pop Name & Matrix
+      if rci.drawState=dsPicking then
+         if rci.proxySubObject then
+            glPopName;
       glPopMatrix;
    end;
 end;

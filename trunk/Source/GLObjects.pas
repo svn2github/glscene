@@ -12,6 +12,7 @@
    </ul>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/08/01 - Egg - TTorus.RayCastIntersect fixes
       <li>30/07/01 - Egg - Updated AxisAlignedDimensions implems
       <li>16/03/01 - Egg - TCylinderBase, changed default Stacks from 8 to 4
       <li>27/02/01 - Egg - Fix in TCube texcoords, added TFrustrum (thx Robin Gerrets)
@@ -3409,49 +3410,59 @@ function TTorus.RayCastIntersect(const rayStart, rayVector : TAffineVector;
                                  intersectNormal : PAffineVector = nil) : Boolean;
 var
    i : Integer;
-   fRo2, fRi2, fDE, fVal : Double;
-   polynom : array [0..4] of Double;
+   fRo2, fRi2, fDE, fVal, r, nearest : Double;
+   polynom : array [0..4] of Extended;
    polyComplexRoots : TComplexArray;
-   v : TAffineVector;
+   localStart, localVector : TAffinevector;
+   vi, vc : TAffineVector;
 begin
-    // The ray is p*dir+eye, p >= 0.  The intersection is determined by
-    // p^4+c3*p^3+c2*p^2+c1*p+c0 = 0.  The direction is assumed to be towards
-    // the object from the observer so that the minimum p solution gives the
-    // nearest intersection.
+   // compute coefficients of quartic polynomial
+   fRo2 := Sqr(MajorRadius);
+   fRi2 := Sqr(MinorRadius);
+   SetVector(localStart, AbsoluteToLocal(VectorMake(rayStart, 1)));
+   SetVector(localVector, AbsoluteToLocal(VectorMake(rayVector, 0)));
+   NormalizeVector(localVector);
+   fDE  := VectorDotProduct(localStart, localVector);
+   fVal := VectorNorm(localStart) - (fRo2 + fRi2);
 
-    // compute coefficients of quartic polynomial
-    fRo2 := Sqr(FMajorRadius);
-    fRi2 := Sqr(FMinorRadius);
-    SetVector(v, AbsolutePosition);
-    SubtractVector(v, rayStart);
-    ScaleVector(v, -1);
-    fDE  := VectorDotProduct(v, rayVector);
-    fVal := VectorNorm(v) - (fRo2 + fRi2);
+   polynom[0] := Sqr(fVal) - 4.0*fRo2*(fRi2 - Sqr(localStart[2]));
+   polynom[1] := 4.0*fDE*fVal + 8.0*fRo2*localVector[2]*localStart[2];
+   polynom[2] := 2.0*fVal + 4.0*Sqr(fDE) + 4.0*fRo2*Sqr(localVector[2]);
+   polynom[3] := 4.0*fDE;
+   polynom[4] := 1;
 
-    polynom[0] := Sqr(fVal) - 4.0*fRo2*(fRi2 - Sqr(v[2]));
-    polynom[1] := 4.0*fDE*fVal + 8.0*fRo2*rayVector[2]*v[2];
-    polynom[2] := 2.0*fVal + 4.0*Sqr(fDE) + 4.0*fRo2*Sqr(rayVector[2]);
-    polynom[3] := 4.0*fDE;
-    polynom[4] := 1;
+   // solve the quartic
+   polyComplexRoots:=qtcrt(@polynom[0]);
 
-    // solve the quartic
-    polyComplexRoots:=qtcrt(@polynom[0]);
-
-    // search for closest point
-    Result:=False;
-    for i:=Low(polyComplexRoots) to High(polyComplexRoots) do begin
+   // search for closest point
+   Result:=False;
+   nearest:=1e20;
+   for i:=Low(polyComplexRoots) to High(polyComplexRoots) do
       if polyComplexRoots[i].Imag=0 then begin
-         v:=VectorCombine(rayStart, rayVector, 1, polyComplexRoots[i].Real);
-         if Assigned(intersectPoint) then begin
-            SetVector(intersectPoint^, v);
+         r:=polyComplexRoots[i].Real;
+         if (r>=0) and (r<nearest) then begin
+            nearest:=r;
+            Result:=True;
          end;
-         if Assigned(intersectNormal) then begin
-            SetVector(intersectNormal^, XVector);
-         end;
-         Result:=True;
-         Break;
       end;
-    end;
+   if Result then begin
+      vi:=VectorCombine(localStart, localVector, 1, nearest);
+      if Assigned(intersectPoint) then
+         SetVector(intersectPoint^, LocalToAbsolute(VectorMake(vi, 1)));
+      if Assigned(intersectNormal) then begin
+         // project vi on local torus plane
+         vc[0]:=vi[0];
+         vc[1]:=vi[1];
+         vc[2]:=0;
+         // project vc on MajorRadius circle
+         ScaleVector(vc, MajorRadius/(VectorLength(vc)+0.000001));
+         // calculate circle to intersect vector (gives normal);
+         SubtractVector(vi, vc);
+         // return to absolute coordinates and normalize
+         SetVector(intersectNormal^, LocalToAbsolute(VectorMake(vi, 0)));
+         NormalizeVector(intersectNormal^);
+      end;
+   end;
 end;
 
 //----------------- TTeapot ----------------------------------------------------

@@ -1,6 +1,6 @@
 {: Polynomials.<p>
 
-   ********* IN PROGRESS - NOT STABLE **********
+   ********* IN PROGRESS - NOT FULLY STABLE **********
 
    Utility functions for manipulationg and solving polynomials.<p>
 
@@ -19,10 +19,15 @@
    Adapted to pascal by Eric Grange (egrange@glscene.org), if you find
    errors, they are probably mine. Note that contrary to the original code,
    the functions accept 'zero' values for any of the parameters.<br>
+   I also made some changes for certain limit cases that (seemingly) weren't
+   properly handled, these are marked by comments in the code.<p>
+
    Complex code is currently *NOT* the purpose of this unit, and is here only
-   to provide Complex numbers support for polynom roots output.<p>
+   to provide Complex numbers support for polynom roots output without having
+   a dependency.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
 	   <li>21/08/01 - EG - Creation
 	</ul></font>
 
@@ -35,35 +40,37 @@ uses Geometry;
 
 type
    TComplex = record
-      Real, Imag : Double;
+      Real, Imag : Extended;
    end;
    TComplexArray = array of TComplex;
 
 {: Creates a complex. }
-function Complex(const real, imag : Double) : TComplex;
-{: Calculates the square root of a complex. }
+function Complex(const real, imag : Extended) : TComplex;
+{: Calculates the square root of a complex.<p>
+   This "emulates" the Fortran sqrt for complex, and returns a positive root
+   (for which Real>=0) }
 function ComplexSqrt(const complex : TComplex) : TComplex;
 
 {: Sign transfer function from ye olde Fortran. }
-function FortranSign(const a, b : Double) : Double;
+function FortranSign(const a, b : Extended) : Extended;
 
 {: Calculates the cube root of its parameter. }
-function cbrt(const x : Double) : Double;
+function cbrt(const x : Extended) : Extended;
 
 {: Computes the root of a real polynomial of the 2nd degree.<p>
    The polynomial is of the form:<br>
    A(0) + A(1)*Z + A(2)*Z**2 }
-function qdcrt(const a : PDoubleArray) : TComplexArray;
+function qdcrt(const a : PExtendedArray) : TComplexArray;
 
 {: Computes the root of a real polynomial of the 3rd degree.<p>
    The polynomial is of the form:<br>
    A(0) + A(1)*Z + A(2)*Z**2 + A(3)*Z**3 }
-function cbcrt(const a : PDoubleArray) : TComplexArray;
+function cbcrt(const a : PExtendedArray) : TComplexArray;
 
 {: Computes the root of a real polynomial of the 4th degree.<p>
    The polynomial is of the form:<br>
    A(0) + A(1)*Z + ... + A(4)*Z**4 }
-function qtcrt(const a : PDoubleArray) : TComplexArray;
+function qtcrt(const a : PExtendedArray) : TComplexArray;
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -73,9 +80,12 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
+const
+   cEpsilon : Extended = 1e-15;
+
 // Complex
 //
-function Complex(const real, imag : Double) : TComplex;
+function Complex(const real, imag : Extended) : TComplex;
 begin
    Result.Real:=real;
    Result.Imag:=imag;
@@ -84,11 +94,25 @@ end;
 // ComplexSqrt
 //
 function ComplexSqrt(const complex : TComplex) : TComplex;
+var
+   rho, theta : Extended;
 begin
    if complex.Imag<>0 then begin
-      Result.Imag:=complex.Imag*0.5;
-      Result.Real:=Sqrt(complex.Real+Sqr(complex.Imag));
+      // go for polar representation
+      rho  :=Sqrt(Sqr(complex.Real)+Sqr(complex.Imag));
+      theta:=ArcTan2(complex.Imag, complex.Real);
+      // calc polar sqrt
+      rho  :=Sqrt(rho);
+      theta:=theta*0.5;
+      // back to cartesian
+      SinCos(theta, rho, Result.Imag, Result.Real);
+      if Result.Real<0 then begin
+         // we want it positive, take the symetric root
+         Result.Real:=-Result.Real;
+         Result.Imag:=-Result.Imag;
+      end;
    end else begin
+      // trivial case
       Result.Real:=Sqrt(complex.Real);
       Result.Imag:=0;
    end;
@@ -96,7 +120,7 @@ end;
 
 // FortranSign
 //
-function FortranSign(const a, b : Double) : Double;
+function FortranSign(const a, b : Extended) : Extended;
 begin
    // now, isn't that some weird 'sign' function? ;)
    if (b>=0) then
@@ -106,9 +130,9 @@ end;
 
 // cbrt
 //
-function cbrt(const x : Double) : Double;
+function cbrt(const x : Extended) : Extended;
 const
-   c1div3 : Double = 1/3;
+   c1div3 : Extended = 1/3;
 begin
    if x<0 then
       Result:=-Exp(Ln(-x)*c1div3)
@@ -119,9 +143,9 @@ end;
 
 // qdcrt
 //
-function qdcrt(const a : PDoubleArray) : TComplexArray;
+function qdcrt(const a : PExtendedArray) : TComplexArray;
 var
-   d, r, w, x, y : Double;
+   d, r, w, x, y : Extended;
 begin
    if (a[0] = 0) then begin
       // zero is a trivial solution
@@ -141,7 +165,7 @@ begin
    end else begin
       SetLength(Result, 2);
       d := Sqr(a[1]) - 4.0*a[0]*a[2];
-      if (Abs(d) < 2.0*Sqr(a[1])) then begin
+      if (Abs(d) <= 2.0*cEpsilon*Sqr(a[1])) then begin
          // EQUAL REAL ROOTS
          Result[0] := Complex(-0.5*a[1]/a[2], 0);
          Result[1] := Result[0];
@@ -171,13 +195,13 @@ end;
 
 // cbcrt
 //
-function cbcrt(const a : PDoubleArray) : TComplexArray;
+function cbcrt(const a : PExtendedArray) : TComplexArray;
 var
-   aq : array [0..2] of Double;
-   arg, c, cf, d, p, p1, q, q1, r, ra, rb, rq, rt, r1,
-   s, sf, sq, sum, t, t1, w, w1, w2, x, x1, x2, x3, y, y1, y2, y3 : Double;
+   aq : array [0..2] of Extended;
+   arg, c, cf, d, p, p1, q, q1, r, ra, rb, rq, rt, r1, tol,
+   s, sf, sq, sum, t, t1, w, w1, w2, x, x1, x2, x3, y, y1, y2, y3 : Extended;
 const
-   rt3 : Double = 1.7320508075689;
+   rt3 : Extended = 1.7320508075689;
 
    procedure Goto70Remainder;
    begin
@@ -196,28 +220,31 @@ const
    end;
 
 begin
-   if a[0]=0 then begin
+   if a[3]=0 then begin
+      // actually of a lower order
+      Result:=qdcrt(@a[0]);
+   end else if a[0]=0 then begin
       // zero is a trivial solution
       Result:=qdcrt(@a[1]);
       SetLength(Result, 3);
       Result[2]:=Complex(0, 0);
-   end else if a[3]=0 then begin
-      // actually of a lower order
-      Result:=qdcrt(@a[1]);
    end else begin
       SetLength(Result, 3);
+
+      tol := 4*cEpsilon;
+
       p := a[2]/(3.0*a[3]);
       q := a[1]/a[3];
       r := a[0]/a[3];
 
       c := 0;
       t := a[1] - p*a[2];
-      if (Abs(t) >= 4*Abs(a[1])) then c := t/a[3];
+      if (Abs(t) > tol*Abs(a[1])) then c := t/a[3];
 
       t := 2.0*Sqr(p) - q;
-      if (Abs(t) < 4*Abs(q)) then t := 0;
+      if (Abs(t) <= tol*Abs(q)) then t := 0;
       d := r + p*t;
-      if (Abs(d) < 4*ABS(r)) then begin
+      if (Abs(d) <= tol*ABS(r)) then begin
          Result[0] := Complex(-p, 0);
          w := Sqrt(Abs(c));
          if (c < 0) then begin
@@ -243,7 +270,7 @@ begin
       r1 := a[0]/s;
 
       t1 := q - 2.25*Sqr(p);
-      if (Abs(t1) < 4*Abs(q)) then t1 := 0;
+      if (Abs(t1) <= tol*Abs(q)) then t1 := 0;
       w := 0.25*Sqr(r1);
       w1 := 0.5*p1*r1*t;
       w2 := Sqr(q1)*t1/27.0;
@@ -258,9 +285,11 @@ begin
             sq := w + w1;
          end;
       end;
-      if (Abs(sq) < 4*w) then sq := 0;
+      if (Abs(sq) <= tol*w) then sq := 0;
       rq := Abs(s/a[3])*Sqrt(Abs(sq));
-      if (sq < 0) then begin
+// Note by Eric Grange
+// test in original code was against '<0', which is wrong, unless I'm mistaken
+      if (sq <= 0) then begin
          // ALL ROOTS ARE REAL
 
          arg := ArcTan2(rq, -0.5*d);
@@ -307,15 +336,15 @@ begin
          t := ra + rb;
          w := -p;
          x := -p;
-         if (ABS(t) >= 4*ABS(ra)) then begin
+         if (ABS(t) > tol*ABS(ra)) then begin
             w := t - p;
             x := -0.5*t - p;
-            if (Abs(x) < 4*Abs(p)) then x := 0;
+            if (Abs(x) <= tol*Abs(p)) then x := 0;
          end;
          t := Abs(ra - rb);
          y := 0.5*rt3*t;
 
-         if (t >= 4*Abs(ra)) then begin
+         if (t > tol*Abs(ra)) then begin
             if (Abs(x) < Abs(y)) then begin
                s := Abs(y);
                t := x/y;
@@ -358,12 +387,12 @@ end;
 
 // qtcrt
 //
-function qtcrt(const a : PDoubleArray) : TComplexArray;
+function qtcrt(const a : PExtendedArray) : TComplexArray;
 var
    w : TComplex;
    b, b2, c, d, e, h, p, q, r, t, u, v, v1, v2,
-                x, x1, x2, x3, y : Double;
-   temp : array [0..3] of Double;
+                x, x1, x2, x3, y : Extended;
+   temp : array of Extended;
 
    procedure Goto50Remainder; // couldn't sort that goto out... :(
    begin
@@ -401,14 +430,14 @@ var
    end;
 
 begin
-   if a[0]=0 then begin
+   if a[4]=0 then begin
+      // actually of a lower order
+      Result:=cbcrt(@a[0]);
+   end else if a[0]=0 then begin
       // zero is a trivial solution
       Result:=cbcrt(@a[1]);
       SetLength(Result, 4);
       Result[3]:=Complex(0, 0);
-   end else if a[4]=0 then begin
-      // actually of a lower order
-      Result:=cbcrt(@a[1]);
    end else begin
       b := a[3]/(4.0*a[4]);
       c := a[2]/a[4];
@@ -429,6 +458,7 @@ begin
       //  WHERE THE SIGNS OF THE SQUARE ROOTS ARE CHOSEN SO
       //  THAT CSQRT(W1) * CSQRT(W2) * CSQRT(W3) = -Q/8.
 
+      SetLength(temp, 4);
       temp[0] := -Sqr(q)/64.0;
       temp[1] := 0.25*(Sqr(p) - r);
       temp[2] := p;
@@ -485,11 +515,14 @@ begin
          temp[1] := ((-x1 - x2) + u) - b;
          temp[2] := (( x1 - x2) - u) - b;
          temp[3] := ((-x1 + x2) - u) - b;
-         SortArrayAscending(@temp[0], 4);
+// Note by Eric Grange
+// This was in the original code, but I find it highly aggressive of a rounding...
+//
+{         SortArrayAscending(temp);
          if (Abs(temp[0]) < 0.1*Abs(temp[3])) then begin
             t := temp[1]*temp[2]*temp[3];
             if (t <> 0) then temp[0] := e/t;
-         end;
+         end; }
          Result[0] := Complex(temp[0], 0);
          Result[1] := Complex(temp[1], 0);
          Result[2] := Complex(temp[2], 0);

@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>22/08/01 - EG - Some new overloads
       <li>19/08/01 - EG - Added sphere raycasting functions
       <li>08/08/01 - EG - Added MaxFloat overloads
       <li>24/07/01 - EG - VectorAngle renamed to VectorAngleCosine to avoid confusions
@@ -797,7 +798,15 @@ function NormalizeDegAngle(angle : Single) : Single;
 //: Calculates sine and cosine from the given angle Theta
 procedure SinCos(const Theta: Extended; var Sin, Cos: Extended); overload;
 //: Calculates sine and cosine from the given angle Theta
+procedure SinCos(const Theta: Double; var Sin, Cos: Double); overload;
+//: Calculates sine and cosine from the given angle Theta
 procedure SinCos(const Theta: Single; var Sin, Cos: Single); overload;
+{: Calculates sine and cosine from the given angle Theta and Radius.<p>
+   sin and cos values calculated from theta are multiplicated by radius. }
+procedure SinCos(const theta, radius : Double; var Sin, Cos: Extended); overload;
+{: Calculates sine and cosine from the given angle Theta and Radius.<p>
+   sin and cos values calculated from theta are multiplicated by radius. }
+procedure SinCos(const theta, radius : Double; var Sin, Cos: Double); overload;
 {: Calculates sine and cosine from the given angle Theta and Radius.<p>
    sin and cos values calculated from theta are multiplicated by radius. }
 procedure SinCos(const theta, radius : Single; var Sin, Cos: Single); overload;
@@ -873,7 +882,7 @@ function MinAbsXYZComponent(v : TVector) : Single;
 
 {: Sorts given array in ascending order.<p>
    NOTE : current implementation is a slow bubble sort... }
-procedure SortArrayAscending(a : PDoubleArray; nbItems : Integer);
+procedure SortArrayAscending(var a : array of Extended);
 
 {: Clamps aValue in the aMin-aMax interval.<p> }
 function ClampValue(const aValue, aMin, aMax : Single) : Single; overload;
@@ -4264,6 +4273,19 @@ asm
    FSTP TBYTE PTR [EAX]    // sine
 end;
 
+// SinCos (Double)
+//
+procedure SinCos(const Theta: Double; var Sin, Cos: Double); register;
+// EAX contains address of Sin
+// EDX contains address of Cos
+// Theta is passed over the stack
+asm
+   FLD  Theta
+   FSINCOS
+   FSTP QWORD PTR [EDX]    // cosine
+   FSTP QWORD PTR [EAX]    // sine
+end;
+
 // SinCos (Single)
 //
 procedure SinCos(const Theta: Single; var Sin, Cos: Single); register;
@@ -4275,6 +4297,36 @@ asm
    FSINCOS
    FSTP DWORD PTR [EDX]    // cosine
    FSTP DWORD PTR [EAX]    // sine
+end;
+
+// SinCos (Extended w radius)
+//
+procedure SinCos(const theta, radius : Double; var Sin, Cos: Extended); register;
+// EAX contains address of Sin
+// EDX contains address of Cos
+// Theta is passed over the stack
+asm
+   FLD  theta
+   FSINCOS
+   FMUL radius
+   FSTP TBYTE PTR [EDX]    // cosine
+   FMUL radius
+   FSTP TBYTE PTR [EAX]    // sine
+end;
+
+// SinCos (Double w radius)
+//
+procedure SinCos(const theta, radius : Double; var Sin, Cos: Double); register;
+// EAX contains address of Sin
+// EDX contains address of Cos
+// Theta is passed over the stack
+asm
+   FLD  theta
+   FSINCOS
+   FMUL radius
+   FSTP QWORD PTR [EDX]    // cosine
+   FMUL radius
+   FSTP QWORD PTR [EAX]    // sine
 end;
 
 // SinCos (Single w radius)
@@ -4788,16 +4840,16 @@ begin
    Result:=MinXYZComponent(v);
 end;
 
-// SortArrayAscending
+// SortArrayAscending (extended)
 //
-procedure SortArrayAscending(a : PDoubleArray; nbItems : Integer);
+procedure SortArrayAscending(var a : array of Extended);
 var
    i, j, m : Integer;
    buf : Double;
 begin
-   for i:=0 to nbItems-2 do begin
+   for i:=Low(a) to High(a)-1 do begin
       m:=i;
-      for j:=i+1 to nbItems-1 do
+      for j:=i+1 to High(a) do
          if a[j]<a[m] then m:=j;
       if m<>i then begin
          buf:=a[m];
