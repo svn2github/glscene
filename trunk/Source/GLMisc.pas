@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/02 - EG - Added TGLNodes.Normal
       <li>17/03/02 - EG - Added First/Last to TGLNodes
       <li>24/01/02 - EG - Added vUseDefaultSets mechanism
       <li>07/01/02 - EG - TGLNodes.Barycenter fix (thx Bob)
@@ -350,6 +351,9 @@ type
 
          //: Calculates and returns the barycenter of the nodes
          function Barycenter : TAffineVector;
+         {: Computes normal based on the 1st three nodes.<p>
+            Returns NullVector if there are less than 3 nodes. }
+         function Normal : TAffineVector;
          //: Returns normalized vector Nodes[i+1]-Nodes[i]
          function Vector(i : Integer) : TAffineVector;
 
@@ -1512,6 +1516,15 @@ begin
          AddVector(Result, PAffineVector(Items[i].AsAddress)^);
       ScaleVector(Result, 1/Count);
    end;
+end;
+
+// Normal
+//
+function TGLNodes.Normal : TAffineVector;
+begin
+   if Count>=3 then
+      CalcPlaneNormal(Items[0].FCoords, Items[1].FCoords, Items[2].FCoords, Result)
+   else Result:=NullVector;
 end;
 
 // Vector
