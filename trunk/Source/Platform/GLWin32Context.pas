@@ -190,7 +190,7 @@ begin
    if not classRegistered then
       Windows.RegisterClass(vUtilWindowClass);
    Result:=CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
-                            '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
+                          '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
 end;
 
 // ------------------
@@ -336,11 +336,20 @@ procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piForm
                                           var nNumFormats: Integer);
 const
    cAAToSamples : array [aaNone..aa4xHQ] of Integer = (1, 2, 2, 4, 4);
+
+   procedure ChoosePixelFormat;
+   begin
+      wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
+                              32, piFormats, @nNumFormats);
+   end;
+
 begin
+   // request hardware acceleration
+   AddIAttrib(WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB);
    AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
    if AlphaBits>0 then
       AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
-   AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
+   AddIAttrib(WGL_DEPTH_BITS_ARB, DepthBits);
    if StencilBits>0 then
       AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
    if AccumBits>0 then
@@ -352,20 +361,34 @@ begin
        AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
    end;
    ClearFAttribs;
-   wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
-                           32, piFormats, @nNumFormats);
+   ChoosePixelFormat;
    if (nNumFormats=0) and (AntiAliasing<>aaDefault) then begin
       // couldn't find AA buffer, try without
       DropIAttrib(WGL_SAMPLE_BUFFERS_ARB);
       DropIAttrib(WGL_SAMPLES_ARB);
-      wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
-                              32, piFormats, @nNumFormats);
+   end;
+   if (nNumFormats=0) and (DepthBits>=32) then begin
+      // couldn't find 32+ bits depth buffer, 24 bits one available?
+      ChangeIAttrib(WGL_DEPTH_BITS_ARB, 24);
+      ChoosePixelFormat;
+   end;
+   if (nNumFormats=0) and (DepthBits>=24) then begin
+      // couldn't find 24+ bits depth buffer, 16 bits one available?
+      ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
+      ChoosePixelFormat;
+   end;
+   if (nNumFormats=0) and (ColorBits>=24) then begin
+      // couldn't find 24+ bits color buffer, 16 bits one available?
+      ChangeIAttrib(WGL_COLOR_BITS_ARB, 16);
+      ChoosePixelFormat;
    end;
    if nNumFormats=0 then begin
-      // couldn't find 24 bits depth buffer, 16 bits one available?
-      ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
-      wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
-                              32, piFormats, @nNumFormats);
+      // ok, last attempt: no AA, restored depth and color,
+      // relaxed hardware-acceleration request
+      ChangeIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+      ChangeIAttrib(WGL_DEPTH_BITS_ARB, DepthBits);
+      DropIAttrib(WGL_ACCELERATION_ARB);
+      ChoosePixelFormat;
    end;
 end;
 
@@ -383,6 +406,25 @@ var
    tempWnd : HWND;
    tempDC, outputDC : HDC;
    localDC, localRC : Integer;
+
+   function CurrentPixelFormatIsHardwareAccelerated : Boolean;
+   var
+      localPFD : TPixelFormatDescriptor;
+   begin
+      Result:=False;
+      if pixelFormat=0 then Exit;
+      with localPFD do begin
+         nSize:=SizeOf(localPFD);
+         nVersion:=1;
+      end;
+      if GetPixelFormat(outputDC)<>pixelFormat then begin
+         if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
+            RaiseLastOSError;
+      end;
+      DescribePixelFormat(outputDC, pixelFormat, SizeOf(localPFD), localPFD);
+      Result:=((localPFD.dwFlags and PFD_GENERIC_FORMAT)=0);
+   end;
+
 begin
    outputDC:=HDC(outputDevice);
    if vUseWindowTrackingHook then
@@ -409,7 +451,7 @@ begin
          dwFlags:=dwFlags or PFD_STEREO;
       iPixelType:=PFD_TYPE_RGBA;
       cColorBits:=ColorBits;
-      cDepthBits:=24;
+      cDepthBits:=DepthBits;
       cStencilBits:=StencilBits;
       cAccumBits:=AccumBits;
       cAlphaBits:=AlphaBits;
@@ -465,15 +507,28 @@ begin
    if pixelFormat=0 then begin
       // Legacy pixel format selection
       pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
-
-      if pixelFormat=0 then RaiseLastOSError;
-
-      if GetPixelFormat(outputDC)<>pixelFormat then begin
-         if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
-            RaiseLastOSError;
+      if (not (aType in cMemoryDCs)) and (not CurrentPixelFormatIsHardwareAccelerated) then
+         pixelFormat:=0;
+      if pixelFormat=0 then begin
+         // Failed on default params, try with 16 bits depth buffer
+         PFDescriptor.cDepthBits:=16;
+         pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
+         if not CurrentPixelFormatIsHardwareAccelerated then
+            pixelFormat:=0;
+         if pixelFormat=0 then begin
+            // Failed, try with 16 bits color buffer
+            PFDescriptor.cColorBits:=16;
+            pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
+         end;
+         // I'm outta options, raise an error
+         if pixelFormat=0 then RaiseLastOSError;
       end;
-
       ClearGLError;
+   end;
+
+   if GetPixelFormat(outputDC)<>pixelFormat then begin
+      if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
+         RaiseLastOSError;
    end;
 
    // Check the properties we just set.

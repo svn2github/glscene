@@ -42,6 +42,10 @@ type
    //
    TGLAntiAliasing = (aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ);
 
+   // TGLDepthPrecision
+   //
+   TGLDepthPrecision = (dpDefault, dp16bits, dp24bits, dp32bits);
+
    // TGLContext
    //
    {: Wrapper around an OpenGL rendering context.<p>
@@ -56,6 +60,7 @@ type
       private
          { Private Declarations }
          FColorBits, FAlphaBits : Integer;
+         FDepthBits : Integer;
          FStencilBits : Integer;
          FAccumBits : Integer;
          FAuxBuffers : Integer;
@@ -73,6 +78,7 @@ type
 
          procedure SetColorBits(const aColorBits : Integer);
          procedure SetAlphaBits(const aAlphaBits : Integer);
+         procedure SetDepthBits(const val : Integer);
          procedure SetStencilBits(const aStencilBits : Integer);
          procedure SetAccumBits(const aAccumBits : Integer);
          procedure SetAuxBuffers(const aAuxBuffers : Integer);
@@ -101,6 +107,8 @@ type
          property ColorBits : Integer read FColorBits write SetColorBits;
          {: Alpha bits for the rendering context }
          property AlphaBits : Integer read FAlphaBits write SetAlphaBits;
+         {: Depth bits for the rendering context }
+         property DepthBits : Integer read FDepthBits write SetDepthBits;
          {: Stencil bits for the rendering context }
          property StencilBits : Integer read FStencilBits write SetStencilBits;
          {: Accumulation buffer bits for the rendering context }
@@ -469,6 +477,15 @@ begin
    if Active then
       raise EGLContext.Create(cCannotAlterAnActiveContext)
    else FAlphaBits:=aAlphaBits;
+end;
+
+// SetDepthBits
+//
+procedure TGLContext.SetDepthBits(const val : Integer);
+begin
+   if Active then
+      raise EGLContext.Create(cCannotAlterAnActiveContext)
+   else FDepthBits:=val;
 end;
 
 // SetStencilBits
