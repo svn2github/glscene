@@ -969,10 +969,10 @@ type
    TCollisionNode = class
       Collision:TGLBCollision;
       AABB:TAABB;
-      constructor Create(const Collision:TGLBCollision;const AABB:TAABB);
+      constructor Create(Collision:TGLBCollision; AABB:TAABB);
    end;
 
-constructor TCollisionNode.Create(const Collision:TGLBCollision;const AABB:TAABB);
+constructor TCollisionNode.Create(Collision:TGLBCollision; AABB:TAABB);
 begin
   inherited Create();
   Self.Collision:=Collision;
@@ -987,7 +987,7 @@ end;
       d:=(TCollisionNode(Item2).AABB.min[2]-TCollisionNode(Item1).AABB.min[2]);
       if d>0 then Result:=-1 else if d<0 then Result:=1 else Result:=0;
    end;
-   
+
 procedure TCollisionManager.CheckCollisions;
 var
   NodeList:TList;
@@ -1012,7 +1012,7 @@ begin
     obj1:=cli1.OwnerBaseSceneObject;
     //TODO:  need to do different things for different objects, especially points (to improve speed)
     box1:=obj1.AxisAlignedBoundingBoxUnscaled;         //get obj1 axis-aligned bounding box
-    if box1.min[0]>box1.max[0] then continue;          //check for case where no bb exists
+    if box1.min[2]>=box1.max[2] then continue;          //check for case where no bb exists
     AABBTransform(box1,obj1.AbsoluteMatrix);           //& transform it to world axis
     CollisionNode1:=TCollisionNode.Create(cli1,box1);
     NodeList.Add(CollisionNode1);
