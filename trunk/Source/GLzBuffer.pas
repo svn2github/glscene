@@ -768,6 +768,9 @@ begin
    end;
    ViewerZBuf.Refresh;
 
+   glPushAttrib(GL_ENABLE_BIT);
+   glEnable(GL_TEXTURE_2D);
+
    if FWidth >rci.viewPortSize.cx then Fwidth :=rci.viewPortSize.cx;
    if FHeight>rci.viewPortSize.cy then FHeight:=rci.viewPortSize.cy;
 
@@ -807,9 +810,9 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
-   glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_LIGHTING);
+
 //   vx:=0;   vx1:=vx+FWidth+1;
 //   vy:=0;   vy1:=vy-FHeight-1;
 
@@ -820,16 +823,17 @@ begin
    // issue quad
 	glBegin(GL_QUADS);
       glNormal3fv(@YVector);
-      xglTexCoord2f(0, 0);  glVertex2f( vx, vy1);
-      xglTexCoord2f(1, 0);  glVertex2f(vx1, vy1);
-      xglTexCoord2f(1, 1);  glVertex2f(vx1,  vy);
-      xglTexCoord2f(0, 1);  glVertex2f( vx,  vy);
+      glTexCoord2f(0, 0);  glVertex2f( vx, vy1);
+      glTexCoord2f(1, 0);  glVertex2f(vx1, vy1);
+      glTexCoord2f(1, 1);  glVertex2f(vx1,  vy);
+      glTexCoord2f(0, 1);  glVertex2f( vx,  vy);
 	glEnd;
    // restore state
-   glPopAttrib;
    glPopMatrix;
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix;
+
+   glPopAttrib;
 
    if Count>0 then Self.RenderChildren(0, Count-1, rci);
 end;
