@@ -12,6 +12,7 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>29/11/03 - JAJ - Created and Submitted to GLScene.
+      <li>21/07/03 - JAJ - Added BuildCylinder2 submitted by Gorka?
 	</ul></font>
 }
 unit GLMeshBuilder;
@@ -23,6 +24,7 @@ Uses
 
 Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
 Procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
+Procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector; TopRadius,BottomRadius,Height: single; Slices : Integer);
 
 implementation
 
@@ -167,6 +169,74 @@ Begin
     // Texture Coordinates
     Mesh.TexCoords.add(VectorCombineWeighted(Position,XYZVector,0.5*cosine[xc],0.5*sine[xc],0.5));
     Mesh.TexCoords.add(VectorCombineWeighted(Position,XYZVector,0.5*cosine[xc],0.5*sine[xc],-0.5));
+  End;
+
+  Mesh.Normals.add(AffineVectorMake(0,0,1));
+  Mesh.Normals.add(AffineVectorMake(0,0,-1));
+
+  FGR := TFGVertexNormalTexIndexList.CreateOwned(Mesh.FaceGroups);
+  FGR.Mode := fgmmTriangles;
+  For xc := 0 to Slices-1 do
+  Begin
+    yc := xc+1;
+    If yc = slices then yc := 0;
+
+    FGR.VertexIndices.Add(VertexOffset+xc*2,VertexOffset+xc*2+1,VertexOffset+yc*2+1);
+    FGR.VertexIndices.Add(VertexOffset+xc*2,VertexOffset+yc*2+1,VertexOffset+yc*2);
+
+    FGR.NormalIndices.Add(NormalOffset+xc,NormalOffset+xc,NormalOffset+yc);
+    FGR.NormalIndices.Add(NormalOffset+xc,NormalOffset+yc,NormalOffset+yc);
+
+    FGR.TexCoordIndices.Add(TextureOffset+xc*2,TextureOffset+xc*2+1,TextureOffset+yc*2+1);
+    FGR.TexCoordIndices.Add(TextureOffset+xc*2,TextureOffset+yc*2+1,TextureOffset+yc*2);
+  End;
+
+  For xc := 1 to Slices-2 do
+  Begin
+    yc := xc+1;
+    FGR.VertexIndices.Add(VertexOffset,VertexOffset+xc*2,VertexOffset+yc*2);
+    FGR.VertexIndices.Add(VertexOffset+1,VertexOffset+yc*2+1,VertexOffset+xc*2+1);
+
+    FGR.NormalIndices.Add(NormalOffset+Slices,NormalOffset+Slices,NormalOffset+Slices);
+    FGR.NormalIndices.Add(NormalOffset+Slices+1,NormalOffset+Slices+1,NormalOffset+Slices+1);
+
+    FGR.TexCoordIndices.Add(TextureOffset,TextureOffset+xc*2,TextureOffset+yc*2);
+    FGR.TexCoordIndices.Add(TextureOffset+1,TextureOffset+yc*2+1,TextureOffset+xc*2+1);
+  End;
+
+End;
+
+
+Procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector;  TopRadius,BottomRadius,Height: single; Slices : Integer);
+Var
+  FGR : TFGVertexNormalTexIndexList;
+  VertexOffset : Integer;
+  NormalOffset : Integer;
+  TextureOffset : Integer;
+  Cosine,Sine : Array of Single;
+  xc,yc : Integer;
+
+Begin
+  If Slices < 3 then Exit;
+
+  SetLength(Sine,Slices+1);
+  SetLength(Cosine,Slices+1);
+  PrepareSinCosCache(Sine,Cosine,0,360);
+
+  VertexOffset  := Mesh.Vertices.Count;
+  NormalOffset  := Mesh.Normals.Count;
+  TextureOffset := Mesh.TexCoords.Count;
+  For xc := 0 to Slices-1 do
+  Begin
+    Mesh.Vertices.Add(VectorCombineWeighted(Position,Scale,TopRadius*0.5*cosine[xc],TopRadius*0.5*sine[xc],Height/2));
+    Mesh.Vertices.Add(VectorCombineWeighted(Position,Scale,BottomRadius*0.5*cosine[xc],BottomRadius*0.5*sine[xc],-Height/2));
+
+    // Normals
+    Mesh.Normals.add(AffineVectorMake(cosine[xc],sine[xc],0));
+
+    // Texture Coordinates
+    Mesh.TexCoords.add(VectorCombineWeighted(Position,XYZVector,TopRadius*0.5*cosine[xc],TopRadius*0.5*sine[xc],Height/2));
+    Mesh.TexCoords.add(VectorCombineWeighted(Position,XYZVector,BottomRadius*0.5*cosine[xc],BottomRadius*0.5*sine[xc],-Height/2));
   End;
 
   Mesh.Normals.add(AffineVectorMake(0,0,1));
