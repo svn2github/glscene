@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/01/03 - EG - StopPrimitive now public
       <li>09/12/02 - EG - Now properly disables fog
       <li>20/11/02 - EG - Now uses Types/Windows TPoint (D5 & D6 tested only) 
       <li>01/10/02 - EG - Added Polygon & Polyline
@@ -59,12 +60,10 @@ type
 	      procedure RestoreOpenGLStates;
 
 	      procedure StartPrimitive(const primitiveType : Integer);
-         procedure StopPrimitive;
 
          procedure SetPenColor(const val : TColor);
          procedure SetPenAlpha(const val : Single);
          procedure SetPenWidth(const val : Integer);
-
 
       public
 	      { Public Declarations }
@@ -72,6 +71,13 @@ type
                             const baseTransform : TMatrix); overload;
 	      constructor Create(bufferSizeX, bufferSizeY : Integer); overload;
 	      destructor Destroy; override;
+
+         {: Stops the current internal primitive.<p>
+            This function is invoked automatically by TGLCanvas when changeing
+            primitives, you should directly call if you want to render your
+            own stuff intertwined with TGLCanvas drawings. In that case, call
+            it before your own OpenGL calls. }
+         procedure StopPrimitive;
 
          {: Inverts the orientation of the Y Axis.<p>
             If (0, 0) was in the top left corner, it will move to the bottom
