@@ -91,7 +91,7 @@ var
                   specColor:=VectorMake(material.Specular.R, material.Specular.G, material.Specular.B, 1);
                   ScaleVector(specColor, 1 - material.Shininess);
                   Specular.Color:=specColor;
-                  Shininess:=Round((1 - material.ShinStrength) * 128);
+                  Shininess:=MaxInteger(0, Round((1 - material.ShinStrength) * 128));
                end;
                if Trim(material.Texture.Map.NameStr)<>'' then begin
                   try
