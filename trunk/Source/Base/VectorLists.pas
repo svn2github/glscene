@@ -321,8 +321,8 @@ begin
 				while Single(refList.List[I])<P do Inc(I);
 				while Single(refList.List[J])>P do Dec(J);
 				if I <= J then begin
-					refList.Exchange(i, J);
-					objList.Exchange(i, j);
+					refList.Exchange(I, J);
+					objList.Exchange(I, J);
 					Inc(I); Dec(J);
 				end;
 			until I > J;
