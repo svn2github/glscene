@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/08/03 - EG - Added osRenderNearestFirst
       <li>17/06/03 - EG - New TryStrToFloat, updated StrToFloatDef
       <li>05/06/03 - EG - TDataFile moved out to ApplicationFileIO,
                           added Silhouette classes
@@ -106,8 +107,12 @@ type
 			the camera first.
       <li>osRenderBlendedLast : opaque objects are not sorted and rendered
          first, blended ones are rendered afterwards and depth sorted.
+		<li>osRenderNearestFirst : render objects whose Position is the nearest to
+			the camera first.
        </ul> }
-   TGLObjectsSorting = (osInherited, osNone, osRenderFarthestFirst, osRenderBlendedLast);
+   TGLObjectsSorting = (osInherited, osNone,
+                        osRenderFarthestFirst, osRenderBlendedLast,
+                        osRenderNearestFirst);
 
    // TGLVisibilityCulling
    //

@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/08/03 - EG - Added osRenderNearestFirst
       <li>28/07/03 - aidave - Added TGLColorProxyObject
       <li>22/07/03 - EG - LocalMatrix now a PMatrix, FListHandle and FChildren
                           are now autocreating
@@ -1019,8 +1020,9 @@ type
    // TGLColorProxyObject
    //
    {: A proxy object with its own color.<p>
-      This proxy object can have a unique color.
-   }
+      This proxy object can have a unique color. Note that multi-material
+      objects (Freeforms linked to a material library f.i.) won't honour
+      the color. }
    TGLColorProxyObject = class (TGLProxyObject)
       private
          { Private Declarations }
@@ -3924,7 +3926,7 @@ begin
             for i:=firstChildIndex to lastChildIndex do
                TGLBaseSceneObject(plist[i]).Render(rci);
          end;
-         osRenderFarthestFirst, osRenderBlendedLast : begin
+         osRenderFarthestFirst, osRenderBlendedLast, osRenderNearestFirst : begin
             if not Assigned(FSortDistList) then
                FSortDistList:=TSingleList.Create
             else FSortDistList.Count:=0;
@@ -3934,23 +3936,36 @@ begin
             else FSortObjList.Count:=0;
             objList:=TList.Create;
             try
-               if rci.objectsSorting=osRenderBlendedLast then begin
-                  // render opaque stuff
-                  for i:=firstChildIndex to lastChildIndex do begin
-                     obj:=TGLBaseSceneObject(FChildren.List[i]);
-                     if not obj.Blended then
-                        obj.Render(rci)
-                     else if obj.Visible then begin
-                        objList.Add(obj);
-                        distList.Add(1+obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+               case rci.objectsSorting of
+                  osRenderBlendedLast :
+                     // render opaque stuff
+                     for i:=firstChildIndex to lastChildIndex do begin
+                        obj:=TGLBaseSceneObject(FChildren.List[i]);
+                        if not obj.Blended then
+                           obj.Render(rci)
+                        else if obj.Visible then begin
+                           objList.Add(obj);
+                           distList.Add(1+obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                        end;
                      end;
-                  end;
-               end else for i:=firstChildIndex to lastChildIndex do begin
-                  obj:=TGLBaseSceneObject(FChildren.List[i]);
-                  if obj.Visible then begin
-                     objList.Add(obj);
-                     distList.Add(obj.BarycenterSqrDistanceTo(rci.cameraPosition));
-                  end;
+                  osRenderFarthestFirst :
+                     for i:=firstChildIndex to lastChildIndex do begin
+                        obj:=TGLBaseSceneObject(FChildren.List[i]);
+                        if obj.Visible then begin
+                           objList.Add(obj);
+                           distList.Add(obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                        end;
+                     end;
+                  osRenderNearestFirst :
+                     for i:=firstChildIndex to lastChildIndex do begin
+                        obj:=TGLBaseSceneObject(FChildren.List[i]);
+                        if obj.Visible then begin
+                           objList.Add(obj);
+                           distList.Add(-obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                        end;
+                     end;
+               else
+                  Assert(False);
                end;
                if distList.Count>0 then begin
                   if distList.Count>1 then
