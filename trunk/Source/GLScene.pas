@@ -1028,10 +1028,13 @@ type
          { Private Declarations }
          FUseBuildList : Boolean;
          FOnRender : TDirectRenderEvent;
+         FBlend : Boolean;
 
       protected
          { Protected Declarations }
          procedure SetUseBuildList(const val : Boolean);
+         function Blended : Boolean; override;
+         procedure SetBlend(const val : Boolean);
 
       public
          { Public Declarations }
@@ -1055,6 +1058,10 @@ type
             entering, or exclusively use the GLMisc utility functions to alter
             the states.<br> }
          property OnRender : TDirectRenderEvent read FOnRender write FOnRender;
+         {: Defines if the object uses blending.<p>
+            This property will allow direct opengl objects to be flagged as
+            blended for object sorting purposes.<br> }
+         property Blend : Boolean read FBlend write SetBlend;
    end;
 
    // TGLRenderPoint
@@ -5274,6 +5281,7 @@ constructor TGLDirectOpenGL.Create(AOwner: TComponent);
 begin
    inherited;
    ObjectStyle:=ObjectStyle+[osDirectDraw, osDoesTemperWithColorsOrFaceWinding];
+   FBlend:=False;
 end;
 
 // Assign
@@ -5284,6 +5292,7 @@ begin
       UseBuildList:=TGLDirectOpenGL(Source).UseBuildList;
       FOnRender:=TGLDirectOpenGL(Source).FOnRender;
       FOnProgress:=TGLDirectOpenGL(Source).FOnProgress;
+      FBlend:=TGLDirectOpenGL(Source).Blend;
    end;
    inherited Assign(Source);
 end;
@@ -5309,6 +5318,24 @@ begin
       else ObjectStyle:=ObjectStyle+[osDirectDraw];
    end;
 end;
+
+// Blended
+//
+function TGLDirectOpenGL.Blended : Boolean;
+begin
+  Result:=FBlend;
+end;
+
+// SetBlend
+//
+procedure TGLDirectOpenGL.SetBlend(const val : Boolean);
+begin
+  if val<>FBlend then begin
+    FBlend:=val;
+    StructureChanged;
+  end;
+end;
+
 
 // ------------------
 // ------------------ TGLRenderPoint ------------------
