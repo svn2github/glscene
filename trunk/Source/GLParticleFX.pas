@@ -7,7 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
-
+      <li>23/11/04 - SG - Fixed memory leak in TGLLifeColoredPFXManager (kenguru)
       <li>03/10/04 - Mrqzzz - added property TGLParticleFXEffect.DisabledIfOwnerInvisible. Fixed PositionDispersionRange to honour VelocityMode=svmRelative
       <li>25/09/04 - Graham Kennedy - Fixed restore of currentTexturingMode
       <li>09/09/04 - Mrqzzz - added property TGLParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TGLParticleFXEffect.ArchiveVersion updated to 4
@@ -2144,6 +2144,8 @@ end;
 destructor TGLLifeColoredPFXManager.Destroy;
 begin
    FLifeColors.Free;
+   FColorInner.Free;
+   FColorOuter.Free;
    inherited Destroy;
 end;
 
