@@ -14,17 +14,19 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 433
-    Height = 273
+    Left = 0
+    Top = 0
+    Width = 450
+    Height = 288
     Camera = GLCamera1
+    Align = alClient
   end
   object TrackBar1: TTrackBar
-    Left = 8
+    Left = 0
     Top = 288
-    Width = 441
+    Width = 450
     Height = 45
+    Align = alBottom
     Max = 20
     Min = -20
     Orientation = trHorizontal
