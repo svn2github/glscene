@@ -1687,7 +1687,7 @@ function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$ifndef GEOMETRY_NO_ASM}
+{$ifdef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EAX]
          FADD DWORD PTR [EDX]
@@ -6359,7 +6359,9 @@ asm
         FYL2X
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Math.Log2(X);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6416,6 +6418,7 @@ end;
 //
 function Power(const base, exponent : Single) : Single;
 begin
+   {$HINTS OFF}
    if exponent=cZero then
       Result:=cOne
    else if (base=cZero) and (exponent>cZero) then
@@ -6423,6 +6426,7 @@ begin
    else if RoundInt(exponent)=exponent then
      Result:=Power(base, Round(exponent))
    else Result:=Exp(exponent*Ln(base));
+   {$HINTS ON}
 end;
 
 // Power (int exponent)
@@ -6451,7 +6455,9 @@ asm
 @@3:
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Math.Power(Base, Exponent);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6558,7 +6564,9 @@ var
    s, c : Extended;
 begin
    Math.SinCos(Theta, s, c);
+   {$HINTS OFF}
    Sin:=s; Cos:=c;
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6579,7 +6587,9 @@ var
    s, c : Extended;
 begin
    Math.SinCos(Theta, s, c);
+   {$HINTS OFF}
    Sin:=s; Cos:=c;
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6706,7 +6716,9 @@ asm
       FPATAN
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Math.ArcCos(X);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6731,7 +6743,9 @@ asm
       FPATAN
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Math.ArcSin(X);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6759,7 +6773,9 @@ asm
       FPATAN
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Math.ArcTan2(y, x);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6787,7 +6803,9 @@ asm
       FSTP ST(0)      // FPTAN pushes 1.0 after result
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Math.Tan(x);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6815,7 +6833,9 @@ asm
       FDIVRP
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Math.CoTan(x);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6950,7 +6970,9 @@ asm
       pop      eax
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Round(Sqrt(i));
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6972,7 +6994,9 @@ asm
       pop      eax
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Round(Sqrt(x*x+y*y));
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -6999,7 +7023,9 @@ asm
       pop      eax
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Round(Sqrt(x*x+y*y+z*z));
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -7062,7 +7088,9 @@ asm
       FRNDINT
 {$else}
 begin
-   Result:=Int(v+0.5);
+   {$HINTS OFF}
+   Result:=Int(v+cOneDotFive);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -7211,9 +7239,11 @@ end;
 //
 function Ceil(v : Single) : Integer; overload;
 begin
+   {$HINTS OFF}
    if Frac(v)>0 then
       Result:=Trunc(v)+1
-   else Result:=Trunc(v)
+   else Result:=Trunc(v);
+   {$HINTS ON}
 end;
 
 // Floor64 (Extended)
@@ -7229,9 +7259,11 @@ end;
 //
 function Floor(v : Single) : Integer; overload;
 begin
+   {$HINTS OFF}
   if Frac(v)<0 then
       Result:=Trunc(v)-1
    else Result:=Trunc(v);
+   {$HINTS ON}
 end;
 
 // Sign
@@ -7257,7 +7289,9 @@ asm
    pop   eax
 {$else}
 begin
+   {$HINTS OFF}
    Result:=Round(i*s);
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -8097,7 +8131,7 @@ end;
 procedure SortArrayAscending(var a : array of Extended);
 var
    i, j, m : Integer;
-   buf : Double;
+   buf : Extended;
 begin
    for i:=Low(a) to High(a)-1 do begin
       m:=i;
@@ -8425,10 +8459,12 @@ asm
               FSTP DWORD PTR [EDX + 12]
 {$else}
 begin
+   {$HINTS OFF}
    Result[0]:=V[0];
    Result[1]:=V[1];
    Result[2]:=V[2];
    Result[3]:=V[3];
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -8446,9 +8482,11 @@ asm
               FSTP DWORD PTR [EDX + 8]
 {$else}
 begin
+   {$HINTS OFF}
    Result[0]:=V[0];
    Result[1]:=V[1];
    Result[2]:=V[2];
+   {$HINTS ON}
 {$endif}
 end;
 
@@ -8924,6 +8962,7 @@ const
 begin
    q:=QuaternionFromMatrix(mat);
    NormalizeQuaternion(q);
+   {$HINTS OFF}
    if q.RealPart<0 then begin
       Result[0]:=Round(-q.ImagPart[0]*cFact);
       Result[1]:=Round(-q.ImagPart[1]*cFact);
@@ -8933,6 +8972,7 @@ begin
       Result[1]:=Round(q.ImagPart[1]*cFact);
       Result[2]:=Round(q.ImagPart[2]*cFact);
    end;
+   {$HINTS ON}
 end;
 
 // UnPackRotationMatrix
