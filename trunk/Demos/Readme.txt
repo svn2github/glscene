@@ -5,6 +5,10 @@ These samples may not be a great piece of eye candy
 and you will see  that very little code is needed to
 achieve simple tasks.
 
+If you want to compile all of the demos, you may use
+the bpg (close Delphi in between, when compiling BPGs
+D5 and D6 leak heaps of memory and get awfully slow).
+
 Enjoy :)
 
 Eric Grange
