@@ -1088,7 +1088,7 @@ end;
 procedure TGLGuiElementList.AssignTo(Dest: TPersistent);
 Var
    i : Integer;
-   element : TGLGuiElement;
+   //element : TGLGuiElement;
 begin
    if Dest is TGLGuiElementList then
    Begin
@@ -1101,7 +1101,7 @@ end;
 
 procedure TGLGuiElement.AssignTo(Dest: TPersistent);
 Var
-   i : Integer;
+   //i : Integer;
    element : TGLGuiElement;
 begin
    if Dest is TGLGuiElement then
