@@ -190,6 +190,7 @@ contains
   GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas',
   GLCelShader in '..\Source\Shaders\GLCelShader.pas',
   GLFPSMovement in '..\Source\GLFPSMovement.pas',
-  GLBumpShader in '..\Source\Shaders\GLBumpShader.pas';
+  GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
+  GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas';
 
 end.
