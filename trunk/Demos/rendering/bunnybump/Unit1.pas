@@ -1,15 +1,20 @@
 {: Using the GLBumpShader for object space bump mapping.<p>
 
    The bump shader runs an ambient light pass and then a
-   pass for each light shining in the scene. Currently there
-   is only the dot3 texture combiner method available, but I
-   will be adding some fragment program alternatives soon
-   that will support specular lighting and possibly process
-   multiple lights in one pass.<p>
+   pass for each light shining in the scene. There are
+   currently 2 bump methods: a dot3 texture combiner and
+   a basic ARB fragment program. The dot3 texture combiner
+   only supports diffuse lighting but is fast and works
+   on lower end graphics adapters. The basic ARBFP method
+   supports diffuse and specular lighting and picks up
+   the light and material options through the OpenGL
+   state.<p>
 
-   For the shader to work you need to have the normal map
-   as the primary texture. For now the secondary texture is
-   disabled, that will change with the next update.<p>
+   The normal map is expected as the primary texture.<p>
+
+   Diffuse textures are supported through the secondary
+   texture and can be enabled using the boDiffuseTeture2
+   bump option.<p>
 }
 unit Unit1;
 
@@ -100,7 +105,6 @@ begin
 
   ComboBox1.ItemIndex:=0;
   ComboBox1Change(nil);
-  //GLMaterialLibrary1.Materials[0].Texture2Name:='';
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
