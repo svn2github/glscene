@@ -540,7 +540,7 @@ begin
          finally
             bmp.Free;
          end;
-      end else inherited;
+      end;
 {$endif}
 {$ifdef GLS_Graphics32_SUPPORT}
    end else if Source is TBitmap32 then begin
