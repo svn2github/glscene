@@ -398,6 +398,7 @@ begin
       else if AComponent=FReference then
          Reference:=nil;
    end;
+   inherited;
 end;
 
 // DoProgress

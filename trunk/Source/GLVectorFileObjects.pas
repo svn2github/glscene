@@ -5592,6 +5592,7 @@ procedure TGLAnimationControler.Notification(AComponent: TComponent; Operation: 
 begin
    if (AComponent=FActor) and (Operation=opRemove) then
       SetActor(nil);
+   inherited;
 end;
 
 // DoChange

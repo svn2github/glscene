@@ -151,6 +151,7 @@ procedure TGLTimeEventsMGR.Notification(AComponent: TComponent; Operation: TOper
 begin
    if (Operation=opRemove) and (AComponent=Cadencer) then
       FCadencer:=nil;
+   inherited;
 end;
 
 // SetCadencer

@@ -4728,9 +4728,9 @@ end;
 //
 procedure TGLCamera.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   inherited;
    if (Operation=opRemove) and (AComponent=FTargetObject) then
       TargetObject:=nil;
+   inherited;
 end;
 
 // SetTargetObject
@@ -7455,9 +7455,9 @@ end;
 //
 procedure TGLNonVisualViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   inherited;
    if (Operation=opRemove) and (AComponent=Camera) then
       Camera:=nil;
+   inherited;
 end;
 
 // CopyToTexture

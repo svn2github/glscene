@@ -333,6 +333,7 @@ procedure TGLThorFXManager.Notification(AComponent: TComponent; Operation: TOper
 begin
    if (Operation=opRemove) and (AComponent=FCadencer) then
       Cadencer:=nil;
+   inherited;
 end;
 
 // DoProgress

@@ -114,12 +114,12 @@ end;
 //
 procedure TGLTexCombineShader.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   inherited;
    if (FMaterialLibrary=AComponent) and (Operation=opRemove) then begin
       NotifyLibMaterial3Destruction;
       NotifyLibMaterial4Destruction;
       FMaterialLibrary:=nil;
    end;
+   inherited;
 end;
 
 // NotifyChange

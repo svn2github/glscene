@@ -354,9 +354,9 @@ end;
 //
 procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   inherited;
    if (Operation = opRemove) and (AComponent = Camera) then
       Camera:=nil;
+   inherited;
 end;
 
 // RecreateWnd

@@ -422,6 +422,7 @@ begin
       if Assigned(FSubscribedCadenceableComponents) then
          FSubscribedCadenceableComponents.Remove(AComponent);
    end;
+   inherited;
 end;
 
 // Loaded
