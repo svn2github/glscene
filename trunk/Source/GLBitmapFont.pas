@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/09/01 - Egg - Fixed visibility of tile 0
       <li>12/08/01 - Egg - Completely rewritten handles management
       <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
 	   <li>15/01/01 - EG - Creation
@@ -577,7 +578,7 @@ begin
          end
       else
          idx:=Ranges.CharacterToTileIndex(aString[i]);
-         if idx>0 then begin
+         if idx>=0 then begin
             TileIndexToTexCoords(idx, topLeft, bottomRight);
 
             xglTexCoord2fv(@topLeft);
