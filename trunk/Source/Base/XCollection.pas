@@ -592,10 +592,12 @@ function TXCollection.Add(anItem : TXCollectionItem) : Integer;
 begin
    Assert(anItem.InheritsFrom(ItemsClass));
 	Assert(CanAdd(TXCollectionItemClass(anItem.ClassType)));
-	if Assigned(anItem.FOwner) then
-		anItem.FOwner.FList.Remove(anItem);
-	anItem.FOwner:=Self;
-	Result:=FList.Add(anItem);
+   if Assigned(anItem.FOwner) then begin
+      anItem.FOwner.FList.Remove(anItem);
+      anItem.FOwner.FCount:=anItem.FOwner.FList.Count;
+   end;
+   anItem.FOwner:=Self;
+   Result:=FList.Add(anItem);
    FCount:=FList.Count;
 end;
 
@@ -605,8 +607,7 @@ function TXCollection.GetOrCreate(anItem:TXCollectionItemClass) : TXCollectionIt
 var
 	i : Integer;
 begin
-        Assert(anItem.InheritsFrom(ItemsClass));
-
+   Assert(anItem.InheritsFrom(ItemsClass));
 	i:=Self.IndexOfClass(anItem);
 	if i>=0 then
 		Result:=TXCollectionItem(Self[i])
