@@ -587,8 +587,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLCrossPlatform;
-
 resourcestring
    cCannotAlterAnActiveContext = 'Cannot alter an active context';
    cInvalidContextRegistration = 'Invalid context registration';

@@ -85,7 +85,7 @@ type
 
          procedure CreateParams(var Params: TCreateParams); override;
          procedure CreateWnd; override;
-         procedure DestroyWindowHandle; override;
+         procedure DestroyWnd; override;
          procedure Loaded; override;
          procedure DoBeforeRender(Sender : TObject); dynamic;
          procedure DoBufferChange(Sender : TObject); virtual;
@@ -330,9 +330,9 @@ begin
    end;
 end;
 
-// DestroyWindowHandle
+// DestroyWnd
 //
-procedure TGLSceneViewer.DestroyWindowHandle;
+procedure TGLSceneViewer.DestroyWnd;
 begin
    FBuffer.DestroyRC;
    if FOwnDC<>0 then begin

@@ -2113,8 +2113,6 @@ type
          { Public Declarations }
    end;
 
-   EOpenGLError = class(Exception);
-
    TInvokeInfoForm  = procedure (aSceneBuffer : TGLSceneBuffer; Modal : boolean);
 
 {: Register an event handler triggered by any TGLBaseSceneObject Name change.<p>
@@ -2266,7 +2264,7 @@ begin
          else Result:=0;
       end;
       psMaxDepth : begin
-         Diff:=Round(TPickRecord(Item1).ZMax-TPickRecord(Item2).ZMax);
+         Diff:=TPickRecord(Item1).ZMax-TPickRecord(Item2).ZMax;
          if Diff < 0 then
             Result:=-1
          else if Diff > 0 then
@@ -7281,8 +7279,8 @@ begin
    SetVector(cam, Camera.AbsolutePosition);
    //targ:=Camera.TargetObject.Position.AsAffineVector;
    //SubtractVector(targ,cam);
-   pix[0]:=FViewPort.Width/2;
-   pix[1]:=FViewPort.Height/2;
+   pix[0]:=FViewPort.Width*0.5;
+   pix[1]:=FViewPort.Height*0.5;
    pix[2]:=0;
    targ:=self.ScreenToVector(pix);
 
@@ -7370,8 +7368,8 @@ begin
          for I:=0 to Hits-1 do begin
             current:=next;
             next:=current + buffer[current] + 3;
-            szmin:=(buffer[current + 1] shr 1) / MaxInt;
-            szmax:=(buffer[current + 2] shr 1) / MaxInt;
+            szmin:=(buffer[current + 1] shr 1) * (1/MaxInt);
+            szmax:=(buffer[current + 2] shr 1) * (1/MaxInt);
             subObj:=nil;
             subObjIndex:=current+4;
             if subObjIndex<next then begin
@@ -7483,8 +7481,8 @@ begin
    coord[0]:=x;
    coord[1]:=y;
    vec:=self.ScreenToVector(coord);     //get the pixel vector
-   coord[0]:=Round(FViewPort.Width/2);
-   coord[1]:=Round(FViewPort.Height/2);
+   coord[0]:=FViewPort.Width div 2;
+   coord[1]:=FViewPort.Height div 2;
    norm:=self.ScreenToVector(coord);    //get the absolute camera direction
    camAng:=VectorAngleCosine(norm,vec);
    Result:=dst/camAng;                 //compensate for flat frustrum face

@@ -122,6 +122,9 @@ function GetCurrentColorDepth : Integer;
 {: Returns the number of color bits associated to the given pixel format. }
 function PixelFormatToColorBits(aPixelFormat : TPixelFormat) : Integer;
 
+{: Returns the bitmap's scanline for the specified row. }
+function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
+
 {: Suspends thread execution for length milliseconds.<p>
    If length is zero, only the remaining time in the current thread's time
    slice is relinquished. }
@@ -422,6 +425,19 @@ begin
    end;
 end;
 
+// BitmapScanLine
+//
+function BitmapScanLine(aBitmap : TGLBitmap; aRow : Integer) : Pointer;
+begin
+{$ifdef FPC}
+   Assert(False, 'BitmapScanLine unsupported');
+   Result:=nil;
+{$else}
+   Result:=aBitmap.ScanLine[aRow];
+{$endif}
+end;
+
+
 // Sleep
 //
 procedure Sleep(length : Cardinal);
@@ -454,7 +470,7 @@ var
 {$endif}
 begin
 {$ifdef WIN32}
-   Result:=Windows.QueryPerformanceFrequency(val);
+   Result:=Boolean(Windows.QueryPerformanceFrequency(val));
 {$else}
    aTime:=Now;
    while aTime=Now do ;
@@ -492,7 +508,7 @@ begin
    QueryPerformanceCounter(cur);
    if not vInvPerformanceCounterFrequencyReady then begin
       QueryPerformanceFrequency(freq);
-      vInvPerformanceCounterFrequency:=1/freq;
+      vInvPerformanceCounterFrequency:=1.0/freq;
       vInvPerformanceCounterFrequencyReady:=True;
    end;
    Result:=(cur-precisionTimer)*vInvPerformanceCounterFrequency;

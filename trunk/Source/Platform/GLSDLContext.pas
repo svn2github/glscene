@@ -274,8 +274,6 @@ end;
 // DoCreateContext
 //
 procedure TGLSDLContext.DoCreateContext(outputDevice : Integer);
-const
-   cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
 var
    sdlOpt : TSDLWindowOptions;
 begin

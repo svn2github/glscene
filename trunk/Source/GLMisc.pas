@@ -67,7 +67,7 @@ unit GLMisc;
 
 interface
 
-uses Classes, VectorGeometry, OpenGL1x, Spline, VectorLists, GLState;
+uses Classes, VectorGeometry, OpenGL1x, Spline, VectorLists;
 
 {$i GLScene.inc}
 
@@ -1239,7 +1239,7 @@ begin
    if Count>0 then begin
       for i:=0 to Count-1 do
          AddVector(Result, PAffineVector(Items[i].AsAddress)^);
-      ScaleVector(Result, 1/Count);
+      ScaleVector(Result, 1.0/Count);
    end;
 end;
 
@@ -1494,7 +1494,7 @@ begin
          // cubic spline
          GetMem(newVertices, 2*splineDivisions*Count*SizeOf(TAffineVector));
          spline:=CreateNewCubicSpline;
-         f:=1/splineDivisions;
+         f:=1.0/splineDivisions;
          if invertNormals then begin
             for i:=splineDivisions*(Count-1) downto 0 do begin
                splinePos:=AllocNewVertex;

@@ -548,14 +548,14 @@ begin
    if Height>0 then begin
       pDest:=@PChar(FData)[Width*4*(Height-1)];
       if Height=1 then begin
-         BGR24ToRGBA32(aBitmap.ScanLine[0], pDest, Width);
+         BGR24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, Width);
       end else begin
          if VerticalReverseOnAssignFromBitmap then begin
-            pSrc:=aBitmap.ScanLine[Height-1];
-            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+            pSrc:=BitmapScanLine(aBitmap, Height-1);
+            rowOffset:=Integer(BitmapScanLine(aBitmap, Height-2))-Integer(pSrc);
          end else begin
-            pSrc:=aBitmap.ScanLine[0];
-            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+            pSrc:=BitmapScanLine(aBitmap, 0);
+            rowOffset:=Integer(BitmapScanLine(aBitmap, 1))-Integer(pSrc);
          end;
          for y:=0 to Height-1 do begin
             BGR24ToRGBA32(pSrc, pDest, Width);
@@ -582,14 +582,14 @@ begin
    if Height>0 then begin
       pDest:=@PChar(FData)[Width*4*(Height-1)];
       if Height=1 then begin
-         RGB24ToRGBA32(aBitmap.ScanLine[0], pDest, Width);
+         RGB24ToRGBA32(BitmapScanLine(aBitmap, 0), pDest, Width);
       end else begin
          if VerticalReverseOnAssignFromBitmap then begin
-            pSrc:=aBitmap.ScanLine[Height-1];
-            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+            pSrc:=BitmapScanLine(aBitmap, Height-1);
+            rowOffset:=Integer(BitmapScanLine(aBitmap, Height-2))-Integer(pSrc);
          end else begin
-            pSrc:=aBitmap.ScanLine[0];
-            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+            pSrc:=BitmapScanLine(aBitmap, 0);
+            rowOffset:=Integer(BitmapScanLine(aBitmap, 1))-Integer(pSrc);
          end;
          for y:=0 to Height-1 do begin
             RGB24ToRGBA32(pSrc, pDest, Width);
@@ -616,14 +616,14 @@ begin
    if Height>0 then begin
       pDest:=@PChar(FData)[Width*4*(Height-1)];
       if VerticalReverseOnAssignFromBitmap then begin
-         pSrc:=aBitmap.ScanLine[Height-1];
+         pSrc:=BitmapScanLine(aBitmap, Height-1);
          if Height>1 then
-            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc)
+            rowOffset:=Integer(BitmapScanLine(aBitmap, Height-2))-Integer(pSrc)
          else rowOffset:=0;
       end else begin
-         pSrc:=aBitmap.ScanLine[0];
+         pSrc:=BitmapScanLine(aBitmap, 0);
          if Height>1 then
-            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc)
+            rowOffset:=Integer(BitmapScanLine(aBitmap, 1))-Integer(pSrc)
          else rowOffset:=0;
       end;
       for y:=0 to Height-1 do begin
@@ -721,7 +721,7 @@ begin
    if Height>0 then begin
       pSrc:=@PChar(FData)[Width*4*(Height-1)];
       for y:=0 to Height-1 do begin
-         pDest:=Result.ScanLine[y];
+         pDest:=BitmapScanLine(Result, y);
          for x:=0 to Width-1 do begin
             x4:=x*4;
             pDest[x4+0]:=pSrc[x4+2];
@@ -1090,9 +1090,9 @@ begin
                dcy:=scale*(prevRow[x].g-nextRow[x].g);
                invLen:=127*RSqrt(dcx*dcx+dcy*dcy+1);
                with p^ do begin
-                  r:=Round(128+ClampValue(dcx*invLen, -128, 127));
-                  g:=Round(128+ClampValue(dcy*invLen, -128, 127));
-                  b:=Round(128+ClampValue(invLen, -128, 127));
+                  r:=Integer(Round(128+ClampValue(dcx*invLen, -128, 127)));
+                  g:=Integer(Round(128+ClampValue(dcy*invLen, -128, 127)));
+                  b:=Integer(Round(128+ClampValue(invLen, -128, 127)));
                   a:=255;
                end;
                Inc(p);

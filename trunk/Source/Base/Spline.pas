@@ -180,7 +180,7 @@ begin
          i:=0
       else if x>nb-1 then
          i:=nb-1
-      else i:=Trunc(x);
+      else i:=Integer(Trunc(x));
       { TODO : the following line looks like a bug... }
       if i=(nb-1) then Dec(i);
       Result:=((spline[i][0]*x+spline[i][1])*x+spline[i][2])*x+spline[i][3];
@@ -199,7 +199,7 @@ begin
          i:=0
       else if x>nb-1 then
          i:=nb-1
-      else i:=Trunc(x);
+      else i:=Integer(Trunc(x));
       { TODO : the following line looks like a bug... }
       if i=(nb-1) then Dec(i);
       Result:=(3*spline[i][0]*x+2*spline[i][1])*x+spline[i][2];

@@ -56,7 +56,7 @@ procedure SaveStringToFile(const fileName, data : String);
 function LoadStringFromFile(const fileName : String) : String;
 {: Returns the size of "filename".<p>
    Returns 0 (zero) is file does not exists. }
-function SizeOfFile(const fileName : String) : Integer;
+function SizeOfFile(const fileName : String) : Int64;
 
 {: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array : PSqrt255Array;
@@ -354,7 +354,7 @@ end;
 
 // SizeOfFile
 //
-function SizeOfFile(const fileName : String) : Integer;
+function SizeOfFile(const fileName : String) : Int64;
 var
 	fs : TStream;
 begin
@@ -371,12 +371,14 @@ end;
 // GetSqrt255Array
 //
 function GetSqrt255Array : PSqrt255Array;
+const
+   cOneDiv255 = 1/255;
 var
 	i : Integer;
 begin
 	if vSqrt255[255]<>255 then begin
 		for i:=0 to 255 do
-			vSqrt255[i]:=Trunc(255*Sqrt(i/255));
+			vSqrt255[i]:=Integer(Trunc(255*Sqrt(i*cOneDiv255)));
 	end;
 	Result:=@vSqrt255;
 end;

@@ -670,13 +670,16 @@ end;
 procedure TPersistentObject.SaveToStream(stream : TStream; writerClass : TVirtualWriterClass = nil);
 var
    wr : TVirtualWriter;
+   fileSig : String;
 begin
    if writerClass=nil then
       writerClass:=TBinaryWriter;
    wr:=writerClass.Create(stream);
    try
-      if FileSignature<>'' then
-         wr.Write(FileSignature[1], Length(FileSignature));
+      if FileSignature<>'' then begin
+         fileSig:=FileSignature;
+         wr.Write(fileSig[1], Length(fileSig));
+      end;
       WriteToFiler(wr);
    finally
       wr.Free;
@@ -1391,7 +1394,7 @@ end;
 //
 function TBinaryReader.NextValue : TValueType;
 var
-   pos : Cardinal;
+   pos : Int64;
 begin
    pos:=FStream.Position;
    Result:=ReadValue;
@@ -1401,22 +1404,22 @@ end;
 // ReadInteger
 //
 function TBinaryReader.ReadInteger : Integer;
-type
-   PShortInt = ^ShortInt;
-   PSmallInt = ^SmallInt;
+var
+   tempShort : ShortInt;
+   tempSmallInt : SmallInt;
 begin
-   Result:=0;
    case ReadValue of
       vaInt8  : begin
-         Read(Result, 1);
-         Result:=PShortInt(@Result)^;  // sign extend
+         Read(tempShort, 1);
+         Result:=tempShort;
       end;
       vaInt16 : begin
-         Read(Result, 2);
-         Result:=PSmallInt(@Result)^;  // sign extend
+         Read(tempSmallInt, 2);
+         Result:=tempSmallInt;
       end;
       vaInt32 : Read(Result, 4);
    else
+      Result:=0;
       ReadTypeError;
    end;
 end;
@@ -1678,7 +1681,7 @@ end;
 //
 function TTextReader.NextValue : TValueType;
 var
-   p : Integer;
+   p : Int64;
 begin
    p:=Stream.Position;
    ReadLine;
@@ -1766,7 +1769,7 @@ end;
 //
 function TTextReader.EndOfList : Boolean;
 var
-   p : Integer;
+   p : Int64;
 begin
    p:=Stream.Position;
    ReadLine;

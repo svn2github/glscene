@@ -130,8 +130,6 @@ uses
   ;
 
 type
-
-   TColor = TDelphiColor;
 	PColorVector = ^TColorVector;
    TColorVector = TVector;
 
@@ -716,12 +714,14 @@ type
 
 		published
          { Public Declarations }
+         {$ifndef FPC}
          property PicturePX : TGLPicture index cmtPX read GetPicture write SetPicture;
          property PictureNX : TGLPicture index cmtNX read GetPicture write SetPicture;
          property PicturePY : TGLPicture index cmtPY read GetPicture write SetPicture;
          property PictureNY : TGLPicture index cmtNY read GetPicture write SetPicture;
          property PicturePZ : TGLPicture index cmtPZ read GetPicture write SetPicture;
          property PictureNZ : TGLPicture index cmtNZ read GetPicture write SetPicture;
+         {$endif}
 	end;
 
    TGLLibMaterial = Class;

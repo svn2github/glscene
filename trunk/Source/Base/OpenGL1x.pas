@@ -109,13 +109,13 @@ type
    GLhandleARB = Cardinal;
    PGLhandleARB = ^GLhandleARB;
 
-   PPCharArray = ^PChar;
+   PGLPCharArray = ^PChar;
 
    PGLvoid = Pointer;
 
    TVector4p = array[0..3] of Pointer;
 
-   PPointer = ^Pointer;
+   PGLPointer = ^Pointer;
 
   PWGLSwap = ^TWGLSwap;
   _WGLSWAP = packed record
@@ -2269,13 +2269,13 @@ type
    TGLUTessVertexProc = procedure(VertexData: Pointer); stdcall;
    TGLUTessEndProc = procedure; stdcall;
    TGLUTessErrorProc = procedure(ErrNo: TGLEnum); stdcall;
-   TGLUTessCombineProc = procedure(Coords: TVector3d; VertexData: TVector4p; Weight: TVector4f; OutData: PPointer); stdcall;
+   TGLUTessCombineProc = procedure(Coords: TVector3d; VertexData: TVector4p; Weight: TVector4f; OutData: PGLPointer); stdcall;
    TGLUTessBeginDataProc = procedure(AType: TGLEnum; UserData: Pointer); stdcall;
    TGLUTessEdgeFlagDataProc = procedure(Flag: TGLboolean; UserData: Pointer); stdcall;
    TGLUTessVertexDataProc = procedure(VertexData: Pointer; UserData: Pointer); stdcall;
    TGLUTessEndDataProc = procedure(UserData: Pointer); stdcall;
    TGLUTessErrorDataProc = procedure(ErrNo: TGLEnum; UserData: Pointer); stdcall;
-   TGLUTessCombineDataProc = procedure(Coords: TVector3d; VertexData: TVector4p; Weight: TVector4f; OutData: PPointer; UserData: Pointer); stdcall;
+   TGLUTessCombineDataProc = procedure(Coords: TVector3d; VertexData: TVector4p; Weight: TVector4f; OutData: PGLPointer; UserData: Pointer); stdcall;
 
    // GLUNurbsCallback
    TGLUNurbsErrorProc = procedure(ErrorCode: TGLEnum); stdcall;
@@ -2983,7 +2983,7 @@ var
    glGetHandleARB: function(pname: GLenum): GLhandleARB; stdcall;
    glDetachObjectARB: procedure(containerObj: GLhandleARB; attachedObj: GLhandleARB); stdcall;
    glCreateShaderObjectARB: function(shaderType: GLenum): GLhandleARB; stdcall;
-   glShaderSourceARB: procedure(shaderObj: GLhandleARB; count: GLsizei; const _string: PPCharArray; const length: PGLint); stdcall;
+   glShaderSourceARB: procedure(shaderObj: GLhandleARB; count: GLsizei; const _string: PGLPCharArray; const length: PGLint); stdcall;
    glCompileShaderARB: procedure(shaderObj: GLhandleARB); stdcall;
    glCreateProgramObjectARB: function(): GLhandleARB; stdcall;
    glAttachObjectARB: procedure(containerObj: GLhandleARB; obj: GLhandleARB); stdcall;
@@ -3144,7 +3144,7 @@ var
    glGetVertexAttribdvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLdouble); stdcall;
    glGetVertexAttribfvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLfloat); stdcall;
    glGetVertexAttribivNV: procedure (index: TGLuint; pname: TGLenum; params: PGLint); stdcall;
-   glGetVertexAttribPointervNV: procedure (index: TGLuint; pname: TGLenum; pointer: PPointer); stdcall;
+   glGetVertexAttribPointervNV: procedure (index: TGLuint; pname: TGLenum; pointer: PGLPointer); stdcall;
    glIsProgramNV: function (id: TGLuint): TGLboolean; stdcall;
    glLoadProgramNV: procedure (target: TGLenum; id: TGLuint; len: TGLSizei; programIdx: PGLubyte); stdcall;
    glProgramParameter4dNV: procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLdouble); stdcall;

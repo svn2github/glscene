@@ -386,8 +386,8 @@ type
          procedure Offset(delta : Integer; const base, nb : Integer); overload;
 	end;
 
-   TSingleArray = array [0..MaxInt shr 4] of Single;
-   PSingleArray = ^TSingleArray;
+   TSingleArrayList = array [0..MaxInt shr 4] of Single;
+   PSingleArrayList = ^TSingleArrayList;
 
   	// TSingleList
 	//
@@ -397,7 +397,7 @@ type
 	TSingleList = class (TBaseList)
 		private
          { Private Declarations }
-			FList: PSingleArray;
+			FList : PSingleArrayList;
 
 		protected
          { Protected Declarations }
@@ -416,7 +416,7 @@ type
 			procedure Insert(Index : Integer; const item : Single);
 
 			property Items[Index: Integer] : Single read Get write Put; default;
-			property List: PSingleArray read FList;
+			property List : PSingleArrayList read FList;
 
          procedure AddSerie(aBase, aDelta : Single; aCount : Integer);
          
@@ -537,7 +537,7 @@ procedure QuickSortLists(startIndex, endIndex : Integer;
 								 refList : TSingleList; objList : TList);
 var
 	I, J : Integer;
-	P : single;
+	P : Single;
 begin
 	if endIndex-startIndex>1 then begin
 		repeat
@@ -571,7 +571,7 @@ procedure QuickSortLists(startIndex, endIndex : Integer;
 								 refList : TSingleList; objList : TBaseList);
 var
 	I, J : Integer;
-	P : single;
+	P : Single;
 begin
 	if endIndex-startIndex>1 then begin
 		repeat
@@ -603,8 +603,6 @@ end;
 //
 procedure FastQuickSortLists(startIndex, endIndex : Integer;
 								     refList : TSingleList; objList : TPersistentObjectList);
-type
-   PSingle = ^Single;
 var
 	i, j : Integer;
 	p, temp : Integer;
@@ -904,7 +902,7 @@ begin
       Assert(Cardinal(curIndex)<Cardinal(Count));
 {$ENDIF}
       if FItemSize=4 then
-         PInteger(BufferItem)^:=PInteger(FBaseList[curIndex*FItemSize])^
+         PInteger(BufferItem)^:=PInteger(@FBaseList[curIndex*FItemSize])^
       else System.Move(FBaseList[curIndex*FItemSize], BufferItem[0], FItemSize);
       if curIndex<newIndex then begin
          // curIndex+1 necessarily exists since curIndex<newIndex and newIndex<Count
@@ -2373,7 +2371,7 @@ end;
 procedure TSingleList.SetCapacity(NewCapacity : Integer);
 begin
    inherited;
-   FList:=PSingleArray(FBaseList);
+   FList:=PSingleArrayList(FBaseList);
 end;
 
 // Push
@@ -2439,7 +2437,7 @@ end;
 procedure TSingleList.Sqr;
 var
    i : Integer;
-   locList : PSingleArray;
+   locList : PSingleArrayList;
 begin
    locList:=FList;
    for i:=0 to Count-1 do
@@ -2451,7 +2449,7 @@ end;
 procedure TSingleList.Sqrt;
 var
    i : Integer;
-   locList : PSingleArray;
+   locList : PSingleArrayList;
 begin
    locList:=FList;
    for i:=0 to Count-1 do
@@ -2462,7 +2460,7 @@ end;
 //
 function TSingleList.Sum : Single;
 
-   function ComputeSum(list : PSingleArray; nb : Integer) : Single; register;
+   function ComputeSum(list : PSingleArrayList; nb : Integer) : Single; register;
    asm
          fld   dword ptr [eax]
    @@Loop:
