@@ -231,6 +231,7 @@ type
          FSingleData : PSingleArray;
          FSingleRaster : PSingleRaster;
          FTextureCoordinatesMode : THDTextureCoordinatesMode;
+         FTCOffset, FTCScale : TTexPoint;
          FMaterialName : String;
          FObjectTag : TObject;
          FTag, FTag2 : Integer;
@@ -332,6 +333,8 @@ type
          {: Texture coordinates generation mode.<p>
             Default is tcmWorld coordinates. }
          property TextureCoordinatesMode : THDTextureCoordinatesMode read FTextureCoordinatesMode write FTextureCoordinatesMode;
+         property TextureCoordinatesOffset : TTexPoint read FTCOffset write FTCOffset;
+         property TextureCoordinatesScale : TTexPoint read FTCScale write FTCScale;
 
          {: Height of point x, y as a Byte.<p> }
 	      function ByteHeight(x, y : Integer) : Byte;
@@ -834,11 +837,13 @@ constructor THeightData.Create(aOwner : THeightDataSource;
                                aDataType : THeightDataType);
 begin
 	inherited Create;
+   SetLength(FUsers, 0);
    FOwner:=aOwner;
    FXLeft:=aXLeft;
    FYTop:=aYTop;
    FSize:=aSize;
    FTextureCoordinatesMode:=tcmWorld;
+   FTCScale:=XYTexPoint;
    FDataType:=aDataType;
    FDataState:=hdsQueued;
 end;

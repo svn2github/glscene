@@ -233,8 +233,8 @@ begin
          i:=Length(FHashTable[key]);
          SetLength(FHashTable[key], i+1);
          FHashTable[key][i]:=n;
-         for qx:=QuadTableX(left) to QuadTableX(left+width) do begin
-            for qy:=QuadTableY(top) to QuadTableY(top+height) do begin
+         for qx:=QuadTableX(left) to QuadTableX(left+width-1) do begin
+            for qy:=QuadTableY(top) to QuadTableY(top+height-1) do begin
                i:=Length(FQuadTable[qx, qy]);
                SetLength(FQuadTable[qx, qy], i+1);
                FQuadTable[qx, qy][i]:=n;

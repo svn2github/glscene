@@ -28,7 +28,8 @@ uses Classes, GLScene, GLHeightData, GLTexture, Geometry, GLContext, GLROAMPatch
 
 type
 
-  TOnGetTerrainBounds = procedure(var l, t, r, b : Single) of object;
+   TGetTerrainBoundsEvent = procedure(var l, t, r, b : Single) of object;
+   TPatchPostRenderEvent = procedure (var rci : TRenderContextInfo; const patches : TList) of object;
 
 	// TGLTerrainRenderer
 	//
@@ -52,7 +53,8 @@ type
          FBufferTexPoints : TTexPointList;
          FBufferVertexIndices : TIntegerList;
          FMaterialLibrary : TGLMaterialLibrary;
-         FOnGetTerrainBounds : TOnGetTerrainBounds;
+         FOnGetTerrainBounds : TGetTerrainBoundsEvent;
+         FOnPatchPostRender : TPatchPostRenderEvent;
 
 	   protected
 	      { Protected Declarations }
@@ -129,7 +131,11 @@ type
             Default rendering bounds will reach depth of view in all direction,
             with this event you can chose to specify a smaller rendered
             terrain area. }
-         property OnGetTerrainBounds : TOnGetTerrainBounds read FOnGetTerrainBounds write FOnGetTerrainBounds;
+         property OnGetTerrainBounds : TGetTerrainBoundsEvent read FOnGetTerrainBounds write FOnGetTerrainBounds;
+         {: Invoked for each rendered patch after terrain render has completed.<p>
+            The list holds TGLROAMPatch objects and allows per-patch
+            post-processings, like waters, trees... }
+         property OnPatchPostRender : TPatchPostRenderEvent read FOnPatchPostRender write FOnPatchPostRender;
 	end;
 
 // ------------------------------------------------------------------
@@ -316,7 +322,7 @@ var
    delta, n, rpIdxDelta : Integer;
    f, tileRadius, texFactor, tileDist, qDist : Single;
    patch, prevPatch : TGLROAMPatch;
-   patchList, rowList, prevRow, buf : TList;
+   patchList, rowList, prevRow, buf, postRenderList : TList;
    rcci : TRenderContextClippingInfo;
    currentMaterialName : String;
    maxTilePosX, maxTilePosY, minTilePosX, minTilePosY : Single;
@@ -352,7 +358,7 @@ begin
    SetVector(observer, vEye);
    vEye[0]:=Round(vEye[0]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
    vEye[1]:=Round(vEye[1]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
-   tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(256*Scale.Z))*1.3;
+   tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(512*Scale.Z))*1.3;
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
    delta:=TileSize;
@@ -396,6 +402,9 @@ begin
    patchList:=TList.Create;
    rowList:=TList.Create;
    prevRow:=TList.Create;
+   if Assigned(FOnPatchPostRender) then
+      postRenderList:=TList.Create
+   else postRenderList:=nil;
 
    MarkAllTilesAsUnused;
    AbsoluteMatrix; // makes sure it is available
@@ -454,6 +463,9 @@ begin
                   // CLOD patches are issued after tesselation
                   patchList.Add(patch);
                end;
+
+               if Assigned(postRenderList) then
+                  postRenderList.Add(patch);
                
             end else begin
 
@@ -501,7 +513,12 @@ begin
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
    xglPopState;
-   
+
+   if Assigned(postRenderList) then begin
+      FOnPatchPostRender(rci, postRenderList);
+      postRenderList.Free;
+   end;
+
    glPopMatrix;
 
    ReleaseAllUnusedTiles;
@@ -624,13 +641,16 @@ begin
          patch.HeightData:=tile;
          patch.VertexScale:=XYZVector;
          patch.VertexOffset:=tilePos;
-         patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
          case tile.TextureCoordinatesMode of
             tcmWorld : begin
+               patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
                patch.TextureOffset:=AffineVectorMake(xLeft*texFactor, 1-yTop*texFactor, 0);
             end;
             tcmLocal : begin
-               patch.TextureOffset:=AffineVectorMake(0, 1, 0);
+               with tile.TextureCoordinatesScale do
+               patch.TextureScale:=AffineVectorMake(texFactor*S, -texFactor*T, texFactor);
+               with tile.TextureCoordinatesOffset do
+                  patch.TextureOffset:=AffineVectorMake(0+S, 1+T, 0);
             end;
          else
             Assert(False);
