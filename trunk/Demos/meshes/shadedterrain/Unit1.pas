@@ -206,7 +206,20 @@ begin
 end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
+var
+  texunits : Cardinal;
 begin
+   if GLTexCombineShader1.Enabled then begin
+      GLSceneViewer1.Buffer.RenderingContext.Activate;
+      texunits:=GLSceneViewer1.Buffer.LimitOf[limNbTextureUnits];
+      GLSceneViewer1.Buffer.RenderingContext.Deactivate;
+      if texunits<4 then begin
+         Application.MessageBox(
+            'Not enough texture units! The shader will be disabled.',
+            'Error', MB_OK);
+         GLTexCombineShader1.Enabled:=False;
+      end;
+   end;
    GLLensFlare.PreRender(Sender as TGLSceneBuffer);
 end;
 
