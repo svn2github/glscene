@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/06/03 - EG - Added TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
       <li>01/05/03 - SG - Added NURBS Curve to TGLLines (color not supported yet)
       <li>14/04/03 - SG - Added a Simple Bezier Spline to TGLLines (color not supported yet)
       <li>02/04/03 - EG - TGLPlane.RayCastIntersect fix (Erick Schuitema)
@@ -943,7 +944,6 @@ type
 			procedure Assign(Source: TPersistent); override;
 
 			procedure BuildList(var rci : TRenderContextInfo); override;
-//         function AxisAlignedDimensions : TVector; override;
          function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
@@ -989,8 +989,10 @@ type
          procedure Assign(Source: TPersistent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
-//         function AxisAlignedDimensions : TVector; override;
          function AxisAlignedDimensionsUnscaled : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
 
       published
 			{ Published Declarations }
@@ -1021,7 +1023,6 @@ type
          constructor Create(AOwner: TComponent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
-//         function AxisAlignedDimensions : TVector; override;
          function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
@@ -4243,9 +4244,136 @@ begin
    r1:=Abs(FTopRadius);
    if r1>r then r:=r1;
    Result:=VectorMake(r, 0.5*FHeight, r);
-//   ScaleVector(Result, Scale.AsVector);
 end;
 
+// RayCastIntersect
+//
+function TGLAnnulus.RayCastIntersect(const rayStart, rayVector : TVector;
+                  intersectPoint, intersectNormal : PVector) : Boolean;
+const
+   cOne : Single = 1;
+var
+   locRayStart, locRayVector, ip : TVector;
+   poly : array [0..2] of Double;
+   roots : TDoubleArray;
+   minRoot : Double;
+   t, tr2, invRayVector1, hTop, hBottom : Single;
+   tPlaneMin, tPlaneMax : Single;
+   DistToY  :single; // Distance from rayStart to the local Y axis
+   LocalInnerRadius:single; // Radius at the height of rayStart
+   LocalOuterRadius:single; // Radius at the height of rayStart
+   CheckRadius :single; // Inner or outer radius depending on the position of rayStart
+   tir2,d2 :single;
+begin
+   Result:=False;
+   locRayStart:=AbsoluteToLocal(rayStart);
+   locRayVector:=AbsoluteToLocal(rayVector);
+
+   hTop:=Height*0.5;
+   hBottom:=-hTop;
+
+   if locRayVector[1]=0 then begin
+      // intersect if ray shot through the top/bottom planes
+      if (locRayStart[0]>hTop) or (locRayStart[0]<hBottom) then
+         Exit;
+      tPlaneMin:=-1e99;
+      tPlaneMax:=1e99;
+   end else begin
+      invRayVector1:=cOne/locRayVector[1];
+      tr2:=Sqr(TopRadius);
+      tir2:=Sqr(TopInnerRadius);
+
+      // compute intersection with topPlane
+      t:=(hTop-locRayStart[1])*invRayVector1;
+      if (t>0) and (anTop in Parts) then begin
+         ip[0]:=locRayStart[0]+t*locRayVector[0];
+         ip[2]:=locRayStart[2]+t*locRayVector[2];
+         d2:=Sqr(ip[0])+Sqr(ip[2]);
+         if (d2<=tr2)and(d2>=tir2) then begin
+            // intersect with top plane
+            if Assigned(intersectPoint) then
+               intersectPoint^:=LocalToAbsolute(VectorMake(ip[0], hTop, ip[2], 1));
+            if Assigned(intersectNormal) then
+               intersectNormal^:=LocalToAbsolute(YHmgVector);
+            Result:=True;
+         end;
+      end;
+      tPlaneMin:=t;
+      tPlaneMax:=t;
+      // compute intersection with bottomPlane
+      t:=(hBottom-locRayStart[1])*invRayVector1;
+      if (t>0) and (anBottom in Parts) then begin
+         ip[0]:=locRayStart[0]+t*locRayVector[0];
+         ip[2]:=locRayStart[2]+t*locRayVector[2];
+         d2:=Sqr(ip[0])+Sqr(ip[2]);
+         if (t<tPlaneMin) or (not (anTop in Parts)) then begin
+            if (d2<=tr2)and(d2>=tir2) then begin
+               // intersect with top plane
+               if Assigned(intersectPoint) then
+                  intersectPoint^:=LocalToAbsolute(VectorMake(ip[0], hBottom, ip[2], 1));
+               if Assigned(intersectNormal) then
+                  intersectNormal^:=LocalToAbsolute(VectorNegate(YHmgVector));
+               Result:=True;
+            end;
+         end;
+      end;
+      if t<tPlaneMin then
+         tPlaneMin:=t;
+      if t>tPlaneMax then
+         tPlaneMax:=t;
+   end;
+
+   {Which cylinder will be checked for intersection?}
+   DistToY:=sqrt(sqr(locRayStart[0])+sqr(locRayStart[2]));  // Distance to annulus axis
+   LocalInnerRadius:=(TopInnerRadius-BottomInnerRadius)/Height*locRayStart[1]
+                     +(BottomInnerRadius+TopInnerRadius)/2; // Inner radius at the height of rayStart
+   LocalOuterRadius:=(TopRadius-BottomRadius)/Height*locRayStart[1]
+                     +(BottomRadius+TopRadius)/2; // Outer radius at the height of rayStart
+   if DistToY<LocalInnerRadius then CheckRadius:=TopInnerRadius   // The annulus has the same width all along
+   else if DistToY>LocalOuterRadius then CheckRadius:=TopRadius
+   else begin // rayStart is in the annulus, check which the rayVector will intersect first
+      {Let C be a circle C of centre O and radius r, P any point outside of C,
+      d = ||OP|| > r, I one of the tangent points to C from P and t = ||IP||,
+      and v any unitary vector.
+      Let x be the length of the projection of OP on v. (i.e. < OP , v > the norm product
+      If x^2 > t^2, then the line through P parallel to v will interset C
+      (No demonstration, but obvious if you draw it on a sheet of paper)
+      Pythagore says that t^2 = d^2 - r^2
+      Therefore intersection occurs if <OP,v>^2 > d^2 - r^2
+      }
+      if sqr(RayVector[0]*RayStart[0]+RayVector[1]*RayStart[1])    // <OP,v>^2
+         > (sqr(DistToY)-sqr(LocalInnerRadius) )                     // d^2 - r^2
+
+      then CheckRadius:=TopInnerRadius
+      else CheckRadius:=TopRadius;
+   end;//else
+
+   if ((anInnerSides in Parts)and(CheckRadius<TopRadius))or
+      ((anOuterSides in Parts)and(CheckRadius>TopInnerRadius))
+   then begin
+      // intersect against infinite cylinder
+      poly[0]:=Sqr(locRayStart[0])+Sqr(locRayStart[2])-Sqr(CheckRadius);
+      poly[1]:=2*(locRayStart[0]*locRayVector[0]+locRayStart[2]*locRayVector[2]);
+      poly[2]:=Sqr(locRayVector[0])+Sqr(locRayVector[2]);
+      roots:=SolveQuadric(@poly);
+      if MinPositiveCoef(roots, minRoot) then begin
+         t:=minRoot;
+         if (t>=tPlaneMin) and (t<tPlaneMax) then begin
+            if Assigned(intersectPoint) or Assigned(intersectNormal) then begin
+               ip:=VectorCombine(locRayStart, locRayVector, 1, t);
+               if Assigned(intersectPoint) then
+                  intersectPoint^:=LocalToAbsolute(ip);
+               if Assigned(intersectNormal) then begin
+                  ip[1]:=0;
+                  ip[3]:=0;
+                  intersectNormal^:=LocalToAbsolute(ip);
+               end;
+            end;
+            Result:=True;
+         end;
+      end;
+   end else SetLength(roots, 0);
+end;
 
 // ------------------
 // ------------------ TGLTorus ------------------
