@@ -5,8 +5,10 @@
 	Particles are made of a dummycube (used as axis, hosting an inertia) and a
 	child Sprite (untextured, unblended). Depth test is disabled.<p>
 
-	CPU	 	 OS		Renderer				Colors 	 Particles	 FPS		Rating
-   K7-1Ghz  Win98    GF2 Pro-12.41     32 bits      360    120.5      43200
+	CPU	     OS	      Renderer	        Colors      Particles	 FPS		Rating
+        K7-1.2Ghz   Win98     GF2 Pro-23.11     32 bits      404    134.2      54200
+	------ 20/01/02 : Long time no bench
+        K7-1Ghz  Win98    GF2 Pro-12.41     32 bits      360    120.5      43200
 	------ 04/09/01 : Long time no bench
 	K7-500   Win98    GeForce-5.33      32 bits      255    120.2      30600
 	------ 13/01/00 : Another Matrix setup change

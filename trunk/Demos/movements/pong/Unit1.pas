@@ -10,7 +10,7 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, GLMisc, GLTexture, Geometry, ExtCtrls,
-  Classes, Controls, GLCadencer, GLWin32Viewer;
+  Classes, Controls, GLCadencer, GLWin32Viewer, GLSpaceText;
 
 type
   TForm1 = class(TForm)

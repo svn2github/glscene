@@ -115,6 +115,7 @@ begin
    // re-center the HUDSprite
    HUDSprite1.Position.X:=GLSceneViewer1.Width/2;
    HUDSprite1.Position.Y:=GLSceneViewer1.Height/2;
+   GLSceneViewer1.Invalidate;
 end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
