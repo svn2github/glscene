@@ -173,7 +173,12 @@ type
       procedure Execute(var ExternalObject: TObject); override;
   end;
 
-  TGLBaseSceneObjectGetAbsoluteMatrixMethod = class(TInternalMethod)
+  TGLBaseSceneObjectAbsoluteMatrixMethod = class(TInternalMethod)
+    public
+      procedure Execute(var ExternalObject: TObject); override;
+  end;
+
+  TGLBaseSceneObjectInvAbsoluteMatrixMethod = class(TInternalMethod)
     public
       procedure Execute(var ExternalObject: TObject); override;
   end;
@@ -550,11 +555,18 @@ begin
   SetInfoFromMatrix(Info.Vars['Result'], TGLBaseSceneObject(ExternalObject).Matrix);
 end;
 
-// TGLBaseSceneObject.GetAbsoluteMatrix
-procedure TGLBaseSceneObjectGetAbsoluteMatrixMethod.Execute(var ExternalObject: TObject);
+// TGLBaseSceneObject.AbsoluteMatrix
+procedure TGLBaseSceneObjectAbsoluteMatrixMethod.Execute(var ExternalObject: TObject);
 begin
   ValidateExternalObject(ExternalObject, TGLBaseSceneObject);
   SetInfoFromMatrix(Info.Vars['Result'], TGLBaseSceneObject(ExternalObject).AbsoluteMatrix);
+end;
+
+// TGLBaseSceneObject.InvAbsoluteMatrix
+procedure TGLBaseSceneObjectInvAbsoluteMatrixMethod.Execute(var ExternalObject: TObject);
+begin
+  ValidateExternalObject(ExternalObject, TGLBaseSceneObject);
+  SetInfoFromMatrix(Info.Vars['Result'], TGLBaseSceneObject(ExternalObject).InvAbsoluteMatrix);
 end;
 
 // TGLBaseSceneObject.SetAbsolutePosition
@@ -843,8 +855,10 @@ begin
     TGLBaseSceneObjectSetMatrixMethod.Create(mkProcedure, [], 0, 'SetMatrix', ['Value', 'TMatrix'], '', ClassSym, SymbolTable);
   if not Assigned(ClassSym.Members.FindLocal('GetMatrix')) then
     TGLBaseSceneObjectGetMatrixMethod.Create(mkFunction, [], 0, 'GetMatrix', [], 'TMatrix', ClassSym, SymbolTable);
-  if not Assigned(ClassSym.Members.FindLocal('GetAbsoluteMatrix')) then
-    TGLBaseSceneObjectGetAbsoluteMatrixMethod.Create(mkFunction, [], 0, 'GetAbsoluteMatrix', [], 'TMatrix', ClassSym, SymbolTable);
+  if not Assigned(ClassSym.Members.FindLocal('AbsoluteMatrix')) then
+    TGLBaseSceneObjectAbsoluteMatrixMethod.Create(mkFunction, [], 0, 'AbsoluteMatrix', [], 'TMatrix', ClassSym, SymbolTable);
+  if not Assigned(ClassSym.Members.FindLocal('InvAbsoluteMatrix')) then
+    TGLBaseSceneObjectInvAbsoluteMatrixMethod.Create(mkFunction, [], 0, 'InvAbsoluteMatrix', [], 'TMatrix', ClassSym, SymbolTable);
   if not Assigned(ClassSym.Members.FindLocal('SetAbsolutePosition')) then
     TGLBaseSceneObjectSetAbsolutePositionMethod.Create(mkProcedure, [], 0, 'SetAbsolutePosition', ['Value', 'TVector'], '', ClassSym, SymbolTable);
   if not Assigned(ClassSym.Members.FindLocal('GetAbsolutePosition')) then
@@ -899,7 +913,6 @@ begin
   // Properties
   AddPropertyToClass('Visible', 'Boolean', 'GetVisible', 'SetVisible', '', False, ClassSym, SymbolTable);
   AddPropertyToClass('Matrix', 'TMatrix', 'GetMatrix', 'SetMatrix', '', False, ClassSym, SymbolTable);
-  AddPropertyToClass('AbsoluteMatrix', 'TMatrix', 'GetAbsoluteMatrix', '', '', False, ClassSym, SymbolTable);
   AddPropertyToClass('AbsolutePosition', 'TVector', 'GetAbsolutePosition', 'SetAbsolutePosition', '', False, ClassSym, SymbolTable);
   AddPropertyToClass('AbsoluteUp', 'TVector', 'GetAbsoluteUp', 'SetAbsoluteUp', '', False, ClassSym, SymbolTable);
   AddPropertyToClass('AbsoluteDirection', 'TVector', 'GetAbsoluteDirection', 'SetAbsoluteDirection', '', False, ClassSym, SymbolTable);
