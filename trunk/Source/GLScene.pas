@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>27/08/02 - Egg - Added TGLProxyObject.RayCastIntersect (Matheus Degiovani)
+      <li>27/08/02 - Egg - Added TGLProxyObject.RayCastIntersect (Matheus Degiovani),
+                           Fixed PixelRayToWorld
       <li>22/08/02 - Egg - Fixed src LocalMatrix computation on Assign
       <li>12/08/02 - Egg - Fixed Effects persistence 'Assert' issue (David Alcelay),
                            TGLSceneBuffer.PickObjects now preserves ProjMatrix 
@@ -200,9 +201,6 @@
    </ul></font>
 }
 unit GLScene;
-// TGLScene    - An encapsulation of the OpenGL API
-// Version     - 0.5.8
-// 30-DEC-99 ml: adjustments for Delphi 5
 
 interface
 
@@ -6423,7 +6421,7 @@ begin
    vec[2]:=0;
    vec   :=ScreenToVector(vec);
    NormalizeVector(vec);
-   cam :=Camera.Position.AsAffineVector;
+   SetVector(cam, Camera.AbsolutePosition);
    //targ:=Camera.TargetObject.Position.AsAffineVector;
    //SubtractVector(targ,cam);
    pix[0]:=FViewPort.Width/2;
