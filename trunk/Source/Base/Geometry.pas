@@ -2530,6 +2530,7 @@ procedure VectorCombine(const V1, V2: TVector; const F1, F2: Single; var vr : TV
 // ECX contains address of vr
 // ebp+$c points to f1
 // ebp+$8 points to f2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -2585,6 +2586,12 @@ asm
       FMUL DWORD PTR [EBP+$08]
       FADD
       FSTP DWORD PTR [ECX+12]
+{$else}
+   vr[0]:=(F1 * V1[0]) + (F2 * V2[0]);
+   vr[1]:=(F1 * V1[1]) + (F2 * V2[1]);
+   vr[2]:=(F1 * V1[2]) + (F2 * V2[2]);
+   vr[3]:=(F1 * V1[3]) + (F2 * V2[3]);
+{$endif}
 end;
 
 // VectorCombine
@@ -2618,6 +2625,7 @@ procedure VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single; va
 // ebp+$10 points to f2
 // ebp+$0c points to f3
 begin
+{$ifndef GEOMETRY_NO_ASM}
    asm
       test vSIMD, 1
       jz @@FPU
@@ -2655,6 +2663,7 @@ begin
       ret $10
 @@FPU:      // 263
    end;
+{$endif}
    vr[X]:=(F1 * V1[X]) + (F2 * V2[X]) + (F3 * V3[X]);
    vr[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]) + (F3 * V3[Y]);
    vr[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]) + (F3 * V3[Z]);
@@ -2667,6 +2676,7 @@ function VectorDotProduct(const V1, V2 : TAffineVector): Single; assembler; regi
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD DWORD PTR [EAX]
          FMUL DWORD PTR [EDX]
@@ -2676,6 +2686,9 @@ asm
          FLD DWORD PTR [EAX + 8]
          FMUL DWORD PTR [EDX + 8]
          FADDP
+{$else}
+   Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];
+{$endif}
 end;
 
 // VectorDotProduct (hmg)
@@ -2684,6 +2697,7 @@ function VectorDotProduct(const V1, V2 : TVector) : Single; assembler; register;
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD DWORD PTR [EAX]
          FMUL DWORD PTR [EDX]
@@ -2696,6 +2710,9 @@ asm
          FLD DWORD PTR [EAX + 12]
          FMUL DWORD PTR [EDX + 12]
          FADDP
+{$else}
+   Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2]+V1[3]*V2[3];
+{$endif}
 end;
 
 // VectorDotProduct
@@ -2704,6 +2721,7 @@ function VectorDotProduct(const V1 : TVector; const V2 : TAffineVector) : Single
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD DWORD PTR [EAX]
          FMUL DWORD PTR [EDX]
@@ -2713,6 +2731,9 @@ asm
          FLD DWORD PTR [EAX + 8]
          FMUL DWORD PTR [EDX + 8]
          FADDP
+{$else}
+   Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];
+{$endif}
 end;
 
 // VectorCrossProduct
@@ -2837,6 +2858,7 @@ var
    pt : ^Single;
 begin
    pt:=@t;
+{$ifndef GEOMETRY_NO_ASM}
    asm
       test vSIMD, 1
       jz @@FPU
@@ -2862,6 +2884,7 @@ begin
       ret $04
 @@FPU:      // 811 !!!
    end;
+{$endif}
    vr[X]:=V1[X]+(V2[X]-V1[X])*pt^;
    vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*pt^;
    vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*pt^;
@@ -2891,6 +2914,7 @@ var
    pt : ^Single;
 begin
    pt:=@t;
+{$ifndef GEOMETRY_NO_ASM}
    asm
       test vSIMD, 1
       jz @@FPU
@@ -2916,6 +2940,7 @@ begin
       ret $04
 @@FPU:      // 242
    end;
+{$endif}
    vr[X]:=V1[X]+(V2[X]-V1[X])*pt^;
    vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*pt^;
    vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*pt^;
@@ -2947,20 +2972,8 @@ end;
 // VectorAngleCombine
 //
 function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineVector;
-{var
-   q1, q2, qr : TQuaternion;
-   m : TMatrix;
-   tran : TTransformations; }
 begin
    Result:=VectorCombine(v1, v2, 1, f);
-{   q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
-   q2:=QuaternionFromEuler(RadToDeg(v2[0])*f, RadToDeg(v2[1])*f, RadToDeg(v2[2])*f, eulZYX);
-   qr:=QuaternionMultiply(q1, q2);
-   m:=QuaternionToMatrix(qr);
-   MatrixDecompose(m, tran);
-   Result[0]:=tran[ttRotateX];
-   Result[1]:=tran[ttRotateY];
-   Result[2]:=tran[ttRotateZ]; }
 end;
 
 // VectorArrayLerp_3DNow (hmg)
@@ -3022,13 +3035,16 @@ procedure VectorArrayLerp(const src1, src2 : PVectorArray; t : Single; n : Integ
 var
    i : Integer;
 begin
+{$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then
       VectorArrayLerp_3DNow(src1, src2, t, n, dest)
-   else for i:=0 to n-1 do begin
-      dest[i][0]:=src1[i][0]+(src2[i][0]-src1[i][0])*t;
-      dest[i][1]:=src1[i][1]+(src2[i][1]-src1[i][1])*t;
-      dest[i][2]:=src1[i][2]+(src2[i][2]-src1[i][2])*t;
-      dest[i][3]:=src1[i][3]+(src2[i][3]-src1[i][3])*t;
+   else {$endif} begin
+      for i:=0 to n-1 do begin
+         dest[i][0]:=src1[i][0]+(src2[i][0]-src1[i][0])*t;
+         dest[i][1]:=src1[i][1]+(src2[i][1]-src1[i][1])*t;
+         dest[i][2]:=src1[i][2]+(src2[i][2]-src1[i][2])*t;
+         dest[i][3]:=src1[i][3]+(src2[i][3]-src1[i][3])*t;
+      end;
    end;
 end;
 
@@ -3100,12 +3116,15 @@ procedure VectorArrayLerp(const src1, src2 : PAffineVectorArray; t : Single; n :
 var
    i : Integer;
 begin
+{$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then
       VectorArrayLerp_3DNow(src1, src2, t, n, dest)
-   else for i:=0 to n-1 do begin
-      dest[i][0]:=src1[i][0]+(src2[i][0]-src1[i][0])*t;
-      dest[i][1]:=src1[i][1]+(src2[i][1]-src1[i][1])*t;
-      dest[i][2]:=src1[i][2]+(src2[i][2]-src1[i][2])*t;
+   else {$endif} begin
+      for i:=0 to n-1 do begin
+         dest[i][0]:=src1[i][0]+(src2[i][0]-src1[i][0])*t;
+         dest[i][1]:=src1[i][1]+(src2[i][1]-src1[i][1])*t;
+         dest[i][2]:=src1[i][2]+(src2[i][2]-src1[i][2])*t;
+      end;
    end;
 end;
 
@@ -3115,6 +3134,7 @@ function VectorLength(V: array of Single): Single; assembler;
 // EAX contains address of V
 // EDX contains the highest index of V
 // the result is returned in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLDZ                           // initialize sum
 @@Loop:
@@ -3124,12 +3144,21 @@ asm
          SUB  EDX, 1
          JNL  @@Loop
          FSQRT
+{$else}
+var
+   i : Integer;
+begin
+   Result:=0;
+   for i:=Low(V) to High(V) do
+      Result:=Result+Sqr(V[i]);
+   Result:=Sqrt(Result);
+{$endif}
 end;
 
 // VectorLength  (x, y)
 //
 function VectorLength(const x, y : Single) : Single; assembler;
-// Result:=sqrt(x*x+y*y)
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD X
          FMUL ST, ST
@@ -3137,12 +3166,16 @@ asm
          FMUL ST, ST
          FADD
          FSQRT
+{$else}
+begin
+   Result:=Sqrt(x*x+y*y);
+{$endif}
 end;
 
 // VectorLength (x, y, z)
 //
 function VectorLength(const x, y, z : Single) : Single; assembler;
-// Result:=sqrt(x*x+y*y+z*z)
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD X
          FMUL ST, ST
@@ -3153,6 +3186,10 @@ asm
          FMUL ST, ST
          FADD
          FSQRT
+{$else}
+begin
+   Result:=Sqrt(x*x+y*y+z*z);
+{$endif}
 end;
 
 // VectorLength
@@ -3160,6 +3197,7 @@ end;
 function VectorLength(const v : TAffineVector) : Single; register;
 // EAX contains address of V
 // result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
        FLD  DWORD PTR [EAX]
        FMUL ST, ST
@@ -3170,6 +3208,10 @@ asm
        FMUL ST, ST
        FADDP
        FSQRT
+{$else}
+begin
+   Result:=Sqrt(VectorNorm(v));
+{$endif}
 end;
 
 // VectorLength
@@ -3177,6 +3219,7 @@ end;
 function VectorLength(const v : TVector) : Single; register;
 // EAX contains address of V
 // result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
        FLD  DWORD PTR [EAX]
        FMUL ST, ST
@@ -3186,10 +3229,11 @@ asm
        FLD  DWORD PTR [EAX+8]
        FMUL ST, ST
        FADDP
-       FLD  DWORD PTR [EAX+12]
-       FMUL ST, ST
-       FADDP
        FSQRT
+{$else}
+begin
+   Result:=Sqrt(VectorNorm(v));
+{$endif}
 end;
 
 // VectorNorm
@@ -3204,6 +3248,7 @@ end;
 function VectorNorm(const v : TAffineVector) : Single; register;
 // EAX contains address of V
 // result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX];
       FMUL ST, ST
@@ -3213,6 +3258,10 @@ asm
       FLD DWORD PTR [EAX+8];
       FMUL ST, ST
       FADD
+{$else}
+begin
+   Result:=v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
+{$endif}
 end;
 
 // VectorNorm (hmg)
@@ -3220,6 +3269,7 @@ end;
 function VectorNorm(const v : TVector) : Single; register;
 // EAX contains address of V
 // result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX];
       FMUL ST, ST
@@ -3229,6 +3279,10 @@ asm
       FLD DWORD PTR [EAX+8];
       FMUL ST, ST
       FADD
+{$else}
+begin
+   Result:=v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
+{$endif}
 end;
 
 // VectorNorm
@@ -3237,6 +3291,7 @@ function VectorNorm(var V: array of Single): Single; assembler; register;
 // EAX contains address of V
 // EDX contains highest index in V
 // result is passed in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLDZ                           // initialize sum
 @@Loop:
@@ -3245,13 +3300,20 @@ asm
       FADDP                          // add previous calculated sum
       SUB  EDX, 1
       JNL  @@Loop
+{$else}
+var
+   i : Integer;
+begin
+   Result:=0;
+   for i:=Low(v) to High(v) do
+      Result:=Result+v[i]*v[i];
+{$endif}
 end;
 
 // NormalizeVector (affine)
 //
 procedure NormalizeVector(var v : TAffineVector); register;
-//   Result:=VectorLength(v);
-//   ScaleVector(v, 1/Result);
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -3299,13 +3361,21 @@ asm
       FSTP DWORD PTR [EAX+4]
       FMUL DWORD PTR [EAX+8]
       FSTP DWORD PTR [EAX+8]
+{$else}
+var
+   invLen : Single;
+begin
+   invLen:=RSqrt(VectorNorm(v));
+   v[0]:=v[0]*invLen;
+   v[1]:=v[1]*invLen;
+   v[2]:=v[2]*invLen;
+{$endif}
 end;
 
 // VectorNormalize
 //
 function VectorNormalize(const v : TAffineVector) : TAffineVector; register;
-//   Result:=VectorLength(v);
-//   ScaleVector(v, 1/Result);
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -3353,6 +3423,15 @@ asm
       FSTP DWORD PTR [EDX+4]
       FMUL DWORD PTR [EAX+8]
       FSTP DWORD PTR [EDX+8]
+{$else}
+var
+   invLen : Single;
+begin
+   invLen:=RSqrt(VectorNorm(v));
+   Result[0]:=v[0]*invLen;
+   Result[1]:=v[1]*invLen;
+   Result[2]:=v[2]*invLen;
+{$endif}
 end;
 
 // NormalizeVectorArray
@@ -3360,6 +3439,7 @@ end;
 procedure NormalizeVectorArray(list : PAffineVectorArray; n : Integer);
 // EAX contains list
 // EDX contains n
+{$ifndef GEOMETRY_NO_ASM}
 asm
       OR    EDX, EDX
       JZ    @@End
@@ -3417,13 +3497,19 @@ asm
       DEC   EDX
       JNZ   @@FPULOOP
 @@End:
+{$else}
+var
+   i : Integer;
+begin
+   for i:=0 to n-1 do
+      NormalizeVector(list[i]);
+{$endif}
 end;
 
 // NormalizeVector (hmg)
 //
 procedure NormalizeVector(var v : TVector); register;
-//   Result:=VectorLength(v);
-//   ScaleVector(v, 1/Result);
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -3475,13 +3561,22 @@ asm
       FSTP DWORD PTR [EAX+8]
       xor   edx, edx
       mov   [eax+12], edx
+{$else}
+var
+   invLen : Single;
+begin
+   invLen:=RSqrt(VectorNorm(v));
+   v[0]:=v[0]*invLen;
+   v[1]:=v[1]*invLen;
+   v[2]:=v[2]*invLen;
+   v[3]:=0;
+{$endif}
 end;
 
 // VectorNormalize (hmg)
 //
 function VectorNormalize(const v : TVector) : TVector; register;
-//   Result:=VectorLength(v);
-//   ScaleVector(v, 1/Result);
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -3533,14 +3628,24 @@ asm
       FSTP DWORD PTR [EDX+8]
       xor   eax, eax
       mov   [edx+12], eax
+{$else}
+var
+   invLen : Single;
+begin
+   invLen:=RSqrt(VectorNorm(v));
+   v[0]:=v[0]*invLen;
+   v[1]:=v[1]*invLen;
+   v[2]:=v[2]*invLen;
+   v[3]:=0;
+{$endif}
 end;
 
 // VectorAngleCosine
 //
 function VectorAngleCosine(const V1, V2: TAffineVector): Single; assembler;
-//   Result = DotProduct(V1, V2) / (Length(V1) * Length(V2)) }
 // EAX contains address of Vector1
 // EDX contains address of Vector2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]           // V1[0]
       FLD ST                        // double V1[0]
@@ -3571,6 +3676,10 @@ asm
       FSQRT                         // sqrt(ST(0))
       FDIVP                         // ST(0):=Result:=ST(1) / ST(0)
   // the result is expected in ST(0), if it's invalid, an error is raised
+{$else}
+begin
+   Result:=VectorDotProduct(V1, V2)/(VectorLength(V1)*VectorLength(V2));
+{$endif}
 end;
 
 // VectorNegate (affine)
@@ -3578,6 +3687,7 @@ end;
 function VectorNegate(const v : TAffineVector) : TAffineVector;
 // EAX contains address of v
 // EDX contains address of Result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]
       FCHS
@@ -3588,6 +3698,12 @@ asm
       FLD DWORD PTR [EAX+8]
       FCHS
       FSTP DWORD PTR [EDX+8]
+{$else}
+begin
+   Result[0]:=-v[0];
+   Result[1]:=-v[1];
+   Result[2]:=-v[2];
+{$endif}
 end;
 
 // VectorNegate (hmg)
@@ -3595,6 +3711,7 @@ end;
 function VectorNegate(const v : TVector) : TVector;
 // EAX contains address of v
 // EDX contains address of Result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]
       FCHS
@@ -3608,12 +3725,20 @@ asm
       FLD DWORD PTR [EAX+12]
       FCHS
       FSTP DWORD PTR [EDX+12]
+{$else}
+begin
+   Result[0]:=-v[0];
+   Result[1]:=-v[1];
+   Result[2]:=-v[2];
+   Result[3]:=-v[3];
+{$endif}
 end;
 
 // NegateVector
 //
 procedure NegateVector(var v : TAffineVector); register;
 // EAX contains address of v
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]
       FCHS
@@ -3624,12 +3749,19 @@ asm
       FLD DWORD PTR [EAX+8]
       FCHS
       FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   v[0]:=-v[0];
+   v[1]:=-v[1];
+   v[2]:=-v[2];
+{$endif}
 end;
 
 // NegateVector
 //
 procedure NegateVector(var v : TVector); register;
 // EAX contains address of v
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]
       FCHS
@@ -3643,6 +3775,13 @@ asm
       FLD DWORD PTR [EAX+12]
       FCHS
       FSTP DWORD PTR [EAX+12]
+{$else}
+begin
+   v[0]:=-v[0];
+   v[1]:=-v[1];
+   v[2]:=-v[2];
+   v[3]:=-v[3];
+{$endif}
 end;
 
 // NegateVector
@@ -3650,10 +3789,8 @@ end;
 procedure NegateVector(V: array of Single); assembler; register;
 // EAX contains address of V
 // EDX contains highest index in V
+{$ifndef GEOMETRY_NO_ASM}
 asm
-  {V[X]:=-V[X];
-  V[Y]:=-V[Y];
-  V[Z]:=-V[Z];}
 @@Loop:
       FLD DWORD PTR [EAX + 4 * EDX]
       FCHS
@@ -3661,7 +3798,16 @@ asm
       FSTP DWORD PTR [EAX + 4 * EDX]
       DEC EDX
       JNS @@Loop
+{$else}
+var
+   i : Integer;
+begin
+   for i:=Low(v) to High(v) do
+      v[i]:=-v[i];
+{$endif}
 end;
+
+// ------- NO_ASM alternatives end here !!!!!!!!!!!!!!! ---------------
 
 // ScaleVector (affine)
 //
