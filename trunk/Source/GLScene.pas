@@ -5663,7 +5663,8 @@ var
                   if Assigned(intersectNormal) then
                      intersectNormal^:=iNormal;
                end;
-            end else RecursiveDive(curObj);
+            end;
+            RecursiveDive(curObj);
          end;
       end;
    end;
