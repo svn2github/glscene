@@ -230,8 +230,10 @@ constructor TXCollectionItem.Create(aOwner : TXCollection);
 begin
 	inherited Create;
 	FOwner:=aOwner;
-	if Assigned(aOwner) then
+	if Assigned(aOwner) then begin
 		aOwner.FList.Add(Self);
+      aOwner.FCount:=aOwner.FList.Count;
+   end;
 	FName:=FriendlyName;
 end;
 
@@ -407,6 +409,7 @@ begin
          newItem.Assign(srcItem);
       end;
 	end else inherited Assign(Source);
+   FCount:=FList.Count;
 end;
 
 // Loaded

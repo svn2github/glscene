@@ -208,7 +208,9 @@ type
   // TObjectChanges
   //
   // used to decribe only the changes in an object, which have to be reflected in the scene
-  TObjectChange = (ocSpot, ocAttenuation, ocTransformation, ocStructure);
+  TObjectChange = (ocSpot, ocAttenuation,
+                   ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
+                   ocStructure);
   TObjectChanges = set of TObjectChange;
 
   // flags for design notification
@@ -288,6 +290,8 @@ type
    TGLBaseSceneObject = class (TGLUpdateAbleComponent)
       private
          { Private Declarations }
+         FLocalMatrix : TMatrix;
+         FAbsoluteMatrix, FInvAbsoluteMatrix : PMatrix;
          FObjectStyle : TGLObjectStyles;
          FListHandle : TGLListHandle;
          FPosition : TGLCoordinates;
@@ -298,8 +302,6 @@ type
          FScene : TGLScene;
          FChildren : TList;
          FVisible : Boolean;
-         FLocalMatrix, FAbsoluteMatrix, FInvAbsoluteMatrix : TMatrix;
-         FLocalMatrixDirty, FAbsoluteMatrixDirty, FInvAbsoluteMatrixDirty : Boolean;
          FUpdateCount : Integer;
          FShowAxes : Boolean;
          FRotation: TGLCoordinates; // current rotation angles
@@ -308,8 +310,8 @@ type
          FObjectsSorting : TGLObjectsSorting;
          FVisibilityCulling : TGLVisibilityCulling;
          FOnProgress : TGLProgressEvent;
-         FBehaviours : TGLBehaviours;
-         FObjectEffects : TGLObjectEffects;
+         FGLBehaviours : TGLBehaviours;
+         FGLObjectEffects : TGLObjectEffects;
          FTagFloat: Single;
 
          function Get(Index : Integer) : TGLBaseSceneObject;
@@ -337,7 +339,9 @@ type
          procedure SetObjectsSorting(const val : TGLObjectsSorting);
          procedure SetVisibilityCulling(const val : TGLVisibilityCulling);
          procedure SetBehaviours(const val : TGLBehaviours);
+         function  GetBehaviours : TGLBehaviours;
          procedure SetEffects(const val : TGLObjectEffects);
+         function  GetEffects : TGLObjectEffects;
          procedure SetScene(const value : TGLScene);
 
       protected
@@ -539,8 +543,8 @@ type
          property ObjectsSorting : TGLObjectsSorting read FObjectsSorting write SetObjectsSorting default osInherited;
          property VisibilityCulling : TGLVisibilityCulling read FVisibilityCulling write SetVisibilityCulling default vcInherited;
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
-         property Behaviours : TGLBehaviours read FBehaviours write SetBehaviours stored False;
-         property Effects : TGLObjectEffects read FObjectEffects write SetEffects stored False;
+         property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
+         property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
 
       published
          { Published Declarations }
@@ -1980,24 +1984,18 @@ constructor TGLBaseSceneObject.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FObjectStyle:=[];
-   FChanges:=[ocTransformation, ocStructure];
+   FChanges:=[ocTransformation, ocStructure, 
+              ocAbsoluteMatrix, ocInvAbsoluteMatrix];
    FPosition:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
    FRotation:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
    FDirection:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
    FUp:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
    FScaling:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csVector);
-   FAbsoluteMatrix:=IdentityHmgMatrix;
-   FInvAbsoluteMatrix:=IdentityHmgMatrix;
    FLocalMatrix:=IdentityHmgMatrix;
    FChildren:=TList.Create;
    FVisible:=True;
-   FLocalMatrixDirty:=True;
-   FAbsoluteMatrixDirty:=True;
-   FInvAbsoluteMatrixDirty:=True;
    FObjectsSorting:=osInherited;
    FVisibilityCulling:=vcInherited;
-   FBehaviours:=TGLBehaviours.Create(Self);
-   FObjectEffects:=TGLObjectEffects.Create(Self);
    FListHandle:=TGLListHandle.Create;
 end;
 
@@ -2006,8 +2004,10 @@ end;
 destructor TGLBaseSceneObject.Destroy;
 begin
    DeleteChildCameras;
-   FObjectEffects.Free;
-   FBehaviours.Free;
+   Dispose(FInvAbsoluteMatrix);
+   Dispose(FAbsoluteMatrix);
+   FGLObjectEffects.Free;
+   FGLBehaviours.Free;
    FListHandle.Free;
    FPosition.Free;
    FRotation.Free;
@@ -2116,10 +2116,11 @@ end;
 procedure TGLBaseSceneObject.Loaded;
 begin
    inherited;
-   FChanges:=[ocTransformation, ocStructure];
    FPosition.W:=1;
-   FBehaviours.Loaded;
-   FObjectEffects.Loaded;
+   if Assigned(FGLBehaviours) then
+      FGLBehaviours.Loaded;
+   if Assigned(FGLObjectEffects) then
+      FGLObjectEffects.Loaded;
 end;
 
 // DefineProperties
@@ -2129,10 +2130,10 @@ begin
    inherited;
    Filer.DefineBinaryProperty('BehavioursData',
                               ReadBehaviours, WriteBehaviours, 
-                              (FBehaviours.Count>0));
+                              (Assigned(FGLBehaviours) and (FGLBehaviours.Count>0)));
    Filer.DefineBinaryProperty('EffectsData',
                               ReadEffects, WriteEffects,
-                              (FObjectEffects.Count>0));
+                              (Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0)));
 end;
 
 // WriteBehaviours
@@ -2143,7 +2144,7 @@ var
 begin
    writer:=TWriter.Create(stream, 16384);
    try
-      FBehaviours.WriteToFiler(writer);
+      Behaviours.WriteToFiler(writer);
    finally
       writer.Free;
    end;
@@ -2157,7 +2158,7 @@ var
 begin
    reader:=TReader.Create(stream, 16384);
    try
-      FBehaviours.ReadFromFiler(reader);
+      Behaviours.ReadFromFiler(reader);
    finally
       reader.Free;
    end;
@@ -2171,7 +2172,7 @@ var
 begin
    writer:=TWriter.Create(stream, 16384);
    try
-      FObjectEffects.WriteToFiler(writer);
+      Effects.WriteToFiler(writer);
    finally
       writer.Free;
    end;
@@ -2185,7 +2186,7 @@ var
 begin
    reader:=TReader.Create(stream, 16384);
    try
-      FObjectEffects.ReadFromFiler(reader);
+      Effects.ReadFromFiler(reader);
    finally
       reader.Free;
    end;
@@ -2218,8 +2219,8 @@ begin
       VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix[1]);
       VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix[2]);
       SetVector(FLocalMatrix[3], FPosition.AsVector);
-      FAbsoluteMatrixDirty:=True;
-      FInvAbsoluteMatrixDirty:=True;
+      Include(FChanges, ocAbsoluteMatrix);
+      Include(FChanges, ocInvAbsoluteMatrix);
    end;
 end;
 
@@ -2276,28 +2277,32 @@ end;
 //
 function TGLBaseSceneObject.AbsoluteMatrixAsAddress : PMatrix;
 begin
-   if FAbsoluteMatrixDirty then begin
+   if ocAbsoluteMatrix in FChanges then begin
+      RebuildMatrix;
+      if not Assigned(FAbsoluteMatrix) then
+         New(FAbsoluteMatrix);
       if Assigned(Parent) and (not (Parent is TGLSceneRootObject)) then begin
-         TGLBaseSceneObject(Parent).AbsoluteMatrixAsAddress;
-         MatrixMultiply(FLocalMatrix, TGLBaseSceneObject(Parent).FAbsoluteMatrix,
-                        FAbsoluteMatrix);
-      end else FAbsoluteMatrix:=FLocalMatrix;
-      FAbsoluteMatrixDirty:=False;
-      FInvAbsoluteMatrixDirty:=True;
+         MatrixMultiply(FLocalMatrix, TGLBaseSceneObject(Parent).AbsoluteMatrixAsAddress^,
+                        FAbsoluteMatrix^);
+      end else FAbsoluteMatrix^:=FLocalMatrix;
+      Exclude(FChanges, ocAbsoluteMatrix);
+      Include(FChanges, ocInvAbsoluteMatrix);
    end;
-   Result:=@FAbsoluteMatrix;
+   Result:=FAbsoluteMatrix;
 end;
 
 // InvAbsoluteMatrix
 //
 function TGLBaseSceneObject.InvAbsoluteMatrix : TMatrix;
 begin
-  if FInvAbsoluteMatrixDirty then begin
-    FInvAbsoluteMatrix:=AbsoluteMatrixAsAddress^;
-    InvertMatrix(FInvAbsoluteMatrix);
-    FInvAbsoluteMatrixDirty:=False;
-  end;
-  Result:=FInvAbsoluteMatrix;
+   if ocInvAbsoluteMatrix in FChanges then begin
+      if not Assigned(FInvAbsoluteMatrix) then
+         New(FInvAbsoluteMatrix);
+      FInvAbsoluteMatrix^:=AbsoluteMatrixAsAddress^;
+      InvertMatrix(FInvAbsoluteMatrix^);
+      Exclude(FChanges, ocInvAbsoluteMatrix);
+   end;
+   Result:=FInvAbsoluteMatrix^;
 end;
 
 // AbsoluteDirection
@@ -2494,14 +2499,12 @@ begin
       FDirection.Assign(TGLBaseSceneObject(Source).FDirection);
       FUp.Assign(TGLBaseSceneObject(Source).FUp);
       FScaling.Assign(TGLBaseSceneObject(Source).FScaling);
-      FChanges:=[ocTransformation, ocStructure];
+      FChanges:=[ocTransformation, ocStructure, 
+                 ocAbsoluteMatrix, ocInvAbsoluteMatrix];
       FVisible:=TGLBaseSceneObject(Source).FVisible;
       FLocalMatrix:=TGLBaseSceneObject(Source).FLocalMatrix;
-      FLocalMatrixDirty:=TGLBaseSceneObject(Source).FLocalMatrixDirty;
       FAbsoluteMatrix:=TGLBaseSceneObject(Source).FAbsoluteMatrix;
-      FAbsoluteMatrixDirty:=TGLBaseSceneObject(Source).FAbsoluteMatrixDirty;
       FInvAbsoluteMatrix:=TGLBaseSceneObject(Source).FInvAbsoluteMatrix;
-      FInvAbsoluteMatrixDirty:=TGLBaseSceneObject(Source).FInvAbsoluteMatrixDirty;
       SetMatrix(TGLCustomSceneObject(Source).FLocalMatrix);
       FShowAxes:=TGLBaseSceneObject(Source).FShowAxes;
       FObjectsSorting:=TGLBaseSceneObject(Source).FObjectsSorting;
@@ -2518,8 +2521,8 @@ begin
       end;
       if Assigned(Scene) then Scene.EndUpdate;
       OnProgress:=TGLBaseSceneObject(Source).OnProgress;
-      FBehaviours.Assign(TGLBaseSceneObject(Source).FBehaviours);
-      FObjectEffects.Assign(TGLBaseSceneObject(Source).FObjectEffects);
+      Behaviours.Assign(TGLBaseSceneObject(Source).Behaviours);
+      Effects.Assign(TGLBaseSceneObject(Source).Effects);
       Tag:=TGLBaseSceneObject(Source).Tag;
       FTagFloat:=TGLBaseSceneObject(Source).FTagFloat;
    end else inherited Assign(Source);
@@ -2540,7 +2543,7 @@ begin
    AChild.SetScene(FScene);
    if Assigned(FScene) and (AChild is TGLLightSource) then
       FScene.AddLight(TGLLightSource(AChild));
-     TransformationChanged;
+   TransformationChanged;
 end;
 
 //------------------------------------------------------------------------------
@@ -2697,23 +2700,29 @@ var
    Up, Dir: TAffineVector;
    r : Single;
 begin
-   GetOrientationVectors(Up, Dir);
-   Angle:=DegToRad(Angle);
-   FUp.Rotate(Dir, Angle);
-   FUp.Normalize;
-   FDirection.Rotate(Dir, Angle);
-   FDirection.Normalize;
-   if FTransMode = tmParentWithPos then
-      FPosition.Rotate(Dir, Angle);
+   FIsCalculating:=True;
+   try
+      GetOrientationVectors(Up, Dir);
+      Angle:=DegToRad(Angle);
+      FUp.Rotate(Dir, Angle);
+      FUp.Normalize;
+      FDirection.Rotate(Dir, Angle);
+      FDirection.Normalize;
+      if FTransMode = tmParentWithPos then
+         FPosition.Rotate(Dir, Angle);
 
-   // calculate new rotation angle from vectors
-   RightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
-   r:=-RadToDeg(arctan2(Rightvector[1], Sqrt(Sqr(RightVector[0]) + Sqr(RightVector[2]))));
-   if RightVector[0] < 0 then
-      if RightVector[1] < 0 then
-         r:=180-r
-      else r:=-180-r;
-   FRotation.Z:=r;
+      // calculate new rotation angle from vectors
+      RightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
+      r:=-RadToDeg(arctan2(Rightvector[1], Sqrt(Sqr(RightVector[0]) + Sqr(RightVector[2]))));
+      if RightVector[0] < 0 then
+         if RightVector[1] < 0 then
+            r:=180-r
+         else r:=-180-r;
+      FRotation.Z:=r;
+   finally
+      FIsCalculating:=False;
+   end;
+   TransformationChanged;
 end;
 
 // SetRollAngle
@@ -2748,20 +2757,26 @@ var
    Up, Dir: TAffineVector;
    r : Single;
 begin
-   GetOrientationVectors(Up, Dir);
-   Angle:=DegToRad(Angle);
-   FUp.Rotate(Up, Angle);
-   FUp.Normalize;
-   FDirection.Rotate(Up, Angle);
-   FDirection.Normalize;
-   if FTransMode = tmParentWithPos then
-      FPosition.Rotate(Up, Angle);
-   r:=-RadToDeg(arctan2(FDirection.X, Sqrt(Sqr(FDirection.Y) + Sqr(FDirection.Z))));
-   if FDirection.X < 0 then
-      if FDirection.Y < 0 then
-         r:=180-r
-      else r:=-180-r;
-   FRotation.Y:=r;
+   FIsCalculating:=True;
+   try
+      GetOrientationVectors(Up, Dir);
+      Angle:=DegToRad(Angle);
+      FUp.Rotate(Up, Angle);
+      FUp.Normalize;
+      FDirection.Rotate(Up, Angle);
+      FDirection.Normalize;
+      if FTransMode = tmParentWithPos then
+         FPosition.Rotate(Up, Angle);
+      r:=-RadToDeg(arctan2(FDirection.X, Sqrt(Sqr(FDirection.Y) + Sqr(FDirection.Z))));
+      if FDirection.X < 0 then
+         if FDirection.Y < 0 then
+            r:=180-r
+         else r:=-180-r;
+      FRotation.Y:=r;
+   finally
+      FIsCalculating:=False;
+   end;
+   TransformationChanged;
 end;
 
 // SetTurnAngle
@@ -2952,14 +2967,13 @@ end;
 //
 procedure TGLBaseSceneObject.TransformationChanged;
 begin
-   FLocalMatrixDirty:=True;
-   FAbsoluteMatrixDirty:=True;
-   FInvAbsoluteMatrixDirty:=True;
-   if not (csLoading in ComponentState) then
-      if not (ocTransformation in FChanges) then begin
-         Include(FChanges, ocTransformation);
+   Include(FChanges, ocAbsoluteMatrix);
+   Include(FChanges, ocInvAbsoluteMatrix);
+   if not (ocTransformation in FChanges) then begin
+      Include(FChanges, ocTransformation);
+      if not (csLoading in ComponentState) then
          NotifyChange(Self);
-      end;
+   end;
 end;
 
 // MoveTo
@@ -3051,10 +3065,10 @@ begin
    list:=FChildren.List;
    for i:=FChildren.Count-1 downto 0 do 
       TGLBaseSceneObject(list[i]).DoProgress(progressTime);
-   if Behaviours.Count>0 then
-      Behaviours.DoProgress(progressTime);
-   if Effects.Count>0 then
-      Effects.DoProgress(progressTime);
+   if Assigned(FGLBehaviours) then
+      FGLBehaviours.DoProgress(progressTime);
+   if Assigned(FGLObjectEffects) then
+      FGLObjectEffects.DoProgress(progressTime);
    if Assigned(FOnProgress) then with progressTime do
       FOnProgress(Self, deltaTime, newTime);
 end;
@@ -3171,9 +3185,9 @@ begin
       if shouldRenderSelf then begin
          if FShowAxes then
             DrawAxes($CCCC);
-         if Effects.Count>0 then begin
+         if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0) then begin
             glPushMatrix;
-            Effects.RenderPreEffects(Scene.CurrentBuffer, rci);
+            FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
             glPushMatrix;
             if Scene.CurrentBuffer.DepthTest and (osIgnoreDepthBuffer in ObjectStyle) then begin
@@ -3187,7 +3201,7 @@ begin
                ResetGLCurrentTexture;
                ResetGLFrontFace;
             end;
-            Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
+            FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
          end else begin
             if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentBuffer.DepthTest then begin
@@ -3208,7 +3222,6 @@ begin
             SetGLState(rci.currentStates, stDepthTest);
          end else DoRender(rci, False, shouldRenderChildren);
       end;
-      FChanges:=[];
       // Pop Name & Matrix
       if rci.drawState=dsPicking then
          if rci.proxySubObject then
@@ -3283,8 +3296,9 @@ begin
                      distList.Add(obj.BarycenterSqrDistanceTo(rci.cameraPosition));
                   end;
                end;
-               if distList.Count>1 then begin
-                  QuickSortLists(0, distList.Count-1, distList, objList);
+               if distList.Count>0 then begin
+                  if distList.Count>1 then
+                     QuickSortLists(0, distList.Count-1, distList, objList);
                   for i:=objList.Count-1 downto 0 do
                      TGLBaseSceneObject(objList.List[i]).Render(rci);
                end;
@@ -3320,9 +3334,11 @@ begin
       RebuildMatrix;
       Exclude(FChanges, ocTransformation);
    end else begin
-      if not FAbsoluteMatrixDirty then begin
-         FAbsoluteMatrixDirty:=FParent.FAbsoluteMatrixDirty;
-         FInvAbsoluteMatrixDirty:=FAbsoluteMatrixDirty or FInvAbsoluteMatrixDirty;
+      if not (ocAbsoluteMatrix in FChanges) then begin
+         if ocAbsoluteMatrix in FParent.FChanges then begin
+            Include(FChanges, ocAbsoluteMatrix);
+            Include(FChanges, ocInvAbsoluteMatrix);
+         end;
       end;
    end;
    // validate for children
@@ -3407,14 +3423,32 @@ end;
 //
 procedure TGLBaseSceneObject.SetBehaviours(const val : TGLBehaviours);
 begin
-   FBehaviours.Assign(val);
+   Behaviours.Assign(val);
+end;
+
+// GetBehaviours
+//
+function  TGLBaseSceneObject.GetBehaviours : TGLBehaviours;
+begin
+   if not Assigned(FGLBehaviours) then
+      FGLBehaviours:=TGLBehaviours.Create(Self);
+   Result:=FGLBehaviours;
 end;
 
 // SetEffects
 //
 procedure TGLBaseSceneObject.SetEffects(const val : TGLObjectEffects);
 begin
-   FObjectEffects.Assign(val);
+   Effects.Assign(val);
+end;
+
+// GetEffects
+//
+function TGLBaseSceneObject.GetEffects : TGLObjectEffects;
+begin
+   if not Assigned(FGLObjectEffects) then
+      FGLObjectEffects:=TGLObjectEffects.Create(Self);
+   Result:=FGLObjectEffects;
 end;
 
 // SetScene
@@ -4358,7 +4392,6 @@ begin
   FDiffuse.Initialize(clrWhite);
   FSpecular:=TGLColor.Create(Self);
   FVisible:=False;
-  FChanges:=[];
 end;
 
 // Destroy

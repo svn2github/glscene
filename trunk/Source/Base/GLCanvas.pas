@@ -145,7 +145,7 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
-   gluOrtho2D(0, bufferSizeX-1, bufferSizeY-1, 0);
+   gluOrtho2D(0, bufferSizeX, bufferSizeY, 0);
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;

@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/01/02 - EG - Added vUseDefaultSets mechanism
       <li>07/01/02 - EG - TGLNodes.Barycenter fix (thx Bob)
       <li>15/12/01 - EG - Added support for cube maps
       <li>14/09/01 - EG - Addition of vFileStreamClass
@@ -192,7 +193,8 @@ type
 		private
 			{ Private Declarations }
          FStyle : TGLCoordinatesStyle; // NOT Persistent
-			FCoords, FDefaultCoords : TVector;
+			FCoords : TVector;
+         FPDefaultCoords : PVector;
 			procedure SetAsVector(const value : TVector);
 			procedure SetAsAffineVector(const value : TAffineVector);
          function GetAsAffineVector : TAffineVector;
@@ -208,7 +210,7 @@ type
 			{ Public Declarations }
          constructor CreateInitialized(aOwner : TPersistent; const aValue : TVector;
                                        const aStyle : TGLCoordinatesStyle = csUnknown);
-
+         destructor Destroy; override;
 			procedure Assign(Source: TPersistent); override;
          procedure WriteToFiler(writer : TWriter);
          procedure ReadFromFiler(reader : TReader);
@@ -499,6 +501,9 @@ function FindManager(classType : TComponentClass; const managerName : String) : 
 var
    // Class of file streams to use throughout all of GLScene
    vFileStreamClass : TFileStreamClass = TFileStream;
+   // Specifies if TGLCoordinates, TGLColor, etc. should allocate memory for
+   // their default values (ie. design-time) or not (run-time)
+   vUseDefaultSets : Boolean = False;
 
 //------------------------------------------------------
 //------------------------------------------------------
@@ -1021,9 +1026,17 @@ constructor TGLCoordinates.CreateInitialized(aOwner : TPersistent; const aValue 
                                              const aStyle : TGLCoordinatesStyle = csUnknown);
 begin
    Create(aOwner);
-   FCoords:=aValue;
-   FDefaultCoords:=aValue;
+   Initialize(aValue);
    FStyle:=aStyle;
+end;
+
+// Destroy
+//
+destructor TGLCoordinates.Destroy;
+begin
+   if Assigned(FPDefaultCoords) then
+      Dispose(FPDefaultCoords);
+   inherited;
 end;
 
 // Initialize
@@ -1031,7 +1044,11 @@ end;
 procedure TGLCoordinates.Initialize(const value : TVector);
 begin
    FCoords:=value;
-   FDefaultCoords:=value;
+   if vUseDefaultSets then begin
+      if not Assigned(FPDefaultCoords) then
+         New(FPDefaultCoords);
+      FPDefaultCoords^:=value;
+   end;
 end;
 
 // Assign
@@ -1051,7 +1068,9 @@ var
 begin
    with writer do begin
       WriteInteger(0); // Archive Version 0
-      writeCoords:=not VectorEquals(FDefaultCoords, FCoords);
+      if vUseDefaultSets then
+         writeCoords:=not VectorEquals(FPDefaultCoords^, FCoords)
+      else writeCoords:=True;
       WriteBoolean(writeCoords);
       if writeCoords then
          Write(FCoords, SizeOf(FCoords));
@@ -1066,7 +1085,8 @@ begin
       ReadInteger; // Ignore ArchiveVersion
       if ReadBoolean then
          Read(FCoords, SizeOf(FCoords))
-      else FCoords:=FDefaultCoords;
+      else if Assigned(FPDefaultCoords) then
+         FCoords:=FPDefaultCoords^;
    end;
 end;
 
@@ -1076,7 +1096,7 @@ procedure TGLCoordinates.DefineProperties(Filer: TFiler);
 begin
 	inherited;
 	Filer.DefineBinaryProperty('Coordinates', ReadData, WriteData,
-                              not VectorEquals(FDefaultCoords, FCoords));
+                              not (Assigned(FPDefaultCoords) and VectorEquals(FPDefaultCoords^, FCoords)));
 end;
 
 // ReadData

@@ -1293,6 +1293,8 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+   GLMisc.vUseDefaultSets:=True;
+
    with ObjectManager do begin
       RegisterSceneObject(TGLCamera, 'Camera', '');
       RegisterSceneObject(TGLLightSource, 'LightSource', '');

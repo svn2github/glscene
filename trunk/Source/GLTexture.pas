@@ -3,6 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>24/01/02 - EG - Added vUseDefaultSets mechanism,
+                          TGLPictureImage no longer systematically creates a TPicture 
       <li>21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
       <li>20/01/02 - EG - Fixed texture memory use report error
       <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
@@ -330,7 +332,8 @@ type
 	//
    TGLColor = class(TGLUpdateAbleObject)
       private
-			FColor, FDefaultColor : TColorVector;
+			FColor : TColorVector;
+         FPDefaultColor : PColorVector;
 			procedure SetColor(const aColor: TColorVector);
 			procedure SetColorComponent(Index: Integer; Value: TGLFloat);
 			procedure SetAsWinColor(const val : TColor);
@@ -346,7 +349,7 @@ type
 			constructor Create(AOwner : TPersistent); override;
 			constructor CreateInitialized(AOwner : TPersistent; const color : TColorVector;
                                        changeEvent : TNotifyEvent = nil);
-
+         destructor Destroy; override;
          procedure NotifyChange(Sender : TObject); override;
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
@@ -510,7 +513,7 @@ type
 		private
          { Private Declarations }
 			FBitmap : TGLBitmap32;
-			FPicture : TGLPicture;
+			FGLPicture : TGLPicture;
 			FUpdateCounter : Integer;
 
 		protected
@@ -518,6 +521,7 @@ type
 			function GetHeight: Integer; override;
 			function GetWidth: Integer; override;
 
+         function  GetPicture : TGLPicture; 
 			procedure SetPicture(const aPicture : TGLPicture);
 			procedure PictureChanged(Sender: TObject);
 
@@ -535,7 +539,7 @@ type
 			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
 			procedure ReleaseBitmap32; override;
 
-			property Picture : TGLPicture read FPicture write SetPicture;
+			property Picture : TGLPicture read GetPicture write SetPicture;
 	end;
 
 	// TGLPersistentImage
@@ -707,8 +711,8 @@ type
 			FImage               : TGLTextureImage;
 			FImageAlpha          : TGLTextureImageAlpha;
          FMappingMode         : TGLTextureMappingMode;
-         FMappingSCoordinates : TGLCoordinates;
-         FMappingTCoordinates : TGLCoordinates;
+         FMapSCoordinates     : TGLCoordinates;
+         FMapTCoordinates     : TGLCoordinates;
          FOnTextureNeeded     : TTextureNeededEvent;
          FCompression         : TGLTextureCompression;
          FRequiredMemorySize  : Integer;
@@ -726,7 +730,9 @@ type
          procedure SetCompression(const val : TGLTextureCompression);
          procedure SetFilteringQuality(const val : TGLTextureFilteringQuality);
          procedure SetMappingMode(const val : TGLTextureMappingMode);
+         function  GetMappingSCoordinates : TGLCoordinates;
          procedure SetMappingSCoordinates(const val : TGLCoordinates);
+         function  GetMappingTCoordinates : TGLCoordinates;
          procedure SetMappingTCoordinates(const val : TGLCoordinates);
 			procedure SetDisabled(AValue: Boolean);
          procedure SetEnabled(const val : Boolean);
@@ -824,11 +830,11 @@ type
          {: Texture mapping coordinates mode for S axis.<p>
             This property stores the coordinates for automatic texture
             coordinates generation. }
-         property MappingSCoordinates : TGLCoordinates read FMappingSCoordinates write SetMappingSCoordinates;
+         property MappingSCoordinates : TGLCoordinates read GetMappingSCoordinates write SetMappingSCoordinates;
          {: Texture mapping coordinates mode for T axis.<p>
             This property stores the coordinates for automatic texture
             coordinates generation. }
-         property MappingTCoordinates : TGLCoordinates read FMappingTCoordinates write SetMappingTCoordinates;
+         property MappingTCoordinates : TGLCoordinates read GetMappingTCoordinates write SetMappingTCoordinates;
 
 			property Disabled: Boolean read FDisabled write SetDisabled default True;
 	end;
@@ -907,7 +913,7 @@ type
 	TGLMaterial = class (TGLUpdateAbleObject)
       private
 	      { Private Declarations }
-         FFrontProperties, FBackProperties : TGLFaceProperties;
+         FFrontProperties, FGLBackProperties : TGLFaceProperties;
 			FBlendingMode : TBlendingMode;
          FTexture : TGLTexture;
          FMaterialLibrary : TGLMaterialLibrary;
@@ -918,6 +924,7 @@ type
 
 	   protected
 	      { Protected Declarations }
+         function GetBackProperties : TGLFaceProperties;
          procedure SetBackProperties(Values: TGLFaceProperties);
          procedure SetFrontProperties(Values: TGLFaceProperties);
          procedure SetBlendingMode(const val : TBlendingMode);
@@ -947,7 +954,7 @@ type
 
 		published
 			{ Published Declarations }
-			property BackProperties: TGLFaceProperties read FBackProperties write SetBackProperties stored StoreMaterialProps;
+			property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
 			property FrontProperties: TGLFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
 			property BlendingMode : TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
          property MaterialOptions : TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
@@ -1297,13 +1304,16 @@ begin
    else Result:=s;
 end;
 
-//---------------------- TGLColor ----------------------------------------------
+// ------------------
+// ------------------ TGLColor ------------------
+// ------------------
 
+// Create
+//
 constructor TGLColor.Create(AOwner: TPersistent);
 begin
    inherited;
-	FColor:=clrBlack;
-	FDefaultColor:=FColor;
+   Initialize(clrBlack);
 end;
 
 // CreateInitialized
@@ -1314,6 +1324,25 @@ begin
    Create(AOwner);
    Initialize(color);
    OnNotifyChange:=changeEvent;
+end;
+
+// Destroy
+//
+destructor TGLColor.Destroy;
+begin
+   Dispose(FPDefaultColor);
+   inherited;
+end;
+
+// Initialize
+//
+procedure TGLColor.Initialize(const color : TColorVector);
+begin
+	FColor:=color;
+   if vUseDefaultSets then begin
+      New(FPDefaultColor);
+   	FPDefaultColor^:=color;
+   end;
 end;
 
 procedure TGLColor.SetColor(const aColor: TColorVector);
@@ -1345,6 +1374,8 @@ begin
 	Result:=ConvertColorVector(FColor);
 end;
 
+// Assign
+//
 procedure TGLColor.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLColor) then begin
@@ -1353,25 +1384,27 @@ begin
    end else inherited;
 end;
 
+// DefineProperties
+//
 procedure TGLColor.DefineProperties(Filer: TFiler);
 begin
   inherited;
   Filer.DefineBinaryProperty('Color', ReadData, WriteData,
-                             not VectorEquals(FColor, FDefaultColor));
+                             not (Assigned(FPDefaultColor) and VectorEquals(FColor, FPDefaultColor^)));
 end;
 
 // ReadData
 //
 procedure TGLColor.ReadData(Stream: TStream);
 begin
-  Stream.Read(FColor, SizeOf(FColor));
+   Stream.Read(FColor, SizeOf(FColor));
 end;
 
 // WriteData
 //
 procedure TGLColor.WriteData(Stream: TStream);
 begin
-  Stream.Write(FColor, SizeOf(FColor));
+   Stream.Write(FColor, SizeOf(FColor));
 end;
 
 // NotifyChange
@@ -1390,12 +1423,6 @@ end;
 function TGLColor.AsAddress: PGLFloat;
 begin
 	Result:=@FColor;
-end;
-
-procedure TGLColor.Initialize(const color : TColorVector);
-begin
-   FColor:=color;
-	FDefaultColor:=color;
 end;
 
 //----------------- TGLFaceProperties --------------------------------------------
@@ -1736,8 +1763,6 @@ end;
 constructor TGLPictureImage.Create(AOwner: TPersistent);
 begin
 	inherited;
-	FPicture:=TGLPicture.Create;
-	FPicture.OnChange:=PictureChanged;
 end;
 
 // Destroy
@@ -1745,7 +1770,7 @@ end;
 destructor TGLPictureImage.Destroy;
 begin
 	ReleaseBitmap32;
-	FPicture.Free;
+	FGLPicture.Free;
 	inherited Destroy;
 end;
 
@@ -1755,11 +1780,11 @@ procedure TGLPictureImage.Assign(Source: TPersistent);
 begin
 	if Assigned(Source) then begin
       if (Source is TGLPersistentImage) then
-   		FPicture.Assign(TGLPersistentImage(Source).FPicture)
+   		Picture.Assign(TGLPersistentImage(Source).Picture)
       else if (Source is TGLGraphic) then
-         FPicture.Assign(Source)
+         Picture.Assign(Source)
       else if (Source is TGLPicture) then
-         FPicture.Assign(Source)
+         Picture.Assign(Source)
       else inherited;
 	end else inherited;
 end;
@@ -1769,7 +1794,7 @@ end;
 procedure TGLPictureImage.BeginUpdate;
 begin
 	Inc(FUpdateCounter);
-	FPicture.OnChange:=nil;
+	Picture.OnChange:=nil;
 end;
 
 // EndUpdate
@@ -1778,23 +1803,23 @@ procedure TGLPictureImage.EndUpdate;
 begin
 	Assert(FUpdateCounter>0, ClassName+': Unbalanced Begin/EndUpdate');
 	Dec(FUpdateCounter);
-	FPicture.OnChange:=PictureChanged;
+	Picture.OnChange:=PictureChanged;
 	if FUpdateCounter=0 then
-		PictureChanged(FPicture);
+		PictureChanged(Picture);
 end;
 
 // GetHeight
 //
 function TGLPictureImage.GetHeight: Integer;
 begin
-	Result:=FPicture.Height;
+	Result:=Picture.Height;
 end;
 
 // GetWidth
 //
 function TGLPictureImage.GetWidth: Integer;
 begin
-	Result:=FPicture.Width;
+	Result:=Picture.Width;
 end;
 
 // GetBitmap32
@@ -1805,11 +1830,11 @@ begin
       FBitmap:=TGLBitmap32.Create;
       // we need to deactivate OnChange, due to a "glitch" in some TGraphics,
       // for instance, TJPegImage triggers an OnChange when it is drawn...
-      FPicture.OnChange:=nil;
+      Picture.OnChange:=nil;
       try
-         FBitmap.Assign(FPicture.Graphic);
+         FBitmap.Assign(Picture.Graphic);
       finally
-         FPicture.OnChange:=PictureChanged;
+         Picture.OnChange:=PictureChanged;
       end;
 	end;
 	Result:=FBitmap;
@@ -1832,11 +1857,22 @@ begin
 	Invalidate;
 end;
 
+// GetPicture
+//
+function TGLPictureImage.GetPicture : TGLPicture;
+begin
+   if not Assigned(FGLPicture) then begin
+      FGLPicture:=TGLPicture.Create;
+      FGLPicture.OnChange:=PictureChanged;
+   end;
+   Result:=FGLPicture;
+end;
+
 // SetPicture
 //
 procedure TGLPictureImage.SetPicture(const aPicture : TGLPicture);
 begin
-	FPicture.Assign(aPicture);
+	Picture.Assign(aPicture);
 end;
 
 // ------------------
@@ -2236,16 +2272,15 @@ begin
    FRequiredMemorySize:=-1;
    FTextureHandle:=TGLTextureHandle.Create;
    FMappingMode:=tmmUser;
-   FMappingSCoordinates:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
-   FMappingTCoordinates:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
+//   FMappingTCoordinates:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
 end;
 
 // Destroy
 //
 destructor TGLTexture.Destroy;
 begin
-   FMappingSCoordinates.Free;
-   FMappingTCoordinates.Free;
+   FMapSCoordinates.Free;
+   FMapTCoordinates.Free;
 	DestroyHandles;
    FTextureHandle.Free;
 	FImage.Free;
@@ -2267,8 +2302,8 @@ begin
 		   	FMinFilter:=TGLTexture(Source).FMinFilter;
 			   FMagFilter:=TGLTexture(Source).FMagFilter;
             FMappingMode:=TGLTexture(Source).FMappingMode;
-            FMappingSCoordinates.Assign(TGLTexture(Source).FMappingSCoordinates);
-            FMappingTCoordinates.Assign(TGLTexture(Source).FMappingTCoordinates);
+            MappingSCoordinates.Assign(TGLTexture(Source).MappingSCoordinates);
+            MappingTCoordinates.Assign(TGLTexture(Source).MappingTCoordinates);
    			FDisabled:=TGLTexture(Source).FDisabled;
 	   		SetImage(TGLTexture(Source).FImage);
 		   	FChanges:=[tcParams, tcImage];
@@ -2467,14 +2502,32 @@ end;
 //
 procedure TGLTexture.SetMappingSCoordinates(const val : TGLCoordinates);
 begin
-   FMappingSCoordinates.Assign(val);
+   MappingSCoordinates.Assign(val);
+end;
+
+// GetMappingSCoordinates
+//
+function TGLTexture.GetMappingSCoordinates : TGLCoordinates;
+begin
+   if not Assigned(FMapSCoordinates) then
+      FMapSCoordinates:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
+   Result:=FMapSCoordinates;
 end;
 
 // SetMappingTCoordinates
 //
 procedure TGLTexture.SetMappingTCoordinates(const val : TGLCoordinates);
 begin
-   FMappingTCoordinates.Assign(val);
+   MappingTCoordinates.Assign(val);
+end;
+
+// GetMappingTCoordinates
+//
+function TGLTexture.GetMappingTCoordinates : TGLCoordinates;
+begin
+   if not Assigned(FMapTCoordinates) then
+      FMapTCoordinates:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
+   Result:=FMapTCoordinates;
 end;
 
 // StoreImageClassName
@@ -2836,7 +2889,6 @@ end;
 constructor TGLMaterial.Create(AOwner: TPersistent);
 begin
   inherited;
-  FBackProperties:=TGLFaceProperties.Create(Self);
   FFrontProperties:=TGLFaceProperties.Create(Self);
   FTexture:=TGLTexture.Create(Self);
   FFaceCulling:=fcBufferDefault;
@@ -2848,7 +2900,7 @@ destructor TGLMaterial.Destroy;
 begin
    if Assigned(currentLibMaterial) then
       currentLibMaterial.UnregisterUser(Self);
-   FBackProperties.Free;
+   FGLBackProperties.Free;
    FFrontProperties.Free;
    FTexture.Free;
    inherited Destroy;
@@ -2858,8 +2910,17 @@ end;
 //
 procedure TGLMaterial.SetBackProperties(Values: TGLFaceProperties);
 begin
-	FBackProperties.Assign(Values);
+	BackProperties.Assign(Values);
 	NotifyChange(Self);
+end;
+
+// GetBackProperties
+//
+function TGLMaterial.GetBackProperties : TGLFaceProperties;
+begin
+   if not Assigned(FGLBackProperties) then
+      FGLBackProperties:=TGLFaceProperties.Create(Self);
+   Result:=FGLBackProperties;
 end;
 
 // SetFrontProperties
@@ -2978,12 +3039,12 @@ begin
          case FFaceCulling of
             fcBufferDefault : if not rci.bufferFaceCull then begin
                UnSetGLState(rci.currentStates, stCullFace);
-               FBackProperties.Apply(GL_BACK);
+               BackProperties.Apply(GL_BACK);
             end;
             fcCull : ; // nothing to do
             fcNoCull : begin
                UnSetGLState(rci.currentStates, stCullFace);
-               FBackProperties.Apply(GL_BACK);
+               BackProperties.Apply(GL_BACK);
             end;
          else
             Assert(False);
@@ -2994,10 +3055,10 @@ begin
             fcBufferDefault : begin
                if rci.bufferFaceCull then
                   SetGLState(rci.currentStates, stCullFace)
-               else FBackProperties.Apply(GL_BACK);
+               else BackProperties.Apply(GL_BACK);
             end;
             fcCull : SetGLState(rci.currentStates, stCullFace);
-            fcNoCull : FBackProperties.Apply(GL_BACK);
+            fcNoCull : BackProperties.Apply(GL_BACK);
          else
             Assert(False);
          end;
@@ -3051,7 +3112,7 @@ end;
 procedure TGLMaterial.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLMaterial) then begin
-      FBackProperties.Assign(TGLMaterial(Source).FBackProperties);
+      BackProperties.Assign(TGLMaterial(Source).BackProperties);
       FFrontProperties.Assign(TGLMaterial(Source).FFrontProperties);
 		FBlendingMode:=TGLMaterial(Source).FBlendingMode;
       FMaterialOptions:=TGLMaterial(Source).FMaterialOptions;
