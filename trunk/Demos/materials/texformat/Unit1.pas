@@ -79,6 +79,7 @@ begin
       CBImage.Items.Add(sr.Name);
       i:=FindNext(sr);
    end;
+   FindClose(sr);
    // default selection
    CBFormat.ItemIndex:=0;
    CBCompression.ItemIndex:=0;

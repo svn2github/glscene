@@ -8,7 +8,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLFireFX, GLCadencer, GLScene, GLMisc, GLObjects, GLBehaviours, ExtCtrls,
-  Geometry, GLThorFX, GLSkydome, StdCtrls, ComCtrls, GLGraph;
+  Geometry, GLThorFX, GLSkydome, StdCtrls, ComCtrls, GLGraph, VectorTypes;
 
 type
   TForm1 = class(TForm)
@@ -54,11 +54,11 @@ type
     procedure CoreBoxClick(Sender: TObject);
     procedure GLThorFXManager1CalcPoint(Sender: TObject; PointNo: Integer;
       var x, y, z: Single);
-    procedure HeightField1GetHeight(const x, y: Single; var z: Single;
-      var color: THomogeneousFltVector; var texPoint: TTexPoint);
     procedure PauseBoxClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure HeightField1GetHeight(const x, y: Single; var z: Single;
+      var color: TVector4f; var texPoint: TTexPoint);
   private
     { Déclarations privées }
   public
@@ -160,20 +160,20 @@ begin
  end;
 end;
 
-procedure TForm1.HeightField1GetHeight(const x, y: Single; var z: Single;
-  var color: THomogeneousFltVector; var texPoint: TTexPoint);
-begin
-   Z:=0;
-end;
-
 procedure TForm1.PauseBoxClick(Sender: TObject);
 begin
-GLThorFXManager1.paused:=PauseBox.checked;
+   GLThorFXManager1.Paused:=PauseBox.checked;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
    HeightField1.Material.Texture.Image.SaveToFile('c:\test.jpg');
+end;
+
+procedure TForm1.HeightField1GetHeight(const x, y: Single; var z: Single;
+  var color: TVector4f; var texPoint: TTexPoint);
+begin
+   Z:=0;
 end;
 
 end.

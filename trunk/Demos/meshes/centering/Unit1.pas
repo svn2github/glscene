@@ -56,7 +56,7 @@ begin
    FreeForm2.LoadFromFile(cFileName);
    // right one
    FreeForm1.AutoCentering:=[macCenterX, macCenterY, macCenterZ];
-   FreeForm1.LoadFromFile(cFileName);
+   FreeForm1.LoadFromFile(cFileName); 
 end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);

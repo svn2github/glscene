@@ -195,6 +195,7 @@ begin
       // create a new proxy and set its MasterObject property
       proxy:=TGLProxyObject(DummyCube1.AddNewChild(TGLProxyObject));
       with proxy do begin
+         ProxyOptions:=[pooObjects];
          MasterObject:=FreeForm1;
          // retrieve reference attitude
          Direction:=FreeForm1.Direction;
