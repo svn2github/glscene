@@ -137,7 +137,7 @@ begin
    // some stats
    if ActiveSoundManager is TGLSMBASS then
       mngName:='BASS'
-   else if ActiveSoundManager is TGLSMBASS then
+   else if ActiveSoundManager is TGLSMFMOD then
       mngName:='FMOD'
    else mngName:='DSound';
    Caption:=Format('%.2f FPS, %s CPU use : %.2f%%',
