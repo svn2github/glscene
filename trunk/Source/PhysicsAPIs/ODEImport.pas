@@ -22,7 +22,7 @@
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.7.3                                        *
+ * ODE Delphi Import unit : 0.8.1                                        *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -61,28 +61,39 @@
 
   Change history
 
-  2002.09.16 Conversion started by Mattias and Christophe
-  2002.09.22 Preliminary Linux support added by Dominique Louis
-  2002.09.24 New Single and Double precision DLLs created by Christophe Hosted
-  2002.09.25 I'm having issues with the single precision DLL, it seems less
+  2003.07.23 - CH - New single dll, now handles Plane2D
+  2003.07.18 - CH - Added set and get UniversalParam, new dll deployed
+  2003.07.07 - MF - DelphiODE now defaults to Single precision, because TriMesh
+    only works with Single precision. We're hoping this will be corrected in the
+    future
+  2003.07.05 - CH - updated file to support new tri-collider code
+  2003.06.13 - CH - Creted new DLL, adding dWorldStepFast and
+    dJointTypePlane2D
+  2003.06.12 - MF - fixed Single support, which was slightly broken
+  2003.06.10 - MF - Removed GeomTransformGroup as they're not in
+    the DLL.
+  2003.02.11 - JV - added syntax enforcement on some enumerated types
+  2003.02.01 - CH - removed dGeomGroup and all it's procedures / functions
+    due to deprecation
+  2003.02.01 - MF - added a few new functions
+  2003.01.20 - CH - compiled a new DLL and added the new functions.
+  2002.10.31 - CH - compiled a new dll version, with some minor updates to
+    friction among other things
+  2002.10.10 - MF - added the functions needed to support cylinder and
+    GeomTransformGroup.
+  2002.10.10 - CH - compiled a new DLL with the new cylinder geom and the
+    new GeomTransformGroup.
+  2002.09.25 - MF - I'm having issues with the single precision DLL, it seems less
     stable. DelphiODE will still default to double precision. The goal is single
     precision though, so the Tri-Collider can be used.
-  2002.10.10 Christophe compiled a new DLL with the new cylinder geom and the
-    new GeomTransformGroup.
-  2002.10.10 Mattias added the functions needed to support cylinder and
-    GeomTransformGroup.
-  2002.10.31 Christophe compiled a new dll version, with some minor updates to
-    friction among other things
-  2003.01.20 Christophe compiled a new DLL and added the new functions.
-  2003.02.01 Mattias added a few new functions
-  2003.02.01 Christophe removed dGeomGroup and all it's procedures / functions
-    due to deprecation
-  2003.02.11 John Villar added syntax enforcement on some enumerated types
-  2003.06.10 Mattias Fagerlund removed GeomTransformGroup as they're not in
-    the DLL.
-  2003.06.12 Mattias Fagerlund fixed Single support, which was slightly broken
-  2003.06.13 Christophe Hosten delivered new DLL, adding dWorldStepFast and
-    dJointTypePlane2D
+  2002.09.24 - CH - New Single and Double precision DLLs created
+  2002.09.22 - DL - Preliminary Linux support added by
+  2002.09.16 - MF & CH - Conversion started
+
+  MF = Mattias Fagerlund
+  CH = Christophe Hosten (Chroma)
+  JV = John Villar
+  DL = Dominique Louis
  }
 
 unit ODEImport;
@@ -113,18 +124,36 @@ const
 type
   // ********************************************************************
   // ********************************************************************
-  //   Determine what precision your dll uses!
-  //   COULD BE SINGLE _OR_ DOUBLE - DEPENDS ON COMPILE!
-  // typedef double dReal;
-  {define cSINGLE} // Add a "$" before "define" to make DelphiODE single based
-  {define cTRILIST}
+  //
+  //   ODE precision:
+  //
+  //   ODE can be run in Single or Double precision, Single is less precise,
+  //   but requires less memory.
+  //
+  //   If you choose to run in Single mode, you must deploy the single precision
+  //   dll (this is default)
+  //
+  //   If you choose to run in Double mode, you must delpoy the double precision
+  //   dll (named ode-Double.dll and located in the dll directory)
+  //
+  //  A major issue is that Single and Double support different function sets,
+  //  but we gope this will be sorted out in the future. The TriList only
+  //  works in single mode, and the Plane2D joint only works in double mode.
+
+  {$define cPLANE2D} // Use Plane2D (now exists in both single and double)
+  {$define cSINGLE}  // Add a "$" before "define" to make DelphiODE single based
 
   {$ifdef cSINGLE}
-  TdReal = single;
+    {$define cTRILIST} // Use TriList (currently only exists in single dll)
+    TdReal = single;
   {$else}
-  TdReal = double;
+    TdReal = double;
   {$endif}
+
   PdReal = ^TdReal;
+
+  {define cODEDebugEnabled} // Debug mode
+
 
   // Pointers to internal ODE structures. These I haven't been able to reproduce
   // in delphi, they're C++ classes. 
@@ -349,7 +378,8 @@ enum {
     dJointTypeHinge2,
     dJointTypeFixed,
     dJointTypeNull,
-    dJointTypeAMotor);
+    dJointTypeAMotor,
+    dJointTypePlane2D);
 
   TdAngularMotorModeNumbers =
     (dAMotorUser,
@@ -565,6 +595,21 @@ type
   PdxSpace = ^TdxSpace;
 
 
+(*struct dxTriMeshData{
+	Model BVTree;
+	MeshInterface Mesh;
+
+	dxTriMeshData();
+	~dxTriMeshData();
+
+	void Build(const void* Vertices, int VertexStide, int VertexCount, const void* Indices, int IndexCount, int TriStride);
+};*)
+  TdxTriMeshData = record
+    unknown : byte; // 
+  end;
+
+  PdxTriMeshData = ^TdxTriMeshData;
+
 (*//simple space - reports all n^2 object intersections
 struct dxSimpleSpace : public dxSpace {
   dGeomID first;
@@ -770,15 +815,15 @@ enum {
     dParamGroup: TJointParams = $100;
 
 
+  {$ifdef cTRILIST}
   type
     // Tri-list collider
-    TdcVector3 = record
-      x, y, z: Single;
-    end;
-    PdcVector3 = ^TdcVector3;
+    TdIntegerArray = array[0..65535] of Integer;
+    PdIntegerArray = ^TdIntegerArray;
 
-    TdcVector3Array = array[0..65535] of TdcVector3;
-    PdcVector3Array = ^TdcVector3Array;
+    TdVector3Array = array[0..65535] of TdVector3;
+    PdVector3Array = ^TdVector3Array;
+  {$endif}
 
 { TODO :
 // How does one import integers?
@@ -893,6 +938,7 @@ dWtoDQ}
   procedure dBodySetLinearVel(const Body: PdxBody; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dBodySetMass(const Body: PdxBody; const mass: TdMass); cdecl; external ODEDLL;
   procedure dBodySetPosition(const Body: PdxBody; const x, y, z: TdReal); cdecl; external ODEDLL;
+
   procedure dBodySetQuaternion(const Body: PdxBody; const q: TdQuaternion); cdecl; external ODEDLL;
   procedure dBodySetRotation(const Body: PdxBody; const R: TdMatrix3); cdecl; external ODEDLL;
   procedure dBodySetTorque(const Body: PdxBody; const x, y, z: TdReal); cdecl; external ODEDLL;
@@ -965,6 +1011,13 @@ dWtoDQ}
   procedure dJointSetUniversalAxis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   function dJointGetData (const dJointID : TdJointID) : pointer; cdecl; external ODEDLL;
   procedure dJointSetData (const dJointID : TdJointID; data : Pointer); cdecl; external ODEDLL;
+  procedure dJointGetBallAnchor2(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
+  procedure dJointGetHingeAnchor2(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
+  procedure dJointGetHinge2Anchor2(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
+  procedure dJointGetUniversalAnchor2(const dJointID : TdJointID; result: TdVector3); cdecl; external ODEDLL;
+  procedure dJointSetUniversalParam(const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal); cdecl; external ODEDLL;
+  function dJointGetUniversalParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external ODEDLL;
+
 
   // New "callback" routines for feedback of joints
   procedure dJointSetFeedback (const dJointID : TdJointID; Feedback : PTdJointFeedback); cdecl; external ODEDLL;
@@ -972,7 +1025,7 @@ dWtoDQ}
 
   // dJointTypePlane2D
 
-  {$ifndef cSINGLE}
+  {$ifdef cPLANE2D}
   // JointPlane2D isn't currently defined in the single dll
   function dJointCreatePlane2D(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external ODEDLL;
   procedure dJointSetPlane2DXParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external ODEDLL;
@@ -991,6 +1044,7 @@ dWtoDQ}
   function dGeomGetClass(const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
   function dGeomGetPosition(const Geom : PdxGeom): PdVector3; cdecl; external ODEDLL;
   function dGeomGetRotation(const Geom : PdxGeom): PdMatrix3; cdecl; external ODEDLL;
+  function dGeomGetSpace(const Geom : PdxGeom): PdxSpace; cdecl; external ODEDLL;
 
   // Deprecated!
   //function dGeomGetSpaceAABB(const Geom : PdxGeom): TdReal; cdecl; external ODEDLL;
@@ -1015,6 +1069,8 @@ dWtoDQ}
   function dGeomGetData (const Geom : PdxGeom) : pointer; cdecl; external ODEDLL;
   procedure dGeomTransformSetInfo (const Geom : PdxGeom; mode : integer); cdecl; external ODEDLL;
   function dGeomTransformGetInfo (const Geom : PdxGeom) : integer; cdecl; external ODEDLL;
+  procedure dGeomGetQuaternion(const Geom : PdxGeom; var result: TdQuaternion); cdecl; external ODEDLL;
+  procedure dGeomSetQuaternion(const Geom : PdxGeom; const TdQuaternion); cdecl; external ODEDLL;
 
   function dGeomIsSpace (const Geom : PdxGeom) : integer; cdecl; external ODEDLL;
   procedure dGeomSetCategoryBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external ODEDLL;
@@ -1029,6 +1085,7 @@ dWtoDQ}
   function dGeomBoxPointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
   function dGeomPlanePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
   function dGeomCCylinderPointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
+
 
   // A strange fix, so the class ids can be updated
   // ***************
@@ -1083,15 +1140,18 @@ dWtoDQ}
 
 
   //----- dSpace -----
-  procedure dSpaceAdd(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
-  procedure dSpaceDestroy(const Space: PdxSpace); cdecl; external ODEDLL;
-  function dSpaceQuery (const Space : PdxSpace; const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
-  procedure dSpaceRemove(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
   function dSimpleSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external ODEDLL;
   function dHashSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external ODEDLL;
+  function dQuadTreeSpaceCreate(Space : PdxSpace; Center, Extents : TdVector3; Depth : Integer): PdxSpace; cdecl; external ODEDLL;
+
+  procedure dSpaceDestroy(const Space: PdxSpace); cdecl; external ODEDLL;
+  procedure dSpaceAdd(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
+  function dSpaceQuery (const Space : PdxSpace; const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
+  procedure dSpaceRemove(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
   procedure dHashSpaceSetLevels(const Space: PdxSpace; const minlevel, maxlevel: Integer); cdecl; external ODEDLL;
   procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external ODEDLL;
   function dSpaceGetNumGeoms (const Space: PdxSpace) : integer; cdecl; external ODEDLL;
+
 
 
   procedure dSpaceSetCleanup (space : PdxSpace; const mode : integer); cdecl; external ODEDLL;
@@ -1108,20 +1168,24 @@ dWtoDQ}
   procedure dMassSetZero(var m: TdMass); cdecl; external ODEDLL;
   procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dMassSetCylinder(var m: TdMass; density: TdReal; direction: Integer; a, b: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetBoxTotal(var m: TdMass; total_mass, lx, ly, lz: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetSphereTotal(var m: TdMass; total_mass, radius: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetCappedCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetCylinderTotal(var m: TdMass; total_mass: TdReal; direction: Integer; radius, length: TdReal); cdecl; external ODEDLL;
 
   //----- dTrilistCollider -----
   {$ifdef cTRILIST}
-  // dxGeom* dCreateTriList(dSpaceID space, dTriCallback* Callback, dTriArrayCallback* ArrayCallback){
-  //function dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer; RayCallback: Pointer): PdxGeom; cdecl;
+  function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
+  function EXT_dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl; external ODEDLL name 'dCreateTriMesh';
 
-  function dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer): PdxGeom; cdecl;
-  function EXT_dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer): PdxGeom; cdecl; external ODEDLL name 'dCreateTriList';
+  procedure dGeomTriMeshDataBuild(g: PdxTriMeshData; Vertices: pointer; VertexStride : integer; VertexCount : integer; Indices: pointer; IndexCount, TriStride : integer) cdecl; external ODEDLL;
+  procedure dGeomTriMeshDataBuildSimple(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external ODEDLL;
 
-  // void dGeomTriListBuild(dGeomID g, const dcVector3* Vertices, int VertexCount, const int* Indices, int IndexCount)
-  // procedure dGeomTriListBuild(Geom : PdxGeom; Vertices: PdxVector3Array; VertexStride, VertexCount: Integer; Indices: PIntegerArray; IndexStride, IndexCount, TriStride: Integer); cdecl; external ODEDLL;
-  procedure dGeomTriListBuild(Geom : PdxGeom; Vertices: PdcVector3Array; VertexCount: Integer; Indices: PIntegerArray; IndexCount : Integer); cdecl; external ODEDLL;
-  // void dGeomTriListGetTriangle(dGeomID g, int Index, dVector3* v0, dVector3* v1, dVector3* v2);
-  // procedure dGeomTriListGetTriangle(Geom : PdxGeom; Index : Integer; var v0, v1, v2 : TdcVector3); cdecl; external ODEDLL;
+  function dGeomTriMeshDataCreate: PdxTriMeshData; cdecl; external ODEDLL;
+  procedure dGeomTriMeshDataDestroy(g: PdxTriMeshData); cdecl; external ODEDLL;
+
+  procedure dGeomTriMeshGetTriangle(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl; external ODEDLL;
+  procedure dGeomTriMeshGetPoint(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl; external ODEDLL;
   {$endif}
 
   //----- Rotation.h -----
@@ -1200,7 +1264,14 @@ var
   dCylinderClass : integer=-1;
   dRayClass : integer=-1;
   dGeomTransformGroupClass : integer=-1;
-  dTriListClass : integer=-1;
+  dTriMeshClass : integer=-1;
+
+  DisabledDebugGeom : boolean = False ;
+
+{$IFDEF cODEDebugEnabled}
+var
+   ODEDebugGeomList: TGeomList;
+{$ENDIF}
 
 implementation
 
@@ -1392,6 +1463,14 @@ begin
 
   if dSphereClass=-1 then
     dSphereClass := dGeomGetClass(result);
+{$IFDEF cODEDebugEnabled}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
 end;
 
 function dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl;
@@ -1400,6 +1479,14 @@ begin
 
   if dBoxClass=-1 then
     dBoxClass := dGeomGetClass(result);
+{$IFDEF cODEDebugEnabled}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
 end;
 
 function dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl;
@@ -1416,6 +1503,14 @@ begin
 
   if dCCylinderClass=-1 then
     dCCylinderClass := dGeomGetClass(result);
+{$IFDEF cODEDebugEnabled}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
 end;
 
 function dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl;
@@ -1424,6 +1519,14 @@ begin
 
   if dGeomTransformClass=-1 then
     dGeomTransformClass := dGeomGetClass(result);
+{$IFDEF cODEDebugEnabled}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
 end;
 
 function dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl;
@@ -1432,6 +1535,14 @@ begin
 
   if dCylinderClass=-1 then
     dCylinderClass := dGeomGetClass(result);
+{$IFDEF cODEDebugEnabled}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
 end;
 
 function dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl;
@@ -1440,15 +1551,24 @@ begin
 
   if dRayClass=-1 then
     dRayClass := dGeomGetClass(result);
+{$IFDEF cODEDebugEnabled}
+   If Not DisabledDebugGeom Then
+      Begin
+      if Not Assigned(ODEDebugGeomList) then
+         ODEDebugGeomList := TGeomList.create();
+      ODEDebugGeomList.Add(result);
+      End ;
+{$ENDIF}
 end;
 
 {$ifdef cTRILIST}
-function dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer): PdxGeom; cdecl;
-begin
-  result := EXT_dCreateTriList(Space, Callback, ArrayCallback);
+function dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
 
-  if dTriListClass=-1 then
-    dTriListClass := dGeomGetClass(result);
+begin
+  result := EXT_dCreateTriMesh(Space, Data, Callback, ArrayCallback, RayCallback);
+
+  if dTriMeshClass=-1 then
+    dTriMeshClass := dGeomGetClass(result);
 end;
 {$endif}
 

@@ -18,12 +18,13 @@ interface
   very useful to you. The unit is not intended as a sorted toolbox, but more
   as a place to put stuff until we figure out how to organize the integration.
 
-  Mattias Fagerlund ( mattias@cambrianlabs.com ), 2002-09-26 
+  Mattias Fagerlund ( mattias@cambrianlabs.com ), 2002-09-26
 
 }
 
 uses
-  OpenGL1x, Geometry, ODEImport, GLScene, VectorTypes, GLObjects;
+  OpenGL1x, Geometry, ODEImport, GLScene, VectorTypes, VectorLists,
+  GLObjects, GLVerletClothify, GLVectorFileObjects;
 
   procedure DrawBox(Sides : TdVector3);
   procedure setTransform (pos : TdVector3; R : TdMatrix3);
@@ -67,6 +68,17 @@ uses
   function CreateGeomFromCube(Cube : TGLCube; Space : PdxSpace) : PdxGeom;
   function CreateBodyFromCube(var Geom : PdxGeom; Cube : TGLCube; World : PdxWorld; Space : PdxSpace) : PdxBody;
 
+  {: Note that this method requires you to manually deallocate vertices and
+    indices when you're done with the trimesh }
+  {$if SizeOf(TdReal)=SizeOf(Single)}
+  function CreateTriMeshFromBaseMesh(
+    GLBaseMesh : TGLBaseMesh;
+    Space : PdxSpace;
+    var Vertices : PdVector3Array;
+    var Indices : PdIntegerArray): PdxGeom;
+  {$ifend}
+
+
   function GLMatrixFromGeom(Geom : PdxGeom) : TMatrix;
   function GLDirectionFromGeom(Geom : PdxGeom) : TVector;
 
@@ -79,6 +91,8 @@ uses
   // { $ EXTERNALSYM GL_ZERO} ?
 
 implementation
+
+uses SysUtils;
 
 
 procedure ODERToGLSceneMatrix(var m : TMatrix; R : TdMatrix3_As3x4; pos : TdVector3); overload;
@@ -334,8 +348,12 @@ begin
 end;
 
 procedure PositionSceneObject(GLBaseSceneObject : TGLBaseSceneObject; Geom : PdxGeom);
+var
+  Scale : TAffineVector;
 begin
+  Scale := GLBaseSceneObject.Scale.AsAffineVector;
   GLBaseSceneObject.Matrix:=GLMatrixFromGeom(Geom);
+  GLBaseSceneObject.Scale.AsAffineVector := Scale;
 end;
 
 procedure CopyCubeSizeFromBox(Cube : TGLCube; Geom : PdxGeom);
@@ -406,6 +424,82 @@ begin
   end;
 end;
 
+{$if SizeOf(TdReal)=SizeOf(Single)}
+function CreateTriMeshFromBaseMesh(
+    GLBaseMesh : TGLBaseMesh;
+    Space : PdxSpace;
+    var Vertices : PdVector3Array;
+    var Indices : PdIntegerArray): PdxGeom;
+var
+  i,j,p : integer;
+  FaceExtractor : TFaceExtractor;
+  VertexCount : integer;
+  Vertex : TAffineVector;
+  OffsetList : TIntegerList;
+  Face : TFace;
+  iMO : integer;
+  TriMeshData : PdxTriMeshData;
+begin
+  OffsetList := nil;
+  FaceExtractor := TFaceExtractor.Create(GLBaseMesh);
+
+  try
+    OffsetList := TIntegerList.Create;
+
+    FaceExtractor.ProcessMesh;
+
+    VertexCount := 0;
+    for i := 0 to GLBaseMesh.MeshObjects.Count-1 do
+      VertexCount := VertexCount + GLBaseMesh.MeshObjects[i].Vertices.Count;
+
+    Vertices := AllocMem(sizeOf(TdVector3) * VertexCount);
+    Indices := AllocMem(sizeOf(integer) * FaceExtractor.FaceList.Count * 3);
+
+    // Copy all vertices
+    p := 0;
+    for i := 0 to GLBaseMesh.MeshObjects.Count-1 do
+    begin
+      OffsetList.Add(p);
+      for j := 0 to GLBaseMesh.MeshObjects[i].Vertices.Count-1 do
+      begin
+        Vertex := GLBaseMesh.LocalToAbsolute(GLBaseMesh.MeshObjects[i].Vertices[j]);
+        Vertices^[p,0] := Vertex[0];
+        Vertices^[p,1] := Vertex[1];
+        Vertices^[p,2] := Vertex[2];
+        Vertices^[p,3] := 0;
+        inc(p);
+      end;
+    end;
+
+    // Copy all triangles
+    p := 0;
+    for i := 0 to FaceExtractor.FaceList.Count-1 do
+    begin
+      Face := FaceExtractor.FaceList[i];
+      iMO := GLBaseMesh.MeshObjects.IndexOf(Face.MeshObject);
+
+      Indices^[p] := Face.Vertices[0] + OffsetList[iMO]; inc(p);
+      Indices^[p] := Face.Vertices[1] + OffsetList[iMO]; inc(p);
+      Indices^[p] := Face.Vertices[2] + OffsetList[iMO]; inc(p);
+    end;
+
+    TriMeshData := dGeomTriMeshDataCreate;
+
+    dGeomTriMeshDataBuildSimple(
+      TriMeshData,
+      Vertices, VertexCount,
+      Indices, FaceExtractor.FaceList.Count * 3);
+
+    result := dCreateTriMesh(space, TriMeshData, nil, nil, nil);
+  finally
+    FaceExtractor.Free;
+
+    if OffsetList<>nil then
+      OffsetList.Free;
+  end;
+end;
+{$ifend}
+
 procedure CopyBodyFromCube(Body : PdxBody; var Geom : PdxGeom; Cube : TGLCube; Space : PdxSpace);
 var
   m : TdMass;
@@ -465,6 +559,4 @@ function RandomColorVector : TVector;
 begin
   result := VectorMake(Random, Random, Random, 0);
 end;
-
-
 end.
