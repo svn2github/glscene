@@ -705,6 +705,8 @@ procedure DivideVector(var v : TVector; const divider : TVector); overload;
 function VectorEquals(const V1, V2: TVector) : Boolean; overload;
 //: True if all components are equal.
 function VectorEquals(const V1, V2: TAffineVector) : Boolean; overload;
+//: True if X, Y and Z components are equal.
+function AffineVectorEquals(const V1, V2: TVector) : Boolean; overload;
 //: True if x=y=z=0, w ignored
 function VectorIsNull(const v : TVector) : Boolean; overload;
 //: True if x=y=z=0, w ignored
@@ -4273,25 +4275,23 @@ function VectorEquals(const V1, V2: TVector) : Boolean;
 // EDX contains highest of v2
 {$ifndef GEOMETRY_NO_ASM}
 asm
-      mov ecx, eax
-      mov eax, [edx]
-      cmp eax, [ecx]
+      mov ecx, [edx]
+      cmp ecx, [eax]
       jne @@Diff
-      mov eax, [edx+$4]
-      cmp eax, [ecx+$4]
+      mov ecx, [edx+$4]
+      cmp ecx, [eax+$4]
       jne @@Diff
-      mov eax, [edx+$8]
-      cmp eax, [ecx+$8]
+      mov ecx, [edx+$8]
+      cmp ecx, [eax+$8]
       jne @@Diff
-      mov eax, [edx+$C]
-      cmp eax, [ecx+$C]
+      mov ecx, [edx+$C]
+      cmp ecx, [eax+$C]
       jne @@Diff
-@@Equal:
-      mov al, 1
-      jmp @@End
+@@Equal:             
+      mov eax, 1
+      ret
 @@Diff:
       xor eax, eax
-@@End:
 {$else}
 begin
    Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]) and (v1[3]=v2[3]);
@@ -4305,22 +4305,48 @@ function VectorEquals(const V1, V2: TAffineVector) : Boolean;
 // EDX contains highest of v2
 {$ifndef GEOMETRY_NO_ASM}
 asm
-      mov ecx, eax
-      mov eax, [edx]
-      cmp eax, [ecx]
+      mov ecx, [edx]
+      cmp ecx, [eax]
       jne @@Diff
-      mov eax, [edx+$4]
-      cmp eax, [ecx+$4]
+      mov ecx, [edx+$4]
+      cmp ecx, [eax+$4]
       jne @@Diff
-      mov eax, [edx+$8]
-      cmp eax, [ecx+$8]
+      mov ecx, [edx+$8]
+      cmp ecx, [eax+$8]
       jne @@Diff
 @@Equal:
       mov al, 1
-      jmp @@End
+      ret
 @@Diff:
       xor eax, eax
 @@End:
+{$else}
+begin
+   Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]);
+{$endif}
+end;
+
+// AffineVectorEquals (hmg vector)
+//
+function AffineVectorEquals(const V1, V2 : TVector) : Boolean;
+// EAX contains address of v1
+// EDX contains highest of v2
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      mov ecx, [edx]
+      cmp ecx, [eax]
+      jne @@Diff
+      mov ecx, [edx+$4]
+      cmp ecx, [eax+$4]
+      jne @@Diff
+      mov ecx, [edx+$8]
+      cmp ecx, [eax+$8]
+      jne @@Diff
+@@Equal:
+      mov eax, 1
+      ret
+@@Diff:
+      xor eax, eax
 {$else}
 begin
    Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]);
