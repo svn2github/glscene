@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 114
-  Top = 96
-  Width = 659
-  Height = 405
+  Left = 77
+  Top = 66
+  Width = 665
+  Height = 442
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,52 +17,61 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 25
-    Width = 651
-    Height = 351
+    Width = 657
+    Height = 388
     Camera = GLCamera2
+    Buffer.BackgroundColor = clGreen
     Align = alClient
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 651
+    Width = 657
     Height = 25
     Align = alTop
     BevelOuter = bvLowered
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    ParentFont = False
     TabOrder = 1
     object Label3: TLabel
-      Left = 304
+      Left = 352
       Top = 6
-      Width = 75
-      Height = 13
+      Width = 76
+      Height = 14
       Caption = 'F7 Third Person'
     end
     object Label4: TLabel
-      Left = 400
+      Left = 448
       Top = 6
-      Width = 86
-      Height = 13
+      Width = 83
+      Height = 14
       Caption = 'F8 First Person'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
-      Font.Name = 'MS Sans Serif'
+      Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
     end
     object Label1: TLabel
       Left = 8
       Top = 6
-      Width = 265
-      Height = 13
-      Caption = 'Move with arrow keys, strafe with CTRL, run with SHIFT'
+      Width = 332
+      Height = 14
+      Caption = 
+        'Move with arrow keys, strafe with CTRL, run with SHIFT, ESC to e' +
+        'xit'
     end
     object CBMouseLook: TCheckBox
-      Left = 512
+      Left = 552
       Top = 4
       Width = 97
       Height = 17
-      Caption = 'Mouse Look'
+      Caption = '&Mouse Look'
       TabOrder = 0
       OnClick = CBMouseLookClick
     end
@@ -84,11 +93,6 @@ object Form1: TForm1
           StopAngle = 90
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Stacks = 4
-        end
-        item
-          StartAngle = -15
-          StartColor.Color = {9D9C1C3EA4A3233F9D9C1C3E0000803F}
-          StopColor.Color = {000000008180003F000000000000803F}
         end>
       Stars = <>
     end
@@ -107,7 +111,7 @@ object Form1: TForm1
       ConstAttenuation = 1
       Position.Coordinates = {0000704200003443000000000000803F}
       LightStyle = lsOmni
-      SpotCutOff = 360
+      SpotCutOff = 180
     end
     object DummyCube1: TGLDummyCube
       Direction.Coordinates = {00000000000000800000803F00000000}
@@ -142,23 +146,13 @@ object Form1: TForm1
         Material.Texture.MinFilter = miLinear
         Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
         Material.Texture.Disabled = False
-        StartFrame = 0
-        EndFrame = 0
-        CurrentFrame = 0
         Interval = 100
-        Animations = <>
-        OverlaySkeleton = False
         object Actor2: TGLActor
           Direction.Coordinates = {00000080000000000000803F00000000}
           Material.Texture.MinFilter = miLinear
           Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
           Material.Texture.Disabled = False
-          StartFrame = 0
-          EndFrame = 0
-          CurrentFrame = 0
           Interval = 100
-          Animations = <>
-          OverlaySkeleton = False
         end
       end
       object DummyCube3: TGLDummyCube
