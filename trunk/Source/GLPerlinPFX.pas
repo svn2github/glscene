@@ -3,6 +3,7 @@
    PFX particle effects revolving around the use of Perlin noise.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/04/04 - Mrqzzz - Fixed range check error suggested by Graham Kennedy
       <li>15/04/04 - EG - Creation
    </ul></font>
 }
@@ -232,6 +233,7 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
                   df:=ClampValue(Power(df, InvGamma)*Brightness, 0, 1);
                dfg:=Power((1-Sqrt(f)), FSmoothness);
                d:=Trunc(df*255);
+               if d > 255 then d:=255;
                with scanLine[x+dx] do begin
                   r:=d;
                   g:=d;
