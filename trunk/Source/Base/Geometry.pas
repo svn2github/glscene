@@ -1551,24 +1551,24 @@ asm
       jmp   @@End
 
 @@3DNow:
-      movq  mm0, [edx]
-      movd  mm1, [edx+8]
+      db $0F,$6F,$02           /// movq  mm0, [edx]
+      db $0F,$6E,$4A,$08       /// movd  mm1, [edx+8]
       mov   edx, dest
 
 @@3DNowLoop:
-      movq  mm2, [eax]
-      movd  mm3, [eax+8]
-      pfadd mm2, mm0
-      pfadd mm3, mm1
-      movq  [edx], mm2
-      movd  [edx+8], mm3
+      db $0F,$6F,$10           /// movq  mm2, [eax]
+      db $0F,$6E,$58,$08       /// movd  mm3, [eax+8]
+      db $0F,$0F,$D0,$9E       /// pfadd mm2, mm0
+      db $0F,$0F,$D9,$9E       /// pfadd mm3, mm1
+      db $0F,$7F,$12           /// movq  [edx], mm2
+      db $0F,$7E,$5A,$08       /// movd  [edx+8], mm3
 
       add   eax, 12
       add   edx, 12
       dec   ecx
       jnz   @@3DNowLoop 
 
-      femms
+      db $0F,$0E               /// femms
 
 @@End:
 end;
@@ -5253,17 +5253,17 @@ asm
       or    edx, edx
       jz    @@FPU
 
-      movd  mm7, [ecx]
-      punpckldq   mm7, mm7
+      db $0F,$6E,$39           /// movd        mm7, [ecx]
+      db $0F,$62,$FF           /// punpckldq   mm7, mm7
 
 @@3DNowLoop:
-      prefetchw [eax+64]
-      movq  mm0, [eax]
-      movq  mm1, [eax+8]
-      pfmul mm0, mm7
-      pfmul mm1, mm7
-      movq  [eax], mm0
-      movq  [eax+8], mm1
+      db $0F,$0D,$48,$40       /// prefetchw [eax+64]
+      db $0F,$6F,$00           /// movq  mm0, [eax]
+      db $0F,$6F,$48,$08       /// movq  mm1, [eax+8]
+      db $0F,$0F,$C7,$B4       /// pfmul mm0, mm7
+      db $0F,$0F,$CF,$B4       /// pfmul mm1, mm7
+      db $0F,$7F,$00           /// movq  [eax], mm0
+      db $0F,$7F,$48,$08       /// movq  [eax+8], mm1
 
       add   eax, 16
       dec   edx
@@ -5271,7 +5271,7 @@ asm
 
       pop   edx
       and   edx, 3
-      femms
+      db $0F,$0E               /// femms
 
 @@FPU:
       push  edx
@@ -5325,17 +5325,17 @@ asm
       or    edx, edx
       jz    @@FPU
 
-      movd  mm7, [ecx]
-      punpckldq   mm7, mm7
+      db $0F,$6E,$39           /// movd  mm7, [ecx]
+      db $0F,$62,$FF           /// punpckldq   mm7, mm7
 
 @@3DNowLoop:
-      prefetchw [eax+64]
-      movq  mm0, [eax]
-      movq  mm1, [eax+8]
-      pfadd mm0, mm7
-      pfadd mm1, mm7
-      movq  [eax], mm0
-      movq  [eax+8], mm1
+      db $0F,$0D,$48,$40       /// prefetchw [eax+64]
+      db $0F,$6F,$00           /// movq  mm0, [eax]
+      db $0F,$6F,$48,$08       /// movq  mm1, [eax+8]
+      db $0F,$0F,$C7,$9E       /// pfadd mm0, mm7
+      db $0F,$0F,$CF,$9E       /// pfadd mm1, mm7
+      db $0F,$7F,$00           /// movq  [eax], mm0
+      db $0F,$7F,$48,$08       /// movq  [eax+8], mm1
 
       add   eax, 16
       dec   edx
@@ -5343,7 +5343,7 @@ asm
 
       pop   edx
       and   edx, 3
-      femms
+      db $0F,$0E               /// femms
 
 @@FPU:
       push  edx

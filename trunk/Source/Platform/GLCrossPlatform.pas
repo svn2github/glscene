@@ -76,6 +76,11 @@ procedure FreeAndNil(var anObject);
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 
+{: Suspends thread execution for length milliseconds.<p>
+   If length is zero, only the remaining time in the current thread's time
+   slice is relinquished. }
+procedure Sleep(length : Cardinal);
+
 {: Returns the current value of the highest-resolution counter.<p>
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
@@ -222,6 +227,13 @@ end;
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 begin
    Result:=GetDeviceCaps(device, LOGPIXELSX);
+end;
+
+// Sleep
+//
+procedure Sleep(length : Cardinal);
+begin
+   Windows.Sleep(length);
 end;
 
 // QueryPerformanceCounter

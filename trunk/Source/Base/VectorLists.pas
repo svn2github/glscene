@@ -1481,7 +1481,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterClasses([TAffineVectorList, TVectorList, TTexPointList, TIntegerList, TSingleList]);
+   RegisterClasses([TAffineVectorList, TVectorList, TTexPointList, TSingleList]);
 
 end.
 
