@@ -9,6 +9,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/08/03 - SG - Added MirrorU and MirrorV to TGLSprite for mirroring textures
       <li>21/07/03 - EG - TGLTeapot moved to new GLTeapot unit,
                           TGLDodecahedron moved to new GLPolyhedron unit,
                           TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
@@ -256,6 +257,8 @@ type
 			FRotation : TGLFloat;
          FAlphaChannel : Single;
          FNoZWrite : Boolean;
+         FMirrorU,
+         FMirrorV : Boolean;
 
 		protected
 			{ Protected Declarations }
@@ -265,6 +268,8 @@ type
          procedure SetAlphaChannel(const val : Single);
          function StoreAlphaChannel : Boolean;
          procedure SetNoZWrite(const val : Boolean);
+         procedure SetMirrorU(const val : Boolean);
+         procedure SetMirrorV(const val : Boolean);
 
 		public
 			{ Public Declarations }
@@ -291,6 +296,10 @@ type
          {: If True, sprite will not write to Z-Buffer.<p>
             Sprite will STILL be maskable by ZBuffer test. }
          property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
+         {: Reverses the texture coordinates in the U and V direction to mirror 
+            the texture. }
+         property MirrorU : Boolean read FMirrorU write SetMirrorU;
+         property MirrorV : Boolean read FMirrorV write SetMirrorV;
 	end;
 
    // TGLPointStyle
@@ -1405,6 +1414,7 @@ var
 	i : Integer;
    w, h, c, s : Single;
    mat : TMatrix;
+   u0, v0, u1, v1 : Integer;
 begin
    if FAlphaChannel<>1 then
       SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
@@ -1421,12 +1431,26 @@ begin
    	vx[2]:=mat[2][0];  vy[2]:=mat[2][1];
       ScaleVector(vx, w/VectorLength(vx));
       ScaleVector(vy, h/VectorLength(vy));
+      if FMirrorU then begin
+        u0:=1;
+        u1:=0;
+      end else begin
+        u0:=0;
+        u1:=1;
+      end;
+      if FMirrorV then begin
+        v0:=1;
+        v1:=0;
+      end else begin
+        v0:=0;
+        v1:=1;
+      end;
       if FRotation=0 then begin
          // no rotation, use fast, direct projection
-   		xglTexCoord2f(1, 1);  glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
-	   	xglTexCoord2f(0, 1);  glVertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
-		   xglTexCoord2f(0, 0);  glVertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
-   		xglTexCoord2f(1, 0);  glVertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
+   		xglTexCoord2f(u1, v1);  glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
+	   	xglTexCoord2f(u0, v1);  glVertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
+		   xglTexCoord2f(u0, v0);  glVertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
+   		xglTexCoord2f(u1, v0);  glVertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
       end else begin
          // we need to compose main vectors...
          SinCos(FRotation*cPIdiv180, s, c);
@@ -1435,10 +1459,10 @@ begin
             vy1[i]:=vy[i]-vx[i];
          end;
          // ...and apply rotation... way slower
-   		xglTexCoord2f(1, 1);  glVertex3f( c*vx1[0]+s*vy1[0], c*vx1[1]+s*vy1[1], c*vx1[2]+s*vy1[2]);
-	   	xglTexCoord2f(0, 1);  glVertex3f(-s*vx1[0]+c*vy1[0],-s*vx1[1]+c*vy1[1],-s*vx1[2]+c*vy1[2]);
-		   xglTexCoord2f(0, 0);  glVertex3f(-c*vx1[0]-s*vy1[0],-c*vx1[1]-s*vy1[1],-c*vx1[2]-s*vy1[2]);
-   		xglTexCoord2f(1, 0);  glVertex3f( s*vx1[0]-c*vy1[0], s*vx1[1]-c*vy1[1], s*vx1[2]-c*vy1[2]);
+   		xglTexCoord2f(u1, v1);  glVertex3f( c*vx1[0]+s*vy1[0], c*vx1[1]+s*vy1[1], c*vx1[2]+s*vy1[2]);
+	   	xglTexCoord2f(u0, v1);  glVertex3f(-s*vx1[0]+c*vy1[0],-s*vx1[1]+c*vy1[1],-s*vx1[2]+c*vy1[2]);
+		   xglTexCoord2f(u0, v0);  glVertex3f(-c*vx1[0]-s*vy1[0],-c*vx1[1]-s*vy1[1],-c*vx1[2]-s*vy1[2]);
+   		xglTexCoord2f(u1, v0);  glVertex3f( s*vx1[0]-c*vy1[0], s*vx1[1]-c*vy1[1], s*vx1[2]-c*vy1[2]);
       end;
 	glEnd;
    if NoZWrite then
@@ -1501,6 +1525,22 @@ end;
 procedure TGLSprite.SetNoZWrite(const val : Boolean);
 begin
    FNoZWrite:=val;
+   NotifyChange(Self);
+end;
+
+// SetMirrorU
+//
+procedure TGLSprite.SetMirrorU(const val : Boolean);
+begin
+   FMirrorU:=val;
+   NotifyChange(Self);
+end;
+
+// SetMirrorV
+//
+procedure TGLSprite.SetMirrorV(const val : Boolean);
+begin
+   FMirrorV:=val;
    NotifyChange(Self);
 end;
 
