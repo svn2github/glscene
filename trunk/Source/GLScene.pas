@@ -2710,15 +2710,15 @@ begin
    // No we build rotation matrices and use them to rotate the obj
    if rx<>0 then begin
       SetVector(v, AbsoluteToLocal(XVector));
-      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(rx)), resMat);
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, -DegToRad(rx)), resMat);
    end;
    if ry<>0 then begin
       SetVector(v, AbsoluteToLocal(YVector));
-      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(ry)), resMat);
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, -DegToRad(ry)), resMat);
    end;
    if rz<>0 then begin
       SetVector(v, AbsoluteToLocal(ZVector));
-      resMat:=MatrixMultiply(CreateRotationMatrix(v, DegToRad(rz)), resMat);
+      resMat:=MatrixMultiply(CreateRotationMatrix(v, -DegToRad(rz)), resMat);
    end;
    Matrix:=resMat;
 end;
