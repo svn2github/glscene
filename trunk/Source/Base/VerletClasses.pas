@@ -2011,7 +2011,7 @@ end;
 procedure TVCRigidBody.ComputeRigidityParameters;
 var
    i : Integer;
-   barycenter, delta : TAffineVector;
+   barycenter : TAffineVector;
    d : Single;
 begin
    // first we compute the barycenter
