@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/12/01 - EG - Upgraded TActor.Synchronize (smooth transitions support)
       <li>30/11/01 - EG - Added smooth transitions (based on Mrqzzz code)
       <li>14/09/01 - EG - Use of vFileStreamClass
       <li>18/08/01 - EG - Added TriangleCount methods, STL export, PLY import
@@ -5046,13 +5047,19 @@ end;
 procedure TActor.Synchronize(referenceActor : TActor);
 begin
    if Assigned(referenceActor) then begin
-      FStartFrame:=referenceActor.StartFrame;
-      FEndFrame:=referenceActor.EndFrame;
+      if referenceActor.StartFrame<FrameCount then
+         FStartFrame:=referenceActor.StartFrame;
+      if referenceActor.EndFrame<FrameCount then
+         FEndFrame:=referenceActor.EndFrame;
       FReference:=referenceActor.Reference;
-      CurrentFrame:=referenceActor.CurrentFrame;
-      CurrentFrameDelta:=referenceActor.CurrentFrameDelta;
-      AnimationMode:=referenceActor.AnimationMode;
-      FrameInterpolation:=referenceActor.FrameInterpolation;
+      if referenceActor.CurrentFrame<FrameCount then
+         FCurrentFrame:=referenceActor.CurrentFrame;
+      FCurrentFrameDelta:=referenceActor.CurrentFrameDelta;
+      FAnimationMode:=referenceActor.AnimationMode;
+      FFrameInterpolation:=referenceActor.FrameInterpolation;
+      if referenceActor.FTargetSmoothAnimation<>nil then
+         FTargetSmoothAnimation:=Animations.FindName(referenceActor.FTargetSmoothAnimation.Name)
+      else FTargetSmoothAnimation:=nil;
    end;
 end;
 
