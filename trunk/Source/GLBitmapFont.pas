@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/09/02 - JAJ - Prepared for TWindowsBitmapFont
       <li>28/08/02 - EG - Repaired fixed CharWidth, variable CharWidth not yet repaired
       <li>12/08/02 - JAJ - Merged Dual Development, Alpha Channel and CharWidth are now side by side
       <li>UNKNOWN  - EG - Added Alpha Channel.
@@ -41,13 +42,15 @@ type
          procedure SetStopASCII(const val : Char);
          procedure SetStartGlyphIdx(const val : Integer);
          function GetDisplayName : String; override;
+         Function GetWidth(index : Integer) : Integer;
+         procedure SetWidth(index : Integer; const val : Integer);
 
       public
 	      { Public Declarations }
 	      constructor Create(Collection : TCollection); override;
 	      destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
-
+         property Widths[index : Integer] : Integer read GetWidth write SetWidth;
 	   published
 	      { Published Declarations }
          property StartASCII : Char read FStartASCII write SetStartASCII;
@@ -58,9 +61,11 @@ type
 	// TBitmapFontRanges
 	//
 	TBitmapFontRanges = class (TCollection)
+      private
 	   protected
 	      { Protected Declarations }
 	      owner : TComponent;
+
 	      function GetOwner: TPersistent; override;
          procedure SetItems(index : Integer; const val : TBitmapFontRange);
 	      function GetItems(index : Integer) : TBitmapFontRange;
@@ -68,6 +73,7 @@ type
       public
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent);
+	      destructor  Destroy; override;
          function Add: TBitmapFontRange;
 	      function FindItemID(ID: Integer): TBitmapFontRange;
 	      property Items[index : Integer] : TBitmapFontRange read GetItems write SetItems; default;
@@ -89,7 +95,7 @@ type
       dimensions should be close to a power of two, and have at least 1 pixel
       spacing between characters (horizontally and vertically) to avoid artefacts
       when rendering with linear filtering. }
-	TBitmapFont = class (TComponent)
+	TBitmapFont = class (TGLUpdateAbleComponent)
 	   private
 	      { Private Declarations }
          FRanges : TBitmapFontRanges;
@@ -120,12 +126,13 @@ type
 			procedure SetMinFilter(AValue: TGLMinFilter);
          procedure SetGlyphsAlpha(val : TGLTextureImageAlpha);
 
+         procedure FreeTextureHandle; virtual;
+
 	      procedure InvalidateUsers;
 	      function  CharactersPerRow : Integer;
-	      procedure TileIndexToTexCoords(tileIndex : Integer; var topLeft, bottomRight : TTexPoint; ThisCharWidth : Single = -1);
-         procedure PrepareImage;
+	      procedure TileIndexToTexCoords(tileIndex : Integer; var topLeft, bottomRight : TTexPoint; ThisCharWidth : Single = -1); // JAJ: is it safe to remove the default value? still there for compatibility...
+         procedure PrepareImage; virtual;
          procedure PrepareParams;
-
 	   public
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
@@ -134,12 +141,14 @@ type
 	      procedure RegisterUser(anObject : TGLBaseSceneObject); virtual;
 	      procedure UnRegisterUser(anObject : TGLBaseSceneObject); virtual;
 
-         {: Renders the given string at current position.<p>
+         {: Renders the given string at current position or at position given by the optional position variable.<p>
             The current matrix is blindly used, meaning you can render all kinds
             of rotated and linear distorted text with this method. }
 	      procedure RenderString(const aString : String; alignment : TAlignment;
-                                layout : TTextLayout; const color : TColorVector);
+                                layout : TTextLayout; const color : TColorVector; position : PVector = Nil);
+         {: Get the actual width for this char. }
          function  CalcCharWidth(ch : Char) : Integer;
+         {: Get the actual pixel width for this string. }
          function  CalcStringWidth(const st : String) : Integer;
 
 	   published
@@ -166,6 +175,7 @@ type
 
 			property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maLinear;
 			property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miLinear;
+         property GlyphsAlpha: TGLTextureImageAlpha read FGlyphsAlpha write FGlyphsAlpha default tiaDefault;
 	end;
 
 // ------------------------------------------------------------------
@@ -218,6 +228,20 @@ begin
                    StartGlyphIdx+Integer(StopASCII)-Integer(StartASCII)]);
 end;
 
+// GetWidth
+//
+function TBitmapFontRange.GetWidth(index : Integer) : Integer;
+begin
+  Result := FWidths[index];
+end;
+
+// SetWidth
+//
+procedure TBitmapFontRange.SetWidth(index : Integer; const val : Integer);
+begin
+  FWidths[index] := val;
+end;
+
 // PrepareWidths
 //
 procedure TBitmapFontRange.PrepareWidths;
@@ -245,8 +269,8 @@ begin
    FStartASCII:=val;
    if FStartASCII>FStopASCII then begin
       FStopASCII:=FStartASCII;
-      PrepareWidths;
    end;
+   PrepareWidths;
 end;
 
 // SetStopASCII
@@ -256,8 +280,8 @@ begin
    FStopASCII:=val;
    if FStopASCII<FStartASCII then begin
       FStartASCII:=FStopASCII;
-      PrepareWidths;
    end;
+   PrepareWidths;
 end;
 
 // SetStartGlyphIdx
@@ -280,6 +304,13 @@ constructor TBitmapFontRanges.Create(AOwner : TComponent);
 begin
 	Owner:=AOwner;
 	inherited Create(TBitmapFontRange);
+end;
+
+// Destroy
+//
+destructor  TBitmapFontRanges.Destroy;
+begin
+  inherited;
 end;
 
 // GetOwner
@@ -397,11 +428,11 @@ var
    i : Integer;
 begin
    Result:=0;
-   for i:=1 to Length(St)-1 do begin
+   for i:=1 to Length(St) do begin
       Result:=Result+CalcCharWidth(St[i]);
       Inc(Result, HSpace);
    end;
-   if st<>'' then Dec(Result, HSpace);
+   if st<>'' then Dec(Result, HSpace+1); //dont really understand this +1, but it results in the correct center!
 end;
 
 // SetRanges
@@ -422,10 +453,17 @@ end;
 // SetCharWidth
 //
 procedure TBitmapFont.SetCharWidth(const val : Integer);
+Var
+  xc : Integer;
 begin
    if val>1 then
       FCharWidth:=val
    else FCharWidth:=1;
+
+   For xc := 0 to FRanges.Count-1 do
+   Begin
+     FRanges[xc].PrepareWidths;
+   End;
    InvalidateUsers;
 end;
 
@@ -565,7 +603,8 @@ begin
          end;
          tiaOpaque :
             SetAlphaToValue(255);
-         tiaTopLeftPointColorTransparent, tiaDefault :
+         tiaDefault,
+         tiaTopLeftPointColorTransparent :
             SetAlphaTransparentForColor(Data[Width*(Height-1)]);
       else
          Assert(False);
@@ -604,7 +643,7 @@ end;
 // RenderString
 //
 procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignment;
-                                   layout : TTextLayout; const color : TColorVector);
+                                   layout : TTextLayout; const color : TColorVector; position : PVector = Nil);
 
    function AlignmentAdjustement(p : Integer) : Single;
    var
@@ -616,11 +655,9 @@ procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignmen
       end;
       case alignment of
          taLeftJustify : Result:=0;
-         taRightJustify : Result:=-(i*(CharWidth+HSpace)-HSpace)
-//         taRightJustify : Result:=-CalcStringWidth(Copy(aString, p-i, i))
+         taRightJustify : Result:=-CalcStringWidth(Copy(aString, p-i, i))
       else // taCenter
-          Result:=-(i*(CharWidth+HSpace)-HSpace)*0.5;
-//          Result:=-CalcStringWidth(Copy(aString, p-i, i))*0.5;
+          Result:=-CalcStringWidth(Copy(aString, p-i, i))*0.5;
       end;
    end;
 
@@ -644,6 +681,8 @@ var
    topLeft, bottomRight : TTexPoint;
    vTopLeft, vBottomRight : TVector;
    deltaH, deltaV : Single;
+   vcurrentChar : Char;
+
 begin
    if (Glyphs.Width=0) or (aString='') then Exit;
    // prepare texture if necessary
@@ -662,9 +701,10 @@ begin
       FHandleIsDirty:=False;
    end;
    // precalcs
-   MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
-   MakePoint(vBottomRight, vTopLeft[0]+CharWidth-1, vTopLeft[1]-(CharHeight-1), 0);
-   deltaH:=CharWidth+HSpace;
+   If assigned(position) then
+      MakePoint(vTopLeft, position^[0]+AlignmentAdjustement(1),position^[1]+LayoutAdjustement, 0)
+   else
+      MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
    deltaV:=-(CharHeight+VSpace);
    // set states
 	glEnable(GL_TEXTURE_2D);
@@ -677,18 +717,23 @@ begin
    glColor4fv(@color);
    glBegin(GL_QUADS);
    for i:=1 to Length(aString) do begin
-      case aString[i] of
+      vcurrentChar := aString[i];
+      case vcurrentChar of
          #0..#12, #14..#31 : ; // ignore
          #13 : begin
-            vTopLeft[0]:=AlignmentAdjustement(i+1);
+            If assigned(position) then
+               vTopLeft[0]:=position^[0]+AlignmentAdjustement(i+1)
+            else
+               vTopLeft[0]:=AlignmentAdjustement(i+1);
             vTopLeft[1]:=vTopLeft[1]+deltaV;
-            vBottomRight[0]:=vTopLeft[0]+CharWidth-1;
-            vBottomRight[1]:=vBottomRight[1]+deltaV;
          end
       else
-         idx:=Ranges.CharacterToTileIndex(aString[i]);
+         idx:=Ranges.CharacterToTileIndex(vcurrentChar);
+         deltaH := CalcCharWidth(vcurrentChar);
+
          if idx>=0 then begin
-            TileIndexToTexCoords(idx, topLeft, bottomRight);
+            TileIndexToTexCoords(idx, topLeft, bottomRight, deltaH);
+            MakePoint(vBottomRight, vTopLeft[0]+deltaH-1, vTopLeft[1]-CharHeight, 0);
 
             glTexCoord2fv(@topLeft);
             glVertex4fv(@vTopLeft);
@@ -702,95 +747,12 @@ begin
             glTexCoord2f(bottomRight.S, topLeft.T);
             glVertex2f(vBottomRight[0], vTopLeft[1]);
          end;
-         vTopLeft[0]:=vTopLeft[0]+deltaH;
-         vBottomRight[0]:=vBottomRight[0]+deltaH;
+         vTopLeft[0]:=vTopLeft[0]+deltaH+HSpace;
       end;
    end;
    glEnd;
 end;
-{ Commented out by EG: variable width support code
-   (doesnt work, some issue with vertex coordinates and character stretching,
-   not sure were).
 
-// RenderString
-//
-procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignment; layout : TTextLayout; color : TColorVector; position : PVector = Nil);
-Var
-   i, idx : Integer;
-   topLeft, bottomRight : TTexPoint;
-   vTopLeft, vBottomRight : TVector;
-   deltaH, deltaV : Single;
-begin
-   if (Glyphs.Width=0) or (aString='') then Exit;
-   // prepare texture if necessary
-   if FHandleIsDirty then begin
-      // prepare handle
-      if FTextureHandle.Handle=0 then begin
-         FTextureHandle.AllocateHandle;
-         Assert(FTextureHandle.Handle<>0);
-      end;
-      SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
-      // texture registration
-      if Glyphs.Width<>0 then begin
-         PrepareImage;
-         PrepareParams;
-      end;
-      FHandleIsDirty:=False;
-   end;
-   // precalcs
-   MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
-
-   if Assigned(position) then
-      vTopLeft := VectorAdd(vTopLeft,position^);
-
-   deltaV:=-(CharHeight+VSpace);
-   // set states
-	glEnable(GL_TEXTURE_2D);
-   glDisable(GL_LIGHTING);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-   // start rendering
-   glBegin(GL_QUADS);
-   for i:=1 to Length(aString) do begin
-      case aString[i] of
-         #0..#12, #14..#31 : ; // ignore
-         #13 : begin
-            vTopLeft[0]:=AlignmentAdjustement(i);
-            vTopLeft[1]:=vTopLeft[1]+deltaV;
-
-            if Assigned(position) then vTopLeft[0]:=vTopLeft[0]+position[0];
-         end;
-      else
-         begin
-            idx:=Ranges.CharacterToTileIndex(aString[i]);
-            deltaH := CalcCharWidth(aString[i]);
-            MakePoint(vBottomRight, vTopLeft[0]+deltaH-1, vTopLeft[1]-CharHeight, 0);
-            if idx>=0 then begin
-               TileIndexToTexCoords(idx, topLeft, bottomRight, deltaH);
-
-               glColor4fv(@color);
-
-               glTexCoord2fv(@topLeft);
-               glVertex4fv(@vTopLeft);
-
-               glTexCoord2f(topLeft.S, bottomRight.T);
-               glVertex2f(vTopLeft[0], vBottomRight[1]);
-
-               glTexCoord2fv(@bottomRight);
-               glVertex4fv(@vBottomRight);
-
-               glTexCoord2f(bottomRight.S, topLeft.T);
-               glVertex2f(vBottomRight[0], vTopLeft[1]);
-            end;
-            vTopLeft[0]:=vTopLeft[0]+deltaH+HSpace;
-         end;
-      end;
-   end;
-   glEnd;
-end;
-}
 // CharactersPerRow
 //
 function TBitmapFont.CharactersPerRow : Integer;
@@ -811,23 +773,9 @@ begin
    carX:=(tileIndex mod CharactersPerRow)*(CharWidth+GlyphsIntervalX);
    carY:=(tileIndex div CharactersPerRow)*(CharHeight+GlyphsIntervalY);
    topLeft.S:=(carX+0.05)/FTextureWidth;
-   topLeft.T:=FTextureHeight-(carY+0.05)/FTextureHeight;
-   bottomRight.S:=(carX+CharWidth-1.05)/FTextureWidth;
-   bottomRight.T:=FTextureHeight-(carY+CharHeight-1.05)/FTextureHeight;
-
-// commented out by EG, not sure what was wrong...
-{
-   if thisCharWidth=-1 then
-      thisCharWidth:=CharWidth;
-
-   carX:=(tileIndex mod CharactersPerRow)*(CharWidth+GlyphsIntervalX);
-   carY:=(tileIndex div CharactersPerRow)*(CharHeight+GlyphsIntervalY);
-   topLeft.S:=(carX+0.05)/FTextureWidth;
    topLeft.T:=(FTextureHeight-(carY+0.05))/FTextureHeight;
    bottomRight.S:=(carX+thisCharWidth-1.05)/FTextureWidth;
    bottomRight.T:=(FTextureHeight-(carY+CharHeight-0.05))/FTextureHeight;
-
-   exit; }
 end;
 
 // InvalidateUsers
@@ -839,6 +787,13 @@ begin
    for i:=FUsers.Count-1 downto 0 do
       TGLBaseSceneObject(FUsers[i]).NotifyChange(Self);
 end;
+
+procedure TBitmapFont.FreeTextureHandle;
+
+Begin
+  FTextureHandle.DestroyHandle;
+  FHandleIsDirty := True;
+End;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
