@@ -2,6 +2,7 @@
 {: Geometric objects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/10/03 - NelC - Fixed TGLTorus texture coord. bug
       <li>21/07/03 - EG - Creation from GLObjects split
    </ul></font>
 }
@@ -1232,10 +1233,12 @@ begin
          phi:=phi+sideDelta;
          SinCos(phi, sinPhi, cosPhi);
          dist:=FMajorRadius+FMinorRadius*cosPhi;
-         xglTexCoord2f((i+1)*iFact, j*jFact);
+
+         xglTexCoord2f(i*iFact, j*jFact);
          glNormal3f(cosTheta1*cosPhi, -sinTheta1*cosPhi, sinPhi);
          glVertex3f(cosTheta1*dist, -sinTheta1*dist, FMinorRadius*sinPhi);
-         xglTexCoord2f(i*iFact, j*jFact);
+
+         xglTexCoord2f((i+1)*iFact, j*jFact);
          glNormal3f(cosTheta*cosPhi, -sinTheta*cosPhi, sinPhi);
          glVertex3f(cosTheta*dist, -sinTheta*dist, FMinorRadius*sinPhi);
       end;
