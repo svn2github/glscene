@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>25/11/04 - SG - Fixed memory leak in TMeshObject (kenguru)
       <li>24/11/04 - MF - Added OctreePointInMesh
       <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
       <li>24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
@@ -3277,6 +3278,7 @@ begin
    FLightMapTexCoords.Free;
    for i:=0 to FTexCoordsEx.Count-1 do
       TVectorList(FTexCoordsEx[i]).Free;
+   FTexCoordsEx.Free;
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
