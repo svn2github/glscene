@@ -902,8 +902,8 @@ procedure TGLParticleFXRenderer.BuildList(var rci : TRenderContextInfo);
    by the distance calculation and a fixed offset of 1.
 }
 const
-   cNbRegions = 64;     // number of distance regions
-   cGranularity = 64;   // granularity of particles per region
+   cNbRegions = 64;      // number of distance regions
+   cGranularity = 128;   // granularity of particles per region
 
 type
    PInteger = ^Integer;
@@ -920,6 +920,9 @@ type
       particleOrder : array of PParticleReference
    end;
    PRegion = ^TRegion;
+var
+   dist, distDelta, invRegionSize : Single;
+   managerIdx, particleIdx, regionIdx : Integer;
 
    procedure QuickSortRegion(startIndex, endIndex : Integer; region : PRegion);
    var
@@ -958,11 +961,19 @@ type
       end;
    end;
 
+   procedure DistToRegionIdx; register;
+   asm
+      // fast version of
+      // regionIdx:=Round((dist-distDelta)*invRegionSize);
+      FLD     dist
+      FSUB    distDelta
+      FMUL    invRegionSize
+      FISTP   regionIdx
+   end;
+
 var
    regions : array [0..cNbRegions-1] of TRegion;
-   dist, invRegionSize, distDelta : Single;
    minDist, maxDist : Integer;
-   managerIdx, particleIdx, regionIdx : Integer;
    curManager : TGLParticleFXManager;
    curManagerList : TGLParticleList;
    curList : PGLParticleArray;
@@ -979,7 +990,7 @@ begin
    with Scene.CurrentGLCamera do begin
       PSingle(@minDist)^:=NearPlane+1;
       PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
-      invRegionSize:=cNbRegions/DepthOfView;
+      invRegionSize:=(cNbRegions-1)/DepthOfView;
       distDelta:=NearPlane+1+0.49999/invRegionSize
    end;
    SetVector(cameraPos, rci.cameraPosition);
@@ -1003,10 +1014,7 @@ begin
             dist:=VectorDotProduct(VectorSubtract(curParticle.FPosition, cameraPos),
                                    cameraVector)+1;
             if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
-               // Round(x-0.5)=Trunc(x) and Round is faster (significantly faster)
-               regionIdx:=Geometry.Round((dist-distDelta)*invRegionSize);
-               if regionIdx>=cNbRegions then
-                  regionIdx:=cNbRegions-1;
+               DistToRegionIdx;
                curRegion:=@regions[regionIdx];
                // add particle to region
                if curRegion.count=curRegion.capacity then begin
@@ -1232,13 +1240,16 @@ end;
 // DoProgress
 //
 procedure TGLSourcePFXEffect.DoProgress(const deltaTime, newTime : Double);
+var
+   n : Integer;
 begin
    if not Assigned(Manager) then Exit;
    if FParticleInterval=0 then Exit;
    FTimeRemainder:=FTimeRemainder+deltaTime;
-   while FTimeRemainder>FParticleInterval do begin
-      Burst(newTime, 1);
-      FTimeRemainder:=FTimeRemainder-FParticleInterval;
+   if FTimeRemainder>FParticleInterval then begin
+      n:=Trunc((FTimeRemainder-FParticleInterval)/FParticleInterval);
+      Burst(newTime, n);
+      FTimeRemainder:=FTimeRemainder-n*FParticleInterval;
    end;
 end;
 
