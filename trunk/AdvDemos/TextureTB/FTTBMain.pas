@@ -475,6 +475,7 @@ var
    end;
 
 begin
+   Screen.Cursor:=crHourGlass;
    // for all pixels in the color map that are fully transparent,
    // change their color to the average of the weighted average of their
    // opaque neighbours
@@ -499,6 +500,7 @@ begin
       end;
    end;
    TextureChanged;
+   Screen.Cursor:=crDefault;
 end;
 
 procedure TTTBMain.ACAlphaErosionExecute(Sender: TObject);
