@@ -279,12 +279,13 @@ var
    verticesList, normalsList, texCoordsList : PAffineVectorArray;
 const
    cVerticesPerHashKey = 48;
+   cInvVerticesPerHashKey = 1/cVerticesPerHashKey;
 
-   function HashKey(const v : TAffineVector) : Integer;
+   function HashKey(const v : TAffineVector; hashSize : Integer) : Integer;
    begin
-      Result:=(( Integer(PIntegerArray(@v)[0])
-                +Integer(PIntegerArray(@v)[1])
-                +Integer(PIntegerArray(@v)[2])) shr 8) and hashSize;
+      Result:=((    Integer(PIntegerArray(@v)[0])
+                xor Integer(PIntegerArray(@v)[1])
+                xor Integer(PIntegerArray(@v)[2])) shr 16) and hashSize;
    end;
 
 begin
@@ -307,7 +308,8 @@ begin
 
    // Initialize data structures for a hash table
    // (each vertex will only be compared to vertices of similar hash value)
-   hashSize:=Trunc(Power(2, Trunc(log2(vertices.Count/cVerticesPerHashKey))))-1;
+   hashSize:=(1 shl Trunc(log2(vertices.Count*cInvVerticesPerHashKey)))-1;
+   if hashSize<7 then hashSize:=7;
    if hashSize>65535 then hashSize:=65535;
    SetLength(hashTable, hashSize+1);
    // allocate and fill our hashtable (will store "reference" vertex indices)
@@ -316,29 +318,42 @@ begin
       hashTable[i].GrowthDelta:=cVerticesPerHashKey div 2;
    end;
    // here we go for all vertices
-   for i:=0 to vertices.Count-1 do begin
-      list:=hashTable[HashKey(verticesList[i])];
-      found:=False;
-      // Check each vertex against its hashkey siblings
-      if list.Count>0 then begin
-         if Assigned(texCoords) then begin
-            if Assigned(normals) then begin
-               for j:=0 to list.Count-1 do begin
-                  k:=list.List[j];
-                  if     VectorEquals(verticesList[k], verticesList[i])
-                     and VectorEquals(normalsList[k], normalsList[i])
-                     and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
-                     // vertex known, just store its index
-                     Result.Add(k);
-                     found:=True;
-                     Break;
+   if Assigned(texCoordsList) or Assigned(normalsList) then begin
+      for i:=0 to vertices.Count-1 do begin
+         list:=hashTable[HashKey(verticesList[i], hashSize)];
+         found:=False;
+         // Check each vertex against its hashkey siblings
+         if list.Count>0 then begin
+            if Assigned(texCoordsList) then begin
+               if Assigned(normalsList) then begin
+                  for j:=0 to list.Count-1 do begin
+                     k:=list.List[j];
+                     if     VectorEquals(verticesList[k], verticesList[i])
+                        and VectorEquals(normalsList[k], normalsList[i])
+                        and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
+                        // vertex known, just store its index
+                        Result.Add(k);
+                        found:=True;
+                        Break;
+                     end;
+                  end;
+               end else begin
+                  for j:=0 to list.Count-1 do begin
+                     k:=list.List[j];
+                     if     VectorEquals(verticesList[k], verticesList[i])
+                        and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
+                        // vertex known, just store its index
+                        Result.Add(k);
+                        found:=True;
+                        Break;
+                     end;
                   end;
                end;
             end else begin
                for j:=0 to list.Count-1 do begin
                   k:=list.List[j];
                   if     VectorEquals(verticesList[k], verticesList[i])
-                     and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
+                     and VectorEquals(normalsList[k], normalsList[i]) then begin
                      // vertex known, just store its index
                      Result.Add(k);
                      found:=True;
@@ -346,22 +361,32 @@ begin
                   end;
                end;
             end;
-         end else begin
-            for j:=0 to list.Count-1 do begin
-               k:=list.List[j];
-               if VectorEquals(verticesList[k], verticesList[i]) then begin
-                  // vertex known, just store its index
-                  Result.Add(k);
-                  found:=True;
-                  Break;
-               end;
-            end;
+         end;
+         if not found then begin
+            // vertex unknown, store index and add to the hashTable's list
+            list.Add(i);
+            Result.Add(i);
          end;
       end;
-      if not found then begin
-         // vertex unknown, store index and add to the hashTable's list
-         list.Add(i);
-         Result.Add(i);
+   end else begin
+      for i:=0 to vertices.Count-1 do begin
+         list:=hashTable[HashKey(verticesList[i], hashSize)];
+         found:=False;
+         // Check each vertex against its hashkey siblings
+         for j:=0 to list.Count-1 do begin
+            k:=list.List[j];
+            if VectorEquals(verticesList[k], verticesList[i]) then begin
+               // vertex known, just store its index
+               Result.Add(k);
+               found:=True;
+               Break;
+            end;
+         end;
+         if not found then begin
+            // vertex unknown, store index and add to the hashTable's list
+            list.Add(i);
+            Result.Add(i);
+         end;
       end;
    end;
    // free hash data
@@ -455,7 +480,7 @@ begin
    for i:=0 to High(tag) do begin
       if tag[i]<>0 then begin
          tag[i]:=n;
-         if n<>i then
+         if n<>i then    
             refList[n]:=refList[i];
          Inc(n);
       end;
@@ -668,58 +693,77 @@ end;
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
                                    triangleEdges : TIntegerList = nil;
                                    edgesTriangles : TIntegerList = nil) : TIntegerList;
+const
+   cEdgesHashMax = 127; // must be a power of two minus 1
 var
-   edgesHash : array [0..127] of TIntegerList;
+   edgesHash : array [0..cEdgesHashMax] of TIntegerList;
    curTri : Integer;
+   edges : TIntegerList;
 
-   function ProcessEdge(a, b : Integer; edges : TIntegerList) : Integer;
+   function ProcessEdge(a, b : Integer) : Integer;
    var
       i, n : Integer;
       hashKey : Integer;
+      edgesList, iList : PIntegerArray;
+      hashList : TIntegerList;
    begin
-      if a<=b then begin
-         hashKey:=(a xor b) and 127;
-         with edgesHash[hashKey] do begin
-            for i:=0 to Count-1 do begin
-               n:=List[i];
-               if (edges[n]=a) and (edges[n+1]=b) then begin
-                  Result:=n;
-                  Exit;
-               end;
-            end;
-            Result:=edges.Count;
-            Add(Result);
+      if a>=b then begin
+         i:=a;
+         a:=b;
+         b:=i;
+      end;
+      hashKey:=(a xor b) and cEdgesHashMax;
+      hashList:=edgesHash[hashKey];
+      edgesList:=edges.List;
+      iList:=hashList.List;
+      for i:=0 to hashList.Count-1 do begin
+         n:=iList[i];
+         if (edgesList[n]=a) and (edgesList[n+1]=b) then begin
+            Result:=n;
+            Exit;
          end;
-         edges.Add(a, b);
-      end else Result:=ProcessEdge(b, a, edges);
+      end;
+      Result:=edges.Count;
+      hashList.Add(Result);
+      edges.Add(a, b);
    end;
 
-   function ProcessEdge2(a, b : Integer; edges : TIntegerList) : Integer;
+   function ProcessEdge2(a, b : Integer) : Integer;
    var
-      i, n : Integer;
+      n : Integer;
       hashKey : Integer;
+      edgesList : PIntegerArray;
+      iList, iListEnd : PInteger;
+      hashList : TIntegerList;
    begin
-      if a<=b then begin
-         hashKey:=(a xor b) and 127;
-         with edgesHash[hashKey] do begin
-            for i:=0 to Count-1 do begin
-               n:=List[i];
-               if (edges[n]=a) and (edges[n+1]=b) then begin
-                  edgesTriangles[n+1]:=curTri;
-                  Result:=n;
-                  Exit;
-               end;
-            end;
-            Result:=edges.Count;
-            Add(Result);
+      if a>=b then begin
+         n:=a;
+         a:=b;
+         b:=n;
+      end;
+      hashKey:=(a xor (b shl 1)) and cEdgesHashMax;
+      edgesList:=edges.List;
+      hashList:=edgesHash[hashKey];
+      iList:=@hashList.List[0];
+      iListEnd:=@hashList.List[hashList.Count];
+      while Integer(iList)<Integer(iListEnd) do begin
+         n:=iList^;
+         if (edgesList[n]=a) and (edgesList[n+1]=b) then begin
+            edgesTriangles[n+1]:=curTri;
+            Result:=n;
+            Exit;
          end;
-         edges.Add(a, b);
-         edgesTriangles.Add(curTri, -1);
-      end else Result:=ProcessEdge(b, a, edges);
+         Inc(iList);
+      end;
+      Result:=edges.Count;
+      hashList.Add(Result);
+      edges.Add(a, b);
+      edgesTriangles.Add(curTri, -1);
    end;
 
 var
    j, k : Integer;
+   triIndicesList : PIntegerArray;
 begin
    Result:=TIntegerList.Create;
    Result.Capacity:=1024;
@@ -729,53 +773,47 @@ begin
    if Assigned(edgesTriangles) then
       edgesTriangles.Count:=0;
    // Create Hash
-   for j:=0 to High(edgesHash) do
+   k:=(triangleIndices.Count div (cEdgesHashMax+1))+128;
+   for j:=0 to High(edgesHash) do begin
       edgesHash[j]:=TIntegerList.Create;
+      edgesHash[j].Capacity:=k;
+   end;
    // collect all edges
    curTri:=0;
+   triIndicesList:=triangleIndices.List;
+   edges:=Result;
    if Assigned(triangleEdges) then begin
       if Assigned(edgesTriangles) then begin
          while curTri<triangleIndices.Count do begin
-            triangleEdges[curTri  ]:=ProcessEdge2(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
-            triangleEdges[curTri+1]:=ProcessEdge2(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
-            triangleEdges[curTri+2]:=ProcessEdge2(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            triangleEdges[curTri  ]:=ProcessEdge2(triIndicesList[curTri  ], triIndicesList[curTri+1]);
+            triangleEdges[curTri+1]:=ProcessEdge2(triIndicesList[curTri+1], triIndicesList[curTri+2]);
+            triangleEdges[curTri+2]:=ProcessEdge2(triIndicesList[curTri+2], triIndicesList[curTri  ]);
             Inc(curTri, 3);
          end;
       end else begin
          while curTri<triangleIndices.Count do begin
-            triangleEdges[curTri  ]:=ProcessEdge(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
-            triangleEdges[curTri+1]:=ProcessEdge(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
-            triangleEdges[curTri+2]:=ProcessEdge(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            triangleEdges[curTri  ]:=ProcessEdge(triIndicesList[curTri  ], triIndicesList[curTri+1]);
+            triangleEdges[curTri+1]:=ProcessEdge(triIndicesList[curTri+1], triIndicesList[curTri+2]);
+            triangleEdges[curTri+2]:=ProcessEdge(triIndicesList[curTri+2], triIndicesList[curTri  ]);
             Inc(curTri, 3);
          end;
       end;
    end else begin
       if Assigned(edgesTriangles) then begin
          while curTri<triangleIndices.Count do begin
-            ProcessEdge(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
-            ProcessEdge(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
-            ProcessEdge(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            ProcessEdge2(triIndicesList[curTri  ], triIndicesList[curTri+1]);
+            ProcessEdge2(triIndicesList[curTri+1], triIndicesList[curTri+2]);
+            ProcessEdge2(triIndicesList[curTri+2], triIndicesList[curTri  ]);
             Inc(curTri, 3);
          end;
       end else begin
          while curTri<triangleIndices.Count do begin
-            ProcessEdge(triangleIndices[curTri  ], triangleIndices[curTri+1], Result);
-            ProcessEdge(triangleIndices[curTri+1], triangleIndices[curTri+2], Result);
-            ProcessEdge(triangleIndices[curTri+2], triangleIndices[curTri  ], Result);
+            ProcessEdge(triIndicesList[curTri  ], triIndicesList[curTri+1]);
+            ProcessEdge(triIndicesList[curTri+1], triIndicesList[curTri+2]);
+            ProcessEdge(triIndicesList[curTri+2], triIndicesList[curTri  ]);
             Inc(curTri, 3);
          end;
       end;
-   end;
-   // Cleanup
-   k:=0;
-   j:=0;
-   while k<=Result.Count-2 do begin
-      if Result[k]<>Result[k+1] then begin
-         Result[j]:=Result[k];
-         Result[j+1]:=Result[k+1];
-         Inc(j, 2);
-      end;
-      Inc(k, 2);
    end;
    // Destroy Hash
    for j:=0 to High(edgesHash) do
