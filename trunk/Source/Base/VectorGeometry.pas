@@ -5775,7 +5775,7 @@ procedure NormalizePlane(var plane : THmgPlane);
 var
    n : Single;
 begin
-   n:=RSqrt(plane[0]*plane[0]+plane[1]*plane[1]+plane[2]*plane[2]+plane[3]*plane[3]);
+   n:=RSqrt(plane[0]*plane[0]+plane[1]*plane[1]+plane[2]*plane[2]);
    ScaleVector(plane, n);
 end;
 
