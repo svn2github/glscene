@@ -520,6 +520,7 @@ procedure VectorSubtract(const v1, v2 : TVector; var result : TVector); overload
 //: Subtracts V2 from V1 and return value in result
 procedure VectorSubtract(const v1, v2 : TVector; var result : TAffineVector); overload;
 function VectorSubtract(const v1 : TAffineVector; delta : Single) : TAffineVector; overload;
+function VectorSubtract(const v1 : TVector; delta : Single) : TVector; overload;
 //: Subtracts V2 from V1, result is placed in V1
 procedure SubtractVector(var V1 : TAffineVector; const V2 : TAffineVector); overload;
 //: Subtracts V2 from V1, result is placed in V1
@@ -2355,9 +2356,19 @@ end;
 //
 function VectorSubtract(const v1 : TAffineVector; delta : Single) : TAffineVector;
 begin
-   result[0]:=v1[0]-delta;
-   result[1]:=v1[1]-delta;
-   result[2]:=v1[2]-delta;
+   Result[0]:=v1[0]-delta;
+   Result[1]:=v1[1]-delta;
+   Result[2]:=v1[2]-delta;
+end;
+
+// VectorSubtract (hmg, single)
+//
+function VectorSubtract(const v1 : TVector; delta : Single) : TVector;
+begin
+   Result[0]:=v1[0]-delta;
+   Result[1]:=v1[1]-delta;
+   Result[2]:=v1[2]-delta;
+   Result[3]:=v1[3]-delta;
 end;
 
 // SubtractVector (affine)

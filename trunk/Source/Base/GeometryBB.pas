@@ -115,7 +115,8 @@ another Bounding box.<p> }
 function AABBFitsInAABBAbsolute(const aabb1, aabb2 : TAABB) : Boolean;
 
 {: Checks if a point "p" is inside an AABB}
-function PointInAABB(const p: TAffineVector; const aabb: TAABB): boolean;
+function PointInAABB(const p : TAffineVector; const aabb : TAABB) : Boolean; overload;
+function PointInAABB(const p : TVector; const aabb : TAABB) : Boolean; overload;
 
 {: Checks if a plane (given by the normal+d) intersects the AABB}
 function PlaneIntersectAABB(Normal: TAffineVector; d: single; aabb: TAABB): boolean;
@@ -130,6 +131,7 @@ procedure AABBToBSphere(const AABB : TAABB; var BSphere : TBSphere);
 {: Convert a BSphere to an AABB }
 procedure BSphereToAABB(const BSphere : TBSphere; var AABB : TAABB); overload;
 function BSphereToAABB(const center : TAffineVector; radius : Single) : TAABB; overload;
+function BSphereToAABB(const center : TVector; radius : Single) : TAABB; overload;
 
 {: Determines to which extent one AABB contains another AABB}
 function AABBContainsAABB(const mainAABB, testAABB : TAABB) : TSpaceContains;
@@ -640,13 +642,22 @@ begin
     (AABB1.max[2]<=AABB2.max[2]);
 end;
 
-// PointInAABB
+// PointInAABB (affine)
 //
-function PointInAABB(const p: TAffineVector; const aabb: TAABB): boolean;
+function PointInAABB(const p : TAffineVector; const aabb : TAABB) : Boolean;
 begin
-     result:= (p[0] <= aabb.max[0]) and (p[0] >= aabb.min[0]) and
-              (p[1] <= aabb.max[1]) and (p[1] >= aabb.min[1]) and
-              (p[2] <= aabb.max[2]) and (p[2] >= aabb.min[2]);
+   Result:=    (p[0]<=aabb.max[0]) and (p[0]>=aabb.min[0])
+           and (p[1]<=aabb.max[1]) and (p[1]>=aabb.min[1])
+           and (p[2]<=aabb.max[2]) and (p[2]>=aabb.min[2]);
+end;
+
+// PointInAABB (hmg)
+//
+function PointInAABB(const p : TVector; const aabb : TAABB) : Boolean;
+begin
+   Result:=    (p[0]<=aabb.max[0]) and (p[0]>=aabb.min[0])
+           and (p[1]<=aabb.max[1]) and (p[1]>=aabb.min[1])
+           and (p[2]<=aabb.max[2]) and (p[2]>=aabb.min[2]);
 end;
 
 // PlaneIntersectAABB
@@ -746,7 +757,7 @@ begin
   BSphere.Radius := VectorDistance(AABB.min, AABB.max) * 0.5;
 end;
 
-//  BSphereToAABB
+//  BSphereToAABB (bsphere)
 //
 procedure BSphereToAABB(const BSphere : TBSphere; var AABB : TAABB);
 begin
@@ -754,12 +765,20 @@ begin
    AABB.max:=VectorAdd(BSphere.Center, BSphere.Radius);
 end;
 
-// BSphereToAABB
+// BSphereToAABB (affine center, radius)
 //
 function BSphereToAABB(const center : TAffineVector; radius : Single) : TAABB;
 begin
    Result.min:=VectorSubtract(center, radius);
    Result.max:=VectorAdd(center, radius);
+end;
+
+// BSphereToAABB (hmg center, radius)
+//
+function BSphereToAABB(const center : TVector; radius : Single) : TAABB;
+begin
+   SetVector(Result.min, VectorSubtract(center, radius));
+   SetVector(Result.max, VectorAdd(center, radius));
 end;
 
 //  AABBContainsAABB
