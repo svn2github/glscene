@@ -4747,7 +4747,7 @@ begin
       if AName[1] in ['(','[','<'] then
          workCopy:=Copy(workCopy, 2, Length(AName)-2);
       if CompareText(Copy(workCopy,1,3),'clr')=0 then
-         SetVector(Result, FindColor(workCopy));
+         SetVector(Result, FindColor(workCopy))
       else try
          // initialize result
          Result:=clrBlack;
