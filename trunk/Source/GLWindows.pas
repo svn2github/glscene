@@ -8,6 +8,7 @@
       <li>05/01/03 - JAJ - Cleaned up the DesignTime AccessViolations...
       <li>07/01/03 - JAJ - Jeremy Darling modified the TGLEdit's Render, more updates on TGLEdit expected...
       <li>18/01/03 - JAJ - Added TGLStringList, TGLScrollbar, TGLPopupMenu...
+      <li>14/08/03 - SG - Fixed TGLBaseComponent.SetGuiLayout (Joen Joensen)
 	</ul></font>
 }
 
@@ -641,7 +642,6 @@ Begin
    FGuiLayout.Material.UnApply(rci);
 End;
 
-
 procedure TGLBaseComponent.SetGuiLayout(NewGui : TGLGuiLayout);
 
 Begin
@@ -655,13 +655,12 @@ Begin
     FGuiLayout := NewGui;
     If Assigned(FGuiLayout) then
     If FGuiLayoutName <> '' then
-    Begin
       FGuiComponent := FGuiLayout.GuiComponents.FindItem(FGuiLayoutName);
-      If Assigned(FGuiLayout) then
-      Begin
-        FGuiLayout.AddGuiComponent(Self);
-      End;
-    End;
+
+    // in effect this code have been moved...
+    If Assigned(FGuiLayout) then
+      FGuiLayout.AddGuiComponent(Self);
+
     NotifyChange(Self);
   End;
 End;
