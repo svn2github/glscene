@@ -1,6 +1,6 @@
 object InfoForm: TInfoForm
-  Left = 453
-  Top = 115
+  Left = 337
+  Top = 107
   BorderIcons = [biSystemMenu, biHelp]
   BorderStyle = bsToolWindow
   BorderWidth = 3
@@ -15,6 +15,7 @@ object InfoForm: TInfoForm
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = True
+  Position = poScreenCenter
   ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
