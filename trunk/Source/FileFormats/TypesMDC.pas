@@ -8,6 +8,7 @@
     Original code by Osman Turan (osmanturancom@yahoo.com)<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>18/12/04 - PhP - fixed constants, improve performance
       <li>11/05/04 - SG - Added to CVS
       <li>07/02/04 - OT - Creation (Osman Turan)
 	</ul></font>
@@ -23,8 +24,8 @@ const
   MDCFILE_IDENTITY = 'IDPC';
   MDCFILE_VERSION  = 2;
 
-  MDC_BASEVERTEX_FACTOR = 1/64;
-  MDC_COMPVERTEX_FACTOR = 3/64;
+  MDC_BASEVERTEX_FACTOR = 0.015625; // 1/64;
+  MDC_COMPVERTEX_FACTOR = 0.046875; // 3/64;
 
 type
   TMDCPoint = array[0..2] of Single;
