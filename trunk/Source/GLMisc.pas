@@ -203,6 +203,7 @@ type
 			procedure SetAsAffineVector(const value : TAffineVector);
          function GetAsAffineVector : TAffineVector;
 			procedure SetCoordinate(Index: Integer; AValue: TGLFloat);
+         function GetAsString : String;
 
 		protected
 			{ Protected Declarations }
@@ -259,6 +260,9 @@ type
 
 			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate;
 
+         {: The coordinates, in-between brackets, separated by semi-colons. }
+         property AsString : String read GetAsString;
+         
          //: Similar to AsVector but does not trigger notification events
          property DirectVector : TVector read FCoords write FCoords;
          property DirectX : TGLFloat read FCoords[0] write FCoords[0];
@@ -1412,6 +1416,16 @@ procedure TGLCoordinates.SetCoordinate(Index: Integer; AValue: TGLFloat);
 begin
 	FCoords[Index]:=AValue;
 	NotifyChange(Self);
+end;
+
+// GetAsString
+//
+function TGLCoordinates.GetAsString : String;
+begin
+   if Style in [csPoint, csVector] then
+      Result:=Format('(%g; %g; %g)', [FCoords[0], FCoords[1], FCoords[2]])
+   else Result:=Format('(%g; %g; %g; %g)',
+                       [FCoords[0], FCoords[1], FCoords[2], FCoords[3]]);
 end;
 
 // ------------------
