@@ -276,12 +276,13 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 var
    hud : String;
 begin
-   hud:=Format('%.1f FPS - %d trees',
-               [SceneViewer.FramesPerSecond, TreesShown]);
-   if enableTex2DReflection then
+   hud:=Format('%.1f FPS - %d trees'#13#10'Tree sort: %f ms',
+               [SceneViewer.FramesPerSecond, TreesShown, RenderTrees.LastSortTime]);
+   if enableTex2DReflection then begin
       hud:=hud+#13#10+'Water reflections';
-   if enableRectReflection then
-      hud:=hud+' (RECT)';
+      if enableRectReflection then
+         hud:=hud+' (RECT)';
+   end;
    if enableGLSL and enableTex2DReflection then
       hud:=hud+#13#10+'GLSL water';
    GLHUDText1.Text:=hud;
@@ -571,7 +572,7 @@ var
    x, y : Integer;
 begin
    if enableGLSL and enableTex2DReflection then Exit;
-
+                                                     
    tWave:=GLCadencer.CurrentTime*cWaveSpeed;
 
    glPushAttrib(GL_ENABLE_BIT);
@@ -623,16 +624,16 @@ begin
    end;
 
    glDisable(GL_CULL_FACE);
-   for y:=-20 to 20-1 do begin
+   for y:=-10 to 10-1 do begin
       glBegin(GL_QUAD_STRIP);
-      for x:=-20 to 20 do begin
-         SetVector(pos, x*500, 0, y*500);
+      for x:=-10 to 10 do begin
+         SetVector(pos, x*1500, 0, y*1500);
          tex:=TexPointMake(x, y);
          glMultiTexCoord2fvARB(GL_TEXTURE0_ARB, @tex);
          glMultiTexCoord2fvARB(GL_TEXTURE1_ARB, @tex);
          glMultiTexCoord3fvARB(GL_TEXTURE2_ARB, @pos);
          glVertex3fv(@pos);
-         SetVector(pos, x*500, 0, (y+1)*500);
+         SetVector(pos, x*1500, 0, (y+1)*1500);
          tex:=TexPointMake(x, (y+1));
          glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, @tex);
          glMultiTexCoord3fvARB(GL_TEXTURE1_ARB, @tex);
@@ -716,9 +717,9 @@ begin
 
 //   reflectionProgram.EndUseProgramObject;
 
-   for y:=-5 to 5-1 do begin
+   for y:=-10 to 10-1 do begin
       glBegin(GL_QUAD_STRIP);
-      for x:=-5 to 5 do begin
+      for x:=-10 to 10 do begin
          glVertex3f(x*1500, 0, y*1500);
          glVertex3f(x*1500, 0, (y+1)*1500);
       end;

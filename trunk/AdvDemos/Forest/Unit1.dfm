@@ -1,7 +1,6 @@
 object Form1: TForm1
-  Left = 408
-  Top = 164
-  Align = alClient
+  Left = 211
+  Top = 57
   BorderStyle = bsNone
   Caption = 'Form1'
   ClientHeight = 413
@@ -12,7 +11,6 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
-  FormStyle = fsStayOnTop
   OldCreateOrder = False
   WindowState = wsMaximized
   OnCreate = FormCreate
@@ -30,8 +28,8 @@ object Form1: TForm1
     Height = 413
     Camera = Camera
     Buffer.FogEnvironment.FogColor.Color = {9CC4403FFED4583F48E17A3F0000803F}
-    Buffer.FogEnvironment.FogStart = 2000
-    Buffer.FogEnvironment.FogEnd = 7500
+    Buffer.FogEnvironment.FogStart = 3500
+    Buffer.FogEnvironment.FogEnd = 10000
     Buffer.BackgroundColor = 16242626
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roDestinationAlpha, roNoColorBufferClear]
     Buffer.FogEnable = True
@@ -75,14 +73,14 @@ object Form1: TForm1
     end
     object Terrain: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Position.Coordinates = {000080450000C042000080C50000803F}
-      Scale.Coordinates = {00000041000000410000804000000000}
+      Position.Coordinates = {0000C0450080A2430000C0C50000803F}
+      Scale.Coordinates = {00004041000040410000C04000000000}
       Up.Coordinates = {00000000000000800000803F00000000}
       HeightDataSource = GLHeightTileFileHDS
       TileSize = 32
       TilesPerTexture = 32
       MaterialLibrary = MLTerrain
-      QualityDistance = 750
+      QualityDistance = 250
       QualityStyle = hrsTesselated
       MaxCLODTriangles = 165536
       CLODPrecision = 15
@@ -112,7 +110,7 @@ object Form1: TForm1
       ModulateColor.Color = {48E13A3F0AD7233E8FC2753F0000803F}
     end
     object Camera: TGLCamera
-      DepthOfView = 7500
+      DepthOfView = 10000
       FocalLength = 50
       Direction.Coordinates = {0000803F000000000000000000000000}
       Up.Coordinates = {000000000000803F0000008000000000}
@@ -232,7 +230,7 @@ object Form1: TForm1
   object GLHeightTileFileHDS: TGLHeightTileFileHDS
     HTFFileName = 'media\volcano.htf'
     InfiniteWrap = False
-    MinElevation = -3000
+    MinElevation = -7000
     MaxPoolSize = 0
     DefaultHeight = -9999
     Left = 152
