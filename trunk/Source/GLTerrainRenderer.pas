@@ -2,7 +2,8 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden)
+      <li>28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden),
+                          Terrain bounds limiting event (Erazem Polutnik)
       <li>10/07/02 - EG - Added support for "holes" in the elevation data
       <li>16/06/02 - EG - Added support for multi-material terrains
       <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
@@ -24,6 +25,8 @@ uses Classes, GLScene, GLHeightData, GLTexture, Geometry, GLContext, GLROAMPatch
    VectorLists;
 
 type
+
+  TOnGetTerrainBounds = procedure(var l, t, r, b : Single) of object;
 
 	// TTerrainRenderer
 	//
@@ -47,6 +50,7 @@ type
          FBufferTexPoints : TTexPointList;
          FBufferVertexIndices : TIntegerList;
          FMaterialLibrary : TGLMaterialLibrary;
+         FOnGetTerrainBounds : TOnGetTerrainBounds;
 
 	   protected
 	      { Protected Declarations }
@@ -115,6 +119,12 @@ type
             Large values will result in coarse terrain.<br>
             high-resolution tiles (closer than QualityDistance) ignore this setting. }
          property CLODPrecision : Integer read FCLODPrecision write SetCLODPrecision default 100;
+
+         {: Allows to specify terrain bounds.<p>
+            Default rendering bounds will reach depth of view in all direction,
+            with this event you can chose to specify a smaller rendered
+            terrain area. }
+         property OnGetTerrainBounds : TOnGetTerrainBounds read FOnGetTerrainBounds write FOnGetTerrainBounds;
 	end;
 
 // ------------------------------------------------------------------
@@ -238,11 +248,13 @@ var
    vEye : TVector;
    tilePos, absTilePos, observer : TAffineVector;
    delta, n, rpIdxDelta : Integer;
-   f, tileRadius, texFactor, maxTilePosX, tileDist, qDist : Single;
+   f, tileRadius, texFactor, tileDist, qDist : Single;
    patch, prevPatch : TGLROAMPatch;
    patchList, rowList, prevRow, buf : TList;
    rcci : TRenderContextClippingInfo;
    currentMaterialName : String;
+   maxTilePosX, maxTilePosY, minTilePosX, minTilePosY : Single;
+   t_l, t_t, t_r, t_b : Single;
 
    procedure ApplyMaterial(const materialName : String);
    begin
@@ -283,6 +295,10 @@ begin
    f:=(rci.rcci.farClippingDistance+tileRadius)/Scale.X;
    f:=Round(f*FinvTileSize+1.0)*TileSize;
    maxTilePosX:=vEye[0]+f;
+   maxTilePosY:=vEye[1]+f;
+   minTilePosX:=vEye[0]-f;
+   minTilePosY:=vEye[1]-f;
+
    texFactor:=1/(TilesPerTexture*TileSize);
    rcci:=rci.rcci;
    if QualityDistance>0 then
@@ -314,9 +330,29 @@ begin
    MarkAllTilesAsUnused;
    AbsoluteMatrix; // makes sure it is available
 
-   tilePos[1]:=vEye[1]-f;
-   while tilePos[1]<=vEye[1]+f do begin
-      tilePos[0]:=vEye[0]-f;
+   if Assigned(FOnGetTerrainBounds) then begin
+      // User-specified terrain bounds, may override ours
+      t_l:=minTilePosX;
+      t_t:=maxTilePosY;
+      t_r:=maxTilePosX;
+      t_b:=minTilePosY;
+
+      FOnGetTerrainBounds(t_l, t_t, t_r, t_b);
+
+      t_l:=Round(t_l/TileSize-0.5)*TileSize+TileSize*0.5;
+      t_t:=Round(t_t/TileSize-0.5)*TileSize-TileSize*0.5;
+      t_r:=Round(t_r/TileSize-0.5)*TileSize-TileSize*0.5;
+      t_b:=Round(t_b/TileSize-0.5)*TileSize+TileSize*0.5;
+
+      if maxTilePosX>t_r then maxTilePosX:=t_r;
+      if maxTilePosY>t_t then maxTilePosY:=t_t;
+      if minTilePosX<t_l then minTilePosX:=t_l;
+      if minTilePosY<t_b then minTilePosY:=t_b;
+   end;
+
+   tilePos[1]:=minTilePosY;
+   while tilePos[1]<=maxTilePosY do begin
+      tilePos[0]:=minTilePosX;
       prevPatch:=nil;
       n:=0;
       while tilePos[0]<=maxTilePosX do begin
