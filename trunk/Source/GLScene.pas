@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>26/02/02 - Egg - DestroyHandle/DestroyHandles split,
+                           Fixed PickObjects guess count (Steffen Xonna)
       <li>22/02/02 - Egg - Push/pop ModelView matrix for buffer
       <li>07/02/02 - Egg - Faster InvAbsoluteMatrix computation
       <li>06/02/02 - Egg - ValidateTransformations phased out
@@ -384,7 +386,7 @@ type
          procedure SetName(const NewName: TComponentName); override;
          procedure SetParentComponent(Value: TComponent); override;
          procedure DestroyHandle; dynamic;
-         procedure DestroyHandles; dynamic;
+         procedure DestroyHandles;
          procedure DeleteChildCameras;
 
       public
@@ -6265,13 +6267,12 @@ begin
          hits:=-1;
          repeat
             if hits < 0 then begin
-               // Allocate 4 integers per row (EG : dunno why 4)
+               // Allocate 4 integers per row
                // Add 32 integers of slop (an extra cache line) to end for buggy
                // hardware that uses DMA to return select results but that sometimes
                // overrun the buffer.  Yuck.
+               Inc(objectCountGuess, objectCountGuess); // double buffer size
                ReallocMem(buffer, objectCountGuess * 4 * SizeOf(Integer) + 32 * 4);
-               // increase buffer by 50% if we get nothing
-               Inc(objectCountGuess, objectCountGuess shr 1);
             end;
             // pass buffer to opengl and prepare render
             glSelectBuffer(objectCountGuess*4, @Buffer^);
