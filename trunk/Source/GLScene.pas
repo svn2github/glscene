@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/02/02 - Egg - Push/pop ModelView matrix for buffer
       <li>07/02/02 - Egg - Faster InvAbsoluteMatrix computation
       <li>06/02/02 - Egg - ValidateTransformations phased out
       <li>05/02/02 - Egg - Added roNoColorBuffer
@@ -1381,6 +1382,7 @@ type
          FRenderingContext : TGLContext;
          FAfterRenderEffects : TList;
          FProjectionMatrix, FModelViewMatrix : TMatrix;
+         FModelViewMatrixStack : array of TMatrix;
          FBaseProjectionMatrix : TMatrix;
          FCameraAbsolutePosition : TVector;
 
@@ -1517,6 +1519,13 @@ type
             matrix, ie. it is the matrix on which the perspective or orthogonal
             matrix gets applied. }
          property BaseProjectionMatrix : TMatrix read FBaseProjectionMatrix;
+
+         {: Back up current ModelView matrix and replace it with newMatrix.<p>
+            This method has no effect on the OpenGL matrix, only on the Buffer's
+            matrix, and is intended for special effects rendering. }
+         procedure PushModelViewMatrix(const newMatrix : TMatrix);
+         {: Restore a ModelView matrix previously pushed. }
+         procedure PopModelViewMatrix;
 
          {: Converts a screen coordinate into world (3D) coordinates.<p>
             This methods wraps a call to gluUnProject.<p>
@@ -5992,6 +6001,30 @@ begin
    FTicks:=0;
 end;
 
+// PushModelViewMatrix
+//
+procedure TGLSceneBuffer.PushModelViewMatrix(const newMatrix : TMatrix);
+var
+   n : Integer;
+begin
+   n:=Length(FModelViewMatrixStack);
+   SetLength(FModelViewMatrixStack, n+1);
+   FModelViewMatrixStack[n]:=FModelViewMatrix;
+   FModelViewMatrix:=newMatrix;
+end;
+
+// PopModelViewMatrix
+//
+procedure TGLSceneBuffer.PopModelViewMatrix;
+var
+   n : Integer;
+begin
+   n:=High(FModelViewMatrixStack);
+   Assert(n>=0, 'Unbalanced PopModelViewMatrix');
+   FModelViewMatrix:=FModelViewMatrixStack[n];
+   SetLength(FModelViewMatrixStack, n);
+end;
+
 // ScreenToWorld (affine)
 //
 function TGLSceneBuffer.ScreenToWorld(const aPoint : TAffineVector) : TAffineVector;
@@ -6398,6 +6431,8 @@ begin
       if Owner is TComponent then
          if not (csDesigning in TComponent(Owner).ComponentState) then
             FPostRender(Self);
+   Assert(Length(FModelViewMatrixStack)=0,
+          'Unbalance Push/PopModelViewMatrix.');  
 end;
 
 // Render
