@@ -50,7 +50,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLFileNurbs, GLParametricSurfaces, Geometry, VectorLists;
+uses GLFileNurbs, GLParametricSurfaces, VectorGeometry, VectorLists;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
