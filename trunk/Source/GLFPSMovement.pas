@@ -5,12 +5,12 @@
 
    FPS-like movement behaviour and manager.<p>
 
-	<b>History : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>	
       <li>03/07/04 - LR - Corrections for Linux compatibility
                           Replace GetTickCount by GLGetTickCount
       <li>19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
-      <li>14/06/04 - MathD - Preventing repeated maps when adding through maps.addMap
-      <li>09/06/04 - MathD - Creation
+      <li>14/06/04 - Mathx - Preventing repeated maps when adding through maps.addMap
+      <li>09/06/04 - Mathx - Creation
 	</ul></font>
 }
 unit GLFPSMovement;
@@ -315,7 +315,7 @@ i: integer;
 aux: TGLMapCollectionItem;
 begin
      result:= nil;
-     for i:= 0 to count do begin
+     for i:= 0 to count -1 do begin
           aux:= TGLMapCollectionItem(Items[i]);
           if aux.Map = mapFreeForm then begin
                result:= aux;
