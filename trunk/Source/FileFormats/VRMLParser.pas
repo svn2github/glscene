@@ -192,10 +192,13 @@ begin
       token:=Result[i];
       p:=Pos(cSymbols[j], token);
       if (p>0) and (token<>cSymbols[j]) then begin
-        str:=Copy(token, p+1, Length(token));
-        if (p = 1) then
-          Result.Insert(i, trim(str))
-        else begin
+        str:=Copy(token, p+1, Length(token)-p);
+
+        if (p = 1) then begin
+          Result.Delete(i);
+          Result.Insert(i, trim(str));
+          Result.Insert(i, cSymbols[j]);
+        end else begin
           Result.Delete(i);
           if Length(str)>0 then
             Result.Insert(i, trim(str));
@@ -826,7 +829,7 @@ begin
       exit
     else if token = 'def' then
       ReadDef
-    else if token = 'group' then
+    else if (token = 'group') or (token = 'switch') then
       ReadGroup
     else if token = 'separator' then
       ReadSeparator
@@ -874,7 +877,7 @@ begin
       exit
     else if token = 'def' then
       ReadDef
-    else if token = 'group' then
+    else if (token = 'group') or (token = 'switch') then
       ReadGroup
     else if token = 'separator' then
       ReadSeparator
@@ -905,7 +908,7 @@ var
 begin
   defname:=ReadToken;
   token:=ReadToken;
-  if token = 'group' then
+  if (token = 'group') or (token = 'switch') then
     ReadGroup(defname)
   else if token = 'separator' then
     ReadSeparator(defname)
@@ -945,7 +948,7 @@ begin
       token:=ReadToken;
       if token = 'def' then
         ReadDef
-      else if token = 'group' then
+      else if (token = 'group') or (token = 'switch') then
         ReadGroup
       else if token = 'separator' then
         ReadSeparator

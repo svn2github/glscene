@@ -484,7 +484,7 @@ var
 
         if not Assigned(fgindices) then Continue;
 
-        indices:=TVRMLIntegerArray(node[0]).Values;
+        indices:=TVRMLIntegerArray(node[n]).Values;
         i:=0;
         while i<indices.Count do begin
           if indices[i] = -1 then begin
