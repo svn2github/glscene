@@ -3993,18 +3993,18 @@ begin
    buffer:=glGetString(GL_VERSION);
    TrimAndSplitVersionString(buffer, majorversion, minorVersion);
    GL_VERSION_1_0:=True;
-   GL_VERSION_1_1:=(minorVersion>=1);
-   GL_VERSION_1_2:=(minorVersion>=2);
-   GL_VERSION_1_3:=(minorVersion>=3);
-   GL_VERSION_1_4:=(minorVersion>=4);
-   GL_VERSION_1_5:=(minorVersion>=5);
+   GL_VERSION_1_1:=(minorVersion>=1) or (majorVersion>1);
+   GL_VERSION_1_2:=(minorVersion>=2) or (majorVersion>1);
+   GL_VERSION_1_3:=(minorVersion>=3) or (majorVersion>1);
+   GL_VERSION_1_4:=(minorVersion>=4) or (majorVersion>1);
+   GL_VERSION_1_5:=(minorVersion>=5) or (majorVersion>1);
 
    // GLU
    buffer:=gluGetString(GLU_VERSION);
    TrimAndSplitVersionString(buffer, majorversion, minorVersion);
    GLU_VERSION_1_1:=True; // won't load without at least GLU 1.1
-   GLU_VERSION_1_2:=(minorVersion>1);
-   GLU_VERSION_1_3:=(minorVersion>2);
+   GLU_VERSION_1_2:=(minorVersion>1) or (majorVersion>1);
+   GLU_VERSION_1_3:=(minorVersion>2) or (majorVersion>1);
 
    // check supported extensions
    // GL
