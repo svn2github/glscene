@@ -457,10 +457,15 @@ type
          {: Converts a vector from local coordinates to absolute coordinates.<p> }
          function LocalToAbsolute(const v : TAffineVector) : TAffineVector; overload;
 
-         {: Calculates the object's square distance to a point.<p>
+         {: Calculates the object's square distance to a point/object.<p>
             pt is assumed to be in absolute coordinates,
             AbsolutePosition is considered as being the object position. }
-         function SqrDistanceTo(const pt : TVector) : Single;
+         function SqrDistanceTo(anObject : TGLBaseSceneObject) : Single; overload;
+         function SqrDistanceTo(const pt : TVector) : Single; overload;
+         {: Computes the object's distance to a point/object.<p>
+            Only objects AbsolutePositions are considered. }
+         function DistanceTo(anObject : TGLBaseSceneObject) : Single; overload;
+         function DistanceTo(const pt : TVector) : Single; overload;
          {: Calculates the object's barycenter in absolute coordinates.<p>
             Default behaviour is to consider Barycenter=AbsolutePosition
             (whatever the number of children).<br>
@@ -2576,11 +2581,36 @@ begin
    Result:=AbsolutePosition;
 end;
 
-// SqrDistanceTo
+// SqrDistanceTo (obj)
+//
+function TGLBaseSceneObject.SqrDistanceTo(anObject : TGLBaseSceneObject) : Single;
+begin
+   if Assigned(anObject) then
+      Result:=VectorDistance(AbsolutePosition, anObject.AbsolutePosition)
+   else Result:=0;
+end;
+
+// SqrDistanceTo (vec4)
 //
 function TGLBaseSceneObject.SqrDistanceTo(const pt : TVector) : Single;
 begin
    Result:=VectorDistance2(pt, AbsolutePosition);
+end;
+
+// DistanceTo (obj)
+//
+function TGLBaseSceneObject.DistanceTo(anObject : TGLBaseSceneObject) : Single;
+begin
+   if Assigned(anObject) then
+      Result:=VectorDistance(AbsolutePosition, anObject.AbsolutePosition)
+   else Result:=0;
+end;
+
+// DistanceTo (vec4)
+//
+function TGLBaseSceneObject.DistanceTo(const pt : TVector) : Single;
+begin
+   Result:=VectorDistance(AbsolutePosition, pt);
 end;
 
 // BarycenterSqrDistanceTo
