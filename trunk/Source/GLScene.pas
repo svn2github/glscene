@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/07/02 - Egg - Fixed CurrentStates computation
       <li>01/07/02 - Egg - Fixed XOpenGL picking state
       <li>03/06/02 - Egg - TGLSceneBuffer.DestroyRC now removes buffer from scene's list
       <li>30/05/02 - Egg - Fixed light movements not triggering viewer redraw issue,
@@ -5849,35 +5850,36 @@ end;
 // SetupRenderingContext
 //
 procedure TGLSceneBuffer.SetupRenderingContext;
+
+   procedure PerformEnable(bool : Boolean; csState : TGLState; glState : TGLEnum);
+   begin
+      if bool then begin
+         Include(FCurrentStates, csState);
+         glEnable(glState);
+      end else begin
+         Exclude(FCurrentStates, csState);
+         glDisable(glState);
+      end;
+   end;
+
 var
    colorDepth : Cardinal;
 begin
    if roTwoSideLighting in FContextOptions then
       glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
    else glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+   
    glEnable(GL_NORMALIZE);
    Include(FCurrentStates, stNormalize);
-   if DepthTest then begin
-      Include(FCurrentStates, stDepthTest);
-      glEnable(GL_DEPTH_TEST)
-   end else glDisable(GL_DEPTH_TEST);
-   if FaceCulling then begin
-      Include(FCurrentStates, stCullFace);
-      glEnable(GL_CULL_FACE)
-   end else glDisable(GL_CULL_FACE);
-   if Lighting then begin
-      Include(FCurrentStates, stLighting);
-      glEnable(GL_LIGHTING)
-   end else glDisable(GL_LIGHTING);
-   if FogEnable then begin
-      Include(FCurrentStates, stFog);
-      glEnable(GL_FOG)
-   end else glDisable(GL_FOG);
+   
+   PerformEnable(DepthTest, stDepthTest, GL_DEPTH_TEST);
+   PerformEnable(FaceCulling, stCullFace, GL_CULL_FACE);
+   PerformEnable(Lighting, stLighting, GL_LIGHTING);
+   PerformEnable(FogEnable, stFog, GL_FOG);
+
    glGetIntegerv(GL_BLUE_BITS, @colorDepth); // could've used red or green too
-   if colorDepth<8 then begin
-      Include(FCurrentStates, stDither);
-      glEnable(GL_DITHER);
-   end else glDisable(GL_DITHER);
+   PerformEnable((colorDepth<8), stDither, GL_DITHER);
+
    glDepthFunc(GL_LESS);
    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
    case ShadeModel of
@@ -6715,10 +6717,10 @@ end;
 
 // SetLighting
 //
-procedure TGLSceneBuffer.SetLighting(AValue: Boolean);
+procedure TGLSceneBuffer.SetLighting(aValue : Boolean);
 begin
-   if FLighting <> AValue then begin
-      FLighting:=AValue;
+   if FLighting<>aValue then begin
+      FLighting:=aValue;
       NotifyChange(Self);
    end;
 end;
