@@ -5658,6 +5658,7 @@ begin
       glColorMask(False, False, False, False)
    else glColorMask(True, True, True, True);
    FObjects.Render(rci);
+   glColorMask(True, True, True, True);
    with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
          TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
@@ -7224,7 +7225,6 @@ begin
       // clear the buffers
       BackColor:=ConvertWinColor(FBackgroundColor);
       glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
-      CheckOpenGLError;
       ClearBuffers;
       CheckOpenGLError;
       // render
