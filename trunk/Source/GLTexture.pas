@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/08/01 - Egg - Fixed OnTextureNeeded handling (paths for mat lib)
       <li>12/08/01 - Egg - Completely rewritten handles management
       <li>27/07/01 - Egg - TGLLibMaterials now a TOwnedCollection
       <li>19/07/01 - Egg - Added "Enabled" to TGLTexture
@@ -631,6 +632,7 @@ type
 			procedure PrepareParams; virtual;
 
          property OnTextureNeeded : TTextureNeededEvent read FOnTextureNeeded write FOnTextureNeeded;
+         procedure DoOnTextureNeeded(Sender : TObject; var textureFileName : String);
 
 		public
 			constructor Create(AOwner: TPersistent); override;
@@ -1563,10 +1565,14 @@ end;
 // LoadFromFile
 //
 procedure TGLPersistentImage.LoadFromFile(const fileName : String);
+var
+   buf : String;
 begin
-   inherited;
-   if FileExists(fileName) then
-      Picture.LoadFromFile(fileName)
+   buf:=fileName;
+   if Assigned(FOnTextureNeeded) then;
+      FOnTextureNeeded(Self, buf);
+   if FileExists(buf) then
+      Picture.LoadFromFile(buf)
    else begin
       Picture.Graphic:=nil;
       Assert(False, Format(glsFailedOpenFile, [fileName]));
@@ -1811,6 +1817,7 @@ begin
 	FDisabled:=True;
 	FChanges:=[tcImage, tcParams];
 	FImage:=TGLPersistentImage.Create(Self);
+   FImage.FOnTextureNeeded:=DoOnTextureNeeded;
 	FImageAlpha:=tiaDefault;
 	FMagFilter:=maNearest;
 	FMinFilter:=miNearest;
@@ -1860,7 +1867,7 @@ begin
 	if FImage.ClassType<>AValue.ClassType then begin
 		FImage.Free;
 		FImage:=TGLTextureImageClass(AValue.ClassType).Create(Self);
-      FImage.OnTextureNeeded:=OnTextureNeeded;
+      FImage.OnTextureNeeded:=DoOnTextureNeeded;
 	end;
 	FImage.Assign(AValue);
 end;
@@ -1872,7 +1879,7 @@ begin
 	if val<>'' then if FImage.ClassName<>val then begin
 		FImage.Free;
 		FImage:=TGLTextureImageClass(FindGLTextureImageClass(val)).Create(Self);
-      FImage.OnTextureNeeded:=OnTextureNeeded;
+      FImage.OnTextureNeeded:=DoOnTextureNeeded;
 		Include(FChanges, tcImage);
 		NotifyChange(Self);
 	end;
@@ -2208,6 +2215,14 @@ begin
    if GL_EXT_texture_filter_anisotropic then
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
                       cFilteringQuality[FFilteringQuality]);
+end;
+
+// DoOnTextureNeeded
+//
+procedure TGLTexture.DoOnTextureNeeded(Sender : TObject; var textureFileName : String);
+begin
+   if Assigned(FOnTextureNeeded) then
+      FOnTextureNeeded(Sender, textureFileName);
 end;
 
 // DisableAutoTexture
@@ -2992,7 +3007,8 @@ begin
          MagFilter:=maLinear;
          TextureMode:=tmModulate;
          Disabled:=False;
-         Image.LoadFromFile(fileName);
+         if fileName<>'' then
+            Image.LoadFromFile(fileName);
       end;
    end;
 end;

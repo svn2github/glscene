@@ -499,7 +499,7 @@ begin
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
-   glDepthMask(GL_FALSE);
+   glDepthMask(False);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentViewer.ModelViewMatrix);
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
@@ -511,7 +511,7 @@ begin
    glCallList(GetHandle(rci));
    // restore
    glPopMatrix;
-   glDepthMask(GL_TRUE);
+   glDepthMask(True);
    glPopAttrib;
    // process childs
    if Count>0 then

@@ -1,4 +1,4 @@
-{: GLTexture<p>
+{: GLSceneEdit<p>
 
    Handles all the color and texture stuff.<p>
 
