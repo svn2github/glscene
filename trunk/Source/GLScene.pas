@@ -458,6 +458,8 @@ type
             If you're *sure* the local matrix is up-to-date, you may use LocalMatrix
             for quicker access. }
          property Matrix : TMatrix read GetMatrix write SetMatrix;
+         {: See Matrix. }
+         function MatrixAsAddress : PMatrix;
          {: Holds the local transformation (relative to parent).<p>
             If you're not *sure* the local matrix is up-to-date, use Matrix property. }
          property LocalMatrix : PMatrix read FLocalMatrix;
@@ -4037,6 +4039,14 @@ begin
    Result:=FLocalMatrix^;
 end;
 
+// MatrixAsAddress
+//
+function TGLBaseSceneObject.MatrixAsAddress : PMatrix;
+begin
+   RebuildMatrix;
+   Result:=FLocalMatrix;
+end;
+
 // SetMatrix
 //
 procedure TGLBaseSceneObject.SetMatrix(const aValue : TMatrix);
@@ -5107,7 +5117,7 @@ begin
             oldProxySubObject:=rci.proxySubObject;
             rci.proxySubObject:=True;
             if pooTransformation in FProxyOptions then
-               glMultMatrixf(PGLFloat(FMasterObject.FLocalMatrix));
+               glMultMatrixf(PGLFloat(master.MatrixAsAddress));
             FMasterObject.DoRender(rci, renderSelf, (FMasterObject.Count>0));
             rci.proxySubObject:=oldProxySubObject;
          end;

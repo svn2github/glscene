@@ -373,7 +373,7 @@ begin
          if (master<>nil) and (d2>=mpMaster.FDistanceMin2) and (d2<mpMaster.FDistanceMax2) then begin
             oldProxySubObject:=rci.proxySubObject;
             rci.proxySubObject:=True;
-            glMultMatrixf(PGLFloat(master.LocalMatrix));
+            glMultMatrixf(PGLFloat(master.MatrixAsAddress));
             master.DoRender(rci, renderSelf, (master.Count>0));
             rci.proxySubObject:=oldProxySubObject;
          end;
