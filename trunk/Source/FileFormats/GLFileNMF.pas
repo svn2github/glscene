@@ -3,8 +3,9 @@
   
   Notes:
     NormalMapper can be found at http://www.ati.com/developer/tools.html
-    
+
   History:
+    20/05/2003 - SG - Fixed SaveToStream to use ExtractTriangles
     16/05/2003 - SG - Creation
 }
 unit GLFileNMF;
@@ -12,7 +13,7 @@ unit GLFileNMF;
 interface
 
 uses
-  Classes, GLVectorFileObjects, GLMisc, Geometry, FileNMF;
+  Classes, GLVectorFileObjects, GLMisc, Geometry, VectorLists, FileNMF;
 
 type
   TGLNMFVectorFile = class (TVectorFile)
@@ -71,25 +72,38 @@ end;
 procedure TGLNMFVectorFile.SaveToStream(aStream : TStream);
 var
   i,j  : Integer;
-  mesh : TMeshObject;
   nmf  : TFileNMF;
+  Vertices,
+  TempVertices,
+  Normals,
+  TexCoords : TAffineVectorList;
 begin
   nmf:=TFileNMF.Create;
+  Vertices:=TAffineVectorList.Create;
+  Normals:=TAffineVectorList.Create;
+  TexCoords:=TAffineVectorList.Create;
   try
-    mesh:=Owner.MeshObjects[0];
-    if mesh.Mode<>momTriangles then exit;
-    nmf.NumTris:=(mesh.Vertices.count div 3);
+    for i:=0 to Owner.MeshObjects.Count-1 do begin
+      TempVertices:=Owner.MeshObjects[i].ExtractTriangles(TexCoords,Normals);
+      Vertices.Add(TempVertices);
+      TempVertices.Free;
+    end;
+
+    nmf.NumTris:=(Vertices.count div 3);
     SetLength(nmf.RawTriangles,nmf.NumTris);
     for i:=0 to nmf.NumTris-1 do begin
       for j:=0 to 2 do begin
-        nmf.RawTriangles[i].vert[j]:=mesh.Vertices[3*i+j];
-        nmf.RawTriangles[i].norm[j]:=mesh.Normals[3*i+j];
-        nmf.RawTriangles[i].texCoord[j].S:=mesh.TexCoords[3*i+j][0];
-        nmf.RawTriangles[i].texCoord[j].T:=mesh.TexCoords[3*i+j][1];
+        nmf.RawTriangles[i].vert[j]:=Vertices[3*i+j];
+        nmf.RawTriangles[i].norm[j]:=Normals[3*i+j];
+        nmf.RawTriangles[i].texCoord[j].S:=TexCoords[3*i+j][0];
+        nmf.RawTriangles[i].texCoord[j].T:=TexCoords[3*i+j][1];
       end;
     end;
     nmf.SaveToStream(aStream);
   finally
+    Vertices.Free;
+    Normals.Free;
+    TexCoords.Free;
     nmf.Free;
   end;
 end;
