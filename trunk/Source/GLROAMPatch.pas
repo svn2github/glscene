@@ -351,7 +351,7 @@ procedure TGLROAMPatch.RecursTessellate(tri : PROAMTriangleNode;
                                         n : Integer);
 var
    half : TGLPoint;
-   d, v : Cardinal;
+   d, dd, v : Cardinal;
    halfZ : SmallInt;
 
    function GetVariance(n : Integer) : Integer;
@@ -371,9 +371,12 @@ begin
    half.Y:=(left.Y+right.Y) shr 1;
    halfZ:=FHeightRaster[half.Y][half.X];
 
-   d:=1+( Abs(half.x-FObserverPosition[0])*Abs(half.x-FObserverPosition[0])
-         +Abs(half.y-FObserverPosition[1])*Abs(half.y-FObserverPosition[1])
-         +(Abs(halfZ-FObserverPosition[2]) shr 9));
+   dd:=Abs(half.x-FObserverPosition[0]);
+   d:=1+dd*dd;
+   dd:=Abs(half.y-FObserverPosition[1]);
+   d:=d+dd*dd;
+   dd:=(Abs(halfZ-FObserverPosition[2]) shr 9);
+   d:=d+dd*dd;
    v:=GetVariance(n);
    if v>d*FFrameVariance then begin
       if (Abs(left.X-right.X)>=2) or (Abs(left.Y-right.Y)>=2) then begin
