@@ -560,6 +560,7 @@ function VectorLerp(const v1, v2 : TVector; t : Single) : TVector; overload;
 procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector); overload;
 
 function VectorAngleLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector; overload;
+function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineVector; overload;
 
 //: Calculates linear interpolation between vector arrays
 procedure VectorArrayLerp(const src1, src2 : PVectorArray; t : Single; n : Integer; dest : PVectorArray); overload;
@@ -2541,18 +2542,37 @@ var
    m : TMatrix;
    tran : TTransformations;
 begin
-   q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
-   q2:=QuaternionFromEuler(RadToDeg(v2[0]), RadToDeg(v2[1]), RadToDeg(v2[2]), eulZYX);
-   qr:=QuaternionSlerp(q1, q2, t);
+   if VectorEquals(v1, v2) then begin
+      Result:=v1;
+   end else begin
+      q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
+      q2:=QuaternionFromEuler(RadToDeg(v2[0]), RadToDeg(v2[1]), RadToDeg(v2[2]), eulZYX);
+      qr:=QuaternionSlerp(q1, q2, t);
+      m:=QuaternionToMatrix(qr);
+      MatrixDecompose(m, tran);
+      Result[0]:=tran[ttRotateX];
+      Result[1]:=tran[ttRotateY];
+      Result[2]:=tran[ttRotateZ];
+   end;
+end;
+
+// VectorAngleCombine
+//
+function VectorAngleCombine(const v1, v2 : TAffineVector; f : Single) : TAffineVector;
+{var
+   q1, q2, qr : TQuaternion;
+   m : TMatrix;
+   tran : TTransformations; }
+begin
+   Result:=VectorCombine(v1, v2, 1, f);
+{   q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
+   q2:=QuaternionFromEuler(RadToDeg(v2[0])*f, RadToDeg(v2[1])*f, RadToDeg(v2[2])*f, eulZYX);
+   qr:=QuaternionMultiply(q1, q2);
    m:=QuaternionToMatrix(qr);
    MatrixDecompose(m, tran);
    Result[0]:=tran[ttRotateX];
    Result[1]:=tran[ttRotateY];
-   Result[2]:=tran[ttRotateZ];
-{
-   Result[0]:=AngleLerp(v1[0], v2[0], t);
-   Result[1]:=AngleLerp(v1[1], v2[1], t);
-   Result[2]:=AngleLerp(v1[2], v2[2], t); }
+   Result[2]:=tran[ttRotateZ]; }
 end;
 
 // VectorArrayLerp_3DNow (hmg)

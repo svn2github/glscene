@@ -114,6 +114,7 @@ type
          {: Replace content of the list with angle lerp between the two given lists.<p>
             Note: you can't Lerp with Self!!! }
          procedure AngleLerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); dynamic;
+         procedure AngleCombine(const list1 : TBaseVectorList; intensity : Single);
          {: Linear combination of Self with another list.<p>
             Self[i]:=Self[i]+list2[i]*factor }
          procedure Combine(const list2 : TBaseVectorList; factor : Single); dynamic;
@@ -705,13 +706,25 @@ var
    i : Integer;
 begin
    Assert(list1.Count=list2.Count);
-   Clear;
    Capacity:=list1.Count;
    FCount:=list1.Count;
    for i:=0 to list1.Count-1 do
       PAffineVector(ItemAddress[i])^:=VectorAngleLerp(PAffineVector(list1.ItemAddress[i])^,
                                                       PAffineVector(list2.ItemAddress[i])^,
                                                       lerpFactor);
+end;
+
+// AngleCombine
+//
+procedure TBaseVectorList.AngleCombine(const list1 : TBaseVectorList; intensity : Single);
+var
+   i : Integer;
+begin
+   Assert(list1.Count=Count);
+   for i:=0 to Count-1 do
+      PAffineVector(ItemAddress[i])^:=VectorAngleCombine(PAffineVector(ItemAddress[i])^,
+                                                         PAffineVector(list1.ItemAddress[i])^,
+                                                         intensity);
 end;
 
 // Combine

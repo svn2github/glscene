@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/03/02 - EG - TAnimationControler basics now functional
       <li>13/03/02 - EG - Octree support (experimental)
       <li>18/02/02 - EG - Fixed persistence of skeletal meshes
       <li>04/01/02 - EG - Added basic RayCastIntersect implementation
@@ -375,6 +376,7 @@ type
          procedure BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
 
          procedure MakeSkeletalTranslationStatic(startFrame, endFrame : Integer);
+         procedure MakeSkeletalRotationDelta(startFrame, endFrame : Integer);
 
          {: Applies current frame to morph all mesh objects. }
          procedure MorphMesh;
@@ -1131,6 +1133,7 @@ type
 
          function OwnerActor : TActor;
          procedure MakeSkeletalTranslationStatic;
+         procedure MakeSkeletalRotationDelta;
 
 	   published
 	      { Published Declarations }
@@ -1180,12 +1183,17 @@ type
 	      { Private Declarations }
          FActor : TActor;
          FAnimationName : TActorAnimationName;
+         FRatio : Single;
 
 	   protected
 	      { Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+         procedure DoChange;
          procedure SetActor(const val : TActor);
          procedure SetAnimationName(const val : TActorAnimationName);
+         procedure SetRatio(const val : Single);
+
+         function Apply(var lerpInfo : TBlendedLerpInfo) : Boolean;
 
 	   public
 	      { Public Declarations }
@@ -1196,6 +1204,7 @@ type
          { Published Declarations }
          property Actor : TActor read FActor write SetActor;
          property AnimationName : String read FAnimationName write SetAnimationName;
+         property Ratio : Single read FRatio write SetRatio;
 	end;
 
    // TActorFrameInterpolation
@@ -1242,6 +1251,7 @@ type
          FOnEndFrameReached, FOnStartFrameReached : TNotifyEvent;
          FAnimations : TActorAnimations;
          FTargetSmoothAnimation : TActorAnimation;
+         FControlers : TList;
 
       protected
          { Protected Declarations }
@@ -1252,6 +1262,8 @@ type
          procedure SetAnimations(const val : TActorAnimations);
 
          procedure PrepareMesh; override;
+         procedure RegisterControler(aControler : TAnimationControler);
+         procedure UnRegisterControler(aControler : TAnimationControler);
 
       public
          { Public Declarations }
@@ -2274,8 +2286,10 @@ begin
       FCurrentFrame.Free;
    FCurrentFrame:=TSkeletonFrame.Create;
    with FCurrentFrame do begin
-      Position.Lerp(Frames[frameIndex1].Position, Frames[frameIndex2].Position, lerpFactor);
-      Rotation.AngleLerp(Frames[frameIndex1].Rotation, Frames[frameIndex2].Rotation, lerpFactor);
+      Position.Lerp(Frames[frameIndex1].Position,
+                    Frames[frameIndex2].Position, lerpFactor);
+      Rotation.AngleLerp(Frames[frameIndex1].Rotation,
+                         Frames[frameIndex2].Rotation, lerpFactor);
    end;
 end;
 
@@ -2284,6 +2298,7 @@ end;
 procedure TSkeleton.BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
 var
    i, n : Integer;
+   blendRotations : TAffineVectorList;
 begin
    n:=High(lerpInfos)-Low(lerpInfos)+1;
    Assert(n>=1);
@@ -2296,30 +2311,28 @@ begin
       if Assigned(FCurrentFrame) then
          FCurrentFrame.Free;
       FCurrentFrame:=TSkeletonFrame.Create;
+      blendRotations:=TAffineVectorList.Create;
       with FCurrentFrame do begin
          // lerp first item separately
          Position.Lerp(Frames[lerpInfos[i].frameIndex1].Position,
                        Frames[lerpInfos[i].frameIndex2].Position,
                        lerpInfos[i].lerpFactor);
-         Position.Scale(lerpInfos[i].weight);
+         if lerpInfos[i].weight<>1 then
+            Position.Scale(lerpInfos[i].weight);
          Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
                             Frames[lerpInfos[i].frameIndex2].Rotation,
                             lerpInfos[i].lerpFactor);
-         Rotation.Scale(lerpInfos[i].weight);
          Inc(i);
          // combine the other items
          while i<=High(lerpInfos) do begin
-            Position.Combine(Frames[lerpInfos[i].frameIndex1].Position,
-                             (1-lerpInfos[i].lerpFactor)*lerpInfos[i].weight);
-            Position.Combine(Frames[lerpInfos[i].frameIndex2].Position,
-                             lerpInfos[i].lerpFactor*lerpInfos[i].weight);
-            Rotation.Combine(Frames[lerpInfos[i].frameIndex1].Rotation,
-                             (1-lerpInfos[i].lerpFactor)*lerpInfos[i].weight);
-            Rotation.Combine(Frames[lerpInfos[i].frameIndex2].Rotation,
-                             lerpInfos[i].lerpFactor*lerpInfos[i].weight);
+            blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
+                                     Frames[lerpInfos[i].frameIndex2].Rotation,
+                                     lerpInfos[i].lerpFactor);
+            Rotation.AngleCombine(blendRotations, 1);
             Inc(i);
          end;
       end;
+      blendRotations.Free;
    end;
 end;
 
@@ -2337,6 +2350,26 @@ begin
    for i:=startFrame to endFrame do
       Frames[i].Position[0]:=VectorCombine(Frames[i].Position[0], delta,
                                            1, (i-startFrame)*f);
+end;
+
+// MakeSkeletalRotationDelta
+//
+procedure TSkeleton.MakeSkeletalRotationDelta(startFrame, endFrame : Integer);
+var
+   i, j : Integer;
+   v : TAffineVector;
+begin
+   if endFrame<=startFrame then Exit;
+   for i:=startFrame to endFrame do begin
+      for j:=0 to Frames[i].Position.Count-1 do begin
+         Frames[i].Position[j]:=NullVector;
+         v:=VectorSubtract(Frames[i].Rotation[j],
+                           Frames[0].Rotation[j]);
+         if VectorNorm(v)<1e-6 then
+            Frames[i].Rotation[j]:=NullVector
+         else Frames[i].Rotation[j]:=v;
+      end;
+   end;
 end;
 
 // MorphMesh
@@ -4765,6 +4798,13 @@ begin
    OwnerActor.Skeleton.MakeSkeletalTranslationStatic(StartFrame, EndFrame);
 end;
 
+// MakeSkeletalRotationDelta
+//
+procedure TActorAnimation.MakeSkeletalRotationDelta;
+begin
+   OwnerActor.Skeleton.MakeSkeletalRotationDelta(StartFrame, EndFrame);
+end;
+
 // ------------------
 // ------------------ TActorAnimations ------------------
 // ------------------
@@ -4924,6 +4964,7 @@ end;
 //
 destructor TAnimationControler.Destroy;
 begin
+   SetActor(nil);
 	inherited Destroy;
 end;
 
@@ -4935,11 +4976,27 @@ begin
       SetActor(nil); 
 end;
 
+// DoChange
+//
+procedure TAnimationControler.DoChange;
+begin
+   if Assigned(FActor) and (AnimationName<>'') then
+      FActor.NotifyChange(Self);
+end;
+
 // SetActor
 //
 procedure TAnimationControler.SetActor(const val : TActor);
 begin
-   FActor:=val;
+   if FActor<>val then begin
+      if Assigned(FActor) then
+         FActor.UnRegisterControler(Self);
+      FActor:=val;
+      if Assigned(FActor) then begin
+         FActor.RegisterControler(Self);
+         DoChange;
+      end;
+   end;
 end;
 
 // SetAnimationName
@@ -4948,6 +5005,48 @@ procedure TAnimationControler.SetAnimationName(const val : TActorAnimationName);
 begin
    if FAnimationName<>val then begin
       FAnimationName:=val;
+      DoChange;
+   end;
+end;
+
+// SetRatio
+//
+procedure TAnimationControler.SetRatio(const val : Single);
+begin
+   if FRatio<>val then begin
+      FRatio:=ClampValue(val, 0, 1);
+      DoChange;
+   end;
+end;
+
+// Apply
+//
+function TAnimationControler.Apply(var lerpInfo : TBlendedLerpInfo) : Boolean;
+var
+   anim : TActorAnimation;
+   baseDelta : Integer;
+begin
+   anim:=Actor.Animations.FindName(AnimationName);
+   Result:=(anim<>nil);
+   if not Result then Exit;
+
+   with lerpInfo do begin
+      if Ratio=0 then begin
+         frameIndex1:=anim.StartFrame;
+         frameIndex2:=frameIndex1;
+         lerpFactor:=0;
+      end else if Ratio=1 then begin
+         frameIndex1:=anim.EndFrame;
+         frameIndex2:=frameIndex1;
+         lerpFactor:=0;
+      end else begin
+         baseDelta:=anim.EndFrame-anim.StartFrame;
+         lerpFactor:=anim.StartFrame+baseDelta*Ratio;
+         frameIndex1:=Geometry.Trunc(lerpFactor);
+         frameIndex2:=frameIndex1+1;
+         lerpFactor:=Geometry.Frac(lerpFactor);
+      end;
+      weight:=1;
    end;
 end;
 
@@ -4965,14 +5064,37 @@ begin
    FAnimationMode:=aamNone;
    FInterval:=100; // 10 animation frames per second
    FAnimations:=TActorAnimations.Create(Self);
+   FControlers:=nil; // created on request
 end;
 
 // Destroy
 //
 destructor TActor.Destroy;
 begin
-   FAnimations.Free;
    inherited Destroy;
+   FControlers.Free;
+   FAnimations.Free;
+end;
+
+// RegisterControler
+//
+procedure TActor.RegisterControler(aControler : TAnimationControler);
+begin
+   if not Assigned(FControlers) then
+      FControlers:=TList.Create;
+   FControlers.Add(aControler);
+   FreeNotification(aControler);
+end;
+
+// UnRegisterControler
+//
+procedure TActor.UnRegisterControler(aControler : TAnimationControler);
+begin
+   Assert(Assigned(FControlers));
+   FControlers.Remove(aControler);
+   RemoveFreeNotification(aControler);
+   if FControlers.Count=0 then
+      FreeAndNil(FControlers);
 end;
 
 // SetCurrentFrame
@@ -5112,7 +5234,9 @@ end;
 //
 procedure TActor.BuildList(var rci : TRenderContextInfo);
 var
+   i, k : Integer;
    nextFrameIdx : Integer;
+   lerpInfos : array of TBlendedLerpInfo;
 begin
    nextFrameIdx:=NextFrameIndex;
    if nextFrameIdx>=0 then begin
@@ -5126,11 +5250,38 @@ begin
             end;
          end;
          aarSkeleton : if Skeleton.Frames.Count>0 then begin
-            case FrameInterpolation of
-               afpLinear :
-                  Skeleton.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta);
-            else
-               Skeleton.SetCurrentFrame(Skeleton.Frames[CurrentFrame]);
+            if Assigned(FControlers) then begin
+               // Blended Skeletal Lerping
+               SetLength(lerpInfos, FControlers.Count+1);
+               case FrameInterpolation of
+                  afpLinear : with lerpInfos[0] do begin
+                     frameIndex1:=CurrentFrame;
+                     frameIndex2:=nextFrameIdx;
+                     lerpFactor:=CurrentFrameDelta;
+                     weight:=1;
+                  end;
+               else
+                  with lerpInfos[0] do begin
+                     frameIndex1:=CurrentFrame;
+                     frameIndex2:=CurrentFrame;
+                     lerpFactor:=0;
+                     weight:=1;
+                  end;
+               end;
+               k:=1;
+               for i:=0 to FControlers.Count-1 do
+                  if TAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
+                     Inc(k);
+               SetLength(lerpInfos, k);
+               Skeleton.BlendedLerps(lerpInfos);
+            end else begin
+               // Single Skeletal Lerp
+               case FrameInterpolation of
+                  afpLinear :
+                     Skeleton.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta);
+               else
+                  Skeleton.SetCurrentFrame(Skeleton.Frames[CurrentFrame]);
+               end;
             end;
             Skeleton.MorphMesh;
          end;
