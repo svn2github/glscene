@@ -3,6 +3,7 @@
   A sprite that uses a scrolling texture for animation.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>21/07/04 - SG - Added Margins to Animations, Added comments.
     <li>20/07/04 - SG - Added FrameRate (alternative for Interval),
                         Added Interval to Animations, will override
                         sprite interval if not equal to zero.
@@ -25,6 +26,10 @@ type
   TSpriteAnimationList = class;
   TGLAnimatedSprite = class;
 
+  // TSpriteAnimFrame
+  {: Used by the SpriteAnimation when Dimensions are set manual. The animation
+     will use the offsets, width and height to determine the texture coodinates
+     for this frame. }
   TSpriteAnimFrame = class(TXCollectionItem)
     private
       FOffsetX,
@@ -54,6 +59,8 @@ type
 
   end;
 
+  // TSpriteAnimFrameList
+  {: The XCollection used for the TSpriteAnimFrame object. }
   TSpriteAnimFrameList = class(TXCollection)
     public
       constructor Create(aOwner : TPersistent); override;
@@ -61,8 +68,48 @@ type
 
   end;
 
+  // TSpriteFrameDimensions
+  {: Determines if the texture coordinates are Automatically generated
+     from the Animations properties or if they are Manually set through
+     the Frames collection. }
   TSpriteFrameDimensions = (sfdAuto, sfdManual);
 
+  // TSpriteAnimMargins
+  {: Used to mask the auto generated frames. The Left, Top, Right and
+     Bottom properties determines the number of pixels to be cropped
+     from each corresponding side of the frame. Only applicable to
+     auto dimensions. }
+  TSpriteAnimMargins = class(TPersistent)
+    private
+      FOwner : TSpriteAnimation;
+      FLeft,
+      FTop,
+      FRight,
+      FBottom : Integer;
+
+    protected
+      procedure SetLeft(const Value : Integer);
+      procedure SetTop(const Value : Integer);
+      procedure SetRight(const Value : Integer);
+      procedure SetBottom(const Value : Integer);
+      procedure DoChanged;
+
+    public
+      constructor Create(Animation : TSpriteAnimation);
+
+      property Owner : TSpriteAnimation read FOwner;
+
+    published
+      property Left : Integer read FLeft write SetLeft;
+      property Top : Integer read FTop write SetTop;
+      property Right : Integer read FRight write SetRight;
+      property Bottom : Integer read FBottom write SetBottom;
+
+  end;
+
+  // TSpriteAnimation
+  {: Animations define how the texture coordinates for each offset 
+     are to be determined. }
   TSpriteAnimation = class(TXCollectionItem)
     private
       FCurrentFrame,
@@ -75,6 +122,7 @@ type
       FLibMaterialName : TGLLibMaterialName;
       FLibMaterialCached : TGLLibMaterial;
       FDimensions: TSpriteFrameDimensions;
+      FMargins : TSpriteAnimMargins;
 
       procedure DoChanged;
 
@@ -100,19 +148,40 @@ type
       property LibMaterialCached : TGLLibMaterial read GetLibMaterialCached;
 
     published
+      //: The current showing frame for this animation.
       property CurrentFrame : Integer read FCurrentFrame write SetCurrentFrame;
+      //: Defines the starting frame for auto dimension animations.
       property StartFrame : Integer read FStartFrame write FStartFrame;
+      //: Defines the ending frame for auto dimension animations.
       property EndFrame : Integer read FEndFrame write FEndFrame;
+      //: Width of each frame in an auto dimension animation.
       property FrameWidth : Integer read FFrameWidth write SetFrameWidth;
+      //: Height of each frame in an auto dimension animation.
       property FrameHeight : Integer read FFrameHeight write SetFrameHeight;
+      {: The name of the lib material the sprites associated material library
+         for this animation. }
       property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
+      {: Manual dimension animation frames. Stores the offsets and dimensions
+         for each frame in the animation. }
       property Frames : TSpriteAnimFrameList read FFrames;
+      //: Automatic or manual texture coordinate generation.
       property Dimensions : TSpriteFrameDimensions read FDimensions write SetDimensions;
+      {: The number of milliseconds between each frame in the animation.
+         Will automatically calculate the FrameRate value when set. 
+         Will override the TGLAnimatedSprite Interval is greater than
+         zero. }
       property Interval : Integer read FInterval write SetInterval;
+      {: The number of frames per second for the animation. 
+         Will automatically calculate the Interval value when set.
+         Precision will depend on Interval since Interval has priority. }
       property FrameRate : Single read GetFrameRate write SetFrameRate;
+      //: Sets cropping margins for auto dimension animations.
+      property Margins : TSpriteAnimMargins read FMargins;
 
   end;
 
+  // TSpriteAnimationList
+  {: A collection for storing TSpriteAnimation objects. }
   TSpriteAnimationList = class(TXCollection)
     public
       constructor Create(aOwner : TPersistent); override;
@@ -120,9 +189,23 @@ type
 
   end;
 
+  // TSpriteAnimationMode
+  {: Sets the current animation playback mode: <ul>
+     <li>samNone - No playback, the animation does not progress.
+     <li>samPlayOnce - Plays the animation once then switches to samNone.
+     <li>samLoop - Play the animation forward in a continuous loop.
+     <li>samLoopBackward - Same as samLoop but reversed direction.
+     <li>samBounceForward - Plays forward and switches to samBounceBackward
+        when EndFrame is reached.
+     <li>samBounceBackward - Plays backward and switches to samBounceForward
+        when StartFrame is reached.
+     </ul>. }
   TSpriteAnimationMode = (samNone, samPlayOnce, samLoop, samBounceForward,
                           samBounceBackward, samLoopBackward);
 
+  // TGLAnimatedSprite
+  {: An animated version of the TGLSprite using offset texture 
+     coordinate animation. }
   TGLAnimatedSprite = class(TGLBaseSceneObject)
     private
       FAnimations : TSpriteAnimationList;
@@ -162,25 +245,48 @@ type
       procedure BuildList(var rci : TRenderContextInfo); override;
       procedure DoProgress(const progressTime : TProgressTimes); override;
 
+      //: Steps the current animation to the next frame
       procedure NextFrame;
 
     published
+      {: A collection of animations. Stores the settings for animating 
+         then sprite. }
       property Animations : TSpriteAnimationList read FAnimations;
+      //: The material library that stores the lib materials for the animations.
       property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+      {: Sets the number of milliseconds between each frame. Will recalculate 
+         the Framerate when set. Will be overridden by the TSpriteAnimation 
+         Interval if it is greater than zero. }
       property Interval : Integer read FInterval write SetInterval;
+      //: Index of the sprite animation to be used.
       property AnimationIndex : Integer read FAnimationIndex write SetAnimationIndex;
+      //: Playback mode for the current animation.
       property AnimationMode : TSpriteAnimationMode read FAnimationMode write SetAnimationMode;
+      {: Used to automatically calculate the width and height of a sprite based 
+         on the size of the frame it is showing. For example, if PixelRatio is 
+         set to 100 and the current animation frame is 100 pixels wide it will 
+         set the width of the sprite to 1. If the frame is 50 pixels widtdh the 
+         sprite will be 0.5 wide. }
       property PixelRatio : Integer read FPixelRatio write SetPixelRatio;
+      //: Rotates the sprite (in degrees).
       property Rotation : Integer read FRotation write SetRotation;
+      //: Mirror the generated texture coords in the U axis.
       property MirrorU : Boolean read FMirrorU write SetMirrorU;
+      //: Mirror the generated texture coords in the V axis.
       property MirrorV : Boolean read FMirrorV write SetMirrorV;
+      {: Sets the frames per second for the current animation. Automatically
+         calculates the Interval. Precision will be restricted to the values
+         of Interval since Interval takes priority. }
       property FrameRate : Single read GetFrameRate write SetFrameRate;
 
       property Position;
       property Scale;
 
+      //: An event fired when the animation changes to it's next frame.
       property OnFrameChanged : TNotifyEvent read FOnFrameChanged write FOnFrameChanged;
+      //: An event fired when the animation reaches the end frame.
       property OnEndFrameReached : TNotifyEvent read FOnEndFrameReached write FOnEndFrameReached;
+      //: An event fired when the animation reaches the start frame.
       property OnStartFrameReached : TNotifyEvent read FOnStartFrameReached write FOnStartFrameReached;
 
   end;
@@ -323,6 +429,67 @@ end;
 
 
 // ----------
+// ---------- TSpriteAnimationMargins ----------
+// ----------
+
+// Create
+//
+constructor TSpriteAnimMargins.Create(Animation : TSpriteAnimation);
+begin
+  inherited Create;
+  FOwner:=Animation;
+end;
+
+// SetLeft
+//
+procedure TSpriteAnimMargins.SetLeft(const Value : Integer);
+begin
+  if Value<>FLeft then begin
+    FLeft:=Value;
+    DoChanged;
+  end;
+end;
+
+// SetTop
+//
+procedure TSpriteAnimMargins.SetTop(const Value : Integer);
+begin
+  if Value<>FTop then begin
+    FTop:=Value;
+    DoChanged;
+  end;
+end;
+
+// SetRight
+//
+procedure TSpriteAnimMargins.SetRight(const Value : Integer);
+begin
+  if Value<>FRight then begin
+    FRight:=Value;
+    DoChanged;
+  end;
+end;
+
+// SetBottom
+//
+procedure TSpriteAnimMargins.SetBottom(const Value : Integer);
+begin
+  if Value<>FBottom then begin
+    FBottom:=Value;
+    DoChanged;
+  end;
+end;
+
+// DoChanged
+//
+procedure TSpriteAnimMargins.DoChanged;
+begin
+  if Assigned(Owner) then
+    Owner.DoChanged;
+end;
+
+
+// ----------
 // ---------- TSpriteAnimation ----------
 // ----------
 
@@ -332,6 +499,7 @@ constructor TSpriteAnimation.Create(aOwner : TXCollection);
 begin
   inherited;
   FFrames:=TSpriteAnimFrameList.Create(Self);
+  FMargins:=TSpriteAnimMargins.Create(Self);
 end;
 
 // Destroy
@@ -339,6 +507,7 @@ end;
 destructor TSpriteAnimation.Destroy;
 begin
   FFrames.Free;
+  FMargins.Free;
   inherited;
 end;
 
@@ -361,9 +530,10 @@ end;
 procedure TSpriteAnimation.WriteToFiler(writer : TWriter);
 begin
   inherited;
-  writer.WriteInteger(1); // Archive version number
+  writer.WriteInteger(2); // Archive version number
   Frames.WriteToFiler(writer);
   with writer do begin
+    // Version 0
     WriteString(LibMaterialName);
     WriteInteger(CurrentFrame);
     WriteInteger(StartFrame);
@@ -371,7 +541,15 @@ begin
     WriteInteger(FrameWidth);
     WriteInteger(FrameHeight);
     WriteInteger(Integer(Dimensions));
+
+    // Version 1
     WriteInteger(Interval);
+
+    // Version 2
+    WriteInteger(Margins.Left);
+    WriteInteger(Margins.Top);
+    WriteInteger(Margins.Right);
+    WriteInteger(Margins.Bottom);
   end;
 end;
 
@@ -383,7 +561,7 @@ var
 begin
   inherited;
   archiveVersion:=reader.ReadInteger;
-  Assert((archiveVersion>=0) and (archiveVersion<=1));
+  Assert((archiveVersion>=0) and (archiveVersion<=2));
   Frames.ReadFromFiler(reader);
   with reader do begin
     FLibMaterialName:=ReadString;
@@ -393,8 +571,16 @@ begin
     FrameWidth:=ReadInteger;
     FrameHeight:=ReadInteger;
     Dimensions:=TSpriteFrameDimensions(ReadInteger);
+
     if archiveVersion>=1 then begin
       Interval:=ReadInteger;
+    end;
+
+    if archiveVersion>=2 then begin
+      Margins.Left:=ReadInteger;
+      Margins.Top:=ReadInteger;
+      Margins.Right:=ReadInteger;
+      Margins.Bottom:=ReadInteger;
     end;
   end;
 end;
@@ -612,6 +798,11 @@ begin
             end;
             x1:=x0+Anim.FrameWidth;
             y1:=y0+Anim.FrameHeight;
+
+            x0:=x0+Anim.Margins.Left;
+            y0:=y0+Anim.Margins.Top;
+            x1:=x1-Anim.Margins.Right;
+            y1:=y1-Anim.Margins.Bottom;
           end;
           if (TexWidth>0) and (TexHeight>0) and (x0<>x1) and (y0<>y1) then begin
             u0:=x0/TexWidth; v0:=1-y1/TexHeight;
