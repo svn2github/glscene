@@ -72,6 +72,11 @@ begin
       // got one, move the sphere there and orient it appropriately
       Sphere1.Position.AsVector:=iPoint;
       Sphere1.Direction.AsVector:=VectorNormalize(iNormal);
+      // make it visible
+      Sphere1.Visible:=True;
+   end else begin
+      // hide it if we did not hit
+      Sphere1.Visible:=False;
    end;
 end;
 
@@ -95,7 +100,8 @@ begin
    if FreeForm1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then begin
       Sphere1.Position.AsVector:=iPoint;
       Sphere1.Direction.AsVector:=VectorNormalize(iNormal);
-   end;
+      Sphere1.Visible:=True;
+   end else Sphere1.Visible:=False;
 end;
 
 procedure TForm1.GLSceneViewer2MouseMove(Sender: TObject;
