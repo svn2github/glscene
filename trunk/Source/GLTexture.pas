@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>18/10/02 - EG - CubeMap texture matrix now setup for 2nd texture unit too
       <li>24/07/02 - EG - Added TGLLibMaterials.DeleteUnusedMaterials
       <li>13/07/02 - EG - Improved materials when lighting is off
       <li>10/07/02 - EG - Added basic protection against cyclic material refs
@@ -851,8 +852,8 @@ type
          procedure UnApplyMappingMode;
 			procedure Apply(var rci : TRenderContextInfo);
          procedure UnApply(var rci : TRenderContextInfo);
-         procedure ApplyAsTexture2(libMaterial : TGLLibMaterial);
-         procedure UnApplyAsTexture2(libMaterial : TGLLibMaterial);
+         procedure ApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
+         procedure UnApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
 
 			procedure Assign(Source: TPersistent); override;
 
@@ -2961,30 +2962,55 @@ end;
 
 // ApplyAsTexture2
 //
-procedure TGLTexture.ApplyAsTexture2(libMaterial : TGLLibMaterial);
+procedure TGLTexture.ApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
+var
+   m : TMatrix;
 begin
    if not Disabled then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
-      glEnable(Image.NativeTextureTarget);
-      SetGLCurrentTexture(1, Image.NativeTextureTarget, Handle);
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-      ApplyMappingMode;
-      if not libMaterial.FTextureMatrixIsIdentity then begin
+
+      if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
+         glEnable(Image.NativeTextureTarget);
+         SetGLCurrentTexture(1, Image.NativeTextureTarget, Handle);
+
+         if not libMaterial.FTextureMatrixIsIdentity then begin
+            glMatrixMode(GL_TEXTURE);
+            glLoadMatrixf(PGLFloat(@libMaterial.FTextureMatrix[0][0]));
+            glMatrixMode(GL_MODELVIEW);
+         end;
+
+      end else if GL_ARB_texture_cube_map then begin
+         glEnable(Image.NativeTextureTarget);
+         SetGLCurrentTexture(1, Image.NativeTextureTarget, Handle);
+
+         // compute model view matrix for proper viewing
          glMatrixMode(GL_TEXTURE);
-         glLoadMatrixf(PGLFloat(@libMaterial.FTextureMatrix[0][0]));
+         m:=rci.modelViewMatrix^;
+         NormalizeMatrix(m);
+         // Transposition = Matrix inversion (matrix is now orthonormal)
+         if GL_ARB_transpose_matrix then
+            glLoadTransposeMatrixfARB(@m)
+         else begin
+            TransposeMatrix(m);
+            glLoadMatrixf(@m);
+         end;
          glMatrixMode(GL_MODELVIEW);
       end;
+
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      ApplyMappingMode;
       glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
 end;
 
 // UnApplyAsTexture2
 //
-procedure TGLTexture.UnApplyAsTexture2(libMaterial : TGLLibMaterial);
+procedure TGLTexture.UnApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
 begin
    glActiveTextureARB(GL_TEXTURE1_ARB);
    UnApplyMappingMode;
-   if not libMaterial.FTextureMatrixIsIdentity then begin
+   if (Image.NativeTextureTarget<>GL_TEXTURE_2D)
+      or (not libMaterial.FTextureMatrixIsIdentity) then begin
       glMatrixMode(GL_TEXTURE);
       glLoadIdentity;
       glMatrixMode(GL_MODELVIEW);
@@ -3608,7 +3634,7 @@ begin
       if not FTextureMatrixIsIdentity then
          SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
-      libMatTexture2.Material.Texture.ApplyAsTexture2(libMatTexture2);
+      libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
       // calculate and apply appropriate xgl mode
       if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
          if libMatTexture2.Material.Texture.MappingMode=tmmUser then
@@ -3643,7 +3669,7 @@ begin
    if not Result then begin
       // if multipassing, this will occur upon last pass only
       if Assigned(libMatTexture2) then begin
-         libMatTexture2.Material.Texture.UnApplyAsTexture2(libMatTexture2);
+         libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
          xglMapTexCoordToMain;
       end;
       Material.UnApply(rci);
