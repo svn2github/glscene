@@ -1,15 +1,3 @@
-{: Creating ODE joints with GLODEManager.<p>
-   
-   This demo shows how to create connections between ODE objects using
-   joints.<p>
-
-   In this demo, the Dynamic Behaviour object was used to pass the
-   control of GLScene objects to ODE. Joints are used to connect
-   the objects together physically.<p>
-
-   A joint can be fixed to space by attaching to a nothing, as done
-   with the 'Wheel Fixed' and 'Pin2 Fixed'.<p>
-}
 unit Unit1;
 
 interface
@@ -17,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLMisc, GLODEManager,
-  GLCadencer, GLGeomObjects;
+  GLCadencer, GLGeomObjects, dynode;
 
 type
   TForm1 = class(TForm)
@@ -36,7 +24,7 @@ type
     Slider: TGLCube;
     Pin2: TGLCylinder;
     GLCadencer1: TGLCadencer;
-    procedure FormCreate(Sender: TObject);
+    ODERenderPoint: TGLRenderPoint;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -59,11 +47,6 @@ uses VectorGeometry;
 
 {$R *.dfm}
 
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  TGLODEDynamicBehaviour(Pin2.Behaviours[0]).AddForce(AffineVectorMake(-250,0,0));
-end;
-
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
@@ -82,8 +65,13 @@ end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
+var
+  Speed : PdVector3;
 begin
   GLODEManager1.Step(deltaTime);
+
+  Speed:=dBodyGetAngularVel(TGLODEDynamic(Wheel.Behaviours[0]).Body);
+  Form1.Caption:=Format('Wheel (Angular Velocity = %.2f)', [Speed[1]]);
 end;
 
 end.

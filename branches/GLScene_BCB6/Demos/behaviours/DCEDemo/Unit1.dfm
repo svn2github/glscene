@@ -20,7 +20,7 @@ object Form1: TForm1
     Left = 185
     Top = 0
     Width = 503
-    Height = 453
+    Height = 446
     Camera = GLCamera1
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
@@ -29,7 +29,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 185
-    Height = 453
+    Height = 446
     Align = alLeft
     TabOrder = 1
     object lbCollided: TLabel
@@ -123,6 +123,15 @@ object Form1: TForm1
       TabOrder = 6
       WantReturns = False
     end
+    object cbBox: TCheckBox
+      Left = 8
+      Top = 152
+      Width = 97
+      Height = 17
+      Caption = 'Box'
+      Enabled = False
+      TabOrder = 7
+    end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
@@ -143,7 +152,7 @@ object Form1: TForm1
       Position.Coordinates = {000080BF000060C0000040400000803F}
       BehavioursData = {
         0201060B54474C42444345426F64790200060B4443454D616E61676572310202
-        020008090F0000A040020008}
+        020008090F0000803F020008}
     end
     object normal: TGLArrowLine
       Material.FrontProperties.Diffuse.Color = {000000000000803F9998183E0000803F}
@@ -157,6 +166,7 @@ object Form1: TForm1
       BottomArrowHeadRadius = 0.200000002980232200
     end
     object Map: TGLFreeForm
+      Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3F1283203F}
       AutoScaling.Coordinates = {0000004000000040000000400000803F}
       BehavioursData = {
         0201060B54474C42444345426F64790200060B4443454D616E61676572310202
@@ -179,7 +189,16 @@ object Form1: TForm1
       TilesPerTexture = 1.000000000000000000
       BehavioursData = {
         0201060B54474C42444345426F64790200060B4443454D616E61676572310203
-        020008090F00004041020008}
+        020008090F0000A040020008}
+    end
+    object Box: TGLCube
+      Direction.Coordinates = {F304353FFFFFFF3EFFFFFF3E00000000}
+      Position.Coordinates = {0000C03F000080C0000000000000803F}
+      Up.Coordinates = {00000000F304353FF30435BF00000000}
+      BehavioursData = {
+        0201060B54474C42444345426F64790200060B4443454D616E61676572310201
+        020008090F0000C841020009000000400000803F0000C03F00000000}
+      CubeSize = {000000400000803F0000C03F}
     end
     object Ellipsoid: TGLSphere
       Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3F508DD73E}
@@ -204,7 +223,7 @@ object Form1: TForm1
       CubeSize = 1.000000000000000000
       BehavioursData = {
         0201060B54474C42444345426F64790200060B4443454D616E61676572310200
-        020009090F0000A0400200090000003FCDCC4C3F0000003F00000000}
+        020009090F000020410200090000003FCDCC4C3F0000003F00000000}
       object plBody: TGLSphere
         Material.FrontProperties.Diffuse.Color = {0000803F000000000000000046B6F33E}
         Material.BlendingMode = bmTransparency
@@ -221,6 +240,12 @@ object Form1: TForm1
           SpotCutOff = 180.000000000000000000
         end
       end
+    end
+    object GLDirectOpenGL1: TGLDirectOpenGL
+      Visible = False
+      UseBuildList = False
+      OnRender = GLDirectOpenGL1Render
+      Blend = False
     end
   end
   object DCEManager1: TGLDCEManager

@@ -1,4 +1,4 @@
-{: This is a basic use for the Dynamic Collision Engine (DCE) by Locas Goiareb.<p>
+{: This is a basic use for the Dynamic Collision Engine (DCE) by Lucas Goraieb.<p>
 
      The engine pretty much works by creating a TGLDCEManager, and several
      TGLBDCEBody behaviours on the objects that should interact. Each object
@@ -8,7 +8,7 @@
      This means your next FPS project is pretty much done: All you have to do
      is keep loading object files into freeForms and letting DCE do the trick
      for you. The only "real" code in this demo is inside the onProgress event
-     of the cadencer, that takes care of input. 
+     of the cadencer, that takes care of input.
 
 }
 unit Unit1;
@@ -16,11 +16,11 @@ unit Unit1;
 interface
 
 uses
-  glDCE,
+  glDCE, GLEllipseCollision, 
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLWin32Viewer, StdCtrls, ExtCtrls, GLHeightData, GLScene,
   GLObjects, GLTerrainRenderer, GLGeomObjects, GLMisc, GLVectorFileObjects,
-  GLCadencer, vectorGeometry, glFile3ds, jpeg, keyboard;
+  GLCadencer, vectorGeometry, glFile3ds, jpeg, keyboard, GLTexture, OpenGL1x;
 
 type
   TForm1 = class(TForm)
@@ -51,6 +51,9 @@ type
     Terrain: TGLTerrainRenderer;
     DCEManager1: TGLDCEManager;
     Timer1: TTimer;
+    GLDirectOpenGL1: TGLDirectOpenGL;
+    Box: TGLCube;
+    cbBox: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -65,6 +68,8 @@ type
       Shift: TShiftState);
     procedure PlayerBehaviours0Collision(Sender: TObject;
       ObjectCollided: TGLBaseSceneObject; CollisionInfo: TDCECollision);
+    procedure GLDirectOpenGL1Render(Sender: TObject;
+      var rci: TRenderContextInfo);
   private
     { Private declarations }
   public
@@ -110,6 +115,11 @@ begin
 
   //Used to calculate enemy jumps
   LastEnemyPos := Enemy.AbsolutePosition;
+
+  //The behaviour event can't be assigned in the ObjectInspector, don't know why
+  TGLBDCEBody(Player.Behaviours.Behaviour[0]).OnCollision := PlayerBehaviours0Collision;
+  //TGLBDCEBody(Player.Behaviours.Behaviour[0]).UseGravity := False;
+  //TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).Active := False;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -145,24 +155,28 @@ begin
   TGLBDCEBody(Player.Behaviours.Behaviour[0]).AddForce(Force);
 
   //Move Enemy
-  EnemyTime := EnemyTime + (deltaTime * 0.5);
-  Dist := VectorDistance(Enemy.AbsolutePosition,LastEnemyPos);
-  EnemyDistance := EnemyDistance + Dist;
-  if EnemyDistance / EnemyTime < 5 then EnemyStuck := EnemyStuck - deltaTime;
-  LastEnemyPos := Enemy.AbsolutePosition;
-
-  //Check if the enemy is stucked and jump
-  if EnemyStuck < 0 then
+  if Enemy.DistanceTo(Player) > 3 then
   begin
-    EnemyStuck := 1;
-    EnemyTime := 0;
-    EnemyDistance := 0;
-    TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).Jump(1.3,20);
+    EnemyTime := EnemyTime + (deltaTime * 0.5);
+    Dist := VectorDistance(Enemy.AbsolutePosition,LastEnemyPos);
+    EnemyDistance := EnemyDistance + Dist;
+    if EnemyDistance / EnemyTime < 5 then EnemyStuck := EnemyStuck - deltaTime;
+    LastEnemyPos := Enemy.AbsolutePosition;
+
+    //Check if the enemy is stucked and jump
+    if EnemyStuck < 0 then
+    begin
+      EnemyStuck := 1;
+      EnemyTime := 0;
+      EnemyDistance := 0;
+      TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).Jump(1.3,20);
+    end;
+
+    Enemy.PointTo(Player,VectorMake(0,0,0,0));
+    Force := AffineVectorMake(0,0,20);
+    TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).AddForce(Force);
   end;
 
-  Enemy.PointTo(Player,VectorMake(0,0,0,0));
-  Force := AffineVectorMake(0,0,20);
-  TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).AddForce(Force);
 end;
 
 procedure TForm1.DCEManager1Collision(Sender: TObject; object1,
@@ -177,6 +191,7 @@ begin
     if object2.Name = 'Ellipsoid' then cbEllipse.Checked := True;
     if object2.Name = 'Terrain' then cbTerrain.Checked := True;
     if object2.Name = 'Enemy' then cbEnemy.Checked := True;
+    if object2.Name = 'Box' then cbBox.Checked := True;
   end;
 end;
 
@@ -188,6 +203,7 @@ begin
   cbEllipse.Checked := False;
   cbTerrain.Checked := False;
   cbEnemy.Checked := False;
+  cbBox.Checked := False;
 
   lbFPS.Caption := Format('FPS: %.3f',[GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
@@ -232,6 +248,62 @@ begin
     normal.AbsoluteDirection := VectorMake(CollisionInfo.Normal);
     normal.AbsolutePosition := VectorMake(CollisionInfo.Point);
   end;
+end;
+
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
+  var rci: TRenderContextInfo);
+//var i: integer;
+//    p,n: TAffineVector;
+begin
+  glPointSize(5.0);
+  glColor3f(0,1,0);
+  glPushAttrib(GL_LIGHTING_BIT);
+  glDisable(GL_LIGHTING);
+
+  //Set GLDirectOpenGL1.Visible = True to see the Collision Triangles
+  //Change GLDCE.pas for d_TriList
+  //Change GLDCEMisc.pas for d_TriList[i].Collided
+  //Change GLEllispeCollision.pas for d_TriList[i].Collided
+  {for i := 0 to High(d_TriList) do
+  with d_TriList[i] do begin
+
+    if d_TriList[i].Collided then
+    begin
+
+      glColor3f(1,0,0);
+      glBegin(GL_POLYGON);
+        glVertex3f(p1[0],p1[1],p1[2]);
+        glVertex3f(p2[0],p2[1],p2[2]);
+        glVertex3f(p3[0],p3[1],p3[2]);
+      glEnd;
+
+    end;
+
+    glColor3f(0,0,0);
+    glBegin(GL_LINE_STRIP);
+      glVertex3f(p1[0],p1[1],p1[2]);
+      glVertex3f(p2[0],p2[1],p2[2]);
+      glVertex3f(p3[0],p3[1],p3[2]);
+    glEnd;
+    CalcPlaneNormal(p1,p2,p3,n);
+    ScaleVector(n,0.25);
+    p[0] := (p1[0] + p2[0] + p3[0]) / 3;
+    p[1] := (p1[1] + p2[1] + p3[1]) / 3;
+    p[2] := (p1[2] + p2[2] + p3[2]) / 3;
+    glColor3f(0,0,1);
+    glBegin(GL_LINE_STRIP);
+      glVertex3f(p[0],p[1],p[2]);
+      glVertex3f(p[0]+n[0],p[1]+n[1],p[2]+n[2]);
+    glEnd;
+    glBegin(GL_POINTS);
+      glVertex3f(p[0]+n[0],p[1]+n[1],p[2]+n[2]);
+    glEnd;
+
+  end; }
+
+  //glEnable(GL_DEPTH_TEST);
+  glPopAttrib;
+
 end;
 
 end.

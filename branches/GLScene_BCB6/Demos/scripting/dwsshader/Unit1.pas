@@ -1,9 +1,9 @@
 {: Scripting a Shader with DelphiWebScriptII<p>
 
-   A very simple example of how the GLUserShader and DWS2 components
-   can be used to build a scripted material shader.<p>
-   
-   The Tdws2OpenGL1xUnit requires the Tdws2VectorGeometryUnit to be 
+   A very simple example of how the GLUserShader and scripting
+   components can be used to build a scripted material shader.<p>
+
+   The Tdws2OpenGL1xUnit requires the Tdws2VectorGeometryUnit to be
    associated with the script.
 }
 unit Unit1;
@@ -11,10 +11,10 @@ unit Unit1;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLCadencer, StdCtrls, GLTexture, GLUserShader, ExtCtrls,
-  GLWin32Viewer, GLMisc, GLScene, GLObjects, dws2Exprs, dws2Comp, dws2OpenGL1x,
-  dws2VectorGeometry, AsyncTimer, GLDWS2Objects;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLUserShader, GLWin32Viewer,
+  GLMisc, GLScene, GLObjects, AsyncTimer, GLScriptBase, GLScriptDWS2,
+  dws2OpenGL1x, dws2VectorGeometry, dws2Comp;
 
 type
   TForm1 = class(TForm)
@@ -36,6 +36,7 @@ type
     dws2VectorGeometryUnit1: Tdws2VectorGeometryUnit;
     AsyncTimer1: TAsyncTimer;
     GLDelphiWebScriptII1: TGLDelphiWebScriptII;
+    GLScriptLibrary1: TGLScriptLibrary;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure RecompileClick(Sender: TObject);
@@ -44,7 +45,6 @@ type
       var rci: TRenderContextInfo);
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
       var rci: TRenderContextInfo; var Continue: Boolean);
-    procedure FormDestroy(Sender: TObject);
     procedure EnabledClick(Sender: TObject);
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
@@ -56,7 +56,6 @@ type
   public
     { Public declarations }
     mx, my : Integer;
-    ShaderProgram : TProgram;
     Compiled : Boolean;
   end;
 
@@ -69,63 +68,38 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  ShaderScript.Lines.AddStrings(GLScriptLibrary1.Scripts[0].Text);
+
   // Compile the program when the form is created
   RecompileClick(nil);
 end;
 
 procedure TForm1.RecompileClick(Sender: TObject);
 begin
-  // Free the compiled program if it already exists
-  FreeAndNil(ShaderProgram);
+  with GLScriptLibrary1.Scripts[0] do begin;
+    // Assign the script text from the memo
+    Text.Clear;
+    Text.AddStrings(ShaderScript.Lines);
 
-  // Compile the script
-  ShaderProgram:=GLDelphiWebScriptII1.Compile(ShaderScript.Lines.Text);
-  Compiled:=(ShaderProgram.ProgramState = psReadyToRun);
-
-  // Start the program
-  if Compiled then
-    ShaderProgram.BeginProgram(False)
-  else
-    Application.MessageBox('The script failed to compile.', 'Error', MB_OK);
+    // Compile/Recompiler and then start the script
+    Compile;
+    Start;
+  end;
 end;
 
 procedure TForm1.GLUserShader1DoApply(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
   // Call the scripted DoApply procedure to handle the shader application
-  if Compiled then
-    try
-      ShaderProgram.Info.Func['DoApply'].Call;
-    except
-      on E:Exception do begin
-        Application.MessageBox(PChar(E.Message), 'Error', MB_OK);
-        Compiled:=False;
-      end;
-    end;
+  GLScriptLibrary1.Scripts[0].Call('DoApply',[]);
 end;
 
 procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
   var rci: TRenderContextInfo; var Continue: Boolean);
 begin
-  Continue:=False;
-
   // Call the scripted DoUnApply function to handle the shader unapplication
   // pass the result of the scripted function to the Continue variable
-  if Compiled then
-    try
-      Continue:=ShaderProgram.Info.Func['DoUnApply'].Call([Pass]).Value;
-    except
-      on E:Exception do begin
-        Application.MessageBox(PChar(E.Message), 'Error', MB_OK);
-        Compiled:=False;
-      end;
-    end;
-end;
-
-procedure TForm1.FormDestroy(Sender: TObject);
-begin
-  // Cleanup
-  FreeAndNil(ShaderProgram);
+  Continue:=GLScriptLibrary1.Scripts[0].Call('DoUnApply',[Pass]);
 end;
 
 procedure TForm1.EnabledClick(Sender: TObject);
