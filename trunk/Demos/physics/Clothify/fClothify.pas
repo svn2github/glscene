@@ -7,7 +7,7 @@ uses
   Dialogs, GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer, GLMisc,
   GLFileMS3D, VerletClasses, VectorTypes, VectorLists, Geometry, GLTexture,
   OpenGL12, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
-  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, GLShadowVolume;
+  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, GLShadowVolume, ODEImport, ODEGL;
 
 type
   TfrmClothify = class(TForm)
@@ -50,6 +50,7 @@ type
     TrackBar_Friction: TTrackBar;
     Label7: TLabel;
     GLDummyCube_Light: TGLDummyCube;
+    GLDirectOpenGL1: TGLDirectOpenGL;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
@@ -70,6 +71,14 @@ type
     { Public declarations }
     VerletAssembly : TVerletAssembly;
     EdgeDetector : TEdgeDetector;
+
+    world : PdxWorld;
+    space : PdxSpace;
+    ODESphere: PdxGeom;
+    body : PdxBody;
+    contactgroup : TdJointGroupID;
+
+    VCSphere : TVCSphere;
   end;
 
 var
@@ -96,7 +105,6 @@ end;
 procedure TfrmClothify.Button_LoadMeshClick(Sender: TObject);
 var
   Floor : TVCFloor;
-  Sphere : TVCSphere;
   Capsule : TVCCapsule;
   Sides : TAffineVector;
   Cube : TVCCube;
@@ -115,11 +123,43 @@ var
     Cube.Sides := Sides;//}
   end;
 
+  procedure CreateODEWorld;
+  var
+    m : TdMass;
+
+  begin
+    GLSphere1.Visible := true;
+    world := dWorldCreate;
+    dWorldSetGravity (world,0,-9.81,0);
+
+    contactgroup := dJointGroupCreate (0);
+    space := dHashSpaceCreate(0);
+    body := dBodyCreate(world);
+    dMassSetSphere (m,0.1,GLSphere1.Radius);
+    dCreatePlane (space,0,1,0,GLShadowPlane1.Position.Y);
+
+
+    ODESphere := dCreateSphere (space, GLSphere1.Radius);
+
+    dGeomSetBody (ODESphere, body);
+    dBodySetMass (body,m);
+
+    ODESphere.data := GLSphere1;
+
+    PositionSceneObjectForGeom(ODESphere);
+  end;
 begin
   randomize;
 
-  if VerletAssembly<>nil then
-    VerletAssembly.Free;
+  if world<>nil then
+  begin
+    dWorldDestroy(world);
+    world := nil;
+    GLSphere1.Position.AsAffineVector := NullVector;
+  end;
+
+  FreeAndNil(VerletAssembly);
+  FreeAndNil(EdgeDetector);
 
   s := ComboBox_MeshName.Text;
 
@@ -133,6 +173,7 @@ begin
 
   GLActor1.AutoCentering := [macUseBarycenter];
   GLActor1.LoadFromFile(Trim(Copy(s, 1, p-1)));
+  GLActor1.Reference := aarNone;
 
   GLActor1.Roll(random*360);
   GLActor1.Turn(random*360);//}
@@ -144,89 +185,86 @@ begin
   GL_Capsule.Visible := False;
 
   case ComboBox_Collider.ItemIndex of
-    0 : GLSphere1.Visible := true;
+    0,-1 : GLSphere1.Visible := true;
     1 : GLCylinder1.Visible := true;
     2 : GLCube1.Visible := true;
     3 : GLDummyCube_Stairs.Visible := true;
     4 : GL_Capsule.Visible := true;
+    5 : CreateODEWorld;
   end;
 
   EdgeDetector := TEdgeDetector.Create(GLActor1);
 
-  try
-    if not CheckBox_Weld.Checked then
-      EdgeDetector.WeldDistance := -1;
+  if not CheckBox_Weld.Checked then
+    EdgeDetector.WeldDistance := -1;
       
-    EdgeDetector.ProcessMesh;
+  EdgeDetector.ProcessMesh;
 
-    if ComboBox_ConstraintType.ItemIndex=0 then
-      VerletAssembly := EdgeDetector.CreateVAWithSticks(GetSlack)
-    else
-      VerletAssembly := EdgeDetector.CreateVAWithForces(1000,100, GetSlack);
+  if ComboBox_ConstraintType.ItemIndex=0 then
+    VerletAssembly := EdgeDetector.CreateVAWithSticks(GetSlack)
+  else
+    VerletAssembly := EdgeDetector.CreateVAWithForces(1000,100, GetSlack);//}
 
-    // VerletAssembly.Nodes[0].NailedDown := true;
+  // VerletAssembly.Nodes[0].NailedDown := true;
 
-    TVFGravity.Create(VerletAssembly);
+  TVFGravity.Create(VerletAssembly);
 
-    {AirResistance := TVFAirResistance.Create(VerletAssembly);
-    AirResistance.DragCoeff := 0.00001;//}
+  {AirResistance := TVFAirResistance.Create(VerletAssembly);
+  AirResistance.DragCoeff := 0.00001;//}
 
-    Floor := TVCFloor.Create(VerletAssembly);
-    Floor.Location := VectorAdd(GLShadowPlane1.Position.AsAffineVector, myVectorMake2(0,0.1,0));
-    Floor.Normal := GLShadowPlane1.Direction.AsAffineVector;
+  Floor := TVCFloor.Create(VerletAssembly);
+  Floor.Location := VectorAdd(GLShadowPlane1.Position.AsAffineVector, myVectorMake2(0,0.1,0));
+  Floor.Normal := GLShadowPlane1.Direction.AsAffineVector;
 
-    Floor.FrictionRatio := 0.6;
+  Floor.FrictionRatio := 0.6;
 
-    if GLSphere1.Visible then begin
-       Sphere := TVCSphere.Create(VerletAssembly);
-       Sphere.Radius := GLSphere1.Radius;
-       Sphere.Location := myVectorMake(GLSphere1.AbsolutePosition);
-    end;
-
-    if GLCube1.Visible then begin
-      CreateCubeFromGLCube(GLCube1);
-    end;
-
-    if GLCylinder1.Visible then begin
-       {Cylinder := TVCCylinder.Create(VerletAssembly);
-       Cylinder.Radius := GLCylinder1.TopRadius;
-       Cylinder.Base := AffineVectorMake(GLCylinder1.AbsolutePosition);
-       Cylinder.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
-
-       Capsule := TVCCapsule.Create(VerletAssembly);
-       Capsule.Radius := GLCylinder1.TopRadius;
-       Capsule.Base := AffineVectorMake(GLCylinder1.AbsolutePosition);
-       Capsule.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
-       Capsule.Length := 20;
-       Capsule.FrictionRatio := 0.6;
-    end;
-
-    if GL_Capsule.Visible then begin
-       Capsule := TVCCapsule.Create(VerletAssembly);
-       Capsule.Radius := GL_Capsule.TopRadius;
-       Capsule.Base := AffineVectorMake(GL_Capsule.AbsolutePosition);
-       Capsule.Axis := AffineVectorMake(GL_Capsule.AbsoluteUp);//}
-       Capsule.Length := GL_Capsule.Height;
-       Capsule.FrictionRatio := 0.6;
-    end;
-
-    if GLDummyCube_Stairs.Visible then begin
-      CreateCubeFromGLCube(GLCube_Stair1);
-      CreateCubeFromGLCube(GLCube_Stair2);
-      CreateCubeFromGLCube(GLCube_Stair3);
-      CreateCubeFromGLCube(GLCube_Stair4);
-    end;
-
-    VerletAssembly.SimTime := GLCadencer1.GetCurrentTime;
-    VerletAssembly.MaxDeltaTime := 0.01;
-    VerletAssembly.Iterations := TrackBar_Iterations.Position;
-
-    TrackBar_FrictionChange(nil);
-
-    Caption := Format('Edges = %d, EdgeDoublesSkipped = %d',[EdgeDetector.EdgeList.Count, EdgeDetector.EdgeDoublesSkipped]);
-  finally
-    EdgeDetector.Free;
+  if GLSphere1.Visible then begin
+     VCSphere := TVCSphere.Create(VerletAssembly);
+     VCSphere.Radius := GLSphere1.Radius;
+     VCSphere.Location := myVectorMake(GLSphere1.AbsolutePosition);
   end;
+
+  if GLCube1.Visible then begin
+    CreateCubeFromGLCube(GLCube1);
+  end;
+
+  if GLCylinder1.Visible then begin
+     {Cylinder := TVCCylinder.Create(VerletAssembly);
+     Cylinder.Radius := GLCylinder1.TopRadius;
+     Cylinder.Base := AffineVectorMake(GLCylinder1.AbsolutePosition);
+     Cylinder.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
+
+     Capsule := TVCCapsule.Create(VerletAssembly);
+     Capsule.Radius := GLCylinder1.TopRadius;
+     Capsule.Base := AffineVectorMake(GLCylinder1.AbsolutePosition);
+     Capsule.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
+     Capsule.Length := 20;
+     Capsule.FrictionRatio := 0.6;
+  end;
+
+  if GL_Capsule.Visible then begin
+     Capsule := TVCCapsule.Create(VerletAssembly);
+     Capsule.Radius := GL_Capsule.TopRadius;
+     Capsule.Base := AffineVectorMake(GL_Capsule.AbsolutePosition);
+     Capsule.Axis := AffineVectorMake(GL_Capsule.AbsoluteUp);//}
+     Capsule.Length := GL_Capsule.Height;
+     Capsule.FrictionRatio := 0.6;
+  end;
+
+  if GLDummyCube_Stairs.Visible then begin
+    CreateCubeFromGLCube(GLCube_Stair1);
+    CreateCubeFromGLCube(GLCube_Stair2);
+    CreateCubeFromGLCube(GLCube_Stair3);
+    CreateCubeFromGLCube(GLCube_Stair4);
+  end;
+
+  VerletAssembly.SimTime := GLCadencer1.GetCurrentTime;
+  VerletAssembly.MaxDeltaTime := 0.01;
+  VerletAssembly.Iterations := TrackBar_Iterations.Position;
+
+  TrackBar_FrictionChange(nil);
+
+  // Caption := Format('Edges = %d, EdgeDoublesSkipped = %d',[EdgeDetector.EdgeList.Count, EdgeDetector.EdgeDoublesSkipped]);
 end;
 
 var
@@ -246,6 +284,48 @@ begin
   my := y
 end;
 
+procedure nearCallback (data : pointer; o1, o2 : PdxGeom); cdecl;
+const
+  cCOL_MAX = 3;
+var
+  i : integer;
+  b1, b2 : PdxBody;
+  numc : integer;
+  contact : array[0..cCOL_MAX-1] of TdContact;
+  c : TdJointID;
+begin
+  // exit without doing anything if the two bodies are connected by a joint
+  b1 := dGeomGetBody(o1);
+  b2 := dGeomGetBody(o2);
+  if (assigned(b1) and assigned(b2) and (dAreConnected (b1,b2)<>0)) then
+    exit;//}
+
+  for i :=0 to cCOL_MAX-1 do
+  begin
+    contact[i].surface.mode := dContactBounce;
+
+    // This determines friction, play around with it!
+    contact[i].surface.mu := 10e9; //dInfinity; SHOULD BE INFINITY!
+    contact[i].surface.mu2 := 0;
+    contact[i].surface.bounce := 0.5;//0.5;
+    contact[i].surface.bounce_vel := 0.1;
+  end;
+
+  numc := dCollide (o1,o2,cCOL_MAX,contact[0].geom,sizeof(TdContact));
+  if (numc>0) then
+  begin
+    // dMatrix3 RI;
+    // dRSetIdentity (RI);
+    // const dReal ss[3] = {0.02,0.02,0.02};
+    for i := 0 to numc-1 do
+    begin
+      c := dJointCreateContact (frmClothify.world,frmClothify.contactgroup,contact[i]);
+      dJointAttach (c,b1,b2);
+      // dsDrawBox (contact[i].geom.pos,RI,ss);
+    end;
+  end;
+end;
+
 procedure TfrmClothify.GLCadencer1Progress(Sender: TObject;
   const deltaTime, newTime: Double);
 begin
@@ -253,7 +333,23 @@ begin
     VerletAssembly.SimTime := newTime
   else
   begin
+    if world <> nil then
+    begin
+      PositionSceneObjectForGeom(ODESphere);
+      VCSphere.Location := GLSphere1.Position.AsAffineVector;
+
+      dBodyAddForce(dGeomGetBody(ODESphere),
+        VCSphere.KickbackForce[0],
+        VCSphere.KickbackForce[1],
+        VCSphere.KickbackForce[2]);
+
+      dSpaceCollide (space,nil,nearCallback);
+      dWorldStep(World, deltaTime);
+      dJointGroupEmpty (contactgroup);
+    end;
+
     VerletAssembly.Progress(deltaTime, newTime);
+
     GLActor1.StructureChanged;
   end;
 end;
@@ -266,7 +362,11 @@ end;
 
 procedure TfrmClothify.FormCreate(Sender: TObject);
 begin
-  SetCurrentDir('..\..\Media\');
+  if DirectoryExists('Media') then
+    SetCurrentDir('Media')
+  else
+    SetCurrentDir('..\..\Media\');
+
   Button_LoadMesh.Click;
   TrackBar_IterationsChange(nil);
 end;
@@ -308,5 +408,4 @@ begin
     if VerletAssembly.Constraints[i] is TVerletGlobalFrictionConstraint then
       TVerletGlobalFrictionConstraint(VerletAssembly.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
 end;
-
 end.
