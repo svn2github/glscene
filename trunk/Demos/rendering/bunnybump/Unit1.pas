@@ -97,8 +97,11 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
   // Orbit the camera
-  if (dx<>0) or (dy<>0) then
+  if (dx<>0) or (dy<>0) then begin
     Camera.MoveAroundTarget(dy, dx);
+    dx:=0;
+    dy:=0;
+  end;
 
   // Rotate the light sources
   DCLights.Turn(deltaTime*10);
