@@ -1972,9 +1972,9 @@ end;
 procedure TIntegerList.Put(Index: Integer; const Item: Integer);
 begin
 {$IFOPT R+}
-   Assert(Cardinal(Index) < Cardinal(FCount));
+   Assert(Cardinal(Index)<Cardinal(FCount));
 {$ENDIF}
-	FList[Index] := Item;
+	FList[Index]:=Item;
 end;
 
 // SetCapacity

@@ -923,9 +923,16 @@ type
    // TGLImmaterialSceneObject
    //
    {: Base class for objects that do not have a published "material".<p>
-      Note that the material is available in public properties.<br>
-      Subclassing should be reserved to structural objects. }
+      Note that the material is available in public properties, but isn't
+      applied automatically before invoking BuildList.<br>
+      Subclassing should be reserved to structural objects and objects that
+      have no material of their own. }
    TGLImmaterialSceneObject = class(TGLCustomSceneObject)
+      public
+         { Public Declarations }
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
+                            
       published
          { Published Declarations }
          property ObjectsSorting;
@@ -5077,8 +5084,24 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLCameraInvariantObject ------------------
+// ------------------ TGLImmaterialSceneObject ------------------
 // ------------------
+
+// DoRender
+//
+procedure TGLImmaterialSceneObject.DoRender(var rci : TRenderContextInfo;
+                                        renderSelf, renderChildren : Boolean);
+begin
+   // start rendering self
+   if renderSelf then begin
+      if (osDirectDraw in ObjectStyle) or rci.amalgamating then
+         BuildList(rci)
+      else glCallList(GetHandle(rci));
+   end;
+   // start rendering children (if any)
+   if renderChildren then
+      Self.RenderChildren(0, FChildren.Count-1, rci);
+end;
 
 // Create
 //

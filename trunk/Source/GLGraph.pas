@@ -183,7 +183,6 @@ type
          FZSamplingScale : TGLSamplingScale;
          FParts : TXYZGridParts;
          FLinesStyle : TXYZGridLinesStyle;
-         FLinesSmoothing : Boolean;
 
 		protected
 			{ Protected Declarations }
@@ -211,10 +210,8 @@ type
          property Parts : TXYZGridParts read FParts write SetParts default [gpX, gpY];
          property LinesStyle : TXYZGridLinesStyle read FLinesStyle write SetLinesStyle default glsSegments;
          {: Adjusts lines smoothing (or antialiasing).<p>
-            Be aware that only professionnal graphics board currently accelerate
-            this feature, if you have an entry-level board, expect huge performance
-            drops or improper antialiasing. }            
-         property LinesSmoothing : Boolean read FLinesSmoothing write SetLinesSmoothing;
+            Obsolete, now maps to Antialiased property. }
+         property LinesSmoothing : Boolean write SetLinesSmoothing stored False;
    end;
 
 // ------------------------------------------------------------------
@@ -677,10 +674,7 @@ end;
 //
 procedure TGLXYZGrid.SetLinesSmoothing(const val : Boolean);
 begin
-   if FLinesSmoothing<>val then begin
-      FLinesSmoothing:=val;
-      StructureChanged;
-   end;
+   AntiAliased:=val;
 end;
 
 // NotifyChange

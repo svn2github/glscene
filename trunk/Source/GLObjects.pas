@@ -570,12 +570,12 @@ type
 
       published
 			{ Published Declarations }
-         {: The nodes list.<p> }
-         property Nodes : TGLLinesNodes read FNodes write SetNodes;
-
          {: Default color for nodes.<p>
             lnaInvisible and lnaAxes ignore this setting. }
          property NodeColor: TGLColor read FNodeColor write SetNodeColor;
+         {: The nodes list.<p> }
+         property Nodes : TGLLinesNodes read FNodes write SetNodes;
+
          {: Default aspect of line nodes.<p>
             May help you materialize nodes, segments and control points. }
          property NodesAspect: TLineNodesAspect read FNodesAspect write SetNodesAspect default lnaAxes;
@@ -2084,13 +2084,17 @@ begin
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glLineStipple(1, FLinePattern);
    end;
-   if FAntiAliased then
-      glEnable(GL_LINE_SMOOTH)
-   else glDisable(GL_LINE_SMOOTH);
-   glLineWidth(FLineWidth);
-   if FLineColor.Alpha<>1 then begin
+   if FAntiAliased then begin
+      glEnable(GL_LINE_SMOOTH);
       glEnable(GL_BLEND);
    	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   end else glDisable(GL_LINE_SMOOTH);
+   glLineWidth(FLineWidth);
+   if FLineColor.Alpha<>1 then begin
+      if not FAntiAliased then begin
+         glEnable(GL_BLEND);
+      	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      end;
       glColor4fv(FLineColor.AsAddress);
    end else glColor3fv(FLineColor.AsAddress);
 end;
@@ -2549,6 +2553,9 @@ begin
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          end;
+         glDisable(GL_TEXTURE_2D);
+         if GL_ARB_texture_cube_map then
+            glDisable(GL_TEXTURE_CUBE_MAP_ARB);
          for i:=0 to Nodes.Count-1 do with TGLLinesNode(Nodes[i]) do
             DrawNode(rci, X, Y, Z, Color);
          glPopAttrib;
@@ -3385,7 +3392,6 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
