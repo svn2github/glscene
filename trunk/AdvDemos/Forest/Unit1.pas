@@ -503,24 +503,31 @@ begin
    rci.GLStates.ResetGLMaterialColors;
    rci.GLStates.ResetGLCurrentTexture;
 
-   w:=RoundUpToPowerOf2(SceneViewer.Width);
-   h:=RoundUpToPowerOf2(SceneViewer.Height);
+   if GL_NV_texture_rectangle then begin
+      mirrorTexType:=GL_TEXTURE_RECTANGLE_NV;
+      w:=SceneViewer.Width;
+      h:=SceneViewer.Height;
+   end else begin
+      mirrorTexType:=GL_TEXTURE_2D;
+      w:=RoundUpToPowerOf2(SceneViewer.Width);
+      h:=RoundUpToPowerOf2(SceneViewer.Height);
+   end;
 
    if mirrorTexture.Handle=0 then begin
       mirrorTexture.AllocateHandle;
-      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
+      glBindTexture(mirrorTexType, mirrorTexture.Handle);
 
-     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+     	glTexParameteri(mirrorTexType, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(mirrorTexType, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+     	glTexParameteri(mirrorTexType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	   glTexParameteri(mirrorTexType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-   	glCopyTexImage2d(GL_TEXTURE_2D, 0, GL_RGBA,
+   	glCopyTexImage2d(mirrorTexType, 0, GL_RGBA,
                        0, 0, w, h, 0);
    end else begin
-      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
+      glBindTexture(mirrorTexType, mirrorTexture.Handle);
 
-      glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+      glCopyTexSubImage2D(mirrorTexType, 0, 0, 0,
                           0, 0, w, h);
    end;
 
@@ -571,8 +578,8 @@ begin
    if enableReflection then begin
       glActiveTextureARB(GL_TEXTURE2_ARB);
 
-      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
-      glEnable(GL_TEXTURE_2D);
+      glBindTexture(mirrorTexType, mirrorTexture.Handle);
+      glEnable(mirrorTexType);
 
       SetupReflectionMatrix;
    end;
@@ -667,8 +674,7 @@ begin
    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
    glDisable(GL_DEPTH_TEST); }
 
-   glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
-   glEnable(GL_TEXTURE_2D);
+   glBindTexture(mirrorTexType, mirrorTexture.Handle);
 
    glMatrixMode(GL_TEXTURE);
    
@@ -714,8 +720,13 @@ procedure TForm1.SetupReflectionMatrix;
 var
    w, h : Single;
 begin
-   w:=0.5*SceneViewer.Width/RoundUpToPowerOf2(SceneViewer.Width);
-   h:=0.5*SceneViewer.Height/RoundUpToPowerOf2(SceneViewer.Height);
+   if mirrorTexType=GL_TEXTURE_2D then begin
+      w:=0.5*SceneViewer.Width/RoundUpToPowerOf2(SceneViewer.Width);
+      h:=0.5*SceneViewer.Height/RoundUpToPowerOf2(SceneViewer.Height);
+   end else begin
+      w:=0.5*SceneViewer.Width;
+      h:=0.5*SceneViewer.Height;
+   end;
 
    glLoadIdentity;
    glTranslatef(w, h, 0);

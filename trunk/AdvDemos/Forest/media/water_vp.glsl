@@ -9,12 +9,12 @@
 uniform vec4  EyePos;
 uniform float Time;
 
-varying vec3 WorldPos;
+varying vec3  EyeVec;
 varying half4 FogColor;
 
 void main()
 {
-    WorldPos = gl_Vertex.xyz;
+    EyeVec = gl_Vertex.xyz-EyePos.xyz;
 
     FogColor.rgb = gl_Fog.color.rgb;
     FogColor.a = clamp((distance(EyePos.xyz, gl_Vertex.xyz)-gl_Fog.start)*gl_Fog.scale, 0, 1);

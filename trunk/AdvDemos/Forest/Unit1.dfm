@@ -71,12 +71,12 @@ object Form1: TForm1
     end
     object Terrain: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Position.Coordinates = {0000204500007042000020C50000803F}
-      Scale.Coordinates = {0000A0400000A0400000204000000000}
+      Position.Coordinates = {000080450000C042000080C50000803F}
+      Scale.Coordinates = {00000041000000410000804000000000}
       Up.Coordinates = {00000000000000800000803F00000000}
       HeightDataSource = GLHeightTileFileHDS
-      TileSize = 64
-      TilesPerTexture = 16.000000000000000000
+      TileSize = 32
+      TilesPerTexture = 32.000000000000000000
       MaterialLibrary = MLTerrain
       QualityDistance = 250.000000000000000000
       QualityStyle = hrsTesselated
