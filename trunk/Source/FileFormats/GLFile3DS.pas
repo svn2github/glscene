@@ -125,10 +125,10 @@ var
          matLib:=TGLBaseMesh(GetOwner).LightmapLibrary;
          if Assigned(matLib) then begin
             if Trim(material.IllumMap.Map.NameStr)<>'' then begin
-               libMat:=matLib.Materials.GetLibMaterialByName(name);
+               libMat:=matLib.Materials.GetLibMaterialByName(material.IllumMap.Map.NameStr);
                if not Assigned(libMat) then begin
                   libMat:=matLib.Materials.Add;
-                  libMat.Name:=name;
+                  libMat.Name:=material.IllumMap.Map.NameStr;
                   try
                      with libMat.Material.Texture do begin
                         Image.LoadFromFile(material.IllumMap.Map.NameStr);
