@@ -171,9 +171,13 @@ type
             The default value of zero effectively disables pooling. }
          property MaxPoolSize : Integer read FMaxPoolSize write FMaxPoolSize;
 
-         {: Interpolates height for the given point. } 
+         {: Interpolates height for the given point. }
          function InterpolatedHeight(x, y : Single) : Single; virtual;
 	end;
+
+   // THDTextureCoordinatesMode
+   //
+   THDTextureCoordinatesMode = (tcmWorld, tcmLocal);
 
    // THeightDataState
    //
@@ -226,6 +230,7 @@ type
          FSmallIntRaster : PSmallIntRaster;
          FSingleData : PSingleArray;
          FSingleRaster : PSingleRaster;
+         FTextureCoordinatesMode : THDTextureCoordinatesMode;
          FMaterialName : String;
          FObjectTag : TObject;
          FTag, FTag2 : Integer;
@@ -247,7 +252,6 @@ type
 	   protected
 	      { Protected Declarations }
          FThread : THeightDataThread; // thread used for multi-threaded processing (if any)
-
 
          procedure SetDataType(const val : THeightDataType);
 
@@ -322,8 +326,12 @@ type
          {: Access to data as a Single raster (y, x).<p>
             If THeightData is not of type hdtSingle, this value is nil. }
          property SingleRaster : PSingleRaster read FSingleRaster;
+
          {: Name of material for the tile (if terrain uses multiple materials). }
          property MaterialName : String read FMaterialName write FMaterialName;
+         {: Texture coordinates generation mode.<p>
+            Default is tcmWorld coordinates. }
+         property TextureCoordinatesMode : THDTextureCoordinatesMode read FTextureCoordinatesMode write FTextureCoordinatesMode;
 
          {: Height of point x, y as a Byte.<p> }
 	      function ByteHeight(x, y : Integer) : Byte;
@@ -830,6 +838,7 @@ begin
    FXLeft:=aXLeft;
    FYTop:=aYTop;
    FSize:=aSize;
+   FTextureCoordinatesMode:=tcmWorld;
    FDataType:=aDataType;
    FDataState:=hdsQueued;
 end;
