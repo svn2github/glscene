@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/08/03 - EG - Fixed Application.OnIdle reset bug (Solerman Kaplon)
       <li>04/07/03 - EG - Improved TimeMultiplier transitions (supports zero)
       <li>06/06/03 - EG - Added cmApplicationIdle Mode
       <li>19/05/03 - EG - Added Reset (Roberto Bussola)
@@ -243,7 +244,8 @@ begin
          if not Assigned(vHandler) then
             vHandler:=TASAPHandler.Create;
       end;
-   end else Application.OnIdle:=aCadencer.OnIdleEvent;
+   end else if aCadencer.Mode=cmApplicationIdle then
+      Application.OnIdle:=aCadencer.OnIdleEvent;
 end;
 
 // UnRegisterASAPCadencer
@@ -260,7 +262,8 @@ begin
             vHandler:=nil;
          end;
       end;
-   end else Application.OnIdle:=nil;
+   end else if aCadencer.Mode=cmApplicationIdle then
+      Application.OnIdle:=nil;
 end;
 
 // ------------------
