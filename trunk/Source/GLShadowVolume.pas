@@ -6,10 +6,11 @@
    or the casters will be rendered incorrectly.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/04 - EG - Added Active property
       <li>29/11/03 - MF - Removed a "feature" that would draw the shadow of
-        (hierarchially) invisible objects
+                          (hierarchially) invisible objects
       <li>27/11/03 - MF - TGLShadowVolumeCaster now registers with the FCaster
-        for delete notification
+                          for delete notification
       <li>11/06/03 - EG - Added silhouette cache
       <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
@@ -152,6 +153,7 @@ type
          function AddCaster(obj : TGLBaseSceneObject; effectiveRadius : Single = 0;
           CastingMode : TGLShadowCastingMode = scmRecursivelyVisible) : TGLShadowVolumeCaster;
          procedure RemoveCaster(obj : TGLBaseSceneObject);
+         function IndexOfCaster(obj : TGLBaseSceneObject) : Integer;
 
          property Items[index : Integer] : TGLShadowVolumeCaster read GetItems; default;
    end;
@@ -195,6 +197,7 @@ type
 	TGLShadowVolume = class (TGLImmaterialSceneObject)
 	   private
 			{ Private Declarations }
+         FActive : Boolean;
          FRendering : Boolean;
          FLights : TGLShadowVolumeCasters;
          FOccluders : TGLShadowVolumeCasters;
@@ -207,6 +210,7 @@ type
 			{ Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
+         procedure SetActive(const val : Boolean);
          procedure SetLights(const val : TGLShadowVolumeCasters);
          procedure SetOccluders(const val : TGLShadowVolumeCasters);
          procedure SetOptions(const val : TGLShadowVolumeOptions);
@@ -227,6 +231,10 @@ type
 
 		published
 			{ Public Declarations }
+         {: Determines if shadow volume rendering is active.<p>
+            When set to false, children will be rendered without any shadowing
+            or multipass lighting. }
+         property Active : Boolean read FActive write SetActive default True;
          {: Lights that cast shadow volumes. }
          property Lights : TGLShadowVolumeCasters read FLights write SetLights;
          {: Occluders that cast shadow volumes. }
@@ -493,11 +501,23 @@ procedure TGLShadowVolumeCasters.RemoveCaster(obj : TGLBaseSceneObject);
 var
    i : Integer;
 begin
-   for i:=0 to Count-1 do
+   i:=IndexOfCaster(obj);
+   if i>=0 then Delete(i);
+end;
+
+// IndexOfCaster
+//
+function TGLShadowVolumeCasters.IndexOfCaster(obj : TGLBaseSceneObject) : Integer;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do begin
       if Items[i].Caster=obj then begin
-         Delete(i);
-         Break;
+         Result:=i;
+         Exit;
       end;
+   end;
+   Result:=-1;
 end;
 
 // ------------------
@@ -510,6 +530,7 @@ constructor TGLShadowVolume.Create(AOwner:Tcomponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle-[osDirectDraw]+[osNoVisibilityCulling];
+   FActive:=True;
    FLights:=TGLShadowVolumeCasters.Create(TGLShadowVolumeLight);
    FLights.FOwner:=Self;
    FOccluders:=TGLShadowVolumeCasters.Create(TGLShadowVolumeOccluder);
@@ -564,12 +585,23 @@ begin
       (Lights[i] as TGLShadowVolumeLight).FlushSilhouetteCache;
 end;
 
+// SetActive
+//
+procedure TGLShadowVolume.SetActive(const val : Boolean);
+begin
+   if FActive<>val then begin
+      FActive:=val;
+      StructureChanged;
+   end;
+end;
+
 // SetLights
 //
 procedure TGLShadowVolume.SetLights(const val : TGLShadowVolumeCasters);
 begin
    Assert(val.ItemClass=TGLShadowVolumeLight);
    FLights.Assign(val);
+   StructureChanged;
 end;
 
 // SetOccluders
@@ -578,6 +610,7 @@ procedure TGLShadowVolume.SetOccluders(const val : TGLShadowVolumeCasters);
 begin
    Assert(val.ItemClass=TGLShadowVolumeOccluder);
    FOccluders.Assign(val);
+   StructureChanged;
 end;
 
 // SetOptions
@@ -666,6 +699,10 @@ var
    pWorldAABB : PAABB;
 
 begin
+   if not Active then begin
+      inherited;
+      Exit;
+   end;
    if FRendering then Exit;
    if not (renderSelf or renderChildren) then Exit;
    ClearStructureChanged;
