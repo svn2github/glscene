@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/01/04 - EG - Leak fix (Phil Scadden)
       <li>05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
       <li>06/02/03 - EG - Fixed speculative range computation, better hashkey
       <li>14/01/03 - EG - RayCastIntersect normals fix (Stuart Gooding)
@@ -296,7 +297,6 @@ begin
    for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
       for k:=Count-1 downto 0 do begin
          hd:=THeightData(List[k]);
-         hd.OnDestroy:=nil;
          hd.Release;
       end;
       Clear;
@@ -594,7 +594,6 @@ begin
          hd:=THeightData(hashList.List[j]);
          if hd.Tag=0 then begin
             hashList.Delete(j);
-            hd.OnDestroy:=nil;
             hd.Release;
          end;
       end;
