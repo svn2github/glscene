@@ -33,7 +33,6 @@ __published:                   // IDE-managed Components
   TGLCylinder *Wheel;
   TGLCylinder *Pin1;
   TGLCylinder *Axle;
-  TGLSphere *GLSphere1;
   void __fastcall GLCadencer1Progress(TObject * Sender,
                                       const double deltaTime,
                                       const double newTime);

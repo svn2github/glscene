@@ -133,25 +133,25 @@ const
 begin
 
   Force := NullVector;
-  if IsKeyDown('w') then Force[2] := cForce;
-  if IsKeyDown('s') then Force[2] := -cForce;
-  if IsKeyDown('a') then Force[0] := cForce;
-  if IsKeyDown('d') then Force[0] := -cForce;
+  if IsKeyDown('w') then Force.Coord[2] := cForce;
+  if IsKeyDown('s') then Force.Coord[2] := -cForce;
+  if IsKeyDown('a') then Force.Coord[0] := cForce;
+  if IsKeyDown('d') then Force.Coord[0] := -cForce;
 
   //Gravity forces
-  if IsKeyDown('x') then Force[1] := -cForce;
+  if IsKeyDown('x') then Force.Coord[1] := -cForce;
   if IsKeyDown('g') then DCEManager1.Gravity.Y := 0
   else DCEManager1.Gravity.Y := -9;
 
   //Rotation
   Rotate := NullVector;
-  if IsKeyDown(VK_RIGHT) then Rotate[1] := aForce * deltaTime;
-  if IsKeyDown(VK_LEFT) then Rotate[1] := -aForce * deltaTime;
-  if IsKeyDown(VK_UP) then Rotate[2] :=aForce * deltaTime;
-  if IsKeyDown(VK_DOWN) then Rotate[2] :=-aForce * deltaTime;
+  if IsKeyDown(VK_RIGHT) then Rotate.Coord[1] := aForce * deltaTime;
+  if IsKeyDown(VK_LEFT) then Rotate.Coord[1] := -aForce * deltaTime;
+  if IsKeyDown(VK_UP) then Rotate.Coord[2] :=aForce * deltaTime;
+  if IsKeyDown(VK_DOWN) then Rotate.Coord[2] :=-aForce * deltaTime;
 
   //Move player
-  Player.Turn(Rotate[1]);
+  Player.Turn(Rotate.Coord[1]);
   TGLBDCEBody(Player.Behaviours.Behaviour[0]).AddForce(Force);
 
   //Move Enemy

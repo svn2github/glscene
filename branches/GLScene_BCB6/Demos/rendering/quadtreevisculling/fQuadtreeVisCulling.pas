@@ -172,10 +172,10 @@ procedure TfrmQuadtreeVisCulling.queryVisibleRender(Sender: TObject;
   function PlaneToStr(const APlane : THmgPlane) : string;
   begin
     result := Format('(%2.1f, %2.1f, %2.1f, %2.1f)',[
-      APlane[0],
-      APlane[1],
-      APlane[2],
-      APlane[3]]);
+      APlane.Coord[0],
+      APlane.Coord[1],
+      APlane.Coord[2],
+      APlane.Coord[3]]);
   end;
 var
   i: integer;
