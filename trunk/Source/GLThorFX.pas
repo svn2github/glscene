@@ -78,7 +78,7 @@ type
 	      { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-	 procedure DoProgress(const deltaTime, newTime : Double); override;
+         procedure DoProgress(const progressTime : TProgressTimes); override;
 
 
     	   published
@@ -332,7 +332,7 @@ end;
 
 // DoProgress
 //
-procedure TGLThorFXManager.DoProgress(const deltaTime, newTime : Double);
+procedure TGLThorFXManager.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
 begin

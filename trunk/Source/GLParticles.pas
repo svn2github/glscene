@@ -73,7 +73,7 @@ type
 			procedure BuildList(var rci : TRenderContextInfo); override;
 			procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
-			procedure DoProgress(const deltaTime, newTime : Double); override;
+			procedure DoProgress(const progressTime : TProgressTimes); override;
 
 			{: Request creation of a new particle.<p>
 				Particle will be either created or retrieved from the particlePool. }
@@ -240,14 +240,14 @@ end;
 
 // DoProgress
 //
-procedure TGLParticles.DoProgress(const deltaTime, newTime : Double);
+procedure TGLParticles.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
 begin
 	for i:=Count-1 downto 1 do
-		Children[i].DoProgress(deltaTime, newTime);
-	Behaviours.DoProgress(deltaTime, newTime);
-   if Assigned(OnProgress) then
+		Children[i].DoProgress(progressTime);
+	Behaviours.DoProgress(progressTime);
+   if Assigned(OnProgress) then with progressTime do
 		OnProgress(Self, deltaTime, newTime);
 end;
 

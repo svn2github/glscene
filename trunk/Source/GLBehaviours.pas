@@ -107,7 +107,7 @@ type
 			class function FriendlyDescription : String; override;
 			class function UniqueItem : Boolean; override;
 
-			procedure DoProgress(const deltaTime, newTime : Double); override;
+			procedure DoProgress(const progressTime : TProgressTimes); override;
 
 			{: Adds time-proportionned acceleration to the speed. }
 			procedure ApplyTranslationAcceleration(const deltaTime : Double; const accel : TVector);
@@ -404,14 +404,14 @@ end;
 
 // DoProgress
 //
-procedure TGLBInertia.DoProgress(const deltaTime, newTime : Double);
+procedure TGLBInertia.DoProgress(const progressTime : TProgressTimes);
 var
 	trnVector : TVector;
 	speed, newSpeed : Double;
 
 	procedure ApplyRotationDamping(var rotationSpeed : Single);
 	begin
-		rotationSpeed:=RotationDamping.Calculate(rotationSpeed, deltaTime);
+		rotationSpeed:=RotationDamping.Calculate(rotationSpeed, progressTime.deltaTime);
 		if rotationSpeed<=0 then
 			rotationSpeed:=0;
 	end;
@@ -422,7 +422,7 @@ begin
 		// Translation damping
 		speed:=TranslationSpeed.VectorLength;
       if speed>0 then begin
-   		newSpeed:=TranslationDamping.Calculate(speed, deltaTime);
+   		newSpeed:=TranslationDamping.Calculate(speed, progressTime.deltaTime);
 	   	if newSpeed<=0 then begin
             trnVector:=NullHmgVector;
 			   TranslationSpeed.AsVector:=trnVector;
@@ -437,7 +437,7 @@ begin
 		ApplyRotationDamping(FPitchSpeed);
 	end else SetVector(trnVector, TranslationSpeed.AsVector);
 	// Apply speed to object
-	with OwnerBaseSceneObject do begin
+	with OwnerBaseSceneObject do with progressTime do begin
 		Position.AddScaledVector(deltaTime, trnVector);
 		TurnAngle:=TurnAngle+TurnSpeed*deltaTime;
 		RollAngle:=RollAngle+RollSpeed*deltaTime;

@@ -255,7 +255,7 @@ type
     procedure StartPathTravel;
     procedure StopPathTravel;
 
-    procedure DoProgress(const deltaTime, newTime: double); override;
+    procedure DoProgress(const progressTime : TProgressTimes); override;
 
     function NextPath: integer;
     function PrevPath: integer;
@@ -1529,7 +1529,7 @@ begin
 end;
 
 //Calculate functions add into this method
-procedure TGLMovement.DoProgress(const deltaTime, newTime: double);
+procedure TGLMovement.DoProgress(const progressTime : TProgressTimes);
 var
   Path: TGLMovementPath;
 begin
@@ -1537,7 +1537,7 @@ begin
     //if deltaTime >= 0.033 then
     begin
       Path := Paths[FActivePathIndex];
-      Path.CalculateState(newTime);
+      Path.CalculateState(progressTime.newTime);
       if Assigned(Path.CurrentNode) then
       begin
         if Owner.Owner is TGLBaseSceneObject then

@@ -1238,7 +1238,7 @@ type
 
          procedure BuildList(var rci : TRenderContextInfo); override;
 
-			procedure DoProgress(const deltaTime, newTime : Double); override;
+			procedure DoProgress(const progressTime : TProgressTimes); override;
 
 	      procedure SwitchToAnimation(anAnimation : TActorAnimation; smooth : Boolean = False); overload;
 	      procedure SwitchToAnimation(const animationName : String; smooth : Boolean = False); overload;
@@ -5027,14 +5027,14 @@ end;
 
 // DoProgress
 //
-procedure TActor.DoProgress(const deltaTime, newTime : Double);
+procedure TActor.DoProgress(const progressTime : TProgressTimes);
 var
    fDelta : Single;
 begin
    inherited;
    if (AnimationMode<>aamNone) and (Interval>0) then begin
       if (StartFrame<>EndFrame) and (FrameCount>1)  then begin
-         FCurrentFrameDelta:=FCurrentFrameDelta+(deltaTime*1000)/FInterval;
+         FCurrentFrameDelta:=FCurrentFrameDelta+(progressTime.deltaTime*1000)/FInterval;
          if FCurrentFrameDelta>1 then begin
             if Assigned(FTargetSmoothAnimation) then begin
                SwitchToAnimation(FTargetSmoothAnimation);

@@ -334,7 +334,7 @@ type
          {: Progress notification for time synchronization.<p>
             This method will call UpdateSources depending on the last time
             it was performed and the value of the UpdateFrequency property. }
-			procedure DoProgress(const deltaTime, newTime : Double); override;
+			procedure DoProgress(const progressTime : TProgressTimes); override;
 
          {: Sound manager API reported CPU Usage.<p>
             Returns -1 when unsupported. }
@@ -422,7 +422,7 @@ type
 			class function FriendlyDescription : String; override;
 			class function UniqueItem : Boolean; override;
 
-			procedure DoProgress(const deltaTime, newTime : Double); override;
+			procedure DoProgress(const progressTime : TProgressTimes); override;
 
 		published
 			{ Published Declarations }
@@ -1378,9 +1378,9 @@ end;
 
 // DoProgress
 //
-procedure TGLSoundManager.DoProgress(const deltaTime, newTime : Double);
+procedure TGLSoundManager.DoProgress(const progressTime : TProgressTimes);
 begin
-   if newTime-FLastUpdateTime>1/FUpdateFrequency then begin
+   with progressTime do if newTime-FLastUpdateTime>1/FUpdateFrequency then begin
       FLastDeltaTime:=newTime-FLastUpdateTime;
       FLastUpdateTime:=newTime;
       UpdateSources;
@@ -1474,7 +1474,7 @@ end;
 
 // DoProgress
 //
-procedure TGLBSoundEmitter.DoProgress(const deltaTime, newTime : Double);
+procedure TGLBSoundEmitter.DoProgress(const progressTime : TProgressTimes);
 begin
    // nothing, yet
 end;

@@ -314,7 +314,7 @@ type
 			class function FriendlyName : String; override;
 			class function FriendlyDescription : String; override;
 
-         procedure DoProgress(const deltaTime, newTime : Double); override;
+         procedure DoProgress(const progressTime : TProgressTimes); override;
 
          //: Instantaneously creates nb particles
          procedure Burst(time : Double; nb : Integer);
@@ -413,7 +413,7 @@ type
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
-         procedure DoProgress(const deltaTime, newTime : Double); override;
+         procedure DoProgress(const progressTime : TProgressTimes); override;
 
 	   published
 	      { Published Declarations }
@@ -907,6 +907,7 @@ const
 
 type
    PInteger = ^Integer;
+   PSingle = ^Single;
    TParticleReference = record
       particle : TGLParticle;
       distance : Integer;  // stores an IEEE single!
@@ -1239,17 +1240,19 @@ end;
 
 // DoProgress
 //
-procedure TGLSourcePFXEffect.DoProgress(const deltaTime, newTime : Double);
+procedure TGLSourcePFXEffect.DoProgress(const progressTime : TProgressTimes);
 var
    n : Integer;
 begin
    if not Assigned(Manager) then Exit;
    if FParticleInterval=0 then Exit;
-   FTimeRemainder:=FTimeRemainder+deltaTime;
-   if FTimeRemainder>FParticleInterval then begin
-      n:=Trunc((FTimeRemainder-FParticleInterval)/FParticleInterval);
-      Burst(newTime, n);
-      FTimeRemainder:=FTimeRemainder-n*FParticleInterval;
+   with progressTime do begin
+      FTimeRemainder:=FTimeRemainder+deltaTime;
+      if FTimeRemainder>FParticleInterval then begin
+         n:=Trunc((FTimeRemainder-FParticleInterval)/FParticleInterval);
+         Burst(newTime, n);
+         FTimeRemainder:=FTimeRemainder-n*FParticleInterval;
+      end;
    end;
 end;
 
@@ -1466,7 +1469,7 @@ end;
 
 // DoProgress
 //
-procedure TGLDynamicPFXManager.DoProgress(const deltaTime, newTime : Double);
+procedure TGLDynamicPFXManager.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
    curParticle : TGLParticle;
@@ -1476,11 +1479,11 @@ var
 begin
    maxAge:=MaxParticleAge;
    accelVector:=Acceleration.AsAffineVector;
-   dt:=deltaTime;
-   FCurrentTime:=newTime;
+   dt:=progressTime.deltaTime;
+   FCurrentTime:=progressTime.newTime;
    for i:=0 to Particles.ItemCount-1 do begin
       curParticle:=Particles.List[i];
-      particleAge:=newTime-curParticle.CreationTime;
+      particleAge:=progressTime.newTime-curParticle.CreationTime;
       if particleAge<maxAge then begin
          // particle alive, just update velocity and position
          with curParticle do begin

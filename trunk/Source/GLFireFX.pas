@@ -102,7 +102,7 @@ type
          {: Current Nb of particles. }
          property ParticleCount : Integer read NP;
 
-			procedure DoProgress(const deltaTime, newTime : Double); override;
+			procedure DoProgress(const progressTime : TProgressTimes); override;
 
 		published
 			{ Published Declarations }
@@ -375,13 +375,14 @@ end;
 
 // DoProgress
 //
-procedure TGLFireFXManager.DoProgress(const deltaTime, newTime : Double);
+procedure TGLFireFXManager.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
 begin
    // Progress the particles
    If (not FPaused) and (FParticleInterval > 0) then
-     CalcFire(deltaTime*(1.0+Abs(FFireBurst)), FParticleInterval, FParticleLife, FFireDensity);
+     CalcFire(progressTime.deltaTime*(1.0+Abs(FFireBurst)),
+              FParticleInterval, FParticleLife, FFireDensity);
 
    // Invalidate all clients
    for i:=0 to FClients.Count-1 do
