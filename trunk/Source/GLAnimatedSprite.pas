@@ -3,6 +3,10 @@
   A sprite that uses a scrolling texture for animation.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>20/07/04 - SG - Added FrameRate (alternative for Interval),
+                        Added Interval to Animations, will override
+                        sprite interval if not equal to zero.
+                        Some minor fixes.
     <li>13/07/04 - SG - Creation
   </ul></font>
 }
@@ -65,7 +69,8 @@ type
       FStartFrame,
       FEndFrame,
       FFrameWidth,
-      FFrameHeight : Integer;
+      FFrameHeight,
+      FInterval : Integer;
       FFrames : TSpriteAnimFrameList;
       FLibMaterialName : TGLLibMaterialName;
       FLibMaterialCached : TGLLibMaterial;
@@ -82,6 +87,9 @@ type
       procedure SetDimensions(const Value: TSpriteFrameDimensions);
       procedure SetLibMaterialName(const val : TGLLibMaterialName);
       function GetLibMaterialCached : TGLLibMaterial;
+      procedure SetInterval(const Value : Integer);
+      procedure SetFrameRate(const Value : Single);
+      function GetFrameRate : Single;
 
     public
       constructor Create(aOwner : TXCollection); override;
@@ -100,6 +108,8 @@ type
       property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
       property Frames : TSpriteAnimFrameList read FFrames;
       property Dimensions : TSpriteFrameDimensions read FDimensions write SetDimensions;
+      property Interval : Integer read FInterval write SetInterval;
+      property FrameRate : Single read GetFrameRate write SetFrameRate;
 
   end;
 
@@ -142,6 +152,8 @@ type
       procedure SetRotation(const val : Integer);
       procedure SetMirrorU(const val : Boolean);
       procedure SetMirrorV(const val : Boolean);
+      procedure SetFrameRate(const Value : Single);
+      function GetFrameRate : Single;
 
     public
       constructor Create(AOwner : TComponent); override;
@@ -162,6 +174,7 @@ type
       property Rotation : Integer read FRotation write SetRotation;
       property MirrorU : Boolean read FMirrorU write SetMirrorU;
       property MirrorV : Boolean read FMirrorV write SetMirrorV;
+      property FrameRate : Single read GetFrameRate write SetFrameRate;
 
       property Position;
       property Scale;
@@ -348,7 +361,7 @@ end;
 procedure TSpriteAnimation.WriteToFiler(writer : TWriter);
 begin
   inherited;
-  writer.WriteInteger(0); // Archive version number
+  writer.WriteInteger(1); // Archive version number
   Frames.WriteToFiler(writer);
   with writer do begin
     WriteString(LibMaterialName);
@@ -358,6 +371,7 @@ begin
     WriteInteger(FrameWidth);
     WriteInteger(FrameHeight);
     WriteInteger(Integer(Dimensions));
+    WriteInteger(Interval);
   end;
 end;
 
@@ -369,7 +383,7 @@ var
 begin
   inherited;
   archiveVersion:=reader.ReadInteger;
-  Assert(archiveVersion = 0);
+  Assert((archiveVersion>=0) and (archiveVersion<=1));
   Frames.ReadFromFiler(reader);
   with reader do begin
     FLibMaterialName:=ReadString;
@@ -379,6 +393,9 @@ begin
     FrameWidth:=ReadInteger;
     FrameHeight:=ReadInteger;
     Dimensions:=TSpriteFrameDimensions(ReadInteger);
+    if archiveVersion>=1 then begin
+      Interval:=ReadInteger;
+    end;
   end;
 end;
 
@@ -462,6 +479,36 @@ begin
   Result:=FLibMaterialCached;
 end;
 
+// SetInterval
+//
+procedure TSpriteAnimation.SetInterval(const Value: Integer);
+begin
+  if Value<>FInterval then begin
+    FInterval := Value;
+    DoChanged;
+  end;
+end;
+
+// SetFrameRate
+//
+procedure TSpriteAnimation.SetFrameRate(const Value: Single);
+begin
+  if Value>0 then
+    Interval := Round(1000/Value)
+  else
+    Interval := 0;
+end;
+
+// GetFrameRate
+//
+function TSpriteAnimation.GetFrameRate : Single;
+begin
+  if Interval>0 then
+    Result:=1000/Interval
+  else
+    Result:=0;
+end;
+
 
 // ----------
 // ---------- TSpriteAnimationList ----------
@@ -511,7 +558,7 @@ begin
   inherited;
 end;
 
-// DoRender
+// BuildList
 //
 procedure TGLAnimatedSprite.BuildList(var rci : TRenderContextInfo);
 var
@@ -555,7 +602,8 @@ begin
             x1:=x0+Frame.Width;
             y1:=y0+Frame.Height;
           end else begin
-            if TexWidth>0 then begin
+            if (TexWidth>0) and (Anim.FrameWidth>0)
+            and (TexHeight>0) and (Anim.FrameHeight>0) then begin
               x0:=Anim.FrameWidth*(Anim.CurrentFrame mod (TexWidth div Anim.FrameWidth));
               y0:=Anim.FrameHeight*(Anim.CurrentFrame div (TexWidth div Anim.FrameWidth));
             end else begin
@@ -619,11 +667,15 @@ end;
 //
 procedure TGLAnimatedSprite.DoProgress(const progressTime : TProgressTimes);
 var
-  i : Integer;
+  i,intr : Integer;
 begin
   inherited;
-  if (FAnimationMode<>samNone) and (Interval>0) and (AnimationIndex<>-1) then begin
-    FCurrentFrameDelta:=FCurrentFrameDelta+(progressTime.deltaTime*1000)/FInterval;
+  if (AnimationIndex = -1) then exit;
+  intr:=TSpriteAnimation(Animations[AnimationIndex]).Interval;
+  if intr = 0 then
+    intr:=Interval;
+  if (FAnimationMode<>samNone) and (intr>0) then begin
+    FCurrentFrameDelta:=FCurrentFrameDelta+(progressTime.deltaTime*1000)/intr;
     if FCurrentFrameDelta>=1 then begin
       for i:=0 to Floor(FCurrentFrameDelta)-1 do begin
         NextFrame;
@@ -758,6 +810,26 @@ begin
     FInterval:=val;
     NotifyChange(Self);
   end;
+end;
+
+// SetFrameRate
+//
+procedure TGLAnimatedSprite.SetFrameRate(const Value: Single);
+begin
+  if Value>0 then
+    Interval := Round(1000/Value)
+  else
+    Interval := 0;
+end;
+
+// GetFrameRate
+//
+function TGLAnimatedSprite.GetFrameRate : Single;
+begin
+  if Interval>0 then
+    Result:=1000/Interval
+  else
+    Result:=0;
 end;
 
 // SetAnimationIndex
