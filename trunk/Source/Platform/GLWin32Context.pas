@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/07/02 - EG - ChooseWGLFormat Kyro fix (Patrick Chevalley)
       <li>13/03/02 - EG - aaDefault now prefers non-AA when possible
       <li>03/03/02 - EG - Fixed aaNone mode (AA specifically off)
       <li>01/03/02 - EG - Fixed CurrentPixelFormatIsHardwareAccelerated
@@ -342,8 +343,9 @@ const
 
    procedure ChoosePixelFormat;
    begin
-      wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
-                              32, piFormats, @nNumFormats);
+      if not wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
+                                     32, piFormats, @nNumFormats) then
+         nNumFormats:=0;
    end;
 
 begin
