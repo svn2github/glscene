@@ -2203,7 +2203,7 @@ end;
 constructor TGLNodedLines.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
-   FNodes:=TGLLinesNodes.Create(Self);
+   FNodes:=TGLLinesNodes.Create(TComponent(Self));
    FNodeColor:=TGLColor.Create(Self);
    FNodeColor.Initialize(clrBlue);
    FNodeColor.OnNotifyChange:=OnNodeColorChanged;
@@ -2988,10 +2988,10 @@ begin
       rci.GLStates.InvertGLFrontFace;
 
    // common settings
-   AngTop:=DegToRad(FTop);
-   AngBottom:=DegToRad(FBottom);
-   AngStart:=DegToRad(FStart);
-   AngStop:=DegToRad(FStop);
+   AngTop:=DegToRad(Single(FTop));
+   AngBottom:=DegToRad(Single(FBottom));
+   AngStart:=DegToRad(Single(FStart));
+   AngStop:=DegToRad(Single(FStop));
    StepH:=(AngStop - AngStart) / FSlices;
    StepV:=(AngTop - AngBottom) / FStacks;
    glPushMatrix;
@@ -3422,7 +3422,6 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------

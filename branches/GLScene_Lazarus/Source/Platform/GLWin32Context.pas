@@ -112,8 +112,13 @@ resourcestring
 
 var
    vTrackingCount : Integer;
+{$IFNDEF FPC}
    vTrackedHwnd : array of HWND;
    vTrackedEvents : array of TNotifyEvent;
+{$ELSE}
+   vTrackedHwnd : array[0..127] of HWND;
+   vTrackedEvents : array[0..127] of TNotifyEvent;
+{$ENDIF}
    vTrackingHook : HHOOK;
 
 // TrackHookProc
@@ -151,9 +156,11 @@ begin
    if vTrackingCount=0 then
       vTrackingHook:=SetWindowsHookEx(WH_CALLWNDPROC, @TrackHookProc, 0, GetCurrentThreadID);
    Inc(vTrackingCount);
+{$IFNDEF FPC}
    SetLength(vTrackedHwnd, vTrackingCount);
-   vTrackedHwnd[vTrackingCount-1]:=h;
    SetLength(vTrackedEvents, vTrackingCount);
+{$ENDIF}
+   vTrackedHwnd[vTrackingCount-1]:=h;
    vTrackedEvents[vTrackingCount-1]:=notifyEvent;
 end;
 
@@ -172,8 +179,10 @@ begin
       Inc(k);
    end;
    Dec(vTrackingCount);
+{$IFNDEF FPC}
    SetLength(vTrackedHwnd, vTrackingCount);
    SetLength(vTrackedEvents, vTrackingCount);
+{$ENDIF}
    if vTrackingCount=0 then
       UnhookWindowsHookEx(vTrackingHook);
 end;
@@ -181,7 +190,7 @@ end;
 var
    vUtilWindowClass: TWndClass = (
       style: 0;
-      lpfnWndProc: @DefWindowProc;
+      lpfnWndProc: nil;
       cbClsExtra: 0;
       cbWndExtra: 0;
       hInstance: 0;
@@ -199,6 +208,8 @@ var
    tempClass: TWndClass;
 begin
    vUtilWindowClass.hInstance:=HInstance;
+   if not Assigned(vUtilWindowClass.lpfnWndProc) then
+     vUtilWindowClass.lpfnWndProc:=@DefWindowProc;
    classRegistered:=GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
                                  tempClass);
    if not classRegistered then

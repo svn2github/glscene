@@ -2402,7 +2402,8 @@ destructor TGLBaseSceneObject.Destroy;
 begin
    DeleteChildCameras;
    FreeMem(FLocalMatrix, SizeOf(TMatrix));
-   FreeMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);
+   if Assigned(FAbsoluteMatrix) then
+      FreeMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);
    FGLObjectEffects.Free;
    FGLBehaviours.Free;
    FListHandle.Free;

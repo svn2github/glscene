@@ -24,7 +24,7 @@ interface
 {$i GLScene.inc}
 
 uses Windows, Graphics, Forms, Messages, Classes, GLScene, Controls, Menus,
-   GLContext;
+   GLContext{$ifdef FPC}, LMessages{$endif};
 
 type
 
@@ -64,15 +64,22 @@ type
          FIsOpenGLAvailable : Boolean;
          FLastScreenPos : TPoint;
 
+         {$ifdef FPC}
+         procedure EraseBackground(DC: HDC); override;
+         procedure WMPaint(var Message: TLMPaint); Message LM_PAINT;
+         procedure WMSize(var Message: TLMSize); Message LM_SIZE;
+         procedure WMDestroy(var Message: TLMDestroy); message LM_DESTROY;
+         {$else}
          procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); Message WM_ERASEBKGND;
          procedure WMPaint(var Message: TWMPaint); Message WM_PAINT;
          procedure WMSize(var Message: TWMSize); Message WM_SIZE;
          procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
+         {$endif}
 
-	      procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
-	      procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
-        function GetFieldOfView: single;
-        procedure SetFieldOfView(const Value: single);
+         procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
+         procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
+         function GetFieldOfView: single;
+         procedure SetFieldOfView(const Value: single);
 
       protected
          { Protected Declarations }
@@ -86,7 +93,7 @@ type
          function GetCamera : TGLCamera;
          procedure SetBuffer(const val : TGLSceneBuffer);
 
-         procedure CreateParams(var Params: TCreateParams); override;
+         {$ifndef FPC}procedure CreateParams(var Params: TCreateParams); override;{$endif}
          procedure CreateWnd; override;
          procedure DestroyWnd; override;
          procedure Loaded; override;
@@ -149,8 +156,8 @@ type
          changed, FieldOfView is changed also. }
          property FieldOfView : single read GetFieldOfView write SetFieldOfView;
 
-			   property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-			   property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+         property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+         property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
          
          property Align;
          property Anchors;
@@ -314,6 +321,7 @@ begin
    FBuffer.Assign(val);
 end;
 
+{$ifndef FPC}
 // CreateParams
 //
 procedure TGLSceneViewer.CreateParams(var Params: TCreateParams);
@@ -324,6 +332,7 @@ begin
       WindowClass.Style:=WindowClass.Style or CS_OWNDC;
    end;
 end;
+{$endif}
 
 // CreateWnd
 //
@@ -351,6 +360,15 @@ begin
    inherited;
 end;
 
+{$ifdef FPC}
+// EraseBackground
+//
+procedure TGLSceneViewer.EraseBackground(DC: HDC);
+begin
+   if not IsOpenGLAvailable then
+      Inherited;
+end;
+{$else}
 // WMEraseBkgnd
 //
 procedure TGLSceneViewer.WMEraseBkgnd(var Message: TWMEraseBkgnd);
@@ -359,10 +377,15 @@ begin
       Message.Result:=1
    else inherited; 
 end;
+{$endif}
 
 // WMSize
 //
+{$ifndef FPC}
 procedure TGLSceneViewer.WMSize(var Message: TWMSize);
+{$else}
+procedure TGLSceneViewer.WMSize(var Message: TLMSize);
+{$endif}
 begin
    inherited;
    FBuffer.Resize(Message.Width, Message.Height);
@@ -370,7 +393,11 @@ end;
 
 // WMPaint
 //
+{$ifndef FPC}
 procedure TGLSceneViewer.WMPaint(var Message: TWMPaint);
+{$else}
+procedure TGLSceneViewer.WMPaint(var Message: TLMPaint);
+{$endif}
 var
    PS : TPaintStruct;
    p : TPoint;
@@ -395,7 +422,11 @@ end;
 
 // WMDestroy
 //
+{$ifndef FPC}
 procedure TGLSceneViewer.WMDestroy(var Message: TWMDestroy);
+{$else}
+procedure TGLSceneViewer.WMDestroy(var Message: TLMDestroy);
+{$endif}
 begin
    FBuffer.DestroyRC;
    if FOwnDC<>0 then begin
@@ -430,6 +461,9 @@ begin
    inherited Loaded;
    // initiate window creation
    HandleNeeded;
+   {$ifdef FPC}
+   FBuffer.Resize(Self.Width, Self.Height);
+   {$endif}
 end;
 
 // DoBeforeRender
@@ -524,8 +558,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

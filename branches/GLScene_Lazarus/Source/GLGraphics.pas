@@ -251,8 +251,11 @@ begin
    for i:=0 to 255 do
       vGammaLUT[i]:=Round(255*Power(i*(1/255), InvGamma));
    // perform correction
-   for i:=Integer(base) to Integer(base)+pixelCount*3-1 do
+   i:=Integer(base);
+   while i<=Integer(base)+pixelCount*3-1 do begin
       PByte(i)^:=vGammaLUT[PByte(i)^];
+      Inc(i);
+   end;
 end;
 
 // GammaCorrectRGBAArray
@@ -305,8 +308,11 @@ begin
       vBrightnessLUT[i]:=k;
    end;
    // perform correction
-   for i:=Integer(base) to Integer(base)+pixelCount*3-1 do
+   i:=Integer(base);
+   while i<=Integer(base)+pixelCount*3-1 do begin
       PByte(i)^:=vBrightnessLUT[PByte(i)^];
+      Inc(i);
+   end;
 end;
 
 // BrightenRGBAArray
@@ -487,9 +493,11 @@ end;
 // Assign
 //
 procedure TGLBitmap32.Assign(Source: TPersistent);
+{$ifndef FPC}
 var
    bmp : TGLBitmap;
    graphic : TGLGraphic;
+{$endif}
 begin
    if Source=nil then begin
       FDataSize:=0;
@@ -504,6 +512,12 @@ begin
       ReallocMem(FData, FDataSize);
       Move(TGLBitmap32(Source).Data^, Data^, DataSize);
    end else if Source is TGLGraphic then begin
+{$ifdef FPC}
+      if Source is TGLBitmap then begin
+        // in FPC this is pixel wize and reads all pixelFormats.
+        AssignFrom24BitsBitmap(TGLBitmap(Source));
+      end else inherited;
+{$else}
       if (Source is TGLBitmap) and (TGLBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
             and ((TGLBitmap(Source).Width and 3)=0) then begin
          if TGLBitmap(Source).PixelFormat=glpf24bit then
@@ -526,7 +540,8 @@ begin
          finally
             bmp.Free;
          end;
-      end;
+      end else inherited;
+{$endif}
 {$ifdef GLS_Graphics32_SUPPORT}
    end else if Source is TBitmap32 then begin
       AssignFromBitmap32(TBitmap32(Source));
@@ -536,6 +551,31 @@ end;
 
 // AssignFrom24BitsBitmap
 //
+{$ifdef FPC}
+procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TGLBitmap);
+var
+   y, x : Integer;
+   pDest : PChar;
+   pixel : TColor;
+begin
+   Assert((aBitmap.Width and 3)=0);
+   FWidth:=aBitmap.Width;
+   FHeight:=aBitmap.Height;
+   FDataSize:=FWidth*FHeight*4;
+   ReallocMem(FData, FDataSize);
+
+   pDest:=PChar(FData);
+   for y:= 0 to Height-1 do
+   for x:= 0 to width-1 do
+   Begin
+     pixel := aBitmap.Canvas.Pixels[x,y];
+     pDest^ := Char(pixel and $ff); inc(pDest);
+     pDest^ := Char((pixel shr 8) and $ff); inc(pDest);
+     pDest^ := Char((pixel shr 16) and $ff); inc(pDest);
+     pDest^ := Char($ff); inc(pDest);
+   end;
+end;
+{$else}
 procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
@@ -567,6 +607,7 @@ begin
       end;
    end;
 end;
+{$endif}
 
 // AssignFromBitmap24WithoutRGBSwap
 //

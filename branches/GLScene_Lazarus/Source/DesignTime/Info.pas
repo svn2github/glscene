@@ -26,6 +26,7 @@ interface
 
 {$IFDEF MSWINDOWS}
 uses
+  {$IFDEF FPC}LResources,{$ENDIF}
   Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls, 
      CommCtrl, ExtCtrls, Graphics, Menus;
 {$ENDIF}
@@ -123,6 +124,7 @@ implementation
 uses
   OpenGL1x, SysUtils, GLCrossPlatform;
 
+{$IFNDEF FPC}
 {$IFDEF MSWINDOWS}
 {$R *.dfm}
 {$ENDIF}
@@ -131,6 +133,7 @@ uses
 {$ENDIF}
 
 {$R Info.res}
+{$ENDIF}
 
 // ShowInfoForm
 //
@@ -283,11 +286,11 @@ begin
       NewB:=Round(I*b/175); if NewB > b then NewB:=b;
       NewColors[I]:=RGB(NewR,NewG,NewB);
     end;
-    {$IFDEF MSWINDOWS}
+    {$IFDEF MSWINDOWS}{$IFNDEF FPC}
     BM.Handle:=CreateMappedRes(HInstance,'INFO_BACK',OldColors,NewColors);
 	 for Y:=0 to Image1.Height div BM.Height do
       for X:=0 to Image1.Width div BM.Width do Image1.Canvas.Draw(X*BM.Width,Y*BM.Height,BM);
-    {$ENDIF}
+    {$ENDIF}{$ENDIF}
     Image2.Picture:=Image1.Picture;
     Image3.Picture:=Image1.Picture;
   finally
@@ -365,6 +368,8 @@ initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
+   {$IFDEF FPC}{$i Info.lrs}{$ENDIF}
 
    RegisterInfoForm(ShowInfoForm);
 

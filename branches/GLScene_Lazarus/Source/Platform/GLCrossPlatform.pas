@@ -33,7 +33,7 @@ interface
 {$IFDEF MSWINDOWS}
 uses
   Windows, Classes, SysUtils, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtDlgs, Consts;
+  Dialogs, StdCtrls, ExtDlgs{$IFNDEF FPC}, Consts{$ENDIF};
 {$ENDIF}
 {$IFDEF LINUX}
 uses
@@ -139,7 +139,7 @@ const
 
 // Several define from unit Consts
 const
-  glsAllFilter: string = sAllFilter;
+  glsAllFilter: string = {$ifndef FPC}sAllFilter{$else}'all'{$endif};
 
 
 function GLPoint(const x, y : Integer) : TGLPoint;
