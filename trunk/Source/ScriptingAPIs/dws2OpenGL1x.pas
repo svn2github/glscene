@@ -269,6 +269,11 @@ type
     procedure Execute; override;
   end;
 
+  TglLineWidth = class(TInternalFunction)
+  public
+    procedure Execute; override;
+  end;
+
 
 // Register
 //
@@ -1963,6 +1968,7 @@ begin
   TglTexCoord2f.Create(SymbolTable, 'glTexCoord2f', ['s', 'Float', 't', 'Float'], '');
   TglTexCoord3f.Create(SymbolTable, 'glTexCoord3f', ['s', 'Float', 't', 'Float', 'r', 'Float'], '');
   TglTexCoord4f.Create(SymbolTable, 'glTexCoord4f', ['s', 'Float', 't', 'Float', 'r', 'Float', 'q', 'Float'], '');
+  TglLineWidth.Create(SymbolTable, 'glLineWidth', ['width', 'Float'], '');
 
   TglMultiTexCoord1fARB.Create(SymbolTable, 'glMultiTexCoord1fARB', ['target', 'Cardinal', 's', 'Float'], '');
   TglMultiTexCoord2fARB.Create(SymbolTable, 'glMultiTexCoord2fARB', ['target', 'Cardinal', 's', 'Float', 't', 'Float'], '');
@@ -2357,6 +2363,18 @@ begin
   r:=Info['r'];
   q:=Info['q'];
   glTexCoord4f(s, t, r, q);
+end;
+
+// ----------
+// ---------- TglLineWidth ----------
+// ----------
+
+procedure TglLineWidth.Execute;
+var
+  width : Single;
+begin
+  width:=Info['width'];
+  glLineWidth(width);
 end;
 
 // ----------
