@@ -2,38 +2,39 @@
 
    Miscellaneous support routines & classes.<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>14/09/01 - Egg - Addition of vFileStreamClass
-      <li>04/09/01 - Egg - SetGLCurrentTexture stuff
-      <li>18/07/01 - Egg - Added TGLVisibilityCulling
-      <li>08/07/01 - Egg - Changes in TGLNodes based on code from Uwe Raabe
-      <li>19/06/01 - Egg - Added StrToFloatDef
-      <li>16/03/01 - Egg - Added Capabilities to TDataFile
-      <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
-      <li>05/02/01 - Egg - Faster SetGLMaterialColors
-      <li>15/01/01 - Egg - Added SizeOfFile
-      <li>04/01/00 - Egg - Added AsAffineVector to TGLNode 
-      <li>22/12/00 - Egg - Fixed TGLNodes.Vector when there is only one node
-      <li>03/11/00 - Egg - Added TGLCoordinates.AsAffineVector
-      <li>08/10/00 - Egg - Added "Style" to TGLCoordinates to detect some misuses
-      <li>06/08/00 - Egg - TGLCoordinates moved in, added TextureMatrix stuff,
-                           added TGLNodes.AddXYArc
-      <li>19/07/00 - Egg - Improvements to TGLNodes (tessellation, scaling...)
-      <li>16/07/00 - Egg - Added "Managers" support classes,
-                           Added TDataFile
-      <li>11/07/00 - Egg - Added 'Sender' to MotifyChange
-      <li>05/07/00 - Egg - Added Begin/EndUpdate to TGLNodes
-      <li>23/06/00 - Egg - Added Read/WriteCRLFString
-      <li>18/06/00 - Egg - Added update control to TGLUpdateAbleObject
-      <li>09/06/00 - Egg - Added TGLCadenceAbleComponent
-      <li>07/06/00 - Egg - Added RemoveFreeNotification for Delphi 4
-      <li>29/05/00 - Egg - Added TGLNode/TGLNodes
-      <li>26/05/00 - Egg - TMeshMode & TVertexMode moved in
-		<li>22/03/00 - Egg - Added SetGLState/UnSetGLState
-		<li>21/03/00 - Egg - Added SaveStringToFile/LoadStringFromFile 
-		<li>18/03/00 - Egg - Added GetSqrt255Array
-      <li>06/02/00 - Egg - Javadocisation, RoundUpToPowerOf2,
-                           RoundDownToPowerOf2 and IsPowerOf2 moved in
+	<b>History : </b><font size=-1><ul>
+      <li>15/12/01 - EG - Added support for cube maps
+      <li>14/09/01 - EG - Addition of vFileStreamClass
+      <li>04/09/01 - EG - SetGLCurrentTexture stuff
+      <li>18/07/01 - EG - Added TGLVisibilityCulling
+      <li>08/07/01 - EG - Changes in TGLNodes based on code from Uwe Raabe
+      <li>19/06/01 - EG - Added StrToFloatDef
+      <li>16/03/01 - EG - Added Capabilities to TDataFile
+      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+      <li>05/02/01 - EG - Faster SetGLMaterialColors
+      <li>15/01/01 - EG - Added SizeOfFile
+      <li>04/01/00 - EG - Added AsAffineVector to TGLNode
+      <li>22/12/00 - EG - Fixed TGLNodes.Vector when there is only one node
+      <li>03/11/00 - EG - Added TGLCoordinates.AsAffineVector
+      <li>08/10/00 - EG - Added "Style" to TGLCoordinates to detect some misuses
+      <li>06/08/00 - EG - TGLCoordinates moved in, added TextureMatrix stuff,
+                          added TGLNodes.AddXYArc
+      <li>19/07/00 - EG - Improvements to TGLNodes (tessellation, scaling...)
+      <li>16/07/00 - EG - Added "Managers" support classes,
+                          Added TDataFile
+      <li>11/07/00 - EG - Added 'Sender' to MotifyChange
+      <li>05/07/00 - EG - Added Begin/EndUpdate to TGLNodes
+      <li>23/06/00 - EG - Added Read/WriteCRLFString
+      <li>18/06/00 - EG - Added update control to TGLUpdateAbleObject
+      <li>09/06/00 - EG - Added TGLCadenceAbleComponent
+      <li>07/06/00 - EG - Added RemoveFreeNotification for Delphi 4
+      <li>29/05/00 - EG - Added TGLNode/TGLNodes
+      <li>26/05/00 - EG - TMeshMode & TVertexMode moved in
+		<li>22/03/00 - EG - Added SetGLState/UnSetGLState
+		<li>21/03/00 - EG - Added SaveStringToFile/LoadStringFromFile
+		<li>18/03/00 - EG - Added GetSqrt255Array
+      <li>06/02/00 - EG - Javadocisation, RoundUpToPowerOf2,
+                          RoundDownToPowerOf2 and IsPowerOf2 moved in
    </ul></font>
 
    TODO : separating misc stuff from base classes and OpenGL support
@@ -68,7 +69,7 @@ type
 					stFog, stLighting, stLineSmooth, stLineStipple,
 					stLogicOp, stNormalize, stPointSmooth, stPolygonSmooth,
 					stPolygonStipple, stScissorTest, stStencilTest,
-					stTexture1D, stTexture2D);
+					stTexture1D, stTexture2D, stTextureCubeMap);
 	TGLStates = set of TGLState;
 
    TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles,
@@ -469,7 +470,7 @@ procedure SetGLMaterialColors(const aFace : TGLEnum;
 procedure SetGLMaterialAlphaChannel(const aFace : TGLEnum; const alpha : TGLFloat);
 procedure ResetGLMaterialColors;
 
-procedure SetGLCurrentTexture(const textureUnit, handle : Integer);
+procedure SetGLCurrentTexture(const textureUnit, target, handle : Integer);
 procedure ResetGLCurrentTexture;
 
 {: Defines the OpenGL texture matrix.<p>
@@ -502,12 +503,12 @@ implementation
 uses GLScene, XOpenGL;
 
 const
-	cGLStateToGLEnum : array [stAlphaTest..stTexture2D] of TGLEnum =
+	cGLStateToGLEnum : array [stAlphaTest..stTextureCubeMap] of TGLEnum =
 		(GL_ALPHA_TEST, GL_AUTO_NORMAL, GL_BLEND, GL_COLOR_MATERIAL, GL_CULL_FACE,
 		 GL_DEPTH_TEST, GL_DITHER, GL_FOG, GL_LIGHTING, GL_LINE_SMOOTH,
 		 GL_LINE_STIPPLE, GL_LOGIC_OP, GL_NORMALIZE, GL_POINT_SMOOTH,
 		 GL_POLYGON_SMOOTH, GL_POLYGON_STIPPLE, GL_SCISSOR_TEST, GL_STENCIL_TEST,
-		 GL_TEXTURE_1D, GL_TEXTURE_2D);
+		 GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP_ARB);
 
 var
 	vSqrt255 : TSqrt255Array;
@@ -676,10 +677,10 @@ end;
 //
 var
    lastTextureHandle : array [0..7] of Integer;
-procedure SetGLCurrentTexture(const textureUnit, handle : Integer);
+procedure SetGLCurrentTexture(const textureUnit, target, handle : Integer);
 begin
    if handle<>lastTextureHandle[textureUnit] then begin
-      glBindTexture(GL_TEXTURE_2D, Handle);
+      glBindTexture(target, Handle);
       lastTextureHandle[textureUnit]:=handle;
    end;
 end;

@@ -216,7 +216,8 @@ type
 			constructor Create; override;
 			procedure Assign(Src: TPersistent); override;
 
-			function Add(const item : TTexPoint): Integer;
+			function Add(const item : TTexPoint) : Integer; overload;
+			function Add(const texS, texT : Single) : Integer; overload;
 			procedure Push(const val : TTexPoint);
 			function  Pop : TTexPoint;
 			procedure Insert(Index: Integer; const item : TTexPoint);
@@ -1052,6 +1053,19 @@ begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
 	FList^[Result] := Item;
+  	Inc(FCount);
+end;
+
+// Add
+//
+function TTexPointList.Add(const texS, texT : Single) : Integer;
+begin
+	Result:=FCount;
+	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+   with FList^[Result] do begin
+      s:=texS;
+      t:=texT;
+   end;
   	Inc(FCount);
 end;
 

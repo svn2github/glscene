@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/12/01 - EG - Added support for AlphaBits
       <li>12/12/01 - Egg - Introduced TGLNonVisualViewer,
                            TGLSceneViewer moved to GLWin32Viewer
       <li>07/12/01 - Egg - Added TGLBaseSceneObject.PointTo
@@ -211,9 +212,11 @@ type
      roRenderToWindows: ignored (legacy).<br>
      roTwoSideLighting: enables two-side lighting model.<br>
      roStereo: enables stereo support in the driver (dunno if it works,
-         I don't have a stereo device to test...) }
+         I don't have a stereo device to test...)<br>
+     roDestinationAlpha: request an Alpha channel for the rendered output }
   TContextOption = (roDoubleBuffer, roStencilBuffer,
-                    roRenderToWindow, roTwoSideLighting, roStereo);
+                    roRenderToWindow, roTwoSideLighting, roStereo,
+                    roDestinationAlpha);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -1464,7 +1467,7 @@ type
          property ContextOptions: TContextOptions read FContextOptions write SetContextOptions default [roDoubleBuffer, roRenderToWindow];
          {: DepthTest enabling.<p>
             When DepthTest is enabled, objects closer to the camera will hide
-            farther (Z-Buffering is used).<br>
+            farther ones (Z-Buffering is used).<br>
             When DepthTest is disable, the latest objects drawn/rendered overlap
             all previous objects, whatever their distance to the camera. }
          property DepthTest : Boolean read FDepthTest write SetDepthTest default True;
@@ -5179,7 +5182,7 @@ procedure TGLSceneBuffer.CreateRC(deviceHandle : Integer; memoryContext : Boolea
 var
    backColor: TColorVector;
    locOptions: TGLRCOptions;
-   locStencilBits : Integer;
+   locStencilBits, locAlphaBits : Integer;
 begin
    DestroyRC;
    FRendering:=True;
@@ -5192,6 +5195,9 @@ begin
       if roStencilBuffer in ContextOptions then
          locStencilBits:=8
       else locStencilBits:=0;
+      if roDestinationAlpha in ContextOptions then
+         locAlphaBits:=8
+      else locAlphaBits:=0;
       // will be freed in DestroyWindowHandle
       FRenderingContext:=GLContextManager.CreateContext;
       if not Assigned(FRenderingContext) then
@@ -5200,6 +5206,7 @@ begin
          Options:=locOptions;
          ColorBits:=24;
          StencilBits:=locStencilBits;
+         AlphaBits:=locAlphaBits;
          AccumBits:=0;
          AuxBuffers:=0;
          PrepareGLContext;
@@ -6243,7 +6250,7 @@ begin
    if Buffer.RenderingContext<>nil then begin
       Buffer.RenderingContext.Activate;
       try
-         SetGLCurrentTexture(0, aTexture.Handle);
+         SetGLCurrentTexture(0, GL_TEXTURE_2D, aTexture.Handle);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc, width, height);
          CheckOpenGLError;
       finally

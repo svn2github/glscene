@@ -464,7 +464,7 @@ begin
    bitmap.Free;
    with bitmap32 do begin
       SetAlphaTransparentForColor(Data[Width*(Height-1)]);
-      RegisterAsOpenGLTexture(MinFilter, GL_RGBA);
+      RegisterAsOpenGLTexture(GL_TEXTURE_2D, MinFilter, GL_RGBA);
       FTextureWidth:=Width;
       FTextureHeight:=Height;
       Free;
@@ -545,7 +545,7 @@ begin
          FTextureHandle.AllocateHandle;
          Assert(FTextureHandle.Handle<>0);
       end;
-      SetGLCurrentTexture(0, FTextureHandle.Handle);
+      SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
       // texture registration
       if Glyphs.Width<>0 then begin
          PrepareImage;
@@ -563,7 +563,7 @@ begin
    glDisable(GL_LIGHTING);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   SetGLCurrentTexture(0, FTextureHandle.Handle);
+   SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
    // start rendering
    glBegin(GL_QUADS);

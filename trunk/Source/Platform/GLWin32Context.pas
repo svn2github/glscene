@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/12/01 - EG - Added support for AlphaBits
       <li>30/11/01 - EG - Hardware acceleration support now detected
       <li>20/11/01 - EG - New temp HWnd code for memory contexts (improved compat.)
       <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
@@ -257,6 +258,7 @@ begin
          cDepthBits:=24;
          cStencilBits:=StencilBits;
          cAccumBits:=AccumBits;
+         cAlphaBits:=AlphaBits;
          cAuxBuffers:=AuxBuffers;
          iLayerType:=PFD_MAIN_PLANE;
       end;
@@ -337,6 +339,7 @@ begin
          if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
             ClearIAttribs;
             AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+            AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
             AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
             if StencilBits>0 then
                AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);

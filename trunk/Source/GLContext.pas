@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>15/12/01 - EG - Added support for AlphaBits
       <li>30/11/01 - EG - Added TGLContextAcceleration
       <li>06/09/01 - EG - Win32Context moved to new GLWin32Context unit
       <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
@@ -45,7 +46,7 @@ type
    TGLContext = class
       private
          { Private Declarations }
-         FColorBits : Integer;
+         FColorBits, FAlphaBits : Integer;
          FStencilBits : Integer;
          FAccumBits : Integer;
          FAuxBuffers : Integer;
@@ -61,6 +62,7 @@ type
          FAcceleration : TGLContextAcceleration;
 
          procedure SetColorBits(const aColorBits : Integer);
+         procedure SetAlphaBits(const aAlphaBits : Integer);
          procedure SetStencilBits(const aStencilBits : Integer);
          procedure SetAccumBits(const aAccumBits : Integer);
          procedure SetAuxBuffers(const aAuxBuffers : Integer);
@@ -86,6 +88,8 @@ type
 
          {: Color bits for the rendering context }
          property ColorBits : Integer read FColorBits write SetColorBits;
+         {: Alpha bits for the rendering context }
+         property AlphaBits : Integer read FAlphaBits write SetAlphaBits;
          {: Stencil bits for the rendering context }
          property StencilBits : Integer read FStencilBits write SetStencilBits;
          {: Accumulation buffer bits for the rendering context }
@@ -414,6 +418,15 @@ begin
    if Active then
       raise EGLContext.Create(cCannotAlterAnActiveContext)
    else FColorBits:=aColorBits;
+end;
+
+// SetAlphaBits
+//
+procedure TGLContext.SetAlphaBits(const aAlphaBits : Integer);
+begin
+   if Active then
+      raise EGLContext.Create(cCannotAlterAnActiveContext)
+   else FAlphaBits:=aAlphaBits;
 end;
 
 // SetStencilBits

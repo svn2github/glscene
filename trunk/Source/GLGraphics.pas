@@ -3,6 +3,7 @@
 	Fonction utilitaires graphiques<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>15/12/01 - EG - Texture target support
       <li>14/09/01 - EG - Use of vFileStreamClass
       <li>31/08/01 - EG - 24bits Bitmaps are now made opaque by default
       <li>12/08/01 - EG - Now detects and uses GL_SGIS_generate_mipmap
@@ -57,6 +58,7 @@ type
          FData : PGLPixel32Array;
          FWidth, FHeight : Integer;
          FDataSize : Integer;
+         FVerticalReverseOnAssignFromBitmap : Boolean;
 
 	   protected
 	      { Protected Declarations }
@@ -95,6 +97,8 @@ type
             and invoking it is invalid if the bitmap is Empty. }
          property ScanLine[index : Integer] : PGLPixel32Array read GetScanLine;
 
+         property VerticalReverseOnAssignFromBitmap : Boolean read FVerticalReverseOnAssignFromBitmap write FVerticalReverseOnAssignFromBitmap;
+
          {: Grants direct access to the bitmap's data.<p>
             This property is equivalent to ScanLine[0], and may be nil is the
             bitmap is empty. }
@@ -127,11 +131,13 @@ type
             </ul>The texWidth and texHeight parameters are used to return
             the actual width and height of the texture (that can be different
             from the size of the bitmap32). }
-         procedure RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
+         procedure RegisterAsOpenGLTexture(target : TGLUInt;
+                                           minFilter : TGLMinFilter;
                                            texFormat : Integer;
                                            var texWidth, texHeight : Integer); overload;
          {: Helper version of RegisterAsOpenGLTexture. }
-         procedure RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
+         procedure RegisterAsOpenGLTexture(target : TGLUInt;
+                                           minFilter : TGLMinFilter;
                                            texFormat : Integer); overload;
 
          {: Reads the given area from the current active OpenGL rendering context.<p>
@@ -236,7 +242,9 @@ begin
    ReallocMem(FData, FDataSize);
    pDest:=@PChar(FData)[Width*4*(Height-1)];
    for y:=0 to Height-1 do begin
-      pSrc:=aBitmap.ScanLine[y];
+      if VerticalReverseOnAssignFromBitmap then
+         pSrc:=aBitmap.ScanLine[Height-1-y]
+      else pSrc:=aBitmap.ScanLine[y];
       for x:=0 to Width-1 do begin
          pDest[x*4+0]:=pSrc[x*3+2];
          pDest[x*4+1]:=pSrc[x*3+1];
@@ -262,7 +270,9 @@ begin
    ReallocMem(FData, FDataSize);
    pDest:=@PChar(FData)[Width*4*(Height-1)];
    for y:=0 to Height-1 do begin
-      pSrc:=aBitmap.ScanLine[y];
+      if VerticalReverseOnAssignFromBitmap then
+         pSrc:=aBitmap.ScanLine[Height-1-y]
+      else pSrc:=aBitmap.ScanLine[y];
       for x:=0 to Width-1 do begin
          pDest[x*4+0]:=pSrc[x*4+2];
          pDest[x*4+1]:=pSrc[x*4+1];
@@ -427,17 +437,19 @@ end;
 
 // RegisterAsOpenGLTexture
 //
-procedure TGLBitmap32.RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
+procedure TGLBitmap32.RegisterAsOpenGLTexture(target : TGLUInt;
+                                              minFilter : TGLMinFilter;
                                               texFormat : Integer);
 var
    tw, th : Integer;
 begin
-   RegisterAsOpenGLTexture(minFilter, texFormat, tw, th);
+   RegisterAsOpenGLTexture(target, minFilter, texFormat, tw, th);
 end;
 
 // RegisterAsOpenGLTexture
 //
-procedure TGLBitmap32.RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
+procedure TGLBitmap32.RegisterAsOpenGLTexture(target : TGLUInt;
+                                              minFilter : TGLMinFilter;
                                               texFormat : Integer;
                                               var texWidth, texHeight : Integer);
 var
@@ -460,17 +472,17 @@ begin
       try
    		case minFilter of
 			   miNearest, miLinear :
-		   		glTexImage2d(GL_TEXTURE_2D, 0, texFormat, w2, h2, 0,
+		   		glTexImage2d(target, 0, texFormat, w2, h2, 0,
 	   							 GL_RGBA, GL_UNSIGNED_BYTE, buffer)
    		else
             if GL_SGIS_generate_mipmap then begin
                // hardware-accelerated when supported
-               glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-		   		glTexImage2d(GL_TEXTURE_2D, 0, texFormat, w2, h2, 0,
+               glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+		   		glTexImage2d(target, 0, texFormat, w2, h2, 0,
 	   							 GL_RGBA, GL_UNSIGNED_BYTE, buffer);
             end else begin
                // slower (software mode)
-   		   	gluBuild2DMipmaps(GL_TEXTURE_2D, texFormat, w2, h2,
+   		   	gluBuild2DMipmaps(target, texFormat, w2, h2,
 	      								GL_RGBA, GL_UNSIGNED_BYTE, buffer);
             end;
    		end;
