@@ -41,7 +41,7 @@ type
   private
     FSpacePartition : TBaseSpacePartition;
     procedure SetSpacePartition(const Value: TBaseSpacePartition);
-  protected
+  public
     {: This can be used by the space partitioner as it sees fit}
     FPartitionTag : pointer;
     {: Leaves cache their AABBs so they can easily be accessed when needed by
@@ -50,7 +50,7 @@ type
     {: Leaves cache their BoundingSpheres so they can easily be accessed when
     needed by the space partitioner }
     FCachedBSphere : TBSphere;
-  public
+
     {: Whenever the size or location of the leaf changes, the space partitioner
     should be notified through a call to Changed. In the basic version, all it
     does is update the cached AABB and BSphere. You do not need to override this
@@ -89,6 +89,9 @@ type
   TBaseSpacePartition = class(TPersistentObject)
   protected
     FQueryResult: TSpacePartitionLeafList;
+    FQueryInterObjectTests : integer;
+
+    {: Empties the search result and resetting all search statistics }
     procedure FlushQueryResult; virtual;
   public
     {: The results from the last query }
@@ -115,6 +118,11 @@ type
     {: Query space for Leaves that intersect the bounding sphere or box
     of a leaf. Result is returned through QueryResult}
     function QueryLeaf(const aLeaf : TSpacePartitionLeaf) : integer; virtual;
+
+    {: Once a query has been run, this number tells of how many inter object
+    tests that were run. This value must be set by all that override the
+    queries. }
+    property QueryInterObjectTests : integer read FQueryInterObjectTests;
 
     {: Some space partitioners delay processing changes until all changes have
     been made. ProcessUpdated should be called when all changes have been
@@ -208,9 +216,9 @@ type
     {: The number of child sectors that have been created }
     property ChildCount : integer read FChildCount;
 
-    {: Computes which child the location is located in. Base version does this
-    by comparing the center of the node to the location }
-    function GetChildForLocation(Location : TAffineVector) : TSectorNode; virtual;
+    {: Computes which child the AABB should go in. Returns nil if no such child
+    exists }
+    function GetChildForAABB(AABB : TAABB) : TSectorNode; virtual;
 
     {: The leaves that are stored in this node }
     property Leaves : TSpacePartitionLeafList read FLeaves;
@@ -300,7 +308,11 @@ type
     FGrowGravy: single;
     procedure SetLeafThreshold(const Value: integer);
     procedure SetMaxTreeDepth(const Value: integer);
+  protected
+    FQueryNodeTests : integer;
 
+    {: Empties the search result and resetting all search statistics }
+    procedure FlushQueryResult; override;
   public
     // ** Update space partition
     {: Add a leaf to the structure. If the leaf doesn't fit in the structure, the
@@ -329,6 +341,10 @@ type
     {: Query space for Leaves that intersect the bounding sphere or box
     of a leaf. Result is returned through QueryResult}
     function QueryLeaf(const aLeaf : TSpacePartitionLeaf) : integer; override;
+
+    {: After a query has been run, this value will contain the number of nodes
+    that were checked during the query }
+    property QueryNodeTests : integer read FQueryNodeTests;
 
     {: Returns the number of nodes in the structure }
     function GetNodeCount : integer;
@@ -362,7 +378,7 @@ type
 
     {: Determines if the structure should grow with new leaves, or if an exception
     should be raised }
-    property AutoGrow : boolean read FAutoGrow;
+    property AutoGrow : boolean read FAutoGrow write FAutoGrow;
 
     {: When the structure is recreated because it's no longer large enough to fit
     all leafs, it will become large enough to safely fit all leafs, plus
@@ -533,6 +549,7 @@ end;
 procedure TBaseSpacePartition.FlushQueryResult;
 begin
   FQueryResult.Count := 0;
+  FQueryInterObjectTests := 0;
 end;
 
 procedure TBaseSpacePartition.LeafChanged(aLeaf: TSpacePartitionLeaf);
@@ -623,6 +640,8 @@ begin
 
   for i := 0 to Leaves.Count-1 do
   begin
+    inc(FQueryInterObjectTests);
+
     if IntersectAABBsAbsolute(aAABB, Leaves[i].FCachedAABB) then
       FQueryResult.Add(Leaves[i]);
   end;
@@ -644,6 +663,8 @@ begin
   begin
     Leaf := Leaves[i];
     Distance2 := VectorDistance2(Leaf.FCachedBSphere.Center, aBSphere.Center);
+
+    inc(FQueryInterObjectTests);
 
     if Distance2<sqr(Leaf.FCachedBSphere.Radius + aBSphere.Radius) then
       FQueryResult.Add(Leaf);
@@ -678,7 +699,9 @@ end;
 function TSectorNode.AddLeaf(aLeaf: TSpacePartitionLeaf): TSectorNode;
 begin
   // Time to grow the node?
-  if NoChildren and (FLeaves.Count>=FSectoredSpacePartition.FLeafThreshold) and (FNodeDepth<FSectoredSpacePartition.FMaxTreeDepth) then
+  if NoChildren and
+    (FLeaves.Count>=FSectoredSpacePartition.FLeafThreshold) and
+    (FNodeDepth<FSectoredSpacePartition.FMaxTreeDepth) then
   begin
     ExpandNode;
   end;
@@ -805,15 +828,17 @@ end;
 
 function TSectorNode.PlaceLeafInChild(aLeaf: TSpacePartitionLeaf)  : TSectorNode;
 var
-  ChildNode : TSectorNode;
+  TestChildNode, ChildNode : TSectorNode;
+  i : integer;
 begin
   // Which child does it fit in?
-  ChildNode := GetChildForLocation(aLeaf.FCachedAABB.min);
-  if ChildNode.AABBFitsInNode(aLeaf.FCachedAABB) then
+  ChildNode := GetChildForAABB(aLeaf.FCachedAABB);
+
+  if ChildNode <> nil then
   begin
     result := ChildNode.AddLeaf(aLeaf);
     exit;
-  end;
+  end;//}
   
   // Doesn't fit the any child
   aLeaf.FPartitionTag := self;
@@ -827,6 +852,8 @@ var
   i : integer;
   SpaceContains : TSpaceContains;
 begin
+  inc(FSectoredSpacePartition.FQueryNodeTests);
+
   SpaceContains := AABBContainsSector(aAABB);
 
   if SpaceContains = scContainsFully then
@@ -837,8 +864,12 @@ begin
   begin
     // Add all leaves that overlap
     for i := 0 to FLeaves.Count-1 do
+    begin
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+
       if IntersectAABBsAbsolute(FLeaves[i].FCachedAABB, aAABB) then
         QueryResult.Add(FLeaves[i]);
+    end;
 
     // Recursively let the children add their leaves
     for i := 0 to FChildCount-1 do
@@ -852,6 +883,8 @@ var
   i : integer;
   SpaceContains : TSpaceContains;
 begin
+  inc(FSectoredSpacePartition.FQueryNodeTests);
+
   SpaceContains := BSphereContainsSector(aBSphere);
 
   if SpaceContains = scContainsFully then
@@ -867,7 +900,11 @@ begin
 
     // Recursively let the children add their leaves
     for i := 0 to FChildCount-1 do
+    begin
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+
       FChildren[i].QueryBSphere(aBSphere, QueryResult);
+    end;
   end;
 end;
 
@@ -937,18 +974,18 @@ begin
   FCenter := VectorScale(VectorAdd(FAABB.min,FAABB.max), 0.5);
 end;
 
-function TSectorNode.GetChildForLocation(
-  Location: TAffineVector): TSectorNode;
-type
-  TCompareSet = set of (cUpper, cLower, cBack, cFore, cLeft, cRight);
+function TSectorNode.GetChildForAABB(
+  AABB: TAABB): TSectorNode;
 var
-  i : integer;
-  CompareResult : TCompareSet;
+  Location : TAffineVector;
+  ChildNode : TSectorNode;
   ChildNodeIndex : integer;
 begin
   // Instead of looping through all children, we simply determine on which
   // side of the center node the child is located
   ChildNodeIndex := 0;
+
+  Location := AABB.min;
 
   // Upper / Lower
   if Location[1]<FCenter[1] then  ChildNodeIndex := 4;
@@ -959,7 +996,15 @@ begin
   // Fore / Back
   if Location[0]>FCenter[0] then ChildNodeIndex := ChildNodeIndex or 1;
 
-  result := FChildren[ChildNodeIndex];
+  ChildNode := FChildren[ChildNodeIndex];
+
+  if ChildNode.AABBFitsInNode(AABB) then
+  begin
+    result := ChildNode;
+    exit;
+  end;
+
+  result := nil;
 end;
 
 { TSectoredSpacePartition }
@@ -985,9 +1030,6 @@ begin
 
   FRootNode := CreateNewNode(nil);
   FAutoGrow := true;
-
-  {MakeVector(FRootNode.FAABB.min, XMin, YMin, ZMin);
-  MakeVector(FRootNode.FAABB.max, XMax, YMax, ZMax);//}
 
   FGrowGravy := cOctree_GROW_GRAVY;
 
@@ -1082,6 +1124,7 @@ function TSectoredSpacePartition.QueryLeaf(
 var
   i : integer;
   Node : TSectorNode;
+  TestLeaf : TSpacePartitionLeaf;
 begin
   // Query current node and all nodes upwards until we find the root, no need
   // to check intersections, because we know that the leaf partially intersects
@@ -1090,12 +1133,24 @@ begin
   Node := TSectorNode(aLeaf.FPartitionTag);
   FlushQueryResult;
 
+  // First, query downwards!
+  Node.QueryAABB(aLeaf.FCachedAABB, QueryResult);
+
+  // Now, query parents and upwards!
+  Node := Node.Parent;
+
   while Node<>nil do
   begin
+    inc(FQueryNodeTests);
+
     // Add all leaves that overlap
-    for i := 0 to FLeaves.Count-1 do
-      if IntersectAABBsAbsolute(FLeaves[i].FCachedAABB, aLeaf.FCachedAABB) then
-        QueryResult.Add(FLeaves[i]);
+    for i := 0 to Node.FLeaves.Count-1 do
+    begin
+      TestLeaf := Node.FLeaves[i];
+      inc(FQueryInterObjectTests);
+      if IntersectAABBsAbsolute(TestLeaf.FCachedAABB, aLeaf.FCachedAABB) then
+        QueryResult.Add(TestLeaf);
+    end;
 
     // Try the parent
     Node := Node.Parent;
@@ -1132,7 +1187,7 @@ begin
   FRootNode.Free;
 
   FRootNode := CreateNewNode(nil);
-  FRootNode.FAABB := NewAABB;
+  FRootNode.AABB := NewAABB;
 
   // Insert all nodes again
   OldLeaves := FLeaves;
@@ -1161,6 +1216,13 @@ begin
   NewAABB.max := VectorAdd(MaxAABB.max, VectorScale(AABBSize, Gravy));//}
 
   RebuildTree(NewAABB);
+end;
+
+procedure TSectoredSpacePartition.FlushQueryResult;
+begin
+  inherited;
+
+  FQueryNodeTests := 0;
 end;
 
 { TSPOctreeNode }
