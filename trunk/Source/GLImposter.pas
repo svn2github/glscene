@@ -467,7 +467,7 @@ procedure TImposter.BeginRender(var rci : TRenderContextInfo);
 var
    mat : TMatrix;
    filter : TGLEnum;
-   fx, fy, yOffset : Single;
+   fx, fy, yOffset, cosAlpha : Single;
 begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
@@ -501,14 +501,15 @@ begin
    FVx[1]:=mat[1][0];
    FVx[2]:=mat[2][0];
    NormalizeVector(FVx);
-   if not (impoNoPerspectiveCorrection in Builder.ImposterOptions) then
-      FVy:=YHmgVector
-   else begin
-      FVy[0]:=mat[0][1];
-      FVy[1]:=mat[1][1];
-      FVy[2]:=mat[2][1];
+
+   FVy[0]:=mat[0][1];
+   FVy[1]:=mat[1][1];
+   FVy[2]:=mat[2][1];
+   if not (impoNoPerspectiveCorrection in Builder.ImposterOptions) then begin
+      FVy:=VectorLerp(FVy, YHmgVector, Abs(FVy[1]));
+   end else begin
       NormalizeVector(FVy);
-   end;
+   end;            
 
    fx:=Sqrt(FAspectRatio);
    fy:=1/fx;
