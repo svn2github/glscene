@@ -105,7 +105,6 @@ object frmClothify: TfrmClothify
       'Cylinder.ms3d, 0.3'
       'lgrid.3ds, 6'
       'BigHoleBox2.ms3d, 0.5'
-      'lgrid2.3ds,6'
       'mushroom.3ds, 0.15'
       'polyhedron.3ds, 2'
       'teapot.3ds, 0.2')
@@ -129,6 +128,7 @@ object frmClothify: TfrmClothify
     Width = 73
     Height = 21
     ItemHeight = 13
+    ItemIndex = 3
     TabOrder = 4
     Text = 'Stairs'
     Items.Strings = (
