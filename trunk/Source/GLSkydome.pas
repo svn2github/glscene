@@ -1,7 +1,8 @@
 // GLSkydome
 {: Skydome object<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>20/01/05 - Mathx - Added the ExtendedOptions of the EarthSkyDome
       <li>09/01/04 - EG - Now based on TGLCameraInvariantObject
       <li>04/08/03 - SG - Fixed small bug with random star creation
       <li>17/06/03 - EG - Fixed PolygonMode (Carlos Ferreira)
@@ -22,7 +23,7 @@ unit GLSkydome;
 
 interface
 
-uses Classes, GLScene, GLMisc, GLTexture, VectorGeometry, GLGraphics;
+uses Classes, GLScene, GLMisc, GLTexture, VectorGeometry, GLGraphics, glCrossPlatform;
 
 type
 
@@ -199,6 +200,9 @@ type
          property Options : TSkyDomeOptions read FOptions write SetOptions default [];
 	end;
 
+     TEarthSkydomeOption = (esoFadeStarsWithSun, esoRotateOnTwelveHours);
+     TEarthSkydomeOptions = set of TEarthSkydomeOption;
+
    // TGLEarthSkyDome
    //
    {: Render a skydome like what can be seen on earth.<p>
@@ -223,6 +227,7 @@ type
          FNightColor : TGLColor;
          FDeepColor : TGLColor;
          FSlices, FStacks : Integer;
+         FExtendedOptions: TEarthSkydomeOptions;
 
 	   protected
 	      { Protected Declarations }
@@ -266,6 +271,8 @@ type
          property SkyColor : TGLColor read FSkyColor write SetSkyColor;
          property NightColor : TGLColor read FNightColor write SetNightColor;
          property DeepColor : TGLColor read FDeepColor write SetDeepColor;
+
+         property ExtendedOptions: TEarthSkydomeOptions read FExtendedOptions write FExtendedOptions;
 
          property Slices : Integer read FSlices write SetSlices default 24;
          property Stacks : Integer read FStacks write SetStacks default 48;
@@ -743,6 +750,7 @@ begin
    end;
 end;
 
+
 // ------------------
 // ------------------ TGLSkyDome ------------------
 // ------------------
@@ -916,9 +924,14 @@ end;
 // SetSunElevation
 //
 procedure TGLEarthSkyDome.SetSunElevation(const val : Single);
+var
+newVal: single;
 begin
-   FSunElevation:=ClampValue(val, -90, 90);
+   newval:= clampValue(val, -90, 90);
+   if FSunElevation <> newval then begin
+      FSunElevation:= newval;
    PreCalculate;
+   end;
 end;
 
 // SetTurbidity
@@ -1040,6 +1053,8 @@ procedure TGLEarthSkyDome.PreCalculate;
 var
    ts : Single;
    fts : Single;
+   i: integer;
+   color: TColor;
 begin
    ts:=DegToRad(90-SunElevation);
    // Precompose base colors
@@ -1051,6 +1066,26 @@ begin
    // Precalculate Turbidity factors
    FCurHazeTurbid:=-sqrt(121-Turbidity)*2;
    FCurSunSkyTurbid:=-(121-Turbidity);
+
+   //fade stars if required
+   if SunElevation > 0 then ts:= power(1-SunElevation/90, 11) else ts:= 1;
+   color:= RGB(round(ts*255), round(ts*255), round(ts*255));
+   if esoFadeStarsWithSun in ExtendedOptions then
+      for i:= 0 to Stars.Count -1 do
+          stars[i].Color:= color;
+
+   if esoRotateOnTwelveHours in ExtendedOptions then begin
+      if SunElevation = 90 then begin
+         roll(180);
+         for i:= 0 to Stars.Count -1 do
+            stars[i].RA:= Stars[i].RA + 180;
+      end else if SunElevation = -90 then begin
+         roll(180);
+         for i:= 0 to Stars.Count -1 do
+            stars[i].RA:= Stars[i].RA + 180;
+      end;
+   end;
+
    StructureChanged;
 end;
 
