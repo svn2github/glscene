@@ -179,6 +179,7 @@ contains
   GLUtils in '..\Source\GLUtils.pas',
   GLTilePlane in '..\Source\GLTilePlane.pas',
   GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas',
-  GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas';
+  GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas',
+  GLImposter in '..\Source\GLImposter.pas';
 
 end.
