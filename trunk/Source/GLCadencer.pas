@@ -181,6 +181,7 @@ const
 //
 procedure RegisterASAPCadencer(aCadencer : TGLCadencer);
 begin
+//   Windows.Beep(880, 1000); Sleep(500);
    if not Assigned(vASAPCadencerList) then
       vASAPCadencerList:=TList.Create;
    if vASAPCadencerList.IndexOf(aCadencer)<0 then begin
@@ -245,6 +246,7 @@ var
    i : Integer;
    cad : TGLCadencer;
 begin
+//   Windows.Beep(440, 10);
    with Msg do begin
       if Msg=WM_TIMER then begin
          KillTimer(FWindowHandle, FTimer);
@@ -403,7 +405,11 @@ end;
 procedure TGLCadencer.SetScene(const val : TGLScene);
 begin
 	if FScene<>val then begin
+      if Assigned(FScene) then
+         FScene.RemoveFreeNotification(Self);
 		FScene:=val;
+      if Assigned(FScene) then
+         FScene.FreeNotification(Self);
       RestartASAP;
 	end;
 end;

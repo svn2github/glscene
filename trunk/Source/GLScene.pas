@@ -3889,13 +3889,13 @@ begin
       // normalRight points to the camera's right
       // the camera is pitching around this axis.
       normalCameraRight:=VectorCrossProduct(Up.AsVector, normalT2C);
-      if VectorLength(normalCameraRight)<0.05 then
+      if VectorLength(normalCameraRight)<0.001 then
          SetVector(normalCameraRight, XVector) // arbitrary vector
       else NormalizeVector(normalCameraRight);
       // calculate the current pitch.
       // 0 is looking down and PI is looking up
       pitchNow:=ArcCos(VectorDotProduct(Up.AsVector, normalT2C));
-      pitchNow:=ClampValue(pitchNow+DegToRad(pitchDelta), 0+0.001, PI-0.001);
+      pitchNow:=ClampValue(pitchNow+DegToRad(pitchDelta), 0+0.005, PI-0.005);
       // create a new vector pointing up and then rotate it down
       // into the new position
       SetVector(normalT2C, Up.AsVector);
@@ -4167,7 +4167,6 @@ procedure TGLProxyObject.DoRender(var rci : TRenderContextInfo;
                                   renderSelf, renderChildren : Boolean);
 var
    gotMaster, masterGotEffects, oldProxySubObject : Boolean;
-   refMat : TMatrix;
 begin
    if FRendering then Exit;
    FRendering:=True;
@@ -5572,7 +5571,7 @@ end;
 //
 function TGLSceneBuffer.Height : Integer;
 begin
-   Result:=FViewPort.Width;
+   Result:=FViewPort.Height;
 end;
 
 // RenderToBitmap
@@ -6045,7 +6044,7 @@ begin
    coord[1]:=Round(FViewPort.Height/2);
    norm:=self.ScreenToVector(coord);    //get the absolute camera direction
    camAng:=VectorAngleCosine(norm,vec);
-   result:=dst/camAng;                 //compensate for flat frustrum face
+   Result:=dst/camAng;                 //compensate for flat frustrum face
 end;
 
 // PrepareRenderingMatrices

@@ -562,6 +562,9 @@ procedure NormalizeVectorArray(list : PAffineVectorArray; n : Integer); overload
 function VectorAngleCosine(const V1, V2: TAffineVector) : Single;
 
 //: Negates the vector
+function VectorNegate(const v : TAffineVector) : TAffineVector; overload;
+
+//: Negates the vector
 procedure NegateVector(var V : TAffineVector); overload;
 //: Negates the vector
 procedure NegateVector(var V : TVector); overload;
@@ -2560,6 +2563,23 @@ asm
       FSQRT                         // sqrt(ST(0))
       FDIVP                         // ST(0):=Result:=ST(1) / ST(0)
   // the result is expected in ST(0), if it's invalid, an error is raised
+end;
+
+// VectorNegate
+//
+function VectorNegate(const v : TAffineVector) : TAffineVector;
+// EAX contains address of v
+// EDX contains address of Result
+asm
+      FLD DWORD PTR [EAX]
+      FCHS
+      FSTP DWORD PTR [EDX]
+      FLD DWORD PTR [EAX+4]
+      FCHS
+      FSTP DWORD PTR [EDX+4]
+      FLD DWORD PTR [EAX+8]
+      FCHS
+      FSTP DWORD PTR [EDX+8]
 end;
 
 // NegateVector

@@ -599,6 +599,7 @@ begin
             Update;
          end;
          TreeChange(Self, node);
+         FCurrentDesigner.Modified;
       end;
    end;
 end;
@@ -618,6 +619,7 @@ begin
             Update;
          end;
 			TreeChange(Self, node);
+         FCurrentDesigner.Modified;
 		end;
 	end;
 end;

@@ -1,6 +1,9 @@
 // GLMirror
 {: Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).<p>
 
+   It is strongly recommended to read and understand the explanations in the
+   materials/mirror demo before using this component.<p>
+
 	<b>History : </b><font size=-1><ul>
       <li>07/12/01 - Egg - Creation
    </ul></font>
@@ -15,7 +18,7 @@ type
 
    // TMirrorOptions
    //
-   TMirrorOption = (moUseStencil, moOpaque);
+   TMirrorOption = (moUseStencil, moOpaque, moMirrorPlaneClip, moClearZBuffer);
    TMirrorOptions = set of TMirrorOption;
 
 const
@@ -30,22 +33,23 @@ type
       The object is a mix between a plane and a proxy object, in that the plane
       defines the mirror's surface, while the proxy part is used to reference
       the objects that should be mirrored (it is legal to self-mirror, but no
-      self-mirror visuals will be rendered). }
+      self-mirror visuals will be rendered).<p>
+      It is strongly recommended to read and understand the explanations in the
+      materials/mirror demo before using this component. }
 	TGLMirror = class (TGLSceneObject)
 	   private
 			{ Private Declarations }
          FRendering : Boolean;
-         FMasterObject : TGLBaseSceneObject;
-         FProxyOptions : TGLProxyObjectOptions;
+         FMirrorObject : TGLBaseSceneObject;
 			FWidth, FHeight : TGLFloat;
          FMirrorOptions : TMirrorOptions;
 
 		protected
 			{ Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure SetMasterObject(const val : TGLBaseSceneObject);
-         procedure SetProxyOptions(const val : TGLProxyObjectOptions);
+         procedure SetMirrorObject(const val : TGLBaseSceneObject);
          procedure SetMirrorOptions(const val : TMirrorOptions);
+         procedure ClearZBufferArea;
 
 		   procedure SetHeight(AValue: TGLFloat);
 		   procedure SetWidth(AValue: TGLFloat);
@@ -63,8 +67,21 @@ type
 
 		published
 			{ Public Declarations }
-         property MasterObject : TGLBaseSceneObject read FMasterObject write SetMasterObject;
-         property ProxyOptions : TGLProxyObjectOptions read FProxyOptions write SetProxyOptions default cDefaultProxyOptions;
+         {: Selects the object to mirror.<p>
+            If nil, the whole scene is mirrored. }
+         property MirrorObject : TGLBaseSceneObject read FMirrorObject write SetMirrorObject;
+         {: Controls rendering options.<p>
+            <ul>
+            <li>moUseStencil: mirror area is stenciled, prevents reflected
+               objects to be visible on the sides of the mirror
+            <li>moOpaque: mirror is opaque (ie. painted with background color)
+            <li>moMirrorPlaneClip: a ClipPlane is defined when reflecting objects
+               to prevent reflections from popping out of the mirror
+            <li>moClearZBuffer: mirror area's ZBuffer is cleared so that background
+               objects don't interfere with reflected objects (reflected objects
+               must be rendered AFTER the mirror in the hierarchy)
+            </ul>
+         }
          property MirrorOptions : TMirrorOptions read FMirrorOptions write SetMirrorOptions default cDefaultMirrorOptions;
 
 			property Height: TGLFloat read FHeight write SetHeight;
@@ -90,7 +107,6 @@ begin
    inherited Create(AOwner);
    FWidth:=1;
    FHeight:=1;
-   FProxyOptions:=cDefaultProxyOptions;
    FMirrorOptions:=cDefaultMirrorOptions;
    ObjectStyle:=ObjectStyle+[osDirectDraw];
    Material.FrontProperties.Diffuse.Initialize(VectorMake(1, 1, 1, 0.1));
@@ -102,7 +118,7 @@ end;
 procedure TGLMirror.DoRender(var rci : TRenderContextInfo;
                           renderSelf, renderChildren : Boolean);
 var
-   gotMaster, masterGotEffects, oldProxySubObject : Boolean;
+   oldProxySubObject : Boolean;
    refMat : TMatrix;
    clipPlane : TDoubleHmgPlane;
    bgColor : TColorVector;
@@ -110,100 +126,110 @@ begin
    if FRendering then Exit;
    FRendering:=True;
    try
-      gotMaster:=Assigned(FMasterObject);
-      masterGotEffects:=gotMaster and (pooEffects in FProxyOptions)
-                        and (FMasterObject.Effects.Count>0);
-      if gotMaster then begin
-         if pooObjects in FProxyOptions then begin
-            oldProxySubObject:=rci.proxySubObject;
-            rci.proxySubObject:=True;
-            if pooTransformation in FProxyOptions then
-               glMultMatrixf(@FMasterObject.LocalMatrix);
+      oldProxySubObject:=rci.proxySubObject;
+      rci.proxySubObject:=True;
 
-            glPushMatrix;
-            glPushAttrib(GL_ENABLE_BIT);
+      if VectorDotProduct(VectorSubtract(rci.cameraPosition, AbsolutePosition), AbsoluteDirection)>0 then begin
+      
+         glPushAttrib(GL_ENABLE_BIT);
 
-            // "Render" stencil mask
-            if MirrorOptions<>[] then begin
-               if (moUseStencil in MirrorOptions) then begin
-                  glClearStencil(1);
-                  glEnable(GL_STENCIL_TEST);
-                  glStencilFunc(GL_ALWAYS, 0, 0);
-                  glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
-               end;
-               if (moOpaque in MirrorOptions) then begin
-                  bgColor:=ConvertWinColor(Scene.CurrentBuffer.BackgroundColor);
-                  SetGLMaterialColors(GL_FRONT, @bgColor, @clrBlack, @clrBlack, @clrBlack, 0);
-                  UnSetGLState(rci.currentStates, stTexture2D);
-               end else begin
-                  glColorMask(False, False, False, False);
-               end;
-//               glDisable(GL_DEPTH_TEST);
-               glDepthMask(False);
+         // "Render" stencil mask
+         if MirrorOptions<>[] then begin
+            if (moUseStencil in MirrorOptions) then begin
+               glClearStencil(1);
+               glEnable(GL_STENCIL_TEST);
+               glStencilFunc(GL_ALWAYS, 0, 0);
+               glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+            end;
+            if (moOpaque in MirrorOptions) then begin
+               bgColor:=ConvertWinColor(Scene.CurrentBuffer.BackgroundColor);
+               SetGLMaterialColors(GL_FRONT, @bgColor, @clrBlack, @clrBlack, @clrBlack, 0);
+               UnSetGLState(rci.currentStates, stTexture2D);
+            end else begin
+               glColorMask(False, False, False, False);
+            end;
+            glDepthMask(False);
 
-               BuildList(rci);
+            BuildList(rci);
 
-               glDepthMask(True);
-               glEnable(GL_DEPTH_TEST);
-               if not (moOpaque in MirrorOptions) then
-                  glColorMask(True, True, True, True);
-               if (moUseStencil in MirrorOptions) then begin
-                  glStencilFunc(GL_EQUAL, 0, 1);
-                  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-               end;
+            glDepthMask(True);
+
+            if (moUseStencil in MirrorOptions) then begin
+               glStencilFunc(GL_EQUAL, 0, 1);
+               glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             end;
 
-            // Mirror lights
-            glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-            refMat:=MakeReflectionMatrix(AffineVectorMake(AbsolutePosition),
-                                         AffineVectorMake(AbsoluteUp));
-            glMultMatrixf(@refMat);
-            Scene.SetupLights(Scene.CurrentBuffer.LimitOf[limLights]);
+            if (moClearZBuffer in MirrorOptions) then
+               ClearZBufferArea;
 
-            // mirror geometry and render master
-            glPopMatrix;
-            glPushMatrix;
-            refMat:=MakeReflectionMatrix(NullVector, Up.AsAffineVector);
-            glMultMatrixf(@refMat);
-
-            glDisable(GL_CULL_FACE);
-            glEnable(GL_NORMALIZE);
-
-            glEnable(GL_CLIP_PLANE0);
-            SetPlane(clipPlane, PlaneMake(Position.AsAffineVector,
-                                          Up.AsAffineVector));
-            glClipPlane(GL_CLIP_PLANE0, @clipPlane);
-
-            FMasterObject.DoRender(rci, renderSelf, RenderChildren);
-
-            glDisable(GL_CLIP_PLANE0);
-
-            if moUseStencil in MirrorOptions then begin
-               glDisable(GL_STENCIL_TEST);
-            end;
-
-            // Restore to "normal"
-            glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-            Scene.SetupLights(Scene.CurrentBuffer.LimitOf[limLights]);
-
-            glPopAttrib;
-            glPopMatrix;
-            ResetGLMaterialColors;
-            ResetGLCurrentTexture;
-
-            rci.proxySubObject:=oldProxySubObject;
+            if not (moOpaque in MirrorOptions) then
+               glColorMask(True, True, True, True);
          end;
+
+         // Mirror lights
+         glPushMatrix;
+         glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+         refMat:=MakeReflectionMatrix(AffineVectorMake(AbsolutePosition),
+                                      AffineVectorMake(AbsoluteDirection));
+         glMultMatrixf(@refMat);
+         Scene.SetupLights(Scene.CurrentBuffer.LimitOf[limLights]);
+
+         // mirror geometry and render master
+         glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+
+         glDisable(GL_CULL_FACE);
+         glEnable(GL_NORMALIZE);
+
+         if moMirrorPlaneClip in MirrorOptions then begin
+            glEnable(GL_CLIP_PLANE0);
+            SetPlane(clipPlane, PlaneMake(AffineVectorMake(AbsolutePosition),
+                                          VectorNegate(AffineVectorMake(AbsoluteDirection))));
+            glClipPlane(GL_CLIP_PLANE0, @clipPlane);
+         end;
+
+         if Assigned(FMirrorObject) then begin
+            if FMirrorObject.Parent<>nil then
+               glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
+            glMultMatrixf(@refMat);
+            FMirrorObject.DoRender(rci, renderSelf, RenderChildren);
+         end else begin
+            glMultMatrixf(@refMat);
+            Scene.Objects.DoRender(rci, renderSelf, RenderChildren);
+         end;
+
+         if moMirrorPlaneClip in MirrorOptions then begin
+            glDisable(GL_CLIP_PLANE0);
+         end;
+
+         if moUseStencil in MirrorOptions then begin
+            glDisable(GL_STENCIL_TEST);
+         end;
+
+         // Restore to "normal"
+         glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+         Scene.SetupLights(Scene.CurrentBuffer.LimitOf[limLights]);
+
+         glPopAttrib;
+         glPopMatrix;
+         ResetGLMaterialColors;
+         ResetGLCurrentTexture;
+
+         rci.proxySubObject:=oldProxySubObject;
+
+         // start rendering self
+         if renderSelf then begin
+            Material.Apply(rci);
+            BuildList(rci);
+            Material.UnApply(rci);
+         end;
+         
       end;
-      // start rendering self
-      if renderSelf then begin
-         Material.Apply(rci);
-         BuildList(rci);
-         Material.UnApply(rci);
-      end;
+      
       if renderChildren and (Count>0) then
          Self.RenderChildren(0, Count-1, rci);
-      if masterGotEffects then
-         FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
+
+      if Assigned(FMirrorObject) then
+         FMirrorObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
    finally
       FRendering:=False;
    end;
@@ -219,42 +245,70 @@ begin
    hh:=FHeight*0.5;
    glNormal3fv(@YVector);
    glBegin(GL_QUADS);
-      glVertex3f( hw, 0, hh);
-      glVertex3f( hw, 0, -hh);
-      glVertex3f(-hw, 0, -hh);
-      glVertex3f(-hw, 0, hh);
+      glVertex3f( hw,  hh, 0);
+      glVertex3f(-hw,  hh, 0);
+      glVertex3f(-hw, -hh, 0);
+      glVertex3f( hw, -hh, 0);
    glEnd;
+end;
+
+// BuildList
+//
+procedure TGLMirror.ClearZBufferArea;
+var
+   worldMat : TMatrix;
+   p : TAffineVector;
+begin
+   with Scene.CurrentBuffer do begin
+      glPushMatrix;
+      worldMat:=Self.AbsoluteMatrix;
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix;
+      glLoadIdentity;
+      glOrtho(0, Width, 0, Height, 1, -1);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity;
+      glDepthFunc(GL_ALWAYS);
+      SetGLMaterialColors(GL_FRONT, @clrWhite, @clrBlack, @clrBlack, @clrBlack, 0);
+
+      glBegin(GL_QUADS);
+         p:=WorldToScreen(VectorTransform(AffineVectorMake(Self.Width*0.5, Self.Height*0.5, 0), worldMat));
+         glVertex3f(p[0], p[1], 0.99);
+         p:=WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width*0.5, Self.Height*0.5, 0), worldMat));
+         glVertex3f(p[0], p[1], 0.99);
+         p:=WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width*0.5, -Self.Height*0.5, 0), worldMat));
+         glVertex3f(p[0], p[1], 0.99);
+         p:=WorldToScreen(VectorTransform(AffineVectorMake(Self.Width*0.5, -Self.Height*0.5, 0), worldMat));
+         glVertex3f(p[0], p[1], 0.99);
+      glEnd;
+
+      glDepthFunc(GL_LESS);
+      glMatrixMode(GL_PROJECTION);
+      glPopMatrix;
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix;
+   end;
 end;
 
 // Notification
 //
 procedure TGLMirror.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if (Operation = opRemove) and (AComponent = FMasterObject) then
-      MasterObject:=nil;
+   if (Operation = opRemove) and (AComponent = FMirrorObject) then
+      MirrorObject:=nil;
    inherited;
 end;
 
-// SetMasterObject
+// SetMirrorObject
 //
-procedure TGLMirror.SetMasterObject(const val : TGLBaseSceneObject);
+procedure TGLMirror.SetMirrorObject(const val : TGLBaseSceneObject);
 begin
-   if FMasterObject<>val then begin
-      if Assigned(FMasterObject) then
-         FMasterObject.RemoveFreeNotification(Self);
-      FMasterObject:=val;
-      if Assigned(FMasterObject) then
-         FMasterObject.FreeNotification(Self);
-      StructureChanged;
-   end;
-end;
-
-// SetProxyOptions
-//
-procedure TGLMirror.SetProxyOptions(const val : TGLProxyObjectOptions);
-begin
-   if FProxyOptions<>val then begin
-      FProxyOptions:=val;
+   if FMirrorObject<>val then begin
+      if Assigned(FMirrorObject) then
+         FMirrorObject.RemoveFreeNotification(Self);
+      FMirrorObject:=val;
+      if Assigned(FMirrorObject) then
+         FMirrorObject.FreeNotification(Self);
       StructureChanged;
    end;
 end;
@@ -287,8 +341,7 @@ begin
       FWidth:=TGLMirror(Source).FWidth;
       FHeight:=TGLMirror(Source).FHeight;
       FMirrorOptions:=TGLMirror(Source).FMirrorOptions;
-      FProxyOptions:=TGLMirror(Source).FProxyOptions;
-      MasterObject:=TGLMirror(Source).MasterObject;
+      MirrorObject:=TGLMirror(Source).MirrorObject;
    end;
    inherited Assign(Source);
 end;
