@@ -1391,6 +1391,8 @@ procedure TGLCustomHDS.StartPreparingData(heightData : THeightData);
 begin
    if Assigned(FOnStartPreparingData) then
       FOnStartPreparingData(heightData);
+   if heightData.DataState<>hdsNone then
+      heightData.DataState:=hdsReady;
 end;
 
 // ------------------
