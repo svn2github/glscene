@@ -6,7 +6,7 @@
    particle depth-sorting (allowing correct rendering of interwoven separate
    fire and smoke particle systems for instance).<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
       <li>26/05/03 - EG - Improved TGLParticleFXRenderer.BuildList
       <li>05/11/02 - EG - Enable per-manager blending mode control
       <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
@@ -601,7 +601,7 @@ type
             Min value is 3 (size=8), max value is 9 (size=512). }
          property TexMapSize : Integer read FTexMapSize write SetTexMapSize default 5;
 
-         property ColorMode default scmFade;
+         property ColorMode default scmNone;
          property ParticleSize;
          property ColorInner;
          property ColorOuter;
@@ -2178,7 +2178,7 @@ constructor TGLPointLightPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
    FTexMapSize:=5;
-   FColorMode:=scmFade;
+   FColorMode:=scmNone;
 end;
 
 // Destroy
