@@ -69,6 +69,20 @@ type
     N2: TMenuItem;
     ACAlphaDilatation: TAction;
     AlphamapDilatation1: TMenuItem;
+    GenerateAlpha1: TMenuItem;
+    ACAlphaSuperBlack: TAction;
+    Alpha1: TMenuItem;
+    SuperBlackTransparent1: TMenuItem;
+    ACOpaque: TAction;
+    ACFromRGBIntensity: TAction;
+    ACFromRGBSqrtIntensity: TAction;
+    Opaque1: TMenuItem;
+    FromRGBIntensity1: TMenuItem;
+    FromRGBSqrtIntensity1: TMenuItem;
+    ACAlphaOffset: TAction;
+    Offset1: TMenuItem;
+    ACAlphaSaturate: TAction;
+    Saturate1: TMenuItem;
     procedure PAPreviewResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ACImportExecute(Sender: TObject);
@@ -86,12 +100,21 @@ type
     procedure ACAlphaErosionExecute(Sender: TObject);
     procedure ACExportExecute(Sender: TObject);
     procedure ACAlphaDilatationExecute(Sender: TObject);
+    procedure ACAlphaSuperBlackExecute(Sender: TObject);
+    procedure ACOpaqueExecute(Sender: TObject);
+    procedure ACFromRGBIntensityExecute(Sender: TObject);
+    procedure ACFromRGBSqrtIntensityExecute(Sender: TObject);
+    procedure ACAlphaOffsetExecute(Sender: TObject);
+    procedure ACAlphaSaturateExecute(Sender: TObject);
 
   private
     { Private declarations }
     mx, my : Integer;
 
     procedure ResetAlpha;
+    procedure GenerateAlpha(transparentColor : TColor;
+                            fromIntensity : Boolean;
+                            doSqrt : Boolean);
     function SpawnBitmap : TBitmap;
     procedure ResizeImage(im : TImage);
     procedure NormalizeAlpha;
@@ -107,7 +130,7 @@ var
 
 implementation
 
-uses GLTexture, VectorGeometry;
+uses GLTexture, GLGraphics, VectorGeometry;
 
 {$R *.dfm}
 
@@ -189,6 +212,46 @@ begin
    finally
       bmp.Free;
    end;
+end;
+
+procedure TTTBMain.GenerateAlpha(transparentColor : TColor;
+                                 fromIntensity : Boolean;
+                                 doSqrt : Boolean);
+var
+   bmp : TBitmap;
+   bmp32 : TGLBitmap32;
+   x, y : Integer;
+   pSrc : PGLPixel32Array;
+   pDest : PIntegerArray;
+   c : Integer;
+begin
+   // Opaque alpha channel
+   bmp:=SpawnBitmap;
+   bmp32:=TGLBitmap32.Create;
+   try
+      bmp.Canvas.StretchDraw(Rect(0, 0, bmp.Width, bmp.Height), IMRGB.Picture.Graphic);
+      bmp32.Assign(bmp);
+      if transparentColor<>-1 then
+         bmp32.SetAlphaTransparentForColor(transparentColor);
+      if fromIntensity then
+         bmp32.SetAlphaFromIntensity;
+      if doSqrt then
+         bmp32.SqrtAlpha;
+      for y:=0 to bmp.Height-1 do begin
+         pSrc:=bmp32.ScanLine[y];
+         pDest:=bmp.ScanLine[bmp.Height-1-y];
+         for x:=0 to bmp.Width-1 do begin
+            c:=pSrc[x].a;
+            c:=c+(c shl 8)+(c shl 16);
+            pDest[x]:=c;
+         end;
+      end;
+      IMAlpha.Picture.Graphic:=bmp;
+   finally
+      bmp32.Free;
+      bmp.Free;
+   end;
+   TextureChanged;
 end;
 
 procedure TTTBMain.NormalizeAlpha;
@@ -481,6 +544,86 @@ begin
    end;
    IMAlpha.Picture.Bitmap:=bmp;
    bmp.Free;
+   TextureChanged;
+end;
+
+procedure TTTBMain.ACOpaqueExecute(Sender: TObject);
+begin
+   ResetAlpha;
+end;
+
+procedure TTTBMain.ACAlphaSuperBlackExecute(Sender: TObject);
+begin
+   GenerateAlpha(clBlack, False, False);
+end;
+
+procedure TTTBMain.ACFromRGBIntensityExecute(Sender: TObject);
+begin
+   GenerateAlpha(-1, True, False);
+end;
+
+procedure TTTBMain.ACFromRGBSqrtIntensityExecute(Sender: TObject);
+begin
+   GenerateAlpha(-1, True, True);
+end;
+
+procedure TTTBMain.ACAlphaOffsetExecute(Sender: TObject);
+var
+   x, y, c, offset : Integer;
+   bmp : TBitmap;
+   pSrc, pDest : PIntegerArray;
+   offsetStr : String;
+begin
+   offsetStr:='0';
+   if not InputQuery('Alpha Offset', 'Enter Offset Value (-255..255)', offsetStr) then Exit;
+   offset:=StrToIntDef(offsetStr, MaxInt);
+   if (offset<-255) or (offset>255) then begin
+      ShowMessage('Invalid Alpha Offset');
+      Exit;
+   end;
+   bmp:=SpawnBitmap;
+   try
+      for y:=0 to bmp.Height-1 do begin
+         pSrc:=IMAlpha.Picture.Bitmap.ScanLine[y];
+         pDest:=bmp.ScanLine[y];
+         for x:=0 to bmp.Width-1 do begin
+            c:=pSrc[x] and $FF;
+            c:=c+offset;
+            if c<=0 then
+               pDest[x]:=0
+            else if c>=255 then
+               pDest[x]:=$FFFFFF
+            else pDest[x]:=c+(c shl 8)+(c shl 16);
+         end;
+      end;
+      IMAlpha.Picture.Bitmap:=bmp;
+   finally
+      bmp.Free;
+   end;
+   TextureChanged;
+end;
+
+procedure TTTBMain.ACAlphaSaturateExecute(Sender: TObject);
+var
+   x, y : Integer;
+   bmp : TBitmap;
+   pSrc, pDest : PIntegerArray;
+begin
+   bmp:=SpawnBitmap;
+   try
+      for y:=0 to bmp.Height-1 do begin
+         pSrc:=IMAlpha.Picture.Bitmap.ScanLine[y];
+         pDest:=bmp.ScanLine[y];
+         for x:=0 to bmp.Width-1 do begin
+            if (pSrc[x] and $FF)>0 then
+               pDest[x]:=$FFFFFF
+            else pDest[x]:=0;
+         end;
+      end;
+      IMAlpha.Picture.Bitmap:=bmp;
+   finally
+      bmp.Free;
+   end;
    TextureChanged;
 end;
 
