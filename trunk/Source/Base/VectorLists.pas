@@ -408,9 +408,14 @@ type
          function  Sum : Single;
 	end;
 
-{: Sort the refList in ascending order, ordering objList on the way. }
+{: Sort the refList in ascending order, ordering objList (TList) on the way. }
 procedure QuickSortLists(startIndex, endIndex : Integer;
-							    refList : TSingleList; objList : TList);
+							    refList : TSingleList; objList : TList); overload;
+
+{: Sort the refList in ascending order, ordering objList (TBaseList) on the way. }
+procedure QuickSortLists(startIndex, endIndex : Integer;
+								 refList : TSingleList; objList : TBaseList); overload;
+
 {: Sort the refList in ascending order, ordering objList on the way.<p>
    Use if, and *ONLY* if refList contains only values superior or equal to 1. }
 procedure FastQuickSortLists(startIndex, endIndex : Integer;
@@ -428,10 +433,44 @@ implementation
 const
    cDefaultListGrowthDelta = 16;
 
-// QuickSortLists
+// QuickSortLists (TList)
 //
 procedure QuickSortLists(startIndex, endIndex : Integer;
 								 refList : TSingleList; objList : TList);
+var
+	I, J : Integer;
+	P : single;
+begin
+	if endIndex-startIndex>1 then begin
+		repeat
+			I:=startIndex; J:=endIndex;
+			P:=refList.List[(I + J) shr 1];
+			repeat
+				while Single(refList.List[I])<P do Inc(I);
+				while Single(refList.List[J])>P do Dec(J);
+				if I <= J then begin
+					refList.Exchange(I, J);
+					objList.Exchange(I, J);
+					Inc(I); Dec(J);
+				end;
+			until I > J;
+			if startIndex < J then
+				QuickSortLists(startIndex, J, refList, objList);
+			startIndex:=I;
+		until I >= endIndex;
+	end else if endIndex-startIndex>0 then begin
+		p:=refList.List[startIndex];
+		if refList.List[endIndex]<p then begin
+			refList.Exchange(startIndex, endIndex);
+			objList.Exchange(startIndex, endIndex);
+		end;
+	end;
+end;
+
+// QuickSortLists (TBaseList)
+//
+procedure QuickSortLists(startIndex, endIndex : Integer;
+								 refList : TSingleList; objList : TBaseList);
 var
 	I, J : Integer;
 	P : single;
