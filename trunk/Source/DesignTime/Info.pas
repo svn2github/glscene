@@ -1,10 +1,12 @@
 // Info
-{: Information sur le driver OpenGL courant<p>
+{: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/02/04 - EG - Added extensions popup menu and hyperlink to
+                          Delphi3D's hardware registry
       <li>08/02/04 - NelC - Added option for modal
       <li>09/09/03 - NelC - Added Renderer info
-      <li>26/06/03 - EG - Double-clicking an extension will no go to its OpenGL
+      <li>26/06/03 - EG - Double-clicking an extension will now go to its OpenGL
                           registry webpage 
       <li>22/05/03 - EG - Added Texture Units info
       <li>21/07/02 - EG - No longer modal
@@ -18,7 +20,7 @@ unit Info;
 interface
 
 uses Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls,
-     CommCtrl, ExtCtrls, Graphics;
+     CommCtrl, ExtCtrls, Graphics, Menus;
 
 type
 
@@ -87,11 +89,17 @@ type
     Extensions: TListBox;
     Label13: TLabel;
     RendererLabel: TLabel;
+    PMWebLink: TPopupMenu;
+    MIRegistryLink: TMenuItem;
+    MIDelphi3D: TMenuItem;
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ExtensionsDblClick(Sender: TObject);
+    procedure ExtensionsClick(Sender: TObject);
+    procedure ExtensionsKeyPress(Sender: TObject; var Key: Char);
+    procedure MIDelphi3DClick(Sender: TObject);
   public
     procedure GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
   end;
@@ -282,6 +290,36 @@ begin
    url:= 'http://oss.sgi.com/projects/ogl-sample/registry/'
         +buf+'/'+Copy(url, p+1, 255)+'.txt';
    ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOW);
+end;
+
+procedure TInfoForm.MIDelphi3DClick(Sender: TObject);
+var
+   url : String;
+begin
+   with Extensions do begin
+      if ItemIndex<0 then Exit;
+      url:='http://www.delphi3d.net/hardware/extsupport.php?extension='+Items[ItemIndex];
+   end;
+   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOW);
+end;
+
+procedure TInfoForm.ExtensionsClick(Sender: TObject);
+var
+   extName : String;
+begin
+   if Extensions.ItemIndex<0 then
+      Extensions.PopupMenu:=nil
+   else begin
+      Extensions.PopupMenu:=PMWebLink;
+      extName:=Extensions.Items[Extensions.ItemIndex];
+      MIRegistryLink.Caption:='View OpenGL Extension Registry for '+extName;
+      MIDelphi3D.Caption:='View Delphi3D Hardware Registry for '+extName;
+   end;
+end;
+
+procedure TInfoForm.ExtensionsKeyPress(Sender: TObject; var Key: Char);
+begin
+   ExtensionsClick(Sender);
 end;
 
 //------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 object InfoForm: TInfoForm
-  Left = 233
-  Top = 113
+  Left = 453
+  Top = 115
   BorderIcons = [biSystemMenu, biHelp]
   BorderStyle = bsToolWindow
   BorderWidth = 3
@@ -49,8 +49,9 @@ object InfoForm: TInfoForm
     Top = 0
     Width = 404
     Height = 225
-    ActivePage = Sheet1
+    ActivePage = TabSheet1
     HotTrack = True
+    TabIndex = 3
     TabOrder = 0
     object Sheet1: TTabSheet
       Caption = 'Common'
@@ -860,8 +861,22 @@ object InfoForm: TInfoForm
         ItemHeight = 15
         ParentFont = False
         TabOrder = 0
+        OnClick = ExtensionsClick
         OnDblClick = ExtensionsDblClick
+        OnKeyPress = ExtensionsKeyPress
       end
+    end
+  end
+  object PMWebLink: TPopupMenu
+    Left = 24
+    Top = 48
+    object MIRegistryLink: TMenuItem
+      Caption = 'MIRegistryLink'
+      OnClick = ExtensionsDblClick
+    end
+    object MIDelphi3D: TMenuItem
+      Caption = 'MIDelphi3D'
+      OnClick = MIDelphi3DClick
     end
   end
 end
