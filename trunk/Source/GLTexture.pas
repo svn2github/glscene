@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>31/08/01 - Egg - tiaDefault wasn't honoured (Rene Lindsay)
       <li>25/08/01 - Egg - Added TGLBlankImage
       <li>16/08/01 - Egg - drawState now part of TRenderContextInfo
       <li>15/08/01 - Egg - TexGen support (object_linear, eye_linear and sphere_map)
@@ -2526,7 +2527,7 @@ begin
       else
          Assert(False);
       end;
-   end else bitmap32.SetAlphaToValue(255);
+   end;
    bitmap32.RegisterAsOpenGLTexture(MinFilter, targetFormat, FTexWidth, FTexHeight);
    if texComp<>tcNone then
       glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB,

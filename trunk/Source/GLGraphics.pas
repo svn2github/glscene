@@ -4,6 +4,7 @@
 	Fonction utilitaires graphiques<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>31/08/01 - EG - 24bits Bitmaps are now made opaque by default
       <li>12/08/01 - EG - Now detects and uses GL_SGIS_generate_mipmap
       <li>20/02/01 - EG - Fixed SetHeight & SetWidth (thx Nelson Chu)
       <li>14/02/01 - EG - Simplified RegisterAsOpenGLTexture
@@ -240,7 +241,7 @@ begin
          pDest[x*4+0]:=pSrc[x*3+2];
          pDest[x*4+1]:=pSrc[x*3+1];
          pDest[x*4+2]:=pSrc[x*3+0];
-         pDest[x*4+3]:=#0;
+         pDest[x*4+3]:=#255;
       end;
       Dec(pDest, Width*4);
    end;
