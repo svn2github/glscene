@@ -9,6 +9,7 @@
 
    CPU               Graphics          Colors      FPS         Sort Time
 
+   Duron 800MHz      Voodoo3 NT4       16 bits      7.4        5.52 msec
    TBird 1.1Ghz      GeForce2 Pro      32 bits     65.5        3.66 msec
    --- 09/09/01 - Created Benchmark
 
