@@ -5611,7 +5611,8 @@ begin
    rci.modelViewMatrix:=@aBuffer.FModelViewMatrix;
    rci.currentStates:=aBuffer.FCurrentStates;
    rci.proxySubObject:=False;
-   rci.ignoreMaterials:=(roNoColorBuffer in aBuffer.ContextOptions);
+   rci.ignoreMaterials:=   (roNoColorBuffer in aBuffer.ContextOptions)
+                        or (rci.drawState=dsPicking);
    if rci.ignoreMaterials then
       glColorMask(False, False, False, False)
    else glColorMask(True, True, True, True);
