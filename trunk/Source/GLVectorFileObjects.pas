@@ -1156,7 +1156,6 @@ type
                                         intersectPoint : PVector = nil;
                                         intersectNormal : PVector = nil) : Boolean;
          function OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
-         function GetTrianglesInCube(Obj: TGLBaseSceneObject): TAffineVectorList; //via Octree
 
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
@@ -1508,7 +1507,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO, GeometryBB,
-     GLCollision, MeshUtils,
+     MeshUtils,
      // 3DS Support
 	  File3DS, Types3DS,
      // MD2 Support
@@ -5196,59 +5195,6 @@ begin
 
    Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
    Result:= Octree.TriangleIntersect(t1, t2, t3);
-end;
-
-// GetTrianglesInCube
-//
-function TGLFreeForm.GetTrianglesInCube(obj : TGLBaseSceneObject) : TAffineVectorList;
-var
-  AABB1: TAABB;
-  M1To2, M2To1: TMatrix;
-
-   procedure HandleNode(Onode: POctreeNode);
-   var
-      AABB2: TAABB;
-      i: integer;
-   begin
-      AABB2.min:= Onode.MinExtent;
-      AABB2.max:= Onode.MaxExtent;
-
-      if IntersectCubes(AABB1, AABB2, M1To2, M2To1) then begin
-         if Assigned(Onode.ChildArray[0]) then begin
-            for i:=0 to 7 do
-               HandleNode(Onode.ChildArray[i])
-         end else begin
-            SetLength(Octree.resultarray, Length(Octree.resultarray)+1);
-            Octree.resultarray[High(Octree.resultarray)]:=Onode;
-         end;
-      end;
-   end;
-
-var
-   i, t, k : Integer;
-   p : POctreeNode;
-begin
-  Result:= TAffineVectorList.Create;
-  //Calc AABBs
-  AABB1:= Obj.AxisAlignedBoundingBox;
-  //Calc Conversion Matrixes
-  MatrixMultiply(Obj.AbsoluteMatrix, Self.InvAbsoluteMatrix, M1To2);
-  MatrixMultiply(Self.AbsoluteMatrix,Obj.InvAbsoluteMatrix,M2To1);
-
-  Finalize(Octree.ResultArray);
-  if Assigned(Octree.RootNode) then
-     HandleNode(Octree.RootNode);
-
-  //fill the triangles from all nodes in the resultarray to AL
-  for i:=0 to High(Octree.ResultArray) do
-  begin
-    p:=Octree.ResultArray[i];
-    for t:=0 to High(p.TriArray) do
-    begin
-      k:=p.triarray[t];
-      result.Add(Octree.triangleFiler.List[k], Octree.triangleFiler.List[k+1], Octree.triangleFiler.List[k+2]);
-    end;
-  end;
 end;
 
 // ------------------
