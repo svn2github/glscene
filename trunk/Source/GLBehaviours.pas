@@ -3,6 +3,7 @@
 	Standard TGLBehaviour subclasses for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>24/09/02 - Egg - Support for negative rotation speeds (Marco Chung)
       <li>02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug) 
       <li>09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
       <li>11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
@@ -415,9 +416,15 @@ var
 
 	procedure ApplyRotationDamping(var rotationSpeed : Single);
 	begin
-		rotationSpeed:=RotationDamping.Calculate(rotationSpeed, progressTime.deltaTime);
-		if rotationSpeed<=0 then
-			rotationSpeed:=0;
+      if rotationSpeed>0 then begin
+   		rotationSpeed:=RotationDamping.Calculate(rotationSpeed, progressTime.deltaTime);
+	   	if rotationSpeed<=0 then
+		   	rotationSpeed:=0;
+      end else begin
+   		rotationSpeed:=-RotationDamping.Calculate(-rotationSpeed, progressTime.deltaTime);
+	   	if rotationSpeed>=0 then
+		   	rotationSpeed:=0;
+      end;
 	end;
 
 begin
