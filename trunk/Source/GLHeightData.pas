@@ -1238,7 +1238,11 @@ procedure TGLBitmapHDS.SetInfiniteWrap(val : Boolean);
 begin
    if FInfiniteWrap<>val then begin
       FInfiniteWrap:=val;
+{$ifdef GLS_DELPHI_4}
+      inherited MarkDirty;
+{$else}
       MarkDirty;
+{$endif}
    end;
 end;
 
@@ -1464,3 +1468,5 @@ initialization
    Classes.RegisterClasses([TGLBitmapHDS, TGLCustomHDS, TGLTerrainBaseHDS]);
 
 end.
+
+

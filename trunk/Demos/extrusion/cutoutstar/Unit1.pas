@@ -79,7 +79,7 @@ begin
    // it around with the TGLNodes methods.
    SinCos(newTime, 2, y, x);
    with ExtrusionSolid.Contours do begin
-      Delete(1);
+      Items[1].Free;
       with Add.Nodes do begin
          AddNode(x-1, y-1, 0);
          AddNode(x+1, y-1, 0);

@@ -134,7 +134,7 @@ begin
    Lines1.Nodes.Last.AsVector:=p;
    Lines1.AddNode(0, 0, 0);
    if Lines1.Nodes.Count>20 then // limit trail to 20 points
-      Lines1.Nodes.Delete(0);
+      Lines1.Nodes[0].Free;
 
    for i:=0 to 19 do begin
       k:=Lines1.Nodes.Count-i-1;
