@@ -221,7 +221,7 @@ begin
             if FMirrorObject.Parent<>nil then
                glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
             glMultMatrixf(PGLFloat(FMirrorObject.LocalMatrix));
-            FMirrorObject.DoRender(rci, renderSelf, True);
+            FMirrorObject.DoRender(rci, renderSelf, FMirrorObject.Count>0);
          end else begin
             Scene.Objects.DoRender(rci, renderSelf, True);
          end;
