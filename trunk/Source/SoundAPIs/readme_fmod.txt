@@ -9,3 +9,6 @@ Installation :
 
 * Win9x : Place "fmod.dll" in your Windows\System directory
 * WinNT : Place "fmod.dll" in your Windows\System32 directory
+
+Interface unit used here is the dynamically-linked version
+by Steve Williams (stevewilliams@kromestudios.com)

@@ -6,10 +6,11 @@
       <li>sound source velocity
       <li>looping (sounds are played either once or forever)
       <li>sound cones
-      <li>environments (not available in the Delphi API unit...)
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/08/02 - EG - Now uses dynamically linked version by Steve Williams,
+                          Added support for EAX environments
       <li>26/08/02 - EG - Updated to FMOD 3.6
       <li>27/02/02 - EG - Updated to FMOD 3.5, added 3D Factors
       <li>05/02/02 - EG - Updated to FMOD 3.4, now uses DSound by default
@@ -70,7 +71,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses SysUtils, FMod, Geometry;
+uses SysUtils, FMod, Geometry, FModPresets;
 
 type
    TFMODInfo =  record
@@ -116,6 +117,7 @@ end;
 //
 function TGLSMFMOD.DoActivate : Boolean;
 begin
+   FMOD_Load;
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then Assert(False);
    if not FSOUND_SetDriver(0) then Assert(False);
    if not FSOUND_Init(OutputFrequency, MaxChannels, 0) then Assert(False);
@@ -130,6 +132,7 @@ procedure TGLSMFMOD.DoDeActivate;
 begin
    FSOUND_StopSound(FSOUND_ALL);
    FSOUND_Close;
+   FMOD_Unload;
 end;
 
 // NotifyMasterVolumeChange
@@ -155,7 +158,39 @@ end;
 //
 procedure TGLSMFMOD.NotifyEnvironmentChanged;
 begin
-   // nothing
+   if FActivated and EAXSupported then begin
+      case Environment of
+         seDefault :          FSOUND_Reverb_SetProperties(FSOUND_PRESET_GENERIC);
+         sePaddedCell :       FSOUND_Reverb_SetProperties(FSOUND_PRESET_PADDEDCELL);
+         seRoom :             FSOUND_Reverb_SetProperties(FSOUND_PRESET_ROOM);
+         seBathroom :         FSOUND_Reverb_SetProperties(FSOUND_PRESET_BATHROOM);
+         seLivingRoom :       FSOUND_Reverb_SetProperties(FSOUND_PRESET_LIVINGROOM);
+         seStoneroom :        FSOUND_Reverb_SetProperties(FSOUND_PRESET_STONEROOM);
+         seAuditorium :       FSOUND_Reverb_SetProperties(FSOUND_PRESET_AUDITORIUM);
+         seConcertHall :      FSOUND_Reverb_SetProperties(FSOUND_PRESET_CONCERTHALL);
+         seCave :             FSOUND_Reverb_SetProperties(FSOUND_PRESET_CAVE);
+         seArena :            FSOUND_Reverb_SetProperties(FSOUND_PRESET_ARENA);
+         seHangar :           FSOUND_Reverb_SetProperties(FSOUND_PRESET_HANGAR);
+         seCarpetedHallway :  FSOUND_Reverb_SetProperties(FSOUND_PRESET_CARPETTEDHALLWAY);
+         seHallway :          FSOUND_Reverb_SetProperties(FSOUND_PRESET_HALLWAY);
+         seStoneCorridor :    FSOUND_Reverb_SetProperties(FSOUND_PRESET_STONECORRIDOR);
+         seAlley :            FSOUND_Reverb_SetProperties(FSOUND_PRESET_ALLEY);
+         seForest :           FSOUND_Reverb_SetProperties(FSOUND_PRESET_FOREST);
+         seCity :             FSOUND_Reverb_SetProperties(FSOUND_PRESET_CITY);
+         seMountains :        FSOUND_Reverb_SetProperties(FSOUND_PRESET_MOUNTAINS);
+         seQuarry :           FSOUND_Reverb_SetProperties(FSOUND_PRESET_QUARRY);
+         sePlain :            FSOUND_Reverb_SetProperties(FSOUND_PRESET_PLAIN);
+         seParkingLot :       FSOUND_Reverb_SetProperties(FSOUND_PRESET_PARKINGLOT);
+         seSewerPipe :        FSOUND_Reverb_SetProperties(FSOUND_PRESET_SEWERPIPE);
+         seUnderWater :       FSOUND_Reverb_SetProperties(FSOUND_PRESET_UNDERWATER);
+         // unsupported
+         seDrugged :          FSOUND_Reverb_SetProperties(FSOUND_PRESET_GENERIC);
+         seDizzy :            FSOUND_Reverb_SetProperties(FSOUND_PRESET_GENERIC);
+         sePsychotic :        FSOUND_Reverb_SetProperties(FSOUND_PRESET_GENERIC);
+      else
+         Assert(False);
+      end;
+   end;
 end;
 
 // KillSource
