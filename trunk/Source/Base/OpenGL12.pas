@@ -318,6 +318,7 @@ var
   GL_VERSION_1_0,
   GL_VERSION_1_1,
   GL_VERSION_1_2,
+  GL_VERSION_1_3,
   GLU_VERSION_1_1,
   GLU_VERSION_1_2,
   GLU_VERSION_1_3: Boolean;
@@ -8327,15 +8328,12 @@ begin
   TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion);
   GL_VERSION_1_0 := True;
   GL_VERSION_1_1 := False;
-  GL_VERSION_1_2 := False; 
-  if MajorVersion > 0 then
-  begin
-    if MinorVersion > 0 then
-    begin
-      GL_VERSION_1_1 := True; 
-      if MinorVersion > 1 then
-        GL_VERSION_1_2 := True;
-    end;
+  GL_VERSION_1_2 := False;
+  GL_VERSION_1_3 := False; 
+  if MajorVersion > 0 then begin
+    GL_VERSION_1_1:=(MinorVersion>=1);
+    GL_VERSION_1_2:=(MinorVersion>=2);
+    GL_VERSION_1_3:=(MinorVersion>=3);
   end;
 
   // GLU
