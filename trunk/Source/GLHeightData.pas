@@ -24,6 +24,7 @@ interface
 uses Classes, Graphics, Geometry;
 
 {$i GLScene.inc}
+{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 type
 

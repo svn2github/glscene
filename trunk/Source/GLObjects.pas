@@ -12,6 +12,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/01/02 - Egg - TSpaceText moved to GLSpaceText
       <li>22/08/01 - Egg - TTorus.RayCastIntersect fixes
       <li>30/07/01 - Egg - Updated AxisAlignedDimensions implems
       <li>16/03/01 - Egg - TCylinderBase, changed default Stacks from 8 to 4
@@ -85,8 +86,9 @@ unit GLObjects;
 
 interface
 
-uses Classes, Geometry, GLScene, GLTexture, GLMisc, Graphics, OpenGL12,
-   SysUtils, extctrls;
+{$i GLScene.inc}
+
+uses Classes, Geometry, GLScene, GLTexture, GLMisc, OpenGL12, SysUtils;
 
 type
 
@@ -808,58 +810,6 @@ type
          property Sides: Cardinal read FSides write SetSides default 15;
    end;
 
-   // TSpaceTextCharRange
-   //
-   TSpaceTextCharRange = (stcrAlphaNum, stcrNumbers, stcrAll);
-
-   // TSpaceText
-   //
-   {: Renders a text in 3D. }
-   TSpaceText = class(TGLSceneObject)
-      private
-			{ Private Declarations }
-         FFont       : TFont;
-         FText       : String;
-         FExtrusion  : Single;
-         FAllowedDeviation : Single;
-         FCharacterRange : TSpaceTextCharRange;
-         procedure SetCharacterRange(const val : TSpaceTextCharRange);
-         procedure SetAllowedDeviation(const val : Single);
-         procedure SetExtrusion(AValue: Single);
-         procedure SetFont(AFont: TFont);
-         procedure SetText(AText: String);
-
-		protected
-			{ Protected Declarations }
-         BaseList    : TGLuint;
-         FontChanged : Boolean;
-         procedure DestroyHandles; override;
-         procedure OnFontChange(sender : TObject);
-
-		public
-			{ Public Declarations }
-         constructor Create(AOwner: TComponent); override;
-         destructor Destroy; override;
-
-         procedure BuildList(var rci : TRenderContextInfo); override;
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
-
-		published
-			{ Published Declarations }
-         {: Adjusts the 3D font extrusion.<p>
-            If Extrusion=0, the characters will be flat (2D), values >0 will
-            give them a third dimension. }
-         property Extrusion: Single read FExtrusion write SetExtrusion;
-         property Font: TFont read FFont write SetFont;
-         property Text: String read FText write SetText;
-         {: Quality related, see Win32 help for wglUseFontOutlines }
-         property AllowedDeviation : Single read FAllowedDeviation write SetAllowedDeviation;
-         {: Character range to convert.<p>
-            Converting less characters saves time and memory... }
-         property CharacterRange : TSpaceTextCharRange read FCharacterRange write SetCharacterRange default stcrAll;
-   end;
-
    // TTeapot
    //
    {: The age old teapot.<p>
@@ -1020,38 +970,6 @@ type
          property Parts : TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
    end;
 
-   // holds an entry in the font manager list (used in TSpaceText)
-   PFontEntry        = ^TFontEntry;
-   TFontEntry        = record
-                         Name      : String;
-                         Styles    : TFontStyles;
-                         Extrusion : Single;
-                         Base      : TGLuint;
-                         RefCount  : Integer;
-                         allowedDeviation : Single;
-                         firstChar, lastChar : Integer;
-                       end;
-
-   // TFontManager
-   //
-   {: Manages a list of fonts for which display lists were created. }
-   TFontManager = class(TList)
-	   public
-			{ Public Declarations }
-         destructor Destroy; override;
-         function FindFont(AName: String; FStyles: TFontStyles; FExtrusion: Single;
-                           FAllowedDeviation : Single;
-                           FFirstChar, FLastChar : Integer) : PFontEntry;
-         function FindFontByList(AList: TGLuint): PFontEntry;
-         function GetFontBase(AName: String; FStyles: TFontStyles; FExtrusion: Single;
-                              allowedDeviation : Single;
-                              firstChar, lastChar : Integer) : TGLuint;
-         procedure Release(List: TGLuint);
-   end;
-
-function FontManager : TFontManager;
-procedure ReleaseFontManager;
-
 {: Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
 {: Issues OpenGL for a unit-size cube stippled wireframe. }
@@ -1066,29 +984,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Windows, Consts, Dialogs, Forms, GLStrings, Spline, XOpenGL, Polynomials;
-
-var
-	vFontManager : TFontManager;
-
-// FontManager
-//
-function FontManager : TFontManager;
-begin
-	if not Assigned(vFontManager) then
-		vFontManager:=TFontManager.Create;
-	Result:=vFontManager;
-end;
-
-// ReleaseFontManager
-//
-procedure ReleaseFontManager;
-begin
-   if Assigned(vFontManager) then begin
-      vFontManager.Free;
-      vFontManager:=nil;
-   end;
-end;
+uses Consts, GLStrings, Spline, XOpenGL, Polynomials;
 
 // CubeWireframeBuildList
 //
@@ -1130,132 +1026,6 @@ begin
       glVertex3f(ma, mi, ma); glVertex3f(mi, mi, ma);
    glEnd;
    glPopAttrib;
-end;
-
-
-//----------------- TFontManager -----------------------------------------------
-
-// Destroy
-//
-destructor TFontManager.Destroy;
-var
-   i : Integer;
-begin
-   for I:=0 to Count-1 do begin
-      if TFontEntry(Items[I]^).Base<>0 then
-         glDeleteLists(TFontEntry(Items[I]^).Base, 255);
-      FreeMem(Items[I], SizeOf(TFontEntry));
-   end;
-   inherited Destroy;
-end;
-
-// FindFond
-//
-function TFontManager.FindFont(AName: String; FStyles: TFontStyles; FExtrusion: Single;
-										 FAllowedDeviation : Single;
-										 FFirstChar, FLastChar : Integer) : PFontEntry;
-var
-	i : Integer;
-begin
-	Result:=nil;
-	// try to find an entry with the required attributes
-	for I :=0 to Count-1 do with TFontEntry(Items[I]^) do
-		if (CompareText(Name, AName) = 0) and (Styles = FStyles)
-				and (Extrusion = FExtrusion) and (allowedDeviation=FAllowedDeviation)
-				and (firstChar=FFirstChar)	and (lastChar=FLastChar) then begin
-			// entry found
-			Result:=Items[I];
-			Break;
-		end;
-end;
-
-// FindFontByList
-//
-function TFontManager.FindFontByList(AList: TGLuint): PFontEntry;
-var
-   i : Integer;
-begin
-   Result:=nil;
-   // try to find an entry with the required attributes
-   for I :=0 to Count-1 do
-      with TFontEntry(Items[I]^) do
-         if Base = AList then begin // entry found
-            Result:=Items[I];
-            Break;
-         end;
-end;
-
-// GetFontBase
-//
-function TFontManager.GetFontBase(AName: String; FStyles: TFontStyles; FExtrusion: Single;
-											 allowedDeviation : Single;
-											 firstChar, lastChar : Integer) : TGLuint;
-var
-   NewEntry : PFontEntry;
-	MemDC    : HDC;
-	AFont    : TFont;
-begin
-   NewEntry:=FindFont(AName, FStyles, FExtrusion, allowedDeviation, firstChar, lastChar);
-   if Assigned(NewEntry) then begin
-	   Inc(NewEntry^.RefCount);
-      Result:=NewEntry^.Base;
-      Exit;
-   end;
-   // no entry found, so create one
-   New(NewEntry);
-   try
-      NewEntry^.Name:=AName;
-      NewEntry^.Styles:=FStyles;
-      NewEntry^.Extrusion:=FExtrusion;
-	   NewEntry^.RefCount:=1;
-	   NewEntry^.firstChar:=firstChar;
-	   NewEntry^.lastChar:=lastChar;
-	   NewEntry^.allowedDeviation:=allowedDeviation;
-
-      // create a font to be used while display list creation
-      AFont:=TFont.Create;
-      MemDC:=CreateCompatibleDC(0);
-      try
-         AFont.Name:=AName;
-         AFont.Style:=FStyles;
-         SelectObject(MemDC, AFont.Handle);
-         NewEntry^.Base:=glGenLists(255);
-		   if NewEntry^.Base = 0 then
-			   raise Exception.Create('FontManager: no more display lists available');
-		   if not OpenGL12.wglUseFontOutlines(MemDC, firstChar, lastChar-firstChar+1,
-                                            NewEntry^.Base, allowedDeviation,
-                                            FExtrusion, WGL_FONT_POLYGONS, nil) then
-		  	raise Exception.Create('FontManager: font creation failed');
-      finally
-		   AFont.Free;
-         DeleteDC(MemDC);
-      end;
-      Add(NewEntry);
-      Result:=NewEntry^.Base;
-   except
-      if NewEntry^.Base<>0 then glDeleteLists(NewEntry^.Base, 255);
-      Dispose(NewEntry);
-      raise;
-   end;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TFontManager.Release(List: TGLuint);
-
-var Entry : PFontEntry;
-
-begin
-  Entry:=FindFontByList(List);
-  if assigned(Entry) then
-  begin
-    Dec(Entry^.RefCount);
-    if Entry^.RefCount = 0 then
-    begin
-      glDeleteLists(Entry^.Base, 255);
-      Remove(Entry);
-    end;
-  end;
 end;
 
 // ------------------
@@ -3590,141 +3360,6 @@ begin
   glPopMatrix;
 end;
 
-//----------------- TSpaceText ----------------------------------------------------
-
-// Create
-//
-constructor TSpaceText.Create(AOwner:TComponent);
-begin
-   inherited Create(AOwner);
-   FFont:=TFont.Create;
-   FFont.Name:='Arial';
-   FontChanged:=True;
-   FExtrusion:=0;
-   CharacterRange:=stcrAll;
-   FFont.OnChange:=OnFontChange;
-end;
-
-// Destroy
-//
-destructor TSpaceText.Destroy;
-begin
-   FFont.OnChange:=nil;
-   FFont.Free;
-   inherited Destroy;
-end;
-
-// BuildList
-//
-procedure TSpaceText.BuildList(var rci : TRenderContextInfo);
-begin
-	if Length(FText) > 0 then begin
-		// create texture coordinates if necessary
-		//    if not (Material.Texture.Disabled)  and  not (Material.Texture.IsInherited) then
-		glPushAttrib(GL_POLYGON_BIT);
-		case FCharacterRange of
-			stcrAlphaNum :	glListBase(BaseList-32);
-			stcrNumbers : glListBase(BaseList-Cardinal('0'));
-		else
-			glListBase(BaseList);
-		end;
-		glCallLists(Length(FText), GL_UNSIGNED_BYTE, PChar(FText));
-		glPopAttrib;
-	end;
-end;
-
-// DoDestroyList
-//
-procedure TSpaceText.DestroyHandles;
-begin
-   ReleaseFontManager;
-   inherited;
-end;
-
-// DoRender
-//
-procedure TSpaceText.DoRender(var rci : TRenderContextInfo;
-                              renderSelf, renderChildren : Boolean);
-var
-	firstChar, lastChar : Integer;
-begin
-	if FontChanged and (Length(FText) > 0) then with FFont do begin
-		FontManager.Release(BaseList);
-		case FCharacterRange of
-			stcrAlphaNum : begin
-				firstChar:=32; lastChar:=127;
-			end;
-			stcrNumbers : begin
-				firstChar:=Integer('0'); lastChar:=Integer('9');
-			end;
-		else
-			// stcrAll
-			firstChar:=0; lastChar:=255;
-		end;
-		BaseList:=FontManager.GetFontBase(Name, Style, FExtrusion,
-													 FAllowedDeviation, firstChar, lastChar);
-		FontChanged:=False;
-	end;
-	inherited;
-end;
-
-// SetExtrusion
-//
-procedure TSpaceText.SetExtrusion(AValue: Single);
-begin
-   Assert(AValue>=0, 'Extrusion must be >=0');
-	if FExtrusion<>AValue then begin
-		FExtrusion:=AValue;
-      OnFontChange(nil);
-	end;
-end;
-
-// SetAllowedDeviation
-//
-procedure TSpaceText.SetAllowedDeviation(const val : Single);
-begin
-	if FAllowedDeviation<>val then begin
-		FAllowedDeviation:=val;
-      OnFontChange(nil);
-	end;
-end;
-
-// SetCharacterRange
-//
-procedure TSpaceText.SetCharacterRange(const val : TSpaceTextCharRange);
-begin
-	if FCharacterRange<>val then begin
-		FCharacterRange:=val;
-      OnFontChange(nil);
-	end;
-end;
-
-// SetFont
-//
-procedure TSpaceText.SetFont(AFont: TFont);
-begin
-   FFont.Assign(AFont);
-   OnFontChange(nil);
-end;
-
-// OnFontChange
-//
-procedure TSpaceText.OnFontChange(sender : TObject);
-begin
-   FontChanged:=True;
-   StructureChanged;
-end;
-
-// SetText
-//
-procedure TSpaceText.SetText(AText: String);
-begin
-   if FText<>AText then begin
-      FText:=AText;
-      StructureChanged;
-   end;
-end;
-
 //----------------- TDodecahedron ----------------------------------------------
 
 procedure DodecahedronBuildList;
@@ -4157,11 +3792,7 @@ initialization
 //-------------------------------------------------------------
 
    RegisterClasses([TSphere, TCube, TFrustrum, TCylinder, TCone, TTorus,
-                    TSpaceText, TTeapot, TDodecahedron, TDisk, TPlane, TSprite,
+                    TTeapot, TDodecahedron, TDisk, TPlane, TSprite,
                     TDummyCube, TLines, TAnnulus, TArrowLine, TPolygon]);
-
-finalization
-
-   ReleaseFontManager;
 
 end.

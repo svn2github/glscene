@@ -14,6 +14,9 @@ unit Joystick;
 
 interface
 
+{$i GLScene.inc}
+{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+
 uses Windows, Forms, Classes, Controls, Messages;
 
 type

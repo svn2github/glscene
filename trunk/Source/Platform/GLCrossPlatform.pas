@@ -3,7 +3,7 @@
 	Cross platform support functions and types for GLScene.<p>
 
    Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core GLScene units, and moved here instead.<p>
+   in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
       <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog,
@@ -19,23 +19,38 @@ interface
 {$include GLScene.inc}
 
 {$ifdef WIN32}
-uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;//, GLWin32Context;
+uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;
 {$endif}
 {$ifdef LINUX}
-
+uses QGraphics;
 {$endif}
 
 type
+
+   // Several aliases to shield us from the need of ifdef'ing between
+   // the "almost cross-platform" units like Graphics/QGraphics etc.
+   // Gives a little "alien" look to names, but that's the only way around :(
 
    TGLPoint = TPoint;
    PGLPoint = ^TGLPoint;
    TGLRect = TRect;
    PGLRect = ^TGLRect;
+   TDelphiColor = TColor;
+
+   TGLPicture = TPicture;
+   TGLGraphic = TGraphic;
+   TGLBitmap = TBitmap;
+
+const
+   glpf24bit = pf24bit;
+   glpf32Bit = pf32bit;
 
 function GLPoint(const x, y : Integer) : TGLPoint;
 
 {: Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b : Byte) : TColor;
+{: Converts 'magic' colors to their RGB values. }
+function ColorToRGB(color : TColor) : TColor;
 
 function GetRValue(rgb: DWORD): Byte;
 function GetGValue(rgb: DWORD): Byte;
@@ -46,6 +61,8 @@ procedure InformationDlg(const msg : String);
 {: Pops up a simple question dialog with msg and yes/no buttons.<p>
    Returns True if answer was "yes". }
 function QuestionDlg(const msg : String) : Boolean;
+{: Posp a simple dialog with a string input. }
+function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
 {: Pops up a simple save picture dialog. }
 function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
 
@@ -105,6 +122,13 @@ begin
    Result:=(b shl 16) or (g shl 8) or r;
 end;
 
+// ColorToRGB
+//
+function ColorToRGB(color : TColor) : TColor;
+begin
+   Result:=Graphics.ColorToRGB(color);
+end;
+
 // GetRValue
 //
 function GetRValue(rgb: DWORD): Byte;
@@ -138,6 +162,13 @@ end;
 function QuestionDlg(const msg : String) : Boolean;
 begin
    Result:=(MessageDlg(msg, mtConfirmation, [mbYes, mbNo], 0)=mrYes);
+end;
+
+// InputDlg
+//
+function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
+begin
+   Result:=InputBox(aCaption, aPrompt, aDefault);
 end;
 
 // SavePictureDialog

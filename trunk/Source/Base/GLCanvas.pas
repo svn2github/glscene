@@ -12,16 +12,18 @@ unit GLCanvas;
 
 interface
 
-uses Classes, Geometry, Graphics;
+uses Classes, Geometry;
 
 type
+
+   TColor = Integer;
 
 	// TGLCanvas
 	//
    {: A simple Canvas-like interface for OpenGL.<p>
       This class implements a small "shell" for 2D operations in OpenGL,
       it operates over the current OpenGL context and provides methods
-      for drawing lines (circles, points, etc. not in yet).<br>
+      for drawing lines, ellipses and points.<br>
       This class is typically used by creating an instance, using it for drawing,
       and freeing the instance. When drawing (0, 0) is the top left corner.<br>
       All coordinates are internally maintained with floating point precisoion.<p>
@@ -42,7 +44,11 @@ type
 
 	   protected
 	      { Protected Declarations }
+	      procedure BackupOpenGLStates;
+	      procedure RestoreOpenGLStates;
+
 	      procedure StartPrimitive(const primitiveType : Integer);
+         procedure StopPrimitive;
 
          procedure SetPenColor(const val : TColor);
          procedure SetPenWidth(const val : Integer);
@@ -78,6 +84,12 @@ type
             The current position is NOT updated. }
   	      procedure PlotPixel(const x, y : Integer); overload;
 	      procedure PlotPixel(const x, y : Single); overload;
+
+         {: Draws an ellipse with (x1,y1)-(x2, y2) bounding rectangle. }
+	      procedure Ellipse(const x1, y1, x2, y2 : Integer); overload;
+         {: Draws and ellipse centered at (x, y) with given radiuses. }
+	      procedure Ellipse(const x, y : Integer; const xRadius, yRadius : Single); overload;
+	      procedure Ellipse(const x, y, xRadius, yRadius : Single); overload;
 	end;
 
 //-------------------------------------------------------------
@@ -99,7 +111,7 @@ function ConvertColorVector(const aColor: TVector): TColor;
 begin
   Result:=   (Round(255 * AColor[2]) shl 16)
           or (Round(255 * AColor[1]) shl 8)
-          or Round(255 * AColor[0]);
+          or  Round(255 * AColor[0]);
 end;
 
 // ConvertWinColor
@@ -126,8 +138,6 @@ end;
 constructor TGLCanvas.Create(bufferSizeX, bufferSizeY : Integer;
                              const baseTransform : TMatrix);
 begin
-   glPushAttrib(GL_ENABLE_BIT);
-
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
@@ -136,6 +146,39 @@ begin
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
    glLoadMatrixf(@baseTransform);
+
+   BackupOpenGLStates;
+
+   FLastPrimitive:=cNoPrimitive;
+end;
+
+// Create
+//
+constructor TGLCanvas.Create(bufferSizeX, bufferSizeY : Integer);
+begin
+   Create(bufferSizeX, bufferSizeY, IdentityHmgMatrix);
+end;
+
+// Destroy
+//
+destructor TGLCanvas.Destroy;
+begin
+   StopPrimitive;
+
+   RestoreOpenGLStates;
+
+   glMatrixMode(GL_PROJECTION);
+   glPopMatrix;
+
+   glMatrixMode(GL_MODELVIEW);
+   glPopMatrix;
+end;
+
+// BackupOpenGLStates
+//
+procedure TGLCanvas.BackupOpenGLStates;
+begin
+   glPushAttrib(GL_ENABLE_BIT);
 
    glDisable(GL_LIGHTING);
    glDisable(GL_CULL_FACE);
@@ -156,33 +199,16 @@ begin
    FPenWidth:=1;
    glLineWidth(1);
    glPointSize(1);
-
-   FLastPrimitive:=cNoPrimitive;
 end;
 
-// Create
+// RestoreOpenGLStates
 //
-constructor TGLCanvas.Create(bufferSizeX, bufferSizeY : Integer);
+procedure TGLCanvas.RestoreOpenGLStates;
 begin
-   Create(bufferSizeX, bufferSizeY, IdentityHmgMatrix);
-end;
-
-// Destroy
-//
-destructor TGLCanvas.Destroy;
-begin
-   StartPrimitive(cNoPrimitive);
-
    glColor4fv(@FColorBackup);
    glLineWidth(FLineWidthBackup);
    glPointSize(FPointSizeBackup);
 
-   glMatrixMode(GL_PROJECTION);
-   glPopMatrix;
-
-   glMatrixMode(GL_MODELVIEW);
-   glPopMatrix;
-   
    glPopAttrib;
 end;
 
@@ -197,6 +223,13 @@ begin
          glBegin(primitiveType);
       FLastPrimitive:=primitiveType;
    end;
+end;
+
+// StopPrimitive
+//
+procedure TGLCanvas.StopPrimitive;
+begin
+   StartPrimitive(cNoPrimitive);
 end;
 
 // SetPenColor
@@ -290,6 +323,53 @@ procedure TGLCanvas.PlotPixel(const x, y : Single);
 begin
    StartPrimitive(GL_POINTS);
    glVertex2f(x, y);
+end;
+
+// Ellipse
+//
+procedure TGLCanvas.Ellipse(const x1, y1, x2, y2 : Integer);
+begin
+   Ellipse((x1+x2)*0.5, (y1+y2)*0.5, Abs(x2-x1)*0.5, Abs(y2-y1)*0.5);
+end;
+
+// Ellipse
+//
+procedure TGLCanvas.Ellipse(const x, y : Integer; const xRadius, yRadius : Single);
+var
+   sx, sy : Single;
+begin
+   sx:=x; sy:=y;
+   Ellipse(sx, sy, xRadius, yRadius);
+end;
+
+// Ellipse
+//
+procedure TGLCanvas.Ellipse(const x, y, xRadius, yRadius : Single);
+var
+   i, n : Integer;
+   s, c : array of Single;
+begin
+   n:=Round(MaxFloat(xRadius, yRadius)*0.1)+6;
+   SetLength(s, n);
+   SetLength(c, n);
+   Dec(n);
+   PrepareSinCosCache(s, c, 0, 90);
+   ScaleFloatArray(s, yRadius);
+   ScaleFloatArray(c, xRadius);
+   StartPrimitive(GL_LINE_STRIP);
+   // first quadrant (top right)
+   for i:=0 to n do
+      glVertex2f(x+c[i], y-s[i]);
+   // second quadrant (top left)
+   for i:=n-1 downto 0 do
+      glVertex2f(x-c[i], y-s[i]);
+   // third quadrant (bottom left)
+   for i:=1 to n do
+      glVertex2f(x-c[i], y+s[i]);
+   // fourth quadrant (bottom right)
+   for i:=n-1 downto 0 do
+      glVertex2f(x+c[i], y+s[i]);
+   StopPrimitive;
 end;
 
 end.

@@ -107,7 +107,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL12, GLMisc, Graphics, XOpenGL, VectorLists;
+uses SysUtils, OpenGL12, GLMisc, XOpenGL, VectorLists;
 
 // ------------------
 // ------------------ TTerrainRenderer ------------------

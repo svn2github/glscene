@@ -99,25 +99,21 @@ procedure ShowErrorFormatted(ErrorMessage: String; const Args: array of const);
 
 implementation
 
-uses Windows, Dialogs, SysUtils, Const3DS;
+uses SysUtils, Const3DS;
 
 type E3DSError = class(Exception);
 
 //----------------- error handling ------------------------------------------------------------------------------------
 
 procedure ShowError(ErrorMessage: String);
-
 begin
-  MessageBeep(MB_ICONHAND);
   raise E3DSError.Create(ErrorMessage);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
 
 procedure ShowErrorFormatted(ErrorMessage: String; const Args: array of const);
-
 begin
-  MessageBeep(MB_ICONHAND);
   raise E3DSError.CreateFmt(ErrorMessage, Args);
 end;
 

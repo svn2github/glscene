@@ -10,7 +10,7 @@ unit GLWin32Viewer;
 
 interface
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 uses Windows, Messages, Classes, GLScene, Controls;
 

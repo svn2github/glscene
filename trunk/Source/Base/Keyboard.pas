@@ -18,6 +18,9 @@ unit Keyboard;
 
 interface
 
+{$i GLScene.inc}
+{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
+
 uses
   Windows;
 

@@ -13,8 +13,9 @@ unit GLHUDObjects;
 
 interface
 
-uses Classes, GLScene, Graphics, Geometry, GLMisc, StdCtrls, GLObjects,
-   GLBitmapFont, GLTexture;
+uses
+   Classes, GLScene, Geometry, GLMisc, StdCtrls, GLObjects, GLBitmapFont,
+   GLTexture;
 
 type
 

@@ -3,6 +3,7 @@
    This component is based on ThreadedTimer by Carlos Barbosa.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>20/01/02 - Egg - Simplifications, dropped Win32 dependencies
       <li>05/04/00 - GrC - Enabled checks to prevent events after destroy
       <li>01/04/00 - Egg - Re-Creation, minor changes over Carlos's code
    </ul></font>
@@ -11,8 +12,9 @@ unit AsyncTimer;
 
 interface
 
-uses
-  Windows, Classes;
+{$i GLScene.inc}
+
+uses Classes;
 
 const
   cDEFAULT_TIMER_INTERVAL = 1000;
@@ -20,7 +22,7 @@ const
 type
    // TAsyncTimer
    //
-   {: Asynchronous timer component (actual 1 ms resolution).<p>
+   {: Asynchronous timer component (actual 1 ms resolution, if CPU fast enough).<p>
       Keep in mind timer resolution is obtained <i>in-between</i> events, but
       events are not triggered every x ms. For instance if you set the interval to
       5 ms, and your Timer event takes 1 ms to complete, Timer events will actually
@@ -51,18 +53,24 @@ type
          property ThreadPriority: TThreadPriority read GetThreadPriority write SetThreadPriority default tpNormal;
   end;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
-uses SysUtils;
+uses SysUtils, GLCrossPlatform;
 
 type
+
    // TTimerThread
    //
    TTimerThread = class(TThread)
       private
          FOwner: TAsyncTimer;
          FInterval: Word;
-         FStop: THandle;
       protected
          constructor Create(CreateSuspended: Boolean); virtual;
          procedure Execute; override;
@@ -73,25 +81,34 @@ type
 constructor TTimerThread.Create(CreateSuspended: Boolean);
 begin
   inherited Create(CreateSuspended);
-  // create event object for signaling interruptions
-  FStop := CreateEvent(nil, False, False, nil);
 end;
 
 // Execute
 //
 procedure TTimerThread.Execute;
+var
+   lastTick, nextTick, curTick, perfFreq : Int64;
 begin
+   QueryPerformanceFrequency(perfFreq);
+   QueryPerformanceCounter(lastTick);
+   nextTick:=lastTick+(FInterval*perfFreq) div 1000;
    while not Terminated do begin
-      // wait for time elapse
-      if WaitForSingleObject(FStop, FInterval) = WAIT_TIMEOUT then
-      // test for termination here too, odds are termination happenning
-      // during WaitSingleObject most of the time !
-      if not Terminated then
+      while not Terminated do begin
+         QueryPerformanceCounter(lastTick);
+         if lastTick>=nextTick then break;
+         Sleep(1);
+      end;
+      if not Terminated then begin
          // if time elapsed run user-event
          Synchronize(FOwner.DoTimer);
+         QueryPerformanceCounter(curTick);
+         nextTick:=lastTick+(FInterval*perfFreq) div 1000;
+         if nextTick<=curTick then begin
+            // CPU too slow... delay to avoid monopolizing what's left
+            nextTick:=curTick+(FInterval*perfFreq) div 1000;
+         end;
+      end;
    end;
-   // Delete event object
-   CloseHandle(FStop);
 end;
 
 { TAsyncTimer }
@@ -106,7 +123,7 @@ begin
    with TTimerThread(FTimerThread) do begin
       FOwner := Self;
       FreeOnTerminate := False;
-      Priority := tpNormal;
+      Priority := tpTimeCritical;
       FInterval := cDEFAULT_TIMER_INTERVAL;
    end;
 end;
@@ -116,13 +133,11 @@ end;
 destructor TAsyncTimer.Destroy;
 begin
    Enabled:=False;
-   // Destroy thread
-   // signal thread to terminate
    FTimerThread.Terminate;
-   SetEvent(TTimerThread(FTimerThread).FStop);
-   // resume if stopped
-   if FTimerThread.Suspended then FTimerThread.Resume;
-   // wait and free
+   // if stopped, resume
+   if FTimerThread.Suspended then
+      FTimerThread.Resume;
+   // wait & free
    FTimerThread.WaitFor;
    FTimerThread.Free;
    inherited Destroy;
@@ -145,7 +160,6 @@ begin
       if FEnabled then begin
          // When enabled resume thread
          if TTimerThread(FTimerThread).FInterval > 0 then begin
-            SetEvent(TTimerThread(FTimerThread).FStop);
             FTimerThread.Resume;
          end;
       end

@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>20/01/02 - EG - Fixed texture memory use report error
       <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
                           are now Linear/MipMap 
       <li>07/01/02 - EG - Added renderDPI to rci
@@ -105,11 +106,11 @@ unit GLTexture;
 interface
 
 uses
-  Classes, OpenGL12, Graphics, Geometry, SysUtils, GLMisc, GLGraphics,
-  GLContext;
+  Classes, OpenGL12, Geometry, SysUtils, GLMisc, GLGraphics, GLContext, GLCrossPlatform;
 
 type
 
+   TColor = TDelphiColor;
 	PColorVector = ^TColorVector;
    TColorVector = TVector;
 
@@ -507,7 +508,7 @@ type
 		private
          { Private Declarations }
 			FBitmap : TGLBitmap32;
-			FPicture : TPicture;
+			FPicture : TGLPicture;
 			FUpdateCounter : Integer;
 
 		protected
@@ -515,7 +516,7 @@ type
 			function GetHeight: Integer; override;
 			function GetWidth: Integer; override;
 
-			procedure SetPicture(const aPicture : TPicture);
+			procedure SetPicture(const aPicture : TGLPicture);
 			procedure PictureChanged(Sender: TObject);
 
 		public
@@ -532,7 +533,7 @@ type
 			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
 			procedure ReleaseBitmap32; override;
 
-			property Picture : TPicture read FPicture write SetPicture;
+			property Picture : TGLPicture read FPicture write SetPicture;
 	end;
 
 	// TGLPersistentImage
@@ -607,13 +608,13 @@ type
          { Private Declarations }
 			FBitmap : TGLBitmap32;
 			FUpdateCounter : Integer;
-         FPicture : array [cmtPX..cmtNZ] of TPicture;
+         FPicture : array [cmtPX..cmtNZ] of TGLPicture;
 		protected
          { Protected Declarations }
 		   function GetWidth: Integer; override;
 			function GetHeight: Integer; override;
-         procedure SetPicture(index : TGLCubeMapTarget; const val : TPicture);
-         function GetPicture(index : TGLCubeMapTarget) : TPicture;
+         procedure SetPicture(index : TGLCubeMapTarget; const val : TGLPicture);
+         function GetPicture(index : TGLCubeMapTarget) : TGLPicture;
 
 			procedure PictureChanged(Sender: TObject);
 
@@ -638,7 +639,7 @@ type
 			class function FriendlyName : String; override;
 			class function NativeTextureTarget : TGLUInt; override;
 
-         property Picture[index : TGLCubeMapTarget] : TPicture read GetPicture write SetPicture;
+         property Picture[index : TGLCubeMapTarget] : TGLPicture read GetPicture write SetPicture;
 	end;
 
    TGLLibMaterial = Class;
@@ -1100,7 +1101,7 @@ type
          function AddTextureMaterial(const materialName, fileName : String) : TGLLibMaterial; overload;
          {: Add a "standard" texture material.<p>
             TGraphic based variant. }
-         function AddTextureMaterial(const materialName : String; graphic : TGraphic) : TGLLibMaterial; overload;
+         function AddTextureMaterial(const materialName : String; graphic : TGLGraphic) : TGLLibMaterial; overload;
          {: Applies the material of given name.<p>
             Returns False if the material could not be found. ake sure this
             call is balanced with a corresponding UnApplyMaterial (or an
@@ -1191,7 +1192,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses Dialogs, GLScene, GLScreen, GLStrings, ExtDlgs, XOpenGL, GLCrossPlatform;
+uses GLScene, GLScreen, GLStrings, ExtDlgs, XOpenGL, Graphics;
 
 var
 	vGLTextureImageClasses : TList;
@@ -1666,14 +1667,14 @@ var
    p : Integer;
    buf : String;
 begin
-	buf:=InputBox('Blank Image', 'Enter size', Format('%d x %d', [FWidth, FHeight]));
+	buf:=InputDlg('Blank Image', 'Enter size', Format('%d x %d', [FWidth, FHeight]));
    p:=Pos('x', buf);
    if p>0 then begin
       Width:=StrToIntDef(Trim(Copy(buf, 1, p-1)), 256);
       Height:=StrToIntDef(Trim(Copy(buf, p+1, MaxInt)), 256);
       Result:=True;
    end else begin
-      ShowMessage('Invalid size');
+      InformationDlg('Invalid size');
       Result:=False;
    end;
 end;
@@ -1733,7 +1734,7 @@ end;
 constructor TGLPictureImage.Create(AOwner: TPersistent);
 begin
 	inherited;
-	FPicture:=TPicture.Create;
+	FPicture:=TGLPicture.Create;
 	FPicture.OnChange:=PictureChanged;
 end;
 
@@ -1753,9 +1754,9 @@ begin
 	if Assigned(Source) then begin
       if (Source is TGLPersistentImage) then
    		FPicture.Assign(TGLPersistentImage(Source).FPicture)
-      else if (Source is TGraphic) then
+      else if (Source is TGLGraphic) then
          FPicture.Assign(Source)
-      else if (Source is TPicture) then
+      else if (Source is TGLPicture) then
          FPicture.Assign(Source)
       else inherited;
 	end else inherited;
@@ -1831,7 +1832,7 @@ end;
 
 // SetPicture
 //
-procedure TGLPictureImage.SetPicture(const aPicture : TPicture);
+procedure TGLPictureImage.SetPicture(const aPicture : TGLPicture);
 begin
 	FPicture.Assign(aPicture);
 end;
@@ -1995,7 +1996,7 @@ var
 	newName : String;
 begin
 { TODO : A better TGLPicFileImage.Edit is needed... }
-	newName:=InputBox('PicFile Image', 'Enter filename', PictureFileName);
+	newName:=InputDlg('PicFile Image', 'Enter filename', PictureFileName);
 	Result:=(PictureFileName<>newName);
 	if Result then
 		PictureFileName:=newName
@@ -2051,7 +2052,7 @@ var
 begin
 	inherited;
    for i:=Low(FPicture) to High(FPicture) do begin
-      FPicture[i]:=TPicture.Create;
+      FPicture[i]:=TGLPicture.Create;
       FPicture[i].OnChange:=PictureChanged;
    end;
 end;
@@ -2164,7 +2165,7 @@ end;
 //
 function TGLCubeMapImage.Edit : Boolean;
 begin
-   ShowMessage('Not supported... yet');
+   InformationDlg('Not supported... yet');
    Result:=False;
 end;
 
@@ -2172,14 +2173,14 @@ end;
 //
 procedure TGLCubeMapImage.SaveToFile(const fileName : String);
 begin
-   ShowMessage('Not supported... yet');
+   InformationDlg('Not supported... yet');
 end;
 
 // LoadFromFile
 //
 procedure TGLCubeMapImage.LoadFromFile(const fileName : String);
 begin
-   ShowMessage('Not supported... yet');
+   InformationDlg('Not supported... yet');
 end;
 
 // FriendlyName
@@ -2205,14 +2206,14 @@ end;
 
 // SetPicture
 //
-procedure TGLCubeMapImage.SetPicture(index : TGLCubeMapTarget; const val : TPicture);
+procedure TGLCubeMapImage.SetPicture(index : TGLCubeMapTarget; const val : TGLPicture);
 begin
    FPicture[index].Assign(val);
 end;
 
 // GetPicture
 //
-function TGLCubeMapImage.GetPicture(index : TGLCubeMapTarget) : TPicture;
+function TGLCubeMapImage.GetPicture(index : TGLCubeMapTarget) : TGLPicture;
 begin
    Result:=FPicture[index];
 end;
@@ -2274,7 +2275,7 @@ begin
 	   		SetImage(TGLTexture(Source).FImage);
 		   	FChanges:=[tcParams, tcImage];
    		end;
-      end else if (Source is TGraphic) then begin
+      end else if (Source is TGLGraphic) then begin
          Image.Assign(Source);
       end;
 	end else inherited Assign(Source);
@@ -2582,7 +2583,6 @@ begin
       ApplyMappingMode;
 	end else begin
       UnSetGLState(rci.currentStates, stTexture2D);
-      UnSetGLState(rci.currentStates, stTextureCubeMap);
    end;
 end;
 
@@ -2591,6 +2591,7 @@ end;
 procedure TGLTexture.UnApply(var rci : TRenderContextInfo);
 begin
    if stTextureCubeMap in rci.currentStates then begin
+      UnSetGLState(rci.currentStates, stTextureCubeMap);
       glMatrixMode(GL_TEXTURE);
       glLoadIdentity;
       glMatrixMode(GL_MODELVIEW);
@@ -2781,6 +2782,8 @@ begin
    bitmap32.RegisterAsOpenGLTexture(target, MinFilter, targetFormat, FTexWidth, FTexHeight);
    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB,
                             @FRequiredMemorySize);
+   if glGetError<>GL_NO_ERROR then
+      FRequiredMemorySize:=-1;
    ClearGLError; // ignore texture-size errors
    image.ReleaseBitmap32;
 end;
@@ -3001,7 +3004,8 @@ begin
       end;
       // Apply Blending mode
 		case FBlendingMode of
-			bmOpaque : UnSetGLState(rci.currentStates, stBlend);
+			bmOpaque :
+            UnSetGLState(rci.currentStates, stBlend);
 			bmTransparency : begin
 				SetGLState(rci.currentStates, stBlend);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -3680,7 +3684,7 @@ end;
 
 // AddTextureMaterial
 //
-function TGLMaterialLibrary.AddTextureMaterial(const materialName : String; graphic : TGraphic) : TGLLibMaterial;
+function TGLMaterialLibrary.AddTextureMaterial(const materialName : String; graphic : TGLGraphic) : TGLLibMaterial;
 begin
    Result:=Materials.Add;
    with Result do begin
@@ -3775,7 +3779,7 @@ begin
     end
     else Result[0]:=StrToFloat(WorkCopy);
   except
-    ShowMessage('Wrong vector format. Use: ''<red green blue alpha>''!');
+    InformationDlg('Wrong vector format. Use: ''<red green blue alpha>''!');
     Abort;
   end;
 end;
@@ -4023,9 +4027,9 @@ begin
 	// Delphi color to Windows color
    winColor:=ColorToRGB(AColor);
    // convert 0..255 range into 0..1 range
-   Result[0]:=(winColor and $FF)/255;
-   Result[1]:=((winColor shr 8) and $FF)/255;
-   Result[2]:=((winColor shr 16) and $FF)/255;
+   Result[0]:=(winColor and $FF)*(1/255);
+   Result[1]:=((winColor shr 8) and $FF)*(1/255);
+   Result[2]:=((winColor shr 16) and $FF)*(1/255);
    Result[3]:=alpha;
 end;
 

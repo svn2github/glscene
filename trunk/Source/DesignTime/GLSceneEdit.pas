@@ -27,11 +27,16 @@ unit GLSceneEdit;
 interface
 
 {$i GLScene.inc}
+{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 uses
-  Windows, Forms, ComCtrls, GLScene, Menus, ActnList, ToolWin,
-  Controls, Classes, ImgList, Dialogs,
-  {$ifdef GLS_DELPHI_6_UP} DesignIntf {$else} DsgnIntf {$endif};
+   {$IFDEF GLS_CLX}
+   QDialogs, QImgList, QActnList, QForms, QMenus, QTypes, QComCtrls, QControls, Types,
+   {$ELSE}
+   Controls, Windows, Forms, ComCtrls, ImgList, Dialogs, Menus, ActnList, ToolWin,
+   {$ENDIF}
+   GLScene, Classes,
+   {$ifdef GLS_DELPHI_6_UP} DesignIntf {$else} DsgnIntf {$endif};
 
 type
 

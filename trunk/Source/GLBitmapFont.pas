@@ -2,9 +2,10 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>10/09/01 - Egg - Fixed visibility of tile 0
-      <li>12/08/01 - Egg - Completely rewritten handles management
-      <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
+      <li>20/01/02 - EG - Dropped 'Graphics' dependency
+      <li>10/09/01 - EG - Fixed visibility of tile 0
+      <li>12/08/01 - EG - Completely rewritten handles management
+      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
 	   <li>15/01/01 - EG - Creation
 	</ul></font>
 }
@@ -12,7 +13,7 @@ unit GLBitmapFont;
 
 interface
 
-uses Classes, GLScene, Graphics, Geometry, GLMisc, StdCtrls, GLContext;
+uses Classes, GLScene, Geometry, GLMisc, StdCtrls, GLContext, GLCrossPlatform;
 
 type
 
@@ -85,7 +86,7 @@ type
 	   private
 	      { Private Declarations }
          FRanges : TBitmapFontRanges;
-         FGlyphs : TPicture;
+         FGlyphs : TGLPicture;
          FCharWidth, FCharHeight : Integer;
          FGlyphsIntervalX, FGlyphsIntervalY : Integer;
          FHSpace, FVSpace : Integer;
@@ -99,7 +100,7 @@ type
 	   protected
 	      { Protected Declarations }
          procedure SetRanges(const val : TBitmapFontRanges);
-         procedure SetGlyphs(const val : TPicture);
+         procedure SetGlyphs(const val : TGLPicture);
          procedure SetCharWidth(const val : Integer);
          procedure SetCharHeight(const val : Integer);
          procedure SetGlyphsIntervalX(const val : Integer);
@@ -134,7 +135,7 @@ type
 	      { Published Declarations }
          {: A single bitmap containing all the characters.<p>
             The transparent color is that of the top left pixel. }
-         property Glyphs : TPicture read FGlyphs write SetGlyphs;
+         property Glyphs : TGLPicture read FGlyphs write SetGlyphs;
          {: Nb of horizontal pixels between two columns in the Glyphs. }
          property GlyphsIntervalX : Integer read FGlyphsIntervalX write SetGlyphsIntervalX;
          {: Nb of vertical pixels between two rows in the Glyphs. }
@@ -302,7 +303,7 @@ constructor TBitmapFont.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    FRanges:=TBitmapFontRanges.Create(Self);
-   FGlyphs:=TPicture.Create;
+   FGlyphs:=TGLPicture.Create;
    FGlyphs.OnChange:=OnGlyphsChanged;
    FCharWidth:=16;
    FCharHeight:=16;
@@ -336,7 +337,7 @@ end;
 
 // SetGlyphs
 //
-procedure TBitmapFont.SetGlyphs(const val : TPicture);
+procedure TBitmapFont.SetGlyphs(const val : TGLPicture);
 begin
    FGlyphs.Assign(val);
 end;
@@ -449,12 +450,12 @@ end;
 //
 procedure TBitmapFont.PrepareImage;
 var
-   bitmap : TBitmap;
+   bitmap : TGLBitmap;
    bitmap32 : TGLBitmap32;
 begin
-   bitmap:=TBitmap.Create;
+   bitmap:=TGLBitmap.Create;
    with bitmap do begin
-      PixelFormat:=pf24bit;
+      PixelFormat:=glpf24bit;
       Width:=RoundUpToPowerOf2(Glyphs.Width);
       Height:=RoundUpToPowerOf2(Glyphs.Height);
       Canvas.Draw(0, 0, Glyphs.Graphic);

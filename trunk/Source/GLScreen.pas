@@ -17,7 +17,8 @@ unit GLScreen;
 
 interface
 
-uses Windows, Classes, Geometry, Graphics;
+uses
+   Windows, Classes, Geometry, Graphics;
 
 const
    MaxVideoModes = 200;
