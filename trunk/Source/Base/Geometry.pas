@@ -372,6 +372,7 @@ const
   YTexPoint    : TTexPoint = (S:0; T:1);
   XYTexPoint   : TTexPoint = (S:1; T:1);
   NullTexPoint : TTexPoint = (S:0; T:0);
+  MidTexPoint  : TTexPoint = (S:0.5; T:0.5);
 
   // standard vectors
   XVector :    TAffineVector = (1, 0, 0);

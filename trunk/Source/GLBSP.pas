@@ -18,6 +18,11 @@ uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, Geometry;
 
 type
 
+   TBSPCullingSphere = record
+      position : TVector;
+      radius : Single;
+   end;
+
    // TBSPRenderContextInfo
    //
    TBSPRenderContextInfo = record
@@ -25,6 +30,7 @@ type
       cameraLocal : TVector;
       rci : PRenderContextInfo;
       faceGroups : TList;
+      cullingSpheres : array of TBSPCullingSphere;
    end;
 
    // TBSPRenderSort
@@ -85,6 +91,8 @@ type
 	      constructor CreateOwned(AOwner : TFaceGroups); override;
          destructor Destroy; override;
 
+         procedure IsCulled(const bsprci : TBSPRenderContextInfo;
+                            var positive, negative : Boolean);
          procedure CollectNoSort(var bsprci : TBSPRenderContextInfo);
          procedure CollectFrontToBack(var bsprci : TBSPRenderContextInfo);
          procedure CollectBackToFront(var bsprci : TBSPRenderContextInfo);
@@ -141,6 +149,18 @@ var
    libMat : TGLLibMaterial;
    faceGroupList : TList;
    bspNodeList : PPointerList;
+
+   procedure AbsoluteSphereToLocal(const absPos : TVector; absRadius : Single;
+                                   var local : TBSPCullingSphere);
+   var
+      v : TVector;
+   begin
+      local.position:=Owner.Owner.AbsoluteToLocal(absPos);
+      SetVector(v, absRadius, absRadius, absRadius, 0);
+      v:=Owner.Owner.AbsoluteToLocal(v);
+      local.radius:=MaxFloat(v);
+   end;
+
 begin
    if Mode<>momFaceGroups then begin
       inherited BuildList(mrci);
@@ -149,6 +169,14 @@ begin
    // render BSP
    if FaceGroups.Count>0 then begin
       bsprci.cameraLocal:=Owner.Owner.AbsoluteToLocal(mrci.cameraPosition);
+      SetLength(bsprci.cullingSpheres, 2);
+
+      AbsoluteSphereToLocal(mrci.cameraPosition, 1, bsprci.cullingSpheres[0]);
+      AbsoluteSphereToLocal(VectorCombine(mrci.cameraPosition,mrci.rcci.clippingDirection,
+                                          1, mrci.rcci.farClippingDistance),
+                            mrci.rcci.viewPortRadius*mrci.rcci.farClippingDistance,
+                            bsprci.cullingSpheres[1]);
+
       bsprci.rci:=@mrci;
       faceGroupList:=TList.Create;
       try
@@ -283,15 +311,40 @@ begin
 	inherited;
 end;
 
+// IsCulled
+//
+procedure TFGBSPNode.IsCulled(const bsprci : TBSPRenderContextInfo;
+                              var positive, negative : Boolean);
+var
+   i, n : Integer;
+   d : Single;
+begin
+   n:=Length(bsprci.cullingSpheres);
+   if n>0 then begin
+      positive:=True;
+      negative:=True;
+      for i:=0 to n-1 do with bsprci.cullingSpheres[i] do begin
+         d:=PlaneEvaluatePoint(SplitPlane, position);
+         if d>=-radius then
+            positive:=False;
+         if d<=radius then
+            negative:=False;
+      end;
+   end else begin
+      positive:=False;
+      negative:=False;
+   end;
+end;
+
 // CollectNoSort
 //
 procedure TFGBSPNode.CollectNoSort(var bsprci : TBSPRenderContextInfo);
 begin
-   if PositiveSubNodeIndex>0 then
+   if (PositiveSubNodeIndex>0) then
       TFGBSPNode(Owner[PositiveSubNodeIndex]).CollectNoSort(bsprci);
    if VertexIndices.Count>0 then
       bsprci.faceGroups.Add(Self);
-   if NegativeSubNodeIndex>0 then
+   if (NegativeSubNodeIndex>0) then
       TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectNoSort(bsprci);
 end;
 
