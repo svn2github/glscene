@@ -40,12 +40,18 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-//  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
-
+  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
+  {
+  // There is a problem here when the package is installed and then
+  // removed, the scene objects remain in the list without the classes
+  // there to be linked to. Unregistering them fixes this problem but
+  // Delphi7 doesn't seem to like the UnregisterSceneObject. So I'm
+  // commenting this registration out until the problem is resolved.
   with ObjectManager do begin
     RegisterSceneObject(TGLODEDummy,'GLODEDummy','ODE Objects');
     RegisterSceneObject(TGLODEPlane,'GLODEPlane','ODE Objects');
   end;
+  //}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -55,11 +61,13 @@ finalization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-//  UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
-{
+  UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
+  {
+  // See the comments above
   with ObjectManager do begin
     UnregisterSceneObject(TGLODEDummy);
     UnregisterSceneObject(TGLODEPlane);
   end;
- }
+  //}
+
 end.
