@@ -1381,6 +1381,8 @@ uses GLScene, GLStrings, XOpenGL, ApplicationFileIO
    {$ifdef WIN32}, Graphics{$endif} // for standard application colors
    ;
 
+{$Q-} // no range checking
+
 var
 	vGLTextureImageClasses : TList;
 	vColorManager: TGLColorManager;
@@ -3604,6 +3606,7 @@ begin
 		FBlendingMode:=TGLMaterial(Source).FBlendingMode;
       FMaterialOptions:=TGLMaterial(Source).FMaterialOptions;
       FTexture.Assign(TGLMaterial(Source).FTexture);
+      FFaceCulling:=TGLMaterial(Source).FFaceCulling;
 		FMaterialLibrary:=TGLMaterial(Source).MaterialLibrary;
       SetLibMaterialName(TGLMaterial(Source).LibMaterialName);
    	NotifyChange(Self);
@@ -3943,7 +3946,7 @@ begin
    n:=Length(name);
    Result:=n;
    for i:=1 to n do
-      Result:=(Result shl 1)+Ord(name[i]);
+      Result:=(Result shl 1)+Byte(name[i]);
 end;
 
 // SetName
