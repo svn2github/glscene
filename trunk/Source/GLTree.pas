@@ -632,6 +632,8 @@ begin
       Vertices.Translate(delta);
       Owner.Leaves.Vertices.Translate(delta);
    end;
+
+   Owner.FAxisAlignedDimensionsCache[0]:=-1;
 end;
 
 // BuildList
@@ -749,10 +751,9 @@ begin
    FBranches:=TGLTreeBranches.Create(Self);
    FNoise:=TGLTreeBranchNoise.Create;
 
-   FBranches.BuildBranches;
-   FRebuildTree:=False;
-   
    FAxisAlignedDimensionsCache[0]:=-1;
+
+   FBranches.BuildBranches;
 end;
 
 // Destroy
@@ -1258,8 +1259,18 @@ var
   lmin, lmax,
   bmin, bmax : TAffineVector;
 begin
-   Leaves.Vertices.GetExtents(lmin, lmax);
-   Branches.Vertices.GetExtents(bmin, bmax);
+   if Leaves.Vertices.Count>0 then
+     Leaves.Vertices.GetExtents(lmin, lmax)
+   else begin
+     lmin:=NullVector;
+     lmax:=NullVector;
+   end;
+   if Branches.Vertices.Count>0 then
+     Branches.Vertices.GetExtents(bmin, bmax)
+   else begin
+     bmin:=NullVector;
+     bmax:=NullVector;
+   end;
 
    min[0]:=MinFloat([lmin[0], lmax[0], bmin[0], bmax[0]]);
    min[1]:=MinFloat([lmin[1], lmax[1], bmin[1], bmax[1]]);
