@@ -188,7 +188,9 @@ begin
       end;
 
       case PixelFormat of
+         {$IFDEF MSWINDOWS}
          glpf24bit : imgPixelSize:=3;
+         {$ENDIF}
          glpf32bit : imgPixelSize:=4;
       end;
 
@@ -248,6 +250,7 @@ begin
       dwWidth:=Width;
       dwHeight:=Height;
       case PixelFormat of
+         {$IFDEF MSWINDOWS}
          glpf24bit : begin
             ddpfPixelFormat.dwFlags:=DDPF_RGB;
             ddpfPixelFormat.dwRGBBitCount:=24;
@@ -255,6 +258,7 @@ begin
             ddpfPixelFormat.dwGBitMask:=$0000FF00;
             ddpfPixelFormat.dwBBitMask:=$000000FF;
          end;
+         {$ENDIF}
          glpf32bit : begin
             ddpfPixelFormat.dwFlags:=DDPF_RGB;
             ddpfPixelFormat.dwRGBBitCount:=32;
