@@ -154,24 +154,26 @@ begin
             RemapAndCleanupReferences(morphTris, bufRemap);
 
             morphNorms:=MeshUtils.BuildNormals(morphTris, bufRemap);
-            try
-               SubdivideTriangles(TrackBar1.Position*0.1, morphTris, bufRemap, morphNorms);
-            finally
-               morphNorms.Free;
-            end;
+
+            SubdivideTriangles(TrackBar1.Position*0.1, morphTris, bufRemap, morphNorms);
 
             buf:=TAffineVectorList.Create;
             try
                ConvertIndexedListToList(morphTris, bufRemap, buf);
                morphTris.Assign(buf);
+               ConvertIndexedListToList(morphNorms, bufRemap, buf);
+               morphNorms.Assign(buf);
             finally
                buf.Free;
             end;
             RemapReferences(morphTris, subdivideRemap);
+            RemapReferences(morphNorms, subdivideRemap);
 
             MorphTargets[j].Vertices:=morphTris;
+            MorphTargets[j].Normals:=morphNorms;
 
             morphTris.Free;
+            morphNorms.Free;
          end;
          bufRemap.Free;
 
@@ -196,10 +198,11 @@ begin
 
 //   (GLActor1.MeshObjects[0] as TSkeletonMeshObject).PrepareBoneMatrixInvertedMeshes;
 
-   LASubdivideTime.Caption:=Format('%f.1 ms', [StopPrecisionTimer(t)*1000]);
+   LASubdivideTime.Caption:=Format('%.1f ms', [StopPrecisionTimer(t)*1000]);
    // Initial perf: 1412 ms
    // Basic Edges Hash: 464 ms
    // Several transfer optims: 377 ms
+   // morph & subdivide normals too : 527 ms
    Screen.Cursor:=crDefault;
 
    GLActor1.StructureChanged;
