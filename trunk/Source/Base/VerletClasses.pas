@@ -490,7 +490,6 @@ type
       private
 			{ Private Declarations }
          FLocation : TAffineVector;
-         FRadius  : Single;
          FHalfSides : TAffineVector;
          FSides: TAffineVector;
          FFrictionRatio: Single;
@@ -1433,8 +1432,7 @@ var
    f, dist2 : Single;
 begin
    // Compute projection of node position on the axis
-   VectorSubtract(aNode.Location, Base, proj);
-   f:=VectorDotProduct(Axis, proj);
+   f:=PointProject(aNode.Location, Base, axis);
    proj:=VectorCombine(Base, Axis, 1, f);
 
    // Sqr distance
@@ -1544,7 +1542,6 @@ begin
    FLengthDiv2:=val*0.5;
 end;
 
-<<<<<<< VerletClasses.pas
 // SetRadius
 //
 procedure TVCCapsule.SetRadius(const val : Single);
@@ -1557,20 +1554,10 @@ end;
 //
 procedure TVCCapsule.SatisfyConstraintForNode(aNode : TVerletNode;
                                               const iteration, maxIterations : Integer);
-=======
-{ TVCCapsule }
-
-procedure TVCCapsule.SatisfyConstraintForNode(aNode: TVerletNode;
-  const iteration, maxIterations: Integer);
->>>>>>> 1.15
 var
    p, n2  : Single;
    closest, v : TAffineVector;
-
-  delta, move : TAffineVector;
-  deltaLength, diff : Single;
 begin
-<<<<<<< VerletClasses.pas
    // Find the closest point to location on the capsule axis
    p:=ClampValue(PointProject(aNode.Location, FBase, FAxis),
                  -FLengthDiv2, FLengthDiv2);
@@ -1583,33 +1570,6 @@ begin
    n2:=VectorNorm(v);
    if n2<FRadius2 then
       aNode.FLocation:=VectorCombine(closest, v, 1, Sqrt(FRadius2/n2));
-=======
-  // Find the closest location on the capsule axis
-  // This could all be cached!
-  SegmentStart := VectorAdd(FBase, VectorScale(FAxis, FLength / 2));
-  SegmentStop := VectorSubtract(FBase, VectorScale(FAxis, FLength / 2));
-
-  ClosestPosition :=
-    PointSegmentClosestPoint(
-      aNode.Location,
-      SegmentStart,
-      SegmentStop);
-
-   // Find the distance between the two
-   VectorSubtract(aNode.Location, ClosestPosition, delta);
-
-   // Is it inside the sphere?
-   deltaLength:=VectorLength(delta)-aNode.Radius;
-   if Abs(deltaLength)<Radius then begin
-      // Slow it down!
-      aNode.OldApplyFriction(0.05, Radius-Abs(DeltaLength));
-
-      // Move it outside the sphere!
-      diff:=(Radius-deltaLength)/deltaLength;
-      VectorScale(delta, diff, move);
-
-      AddVector(aNode.FLocation, move);
-   end;
->>>>>>> 1.15
 end;
+
 end.
