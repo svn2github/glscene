@@ -30,6 +30,7 @@ type
          FNoiseScale : Integer;
          FNoiseAmplitude : Integer;
          FSmoothness : Single;
+         FBrightness, FGamma : Single;
 
       protected
          { Protected Declarations }
@@ -40,6 +41,8 @@ type
          procedure SetNoiseScale(const val : Integer);
          procedure SetNoiseAmplitude(const val : Integer);
          procedure SetSmoothness(const val : Single);
+         procedure SetBrightness(const val : Single);
+         procedure SetGamma(const val : Single);
 
       public
          { Public Declarations }
@@ -58,6 +61,15 @@ type
             fade-off more abruptly, and with values below 1, there will be a
             sharp spike in the center. }
          property Smoothness : Single read FSmoothness write SetSmoothness;
+         {: Brightness factor applied to the perlin texture intensity.<p>
+            Brightness acts as a scaling, non-saturating factor. Examples:<ul>
+            <li>Brightness = 1 : intensities in the [0; 1] range
+            <li>Brightness = 2 : intensities in the [0.5; 1] range
+            <li>Brightness = 0.5 : intensities in the [0; 0.5] range
+            </ul>Brightness is applied to the final texture (and thus affects
+            the distance based intensity). }
+         property Brightness : Single read FBrightness write SetBrightness;
+         property Gamma : Single read FGamma write SetGamma;
          {: Random seed to use for the perlin noise. }
          property NoiseSeed : Integer read FNoiseSeed write SetNoiseSeed default 0;
          {: Scale applied to the perlin noise (stretching). }
@@ -97,6 +109,8 @@ begin
    FNoiseScale:=100;
    FNoiseAmplitude:=50;
    FSmoothness:=1;
+   FBrightness:=1;
+   FGamma:=1;
    ColorMode:=scmInner;
 end;
 
@@ -161,15 +175,37 @@ begin
    end;
 end;
 
+// SetBrightness
+//
+procedure TGLPerlinPFXManager.SetBrightness(const val : Single);
+begin
+   if FBrightness<>val then begin
+      FBrightness:=ClampValue(val, 1e-3, 1e3);
+      NotifyChange(Self);
+   end;
+end;
+
+// SetGamma
+//
+procedure TGLPerlinPFXManager.SetGamma(const val : Single);
+begin
+   if FGamma<>val then begin
+      FGamma:=ClampValue(val, 0.1, 10);
+      NotifyChange(Self);
+   end;
+end;
+
 // BindTexture
 //
 procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer);
 var
    s, s2 : Integer;
    x, y, d : Integer;
-   is2, f, fy, pf, nBase, nAmp : Single;
+   is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
+   brScale, brOffset, invGamma : Single;
    scanLine : PGLPixel32Array;
    noise : TPerlin3DNoise;
+   gotIntensityCorrection : Boolean;
 begin
    s:=(1 shl TexMapSize);
    bmp32.Width:=s;
@@ -180,18 +216,33 @@ begin
       s2:=s shr 1;
       is2:=1/s2;
       pf:=FNoiseScale*0.05*is2;
-      nAmp:=FNoiseAmplitude*(0.01*0.5);
-      nBase:=1-nAmp;
+      nAmp:=FNoiseAmplitude*(0.01);
+      nBase:=1-nAmp*0.5;
+
+      if FBrightness>1 then begin
+         brScale:=1/FBrightness;
+         brOffset:=1-brScale;
+      end else begin
+         brScale:=FBrightness;
+         brOffset:=0;
+      end;
+      if Gamma<0.1 then
+         invGamma:=10
+      else invGamma:=1/Gamma;
+      gotIntensityCorrection:=(Gamma<>1) or (Brightness<>1);
+
       for y:=0 to s-1 do begin
          fy:=Sqr((y+0.5-s2)*is2);
          scanLine:=bmp32.ScanLine[y];
          for x:=0 to s-1 do begin
             f:=Sqr((x+0.5-s2)*is2)+fy;
             if f<1 then begin
-               d:=Trunc( Power((1-Sqrt(f)), FSmoothness)
-                        *(nBase+nAmp*noise.Noise(x*pf, y*pf))
-                        *255);
-               d:=d+(d shl 8)+(d shl 16)+(d shl 24);
+               df:=nBase+nAmp*noise.Noise(x*pf, y*pf);
+               if gotIntensityCorrection then
+                  df:=ClampValue(Power(df, InvGamma)*Brightness, 0, 1);
+               dfg:=Power((1-Sqrt(f)), FSmoothness);
+               d:=Trunc(df*255);
+               d:=d+(d shl 8)+(d shl 16)+(Trunc(dfg*255) shl 24);
             end else d:=0;
             PInteger(@scanLine[x])^:=d;
          end;
