@@ -788,6 +788,7 @@ type
    PVertexBoneWeightArray = ^TVertexBoneWeightArray;
    TVerticesBoneWeights = array [0..MaxInt shr 3] of PVertexBoneWeightArray;
    PVerticesBoneWeights = ^TVerticesBoneWeights;
+   TVertexBoneWeightDynArray = array of TVertexBoneWeight;
 
 	// TSkeletonMeshObject
 	//
@@ -827,9 +828,13 @@ type
          property VerticeBoneWeightCount : Integer read FVerticeBoneWeightCount write SetVerticeBoneWeightCount;
          property BonesPerVertex : Integer read FBonesPerVertex write SetBonesPerVertex;
 
-         function FindOrAdd(boneID : Integer; const vertex, normal : TAffineVector) : Integer;
+         function FindOrAdd(boneID : Integer;
+                            const vertex, normal : TAffineVector) : Integer; overload;
+         function FindOrAdd(const boneIDs : TVertexBoneWeightDynArray;
+                            const vertex, normal : TAffineVector) : Integer; overload;
 
          procedure AddWeightedBone(aBoneID : Integer; aWeight : Single);
+         procedure AddWeightedBones(const boneIDs : TVertexBoneWeightDynArray);
          procedure PrepareBoneMatrixInvertedMeshes;
          procedure ApplyCurrentSkeletonFrame(normalize : Boolean);
 
@@ -4131,19 +4136,45 @@ procedure TSkeletonMeshObject.AddWeightedBone(aBoneID : Integer; aWeight : Singl
 begin
    if BonesPerVertex<1 then BonesPerVertex:=1;
    VerticeBoneWeightCount:=VerticeBoneWeightCount+1;
-   with VerticesBonesWeights[VerticeBoneWeightCount-1][0] do 
-   begin
+   with VerticesBonesWeights[VerticeBoneWeightCount-1][0] do begin
       BoneID:=aBoneID;
       Weight:=aWeight;
    end;
 end;
 
-// FindOrAdd
+// AddWeightedBones
 //
-function TSkeletonMeshObject.FindOrAdd(boneID : Integer; const vertex, normal : TAffineVector) : Integer;
+procedure TSkeletonMeshObject.AddWeightedBones(const boneIDs : TVertexBoneWeightDynArray);
 var
    i : Integer;
+   n : Integer;
 begin
+   n:=Length(boneIDs);
+   if BonesPerVertex<n then BonesPerVertex:=n;
+   VerticeBoneWeightCount:=VerticeBoneWeightCount+1;
+   for i:=0 to n-1 do begin
+      with VerticesBonesWeights[VerticeBoneWeightCount-1][i] do begin
+         BoneID:=boneIDs[i].BoneID;
+         Weight:=boneIDs[i].Weight;
+      end;
+   end;
+end;
+
+// FindOrAdd
+//
+function TSkeletonMeshObject.FindOrAdd(boneID : Integer;
+                                       const vertex, normal : TAffineVector) : Integer;
+var
+   i : Integer;
+   dynArray : TVertexBoneWeightDynArray;
+begin
+   if BonesPerVertex>1 then begin
+      SetLength(dynArray, 1);
+      dynArray[0].BoneID:=boneID;
+      dynArray[0].Weight:=1;
+      Result:=FindOrAdd(dynArray, vertex, normal);
+      Exit;
+   end;
    Result:=-1;
    for i:=0 to Vertices.Count-1 do
       if (VerticesBonesWeights[i][0].BoneID=boneID)
@@ -4154,6 +4185,37 @@ begin
       end;
    if Result<0 then begin
       AddWeightedBone(boneID, 1);
+      Vertices.Add(vertex);
+      Result:=Normals.Add(normal);
+   end;
+end;
+
+// FindOrAdd
+//
+function TSkeletonMeshObject.FindOrAdd(const boneIDs : TVertexBoneWeightDynArray;
+                                       const vertex, normal : TAffineVector) : Integer;
+var
+   i, j : Integer;
+   bonesMatch : Boolean;
+begin
+   Result:=-1;
+   for i:=0 to Vertices.Count-1 do begin
+      bonesMatch:=True;
+      for j:=0 to High(boneIDs) do begin
+         if    (boneIDs[j].BoneID<>VerticesBonesWeights[i][j].BoneID)
+            or (boneIDs[j].Weight<>VerticesBonesWeights[i][j].Weight) then begin
+            bonesMatch:=False;
+            Break;
+         end;
+      end;
+      if bonesMatch and VectorEquals(Vertices[i], vertex)
+                    and VectorEquals(Normals[i], normal) then begin
+         Result:=i;
+         Break;
+      end;
+   end;
+   if Result<0 then begin
+      AddWeightedBones(boneIDs);
       Vertices.Add(vertex);
       Result:=Normals.Add(normal);
    end;
