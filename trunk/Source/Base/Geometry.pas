@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>11/02/02 - EG - Non-spinned QuaternionSlerp (Alex Grigny de Castro)
       <li>07/02/02 - EG - Added AnglePreservingMatrixInvert
       <li>30/01/02 - EG - New Quaternion<->Matrix code (Alex Grigny de Castro)
       <li>29/01/02 - EG - Fixed AngleLerp, added DistanceBetweenAngles (Alex Grigny de Castro)
@@ -828,7 +829,8 @@ function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
    QStart, QEnd - start and end unit quaternions<br>
    t            - interpolation parameter (0 to 1)<br>
    Spin         - number of extra spin rotations to involve<br> }
-function QuaternionSlerp(const QStart, QEnd: TQuaternion; Spin: Integer; t: Single): TQuaternion;
+function QuaternionSlerp(const QStart, QEnd: TQuaternion; Spin: Integer; t: Single): TQuaternion; overload;
+function QuaternionSlerp(const source, dest: TQuaternion; const t : Single) : TQuaternion; overload;
 
 //------------------------------------------------------------------------------
 // Logarithmic and exponential functions
@@ -6000,6 +6002,54 @@ begin
    Result.ImagPart[Y]:=beta * QStart.ImagPart[Y] + t * QEnd.ImagPart[Y];
    Result.ImagPart[Z]:=beta * QStart.ImagPart[Z] + t * QEnd.ImagPart[Z];
    Result.RealPart:=beta * QStart.RealPart + t * QEnd.RealPart;
+end;
+
+// QuaternionSlerp
+//
+function QuaternionSlerp(const source, dest: TQuaternion; const t: Single): TQuaternion;
+var
+   to1: array[0..4] of Single;
+   omega, cosom, sinom, scale0, scale1: Extended;
+// t goes from 0 to 1
+// absolute rotations
+begin
+   // calc cosine
+   cosom := source.ImagPart[0] * dest.ImagPart[0]
+          + source.ImagPart[1] * dest.ImagPart[1]
+          + source.ImagPart[2] * dest.ImagPart[2]
+	  + source.RealPart * dest.RealPart;
+   // adjust signs (if necessary)
+   if ( cosom < 0.0 )
+   then begin
+      cosom := -cosom;
+      to1[0] := - dest.ImagPart[0];
+      to1[1] := - dest.ImagPart[1];
+      to1[2] := - dest.ImagPart[2];
+      to1[3] := - dest.RealPart;
+   end else begin
+      to1[0] := dest.ImagPart[0];
+      to1[1] := dest.ImagPart[1];
+      to1[2] := dest.ImagPart[2];
+      to1[3] := dest.RealPart;
+   end;
+   // calculate coefficients
+   if ( (1.0 - cosom) > EPSILON2 )
+   then begin // standard case (slerp)
+      omega := arccos(cosom);
+      sinom := sin(omega);
+      scale0 := sin((1.0 - t) * omega) / sinom;
+      scale1 := sin(t * omega) / sinom;
+   end else begin // "from" and "to" quaternions are very close
+	          //  ... so we can do a linear interpolation
+      scale0 := 1.0 - t;
+      scale1 := t;
+   end;
+   // calculate final values
+   Result.ImagPart[0] := scale0 * source.ImagPart[0] + scale1 * to1[0];
+   Result.ImagPart[1] := scale0 * source.ImagPart[1] + scale1 * to1[1];
+   Result.ImagPart[2] := scale0 * source.ImagPart[2] + scale1 * to1[2];
+   Result.RealPart := scale0 * source.RealPart + scale1 * to1[3];
+   NormalizeQuaternion(Result);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
