@@ -173,6 +173,8 @@ begin
       if (i<sl.Count) and (sl[i]='triangles') then begin
          // read optional mesh data
          Inc(i);
+         if mesh.BonesPerVertex<1 then
+            mesh.BonesPerVertex:=1;
          faceGroup:=nil;
          while sl[i]<>'end' do begin
             if (faceGroup=nil) or (faceGroup.MaterialName<>sl[i]) then begin
@@ -186,7 +188,6 @@ begin
                tl.CommaText:=sl[i];
                if tl.Count>=12 then begin
                   // Half-Life 2 SMD, specifies bones and weights
-                  //nbBones:=StrToInt(tl[9]);
                   boneID:=StrToInt(tl[10]);
                end else boneID:=StrToInt(tl[0]);
                nVert:=FindOrAdd(boneID,
