@@ -18,7 +18,7 @@ PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe \
   Multitexture.exe texformat.exe terrain.exe Recorder.exe bmpfont.exe boom.exe \
   candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering.exe \
   warping.exe raycast.exe memviewer.exe volcano.exe shadows.exe tentacles.exe \
-  pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe
+  pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe tobitmap.exe meshhit.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -191,3 +191,8 @@ basicsdl.exe: rendering\basicsdl\basicsdl.dpr
 dyncubemap.exe: materials\dyncubemap\dyncubemap.dpr
   $(DCC)
 
+tobitmap.exe: rendering\tobitmap\tobitmap.dpr
+  $(DCC)
+
+meshhit.exe: collisions\meshhit\meshhit.dpr
+  $(DCC)
