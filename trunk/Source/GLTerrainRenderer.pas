@@ -194,8 +194,10 @@ begin
    FBufferTexPoints.Free;
    FBufferVertexIndices.Free;
    ReleaseAllTiles;
-   for i:=0 to High(FTilesHash) do
+   for i:=0 to High(FTilesHash) do begin
       FTilesHash[i].Free;
+      FTilesHash[i]:=nil;
+   end;
 	inherited Destroy;
 end;
 
@@ -293,6 +295,7 @@ begin
    for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
       for k:=Count-1 downto 0 do begin
          hd:=THeightData(List[k]);
+         hd.OnDestroy:=nil;
          hd.Release;
       end;
       Clear;
@@ -698,9 +701,7 @@ begin
          end;
          patch.ComputeVariance(FCLODPrecision);
       end;
-      PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-tilePos[0]);
-      PAffineIntVector(@patch.ObserverPosition)[1]:=Round(eyePos[1]-tilePos[1]);
-      PAffineIntVector(@patch.ObserverPosition)[2]:=Round(eyePos[2]-tilePos[2]);
+      patch.ObserverPosition:=VectorSubtract(eyePos, tilePos);
       patch.ResetTessellation;
       Result:=patch;
    end;
