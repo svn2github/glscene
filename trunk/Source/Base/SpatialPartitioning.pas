@@ -25,14 +25,6 @@ const
 type
   TBaseSpacePartition = class;
 
-  {: Structure for storing BoundingSpheres. Similar to TAABB}
-  TBSphere = record
-    {: Center of Bounding Sphere }
-    Center : TAffineVector;
-    {: Radius of Bounding Sphere }
-    Radius : single;
-  end;
-
   {: Used to store the actual objects in the SpacePartition }
   TSpacePartitionLeaf = class(TPersistentObject)
   private
@@ -332,33 +324,6 @@ type
     property GrowGravy : single read FGrowGravy write FGrowGravy;
   end;
 
-  {: Result type for space intersection tests, like AABBContainsAABB or
-  BSphereContainsAABB }
-  TSpaceContains = (scNoOverlap, scContainsFully, scContainsPartially);
-  {: Structure for storing the corners of an AABB, used with ExtractAABBCorners}
-  TAABBCorners = array[0..7] of TAffineVector;
-
-  {: Extract the corners from an AABB}
-  procedure ExtractAABBCorners(const AABB: TAABB; var AABBCorners : TAABBCorners);
-
-  {: Convert an AABB to a BSphere}
-  procedure AABBToBSphere(const AABB : TAABB; var BSphere : TBSphere);
-  {: Convert a BSphere to an AABB }
-  procedure BSphereToAABB(const BSphere : TBSphere; var AABB : TAABB);
-
-  {: Determines to which extent one AABB contains another AABB}
-  function AABBContainsAABB(const mainAABB, testAABB : TAABB) : TSpaceContains;
-  {: Determines to which extent a BSphere contains an AABB}
-  function BSphereContainsAABB(const mainBSphere : TBSphere; const testAABB : TAABB) : TSpaceContains;
-  {: Determines to which extent one BSphere contains another BSphere}
-  function BSphereContainsBSphere(const mainBSphere, testBSphere : TBSphere) : TSpaceContains;
-  {: Determines to which extent an AABB contains a BSpher}
-  function AABBContainsBSphere(const mainAABB : TAABB; const testBSphere : TBSphere) : TSpaceContains;
-
-  {: Clips a position to an AABB }
-  function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector;
-
-
 implementation
 
 // This was copied from Octree.pas!
@@ -402,137 +367,6 @@ const
       (cMIN,cMIN,cMIN), //Lower Back Left
       (cMID,cMIN,cMIN)  //Lower Back Right
     );
-
-procedure ExtractAABBCorners(const AABB: TAABB; var AABBCorners : TAABBCorners);
-begin
-  MakeVector(AABBCorners[0], AABB.min[0], AABB.min[1], AABB.min[2]);
-  MakeVector(AABBCorners[1], AABB.min[0], AABB.min[1], AABB.max[2]);
-  MakeVector(AABBCorners[2], AABB.min[0], AABB.max[1], AABB.min[2]);
-  MakeVector(AABBCorners[3], AABB.min[0], AABB.max[1], AABB.max[2]);
-
-  MakeVector(AABBCorners[4], AABB.max[0], AABB.min[1], AABB.min[2]);
-  MakeVector(AABBCorners[5], AABB.max[0], AABB.min[1], AABB.max[2]);
-  MakeVector(AABBCorners[6], AABB.max[0], AABB.max[1], AABB.min[2]);
-  MakeVector(AABBCorners[7], AABB.max[0], AABB.max[1], AABB.max[2]);
-end;
-
-procedure AABBToBSphere(const AABB : TAABB; var BSphere : TBSphere);
-begin
-  BSphere.Center := VectorScale(VectorAdd(AABB.min, AABB.max), 0.5);
-  BSphere.Radius := VectorDistance(AABB.min, AABB.max) * 0.5;
-end;
-
-procedure BSphereToAABB(const BSphere : TBSphere; var AABB : TAABB);
-begin
-  AABB.min[0] := BSphere.Center[0] - BSphere.Radius;
-  AABB.min[1] := BSphere.Center[1] - BSphere.Radius;
-  AABB.min[2] := BSphere.Center[2] - BSphere.Radius;
-
-  AABB.max[0] := BSphere.Center[0] + BSphere.Radius;
-  AABB.max[1] := BSphere.Center[1] + BSphere.Radius;
-  AABB.max[2] := BSphere.Center[2] + BSphere.Radius;
-end;
-
-function AABBContainsAABB(const mainAABB, testAABB : TAABB) : TSpaceContains;
-begin
-  // AABB1 fits completely inside AABB2?
-  // AABB1 min must be >= to AABB2 min
-  // AABB1 max must be <= to AABB2 max
-
-  if
-   ((mainAABB.min[0]<testAABB.max[0]) and
-    (mainAABB.min[1]<testAABB.max[1]) and
-    (mainAABB.min[2]<testAABB.max[2]) and
-
-    (testAABB.min[0]<mainAABB.max[0]) and
-    (testAABB.min[1]<mainAABB.max[1]) and
-    (testAABB.min[2]<mainAABB.max[2])) then
-  begin
-    if(testAABB.min[0]>=mainAABB.min[0]) and
-      (testAABB.min[1]>=mainAABB.min[1]) and
-      (testAABB.min[2]>=mainAABB.min[2]) and
-
-      (testAABB.max[0]<=mainAABB.max[0]) and
-      (testAABB.max[1]<=mainAABB.max[1]) and
-      (testAABB.max[2]<=mainAABB.max[2]) then
-      result := scContainsFully
-    else
-      result := scContainsPartially;
-  end else
-    result := scNoOverlap;
-end;
-
-function AABBContainsBSphere(const mainAABB : TAABB; const testBSphere : TBSphere) : TSpaceContains;
-var
-  testAABB : TAABB;
-begin
-  BSphereToAABB(testBSphere, testAABB);
-  result := AABBContainsAABB(mainAABB, testAABB);
-end;
-
-function BSphereContainsAABB(const mainBSphere : TBSphere; const testAABB : TAABB) : TSpaceContains;
-var
-  r2: single;
-  ClippedCenter : TAffineVector;
-
-  AABBCorners : TAABBCorners;
-  CornerHitCount : integer;
-begin
-  r2 := sqr(mainBSphere.Radius);
-
-  ClippedCenter := ClipToAABB(mainBSphere.Center, testAABB);
-
-  if VectorDistance2(ClippedCenter, mainBSphere.Center) < r2 then
-  begin
-    ExtractAABBCorners(testAABB, AABBCorners);
-
-    CornerHitCount := 0;
-    // BSphere fully contains aabb if all corners of aabb are within bsphere.
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[0]) < r2) then inc(CornerHitCount);
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[1]) < r2) then inc(CornerHitCount);
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[2]) < r2) then inc(CornerHitCount);
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[3]) < r2) then inc(CornerHitCount);
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[4]) < r2) then inc(CornerHitCount);
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[5]) < r2) then inc(CornerHitCount);
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[6]) < r2) then inc(CornerHitCount);
-    if (VectorDistance2(mainBSphere.Center, AABBCorners[7]) < r2) then inc(CornerHitCount);
-
-    if CornerHitCount=7 then
-      result := scContainsFully
-    else
-      result := scContainsPartially;
-  end else
-    result := scNoOverlap;
-end;
-
-function BSphereContainsBSphere(const mainBSphere, testBSphere : TBSphere) : TSpaceContains;
-var
-  d2 : single;
-begin
-  d2 := VectorDistance2(mainBSphere.Center, testBSphere.Center);
-
-  if d2<sqr(mainBSphere.Radius+testBSphere.Radius) then
-  begin
-    if d2<sqr(mainBSphere.Radius-testBSphere.Radius) then
-      result := scContainsFully
-    else
-      result := scContainsPartially;
-  end else
-    result := scNoOverlap;
-end;
-
-function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector;
-begin
-  result := v;
-
-  if result[0]<AABB.min[0] then result[0] := AABB.min[0];
-  if result[1]<AABB.min[1] then result[1] := AABB.min[1];
-  if result[2]<AABB.min[2] then result[2] := AABB.min[2];
-
-  if result[0]>AABB.max[0] then result[0] := AABB.max[0];
-  if result[1]>AABB.max[1] then result[1] := AABB.max[1];
-  if result[2]>AABB.max[2] then result[2] := AABB.max[2];
-end;
 
 { TSpacePartitionLeaf }
 

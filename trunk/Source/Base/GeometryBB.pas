@@ -6,6 +6,9 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/06/03 - MF - Added TBSphere for bounding spheres and classes to
+                          determine whether one aabb/bsphere contains another
+                          aabb/bsphere
       <li>21/06/03 - MF - Added IntersectAABBsAbsolute
       <li>08/05/03 - DanB - Added Plane/Triangle-AABB collisions (Matheus Degiovani)
       <li>07/02/03 - EG - Added IntersectAABBsAbsoluteXY (Dan Bartlett)
@@ -114,7 +117,6 @@ function BSphereContainsAABB(const mainBSphere : TBSphere; const testAABB : TAAB
 function BSphereContainsBSphere(const mainBSphere, testBSphere : TBSphere) : TSpaceContains;
 {: Determines to which extent an AABB contains a BSpher}
 function AABBContainsBSphere(const mainAABB : TAABB; const testBSphere : TBSphere) : TSpaceContains;
-
 {: Clips a position to an AABB }
 function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector;
 
