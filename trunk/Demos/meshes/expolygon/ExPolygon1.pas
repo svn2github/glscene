@@ -9,7 +9,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Geometry, GLTexture, GLScene, GLObjects, GLMisc, GLMultiPolygon,
+  Geometry, GLTexture, GLScene, GLObjects, GLGeomObjects, GLMisc, GLMultiPolygon,
   GLWin32Viewer;
 
 type
