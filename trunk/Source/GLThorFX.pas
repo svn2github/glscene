@@ -1,3 +1,5 @@
+//    04/15/03 - Added initialization to CalcThor, to fix an error
+//               Thanks to Martin Kirsch for this solution 
 //    12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
 //                    Fixed leaks (colors) 
 //
@@ -382,8 +384,12 @@ var
    a,b :single;
    len :single;
 begin
+ // initialise all points with valid data
+ for N := 0 to Maxpoints-1 do
+   SetVector(FThorpoints[N].Position,0,0,0);
+
  //------------------Calculate fractal (wildness)---------------
-  SetVector(FThorpoints[0].Position,0,0,0);
+//  SetVector(FThorpoints[0].Position,0,0,0);
   SetVector(FThorpoints[Maxpoints-1].Position,0,0,0);
 
   CalcFrac(0,maxpoints-1,0,0,0);
