@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/09/03 - EG - Added TGLShader.Enabled
       <li>02/09/03 - EG - Added TGLColor.HSVA
       <li>28/07/03 - aidave - Added TGLColor.RandomColor
       <li>24/07/03 - EG - Introduced TGLTextureImageEditor mechanism
@@ -728,6 +729,7 @@ type
    TGLShader = class (TGLUpdateAbleComponent)
 	   private
 	      { Private Declarations }
+         FEnabled : Boolean;
          FLibMatUsers : TList;
          FVirtualHandle : TGLVirtualHandle;
          FShaderStyle : TGLShaderStyle;
@@ -755,6 +757,7 @@ type
          procedure FinalizeShader;
          procedure OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
          procedure OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+         procedure SetEnabled(val : Boolean);
 
          property ShaderInitialized : Boolean read GetShaderInitialized;
          property ShaderActive : Boolean read FShaderActive;
@@ -782,6 +785,14 @@ type
 
          {: Shader application style (default is ssLowLevel). }
          property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle;
+
+      published
+	      { Published Declarations }
+         {: Turns on/off shader application.<p>
+            Note that this only turns on/off the shader application, if the
+            ShaderStyle is ssReplace, the material won't be applied even if
+            the shader is disabled. }
+         property Enabled : Boolean read FEnabled write SetEnabled default True;
    end;
 
    // TGLTextureFormat
@@ -2671,6 +2682,7 @@ begin
    FLibMatUsers:=TList.Create;
    FVirtualHandle:=TGLVirtualHandle.Create;
    FShaderStyle:=ssLowLevel;
+   FEnabled:=True;
 	inherited;
 end;
 
@@ -2784,9 +2796,11 @@ end;
 procedure TGLShader.Apply(var rci : TRenderContextInfo);
 begin
    Assert(not FShaderActive, 'Unbalanced shader application.');
-   if FVirtualHandle.Handle=0 then
-      InitializeShader;
-   DoApply(rci);
+   if Enabled then begin
+      if FVirtualHandle.Handle=0 then
+         InitializeShader;
+      DoApply(rci);
+   end;
    FShaderActive:=True;
 end;
 
@@ -2795,9 +2809,14 @@ end;
 function TGLShader.UnApply(var rci : TRenderContextInfo) : Boolean;
 begin
    Assert(FShaderActive, 'Unbalanced shader application.');
-   Result:=DoUnApply(rci);
-   if not Result then
+   if Enabled then begin
+      Result:=DoUnApply(rci);
+      if not Result then
+         FShaderActive:=False;
+   end else begin
       FShaderActive:=False;
+      Result:=False;
+   end;
 end;
 
 // OnVirtualHandleDestroy
@@ -2813,6 +2832,17 @@ end;
 procedure TGLShader.OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
 begin
    handle:=1;
+end;
+
+// SetEnabled
+//
+procedure TGLShader.SetEnabled(val : Boolean);
+begin
+   Assert(not FShaderActive, 'Shader is active.');
+   if val<>FEnabled then begin
+      FEnabled:=val;
+      NotifyChange(Self);
+   end;
 end;
 
 // RegisterUser
