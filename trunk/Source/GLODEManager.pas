@@ -84,6 +84,8 @@ type
                               csmMotion1,csmMotion2,csmSlip1,csmSlip2);
   TSurfaceModes = set of TODECollisionSurfaceMode;
 
+  TODESolverMethod = (osmDefault, osmStepFast, osmQuickStep);
+
   TODEElements = class;
   TODEBaseElement = class;
   TODEBaseJoint = class;
@@ -104,10 +106,11 @@ type
       FDynamicObjectRegister,
       FJointRegister : TPersistentObjectList;
       FRFContactList     : TList; // Rolling friction list
-      FStepFast : Boolean;
-      FFastIterations : Integer;
+      FIterations : Integer;
+      FSolver : TODESolverMethod;
       procedure SetGravity(value:TGLCoordinates);
       procedure GravityChange(Sender:TObject);
+      procedure SetIterations(const val : Integer);
     protected
       {: Calculate the contact between 2 objects based on their Collision
          Surfaces. }
@@ -146,15 +149,15 @@ type
       {: This event occurs after the contact information has been filled out
          by the CalcContact procedure and before the contact joint is created.
          The HandleCollision parameter can be set to determine if a collision
-         is added the Contact Joints. Any 'last minute' changes to the 
+         is added the Contact Joints. Any 'last minute' changes to the
          collisions behaviour can be made through the contact parameter. }
       property OnCollision : TODECollisionEvent read FOnCollision write FOnCollision;
       {: Use this event to override the collision handling procedure with your
          own custom collision handling code. }
       property OnCustomCollision : TODECustomCollisionEvent read FOnCustomCollision write FOnCustomCollision;
-      //: dWorldStepFast1 properties
-      property StepFast : Boolean read FStepFast write FStepFast;
-      property FastIterations : Integer read FFastIterations write FFastIterations;
+      //: ODE solver properties
+      property Solver : TODESolverMethod read FSolver write FSolver;
+      property Iterations : Integer read FIterations write SetIterations;
   end;
 
   // TODECollisionSurface
@@ -1089,17 +1092,18 @@ begin
   FGravity:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
   FGravity.OnNotifyChange:=GravityChange;
 
+  FSolver:=osmDefault;
+  FIterations:=3;
+
   if not (csDesigning in ComponentState) then begin
     if not InitODE('') then
       raise Exception.Create('ODE failed to initialize.');
     FWorld:=dWorldCreate;
     FSpace:=dHashSpaceCreate(nil);
     dWorldSetCFM(FWorld,1e-5);
+    dWorldSetQuickStepNumIterations(FWorld, FIterations);
     FContactGroup:=dJointGroupCreate(100);
   end;
-
-  FStepFast:=False;
-  FFastIterations:=5;
 
   RegisterManager(Self);
 end;
@@ -1314,10 +1318,11 @@ begin
 
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace,Self,nearCallback);
-  if FStepFast then
-    dWorldStepFast1(FWorld, deltaTime, FFastIterations)
-  else
-    dWorldStep(FWorld, deltaTime);
+  case FSolver of
+    osmDefault   : dWorldStep(FWorld, deltaTime);
+    osmStepFast  : dWorldStepFast1(FWorld, deltaTime, FIterations);
+    osmQuickStep : dWorldQuickStep(FWorld, deltaTime);
+  end;
   dJointGroupEmpty(FContactGroup);
 
   // Align dynamic objects to their ODE bodies
@@ -1346,6 +1351,13 @@ begin
     dBodySetAngularVel(body,vec[0]*Coeff,vec[1]*Coeff,vec[2]*Coeff);
     FRFContactList.Delete(0);
   end;
+end;
+
+procedure TGLODEManager.SetIterations(const val : Integer);
+begin
+  FIterations:=val;
+  if Assigned(FWorld) then
+    dWorldSetQuickStepNumIterations(FWorld, FIterations);
 end;
 
 
