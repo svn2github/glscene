@@ -261,7 +261,7 @@ procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
       glGetIntegerv(OpenGL1x.GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
       if errPos>-1 then begin
          errString:=glGetString(GL_PROGRAM_ERROR_STRING_ARB);
-         Exception.Create(PChar(errString));
+         raise Exception.Create(PChar(errString));
       end;
       CheckOpenGLError;
    end;
