@@ -45,8 +45,45 @@ edge, and it is not called &quot;bleeding&quot; without reason ;)...
 Otherwise, check your Delphi paths for duplicates or old .pas/.dcu
 that's where the problem lies 99% of the time.</p>
 
-<p>Compile options (activated/deactivated in <em>GLScene.inc</em>,
-all are inactive by default):</p>
+<p><strong><u>Content of source directories:</u></strong></p>
+
+<ul>
+    <li><strong>Source</strong> : &quot;core&quot; GLScene units,
+        that define and implement all common objects and
+        behaviours that are GLScene specific. These cover all
+        platform-independant aspects of managing and rendering
+        the scene.</li>
+    <li><strong>Source\Base</strong> : base units, used by
+        GLScene. All code in this directory is not GLScene-specific
+        and can have other uses (no dependencies to core GLScene
+        units). Cover object persistence, maths, etc.</li>
+    <li><strong>Source\DesignTime</strong> : contains all design-time
+        units, property editors and experts. None of these units
+        should be linked with an end-user compiled executable (unless
+        you explicitly use these units).</li>
+    <li><strong>Source\FileFormats</strong> : fileformats
+        specific units, dedicated to loading/saving or describing
+        external (non GLScene) fileformats.</li>
+    <li><strong>Source\Platform</strong> : platform-specific
+        support units.</li>
+    <li><strong>Source\PlugIn</strong> : old plug-in support
+        units, currently in stasis/undefined state.</li>
+    <li><strong>Source\GameAPIs</strong> : game APIs interface
+        units (and DLLs). Placed here for convenience but not
+        really a part of GLScene, if you have issues with these,
+        refer to their owners.</li>
+    <li><strong>Source\SoundAPIs</strong> : sound APIs interface
+        units (and DLLs). Placed here for convenience but not
+        really a part of GLScene, if you have issues with these,
+        refer to their owners.</li>
+    <li><strong>Source\VideoAPIs</strong> : video APIs interface
+        units (and DLLs). Placed here for convenience but not
+        really a part of GLScene, if you have issues with these,
+        refer to their owners.</li>
+</ul>
+
+<p><strong><u>Compile options (activated/deactivated in </u></strong><em><strong><u>GLScene.inc</u></strong></em><strong><u>,
+all are inactive by default):</u></strong></p>
 
 <ul>
     <li>GLS_Graphics32_SUPPORT : controls support and dependency
