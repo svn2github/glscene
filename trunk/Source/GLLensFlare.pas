@@ -465,11 +465,11 @@ begin
 
    // make the glow appear/disappear progressively
    if flareInViewPort and FlareIsNotOccluded then begin
-      FCurrSize:=FCurrSize+FDeltaTime*500;
+      FCurrSize:=FCurrSize+FDeltaTime*10*Size;
       if FCurrSize>Size then
          FCurrSize:=Size;
    end else begin
-      FCurrSize:=FCurrSize-FDeltaTime*500;
+      FCurrSize:=FCurrSize-FDeltaTime*10*Size;
       if FCurrSize<0 then
          FCurrSize:=0;
    end;
