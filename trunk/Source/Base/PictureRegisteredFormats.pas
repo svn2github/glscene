@@ -37,6 +37,9 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+type
+   PInteger = ^Integer;
+
 // GraphicClassForExtension
 //
 function GraphicClassForExtension(const anExtension : String) : TGraphicClass;
