@@ -2354,13 +2354,14 @@ var
    i : Integer;
    list : TList;
 begin
+   FVirtualHandle.DestroyHandle;
+   FinalizeShader;
 	inherited;
    list:=FLibMatUsers;
    FLibMatUsers:=nil;
    for i:=list.Count-1 downto 0 do
       TGLLibMaterial(list[i]).Shader:=nil;
    list.Free;
-   FinalizeShader;
    FVirtualHandle.Free;
 end;
 
@@ -2401,19 +2402,14 @@ var
    activateContext : Boolean;
 begin
    if FVirtualHandle.Handle<>0 then begin
+      activateContext:=(not FVirtualHandle.RenderingContext.Active);
+      if activateContext then
+         FVirtualHandle.RenderingContext.Activate;
       try
-         activateContext:=(not FVirtualHandle.RenderingContext.Active);
-         if activateContext then
-            FVirtualHandle.RenderingContext.Activate;
-         try
-            DoFinalize;
-         finally
-            if activateContext then
-               FVirtualHandle.RenderingContext.Deactivate;
-         end;
+         DoFinalize;
       finally
-         FVirtualHandle.OnDestroy:=nil;
-         FVirtualHandle.Free;
+         if activateContext then
+            FVirtualHandle.RenderingContext.Deactivate;
       end;
    end;
 end;
@@ -3674,6 +3670,7 @@ begin
       FShader:=val;
       if Assigned(FShader) then
          FShader.RegisterUser(Self);
+      NotifyUsers;
    end;
 end;
 
