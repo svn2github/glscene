@@ -97,7 +97,7 @@ type
 			{ Protected Declarations }
          FTextFontEntry : PFontEntry;
          FontChanged : Boolean;
-         procedure DestroyHandles; override;
+         procedure DestroyHandle; override;
          procedure OnFontChange(sender : TObject);
          procedure GetFirstAndLastChar(var firstChar, lastChar : Integer);
 
@@ -375,9 +375,9 @@ begin
    end;
 end;
 
-// DoDestroyList
+// DestroyHandle
 //
-procedure TSpaceText.DestroyHandles;
+procedure TSpaceText.DestroyHandle;
 begin
    ReleaseFontManager;
    inherited;

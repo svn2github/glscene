@@ -383,7 +383,8 @@ type
          procedure RebuildMatrix;
          procedure SetName(const NewName: TComponentName); override;
          procedure SetParentComponent(Value: TComponent); override;
-         procedure DestroyHandles; virtual;
+         procedure DestroyHandle; dynamic;
+         procedure DestroyHandles; dynamic;
          procedure DeleteChildCameras;
 
       public
@@ -764,7 +765,7 @@ type
          function  Blended : Boolean; override;
 
          procedure SetGLMaterial(AValue: TGLMaterial);
-         procedure DestroyHandles; override;
+         procedure DestroyHandle; override;
 
       public
          { Public Declarations }
@@ -2142,6 +2143,13 @@ begin
    end;
 end;
 
+// DestroyHandle
+//
+procedure TGLBaseSceneObject.DestroyHandle;
+begin
+   FListHandle.DestroyHandle;
+end;
+
 // DestroyHandles
 //
 procedure TGLBaseSceneObject.DestroyHandles;
@@ -2150,7 +2158,7 @@ var
 begin
    for i:=0 to Count-1 do
       Children[i].DestroyHandles;
-   FListHandle.DestroyHandle;
+   DestroyHandle;
 end;
 
 // Blended
@@ -3911,9 +3919,9 @@ begin
    NotifyChange(Self);
 end;
 
-// DestroyHandles
+// DestroyHandle
 //
-procedure TGLCustomSceneObject.DestroyHandles;
+procedure TGLCustomSceneObject.DestroyHandle;
 begin
    inherited;
    FMaterial.DestroyHandles;

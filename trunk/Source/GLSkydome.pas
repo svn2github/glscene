@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>26/02/02 - EG - Enhanced star support (generation and twinkle)
       <li>21/01/02 - EG - Skydome position now properly ignored
       <li>23/09/01 - EG - Fixed and improved TEarthSkyDome
       <li>26/08/01 - EG - Added SkyDomeStars
@@ -137,7 +138,7 @@ type
 	      function FindItemID(ID: Integer): TSkyDomeStar;
 	      property Items[index : Integer] : TSkyDomeStar read GetItems write SetItems; default;
 
-         procedure BuildList(var rci : TRenderContextInfo);
+         procedure BuildList(var rci : TRenderContextInfo; twinkle : Boolean);
 
          {: Adds nb random stars of the given color.<p>
             Stars are homogenously scattered on the complete sphere, not only the
@@ -145,6 +146,11 @@ type
          procedure AddRandomStars(nb : Integer; color : TColor;
                                   limitToTopDome : Boolean = False);
    end;
+
+   // TSkyDomeOption
+   //
+   TSkyDomeOption = (sdoTwinkle);
+   TSkyDomeOptions = set of TSkyDomeOption;
 
 	// TSkyDome
 	//
@@ -160,6 +166,7 @@ type
 	TSkyDome = class (TGLImmaterialSceneObject)
 	   private
 	      { Private Declarations }
+         FOptions : TSkyDomeOptions;
          FBands : TSkyDomeBands;
          FStars : TSkyDomeStars;
 
@@ -167,6 +174,7 @@ type
 	      { Protected Declarations }
          procedure SetBands(const val : TSkyDomeBands);
          procedure SetStars(const val : TSkyDomeStars);
+         procedure SetOptions(const val : TSkyDomeOptions);
 
 	   public
 	      { Public Declarations }
@@ -182,6 +190,7 @@ type
 	      { Published Declarations }
          property Bands : TSkyDomeBands read FBands write SetBands;
          property Stars : TSkyDomeStars read FStars write SetStars;
+         property Options : TSkyDomeOptions read FOptions write SetOptions default [];
 	end;
 
    // TEarthSkyDome
@@ -604,32 +613,46 @@ end;
 
 // BuildList
 //
-procedure TSkyDomeStars.BuildList(var rci : TRenderContextInfo);
+procedure TSkyDomeStars.BuildList(var rci : TRenderContextInfo; twinkle : Boolean);
 var
-   i : Integer;
+   i, n : Integer;
    star : TSkyDomeStar;
    lastColor : TColor;
-   color : TColorVector;
+   color, twinkleColor : TColorVector;
+
+   procedure DoTwinkle;
+   begin
+      if (n and 63)=0 then begin
+         twinkleColor:=VectorScale(color, Random*0.6+0.4);
+         glColor3fv(@twinkleColor[0]);
+         n:=0;
+      end else Inc(n);
+   end;
+
 begin
    if Count=0 then Exit;
    CalculateCartesianCoordinates;
    lastColor:=-1;
+   n:=0;
    glPointSize(1.2);
-//   glEnable(GL_POINT_SMOOTH);
    for i:=0 to Count-1 do begin
       star:=Items[i];
       if lastColor<>star.FColor then begin
          color:=ConvertWinColor(star.FColor);
          if lastColor<>-1 then
             glEnd;
-         glColor4fv(@color[0]);
+         if twinkle then begin
+            n:=0;
+            DoTwinkle;
+         end else glColor4fv(@color[0]);
          glBegin(GL_POINTS);
          lastColor:=star.FColor;
       end;
+      if twinkle then
+         DoTwinkle;
       glVertex3fv(@star.FCacheCoord[0]);
    end;
    glEnd;
-   glDisable(GL_POINT_SMOOTH);
    glPointSize(1);
 end;
 
@@ -645,17 +668,14 @@ begin
    for i:=1 to nb do begin
       star:=Add;
       // pick a point in the half-cube
-      coord[0]:=Random-0.5;
-      coord[1]:=Random-0.5;
       if limitToTopDome then
          coord[2]:=Random
-      else coord[2]:=Random-0.5;
-      // project it on the sphere
-      NormalizeVector(coord);
+      else coord[2]:=Random*2-1;
       // calculate RA and Dec
       star.RA:=ArcSin(coord[2]);
-      star.Dec:=ArcTan2(coord[1], coord[0]);
-      // pick a random color
+      star.Dec:=Random*c2PI-PI;
+      SinCos(star.Dec, coord[0], coord[1]);
+      // pick a color
       star.Color:=color;
    end;
 end;
@@ -723,12 +743,28 @@ begin
    StructureChanged;
 end;
 
+// SetOptions
+//
+procedure TSkyDome.SetOptions(const val : TSkyDomeOptions);
+begin
+   if val<>FOptions then begin
+      FOptions:=val;
+      if sdoTwinkle in FOptions then
+         ObjectStyle:=ObjectStyle+[osDirectDraw]
+      else begin
+         ObjectStyle:=ObjectStyle-[osDirectDraw];
+         DestroyHandle;
+      end;
+      StructureChanged;
+   end;
+end;
+
 // BuildList
 //
 procedure TSkyDome.BuildList(var rci : TRenderContextInfo);
 begin
    Bands.BuildList(rci);
-   Stars.BuildList(rci);
+   Stars.BuildList(rci, (sdoTwinkle in FOptions));
 end;
 
 // DoRender
@@ -756,7 +792,9 @@ begin
    glTranslatef(-LocalMatrix[3][0], -LocalMatrix[3][1], -LocalMatrix[3][2]);
    glMultMatrixf(@LocalMatrix);
    // render
-   glCallList(GetHandle(rci));
+   if sdoTwinkle in FOptions then
+      BuildList(rci)
+   else glCallList(GetHandle(rci));
    // restore
    glPopMatrix;
    glDepthMask(True);

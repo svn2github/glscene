@@ -952,7 +952,7 @@ type
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
 
-         procedure DestroyHandles; override;
+         procedure DestroyHandle; override;
 
          {: Invoked after creating a TVectorFile and before loading.<p>
             Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
@@ -4265,7 +4265,7 @@ procedure TBaseMesh.SetMaterialLibrary(const val : TGLMaterialLibrary);
 begin
    if FMaterialLibrary<>val then begin
       if Assigned(FMaterialLibrary) then begin
-         DestroyHandles;
+         DestroyHandle;
          FMaterialLibrary.RemoveFreeNotification(Self);
       end;
       FMaterialLibrary:=val;
@@ -4320,9 +4320,9 @@ begin
    ScaleVector(Result, Scale.DirectVector);
 end;
 
-// DestroyHandles
+// DestroyHandle
 //
-procedure TBaseMesh.DestroyHandles;
+procedure TBaseMesh.DestroyHandle;
 begin
    if Assigned(FMaterialLibrary) then
       MaterialLibrary.DestroyHandles;

@@ -57,7 +57,7 @@ type
          procedure SetCLODPrecision(const val : Integer);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-			procedure DestroyHandles; override;
+			procedure DestroyHandle; override;
 
          procedure ReleaseAllTiles; dynamic;
          procedure OnTileDestroyed(sender : TObject); virtual;
@@ -164,9 +164,9 @@ begin
    inherited;
 end;
 
-// DestroyHandles
+// DestroyHandle
 //
-procedure TTerrainRenderer.DestroyHandles;
+procedure TTerrainRenderer.DestroyHandle;
 begin
    inherited;
    ReleaseAllTiles;
