@@ -1161,6 +1161,8 @@ type
          property Behaviours;
    end;
 
+   TGLProxyObjectClass = class of TGLProxyObject;
+
    // TLightStyle
    //
    {: Defines the various styles for lightsources.<p>
