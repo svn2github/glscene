@@ -90,7 +90,8 @@
       ..\Source\GLPerlinPFX.obj ..\Source\GLImposter.obj 
       ..\Source\GLFeedback.obj ..\Source\GLAnimatedSprite.obj 
       ..\Source\Base\VerletHairClasses.obj ..\Source\GLVerletClasses.obj 
-      ..\Source\GLGLUTesselation.obj ..\Source\GLMeshBuilder.obj"/>
+      ..\Source\GLGLUTesselation.obj ..\Source\GLMeshBuilder.obj
+      ..\Source\FileFormats\DDS.obj"/>
     <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
       ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
     <IDLFILES value=""/>
@@ -319,6 +320,7 @@
       <FILE FILENAME="..\Source\GLVerletClasses.pas" FORMNAME="" UNITNAME="GLVerletClasses" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLGLUTesselation.pas" FORMNAME="" UNITNAME="GLGLUTesselation" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLMeshBuilder.pas" FORMNAME="" UNITNAME="GLMeshBuilder" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\DDS.pas" FORMNAME="" UNITNAME="DDS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
