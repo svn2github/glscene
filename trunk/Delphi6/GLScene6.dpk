@@ -164,6 +164,7 @@ contains
   GLFileTIN in '..\Source\FileFormats\GLFileTIN.pas',
   GLFileGTS in '..\Source\FileFormats\GLFileGTS.pas',
   GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
-  GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas';
+  GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas',
+  GLShadowVolume in '..\Source\GLShadowVolume.pas';
 
 end.
