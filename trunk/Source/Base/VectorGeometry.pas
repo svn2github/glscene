@@ -6471,7 +6471,7 @@ begin
    else if (base=cZero) and (exponent>cZero) then
       Result:=cZero
    else if RoundInt(exponent)=exponent then
-     Result:=Power(base, Round(exponent))
+     Result:=Power(base, Integer(Round(exponent)))
    else Result:=Exp(exponent*Ln(base));
    {$HINTS ON}
 end;
