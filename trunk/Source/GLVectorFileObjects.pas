@@ -213,8 +213,8 @@ type
          FName : String;
          FPosition : TAffineVectorList;
          FRotation : TAffineVectorList;
-         FLocalMatrixList : PMatrixArray;
          FQuaternion : TQuaternionList;
+         FLocalMatrixList : PMatrixArray;
          FTransformMode : TSkeletonFrameTransform;
 
 	   protected
@@ -342,9 +342,6 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor Create; override;
-         destructor Destroy; override;
-
 	      procedure WriteToFiler(writer : TVirtualWriter); override;
 	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
@@ -421,8 +418,7 @@ type
          FOwner : TSkeletonColliderList;
          FBone : TSkeletonBone;
          FBoneID : Integer;
-         FLocalMatrix,
-         FGlobalMatrix : TMatrix;
+         FLocalMatrix, FGlobalMatrix : TMatrix;
          FAutoUpdate : Boolean;
 
       protected
@@ -456,7 +452,7 @@ type
    // TSkeletonColliderList
    //
    {: List class for storing TSkeletonCollider objects. }
-   TSkeletonColliderList = class(TPersistentObjectList)
+   TSkeletonColliderList = class (TPersistentObjectList)
       private
          { Private Declarations }
          FOwner : TPersistent;
@@ -468,6 +464,8 @@ type
       public
          { Public Declarations }
          constructor CreateOwned(AOwner : TPersistent);
+         destructor Destroy; override;
+
          procedure ReadFromFiler(reader : TVirtualReader); override;
          procedure Clear; override;
          {: Calls AlignCollider for each collider in the list. }
@@ -1406,7 +1404,7 @@ type
 	TActorAnimations = class (TCollection)
 	   private
 	      { Private Declarations }
-	      owner : TGLActor;
+	      FOwner : TGLActor;
 
 	   protected
 	      { Protected Declarations }
@@ -1624,18 +1622,18 @@ type
 
    // TVectorFileFormat
    //
-   PVectorFileFormat = ^TVectorFileFormat;
-   TVectorFileFormat = record
-      VectorFileClass : TVectorFileClass;
-      Extension       : String;
-      Description     : String;
-      DescResID       : Integer;
+   TVectorFileFormat = class
+      public
+         VectorFileClass : TVectorFileClass;
+         Extension       : String;
+         Description     : String;
+         DescResID       : Integer;
    end;
 
    // TVectorFileFormatsList
    //
    {: Stores registered vector file formats. }
-   TVectorFileFormatsList = class(TList)
+   TVectorFileFormatsList = class (TPersistentObjectList)
       public
          { Public Declarations }
          destructor Destroy; override;
@@ -1671,8 +1669,7 @@ procedure UnregisterVectorFileClass(aClass : TVectorFileClass);
 
 
 var
-   vGLVectorFileObjectsAllocateMaterials : boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
-
+   vGLVectorFileObjectsAllocateMaterials : Boolean = True; // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1682,7 +1679,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
+uses GLStrings, Consts, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
   GLBaseMeshSilhouette;
 
 var
@@ -1742,34 +1739,29 @@ begin
    Result:=GetVectorFileFormats.FindExtByIndex(index);
 end;
 
-//----------------- vector format support --------------------------------------
-
+// TVectorFileFormatsList.Destroy
+//
 destructor TVectorFileFormatsList.Destroy;
-
-var I: Integer;
-
 begin
-  for I:=0 to Count - 1 do Dispose(PVectorFileFormat(Items[I]));
-  inherited Destroy;
+   Clean;
+   inherited;
 end;
 
-//------------------------------------------------------------------------------
-
+// Add
+//
 procedure TVectorFileFormatsList.Add(const Ext, Desc: String; DescID: Integer;
                                      AClass: TVectorFileClass);
-
-var NewRec: PVectorFileFormat;
-
+var
+   newRec : TVectorFileFormat;
 begin
-  New(NewRec);
-  with NewRec^ do
-  begin
-    Extension:=AnsiLowerCase(Ext);
-    VectorFileClass:=AClass;
-    Description:=Desc;
-    DescResID:=DescID;
-  end;
-  inherited Add(NewRec);
+   newRec:=TVectorFileFormat.Create;
+   with newRec do begin
+      Extension:=AnsiLowerCase(Ext);
+      VectorFileClass:=AClass;
+      Description:=Desc;
+      DescResID:=DescID;
+   end;
+   inherited Add(newRec);
 end;
 
 // FindExt
@@ -1779,13 +1771,13 @@ var
    i : Integer;
 begin
    ext:=AnsiLowerCase(ext);
-   for i:=Count-1 downto 0 do
-      with PVectorFileFormat(Items[I])^ do
-         if Extension=ext then begin
-            Result:=VectorFileClass;
-            Exit;
-         end;
-  Result:=nil;
+   for i:=Count-1 downto 0 do with TVectorFileFormat(Items[I]) do begin
+      if Extension=ext then begin
+         Result:=VectorFileClass;
+         Exit;
+      end;
+   end;
+   Result:=nil;
 end;
 
 // FindFromFileName
@@ -1802,23 +1794,16 @@ begin
                                          [ext, 'GLFile'+UpperCase(ext)]);
 end;
 
-//------------------------------------------------------------------------------
-
+// Remove
+//
 procedure TVectorFileFormatsList.Remove(AClass: TVectorFileClass);
-
-var I : Integer;
-    P : PVectorFileFormat;
-
+var
+   i : Integer;
 begin
-  for I:=Count-1 downto 0 do
-  begin
-    P:=PVectorFileFormat(Items[I]);
-    if P^.VectorFileClass.InheritsFrom(AClass) then
-    begin
-      Dispose(P);
-      Delete(I);
-    end;
-  end;
+   for i:=Count-1 downto 0 do begin
+      if TVectorFileFormat(Items[i]).VectorFileClass.InheritsFrom(AClass) then
+         DeleteAndFree(i);
+   end;
 end;
 
 // BuildFilterStrings
@@ -1830,17 +1815,17 @@ procedure TVectorFileFormatsList.BuildFilterStrings(
                                        formatsThatCanBeSaved : Boolean = False);
 var
    k, i : Integer;
-   p : PVectorFileFormat;
+   p : TVectorFileFormat;
 begin
    descriptions:='';
    filters:='';
    k:=0;
    for i:=0 to Count-1 do begin
-      p:=PVectorFileFormat(Items[i]);
+      p:=TVectorFileFormat(Items[i]);
       if     p.VectorFileClass.InheritsFrom(vectorFileClass) and (p.Extension<>'')
          and (   (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities))
               or (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities))) then begin
-         with p^ do begin
+         with p do begin
             if k<>0 then begin
                descriptions:=descriptions+'|';
                filters:=filters+';';
@@ -1849,7 +1834,7 @@ begin
                Description:=LoadStr(DescResID);
             FmtStr(descriptions, '%s%s (*.%s)|*.%2:s',
                    [descriptions, Description, Extension]);
-            FmtStr(filters, '%s*.%s', [filters, Extension]);
+            filters:=filters+'*.'+Extension;
             Inc(k);
          end;
       end;
@@ -1866,12 +1851,12 @@ function TVectorFileFormatsList.FindExtByIndex(index : Integer;
                                        formatsThatCanBeSaved : Boolean = False) : String;
 var
    i : Integer;
-   p : PVectorFileFormat;
+   p : TVectorFileFormat;
 begin
    Result:='';
    if index>0 then begin
       for i:=0 to Count-1 do begin
-         p:=PVectorFileFormat(Items[i]);
+         p:=TVectorFileFormat(Items[i]);
          if    (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities))
             or (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities)) then begin
             if index=1 then begin
@@ -2396,6 +2381,7 @@ end;
 //
 destructor TSkeletonBoneList.Destroy;
 begin
+   Clean;
 	inherited;
 end;
 
@@ -2491,20 +2477,6 @@ end;
 // ------------------
 // ------------------ TSkeletonRootBoneList ------------------
 // ------------------
-
-// Create
-//
-constructor TSkeletonRootBoneList.Create;
-begin
-	inherited;
-end;
-
-// Destroy
-//
-destructor TSkeletonRootBoneList.Destroy;
-begin
-	inherited;
-end;
 
 // WriteToFiler
 //
@@ -2787,17 +2759,24 @@ begin
    FOwner:=AOwner;
 end;
 
+// Destroy
+//
+destructor TSkeletonColliderList.Destroy;
+begin
+   Clear;
+   inherited;
+end;
+
 // GetSkeletonCollider
 //
-function TSkeletonColliderList.GetSkeletonCollider(
-   index: Integer): TSkeletonCollider;
+function TSkeletonColliderList.GetSkeletonCollider(index : Integer): TSkeletonCollider;
 begin
    Result:=TSkeletonCollider(inherited Get(index));
 end;
 
 // ReadFromFiler
 //
-procedure TSkeletonColliderList.ReadFromFiler(reader: TVirtualReader);
+procedure TSkeletonColliderList.ReadFromFiler(reader : TVirtualReader);
 var
    i : Integer;
 begin
@@ -3941,8 +3920,8 @@ end;
 //
 constructor TMorphableMeshObject.Create;
 begin
-   FMorphTargets:=TMeshMorphTargetList.CreateOwned(Self);
    inherited;
+   FMorphTargets:=TMeshMorphTargetList.CreateOwned(Self);
 end;
 
 // Destroy
@@ -5202,8 +5181,9 @@ begin
    Owner.MeshObjects.SaveToStream(aStream);
 end;
 
-
-//----------------- TGLBaseMesh --------------------------------------------------
+// ------------------
+// ------------------ TGLBaseMesh ------------------
+// ------------------
 
 // Create
 //
@@ -5905,7 +5885,7 @@ end;
 //
 destructor TActorAnimation.Destroy;
 begin
-   with (Collection as TActorAnimations).owner do
+   with (Collection as TActorAnimations).FOwner do
       if FTargetSmoothAnimation=Self then
          FTargetSmoothAnimation:=nil;
 	inherited Destroy;
@@ -5936,9 +5916,9 @@ function TActorAnimation.FrameCount : Integer;
 begin
    case Reference of
       aarMorph :
-         Result:=TActorAnimations(Collection).Owner.MeshObjects.MorphTargetCount;
+         Result:=TActorAnimations(Collection).FOwner.MeshObjects.MorphTargetCount;
       aarSkeleton :
-         Result:=TActorAnimations(Collection).Owner.Skeleton.Frames.Count;
+         Result:=TActorAnimations(Collection).FOwner.Skeleton.Frames.Count;
    else
       Result:=0;
       Assert(False);
@@ -6056,7 +6036,7 @@ end;
 //
 constructor TActorAnimations.Create(AOwner : TGLActor);
 begin
-	Owner:=AOwner;
+	FOwner:=AOwner;
 	inherited Create(TActorAnimation);
 end;
 
@@ -6064,7 +6044,7 @@ end;
 //
 function TActorAnimations.GetOwner: TPersistent;
 begin
-	Result:=Owner;
+	Result:=FOwner;
 end;
 
 // SetItems
