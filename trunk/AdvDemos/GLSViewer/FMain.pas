@@ -107,6 +107,9 @@ type
     Savetextures1: TMenuItem;
     MIOpenTexLib: TMenuItem;
     ODTextures: TOpenDialog;
+    Optimize1: TMenuItem;
+    N5: TMenuItem;
+    ACOptimize: TAction;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -145,9 +148,11 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure ACSaveTexturesExecute(Sender: TObject);
     procedure MIOpenTexLibClick(Sender: TObject);
+    procedure ACOptimizeExecute(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
+    procedure SetupFreeFormShading;
     procedure ApplyShadeModeToMaterial(aMaterial : TGLMaterial);
     procedure ApplyShadeMode;
     procedure ApplyFSAA;
@@ -174,8 +179,10 @@ implementation
 
 {$R *.dfm}
 
-uses KeyBoard, GraphicEx, Registry, GLFileOBJ, GLFileSTL, GLFileLWO,
-   GLFileQ3BSP, GLFileOCT, PersistentClasses, MeshUtils;
+uses KeyBoard, GraphicEx, Registry, PersistentClasses, MeshUtils,
+   GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
+   GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFileTIN,
+   GLFilePLY, GLMeshOptimizer;
 
 type
 
@@ -452,22 +459,11 @@ begin
    end;
 end;
 
-procedure TMain.DoOpen(const fileName : String);
+procedure TMain.SetupFreeFormShading;
 var
    i : Integer;
-   min, max : TAffineVector;
    libMat : TGLLibMaterial;
 begin
-   if not FileExists(fileName) then Exit;
-
-   Screen.Cursor:=crHourGlass;
-
-   Caption:='GLSViewer - '+ExtractFileName(fileName);
-
-   FreeForm.MeshObjects.Clear;
-   GLMaterialLibrary.Materials.Clear;
-
-   FreeForm.LoadFromFile(fileName);
    with GLMaterialLibrary do begin
       if Materials.Count=0 then begin
          FreeForm.Material.MaterialLibrary:=GLMaterialLibrary;
@@ -481,6 +477,24 @@ begin
    ApplyShadeMode;
    ApplyTexturing;
    ApplyFPS;
+end;
+
+procedure TMain.DoOpen(const fileName : String);
+var
+   min, max : TAffineVector;
+begin
+   if not FileExists(fileName) then Exit;
+
+   Screen.Cursor:=crHourGlass;
+
+   Caption:='GLSViewer - '+ExtractFileName(fileName);
+
+   FreeForm.MeshObjects.Clear;
+   GLMaterialLibrary.Materials.Clear;
+
+   FreeForm.LoadFromFile(fileName);
+
+   SetupFreeFormShading;
 
    StatusBar.Panels[0].Text:=IntToStr(FreeForm.MeshObjects.TriangleCount)+' tris';
    StatusBar.Panels[2].Text:=fileName;
@@ -722,7 +736,8 @@ begin
       i:=BuildVectorCountOptimizedIndices(v);
       try
          RemapAndCleanupReferences(v, i);
-         IncreaseCoherency(i, 8);
+         IncreaseCoherency(i, 12);
+         i.Capacity:=i.Count;
          FreeForm.MeshObjects.Clean;
          m:=TMeshObject.CreateOwned(FreeForm.MeshObjects);
          m.Vertices:=v;
@@ -738,6 +753,15 @@ begin
    finally
       v.Free;
    end;
+   GLMaterialLibrary.Materials.Clear;
+   SetupFreeFormShading;
+end;
+
+procedure TMain.ACOptimizeExecute(Sender: TObject);
+begin
+   OptimizeMesh(FreeForm.MeshObjects, [mooVertexCache, mooSortByMaterials]);
+   FreeForm.StructureChanged;
+   SetupFreeFormShading;
 end;
 
 procedure TMain.GLCadencerProgress(Sender: TObject; const deltaTime,
