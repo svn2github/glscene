@@ -26,7 +26,7 @@ type
    TImposterOptions = set of TImposterOption;
 
 const
-   cDefaultImposterOptions = [impoBlended, impoAlphaTest];
+   cDefaultImposterOptions = [impoBlended, impoAlphaTest, impoNoPerspectiveCorrection];
 
 type
    TGLImposterBuilder = class;
@@ -505,11 +505,9 @@ begin
    FVy[0]:=mat[0][1];
    FVy[1]:=mat[1][1];
    FVy[2]:=mat[2][1];
-   if not (impoNoPerspectiveCorrection in Builder.ImposterOptions) then begin
+   if not (impoNoPerspectiveCorrection in Builder.ImposterOptions) then
       FVy:=VectorLerp(FVy, YHmgVector, Abs(FVy[1]));
-   end else begin
-      NormalizeVector(FVy);
-   end;            
+   NormalizeVector(FVy);
 
    fx:=Sqrt(FAspectRatio);
    fy:=1/fx;
@@ -1273,11 +1271,12 @@ begin
             glScalef(2, 2, 2);
          glTranslatef(FBuildOffset.X, FBuildOffset.Y, FBuildOffset.Z);
          impostoredObject.Render(rci);
-
+         CheckOpenGLError;
+         
          xDest:=(curSample mod FSamplesPerAxis.X)*SampleSize;
          yDest:=(curSample div FSamplesPerAxis.X)*SampleSize;
 
-         rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, destImposter.Texture.Handle);
+         glBindTexture(GL_TEXTURE_2D, destImposter.Texture.Handle);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
                              SampleSize, SampleSize);
 
@@ -1292,6 +1291,7 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPopMatrix;
    glMatrixMode(GL_MODELVIEW);
+   rci.GLStates.ResetGLCurrentTexture;
 
    glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
    if Lighting=siblStaticLighting then
