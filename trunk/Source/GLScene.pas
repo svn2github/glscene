@@ -8076,7 +8076,8 @@ initialization
 //------------------------------------------------------------------------------
 
    RegisterClasses([TGLLightSource, TGLCamera, TGLProxyObject,
-                    TGLScene, TGLDirectOpenGL, TGLMemoryViewer]);
+                    TGLScene, TGLDirectOpenGL, TGLRenderPoint,
+                    TGLMemoryViewer]);
 
    // preparation for high resolution timer
    QueryPerformanceFrequency(vCounterFrequency); 
