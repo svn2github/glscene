@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 192
-  Top = 114
+  Left = 298
+  Top = 107
   Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
@@ -19,7 +19,7 @@ object Form1: TForm1
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object GLSceneViewer1: TGLSceneViewer
+  object SceneViewer: TGLSceneViewer
     Left = 0
     Top = 0
     Width = 505
@@ -41,7 +41,11 @@ object Form1: TForm1
     Top = 8
     object GLRenderPoint: TGLRenderPoint
     end
-    object GLEarthSkyDome1: TGLEarthSkyDome
+    object DOInitializeReflection: TGLDirectOpenGL
+      UseBuildList = False
+      OnRender = DOInitializeReflectionRender
+    end
+    object EarthSkyDome: TGLEarthSkyDome
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
       Bands = <>
@@ -60,7 +64,7 @@ object Form1: TForm1
     end
     object Terrain: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {00000000000000000000803F00000000}
+      Up.Coordinates = {00000000000000800000803F00000000}
       TilesPerTexture = 1.000000000000000000
       MaterialLibrary = MLTerrain
       QualityDistance = 500.000000000000000000
@@ -73,12 +77,17 @@ object Form1: TForm1
       Material.LibMaterialName = 'Water'
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
+      Visible = False
       Height = 1.000000000000000000
       Width = 1.000000000000000000
       XTiles = 20
       YTiles = 20
       Style = [psTileTexture]
       NoZWrite = False
+    end
+    object DOWaterPlane: TGLDirectOpenGL
+      UseBuildList = False
+      OnRender = DOWaterPlaneRender
     end
     object RenderTrees: TGLParticleFXRenderer
       ZCull = False
@@ -98,6 +107,7 @@ object Form1: TForm1
     object Camera: TGLCamera
       DepthOfView = 5000.000000000000000000
       FocalLength = 50.000000000000000000
+      CameraStyle = csInfinitePerspective
       Direction.Coordinates = {F304353F00000000F304353F00000000}
       Up.Coordinates = {00000000FFFF7F3F0000008000000000}
     end
@@ -201,6 +211,15 @@ object Form1: TForm1
         Material.FaceCulling = fcNoCull
         Tag = 0
         Shader = WaterShader
+      end
+      item
+        Name = 'WaterBump'
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Material.Texture.Image.PictureFileName = 'media\caustics.bmp'
+        Material.Texture.TextureMode = tmReplace
+        Material.Texture.TextureFormat = tfNormalMap
+        Material.Texture.Disabled = False
+        Tag = 0
       end>
     Left = 168
     Top = 8
