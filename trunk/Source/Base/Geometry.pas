@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/07/03 - EG - Added RoundInt, faster Round/Round64, updated Power
       <li>04/07/03 - EG - New VectorCombine overload, some optimizations
       <li>18/06/03 - MF - Added PointSegmentClosestPoint, PointSegmentDistance,
                           PointLineClosestPoint and PointLineDistance.
@@ -1040,9 +1041,14 @@ function Trunc(v : Single) : Integer; overload;
 function Trunc64(v : Extended) : Int64; overload;
 function Int(v : Single) : Single; overload;
 function Int(v : Extended) : Extended; overload;
+{: Rounds the floating point value to the closest integer.<p>
+   Behaves like Round but returns a floating point value like Int. }
+function RoundInt(v : Single) : Single; overload;
+function RoundInt(v : Extended) : Extended; overload;
 function Frac(v : Single) : Single; overload;
 function Frac(v : Extended) : Extended; overload;
 function Round(v : Single) : Integer; overload;
+function Round64(v : Single) : Int64; overload;
 function Round64(v : Extended) : Int64; overload;
 
 function Ceil(v : Single) : Integer; overload;
@@ -6314,13 +6320,15 @@ end;
 
 // Power
 //
-function Power(const Base, Exponent: Single): Single;
+function Power(const base, exponent : Single) : Single;
 begin
-   if Exponent=cZero then
-      Result:=cOne                { n**0 = 1 }
-   else if (Base=cZero) and (Exponent>cZero) then
-      Result:=cZero               { 0**n = 0, n > 0 }
-   else Result:=Exp(Exponent * Ln(Base));
+   if exponent=cZero then
+      Result:=cOne
+   else if (base=cZero) and (exponent>cZero) then
+      Result:=cZero
+   else if RoundInt(exponent)=exponent then
+     Result:=Power(base, Round(exponent))
+   else Result:=Exp(exponent*Ln(base));
 end;
 
 // Power (int exponent)
@@ -7024,6 +7032,32 @@ begin
 {$endif}
 end;
 
+// RoundInt (single)
+//
+function RoundInt(v : Single) : Single;
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD     v
+      FRNDINT
+{$else}
+begin
+   Result:=System.Int(v+0.5);
+{$endif}
+end;
+
+// RoundInt (extended)
+//
+function RoundInt(v : Extended) : Extended;
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD     v
+      FRNDINT
+{$else}
+begin
+   Result:=System.Int(v+0.5);
+{$endif}
+end;
+
 // Frac (Extended)
 //
 function Frac(v : Extended) : Extended;
@@ -7064,9 +7098,9 @@ begin
 {$endif}
 end;
 
-// Round64 (Extended);
+// Round64 (Single);
 //
-function Round64(v : Extended) : Int64; register;
+function Round64(v : Single) : Int64; register;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,8
@@ -7080,15 +7114,29 @@ begin
 {$endif}
 end;
 
+// Round64 (Extended);
+//
+function Round64(v : Extended) : Int64; register;
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      FLD      v
+      FISTP    qword ptr [v]           // use v as storage to place the result
+      MOV      EAX, dword ptr [v]
+      MOV      EDX, dword ptr [v+4]
+{$else}
+begin
+   Result:=System.Round(v);
+{$endif}
+end;
+
 // Round (Single);
 //
 function Round(v : Single) : Integer; register;
 {$ifndef GEOMETRY_NO_ASM}
 asm
-      SUB     ESP,4
       FLD     v
-      FISTP   dword ptr [ESP]
-      POP     EAX
+      FISTP   DWORD PTR [v]     // use v as storage to place the result
+      MOV     EAX, [v]
 {$else}
 begin
    Result:=System.Round(v);
