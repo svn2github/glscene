@@ -2,6 +2,7 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>23/04/04 - NelC - Now ManageTexture is false by default (Cg 1.2.1)
       <li>24/03/04 - NelC - Added GetLatestProfile
       <li>21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
                             Added TCustomCgShader.IsProfileSupported
@@ -256,7 +257,8 @@ type
   published
     property Profile : TCgFPProfile read FFPProfile write SetFPProfile default fpDetectLatest;
     // Switch for auto enabling of texture parameters (Cg 1.2 feature)
-    property ManageTexture : boolean read FManageTexture write SetManageTexture default true;
+    // With Cg 1.2.1, default is OFF
+    property ManageTexture : boolean read FManageTexture write SetManageTexture default false;
   end;
 
   // TCustomCgShader
@@ -929,7 +931,7 @@ begin
   inherited;
   FProgramType := ptFragment;
   FFPProfile:=fpDetectLatest;
-  FManageTexture:=true;
+  FManageTexture:=false;
 end;
 
 // SetManageTexture
@@ -948,7 +950,7 @@ end;
 procedure TCgFragmentProgram.Initialize;
 begin
   inherited;
-  if not FManageTexture then // ManageTexture is on by default
+  if FManageTexture then // ManageTexture is off by default
     cgGLSetManageTextureParameters(@FCgContext, CgBoolean[FManageTexture]);
 end;
 
