@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/03 - MF - Added friction to TVCCylinder
       <li>19/06/03 - MF - Added surface normals to all colliders - surface
                           normal is identical to Normalize(Movement)!
       <li>18/06/03 - MF - Moved FrictionRatio to TVerletGlobalFrictionConstraint
