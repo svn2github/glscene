@@ -7,6 +7,8 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/03 - MF - Added surface normals to all colliders - surface
+                          normal is identical to Normalize(Movement)!
       <li>18/06/03 - MF - Moved FrictionRatio to TVerletGlobalFrictionConstraint
       <li>18/06/03 - EG - Updated TVCCapsule
       <li>18/06/03 - MF - Updated TVCFloor to use a normal and a point
@@ -609,14 +611,16 @@ var
    frictionMove, move, moveNormal : TAffineVector;
    realFriction : single;
 begin
-   realFriction := friction*FFriction;
-   VectorSubtract(Location, OldLocation, move);
-   moveNormal:=VectorScale(surfaceNormal, VectorDotProduct(move, surfaceNormal));
-   frictionMove:=VectorSubtract(move, moveNormal);
-   if penetrationDepth>Radius then
-      ScaleVector(frictionMove, realFriction)
-   else ScaleVector(frictionMove, realFriction*Sqrt(penetrationDepth/Radius));
-   VectorAdd(OldLocation, frictionMove, FOldLocation);
+   if penetrationDepth>0 then begin
+       realFriction := friction*FFriction;
+       VectorSubtract(Location, OldLocation, move);
+       moveNormal:=VectorScale(surfaceNormal, VectorDotProduct(move, surfaceNormal));
+       frictionMove:=VectorSubtract(move, moveNormal);
+       if penetrationDepth>Radius then
+          ScaleVector(frictionMove, realFriction)
+       else ScaleVector(frictionMove, realFriction*Sqrt(penetrationDepth/Radius));
+       VectorAdd(OldLocation, frictionMove, FOldLocation);
+   end;
 end;
 
 // OldApplyFriction
@@ -1480,8 +1484,8 @@ end;
 procedure TVCCylinder.SatisfyConstraintForNode(aNode : TVerletNode;
                                     const iteration, maxIterations : Integer);
 var
-   proj : TAffineVector;
-   f, dist2 : Single;
+   proj, newLocation, move : TAffineVector;
+   f, dist2, penetrationDepth : Single;
 begin
    // Compute projection of node position on the axis
    f:=PointProject(aNode.Location, Base, axis);
@@ -1491,7 +1495,15 @@ begin
    dist2:=VectorDistance2(proj, aNode.Location);
    if dist2<FRadius2 then begin
       // move out of the cylinder
-      VectorLerp(proj, aNode.Location, FRadius*RSqrt(dist2), aNode.FLocation);
+      VectorLerp(proj, aNode.Location, FRadius*RSqrt(dist2), newLocation);
+
+      move := VectorSubtract(aNode.FLocation, newLocation);
+
+      penetrationDepth := VectorLength(Move);
+
+      aNode.ApplyFriction(FFrictionRatio, penetrationDepth, VectorScale(move, 1/penetrationDepth));
+
+      aNode.FLocation := newLocation;
    end;
 end;
 
@@ -1502,14 +1514,20 @@ end;
 procedure TVCCube.SatisfyConstraintForNode(aNode: TVerletNode;
   const iteration, maxIterations: Integer);
 var
-  P, AbsP, dp : TAffineVector;
+  P, AbsP, dp, ContactNormal, SideSign : TAffineVector;
   SmallestSide : integer;
   procedure TestSide(Side : integer);
   begin
     if (p[Side])<0 then
-      p[Side]:=-FHalfSides[Side]-p[Side]
+    begin
+      p[Side]:=-FHalfSides[Side]-p[Side];
+      SideSign[Side] := -1;
+    end
     else
+    begin
       p[Side]:=FHalfSides[Side]-p[Side];
+      SideSign[Side] := 1;
+    end;
   end;
 begin
   // TODO: Direction of Cube should be used to rotate the nodes location, as it
@@ -1558,11 +1576,15 @@ begin
   dp[1] := 0;
   dp[2] := 0;
 
+  ContactNormal := dp;
+
   // Only move along the "shortest" axis
   dp[SmallestSide] := P[SmallestSide];
+  ContactNormal[SmallestSide] := SideSign[SmallestSide];
 
   // Slow it down!
-  aNode.OldApplyFriction(0.05, abs(P[SmallestSide]));
+  //aNode.OldApplyFriction(0.05, abs(P[SmallestSide]));
+  aNode.ApplyFriction(FFrictionRatio, abs(P[SmallestSide]), ContactNormal);
 
   SubtractVector(aNode.FLocation, dp);
 end;
@@ -1607,7 +1629,7 @@ procedure TVCCapsule.SatisfyConstraintForNode(aNode : TVerletNode;
 var
    p, n2, penetrationDepth  : Single;
    closest, v : TAffineVector;
-   newLocation : TAffineVector;
+   newLocation, move : TAffineVector;
 
 begin
    // Find the closest point to location on the capsule axis
@@ -1626,8 +1648,11 @@ begin
       newLocation := VectorCombine(closest, v, 1, Sqrt(FRadius2/n2));
 
       // Do friction calculations
-      penetrationDepth := VectorLength(VectorSubtract(newLocation,aNode.FLocation));
-      aNode.OldApplyFriction(FFrictionRatio, penetrationDepth);
+      move := VectorSubtract(newLocation,aNode.FLocation);
+      penetrationDepth := VectorLength(move);
+
+      //aNode.OldApplyFriction(FFrictionRatio, penetrationDepth);
+      aNode.ApplyFriction(FFrictionRatio, penetrationDepth, VectorScale(move, 1/penetrationDepth));
 
       aNode.FLocation:=newLocation;
    end;
