@@ -172,22 +172,65 @@ end;
 // ------------------ TFaceGroupConnectivity ------------------
 // ------------------
 
+constructor TFaceGroupConnectivity.Create(aMeshObject : TMeshObject; PrecomputeFaceNormal : boolean);
+begin
+  FFaceVisible := TIntegerList.Create;
+
+  FFaceVertexIndex := TIntegerList.Create;
+  FFaceNormal := TAffineVectorList.Create;
+
+  FEdgeVertices := TIntegerList.Create;
+  FEdgeFaces := TIntegerList.Create;
+
+  FMeshObject := aMeshObject;
+
+  FPrecomputeFaceNormal := PrecomputeFaceNormal;
+
+  FVertexMemory := TIntegerList.Create;
+
+  RebuildEdgeList;
+end;
+
+destructor TFaceGroupConnectivity.Destroy;
+begin
+  Clear;
+
+  FFaceVisible.Free;
+  FFaceVertexIndex.Free;
+  FFaceNormal.Free;
+
+  FEdgeVertices.Free;
+  FEdgeFaces.Free;
+
+  FVertexMemory.Free;
+
+  inherited;
+end;
+
+procedure TFaceGroupConnectivity.Clear;
+begin
+  FEdgeVertices.Clear;
+  FEdgeFaces.Clear;
+  FFaceVisible.Clear;
+  FFaceVertexIndex.Clear;
+  FFaceNormal.Clear;
+  FVertexMemory.Clear;
+end;
+
 procedure TFaceGroupConnectivity.AddEdge(VertexIndex0,
   VertexIndex1: word; FaceID: word);
 var
   i : integer;
   EdgeVi0, EdgeVi1 : word;
 begin
-  // Make sure that the edge doesn't allready exist
-  for i := 0 to EdgeCount-1 do
-  begin
+  // Make sure that the edge doesn't already exists
+  for i := 0 to EdgeCount-1 do begin
     // Retrieve the two vertices in the edge
     EdgeVi0 := FEdgeVertices[i*2 + 0];
     EdgeVi1 := FEdgeVertices[i*2 + 1];
 
     if ((EdgeVi0 = VertexIndex0) and (EdgeVi1 = VertexIndex1)) or
-       ((EdgeVi0 = VertexIndex1) and (EdgeVi1 = VertexIndex0)) then
-    begin
+       ((EdgeVi0 = VertexIndex1) and (EdgeVi1 = VertexIndex0)) then begin
       // Update the second Face of the edge and we're done (this _MAY_
       // overwrite a previous Face in a broken mesh)
       FEdgeFaces[i*2 + 1] := FaceID;
@@ -275,35 +318,6 @@ begin
   end;
 end;
 
-procedure TFaceGroupConnectivity.Clear;
-begin
-  FEdgeVertices.Clear;
-  FEdgeFaces.Clear;
-  FFaceVisible.Clear;
-  FFaceVertexIndex.Clear;
-  FFaceNormal.Clear;
-  FVertexMemory.Clear;
-end;
-
-constructor TFaceGroupConnectivity.Create(aMeshObject : TMeshObject; PrecomputeFaceNormal : boolean);
-begin
-  FFaceVisible := TIntegerList.Create;
-
-  FFaceVertexIndex := TIntegerList.Create;
-  FFaceNormal := TAffineVectorList.Create;
-
-  FEdgeVertices := TIntegerList.Create;
-  FEdgeFaces := TIntegerList.Create;
-
-  FMeshObject := aMeshObject;
-
-  FPrecomputeFaceNormal := PrecomputeFaceNormal;
-
-  FVertexMemory := TIntegerList.Create;
-
-  RebuildEdgeList;
-end;
-
 function TFaceGroupConnectivity.ReuseOrFindVertexID(SeenFrom : TAffineVector; aSilhouette : TGLSilhouette; Index : integer) : integer;
 var
   MemIndex, i : integer;
@@ -353,7 +367,7 @@ begin
   if MemIndex=-1 then
   begin
     // Add the "near" vertex
-    Vertex := FMeshObject.Owner.Owner.LocalToAbsolute(FMeshObject.Vertices[Index]);
+    Vertex := FMeshObject.Vertices[Index];
     MemIndex := aSilhouette.Vertices.Add(Vertex, 1);
 
     FVertexMemory[Index] := MemIndex;
@@ -383,8 +397,6 @@ begin
     aSilhouette.Flush;
 
   GLBaseMesh := FMeshObject.Owner.Owner;
-
-  SeenFrom := GLBaseMesh.AbsoluteToLocal(SeenFrom);
 
   // Clear the vertex memory
   FVertexMemory.Flush;
@@ -424,7 +436,7 @@ begin
       tVi1 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi1);
       tVi2 := ReuseOrFindVertexID(SeenFrom, aSilhouette, Vi2);
 
-      aSilhouette.CapIndices.Add(tVi2, tVi1, tVi0);
+      aSilhouette.CapIndices.Add(tVi0, tVi1, tVi2);
     end;
   end;
 
@@ -458,20 +470,6 @@ begin
         end;
     end;
   end;
-end;
-
-destructor TFaceGroupConnectivity.Destroy;
-begin
-  Clear;
-
-  FFaceVisible.Free;
-  FFaceVertexIndex.Free;
-  FFaceNormal.Free;
-
-  FEdgeVertices.Free;
-  FEdgeFaces.Free;
-
-  inherited;
 end;
 
 function TFaceGroupConnectivity.GetEdgeCount: integer;
