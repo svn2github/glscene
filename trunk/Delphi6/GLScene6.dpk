@@ -138,6 +138,7 @@ contains
   GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas' {GUISkinEditor},
   GLShadowPlane in '..\Source\GLShadowPlane.pas',
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
-  TGA in '..\Source\FileFormats\TGA.pas';
+  TGA in '..\Source\FileFormats\TGA.pas',
+  GLLensFlare in '..\Source\GLLensFlare.pas';
 
 end.
