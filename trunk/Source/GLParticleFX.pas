@@ -2373,7 +2373,6 @@ end;
 //
 procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
 var
-   i : Integer;
    lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
