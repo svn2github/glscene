@@ -3,6 +3,7 @@
 	Base classes and interface for GLScene Sound System<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/07/02 - EG - Persistence fix (MP3 / Sternas Stefanos)
       <li>05/03/02 - EG - TGLBSoundEmitter.Loaded
       <li>27/02/02 - EG - Added 3D Factors, special listener-is-camera support
       <li>13/01/01 - EG - Added CPUUsagePercent
@@ -614,7 +615,7 @@ end;
 //
 procedure TGLSoundSample.DefineProperties(Filer: TFiler);
 begin
-   Filer.DefineBinaryProperty('BinData', ReadData, WriteData, (LengthInBytes>0));
+   Filer.DefineBinaryProperty('BinData', ReadData, WriteData, Assigned(FData));
 end;
 
 // ReadData
@@ -728,7 +729,9 @@ end;
 procedure TGLSoundSample.SetData(const val : TGLSoundFile);
 begin
    FData.Free;
-   FData:=TGLSoundFile(val.CreateCopy(Self));
+   if Assigned(val) then
+      FData:=TGLSoundFile(val.CreateCopy(Self))
+   else FData:=nil;
 end;
 
 // ------------------
