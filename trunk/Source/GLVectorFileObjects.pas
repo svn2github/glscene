@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/08/01 - Egg - Improved/fixed SMD loader
       <li>12/08/01 - Egg - Completely rewritten handles management,
                            Fixed TActorAnimation.Assign,
                            Fixed persistence
@@ -4815,7 +4816,9 @@ procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
          matLib:=TBaseMesh(GetOwner).MaterialLibrary;
          if Assigned(matLib) then
             if matLib.Materials.GetLibMaterialByName(name)=nil then
-               matLib.AddTextureMaterial(name, name)
+               if CompareText(name, 'null.bmp')<>0 then
+                  matLib.AddTextureMaterial(name, name)
+               else matLib.AddTextureMaterial(name, '');
       end;
    end;
 
@@ -4839,18 +4842,24 @@ begin
       if sl.IndexOf('triangles')>=0 then begin
          mesh:=TSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
          mesh.Mode:=momFaceGroups;
-      end else mesh:=(Owner.MeshObjects[0] as TSkeletonMeshObject);
+      end else if Owner.MeshObjects.Count>0 then
+         mesh:=(Owner.MeshObjects[0] as TSkeletonMeshObject)
+      else raise Exception.Create('SMD is an animation, load model SMD first.');
       // read skeleton nodes
       i:=2;
       if Owner.Skeleton.RootBone.Name='' then begin
          while sl[i]<>'end' do begin
             tl.CommaText:=sl[i];
             with Owner.Skeleton do
-               if tl[2]<>'-1' then
+               if (tl[2]<>'-1') then
                   bone:=TSkeletonBone.CreateOwned(RootBone.BoneByIndex(StrToInt(tl[2])))
-               else bone:=RootBone;
-            bone.BoneIndex:=StrToInt(tl[0]);
-            bone.Name:=tl[1];
+               else if RootBone.Name='' then
+                  bone:=RootBone
+               else bone:=nil; // ignore extra root bones (invalid?)
+            if Assigned(bone) then begin
+               bone.BoneIndex:=StrToInt(tl[0]);
+               bone.Name:=tl[1];
+            end;
             Inc(i);
          end;
       end else while sl[i]<>'end' do Inc(i);
@@ -4862,13 +4871,13 @@ begin
       firstFrame:=Owner.Skeleton.Frames.Count;
       while sl[i]<>'end' do begin
          if Copy(sl[i], 1, 5)<>'time ' then
-            raise Exception.Create('time not found');
+            raise Exception.Create('time not found, got: '+sl[i]);
          frame:=TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
          frame.Name:=ResourceName+' '+sl[i];
          Inc(i);
-         while Copy(sl[i], 1, 1)=' ' do begin
+         while Pos(Copy(sl[i], 1, 1), ' 1234567890')>0 do begin
             tl.CommaText:=sl[i];
-            Assert(StrToInt(tl[0])=frame.Position.Count);
+            Assert(StrToInt(tl[0])=frame.Position.Count, 'Invalid vertex count: '+tl[0]+' vs '+IntToStr(frame.Position.Count));
             frame.Position.Add(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3]));
             v:=AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6]));
             frame.Rotation.Add(v);
