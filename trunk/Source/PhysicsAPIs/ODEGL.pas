@@ -1,4 +1,3 @@
-// 28/10/02 - EG - Fixed CopyPosFromGeomToGL
 unit ODEGL;
 
 interface
@@ -17,9 +16,9 @@ uses
   OpenGL12, Geometry, ODEImport, GLScene, VectorTypes, GLObjects;
 
   procedure DrawBox(Sides : TdVector3);
-  procedure setTransform(const pos : TdVector3; const R : TdMatrix3);
-  procedure dsDrawBox(const pos : PdVector3; const R : PdMatrix3; const Sides : TdVector3); overload;
-  procedure dsDrawBox(const pos : TdVector3; const R : TdMatrix3; const Sides : TdVector3); overload;
+  procedure setTransform (pos : TdVector3; R : TdMatrix3);
+  procedure dsDrawBox (pos : PdVector3; R : PdMatrix3; Sides : TdVector3); overload;
+  procedure dsDrawBox (pos : TdVector3; R : TdMatrix3; Sides : TdVector3); overload;
 
   procedure ODERToGLSceneMatrix(var m : TMatrix; R : TdMatrix3; pos : TdVector3); overload;
   procedure ODERToGLSceneMatrix(var m : TMatrix; R : PdMatrix3; pos : PdVector3); overload;
@@ -134,19 +133,19 @@ begin
   glEnd();
 end;
 
-procedure dsDrawBox(const pos : PdVector3; const R : PdMatrix3; const Sides : TdVector3);
+procedure dsDrawBox (pos : PdVector3; R : PdMatrix3; Sides : TdVector3);
 begin
   dsDrawBox(pos^, r^, Sides);
 end;
 
-procedure dsDrawBox(const pos : TdVector3; const R : TdMatrix3; const Sides : TdVector3);
+procedure dsDrawBox (pos : TdVector3; R : TdMatrix3; Sides : TdVector3);
 begin
   setTransform (pos, R);
   drawBox (sides);
   glPopMatrix();
 end;
 
-procedure setTransform(const pos : TdVector3; const R : TdMatrix3);
+procedure setTransform (pos : TdVector3; R : TdMatrix3);
 var
   matrix : array[0..15] of GLfloat;
 begin
@@ -264,18 +263,14 @@ var
   R : PdMatrix3;
   pos : PdVector3;
 begin
-
   v := GLBaseSceneObject.AbsolutePosition;
 
-  // Not strictly necessary!
-  Geom.pos[0] := v[0];
-  Geom.pos[1] := v[1];
-  Geom.pos[2] := v[2];//}
+  dGeomSetPosition(Geom, v[0], v[1], v[2]);
 
   R := dGeomGetRotation(Geom);
   pos := dgeomGetPosition(Geom);
 
-  m := GLBaseSceneObject.AbsoluteMatrix;
+  m := GLBaseSceneObject.Matrix;
   R[0] := m[0][0];
   R[4] := m[0][1];
   R[8] := m[0][2];
@@ -301,11 +296,13 @@ begin
 end;
 
 function CreateBodyFromCube(var Geom : PdxGeom; Cube : TGLCube; World : PdxWorld; Space : PdxSpace) : PdxBody;
+var
+  Body : PdxBody;
 begin
-   Result := dBodyCreate(World);
-   dBodySetLinearVel(Result, 0, 0, 0);
+  Body := dBodyCreate(World);
+  dBodySetLinearVel(Body, 0, 0, 0);
 
-   CopyBodyFromCube(Result, Geom, Cube, Space);
+  CopyBodyFromCube(Body, Geom, Cube, Space);
 end;
 
 procedure CopyBodyFromCube(Body : PdxBody; var Geom : PdxGeom; Cube : TGLCube; Space : PdxSpace);

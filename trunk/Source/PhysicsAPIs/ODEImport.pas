@@ -35,7 +35,7 @@
  *  Convertion started 2002-09-16.                                       *
  *                                                                       *
  *  There is no Delphi documentation for ODE, see the original ODE files *
- *  for information http://www.q12.org/ode/ode-0.03-userguide.html       *
+ *  for information http://opende.sourceforge.net/ode-docs.html          *
  *                                                                       *
  *************************************************************************}
 
@@ -71,6 +71,12 @@
     new GeomTransformGroup.
   2002.10.10 Mattias added the functions needed to support cylinder and
     GeomTransformGroup.
+  2002.10.31 Chroma compiled a new dll version, with some minor updates to
+    friction among other things
+  2003.01.20 Christophe compiled a new DLL and added the new functions.
+  2003.03.01 Added a few new functions
+  2003.03.01 dGeomGroup and all it's procedures / functions have been removed
+    due to deprecation
  }
 
 unit ODEImport;
@@ -266,6 +272,23 @@ struct dObject : public dBase {
     global_erp : TdReal;		// global error reduction parameter
     global_cfm : TdReal;		// global costraint force mixing parameter
   end;
+
+
+(*  typedef struct dJointFeedback {
+  dVector3 f1;       // force that joint applies to body 1
+  dVector3 t1;       // torque that joint applies to body 1
+  dVector3 f2;       // force that joint applies to body 2
+  dVector3 t2;       // torque that joint applies to body 2
+} dJointFeedback;)*)
+
+  TdJointFeedback = record
+    f1 : TdVector3;       // force that joint applies to body 1
+    t1 : TdVector3;       // torque that joint applies to body 1
+    f2 : TdVector3;       // force that joint applies to body 2
+    t2 : TdVector3;       // torque that joint applies to body 2
+  end;
+
+  pTdJointFeedback = ^TdJointFeedback;
 
 (*enum {
   d_ERR_UNKNOWN = 0,		/* unknown error */
@@ -565,7 +588,6 @@ struct dxHashSpace : public dxSpace {
   // this structure. pos and R will either point to a separately allocated
   // buffer (if body is 0 - pos points to the dxPosR object) or to the pos and
   // R of the body (if body nonzero).
-
   struct dxGeom {		// a dGeomID is a pointer to this
     dxGeomClass *_class;	// class of this object
     void *data;		// user data pointer
@@ -706,7 +728,6 @@ dPlaneClass
 
 // Functions
 dBoxBox
-dBoxTouchesBox
 dClearUpperTriangle
 dError
 dFactorCholesky
@@ -875,8 +896,12 @@ dWtoDQ}
   procedure dJointSetUniversalAnchor(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetUniversalAxis1(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dJointSetUniversalAxis2(const dJointID : TdJointID; const x, y, z: TdReal); cdecl; external ODEDLL;
-  function dJointGetData (const dJointID : TdJointID) : pointer; cdecl; external ODEDLL;    
-  procedure dJointSetData (const dJointID : TdJointID; data : Pointer); cdecl; external ODEDLL;    
+  function dJointGetData (const dJointID : TdJointID) : pointer; cdecl; external ODEDLL;
+  procedure dJointSetData (const dJointID : TdJointID; data : Pointer); cdecl; external ODEDLL;
+
+  // New "callback" routines for feedback of joints
+  procedure dJointSetFeedback (const dJointID : TdJointID; Feedback : PTdJointFeedback); cdecl; external ODEDLL;
+  function dJointGetFeedback (const dJointID : TdJointID) : PTdJointFeedback; cdecl; external ODEDLL;
 
   //----- dGeom -----
   procedure dGeomBoxGetLengths(const Geom : PdxGeom; result: TdVector3); cdecl; external ODEDLL;
@@ -890,10 +915,12 @@ dWtoDQ}
   function dGeomGetPosition(const Geom : PdxGeom): PdVector3; cdecl; external ODEDLL;
   function dGeomGetRotation(const Geom : PdxGeom): PdMatrix3; cdecl; external ODEDLL;
   function dGeomGetSpaceAABB(const Geom : PdxGeom): TdReal; cdecl; external ODEDLL;
-  procedure dGeomGroupAdd (const GeomGroup, Geom : PdxGeom); cdecl; external ODEDLL;
-  function dGeomGroupGetGeom(const Geom : PdxGeom; const i: Integer): PdxGeom; cdecl; external ODEDLL;
-  function dGeomGroupGetNumGeoms(const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
-  procedure dGeomGroupRemove(const group, x: PdxGeom); cdecl; external ODEDLL;
+
+  // Deprecated!
+  //procedure dGeomGroupAdd (const GeomGroup, Geom : PdxGeom); cdecl; external ODEDLL;
+  //function dGeomGroupGetGeom(const Geom : PdxGeom; const i: Integer): PdxGeom; cdecl; external ODEDLL;
+  //function dGeomGroupGetNumGeoms(const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
+  //procedure dGeomGroupRemove(const group, x: PdxGeom); cdecl; external ODEDLL;
   procedure dGeomPlaneGetParams(const Geom : PdxGeom; result: TdVector4); cdecl; external ODEDLL;
   procedure dGeomPlaneSetParams (const Geom : PdxGeom; const a, b, c, d: TdReal); cdecl; external ODEDLL;
   procedure dGeomSetBody(const Geom : PdxGeom; Body: PdxBody); cdecl; external ODEDLL;
@@ -907,17 +934,37 @@ dWtoDQ}
   procedure dGeomTransformSetGeom(const Geom, obj: PdxGeom); cdecl; external ODEDLL;
   procedure dGeomSetData (const Geom : PdxGeom; data : pointer); cdecl; external ODEDLL;
   function dGeomGetData (const Geom : PdxGeom) : pointer; cdecl; external ODEDLL;
+  procedure dGeomTransformSetInfo (const Geom : PdxGeom; mode : integer); cdecl; external ODEDLL;
+  function dGeomTransformGetInfo (const Geom : PdxGeom) : integer; cdecl; external ODEDLL;
+
+  // These methods are not currently available in the ODE.dll, since they require
+  // additional changes! They're placed here to prepare for these changes
+  function dGeomIsSpace (const Geom : PdxGeom) : integer; cdecl; external ODEDLL;
+  procedure dGeomSetCategoryBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external ODEDLL;
+  procedure dGeomSetCollideBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external ODEDLL;
+  function dGeomGetCategoryBits (const Geom : PdxGeom) : cardinal; cdecl; external ODEDLL;
+  function dGeomGetCollideBits (const Geom : PdxGeom) : cardinal; cdecl; external ODEDLL;
+  procedure dGeomEnable (const Geom : PdxGeom); cdecl; external ODEDLL;
+  procedure dGeomDisable (const Geom : PdxGeom); cdecl; external ODEDLL;
+  function dGeomIsEnabled (const Geom : PdxGeom) : integer; cdecl; external ODEDLL;
+
+  function dGeomSpherePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
+  function dGeomBoxPointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
+  function dGeomPlanePointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
+  function dGeomCCylinderPointDepth (const Geom : PdxGeom; const x,y,z : TdReal) : TdReal; cdecl; external ODEDLL;
 
   // A strange fix, so the class ids can be updated
   // ***************
-  function dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl;
+  // Deprecated
+  //function dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl;
   function dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl;
   function dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl;
   function dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl;
   function dCreateCCylinder(const Space : PdxSpace; const radius, length: TdReal): PdxGeom; cdecl;
   function dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl;
 
-  function EXT_dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl; external ODEDLL name 'dCreateGeomGroup';
+  // Deprecated
+  //function EXT_dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl; external ODEDLL name 'dCreateGeomGroup';
   function EXT_dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateSphere';
   function EXT_dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreateBox';
   function EXT_dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl; external ODEDLL name 'dCreatePlane';
@@ -944,6 +991,13 @@ dWtoDQ}
   procedure dGeomCylinderSetParams (const Geom : PdxGeom; radius, length : TdReal); cdecl; external ODEDLL;
   procedure dGeomCylinderGetParams (const Geom : PdxGeom; var radius, length : TdReal); cdecl; external ODEDLL;
 
+  //dRay
+  function dCreateRay(const Space : PdxSpace; length: TdReal) : PdxGeom; cdecl;
+  function EXT_dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateRay';
+  procedure dGeomRaySetLength(const Geom : PdxGeom; length: TdReal); cdecl; external ODEDLL;
+  function dGeomRayGetLength(const Geom : PdxGeom) : TdReal; cdecl; external ODEDLL;
+  procedure dGeomRaySet(const Geom : PdxGeom; px, py, pz, dx, dy, dz: TdReal); cdecl; external ODEDLL;
+  procedure dGeomRayGet(const Geom : PdxGeom; var start, dir: TdVector3); cdecl; external ODEDLL;
 
   function dCreateGeomClass(const classptr : TdGeomClass) : Integer; cdecl; external ODEDLL;
   function dGeomGetClassData(o : PdxGeom) : Pointer; cdecl; external ODEDLL;    
@@ -955,10 +1009,13 @@ dWtoDQ}
   procedure dSpaceDestroy(const Space: PdxSpace); cdecl; external ODEDLL;
   function dSpaceQuery (const Space : PdxSpace; const Geom : PdxGeom): Integer; cdecl; external ODEDLL;
   procedure dSpaceRemove(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external ODEDLL;
-  function dSimpleSpaceCreate: PdxSpace; cdecl; external ODEDLL;
-  function dHashSpaceCreate: PdxSpace; cdecl; external ODEDLL;
+  function dSimpleSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external ODEDLL;
+  function dHashSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external ODEDLL;
   procedure dHashSpaceSetLevels(const Space: PdxSpace; const minlevel, maxlevel: Integer); cdecl; external ODEDLL;
-  procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external ODEDLL;    
+  procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external ODEDLL;
+
+  procedure dSpaceSetCleanup (space : PdxSpace; const mode : integer); cdecl; external ODEDLL;
+  function dSpaceGetCleanup(Space : PdxSpace): integer; cdecl; external ODEDLL;
 
   //----- dMass -----
   procedure dMassAdd(var a,b : TdMass); cdecl; external ODEDLL;
@@ -976,29 +1033,38 @@ dWtoDQ}
   procedure dRFromAxisAndAngle (var R : TdMatrix3; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;    
   procedure dRSetIdentity (R : TdMatrix3); cdecl; external ODEDLL;    
   procedure dRFromEulerAngles (R : TdMatrix3; phi, theta, psi : TdReal); cdecl; external ODEDLL;    
-  procedure dRFrom2Axes (R: TdMatrix3; ax, ay, az, bx, by, bz : TdReal); cdecl; external ODEDLL;    
+  procedure dRFrom2Axes (R: TdMatrix3; ax, ay, az, bx, by, bz : TdReal); cdecl; external ODEDLL;
 
   procedure dMultiply0 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
   procedure dMultiply1 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
   procedure dMultiply2 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
   procedure dMultiply3 (const A : PdReal; const B, C : PdReal; p, q, r : integer); cdecl; external ODEDLL;    
   procedure dQtoR (const q : TdQuaternion; const R : TdMatrix3); cdecl; external ODEDLL;    
-  procedure dRtoQ (const R : TdMatrix3; q : TdQuaternion); cdecl; external ODEDLL;    
-  procedure WtoDQ (const w : TdVector3; q: TdQuaternion; dq : TdVector4); cdecl; external ODEDLL;    
+  procedure dRtoQ (const R : TdMatrix3; q : TdQuaternion); cdecl; external ODEDLL;
+  procedure WtoDQ (const w : TdVector3; q: TdQuaternion; dq : TdVector4); cdecl; external ODEDLL;
 
   //----- Math -----
   procedure dNormalize3 (var a : TdVector3); cdecl; external ODEDLL;    
   procedure dNormalize4 (var a : TdVector4); cdecl; external ODEDLL;    
 
   //----- Misc -----
-  function dMaxDifference (A, B : PdReal; n, m : integer) : TdReal; cdecl; external ODEDLL;    
-  procedure dMakeRandomVector(var n1 : TdVector3; a : integer; f : TdReal); cdecl; external ODEDLL;    
-  function dAreConnected (a, b : PdxBody) : integer; cdecl; external ODEDLL;    
-  function dCollide (o1, o2 : PdxGeom; flags : integer; var Contact : TdContactGeom; Skip : integer) : integer; cdecl; external ODEDLL;    
+  procedure dClosestLineSegmentPoints (const a1, a2, b1, b2 : TdVector3; var cp1, cp2 : TdVector3); cdecl; external ODEDLL;
+
+  function dBoxTouchesBox (const _p1 : TdVector3; const R1 : TdMatrix3;
+                    const side1 : TdVector3; const _p2 : TdVector3;
+                    const R2 : TdMatrix3; const side2 : TdVector3) : integer; cdecl; external ODEDLL;
+
+  function dMaxDifference (A, B : PdReal; n, m : integer) : TdReal; cdecl; external ODEDLL;
+  procedure dMakeRandomVector(var n1 : TdVector3; a : integer; f : TdReal); cdecl; external ODEDLL;
+  function dAreConnected (a, b : PdxBody) : integer; cdecl; external ODEDLL;
+  function dAreConnectedExcluding (a, b : PdxBody; joint_type : TdJointTypeNumbers) : integer; cdecl; external ODEDLL;
+
+  function dCollide (o1, o2 : PdxGeom; flags : integer; var Contact : TdContactGeom; Skip : integer) : integer; cdecl; external ODEDLL;
   procedure dSpaceCollide (const Space : PdxSpace; data : pointer; callback : TdNearCallback); cdecl; external ODEDLL;
+  procedure dSpaceCollide2 (o1, o2 : PdxGeom; data : pointer; callback : TdNearCallback); cdecl; external ODEDLL;
   procedure dMakeRandomMatrix (A : PdRealArray; n, m : integer; range :  TdReal); cdecl; external ODEDLL;    
-  procedure dClearUpperTriangle (A : PdRealArray; n : integer); cdecl; external ODEDLL;    
-  function dMaxDifferenceLowerTriangle (A : PdRealArray;  var B : TdReal;  n : integer) : TdReal; cdecl; external ODEDLL;    
+  procedure dClearUpperTriangle (A : PdRealArray; n : integer); cdecl; external ODEDLL;
+  function dMaxDifferenceLowerTriangle (A : PdRealArray;  var B : TdReal;  n : integer) : TdReal; cdecl; external ODEDLL;
 
   // How can this be imported? I can't find it in the source!
   //function dInfinityValue : TdReal; cdecl; external ODEDLL;
@@ -1028,8 +1094,10 @@ var
   dCCylinderClass : integer=-1;
   dGeomTransformClass : integer=-1;
   dPlaneClass : integer=-1;
-  dGeomGroupClass : integer=-1;
+  // Deprecated
+  //dGeomGroupClass : integer=-1;
   dCylinderClass : integer=-1;
+  dRayClass : integer=-1;
   dGeomTransformGroupClass : integer=-1;
 
 implementation
@@ -1158,13 +1226,14 @@ begin
   result := sqrt(sqr(a[0])+sqr(a[1])+sqr(a[2]));
 end;
 
-function dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl;
+// Deprecated
+{function dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl;
 begin
   result := EXT_dCreateGeomGroup(Space);
 
   if dGeomGroupClass=-1 then
     dGeomGroupClass := dGeomGetClass(result);
-end;
+end;//}
 
 function dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl;
 begin
@@ -1212,6 +1281,14 @@ begin
 
   if dCylinderClass=-1 then
     dCylinderClass := dGeomGetClass(result);
+end;
+
+function dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl;
+begin
+  result := EXT_dCreateRay(Space, length);
+
+  if dRayClass=-1 then
+    dRayClass := dGeomGetClass(result);
 end;
 
 function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
