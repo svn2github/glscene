@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/10/04 - NelC - Added support for 64bit and 128bit color depth (float pbuffer)
       <li>07/07/04 - Mrqzzz - TGLbaseSceneObject.Remove checks if removed object is actually a child (Uffe Hammer)
       <li>25/02/04 - Mrqzzz - Added TGLSCene.RenderedObject
       <li>25/02/04 - EG - Children no longer owned
@@ -1640,7 +1641,7 @@ type
 
    // TGLColorDepth
    //
-   TGLColorDepth = (cdDefault, cd8bits, cd16bits, cd24bits);
+   TGLColorDepth = (cdDefault, cd8bits, cd16bits, cd24bits, cdFloat64bits, cdFloat128bits); // float_type
 
    // TGLShadeModel
    //
@@ -6050,6 +6051,7 @@ begin
    with rci.GLStates do begin
       UnSetGLState(stBlend);
       UnSetGLState(stTexture2D);
+      UnSetGLState(stTextureRect);
       SetGLState(stAlphaTest);
    end;
    glAlphaFunc(GL_GREATER, 0);
@@ -6537,8 +6539,8 @@ end;
 //
 procedure TGLSceneBuffer.SetupRCOptions(context : TGLContext);
 const
-   cColorDepthToColorBits : array [cdDefault..cd24bits] of Integer =
-                                    (24, 8, 16, 24);
+   cColorDepthToColorBits : array [cdDefault..cdFloat128bits] of Integer =
+                                    (24, 8, 16, 24, 64, 128); // float_type
    cDepthPrecisionToDepthBits : array [dpDefault..dp32bits] of Integer =
                                     (24, 16, 24, 32);
 var
@@ -7054,7 +7056,7 @@ end;
 
 // ShowInfo
 //
-procedure TGLSceneBuffer.ShowInfo;
+procedure TGLSceneBuffer.ShowInfo(Modal : boolean);
 begin
    if not Assigned(FRenderingContext) then Exit;
    // most info is available with active context only
@@ -7892,27 +7894,15 @@ procedure TGLNonVisualViewer.CopyToTexture(aTexture : TGLTexture;
 var
    target, handle : Integer;
    buf : PChar;
-begin
-   if Buffer.RenderingContext<>nil then begin
-      Buffer.RenderingContext.Activate;
-      try
-         target:=aTexture.Image.NativeTextureTarget;
-         if (target<>GL_TEXTURE_CUBE_MAP_ARB) or (FCubeMapRotIdx=0) then begin
-            FCreateTexture:=not aTexture.IsHandleAllocated;
-            if FCreateTexture then
-               handle:=aTexture.AllocateHandle
-            else handle:=aTexture.Handle;
-         end else handle:=aTexture.Handle;
-         Buffer.GLStates.SetGLCurrentTexture(0, target, handle);
-         if target=GL_TEXTURE_CUBE_MAP_ARB then
-            target:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+FCubeMapRotIdx;
-         if FCreateTexture then begin
-            GetMem(buf, Width*Height*4);
-            try
-               glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-               case aTexture.MinFilter of
-                  miNearest, miLinear :
-              	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+
+   procedure CreateNewTexture;
+   begin
+      GetMem(buf, Width*Height*4);
+      try // float_type
+         glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+         case aTexture.MinFilter of
+            miNearest, miLinear :
+        	   	glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
                                   0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
                else
                   if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
@@ -7923,15 +7913,43 @@ begin
                   end else begin
                      // slower (software mode)
                      gluBuild2DMipmaps(target, aTexture.OpenGLTextureFormat, Width, Height,
-                                       GL_RGBA, GL_UNSIGNED_BYTE, buf);
-                  end;
-               end;
-            finally
-               FreeMem(buf);
+                                 GL_RGBA, GL_UNSIGNED_BYTE, buf);
             end;
-         end else begin
-            glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
          end;
+      finally
+         FreeMem(buf);
+      end;
+   end;
+
+begin
+   if Buffer.RenderingContext<>nil then begin
+      Buffer.RenderingContext.Activate;
+      try
+         target:=aTexture.Image.NativeTextureTarget;
+
+         if aTexture.IsFloatType then begin // float_type special treatment
+             FCreateTexture:=false;
+             handle:=aTexture.Handle;
+           end
+         else
+           if (target<>GL_TEXTURE_CUBE_MAP_ARB) or (FCubeMapRotIdx=0) then begin
+                FCreateTexture:=not aTexture.IsHandleAllocated;
+                if FCreateTexture then
+                   handle:=aTexture.AllocateHandle
+                else handle:=aTexture.Handle;
+              end
+           else handle:=aTexture.Handle;
+
+         Buffer.GLStates.SetGLCurrentTexture(0, target, handle);
+
+         if target=GL_TEXTURE_CUBE_MAP_ARB then
+            target:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+FCubeMapRotIdx;
+            
+         if FCreateTexture then
+            CreateNewTexture
+         else
+            glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
+
          ClearGLError;
       finally
          Buffer.RenderingContext.Deactivate;
