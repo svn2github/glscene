@@ -14,6 +14,7 @@
   History:<ul>
     <li>24/07/03 - SG - ReadFromFiler and WriteToFiler routines added,
                         improved object and joint initialization system.
+                        Manager properties not persitent in joints and behaviours.
     <li>26/06/03 - EG - Replaced TObjectList with TPersistentObjectList,
                         dropped Contnrs dependency (D5 compatibility)
     <li>23/06/03 - SG - Added GLODETerrainCollider, an implementation from DelphiODE
@@ -94,9 +95,11 @@ type
 
       procedure RegisterJoint(aJoint : TODEBaseJoint);
       procedure UnregisterJoint(aJoint : TODEBaseJoint);
-      
+
       procedure InitializeDynamicObjects;
       procedure InitializeJoints;
+      property DynamicObjectRegister : TPersistentObjectList read FDynamicObjectRegister;
+      property JointRegister : TPersistentObjectList read FJointRegister;
     public
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
@@ -269,6 +272,9 @@ type
     protected
       procedure Initialize; override;
       procedure Deinitialize; override;
+      procedure DefineProperties(Filer: TFiler); override;
+      procedure WriteElements(stream : TStream);
+      procedure ReadElements(stream : TStream);
     public
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
@@ -611,12 +617,18 @@ type
   TGLODEJointList = class(TComponent)
     private
       FJoints : TODEJoints;
+    protected
+      procedure DefineProperties(Filer: TFiler); override;
+      procedure WriteJoints(stream : TStream);
+      procedure ReadJoints(stream : TStream);
     public
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
     published
       property Joints : TODEJoints read FJoints;
   end;
+
+  TODEObjectName = String;
 
   {
   TODEBaseJoint:
@@ -629,6 +641,9 @@ type
       FObject1,
       FObject2 : TObject;
       FManager : TGLODEManager;
+      FObject1Index,
+      FObject2Index : Integer;
+      FManagerName : String;
       FAnchor,
       FAxis,
       FAxis2   : TGLCoordinates;
@@ -648,6 +663,7 @@ type
       property Axis2 : TGLCoordinates read FAxis2;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
+      procedure Loaded; override;
     public
       constructor Create(aOwner : TXCollection); override;
       destructor Destroy; override;
@@ -670,8 +686,6 @@ type
       procedure Initialize; override;
       procedure SetAnchor(Value : TAffineVector); override;
       procedure SetAxis(Value : TAffineVector); override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
     public
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -689,8 +703,6 @@ type
     protected
       procedure Initialize; override;
       procedure SetAnchor(Value : TAffineVector); override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
     public
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -707,8 +719,6 @@ type
     protected
       procedure Initialize; override;
       procedure SetAxis(Value : TAffineVector); override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
     public
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -740,8 +750,6 @@ type
       procedure SetAnchor(Value : TAffineVector); override;
       procedure SetAxis(Value : TAffineVector); override;
       procedure SetAxis2(Value : TAffineVector); override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
     public
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -762,8 +770,6 @@ type
       procedure SetAnchor(Value : TAffineVector); override;
       procedure SetAxis(Value : TAffineVector); override;
       procedure SetAxis2(Value : TAffineVector); override;
-      procedure WriteToFiler(writer : TWriter); override;
-      procedure ReadFromFiler(reader : TReader); override;
     public
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1087,12 +1093,16 @@ var
   i : integer;
 begin
   for i:=0 to FDynamicObjectRegister.Count-1 do begin
-    if FDynamicObjectRegister[i] is TGLODEDynamicObject then
+    if FDynamicObjectRegister[i] is TGLODEDynamicObject then begin
       if not TGLODEDynamicObject(FDynamicObjectRegister[i]).Initialized then
         TGLODEDynamicObject(FDynamicObjectRegister[i]).Initialize;
+      if FDynamicObjectRegister[i] is TGLODEDummy then
+        TGLODEDummy(FDynamicObjectRegister[i]).Elements.Initialize
+    end;
     if FDynamicObjectRegister[i] is TGLODEDynamicBehaviour then
       if not TGLODEDynamicBehaviour(FDynamicObjectRegister[i]).Initialized then
         TGLODEDynamicBehaviour(FDynamicObjectRegister[i]).Initialize;
+      TGLODEDynamicBehaviour(FDynamicObjectRegister[i]).Elements.Initialize
   end;
 end;
 
@@ -1662,7 +1672,9 @@ end;
 //
 procedure TGLODEDummy.Initialize;
 begin
-  if (not Assigned(Manager)) or Assigned(FBody) then exit;
+  if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then
+    exit;
+
   FBody:=dBodyCreate(Manager.World);
   AlignBodyToMatrix(AbsoluteMatrix);
   dMassSetZero(FMass);
@@ -1682,6 +1694,44 @@ begin
     FManager.UnregisterObject(self);
   
   inherited;
+end;
+
+// DefineProperties
+//
+procedure TGLODEDummy.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineBinaryProperty('ODEElementsData',
+                             ReadElements, WriteElements,
+                             (Assigned(FElements) and (FElements.Count>0)));
+end;
+
+// WriteElements
+//
+procedure TGLODEDummy.WriteElements(stream : TStream);
+var
+  writer : TWriter;
+begin
+  writer:=TWriter.Create(stream, 16384);
+  try
+    Elements.WriteToFiler(writer);
+  finally
+    writer.Free;
+  end;
+end;
+
+// ReadElements
+//
+procedure TGLODEDummy.ReadElements(stream : TStream);
+var
+  reader : TReader;
+begin
+  reader:=TReader.Create(stream, 16384);
+  try
+    Elements.ReadFromFiler(reader);
+  finally
+    reader.Free;
+  end;
 end;
 
 // CalculateMass
@@ -1772,6 +1822,7 @@ begin
   inherited;
   with writer do begin
     WriteInteger(0); // Archive version
+    WriteString(FManager.GetNamePath);
   end;
 end;
 
@@ -1782,6 +1833,7 @@ begin
   inherited;
   with reader do begin
     Assert(ReadInteger = 0); // Archive version
+    FManagerName:=ReadString;
   end;
 end;
 
@@ -1885,6 +1937,10 @@ end;
 procedure TGLODEDynamicBehaviour.WriteToFiler(writer : TWriter);
 begin
   inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    FElements.WriteToFiler(writer);
+  end;
 end;
 
 // ReadFromFiler
@@ -1892,6 +1948,10 @@ end;
 procedure TGLODEDynamicBehaviour.ReadFromFiler(reader : TReader);
 begin
   inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    FElements.ReadFromFiler(reader);
+  end;
 end;
 
 // AddNewElement
@@ -2105,8 +2165,6 @@ var
   Manager : TGLODEManager;
   Body : PdxBody;
 begin
-  if FInitialized then exit;
-  
   Manager:=nil;
   Body:=nil;
   if Owner.Owner is TGLODEDummy then begin
@@ -2139,6 +2197,13 @@ end;
 procedure TODEBaseElement.WriteToFiler(writer : TWriter);
 begin
   inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    FPosition.WriteToFiler(writer);
+    FDirection.WriteToFiler(writer);
+    FUp.WriteToFiler(writer);
+    WriteSingle(Density);
+  end;
 end;
 
 // ReadFromFiler
@@ -2146,6 +2211,13 @@ end;
 procedure TODEBaseElement.ReadFromFiler(reader : TReader);
 begin
   inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    FPosition.ReadFromFiler(reader);
+    FDirection.ReadFromFiler(reader);
+    FUp.ReadFromFiler(reader);
+    Density:=ReadSingle;
+  end;
 end;
 
 // CalculateMass
@@ -2265,6 +2337,8 @@ end;
 //
 procedure TODEElementBox.Initialize;
 begin
+  if FInitialized then exit;
+
   FGeomElement:=dCreateBox(nil,FBoxWidth,FBoxHeight,FBoxDepth);
   inherited;
 end;
@@ -2274,6 +2348,12 @@ end;
 procedure TODEElementBox.WriteToFiler(writer : TWriter);
 begin
   inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    WriteSingle(BoxWidth);
+    WriteSingle(BoxHeight);
+    WriteSingle(BoxDepth);
+  end;
 end;
 
 // ReadFromFiler
@@ -2281,6 +2361,12 @@ end;
 procedure TODEElementBox.ReadFromFiler(reader : TReader);
 begin
   inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    BoxWidth:=ReadSingle;
+    BoxHeight:=ReadSingle;
+    BoxDepth:=ReadSingle;
+  end;
 end;
 
 // FriendlyName
@@ -2468,6 +2554,8 @@ end;
 //
 procedure TODEElementSphere.Initialize;
 begin
+  if FInitialized then exit;
+
   FGeomElement:=dCreateSphere(nil,FRadius);
   inherited;
 end;
@@ -2477,6 +2565,10 @@ end;
 procedure TODEElementSphere.WriteToFiler(writer : TWriter);
 begin
   inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    WriteSingle(Radius);
+  end;
 end;
 
 // ReadFromFiler
@@ -2484,6 +2576,10 @@ end;
 procedure TODEElementSphere.ReadFromFiler(reader : TReader);
 begin
   inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    Radius:=ReadSingle;
+  end;
 end;
 
 // FriendlyName
@@ -2611,6 +2707,8 @@ end;
 //
 procedure TODEElementCapsule.Initialize;
 begin
+  if FInitialized then exit;
+  
   FGeomElement:=dCreateCCylinder(nil,FRadius,FLength);
   inherited;
 end;
@@ -2620,6 +2718,11 @@ end;
 procedure TODEElementCapsule.WriteToFiler(writer : TWriter);
 begin
   inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    WriteSingle(Radius);
+    WriteSingle(Length);
+  end;
 end;
 
 // ReadFromFiler
@@ -2627,6 +2730,11 @@ end;
 procedure TODEElementCapsule.ReadFromFiler(reader : TReader);
 begin
   inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    Radius:=ReadSingle;
+    Length:=ReadSingle;
+  end;
 end;
 
 // FriendlyName
@@ -2775,6 +2883,8 @@ end;
 //
 procedure TODEElementCylinder.Initialize;
 begin
+  if FInitialized then exit;
+
   FGeomElement:=dCreateCylinder(nil,FRadius,FLength);
   inherited;
 end;
@@ -2784,6 +2894,11 @@ end;
 procedure TODEElementCylinder.WriteToFiler(writer : TWriter);
 begin
   inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    WriteSingle(Radius);
+    WriteSingle(Length);
+  end;
 end;
 
 // ReadFromFiler
@@ -2791,6 +2906,11 @@ end;
 procedure TODEElementCylinder.ReadFromFiler(reader : TReader);
 begin
   inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    Radius:=ReadSingle;
+    Length:=ReadSingle;
+  end;
 end;
 
 // FriendlyName
@@ -3034,6 +3154,44 @@ begin
   inherited;
 end;
 
+// DefineProperties
+//
+procedure TGLODEJointList.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineBinaryProperty('ODEJointsData',
+                             ReadJoints, WriteJoints,
+                             (Assigned(FJoints) and (FJoints.Count>0)));
+end;
+
+// WriteJoints
+//
+procedure TGLODEJointList.WriteJoints(stream : TStream);
+var
+  writer : TWriter;
+begin
+  writer:=TWriter.Create(stream, 16384);
+  try
+    Joints.WriteToFiler(writer);
+  finally
+    writer.Free;
+  end;
+end;
+
+// ReadJoints
+//
+procedure TGLODEJointList.ReadJoints(stream : TStream);
+var
+  reader : TReader;
+begin
+  reader:=TReader.Create(stream, 16384);
+  try
+    Joints.ReadFromFiler(reader);
+  finally
+    reader.Free;
+  end;
+end;
+
 
 // ------------------------------------------------------------------
 // TODEBaseJoint
@@ -3085,6 +3243,15 @@ end;
 procedure TODEBaseJoint.WriteToFiler(writer : TWriter);
 begin
   inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+    WriteString(Manager.GetNamePath);
+    WriteInteger(FObject1Index);
+    WriteInteger(FObject2Index);
+    FAnchor.WriteToFiler(writer);
+    FAxis.WriteToFiler(writer);
+    FAxis2.WriteToFiler(writer);
+  end;
 end;
 
 // ReadFromFiler
@@ -3092,6 +3259,30 @@ end;
 procedure TODEBaseJoint.ReadFromFiler(reader : TReader);
 begin
   inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+    FManagerName:=ReadString;
+    FObject1Index:=ReadInteger;
+    FObject2Index:=ReadInteger;
+    FAnchor.ReadFromFiler(reader);
+    FAxis.ReadFromFiler(reader);
+    FAxis2.ReadFromFiler(reader);
+  end;
+end;
+
+// Loaded
+//
+procedure TODEBaseJoint.Loaded;
+var
+  mng : TComponent;
+begin
+  inherited;
+  if FManagerName<>'' then begin
+    mng:=FindManager(TGLODEManager, FManagerName);
+    if Assigned(mng) then
+      Manager:=TGLODEManager(mng);
+    FManagerName:='';
+  end
 end;
 
 // AnchorChange
@@ -3214,20 +3405,6 @@ begin
   Result:='ODE Hinge joint implementation';
 end;
 
-// WriteToFiler
-//
-procedure TODEJointHinge.WriteToFiler(writer : TWriter);
-begin
-  inherited;
-end;
-
-// ReadFromFiler
-//
-procedure TODEJointHinge.ReadFromFiler(reader : TReader);
-begin
-  inherited;
-end;
-
 
 // ------------------------------------------------------------------
 // TODEJointBall
@@ -3265,20 +3442,6 @@ begin
   Result:='ODE Ball joint implementation';
 end;
 
-// WriteToFiler
-//
-procedure TODEJointBall.WriteToFiler(writer : TWriter);
-begin
-  inherited;
-end;
-
-// ReadFromFiler
-//
-procedure TODEJointBall.ReadFromFiler(reader : TReader);
-begin
-  inherited;
-end;
-
 
 // ------------------------------------------------------------------
 // TODEJointSlider
@@ -3314,20 +3477,6 @@ end;
 class function TODEJointSlider.FriendlyDescription : String;
 begin
   Result:='ODE Slider joint implementation';
-end;
-
-// WriteToFiler
-//
-procedure TODEJointSlider.WriteToFiler(writer : TWriter);
-begin
-  inherited;
-end;
-
-// ReadFromFiler
-//
-procedure TODEJointSlider.ReadFromFiler(reader : TReader);
-begin
-  inherited;
 end;
 
 
@@ -3412,20 +3561,6 @@ begin
   Result:='ODE Double Axis Hinge joint implementation';
 end;
 
-// WriteToFiler
-//
-procedure TODEJointHinge2.WriteToFiler(writer : TWriter);
-begin
-  inherited;
-end;
-
-// ReadFromFiler
-//
-procedure TODEJointHinge2.ReadFromFiler(reader : TReader);
-begin
-  inherited;
-end;
-
 
 // ------------------------------------------------------------------
 // TODEJointUniversal
@@ -3477,20 +3612,6 @@ end;
 class function TODEJointUniversal.FriendlyDescription : String;
 begin
   Result:='ODE Universal joint implementation';
-end;
-
-// WriteToFiler
-//
-procedure TODEJointUniversal.WriteToFiler(writer : TWriter);
-begin
-  inherited;
-end;
-
-// ReadFromFiler
-//
-procedure TODEJointUniversal.ReadFromFiler(reader : TReader);
-begin
-  inherited;
 end;
 
 
