@@ -9,8 +9,9 @@
 
    CPU               Graphics          Colors      FPS         Sort Time
 
+   TBird 1.1GHz      GeForce2 Pro      32 bits     96.9        2.69 msec
    Duron 800MHz      TNT2 M64          32 bits     16.6        4.45 msec
-   --- 23/01/02 - ZWrite=False in the PFX Renderer
+   --- 23/01/02 - ZWrite=False in the PFX Renderer, minor optims
    TBird 1.1GHz      GeForce2 Pro      32 bits     91.7        2.86 msec
    Duron 800MHz      TNT2 M64          32 bits     12.2        4.45 msec
    --- 20/01/02 - Optimized PFX (sort) and TGLPolygonPFXManager (rendering)
