@@ -29,8 +29,8 @@ unit GLODEManager;
 interface
 
 uses
-  Classes,ODEImport,ODEGL,GLScene,GLMisc,Geometry,GLTexture,
-  OpenGL12,XOpenGL,SysUtils,GLObjects,XCollection,Contnrs;
+  Classes,ODEImport,ODEGL,GLScene,GLMisc,Geometry,GLTexture,OpenGL12,
+  XOpenGL,SysUtils,GLObjects,XCollection,Contnrs;
 
 type
 
@@ -317,11 +317,12 @@ type
       FOnCollision : TODEObjectCollisionEvent;
       procedure SetManager(Value : TGLODEManager);
       procedure SetSurface(value:TODECollisionSurface);
+    protected
+      procedure Initialize; virtual;
+      procedure Deinitialize; virtual;
     public
       constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
-      procedure Initialize; virtual;
-      procedure Deinitialize; virtual;
     published
       property Manager : TGLODEManager read FManager write SetManager;
       property Surface : TODECollisionSurface read FSurface write SetSurface;
@@ -343,12 +344,13 @@ type
       function GetMass : TdMass;
       procedure AlignBodyToMatrix(Mat: TMatrix);
       function GetAbsoluteMatrix : TMatrix;
+    protected
+      procedure Initialize; override;
+      procedure Deinitialize; override;
     public
       constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
       class function FriendlyName : String; override;
-      procedure Initialize; override;
-      procedure Deinitialize; override;
       function AddNewElement(AChild:TODEElementClass):TODEBaseElement; dynamic;
       procedure AlignObject;
       function CalculateMass : TdMass;
@@ -518,6 +520,7 @@ type
   --------------------
   ODE cylinder implementation.
   }
+  { Commented out because of instability
   TODEElementCylinder = class (TODEBaseElement)
     private
       FRadius,
@@ -537,7 +540,7 @@ type
     published
       property Radius : single read GetRadius write SetRadius;
       property Length : single read GetLength write SetLength;
-  end;
+  end; //}
 
   TODEBaseJoint = class;
 
@@ -644,6 +647,16 @@ type
       procedure SetAxis(Value : TAffineVector); override;
   end;
 
+  {
+  TODEJointFixed:
+  ---------------
+  ODE fixed joint implementation.
+  }
+  TODEJointFixed = class (TODEBaseJoint)
+    protected
+      procedure Initialize; override;
+  end;
+
 
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
 procedure Register;
@@ -686,8 +699,8 @@ function GetBodyFromODEObject(Obj:TObject):PdxBody;
 begin
   Result:=nil;
   if Assigned(Obj) then begin
-    if Obj is TGLODEDummy then
-      Result:=TGLODEDummy(Obj).Body;
+    if Obj is TGLODEDynamicObject then
+      Result:=TGLODEDynamicObject(Obj).Body;
     if Obj is TGLODEDynamicBehaviour then
       Result:=TGLODEDynamicBehaviour(Obj).Body;
   end;
@@ -699,10 +712,10 @@ function GetSurfaceFromODEObject(Obj:TObject):TODECollisionSurface;
 begin
   Result:=nil;
   if Assigned(Obj) then begin
-    if Obj is TGLODEDummy then
-      Result:=TGLODEDummy(Obj).Surface;
-    if Obj is TGLODEDynamicBehaviour then
-      Result:=TGLODEDynamicBehaviour(Obj).Surface;
+    if Obj is TGLODEBaseObject then
+      Result:=TGLODEBaseObject(Obj).Surface;
+    if Obj is TGLODEBaseBehaviour then
+      Result:=TGLODEBaseBehaviour(Obj).Surface;
   end;
 end;
 
@@ -804,7 +817,7 @@ begin
 
   // Rolling friction
   Body1:=GetBodyFromODEObject(Object1);
-  Body2:=GetBodyFromODEObject(Object1);
+  Body2:=GetBodyFromODEObject(Object2);
   if (Surface1.RollingFrictionEnabled) and Assigned(Body1) then
     FRFContactList.Add(Object1);
   if (Surface2.RollingFrictionEnabled) and Assigned(Body2) then
@@ -1501,13 +1514,15 @@ end;
 //
 procedure TGLODEDynamicBehaviour.Initialize;
 begin
+  if not Assigned(Manager) then exit;
+
   FBody:=dBodyCreate(Manager.World);
   AlignBodyToMatrix(TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix);
   dMassSetZero(FMass);
   FElements.Initialize;
   CalculateMass;
   dBodySetMass(FBody,FMass);
-  FManager.RegisterObject(self);
+  Manager.RegisterObject(self);
 end;
 
 // Deinitialize
@@ -1515,7 +1530,9 @@ end;
 procedure TGLODEDynamicBehaviour.Deinitialize;
 begin
   FElements.Deinitialize;
-  FManager.UnregisterObject(self);
+  if Assigned(Manager) then
+    Manager.UnregisterObject(self);
+  inherited;
 end;
 
 // AddNewElement
@@ -2273,7 +2290,7 @@ end;
 // ------------------------------------------------------------------
 // TODEElementCylinder
 // ------------------------------------------------------------------
-
+{
 // BuildList
 //
 procedure TODEElementCylinder.BuildList(var rci : TRenderContextInfo);
@@ -2404,7 +2421,7 @@ begin
   FLength:=Value;
   ODERebuild;
 end;
-
+//}
 
 // ------------------------------------------------------------------
 // TGLODEStaticObject
@@ -2735,6 +2752,19 @@ procedure TODEJointSlider.SetAxis(Value : TAffineVector);
 begin
   if FJointID<>0 then
     dJointSetSliderAxis(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+
+// ------------------------------------------------------------------
+// TODEJointFixed
+// ------------------------------------------------------------------
+
+// Initialize
+//
+procedure TODEJointFixed.Initialize;
+begin
+  if not Assigned(FManager) then exit;
+  FJointID:=dJointCreateFixed(FManager.World,0);
 end;
 
 
