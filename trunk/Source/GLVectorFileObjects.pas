@@ -1256,11 +1256,14 @@ type
          procedure PrevFrame(nbSteps : Integer = 1);
 
          function FrameCount : Integer;
+    procedure AddChild(AChild: TGLBaseSceneObject); override;
 
       published
          { Published Declarations }
          property StartFrame : Integer read FStartFrame write SetStartFrame;
          property EndFrame : Integer read FEndFrame write SetEndFrame;
+         {: Reference Frame Animation mode.<p>
+            Allows specifying if the model is primarily morph or skeleton based. }
          property Reference : TActorAnimationReference read FReference write FReference default aarMorph;
 
          property CurrentFrame : Integer read FCurrentFrame write SetCurrentFrame;
@@ -4979,7 +4982,7 @@ begin
                MeshObjects.MorphTo(CurrentFrame);
             end;
          end;
-         aarSkeleton : begin
+         aarSkeleton : if Skeleton.Frames.Count>0 then begin
             case FrameInterpolation of
                afpLinear :
                   Skeleton.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta);
