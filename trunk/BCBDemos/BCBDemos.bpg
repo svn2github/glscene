@@ -37,6 +37,10 @@ octreedemo.exe: collisions\octree\octreedemo.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
 
+SimpleGLSL.exe: glslshaders\SimpleGLSL\SimpleGLSL.bpr
+  $(ROOT)\bin\bpr2mak $**
+  $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
+
 fxy.exe: graph\fxy\fxy.bpr
   $(ROOT)\bin\bpr2mak $**
   $(ROOT)\bin\make -$(MAKEFLAGS) -f$*.mak
