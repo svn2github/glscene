@@ -3,6 +3,7 @@
 	Base classes and interface for GLScene Sound System<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/07/02 - EG - SetMute/SetPause fix (Sternas Stefanos)
       <li>02/07/02 - EG - Persistence fix (MP3 / Sternas Stefanos)
       <li>05/03/02 - EG - TGLBSoundEmitter.Loaded
       <li>27/02/02 - EG - Added 3D Factors, special listener-is-camera support
@@ -1052,7 +1053,8 @@ procedure TGLBaseSoundSource.SetPause(const val : Boolean);
 begin
    if val<>FPause then begin
       FPause:=val;
-      TGLSoundManager(TGLSoundSources(Collection).owner).PauseSource(Self, FPause);
+      if Collection<>nil then
+         TGLSoundManager(TGLSoundSources(Collection).owner).PauseSource(Self, FPause);
    end;
 end;
 
@@ -1072,7 +1074,8 @@ procedure TGLBaseSoundSource.SetMute(const val : Boolean);
 begin
    if val<>FMute then begin
       FMute:=val;
-      TGLSoundManager(TGLSoundSources(Collection).owner).MuteSource(Self, FMute);
+      if Collection<>nil then
+         TGLSoundManager(TGLSoundSources(Collection).owner).MuteSource(Self, FMute);
    end;
 end;
 
