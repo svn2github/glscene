@@ -3783,7 +3783,7 @@ begin
   if FInitialized or (not Assigned(Manager)) then exit;
   if NumNodesPerSide<=0 then exit;
 
-  FGeom:=dCreateTerrain(Manager.Space, FData, Length, NumNodesPerSide);
+  FGeom:=dCreateTerrainY(Manager.Space, FData, Length, NumNodesPerSide, 1, 1);
 
   inherited;
 end;
