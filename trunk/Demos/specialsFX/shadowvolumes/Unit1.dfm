@@ -42,6 +42,9 @@ object Form1: TForm1
     Font.Style = []
     ParentFont = False
     TabOrder = 1
+    DesignSize = (
+      135
+      456)
     object Label1: TLabel
       Left = 8
       Top = 8
@@ -54,6 +57,14 @@ object Form1: TForm1
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
+    end
+    object Label2: TLabel
+      Left = 16
+      Top = 416
+      Width = 94
+      Height = 14
+      Anchors = [akLeft, akBottom]
+      Caption = 'Shadow Resolution'
     end
     object CBShowVolumes: TCheckBox
       Left = 16
@@ -131,14 +142,18 @@ object Form1: TForm1
       TabOrder = 7
       OnClick = CBRedLightClick
     end
-    object Button1: TButton
+    object ScrollBar_ShadowResolution: TScrollBar
       Left = 16
-      Top = 320
-      Width = 75
-      Height = 25
-      Caption = 'Button1'
+      Top = 432
+      Width = 89
+      Height = 17
+      Anchors = [akLeft, akBottom]
+      Max = 21
+      Min = 3
+      PageSize = 0
+      Position = 3
       TabOrder = 8
-      OnClick = Button1Click
+      OnChange = ScrollBar_ShadowResolutionChange
     end
   end
   object GLScene1: TGLScene
@@ -233,6 +248,10 @@ object Form1: TForm1
         end
         item
           Caster = GLCylinder1
+        end
+        item
+          CastingMode = scmParentVisible
+          Caster = GLSphere_Shadow
         end>
       Options = [svoCacheSilhouettes, svoScissorClips, svoDesignVisible]
       object GLPlane1: TGLPlane
@@ -289,6 +308,16 @@ object Form1: TForm1
         BottomRadius = 0.600000023841857900
         Height = 6.000000000000000000
         TopRadius = 0.800000011920929000
+      end
+      object GLSphere4: TGLSphere
+        Position.Coordinates = {00000000000000000000C0C00000803F}
+        Radius = 2.000000000000000000
+        object GLSphere_Shadow: TGLSphere
+          Visible = False
+          Radius = 2.000000000000000000
+          Slices = 5
+          Stacks = 5
+        end
       end
     end
   end

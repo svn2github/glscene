@@ -57,7 +57,10 @@ type
     GLCube1: TGLCube;
     GLMaterialLibrary1: TGLMaterialLibrary;
     GLCylinder1: TGLCylinder;
-    Button1: TButton;
+    GLSphere4: TGLSphere;
+    GLSphere_Shadow: TGLSphere;
+    Label2: TLabel;
+    ScrollBar_ShadowResolution: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -72,7 +75,7 @@ type
     procedure CBMainLightClick(Sender: TObject);
     procedure CBBlueLightClick(Sender: TObject);
     procedure CBRedLightClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure ScrollBar_ShadowResolutionChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -109,7 +112,7 @@ begin
             sphere:=TGLSphere(DCSpheres.AddNewChild(TGLSphere));
             sphere.Position.SetPoint(x*cSpacing, y*cSpacing, z*cSpacing);
             sphere.Radius:=cRadius;
-            GLShadowVolume.Occluders.AddCaster(sphere); 
+            GLShadowVolume.Occluders.AddCaster(sphere, 0, scmParentVisible); 
          end;
    DCSpheres.MoveTo(GLShadowVolume);
    GLFreeForm.LoadFromFile('trinityrage.smd');
@@ -194,9 +197,10 @@ begin
    GLLightSource3.Shining:=CBRedLight.Checked;
 end;
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.ScrollBar_ShadowResolutionChange(Sender: TObject);
 begin
-  GLCylinder1.Free;
+  GLSphere_Shadow.Stacks := ScrollBar_ShadowResolution.Position;
+  GLSphere_Shadow.Slices := ScrollBar_ShadowResolution.Position;
+  GLShadowVolume.FlushSilhouetteCache;
 end;
-
 end.

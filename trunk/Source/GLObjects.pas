@@ -764,6 +764,7 @@ type
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
 
+          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
       published
          { Published Declarations }
          property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
@@ -3048,6 +3049,53 @@ begin
          SetVector(intersectNormal^, LocalToAbsolute(i1));
       end;
    end else Result:=False;
+end;
+
+// GenerateSilhouette
+//
+function TGLSphere.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
+var
+   i, j : Integer;
+   d, r, vr, s, c, angleFactor : Single;
+   sVec, tVec : TAffineVector;
+   Segments : integer;
+begin
+   Segments := FStacks;
+
+   if FSlices>FStacks then
+    Segments := FSlices;
+
+   r:=BoundingSphereRadiusUnscaled;
+   d:=VectorLength(silhouetteParameters.SeenFrom);
+   // determine visible radius
+   case silhouetteParameters.Style of
+      ssOmni     : vr:=SphereVisibleRadius(d, r);
+      ssParallel : vr:=r;
+   else
+      Assert(False);
+      vr:=r;
+   end;
+   // determine a local orthonormal matrix, viewer-oriented
+   sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
+   if VectorLength(sVec)<1e-3 then
+      sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, YVector);
+   tVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, sVec);
+   NormalizeVector(sVec);
+   NormalizeVector(tVec);
+   // generate the silhouette (outline and capping)
+   Result:=TGLSilhouette.Create;
+   angleFactor:=(2*PI)/Segments;
+   vr:=vr*0.98;
+   for i:=0 to Segments-1 do begin
+      SinCos(i*angleFactor, vr, s, c);
+      Result.Vertices.AddPoint(VectorCombine(sVec, tVec, s, c));
+      j:=(i+1) mod FStacks;
+      Result.Indices.Add(i, j);
+      if silhouetteParameters.CappingRequired then
+         Result.CapIndices.Add(Segments, i, j)
+   end;
+   if silhouetteParameters.CappingRequired then
+      Result.Vertices.Add(NullHmgPoint);
 end;
 
 // SetBottom
