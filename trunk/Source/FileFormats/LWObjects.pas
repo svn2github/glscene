@@ -727,14 +727,14 @@ type
 
 implementation
 
-uses SysUtils, Contnrs;
+uses SysUtils;
 
 type
   PWord = ^Word;
   PLongWord = ^LongWord;
 
 var
-  ChunkClasses: TClassList;
+  ChunkClasses: TList;
 
 {-----------------------------------------------------------------------------
   Procedure: GetChunkClasses
@@ -744,10 +744,10 @@ var
 
   Singleton access for the chunk class list.
 -----------------------------------------------------------------------------}
-function GetChunkClasses: TClassList;
+function GetChunkClasses: TList;
 begin
   if ChunkClasses = nil then
-    ChunkClasses := TClassList.Create;
+    ChunkClasses := TList.Create;
   result := ChunkClasses;
 end;
 
@@ -1632,7 +1632,7 @@ begin
     if FDimensions > 0 then
     begin
   
-      while Position < (DataStart + DataSize) do
+      while Cardinal(Position) < (DataStart + DataSize) do
       begin
         SetLength(FValues,Length(FValues) + 1);
   
@@ -1681,7 +1681,7 @@ var
   TmpStr: string;
 begin
   EndPos := DataStart + DataSize;
-  while AStream.Position < EndPos do
+  while Cardinal(AStream.Position) < Cardinal(EndPos) do
   begin
     ReadS0(AStream,TmpStr);
     Tags.Add(TmpStr);
@@ -1744,7 +1744,8 @@ begin
   ReadMotorolaNumber(AStream,@FPivot,4,3);
   ReadS0(AStream,FName);
   
-  if ((DataStart + DataSize) - AStream.Position) > 2 then ReadMotorolaNumber(AStream,@FParent,2);
+   if ((DataStart + DataSize) - Cardinal(AStream.Position)) > 2 then
+      ReadMotorolaNumber(AStream,@FParent,2);
 end;
 
 { TLWSurf }
@@ -1784,7 +1785,7 @@ begin
   
   ReadS0(AStream,FSource);
   
-  while AStream.Position < (DataStart + DataSize) do
+  while Cardinal(AStream.Position) < (DataStart + DataSize) do
   begin
   
     AStream.Read(CurId,4);
@@ -1913,7 +1914,7 @@ begin
 
     SetLength(FTagMaps,(DataSize - 4) div 2);
 
-    while Position < (DataStart + DataSize) do
+    while Cardinal(Position) < (DataStart + DataSize) do
     begin
       ReadVXAsU2(AStream, @FTagMaps[Idx]);
       ReadMotorolaNumber(AStream,@FTagMaps[Idx + 1],2);
