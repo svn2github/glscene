@@ -4181,7 +4181,8 @@ var
 begin
    if value<>FScene then begin
       // must be freed, the new scene may be using a non-compatible RC
-      DestroyHandles;
+      if FScene<>nil then
+         DestroyHandles;
       FScene:=value;
       // propagate for childs
       if Assigned(FChildren) then
