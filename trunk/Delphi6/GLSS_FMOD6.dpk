@@ -32,6 +32,7 @@ requires
 
 contains
   FMOD in '..\Source\SoundAPIs\fmod.pas',
+  FMODPresets in '..\Source\SoundAPIs\fmodpresets.pas',
   GLSMFMOD in '..\Source\GLSMFMOD.pas';
 
 end.
