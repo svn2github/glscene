@@ -224,8 +224,10 @@ type
 
       public
          { Public Declarations }
+{$W-}
          constructor Create; virtual;
          constructor CreateAndAllocate;
+{W+}
          destructor Destroy; override;
 
          property Handle : Integer read FHandle;
