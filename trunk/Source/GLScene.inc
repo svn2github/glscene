@@ -16,7 +16,7 @@
 //
 
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
-{$DEFINE GLS_Graphics32_SUPPORT}
+{.$DEFINE GLS_Graphics32_SUPPORT}
 
 //
 // Platform Detection

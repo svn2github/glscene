@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/03/02 - EG - GetFontBase fix (Sören Mühlbauer)
       <li>30/01/02 - EG - Text Alignment (Sören Mühlbauer),
                           TFontManager now GLContext compliant (RenderToBitmap ok!) 
       <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
@@ -592,8 +593,9 @@ begin
 	   Inc(NewEntry^.RefCount);
       Result:=NewEntry;
    end else Result:=nil;
-   if Result=nil then begin
+   if (Result=nil) or (Assigned(Result) and (Result.FVirtualHandle.Handle=0)) then begin
       // no entry found, or entry was purged
+      nbLists:=lastChar-firstChar+1;
       nbLists:=lastChar-firstChar+1;
       if not Assigned(newEntry) then begin
          // no entry found, so create one
