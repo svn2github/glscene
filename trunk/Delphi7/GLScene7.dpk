@@ -200,6 +200,7 @@ contains
   GLDCEMisc in '..\Source\GLDCEMisc.pas',
   GLEllipseCollision in '..\Source\GLEllipseCollision.pas',
   GLDCE in '..\Source\GLDCE.pas',
-  GLProjectedTextures in '..\Source\GLProjectedTextures.pas';
+  GLProjectedTextures in '..\Source\GLProjectedTextures.pas',
+  GLBlur in '..\Source\GLBlur.pas';
 
 end.
