@@ -1594,7 +1594,11 @@ uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO, GeometryBB,
      // 3DS Support
 	  File3DS, Types3DS,
      // MD2 Support
-	  FileMD2, TypesMD2;
+	  FileMD2, TypesMD2,
+
+     // MS3D Support
+	  GLFileMS3D, FypesMS3D;
+
 
 var
    vVectorFileFormats : TVectorFileFormatsList;
@@ -6738,6 +6742,7 @@ initialization
    RegisterVectorFileFormat('prj', '3D Studio project files', TGL3DSVectorFile);
    RegisterVectorFileFormat('smd', 'Half-Life SMD files', TGLSMDVectorFile);
    RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);
+   RegisterVectorFileFormat('ms3d', 'MilkShape3D files', TGLMS3DVectorFile);
 
    RegisterClasses([TGLFreeForm, TGLActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
                     TSkeletonMeshObject, TMeshObject, TSkeletonFrame, TMeshMorphTarget,
