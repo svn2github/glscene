@@ -205,12 +205,16 @@ type
 													   afterSenderObjectCreated : TNotifyEvent);
 
 			function Add(const item : TObject) : Integer;
-			procedure Delete(Index: Integer);
+         procedure AddNils(nbVals : Cardinal);
+			procedure Delete(index : Integer);
+         procedure DeleteItems(index : Integer; nbVals : Cardinal);
 			procedure Exchange(Index1, Index2: Integer);
 			procedure Insert(Index: Integer; Item: TObject);
+         procedure InsertNils(index : Integer; nbVals : Cardinal);
 			procedure Move(CurIndex, NewIndex: Integer);
 			function Remove(Item: TObject): Integer;
 			procedure DeleteAndFree(index : Integer);
+			procedure DeleteAndFreeItems(index : Integer; nbVals : Cardinal);
 			function RemoveAndFree(item : TObject) : Integer;
 
 			property GrowthDelta : integer read FGrowthDelta write FGrowthDelta;
@@ -242,6 +246,7 @@ type
 			property Last : TObject read GetLast write SetLast;
 			procedure Push(item : TObject);
 			function Pop : TObject;
+         
 			function AddObjects(const objectList : TPersistentObjectList) : Integer;
 			procedure RemoveObjects(const objectList : TPersistentObjectList);
          procedure Sort(compareFunc : TObjectListSortCompare);
@@ -793,6 +798,16 @@ begin
 	Inc(FCount);
 end;
 
+// AddNils
+//
+procedure TPersistentObjectList.AddNils(nbVals : Cardinal);
+begin
+   if Integer(nbVals)+Count>Capacity then
+      SetCapacity(Integer(nbVals)+Count);
+   FillChar(FList[FCount], Integer(nbVals)*SizeOf(TObject), 0);
+   FCount:=FCount+Integer(nbVals);
+end;
+
 // AddObjects
 //
 function TPersistentObjectList.AddObjects(const objectList : TPersistentObjectList) : Integer;
@@ -835,6 +850,23 @@ begin
 	Dec(FCount);
 	if index<FCount then
 		System.Move(FList[index+1], FList[index], (FCount-index)*SizeOf(TObject));
+end;
+
+// DeleteItems
+//
+procedure TPersistentObjectList.DeleteItems(index : Integer; nbVals : Cardinal);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(index)<Cardinal(FCount));
+{$ENDIF}
+   if nbVals>0 then begin
+      if index+Integer(nbVals)<FCount then begin
+	   	System.Move(FList[index+Integer(nbVals)],
+                     FList[index],
+                     (FCount-index-Integer(nbVals))*SizeOf(TObject));
+      end;
+	   Dec(FCount, nbVals);
+   end;
 end;
 
 // Exchange
@@ -946,6 +978,27 @@ begin
 						(FCount-index)*SizeOf(TObject));
 	FList[index]:=item;
 	Inc(FCount);
+end;
+
+// InsertNils
+//
+procedure TPersistentObjectList.InsertNils(index : Integer; nbVals : Cardinal);
+var
+   nc : Integer;
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+   if nbVals>0 then begin
+      nc:=FCount+Integer(nbVals);
+	   if nc>FCapacity then
+         SetCapacity(nc);
+   	if Index<FCount then
+	   	System.Move(FList[Index], FList[Index+Integer(nbVals)],
+                     (FCount-Index)*SizeOf(TObject));
+      FillChar(FList[Index], Integer(nbVals)*SizeOf(TObject), 0);
+	   FCount:=nc;
+   end;
 end;
 
 // GetLast
@@ -1077,6 +1130,23 @@ begin
 	obj:=Get(index);
 	Delete(index);
 	obj.Free;
+end;
+
+// DeleteAndFreeItems
+//
+procedure TPersistentObjectList.DeleteAndFreeItems(index : Integer; nbVals : Cardinal);
+var
+   i, n : Integer;
+begin
+{$IFOPT R+}
+   Assert(Cardinal(index)<Cardinal(FCount));
+{$ENDIF}
+   n:=index+Integer(nbVals);
+   if n>=FCount then
+      n:=FCount-1;
+   for i:=index to n do
+      FList[i].Free;
+   DeleteItems(index, nbVals);
 end;
 
 // RemoveAndFree

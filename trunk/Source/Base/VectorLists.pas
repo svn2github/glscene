@@ -84,7 +84,9 @@ type
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         procedure AddNulls(nbVals : Integer);
+         procedure AddNulls(nbVals : Cardinal);
+			procedure InsertNulls(index : Integer; nbVals : Cardinal);
+
          procedure AdjustCapacityToAtLeast(const size : Integer);
          function DataSize : Integer;
          {: Tell the list to use the specified range instead of its own.<p>
@@ -99,6 +101,7 @@ type
          procedure Clear;
 
          procedure Delete(index : Integer);
+         procedure DeleteItems(index : Integer; nbVals : Cardinal);
          procedure Exchange(index1, index2 : Integer);
          procedure Move(curIndex, newIndex : Integer);
          procedure Reverse;
@@ -141,6 +144,7 @@ type
          function MaxSpacing(list2 : TBaseVectorList) : Single; dynamic;
          procedure Translate(const delta : TAffineVector); overload; dynamic;
          procedure Translate(const delta : TBaseVectorList); overload; dynamic;
+         procedure TranslateInv(const delta : TBaseVectorList); overload; dynamic;
 
          {: Replace content of the list with lerp results between the two given lists.<p>
             Note: you can't Lerp with Self!!! }
@@ -727,12 +731,34 @@ end;
 
 // AddNulls
 //
-procedure TBaseList.AddNulls(nbVals : Integer);
+procedure TBaseList.AddNulls(nbVals : Cardinal);
 begin
-   if nbVals+Count>Capacity then
-      SetCapacity(nbVals+Count);
-   FillChar(FBaseList[FCount*FItemSize], nbVals * FItemSize, 0);
-   FCount:=FCount+nbVals;
+   if Integer(nbVals)+Count>Capacity then
+      SetCapacity(Integer(nbVals)+Count);
+   FillChar(FBaseList[FCount*FItemSize], Integer(nbVals)*FItemSize, 0);
+   FCount:=FCount+Integer(nbVals);
+end;
+
+// InsertNulls
+//
+procedure TBaseList.InsertNulls(index : Integer; nbVals : Cardinal);
+var
+   nc : Integer;
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+   if nbVals>0 then begin
+      nc:=FCount+Integer(nbVals);
+	   if nc>FCapacity then
+         SetCapacity(nc);
+   	if Index<FCount then
+	   	System.Move(FBaseList[Index*FItemSize],
+                     FBaseList[(Index+Integer(nbVals))*FItemSize],
+                     (FCount-Index)*FItemSize);
+      FillChar(FBaseList[Index*FItemSize], Integer(nbVals)*FItemSize, 0);
+	   FCount:=nc;
+   end;
 end;
 
 // AdjustCapacityToAtLeast
@@ -823,6 +849,23 @@ begin
 		System.Move(FBaseList[(index+1)*FItemSize],
                   FBaseList[index*FItemSize],
                   (FCount-index)*FItemSize);
+end;
+
+// DeleteItems
+//
+procedure TBaseList.DeleteItems(index : Integer; nbVals : Cardinal);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(index)<Cardinal(FCount));
+{$ENDIF}
+   if nbVals>0 then begin
+      if index+Integer(nbVals)<FCount then begin
+	   	System.Move(FBaseList[(index+Integer(nbVals))*FItemSize],
+                     FBaseList[index*FItemSize],
+                     (FCount-index-Integer(nbVals))*FItemSize);
+      end;
+	   Dec(FCount, nbVals);
+   end;
 end;
 
 // Exchange
@@ -996,6 +1039,17 @@ begin
    Assert(Count<=delta.Count);
    for i:=0 to Count-1 do
       AddVector(PAffineVector(ItemAddress[i])^, PAffineVector(delta.ItemAddress[i])^);
+end;
+
+// TranslateInv (TBaseVectorList)
+//
+procedure TBaseVectorList.TranslateInv(const delta : TBaseVectorList);
+var
+   i : Integer;
+begin
+   Assert(Count<=delta.Count);
+   for i:=0 to Count-1 do
+      SubtractVector(PAffineVector(ItemAddress[i])^, PAffineVector(delta.ItemAddress[i])^);
 end;
 
 // AngleLerp
@@ -1890,11 +1944,11 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$ENDIF}
-	if FCount = FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-	if Index < FCount then
-		System.Move(FList[Index], FList[Index + 1],
-						(FCount - Index) * SizeOf(Integer));
-	FList[Index] := Item;
+	if FCount=FCapacity then
+      SetCapacity(FCapacity+FGrowthDelta);
+	if Index<FCount then
+		System.Move(FList[Index], FList[Index+1],	(FCount-Index)*SizeOf(Integer));
+	FList[Index]:=Item;
 	Inc(FCount);
 end;
 
