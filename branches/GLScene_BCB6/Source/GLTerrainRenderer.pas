@@ -2,7 +2,8 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
+      <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)   
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>25/04/04 - EG - Occlusion testing support
       <li>13/01/04 - EG - Leak fix (Phil Scadden)
       <li>05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
@@ -296,32 +297,32 @@ begin
       step:=(Scale.X+Scale.Y); //Initial step size guess
       i:=step;
       d:=VectorNormalize(rayVector);
-      startedAbove:=((InterpolatedHeight(rayStart)-rayStart[1])<0);
+      startedAbove:=((InterpolatedHeight(rayStart)-rayStart.Coord[1])<0);
       maxH:=Scale.Z*256;
       minH:=-Scale.Z*256;
       failSafe:=0;
       while True do begin
          p1:=VectorCombine(rayStart, d, 1, i);
          h:=InterpolatedHeight(p1);
-         if Abs(h-p1[1])<Scale.Z then begin //Need a tolerance variable here (how close is good enough?)
+         if Abs(h-p1.Coord[1])<Scale.Z then begin //Need a tolerance variable here (how close is good enough?)
             Result:=True;
             Break;
          end else begin
             if startedAbove then begin
-               if h<p1[1] then
+               if h<p1.Coord[1] then
                   i:=i+step;
-               if (h-p1[1])>0 then begin
+               if (h-p1.Coord[1])>0 then begin
                   step:=step*0.5;
                   i:=i-step;
                end;
             end else begin
-               if h>p1[1] then
+               if h>p1.Coord[1] then
                   i:=i+step;
             end;
          end;
          Inc(failSafe);
          if failSafe>1024 then Break;
-         if d[1]<0 then begin
+         if d.Coord[1]<0 then begin
             if h<minH then Exit
          end else if h>maxH then Exit;
       end;
@@ -333,10 +334,10 @@ begin
          // Calc Normal
          if Assigned(intersectNormal) then begin
             // Get 2 nearby points for cross-product
-            p2:=VectorMake(p1[0]-0.1, 0, p1[2]);
-            p2[1]:=InterpolatedHeight(p2);
-            p3:=VectorMake(p1[0], 0, p1[2]-0.1);
-            p3[1]:=InterpolatedHeight(p3);
+            p2:=VectorMake(p1.Coord[0]-0.1, 0, p1.Coord[2]);
+            p2.Coord[1]:=InterpolatedHeight(p2);
+            p3:=VectorMake(p1.Coord[0], 0, p1.Coord[2]-0.1);
+            p3.Coord[1]:=InterpolatedHeight(p3);
 
             intersectNormal^:=VectorNormalize(VectorCrossProduct(VectorSubtract(p1, p2),
                                                                  VectorSubtract(p3, p1)));
@@ -388,7 +389,7 @@ var
 begin
    if Assigned(HeightDataSource) then begin
       pLocal:=AbsoluteToLocal(p);
-      Result:=HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1], TileSize+1)*Scale.Z*(1/128);
+      Result:=HeightDataSource.InterpolatedHeight(pLocal.Coord[0], pLocal.Coord[1], TileSize+1)*Scale.Z*(1/128);
    end else Result:=0;
 end;
 
@@ -449,20 +450,20 @@ begin
    vEye:=VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
    vEyeDirection:=VectorTransform(rci.cameraDirection, InvAbsoluteMatrix);
    SetVector(observer, vEye);
-   vEye[0]:=Round(vEye[0]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
-   vEye[1]:=Round(vEye[1]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
+   vEye.Coord[0]:=Round(vEye.Coord[0]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
+   vEye.Coord[1]:=Round(vEye.Coord[1]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
    tileGroundRadius:=Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y);
    tileRadius:=Sqrt(tileGroundRadius+Sqr(256*Scale.Z));
    tileGroundRadius:=Sqrt(tileGroundRadius);
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
-   tilePos[2]:=0;
+   tilePos.Coord[2]:=0;
    f:=(rci.rcci.farClippingDistance+tileGroundRadius)/Scale.X;
    f:=Round(f*FinvTileSize+1.0)*TileSize;
-   maxTilePosX:=vEye[0]+f;
-   maxTilePosY:=vEye[1]+f;
-   minTilePosX:=vEye[0]-f;
-   minTilePosY:=vEye[1]-f;
+   maxTilePosX:=vEye.Coord[0]+f;
+   maxTilePosY:=vEye.Coord[1]+f;
+   minTilePosX:=vEye.Coord[0]-f;
+   minTilePosY:=vEye.Coord[1]-f;
 
    texFactor:=1/(TilesPerTexture*TileSize);
    rcci:=rci.rcci;
@@ -534,13 +535,13 @@ begin
    AbsoluteMatrix; // makes sure it is available
 
    // determine orientation (to render front-to-back)
-   if vEyeDirection[0]>=0 then
+   if vEyeDirection.Coord[0]>=0 then
       deltaX:=TileSize
    else begin
       deltaX:=-TileSize;
       minTilePosX:=maxTilePosX;
    end;
-   if vEyeDirection[1]>=0 then
+   if vEyeDirection.Coord[1]>=0 then
       deltaY:=TileSize
    else begin
       deltaY:=-TileSize;
@@ -549,9 +550,9 @@ begin
 
    tileRadius:=tileRadius;
 
-   tilePos[1]:=minTilePosY;
+   tilePos.Coord[1]:=minTilePosY;
    for iY:=0 to nbY-1 do begin
-      tilePos[0]:=minTilePosX;
+      tilePos.Coord[0]:=minTilePosX;
       prevPatch:=nil;
       n:=0;
       for iX:=0 to nbX do begin
@@ -603,10 +604,10 @@ begin
             prevPatch:=nil;
             rowList.Add(nil);
          end;
-         tilePos[0]:=tilePos[0]+deltaX;
+         tilePos.Coord[0]:=tilePos.Coord[0]+deltaX;
          Inc(n);
       end;
-      tilePos[1]:=tilePos[1]+deltaY;
+      tilePos.Coord[1]:=tilePos.Coord[1]+deltaY;
       buf:=prevRow;
       prevRow:=rowList;
       rowList:=buf;
@@ -725,8 +726,8 @@ function TGLTerrainRenderer.HashedTile(const tilePos : TAffineVector; canAllocat
 var
    xLeft, yTop : Integer;
 begin
-   xLeft:=Round(tilePos[0]*FinvTileSize-0.5)*(TileSize);
-   yTop:=Round(tilePos[1]*FinvTileSize-0.5)*(TileSize);
+   xLeft:=Round(tilePos.Coord[0]*FinvTileSize-0.5)*(TileSize);
+   yTop:=Round(tilePos.Coord[1]*FinvTileSize-0.5)*(TileSize);
    Result:=HashedTile(xLeft, yTop, canAllocate);
 end;
 
@@ -769,8 +770,8 @@ var
    patch : TGLROAMPatch;
    xLeft, yTop : Integer;
 begin
-   xLeft:=Round(tilePos[0]*FinvTileSize-0.5)*TileSize;
-   yTop:=Round(tilePos[1]*FinvTileSize-0.5)*TileSize;
+   xLeft:=Round(tilePos.Coord[0]*FinvTileSize-0.5)*TileSize;
+   yTop:=Round(tilePos.Coord[1]*FinvTileSize-0.5)*TileSize;
    tile:=HashedTile(xLeft, yTop);
    if Assigned(hdList) then
       hdList.Add(tile);

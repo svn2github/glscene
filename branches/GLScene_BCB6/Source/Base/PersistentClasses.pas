@@ -1459,7 +1459,8 @@ begin
       ReadTypeError;
    end;
    SetLength(Result, n);
-   Read(Result[1], n);
+   if n<>0 then
+     Read(Result[1], n);
 end;
 
 // ReadWideString

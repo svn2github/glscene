@@ -12,7 +12,7 @@
       <li>21/02/02 - EG - AntiAliasing support *experimental* (Chris N. Strahm)
       <li>05/02/02 - EG - Fixed UnTrackWindow
       <li>03/02/02 - EG - Added experimental Hook-based window tracking
-      <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support
+      <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support 
       <li>21/01/02 - EG - More graceful recovery for ICDs without pbuffer support
       <li>07/01/02 - EG - DoCreateMemoryContext now retrieved topDC when needed
       <li>15/12/01 - EG - Added support for AlphaBits
@@ -381,7 +381,7 @@ begin
 
    AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
    if AlphaBits>0 then
-     AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
+      AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
    AddIAttrib(WGL_DEPTH_BITS_ARB, DepthBits);
    if StencilBits>0 then
       AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);

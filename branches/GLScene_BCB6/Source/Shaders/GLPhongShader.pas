@@ -3,6 +3,7 @@
    An ARBvp1.0 + ARBfp1.0 shader that implements phong shading.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>13/10/04 - LR, YHC - BCB corrections: use record instead array    
       <li>11/10/04 - SG - Creation.
    </ul></font>
 }
@@ -170,15 +171,15 @@ var
 begin
    glEnable(GL_VERTEX_PROGRAM_ARB);
    glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVPHandle);
-   glGetLightfv(lightID, GL_POSITION, @light[0]);
-   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @light[0]);
+   glGetLightfv(lightID, GL_POSITION, @light.Coord[0]);
+   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @light.Coord[0]);
 
    glEnable(GL_FRAGMENT_PROGRAM_ARB);
    glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FFPHandle);
-   glGetLightfv(lightID, GL_DIFFUSE, @light[0]);
-   glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @light[0]);
-   glGetLightfv(lightID, GL_SPECULAR, @light[0]);
-   glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @light[0]);
+   glGetLightfv(lightID, GL_DIFFUSE, @light.Coord[0]);
+   glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @light.Coord[0]);
+   glGetLightfv(lightID, GL_SPECULAR, @light.Coord[0]);
+   glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @light.Coord[0]);
 end;
 
 // DoAmbientPass
@@ -196,9 +197,9 @@ begin
 
    glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
    glGetMaterialfv(GL_FRONT, GL_AMBIENT, @materialAmbient);
-   ambient[0]:=ambient[0]*materialAmbient[0];
-   ambient[1]:=ambient[1]*materialAmbient[1];
-   ambient[2]:=ambient[2]*materialAmbient[2];
+   ambient.Coord[0]:=ambient.Coord[0]*materialAmbient.Coord[0];
+   ambient.Coord[1]:=ambient.Coord[1]*materialAmbient.Coord[1];
+   ambient.Coord[2]:=ambient.Coord[2]*materialAmbient.Coord[2];
    glColor3fv(@ambient);
 
    FAmbientPass:=True;

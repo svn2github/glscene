@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>03/07/04 - LR - Completly review to take account designtime for Linux
                           Note a problem with TGLColorProperty
       <li>28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
@@ -917,7 +918,7 @@ end;
 //
 function TGLColorProperty.ColorToBorderColor(aColor: TColorVector; selected : Boolean) : TColor;
 begin
-   if (aColor[0]>0.75) or (aColor[1]>0.75) or (aColor[2]>0.75) then
+   if (aColor.Coord[0]>0.75) or (aColor.Coord[1]>0.75) or (aColor.Coord[2]>0.75) then
       Result:=clBlack
    else if selected then
       Result:=clWhite
@@ -1888,7 +1889,7 @@ initialization
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
-      {$ifdef WIN32}      
+      {$ifdef WIN32}  // Unknown resource
       RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', glsOCSpecialObjects);
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
       RegisterSceneObject(TGLBlur, 'GLBlur', glsOCSpecialObjects);

@@ -8,6 +8,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
 	<b>History : </b><font size=-1><ul>
+           <li>02/08/04 - LR, YHC - BCB corrections: use record instead array        
 	   <li>31/01/03 - EG - Materials support
       <li>30/01/03 - EG - Creation
    </ul><p>
@@ -179,7 +180,7 @@ begin
       for i:=0 to bsp.NumOfNodes-1 do begin
          fg:=TFGBSPNode.CreateOwned(mo.FaceGroups);
          plane:=bsp.Planes[bsp.Nodes[i].plane];
-         plane:=VectorMake(plane[0], plane[1], plane[2], plane[3]);
+         plane:=VectorMake(plane.Coord[0], plane.Coord[1], plane.Coord[2], plane.Coord[3]);
          fg.SplitPlane:=plane;
          fg.PositiveSubNodeIndex:=bsp.Nodes[i].Children[0];
          if fg.PositiveSubNodeIndex<0 then

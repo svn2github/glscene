@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array        
       <li>18/10/03 - EG - Dynamic support is back
       <li>18/09/03 - ARH - updated for fmod 3.7
       <li>24/09/02 - EG - FMOD activation errors no longer result in Asserts (ignored)
@@ -97,9 +98,9 @@ end;
 //
 procedure VectorToFMODVector(const aVector : TVector; var aFMODVector : TFSoundVector);
 begin
-   aFMODVector.x:=aVector[0];
-   aFMODVector.y:=aVector[1];
-   aFMODVector.z:=-aVector[2];
+   aFMODVector.x:=aVector.Coord[0];
+   aFMODVector.y:=aVector.Coord[1];
+   aFMODVector.z:=-aVector.Coord[2];
 end;
 
 // ------------------

@@ -6,6 +6,9 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               remove "dynamic" declaration of TAffineVectorList.Translate(const delta : TBaseVectorList)
+                               Added VectorTypes Unit
       <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>03/09/03 - EG - Added TBaseList.Move, faster TIntegerList.Offset
       <li>22/08/03 - EG - Faster FastQuickSortLists
@@ -144,7 +147,7 @@ type
          procedure Normalize; dynamic;
          function MaxSpacing(list2 : TBaseVectorList) : Single; dynamic;
          procedure Translate(const delta : TAffineVector); overload; dynamic;
-         procedure Translate(const delta : TBaseVectorList); overload; dynamic;
+         procedure Translate(const delta : TBaseVectorList); overload; //dynamic; //BCB
          procedure TranslateInv(const delta : TBaseVectorList); overload; dynamic;
 
          {: Replace content of the list with lerp results between the two given lists.<p>
@@ -980,8 +983,8 @@ begin
       ref:=ItemAddress[i];
       for k:=0 to 2 do begin
          f:=ref[k];
-         if f<min[k] then min[k]:=f;
-         if f>max[k] then max[k]:=f;
+         if f<min.Coord[k] then min.Coord[k]:=f;
+         if f>max.Coord[k] then max.Coord[k]:=f;
       end;
    end;
 end;
@@ -1180,7 +1183,7 @@ end;
 //
 function TAffineVectorList.Add(const item : TVector2f) : Integer;
 begin
-   Result:=Add(AffineVectorMake(item[0], item[1], 0))
+   Result:=Add(AffineVectorMake(item.Coord[0], item.Coord[1], 0))
 end;
 
 // Add (texpoint)
@@ -1197,12 +1200,12 @@ var
    v : PAffineVector;
 begin
    Result:=FCount;
-  	Inc(FCount);
+   Inc(FCount);
    while FCount>FCapacity do SetCapacity(FCapacity+FGrowthDelta);
    v:=@List[Result];
-   v[0]:=x;
-	v[1]:=y;
-	v[2]:=0;
+   v.Coord[0]:=x;
+   v.Coord[1]:=y;
+   v.Coord[2]:=0;
 end;
 
 // Add
@@ -1212,12 +1215,12 @@ var
    v : PAffineVector;
 begin
    Result:=FCount;
-  	Inc(FCount);
+   Inc(FCount);
    while FCount>FCapacity do SetCapacity(FCapacity+FGrowthDelta);
    v:=@List[Result];
-   v[0]:=x;
-	v[1]:=y;
-	v[2]:=z;
+   v.Coord[0]:=x;
+   v.Coord[1]:=y;
+   v.Coord[2]:=z;
 end;
 
 // Add (3 ints)
@@ -1226,13 +1229,13 @@ function TAffineVectorList.Add(const x, y, z : Integer) : Integer;
 var
    v : PAffineVector;
 begin
-	Result:=FCount;
-	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+   Result:=FCount;
+   if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
    v:=@List[Result];
-   v[0]:=x;
-	v[1]:=y;
-	v[2]:=z;
-  	Inc(FCount);
+   v.Coord[0]:=x;
+   v.Coord[1]:=y;
+   v.Coord[2]:=z;
+   Inc(FCount);
 end;
 
 // Add (3 ints, no capacity check)
@@ -1241,12 +1244,12 @@ function TAffineVectorList.AddNC(const x, y, z : Integer) : Integer;
 var
    v : PAffineVector;
 begin
-	Result:=FCount;
+   Result:=FCount;
    v:=@List[Result];
-   v[0]:=x;
-	v[1]:=y;
-	v[2]:=z;
-  	Inc(FCount);
+   v.Coord[0]:=x;
+   v.Coord[1]:=y;
+   v.Coord[2]:=z;
+   Inc(FCount);
 end;
 
 // Add (2 ints in array + 1)
@@ -1255,13 +1258,13 @@ function TAffineVectorList.Add(const xy : PIntegerArray; const z : Integer) : In
 var
    v : PAffineVector;
 begin
-	Result:=FCount;
-	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+   Result:=FCount;
+   if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
    v:=@List[Result];
-   v[0]:=xy[0];
-	v[1]:=xy[1];
-	v[2]:=z;
-  	Inc(FCount);
+   v.Coord[0]:=xy[0];
+   v.Coord[1]:=xy[1];
+   v.Coord[2]:=z;
+   Inc(FCount);
 end;
 
 // AddNC (2 ints in array + 1, no capacity check)
@@ -1270,12 +1273,12 @@ function TAffineVectorList.AddNC(const xy : PIntegerArray; const z : Integer) : 
 var
    v : PAffineVector;
 begin
-	Result:=FCount;
+   Result:=FCount;
    v:=@List[Result];
-   v[0]:=xy[0];
-	v[1]:=xy[1];
-	v[2]:=z;
-  	Inc(FCount);
+   v.Coord[0]:=xy[0];
+   v.Coord[1]:=xy[1];
+   v.Coord[2]:=z;
+   Inc(FCount);
 end;
 
 // Add
@@ -1476,7 +1479,7 @@ end;
 procedure TAffineVectorList.Scale(factor : Single);
 begin
    if (Count>0) and (factor<>1) then
-      ScaleFloatArray(@FList[0][0], Count*3, factor);
+      ScaleFloatArray(@FList[0].Coord[0], Count*3, factor);
 end;
 
 // Scale (affine)
@@ -1543,9 +1546,9 @@ procedure TVectorList.Add(const i1, i2, i3 : TAffineVector; w : Single);
 begin
   	Inc(FCount, 3);
    while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
-	PAffineVector(@FList[FCount-3])^:=i1;   FList[FCount-3][3]:=w;
-	PAffineVector(@FList[FCount-2])^:=i2;   FList[FCount-2][3]:=w;
-	PAffineVector(@FList[FCount-1])^:=i3;   FList[FCount-1][3]:=w;
+	PAffineVector(@FList[FCount-3])^:=i1;   FList[FCount-3].Coord[3]:=w;
+	PAffineVector(@FList[FCount-2])^:=i2;   FList[FCount-2].Coord[3]:=w;
+	PAffineVector(@FList[FCount-1])^:=i3;   FList[FCount-1].Coord[3]:=w;
 end;
 
 // AddVector
@@ -2592,7 +2595,7 @@ end;
 //
 function TQuaternionList.Add(const item : TAffineVector; w : Single): Integer;
 begin
-   Result:=Add(QuaternionMake(item, w));
+   Result:=Add(QuaternionMake(item.Coord, w));
 end;
 
 // Add

@@ -7,6 +7,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>08/09/03 - Jaj - Added single outline polygon support
 
    </ul><p>
@@ -28,7 +29,7 @@ Procedure DoTesselate(Vertexes : TAffineVectorList; Mesh : TGLFreeForm; normal :
 implementation
 
 uses
-  SysUtils;
+  SysUtils, VectorTypes;
 Var
   TessMesh : TMeshObject;
   TessFace : TFGIndexTexCoordList;
@@ -80,7 +81,6 @@ Var
   Tess : PGLUTesselator;
   i : Integer;
   dblVector : TAffineDblVector;
-  P : PAffineVector;
 Begin
   TessError := False;
 
@@ -106,7 +106,7 @@ Begin
   gluTessCallback(tess, GLU_TESS_COMBINE, @DoTessCombine);
 
   if Assigned(normal) then
-    gluTessNormal(tess, normal^[0], normal^[1], normal^[2])
+    gluTessNormal(tess, normal^.Coord[0], normal^.Coord[1], normal^.Coord[2])
   else
     gluTessNormal(tess, 0, 1, 0);
 

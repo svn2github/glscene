@@ -1,14 +1,7 @@
-unit GLExplosionFx;
+{: GLBExplosionFX<p>
 
-interface
-
-uses
-     OpenGL1x, VectorGeometry, glMisc, glScene, glVectorFileObjects, glTexture, VectorLists, XCollection;
-
-{
-TGLBExplosionFX Effect
-Initial Design: Matheus Degiovani (matheus@tilt.net)
-Initial release Date: 7/03/2002
+Initial Design: Matheus Degiovani (matheus@tilt.net)<p>
+Initial release Date: 7/03/2002<p>
 
 Description: this effect explodes a mesh object into triangles
 that fly over. You can define a default direction, in wich case
@@ -16,14 +9,28 @@ the pieces of the mesh will follow that direction, only rotating,
 or if you define a null vector as the direction, a vector will be
 calculated for each triangle, based on the normal vector of that
 triangle, with a little random addition so things look better.
-Pretty neat :)
+Pretty neat :)<p>
 
 Note: the owner of this behaviour should be any class that derives
 from TGLBaseMesh class or any other class derived from TGLBaseMesh.
 Also, the structure of the mesh is lost after the caching of information,
 so if you'll need the mesh after exploding it, you'll have to save the
-MeshObjects property of the mesh, OR load it again.
+MeshObjects property of the mesh, OR load it again.<p>
+
+   <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+      <li>07/03/02 - Matheus Degiovani (matheus@tilt.net)
+   </ul></font>
 }
+
+unit GLExplosionFx;
+
+interface
+
+uses
+     OpenGL1x, VectorGeometry, glMisc, glScene, glVectorFileObjects, glTexture,
+     VectorLists, XCollection;
+
 
 type TGLBExplosionFX = class(TGLObjectPreEffect)
      private
@@ -201,9 +208,9 @@ begin
 
           //calculate the center (position) of the triangle
           //so it rotates around its center
-          posi[0]:= (p1[0] + p2[0] + p3[0]) / 3;
-          posi[1]:= (p1[1] + p2[1] + p3[1]) / 3;
-          posi[2]:= (p1[2] + p2[2] + p3[2]) / 3;
+          posi.Coord[0]:= (p1.Coord[0] + p2.Coord[0] + p3.Coord[0]) / 3;
+          posi.Coord[1]:= (p1.Coord[1] + p2.Coord[1] + p3.Coord[1]) / 3;
+          posi.Coord[2]:= (p1.Coord[2] + p2.Coord[2] + p3.Coord[2]) / 3;
           posList.add(posi);
 
           //random rotation (in degrees)
@@ -240,9 +247,9 @@ begin
 
           //rotate the face
           mat:= IdentityHmgMatrix;
-          mat:= MatrixMultiply(mat, CreateRotationMatrixX(rotList.items[face][0]));
-          mat:= MatrixMultiply(mat, CreateRotationMatrixY(rotList.items[face][1]));
-          mat:= MatrixMultiply(mat, CreateRotationMatrixZ(rotList.items[face][2]));
+          mat:= MatrixMultiply(mat, CreateRotationMatrixX(rotList.items[face].Coord[0]));
+          mat:= MatrixMultiply(mat, CreateRotationMatrixY(rotList.items[face].Coord[1]));
+          mat:= MatrixMultiply(mat, CreateRotationMatrixZ(rotList.items[face].Coord[2]));
 
           p1:= VectorSubtract(p1, posList.items[face]);
           p2:= VectorSubtract(p2, posList.items[face]);
@@ -259,7 +266,7 @@ begin
 
           //move the face in the direction it is heading
           setVector(dir, dirList.items[face]);
-          glNormal3f(dir[0], dir[1], dir[2]);
+          glNormal3f(dir.Coord[0], dir.Coord[1], dir.Coord[2]);
           dir:= VectorScale(dir, speed);
           p1:= VectorAdd(p1, dir);
           p2:= VectorAdd(p2, dir);
@@ -273,9 +280,9 @@ begin
           trilist.items[face * 3 +1]:= p2;
           trilist.items[face * 3 +2]:= p3;
 
-          glVertex3f(p1[0], p1[1], p1[2]);
-          glVertex3f(p2[0], p2[1], p2[2]);
-          glVertex3f(p3[0], p3[1], p3[2]);
+          glVertex3f(p1.Coord[0], p1.Coord[1], p1.Coord[2]);
+          glVertex3f(p2.Coord[0], p2.Coord[1], p2.Coord[2]);
+          glVertex3f(p3.Coord[0], p3.Coord[1], p3.Coord[2]);
      end;
      glEnd;
      glEnable(GL_CULL_FACE);

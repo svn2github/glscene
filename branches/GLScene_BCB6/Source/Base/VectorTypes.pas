@@ -19,6 +19,9 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               move PAffineVectorArray, PVectorArray and PMatrixArray
+                               from VectorGeometry to this Unit
       <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>24/08/03 - PP - Added smallint vectors
       <li>04/07/01 - EG - Creation
@@ -31,30 +34,110 @@ interface
 {$i GLScene.inc}
 
 type
-  TVector2d = array[0..1] of double;
-  TVector2f = array[0..1] of single;
-  TVector2i = array[0..1] of longint;
-  TVector2s = array[0..1] of smallint;
+  TVector2d = record
+    case boolean of
+      true  : (Coord: array[0..1] of double);
+      false : (X,Y: double);
+  end;
+  TVector2f = record
+    case boolean of
+      true  : (Coord: array[0..1] of single);
+      false : (X,Y: single);
+  end;
+  TVector2i = record
+    case boolean of
+      true  : (Coord: array[0..1] of longint);
+      false : (X,Y: longint);
+  end;
+  TVector2s = record
+    case boolean of
+      true  : (Coord: array[0..1] of smallint);
+      false : (X,Y: smallint);
+  end;
 
-  TVector3d = array[0..2] of double;
-  TVector3f = array[0..2] of single;
-  TVector3i = array[0..2] of longint;
-  TVector3s = array[0..2] of smallint;
+  TVector3d = record
+    case boolean of
+      true  : (Coord: array[0..2] of double);
+      false : (X,Y,Z: double);
+  end;
+  TVector3f = record
+    case boolean of
+      true  : (Coord: array[0..2] of single);
+      false : (X,Y,Z: single);
+  end;
+  TVector3i = record
+    case boolean of
+      true  : (Coord: array[0..2] of longint);
+      false : (X,Y,Z: longint);
+  end;
+  TVector3s = record
+    case boolean of
+      true  : (Coord: array[0..2] of smallint);
+      false : (X,Y,Z: smallint);
+  end;
 
-  TVector4d = array[0..3] of double;
-  TVector4f = array[0..3] of single;
-  TVector4i = array[0..3] of longint;
-  TVector4s = array[0..3] of smallint;
+  TVector4d = record
+    case boolean of
+      true  : (Coord: array[0..3] of double);
+      false : (X,Y,Z,W: double);
+  end;
+  TVector4f = record
+    case boolean of
+      true  : (Coord: array[0..3] of single);
+      false : (X,Y,Z,W: single);
+  end;
+  TVector4i = record
+    case boolean of
+      true  : (Coord: array[0..3] of longint);
+      false : (X,Y,Z,W: longint);
+  end;
+  TVector4s = record
+    case boolean of
+      true  : (Coord: array[0..3] of smallint);
+      false : (X,Y,Z,W: smallint);
+  end;
 
-  TMatrix3d = array[0..2] of TVector3d;
-  TMatrix3f = array[0..2] of TVector3f;
-  TMatrix3i = array[0..2] of TVector3i;
-  TMatrix3s = array[0..2] of TVector3s;
+  TMatrix3d = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3d);
+      false : (X,Y,Z: TVector3d);
+  end;
+  TMatrix3f = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3f);
+      false : (X,Y,Z: TVector3f);
+  end;
+  TMatrix3i = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3i);
+      false : (X,Y,Z: TVector3i);
+  end;
+  TMatrix3s = record
+    case boolean of
+      true  : (Coord: array[0..2] of TVector3s);
+      false : (X,Y,Z: TVector3s);
+  end;
 
-  TMatrix4d = array[0..3] of TVector4d;
-  TMatrix4f = array[0..3] of TVector4f;
-  TMatrix4i = array[0..3] of TVector4i;
-  TMatrix4s = array[0..3] of TVector4s;
+  TMatrix4d = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4d);
+      false : (X,Y,Z,W: TVector4d);
+  end;
+  TMatrix4f = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4f);
+      false : (X,Y,Z,W: TVector4f);
+  end;
+  TMatrix4i = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4i);
+      false : (X,Y,Z,W: TVector4i);
+  end;
+  TMatrix4s = record
+    case boolean of
+      true  : (Coord: array[0..3] of TVector4s);
+      false : (X,Y,Z,W: TVector4s);
+  end;
 
   TD3DVector = packed record
     case Integer of
@@ -72,6 +155,16 @@ type
            _41, _42, _43, _44: single);
       1 : (M : TMatrix4f);
   end;
+
+  // arrays of vectors
+  PAffineVectorArray = ^TAffineVectorArray;
+  TAffineVectorArray = array[0..MAXINT shr 4] of TVector3f;
+
+  PVectorArray = ^TVectorArray;
+  TVectorArray = array[0..MAXINT shr 5] of TVector4f;
+
+  TMatrixArray = array [0..MaxInt shr 7] of TMatrix4f;
+  PMatrixArray = ^TMatrixArray;
 
 implementation
 

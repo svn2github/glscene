@@ -3,7 +3,8 @@
 
    <b>History :</b><font size=-1><ul>
       <li>07/09/04 - NelC - Added profiles VP40, FP40 from Cg 1.3 beta 2,
-                            Added option OutputCompilerWarnings
+                            Added option OutputCompilerWarnings   
+      <li>02/08/04 - LR, YHC - BCB corrections: fixed the conflict with GetProfileString in C++ header
       <li>23/04/04 - NelC - Now ManageTexture is false by default (Cg 1.2.1)
       <li>24/03/04 - NelC - Added GetLatestProfile
       <li>21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
@@ -44,7 +45,9 @@ interface
 uses
   Classes, VectorGeometry, VectorLists, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
 
-{$Include GLScene.inc}
+{$HPPEMIT '#ifdef GetProfileString   // defined in winbase.h'}
+{$HPPEMIT '  #undef GetProfileString'}
+{$HPPEMIT '#endif'}
 
 {.$DEFINE OutputCompilerWarnings}
 { Define OutputCompilerWarnings to output Cg compiler warnings to a file. Edit
@@ -374,7 +377,7 @@ const
 
 var
   vCgContextCount : Integer;
-  CurCgProgram    : TCgProgram;  // for reporting error
+  CurCgProgram    : TCgProgram; // for reporting error
 {$IFDEF OutputCompilerWarnings}
   CompilerMsg     : TStringList; // useful for seeing compiler warnings
 {$ENDIF}

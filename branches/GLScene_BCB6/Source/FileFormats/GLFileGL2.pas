@@ -4,6 +4,7 @@
 	files into GLScene.<p>
 
 	<b>History :</b><font size=-1><ul>
+           <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
 	   <li>22/10/03 - SG - Animation fixes, removed skeletal reconstruction
 	   <li>25/03/03 - SG - Creation.
 	</ul></font>
@@ -119,7 +120,7 @@ begin
 
             // Fix and then add the Texture coords
             vec2:=TexCoords[j];
-            vec2[1]:=1-vec2[1]; // reverse the v coordinate
+            vec2.Coord[1]:=1-vec2.Coord[1]; // reverse the v coordinate
             mesh.TexCoords.Add(vec2);
 
             // Add weighted bones

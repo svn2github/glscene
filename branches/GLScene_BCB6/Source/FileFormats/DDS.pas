@@ -129,22 +129,22 @@ const
    FOURCC_DXT5 = $35545844; // 'DXT5'
 
 
-function GetBitsFromMask(Mask : Cardinal) : Byte;
-var
-   i, temp : Integer;
-begin
-   if Mask=0 then begin
-     Result:=0;
-     exit;
+   function GetBitsFromMask(Mask : Cardinal) : Byte;
+   var
+      i, temp : Integer;
+   begin
+      if Mask=0 then begin
+        Result:=0;
+        exit;
+      end;
+      temp:=Mask;
+      for i:=0 to 31 do begin
+         if (Temp and 1) = 1 then
+            break;
+         temp:=temp shr 1;
+      end;
+      Result:=i;
    end;
-   temp:=Mask;
-   for i:=0 to 31 do begin
-      if (Temp and 1) = 1 then
-         break;
-      temp:=temp shr 1;
-   end;
-   Result:=i;
-end;
 
 
 // ------------------
@@ -176,7 +176,7 @@ begin
 
       PixelFormat:=glpf32bit;
       if (ddpfPixelFormat.dwFlags and DDPF_ALPHAPIXELS)>0 then
-         Transparent:=True;
+               Transparent:=True;
 
       Width:=dwWidth;
       Height:=dwHeight;
@@ -190,33 +190,33 @@ begin
                FOURCC_DXT1 : begin
                   DecodeDXT1toBitmap32(buf, decoded, Width, Height, trans);
                   Transparent:=trans;
-               end;
+            end;
                FOURCC_DXT3 : begin
                   DecodeDXT3toBitmap32(buf, decoded, Width, Height);
                   Transparent:=True;
-               end;
+         end;
                FOURCC_DXT5 : begin
                   DecodeDXT5toBitmap32(buf, decoded, Width, Height);
-                  Transparent:=True;
-               end;
-            else
+               Transparent:=True;
+         end;
+      else
                raise EDDSException.CreateFmt('Unsupported compression type: %s',[TFOURCC(ddpfPixelFormat.dwFourCC)]);
-            end;
+      end;
             for j:=0 to Height-1 do
                System.Move(decoded[4*j*Width], PCardinal(ScanLine[j])^, Width*4);
          finally
             FreeMem(decoded);
             FreeMem(buf);
-         end;
+      end;
       end else begin
          imgPixelSize:=4;
-         ddsPixelSize:=(ddpfPixelFormat.dwRGBBitCount div 8);
+      ddsPixelSize:=(ddpfPixelFormat.dwRGBBitCount div 8);
          rowSize:=ddsPixelSize*Integer(dwWidth);
 
-         RedShift:=GetBitsFromMask(ddpfPixelFormat.dwRBitMask);
-         GreenShift:=GetBitsFromMask(ddpfPixelFormat.dwGBitMask);
-         BlueShift:=GetBitsFromMask(ddpfPixelFormat.dwBBitMask);
-         if Transparent then
+      RedShift:=GetBitsFromMask(ddpfPixelFormat.dwRBitMask);
+      GreenShift:=GetBitsFromMask(ddpfPixelFormat.dwGBitMask);
+      BlueShift:=GetBitsFromMask(ddpfPixelFormat.dwBBitMask);
+      if Transparent then
             AlphaShift:=GetBitsFromMask(ddpfPixelFormat.dwRGBAlphaBitMask)
          else
             AlphaShift:=0;
@@ -227,34 +227,34 @@ begin
          AlphaMult:=1;
 
          if (ddpfPixelFormat.dwRBitMask shr RedShift)>0 then
-            RedMult := 255 div (ddpfPixelFormat.dwRBitMask shr RedShift);
+      RedMult  :=255 div (ddpfPixelFormat.dwRBitMask shr RedShift);
          if (ddpfPixelFormat.dwGBitMask shr GreenShift)>0 then
-            GreenMult := 255 div (ddpfPixelFormat.dwGBitMask shr GreenShift);
+      GreenMult:=255 div (ddpfPixelFormat.dwGBitMask shr GreenShift);
          if (ddpfPixelFormat.dwBBitMask shr BlueShift)>0 then
-            BlueMult := 255 div (ddpfPixelFormat.dwBBitMask shr BlueShift);
-         if Transparent then
+      BlueMult :=255 div(ddpfPixelFormat.dwBBitMask shr BlueShift);
+      if Transparent then
             if (ddpfPixelFormat.dwRGBAlphaBitMask shr AlphaShift)>0 then
-               AlphaMult:=255 div (ddpfPixelFormat.dwRGBAlphaBitMask shr AlphaShift);
+         AlphaMult:=255 div (ddpfPixelFormat.dwRGBAlphaBitMask shr AlphaShift);
 
-         GetMem(buf, rowSize);
-         for j:=0 to Height-1 do begin
-            Stream.Read(buf[0], rowSize);
-            for i:=0 to Width-1 do begin
-               col:=@buf[ddsPixelSize*i];
-               PByteArray(ScanLine[j])^[imgPixelSize*i+0]:=
-                  BlueMult*(col^ and ddpfPixelFormat.dwBBitMask) shr BlueShift;
-               PByteArray(ScanLine[j])^[imgPixelSize*i+1]:=
-                  GreenMult*(col^ and ddpfPixelFormat.dwGBitMask) shr GreenShift;
-               PByteArray(ScanLine[j])^[imgPixelSize*i+2]:=
-                  RedMult*(col^ and ddpfPixelFormat.dwRBitMask) shr RedShift;            if Transparent then begin
-               if Transparent then
-                  PByteArray(ScanLine[j])^[imgPixelSize*i+3]:=
-                     AlphaMult*(col^ and ddpfPixelFormat.dwRGBAlphaBitMask) shr AlphaShift;            end;
-            end;
+      GetMem(buf, rowSize);
+      for j:=0 to Height-1 do begin
+         Stream.Read(buf[0], rowSize);
+         for i:=0 to Width-1 do begin
+            col:=@buf[ddsPixelSize*i];
+            PByteArray(ScanLine[j])^[imgPixelSize*i+0]:=
+               BlueMult*(col^ and ddpfPixelFormat.dwBBitMask) shr BlueShift;
+            PByteArray(ScanLine[j])^[imgPixelSize*i+1]:=
+               GreenMult*(col^ and ddpfPixelFormat.dwGBitMask) shr GreenShift;
+            PByteArray(ScanLine[j])^[imgPixelSize*i+2]:=
+               RedMult*(col^ and ddpfPixelFormat.dwRBitMask) shr RedShift;            if Transparent then begin
+            if Transparent then
+               PByteArray(ScanLine[j])^[imgPixelSize*i+3]:=
+                  AlphaMult*(col^ and ddpfPixelFormat.dwRGBAlphaBitMask) shr AlphaShift;            end;
          end;
-         FreeMem(buf);
       end;
+      FreeMem(buf);
    end;
+end;
 end;
 
 // SaveToStream

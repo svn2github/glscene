@@ -5,6 +5,8 @@
    surface described by a moving curve.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Added VectorTypes Unit
       <li>02/11/01 - Egg - TGLPipe.BuildList now has a "persistent" cache
       <li>25/11/01 - Egg - TGLPipe nodes can now be colored
       <li>19/07/01 - Egg - Fix in TGLRevolutionSolid due to RotateAround change
@@ -266,7 +268,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, VectorGeometry, Spline, VectorLists, XOpenGL;
+uses SysUtils, VectorTypes, VectorGeometry, Spline, VectorLists, XOpenGL;
 
 // ------------------
 // ------------------ TGLRevolutionSolid ------------------
@@ -402,12 +404,12 @@ var
       tb : TAffineVector;
       mx, mz : Single;
    begin
-      mx:=ptBottom[0]+ptTop[0];
-      mz:=ptBottom[2]+ptTop[2];
+      mx:=ptBottom.Coord[0]+ptTop.Coord[0];
+      mz:=ptBottom.Coord[2]+ptTop.Coord[2];
       VectorSubtract(ptBottom^, ptTop^, tb);
-      normal[0]:=-tb[1]*mx;
-      normal[1]:=mx*tb[0]+mz*tb[2];
-      normal[2]:=-mz*tb[1];
+      normal.Coord[0]:=-tb.Coord[1]*mx;
+      normal.Coord[1]:=mx*tb.Coord[0]+mz*tb.Coord[2];
+      normal.Coord[2]:=-mz*tb.Coord[1];
       NormalizeVector(normal);
    end;
 
@@ -455,8 +457,8 @@ var
       VectorRotateAroundY(ptTop^, alpha, topBase);
       VectorRotateAroundY(ptBottom^, alpha, bottomBase);
       if gotYDeltaOffset then begin
-         topBase[1]:=topBase[1]+yOffset;
-         bottomBase[1]:=bottomBase[1]+yOffset;
+         topBase.Coord[1]:=topBase.Coord[1]+yOffset;
+         bottomBase.Coord[1]:=bottomBase.Coord[1]+yOffset;
       end;
       CalcNormal(@topBase, @bottomBase, normal);
       SetLocalNormals;
@@ -477,8 +479,8 @@ var
          VectorRotateAroundY(ptTop^, nextAlpha, topNext);
          VectorRotateAroundY(ptBottom^, nextAlpha, bottomNext);
          if gotYDeltaOffset then begin
-            topNext[1]:=topNext[1]+yOffset;
-            bottomNext[1]:=bottomNext[1]+yOffset;
+            topNext.Coord[1]:=topNext.Coord[1]+yOffset;
+            bottomNext.Coord[1]:=bottomNext.Coord[1]+yOffset;
             yOffset:=yOffset+deltaYOffset
          end;
          CalcNormal(@topNext, @bottomNext, normal);
@@ -589,7 +591,7 @@ begin
       end;
       // tessellate start/stop polygons
       if (rspStartPolygon in FParts) or (rspStopPolygon in FParts) then begin
-         bary:=Nodes.Barycenter; bary[1]:=0;
+         bary:=Nodes.Barycenter; bary.Coord[1]:=0;
          NormalizeVector(bary);
          // tessellate start polygon
          if rspStartPolygon in FParts then begin
@@ -896,12 +898,12 @@ const
       kx:=1;   ky:=1;   kz:=1;
       kpx:=1;  kpy:=1;  kpz:=1;
       for j:=0 to Slices do begin
-         if Sign(curRow.node[j].normal[0])<>Sign(prevRow.node[j].normal[0]) then Inc(kx);
-         if Sign(curRow.node[j].normal[1])<>Sign(prevRow.node[j].normal[1]) then Inc(ky);
-         if Sign(curRow.node[j].normal[2])<>Sign(prevRow.node[j].normal[2]) then Inc(kz);
-         if Sign(curRow.node[j].pos[0])<>Sign(prevRow.node[j].pos[0]) then Inc(kpx);
-         if Sign(curRow.node[j].pos[1])<>Sign(prevRow.node[j].pos[1]) then Inc(kpy);
-         if Sign(curRow.node[j].pos[2])<>Sign(prevRow.node[j].pos[2]) then Inc(kpz);
+         if Sign(curRow.node[j].normal.Coord[0])<>Sign(prevRow.node[j].normal.Coord[0]) then Inc(kx);
+         if Sign(curRow.node[j].normal.Coord[1])<>Sign(prevRow.node[j].normal.Coord[1]) then Inc(ky);
+         if Sign(curRow.node[j].normal.Coord[2])<>Sign(prevRow.node[j].normal.Coord[2]) then Inc(kz);
+         if Sign(curRow.node[j].pos.Coord[0])<>Sign(prevRow.node[j].pos.Coord[0]) then Inc(kpx);
+         if Sign(curRow.node[j].pos.Coord[1])<>Sign(prevRow.node[j].pos.Coord[1]) then Inc(kpy);
+         if Sign(curRow.node[j].pos.Coord[2])<>Sign(prevRow.node[j].pos.Coord[2]) then Inc(kpz);
       end;
       // k is a Value, which indicate the similarity of the normal vectors
       // between curRow and PrevRow
@@ -1116,9 +1118,9 @@ var
    {var
      p : TAffineVector;}
    begin
-      normal[0]:=Bottom[1] - Top[1];
-      normal[1]:=Top[0] - Bottom[0];
-      normal[2]:=0;
+      normal.Coord[0]:=Bottom.Coord[1] - Top.Coord[1];
+      normal.Coord[1]:=Top.Coord[0] - Bottom.Coord[0];
+      normal.Coord[2]:=0;
       NormalizeVector(normal);
       if FHeight<0 then NegateVector(normal);
       (*
@@ -1181,8 +1183,8 @@ var
          glVertex3fv(@bottomBase);
          topTPNext.S:=step*deltaS;
          bottomTPNext.S:=step*deltaS;
-         topNext[2]:=step*DeltaZ;
-         bottomNext[2]:=topNext[2];
+         topNext.Coord[2]:=step*DeltaZ;
+         bottomNext.Coord[2]:=topNext.Coord[2];
          xglTexCoord2fv(@topTPNext);
          glNormal3fv(@normTop);
          glVertex3fv(@topNext);

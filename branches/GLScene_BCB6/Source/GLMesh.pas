@@ -5,6 +5,7 @@
    implements more efficient (though more complex) mesh tools.<p> 
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>06/07/02 - EG - Mesh vertex lock only performed if context is active
       <li>18/03/02 - EG - Color "leak" fix (Nelson Chu)
       <li>21/01/02 - EG - TVertexList.OnNotifyChange now handled
@@ -508,9 +509,9 @@ begin
    SetVector(max, cSmallValue, cSmallValue, cSmallValue);
    for i:=0 to Count-1 do begin
       with FValues[i] do for k:=0 to 2 do begin
-         f:=coord[k];
-         if f<min[k] then min[k]:=f;
-         if f>max[k] then max[k]:=f;
+         f:=coord.Coord[k];
+         if f<min.Coord[k] then min.Coord[k]:=f;
+         if f>max.Coord[k] then max.Coord[k]:=f;
       end;
    end;
 end;

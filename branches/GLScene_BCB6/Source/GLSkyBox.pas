@@ -4,6 +4,7 @@
    for use as a skybox always centered on the camera.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>12/04/04 - EG - Added Style property, multipass support
       <li>27/11/03 - EG - Cleanup and fixes
       <li>09/11/03 - MRQZZZ - mandatory changes suggested by Eric.
@@ -140,10 +141,10 @@ begin
    glDepthMask(False);
 
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-   SetVector(transMat[0], LeftVector);
-   SetVector(transMat[1], Up.AsVector);
-   SetVector(transMat[2], Direction.AsVector);
-   SetVector(transMat[3], rci.cameraPosition);
+   SetVector(transMat.Coord[0], LeftVector);
+   SetVector(transMat.Coord[1], Up.AsVector);
+   SetVector(transMat.Coord[2], Direction.AsVector);
+   SetVector(transMat.Coord[3], rci.cameraPosition);
    glMultMatrixf(@transMat);
    
    with Scene.CurrentGLCamera do

@@ -13,6 +13,11 @@
       <li>09/09/04 - Mrqzzz - added property TGLParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TGLParticleFXEffect.ArchiveVersion updated to 4
       <li>29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
       <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Replace direct access of some properties by
+                               a getter and a setter.
+                               Added VectorTypes Unit.
+                               fixed undefined TPFXRegion error in BCB          
       <li>09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
       <li>08/07/04 - Eugene Kryukov - Added rotation for particles, RotateAngle in
                         LifeColor. And added AbsoluteRotation for TGLDynamicPFXManager
@@ -45,7 +50,7 @@ const
    cPFXGranularity = 128;   // granularity of particles per region
 
 type
-
+   
    TGLParticleList = class;
    TGLParticleFXManager = class;
 
@@ -66,7 +71,12 @@ type
          FRotation: single;
          
          FCreationTime : Double;
-         EffectScale : single; 
+         EffectScale : single;          
+         function GetPosition(const Index: Integer): Single;
+         procedure WritePosition(const Index: Integer; const aValue: Single);
+         function GetVelocity(const Index: Integer): Single;
+         procedure WriteVelocity(const Index: Integer; const aValue: Single);
+
       protected
          { Protected Declarations }
 
@@ -94,12 +104,12 @@ type
          {: Time at which particle was created }
          property CreationTime : Double read FCreationTime write FCreationTime;
 
-         property PosX : Single read FPosition[0] write FPosition[0];
-         property PosY : Single read FPosition[1] write FPosition[1];
-         property PosZ : Single read FPosition[2] write FPosition[2];
-         property VelX : Single read FVelocity[0] write FVelocity[0];
-         property VelY : Single read FVelocity[1] write FVelocity[1];
-         property VelZ : Single read FVelocity[2] write FVelocity[2];
+         property PosX : Single index 0 read GetPosition write WritePosition;
+         property PosY : Single index 1 read GetPosition write WritePosition;
+         property PosZ : Single index 2 read GetPosition write WritePosition;
+         property VelX : Single index 0 read GetVelocity write WriteVelocity;
+         property VelY : Single index 1 read GetVelocity write WriteVelocity;
+         property VelZ : Single index 2 read GetVelocity write WriteVelocity;
          property Tag : Integer read FTag write FTag;
    end;
 
@@ -241,7 +251,7 @@ type
          {: Return the number of particles.<p>
             Note that subclasses may decide to return a particle count inferior
             to Particles.ItemCount, and the value returned by this method will
-            be the one honoured at render time. }
+            be the one honoured at render time. } 
          function ParticleCount : Integer; virtual;
 
 		published
@@ -271,7 +281,7 @@ type
          { Protected Declarations }
          procedure SetManager(val : TGLParticleFXManager);
 
-         procedure WriteToFiler(writer : TWriter); override;
+			procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
 
          procedure Loaded; override;
@@ -290,19 +300,42 @@ type
    end;
 
    // PFX region rendering structures
-
+   
    TParticleReference = packed record
+   {$NODEFINE TParticleReference}
       particle : TGLParticle;
       distance : Integer;  // stores an IEEE single!
    end;
+   (*$HPPEMIT 'namespace Glparticlefx {'*)
+   (*$HPPEMIT 'class DELPHICLASS TGLParticle;'*)
+   (*$HPPEMIT '#pragma pack(push, 1)'*)
+   (*$HPPEMIT 'struct TParticleReference'*)
+   (*$HPPEMIT '{'*)
+   (*$HPPEMIT '	TGLParticle* particle;'*)
+   (*$HPPEMIT '	int distance;'*)
+   (*$HPPEMIT '} ;'*)
+   (*$HPPEMIT '#pragma pack(pop)'*)
+
    PParticleReference = ^TParticleReference;
    TParticleReferenceArray = packed array [0..MaxInt shr 4] of TParticleReference;
    PParticleReferenceArray = ^TParticleReferenceArray;
    TPFXRegion = packed record
+   {$NODEFINE TPFXRegion}
       count, capacity : Integer;
       particleRef : PParticleReferenceArray;
       particleOrder : PPointerList;
    end;
+   (*$HPPEMIT '#pragma pack(push, 1)'*)
+   (*$HPPEMIT 'struct TPFXRegion'*)
+   (*$HPPEMIT '{'*)
+   (*$HPPEMIT '	int count;'*)
+   (*$HPPEMIT '	int capacity;'*)
+   (*$HPPEMIT '	TParticleReference *particleRef;'*)
+   (*$HPPEMIT '	void * *particleOrder;'*)
+   (*$HPPEMIT '} ;'*)
+   (*$HPPEMIT '#pragma pack(pop)'*)
+   (*$HPPEMIT '} //namespace Glparticlefx'*)
+
    PPFXRegion = ^TPFXRegion;
 
    // TGLParticleFXRenderer
@@ -861,7 +894,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLCrossPlatform, GLState, GLUtils, PerlinNoise;
+uses SysUtils, OpenGL1x, VectorTypes, GLCrossPlatform, GLState, GLUtils, PerlinNoise;
 
 // GetOrCreateSourcePFX
 //
@@ -902,20 +935,20 @@ begin
    else p:=VectorScale(XYZHmgVector, f2);
    case dispersion of
       sdmFast : begin
-         v[0]:=(Random-0.5)*p[0];
-         v[1]:=(Random-0.5)*p[1];
-         v[2]:=(Random-0.5)*p[2];
+         v.Coord[0]:=(Random-0.5)*p.Coord[0];
+         v.Coord[1]:=(Random-0.5)*p.Coord[1];
+         v.Coord[2]:=(Random-0.5)*p.Coord[2];
       end;
    else
       fsq:=Sqr(0.5);
       repeat
-         v[0]:=(Random-0.5);
-         v[1]:=(Random-0.5);
-         v[2]:=(Random-0.5);
+         v.Coord[0]:=(Random-0.5);
+         v.Coord[1]:=(Random-0.5);
+         v.Coord[2]:=(Random-0.5);
       until VectorNorm(v)<=fsq;
-      v[0]:=v[0]*p[0];
-      v[1]:=v[1]*p[1];
-      v[2]:=v[2]*p[2];
+      v.Coord[0]:=v.Coord[0]*p.Coord[0];
+      v.Coord[1]:=v.Coord[1]*p.Coord[1];
+      v.Coord[2]:=v.Coord[2]*p.Coord[2];
    end;
 end;
 
@@ -966,6 +999,36 @@ begin
       Read(FVelocity, SizeOf(FVelocity));
       FCreationTime:=ReadFloat;
    end else RaiseFilerException(archiveVersion);
+end;
+
+// GetPosition
+//
+function TGLParticle.GetPosition(const Index: Integer): Single;
+begin
+  result := FPosition.Coord[Index];
+end;
+
+// WritePosition
+//
+procedure TGLParticle.WritePosition(const Index: Integer; const aValue: Single);
+begin
+  if (aValue <> FPosition.Coord[Index]) then
+    FPosition.Coord[Index] := aValue;
+end;
+
+// GetVelocity
+//
+function TGLParticle.GetVelocity(const Index: Integer): Single;
+begin
+  result := FVelocity.Coord[0];
+end;
+
+// WriteVelocity
+//
+procedure TGLParticle.WriteVelocity(const Index: Integer; const aValue: Single);
+begin
+  if (aValue <> FVelocity.Coord[Index]) then
+    FVelocity.Coord[Index] := aValue;
 end;
 
 // ------------------
@@ -1279,9 +1342,9 @@ begin
       Assert(archiveVersion in [0..1]);
       if archiveVersion>=0 then
       begin
-           FManagerName:=ReadString;
-           Manager:=nil;
-      end;
+      FManagerName:=ReadString;
+      Manager:=nil;
+   end;
       if archiveVersion>=1 then
       begin
            FEffectScale:=ReadFloat;
@@ -1573,7 +1636,7 @@ begin
                               glDisable(currentTexturingMode);
                            currentTexturingMode:=curManager.TexturingMode;
                            if currentTexturingMode<>0 then   // GRAHAM KENNEDY
-                              glEnable(currentTexturingMode);
+                           glEnable(currentTexturingMode);
                         end;
                         curManager.BeginParticles;
                      end;
@@ -1795,7 +1858,7 @@ begin
    if VelocityMode=svmRelative then
         AddVector(pos, VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(InitialPosition.AsAffineVector),OwnerObjRelPos))
    else
-        AddVector(pos, InitialPosition.AsAffineVector);
+   AddVector(pos, InitialPosition.AsAffineVector);
 
 
    if FManager is TGLDynamicPFXManager then
@@ -2086,14 +2149,14 @@ begin
               SetVector(axis, VectorSubtract(axis, FRotationCenter));
               NormalizeVector(axis);
               MakeVector(pos4, pos1);
-              pos4[0] := pos4[0] - FRotationCenter[0];
-              pos4[1] := pos4[1] - FRotationCenter[1];
-              pos4[2] := pos4[2] - FRotationCenter[2];
+              pos4.Coord[0] := pos4.Coord[0] - FRotationCenter.Coord[0];
+              pos4.Coord[1] := pos4.Coord[1] - FRotationCenter.Coord[1];
+              pos4.Coord[2] := pos4.Coord[2] - FRotationCenter.Coord[2];
               RotateVector(pos4, axis, FRotation * dt);
-              pos4[0] := pos4[0] + FRotationCenter[0];
-              pos4[1] := pos4[1] + FRotationCenter[1];
-              pos4[2] := pos4[2] + FRotationCenter[2];
-              MakeVector(pos1, pos4[0], pos4[1], pos4[2]);
+              pos4.Coord[0] := pos4.Coord[0] + FRotationCenter.Coord[0];
+              pos4.Coord[1] := pos4.Coord[1] + FRotationCenter.Coord[1];
+              pos4.Coord[2] := pos4.Coord[2] + FRotationCenter.Coord[2];
+              MakeVector(pos1, pos4.Coord[0], pos4.Coord[1], pos4.Coord[2]);
 
               FVelocity := VectorSubtract(pos1, pos);
               CombineVector(FPosition, FVelocity, dt);
@@ -2552,8 +2615,8 @@ begin
    inherited;
    glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
-      Fvx[i]:=matrix[i][0]*FParticleSize;
-      Fvy[i]:=matrix[i][1]*FParticleSize;
+      Fvx.Coord[i]:=matrix.Coord[i].Coord[0]*FParticleSize;
+      Fvy.Coord[i]:=matrix.Coord[i].Coord[1]*FParticleSize;
    end;
    FVertices:=TAffineVectorList.Create;
    FVertices.Capacity:=FNbSides;
@@ -2602,7 +2665,7 @@ begin
    end
    else
    begin
-        VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+   VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
    end;
 
 
@@ -2615,9 +2678,9 @@ begin
 
       diff := DegToRad(rotateAngle);
       rotMatrix := CreateRotationMatrix(axis, diff);
-      p[0] := -pos[0];
-      p[1] := -pos[1];
-      p[2] := -pos[2];
+      p.Coord[0] := -pos.Coord[0];
+      p.Coord[1] := -pos.Coord[1];
+      p.Coord[2] := -pos.Coord[2];
       FVertBuf.Translate(p);
       FVertBuf.TransformAsVectors(rotMatrix);
       FVertBuf.Translate(pos);
@@ -2625,7 +2688,7 @@ begin
    
    if ComputeSizeScale(lifeTime, sizeScale) then
    Begin
-        FVertBuf.Scale(sizeScale);
+      FVertBuf.Scale(sizeScale);
    end;
 
 
@@ -2636,7 +2699,7 @@ begin
       for i:=0 to FVertBuf.Count-1 do
       begin
            //ScaleVector(vertexList[i],aParticle.EffectScale);
-           glVertex3fv(@vertexList[i]);
+         glVertex3fv(@vertexList[i]);
       end;
 
       glVertex3fv(@vertexList[0]);
@@ -2805,9 +2868,9 @@ begin
    h:=Sqr(FParticleSize)/w;
 
    for i:=0 to 2 do begin
-      Fvx[i]:=matrix[i][0]*w;
-      Fvy[i]:=matrix[i][1]*h;
-      Fvz[i]:=matrix[i][2];
+      Fvx.Coord[i]:=matrix.Coord[i].Coord[0]*w;
+      Fvy.Coord[i]:=matrix.Coord[i].Coord[1]*h;
+      Fvz.Coord[i]:=matrix.Coord[i].Coord[2];
    end;
 
    FVertices:=TAffineVectorList.Create;
@@ -2892,12 +2955,12 @@ begin
    if ComputeSizeScale(lifeTime, sizeScale) or (aParticle.EffectScale<>1) then
    begin
         sizeScale := sizeScale*aParticle.EffectScale;
-        for i:=0 to FVertBuf.Count-1 do
-            vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
+      for i:=0 to FVertBuf.Count-1 do
+         vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
    end
    else
    begin
-        VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+      VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
         {for i:=0 to FVertBuf.Count-1 do
             ScaleVector(vertexList[i],aParticle.EffectScale);}
    end;
@@ -2909,9 +2972,9 @@ begin
       NormalizeVector(axis);
       diff := DegToRad(rotateAngle);
       rotMatrix := CreateRotationMatrix(axis, diff);
-      p[0] := -pos[0];
-      p[1] := -pos[1];
-      p[2] := -pos[2];
+      p.Coord[0] := -pos.Coord[0];
+      p.Coord[1] := -pos.Coord[1];
+      p.Coord[2] := -pos.Coord[2];
       FVertBuf.Translate(p);
       FVertBuf.TransformAsVectors(rotMatrix);
       FVertBuf.Translate(pos);

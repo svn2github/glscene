@@ -2,7 +2,8 @@
 
    RGB+Alpha color editor.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>03/07/04 - LR - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
@@ -126,10 +127,10 @@ end;
 //
 procedure TRColorEditor.SetColor(const val : THomogeneousFltVector);
 begin
-  RedValue:=Round(val[0]*255);
-  GreenValue:=Round(val[1]*255);
-  BlueValue:=Round(val[2]*255);
-  AlphaValue:=Round(val[3]*1000);
+  RedValue:=Round(val.Coord[0]*255);
+  GreenValue:=Round(val.Coord[1]*255);
+  BlueValue:=Round(val.Coord[2]*255);
+  AlphaValue:=Round(val.Coord[3]*1000);
 
   ContentsChanged;
 end;

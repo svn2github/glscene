@@ -5,14 +5,15 @@
 
    Cubic spline interpolation functions<p>
 
-	<b>History : </b><font size=-1><ul>
-           <li>08/07/04 - LR - Removed ../ from the GLScene.inc
-           <li>16/07/02 - Egg - Added methods to access slope per axis
-	   <li>28/05/00 - Egg - Javadocisation, minor changes & optimizations,
+   <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+      <li>08/07/04 - LR - Removed ../ from the GLScene.inc
+      <li>16/07/02 - Egg - Added methods to access slope per axis
+      <li>28/05/00 - Egg - Javadocisation, minor changes & optimizations,
                            Renamed TSpline to TCubicSpline, added W component
                            and a bunch of helper methods
-	   <li>20/05/00 - RoC - Created, based on the C source code from Eric
-	</ul></font>
+      <li>20/05/00 - RoC - Created, based on the C source code from Eric
+   </ul></font>
 }
 unit Spline;
 
@@ -289,38 +290,38 @@ end;
 //
 function TCubicSpline.SplineAffineVector(const t : single) : TAffineVector;
 begin
-   Result[0]:=MATValeurSpline(MatX, t, FNb);
-   Result[1]:=MATValeurSpline(MatY, t, FNb);
-   Result[2]:=MATValeurSpline(MatZ, t, FNb);
+   Result.Coord[0]:=MATValeurSpline(MatX, t, FNb);
+   Result.Coord[1]:=MATValeurSpline(MatY, t, FNb);
+   Result.Coord[2]:=MATValeurSpline(MatZ, t, FNb);
 end;
 
 // SplineAffineVector
 //
 procedure TCubicSpline.SplineAffineVector(const t : single; var vector : TAffineVector);
 begin
-   vector[0]:=MATValeurSpline(MatX, t, FNb);
-   vector[1]:=MATValeurSpline(MatY, t, FNb);
-   vector[2]:=MATValeurSpline(MatZ, t, FNb);
+   vector.Coord[0]:=MATValeurSpline(MatX, t, FNb);
+   vector.Coord[1]:=MATValeurSpline(MatY, t, FNb);
+   vector.Coord[2]:=MATValeurSpline(MatZ, t, FNb);
 end;
 
 // SplineVector
 //
 function TCubicSpline.SplineVector(const t : single) : TVector;
 begin
-   Result[0]:=MATValeurSpline(MatX, t, FNb);
-   Result[1]:=MATValeurSpline(MatY, t, FNb);
-   Result[2]:=MATValeurSpline(MatZ, t, FNb);
-   Result[3]:=MATValeurSpline(MatW, t, FNb);
+   Result.Coord[0]:=MATValeurSpline(MatX, t, FNb);
+   Result.Coord[1]:=MATValeurSpline(MatY, t, FNb);
+   Result.Coord[2]:=MATValeurSpline(MatZ, t, FNb);
+   Result.Coord[3]:=MATValeurSpline(MatW, t, FNb);
 end;
 
 // SplineVector
 //
 procedure TCubicSpline.SplineVector(const t : single; var vector : TVector);
 begin
-   vector[0]:=MATValeurSpline(MatX, t, FNb);
-   vector[1]:=MATValeurSpline(MatY, t, FNb);
-   vector[2]:=MATValeurSpline(MatZ, t, FNb);
-   vector[3]:=MATValeurSpline(MatW, t, FNb);
+   vector.Coord[0]:=MATValeurSpline(MatX, t, FNb);
+   vector.Coord[1]:=MATValeurSpline(MatY, t, FNb);
+   vector.Coord[2]:=MATValeurSpline(MatZ, t, FNb);
+   vector.Coord[3]:=MATValeurSpline(MatW, t, FNb);
 end;
 
 // SplineSlopeX
@@ -355,9 +356,9 @@ end;
 //
 function TCubicSpline.SplineSlopeVector(const t : single) : TAffineVector;
 begin
-   Result[0]:=MATValeurSplineSlope(MatX, t, FNb);
-   Result[1]:=MATValeurSplineSlope(MatY, t, FNb);
-   Result[2]:=MATValeurSplineSlope(MatZ, t, FNb);
+   Result.Coord[0]:=MATValeurSplineSlope(MatX, t, FNb);
+   Result.Coord[1]:=MATValeurSplineSlope(MatY, t, FNb);
+   Result.Coord[2]:=MATValeurSplineSlope(MatZ, t, FNb);
 end;
 
 // SplineIntersecYZ

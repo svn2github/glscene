@@ -8,6 +8,9 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Replace direct access of some properties by
+                               a getter and a setter 
       <li>08/07/04 - LR - Replace Graphics and TPoint by GLCrossPlatform for Linux
       <li>13/01/04 - EG - Polyline/Polygon fix
       <li>07/05/03 - EG - SetPenWidth now correctly stops the primitive
@@ -66,6 +69,7 @@ type
 	      procedure StartPrimitive(const primitiveType : Integer);
 
          procedure SetPenColor(const val : TColor);
+         function GetPenAlpha: Single;
          procedure SetPenAlpha(const val : Single);
          procedure SetPenWidth(const val : Integer);
 
@@ -91,7 +95,7 @@ type
          {: Current Pen Color. }
          property PenColor : TColor read FPenColor write SetPenColor;
          {: Current Pen Alpha channel (from 0.0 to 1.0) }
-         property PenAlpha : Single read FCurrentPenColorVector[3] write SetPenAlpha;
+         property PenAlpha : Single read GetPenAlpha write SetPenAlpha;
          {: Current Pen Width. }
          property PenWidth : Integer read FPenWidth write SetPenWidth;
 
@@ -152,9 +156,9 @@ const
 //
 function ConvertColorVector(const aColor: TVector): TColor;
 begin
-  Result:=   (Round(255 * AColor[2]) shl 16)
-          or (Round(255 * AColor[1]) shl 8)
-          or  Round(255 * AColor[0]);
+  Result:=   (Round(255 * AColor.Coord[2]) shl 16)
+          or (Round(255 * AColor.Coord[1]) shl 8)
+          or  Round(255 * AColor.Coord[0]);
 end;
 
 // ConvertWinColor
@@ -166,10 +170,10 @@ begin
 	// Delphi color to Windows color
    winColor:=ColorToRGB(AColor);
    // convert 0..255 range into 0..1 range
-   Result[0]:=(winColor and $FF)*(1/255);
-   Result[1]:=((winColor shr 8) and $FF)*(1/255);
-   Result[2]:=((winColor shr 16) and $FF)*(1/255);
-   Result[3]:=alpha;
+   Result.Coord[0]:=(winColor and $FF)*(1/255);
+   Result.Coord[1]:=((winColor shr 8) and $FF)*(1/255);
+   Result.Coord[2]:=((winColor shr 16) and $FF)*(1/255);
+   Result.Coord[3]:=alpha;
 end;
 
 // ------------------
@@ -291,8 +295,8 @@ var
    mat : TMatrix;
 begin
    mat:=IdentityHmgMatrix;
-   mat[1][1]:=-1;
-   mat[3][1]:=FBufferSizeY;
+   mat.Coord[1].Coord[1]:=-1;
+   mat.Coord[3].Coord[1]:=FBufferSizeY;
    glMultMatrixf(@mat);
 //   glTranslatef(0, FBufferSizeY, 0);
 //   glScalef(0, -1, 0);
@@ -303,18 +307,25 @@ end;
 procedure TGLCanvas.SetPenColor(const val : TColor);
 begin
    if val<>FPenColor then begin
-      SetVector(FCurrentPenColorVector, ConvertWinColor(val, FCurrentPenColorVector[3]));
+      SetVector(FCurrentPenColorVector, ConvertWinColor(val, FCurrentPenColorVector.Coord[3]));
       FPenColor:=val;
       glColor4fv(@FCurrentPenColorVector);
    end;
+end;
+
+// GetPenAlpha
+//
+function TGLCanvas.GetPenAlpha: Single;
+begin
+   result := FCurrentPenColorVector.Coord[3];
 end;
 
 // SetPenAlpha
 //
 procedure TGLCanvas.SetPenAlpha(const val : Single);
 begin
-   if val<>FCurrentPenColorVector[3] then begin
-      FCurrentPenColorVector[3]:=val;
+   if val<>FCurrentPenColorVector.Coord[3] then begin
+      FCurrentPenColorVector.Coord[3]:=val;
       glColor4fv(@FCurrentPenColorVector);
    end;
 end;
@@ -336,16 +347,16 @@ end;
 //
 procedure TGLCanvas.MoveTo(const x, y : Integer);
 begin
-   FCurrentPos[0]:=x;
-   FCurrentPos[1]:=y;
+   FCurrentPos.Coord[0]:=x;
+   FCurrentPos.Coord[1]:=y;
 end;
 
 // MoveTo
 //
 procedure TGLCanvas.MoveTo(const x, y : Single);
 begin
-   FCurrentPos[0]:=x;
-   FCurrentPos[1]:=y;
+   FCurrentPos.Coord[0]:=x;
+   FCurrentPos.Coord[1]:=y;
 end;
 
 // LineTo

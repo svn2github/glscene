@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               move PAffineVectorArray, PVectorArray and PMatrixArray to VectorTypes Unit
       <li>08/07/04 - LR - Removed ../ from the GLScene.inc	
       <li>26/10/03 - EG - Renamed from "Geometry.pas" to "VectorGeometry.pas"
       <li>17/10/03 - EG - Optimized Min/MaxInteger, some of the Min/MaxFloat
@@ -293,15 +295,8 @@ type
    PVertex    = ^TVertex;
 	TVertex    = TAffineVector;
 
-   // arrays of vectors
-   PAffineVectorArray = ^TAffineVectorArray;
-   TAffineVectorArray = array[0..MAXINT shr 4] of TAffineVector;
-
-   PVectorArray = ^TVectorArray;
-   TVectorArray = array[0..MAXINT shr 5] of TVector;
-
-	PTexPointArray = ^TTexPointArray;
-	TTexPointArray = array [0..MaxInt shr 4] of TTexPoint;
+   PTexPointArray = ^TTexPointArray;
+   TTexPointArray = array [0..MaxInt shr 4] of TTexPoint;
 
    // matrices
    THomogeneousByteMatrix = array[0..3] of THomogeneousByteVector;
@@ -337,9 +332,6 @@ type
    // some simplified names
    PMatrix = ^TMatrix;
    TMatrix = THomogeneousFltMatrix;
-
-   TMatrixArray = array [0..MaxInt shr 7] of TMatrix;
-   PMatrixArray = ^TMatrixArray;
 
    PHomogeneousMatrix = ^THomogeneousMatrix;
    THomogeneousMatrix = THomogeneousFltMatrix;
@@ -406,55 +398,55 @@ const
   MidTexPoint  : TTexPoint = (S:0.5; T:0.5);
 
   // standard vectors
-  XVector :    TAffineVector = (1, 0, 0);
-  YVector :    TAffineVector = (0, 1, 0);
-  ZVector :    TAffineVector = (0, 0, 1);
-  XYVector :   TAffineVector = (1, 1, 0);
-  XZVector :   TAffineVector = (1, 0, 1);
-  YZVector :   TAffineVector = (0, 1, 1);
-  XYZVector :  TAffineVector = (1, 1, 1);
-  NullVector : TAffineVector = (0, 0, 0);
-  MinusXVector : TAffineVector = (-1,  0,  0);
-  MinusYVector : TAffineVector = ( 0, -1,  0);
-  MinusZVector : TAffineVector = ( 0,  0, -1);
+  XVector :    TAffineVector = (X:1; Y:0; Z:0);
+  YVector :    TAffineVector = (X:0; Y:1; Z:0);
+  ZVector :    TAffineVector = (X:0; Y:0; Z:1);
+  XYVector :   TAffineVector = (X:1; Y:1; Z:0);
+  XZVector :   TAffineVector = (X:1; Y:0; Z:1);
+  YZVector :   TAffineVector = (X:0; Y:1; Z:1);
+  XYZVector :  TAffineVector = (X:1; Y:1; Z:1);
+  NullVector : TAffineVector = (X:0; Y:0; Z:0);
+  MinusXVector : TAffineVector = (X:-1; Y: 0; Z: 0);
+  MinusYVector : TAffineVector = (X: 0; Y:-1; Z: 0);
+  MinusZVector : TAffineVector = (X: 0; Y: 0; Z:-1);
   // standard homogeneous vectors
-  XHmgVector : THomogeneousVector = (1, 0, 0, 0);
-  YHmgVector : THomogeneousVector = (0, 1, 0, 0);
-  ZHmgVector : THomogeneousVector = (0, 0, 1, 0);
-  WHmgVector : THomogeneousVector = (0, 0, 0, 1);
-  XYHmgVector  : THomogeneousVector =  (1, 1, 0, 0);
-  XYZHmgVector  : THomogeneousVector = (1, 1, 1, 0);
-  XYZWHmgVector : THomogeneousVector = (1, 1, 1, 1);
-  NullHmgVector : THomogeneousVector = (0, 0, 0, 0);
+  XHmgVector : THomogeneousVector = (X:1; Y:0; Z:0; W:0);
+  YHmgVector : THomogeneousVector = (X:0; Y:1; Z:0; W:0);
+  ZHmgVector : THomogeneousVector = (X:0; Y:0; Z:1; W:0);
+  WHmgVector : THomogeneousVector = (X:0; Y:0; Z:0; W:1);
+  XYHmgVector  : THomogeneousVector =  (X:1; Y:1; Z:0; W:0);
+  XYZHmgVector  : THomogeneousVector = (X:1; Y:1; Z:1; W:0);
+  XYZWHmgVector : THomogeneousVector = (X:1; Y:1; Z:1; W:1);
+  NullHmgVector : THomogeneousVector = (X:0; Y:0; Z:0; W:0);
   // standard homogeneous points
-  XHmgPoint :  THomogeneousVector = (1, 0, 0, 1);
-  YHmgPoint :  THomogeneousVector = (0, 1, 0, 1);
-  ZHmgPoint :  THomogeneousVector = (0, 0, 1, 1);
-  WHmgPoint :  THomogeneousVector = (0, 0, 0, 1);
-  NullHmgPoint : THomogeneousVector = (0, 0, 0, 1);
+  XHmgPoint :  THomogeneousVector = (X:1; Y:0; Z:0; W:1);
+  YHmgPoint :  THomogeneousVector = (X:0; Y:1; Z:0; W:1);
+  ZHmgPoint :  THomogeneousVector = (X:0; Y:0; Z:1; W:1);
+  WHmgPoint :  THomogeneousVector = (X:0; Y:0; Z:0; W:1);
+  NullHmgPoint : THomogeneousVector = (X:0; Y:0; Z:0; W:1);
 
-  IdentityMatrix: TAffineMatrix = ((1, 0, 0),
-                                   (0, 1, 0),
-                                   (0, 0, 1));
-  IdentityHmgMatrix: TMatrix = ((1, 0, 0, 0),
-                                (0, 1, 0, 0),
-                                (0, 0, 1, 0),
-                                (0, 0, 0, 1));
-  IdentityHmgDblMatrix: THomogeneousDblMatrix = ((1, 0, 0, 0),
-                                                 (0, 1, 0, 0),
-                                                 (0, 0, 1, 0),
-                                                 (0, 0, 0, 1));
-  EmptyMatrix: TAffineMatrix = ((0, 0, 0),
-                                (0, 0, 0),
-                                (0, 0, 0));
-  EmptyHmgMatrix: TMatrix = ((0, 0, 0, 0),
-                             (0, 0, 0, 0),
-                             (0, 0, 0, 0),
-                             (0, 0, 0, 0));
+  IdentityMatrix: TAffineMatrix = (Coord:((X:1; Y:0; Z:0),
+                                          (X:0; Y:1; Z:0),
+                                          (X:0; Y:0; Z:1)));
+  IdentityHmgMatrix: TMatrix = (Coord:((X:1; Y:0; Z:0; W:0),
+                                       (X:0; Y:1; Z:0; W:0),
+                                       (X:0; Y:0; Z:1; W:0),
+                                       (X:0; Y:0; Z:0; W:1)));
+  IdentityHmgDblMatrix: THomogeneousDblMatrix = (Coord:((X:1; Y:0; Z:0; W:0),
+                                                        (X:0; Y:1; Z:0; W:0),
+                                                        (X:0; Y:0; Z:1; W:0),
+                                                        (X:0; Y:0; Z:0; W:1)));
+  EmptyMatrix: TAffineMatrix = (Coord:((X:0; Y:0; Z:0),
+                                       (X:0; Y:0; Z:0),
+                                       (X:0; Y:0; Z:0)));
+  EmptyHmgMatrix: TMatrix = (Coord:((X:0; Y:0; Z:0; W:0),
+                                    (X:0; Y:0; Z:0; W:0),
+                                    (X:0; Y:0; Z:0; W:0),
+                                    (X:0; Y:0; Z:0; W:0)));
 
   // Quaternions
 
-  IdentityQuaternion: TQuaternion = (ImagPart:(0,0,0); RealPart: 1);
+  IdentityQuaternion: TQuaternion = (ImagPart:(X:0; Y:0; Z:0); RealPart: 1);
 
   // some very small numbers
   EPSILON  : Single = 1e-40;
@@ -1460,142 +1452,142 @@ end;
 //
 function AffineVectorMake(const x, y, z : Single) : TAffineVector; overload;
 begin
-   Result[0]:=x;
-   Result[1]:=y;
-   Result[2]:=z;
+   Result.Coord[0]:=x;
+   Result.Coord[1]:=y;
+   Result.Coord[2]:=z;
 end;
 
 // AffineVectorMake
 //
 function AffineVectorMake(const v : TVector) : TAffineVector;
 begin
-   Result[0]:=v[0];
-   Result[1]:=v[1];
-   Result[2]:=v[2];
+   Result.Coord[0]:=v.Coord[0];
+   Result.Coord[1]:=v.Coord[1];
+   Result.Coord[2]:=v.Coord[2];
 end;
 
 // SetAffineVector
 //
 procedure SetAffineVector(var v : TAffineVector; const x, y, z : Single); overload;
 begin
-   v[0]:=x;
-   v[1]:=y;
-   v[2]:=z;
+   v.Coord[0]:=x;
+   v.Coord[1]:=y;
+   v.Coord[2]:=z;
 end;
 
 // SetVector (affine)
 //
 procedure SetVector(var v : TAffineVector; const x, y, z : Single);
 begin
-   v[0]:=x;
-   v[1]:=y;
-   v[2]:=z;
+   v.Coord[0]:=x;
+   v.Coord[1]:=y;
+   v.Coord[2]:=z;
 end;
 
 // SetVector (affine-hmg)
 //
 procedure SetVector(var v : TAffineVector; const vSrc : TVector);
 begin
-   v[0]:=vSrc[0];
-   v[1]:=vSrc[1];
-   v[2]:=vSrc[2];
+   v.Coord[0]:=vSrc.Coord[0];
+   v.Coord[1]:=vSrc.Coord[1];
+   v.Coord[2]:=vSrc.Coord[2];
 end;
 
 // SetVector (affine-affine)
 //
 procedure SetVector(var v : TAffineVector; const vSrc : TAffineVector);
 begin
-   v[0]:=vSrc[0];
-   v[1]:=vSrc[1];
-   v[2]:=vSrc[2];
+   v.Coord[0]:=vSrc.Coord[0];
+   v.Coord[1]:=vSrc.Coord[1];
+   v.Coord[2]:=vSrc.Coord[2];
 end;
 
 // SetVector (affine double - affine single)
 //
 procedure SetVector(var v : TAffineDblVector; const vSrc : TAffineVector);
 begin
-   v[0]:=vSrc[0];
-   v[1]:=vSrc[1];
-   v[2]:=vSrc[2];
+   v.Coord[0]:=vSrc.Coord[0];
+   v.Coord[1]:=vSrc.Coord[1];
+   v.Coord[2]:=vSrc.Coord[2];
 end;
 
 // SetVector (affine double - hmg single)
 //
 procedure SetVector(var v : TAffineDblVector; const vSrc : TVector);
 begin
-   v[0]:=vSrc[0];
-   v[1]:=vSrc[1];
-   v[2]:=vSrc[2];
+   v.Coord[0]:=vSrc.Coord[0];
+   v.Coord[1]:=vSrc.Coord[1];
+   v.Coord[2]:=vSrc.Coord[2];
 end;
 
 // VectorMake
 //
 function VectorMake(const v : TAffineVector; w : Single = 0) : TVector;
 begin
-	Result[0]:=v[0];
-	Result[1]:=v[1];
-	Result[2]:=v[2];
-	Result[3]:=w;
+	Result.Coord[0]:=v.Coord[0];
+	Result.Coord[1]:=v.Coord[1];
+	Result.Coord[2]:=v.Coord[2];
+	Result.Coord[3]:=w;
 end;
 
 // VectorMake
 //
 function VectorMake(const x, y, z : Single; w : Single = 0) : TVector;
 begin
-	Result[0]:=x;
-	Result[1]:=y;
-	Result[2]:=z;
-	Result[3]:=w;
+	Result.Coord[0]:=x;
+	Result.Coord[1]:=y;
+	Result.Coord[2]:=z;
+	Result.Coord[3]:=w;
 end;
 
 // PointMake (xyz)
 //
 function PointMake(const x, y, z: Single) : TVector; overload;
 begin
-	Result[0]:=x;
-	Result[1]:=y;
-	Result[2]:=z;
-   Result[3]:=1;
+	Result.Coord[0]:=x;
+	Result.Coord[1]:=y;
+	Result.Coord[2]:=z;
+        Result.Coord[3]:=1;
 end;
 
 // PointMake (affine)
 //
 function PointMake(const v : TAffineVector) : TVector; overload;
 begin
-	Result[0]:=v[0];
-	Result[1]:=v[1];
-	Result[2]:=v[2];
-   Result[3]:=1;
+	Result.Coord[0]:=v.Coord[0];
+	Result.Coord[1]:=v.Coord[1];
+	Result.Coord[2]:=v.Coord[2];
+        Result.Coord[3]:=1;
 end;
 
 // PointMake (hmg)
 //
 function PointMake(const v : TVector) : TVector; overload;
 begin
-	Result[0]:=v[0];
-	Result[1]:=v[1];
-	Result[2]:=v[2];
-   Result[3]:=1;
+	Result.Coord[0]:=v.Coord[0];
+	Result.Coord[1]:=v.Coord[1];
+	Result.Coord[2]:=v.Coord[2];
+        Result.Coord[3]:=1;
 end;
 
 // SetVector
 //
 procedure SetVector(var v : TVector; const x, y, z : Single; w : Single = 0);
 begin
-	v[0]:=x;
-	v[1]:=y;
-	v[2]:=z;
-	v[3]:=w;
+	v.Coord[0]:=x;
+	v.Coord[1]:=y;
+	v.Coord[2]:=z;
+	v.Coord[3]:=w;
 end;
 
 // SetVector
 //
 procedure SetVector(var v : TVector; const av : TAffineVector; w : Single = 0);
 begin
-	v[0]:=av[0];
-	v[1]:=av[1];
-	v[2]:=av[2];
-	v[3]:=w;
+	v.Coord[0]:=av.Coord[0];
+	v.Coord[1]:=av.Coord[1];
+	v.Coord[2]:=av.Coord[2];
+	v.Coord[3]:=w;
 end;
 
 // SetVector
@@ -1603,79 +1595,79 @@ end;
 procedure SetVector(var v : TVector; const vSrc : TVector);
 begin
    // faster than memcpy, move or ':=' on the TVector...
-	v[0]:=vSrc[0];
-	v[1]:=vSrc[1];
-	v[2]:=vSrc[2];
-	v[3]:=vSrc[3];
+	v.Coord[0]:=vSrc.Coord[0];
+	v.Coord[1]:=vSrc.Coord[1];
+	v.Coord[2]:=vSrc.Coord[2];
+	v.Coord[3]:=vSrc.Coord[3];
 end;
 
 // MakePoint
 //
 procedure MakePoint(var v : TVector; const x, y, z: Single);
 begin
-	v[0]:=x;
-	v[1]:=y;
-	v[2]:=z;
-	v[3]:=cOne;
+	v.Coord[0]:=x;
+	v.Coord[1]:=y;
+	v.Coord[2]:=z;
+	v.Coord[3]:=cOne;
 end;
 
 // MakePoint
 //
 procedure MakePoint(var v : TVector; const av : TAffineVector);
 begin
-	v[0]:=av[0];
-	v[1]:=av[1];
-	v[2]:=av[2];
-	v[3]:=cOne;
+	v.Coord[0]:=av.Coord[0];
+	v.Coord[1]:=av.Coord[1];
+	v.Coord[2]:=av.Coord[2];
+	v.Coord[3]:=cOne;
 end;
 
 // MakePoint
 //
 procedure MakePoint(var v : TVector; const av : TVector);
 begin
-	v[0]:=av[0];
-	v[1]:=av[1];
-	v[2]:=av[2];
-	v[3]:=cOne;
+	v.Coord[0]:=av.Coord[0];
+	v.Coord[1]:=av.Coord[1];
+	v.Coord[2]:=av.Coord[2];
+	v.Coord[3]:=cOne;
 end;
 
 // MakeVector
 //
 procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;
 begin
-	v[0]:=x;
-	v[1]:=y;
-	v[2]:=z;
+	v.Coord[0]:=x;
+	v.Coord[1]:=y;
+	v.Coord[2]:=z;
 end;
 
 // MakeVector
 //
 procedure MakeVector(var v : TVector; const x, y, z: Single);
 begin
-	v[0]:=x;
-	v[1]:=y;
-	v[2]:=z;
-	v[3]:=cZero;
+	v.Coord[0]:=x;
+	v.Coord[1]:=y;
+	v.Coord[2]:=z;
+	v.Coord[3]:=cZero;
 end;
 
 // MakeVector
 //
 procedure MakeVector(var v : TVector; const av : TAffineVector);
 begin
-	v[0]:=av[0];
-	v[1]:=av[1];
-	v[2]:=av[2];
-	v[3]:=cZero;
+	v.Coord[0]:=av.Coord[0];
+	v.Coord[1]:=av.Coord[1];
+	v.Coord[2]:=av.Coord[2];
+	v.Coord[3]:=cZero;
 end;
 
 // MakeVector
 //
 procedure MakeVector(var v : TVector; const av : TVector);
 begin
-	v[0]:=av[0];
-	v[1]:=av[1];
-	v[2]:=av[2];
-	v[3]:=cZero;
+	v.Coord[0]:=av.Coord[0];
+	v.Coord[1]:=av.Coord[1];
+	v.Coord[2]:=av.Coord[2];
+	v.Coord[3]:=cZero;
 end;
 
 // RstVector (affine)
@@ -1689,9 +1681,9 @@ asm
          mov   [eax+8], edx
 {$else}
 begin
-   v[0]:=0;
-   v[1]:=0;
-   v[2]:=0;
+   v.Coord[0]:=0;
+   v.Coord[1]:=0;
+   v.Coord[2]:=0;
 {$endif}
 end;
 
@@ -1707,10 +1699,10 @@ asm
          mov   [eax+12], edx
 {$else}
 begin
-   v[0]:=0;
-   v[1]:=0;
-   v[2]:=0;
-   v[3]:=0;
+   v.Coord[0]:=0;
+   v.Coord[1]:=0;
+   v.Coord[2]:=0;
+   v.Coord[3]:=0;
 {$endif}
 end;
 
@@ -1733,9 +1725,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   Result[0]:=v1[0]+v2[0];
-   Result[1]:=v1[1]+v2[1];
-   Result[2]:=v1[2]+v2[2];
+   Result.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -1758,9 +1750,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   vr[0]:=v1[0]+v2[0];
-   vr[1]:=v1[1]+v2[1];
-   vr[2]:=v1[2]+v2[2];
+   vr.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   vr.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   vr.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -1783,9 +1775,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   vr^[0]:=v1[0]+v2[0];
-   vr^[1]:=v1[1]+v2[1];
-   vr^[2]:=v1[2]+v2[2];
+   vr^.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   vr^.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   vr^.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -1824,10 +1816,10 @@ asm
          FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   Result[0]:=v1[0]+v2[0];
-   Result[1]:=v1[1]+v2[1];
-   Result[2]:=v1[2]+v2[2];
-   Result[3]:=v1[3]+v2[3];
+   Result.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]+v2.Coord[2];
+   Result.Coord[3]:=v1.Coord[3]+v2.Coord[3];
 {$endif}
 end;
 
@@ -1866,10 +1858,10 @@ asm
          FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   vr[0]:=v1[0]+v2[0];
-   vr[1]:=v1[1]+v2[1];
-   vr[2]:=v1[2]+v2[2];
-   vr[3]:=v1[3]+v2[3];
+   vr.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   vr.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   vr.Coord[2]:=v1.Coord[2]+v2.Coord[2];
+   vr.Coord[3]:=v1.Coord[3]+v2.Coord[3];
 {$endif}
 end;
 
@@ -1877,19 +1869,19 @@ end;
 //
 function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector;
 begin
-   Result[0]:=v[0]+f;
-   Result[1]:=v[1]+f;
-   Result[2]:=v[2]+f;
+   Result.Coord[0]:=v.Coord[0]+f;
+   Result.Coord[1]:=v.Coord[1]+f;
+   Result.Coord[2]:=v.Coord[2]+f;
 end;
 
 // VectorAdd (hmg, single)
 //
 function VectorAdd(const v : TVector; const f : Single) : TVector;
 begin
-   Result[0]:=v[0]+f;
-   Result[1]:=v[1]+f;
-   Result[2]:=v[2]+f;
-   Result[3]:=v[3]+f;
+   Result.Coord[0]:=v.Coord[0]+f;
+   Result.Coord[1]:=v.Coord[1]+f;
+   Result.Coord[2]:=v.Coord[2]+f;
+   Result.Coord[3]:=v.Coord[3]+f;
 end;
 
 // AddVector (affine)
@@ -1910,9 +1902,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v1[0]:=v1[0]+v2[0];
-   v1[1]:=v1[1]+v2[1];
-   v1[2]:=v1[2]+v2[2];
+   v1.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -1934,9 +1926,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v1[0]:=v1[0]+v2[0];
-   v1[1]:=v1[1]+v2[1];
-   v1[2]:=v1[2]+v2[2];
+   v1.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]+v2.Coord[2];
 {$endif}
 end;
 
@@ -1973,10 +1965,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v1[0]:=v1[0]+v2[0];
-   v1[1]:=v1[1]+v2[1];
-   v1[2]:=v1[2]+v2[2];
-   v1[3]:=v1[3]+v2[3];
+   v1.Coord[0]:=v1.Coord[0]+v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]+v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]+v2.Coord[2];
+   v1.Coord[3]:=v1.Coord[3]+v2.Coord[3];
 {$endif}
 end;
 
@@ -1984,19 +1976,19 @@ end;
 //
 procedure AddVector(var v : TAffineVector; const f : Single);
 begin
-   v[0]:=v[0]+f;
-   v[1]:=v[1]+f;
-   v[2]:=v[2]+f;
+   v.Coord[0]:=v.Coord[0]+f;
+   v.Coord[1]:=v.Coord[1]+f;
+   v.Coord[2]:=v.Coord[2]+f;
 end;
 
 // AddVector (hmg)
 //
 procedure AddVector(var v : TVector; const f : Single);
 begin
-   v[0]:=v[0]+f;
-   v[1]:=v[1]+f;
-   v[2]:=v[2]+f;
-   v[3]:=v[3]+f;
+   v.Coord[0]:=v.Coord[0]+f;
+   v.Coord[1]:=v.Coord[1]+f;
+   v.Coord[2]:=v.Coord[2]+f;
+   v.Coord[3]:=v.Coord[3]+f;
 end;
 
 // TexPointArrayAdd
@@ -2186,9 +2178,9 @@ var
    i : Integer;
 begin
    for i:=0 to nb-1 do begin
-      dest^[i][0]:=src^[i][0]+delta[0];
-      dest^[i][1]:=src^[i][1]+delta[1];
-      dest^[i][2]:=src^[i][2]+delta[2];
+      dest^[i].Coord[0]:=src^[i].Coord[0]+delta.Coord[0];
+      dest^[i].Coord[1]:=src^[i].Coord[1]+delta.Coord[1];
+      dest^[i].Coord[2]:=src^[i].Coord[2]+delta.Coord[2];
    end;
 {$endif}
 end;
@@ -2212,9 +2204,9 @@ asm
       FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   Result[0]:=v1[0]-v2[0];
-   Result[1]:=v1[1]-v2[1];
-   Result[2]:=v1[2]-v2[2];
+   Result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2237,9 +2229,9 @@ asm
       FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   result[0]:=v1[0]-v2[0];
-   result[1]:=v1[1]-v2[1];
-   result[2]:=v1[2]-v2[2];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2264,10 +2256,10 @@ asm
       mov   [ECX+12], eax
 {$else}
 begin
-   result[0]:=v1[0]-v2[0];
-   result[1]:=v1[1]-v2[1];
-   result[2]:=v1[2]-v2[2];
-   result[3]:=0;
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   result.Coord[3]:=0;
 {$endif}
 end;
 
@@ -2292,10 +2284,10 @@ asm
       mov   [ECX+12], edx
 {$else}
 begin
-   result[0]:=v1[0]-v2[0];
-   result[1]:=v1[1]-v2[1];
-   result[2]:=v1[2]-v2[2];
-   result[3]:=v1[0];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   result.Coord[3]:=v1.Coord[0];
 {$endif}
 end;
 
@@ -2333,9 +2325,9 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   Result[0]:=v1[0]-v2[0];
-   Result[1]:=v1[1]-v2[1];
-   Result[2]:=v1[2]-v2[2];
+   Result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   Result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   Result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2373,10 +2365,10 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   result[0]:=v1[0]-v2[0];
-   result[1]:=v1[1]-v2[1];
-   result[2]:=v1[2]-v2[2];
-   result[3]:=v1[3]-v2[3];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   result.Coord[3]:=v1.Coord[3]-v2.Coord[3];
 {$endif}
 end;
 
@@ -2399,9 +2391,9 @@ asm
          FSTP DWORD PTR [ECX+8]
 {$else}
 begin
-   result[0]:=v1[0]-v2[0];
-   result[1]:=v1[1]-v2[1];
-   result[2]:=v1[2]-v2[2];
+   result.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   result.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   result.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2409,19 +2401,19 @@ end;
 //
 function VectorSubtract(const v1 : TAffineVector; delta : Single) : TAffineVector;
 begin
-   Result[0]:=v1[0]-delta;
-   Result[1]:=v1[1]-delta;
-   Result[2]:=v1[2]-delta;
+   Result.Coord[0]:=v1.Coord[0]-delta;
+   Result.Coord[1]:=v1.Coord[1]-delta;
+   Result.Coord[2]:=v1.Coord[2]-delta;
 end;
 
 // VectorSubtract (hmg, single)
 //
 function VectorSubtract(const v1 : TVector; delta : Single) : TVector;
 begin
-   Result[0]:=v1[0]-delta;
-   Result[1]:=v1[1]-delta;
-   Result[2]:=v1[2]-delta;
-   Result[3]:=v1[3]-delta;
+   Result.Coord[0]:=v1.Coord[0]-delta;
+   Result.Coord[1]:=v1.Coord[1]-delta;
+   Result.Coord[2]:=v1.Coord[2]-delta;
+   Result.Coord[3]:=v1.Coord[3]-delta;
 end;
 
 // SubtractVector (affine)
@@ -2442,9 +2434,9 @@ asm
          FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v1[0]:=v1[0]-v2[0];
-   v1[1]:=v1[1]-v2[1];
-   v1[2]:=v1[2]-v2[2];
+   v1.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]-v2.Coord[2];
 {$endif}
 end;
 
@@ -2481,10 +2473,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v1[0]:=v1[0]-v2[0];
-   v1[1]:=v1[1]-v2[1];
-   v1[2]:=v1[2]-v2[2];
-   v1[3]:=v1[3]-v2[3];
+   v1.Coord[0]:=v1.Coord[0]-v2.Coord[0];
+   v1.Coord[1]:=v1.Coord[1]-v2.Coord[1];
+   v1.Coord[2]:=v1.Coord[2]-v2.Coord[2];
+   v1.Coord[3]:=v1.Coord[3]-v2.Coord[3];
 {$endif}
 end;
 
@@ -2510,9 +2502,9 @@ asm
          FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   vr[0]:=vr[0]+v[0]*f;
-   vr[1]:=vr[1]+v[1]*f;
-   vr[2]:=vr[2]+v[2]*f;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*f;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*f;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*f;
 {$endif}
 end;
 
@@ -2538,9 +2530,9 @@ asm
          FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   vr[0]:=vr[0]+v[0]*pf^;
-   vr[1]:=vr[1]+v[1]*pf^;
-   vr[2]:=vr[2]+v[2]*pf^;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*pf^;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*pf^;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*pf^;
 {$endif}
 end;
 
@@ -2556,27 +2548,27 @@ end;
 //
 function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector;
 begin
-   Result[X]:=(F1 * V1[X]) + (F2 * V2[X]);
-   Result[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]);
-   Result[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]);
+   Result.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]);
+   Result.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]);
+   Result.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]);
 end;
 
 // VectorCombine3 (func)
 //
 function VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single): TAffineVector;
 begin
-  Result[X]:=(F1 * V1[X]) + (F2 * V2[X]) + (F3 * V3[X]);
-  Result[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]) + (F3 * V3[Y]);
-  Result[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]) + (F3 * V3[Z]);
+  Result.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]) + (F3 * V3.Coord[X]);
+  Result.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]) + (F3 * V3.Coord[Y]);
+  Result.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]) + (F3 * V3.Coord[Z]);
 end;
 
 // VectorCombine3 (vector)
 //
 procedure VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single; var vr : TAffineVector);
 begin
-   vr[X]:=(F1 * V1[X]) + (F2 * V2[X]) + (F3 * V3[X]);
-   vr[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]) + (F3 * V3[Y]);
-   vr[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]) + (F3 * V3[Z]);
+   vr.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]) + (F3 * V3.Coord[X]);
+   vr.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]) + (F3 * V3.Coord[Y]);
+   vr.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]) + (F3 * V3.Coord[Z]);
 end;
 
 // CombineVector
@@ -2621,10 +2613,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   vr[0]:=vr[0]+v[0]*f;
-   vr[1]:=vr[1]+v[1]*f;
-   vr[2]:=vr[2]+v[2]*f;
-   vr[3]:=vr[3]+v[3]*f;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*f;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*f;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*f;
+   vr.Coord[3]:=vr.Coord[3]+v.Coord[3]*f;
 {$endif}
 end;
 
@@ -2650,9 +2642,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   vr[0]:=vr[0]+v[0]*f;
-   vr[1]:=vr[1]+v[1]*f;
-   vr[2]:=vr[2]+v[2]*f;
+   vr.Coord[0]:=vr.Coord[0]+v.Coord[0]*f;
+   vr.Coord[1]:=vr.Coord[1]+v.Coord[1]*f;
+   vr.Coord[2]:=vr.Coord[2]+v.Coord[2]*f;
 {$endif}
 end;
 
@@ -2660,20 +2652,20 @@ end;
 //
 function VectorCombine(const V1, V2: TVector; const F1, F2: Single): TVector;
 begin
-   Result[X]:=(F1 * V1[X]) + (F2 * V2[X]);
-   Result[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]);
-   Result[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]);
-   Result[W]:=(F1 * V1[W]) + (F2 * V2[W]);
+   Result.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]);
+   Result.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]);
+   Result.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]);
+   Result.Coord[W]:=(F1 * V1.Coord[W]) + (F2 * V2.Coord[W]);
 end;
 
 // VectorCombine
 //
 function VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single): TVector; overload;
 begin
-   Result[X]:=(F1 * V1[X]) + (F2 * V2[X]);
-   Result[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]);
-   Result[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]);
-   Result[W]:=F1*V1[W];
+   Result.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]);
+   Result.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]);
+   Result.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]);
+   Result.Coord[W]:=F1*V1.Coord[W];
 end;
 
 // VectorCombine
@@ -2742,10 +2734,10 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin
-   vr[0]:=(F1 * V1[0]) + (F2 * V2[0]);
-   vr[1]:=(F1 * V1[1]) + (F2 * V2[1]);
-   vr[2]:=(F1 * V1[2]) + (F2 * V2[2]);
-   vr[3]:=(F1 * V1[3]) + (F2 * V2[3]);
+   vr.Coord[0]:=(F1 * V1.Coord[0]) + (F2 * V2.Coord[0]);
+   vr.Coord[1]:=(F1 * V1.Coord[1]) + (F2 * V2.Coord[1]);
+   vr.Coord[2]:=(F1 * V1.Coord[2]) + (F2 * V2.Coord[2]);
+   vr.Coord[3]:=(F1 * V1.Coord[3]) + (F2 * V2.Coord[3]);
 {$endif}
 end;
 
@@ -2804,10 +2796,10 @@ asm
       FSTP DWORD PTR [ECX+12]
 {$else}
 begin      // 201283
-   vr[0]:=V1[0] + (F2 * V2[0]);
-   vr[1]:=V1[1] + (F2 * V2[1]);
-   vr[2]:=V1[2] + (F2 * V2[2]);
-   vr[3]:=V1[3] + (F2 * V2[3]);
+   vr.Coord[0]:=V1.Coord[0] + (F2 * V2.Coord[0]);
+   vr.Coord[1]:=V1.Coord[1] + (F2 * V2.Coord[1]);
+   vr.Coord[2]:=V1.Coord[2] + (F2 * V2.Coord[2]);
+   vr.Coord[3]:=V1.Coord[3] + (F2 * V2.Coord[3]);
 {$endif}
 end;
 
@@ -2815,20 +2807,20 @@ end;
 //
 procedure VectorCombine(const V1 : TVector; const V2: TAffineVector; const F1, F2: Single; var vr : TVector);
 begin
-   vr[X]:=(F1 * V1[X]) + (F2 * V2[X]);
-   vr[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]);
-   vr[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]);
-   vr[W]:=F1*V1[W];
+   vr.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]);
+   vr.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]);
+   vr.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]);
+   vr.Coord[W]:=F1*V1.Coord[W];
 end;
 
 // VectorCombine3
 //
 function VectorCombine3(const V1, V2, V3 : TVector; const F1, F2, F3 : Single) : TVector;
 begin
-   Result[X]:=(F1 * V1[X]) + (F2 * V2[X]) + (F3 * V3[X]);
-   Result[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]) + (F3 * V3[Y]);
-   Result[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]) + (F3 * V3[Z]);
-   Result[W]:=(F1 * V1[W]) + (F2 * V2[W]) + (F3 * V3[W]);
+   Result.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]) + (F3 * V3.Coord[X]);
+   Result.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]) + (F3 * V3.Coord[Y]);
+   Result.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]) + (F3 * V3.Coord[Z]);
+   Result.Coord[W]:=(F1 * V1.Coord[W]) + (F2 * V2.Coord[W]) + (F3 * V3.Coord[W]);
 end;
 
 // VectorCombine3
@@ -2881,10 +2873,10 @@ begin
 @@FPU:      // 263
    end;
 {$endif}
-   vr[X]:=(F1 * V1[X]) + (F2 * V2[X]) + (F3 * V3[X]);
-   vr[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]) + (F3 * V3[Y]);
-   vr[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]) + (F3 * V3[Z]);
-   vr[W]:=(F1 * V1[W]) + (F2 * V2[W]) + (F3 * V3[W]);
+   vr.Coord[X]:=(F1 * V1.Coord[X]) + (F2 * V2.Coord[X]) + (F3 * V3.Coord[X]);
+   vr.Coord[Y]:=(F1 * V1.Coord[Y]) + (F2 * V2.Coord[Y]) + (F3 * V3.Coord[Y]);
+   vr.Coord[Z]:=(F1 * V1.Coord[Z]) + (F2 * V2.Coord[Z]) + (F3 * V3.Coord[Z]);
+   vr.Coord[W]:=(F1 * V1.Coord[W]) + (F2 * V2.Coord[W]) + (F3 * V3.Coord[W]);
 end;
 
 // VectorDotProduct (affine)
@@ -2906,7 +2898,7 @@ asm
 end;
 {$else}
 begin
-   Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];
+   Result:=V1.Coord[0]*V2.Coord[0]+V1.Coord[1]*V2.Coord[1]+V1.Coord[2]*V2.Coord[2];
 end;
 {$endif}
 
@@ -2931,7 +2923,8 @@ asm
          FADDP
 {$else}
 begin
-   Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2]+V1[3]*V2[3];
+   Result:=V1.Coord[0]*V2.Coord[0]+V1.Coord[1]*V2.Coord[1]+
+           V1.Coord[2]*V2.Coord[2]+V1.Coord[3]*V2.Coord[3];
 {$endif}
 end;
 
@@ -2953,7 +2946,7 @@ asm
          FADDP
 {$else}
 begin
-   Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];
+   Result:=V1.Coord[0]*V2.Coord[0]+V1.Coord[1]*V2.Coord[1]+V1.Coord[2]*V2.Coord[2];
 {$endif}
 end;
 
@@ -2976,9 +2969,9 @@ asm
       fadd
 {$else}
 begin
-   Result:= direction[0]*(p[0]-origin[0])
-           +direction[1]*(p[1]-origin[1])
-           +direction[2]*(p[2]-origin[2]);
+   Result:= direction.Coord[0]*(p.Coord[0]-origin.Coord[0])
+           +direction.Coord[1]*(p.Coord[1]-origin.Coord[1])
+           +direction.Coord[2]*(p.Coord[2]-origin.Coord[2]);
 {$endif}
 end;
 
@@ -3001,9 +2994,9 @@ asm
       fadd
 {$else}
 begin
-   Result:= direction[0]*(p[0]-origin[0])
-           +direction[1]*(p[1]-origin[1])
-           +direction[2]*(p[2]-origin[2]);
+   Result:= direction.Coord[0]*(p.Coord[0]-origin.Coord[0])
+           +direction.Coord[1]*(p.Coord[1]-origin.Coord[1])
+           +direction.Coord[2]*(p.Coord[2]-origin.Coord[2]);
 {$endif}
 end;
 
@@ -3011,57 +3004,57 @@ end;
 //
 function VectorCrossProduct(const v1, v2 : TAffineVector) : TAffineVector;
 begin
-   Result[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
-   Result[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
-   Result[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
+   Result.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   Result.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   Result.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
 end;
 
 // VectorCrossProduct
 //
 function VectorCrossProduct(const v1, v2 : TVector) : TVector;
 begin
-   Result[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
-   Result[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
-   Result[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
-   Result[W]:=0;
+   Result.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   Result.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   Result.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
+   Result.Coord[W]:=0;
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2: TVector; var vr : TVector);
 begin
-   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
-   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
-   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
-   vr[W]:=0;
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
+   vr.Coord[W]:=0;
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TVector); overload;
 begin
-   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
-   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
-   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
-   vr[W]:=0;
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
+   vr.Coord[W]:=0;
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2 : TVector; var vr : TAffineVector); overload;
 begin
-   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
-   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
-   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVector); overload;
 begin
-   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
-   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
-   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
+   vr.Coord[X]:=v1.Coord[Y]*v2.Coord[Z]-v1.Coord[Z]*v2.Coord[Y];
+   vr.Coord[Y]:=v1.Coord[Z]*v2.Coord[X]-v1.Coord[X]*v2.Coord[Z];
+   vr.Coord[Z]:=v1.Coord[X]*v2.Coord[Y]-v1.Coord[Y]*v2.Coord[X];
 end;
 
 // Lerp
@@ -3140,9 +3133,9 @@ asm
    ffree st(0)
 {$else}
 begin
-   Result[X]:=V1[X]+(V2[X]-V1[X])*t;
-   Result[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
-   Result[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
+   Result.Coord[X]:=V1.Coord[X]+(V2.Coord[X]-V1.Coord[X])*t;
+   Result.Coord[Y]:=V1.Coord[Y]+(V2.Coord[Y]-V1.Coord[Y])*t;
+   Result.Coord[Z]:=V1.Coord[Z]+(V2.Coord[Z]-V1.Coord[Z])*t;
 {$endif}
 end;
 
@@ -3181,9 +3174,9 @@ asm
       ffree st(0)
 {$else}
 begin
-   vr[X]:=V1[X]+(V2[X]-V1[X])*t;
-   vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
-   vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
+   vr.Coord[X]:=V1.Coord[X]+(V2.Coord[X]-V1.Coord[X])*t;
+   vr.Coord[Y]:=V1.Coord[Y]+(V2.Coord[Y]-V1.Coord[Y])*t;
+   vr.Coord[Z]:=V1.Coord[Z]+(V2.Coord[Z]-V1.Coord[Z])*t;
 {$endif}
 end;
 
@@ -3191,20 +3184,20 @@ end;
 //
 function VectorLerp(const V1, V2: TVector; t: Single): TVector;
 begin
-   Result[X]:=V1[X]+(V2[X]-V1[X])*t;
-   Result[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
-   Result[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
-   Result[W]:=V1[W]+(V2[W]-V1[W])*t;
+   Result.Coord[X]:=V1.Coord[X]+(V2.Coord[X]-V1.Coord[X])*t;
+   Result.Coord[Y]:=V1.Coord[Y]+(V2.Coord[Y]-V1.Coord[Y])*t;
+   Result.Coord[Z]:=V1.Coord[Z]+(V2.Coord[Z]-V1.Coord[Z])*t;
+   Result.Coord[W]:=V1.Coord[W]+(V2.Coord[W]-V1.Coord[W])*t;
 end;
 
 // VectorLerp
 //
 procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector);
 begin
-   vr[X]:=V1[X]+(V2[X]-V1[X])*t;
-   vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
-   vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
-   vr[W]:=V1[W]+(V2[W]-V1[W])*t;
+   vr.Coord[X]:=V1.Coord[X]+(V2.Coord[X]-V1.Coord[X])*t;
+   vr.Coord[Y]:=V1.Coord[Y]+(V2.Coord[Y]-V1.Coord[Y])*t;
+   vr.Coord[Z]:=V1.Coord[Z]+(V2.Coord[Z]-V1.Coord[Z])*t;
+   vr.Coord[W]:=V1.Coord[W]+(V2.Coord[W]-V1.Coord[W])*t;
 end;
 
 // VectorAngleLerp
@@ -3218,14 +3211,14 @@ begin
    if VectorEquals(v1, v2) then begin
       Result:=v1;
    end else begin
-      q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
-      q2:=QuaternionFromEuler(RadToDeg(v2[0]), RadToDeg(v2[1]), RadToDeg(v2[2]), eulZYX);
+      q1:=QuaternionFromEuler(RadToDeg(v1.Coord[0]), RadToDeg(v1.Coord[1]), RadToDeg(v1.Coord[2]), eulZYX);
+      q2:=QuaternionFromEuler(RadToDeg(v2.Coord[0]), RadToDeg(v2.Coord[1]), RadToDeg(v2.Coord[2]), eulZYX);
       qr:=QuaternionSlerp(q1, q2, t);
       m:=QuaternionToMatrix(qr);
       MatrixDecompose(m, tran);
-      Result[0]:=tran[ttRotateX];
-      Result[1]:=tran[ttRotateY];
-      Result[2]:=tran[ttRotateZ];
+      Result.Coord[0]:=tran[ttRotateX];
+      Result.Coord[1]:=tran[ttRotateY];
+      Result.Coord[2]:=tran[ttRotateZ];
    end;
 end;
 
@@ -3302,10 +3295,10 @@ begin
       VectorArrayLerp_3DNow(src1, src2, t, n, dest)
    else {$endif} begin
       for i:=0 to n-1 do begin
-         dest^[i][0]:=src1^[i][0]+(src2^[i][0]-src1^[i][0])*t;
-         dest^[i][1]:=src1^[i][1]+(src2^[i][1]-src1^[i][1])*t;
-         dest^[i][2]:=src1^[i][2]+(src2^[i][2]-src1^[i][2])*t;
-         dest^[i][3]:=src1^[i][3]+(src2^[i][3]-src1^[i][3])*t;
+         dest^[i].Coord[0]:=src1^[i].Coord[0]+(src2^[i].Coord[0]-src1^[i].Coord[0])*t;
+         dest^[i].Coord[1]:=src1^[i].Coord[1]+(src2^[i].Coord[1]-src1^[i].Coord[1])*t;
+         dest^[i].Coord[2]:=src1^[i].Coord[2]+(src2^[i].Coord[2]-src1^[i].Coord[2])*t;
+         dest^[i].Coord[3]:=src1^[i].Coord[3]+(src2^[i].Coord[3]-src1^[i].Coord[3])*t;
       end;
    end;
 end;
@@ -3385,9 +3378,9 @@ begin
       VectorArrayLerp_3DNow(src1, src2, t, n, dest)
    else {$endif} begin
       for i:=0 to n-1 do begin
-         dest^[i][0]:=src1^[i][0]+(src2^[i][0]-src1^[i][0])*t;
-         dest^[i][1]:=src1^[i][1]+(src2^[i][1]-src1^[i][1])*t;
-         dest^[i][2]:=src1^[i][2]+(src2^[i][2]-src1^[i][2])*t;
+         dest^[i].Coord[0]:=src1^[i].Coord[0]+(src2^[i].Coord[0]-src1^[i].Coord[0])*t;
+         dest^[i].Coord[1]:=src1^[i].Coord[1]+(src2^[i].Coord[1]-src1^[i].Coord[1])*t;
+         dest^[i].Coord[2]:=src1^[i].Coord[2]+(src2^[i].Coord[2]-src1^[i].Coord[2])*t;
       end;
    end;
 end;
@@ -3524,7 +3517,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
+   Result:=v.Coord[0]*v.Coord[0]+v.Coord[1]*v.Coord[1]+v.Coord[2]*v.Coord[2];
 {$endif}
 end;
 
@@ -3545,7 +3538,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
+   Result:=v.Coord[0]*v.Coord[0]+v.Coord[1]*v.Coord[1]+v.Coord[2]*v.Coord[2];
 {$endif}
 end;
 
@@ -3630,9 +3623,9 @@ var
    invLen : Single;
 begin
    invLen:=RSqrt(VectorNorm(v));
-   v[0]:=v[0]*invLen;
-   v[1]:=v[1]*invLen;
-   v[2]:=v[2]*invLen;
+   v.Coord[0]:=v.Coord[0]*invLen;
+   v.Coord[1]:=v.Coord[1]*invLen;
+   v.Coord[2]:=v.Coord[2]*invLen;
 {$endif}
 end;
 
@@ -3692,9 +3685,9 @@ var
    invLen : Single;
 begin
    invLen:=RSqrt(VectorNorm(v));
-   Result[0]:=v[0]*invLen;
-   Result[1]:=v[1]*invLen;
-   Result[2]:=v[2]*invLen;
+   Result.Coord[0]:=v.Coord[0]*invLen;
+   Result.Coord[1]:=v.Coord[1]*invLen;
+   Result.Coord[2]:=v.Coord[2]*invLen;
 {$endif}
 end;
 
@@ -3830,10 +3823,10 @@ var
    invLen : Single;
 begin
    invLen:=RSqrt(VectorNorm(v));
-   v[0]:=v[0]*invLen;
-   v[1]:=v[1]*invLen;
-   v[2]:=v[2]*invLen;
-   v[3]:=0;
+   v.Coord[0]:=v.Coord[0]*invLen;
+   v.Coord[1]:=v.Coord[1]*invLen;
+   v.Coord[2]:=v.Coord[2]*invLen;
+   v.Coord[3]:=0;
 {$endif}
 end;
 
@@ -3897,10 +3890,10 @@ var
    invLen : Single;
 begin
    invLen:=RSqrt(VectorNorm(v));
-   Result[0]:=v[0]*invLen;
-   Result[1]:=v[1]*invLen;
-   Result[2]:=v[2]*invLen;
-   Result[3]:=0;
+   Result.Coord[0]:=v.Coord[0]*invLen;
+   Result.Coord[1]:=v.Coord[1]*invLen;
+   Result.Coord[2]:=v.Coord[2]*invLen;
+   Result.Coord[3]:=0;
 {$endif}
 end;
 
@@ -3964,9 +3957,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   Result[0]:=-v[0];
-   Result[1]:=-v[1];
-   Result[2]:=-v[2];
+   Result.Coord[0]:=-v.Coord[0];
+   Result.Coord[1]:=-v.Coord[1];
+   Result.Coord[2]:=-v.Coord[2];
 {$endif}
 end;
 
@@ -3991,10 +3984,10 @@ asm
       FSTP DWORD PTR [EDX+12]
 {$else}
 begin
-   Result[0]:=-v[0];
-   Result[1]:=-v[1];
-   Result[2]:=-v[2];
-   Result[3]:=-v[3];
+   Result.Coord[0]:=-v.Coord[0];
+   Result.Coord[1]:=-v.Coord[1];
+   Result.Coord[2]:=-v.Coord[2];
+   Result.Coord[3]:=-v.Coord[3];
 {$endif}
 end;
 
@@ -4015,9 +4008,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v[0]:=-v[0];
-   v[1]:=-v[1];
-   v[2]:=-v[2];
+   v.Coord[0]:=-v.Coord[0];
+   v.Coord[1]:=-v.Coord[1];
+   v.Coord[2]:=-v.Coord[2];
 {$endif}
 end;
 
@@ -4041,10 +4034,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v[0]:=-v[0];
-   v[1]:=-v[1];
-   v[2]:=-v[2];
-   v[3]:=-v[3];
+   v.Coord[0]:=-v.Coord[0];
+   v.Coord[1]:=-v.Coord[1];
+   v.Coord[2]:=-v.Coord[2];
+   v.Coord[3]:=-v.Coord[3];
 {$endif}
 end;
 
@@ -4087,9 +4080,9 @@ asm
       FSTP DWORD PTR [EAX+8]
 {$else}
 begin
-   v[0]:=v[0]*factor;
-   v[1]:=v[1]*factor;
-   v[2]:=v[2]*factor;
+   v.Coord[0]:=v.Coord[0]*factor;
+   v.Coord[1]:=v.Coord[1]*factor;
+   v.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -4135,10 +4128,10 @@ asm
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
-   v[0]:=v[0]*factor;
-   v[1]:=v[1]*factor;
-   v[2]:=v[2]*factor;
-   v[3]:=v[3]*factor;
+   v.Coord[0]:=v.Coord[0]*factor;
+   v.Coord[1]:=v.Coord[1]*factor;
+   v.Coord[2]:=v.Coord[2]*factor;
+   v.Coord[3]:=v.Coord[3]*factor;
 {$endif}
 end;
 
@@ -4146,19 +4139,19 @@ end;
 //
 procedure ScaleVector(var v : TAffineVector; const factor : TAffineVector);
 begin
-   v[0]:=v[0]*factor[0];
-   v[1]:=v[1]*factor[1];
-   v[2]:=v[2]*factor[2];
+   v.Coord[0]:=v.Coord[0]*factor.Coord[0];
+   v.Coord[1]:=v.Coord[1]*factor.Coord[1];
+   v.Coord[2]:=v.Coord[2]*factor.Coord[2];
 end;
 
 // ScaleVector (hmg vector)
 //
 procedure ScaleVector(var v : TVector; const factor : TVector);
 begin
-   v[0]:=v[0]*factor[0];
-   v[1]:=v[1]*factor[1];
-   v[2]:=v[2]*factor[2];
-   v[3]:=v[3]*factor[3];
+   v.Coord[0]:=v.Coord[0]*factor.Coord[0];
+   v.Coord[1]:=v.Coord[1]*factor.Coord[1];
+   v.Coord[2]:=v.Coord[2]*factor.Coord[2];
+   v.Coord[3]:=v.Coord[3]*factor.Coord[3];
 end;
 
 // VectorScale (affine)
@@ -4177,9 +4170,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   Result[0]:=v[0]*factor;
-   Result[1]:=v[1]*factor;
-   Result[2]:=v[2]*factor;
+   Result.Coord[0]:=v.Coord[0]*factor;
+   Result.Coord[1]:=v.Coord[1]*factor;
+   Result.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -4199,9 +4192,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   vr[0]:=v[0]*factor;
-   vr[1]:=v[1]*factor;
-   vr[2]:=v[2]*factor;
+   vr.Coord[0]:=v.Coord[0]*factor;
+   vr.Coord[1]:=v.Coord[1]*factor;
+   vr.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -4224,10 +4217,10 @@ asm
       FSTP DWORD PTR [EDX+12]
 {$else}
 begin
-   Result[0]:=v[0]*factor;
-   Result[1]:=v[1]*factor;
-   Result[2]:=v[2]*factor;
-   Result[3]:=v[3]*factor;
+   Result.Coord[0]:=v.Coord[0]*factor;
+   Result.Coord[1]:=v.Coord[1]*factor;
+   Result.Coord[2]:=v.Coord[2]*factor;
+   Result.Coord[3]:=v.Coord[3]*factor;
 {$endif}
 end;
 
@@ -4250,10 +4243,10 @@ asm
       FSTP DWORD PTR [EDX+12]
 {$else}
 begin
-   vr[0]:=v[0]*factor;
-   vr[1]:=v[1]*factor;
-   vr[2]:=v[2]*factor;
-   vr[3]:=v[3]*factor;
+   vr.Coord[0]:=v.Coord[0]*factor;
+   vr.Coord[1]:=v.Coord[1]*factor;
+   vr.Coord[2]:=v.Coord[2]*factor;
+   vr.Coord[3]:=v.Coord[3]*factor;
 {$endif}
 end;
 
@@ -4273,9 +4266,9 @@ asm
       FSTP DWORD PTR [EDX+8]
 {$else}
 begin
-   vr[0]:=v[0]*factor;
-   vr[1]:=v[1]*factor;
-   vr[2]:=v[2]*factor;
+   vr.Coord[0]:=v.Coord[0]*factor;
+   vr.Coord[1]:=v.Coord[1]*factor;
+   vr.Coord[2]:=v.Coord[2]*factor;
 {$endif}
 end;
 
@@ -4283,10 +4276,10 @@ end;
 //
 procedure DivideVector(var v : TVector; const divider : TVector);
 begin
-   v[0]:=v[0]/divider[0];
-   v[1]:=v[1]/divider[1];
-   v[2]:=v[2]/divider[2];
-   v[3]:=v[3]/divider[3];
+   v.Coord[0]:=v.Coord[0]/divider.Coord[0];
+   v.Coord[1]:=v.Coord[1]/divider.Coord[1];
+   v.Coord[2]:=v.Coord[2]/divider.Coord[2];
+   v.Coord[3]:=v.Coord[3]/divider.Coord[3];
 end;
 
 // VectorEquals (hmg vector)
@@ -4315,7 +4308,8 @@ asm
       xor eax, eax
 {$else}
 begin
-   Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]) and (v1[3]=v2[3]);
+   Result:=(v1.Coord[0]=v2.Coord[0]) and (v1.Coord[1]=v2.Coord[1]) and
+           (v1.Coord[2]=v2.Coord[2]) and (v1.Coord[3]=v2.Coord[3]);
 {$endif}
 end;
 
@@ -4343,7 +4337,8 @@ asm
 @@End:
 {$else}
 begin
-   Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]);
+   Result:=(v1.Coord[0]=v2.Coord[0]) and (v1.Coord[1]=v2.Coord[1]) and
+           (v1.Coord[2]=v2.Coord[2]);
 {$endif}
 end;
 
@@ -4370,7 +4365,8 @@ asm
       xor eax, eax
 {$else}
 begin
-   Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]);
+   Result:=(v1.Coord[0]=v2.Coord[0]) and (v1.Coord[1]=v2.Coord[1]) and
+           (v1.Coord[2]=v2.Coord[2]);
 {$endif}
 end;
 
@@ -4378,14 +4374,14 @@ end;
 //
 function VectorIsNull(const v : TVector) : Boolean;
 begin
-   Result:=((v[0]=0) and (v[1]=0) and (v[2]=0));
+   Result:=((v.Coord[0]=0) and (v.Coord[1]=0) and (v.Coord[2]=0));
 end;
 
 // VectorIsNull (affine)
 //
 function VectorIsNull(const v : TAffineVector) : Boolean; overload;
 begin
-   Result:=((v[0]=0) and (v[1]=0) and (v[2]=0));
+   Result:=((v.Coord[0]=0) and (v.Coord[1]=0) and (v.Coord[2]=0));
 end;
 
 // VectorSpacing (texpoint)
@@ -4430,7 +4426,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=Abs(v2[0]-v1[0])+Abs(v2[1]-v1[1])+Abs(v2[2]-v1[2]);
+   Result:=Abs(v2.Coord[0]-v1.Coord[0])+Abs(v2.Coord[1]-v1.Coord[1])+Abs(v2.Coord[2]-v1.Coord[2]);
 {$endif}
 end;
 
@@ -4459,7 +4455,8 @@ asm
       FADD
 {$else}
 begin
-   Result:=Abs(v2[0]-v1[0])+Abs(v2[1]-v1[1])+Abs(v2[2]-v1[2])+Abs(v2[3]-v1[3]);
+   Result:=Abs(v2.Coord[0]-v1.Coord[0])+Abs(v2.Coord[1]-v1.Coord[1])+
+           Abs(v2.Coord[2]-v1.Coord[2])+Abs(v2.Coord[3]-v1.Coord[3]);
 {$endif}
 end;
 
@@ -4485,7 +4482,7 @@ asm
       FSQRT
 {$else}
 begin
-   Result:=Sqrt(Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]));
+   Result:=Sqrt(Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+Sqr(v2.Coord[2]-v1.Coord[2]));
 {$endif}
 end;
 
@@ -4511,7 +4508,8 @@ asm
       FSQRT
 {$else}
 begin
-   Result:=Sqrt(Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]));
+   Result:=Sqrt(Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+
+                Sqr(v2.Coord[2]-v1.Coord[2]));
 {$endif}
 end;
 
@@ -4536,7 +4534,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]);
+   Result:=Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+Sqr(v2.Coord[2]-v1.Coord[2]);
 {$endif}
 end;
 
@@ -4561,7 +4559,7 @@ asm
       FADD
 {$else}
 begin
-   Result:=Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]);
+   Result:=Sqr(v2.Coord[0]-v1.Coord[0])+Sqr(v2.Coord[1]-v1.Coord[1])+Sqr(v2.Coord[2]-v1.Coord[2]);
 {$endif}
 end;
 
@@ -4572,9 +4570,9 @@ var
    dot : Single;
 begin
    dot:=VectorDotProduct(V, N);
-   Result[X]:=V[X]-Dot * N[X];
-   Result[Y]:=V[Y]-Dot * N[Y];
-   Result[Z]:=V[Z]-Dot * N[Z];
+   Result.Coord[X]:=V.Coord[X]-Dot * N.Coord[X];
+   Result.Coord[Y]:=V.Coord[Y]-Dot * N.Coord[Y];
+   Result.Coord[Z]:=V.Coord[Z]-Dot * N.Coord[Z];
 end;
 
 // VectorReflect
@@ -4611,9 +4609,9 @@ var
    c, s, v0 : Single;
 begin
    SinCos(alpha, s, c);
-   v0:=v[0];
-   v[0]:=c*v0+s*v[2];
-   v[2]:=c*v[2]-s*v0;
+   v0:=v.Coord[0];
+   v.Coord[0]:=c*v0+s*v.Coord[2];
+   v.Coord[2]:=c*v.Coord[2]-s*v0;
 end;
 
 // VectorRotateAroundX (func)
@@ -4623,9 +4621,9 @@ var
    c, s : Single;
 begin
    SinCos(alpha, s, c);
-   Result[0]:=v[0];
-   Result[1]:=c*v[1]+s*v[2];
-   Result[2]:=c*v[2]-s*v[1];
+   Result.Coord[0]:=v.Coord[0];
+   Result.Coord[1]:=c*v.Coord[1]+s*v.Coord[2];
+   Result.Coord[2]:=c*v.Coord[2]-s*v.Coord[1];
 end;
 
 // VectorRotateAroundY (func)
@@ -4635,9 +4633,9 @@ var
    c, s : Single;
 begin
    SinCos(alpha, s, c);
-   Result[1]:=v[1];
-   Result[0]:=c*v[0]+s*v[2];
-   Result[2]:=c*v[2]-s*v[0];
+   Result.Coord[1]:=v.Coord[1];
+   Result.Coord[0]:=c*v.Coord[0]+s*v.Coord[2];
+   Result.Coord[2]:=c*v.Coord[2]-s*v.Coord[0];
 end;
 
 // VectorRotateAroundY (proc)
@@ -4647,9 +4645,9 @@ var
    c, s : Single;
 begin
    SinCos(alpha, s, c);
-   vr[1]:=v[1];
-   vr[0]:=c*v[0]+s*v[2];
-   vr[2]:=c*v[2]-s*v[0];
+   vr.Coord[1]:=v.Coord[1];
+   vr.Coord[0]:=c*v.Coord[0]+s*v.Coord[2];
+   vr.Coord[2]:=c*v.Coord[2]-s*v.Coord[0];
 end;
 
 // VectorRotateAroundZ (func)
@@ -4659,47 +4657,47 @@ var
    c, s : Single;
 begin
    SinCos(alpha, s, c);
-   Result[0]:=c*v[0]+s*v[1];
-   Result[1]:=c*v[1]-s*v[0];
-   Result[2]:=v[2];
+   Result.Coord[0]:=c*v.Coord[0]+s*v.Coord[1];
+   Result.Coord[1]:=c*v.Coord[1]-s*v.Coord[0];
+   Result.Coord[2]:=v.Coord[2];
 end;
 
 // AbsVector (hmg)
 //
 procedure AbsVector(var v : TVector);
 begin
-  v[0]:=Abs(v[0]);
-  v[1]:=Abs(v[1]);
-  v[2]:=Abs(v[2]);
-  v[3]:=Abs(v[3]);
+  v.Coord[0]:=Abs(v.Coord[0]);
+  v.Coord[1]:=Abs(v.Coord[1]);
+  v.Coord[2]:=Abs(v.Coord[2]);
+  v.Coord[3]:=Abs(v.Coord[3]);
 end;
 
 // AbsVector (affine)
 //
 procedure AbsVector(var v : TAffineVector);
 begin
-  v[0]:=Abs(v[0]);
-  v[1]:=Abs(v[1]);
-  v[2]:=Abs(v[2]);
+  v.Coord[0]:=Abs(v.Coord[0]);
+  v.Coord[1]:=Abs(v.Coord[1]);
+  v.Coord[2]:=Abs(v.Coord[2]);
 end;
 
 // VectorAbs (hmg)
 //
 function VectorAbs(const v : TVector) : TVector;
 begin
-   Result[0]:=Abs(v[0]);
-   Result[1]:=Abs(v[1]);
-   Result[2]:=Abs(v[2]);
-   Result[3]:=Abs(v[3]);
+   Result.Coord[0]:=Abs(v.Coord[0]);
+   Result.Coord[1]:=Abs(v.Coord[1]);
+   Result.Coord[2]:=Abs(v.Coord[2]);
+   Result.Coord[3]:=Abs(v.Coord[3]);
 end;
 
 // VectorAbs (affine)
 //
 function VectorAbs(const v : TAffineVector) : TAffineVector;
 begin
-   Result[0]:=Abs(v[0]);
-   Result[1]:=Abs(v[1]);
-   Result[2]:=Abs(v[2]);
+   Result.Coord[0]:=Abs(v.Coord[0]);
+   Result.Coord[1]:=Abs(v.Coord[1]);
+   Result.Coord[2]:=Abs(v.Coord[2]);
 end;
 
 // SetMatrix (single->double)
@@ -4709,10 +4707,10 @@ var
    i : Integer;
 begin
    for i:=X to W do begin
-      dest[i, X]:=src[i, X];
-      dest[i, Y]:=src[i, Y];
-      dest[i, Z]:=src[i, Z];
-      dest[i, W]:=src[i, W];
+      dest.Coord[i].X:=src.Coord[i].X;
+      dest.Coord[i].Y:=src.Coord[i].Y;
+      dest.Coord[i].Z:=src.Coord[i].Z;
+      dest.Coord[i].W:=src.Coord[i].W;
    end;
 end;
 
@@ -4720,29 +4718,29 @@ end;
 //
 procedure SetMatrix(var dest : TAffineMatrix; const src : TMatrix);
 begin
-   dest[0, 0]:=src[0, 0]; dest[0, 1]:=src[0, 1]; dest[0, 2]:=src[0, 2];
-   dest[1, 0]:=src[1, 0]; dest[1, 1]:=src[1, 1]; dest[1, 2]:=src[1, 2];
-   dest[2, 0]:=src[2, 0]; dest[2, 1]:=src[2, 1]; dest[2, 2]:=src[2, 2];
+   dest.Coord[0].X:=src.Coord[0].X; dest.Coord[0].Y:=src.Coord[0].Y; dest.Coord[0].Z:=src.Coord[0].Z;
+   dest.Coord[1].X:=src.Coord[1].X; dest.Coord[1].Y:=src.Coord[1].Y; dest.Coord[1].Z:=src.Coord[1].Z;
+   dest.Coord[2].X:=src.Coord[2].X; dest.Coord[2].Y:=src.Coord[2].Y; dest.Coord[2].Z:=src.Coord[2].Z;
 end;
 
 // SetMatrix (affine->hmg)
 //
 procedure SetMatrix(var dest : TMatrix; const src : TAffineMatrix);
 begin
-   dest[0, 0]:=src[0, 0]; dest[0, 1]:=src[0, 1]; dest[0, 2]:=src[0, 2]; dest[0, 3]:=0;
-   dest[1, 0]:=src[1, 0]; dest[1, 1]:=src[1, 1]; dest[1, 2]:=src[1, 2]; dest[1, 3]:=0;
-   dest[2, 0]:=src[2, 0]; dest[2, 1]:=src[2, 1]; dest[2, 2]:=src[2, 2]; dest[2, 3]:=0;
-   dest[3, 0]:=0;         dest[3, 1]:=0;         dest[3, 2]:=0;         dest[3, 3]:=1;
+   dest.Coord[0].X:=src.Coord[0].X; dest.Coord[0].Y:=src.Coord[0].Y; dest.Coord[0].Z:=src.Coord[0].Z; dest.Coord[0].W:=0;
+   dest.Coord[1].X:=src.Coord[1].X; dest.Coord[1].Y:=src.Coord[1].Y; dest.Coord[1].Z:=src.Coord[1].Z; dest.Coord[1].W:=0;
+   dest.Coord[2].X:=src.Coord[2].X; dest.Coord[2].Y:=src.Coord[2].Y; dest.Coord[2].Z:=src.Coord[2].Z; dest.Coord[2].W:=0;
+   dest.Coord[3].X:=0;              dest.Coord[3].Y:=0;              dest.Coord[3].Z:=0;              dest.Coord[3].W:=1;
 end;
 
 // SetMatrixRow
 //
 procedure SetMatrixRow(var dest : TMatrix; rowNb : Integer; const aRow : TVector);
 begin
-   dest[0, rowNb]:=aRow[0];
-   dest[1, rowNb]:=aRow[1];
-   dest[2, rowNb]:=aRow[2];
-   dest[3, rowNb]:=aRow[3];
+   dest.Coord[0].Coord[rowNb]:=aRow.Coord[0];
+   dest.Coord[1].Coord[rowNb]:=aRow.Coord[1];
+   dest.Coord[2].Coord[rowNb]:=aRow.Coord[2];
+   dest.Coord[3].Coord[rowNb]:=aRow.Coord[3];
 end;
 
 // CreateScaleMatrix (affine)
@@ -4750,9 +4748,9 @@ end;
 function CreateScaleMatrix(const v : TAffineVector) : TMatrix;
 begin
    Result:=IdentityHmgMatrix;
-   Result[X, X]:=v[X];
-   Result[Y, Y]:=v[Y];
-   Result[Z, Z]:=v[Z];
+   Result.X.X:=v.Coord[X];
+   Result.Y.Y:=v.Coord[Y];
+   Result.Z.Z:=v.Coord[Z];
 end;
 
 // CreateScaleMatrix (Hmg)
@@ -4760,9 +4758,9 @@ end;
 function CreateScaleMatrix(const v : TVector) : TMatrix;
 begin
    Result:=IdentityHmgMatrix;
-   Result[X, X]:=V[X];
-   Result[Y, Y]:=V[Y];
-   Result[Z, Z]:=V[Z];
+   Result.X.X:=v.Coord[X];
+   Result.Y.Y:=v.Coord[Y];
+   Result.Z.Z:=v.Coord[Z];
 end;
 
 // CreateTranslationMatrix (affine)
@@ -4770,9 +4768,9 @@ end;
 function CreateTranslationMatrix(const V: TAffineVector): TMatrix;
 begin
    Result:=IdentityHmgMatrix;
-   Result[W, X]:=V[X];
-   Result[W, Y]:=V[Y];
-   Result[W, Z]:=V[Z];
+   Result.W.X:=V.Coord[X];
+   Result.W.Y:=V.Coord[Y];
+   Result.W.Z:=V.Coord[Z];
 end;
 
 // CreateTranslationMatrix (hmg)
@@ -4780,9 +4778,9 @@ end;
 function CreateTranslationMatrix(const V: TVector): TMatrix;
 begin
    Result:=IdentityHmgMatrix;
-   Result[W, X]:=V[X];
-   Result[W, Y]:=V[Y];
-   Result[W, Z]:=V[Z];
+   Result.W.X:=V.Coord[X];
+   Result.W.Y:=V.Coord[Y];
+   Result.W.Z:=V.Coord[Z];
 end;
 
 // CreateScaleAndTranslationMatrix
@@ -4790,9 +4788,9 @@ end;
 function CreateScaleAndTranslationMatrix(const scale, offset : TVector): TMatrix;
 begin
    Result:=IdentityHmgMatrix;
-   Result[X, X]:=scale[X];   Result[W, X]:=offset[X];
-   Result[Y, Y]:=scale[Y];   Result[W, Y]:=offset[Y];
-   Result[Z, Z]:=scale[Z];   Result[W, Z]:=offset[Z];
+   Result.X.X:=scale.Coord[X];   Result.W.X:=offset.Coord[X];
+   Result.Y.Y:=scale.Coord[Y];   Result.W.Y:=offset.Coord[Y];
+   Result.Z.Z:=scale.Coord[Z];   Result.W.Z:=offset.Coord[Z];
 end;
 
 // CreateRotationMatrixX
@@ -4800,12 +4798,12 @@ end;
 function CreateRotationMatrixX(const sine, cosine: Single) : TMatrix;
 begin
    Result:=EmptyHmgMatrix;
-   Result[X, X]:=1;
-   Result[Y, Y]:=cosine;
-   Result[Y, Z]:=sine;
-   Result[Z, Y]:=-sine;
-   Result[Z, Z]:=cosine;
-   Result[W, W]:=1;
+   Result.X.X:=1;
+   Result.Y.Y:=cosine;
+   Result.Y.Z:=sine;
+   Result.Z.Y:=-sine;
+   Result.Z.Z:=cosine;
+   Result.W.W:=1;
 end;
 
 // CreateRotationMatrixX
@@ -4823,12 +4821,12 @@ end;
 function CreateRotationMatrixY(const sine, cosine: Single): TMatrix;
 begin
    Result:=EmptyHmgMatrix;
-   Result[X, X]:=cosine;
-   Result[X, Z]:=-sine;
-   Result[Y, Y]:=1;
-   Result[Z, X]:=sine;
-   Result[Z, Z]:=cosine;
-   Result[W, W]:=1;
+   Result.X.X:=cosine;
+   Result.X.Z:=-sine;
+   Result.Y.Y:=1;
+   Result.Z.X:=sine;
+   Result.Z.Z:=cosine;
+   Result.W.W:=1;
 end;
 
 // CreateRotationMatrixY
@@ -4846,12 +4844,12 @@ end;
 function CreateRotationMatrixZ(const sine, cosine: Single): TMatrix;
 begin
    Result:=EmptyHmgMatrix;
-   Result[X, X]:=cosine;
-   Result[X, Y]:=sine;
-   Result[Y, X]:=-sine;
-   Result[Y, Y]:=cosine;
-   Result[Z, Z]:=1;
-   Result[W, W]:=1;
+   Result.X.X:=cosine;
+   Result.X.Y:=sine;
+   Result.Y.X:=-sine;
+   Result.Y.Y:=cosine;
+   Result.Z.Z:=1;
+   Result.W.W:=1;
 end;
 
 // CreateRotationMatrixZ
@@ -4875,25 +4873,25 @@ begin
    one_minus_cosine:=1-cosine;
    axis:=VectorNormalize(anAxis);
 
-   Result[X, X]:=(one_minus_cosine * axis[0] * axis[0]) + cosine;
-   Result[X, Y]:=(one_minus_cosine * axis[0] * axis[1]) - (axis[2] * sine);
-   Result[X, Z]:=(one_minus_cosine * axis[2] * axis[0]) + (axis[1] * sine);
-   Result[X, W]:=0;
+   Result.X.X:=(one_minus_cosine * axis.Coord[0] * axis.Coord[0]) + cosine;
+   Result.X.Y:=(one_minus_cosine * axis.Coord[0] * axis.Coord[1]) - (axis.Coord[2] * sine);
+   Result.X.Z:=(one_minus_cosine * axis.Coord[2] * axis.Coord[0]) + (axis.Coord[1] * sine);
+   Result.X.W:=0;
 
-   Result[Y, X]:=(one_minus_cosine * axis[0] * axis[1]) + (axis[2] * sine);
-   Result[Y, Y]:=(one_minus_cosine * axis[1] * axis[1]) + cosine;
-   Result[Y, Z]:=(one_minus_cosine * axis[1] * axis[2]) - (axis[0] * sine);
-   Result[Y, W]:=0;
+   Result.Y.X:=(one_minus_cosine * axis.Coord[0] * axis.Coord[1]) + (axis.Coord[2] * sine);
+   Result.Y.Y:=(one_minus_cosine * axis.Coord[1] * axis.Coord[1]) + cosine;
+   Result.Y.Z:=(one_minus_cosine * axis.Coord[1] * axis.Coord[2]) - (axis.Coord[0] * sine);
+   Result.Y.W:=0;
 
-   Result[Z, X]:=(one_minus_cosine * axis[2] * axis[0]) - (axis[1] * sine);
-   Result[Z, Y]:=(one_minus_cosine * axis[1] * axis[2]) + (axis[0] * sine);
-   Result[Z, Z]:=(one_minus_cosine * axis[2] * axis[2]) + cosine;
-   Result[Z, W]:=0;
+   Result.Z.X:=(one_minus_cosine * axis.Coord[2] * axis.Coord[0]) - (axis.Coord[1] * sine);
+   Result.Z.Y:=(one_minus_cosine * axis.Coord[1] * axis.Coord[2]) + (axis.Coord[0] * sine);
+   Result.Z.Z:=(one_minus_cosine * axis.Coord[2] * axis.Coord[2]) + cosine;
+   Result.Z.W:=0;
 
-   Result[W, X]:=0;
-   Result[W, Y]:=0;
-   Result[W, Z]:=0;
-   Result[W, W]:=1;
+   Result.W.X:=0;
+   Result.W.Y:=0;
+   Result.W.Z:=0;
+   Result.W.W:=1;
 end;
 
 // CreateRotationMatrix (hmg)
@@ -4914,17 +4912,17 @@ begin
    one_minus_cosine:=1 - cosine;
    axis:=VectorNormalize(anAxis);
 
-   Result[X, X]:=(one_minus_cosine * Sqr(Axis[0])) + Cosine;
-   Result[X, Y]:=(one_minus_cosine * Axis[0] * Axis[1]) - (Axis[2] * Sine);
-   Result[X, Z]:=(one_minus_cosine * Axis[2] * Axis[0]) + (Axis[1] * Sine);
+   Result.X.X:=(one_minus_cosine * Sqr(Axis.Coord[0])) + Cosine;
+   Result.X.Y:=(one_minus_cosine * Axis.Coord[0] * Axis.Coord[1]) - (Axis.Coord[2] * Sine);
+   Result.X.Z:=(one_minus_cosine * Axis.Coord[2] * Axis.Coord[0]) + (Axis.Coord[1] * Sine);
 
-   Result[Y, X]:=(one_minus_cosine * Axis[0] * Axis[1]) + (Axis[2] * Sine);
-   Result[Y, Y]:=(one_minus_cosine * Sqr(Axis[1])) + Cosine;
-   Result[Y, Z]:=(one_minus_cosine * Axis[1] * Axis[2]) - (Axis[0] * Sine);
+   Result.Y.X:=(one_minus_cosine * Axis.Coord[0] * Axis.Coord[1]) + (Axis.Coord[2] * Sine);
+   Result.Y.Y:=(one_minus_cosine * Sqr(Axis.Coord[1])) + Cosine;
+   Result.Y.Z:=(one_minus_cosine * Axis.Coord[1] * Axis.Coord[2]) - (Axis.Coord[0] * Sine);
 
-   Result[Z, X]:=(one_minus_cosine * Axis[2] * Axis[0]) - (Axis[1] * Sine);
-   Result[Z, Y]:=(one_minus_cosine * Axis[1] * Axis[2]) + (Axis[0] * Sine);
-   Result[Z, Z]:=(one_minus_cosine * Sqr(Axis[2])) + Cosine;
+   Result.Z.X:=(one_minus_cosine * Axis.Coord[2] * Axis.Coord[0]) - (Axis.Coord[1] * Sine);
+   Result.Z.Y:=(one_minus_cosine * Axis.Coord[1] * Axis.Coord[2]) + (Axis.Coord[0] * Sine);
+   Result.Z.Z:=(one_minus_cosine * Sqr(Axis.Coord[2])) + Cosine;
 end;
 
 // MatrixMultiply (3x3 func)
@@ -5000,15 +4998,15 @@ begin
          db $0F,$0E               /// femms
       end;
    end else {$endif} begin
-      Result[X, X]:= M1[X, X]*M2[X, X]+M1[X, Y]*M2[Y, X]+M1[X, Z]*M2[Z, X];
-      Result[X, Y]:= M1[X, X]*M2[X, Y]+M1[X, Y]*M2[Y, Y]+M1[X, Z]*M2[Z, Y];
-      Result[X, Z]:= M1[X, X]*M2[X, Z]+M1[X, Y]*M2[Y, Z]+M1[X, Z]*M2[Z, Z];
-      Result[Y, X]:= M1[Y, X]*M2[X, X]+M1[Y, Y]*M2[Y, X]+M1[Y, Z]*M2[Z, X];
-      Result[Y, Y]:= M1[Y, X]*M2[X, Y]+M1[Y, Y]*M2[Y, Y]+M1[Y, Z]*M2[Z, Y];
-      Result[Y, Z]:= M1[Y, X]*M2[X, Z]+M1[Y, Y]*M2[Y, Z]+M1[Y, Z]*M2[Z, Z];
-      Result[Z, X]:= M1[Z, X]*M2[X, X]+M1[Z, Y]*M2[Y, X]+M1[Z, Z]*M2[Z, X];
-      Result[Z, Y]:= M1[Z, X]*M2[X, Y]+M1[Z, Y]*M2[Y, Y]+M1[Z, Z]*M2[Z, Y];
-      Result[Z, Z]:= M1[Z, X]*M2[X, Z]+M1[Z, Y]*M2[Y, Z]+M1[Z, Z]*M2[Z, Z];
+      Result.X.X:= M1.X.X*M2.X.X+M1.X.Y*M2.Y.X+M1.X.Z*M2.Z.X;
+      Result.X.Y:= M1.X.X*M2.X.Y+M1.X.Y*M2.Y.Y+M1.X.Z*M2.Z.Y;
+      Result.X.Z:= M1.X.X*M2.X.Z+M1.X.Y*M2.Y.Z+M1.X.Z*M2.Z.Z;
+      Result.Y.X:= M1.Y.X*M2.X.X+M1.Y.Y*M2.Y.X+M1.Y.Z*M2.Z.X;
+      Result.Y.Y:= M1.Y.X*M2.X.Y+M1.Y.Y*M2.Y.Y+M1.Y.Z*M2.Z.Y;
+      Result.Y.Z:= M1.Y.X*M2.X.Z+M1.Y.Y*M2.Y.Z+M1.Y.Z*M2.Z.Z;
+      Result.Z.X:= M1.Z.X*M2.X.X+M1.Z.Y*M2.Y.X+M1.Z.Z*M2.Z.X;
+      Result.Z.Y:= M1.Z.X*M2.X.Y+M1.Z.Y*M2.Y.Y+M1.Z.Z*M2.Z.Y;
+      Result.Z.Z:= M1.Z.X*M2.X.Z+M1.Z.Y*M2.Y.Z+M1.Z.Z*M2.Z.Z;
    end;
 end;
 
@@ -5138,22 +5136,22 @@ begin
          db $0F,$0E               /// femms
       end;
    end else {$endif} begin
-      Result[X,X]:=M1[X,X]*M2[X,X]+M1[X,Y]*M2[Y,X]+M1[X,Z]*M2[Z,X]+M1[X,W]*M2[W,X];
-      Result[X,Y]:=M1[X,X]*M2[X,Y]+M1[X,Y]*M2[Y,Y]+M1[X,Z]*M2[Z,Y]+M1[X,W]*M2[W,Y];
-      Result[X,Z]:=M1[X,X]*M2[X,Z]+M1[X,Y]*M2[Y,Z]+M1[X,Z]*M2[Z,Z]+M1[X,W]*M2[W,Z];
-      Result[X,W]:=M1[X,X]*M2[X,W]+M1[X,Y]*M2[Y,W]+M1[X,Z]*M2[Z,W]+M1[X,W]*M2[W,W];
-      Result[Y,X]:=M1[Y,X]*M2[X,X]+M1[Y,Y]*M2[Y,X]+M1[Y,Z]*M2[Z,X]+M1[Y,W]*M2[W,X];
-      Result[Y,Y]:=M1[Y,X]*M2[X,Y]+M1[Y,Y]*M2[Y,Y]+M1[Y,Z]*M2[Z,Y]+M1[Y,W]*M2[W,Y];
-      Result[Y,Z]:=M1[Y,X]*M2[X,Z]+M1[Y,Y]*M2[Y,Z]+M1[Y,Z]*M2[Z,Z]+M1[Y,W]*M2[W,Z];
-      Result[Y,W]:=M1[Y,X]*M2[X,W]+M1[Y,Y]*M2[Y,W]+M1[Y,Z]*M2[Z,W]+M1[Y,W]*M2[W,W];
-      Result[Z,X]:=M1[Z,X]*M2[X,X]+M1[Z,Y]*M2[Y,X]+M1[Z,Z]*M2[Z,X]+M1[Z,W]*M2[W,X];
-      Result[Z,Y]:=M1[Z,X]*M2[X,Y]+M1[Z,Y]*M2[Y,Y]+M1[Z,Z]*M2[Z,Y]+M1[Z,W]*M2[W,Y];
-      Result[Z,Z]:=M1[Z,X]*M2[X,Z]+M1[Z,Y]*M2[Y,Z]+M1[Z,Z]*M2[Z,Z]+M1[Z,W]*M2[W,Z];
-      Result[Z,W]:=M1[Z,X]*M2[X,W]+M1[Z,Y]*M2[Y,W]+M1[Z,Z]*M2[Z,W]+M1[Z,W]*M2[W,W];
-      Result[W,X]:=M1[W,X]*M2[X,X]+M1[W,Y]*M2[Y,X]+M1[W,Z]*M2[Z,X]+M1[W,W]*M2[W,X];
-      Result[W,Y]:=M1[W,X]*M2[X,Y]+M1[W,Y]*M2[Y,Y]+M1[W,Z]*M2[Z,Y]+M1[W,W]*M2[W,Y];
-      Result[W,Z]:=M1[W,X]*M2[X,Z]+M1[W,Y]*M2[Y,Z]+M1[W,Z]*M2[Z,Z]+M1[W,W]*M2[W,Z];
-      Result[W,W]:=M1[W,X]*M2[X,W]+M1[W,Y]*M2[Y,W]+M1[W,Z]*M2[Z,W]+M1[W,W]*M2[W,W];
+      Result.X.X:=M1.X.X*M2.X.X+M1.X.Y*M2.Y.X+M1.X.Z*M2.Z.X+M1.X.W*M2.W.X;
+      Result.X.Y:=M1.X.X*M2.X.Y+M1.X.Y*M2.Y.Y+M1.X.Z*M2.Z.Y+M1.X.W*M2.W.Y;
+      Result.X.Z:=M1.X.X*M2.X.Z+M1.X.Y*M2.Y.Z+M1.X.Z*M2.Z.Z+M1.X.W*M2.W.Z;
+      Result.X.W:=M1.X.X*M2.X.W+M1.X.Y*M2.Y.W+M1.X.Z*M2.Z.W+M1.X.W*M2.W.W;
+      Result.Y.X:=M1.Y.X*M2.X.X+M1.Y.Y*M2.Y.X+M1.Y.Z*M2.Z.X+M1.Y.W*M2.W.X;
+      Result.Y.Y:=M1.Y.X*M2.X.Y+M1.Y.Y*M2.Y.Y+M1.Y.Z*M2.Z.Y+M1.Y.W*M2.W.Y;
+      Result.Y.Z:=M1.Y.X*M2.X.Z+M1.Y.Y*M2.Y.Z+M1.Y.Z*M2.Z.Z+M1.Y.W*M2.W.Z;
+      Result.Y.W:=M1.Y.X*M2.X.W+M1.Y.Y*M2.Y.W+M1.Y.Z*M2.Z.W+M1.Y.W*M2.W.W;
+      Result.Z.X:=M1.Z.X*M2.X.X+M1.Z.Y*M2.Y.X+M1.Z.Z*M2.Z.X+M1.Z.W*M2.W.X;
+      Result.Z.Y:=M1.Z.X*M2.X.Y+M1.Z.Y*M2.Y.Y+M1.Z.Z*M2.Z.Y+M1.Z.W*M2.W.Y;
+      Result.Z.Z:=M1.Z.X*M2.X.Z+M1.Z.Y*M2.Y.Z+M1.Z.Z*M2.Z.Z+M1.Z.W*M2.W.Z;
+      Result.Z.W:=M1.Z.X*M2.X.W+M1.Z.Y*M2.Y.W+M1.Z.Z*M2.Z.W+M1.Z.W*M2.W.W;
+      Result.W.X:=M1.W.X*M2.X.X+M1.W.Y*M2.Y.X+M1.W.Z*M2.Z.X+M1.W.W*M2.W.X;
+      Result.W.Y:=M1.W.X*M2.X.Y+M1.W.Y*M2.Y.Y+M1.W.Z*M2.Z.Y+M1.W.W*M2.W.Y;
+      Result.W.Z:=M1.W.X*M2.X.Z+M1.W.Y*M2.Y.Z+M1.W.Z*M2.Z.Z+M1.W.W*M2.W.Z;
+      Result.W.W:=M1.W.X*M2.X.W+M1.W.Y*M2.Y.W+M1.W.Z*M2.Z.W+M1.W.W*M2.W.W;
    end;
 end;
 
@@ -5203,10 +5201,10 @@ begin
         db $0F,$0E               /// femms
       end
    end else {$endif} begin
-      Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X] + V[W] * M[W, X];
-      Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y] + V[W] * M[W, Y];
-      Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z] + V[W] * M[W, Z];
-      Result[W]:=V[X] * M[X, W] + V[Y] * M[Y, W] + V[Z] * M[Z, W] + V[W] * M[W, W];
+      Result.Coord[X]:=V.Coord[X] * M.X.X + V.Coord[Y] * M.Y.X + V.Coord[Z] * M.Z.X + V.Coord[W] * M.W.X;
+      Result.Coord[Y]:=V.Coord[X] * M.X.Y + V.Coord[Y] * M.Y.Y + V.Coord[Z] * M.Z.Y + V.Coord[W] * M.W.Y;
+      Result.Coord[Z]:=V.Coord[X] * M.X.Z + V.Coord[Y] * M.Y.Z + V.Coord[Z] * M.Z.Z + V.Coord[W] * M.W.Z;
+      Result.Coord[W]:=V.Coord[X] * M.X.W + V.Coord[Y] * M.Y.W + V.Coord[Z] * M.Z.W + V.Coord[W] * M.W.W;
    end;
 end;
 
@@ -5214,19 +5212,19 @@ end;
 //
 function VectorTransform(const V: TVector; const M: TAffineMatrix): TVector;
 begin
-   Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X];
-   Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y];
-   Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z];
-   Result[W]:=V[W];
+   Result.Coord[X]:=V.Coord[X] * M.X.X + V.Coord[Y] * M.Y.X + V.Coord[Z] * M.Z.X;
+   Result.Coord[Y]:=V.Coord[X] * M.X.Y + V.Coord[Y] * M.Y.Y + V.Coord[Z] * M.Z.Y;
+   Result.Coord[Z]:=V.Coord[X] * M.X.Z + V.Coord[Y] * M.Y.Z + V.Coord[Z] * M.Z.Z;
+   Result.Coord[W]:=V.Coord[W];
 end;
 
 // VectorTransform
 //
 function VectorTransform(const V: TAffineVector; const M: TMatrix): TAffineVector;
 begin
-   Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X] + M[W, X];
-   Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y] + M[W, Y];
-   Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z] + M[W, Z];
+   Result.Coord[X]:=V.Coord[X] * M.X.X + V.Coord[Y] * M.Y.X + V.Coord[Z] * M.Z.X + M.W.X;
+   Result.Coord[Y]:=V.Coord[X] * M.X.Y + V.Coord[Y] * M.Y.Y + V.Coord[Z] * M.Z.Y + M.W.Y;
+   Result.Coord[Z]:=V.Coord[X] * M.X.Z + V.Coord[Y] * M.Y.Z + V.Coord[Z] * M.Z.Z + M.W.Z;
 end;
 
 // VectorTransform
@@ -5260,9 +5258,9 @@ begin
         db $0F,$0E               /// femms
       end;
    end else {$endif} begin
-      Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X];
-      Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y];
-      Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z];
+      Result.Coord[X]:=V.Coord[X] * M.X.X + V.Coord[Y] * M.Y.X + V.Coord[Z] * M.Z.X;
+      Result.Coord[Y]:=V.Coord[X] * M.X.Y + V.Coord[Y] * M.Y.Y + V.Coord[Z] * M.Z.Y;
+      Result.Coord[Z]:=V.Coord[X] * M.X.Z + V.Coord[Y] * M.Y.Z + V.Coord[Z] * M.Z.Z;
    end;
 end;
 
@@ -5270,9 +5268,9 @@ end;
 //
 function MatrixDeterminant(const M: TAffineMatrix): Single;
 begin
-  Result:=  M[X, X] * (M[Y, Y] * M[Z, Z] - M[Z, Y] * M[Y, Z])
-          - M[X, Y] * (M[Y, X] * M[Z, Z] - M[Z, X] * M[Y, Z])
-          + M[X, Z] * (M[Y, X] * M[Z, Y] - M[Z, X] * M[Y, Y]);
+  Result:=  M.X.X * (M.Y.Y * M.Z.Z - M.Z.Y * M.Y.Z)
+          - M.X.Y * (M.Y.X * M.Z.Z - M.Z.X * M.Y.Z)
+          + M.X.Z * (M.Y.X * M.Z.Y - M.Z.X * M.Y.Y);
 end;
 
 // MatrixDetInternal
@@ -5289,10 +5287,10 @@ end;
 //
 function MatrixDeterminant(const M: TMatrix): Single;
 begin
-  Result:= M[X, X]*MatrixDetInternal(M[Y, Y], M[Z, Y], M[W, Y], M[Y, Z], M[Z, Z], M[W, Z], M[Y, W], M[Z, W], M[W, W])
-          -M[X, Y]*MatrixDetInternal(M[Y, X], M[Z, X], M[W, X], M[Y, Z], M[Z, Z], M[W, Z], M[Y, W], M[Z, W], M[W, W])
-          +M[X, Z]*MatrixDetInternal(M[Y, X], M[Z, X], M[W, X], M[Y, Y], M[Z, Y], M[W, Y], M[Y, W], M[Z, W], M[W, W])
-          -M[X, W]*MatrixDetInternal(M[Y, X], M[Z, X], M[W, X], M[Y, Y], M[Z, Y], M[W, Y], M[Y, Z], M[Z, Z], M[W, Z]);
+  Result:= M.X.X*MatrixDetInternal(M.Y.Y, M.Z.Y, M.W.Y, M.Y.Z, M.Z.Z, M.W.Z, M.Y.W, M.Z.W, M.W.W)
+          -M.X.Y*MatrixDetInternal(M.Y.X, M.Z.X, M.W.X, M.Y.Z, M.Z.Z, M.W.Z, M.Y.W, M.Z.W, M.W.W)
+          +M.X.Z*MatrixDetInternal(M.Y.X, M.Z.X, M.W.X, M.Y.Y, M.Z.Y, M.W.Y, M.Y.W, M.Z.W, M.W.W)
+          -M.X.W*MatrixDetInternal(M.Y.X, M.Z.X, M.W.X, M.Y.Y, M.Z.Y, M.W.Y, M.Y.Z, M.Z.Z, M.W.Z);
 end;
 
 // AdjointMatrix
@@ -5304,35 +5302,35 @@ var
    c1, c2, c3, c4,
    d1, d2, d3, d4: Single;
 begin
-    a1:= M[X, X]; b1:= M[X, Y];
-    c1:= M[X, Z]; d1:= M[X, W];
-    a2:= M[Y, X]; b2:= M[Y, Y];
-    c2:= M[Y, Z]; d2:= M[Y, W];
-    a3:= M[Z, X]; b3:= M[Z, Y];
-    c3:= M[Z, Z]; d3:= M[Z, W];
-    a4:= M[W, X]; b4:= M[W, Y];
-    c4:= M[W, Z]; d4:= M[W, W];
+    a1:= M.X.X; b1:= M.X.Y;
+    c1:= M.X.Z; d1:= M.X.W;
+    a2:= M.Y.X; b2:= M.Y.Y;
+    c2:= M.Y.Z; d2:= M.Y.W;
+    a3:= M.Z.X; b3:= M.Z.Y;
+    c3:= M.Z.Z; d3:= M.Z.W;
+    a4:= M.W.X; b4:= M.W.Y;
+    c4:= M.W.Z; d4:= M.W.W;
 
     // row column labeling reversed since we transpose rows & columns
-    M[X, X]:= MatrixDetInternal(b2, b3, b4, c2, c3, c4, d2, d3, d4);
-    M[Y, X]:=-MatrixDetInternal(a2, a3, a4, c2, c3, c4, d2, d3, d4);
-    M[Z, X]:= MatrixDetInternal(a2, a3, a4, b2, b3, b4, d2, d3, d4);
-    M[W, X]:=-MatrixDetInternal(a2, a3, a4, b2, b3, b4, c2, c3, c4);
+    M.X.X:= MatrixDetInternal(b2, b3, b4, c2, c3, c4, d2, d3, d4);
+    M.Y.X:=-MatrixDetInternal(a2, a3, a4, c2, c3, c4, d2, d3, d4);
+    M.Z.X:= MatrixDetInternal(a2, a3, a4, b2, b3, b4, d2, d3, d4);
+    M.W.X:=-MatrixDetInternal(a2, a3, a4, b2, b3, b4, c2, c3, c4);
 
-    M[X, Y]:=-MatrixDetInternal(b1, b3, b4, c1, c3, c4, d1, d3, d4);
-    M[Y, Y]:= MatrixDetInternal(a1, a3, a4, c1, c3, c4, d1, d3, d4);
-    M[Z, Y]:=-MatrixDetInternal(a1, a3, a4, b1, b3, b4, d1, d3, d4);
-    M[W, Y]:= MatrixDetInternal(a1, a3, a4, b1, b3, b4, c1, c3, c4);
+    M.X.Y:=-MatrixDetInternal(b1, b3, b4, c1, c3, c4, d1, d3, d4);
+    M.Y.Y:= MatrixDetInternal(a1, a3, a4, c1, c3, c4, d1, d3, d4);
+    M.Z.Y:=-MatrixDetInternal(a1, a3, a4, b1, b3, b4, d1, d3, d4);
+    M.W.Y:= MatrixDetInternal(a1, a3, a4, b1, b3, b4, c1, c3, c4);
 
-    M[X, Z]:= MatrixDetInternal(b1, b2, b4, c1, c2, c4, d1, d2, d4);
-    M[Y, Z]:=-MatrixDetInternal(a1, a2, a4, c1, c2, c4, d1, d2, d4);
-    M[Z, Z]:= MatrixDetInternal(a1, a2, a4, b1, b2, b4, d1, d2, d4);
-    M[W, Z]:=-MatrixDetInternal(a1, a2, a4, b1, b2, b4, c1, c2, c4);
+    M.X.Z:= MatrixDetInternal(b1, b2, b4, c1, c2, c4, d1, d2, d4);
+    M.Y.Z:=-MatrixDetInternal(a1, a2, a4, c1, c2, c4, d1, d2, d4);
+    M.Z.Z:= MatrixDetInternal(a1, a2, a4, b1, b2, b4, d1, d2, d4);
+    M.W.Z:=-MatrixDetInternal(a1, a2, a4, b1, b2, b4, c1, c2, c4);
 
-    M[X, W]:=-MatrixDetInternal(b1, b2, b3, c1, c2, c3, d1, d2, d3);
-    M[Y, W]:= MatrixDetInternal(a1, a2, a3, c1, c2, c3, d1, d2, d3);
-    M[Z, W]:=-MatrixDetInternal(a1, a2, a3, b1, b2, b3, d1, d2, d3);
-    M[W, W]:= MatrixDetInternal(a1, a2, a3, b1, b2, b3, c1, c2, c3);
+    M.X.W:=-MatrixDetInternal(b1, b2, b3, c1, c2, c3, d1, d2, d3);
+    M.Y.W:= MatrixDetInternal(a1, a2, a3, c1, c2, c3, d1, d2, d3);
+    M.Z.W:=-MatrixDetInternal(a1, a2, a3, b1, b2, b3, d1, d2, d3);
+    M.W.W:= MatrixDetInternal(a1, a2, a3, b1, b2, b3, c1, c2, c3);
 end;
 
 // AdjointMatrix (affine)
@@ -5343,20 +5341,20 @@ var
    b1, b2, b3,
    c1, c2, c3: Single;
 begin
-   a1:= M[X, X]; a2:= M[X, Y]; a3:= M[X, Z];
-   b1:= M[Y, X]; b2:= M[Y, Y]; b3:= M[Y, Z];
-   c1:= M[Z, X]; c2:= M[Z, Y]; c3:= M[Z, Z];
-   M[X, X]:= (b2*c3-c2*b3);
-   M[Y, X]:=-(b1*c3-c1*b3);
-   M[Z, X]:= (b1*c2-c1*b2);
+   a1:= M.X.X; a2:= M.X.Y; a3:= M.X.Z;
+   b1:= M.Y.X; b2:= M.Y.Y; b3:= M.Y.Z;
+   c1:= M.Z.X; c2:= M.Z.Y; c3:= M.Z.Z;
+   M.X.X:= (b2*c3-c2*b3);
+   M.Y.X:=-(b1*c3-c1*b3);
+   M.Z.X:= (b1*c2-c1*b2);
 
-   M[X, Y]:=-(a2*c3-c2*a3);
-   M[Y, Y]:= (a1*c3-c1*a3);
-   M[Z, Y]:=-(a1*c2-c1*a2);
+   M.X.Y:=-(a2*c3-c2*a3);
+   M.Y.Y:= (a1*c3-c1*a3);
+   M.Z.Y:=-(a1*c2-c1*a2);
 
-   M[X, Z]:= (a2*b3-b2*a3);
-   M[Y, Z]:=-(a1*b3-b1*a3);
-   M[Z, Z]:= (a1*b2-b1*a2);
+   M.X.Z:= (a2*b3-b2*a3);
+   M.Y.Z:=-(a1*b3-b1*a3);
+   M.Z.Z:= (a1*b2-b1*a2);
 end;
 
 // ScaleMatrix (affine)
@@ -5366,9 +5364,9 @@ var
    i : Integer;
 begin
    for i:=0 to 2 do begin
-      M[I, 0]:=M[I, 0] * Factor;
-      M[I, 1]:=M[I, 1] * Factor;
-      M[I, 2]:=M[I, 2] * Factor;
+      M.Coord[I].Coord[0]:=M.Coord[I].Coord[0] * Factor;
+      M.Coord[I].Coord[1]:=M.Coord[I].Coord[1] * Factor;
+      M.Coord[I].Coord[2]:=M.Coord[I].Coord[2] * Factor;
    end;
 end;
 
@@ -5379,10 +5377,10 @@ var
    i : Integer;
 begin
    for i:=0 to 3 do begin
-      M[I, 0]:=M[I, 0] * Factor;
-      M[I, 1]:=M[I, 1] * Factor;
-      M[I, 2]:=M[I, 2] * Factor;
-      M[I, 3]:=M[I, 3] * Factor;
+      M.Coord[I].Coord[0]:=M.Coord[I].Coord[0] * Factor;
+      M.Coord[I].Coord[1]:=M.Coord[I].Coord[1] * Factor;
+      M.Coord[I].Coord[2]:=M.Coord[I].Coord[2] * Factor;
+      M.Coord[I].Coord[3]:=M.Coord[I].Coord[3] * Factor;
    end;
 end;
 
@@ -5390,29 +5388,29 @@ end;
 //
 procedure TranslateMatrix(var M : TMatrix; const v : TAffineVector);
 begin
-   M[3][0]:=M[3][0]+v[0];
-   M[3][1]:=M[3][1]+v[1];
-   M[3][2]:=M[3][2]+v[2];
+   M.Coord[3].Coord[0]:=M.Coord[3].Coord[0]+v.Coord[0];
+   M.Coord[3].Coord[1]:=M.Coord[3].Coord[1]+v.Coord[1];
+   M.Coord[3].Coord[2]:=M.Coord[3].Coord[2]+v.Coord[2];
 end;
 
 // TranslateMatrix
 //
 procedure TranslateMatrix(var M : TMatrix; const v : TVector);
 begin
-   M[3][0]:=M[3][0]+v[0];
-   M[3][1]:=M[3][1]+v[1];
-   M[3][2]:=M[3][2]+v[2];
+   M.Coord[3].Coord[0]:=M.Coord[3].Coord[0]+v.Coord[0];
+   M.Coord[3].Coord[1]:=M.Coord[3].Coord[1]+v.Coord[1];
+   M.Coord[3].Coord[2]:=M.Coord[3].Coord[2]+v.Coord[2];
 end;
 
 // NormalizeMatrix
 //
 procedure NormalizeMatrix(var M : TMatrix);
 begin
-   M[0][3]:=0; NormalizeVector(M[0]);
-   M[1][3]:=0; NormalizeVector(M[1]);
-   M[2]:=VectorCrossProduct(M[0], M[1]);
-   M[0]:=VectorCrossProduct(M[1], M[2]);
-   M[3]:=WHmgVector;
+   M.Coord[0].Coord[3]:=0; NormalizeVector(M.Coord[0]);
+   M.Coord[1].Coord[3]:=0; NormalizeVector(M.Coord[1]);
+   M.Coord[2]:=VectorCrossProduct(M.Coord[0], M.Coord[1]);
+   M.Coord[0]:=VectorCrossProduct(M.Coord[1], M.Coord[2]);
+   M.Coord[3]:=WHmgVector;
 end;
 
 // TransposeMatrix
@@ -5421,9 +5419,9 @@ procedure TransposeMatrix(var M: TAffineMatrix);
 var
    f : Single;
 begin
-   f:=M[0, 1]; M[0, 1]:=M[1, 0]; M[1, 0]:=f;
-   f:=M[0, 2]; M[0, 2]:=M[2, 0]; M[2, 0]:=f;
-   f:=M[1, 2]; M[1, 2]:=M[2, 1]; M[2, 1]:=f;
+   f:=M.Coord[0].Coord[1]; M.Coord[0].Coord[1]:=M.Coord[1].Coord[0]; M.Coord[1].Coord[0]:=f;
+   f:=M.Coord[0].Coord[2]; M.Coord[0].Coord[2]:=M.Coord[2].Coord[0]; M.Coord[2].Coord[0]:=f;
+   f:=M.Coord[1].Coord[2]; M.Coord[1].Coord[2]:=M.Coord[2].Coord[1]; M.Coord[2].Coord[1]:=f;
 end;
 
 // TransposeMatrix
@@ -5432,12 +5430,12 @@ procedure TransposeMatrix(var M: TMatrix);
 var
    f : Single;
 begin
-   f:=M[0, 1]; M[0, 1]:=M[1, 0]; M[1, 0]:=f;
-   f:=M[0, 2]; M[0, 2]:=M[2, 0]; M[2, 0]:=f;
-   f:=M[0, 3]; M[0, 3]:=M[3, 0]; M[3, 0]:=f;
-   f:=M[1, 2]; M[1, 2]:=M[2, 1]; M[2, 1]:=f;
-   f:=M[1, 3]; M[1, 3]:=M[3, 1]; M[3, 1]:=f;
-   f:=M[2, 3]; M[2, 3]:=M[3, 2]; M[3, 2]:=f;
+   f:=M.Coord[0].Coord[1]; M.Coord[0].Coord[1]:=M.Coord[1].Coord[0]; M.Coord[1].Coord[0]:=f;
+   f:=M.Coord[0].Coord[2]; M.Coord[0].Coord[2]:=M.Coord[2].Coord[0]; M.Coord[2].Coord[0]:=f;
+   f:=M.Coord[0].Coord[3]; M.Coord[0].Coord[3]:=M.Coord[3].Coord[0]; M.Coord[3].Coord[0]:=f;
+   f:=M.Coord[1].Coord[2]; M.Coord[1].Coord[2]:=M.Coord[2].Coord[1]; M.Coord[2].Coord[1]:=f;
+   f:=M.Coord[1].Coord[3]; M.Coord[1].Coord[3]:=M.Coord[3].Coord[1]; M.Coord[3].Coord[1]:=f;
+   f:=M.Coord[2].Coord[3]; M.Coord[2].Coord[3]:=M.Coord[3].Coord[2]; M.Coord[3].Coord[2]:=f;
 end;
 
 // InvertMatrix
@@ -5519,15 +5517,15 @@ begin
       fstp  dword ptr [edx+40]
    end;
 {$else}
-   dest[0][0]:=scale*src[0][0];
-   dest[1][0]:=scale*src[0][1];
-   dest[2][0]:=scale*src[0][2];
-   dest[0][1]:=scale*src[1][0];
-   dest[1][1]:=scale*src[1][1];
-   dest[2][1]:=scale*src[1][2];
-   dest[0][2]:=scale*src[2][0];
-   dest[1][2]:=scale*src[2][1];
-   dest[2][2]:=scale*src[2][2];
+   dest.Coord[0].Coord[0]:=scale*src.Coord[0].Coord[0];
+   dest.Coord[1].Coord[0]:=scale*src.Coord[0].Coord[1];
+   dest.Coord[2].Coord[0]:=scale*src.Coord[0].Coord[2];
+   dest.Coord[0].Coord[1]:=scale*src.Coord[1].Coord[0];
+   dest.Coord[1].Coord[1]:=scale*src.Coord[1].Coord[1];
+   dest.Coord[2].Coord[1]:=scale*src.Coord[1].Coord[2];
+   dest.Coord[0].Coord[2]:=scale*src.Coord[2].Coord[0];
+   dest.Coord[1].Coord[2]:=scale*src.Coord[2].Coord[1];
+   dest.Coord[2].Coord[2]:=scale*src.Coord[2].Coord[2];
 {$endif}
 end;
 
@@ -5537,7 +5535,7 @@ function AnglePreservingMatrixInvert(const mat : TMatrix) : TMatrix;
 var
    scale : Single;
 begin
-   scale:=VectorNorm(mat[0]);
+   scale:=VectorNorm(mat.Coord[0]);
 
    // Is the submatrix A singular?
    if Abs(scale)<EPSILON then begin
@@ -5550,24 +5548,24 @@ begin
    end;
 
    // Fill in last row while CPU is busy with the division
-   Result[0][3]:=0.0;
-   Result[1][3]:=0.0;
-   Result[2][3]:=0.0;
-   Result[3][3]:=1.0;
+   Result.Coord[0].Coord[3]:=0.0;
+   Result.Coord[1].Coord[3]:=0.0;
+   Result.Coord[2].Coord[3]:=0.0;
+   Result.Coord[3].Coord[3]:=1.0;
 
    // Transpose and scale the 3 by 3 upper-left submatrix
    transpose_scale_m33(mat, Result, scale);
 
    // Calculate -(transpose(A) / s*s) C
-   Result[3][0]:=-( Result[0][0]*mat[3][0]
-                   +Result[1][0]*mat[3][1]
-                   +Result[2][0]*mat[3][2]);
-   Result[3][1]:=-( Result[0][1]*mat[3][0]
-                   +Result[1][1]*mat[3][1]
-                   +Result[2][1]*mat[3][2]);
-   Result[3][2]:=-( Result[0][2]*mat[3][0]
-                   +Result[1][2]*mat[3][1]
-                   +Result[2][2]*mat[3][2]);
+   Result.Coord[3].Coord[0]:=-( Result.Coord[0].Coord[0]*mat.Coord[3].Coord[0]
+                   +Result.Coord[1].Coord[0]*mat.Coord[3].Coord[1]
+                   +Result.Coord[2].Coord[0]*mat.Coord[3].Coord[2]);
+   Result.Coord[3].Coord[1]:=-( Result.Coord[0].Coord[1]*mat.Coord[3].Coord[0]
+                   +Result.Coord[1].Coord[1]*mat.Coord[3].Coord[1]
+                   +Result.Coord[2].Coord[1]*mat.Coord[3].Coord[2]);
+   Result.Coord[3].Coord[2]:=-( Result.Coord[0].Coord[2]*mat.Coord[3].Coord[0]
+                   +Result.Coord[1].Coord[2]*mat.Coord[3].Coord[1]
+                   +Result.Coord[2].Coord[2]*mat.Coord[3].Coord[2]);
 end;
 
 // MatrixDecompose
@@ -5583,27 +5581,27 @@ begin
   Result:=False;
   locmat:=M;
   // normalize the matrix
-  if locmat[W, W] = 0 then Exit;
+  if locmat.W.W = 0 then Exit;
   for I:=0 to 3 do
     for J:=0 to 3 do
-      locmat[I, J]:=locmat[I, J] / locmat[W, W];
+      locmat.Coord[I].Coord[J]:=locmat.Coord[I].Coord[J] / locmat.W.W;
 
   // pmat is used to solve for perspective, but it also provides
   // an easy way to test for singularity of the upper 3x3 component.
 
   pmat:=locmat;
-  for I:=0 to 2 do pmat[I, W]:=0;
-  pmat[W, W]:=1;
+  for I:=0 to 2 do pmat.Coord[I].Coord[W]:=0;
+  pmat.W.W:=1;
 
   if MatrixDeterminant(pmat) = 0 then Exit;
 
   // First, isolate perspective.  This is the messiest.
-  if (locmat[X, W] <> 0) or (locmat[Y, W] <> 0) or (locmat[Z, W] <> 0) then begin
+  if (locmat.X.W <> 0) or (locmat.Y.W <> 0) or (locmat.Z.W <> 0) then begin
     // prhs is the right hand side of the equation.
-    prhs[X]:=locmat[X, W];
-    prhs[Y]:=locmat[Y, W];
-    prhs[Z]:=locmat[Z, W];
-    prhs[W]:=locmat[W, W];
+    prhs.Coord[X]:=locmat.X.W;
+    prhs.Coord[Y]:=locmat.Y.W;
+    prhs.Coord[Z]:=locmat.Z.W;
+    prhs.Coord[W]:=locmat.W.W;
 
     // Solve the equation by inverting pmat and multiplying
     // prhs by the inverse.  (This is the easiest way, not
@@ -5615,16 +5613,16 @@ begin
     psol:=VectorTransform(prhs, invpmat);
 
     // stuff the answer away
-    Tran[ttPerspectiveX]:=psol[X];
-    Tran[ttPerspectiveY]:=psol[Y];
-    Tran[ttPerspectiveZ]:=psol[Z];
-    Tran[ttPerspectiveW]:=psol[W];
+    Tran[ttPerspectiveX]:=psol.Coord[X];
+    Tran[ttPerspectiveY]:=psol.Coord[Y];
+    Tran[ttPerspectiveZ]:=psol.Coord[Z];
+    Tran[ttPerspectiveW]:=psol.Coord[W];
 
     // clear the perspective partition
-    locmat[X, W]:=0;
-    locmat[Y, W]:=0;
-    locmat[Z, W]:=0;
-    locmat[W, W]:=1;
+    locmat.X.W:=0;
+    locmat.Y.W:=0;
+    locmat.Z.W:=0;
+    locmat.W.W:=1;
   end else begin
     // no perspective
     Tran[ttPerspectiveX]:=0;
@@ -5635,14 +5633,14 @@ begin
 
   // next take care of translation (easy)
   for I:=0 to 2 do begin
-    Tran[TTransType(Ord(ttTranslateX) + I)]:=locmat[W, I];
-    locmat[W, I]:=0;
+    Tran[TTransType(Ord(ttTranslateX) + I)]:=locmat.Coord[W].Coord[I];
+    locmat.Coord[W].Coord[I]:=0;
   end;
 
   // now get scale and shear
-  SetVector(row0, locmat[0]);
-  SetVector(row1, locmat[1]);
-  SetVector(row2, locmat[2]);
+  SetVector(row0, locmat.Coord[0]);
+  SetVector(row1, locmat.Coord[1]);
+  SetVector(row2, locmat.Coord[2]);
 
   // compute X scale factor and normalize first row
   Tran[ttScaleX]:=VectorNorm(row0);
@@ -5684,12 +5682,12 @@ begin
   end;
 
   // now, get the rotations out, as described in the gem
-  Tran[ttRotateY]:=VectorGeometry.ArcSin(-row0[Z]);
+  Tran[ttRotateY]:=VectorGeometry.ArcSin(-row0.Coord[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
-    Tran[ttRotateX]:=ArcTan2(row1[Z], row2[Z]);
-    Tran[ttRotateZ]:=ArcTan2(row0[Y], row0[X]);
+    Tran[ttRotateX]:=ArcTan2(row1.Coord[Z], row2.Coord[Z]);
+    Tran[ttRotateZ]:=ArcTan2(row0.Coord[Y], row0.Coord[X]);
   end else begin
-    tran[ttRotateX]:=ArcTan2(row1[X], row1[Y]);
+    tran[ttRotateX]:=ArcTan2(row1.Coord[X], row1.Coord[Y]);
     tran[ttRotateZ]:=0;
   end;
   // All done!
@@ -5737,7 +5735,7 @@ end;
 function PlaneMake(const point, normal : TAffineVector) : THmgPlane;
 begin
    PAffineVector(@Result)^:=normal;
-   Result[3]:=-VectorDotProduct(point, normal);
+   Result.Coord[3]:=-VectorDotProduct(point, normal);
 end;
 
 // PlaneMake (point + normal, hmg)
@@ -5745,7 +5743,7 @@ end;
 function PlaneMake(const point, normal : TVector) : THmgPlane;
 begin
    PAffineVector(@Result)^:=PAffineVector(@normal)^;
-   Result[3]:=-VectorDotProduct(PAffineVector(@point)^, PAffineVector(@normal)^);
+   Result.Coord[3]:=-VectorDotProduct(PAffineVector(@point)^, PAffineVector(@normal)^);
 end;
 
 // PlaneMake (3 points, affine)
@@ -5753,7 +5751,7 @@ end;
 function PlaneMake(const p1, p2, p3 : TAffineVector) : THmgPlane;
 begin
    CalcPlaneNormal(p1, p2, p3, PAffineVector(@Result)^);
-   Result[3]:=-VectorDotProduct(p1, PAffineVector(@Result)^);
+   Result.Coord[3]:=-VectorDotProduct(p1, PAffineVector(@Result)^);
 end;
 
 // PlaneMake (3 points, hmg)
@@ -5761,17 +5759,17 @@ end;
 function PlaneMake(const p1, p2, p3 : TVector) : THmgPlane;
 begin
    CalcPlaneNormal(p1, p2, p3, PAffineVector(@Result)^);
-   Result[3]:=-VectorDotProduct(p1, PAffineVector(@Result)^);
+   Result.Coord[3]:=-VectorDotProduct(p1, PAffineVector(@Result)^);
 end;
 
 // SetPlane
 //
 procedure SetPlane(var dest : TDoubleHmgPlane; const src : THmgPlane);
 begin
-   dest[0]:=src[0];
-   dest[1]:=src[1];
-   dest[2]:=src[2];
-   dest[3]:=src[3];
+   dest.Coord[0]:=src.Coord[0];
+   dest.Coord[1]:=src.Coord[1];
+   dest.Coord[2]:=src.Coord[2];
+   dest.Coord[3]:=src.Coord[3];
 end;
 
 // NormalizePlane
@@ -5780,7 +5778,7 @@ procedure NormalizePlane(var plane : THmgPlane);
 var
    n : Single;
 begin
-   n:=RSqrt(plane[0]*plane[0]+plane[1]*plane[1]+plane[2]*plane[2]);
+   n:=RSqrt(plane.Coord[0]*plane.Coord[0]+plane.Coord[1]*plane.Coord[1]+plane.Coord[2]*plane.Coord[2]);
    ScaleVector(plane, n);
 end;
 
@@ -5804,7 +5802,7 @@ asm
       FADDP
 {$else}
 begin
-   Result:=plane[0]*point[0]+plane[1]*point[1]+plane[2]*point[2]+plane[3];
+   Result:=plane.Coord[0]*point.Coord[0]+plane.Coord[1]*point.Coord[1]+plane.Coord[2]*point.Coord[2]+plane.Coord[3];
 {$endif}
 end;
 
@@ -5828,7 +5826,7 @@ asm
       FADDP
 {$else}
 begin
-   Result:=plane[0]*point[0]+plane[1]*point[1]+plane[2]*point[2]+plane[3];
+   Result:=plane.Coord[0]*point.Coord[0]+plane.Coord[1]*point.Coord[1]+plane.Coord[2]*point.Coord[2]+plane.Coord[3];
 {$endif}
 end;
 
@@ -5870,18 +5868,18 @@ end;
 //
 function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single;
 begin
-   Result:= (point[0]-planePoint[0])*planeNormal[0]
-           +(point[1]-planePoint[1])*planeNormal[1]
-           +(point[2]-planePoint[2])*planeNormal[2];
+   Result:= (point.Coord[0]-planePoint.Coord[0])*planeNormal.Coord[0]
+           +(point.Coord[1]-planePoint.Coord[1])*planeNormal.Coord[1]
+           +(point.Coord[2]-planePoint.Coord[2])*planeNormal.Coord[2];
 end;
 
 // PointPlaneDistance
 //
 function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single;
 begin
-   Result:= (point[0]-planePoint[0])*planeNormal[0]
-           +(point[1]-planePoint[1])*planeNormal[1]
-           +(point[2]-planePoint[2])*planeNormal[2];
+   Result:= (point.Coord[0]-planePoint.Coord[0])*planeNormal.Coord[0]
+           +(point.Coord[1]-planePoint.Coord[1])*planeNormal.Coord[1]
+           +(point.Coord[2]-planePoint.Coord[2])*planeNormal.Coord[2];
 end;
 
 // PointLineClosestPoint
@@ -6069,9 +6067,9 @@ var
    n : Integer;
 begin
    n:=Length(Imag);
-   if n>=1 then Result.ImagPart[0]:=Imag[0];
-   if n>=2 then Result.ImagPart[1]:=Imag[1];
-   if n>=3 then Result.ImagPart[2]:=Imag[2];
+   if n>=1 then Result.ImagPart.Coord[0]:=Imag[0];
+   if n>=2 then Result.ImagPart.Coord[1]:=Imag[1];
+   if n>=3 then Result.ImagPart.Coord[2]:=Imag[2];
    Result.RealPart:=real;
 {$endif}
 end;
@@ -6080,9 +6078,9 @@ end;
 //
 function QuaternionConjugate(const Q : TQuaternion) : TQuaternion;
 begin
-   Result.ImagPart[0]:=-Q.ImagPart[0];
-   Result.ImagPart[1]:=-Q.ImagPart[1];
-   Result.ImagPart[2]:=-Q.ImagPart[2];
+   Result.ImagPart.Coord[0]:=-Q.ImagPart.Coord[0];
+   Result.ImagPart.Coord[1]:=-Q.ImagPart.Coord[1];
+   Result.ImagPart.Coord[2]:=-Q.ImagPart.Coord[2];
    Result.RealPart:=Q.RealPart;
 end;
 
@@ -6122,35 +6120,35 @@ function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
 var
    traceMat, s, invS : Double;
 begin
-   traceMat := 1 + mat[0,0] + mat[1,1] + mat[2,2];
+   traceMat := 1 + mat.Coord[0].Coord[0] + mat.Coord[1].Coord[1] + mat.Coord[2].Coord[2];
    if traceMat>EPSILON2 then begin
       s:=Sqrt(traceMat)*2;
       invS:=1/s;
-      Result.ImagPart[0]:=(mat[1,2]-mat[2,1])*invS;
-      Result.ImagPart[1]:=(mat[2,0]-mat[0,2])*invS;
-      Result.ImagPart[2]:=(mat[0,1]-mat[1,0])*invS;
-      Result.RealPart   :=0.25*s;
-   end else if (mat[0,0]>mat[1,1]) and (mat[0,0]>mat[2,2]) then begin  // Row 0:
-      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat[0,0]-mat[1,1]-mat[2,2]))*2;
+      Result.ImagPart.Coord[0]:=(mat.Coord[1].Coord[2]-mat.Coord[2].Coord[1])*invS;
+      Result.ImagPart.Coord[1]:=(mat.Coord[2].Coord[0]-mat.Coord[0].Coord[2])*invS;
+      Result.ImagPart.Coord[2]:=(mat.Coord[0].Coord[1]-mat.Coord[1].Coord[0])*invS;
+      Result.RealPart         :=0.25*s;
+   end else if (mat.Coord[0].Coord[0]>mat.Coord[1].Coord[1]) and (mat.Coord[0].Coord[0]>mat.Coord[2].Coord[2]) then begin  // Row 0:
+      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat.Coord[0].Coord[0]-mat.Coord[1].Coord[1]-mat.Coord[2].Coord[2]))*2;
       invS:=1/s;
-      Result.ImagPart[0]:=0.25*s;
-      Result.ImagPart[1]:=(mat[0,1]+mat[1,0])*invS;
-      Result.ImagPart[2]:=(mat[2,0]+mat[0,2])*invS;
-      Result.RealPart   :=(mat[1,2]-mat[2,1])*invS;
-   end else if (mat[1,1]>mat[2,2]) then begin  // Row 1:
-      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat[1,1]-mat[0,0]-mat[2,2]))*2;
+      Result.ImagPart.Coord[0]:=0.25*s;
+      Result.ImagPart.Coord[1]:=(mat.Coord[0].Coord[1]+mat.Coord[1].Coord[0])*invS;
+      Result.ImagPart.Coord[2]:=(mat.Coord[2].Coord[0]+mat.Coord[0].Coord[2])*invS;
+      Result.RealPart         :=(mat.Coord[1].Coord[2]-mat.Coord[2].Coord[1])*invS;
+   end else if (mat.Coord[1].Coord[1]>mat.Coord[2].Coord[2]) then begin  // Row 1:
+      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat.Coord[1].Coord[1]-mat.Coord[0].Coord[0]-mat.Coord[2].Coord[2]))*2;
       invS:=1/s;
-      Result.ImagPart[0]:=(mat[0,1]+mat[1,0])*invS;
-      Result.ImagPart[1]:=0.25*s;
-      Result.ImagPart[2]:=(mat[1,2]+mat[2,1])*invS;
-      Result.RealPart   :=(mat[2,0]-mat[0,2])*invS;
+      Result.ImagPart.Coord[0]:=(mat.Coord[0].Coord[1]+mat.Coord[1].Coord[0])*invS;
+      Result.ImagPart.Coord[1]:=0.25*s;
+      Result.ImagPart.Coord[2]:=(mat.Coord[1].Coord[2]+mat.Coord[2].Coord[1])*invS;
+      Result.RealPart         :=(mat.Coord[2].Coord[0]-mat.Coord[0].Coord[2])*invS;
    end else begin  // Row 2:
-      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat[2,2]-mat[0,0]-mat[1,1]))*2;
+      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat.Coord[2].Coord[2]-mat.Coord[0].Coord[0]-mat.Coord[1].Coord[1]))*2;
       invS:=1/s;
-      Result.ImagPart[0]:=(mat[2,0]+mat[0,2])*invS;
-      Result.ImagPart[1]:=(mat[1,2]+mat[2,1])*invS;
-      Result.ImagPart[2]:=0.25*s;
-      Result.RealPart   :=(mat[0,1]-mat[1,0])*invS;
+      Result.ImagPart.Coord[0]:=(mat.Coord[2].Coord[0]+mat.Coord[0].Coord[2])*invS;
+      Result.ImagPart.Coord[1]:=(mat.Coord[1].Coord[2]+mat.Coord[2].Coord[1])*invS;
+      Result.ImagPart.Coord[2]:=0.25*s;
+      Result.RealPart         :=(mat.Coord[0].Coord[1]-mat.Coord[1].Coord[0])*invS;
    end;
    NormalizeQuaternion(Result);
 end;
@@ -6161,14 +6159,14 @@ function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
 var
    Temp : TQuaternion;
 begin
-   Temp.RealPart:=qL.RealPart * qR.RealPart - qL.ImagPart[X] * qR.ImagPart[X]
-                  - qL.ImagPart[Y] * qR.ImagPart[Y] - qL.ImagPart[Z] * qR.ImagPart[Z];
-   Temp.ImagPart[X]:=qL.RealPart * qR.ImagPart[X] + qL.ImagPart[X] * qR.RealPart
-                     + qL.ImagPart[Y] * qR.ImagPart[Z] - qL.ImagPart[Z] * qR.ImagPart[Y];
-   Temp.ImagPart[Y]:=qL.RealPart * qR.ImagPart[Y] + qL.ImagPart[Y] * qR.RealPart
-                     + qL.ImagPart[Z] * qR.ImagPart[X] - qL.ImagPart[X] * qR.ImagPart[Z];
-   Temp.ImagPart[Z]:=qL.RealPart * qR.ImagPart[Z] + qL.ImagPart[Z] * qR.RealPart
-                     + qL.ImagPart[X] * qR.ImagPart[Y] - qL.ImagPart[Y] * qR.ImagPart[X];
+   Temp.RealPart:=qL.RealPart * qR.RealPart - qL.ImagPart.Coord[X] * qR.ImagPart.Coord[X]
+                  - qL.ImagPart.Coord[Y] * qR.ImagPart.Coord[Y] - qL.ImagPart.Coord[Z] * qR.ImagPart.Coord[Z];
+   Temp.ImagPart.Coord[X]:=qL.RealPart * qR.ImagPart.Coord[X] + qL.ImagPart.Coord[X] * qR.RealPart
+                     + qL.ImagPart.Coord[Y] * qR.ImagPart.Coord[Z] - qL.ImagPart.Coord[Z] * qR.ImagPart.Coord[Y];
+   Temp.ImagPart.Coord[Y]:=qL.RealPart * qR.ImagPart.Coord[Y] + qL.ImagPart.Coord[Y] * qR.RealPart
+                     + qL.ImagPart.Coord[Z] * qR.ImagPart.Coord[X] - qL.ImagPart.Coord[X] * qR.ImagPart.Coord[Z];
+   Temp.ImagPart.Coord[Z]:=qL.RealPart * qR.ImagPart.Coord[Z] + qL.ImagPart.Coord[Z] * qR.RealPart
+                     + qL.ImagPart.Coord[X] * qR.ImagPart.Coord[Y] - qL.ImagPart.Coord[Y] * qR.ImagPart.Coord[X];
    Result:=Temp;
 end;
 
@@ -6180,9 +6178,9 @@ var
 begin
    NormalizeQuaternion(quat);
    w := quat.RealPart;
-   x := quat.ImagPart[0];
-   y := quat.ImagPart[1];
-   z := quat.ImagPart[2];
+   x := quat.ImagPart.Coord[0];
+   y := quat.ImagPart.Coord[1];
+   z := quat.ImagPart.Coord[2];
    xx := x * x;
    xy := x * y;
    xz := x * z;
@@ -6192,22 +6190,22 @@ begin
    yw := y * w;
    zz := z * z;
    zw := z * w;
-   Result[0, 0] := 1 - 2 * ( yy + zz );
-   Result[1, 0] :=     2 * ( xy - zw );
-   Result[2, 0] :=     2 * ( xz + yw );
-   Result[3, 0] := 0;
-   Result[0, 1] :=     2 * ( xy + zw );
-   Result[1, 1] := 1 - 2 * ( xx + zz );
-   Result[2, 1] :=     2 * ( yz - xw );
-   Result[3, 1] := 0;
-   Result[0, 2] :=     2 * ( xz - yw );
-   Result[1, 2] :=     2 * ( yz + xw );
-   Result[2, 2] := 1 - 2 * ( xx + yy );
-   Result[3, 2] := 0;
-   Result[0, 3] := 0;
-   Result[1, 3] := 0;
-   Result[2, 3] := 0;
-   Result[3, 3] := 1;
+   Result.Coord[0].Coord[0] := 1 - 2 * ( yy + zz );
+   Result.Coord[1].Coord[0] :=     2 * ( xy - zw );
+   Result.Coord[2].Coord[0] :=     2 * ( xz + yw );
+   Result.Coord[3].Coord[0] := 0;
+   Result.Coord[0].Coord[1] :=     2 * ( xy + zw );
+   Result.Coord[1].Coord[1] := 1 - 2 * ( xx + zz );
+   Result.Coord[2].Coord[1] :=     2 * ( yz - xw );
+   Result.Coord[3].Coord[1] := 0;
+   Result.Coord[0].Coord[2] :=     2 * ( xz - yw );
+   Result.Coord[1].Coord[2] :=     2 * ( yz + xw );
+   Result.Coord[2].Coord[2] := 1 - 2 * ( xx + yy );
+   Result.Coord[3].Coord[2] := 0;
+   Result.Coord[0].Coord[3] := 0;
+   Result.Coord[1].Coord[3] := 0;
+   Result.Coord[2].Coord[3] := 0;
+   Result.Coord[3].Coord[3] := 1;
 end;
 
 //QuaternionToAffineMatrix
@@ -6218,9 +6216,9 @@ var
 begin
    NormalizeQuaternion(quat);
    w := quat.RealPart;
-   x := quat.ImagPart[0];
-   y := quat.ImagPart[1];
-   z := quat.ImagPart[2];
+   x := quat.ImagPart.Coord[0];
+   y := quat.ImagPart.Coord[1];
+   z := quat.ImagPart.Coord[2];
    xx := x * x;
    xy := x * y;
    xz := x * z;
@@ -6230,15 +6228,15 @@ begin
    yw := y * w;
    zz := z * z;
    zw := z * w;
-   Result[0, 0] := 1 - 2 * ( yy + zz );
-   Result[1, 0] :=     2 * ( xy - zw );
-   Result[2, 0] :=     2 * ( xz + yw );
-   Result[0, 1] :=     2 * ( xy + zw );
-   Result[1, 1] := 1 - 2 * ( xx + zz );
-   Result[2, 1] :=     2 * ( yz - xw );
-   Result[0, 2] :=     2 * ( xz - yw );
-   Result[1, 2] :=     2 * ( yz + xw );
-   Result[2, 2] := 1 - 2 * ( xx + yy );
+   Result.Coord[0].Coord[0] := 1 - 2 * ( yy + zz );
+   Result.Coord[1].Coord[0] :=     2 * ( xy - zw );
+   Result.Coord[2].Coord[0] :=     2 * ( xz + yw );
+   Result.Coord[0].Coord[1] :=     2 * ( xy + zw );
+   Result.Coord[1].Coord[1] := 1 - 2 * ( xx + zz );
+   Result.Coord[2].Coord[1] :=     2 * ( yz - xw );
+   Result.Coord[0].Coord[2] :=     2 * ( xz - yw );
+   Result.Coord[1].Coord[2] :=     2 * ( yz + xw );
+   Result.Coord[2].Coord[2] := 1 - 2 * ( xx + yy );
 end;
 
 // QuaternionFromAngleAxis
@@ -6250,9 +6248,9 @@ begin
    SinCos(DegToRad(angle*cOneDotFive), s, c);
 	Result.RealPart:=c;
    f:=s/VectorLength(axis);
-   Result.ImagPart[0]:=axis[0]*f;
-   Result.ImagPart[1]:=axis[1]*f;
-   Result.ImagPart[2]:=axis[2]*f;
+   Result.ImagPart.Coord[0]:=axis.Coord[0]*f;
+   Result.ImagPart.Coord[1]:=axis.Coord[1]*f;
+   Result.ImagPart.Coord[2]:=axis.Coord[2]*f;
 end;
 
 // QuaternionFromRollPitchYaw
@@ -6329,18 +6327,18 @@ procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVe
 var
    s, invS : Single;
 begin
-   s:=Q.ImagPart[X]*Q.ImagPart[X]+Q.ImagPart[Y]*Q.ImagPart[Y];
+   s:=Q.ImagPart.Coord[X]*Q.ImagPart.Coord[X]+Q.ImagPart.Coord[Y]*Q.ImagPart.Coord[Y];
    if s=0 then
       SetAffineVector(ArcFrom, 0, 1, 0)
    else begin
       invS:=RSqrt(s);
-      SetAffineVector(ArcFrom, -Q.ImagPart[Y]*invS, Q.ImagPart[X]*invS, 0);
+      SetAffineVector(ArcFrom, -Q.ImagPart.Coord[Y]*invS, Q.ImagPart.Coord[X]*invS, 0);
    end;
-   ArcTo[X]:=Q.RealPart*ArcFrom[X]-Q.ImagPart[Z]*ArcFrom[Y];
-   ArcTo[Y]:=Q.RealPart*ArcFrom[Y]+Q.ImagPart[Z]*ArcFrom[X];
-   ArcTo[Z]:=Q.ImagPart[X]*ArcFrom[Y]-Q.ImagPart[Y]*ArcFrom[X];
+   ArcTo.Coord[X]:=Q.RealPart*ArcFrom.Coord[X]-Q.ImagPart.Coord[Z]*ArcFrom.Coord[Y];
+   ArcTo.Coord[Y]:=Q.RealPart*ArcFrom.Coord[Y]+Q.ImagPart.Coord[Z]*ArcFrom.Coord[X];
+   ArcTo.Coord[Z]:=Q.ImagPart.Coord[X]*ArcFrom.Coord[Y]-Q.ImagPart.Coord[Y]*ArcFrom.Coord[X];
    if Q.RealPart<0 then
-      SetAffineVector(ArcFrom, -ArcFrom[X], -ArcFrom[Y], 0);
+      SetAffineVector(ArcFrom, -ArcFrom.Coord[X], -ArcFrom.Coord[Y], 0);
 end;
 
 // LnXP1
@@ -7142,10 +7140,10 @@ procedure RandomPointOnSphere(var p : TAffineVector);
 var
    t, w : Single;
 begin
-   p[2]:=2*Random-1;
+   p.Coord[2]:=2*Random-1;
    t:=2*PI*Random;
-   w:=Sqrt(1-p[2]*p[2]);
-   SinCos(t, w, p[1], p[0]);
+   w:=Sqrt(1-p.Coord[2]*p.Coord[2]);
+   SinCos(t, w, p.Coord[1], p.Coord[0]);
 end;
 
 // RoundInt (single)
@@ -7403,18 +7401,18 @@ end;
 //
 function IsInCube(const p, d : TAffineVector) : Boolean; overload;
 begin
-   Result:=    ((p[0]>=-d[0]) and (p[0]<=d[0]))
-           and ((p[1]>=-d[1]) and (p[1]<=d[1]))
-           and ((p[2]>=-d[2]) and (p[2]<=d[2]));
+   Result:=    ((p.Coord[0]>=-d.Coord[0]) and (p.Coord[0]<=d.Coord[0]))
+           and ((p.Coord[1]>=-d.Coord[1]) and (p.Coord[1]<=d.Coord[1]))
+           and ((p.Coord[2]>=-d.Coord[2]) and (p.Coord[2]<=d.Coord[2]));
 end;
 
 // IsInCube (hmg)
 //
 function IsInCube(const p, d : TVector) : Boolean; overload;
 begin
-   Result:=    ((p[0]>=-d[0]) and (p[0]<=d[0]))
-           and ((p[1]>=-d[1]) and (p[1]<=d[1]))
-           and ((p[2]>=-d[2]) and (p[2]<=d[2]));
+   Result:=    ((p.Coord[0]>=-d.Coord[0]) and (p.Coord[0]<=d.Coord[0]))
+           and ((p.Coord[1]>=-d.Coord[1]) and (p.Coord[1]<=d.Coord[1]))
+           and ((p.Coord[2]>=-d.Coord[2]) and (p.Coord[2]<=d.Coord[2]));
 end;
 
 // MinFloat (single)
@@ -7910,8 +7908,8 @@ end;
 //
 function TriangleSignedArea(const p1, p2, p3 : TAffineVector) : Single;
 begin
-   Result:=0.5*( (p2[0]-p1[0])*(p3[1]-p1[1])
-                -(p3[0]-p1[0])*(p2[1]-p1[1]));
+   Result:=0.5*( (p2.Coord[0]-p1.Coord[0])*(p3.Coord[1]-p1.Coord[1])
+                -(p3.Coord[0]-p1.Coord[0])*(p2.Coord[1]-p1.Coord[1]));
 end;
 
 // PolygonSignedArea
@@ -7927,8 +7925,8 @@ begin
       p2:=@(p^[1]);
       for i:=2 to nSides-1 do begin
          p3:=@(p^[i]);
-         Result:=Result+(p2^[0]-p1^[0])*(p3^[1]-p1^[1])
-                       -(p3^[0]-p1^[0])*(p2^[1]-p1^[1]);
+         Result:=Result+(p2^.Coord[0]-p1^.Coord[0])*(p3^.Coord[1]-p1^.Coord[1])
+                       -(p3^.Coord[0]-p1^.Coord[0])*(p2^.Coord[1]-p1^.Coord[1]);
          p2:=p3;
       end;
       Result:=Result*0.5;
@@ -8124,38 +8122,38 @@ end;
 //
 function MaxXYZComponent(const v : TVector) : Single; overload;
 begin
-   Result:=MaxFloat(v[0], v[1], v[2]);
+   Result:=MaxFloat(v.Coord[0], v.Coord[1], v.Coord[2]);
 end;
 
 // MaxXYZComponent
 //
 function MaxXYZComponent(const v : TAffineVector): Single; overload;
 begin
-   Result:=MaxFloat(v[0], v[1], v[2]);
+   Result:=MaxFloat(v.Coord[0], v.Coord[1], v.Coord[2]);
 end;
 
 // MinXYZComponent
 //
 function MinXYZComponent(const v : TVector) : Single; overload;
 begin
-   if v[0]<=v[1] then
-      if v[0]<=v[2] then
-         Result:=v[0]
-      else if v[2]<=v[1] then
-         Result:=v[2]
-      else Result:=v[1]
-   else if v[1]<=v[2] then
-      Result:=v[1]
-   else if v[2]<=v[0] then
-      Result:=v[2]
-   else Result:=v[0];
+   if v.Coord[0]<=v.Coord[1] then
+      if v.Coord[0]<=v.Coord[2] then
+         Result:=v.Coord[0]
+      else if v.Coord[2]<=v.Coord[1] then
+         Result:=v.Coord[2]
+      else Result:=v.Coord[1]
+   else if v.Coord[1]<=v.Coord[2] then
+      Result:=v.Coord[1]
+   else if v.Coord[2]<=v.Coord[0] then
+      Result:=v.Coord[2]
+   else Result:=v.Coord[0];
 end;
 
 // MinXYZComponent
 //
 function MinXYZComponent(const v : TAffineVector) : Single; overload;
 begin
-   Result:=MinFloat(v[0], v[1], v[2]);
+   Result:=MinFloat(v.Coord[0], v.Coord[1], v.Coord[2]);
 end;
 
 // MaxAbsXYZComponent
@@ -8178,38 +8176,38 @@ end;
 //
 procedure MaxVector(var v : TVector; const v1 : TVector);
 begin
-   if v1[0]>v[0] then v[0]:=v1[0];
-   if v1[1]>v[1] then v[1]:=v1[1];
-   if v1[2]>v[2] then v[2]:=v1[2];
-   if v1[3]>v[3] then v[3]:=v1[3];
+   if v1.Coord[0]>v.Coord[0] then v.Coord[0]:=v1.Coord[0];
+   if v1.Coord[1]>v.Coord[1] then v.Coord[1]:=v1.Coord[1];
+   if v1.Coord[2]>v.Coord[2] then v.Coord[2]:=v1.Coord[2];
+   if v1.Coord[3]>v.Coord[3] then v.Coord[3]:=v1.Coord[3];
 end;
 
 // MaxVector (affine)
 //
 procedure MaxVector(var v : TAffineVector; const v1 : TAffineVector); overload;
 begin
-   if v1[0]>v[0] then v[0]:=v1[0];
-   if v1[1]>v[1] then v[1]:=v1[1];
-   if v1[2]>v[2] then v[2]:=v1[2];
+   if v1.Coord[0]>v.Coord[0] then v.Coord[0]:=v1.Coord[0];
+   if v1.Coord[1]>v.Coord[1] then v.Coord[1]:=v1.Coord[1];
+   if v1.Coord[2]>v.Coord[2] then v.Coord[2]:=v1.Coord[2];
 end;
 
 // MinVector (hmg)
 //
 procedure MinVector(var v : TVector; const v1 : TVector);
 begin
-   if v1[0]<v[0] then v[0]:=v1[0];
-   if v1[1]<v[1] then v[1]:=v1[1];
-   if v1[2]<v[2] then v[2]:=v1[2];
-   if v1[3]<v[3] then v[3]:=v1[3];
+   if v1.Coord[0]<v.Coord[0] then v.Coord[0]:=v1.Coord[0];
+   if v1.Coord[1]<v.Coord[1] then v.Coord[1]:=v1.Coord[1];
+   if v1.Coord[2]<v.Coord[2] then v.Coord[2]:=v1.Coord[2];
+   if v1.Coord[3]<v.Coord[3] then v.Coord[3]:=v1.Coord[3];
 end;
 
 // MinVector (affine)
 //
 procedure MinVector(var v : TAffineVector; const v1 : TAffineVector);
 begin
-   if v1[0]<v[0] then v[0]:=v1[0];
-   if v1[1]<v[1] then v[1]:=v1[1];
-   if v1[2]<v[2] then v[2]:=v1[2];
+   if v1.Coord[0]<v.Coord[0] then v.Coord[0]:=v1.Coord[0];
+   if v1.Coord[1]<v.Coord[1] then v.Coord[1]:=v1.Coord[1];
+   if v1.Coord[2]<v.Coord[2] then v.Coord[2]:=v1.Coord[2];
 end;
 
 // SortArrayAscending (extended)
@@ -8281,9 +8279,9 @@ end;
 //
 function MakeAffineDblVector(var V: array of Double): TAffineDblVector;
 begin
-   Result[0]:=V[0];
-   Result[1]:=V[1];
-   Result[2]:=V[2];
+   Result.Coord[0]:=V[0];
+   Result.Coord[1]:=V[1];
+   Result.Coord[2]:=V[2];
 end;
 
 // MakeDblVector
@@ -8305,10 +8303,10 @@ asm
               POP EDI
 {$else}
 begin
-   Result[0]:=V[0];
-   Result[1]:=V[1];
-   Result[2]:=V[2];
-   Result[3]:=V[3];
+   Result.Coord[0]:=V[0];
+   Result.Coord[1]:=V[1];
+   Result.Coord[2]:=V[2];
+   Result.Coord[3]:=V[3];
 {$endif}
 end;
 
@@ -8408,32 +8406,32 @@ var
    I: Integer;
 begin
    // see if we are only rotating about a single Axis
-   if Abs(Angles[X]) < EPSILON then begin
-      if Abs(Angles[Y]) < EPSILON then begin
-         SetVector(Result, 0, 0, 1, Angles[Z]);
+   if Abs(Angles.Coord[X]) < EPSILON then begin
+      if Abs(Angles.Coord[Y]) < EPSILON then begin
+         SetVector(Result, 0, 0, 1, Angles.Coord[Z]);
          Exit;
-      end else if Abs(Angles[Z]) < EPSILON then begin
-         SetVector(Result, 0, 1, 0, Angles[Y]);
+      end else if Abs(Angles.Coord[Z]) < EPSILON then begin
+         SetVector(Result, 0, 1, 0, Angles.Coord[Y]);
          Exit;
       end
-   end else if (Abs(Angles[Y]) < EPSILON) and (Abs(Angles[Z]) < EPSILON) then begin
-      SetVector(Result, 1, 0, 0, Angles[X]);
+   end else if (Abs(Angles.Coord[Y]) < EPSILON) and (Abs(Angles.Coord[Z]) < EPSILON) then begin
+      SetVector(Result, 1, 0, 0, Angles.Coord[X]);
       Exit;
    end;
 
    // make the rotation matrix
    Axis1:=XVector;
-   M:=CreateRotationMatrix(Axis1, Angles[X]);
+   M:=CreateRotationMatrix(Axis1, Angles.Coord[X]);
 
    Axis2:=YVector;
-   M2:=CreateRotationMatrix(Axis2, Angles[Y]);
+   M2:=CreateRotationMatrix(Axis2, Angles.Coord[Y]);
    M1:=MatrixMultiply(M, M2);
 
    Axis2:=ZVector;
-   M2:=CreateRotationMatrix(Axis2, Angles[Z]);
+   M2:=CreateRotationMatrix(Axis2, Angles.Coord[Z]);
    M:=MatrixMultiply(M1, M2);
 
-   cost:=((M[X, X] + M[Y, Y] + M[Z, Z])-1) / 2;
+   cost:=((M.X.X + M.Y.Y + M.Z.Z)-1) / 2;
    if cost < -1 then
       cost:=-1
    else if cost > 1 - EPSILON then begin
@@ -8443,9 +8441,9 @@ begin
    end;
 
    cost1:=1 - cost;
-   SetVector(Result, sqrt((M[X, X]-cost) / cost1),
-                     sqrt((M[Y, Y]-cost) / cost1),
-                     sqrt((M[Z, Z]-cost) / cost1),
+   SetVector(Result, sqrt((M.X.X-cost) / cost1),
+                     sqrt((M.Y.Y-cost) / cost1),
+                     sqrt((M.Z.Z-cost) / cost1),
                      arccos(cost));
 
    sint:=2 * Sqrt(1 - cost * cost); // This is actually 2 Sin(t)
@@ -8455,13 +8453,13 @@ begin
      if (I and 1) > 1 then s1:=-1 else s1:=1;
      if (I and 2) > 1 then s2:=-1 else s2:=1;
      if (I and 4) > 1 then s3:=-1 else s3:=1;
-     if (Abs(s1 * Result[X] * sint-M[Y, Z] + M[Z, Y]) < EPSILON2)
-        and (Abs(s2 * Result[Y] * sint-M[Z, X] + M[X, Z]) < EPSILON2)
-        and (Abs(s3 * Result[Z] * sint-M[X, Y] + M[Y, X]) < EPSILON2) then begin
+     if (Abs(s1 * Result.Coord[X] * sint-M.Y.Z + M.Z.Y) < EPSILON2)
+        and (Abs(s2 * Result.Coord[Y] * sint-M.Z.X + M.X.Z) < EPSILON2)
+        and (Abs(s3 * Result.Coord[Z] * sint-M.X.Y + M.Y.X) < EPSILON2) then begin
            // We found the right combination of signs
-           Result[X]:=Result[X] * s1;
-           Result[Y]:=Result[Y] * s2;
-           Result[Z]:=Result[Z] * s3;
+           Result.Coord[X]:=Result.Coord[X] * s1;
+           Result.Coord[Y]:=Result.Coord[Y] * s2;
+           Result.Coord[Z]:=Result.Coord[Z] * s3;
            Exit;
          end;
    end;
@@ -8504,9 +8502,9 @@ begin
    if bflip then t:=-t;
 
    // interpolate
-   Result.ImagPart[X]:=beta * QStart.ImagPart[X] + t * QEnd.ImagPart[X];
-   Result.ImagPart[Y]:=beta * QStart.ImagPart[Y] + t * QEnd.ImagPart[Y];
-   Result.ImagPart[Z]:=beta * QStart.ImagPart[Z] + t * QEnd.ImagPart[Z];
+   Result.ImagPart.Coord[X]:=beta * QStart.ImagPart.Coord[X] + t * QEnd.ImagPart.Coord[X];
+   Result.ImagPart.Coord[Y]:=beta * QStart.ImagPart.Coord[Y] + t * QEnd.ImagPart.Coord[Y];
+   Result.ImagPart.Coord[Z]:=beta * QStart.ImagPart.Coord[Z] + t * QEnd.ImagPart.Coord[Z];
    Result.RealPart:=beta * QStart.RealPart + t * QEnd.RealPart;
 end;
 
@@ -8520,21 +8518,21 @@ var
 // absolute rotations
 begin
    // calc cosine
-   cosom:= source.ImagPart[0]*dest.ImagPart[0]
-          +source.ImagPart[1]*dest.ImagPart[1]
-          +source.ImagPart[2]*dest.ImagPart[2]
+   cosom:= source.ImagPart.Coord[0]*dest.ImagPart.Coord[0]
+          +source.ImagPart.Coord[1]*dest.ImagPart.Coord[1]
+          +source.ImagPart.Coord[2]*dest.ImagPart.Coord[2]
 	       +source.RealPart   *dest.RealPart;
    // adjust signs (if necessary)
    if cosom<0 then begin
       cosom := -cosom;
-      to1[0] := - dest.ImagPart[0];
-      to1[1] := - dest.ImagPart[1];
-      to1[2] := - dest.ImagPart[2];
+      to1[0] := - dest.ImagPart.Coord[0];
+      to1[1] := - dest.ImagPart.Coord[1];
+      to1[2] := - dest.ImagPart.Coord[2];
       to1[3] := - dest.RealPart;
    end else begin
-      to1[0] := dest.ImagPart[0];
-      to1[1] := dest.ImagPart[1];
-      to1[2] := dest.ImagPart[2];
+      to1[0] := dest.ImagPart.Coord[0];
+      to1[1] := dest.ImagPart.Coord[1];
+      to1[2] := dest.ImagPart.Coord[2];
       to1[3] := dest.RealPart;
    end;
    // calculate coefficients
@@ -8549,9 +8547,9 @@ begin
       scale1:=t;
    end;
    // calculate final values
-   Result.ImagPart[0] := scale0 * source.ImagPart[0] + scale1 * to1[0];
-   Result.ImagPart[1] := scale0 * source.ImagPart[1] + scale1 * to1[1];
-   Result.ImagPart[2] := scale0 * source.ImagPart[2] + scale1 * to1[2];
+   Result.ImagPart.Coord[0] := scale0 * source.ImagPart.Coord[0] + scale1 * to1[0];
+   Result.ImagPart.Coord[1] := scale0 * source.ImagPart.Coord[1] + scale1 * to1[1];
+   Result.ImagPart.Coord[2] := scale0 * source.ImagPart.Coord[2] + scale1 * to1[2];
    Result.RealPart := scale0 * source.RealPart + scale1 * to1[3];
    NormalizeQuaternion(Result);
 end;
@@ -8573,10 +8571,10 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result[0]:=V[0];
-   Result[1]:=V[1];
-   Result[2]:=V[2];
-   Result[3]:=V[3];
+   Result.Coord[0]:=V.Coord[0];
+   Result.Coord[1]:=V.Coord[1];
+   Result.Coord[2]:=V.Coord[2];
+   Result.Coord[3]:=V.Coord[3];
    {$HINTS ON}
 {$endif}
 end;
@@ -8596,9 +8594,9 @@ asm
 {$else}
 begin
    {$HINTS OFF}
-   Result[0]:=V[0];
-   Result[1]:=V[1];
-   Result[2]:=V[2];
+   Result.Coord[0]:=V.Coord[0];
+   Result.Coord[1]:=V.Coord[1];
+   Result.Coord[2]:=V.Coord[2];
    {$HINTS ON}
 {$endif}
 end;
@@ -8617,9 +8615,9 @@ asm
               FSTP QWORD PTR [EDX + 8]
 {$else}
 begin
-   Result[0]:=V[0];
-   Result[1]:=V[1];
-   Result[2]:=V[2];
+   Result.Coord[0]:=V.Coord[0];
+   Result.Coord[1]:=V.Coord[1];
+   Result.Coord[2]:=V.Coord[2];
 {$endif}
 end;
 
@@ -8639,10 +8637,10 @@ asm
               FSTP QWORD PTR [EDX + 12]
 {$else}
 begin
-   Result[0]:=V[0];
-   Result[1]:=V[1];
-   Result[2]:=V[2];
-   Result[3]:=V[3];
+   Result.Coord[0]:=V.Coord[0];
+   Result.Coord[1]:=V.Coord[1];
+   Result.Coord[2]:=V.Coord[2];
+   Result.Coord[3]:=V.Coord[3];
 {$endif}
 end;
 
@@ -8652,7 +8650,7 @@ end;
 //
 function Turn(const Matrix: TMatrix; Angle: Single): TMatrix;
 begin
-   Result:=MatrixMultiply(Matrix, CreateRotationMatrix(AffineVectorMake(Matrix[1][0], Matrix[1][1], Matrix[1][2]), Angle));
+   Result:=MatrixMultiply(Matrix, CreateRotationMatrix(AffineVectorMake(Matrix.Coord[1].Coord[0], Matrix.Coord[1].Coord[1], Matrix.Coord[1].Coord[2]), Angle));
 end;
 
 // Turn (direction)
@@ -8666,7 +8664,7 @@ end;
 //
 function Pitch(const Matrix: TMatrix; Angle: Single): TMatrix;
 begin
-   Result:=MatrixMultiply(Matrix, CreateRotationMatrix(AffineVectorMake(Matrix[0][0], Matrix[0][1], Matrix[0][2]), Angle));
+   Result:=MatrixMultiply(Matrix, CreateRotationMatrix(AffineVectorMake(Matrix.Coord[0].Coord[0], Matrix.Coord[0].Coord[1], Matrix.Coord[0].Coord[2]), Angle));
 end;
 
 // Pitch (direction)
@@ -8680,7 +8678,7 @@ end;
 //
 function Roll(const Matrix: TMatrix; Angle: Single): TMatrix;
 begin
-   Result:=MatrixMultiply(Matrix, CreateRotationMatrix(AffineVectorMake(Matrix[2][0], Matrix[2][1], Matrix[2][2]), Angle));
+   Result:=MatrixMultiply(Matrix, CreateRotationMatrix(AffineVectorMake(Matrix.Coord[2].Coord[0], Matrix.Coord[2].Coord[1], Matrix.Coord[2].Coord[2]), Angle));
 end;
 
 // Roll (direction)
@@ -8719,10 +8717,10 @@ function RayCastPlaneXZIntersect(const rayStart, rayVector : TVector;
 var
    t : Single;
 begin
-   if rayVector[1]=0 then
+   if rayVector.Coord[1]=0 then
       Result:=False
    else begin
-      t:=(rayStart[1]-planeY)/rayVector[1];
+      t:=(rayStart.Coord[1]-planeY)/rayVector.Coord[1];
       if t<0 then begin
          if Assigned(intersectPoint) then
             VectorCombine(rayStart, rayVector, t, intersectPoint^);
@@ -8888,40 +8886,40 @@ function ExtractFrustumFromModelViewProjection(const modelViewProj : TMatrix) : 
 begin
    with Result do begin
       // extract left plane
-      pLeft[0]:=modelViewProj[0][3]+modelViewProj[0][0];
-      pLeft[1]:=modelViewProj[1][3]+modelViewProj[1][0];
-      pLeft[2]:=modelViewProj[2][3]+modelViewProj[2][0];
-      pLeft[3]:=modelViewProj[3][3]+modelViewProj[3][0];
+      pLeft.Coord[0]:=modelViewProj.Coord[0].Coord[3]+modelViewProj.Coord[0].Coord[0];
+      pLeft.Coord[1]:=modelViewProj.Coord[1].Coord[3]+modelViewProj.Coord[1].Coord[0];
+      pLeft.Coord[2]:=modelViewProj.Coord[2].Coord[3]+modelViewProj.Coord[2].Coord[0];
+      pLeft.Coord[3]:=modelViewProj.Coord[3].Coord[3]+modelViewProj.Coord[3].Coord[0];
       NormalizePlane(pLeft);
       // extract top plane
-      pTop[0]:=modelViewProj[0][3]-modelViewProj[0][1];
-      pTop[1]:=modelViewProj[1][3]-modelViewProj[1][1];
-      pTop[2]:=modelViewProj[2][3]-modelViewProj[2][1];
-      pTop[3]:=modelViewProj[3][3]-modelViewProj[3][1];
+      pTop.Coord[0]:=modelViewProj.Coord[0].Coord[3]-modelViewProj.Coord[0].Coord[1];
+      pTop.Coord[1]:=modelViewProj.Coord[1].Coord[3]-modelViewProj.Coord[1].Coord[1];
+      pTop.Coord[2]:=modelViewProj.Coord[2].Coord[3]-modelViewProj.Coord[2].Coord[1];
+      pTop.Coord[3]:=modelViewProj.Coord[3].Coord[3]-modelViewProj.Coord[3].Coord[1];
       NormalizePlane(pTop);
       // extract right plane
-      pRight[0]:=modelViewProj[0][3]-modelViewProj[0][0];
-      pRight[1]:=modelViewProj[1][3]-modelViewProj[1][0];
-      pRight[2]:=modelViewProj[2][3]-modelViewProj[2][0];
-      pRight[3]:=modelViewProj[3][3]-modelViewProj[3][0];
+      pRight.Coord[0]:=modelViewProj.Coord[0].Coord[3]-modelViewProj.Coord[0].Coord[0];
+      pRight.Coord[1]:=modelViewProj.Coord[1].Coord[3]-modelViewProj.Coord[1].Coord[0];
+      pRight.Coord[2]:=modelViewProj.Coord[2].Coord[3]-modelViewProj.Coord[2].Coord[0];
+      pRight.Coord[3]:=modelViewProj.Coord[3].Coord[3]-modelViewProj.Coord[3].Coord[0];
       NormalizePlane(pRight);
       // extract bottom plane
-      pBottom[0]:=modelViewProj[0][3]+modelViewProj[0][1];
-      pBottom[1]:=modelViewProj[1][3]+modelViewProj[1][1];
-      pBottom[2]:=modelViewProj[2][3]+modelViewProj[2][1];
-      pBottom[3]:=modelViewProj[3][3]+modelViewProj[3][1];
+      pBottom.Coord[0]:=modelViewProj.Coord[0].Coord[3]+modelViewProj.Coord[0].Coord[1];
+      pBottom.Coord[1]:=modelViewProj.Coord[1].Coord[3]+modelViewProj.Coord[1].Coord[1];
+      pBottom.Coord[2]:=modelViewProj.Coord[2].Coord[3]+modelViewProj.Coord[2].Coord[1];
+      pBottom.Coord[3]:=modelViewProj.Coord[3].Coord[3]+modelViewProj.Coord[3].Coord[1];
       NormalizePlane(pBottom);
       // extract far plane
-      pFar[0]:=modelViewProj[0][3]-modelViewProj[0][2];
-      pFar[1]:=modelViewProj[1][3]-modelViewProj[1][2];
-      pFar[2]:=modelViewProj[2][3]-modelViewProj[2][2];
-      pFar[3]:=modelViewProj[3][3]-modelViewProj[3][2];
+      pFar.Coord[0]:=modelViewProj.Coord[0].Coord[3]-modelViewProj.Coord[0].Coord[2];
+      pFar.Coord[1]:=modelViewProj.Coord[1].Coord[3]-modelViewProj.Coord[1].Coord[2];
+      pFar.Coord[2]:=modelViewProj.Coord[2].Coord[3]-modelViewProj.Coord[2].Coord[2];
+      pFar.Coord[3]:=modelViewProj.Coord[3].Coord[3]-modelViewProj.Coord[3].Coord[2];
       NormalizePlane(pFar);
       // extract near plane
-      pNear[0]:=modelViewProj[0][3]+modelViewProj[0][2];
-      pNear[1]:=modelViewProj[1][3]+modelViewProj[1][2];
-      pNear[2]:=modelViewProj[2][3]+modelViewProj[2][2];
-      pNear[3]:=modelViewProj[3][3]+modelViewProj[3][2];
+      pNear.Coord[0]:=modelViewProj.Coord[0].Coord[3]+modelViewProj.Coord[0].Coord[2];
+      pNear.Coord[1]:=modelViewProj.Coord[1].Coord[3]+modelViewProj.Coord[1].Coord[2];
+      pNear.Coord[2]:=modelViewProj.Coord[2].Coord[3]+modelViewProj.Coord[2].Coord[2];
+      pNear.Coord[3]:=modelViewProj.Coord[3].Coord[3]+modelViewProj.Coord[3].Coord[2];
       NormalizePlane(pNear);
    end;
 end;
@@ -8968,32 +8966,32 @@ function MakeParallelProjectionMatrix(const plane : THmgPlane;
 var
    dot, invDot : Single;
 begin
-   dot:=plane[0]*dir[0]+plane[1]*dir[1]+plane[2]*dir[2];
+   dot:=plane.Coord[0]*dir.Coord[0]+plane.Coord[1]*dir.Coord[1]+plane.Coord[2]*dir.Coord[2];
    if Abs(dot)<1e-5 then begin
       Result:=IdentityHmgMatrix;
       Exit;
    end;
    invDot:=1/dot;
 
-   Result[0][0]:=(plane[1]*dir[1]+plane[2]*dir[2])*invDot;
-   Result[1][0]:=(-plane[1]*dir[0])*invDot;
-   Result[2][0]:=(-plane[2]*dir[0])*invDot;
-   Result[3][0]:=(-plane[3]*dir[0])*invDot;
+   Result.Coord[0].Coord[0]:=(plane.Coord[1]*dir.Coord[1]+plane.Coord[2]*dir.Coord[2])*invDot;
+   Result.Coord[1].Coord[0]:=(-plane.Coord[1]*dir.Coord[0])*invDot;
+   Result.Coord[2].Coord[0]:=(-plane.Coord[2]*dir.Coord[0])*invDot;
+   Result.Coord[3].Coord[0]:=(-plane.Coord[3]*dir.Coord[0])*invDot;
 
-   Result[0][1]:=(-plane[0]*dir[1])*invDot;
-   Result[1][1]:=(plane[0]*dir[0]+plane[2]*dir[2])*invDot;
-   Result[2][1]:=(-plane[2]*dir[1])*invDot;
-   Result[3][1]:=(-plane[3]*dir[1])*invDot;
+   Result.Coord[0].Coord[1]:=(-plane.Coord[0]*dir.Coord[1])*invDot;
+   Result.Coord[1].Coord[1]:=(plane.Coord[0]*dir.Coord[0]+plane.Coord[2]*dir.Coord[2])*invDot;
+   Result.Coord[2].Coord[1]:=(-plane.Coord[2]*dir.Coord[1])*invDot;
+   Result.Coord[3].Coord[1]:=(-plane.Coord[3]*dir.Coord[1])*invDot;
 
-   Result[0][2]:=(-plane[0]*dir[2])*invDot;
-   Result[1][2]:=(-plane[1]*dir[2])*invDot;
-   Result[2][2]:=(plane[0]*dir[0]+plane[1]*dir[1])*invDot;
-   Result[3][2]:=(-plane[3]*dir[2])*invDot;
+   Result.Coord[0].Coord[2]:=(-plane.Coord[0]*dir.Coord[2])*invDot;
+   Result.Coord[1].Coord[2]:=(-plane.Coord[1]*dir.Coord[2])*invDot;
+   Result.Coord[2].Coord[2]:=(plane.Coord[0]*dir.Coord[0]+plane.Coord[1]*dir.Coord[1])*invDot;
+   Result.Coord[3].Coord[2]:=(-plane.Coord[3]*dir.Coord[2])*invDot;
 
-   Result[0][3]:=0;
-   Result[1][3]:=0;
-   Result[2][3]:=0;
-   Result[3][3]:=1;
+   Result.Coord[0].Coord[3]:=0;
+   Result.Coord[1].Coord[3]:=0;
+   Result.Coord[2].Coord[3]:=0;
+   Result.Coord[3].Coord[3]:=1;
 end;
 
 
@@ -9004,35 +9002,35 @@ var
    planeNormal3, dot : Single;
 begin
 	// Find the last coefficient by back substitutions
-	planeNormal3:=-( planeNormal[0]*planePoint[0]
-                   +planeNormal[1]*planePoint[1]
-                   +planeNormal[2]*planePoint[2]);
+	planeNormal3:=-( planeNormal.Coord[0]*planePoint.Coord[0]
+                   +planeNormal.Coord[1]*planePoint.Coord[1]
+                   +planeNormal.Coord[2]*planePoint.Coord[2]);
 	// Dot product of plane and light position
-	dot:= planeNormal[0]*lightPos[0]
-        +planeNormal[1]*lightPos[1]
-        +planeNormal[2]*lightPos[2]
-        +planeNormal3  *lightPos[3];
+	dot:= planeNormal.Coord[0]*lightPos.Coord[0]
+        +planeNormal.Coord[1]*lightPos.Coord[1]
+        +planeNormal.Coord[2]*lightPos.Coord[2]
+        +planeNormal3  *lightPos.Coord[3];
 	// Now do the projection
 	// First column
-   Result[0][0]:= dot - lightPos[0] * planeNormal[0];
-   Result[1][0]:=     - lightPos[0] * planeNormal[1];
-   Result[2][0]:=     - lightPos[0] * planeNormal[2];
-   Result[3][0]:=     - lightPos[0] * planeNormal3;
+        Result.Coord[0].Coord[0]:= dot - lightPos.Coord[0] * planeNormal.Coord[0];
+        Result.Coord[1].Coord[0]:=     - lightPos.Coord[0] * planeNormal.Coord[1];
+        Result.Coord[2].Coord[0]:=     - lightPos.Coord[0] * planeNormal.Coord[2];
+        Result.Coord[3].Coord[0]:=     - lightPos.Coord[0] * planeNormal3;
 	// Second column
-	Result[0][1]:=     - lightPos[1] * planeNormal[0];
-	Result[1][1]:= dot - lightPos[1] * planeNormal[1];
-	Result[2][1]:=     - lightPos[1] * planeNormal[2];
-	Result[3][1]:=     - lightPos[1] * planeNormal3;
+	Result.Coord[0].Coord[1]:=     - lightPos.Coord[1] * planeNormal.Coord[0];
+	Result.Coord[1].Coord[1]:= dot - lightPos.Coord[1] * planeNormal.Coord[1];
+	Result.Coord[2].Coord[1]:=     - lightPos.Coord[1] * planeNormal.Coord[2];
+	Result.Coord[3].Coord[1]:=     - lightPos.Coord[1] * planeNormal3;
 	// Third Column
-	Result[0][2]:=     - lightPos[2] * planeNormal[0];
-	Result[1][2]:=     - lightPos[2] * planeNormal[1];
-	Result[2][2]:= dot - lightPos[2] * planeNormal[2];
-	Result[3][2]:=     - lightPos[2] * planeNormal3;
+	Result.Coord[0].Coord[2]:=     - lightPos.Coord[2] * planeNormal.Coord[0];
+	Result.Coord[1].Coord[2]:=     - lightPos.Coord[2] * planeNormal.Coord[1];
+	Result.Coord[2].Coord[2]:= dot - lightPos.Coord[2] * planeNormal.Coord[2];
+	Result.Coord[3].Coord[2]:=     - lightPos.Coord[2] * planeNormal3;
 	// Fourth Column
-	Result[0][3]:=     - lightPos[3] * planeNormal[0];
-	Result[1][3]:=     - lightPos[3] * planeNormal[1];
-	Result[2][3]:=     - lightPos[3] * planeNormal[2];
-	Result[3][3]:= dot - lightPos[3] * planeNormal3;
+	Result.Coord[0].Coord[3]:=     - lightPos.Coord[3] * planeNormal.Coord[0];
+	Result.Coord[1].Coord[3]:=     - lightPos.Coord[3] * planeNormal.Coord[1];
+	Result.Coord[2].Coord[3]:=     - lightPos.Coord[3] * planeNormal.Coord[2];
+	Result.Coord[3].Coord[3]:= dot - lightPos.Coord[3] * planeNormal3;
 end;
 
 // MakeReflectionMatrix
@@ -9044,25 +9042,25 @@ begin
    // Precalcs
    pv2:=2*VectorDotProduct(planePoint, planeNormal);
    // 1st column
-   Result[0][0]:=1-2*Sqr(planeNormal[0]);
-   Result[0][1]:=-2*planeNormal[0]*planeNormal[1];
-   Result[0][2]:=-2*planeNormal[0]*planeNormal[2];
-   Result[0][3]:=0;
+   Result.Coord[0].Coord[0]:=1-2*Sqr(planeNormal.Coord[0]);
+   Result.Coord[0].Coord[1]:=-2*planeNormal.Coord[0]*planeNormal.Coord[1];
+   Result.Coord[0].Coord[2]:=-2*planeNormal.Coord[0]*planeNormal.Coord[2];
+   Result.Coord[0].Coord[3]:=0;
    // 2nd column
-   Result[1][0]:=-2*planeNormal[1]*planeNormal[0];
-   Result[1][1]:=1-2*Sqr(planeNormal[1]);
-   Result[1][2]:=-2*planeNormal[1]*planeNormal[2];
-   Result[1][3]:=0;
+   Result.Coord[1].Coord[0]:=-2*planeNormal.Coord[1]*planeNormal.Coord[0];
+   Result.Coord[1].Coord[1]:=1-2*Sqr(planeNormal.Coord[1]);
+   Result.Coord[1].Coord[2]:=-2*planeNormal.Coord[1]*planeNormal.Coord[2];
+   Result.Coord[1].Coord[3]:=0;
    // 3rd column
-   Result[2][0]:=-2*planeNormal[2]*planeNormal[0];
-   Result[2][1]:=-2*planeNormal[2]*planeNormal[1];
-   Result[2][2]:=1-2*Sqr(planeNormal[2]);
-   Result[2][3]:=0;
+   Result.Coord[2].Coord[0]:=-2*planeNormal.Coord[2]*planeNormal.Coord[0];
+   Result.Coord[2].Coord[1]:=-2*planeNormal.Coord[2]*planeNormal.Coord[1];
+   Result.Coord[2].Coord[2]:=1-2*Sqr(planeNormal.Coord[2]);
+   Result.Coord[2].Coord[3]:=0;
    // 4th column
-   Result[3][0]:=pv2*planeNormal[0];
-   Result[3][1]:=pv2*planeNormal[1];
-   Result[3][2]:=pv2*planeNormal[2];
-   Result[3][3]:=1;
+   Result.Coord[3].Coord[0]:=pv2*planeNormal.Coord[0];
+   Result.Coord[3].Coord[1]:=pv2*planeNormal.Coord[1];
+   Result.Coord[3].Coord[2]:=pv2*planeNormal.Coord[2];
+   Result.Coord[3].Coord[3]:=1;
 end;
 
 // PackRotationMatrix
@@ -9077,13 +9075,13 @@ begin
    NormalizeQuaternion(q);
    {$HINTS OFF}
    if q.RealPart<0 then begin
-      Result[0]:=Round(-q.ImagPart[0]*cFact);
-      Result[1]:=Round(-q.ImagPart[1]*cFact);
-      Result[2]:=Round(-q.ImagPart[2]*cFact);
+      Result[0]:=Round(-q.ImagPart.Coord[0]*cFact);
+      Result[1]:=Round(-q.ImagPart.Coord[1]*cFact);
+      Result[2]:=Round(-q.ImagPart.Coord[2]*cFact);
    end else begin
-      Result[0]:=Round(q.ImagPart[0]*cFact);
-      Result[1]:=Round(q.ImagPart[1]*cFact);
-      Result[2]:=Round(q.ImagPart[2]*cFact);
+      Result[0]:=Round(q.ImagPart.Coord[0]*cFact);
+      Result[1]:=Round(q.ImagPart.Coord[1]*cFact);
+      Result[2]:=Round(q.ImagPart.Coord[2]*cFact);
    end;
    {$HINTS ON}
 end;
@@ -9096,9 +9094,9 @@ var
 const
    cFact : Single = 1/32767;
 begin
-   q.ImagPart[0]:=packedMatrix[0]*cFact;
-   q.ImagPart[1]:=packedMatrix[1]*cFact;
-   q.ImagPart[2]:=packedMatrix[2]*cFact;
+   q.ImagPart.Coord[0]:=packedMatrix[0]*cFact;
+   q.ImagPart.Coord[1]:=packedMatrix[1]*cFact;
+   q.ImagPart.Coord[2]:=packedMatrix[2]*cFact;
    q.RealPart:=1-VectorNorm(q.ImagPart);
    if q.RealPart<0 then
       q.RealPart:=0

@@ -7,6 +7,7 @@
    systems. Room for optimisations.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>30/04/03 - EG - Hyperbolic functions moved to VectorGeometry.pas
       <li>30/04/03 - ARH - Remove math.pas dependency
       <li>24/04/03 - ARH - Double versions added
@@ -282,8 +283,8 @@ end;
 procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single);
 begin
    r:=VectorLength(v);
-   theta:=ArcTan2(v[1], v[0]);
-   phi:=ArcCos(v[2]/r);
+   theta:=ArcTan2(v.Coord[1], v.Coord[0]);
+   phi:=ArcCos(v.Coord[2]/r);
 end;
 
 // ----- Cartesian_Spherical ---------------------------------------------------

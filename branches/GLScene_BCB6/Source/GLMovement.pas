@@ -5,6 +5,9 @@
    <b>Historique : </b><font size=-1><ul>
       <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)  
       <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Replace direct access of some properties by
+                               a getter and a setter
       <li>20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
       <li>14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
                            use of standard classes and documentation
@@ -34,8 +37,11 @@ type
     procedure SetRotationAsVector(const Value: TVector);
     procedure SetScaleAsVector(const Value: TVector);
 
+    function GetPositionCoordinate(const Index: Integer): TGLFloat;
     procedure SetPositionCoordinate(Index: integer; AValue: TGLFloat);
+    function GetRotationCoordinate(const Index: Integer): TGLFloat;
     procedure SetRotationCoordinate(Index: integer; AValue: TGLFloat);
+    function GetScaleCoordinate(const Index: Integer): TGLFloat;
     procedure SetScaleCoordinate(Index: integer; AValue: TGLFloat);
 
     procedure SetSpeed(Value: single);
@@ -60,20 +66,20 @@ type
     property RotationAsVector: TVector Read FRotation Write SetRotationAsVector;
     property ScaleAsVector: TVector Read FScale Write SetScaleAsVector;
   published
-    property X: TGLFloat index 0 Read FPosition[0] Write SetPositionCoordinate;
-    property Y: TGLFloat index 1 Read FPosition[1] Write SetPositionCoordinate;
-    property Z: TGLFloat index 2 Read FPosition[2] Write SetPositionCoordinate;
+    property X: TGLFloat index 0 Read GetPositionCoordinate Write SetPositionCoordinate;
+    property Y: TGLFloat index 1 Read GetPositionCoordinate Write SetPositionCoordinate;
+    property Z: TGLFloat index 2 Read GetPositionCoordinate Write SetPositionCoordinate;
 
     //Rotation.X means PitchAngle;
     //Rotation.Y means TurnAngle;
     //Rotation.Z means RollAngle;
-    property PitchAngle: TGLFloat index 0 Read FRotation[0] Write SetRotationCoordinate;
-    property TurnAngle: TGLFloat index 1 Read FRotation[1] Write SetRotationCoordinate;
-    property RollAngle: TGLFloat index 2 Read FRotation[2] Write SetRotationCoordinate;
+    property PitchAngle: TGLFloat index 0 Read GetRotationCoordinate Write SetRotationCoordinate;
+    property TurnAngle: TGLFloat index 1 Read GetRotationCoordinate Write SetRotationCoordinate;
+    property RollAngle: TGLFloat index 2 Read GetRotationCoordinate Write SetRotationCoordinate;
 
-    property ScaleX: TGLFloat index 0 Read FScale[0] Write SetScaleCoordinate;
-    property ScaleY: TGLFloat index 1 Read FScale[1] Write SetScaleCoordinate;
-    property ScaleZ: TGLFloat index 2 Read FScale[2] Write SetScaleCoordinate;
+    property ScaleX: TGLFloat index 0 Read GetScaleCoordinate Write SetScaleCoordinate;
+    property ScaleY: TGLFloat index 1 Read GetScaleCoordinate Write SetScaleCoordinate;
+    property ScaleZ: TGLFloat index 2 Read GetScaleCoordinate Write SetScaleCoordinate;
 
     property Speed: single Read FSpeed Write SetSpeed;
   end;
@@ -417,22 +423,46 @@ begin
     (VectorEquals(FScale, aNode.FScale));
 end;
 
+function TGLPathNode.GetPositionCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FPosition.Coord[Index];
+end;
+
 procedure TGLPathNode.SetPositionCoordinate(Index: integer; AValue: TGLFloat);
 begin
-  FPosition[Index] := AValue;
+  if (FPosition.Coord[Index] <> AValue) then
+  begin
+    FPosition.Coord[Index] := AValue;
     (Collection as TGLPathNodes).NotifyChange;
+  end;
+end;
+
+function TGLPathNode.GetRotationCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FRotation.Coord[Index];
 end;
 
 procedure TGLPathNode.SetRotationCoordinate(Index: integer; AValue: TGLFloat);
 begin
-  FRotation[Index] := AValue;
+  if (FRotation.Coord[Index] <> AValue) then
+  begin
+    FRotation.Coord[Index] := AValue;
     (Collection as TGLPathNodes).NotifyChange;
+  end;
+end;
+
+function TGLPathNode.GetScaleCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FScale.Coord[Index];
 end;
 
 procedure TGLPathNode.SetScaleCoordinate(Index: integer; AValue: TGLFloat);
 begin
-  FScale[Index] := AValue;
+  if (FScale.Coord[Index] <> AValue) then
+  begin
+    FScale.Coord[Index] := AValue;
     (Collection as TGLPathNodes).NotifyChange;
+  end;
 end;
 
 procedure TGLPathNode.SetSpeed(Value: single);
@@ -910,15 +940,15 @@ begin
     GetMem(sz, sizeof(single) * FNodes.Count);
     for I := 0 to FNodes.Count - 1 do
     begin
-      PFloatArray(x)[I]  := Nodes[I].FPosition[0];
-      PFloatArray(y)[I]  := Nodes[I].FPosition[1];
-      PFloatArray(z)[I]  := Nodes[I].FPosition[2];
-      PFloatArray(p)[I]  := Nodes[I].FRotation[0];
-      PFloatArray(t)[I]  := Nodes[I].FRotation[1];
-      PFloatArray(r)[I]  := Nodes[I].FRotation[2];
-      PFloatArray(sx)[I] := Nodes[I].FScale[0];
-      PFloatArray(sy)[I] := Nodes[I].FScale[1];
-      PFloatArray(sz)[I] := Nodes[I].FScale[2];
+      PFloatArray(x)[I]  := Nodes[I].FPosition.Coord[0];
+      PFloatArray(y)[I]  := Nodes[I].FPosition.Coord[1];
+      PFloatArray(z)[I]  := Nodes[I].FPosition.Coord[2];
+      PFloatArray(p)[I]  := Nodes[I].FRotation.Coord[0];
+      PFloatArray(t)[I]  := Nodes[I].FRotation.Coord[1];
+      PFloatArray(r)[I]  := Nodes[I].FRotation.Coord[2];
+      PFloatArray(sx)[I] := Nodes[I].FScale.Coord[0];
+      PFloatArray(sy)[I] := Nodes[I].FScale.Coord[1];
+      PFloatArray(sz)[I] := Nodes[I].FScale.Coord[2];
     end;
     MotionSplineControl   := TCubicSpline.Create(x, y, z, nil, FNodes.Count);
     RotationSplineControl := TCubicSpline.Create(p, t, r, nil, FNodes.Count);

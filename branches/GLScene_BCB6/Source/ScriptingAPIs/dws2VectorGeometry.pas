@@ -158,7 +158,7 @@ var
   i : Integer;
 begin
   for i:=0 to 3 do
-    Info.Element([i]).Value:=vec[i];
+    Info.Element([i]).Value:=vec.Coord[i];
 end;
 
 function GetMatrixFromInfo(Info : IInfo) : TMatrix;
@@ -166,7 +166,7 @@ var
   i : Integer;
 begin
   for i:=0 to 3 do
-    Result[i]:=VectorMake(Info.Element([i]).Element([0]).Value,
+    Result.Coord[i]:=VectorMake(Info.Element([i]).Element([0]).Value,
                           Info.Element([i]).Element([1]).Value,
                           Info.Element([i]).Element([2]).Value,
                           Info.Element([i]).Element([3]).Value);
@@ -178,7 +178,7 @@ var
 begin
   for i:=0 to 3 do
     for j:=0 to 3 do
-      Info.Element([i]).Element([j]).Value:=mat[i][j];
+      Info.Element([i]).Element([j]).Value:=mat.Coord[i].Coord[j];
 end;
 
 // ----------

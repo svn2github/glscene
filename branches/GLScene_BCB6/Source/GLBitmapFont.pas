@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/06/04 - NelC - Added TGLFlatText.Assign
       <li>01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
@@ -839,14 +840,14 @@ begin
    end;
    // precalcs
    if Assigned(position) then
-      MakePoint(vTopLeft, position[0]+AlignmentAdjustement(1), position[1]+LayoutAdjustement, 0)
+      MakePoint(vTopLeft, position.Coord[0]+AlignmentAdjustement(1), position.Coord[1]+LayoutAdjustement, 0)
    else MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
    deltaV:=-(CharHeight+VSpace);
    if reverseY then
-      vBottomRight[1]:=vTopLeft[1]+CharHeight
-   else vBottomRight[1]:=vTopLeft[1]-CharHeight;
-   vBottomRight[2]:=0;
-   vBottomRight[3]:=1;
+      vBottomRight.Coord[1]:=vTopLeft.Coord[1]+CharHeight
+   else vBottomRight.Coord[1]:=vTopLeft.Coord[1]-CharHeight;
+   vBottomRight.Coord[2]:=0;
+   vBottomRight.Coord[3]:=1;
    spaceDeltaH:=GetCharWidth(#32)+HSpaceFix;
    // set states
 	glEnable(GL_TEXTURE_2D);
@@ -865,33 +866,33 @@ begin
          #0..#12, #14..#31 : ; // ignore
          #13 : begin
             if Assigned(position) then
-               vTopLeft[0]:=position[0]+AlignmentAdjustement(i+1)
-            else vTopLeft[0]:=AlignmentAdjustement(i+1);
-            vTopLeft[1]:=vTopLeft[1]+deltaV;
+               vTopLeft.Coord[0]:=position.Coord[0]+AlignmentAdjustement(i+1)
+            else vTopLeft.Coord[0]:=AlignmentAdjustement(i+1);
+            vTopLeft.Coord[1]:=vTopLeft.Coord[1]+deltaV;
             if reverseY then
-               vBottomRight[1]:=vTopLeft[1]+CharHeight
-            else vBottomRight[1]:=vTopLeft[1]-CharHeight;
+               vBottomRight.Coord[1]:=vTopLeft.Coord[1]+CharHeight
+            else vBottomRight.Coord[1]:=vTopLeft.Coord[1]-CharHeight;
          end;
-         #32 : vTopLeft[0]:=vTopLeft[0]+spaceDeltaH;
+         #32 : vTopLeft.Coord[0]:=vTopLeft.Coord[0]+spaceDeltaH;
       else
          deltaH:=GetCharWidth(currentChar);
          if deltaH>0 then begin
             GetCharTexCoords(currentChar, topLeft, bottomRight);
-            vBottomRight[0]:=vTopLeft[0]+deltaH;
+            vBottomRight.Coord[0]:=vTopLeft.Coord[0]+deltaH;
 
             glTexCoord2fv(@topLeft);
             glVertex4fv(@vTopLeft);
 
             glTexCoord2f(topLeft.S, bottomRight.T);
-            glVertex2f(vTopLeft[0], vBottomRight[1]);
+            glVertex2f(vTopLeft.Coord[0], vBottomRight.Coord[1]);
 
             glTexCoord2fv(@bottomRight);
             glVertex4fv(@vBottomRight);
 
             glTexCoord2f(bottomRight.S, topLeft.T);
-            glVertex2f(vBottomRight[0], vTopLeft[1]);
+            glVertex2f(vBottomRight.Coord[0], vTopLeft.Coord[1]);
 
-            vTopLeft[0]:=vTopLeft[0]+deltaH+HSpace;
+            vTopLeft.Coord[0]:=vTopLeft.Coord[0]+deltaH+HSpace;
          end;
       end;
    end;
@@ -907,10 +908,10 @@ var
    v : TVector;
 begin
    glPushAttrib(GL_ENABLE_BIT);
-   v[0]:=x;
-   v[1]:=y;
-   v[2]:=0;
-   v[3]:=1;
+   v.Coord[0]:=x;
+   v.Coord[1]:=y;
+   v.Coord[2]:=0;
+   v.Coord[3]:=1;
    RenderString(rci, text, taLeftJustify, tlTop, color, @v, True);
    glPopAttrib;
 end;
@@ -950,19 +951,19 @@ begin
             p:=@FCharRects[j];
             carX:=(tileIndex mod CharactersPerRow)*(CharWidth+GlyphsIntervalX);
             carY:=(tileIndex div CharactersPerRow)*(CharHeight+GlyphsIntervalY);
-            p[0]:=(carX+0.05)/FTextureWidth;
-            p[1]:=(FTextureHeight-(carY+0.05))/FTextureHeight;
-            p[2]:=(carX+GetCharWidth(Char(j))-0.05)/FTextureWidth;
-            p[3]:=(FTextureHeight-(carY+CharHeight-0.05))/FTextureHeight;
+            p.Coord[0]:=(carX+0.05)/FTextureWidth;
+            p.Coord[1]:=(FTextureHeight-(carY+0.05))/FTextureHeight;
+            p.Coord[2]:=(carX+GetCharWidth(Char(j))-0.05)/FTextureWidth;
+            p.Coord[3]:=(FTextureHeight-(carY+CharHeight-0.05))/FTextureHeight;
             Inc(tileIndex);
          end;
       end;
    end;
    p:=@FCharRects[Integer(ch)];
-   topLeft.S:=p[0];
-   topLeft.T:=p[1];
-   bottomRight.S:=p[2];
-   bottomRight.T:=p[3];
+   topLeft.S:=p.Coord[0];
+   topLeft.T:=p.Coord[1];
+   bottomRight.S:=p.Coord[2];
+   bottomRight.T:=p.Coord[3];
 end;
 
 // InvalidateUsers

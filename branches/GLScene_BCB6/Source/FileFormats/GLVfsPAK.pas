@@ -275,8 +275,8 @@ begin
       FHeader.Signature := SIGN_COMPRESSED
     else
       FHeader.Signature := SIGN;
-    FHeader.DirOffset := SizeOf(TPakHeader);
-    FHeader.DirLength := 0;
+      FHeader.DirOffset := SizeOf(TPakHeader);
+      FHeader.DirLength := 0;
 {$IFDEF GLS_LZRW_SUPPORT}
     if FHeader.Signature = SIGN_COMPRESSED then
       FHeader.CbrMode := FCompressionLevel;
@@ -287,8 +287,8 @@ begin
      Exit;
     end;
 {$ENDIF}
-    FStream.WriteBuffer(FHeader, SizeOf(TPakHeader));
-    FStream.Position := 0;
+      FStream.WriteBuffer(FHeader, SizeOf(TPakHeader));
+      FStream.Position := 0;
    end;
    FStream.ReadBuffer(FHeader, SizeOf(TPakHeader));
    if (FHeader.Signature <> SIGN) and (FHeader.Signature <> SIGN_COMPRESSED) then
@@ -356,10 +356,10 @@ begin
      tempStream.Free;
    end
    else begin //Uncompressed stream.
-     Result := TMemoryStream.Create;
-     Result.CopyFrom(FStream, Dir.FileLength);
-     Result.Position := 0;
-   end;
+   Result := TMemoryStream.Create;
+   Result.CopyFrom(FStream, Dir.FileLength);
+   Result.Position := 0;
+end;
 {$ELSE}
    Result := TMemoryStream.Create;
    Result.CopyFrom(FStream, Dir.FileLength);

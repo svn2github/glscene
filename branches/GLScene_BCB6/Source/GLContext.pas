@@ -4,6 +4,8 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               move TGLContextNotification to top of declaration
       <li>25/04/04 - EG - Added TGLOcclusionQueryHandle.Active 
       <li>25/09/03 - EG - Added TGLVBOHandle
       <li>20/09/03 - EG - Added TGLOcclusionQueryHandle
@@ -31,6 +33,13 @@ uses Classes, SysUtils, OpenGL1x, VectorGeometry;
 {$i GLScene.inc}
 
 type
+
+   // TGLContextNotification
+   //
+   TGLContextNotification = record
+      obj : TObject;
+      event : TNotifyEvent;
+   end;
 
    // TGLRCOptions
    //
@@ -497,13 +506,6 @@ type
          property Uniform3f[const index : String] : TAffineVector read GetUniform3f write SetUniform3f;
          property Uniform4f[const index : String] : TVector read GetUniform4f write SetUniform4f;
          property UniformMatrix4fv[const index : String] : TMatrix read GetUniformMatrix4fv write SetUniformMatrix4fv;
-   end;
-
-   // TGLContextNotification
-   //
-   TGLContextNotification = record
-      obj : TObject;
-      event : TNotifyEvent;
    end;
 
    // TGLContextManager
@@ -1540,7 +1542,7 @@ end;
 //
 procedure TGLProgramHandle.SetUniform3f(const index : String; const val : TAffineVector);
 begin
-   glUniform3fARB(GetUniformLocation(index), val[0], val[1], val[2]);
+   glUniform3fARB(GetUniformLocation(index), val.Coord[0], val.Coord[1], val.Coord[2]);
 end;
 
 // GetUniform4f
@@ -1554,7 +1556,7 @@ end;
 //
 procedure TGLProgramHandle.SetUniform4f(const index : String; const val : TVector);
 begin
-   glUniform4fARB(GetUniformLocation(index), val[0], val[1], val[2], val[3]);
+   glUniform4fARB(GetUniformLocation(index), val.Coord[0], val.Coord[1], val.Coord[2], val.Coord[3]);
 end;
 
 // GetUniformMatrix4fv

@@ -1,15 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{
-  GLFileNMF - NormalMapper loading into GLScene FreeForms/Actors
+{: GLFileNMF<p>
+     NormalMapper loading into GLScene FreeForms/Actors<p>
   
   Notes:
-    NormalMapper can be found at http://www.ati.com/developer/tools.html
+    NormalMapper can be found at http://www.ati.com/developer/tools.html<p>
 
-  History:
-    20/05/2003 - SG - Fixed SaveToStream to use ExtractTriangles
-    16/05/2003 - SG - Creation
+	<b>History :</b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+      <li>20/05/2003 - SG - Fixed SaveToStream to use ExtractTriangles
+      <li>16/05/2003 - SG - Creation
+	</ul></font>
 }
 unit GLFileNMF;
 
@@ -99,8 +101,8 @@ begin
       for j:=0 to 2 do begin
         nmf.RawTriangles[i].vert[j]:=Vertices[3*i+j];
         nmf.RawTriangles[i].norm[j]:=Normals[3*i+j];
-        nmf.RawTriangles[i].texCoord[j].S:=TexCoords[3*i+j][0];
-        nmf.RawTriangles[i].texCoord[j].T:=TexCoords[3*i+j][1];
+        nmf.RawTriangles[i].texCoord[j].S:=TexCoords[3*i+j].Coord[0];
+        nmf.RawTriangles[i].texCoord[j].T:=TexCoords[3*i+j].Coord[1];
       end;
     end;
     nmf.SaveToStream(aStream);

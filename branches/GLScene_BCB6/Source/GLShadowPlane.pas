@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>23/03/04 - EG - Added spoTransparent 
       <li>29/11/03 - EG - Scissors turned of if camera is withing bounding volume
       <li>30/10/02 - EG - Added OnBegin/EndRenderingShadows
@@ -126,7 +127,7 @@ implementation
 //
 constructor TGLShadowPlane.Create(AOwner:Tcomponent);
 const
-   cDefaultShadowColor : TColorVector = (0, 0, 0, 0.5);
+   cDefaultShadowColor : TColorVector = (X:0; Y:0; Z:0; W:0.5);
 begin
    inherited Create(AOwner);
    FShadowOptions:=cDefaultShadowPlaneOptions;

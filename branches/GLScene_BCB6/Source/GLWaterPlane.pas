@@ -3,7 +3,8 @@
 
 	<b>History : </b><font size=-1><ul>
 
-      <li>22/09/04 - R.Cao - Added AxisAlignedDimensionsUnscaled to fix visibility culling
+      <li>22/09/04 - R.Cao - Added AxisAlignedDimensionsUnscaled to fix visibility culling	
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>02/04/03 - EG - More optimizations, mask support
       <li>01/04/03 - EG - Cleanup and optimizations
       <li>14/11/03 - Mrqzzz - Tried "CreateRippleAtWorldPos" to work at any position/rotation, but need expert's help.. :(
@@ -227,8 +228,8 @@ var
    vv : TVector;
 begin
    vv:=AbsoluteToLocal(PointMake(x, y, z));
-   CreateRippleAtGridPos(Round((vv[0]+0.5)*Resolution),
-                         Round((vv[2]+0.5)*Resolution));
+   CreateRippleAtGridPos(Round((vv.Coord[0]+0.5)*Resolution),
+                         Round((vv.Coord[2]+0.5)*Resolution));
 end;
 
 // CreateRippleAtWorldPos
@@ -238,8 +239,8 @@ var
    vv : TVector;
 begin
    vv:=AbsoluteToLocal(PointMake(pos));
-   CreateRippleAtGridPos(Round((vv[0]+0.5)*Resolution),
-                         Round((vv[2]+0.5)*Resolution));
+   CreateRippleAtGridPos(Round((vv.Coord[0]+0.5)*Resolution),
+                         Round((vv.Coord[2]+0.5)*Resolution));
 end;
 
 // CreateRippleRandom
@@ -276,9 +277,9 @@ begin
    end;
 
    FPlaneQuadNormals.Count:=resSqr;
-   v[0]:=0;
-   v[1]:=2048;
-   v[2]:=0;
+   v.Coord[0]:=0;
+   v.Coord[1]:=2048;
+   v.Coord[2]:=0;
    for i:=0 to FPlaneQuadNormals.Count-1 do
       FPlaneQuadNormals.List[i]:=v;
 
@@ -403,7 +404,7 @@ begin
       if lockList[ij]=0 then begin
          posList[ij]:=posList[ij]-coeff*velList[ij];
          velList[ij]:=velList[ij]*FViscosity;
-         FPlaneQuadVertices.List[ij][1]:=posList[ij]*f;
+         FPlaneQuadVertices.List[ij].Coord[1]:=posList[ij]*f;
       end;
    end;
 end;
@@ -425,8 +426,8 @@ begin
       for j:=1 to Resolution-2 do begin
          Inc(ij);
          pv:=@normList[ij];
-         pv[0]:=posList[ij+1]-posList[ij-1];
-         pv[2]:=posList[ij+Resolution]-posList[ij-Resolution];
+         pv.Coord[0]:=posList[ij+1]-posList[ij-1];
+         pv.Coord[2]:=posList[ij+Resolution]-posList[ij-Resolution];
       end;
    end;
 end;
@@ -497,9 +498,9 @@ end;
 //
 function TGLWaterPlane.AxisAlignedDimensionsUnscaled : TVector;
 begin
-  Result[0]:=0.5*Abs(Resolution);
-  Result[1]:=0;
-  Result[2]:=0.5*Abs(FResolution);
+  Result.Coord[0]:=0.5*Abs(Resolution);
+  Result.Coord[1]:=0;
+  Result.Coord[2]:=0.5*Abs(FResolution);
 end;
 
 

@@ -12,7 +12,8 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
-	  <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
+	    <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>03/07/04 - LR - Corrections for Linux compatibility
                           CreateMonochromeBitmap NOT implemented for Linux
       <li>12/07/03 - EG - Further InterpolatedHeight fixes
@@ -1318,17 +1319,17 @@ var
 begin
    if x>0 then
       if x<Size-1 then
-         dx:=(Height(x+1, y)-Height(x-1, y))*scale[0]*scale[2]
-      else dx:=(Height(x, y)-Height(x-1, y))*scale[0]*scale[2]
-   else dx:=(Height(x+1, y)-Height(x, y))*scale[0]*scale[2];
+         dx:=(Height(x+1, y)-Height(x-1, y))*scale.Coord[0]*scale.Coord[2]
+      else dx:=(Height(x, y)-Height(x-1, y))*scale.Coord[0]*scale.Coord[2]
+   else dx:=(Height(x+1, y)-Height(x, y))*scale.Coord[0]*scale.Coord[2];
    if y>0 then
       if y<Size-1 then
-         dy:=(Height(x, y+1)-Height(x, y-1))*scale[1]*scale[2]
-      else dy:=(Height(x, y)-Height(x, y-1))*scale[1]*scale[2]
-   else dy:=(Height(x, y+1)-Height(x, y))*scale[1]*scale[2];
-   Result[0]:=dx;
-   Result[1]:=dy;
-   Result[2]:=1;
+         dy:=(Height(x, y+1)-Height(x, y-1))*scale.Coord[1]*scale.Coord[2]
+      else dy:=(Height(x, y)-Height(x, y-1))*scale.Coord[1]*scale.Coord[2]
+   else dy:=(Height(x, y+1)-Height(x, y))*scale.Coord[1]*scale.Coord[2];
+   Result.Coord[0]:=dx;
+   Result.Coord[1]:=dy;
+   Result.Coord[2]:=1;
    NormalizeVector(Result);
 end;
 

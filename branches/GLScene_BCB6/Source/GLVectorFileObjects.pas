@@ -6,7 +6,10 @@
       <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
       <li>24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
                           Added TexCoordsEx, Binormals, Tangents,
-                          Added BuildTangentSpace function (experimental).
+                          Added BuildTangentSpace function (experimental).	
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Added VectorTypes Unit
+                               moved TBlendedLerpInfo to top of declaration
       <li>23/07/04 - SG - Added fgmmQuad case for TFGVertexIndexList.TraingleCount
                           (Thanks fig).
       <li>18/07/04 - LR - Suppress Consts in uses
@@ -125,7 +128,7 @@ unit GLVectorFileObjects;
 interface
 
 uses Classes, GLScene, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLTexture,
-   GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
+   GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB, VectorTypes,
    ApplicationFileIO, GLSilhouette;
 
 type
@@ -2267,23 +2270,23 @@ begin
          sftRotation : begin
             FLocalMatrixList:=AllocMem(SizeOf(TMatrix)*Rotation.Count);
             for i:=0 to Rotation.Count-1 do begin
-               if Rotation[i][0]<>0 then begin
-                  SinCos(Rotation[i][0], s, c);
+               if Rotation[i].Coord[0]<>0 then begin
+                  SinCos(Rotation[i].Coord[0], s, c);
                   mat:=CreateRotationMatrixX(s, c);
                end else mat:=IdentityHmgMatrix;
-               if Rotation[i][1]<>0 then begin
-                  SinCos(Rotation[i][1], s, c);
+               if Rotation[i].Coord[1]<>0 then begin
+                  SinCos(Rotation[i].Coord[1], s, c);
                   rmat:=CreateRotationMatrixY(s, c);
                   mat:=MatrixMultiply(mat, rmat);
                end;
-               if Rotation[i][2]<>0 then begin
-                  SinCos(Rotation[i][2], s, c);
+               if Rotation[i].Coord[2]<>0 then begin
+                  SinCos(Rotation[i].Coord[2], s, c);
                   rmat:=CreateRotationMatrixZ(s, c);
                   mat:=MatrixMultiply(mat, rmat);
                end;
-               mat[3][0]:=Position[i][0];
-               mat[3][1]:=Position[i][1];
-               mat[3][2]:=Position[i][2];
+               mat.Coord[3].Coord[0]:=Position[i].Coord[0];
+               mat.Coord[3].Coord[1]:=Position[i].Coord[1];
+               mat.Coord[3].Coord[2]:=Position[i].Coord[2];
                FLocalMatrixList[i]:=mat;
             end;
          end;
@@ -2292,10 +2295,10 @@ begin
             for i:=0 to Quaternion.Count-1 do begin
                quat:=Quaternion[i];
                mat:=QuaternionToMatrix(quat);
-               mat[3][0]:=Position[i][0];
-               mat[3][1]:=Position[i][1];
-               mat[3][2]:=Position[i][2];
-               mat[3][3]:=1;
+               mat.Coord[3].Coord[0]:=Position[i].Coord[0];
+               mat.Coord[3].Coord[1]:=Position[i].Coord[1];
+               mat.Coord[3].Coord[2]:=Position[i].Coord[2];
+               mat.Coord[3].Coord[3]:=1;
                FLocalMatrixList[i]:=mat;
             end;
          end;
@@ -2345,13 +2348,13 @@ begin
   Quaternion.Clear;
   for i:= 0 to Rotation.Count-1 do begin
     mat:=IdentityHmgMatrix;
-    SinCos(Rotation[i][0], s, c);
+    SinCos(Rotation[i].Coord[0], s, c);
     rmat:=CreateRotationMatrixX(s, c);
     mat:=MatrixMultiply(mat, rmat);
-    SinCos(Rotation[i][1], s, c);
+    SinCos(Rotation[i].Coord[1], s, c);
     rmat:=CreateRotationMatrixY(s, c);
     mat:=MatrixMultiply(mat, rmat);
-    SinCos(Rotation[i][2], s, c);
+    SinCos(Rotation[i].Coord[2], s, c);
     rmat:=CreateRotationMatrixZ(s, c);
     mat:=MatrixMultiply(mat, rmat);
     Quaternion.Add(QuaternionFromMatrix(mat));
@@ -2676,14 +2679,14 @@ begin
    glPointSize(5);
    glBegin(GL_POINTS);
       IssueColor(Color);
-      glVertex3fv(@GlobalMatrix[3][0]);
+      glVertex3fv(@GlobalMatrix.Coord[3].Coord[0]);
    glEnd;
    glPointSize(1);
    // parent-self bone line
    if Owner is TSkeletonBone then begin
       glBegin(GL_LINES);
-         glVertex3fv(@TSkeletonBone(Owner).GlobalMatrix[3][0]);
-         glVertex3fv(@GlobalMatrix[3][0]);
+         glVertex3fv(@TSkeletonBone(Owner).GlobalMatrix.Coord[3].Coord[0]);
+         glVertex3fv(@GlobalMatrix.Coord[3].Coord[0]);
       glEnd;
    end;
    // render sub-bones
@@ -3287,8 +3290,8 @@ begin
    inherited WriteToFiler(writer);
    with writer do begin
       WriteInteger(2);        // Archive Version 2
-      FTexCoords.WriteToFiler(writer);
-      FLightMapTexCoords.WriteToFiler(writer);
+         FTexCoords.WriteToFiler(writer);
+         FLightMapTexCoords.WriteToFiler(writer);
       FColors.WriteToFiler(writer);
       FFaceGroups.WriteToFiler(writer);
       WriteInteger(Integer(FMode));
@@ -3438,8 +3441,8 @@ var
    min, max : TAffineVector;
 begin
    GetExtents(min, max);
-   Result:=    (aPoint[0]>=min[0]) and (aPoint[1]>=min[1]) and (aPoint[2]>=min[2])
-           and (aPoint[0]<=max[0]) and (aPoint[1]<=max[1]) and (aPoint[2]<=max[2]);
+   Result:=    (aPoint.Coord[0]>=min.Coord[0]) and (aPoint.Coord[1]>=min.Coord[1]) and (aPoint.Coord[2]>=min.Coord[2])
+           and (aPoint.Coord[0]<=max.Coord[0]) and (aPoint.Coord[1]<=max.Coord[1]) and (aPoint.Coord[2]<=max.Coord[2]);
 end;
 
 // SetTexCoords
@@ -3813,17 +3816,17 @@ var
 
    procedure SortVertexData(sortidx : Integer);
    begin
-      if t[0][sortidx]<t[1][sortidx] then begin
+      if t[0].Coord[sortidx]<t[1].Coord[sortidx] then begin
          vt:=v[0];   tt:=t[0];
          v[0]:=v[1]; t[0]:=t[1];
          v[1]:=vt;   t[1]:=tt;
       end;
-      if t[0][sortidx]<t[2][sortidx] then begin
+      if t[0].Coord[sortidx]<t[2].Coord[sortidx] then begin
          vt:=v[0];   tt:=t[0];
          v[0]:=v[2]; t[0]:=t[2];
          v[2]:=vt;   t[2]:=tt;
       end;
-      if t[1][sortidx]<t[2][sortidx] then begin
+      if t[1].Coord[sortidx]<t[2].Coord[sortidx] then begin
          vt:=v[1];   tt:=t[1];
          v[1]:=v[2]; t[1]:=t[2];
          v[2]:=vt;   t[2]:=tt;
@@ -3846,17 +3849,17 @@ begin
          if buildTangents then begin
             SortVertexData(1);
 
-            if (t[2][1]-t[0][1]) = 0 then interp:=1
-            else interp:=(t[1][1]-t[0][1])/(t[2][1]-t[0][1]);
+            if (t[2].Coord[1]-t[0].Coord[1]) = 0 then interp:=1
+            else interp:=(t[1].Coord[1]-t[0].Coord[1])/(t[2].Coord[1]-t[0].Coord[1]);
 
             vt:=VectorLerp(v[0],v[2],interp);
-            interp:=t[0][0]+(t[2][0]-t[0][0])*interp;
+            interp:=t[0].Coord[0]+(t[2].Coord[0]-t[0].Coord[0])*interp;
             vt:=VectorSubtract(vt,v[1]);
-            if t[1][0]<interp then vt:=VectorNegate(vt);
+            if t[1].Coord[0]<interp then vt:=VectorNegate(vt);
             dot:=VectorDotProduct(vt,n[j]);
-            vt[0]:=vt[0]-n[j][0]*dot;
-            vt[1]:=vt[1]-n[j][1]*dot;
-            vt[2]:=vt[2]-n[j][2]*dot;
+            vt.Coord[0]:=vt.Coord[0]-n[j].Coord[0]*dot;
+            vt.Coord[1]:=vt.Coord[1]-n[j].Coord[1]*dot;
+            vt.Coord[2]:=vt.Coord[2]-n[j].Coord[2]*dot;
             tangent[j]:=VectorMake(VectorNormalize(vt),0);
          end;
 
@@ -3864,17 +3867,17 @@ begin
          if buildBinormals then begin
             SortVertexData(0);
 
-            if (t[2][0]-t[0][0]) = 0 then interp:=1
-            else interp:=(t[1][0]-t[0][0])/(t[2][0]-t[0][0]);
+            if (t[2].Coord[0]-t[0].Coord[0]) = 0 then interp:=1
+            else interp:=(t[1].Coord[0]-t[0].Coord[0])/(t[2].Coord[0]-t[0].Coord[0]);
 
             vt:=VectorLerp(v[0],v[2],interp);
-            interp:=t[0][1]+(t[2][1]-t[0][1])*interp;
+            interp:=t[0].Coord[1]+(t[2].Coord[1]-t[0].Coord[1])*interp;
             vt:=VectorSubtract(vt,v[1]);
-            if t[1][1]<interp then vt:=VectorNegate(vt);
+            if t[1].Coord[1]<interp then vt:=VectorNegate(vt);
             dot:=VectorDotProduct(vt,n[j]);
-            vt[0]:=vt[0]-n[j][0]*dot;
-            vt[1]:=vt[1]-n[j][1]*dot;
-            vt[2]:=vt[2]-n[j][2]*dot;
+            vt.Coord[0]:=vt.Coord[0]-n[j].Coord[0]*dot;
+            vt.Coord[1]:=vt.Coord[1]-n[j].Coord[1]*dot;
+            vt.Coord[2]:=vt.Coord[2]-n[j].Coord[2]*dot;
             binormal[j]:=VectorMake(VectorNormalize(vt),0);
          end;
       end;
@@ -3911,9 +3914,9 @@ begin
          end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
          if GL_ARB_multitexture then begin
             if LightMapTexCoords.Count>0 then begin
-               glClientActiveTextureARB(GL_TEXTURE1_ARB);
-               glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LightMapTexCoords.List);
-               glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            glClientActiveTextureARB(GL_TEXTURE1_ARB);
+            glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LightMapTexCoords.List);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             end;
             for i:=0 to FTexCoordsEx.Count-1 do begin
                if TexCoordsEx[i].Count>0 then begin
@@ -3969,8 +3972,8 @@ begin
             xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
          if GL_ARB_multitexture then begin
             if LightMapTexCoords.Count>0 then begin
-               glClientActiveTextureARB(GL_TEXTURE1_ARB);
-               glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            glClientActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
             end;
             for i:=0 to FTexCoordsEx.Count-1 do begin
                if TexCoordsEx[i].Count>0 then begin
@@ -4290,8 +4293,8 @@ begin
    for i:=0 to Count-1 do begin
       GetMeshObject(i).GetExtents(lMin, lMax);
       for k:=0 to 2 do begin
-          if lMin[k]<min[k] then min[k]:=lMin[k];
-          if lMax[k]>max[k] then max[k]:=lMax[k];
+          if lMin.Coord[k]<min.Coord[k] then min.Coord[k]:=lMin.Coord[k];
+          if lMax.Coord[k]>max.Coord[k] then max.Coord[k]:=lMax.Coord[k];
       end;
    end;
 end;
@@ -4841,7 +4844,7 @@ begin
          // transform normal
          SetVector(p, Normals[i]);
          invMat:=bone.GlobalMatrix;
-         invMat[3]:=NullHmgPoint;
+         invMat.Coord[3]:=NullHmgPoint;
          InvertMatrix(invMat);
          p:=VectorTransform(p, invMat);
          invMesh.Normals[i]:=PAffineVector(@p)^;
@@ -4866,7 +4869,7 @@ begin
       refNormals:=Normals;
    end;
    skeleton:=Owner.Owner.Skeleton;
-   n[3]:=0;
+   n.Coord[3]:=0;
    if BonesPerVertex=1 then begin
       // simple case, one bone per vertex
       for i:=0 to refVertices.Count-1 do begin
@@ -5235,8 +5238,8 @@ begin
       ref:=Owner.Owner.Vertices.ItemAddress[VertexIndices[i]];
       for k:=0 to 2 do begin
          f:=ref[k];
-         if f<min[k] then min[k]:=f;
-         if f>max[k] then max[k]:=f;
+         if f<min.Coord[k] then min.Coord[k]:=f;
+         if f>max.Coord[k] then max.Coord[k]:=f;
       end;
    end;
 end;
@@ -5776,7 +5779,7 @@ begin
       FSkeleton:=TSkeleton.CreateOwned(Self);
    FUseMeshMaterials:=True;
    FAutoCentering:=[];
-   FAxisAlignedDimensionsCache[0]:=-1;
+   FAxisAlignedDimensionsCache.Coord[0]:=-1;
    FAutoScaling:=TGLCoordinates.CreateInitialized(Self, XYZWHmgVector, csPoint);   
 end;
 
@@ -5948,8 +5951,8 @@ begin
    for i:=0 to MeshObjects.Count-1 do begin
       TMeshObject(MeshObjects[i]).GetExtents(lMin, lMax);
       for k:=0 to 2 do begin
-          if lMin[k]<min[k] then min[k]:=lMin[k];
-          if lMax[k]>max[k] then max[k]:=lMax[k];
+          if lMin.Coord[k]<min.Coord[k] then min.Coord[k]:=lMin.Coord[k];
+          if lMax.Coord[k]>max.Coord[k] then max.Coord[k]:=lMax.Coord[k];
       end;
    end;
 end;
@@ -6066,11 +6069,11 @@ function TGLBaseMesh.AxisAlignedDimensionsUnscaled : TVector;
 var
    dMin, dMax : TAffineVector;
 begin
-   if FAxisAlignedDimensionsCache[0]<0 then begin
+   if FAxisAlignedDimensionsCache.Coord[0]<0 then begin
       MeshObjects.GetExtents(dMin, dMax);
-      FAxisAlignedDimensionsCache[0]:=MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
-      FAxisAlignedDimensionsCache[1]:=MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
-      FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+      FAxisAlignedDimensionsCache.Coord[0]:=MaxFloat(Abs(dMin.Coord[0]), Abs(dMax.Coord[0]));
+      FAxisAlignedDimensionsCache.Coord[1]:=MaxFloat(Abs(dMin.Coord[1]), Abs(dMax.Coord[1]));
+      FAxisAlignedDimensionsCache.Coord[2]:=MaxFloat(Abs(dMin.Coord[2]), Abs(dMax.Coord[2]));
    end;
    SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -6104,14 +6107,14 @@ begin
    end else begin
       GetExtents(min, max);
       if macCenterX in AutoCentering then
-         delta[0]:=-0.5*(min[0]+max[0])
-      else delta[0]:=0;
+         delta.Coord[0]:=-0.5*(min.Coord[0]+max.Coord[0])
+      else delta.Coord[0]:=0;
       if macCenterY in AutoCentering then
-         delta[1]:=-0.5*(min[1]+max[1])
-      else delta[1]:=0;
+         delta.Coord[1]:=-0.5*(min.Coord[1]+max.Coord[1])
+      else delta.Coord[1]:=0;
       if macCenterZ in AutoCentering then
-         delta[2]:=-0.5*(min[2]+max[2])
-      else delta[2]:=0;
+         delta.Coord[2]:=-0.5*(min.Coord[2]+max.Coord[2])
+      else delta.Coord[2]:=0;
    end;
    MeshObjects.Translate(delta);
 end;
@@ -6241,7 +6244,7 @@ end;
 //
 procedure TGLBaseMesh.StructureChanged;
 begin
-   FAxisAlignedDimensionsCache[0]:=-1;
+   FAxisAlignedDimensionsCache.Coord[0]:=-1;
    DropMaterialLibraryCache;
    MeshObjects.Prepare;
    inherited;

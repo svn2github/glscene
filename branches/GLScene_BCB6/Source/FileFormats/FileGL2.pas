@@ -6,6 +6,7 @@
 	Also referred to as MDX (MDXM/MDXA) format in C source.<p>
 
 	<b>History :</b><font size=-1><ul>
+           <li>02/08/04 - LR, YHC - BCB corrections: use record instead array 
 	   <li>09/05/03 - SG - Fixed compressed bone pool
 	   <li>01/04/03 - SG - Finished GLM/GLA loading procedures
 	   <li>25/03/03 - SG - Creation
@@ -206,7 +207,7 @@ end;
 procedure MC_UnCompressQuat(var mat : TMatrix; const comp : TGLACompQuatBone);
 begin
   mat:=QuaternionToMatrix(QuaternionMake([comp[1]-32726,comp[2]-32726,comp[3]-32726],comp[0]-32726));
-  mat[3]:=VectorMake(comp[4]/64-512,comp[5]/64-512,comp[6]/64-512,1);
+  mat.Coord[3]:=VectorMake(comp[4]/64-512,comp[5]/64-512,comp[6]/64-512,1);
 end;
 
 

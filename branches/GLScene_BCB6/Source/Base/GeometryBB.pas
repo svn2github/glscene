@@ -6,6 +6,8 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               changed type of THmgBoundingBox to record
       <li>22/06/03 - MF - Added TBSphere for bounding spheres and classes to
                           determine whether one aabb/bsphere contains another
                           aabb/bsphere
@@ -30,7 +32,9 @@ uses VectorGeometry;
 type
 
    {: Structure for storing Bounding Boxes }
-   THmgBoundingBox = array [0..7] of TVector; {JT}
+   THmgBoundingBox = record
+      BBox : array [0..7] of TVector; {JT}
+   end;
 
    {: Structure for storing Axis Aligned Bounding Boxes }
    TAABB = record
@@ -194,8 +198,8 @@ var
 begin
    for i := 0 to 3 do
    begin
-       BB[cBBPlans[NumPlan][i]][cDirPlan[NumPlan]] := Valeur;
-       BB[cBBPlans[NumPlan][i]][3] := 1;
+       BB.BBox[cBBPlans[NumPlan][i]].Coord[cDirPlan[NumPlan]] := Valeur;
+       BB.BBox[cBBPlans[NumPlan][i]].Coord[3] := 1;
    end;
 end;
 
@@ -208,17 +212,17 @@ var
 begin
    for i:=0 to 7 do begin
       for j:=0 to 3 do
-          if c1[cBBFront[j]][0]<c2[i][0] then SetPlanBB(c1, 0, c2[i][0]);
+          if c1.BBox[cBBFront[j]].Coord[0]<c2.BBox[i].Coord[0] then SetPlanBB(c1, 0, c2.BBox[i].Coord[0]);
       for j:=0 to 3 do
-          if c1[cBBBack[j]][0]>c2[i][0] then SetPlanBB(c1, 1, c2[i][0]);
+          if c1.BBox[cBBBack[j]].Coord[0]>c2.BBox[i].Coord[0] then SetPlanBB(c1, 1, c2.BBox[i].Coord[0]);
       for j:=0 to 3 do
-          if c1[cBBLeft[j]][1]<c2[i][1] then SetPlanBB(c1, 2, c2[i][1]);
+          if c1.BBox[cBBLeft[j]].Coord[1]<c2.BBox[i].Coord[1] then SetPlanBB(c1, 2, c2.BBox[i].Coord[1]);
       for j:=0 to 3 do
-          if c1[cBBRight[j]][1]>c2[i][1] then SetPlanBB(c1, 3, c2[i][1]);
+          if c1.BBox[cBBRight[j]].Coord[1]>c2.BBox[i].Coord[1] then SetPlanBB(c1, 3, c2.BBox[i].Coord[1]);
       for j:=0 to 3 do
-          if c1[cBBTop[j]][2]<c2[i][2] then SetPlanBB(c1, 4, c2[i][2]);
+          if c1.BBox[cBBTop[j]].Coord[2]<c2.BBox[i].Coord[2] then SetPlanBB(c1, 4, c2.BBox[i].Coord[2]);
       for j:=0 to 3 do
-          if c1[cBBBottom[j]][2]>c2[i][2] then SetPlanBB(c1, 5, c2[i][2]);
+          if c1.BBox[cBBBottom[j]].Coord[2]>c2.BBox[i].Coord[2] then SetPlanBB(c1, 5, c2.BBox[i].Coord[2]);
    end;
    Result:=c1;
 end;
@@ -227,36 +231,36 @@ end;
 //
 procedure AddAABB(var aabb : TAABB; const aabb1 : TAABB);
 begin
-   if aabb1.min[0]<aabb.min[0] then aabb.min[0]:=aabb1.min[0];
-   if aabb1.min[1]<aabb.min[1] then aabb.min[1]:=aabb1.min[1];
-   if aabb1.min[2]<aabb.min[2] then aabb.min[2]:=aabb1.min[2];
-   if aabb1.max[0]>aabb.max[0] then aabb.max[0]:=aabb1.max[0];
-   if aabb1.max[1]>aabb.max[1] then aabb.max[1]:=aabb1.max[1];
-   if aabb1.max[2]>aabb.max[2] then aabb.max[2]:=aabb1.max[2];
+   if aabb1.min.Coord[0]<aabb.min.Coord[0] then aabb.min.Coord[0]:=aabb1.min.Coord[0];
+   if aabb1.min.Coord[1]<aabb.min.Coord[1] then aabb.min.Coord[1]:=aabb1.min.Coord[1];
+   if aabb1.min.Coord[2]<aabb.min.Coord[2] then aabb.min.Coord[2]:=aabb1.min.Coord[2];
+   if aabb1.max.Coord[0]>aabb.max.Coord[0] then aabb.max.Coord[0]:=aabb1.max.Coord[0];
+   if aabb1.max.Coord[1]>aabb.max.Coord[1] then aabb.max.Coord[1]:=aabb1.max.Coord[1];
+   if aabb1.max.Coord[2]>aabb.max.Coord[2] then aabb.max.Coord[2]:=aabb1.max.Coord[2];
 end;
 
 // SetBB
 //
 procedure SetBB( var c : THmgBoundingBox; const v : TVector );
 begin
-   SetPlanBB( c, 0, v[0] );
-   SetPlanBB( c, 1, -v[0] );
-   SetPlanBB( c, 2, v[1] );
-   SetPlanBB( c, 3, -v[1] );
-   SetPlanBB( c, 4, v[2] );
-   SetPlanBB( c, 5, -v[2] );
+   SetPlanBB( c, 0, v.Coord[0] );
+   SetPlanBB( c, 1, -v.Coord[0] );
+   SetPlanBB( c, 2, v.Coord[1] );
+   SetPlanBB( c, 3, -v.Coord[1] );
+   SetPlanBB( c, 4, v.Coord[2] );
+   SetPlanBB( c, 5, -v.Coord[2] );
 end;
 
 // SetAABB
 //
 procedure SetAABB(var bb : TAABB; const v : TVector);
 begin
-   bb.max[0]:=Abs(v[0]);
-   bb.max[1]:=Abs(v[1]);
-   bb.max[2]:=Abs(v[2]);
-   bb.min[0]:=-bb.max[0];
-   bb.min[1]:=-bb.max[1];
-   bb.min[2]:=-bb.max[2];
+   bb.max.Coord[0]:=Abs(v.Coord[0]);
+   bb.max.Coord[1]:=Abs(v.Coord[1]);
+   bb.max.Coord[2]:=Abs(v.Coord[2]);
+   bb.min.Coord[0]:=-bb.max.Coord[0];
+   bb.min.Coord[1]:=-bb.max.Coord[1];
+   bb.min.Coord[2]:=-bb.max.Coord[2];
 end;
 
 // BBTransform
@@ -266,7 +270,7 @@ var
    i : Integer;
 begin
    for i:=0 to 7 do
-      c[i]:=VectorTransform(c[i], m);
+      c.BBox[i]:=VectorTransform(c.BBox[i], m);
 end;
 
 // AABBTransform
@@ -279,12 +283,12 @@ begin
    oldMax:=bb.max;
    bb.min:=VectorTransform(oldMin , m);
    bb.max:=bb.min;
-   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin[0], oldMin[1], oldMax[2]), m));
-   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin[0], oldMax[1], oldMin[2]), m));
-   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin[0], oldMax[1], oldMax[2]), m));
-   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMin[1], oldMin[2]), m));
-   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMin[1], oldMax[2]), m));
-   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMax[1], oldMin[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin.Coord[0], oldMin.Coord[1], oldMax.Coord[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin.Coord[0], oldMax.Coord[1], oldMin.Coord[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin.Coord[0], oldMax.Coord[1], oldMax.Coord[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax.Coord[0], oldMin.Coord[1], oldMin.Coord[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax.Coord[0], oldMin.Coord[1], oldMax.Coord[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax.Coord[0], oldMax.Coord[1], oldMin.Coord[2]), m));
    AABBInclude(bb, VectorTransform(oldMax , m));
 end;
 
@@ -302,9 +306,9 @@ function BBMinX(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   Result:=c[0][0];
+   Result:=c.BBox[0].Coord[0];
    for i:=1 to 7 do
-      Result:=MinFloat(Result, c[i][0]);
+      Result:=MinFloat(Result, c.BBox[i].Coord[0]);
 end;
 
 //BBMaxX
@@ -313,9 +317,9 @@ function BBMaxX(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   result := c[0][0];
+   result := c.BBox[0].Coord[0];
    for i := 1 to 7 do
-      result := MaxFloat( Result, c[i][0] );
+      result := MaxFloat( Result, c.BBox[i].Coord[0] );
 end;
 
 //BBMinY
@@ -324,9 +328,9 @@ function BBMinY(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   result := c[0][1];
+   result := c.BBox[0].Coord[1];
    for i := 1 to 7 do
-      Result := MinFloat( Result, c[i][1] );
+      Result := MinFloat( Result, c.BBox[i].Coord[1] );
 end;
 
 //BBMaxY
@@ -335,9 +339,9 @@ function BBMaxY(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   Result := c[0][1];
+   Result := c.BBox[0].Coord[1];
    for i := 1 to 7 do
-      Result := MaxFloat( Result, c[i][1] );
+      Result := MaxFloat( Result, c.BBox[i].Coord[1] );
 end;
 
 //BBMinZ
@@ -346,9 +350,9 @@ function BBMinZ(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   Result := c[0][2];
+   Result := c.BBox[0].Coord[2];
    for i := 1 to 7 do
-      Result := MinFloat( Result, c[i][2] );
+      Result := MinFloat( Result, c.BBox[i].Coord[2] );
 end;
 
 // BBMaxZ
@@ -357,58 +361,58 @@ function BBMaxZ(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   Result := c[0][2];
+   Result := c.BBox[0].Coord[2];
    for i := 1 to 7 do
-      Result := MaxFloat( Result, c[i][2] );
+      Result := MaxFloat( Result, c.BBox[i].Coord[2] );
 end;
 
 // AABBInclude
 //
 procedure AABBInclude(var bb : TAABB; const p : TAffineVector);
 begin
-   if p[0]<bb.min[0] then bb.min[0]:=p[0];
-   if p[0]>bb.max[0] then bb.max[0]:=p[0];
-   if p[1]<bb.min[1] then bb.min[1]:=p[1];
-   if p[1]>bb.max[1] then bb.max[1]:=p[1];
-   if p[2]<bb.min[2] then bb.min[2]:=p[2];
-   if p[2]>bb.max[2] then bb.max[2]:=p[2];
+   if p.Coord[0]<bb.min.Coord[0] then bb.min.Coord[0]:=p.Coord[0];
+   if p.Coord[0]>bb.max.Coord[0] then bb.max.Coord[0]:=p.Coord[0];
+   if p.Coord[1]<bb.min.Coord[1] then bb.min.Coord[1]:=p.Coord[1];
+   if p.Coord[1]>bb.max.Coord[1] then bb.max.Coord[1]:=p.Coord[1];
+   if p.Coord[2]<bb.min.Coord[2] then bb.min.Coord[2]:=p.Coord[2];
+   if p.Coord[2]>bb.max.Coord[2] then bb.max.Coord[2]:=p.Coord[2];
 end;
 
 // AABBFromSweep
 //
 procedure AABBFromSweep(var SweepAABB:TAABB; const Start,Dest:TVector; const Radius:Single);
 begin
-   if Start[0]<Dest[0] then
+   if Start.Coord[0]<Dest.Coord[0] then
    begin
-     SweepAABB.min[0]:=Start[0]-radius;
-     SweepAABB.max[0]:=Dest[0]+radius;
+     SweepAABB.min.Coord[0]:=Start.Coord[0]-radius;
+     SweepAABB.max.Coord[0]:=Dest.Coord[0]+radius;
    end
    else
    begin
-     SweepAABB.min[0]:=Dest[0]-radius;
-     SweepAABB.max[0]:=Start[0]+radius;
+     SweepAABB.min.Coord[0]:=Dest.Coord[0]-radius;
+     SweepAABB.max.Coord[0]:=Start.Coord[0]+radius;
    end;
 
-   if Start[1]<Dest[1] then
+   if Start.Coord[1]<Dest.Coord[1] then
    begin
-     SweepAABB.min[1]:=Start[1]-radius;
-     SweepAABB.max[1]:=Dest[1]+radius;
+     SweepAABB.min.Coord[1]:=Start.Coord[1]-radius;
+     SweepAABB.max.Coord[1]:=Dest.Coord[1]+radius;
    end
    else
    begin
-     SweepAABB.min[1]:=Dest[1]-radius;
-     SweepAABB.max[1]:=Start[1]+radius;
+     SweepAABB.min.Coord[1]:=Dest.Coord[1]-radius;
+     SweepAABB.max.Coord[1]:=Start.Coord[1]+radius;
    end;
 
-   if Start[2]<Dest[2] then
+   if Start.Coord[2]<Dest.Coord[2] then
    begin
-     SweepAABB.min[2]:=Start[2]-radius;
-     SweepAABB.max[2]:=Dest[2]+radius;
+     SweepAABB.min.Coord[2]:=Start.Coord[2]-radius;
+     SweepAABB.max.Coord[2]:=Dest.Coord[2]+radius;
    end
    else
    begin
-     SweepAABB.min[2]:=Dest[2]-radius;
-     SweepAABB.max[2]:=Start[2]+radius;
+     SweepAABB.min.Coord[2]:=Dest.Coord[2]-radius;
+     SweepAABB.max.Coord[2]:=Start.Coord[2]+radius;
    end;
 end;
 
@@ -419,8 +423,8 @@ var
    i : Integer;
 begin
    for i:=0 to 2 do begin
-      Result.min[i]:=MaxFloat(aabb1.min[i], aabb2.min[i]);
-      Result.max[i]:=MinFloat(aabb1.max[i], aabb2.max[i]);
+      Result.min.Coord[i]:=MaxFloat(aabb1.min.Coord[i], aabb2.min.Coord[i]);
+      Result.max.Coord[i]:=MinFloat(aabb1.max.Coord[i], aabb2.max.Coord[i]);
    end;
 end;
 
@@ -430,21 +434,21 @@ function BBToAABB(const aBB : THmgBoundingBox) : TAABB;
 var
    i : Integer;
 begin
-   SetVector(Result.min, aBB[0]);
-   SetVector(Result.max, aBB[0]);
+   SetVector(Result.min, aBB.BBox[0]);
+   SetVector(Result.max, aBB.BBox[0]);
    for i:=1 to 7 do begin
-      if aBB[i][0]<Result.min[0] then
-         Result.min[0]:=aBB[i][0];
-      if aBB[i][0]>Result.max[0] then
-         Result.max[0]:=aBB[i][0];
-      if aBB[i][1]<Result.min[1] then
-         Result.min[1]:=aBB[i][1];
-      if aBB[i][1]>Result.max[1] then
-         Result.max[1]:=aBB[i][1];
-      if aBB[i][2]<Result.min[2] then
-         Result.min[2]:=aBB[i][2];
-      if aBB[i][2]>Result.max[2] then
-         Result.max[2]:=aBB[i][2];
+      if aBB.BBox[i].Coord[0]<Result.min.Coord[0] then
+         Result.min.Coord[0]:=aBB.BBox[i].Coord[0];
+      if aBB.BBox[i].Coord[0]>Result.max.Coord[0] then
+         Result.max.Coord[0]:=aBB.BBox[i].Coord[0];
+      if aBB.BBox[i].Coord[1]<Result.min.Coord[1] then
+         Result.min.Coord[1]:=aBB.BBox[i].Coord[1];
+      if aBB.BBox[i].Coord[1]>Result.max.Coord[1] then
+         Result.max.Coord[1]:=aBB.BBox[i].Coord[1];
+      if aBB.BBox[i].Coord[2]<Result.min.Coord[2] then
+         Result.min.Coord[2]:=aBB.BBox[i].Coord[2];
+      if aBB.BBox[i].Coord[2]>Result.max.Coord[2] then
+         Result.max.Coord[2]:=aBB.BBox[i].Coord[2];
    end;
 end;
 
@@ -453,12 +457,12 @@ end;
 function AABBToBB(const anAABB : TAABB) : THmgBoundingBox;
 begin
    with anAABB do begin
-      SetPlanBB( Result, 0, max[0] );
-      SetPlanBB( Result, 1, min[0] );
-      SetPlanBB( Result, 2, max[1] );
-      SetPlanBB( Result, 3, min[1] );
-      SetPlanBB( Result, 4, max[2] );
-      SetPlanBB( Result, 5, min[2] );
+      SetPlanBB( Result, 0, max.Coord[0] );
+      SetPlanBB( Result, 1, min.Coord[0] );
+      SetPlanBB( Result, 2, max.Coord[1] );
+      SetPlanBB( Result, 3, min.Coord[1] );
+      SetPlanBB( Result, 4, max.Coord[2] );
+      SetPlanBB( Result, 5, min.Coord[2] );
    end;
 end;
 
@@ -501,14 +505,14 @@ const
    procedure MakeAABBPoints(const AABB : TAABB; var pt : array of TVertex);
    begin
       with AABB do begin
-         SetVector(pt[0], min[0], min[1], min[2]);
-         SetVector(pt[1], max[0], min[1], min[2]);
-         SetVector(pt[2], max[0], max[1], min[2]);
-         SetVector(pt[3], min[0], max[1], min[2]);
-         SetVector(pt[4], min[0], min[1], max[2]);
-         SetVector(pt[5], max[0], min[1], max[2]);
-         SetVector(pt[6], max[0], max[1], max[2]);
-         SetVector(pt[7], min[0], max[1], max[2]);
+         SetVector(pt[0], min.Coord[0], min.Coord[1], min.Coord[2]);
+         SetVector(pt[1], max.Coord[0], min.Coord[1], min.Coord[2]);
+         SetVector(pt[2], max.Coord[0], max.Coord[1], min.Coord[2]);
+         SetVector(pt[3], min.Coord[0], max.Coord[1], min.Coord[2]);
+         SetVector(pt[4], min.Coord[0], min.Coord[1], max.Coord[2]);
+         SetVector(pt[5], max.Coord[0], min.Coord[1], max.Coord[2]);
+         SetVector(pt[6], max.Coord[0], max.Coord[1], max.Coord[2]);
+         SetVector(pt[7], min.Coord[0], max.Coord[1], max.Coord[2]);
       end;
    end;
 
@@ -537,9 +541,9 @@ begin
   begin
     pt:= VectorTransform(pt2[i], m2To1);
     //check for inclusion (points of Obj2 in Obj1)
-    if IsInRange(pt[0], AABB1.Min[0], AABB1.Max[0]) and
-      IsInRange(pt[1], AABB1.Min[1], AABB1.Max[1]) and
-      IsInRange(pt[2], AABB1.Min[2], AABB1.Max[2]) then
+    if IsInRange(pt.Coord[0], AABB1.Min.Coord[0], AABB1.Max.Coord[0]) and
+      IsInRange(pt.Coord[1], AABB1.Min.Coord[1], AABB1.Max.Coord[1]) and
+      IsInRange(pt.Coord[2], AABB1.Min.Coord[2], AABB1.Max.Coord[2]) then
     begin
       result:= true;
       exit;
@@ -550,9 +554,9 @@ begin
   begin
     pt1[i]:= VectorTransform(pt1[i], m1To2);
     //check for inclusion (points of Obj1 in Obj2)
-    if IsInRange(pt1[i][0], AABB2.Min[0], AABB2.Max[0]) and
-      IsInRange(pt1[i][1], AABB2.Min[1], AABB2.Max[1]) and
-      IsInRange(pt1[i][2], AABB2.Min[2], AABB2.Max[2]) then
+    if IsInRange(pt1[i].Coord[0], AABB2.Min.Coord[0], AABB2.Max.Coord[0]) and
+      IsInRange(pt1[i].Coord[1], AABB2.Min.Coord[1], AABB2.Max.Coord[1]) and
+      IsInRange(pt1[i].Coord[2], AABB2.Min.Coord[2], AABB2.Max.Coord[2]) then
     begin
       result:= true;
       exit;
@@ -572,14 +576,14 @@ begin
       if IntersectLinePlane(VectorMake(pt1[cWires[i,0]]), VectorMake(V), Planes2[t], @P) = 1 then
       begin
         //check point in Wire
-        if IsInRange(P[0], pt1[cWires[i,0]][0], pt1[cWires[i,1]][0]) and
-          IsInRange(P[1], pt1[cWires[i,0]][1], pt1[cWires[i,1]][1]) and
-          IsInRange(P[2], pt1[cWires[i,0]][2], pt1[cWires[i,1]][2]) then
+        if IsInRange(P.Coord[0], pt1[cWires[i,0]].Coord[0], pt1[cWires[i,1]].Coord[0]) and
+          IsInRange(P.Coord[1], pt1[cWires[i,0]].Coord[1], pt1[cWires[i,1]].Coord[1]) and
+          IsInRange(P.Coord[2], pt1[cWires[i,0]].Coord[2], pt1[cWires[i,1]].Coord[2]) then
         begin
           //check point in Plane
-          if IsInRange(P[0], pt2[cPlanes[t, 0]][0], pt2[cPlanes[t, 2]][0]) and
-            IsInRange(P[1], pt2[cPlanes[t, 0]][1], pt2[cPlanes[t, 2]][1]) and
-            IsInRange(P[2], pt2[cPlanes[t, 0]][2], pt2[cPlanes[t, 2]][2]) then
+          if IsInRange(P.Coord[0], pt2[cPlanes[t, 0]].Coord[0], pt2[cPlanes[t, 2]].Coord[0]) and
+            IsInRange(P.Coord[1], pt2[cPlanes[t, 0]].Coord[1], pt2[cPlanes[t, 2]].Coord[1]) and
+            IsInRange(P.Coord[2], pt2[cPlanes[t, 0]].Coord[2], pt2[cPlanes[t, 2]].Coord[2]) then
           begin
             result:= true;
             exit;
@@ -596,8 +600,8 @@ function IntersectAABBsAbsoluteXY(const aabb1, aabb2 : TAABB) : Boolean;
 begin
   result:= false;
 
-  if (AABB2.min[0]>AABB1.max[0])or (AABB2.min[1]>AABB1.max[1]) then Exit
-  else if (AABB2.max[0]<AABB1.min[0])or (AABB2.max[1]<AABB1.min[1]) then Exit
+  if (AABB2.min.Coord[0]>AABB1.max.Coord[0])or (AABB2.min.Coord[1]>AABB1.max.Coord[1]) then Exit
+  else if (AABB2.max.Coord[0]<AABB1.min.Coord[0])or (AABB2.max.Coord[1]<AABB1.min.Coord[1]) then Exit
   else Result:=true;
 
 end;
@@ -605,11 +609,11 @@ end;
 function IntersectAABBsAbsoluteXZ(const aabb1, aabb2 : TAABB) : Boolean;
 begin
   result := 
-   ((AABB1.min[0]<AABB2.max[0]) and
-    (AABB1.min[2]<AABB2.max[2]) and
+   ((AABB1.min.Coord[0]<AABB2.max.Coord[0]) and
+    (AABB1.min.Coord[2]<AABB2.max.Coord[2]) and
 
-    (AABB2.min[0]<AABB1.max[0]) and
-    (AABB2.min[2]<AABB1.max[2]));
+    (AABB2.min.Coord[0]<AABB1.max.Coord[0]) and
+    (AABB2.min.Coord[2]<AABB1.max.Coord[2]));
 end;
 
 // IntersectAABBsAbsolute
@@ -617,13 +621,13 @@ end;
 function IntersectAABBsAbsolute(const aabb1, aabb2 : TAABB) : Boolean;
 begin
   result := not
-   ((AABB1.min[0]>AABB2.max[0]) or
-    (AABB1.min[1]>AABB2.max[1]) or
-    (AABB1.min[2]>AABB2.max[2]) or
+   ((AABB1.min.Coord[0]>AABB2.max.Coord[0]) or
+    (AABB1.min.Coord[1]>AABB2.max.Coord[1]) or
+    (AABB1.min.Coord[2]>AABB2.max.Coord[2]) or
 
-    (AABB2.min[0]>AABB1.max[0]) or
-    (AABB2.min[1]>AABB1.max[1]) or
-    (AABB2.min[2]>AABB1.max[2]));
+    (AABB2.min.Coord[0]>AABB1.max.Coord[0]) or
+    (AABB2.min.Coord[1]>AABB1.max.Coord[1]) or
+    (AABB2.min.Coord[2]>AABB1.max.Coord[2]));
 end;
 
 // IntersectAABBsAbsolute
@@ -635,31 +639,31 @@ begin
   // AABB1 max must be <= to AABB2 max
 
   result :=
-    (AABB1.min[0]>=AABB2.min[0]) and
-    (AABB1.min[1]>=AABB2.min[1]) and
-    (AABB1.min[2]>=AABB2.min[2]) and
+    (AABB1.min.Coord[0]>=AABB2.min.Coord[0]) and
+    (AABB1.min.Coord[1]>=AABB2.min.Coord[1]) and
+    (AABB1.min.Coord[2]>=AABB2.min.Coord[2]) and
 
-    (AABB1.max[0]<=AABB2.max[0]) and
-    (AABB1.max[1]<=AABB2.max[1]) and
-    (AABB1.max[2]<=AABB2.max[2]);
+    (AABB1.max.Coord[0]<=AABB2.max.Coord[0]) and
+    (AABB1.max.Coord[1]<=AABB2.max.Coord[1]) and
+    (AABB1.max.Coord[2]<=AABB2.max.Coord[2]);
 end;
 
 // PointInAABB (affine)
 //
 function PointInAABB(const p : TAffineVector; const aabb : TAABB) : Boolean;
 begin
-   Result:=    (p[0]<=aabb.max[0]) and (p[0]>=aabb.min[0])
-           and (p[1]<=aabb.max[1]) and (p[1]>=aabb.min[1])
-           and (p[2]<=aabb.max[2]) and (p[2]>=aabb.min[2]);
+   Result:=    (p.Coord[0]<=aabb.max.Coord[0]) and (p.Coord[0]>=aabb.min.Coord[0])
+           and (p.Coord[1]<=aabb.max.Coord[1]) and (p.Coord[1]>=aabb.min.Coord[1])
+           and (p.Coord[2]<=aabb.max.Coord[2]) and (p.Coord[2]>=aabb.min.Coord[2]);
 end;
 
 // PointInAABB (hmg)
 //
 function PointInAABB(const p : TVector; const aabb : TAABB) : Boolean;
 begin
-   Result:=    (p[0]<=aabb.max[0]) and (p[0]>=aabb.min[0])
-           and (p[1]<=aabb.max[1]) and (p[1]>=aabb.min[1])
-           and (p[2]<=aabb.max[2]) and (p[2]>=aabb.min[2]);
+   Result:=    (p.Coord[0]<=aabb.max.Coord[0]) and (p.Coord[0]>=aabb.min.Coord[0])
+           and (p.Coord[1]<=aabb.max.Coord[1]) and (p.Coord[1]>=aabb.min.Coord[1])
+           and (p.Coord[2]<=aabb.max.Coord[2]) and (p.Coord[2]>=aabb.min.Coord[2]);
 end;
 
 // PlaneIntersectAABB
@@ -671,12 +675,12 @@ i: integer;
 begin
      result:= false;
      for i:= 0 to 2 do
-          if normal[i] > 0.0 then begin
-               vMin[i]:= aabb.min[i];
-               vMax[i]:= aabb.max[i];
+          if normal.Coord[i] > 0.0 then begin
+               vMin.Coord[i]:= aabb.min.Coord[i];
+               vMax.Coord[i]:= aabb.max.Coord[i];
           end else begin
-               vMin[i]:= aabb.max[i];
-               vMax[i]:= aabb.min[i];
+               vMin.Coord[i]:= aabb.max.Coord[i];
+               vMax.Coord[i]:= aabb.min.Coord[i];
           end;
 
      if VectorDotProduct(normal, vmin) + d > 0 then Exit;
@@ -705,17 +709,17 @@ begin
      e[3]:= ZVector;
 
      //test 3
-     min:= MinXYZComponent(affineVectorMake(v1[0], v2[0], v3[0]));
-     max:= MaxXYZComponent(affineVectorMake(v1[0], v2[0], v3[0]));
-     if (min > aabb.max[0]) or (max < aabb.min[0]) then exit;
+     min:= MinXYZComponent(affineVectorMake(v1.Coord[0], v2.Coord[0], v3.Coord[0]));
+     max:= MaxXYZComponent(affineVectorMake(v1.Coord[0], v2.Coord[0], v3.Coord[0]));
+     if (min > aabb.max.Coord[0]) or (max < aabb.min.Coord[0]) then exit;
 
-     min:= MinXYZComponent(affineVectorMake(v1[1], v2[1], v3[1]));
-     max:= MaxXYZComponent(affineVectorMake(v1[1], v2[1], v3[1]));
-     if (min > aabb.max[1]) or (max < aabb.min[1]) then exit;
+     min:= MinXYZComponent(affineVectorMake(v1.Coord[1], v2.Coord[1], v3.Coord[1]));
+     max:= MaxXYZComponent(affineVectorMake(v1.Coord[1], v2.Coord[1], v3.Coord[1]));
+     if (min > aabb.max.Coord[1]) or (max < aabb.min.Coord[1]) then exit;
 
-     min:= MinXYZComponent(affineVectorMake(v1[2], v2[2], v3[2]));
-     max:= MaxXYZComponent(affineVectorMake(v1[2], v2[2], v3[2]));
-     if (min > aabb.max[2]) or (max < aabb.min[2]) then exit;
+     min:= MinXYZComponent(affineVectorMake(v1.Coord[2], v2.Coord[2], v3.Coord[2]));
+     max:= MaxXYZComponent(affineVectorMake(v1.Coord[2], v2.Coord[2], v3.Coord[2]));
+     if (min > aabb.max.Coord[2]) or (max < aabb.min.Coord[2]) then exit;
 
      //test 2
      VectorCrossProduct(f[1], f[2], normal);
@@ -729,7 +733,7 @@ begin
                p1:= VectorDotProduct(a, v1);
                p2:= VectorDotProduct(a, v2);
                p3:= VectorDotProduct(a, v3);
-               r:= aabb.max[0] * abs(a[0]) + aabb.max[1] * abs(a[1]) + aabb.max[2] * abs(a[2]);
+               r:= aabb.max.Coord[0] * abs(a.Coord[0]) + aabb.max.Coord[1] * abs(a.Coord[1]) + aabb.max.Coord[2] * abs(a.Coord[2]);
                if (MinFloat(p1, p2, p3) > r) or (maxFloat(p1, p2, p3) < -r) then exit;
           end;
 
@@ -740,15 +744,15 @@ end;
 //
 procedure ExtractAABBCorners(const AABB: TAABB; var AABBCorners : TAABBCorners);
 begin
-  MakeVector(AABBCorners[0], AABB.min[0], AABB.min[1], AABB.min[2]);
-  MakeVector(AABBCorners[1], AABB.min[0], AABB.min[1], AABB.max[2]);
-  MakeVector(AABBCorners[2], AABB.min[0], AABB.max[1], AABB.min[2]);
-  MakeVector(AABBCorners[3], AABB.min[0], AABB.max[1], AABB.max[2]);
+  MakeVector(AABBCorners[0], AABB.min.Coord[0], AABB.min.Coord[1], AABB.min.Coord[2]);
+  MakeVector(AABBCorners[1], AABB.min.Coord[0], AABB.min.Coord[1], AABB.max.Coord[2]);
+  MakeVector(AABBCorners[2], AABB.min.Coord[0], AABB.max.Coord[1], AABB.min.Coord[2]);
+  MakeVector(AABBCorners[3], AABB.min.Coord[0], AABB.max.Coord[1], AABB.max.Coord[2]);
 
-  MakeVector(AABBCorners[4], AABB.max[0], AABB.min[1], AABB.min[2]);
-  MakeVector(AABBCorners[5], AABB.max[0], AABB.min[1], AABB.max[2]);
-  MakeVector(AABBCorners[6], AABB.max[0], AABB.max[1], AABB.min[2]);
-  MakeVector(AABBCorners[7], AABB.max[0], AABB.max[1], AABB.max[2]);
+  MakeVector(AABBCorners[4], AABB.max.Coord[0], AABB.min.Coord[1], AABB.min.Coord[2]);
+  MakeVector(AABBCorners[5], AABB.max.Coord[0], AABB.min.Coord[1], AABB.max.Coord[2]);
+  MakeVector(AABBCorners[6], AABB.max.Coord[0], AABB.max.Coord[1], AABB.min.Coord[2]);
+  MakeVector(AABBCorners[7], AABB.max.Coord[0], AABB.max.Coord[1], AABB.max.Coord[2]);
 end;
 
 //  AABBToBSphere
@@ -792,21 +796,21 @@ begin
   // AABB1 max must be <= to AABB2 max
 
   if
-   ((mainAABB.min[0]<testAABB.max[0]) and
-    (mainAABB.min[1]<testAABB.max[1]) and
-    (mainAABB.min[2]<testAABB.max[2]) and
+   ((mainAABB.min.Coord[0]<testAABB.max.Coord[0]) and
+    (mainAABB.min.Coord[1]<testAABB.max.Coord[1]) and
+    (mainAABB.min.Coord[2]<testAABB.max.Coord[2]) and
 
-    (testAABB.min[0]<mainAABB.max[0]) and
-    (testAABB.min[1]<mainAABB.max[1]) and
-    (testAABB.min[2]<mainAABB.max[2])) then
+    (testAABB.min.Coord[0]<mainAABB.max.Coord[0]) and
+    (testAABB.min.Coord[1]<mainAABB.max.Coord[1]) and
+    (testAABB.min.Coord[2]<mainAABB.max.Coord[2])) then
   begin
-    if(testAABB.min[0]>=mainAABB.min[0]) and
-      (testAABB.min[1]>=mainAABB.min[1]) and
-      (testAABB.min[2]>=mainAABB.min[2]) and
+    if(testAABB.min.Coord[0]>=mainAABB.min.Coord[0]) and
+      (testAABB.min.Coord[1]>=mainAABB.min.Coord[1]) and
+      (testAABB.min.Coord[2]>=mainAABB.min.Coord[2]) and
 
-      (testAABB.max[0]<=mainAABB.max[0]) and
-      (testAABB.max[1]<=mainAABB.max[1]) and
-      (testAABB.max[2]<=mainAABB.max[2]) then
+      (testAABB.max.Coord[0]<=mainAABB.max.Coord[0]) and
+      (testAABB.max.Coord[1]<=mainAABB.max.Coord[1]) and
+      (testAABB.max.Coord[2]<=mainAABB.max.Coord[2]) then
       result := scContainsFully
     else
       result := scContainsPartially;
@@ -899,13 +903,13 @@ function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector
 begin
   result := v;
 
-  if result[0]<AABB.min[0] then result[0] := AABB.min[0];
-  if result[1]<AABB.min[1] then result[1] := AABB.min[1];
-  if result[2]<AABB.min[2] then result[2] := AABB.min[2];
+  if result.Coord[0]<AABB.min.Coord[0] then result.Coord[0] := AABB.min.Coord[0];
+  if result.Coord[1]<AABB.min.Coord[1] then result.Coord[1] := AABB.min.Coord[1];
+  if result.Coord[2]<AABB.min.Coord[2] then result.Coord[2] := AABB.min.Coord[2];
 
-  if result[0]>AABB.max[0] then result[0] := AABB.max[0];
-  if result[1]>AABB.max[1] then result[1] := AABB.max[1];
-  if result[2]>AABB.max[2] then result[2] := AABB.max[2];
+  if result.Coord[0]>AABB.max.Coord[0] then result.Coord[0] := AABB.max.Coord[0];
+  if result.Coord[1]>AABB.max.Coord[1] then result.Coord[1] := AABB.max.Coord[1];
+  if result.Coord[2]>AABB.max.Coord[2] then result.Coord[2] := AABB.max.Coord[2];
 end;
 
 // IncludeInClipRect
@@ -931,22 +935,22 @@ var
 begin
    minmax[0]:=@aabb.min;
    minmax[1]:=@aabb.max;
-   v[3]:=1;
+   v.Coord[3]:=1;
    for i:=0 to 7 do begin
-      v[0]:=minmax[i and 1][0];
-      v[1]:=minmax[(i shr 1) and 1][1];
-      v[2]:=minmax[(i shr 2) and 1][2];
+      v.Coord[0]:=minmax[i and 1].Coord[0];
+      v.Coord[1]:=minmax[(i shr 1) and 1].Coord[1];
+      v.Coord[2]:=minmax[(i shr 2) and 1].Coord[2];
 
       // Project
       vt:=VectorTransform(v, modelViewProjection);
-      ScaleVector(vt, 1/vt[3]);
+      ScaleVector(vt, 1/vt.Coord[3]);
 
       // Convert to screen coordinates
       if i>0 then
-         IncludeInClipRect(Result, viewportSizeX*(vt[0]+1)*0.5, viewportSizeY*(vt[1]+1)*0.5)
+         IncludeInClipRect(Result, viewportSizeX*(vt.Coord[0]+1)*0.5, viewportSizeY*(vt.Coord[1]+1)*0.5)
       else begin
-         Result.Left:=viewportSizeX*(vt[0]+1)*0.5;
-         Result.Top:=viewportSizeY*(vt[1]+1)*0.5;
+         Result.Left:=viewportSizeX*(vt.Coord[0]+1)*0.5;
+         Result.Top:=viewportSizeY*(vt.Coord[1]+1)*0.5;
          Result.Right:=Result.Left;
          Result.Bottom:=Result.Top;
       end;

@@ -6,6 +6,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - Added VectorTypes Unit
       <li>29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
       <li>05/03/03 - EG - Added RemapIndicesToIndicesMap
       <li>20/01/03 - EG - Added UnifyTrianglesWinding
@@ -23,7 +24,7 @@ unit MeshUtils;
 
 interface
 
-uses PersistentClasses, VectorLists, VectorGeometry;
+uses PersistentClasses, VectorLists, VectorTypes, VectorGeometry;
 
 {: Converts a triangle strips into a triangle list.<p>
    Vertices are added to list, based on the content of strip. Both non-indexed

@@ -12,6 +12,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array   
     <li>03/05/04 - SG - Tri-mesh and various fixes/enhancements.
     <li>23/04/04 - SG - Fixes for object registration,
                         Exception raised now if ODE fails to initialize at run-time.
@@ -1663,11 +1664,11 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FBody) then exit;
-  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  R[0]:=Mat.Coord[0].Coord[0]; R[1]:=Mat.Coord[1].Coord[0]; R[2]:= Mat.Coord[2].Coord[0]; R[3]:= 0;
+  R[4]:=Mat.Coord[0].Coord[1]; R[5]:=Mat.Coord[1].Coord[1]; R[6]:= Mat.Coord[2].Coord[1]; R[7]:= 0;
+  R[8]:=Mat.Coord[0].Coord[2]; R[9]:=Mat.Coord[1].Coord[2]; R[10]:=Mat.Coord[2].Coord[2]; R[11]:=0;
   dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat[3][0],Mat[3][1],Mat[3][2]);
+  dBodySetPosition(FBody,Mat.Coord[3].Coord[0],Mat.Coord[3].Coord[1],Mat.Coord[3].Coord[2]);
   FRealignODE:=False;
 end;
 
@@ -1715,7 +1716,7 @@ end;
 procedure TGLODEDynamicObject.AddForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForce(FBody,Force[0],Force[1],Force[2]);
+    dBodyAddForce(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2]);
 end;
 
 // AddlForceAtPos
@@ -1723,7 +1724,7 @@ end;
 procedure TGLODEDynamicObject.AddForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddForceAtRelPos
@@ -1731,7 +1732,7 @@ end;
 procedure TGLODEDynamicObject.AddForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtRelPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddRelForce
@@ -1739,7 +1740,7 @@ end;
 procedure TGLODEDynamicObject.AddRelForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForce(FBody,Force[0],Force[1],Force[2]);
+    dBodyAddRelForce(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2]);
 end;
 
 // AddRelForceAtPos
@@ -1747,7 +1748,7 @@ end;
 procedure TGLODEDynamicObject.AddRelForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddRelForceAtRelPos
@@ -1755,7 +1756,7 @@ end;
 procedure TGLODEDynamicObject.AddRelForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddRelForceAtRelPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddTorque
@@ -1763,7 +1764,7 @@ end;
 procedure TGLODEDynamicObject.AddTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddTorque(FBody,Torque[0],Torque[1],Torque[2]);
+    dBodyAddTorque(FBody,Torque.Coord[0],Torque.Coord[1],Torque.Coord[2]);
 end;
 
 // AddRelTorque
@@ -1771,7 +1772,7 @@ end;
 procedure TGLODEDynamicObject.AddRelTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelTorque(FBody,Torque[0],Torque[1],Torque[2]);
+    dBodyAddRelTorque(FBody,Torque.Coord[0],Torque.Coord[1],Torque.Coord[2]);
 end;
 
 
@@ -2229,11 +2230,11 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FBody) then exit;
-  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  R[0]:=Mat.Coord[0].Coord[0]; R[1]:=Mat.Coord[1].Coord[0]; R[2]:= Mat.Coord[2].Coord[0]; R[3]:= 0;
+  R[4]:=Mat.Coord[0].Coord[1]; R[5]:=Mat.Coord[1].Coord[1]; R[6]:= Mat.Coord[2].Coord[1]; R[7]:= 0;
+  R[8]:=Mat.Coord[0].Coord[2]; R[9]:=Mat.Coord[1].Coord[2]; R[10]:=Mat.Coord[2].Coord[2]; R[11]:=0;
   dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat[3][0],Mat[3][1],Mat[3][2]);
+  dBodySetPosition(FBody,Mat.Coord[3].Coord[0],Mat.Coord[3].Coord[1],Mat.Coord[3].Coord[2]);
 end;
 
 // CalculateMass
@@ -2315,7 +2316,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForce(FBody,Force[0],Force[1],Force[2]);
+    dBodyAddForce(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2]);
 end;
 
 // AddlForceAtPos
@@ -2323,7 +2324,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddForceAtRelPos
@@ -2331,7 +2332,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtRelPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddRelForce
@@ -2339,7 +2340,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddRelForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForce(FBody,Force[0],Force[1],Force[2]);
+    dBodyAddRelForce(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2]);
 end;
 
 // AddRelForceAtPos
@@ -2347,7 +2348,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddRelForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddForceAtPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddRelForceAtRelPos
@@ -2355,7 +2356,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddRelForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+    dBodyAddRelForceAtRelPos(FBody,Force.Coord[0],Force.Coord[1],Force.Coord[2],Pos.Coord[0],Pos.Coord[1],Pos.Coord[2]);
 end;
 
 // AddTorque
@@ -2363,7 +2364,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddTorque(FBody,Torque[0],Torque[1],Torque[2]);
+    dBodyAddTorque(FBody,Torque.Coord[0],Torque.Coord[1],Torque.Coord[2]);
 end;
 
 // AddRelTorque
@@ -2371,7 +2372,7 @@ end;
 procedure TGLODEDynamicBehaviour.AddRelTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelTorque(FBody,Torque[0],Torque[1],Torque[2]);
+    dBodyAddRelTorque(FBody,Torque.Coord[0],Torque.Coord[1],Torque.Coord[2]);
 end;
 
 
@@ -2547,7 +2548,7 @@ end;
 // AbsolutePosition
 function TODEBaseElement.AbsolutePosition: TAffineVector;
 begin
-  Result:=AffineVectorMake(AbsoluteMatrix[3]);
+  Result:=AffineVectorMake(AbsoluteMatrix.Coord[3]);
 end;
 
 // AlignGeomElementToMatrix
@@ -2557,10 +2558,10 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FGeomElement) then exit;
-  dGeomSetPosition(FGeomElement,Mat[3][0],Mat[3][1],Mat[3][2]);
-  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
-  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
-  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  dGeomSetPosition(FGeomElement,Mat.Coord[3].Coord[0],Mat.Coord[3].Coord[1],Mat.Coord[3].Coord[2]);
+  R[0]:=Mat.Coord[0].Coord[0]; R[1]:=Mat.Coord[1].Coord[0]; R[2]:= Mat.Coord[2].Coord[0]; R[3]:= 0;
+  R[4]:=Mat.Coord[0].Coord[1]; R[5]:=Mat.Coord[1].Coord[1]; R[6]:= Mat.Coord[2].Coord[1]; R[7]:= 0;
+  R[8]:=Mat.Coord[0].Coord[2]; R[9]:=Mat.Coord[1].Coord[2]; R[10]:=Mat.Coord[2].Coord[2]; R[11]:=0;
   dGeomSetRotation(FGeomElement,R);
   FRealignODE:=False;
 end;
@@ -2708,11 +2709,11 @@ function TODEBaseElement.CalculateMass: TdMass;
 var
   R : TdMatrix3;
 begin
-  R[0]:=FLocalMatrix[0][0]; R[1]:=FLocalMatrix[1][0]; R[2]:= FLocalMatrix[2][0]; R[3]:= 0;
-  R[4]:=FLocalMatrix[0][1]; R[5]:=FLocalMatrix[1][1]; R[6]:= FLocalMatrix[2][1]; R[7]:= 0;
-  R[8]:=FLocalMatrix[0][2]; R[9]:=FLocalMatrix[1][2]; R[10]:=FLocalMatrix[2][2]; R[11]:=0;
+  R[0]:=FLocalMatrix.Coord[0].Coord[0]; R[1]:=FLocalMatrix.Coord[1].Coord[0]; R[2]:= FLocalMatrix.Coord[2].Coord[0]; R[3]:= 0;
+  R[4]:=FLocalMatrix.Coord[0].Coord[1]; R[5]:=FLocalMatrix.Coord[1].Coord[1]; R[6]:= FLocalMatrix.Coord[2].Coord[1]; R[7]:= 0;
+  R[8]:=FLocalMatrix.Coord[0].Coord[2]; R[9]:=FLocalMatrix.Coord[1].Coord[2]; R[10]:=FLocalMatrix.Coord[2].Coord[2]; R[11]:=0;
   dMassRotate(FMass,R);
-  dMassTranslate(FMass,FLocalMatrix[3][0],FLocalMatrix[3][1],FLocalMatrix[3][2]);
+  dMassTranslate(FMass,FLocalMatrix.Coord[3].Coord[0],FLocalMatrix.Coord[3].Coord[1],FLocalMatrix.Coord[3].Coord[2]);
   result:=FMass;
 end;
 
@@ -2735,19 +2736,19 @@ end;
 //
 procedure TODEBaseElement.RebuildMatrix;
 begin
-  VectorCrossProduct(FUp.AsVector,FDirection.AsVector,FLocalMatrix[0]);
-  SetVector(FLocalMatrix[1],FUp.AsVector);
-  SetVector(FLocalMatrix[2],FDirection.AsVector);
-  SetVector(FLocalMatrix[3],FPosition.AsVector);
+  VectorCrossProduct(FUp.AsVector,FDirection.AsVector,FLocalMatrix.Coord[0]);
+  SetVector(FLocalMatrix.Coord[1],FUp.AsVector);
+  SetVector(FLocalMatrix.Coord[2],FDirection.AsVector);
+  SetVector(FLocalMatrix.Coord[3],FPosition.AsVector);
 end;
 
 // RebuildVectors
 //
 procedure TODEBaseElement.RebuildVectors;
 begin
-  FUp.SetVector(FLocalMatrix[1][0],FLocalMatrix[1][1],FLocalMatrix[1][2]);
-  FDirection.SetVector(FLocalMatrix[2][0],FLocalMatrix[2][1],FLocalMatrix[2][2]);
-  FPosition.SetPoint(FLocalMatrix[3][0],FLocalMatrix[3][1],FLocalMatrix[3][2]);
+  FUp.SetVector(FLocalMatrix.Coord[1].Coord[0],FLocalMatrix.Coord[1].Coord[1],FLocalMatrix.Coord[1].Coord[2]);
+  FDirection.SetVector(FLocalMatrix.Coord[2].Coord[0],FLocalMatrix.Coord[2].Coord[1],FLocalMatrix.Coord[2].Coord[2]);
+  FPosition.SetPoint(FLocalMatrix.Coord[3].Coord[0],FLocalMatrix.Coord[3].Coord[1],FLocalMatrix.Coord[3].Coord[2]);
 end;
 
 // SetDensity
@@ -3865,8 +3866,8 @@ begin
   if Assigned(Geom) then begin
     Dir := AbsoluteDirection;
     Pos := AbsolutePosition;
-    d := (Dir[0]*Pos[0]+Dir[1]*Pos[1]+Dir[2]*Pos[2]);
-    dGeomPlaneSetParams(Geom,Dir[0],Dir[1],Dir[2],d);
+    d := (Dir.Coord[0]*Pos.Coord[0]+Dir.Coord[1]*Pos.Coord[1]+Dir.Coord[2]*Pos.Coord[2]);
+    dGeomPlaneSetParams(Geom,Dir.Coord[0],Dir.Coord[1],Dir.Coord[2],d);
   end;
 end;
 
@@ -4512,7 +4513,7 @@ end;
 procedure TODEJointHinge.SetAnchor(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetHingeAnchor(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetHingeAnchor(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // SetAxis
@@ -4520,7 +4521,7 @@ end;
 procedure TODEJointHinge.SetAxis(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetHingeAxis(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetHingeAxis(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // FriendlyName
@@ -4557,7 +4558,7 @@ end;
 procedure TODEJointBall.SetAnchor(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetBallAnchor(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetBallAnchor(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // FriendlyName
@@ -4594,7 +4595,7 @@ end;
 procedure TODEJointSlider.SetAxis(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetSliderAxis(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetSliderAxis(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // FriendlyName
@@ -4660,7 +4661,7 @@ end;
 procedure TODEJointHinge2.SetAnchor(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetHinge2Anchor(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetHinge2Anchor(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // SetAxis
@@ -4668,7 +4669,7 @@ end;
 procedure TODEJointHinge2.SetAxis(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetHinge2Axis1(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetHinge2Axis1(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // SetAxis2
@@ -4676,7 +4677,7 @@ end;
 procedure TODEJointHinge2.SetAxis2(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetHinge2Axis2(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetHinge2Axis2(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // FriendlyName
@@ -4713,7 +4714,7 @@ end;
 procedure TODEJointUniversal.SetAnchor(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetUniversalAnchor(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetUniversalAnchor(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // SetAxis
@@ -4721,7 +4722,7 @@ end;
 procedure TODEJointUniversal.SetAxis(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetUniversalAxis1(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetUniversalAxis1(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // SetAxis2
@@ -4729,7 +4730,7 @@ end;
 procedure TODEJointUniversal.SetAxis2(Value : TAffineVector);
 begin
   if FJointID<>0 then
-    dJointSetUniversalAxis2(FJointID,Value[0],Value[1],Value[2]);
+    dJointSetUniversalAxis2(FJointID,Value.Coord[0],Value.Coord[1],Value.Coord[2]);
 end;
 
 // FriendlyName

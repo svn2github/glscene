@@ -2,6 +2,8 @@
 {: Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               fixed BCB Compiler error "E2370 Simple type name expected"
       <li>07/05/04 - EG - Perspective distortion properly applied
       <li>06/05/04 - EG - Fixes, improvements, clean ups
       <li>04/05/04 - EG - Reworked architecture
@@ -98,8 +100,14 @@ type
 
    // Imposter loading events
    //
+   {$IFDEF GLS_CPPB}
+   TLoadingImposterEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject;
+                                     destImposter : TImposter; var result : TGLBitmap32) of object;
+   {$ELSE}
    TLoadingImposterEvent = function (Sender : TObject; impostoredObject : TGLBaseSceneObject;
                                      destImposter : TImposter) : TGLBitmap32 of object;
+   {$ENDIF}
+
    TImposterLoadedEvent = procedure (Sender : TObject; impostoredObject : TGLBaseSceneObject;
                                      destImposter : TImposter) of object;
 
@@ -513,15 +521,15 @@ begin
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
    end else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-   glGetFloatv(GL_MODELVIEW_MATRIX, @mat[0][0]);
-   FVx[0]:=mat[0][0];
-   FVx[1]:=mat[1][0];
-   FVx[2]:=mat[2][0];
+   glGetFloatv(GL_MODELVIEW_MATRIX, @mat.Coord[0].Coord[0]);
+   FVx.Coord[0]:=mat.Coord[0].Coord[0];
+   FVx.Coord[1]:=mat.Coord[1].Coord[0];
+   FVx.Coord[2]:=mat.Coord[2].Coord[0];
    NormalizeVector(FVx);
 
-   FVy[0]:=mat[0][1];
-   FVy[1]:=mat[1][1];
-   FVy[2]:=mat[2][1];
+   FVy.Coord[0]:=mat.Coord[0].Coord[1];
+   FVy.Coord[1]:=mat.Coord[1].Coord[1];
+   FVy.Coord[2]:=mat.Coord[2].Coord[1];
    NormalizeVector(FVy);
    if impoPerspectiveCorrection in Builder.ImposterOptions then begin
       cosAlpha:=VectorDotProduct(FVy, YHmgVector);
@@ -550,7 +558,7 @@ procedure TImposter.Render(var rci : TRenderContextInfo;
                            const objPos, localCameraPos : TVector;
                            size : Single);
 const
-   cQuadTexExtents : TVector = (0, 0, 1, 1);
+   cQuadTexExtents : TVector = (X:0; Y:0; Z:1; W:1);
 begin
    RenderQuad(cQuadTexExtents, objPos, size);
 end;
@@ -562,13 +570,13 @@ var
    pos : TVector;
 begin
    VectorCombine(objPos, FQuad[0], size, pos);
-   glTexCoord2f(texExtents[2], texExtents[3]);  glVertex3fv(@pos);
+   glTexCoord2f(texExtents.Coord[2], texExtents.Coord[3]);  glVertex3fv(@pos);
    VectorCombine(objPos, FQuad[1], size, pos);
-   glTexCoord2f(texExtents[0], texExtents[3]);  glVertex3fv(@pos);
+   glTexCoord2f(texExtents.Coord[0], texExtents.Coord[3]);  glVertex3fv(@pos);
    VectorCombine(objPos, FQuad[2], size, pos);
-   glTexCoord2f(texExtents[0], texExtents[1]);  glVertex3fv(@pos);
+   glTexCoord2f(texExtents.Coord[0], texExtents.Coord[1]);  glVertex3fv(@pos);
    VectorCombine(objPos, FQuad[3], size, pos);
-   glTexCoord2f(texExtents[2], texExtents[1]);  glVertex3fv(@pos);
+   glTexCoord2f(texExtents.Coord[2], texExtents.Coord[1]);  glVertex3fv(@pos);
 end;
 
 // EndRender
@@ -660,7 +668,11 @@ begin
       imp:=TImposter(ImposterRegister[i]);
       if (imp.ImpostoredObject<>nil) and (imp.Texture.Handle=0) then begin
          if Assigned(FOnLoadingImposter) then
+            {$IFDEF GLS_CPPB}
+            FOnLoadingImposter(Self, imp.ImpostoredObject, imp, bmp32)
+            {$ELSE}
             bmp32:=FOnLoadingImposter(Self, imp.ImpostoredObject, imp)
+            {$ENDIF}
          else bmp32:=nil;
          if not Assigned(bmp32) then
             DoPrepareImposter(rci, imp.ImpostoredObject, imp)
@@ -1028,10 +1040,10 @@ begin                  // inherited; exit;
 
    // determine closest corona
    bestCorona:=siBuilder.Coronas.CoronaForElevationTangent(
-                     localCameraPos[1]/VectorLength(localCameraPos[0], localCameraPos[2]));
+                     localCameraPos.Coord[1]/VectorLength(localCameraPos.Coord[0], localCameraPos.Coord[2]));
 
    // determine closest sample in corona
-   azimuthAngle:=FastArcTan2(localCameraPos[2], localCameraPos[0])+cPI;
+   azimuthAngle:=FastArcTan2(localCameraPos.Coord[2], localCameraPos.Coord[0])+cPI;
    i:=Round(azimuthAngle*bestCorona.Samples*cInv2PI);
    if i<0 then
       i:=0
@@ -1039,13 +1051,13 @@ begin                  // inherited; exit;
       i:=bestCorona.Samples-1;
    i:=bestCorona.FSampleBaseIndex+i;
 
-   tdx:=siBuilder.FInvSamplesPerAxis[0];
-   tdy:=siBuilder.FInvSamplesPerAxis[1];
+   tdx:=siBuilder.FInvSamplesPerAxis.Coord[0];
+   tdy:=siBuilder.FInvSamplesPerAxis.Coord[1];
    DivMod(i, siBuilder.SamplesPerAxis.X, y, x);
-   texExtents[0]:=tdx*x;
-   texExtents[1]:=tdy*y;
-   texExtents[2]:=texExtents[0]+tdx;
-   texExtents[3]:=texExtents[1]+tdy;
+   texExtents.Coord[0]:=tdx*x;
+   texExtents.Coord[1]:=tdy*y;
+   texExtents.Coord[2]:=texExtents.Coord[0]+tdx;
+   texExtents.Coord[3]:=texExtents.Coord[1]+tdy;
 
    // then render it
    RenderQuad(texExtents, objPos, Size);
@@ -1202,8 +1214,8 @@ begin
 
    FSamplesPerAxis.X:=FTextureSize.X div SampleSize;
    FSamplesPerAxis.Y:=FTextureSize.Y div SampleSize;
-   FInvSamplesPerAxis[0]:=1/FSamplesPerAxis.X;
-   FInvSamplesPerAxis[1]:=1/FSamplesPerAxis.Y;
+   FInvSamplesPerAxis.Coord[0]:=1/FSamplesPerAxis.X;
+   FInvSamplesPerAxis.Coord[1]:=1/FSamplesPerAxis.Y;
    Assert(FSamplesPerAxis.X*FSamplesPerAxis.Y>=Coronas.SampleCount,
           'User specified bitmap and imposter parameters don''t match');
 
@@ -1242,7 +1254,7 @@ begin
 
    glGetIntegerv(GL_MAX_LIGHTS, @maxLight);
    glGetIntegerv(GL_VIEWPORT, @viewPort);
-   Assert((viewPort[2]>=SampleSize) and (viewPort[3]>=SampleSize),
+   Assert((viewPort.Coord[2]>=SampleSize) and (viewPort.Coord[3]>=SampleSize),
           'ViewPort too small to render imposter samples!');
 
    // Setup the buffer in a suitable fashion for our needs
@@ -1255,12 +1267,12 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
-   fx:=radius*viewPort[2]/SampleSize;
-   fy:=radius*viewPort[3]/SampleSize;
+   fx:=radius*viewPort.Coord[2]/SampleSize;
+   fy:=radius*viewPort.Coord[3]/SampleSize;
    yOffset:=cReferenceToPos[ImposterReference]*radius;
    glOrtho(-fx, fx, yOffset-fy, yOffset+fy, radius*0.5, radius*5);
-   xSrc:=(viewPort[2]-SampleSize) div 2;
-   ySrc:=(viewPort[3]-SampleSize) div 2;
+   xSrc:=(viewPort.Coord[2]-SampleSize) div 2;
+   ySrc:=(viewPort.Coord[3]-SampleSize) div 2;
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
@@ -1287,7 +1299,7 @@ begin
 
          glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
          glLoadIdentity;
-         gluLookAt(cameraOffset[0], cameraOffset[1], cameraOffset[2],
+         gluLookAt(cameraOffset.Coord[0], cameraOffset.Coord[1], cameraOffset.Coord[2],
                    0, 0, 0, 0, 1, 0);
          if Lighting=siblStaticLighting then
             (rci.scene as TGLScene).SetupLights(maxLight);

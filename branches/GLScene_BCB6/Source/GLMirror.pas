@@ -5,7 +5,8 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>18/07/04 - Orlando - added custom shapes
+      <li>18/07/04 - Orlando - added custom shapes	
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>13/02/03 - DanB - added TGLMirror.AxisAlignedDimensionsUnscaled
       <li>13/11/02 - EG - Fixed TGLMirror.DoRender transform
       <li>06/11/02 - EG - Fixed Stencil setup
@@ -293,16 +294,16 @@ var
    quadric : PGLUquadricObj;
 begin
   if msRect = FShape then
-  begin
-    hw:=FWidth*0.5;
-    hh:=FHeight*0.5;
-    glNormal3fv(@ZVector);
-    glBegin(GL_QUADS);
+begin
+   hw:=FWidth*0.5;
+   hh:=FHeight*0.5;
+   glNormal3fv(@ZVector);
+   glBegin(GL_QUADS);
       glVertex3f( hw,  hh, 0);
       glVertex3f(-hw,  hh, 0);
       glVertex3f(-hw, -hh, 0);
       glVertex3f( hw, -hh, 0);
-    glEnd;
+   glEnd;
   end
   else
   begin
@@ -333,13 +334,13 @@ begin
 
       glBegin(GL_QUADS);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(Self.Width*0.5, Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.999);
+         glVertex3f(p.Coord[0], p.Coord[1], 0.999);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width*0.5, Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.999);
+         glVertex3f(p.Coord[0], p.Coord[1], 0.999);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width*0.5, -Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.999);
+         glVertex3f(p.Coord[0], p.Coord[1], 0.999);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(Self.Width*0.5, -Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.999);
+         glVertex3f(p.Coord[0], p.Coord[1], 0.999);
       glEnd;
 
       glColorMask(True, True, True, True);

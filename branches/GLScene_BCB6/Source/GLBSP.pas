@@ -5,6 +5,8 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Added VectorTypes Unit
       <li>07/03/03 - EG - T-junctions now properly supported and repaired
       <li>05/03/03 - EG - Preliminary BSP splitting support
 	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
@@ -17,7 +19,7 @@ unit GLBSP;
 interface
 
 uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, VectorGeometry,
-   VectorLists;
+   VectorTypes, VectorLists;
 
 type
 
@@ -334,7 +336,7 @@ var
       local.position:=Owner.Owner.AbsoluteToLocal(absPos);
       SetVector(v, absRadius, absRadius, absRadius, 0);
       v:=Owner.Owner.AbsoluteToLocal(v);
-      local.radius:=MaxFloat(v);
+      local.radius:=MaxFloat(v.Coord);
    end;
 
 begin
@@ -530,10 +532,10 @@ function TBSPMeshObject.FindNodeByPoint(aPoint : TVector) : TFGBSPNode;
       if node.VertexIndices.Count > 0 then
          Result:=nodeIndex
       else begin
-         eval:=node.SplitPlane[0]*aPoint[0]+
-               node.SplitPlane[1]*aPoint[1]+
-               node.SplitPlane[2]*aPoint[2]-
-               node.SplitPlane[3];
+         eval:=node.SplitPlane.Coord[0]*aPoint.Coord[0]+
+               node.SplitPlane.Coord[1]*aPoint.Coord[1]+
+               node.SplitPlane.Coord[2]*aPoint.Coord[2]-
+               node.SplitPlane.Coord[3];
          if eval>=0 then
             idx:=node.PositiveSubNodeIndex
          else
@@ -995,21 +997,21 @@ procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates : TIntegerList);
       // compute extent and its inversion
       vector:=VectorSubtract(vB^, vA^);
       for i:=0 to 2 do
-         if vector[i]<>0 then
-            invVector[i]:=1/vector[i]
-         else invVector[i]:=0;
+         if vector.Coord[i]<>0 then
+            invVector.Coord[i]:=1/vector.Coord[i]
+         else invVector.Coord[i]:=0;
       // lookup all candidates
       for i:=0 to candidatesList.Count-1 do begin
          k:=candidatesList.List[i];
          if (k=iA) or (k=iB) or (k=iC) then Continue;
          candidate:=@vertices[k];
-         if     (candidate[0]>boxMin[0]) and (candidate[1]>boxMin[1]) and (candidate[2]>boxMin[2])
-            and (candidate[0]<boxMax[0]) and (candidate[1]<boxMax[1]) and (candidate[2]<boxMax[2]) then begin
+         if     (candidate.Coord[0]>boxMin.Coord[0]) and (candidate.Coord[1]>boxMin.Coord[1]) and (candidate.Coord[2]>boxMin.Coord[2])
+            and (candidate.Coord[0]<boxMax.Coord[0]) and (candidate.Coord[1]<boxMax.Coord[1]) and (candidate.Coord[2]<boxMax.Coord[2]) then begin
             f:=candidate^;
             SubtractVector(f, vA^);
             ScaleVector(f, invVector);
-            if     (Abs(f[0]-f[1])<cTJunctionEpsilon) and (Abs(f[0]-f[2])<cTJunctionEpsilon)
-               and (Abs(f[1]-f[2])<cTJunctionEpsilon) then begin
+            if     (Abs(f.Coord[0]-f.Coord[1])<cTJunctionEpsilon) and (Abs(f.Coord[0]-f.Coord[2])<cTJunctionEpsilon)
+               and (Abs(f.Coord[1]-f.Coord[2])<cTJunctionEpsilon) then begin
                Result:=AddLerpIfDistinct(iA, iB, k);
                Break;
             end;

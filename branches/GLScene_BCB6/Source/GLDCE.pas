@@ -16,6 +16,7 @@
   - Solid = An object can still get the collision event but it "walks-thru"
 
   <b>History : </b><font size=-1><ul>
+    <li>08/10/04 - LR, YHC - BCB corrections: use record instead array    
     <li>03/09/04 - LucasG. - First release
     <li>29/07/04 - LucasG. - Creation
   </ul></font>
@@ -405,12 +406,12 @@ procedure TGLBDCEBody.Jump(jHeight, jSpeed: Single);
 begin
   if (not FJumping) and (FInGround) then
   begin
-    FJumpPos := OwnerBaseSceneObject.AbsolutePosition[1];
-    FJumpHeight := OwnerBaseSceneObject.AbsolutePosition[1] + jHeight;
+    FJumpPos := OwnerBaseSceneObject.AbsolutePosition.Coord[1];
+    FJumpHeight := OwnerBaseSceneObject.AbsolutePosition.Coord[1] + jHeight;
     FJumpForce := jSpeed;
-    FJumpSpeed[0] := 0;//jSpeed * FGroundBounce[0];
-    FJumpSpeed[1] := jSpeed * FGroundNormal[1];
-    FJumpSpeed[2] := 0;//jSpeed * FGroundBounce[2];
+    FJumpSpeed.Coord[0] := 0;//jSpeed * FGroundBounce.Coord[0];
+    FJumpSpeed.Coord[1] := jSpeed * FGroundNormal.Coord[1];
+    FJumpSpeed.Coord[2] := 0;//jSpeed * FGroundBounce.Coord[2];
     FJumping := True;
   end;
 end;
@@ -421,9 +422,9 @@ var Fat,fAvg, fAbs: Single;
 begin
   //if not FInGround then ScaleVector(FForce, 0.5);
 
-  FSpeed[0] := (FSpeed[0]) + (FForce[0] * deltaTime);
-  FSpeed[1] := (FSpeed[1]) + (FForce[1] * deltaTime);
-  FSpeed[2] := (FSpeed[2]) + (FForce[2] * deltaTime);
+  FSpeed.Coord[0] := (FSpeed.Coord[0]) + (FForce.Coord[0] * deltaTime);
+  FSpeed.Coord[1] := (FSpeed.Coord[1]) + (FForce.Coord[1] * deltaTime);
+  FSpeed.Coord[2] := (FSpeed.Coord[2]) + (FForce.Coord[2] * deltaTime);
 
   //Do jump according to the ground normal
   if FJumping then
@@ -435,9 +436,9 @@ begin
   Dir := OwnerBaseSceneObject.Direction.AsAffineVector;
   Up := OwnerBaseSceneObject.Up.AsAffineVector;
   Left := AffineVectorMake(OwnerBaseSceneObject.LeftVector);
-  Distance[0] := (Left[0] * FSpeed[0]) + (Up[0] * FSpeed[1]) + (Dir[0] * FSpeed[2]);
-  Distance[1] := (Left[1] * FSpeed[0]) + (Up[1] * FSpeed[1]) + (Dir[1] * FSpeed[2]);
-  Distance[2] := (Left[2] * FSpeed[0]) + (Up[2] * FSpeed[1]) + (Dir[2] * FSpeed[2]);
+  Distance.Coord[0] := (Left.Coord[0] * FSpeed.Coord[0]) + (Up.Coord[0] * FSpeed.Coord[1]) + (Dir.Coord[0] * FSpeed.Coord[2]);
+  Distance.Coord[1] := (Left.Coord[1] * FSpeed.Coord[0]) + (Up.Coord[1] * FSpeed.Coord[1]) + (Dir.Coord[1] * FSpeed.Coord[2]);
+  Distance.Coord[2] := (Left.Coord[2] * FSpeed.Coord[0]) + (Up.Coord[2] * FSpeed.Coord[1]) + (Dir.Coord[2] * FSpeed.Coord[2]);
   //Add jump vector
   AddVector(Distance,FJumpSpeed);
 

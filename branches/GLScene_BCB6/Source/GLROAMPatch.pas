@@ -2,6 +2,7 @@
 {: Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>25/04/04 - EG - Occlusion testing support
       <li>06/02/03 - EG - Adaptative variance computation
       <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
@@ -537,8 +538,8 @@ var
    s : Integer;
 begin
    tessMaxDepth:=FMaxDepth;
-   tessObserverPosX:=Round(FObserverPosition[0]);
-   tessObserverPosY:=Round(FObserverPosition[1]);
+   tessObserverPosX:=Round(FObserverPosition.Coord[0]);
+   tessObserverPosY:=Round(FObserverPosition.Coord[1]);
 
    if HighRes then begin
       FullRightTess(FTLNode, 1);
@@ -555,8 +556,8 @@ begin
          FullLeftTess(FBRNode, 1);
       if Assigned(FWest) and FWest.HighRes then
          FullLeftTess(FTLNode, 1);
-      if FObserverPosition[2]>0 then
-         tessFrameVarianceDelta:=Round(Sqr(FObserverPosition[2]*(1/16)))
+      if FObserverPosition.Coord[2]>0 then
+         tessFrameVarianceDelta:=Round(Sqr(FObserverPosition.Coord[2]*(1/16)))
       else tessFrameVarianceDelta:=0;
    end;
    s:=FPatchSize;
@@ -790,13 +791,13 @@ begin
    texCoords.Count:=Sqr(rowLength);
    texCoordsList:=PTexPoint(texCoords.List);
    for y:=0 to FPatchSize do begin
-      p[1]:=y;
-      tex.T:=p[1];
+      p.Coord[1]:=y;
+      tex.T:=p.Coord[1];
       row:=raster[y];
       for x:=0 to FPatchSize do begin
-         p[0]:=x;
-         tex.S:=p[0];
-         p[2]:=row[x];
+         p.Coord[0]:=x;
+         tex.S:=p.Coord[0];
+         p.Coord[2]:=row[x];
          verticesList^:=p;
          Inc(verticesList);
          texCoordsList^:=tex;

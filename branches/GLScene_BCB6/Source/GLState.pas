@@ -2,8 +2,9 @@
 
    Miscellaneous support routines & classes.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)
+   <b>History : </b><font size=-1><ul>
+      <li>04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)   
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>07/01/04 - EG - Introduced TGLStateCache
       <li>05/09/03 - EG - Creation from GLMisc split
    </ul></font>
@@ -231,8 +232,8 @@ var
    i : Integer;
 begin
    i:=aFace-GL_FRONT;
-   if FFrontBackColors[i][2][3]<>alpha then begin
-      FFrontBackColors[i][2][3]:=alpha;
+   if FFrontBackColors[i][2].Coord[3]<>alpha then begin
+      FFrontBackColors[i][2].Coord[3]:=alpha;
      	glMaterialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
    end;
 end;
@@ -241,9 +242,9 @@ end;
 //
 procedure TGLStateCache.ResetGLMaterialColors;
 const
-   clrBlack  : TVector = (0,    0,    0,    1);
-   clrGray20 : TVector = (0.20, 0.20, 0.20, 1);
-   clrGray80 : TVector = (0.80, 0.80, 0.80, 1);
+   clrBlack  : TVector = (X:0;    Y:0;    Z:0;    W:1);
+   clrGray20 : TVector = (X:0.20; Y:0.20; Z:0.20; W:1);
+   clrGray80 : TVector = (X:0.80; Y:0.80; Z:0.80; W:1);
 begin
   	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, @clrGray20);
   	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, @clrGray80);
@@ -281,7 +282,7 @@ procedure TGLStateCache.SetGLTextureMatrix(const matrix : TMatrix);
 begin
    FTextureMatrixIsIdenty:=False;
    glMatrixMode(GL_TEXTURE);
-   glLoadMatrixf(PGLFloat(@matrix[0][0]));
+   glLoadMatrixf(PGLFloat(@matrix.Coord[0].Coord));
    glMatrixMode(GL_MODELVIEW);
 end;
 

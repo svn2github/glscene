@@ -13,7 +13,9 @@
   the non-discriminating volume).</i><p>
 
 
-	<b>History : </b><font size=-1><ul>
+  <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Change TSectorNodeArray definition
       <li>23/06/03 - MF - Separated functionality for Octrees and general
                           sectored space partitions so Quadtrees will be easy
                           to add.
@@ -203,7 +205,9 @@ type
 
   TSectoredSpacePartition = class;
   TSectorNode = class;
-  TSectorNodeArray = array[0..7] of TSectorNode;
+  TSectorNodeArray = record
+    Child: array[0..7] of TSectorNode;
+  end;
 
   {: Implements a SectorNode node. Each node can have 0 or 8 children, each child
   being a portion of the size of the parent. For quadtrees, that's 1/4, for
@@ -850,7 +854,7 @@ begin
     QueryResult.Add(FLEaves[i]);
 
   for i := 0 to FChildCount-1 do
-    FChildren[i].AddAllLeavesRecursive(QueryResult);
+    FChildren.Child[i].AddAllLeavesRecursive(QueryResult);
 end;
 
 function TSectorNode.AddLeaf(aLeaf: TSpacePartitionLeaf): TSectorNode;
@@ -894,7 +898,7 @@ begin
   result := FLeaves.Count;
 
   for i := 0 to FChildCount-1 do
-    result := result + FChildren[i].CalcRecursiveLeafCount;
+    result := result + FChildren.Child[i].CalcRecursiveLeafCount;
 end;
 
 procedure TSectorNode.Clear;
@@ -902,7 +906,7 @@ var
   i : integer;
 begin
   for i := 0 to FChildCount-1 do
-    FreeAndNil(FChildren[i]);
+    FreeAndNil(FChildren.Child[i]);
 
   FLeaves.Clear;
 end;
@@ -945,17 +949,17 @@ var
 begin
   for i := 0 to FChildCount-1 do
   begin
-    FChildren[i].CollapseNode;
+    FChildren.Child[i].CollapseNode;
 
-    for j := 0 to FChildren[i].FLeaves.Count-1 do
+    for j := 0 to FChildren.Child[i].FLeaves.Count-1 do
     begin
-      FChildren[i].FLeaves[j].FPartitionTag := self;
-      FLeaves.Add(FChildren[i].FLeaves[j]);
+      FChildren.Child[i].FLeaves[j].FPartitionTag := self;
+      FLeaves.Add(FChildren.Child[i].FLeaves[j]);
     end;
 
-    FChildren[i].FLeaves.Clear;
+    FChildren.Child[i].FLeaves.Clear;
 
-    FreeAndNil(FChildren[i]);
+    FreeAndNil(FChildren.Child[i]);
   end;
 
   FChildCount := 0;
@@ -980,7 +984,7 @@ begin
   result := 1;
 
   for i := 0 to FChildCount-1 do
-    result := result + FChildren[i].GetNodeCount;
+    result := result + FChildren.Child[i].GetNodeCount;
 end;
 
 function TSectorNode.PlaceLeafInChild(aLeaf: TSpacePartitionLeaf)  : TSectorNode;
@@ -1036,7 +1040,7 @@ begin
 
     // Recursively let the children add their leaves
     for i := 0 to FChildCount-1 do
-      FChildren[i].QueryAABB(aAABB, QueryResult);
+      FChildren.Child[i].QueryAABB(aAABB, QueryResult);
   end;
 end;
 
@@ -1071,7 +1075,7 @@ begin
     begin
       inc(FSectoredSpacePartition.FQueryInterObjectTests);
 
-      FChildren[i].QueryBSphere(aBSphere, QueryResult);
+      FChildren.Child[i].QueryBSphere(aBSphere, QueryResult);
     end;
   end;
 end;
@@ -1107,7 +1111,7 @@ begin
     begin
       inc(FSectoredSpacePartition.FQueryInterObjectTests);
 
-      FChildren[i].QueryPlane(Location, Normal, QueryResult);
+      FChildren.Child[i].QueryPlane(Location, Normal, QueryResult);
     end;
   end;//}
 end;
@@ -1139,7 +1143,7 @@ begin
 
   for i := 0 to FChildCount-1 do
   begin
-    result := FChildren[i].VerifyRecursiveLeafCount;
+    result := FChildren.Child[i].VerifyRecursiveLeafCount;
     if result<>'' then
       exit;
   end;
@@ -1193,15 +1197,15 @@ begin
   Location := AABB.min;
 
   // Upper / Lower
-  if Location[1]<FBSphere.Center[1] then  ChildNodeIndex := 4;
+  if Location.Coord[1]<FBSphere.Center.Coord[1] then  ChildNodeIndex := 4;
 
   // Left / Right
-  if Location[2]<FBSphere.Center[2] then ChildNodeIndex := ChildNodeIndex or 2;
+  if Location.Coord[2]<FBSphere.Center.Coord[2] then ChildNodeIndex := ChildNodeIndex or 2;
 
   // Fore / Back
-  if Location[0]>FBSphere.Center[0] then ChildNodeIndex := ChildNodeIndex or 1;
+  if Location.Coord[0]>FBSphere.Center.Coord[0] then ChildNodeIndex := ChildNodeIndex or 1;
 
-  ChildNode := FChildren[ChildNodeIndex];
+  ChildNode := FChildren.Child[ChildNodeIndex];
 
   if ChildNode.AABBFitsInNode(AABB) then
   begin
@@ -1496,21 +1500,21 @@ var
   begin
      for n:=0 to 2 do begin
        case flags[n] of
-         cMIN: result[n]:=FAABB.min[n];
-         cMID: result[n]:=(FAABB.max[n]+FAABB.min[n])/2;
-         cMAX: result[n]:=FAABB.max[n];
+         cMIN: result.Coord[n]:=FAABB.min.Coord[n];
+         cMID: result.Coord[n]:=(FAABB.max.Coord[n]+FAABB.min.Coord[n])/2;
+         cMAX: result.Coord[n]:=FAABB.max.Coord[n];
        end;
      end;
   end;
 begin
   for i := 0 to 7 do
   begin
-    FChildren[i] := FSectoredSpacePartition.CreateNewNode(self);
+    FChildren.Child[i] := FSectoredSpacePartition.CreateNewNode(self);
 
     //Generate new extents based on parent's extents
     AABB.min :=GetExtent(cFlagMin[i]);
     AABB.max :=GetExtent(cFlagMax[i]);
-    FChildren[i].AABB := AABB;
+    FChildren.Child[i].AABB := AABB;
   end;
 
   FChildCount := 8;

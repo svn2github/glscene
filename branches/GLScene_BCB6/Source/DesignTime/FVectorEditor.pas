@@ -3,6 +3,7 @@
    Editor for a vector.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array    
       <li>03/07/04 - LR - Make change for Linux
       <li>?/?/? -  - Creation
    </ul></font>
@@ -207,9 +208,9 @@ begin
    if VectorLength(v)=0 then
       v:=NullVector
    else NormalizeVector(v);
-   EDx.Text:=FloatToStr(v[0]);
-   EDy.Text:=FloatToStr(v[1]);
-   EDz.Text:=FloatToStr(v[2]);
+   EDx.Text:=FloatToStr(v.Coord[0]);
+   EDy.Text:=FloatToStr(v.Coord[1]);
+   EDz.Text:=FloatToStr(v.Coord[2]);
 end;
 
 procedure TVectorEditorForm.SBInvertClick(Sender: TObject);
@@ -218,9 +219,9 @@ var
 begin
    SetVector(v, StrToFloatDef(EDx.Text, 0), StrToFloatDef(EDy.Text, 0), StrToFloatDef(EDz.Text, 0));
    NegateVector(v);
-   EDx.Text:=FloatToStr(v[0]);
-   EDy.Text:=FloatToStr(v[1]);
-   EDz.Text:=FloatToStr(v[2]);
+   EDx.Text:=FloatToStr(v.Coord[0]);
+   EDy.Text:=FloatToStr(v.Coord[1]);
+   EDz.Text:=FloatToStr(v.Coord[2]);
 end;
 
 // ------------------------------------------------------------------

@@ -13,6 +13,7 @@
     Original code by Osman Turan (osmanturancom@yahoo.com)<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>11/05/04 - SG - Added to CVS
       <li>07/02/04 - OT - Creation (Osman Turan)
 	</ul></font>
@@ -76,9 +77,9 @@ var
     // to be calculated into cartesian space.
     lat:=(pn[0])*(2*pi)/255;
     lng:=(pn[1])*(2*pi)/255;
-    Result[0] := cos(lat)*sin(lng);
-    Result[1] := sin(lat)*sin(lng);
-    Result[2] := cos(lng);
+    Result.Coord[0] := cos(lat)*sin(lng);
+    Result.Coord[1] := sin(lat)*sin(lng);
+    Result.Coord[2] := cos(lng);
   end;
 
   procedure AllocateMaterial(meshname:string);
@@ -197,22 +198,22 @@ begin
 
           for k := 0 to surfheader.NumVertices-1 do
           begin
-            xyz[0] :=
+            xyz.Coord[0] :=
               (baseframe.BaseVertices[k, 0] * MDC_BASEVERTEX_FACTOR) +
                borderframes[j].localorigin[0];
-            xyz[1] :=
+            xyz.Coord[1] :=
               (baseframe.BaseVertices[k, 1] * MDC_BASEVERTEX_FACTOR) +
                borderframes[j].localorigin[1];
-            xyz[2] :=
+            xyz.Coord[2] :=
               (baseframe.BaseVertices[k, 2] * MDC_BASEVERTEX_FACTOR) +
                borderframes[j].localorigin[2];
             normal := UnpackNormal(PPackedNormal(@baseframe.BaseVertices[k, 3])^);
 
             if compframetable[j] <> $FFFF then
             begin
-              xyz[0] := xyz[0] + ((compframe.CompVertices[k, 0]-128) * MDC_COMPVERTEX_FACTOR);
-              xyz[1] := xyz[1] + ((compframe.CompVertices[k, 1]-128) * MDC_COMPVERTEX_FACTOR);
-              xyz[2] := xyz[2] + ((compframe.CompVertices[k, 2]-128) * MDC_COMPVERTEX_FACTOR);
+              xyz.Coord[0] := xyz.Coord[0] + ((compframe.CompVertices[k, 0]-128) * MDC_COMPVERTEX_FACTOR);
+              xyz.Coord[1] := xyz.Coord[1] + ((compframe.CompVertices[k, 1]-128) * MDC_COMPVERTEX_FACTOR);
+              xyz.Coord[2] := xyz.Coord[2] + ((compframe.CompVertices[k, 2]-128) * MDC_COMPVERTEX_FACTOR);
               //FIXME:
               //I'm sure compframe.CompVertices[3] points a packed normal.
               //And it must be add the current normal like xyz.
@@ -231,13 +232,13 @@ begin
 
             //all id Sofware based games uses Z axis as up instead of Y. So, convert them
             morphTarget.Vertices.Add(
-              xyz[0],
-              xyz[2],
-              -xyz[1]);
+              xyz.Coord[0],
+              xyz.Coord[2],
+              -xyz.Coord[1]);
             morphTarget.Normals.Add(
-              normal[0],
-              normal[2],
-              -normal[1]);
+              normal.Coord[0],
+              normal.Coord[2],
+              -normal.Coord[1]);
           end;
         end;
       end;

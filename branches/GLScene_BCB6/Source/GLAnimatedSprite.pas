@@ -3,6 +3,7 @@
   A sprite that uses a scrolling texture for animation.<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array   
     <li>21/07/04 - SG - Added Margins to Animations, Added comments.
     <li>20/07/04 - SG - Added FrameRate (alternative for Interval),
                         Added Interval to Animations, will override
@@ -813,9 +814,9 @@ begin
         end;
 
         glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
-        vx[0]:=mat[0][0]; vy[0]:=mat[0][1];
-        vx[1]:=mat[1][0]; vy[1]:=mat[1][1];
-        vx[2]:=mat[2][0]; vy[2]:=mat[2][1];
+        vx.Coord[0]:=mat.Coord[0].Coord[0]; vy.Coord[0]:=mat.Coord[0].Coord[1];
+        vx.Coord[1]:=mat.Coord[1].Coord[0]; vy.Coord[1]:=mat.Coord[1].Coord[1];
+        vx.Coord[2]:=mat.Coord[2].Coord[0]; vy.Coord[2]:=mat.Coord[2].Coord[1];
         ScaleVector(vx, w*VectorLength(vx));
         ScaleVector(vy, h*VectorLength(vy));
 
@@ -836,13 +837,13 @@ begin
         if FRotation<>0 then begin
           glMatrixMode(GL_MODELVIEW);
           glPushMatrix;
-          glRotatef(FRotation,mat[0][2],mat[1][2],mat[2][2]);
+          glRotatef(FRotation,mat.Coord[0].Coord[2],mat.Coord[1].Coord[2],mat.Coord[2].Coord[2]);
         end;
         glBegin(GL_QUADS);
-          glTexCoord2f(u1, v1); glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
-          glTexCoord2f(u0, v1); glVertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
-          glTexCoord2f(u0, v0); glVertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
-          glTexCoord2f(u1, v0); glVertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
+          glTexCoord2f(u1, v1); glVertex3f( vx.Coord[0]+vy.Coord[0], vx.Coord[1]+vy.Coord[1], vx.Coord[2]+vy.Coord[2]);
+          glTexCoord2f(u0, v1); glVertex3f(-vx.Coord[0]+vy.Coord[0],-vx.Coord[1]+vy.Coord[1],-vx.Coord[2]+vy.Coord[2]);
+          glTexCoord2f(u0, v0); glVertex3f(-vx.Coord[0]-vy.Coord[0],-vx.Coord[1]-vy.Coord[1],-vx.Coord[2]-vy.Coord[2]);
+          glTexCoord2f(u1, v0); glVertex3f( vx.Coord[0]-vy.Coord[0], vx.Coord[1]-vy.Coord[1], vx.Coord[2]-vy.Coord[2]);
         glEnd;
         if FRotation<>0 then begin
           glPopMatrix;

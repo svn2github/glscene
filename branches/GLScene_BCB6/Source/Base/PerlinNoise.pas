@@ -3,6 +3,7 @@
    Classes and function for generation of PerlinNoise.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array     
       <li>14/04/04 - EG - Creation
    </ul></font>
 
@@ -139,18 +140,18 @@ var
    wx, wy, wz : Single;
    vy0, vy1, vz0, vz1 : Single;
 begin
-   ix:=Floor(v[0]);
-   fx0:=v[0]-ix;
+   ix:=Floor(v.Coord[0]);
+   fx0:=v.Coord[0]-ix;
    fx1:=fx0-1;
    wx:=Smooth(fx0);
    
-   iy:=Floor(v[1]);
-   fy0:=v[1]-iy;
+   iy:=Floor(v.Coord[1]);
+   fy0:=v.Coord[1]-iy;
    fy1:=fy0-1;
    wy:=Smooth(fy0);
 
-   iz:=Floor(v[2]);
-   fz0:=v[2]-iz;
+   iz:=Floor(v.Coord[2]);
+   fz0:=v.Coord[2]-iz;
    fz1:=fz0-1;
    wz:=Smooth(fz0);
 

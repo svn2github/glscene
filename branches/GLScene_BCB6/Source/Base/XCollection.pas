@@ -6,6 +6,8 @@
 	A polymorphism-enabled TCollection-like set of classes<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Add dummy method for the abstract problem
       <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
       <li>12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
       <li>19/06/03 - DanB - Added TXCollection.GetOrCreate
@@ -80,7 +82,7 @@ type
 			{: Returns a user-friendly denomination for the class.<p>
 				This denomination is used for picking a texture image class
 				in the IDE expert. }
-			class function FriendlyName : String; virtual; abstract;
+			class function FriendlyName : String; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
 			{: Returns a user-friendly description for the class.<p>
 				This denomination is used for helping the user when picking a
 				texture image class in the IDE expert. If it's not overriden,
@@ -196,6 +198,14 @@ implementation
 var
   vXCollectionItemClasses : TList;
   vXCollectionDestroyEvent : TNotifyEvent;
+
+// Dummy method for CPP
+{$IFDEF GLS_CPPB}
+class function TXCollectionItem.FriendlyName : String;
+begin
+  result := '';
+end;
+{$ENDIF}
 
 //---------- internal global routines (used by xcollection editor) -------------
 

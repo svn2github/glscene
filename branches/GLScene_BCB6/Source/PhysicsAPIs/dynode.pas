@@ -69,6 +69,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 
   Change history
 
+  2004.XX.XX - LR, YHC - BCB corrections: fixed Linking Error of PdxSpace
   2004.05.19 - CH - New single and double dll. Added support for the new QuickStep solver
   2004.04.25 - CH - New single and double dll. Trimesh now works in both mode.
   2004.04.22 - MF - Fixes to make DelphiODE behave better when used as dynamic
@@ -645,6 +646,8 @@ type
   end;
 
   PdxSpace = ^TdxSpace;
+  {$NODEFINE PdxSpace}
+  {$HPPEMIT '#define PdxSpace TdxSpace*'}
 
   TdRealHugeArray = array[0..65535] of TdReal;
   PdRealHugeArray = ^TdRealHugeArray;

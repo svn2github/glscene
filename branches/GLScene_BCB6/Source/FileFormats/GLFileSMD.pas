@@ -6,6 +6,7 @@
 	SMD vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array        
       <li>30/03/04 - EG - Basic Half-Life2/XSI support
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
@@ -245,7 +246,7 @@ begin
             for j:=0 to Owner.Skeleton.Frames[i].Position.Count-1 do begin
                p:=Owner.Skeleton.Frames[i].Position[j];
                r:=Owner.Skeleton.Frames[i].Rotation[j];
-               str.Add(Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',[j,p[0],p[1],p[2],r[0],r[1],r[2]]));
+               str.Add(Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',[j,p.Coord[0],p.Coord[1],p.Coord[2],r.Coord[0],r.Coord[1],r.Coord[2]]));
             end;
          end;
          str.Add('end');
@@ -266,7 +267,8 @@ begin
                      n:=Normals[NormalIndices[3*k+l]];
                      t:=TexCoords[TexCoordIndices[3*k+l]];
                      b:=VerticesBonesWeights[VertexIndices[3*k+l]][0].BoneID;
-                     str.Add(Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',[b,v[0],v[1],v[2],n[0],n[1],n[2],t[0],t[1]]));
+                     str.Add(Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',
+                       [b,v.Coord[0],v.Coord[1],v.Coord[2],n.Coord[0],n.Coord[1],n.Coord[2],t.Coord[0],t.Coord[1]]));
                   end;
                end;
             end;

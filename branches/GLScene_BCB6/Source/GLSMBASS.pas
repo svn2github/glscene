@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>09/05/04 - GAK - Updated to BASS Version 2.0, and swapped to Dynamic DLL loading
       <li>24/09/02 - EG - BASS activation errors no longer result in Asserts (ignored)
       <li>27/02/02 - EG - Added 3D Factors and Environment support
@@ -96,9 +97,9 @@ end;
 procedure VectorToBASSVector(const aVector : TVector; var aBASSVector : BASS_3DVECTOR);
 begin
    with aBASSVector do begin
-      x:=aVector[0];
-      y:=aVector[1];
-      z:=-aVector[2];
+      x:=aVector.Coord[0];
+      y:=aVector.Coord[1];
+      z:=-aVector.Coord[2];
    end;
 end;
 

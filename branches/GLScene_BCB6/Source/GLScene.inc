@@ -20,6 +20,9 @@
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
+// De-Activate assembly routine
+{.$DEFINE GEOMETRY_NO_ASM}
+
 //
 // Platform Detection
 //

@@ -15,7 +15,7 @@
       gluProject, gluUnProject, gluTessVertex, gluLoadSamplingMatrices
       <li>04/10/04 - NC - Added GL_ATI_texture_float, WGL_ATI_pixel_format_float,
                           WGL_NV_float_buffer, GL_NV_float_buffer
-      <li>08/07/04 - LR - Change case for Linux
+      <li>08/07/04 - LR - Change case for Linux	
       <li>05/07/04 - LR - Corrections for Linux. Now glX function are directly load
                           by external action (like for Windows). So i suppress
                           the function LoadLinuxOpenGL.
@@ -24,7 +24,7 @@
       <li>17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
       <li>06/04/04 - EG - Added GL_ARB_shader_objects, GL_ARB_vertex_shader
                           and GL_ARB_fragment_shader, dropped a few oldies
-      <li>13/02/04 - EG - Added GL_NV_texture_rectangle
+      <li>13/02/04 - EG - Added GL_NV_texture_rectangle 
       <li>18/11/03 - EG - Fixed binding of core extensions, added GL_ARB_depth_texture
                           and GL_ARB_shadow support
       <li>20/09/03 - EG - Added GL_NV_occlusion_query, dropped some more oldies

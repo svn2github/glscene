@@ -1,12 +1,17 @@
 {: GLTexture<p>
 
-	Handles all the color and texture stuff.<p>
+ Handles all the color and texture stuff.<p>
 
-	<b>History : </b><font size=-1><ul>
+ <b>History : </b><font size=-1><ul>
       <li>06/10/04 - NC - Corrected filtering param. setting for float texture, 
                           Now keep using GL_TEXTURE_RECTANGLE_NV for TGLFloatDataImage
       <li>05/10/04 - SG - Added Material.TextureEx (texture extension)
-      <li>04/10/04 - NC - Added TGLFloatDataImage
+      <li>04/10/04 - NC - Added TGLFloatDataImage 
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Replace direct access of some properties by
+                               a getter and a setter
+                               Add dummy method for the abstract problem
+                               Changed type of TGLCubeMapTarget to integer
       <li>03/07/04 - LR - Move InitWinColors to GLCrossPlatform
                           Replace TGraphics, TBitmap by TGLGraphics, TGLBitmap
       <li>29/06/04 - SG - Added bmModulate blending mode
@@ -82,46 +87,46 @@
       <li>28/05/00 - EG - TGLColor now has NotifyChange support for TGLBaseSceneObject
       <li>23/04/00 - EG - Fixed bugs with TGLPicFileImage & TGLPersistentImage,
                           Added tiaOpaque
-		<li>17/04/00 - EG - Added Assign to DummyCube and Sprite
+      <li>17/04/00 - EG - Added Assign to DummyCube and Sprite
       <li>16/04/00 - EG - Added TGLPicFileImage.Assign
       <li>26/03/00 - EG - Finally fixed nasty bug in TGLMaterial.Free
-		<li>22/03/00 - EG - Added BeginUpdate/EndUpdate to TGLPictureImage,
-								  Made use of [Un]SetGLState in TGLMaterial
-								  (gain = 7-10% on T&L intensive rendering),
+      <li>22/03/00 - EG - Added BeginUpdate/EndUpdate to TGLPictureImage,
+                          Made use of [Un]SetGLState in TGLMaterial
+                          (gain = 7-10% on T&L intensive rendering),
                           TGLTexBaseClass is no more (RIP)
-		<li>21/03/00 - EG - TGLMaterial props are now longer stored when it is
-								  linked to a material library entry,
-								  Added TGLPictureImage (split from TGLPersistentImage),
-								  TGLPicFileImage has been updated and reactivated,
-								  ColorManager is now autocreated and non longer force-linked.
+      <li>21/03/00 - EG - TGLMaterial props are now longer stored when it is
+                          linked to a material library entry,
+                          Added TGLPictureImage (split from TGLPersistentImage),
+                          TGLPicFileImage has been updated and reactivated,
+                          ColorManager is now autocreated and non longer force-linked.
       <li>19/03/00 - EG - Added SaveToXxxx & LoadFromXxxx to TGLMaterialLibrary
-		<li>18/03/00 - EG - Added GetGLTextureImageClassesAsStrings,
-								  Added FindGLTextureImageClassByFriendlyName,
-								  FChanges states now ignored in TGLTexture.GetHandle,
-								  Added SaveToFile/LoadFromFile to TextureImage
-		<li>17/03/00 - EG - Added tiaLuminance
-		<li>14/03/00 - EG - Added RegisterGLTextureImageClass stuff,
-								  Added ImageAlpha
-		<li>13/03/00 - EG - Changed TGLTextureImage image persistence again,
-								  Added "Edit" method for texture image classes,
-								  TMagFilter/TMinFilter -> TGLMagFilter/TGLMinFilter
-		<li>03/03/00 - EG - Removed TImagePath,
-								  Started major rework of the whole TGLTextureImage stuff,
-								  Fixed and optimized TGLTexture.PrepareImage
-		<li>12/02/00 - EG - Added Material Library
+      <li>18/03/00 - EG - Added GetGLTextureImageClassesAsStrings,
+                          Added FindGLTextureImageClassByFriendlyName,
+                          FChanges states now ignored in TGLTexture.GetHandle,
+                          Added SaveToFile/LoadFromFile to TextureImage
+      <li>17/03/00 - EG - Added tiaLuminance
+      <li>14/03/00 - EG - Added RegisterGLTextureImageClass stuff,
+                          Added ImageAlpha
+      <li>13/03/00 - EG - Changed TGLTextureImage image persistence again,
+                          Added "Edit" method for texture image classes,
+                          TMagFilter/TMinFilter -> TGLMagFilter/TGLMinFilter
+      <li>03/03/00 - EG - Removed TImagePath,
+                          Started major rework of the whole TGLTextureImage stuff,
+                          Fixed and optimized TGLTexture.PrepareImage
+      <li>12/02/00 - EG - Added Material Library
       <li>10/02/00 - EG - Fixed crash when texture is empty
-		<li>08/02/00 - EG - Added AsWinColor & DeclareCurrentAsDefault to TGLColor,
-								  fixed notification on material property setXxx methods,
-								  Objects now begin with 'TGL'
-		<li>07/02/00 - EG - "Update"s renamed to "NotifyChange"s
-		<li>06/02/00 - EG - RoundUpToPowerOf2, RoundDownToPowerOf2 and
+      <li>08/02/00 - EG - Added AsWinColor & DeclareCurrentAsDefault to TGLColor,
+                          fixed notification on material property setXxx methods,
+                          Objects now begin with 'TGL'
+      <li>07/02/00 - EG - "Update"s renamed to "NotifyChange"s
+      <li>06/02/00 - EG - RoundUpToPowerOf2, RoundDownToPowerOf2 and
                           IsPowerOf2 moved to GLMisc, added TGLPersistentImage.Assign,
                           fixed TGLMaterial.Assign,
                           disable inheritance stuff in TGLFaceProperties.Apply (needs fixing),
                           Diffuse & ambient color now default to openGL values
       <li>05/02/00 - EG - Javadocisation, fixes and enhancements :<br>
                           TGLColor.Update, ConvertWinColor, TPicImage,
-								  TGLMaterial.Apply
+                          TGLMaterial.Apply
    </ul></font>
 }
 unit GLTexture;
@@ -135,7 +140,7 @@ uses
   GLCrossPlatform, PersistentClasses, GLUtils, GLState;
 
 type
-	PColorVector = ^TColorVector;
+ PColorVector = ^TColorVector;
    TColorVector = TVector;
 
 const
@@ -147,182 +152,182 @@ const
 
    {$J+ - allow change of the following typed constants}
 
-   clrScrollBar           : TColorVector = (0,0,0,1);
-   clrBackground          : TColorVector = (0,0,0,1);
-   clrActiveCaption       : TColorVector = (0,0,0,1);
-   clrInactiveCaption     : TColorVector = (0,0,0,1);
-   clrMenu                : TColorVector = (0,0,0,1);
-   clrWindow              : TColorVector = (0,0,0,1);
-   clrWindowFrame         : TColorVector = (0,0,0,1);
-   clrMenuText            : TColorVector = (0,0,0,1);
-   clrWindowText          : TColorVector = (0,0,0,1);
-   clrCaptionText         : TColorVector = (0,0,0,1);
-   clrActiveBorder        : TColorVector = (0,0,0,1);
-   clrInactiveBorder      : TColorVector = (0,0,0,1);
-   clrAppWorkSpace        : TColorVector = (0,0,0,1);
-   clrHighlight           : TColorVector = (0,0,0,1);
-   clrHighlightText       : TColorVector = (0,0,0,1);
-   clrBtnFace             : TColorVector = (0,0,0,1);
-   clrBtnShadow           : TColorVector = (0,0,0,1);
-   clrGrayText            : TColorVector = (0,0,0,1);
-   clrBtnText             : TColorVector = (0,0,0,1);
-   clrInactiveCaptionText : TColorVector = (0,0,0,1);
-   clrBtnHighlight        : TColorVector = (0,0,0,1);
-   clr3DDkShadow          : TColorVector = (0,0,0,1);
-   clr3DLight             : TColorVector = (0,0,0,1);
-   clrInfoText            : TColorVector = (0,0,0,1);
-   clrInfoBk              : TColorVector = (0,0,0,1);
+   clrScrollBar           : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrBackground          : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrActiveCaption       : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrInactiveCaption     : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrMenu                : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrWindow              : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrWindowFrame         : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrMenuText            : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrWindowText          : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrCaptionText         : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrActiveBorder        : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrInactiveBorder      : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrAppWorkSpace        : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrHighlight           : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrHighlightText       : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrBtnFace             : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrBtnShadow           : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrGrayText            : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrBtnText             : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrInactiveCaptionText : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrBtnHighlight        : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clr3DDkShadow          : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clr3DLight             : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrInfoText            : TColorVector = (X:0;Y:0;Z:0;W:1);
+   clrInfoBk              : TColorVector = (X:0;Y:0;Z:0;W:1);
       
    {$J- - disable change of other typed constants}
 
    // 'static' color definitions
    // sort of grays
-   clrTransparent         : TColorVector = (0,    0,    0,    0);
-   clrBlack               : TColorVector = (0,    0,    0,    1);
-   clrGray05              : TColorVector = (0.05, 0.05, 0.05, 1);
-   clrGray10              : TColorVector = (0.10, 0.10, 0.10, 1);
-   clrGray15              : TColorVector = (0.15, 0.15, 0.15, 1);
-   clrGray20              : TColorVector = (0.20, 0.20, 0.20, 1);
-   clrGray25              : TColorVector = (0.25, 0.25, 0.25, 1);
-   clrGray30              : TColorVector = (0.30, 0.30, 0.30, 1);
-   clrGray35              : TColorVector = (0.35, 0.35, 0.35, 1);
-   clrGray40              : TColorVector = (0.40, 0.40, 0.40, 1);
-   clrGray45              : TColorVector = (0.45, 0.45, 0.45, 1);
-   clrGray50              : TColorVector = (0.50, 0.50, 0.50, 1);
-   clrGray55              : TColorVector = (0.55, 0.55, 0.55, 1);
-   clrGray60              : TColorVector = (0.60, 0.60, 0.60, 1);
-   clrGray65              : TColorVector = (0.65, 0.65, 0.65, 1);
-   clrGray70              : TColorVector = (0.70, 0.70, 0.70, 1);
-   clrGray75              : TColorVector = (0.75, 0.75, 0.75, 1);
-   clrGray80              : TColorVector = (0.80, 0.80, 0.80, 1);
-   clrGray85              : TColorVector = (0.85, 0.85, 0.85, 1);
-   clrGray90              : TColorVector = (0.90, 0.90, 0.90, 1);
-   clrGray95              : TColorVector = (0.95, 0.95, 0.95, 1);
-   clrWhite               : TColorVector = (1,    1,    1,    1);
+   clrTransparent         : TColorVector = (X:0;    Y:0;    Z:0;    W:0);
+   clrBlack               : TColorVector = (X:0;    Y:0;    Z:0;    W:1);
+   clrGray05              : TColorVector = (X:0.05; Y:0.05; Z:0.05; W:1);
+   clrGray10              : TColorVector = (X:0.10; Y:0.10; Z:0.10; W:1);
+   clrGray15              : TColorVector = (X:0.15; Y:0.15; Z:0.15; W:1);
+   clrGray20              : TColorVector = (X:0.20; Y:0.20; Z:0.20; W:1);
+   clrGray25              : TColorVector = (X:0.25; Y:0.25; Z:0.25; W:1);
+   clrGray30              : TColorVector = (X:0.30; Y:0.30; Z:0.30; W:1);
+   clrGray35              : TColorVector = (X:0.35; Y:0.35; Z:0.35; W:1);
+   clrGray40              : TColorVector = (X:0.40; Y:0.40; Z:0.40; W:1);
+   clrGray45              : TColorVector = (X:0.45; Y:0.45; Z:0.45; W:1);
+   clrGray50              : TColorVector = (X:0.50; Y:0.50; Z:0.50; W:1);
+   clrGray55              : TColorVector = (X:0.55; Y:0.55; Z:0.55; W:1);
+   clrGray60              : TColorVector = (X:0.60; Y:0.60; Z:0.60; W:1);
+   clrGray65              : TColorVector = (X:0.65; Y:0.65; Z:0.65; W:1);
+   clrGray70              : TColorVector = (X:0.70; Y:0.70; Z:0.70; W:1);
+   clrGray75              : TColorVector = (X:0.75; Y:0.75; Z:0.75; W:1);
+   clrGray80              : TColorVector = (X:0.80; Y:0.80; Z:0.80; W:1);
+   clrGray85              : TColorVector = (X:0.85; Y:0.85; Z:0.85; W:1);
+   clrGray90              : TColorVector = (X:0.90; Y:0.90; Z:0.90; W:1);
+   clrGray95              : TColorVector = (X:0.95; Y:0.95; Z:0.95; W:1);
+   clrWhite               : TColorVector = (X:1;    Y:1;    Z:1;    W:1);
 
    // other grays
-   clrDimGray             : TColorVector = (0.329412, 0.329412, 0.329412, 1);
-   clrGray                : TColorVector = (0.752941, 0.752941, 0.752941, 1);
-   clrLightGray           : TColorVector = (0.658824, 0.658824, 0.658824, 1);
+   clrDimGray             : TColorVector = (X:0.329412; Y:0.329412; Z:0.329412; W:1);
+   clrGray                : TColorVector = (X:0.752941; Y:0.752941; Z:0.752941; W:1);
+   clrLightGray           : TColorVector = (X:0.658824; Y:0.658824; Z:0.658824; W:1);
 
    // colors en masse
-   clrAquamarine          : TColorVector = (0.439216, 0.858824, 0.576471, 1);
-   clrBlueViolet          : TColorVector = (0.62352,  0.372549, 0.623529, 1);
-   clrBrown               : TColorVector = (0.647059, 0.164706, 0.164706, 1);
-   clrCadetBlue           : TColorVector = (0.372549, 0.623529, 0.623529, 1);
-   clrCoral               : TColorVector = (1,        0.498039, 0.0,      1);
-   clrCornflowerBlue      : TColorVector = (0.258824, 0.258824, 0.435294, 1);
-   clrDarkGreen           : TColorVector = (0.184314, 0.309804, 0.184314, 1);
-   clrDarkOliveGreen      : TColorVector = (0.309804, 0.309804, 0.184314, 1);
-   clrDarkOrchid          : TColorVector = (0.6,      0.196078, 0.8,      1);
-   clrDarkSlateBlue       : TColorVector = (0.419608, 0.137255, 0.556863, 1);
-   clrDarkSlateGray       : TColorVector = (0.184314, 0.309804, 0.309804, 1);
-   clrDarkSlateGrey       : TColorVector = (0.184314, 0.309804, 0.309804, 1);
-   clrDarkTurquoise       : TColorVector = (0.439216, 0.576471, 0.858824, 1);
-   clrFirebrick           : TColorVector = (0.556863, 0.137255, 0.137255, 1);
-   clrForestGreen         : TColorVector = (0.137255, 0.556863, 0.137255, 1);
-   clrGold                : TColorVector = (0.8,      0.498039, 0.196078, 1);
-   clrGoldenrod           : TColorVector = (0.858824, 0.858824, 0.439216, 1);
-   clrGreenYellow         : TColorVector = (0.576471, 0.858824, 0.439216, 1);
-   clrIndian              : TColorVector = (0.309804, 0.184314, 0.184314, 1);
-   clrKhaki               : TColorVector = (0.623529, 0.623529, 0.372549, 1);
-   clrLightBlue           : TColorVector = (0.74902,  0.847059, 0.847059, 1);
-   clrLightSteelBlue      : TColorVector = (0.560784, 0.560784, 0.737255, 1);
-   clrLimeGreen           : TColorVector = (0.196078, 0.8,      0.196078, 1);
-   clrMaroon              : TColorVector = (0.556863, 0.137255, 0.419608, 1);
-   clrMediumAquamarine    : TColorVector = (0.196078, 0.8,      0.6,      1);
-   clrMediumBlue          : TColorVector = (0.196078, 0.196078, 0.8,      1);
-   clrMediumForestGreen   : TColorVector = (0.419608, 0.556863, 0.137255, 1);
-   clrMediumGoldenrod     : TColorVector = (0.917647, 0.917647, 0.678431, 1);
-   clrMediumOrchid        : TColorVector = (0.576471, 0.439216, 0.858824, 1);
-   clrMediumSeaGreen      : TColorVector = (0.258824, 0.435294, 0.258824, 1);
-   clrMediumSlateBlue     : TColorVector = (0.498039, 0,        1,        1);
-   clrMediumSpringGreen   : TColorVector = (0.498039, 1,        0,        1);
-   clrMediumTurquoise     : TColorVector = (0.439216, 0.858824, 0.858824, 1);
-   clrMediumViolet        : TColorVector = (0.858824, 0.439216, 0.576471, 1);
-   clrMidnightBlue        : TColorVector = (0.184314, 0.184314, 0.309804, 1);
-   clrNavy                : TColorVector = (0.137255, 0.137255, 0.556863, 1);
-   clrNavyBlue            : TColorVector = (0.137255, 0.137255, 0.556863, 1);
-   clrOrange              : TColorVector = (1,        0.5,      0.0,      1);
-   clrOrangeRed           : TColorVector = (1,        0.25,     0,        1);
-   clrOrchid              : TColorVector = (0.858824, 0.439216, 0.858824, 1);
-   clrPaleGreen           : TColorVector = (0.560784, 0.737255, 0.560784, 1);
-   clrPink                : TColorVector = (0.737255, 0.560784, 0.560784, 1);
-   clrPlum                : TColorVector = (0.917647, 0.678431, 0.917647, 1);
-   clrSalmon              : TColorVector = (0.435294, 0.258824, 0.258824, 1);
-   clrSeaGreen            : TColorVector = (0.137255, 0.556863, 0.419608, 1);
-   clrSienna              : TColorVector = (0.556863, 0.419608, 0.137255, 1);
-   clrSkyBlue             : TColorVector = (0.196078, 0.6,      0.8,      1);
-   clrSlateBlue           : TColorVector = (0,        0.498039, 1,        1);
-   clrSpringGreen         : TColorVector = (0,        1,        0.498039, 1);
-   clrSteelBlue           : TColorVector = (0.137255, 0.419608, 0.556863, 1);
-   clrTan                 : TColorVector = (0.858824, 0.576471, 0.439216, 1);
-   clrThistle             : TColorVector = (0.847059, 0.74902,  0.847059, 1);
-   clrTurquoise           : TColorVector = (0.678431, 0.917647, 0.917647, 1);
-   clrViolet              : TColorVector = (0.309804, 0.184314, 0.309804, 1);
-   clrVioletRed           : TColorVector = (0.8,      0.196078, 0.6,      1);
-   clrWheat               : TColorVector = (0.847059, 0.847059, 0.74902,  1);
-   clrYellowGreen         : TColorVector = (0.6,      0.8,      0.196078, 1);
-   clrSummerSky           : TColorVector = (0.22,     0.69,     0.87,     1);
-   clrRichBlue            : TColorVector = (0.35,     0.35,     0.67,     1);
-   clrBrass               : TColorVector = (0.71,     0.65,     0.26,     1);
-   clrCopper              : TColorVector = (0.72,     0.45,     0.20,     1);
-   clrBronze              : TColorVector = (0.55,     0.47,     0.14,     1);
-   clrBronze2             : TColorVector = (0.65,     0.49,     0.24,     1);
-   clrSilver              : TColorVector = (0.90,     0.91,     0.98,     1);
-   clrBrightGold          : TColorVector = (0.85,     0.85,     0.10,     1);
-   clrOldGold             : TColorVector = (0.81,     0.71,     0.23,     1);
-   clrFeldspar            : TColorVector = (0.82,     0.57,     0.46,     1);
-   clrQuartz              : TColorVector = (0.85,     0.85,     0.95,     1);
-   clrNeonPink            : TColorVector = (1.00,     0.43,     0.78,     1);
-   clrDarkPurple          : TColorVector = (0.53,     0.12,     0.47,     1);
-   clrNeonBlue            : TColorVector = (0.30,     0.30,     1.00,     1);
-   clrCoolCopper          : TColorVector = (0.85,     0.53,     0.10,     1);
-   clrMandarinOrange      : TColorVector = (0.89,     0.47,     0.20,     1);
-   clrLightWood           : TColorVector = (0.91,     0.76,     0.65,     1);
-   clrMediumWood          : TColorVector = (0.65,     0.50,     0.39,     1);
-   clrDarkWood            : TColorVector = (0.52,     0.37,     0.26,     1);
-   clrSpicyPink           : TColorVector = (1.00,     0.11,     0.68,     1);
-   clrSemiSweetChoc       : TColorVector = (0.42,     0.26,     0.15,     1);
-   clrBakersChoc          : TColorVector = (0.36,     0.20,     0.09,     1);
-   clrFlesh               : TColorVector = (0.96,     0.80,     0.69,     1);
-   clrNewTan              : TColorVector = (0.92,     0.78,     0.62,     1);
-   clrNewMidnightBlue     : TColorVector = (0.00,     0.00,     0.61,     1);
-   clrVeryDarkBrown       : TColorVector = (0.35,     0.16,     0.14,     1);
-   clrDarkBrown           : TColorVector = (0.36,     0.25,     0.20,     1);
-   clrDarkTan             : TColorVector = (0.59,     0.41,     0.31,     1);
-   clrGreenCopper         : TColorVector = (0.32,     0.49,     0.46,     1);
-   clrDkGreenCopper       : TColorVector = (0.29,     0.46,     0.43,     1);
-   clrDustyRose           : TColorVector = (0.52,     0.39,     0.39,     1);
-   clrHuntersGreen        : TColorVector = (0.13,     0.37,     0.31,     1);
-   clrScarlet             : TColorVector = (0.55,     0.09,     0.09,     1);
-   clrMediumPurple        : TColorVector = (0.73,     0.16,     0.96,     1);
-   clrLightPurple         : TColorVector = (0.87,     0.58,     0.98,     1);
-   clrVeryLightPurple     : TColorVector = (0.94,     0.81,     0.99,     1);
-   clrGreen               : TColorVector = (0,        0.5,      0,        1);
-   clrOlive               : TColorVector = (0.5,      0.5,      1,        1);
-   clrPurple              : TColorVector = (1,        0,        1,        1);
-   clrTeal                : TColorVector = (0,        0.5,      0.5,      1);
-   clrRed                 : TColorVector = (1,        0,        0,        1);
-   clrLime                : TColorVector = (0,        1,        0,        1);
-   clrYellow              : TColorVector = (1,        1,        0,        1);
-   clrBlue                : TColorVector = (0,        0,        1,        1);
-   clrFuchsia             : TColorVector = (1,        0,        1,        1);
-   clrAqua                : TColorVector = (0,        1,        1,        1);
+   clrAquamarine          : TColorVector = (X:0.439216; Y:0.858824; Z:0.576471; W:1);
+   clrBlueViolet          : TColorVector = (X:0.62352;  Y:0.372549; Z:0.623529; W:1);
+   clrBrown               : TColorVector = (X:0.647059; Y:0.164706; Z:0.164706; W:1);
+   clrCadetBlue           : TColorVector = (X:0.372549; Y:0.623529; Z:0.623529; W:1);
+   clrCoral               : TColorVector = (X:1;        Y:0.498039; Z:0.0;      W:1);
+   clrCornflowerBlue      : TColorVector = (X:0.258824; Y:0.258824; Z:0.435294; W:1);
+   clrDarkGreen           : TColorVector = (X:0.184314; Y:0.309804; Z:0.184314; W:1);
+   clrDarkOliveGreen      : TColorVector = (X:0.309804; Y:0.309804; Z:0.184314; W:1);
+   clrDarkOrchid          : TColorVector = (X:0.6;      Y:0.196078; Z:0.8;      W:1);
+   clrDarkSlateBlue       : TColorVector = (X:0.419608; Y:0.137255; Z:0.556863; W:1);
+   clrDarkSlateGray       : TColorVector = (X:0.184314; Y:0.309804; Z:0.309804; W:1);
+   clrDarkSlateGrey       : TColorVector = (X:0.184314; Y:0.309804; Z:0.309804; W:1);
+   clrDarkTurquoise       : TColorVector = (X:0.439216; Y:0.576471; Z:0.858824; W:1);
+   clrFirebrick           : TColorVector = (X:0.556863; Y:0.137255; Z:0.137255; W:1);
+   clrForestGreen         : TColorVector = (X:0.137255; Y:0.556863; Z:0.137255; W:1);
+   clrGold                : TColorVector = (X:0.8;      Y:0.498039; Z:0.196078; W:1);
+   clrGoldenrod           : TColorVector = (X:0.858824; Y:0.858824; Z:0.439216; W:1);
+   clrGreenYellow         : TColorVector = (X:0.576471; Y:0.858824; Z:0.439216; W:1);
+   clrIndian              : TColorVector = (X:0.309804; Y:0.184314; Z:0.184314; W:1);
+   clrKhaki               : TColorVector = (X:0.623529; Y:0.623529; Z:0.372549; W:1);
+   clrLightBlue           : TColorVector = (X:0.74902;  Y:0.847059; Z:0.847059; W:1);
+   clrLightSteelBlue      : TColorVector = (X:0.560784; Y:0.560784; Z:0.737255; W:1);
+   clrLimeGreen           : TColorVector = (X:0.196078; Y:0.8;      Z:0.196078; W:1);
+   clrMaroon              : TColorVector = (X:0.556863; Y:0.137255; Z:0.419608; W:1);
+   clrMediumAquamarine    : TColorVector = (X:0.196078; Y:0.8;      Z:0.6;      W:1);
+   clrMediumBlue          : TColorVector = (X:0.196078; Y:0.196078; Z:0.8;      W:1);
+   clrMediumForestGreen   : TColorVector = (X:0.419608; Y:0.556863; Z:0.137255; W:1);
+   clrMediumGoldenrod     : TColorVector = (X:0.917647; Y:0.917647; Z:0.678431; W:1);
+   clrMediumOrchid        : TColorVector = (X:0.576471; Y:0.439216; Z:0.858824; W:1);
+   clrMediumSeaGreen      : TColorVector = (X:0.258824; Y:0.435294; Z:0.258824; W:1);
+   clrMediumSlateBlue     : TColorVector = (X:0.498039; Y:0;        Z:1;        W:1);
+   clrMediumSpringGreen   : TColorVector = (X:0.498039; Y:1;        Z:0;        W:1);
+   clrMediumTurquoise     : TColorVector = (X:0.439216; Y:0.858824; Z:0.858824; W:1);
+   clrMediumViolet        : TColorVector = (X:0.858824; Y:0.439216; Z:0.576471; W:1);
+   clrMidnightBlue        : TColorVector = (X:0.184314; Y:0.184314; Z:0.309804; W:1);
+   clrNavy                : TColorVector = (X:0.137255; Y:0.137255; Z:0.556863; W:1);
+   clrNavyBlue            : TColorVector = (X:0.137255; Y:0.137255; Z:0.556863; W:1);
+   clrOrange              : TColorVector = (X:1;        Y:0.5;      Z:0.0;      W:1);
+   clrOrangeRed           : TColorVector = (X:1;        Y:0.25;     Z:0;        W:1);
+   clrOrchid              : TColorVector = (X:0.858824; Y:0.439216; Z:0.858824; W:1);
+   clrPaleGreen           : TColorVector = (X:0.560784; Y:0.737255; Z:0.560784; W:1);
+   clrPink                : TColorVector = (X:0.737255; Y:0.560784; Z:0.560784; W:1);
+   clrPlum                : TColorVector = (X:0.917647; Y:0.678431; Z:0.917647; W:1);
+   clrSalmon              : TColorVector = (X:0.435294; Y:0.258824; Z:0.258824; W:1);
+   clrSeaGreen            : TColorVector = (X:0.137255; Y:0.556863; Z:0.419608; W:1);
+   clrSienna              : TColorVector = (X:0.556863; Y:0.419608; Z:0.137255; W:1);
+   clrSkyBlue             : TColorVector = (X:0.196078; Y:0.6;      Z:0.8;      W:1);
+   clrSlateBlue           : TColorVector = (X:0;        Y:0.498039; Z:1;        W:1);
+   clrSpringGreen         : TColorVector = (X:0;        Y:1;        Z:0.498039; W:1);
+   clrSteelBlue           : TColorVector = (X:0.137255; Y:0.419608; Z:0.556863; W:1);
+   clrTan                 : TColorVector = (X:0.858824; Y:0.576471; Z:0.439216; W:1);
+   clrThistle             : TColorVector = (X:0.847059; Y:0.74902;  Z:0.847059; W:1);
+   clrTurquoise           : TColorVector = (X:0.678431; Y:0.917647; Z:0.917647; W:1);
+   clrViolet              : TColorVector = (X:0.309804; Y:0.184314; Z:0.309804; W:1);
+   clrVioletRed           : TColorVector = (X:0.8;      Y:0.196078; Z:0.6;      W:1);
+   clrWheat               : TColorVector = (X:0.847059; Y:0.847059; Z:0.74902;  W:1);
+   clrYellowGreen         : TColorVector = (X:0.6;      Y:0.8;      Z:0.196078; W:1);
+   clrSummerSky           : TColorVector = (X:0.22;     Y:0.69;     Z:0.87;     W:1);
+   clrRichBlue            : TColorVector = (X:0.35;     Y:0.35;     Z:0.67;     W:1);
+   clrBrass               : TColorVector = (X:0.71;     Y:0.65;     Z:0.26;     W:1);
+   clrCopper              : TColorVector = (X:0.72;     Y:0.45;     Z:0.20;     W:1);
+   clrBronze              : TColorVector = (X:0.55;     Y:0.47;     Z:0.14;     W:1);
+   clrBronze2             : TColorVector = (X:0.65;     Y:0.49;     Z:0.24;     W:1);
+   clrSilver              : TColorVector = (X:0.90;     Y:0.91;     Z:0.98;     W:1);
+   clrBrightGold          : TColorVector = (X:0.85;     Y:0.85;     Z:0.10;     W:1);
+   clrOldGold             : TColorVector = (X:0.81;     Y:0.71;     Z:0.23;     W:1);
+   clrFeldspar            : TColorVector = (X:0.82;     Y:0.57;     Z:0.46;     W:1);
+   clrQuartz              : TColorVector = (X:0.85;     Y:0.85;     Z:0.95;     W:1);
+   clrNeonPink            : TColorVector = (X:1.00;     Y:0.43;     Z:0.78;     W:1);
+   clrDarkPurple          : TColorVector = (X:0.53;     Y:0.12;     Z:0.47;     W:1);
+   clrNeonBlue            : TColorVector = (X:0.30;     Y:0.30;     Z:1.00;     W:1);
+   clrCoolCopper          : TColorVector = (X:0.85;     Y:0.53;     Z:0.10;     W:1);
+   clrMandarinOrange      : TColorVector = (X:0.89;     Y:0.47;     Z:0.20;     W:1);
+   clrLightWood           : TColorVector = (X:0.91;     Y:0.76;     Z:0.65;     W:1);
+   clrMediumWood          : TColorVector = (X:0.65;     Y:0.50;     Z:0.39;     W:1);
+   clrDarkWood            : TColorVector = (X:0.52;     Y:0.37;     Z:0.26;     W:1);
+   clrSpicyPink           : TColorVector = (X:1.00;     Y:0.11;     Z:0.68;     W:1);
+   clrSemiSweetChoc       : TColorVector = (X:0.42;     Y:0.26;     Z:0.15;     W:1);
+   clrBakersChoc          : TColorVector = (X:0.36;     Y:0.20;     Z:0.09;     W:1);
+   clrFlesh               : TColorVector = (X:0.96;     Y:0.80;     Z:0.69;     W:1);
+   clrNewTan              : TColorVector = (X:0.92;     Y:0.78;     Z:0.62;     W:1);
+   clrNewMidnightBlue     : TColorVector = (X:0.00;     Y:0.00;     Z:0.61;     W:1);
+   clrVeryDarkBrown       : TColorVector = (X:0.35;     Y:0.16;     Z:0.14;     W:1);
+   clrDarkBrown           : TColorVector = (X:0.36;     Y:0.25;     Z:0.20;     W:1);
+   clrDarkTan             : TColorVector = (X:0.59;     Y:0.41;     Z:0.31;     W:1);
+   clrGreenCopper         : TColorVector = (X:0.32;     Y:0.49;     Z:0.46;     W:1);
+   clrDkGreenCopper       : TColorVector = (X:0.29;     Y:0.46;     Z:0.43;     W:1);
+   clrDustyRose           : TColorVector = (X:0.52;     Y:0.39;     Z:0.39;     W:1);
+   clrHuntersGreen        : TColorVector = (X:0.13;     Y:0.37;     Z:0.31;     W:1);
+   clrScarlet             : TColorVector = (X:0.55;     Y:0.09;     Z:0.09;     W:1);
+   clrMediumPurple        : TColorVector = (X:0.73;     Y:0.16;     Z:0.96;     W:1);
+   clrLightPurple         : TColorVector = (X:0.87;     Y:0.58;     Z:0.98;     W:1);
+   clrVeryLightPurple     : TColorVector = (X:0.94;     Y:0.81;     Z:0.99;     W:1);
+   clrGreen               : TColorVector = (X:0;        Y:0.5;      Z:0;        W:1);
+   clrOlive               : TColorVector = (X:0.5;      Y:0.5;      Z:1;        W:1);
+   clrPurple              : TColorVector = (X:1;        Y:0;        Z:1;        W:1);
+   clrTeal                : TColorVector = (X:0;        Y:0.5;      Z:0.5;      W:1);
+   clrRed                 : TColorVector = (X:1;        Y:0;        Z:0;        W:1);
+   clrLime                : TColorVector = (X:0;        Y:1;        Z:0;        W:1);
+   clrYellow              : TColorVector = (X:1;        Y:1;        Z:0;        W:1);
+   clrBlue                : TColorVector = (X:0;        Y:0;        Z:1;        W:1);
+   clrFuchsia             : TColorVector = (X:1;        Y:0;        Z:1;        W:1);
+   clrAqua                : TColorVector = (X:0;        Y:1;        Z:1;        W:1);
 
    cDefaultNormalMapScale = 0.125;
 
 type
 
-	PRGBColor = ^TRGBColor;
-	TRGBColor = TAffineByteVector;
+ PRGBColor = ^TRGBColor;
+ TRGBColor = TAffineByteVector;
 
-	TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace);
-	TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal);
+ TGLTextureMode = (tmDecal, tmModulate, tmBlend, tmReplace);
+ TGLTextureWrap = (twBoth, twNone, twVertical, twHorizontal);
 
-	TGLFaceProperties  = class;
-	TGLTexture         = class;
-	TGLMaterial        = class;
+ TGLFaceProperties  = class;
+ TGLTexture         = class;
+ TGLMaterial        = class;
    TGLMaterialLibrary = class;
 
    TDrawState = (dsRendering, dsPicking, dsPrinting);
@@ -361,363 +366,364 @@ type
    PRenderContextInfo = ^TRenderContextInfo;
 
    // TGLColor
-	//
+ //
    {: Wraps an OpenGL color. }
    TGLColor = class(TGLUpdateAbleObject)
       private
          { Private Properties }
-			FColor : TColorVector;
+   FColor : TColorVector;
          FPDefaultColor : PColorVector;
-			procedure SetColorVector(const aColor : TColorVector); overload;
-			procedure SetColorComponent(index : Integer; value : TGLFloat);
-			procedure SetAsWinColor(const val : TColor);
-			function GetAsWinColor : TColor;
+   procedure SetColorVector(const aColor : TColorVector); overload;
+   function GetColorComponent(const Index: Integer): TGLFloat;
+   procedure SetColorComponent(index : Integer; value : TGLFloat);
+   procedure SetAsWinColor(const val : TColor);
+   function GetAsWinColor : TColor;
 
-		protected
+  protected
          { Protected Properties }
-			procedure DefineProperties(Filer: TFiler); override;
-			procedure ReadData(Stream: TStream);
-			procedure WriteData(Stream: TStream);
+   procedure DefineProperties(Filer: TFiler); override;
+   procedure ReadData(Stream: TStream);
+   procedure WriteData(Stream: TStream);
 
          function GetHSVA : TVector;
          procedure SetHSVA(const hsva : TVector);
 
-		public
+  public
          { Public Properties }
-			constructor Create(AOwner : TPersistent); override;
-			constructor CreateInitialized(AOwner : TPersistent; const color : TColorVector;
+   constructor Create(AOwner : TPersistent); override;
+   constructor CreateInitialized(AOwner : TPersistent; const color : TColorVector;
                                        changeEvent : TNotifyEvent = nil);
          destructor Destroy; override;
          procedure NotifyChange(Sender : TObject); override;
-			procedure Assign(Source : TPersistent); override;
-			procedure Initialize(const color : TColorVector);
-			function AsAddress : PGLFloat;
+   procedure Assign(Source : TPersistent); override;
+   procedure Initialize(const color : TColorVector);
+   function AsAddress : PGLFloat;
 
          procedure RandomColor;
          procedure SetColor(red, green, blue : Single; alpha : Single = 1); overload;
 
-			property Color : TColorVector read FColor write SetColorVector;
-			property AsWinColor : TColor read GetAsWinColor write SetAsWinColor;
+   property Color : TColorVector read FColor write SetColorVector;
+   property AsWinColor : TColor read GetAsWinColor write SetAsWinColor;
          property HSVA : TVector read GetHSVA write SetHSVA;
 
          property DefaultColor : TColorVector read FColor;
 
 {$ifndef FPC}
-		published
+  published
          { Published Properties }
-			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent stored False;
-			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent stored False;
-			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent stored False;
-			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent stored False;
+   property Red :   TGLFloat index 0 read GetColorComponent write SetColorComponent stored False;
+   property Green : TGLFloat index 1 read GetColorComponent write SetColorComponent stored False;
+   property Blue :  TGLFloat index 2 read GetColorComponent write SetColorComponent stored False;
+   property Alpha : TGLFloat index 3 read GetColorComponent write SetColorComponent stored False;
 {$else}
-			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent;
-			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent;
-			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent;
-			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent;
+   property Red :   TGLFloat index 0 read GetColorComponent write SetColorComponent;
+   property Green : TGLFloat index 1 read GetColorComponent write SetColorComponent;
+   property Blue :  TGLFloat index 2 read GetColorComponent write SetColorComponent;
+   property Alpha : TGLFloat index 3 read GetColorComponent write SetColorComponent;
 {$endif}
-	end;
+ end;
 
    // TTextureNeededEvent
    //
    TTextureNeededEvent = procedure (Sender : TObject; var textureFileName : String) of object;
 
-	TGLTextureChange  = (tcImage, tcParams);
-	TGLTextureChanges = set of TGLTextureChange;
+ TGLTextureChange  = (tcImage, tcParams);
+ TGLTextureChanges = set of TGLTextureChange;
 
-	{: Defines how and if Alpha channel is defined for a texture image.<ul>
-		<li>tiaDefault : uses the alpha channel in the image if any
-		<li>tiaAlphaFromIntensity : the alpha channel value is deduced from other
-			RGB components intensity (the brighter, the more opaque)
-		<li>tiaSuperBlackTransparent : pixels with a RGB color of (0, 0, 0) are
-			completely transparent, others are completely opaque
-		<li>tiaLuminance : the luminance value is calculated for each pixel
-			and used for RGB and Alpha values
-		<li>tiaLuminanceSqrt : same as tiaLuminance but with an Sqrt(Luminance)
+ {: Defines how and if Alpha channel is defined for a texture image.<ul>
+  <li>tiaDefault : uses the alpha channel in the image if any
+  <li>tiaAlphaFromIntensity : the alpha channel value is deduced from other
+   RGB components intensity (the brighter, the more opaque)
+  <li>tiaSuperBlackTransparent : pixels with a RGB color of (0, 0, 0) are
+   completely transparent, others are completely opaque
+  <li>tiaLuminance : the luminance value is calculated for each pixel
+   and used for RGB and Alpha values
+  <li>tiaLuminanceSqrt : same as tiaLuminance but with an Sqrt(Luminance)
       <li>tiaOpaque : alpha channel is uniformously set to 1.0
       <li>tiaTopLeftPointColorTransparent : points of the same color as the
          top left point of the bitmap are transparent, others are opaque.
       </ul>
    }
-	TGLTextureImageAlpha = (tiaDefault, tiaAlphaFromIntensity,
-									tiaSuperBlackTransparent, tiaLuminance,
-									tiaLuminanceSqrt, tiaOpaque,
+ TGLTextureImageAlpha = (tiaDefault, tiaAlphaFromIntensity,
+         tiaSuperBlackTransparent, tiaLuminance,
+         tiaLuminanceSqrt, tiaOpaque,
                            tiaTopLeftPointColorTransparent,
                            tiaInverseLuminance, tiaInverseLuminanceSqrt);
 
-	// TGLTextureImage
-	//
-	{: Base class for texture image data.<p>
-		Basicly, subclasses are to be considered as different ways of getting
-		a HBitmap (interfacing the actual source).<br>
-		SubClasses should be registered using RegisterGLTextureImageClass to allow
-		proper persistence and editability in the IDE experts. }
-	TGLTextureImage = class(TGLUpdateAbleObject)
-		private
-			FOwnerTexture : TGLTexture;
-         FOnTextureNeeded : TTextureNeededEvent;
+ // TGLTextureImage
+ //
+ {: Base class for texture image data.<p>
+  Basicly, subclasses are to be considered as different ways of getting
+  a HBitmap (interfacing the actual source).<br>
+  SubClasses should be registered using RegisterGLTextureImageClass to allow
+  proper persistence and editability in the IDE experts. }
+ TGLTextureImage = class(TGLUpdateAbleObject)
+  private
+   FOwnerTexture : TGLTexture;
+   FOnTextureNeeded : TTextureNeededEvent;
 
-		protected
-			function GetHeight: Integer; virtual; abstract;
-			function GetWidth: Integer; virtual; abstract;
+  protected
+   function GetHeight: Integer; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
+   function GetWidth: Integer; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
 
-         property OnTextureNeeded : TTextureNeededEvent read FOnTextureNeeded write FOnTextureNeeded;
+   property OnTextureNeeded : TTextureNeededEvent read FOnTextureNeeded write FOnTextureNeeded;
 
-		public
+  public
          { Public Properties }
-			constructor Create(AOwner : TPersistent); override;
-			destructor Destroy; override;
+   constructor Create(AOwner : TPersistent); override;
+   destructor Destroy; override;
 
-			property OwnerTexture : TGLTexture read FOwnerTexture write FOwnerTexture;
-			procedure NotifyChange(Sender : TObject); override;
+   property OwnerTexture : TGLTexture read FOwnerTexture write FOwnerTexture;
+   procedure NotifyChange(Sender : TObject); override;
 
-			{: Request to edit the textureImage.<p>
-				Returns True if changes have been made.<br>
-				This method may be invoked from the IDE or at run-time. }
-			function Edit : Boolean;
-			{: Save textureImage to file.<p>
-				This may not save a picture, but for instance, parameters, if the
-				textureImage is a procedural texture. }
-			procedure SaveToFile(const fileName : String); dynamic; abstract;
-			{: Load textureImage from a file.<p>
-				This may not load a picture, but for instance, parameters, if the
-				textureImage is a procedural texture.<br>
+   {: Request to edit the textureImage.<p>
+    Returns True if changes have been made.<br>
+    This method may be invoked from the IDE or at run-time. }
+   function Edit : Boolean;
+   {: Save textureImage to file.<p>
+    This may not save a picture, but for instance, parameters, if the
+    textureImage is a procedural texture. }
+   procedure SaveToFile(const fileName : String); dynamic; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
+   {: Load textureImage from a file.<p>
+    This may not load a picture, but for instance, parameters, if the
+    textureImage is a procedural texture.<br>
             Subclasses should invoke inherited which will take care of the
             "OnTextureNeeded" stuff. }
-			procedure LoadFromFile(const fileName : String); dynamic;
-			{: Returns a user-friendly denomination for the class.<p>
-				This denomination is used for picking a texture image class
-				in the IDE expert. }
-			class function FriendlyName : String; virtual; abstract;
-			{: Returns a user-friendly description for the class.<p>
-				This denomination is used for helping the user when picking a
-				texture image class in the IDE expert. If it's not overriden,
-				takes its value from FriendlyName. }
-			class function FriendlyDescription : String; virtual;
+   procedure LoadFromFile(const fileName : String); dynamic;
+   {: Returns a user-friendly denomination for the class.<p>
+    This denomination is used for picking a texture image class
+    in the IDE expert. }
+   class function FriendlyName : String; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
+   {: Returns a user-friendly description for the class.<p>
+    This denomination is used for helping the user when picking a
+    texture image class in the IDE expert. If it's not overriden,
+    takes its value from FriendlyName. }
+   class function FriendlyDescription : String; virtual;
          {: Native opengl texture target.<p>
             Usually GL_TEXTURE_2D (default) or GL_TEXTURE_CUBE_MAP_ARB. }
          class function NativeTextureTarget : TGLUInt; virtual;
 
-			{: Request reload/refresh of data upon next use. }
-			procedure Invalidate; dynamic;
+   {: Request reload/refresh of data upon next use. }
+   procedure Invalidate; dynamic;
 
-			{: Returns image's bitmap handle.<p>
+   {: Returns image's bitmap handle.<p>
             The specified target can be TEXTURE_2D or one of the cube maps targets.<br>
-				If the actual image is not a windows bitmap (BMP), descendants should
-				take care of properly converting to bitmap. }
-			function GetBitmap32(target : TGLUInt) : TGLBitmap32; virtual; abstract;
-			{: Request for unloading bitmapData, to free some memory.<p>
-				This one is invoked when GLScene no longer needs the Bitmap data
-				it got through a call to GetHBitmap.<br>
-				Subclasses may ignore this call if the HBitmap was obtained at
-				no particular memory cost. }
-			procedure ReleaseBitmap32; virtual;
+    If the actual image is not a windows bitmap (BMP), descendants should
+    take care of properly converting to bitmap. }
+   function GetBitmap32(target : TGLUInt) : TGLBitmap32; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
+   {: Request for unloading bitmapData, to free some memory.<p>
+    This one is invoked when GLScene no longer needs the Bitmap data
+    it got through a call to GetHBitmap.<br>
+    Subclasses may ignore this call if the HBitmap was obtained at
+    no particular memory cost. }
+   procedure ReleaseBitmap32; virtual;
 
-			property Width : Integer read GetWidth;
-			property Height : Integer read GetHeight;
-	end;
+   property Width : Integer read GetWidth;
+   property Height : Integer read GetHeight;
+ end;
 
-	TGLTextureImageClass = class of TGLTextureImage;
+ TGLTextureImageClass = class of TGLTextureImage;
 
    // TGLTextureImageEditor
    //
    TGLTextureImageEditor = class(TObject)
-		public
+  public
          { Public Properties }
-			{: Request to edit a textureImage.<p>
-				Returns True if changes have been made.<br>
-				This method may be invoked from the IDE or at run-time. }
-			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual; abstract;
+   {: Request to edit a textureImage.<p>
+    Returns True if changes have been made.<br>
+    This method may be invoked from the IDE or at run-time. }
+   class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
    end;
 
    TGLTextureImageEditorClass = class of TGLTextureImageEditor;
 
-	// TGLBlankImage
-	//
-	{: A texture image with no specified content, only a size.<p>
+ // TGLBlankImage
+ //
+ {: A texture image with no specified content, only a size.<p>
       This texture image type is of use if the context of your texture is
       calculated at run-time (with a TGLMemoryViewer for instance). }
-	TGLBlankImage = class(TGLTextureImage)
-		private
+ TGLBlankImage = class(TGLTextureImage)
+  private
          { Private Declarations }
-			FBitmap : TGLBitmap32;
+   FBitmap : TGLBitmap32;
          FWidth, FHeight : Integer;
 
-		protected
+  protected
          { Protected Declarations }
          procedure SetWidth(val : Integer);
-		   function GetWidth: Integer; override;
+     function GetWidth: Integer; override;
          procedure SetHeight(val : Integer);
-			function GetHeight: Integer; override;
+   function GetHeight: Integer; override;
 
-		public
+  public
          { Public Declarations }
-			constructor Create(AOwner: TPersistent); override;
-			destructor Destroy; override;
+   constructor Create(AOwner: TPersistent); override;
+   destructor Destroy; override;
 
-			procedure Assign(Source: TPersistent); override;
+   procedure Assign(Source: TPersistent); override;
 
-			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
-			procedure ReleaseBitmap32; override;
+   function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
+   procedure ReleaseBitmap32; override;
 
-			procedure SaveToFile(const fileName : String); override;
-			procedure LoadFromFile(const fileName : String); override;
-			class function FriendlyName : String; override;
-			class function FriendlyDescription : String; override;
+   procedure SaveToFile(const fileName : String); override;
+   procedure LoadFromFile(const fileName : String); override;
+   class function FriendlyName : String; override;
+   class function FriendlyDescription : String; override;
 
-		published
+  published
          { Published Declarations }
          {: Width of the blank image (for memory allocation). }
-			property Width : Integer read GetWidth write SetWidth default 256;
+   property Width : Integer read GetWidth write SetWidth default 256;
          {: Width of the blank image (for memory allocation). }
-			property Height : Integer read GetHeight write SetHeight default 256;
-	end;
+   property Height : Integer read GetHeight write SetHeight default 256;
+ end;
 
-	// TGLPictureImage
-	//
-	{: Base class for image data classes internally based on a TPicture. }
-	TGLPictureImage = class(TGLTextureImage)
-		private
+ // TGLPictureImage
+ //
+ {: Base class for image data classes internally based on a TPicture. }
+ TGLPictureImage = class(TGLTextureImage)
+  private
          { Private Declarations }
-			FBitmap : TGLBitmap32;
-			FGLPicture : TGLPicture;
-			FUpdateCounter : Integer;
+   FBitmap : TGLBitmap32;
+   FGLPicture : TGLPicture;
+   FUpdateCounter : Integer;
 
-		protected
+  protected
          { Protected Declarations }
-			function GetHeight: Integer; override;
-			function GetWidth: Integer; override;
+   function GetHeight: Integer; override;
+   function GetWidth: Integer; override;
 
          function  GetPicture : TGLPicture; 
-			procedure SetPicture(const aPicture : TGLPicture);
-			procedure PictureChanged(Sender: TObject);
+   procedure SetPicture(const aPicture : TGLPicture);
+   procedure PictureChanged(Sender: TObject);
 
-		public
+  public
          { Public Declarations }
-			constructor Create(AOwner: TPersistent); override;
-			destructor Destroy; override;
+   constructor Create(AOwner: TPersistent); override;
+   destructor Destroy; override;
 
-			procedure Assign(Source: TPersistent); override;
+   procedure Assign(Source: TPersistent); override;
 
-			{: Use this function if you are going to modify the Picture directly.<p>
-				Each invokation MUST be balanced by a call to EndUpdate. }
-			procedure BeginUpdate;
+   {: Use this function if you are going to modify the Picture directly.<p>
+    Each invokation MUST be balanced by a call to EndUpdate. }
+   procedure BeginUpdate;
          {: Ends a direct picture modification session.<p>
             Follows a BeginUpdate. }
-			procedure EndUpdate;
-			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
-			procedure ReleaseBitmap32; override;
+   procedure EndUpdate;
+   function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
+   procedure ReleaseBitmap32; override;
 
          {: Holds the image content. }
-			property Picture : TGLPicture read GetPicture write SetPicture;
-	end;
+   property Picture : TGLPicture read GetPicture write SetPicture;
+ end;
 
-	// TGLPersistentImage
-	//
-	{: Stores any image compatible with Delphi's TPicture mechanism.<p>
-		The picture's data is actually stored into the DFM, the original
-		picture name or path is not remembered. It is similar in behaviour
-		to Delphi's TImage.<p>
-		Note that if original image is for instance JPEG format, only the JPEG
-		data will be stored in the DFM (compact) }
-	TGLPersistentImage = class(TGLPictureImage)
-		public
+ // TGLPersistentImage
+ //
+ {: Stores any image compatible with Delphi's TPicture mechanism.<p>
+  The picture's data is actually stored into the DFM, the original
+  picture name or path is not remembered. It is similar in behaviour
+  to Delphi's TImage.<p>
+  Note that if original image is for instance JPEG format, only the JPEG
+  data will be stored in the DFM (compact) }
+ TGLPersistentImage = class(TGLPictureImage)
+  public
          { Public Declarations }
-			constructor Create(AOwner: TPersistent); override;
-			destructor Destroy; override;
+   constructor Create(AOwner: TPersistent); override;
+   destructor Destroy; override;
 
-			procedure SaveToFile(const fileName : String); override;
-			procedure LoadFromFile(const fileName : String); override;
-			class function FriendlyName : String; override;
-			class function FriendlyDescription : String; override;
+   procedure SaveToFile(const fileName : String); override;
+   procedure LoadFromFile(const fileName : String); override;
+   class function FriendlyName : String; override;
+   class function FriendlyDescription : String; override;
 
-		published
+  published
          { Published Declarations }
-			property Picture;
-	end;
+   property Picture;
+ end;
 
-	// TGLPicFileImage
-	//
-	{: Uses a picture whose data is found in a file (only filename is stored).<p>
+ // TGLPicFileImage
+ //
+ {: Uses a picture whose data is found in a file (only filename is stored).<p>
       The image is unloaded after upload to OpenGL. }
-	TGLPicFileImage = class(TGLPictureImage)
-		private
-			FPictureFileName : String;
+ TGLPicFileImage = class(TGLPictureImage)
+  private
+   FPictureFileName : String;
          FAlreadyWarnedAboutMissingFile : Boolean;
 
-		protected
-			procedure SetPictureFileName(const val : String);
+  protected
+   procedure SetPictureFileName(const val : String);
 
-		public
+  public
          { Public Declarations }
-			constructor Create(AOwner: TPersistent); override;
-			destructor Destroy; override;
+   constructor Create(AOwner: TPersistent); override;
+   destructor Destroy; override;
 
-  			procedure Assign(Source: TPersistent); override;
+     procedure Assign(Source: TPersistent); override;
 
-			//: Only picture file name is saved
-			procedure SaveToFile(const fileName : String); override;
+   //: Only picture file name is saved
+   procedure SaveToFile(const fileName : String); override;
          {: Load picture file name or use fileName as picture filename.<p>
             The autodetection is based on the filelength and presence of zeros. }
-			procedure LoadFromFile(const fileName : String); override;
-			class function FriendlyName : String; override;
-			class function FriendlyDescription : String; override;
+   procedure LoadFromFile(const fileName : String); override;
+   class function FriendlyName : String; override;
+   class function FriendlyDescription : String; override;
 
-			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
-			procedure Invalidate; override;
+   function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
+   procedure Invalidate; override;
 
-		published
+  published
          {: Filename of the picture to use. } 
-			property PictureFileName : String read FPictureFileName write SetPictureFileName;
-	end;
+   property PictureFileName : String read FPictureFileName write SetPictureFileName;
+ end;
 
    // TGLCubeMapTarget
    //
    TGLCubeMapTarget = (cmtPX, cmtNX, cmtPY, cmtNY, cmtPZ, cmtNZ);
 
-	// TGLCubeMapImage
-	//
-	{: A texture image used for specifying and stroing a cube map.<p>
+ // TGLCubeMapImage
+ //
+ {: A texture image used for specifying and stroing a cube map.<p>
       Not unlike TGLPictureImage, but storing 6 of them instead of just one.<br>
       Saving & loading as a whole currently not supported. }
-	TGLCubeMapImage = class(TGLTextureImage)
-		private
+ TGLCubeMapImage = class(TGLTextureImage)
+  private
          { Private Declarations }
-			FBitmap : TGLBitmap32;
-			FUpdateCounter : Integer;
+   FBitmap : TGLBitmap32;
+   FUpdateCounter : Integer;
          FPicture : array [cmtPX..cmtNZ] of TGLPicture;
-		protected
+  protected
          { Protected Declarations }
-		   function GetWidth: Integer; override;
-			function GetHeight: Integer; override;
+     function GetWidth: Integer; override;
+   function GetHeight: Integer; override;
          procedure SetPicture(index : TGLCubeMapTarget; const val : TGLPicture);
          function GetPicture(index : TGLCubeMapTarget) : TGLPicture;
 
-			procedure PictureChanged(Sender: TObject);
+   procedure PictureChanged(Sender: TObject);
 
-		public
+  public
          { Public Declarations }
-			constructor Create(AOwner: TPersistent); override;
-			destructor Destroy; override;
+   constructor Create(AOwner: TPersistent); override;
+   destructor Destroy; override;
 
-			procedure Assign(Source: TPersistent); override;
+   procedure Assign(Source: TPersistent); override;
 
-			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
-			procedure ReleaseBitmap32; override;
+   function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
+   procedure ReleaseBitmap32; override;
 
-			{: Use this function if you are going to modify the Picture directly.<p>
-				Each invokation MUST be balanced by a call to EndUpdate. }
-			procedure BeginUpdate;
-			procedure EndUpdate;
+   {: Use this function if you are going to modify the Picture directly.<p>
+    Each invokation MUST be balanced by a call to EndUpdate. }
+   procedure BeginUpdate;
+   procedure EndUpdate;
 
-			procedure SaveToFile(const fileName : String); override;
-			procedure LoadFromFile(const fileName : String); override;
-			class function FriendlyName : String; override;
-			class function NativeTextureTarget : TGLUInt; override;
+   procedure SaveToFile(const fileName : String); override;
+   procedure LoadFromFile(const fileName : String); override;
+   class function FriendlyName : String; override;
+   class function NativeTextureTarget : TGLUInt; override;
 
          {: Indexed access to the cube map's sub pictures. }
          property Picture[index : TGLCubeMapTarget] : TGLPicture read GetPicture write SetPicture;
 
-		published
+  published
          { Public Declarations }
          {$ifndef FPC}
          property PicturePX : TGLPicture index cmtPX read GetPicture write SetPicture;
@@ -727,7 +733,7 @@ type
          property PicturePZ : TGLPicture index cmtPZ read GetPicture write SetPicture;
          property PictureNZ : TGLPicture index cmtNZ read GetPicture write SetPicture;
          {$endif}
-	end;
+ end;
 
 	// TGLFloatDataImage
 	//
@@ -796,8 +802,8 @@ type
       Subclasses are expected to provide implementation for DoInitialize,
       DoApply, DoUnApply and DoFinalize. }
    TGLShader = class (TGLUpdateAbleComponent)
-	   private
-	      { Private Declarations }
+    private
+       { Private Declarations }
          FEnabled : Boolean;
          FLibMatUsers : TList;
          FVirtualHandle : TGLVirtualHandle;
@@ -805,18 +811,18 @@ type
          FUpdateCount : Integer;
          FShaderActive, FShaderInitialized : Boolean;
 
-	   protected
-			{ Protected Declarations }
+    protected
+   { Protected Declarations }
          {: Invoked once, before the first call to DoApply.<p>
             The call happens with the OpenGL context being active. }
          procedure DoInitialize; dynamic;
          {: Request to apply the shader.<p>
             Always followed by a DoUnApply when the shader is no longer needed. }
-         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); virtual; abstract;
+         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
          {: Request to un-apply the shader.<p>
             Subclasses can assume the shader has been applied previously.<br>
             Return True to request a multipass. }
-         function DoUnApply(var rci : TRenderContextInfo) : Boolean; virtual; abstract;
+         function DoUnApply(var rci : TRenderContextInfo) : Boolean; virtual; {$IFDEF GLS_DELPHI} abstract; {$ENDIF}
          {: Invoked once, before the destruction of context or release of shader.<p>
             The call happens with the OpenGL context being active. }
          procedure DoFinalize; dynamic;
@@ -835,12 +841,12 @@ type
          procedure UnRegisterUser(libMat : TGLLibMaterial);
 
       public
-	      { Public Declarations }
-	      constructor Create(AOwner : TComponent); override;
+       { Public Declarations }
+       constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
 
          {: Subclasses should invoke this function when shader properties are altered. }
-			procedure NotifyChange(Sender : TObject); override;
+   procedure NotifyChange(Sender : TObject); override;
          procedure BeginUpdate;
          procedure EndUpdate;
 
@@ -856,7 +862,7 @@ type
          property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle;
 
       published
-	      { Published Declarations }
+       { Published Declarations }
          {: Turns on/off shader application.<p>
             Note that this only turns on/off the shader application, if the
             ShaderStyle is ssReplace, the material won't be applied even if
@@ -909,26 +915,26 @@ type
                             tmmCubeMapReflection, tmmCubeMapNormal,
                             tmmCubeMapLight0, tmmCubeMapCamera);
 
-	// TGLTexture
-	//
+ // TGLTexture
+ //
    {: Defines basic texturing properties.<p>
       You can control texture wrapping, smoothing/filtering and of course define
       the texture map (note that texturing is disabled by default).<p>
       A built-in mechanism (through ImageAlpha) allows auto-generation of an
       Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
-	TGLTexture = class (TGLUpdateAbleObject)
-		private
-	      { Private Declarations }
-			FTextureHandle       : TGLTextureHandle;
-			FTextureMode         : TGLTextureMode;
-			FTextureWrap         : TGLTextureWrap;
+ TGLTexture = class (TGLUpdateAbleObject)
+  private
+       { Private Declarations }
+   FTextureHandle       : TGLTextureHandle;
+   FTextureMode         : TGLTextureMode;
+   FTextureWrap         : TGLTextureWrap;
          FTextureFormat       : TGLTextureFormat;
-			FMinFilter           : TGLMinFilter;
-			FMagFilter           : TGLMagFilter;
-			FChanges             : TGLTextureChanges;
-			FDisabled            : Boolean;
-			FImage               : TGLTextureImage;
-			FImageAlpha          : TGLTextureImageAlpha;
+   FMinFilter           : TGLMinFilter;
+   FMagFilter           : TGLMagFilter;
+   FChanges             : TGLTextureChanges;
+   FDisabled            : Boolean;
+   FImage               : TGLTextureImage;
+   FImageAlpha          : TGLTextureImageAlpha;
          FImageBrightness     : Single;
          FImageGamma          : Single;
          FMappingMode         : TGLTextureMappingMode;
@@ -942,21 +948,21 @@ type
          FEnvColor            : TGLColor;
          FNormalMapScale      : Single;
 
-		protected
-			{ Protected Declarations }
+  protected
+   { Protected Declarations }
          procedure NotifyImageChange;
          procedure NotifyParamsChange;
 
-			procedure SetImage(AValue: TGLTextureImage);
-			procedure SetImageAlpha(const val : TGLTextureImageAlpha);
+   procedure SetImage(AValue: TGLTextureImage);
+   procedure SetImageAlpha(const val : TGLTextureImageAlpha);
          procedure SetImageBrightness(const val : Single);
          function  StoreBrightness : Boolean;
          procedure SetImageGamma(const val : Single);
          function  StoreGamma : Boolean;
-			procedure SetMagFilter(AValue: TGLMagFilter);
-			procedure SetMinFilter(AValue: TGLMinFilter);
-			procedure SetTextureMode(AValue: TGLTextureMode);
-			procedure SetTextureWrap(AValue: TGLTextureWrap);
+   procedure SetMagFilter(AValue: TGLMagFilter);
+   procedure SetMinFilter(AValue: TGLMinFilter);
+   procedure SetTextureMode(AValue: TGLTextureMode);
+   procedure SetTextureWrap(AValue: TGLTextureWrap);
          procedure SetTextureFormat(const val : TGLTextureFormat);
          procedure SetCompression(const val : TGLTextureCompression);
          procedure SetFilteringQuality(const val : TGLTextureFilteringQuality);
@@ -965,7 +971,7 @@ type
          procedure SetMappingSCoordinates(const val : TGLCoordinates4);
          function  GetMappingTCoordinates : TGLCoordinates4;
          procedure SetMappingTCoordinates(const val : TGLCoordinates4);
-			procedure SetDisabled(AValue: Boolean);
+   procedure SetDisabled(AValue: Boolean);
          procedure SetEnabled(const val : Boolean);
          function GetEnabled : Boolean;
          procedure SetEnvColor(const val : TGLColor);
@@ -974,24 +980,24 @@ type
 
          function StoreImageClassName : Boolean;
 
-			function GetHandle: TGLuint; virtual;
-			//: Load texture to OpenGL subsystem
-			procedure PrepareImage(target : TGLUInt); virtual;
-			//: Setup OpenGL texture parameters
-			procedure PrepareParams(target : TGLUInt); virtual;
+   function GetHandle: TGLuint; virtual;
+   //: Load texture to OpenGL subsystem
+   procedure PrepareImage(target : TGLUInt); virtual;
+   //: Setup OpenGL texture parameters
+   procedure PrepareParams(target : TGLUInt); virtual;
 
          property OnTextureNeeded : TTextureNeededEvent read FOnTextureNeeded write FOnTextureNeeded;
          procedure DoOnTextureNeeded(Sender : TObject; var textureFileName : String);
 
-		public
-	      { Public Declarations }
-			constructor Create(AOwner: TPersistent); override;
-			destructor  Destroy; override;
+  public
+       { Public Declarations }
+   constructor Create(AOwner: TPersistent); override;
+   destructor  Destroy; override;
 
          procedure PrepareBuildList;
          procedure ApplyMappingMode;
          procedure UnApplyMappingMode;
-			procedure Apply(var rci : TRenderContextInfo);
+   procedure Apply(var rci : TRenderContextInfo);
          procedure UnApply(var rci : TRenderContextInfo);
          {: Applies to TEXTURE1_ARB }
          procedure ApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
@@ -1000,13 +1006,13 @@ type
          procedure ApplyAsTextureN(n : Integer; var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
          procedure UnApplyAsTextureN(n : Integer; var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
 
-			procedure Assign(Source: TPersistent); override;
-			procedure NotifyChange(Sender : TObject); override;
+   procedure Assign(Source: TPersistent); override;
+	 procedure NotifyChange(Sender : TObject); override;
 
-			procedure DestroyHandles;
+   procedure DestroyHandles;
 
-			procedure SetImageClassName(const val : String);
-			function GetImageClassName : String;
+   procedure SetImageClassName(const val : String);
+   function GetImageClassName : String;
 
          {: Returns the OpenGL memory used by the texture.<p>
             The compressed size is returned if, and only if texture compression
@@ -1030,30 +1036,30 @@ type
          {: Handle to the OpenGL texture object.<p>
             If the handle hasn't already been allocated, it will be allocated
             by this call (ie. do not use if no OpenGL context is active!) }
-			property Handle : TGLuint read GetHandle;
+   property Handle : TGLuint read GetHandle;
 
          {: Actual width used for last texture specification binding. }
          property TexWidth : Integer read FTexWidth;
          {: Actual width used for last texture specification binding. }
          property TexHeight : Integer read FTexHeight;
 
-		published
-	      { Published Declarations }
+  published
+       { Published Declarations }
 
-			{: Image ClassName for enabling True polymorphism.<p>
-				This is ugly, but since the default streaming mechanism does a
-				really bad job at storing	polymorphic owned-object properties,
-				and neither TFiler nor TPicture allow proper use of the built-in
-				streaming, that's the only way I found to allow a user-extensible
-				mechanism. }
-			property ImageClassName : String read GetImageClassName write SetImageClassName stored StoreImageClassName;
-			{: Image data for the texture.<p> }
-			property Image: TGLTextureImage read FImage write SetImage;
+   {: Image ClassName for enabling True polymorphism.<p>
+    This is ugly, but since the default streaming mechanism does a
+    really bad job at storing polymorphic owned-object properties,
+    and neither TFiler nor TPicture allow proper use of the built-in
+    streaming, that's the only way I found to allow a user-extensible
+    mechanism. }
+   property ImageClassName : String read GetImageClassName write SetImageClassName stored StoreImageClassName;
+   {: Image data for the texture.<p> }
+   property Image: TGLTextureImage read FImage write SetImage;
 
          {: Automatic Image Alpha setting.<p>
             Allows to control how and if the image's Alpha channel (transparency)
             is computed. }
-			property ImageAlpha : TGLTextureImageAlpha read FImageAlpha write SetImageAlpha default tiaDefault;
+   property ImageAlpha : TGLTextureImageAlpha read FImageAlpha write SetImageAlpha default tiaDefault;
          {: Texture brightness correction.<p>
             This correction is applied upon loading a TGLTextureImage, it's a
             simple saturating scaling applied to the RGB components of
@@ -1067,13 +1073,13 @@ type
          property ImageGamma : Single read FImageGamma write SetImageGamma stored StoreGamma;
 
          {: Texture magnification filter. }
-			property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maLinear;
+   property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maLinear;
          {: Texture minification filter. }
-			property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miLinearMipMapLinear;
+   property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miLinearMipMapLinear;
          {: Texture application mode. }
-			property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode default tmDecal;
+   property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode default tmDecal;
          {: Wrapping mode for the texture. }
-			property TextureWrap: TGLTextureWrap read FTextureWrap write SetTextureWrap default twBoth;
+   property TextureWrap: TGLTextureWrap read FTextureWrap write SetTextureWrap default twBoth;
 
          {: Texture format for use by the renderer.<p>
             See TGLTextureFormat for details. }
@@ -1104,14 +1110,14 @@ type
          property EnvColor : TGLColor read FEnvColor write SetEnvColor;
 
          {: If true, the texture is disabled (not used). }
-			property Disabled: Boolean read FDisabled write SetDisabled default True;
+   property Disabled: Boolean read FDisabled write SetDisabled default True;
 
          {: Normal Map scaling.<p>
             Only applies when TextureFormat is tfNormalMap, this property defines
             the scaling that is applied during normal map generation (ie. controls
             the intensity of the bumps). }
          property NormalMapScale : Single read FNormalMapScale write SetNormalMapScale stored StoreNormalMapScale;
-	end;
+ end;
 
   TGLTextureExItem = class (TCollectionItem)
     private
@@ -1183,7 +1189,7 @@ type
 
   end;
 
-	TShininess = 0..128;
+ TShininess = 0..128;
    TPolygonMode = (pmFill, pmLines, pmPoints);
 
    // TGLFaceProperties
@@ -1193,15 +1199,15 @@ type
       properties that behave like those of most rendering tools.<br>
       You also have control over shininess (governs specular lighting) and
       polygon mode (lines / fill). }
-	TGLFaceProperties = class (TGLUpdateAbleObject)
-	   private
-	      { Private Declarations }
+ TGLFaceProperties = class (TGLUpdateAbleObject)
+    private
+       { Private Declarations }
          FAmbient, FDiffuse, FSpecular, FEmission  : TGLColor;
          FPolygonMode : TPolygonMode;
          FShininess : TShininess;
 
       protected
-	      { Protected Declarations }
+       { Protected Declarations }
          procedure SetAmbient(AValue: TGLColor);
          procedure SetDiffuse(AValue: TGLColor);
          procedure SetEmission(AValue: TGLColor);
@@ -1209,17 +1215,17 @@ type
          procedure SetPolygonMode(AValue: TPolygonMode);
          procedure SetShininess(AValue: TShininess);
 
-	   public
-			{ Public Declarations }
+    public
+   { Public Declarations }
          constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
-
+         
          procedure Apply(var rci : TRenderContextInfo; aFace : TGLEnum);
          procedure ApplyNoLighting(var rci : TRenderContextInfo; aFace : TGLEnum);
          procedure Assign(Source: TPersistent); override;
 
       published
-			{ Published Declarations }
+   { Published Declarations }
          property Ambient : TGLColor read FAmbient write SetAmbient;
          property Diffuse : TGLColor read FDiffuse write SetDiffuse;
          property Emission : TGLColor read FEmission write SetEmission;
@@ -1254,7 +1260,7 @@ type
    TMaterialOption = (moIgnoreFog, moNoLighting);
    TMaterialOptions = set of TMaterialOption;
 
-	// TGLMaterial
+ // TGLMaterial
    //
    {: Describes a rendering material.<p>
       A material is basicly a set of face properties (front and back) that take
@@ -1265,11 +1271,11 @@ type
       TGLLibMaterial (taken for a material library).<p>
       The TGLLibMaterial has more adavanced properties (like texture transforms)
       and provides a standard way of sharing definitions and texture maps. }
-	TGLMaterial = class (TGLUpdateAbleObject)
+ TGLMaterial = class (TGLUpdateAbleObject)
       private
-	      { Private Declarations }
+       { Private Declarations }
          FFrontProperties, FGLBackProperties : TGLFaceProperties;
-			FBlendingMode : TBlendingMode;
+   FBlendingMode : TBlendingMode;
          FTexture : TGLTexture;
          FMaterialLibrary : TGLMaterialLibrary;
          FLibMaterialName : TGLLibMaterialName;
@@ -1278,8 +1284,8 @@ type
          currentLibMaterial : TGLLibMaterial;
          FTextureEx : TGLTextureEx;
 
-	   protected
-	      { Protected Declarations }
+    protected
+       { Protected Declarations }
          function GetBackProperties : TGLFaceProperties;
          procedure SetBackProperties(Values: TGLFaceProperties);
          procedure SetFrontProperties(Values: TGLFaceProperties);
@@ -1292,23 +1298,23 @@ type
          procedure SetFaceCulling(const val : TFaceCulling);
          procedure SetTextureEx(const Value : TGLTextureEx);
 
-			procedure NotifyLibMaterialDestruction;
-			//: Back, Front, Texture and blending not stored if linked to a LibMaterial
-			function StoreMaterialProps : Boolean;
+   procedure NotifyLibMaterialDestruction;
+   //: Back, Front, Texture and blending not stored if linked to a LibMaterial
+   function StoreMaterialProps : Boolean;
 
-		public
-			{ Public Declarations }
-			constructor Create(AOwner: TPersistent); override;
-			destructor Destroy; override;
+  public
+   { Public Declarations }
+   constructor Create(AOwner: TPersistent); override;
+   destructor Destroy; override;
 
          procedure PrepareBuildList;
-			procedure Apply(var rci : TRenderContextInfo);
+   procedure Apply(var rci : TRenderContextInfo);
          {: Restore non-standard material states that were altered;<p>
             A return value of True is a multipass request. }
          function  UnApply(var rci : TRenderContextInfo) : Boolean;
-			procedure Assign(Source: TPersistent); override;
-			procedure NotifyChange(Sender : TObject); override;
-			procedure NotifyTexMapChange(Sender : TObject);
+   procedure Assign(Source: TPersistent); override;
+   procedure NotifyChange(Sender : TObject); override;
+   procedure NotifyTexMapChange(Sender : TObject);
          procedure DestroyHandles;
 
          procedure Loaded;
@@ -1327,29 +1333,29 @@ type
          //: Gets the primary texture either from material library or the texture property
          function GetActualPrimaryTexture: TGLTexture;
 
-		published
-			{ Published Declarations }
-			property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
-			property FrontProperties: TGLFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
-			property BlendingMode : TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
+  published
+   { Published Declarations }
+   property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
+   property FrontProperties: TGLFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
+   property BlendingMode : TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
          property MaterialOptions : TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
-			property Texture : TGLTexture read GetTexture write SetTexture stored StoreMaterialProps;
+   property Texture : TGLTexture read GetTexture write SetTexture stored StoreMaterialProps;
          property FaceCulling : TFaceCulling read FFaceCulling write SetFaceCulling default fcBufferDefault;
 
-			property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-			property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
-      property TextureEx : TGLTextureEx read FTextureEx write SetTextureEx;
-	  end;
+   property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+   property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
+   property TextureEx : TGLTextureEx read FTextureEx write SetTextureEx;
+   end;
 
-	// TGLLibMaterial
-	//
+ // TGLLibMaterial
+ //
    {: Material in a material library.<p>
       Introduces Texture transformations (offset and scale). Those transformations
       are available only for lib materials to minimize the memory cost of basic
       materials (which are used in almost all objects). }
-	TGLLibMaterial = class (TCollectionItem)
-	   private
-	      { Private Declarations }
+ TGLLibMaterial = class (TCollectionItem)
+    private
+       { Private Declarations }
          userList : TList;
          FName : TGLLibMaterialName;
          FNameHashKey : Integer;
@@ -1363,8 +1369,8 @@ type
          libMatTexture2 : TGLLibMaterial; // internal cache
          FTag : Integer;
 
-	   protected
-	      { Protected Declarations }
+    protected
+       { Protected Declarations }
          function GetDisplayName : String; override;
          procedure Loaded;
 
@@ -1383,30 +1389,30 @@ type
          procedure DoOnTextureNeeded(Sender : TObject; var textureFileName : String);
 
       public
-	      { Public Declarations }
-	      constructor Create(Collection : TCollection); override;
-	      destructor Destroy; override;
+       { Public Declarations }
+       constructor Create(Collection : TCollection); override;
+       destructor Destroy; override;
 
-	      procedure Assign(Source: TPersistent); override;
+       procedure Assign(Source: TPersistent); override;
 
          procedure PrepareBuildList;
-			procedure Apply(var rci : TRenderContextInfo);
+   procedure Apply(var rci : TRenderContextInfo);
          //: Restore non-standard material states that were altered
          function  UnApply(var rci : TRenderContextInfo) : Boolean;
 
          procedure RegisterUser(obj : TGLUpdateAbleObject); overload;
-			procedure UnregisterUser(obj : TGLUpdateAbleObject); overload;
+   procedure UnregisterUser(obj : TGLUpdateAbleObject); overload;
          procedure RegisterUser(comp : TGLUpdateAbleComponent); overload;
-			procedure UnregisterUser(comp : TGLUpdateAbleComponent); overload;
+   procedure UnregisterUser(comp : TGLUpdateAbleComponent); overload;
          procedure RegisterUser(libMaterial : TGLLibMaterial); overload;
-			procedure UnregisterUser(libMaterial : TGLLibMaterial); overload;
+   procedure UnregisterUser(libMaterial : TGLLibMaterial); overload;
          procedure NotifyUsers;
          procedure NotifyUsersOfTexMapChange;
 
          property NameHashKey : Integer read FNameHashKey;
 
-	   published
-	      { Published Declarations }
+    published
+       { Published Declarations }
          property Name : TGLLibMaterialName read FName write SetName;
          property Material : TGLMaterial read FMaterial write SetMaterial;
          property Tag : Integer read FTag write FTag;
@@ -1428,32 +1434,32 @@ type
 
          {: Optionnal shader for the material. }
          property Shader : TGLShader read FShader write SetShader;
-	end;
+ end;
 
-	// TGLLibMaterials
-	//
+ // TGLLibMaterials
+ //
    {: A collection of materials, mainly used in material libraries. }
-	TGLLibMaterials = class (TOwnedCollection)
-	   private
-	      { Protected Declarations }
+ TGLLibMaterials = class (TOwnedCollection)
+    private
+       { Protected Declarations }
 
-	   protected
-	      { Protected Declarations }
+    protected
+       { Protected Declarations }
          procedure Loaded;
 
          procedure SetItems(index : Integer; const val : TGLLibMaterial);
-	      function GetItems(index : Integer) : TGLLibMaterial;
+       function GetItems(index : Integer) : TGLLibMaterial;
          procedure DestroyHandles;
 
       public
-	      { Public Declarations }
-	      constructor Create(AOwner : TComponent);
+       { Public Declarations }
+       constructor Create(AOwner : TComponent);
 
          function Owner : TPersistent;
 
          function Add: TGLLibMaterial;
-	      function FindItemID(ID: Integer): TGLLibMaterial;
-	      property Items[index : Integer] : TGLLibMaterial read GetItems write SetItems; default;
+       function FindItemID(ID: Integer): TGLLibMaterial;
+       property Items[index : Integer] : TGLLibMaterial read GetItems write SetItems; default;
          function MakeUniqueName(const nameRoot : TGLLibMaterialName) : TGLLibMaterialName;
          function GetLibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
          procedure PrepareBuildList;
@@ -1472,8 +1478,8 @@ type
       Materials in a material library also feature advanced control properties
       like texture coordinates transforms. }  
    TGLMaterialLibrary = class (TGLCadenceAbleComponent)
-	   private
-	      { Private Declarations }
+    private
+       { Private Declarations }
          FDoNotClearMaterialsOnLoad : Boolean;
          FMaterials : TGLLibMaterials;
          FTexturePaths : String;
@@ -1481,31 +1487,31 @@ type
          FTexturePathList : TStringList;
          FLastAppliedMaterial : TGLLibMaterial;
 
-	   protected
-			{ Protected Declarations }
+    protected
+   { Protected Declarations }
          procedure Loaded; override;
          procedure SetMaterials(const val : TGLLibMaterials);
          function StoreMaterials : Boolean;
          procedure SetTexturePaths(const val : String);
 
       public
-	      { Public Declarations }
-	      constructor Create(AOwner : TComponent); override;
+       { Public Declarations }
+       constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
          procedure DestroyHandles;
 
          procedure WriteToFiler(writer : TVirtualWriter);
-   	   procedure ReadFromFiler(reader : TVirtualReader);
-	      procedure SaveToStream(aStream : TStream); dynamic;
-	      procedure LoadFromStream(aStream : TStream); dynamic;
+       procedure ReadFromFiler(reader : TVirtualReader);
+       procedure SaveToStream(aStream : TStream); dynamic;
+       procedure LoadFromStream(aStream : TStream); dynamic;
          procedure AddMaterialsFromStream(aStream : TStream);
 
          {: Save library content to a file.<p>
             Recommended extension : .GLML<br>
             Currently saves only texture, ambient, diffuse, emission
             and specular colors. }
-	      procedure SaveToFile(const fileName : String);
-	      procedure LoadFromFile(const fileName : String);
+       procedure SaveToFile(const fileName : String);
+       procedure LoadFromFile(const fileName : String);
          procedure AddMaterialsFromFile(const fileName : String);
 
          {: Add a "standard" texture material.<p>
@@ -1536,7 +1542,7 @@ type
          function UnApplyMaterial(var rci : TRenderContextInfo) : Boolean;
 
       published
-	      { Published Declarations }
+       { Published Declarations }
          {: The materials collection. }
          property Materials : TGLLibMaterials read FMaterials write SetMaterials stored StoreMaterials;
          {: Paths to lookup when attempting to load a texture.<p>
@@ -1604,7 +1610,7 @@ function FindGLTextureImageClassByFriendlyName(const friendlyName : String) : TG
 //: Defines a TStrings with the list of registered TGLTextureImageClass.
 procedure SetGLTextureImageClassesToStrings(aStrings : TStrings);
 {: Creates a TStrings with the list of registered TGLTextureImageClass.<p>
-	To be freed by caller. }
+ To be freed by caller. }
 function GetGLTextureImageClassesAsStrings : TStrings;
 
 // Global texturing defaults
@@ -1620,7 +1626,7 @@ procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
 procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
 
 procedure RegisterTGraphicClassFileExtension(const extension : String;
-                                             const aClass : TGraphicClass);
+                                             const aClass : TGraphicClass);   
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1635,17 +1641,59 @@ uses GLScene, GLStrings, XOpenGL, ApplicationFileIO;
 {$Q-} // no range checking
 
 var
-	vGLTextureImageClasses : TList;
-	vColorManager : TGLColorManager;
+ vGLTextureImageClasses : TList;
+ vColorManager : TGLColorManager;
    vTIEClass, vTIEEditor : TList;
 
 const
-	cTextureMode : array [tmDecal..tmReplace] of TGLEnum =
-							( GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE );
+ cTextureMode : array [tmDecal..tmReplace] of TGLEnum =
+       ( GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE );
 
 var
    vTGraphicFileExtension : array of String;
    vTGraphicClass : array of TGraphicClass;
+
+// Dummy method for CPP
+{$IFDEF GLS_CPPB}
+function TGLTextureImage.GetHeight: Integer;
+begin
+  result := 0;
+end;
+
+function TGLTextureImage.GetWidth: Integer;
+begin
+  result := 0;
+end;
+
+procedure TGLTextureImage.SaveToFile(const fileName : String);
+begin
+end;
+
+class function TGLTextureImage.FriendlyName : String;
+begin
+  result := '';
+end;
+
+function TGLTextureImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
+begin
+  result := nil;
+end;
+
+class function TGLTextureImageEditor.Edit(aTexImage : TGLTextureImage) : Boolean;
+begin
+  result := true;
+end;
+
+procedure TGLShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
+begin
+end;
+
+function TGLShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
+begin
+  result := true;
+end;
+
+{$ENDIF}
 
 // RegisterTGraphicClassFileExtension
 //
@@ -1712,38 +1760,38 @@ end;
 //
 function ColorManager : TGLColorManager;
 begin
-	if not Assigned(vColorManager) then begin
-		vColorManager:=TGLColorManager.Create;
-		vColorManager.RegisterDefaultColors;
-	end;
-	Result:=vColorManager;
+ if not Assigned(vColorManager) then begin
+  vColorManager:=TGLColorManager.Create;
+  vColorManager.RegisterDefaultColors;
+ end;
+ Result:=vColorManager;
 end;
 
 // RegisterGLTextureImageClass
 //
 procedure RegisterGLTextureImageClass(textureImageClass : TGLTextureImageClass);
 begin
-	if not Assigned(vGLTextureImageClasses) then
-		vGLTextureImageClasses:=TList.Create;
-	vGLTextureImageClasses.Add(textureImageClass);
+ if not Assigned(vGLTextureImageClasses) then
+  vGLTextureImageClasses:=TList.Create;
+ vGLTextureImageClasses.Add(textureImageClass);
 end;
 
 // FindGLTextureImageClass
 //
 function FindGLTextureImageClass(const className : String) : TGLTextureImageClass;
 var
-	i : Integer;
-	tic : TGLTextureImageClass;
+ i : Integer;
+ tic : TGLTextureImageClass;
 begin
-	Result:=nil;
-	if Assigned(vGLTextureImageClasses) then
-		for i:=0 to vGLTextureImageClasses.Count-1 do begin
-			tic:=TGLTextureImageClass(vGLTextureImageClasses[i]);
-			if tic.ClassName=className then begin
-				Result:=tic;
-				Break;
-			end;
-		end;
+ Result:=nil;
+ if Assigned(vGLTextureImageClasses) then
+  for i:=0 to vGLTextureImageClasses.Count-1 do begin
+   tic:=TGLTextureImageClass(vGLTextureImageClasses[i]);
+   if tic.ClassName=className then begin
+    Result:=tic;
+    Break;
+   end;
+  end;
 
 end;
 
@@ -1751,45 +1799,45 @@ end;
 //
 function FindGLTextureImageClassByFriendlyName(const friendlyName : String) : TGLTextureImageClass;
 var
-	i : Integer;
-	tic : TGLTextureImageClass;
+ i : Integer;
+ tic : TGLTextureImageClass;
 begin
-	Result:=nil;
-	if Assigned(vGLTextureImageClasses) then
-		for i:=0 to vGLTextureImageClasses.Count-1 do begin
-			tic:=TGLTextureImageClass(vGLTextureImageClasses[i]);
-			if tic.FriendlyName=friendlyName then begin
-				Result:=tic;
-				Break;
-			end;
-		end;
+ Result:=nil;
+ if Assigned(vGLTextureImageClasses) then
+  for i:=0 to vGLTextureImageClasses.Count-1 do begin
+   tic:=TGLTextureImageClass(vGLTextureImageClasses[i]);
+   if tic.FriendlyName=friendlyName then begin
+    Result:=tic;
+    Break;
+   end;
+  end;
 end;
 
 // SetGLTextureImageClassesToStrings
 //
 procedure SetGLTextureImageClassesToStrings(aStrings : TStrings);
 var
-	i : Integer;
-	tic : TGLTextureImageClass;
+ i : Integer;
+ tic : TGLTextureImageClass;
 begin
-	with aStrings do begin
-		BeginUpdate;
-		Clear;
-		if Assigned(vGLTextureImageClasses) then
-			for i:=0 to vGLTextureImageClasses.Count-1 do begin
-				tic:=TGLTextureImageClass(vGLTextureImageClasses[i]);
-				AddObject(tic.FriendlyName, Pointer(tic));
-			end;
-		EndUpdate;
-	end;
+ with aStrings do begin
+  BeginUpdate;
+  Clear;
+  if Assigned(vGLTextureImageClasses) then
+   for i:=0 to vGLTextureImageClasses.Count-1 do begin
+    tic:=TGLTextureImageClass(vGLTextureImageClasses[i]);
+    AddObject(tic.FriendlyName, Pointer(tic));
+   end;
+  EndUpdate;
+ end;
 end;
 
 // GetGLTextureImageClassesAsStrings
 //
 function GetGLTextureImageClassesAsStrings : TStrings;
 begin
-	Result:=TStringList.Create;
-	SetGLTextureImageClassesToStrings(Result);
+ Result:=TStringList.Create;
+ SetGLTextureImageClassesToStrings(Result);
 end;
 
 // IncludeTrailingBackslash
@@ -1835,10 +1883,10 @@ end;
 //
 procedure TGLColor.Initialize(const color : TColorVector);
 begin
-	SetVector(FColor, color);
+ SetVector(FColor, color);
    if vUseDefaultSets then begin
       New(FPDefaultColor);
-   	SetVector(FPDefaultColor^, color);
+    SetVector(FPDefaultColor^, color);
    end;
 end;
 
@@ -1847,32 +1895,39 @@ end;
 procedure TGLColor.SetColorVector(const aColor : TColorVector);
 begin
    SetVector(FColor, AColor);
-	NotifyChange(Self);
+ NotifyChange(Self);
+end;
+
+// GetColorComponent
+//
+function TGLColor.GetColorComponent(const Index: Integer): TGLFloat;
+begin
+  result := FColor.Coord[Index];
 end;
 
 // SetColorComponent
 //
 procedure TGLColor.SetColorComponent(index : Integer; value : TGLFloat);
 begin
-	if FColor[index]<>value then begin
-		FColor[index]:=value;
-		NotifyChange(Self);
-	end;
+ if FColor.Coord[index]<>value then begin
+  FColor.Coord[index]:=value;
+  NotifyChange(Self);
+ end;
 end;
 
 // SetAsWinColor
 //
 procedure TGLColor.SetAsWinColor(const val : TColor);
 begin
-	FColor:=ConvertWinColor(val);
-	NotifyChange(Self);
+ FColor:=ConvertWinColor(val);
+ NotifyChange(Self);
 end;
 
 // GetAsWinColor
 //
 function TGLColor.GetAsWinColor : TColor;
 begin
-	Result:=ConvertColorVector(FColor);
+ Result:=ConvertColorVector(FColor);
 end;
 
 // Assign
@@ -1880,7 +1935,7 @@ end;
 procedure TGLColor.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLColor) then begin
-		FColor:=TGLColor(Source).FColor;
+  FColor:=TGLColor(Source).FColor;
       NotifyChange(Self);
    end else inherited;
 end;
@@ -1923,7 +1978,7 @@ end;
 //
 function TGLColor.AsAddress: PGLFloat;
 begin
-	Result:=@FColor;
+ Result:=@FColor;
 end;
 
 // RandomColor
@@ -1939,10 +1994,10 @@ end;
 //
 procedure TGLColor.SetColor(red, green, blue : Single; alpha : Single = 1);
 begin
-   FColor[0]:=red;
-   FColor[1]:=Green;
-   FColor[2]:=blue;
-   FColor[3]:=alpha;
+   FColor.Coord[0]:=red;
+   FColor.Coord[1]:=Green;
+   FColor.Coord[2]:=blue;
+   FColor.Coord[3]:=alpha;
    NotifyChange(Self);
 end;
 
@@ -1957,28 +2012,28 @@ const
    V = 2;
 begin
    min:=MinFloat(PFloatVector(@FColor), 3);
-   Result[V]:=MaxFloat(PFloatVector(@FColor), 3);
-   delta:=Result[V]-min;
+   Result.Coord[V]:=MaxFloat(PFloatVector(@FColor), 3);
+   delta:=Result.Coord[V]-min;
 
   // saturation is zero if R, G & B are zero
   // hue undefined (zero) if saturation is zero or color is gray (delta=zero)
-   if (Result[V]=0) or (delta=0) then begin
-      Result[S]:=0;
-      Result[H]:=0;
+   if (Result.Coord[V]=0) or (delta=0) then begin
+      Result.Coord[S]:=0;
+      Result.Coord[H]:=0;
    end else begin
-      Result[S]:=delta/Result[V];
-      if Red=Result[V] then
+      Result.Coord[S]:=delta/Result.Coord[V];
+      if Red=Result.Coord[V] then
          // between yellow and magenta
-         Result[H]:=60*(Green-Blue)/delta
-      else if Green=Result[V] then
+         Result.Coord[H]:=60*(Green-Blue)/delta
+      else if Green=Result.Coord[V] then
          // between cyan and yellow
-         Result[H]:=120+60*(Blue-Red)/delta
+         Result.Coord[H]:=120+60*(Blue-Red)/delta
       else // between magenta and cyan
-         Result[H]:=240+60*(Red-Green)/delta;
-      if Result[H]<0 then  // normalize H
-         Result[H]:=Result[H]+360;
+         Result.Coord[H]:=240+60*(Red-Green)/delta;
+      if Result.Coord[H]<0 then  // normalize H
+         Result.Coord[H]:=Result.Coord[H]+360;
    end;
-   Result[3]:=Alpha;
+   Result.Coord[3]:=Alpha;
 end;
 
 // SetHSVA
@@ -1991,53 +2046,53 @@ const
    S = 1;
    V = 2;
 begin
-   if hsva[S]=0 then begin
+   if hsva.Coord[S]=0 then begin
       // gray (ignore hue)
-      FColor[0]:=hsva[V];
-      FColor[1]:=hsva[V];
-      FColor[2]:=hsva[V];
+      FColor.Coord[0]:=hsva.Coord[V];
+      FColor.Coord[1]:=hsva.Coord[V];
+      FColor.Coord[2]:=hsva.Coord[V];
    end else begin
-      hTemp:=hsva[H]*(1/60);
+      hTemp:=hsva.Coord[H]*(1/60);
       f:=Frac(hTemp);
 
-      p:=hsva[V]*(1-hsva[S]);
-      q:=hsva[V]*(1-(hsva[S]*f));
-      t:=hsva[V]*(1-(hsva[S]*(1-f)));
+      p:=hsva.Coord[V]*(1-hsva.Coord[S]);
+      q:=hsva.Coord[V]*(1-(hsva.Coord[S]*f));
+      t:=hsva.Coord[V]*(1-(hsva.Coord[S]*(1-f)));
 
       case Trunc(hTemp) mod 6 of
          0 : begin
-            FColor[0]:=hsva[V];
-            FColor[1]:=t;
-            FColor[2]:=p;
+            FColor.Coord[0]:=hsva.Coord[V];
+            FColor.Coord[1]:=t;
+            FColor.Coord[2]:=p;
          end;
          1 : begin
-            FColor[0]:=q;
-            FColor[1]:=hsva[V];
-            FColor[2]:=p;
+            FColor.Coord[0]:=q;
+            FColor.Coord[1]:=hsva.Coord[V];
+            FColor.Coord[2]:=p;
          end;
          2 : begin
-            FColor[0]:=p;
-            FColor[1]:=hsva[V];
-            FColor[2]:=t;
+            FColor.Coord[0]:=p;
+            FColor.Coord[1]:=hsva.Coord[V];
+            FColor.Coord[2]:=t;
          end;
          3 : begin
-            FColor[0]:=p;
-            FColor[1]:=q;
-            FColor[2]:=hsva[V];
+            FColor.Coord[0]:=p;
+            FColor.Coord[1]:=q;
+            FColor.Coord[2]:=hsva.Coord[V];
          end;
          4 : begin
-            FColor[0]:=t;
-            FColor[1]:=p;
-            FColor[2]:=hsva[V];
+            FColor.Coord[0]:=t;
+            FColor.Coord[1]:=p;
+            FColor.Coord[2]:=hsva.Coord[V];
          end;
          5 : begin
-            FColor[0]:=hsva[V];
-            FColor[1]:=p;
-            FColor[2]:=q;
+            FColor.Coord[0]:=hsva.Coord[V];
+            FColor.Coord[1]:=p;
+            FColor.Coord[2]:=q;
          end;
       end
    end;
-   FColor[3]:=hsva[3];
+   FColor.Coord[3]:=hsva.Coord[3];
    NotifyChange(Self);
 end;
 
@@ -2102,8 +2157,8 @@ begin
       FSpecular.FColor:=TGLFaceProperties(Source).FSpecular.FColor;
       FShininess:=TGLFaceProperties(Source).FShininess;
       FPolygonMode:=TGLFaceProperties(Source).FPolygonMode;
-		FEmission.FColor:=TGLFaceProperties(Source).FEmission.FColor;
-		NotifyChange(Self);
+  FEmission.FColor:=TGLFaceProperties(Source).FEmission.FColor;
+  NotifyChange(Self);
    end;
 end;
 
@@ -2153,10 +2208,10 @@ end;
 //
 procedure TGLFaceProperties.SetShininess(AValue: TShininess);
 begin
-	if FShininess<>AValue then begin
-		FShininess:=AValue;
-		NotifyChange(Self);
-	end;
+ if FShininess<>AValue then begin
+  FShininess:=AValue;
+  NotifyChange(Self);
+ end;
 end;
 
 // ------------------
@@ -2167,22 +2222,22 @@ end;
 //
 constructor TGLTextureImage.Create(AOwner: TPersistent);
 begin
-	inherited;
-	FOwnerTexture:=(AOwner as TGLTexture);
+ inherited;
+ FOwnerTexture:=(AOwner as TGLTexture);
 end;
 
 // Destroy
 //
 destructor TGLTextureImage.Destroy;
 begin
-	inherited Destroy;
+ inherited Destroy;
 end;
 
 // FriendlyDescription
 //
 class function TGLTextureImage.FriendlyDescription : String;
 begin
-	Result:=FriendlyName;
+ Result:=FriendlyName;
 end;
 
 // NativeTextureTarget
@@ -2196,8 +2251,8 @@ end;
 //
 procedure TGLTextureImage.Invalidate;
 begin
-	ReleaseBitmap32;
-	Include(FOwnerTexture.FChanges, tcImage);
+ ReleaseBitmap32;
+ Include(FOwnerTexture.FChanges, tcImage);
    NotifyChange(Self);
 end;
 
@@ -2205,15 +2260,15 @@ end;
 //
 procedure TGLTextureImage.ReleaseBitmap32;
 begin
-	// nothing here.
+ // nothing here.
 end;
 
 // NotifyChange
 //
 procedure TGLTextureImage.NotifyChange;
 begin
-	Include(FOwnerTexture.FChanges, tcImage);
-	FOwnerTexture.NotifyChange(Self);
+ Include(FOwnerTexture.FChanges, tcImage);
+ FOwnerTexture.NotifyChange(Self);
 end;
 
 // Edit
@@ -2243,30 +2298,30 @@ end;
 //
 constructor TGLBlankImage.Create(AOwner: TPersistent);
 begin
-	inherited;
-	FWidth:=256;
-	FHeight:=256;
+ inherited;
+ FWidth:=256;
+ FHeight:=256;
 end;
 
 // Destroy
 //
 destructor TGLBlankImage.Destroy;
 begin
-	ReleaseBitmap32;
-	inherited Destroy;
+ ReleaseBitmap32;
+ inherited Destroy;
 end;
 
 // Assign
 //
 procedure TGLBlankImage.Assign(Source: TPersistent);
 begin
-	if Assigned(Source) then begin
+ if Assigned(Source) then begin
       if (Source is TGLBlankImage) then begin
          FWidth:=TGLBlankImage(Source).FWidth;
          FHeight:=TGLBlankImage(Source).FHeight;
          Invalidate;
       end else inherited;
-	end else inherited;
+ end else inherited;
 end;
 
 // SetWidth
@@ -2284,7 +2339,7 @@ end;
 //
 function TGLBlankImage.GetWidth: Integer;
 begin
-	Result:=FWidth;
+ Result:=FWidth;
 end;
 
 // SetHeight
@@ -2302,29 +2357,29 @@ end;
 //
 function TGLBlankImage.GetHeight: Integer;
 begin
-	Result:=FHeight;
+ Result:=FHeight;
 end;
 
 // GetBitmap32
 //
 function TGLBlankImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
 begin
-	if not Assigned(FBitmap) then begin
+ if not Assigned(FBitmap) then begin
       FBitmap:=TGLBitmap32.Create;
       FBitmap.Width:=FWidth;
       FBitmap.Height:=FHeight;
-	end;
-	Result:=FBitmap;
+ end;
+ Result:=FBitmap;
 end;
 
 // ReleaseBitmap32
 //
 procedure TGLBlankImage.ReleaseBitmap32;
 begin
-	if Assigned(FBitmap) then begin
-   	FBitmap.Free;
-		FBitmap:=nil;
-	end;
+ if Assigned(FBitmap) then begin
+    FBitmap.Free;
+  FBitmap:=nil;
+ end;
 end;
 
 // SaveToFile
@@ -2381,16 +2436,16 @@ end;
 //
 constructor TGLPictureImage.Create(AOwner: TPersistent);
 begin
-	inherited;
+ inherited;
 end;
 
 // Destroy
 //
 destructor TGLPictureImage.Destroy;
 begin
-	ReleaseBitmap32;
-	FGLPicture.Free;
-	inherited Destroy;
+ ReleaseBitmap32;
+ FGLPicture.Free;
+ inherited Destroy;
 end;
 
 // Assign
@@ -2399,9 +2454,9 @@ procedure TGLPictureImage.Assign(Source: TPersistent);
 var
    bmp : TGLBitmap;
 begin
-	if Assigned(Source) then begin
+ if Assigned(Source) then begin
       if (Source is TGLPersistentImage) then
-   		Picture.Assign(TGLPersistentImage(Source).Picture)
+     Picture.Assign(TGLPersistentImage(Source).Picture)
       else if (Source is TGLGraphic) then
          Picture.Assign(Source)
       else if (Source is TGLPicture) then
@@ -2411,47 +2466,47 @@ begin
          Picture.Graphic:=bmp;
          bmp.Free;
       end else inherited;
-	end else inherited;
+ end else inherited;
 end;
 
 // BeginUpdate
 //
 procedure TGLPictureImage.BeginUpdate;
 begin
-	Inc(FUpdateCounter);
-	Picture.OnChange:=nil;
+ Inc(FUpdateCounter);
+ Picture.OnChange:=nil;
 end;
 
 // EndUpdate
 //
 procedure TGLPictureImage.EndUpdate;
 begin
-	Assert(FUpdateCounter>0, ClassName+': Unbalanced Begin/EndUpdate');
-	Dec(FUpdateCounter);
-	Picture.OnChange:=PictureChanged;
-	if FUpdateCounter=0 then
-		PictureChanged(Picture);
+ Assert(FUpdateCounter>0, ClassName+': Unbalanced Begin/EndUpdate');
+ Dec(FUpdateCounter);
+ Picture.OnChange:=PictureChanged;
+ if FUpdateCounter=0 then
+  PictureChanged(Picture);
 end;
 
 // GetHeight
 //
 function TGLPictureImage.GetHeight: Integer;
 begin
-	Result:=Picture.Height;
+ Result:=Picture.Height;
 end;
 
 // GetWidth
 //
 function TGLPictureImage.GetWidth: Integer;
 begin
-	Result:=Picture.Width;
+ Result:=Picture.Width;
 end;
 
 // GetBitmap32
 //
 function TGLPictureImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
 begin
-	if not Assigned(FBitmap) then begin
+ if not Assigned(FBitmap) then begin
       FBitmap:=TGLBitmap32.Create;
       // we need to deactivate OnChange, due to a "glitch" in some TGraphics,
       // for instance, TJPegImage triggers an OnChange when it is drawn...
@@ -2463,25 +2518,25 @@ begin
             Picture.OnChange:=PictureChanged;
          end;
       end else FBitmap.Assign(Picture.Graphic);
-	end;
-	Result:=FBitmap;
+ end;
+ Result:=FBitmap;
 end;
 
 // ReleaseBitmap32
 //
 procedure TGLPictureImage.ReleaseBitmap32;
 begin
-	if Assigned(FBitmap) then begin
-   	FBitmap.Free;
-		FBitmap:=nil;
-	end;
+ if Assigned(FBitmap) then begin
+    FBitmap.Free;
+  FBitmap:=nil;
+ end;
 end;
 
 // PictureChanged
 //
 procedure TGLPictureImage.PictureChanged(Sender: TObject);
 begin
- 	Invalidate;
+  Invalidate;
 end;
 
 // GetPicture
@@ -2499,7 +2554,7 @@ end;
 //
 procedure TGLPictureImage.SetPicture(const aPicture : TGLPicture);
 begin
-	Picture.Assign(aPicture);
+ Picture.Assign(aPicture);
 end;
 
 // ------------------
@@ -2510,21 +2565,21 @@ end;
 //
 constructor TGLPersistentImage.Create(AOwner: TPersistent);
 begin
-	inherited;
+ inherited;
 end;
 
 // Destroy
 //
 destructor TGLPersistentImage.Destroy;
 begin
-	inherited Destroy;
+ inherited Destroy;
 end;
 
 // SaveToFile
 //
 procedure TGLPersistentImage.SaveToFile(const fileName : String);
 begin
-	Picture.SaveToFile(fileName);
+ Picture.SaveToFile(fileName);
 end;
 
 // LoadFromFile
@@ -2573,15 +2628,15 @@ end;
 //
 class function TGLPersistentImage.FriendlyName : String;
 begin
-	Result:='Persistent Image';
+ Result:='Persistent Image';
 end;
 
 // FriendlyDescription
 //
 class function TGLPersistentImage.FriendlyDescription : String;
 begin
-	Result:='Image data is stored in its original format with other form resources,'
-			 +'ie. in the DFM at design-time, and embedded in the EXE at run-time.';
+ Result:='Image data is stored in its original format with other form resources,'
+    +'ie. in the DFM at design-time, and embedded in the EXE at run-time.';
 end;
 
 // ------------------
@@ -2592,14 +2647,14 @@ end;
 //
 constructor TGLPicFileImage.Create(AOwner: TPersistent);
 begin
-	inherited;
+ inherited;
 end;
 
 // Destroy
 //
 destructor TGLPicFileImage.Destroy;
 begin
-	inherited;
+ inherited;
 end;
 
 // Assign
@@ -2608,32 +2663,32 @@ procedure TGLPicFileImage.Assign(Source: TPersistent);
 begin
    if Source is TGLPicFileImage then begin
       FPictureFileName:=TGLPicFileImage(Source).FPictureFileName
-  	end else inherited;
+   end else inherited;
 end;
 
 // SetPictureFileName
 //
 procedure TGLPicFileImage.SetPictureFileName(const val : String);
 begin
-	if val<>FPictureFileName then begin
-		FPictureFileName:=val;
+ if val<>FPictureFileName then begin
+  FPictureFileName:=val;
       FAlreadyWarnedAboutMissingFile:=False;
-		Invalidate;
-	end;
+  Invalidate;
+ end;
 end;
 
 // Invalidate
 //
 procedure TGLPicFileImage.Invalidate;
 begin
-	Picture.OnChange:=nil;
-	try
-		Picture.Assign(nil);
-		FBitmap:=nil;
-	finally
-		Picture.OnChange:=PictureChanged;
-	end;
-	inherited;
+ Picture.OnChange:=nil;
+ try
+  Picture.Assign(nil);
+  FBitmap:=nil;
+ finally
+  Picture.OnChange:=PictureChanged;
+ end;
+ inherited;
 end;
 
 // GetBitmap32
@@ -2642,14 +2697,14 @@ function TGLPicFileImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
 var
    buf : String;
 begin
-	if (GetWidth<=0) and (PictureFileName<>'') then begin
-		Picture.OnChange:=nil;
-		try
+ if (GetWidth<=0) and (PictureFileName<>'') then begin
+  Picture.OnChange:=nil;
+  try
          buf:=PictureFileName;
          if Assigned(FOnTextureNeeded) then
             FOnTextureNeeded(Self, buf);
          if FileExists(buf) then
-   			Picture.LoadFromFile(buf)
+      Picture.LoadFromFile(buf)
          else begin
             Picture.Graphic:=nil;
             if not FAlreadyWarnedAboutMissingFile then begin
@@ -2659,17 +2714,17 @@ begin
          end;
          Result:=inherited GetBitmap32(target);
          Picture.Graphic:=nil;
-		finally
-			Picture.OnChange:=PictureChanged;
-		end;
-	end else	Result:=inherited GetBitmap32(target);
+  finally
+   Picture.OnChange:=PictureChanged;
+  end;
+ end else Result:=inherited GetBitmap32(target);
 end;
 
 // SaveToFile
 //
 procedure TGLPicFileImage.SaveToFile(const fileName : String);
 begin
-	SaveStringToFile(fileName, PictureFileName);
+ SaveStringToFile(fileName, PictureFileName);
 end;
 
 // LoadFromFile
@@ -2682,7 +2737,7 @@ begin
    // attempt to autodetect if we are pointed to a file containing
    // a filename or directly to an image
    if SizeOfFile(fileName)<512 then begin
-   	buf:=LoadStringFromFile(fileName);
+    buf:=LoadStringFromFile(fileName);
       if Pos(#0, buf)>0 then
          PictureFileName:=fileName
       else PictureFileName:=buf;
@@ -2693,14 +2748,14 @@ end;
 //
 class function TGLPicFileImage.FriendlyName : String;
 begin
-	Result:='PicFile Image';
+ Result:='PicFile Image';
 end;
 
 // FriendlyDescription
 //
 class function TGLPicFileImage.FriendlyDescription : String;
 begin
-	Result:='Image data is retrieved from a file.';
+ Result:='Image data is retrieved from a file.';
 end;
 
 // ------------------
@@ -2713,7 +2768,7 @@ constructor TGLCubeMapImage.Create(AOwner: TPersistent);
 var
    i : TGLCubeMapTarget;
 begin
-	inherited;
+ inherited;
    for i:=Low(FPicture) to High(FPicture) do begin
       FPicture[i]:=TGLPicture.Create;
       FPicture[i].OnChange:=PictureChanged;
@@ -2726,10 +2781,10 @@ destructor TGLCubeMapImage.Destroy;
 var
    i : TGLCubeMapTarget;
 begin
-	ReleaseBitmap32;
+ ReleaseBitmap32;
    for i:=Low(FPicture) to High(FPicture) do
       FPicture[i].Free;
-	inherited Destroy;
+ inherited Destroy;
 end;
 
 // Assign
@@ -2738,27 +2793,27 @@ procedure TGLCubeMapImage.Assign(Source: TPersistent);
 var
    i : TGLCubeMapTarget;
 begin
-	if Assigned(Source) then begin
+ if Assigned(Source) then begin
       if (Source is TGLCubeMapImage) then begin
          for i:=Low(FPicture) to High(FPicture) do
             FPicture[i].Assign(TGLCubeMapImage(Source).FPicture[i]);
          Invalidate;
       end else inherited;
-	end else inherited;
+ end else inherited;
 end;
 
 // GetWidth
 //
 function TGLCubeMapImage.GetWidth: Integer;
 begin
-	Result:=FPicture[cmtPX].Width;
+ Result:=FPicture[cmtPX].Width;
 end;
 
 // GetHeight
 //
 function TGLCubeMapImage.GetHeight: Integer;
 begin
-	Result:=FPicture[cmtPX].Height;
+ Result:=FPicture[cmtPX].Height;
 end;
 
 // GetBitmap32
@@ -2786,17 +2841,17 @@ begin
    finally
       FPicture[i].OnChange:=PictureChanged;
    end;
-	Result:=FBitmap;
+ Result:=FBitmap;
 end;
 
 // ReleaseBitmap32
 //
 procedure TGLCubeMapImage.ReleaseBitmap32;
 begin
-	if Assigned(FBitmap) then begin
-   	FBitmap.Free;
-		FBitmap:=nil;
-	end;
+ if Assigned(FBitmap) then begin
+    FBitmap.Free;
+  FBitmap:=nil;
+ end;
 end;
 
 // BeginUpdate
@@ -2805,7 +2860,7 @@ procedure TGLCubeMapImage.BeginUpdate;
 var
    i : TGLCubeMapTarget;
 begin
-	Inc(FUpdateCounter);
+ Inc(FUpdateCounter);
    for i:=Low(FPicture) to High(FPicture) do
       FPicture[i].OnChange:=nil;
 end;
@@ -2816,12 +2871,12 @@ procedure TGLCubeMapImage.EndUpdate;
 var
    i : TGLCubeMapTarget;
 begin
-	Assert(FUpdateCounter>0, ClassName+': Unbalanced Begin/EndUpdate');
-	Dec(FUpdateCounter);
+ Assert(FUpdateCounter>0, ClassName+': Unbalanced Begin/EndUpdate');
+ Dec(FUpdateCounter);
    for i:=Low(FPicture) to High(FPicture) do
       FPicture[i].OnChange:=PictureChanged;
-	if FUpdateCounter=0 then
-		PictureChanged(FPicture[cmtPX]);
+ if FUpdateCounter=0 then
+  PictureChanged(FPicture[cmtPX]);
 end;
 
 // SaveToFile
@@ -2890,7 +2945,7 @@ end;
 //
 procedure TGLCubeMapImage.PictureChanged(Sender: TObject);
 begin
-	Invalidate;
+ Invalidate;
 end;
 
 // SetPicture
@@ -2919,7 +2974,7 @@ begin
    FVirtualHandle:=TGLVirtualHandle.Create;
    FShaderStyle:=ssLowLevel;
    FEnabled:=True;
-	inherited;
+ inherited;
 end;
 
 // Destroy
@@ -2931,7 +2986,7 @@ var
 begin
    FVirtualHandle.DestroyHandle;
    FinalizeShader;
-	inherited;
+ inherited;
    list:=FLibMatUsers;
    FLibMatUsers:=nil;
    for i:=list.Count-1 downto 0 do
@@ -3107,16 +3162,16 @@ end;
 //
 constructor TGLTexture.Create(AOwner: TPersistent);
 begin
-	inherited;
-	FDisabled:=True;
-	FChanges:=[tcImage, tcParams];
-	FImage:=TGLPersistentImage.Create(Self);
+ inherited;
+ FDisabled:=True;
+ FChanges:=[tcImage, tcParams];
+ FImage:=TGLPersistentImage.Create(Self);
    FImage.FOnTextureNeeded:=DoOnTextureNeeded;
-	FImageAlpha:=tiaDefault;
+ FImageAlpha:=tiaDefault;
    FImageBrightness:=1.0;
    FImageGamma:=1.0;
-	FMagFilter:=maLinear;
-	FMinFilter:=miLinearMipMapLinear;
+ FMagFilter:=maLinear;
+ FMinFilter:=miLinearMipMapLinear;
    FFilteringQuality:=tfIsotropic;
    FRequiredMemorySize:=-1;
    FTextureHandle:=TGLTextureHandle.Create;
@@ -3132,10 +3187,10 @@ begin
    FEnvColor.Free;
    FMapSCoordinates.Free;
    FMapTCoordinates.Free;
-	DestroyHandles;
+ DestroyHandles;
    FTextureHandle.Free;
-	FImage.Free;
-	inherited Destroy;
+ FImage.Free;
+ inherited Destroy;
 end;
 
 // Assign
@@ -3144,21 +3199,21 @@ procedure TGLTexture.Assign(Source: TPersistent);
 begin
    if Assigned(Source) then begin
       if (Source is TGLTexture) then begin
-		   if Source<>Self then begin
-			   FImageAlpha:=TGLTexture(Source).FImageAlpha;
-   			FTextureMode:=TGLTexture(Source).FTextureMode;
-	   		FTextureWrap:=TGLTexture(Source).FTextureWrap;
-      		FTextureFormat:=TGLTexture(Source).FTextureFormat;
-      		FCompression:=TGLTexture(Source).FCompression;
-		   	FMinFilter:=TGLTexture(Source).FMinFilter;
-			   FMagFilter:=TGLTexture(Source).FMagFilter;
+     if Source<>Self then begin
+      FImageAlpha:=TGLTexture(Source).FImageAlpha;
+      FTextureMode:=TGLTexture(Source).FTextureMode;
+      FTextureWrap:=TGLTexture(Source).FTextureWrap;
+        FTextureFormat:=TGLTexture(Source).FTextureFormat;
+        FCompression:=TGLTexture(Source).FCompression;
+      FMinFilter:=TGLTexture(Source).FMinFilter;
+      FMagFilter:=TGLTexture(Source).FMagFilter;
             FMappingMode:=TGLTexture(Source).FMappingMode;
             MappingSCoordinates.Assign(TGLTexture(Source).MappingSCoordinates);
             MappingTCoordinates.Assign(TGLTexture(Source).MappingTCoordinates);
-   			FDisabled:=TGLTexture(Source).FDisabled;
-	   		SetImage(TGLTexture(Source).FImage);
-		   	FChanges:=[tcParams, tcImage];
-   		end;
+      FDisabled:=TGLTexture(Source).FDisabled;
+      SetImage(TGLTexture(Source).FImage);
+      FChanges:=[tcParams, tcImage];
+     end;
       end else if (Source is TGLGraphic) then begin
          Image.Assign(Source);
       end else if (Source is TGLPicture) then begin
@@ -3166,8 +3221,8 @@ begin
       end else inherited Assign(Source);
    end else begin
       FDisabled:=True;
-  		SetImage(nil);
-     	FChanges:=[tcParams, tcImage];
+    SetImage(nil);
+      FChanges:=[tcParams, tcImage];
    end;
 end;
 
@@ -3204,15 +3259,15 @@ end;
 procedure TGLTexture.SetImage(AValue: TGLTextureImage);
 begin
    if Assigned(aValue) then begin
-   	if FImage.ClassType<>AValue.ClassType then begin
-	   	FImage.Free;
-		   FImage:=TGLTextureImageClass(AValue.ClassType).Create(Self);
+    if FImage.ClassType<>AValue.ClassType then begin
+     FImage.Free;
+     FImage:=TGLTextureImageClass(AValue.ClassType).Create(Self);
          FImage.OnTextureNeeded:=DoOnTextureNeeded;
-	   end;
-   	FImage.Assign(AValue);
+    end;
+    FImage.Assign(AValue);
    end else begin
       FImage.Free;
-   	FImage:=TGLPersistentImage.Create(Self);
+    FImage:=TGLPersistentImage.Create(Self);
       FImage.FOnTextureNeeded:=DoOnTextureNeeded;
    end;
 end;
@@ -3221,19 +3276,19 @@ end;
 //
 procedure TGLTexture.SetImageClassName(const val : String);
 begin
-	if val<>'' then if FImage.ClassName<>val then begin
-		FImage.Free;
-		FImage:=TGLTextureImageClass(FindGLTextureImageClass(val)).Create(Self);
+ if val<>'' then if FImage.ClassName<>val then begin
+  FImage.Free;
+  FImage:=TGLTextureImageClass(FindGLTextureImageClass(val)).Create(Self);
       FImage.OnTextureNeeded:=DoOnTextureNeeded;
       NotifyImageChange;
-	end;
+ end;
 end;
 
 // GetImageClassName
 //
 function TGLTexture.GetImageClassName : String;
 begin
-	Result:=FImage.ClassName;
+ Result:=FImage.ClassName;
 end;
 
 // TextureImageRequiredMemory
@@ -3262,7 +3317,7 @@ end;
 procedure TGLTexture.SetImageAlpha(const val : TGLTextureImageAlpha);
 begin
    if FImageAlpha<>val then begin
-   	FImageAlpha:=val;
+    FImageAlpha:=val;
       NotifyImageChange;
    end;
 end;
@@ -3272,7 +3327,7 @@ end;
 procedure TGLTexture.SetImageBrightness(const val : Single);
 begin
    if FImageBrightness<>val then begin
-   	FImageBrightness:=val;
+    FImageBrightness:=val;
       NotifyImageChange;
    end;
 end;
@@ -3281,7 +3336,7 @@ end;
 //
 function TGLTexture.StoreBrightness : Boolean;
 begin
-	Result:=(FImageBrightness<>1.0);
+ Result:=(FImageBrightness<>1.0);
 end;
 
 // SetImageGamma
@@ -3289,7 +3344,7 @@ end;
 procedure TGLTexture.SetImageGamma(const val : Single);
 begin
    if FImageGamma<>val then begin
-   	FImageGamma:=val;
+    FImageGamma:=val;
       NotifyImageChange;
    end;
 end;
@@ -3298,52 +3353,52 @@ end;
 //
 function TGLTexture.StoreGamma : Boolean;
 begin
-	Result:=(FImageGamma<>1.0);
+ Result:=(FImageGamma<>1.0);
 end;
 
 // SetMagFilter
 //
 procedure TGLTexture.SetMagFilter(AValue: TGLMagFilter);
 begin
-	if AValue <> FMagFilter then begin
-		FMagFilter:=AValue;
+ if AValue <> FMagFilter then begin
+  FMagFilter:=AValue;
       NotifyParamsChange;
-	end;
+ end;
 end;
 
 // SetMinFilter
 //
 procedure TGLTexture.SetMinFilter(AValue: TGLMinFilter);
 begin
-	if AValue <> FMinFilter then begin
-		FMinFilter:=AValue;
+ if AValue <> FMinFilter then begin
+  FMinFilter:=AValue;
       NotifyParamsChange;
-	end;
+ end;
 end;
 
 // SetTextureMode
 //
 procedure TGLTexture.SetTextureMode(AValue: TGLTextureMode);
 begin
-	if AValue <> FTextureMode then begin
-		FTextureMode:=AValue;
+ if AValue <> FTextureMode then begin
+  FTextureMode:=AValue;
       NotifyParamsChange;
-	end;
+ end;
 end;
 
 // SetDisabled
 //
 procedure TGLTexture.SetDisabled(AValue: Boolean);
 begin
-	if AValue <> FDisabled then begin
-   	FDisabled:=AValue;
+ if AValue <> FDisabled then begin
+    FDisabled:=AValue;
     if Assigned(Owner) or ((Owner is TGLMaterial) or (Owner is TGLTextureExItem)) then begin
        if Owner is TGLMaterial then
           TGLMaterial(Owner).NotifyTexMapChange(Self);
        if Owner is TGLTextureExItem then
           TGLTextureExItem(Owner).NotifyTexMapChange(Self);
     end else NotifyChange(Self);
-	end;
+ end;
 end;
 
 // SetEnabled
@@ -3375,7 +3430,7 @@ begin
    if val<>FNormalMapScale then begin
       FNormalMapScale:=val;
       if TextureFormat=tfNormalMap then
-   		NotifyImageChange;
+     NotifyImageChange;
    end;
 end;
 
@@ -3390,40 +3445,40 @@ end;
 //
 procedure TGLTexture.SetTextureWrap(AValue: TGLTextureWrap);
 begin
-	if AValue <> FTextureWrap then begin
-		FTextureWrap:=AValue;
+ if AValue <> FTextureWrap then begin
+  FTextureWrap:=AValue;
       NotifyParamsChange;
-	end;
+ end;
 end;
 
 // SetTextureFormat
 //
 procedure TGLTexture.SetTextureFormat(const val : TGLTextureFormat);
 begin
-	if val <> FTextureFormat then begin
-		FTextureFormat:=val;
+ if val <> FTextureFormat then begin
+  FTextureFormat:=val;
       NotifyParamsChange;
-	end;
+ end;
 end;
 
 // SetCompression
 //
 procedure TGLTexture.SetCompression(const val : TGLTextureCompression);
 begin
-	if val <> FCompression then begin
-		FCompression:=val;
+ if val <> FCompression then begin
+  FCompression:=val;
       NotifyParamsChange;
-	end;
+ end;
 end;
 
 // SetFilteringQuality
 //
 procedure TGLTexture.SetFilteringQuality(const val : TGLTextureFilteringQuality);
 begin
-	if val<>FFilteringQuality then begin
-		FFilteringQuality:=val;
+ if val<>FFilteringQuality then begin
+  FFilteringQuality:=val;
       NotifyParamsChange;
-	end;
+ end;
 end;
 
 // SetMappingMode
@@ -3441,7 +3496,7 @@ begin
          // must be rebuilt in whole (to specify/remove texCoord data!)
          if Assigned(Owner) and (Owner is TGLMaterial) then
             TGLMaterial(Owner).NotifyTexMapChange(Self);
-      end else	NotifyChange(Self);
+      end else NotifyChange(Self);
    end;
 end;
 
@@ -3525,7 +3580,7 @@ begin
          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
          glEnable(GL_TEXTURE_GEN_S);
          glEnable(GL_TEXTURE_GEN_T);
-  	      glEnable(GL_TEXTURE_GEN_R);
+         glEnable(GL_TEXTURE_GEN_R);
       end;
       tmmCubeMapNormal, tmmCubeMapLight0 : if GL_ARB_texture_cube_map then begin
          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
@@ -3533,7 +3588,7 @@ begin
          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
          glEnable(GL_TEXTURE_GEN_S);
          glEnable(GL_TEXTURE_GEN_T);
-  	      glEnable(GL_TEXTURE_GEN_R);
+         glEnable(GL_TEXTURE_GEN_R);
       end;
    else
       Assert(False);
@@ -3557,10 +3612,10 @@ procedure TGLTexture.Apply(var rci : TRenderContextInfo);
 var
    m : TMatrix;
 begin
-	if not Disabled then begin
+ if not Disabled then begin
       if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
-   		 rci.GLStates.SetGLState(stTexture2D);
-   	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
+     rci.GLStates.SetGLState(stTexture2D);
+       rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
       end
       else
         // NV float needs GL_TEXTURE_RECTANGLE_NV; doesn't affect ATI_float
@@ -3571,7 +3626,7 @@ begin
       else
       if GL_ARB_texture_cube_map then begin
          rci.GLStates.SetGLState(stTextureCubeMap);
-   	     rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
+       rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
          // compute model view matrix for proper viewing
          glMatrixMode(GL_TEXTURE);
          case MappingMode of
@@ -3604,10 +3659,10 @@ begin
                end;
             end;
             tmmCubeMapCamera : begin
-               m[0]:=VectorCrossProduct(rci.cameraUp, rci.cameraDirection);
-               m[1]:=VectorNegate(rci.cameraDirection);
-               m[2]:=rci.cameraUp;
-               m[3]:=WHmgPoint;
+               m.Coord[0]:=VectorCrossProduct(rci.cameraUp, rci.cameraDirection);
+               m.Coord[1]:=VectorNegate(rci.cameraDirection);
+               m.Coord[2]:=rci.cameraUp;
+               m.Coord[3]:=WHmgPoint;
                if GL_ARB_transpose_matrix then
                   glLoadTransposeMatrixfARB(@m)
                else begin
@@ -3624,8 +3679,8 @@ begin
 
          glMatrixMode(GL_MODELVIEW);
       end; // if GL_ARB_texture_cube_map
-      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-    	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+     glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
       xglMapTexCoordToMain;
 	end else begin //if disabled
@@ -3684,7 +3739,7 @@ begin
 
          if Assigned(libMaterial) and (not libMaterial.FTextureMatrixIsIdentity) then begin
             glMatrixMode(GL_TEXTURE);
-            glLoadMatrixf(PGLFloat(@libMaterial.FTextureMatrix[0][0]));
+            glLoadMatrixf(PGLFloat(@libMaterial.FTextureMatrix.Coord[0].Coord[0]));
             glMatrixMode(GL_MODELVIEW);
          end;
 
@@ -3707,7 +3762,7 @@ begin
       end;
 
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-    	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+     glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       
       ApplyMappingMode;
       glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -3746,7 +3801,7 @@ begin
       glBindTexture(target, FTextureHandle.Handle);
       PrepareParams(target);
    end;
-	Result:=FTextureHandle.Handle;
+ Result:=FTextureHandle.Handle;
    FChanges:=[];
 end;
 
@@ -3767,7 +3822,7 @@ var
    cubeMapOk : Boolean;
    cubeMapImage : TGLCubeMapImage;
 begin
-	if (FTextureHandle.Handle=0) or (FChanges<>[]) then begin
+ if (FTextureHandle.Handle=0) or (FChanges<>[]) then begin
       AllocateHandle;
       // Load images
       target:=Image.NativeTextureTarget;
@@ -3789,8 +3844,8 @@ begin
             end;
          end else PrepareImage(target);
       end;
-	end;
-	Result:=FTextureHandle.Handle;
+ end;
+ Result:=FTextureHandle.Handle;
 end;
 
 // DestroyHandles
@@ -3926,35 +3981,35 @@ end;
 //
 procedure TGLTexture.PrepareParams(target : TGLUInt);
 const
-	cTextureSWrap : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT );
-	cTextureTWrap : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE );
-{	cTextureSWrapARB : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP_TO_BORDER_ARB, GL_CLAMP_TO_BORDER_ARB, GL_REPEAT );
-	cTextureTWrapARB : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP_TO_BORDER_ARB, GL_REPEAT, GL_CLAMP_TO_BORDER_ARB ); }
-	cTextureSWrapOld : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT );
-	cTextureTWrapOld : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP );
-	cTextureMagFilter : array [maNearest..maLinear] of TGLEnum =
-							( GL_NEAREST, GL_LINEAR );
-	cTextureMinFilter : array [miNearest..miLinearMipmapLinear] of TGLEnum =
-							( GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
-							  GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
-							  GL_LINEAR_MIPMAP_LINEAR );
+ cTextureSWrap : array [twBoth..twHorizontal] of TGLEnum =
+       ( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT );
+ cTextureTWrap : array [twBoth..twHorizontal] of TGLEnum =
+       ( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE );
+{ cTextureSWrapARB : array [twBoth..twHorizontal] of TGLEnum =
+       ( GL_REPEAT, GL_CLAMP_TO_BORDER_ARB, GL_CLAMP_TO_BORDER_ARB, GL_REPEAT );
+ cTextureTWrapARB : array [twBoth..twHorizontal] of TGLEnum =
+       ( GL_REPEAT, GL_CLAMP_TO_BORDER_ARB, GL_REPEAT, GL_CLAMP_TO_BORDER_ARB ); }
+ cTextureSWrapOld : array [twBoth..twHorizontal] of TGLEnum =
+       ( GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT );
+ cTextureTWrapOld : array [twBoth..twHorizontal] of TGLEnum =
+       ( GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP );
+ cTextureMagFilter : array [maNearest..maLinear] of TGLEnum =
+       ( GL_NEAREST, GL_LINEAR );
+ cTextureMinFilter : array [miNearest..miLinearMipmapLinear] of TGLEnum =
+       ( GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
+         GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
+         GL_LINEAR_MIPMAP_LINEAR );
    cFilteringQuality : array [tfIsotropic..tfAnisotropic] of Integer = (1, 2);
 begin
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+ glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+ glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+ glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+ glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+ glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 
 {   if GL_ARB_texture_border_clamp then begin
-   	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapARB[FTextureWrap]);
-	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapARB[FTextureWrap]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapARB[FTextureWrap]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapARB[FTextureWrap]);
    end else }
 
    if IsFloatType then begin // float_type
@@ -3972,21 +4027,21 @@ begin
          glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
        end;
    end else begin
-     if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
-       glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
-       glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
-     end else begin
-       glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
-       glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
-     end;
-
-	   glTexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
-	   glTexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
-
-     if GL_EXT_texture_filter_anisotropic then
-       glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                       cFilteringQuality[FFilteringQuality]);
+   if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
+   end else begin
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
    end;
+   
+   glTexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+   glTexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+
+   if GL_EXT_texture_filter_anisotropic then
+      glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                      cFilteringQuality[FFilteringQuality]);
+  end;
 end;
 
 // DoOnTextureNeeded
@@ -4060,7 +4115,7 @@ begin
     glMatrixMode(GL_TEXTURE);
     glPushMatrix;
     if FTextureMatrixIsIdentity then glLoadIdentity
-    else glLoadMatrixf(@FTextureMatrix[0][0]);
+    else glLoadMatrixf(@FTextureMatrix.Coord[0].Coord[0]);
     glMatrixMode(GL_MODELVIEW);
     glActiveTextureARB(GL_TEXTURE0_ARB);
     if FTextureIndex = 0 then
@@ -4311,8 +4366,8 @@ end;
 //
 procedure TGLMaterial.SetBackProperties(Values: TGLFaceProperties);
 begin
-	BackProperties.Assign(Values);
-	NotifyChange(Self);
+ BackProperties.Assign(Values);
+ NotifyChange(Self);
 end;
 
 // GetBackProperties
@@ -4328,8 +4383,8 @@ end;
 //
 procedure TGLMaterial.SetFrontProperties(Values: TGLFaceProperties);
 begin
-	FFrontProperties.Assign(Values);
-	NotifyChange(Self);
+ FFrontProperties.Assign(Values);
+ NotifyChange(Self);
 end;
 
 // SetBlendingMode
@@ -4338,7 +4393,7 @@ procedure TGLMaterial.SetBlendingMode(const val : TBlendingMode);
 begin
    if val <> FBlendingMode then begin
       FBlendingMode := val;
-   	NotifyChange(Self);
+    NotifyChange(Self);
    end;
 end;
 
@@ -4348,7 +4403,7 @@ procedure TGLMaterial.SetMaterialOptions(const val : TMaterialOptions);
 begin
    if val<>FMaterialOptions then begin
       FMaterialOptions:=val;
-   	NotifyChange(Self);
+    NotifyChange(Self);
    end;
 end;
 
@@ -4366,7 +4421,7 @@ end;
 procedure TGLMaterial.SetTexture(aTexture : TGLTexture);
 begin
    if Assigned(aTexture) then
-   	Texture.Assign(ATexture)
+    Texture.Assign(ATexture)
    else FreeAndNil(FTexture);
 end;
 
@@ -4376,7 +4431,7 @@ procedure TGLMaterial.SetFaceCulling(const val : TFaceCulling);
 begin
    if val<>FFaceCulling then begin
       FFaceCulling:=val;
-   	NotifyChange(Self);
+    NotifyChange(Self);
    end;
 end;
 
@@ -4459,7 +4514,7 @@ end;
 //
 function TGLMaterial.StoreMaterialProps : Boolean;
 begin
-	Result:=not Assigned(currentLibMaterial);
+ Result:=not Assigned(currentLibMaterial);
 end;
 
 // PrepareBuildList
@@ -4475,9 +4530,9 @@ end;
 procedure TGLMaterial.Apply(var rci : TRenderContextInfo);
 
 begin
-	if Assigned(currentLibMaterial) then
-		currentLibMaterial.Apply(rci)
-	else begin
+ if Assigned(currentLibMaterial) then
+  currentLibMaterial.Apply(rci)
+ else begin
       // Lighting switch
       if moNoLighting in MaterialOptions then begin
          if stLighting in rci.GLStates.States then begin
@@ -4520,20 +4575,20 @@ begin
       end;
       // Apply Blending mode
       if not rci.ignoreBlendingRequests then case FBlendingMode of
-			bmOpaque : begin
+   bmOpaque : begin
             rci.GLStates.UnSetGLState(stBlend);
             rci.GLStates.UnSetGLState(stAlphaTest);
          end;
-			bmTransparency : begin
-				rci.GLStates.SetGLState(stBlend);
-        rci.GLStates.SetGLState(stAlphaTest);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			end;
-			bmAdditive : begin
-				rci.GLStates.SetGLState(stBlend);
-        rci.GLStates.SetGLState(stAlphaTest);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			end;
+   bmTransparency : begin
+    rci.GLStates.SetGLState(stBlend);
+            rci.GLStates.SetGLState(stAlphaTest);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   end;
+   bmAdditive : begin
+    rci.GLStates.SetGLState(stBlend);
+            rci.GLStates.SetGLState(stAlphaTest);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+   end;
          bmAlphaTest50 : begin
             rci.GLStates.UnSetGLState(stBlend);
             rci.GLStates.SetGLState(stAlphaTest);
@@ -4551,7 +4606,7 @@ begin
          end;
       else
          Assert(False);
-		end;
+  end;
       // Fog switch
       if moIgnoreFog in MaterialOptions then begin
          if stFog in rci.GLStates.States then begin
@@ -4560,17 +4615,17 @@ begin
          end;
       end;
       if Assigned(FTexture) and not FTextureEx.IsTextureEnabled(0) then
-      	FTexture.Apply(rci);
+       FTexture.Apply(rci);
       FTextureEx.Apply(rci);
-	end;
+ end;
 end;
 
 // UnApply
 //
 function TGLMaterial.UnApply(var rci : TRenderContextInfo) : Boolean;
 begin
-	if Assigned(currentLibMaterial) then
-		Result:=currentLibMaterial.UnApply(rci)
+ if Assigned(currentLibMaterial) then
+  Result:=currentLibMaterial.UnApply(rci)
    else begin
       if BlendingMode in [bmAlphaTest50, bmAlphaTest100] then
          glAlphaFunc(GL_GREATER, 0);
@@ -4605,16 +4660,16 @@ begin
          BackProperties.Assign(TGLMaterial(Source).BackProperties)
       else FreeAndNil(FGLBackProperties);
       FFrontProperties.Assign(TGLMaterial(Source).FFrontProperties);
-		FBlendingMode:=TGLMaterial(Source).FBlendingMode;
+  FBlendingMode:=TGLMaterial(Source).FBlendingMode;
       FMaterialOptions:=TGLMaterial(Source).FMaterialOptions;
       if Assigned(TGLMaterial(Source).FTexture) then
          Texture.Assign(TGLMaterial(Source).FTexture)
       else FreeAndNil(FTexture);
       FFaceCulling:=TGLMaterial(Source).FFaceCulling;
-		FMaterialLibrary:=TGLMaterial(Source).MaterialLibrary;
+  FMaterialLibrary:=TGLMaterial(Source).MaterialLibrary;
       SetLibMaterialName(TGLMaterial(Source).LibMaterialName);
     TextureEx.Assign(TGLMaterial(Source).TextureEx);
-   	NotifyChange(Self);
+    NotifyChange(Self);
    end else inherited;
 end;
 
@@ -4688,7 +4743,7 @@ end;
 //
 constructor TGLLibMaterial.Create(Collection : TCollection);
 begin
-	inherited Create(Collection);
+ inherited Create(Collection);
    userList:=TList.Create;
    FName:=TGLLibMaterials(Collection).MakeUniqueName('LibMaterial');
    FNameHashKey:=ComputeNameHashKey(FName);
@@ -4723,14 +4778,14 @@ begin
    FMaterial.Free;
    FTextureOffset.Free;
    FTextureScale.Free;
-	inherited Destroy;
+ inherited Destroy;
 end;
 
 // Assign
 //
 procedure TGLLibMaterial.Assign(Source: TPersistent);
 begin
-	if Source is TGLLibMaterial then begin
+ if Source is TGLLibMaterial then begin
       FName:=TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
       FNameHashKey:=ComputeNameHashKey(FName);
       FMaterial.Assign(TGLLibMaterial(Source).Material);
@@ -4738,7 +4793,7 @@ begin
       FTextureScale.Assign(TGLLibMaterial(Source).TextureScale);
       FTexture2Name:=TGLLibMaterial(Source).Texture2Name;
       CalculateTextureMatrix;
-	end else inherited;
+ end else inherited;
 end;
 
 // PrepareBuildList
@@ -4787,8 +4842,8 @@ begin
          rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
       if not Material.TextureEx.IsTextureEnabled(1) then begin
-         libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
-         // calculate and apply appropriate xgl mode
+      libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
+      // calculate and apply appropriate xgl mode
 
          if (not Material.Texture.Disabled)
          and (Material.Texture.MappingMode=tmmUser) then
@@ -4831,10 +4886,10 @@ begin
    if not Result then begin
       // if multipassing, this will occur upon last pass only
       if not Material.TextureEx.IsTextureEnabled(1) then begin
-         if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
-            libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
-            xglMapTexCoordToMain;
-         end;
+      if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
+         libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
+         xglMapTexCoordToMain;
+      end;
       end;
       Material.UnApply(rci);
       if not Material.Texture.Disabled then
@@ -4949,7 +5004,7 @@ end;
 //
 function TGLLibMaterial.GetDisplayName : String;
 begin
-	Result:=Name;
+ Result:=Name;
 end;
 
 // Loaded
@@ -5046,7 +5101,7 @@ begin
    else begin
       FTextureMatrixIsIdentity:=False;
       FTextureMatrix:=CreateScaleAndTranslationMatrix(TextureScale.AsVector,
-                                                      TextureOffset.AsVector);
+                                                      TextureOffset.AsVector);                     
    end;
    NotifyUsers;
 end;
@@ -5057,7 +5112,7 @@ procedure TGLLibMaterial.DestroyHandles;
 var
    libMat : TGLLibMaterial;
 begin
-	FMaterial.DestroyHandles;
+ FMaterial.DestroyHandles;
    if FTexture2Name<>'' then begin
       libMat:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
       if Assigned(libMat) then
@@ -5106,7 +5161,7 @@ end;
 //
 constructor TGLLibMaterials.Create(AOwner : TComponent);
 begin
-	inherited Create(AOwner, TGLLibMaterial);
+ inherited Create(AOwner, TGLLibMaterial);
 end;
 
 // Loaded
@@ -5123,14 +5178,14 @@ end;
 //
 procedure TGLLibMaterials.SetItems(index : Integer; const val : TGLLibMaterial);
 begin
-	inherited Items[index]:=val;
+ inherited Items[index]:=val;
 end;
 
 // GetItems
 //
 function TGLLibMaterials.GetItems(index : Integer) : TGLLibMaterial;
 begin
-	Result:=TGLLibMaterial(inherited Items[index]);
+ Result:=TGLLibMaterial(inherited Items[index]);
 end;
 
 // DestroyHandles
@@ -5154,14 +5209,14 @@ end;
 //
 function TGLLibMaterials.Add: TGLLibMaterial;
 begin
-	Result:=(inherited Add) as TGLLibMaterial;
+ Result:=(inherited Add) as TGLLibMaterial;
 end;
 
 // FindItemID
 //
 function TGLLibMaterials.FindItemID(ID: Integer): TGLLibMaterial;
 begin
-	Result:=(inherited FindItemID(ID)) as TGLLibMaterial;
+ Result:=(inherited FindItemID(ID)) as TGLLibMaterial;
 end;
 
 // MakeUniqueName
@@ -5316,9 +5371,9 @@ var
    end;
 
 begin
-	FTexturePathList.Free;
-	FTexturePathList:=nil;
-	FTexturePaths:=val;
+ FTexturePathList.Free;
+ FTexturePathList:=nil;
+ FTexturePaths:=val;
    if val<>'' then begin
       FTexturePathList:=TStringList.Create;
       lp:=0;
@@ -5724,23 +5779,23 @@ begin
          workCopy:=Trim(workCopy);
          delimiter:=Pos(' ', workCopy);
          if (Length(workCopy)>0) and (delimiter>0) then begin
-            Result[0]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+            Result.Coord[0]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
             System.Delete(workCopy, 1, delimiter);
             workCopy:=TrimLeft(workCopy);
             delimiter:=Pos(' ',workCopy);
             if (Length(workCopy)>0) and (delimiter>0) then begin
-               Result[1]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+               Result.Coord[1]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
                System.Delete(workCopy, 1, delimiter);
                workCopy:=TrimLeft(workCopy);
                delimiter:=Pos(' ', workCopy);
                if (Length(workCopy)>0) and (delimiter>0) then begin
-                  Result[2]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+                  Result.Coord[2]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
                   System.Delete(workCopy, 1, delimiter);
                   workCopy:=TrimLeft(workCopy);
-                  Result[3]:=StrToFloat(workCopy);
-               end else Result[2]:=StrToFloat(workCopy);
-            end else Result[1]:=StrToFloat(workCopy);
-         end else Result[0]:=StrToFloat(workCopy);
+                  Result.Coord[3]:=StrToFloat(workCopy);
+               end else Result.Coord[2]:=StrToFloat(workCopy);
+            end else Result.Coord[1]:=StrToFloat(workCopy);
+         end else Result.Coord[0]:=StrToFloat(workCopy);
       except
          InformationDlg('Wrong vector format. Use: ''<red green blue alpha>''!');
          Abort;
@@ -5759,13 +5814,13 @@ var I : Integer;
 begin
   for I:=0 to Count-1 do
     with TColorEntry(Items[I]^) do
-      if (Abs(Color[0]-AColor[0]) < MinDiff) and
-         (Abs(Color[1]-AColor[1]) < MinDiff) and
-         (Abs(Color[2]-AColor[2]) < MinDiff) and
-         (Abs(Color[3]-AColor[3]) < MinDiff) then Break;
+      if (Abs(Color.Coord[0]-AColor.Coord[0]) < MinDiff) and
+         (Abs(Color.Coord[1]-AColor.Coord[1]) < MinDiff) and
+         (Abs(Color.Coord[2]-AColor.Coord[2]) < MinDiff) and
+         (Abs(Color.Coord[3]-AColor.Coord[3]) < MinDiff) then Break;
   if I < Count then Result:=TColorEntry(Items[I]^).Name
                else
-      Result:=Format('<%.3f %.3f %.3f %.3f>',[AColor[0],AColor[1],AColor[2],AColor[3]]);
+      Result:=Format('<%.3f %.3f %.3f %.3f>',[AColor.Coord[0],AColor.Coord[1],AColor.Coord[2],AColor.Coord[3]]);
 end;
 
 // Destroy
@@ -5976,7 +6031,7 @@ begin
       if CompareText(TColorEntry(Items[i]^).Name, aName)=0 then begin
          Delete(i);
          Break;
-	   end;
+    end;
    end;
 end;
 
@@ -5986,22 +6041,22 @@ function ConvertWinColor(aColor : TColor; alpha : Single = 1) : TColorVector;
 var
    winColor : Integer;
 begin
-	// Delphi color to Windows color
+ // Delphi color to Windows color
    winColor:=GLCrossPlatform.ColorToRGB(aColor);
    // convert 0..255 range into 0..1 range
-   Result[0]:=(winColor and $FF)*(1/255);
-   Result[1]:=((winColor shr 8) and $FF)*(1/255);
-   Result[2]:=((winColor shr 16) and $FF)*(1/255);
-   Result[3]:=alpha;
+   Result.Coord[0]:=(winColor and $FF)*(1/255);
+   Result.Coord[1]:=((winColor shr 8) and $FF)*(1/255);
+   Result.Coord[2]:=((winColor shr 16) and $FF)*(1/255);
+   Result.Coord[3]:=alpha;
 end;
 
 // ConvertColorVector
 //
 function ConvertColorVector(const aColor : TColorVector) : TColor;
 begin
-   Result:=RGB(Round(255*aColor[0]),
-               Round(255*aColor[1]),
-               Round(255*aColor[2]));
+   Result:=RGB(Round(255*aColor.Coord[0]),
+               Round(255*aColor.Coord[1]),
+               Round(255*aColor.Coord[2]));
 end;
 
 // ConvertColorVector
@@ -6009,9 +6064,9 @@ end;
 function ConvertColorVector(const aColor: TColorVector; intensity : Single) : TColor;
 begin
    intensity:=255*intensity;
-   Result:=RGB(Round(intensity*aColor[0]),
-               Round(intensity*aColor[1]),
-               Round(intensity*aColor[2]));
+   Result:=RGB(Round(intensity*aColor.Coord[0]),
+               Round(intensity*aColor.Coord[1]),
+               Round(intensity*aColor.Coord[2]));
 end;
 
 // ConvertRGBColor
@@ -6022,16 +6077,16 @@ var
 begin
    // convert 0..255 range into 0..1 range
    n:=High(AColor);
-   Result[0]:=AColor[0]*(1/255);
+   Result.Coord[0]:=AColor[0]*(1/255);
    if n>0 then
-      Result[1]:=AColor[1]*(1/255)
-   else Result[1]:=0;
+      Result.Coord[1]:=AColor[1]*(1/255)
+   else Result.Coord[1]:=0;
    if n>1 then
-      Result[2]:=AColor[2]*(1/255)
-   else Result[2]:=0;
+      Result.Coord[2]:=AColor[2]*(1/255)
+   else Result.Coord[2]:=0;
    if n>2 then
-      Result[3]:=AColor[3]*(1/255)
-   else Result[3]:=1;
+      Result.Coord[3]:=AColor[3]*(1/255)
+   else Result.Coord[3]:=1;
 end;
 
 // RegisterColor
@@ -6207,19 +6262,19 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-	InitWinColors;
-	RegisterGLTextureImageClass(TGLBlankImage);
-	RegisterGLTextureImageClass(TGLPersistentImage);
-	RegisterGLTextureImageClass(TGLPicFileImage);
-	RegisterGLTextureImageClass(TGLCubeMapImage);
+ InitWinColors;
+ RegisterGLTextureImageClass(TGLBlankImage);
+ RegisterGLTextureImageClass(TGLPersistentImage);
+ RegisterGLTextureImageClass(TGLPicFileImage);
+ RegisterGLTextureImageClass(TGLCubeMapImage);
 	RegisterGLTextureImageClass(TGLFloatDataImage);
    RegisterClasses([TGLMaterialLibrary]);
    RegisterTGraphicClassFileExtension('.bmp', TGLBitmap);
 
 finalization
 
-	vColorManager.Free;
-	vGLTextureImageClasses.Free;
+ vColorManager.Free;
+ vGLTextureImageClasses.Free;
    vGLTextureImageClasses:=nil;
    FreeAndNil(vTIEClass);
    FreeAndNil(vTIEEditor);

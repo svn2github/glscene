@@ -2,6 +2,8 @@
 {: Bezier and B-Spline Curve and Surface Routines.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Added VectorTypes Unit
       <li>11/05/04 - SG - Some fixes for BSpline calculations (rational BSplines
                           are still still broken). Minor knot vector changes.
       <li>20/08/03 - SG - Removed weights realizing it's an inefficient way
@@ -18,7 +20,7 @@ unit CurvesAndSurfaces;
 interface
 
 uses
-  SysUtils, VectorGeometry, VectorLists;
+  SysUtils, VectorTypes, VectorGeometry, VectorLists;
 
 type
   TBSplineContinuity = (bscUniformNonPeriodic, bscUniformPeriodic);
@@ -69,9 +71,9 @@ begin
   Result:=NullVector;
   for i:=0 to n-1 do begin
     b:=BernsteinBasis(n-1,i,t);
-    Result[0]:=Result[0]+cp[i][0]*b;
-    Result[1]:=Result[1]+cp[i][1]*b;
-    Result[2]:=Result[2]+cp[i][2]*b;
+    Result.Coord[0]:=Result.Coord[0]+cp[i].Coord[0]*b;
+    Result.Coord[1]:=Result.Coord[1]+cp[i].Coord[1]*b;
+    Result.Coord[2]:=Result.Coord[2]+cp[i].Coord[2]*b;
   end;
 end;
 
@@ -85,9 +87,9 @@ begin
     for i:=0 to m-1 do begin
       b1:=BernsteinBasis(m-1,i,s);
       b2:=BernsteinBasis(n-1,j,t);
-      Result[0]:=Result[0]+cp[j*m+i][0]*b1*b2;
-      Result[1]:=Result[1]+cp[j*m+i][1]*b1*b2;
-      Result[2]:=Result[2]+cp[j*m+i][2]*b1*b2;
+      Result.Coord[0]:=Result.Coord[0]+cp[j*m+i].Coord[0]*b1*b2;
+      Result.Coord[1]:=Result.Coord[1]+cp[j*m+i].Coord[1]*b1*b2;
+      Result.Coord[2]:=Result.Coord[2]+cp[j*m+i].Coord[2]*b1*b2;
     end;
 end;
 
@@ -150,9 +152,9 @@ begin
   Result:=NullVector;
   for i:=0 to n-1 do begin
     if det<>0 then b[i]:=b[i]/det else b[i]:=0;
-    Result[0]:=Result[0]+cp[i][0]*b[i];
-    Result[1]:=Result[1]+cp[i][1]*b[i];
-    Result[2]:=Result[2]+cp[i][2]*b[i];
+    Result.Coord[0]:=Result.Coord[0]+cp[i].Coord[0]*b[i];
+    Result.Coord[1]:=Result.Coord[1]+cp[i].Coord[1]*b[i];
+    Result.Coord[2]:=Result.Coord[2]+cp[i].Coord[2]*b[i];
   end;
   SetLength(b,0);
 end;
@@ -175,9 +177,9 @@ begin
     if det2<>0 then b2[j]:=b2[j]/det2 else b2[j]:=0;
     for i:=0 to m-1 do begin
       if det1<>0 then b1[i]:=b1[i]/det1 else b1[i]:=0;
-      Result[0]:=Result[0]+cp[j*m+i][0]*b1[i]*b2[j];
-      Result[1]:=Result[1]+cp[j*m+i][1]*b1[i]*b2[j];
-      Result[2]:=Result[2]+cp[j*m+i][2]*b1[i]*b2[j];
+      Result.Coord[0]:=Result.Coord[0]+cp[j*m+i].Coord[0]*b1[i]*b2[j];
+      Result.Coord[1]:=Result.Coord[1]+cp[j*m+i].Coord[1]*b1[i]*b2[j];
+      Result.Coord[2]:=Result.Coord[2]+cp[j*m+i].Coord[2]*b1[i]*b2[j];
     end;
   end;
 end;

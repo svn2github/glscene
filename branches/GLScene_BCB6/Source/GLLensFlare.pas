@@ -2,6 +2,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>19/04/04 - EG - Fixed occlusion test and pojection matrix stack issues
       <li>16/04/04 - EG - Added StreakAngle
       <li>15/04/04 - EG - Texture-based Lens-flare moved to GLTexLensFlare,
@@ -466,10 +467,10 @@ begin
 
       glBegin(GL_TRIANGLE_FAN);
          glColor4fv(grad.FromColor.AsAddress);
-         glVertex2f(v[0], v[1]);
+         glVertex2f(v.Coord[0], v.Coord[1]);
          glColor4fv(grad.ToColor.AsAddress);
          for i:=0 to Resolution-1 do
-            glVertex2f(FCosRes[i]*rnd+v[0], FSinRes[i]*rnd+v[1]);
+            glVertex2f(FCosRes[i]*rnd+v.Coord[0], FSinRes[i]*rnd+v.Coord[1]);
       glEnd;
    end;
 end;
@@ -492,8 +493,8 @@ begin
    if VectorDotProduct(rci.cameraDirection, rv)>0 then begin
       // find out where it is on the screen.
       screenPos:=Scene.CurrentBuffer.WorldToScreen(v);
-      flareInViewPort:=    (screenPos[0]<rci.viewPortSize.cx) and (screenPos[0]>=0)
-                       and (screenPos[1]<rci.viewPortSize.cy) and (screenPos[1]>=0);
+      flareInViewPort:=    (screenPos.Coord[0]<rci.viewPortSize.cx) and (screenPos.Coord[0]>=0)
+                       and (screenPos.Coord[1]<rci.viewPortSize.cy) and (screenPos.Coord[1]>=0);
    end else flareInViewPort:=False;
 
    dynamicSize:=Dynamic and not (csDesigning in ComponentState);
@@ -521,13 +522,13 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    projMatrix:=IdentityHmgMatrix;
-   projMatrix[0][0]:=2/rci.viewPortSize.cx;
-   projMatrix[1][1]:=2/rci.viewPortSize.cy;
+   projMatrix.Coord[0].Coord[0]:=2/rci.viewPortSize.cx;
+   projMatrix.Coord[1].Coord[1]:=2/rci.viewPortSize.cy;
    glLoadMatrixf(@projMatrix);
 
    MakeVector(posVector,
-              screenPos[0]-rci.viewPortSize.cx*0.5,
-              screenPos[1]-rci.viewPortSize.cy*0.5,
+              screenPos.Coord[0]-rci.viewPortSize.cx*0.5,
+              screenPos.Coord[1]-rci.viewPortSize.cy*0.5,
               0);
 
    if AutoZTest then begin
@@ -560,10 +561,10 @@ begin
 
          glDepthFunc(GL_LEQUAL);
          glBegin(GL_QUADS);
-            glVertex3f(posVector[0]+2, posVector[1], 1);
-            glVertex3f(posVector[0], posVector[1]+2, 1);
-            glVertex3f(posVector[0]-2, posVector[1], 1);
-            glVertex3f(posVector[0], posVector[1]-2, 1);
+            glVertex3f(posVector.Coord[0]+2, posVector.Coord[1],   1);
+            glVertex3f(posVector.Coord[0],   posVector.Coord[1]+2, 1);
+            glVertex3f(posVector.Coord[0]-2, posVector.Coord[1],   1);
+            glVertex3f(posVector.Coord[0],   posVector.Coord[1]-2, 1);
          glEnd;
          glDepthFunc(GL_LESS);
 
@@ -578,8 +579,8 @@ begin
          glColorMask(True, True, True, True);
       end else begin
          // explicit ZTesting, can hurt framerate badly
-         depth:=Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),
-                                                  Round(rci.viewPortSize.cy-ScreenPos[1]));
+         depth:=Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos.Coord[0]),
+                                                  Round(rci.viewPortSize.cy-ScreenPos.Coord[1]));
          // but is it behind something?
          FlareIsNotOccluded:=(depth>=1);
       end;
@@ -595,7 +596,7 @@ begin
       SetupRenderingOptions;
 
       if [feGlow, feStreaks, feRays, feRing]*Elements<>[] then begin
-         glTranslatef(posVector[0], posVector[1], posVector[2]);
+         glTranslatef(posVector.Coord[0], posVector.Coord[1], posVector.Coord[2]);
 
          // Glow (a circle with transparent edges):
          if feGlow in Elements then begin

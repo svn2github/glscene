@@ -1009,10 +1009,10 @@ begin
       texHeight:=h2;
 
       if not IsFloat(texFormat) then begin // Non-power-of-two for float_type
-        if (w2<>Width) or (h2<>Height) then begin
-           GetMem(buffer, w2*h2*4);
-           gluScaleImage(GL_RGBA, Width, Height, GL_UNSIGNED_BYTE, Data, w2, h2,
-                         GL_UNSIGNED_BYTE, buffer);
+      if (w2<>Width) or (h2<>Height) then begin
+         GetMem(buffer, w2*h2*4);
+         gluScaleImage(GL_RGBA, Width, Height, GL_UNSIGNED_BYTE, Data, w2, h2,
+                       GL_UNSIGNED_BYTE, buffer);
           end
         else
           buffer:=Pointer(FData);

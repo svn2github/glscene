@@ -15,6 +15,7 @@
                           Added function GLOKMessageBox to avoid the uses of Forms
                           Replace TColor, TBitmap, TMouseEvent, TKeyEvent, ...
                           by TGLColor, TGLBitmap, TGLMouseEvent, TGLKeyEvent, ...
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array                                   
 	</ul></font>
 }
 
@@ -1483,10 +1484,10 @@ Var
 Begin
   If Assigned(BitmapFont) then
   Begin
-    Position[0] := Round(X);
-    Position[1] := Round(Y);
-    Position[2] := 0;
-    Position[3] := 0;
+    Position.Coord[0] := Round(X);
+    Position.Coord[1] := Round(Y);
+    Position.Coord[2] := 0;
+    Position.Coord[3] := 0;
     BitmapFont.RenderString(rci, Data,taLeftJustify,tlTop,Color, @Position);
   End;
 End;
@@ -1497,10 +1498,10 @@ var
 Begin
   If Assigned(BitmapFont) then
   Begin
-    Position[0] := Round(((X2+X1-BitmapFont.CalcStringWidth(Data))*0.5));
-    Position[1] := Round(-((Y2+Y1-GetFontHeight)*0.5))+2;
-    Position[2] := 0;
-    Position[3] := 0;
+    Position.Coord[0] := Round(((X2+X1-BitmapFont.CalcStringWidth(Data))*0.5));
+    Position.Coord[1] := Round(-((Y2+Y1-GetFontHeight)*0.5))+2;
+    Position.Coord[2] := 0;
+    Position.Coord[3] := 0;
     BitmapFont.RenderString(rci, Data,taLeftJustify,tlTop,Color,@Position);
   End;
 End;
@@ -2743,16 +2744,16 @@ Begin
         End;
       End else
       Begin
-        Ty := GetYScrollPos(Ty);
-        If Ty < FPos then PageUp
-        else
-        If Ty > FPos+FPageSize-1 then PageDown
-        else
-        Begin
-          fScrolling := True;
-          FScrollOffs := Ty-FPos;
-          RootControl.ActiveControl := Self;
-        End;
+      Ty := GetYScrollPos(Ty);
+      If Ty < FPos then PageUp
+      else
+      If Ty > FPos+FPageSize-1 then PageDown
+      else
+      Begin
+        fScrolling := True;
+        FScrollOffs := Ty-FPos;
+        RootControl.ActiveControl := Self;
+      End;
       end;
     End else
     Begin
@@ -2892,12 +2893,12 @@ Begin
 //           tagfloat := size;
         end else
         Begin
-           Start := Round(GetScrollPosY(FPos));
+        Start := Round(GetScrollPosY(FPos));
            If FPageSize+FPos > FMax+1 then
              Size  := Round(GetScrollPosY(FMax)-Y1)
            else
-             Size  := Round(GetScrollPosY(FPageSize)-Y1);
-           FGuiKnobComponent.RenderToArea(X1,Start,X2,Start+Size, FKnobRenderStatus, True);
+        Size  := Round(GetScrollPosY(FPageSize)-Y1);
+        FGuiKnobComponent.RenderToArea(X1,Start,X2,Start+Size, FKnobRenderStatus, True);
 //           Tag := start;
 //           tagfloat := size;
         end;

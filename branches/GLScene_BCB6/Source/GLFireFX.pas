@@ -2,7 +2,8 @@
 
 	Fire special effect<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>21/02/02 - EG - Added GetOrCreateFireFX helper functions
       <li>09/12/01 - EG - Added NoZWrite property
       <li>12/08/01 - EG - Fixed leak (color objects)
@@ -475,7 +476,7 @@ begin
       fy:=Random-0.5;
       d:=RSqrt(Sqr(fx)+Sqr(fy));
       PAffineVector(@tmp)^:=VectorCombine(ringVectorX, ringVectorY, fx*d, fy*d);
-      tmp[3]:=1;
+      tmp.Coord[3]:=1;
       ScaleVector(tmp, minInitialSpeed+Random*(maxInitialSpeed-minInitialSpeed));
       with FFireParticles[NP] do begin
          Position:=VectorAdd(refPos, VectorMake((2*Random-1)*FireRadius, (2*Random-1)*FireRadius, (2*Random-1)*FireRadius));
@@ -552,28 +553,28 @@ var
    i : Integer;
 begin
    for i:=0 to 2 do begin
-     vx[i]:=mat[i][0]*FParticleSize;
-     vy[i]:=mat[i][1]*FParticleSize;
+     vx.Coord[i]:=mat.Coord[i].Coord[0]*FParticleSize;
+     vy.Coord[i]:=mat.Coord[i].Coord[1]*FParticleSize;
    end;
    glBegin(GL_TRIANGLE_FAN);
       glVertex3fv(@NullVector);
-      glColor4f(Color2[0], Color2[1], Color2[2], 0.0);
-      glVertex3f(-vx[0], -vx[1], -vx[2]);
+      glColor4f(Color2.Coord[0], Color2.Coord[1], Color2.Coord[2], 0.0);
+      glVertex3f(-vx.Coord[0], -vx.Coord[1], -vx.Coord[2]);
       // those things should be composited in the model view matrix
-      glVertex3f(-0.5*vx[0]+FFireEvaporation*vy[0],
-                 -0.5*vx[1]+FFireEvaporation*vy[1],
-                 -0.5*vx[2]+FFireEvaporation*vy[2]);
-      glVertex3f(+0.5*vx[0]+FFireEvaporation*vy[0],
-                 +0.5*vx[1]+FFireEvaporation*vy[1],
-                 +0.5*vx[2]+FFireEvaporation*vy[2]);
-      glVertex3f(+vx[0], +vx[1], +vx[2]);
-      glVertex3f(+0.5*vx[0]-FFireEvaporation*vy[0],
-                 +0.5*vx[1]-FFireEvaporation*vy[1],
-                 +0.5*vx[2]-FFireEvaporation*vy[2]);
-      glVertex3f(-0.5*vx[0]-FFireEvaporation*vy[0],
-                 -0.5*vx[1]-FFireEvaporation*vy[1],
-                 -0.5*vx[2]-FFireEvaporation*vy[2]);
-      glVertex3f(-vx[0], -vx[1], -vx[2]);
+      glVertex3f(-0.5*vx.Coord[0]+FFireEvaporation*vy.Coord[0],
+                 -0.5*vx.Coord[1]+FFireEvaporation*vy.Coord[1],
+                 -0.5*vx.Coord[2]+FFireEvaporation*vy.Coord[2]);
+      glVertex3f(+0.5*vx.Coord[0]+FFireEvaporation*vy.Coord[0],
+                 +0.5*vx.Coord[1]+FFireEvaporation*vy.Coord[1],
+                 +0.5*vx.Coord[2]+FFireEvaporation*vy.Coord[2]);
+      glVertex3f(+vx.Coord[0], +vx.Coord[1], +vx.Coord[2]);
+      glVertex3f(+0.5*vx.Coord[0]-FFireEvaporation*vy.Coord[0],
+                 +0.5*vx.Coord[1]-FFireEvaporation*vy.Coord[1],
+                 +0.5*vx.Coord[2]-FFireEvaporation*vy.Coord[2]);
+      glVertex3f(-0.5*vx.Coord[0]-FFireEvaporation*vy.Coord[0],
+                 -0.5*vx.Coord[1]-FFireEvaporation*vy.Coord[1],
+                 -0.5*vx.Coord[2]-FFireEvaporation*vy.Coord[2]);
+      glVertex3f(-vx.Coord[0], -vx.Coord[1], -vx.Coord[2]);
    glEnd;
 end;
 
@@ -727,9 +728,9 @@ begin
          SetVector(innerColor, Manager.FInnerColor.Color);
          for i:=n-1 downto 0 do begin
             fp:=PFireParticle(objList[i]);
-            glTranslatef(fp.Position[0]-lastTr[0], fp.Position[1]-lastTr[1], fp.Position[2]-lastTr[2]);
+            glTranslatef(fp.Position.Coord[0]-lastTr.Coord[0], fp.Position.Coord[1]-lastTr.Coord[1], fp.Position.Coord[2]-lastTr.Coord[2]);
             SetVector(lastTr, fp.Position);
-            innerColor[3]:=fp.Alpha*fp.TimeToLive/Sqr(fp.LifeLength);
+            innerColor.Coord[3]:=fp.Alpha*fp.TimeToLive/Sqr(fp.LifeLength);
             glColor4fv(@innerColor);
             glCallList(FHandle);
          end;

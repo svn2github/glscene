@@ -3,6 +3,7 @@
   Dynamic Collision Engine Miscellaneous functions<p>
 
   <b>History : </b><font size=-1><ul>
+    <li>08/10/04 - LR, YHC - BCB corrections: use record instead array    
     <li>03/09/04 - LucasG. - Creation
   </ul></font>
 }
@@ -40,9 +41,9 @@ begin
   Assert(Assigned(FreeForm.Octree), 'Octree must have been prepared and setup before use.');
   SetVector(Pos,  FreeForm.AbsoluteToLocal(MovePack.Position));
   N := VectorNormalize(MovePack.Radius);
-  N[0] := N[0] * Abs(MovePack.Velocity[0]) + Abs(MovePack.Gravity[0]) + MovePack.Radius[0];
-  N[1] := N[1] * Abs(MovePack.Velocity[1]) + Abs(MovePack.Gravity[1]) + MovePack.Radius[1];
-  N[2] := N[2] * Abs(MovePack.Velocity[2]) + Abs(MovePack.Gravity[2]) + MovePack.Radius[2];
+  N.Coord[0] := N.Coord[0] * Abs(MovePack.Velocity.Coord[0]) + Abs(MovePack.Gravity.Coord[0]) + MovePack.Radius.Coord[0];
+  N.Coord[1] := N.Coord[1] * Abs(MovePack.Velocity.Coord[1]) + Abs(MovePack.Gravity.Coord[1]) + MovePack.Radius.Coord[1];
+  N.Coord[2] := N.Coord[2] * Abs(MovePack.Velocity.Coord[2]) + Abs(MovePack.Gravity.Coord[2]) + MovePack.Radius.Coord[2];
   Radius := MaxXYZComponent(N);
 
   count := Length(MovePack.Triangles);

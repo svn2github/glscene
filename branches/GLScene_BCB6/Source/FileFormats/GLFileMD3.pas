@@ -1,13 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{
-  GLFileMD3 - Code for loading animated MD3 files into GLScene
-              FreeForms and Actors.
+{: GLFileMD3 <p>
+              Code for loading animated MD3 files into GLScene
+              FreeForms and Actors.<p>
 
-  History :
-    21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
-    28/02/03 - SG - Creation
+	<b>History :</b><font size=-1><ul>
+           <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+           <li>21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
+           <li>28/02/03 - SG - Creation
+	</ul></font>
 }
 unit GLFileMD3;
 
@@ -63,9 +65,9 @@ var
     // The MD3 normal is a latitude/longitude value that needs
     // to be calculated into cartesian space.
     lat:=(n[1])*(2*pi)/255; lng:=(n[0])*(2*pi)/255;
-    result[0]:=cos(lat)*sin(lng);
-    result[1]:=sin(lat)*sin(lng);
-    result[2]:=cos(lng);
+    result.Coord[0]:=cos(lat)*sin(lng);
+    result.Coord[1]:=sin(lat)*sin(lng);
+    result.Coord[2]:=cos(lng);
   end;
 
   procedure AllocateMaterial(meshname:string);

@@ -8,7 +8,8 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
+      <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public	
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
       <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
       <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
@@ -224,9 +225,9 @@ begin
     if (t < 0.0) then result:=a
     else if (t > d) then result:=b
     else begin
-      v[0]:=v[0]*t;
-      v[1]:=v[1]*t;
-      v[2]:=v[2]*t;
+      v.Coord[0]:=v.Coord[0]*t;
+      v.Coord[1]:=v.Coord[1]*t;
+      v.Coord[2]:=v.Coord[2]*t;
       result:=VectorAdd(a, v);
     end;
 end;
@@ -330,14 +331,14 @@ begin
 	// Find candidate planes; this loop can be avoided if
    	// rays cast all from the eye(assume perpsective view)
         for i:=0 to NUMDIM do begin
-		if(origin[i] < minB[i]) then begin
+		if(origin.Coord[i] < minB.Coord[i]) then begin
 			quadrant[i] := LEFT;
-			candidatePlane[i] := minB[i];
+			candidatePlane[i] := minB.Coord[i];
 			inside := FALSE;
                 end
-		else if (origin[i] > maxB[i]) then begin
+		else if (origin.Coord[i] > maxB.Coord[i]) then begin
 			quadrant[i] := RIGHT;
-			candidatePlane[i] := maxB[i];
+			candidatePlane[i] := maxB.Coord[i];
 			inside := FALSE;
                 end
 		else	quadrant[i] := MIDDLE;
@@ -354,8 +355,8 @@ begin
 
 	//* Calculate T distances to candidate planes */
         for i:=0 to NUMDIM do begin
-		if (quadrant[i] <> MIDDLE) AND (dir[i] <> 0) then
-			maxT[i] := (candidatePlane[i]-origin[i]) / dir[i]
+		if (quadrant[i] <> MIDDLE) AND (dir.Coord[i] <> 0) then
+			maxT[i] := (candidatePlane[i]-origin.Coord[i]) / dir.Coord[i]
 		else
 			maxT[i] := -1;
         end;
@@ -373,13 +374,13 @@ begin
 
         for i:=0 to NUMDIM do begin
 		if whichPlane <> i then begin
-			coord[i] := origin[i] + maxT[whichPlane] * dir[i];
-			if (coord[i] < minB[i]) OR (coord[i] > maxB[i]) then begin
+			coord.Coord[i] := origin.Coord[i] + maxT[whichPlane] * dir.Coord[i];
+			if (coord.Coord[i] < minB.Coord[i]) OR (coord.Coord[i] > maxB.Coord[i]) then begin
 				result:=FALSE;
                                 exit;
                         end;
                 end
-		else 	coord[i] := candidatePlane[i];
+		else 	coord.Coord[i] := candidatePlane[i];
         end;
 
 	result:=TRUE;				//* ray hits box */
@@ -406,10 +407,10 @@ var
       function EDGE_EDGE_TEST(const V0, U0, U1 : TAffineFLTVector) : Integer;
       begin
          result:=0;
-         Bx:=U0[i0]-U1[i0];
-         By:=U0[i1]-U1[i1];
-         Cx:=V0[i0]-U0[i0];
-         Cy:=V0[i1]-U0[i1];
+         Bx:=U0.Coord[i0]-U1.Coord[i0];
+         By:=U0.Coord[i1]-U1.Coord[i1];
+         Cx:=V0.Coord[i0]-U0.Coord[i0];
+         Cy:=V0.Coord[i1]-U0.Coord[i1];
          f:=Ay*Bx-Ax*By;
          d:=By*Cx-Bx*Cy;
          if((f>0) and (d>=0) and (d<=f)) or ((f<0) and (d<=0) and (d>=f)) then begin
@@ -421,8 +422,8 @@ var
       end;
 
    begin
-     Ax:=V1[i0]-V0[i0];
-     Ay:=V1[i1]-V0[i1];
+     Ax:=V1.Coord[i0]-V0.Coord[i0];
+     Ay:=V1.Coord[i1]-V0.Coord[i1];
      //* test edge U0,U1 against V0,V1 */
      result:=EDGE_EDGE_TEST(V0,U0,U1);
      if result=1 then exit;
@@ -440,20 +441,20 @@ var
       result:=0;
       //* is T1 completly inside T2? */
       //* check if V0 is inside tri(U0,U1,U2) */
-      a:=U1[i1]-U0[i1];
-      b:=-(U1[i0]-U0[i0]);
-      c:=-a*U0[i0]-b*U0[i1];
-      d0:=a*V0[i0]+b*V0[i1]+c;
+      a:=U1.Coord[i1]-U0.Coord[i1];
+      b:=-(U1.Coord[i0]-U0.Coord[i0]);
+      c:=-a*U0.Coord[i0]-b*U0.Coord[i1];
+      d0:=a*V0.Coord[i0]+b*V0.Coord[i1]+c;
 
-      a:=U2[i1]-U1[i1];
-      b:=-(U2[i0]-U1[i0]);
-      c:=-a*U1[i0]-b*U1[i1];
-      d1:=a*V0[i0]+b*V0[i1]+c;
+      a:=U2.Coord[i1]-U1.Coord[i1];
+      b:=-(U2.Coord[i0]-U1.Coord[i0]);
+      c:=-a*U1.Coord[i0]-b*U1.Coord[i1];
+      d1:=a*V0.Coord[i0]+b*V0.Coord[i1]+c;
 
-      a:=U0[i1]-U2[i1];
-      b:=-(U0[i0]-U2[i0]);
-      c:=-a*U2[i0]-b*U2[i1];
-      d2:=a*V0[i0]+b*V0[i1]+c;
+      a:=U0.Coord[i1]-U2.Coord[i1];
+      b:=-(U0.Coord[i0]-U2.Coord[i0]);
+      c:=-a*U2.Coord[i0]-b*U2.Coord[i1];
+      d2:=a*V0.Coord[i0]+b*V0.Coord[i1]+c;
       if (d0*d1>0.0) then
          if (d0*d2>0.0) then result:=1;
    end;
@@ -462,11 +463,11 @@ var
 begin
    //* first project onto an axis-aligned plane, that maximizes the area */
    //* of the triangles, compute indices: i0,i1. */
-   A[0]:=abs(N[0]);
-   A[1]:=abs(N[1]);
-   A[2]:=abs(N[2]);
-   if(A[0]>A[1]) then begin
-      if(A[0]>A[2]) then begin
+   A.Coord[0]:=abs(N.Coord[0]);
+   A.Coord[1]:=abs(N.Coord[1]);
+   A.Coord[2]:=abs(N.Coord[2]);
+   if(A.Coord[0]>A.Coord[1]) then begin
+      if(A.Coord[0]>A.Coord[2]) then begin
           i0:=1;      //* A[0] is greatest */
           i1:=2;
       end else begin
@@ -474,7 +475,7 @@ begin
           i1:=1;
       end
    end else begin  //* A[0]<=A[1] */
-      if(A[2]>A[1]) then begin
+      if(A.Coord[2]>A.Coord[1]) then begin
           i0:=0;      //* A[2] is greatest */
           i1:=1;
       end else begin
@@ -611,10 +612,10 @@ begin
    D:=VectorCrossProduct(N1, N2);
 
    //* compute and index to the largest component of D */
-   max:=abs(D[0]);
+   max:=abs(D.Coord[0]);
    index:=0;
-   b:=abs(D[1]);
-   c:=abs(D[2]);
+   b:=abs(D.Coord[1]);
+   c:=abs(D.Coord[2]);
    if(b>max) then begin
      max:=b; index:=1;
    end;
@@ -623,13 +624,13 @@ begin
      index:=2;
    end;
    //* this is the simplified projection onto L*/
-   vp0:=V0[index];
-   vp1:=V1[index];
-   vp2:=V2[index];
+   vp0:=V0.Coord[index];
+   vp1:=V1.Coord[index];
+   vp2:=V2.Coord[index];
 
-   up0:=U0[index];
-   up1:=U1[index];
-   up2:=U2[index];
+   up0:=U0.Coord[index];
+   up1:=U1.Coord[index];
+   up2:=U2.Coord[index];
 
    //* compute interval for triangle 1 */
    COMPUTE_INTERVALS(vp0,vp1,vp2,dv0,dv1,dv2,dv0dv1,dv0dv2,isect1[0],isect1[1]);
@@ -831,9 +832,9 @@ begin
 
    for n:=0 to 2 do begin
      case flags[n] of
-       MIN: result[n]:=emin[n];
-       MID: result[n]:=GetMidPoint(emin[n],emax[n]);
-       MAX: result[n]:=emax[n];
+       MIN: result.Coord[n]:=emin.Coord[n];
+       MID: result.Coord[n]:=GetMidPoint(emin.Coord[n],emax.Coord[n]);
+       MAX: result.Coord[n]:=emax.Coord[n];
      end;
    end;
 end;
@@ -918,8 +919,8 @@ end;
 //
 function TOctree.PointInNode(const min, max, aPoint: TAffineFLTVector) : BOOLEAN;
 begin
-   Result:=(aPoint[0]>=min[0]) and (aPoint[1]>=min[1]) and (aPoint[2]>=min[2])
-           and (aPoint[0]<=max[0]) and (aPoint[1]<=max[1]) and (aPoint[2]<=max[2]);
+   Result:=(aPoint.Coord[0]>=min.Coord[0]) and (aPoint.Coord[1]>=min.Coord[1]) and (aPoint.Coord[2]>=min.Coord[2])
+           and (aPoint.Coord[0]<=max.Coord[0]) and (aPoint.Coord[1]<=max.Coord[1]) and (aPoint.Coord[2]<=max.Coord[2]);
 end;
 
 // WalkPointToLeaf
@@ -961,14 +962,14 @@ begin
 d:=0;
 for i:=0 to 2 do
 begin
-  if(C[i] < MinExtent[i]) then
+  if(C.Coord[i] < MinExtent.Coord[i]) then
   begin
-     s := C[i] - MinExtent[i];
+     s := C.Coord[i] - MinExtent.Coord[i];
      d := d + s*s;
   end
-  else if(C[i] > MaxExtent[i]) then
+  else if(C.Coord[i] > MaxExtent.Coord[i]) then
   begin
-     s := C[i] - MaxExtent[i];
+     s := C.Coord[i] - MaxExtent.Coord[i];
      d := d + s*s;
   end;
 end; //end for
@@ -1044,9 +1045,9 @@ for n:=0 to 5 do begin               //Do all 6 faces.
   for o:=0 to 3 do begin             //Do all 4 vertices for the face.
    for p:=0 to 2 do begin            //Do x,y,z for each vertex.
      if FlagFaces[o+n*4,p] = MIN then
-       aFace[o,p]:=MinExtent[p]
+       aFace[o].Coord[p]:=MinExtent.Coord[p]
      else
-       aFace[o,p]:=MaxExtent[p];
+       aFace[o].Coord[p]:=MaxExtent.Coord[p];
    end; //end for o
   end; //end for p
   f0:=aFace[0];  f1:=aFace[1]; f2:=aFace[2]; f3:=aFace[3];

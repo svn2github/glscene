@@ -3,6 +3,7 @@
    Object with support for complex polygons.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array 
       <li>05/09/03 - EG - TNotifyCollection moved to GLMisc
       <li>14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
       <li>28/12/01 - EG - Added registration (Philipp Pammler)
@@ -605,7 +606,7 @@ begin
          gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
 
          // issue normal
-         gluTessNormal(tess, FContoursNormal[0], FContoursNormal[1], FContoursNormal[2]);
+         gluTessNormal(tess, FContoursNormal.Coord[0], FContoursNormal.Coord[1], FContoursNormal.Coord[2]);
 
          // set properties
          gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
@@ -667,7 +668,7 @@ begin
     // Issue normal
     if Assigned(normal) then begin
       glNormal3fv(PGLFloat(normal));
-      gluTessNormal(tess, normal[0], normal[1], normal[2]);
+      gluTessNormal(tess, normal.Coord[0], normal.Coord[1], normal.Coord[2]);
     end;
     gluTessProperty(Tess,GLU_TESS_WINDING_RULE,GLU_TESS_WINDING_POSITIVE);
     // Issue polygon

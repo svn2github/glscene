@@ -7,10 +7,11 @@
     (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>19/09/03 - EG - "Lighmap" -&gt; "LightMap"
       <li>06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
       <li>02/02/03 - EG     - Creation
-   </ul><p>
+   </ul></font>
 }
 unit GLFileOCT;
 
@@ -118,7 +119,7 @@ begin
       mo.TexCoords.AdjustCapacityToAtLeast(n);
       mo.LightMapTexCoords.AdjustCapacityToAtLeast(n);
       for i:=0 to n-1 do with oct.Vertices[i] do begin
-         mo.Vertices.Add(pos[0], pos[1], pos[2]);
+         mo.Vertices.Add(pos.Coord[0], pos.Coord[1], pos.Coord[2]);
          mo.TexCoords.Add(tv.s, tv.t);
          mo.LightMapTexCoords.Add(lv.s, lv.t);
       end;

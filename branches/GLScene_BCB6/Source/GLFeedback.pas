@@ -11,6 +11,7 @@
    will indicate if there is valid data in the buffer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array    
       <li>23/07/04 - SG - Creation.
    </ul></font>
 
@@ -249,24 +250,24 @@ begin
       Inc(i);
       if count = 3 then begin
         for j:=0 to 2 do begin
-          vertex[0]:=FBuffer[i];   Inc(i);
-          vertex[1]:=FBuffer[i];   Inc(i);
-          vertex[2]:=FBuffer[i];   Inc(i);
+          vertex.Coord[0]:=FBuffer[i];   Inc(i);
+          vertex.Coord[1]:=FBuffer[i];   Inc(i);
+          vertex.Coord[2]:=FBuffer[i];   Inc(i);
           if FMode = fm4DColorTexture then Inc(i);
           if ColorBuffered then begin
-            color[0]:=FBuffer[i];    Inc(i);
-            color[1]:=FBuffer[i];    Inc(i);
-            color[2]:=FBuffer[i];    Inc(i);
-            color[3]:=FBuffer[i];    Inc(i);
+            color.Coord[0]:=FBuffer[i];    Inc(i);
+            color.Coord[1]:=FBuffer[i];    Inc(i);
+            color.Coord[2]:=FBuffer[i];    Inc(i);
+            color.Coord[3]:=FBuffer[i];    Inc(i);
           end;
           if TexCoordBuffered then begin
-            texcoord[0]:=FBuffer[i]; Inc(i);
-            texcoord[1]:=FBuffer[i]; Inc(i);
-            texcoord[2]:=FBuffer[i]; Inc(i);
-            texcoord[3]:=FBuffer[i]; Inc(i);
+            texcoord.Coord[0]:=FBuffer[i]; Inc(i);
+            texcoord.Coord[1]:=FBuffer[i]; Inc(i);
+            texcoord.Coord[2]:=FBuffer[i]; Inc(i);
+            texcoord.Coord[3]:=FBuffer[i]; Inc(i);
           end;
 
-          vertex[2]:=2*vertex[2]-1;
+          vertex.Coord[2]:=2*vertex.Coord[2]-1;
           ScaleVector(vertex, FCorrectionScaling);
 
           tempVertices.Add(AffineVectorMake(vertex));

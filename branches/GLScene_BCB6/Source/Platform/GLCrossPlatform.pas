@@ -6,7 +6,9 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>08/07/04 - LR - Added clBlack  
+      <li>02/08/04 - LR, YHC - BCB corrections: Added namespace 'Graphics' to TGLBitmap
+                               use $NODEFINE to remove declarations of duplicate variables
+      <li>08/07/04 - LR - Added clBlack
       <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
                           Added function GLOKMessageBox to avoid the uses of Forms
                           Added other abstraction calls
@@ -56,6 +58,9 @@ type
    TGLPicture = TPicture;
    TGLGraphic = TGraphic;
    TGLBitmap = TBitmap;
+   (*$NODEFINE TGLBitmap*)
+   (*$HPPEMIT 'typedef Graphics::TBitmap TGLBitmap;'*)
+
    TGraphicClass = class of TGraphic;
 
    TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
@@ -146,12 +151,17 @@ function GLPoint(const x, y : Integer) : TGLPoint;
 
 {: Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b : Byte) : TColor;
+(*$NODEFINE RGB*)
 {: Converts 'magic' colors to their RGB values. }
 function ColorToRGB(color : TColor) : TColor;
+(*$NODEFINE ColorToRGB*)
 
 function GetRValue(rgb: DWORD): Byte;
+(*$NODEFINE GetRValue*)
 function GetGValue(rgb: DWORD): Byte;
+(*$NODEFINE GetGValue*)
 function GetBValue(rgb: DWORD): Byte;
+(*$NODEFINE GetBValue*)
 procedure InitWinColors;
 
 function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;

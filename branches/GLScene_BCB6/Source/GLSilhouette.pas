@@ -7,6 +7,8 @@
    CAUTION : both connectivity classes leak memory.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Added VectorTypes Unit
       <li>26/09/03 - EG - Improved performance of TConnectivity data construction
       <li>19/06/03 - MF - Split up Connectivity classes
       <li>10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
@@ -18,7 +20,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, GLMisc, VectorGeometry, VectorLists;
+uses Classes, GLMisc, VectorTypes, VectorGeometry, VectorLists;
 
 type
    // TGLSilhouetteStyle
@@ -236,7 +238,7 @@ begin
    vList:=Vertices.List;
    vListN:=@vList[nv];
    for i:=0 to nv-1 do begin
-      vListN[i][3]:=0;
+      vListN[i].Coord[3]:=0;
       VectorSubtract(PAffineVector(@vList[i])^, origin, PAffineVector(@vListN[i])^);
    end;
    // change silhouette indices to quad indices

@@ -2,6 +2,7 @@
 {: Texture-based Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>25/09/03 - EG - Creation from GLLensFlare split
 	</ul></font><p>
 }
@@ -143,18 +144,18 @@ begin
   begin
     // find out where it is on the screen.
     screenPos := Scene.CurrentBuffer.WorldToScreen(v);
-    if (screenPos[0] < rci.viewPortSize.cx) and (screenPos[0] >= 0)
-      and (screenPos[1] < rci.viewPortSize.cy) and (screenPos[1] >= 0) then
+    if (screenPos.Coord[0] < rci.viewPortSize.cx) and (screenPos.Coord[0] >= 0)
+      and (screenPos.Coord[1] < rci.viewPortSize.cy) and (screenPos.Coord[1] >= 0) then
     begin
       if FAutoZTest then
       begin
-        depth := Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),
-          Round(rci.viewPortSize.cy - ScreenPos[1]));
+        depth := Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos.Coord[0]),
+          Round(rci.viewPortSize.cy - ScreenPos.Coord[1]));
         // but is it behind something?
-        if screenPos[2] >= 1 then
+        if screenPos.Coord[2] >= 1 then
           flag := (depth >= 1)
         else
-          flag := (depth >= screenPos[2]);
+          flag := (depth >= screenPos.Coord[2]);
       end
       else
         flag := True;
@@ -166,8 +167,8 @@ begin
     flag := False;
 
   MakeVector(posVector,
-    screenPos[0] - rci.viewPortSize.cx / 2,
-    screenPos[1] - rci.viewPortSize.cy / 2,0);
+    screenPos.Coord[0] - rci.viewPortSize.cx / 2,
+    screenPos.Coord[1] - rci.viewPortSize.cy / 2,0);
 
   // make the glow appear/disappear progressively
 
@@ -199,7 +200,7 @@ begin
 
   //Rays and Glow on Same Position
   glPushMatrix;
-  glTranslatef(posVector[0], posVector[1], posVector[2]);
+  glTranslatef(posVector.Coord[0], posVector.Coord[1], posVector.Coord[2]);
 
   if not ImgGlow.Disabled and Assigned(ImgGlow.Image) then
   begin
@@ -229,7 +230,7 @@ begin
   if not ImgRing.Disabled and Assigned(ImgRing.Image) then
   begin
         glPushMatrix;
-          glTranslatef(posVector[0]*1.1, posVector[1]*1.1, posVector[2]);
+          glTranslatef(posVector.Coord[0]*1.1, posVector.Coord[1]*1.1, posVector.Coord[2]);
           ImgRing.Apply(rci);
           glbegin(GL_QUADS);
             glTexCoord2f(0,0);glVertex3f(-FCurrSize,-FCurrSize,0);
@@ -254,7 +255,7 @@ begin
                 ScaleVector(V, rnd)
              else ScaleVector(V, 0.8*rnd);
              glPushMatrix;
-               glTranslatef(v[0], v[1],v[2]);
+               glTranslatef(v.Coord[0], v.Coord[1], v.Coord[2]);
 
                rnd := random*0.5+0.1;
                glbegin(GL_QUADS);

@@ -611,7 +611,6 @@ Var
   TexWidth,
   TexHeight   : TGLFloat;
   AlignCount  : TGUIAlignments;
-  TmpElement  : TGLGuiElement;
 
 Procedure Prepare;
 

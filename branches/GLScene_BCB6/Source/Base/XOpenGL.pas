@@ -74,7 +74,7 @@ procedure xglPopState;
    Use this function when you're using the 2nd texture unit for your own
    purposes and don't want XOpenGL to alter it. }
 procedure xglForbidSecondTextureUnit;
-{: Allow XOpenGL to use the second texture unit again. }
+{: Allow XOpenGL to use the second texture unit again. } 
 procedure xglAllowSecondTextureUnit;
 {: Returns the complex mapping in bitwise form. }
 function xglGetBitWiseMapping : Cardinal;

@@ -6,6 +6,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+           <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
 	   <li>28/10/03 - SG - Partly implemented skeletal animation,
                            asynchronous animations will fail however.
 	   <li>03/06/03 - EG - Added header, now self-registers
@@ -98,23 +99,23 @@ var
     mat1:=IdentityHMGMatrix;
     mat2:=IdentityHMGMatrix;
 
-    SinCos(rot[0],s,c);
+    SinCos(rot.Coord[0],s,c);
     rmat:=CreateRotationMatrixX(s,c);
     mat1:=MatrixMultiply(mat1,rmat);
-    SinCos(rot[1],s,c);
+    SinCos(rot.Coord[1],s,c);
     rmat:=CreateRotationMatrixY(s,c);
     mat1:=MatrixMultiply(mat1,rmat);
-    SinCos(rot[2],s,c);
+    SinCos(rot.Coord[2],s,c);
     rmat:=CreateRotationMatrixZ(s,c);
     mat1:=MatrixMultiply(mat1,rmat);
 
-    SinCos(baserot[0],s,c);
+    SinCos(baserot.Coord[0],s,c);
     rmat:=CreateRotationMatrixX(s,c);
     mat2:=MatrixMultiply(mat2,rmat);
-    SinCos(baserot[1],s,c);
+    SinCos(baserot.Coord[1],s,c);
     rmat:=CreateRotationMatrixY(s,c);
     mat2:=MatrixMultiply(mat2,rmat);
-    SinCos(baserot[2],s,c);
+    SinCos(baserot.Coord[2],s,c);
     rmat:=CreateRotationMatrixZ(s,c);
     mat2:=MatrixMultiply(mat2,rmat);
 

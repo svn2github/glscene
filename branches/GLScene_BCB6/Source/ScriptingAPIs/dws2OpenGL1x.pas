@@ -5,6 +5,7 @@
    This unit is still under development.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/10/04 - LR, YHC - BCB corrections: use record instead array     
       <li>23/09/2004 - SG - Added main GL constants and a few procedures
       <li>21/09/2004 - SG - Creation
    </ul></font>
@@ -284,7 +285,7 @@ var
   i : Integer;
 begin
   for i:=0 to 3 do
-    Result[i]:=VectorMake(Info.Element([i]).Element([0]).Value,
+    Result.Coord[i]:=VectorMake(Info.Element([i]).Element([0]).Value,
                           Info.Element([i]).Element([1]).Value,
                           Info.Element([i]).Element([2]).Value,
                           Info.Element([i]).Element([3]).Value);
@@ -2132,7 +2133,7 @@ var
   m : TMatrix;
 begin
   m:=GetMatrixFromInfo(Info.Vars['m']);
-  glLoadMatrixf(@m[0]);
+  glLoadMatrixf(@m.Coord[0]);
 end;
 
 // ----------

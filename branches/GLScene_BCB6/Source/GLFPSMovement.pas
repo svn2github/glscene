@@ -5,7 +5,8 @@
 
    FPS-like movement behaviour and manager.<p>
 
-	<b>History : </b><font size=-1><ul>	
+	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>03/07/04 - LR - Corrections for Linux compatibility
                           Replace GetTickCount by GLGetTickCount
       <li>19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
@@ -777,7 +778,7 @@ begin
 
      //Change in position = velocity * time taken
      if GravityEnabled then
-          newPosition[1]:=  newPosition[1]-manager.MovementScale*0.5* progressTime.deltaTime;
+          newPosition.Coord[1]:=  newPosition.Coord[1]-manager.MovementScale*0.5* progressTime.deltaTime;
 
      //do some magic!!!  and store new position in newPosition
      if SphereRadius < 0 then
@@ -821,9 +822,9 @@ begin
   for i:=0 to CollisionStates.Count-1 do
   begin
     CollisionState:=TCollisionState(CollisionStates.Items[i]);
-    x:=CollisionState.Position[0];
-    y:=CollisionState.Position[1];
-    z:=CollisionState.Position[2];
+    x:=CollisionState.Position.Coord[0];
+    y:=CollisionState.Position.Coord[1];
+    z:=CollisionState.Position.Coord[2];
     glVertex3f(x,y,z);
   end;
   glEnd();
@@ -834,10 +835,10 @@ begin
     CollisionState:=TCollisionState(CollisionStates.Items[i]);
     t:=(Manager.DisplayTime-(TickCount-CollisionState.Time))/manager.DisplayTime;
     glColor3f(t,t,t);
-      glvertex3f(CollisionState.Contact.intPoint[0],CollisionState.Contact.intPoint[1],CollisionState.Contact.intPoint[2]);
-      glvertex3f(CollisionState.Contact.intPoint[0]+CollisionState.Contact.intNormal[0],//GLSphere4.Radius,
-      CollisionState.Contact.intPoint[1]+CollisionState.Contact.intNormal[1],//GLSphere4.Radius,
-      CollisionState.Contact.intPoint[2]+CollisionState.Contact.intNormal[2]);//GLSphere4.Radius);
+      glvertex3f(CollisionState.Contact.intPoint.Coord[0],CollisionState.Contact.intPoint.Coord[1],CollisionState.Contact.intPoint.Coord[2]);
+      glvertex3f(CollisionState.Contact.intPoint.Coord[0]+CollisionState.Contact.intNormal.Coord[0],//GLSphere4.Radius,
+      CollisionState.Contact.intPoint.Coord[1]+CollisionState.Contact.intNormal.Coord[1],//GLSphere4.Radius,
+      CollisionState.Contact.intPoint.Coord[2]+CollisionState.Contact.intNormal.Coord[2]);//GLSphere4.Radius);
   end;
   glEnd();
   glPopAttrib;

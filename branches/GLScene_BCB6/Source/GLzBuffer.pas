@@ -5,6 +5,7 @@
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>03/07/04 - LR - Added ifdef for Linux
       <li>07/03/02 - Lin - Removed XRes/YRes properties - Shadow-res now always matches viewer-res. 
       <li>21/02/02 - Lin - Now uses 1 Byte per pixel, instead of 4. Faster, and uses less Video Ram.
@@ -353,9 +354,9 @@ begin
    z:=FData[x+fy*FWidth];     //fetch pixel z-depth
    if z<1 then begin
     dst:=(NpFp)/(fp-z*dov);             //calc from z-buffer value to frustrum depth
-    xx:=(lbW[0] + riVecW[0]*x + UpVecW[0]*fy) ;
-    yy:=(lbW[1] + riVecW[1]*x + UpVecW[1]*fy) ;
-    zz:=(lbW[2] + riVecW[2]*x + UpVecW[2]*fy) ;
+    xx:=(lbW.Coord[0] + riVecW.Coord[0]*x + UpVecW.Coord[0]*fy) ;
+    yy:=(lbW.Coord[1] + riVecW.Coord[1]*x + UpVecW.Coord[1]*fy) ;
+    zz:=(lbW.Coord[2] + riVecW.Coord[2]*x + UpVecW.Coord[2]*fy) ;
     result:=sqrt(xx*xx+yy*yy+zz*zz)*dst;
    end else result:=0;
  end;
@@ -410,19 +411,19 @@ begin
   MakeVector(hnorm,normal);
 
   MakeVector(hcVec,lb);                //---Corner Vector---
-  ang1:=ArcTan2(Hnorm[0],Hnorm[2]);
+  ang1:=ArcTan2(Hnorm.Coord[0],Hnorm.Coord[2]);
   SetVector(axs,0,1,0);
   RotateVector(hnorm,axs,ang1);
   RotateVector(hcvec,axs,ang1);
 
-  ang2:=ArcTan2(Hnorm[1],Hnorm[2]);
+  ang2:=ArcTan2(Hnorm.Coord[1],Hnorm.Coord[2]);
   SetVector(axs,1,0,0);
   RotateVector(hcvec,axs,-ang2);
 
-  hcvec[0]:=hcvec[0]/hcvec[2];
+  hcvec.Coord[0]:=hcvec.Coord[0]/hcvec.Coord[2];
   vw:=Fwidth/2;
   vh:=Fheight/2;
-  scal:=vw/hcvec[0];
+  scal:=vw/hcvec.Coord[0];
   SinCos(-ang1, s1, c1);
   SinCos(-ang2, s2, c2);
 //------------------------------------------
@@ -449,9 +450,9 @@ begin
 // OrthAdd:=2;
 // OrthMul:=64;
 
- orthAddX:=rt[0];
+ orthAddX:=rt.Coord[0];
  OrthMulX:=FWidth/(OrthAddX*2);
- orthAddY:=rt[2];
+ orthAddY:=rt.Coord[2];
  OrthMulY:=FHeight/(OrthAddY*2);
  OrthInvDov:=1/dov;
 
@@ -466,23 +467,23 @@ begin
  h:=FHeight;
  Rlerp:=x/w;
  Ulerp:=(h-y)/h;
- result[0]:=lb[0] + riVec[0]*Rlerp + UpVec[0]*Ulerp;
- result[1]:=lb[1] + riVec[1]*Rlerp + UpVec[1]*Ulerp;
- result[2]:=lb[2] + riVec[2]*Rlerp + UpVec[2]*Ulerp;
+ result.Coord[0]:=lb.Coord[0] + riVec.Coord[0]*Rlerp + UpVec.Coord[0]*Ulerp;
+ result.Coord[1]:=lb.Coord[1] + riVec.Coord[1]*Rlerp + UpVec.Coord[1]*Ulerp;
+ result.Coord[2]:=lb.Coord[2] + riVec.Coord[2]*Rlerp + UpVec.Coord[2]*Ulerp;
 end;
 
 function TGLzBuffer.FastVectorToScreen(Vec :TAffineVector):TAffineVector;
  var v0, v1, x,y,z : Single;
  begin
-   x:=vec[0];   y:=vec[1];   z:=vec[2];
+   x:=vec.Coord[0];   y:=vec.Coord[1];   z:=vec.Coord[2];
    v0:=x;
    x:=c1*v0+s1*z;
    z:=c1*z-s1*v0;            //Rotate around Y-axis
    v1:=y;
    y:=c2*v1+s2*z;
    z:=c2*z-s2*v1;            //Rotate around X-axis
-   Result[0]:=Round(-x/z*scal+vw);
-   Result[1]:=Round( y/z*scal+vh);
+   Result.Coord[0]:=Round(-x/z*scal+vw);
+   Result.Coord[1]:=Round( y/z*scal+vh);
 {
   MakeVector(hpvec,vec);
   SetVector(axs,0,1,0);
@@ -522,13 +523,13 @@ begin
   dst:=(NpFp)/(fp-z*dov);  //calc from z-buffer value to frustrum depth
   camvec:=cam.AbsolutePosition;
   fy:=FHeight-y;
-  result[0]:=(lbW[0] + riVecW[0]*x + UpVecW[0]*fy) *dst +camvec[0];
-  result[1]:=(lbW[1] + riVecW[1]*x + UpVecW[1]*fy) *dst +camvec[1];
-  result[2]:=(lbW[2] + riVecW[2]*x + UpVecW[2]*fy) *dst +camvec[2];
+  result.Coord[0]:=(lbW.Coord[0] + riVecW.Coord[0]*x + UpVecW.Coord[0]*fy) *dst +camvec.Coord[0];
+  result.Coord[1]:=(lbW.Coord[1] + riVecW.Coord[1]*x + UpVecW.Coord[1]*fy) *dst +camvec.Coord[1];
+  result.Coord[2]:=(lbW.Coord[2] + riVecW.Coord[2]*x + UpVecW.Coord[2]*fy) *dst +camvec.Coord[2];
  end else begin
-  result[0]:=0;
-  result[1]:=0;
-  result[2]:=0;
+  result.Coord[0]:=0;
+  result.Coord[1]:=0;
+  result.Coord[2]:=0;
  end;
 end;
 
@@ -542,9 +543,9 @@ begin
    //---returns canvas pixel x,y coordinate, and the world distance
    result:=false;
    campos:=cam.AbsolutePosition;
-   x:=apoint[0]-camPos[0];
-   y:=apoint[1]-camPos[1];
-   z:=apoint[2]-camPos[2];      //get vector from camera to world point
+   x:=apoint.Coord[0]-camPos.Coord[0];
+   y:=apoint.Coord[1]-camPos.Coord[1];
+   z:=apoint.Coord[2]-camPos.Coord[2];      //get vector from camera to world point
    v0:=x;
    x:=c1*v0+s1*z;
    z:=c1*z-s1*v0;            //Rotate around Y-axis
@@ -579,9 +580,9 @@ begin
    //---Result is true if pixel lies within view frustrum
    //---returns canvas pixel x,y coordinate, and CALCULATES the z-buffer distance
    campos:=cam.AbsolutePosition;
-   x:=apoint[0]-camPos[0];
-   y:=apoint[1]-camPos[1];
-   z:=apoint[2]-camPos[2];      //get vector from camera to world point
+   x:=apoint.Coord[0]-camPos.Coord[0];
+   y:=apoint.Coord[1]-camPos.Coord[1];
+   z:=apoint.Coord[2]-camPos.Coord[2];      //get vector from camera to world point
    v0:=x;
    x:=c1*v0+s1*z;
    z:=c1*z-s1*v0;            //Rotate around Y-axis
@@ -613,9 +614,9 @@ begin
    //---Result is true if pixel lies within view frustrum
    //---returns canvas pixel x,y coordinate, and CALCULATES the z-buffer distance
    campos:=cam.AbsolutePosition;
-   x:=apoint[0]-camPos[0];
-   y:=apoint[1]-camPos[1];
-   z:=apoint[2]-camPos[2];      //get vector from camera to world point
+   x:=apoint.Coord[0]-camPos.Coord[0];
+   y:=apoint.Coord[1]-camPos.Coord[1];
+   z:=apoint.Coord[2]-camPos.Coord[2];      //get vector from camera to world point
    v0:=x;
    x:=c1*v0+s1*z;
    z:=c1*z-s1*v0;            //Rotate around Y-axis
@@ -644,9 +645,9 @@ var camPos :TVector;
     x,y,z:single;
 begin
    campos:=cam.AbsolutePosition;
-   x:=apoint[0]-camPos[0];
-   y:=apoint[1]-camPos[1];
-   z:=apoint[2]-camPos[2];      //get vector from camera to world point
+   x:=apoint.Coord[0]-camPos.Coord[0];
+   y:=apoint.Coord[1]-camPos.Coord[1];
+   z:=apoint.Coord[2]-camPos.Coord[2];      //get vector from camera to world point
 
    pixX:=(x+OrthAddX)*OrthMulX;
    pixY:=(z+OrthAddY)*OrthMulY;

@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: changed GetCurrentTime to GetCurrenttime
       <li>28/06/04 - LR - Added some ifdef Win32 for Linux
       <li>20/10/03 - EG - Fixed issues about cadencer destruction
       <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
@@ -121,7 +122,7 @@ type
 				If cadencer is disabled, this functions does nothing. }
 			procedure Progress;
 			{: Adjusts CurrentTime if necessary, then returns its value. }
-			function GetCurrentTime : Double;
+			function GetCurrenttime : Double;
          {: Returns True if a "Progress" is underway.<p>
             Be aware that as long as IsBusy is True, the Cadencer may be
             sending messages and progression calls to cadenceable components
@@ -603,7 +604,7 @@ begin
          // One of the processed messages might have disabled us
          if Enabled then begin
             // ...and progress !
-            newTime:=GetCurrentTime;
+            newTime:=GetCurrenttime;
             deltaTime:=newTime-lastTime;
             if (deltaTime>=MinDeltaTime) and (deltaTime>=FixedDeltaTime) then begin
                if FMaxDeltaTime>0 then begin
@@ -666,9 +667,9 @@ begin
 	end;
 end;
 
-// GetCurrentTime
+// GetCurrenttime
 //
-function TGLCadencer.GetCurrentTime : Double;
+function TGLCadencer.GetCurrenttime : Double;
 begin
 	Result:=(GetRawReferenceTime-FOriginTime)*FTimeMultiplier;
 	FCurrentTime:=Result;

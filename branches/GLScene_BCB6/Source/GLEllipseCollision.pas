@@ -12,6 +12,7 @@
 
   <b>History : </b><font size=-1><ul>
     <li>11/10/04 - LR - Restore the GLScene.inc with the good case
+    <li>08/10/04 - LR, YHC - BCB corrections: use record instead array     
     <li>03/09/04 - LucasG. - Creation and addons to support events and terrains
   </ul></font>
 }
@@ -195,22 +196,22 @@ end;
 
 function VectorDivide(const v, divider : TAffineVector): TAffineVector;
 begin
-   result[0]:=v[0]/divider[0];
-   result[1]:=v[1]/divider[1];
-   result[2]:=v[2]/divider[2];
+   result.Coord[0]:=v.Coord[0]/divider.Coord[0];
+   result.Coord[1]:=v.Coord[1]/divider.Coord[1];
+   result.Coord[2]:=v.Coord[2]/divider.Coord[2];
 end;
 
 procedure VectorSetLength(var V: TAffineVector; Len: Single);
 var l,l2: Single;
 begin
-  l2 := V[0]*V[0] + V[1]*V[1] + V[2]*V[2];
+  l2 := V.Coord[0]*V.Coord[0] + V.Coord[1]*V.Coord[1] + V.Coord[2]*V.Coord[2];
   l := sqrt(l2);
   if L <> 0 then
   begin
     Len := Len / l;
-    V[0] :=  V[0] * Len;
-    V[1] :=  V[1] * Len;
-    V[2] :=  V[2] * Len;
+    V.Coord[0] :=  V.Coord[0] * Len;
+    V.Coord[1] :=  V.Coord[1] * Len;
+    V.Coord[2] :=  V.Coord[2] * Len;
   end;
 end;
 
@@ -220,20 +221,20 @@ procedure TECPlane.MakePlane(const nOrigin, nNormal: TAffineVector);
 begin
   Normal := nNormal;
   Origin := nOrigin;
-  Equation[0] := normal[0];
-  Equation[1] := normal[1];
-  Equation[2] := normal[2];
-  Equation[3] := -(normal[0]*origin[0]+normal[1]*origin[1]+normal[2]*origin[2]);
+  Equation[0] := Normal.Coord[0];
+  Equation[1] := Normal.Coord[1];
+  Equation[2] := Normal.Coord[2];
+  Equation[3] := -(Normal.Coord[0]*Origin.Coord[0]+Normal.Coord[1]*Origin.Coord[1]+Normal.Coord[2]*Origin.Coord[2]);
 end;
 
 procedure TECPlane.MakePlane(const p1, p2, p3: TAffineVector);
 begin
   Normal := CalcPlaneNormal(p1,p2,p3);
   Origin := p1;
-  Equation[0] := normal[0];
-  Equation[1] := normal[1];
-  Equation[2] := normal[2];
-  Equation[3] := -(normal[0]*origin[0]+normal[1]*origin[1]+normal[2]*origin[2]);
+  Equation[0] := Normal.Coord[0];
+  Equation[1] := Normal.Coord[1];
+  Equation[2] := Normal.Coord[2];
+  Equation[3] := -(Normal.Coord[0]*Origin.Coord[0]+Normal.Coord[1]*Origin.Coord[1]+Normal.Coord[2]*Origin.Coord[2]);
 end;
 
 function TECPlane.isFrontFacingTo(const Direction: TAffineVector): Boolean;
@@ -590,9 +591,9 @@ begin
   rA := VectorAdd(newPos,nA);
 
   nB := VectorNormalize(VectorDivide(VectorSubtract(rA,ePos),eRadius));
-  rB[0] := ePos[0] + (eRadius[0] * nB[0]);
-  rB[1] := ePos[1] + (eRadius[1] * nB[1]);
-  rB[2] := ePos[2] + (eRadius[2] * nB[2]);
+  rB.Coord[0] := ePos.Coord[0] + (eRadius.Coord[0] * nB.Coord[0]);
+  rB.Coord[1] := ePos.Coord[1] + (eRadius.Coord[1] * nB.Coord[1]);
+  rB.Coord[2] := ePos.Coord[2] + (eRadius.Coord[2] * nB.Coord[2]);
 
   iPoint := rB;
   iNormal := VectorNormalize(VectorDivide(VectorSubtract(newPos,ePos),eRadius));
@@ -722,7 +723,7 @@ begin
   with MovePack.Terrains[i] do begin
     //Origin
     Origin := newPos;
-    Origin[1] :=Terrain.AbsolutePosition[1] + Terrain.InterpolatedHeight(newPos);
+    Origin.Coord[1] :=Terrain.AbsolutePosition.Coord[1] + Terrain.InterpolatedHeight(newPos);
 
     closest := Origin;
 
@@ -732,13 +733,13 @@ begin
     begin
       rang := ang * (3.1415926535897932385 / 180);  //Degree to Rad
       SinCos(rang,x,y);
-      v[0] := x;
-      v[1] := 0;
-      v[2] := y;
+      v.Coord[0] := x;
+      v.Coord[1] := 0;
+      v.Coord[2] := y;
       ScaleVector(v,veryCloseDistance);
       ang := ang + 45;
       p[j] := VectorAdd(newPos,v);
-      p[j][1] :=Terrain.AbsolutePosition[1] + Terrain.InterpolatedHeight(p[j]);
+      p[j].Coord[1] :=Terrain.AbsolutePosition.Coord[1] + Terrain.InterpolatedHeight(p[j]);
 
       //Get the closest to the ellipsoid
       if VectorDistance(p[j], newPos) < VectorDistance(closest, newPos) then

@@ -3,6 +3,10 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+                               Replace direct access of some properties by
+                               a getter and a setter
+                               Added VectorTypes Unit
       <li>05/09/03 - EG - Some GLScene types and helper functions moved
                           to new GLState and GLUtils units
       <li>10/25/03 - Dave - Added TGLCoordinates.SetVector (TAffineVector)
@@ -67,7 +71,7 @@ unit GLMisc;
 
 interface
 
-uses Classes, VectorGeometry, OpenGL1x, Spline, VectorLists;
+uses Classes, VectorTypes, VectorGeometry, OpenGL1x, Spline, VectorLists;
 
 {$i GLScene.inc}
 
@@ -197,19 +201,22 @@ type
 			FCoords : TVector;
          FStyle : TGLCoordinatesStyle; // NOT Persistent
          FPDefaultCoords : PVector;
-			procedure SetAsVector(const value : TVector);
-			procedure SetAsAffineVector(const value : TAffineVector);
+         procedure SetAsVector(const value : TVector);
+         procedure SetAsAffineVector(const value : TAffineVector);
          function GetAsAffineVector : TAffineVector;
-			procedure SetCoordinate(index : Integer; const aValue : TGLFloat);
+         function GetCoordinate(const Index: Integer): TGLFloat;
+         procedure SetCoordinate(index : Integer; const aValue : TGLFloat);
          function GetAsString : String;
+         function GetDirectCoordinate(const Index: Integer): TGLFloat;
+         procedure SetDirectCoordinate(const Index: Integer; const aValue: TGLFloat);
 
 		protected
 			{ Protected Declarations }
          procedure SetDirectVector(const v : TVector);
 
-			procedure DefineProperties(Filer: TFiler); override;
-			procedure ReadData(Stream: TStream);
-			procedure WriteData(Stream: TStream);
+         procedure DefineProperties(Filer: TFiler); override;
+         procedure ReadData(Stream: TStream);
+         procedure WriteData(Stream: TStream);
 
 		public
 			{ Public Declarations }
@@ -231,10 +238,10 @@ type
             coordinates system implies. }
          property Style : TGLCoordinatesStyle read FStyle write FStyle;
 
-			procedure Translate(const translationVector : TVector); overload;
-			procedure Translate(const translationVector : TAffineVector); overload;
-			procedure AddScaledVector(const factor : Single; const translationVector : TVector); overload;
-			procedure AddScaledVector(const factor : Single; const translationVector : TAffineVector); overload;
+         procedure Translate(const translationVector : TVector); overload;
+         procedure Translate(const translationVector : TAffineVector); overload;
+         procedure AddScaledVector(const factor : Single; const translationVector : TVector); overload;
+         procedure AddScaledVector(const factor : Single; const translationVector : TAffineVector); overload;
          procedure Rotate(const anAxis : TAffineVector; anAngle: Single); overload;
          procedure Rotate(const anAxis : TVector; anAngle: Single); overload;
          procedure Normalize;
@@ -258,32 +265,32 @@ type
          {: The coordinates viewed as a vector.<p>
             Assigning a value to this property will trigger notification events,
             if you don't want so, use DirectVector instead. }
-			property AsVector : TVector read FCoords write SetAsVector;
+         property AsVector : TVector read FCoords write SetAsVector;
          {: The coordinates viewed as an affine vector.<p>
             Assigning a value to this property will trigger notification events,
             if you don't want so, use DirectVector instead.<br>
             The W component is automatically adjustes depending on style. }
-			property AsAffineVector : TAffineVector read GetAsAffineVector write SetAsAffineVector;
+         property AsAffineVector : TAffineVector read GetAsAffineVector write SetAsAffineVector;
 
-			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate;
+         property W: TGLFloat index 3 read GetCoordinate write SetCoordinate;
 
          {: The coordinates, in-between brackets, separated by semi-colons. }
          property AsString : String read GetAsString;
-         
+
          //: Similar to AsVector but does not trigger notification events
          property DirectVector : TVector read FCoords write SetDirectVector;
-         property DirectX : TGLFloat read FCoords[0] write FCoords[0];
-         property DirectY : TGLFloat read FCoords[1] write FCoords[1];
-         property DirectZ : TGLFloat read FCoords[2] write FCoords[2];
-         property DirectW : TGLFloat read FCoords[3] write FCoords[3];
+         property DirectX : TGLFloat index 0 read GetDirectCoordinate write SetDirectCoordinate;
+         property DirectY : TGLFloat index 1 read GetDirectCoordinate write SetDirectCoordinate;
+         property DirectZ : TGLFloat index 2 read GetDirectCoordinate write SetDirectCoordinate;
+         property DirectW : TGLFloat index 3 read GetDirectCoordinate write SetDirectCoordinate;
 
 {$ifndef FPC}
 		published
 			{ Published Declarations }
 {$endif}
-			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate stored False;
-			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate stored False;
-			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate stored False;
+         property X: TGLFloat index 0 read GetCoordinate write SetCoordinate stored False;
+         property Y: TGLFloat index 1 read GetCoordinate write SetCoordinate stored False;
+         property Z: TGLFloat index 2 read GetCoordinate write SetCoordinate stored False;
 
   	end;
 
@@ -312,10 +319,11 @@ type
 	   private
 	      { Private Declarations }
 			FCoords : TVector;
-			procedure SetAsVector(const value: TVector);
-			procedure SetAsAffineVector(const value : TAffineVector);
+         procedure SetAsVector(const value: TVector);
+         procedure SetAsAffineVector(const value : TAffineVector);
          function GetAsAffineVector : TAffineVector;
-			procedure SetCoordinate(Index: Integer; AValue: TGLFloat);
+         function GetCoordinate(const Index: Integer): TGLFloat;
+         procedure SetCoordinate(Index: Integer; AValue: TGLFloat);
 
 	   protected
 	      { Protected Declarations }
@@ -333,26 +341,26 @@ type
          {: The coordinates viewed as a vector.<p>
             Assigning a value to this property will trigger notification events,
             if you don't want so, use DirectVector instead. }
-			property AsVector : TVector read FCoords write SetAsVector;
+         property AsVector : TVector read FCoords write SetAsVector;
          {: The coordinates viewed as an affine vector.<p>
             Assigning a value to this property will trigger notification events,
             if you don't want so, use DirectVector instead.<br>
             The W component is automatically adjustes depending on style. }
-			property AsAffineVector : TAffineVector read GetAsAffineVector write SetAsAffineVector;
+         property AsAffineVector : TAffineVector read GetAsAffineVector write SetAsAffineVector;
 
 {$ifndef FPC}
-			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate stored StoreCoordinate;
+         property W: TGLFloat index 3 read GetCoordinate write SetCoordinate stored StoreCoordinate;
 
 	   published
 	      { Published Declarations }
-			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate stored StoreCoordinate;
-			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate stored StoreCoordinate;
-			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate stored StoreCoordinate;
+         property X: TGLFloat index 0 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+         property Y: TGLFloat index 1 read GetCoordinate write SetCoordinate stored StoreCoordinate;
+         property Z: TGLFloat index 2 read GetCoordinate write SetCoordinate stored StoreCoordinate;
 {$else}
-			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate;
-			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate;
-			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate;
-			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate;
+         property X: TGLFloat index 0 read GetCoordinate write SetCoordinate;
+         property Y: TGLFloat index 1 read GetCoordinate write SetCoordinate;
+         property Z: TGLFloat index 2 read GetCoordinate write SetCoordinate;
+         property W: TGLFloat index 3 read GetCoordinate write SetCoordinate;
 {$endif}
 	end;
 
@@ -659,7 +667,7 @@ begin
       else writeCoords:=True;
       WriteBoolean(writeCoords);
       if writeCoords then
-         Write(FCoords[0], SizeOf(FCoords));
+         Write(FCoords.Coord[0], SizeOf(FCoords));
    end;
 end;
 
@@ -674,7 +682,7 @@ begin
       if ReadBoolean then begin
          n:=SizeOf(FCoords);
          Assert(n=4*SizeOf(Single));
-         Read(FCoords[0], n);
+         Read(FCoords.Coord[0], n);
       end else if Assigned(FPDefaultCoords) then
          FCoords:=FPDefaultCoords^;
    end;
@@ -716,9 +724,9 @@ end;
 //
 procedure TGLCoordinates.Translate(const translationVector : TVector);
 begin
-	FCoords[0]:=FCoords[0]+translationVector[0];
-	FCoords[1]:=FCoords[1]+translationVector[1];
-	FCoords[2]:=FCoords[2]+translationVector[2];
+	FCoords.Coord[0]:=FCoords.Coord[0]+translationVector.Coord[0];
+	FCoords.Coord[1]:=FCoords.Coord[1]+translationVector.Coord[1];
+	FCoords.Coord[2]:=FCoords.Coord[2]+translationVector.Coord[2];
 	NotifyChange(Self);
 end;
 
@@ -726,9 +734,9 @@ end;
 //
 procedure TGLCoordinates.Translate(const translationVector : TAffineVector);
 begin
-	FCoords[0]:=FCoords[0]+translationVector[0];
-	FCoords[1]:=FCoords[1]+translationVector[1];
-	FCoords[2]:=FCoords[2]+translationVector[2];
+	FCoords.Coord[0]:=FCoords.Coord[0]+translationVector.Coord[0];
+	FCoords.Coord[1]:=FCoords.Coord[1]+translationVector.Coord[1];
+	FCoords.Coord[2]:=FCoords.Coord[2]+translationVector.Coord[2];
 	NotifyChange(Self);
 end;
 
@@ -862,22 +870,22 @@ end;
 //
 procedure TGLCoordinates.SetDirectVector(const v : TVector);
 begin
-   FCoords[0]:=v[0];
-   FCoords[1]:=v[1];
-   FCoords[2]:=v[2];
-   FCoords[3]:=v[3];
+   FCoords.Coord[0]:=v.Coord[0];
+   FCoords.Coord[1]:=v.Coord[1];
+   FCoords.Coord[2]:=v.Coord[2];
+   FCoords.Coord[3]:=v.Coord[3];
 end;
 
 // SetToZero
 //
 procedure TGLCoordinates.SetToZero;
 begin
-   FCoords[0]:=0;
-   FCoords[1]:=0;
-   FCoords[2]:=0;
+   FCoords.Coord[0]:=0;
+   FCoords.Coord[1]:=0;
+   FCoords.Coord[2]:=0;
    if FStyle=csPoint then
-      FCoords[3]:=1
-   else FCoords[3]:=0;
+      FCoords.Coord[3]:=1
+   else FCoords.Coord[3]:=0;
 	NotifyChange(Self);
 end;
 
@@ -921,8 +929,8 @@ procedure TGLCoordinates.SetAsVector(const value: TVector);
 begin
    FCoords:=value;
    case FStyle of
-      csPoint :  FCoords[3]:=1;
-      csVector : FCoords[3]:=0;
+      csPoint :  FCoords.Coord[3]:=1;
+      csVector : FCoords.Coord[3]:=0;
    end;
 	NotifyChange(Self);
 end;
@@ -946,12 +954,33 @@ begin
    VectorGeometry.SetVector(Result, FCoords);
 end;
 
+// GetCoordinate
+//
+function TGLCoordinates.GetCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FCoords.Coord[Index];
+end;
+
 // SetCoordinate
 //
 procedure TGLCoordinates.SetCoordinate(index : Integer; const aValue : TGLFloat);
 begin
-	FCoords[index]:=aValue;
-	NotifyChange(Self);
+  FCoords.Coord[index]:=aValue;
+  NotifyChange(Self);
+end;
+
+// GetDirectCoordinate
+//
+function TGLCoordinates.GetDirectCoordinate(const Index: Integer): TGLFloat;
+begin
+  result := FCoords.Coord[Index];
+end;
+
+// SetDirectCoordinate
+//
+procedure TGLCoordinates.SetDirectCoordinate(const Index: Integer; const aValue: TGLFloat);
+begin
+  FCoords.Coord[index]:=aValue;
 end;
 
 // GetAsString
@@ -959,9 +988,9 @@ end;
 function TGLCoordinates.GetAsString : String;
 begin
    if Style in [csPoint, csVector] then
-      Result:=Format('(%g; %g; %g)', [FCoords[0], FCoords[1], FCoords[2]])
+      Result:=Format('(%g; %g; %g)', [FCoords.Coord[0], FCoords.Coord[1], FCoords.Coord[2]])
    else Result:=Format('(%g; %g; %g; %g)',
-                       [FCoords[0], FCoords[1], FCoords[2], FCoords[3]]);
+                       [FCoords.Coord[0], FCoords.Coord[1], FCoords.Coord[2], FCoords.Coord[3]]);
 end;
 
 // ------------------
@@ -1030,11 +1059,18 @@ begin
    VectorGeometry.SetVector(Result, FCoords);
 end;
 
+// GetCoordinate
+//
+function TGLNode.GetCoordinate(const Index: Integer): TGLFloat;
+begin
+   result := FCoords.Coord[Index];
+end;
+
 // SetCoordinate
 //
 procedure TGLNode.SetCoordinate(Index: Integer; AValue: TGLFloat);
 begin
-	FCoords[Index]:=AValue;
+   FCoords.Coord[Index]:=AValue;
    (Collection as TGLNodes).NotifyChange;
 end;
 
@@ -1042,7 +1078,7 @@ end;
 //
 function TGLNode.StoreCoordinate(Index: Integer) : Boolean;
 begin
-   Result:=(FCoords[Index]<>0);
+   Result:=(FCoords.Coord[Index]<>0);
 end;
 
 // ------------------
@@ -1222,7 +1258,7 @@ begin
       f:=(stopAngle-startAngle)/nbSegments;
       for i:=0 to nbSegments do begin
          SinCos(i*f+startAngle, s, c);
-         SetVector(Add.FCoords, center[0]+xRadius*c, center[1]+yRadius*s, center[2], 1);
+         SetVector(Add.FCoords, center.Coord[0]+xRadius*c, center.Coord[1]+yRadius*s, center.Coord[2], 1);
       end;
    finally
       EndUpdate;
@@ -1300,9 +1336,9 @@ begin
    SetVector(max, cSmallValue, cSmallValue, cSmallValue);
    for i:=0 to Count-1 do begin
       for k:=0 to 2 do begin
-         f:=PAffineVector(Items[i].AsAddress)[k];
-         if f<min[k] then min[k]:=f;
-         if f>max[k] then max[k]:=f;
+         f:=PAffineVector(Items[i].AsAddress).Coord[k];
+         if f<min.Coord[k] then min.Coord[k]:=f;
+         if f>max.Coord[k] then max.Coord[k]:=f;
       end;
    end;
 end;
@@ -1351,9 +1387,9 @@ begin
    SinCos(cPIDiv180*angle, s, c);
    for i:=0 to Count-1 do begin
       v:=PAffineVector(Items[i].AsAddress);
-      v2:=v[2];
-      v[1]:=c*v[1]+s*v2;
-      v[2]:=c*v2-s*v[1];
+      v2:=v.Coord[2];
+      v.Coord[1]:=c*v.Coord[1]+s*v2;
+      v.Coord[2]:=c*v2-s*v.Coord[1];
    end;
    NotifyChange;
 end;
@@ -1369,9 +1405,9 @@ begin
    SinCos(cPIDiv180*angle, s, c);
    for i:=0 to Count-1 do begin
       v:=PAffineVector(Items[i].AsAddress);
-      v0:=v[0];
-      v[0]:=c*v0+s*v[2];
-      v[2]:=c*v[2]-s*v0;
+      v0:=v.Coord[0];
+      v.Coord[0]:=c*v0+s*v.Coord[2];
+      v.Coord[2]:=c*v.Coord[2]-s*v0;
    end;
    NotifyChange;
 end;
@@ -1387,9 +1423,9 @@ begin
    SinCos(cPIDiv180*angle, s, c);
    for i:=0 to Count-1 do begin
       v:=PAffineVector(Items[i].AsAddress);
-      v1:=v[1];
-      v[1]:=c*v1+s*v[0];
-      v[0]:=c*v[0]-s*v1;
+      v1:=v.Coord[1];
+      v.Coord[1]:=c*v1+s*v.Coord[0];
+      v.Coord[0]:=c*v.Coord[0]-s*v1;
    end;
    NotifyChange;
 end;
@@ -1471,7 +1507,7 @@ begin
       // Issue normal
       if Assigned(normal) then begin
          glNormal3fv(PGLFloat(normal));
-         gluTessNormal(tess, normal[0], normal[1], normal[2]);
+         gluTessNormal(tess, normal.Coord[0], normal.Coord[1], normal.Coord[2]);
       end;
       // Issue polygon
       gluTessBeginPolygon(tess, nil);
@@ -1546,6 +1582,7 @@ end;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
 initialization
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

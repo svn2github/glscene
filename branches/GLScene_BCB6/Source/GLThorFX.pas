@@ -1,10 +1,18 @@
-//    06/04/04 - PHP - Removed property Paused use of property Disabled instead
-//    04/15/03 - Added initialization to CalcThor, to fix an error
-//               Thanks to Martin Kirsch for this solution 
-//    12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
-//                    Fixed leaks (colors) 
-//
-unit GLThorFX;       //--René Lindsay 09/03/2001--
+{: GLThorFX<p>
+
+	Thor special effect<p>
+
+	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+      <li>06/04/04 - PHP - Removed property Paused use of property Disabled instead
+      <li>04/15/03 - Added initialization to CalcThor, to fix an error
+                     Thanks to Martin Kirsch for this solution
+      <li>12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
+                          Fixed leaks (colors)
+      <li>09/03/01  --René Lindsay --
+	</ul></font>
+}
+unit GLThorFX;
 
 interface
 
@@ -329,16 +337,16 @@ begin
  SetVector(nvec,FTarget.x,FTarget.y,FTarget.z);
  Len:=VectorLength(nvec);
  NormalizeVector(nvec);
- a:=ArcCos(nvec[2]);
- b:=ArcTan2(nvec[0],nvec[1]);
+ a:=ArcCos(nvec.Coord[2]);
+ b:=ArcTan2(nvec.Coord[0],nvec.Coord[1]);
 
  N:=0;
  While (N<Maxpoints) do begin
     dist:=N/Maxpoints*len;
     vec:=FThorpoints[N].Position;
-    vec[2]:=dist;
+    vec.Coord[2]:=dist;
 
-    if Assigned(OnCalcPoint) then OnCalcPoint(self,N,Vec[0],vec[1],vec[2]); //Let user mess around with point position
+    if Assigned(OnCalcPoint) then OnCalcPoint(self,N,Vec.Coord[0],vec.Coord[1],vec.Coord[2]); //Let user mess around with point position
 
     SetVector(axs,1,0,0);            //Rotate up
     RotateVector(vec,axs,a);
@@ -361,10 +369,10 @@ begin
  res:=(left+right) mod 2;
  fracScale:=(right-left)/maxpoints;
  midh:= (lh+rh)/2 + (fracScale*FWildness*random)-(fracScale*FWildness)/2     ;
- FThorpoints[mid].Position[xyz]:=midh+(FVibrate*Random-(FVibrate/2));
+ FThorpoints[mid].Position.Coord[xyz]:=midh+(FVibrate*Random-(FVibrate/2));
 // if res=1 then FThorpoints[right-1].Position[xyz]:=
 //    (FThorpoints[right].Position[xyz]+midh)/(right-mid)*(right-mid-1);
- if res=1 then FThorpoints[right-1].Position[xyz]:=FThorpoints[right].Position[xyz];
+ if res=1 then FThorpoints[right-1].Position.Coord[xyz]:=FThorpoints[right].Position.Coord[xyz];
 
  if (mid-left)>1  then CalcFrac(left,mid,lh,midh,xyz);
  if (right-mid)>1 then CalcFrac(mid,right,midh,rh,xyz);
@@ -522,8 +530,8 @@ begin
 
       glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
       for m:=0 to 2 do begin
-          vx[m]:=mat[m][0]*Manager.GlowSize;
-          vy[m]:=mat[m][1]*Manager.GlowSize;
+          vx.Coord[m]:=mat.Coord[m].Coord[0]*Manager.GlowSize;
+          vy.Coord[m]:=mat.Coord[m].Coord[1]*Manager.GlowSize;
       end;
 
       glPushMatrix;
@@ -550,7 +558,7 @@ begin
       for i:=0 to n-1 do begin
           fp:=@(Manager.FThorpoints[i]);
           SetVector(Ppos, fp.position);
-          glVertex3f(Ppos[0],Ppos[1],Ppos[2]);
+          glVertex3f(Ppos.Coord[0],Ppos.Coord[1],Ppos.Coord[2]);
       end;
       glEnd;
       end;//Core;
@@ -565,17 +573,17 @@ begin
           SetVector(Ppos2, fp.position);
           glBegin(GL_TRIANGLE_FAN);
             glColor4fv(@Icol);
-            glVertex3f(ppos[0],ppos[1],ppos[2]);//middle1
+            glVertex3f(ppos.Coord[0],ppos.Coord[1],ppos.Coord[2]);//middle1
             glColor4fv(@Ocol);
-            glVertex3f( vx[0]+vy[0]+ppos[0] , vx[1]+vy[1]+ppos[1] , vx[2]+vy[2]+ppos[2]   );//TopRight
-            glVertex3f( vx[0]*1.4  +ppos[0] , vx[1]*1.4  +ppos[1] , vx[2]*1.4  +ppos[2]   );//Right1
-            glVertex3f( vx[0]-vy[0]+ppos[0] , vx[1]-vy[1]+ppos[1] , vx[2]-vy[2]+ppos[2]   );//BottomRight
-            glVertex3f(-vy[0]*1.4  +ppos[0] ,-vy[1]*1.4  +ppos[1] ,-vy[2]*1.4  +ppos[2]   );//bottom1
-            glVertex3f(-vx[0]-vy[0]+ppos[0] ,-vx[1]-vy[1]+ppos[1] ,-vx[2]-vy[2]+ppos[2]   );//BottomLeft
-            glVertex3f(-vx[0]*1.4  +ppos[0] ,-vx[1]*1.4  +ppos[1] ,-vx[2]*1.4  +ppos[2]   );//left1
-            glVertex3f(-vx[0]+vy[0]+ppos[0] ,-vx[1]+vy[1]+ppos[1] ,-vx[2]+vy[2]+ppos[2]   );//TopLeft
-            glVertex3f( vy[0]*1.4  +ppos[0] , vy[1]*1.4  +ppos[1] , vy[2]*1.4  +ppos[2]   );//top1
-            glVertex3f( vx[0]+vy[0]+ppos[0] , vx[1]+vy[1]+ppos[1] , vx[2]+vy[2]+ppos[2]   );//TopRight
+            glVertex3f( vx.Coord[0]+vy.Coord[0]+ppos.Coord[0] , vx.Coord[1]+vy.Coord[1]+ppos.Coord[1] , vx.Coord[2]+vy.Coord[2]+ppos.Coord[2]   );//TopRight
+            glVertex3f( vx.Coord[0]*1.4  +ppos.Coord[0] , vx.Coord[1]*1.4  +ppos.Coord[1] , vx.Coord[2]*1.4  +ppos.Coord[2]   );//Right1
+            glVertex3f( vx.Coord[0]-vy.Coord[0]+ppos.Coord[0] , vx.Coord[1]-vy.Coord[1]+ppos.Coord[1] , vx.Coord[2]-vy.Coord[2]+ppos.Coord[2]   );//BottomRight
+            glVertex3f(-vy.Coord[0]*1.4  +ppos.Coord[0] ,-vy.Coord[1]*1.4  +ppos.Coord[1] ,-vy.Coord[2]*1.4  +ppos.Coord[2]   );//bottom1
+            glVertex3f(-vx.Coord[0]-vy.Coord[0]+ppos.Coord[0] ,-vx.Coord[1]-vy.Coord[1]+ppos.Coord[1] ,-vx.Coord[2]-vy.Coord[2]+ppos.Coord[2]   );//BottomLeft
+            glVertex3f(-vx.Coord[0]*1.4  +ppos.Coord[0] ,-vx.Coord[1]*1.4  +ppos.Coord[1] ,-vx.Coord[2]*1.4  +ppos.Coord[2]   );//left1
+            glVertex3f(-vx.Coord[0]+vy.Coord[0]+ppos.Coord[0] ,-vx.Coord[1]+vy.Coord[1]+ppos.Coord[1] ,-vx.Coord[2]+vy.Coord[2]+ppos.Coord[2]   );//TopLeft
+            glVertex3f( vy.Coord[0]*1.4  +ppos.Coord[0] , vy.Coord[1]*1.4  +ppos.Coord[1] , vy.Coord[2]*1.4  +ppos.Coord[2]   );//top1
+            glVertex3f( vx.Coord[0]+vy.Coord[0]+ppos.Coord[0] , vx.Coord[1]+vy.Coord[1]+ppos.Coord[1] , vx.Coord[2]+vy.Coord[2]+ppos.Coord[2]   );//TopRight
          glEnd;
        end;//Glow
       end;

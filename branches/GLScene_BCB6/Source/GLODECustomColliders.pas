@@ -8,6 +8,7 @@
   </ul>
 
   <b>History : </b><font size=-1><ul>
+    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array   
     <li>23/04/04 - SG - Removed freeform static collider
     <li>29/10/03 - SG - Fix for GLODETerrainCollider (Matheus Degiovani)
     <li>30/07/03 - SG - Creation.
@@ -73,9 +74,9 @@ function TerrainCollideSphere(o1, o2 : PdxGeom; flags : Integer;
       contact.pos[2]:=zs;
       contact.pos[3]:=1;
       n:=TGLODETerrainCollider(dGeomGetData(o1)).ColliderFormulaNormal(x, y);
-      contact.normal[0]:=-n[0];
-      contact.normal[1]:=-n[1];
-      contact.normal[2]:=-n[2];
+      contact.normal[0]:=-n.Coord[0];
+      contact.normal[1]:=-n.Coord[1];
+      contact.normal[2]:=-n.Coord[2];
       contact.normal[3]:=0;
       contact.depth:=zs-z;
       contact.g1:=o1;
@@ -184,9 +185,9 @@ var
       contact.pos[2]:=Corner.pos[2];
       //contact.pos[3]:=1;
       n:=TGLODETerrainCollider(dGeomGetData(o1)).ColliderFormulaNormal(Corner.pos[0], Corner.pos[1]);
-      contact.normal[0]:=-n[0];
-      contact.normal[1]:=-n[1];
-      contact.normal[2]:=-n[2];
+      contact.normal[0]:=-n.Coord[0];
+      contact.normal[1]:=-n.Coord[1];
+      contact.normal[2]:=-n.Coord[2];
       //contact.normal[3]:=0;
       contact.depth:=Corner.Depth;
       contact.g1:=o1;

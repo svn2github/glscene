@@ -93,6 +93,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+// XX-XX-04 - LR, YHC - BCB corrections:
+//   - suppress the $NODEFINE, $HPPEMIT and $EXTERNALSYM directives
 // 23-Apr-04 - Nelson Chu:
 //   - Adopted to use with GLScene (jedi.inc -> GLScene.inc)
 // 04-Mar-04 - Alexey Barkovoy:
@@ -109,12 +111,15 @@ unit cgGL;
   {$DEFINE COMPILER6_UP}
 {$endif}
 
+
+{$ifdef GLS_CPPB_6}
+  {$UNDEF COMPILER6_UP}
+{$endif}
+
 interface
 
 uses
   OpenGL1x{$IFNDEF COMPILER6_UP}, Windows{$ENDIF}, cg;
-
-(*$HPPEMIT '#include "cgGL.h"' *)
 
 const
   CgGLlibrary = 'cgGL.dll';
@@ -126,291 +131,201 @@ const
 type
   TCGGLenum = TGLEnum;
   CGGLenum = TCGGLenum;
-  {$NODEFINE CGGLenum}
-  {$NODEFINE TCGGLenum}
-  {$HPPEMIT 'typedef CGGLenum TCGGLenum;'}
 
 const
   CG_GL_MATRIX_IDENTITY          = 0;
-  {$EXTERNALSYM CG_GL_MATRIX_IDENTITY}
   CG_GL_MATRIX_TRANSPOSE         = 1;
-  {$EXTERNALSYM CG_GL_MATRIX_TRANSPOSE}
   CG_GL_MATRIX_INVERSE           = 2;
-  {$EXTERNALSYM CG_GL_MATRIX_INVERSE}
   CG_GL_MATRIX_INVERSE_TRANSPOSE = 3;
-  {$EXTERNALSYM CG_GL_MATRIX_INVERSE_TRANSPOSE}
 
   CG_GL_MODELVIEW_MATRIX         = 4;
-  {$EXTERNALSYM CG_GL_MODELVIEW_MATRIX}
   CG_GL_PROJECTION_MATRIX        = 5;
-  {$EXTERNALSYM CG_GL_PROJECTION_MATRIX}
   CG_GL_TEXTURE_MATRIX           = 6;
-  {$EXTERNALSYM CG_GL_TEXTURE_MATRIX}
   CG_GL_MODELVIEW_PROJECTION_MATRIX = 7;
-  {$EXTERNALSYM CG_GL_MODELVIEW_PROJECTION_MATRIX}
 
   CG_GL_VERTEX                   = 8;
-  {$EXTERNALSYM CG_GL_VERTEX}
   CG_GL_FRAGMENT                 = 9;
-  {$EXTERNALSYM CG_GL_FRAGMENT}
 
 (******************************************************************************
  *** Profile Functions
  *****************************************************************************)
 
 function cgGLIsProfileSupported(profile: TCGprofile): TCGbool; cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLIsProfileSupported}
 
 procedure cgGLEnableProfile(profile: TCGprofile); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLEnableProfile}
 procedure cgGLDisableProfile(profile: TCGprofile); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLDisableProfile}
 
 function cgGLGetLatestProfile(profile_type: TCGGLenum): TCGprofile; cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetLatestProfile}
 procedure cgGLSetOptimalOptions(profile: TCGprofile); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetOptimalOptions}
 
 (******************************************************************************
  *** Program Managment Functions
  *****************************************************************************)
 
 procedure cgGLLoadProgram(_program: PCGprogram); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLLoadProgram}
 function cgGLIsProgramLoaded(_program: PCGprogram): TCGbool; cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLIsProgramLoaded}
 procedure cgGLBindProgram(_program: PCGprogram); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLBindProgram}
 procedure cgGLUnbindProgram(profile: TCGprofile); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLUnbindProgram}
 function cgGLGetProgramID(_program: PCGprogram): GLuint; cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetProgramID}
 
 (******************************************************************************
  *** Parameter Managment Functions
  *****************************************************************************)
 
 procedure cgGLSetParameter1f(param: PCGparameter; x: Single); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter1f}
 
 procedure cgGLSetParameter2f(param: PCGparameter; x, y: Single); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter2f}
 
 procedure cgGLSetParameter3f(param: PCGparameter; x, y, z: Single); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter3f}
 
 procedure cgGLSetParameter4f(param: PCGparameter; x, y, z, w: Single); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter4f}
 
 procedure cgGLSetParameter1fv(param: PCGparameter; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter1fv}
 
 procedure cgGLSetParameter2fv(param: PCGparameter; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter2fv}
 
 procedure cgGLSetParameter3fv(param: PCGparameter; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter3fv}
 
 procedure cgGLSetParameter4fv(param: PCGparameter; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter4fv}
 
 procedure cgGLSetParameter1d(param: PCGparameter; x: Double); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter1d}
 
 procedure cgGLSetParameter2d(param: PCGparameter; x, y: Double); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter2d}
 
 procedure cgGLSetParameter3d(param: PCGparameter; x, y, z: Double); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter3d}
 
 procedure cgGLSetParameter4d(param: PCGparameter; x, y, z, w: Double); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter4d}
 
 procedure cgGLSetParameter1dv(param: PCGparameter; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter1dv}
 
 procedure cgGLSetParameter2dv(param: PCGparameter; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter2dv}
 
 procedure cgGLSetParameter3dv(param: PCGparameter; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter3dv}
 
 procedure cgGLSetParameter4dv(param: PCGparameter; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameter4dv}
 
 procedure cgGLGetParameter1f(param: PCGparameter; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter1f}
 
 procedure cgGLGetParameter2f(param: PCGparameter; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter2f}
 
 procedure cgGLGetParameter3f(param: PCGparameter; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter3f}
 
 procedure cgGLGetParameter4f(param: PCGparameter; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter4f}
 
 procedure cgGLGetParameter1d(param: PCGparameter; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter1d}
 
 procedure cgGLGetParameter2d(param: PCGparameter; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter2d}
 
 procedure cgGLGetParameter3d(param: PCGparameter; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter3d}
 
 procedure cgGLGetParameter4d(param: PCGparameter; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameter4d}
 
 procedure cgGLSetParameterArray1f(param: PCGparameter;
     offset, nelements: Longint; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray1f}
 
 procedure cgGLSetParameterArray2f(param: PCGparameter;
     offset, nelements: Longint; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray2f}
 
 procedure cgGLSetParameterArray3f(param: PCGparameter;
     offset, nelements: Longint; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray3f}
 
 procedure cgGLSetParameterArray4f(param: PCGparameter;
     offset, nelements: Longint; const v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray4f}
 
 procedure cgGLSetParameterArray1d(param: PCGparameter;
     offset, nelements: Longint; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray1d}
 
 procedure cgGLSetParameterArray2d(param: PCGparameter;
     offset, nelements: Longint; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray2d}
 
 procedure cgGLSetParameterArray3d(param: PCGparameter;
     offset, nelements: Longint; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray3d}
 
 procedure cgGLSetParameterArray4d(param: PCGparameter;
     offset, nelements: Longint; const v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterArray4d}
 
 procedure cgGLGetParameterArray1f(param: PCGparameter;
     offset, nelements: Longint; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray1f}
 
 procedure cgGLGetParameterArray2f(param: PCGparameter;
     offset, nelements: Longint; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray2f}
 
 procedure cgGLGetParameterArray3f(param: PCGparameter;
     offset, nelements: Longint; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray3f}
 
 procedure cgGLGetParameterArray4f(param: PCGparameter;
     offset, nelements: Longint; v: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray4f}
 
 procedure cgGLGetParameterArray1d(param: PCGparameter;
     offset, nelements: Longint; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray1d}
 
 procedure cgGLGetParameterArray2d(param: PCGparameter;
     offset, nelements: Longint; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray2d}
 
 procedure cgGLGetParameterArray3d(param: PCGparameter;
     offset, nelements: Longint; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray3d}
 
 procedure cgGLGetParameterArray4d(param: PCGparameter;
     offset, nelements: Longint; v: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetParameterArray4d}
 
 procedure cgGLSetParameterPointer(param: PCGparameter; fsize: GLint;
     _type: TGLenum; stride: GLsizei; const _pointer: Pointer); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetParameterPointer}
 
 procedure cgGLEnableClientState(param: PCGparameter); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLEnableClientState}
 procedure cgGLDisableClientState(param: PCGparameter); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLDisableClientState}
 
 (******************************************************************************
  *** Matrix Parameter Managment Functions
  *****************************************************************************)
 
 procedure cgGLSetMatrixParameterdr(param: PCGparameter; const matrix: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterdr}
 procedure cgGLSetMatrixParameterfr(param: PCGparameter; const matrix: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterfr}
 procedure cgGLSetMatrixParameterdc(param: PCGparameter; const matrix: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterdc}
 procedure cgGLSetMatrixParameterfc(param: PCGparameter; const matrix: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterfc}
 
 procedure cgGLGetMatrixParameterdr(param: PCGparameter; matrix: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterdr}
 procedure cgGLGetMatrixParameterfr(param: PCGparameter; matrix: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterfr}
 procedure cgGLGetMatrixParameterdc(param: PCGparameter; matrix: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterdc}
 procedure cgGLGetMatrixParameterfc(param: PCGparameter; matrix: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterfc}
 
 procedure cgGLSetStateMatrixParameter(param: PCGparameter;
     matrix: TCGGLenum; transform: TCGGLenum); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetStateMatrixParameter}
 
 procedure cgGLSetMatrixParameterArrayfc(param: PCGparameter;
     offset, nelements: Longint; const matrices: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterArrayfc}
 
 procedure cgGLSetMatrixParameterArrayfr(param: PCGparameter;
     offset, nelements: Longint; const matrices: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterArrayfr}
 
 procedure cgGLSetMatrixParameterArraydc(param: PCGparameter;
     offset, nelements: Longint; const matrices: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterArraydc}
 
 procedure cgGLSetMatrixParameterArraydr(param: PCGparameter;
     offset, nelements: Longint; const matrices: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetMatrixParameterArraydr}
 
 procedure cgGLGetMatrixParameterArrayfc(param: PCGparameter;
     offset, nelements: Longint; matrices: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterArrayfc}
 
 procedure cgGLGetMatrixParameterArrayfr(param: PCGparameter;
     offset, nelements: Longint; matrices: PSingle); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterArrayfr}
 
 procedure cgGLGetMatrixParameterArraydc(param: PCGparameter;
     offset, nelements: Longint; matrices: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterArraydc}
 
 procedure cgGLGetMatrixParameterArraydr(param: PCGparameter;
     offset, nelements: Longint; matrices: PDouble); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetMatrixParameterArraydr}
 
 (******************************************************************************
  *** Texture Parameter Managment Functions
  *****************************************************************************)
 
 procedure cgGLSetTextureParameter(param: PCGparameter; texobj: TGLuint); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetTextureParameter}
 function cgGLGetTextureParameter(param: PCGparameter): TGLuint; cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetTextureParameter}
 procedure cgGLEnableTextureParameter(param: PCGparameter); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLEnableTextureParameter}
 procedure cgGLDisableTextureParameter(param: PCGparameter); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLDisableTextureParameter}
 function cgGLGetTextureEnum(param: PCGparameter): TGLenum; cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetTextureEnum}
 procedure cgGLSetManageTextureParameters(ctx: PCGcontext; flag: TCGbool); cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLSetManageTextureParameters}
 function cgGLGetManageTextureParameters(ctx: PCGcontext): TCGbool; cdecl; external CgGLlibrary;
-{$EXTERNALSYM cgGLGetManageTextureParameters}
 
 implementation
 

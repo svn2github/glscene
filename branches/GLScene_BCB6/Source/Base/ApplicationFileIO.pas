@@ -7,6 +7,7 @@
    Allows re-routing file reads to reads from a single archive file f.i.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/08/04 - LR, YHC - BCB corrections: fixed BCB Compiler error "E2370 Simple type name expected"
       <li>05/06/03 - EG - TDataFile moved in from GLMisc
       <li>31/01/03 - EG - Added FileExists mechanism
 	   <li>21/11/02 - EG - Creation
@@ -17,6 +18,8 @@ unit ApplicationFileIO;
 interface
 
 uses Classes, SysUtils;
+
+{$i GLScene.inc}
 
 type
 
@@ -30,7 +33,11 @@ type
 
    // TAFIOFileStreamEvent
    //
+   {$IFDEF GLS_CPPB}
+   TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word;var stream : TStream) of object;
+   {$ELSE}
    TAFIOFileStreamEvent = function (const fileName : String; mode : Word) : TStream of object;
+   {$ENDIF}
 
    // TAFIOFileStreamExistsEvent
    //
@@ -161,7 +168,11 @@ begin
    else begin
       Result:=nil;
       if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
+         {$IFDEF GLS_CPPB}
+         vAFIO.FOnFileStream(fileName, mode, Result);
+         {$ELSE}
          Result:=vAFIO.FOnFileStream(fileName, mode);
+         {$ENDIF}
       if not Assigned(Result) then begin
          if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
             Result:=TFileStream.Create(fileName, mode)
