@@ -56,6 +56,8 @@ type
 
    TBumpOption = (boDiffuseTexture2, boSpecularTexture3);
    TBumpOptions = set of TBumpOption;
+   
+   TSpecularMode = (smOff, smBlinn, smPhong);
 
    TSpecularMode = (smOff, smBlinn, smPhong);
 
@@ -337,10 +339,10 @@ begin
       FP.Add('   MUL eye, fragment.texcoord[2], eye.x;');
       case SpecularMode of
          smBlinn : begin
-      FP.Add('   ADD eye, eye, light;');
-      FP.Add('   DP3 temp, eye, eye;');
-      FP.Add('   RSQ temp, temp.x;');
-      FP.Add('   MUL eye, eye, temp.x;');
+            FP.Add('   ADD eye, eye, light;');
+            FP.Add('   DP3 temp, eye, eye;');
+            FP.Add('   RSQ temp, temp.x;');
+            FP.Add('   MUL eye, eye, temp.x;');
             FP.Add('   DP3_SAT spec, normal, eye;');
          end;
          smPhong : begin

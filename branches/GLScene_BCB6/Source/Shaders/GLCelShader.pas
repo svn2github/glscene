@@ -184,9 +184,9 @@ end;
 // GenerateVertexProgram
 //
 function TGLCelShader.GenerateVertexProgram : String;
-   var
+var
    VP : TStringList;
-   begin
+begin
    VP:=TStringList.Create;
    
    VP.Add('!!ARBvp1.0');
@@ -215,13 +215,13 @@ function TGLCelShader.GenerateVertexProgram : String;
       VP.Add('   DP3 result.texcoord[1].x, normal, light;');
    end else begin
       VP.Add('   DP3 result.texcoord[0].x, normal, light;');
-      end;
+   end;   
     
    VP.Add('END');
    
    Result:=VP.Text;
    VP.Free;
-   end;
+end;
 
 // DoApply
 //
