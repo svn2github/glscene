@@ -243,7 +243,7 @@ type
    {$ifdef GLS_COMPILER_5_UP}
    // TGLColorProperty
    //
-   {$ifndef GLS_COMPILER_6}
+   {$ifndef GLS_COMPILER_6_UP}
    TGLColorProperty = class (TClassProperty)
    {$else}
    TGLColorProperty = class (TClassProperty,
@@ -265,7 +265,7 @@ type
 	      procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
 	      procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
 	      {$endif}
-	      {$ifdef GLS_COMPILER_6}
+	      {$ifdef GLS_COMPILER_6_UP}
          // ICustomPropertyListDrawing  stuff
          procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas; var AHeight: Integer);
          procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas; var AWidth: Integer);
@@ -959,7 +959,7 @@ begin
 end;
 {$endif}
 
-{$ifdef GLS_COMPILER_6}
+{$ifdef GLS_COMPILER_6_UP}
 procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
 begin
    if GetVisualValue <> '' then
