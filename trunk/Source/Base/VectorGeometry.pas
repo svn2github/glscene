@@ -172,6 +172,7 @@ type
    PWord = ^Word;
    PInteger = ^Integer;
    PFloat = ^Single;
+   PSingle = ^Single;
    PDouble = ^Double;
    PExtended = ^Extended;
    PPointer = ^Pointer;

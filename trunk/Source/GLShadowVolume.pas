@@ -245,7 +245,7 @@ end;
 //
 function TGLShadowVolumeCaster.GetGLShadowVolume: TGLShadowVolume;
 begin
-  result := TGLShadowVolume(TGLShadowVolumeCasters(Collection).Owner);
+  Result:=TGLShadowVolume(TGLShadowVolumeCasters(Collection).GetOwner);
 end;
 
 // Destroy
