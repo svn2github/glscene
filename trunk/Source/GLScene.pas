@@ -1232,6 +1232,9 @@ type
          {: Computes the absolute normalized right vector to the camera target.<p>
             If no target is defined, AbsoluteRight is returned. }
          function AbsoluteRightVectorToTarget : TVector;
+         {: Computes the absolute normalized up vector to the camera target.<p>
+            If no target is defined, AbsoluteUpt is returned. }
+         function AbsoluteUpVectorToTarget : TVector;
          {: Calculate an absolute translation vector from a screen vector.<p>
             Ratio is applied to both screen delta, planeNormal should be the
             translation plane's normal. }
@@ -4510,6 +4513,15 @@ begin
       Result:=VectorCrossProduct(Result, AbsoluteUp);
       NormalizeVector(Result);
    end else Result:=AbsoluteRight;
+end;
+
+// AbsoluteUpVectorToTarget
+//
+function TGLCamera.AbsoluteUpVectorToTarget : TVector;
+begin
+   if TargetObject<>nil then
+      Result:=VectorCrossProduct(AbsoluteRightVectorToTarget, AbsoluteVectorToTarget)
+   else Result:=AbsoluteUp;
 end;
 
 // Apply
