@@ -809,6 +809,15 @@ function CalcPlaneNormal(const p1, p2, p3 : TAffineVector) : TAffineVector; over
 procedure CalcPlaneNormal(const p1, p2, p3 : TAffineVector; var vr : TAffineVector); overload;
 procedure CalcPlaneNormal(const p1, p2, p3 : TVector; var vr : TAffineVector); overload;
 
+{: Returns true if point is in the half-space defined by a plane with normal.<p>
+   The plane itself is not considered to be in the tested halfspace. }
+function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Boolean;
+
+{: Computes algebraic distance between point and plane.<p>
+   Value will be positive if the point is in the halfspace pointed by the normal,
+   negative on the other side. }
+function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single;
+
 //------------------------------------------------------------------------------
 // Quaternion functions
 //------------------------------------------------------------------------------
@@ -1072,30 +1081,34 @@ function Roll(const Matrix: TMatrix; const MasterDirection: TAffineVector; Angle
 
 // intersection functions
 
-{: Calculates the intersection point "res" of a line with a plane.<p>
+{: Compute the intersection point "res" of a line with a plane.<p>
    Return value:<ul>
    <li>0 : no intersection, line parallel to plane
    <li>1 : res is valid
    <li>-1 : line is inside plane
    </ul><br>
    Adapted from:<br>
-      E.Hartmann, Computerunterstützte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
+   E.Hartmann, Computerunterstützte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
 function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
                             intersectPoint : PVector = nil) : Integer;
 
-                            {: Calculate intersection between a ray and a plane.<p>
+{: Compute intersection between a ray and a plane.<p>
    Returns True if an intersection was found, the intersection point is placed
    in intersectPoint is the reference is not nil. }
 function RayCastPlaneIntersect(const rayStart, rayVector : TVector;
                                const planePoint, planeNormal : TVector;
                                intersectPoint : PVector = nil) : Boolean; overload;
-{: Calculate intersection between a ray and a triangle. }
+function RayCastPlaneXZIntersect(const rayStart, rayVector : TVector;
+                                 const planeY : Single;
+                                 intersectPoint : PVector = nil) : Boolean;
+
+{: Compute intersection between a ray and a triangle. }
 function RayCastTriangleIntersect(const rayStart, rayVector : TVector;
                                   const p1, p2, p3 : TAffineVector;
                                   intersectPoint : PVector = nil;
                                   intersectNormal : PVector = nil) : Boolean;
-{: Calculate the min distance a ray will pass to a point.<p> }
+{: Compute the min distance a ray will pass to a point.<p> }
 function RayCastMinDistToPoint(const rayStart, rayVector : TVector;
                                const point : TVector) : Single;
 {: Determines if a ray will intersect with a given sphere.<p> }
@@ -4943,6 +4956,22 @@ asm
       FADDP
 end;
 
+// PointIsInHalfSpace
+//
+function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Boolean;
+begin
+   Result:=(PointPlaneDistance(point, planePoint, planeNormal)>0);
+end;
+
+// PointPlaneDistance
+//
+function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single;
+begin
+   Result:= (point[0]-planePoint[0])*planeNormal[0]
+           +(point[1]-planePoint[1])*planeNormal[1]
+           +(point[2]-planePoint[2])*planeNormal[2];
+end;
+
 // QuaternionMake
 //
 function QuaternionMake(Imag: array of Single; Real: Single): TQuaternion; assembler;
@@ -6699,6 +6728,26 @@ begin
       if t>0 then
          VectorCombine(rayStart, rayVector, 1, t, intersectPoint^)
       else Result:=False;
+   end;
+end;
+
+// RayCastPlaneXZIntersect
+//
+function RayCastPlaneXZIntersect(const rayStart, rayVector : TVector;
+                                 const planeY : Single;
+                                 intersectPoint : PVector = nil) : Boolean;
+var
+   t : Single;
+begin
+   if rayVector[1]=0 then
+      Result:=False
+   else begin
+      t:=(rayStart[1]-planeY)/rayVector[1];
+      if t<0 then begin
+         if Assigned(intersectPoint) then
+            intersectPoint^:=VectorCombine(rayStart, rayVector, 1, t);
+         Result:=True;
+      end else Result:=False;
    end;
 end;
 

@@ -5466,7 +5466,9 @@ var
 begin
    bestDist2:=1e20;
    bestHit:=nil;
-   if Assigned(intersectNormal) then pINormal:=@iNormal else pINormal:=nil;
+   if Assigned(intersectNormal) then
+      pINormal:=@iNormal else
+   pINormal:=nil;
    RecursiveDive(Objects);
    Result:=bestHit;
 end;

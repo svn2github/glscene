@@ -15,7 +15,8 @@
    I also made some changes for certain limit cases that (seemingly) weren't
    properly handled, these are marked by comments in the code.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>21/07/02 - EG - Added MinPositiveCoef
       <li>14/01/02 - EG - Switched to Jochen Schwarze's solver,
                           droped complex stuff,
                           added utility funcs 
@@ -40,6 +41,9 @@ function DerivatedPolynom(const poly : TDoubleArray) : TDoubleArray;
 {: Finds a root between min and max with a precision of epsilon.<p>
    The evaluation of min/max must be of opposit sign } 
 function FindRoot(const poly : TDoubleArray; min, max, epsilon : Double) : Double;
+{: Finds the minimum positive coef in the array in aMin.<p>
+   Returns true if such an item was found. }
+function MinPositiveCoef(const coefs : TDoubleArray; var aMin : Double) : Boolean;
 
 {: Calculates the cube root of its parameter. }
 function cbrt(const x : Double) : Double;
@@ -150,6 +154,49 @@ begin
    Result:=(max+min)*cHalf;
 end;
 
+// MinPositiveCoef
+//
+function MinPositiveCoef(const coefs : TDoubleArray; var aMin : Double) : Boolean;
+var
+   n, i, j : Integer;
+begin
+   n:=Length(coefs);
+   case n of
+      0 : Result:=False;
+      1 : begin
+         if coefs[0]>=0 then begin
+            aMin:=coefs[0];
+            Result:=True;
+         end else Result:=False;
+      end;
+      2 : begin
+         if coefs[0]>=0 then begin
+            aMin:=coefs[0];
+            if (coefs[1]>=0) and (coefs[1]<aMin) then
+               aMin:=coefs[1];
+            Result:=True;
+         end else if coefs[1]>=0 then begin
+            aMin:=coefs[1];
+            Result:=True;
+         end else Result:=False;
+      end;
+   else
+      Result:=False;
+      // find a positive value, then find lowest positive
+      for i:=0 to n-1 do begin
+         if coefs[i]>=0 then begin
+            aMin:=coefs[i];
+            for j:=i+1 to n-1 do begin
+               if (coefs[j]>=0) and (coefs[j]<aMin) then
+                  aMin:=coefs[j];
+            end;
+            Result:=True;
+            Break;
+         end;
+      end;
+   end;
+end;
+
 // cbrt
 //
 function cbrt(const x : Double) : Double;
@@ -167,23 +214,25 @@ function SolveQuadric(const c : PDoubleArray) : TDoubleArray;
 var
    p, q, D, sqrt_D : Double;
 begin
-    // normal form: x^2 + px + q = 0
+   // normal form: x^2 + px + q = 0
 
-    p := c[1]/(2*c[2]);
-    q := c[0]/c[2];
+   p := c[1]/(2*c[2]);
+   q := c[0]/c[2];
 
-    D := Sqr(p)-q;
+   D := Sqr(p)-q;
 
-    if IsZero(D) then begin
+   if IsZero(D) then begin
       SetLength(Result, 1);
       Result[0]:=-p;
-    end else if D>0 then begin
+   end else if D>0 then begin
       sqrt_D:=Sqrt(D);
       SetLength(Result, 2);
       Result[0]:=sqrt_D-p;
       Result[1]:=-sqrt_D-p;
-    end else // if (D < 0)
+   end else begin
+      // if (D < 0)
       SetLength(Result, 0);
+   end;
 end;
 
 // SolveCubic

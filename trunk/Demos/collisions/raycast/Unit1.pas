@@ -42,6 +42,8 @@ type
     Label3: TLabel;
     Torus1: TTorus;
     PaintBox1: TPaintBox;
+    Plane1: TPlane;
+    Cylinder1: TCylinder;
     procedure BUCastClick(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
