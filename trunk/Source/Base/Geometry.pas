@@ -2856,11 +2856,8 @@ asm
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
       db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
-      db $0F,$7E,$C2           /// movd        edx,mm0
       db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
       db $0F,$6F,$D1           /// movq        mm2,mm1
-      cmp  edx, $0038D1B717    // = 1.0 / 10000.0
-      jl   @@norm_end
 
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
@@ -2913,11 +2910,8 @@ asm
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
       db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
-      db $0F,$7E,$C1           /// movd        ecx,mm0
       db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
       db $0F,$6F,$D1           /// movq        mm2,mm1
-      cmp  ecx, $0038D1B717    // = 1.0 / 10000.0
-      jl   @@norm_end
 
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
@@ -2972,11 +2966,8 @@ asm
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
       db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
-      db $0F,$7E,$C1           /// movd        ecx,mm0
       db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
       db $0F,$6F,$D1           /// movq        mm2,mm1
-      cmp  ecx, $0038D1B717    // = 1.0 / 10000.0
-      jl   @@norm_end
 
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
@@ -3037,11 +3028,8 @@ asm
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
       db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
-      db $0F,$7E,$C2           /// movd        edx,mm0
       db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
       db $0F,$6F,$D1           /// movq        mm2,mm1
-      cmp  edx, $0038D1B717    // = 1.0 / 10000.0
-      jl   @@norm_end
 
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
@@ -3098,11 +3086,8 @@ asm
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
       db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
-      db $0F,$7E,$C1           /// movd        ecx,mm0
       db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
       db $0F,$6F,$D1           /// movq        mm2,mm1
-      cmp  ecx, $0038D1B717    // = 1.0 / 10000.0
-      jl   @@norm_end
 
       db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
       db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
