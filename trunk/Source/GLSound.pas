@@ -197,9 +197,11 @@ type
             an "unlimited" amount of sources from the application point of view. }
          property Priority : Integer read FPriority write SetPriority default 0;
 
-         {: Min distance before spatial attenuation occurs. }
+         {: Min distance before spatial attenuation occurs.<p>
+            1.0 by default }
          property MinDistance : Single read FMinDistance write SetMinDistance;
-         {: Max distance, if source is further away, it will not be heard. }
+         {: Max distance, if source is further away, it will not be heard.<p>
+            100.0 by default }
          property MaxDistance : Single read FMaxDistance write SetMaxDistance;
 
          {: Inside cone angle, [0°; 360°].<p>
@@ -777,7 +779,7 @@ var
    i : Integer;
 begin
    Result:=nil;
-   for i:=0 to Count-1 do if Items[i].Name=aName then begin
+   for i:=0 to Count-1 do if CompareText(Items[i].Name, aName)=0 then begin
       Result:=Items[i];
       Break;
    end;
