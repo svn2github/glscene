@@ -90,13 +90,13 @@
       ..\Source\GLPerlinPFX.obj ..\Source\GLImposter.obj 
       ..\Source\GLFeedback.obj ..\Source\GLAnimatedSprite.obj 
       ..\Source\Base\VerletHairClasses.obj ..\Source\GLVerletClasses.obj 
-      ..\Source\GLGLUTesselation.obj ..\Source\GLMeshBuilder.obj
-      ..\Source\FileFormats\DDS.obj ..\Source\FileFormats\DXTC.obj
-      ..\Source\GLMaterialScript.obj ..\Source\GLDCEMisc.obj
-      ..\Source\GLEllipseCollision.obj ..\Source\GLDCE.obj
-      ..\Source\GLProjectedTextures.obj ..\Source\GLBlur.obj
-      ..\Source\GLPerlinBase.obj ..\Source\GLPerlin.obj
-      ..\Source\Base\ARBProgram.obj ..\Source\Shaders\GLPhongShader.obj
+      ..\Source\GLGLUTesselation.obj ..\Source\GLMeshBuilder.obj 
+      ..\Source\FileFormats\DDS.obj ..\Source\FileFormats\DXTC.obj 
+      ..\Source\GLMaterialScript.obj ..\Source\GLDCEMisc.obj 
+      ..\Source\GLEllipseCollision.obj ..\Source\GLDCE.obj 
+      ..\Source\GLProjectedTextures.obj ..\Source\GLBlur.obj 
+      ..\Source\GLPerlinBase.obj ..\Source\GLPerlin.obj 
+      ..\Source\Base\ARBProgram.obj ..\Source\Shaders\GLPhongShader.obj 
       ..\Source\GLTrail.obj"/>
     <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
       ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
@@ -117,8 +117,8 @@
       ..\Source\DesignTime\GuiSkinEditorFormUnit.dfm"/>
     <LIBFILES value=""/>
     <LIBRARIES value=""/>
-    <SPARELIBS value=""/>
-    <PACKAGES value="rtl.bpi vcl.bpi designide.bpi"/>
+    <SPARELIBS value="rtl.lib"/>
+    <PACKAGES value="rtl.bpi vcl.bpi bcbsmp.bpi bcbie.bpi designide.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;..\Source\Base;..\Source\Platform;..\Source;..\Source\VideoAPIs;..\Source\FileFormats;..\Source\DesignTime;..\Source\Shaders;..\Source\PlugIn"/>
     <PATHRC value=".;"/>
@@ -130,7 +130,7 @@
     <SYSDEFINES value="NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="GLSceneBCB6.cpp"/>
     <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
-    <LIBPATH value="$(BCB)\Projects\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
+    <LIBPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Projects\Lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -155,13 +155,16 @@
   <FILELIST>
       <FILE FILENAME="GLSceneBCB6.res" FORMNAME="" UNITNAME="GLSceneBCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLSceneBCB6.cpp" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="bcbsmp.bpi" FORMNAME="" UNITNAME="bcbsmp" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="bcbie.bpi" FORMNAME="" UNITNAME="bcbie" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="designide.bpi" FORMNAME="" UNITNAME="designide" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>      
       <FILE FILENAME="..\Source\Base\PersistentClasses.pas" FORMNAME="" UNITNAME="PersistentClasses" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\ApplicationFileIO.pas" FORMNAME="" UNITNAME="ApplicationFileIO" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\SpatialPartitioning.pas" FORMNAME="" UNITNAME="SpatialPartitioning" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\AsyncTimer.pas" FORMNAME="" UNITNAME="AsyncTimer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Platform\GLCrossPlatform.pas" FORMNAME="" UNITNAME="GLCrossPlatform" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\CurvesAndSurfaces.pas" FORMNAME="" UNITNAME="CurvesAndSurfaces" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\GeometryBB.pas" FORMNAME="" UNITNAME="GeometryBB" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Base\GLTextureCombiners.pas" FORMNAME="" UNITNAME="GLTextureCombiners" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -194,8 +197,6 @@
       <FILE FILENAME="..\Source\Platform\GLWin32FullScreenViewer.pas" FORMNAME="" UNITNAME="GLWin32FullScreenViewer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLAVIRecorder.pas" FORMNAME="" UNITNAME="GLAVIRecorder" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLBaseMeshSilhouette.pas" FORMNAME="" UNITNAME="GLBaseMeshSilhouette" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\bcbsmp.bpi" FORMNAME="" UNITNAME="bcbsmp" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\bcbie.bpi" FORMNAME="" UNITNAME="bcbie" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLBehaviours.pas" FORMNAME="" UNITNAME="GLBehaviours" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLBitmapFont.pas" FORMNAME="" UNITNAME="GLBitmapFont" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLBSP.pas" FORMNAME="" UNITNAME="GLBSP" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -263,7 +264,6 @@
       <FILE FILENAME="..\Source\DesignTime\FRColorEditor.pas" FORMNAME="RColorEditor" UNITNAME="FRColorEditor" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\DesignTime\FRTrackBarEdit.pas" FORMNAME="RTrackBarEdit" UNITNAME="FRTrackBarEdit" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\DesignTime\FRFaceEditor.pas" FORMNAME="RFaceEditor" UNITNAME="FRFaceEditor" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\designide.bpi" FORMNAME="" UNITNAME="designide" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLUtils.pas" FORMNAME="" UNITNAME="GLUtils" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLStrings.pas" FORMNAME="" UNITNAME="GLStrings" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLCadencer.pas" FORMNAME="" UNITNAME="GLCadencer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -370,52 +370,17 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 
-[Excluded Packages]
-C:\Borland\ComposantsC6\Lib\Misc300_Full.bpl=Chemware Miscellaneous Components (Runtime and Designtime)
-C:\Borland\ComposantsC6\Lib\Plot300_Full.bpl=Chemware Scientific Plotting Component (Runtime and Designtime)
-
 [HistoryLists\hlIncludePath]
-Count=10
-Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi;..\..\Toolsapi
-Item1=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi
-Item2=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi
-Item3=..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
-Item4=..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
-Item5=..\Source\VideoAPIs;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
-Item6=..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
-Item7=..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base
-Item8=$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base
-Item9=$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=11
-Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi
-Item1=$(BCB)\Projects\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
-Item2=$(BCB)\Projects\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
-Item3=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
-Item4=..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
-Item5=..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
-Item6=..\Source\VideoAPIs;..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
-Item7=..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
-Item8=..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib
-Item9=..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib
-Item10=$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
-Count=1
-Item0=_DEBUG
 
 [HistoryLists\hlIntOutputDir]
-Count=1
-Item0=..\..\dcu
 
 [HistoryLists\hIBPIOutputDir]
-Count=1
-Item0=..\..\Lib
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

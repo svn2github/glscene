@@ -12,7 +12,7 @@
     <RESDEPEN value="$(RESFILES)"/>
     <LIBFILES value=""/>
     <LIBRARIES value=""/>
-    <SPARELIBS value=""/>
+    <SPARELIBS value="rtl.lib"/>
     <PACKAGES value="rtl.bpi vcl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;..\Source\SoundAPIs;..\Source"/>
@@ -24,8 +24,8 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="GLSS_FMOD_BCB6.cpp"/>
-    <INCLUDEPATH value="..\Source\SoundAPIs;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="$(BCB)\Projects\Lib;..\Source\SoundAPIs;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="..\Source;..\Source\SoundAPIs;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\..\Lib;..\Source;..\Source\SoundAPIs;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -50,8 +50,8 @@
       <FILE FILENAME="GLSS_FMOD_BCB6.res" FORMNAME="" UNITNAME="GLSS_FMOD_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLSS_FMOD_BCB6.cpp" FORMNAME="" UNITNAME="GLSS_FMOD_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="c:\program files\borland\cbuilder6\Lib\Release\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="c:\program files\borland\cbuilder6\Projects\Lib\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\SoundAPIs\fmod.pas" FORMNAME="" UNITNAME="FMod" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\SoundAPIs\GLSceneVCLFMod.dcr" FORMNAME="" UNITNAME="GLSceneVCLFMod" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLSMFMOD.pas" FORMNAME="" UNITNAME="GLSMFMOD" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -72,8 +72,8 @@ PreRelease=0
 Special=0
 Private=0
 DLL=0
-Locale=1028
-CodePage=950
+Locale=1036
+CodePage=1252
 
 [Version Info Keys]
 CompanyName=
@@ -85,25 +85,16 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
-Comments=
 
 [HistoryLists\hlIncludePath]
-Count=4
-Item0=..\Source\SoundAPIs;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl
-Item1=..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl
-Item2=$(BCB)\Projects;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl
-Item3=$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=4
-Item0=$(BCB)\Projects\Lib;..\Source\SoundAPIs;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib
-Item1=..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib
-Item2=$(BCB)\Projects;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib
-Item3=$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlIntOutputDir]
+
+[HistoryLists\hIBPIOutputDir]
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
@@ -123,17 +114,6 @@ RemoteDebug=0
 [Compiler]
 ShowInfoMsgs=0
 LinkDebugVcl=0
-LinkCGLIB=0
-
-[CORBA]
-AddServerUnit=1
-AddClientUnit=1
-PrecompiledHeaders=1
-
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 
 [Linker]
 LibPrefix=

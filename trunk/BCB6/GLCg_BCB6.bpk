@@ -49,13 +49,13 @@
   <FILELIST>
       <FILE FILENAME="GLCg_BCB6.res" FORMNAME="" UNITNAME="GLCg_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLCg_BCB6.cpp" FORMNAME="" UNITNAME="GLCg_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="..\Source\CgShaders\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\cg.pas" FORMNAME="" UNITNAME="cg" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\cgGL.pas" FORMNAME="" UNITNAME="cgGL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\GLSceneVCLCg.dcr" FORMNAME="" UNITNAME="GLSceneVCLCg" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\GLCgShader.pas" FORMNAME="" UNITNAME="GLCgShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="$(BCB)\Lib\Release\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="$(BCB)\Projects\Lib\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\cg_lib.lib" FORMNAME="" UNITNAME="cg_lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\CgShaders\cgGL_lib.lib" FORMNAME="" UNITNAME="cgGL_lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
@@ -91,26 +91,12 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=3
-Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl
-Item1=..\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl
-Item2=..\Source\CgShaders;$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=5
-Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item1=$(BCB)\Projects\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\lib\obj;$(BCB)\lib
-Item2=..\Source;..\Source\Base;..\Source\Platform;..\Source\CgShaders;$(BCB)\lib\obj;$(BCB)\lib
-Item3=..\Source\CgShaders;$(BCB)\lib\obj;$(BCB)\lib
-Item4=..\Source\CgShaders;$(BCB)\Projects;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
-Count=1
-Item0=_DEBUG
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

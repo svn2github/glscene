@@ -51,14 +51,14 @@
   <FILELIST>
       <FILE FILENAME="GLS_SDL_BCB6.res" FORMNAME="" UNITNAME="GLS_SDL_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLS_SDL_BCB6.cpp" FORMNAME="" UNITNAME="GLS_SDL_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="$(BCB)\Projects\Lib\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GameAPIs\GLSceneVCLSDL.dcr" FORMNAME="" UNITNAME="GLSceneVCLSDL" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\Platform\GLSDLContext.pas" FORMNAME="" UNITNAME="GLSDLContext" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GameAPIs\sdl.pas" FORMNAME="" UNITNAME="SDL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GameAPIs\SDLWindow.pas" FORMNAME="" UNITNAME="SDLWindow" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="$(BCB)\Lib\Release\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GameAPIs\msvcrt.lib" FORMNAME="" UNITNAME="msvcrt" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GameAPIs\sdl_lib.lib" FORMNAME="" UNITNAME="sdl_lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
@@ -93,21 +93,10 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=3
-Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;..\Source\SoundAPIs;..\Source\VideoAPIs;..\Source\GameAPIs;..\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl
-Item1=$(BCB)\Projects;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;..\Source\SoundAPIs;..\Source\VideoAPIs;..\Source\GameAPIs;..\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl
-Item2=$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=4
-Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;..\Source\SoundAPIs;..\Source\VideoAPIs;..\Source\GameAPIs;..\Source\CgShaders;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item1=$(BCB)\Projects\Lib;$(BCB)\Projects;..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;..\Source\SoundAPIs;..\Source\VideoAPIs;..\Source\GameAPIs;..\Source\CgShaders;$(BCB)\lib\obj;$(BCB)\lib
-Item2=..\Source;..\Source\Base;..\Source\Platform;..\Source\FileFormats;..\Source\Shaders;..\Source\PhysicsAPIs;..\Source\SoundAPIs;..\Source\VideoAPIs;..\Source\GameAPIs;..\Source\CgShaders;$(BCB)\lib\obj;$(BCB)\lib
-Item3=$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

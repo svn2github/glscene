@@ -7,15 +7,17 @@
     <OBJFILES value="GLS_ODE_BCB6.obj ..\Source\GLODESkeletonColliders.obj 
       ..\Source\GLODECustomColliders.obj ..\Source\GLODEManager.obj 
       ..\Source\DesignTime\GLODERegister.obj ..\Source\PhysicsAPIs\dynodegl.obj 
-      ..\Source\PhysicsAPIs\dynode.obj"/>
+      ..\Source\PhysicsAPIs\dynode.obj ..\Source\PhysicsAPIs\moduleloader.obj"/>
     <RESFILES value="GLS_ODE_BCB6.res ..\Source\PhysicsAPIs\GLSceneVCLODE.dcr"/>
     <IDLFILES value=""/>
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES)"/>
     <LIBFILES value=""/>
-    <LIBRARIES value=""/>
-    <SPARELIBS value="rtl.lib"/>
+    <LIBRARIES value="GLSS_FMOD_BCB6.lib GLSS_BASS_BCB6.lib Plot300_Full.lib Misc300_Full.lib 
+      GR32_CB6.lib GR32_DSGN_CB6.lib dclocx.lib bcbsmp.lib"/>
+    <SPARELIBS value="rtl.lib bcbsmp.lib dclocx.lib GR32_DSGN_CB6.lib GR32_CB6.lib 
+      Misc300_Full.lib Plot300_Full.lib GLSS_BASS_BCB6.lib GLSS_FMOD_BCB6.lib"/>
     <PACKAGES value="rtl.bpi GLSceneBCB6.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;..\Source;..\Source\DesignTime;..\Source\PhysicsAPIs"/>
@@ -27,8 +29,8 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
     <MAINSOURCE value="GLS_ODE_BCB6.cpp"/>
-    <INCLUDEPATH value="..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="..\Source;..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source\Platform;..\Source\FileFormats;..\..\Toolsapi;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\..\Lib;..\Source;..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source\Platform;..\Source\FileFormats;..\..\Toolsapi;$(BCB)\Source\Toolsapi;$(BCB)\lib\obj;$(BCB)\lib"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -54,7 +56,7 @@
       <FILE FILENAME="GLS_ODE_BCB6.res" FORMNAME="" UNITNAME="GLS_ODE_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="GLS_ODE_BCB6.cpp" FORMNAME="" UNITNAME="GLS_ODE_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="c:\program files\borland\cbuilder6\Projects\Lib\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\PhysicsAPIs\GLSceneVCLODE.dcr" FORMNAME="" UNITNAME="GLSceneVCLODE" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLODESkeletonColliders.pas" FORMNAME="" UNITNAME="GLODESkeletonColliders" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLODECustomColliders.pas" FORMNAME="" UNITNAME="GLODECustomColliders" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
@@ -62,6 +64,7 @@
       <FILE FILENAME="..\Source\DesignTime\GLODERegister.pas" FORMNAME="" UNITNAME="GLODERegister" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\PhysicsAPIs\dynodegl.pas" FORMNAME="" UNITNAME="dynodegl" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\PhysicsAPIs\dynode.pas" FORMNAME="" UNITNAME="dynode" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PhysicsAPIs\moduleloader.pas" FORMNAME="" UNITNAME="moduleloader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>
@@ -79,8 +82,8 @@ PreRelease=0
 Special=0
 Private=0
 DLL=0
-Locale=1028
-CodePage=950
+Locale=1036
+CodePage=1252
 
 [Version Info Keys]
 CompanyName=
@@ -92,33 +95,16 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
-Comments=
 
 [HistoryLists\hlIncludePath]
-Count=8
-Item0=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl
-Item1=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl
-Item2=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl
-Item3=..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl
-Item4=..\Source\Base;..\Source\PhysicsAPIs;..\Source;$(BCB)\include;$(BCB)\include\vcl
-Item5=..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl
-Item6=$(BCB)\include;$(BCB)\include\vcl
-Item7=$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=8
-Item0=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item1=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Source\Toolsapi;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item2=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item3=..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item4=..\Source\Base;..\Source\PhysicsAPIs;..\Source;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item5=$(BCB)\Projects\Lib;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib
-Item6=$(BCB)\lib\obj;$(BCB)\lib
-Item7=$(BCB)\Projects;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlIntOutputDir]
+
+[HistoryLists\hIBPIOutputDir]
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
@@ -138,17 +124,6 @@ RemoteDebug=0
 [Compiler]
 ShowInfoMsgs=0
 LinkDebugVcl=0
-LinkCGLIB=0
-
-[CORBA]
-AddServerUnit=1
-AddClientUnit=1
-PrecompiledHeaders=1
-
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
 
 [Linker]
 LibPrefix=
