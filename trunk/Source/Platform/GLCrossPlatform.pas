@@ -6,6 +6,8 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Added TGLTextLayout, GLLoadBitmapFromInstance
+                          Added GetDeviceCapabilities to replace the old function
       <li>30/05/03 - EG - Added RDTSC and RDTSC-based precision timing for non-WIN32
       <li>22/01/02 - EG - Added OpenPictureDialog, ApplicationTerminated
       <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog,
@@ -18,13 +20,13 @@ unit GLCrossPlatform;
 
 interface
 
-{$include ..\GLScene.inc}
+{$include GLScene.inc}
 
 {$ifdef MSWINDOWS}
-uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;
+uses Windows, SysUtils, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtDlgs;
 {$endif}
 {$ifdef LINUX}
-uses QForms, QGraphics, QControls, QDialogs, Types, SysUtils, libc;
+uses libc, SysUtils, QGraphics, QControls, QForms, QDialogs, QStdCtrls, Types;
 {$endif}
 
 type
@@ -42,6 +44,8 @@ type
    TGLPicture = TPicture;
    TGLGraphic = TGraphic;
    TGLBitmap = TBitmap;
+
+   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
 {$ifdef GLS_DELPHI_5}
    EGLOSError = EWin32Error;
@@ -157,6 +161,8 @@ function StopPrecisionTimer(const precisionTimer : Int64) : Double;
    Use the similarly named CPU instruction. }
 function RDTSC : Int64;
 
+procedure GLLoadBitmapFromInstance(ABitmap: TBitmap; AName: string);
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -165,9 +171,23 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+{$ifdef LINUX}
+uses Qt;
+{$ENDIF}
+
 var
    vInvPerformanceCounterFrequency : Double;
    vInvPerformanceCounterFrequencyReady : Boolean = False;
+
+procedure GLLoadBitmapFromInstance(ABitmap: TBitmap; AName: string);
+begin
+{$IFDEF MSWINDOWS}
+  ABitmap.Handle := LoadBitmap(HInstance, PChar(AName));
+{$ENDIF}
+{$IFDEF LINUX}
+  ABitmap.LoadFromResourceName(HInstance, PChar(AName));
+{$ENDIF}
+end;
 
 // GLPoint
 //
@@ -375,20 +395,68 @@ begin
 end;
 {$ENDIF GLS_DELPHI_5_UP}
 
+type
+  TDeviceCapabilities = record
+    Xdpi, Ydpi: integer;        // Number of pixels per logical inch.
+    Depth: integer;             // The bit depth.
+    NumColors: integer;         // Number of entries in the device's color table.
+  end;
+
+function GetDeviceCapabilities: TDeviceCapabilities;
+{$IFDEF MSWINDOWS}
+var
+  Device: HDC;
+begin
+  Device := GetDC(0);
+  try
+    result.Xdpi := GetDeviceCaps(Device,LOGPIXELSX);
+    result.Ydpi := GetDeviceCaps(Device,LOGPIXELSY);
+    result.Depth := GetDeviceCaps(Device,BITSPIXEL);
+    result.NumColors := GetDeviceCaps(Device,NUMCOLORS);
+  finally
+    ReleaseDC(0, Device);
+  end;
+end;
+{$ENDIF}
+{$IFDEF LINUX}
+var
+  metrics: QPAintDeviceMetricsH;
+  paintDevice: QPaintDeviceH;
+
+begin
+  paintDevice := QWidget_to_QPaintDevice(QApplication_desktop);
+  if paintDevice <> nil then
+  begin
+    metrics := QPaintDeviceMetrics_create(paintDevice);
+    try
+      result.Xdpi := QPaintDeviceMetrics_logicalDpiX(metrics);
+      result.Ydpi := QPaintDeviceMetrics_logicalDpiY(metrics);
+      result.Depth := QPaintDeviceMetrics_depth(metrics);
+      result.NumColors := QPaintDeviceMetrics_numColors(metrics);
+    finally
+      QPaintDeviceMetrics_destroy(metrics);
+    end;
+  end;
+end;
+{$ENDIF}
+
 // GetDeviceLogicalPixelsX
 //
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 begin
-   {$ifdef WIN32}
+  result := GetDeviceCapabilities().Xdpi;
+(*   {$ifdef WIN32}
    Result:=GetDeviceCaps(device, LOGPIXELSX);
    {$else}
    Result:=96; // dunno how to do it properly, so I fake it
-   {$endif}
+   {$endif}   *)
 end;
 
 // GetCurrentColorDepth
 //
+
 function GetCurrentColorDepth : Integer;
+(*
 {$ifdef WIN32}
 var
    topDC : HDC;
@@ -402,7 +470,9 @@ begin
 {$else}
 begin
    Result:=32; // dunno how to do it properly, so I fake it
-{$endif}
+{$endif}     *)
+begin
+  result := GetDeviceCapabilities().Depth;
 end;
 
 // PixelFormatToColorBits

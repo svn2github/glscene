@@ -1,9 +1,10 @@
-// GLWin32Viewer
-{: Win32 specific Context.<p>
+// GLLinuxViewer
+{: Linux specific.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
-	   <li>12/12/01 - EG - Creation (split from GLScene.pas)
+      <li>28/06/04 - LR - Rename TGLLinuxSceneViewer to TGLSceneViewer as for Win32 platform
+      <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)           
+      <li>12/12/01 - EG - Creation (split from GLScene.pas)
 	</ul></font>
 }
 unit GLLinuxViewer;
@@ -23,7 +24,7 @@ type
    //
    TVSyncMode = (vsmSync, vsmNoSync);
 
-   // TGLLinuxSceneViewer
+   // TGLSceneViewer
    //
    {: Component where the GLScene objects get rendered.<p>
       This component delimits the area where OpenGL renders the scene,
@@ -31,7 +32,7 @@ type
       camera property). This component can also render to a file or to a bitmap.<p>
       This viewer also allows to define rendering options such a fog, face culling,
       depth testing, etc. and can take care of framerate calculation.<p> }
-   TGLLinuxSceneViewer = class(TWidgetControl)
+   TGLSceneViewer = class(TWidgetControl)
       private
          { Private Declarations }
          FIsOpenGLAvailable : Boolean;
@@ -120,8 +121,6 @@ type
 {$endif}
    end;
 
-   TGLSceneViewer = TGLLinuxSceneViewer;
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -134,12 +133,12 @@ uses
   OpenGL1x, SysUtils, GLLinuxContext;
 
 // ------------------
-// ------------------ TGLLinuxSceneViewer ------------------
+// ------------------ TGLSceneViewer ------------------
 // ------------------
 
 // Create
 //
-constructor TGLLinuxSceneViewer.Create(AOwner: TComponent);
+constructor TGLSceneViewer.Create(AOwner: TComponent);
 begin
    FIsOpenGLAvailable:=InitOpenGL;
    inherited Create(AOwner);
@@ -156,7 +155,7 @@ end;
 
 // Destroy
 //
-destructor TGLLinuxSceneViewer.Destroy;
+destructor TGLSceneViewer.Destroy;
 begin
    FBuffer.Free;
    inherited Destroy;
@@ -164,7 +163,7 @@ end;
 
 // Notification
 //
-procedure TGLLinuxSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if (Operation = opRemove) and (AComponent = Camera) then
       Camera:=nil;
@@ -173,56 +172,56 @@ end;
 
 // SetPostRender
 //
-procedure TGLLinuxSceneViewer.SetPostRender(const val : TNotifyEvent);
+procedure TGLSceneViewer.SetPostRender(const val : TNotifyEvent);
 begin
    FBuffer.PostRender:=val;
 end;
 
 // GetPostRender
 //
-function TGLLinuxSceneViewer.GetPostRender : TNotifyEvent;
+function TGLSceneViewer.GetPostRender : TNotifyEvent;
 begin
    Result:=FBuffer.PostRender;
 end;
 
 // SetAfterRender
 //
-procedure TGLLinuxSceneViewer.SetAfterRender(const val : TNotifyEvent);
+procedure TGLSceneViewer.SetAfterRender(const val : TNotifyEvent);
 begin
    FBuffer.AfterRender:=val;
 end;
 
 // GetAfterRender
 //
-function TGLLinuxSceneViewer.GetAfterRender : TNotifyEvent;
+function TGLSceneViewer.GetAfterRender : TNotifyEvent;
 begin
    Result:=FBuffer.AfterRender;
 end;
 
 // SetCamera
 //
-procedure TGLLinuxSceneViewer.SetCamera(const val : TGLCamera);
+procedure TGLSceneViewer.SetCamera(const val : TGLCamera);
 begin
    FBuffer.Camera:=val;
 end;
 
 // GetCamera
 //
-function TGLLinuxSceneViewer.GetCamera : TGLCamera;
+function TGLSceneViewer.GetCamera : TGLCamera;
 begin
    Result:=FBuffer.Camera;
 end;
 
 // SetBuffer
 //
-procedure TGLLinuxSceneViewer.SetBuffer(const val : TGLSceneBuffer);
+procedure TGLSceneViewer.SetBuffer(const val : TGLSceneBuffer);
 begin
    FBuffer.Assign(val);
 end;
 
 // Loaded
 //
-procedure TGLLinuxSceneViewer.Loaded;
+procedure TGLSceneViewer.Loaded;
 begin
    inherited Loaded;
    // initiate window creation
@@ -231,7 +230,7 @@ end;
 
 // DoBeforeRender
 //
-procedure TGLLinuxSceneViewer.DoBeforeRender(Sender : TObject);
+procedure TGLSceneViewer.DoBeforeRender(Sender : TObject);
 //var
 //   i : Integer;
 begin
@@ -250,28 +249,28 @@ end;
 
 // DoBufferChange
 //
-procedure TGLLinuxSceneViewer.DoBufferChange(Sender : TObject);
+procedure TGLSceneViewer.DoBufferChange(Sender : TObject);
 begin
    Invalidate;
 end;
 
 // DoBufferStructuralChange
 //
-procedure TGLLinuxSceneViewer.DoBufferStructuralChange(Sender : TObject);
+procedure TGLSceneViewer.DoBufferStructuralChange(Sender : TObject);
 begin
   RecreateWidget;
 end;
 
 // FramesPerSecond
 //
-function TGLLinuxSceneViewer.FramesPerSecond : Single;
+function TGLSceneViewer.FramesPerSecond : Single;
 begin
    Result:=FBuffer.FramesPerSecond;
 end;
 
 // ResetPerformanceMonitor
 //
-procedure TGLLinuxSceneViewer.ResetPerformanceMonitor;
+procedure TGLSceneViewer.ResetPerformanceMonitor;
 begin
    FBuffer.ResetPerformanceMonitor;
 end;
@@ -279,7 +278,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-procedure TGLLinuxSceneViewer.CreateWidget;
+procedure TGLSceneViewer.CreateWidget;
 begin
   inherited;
    if IsOpenGLAvailable then begin
@@ -290,24 +289,24 @@ begin
    end;
 end;
 
-procedure TGLLinuxSceneViewer.DestroyWidget;
+procedure TGLSceneViewer.DestroyWidget;
 begin
   FBuffer.DestroyRC;
   inherited;
 end;
 
-procedure TGLLinuxSceneViewer.Resize;
+procedure TGLSceneViewer.Resize;
 begin
   inherited;
   FBuffer.Resize(Width, Height);
 end;
 
-function TGLLinuxSceneViewer.WidgetFlags: Integer;
+function TGLSceneViewer.WidgetFlags: Integer;
 begin
   Result := inherited WidgetFlags or Integer(WidgetFlags_WRepaintNoErase);
 end;
 
-procedure TGLLinuxSceneViewer.Painting(Sender: QObjectH; EventRegion: QRegionH);
+procedure TGLSceneViewer.Painting(Sender: QObjectH; EventRegion: QRegionH);
 begin
   if IsOpenGLAvailable then
   begin
@@ -324,7 +323,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterClasses([TGLLinuxSceneViewer]);
+   RegisterClasses([TGLSceneViewer]);
 
 end.
 

@@ -2,6 +2,7 @@
 {: GLScene objects that get rendered in 2D coordinates<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
       <li>23/11/02 - EG - Added X/YTiles to HUDSprite
       <li>12/05/02 - EG - ModulateColor for HUDText (Nelson Chu)
@@ -17,8 +18,8 @@ unit GLHUDObjects;
 interface
 
 uses
-   Classes, GLScene, VectorGeometry, GLMisc, StdCtrls, GLObjects, GLBitmapFont,
-   GLTexture;
+   Classes, GLScene, VectorGeometry, GLMisc, GLObjects, GLBitmapFont,
+   GLTexture, GLCrossPlatform;
 
 type
 
@@ -77,7 +78,7 @@ type
          FText : String;
          FRotation : Single;
          FAlignment : TAlignment;
-         FLayout : TTextLayout;
+         FLayout : TGLTextLayout;
          FModulateColor : TGLColor;
 
 	   protected
@@ -86,7 +87,7 @@ type
          procedure SetText(const val : String);
          procedure SetRotation(const val : Single);
          procedure SetAlignment(const val : TAlignment);
-         procedure SetLayout(const val : TTextLayout);
+         procedure SetLayout(const val : TGLTextLayout);
          procedure SetModulateColor(const val : TGLColor);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -116,7 +117,7 @@ type
          property Alignment : TAlignment read FAlignment write SetAlignment;
          {: Controls the text layout (vertical).<p>
             Possible values : tlTop, tlCenter, tlBottom }
-         property Layout : TTextLayout read FLayout write SetLayout;
+         property Layout : TGLTextLayout read FLayout write SetLayout;
          {: Color modulation, can be used for fade in/out too.}
          property ModulateColor : TGLColor read FModulateColor write SetModulateColor;
    end;
@@ -292,7 +293,7 @@ end;
 
 // SetLayout
 //
-procedure TGLHUDText.SetLayout(const val : TTextLayout);
+procedure TGLHUDText.SetLayout(const val : TGLTextLayout);
 begin
    FLayout:=val;
    StructureChanged;

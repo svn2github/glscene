@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
       <li>12/04/04 - EG - LibMaterialName property editor for SkyBox
       <li>22/08/02 - EG - RegisterPropertiesInCategory (Robin Gerrets)
       <li>08/04/02 - EG - Added verb to TGLSceneEditor
@@ -80,7 +81,9 @@ type
          { Private Declarations }
          FSceneObjectList : TList;
          FObjectIcons : TImageList;       // a list of icons for scene objects
+         {$ifdef WIN32}
          FOverlayIndex,                   // indices into the object icon list
+         {$endif}
          FSceneRootIndex,
          FCameraRootIndex,
          FLightsourceRootIndex,
@@ -137,12 +140,12 @@ uses
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
    GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
-   GLPerlinPFX, GLTexLensFlare,
+   GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
    TypInfo, GLCadencer, GLCollision,
-   GLSoundFileObjects, GLFireFX, GLThorFX,
+   GLSoundFileObjects, 
    GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    GLSpaceText, AsyncTimer,
 
@@ -540,10 +543,7 @@ begin
             NewEntry^.Category:=aCategory;
             Index:=FSceneObjectList.Count;
             resBitmapName:=ASceneObject.ClassName;
-            {$ifdef WIN32}
-            // dunno how to load from a resource in Kylix
-            Pic.Bitmap.Handle:=LoadBitmap(HInstance, PChar(resBitmapName));
-            {$endif}
+            GLLoadBitmapFromInstance(Pic.Bitmap,resBitmapName);
             bmp:=TBitmap.Create;
             bmp.PixelFormat:=glpf24bit;
             bmp.Width:=24; bmp.Height:=24;
@@ -587,31 +587,31 @@ var
 begin
    pic:=TPicture.Create;
    // load first pic to get size
-   {$ifdef WIN32}
-   pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_cross');
-   {$endif}
+   GLLoadBitmapFromInstance(Pic.Bitmap,'gls_cross');
    FObjectIcons:=TImageList.CreateSize(Pic.Width, Pic.height);
-   {$ifdef WIN32}
+
    with FObjectIcons, pic.Bitmap.Canvas do begin
       try
          // There's a more direct way for loading images into the image list, but
          // the image quality suffers too much
-         AddMasked(Pic.Bitmap, Pixels[0, 0]); FOverlayIndex:=Count-1;
+         AddMasked(Pic.Bitmap, Pixels[0, 0]);
+         {$ifdef WIN32}
+         FOverlayIndex:=Count-1;
          Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_root');
+         {$endif}
+         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_root');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FSceneRootIndex:=Count-1;
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_camera');
+         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_camera');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FCameraRootIndex:=Count-1;
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_lights');
+         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_lights');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FLightsourceRootIndex:=Count-1;
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_objects');
+         GLLoadBitmapFromInstance(Pic.Bitmap,'gls_objects');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FObjectRootIndex:=Count-1;
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FStockObjectRootIndex:=Count-1;
       finally
          Pic.Free;
       end;
    end;
-   {$endif}
 end;
 
 // DestroySceneObjectList
@@ -1840,8 +1840,9 @@ initialization
       RegisterSceneObject(TGLCone, 'Cone', glsOCBasicGeometry);
       RegisterSceneObject(TGLCylinder, 'Cylinder', glsOCBasicGeometry);
       RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', glsOCBasicGeometry);
+      {$ifdef WIN32}
       RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry);
-
+      {$endif}
       RegisterSceneObject(TGLArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLAnnulus, 'Annulus', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLExtrusionSolid, 'ExtrusionSolid', glsOCAdvancedGeometry);
@@ -1887,7 +1888,9 @@ initialization
       {$endif}
 
       RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
+      {$ifdef WIN32}
       RegisterSceneObject(TGLTextureLensFlare, 'TextureLensFlare', glsOCSpecialObjects);
+      {$endif}
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);

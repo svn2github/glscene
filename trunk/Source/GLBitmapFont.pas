@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/06/04 - NelC - Added TGLFlatText.Assign
       <li>01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
       <li>01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state
@@ -26,7 +27,7 @@ unit GLBitmapFont;
 
 interface
 
-uses Classes, GLScene, VectorGeometry, GLMisc, StdCtrls, GLContext, GLCrossPlatform,
+uses Classes, GLScene, VectorGeometry, GLMisc, GLContext, GLCrossPlatform,
    GLTexture, GLState, GLUtils, GLGraphics;
 
 type
@@ -194,7 +195,7 @@ type
             Enable states are also possibly altered. }
 	      procedure RenderString(var rci : TRenderContextInfo;
                                 const aString : String; alignment : TAlignment;
-                                layout : TTextLayout; const color : TColorVector;
+                                layout : TGLTextLayout; const color : TColorVector;
                                 position : PVector = nil; reverseY : Boolean = False);
          {: A simpler canvas-style TextOut helper for RenderString.<p>
             The rendering is reversed along Y by default, to allow direct use
@@ -247,7 +248,7 @@ type
          FBitmapFont : TGLCustomBitmapFont;
          FText : String;
          FAlignment : TAlignment;
-         FLayout : TTextLayout;
+         FLayout : TGLTextLayout;
          FModulateColor : TGLColor;
          FOptions : TGLFlatTextOptions;
 
@@ -256,7 +257,7 @@ type
          procedure SetBitmapFont(const val : TGLCustomBitmapFont);
          procedure SetText(const val : String);
          procedure SetAlignment(const val : TAlignment);
-         procedure SetLayout(const val : TTextLayout);
+         procedure SetLayout(const val : TGLTextLayout);
          procedure SetModulateColor(const val : TGLColor);
          procedure SetOptions(const val : TGLFlatTextOptions);
 
@@ -287,7 +288,7 @@ type
          property Alignment : TAlignment read FAlignment write SetAlignment;
          {: Controls the text layout (vertical).<p>
             Possible values : tlTop, tlCenter, tlBottom }
-         property Layout : TTextLayout read FLayout write SetLayout;
+         property Layout : TGLTextLayout read FLayout write SetLayout;
          {: Color modulation, can be used for fade in/out too.}
          property ModulateColor : TGLColor read FModulateColor write SetModulateColor;
          {: Flat text options.<p>
@@ -779,7 +780,7 @@ end;
 //
 procedure TGLCustomBitmapFont.RenderString(var rci : TRenderContextInfo;
             const aString : String; alignment : TAlignment;
-            layout : TTextLayout; const color : TColorVector; position : PVector = nil;
+            layout : TGLTextLayout; const color : TColorVector; position : PVector = nil;
             reverseY : Boolean = False);
 
    function AlignmentAdjustement(p : Integer) : Single;
@@ -805,7 +806,7 @@ procedure TGLCustomBitmapFont.RenderString(var rci : TRenderContextInfo;
       n:=1;
       for i:=1 to Length(aString) do
          if aString[i]=#13 then Inc(n);
-      case layout of
+      case TGLTextLayout(layout) of
          tlTop : Result:=0;
          tlBottom : Result:=(n*(CharHeight+VSpace)-VSpace);
       else // tlCenter
@@ -1056,7 +1057,7 @@ end;
 
 // SetLayout
 //
-procedure TGLFlatText.SetLayout(const val : TTextLayout);
+procedure TGLFlatText.SetLayout(const val : TGLTextLayout);
 begin
    FLayout:=val;
    StructureChanged;

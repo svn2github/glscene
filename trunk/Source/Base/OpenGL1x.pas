@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>24/06/04 - SG - Added GL_ARB_fragment_program
       <li>17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
       <li>06/04/04 - EG - Added GL_ARB_shader_objects, GL_ARB_vertex_shader
@@ -29,7 +30,7 @@ unit OpenGL1x;
 
 interface
 
-{$i ..\GLScene.inc}
+{$i GLScene.inc}
 
 {.$define MULTITHREADOPENGL}
 

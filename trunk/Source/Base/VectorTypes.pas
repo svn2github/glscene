@@ -19,6 +19,7 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>24/08/03 - PP - Added smallint vectors
       <li>04/07/01 - EG - Creation
    </ul>
@@ -27,7 +28,7 @@ unit VectorTypes;
 
 interface
 
-{$i ..\GLScene.inc}
+{$i GLScene.inc}
 
 type
   TVector2d = array[0..1] of double;

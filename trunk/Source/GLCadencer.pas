@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Added some ifdef Win32 for Linux
       <li>20/10/03 - EG - Fixed issues about cadencer destruction
       <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
       <li>21/08/03 - EG - Fixed Application.OnIdle reset bug (Solerman Kaplon)
@@ -21,8 +22,8 @@
       <li>01/02/01 - EG - Fixed "Freezing" when Enabled set to False
       <li>08/10/00 - EG - Added TASAPHandler to support multiple ASAP cadencers
       <li>19/06/00 - EG - Fixed TGLCadencer.Notification
-		<li>14/04/00 - EG - Minor fixes
-		<li>13/04/00 - EG - Creation
+      <li>14/04/00 - EG - Minor fixes
+      <li>13/04/00 - EG - Creation
 	</ul></font>
 }
 unit GLCadencer;
@@ -554,8 +555,10 @@ end;
 procedure TGLCadencer.SetMode(const val : TGLCadencerMode);
 begin
 	if FMode<>val then begin
+        {$ifdef WIN32}
       if FMode<>cmManual then
          UnRegisterASAPCadencer(Self);
+        {$endif}
 		FMode:=val;
       RestartASAP;
 	end;
@@ -588,8 +591,10 @@ begin
       // in Idle mode, this processing is implicit
       if Mode=cmASAP then begin
          Application.ProcessMessages;
+         {$ifdef WIN32}
          if    (not Assigned(vASAPCadencerList))
             or (vASAPCadencerList.IndexOf(Self)<0) then Exit;
+         {$endif}
       end;
    end;
 	Inc(FProgressing);
@@ -737,8 +742,8 @@ initialization
 		vCounterFrequency := 0;
 
 finalization
-
+{$ifdef WIN32}
    FreeAndNil(vHandler);
    FreeAndNil(vASAPCadencerList);
-
+{$endif}
 end.

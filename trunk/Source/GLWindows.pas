@@ -18,7 +18,7 @@ interface
 
 uses
    Forms, Windows, Messages, SysUtils, Classes, GLMisc, GLScene, GLHudObjects,
-   GLTexture, OpenGL1x, GLBitmapFont, GLWindowsFont, StdCtrls, VectorGeometry,
+   GLTexture, OpenGL1x, GLBitmapFont, GLWindowsFont, VectorGeometry,
    Controls, GLGui, Graphics;
 
 type
@@ -531,7 +531,7 @@ Function  UnpressGroup(CurrentObject : TGLBaseSceneObject; AGroupID : Integer) :
 
 implementation
 
-uses GLObjects, GLState, GLUtils;
+uses GLObjects, GLState, GLUtils, GLCrossPlatform;
 
 Function  UnpressGroup(CurrentObject : TGLBaseSceneObject; AGroupID : Integer) : Boolean;
 

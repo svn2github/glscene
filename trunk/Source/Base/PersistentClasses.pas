@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>08/12/03 - EG - TBinaryReader/Writer no longer rely on VCL TReader/TWriter 
       <li>26/12/03 - EG - Added sorting support to TPersistentObjectList + misc. changes
       <li>04/09/03 - EG - Improved some TPersistentObjectList methods
@@ -30,7 +31,7 @@ interface
 
 uses Classes, SysUtils;
 
-{$i ..\GLScene.inc}
+{$i GLScene.inc}
 
 type
 

@@ -6,6 +6,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>03/09/03 - EG - Added TBaseList.Move, faster TIntegerList.Offset
       <li>22/08/03 - EG - Faster FastQuickSortLists
       <li>13/08/03 - SG - Added TQuaternionList
@@ -36,7 +37,7 @@ unit VectorLists;
 
 interface
 
-{$i ..\GLScene.inc}
+{$i GLScene.inc}
 
 uses Classes, VectorTypes, VectorGeometry, PersistentClasses, SysUtils;
 

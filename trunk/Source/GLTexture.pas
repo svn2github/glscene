@@ -126,7 +126,8 @@ interface
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
   GLCrossPlatform, PersistentClasses, GLUtils, GLState
-  {$ifdef MSWINDOWS}, Graphics{$endif} // for standard application colors
+  {$ifdef MSWINDOWS}, Graphics {$endif} // for standard application colors
+  {$ifdef LINUX}, QGraphics {$endif} 
   ;
 
 type
