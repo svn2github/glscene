@@ -587,6 +587,7 @@ object Main: TMain
         XTiles = 2
         YTiles = 2
         Style = [psTileTexture]
+        NoZWrite = False
         ShadowingObject = DCObstacles
         ShadowedLight = LSWorld
         ShadowColor.Color = {000000000000000000000000CDCCCC3E}
@@ -604,11 +605,11 @@ object Main: TMain
           Radius = 0.300000011920929
         end
         object DCMap: TGLDummyCube
-          ObjectsSorting = osNone
+          ObjectsSorting = osRenderBlendedLast
           CubeSize = 1
         end
         object DCMapTransparent: TGLDummyCube
-          ObjectsSorting = osRenderBlendedLast
+          ObjectsSorting = osNone
           CubeSize = 1
           object PFXRenderer: TGLParticleFXRenderer
           end
@@ -1197,6 +1198,8 @@ object Main: TMain
         Width = 5
         Height = 5
         NoZWrite = False
+        MirrorU = False
+        MirrorV = False
       end
     end
     object DCBallLag: TGLDummyCube
@@ -1223,6 +1226,8 @@ object Main: TMain
       Width = 100
       Height = 24
       NoZWrite = False
+      MirrorU = False
+      MirrorV = False
       object HTTimer: TGLHUDText
         Position.Coordinates = {0000704100002041000000000000803F}
         BitmapFont = WindowsBitmapFont
@@ -3643,7 +3648,7 @@ object Main: TMain
   end
   object Cadencer: TGLCadencer
     Scene = Scene
-    MaxDeltaTime = 0.02
+    FixedDeltaTime = 0.001
     OnProgress = CadencerProgress
     Left = 72
     Top = 8

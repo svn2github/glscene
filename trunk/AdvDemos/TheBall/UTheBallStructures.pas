@@ -9,7 +9,8 @@ unit UTheBallStructures;
 
 interface
 
-uses Classes, GLScene, GLMisc, GLObjects, Geometry, ODEImport, GLBitmapFont;
+uses Classes, GLScene, GLMisc, GLObjects, Geometry, ODEImport, GLBitmapFont,
+   GLGeomObjects;
 
 type
 

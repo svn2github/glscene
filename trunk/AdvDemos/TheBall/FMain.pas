@@ -17,7 +17,7 @@ uses
   GLObjects, GLShadowPlane, GLWin32Viewer, GLMisc, GLTexture, GLMirror,
   ODEImport, ODEGL, GLCadencer, ExtCtrls, Jpeg, Geometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
-  GLParticleFX, KeyBoard, GLSound, GLSMBASS, Dialogs;
+  GLParticleFX, KeyBoard, GLSound, GLSMBASS, Dialogs, GLGeomObjects;
 
 type
    TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost); 
@@ -405,7 +405,7 @@ end;
 procedure TMain.CadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
-   i : Integer;
+   i, x, y : Integer;
    ballUp, ballDirection, tableUp : TVector;
    pt : TProgressTimes;
    mp : TPoint;
@@ -417,11 +417,16 @@ begin
    if gameStatus=gsPlaying then begin
       if isMouseDown then begin
          GetCursorPos(mp);
-         d:=ClampValue(200*deltaTime, -1, 1);
-         dmx:=ClampValue((mouseDownX-mp.X)*0.5, -d, d);
-         mouseDownX:=mouseDownX-dmx*2;
-         dmy:=ClampValue((mp.Y-mouseDownY)*0.5, -d, d);
-         mouseDownY:=mouseDownY+dmy*2;
+         d:=1;
+         dmx:=ClampValue((mouseDownX-mp.X)*0.15, -d, d);
+         mouseDownX:=mouseDownX-dmx*0.8;
+         dmy:=ClampValue((mp.Y-mouseDownY)*0.15, -d, d);
+         mouseDownY:=mouseDownY+dmy*0.8;
+         x:=Screen.Width div 2;
+         y:=Screen.Height div 2;
+         SetCursorPos(x, y);
+         mouseDownX:=mouseDownX-mp.X+x;
+         mouseDownY:=mouseDownY-mp.Y+y;
       end else begin
          if IsKeyDown(VK_DOWN) then dmy:=1
          else if IsKeyDown(VK_UP) then dmy:=-1
@@ -431,8 +436,8 @@ begin
          else dmx:=0;
       end;
 
-      tablePitch:=ClampValue(tablePitch+dmx*deltaTime*30, -20, 20);
-      tableRoll:=ClampValue(tableRoll+dmy*deltaTime*30, -20, 20);
+      tablePitch:=ClampValue(tablePitch+dmx*0.04, -20, 20);
+      tableRoll:=ClampValue(tableRoll+dmy*0.04, -20, 20);
 
       // update ball position
       PositionSceneObject(DCBallAbsolute, ballGeom);
@@ -461,8 +466,14 @@ begin
 
       ALStart.Material.FrontProperties.Diffuse.Alpha:=d;
       ALStart.Move(Sin(newTime*10)*0.01);
-      if spawnTime<=0 then
+      if spawnTime<=0 then begin
+         DCBallLag.Position.AsVector:=SPHBall.AbsolutePosition;
+         Camera.Position.AsVector:=cCameraPos;
+         GetCursorPos(mp);
+         mouseDownX:=mp.X;
+         mouseDownY:=mp.Y;
          SpawnBall;
+      end;
    end;
 
    // update map strucs
@@ -562,11 +573,14 @@ procedure TMain.SceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
 var
    mp : TPoint;
 begin
-   isMouseDown:=True;
+   isMouseDown:=not isMouseDown;
+   if isMouseDown then
+      Screen.Cursor:=crNone
+   else Screen.Cursor:=crDefault;
+
    GetCursorPos(mp);
    mouseDownX:=mp.X;
    mouseDownY:=mp.Y;
-   Screen.Cursor:=crHandPoint;
 
    if gameStatus=gsLevelPreview then
       LevelWarmup;
@@ -575,9 +589,9 @@ end;
 procedure TMain.SceneViewerMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-   Screen.Cursor:=crDefault;
+//   Screen.Cursor:=crDefault;
 
-   isMouseDown:=False;
+//   isMouseDown:=False;
 end;
 
 procedure TMain.FormResize(Sender: TObject);
