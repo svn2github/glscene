@@ -315,7 +315,13 @@ begin
          FormStyle:=fsStayOnTop
       else FormStyle:=fsNormal;
 
-      BorderStyle:=bsNone;
+      // Following lines doesn't seem to work on ATI hardware,
+      // so we do it via API calls
+      //  BorderStyle:=bsNone;
+      BorderStyle:=bsSizeable;
+      SetWindowLong(Handle, GWL_STYLE, GetWindowLong(Handle, GWL_STYLE) and not WS_CAPTION);
+//      ClientHeight := Height - 41;
+
       Cursor:=Self.Cursor;
       PopupMenu:=Self.PopupMenu;
 
