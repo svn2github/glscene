@@ -27,6 +27,17 @@ type
 
    TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
+   {: Determines when a caster should actually produce a shadow;
+   <ul>
+    <li>scmAlways - Caster always produces a shadow, ignoring visibility
+    <li>scmVisible - Caster casts shadow if the object has visible=true
+    <li>scmRecursivelyVisible - Caster casts shadow if ancestors up the hierarchy
+      all have visible=true
+    <li>scmParentVisible - Caster produces shadow if parent has visible=true
+    <li>scmParentRecursivelyVisible - Caster casts shadow if ancestors up the hierarchy
+      all have visible=true, starting from the parent (ignoring own visible setting)
+   </ul> }
+
    TGLShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
     scmParentVisible, scmParentRecursivelyVisible);
 
@@ -76,7 +87,7 @@ type
          should only cast shadows when recursively visible. But if you're using
          dummy shadow casters which are less complex than their parent objects,
          you should use scmParentRecursivelyVisible.}
-         property CastingMode: TGLShadowCastingMode read FCastingMode write FCastingMode default scmParentRecursivelyVisible;
+         property CastingMode: TGLShadowCastingMode read FCastingMode write FCastingMode default scmRecursivelyVisible;
    end;
 
    // TGLShadowVolumeOccluder
@@ -604,10 +615,12 @@ end;
 procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
                                    renderSelf, renderChildren : Boolean);
 
-  // Function that determines if an object is recursively visible. It halts when
+  // Function that determines if an object is "recursively visible". It halts when
   // * it finds an invisible ancestor (=> invisible)
   // * it finds the root (=> visible)
   // * it finds the shadow volume as an ancestor (=> visible)
+  //
+  // This does _not_ mean that the object is actually visible on the screen
   function DirectHierarchicalVisibility(Obj : TGLBaseSceneObject): boolean;
   var
     p : TGLBaseSceneObject;

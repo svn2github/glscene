@@ -9,6 +9,8 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/11/03 - MF - Added TGLSphere.GenerateSilhouette - it now takes the
+                          stacks/slices of the sphere into account 
       <li>10/09/03 - EG - Introduced TGLNodedLines
       <li>18/08/03 - SG - Added MirrorU and MirrorV to TGLSprite for mirroring textures
       <li>21/07/03 - EG - TGLTeapot moved to new GLTeapot unit,
