@@ -3,6 +3,7 @@
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>21/02/02 - EG - Added GetOrCreateFireFX helper functions
       <li>09/12/01 - EG - Added NoZWrite property
       <li>12/08/01 - EG - Fixed leak (color objects)
       <li>09/03/01 - EG - Fixed MaxParticles change, added RingExplosion
@@ -194,6 +195,13 @@ type
          property Manager : TGLFireFXManager read FManager write SetManager;
 	end;
 
+{: Returns or creates the TGLBFireFX within the given behaviours.<p>
+	This helper function is convenient way to access a TGLBFireFX. }
+function GetOrCreateFireFX(behaviours : TGLBehaviours) : TGLBFireFX; overload;
+{: Returns or creates the TGLBFireFX within the given object's behaviours.<p>
+	This helper function is convenient way to access a TGLBFireFX. }
+function GetOrCreateFireFX(obj : TGLBaseSceneObject) : TGLBFireFX; overload;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -203,6 +211,25 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils, OpenGL12, VectorLists;
+
+// GetOrCreateFireFX (TGLBehaviours)
+//
+function GetOrCreateFireFX(behaviours : TGLBehaviours) : TGLBFireFX;
+var
+	i : Integer;
+begin
+	i:=behaviours.IndexOfClass(TGLBFireFX);
+	if i>=0 then
+		Result:=TGLBFireFX(behaviours[i])
+	else Result:=TGLBFireFX.Create(behaviours);
+end;
+
+// GetOrCreateFireFX (TGLBaseSceneObject)
+//
+function GetOrCreateFireFX(obj : TGLBaseSceneObject) : TGLBFireFX;
+begin
+	Result:=GetOrCreateFireFX(obj.Behaviours);
+end;
 
 // ------------------
 // ------------------ TGLFireFXManager ------------------
