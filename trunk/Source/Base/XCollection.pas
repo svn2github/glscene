@@ -483,6 +483,7 @@ begin
 	finally
 		classList.Free;
 	end;
+   FCount:=FList.Count;
 end;
 
 // ItemsClass
