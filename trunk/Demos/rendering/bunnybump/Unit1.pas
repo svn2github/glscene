@@ -1,19 +1,23 @@
 {: Using the GLBumpShader for object space bump mapping.<p>
 
-   The bump shader runs an ambient light pass and then a
-   pass for each light shining in the scene. There are
-   currently 2 bump methods: a dot3 texture combiner and
-   a basic ARB fragment program. The dot3 texture combiner
-   only supports diffuse lighting but is fast and works
-   on lower end graphics adapters. The basic ARBFP method
-   supports diffuse and specular lighting and picks up
-   the light and material options through the OpenGL
-   state.<p>
+   The bump shader runs an ambient light pass and a pass for 
+   each light shining in the scene. There are currently 2 
+   bump methods: a dot3 texture combiner and a basic ARB 
+   fragment program.<p> 
+   
+   The dot3 texture combiner only supports diffuse lighting 
+   but is fast and works on lower end graphics adapters.<p>
+
+   The basic ARBFP method supports diffuse and specular 
+   lighting<p>
+   
+   Both methods pick up the light and material options 
+   through the OpenGL state.<p>
 
    The normal map is expected as the primary texture.<p>
 
    Diffuse textures are supported through the secondary
-   texture and can be enabled using the boDiffuseTeture2
+   texture and can be enabled using the boDiffuseTexture2
    bump option.<p>
 }
 unit Unit1;
