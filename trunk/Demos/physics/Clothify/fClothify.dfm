@@ -105,9 +105,9 @@ object frmClothify: TfrmClothify
       'Cylinder.ms3d, 0.3'
       'lgrid.3ds, 6'
       'BigHoleBox2.ms3d, 0.5'
-      'mushroom.3ds, 0.15'
+      'mushroom.3ds, 0.08'
       'polyhedron.3ds, 2'
-      'teapot.3ds, 0.2')
+      'teapot.3ds, 0.1')
   end
   object ComboBox_ConstraintType: TComboBox
     Left = 152
@@ -216,7 +216,7 @@ object frmClothify: TfrmClothify
         CubeSize = 1
         object GLLightSource1: TGLLightSource
           ConstAttenuation = 1
-          Position.Coordinates = {0000404000000041000040400000803F}
+          Position.Coordinates = {0000C040000090410000C0400000803F}
           SpotCutOff = 180
         end
       end
