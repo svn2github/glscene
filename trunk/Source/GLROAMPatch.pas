@@ -663,6 +663,8 @@ class procedure TGLROAMPatch.FlushAccum(vertices : TAffineVectorList;
                                         vertexIndices : TIntegerList;
                                         texCoords : TTexPointList);
 begin
+   if vertexIndices.Count=0 then Exit;
+
 //   if GL_ARB_vertex_buffer_object then begin
    if False then begin // VBO currently off (slower)
       if FVBOVertHandle.Handle=0 then
