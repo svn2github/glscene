@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>20/11/01 - EG - New temp HWnd code for memory contexts (improved compat.)
       <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
       <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
       <li>24/08/01 - EG - Fixed PropagateSharedContext
@@ -284,6 +285,19 @@ begin
 
 end;
 
+var
+  vUtilWindowClass: TWndClass = (
+    style: 0;
+    lpfnWndProc: @DefWindowProc;
+    cbClsExtra: 0;
+    cbWndExtra: 0;
+    hInstance: 0;
+    hIcon: 0;
+    hCursor: 0;
+    hbrBackground: 0;
+    lpszMenuName: nil;
+    lpszClassName: 'GLSUtilWindow');
+
 // DoCreateMemoryContext
 //
 procedure TGLWin32Context.DoCreateMemoryContext(outputDevice, width, height : Integer);
@@ -291,7 +305,10 @@ var
    nbFormats : Integer;
    iFormats : array [0..31] of Integer;
    iPBufferAttribs : array [0..0] of Integer;
-   localHPBuffer, localDC, localRC, topDC : Integer;
+   localHPBuffer, localDC, localRC, tempDC : Integer;
+   tempWnd : HWND;
+   tempClass: TWndClass;
+   classRegistered: Boolean;
 begin
    localHPBuffer:=0;
    localDC:=0;
@@ -299,8 +316,16 @@ begin
    // the WGL mechanism is a little awkward: we first create a dummy context
    // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
    // our stuff, etc.
-   topDC:=GetDC(0);
-   DoCreateContext(topDC);
+   vUtilWindowClass.hInstance:=HInstance;
+   classRegistered:=GetClassInfo(HInstance, vUtilWindowClass.lpszClassName,
+                                 tempClass);
+   if not classRegistered  then begin
+      Windows.RegisterClass(vUtilWindowClass);
+   end;
+   tempWnd:=CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
+                           '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
+   tempDC:=GetDC(tempWnd);
+   DoCreateContext(tempDC);
    try
       DoActivate;
       try
@@ -352,7 +377,8 @@ begin
       end;
    finally
       DoDestroyContext;
-      ReleaseDC(0, topDC);
+      ReleaseDC(0, tempDC);
+      DestroyWindow(tempWnd);
    end;
    FHPBUFFER:=localHPBuffer;
    FDC:=localDC;

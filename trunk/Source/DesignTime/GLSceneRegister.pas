@@ -121,7 +121,7 @@ uses
   TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
   GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
   GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
-  GLParticleFX, GLTerrainRenderer,
+  GLParticleFX, GLTerrainRenderer, GLzBuffer,
 {$ifdef GLS_DELPHI_6_UP} DesignIntf, DesignEditors {$else} DsgnIntf {$endif};
 
 var
@@ -1331,6 +1331,7 @@ initialization
       RegisterSceneObject(TDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
 
+      RegisterSceneObject(TZShadows, 'Shadows', '');
    end;
 
 finalization

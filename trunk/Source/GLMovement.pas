@@ -3,6 +3,7 @@
    Movement path behaviour by Roger Cao<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
       <li>14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
                            use of standard classes and documentation
       <li>22/09/00 - RoC - Added StartAllPathTravel and StopAllPathTravel methods
@@ -1544,7 +1545,9 @@ begin
           begin
             Position.AsVector := Path.CurrentNode.FPosition;
             Scale.AsVector    := Path.CurrentNode.FScale;
-            Rotation.AsVector := Path.CurrentNode.FRotation;
+            PitchAngle := Path.CurrentNode.PitchAngle;
+            TurnAngle := Path.CurrentNode.TurnAngle;
+            RollAngle := Path.CurrentNode.RollAngle;
           end;
       end;
     end;

@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/09/01 - Egg - TGLProxyObject loop rendering protection
       <li>14/09/01 - Egg - Use of vFileStreamClass
       <li>04/09/01 - Egg - Texture binding cache
       <li>25/08/01 - Egg - Support for WGL_EXT_swap_control (VSync control),
@@ -770,6 +771,7 @@ type
    TGLProxyObject = class (TGLBaseSceneObject)
       private
          { Private Declarations }
+         FRendering : Boolean;
          FMasterObject : TGLBaseSceneObject;
          FProxyOptions : TGLProxyObjectOptions;
 
@@ -4082,24 +4084,30 @@ procedure TGLProxyObject.DoRender(var rci : TRenderContextInfo;
 var
    gotMaster, masterGotEffects, oldProxySubObject : Boolean;
 begin
-   gotMaster:=Assigned(FMasterObject);
-   masterGotEffects:=gotMaster and (pooEffects in FProxyOptions)
-                     and (FMasterObject.Effects.Count>0);
-   if gotMaster then begin
-      if pooObjects in FProxyOptions then begin
-         oldProxySubObject:=rci.proxySubObject;
-         rci.proxySubObject:=True;
-         if pooTransformation in FProxyOptions then
-            glMultMatrixf(@FMasterObject.FLocalMatrix);
-         FMasterObject.DoRender(rci, renderSelf, RenderChildren);
-         rci.proxySubObject:=oldProxySubObject;
+   if FRendering then Exit;
+   FRendering:=True;
+   try
+      gotMaster:=Assigned(FMasterObject);
+      masterGotEffects:=gotMaster and (pooEffects in FProxyOptions)
+                        and (FMasterObject.Effects.Count>0);
+      if gotMaster then begin
+         if pooObjects in FProxyOptions then begin
+            oldProxySubObject:=rci.proxySubObject;
+            rci.proxySubObject:=True;
+            if pooTransformation in FProxyOptions then
+               glMultMatrixf(@FMasterObject.FLocalMatrix);
+            FMasterObject.DoRender(rci, renderSelf, RenderChildren);
+            rci.proxySubObject:=oldProxySubObject;
+         end;
       end;
+      // now render self stuff (our children, our effects, etc.)
+      if renderChildren and (Count>0) then
+         Self.RenderChildren(0, Count-1, rci);
+      if masterGotEffects then
+         FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
+   finally
+      FRendering:=False;
    end;
-   // now render self stuff (our children, our effects, etc.)
-   if renderChildren and (Count>0) then
-      Self.RenderChildren(0, Count-1, rci);
-   if masterGotEffects then
-      FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
 end;
 
 // AxisAlignedDimensions
