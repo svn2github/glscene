@@ -110,7 +110,7 @@ end;
 procedure TGLBlur.DoProgress(const progressTime : TProgressTimes);
 begin
      inherited;
-     if progressTime.newTime - OldTime > FBlurDeltaTime then
+     if self.Visible and (progressTime.newTime - OldTime > FBlurDeltaTime) then
      begin
           OldTime := progressTime.newTime;
           if Self.Parent is TGLBaseSceneObject then
