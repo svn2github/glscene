@@ -6,6 +6,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/09/03 - EG - Added TBaseList.Move, faster TIntegerList.Offset
       <li>22/08/03 - EG - Faster FastQuickSortLists
       <li>13/08/03 - SG - Added TQuaternionList
       <li>05/06/03 - EG - Added MinInteger, some TIntegerList optimizations
@@ -96,6 +97,7 @@ type
 
          procedure Delete(index : Integer);
          procedure Exchange(index1, index2 : Integer);
+         procedure Move(curIndex, newIndex : Integer);
          procedure Reverse;
 
          {: Nb of items in the list.<p>
@@ -321,6 +323,7 @@ type
 			procedure Assign(src : TPersistent); override;
 
 			function  Add(const item : Integer) : Integer; overload;
+         function  AddNC(const item : Integer) : Integer; overload;
          procedure Add(const i1, i2 : Integer); overload;
          procedure Add(const i1, i2, i3 : Integer); overload;
          procedure Add(const list : TIntegerList); overload;
@@ -344,9 +347,9 @@ type
          procedure AddIntegers(const anArray : array of Integer); overload;
 
          {: Returns the minimum integer item, zero if list is empty. }
-         function MinInteger : Integer;
+         function  MinInteger : Integer;
          {: Returns the maximum integer item, zero if list is empty. }
-         function MaxInteger : Integer;
+         function  MaxInteger : Integer;
          {: Sort items in ascending order. }
          procedure Sort;
          {: Sort items in ascending order and remove duplicated integers. }
@@ -728,7 +731,7 @@ begin
    rangeCapacity:=rangeCapacity div FItemSize;
    if rangeCapacity<FCount then Exit;
    // transfer data
-   Move(FBaseList^, rangeStart^, FCount*FItemSize);
+   System.Move(FBaseList^, rangeStart^, FCount*FItemSize);
    if not (bloExternalMemory in FOptions) then begin
       FreeMem(FBaseList);
       Include(FOptions, bloExternalMemory);
@@ -790,6 +793,33 @@ begin
       System.Move(FBaseList[index1*FItemSize], BufferItem[0], FItemSize);
       System.Move(FBaseList[index2*FItemSize], FBaseList[index1*FItemSize], FItemSize);
       System.Move(BufferItem[0], FBaseList[index2*FItemSize], FItemSize);
+   end;
+end;
+
+// Move
+//
+procedure TBaseList.Move(curIndex, newIndex : Integer);
+begin
+   if curIndex<>newIndex then begin
+{$IFOPT R+}
+      Assert(Cardinal(newIndex)<Cardinal(Count));
+      Assert(Cardinal(curIndex)<Cardinal(Count));
+{$ENDIF}
+      if FItemSize=4 then
+         PInteger(@BufferItem[0])^:=PInteger(FBaseList[curIndex*FItemSize])^
+      else System.Move(FBaseList[curIndex*FItemSize], BufferItem[0], FItemSize);
+      if curIndex<newIndex then begin
+         // curIndex+1 necessarily exists since curIndex<newIndex and newIndex<Count
+         System.Move(FBaseList[(curIndex+1)*FItemSize], FBaseList[curIndex*FItemSize],
+                     (newIndex-curIndex-1)*FItemSize);
+      end else begin
+         // newIndex+1 necessarily exists since newIndex<curIndex and curIndex<Count
+         System.Move(FBaseList[newIndex*FItemSize], FBaseList[(newIndex+1)*FItemSize],
+                     (curIndex-newIndex-1)*FItemSize);
+      end;
+      if FItemSize=4 then
+         PInteger(FBaseList[newIndex*FItemSize])^:=PInteger(@BufferItem[0])^
+      else System.Move(BufferItem[0], FBaseList[newIndex*FItemSize], FItemSize);
    end;
 end;
 
@@ -1736,6 +1766,15 @@ begin
   	Inc(FCount);
 end;
 
+// AddNC (simple, no capacity check)
+//
+function TIntegerList.AddNC(const item : Integer) : Integer;
+begin
+	Result:=FCount;
+	FList[Result]:=Item;
+  	Inc(FCount);
+end;
+
 // Add (two at once)
 //
 procedure TIntegerList.Add(const i1, i2 : Integer);
@@ -2102,9 +2141,11 @@ end;
 procedure TIntegerList.Offset(delta : Integer);
 var
    i : Integer;
+   locList : PIntegerArray;
 begin
+   locList:=FList;
    for i:=0 to FCount-1 do
-      FList[i]:=FList[i]+delta;
+      locList[i]:=locList[i]+delta;
 end;
 
 // ------------------
