@@ -1728,7 +1728,7 @@ begin
    RegisterComponents('GLScene',
                       [TGLScene,
                        TGLSceneViewer, TGLMemoryViewer, TGLFullScreenViewer,
-                       TGLMaterialLibrary,
+                       TGLMaterialLibrary, TGLGuiLayout,
                        TGLCadencer, TAsyncTimer,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLBitmapFont, TGLWindowsBitmapFont,
@@ -1823,13 +1823,16 @@ initialization
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
 
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
-      RegisterSceneObject(TGLForm, 'TGLForm', glsOCGuiObjects);
-      RegisterSceneObject(TGLPanel, 'TGLPanel', glsOCGuiObjects);
-      RegisterSceneObject(TGLButton, 'TGLButton', glsOCGuiObjects);
-      RegisterSceneObject(TGLCheckBox, 'TGLCheckBox', glsOCGuiObjects);
-      RegisterSceneObject(TGLEdit, 'TGLEdit', glsOCGuiObjects);
-      RegisterSceneObject(TGLLabel, 'TGLLabel', glsOCGuiObjects);
-      RegisterSceneObject(TGLAdvancedLabel, 'TGLAdvancedLabel', glsOCGuiObjects);
+      RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);
+      RegisterSceneObject(TGLForm, 'GLForm', glsOCGuiObjects);
+      RegisterSceneObject(TGLPanel, 'GLPanel', glsOCGuiObjects);
+      RegisterSceneObject(TGLButton, 'GLButton', glsOCGuiObjects);
+      RegisterSceneObject(TGLCheckBox, 'GLCheckBox', glsOCGuiObjects);
+      RegisterSceneObject(TGLEdit, 'GLEdit', glsOCGuiObjects);
+      RegisterSceneObject(TGLLabel, 'GLLabel', glsOCGuiObjects);
+      RegisterSceneObject(TGLAdvancedLabel, 'GLAdvancedLabel', glsOCGuiObjects);
+      RegisterSceneObject(TGLScrollbar, 'GLScrollbar', glsOCGuiObjects);
+      RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects);
 
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
