@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/11/04 - EG - No longer stores TextureEx if empty
       <li>06/10/04 - NC - Corrected filtering param. setting for float texture, 
                           Now keep using GL_TEXTURE_RECTANGLE_NV for TGLFloatDataImage
       <li>05/10/04 - SG - Added Material.TextureEx (texture extension)
@@ -1113,75 +1114,78 @@ type
          property NormalMapScale : Single read FNormalMapScale write SetNormalMapScale stored StoreNormalMapScale;
 	end;
 
-  TGLTextureExItem = class (TCollectionItem)
-    private
-      { Private Decalarations }
-      FTexture : TGLTexture;
-      FTextureIndex : Integer;
-      FTextureOffset, FTextureScale : TGLCoordinates;
-      FTextureMatrixIsIdentity : Boolean;
-      FTextureMatrix : TMatrix;
-      FApplied : Boolean;
+   // TGLTextureExItem
+   //
+   TGLTextureExItem = class (TCollectionItem)
+      private
+         { Private Decalarations }
+         FTexture : TGLTexture;
+         FTextureIndex : Integer;
+         FTextureOffset, FTextureScale : TGLCoordinates;
+         FTextureMatrixIsIdentity : Boolean;
+         FTextureMatrix : TMatrix;
+         FApplied : Boolean;
 
-    protected
-      { Protected Decalarations }
-      function GetDisplayName : String; override;
-      function GetOwner : TPersistent; override;
-      procedure SetTexture(const Value : TGLTexture);
-      procedure SetTextureIndex(const Value : Integer);
-      procedure SetTextureOffset(const Value : TGLCoordinates);
-      procedure SetTextureScale(const Value : TGLCoordinates);
-      procedure NotifyTexMapChange(Sender : TObject);
+      protected
+         { Protected Decalarations }
+         function GetDisplayName : String; override;
+         function GetOwner : TPersistent; override;
+         procedure SetTexture(const Value : TGLTexture);
+         procedure SetTextureIndex(const Value : Integer);
+         procedure SetTextureOffset(const Value : TGLCoordinates);
+         procedure SetTextureScale(const Value : TGLCoordinates);
+         procedure NotifyTexMapChange(Sender : TObject);
 
-      procedure CalculateTextureMatrix;
+         procedure CalculateTextureMatrix;
 
-      procedure OnNotifyChange(Sender : TObject);
+         procedure OnNotifyChange(Sender : TObject);
 
-    public
-      { Public Decalarations }
-      constructor Create(ACollection : TCollection); override;
-      destructor Destroy; override;
+      public
+         { Public Decalarations }
+         constructor Create(ACollection : TCollection); override;
+         destructor Destroy; override;
 
-      procedure Assign(Source: TPersistent); override;
-      procedure NotifyChange(Sender : TObject);
+         procedure Assign(Source: TPersistent); override;
+         procedure NotifyChange(Sender : TObject);
 
-      procedure Apply(var rci : TRenderContextInfo);
-      procedure UnApply(var rci : TRenderContextInfo);
+         procedure Apply(var rci : TRenderContextInfo);
+         procedure UnApply(var rci : TRenderContextInfo);
 
-    published
-      { Published Decalarations }
-      property Texture : TGLTexture read FTexture write SetTexture;
-      property TextureIndex : Integer read FTextureIndex write SetTextureIndex;
-      property TextureOffset : TGLCoordinates read FTextureOffset write SetTextureOffset;
-      property TextureScale : TGLCoordinates read FTextureScale write SetTextureScale;
+      published
+         { Published Decalarations }
+         property Texture : TGLTexture read FTexture write SetTexture;
+         property TextureIndex : Integer read FTextureIndex write SetTextureIndex;
+         property TextureOffset : TGLCoordinates read FTextureOffset write SetTextureOffset;
+         property TextureScale : TGLCoordinates read FTextureScale write SetTextureScale;
 
-  end;
+   end;
 
-  TGLTextureEx = class (TCollection)
-    private
-      FMaterial : TGLMaterial;
+   // TGLTextureEx
+   //
+   TGLTextureEx = class (TCollection)
+      private
+         FMaterial : TGLMaterial;
 
-    protected
-      { Protected Decalarations }
-      procedure SetItems(index : Integer; const Value : TGLTextureExItem);
-      function GetItems(index : Integer) : TGLTextureExItem;
-      function GetOwner : TPersistent; override;
-      procedure Loaded;
+      protected
+         { Protected Decalarations }
+         procedure SetItems(index : Integer; const Value : TGLTextureExItem);
+         function GetItems(index : Integer) : TGLTextureExItem;
+         function GetOwner : TPersistent; override;
+         procedure Loaded;
 
-    public
-      { Public Decalarations }
-      constructor Create(AOwner : TGLMaterial);
+      public
+         { Public Decalarations }
+         constructor Create(AOwner : TGLMaterial);
 
-      procedure NotifyChange(Sender : TObject);
-      procedure Apply(var rci : TRenderContextInfo);
-      procedure UnApply(var rci : TRenderContextInfo);
-      function IsTextureEnabled(Index : Integer) : Boolean;
+         procedure NotifyChange(Sender : TObject);
+         procedure Apply(var rci : TRenderContextInfo);
+         procedure UnApply(var rci : TRenderContextInfo);
+         function IsTextureEnabled(Index : Integer) : Boolean;
 
-      function Add : TGLTextureExItem;
+         function Add : TGLTextureExItem;
 
-      property Items[index : Integer] : TGLTextureExItem read GetItems write SetItems; default;
-
-  end;
+         property Items[index : Integer] : TGLTextureExItem read GetItems write SetItems; default;
+   end;
 
 	TShininess = 0..128;
    TPolygonMode = (pmFill, pmLines, pmPoints);
@@ -1291,6 +1295,7 @@ type
          procedure SetLibMaterialName(const val : TGLLibMaterialName);
          procedure SetFaceCulling(const val : TFaceCulling);
          procedure SetTextureEx(const Value : TGLTextureEx);
+         function StoreTextureEx : Boolean;
 
 			procedure NotifyLibMaterialDestruction;
 			//: Back, Front, Texture and blending not stored if linked to a LibMaterial
@@ -1338,7 +1343,7 @@ type
 
 			property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
 			property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
-      property TextureEx : TGLTextureEx read FTextureEx write SetTextureEx;
+         property TextureEx : TGLTextureEx read FTextureEx write SetTextureEx stored StoreTextureEx;
 	  end;
 
 	// TGLLibMaterial
@@ -4439,6 +4444,13 @@ begin
    TextureEx.Assign(Value);
 end;
 
+// StoreTextureEx
+//
+function TGLMaterial.StoreTextureEx : Boolean;
+begin
+   Result:=(TextureEx.Count>0);
+end;
+
 // NotifyLibMaterialDestruction
 //
 procedure TGLMaterial.NotifyLibMaterialDestruction;
@@ -4613,7 +4625,7 @@ begin
       FFaceCulling:=TGLMaterial(Source).FFaceCulling;
 		FMaterialLibrary:=TGLMaterial(Source).MaterialLibrary;
       SetLibMaterialName(TGLMaterial(Source).LibMaterialName);
-    TextureEx.Assign(TGLMaterial(Source).TextureEx);
+      TextureEx.Assign(TGLMaterial(Source).TextureEx);
    	NotifyChange(Self);
    end else inherited;
 end;
