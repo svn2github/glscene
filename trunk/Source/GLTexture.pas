@@ -120,13 +120,13 @@ unit GLTexture;
 
 interface
 
+{$i GLScene.inc}
+
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
   GLCrossPlatform, PersistentClasses, GLUtils, GLState
   {$ifdef MSWINDOWS}, Graphics{$endif} // for standard application colors
   ;
-
-{$i GLScene.inc}
 
 type
 
