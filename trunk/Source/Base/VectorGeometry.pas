@@ -1234,6 +1234,8 @@ function VectorFltToDbl(const v : TVector): THomogeneousDblVector;
 
 function PointInPolygon(var xp, yp : array of Single; x, y : Single) : Boolean;
 
+procedure DivMod(Dividend: Integer; Divisor: Word; var Result, Remainder: Word);
+
 // coordinate system manipulation functions
 
 //: Rotates the given coordinate system (represented by the matrix) around its Y-axis
@@ -1337,6 +1339,7 @@ function PackRotationMatrix(const mat : TMatrix) : TPackedRotationMatrix;
 function UnPackRotationMatrix(const packedMatrix : TPackedRotationMatrix) : TMatrix;
 
 const
+   cPI       : Single =  3.141592654;
    cPIdiv180 : Single =  0.017453292;
    c180divPI : Single = 57.29577951;
    c2PI :      Single =  6.283185307;
@@ -8307,6 +8310,27 @@ begin
          J:=I;
       end;
    end;
+end;
+
+// DivMod
+//
+procedure DivMod(dividend : Integer; divisor: Word; var result, remainder : Word);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+   push  ebx
+   mov   ebx, edx
+   mov   edx, eax
+   shr   edx, 16
+   div   bx
+   mov   ebx, remainder
+   mov   [ecx], ax
+   mov   [ebx], dx
+   pop   ebx
+{$else}
+begin
+   Result:=Dividend div Divisor;
+   Remainder:=Dividend mod Divisor;
+{$endif}
 end;
 
 // ConvertRotation
