@@ -29,6 +29,11 @@ type
 
    PAVIStream = ^IAVIStream;
 
+   // TAVISizeRestriction
+   //
+   {: Frame size restriction.<p>
+      Forces frame dimensions to be a multiple of 2, 4, or 8. Some compressors
+      require this. e.g. DivX 5.2.1 requires mutiples of 2. }
    TAVISizeRestriction = ( srNoRestriction, srForceBlock2x2,
                            srForceBlock4x4, srForceBlock8x8);
 
