@@ -5,6 +5,7 @@
    so that there is no z-fighting in rendering the same geometry multiple times.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/12/03 - NelC - Added ForceMaterial
       <li>03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
                             the multipass demo.
    </ul></font>
@@ -24,21 +25,28 @@ type
        FWidth   : Single;
        FPattern : TGLushort;
 
+       FForceMaterial : Boolean;
+
        procedure SetPattern(const value: TGLushort);
        procedure SetColor(const v : TGLColor);
        procedure SetWidth(const Value: Single);
+       procedure SetForceMaterial(v : boolean);
 
      public
 			{ Public Declarations }
        constructor Create(AOwner: TPersistent); override;
        destructor Destroy; override;
-       procedure Apply;
+       procedure Apply(var rci : TRenderContextInfo);
+       procedure UnApply(var rci : TRenderContextInfo);
 
      published
 			{ Published Declarations }
        property Width : Single read FWidth write SetWidth;
        property Color : TGLColor read FColor write SetColor;
        property Pattern : TGLushort read FPattern write SetPattern default $FFFF;
+       {: Set ForceMaterial to true to enforce the application of the line settings
+          for objects that sets their own color, line width and pattern. }
+       property ForceMaterial : Boolean read FForceMaterial write SetForceMaterial default false;
   end;
 
   TGLHiddenLineShader = class(TGLShader)
@@ -111,6 +119,7 @@ begin
   FColor.Initialize(clrGray20);
   FWidth:=2;
   Pattern:=$FFFF;
+  ForceMaterial:=false;
 end;
 
 // Destroy
@@ -147,9 +156,11 @@ begin
   NotifyChange(Self);
 end;
 
+var IgnoreMatSave : boolean;
+
 // Apply
 //
-procedure TGLLineSettings.Apply;
+procedure TGLLineSettings.Apply(var rci : TRenderContextInfo);
 begin
   glLineWidth(Width);
   glColor4fv(Color.AsAddress);
@@ -159,6 +170,28 @@ begin
     end
   else
     glDisable(GL_LINE_STIPPLE);
+
+  if ForceMaterial then begin
+    IgnoreMatSave:=rci.ignoreMaterials;
+    rci.ignoreMaterials:=true;
+  end;
+end;
+
+// UnApply
+//
+procedure TGLLineSettings.UnApply(var rci : TRenderContextInfo);
+begin
+  if ForceMaterial then rci.ignoreMaterials:=IgnoreMatSave;
+end;
+
+// SetForceMaterial
+//
+procedure TGLLineSettings.SetForceMaterial(v: boolean);
+begin
+   if FForceMaterial<>v then begin
+      FForceMaterial:=v;
+      NotifyChange(self);
+   end;
 end;
 
 // ------------------
@@ -225,7 +258,7 @@ begin
      end
    else begin
        // draw back lines in first pass
-       FBackLine.Apply;
+       FBackLine.Apply(rci);
        glCullFace(GL_FRONT);
        GLPolygonMode(GL_BACK, GL_LINE);
        // enable and adjust polygon offset
@@ -239,17 +272,13 @@ end;
 //
 function TGLHiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
 begin
-   if rci.ignoreMaterials then begin
-      Result:=False;
-      Exit;
-   end;
-
    case FPassCount of
       1 : begin
             // draw front line in 2nd pass
             FPassCount:=2;
 
-            FFrontLine.Apply;
+            FBackLine.UnApply(rci);
+            FFrontLine.Apply(rci);
 
             GLPolygonMode(GL_FRONT, GL_LINE);
             glCullFace(GL_BACK);
@@ -262,6 +291,7 @@ begin
             Result:=True;
           end;
       2 : begin
+            FFrontLine.UnApply(rci);
             glPopAttrib;
             Result:=false;
           end;
