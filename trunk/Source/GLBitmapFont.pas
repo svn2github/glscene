@@ -188,7 +188,14 @@ type
             of rotated and linear distorted text with this method, OpenGL
             Enable states are also possibly altered. }
 	      procedure RenderString(const aString : String; alignment : TAlignment;
-                                layout : TTextLayout; const color : TColorVector; position : PVector = Nil);
+                                layout : TTextLayout; const color : TColorVector;
+                                position : PVector = nil; reverseY : Boolean = False);
+         {: A simpler canvas-style TextOut helper for RenderString.<p>
+            The rendering is reversed along Y by default, to allow direct use
+            with TGLCanvas }
+         procedure TextOut(x, y : Single; const text : String; const color : TColorVector); overload;
+         procedure TextOut(x, y : Single; const text : String; const color : TColor); overload;
+
          {: Get the actual width for this char. }
          function GetCharWidth(ch : Char) : Integer;
          {: Get the actual pixel width for this string. }
@@ -699,7 +706,8 @@ end;
 // RenderString
 //
 procedure TGLCustomBitmapFont.RenderString(const aString : String; alignment : TAlignment;
-                                   layout : TTextLayout; const color : TColorVector; position : PVector = Nil);
+            layout : TTextLayout; const color : TColorVector; position : PVector = nil;
+            reverseY : Boolean = False);
 
    function AlignmentAdjustement(p : Integer) : Single;
    var
@@ -736,7 +744,7 @@ var
    i : Integer;
    topLeft, bottomRight : TTexPoint;
    vTopLeft, vBottomRight : TVector;
-   deltaH, deltaV, fixedDeltaH, spaceDeltaH : Single;
+   deltaH, deltaV, spaceDeltaH : Single;
    currentChar : Char;
 begin
    if (Glyphs.Width=0) or (aString='') then Exit;
@@ -760,11 +768,12 @@ begin
       MakePoint(vTopLeft, position[0]+AlignmentAdjustement(1), position[1]+LayoutAdjustement, 0)
    else MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
    deltaV:=-(CharHeight+VSpace);
-   vBottomRight[1]:=vTopLeft[1]-CharHeight;
+   if reverseY then
+      vBottomRight[1]:=vTopLeft[1]+CharHeight
+   else vBottomRight[1]:=vTopLeft[1]-CharHeight;
    vBottomRight[2]:=0;
    vBottomRight[3]:=1;
-   fixedDeltaH:=HSpace+HSpaceFix;
-   spaceDeltaH:=GetCharWidth(#32)+fixedDeltaH;
+   spaceDeltaH:=GetCharWidth(#32)+HSpaceFix;
    // set states
 	glEnable(GL_TEXTURE_2D);
    glDisable(GL_LIGHTING);
@@ -784,7 +793,9 @@ begin
                vTopLeft[0]:=position[0]+AlignmentAdjustement(i+1)
             else vTopLeft[0]:=AlignmentAdjustement(i+1);
             vTopLeft[1]:=vTopLeft[1]+deltaV;
-            vBottomRight[1]:=vTopLeft[1]-CharHeight;
+            if reverseY then
+               vBottomRight[1]:=vTopLeft[1]+CharHeight
+            else vBottomRight[1]:=vTopLeft[1]-CharHeight;
          end;
          #32 : vTopLeft[0]:=vTopLeft[0]+spaceDeltaH;
       else
@@ -804,10 +815,30 @@ begin
          glTexCoord2f(bottomRight.S, topLeft.T);
          glVertex2f(vBottomRight[0], vTopLeft[1]);
 
-         vTopLeft[0]:=vTopLeft[0]+deltaH+fixedDeltaH;
+         vTopLeft[0]:=vTopLeft[0]+deltaH+HSpaceFix;
       end;
    end;
    glEnd;
+end;
+
+// TextOut
+//
+procedure TGLCustomBitmapFont.TextOut(x, y : Single; const text : String; const color : TColorVector);
+var
+   v : TVector;
+begin
+   v[0]:=x;
+   v[1]:=y;
+   v[2]:=0;
+   v[3]:=1;
+   RenderString(text, taLeftJustify, tlTop, color, @v, True);
+end;
+
+// TextOut
+//
+procedure TGLCustomBitmapFont.TextOut(x, y : Single; const text : String; const color : TColor);
+begin
+   TextOut(x, y, text, ConvertWinColor(color));
 end;
 
 // CharactersPerRow
