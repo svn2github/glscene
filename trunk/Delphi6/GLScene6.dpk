@@ -167,6 +167,7 @@ contains
   GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas',
   GLShadowVolume in '..\Source\GLShadowVolume.pas',
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
-  GLSilhouette in '..\Source\GLSilhouette.pas';
+  GLSilhouette in '..\Source\GLSilhouette.pas',
+  GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas';
 
 end.
