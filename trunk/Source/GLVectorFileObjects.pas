@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>16/05/03 - SG - Fixed OpenGL error caused by glColorMaterial in TMeshObject.BuildList
       <li>08/05/03 - DanB - added OctreeAABBIntersect (Matheus Degiovani)
       <li>07/05/03 - SG - Added TGLSMDVectorFile.SaveToFile method and [read,write] capabilities
       <li>17/04/03 - SG - Added TMeshObjectList.FindMeshByName method
@@ -3066,9 +3067,6 @@ begin
    case Mode of
       momTriangles, momTriangleStrip : if Vertices.Count>0 then begin
          DeclareArraysToOpenGL(mrci);
-         if Mode=momTriangles then
-            glBegin(GL_TRIANGLES)
-         else glBegin(GL_TRIANGLE_STRIP);
          gotNormals:=(Vertices.Count=Normals.Count);
          gotTexCoords:=(Vertices.Count=TexCoords.Count);
          gotColor:=(Vertices.Count=Colors.Count);
@@ -3078,6 +3076,9 @@ begin
             glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
             ResetGLMaterialColors;
          end;
+         if Mode=momTriangles then
+            glBegin(GL_TRIANGLES)
+         else glBegin(GL_TRIANGLE_STRIP);
          for i:=0 to Vertices.Count-1 do begin
             if gotNormals   then glNormal3fv(@Normals.List[i]);
             if gotTexCoords then xglTexCoord2fv(@TexCoords.List[i]);
