@@ -29,6 +29,8 @@
 	<b>History : </b><font size=-1><ul>
       <li>14/06/04 - EG - Secured AllocateRMMChunkBatch vs OutOfMemory (Pierre le Riche),
                           Fixed FindNonFullSMBManager skip of 1st block (Pierre le Riche)
+      <li>29/01/04 - EG - Added RAISE_EXCEPTION_ON_INVALID_RELEASE logic,
+                          AllocateLGB now properly lets EOutOfMemory surface 
       <li>07/11/03 - EG - Properly checks allocation of LGB, minor optims
       <li>06/11/03 - EG - Changed batch logic, more defines supported
       <li>03/11/03 - EG - Shared Memory support (like ShareMem, but DLL-free)
@@ -52,11 +54,20 @@ interface
 
 uses Windows;
 
+// if set the RecyclerMM will automatically bind itself as default memory manager
+{$define AUTO_BIND}
+
 // If set, RecyclerMM will automatically locate and share memory with other
 // RecyclerMMs in DLL modules (same functionality as Borland's ShareMem unit).
 // Sharing will only happen with compatible RMMs.
 // This option is NOT compatible with PATCH_ALLOCMEM
-{$define SHARE_MEM}
+{.$define SHARE_MEM}
+
+// If set SysUtils.AllocMem will be redirected to RAllocMem (*much* faster)
+// however, note that this activates DEFER_INVALIDATE_POINTERS (see below)
+// to avoid crashes resulting from alteration of SysUtils variables.
+// This option is NOT compatible with SHARE_MEM
+{$define PATCH_ALLOCMEM}
 
 // If set, the RMM memorymap will not be writeable by the process, which will
 // ensure wild pointers can't corrupt it and Allocated() remains accurate.
@@ -66,17 +77,18 @@ uses Windows;
 // if set the (possible) BPLs won't be patched, only the jump table will
 {.$define NO_BPL_PATCHING}
 
-// If set SysUtils.AllocMem will be redirected to RAllocMem (*much* faster)
-// however, note that this activates DEFER_INVALIDATE_POINTERS (see below)
-// to avoid crashes resulting from alteration of SysUtils variables.
-// This option is NOT compatible with SHARE_MEM
-{.$define PATCH_ALLOCMEM}
-
 // if set SSE code for Move16/Clear16 will be allowed
 {$define ALLOW_SSE}
 
-// if set the RecyclerMM will automatically bind itself as default memory manager
-{$define AUTO_BIND}
+// if set and exception will be explicitly raised if your code attempts
+// to release a block that isn't allocated. By default, RMM only detects
+// that issue reliably for large blocks and signals the issue to the Borland RTL,
+// which may then raise an exception. But in some circumstances, the RTL will
+// just ignore the issue. When the option is active, RMM will accurately detect
+// this issue all the time, and trigger an exception itself.
+// Doing so incurs a performance penalty on block release, and should preferably
+// only be used for testing or if memory integrity is of primary importance
+{.$define RAISE_EXCEPTION_ON_INVALID_RELEASE}
 
 // if set invalid pointers free/realloc will be defered to SysFreeMem
 // This allows a mixed mode where the RecyclerMM can replace the default
@@ -84,11 +96,25 @@ uses Windows;
 {$define DEFER_INVALIDATE_POINTERS}
 {$ifdef PATCH_ALLOCMEM}{$define DEFER_INVALIDATE_POINTERS}{$endif}
 
+// compile options implicit dependency rules
+
+{$ifdef PATCH_ALLOCMEM}
+   {$define DEFER_INVALIDATE_POINTERS}
+   {$define USES_SYSUTILS}
+{$endif}
+{$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+   {$define DEFER_INVALIDATE_POINTERS}
+   {$define USES_SYSUTILS}
+{$endif}
+
+// compile error when incompatible options have been selected
+
 {$ifdef PATCH_ALLOCMEM}
 {$ifdef SHARE_MEM}
    Error : you cannot combine PATCH_ALLOCMEM and SHARE_MEM
 {$endif}
 {$endif}
+
 
 const
    // Alignment for SMBs
@@ -236,7 +262,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$ifdef PATCH_ALLOCMEM}
+{$ifdef USES_SYSUTILS}
 uses SysUtils;
 {$endif}
 
@@ -336,7 +362,7 @@ var
 
    // Binding variables
    vOldMemoryManager : TMemoryManager;
-   {$ifndef DEFER_INVALIDATE_POINTERS}
+   {$ifdef PATCH_ALLOCMEM}
    vAllocMemPatch : TRedirectPatch;
    {$endif}
    vAllocatedPatch : TRedirectPatch;
@@ -540,6 +566,7 @@ var
 begin
    // Spawn manager, allocate block
    Result:=SysGetMem(SizeOf(TLGBManager));
+   if Result=nil then Exit;
    Result.Signature:=cLGBSignature;
    blkSize:=(Size and $FFFF0000);
    if (Size and $FFFF)<>0 then
@@ -999,6 +1026,7 @@ begin
    candidate:=nil;
    candidateFree:=0;
    while True do begin
+      manager:=manager.next;
       if manager=nil then begin
          if candidateFree=0 then
             Result:=AllocateSMB(smbIndex)
@@ -1016,7 +1044,6 @@ begin
             Exit;
          end;
       end;
-      manager:=manager.next;
    end;
 end;
 
@@ -1108,9 +1135,14 @@ end;
 //
 function RFreeMem(P: Pointer): Integer;
 var
+   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+   i : Integer;
+   {$endif}
    n, blkID, locBlkID : Cardinal;
    smbIndex : Integer;
    manager : PSMBManager;
+label
+   lblRFreeMemExit;
 begin
    {$ifdef SECURE_MEMORYMAP}
    if Integer(P)>0 then
@@ -1131,6 +1163,16 @@ begin
          locBlkID:=blkID;  // hints compiler it can place blkID in a register!
          if locBlkID<manager.MaxFreeBlockOffset then begin
             n:=manager.NbFreeBlockOffset;
+            {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+            for i:=n-1 downto 0 do begin
+               if manager.BlockOffsets[i]=locBlkID then begin
+                  if System.IsMultiThread then
+                     LeaveCriticalSection(vSMBLocks[smbIndex]);
+                  Result:=-1;
+                  goto lblRFreeMemExit;
+               end;
+            end;
+            {$endif}
             manager.BlockOffsets[n]:=locBlkID;
             manager.BlockSizes[locBlkID]:=0;
             Inc(n);
@@ -1163,6 +1205,11 @@ begin
       Result:=-1;
       {$endif}
    end;
+   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
+lblRFreeMemExit:
+   if Result=-1 then
+      raise Exception.Create('RecyclerMM: attempt to free an unallocated block!');
+   {$endif}
 end;
 
 // RReallocMem
@@ -1236,6 +1283,11 @@ end;
 function RAllocMem(Size : Cardinal) : Pointer; register;
 asm
    push  ebx
+   cmp   eax, 0
+   jg    @@Alloc
+   xor   eax, eax
+   jmp   @@End
+@@Alloc:
    mov   ebx, eax
    call  RGetMem              // Result:=RGetMem(Size);
    cmp   ebx, cSMBChunkSize   // LGBs are automatically initialized to zero
@@ -1475,6 +1527,9 @@ procedure UnBindRMM;
 begin
    Dec(vRMMBound);
    if vRMMBound=0 then begin
+      {$ifdef PATCH_ALLOCMEM}
+      RestorePatch(vAllocMemPatch);
+      {$endif}
       {$ifndef DEFER_INVALIDATE_POINTERS}
       RestorePatch(vAllocMemPatch);
       RestorePatch(vAllocatedPatch);
