@@ -59,8 +59,8 @@ const
   BASS_ERROR_NOTFILE      = 27;   // the stream is not a file stream (WAV/MP3/MP2/MP1/OGG)
   BASS_ERROR_NOHW         = 29;   // no hardware voices available
   BASS_ERROR_NOSYNC       = 30;   // synchronizers have been disabled
-  BASS_ERROR_EMPTY	  = 31;	  // the MOD music has no sequence data
-  BASS_ERROR_NONET	  = 32;	  // no internet connection could be opened
+  BASS_ERROR_EMPTY	     = 31;	 // the MOD music has no sequence data
+  BASS_ERROR_NONET	     = 32;	 // no internet connection could be opened
   BASS_ERROR_CREATE       = 33;   // couldn't create the file
   BASS_ERROR_NOFX         = 34;   // effects are not enabled
   BASS_ERROR_PLAYING      = 35;   // the channel is playing
