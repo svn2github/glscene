@@ -4,6 +4,7 @@
    for use as a skybox always centered on the camera.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/04/04 - EG - Added Style property, multipass support
       <li>27/11/03 - EG - Cleanup and fixes
       <li>09/11/03 - MRQZZZ - mandatory changes suggested by Eric.
       <li>02/09/03 - MRQZZZ - Creation
@@ -18,6 +19,10 @@ uses
    XOpenGL;
 
 type
+
+   // TGLSkyBoxStyle
+   //
+   TGLSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds);
 
    // TGLSkyBox
    //
@@ -34,6 +39,7 @@ type
          FMaterialLibrary : TGLMaterialLibrary;
          FCloudsPlaneOffset : Single;
          FCloudsPlaneSize : Single;
+         FStyle : TGLSkyBoxStyle;
 
 	   protected
 			{ Protected Declarations }
@@ -47,6 +53,7 @@ type
          procedure SetMatNameClouds(const Value: string);
          procedure SetCloudsPlaneOffset(const Value: single);
          procedure SetCloudsPlaneSize(const Value: single);
+         procedure SetStyle(const value : TGLSkyBoxStyle);
 
       public
 	      { Public Declarations }
@@ -59,15 +66,16 @@ type
       published
 	      { Published Declarations }
          property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-         property MatNameTop : String read FMatNameTop write SetMatNameTop;
-         property MatNameBottom : String read FMatNameBottom write SetMatNameBottom;
-         property MatNameLeft : String read FMatNameLeft write SetMatNameLeft;
-         property MatNameRight : String read FMatNameRight write SetMatNameRight;
-         property MatNameFront : String read FMatNameFront write SetMatNameFront;
-         property MatNameBack : String read FMatNameBack write SetMatNameBack;
-         property MatNameClouds : String read FMatNameClouds write SetMatNameClouds;
+         property MatNameTop : TGLLibMaterialName read FMatNameTop write SetMatNameTop;
+         property MatNameBottom : TGLLibMaterialName read FMatNameBottom write SetMatNameBottom;
+         property MatNameLeft : TGLLibMaterialName read FMatNameLeft write SetMatNameLeft;
+         property MatNameRight : TGLLibMaterialName read FMatNameRight write SetMatNameRight;
+         property MatNameFront : TGLLibMaterialName read FMatNameFront write SetMatNameFront;
+         property MatNameBack : TGLLibMaterialName read FMatNameBack write SetMatNameBack;
+         property MatNameClouds : TGLLibMaterialName read FMatNameClouds write SetMatNameClouds;
          property CloudsPlaneOffset : Single read FCloudsPlaneOffset write SetCloudsPlaneOffset;
          property CloudsPlaneSize : Single read FCloudsPlaneSize write SetCloudsPlaneSize;
+         property Style : TGLSkyBoxStyle read FStyle write FStyle default sbsFull;
    end;
 
 // ------------------------------------------------------------------
@@ -145,77 +153,100 @@ begin
    glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
    Scene.CurrentBuffer.PushModelViewMatrix(mvMat);
    try
+      glPushMatrix;
+      case Style of
+         sbsFull : ;
+         sbsTopHalf : begin
+            glTranslatef(0, 0.5, 0);
+            glScalef(1, 0.5, 1);
+         end;
+         sbsBottomHalf : begin
+            glTranslatef(0, -0.5, 0);
+            glScalef(1, 0.5, 1);
+         end;
+         sbTopTwoThirds : begin
+            glTranslatef(0, 1/3, 0);
+            glScalef(1, 2/3, 1);
+         end;
+      end;
+
       // FRONT
       libMat:=MaterialLibrary.LibMaterialByName(FMatNameFront);
       if libMat<>nil then begin
          libMat.Apply(rci);
-         glBegin(GL_QUADS);
-            xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1, -1);
-            xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1, -1);
-            xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1, -1);
-            xglTexCoord2f(0.998, 0.998);  glVertex3f( 1,  1, -1);
-         glEnd;
-         libMat.UnApply(rci);
+         repeat
+            glBegin(GL_QUADS);
+               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1, -1);
+               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1, -1);
+               xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1, -1);
+               xglTexCoord2f(0.998, 0.998);  glVertex3f( 1,  1, -1);
+            glEnd;
+         until not libMat.UnApply(rci);
       end;
       // BACK
       libMat:=MaterialLibrary.LibMaterialByName(FMatNameBack);
       if libMat<>nil then begin
          libMat.Apply(rci);
-         glBegin(GL_QUADS);
-            xglTexCoord2f(0.002, 0.998);  glVertex3f( 1,  1,  1);
-            xglTexCoord2f(0.002, 0.002);  glVertex3f( 1, -1,  1);
-            xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1,  1);
-            xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1,  1);
-         glEnd;
-         libMat.UnApply(rci);
+         repeat
+            glBegin(GL_QUADS);
+               xglTexCoord2f(0.002, 0.998);  glVertex3f( 1,  1,  1);
+               xglTexCoord2f(0.002, 0.002);  glVertex3f( 1, -1,  1);
+               xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1,  1);
+               xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1,  1);
+            glEnd;
+         until not libMat.UnApply(rci);
       end;
       // TOP
       libMat:=MaterialLibrary.LibMaterialByName(FMatNameTop);
       if libMat<>nil then begin
          libMat.Apply(rci);
-         glBegin(GL_QUADS);
-            xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1,  1);
-            xglTexCoord2f(0.002, 0.002);  glVertex3f(-1,  1, -1);
-            xglTexCoord2f(0.998, 0.002);  glVertex3f( 1,  1, -1);
-            xglTexCoord2f(0.998, 0.998);  glVertex3f( 1,  1,  1);
-         glEnd;
-         libMat.UnApply(rci);
+         repeat
+            glBegin(GL_QUADS);
+               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1,  1);
+               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1,  1, -1);
+               xglTexCoord2f(0.998, 0.002);  glVertex3f( 1,  1, -1);
+               xglTexCoord2f(0.998, 0.998);  glVertex3f( 1,  1,  1);
+            glEnd;
+         until not libMat.UnApply(rci);
       end;
       // BOTTOM
       libMat:=MaterialLibrary.LibMaterialByName(FMatNameBottom);
       if libMat<>nil then begin
          libMat.Apply(rci);
-         glBegin(GL_QUADS);
-            xglTexCoord2f(0.002, 0.998);  glVertex3f(-1, -1, -1);
-            xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
-            xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1,  1);
-            xglTexCoord2f(0.998, 0.998);  glVertex3f( 1, -1, -1);
-         glEnd;
-         libMat.UnApply(rci);
+         repeat
+            glBegin(GL_QUADS);
+               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1, -1, -1);
+               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
+               xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1,  1);
+               xglTexCoord2f(0.998, 0.998);  glVertex3f( 1, -1, -1);
+            glEnd;
+         until not libMat.UnApply(rci);
       end;
       // LEFT
       libMat:=MaterialLibrary.LibMaterialByName(FMatNameLeft);
       if libMat<>nil then begin
          libMat.Apply(rci);
-         glBegin(GL_QUADS);
-            xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1,  1);
-            xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
-            xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1, -1);
-            xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1, -1);
-         glEnd;
-         libMat.UnApply(rci);
+         repeat
+            glBegin(GL_QUADS);
+               xglTexCoord2f(0.002, 0.998);  glVertex3f(-1,  1,  1);
+               xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
+               xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1, -1);
+               xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1, -1);
+            glEnd;
+         until not libMat.UnApply(rci);
       end;
       // RIGHT
       libMat:=MaterialLibrary.LibMaterialByName(FMatNameRight);
       if libMat<>nil then begin
          libMat.Apply(rci);
-         glBegin(GL_QUADS);
-            xglTexCoord2f(0.002, 0.998);  glVertex3f(1,  1, -1);
-            xglTexCoord2f(0.002, 0.002);  glVertex3f(1, -1, -1);
-            xglTexCoord2f(0.998, 0.002);  glVertex3f(1, -1,  1);
-            xglTexCoord2f(0.998, 0.998);  glVertex3f(1,  1,  1);
-         glEnd;
-         libMat.UnApply(rci);
+         repeat
+            glBegin(GL_QUADS);
+               xglTexCoord2f(0.002, 0.998);  glVertex3f(1,  1, -1);
+               xglTexCoord2f(0.002, 0.002);  glVertex3f(1, -1, -1);
+               xglTexCoord2f(0.998, 0.002);  glVertex3f(1, -1,  1);
+               xglTexCoord2f(0.998, 0.998);  glVertex3f(1,  1,  1);
+            glEnd;
+         until not libMat.UnApply(rci);
       end;
       // CLOUDS CAP PLANE
       libMat:=MaterialLibrary.LibMaterialByName(FMatNameClouds);
@@ -225,14 +256,17 @@ begin
          cof1 := FCloudsPlaneOffset;
 
          libMat.Apply(rci);
-         glBegin(GL_QUADS);
-            xglTexCoord2f(0, 1);  glVertex3f(-cps, cof1,  cps);
-            xglTexCoord2f(0, 0);  glVertex3f(-cps, cof1, -cps);
-            xglTexCoord2f(1, 0);  glVertex3f( cps, cof1, -cps);
-            xglTexCoord2f(1, 1);  glVertex3f( cps, cof1,  cps);
-         glEnd;
-         libMat.UnApply(rci);
+         repeat
+            glBegin(GL_QUADS);
+               xglTexCoord2f(0, 1);  glVertex3f(-cps, cof1,  cps);
+               xglTexCoord2f(0, 0);  glVertex3f(-cps, cof1, -cps);
+               xglTexCoord2f(1, 0);  glVertex3f( cps, cof1, -cps);
+               xglTexCoord2f(1, 1);  glVertex3f( cps, cof1,  cps);
+            glEnd;
+         until not libMat.UnApply(rci);
       end;
+
+      glPopMatrix;
 
       glDepthMask(True); // restore
       if stLighting in oldStates then
@@ -250,7 +284,6 @@ begin
       if stDepthTest in oldStates then
          rci.GLStates.SetGLState(stDepthTest);
 
-
    finally
       Scene.CurrentBuffer.PopModelViewMatrix;
    end;
@@ -266,6 +299,14 @@ procedure TGLSkyBox.SetCloudsPlaneSize(const Value: single);
 begin
   FCloudsPlaneSize := Value;
   StructureChanged;
+end;
+
+// SetStyle
+//
+procedure TGLSkyBox.SetStyle(const value : TGLSkyBoxStyle);
+begin
+   FStyle:=value;
+   StructureChanged;
 end;
 
 // SetMaterialLibrary
