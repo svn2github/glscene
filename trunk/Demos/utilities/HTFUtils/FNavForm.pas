@@ -57,7 +57,7 @@ begin
       for i:=0 to htf.TileCount-1 do with htf.Tiles[i]^ do begin
          x:=(left+(width div 2)) div htf.TileSize;
          y:=(top+(height div 2)) div htf.TileSize;
-         PixelS[x, y]:=HeightToColor(average)
+         PixelS[x, y]:=heightColor[average];
       end;
    end;
    // Couldn't get the form's AutoSize to work...

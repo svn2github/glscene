@@ -14,7 +14,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, HeightTileFile, ActnList, StdCtrls, ExtCtrls, ComCtrls, ImgList,
-  ToolWin, G32_Image, G32;
+  ToolWin, G32_Image, G32, Menus;
 
 type
   TViewerForm = class(TForm)
@@ -35,6 +35,10 @@ type
     ToolButton6: TToolButton;
     ACNavMap: TAction;
     StatusBar: TStatusBar;
+    ToolButton7: TToolButton;
+    ACPalette: TAction;
+    PMPalettes: TPopupMenu;
+    OpenDialogPal: TOpenDialog;
     procedure ACExitExecute(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -49,6 +53,7 @@ type
     procedure PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ACNavMapUpdate(Sender: TObject);
+    procedure ACPaletteExecute(Sender: TObject);
   private
     { Private declarations }
     htf : THeightTileFile;
@@ -62,29 +67,109 @@ type
 var
   ViewerForm: TViewerForm;
 
-function HeightToColor(h : SmallInt) : Integer;
+var
+   heightColor : array [Low(SmallInt)..High(SmallInt)] of TColor32;
 
 implementation
 
 {$R *.dfm}
 
-uses FNavForm;
+uses FNavForm, Geometry;
 
-function HeightToColor(h : SmallInt) : Integer;
+{ Quick'n dirty parser for palette file format '.pal', in which each line defines
+  nodes in the color ramp palette:
+
+   value:red,green,blue
+
+   color is then interpolated between node values (ie. between each line in the file)
+}
+procedure PreparePal(const fileName : String);
+
+   procedure ParseLine(buf : String; var n : Integer; var c : TAffineVector);
+   var
+      p : Integer;
+   begin
+      p:=Pos(':', buf);
+      n:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
+      p:=Pos(',', buf);
+      c[0]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
+      p:=Pos(',', buf);
+      c[1]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
+      c[2]:=StrToInt(buf);
+   end;
+
+var
+   prev, next : Integer;
+   pC, nC : TAffineVector;
+
+   procedure Ramp;
+   var
+      cur : Integer;
+      cC : TAffineVector;
+      d : Single;
+   begin
+      if prev<next then
+         d:=1/(next-prev)
+      else d:=0;
+      for cur:=prev to next do begin
+         cC:=VectorLerp(pC, nC, (cur-prev)*d);
+         heightColor[cur]:=Color32(Round(cC[0]), Round(cC[1]), Round(cC[2]));
+      end;
+   end;
+
+var
+   i : Integer;
+   sl : TStrings;
 begin
-   if h>0 then begin
-      Result:=255-(h shr 5);
-      if Result<0 then Result:=0;
-      Result:=Result shl 8;
-   end else begin
-      Result:=255-((-h) shr 5);
-      if Result<0 then Result:=0;
+   sl:=TStringList.Create;
+   try
+      sl.LoadFromFile(fileName);
+      prev:=0;
+      pC:=NullVector;
+      for i:=0 to sl.Count-1 do begin
+         ParseLine(sl[i], next, nC);
+         Ramp;
+         prev:=next;
+         pC:=nC;
+      end;
+   finally
+      sl.Free;
    end;
 end;
 
 procedure TViewerForm.FormCreate(Sender: TObject);
+var
+   i : Integer;
+   sr : TSearchRec;
+   mi : TMenuItem;
+   appDir : String;
+   sl : TStringList;
 begin
    bmpTile:=TBitmap32.Create;
+
+   appDir:=ExtractFilePath(Application.ExeName);
+
+   PreparePal(appDir+'Blue-Green-Red.pal');
+
+   i:=FindFirst(appDir+'*.pal', faAnyFile, sr);
+   sl:=TStringList.Create;
+   try
+      while i=0 do begin
+         sl.Add(sr.Name);
+         i:=FindNext(sr);
+      end;
+      sl.Sort;
+      for i:=0 to sl.Count-1 do begin
+         mi:=TMenuItem.Create(PMPalettes);
+         mi.Caption:=Copy(sl[i], 1, Length(sl[i])-4);
+         mi.Hint:=appDir+sl[i];
+         mi.OnClick:=ACPaletteExecute;
+         PMPalettes.Items.Add(mi);
+      end;
+   finally
+      sl.Free;
+      FindClose(sr);
+   end;
 end;
 
 procedure TViewerForm.FormDestroy(Sender: TObject);
@@ -150,7 +235,7 @@ begin
             scanLine:=bmpTile.ScanLine[ty];
             dataRow:=@tile.data[ty*tileInfo.width];
             for tx:=0 to tileInfo.width-1 do
-               scanLine[tx]:=HeightToColor(dataRow[tx]);
+               scanLine[tx]:=heightColor[dataRow[tx]];
          end;
          bmp.Draw(tileInfo.left-curX, tileInfo.top-curY, bmpTile);
 
@@ -252,6 +337,16 @@ end;
 procedure TViewerForm.ACNavMapUpdate(Sender: TObject);
 begin
    ACNavMap.Enabled:=Assigned(htf);
+end;
+
+procedure TViewerForm.ACPaletteExecute(Sender: TObject);
+begin
+   if Sender is TMenuItem then
+      PreparePal(TMenuItem(Sender).Hint)
+   else if OpenDialogPal.Execute then
+         PreparePal(OpenDialogPal.FileName);
+   PrepareBitmap;
+   PaintBox.Invalidate;
 end;
 
 end.
