@@ -1,14 +1,18 @@
 // GLMesh
-{: Core classes for Mesh support in GLScene<p>
+{: Raw Mesh support in GLScene.<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
-      <li>30/01/01 - Egg - Added VertexList locking
-      <li>19/07/00 - Egg - Introduced enhanced mesh structure
-      <li>11/07/00 - Egg - Just discovered and made use of "fclex" :)
-	   <li>18/06/00 - Egg - Creation from split of GLObjects,
-                           TVertexList now uses TVertexData,
-                           Rewrite of TMesh.CalcNormals (smaller & faster)
+   This unit is for simple meshes and legacy support, GLVectorFileObjects
+   implements more efficient (though more complex) mesh tools.<p> 
+
+	<b>History : </b><font size=-1><ul>
+      <li>21/01/02 - EG - TVertexList.OnNotifyChange now handled
+      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+      <li>30/01/01 - EG - Added VertexList locking
+      <li>19/07/00 - EG - Introduced enhanced mesh structure
+      <li>11/07/00 - EG - Just discovered and made use of "fclex" :)
+	   <li>18/06/00 - EG - Creation from split of GLObjects,
+                          TVertexList now uses TVertexData,
+                          Rewrite of TMesh.CalcNormals (smaller & faster)
 	</ul></font>
 }
 unit GLMesh;
@@ -129,7 +133,7 @@ type
             mode is faster on static meshes).<br>
             Be aware that the "Locked" state enforcement is not very strict
             to avoid performance hits, and GLScene may not always notify you
-            that you're doing things you shouldn't on a locked list!. } 
+            that you're doing things you shouldn't on a locked list! } 
          property Locked : Boolean read GetLocked write SetLocked;
          procedure EnterLockSection;
          procedure LeaveLockSection;
@@ -152,6 +156,8 @@ type
          procedure SetMode(AValue: TMeshMode);
          procedure SetVertices(AValue: TVertexList);
          procedure SetVertexMode(AValue: TVertexMode);
+
+         procedure VerticesChanged(Sender : TObject);
 
       public
 			{ Public Declarations }
@@ -563,6 +569,7 @@ begin
   FVertices.AddVertex(XVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.AddVertex(YVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.AddVertex(ZVector, ZVector, NullHmgVector, NullTexPoint);
+  FVertices.OnNotifyChange:=VerticesChanged;
   FVertexmode := vmVNCT; //should change this later to default to vmVN. But need to
 end;                     //change GLMeshPropform so that it greys out unused vertex info
 
@@ -572,6 +579,13 @@ destructor TMesh.Destroy;
 begin
    FVertices.Free;
    inherited Destroy;
+end;
+
+// VerticesChanged
+//
+procedure TMesh.VerticesChanged(Sender : TObject);
+begin
+   StructureChanged;
 end;
 
 // BuildList
