@@ -197,14 +197,14 @@ type
          BackgroundColor : TColorVector;
          PassCount : Integer;
       public
-         procedure DoApply(var rci : TRenderContextInfo); override;
+         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
          function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
    end;
 
-procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo);
+procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    PassCount:=1;
-   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+   rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glPushAttrib(GL_ENABLE_BIT);
    glPushAttrib(GL_CURRENT_BIT+GL_ENABLE_BIT);
    glColor3fv(@BackgroundColor);
@@ -218,7 +218,7 @@ begin
    case PassCount of
       1 : begin
          PassCount:=2;
-         SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+         rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
          glPopAttrib;
          glColor3fv(@LinesColor);
          glDisable(GL_LIGHTING);
