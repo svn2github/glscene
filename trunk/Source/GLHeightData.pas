@@ -1171,7 +1171,8 @@ end;
 //
 function THeightData.SmallIntHeight(x, y : Integer) : SmallInt;
 begin
-   Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
+   if (Cardinal(x)>=Cardinal(Size)) or (Cardinal(y)>=Cardinal(Size)) then
+      Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
 	Result:=SmallIntRaster[y][x];
 end;
 
@@ -1187,7 +1188,7 @@ end;
 //
 function THeightData.InterpolatedHeight(x, y : Single) : Single;
 var
-   ix, iy : Integer;
+   ix, iy, ixn, iyn : Integer;
    h1, h2, h3 : Single;
 begin
    if FDataState=hdsNone then
@@ -1195,17 +1196,19 @@ begin
    else begin
       ix:=Trunc(x);  x:=Frac(x);
       iy:=Trunc(y);  y:=Frac(y);
-      if x > y then begin
+      ixn:=ix+1; if ixn>=Size then ixn:=ix;
+      iyn:=iy+1; if iyn>=Size then ixn:=iy;
+      if x>y then begin
          // top-right triangle
-         h1:=Height(ix+1,  iy);
-         h2:=Height(ix,    iy);
-         h3:=Height(ix+1,  iy+1);
+         h1:=Height(ixn,  iy);
+         h2:=Height(ix,   iy);
+         h3:=Height(ixn,  iyn);
          Result:=h1+(h2-h1)*(1-x)+(h3-h1)*y;
       end else begin
          // bottom-left triangle
-         h1:=Height(ix,    iy+1);
-         h2:=Height(ix+1,  iy+1);
-         h3:=Height(ix,    iy);
+         h1:=Height(ix,   iyn);
+         h2:=Height(ixn,  iyn);
+         h3:=Height(ix,   iy);
          Result:=h1+(h2-h1)*(x)+(h3-h1)*(1-y);
       end;
    end;
