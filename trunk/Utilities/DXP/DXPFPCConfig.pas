@@ -43,7 +43,7 @@ implementation
 
 const
    cFPCConfigVersion = 'FPCcfg-00.01';
-   cDefaultFPCoptions = '-OG -O2 -Op3 -Or -Sg -Sh -Sa -Ci -vw -Xs -XX';
+   cDefaultFPCoptions = '-OG -O2 -Op3 -Or -Sg -Sh -Sa -Ci -vwnh -Xs -XX';
 
 // Create
 //

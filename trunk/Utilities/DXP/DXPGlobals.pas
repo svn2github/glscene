@@ -17,6 +17,7 @@ var
    vFPC_BinaryPath : String;
    vFPC_TimeOut : Integer = 60*1000;
    vFPC_SourcePaths : String;   // semicolon-separated
+   vFPC_ShowCompileLog : Boolean = False;
 
 procedure StoreDXPGlobals;
 procedure LoadDXPGlobals;
@@ -36,6 +37,7 @@ const
 
    cBinaryPath = 'BinaryPath';
    cSourcePaths = 'SourcePaths';
+   cCompileLog = 'CompileLog';
 
 function IniFileName : String;
 begin
@@ -52,8 +54,9 @@ var
 begin
    ini:=TIniFile.Create(IniFileName);
    try
-      ini.WriteString(cINI_FreePascal, cBinaryPath, vFPC_BinaryPath);
+      ini.WriteString(cINI_FreePascal, cBinaryPath,  vFPC_BinaryPath);
       ini.WriteString(cINI_FreePascal, cSourcePaths, vFPC_SourcePaths);
+      ini.WriteBool  (cINI_FreePascal, cCompileLog,  vFPC_ShowCompileLog);
    finally
       ini.Free;
    end;
@@ -70,6 +73,7 @@ begin
       try
          vFPC_BinaryPath:=ini.ReadString(cINI_FreePascal, cBinaryPath, '');
          vFPC_SourcePaths:=ini.ReadString(cINI_FreePascal, cSourcePaths, '');
+         vFPC_ShowCompileLog:=ini.ReadBool(cINI_FreePascal, cCompileLog, False);
       finally
          ini.Free;
       end;

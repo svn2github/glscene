@@ -26,9 +26,10 @@ type
     BUFPCBinary: TButton;
     Label2: TLabel;
     EDFPCSourcePaths: TEdit;
-    Button1: TButton;
+    BUFPCSource: TButton;
+    CBShowCompileLog: TCheckBox;
     procedure BUFPCBinaryClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure BUFPCSourceClick(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -51,6 +52,7 @@ begin
    // FPC
    EDFPCBinary.Text:=vFPC_BinaryPath;
    EDFPCSourcePaths.Text:=vFPC_SourcePaths;
+   CBShowCompileLog.Checked:=vFPC_ShowCompileLog;
 
    Result:=(ShowModal=mrOk);
 
@@ -60,6 +62,7 @@ begin
       // FPC
       vFPC_BinaryPath:=EDFPCBinary.Text;
       vFPC_SourcePaths:=EDFPCSourcePaths.Text;
+      vFPC_ShowCompileLog:=CBShowCompileLog.Checked;
    end;
 end;
 
@@ -68,7 +71,7 @@ begin
    DXPDirectoryDialog(EDFPCBinary);
 end;
 
-procedure TDXPOptions.Button1Click(Sender: TObject);
+procedure TDXPOptions.BUFPCSourceClick(Sender: TObject);
 var
    buf : String;
 begin

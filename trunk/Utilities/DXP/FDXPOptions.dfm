@@ -106,7 +106,7 @@ object DXPOptions: TDXPOptions
         TabOrder = 2
         Text = 'EDFPCSourcePaths'
       end
-      object Button1: TButton
+      object BUFPCSource: TButton
         Left = 352
         Top = 72
         Width = 27
@@ -114,7 +114,15 @@ object DXPOptions: TDXPOptions
         Anchors = [akTop, akRight]
         Caption = '...'
         TabOrder = 3
-        OnClick = Button1Click
+        OnClick = BUFPCSourceClick
+      end
+      object CBShowCompileLog: TCheckBox
+        Left = 8
+        Top = 104
+        Width = 113
+        Height = 17
+        Caption = 'Show Compile Log'
+        TabOrder = 4
       end
     end
   end

@@ -34,6 +34,8 @@ implementation
 
 {$R *.dfm}
 
+uses ToolsAPI, DXPGlobals;
+
 var
    vDXPCompileLog : TDXPCompileLog;
 
@@ -51,7 +53,9 @@ end;
 procedure ReleaseDXPCompileLog;
 begin
    if Assigned(vDXPCompileLog) then begin
-      vDXPCompileLog.Release;
+      if vDXPCompileLog.Visible then
+         vDXPCompileLog.Close
+      else vDXPCompileLog.Free;
       vDXPCompileLog:=nil;
    end;
 end;
@@ -90,10 +94,16 @@ end;
 procedure TDXPCompileLog.ExecuteOnFPC(const logFileName : String;
                                       expertModule : TDMDXPExpertModule);
 var
-   i, pOpen, pClose, pComma : Integer;
-   line : String;
+   i, pOpen, pClose, pComma, pDots, colNb, lineNb : Integer;
+   line, fName, msgText, location, msgType : String;
+   msgKind : TOTAMessageKind;
+   msgServices : IOTAMessageServices;
+   lineRef : Pointer;
 begin
    DXPExpertModule:=expertModule;
+   msgServices:=(BorlandIDEServices as IOTAMessageServices);
+   msgServices.ClearToolMessages;
+   msgServices.ClearCompilerMessages;
    LVMessages.Clear;
    if FileExists(logFileName) then begin
       MERaw.Lines.LoadFromFile(logFileName);
@@ -109,13 +119,35 @@ begin
       pClose:=Pos(') ', line);
       pComma:=Pos(',', line);
       if (pOpen<=0) or (pClose<=0) or (pComma<=pOpen) or (pComma>=pClose) then continue;
+
+      fName:=Copy(line, 1, pOpen-1);
+      location:=Copy(line, pOpen+1, pClose-pOpen-1);
+      msgText:=Copy(line, pClose+2, MaxInt);
+
+      pDots:=Pos(':', msgText);
+      msgType:=LowerCase(Copy(msgText, 1, pDots-1));
+
+      if msgType='hint' then msgKind:=otamkHint
+      else if msgType='warn' then msgKind:=otamkWarn
+      else if msgType='error' then msgKind:=otamkError
+      else if msgType='fatal' then msgKind:=otamkFatal
+      else msgKind:=otamkInfo;
+
+      pComma:=Pos(',', location);
+      lineNb:=StrToIntDef(Copy(location, 1, pComma-1), 1);
+      colNb:=StrToIntDef(Copy(location, pComma+1, MaxInt), 1);
+
       with LVMessages.Items.Add do begin
-         Caption:=Copy(line, 1, pOpen-1);
-         SubItems.Add(Copy(line, pOpen+1, pClose-pOpen-1));
-         SubItems.Add(Copy(line, pClose+2, MaxInt));
+         Caption:=fName;
+         SubItems.Add(location);
+         SubItems.Add(msgText);
       end;
+      msgServices.AddCompilerMessage(fName, msgText, 'FPC',
+                                     msgKind, lineNb, colNb, nil, lineRef);
    end;
-   Show;
+   msgServices.ShowMessageView(nil);
+   if vFPC_ShowCompileLog then
+      Show;
 end;
 
 procedure TDXPCompileLog.LVMessagesDblClick(Sender: TObject);

@@ -74,8 +74,7 @@ end;
 //
 destructor TDXPExpert.Destroy;
 begin
-   if DXPCompileLogVisible then
-      DXPCompileLog.Close;
+   ReleaseDXPCompileLog;
    vModule.UnHookIDE;
    FreeAndNil(vModule);
    inherited;

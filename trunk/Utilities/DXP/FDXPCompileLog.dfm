@@ -1,8 +1,8 @@
 object DXPCompileLog: TDXPCompileLog
   Left = 222
-  Top = 117
+  Top = 118
   Width = 568
-  Height = 338
+  Height = 337
   Caption = 'DXPCompileLog'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object DXPCompileLog: TDXPCompileLog
     Left = 0
     Top = 0
     Width = 560
-    Height = 309
+    Height = 308
     ActivePage = TSCooked
     Align = alClient
     TabOrder = 0
@@ -28,7 +28,7 @@ object DXPCompileLog: TDXPCompileLog
         Left = 0
         Top = 0
         Width = 552
-        Height = 281
+        Height = 280
         Align = alClient
         BorderStyle = bsNone
         Columns = <
