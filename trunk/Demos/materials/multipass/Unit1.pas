@@ -15,7 +15,8 @@
 
    Additionnal objects around the show a glow/toon edges effect achieved in two
    passes too: the 1st pass activate lines and gives them a width, the second
-   is used to fill the surface (and clear the lines that aren't on edges). 
+   is used to fill the surface (and clear the lines that aren't on edges).
+   (TOutLineShader thanks to Delauney Jerome, jdelauney@free.fr)
 }
 unit Unit1;
 
