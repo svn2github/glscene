@@ -442,8 +442,6 @@ function RoundUpToPowerOf2(value : Integer): Integer;
 function RoundDownToPowerOf2(value : Integer): Integer;
 //: Returns True if value is a true power of two
 function IsPowerOf2(value : Integer) : Boolean;
-//: Normalize and angle in degrees in the -180 +180 range
-function NormalizeAngle(angle : Single) : Single;
 {: Read a CRLF terminated string from a stream.<p>
    The CRLF is NOT in the returned string. }
 function ReadCRLFString(aStream : TStream) : String;
@@ -933,21 +931,6 @@ end;
 function IsPowerOf2(value : Integer) : Boolean;
 begin
    Result:=(Trunc(log2(Value))=log2(Value));
-end;
-
-// NormalizeAngle
-//
-function NormalizeAngle(angle : Single) : Single;
-begin
-   if angle>180 then
-      if angle>180+360 then
-         Result:=angle-Round((angle+180)*(1/360))*360
-      else Result:=angle-360
-   else if angle<-180 then
-      if angle<-180-360 then
-         Result:=angle+Round((180-angle)*(1/360))*360
-      else Result:=angle+360
-   else Result:=angle;
 end;
 
 // ReadCRLFString

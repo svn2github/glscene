@@ -1087,7 +1087,8 @@ const
    cPIdiv180 : Single =  0.017453292;
    c180divPI : Single = 57.29577951;
    c2PI :      Single =  6.283185307;
-   cPIdiv2 :   Single = 1.5707963268;
+   cPIdiv2 :   Single =  1.570796326;
+   cPIdiv4 :   Single =  0.785398163;
    cInv2PI :   Single = 1/6.283185307;
    cInv360 :   Single = 1/360;
    c180 :      Single = 180;
@@ -4765,7 +4766,7 @@ begin
    if Result>PI then
       Result:=Result-2*PI
    else if Result<-PI then
-      Result:=Result-2*PI;
+      Result:=Result+2*PI;
 end;
 
 // NormalizeDegAngle
@@ -4776,7 +4777,7 @@ begin
    if Result>c180 then
       Result:=Result-c360
    else if Result<-c180 then
-      Result:=Result-c360;
+      Result:=Result+c360;
 end;
 
 // SinCos (Extended)

@@ -1341,7 +1341,7 @@ begin
                        TGLMaterialLibrary,
                        TGLCadencer, TAsyncTimer,
                        TCollisionManager, TGLFireFXManager, TGLThorFXManager,
-                       TGLPolygonPFXManager,
+                       TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TBitmapFont, TGLBitmapHDS,
                        TAnimationControler]);
 

@@ -7,6 +7,8 @@
    fire and smoke particle systems for instance).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
+                          and TGLPointLightPFXManager. 
       <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
                           minor sort and render optims 
       <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
@@ -20,7 +22,7 @@ unit GLParticleFX;
 interface
 
 uses Classes, PersistentClasses, GLScene, Geometry, XCollection, GLTexture,
-     GLCadencer, GLMisc, VectorLists;
+     GLCadencer, GLMisc, VectorLists, GLGraphics, GLContext;
 
 type
 
@@ -420,32 +422,60 @@ type
          property Acceleration : TGLCoordinates read FAcceleration write SetAcceleration;
    end;
 
+   // TGLLifeColoredPFXManager
+   //
+   {: Base PFX manager for particles with life colors.<p>
+      Particles have a core and edge color, for subclassing. }
+   TGLLifeColoredPFXManager = class (TGLDynamicPFXManager)
+      private
+         { Private Declarations }
+         FLifeColors : TPFXLifeColors;
+         FColorInner : TGLColor;
+         FColorOuter : TGLColor;
+         FParticleSize : Double;
+
+      protected
+         { Protected Declarations }
+         procedure SetParticleSize(const val : Double);
+         procedure SetLifeColors(const val : TPFXLifeColors);
+         procedure SetColorInner(const val : TGLColor);
+         procedure SetColorOuter(const val : TGLColor);
+
+         function MaxParticleAge : Double; override;
+
+         procedure ComputeColors(var lifeTime : Double; var inner, outer : TColorVector);
+         procedure ComputeInnerColor(var lifeTime : Double; var inner : TColorVector);
+         procedure ComputeOuterColor(var lifeTime : Double; var outer : TColorVector);
+
+      public
+         { Public Declarations }
+         constructor Create(aOwner : TComponent); override;
+         destructor Destroy; override;
+
+         property ParticleSize : Double read FParticleSize write SetParticleSize;
+         property ColorInner : TGLColor read FColorInner write SetColorInner;
+         property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
+         property LifeColors : TPFXLifeColors read FLifeColors write SetLifeColors;
+   end;
+
    // TGLPolygonPFXManager
    //
    {: Polygonal particles FX manager.<p>
       The particles of this manager are made of N-face regular polygon with
-      a core and edge color. No texturing is available. }
-   TGLPolygonPFXManager = class (TGLDynamicPFXManager)
+      a core and edge color. No texturing is available.<br>
+      If you render large particles and don't have T&L acceleration, consider
+      using TGLPointLightPFXManager. }
+   TGLPolygonPFXManager = class (TGLLifeColoredPFXManager)
       private
          { Private Declarations }
-         FLifeColors : TPFXLifeColors;
-         FParticleSize : Double;
          FNbSides : Integer;
-         FColorInner : TGLColor;
-         FColorOuter : TGLColor;
          Fvx, Fvy : TAffineVector;        // NOT persistent
          FVertices : TAffineVectorList;   // NOT persistent
          FVertBuf : TAffineVectorList;    // NOT persistent
 
       protected
          { Protected Declarations }
-         procedure SetLifeColors(const val : TPFXLifeColors);
-         procedure SetParticleSize(const val : Double);
          procedure SetNbSides(const val : Integer);
-         procedure SetColorInner(const val : TGLColor);
-         procedure SetColorOuter(const val : TGLColor);
-
-         function MaxParticleAge : Double; override;
 
          procedure InitializeRendering; override;
          procedure BeginParticles; override;
@@ -460,11 +490,99 @@ type
 
 	   published
 	      { Published Declarations }
-         property ColorInner : TGLColor read FColorInner write SetColorInner;
-         property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
-         property LifeColors : TPFXLifeColors read FLifeColors write SetLifeColors;
-         property ParticleSize : Double read FParticleSize write SetParticleSize;
          property NbSides : Integer read FNbSides write SetNbSides default 6;
+
+         property ParticleSize;
+         property ColorInner;
+         property ColorOuter;
+         property LifeColors;
+   end;
+
+   // TSpriteColorMode
+   //
+   {: Sprite color modes.<p>
+      <ul>
+      <li>scmFade: vertex coloring is used to fade inner-outer
+      <li>scmInner: vertex coloring uses inner color only
+      <li>scmOuter: vertex coloring uses outer color only
+      <li>scmNone: vertex coloring is NOT used (colors are ignored).
+      </ul> }
+   TSpriteColorMode = (scmFade, scmInner, scmOuter, scmNone);
+
+   // TGLBaseSpritePFXManager
+   //
+   {: Base class for sprite-based particles FX managers.<p>
+      The particles are made of optionally centered single-textured quads. }
+   TGLBaseSpritePFXManager = class (TGLLifeColoredPFXManager)
+      private
+         { Private Declarations }
+         FTexHandle : TGLTextureHandle;
+         Fvx, Fvy : TAffineVector;        // NOT persistent
+         FVertices : TAffineVectorList;   // NOT persistent
+         FVertBuf : TAffineVectorList;    // NOT persistent
+
+         FColorMode : TSpriteColorMode;
+
+      protected
+         { Protected Declarations }
+         {: Subclasses should draw their stuff in this bmp32. }
+         procedure PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer); virtual; abstract;
+
+         procedure BindTexture;
+         procedure SetColorMode(const val : TSpriteColorMode);
+
+         procedure InitializeRendering; override;
+         procedure BeginParticles; override;
+         procedure RenderParticle(aParticle : TGLParticle); override;
+         procedure EndParticles; override;
+         procedure FinalizeRendering; override;
+
+      public
+         { Public Declarations }
+         constructor Create(aOwner : TComponent); override;
+         destructor Destroy; override;
+
+         property ColorMode : TSpriteColorMode read FColorMode write SetColorMode;
+   end;
+
+   // TGLPointLightPFXManager
+   //
+   {: A sprite-based particles FX managers using point light maps.<p>
+      The texture map is a round, distance-based transparency map (center "opaque"),
+      you can adjust the quality (size) of the underlying texture map with the
+      TexMapSize property.<p>
+      This PFX manager renders particles similar to what you can get with
+      TGLPolygonPFXManager but stresses fillrate more than T&L rate (and will
+      usually be slower than the PolygonPFX when nbSides is low or T&L acceleration
+      available). Consider this implementation as a sample for your own PFX managers
+      that may use particles with more complex textures. }
+   TGLPointLightPFXManager = class (TGLBaseSpritePFXManager)
+      private
+         { Private Declarations }
+         FTexMapSize : Integer;
+
+      protected
+         { Protected Declarations }
+         procedure PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer); override;
+
+         procedure SetTexMapSize(const val : Integer);
+
+      public
+         { Public Declarations }
+         constructor Create(aOwner : TComponent); override;
+         destructor Destroy; override;
+
+	   published
+	      { Published Declarations }
+         {: Underlying texture map size, as a power of two.<p>
+            Min value is 3 (size=8), max value is 9 (size=512). }
+         property TexMapSize : Integer read FTexMapSize write SetTexMapSize default 5;
+
+         property ColorMode default scmFade;
+         property ParticleSize;
+         property ColorInner;
+         property ColorOuter;
+         property LifeColors;
    end;
 
 {: Returns or creates the TGLBInertia within the given object's behaviours.<p> }
@@ -1506,16 +1624,15 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLPolygonPFXManager ------------------
+// ------------------ TGLLifeColoredPFXManager ------------------
 // ------------------
 
 // Create
 //
-constructor TGLPolygonPFXManager.Create(aOwner : TComponent);
+constructor TGLLifeColoredPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
    FLifeColors:=TPFXLifeColors.Create(Self);
-   FNbSides:=6;
    FColorInner:=TGLColor.CreateInitialized(Self, clrYellow);
    FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector);
    with FLifeColors.Add do begin
@@ -1526,36 +1643,15 @@ end;
 
 // Destroy
 //
-destructor TGLPolygonPFXManager.Destroy;
+destructor TGLLifeColoredPFXManager.Destroy;
 begin
    FLifeColors.Free;
    inherited Destroy;
 end;
 
-// SetColorInner
-//
-procedure TGLPolygonPFXManager.SetColorInner(const val : TGLColor);
-begin
-   FColorInner.Assign(val);
-end;
-
-// SetColorOuter
-//
-procedure TGLPolygonPFXManager.SetColorOuter(const val : TGLColor);
-begin
-   FColorOuter.Assign(val);
-end;
-
-// SetLifeColors
-//
-procedure TGLPolygonPFXManager.SetLifeColors(const val : TPFXLifeColors);
-begin
-   FLifeColors.Assign(Self);
-end;
-
 // SetParticleSize
 //
-procedure TGLPolygonPFXManager.SetParticleSize(const val : Double);
+procedure TGLLifeColoredPFXManager.SetParticleSize(const val : Double);
 begin
    if FParticleSize<>val then begin
       FParticleSize:=val;
@@ -1563,67 +1659,42 @@ begin
    end;
 end;
 
-// SetNbSides
+// SetColorInner
 //
-procedure TGLPolygonPFXManager.SetNbSides(const val : Integer);
+procedure TGLLifeColoredPFXManager.SetColorInner(const val : TGLColor);
 begin
-   if val<>FNbSides then begin
-      FNbSides:=val;
-      if FNbSides<3 then FNbSides:=3;
-      NotifyChange(Self);
-   end;
+   FColorInner.Assign(val);
+end;
+
+// SetColorOuter
+//
+procedure TGLLifeColoredPFXManager.SetColorOuter(const val : TGLColor);
+begin
+   FColorOuter.Assign(val);
+end;
+
+// SetLifeColors
+//
+procedure TGLLifeColoredPFXManager.SetLifeColors(const val : TPFXLifeColors);
+begin
+   FLifeColors.Assign(Self);
 end;
 
 // MaxParticleAge
 //
-function TGLPolygonPFXManager.MaxParticleAge : Double;
+function TGLLifeColoredPFXManager.MaxParticleAge : Double;
 begin
    Result:=LifeColors.MaxLifeTime;
 end;
 
-// InitializeRendering
+// ComputeColors
 //
-procedure TGLPolygonPFXManager.InitializeRendering;
-var
-   i : Integer;
-   matrix : TMatrix;
-   s, c : Single;
-begin
-   glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
-   for i:=0 to 2 do begin
-      Fvx[i]:=matrix[i][0]*FParticleSize;
-      Fvy[i]:=matrix[i][1]*FParticleSize;
-   end;
-   FVertices:=TAffineVectorList.Create;
-   FVertices.Capacity:=FNbSides+2;
-   for i:=0 to FNbSides do begin
-      SinCos(i*c2PI/FNbSides, s, c);
-      FVertices.Add(VectorCombine(FVx, Fvy, c, s));
-   end;
-   FVertBuf:=TAffineVectorList.Create;
-   FVertBuf.Count:=FVertices.Count;
-end;
-
-// BeginParticles
-//
-procedure TGLPolygonPFXManager.BeginParticles;
-begin
-   glPushMatrix;
-end;
-
-// RenderParticle
-//
-procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
+procedure TGLLifeColoredPFXManager.ComputeColors(var lifeTime : Double; var inner, outer : TColorVector);
 var
    i, k, n : Integer;
    f : Single;
-   lifeTime : Double;
-   inner, outer : TColorVector;
-   pos : TAffineVector;
    lck, lck1 : TPFXLifeColor;
-   vertexList : PAffineVectorArray;
 begin
-   lifeTime:=FCurrentTime-aParticle.CreationTime;
    with LifeColors do begin
       n:=Count-1;
       if n<0 then begin
@@ -1652,6 +1723,150 @@ begin
          end;
       end;
    end;
+end;
+
+// ComputeInnerColor
+//
+procedure TGLLifeColoredPFXManager.ComputeInnerColor(var lifeTime : Double; var inner : TColorVector);
+var
+   i, k, n : Integer;
+   f : Single;
+   lck, lck1 : TPFXLifeColor;
+begin
+   with LifeColors do begin
+      n:=Count-1;
+      if n<0 then
+         inner:=ColorInner.Color
+      else begin
+         if n>0 then begin
+            k:=-1;
+            for i:=0 to n do
+               if Items[i].LifeTime<lifeTime then k:=i;
+            if k<n then Inc(k);
+         end else k:=0;
+         case k of
+            0 : begin
+               lck:=LifeColors[k];
+               f:=lifeTime*lck.InvLifeTime;
+               VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
+            end;
+         else
+            lck:=LifeColors[k];
+            lck1:=LifeColors[k-1];
+            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+            VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
+         end;
+      end;
+   end;
+end;
+
+// ComputeOuterColor
+//
+procedure TGLLifeColoredPFXManager.ComputeOuterColor(var lifeTime : Double; var outer : TColorVector);
+var
+   i, k, n : Integer;
+   f : Single;
+   lck, lck1 : TPFXLifeColor;
+begin
+   with LifeColors do begin
+      n:=Count-1;
+      if n<0 then
+         outer:=ColorOuter.Color
+      else begin
+         if n>0 then begin
+            k:=-1;
+            for i:=0 to n do
+               if Items[i].LifeTime<lifeTime then k:=i;
+            if k<n then Inc(k);
+         end else k:=0;
+         case k of
+            0 : begin
+               lck:=LifeColors[k];
+               f:=lifeTime*lck.InvLifeTime;
+               VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
+            end;
+         else
+            lck:=LifeColors[k];
+            lck1:=LifeColors[k-1];
+            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+            VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
+         end;
+      end;
+   end;
+end;
+
+// ------------------
+// ------------------ TGLPolygonPFXManager ------------------
+// ------------------
+
+// Create
+//
+constructor TGLPolygonPFXManager.Create(aOwner : TComponent);
+begin
+   inherited;
+   FNbSides:=6;
+end;
+
+// Destroy
+//
+destructor TGLPolygonPFXManager.Destroy;
+begin
+   inherited Destroy;
+end;
+
+// SetNbSides
+//
+procedure TGLPolygonPFXManager.SetNbSides(const val : Integer);
+begin
+   if val<>FNbSides then begin
+      FNbSides:=val;
+      if FNbSides<3 then FNbSides:=3;
+      NotifyChange(Self);
+   end;
+end;
+
+// InitializeRendering
+//
+procedure TGLPolygonPFXManager.InitializeRendering;
+var
+   i : Integer;
+   matrix : TMatrix;
+   s, c : Single;
+begin
+   glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+   for i:=0 to 2 do begin
+      Fvx[i]:=matrix[i][0]*FParticleSize;
+      Fvy[i]:=matrix[i][1]*FParticleSize;
+   end;
+   FVertices:=TAffineVectorList.Create;
+   FVertices.Capacity:=FNbSides;
+   for i:=0 to FNbSides-1 do begin
+      SinCos(i*c2PI/FNbSides, s, c);
+      FVertices.Add(VectorCombine(FVx, Fvy, c, s));
+   end;
+   FVertBuf:=TAffineVectorList.Create;
+   FVertBuf.Count:=FVertices.Count;
+end;
+
+// BeginParticles
+//
+procedure TGLPolygonPFXManager.BeginParticles;
+begin
+   // nothing
+end;
+
+// RenderParticle
+//
+procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
+var
+   i : Integer;
+   lifeTime : Double;
+   inner, outer : TColorVector;
+   pos : TAffineVector;
+   vertexList : PAffineVectorArray;
+begin
+   lifeTime:=FCurrentTime-aParticle.CreationTime;
+   ComputeColors(lifeTime, inner, outer);
 
    pos:=aParticle.Position;
 
@@ -1663,6 +1878,7 @@ begin
       glColor4fv(@outer);
       for i:=0 to FVertBuf.Count-1 do
          glVertex3fv(@vertexList[i]);
+      glVertex3fv(@vertexList[0]);
    glEnd;
 end;
 
@@ -1670,7 +1886,7 @@ end;
 //
 procedure TGLPolygonPFXManager.EndParticles;
 begin
-   glPopMatrix;
+   // nothing
 end;
 
 // FinalizeRendering
@@ -1679,6 +1895,249 @@ procedure TGLPolygonPFXManager.FinalizeRendering;
 begin
    FVertBuf.Free;
    FVertices.Free;
+end;
+
+// ------------------
+// ------------------ TGLBaseSpritePFXManager ------------------
+// ------------------
+
+// Create
+//
+constructor TGLBaseSpritePFXManager.Create(aOwner : TComponent);
+begin
+   inherited;
+   FTexHandle:=TGLTextureHandle.Create;
+end;
+
+// Destroy
+//
+destructor TGLBaseSpritePFXManager.Destroy;
+begin
+   FTexHandle.Free;
+   inherited Destroy;
+end;
+
+// SetColorMode
+//
+procedure TGLBaseSpritePFXManager.SetColorMode(const val : TSpriteColorMode);
+begin
+   if val<>FColorMode then begin
+      FColorMode:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// BindTexture
+//
+procedure TGLBaseSpritePFXManager.BindTexture;
+var
+   bmp32 : TGLBitmap32;
+   tw, th, tf : Integer;
+begin
+   if FTexHandle.Handle=0 then begin
+      FTexHandle.AllocateHandle;
+      glBindTexture(GL_TEXTURE_2D, FTexHandle.Handle);
+
+   	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	   glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+   	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	   glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+   	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+
+	   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+      bmp32:=TGLBitmap32.Create;
+      try
+         tf:=GL_RGBA;
+         PrepareImage(bmp32, tf);
+         tw:=bmp32.Width;
+         th:=bmp32.Height;
+         bmp32.RegisterAsOpenGLTexture(GL_TEXTURE_2D, miLinearMipmapLinear,
+                                       tf, tw, th);
+      finally
+         bmp32.Free;
+      end;
+   end else glBindTexture(GL_TEXTURE_2D, FTexHandle.Handle);
+end;
+
+// InitializeRendering
+//
+procedure TGLBaseSpritePFXManager.InitializeRendering;
+var
+   i : Integer;
+   matrix : TMatrix;
+   s, c : Single;
+begin
+   glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+   for i:=0 to 2 do begin
+      Fvx[i]:=matrix[i][0]*FParticleSize;
+      Fvy[i]:=matrix[i][1]*FParticleSize;
+   end;
+   FVertices:=TAffineVectorList.Create;
+   for i:=0 to 3 do begin
+      SinCos(i*cPIdiv2+cPIdiv4, s, c);
+      FVertices.Add(VectorCombine(FVx, Fvy, c, s));
+   end;
+   FVertBuf:=TAffineVectorList.Create;
+   FVertBuf.Count:=FVertices.Count;
+end;
+
+// BeginParticles
+//
+procedure TGLBaseSpritePFXManager.BeginParticles;
+begin
+   glEnable(GL_TEXTURE_2D);
+   BindTexture;
+   if ColorMode=scmNone then
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+   else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+   if ColorMode<>scmFade then
+      glBegin(GL_QUADS);
+end;
+
+// RenderParticle
+//
+procedure TGLBaseSpritePFXManager.RenderParticle(aParticle : TGLParticle);
+var
+   lifeTime : Double;
+   inner, outer : TColorVector;
+   pos : TAffineVector;
+   vertexList : PAffineVectorArray;
+
+   procedure IssueVertices;
+   begin
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3fv(@vertexList[0]);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3fv(@vertexList[1]);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3fv(@vertexList[2]);
+      glTexCoord2fv(@XTexPoint);
+      glVertex3fv(@vertexList[3]);
+   end;
+
+begin
+   lifeTime:=FCurrentTime-aParticle.CreationTime;
+
+   pos:=aParticle.Position;
+   vertexList:=FVertBuf.List;
+   VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+
+   case ColorMode of
+      scmFade : begin
+         ComputeColors(lifeTime, inner, outer);
+         glBegin(GL_TRIANGLE_FAN);
+            glColor4fv(@inner);
+            glTexCoord2f(0.5, 0.5);
+            glVertex3fv(@pos);
+            glColor4fv(@outer);
+            IssueVertices;
+            glTexCoord2fv(@XYTexPoint);
+            glVertex3fv(@vertexList[0]);
+         glEnd;
+      end;
+      scmInner : begin
+         ComputeInnerColor(lifeTime, inner);
+         glColor4fv(@inner);
+         IssueVertices;
+      end;
+      scmOuter : begin
+         ComputeOuterColor(lifeTime, outer);
+         glColor4fv(@outer);
+         IssueVertices;
+      end;
+      scmNone : begin
+         IssueVertices;
+      end;
+   else
+      Assert(False);
+   end;
+end;
+
+// EndParticles
+//
+procedure TGLBaseSpritePFXManager.EndParticles;
+begin
+   if ColorMode<>scmFade then
+      glEnd;
+   glDisable(GL_TEXTURE_2D);
+end;
+
+// FinalizeRendering
+//
+procedure TGLBaseSpritePFXManager.FinalizeRendering;
+begin
+   FVertBuf.Free;
+   FVertices.Free;
+end;
+
+// ------------------
+// ------------------ TGLPointLightPFXManager ------------------
+// ------------------
+
+// Create
+//
+constructor TGLPointLightPFXManager.Create(aOwner : TComponent);
+begin
+   inherited;
+   FTexMapSize:=5;
+   FColorMode:=scmFade;
+end;
+
+// Destroy
+//
+destructor TGLPointLightPFXManager.Destroy;
+begin
+   inherited Destroy;
+end;
+
+// SetTexMapSize
+//
+procedure TGLPointLightPFXManager.SetTexMapSize(const val : Integer);
+begin
+   if val<>FTexMapSize then begin
+      FTexMapSize:=val;
+      if FTexMapSize<3 then FTexMapSize:=3;
+      if FTexMapSize>9 then FTexMapSize:=9;
+      NotifyChange(Self);
+   end;
+end;
+
+// BindTexture
+//
+procedure TGLPointLightPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer);
+var
+   s : Integer;
+   x, y, d, h2 : Integer;
+   ih2, f, fy : Single;
+   scanLine1, scanLine2 : PGLPixel32Array;
+   invert : Boolean;
+begin
+   s:=(1 shl TexMapSize);
+   bmp32.Width:=s;
+   bmp32.Height:=s;
+   texFormat:=GL_LUMINANCE_ALPHA;
+
+   h2:=s div 2;
+   ih2:=1/h2;
+   invert:=False;
+   for y:=0 to h2-1 do begin
+      fy:=Sqr((y+0.5-h2)*ih2);
+      scanLine1:=bmp32.ScanLine[y];
+      scanLine2:=bmp32.ScanLine[s-1-y];
+      for x:=0 to h2-1 do begin
+         f:=Sqr((x+0.5-h2)*ih2)+fy;
+         if f<1 then begin
+            d:=Trunc((1-Sqrt(f))*256);
+            d:=d+(d shl 8)+(d shl 16)+(d shl 24);
+         end else d:=0;
+         PInteger(@scanLine1[x])^:=d;
+         PInteger(@scanLine2[x])^:=d;
+         PInteger(@scanLine1[s-1-x])^:=d;
+         PInteger(@scanLine2[s-1-x])^:=d;
+      end;
+   end;
 end;
 
 // ------------------------------------------------------------------
@@ -1692,7 +2151,8 @@ initialization
    // class registrations
    RegisterClasses([TGLParticle, TGLParticleList,
                     TGLParticleFXEffect, TGLParticleFXRenderer,
-                    TGLPolygonPFXManager]);
+                    TGLPolygonPFXManager,
+                    TGLPointLightPFXManager]);
    RegisterXCollectionItemClass(TGLSourcePFXEffect);
 
    // preparation for high resolution timer
