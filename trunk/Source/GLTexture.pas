@@ -3,6 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/07/03 - EG - Material.Texture now autocreating,
+                          added per-texture brightness and gamma correction 
       <li>13/06/03 - EG - cubemap images can now be saved/restored as a whole
       <li>05/06/03 - EG - Assign fixes (Andrzej Kaluza)
       <li>23/05/03 - EG - More generic libmaterial registration
@@ -708,7 +710,7 @@ type
       DoApply, DoUnApply and DoFinalize. }
    TGLShader = class (TGLUpdateAbleComponent)
 	   private
-	      { Protected Declarations }
+	      { Private Declarations }
          FLibMatUsers : TList;
          FVirtualHandle : TGLVirtualHandle;
          FShaderStyle : TGLShaderStyle;
@@ -816,6 +818,7 @@ type
       Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
 	TGLTexture = class (TGLUpdateAbleObject)
 		private
+	      { Private Declarations }
 			FTextureHandle       : TGLTextureHandle;
 			FTextureMode         : TGLTextureMode;
 			FTextureWrap         : TGLTextureWrap;
@@ -826,6 +829,8 @@ type
 			FDisabled            : Boolean;
 			FImage               : TGLTextureImage;
 			FImageAlpha          : TGLTextureImageAlpha;
+         FImageBrightness     : Single;
+         FImageGamma          : Single;
          FMappingMode         : TGLTextureMappingMode;
          FMapSCoordinates     : TGLCoordinates4;
          FMapTCoordinates     : TGLCoordinates4;
@@ -836,8 +841,15 @@ type
          FTexWidth, FTexHeight : Integer;
 
 		protected
+			{ Protected Declarations }
+         procedure NotifyImageChange;
+
 			procedure SetImage(AValue: TGLTextureImage);
 			procedure SetImageAlpha(const val : TGLTextureImageAlpha);
+         procedure SetImageBrightness(const val : Single);
+         function  StoreBrightness : Boolean;
+         procedure SetImageGamma(const val : Single);
+         function  StoreGamma : Boolean;
 			procedure SetMagFilter(AValue: TGLMagFilter);
 			procedure SetMinFilter(AValue: TGLMinFilter);
 			procedure SetTextureMode(AValue: TGLTextureMode);
@@ -866,6 +878,7 @@ type
          procedure DoOnTextureNeeded(Sender : TObject; var textureFileName : String);
 
 		public
+	      { Public Declarations }
 			constructor Create(AOwner: TPersistent); override;
 			destructor  Destroy; override;
 
@@ -916,6 +929,7 @@ type
          property TexHeight : Integer read FTexHeight;
 
 		published
+	      { Published Declarations }
 
 			{: Image ClassName for enabling True polymorphism.<p>
 				This is ugly, but since the default streaming mechanism does a
@@ -931,6 +945,17 @@ type
             Allows to control how and if the image's Alpha channel (transparency)
             is computed. }
 			property ImageAlpha : TGLTextureImageAlpha read FImageAlpha write SetImageAlpha default tiaDefault;
+         {: Texture brightness correction.<p>
+            This correction is applied upon loading a TGLTextureImage, it's a
+            simple saturating scaling applied to the RGB components of
+            the 32 bits image, before it is passed to OpenGL, and before
+            gamma correction (if any). }
+         property ImageBrightness : Single read FImageBrightness write SetImageBrightness stored StoreBrightness;
+         {: Texture gamma correction.<p>
+            The gamma correction is applied upon loading a TGLTextureImage,
+            applied to the RGB components of the 32 bits image, before it is
+            passed to OpenGL, after brightness correction (if any). }
+         property ImageGamma : Single read FImageGamma write SetImageGamma stored StoreGamma;
 
          {: Texture magnification filter. }
 			property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maLinear;
@@ -1065,6 +1090,7 @@ type
          procedure SetFrontProperties(Values: TGLFaceProperties);
          procedure SetBlendingMode(const val : TBlendingMode);
          procedure SetMaterialOptions(const val : TMaterialOptions);
+         function  GetTexture : TGLTexture;
          procedure SetTexture(ATexture: TGLTexture);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure SetLibMaterialName(const val : TGLLibMaterialName);
@@ -1109,7 +1135,7 @@ type
 			property FrontProperties: TGLFaceProperties read FFrontProperties write SetFrontProperties stored StoreMaterialProps;
 			property BlendingMode : TBlendingMode read FBlendingMode write SetBlendingMode stored StoreMaterialProps default bmOpaque;
          property MaterialOptions : TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
-			property Texture: TGLTexture read FTexture write SetTexture stored StoreMaterialProps;
+			property Texture : TGLTexture read GetTexture write SetTexture stored StoreMaterialProps;
          property FaceCulling : TFaceCulling read FFaceCulling write SetFaceCulling default fcBufferDefault;
 
 			property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
@@ -2680,6 +2706,8 @@ begin
 	FImage:=TGLPersistentImage.Create(Self);
    FImage.FOnTextureNeeded:=DoOnTextureNeeded;
 	FImageAlpha:=tiaDefault;
+   FImageBrightness:=1.0;
+   FImageGamma:=1.0;
 	FMagFilter:=maLinear;
 	FMinFilter:=miLinearMipMapLinear;
    FFilteringQuality:=tfIsotropic;
@@ -2729,6 +2757,14 @@ begin
 	end else inherited Assign(Source);
 end;
 
+// NotifyImageChange
+//
+procedure TGLTexture.NotifyImageChange;
+begin
+   Include(FChanges, tcImage);
+   NotifyChange(Self);
+end;
+
 // SetImage
 //
 procedure TGLTexture.SetImage(AValue: TGLTextureImage);
@@ -2749,8 +2785,7 @@ begin
 		FImage.Free;
 		FImage:=TGLTextureImageClass(FindGLTextureImageClass(val)).Create(Self);
       FImage.OnTextureNeeded:=DoOnTextureNeeded;
-		Include(FChanges, tcImage);
-		NotifyChange(Self);
+      NotifyImageChange;
 	end;
 end;
 
@@ -2786,9 +2821,44 @@ end;
 //
 procedure TGLTexture.SetImageAlpha(const val : TGLTextureImageAlpha);
 begin
-	FImageAlpha:=val;
-	Include(FChanges, tcImage);
-	NotifyChange(Self);
+   if FImageAlpha<>val then begin
+   	FImageAlpha:=val;
+      NotifyImageChange;
+   end;
+end;
+
+// SetImageBrightness
+//
+procedure TGLTexture.SetImageBrightness(const val : Single);
+begin
+   if FImageBrightness<>val then begin
+   	FImageBrightness:=val;
+      NotifyImageChange;
+   end;
+end;
+
+// StoreBrightness
+//
+function TGLTexture.StoreBrightness : Boolean;
+begin
+	Result:=(FImageBrightness<>1.0);
+end;
+
+// SetImageGamma
+//
+procedure TGLTexture.SetImageGamma(const val : Single);
+begin
+   if FImageGamma<>val then begin
+   	FImageGamma:=val;
+      NotifyImageChange;
+   end;
+end;
+
+// StoreGamma
+//
+function TGLTexture.StoreGamma : Boolean;
+begin
+	Result:=(FImageGamma<>1.0);
 end;
 
 // SetMagFilter
@@ -3311,6 +3381,13 @@ begin
    else
       Assert(False);
    end;
+   // apply brightness correction
+   if FImageBrightness<>1.0 then 
+      bitmap32.BrightnessCorrection(FImageBrightness);
+   // apply gamma correction
+   if FImageGamma<>1.0 then
+      bitmap32.GammaCorrection(FImageGamma);
+
    CheckOpenGLError;
    bitmap32.RegisterAsOpenGLTexture(target, MinFilter, targetFormat, FTexWidth, FTexHeight);
    glGetTexLevelParameteriv(target, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB,
@@ -3387,7 +3464,7 @@ constructor TGLMaterial.Create(AOwner: TPersistent);
 begin
   inherited;
   FFrontProperties:=TGLFaceProperties.Create(Self);
-  FTexture:=TGLTexture.Create(Self);
+  FTexture:=nil; // AutoCreate
   FFaceCulling:=fcBufferDefault;
 end;
 
@@ -3448,11 +3525,22 @@ begin
    end;
 end;
 
+// GetTexture
+//
+function TGLMaterial.GetTexture : TGLTexture;
+begin
+   if not Assigned(FTexture) then
+      FTexture:=TGLTexture.Create(Self);
+   Result:=FTexture;
+end;
+
 // SetTexture
 //
-procedure TGLMaterial.SetTexture(ATexture: TGLTexture);
+procedure TGLMaterial.SetTexture(aTexture : TGLTexture);
 begin
-	FTexture.Assign(ATexture);
+   if Assigned(aTexture) then
+   	Texture.Assign(ATexture)
+   else FreeAndNil(FTexture);
 end;
 
 // SetFaceCulling
@@ -3537,8 +3625,8 @@ end;
 //
 procedure TGLMaterial.PrepareBuildList;
 begin
-   if not FTexture.Disabled then
-      Texture.PrepareBuildList;
+   if Assigned(FTexture) and (not FTexture.Disabled) then
+      FTexture.PrepareBuildList;
 end;
 
 // Apply
@@ -3610,7 +3698,8 @@ begin
             Inc(rci.fogDisabledCounter);
          end;
       end;
-   	FTexture.Apply(rci);
+      if Assigned(FTexture) then
+      	FTexture.Apply(rci);
 	end;
 end;
 
@@ -3635,7 +3724,7 @@ begin
                SetGLState(rci.currentStates, stFog);
          end;
       end;
-      if not FTexture.Disabled then
+      if Assigned(FTexture) and (not FTexture.Disabled) then
          FTexture.UnApply(rci);
       Result:=False;
    end;
@@ -3652,7 +3741,7 @@ begin
       FFrontProperties.Assign(TGLMaterial(Source).FFrontProperties);
 		FBlendingMode:=TGLMaterial(Source).FBlendingMode;
       FMaterialOptions:=TGLMaterial(Source).FMaterialOptions;
-      FTexture.Assign(TGLMaterial(Source).FTexture);
+      Texture.Assign(TGLMaterial(Source).FTexture);
       FFaceCulling:=TGLMaterial(Source).FFaceCulling;
 		FMaterialLibrary:=TGLMaterial(Source).MaterialLibrary;
       SetLibMaterialName(TGLMaterial(Source).LibMaterialName);
@@ -3686,7 +3775,8 @@ end;
 //
 procedure TGLMaterial.DestroyHandles;
 begin
-   Texture.DestroyHandles;
+   if Assigned(FTexture) then
+      FTexture.DestroyHandles;
 end;
 
 // Blended
@@ -3705,18 +3795,20 @@ begin
    Result:=Assigned(currentLibMaterial) and Assigned(currentLibMaterial.libMatTexture2);
 end;
 
+// MaterialIsLinkedToLib
+//
 function TGLMaterial.MaterialIsLinkedToLib : Boolean;
 begin
    Result:=Assigned(currentLibMaterial);
 end;
 
-function TGLMaterial.GetActualPrimaryTexture: TGLTexture;
-
+// GetActualPrimaryTexture
+//
+function TGLMaterial.GetActualPrimaryTexture : TGLTexture;
 begin
-   If Assigned(currentLibMaterial) then
-      Result := currentLibMaterial.material.Texture
-   else
-      Result := Texture;
+   if Assigned(currentLibMaterial) then
+      Result:=currentLibMaterial.Material.Texture
+   else Result:=Texture;
 end;
 
 // ------------------
