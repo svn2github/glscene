@@ -395,7 +395,7 @@ var
    tilePos, absTilePos, observer : TAffineVector;
    deltaX, nbX, iX : Integer;
    deltaY, nbY, iY : Integer;
-   n, rpIdxDelta : Integer;
+   n, rpIdxDelta, accumCount : Integer;
    f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist : Single;
    patch, prevPatch : TGLROAMPatch;
    patchList, rowList, prevRow, buf : TList;
@@ -457,7 +457,7 @@ begin
    else qDist:=-1;
 
    SetROAMTrianglesCapacity(MaxCLODTriangles);
-   n:=Sqr(TileSize+1)*2;
+   n:=MaxInteger(MaxCLODTriangles*2, Sqr(TileSize+1)*2);
    FBufferVertices.Capacity:=n;
    FBufferTexPoints.Capacity:=n;
 
@@ -567,8 +567,8 @@ begin
                if patch.HighRes then begin
                   // high-res patches are issued immediately
                   ApplyMaterial(patch.HeightData.MaterialName);
-                  patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
-                               (QualityStyle=hrsTesselated));
+                  patch.RenderHighRes(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
+                                      (QualityStyle=hrsTesselated));
                   FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
                end else begin
                   // CLOD patches are issued after tesselation
@@ -599,6 +599,8 @@ begin
       rowList.Count:=0;
    end;
 
+   accumCount:=FBufferVertexIndices.Capacity shr 3;
+
    // Interleave Tesselate and Render so we can send some work to the hardware
    // while the CPU keeps working
    rpIdxDelta:=Round(2*f/TileSize)+2;
@@ -616,11 +618,14 @@ begin
          patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
          if Assigned(patch) then begin
             ApplyMaterial(patch.HeightData.MaterialName);
-            patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints, False);
+            patch.RenderAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints,
+                              accumCount);
             Inc(FLastTriangleCount, patch.TriangleCount);
          end;
       end;
    end;
+   if FBufferVertexIndices.Count>0 then
+      patch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
 
    xglPushState;
    try

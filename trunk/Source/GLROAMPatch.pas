@@ -51,7 +51,7 @@ type
          FTag : Integer;
          FObserverPosition : TAffineVector;
          FNorth, FSouth, FWest, FEast : TGLROAMPatch; // neighbours
-         FHighRes, FNoDetails : Boolean;
+         FHighRes : Boolean;
          FMaxDepth : Integer;
          FVertexScale, FVertexOffset : TAffineVector;
          FTextureScale, FTextureOffset : TAffineVector;
@@ -85,13 +85,28 @@ type
          procedure ConnectToTheNorth(northPatch : TGLROAMPatch);
          procedure Tesselate;
 
-         {: Render the patch.<p>
+         {: Render the patch in high-resolution.<p>
             The lists are assumed to have enough capacity to allow AddNC calls
-            (additions without capacity check). }
-         procedure Render(vertices : TAffineVectorList;
-                          vertexIndices : TIntegerList;
-                          texCoords : TTexPointList;
-                          forceROAM : Boolean);
+            (additions without capacity check). High-resolution renders use
+            display lists, and are assumed to be made together. }
+         procedure RenderHighRes(vertices : TAffineVectorList;
+                                 vertexIndices : TIntegerList;
+                                 texCoords : TTexPointList;
+                                 forceROAM : Boolean);
+         {: Render the patch by accumulating triangles.<p>
+            The lists are assumed to have enough capacity to allow AddNC calls
+            (additions without capacity check).<br>
+            Once at least autoFlushVertexCount vertices have been accumulated,
+            perform a FlushAccum }
+         procedure RenderAccum(vertices : TAffineVectorList;
+                               vertexIndices : TIntegerList;
+                               texCoords : TTexPointList;
+                               autoFlushVertexCount : Integer);
+         {: Render all vertices accumulated in the arrays and set their count
+            back to zero. }
+         procedure FlushAccum(vertices : TAffineVectorList;
+                              vertexIndices : TIntegerList;
+                              texCoords : TTexPointList);
 
          property HeightData : THeightData read FHeightData write SetHeightData;
          property VertexScale : TAffineVector read FVertexScale write FVertexScale;
@@ -103,7 +118,6 @@ type
          property TextureOffset : TAffineVector read FTextureOffset write FTextureOffset;
 
          property HighRes : Boolean read FHighRes write FHighRes;
-         property NoDetails : Boolean read FNoDetails write FNoDetails;
 
          {: Number of frames to skip after an occlusion test returned zero pixels. }
          property OcclusionSkip : Integer read FOcclusionSkip write SetOcclusionSkip;
@@ -131,6 +145,10 @@ implementation
 // ------------------------------------------------------------------
 
 uses OpenGL1x, XOpenGL, SysUtils;
+
+var
+   FVBOVertHandle, FVBOTexHandle : TGLVBOArrayBufferHandle;
+   FVBOIndicesHandle : TGLVBOElementArrayHandle;
 
 type
 
@@ -550,86 +568,135 @@ begin
    RecursTessellate(FBRNode, 1, VertexDist(s, 0), VertexDist(0, s), VertexDist(s, s));
 end;
 
-// Render
+// RenderHighRes
 //
-procedure TGLROAMPatch.Render(vertices : TAffineVectorList;
-                              vertexIndices : TIntegerList;
-                              texCoords : TTexPointList;
-                              forceROAM : Boolean);
+procedure TGLROAMPatch.RenderHighRes(vertices : TAffineVectorList;
+                                     vertexIndices : TIntegerList;
+                                     texCoords : TTexPointList;
+                                     forceROAM : Boolean);
 var
    primitive : TGLEnum;
-   occlusionPassed : Boolean;
 begin
-   if FNoDetails then begin
-      glActiveTextureARB(GL_TEXTURE1_ARB);
-      glDisable(GL_TEXTURE_2D);
-      glActiveTextureARB(GL_TEXTURE0_ARB);
-   end;
-   if HighRes then begin
-      // High-res tiles use a brute-force stripifier and display lists
-      if FListHandle.Handle=0 then begin
-         if forceROAM then begin
-            ResetTessellation;
-            Tesselate;
-            RenderROAM(vertices, vertexIndices, texCoords);
-            primitive:=GL_TRIANGLES;
-            FTriangleCount:=vertexIndices.Count div 3;
-         end else begin
-            RenderAsStrips(vertices, vertexIndices, texCoords);
-            primitive:=GL_TRIANGLE_STRIP;
-            FTriangleCount:=vertexIndices.Count-2*FPatchSize;
-         end;
-
-         vertices.Translate(VertexOffset);
-         texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
-                                     PTexPoint(@TextureOffset)^);
-
-         FListHandle.AllocateHandle;
-         glNewList(FListHandle.Handle, GL_COMPILE);
-         glDrawElements(primitive, vertexIndices.Count,
-                        GL_UNSIGNED_INT, vertexIndices.List);
-         glEndList;
-      end;
-      glCallList(FListHandle.Handle);
-   end else begin
-      // CLOD tiles are rendered via ROAM
-      if (FOcclusionSkip>0) and GL_NV_occlusion_query then begin
-         if FOcclusionQuery.Handle=0 then begin
-            FOcclusionQuery.AllocateHandle;
-            FOcclusionCounter:=-(ID mod (FOcclusionSkip));
-         end;
-         occlusionPassed:=(FOcclusionCounter<=0) or (FOcclusionQuery.PixelCount>0);
-         Dec(FOcclusionCounter);
-         if occlusionPassed then begin
-            if FOcclusionCounter<=0 then
-               Inc(FOcclusionCounter, FOcclusionSkip);
-            FOcclusionQuery.BeginOcclusionQuery;
-         end;
-      end else occlusionPassed:=True;
-      FLastOcclusionTestPassed:=occlusionPassed;
-      if occlusionPassed then begin
+   // Prepare display list if needed
+   if FListHandle.Handle=0 then begin
+      // either use brute-force strips or a high-res static tesselation
+      if forceROAM then begin
+         ResetTessellation;
+         Tesselate;
          RenderROAM(vertices, vertexIndices, texCoords);
-         vertices.Translate(VertexOffset);
-         texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
-                                     PTexPoint(@TextureOffset)^);
-         if GL_EXT_compiled_vertex_array then begin
-            glLockArraysEXT(0, vertices.Count);
-            glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
-            glUnLockArraysEXT;
-         end else begin
-            glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
-         end;
+         primitive:=GL_TRIANGLES;
          FTriangleCount:=vertexIndices.Count div 3;
+      end else begin
+         RenderAsStrips(vertices, vertexIndices, texCoords);
+         primitive:=GL_TRIANGLE_STRIP;
+         FTriangleCount:=vertexIndices.Count-2*FPatchSize;
+      end;
 
-         if FOcclusionQuery.Active then
-            FOcclusionQuery.EndOcclusionQuery;
-      end else FTriangleCount:=0;
+      vertices.Translate(VertexOffset);
+      texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
+                                  PTexPoint(@TextureOffset)^);
+
+      glVertexPointer(3, GL_FLOAT, 0, vertices.List);
+      xglTexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
+
+      FListHandle.AllocateHandle;
+      glNewList(FListHandle.Handle, GL_COMPILE);
+      glDrawElements(primitive, vertexIndices.Count,
+                     GL_UNSIGNED_INT, vertexIndices.List);
+      glEndList;
+
+      vertices.Count:=0;
+      texCoords.Count:=0;
+      vertexIndices.Count:=0;
    end;
-   if FNoDetails then begin
-      glActiveTextureARB(GL_TEXTURE1_ARB);
-      glEnable(GL_TEXTURE_2D);
-      glActiveTextureARB(GL_TEXTURE0_ARB);
+   // perform the render
+   glCallList(FListHandle.Handle);
+end;
+
+// RenderAccum
+//
+procedure TGLROAMPatch.RenderAccum(vertices : TAffineVectorList;
+                                   vertexIndices : TIntegerList;
+                                   texCoords : TTexPointList;
+                                   autoFlushVertexCount : Integer);
+var
+   occlusionPassed : Boolean;
+   n, nb, nvi : Integer;
+begin
+   // CLOD tiles are rendered via ROAM
+   if (FOcclusionSkip>0) and GL_NV_occlusion_query then begin
+      if FOcclusionQuery.Handle=0 then begin
+         FOcclusionQuery.AllocateHandle;
+         FOcclusionCounter:=-(ID mod (FOcclusionSkip));
+      end;
+      occlusionPassed:=(FOcclusionCounter<=0) or (FOcclusionQuery.PixelCount>0);
+      Dec(FOcclusionCounter);
+      if occlusionPassed then begin
+         if FOcclusionCounter<=0 then
+            Inc(FOcclusionCounter, FOcclusionSkip);
+         FOcclusionQuery.BeginOcclusionQuery;
+      end;
+   end else occlusionPassed:=True;
+   FLastOcclusionTestPassed:=occlusionPassed;
+   if occlusionPassed then begin
+      nvi:=vertexIndices.Count;
+      n:=vertices.Count;
+      RenderROAM(vertices, vertexIndices, texCoords);
+      nb:=vertices.Count-n;
+      FTriangleCount:=(vertexIndices.Count-nvi) div 3;
+
+      vertices.Translate(VertexOffset, n, nb);
+      texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
+                                  PTexPoint(@TextureOffset)^, n, nb);
+
+      if FOcclusionQuery.Active then begin
+         FlushAccum(vertices, vertexIndices, texCoords);
+         FOcclusionQuery.EndOcclusionQuery;
+      end else if vertexIndices.Count>autoFlushVertexCount then
+         FlushAccum(vertices, vertexIndices, texCoords);
+   end else FTriangleCount:=0;
+end;
+
+// FlushAccum
+//
+procedure TGLROAMPatch.FlushAccum(vertices : TAffineVectorList;
+                                  vertexIndices : TIntegerList;
+                                  texCoords : TTexPointList);
+begin
+//   if GL_ARB_vertex_buffer_object then begin
+   if False then begin // VBO currently off (slower)
+      if FVBOVertHandle.Handle=0 then
+         FVBOVertHandle.AllocateHandle;
+      FVBOVertHandle.BindBufferData(vertices.List, vertices.DataSize, GL_STREAM_DRAW_ARB);
+      glVertexPointer(3, GL_FLOAT, 0, nil);
+
+      if FVBOTexHandle.Handle=0 then
+         FVBOTexHandle.AllocateHandle;
+      FVBOTexHandle.BindBufferData(texCoords.List, texCoords.DataSize, GL_STREAM_DRAW_ARB);
+      xglTexCoordPointer(2, GL_FLOAT, 0, nil);
+
+//      if FVBOIndicesHandle.Handle=0 then
+//         FVBOIndicesHandle.AllocateHandle;
+//      FVBOIndicesHandle.BindBufferData(vertexIndices.List, vertexIndices.DataSize, GL_STREAM_DRAW_ARB);
+
+      glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
+                          GL_UNSIGNED_INT, vertexIndices.List);
+//      glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
+//                          GL_UNSIGNED_INT, nil);
+
+      glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+      glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+   end else if GL_EXT_compiled_vertex_array then begin
+      glLockArraysEXT(0, vertices.Count);
+      glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count-1, vertexIndices.Count,
+                          GL_UNSIGNED_INT, vertexIndices.List);
+      glUnLockArraysEXT;
+   end else begin
+      glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
    end;
+   vertices.Count:=0;
+   texCoords.Count:=0;
+   vertexIndices.Count:=0;
 end;
 
 // RenderROAM
@@ -677,14 +744,14 @@ procedure TGLROAMPatch.RenderROAM(vertices : TAffineVectorList;
 var
    rtl, rtr, rbl, rbr : TROAMRenderPoint;
 begin
-   vertices.Count:=0;
-   texCoords.Count:=0;
+//   vertices.Count:=0;
+//   texCoords.Count:=0;
    renderVertices:=vertices;
    renderTexCoords:=texCoords;
-   vertexIndices.AdjustCapacityToAtLeast(Sqr(FPatchSize)*6);
+   vertexIndices.AdjustCapacityToAtLeast(Sqr(FPatchSize)*6+15000);
    // this is required, the actual item count is maintained out of the list scope
    vertexIndices.SetCountResetsMemory:=False;
-   renderIndices:=vertexIndices.List;
+   renderIndices:=@vertexIndices.List[vertexIndices.Count];
 
    renderRaster:=FHeightData.SmallIntRaster;
 
@@ -775,7 +842,15 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+   FVBOVertHandle:=TGLVBOArrayBufferHandle.Create;
+   FVBOTexHandle:=TGLVBOArrayBufferHandle.Create;
+   FVBOIndicesHandle:=TGLVBOElementArrayHandle.Create;
+
 finalization
+
+   FVBOVertHandle.Free;
+   FVBOTexHandle.Free;
+   FVBOIndicesHandle.Free;
 
    SetROAMTrianglesCapacity(0);
 
