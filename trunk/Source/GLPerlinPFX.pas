@@ -53,7 +53,7 @@ type
 	      { Published Declarations }
          {: Underlying texture map size, as a power of two.<p>
             Min value is 3 (size=8), max value is 9 (size=512). }
-         property TexMapSize : Integer read FTexMapSize write SetTexMapSize default 5;
+         property TexMapSize : Integer read FTexMapSize write SetTexMapSize default 6;
          {: Smoothness of the distance-based intensity.<p>
             This value is the exponent applied to the intensity in the texture,
             basically with a value of 1 (default) the intensity decreases linearly,
@@ -80,6 +80,7 @@ type
          property NoiseAmplitude : Integer read FNoiseAmplitude write SetNoiseAmplitude default 50;
 
          property ColorMode default scmInner;
+         property SpritesPerTexture default sptFour;
          property ParticleSize;
          property ColorInner;
          property ColorOuter;
@@ -105,12 +106,13 @@ uses PerlinNoise, OpenGL1x, VectorGeometry;
 constructor TGLPerlinPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
-   FTexMapSize:=5;
+   FTexMapSize:=6;
    FNoiseScale:=100;
    FNoiseAmplitude:=50;
    FSmoothness:=1;
    FBrightness:=1;
    FGamma:=1;
+   SpritesPerTexture:=sptFour;
    ColorMode:=scmInner;
 end;
 
@@ -198,21 +200,16 @@ end;
 // BindTexture
 //
 procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer);
-var
-   s, s2 : Integer;
-   x, y, d : Integer;
-   is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
-   invGamma : Single;
-   scanLine : PGLPixel32Array;
-   noise : TPerlin3DNoise;
-   gotIntensityCorrection : Boolean;
-begin
-   s:=(1 shl TexMapSize);
-   bmp32.Width:=s;
-   bmp32.Height:=s;
-   texFormat:=GL_LUMINANCE_ALPHA;
-   noise:=TPerlin3DNoise.Create(0);
-   try
+
+   procedure PrepareSubImage(dx, dy, s : Integer; noise : TPerlin3DNoise);
+   var
+      s2 : Integer;
+      x, y, d : Integer;
+      is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
+      invGamma : Single;
+      scanLine : PGLPixel32Array;
+      gotIntensityCorrection : Boolean;
+   begin
       s2:=s shr 1;
       is2:=1/s2;
       pf:=FNoiseScale*0.05*is2;
@@ -226,7 +223,7 @@ begin
 
       for y:=0 to s-1 do begin
          fy:=Sqr((y+0.5-s2)*is2);
-         scanLine:=bmp32.ScanLine[y];
+         scanLine:=bmp32.ScanLine[y+dy];
          for x:=0 to s-1 do begin
             f:=Sqr((x+0.5-s2)*is2)+fy;
             if f<1 then begin
@@ -235,10 +232,45 @@ begin
                   df:=ClampValue(Power(df, InvGamma)*Brightness, 0, 1);
                dfg:=Power((1-Sqrt(f)), FSmoothness);
                d:=Trunc(df*255);
-               d:=d+(d shl 8)+(d shl 16)+(Trunc(dfg*255) shl 24);
-            end else d:=0;
-            PInteger(@scanLine[x])^:=d;
+               with scanLine[x+dx] do begin
+                  r:=d;
+                  g:=d;
+                  b:=d;
+                  a:=Trunc(dfg*255);
+               end;
+            end else PInteger(@scanLine[x+dx])^:=0;
          end;
+      end;
+   end;
+
+var
+   s, s2 : Integer;
+   is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
+   invGamma : Single;
+   scanLine : PGLPixel32Array;
+   noise : TPerlin3DNoise;
+   gotIntensityCorrection : Boolean;
+begin
+   s:=(1 shl TexMapSize);
+   bmp32.Width:=s;
+   bmp32.Height:=s;
+   texFormat:=GL_LUMINANCE_ALPHA;
+   noise:=TPerlin3DNoise.Create(NoiseSeed);
+   try
+      case SpritesPerTexture of
+         sptOne : PrepareSubImage(0, 0, s, noise);
+         sptFour : begin
+            s2:=s div 2;
+            PrepareSubImage(0, 0, s2, noise);
+            noise.Initialize(NoiseSeed+1);
+            PrepareSubImage(s2, 0, s2, noise);
+            noise.Initialize(NoiseSeed+2);
+            PrepareSubImage(0, s2, s2, noise);
+            noise.Initialize(NoiseSeed+3);
+            PrepareSubImage(s2, s2, s2, noise);
+         end;
+      else
+         Assert(False);
       end;
    finally
       noise.Free;

@@ -42,6 +42,7 @@ type
    TGLParticle = class (TPersistentObject)
       private
          { Private Declarations }
+         FID : Integer;             
          FOwner : TGLParticleList;  // NOT persistent
          FPosition : TAffineVector;
          FVelocity : TAffineVector;
@@ -59,6 +60,9 @@ type
 
          {: Refers owner list }
          property Owner : TGLParticleList read FOwner write FOwner;
+         {: Particle's ID, given at birth.<p>
+            ID is a value unique per manager. }
+         property ID : Integer read FID;
          {: Particle's absolute position.<p>
             Note that this property is read-accessed directly at rendering time
             in the innards of the depth-sorting code. }
@@ -142,6 +146,7 @@ type
 			FBlendingMode : TBlendingMode;
          FRenderer : TGLParticleFXRenderer;
          FParticles : TGLParticleList;
+         FNextID : Integer;
 
       protected
          { Protected Declarations }
@@ -179,6 +184,9 @@ type
          procedure EndParticles; virtual; abstract;
          {: Invoked when rendering of particles for this manager is done. }
          procedure FinalizeRendering; dynamic; abstract;
+
+         {: ID for the next created particle. }
+         property NextID : Integer read FNextID write FNextID;
 
          {: Blending mode for the particles.<p>
             Protected and unused in the base class. }
@@ -604,6 +612,11 @@ type
       </ul> }
    TSpriteColorMode = (scmFade, scmInner, scmOuter, scmNone);
 
+   // TSpritesPerTexture
+   //
+   {: Sprites per sprite texture for the SpritePFX. }
+   TSpritesPerTexture = (sptOne, sptFour);
+
    // TGLBaseSpritePFXManager
    //
    {: Base class for sprite-based particles FX managers.<p>
@@ -618,6 +631,7 @@ type
          FAspectRatio : Single;
          FRotation : Single;
 
+         FSpritesPerTexture : TSpritesPerTexture;
          FColorMode : TSpriteColorMode;
 
       protected
@@ -626,6 +640,7 @@ type
          procedure PrepareImage(bmp32 : TGLBitmap32; var texFormat : Integer); virtual; abstract;
 
          procedure BindTexture;
+         procedure SetSpritesPerTexture(const val : TSpritesPerTexture); virtual;
          procedure SetColorMode(const val : TSpriteColorMode);
          procedure SetAspectRatio(const val : Single);
          function StoreAspectRatio : Boolean;
@@ -637,6 +652,8 @@ type
          procedure RenderParticle(aParticle : TGLParticle); override;
          procedure EndParticles; override;
          procedure FinalizeRendering; override;
+
+         property SpritesPerTexture : TSpritesPerTexture read FSpritesPerTexture write SetSpritesPerTexture;
 
       public
          { Public Declarations }
@@ -791,6 +808,7 @@ begin
    inherited WriteToFiler(writer);
    with writer do begin
       WriteInteger(0); // Archive Version 0
+      WriteInteger(FID);
       Write(FPosition, SizeOf(FPosition));
       Write(FVelocity, SizeOf(FVelocity));
       WriteFloat(FCreationTime);
@@ -806,6 +824,7 @@ begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
+      FID:=ReadInteger;
       Read(FPosition, SizeOf(FPosition));
       Read(FVelocity, SizeOf(FVelocity));
       FCreationTime:=ReadFloat;
@@ -964,6 +983,8 @@ end;
 function TGLParticleFXManager.CreateParticle : TGLParticle;
 begin
    Result:=TGLParticle.Create;
+   Result.FID:=FNextID;
+   Inc(FNextID);
    FParticles.AddItem(Result);
 end;
 
@@ -2240,6 +2261,7 @@ constructor TGLBaseSpritePFXManager.Create(aOwner : TComponent);
 begin
    inherited;
    FTexHandle:=TGLTextureHandle.Create;
+   FSpritesPerTexture:=sptOne;
    FAspectRatio:=1;
 end;
 
@@ -2249,6 +2271,17 @@ destructor TGLBaseSpritePFXManager.Destroy;
 begin
    FTexHandle.Free;
    inherited Destroy;
+end;
+
+// SetSpritesPerTexture
+//
+procedure TGLBaseSpritePFXManager.SetSpritesPerTexture(const val : TSpritesPerTexture);
+begin
+   if val<>FSpritesPerTexture then begin
+      FSpritesPerTexture:=val;
+      FTexHandle.DestroyHandle;
+      NotifyChange(Self);
+   end;
 end;
 
 // SetColorMode
@@ -2379,27 +2412,44 @@ end;
 // RenderParticle
 //
 procedure TGLBaseSpritePFXManager.RenderParticle(aParticle : TGLParticle);
+type
+   TTexCoordsSet = array [0..3] of TTexPoint;
+   PTexCoordsSet = ^TTexCoordsSet;
+const
+   cBaseTexCoordsSet : TTexCoordsSet = ((S: 1; T: 1), (S: 0; T: 1), (S: 0; T: 0), (S: 1; T: 0));
+   cTexCoordsSets : array [0..3] of TTexCoordsSet =
+                     ( ((S: 1.0; T: 1.0), (S: 0.5; T: 1.0), (S: 0.5; T: 0.5), (S: 1.0; T: 0.5)),
+                       ((S: 0.5; T: 1.0), (S: 0.0; T: 1.0), (S: 0.0; T: 0.5), (S: 0.5; T: 0.5)),
+                       ((S: 1.0; T: 0.5), (S: 0.5; T: 0.5), (S: 0.5; T: 0.0), (S: 1.0; T: 0.0)),
+                       ((S: 0.5; T: 0.5), (S: 0.0; T: 0.5), (S: 0.0; T: 0.0), (S: 0.5; T: 0.0)));
 var
    lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
    i : Integer;
+   tcs : PTexCoordsSet;
 
    procedure IssueVertices;
    begin
-      glTexCoord2fv(@XYTexPoint);
+      glTexCoord2fv(@tcs[0]);
       glVertex3fv(@vertexList[0]);
-      glTexCoord2fv(@YTexPoint);
+      glTexCoord2fv(@tcs[1]);
       glVertex3fv(@vertexList[1]);
-      glTexCoord2fv(@NullTexPoint);
+      glTexCoord2fv(@tcs[2]);
       glVertex3fv(@vertexList[2]);
-      glTexCoord2fv(@XTexPoint);
+      glTexCoord2fv(@tcs[3]);
       glVertex3fv(@vertexList[3]);
    end;
 
 begin
    lifeTime:=FCurrentTime-aParticle.CreationTime;
+
+   case SpritesPerTexture of
+      sptFour : tcs:=@cTexCoordsSets[(aParticle.ID and 3)];
+   else
+      tcs:=@cBaseTexCoordsSet;
+   end;
 
    pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
