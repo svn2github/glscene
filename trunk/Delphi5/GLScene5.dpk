@@ -178,6 +178,8 @@ contains
   GLEllipseCollision in '..\Source\GLEllipseCollision.pas',
   GLDCE in '..\Source\GLDCE.pas',
   GLProjectedTextures in '..\Source\GLProjectedTextures.pas',
-  GLBlur in '..\Source\GLBlur.pas';
+  GLBlur in '..\Source\GLBlur.pas',
+  GLPerlinBase in '..\Source\GLPerlinBase.pas',
+  GLPerlin in '..\Source\GLPerlin.pas';
 
 end.
