@@ -144,6 +144,7 @@ const // color definitions
 
       // 'static' color definitions
       // sort of grays
+      clrTransparent         : TColorVector = (0,    0,    0,    0);
       clrBlack               : TColorVector = (0,    0,    0,    1);
       clrGray05              : TColorVector = (0.05, 0.05, 0.05, 1);
       clrGray10              : TColorVector = (0.10, 0.10, 0.10, 1);
@@ -3559,6 +3560,7 @@ procedure TGLColorManager.RegisterDefaultColors;
 
 begin
   Capacity:=150;
+  AddColor('clrTransparent',clrTransparent);
   AddColor('clrBlack',clrBlack);
   AddColor('clrGray05',clrGray05);
   AddColor('clrGray10',clrGray10);

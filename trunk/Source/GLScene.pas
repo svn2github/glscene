@@ -1677,7 +1677,7 @@ const
    GLAllStates = [stAlphaTest..stStencilTest];
 
 var
-   vCounterFrequency : TLargeInteger;
+   vCounterFrequency : Int64;
 
 //------------------ external global routines ----------------------------------
 

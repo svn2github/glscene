@@ -9,6 +9,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/09/01 - EG - Optimized Pack (x2.5)
       <li>14/08/01 - EG - Added AfterObjectCreatedByReader
       <li>03/08/01 - EG - Big update with addition of Virtual filers
       <li>24/07/01 - EG - D6-related changes
@@ -187,8 +188,14 @@ type
 			property List: PPointerObjectList read FList;
 
 			property Capacity: Integer read FCapacity write SetCapacity;
+         {: Makes sure capacity is at least aCapacity. }
          procedure RequiredCapacity(aCapacity : Integer);
 
+         {: Removes all "nil" from the list.<p>
+            Note: Capacity is unchanged, no memory us freed, the list is just
+            made shorter. This functions is orders of magnitude faster than
+            its TList eponymous. }
+         procedure Pack;
 			{: Empty the list without freeing the objects. }
 			procedure Clear; dynamic;
          {: Empty the list and free the objects. }
@@ -204,7 +211,6 @@ type
 			function Pop : TObject;
 			function AddObjects(const objectList : TPersistentObjectList) : Integer;
 			procedure RemoveObjects(const objectList : TPersistentObjectList);
-			procedure Pack;
 	end;
 
    // TBinaryReader
@@ -848,15 +854,21 @@ end;
 //
 procedure TPersistentObjectList.Pack;
 var
-	i, k : Integer;
+	i : Integer;
+   srcList, destList : PPointerObjectList;
+   obj : TObject;
 begin
-	k:=0;
-	for i:=0 to FCount-1 do
-		if FList^[i]<>nil then begin
-			FList^[k]:=FList^[i];
-			Inc(k);
-		end;
-	SetCount(k);
+   srcList:=FList;
+   destList:=FList;
+   for i:=0 to FCount-1 do begin
+      obj:=srcList[0];
+      if obj<>nil then begin
+         destList[0]:=obj;
+         destList:=Pointer(Integer(destList)+SizeOf(TObject));
+      end;
+      srcList:=Pointer(Integer(srcList)+SizeOf(TObject));
+   end;
+	SetCount((Integer(destList)-Integer(FList)) div 4);
 end;
 
 // SetCapacity

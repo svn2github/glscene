@@ -121,7 +121,7 @@ uses
   TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
   GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
   GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
-  GLTerrainRenderer,
+  GLParticleFX, GLTerrainRenderer,
 {$ifdef GLS_DELPHI_6_UP} DesignIntf, DesignEditors {$else} DsgnIntf {$endif};
 
 var
@@ -1254,6 +1254,7 @@ begin
                        TGLMaterialLibrary,
                        TGLCadencer, TAsyncTimer,
                        TCollisionManager, TGLFireFXManager, TGLThorFXManager,
+                       TGLPolygonPFXManager,
                        TBitmapFont, TGLBitmapHDS,
                        TAnimationControler]);
 
@@ -1320,6 +1321,7 @@ initialization
       RegisterSceneObject(TArrowLine, 'ArrowLine', glsOCSpecialObjects);
       RegisterSceneObject(TSkyDome, 'SkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TEarthSkyDome, 'EarthSkyDome', glsOCSpecialObjects);
+      RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCSpecialObjects);
       RegisterSceneObject(TSpaceText, 'SpaceText', glsOCSpecialObjects);
       RegisterSceneObject(TTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);
       RegisterSceneObject(TTeapot, 'Teapot', glsOCSpecialObjects);
