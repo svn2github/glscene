@@ -6,7 +6,8 @@
    in the core GLScene units, and moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog
+      <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog,
+                          Added PrecisionTimer funcs 
       <li>06/12/01 - EG - Added several abstraction calls
       <li>31/08/01 - EG - Creation
 	</ul></font>
@@ -60,11 +61,26 @@ function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 
 {: Returns the current value of the highest-resolution counter.<p>
    If the platform has none, should return a value derived from the highest
-   precision time reference available. }
+   precision time reference available, avoiding, if possible, timers that
+   allocate specific system resources. }
 procedure QueryPerformanceCounter(var val : Int64);
 {: Returns the frequency of the counter used by QueryPerformanceCounter.<p>
    Return value is in ticks per second (Hz). }
 procedure QueryPerformanceFrequency(var val : Int64);
+
+{: Starts a precision timer.<p>
+   Returned value should just be considered as 'handle', even if it ain't so.
+   Default platform implementation is to use QueryPerformanceCounter and
+   QueryPerformanceFrequency, if higher precision references are available,
+   they should be used. The timer will and must be stopped/terminated/released
+   with StopPrecisionTimer. }
+function StartPrecisionTimer : Int64;
+{: Computes time elapsed since timer start.<p>
+   Return time lap in seconds. }
+function PrecisionTimerLap(const precisionTimer : Int64) : Double;
+{: Computes time elapsed since timer start and stop timer.<p>
+   Return time lap in seconds. }
+function StopPrecisionTimer(const precisionTimer : Int64) : Double;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -189,6 +205,35 @@ end;
 procedure QueryPerformanceFrequency(var val : Int64);
 begin
    Windows.QueryPerformanceFrequency(val);
+end;
+
+// StartPrecisionTimer
+//
+function StartPrecisionTimer : Int64;
+begin
+   QueryPerformanceCounter(Result);
+end;
+
+// PrecisionTimeLap
+//
+function PrecisionTimerLap(const precisionTimer : Int64) : Double;
+var
+   cur, freq : Int64;
+begin
+   QueryPerformanceCounter(cur);
+   QueryPerformanceFrequency(freq);
+   Result:=(cur-precisionTimer)/freq;
+end;
+
+// StopPrecisionTimer
+//
+function StopPrecisionTimer(const precisionTimer : Int64) : Double;
+var
+   cur, freq : Int64;
+begin
+   QueryPerformanceCounter(cur);
+   QueryPerformanceFrequency(freq);
+   Result:=(cur-precisionTimer)/freq;
 end;
 
 end.
