@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
       <li>13/10/04 - MRQZZZ - Added GLTrail
       <li>03/07/04 - LR - Completly review to take account designtime for Linux
                           Note a problem with TGLColorProperty
@@ -1840,6 +1841,7 @@ initialization
       RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry);
       {$endif}
 
+      RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLAnnulus, 'Annulus', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLExtrusionSolid, 'ExtrusionSolid', glsOCAdvancedGeometry);
@@ -1906,7 +1908,6 @@ initialization
       RegisterSceneObject(TGLMultiProxy, 'MultiProxy', '');
       RegisterSceneObject(TGLRenderPoint, 'Render Point', '');
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
-      RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', '');
       RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '');
    end;
 
