@@ -3,10 +3,11 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>11/01/05 - SG - Another fix for TGLBaseMesh.Assign (dikoe Kenguru)
       <li>11/01/05 - SG - Fix for TGLBaseMesh.Assign when assigning actors
       <li>26/11/04 - MRQZZZ - by Uwe Raabe : fixed TBaseMeshObject.BuildNormals
       <li>26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order to prevent rendering of the GLBaseMesh but allowing the rendering of it's children
-      <li>25/11/04 - SG - Fixed memory leak in TMeshObject (kenguru)
+      <li>25/11/04 - SG - Fixed memory leak in TMeshObject (dikoe Kenguru)
       <li>24/11/04 - MF - Added OctreePointInMesh
       <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
       <li>24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
@@ -5811,6 +5812,7 @@ end;
 procedure TGLBaseMesh.Assign(Source: TPersistent);
 begin
    if Source is TGLBaseMesh then begin
+      FSkeleton.Clear;
       FNormalsOrientation:=TGLBaseMesh(Source).FNormalsOrientation;
       FMaterialLibrary:=TGLBaseMesh(Source).FMaterialLibrary;
       FLightmapLibrary:=TGLBaseMesh(Source).FLightmapLibrary;
