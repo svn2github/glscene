@@ -3,7 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>03/13/03 - Dave - Added TGLCoorinates.SetToZero
+      <li>13/03/03 - Dave - Added TGLCoorinates.SetToZero
       <li>23/10/02 - EG - Added ParseFloat
       <li>22/10/02 - EG - Added ParseInteger
       <li>03/07/02 - EG - Added TGLNodes.Normal
