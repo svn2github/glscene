@@ -43,16 +43,16 @@ object Form1: TForm1
   object BULines: TButton
     Left = 8
     Top = 8
-    Width = 75
+    Width = 73
     Height = 25
     Caption = '20k Lines'
     TabOrder = 0
     OnClick = BULinesClick
   end
   object BUEllipses: TButton
-    Left = 96
+    Left = 88
     Top = 8
-    Width = 75
+    Width = 73
     Height = 25
     Caption = '20k Ellipses'
     TabOrder = 1
@@ -86,22 +86,31 @@ object Form1: TForm1
     TabOrder = 4
   end
   object BUPoints: TButton
-    Left = 272
+    Left = 248
     Top = 8
-    Width = 75
+    Width = 73
     Height = 25
     Caption = '200k Points'
     TabOrder = 5
     OnClick = BUPointsClick
   end
   object BURects: TButton
-    Left = 184
+    Left = 168
     Top = 8
-    Width = 75
+    Width = 73
     Height = 25
     Caption = '20k Rects'
     TabOrder = 6
     OnClick = BURectsClick
+  end
+  object BUTextOut: TButton
+    Left = 328
+    Top = 8
+    Width = 73
+    Height = 25
+    Caption = '20k TextOut'
+    TabOrder = 7
+    OnClick = BUTextOutClick
   end
   object GLScene1: TGLScene
     Left = 16
@@ -110,5 +119,14 @@ object Form1: TForm1
       DepthOfView = 100
       FocalLength = 50
     end
+  end
+  object WindowsBitmapFont: TWindowsBitmapFont
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'Arial'
+    Font.Style = []
+    Left = 464
+    Top = 16
   end
 end

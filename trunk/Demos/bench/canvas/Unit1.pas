@@ -7,14 +7,16 @@
    However, this is not really an apples-to-apples comparison, because GDI
    (or any other software implementations) are useless when it comes to drawing
    to an OpenGL buffer, so, this is more to show that GLCanvas is far from
-   a "decelerator" if you have 2D stuff to draw on your 3D Scene.<p>
+   a "decelerator" if you have some 2D stuff to draw on your 3D Scene.<p>
 
    Figures for PenWidth = 1, GLCanvas / GDI<p>
 
-   CPU         Graphics Board    Lines          Ellipses         Points
+   CPU         Graphics Board    Lines          Ellipses         Points       TextOut
 
-   Tbird 1.2   GF2 Pro           7.1 / 162       92 /  557        40 / 223
-   Duron 800   TNT2 M64        105.0 / 571      400 / 1148       126 / 676
+   Tbird 1.2   GF3 Ti200         5.2 / 227      64 /  756        27 / 408     75 / 208
+   ----29/09/02 - Added TextOut bench
+   Tbird 1.2   GF2 Pro           7.1 / 162       92 /  557       40 / 223
+   Duron 800   TNT2 M64        105.0 / 571      400 / 1148      126 / 676
    ----21/01/02 - Initial
 }
 unit Unit1;
@@ -23,7 +25,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLMisc, ExtCtrls, StdCtrls, GLWin32Viewer;
+  Dialogs, GLScene, GLMisc, ExtCtrls, StdCtrls, GLWin32Viewer,
+  GLBitmapFont, GLWindowsFont;
 
 type
   TForm1 = class(TForm)
@@ -40,11 +43,14 @@ type
     RBPenWidth2: TRadioButton;
     BUPoints: TButton;
     BURects: TButton;
+    BUTextOut: TButton;
+    WindowsBitmapFont: TWindowsBitmapFont;
     procedure GLSceneViewerPostRender(Sender: TObject);
     procedure BULinesClick(Sender: TObject);
     procedure BUEllipsesClick(Sender: TObject);
     procedure BUPointsClick(Sender: TObject);
     procedure BURectsClick(Sender: TObject);
+    procedure BUTextOutClick(Sender: TObject);
   private
     { Private declarations }
     procedure PaintTheBox;
@@ -63,7 +69,7 @@ implementation
 uses GLCanvas, GLCrossPlatform, OpenGL12;
 
 type
-   TWhat = (wLines, wEllipses, wRects, wPoints);
+   TWhat = (wLines, wEllipses, wRects, wPoints, wTextOut);
 
 var
    vWhat : TWhat;
@@ -74,6 +80,7 @@ const
    cNbEllipses = 20000;
    cNbRects = 5000;
    cNbPoints = 200000;
+   cNbTextOuts = 20000;
 
 procedure TForm1.BULinesClick(Sender: TObject);
 begin
@@ -96,6 +103,12 @@ end;
 procedure TForm1.BUPointsClick(Sender: TObject);
 begin
    vWhat:=wPoints;
+   Bench;
+end;
+
+procedure TForm1.BUTextOutClick(Sender: TObject);
+begin
+   vWhat:=wTextOut;
    Bench;
 end;
 
@@ -124,9 +137,10 @@ end;
 
 procedure TForm1.GLSceneViewerPostRender(Sender: TObject);
 var
-   i : Integer;
+   i, x, y : Integer;
    glc : TGLCanvas;
    r : TRect;
+   color : TColor;
 begin
    glc:=TGLCanvas.Create(256, 256);
    with glc do begin
@@ -160,6 +174,14 @@ begin
                PlotPixel(Random(256), Random(256));
             end;
          end;
+         wTextOut : begin
+            for i:=1 to cNbTextOuts do begin
+               color:=Random(256*256*256);
+               x:=Random(256);
+               y:=Random(256);
+               WindowsBitmapFont.TextOut(x, y, 'Hello', color);
+            end;
+         end;
       end;
    end;
    glc.Free;
@@ -167,7 +189,7 @@ end;
 
 procedure TForm1.PaintTheBox;
 var
-   i : Integer;
+   i, x, y : Integer;
    r : TRect;
 begin
    with PaintBox.Canvas do begin
@@ -201,6 +223,15 @@ begin
             for i:=1 to cNbPoints do begin
                Pixels[Random(256), Random(256)]:=Random(256*256*256);
             end;
+         end;
+         wTextOut : begin
+            Font:=WindowsBitmapFont.Font;
+            for i:=1 to cNbTextOuts do begin
+               Font.Color:=Random(256*256*256);
+               x:=Random(256);
+               y:=Random(256);
+               TextOut(x, y, 'Hello');
+            end
          end;
       end;
    end;
