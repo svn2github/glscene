@@ -4898,14 +4898,14 @@ begin
    end;
    if not Result then begin
       // if multipassing, this will occur upon last pass only
-      if Assigned(Material.FTextureEx) then begin
-         if not Material.TextureEx.IsTextureEnabled(1) then begin
+{      if Assigned(Material.FTextureEx) then begin
+         if not Material.TextureEx.IsTextureEnabled(1) then begin}
             if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
                libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
                xglMapTexCoordToMain;
             end;
-         end;
-      end;
+{         end;
+      end; }
       Material.UnApply(rci);
       if not Material.Texture.Disabled then
          if not FTextureMatrixIsIdentity then
