@@ -3787,7 +3787,7 @@ procedure TSkeletonMeshObject.ApplyCurrentSkeletonFrame(normalize : Boolean);
 var
    i, j, boneID : Integer;
    refVertices, refNormals : TAffineVectorList;
-   n : TVector;
+   n, nt : TVector;
    bone : TSkeletonBone;
    skeleton : TSkeleton;
 begin
@@ -3804,7 +3804,7 @@ begin
          bone:=skeleton.BoneByID(boneID);
          Vertices.List[i]:=VectorTransform(refVertices.List[i], bone.GlobalMatrix);
          PAffineVector(@n)^:=refNormals.List[i];
-         n:=VectorTransform(n, bone.GlobalMatrix);
+         nt:=VectorTransform(n, bone.GlobalMatrix);
          Normals.List[i]:=PAffineVector(@n)^;
       end;
    end else begin
@@ -4269,8 +4269,8 @@ var
    texCoordPool : PAffineVectorArray;
    normalIdxList, texCoordIdxList, vertexIdxList : PIntegerVector;
 begin
-   Assert(    ((TexCoordIndices.Count=0) or (VertexIndices.Count=TexCoordIndices.Count))
-          and ((NormalIndices.Count=0) or (VertexIndices.Count=NormalIndices.Count)));
+   Assert(    ((TexCoordIndices.Count=0) or (VertexIndices.Count<=TexCoordIndices.Count))
+          and ((NormalIndices.Count=0) or (VertexIndices.Count<=NormalIndices.Count)));
    vertexPool:=Owner.Owner.Vertices.List;
    normalPool:=Owner.Owner.Normals.List;
    texCoordPool:=Owner.Owner.TexCoords.List;
@@ -4288,10 +4288,17 @@ begin
    if TexCoordIndices.Count>0 then
       texCoordIdxList:=TexCoordIndices.List
    else texCoordIdxList:=vertexIdxList;
-   for i:=0 to VertexIndices.Count-1 do begin
-      glNormal3fv(@normalPool[normalIdxList[i]]);
-      xglTexCoord2fv(@texCoordPool[texCoordIdxList[i]]);
-      glVertex3fv(@vertexPool[vertexIdxList[i]]);
+   if Assigned(texCoordPool) then begin
+      for i:=0 to VertexIndices.Count-1 do begin
+         glNormal3fv(@normalPool[normalIdxList[i]]);
+         xglTexCoord2fv(@texCoordPool[texCoordIdxList[i]]);
+         glVertex3fv(@vertexPool[vertexIdxList[i]]);
+      end;
+   end else begin
+      for i:=0 to VertexIndices.Count-1 do begin
+         glNormal3fv(@normalPool[normalIdxList[i]]);
+         glVertex3fv(@vertexPool[vertexIdxList[i]]);
+      end;
    end;
    glEnd;
 end;
