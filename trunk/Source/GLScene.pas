@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>27/08/02 - Egg - Added TGLProxyObject.RayCastIntersect (Matheus Degiovani)
       <li>22/08/02 - Egg - Fixed src LocalMatrix computation on Assign
       <li>12/08/02 - Egg - Fixed Effects persistence 'Assert' issue (David Alcelay),
                            TGLSceneBuffer.PickObjects now preserves ProjMatrix 
@@ -929,6 +930,9 @@ type
                             renderSelf, renderChildren : Boolean); override;
 
          function AxisAlignedDimensions : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean; override;
 
       published
          { Published Declarations }
@@ -1597,6 +1601,7 @@ type
             Note that screen coord (0,0) is the lower left corner. }
          function ScreenToVector(const aPoint : TAffineVector) : TAffineVector; overload;
          function ScreenToVector(const aPoint : TVector) : TVector; overload;
+         function ScreenToVector(const x, y : Integer) : TVector; overload;
          {: Calculates the 2D screen coordinate of a vector from the camera's
             absolute position and is expressed in absolute coordinates.<p>
             Note that screen coord (0,0) is the lower left corner. }
@@ -4748,6 +4753,36 @@ begin
    end;
 end;
 
+// RayCastIntersect
+//
+function TGLProxyObject.RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
+var
+   localRayStart, localRayVector : TVector;
+begin
+   if Assigned(MasterObject) then begin
+      SetVector(localRayStart, AbsoluteToLocal(rayStart));
+      SetVector(localRayStart, MasterObject.LocalToAbsolute(localRayStart));
+      SetVector(localRayVector, AbsoluteToLocal(rayVector));
+      SetVector(localRayVector, MasterObject.LocalToAbsolute(localRayVector));
+      NormalizeVector(localRayVector);
+
+      Result:=MasterObject.RayCastIntersect(localRayStart, localRayVector,
+                                            intersectPoint, intersectNormal);
+      if Result then begin
+         if Assigned(intersectPoint) then begin
+            SetVector(intersectPoint^, MasterObject.AbsoluteToLocal(intersectPoint^));
+            SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
+         end;
+         if Assigned(intersectNormal) then begin
+            SetVector(intersectNormal^, MasterObject.AbsoluteToLocal(intersectNormal^));
+            SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
+         end;
+      end;
+   end else Result:=False;
+end;
+
 // ------------------
 // ------------------ TGLLightSource ------------------
 // ------------------
@@ -6291,6 +6326,20 @@ function TGLSceneBuffer.ScreenToVector(const aPoint : TVector) : TVector;
 begin
    SetVector(Result, VectorSubtract(ScreenToWorld(aPoint),
                                     FCameraAbsolutePosition));
+   Result[3]:=0;
+end;
+
+// ScreenToVector
+//
+function TGLSceneBuffer.ScreenToVector(const x, y : Integer) : TVector;
+var
+   av : TVector;
+begin
+   av[0]:=x;
+   av[1]:=y;
+   av[2]:=0;
+   av[3]:=0;
+   Result:=ScreenToVector(av);
 end;
 
 // VectorToScreen
