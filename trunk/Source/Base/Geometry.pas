@@ -5378,13 +5378,13 @@ asm
       test     vSIMD, 1
       jz @@FPU
 @@3DNow:
-      movd     mm0, [esp]
-      pi2fd    mm1, mm0
-      pfrsqrt  mm2, mm1
-      pfrcp    mm3, mm2
-      pf2id    mm4, mm3
-      movd     [esp], mm4
-      femms
+      db $0F,$6E,$04,$24       /// movd     mm0, [esp]
+      db $0F,$0F,$C8,$0D       /// pi2fd    mm1, mm0
+      db $0F,$0F,$D1,$97       /// pfrsqrt  mm2, mm1
+      db $0F,$0F,$DA,$96       /// pfrcp    mm3, mm2
+      db $0F,$0F,$E3,$1D       /// pf2id    mm4, mm3
+      db $0F,$7E,$24,$24       /// movd     [esp], mm4
+      db $0F,$0E               /// femms
       pop      eax
       ret
 @@FPU:
