@@ -83,6 +83,9 @@ type
     Offset1: TMenuItem;
     ACAlphaSaturate: TAction;
     Saturate1: TMenuItem;
+    ACAlphaNegate: TAction;
+    Negate1: TMenuItem;
+    N3: TMenuItem;
     procedure PAPreviewResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ACImportExecute(Sender: TObject);
@@ -106,6 +109,7 @@ type
     procedure ACFromRGBSqrtIntensityExecute(Sender: TObject);
     procedure ACAlphaOffsetExecute(Sender: TObject);
     procedure ACAlphaSaturateExecute(Sender: TObject);
+    procedure ACAlphaNegateExecute(Sender: TObject);
 
   private
     { Private declarations }
@@ -618,6 +622,29 @@ begin
             if (pSrc[x] and $FF)>0 then
                pDest[x]:=$FFFFFF
             else pDest[x]:=0;
+         end;
+      end;
+      IMAlpha.Picture.Bitmap:=bmp;
+   finally
+      bmp.Free;
+   end;
+   TextureChanged;
+end;
+
+procedure TTTBMain.ACAlphaNegateExecute(Sender: TObject);
+var
+   x, y, c : Integer;
+   bmp : TBitmap;
+   pSrc, pDest : PIntegerArray;
+begin
+   bmp:=SpawnBitmap;
+   try
+      for y:=0 to bmp.Height-1 do begin
+         pSrc:=IMAlpha.Picture.Bitmap.ScanLine[y];
+         pDest:=bmp.ScanLine[y];
+         for x:=0 to bmp.Width-1 do begin
+            c:=$FF-(pSrc[x] and $FF);
+            pDest[x]:=c+(c shl 8)+(c shl 16);
          end;
       end;
       IMAlpha.Picture.Bitmap:=bmp;
