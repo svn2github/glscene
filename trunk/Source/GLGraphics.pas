@@ -105,7 +105,7 @@ type
          {: Assigns from a 24 bits bitmap without swapping RGB.<p>
             This is faster than a regular assignment, but R and B channels
             will be reversed (from what you would view in a TImage). Suitable
-            if you do you own drawing and reverse RGB on the drawing side.<br>
+            if you do your own drawing and reverse RGB on the drawing side.<br>
             If you're after speed, don't forget to set the bitmap's dimensions
             to a power of two! }
          procedure AssignFromBitmap24WithoutRGBSwap(aBitmap : TGLBitmap);
@@ -1066,16 +1066,6 @@ begin
       end;
    end;
 end;
-
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
-	// class registrations
 
 end.
 
