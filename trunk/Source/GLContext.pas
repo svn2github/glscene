@@ -4,6 +4,8 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>21/01/02 - EG - Activation failures now ignored if application is
+                          terminating (workaround for some weird ICDs)
       <li>15/12/01 - EG - Added support for AlphaBits
       <li>30/11/01 - EG - Added TGLContextAcceleration
       <li>06/09/01 - EG - Win32Context moved to new GLWin32Context unit
@@ -318,7 +320,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Forms, OpenGL12;
+uses Forms, OpenGL12, GLCrossPlatform;
 
 resourcestring
    cCannotAlterAnActiveContext = 'Cannot alter an active context';
@@ -330,6 +332,7 @@ resourcestring
 
 var
    vContextClasses : TList = nil;
+   vIgnoreContextActivationFailures : Boolean = False;
 
 threadvar
    vCurrentGLContext : TGLContext;
@@ -567,11 +570,7 @@ begin
       if Assigned(oldContext) then
          oldContext.Deactivate;
    end else oldContext:=nil;
-   try
-      Activate;
-   except
-
-   end;
+   Activate;
    try
       compatContext:=FindCompatibleContext;
       if Assigned(compatContext) then begin
@@ -611,7 +610,13 @@ begin
    if FActivationCount=0 then begin
       if not IsValid then
          raise EGLContext.Create(cContextNotCreated);
-      DoActivate;
+      try
+         DoActivate;
+      except
+         if ApplicationTerminated then
+            vIgnoreContextActivationFailures:=True
+         else raise;
+      end;
       vCurrentGLContext:=Self;
    end else Assert(vCurrentGLContext=Self);
    Inc(FActivationCount);
@@ -626,7 +631,8 @@ begin
    if FActivationCount=0 then begin
       if not IsValid then
          raise EGLContext.Create(cContextNotCreated);
-      DoDeactivate;
+      if not vIgnoreContextActivationFailures then
+         DoDeactivate;
       vCurrentGLContext:=nil;
    end else if FActivationCount<0 then
       raise EGLContext.Create(cUnbalancedContexActivations);
