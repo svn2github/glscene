@@ -2,8 +2,9 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/06/04 - NelC - Added TGLFlatText.Assign
       <li>01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
-      <li>01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state 
+      <li>01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state
       <li>07/05/03 - EG - TGLFlatText Notification fix, added Options
       <li>30/10/02 - EG - Added TGLFlatText
       <li>29/09/02 - EG - Added TexCoords LUT, faster RenderString,
@@ -268,6 +269,8 @@ type
 
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
+
+		     procedure Assign(Source: TPersistent); override;
 
 	   published
 	      { Published Declarations }
@@ -1095,6 +1098,21 @@ begin
    end;
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
+end;
+
+// Assign
+//
+procedure TGLFlatText.Assign(Source: TPersistent);
+begin
+   if Assigned(Source) and (Source is TGLFlatText) then begin
+      BitmapFont:=TGLFlatText(Source).BitmapFont;
+      Text:=TGLFlatText(Source).Text;
+      Alignment:=TGLFlatText(Source).Alignment;
+      Layout:=TGLFlatText(Source).Layout;
+      ModulateColor:=TGLFlatText(Source).ModulateColor;
+      Options:=TGLFlatText(Source).Options;
+   end;
+   inherited Assign(Source);
 end;
 
 // ------------------------------------------------------------------
