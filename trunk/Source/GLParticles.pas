@@ -2,6 +2,7 @@
 {: Particle systems for GLScene, based on replication of full-featured scene objects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/07/04 - EG - Added KillParticles
       <li>18/04/04 - EG - Added Before/After events
       <li>12/07/01 - EG - Fixed FEdgeColor memory leak
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
@@ -85,6 +86,8 @@ type
 				If particlePool is not full, particle will be sent to the pool,
 				if not, it will be freed. }
 			procedure KillParticle(aParticle : TGLBaseSceneObject);
+         {: Kill all particles. }
+         procedure KillParticles;
 
 		published
 			{ Published Declarations }
@@ -347,6 +350,14 @@ begin
          FOnDestroyParticle(Self, aParticle);
       aParticle.Free;
    end;
+end;
+
+// KillParticles
+//
+procedure TGLParticles.KillParticles;
+begin
+   while Count>1 do
+      KillParticle(Children[Count-1]);
 end;
 
 // ------------------------------------------------------------------
