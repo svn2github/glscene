@@ -435,6 +435,7 @@ begin
 
   Button_LoadMesh.Click;
   TrackBar_IterationsChange(nil);
+  CheckBox_UseOctreeClick(nil);
 end;
 
 procedure TfrmClothify.TrackBar_SlackChange(Sender: TObject);
@@ -548,4 +549,5 @@ procedure TfrmClothify.Button_CancelLoadClick(Sender: TObject);
 begin
   GroupBox_LoadForm.Hide;
 end;
+
 end.

@@ -187,10 +187,9 @@ object frmClothify: TfrmClothify
   object Button_OpenLoadForm: TButton
     Left = 352
     Top = 11
-    Width = 75
+    Width = 51
     Height = 21
-    Caption = 'Load'
-    Default = True
+    Caption = '&Load'
     TabOrder = 2
     OnClick = Button_OpenLoadFormClick
   end
