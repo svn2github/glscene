@@ -1079,6 +1079,12 @@ type
          //: True if the material has a secondary texture
          function HasSecondaryTexture : Boolean;
 
+         //: True if the material comes from the library instead of the texture property
+         function MaterialIsLinkedToLib : Boolean;
+
+         //: Gets the primary texture either from material library or the texture property
+         function GetActualPrimaryTexture: TGLTexture;
+
 		published
 			{ Published Declarations }
 			property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
@@ -3618,6 +3624,20 @@ end;
 function TGLMaterial.HasSecondaryTexture : Boolean;
 begin
    Result:=Assigned(currentLibMaterial) and Assigned(currentLibMaterial.libMatTexture2);
+end;
+
+function TGLMaterial.MaterialIsLinkedToLib : Boolean;
+begin
+   Result:=Assigned(currentLibMaterial);
+end;
+
+function TGLMaterial.GetActualPrimaryTexture: TGLTexture;
+
+begin
+   If Assigned(currentLibMaterial) then
+      Result := currentLibMaterial.material.Texture
+   else
+      Result := Texture;
 end;
 
 // ------------------
