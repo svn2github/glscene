@@ -463,7 +463,7 @@ var
    depth : Single;
    posVector, v, rv : TAffineVector;
    screenPos : TAffineVector;
-   flareInViewPort, usedOcclusionQuery : Boolean;
+   flareInViewPort, usedOcclusionQuery, dynamicSize : Boolean;
    oldSeed : LongInt;
    projMatrix : TMatrix;
 begin
@@ -477,7 +477,8 @@ begin
                        and (screenPos[1]<rci.viewPortSize.cy) and (screenPos[1]>=0);
    end else flareInViewPort:=False;
 
-   if Dynamic and (not (csDesigning in ComponentState)) then begin
+   dynamicSize:=Dynamic and not (csDesigning in ComponentState);
+   if dynamicSize then begin
       // make the glow appear/disappear progressively
       if flareInViewPort and FlareIsNotOccluded then begin
          FCurrSize:=FCurrSize+FDeltaTime*10*Size;
@@ -511,14 +512,14 @@ begin
               0);
 
    if AutoZTest then begin
-      if GL_HP_occlusion_test or GL_NV_occlusion_query then begin
+      if dynamicSize and (GL_HP_occlusion_test or GL_NV_occlusion_query) then begin
          // hardware-based occlusion test is possible
          FlareIsNotOccluded:=True;
 
          glColorMask(False, False, False, False);
          glDepthMask(False);
 
-         usedOcclusionQuery:=GL_NV_occlusion_query and (not (csDesigning in ComponentState));
+         usedOcclusionQuery:=GL_NV_occlusion_query;
          if usedOcclusionQuery then begin
             // preferred method, doesn't stall rendering too badly
             if not Assigned(FOcclusionQuery) then
