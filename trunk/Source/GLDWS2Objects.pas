@@ -3,6 +3,7 @@
    objects in GLScene<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/2004 - SG - Moved TGLDelphiWebScriptII to GLScriptDWS2 unit. 
       <li>06/04/2004 - SG - Creation
    </ul></font>
 }
@@ -12,26 +13,14 @@ interface
 
 uses
   Classes, SysUtils, dws2Comp, dws2Exprs, dws2Symbols,
-  GLScene, GLMisc, XCollection;
+  GLScene, GLMisc, XCollection, GLScriptDWS2;
 
 type
-  // TGLDelphiWebScriptII
-  //
-  {: This class only adds manager registration logic to
-     the TDelphiWebScriptII class to enable the XCollection
-     items (ie. TGLDWS2Behaviour) retain it's assigned
-     compiler from design to run -time. }
-  TGLDelphiWebScriptII = class(TDelphiWebScriptII)
-    public
-      constructor Create(AOnwer : TComponent); override;
-      destructor Destroy; override;
-  end;
-
   // TGLDWS2ActiveBehaviour
   //
-  { A DelphiWebScriptII enabled behaviour. This behaviour also calls 
-    on the OnProgress and OnBeginProgram procedures in the script if 
-    they are found. Once compiled and executed the program remains 
+  { A DelphiWebScriptII enabled behaviour. This behaviour also calls
+    on the OnProgress and OnBeginProgram procedures in the script if
+    they are found. Once compiled and executed the program remains
     active until killed, deactivated or the script is invalidated. }
   TGLDWS2ActiveBehaviour = class (TGLBehaviour)
     private
@@ -86,27 +75,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterClasses([TGLDelphiWebScriptII, TGLDWS2ActiveBehaviour]);
-  RegisterComponents('GLScene DWS2',[TGLDelphiWebScriptII]);
-end;
-
-
-// ----------
-// ---------- TGLDelphiWebScriptII ----------
-// ----------
-
-// Create
-//
-constructor TGLDelphiWebScriptII.Create(AOnwer : TComponent);
-begin
-  inherited;
-  RegisterManager(Self);
-end;
-
-destructor TGLDelphiWebScriptII.Destroy;
-begin
-  DeregisterManager(Self);
-  inherited;
+  RegisterClasses([TGLDWS2ActiveBehaviour]);
 end;
 
 
