@@ -25,6 +25,7 @@ type
       public
 			{ Public Declarations }
          constructor Create(AOwner: TComponent); override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
          procedure BuildList(var rci : TRenderContextInfo); override;
    end;
 
@@ -48,6 +49,13 @@ constructor TGLTeapot.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    FGrid:=5;
+end;
+
+// AxisAlignedDimensionsUnscaled
+//
+function TGLTeapot.AxisAlignedDimensionsUnscaled : TVector;
+begin
+   SetVector(Result, 0.55, 0.25, 0.35);
 end;
 
 // BuildList
