@@ -1225,6 +1225,7 @@ type
 			{ Protected Declarations }
          procedure Loaded; override;
          procedure SetMaterials(const val : TGLLibMaterials);
+         function StoreMaterials : Boolean;
          procedure SetTexturePaths(const val : String);
 
       public
@@ -1261,7 +1262,7 @@ type
       published
 	      { Published Declarations }
          {: The materials collection. }
-         property Materials : TGLLibMaterials read FMaterials write SetMaterials;
+         property Materials : TGLLibMaterials read FMaterials write SetMaterials stored StoreMaterials;
          {: Paths to lookup when attempting to load a texture.<p>
             You can specify multiple paths when loading a texture, the separator
             being the semi-colon ';' character. Directories are looked up from
@@ -4126,6 +4127,13 @@ end;
 procedure TGLMaterialLibrary.SetMaterials(const val : TGLLibMaterials);
 begin
    FMaterials.Assign(val);
+end;
+
+// StoreMaterials
+//
+function TGLMaterialLibrary.StoreMaterials : Boolean;
+begin
+   Result:=(FMaterials.Count>0);
 end;
 
 // SetTexturePaths
