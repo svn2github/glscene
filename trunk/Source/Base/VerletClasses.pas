@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/06/03 - MF - Moved FrictionRatio to TVerletGlobalFrictionConstraint
       <li>18/06/03 - EG - Updated TVCCapsule
       <li>18/06/03 - MF - Updated TVCFloor to use a normal and a point
       <li>18/06/03 - MF - Added TVCCapsule
@@ -28,6 +29,7 @@ uses Classes, Geometry, SysUtils, VectorLists;
 
 const
    G_DRAG = 0.005;
+   cDEFAULT_CONSTRAINT_FRICTION = 0.6;
 
 type
 
@@ -44,6 +46,7 @@ type
          FWeight, FInvWeight : Single;
          FRadius : Single;
          FNailedDown : Boolean;
+         FFriction: single;
 
 		protected
 			{ Protected Declarations }
@@ -78,6 +81,7 @@ type
          property Weight : Single read FWeight write SetWeight;
          property InvWeight : Single read FInvWeight;
          property Speed : TAffineVector read GetSpeed;
+         property Friction : single read FFriction write FFriction;
    end;
 
    TVerletNodeClass = class of TVerletNode;
@@ -164,6 +168,20 @@ type
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); override;
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                         const iteration, maxIterations : Integer); virtual; abstract;
+   end;
+
+   // TVerletGlobalFrictionConstraint
+   //
+   TVerletGlobalFrictionConstraint = class (TVerletGlobalConstraint)
+      private
+			{ Private Declarations }
+         FFrictionRatio: single;
+
+      public
+			{ Public Declarations }
+         property FrictionRatio : single read FFrictionRatio write FFrictionRatio;
+
+         constructor Create(aOwner : TVerletAssembly); override;
    end;
 
    // TVerletConstraintList
@@ -379,10 +397,10 @@ type
    //
    {: Floor collision constraint.<p>
       The floor is in the XZ plane with a Y+ normal. Highly un-pretty.}
-   TVCFloor = class (TVerletGlobalConstraint)
+   TVCFloor = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
-         FBounceRatio, FFrictionRatio : Single;
+         FBounceRatio : Single;
          FLocation, FNormal : TAffineVector;
     procedure SetNormal(const Value: TAffineVector);
 
@@ -392,7 +410,6 @@ type
                         const iteration, maxIterations : Integer); override;
 
          property BounceRatio : Single read FBounceRatio write FBounceRatio;
-         property FrictionRatio : Single read FFrictionRatio write FFrictionRatio;
 
          property Location : TAffineVector read FLocation write FLocation;
          property Normal : TAffineVector read FNormal write SetNormal;
@@ -437,7 +454,7 @@ type
    // TVCSphere
    //
    {: Sphere collision constraint. }
-   TVCSphere = class (TVerletGlobalConstraint)
+   TVCSphere = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
          FLocation : TAffineVector;
@@ -456,7 +473,7 @@ type
    //
    {: Cylinder collision constraint.<p>
       The cylinder is considered infinite by this constraint. }
-   TVCCylinder = class (TVerletGlobalConstraint)
+   TVCCylinder = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
          FBase, FAxis : TAffineVector;
@@ -486,13 +503,12 @@ type
    // TVCCube
    //
    {: Cube collision constraint. }
-   TVCCube = class (TVerletGlobalConstraint)
+   TVCCube = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
          FLocation : TAffineVector;
          FHalfSides : TAffineVector;
          FSides: TAffineVector;
-         FFrictionRatio: Single;
          FDirection: TAffineVector;
          procedure SetSides(const Value: TAffineVector);
 
@@ -504,21 +520,17 @@ type
          property Direction : TAffineVector read FDirection write FDirection;
          property Location : TAffineVector read FLocation write FLocation;
          property Sides : TAffineVector read FSides write SetSides;
-         property FrictionRatio : Single read FFrictionRatio write FFrictionRatio;
-
-         constructor Create(aOwner : TVerletAssembly); override;
    end;
 
    // TVCCapsule
    //
    {: Capsule collision constraint. }
-   TVCCapsule = class (TVerletGlobalConstraint)
+   TVCCapsule = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
          FBase : TAffineVector;
          FAxis : TAffineVector;
          FRadius, FRadius2, FLength, FLengthDiv2 : Single;
-         FFriction: single;
 
       protected
 			{ Protected Declarations }
@@ -535,9 +547,6 @@ type
          property Axis : TAffineVector read FAxis write SetAxis;
          property Radius : single read FRadius write SetRadius;
          property Length : single read FLength write SetLength;
-         property Friction : single read FFriction write FFriction;
-
-         constructor Create(aOwner : TVerletAssembly); override;
    end;
 
 
@@ -563,6 +572,7 @@ begin
    FWeight:=1;
    FInvWeight:=1;
    FRadius:=0;
+   FFriction:=1;
 end;
 
 // Destroy
@@ -580,13 +590,15 @@ procedure TVerletNode.ApplyFriction(const friction, penetrationDepth : Single;
                                     const surfaceNormal : TAffineVector);
 var
    frictionMove, move, moveNormal : TAffineVector;
+   realFriction : single;
 begin
+   realFriction := friction*FFriction;
    VectorSubtract(Location, OldLocation, move);
    moveNormal:=VectorScale(surfaceNormal, VectorDotProduct(move, surfaceNormal));
    frictionMove:=VectorSubtract(move, moveNormal);
    if penetrationDepth>Radius then
-      ScaleVector(frictionMove, friction)
-   else ScaleVector(frictionMove, friction*Sqrt(penetrationDepth/Radius));
+      ScaleVector(frictionMove, realFriction)
+   else ScaleVector(frictionMove, realFriction*Sqrt(penetrationDepth/Radius));
    VectorAdd(OldLocation, frictionMove, FOldLocation);
 end;
 
@@ -598,7 +610,7 @@ var
 //   pd : Single;
 begin
    VectorSubtract(Location, OldLocation, move);
-   VectorScale(move, friction, frictionMove);
+   VectorScale(move, friction*FFriction, frictionMove);
    //pd:=Abs(penetrationDepth);
    //ScaleVector(frictionMove, friction*pd);
    VectorAdd(OldLocation, frictionMove, FOldLocation);
@@ -776,6 +788,18 @@ begin
       if not node.NailedDown then
          SatisfyConstraintForNode(node, iteration, maxIterations);
    end;
+end;
+
+// ------------------
+// ------------------ TVerletGlobalFrictionConstraint ------------------
+// ------------------
+
+constructor TVerletGlobalFrictionConstraint.Create(
+  aOwner: TVerletAssembly);
+begin
+  inherited;
+
+  FFrictionRatio:=cDEFAULT_CONSTRAINT_FRICTION;
 end;
 
 // ------------------
@@ -1453,12 +1477,6 @@ end;
 // ------------------ TVCCube ------------------
 // ------------------
 
-constructor TVCCube.Create(aOwner: TVerletAssembly);
-begin
-  inherited;
-  FFrictionRatio := 0.6;
-end;
-
 procedure TVCCube.SatisfyConstraintForNode(aNode: TVerletNode;
   const iteration, maxIterations: Integer);
 var
@@ -1587,15 +1605,9 @@ begin
 
       // Do friction calculations
       penetrationDepth := VectorLength(VectorSubtract(newLocation,aNode.FLocation));
-      aNode.OldApplyFriction(FFriction, penetrationDepth);
+      aNode.OldApplyFriction(FFrictionRatio, penetrationDepth);
 
       aNode.FLocation:=newLocation;
    end;
-end;
-
-constructor TVCCapsule.Create(aOwner: TVerletAssembly);
-begin
-  inherited;
-  FFriction := 0.05;
 end;
 end.
