@@ -2900,11 +2900,11 @@ var
    // ARB_multitexture
    glMultiTexCoord1dARB: procedure(target: TGLenum; s: TGLdouble); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glMultiTexCoord1dVARB: procedure(target: TGLenum; v: PGLdouble); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-   glMultiTexCoord1fARBP: procedure(target: TGLenum; s: TGLfloat); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glMultiTexCoord1fARB: procedure(target: TGLenum; s: TGLfloat); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glMultiTexCoord1fVARB: procedure(target: TGLenum; v: TGLfloat); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glMultiTexCoord1iARB: procedure(target: TGLenum; s: TGLint); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glMultiTexCoord1iVARB: procedure(target: TGLenum; v: PGLInt); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-   glMultiTexCoord1sARBP: procedure(target: TGLenum; s: TGLshort); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glMultiTexCoord1sARB: procedure(target: TGLenum; s: TGLshort); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glMultiTexCoord1sVARB: procedure(target: TGLenum; v: PGLshort); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glMultiTexCoord2dARB: procedure(target: TGLenum; s, t: TGLdouble); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glMultiTexCoord2dvARB: procedure(target: TGLenum; v: PGLdouble); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
@@ -3445,11 +3445,11 @@ begin
    // ARB_multitexture
    glMultiTexCoord1dARB := GLGetProcAddress('glMultiTexCoord1dARB');
    glMultiTexCoord1dVARB := GLGetProcAddress('glMultiTexCoord1dVARB');
-   glMultiTexCoord1fARBP := GLGetProcAddress('glMultiTexCoord1fARBP');
+   glMultiTexCoord1fARB := GLGetProcAddress('glMultiTexCoord1fARB');
    glMultiTexCoord1fVARB := GLGetProcAddress('glMultiTexCoord1fVARB'); 
    glMultiTexCoord1iARB := GLGetProcAddress('glMultiTexCoord1iARB'); 
    glMultiTexCoord1iVARB := GLGetProcAddress('glMultiTexCoord1iVARB'); 
-   glMultiTexCoord1sARBP := GLGetProcAddress('glMultiTexCoord1sARBP'); 
+   glMultiTexCoord1sARB := GLGetProcAddress('glMultiTexCoord1sARB'); 
    glMultiTexCoord1sVARB := GLGetProcAddress('glMultiTexCoord1sVARB'); 
    glMultiTexCoord2dARB := GLGetProcAddress('glMultiTexCoord2dARB');
    glMultiTexCoord2dvARB := GLGetProcAddress('glMultiTexCoord2dvARB'); 
