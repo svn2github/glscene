@@ -242,6 +242,7 @@ type
          procedure Scale(factor : Single);
          function  VectorLength : TGLFloat;
          function  VectorNorm : TGLFloat;
+         function  MaxXYZ : Single;
          function  Equals(const aVector : TVector) : Boolean;
          procedure SetVector(const x, y, z : Single); overload;
          procedure SetVector(const x, y, z, w : Single); overload;
@@ -805,6 +806,13 @@ end;
 function TGLCoordinates.VectorNorm : TGLFloat;
 begin
    Result:=VectorGeometry.VectorNorm(FCoords);
+end;
+
+// MaxXYZ
+//
+function TGLCoordinates.MaxXYZ : Single;
+begin
+   Result:=VectorGeometry.MaxXYZComponent(FCoords);
 end;
 
 // Equals
