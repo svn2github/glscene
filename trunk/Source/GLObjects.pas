@@ -98,7 +98,7 @@ interface
 {$i GLScene.inc}
 
 uses Classes, Geometry, GLScene, GLTexture, GLMisc, OpenGL12, SysUtils,
-   VectorLists;
+   VectorLists, GLCrossPlatform;
 
 type
 
@@ -184,6 +184,9 @@ type
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
+         {: Computes the screen coordinates of the smallest rectangle encompassing the plane.<p>
+            Returned extents are NOT limited to any physical screen extents. }
+         function ScreenRect : TGLRect;
 
 		published
 			{ Public Declarations }
@@ -1437,6 +1440,30 @@ begin
       FWidth:=AValue;
 	   StructureChanged;
    end;
+end;
+
+// ScreenRect
+//
+function TPlane.ScreenRect : TGLRect;
+var
+   v : array [0..3] of TVector;
+   buf : TGLSceneBuffer;
+   hw, hh : TGLFloat;
+begin
+   buf:=Scene.CurrentBuffer;
+   if Assigned(buf) then begin
+      hw:=FWidth*0.5;
+      hh:=FHeight*0.5;
+      v[0]:=LocalToAbsolute(PointMake(-hw, -hh, 0));
+      v[1]:=LocalToAbsolute(PointMake( hw, -hh, 0));
+      v[2]:=LocalToAbsolute(PointMake( hw,  hh, 0));
+      v[3]:=LocalToAbsolute(PointMake(-hw,  hh, 0));
+      buf.WorldToScreen(@v[0], 4);
+      Result.Left  :=Round(MinFloat([v[0][0], v[1][0], v[2][0], v[3][0]]));
+      Result.Right :=Round(MaxFloat([v[0][0], v[1][0], v[2][0], v[3][0]]));
+      Result.Top   :=Round(MinFloat([v[0][1], v[1][1], v[2][1], v[3][1]]));
+      Result.Bottom:=Round(MaxFloat([v[0][1], v[1][1], v[2][1], v[3][1]]));
+   end else FillChar(Result, SizeOf(TGLRect), 0);
 end;
 
 // SetHeight
