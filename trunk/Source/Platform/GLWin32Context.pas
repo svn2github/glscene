@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support 
       <li>21/01/02 - EG - More graceful recovery for ICDs without pbuffer support
       <li>07/01/02 - EG - DoCreateMemoryContext now retrieved topDC when needed
       <li>15/12/01 - EG - Added support for AlphaBits
