@@ -2675,7 +2675,7 @@ end;
 function TGLBaseSceneObject.SqrDistanceTo(anObject : TGLBaseSceneObject) : Single;
 begin
    if Assigned(anObject) then
-      Result:=VectorDistance(AbsolutePosition, anObject.AbsolutePosition)
+      Result:=VectorDistance2(AbsolutePosition, anObject.AbsolutePosition)
    else Result:=0;
 end;
 
