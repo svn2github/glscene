@@ -148,7 +148,7 @@ uses
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
-   GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin,
+   GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin, GLScriptBase,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1753,7 +1753,8 @@ begin
                        TGLMaterialLibrary,
                        TGLCadencer,
                        TGLGuiLayout,
-                       TGLBitmapFont, TGLWindowsBitmapFont
+                       TGLBitmapFont, TGLWindowsBitmapFont,
+                       TGLScriptLibrary
                        {$ifdef WIN32}
                        ,
                        TGLFullScreenViewer
