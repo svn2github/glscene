@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/10/04 - MRQZZZ - Added GLTrail
       <li>03/07/04 - LR - Completly review to take account designtime for Linux
                           Note a problem with TGLColorProperty
       <li>28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
@@ -147,7 +148,7 @@ uses
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
-   GLFeedback, GLProjectedTextures, GLBlur, GLPerlin,
+   GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1893,6 +1894,7 @@ initialization
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
       RegisterSceneObject(TGLBlur, 'GLBlur', glsOCSpecialObjects);
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);
+      RegisterSceneObject(TGLTrail, 'GLTrail', glsOCSpecialObjects);
       {$endif}
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);
       RegisterSceneObject(TGLTree, 'Tree', glsOCDoodad);
