@@ -17,6 +17,7 @@ package GLScene6;
 {$R '..\Source\AVIRecorder.dcr'}
 {$R '..\Source\GLThorFX.dcr'}
 {$R '..\Source\GLzBuffer.dcr'}
+{$R '..\Source\GLTimeEventsMGR.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -126,6 +127,7 @@ contains
   GLWin32Viewer in '..\Source\Platform\GLWin32Viewer.pas',
   GLROAMPatch in '..\Source\GLROAMPatch.pas',
   HeightTileFile in '..\Source\Base\HeightTileFile.pas',
-  GLSpaceText in '..\Source\GLSpaceText.pas';
+  GLSpaceText in '..\Source\GLSpaceText.pas',
+  GLTimeEventsMGR in '..\Source\GLTimeEventsMGR.pas';
 
 end.

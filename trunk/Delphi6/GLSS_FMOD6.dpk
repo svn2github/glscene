@@ -1,8 +1,8 @@
 package GLSS_FMOD6;
 
-{$R *.RES}
+{$R *.res}
 {$R '..\Source\GLSMFMOD.dcr'}
-{$ALIGN ON}
+{$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
