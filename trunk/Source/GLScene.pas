@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>20/08/01 - Egg - SetParentComponent now accepts 'nil' (Uwe Raabe)
       <li>19/08/01 - Egg - Default RayCastIntersect is now Sphere
       <li>16/08/01 - Egg - Dropped Prepare/FinishObject (became obsolete),
                            new CameraStyle (Ortho2D
@@ -2609,6 +2610,7 @@ procedure TGLBaseSceneObject.SetParentComponent(Value: TComponent);
 var
    topGuy : TComponent;
 begin
+   inherited;
    if Assigned(FParent) then begin
       FParent.Remove(Self, False);
       FParent:=nil;
@@ -2627,7 +2629,10 @@ begin
          else topGuy:=nil;
          if Assigned(topGuy) then
             TGLBaseSceneObject(Value).AddChild(Self)
-         else Assert(False);
+         else begin
+            FParent:=nil;
+            SetScene(nil);
+         end;
       end;
    end;
 end;
