@@ -2996,7 +2996,7 @@ begin
       xglMapTexCoordToMain;
 	end else begin
       UnSetGLState(rci.currentStates, stTexture2D);
-      xglMapTexCoordToNull;
+      xglMapTexCoordToMain;
    end;
 end;
 
@@ -3010,7 +3010,7 @@ begin
          glMatrixMode(GL_TEXTURE);
          glLoadIdentity;
          glMatrixMode(GL_MODELVIEW);
-      end;
+      end else UnSetGLState(rci.currentStates, stTexture2D);
       UnApplyMappingMode;
    end;
 end;
@@ -3708,7 +3708,7 @@ begin
          else xglMapTexCoordToMain
       else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
          xglMapTexCoordToSecond
-      else xglMapTexCoordToNull;
+      else xglMapTexCoordToMain;
       xglEndUpdate;
    end;
    if Assigned(FShader) then begin

@@ -2312,6 +2312,7 @@ begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_COLOR_MATERIAL);
    glDisable(GL_LIGHTING);
+   glColor3f(1, 1, 1);
    // render root-bones
    for i:=0 to Count-1 do
       Items[i].BuildList(mrci);
@@ -3035,6 +3036,7 @@ var
    i, j, groupID : Integer;
    gotNormals, gotTexCoords, gotColor : Boolean;
    libMat : TGLLibMaterial;
+   ownMaterial : TGLMaterial;
 begin
    FArraysDeclared:=False;
    case Mode of
