@@ -307,10 +307,6 @@ begin
 
    FForm:=TForm.Create(nil);
    with FForm do begin
-      WindowState:=wsMaximized;
-      ClientWidth:=Self.Width;
-      ClientHeight:=Self.Height;
-
       if StayOnTop then
          FormStyle:=fsStayOnTop
       else FormStyle:=fsNormal;
@@ -323,6 +319,10 @@ begin
 
       Cursor:=Self.Cursor;
       PopupMenu:=Self.PopupMenu;
+
+      ClientWidth:=Self.Width;
+      ClientHeight:=Self.Height;
+      WindowState:=wsMaximized;
 
       BindFormEvents;
       FOldWndProc:=WindowProc;
