@@ -3,6 +3,7 @@
   <p>Spatial partitioning related code that also uses GLScene objects
 
 	<b>History : </b><font size=-1><ul>
+      <li>09/12/04 - LR - BCB corrections: use record instead array
       <li>03/12/04 - MF - Created
   </ul></font>
 }
@@ -51,28 +52,28 @@ begin
   glLineWidth(w);
 
   glBegin(GL_LINE_STRIP);
-    glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-    glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-    glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-    glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-    glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
 
-    glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-    glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-    glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-    glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-    glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
   glEnd;
 
   glBegin(GL_LINES);
-    glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-    glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+    glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-    glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-    glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-    glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-    glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+    glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
   glEnd;
 end;
 
@@ -96,7 +97,7 @@ procedure RenderSpatialPartitioning(const Space : TSectoredSpacePartition);
 
     end else begin
       for i := 0 to Node.ChildCount-1 do
-        RenderSectorNode(Node.Children[i]);
+        RenderSectorNode(Node.Children.Child[i]);
     end;
   end;
 begin

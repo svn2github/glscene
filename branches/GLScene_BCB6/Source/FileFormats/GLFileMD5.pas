@@ -3,6 +3,7 @@
    Doom3 MD5 mesh and animation vector file format implementation.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>09/12/04 - LR - BCB corrections: use record instead array
       <li>02/12/04 - SG - Updated to support MD5 version 10,
                           version 6 support has been dropped.
       <li>01/06/04 - SG - Initial
@@ -119,9 +120,9 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
     rr : Single;
   begin
     with Result do begin
-      ImagPart[0]:=ix;
-      ImagPart[1]:=iy;
-      ImagPart[2]:=iz;
+      ImagPart.Coord[0]:=ix;
+      ImagPart.Coord[1]:=iy;
+      ImagPart.Coord[2]:=iz;
       rr:=1-(ix*ix)-(iy*iy)-(iz*iz);
       if rr<0 then RealPart:=0
       else RealPart:=sqrt(rr);
@@ -142,9 +143,9 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
     bonename:=FTempString[0];
     ParentBoneID:=StrToInt(FTempString[1]);
 
-    pos[0]:=StrToFloatDef(FTempString[2]);
-    pos[1]:=StrToFloatDef(FTempString[4]);
-    pos[2]:=StrToFloatDef(FTempString[3]);
+    pos.Coord[0]:=StrToFloatDef(FTempString[2]);
+    pos.Coord[1]:=StrToFloatDef(FTempString[4]);
+    pos.Coord[2]:=StrToFloatDef(FTempString[3]);
 
     quat:=QuaternionMakeFromImag(StrToFloatDef(FTempString[5]),
                                  StrToFloatDef(FTempString[7]),
@@ -162,13 +163,13 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
         bone:=TSkeletonBone.CreateOwned(parentBone);
 
         mat:=QuaternionToMatrix(quat);
-        mat[3]:=PointMake(pos);
+        mat.Coord[3]:=PointMake(pos);
         rmat:=QuaternionToMatrix(FFrameQuaternions[ParentBoneID]);
-        rmat[3]:=PointMake(FFramePositions[ParentBoneID]);
+        rmat.Coord[3]:=PointMake(FFramePositions[ParentBoneID]);
         InvertMatrix(rmat);
         mat:=MatrixMultiply(mat, rmat);
 
-        pos:=AffineVectorMake(mat[3]);
+        pos:=AffineVectorMake(mat.Coord[3]);
         quat:=QuaternionFromMatrix(mat);
       end;
       with bone do begin
@@ -378,32 +379,32 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
         j:=0;
 
         if FJointFlags[i] and 1 > 0 then begin
-          pos[0]:=StrToFloatDef(FTempString[j]);
+          pos.Coord[0]:=StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 2 > 0 then begin
-          pos[1]:=StrToFloatDef(FTempString[j]);
+          pos.Coord[1]:=StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 4 > 0 then begin
-          pos[2]:=StrToFloatDef(FTempString[j]);
+          pos.Coord[2]:=StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
 
         if FJointFlags[i] and 8 > 0 then begin
-          quat.ImagPart[0]:=StrToFloatDef(FTempString[j]);
+          quat.ImagPart.Coord[0]:=StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 16 > 0 then begin
-          quat.ImagPart[1]:=StrToFloatDef(FTempString[j]);
+          quat.ImagPart.Coord[1]:=StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 32 > 0 then
-          quat.ImagPart[2]:=StrToFloatDef(FTempString[j]);
+          quat.ImagPart.Coord[2]:=StrToFloatDef(FTempString[j]);
       end;
 
-      pos:=AffineVectorMake(pos[0], pos[2], pos[1]);
-      quat:=QuaternionMakeFromImag(quat.ImagPart[0], quat.ImagPart[2], quat.ImagPart[1]);
+      pos:=AffineVectorMake(pos.Coord[0], pos.Coord[2], pos.Coord[1]);
+      quat:=QuaternionMakeFromImag(quat.ImagPart.Coord[0], quat.ImagPart.Coord[2], quat.ImagPart.Coord[1]);
 
       frame.Position[i]:=pos;
       frame.Quaternion[i]:=quat;
