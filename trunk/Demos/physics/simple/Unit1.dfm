@@ -19,7 +19,7 @@ object Form1: TForm1
     Left = 209
     Top = 0
     Width = 511
-    Height = 425
+    Height = 418
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Align = alClient
@@ -30,13 +30,13 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 209
-    Height = 425
+    Height = 418
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
-      Left = 8
+      Left = 40
       Top = 16
-      Width = 193
+      Width = 129
       Height = 16
       Alignment = taCenter
       Caption = 'Add ODE objects'
@@ -50,7 +50,7 @@ object Form1: TForm1
     end
     object Button1: TButton
       Left = 48
-      Top = 176
+      Top = 144
       Width = 115
       Height = 25
       Caption = 'Add composite'
@@ -59,7 +59,7 @@ object Form1: TForm1
     end
     object GroupBox1: TGroupBox
       Left = 8
-      Top = 216
+      Top = 184
       Width = 193
       Height = 81
       Caption = 'GLODEPlane1 Collision Surface'
@@ -82,9 +82,14 @@ object Form1: TForm1
         Width = 110
         Height = 17
         Max = 100
+        Orientation = trHorizontal
+        Frequency = 1
         Position = 100
+        SelEnd = 0
+        SelStart = 0
         TabOrder = 1
         ThumbLength = 10
+        TickMarks = tmBottomRight
         TickStyle = tsNone
         OnChange = TrackBarBounceChange
       end
@@ -104,9 +109,14 @@ object Form1: TForm1
         Width = 110
         Height = 17
         Max = 100
+        Orientation = trHorizontal
+        Frequency = 1
         Position = 50
+        SelEnd = 0
+        SelStart = 0
         TabOrder = 3
         ThumbLength = 10
+        TickMarks = tmBottomRight
         TickStyle = tsNone
         OnChange = TrackBarSoftCFMChange
       end
@@ -138,36 +148,27 @@ object Form1: TForm1
       TabOrder = 4
       OnClick = Button4Click
     end
-    object Button5: TButton
-      Left = 48
-      Top = 144
-      Width = 113
-      Height = 25
-      Caption = 'Add cylinder'
-      TabOrder = 5
-      OnClick = Button5Click
-    end
   end
   object GLScene1: TGLScene
     Left = 216
     Top = 8
     object GLDummyCube1: TGLDummyCube
       Position.Coordinates = {000000000000803F000000000000803F}
-      CubeSize = 1.000000000000000000
+      CubeSize = 1
       object GLCamera1: TGLCamera
-        DepthOfView = 100.000000000000000000
-        FocalLength = 50.000000000000000000
+        DepthOfView = 100
+        FocalLength = 50
         TargetObject = GLDummyCube1
         Position.Coordinates = {0000803F000040400000A0400000803F}
         object GLLightSource1: TGLLightSource
-          ConstAttenuation = 1.000000000000000000
+          ConstAttenuation = 1
           LightStyle = lsOmni
-          SpotCutOff = 180.000000000000000000
+          SpotCutOff = 180
         end
       end
     end
     object ODEObjects: TGLDummyCube
-      CubeSize = 1.000000000000000000
+      CubeSize = 1
     end
   end
   object GLCadencer1: TGLCadencer

@@ -28,7 +28,6 @@ type
     Button3: TButton;
     Button4: TButton;
     Label1: TLabel;
-    Button5: TButton;
     GLODEManager1: TGLODEManager;
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -44,7 +43,6 @@ type
     procedure Button4Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -161,26 +159,6 @@ begin
     Color.Blue:=0.5*Random+0.5;
 
     VisibleAtRuntime:=True;
-  end;
-end;
-
-procedure TForm1.Button5Click(Sender: TObject);
-begin
-  with TGLCylinder(ODEObjects.AddNewChild(TGLCylinder)) do begin
-    Position.SetPoint(Random,Random+3,Random);
-    TopRadius:=0.5*Random+0.25;
-    BottomRadius:=TopRadius;
-    Height:=Random+0.5;
-    Material.FrontProperties.Diffuse.Color:=VectorMake(0.5*Random+0.5, 0.5*Random+0.5, 0.5*Random+0.5, 0.5*Random+0.5);
-
-    with TGLODEDynamicBehaviour.Create(Behaviours) do begin
-      Manager:=GLODEManager1;
-      with TODEElementCylinder(AddNewElement(TODEElementCylinder)) do begin
-        Position.SetPoint(0,0,0);
-        Radius:=TopRadius;
-        Length:=Height;
-      end;
-    end;
   end;
 end;
 
