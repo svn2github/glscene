@@ -5484,7 +5484,7 @@ begin
          end;
 
          // version 1
-         if archiveVersion = 1 then begin
+         if archiveVersion >= 1 then begin
             with libMat.Material.FrontProperties do begin
                Read(FShininess,1);
                PolygonMode:=TPolygonMode(ReadInteger);
@@ -5506,7 +5506,7 @@ begin
          end;
 
          // version 2
-         if archiveVersion = 2 then begin
+         if archiveVersion >= 2 then begin
             texCount:=ReadInteger;
             for tex:=0 to texCount-1 do begin
                texExItem:=libMat.Material.TextureEx.Add;
