@@ -10,7 +10,7 @@ DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
-  shadowvolumes.exe motionblur.exe
+  shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -32,3 +32,11 @@ shadowvolumes.exe: specialsFX\shadowvolumes\shadowvolumes.dpr
 
 motionblur.exe: specialsFX\motionblur\motionblur.dpr
   $(DCC)
+
+OctreeDemo.exe: rendering\OctreeDemo\OctreeDemo.dpr
+  $(DCC)
+
+Clothify.exe: physics\Clothify\Clothify.dpr
+  $(DCC)
+
+

@@ -6,6 +6,10 @@
    Base Verlet modelling/simulation classes.<p>
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
+   Note that currently, the SatisfyConstraintForEdge methods push the nodes in
+   the edge uniformly - it should push the closer node more for correct physics.
+   It's a matter of leverage. <p>
+
 	<b>History : </b><font size=-1><ul>
       <li>24/06/03 - MF - Added force kickbacks for integration with external
                           physics. Needs to be split into force+torque and add
