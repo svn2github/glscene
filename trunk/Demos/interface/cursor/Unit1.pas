@@ -58,8 +58,12 @@ type
     procedure MITrailClick(Sender: TObject);
     procedure MILoadImageClick(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
+    procedure GLSceneViewer1AfterRender(Sender: TObject);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
   private
     { Déclarations privées }
+    handleMouseMoves : Boolean;
   public
     { Déclarations publiques }
   end;
@@ -105,6 +109,9 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
 var
    color : TColor;
 begin
+   // Prevents event floods on slow hardware
+   if not handleMouseMoves then Exit;
+   handleMouseMoves:=False;
    // Mouse moved, adjust the position of our cursor
    HSCursor.Position.X:=x;
    HSCursor.Position.Y:=y;
@@ -117,6 +124,17 @@ begin
       GLParticles1.CreateParticle;
    // Update things now
    GLCadencer1.Progress;
+end;
+
+procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
+begin
+   handleMouseMoves:=True;
+end;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+   GLSceneViewer1.Invalidate;
 end;
 
 procedure TForm1.HSParticleProgress(Sender: TObject; const deltaTime,
@@ -148,6 +166,7 @@ begin
    // update FPS and sprite count
    Caption:=Format('%.1f FPS - %d Cursor Sprites',
                    [GLSceneViewer1.FramesPerSecond, GLParticles1.Count]);
+   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.MITrailClick(Sender: TObject);
@@ -158,7 +177,7 @@ end;
 
 procedure TForm1.MIExitClick(Sender: TObject);
 begin
- Close;
+   Close;
 end;
 
 end.

@@ -25,7 +25,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLWin32Viewer, GLMisc, StdCtrls, GLSkydome,
-  ExtCtrls, GLCadencer, GLParticleFX;
+  ExtCtrls, GLCadencer, GLParticleFX, OpenGL12;
 
 type
   TForm1 = class(TForm)
@@ -58,6 +58,7 @@ type
   public
     { Public declarations }
     mx, my : Integer;
+    cubeMapWarnDone : Boolean;
   end;
 
 var
@@ -69,6 +70,13 @@ implementation
 
 procedure TForm1.GenerateCubeMap;
 begin
+   // Don't do anything if cube maps aren't supported
+   if not GL_ARB_texture_cube_map then begin
+      if not cubeMapWarnDone then
+         ShowMessage('Your graphics board does not support cube maps...');
+      cubeMapWarnDone:=True;
+      Exit;
+   end;
    // Here we generate the new cube map, from CubeMapCamera (a child of the
    // teapot in the scene hierarchy)
    with Teapot1 do begin
