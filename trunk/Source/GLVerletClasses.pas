@@ -31,7 +31,7 @@ type
   protected
     procedure SetLocation(const Value: TAffineVector);override;
   public
-    procedure Verlet(const deltaTime, newTime : Double); override;
+    procedure Verlet(const vpt : TVerletProgressTimes); override;
 
     property GLBaseSceneObject : TGLBaseSceneObject read FGLBaseSceneObject write SetGLBaseSceneObject;
     property RelativePosition : TAffineVector read FRelativePosition write FRelativePosition;
@@ -70,7 +70,7 @@ begin
     FRelativePosition := GLBaseSceneObject.AbsoluteToLocal(Value);
 end;
 
-procedure TGLVerletNode.Verlet(const deltaTime, newTime: Double);
+procedure TGLVerletNode.Verlet(const vpt : TVerletProgressTimes);
 begin
   if Assigned(GLBaseSceneObject) and NailedDown then
   begin

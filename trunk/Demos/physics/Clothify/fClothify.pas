@@ -238,7 +238,7 @@ var
     ODESphere := dCreateSphere (space, GLSphere1.Radius);
 
     dGeomSetBody (ODESphere, body);
-    dBodySetMass (body,m);
+    dBodySetMass (body, @m);
 
     ODESphere.data := GLSphere1;
 
@@ -424,7 +424,7 @@ begin
     // const dReal ss[3] = {0.02,0.02,0.02};
     for i := 0 to numc-1 do
     begin
-      c := dJointCreateContact (frmClothify.world,frmClothify.contactgroup,contact[i]);
+      c := dJointCreateContact (frmClothify.world,frmClothify.contactgroup, @contact[i]);
       dJointAttach (c,b1,b2);
       // dsDrawBox (contact[i].geom.pos,RI,ss);
     end;

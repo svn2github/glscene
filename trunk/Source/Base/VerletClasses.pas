@@ -49,7 +49,7 @@ uses Classes, VectorGeometry, SysUtils, VectorLists, SpatialPartitioning,
   GeometryBB;
 
 const
-   G_DRAG = 0.005;
+   G_DRAG = 0.0001;
    cDEFAULT_CONSTRAINT_FRICTION = 0.6;
 
 type
@@ -1329,7 +1329,7 @@ end;
 constructor TVerletWorld.Create;
 begin
    inherited;
-   FDrag:=0.01;
+   FDrag:=G_DRAG;
    FNodes:=TVerletNodeList.Create;
    FConstraints:=TVerletConstraintList.Create;
    FConstraintsWithBeforeIterations:=TVerletConstraintList.Create;

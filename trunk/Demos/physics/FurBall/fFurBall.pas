@@ -125,7 +125,7 @@ begin
   begin
     for i := 0 to numc-1 do
     begin
-      c := dJointCreateContact (frmFurBall.world,frmFurBall.contactgroup,contact[i]);
+      c := dJointCreateContact (frmFurBall.world,frmFurBall.contactgroup, @contact[i]);
       dJointAttach (c,b1,b2);
     end;
   end;
@@ -265,7 +265,7 @@ begin
   odeFurBallBody := dBodyCreate(World);
 
   dGeomSetBody (odeFurBallGeom,odeFurBallBody);
-  dBodySetMass (odeFurBallBody,m);
+  dBodySetMass (odeFurBallBody, @m);
   dBodySetLinearVel(odeFurBallBody, 0, 14, 0);
 
   dBodyAddTorque(odeFurBallBody, 0.1,0.1,0.1);
