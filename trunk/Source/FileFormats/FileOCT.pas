@@ -65,8 +65,14 @@ type
          Textures       : array of TOCTTexture;
          Lightmaps      : array of TOCTLightmap;
          Lights         : array of TOCTLight;
+         PlayerPos      : TAffineVector;
 
-         constructor Create(octStream : TStream);
+         constructor Create; overload;
+         constructor Create(octStream : TStream); overload;
+
+         {: Saves content to stream in OCT format.<p>
+            The Header is automatically prepared before streaming. }
+         procedure SaveToStream(aStream : TStream);
    end;
 
 // ------------------------------------------------------------------
@@ -85,10 +91,19 @@ uses SysUtils;
 
 // Create
 //
+constructor TOCTFile.Create;
+begin
+   inherited Create;
+end;
+
+// Create
+//
 constructor TOCTFile.Create(octStream : TStream);
 begin
+   inherited Create;
+   
    // Read in the header
-   octStream.Read(Header, SizeOf(header));
+   octStream.Read(Header, SizeOf(Header));
 
    // then the rest of the stuff
 
@@ -106,6 +121,29 @@ begin
 
    SetLength(Lights, Header.numLights);
    octStream.Read(Lights[0], Header.numLights*SizeOf(TOCTLight));
+
+   octStream.Read(PlayerPos, SizeOf(PlayerPos))
+end;
+
+// SaveToStream
+//
+procedure TOCTFile.SaveToStream(aStream : TStream);
+begin
+   with Header, aStream do begin
+      numVerts:=Length(Vertices);
+      numFaces:=Length(Faces);
+      numTextures:=Length(Textures);
+      numLightmaps:=Length(Lightmaps);
+      numLights:=Length(Lights);
+
+      Write(Header, SizeOf(Header));
+      Write(Vertices[0], numVerts*SizeOf(TOCTVertex));
+      Write(Faces[0], numFaces*SizeOf(TOCTFace));
+      Write(Textures[0], numTextures*SizeOf(TOCTTexture));
+      Write(Lightmaps[0], numLightmaps*SizeOf(TOCTLightmap));
+      Write(Lights[0], numLights*SizeOf(TOCTLight));
+      Write(PlayerPos, SizeOf(PlayerPos))
+   end;
 end;
 
 end.
