@@ -19,6 +19,7 @@
    <li>Increase/decrease the viewing distance with '+'/'-'.
    <li>Increase/decrease CLOD precision with '*' and '/'.
    <li>Increase/decrease QualityDistance with '9' and '8'.
+   <li>'n' turns on 'night' mode, 'd' turns back to 'day' mode.
    </ul><p>
 
    When increasing the range, or moving after having increased the range you
@@ -97,6 +98,10 @@ begin
    BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
    // Could've been done at design time, but it the, it hurts the eyes ;)
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
+   // Move camera starting point to an interesting hand-picked location
+   DummyCube1.Position.X:=575;
+   DummyCube1.Position.Z:=-390;
+   DummyCube1.Turn(100);
    // Initial camera height offset (controled with pageUp/pageDown)
    FCamHeight:=0;
 end;
@@ -186,6 +191,36 @@ begin
          if QualityDistance>40 then QualityDistance:=Round(QualityDistance*0.8);
       '9' : with TerrainRenderer1 do
          if QualityDistance<1000 then QualityDistance:=Round(QualityDistance*1.2);
+      'n', 'N' : with SkyDome1 do if Stars.Count=0 then begin
+         // turn on 'night' mode
+         Bands[1].StopColor.AsWinColor:=RGB(0, 0, 16);
+         Bands[1].StartColor.AsWinColor:=RGB(0, 0, 0);
+         Bands[0].StopColor.AsWinColor:=RGB(0, 0, 0);
+         Bands[0].StartColor.AsWinColor:=RGB(0, 0, 32);
+         Stars.AddRandomStars(700, clWhite);   // many white stars
+         Stars.AddRandomStars(100, RGB(255, 200, 200));  // some redish ones
+         Stars.AddRandomStars(100, RGB(200, 200, 255));  // some blueish ones
+         Stars.AddRandomStars(100, RGB(255, 255, 200));  // some yellowish ones
+         GLSceneViewer1.Buffer.BackgroundColor:=RGB(0, 0, 32);
+         with GLSceneViewer1.Buffer.FogEnvironment do begin
+            FogColor.AsWinColor:=clBlack;
+            FogStart:=-FogStart; // Fog is used to make things darker
+         end;
+      end;
+      'd', 'D' : with SkyDome1 do if Stars.Count>0 then begin
+         // turn on 'day' mode
+         Bands[1].StopColor.Color:=clrNavy;
+         Bands[1].StartColor.Color:=clrBlue;
+         Bands[0].StopColor.Color:=clrBlue;
+         Bands[0].StartColor.Color:=clrWhite;
+         Stars.Clear;
+         GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
+         with GLSceneViewer1.Buffer.FogEnvironment do begin
+            FogColor.AsWinColor:=clWhite;
+            FogStart:=-FogStart;
+         end;
+         GLSceneViewer1.Buffer.FogEnvironment.FogStart:=0;
+      end;
    end;
    Key:=#0;
 end;
