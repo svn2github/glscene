@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/07/03 - EG - Removed TTransformationMode and related code
       <li>16/07/03 - EG - TGLBaseGuiObject moved to GLGui along with RecursiveVisible mechanism
       <li>19/06/03 - DanB - Added TGLBaseSceneObject.GetOrCreateBehaviour/Effect
       <li>11/06/03 - Egg - Added CopyToTexture for buffer
@@ -226,9 +227,9 @@ interface
 
 uses
    Classes, GLMisc, GLTexture, SysUtils, Geometry, XCollection,
-   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,{ dialogs, }
-   {$ifdef GLS_VCL}Graphics{$else}QGraphics{$endif},GLSilhouette
-   ;
+   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,
+   {$ifdef GLS_VCL}Graphics{$else}QGraphics{$endif},
+   GLSilhouette;
 
 type
 
@@ -243,7 +244,6 @@ const
 
 type
   TNormalDirection = (ndInside, ndOutside);
-  TTransformationMode = (tmLocal, tmParentNoPos, tmParentWithPos);
 
   // TObjectChanges
   //
@@ -354,7 +354,6 @@ type
          FShowAxes : Boolean;
          FRotation: TGLCoordinates; // current rotation angles
          FIsCalculating: Boolean;
-         FTransMode: TTransformationMode;
          FObjectsSorting : TGLObjectsSorting;
          FVisibilityCulling : TGLVisibilityCulling;
          FOnProgress : TGLProgressEvent;
@@ -426,8 +425,6 @@ type
          function  GetHandle(var rci : TRenderContextInfo) : Cardinal; virtual;
          //: Should the object be considered as blended for sorting purposes?
          function  Blended : Boolean; virtual;
-         //: Returns Up and Direction vectors depending on the transformation mode
-         procedure GetOrientationVectors(var up, direction : TAffineVector);
          procedure RebuildMatrix;
          procedure SetName(const NewName: TComponentName); override;
          procedure SetParentComponent(Value: TComponent); override;
@@ -606,9 +603,9 @@ type
          procedure Translate(tx, ty, tz : Single);
          procedure MoveObjectAround(anObject : TGLBaseSceneObject;
                                     pitchDelta, turnDelta : Single);
-         procedure Pitch(Angle: Single);
-         procedure Roll(Angle: Single);
-         procedure Turn(Angle: Single);
+         procedure Pitch(angle : Single);
+         procedure Roll(angle : Single);
+         procedure Turn(angle : Single);
 
          {: Sets all rotations to zero and restores default Direction/Up.<p>
             Using this function then applying roll/pitch/turn in the order that
@@ -647,8 +644,6 @@ type
          property PitchAngle : Single read GetPitchAngle write SetPitchAngle;
          property RollAngle : Single read GetRollAngle write SetRollAngle;
          property TurnAngle : Single read GetTurnAngle write SetTurnAngle;
-
-         property TransformationMode : TTransformationMode read FTransMode write FTransMode default tmLocal;
 
          property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
          property Changes: TObjectChanges read FChanges;
@@ -896,7 +891,6 @@ type
          property RollAngle;
          property Scale;
          property ShowAxes;
-         property TransformationMode;
          property TurnAngle;
          property Up;
          property Visible;
@@ -1010,7 +1004,6 @@ type
          property RollAngle;
          property Scale;
          property ShowAxes;
-         property TransformationMode;
          property TurnAngle;
          property Up;
          property Visible;
@@ -2992,7 +2985,6 @@ begin
       FObjectsSorting:=TGLBaseSceneObject(Source).FObjectsSorting;
       FVisibilityCulling:=TGLBaseSceneObject(Source).FVisibilityCulling;
       FRotation.Assign(TGLBaseSceneObject(Source).FRotation);
-      FTransMode:=TGLBaseSceneObject(Source).FTransMode;
       DeleteChildren;
       SetScene(TGLBaseSceneObject(Source).FScene);
       if Assigned(Scene) then Scene.BeginUpdate;
@@ -3048,19 +3040,6 @@ begin
       Result:=FParent.FChildren.IndexOf(Self);
 end;
 
-// GetOrientationVectors
-//
-procedure TGLBaseSceneObject.GetOrientationVectors(var up, direction : TAffineVector);
-begin
-   if (FTransMode<>tmLocal) and Assigned(FParent) then begin
-      SetVector(Up, FParent.FUp.AsVector);
-      SetVector(Direction, FParent.FDirection.AsVector);
-   end else begin
-      SetVector(Up, FUp.AsVector);
-      SetVector(Direction, FDirection.AsVector);
-   end;
-end;
-
 // GetParentComponent
 //
 function TGLBaseSceneObject.GetParentComponent: TComponent;
@@ -3078,44 +3057,24 @@ end;
 // Lift
 //
 procedure TGLBaseSceneObject.Lift(aDistance: Single);
-var
-   up, dir : TAffineVector;
 begin
-   if FTransMode = tmParentWithPos then begin
-      GetOrientationVectors(up, dir);
-      FPosition.AddScaledVector(aDistance, up);
-   end else FPosition.AddScaledVector(aDistance, FUp.AsVector);
+   FPosition.AddScaledVector(aDistance, FUp.AsVector);
    TransformationChanged;
 end;
 
 // Move
 //
 procedure TGLBaseSceneObject.Move(ADistance: Single);
-var
-   Up, Dir: TAffineVector;
 begin
-   if FTransMode = tmParentWithPos then begin
-      GetOrientationVectors(Up, Dir);
-      FPosition.AddScaledVector(ADistance, Dir);
-   end else FPosition.AddScaledVector(ADistance, FDirection.AsVector);
+   FPosition.AddScaledVector(ADistance, FDirection.AsVector);
    TransformationChanged;
 end;
 
 // Slide
 //
 procedure TGLBaseSceneObject.Slide(ADistance: Single);
-var
-   RightVector: TAffineVector;
-   Up, Dir: TAffineVector;
 begin
-   if FTransMode = tmParentWithPos then
-      GetOrientationVectors(Up, Dir)
-   else begin
-      SetVector(Up, FUp.AsVector);
-      SetVector(Dir, FDirection.AsVector);
-   end;
-   VectorCrossProduct(Dir, Up, RightVector);
-   FPosition.AddScaledVector(ADistance, RightVector);
+   FPosition.AddScaledVector(ADistance, Right);
    TransformationChanged;
 end;
 
@@ -3139,44 +3098,29 @@ end;
 //
 procedure TGLBaseSceneObject.ResetAndPitchTurnRoll(const degX, degY, degZ : Single);
 var
-   rightVector, up, dir : TAffineVector;
-   diff : Single;
    rotMatrix : TMatrix;
 begin
    ResetRotations;
    // set DegX (Pitch)
-   GetOrientationVectors(Up, Dir);
-   Diff:=DegToRad(DegX);
-   RightVector:=VectorCrossProduct(Dir, Up);
-   rotMatrix:=CreateRotationMatrix(RightVector, Diff);
+   rotMatrix:=CreateRotationMatrix(Right, degX*cPIdiv180);
    FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
    FUp.Normalize;
    FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
    FDirection.Normalize;
-   if FTransMode=tmParentWithPos then
-       FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
    FRotation.DirectX:=NormalizeDegAngle(DegX);
    // set DegY (Turn)
-   GetOrientationVectors(Up, Dir);
-   Diff:=DegToRad(DegY);
-   rotMatrix:=CreateRotationMatrix(Up, Diff);
+   rotMatrix:=CreateRotationMatrix(FUp.AsVector, degY*cPIdiv180);
    FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
    FUp.Normalize;
    FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
    FDirection.Normalize;
-   if FTransMode = tmParentWithPos then
-       FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
    FRotation.DirectY:=NormalizeDegAngle(DegY);
    // set DegZ (Roll)
-   GetOrientationVectors(Up, Dir);
-   Diff:=DegToRad(DegZ);
-   rotMatrix:=CreateRotationMatrix(Dir, Diff);
+   rotMatrix:=CreateRotationMatrix(Direction.AsVector, degZ*cPIdiv180);
    FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
    FUp.Normalize;
    FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
    FDirection.Normalize;
-   if FTransMode = tmParentWithPos then
-       FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
    FRotation.DirectZ:=NormalizeDegAngle(DegZ);
    TransformationChanged;
    NotifyChange(self);
@@ -3220,26 +3164,22 @@ end;
 
 // Pitch
 //
-procedure TGLBaseSceneObject.Pitch(Angle: Single);
+procedure TGLBaseSceneObject.Pitch(angle : Single);
 var
-   RightVector: TAffineVector;
-   Up, Dir: TAffineVector;
    r : Single;
+   rightVector : TVector;
 begin
    FIsCalculating:=True;
    try
-      GetOrientationVectors(Up, Dir);
-      RightVector:=VectorCrossProduct(Dir, Up);
-      Angle:=DegToRad(Angle);
-      FUp.Rotate(RightVector, -Angle);
+      angle:=-DegToRad(angle);
+      rightVector:=Right;
+      FUp.Rotate(rightVector, angle);
       FUp.Normalize;
-      FDirection.Rotate(RightVector, -Angle);
+      FDirection.Rotate(rightVector, angle);
       FDirection.Normalize;
-      if FTransMode = tmParentWithPos then
-         FPosition.Rotate(RightVector, Angle);
-      r:=-RadToDeg(arctan2(FDirection.Y, Sqrt(Sqr(FDirection.X) + Sqr(FDirection.Z))));
-      if FDirection.X < 0 then
-         if FDirection.Y < 0 then
+      r:=-RadToDeg(ArcTan2(FDirection.Y, VectorLength(FDirection.X, FDirection.Z)));
+      if FDirection.X<0 then
+         if FDirection.Y<0 then
             r:=180-r
          else r:=-180-r;
       FRotation.X:=r;
@@ -3253,25 +3193,19 @@ end;
 //
 procedure TGLBaseSceneObject.SetPitchAngle(AValue: Single);
 var
-   RightVector: TAffineVector;
-   Up, Dir: TAffineVector;
-   Diff: Single;
+   diff : Single;
    rotMatrix : TMatrix;
 begin
    if AValue<>FRotation.X then begin
       if not (csLoading in ComponentState) then begin
          FIsCalculating:=True;
          try
-            GetOrientationVectors(Up, Dir);
-            Diff:=DegToRad(FRotation.X-AValue);
-            RightVector:=VectorCrossProduct(Dir, Up);
-            rotMatrix:=CreateRotationMatrix(RightVector, Diff);
+            diff:=DegToRad(FRotation.X-AValue);
+            rotMatrix:=CreateRotationMatrix(Right, diff);
             FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
             FUp.Normalize;
             FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
             FDirection.Normalize;
-            if FTransMode=tmParentWithPos then
-               FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
             TransformationChanged;
          finally
             FIsCalculating:=False;
@@ -3283,28 +3217,25 @@ end;
 
 // Roll
 //
-procedure TGLBaseSceneObject.Roll(Angle: Single);
+procedure TGLBaseSceneObject.Roll(angle : Single);
 var
-   RightVector: TVector;
-   Up, Dir: TAffineVector;
    r : Single;
+   rightVector, directionVector : TVector;
 begin
    FIsCalculating:=True;
    try
-      GetOrientationVectors(Up, Dir);
-      Angle:=DegToRad(Angle);
-      FUp.Rotate(Dir, Angle);
+      angle:=DegToRad(angle);
+      directionVector:=Direction.AsVector;
+      FUp.Rotate(directionVector, angle);
       FUp.Normalize;
-      FDirection.Rotate(Dir, Angle);
+      FDirection.Rotate(directionVector, angle);
       FDirection.Normalize;
-      if FTransMode = tmParentWithPos then
-         FPosition.Rotate(Dir, Angle);
 
       // calculate new rotation angle from vectors
-      RightVector:=VectorCrossProduct(FDirection.AsVector, FUp.AsVector);
-      r:=-RadToDeg(arctan2(Rightvector[1], Sqrt(Sqr(RightVector[0]) + Sqr(RightVector[2]))));
-      if RightVector[0] < 0 then
-         if RightVector[1] < 0 then
+      rightVector:=Right;
+      r:=-RadToDeg(ArcTan2(rightVector[1], VectorLength(rightVector[0], rightVector[2])));
+      if rightVector[0]<0 then
+         if rightVector[1]<0 then
             r:=180-r
          else r:=-180-r;
       FRotation.Z:=r;
@@ -3318,23 +3249,19 @@ end;
 //
 procedure TGLBaseSceneObject.SetRollAngle(AValue: Single);
 var
-   Up, Dir: TAffineVector;
-   Diff: Single;
+   diff : Single;
    rotMatrix : TMatrix;
 begin
-   if AValue <> FRotation.Z then begin
+   if AValue<>FRotation.Z then begin
       if not (csLoading in ComponentState) then begin
          FIsCalculating:=True;
          try
-            GetOrientationVectors(Up, Dir);
-            Diff:=DegToRad(FRotation.Z - AValue);
-            rotMatrix:=CreateRotationMatrix(Dir, Diff);
+            diff:=DegToRad(FRotation.Z-AValue);
+            rotMatrix:=CreateRotationMatrix(Direction.AsVector, diff);
             FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
             FUp.Normalize;
             FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
             FDirection.Normalize;
-            if FTransMode = tmParentWithPos then
-               FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
             TransformationChanged;
          finally
             FIsCalculating:=False;
@@ -3346,24 +3273,22 @@ end;
 
 // Turn
 //
-procedure TGLBaseSceneObject.Turn(Angle: Single);
+procedure TGLBaseSceneObject.Turn(angle : Single);
 var
-   Up, Dir: TAffineVector;
    r : Single;
+   upVector : TVector;
 begin
    FIsCalculating:=True;
    try
-      GetOrientationVectors(Up, Dir);
-      Angle:=DegToRad(Angle);
-      FUp.Rotate(Up, Angle);
+      angle:=DegToRad(angle);
+      upVector:=Up.AsVector;
+      FUp.Rotate(upVector, angle);
       FUp.Normalize;
-      FDirection.Rotate(Up, Angle);
+      FDirection.Rotate(upVector, angle);
       FDirection.Normalize;
-      if FTransMode = tmParentWithPos then
-         FPosition.Rotate(Up, Angle);
-      r:=-RadToDeg(arctan2(FDirection.X, Sqrt(Sqr(FDirection.Y) + Sqr(FDirection.Z))));
-      if FDirection.X < 0 then
-         if FDirection.Y < 0 then
+      r:=-RadToDeg(ArcTan2(FDirection.X, VectorLength(FDirection.Y, FDirection.Z)));
+      if FDirection.X<0 then
+         if FDirection.Y<0 then
             r:=180-r
          else r:=-180-r;
       FRotation.Y:=r;
@@ -3377,7 +3302,6 @@ end;
 //
 procedure TGLBaseSceneObject.SetTurnAngle(AValue: Single);
 var
-   up, dir : TAffineVector;
    diff : Single;
    rotMatrix : TMatrix;
 begin
@@ -3385,15 +3309,12 @@ begin
       if not (csLoading in ComponentState) then begin
          FIsCalculating:=True;
          try
-            GetOrientationVectors(Up, Dir);
-            Diff:=DegToRad(FRotation.Y-AValue);
-            rotMatrix:=CreateRotationMatrix(Up, Diff);
+            diff:=DegToRad(FRotation.Y-AValue);
+            rotMatrix:=CreateRotationMatrix(Up.AsVector, diff);
             FUp.DirectVector:=VectorTransform(FUp.AsVector, rotMatrix);
             FUp.Normalize;
             FDirection.DirectVector:=VectorTransform(FDirection.AsVector, rotMatrix);
             FDirection.Normalize;
-            if FTransMode = tmParentWithPos then
-               FPosition.DirectVector:=VectorTransform(FPosition.AsVector, rotMatrix);
             TransformationChanged;
          finally
             FIsCalculating:=False;
