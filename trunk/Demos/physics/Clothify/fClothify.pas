@@ -28,38 +28,42 @@ type
     GLCadencer1: TGLCadencer;
     Label1: TLabel;
     Timer1: TTimer;
-    Button_LoadMesh: TButton;
-    Label2: TLabel;
-    ComboBox_MeshName: TComboBox;
-    ComboBox_ConstraintType: TComboBox;
     GLSphere1: TGLSphere;
     GLCylinder1: TGLCylinder;
     GLShadowPlane1: TGLShadowPlane;
     GLCube1: TGLCube;
-    ComboBox_Collider: TComboBox;
-    Label4: TLabel;
-    Label5: TLabel;
-    TrackBar_Slack: TTrackBar;
-    Label3: TLabel;
     GLCube_Stair1: TGLCube;
     GLDummyCube_Stairs: TGLDummyCube;
     GLCube_Stair2: TGLCube;
     GLCube_Stair3: TGLCube;
     GLCube_Stair4: TGLCube;
     GLDummyCube2: TGLDummyCube;
-    TrackBar_Iterations: TTrackBar;
-    Label6: TLabel;
-    CheckBox_Weld: TCheckBox;
     GL_Capsule: TGLCylinder;
     GLSphere2: TGLSphere;
     GLSphere3: TGLSphere;
-    TrackBar_Friction: TTrackBar;
-    Label7: TLabel;
     GLDummyCube_Light: TGLDummyCube;
     GLActor2: TGLActor;
     GLDirectOpenGL1: TGLDirectOpenGL;
-    CheckBox_ShowOctree: TCheckBox;
+    GroupBox_LoadForm: TGroupBox;
+    Label2: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    ComboBox_MeshName: TComboBox;
+    ComboBox_ConstraintType: TComboBox;
+    ComboBox_Collider: TComboBox;
+    Button_LoadMesh: TButton;
     CheckBox_UseOctree: TCheckBox;
+    CheckBox_SolidEdges: TCheckBox;
+    CheckBox_Weld: TCheckBox;
+    Button_OpenLoadForm: TButton;
+    Button_CancelLoad: TButton;
+    Label3: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    TrackBar_Slack: TTrackBar;
+    TrackBar_Iterations: TTrackBar;
+    TrackBar_Friction: TTrackBar;
+    CheckBox_ShowOctree: TCheckBox;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -74,6 +78,8 @@ type
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure TrackBar_FrictionChange(Sender: TObject);
     procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
+    procedure Button_OpenLoadFormClick(Sender: TObject);
+    procedure Button_CancelLoadClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -108,6 +114,7 @@ var
   Capsule : TVCCapsule;
   Sides : TAffineVector;
   Cube : TVCCube;
+  ColliderGravy : single;
   s : string;
   f : single;
   p : Integer;
@@ -210,16 +217,17 @@ begin
       AffineVectorMake( -20, -5.5, -20),
       AffineVectorMake(  20,  20,  20), 25, 5);//}
 
-{    VerletWorld.CreateOctree(
-      AffineVectorMake( 0, 0, 0),
-      AffineVectorMake( 0, 0, 0), 25, 5);//}
-
   if ComboBox_ConstraintType.ItemIndex=0 then
     EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack)
   else
     EdgeDetector.AddEdgesAsSprings(VerletWorld, 1000,100, GetSlack);//}
 
-  //EdgeDetector.AddEdgesAsSolidEdges(VerletWorld);
+  if CheckBox_SolidEdges.Checked then
+  begin
+    ColliderGravy := 1;
+    EdgeDetector.AddEdgesAsSolidEdges(VerletWorld);
+  end else
+    ColliderGravy := 1.1;
 
   // VerletWorld.Nodes[0].NailedDown := true;
 
@@ -233,7 +241,7 @@ begin
 
   if GLSphere1.Visible then begin
      VCSphere := TVCSphere.Create(VerletWorld);
-     VCSphere.Radius := GLSphere1.Radius;
+     VCSphere.Radius := GLSphere1.Radius * ColliderGravy;
      VCSphere.Location := AffineVectorMake(GLSphere1.AbsolutePosition);
   end;
 
@@ -243,7 +251,7 @@ begin
 
   if GLCylinder1.Visible then begin
      Capsule := TVCCapsule.Create(VerletWorld);
-     Capsule.Radius := GLCylinder1.TopRadius;
+     Capsule.Radius := GLCylinder1.TopRadius * ColliderGravy;
      Capsule.Location := AffineVectorMake(GLCylinder1.AbsolutePosition);
      Capsule.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
      Capsule.Length := 20;
@@ -252,10 +260,10 @@ begin
 
   if GL_Capsule.Visible then begin
      Capsule := TVCCapsule.Create(VerletWorld);
-     Capsule.Radius := GL_Capsule.TopRadius;
+     Capsule.Radius := GL_Capsule.TopRadius * ColliderGravy;
      Capsule.Location := AffineVectorMake(GL_Capsule.AbsolutePosition);
      Capsule.Axis := AffineVectorMake(GL_Capsule.AbsoluteUp);//}
-     Capsule.Length := GL_Capsule.Height;
+     Capsule.Length := GL_Capsule.Height * ColliderGravy;
      Capsule.FrictionRatio := 0.6;
   end;
 
@@ -270,22 +278,9 @@ begin
   VerletWorld.MaxDeltaTime := 0.01;
   VerletWorld.Iterations := TrackBar_Iterations.Position;
 
-  // DEBUG MULTIPLE OBJECTS IN VERLETWORLD!
-  {GLActor2.LoadFromFile('mushroom.3ds');
-  GLActor2.Scale.AsAffineVector := AffineVectorMake(0.08, 0.08, 0.08);
-
-  FreeAndNil(EdgeDetector);
-
-  EdgeDetector := TEdgeDetector.Create(GLActor2);
-
-  if not CheckBox_Weld.Checked then
-    EdgeDetector.WeldDistance := -1;
-
-  EdgeDetector.ProcessMesh;
-
-  EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack);//}
-
   TrackBar_FrictionChange(nil);
+
+  GroupBox_LoadForm.Hide;
 end;
 
 procedure TfrmClothify.GLSceneViewer1MouseMove(Sender: TObject;
@@ -539,5 +534,16 @@ begin
     RenderOctreeNode(TOctreeSpacePartition(VerletWorld.SpacePartition).RootNode);
     glPopAttrib;
   end;
+end;
+
+procedure TfrmClothify.Button_OpenLoadFormClick(Sender: TObject);
+begin
+  GroupBox_LoadForm.Visible := true;
+  GroupBox_LoadForm.SetFocus;
+end;
+
+procedure TfrmClothify.Button_CancelLoadClick(Sender: TObject);
+begin
+  GroupBox_LoadForm.Hide;
 end;
 end.

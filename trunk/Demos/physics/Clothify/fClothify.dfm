@@ -1,6 +1,6 @@
 object frmClothify: TfrmClothify
-  Left = 9
-  Top = 1
+  Left = 94
+  Top = 124
   Width = 774
   Height = 582
   Caption = 'Clothify'
@@ -27,53 +27,32 @@ object frmClothify: TfrmClothify
     Anchors = [akTop, akRight]
     Caption = '0,0 FPS'
   end
-  object Label2: TLabel
-    Left = 8
-    Top = 0
-    Width = 26
-    Height = 13
-    Caption = 'Mesh'
-  end
-  object Label4: TLabel
-    Left = 152
-    Top = 0
-    Width = 27
-    Height = 13
-    Caption = 'Mode'
-  end
-  object Label5: TLabel
-    Left = 248
-    Top = 0
-    Width = 34
-    Height = 13
-    Caption = 'Collider'
-  end
   object Label3: TLabel
-    Left = 328
-    Top = 0
+    Left = 8
+    Top = 8
     Width = 27
     Height = 13
     Caption = 'Slack'
   end
   object Label6: TLabel
-    Left = 520
-    Top = 0
+    Left = 104
+    Top = 8
     Width = 43
     Height = 13
     Caption = 'Iterations'
   end
   object Label7: TLabel
-    Left = 576
-    Top = 0
+    Left = 184
+    Top = 8
     Width = 34
     Height = 13
     Caption = 'Friction'
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
-    Top = 40
+    Top = 48
     Width = 766
-    Height = 513
+    Height = 537
     Camera = GLCamera1
     Buffer.BackgroundColor = clGray
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roTwoSideLighting]
@@ -81,127 +60,184 @@ object frmClothify: TfrmClothify
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseMove = GLSceneViewer1MouseMove
   end
-  object Button_LoadMesh: TButton
-    Left = 445
-    Top = 8
-    Width = 65
-    Height = 21
-    Caption = 'Load mesh'
-    Default = True
+  object GroupBox_LoadForm: TGroupBox
+    Left = 48
+    Top = 88
+    Width = 649
+    Height = 65
+    Caption = 'Load Settings'
     TabOrder = 1
-    OnClick = Button_LoadMeshClick
+    Visible = False
+    object Label2: TLabel
+      Left = 8
+      Top = 16
+      Width = 26
+      Height = 13
+      Caption = 'Mesh'
+    end
+    object Label4: TLabel
+      Left = 152
+      Top = 16
+      Width = 27
+      Height = 13
+      Caption = 'Mode'
+    end
+    object Label5: TLabel
+      Left = 248
+      Top = 16
+      Width = 34
+      Height = 13
+      Caption = 'Collider'
+    end
+    object ComboBox_MeshName: TComboBox
+      Left = 8
+      Top = 32
+      Width = 137
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 0
+      Text = 'Trinityrage.smd, 0.15'
+      Items.Strings = (
+        'Trinityrage.smd, 0.15'
+        'HalfSphere.ms3d, 2'
+        'Cylinder.ms3d, 0.3'
+        'lgrid.3ds, 3'
+        'BigHoleBox2.ms3d, 0.5'
+        'mushroom.3ds, 0.08'
+        'polyhedron.3ds, 2'
+        'teapot.3ds, 0.1')
+    end
+    object ComboBox_ConstraintType: TComboBox
+      Left = 152
+      Top = 32
+      Width = 89
+      Height = 21
+      ItemHeight = 13
+      ItemIndex = 0
+      TabOrder = 1
+      Text = 'Constraints'
+      Items.Strings = (
+        'Constraints'
+        'Forces')
+    end
+    object ComboBox_Collider: TComboBox
+      Left = 248
+      Top = 32
+      Width = 73
+      Height = 21
+      ItemHeight = 13
+      ItemIndex = 3
+      TabOrder = 2
+      Text = 'Stairs'
+      Items.Strings = (
+        'Sphere'
+        'Infinite Cylinder'
+        'Cube'
+        'Stairs'
+        'Capsule'
+        'ODE Sphere'
+        '(none)')
+    end
+    object Button_LoadMesh: TButton
+      Left = 549
+      Top = 32
+      Width = 36
+      Height = 21
+      Caption = 'OK'
+      Default = True
+      TabOrder = 3
+      OnClick = Button_LoadMeshClick
+    end
+    object CheckBox_UseOctree: TCheckBox
+      Left = 384
+      Top = 34
+      Width = 81
+      Height = 17
+      Caption = 'Use Octree'
+      TabOrder = 4
+    end
+    object CheckBox_SolidEdges: TCheckBox
+      Left = 464
+      Top = 34
+      Width = 81
+      Height = 17
+      Caption = 'Solid Edges'
+      TabOrder = 5
+    end
+    object CheckBox_Weld: TCheckBox
+      Left = 328
+      Top = 34
+      Width = 49
+      Height = 17
+      Caption = 'Weld'
+      Checked = True
+      State = cbChecked
+      TabOrder = 6
+    end
+    object Button_CancelLoad: TButton
+      Left = 589
+      Top = 32
+      Width = 44
+      Height = 21
+      Caption = 'Cancel'
+      TabOrder = 7
+      OnClick = Button_CancelLoadClick
+    end
   end
-  object ComboBox_MeshName: TComboBox
-    Left = 8
-    Top = 16
-    Width = 137
+  object Button_OpenLoadForm: TButton
+    Left = 376
+    Top = 24
+    Width = 75
     Height = 21
-    ItemHeight = 13
+    Caption = 'Load'
+    Default = True
     TabOrder = 2
-    Text = 'Trinityrage.smd, 0.15'
-    Items.Strings = (
-      'Trinityrage.smd, 0.15'
-      'HalfSphere.ms3d, 2'
-      'Cylinder.ms3d, 0.3'
-      'lgrid.3ds, 3'
-      'BigHoleBox2.ms3d, 0.5'
-      'mushroom.3ds, 0.08'
-      'polyhedron.3ds, 2'
-      'teapot.3ds, 0.1')
-  end
-  object ComboBox_ConstraintType: TComboBox
-    Left = 152
-    Top = 16
-    Width = 89
-    Height = 21
-    ItemHeight = 13
-    ItemIndex = 0
-    TabOrder = 3
-    Text = 'Constraints'
-    Items.Strings = (
-      'Constraints'
-      'Forces')
-  end
-  object ComboBox_Collider: TComboBox
-    Left = 248
-    Top = 16
-    Width = 73
-    Height = 21
-    ItemHeight = 13
-    ItemIndex = 3
-    TabOrder = 4
-    Text = 'Stairs'
-    Items.Strings = (
-      'Sphere'
-      'Infinite Cylinder'
-      'Cube'
-      'Stairs'
-      'Capsule'
-      'ODE Sphere'
-      '(none)')
+    OnClick = Button_OpenLoadFormClick
   end
   object TrackBar_Slack: TTrackBar
-    Left = 320
-    Top = 14
-    Width = 57
+    Left = 0
+    Top = 22
+    Width = 97
     Height = 25
     Max = 100
-    TabOrder = 5
+    TabOrder = 3
     TickStyle = tsNone
     OnChange = TrackBar_SlackChange
   end
   object TrackBar_Iterations: TTrackBar
-    Left = 512
-    Top = 14
-    Width = 57
+    Left = 96
+    Top = 22
+    Width = 81
     Height = 25
     Max = 30
     Min = 1
     Position = 4
-    TabOrder = 6
+    TabOrder = 4
     TickStyle = tsNone
     OnChange = TrackBar_IterationsChange
   end
-  object CheckBox_Weld: TCheckBox
-    Left = 384
-    Top = 16
-    Width = 57
-    Height = 17
-    Caption = 'Weld'
-    Checked = True
-    State = cbChecked
-    TabOrder = 7
-  end
   object TrackBar_Friction: TTrackBar
-    Left = 568
-    Top = 14
-    Width = 49
+    Left = 176
+    Top = 22
+    Width = 81
     Height = 25
     Max = 100
     Position = 60
-    TabOrder = 8
+    TabOrder = 5
     TickStyle = tsNone
     OnChange = TrackBar_FrictionChange
   end
   object CheckBox_ShowOctree: TCheckBox
-    Left = 624
-    Top = 20
+    Left = 272
+    Top = 28
     Width = 81
     Height = 17
     Caption = 'Show Octree'
-    TabOrder = 9
-  end
-  object CheckBox_UseOctree: TCheckBox
-    Left = 624
-    Top = 4
-    Width = 81
-    Height = 17
-    Caption = 'Use Octree'
-    TabOrder = 10
+    TabOrder = 6
   end
   object GLScene1: TGLScene
-    Left = 8
-    Top = 56
+    Left = 256
+    Top = 192
     object GLDummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
       object GLDummyCube_Light: TGLDummyCube
@@ -318,18 +354,18 @@ object frmClothify: TfrmClothify
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Left = 40
-    Top = 56
+    Left = 288
+    Top = 192
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 112
-    Top = 56
+    Left = 360
+    Top = 192
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 80
-    Top = 56
+    Left = 328
+    Top = 192
   end
 end
