@@ -34,13 +34,13 @@ type
 
       protected
          { Protected Declarations }
-         procedure Initialize;
          function Lattice(ix, iy, iz : Integer; fx, fy, fz : Single) : Single; overload;
          function Lattice(ix, iy : Integer; fx, fy : Single) : Single; overload;
 
       public
          { Public Declarations }
          constructor Create(randomSeed : Integer);
+         procedure Initialize(randomSeed : Integer);
 
          function Noise(const x, y : Single) : Single; overload;
          function Noise(const x, y, z : Single) : Single; overload;
@@ -63,23 +63,22 @@ implementation
 // Create
 //
 constructor TPerlin3DNoise.Create(randomSeed : Integer);
-var
-   seedBackup : Integer;
 begin
    inherited Create;
-   seedBackup:=RandSeed;
-   RandSeed:=randomSeed;
-   Initialize;
-   RandSeed:=seedBackup;
+   Initialize(randomSeed);
 end;
 
 // InitGradients
 //
-procedure TPerlin3DNoise.Initialize;
+procedure TPerlin3DNoise.Initialize(randomSeed : Integer);
 var
+   seedBackup : Integer;
    i, t, j : Integer;
    z, r : Single;
 begin
+   seedBackup:=RandSeed;
+   RandSeed:=randomSeed;
+
    // Generate random gradient vectors.
    for i:=0 to cPERLIN_TABLE_SIZE-1 do begin
       z:=1-2*Random;
@@ -97,6 +96,8 @@ begin
       FPermutations[i]:=FPermutations[j];
       FPermutations[j]:=t;
    end;
+
+   RandSeed:=seedBackup;
 end;
 
 // Lattice (3d)
