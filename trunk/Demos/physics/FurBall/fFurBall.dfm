@@ -1,0 +1,243 @@
+object frmFurBall: TfrmFurBall
+  Left = 192
+  Top = 114
+  Width = 585
+  Height = 437
+  Caption = 'Fur Ball'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnMouseWheel = FormMouseWheel
+  DesignSize = (
+    577
+    408)
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 287
+    Top = 2
+    Width = 160
+    Height = 13
+    Caption = '(Steer with A/D W/S UP/DOWN)'
+  end
+  object GLSceneViewer1: TGLSceneViewer
+    Left = 8
+    Top = 19
+    Width = 562
+    Height = 380
+    Camera = GLCamera1
+    Buffer.BackgroundColor = clSilver
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    OnMouseMove = GLSceneViewer1MouseMove
+  end
+  object CheckBox_Release: TCheckBox
+    Left = 8
+    Top = 0
+    Width = 65
+    Height = 17
+    Caption = 'Release'
+    Checked = True
+    State = cbChecked
+    TabOrder = 1
+  end
+  object CheckBox_FurGravity: TCheckBox
+    Left = 88
+    Top = 0
+    Width = 81
+    Height = 17
+    Caption = 'Fur Gravity'
+    Checked = True
+    State = cbChecked
+    TabOrder = 2
+    OnClick = CheckBox_FurGravityClick
+  end
+  object CheckBox_WindResistence: TCheckBox
+    Left = 176
+    Top = 0
+    Width = 105
+    Height = 17
+    Caption = 'Wind Resistence'
+    Checked = True
+    State = cbChecked
+    TabOrder = 3
+    OnClick = CheckBox_WindResistenceClick
+  end
+  object GLCadencer1: TGLCadencer
+    Scene = GLScene1
+    MaxDeltaTime = 0.050000000000000000
+    OnProgress = GLCadencer1Progress
+    Left = 48
+    Top = 104
+  end
+  object GLScene1: TGLScene
+    Left = 48
+    Top = 48
+    object DC_LightHolder: TGLDummyCube
+      Up.Coordinates = {000000000000803F0000008000000000}
+      OnProgress = DC_LightHolderProgress
+      CubeSize = 1.000000000000000000
+      object GLLightSource1: TGLLightSource
+        ConstAttenuation = 1.000000000000000000
+        Position.Coordinates = {0000803F0000803F000080400000803F}
+        SpotCutOff = 180.000000000000000000
+        object Sphere1: TGLSphere
+          Material.BackProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
+          Material.BackProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
+          Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
+          Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
+          Radius = 0.100000001490116100
+        end
+      end
+    end
+    object DCShadowCaster: TGLDummyCube
+      CubeSize = 1.000000000000000000
+      object FurBall: TGLSphere
+        Material.FrontProperties.Diffuse.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
+        Material.FrontProperties.Specular.Color = {B1A8A83EB1A8A83EB1A8A83E0000803F}
+        Material.Texture.Image.Picture.Data = {
+          0A544A504547496D61676593050000FFD8FFE000104A46494600010101004800
+          480000FFDB004300080606070605080707070909080A0C140D0C0B0B0C191213
+          0F141D1A1F1E1D1A1C1C20242E2720222C231C1C2837292C30313434341F2739
+          3D38323C2E333432FFDB0043010909090C0B0C180D0D1832211C213232323232
+          3232323232323232323232323232323232323232323232323232323232323232
+          32323232323232323232323232FFC00011080040004003012200021101031101
+          FFC4001F0000010501010101010100000000000000000102030405060708090A
+          0BFFC400B5100002010303020403050504040000017D01020300041105122131
+          410613516107227114328191A1082342B1C11552D1F02433627282090A161718
+          191A25262728292A3435363738393A434445464748494A535455565758595A63
+          6465666768696A737475767778797A838485868788898A92939495969798999A
+          A2A3A4A5A6A7A8A9AAB2B3B4B5B6B7B8B9BAC2C3C4C5C6C7C8C9CAD2D3D4D5D6
+          D7D8D9DAE1E2E3E4E5E6E7E8E9EAF1F2F3F4F5F6F7F8F9FAFFC4001F01000301
+          01010101010101010000000000000102030405060708090A0BFFC400B5110002
+          0102040403040705040400010277000102031104052131061241510761711322
+          328108144291A1B1C109233352F0156272D10A162434E125F11718191A262728
+          292A35363738393A434445464748494A535455565758595A636465666768696A
+          737475767778797A82838485868788898A92939495969798999AA2A3A4A5A6A7
+          A8A9AAB2B3B4B5B6B7B8B9BAC2C3C4C5C6C7C8C9CAD2D3D4D5D6D7D8D9DAE2E3
+          E4E5E6E7E8E9EAF2F3F4F5F6F7F8F9FAFFDA000C03010002110311003F00ADA1
+          EB9F69DB6976FF00BEE91C87F8FD8FFB5FCFEBD77EBCD6BABD0F5CFB4EDB4BB7
+          FDF748E43FC7EC7FDAFE7F5EBF138AC2F37BF0DCAE3BE04F63CD99E591F7779C
+          174EF28AEDDD74DD69B6FD14515E51F8F0514514005719E2EF177D8FCCD374D9
+          3FD27EECD3A9FF0055FECA9FEF7A9EDF5E878BBC5DF63F334DD364FF0049FBB3
+          4EA7FD57FB2A7FBDEA7B7D7A79CD7EB9C15C15CDCB98E631D378C5FF00E952FD
+          17CD9F4794E53CD6AF5D69D177F37E5F9FA6FD7D14515F107F569D5E87AE7DA7
+          6DA5DBFEFBA4721FE3F63FED7F3FAF5DFAF35AEAF43D73ED3B6D2EDFF7DD2390
+          FF001FB1FF006BF9FD7AF9F8AC2F37BF0DCFC438EF813D8F36679647DDDE705D
+          3BCA2BB775D375A6DBF5C678BBC5DF63F334DD364FF49FBB34EA7FD57FB2A7FB
+          DEA7B7D7A1E2EF177D8FCCD374D93FD27EECD3A9FF0055FECA9FEF7A9EDF5E9E
+          735FA3F057057372E6398C74DE317FFA54BF45F367C0E5394F35ABD75A745DFC
+          DF97E7E9B9451457EC07D49D7D14515FCD07F42057A6F81BC0DB7CBD5B568BE6
+          E1A0B771D3D1987F214781BC0DB7CBD5B568BE6E1A0B771D3D1987F215E935F3
+          B9B66DC97A141EBD5F6F25E7F97AEDF0B9DE77F59BE1B0CFDCEAFF009BC97F77
+          BBFB5FE1F8BCDFE22FC368B5D85B54D1E248F538D7E789400B70A074F661D8F7
+          E87B63C1248DE291A3911924425595860A91D4115F61D79C7C47F8709E208DF5
+          6D26354D5506648C702E00FF00D9BD0F7E87DBEE7803C4078471CB33497EEF68
+          4DFD9F293FE5ECFECFA6DF098AC1F27BF4969D57EABFC8F01A29D246F148D1C8
+          8C92212ACAC30548EA08A6D7EFE9A6AE8E0DCEBEBD37C0DE06DBE5EADAB45F37
+          0D05BB8E9E8CC3F90A3C0DE06DBE5EADAB45F370D05BB8E9E8CC3F90AF49AFE4
+          7CDB36E4BD0A0F5EAFB792F3FCBD76FD2B3BCEFEB37C3619FB9D5FF3792FEEF7
+          7F6BFC3F11451457CA9F361451450079C7C47F8709E208DF56D26354D5506648
+          C702E00FFD9BD0F7E87DBC0E48DE291A3911924425595860A91D4115F61D79C7
+          C47F8709E208DF56D26354D5506648C702E00FFD9BD0F7E87DBF63F0FF00C407
+          8471CB33397EEF684DFD9FEECBFBBD9FD9F4DBC8C5E1392F529AD3AAFD57EA8F
+          FFD9}
+        Material.Texture.Disabled = False
+        Position.Coordinates = {000000000000C0BF000040400000803F}
+        Radius = 0.250000000000000000
+      end
+    end
+    object GLShadowPlane_Floor: TGLShadowPlane
+      Material.BackProperties.Diffuse.Color = {1283003F1283003F000000000000803F}
+      Material.FrontProperties.Diffuse.Color = {1283003F1283003F000000000000803F}
+      Direction.Coordinates = {00000000B6C8CB3DC2BA7E3F00000000}
+      Up.Coordinates = {00000000C2BA7E3FB6C8CBBD00000000}
+      Height = 8.000000000000000000
+      Width = 8.000000000000000000
+      XTiles = 10
+      YTiles = 10
+      Style = [psTileTexture]
+      NoZWrite = False
+      ShadowingObject = DCShadowCaster
+      ShadowedLight = GLLightSource1
+    end
+    object GLShadowPlane_Wall: TGLShadowPlane
+      Material.BackProperties.Diffuse.Color = {000000000000803F000000000000803F}
+      Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
+      Direction.Coordinates = {0000803F000000000000000000000000}
+      Position.Coordinates = {000080C0000080400000803F0000803F}
+      Up.Coordinates = {0000000000000000FFFF7FBF00000000}
+      Height = 4.000000000000000000
+      Width = 16.000000000000000000
+      XTiles = 10
+      YTiles = 10
+      Style = [psTileTexture]
+      NoZWrite = False
+      ShadowingObject = DCShadowCaster
+      ShadowedLight = GLLightSource1
+    end
+    object GLShadowPlane_Floor2: TGLShadowPlane
+      Material.BackProperties.Diffuse.Color = {1283003F1283003F000000000000803F}
+      Material.FrontProperties.Diffuse.Color = {1283003F1283003F000000000000803F}
+      Direction.Coordinates = {00000000B6C8CBBDC2BA7E3F00000000}
+      Position.Coordinates = {000000000000F040000000000000803F}
+      Up.Coordinates = {00000000C2BA7E3FB5C8CB3D00000000}
+      Height = 10.000000000000000000
+      Width = 8.000000000000000000
+      XTiles = 10
+      YTiles = 10
+      Style = [psTileTexture]
+      NoZWrite = False
+      ShadowingObject = DCShadowCaster
+      ShadowedLight = GLLightSource1
+    end
+    object GLLines1: TGLLines
+      Nodes = <>
+      Options = []
+    end
+    object GLShadowPlane_Wall2: TGLShadowPlane
+      Material.BackProperties.Diffuse.Color = {000000000000803F000000000000803F}
+      Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Position.Coordinates = {00000000000080C00000803F0000803F}
+      Up.Coordinates = {0000000000000000000080BF00000000}
+      Height = 4.000000000000000000
+      Width = 8.000000000000000000
+      XTiles = 10
+      YTiles = 10
+      Style = [psTileTexture]
+      NoZWrite = False
+      ShadowingObject = DCShadowCaster
+      ShadowedLight = GLLightSource1
+    end
+    object GLShadowPlane_Wall3: TGLShadowPlane
+      Material.BackProperties.Diffuse.Color = {000000000000803F000000000000803F}
+      Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
+      Direction.Coordinates = {00000000000080BF0000000000000000}
+      Position.Coordinates = {00000000000040410000803F0000803F}
+      Up.Coordinates = {0000000000000000000080BF00000000}
+      Height = 4.000000000000000000
+      Width = 8.000000000000000000
+      XTiles = 10
+      YTiles = 10
+      Style = [psTileTexture]
+      NoZWrite = False
+      ShadowingObject = DCShadowCaster
+      ShadowedLight = GLLightSource1
+    end
+    object GLCamera1: TGLCamera
+      DepthOfView = 100.000000000000000000
+      FocalLength = 70.000000000000000000
+      TargetObject = FurBall
+      Position.Coordinates = {0000004100004040000040400000803F}
+      Direction.Coordinates = {000000000000803F0000008000000000}
+      Up.Coordinates = {00000000000000000000803F00000000}
+    end
+  end
+end

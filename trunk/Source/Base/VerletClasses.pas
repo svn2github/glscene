@@ -11,6 +11,7 @@
    It's a matter of leverage. <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/04 - MF - Small updates to accomodate hair
       <li>11/07/03 - EG - Optimized TVCCube collider
       <li>11/07/03 - MF - A bit of a documentation effort
       <li>10/07/03 - MF - Verlets now use spatial partitioning objects to speed

@@ -1,3 +1,15 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLVerletClasses<p>
+
+   Classes and functions that make integration between verlets and glscene
+   objects easy.
+
+	<b>History : </b><font size=-1><ul>
+      <li>06/03/04 - MF - Creation
+   </ul>
+}
 unit GLVerletClasses;
 
 interface
@@ -6,6 +18,11 @@ uses
   VerletClasses, VectorGeometry, GLScene, GLObjects;
 
 type
+  // TGLVerletNode
+  //
+  {: Specialized verlet node that can be anchored to a GLScene object. If it's
+     anchored and has the property "NailedDown" set, it will remain in the same
+     relative position to the GLScene object.}
   TGLVerletNode = class(TVerletNode)
   private
     FRelativePosition: TAffineVector;
