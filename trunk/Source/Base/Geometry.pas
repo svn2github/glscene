@@ -29,7 +29,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>04/09/03 - EG - New Abs/Max functions, VectorTransform(affine, hmgMatrix)
+      <li>29/10/02 - EG - New MinFloat overloads (Bob)
+      <li>04/09/02 - EG - New Abs/Max functions, VectorTransform(affine, hmgMatrix)
                           now considers the matrix as 4x3 (was 3x3)
       <li>21/08/02 - EG - Added Pack/UnPackRotationMatrix
       <li>13/08/02 - EG - Added Area functions
@@ -990,6 +991,11 @@ function MinFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
 function MinFloat(const v1, v2 : Single) : Single; overload;
 function MinFloat(const v : array of Single) : Single; overload;
+function MinFloat(const v1, v2 : Double) : Double; overload;
+function MinFloat(const v1, v2 : Extended) : Extended; overload;
+function MinFloat(const v1, v2, v3 : Single) : Single; overload;
+function MinFloat(const v1, v2, v3 : Double) : Double; overload;
+function MinFloat(const v1, v2, v3 : Extended) : Extended; overload;
 {: Returns the maximum value of the array. }
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MaxFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
@@ -6104,6 +6110,75 @@ begin
       for i:=1 to High(v) do
          if v[i]<Result then Result:=v[i];
    end else Result:=0;
+end;
+
+// MinFloat (double 2)
+//
+function MinFloat(const v1, v2 : Double) : Double;
+begin
+   if v1<v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MinFloat (extended 2)
+//
+function MinFloat(const v1, v2 : Extended) : Extended;
+begin
+   if v1<v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MinFloat
+//
+function MinFloat(const v1, v2, v3 : Single) : Single;
+begin
+   if v1<=v2 then
+      if v1<=v3 then
+         Result:=v1
+      else if v3<=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2<=v3 then
+      Result:=v2
+   else if v3<=v1 then
+      Result:=v3
+   else result:=v1;
+end;
+
+// MinFloat (double)
+//
+function MinFloat(const v1, v2, v3 : Double) : Double;
+begin
+   if v1<=v2 then
+      if v1<=v3 then
+         Result:=v1
+      else if v3<=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2<=v3 then
+      Result:=v2
+   else if v3<=v1 then
+      Result:=v3
+   else result:=v1;
+end;
+
+// MinFloat
+//
+function MinFloat(const v1, v2, v3 : Extended) : Extended;
+begin
+   if v1<=v2 then
+      if v1<=v3 then
+         Result:=v1
+      else if v3<=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2<=v3 then
+      Result:=v2
+   else if v3<=v1 then
+      Result:=v3
+   else result:=v1;
 end;
 
 // MaxFloat (single)
