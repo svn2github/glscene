@@ -32,7 +32,9 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>08/07/04 - LR - Removed ../ from the GLScene.inc	
+      <li>02/12/04 - MF - Added IsVolumeClipped overload that uses Frustum instead
+                          of rcci 
+      <li>08/07/04 - LR - Removed ../ from the GLScene.inc
       <li>26/10/03 - EG - Renamed from "Geometry.pas" to "VectorGeometry.pas"
       <li>17/10/03 - EG - Optimized Min/MaxInteger, some of the Min/MaxFloat
       <li>13/08/03 - SG - Added TQuaternionArray, PQuaternionArray and PQuaternion
@@ -1321,6 +1323,8 @@ function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
                          const rcci : TRenderContextClippingInfo) : Boolean; overload;
 function IsVolumeClipped(const min, max : TAffineVector;
                          const rcci : TRenderContextClippingInfo) : Boolean; overload;
+function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
+                         const Frustum : TFrustum) : Boolean; overload;
 
 // misc funcs
 
@@ -8948,6 +8952,22 @@ begin
            or (PlaneEvaluatePoint(rcci.frustum.pBottom, objPos)<negRadius)
            or (PlaneEvaluatePoint(rcci.frustum.pNear, objPos)<negRadius)
            or (PlaneEvaluatePoint(rcci.frustum.pFar, objPos)<negRadius);
+end;
+
+// IsVolumeClipped
+//
+function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
+                         const Frustum : TFrustum) : Boolean;
+var
+   negRadius : Single;
+begin
+   negRadius:=-objRadius;
+   Result:=   (PlaneEvaluatePoint(frustum.pLeft, objPos)<negRadius)
+           or (PlaneEvaluatePoint(frustum.pTop, objPos)<negRadius)
+           or (PlaneEvaluatePoint(frustum.pRight, objPos)<negRadius)
+           or (PlaneEvaluatePoint(frustum.pBottom, objPos)<negRadius)
+           or (PlaneEvaluatePoint(frustum.pNear, objPos)<negRadius)
+           or (PlaneEvaluatePoint(frustum.pFar, objPos)<negRadius);
 end;
 
 // IsVolumeClipped

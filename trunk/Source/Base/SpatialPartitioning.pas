@@ -14,6 +14,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/12/04 - HRLI - Added cone testing (reworked by MF)
       <li>23/06/03 - MF - Separated functionality for Octrees and general
                           sectored space partitions so Quadtrees will be easy
                           to add.
@@ -144,6 +145,9 @@ type
     {: Query space for Leaves that intersect a plane. Result is returned through
     QueryResult}
     function QueryPlane(const Location, Normal: TAffineVector) : integer; virtual;
+    {: Query space for Leaves that intersect a Frustum. Result is returned through
+    QueryResult}
+    function QueryFrustum(const Frustum : TFrustum) : integer; virtual;
 
     {: Once a query has been run, this number tells of how many inter object
     tests that were run. This value must be set by all that override the
@@ -318,6 +322,9 @@ type
     {: Query the node and it's children for leaves that match the plane }
     procedure QueryPlane(const Location, Normal: TAffineVector; const QueryResult : TSpacePartitionLeafList);
 
+    {: Query the node and it's children for leaves that match the Frustum. }
+    procedure QueryFrustum(const Frustum : TFrustum; const QueryResult : TSpacePartitionLeafList);
+
     {: Adds all leaves to query result without testing if they intersect, and
     then do the same for all children. This is used when QueryAABB or
     QueryBSphere determines that a node fits completely in the searched space}
@@ -336,6 +343,7 @@ type
     function GetNodeCount : integer;
 
     constructor Create(aSectoredSpacePartition : TSectoredSpacePartition; aParent : TSectorNode);
+
     destructor Destroy; override;
   end;
 
@@ -388,6 +396,10 @@ type
     {: Query space for Leaves that intersect a plane. Result is returned through
     QueryResult}
     function QueryPlane(const Location, Normal: TAffineVector) : integer; override;
+
+    {: Query space for Leaves that intersect a Frustum. Result is returned through
+    QueryResult}
+    function QueryFrustum(const Frustum : TFrustum) : integer; override;
 
     {: After a query has been run, this value will contain the number of nodes
     that were checked during the query }
@@ -699,6 +711,13 @@ end;
 procedure TBaseSpacePartition.RemoveLeaf(aLeaf: TSpacePartitionLeaf);
 begin
   // Virtual
+end;
+
+function TBaseSpacePartition.QueryFrustum(
+  const Frustum: TFrustum): integer;
+begin
+  // Virtual
+  result := 0;
 end;
 
 { TLeavedSpacePartition }
@@ -1217,6 +1236,48 @@ begin
   result := FBSphere.Center;
 end;
 
+procedure TSectorNode.QueryFrustum(const Frustum: TFrustum;
+  const QueryResult: TSpacePartitionLeafList);
+var
+  i : integer;                    
+  //SpaceContains : TSpaceContains;
+  function IsAllInVolume(const objPos : TAffineVector; const objRadius : Single;
+                         const Frustum: TFrustum) : Boolean;
+  begin
+     Result:= (PlaneEvaluatePoint(frustum.pLeft, objPos)>=objRadius)
+             and (PlaneEvaluatePoint(frustum.pTop, objPos)>=objRadius)
+             and (PlaneEvaluatePoint(frustum.pRight, objPos)>=objRadius)
+             and (PlaneEvaluatePoint(frustum.pBottom, objPos)>=objRadius)
+             and (PlaneEvaluatePoint(frustum.pNear, objPos)>=objRadius)
+             and (PlaneEvaluatePoint(frustum.pFar, objPos)>=objRadius);
+  end;
+
+begin
+  inc(FSectoredSpacePartition.FQueryNodeTests);
+
+  if IsVolumeClipped(BSphere.Center, BSphere.Radius, Frustum ) then exit;
+
+  if IsAllInVolume(BSphere.Center,BSphere.Radius,Frustum) then
+  begin
+    {inc(FSectoredSpacePartition.FQueryNodeTests);
+    for i := 0 to FLeaves.Count-1 do
+      QueryResult.Add(FLeaves[i]);//}
+    AddAllLeavesRecursive(QueryResult);
+  end else
+  begin
+    for i := 0 to FLeaves.Count-1 do
+      if not IsVolumeClipped(FLeaves[i].FCachedBSphere.Center,FLeaves[i].FCachedBSphere.Radius,Frustum) then
+        QueryResult.Add(FLeaves[i]);
+
+    // Recursively let the children add their leaves
+    for i := 0 to FChildCount-1 do
+    begin
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+      FChildren[i].QueryFrustum(Frustum,QueryResult);
+    end;
+  end;
+end;
+
 { TSectoredSpacePartition }
 
 procedure TSectoredSpacePartition.AddLeaf(aLeaf: TSpacePartitionLeaf);
@@ -1452,6 +1513,14 @@ begin
   inherited;
 
   FQueryNodeTests := 0;
+end;
+
+function TSectoredSpacePartition.QueryFrustum(
+  const Frustum: TFrustum): integer;
+begin
+  FlushQueryResult;
+  FRootNode.QueryFrustum(Frustum, FQueryResult);
+  result := FQueryResult.Count;
 end;
 
 { TSPOctreeNode }
