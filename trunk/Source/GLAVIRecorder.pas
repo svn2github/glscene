@@ -2,7 +2,8 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap
+      <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap,
+                          Added OnPostProcessEvent
       <li>08/07/03 - NelC - Fixed access violation on exit (thx Solerman Kaplon)
                             and minor updates
       <li>11/12/01 - EG - Minor changes for compatibility with JEDI VfW.pas
@@ -31,6 +32,8 @@ type
    TAVIRecorderState = (rsNone, rsRecording);
 
    TAVIImageRetrievalMode = (irmSnapShot, irmRenderToBitmap);
+
+   TAVIRecorderPostProcessEvent = procedure (Sender : TObject; frame : TBitmap) of object;
 
    // TAVIRecorder
    //
@@ -61,6 +64,7 @@ type
        FSizeRestriction : TAVISizeRestriction;
        FImageRetrievalMode : TAVIImageRetrievalMode;
        RecorderState : TAVIRecorderState;
+       FOnPostProcessEvent : TAVIRecorderPostProcessEvent;
 
        procedure SetHeight(const val : integer);
        procedure SetWidth(const val : integer);
@@ -107,6 +111,8 @@ type
        property Compressor : TAVICompressor read FCompressor write FCompressor default acDefault;
        property SizeRestriction : TAVISizeRestriction read FSizeRestriction write SetSizeRestriction default srForceBlock8x8;
        property ImageRetrievalMode : TAVIImageRetrievalMode read FImageRetrievalMode write FImageRetrievalMode default irmRenderToBitmap;
+
+       property OnPostProcessEvent : TAVIRecorderPostProcessEvent read FOnPostProcessEvent write FOnPostProcessEvent;
 
      end;
 
@@ -279,6 +285,8 @@ end;
 //
 procedure TAVIRecorder.InternalAddAVIFrame;
 begin
+   if Assigned(FOnPostProcessEvent) then
+      FOnPostProcessEvent(Self, AVIBitmap);
    with AVIBitmap do begin
       InternalGetDIB( Handle, BitmapInfo^, BitmapBits^);
       if AVIStreamWrite(Stream_c, AVIFrameIndex, 1, BitmapBits, BitmapSize,
