@@ -3,6 +3,7 @@ TCollisionManager BITMAP vcl\glscene_icon_TCollisionManager.bmp
 TGLAnimationControler BITMAP vcl\glscene_icon_TGLAnimationControler.bmp
 TGLBitmapFont BITMAP vcl\glscene_icon_TGLBitmapFont.bmp
 TGLBitmapHDS BITMAP vcl\glscene_icon_TGLBitmapHDS.bmp
+TGLBumpmapHDS BITMAP vcl\glscene_icon_TGLBumpmapHDS.bmp
 TGLCadencer BITMAP vcl\glscene_icon_TGLCadencer.bmp
 TGLCustomHDS BITMAP vcl\glscene_icon_TGLCustomHDS.bmp
 TGLFireFXManager BITMAP vcl\glscene_icon_TGLFireFXManager.bmp

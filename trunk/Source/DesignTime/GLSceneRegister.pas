@@ -141,7 +141,7 @@ uses
    FVectorEditor, GLSound,
    TypInfo, GLCadencer, GLCollision,
    GLSoundFileObjects, GLFireFX, GLThorFX,
-   GLHeightData, GLzBuffer, GLGui,
+   GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    GLSpaceText, AsyncTimer,
 
    GLWindows, GLWindowsFont, GLHeightTileFileHDS,
@@ -1764,6 +1764,7 @@ begin
    RegisterComponents('GLScene Utils',
                       [TAsyncTimer,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
+                       TGLBumpmapHDS,
                        TCollisionManager, TGLAnimationControler
                       ]);
    {$endif}
