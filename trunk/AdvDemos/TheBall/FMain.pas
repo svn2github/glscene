@@ -215,7 +215,7 @@ begin
       ALStart.Position.AsAffineVector:=sp.Position;
       ALStart.Move(1);
    end;
-   DCBallAbsolute.Position.AsVector:=SPHBall.AbsolutePosition;
+   DCBallAbsolute.Position.AsAffineVector:=sp.Position;
    Camera.TargetObject:=DCTable;
    HUDText.Visible:=True;
    HUDText.Text:='Level '+IntToStr(currentLevelIdx)+#13#10#13#10+currentLevelName;
@@ -236,12 +236,16 @@ var
    r : TdReal;
    m : TdMass;
    odeMat : TdMatrix3;
-   sp : TTBSpawnPoint;
 begin
    ALStart.Visible:=False;
 
-   r:=SPHBall.Radius;
-   sp:=TTBSpawnPoint(CurrentLevelSpecial(TTBSpawnPoint));
+   r:=0.3;
+   SPHBall.Radius:=r;
+   with SPHBall.Material.FrontProperties do begin
+      Ambient.Color:=clrGray20;
+      Diffuse.Color:=clrGray80;
+      Emission.Color:=clrGray40;
+   end;
 
    dMassSetSphere(m, 5, r);
 
@@ -255,16 +259,15 @@ begin
    if ballBody<>nil then
       dBodyDestroy(ballBody);
    ballBody:=dBodyCreate(world);
-   if sp<>nil then
-      dBodySetPosition(ballBody, sp.Position[0], sp.Position[1], sp.Position[2])
-   else dBodySetPosition(ballBody, 0, 5, 0);
+   with DCBallAbsolute.Position do
+      dBodySetPosition(ballBody, X, Y, Z);
    dRFromAxisAndAngle(odeMat, 0, 1, 0, 0);
    dBodySetRotation(ballBody, odeMat);
 
    dGeomSetBody(ballGeom, ballBody);
    dBodySetMass(ballBody, m);
 
-   DCBallLag.Position.AsVector:=SPHBall.AbsolutePosition;
+   DCBallLag.Position:=DCBallAbsolute.Position;
 
    HUDText.Visible:=False;
    Camera.Position.AsVector:=cCameraPos;
