@@ -18,7 +18,7 @@ uses PersistentClasses, VectorLists, Geometry;
 
 {: Builds a vector-count optimized indices list.<p>
    The returned list (to be freed by caller) contains an "optimized" indices
-   list in which duplicates corodinates in the original vertices list are used
+   list in which duplicates coordinates in the original vertices list are used
    only once (the first available duplicate in the list is used).<br>
    The vertices list is left untouched, to remap/cleanup, you may use the
    RemapAndCleanupReferences function. }
@@ -166,6 +166,7 @@ var
    refList : PAffineVectorArray;
    indicesList : PIntegerArray;
 begin
+   Assert(reference.Count=indices.Count);
    SetLength(tag, reference.Count);
    indicesList:=indices.List;
    // 1st step, tag all used references

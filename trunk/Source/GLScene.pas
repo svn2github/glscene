@@ -1949,7 +1949,7 @@ begin
    glPushAttrib(GL_ENABLE_BIT or GL_LIGHTING_BIT or GL_LINE_BIT);
    glDisable(GL_LIGHTING);
    glEnable(GL_LINE_STIPPLE);
-   glEnable(GL_LINE_SMOOTH);
+//   glEnable(GL_LINE_SMOOTH);
    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
    glLineWidth(1);
