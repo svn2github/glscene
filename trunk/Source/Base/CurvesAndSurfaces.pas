@@ -17,20 +17,15 @@ uses
 type
   TBSplineContinuity = (bscUniformNonPeriodic, bscUniformPeriodic);
 
-function BezierCurvePoint(t : single; n : integer; cp : PAffineVectorArray) : TAffineVector;
-function BezierSurfacePoint(s,t : single; m,n : integer; cp : PAffineVectorArray) : TAffineVector;
-procedure GenerateBezierCurve(Steps : Integer; ControlPoints, Vertices : TAffineVectorList);
-procedure GenerateBezierSurface(Steps, Width, Height : Integer;
-  ControlPoints, Vertices : TAffineVectorList);
+function BezierCurvePoint(t : single; n : integer; weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
+function BezierSurfacePoint(s,t : single; m,n : integer; weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
+procedure GenerateBezierCurve(Steps : Integer; Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
+procedure GenerateBezierSurface(Steps, Width, Height : Integer; Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
 
-function BSplinePoint(t : single; n,k : integer; knots : PSingleArray;
-  cp : PAffineVectorArray) : TAffineVector;
-function BSplineSurfacePoint(s,t : single; m,n,k1,k2 : integer;
-  uknots, vknots : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
-procedure GenerateBSpline(Steps,Order : Integer; KnotVector : TSingleList;
-  ControlPoints, Vertices : TAffineVectorList);
-procedure GenerateBSplineSurface(Steps, UOrder, VOrder, Width, Height : Integer;
-  UKnotVector, VKnotVector : TSingleList; ControlPoints, Vertices : TAffineVectorList);
+function BSplinePoint(t : single; n,k : integer; knots, weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
+function BSplineSurfacePoint(s,t : single; m,n,k1,k2 : integer; uknots, vknots, weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
+procedure GenerateBSpline(Steps,Order : Integer; KnotVector, Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
+procedure GenerateBSplineSurface(Steps, UOrder, VOrder, Width, Height : Integer; UKnotVector, VKnotVector, Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
 procedure GenerateKnotVector(KnotVector : TSingleList; NumberOfPoints, Order : Integer; Continuity : TBSplineContinuity);
 
 implementation
@@ -60,7 +55,7 @@ begin
   Result:=(Factorial(n)/(Factorial(i)*Factorial(n-i)))*ti*tni;
 end;
 
-function BezierCurvePoint(t : single; n : integer; cp : PAffineVectorArray) : TAffineVector;
+function BezierCurvePoint(t : single; n : integer; weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
 var
   i : integer;
   b : Single;
@@ -68,13 +63,13 @@ begin
   Result:=NullVector;
   for i:=0 to n do begin
     b:=BernsteinBasis(n,i,t);
-    Result[0]:=Result[0]+cp[i][0]*b;
-    Result[1]:=Result[1]+cp[i][1]*b;
-    Result[2]:=Result[2]+cp[i][2]*b;
+    Result[0]:=Result[0]+weights[i]*cp[i][0]*b;
+    Result[1]:=Result[1]+weights[i]*cp[i][1]*b;
+    Result[2]:=Result[2]+weights[i]*cp[i][2]*b;
   end;
 end;
 
-function BezierSurfacePoint(s,t : single; m,n : integer; cp : PAffineVectorArray) : TAffineVector;
+function BezierSurfacePoint(s,t : single; m,n : integer; weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
 var
   i,j : integer;
   b1,b2 : Single;
@@ -84,55 +79,49 @@ begin
     for i:=0 to m do begin
       b1:=BernsteinBasis(m,i,s);
       b2:=BernsteinBasis(n,j,t);
-      Result[0]:=Result[0]+cp[j*(m+1)+i][0]*b1*b2;
-      Result[1]:=Result[1]+cp[j*(m+1)+i][1]*b1*b2;
-      Result[2]:=Result[2]+cp[j*(m+1)+i][2]*b1*b2;
+      Result[0]:=Result[0]+weights[j*(m+1)+i]*cp[j*(m+1)+i][0]*b1*b2;
+      Result[1]:=Result[1]+weights[j*(m+1)+i]*cp[j*(m+1)+i][1]*b1*b2;
+      Result[2]:=Result[2]+weights[j*(m+1)+i]*cp[j*(m+1)+i][2]*b1*b2;
     end;
 end;
 
-procedure GenerateBezierCurve(Steps : Integer; ControlPoints, Vertices : TAffineVectorList);
+procedure GenerateBezierCurve(Steps : Integer; Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
 var
   i : Integer;
 begin
   for i:=0 to Steps do
-    Vertices.Add(BezierCurvePoint(i/Steps,ControlPoints.Count-1,ControlPoints.List));
+    Vertices.Add(BezierCurvePoint(i/Steps,ControlPoints.Count-1,Weights.List,ControlPoints.List));
 end;
 
-procedure GenerateBezierSurface(Steps, Width, Height : Integer; ControlPoints, Vertices : TAffineVectorList);
+procedure GenerateBezierSurface(Steps, Width, Height : Integer; Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
 var
   i,j : Integer;
 begin
   for j:=0 to Steps do
     for i:=0 to Steps do
-      Vertices.Add(BezierSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,ControlPoints.List));
+      Vertices.Add(BezierSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,Weights.List,ControlPoints.List));
 end;
 
 // ------------------------------------------------------------
 // B-Spline routines
 // ------------------------------------------------------------
 
-{ Something not quite right in here.
-  When u = 1 with a uniform non-periodic knot vector
-  it returns 0 in every cp blend.
-  When u -> 0 or u -> 1 with a uniform periodic knot vector
-  the curve approaches the origin.
-  This is an error I'm currently investigating. }
 function BSplineBasis(i,k : integer; u : Single; knots : PSingleArray) : Single;
 var
   t : single;
 begin
   Result:=0;
-  if k=1 then begin
+  if k=0 then begin
     if (u>=knots[i]) and (u<knots[i+1]) then Result:=1;
   end else begin
-    t:=(knots[i+k-1]-knots[i]);
+    t:=(knots[i+k]-knots[i]);
     if t<>0 then Result:=(u-knots[i])*BSplineBasis(i,k-1,u,knots)/t;
-    t:=(knots[i+k]-knots[i+1]);
+    t:=(knots[i+k+1]-knots[i+1]);
     if t<>0 then Result:=Result+(knots[i+k]-u)*BSplineBasis(i+1,k-1,u,knots)/t;
   end;
 end;
 
-function BSplinePoint(t : single; n,k : integer; knots : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
+function BSplinePoint(t : single; n,k : integer; knots, weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
 var
   i : integer;
   b : Single;
@@ -140,13 +129,13 @@ begin
   Result:=NullVector;
   for i:=0 to n do begin
     b:=BSplineBasis(i,k,t,knots);
-    Result[0]:=Result[0]+cp[i][0]*b;
-    Result[1]:=Result[1]+cp[i][1]*b;
-    Result[2]:=Result[2]+cp[i][2]*b;
+    Result[0]:=Result[0]+weights[i]*cp[i][0]*b;
+    Result[1]:=Result[1]+weights[i]*cp[i][1]*b;
+    Result[2]:=Result[2]+weights[i]*cp[i][2]*b;
   end;
 end;
 
-function BSplineSurfacePoint(s,t : single; m,n,k1,k2 : integer; uknots, vknots : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
+function BSplineSurfacePoint(s,t : single; m,n,k1,k2 : integer; uknots, vknots, weights : PSingleArray; cp : PAffineVectorArray) : TAffineVector;
 var
   i,j : integer;
   b1,b2 : Single;
@@ -156,28 +145,27 @@ begin
     for i:=0 to m do begin
       b1:=BSplineBasis(i,k1,s,uknots);
       b2:=BSplineBasis(j,k2,t,vknots);
-      Result[0]:=Result[0]+cp[j*(m+1)+i][0]*b1*b2;
-      Result[1]:=Result[1]+cp[j*(m+1)+i][1]*b1*b2;
-      Result[2]:=Result[2]+cp[j*(m+1)+i][2]*b1*b2;
+      Result[0]:=Result[0]+weights[j*(m+1)+i]*cp[j*(m+1)+i][0]*b1*b2;
+      Result[1]:=Result[1]+weights[j*(m+1)+i]*cp[j*(m+1)+i][1]*b1*b2;
+      Result[2]:=Result[2]+weights[j*(m+1)+i]*cp[j*(m+1)+i][2]*b1*b2;
     end;
 end;
 
-procedure GenerateBSpline(Steps,Order : Integer; KnotVector : TSingleList; ControlPoints, Vertices : TAffineVectorList);
+procedure GenerateBSpline(Steps,Order : Integer; KnotVector, Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
 var
   i : Integer;
 begin
   for i:=0 to Steps do
-    Vertices.Add(BSplinePoint(i/Steps,ControlPoints.Count-1,Order+1,KnotVector.List,ControlPoints.List));
+    Vertices.Add(BSplinePoint(i/Steps,ControlPoints.Count-1,Order+1,KnotVector.List,Weights.List,ControlPoints.List));
 end;
 
-procedure GenerateBSplineSurface(Steps, UOrder, VOrder, Width, Height : Integer;
-  UKnotVector, VKnotVector : TSingleList; ControlPoints, Vertices : TAffineVectorList);
+procedure GenerateBSplineSurface(Steps, UOrder, VOrder, Width, Height : Integer; UKnotVector, VKnotVector, Weights : TSingleList; ControlPoints, Vertices : TAffineVectorList);
 var
   i,j : Integer;
 begin
   for j:=0 to Steps do
     for i:=0 to Steps do
-      Vertices.Add(BSplineSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,UOrder+1,VOrder+1,UKnotVector.List,VKnotVector.List,ControlPoints.List));
+      Vertices.Add(BSplineSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,UOrder+1,VOrder+1,UKnotVector.List,VKnotVector.List,Weights.List,ControlPoints.List));
 end;
 
 procedure GenerateKnotVector(KnotVector : TSingleList; NumberOfPoints, Order : Integer; Continuity : TBSplineContinuity);
@@ -210,7 +198,7 @@ begin
   end;
 
   // Scale the values to range from 0 to 1
-  KnotVector.Scale(1/KnotVector[KnotVector.Count-1]);
+  // KnotVector.Scale(1/KnotVector[KnotVector.Count-1]);
 end;
 
 end.

@@ -141,6 +141,8 @@ begin
                i:=ReadSingleArray(sl, i+1, surface.KnotsU)
             else if buf[0]='vknot' then
                i:=ReadSingleArray(sl, i+1, surface.KnotsV)
+            else if buf[0]='weight' then
+               i:=ReadSingleArray(sl, i+1, surface.Weights)
             else if buf[0]='udimension' then
                surface.CountU:=StrToIntDef(buf[1], 0)
             else if buf[0]='vdimension' then

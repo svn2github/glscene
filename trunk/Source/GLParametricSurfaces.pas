@@ -44,7 +44,8 @@ type
     private
       FControlPoints : TAffineVectorList;
       FKnotsU,
-      FKnotsV : TSingleList;
+      FKnotsV,
+      FWeights : TSingleList;
       FOrderU,
       FOrderV,
       FCountU,
@@ -58,6 +59,7 @@ type
       procedure SetControlPoints(Value : TAffineVectorList);
       procedure SetKnotsU(Value : TSingleList);
       procedure SetKnotsV(Value : TSingleList);
+      procedure SetWeights(Value : TSingleList);
     public
       constructor Create; override;
       destructor Destroy; override;
@@ -80,6 +82,8 @@ type
          parametric values to build the surface. }
       property KnotsU : TSingleList read FKnotsU write SetKnotsU;
       property KnotsV : TSingleList read FKnotsV write SetKnotsV;
+      {: Weights define how much a control point effects the surface. }
+      property Weights : TSingleList read FWeights write SetWeights;
       //: OrderU and OrderV defines the curve order in the U and V direction
       property OrderU : Integer read FOrderU write FOrderU;
       property OrderV : Integer read FOrderV write FOrderV;
@@ -116,6 +120,7 @@ begin
   FControlPoints:=TAffineVectorList.Create;
   FKnotsU:=TSingleList.Create;
   FKnotsV:=TSingleList.Create;
+  FWeights:=TSingleList.Create;
   
   Resolution:=20;
 end;
@@ -127,6 +132,7 @@ begin
   FControlPoints.Free;
   FKnotsU.Free;
   FKnotsV.Free;
+  FWeights.Free;
 end;
 
 // WriteToFiler
@@ -139,6 +145,7 @@ begin
     FControlPoints.WriteToFiler(writer);
     FKnotsU.WriteToFiler(writer);
     FKnotsV.WriteToFiler(writer);
+    FWeights.WriteToFiler(writer);
     WriteInteger(FOrderU);
     WriteInteger(FOrderV);
     WriteInteger(FCountU);
@@ -163,6 +170,7 @@ begin
     FControlPoints.ReadFromFiler(reader);
     FKnotsU.ReadFromFiler(reader);
     FKnotsV.ReadFromFiler(reader);
+    FWeights.ReadFromFiler(reader);
     FOrderU:=ReadInteger;
     FOrderV:=ReadInteger;
     FCountU:=ReadInteger;
@@ -260,6 +268,7 @@ begin
   FControlPoints.Clear;
   FKnotsU.Clear;
   FKnotsV.Clear;
+  FWeights.Clear;
 end;
 
 // GenerateMesh
@@ -269,22 +278,27 @@ var
   i,j : Integer;
   fg : TFGVertexIndexList;
 begin
+  // Make sure there are equal weights to control points
+  while FWeights.Count<>FControlPoints.Count do
+    if FWeights.Count>FControlPoints.Count then
+      FWeights.Delete(FWeights.Count-1)
+    else
+      FWeights.Add(1);
+  
   case FBasis of
     psbBezier  : begin
       if FAutoKnots then begin
         FKnotsU.Clear;
         FKnotsV.Clear;
       end;
-      GenerateBezierSurface(FResolution,FCountU,FCountV,FControlPoints,
-                            Vertices);
+      GenerateBezierSurface(FResolution,FCountU,FCountV,FWeights,FControlPoints,Vertices);
     end;
     psbBSpline : begin
       if FAutoKnots then begin
         GenerateKnotVector(FKnotsU,FCountU,FOrderU,FContinuity);
         GenerateKnotVector(FKnotsV,FCountV,FOrderV,FContinuity);
       end;
-      GenerateBSplineSurface(FResolution,FOrderU,FOrderV,FCountU,FCountV,
-                             FKnotsU,FKnotsV,FControlPoints,Vertices);
+      GenerateBSplineSurface(FResolution,FOrderU,FOrderV,FCountU,FCountV,FKnotsU,FKnotsV,FWeights,FControlPoints,Vertices);
     end;
   end;
 
@@ -324,6 +338,11 @@ end;
 procedure TMOParametricSurface.SetKnotsV(Value : TSingleList);
 begin
   FKnotsV.Assign(Value);
+end;
+
+procedure TMOParametricSurface.SetWeights(Value : TSingleList);
+begin
+  FWeights.Assign(Value);
 end;
 
 end.
