@@ -463,6 +463,7 @@ type
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
+         constructor CreateAsChild(aParentOwner : TGLBaseSceneObject);
          destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
          {: Controls and adjusts internal optimizations based on object's style.<p>
@@ -2352,6 +2353,14 @@ begin
    FVisible:=True;
    FObjectsSorting:=osInherited;
    FVisibilityCulling:=vcInherited;
+end;
+
+// CreateAsChild
+//
+constructor TGLBaseSceneObject.CreateAsChild(aParentOwner : TGLBaseSceneObject);
+begin
+   Create(aParentOwner);
+   aParentOwner.AddChild(Self);
 end;
 
 // Destroy
