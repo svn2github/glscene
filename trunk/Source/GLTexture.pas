@@ -3722,6 +3722,11 @@ begin
          bitmap32.SetAlphaFromIntensity;
          bitmap32.InvertAlpha;
       end;
+      tiaInverseLuminanceSqrt : begin
+         bitmap32.SetAlphaFromIntensity;
+         bitmap32.SqrtAlpha;
+         bitmap32.InvertAlpha;
+      end;
    else
       Assert(False);
    end;
