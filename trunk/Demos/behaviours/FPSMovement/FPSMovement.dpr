@@ -2,8 +2,7 @@ program FPSMovement;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1},
-  GLFPSMovement in 'GLFPSMovement.pas';
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 
