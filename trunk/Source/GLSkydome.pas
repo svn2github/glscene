@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>21/01/02 - EG - Skydome position now properly ignored
       <li>23/09/01 - EG - Fixed and improved TEarthSkyDome
       <li>26/08/01 - EG - Added SkyDomeStars
       <li>12/08/01 - EG - DepthMask no set to False during rendering
@@ -742,13 +743,15 @@ begin
    glDepthMask(False);
    glPushMatrix;
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+   // compensate camera
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.95;
    glScalef(f, f, f);
+   // compensate local position
+   glTranslatef(-LocalMatrix[3][0], -LocalMatrix[3][1], -LocalMatrix[3][2]);
    glMultMatrixf(@LocalMatrix);
    // render
-//   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
    glCallList(GetHandle(rci));
    // restore
    glPopMatrix;
