@@ -111,9 +111,6 @@ procedure TfrmOctreeDemo.CreateBox;
   end;
 var
   Cube : TGLCube;
-  i : integer;
-  AABB : TAABB;
-  NewLeaf, Leaf : TGLSpacePartitionLeaf;
 begin
   Cube := TGLCube(GLScene1.Objects.AddNewChild(TGLCube));
   Cube.Position.AsAffineVector := randomPos;
@@ -127,8 +124,6 @@ end;
 { TGLSpacePartitionLeaf }
 
 constructor TGLSpacePartitionLeaf.Create(SpacePartition : TBaseSpacePartition; aGLBaseSceneObject : TGLBaseSceneObject);
-var
-  AABB : TAABB;
 begin
   GLBaseSceneObject := aGLBaseSceneObject;
 
@@ -236,8 +231,6 @@ var
   Leaf, TestLeaf : TGLSpacePartitionLeaf;
   Cube : TGLCube;
   i, j, CollidingLeafCount : integer;
-  Delta : TAffineVector;
-  Scale : single;
 
   function TestMove(pos : single; var dir : single) : single;
   begin
