@@ -167,6 +167,8 @@ type
 			function  Add(const x, y : Single) : Integer; overload;
 			function  Add(const x, y, z : Single) : Integer; overload;
 			function  Add(const x, y, z : Integer) : Integer; overload;
+			function  AddNC(const x, y, z : Integer) : Integer; overload;
+			function  AddNC(const xy : PIntegerArray; const z : Integer) : Integer; overload;
          procedure Add(const list : TAffineVectorList); overload;
 			procedure Push(const val : TAffineVector);
 			function  Pop : TAffineVector;
@@ -258,6 +260,8 @@ type
 			function Add(const item : TTexPoint) : Integer; overload;
 			function Add(const texS, texT : Single) : Integer; overload;
 			function Add(const texS, texT : Integer) : Integer; overload;
+			function AddNC(const texS, texT : Integer) : Integer; overload;
+			function AddNC(const texST : PIntegerArray) : Integer; overload;
 			procedure Push(const val : TTexPoint);
 			function  Pop : TTexPoint;
 			procedure Insert(Index: Integer; const item : TTexPoint);
@@ -277,18 +281,18 @@ type
 	TIntegerList = class (TBaseList)
 		private
          { Private Declarations }
-			FList: PIntegerArray;
+			FList : PIntegerArray;
 
 		protected
          { Protected Declarations }
-			function  Get(Index: Integer) : Integer;
-			procedure Put(Index: Integer; const item : Integer);
-			procedure SetCapacity(NewCapacity: Integer); override;
+			function  Get(index : Integer) : Integer;
+			procedure Put(index : Integer; const item : Integer);
+			procedure SetCapacity(newCapacity : Integer); override;
 
 		public
          { Public Declarations }
 			constructor Create; override;
-			procedure Assign(Src: TPersistent); override;
+			procedure Assign(src : TPersistent); override;
 
 			function  Add(const item : Integer) : Integer; overload;
          procedure Add(const i1, i2 : Integer); overload;
@@ -296,12 +300,12 @@ type
          procedure Add(const list : TIntegerList); overload;
 			procedure Push(const val : Integer);
 			function  Pop : Integer;
-			procedure Insert(Index : Integer; const item : Integer);
+			procedure Insert(index : Integer; const item : Integer);
          procedure Remove(const item : Integer);
-         function  IndexOf(Item: integer): Integer;
+         function  IndexOf(item : Integer): Integer;
 
-			property Items[Index: Integer] : Integer read Get write Put; default;
-			property List: PIntegerArray read FList;
+			property Items[Index : Integer] : Integer read Get write Put; default;
+			property List : PIntegerArray read FList;
 
          {: Adds count items in an arithmetic serie.<p>
             Items are (aBase), (aBase+aDelta) ... (aBase+(aCount-1)*aDelta) }
@@ -909,6 +913,34 @@ begin
   	Inc(FCount);
 end;
 
+// Add (3 ints, no capacity check)
+//
+function TAffineVectorList.AddNC(const x, y, z : Integer) : Integer;
+var
+   v : PAffineVector;
+begin
+	Result:=FCount;
+   v:=@List[Result];
+   v[0]:=x;
+	v[1]:=y;
+	v[2]:=z;
+  	Inc(FCount);
+end;
+
+// Add (2 ints in array + 1, no capacity check)
+//
+function TAffineVectorList.AddNC(const xy : PIntegerArray; const z : Integer) : Integer;
+var
+   v : PAffineVector;
+begin
+	Result:=FCount;
+   v:=@List[Result];
+   v[0]:=xy[0];
+	v[1]:=xy[1];
+	v[2]:=z;
+  	Inc(FCount);
+end;
+
 // Add
 //
 procedure TAffineVectorList.Add(const list : TAffineVectorList);
@@ -1283,6 +1315,30 @@ begin
       t:=texT;
    end;
   	Inc(FCount);
+end;
+
+// AddNC
+//
+function TTexPointList.AddNC(const texS, texT : Integer) : Integer;
+begin
+	Result:=FCount;
+   with FList^[Result] do begin
+      s:=texS;
+      t:=texT;
+   end;
+ 	Inc(FCount);
+end;
+
+// AddNC
+//
+function TTexPointList.AddNC(const texST : PIntegerArray) : Integer;
+begin
+	Result:=FCount;
+   with FList^[Result] do begin
+      s:=texST[0];
+      t:=texST[1];
+   end;
+ 	Inc(FCount);
 end;
 
 // Get
