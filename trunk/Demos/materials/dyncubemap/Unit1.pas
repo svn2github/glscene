@@ -73,14 +73,14 @@ begin
    // Don't do anything if cube maps aren't supported
    if not GL_ARB_texture_cube_map then begin
       if not cubeMapWarnDone then
-         ShowMessage('Your graphics board does not support cube maps...');
+         ShowMessage('Your graphics hardware does not support cube maps...');
       cubeMapWarnDone:=True;
       Exit;
    end;
    // Here we generate the new cube map, from CubeMapCamera (a child of the
    // teapot in the scene hierarchy)
    with Teapot1 do begin
-      // hided the teapot while rendering the cube map
+      // hide the teapot while rendering the cube map
       Visible:=False;
       // render cube map to the teapot's texture
       GLMemoryViewer1.RenderCubeMapTextures(Material.Texture);
