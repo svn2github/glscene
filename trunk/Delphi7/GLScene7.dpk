@@ -176,6 +176,7 @@ contains
   GLHiddenLineShader in '..\Source\Shaders\GLHiddenLineShader.pas',
   GLProxyObjects in '..\Source\GLProxyObjects.pas',
   GLState in '..\Source\GLState.pas',
-  GLUtils in '..\Source\GLUtils.pas';
+  GLUtils in '..\Source\GLUtils.pas',
+  GLTilePlane in '..\Source\GLTilePlane.pas';
 
 end.

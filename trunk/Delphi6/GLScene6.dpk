@@ -175,6 +175,7 @@ contains
   GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas',
   GLProxyObjects in '..\Source\GLProxyObjects.pas',
   GLState in '..\Source\GLState.pas',
-  GLUtils in '..\Source\GLUtils.pas';
+  GLUtils in '..\Source\GLUtils.pas',
+  GLTilePlane in '..\Source\GLTilePlane.pas';
 
 end.
