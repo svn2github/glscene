@@ -30,6 +30,7 @@ type
 
    TGetTerrainBoundsEvent = procedure(var l, t, r, b : Single) of object;
    TPatchPostRenderEvent = procedure (var rci : TRenderContextInfo; const patches : TList) of object;
+   THeightDataPostRenderEvent = procedure (var rci : TRenderContextInfo; const heightDatas : TList) of object;
 
 	// TGLTerrainRenderer
 	//
@@ -55,6 +56,7 @@ type
          FMaterialLibrary : TGLMaterialLibrary;
          FOnGetTerrainBounds : TGetTerrainBoundsEvent;
          FOnPatchPostRender : TPatchPostRenderEvent;
+         FOnHeightDataPostRender : THeightDataPostRenderEvent;
 
 	   protected
 	      { Protected Declarations }
@@ -78,7 +80,9 @@ type
          procedure ReleaseAllTiles; dynamic;
          procedure OnTileDestroyed(sender : TObject); virtual;
 
-         function GetPreparedPatch(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
+         function GetPreparedPatch(const tilePos, eyePos : TAffineVector;
+                                   texFactor : Single;
+                                   hdList : TList) : TGLROAMPatch;
 
 	   public
 	      { Public Declarations }
@@ -134,8 +138,14 @@ type
          property OnGetTerrainBounds : TGetTerrainBoundsEvent read FOnGetTerrainBounds write FOnGetTerrainBounds;
          {: Invoked for each rendered patch after terrain render has completed.<p>
             The list holds TGLROAMPatch objects and allows per-patch
-            post-processings, like waters, trees... }
+            post-processings, like waters, trees... It is invoked *before*
+            OnHeightDataPostRender. }
          property OnPatchPostRender : TPatchPostRenderEvent read FOnPatchPostRender write FOnPatchPostRender;
+         {: Invoked for each heightData not culled out by the terrain renderer.<p>
+            The list holds THeightData objects and allows per-patch
+            post-processings, like waters, trees... It is invoked *after*
+            OnPatchPostRender. }
+         property OnHeightDataPostRender : THeightDataPostRenderEvent read FOnHeightDataPostRender write FOnHeightDataPostRender;
 	end;
 
 // ------------------------------------------------------------------
@@ -322,11 +332,13 @@ var
    delta, n, rpIdxDelta : Integer;
    f, tileRadius, texFactor, tileDist, qDist : Single;
    patch, prevPatch : TGLROAMPatch;
-   patchList, rowList, prevRow, buf, postRenderList : TList;
+   patchList, rowList, prevRow, buf : TList;
+   postRenderPatchList, postRenderHeightDataList : TList;
    rcci : TRenderContextClippingInfo;
    currentMaterialName : String;
    maxTilePosX, maxTilePosY, minTilePosX, minTilePosY : Single;
    t_l, t_t, t_r, t_b : Single;
+   hd : THeightData;
 
    procedure ApplyMaterial(const materialName : String);
    begin
@@ -403,8 +415,11 @@ begin
    rowList:=TList.Create;
    prevRow:=TList.Create;
    if Assigned(FOnPatchPostRender) then
-      postRenderList:=TList.Create
-   else postRenderList:=nil;
+      postRenderPatchList:=TList.Create
+   else postRenderPatchList:=nil;
+   if Assigned(FOnHeightDataPostRender) then
+      postRenderHeightDataList:=TList.Create
+   else postRenderHeightDataList:=nil;
 
    MarkAllTilesAsUnused;
    AbsoluteMatrix; // makes sure it is available
@@ -437,7 +452,8 @@ begin
       while tilePos[0]<=maxTilePosX do begin
          absTilePos:=VectorTransform(tilePos, DirectAbsoluteMatrix^);
          if not IsVolumeClipped(absTilePos, tileRadius, rcci) then begin
-            patch:=GetPreparedPatch(tilePos, observer, texFactor);
+            patch:=GetPreparedPatch(tilePos, observer, texFactor,
+                                    postRenderHeightDataList);
 
             if patch<>nil then begin
 
@@ -464,8 +480,8 @@ begin
                   patchList.Add(patch);
                end;
 
-               if Assigned(postRenderList) then
-                  postRenderList.Add(patch);
+               if Assigned(postRenderPatchList) then
+                  postRenderPatchList.Add(patch);
                
             end else begin
 
@@ -514,9 +530,14 @@ begin
 
    xglPopState;
 
-   if Assigned(postRenderList) then begin
-      FOnPatchPostRender(rci, postRenderList);
-      postRenderList.Free;
+   ApplyMaterial('');
+   if Assigned(postRenderPatchList) then begin
+      FOnPatchPostRender(rci, postRenderPatchList);
+      postRenderPatchList.Free;
+   end;
+   if Assigned(postRenderHeightDataList) then begin
+      FOnHeightDataPostRender(rci, postRenderHeightDataList);
+      postRenderHeightDataList.Free;
    end;
 
    glPopMatrix;
@@ -527,7 +548,6 @@ begin
    rowList.Free;
    prevRow.Free;
    patchList.Free;
-   ApplyMaterial('');
 end;
 
 // MarkAllTilesAsUnused
@@ -620,7 +640,8 @@ end;
 
 // GetPreparedPatch
 //
-function TGLTerrainRenderer.GetPreparedPatch(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
+function TGLTerrainRenderer.GetPreparedPatch(const tilePos, eyePos : TAffineVector;
+                                             texFactor : Single; hdList : TList) : TGLROAMPatch;
 var
    tile : THeightData;
    patch : TGLROAMPatch;
@@ -629,7 +650,10 @@ begin
    xLeft:=Round(tilePos[0]*FinvTileSize-0.5)*TileSize;
    yTop:=Round(tilePos[1]*FinvTileSize-0.5)*TileSize;
    tile:=HashedTile(xLeft, yTop);
+   if Assigned(hdList) then
+      hdList.Add(tile);
    if tile.DataState=hdsNone then begin
+      tile.Tag:=1;
       Result:=nil;
    end else begin
       tile.Tag:=1;

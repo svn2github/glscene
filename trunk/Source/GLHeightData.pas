@@ -85,6 +85,7 @@ type
          FMaxPoolSize : Integer;
          FHeightDataClass : THeightDataClass;
          FReleaseLatency : TDateTime;
+         FDefaultHeight : Single; 
 
 	   protected
 	      { Protected Declarations }
@@ -170,6 +171,8 @@ type
             for the longest time first.<p>
             The default value of zero effectively disables pooling. }
          property MaxPoolSize : Integer read FMaxPoolSize write FMaxPoolSize;
+         {: Height to return for undefined tiles. }
+         property DefaultHeight : Single read FDefaultHeight write FDefaultHeight;
 
          {: Interpolates height for the given point. }
          function InterpolatedHeight(x, y : Single) : Single; virtual;
@@ -823,7 +826,9 @@ begin
       // request it using "standard" way (takes care of threads)
       foundHd:=GetData(foundHd.XLeft, foundHd.YTop, foundHd.Size, foundHd.DataType);
    end;
-   Result:=foundHd.InterpolatedHeight(x-foundHd.XLeft, y-foundHd.YTop);
+   if foundHd.DataState=hdsNone then
+      Result:=DefaultHeight
+   else Result:=foundHd.InterpolatedHeight(x-foundHd.XLeft, y-foundHd.YTop);
 end;
 
 // ------------------
