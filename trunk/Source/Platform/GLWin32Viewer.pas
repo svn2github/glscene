@@ -1,8 +1,8 @@
 // GLWin32Viewer
-{: Win32 specific Context.<p>
+{: Win32 specific.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer 
+      <li>24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
       <li>11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
       <li>29/10/02 - EG - Added MouseEnter/Leave/InControl
       <li>27/09/02 - EG - Added Ability to set display frequency
