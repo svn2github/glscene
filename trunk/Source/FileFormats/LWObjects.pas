@@ -1,6 +1,9 @@
 // 14/11/02 - EG - Fixed warnings
-
-{-----------------------------------------------------------------------------
+// 16/11/02 - BJ - Replaced TLWChunkList.FindChunk search mechanism
+//          - BJ - Added v. method  TLWChunk.Loaded. Called on Loading complete.
+//          - BJ - Added surface smooth normal generation
+//
+{-------------------------------------------------------------------------------
  Unit Name:  Lightwave
  Author:     Brian Johns brianjohns1@hotmail.com
  Purpose:    Lightwave object support unit for Delphi.
@@ -8,312 +11,101 @@
  Notes:      For the Lightwave Object File Format documentation please refer to
              http://www.lightwave3d.com/developer.
 
-             This unit provides functions, constants and now classes for use in
-             working with Lightwave3D Object files.
-
-             Chunk ID constants are defined for all of the Chunk IDs listed
-             in the Lightwave 7.5 sdk.
-
-             It is important to note that this is a constant work-in-progress
-             and as such there are omissions and may be errors. Feedback and
-             suggestions would be appreciated.
-
-             There are two ways of using this unit. The first uses user-defines
-             callbacks to handle parsing lwo chunk data. The second way uses
-             object orientation.
-
-             Loading LWO chunk data via callbacks
-             ====================================
-
-             A function is provided for loading a Lightwave object from a file.
-             The Loader itself uses a callback mechanism for the loading of
-             Lightwave object chunks. The callback is called for every chunk
-             (with the exception of the FORM and LWOB or LWO2 chunks).
-
-             The Chunk struct passed in the callback contains members for the
-             chunk ID, chunk size and pointer to chunk data. This data is
-             untouched internally so any parsing and numeric formatting
-             is up to you. This provides maximum flexibility and allows you to
-             handle the data that you need without loading the entire object
-             into ram first.
-
-             The chunk data memory is freed upon the return of the callback
-             so do not keep a reference to the chunk data. Copy it to your own
-             storage.
-
-               function LoadLW0(const Filename: string; ReadProc: TLWOReadProc;
-                 UserData: Pointer): LongWord; cdecl;
-
-                 Filename:      The fully qualified filename of the file to be
-                                loaded.
-
-                 ReadCallback:  The address of a TLWOReadCallback procedure
-                                defined as:
-
-                                TLWOReadCallback = procedure(Chunk: TLWChunk;
-                                  UserData: Pointer); cdecl;
-
-                                This procedure will be called for every chunk
-                                encountered in the Lightwave object file. The
-                                Chunk parameter is the chunk struct of the chunk
-                                being loaded. UserData is the pointer supplied
-                                in the original call to LoadLWO (see below).
-
-
-                 UserData:      A pointer to user supplied data to be passed
-                                in the ReadCallback.
-
-
-               A non-zero results indicates that the object file was parsed
-               successfully.
-
-             Loading LWO chunks via objects
-             ==============================
-
-             To load data from a lightwave object file, create an instance of
-             TLWObjectFile and call its LoadFromFile method.
-
-             The data can then be accessed with the Chunks array property and
-             iterated in combination with the ChunkCount property.
-
-             Chunk data is parsed and interfaced by descendents of the TLWChunk
-             class. I have made handlers for the following chunk types:
-
-               TLWLayr  Modeler Layer chunk
-               TLWPnts  Points chunk
-               TLWPols  Polygons chunk
-               TLWPTag  Polygon tag mapping
-               TLWSurf  Surface subchunk container
-               TLWTags  Tags (Name tag strings for named items)
-               TLWVMap  Vertex Mapping
-
-             The data for chunks without handlers can be gotten at with the
-             Data and Size properties of the TLWChunk. Data is a pointer to
-             the start of the chunk data. This data is unparsed.
-             Data is nil for descendents.
-
-
-             This should provide enough to move geometry into your favourite
-             delphi-based 3d engine.
-
-
-             Making chunk handler objects
-             ============================
-
-             All chunk types are derived from TLWChunk in the following manner:
-
-             TLWChunk
-
-               ex:
-
-               TLWPTag        <- PTAG chunk type. polygon tag map.
-
-
-
-               TLWParentChunk <- A base class for chunks that can contain other chunks.
-                                 This is not necessarily how the data is stored in
-                                 the file but more for ease of access to data.
-
-                 ex:
-
-                 TLWPnts <- PNTS chunk type (points)
-                 TLWLayr <- LAYR chunk type (modeler layer)
-
-                 TLWSurf <- SURF chunk type (constains surface attributes as sub chunks)
-
-               TLWSubChunk <- A base class for chunks whose max data len is 65536 bytes.
-                 TLWDiff   <- DIFF subchunk type (diffuse surface parameter)
-                 TLWSpec   <- SPEC subchunk type (specularity surface parameter)...
-                 etc.
-
-             Each descendent of TLWChunk or TLWSubChunk is required to override
-             the GetID class function, the LoadData method and the Clear method
-             to provide custom handling for chunktype data.
-
-
-             ex:
-
-             ...
-
-             type
-
-             TLWPnts = class (TLWParentChunk)
-              private
-                FPoints: TVEC12DynArray;
-                function GetCount: LongWord;
-              protected
-                procedure Clear; override;
-                procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord); override;
-              public
-                class function GetID: TID4; override;
-                function GetVMap(VMapID: TID4; out VMap: TLWVMap): boolean;
-                property Count: LongWord read GetCount;
-                property Points: TVEC12DynArray read FPoints;
-              end;
-
-             ...
-
-
-              /* Return the the chunk id that is the target of this handler */
-              class function TLWPnts.GetID: TID4;
-              begin
-                result := ID_PNTS;
-              end;
-
-              /* Load the point data -
-                 the stream is already positioned at the start of the chunk data
-              */
-              procedure TLWPnts.LoadData(AStream: TStream; DataStart, DataSize: LongWord);
-              begin
-                SetLength(FPoints,DataSize div 12); // allocate storage for DataSize div 12 points
-                ReadMotorolaNumber(AStream,@FPoints[0],4,DataSize div 4); // read the point data
-              end;
-
-              /* Cleanup - Free any memory that you've allocated */
-              procedure TLWPnts.Clear;
-              begin
-                SetLength(FPoints,0);
-              end;
-
-             Utility Functions
-             =================
-             A function is provided for converting an array of numbers between
-             Motorola and Intel format (big endian <-> little endian). Converting
-             only needs to be done for numeric types that are of 2 or 4 byte
-             lengths.
-
-               procedure ReverseByteOrder(ValueIn: Pointer; Size: integer;
-
-                 Count: integer = 1);
-
-                 ValueIn: The address of a number or array of numbers to have their
-                          bytes swapped.
-
-                 Size:    The size in bytes of each numeric type.
-
-                 Count:   The count of numbers in the numbers array. The default
-                          value is 1.
-
-
-             Two routines are provided for reading and writing big endian
-             (Motorola and misc other processor vendors ) numbers to and from a
-             stream. These routines handle 2 and 4 byte numeric types and can
-             also handle arrays.
-
-               procedure ReadMotorolaNumber(Stream: TStream; Data: Pointer;
-                 ElementSize: integer; Count: integer = 1);
-
-               function WriteMotorolaNumber(Stream: TStream; Data: Pointer;
-                 ElementSize: integer; Count: integer = 1): Integer;
-
-               Each take a valid TStream descendent, a pointer to the numeric data,
-               the element size of the data elements (either 2 or 4) and the array
-               element count if sending an array. The default count is 1.
-
-
-
-             Notes for improvement of this unit:
-
-               - A version ID tag should be visible to all chunks in order to
-                 provide handling for Lightwave pre 6.0 object files.
-
-               - Chunk type handlers should leave memory allocation to
-                 the base class (TLWChunk) and act more as an interface
-                 to the data pointed to by Data in TLWChunk. This would
-                 keep memory allocation very efficient and make implementing
-                 chunk handlers even easier.
-
-               - A future Lightwave support unit could possibly benefit from the
-                 use of delphi's interface type.
-
  License:    This unit is distributed under the Mozilla Public License.
              For license details, refer to http://www.mozilla.org
              Lightwave3D is a registered trademark of Newtek Incorporated.
 
------------------------------------------------------------------------------}
+-------------------------------------------------------------------------------}
 unit LWObjects;
 
 interface
 
 uses Classes;
 
+
+type
+
+  TID4 = array[0..3] of char;
+  PID4 = ^TID4;
+  TID4DynArray = array of TID4;
+
 const
   ID_NULL = '#0#0#0#0'; // NULL ID
 
-  ID_LWSC = 'LWSC';  // Lightwave scene file
-  ID_FORM = 'FORM';  // IFF Form
-  ID_LWOB = 'LWOB';  // Lightwave Object version 1.0 - 5.x
-  ID_LWLO = 'LWLO';  // Lightwave Layered Object
-  ID_LAYR = 'LAYR';  // LAYER
-  ID_PNTS = 'PNTS';  // Points chunk
-  ID_SRFS = 'SRFS';  // Surface Names chunk
-  ID_POLS = 'POLS';  // Polygons chunk
-  ID_CRVS = 'CRVS';  // Curves chunk
-  ID_PCHS = 'PCHS';  // Patches chunk
-  ID_SURF = 'SURF';  // Surfaces chunk
-  ID_COLR = 'COLR';  // Color chunk
+  ID_LWSC: TID4 = 'LWSC';  // Lightwave scene file
+  ID_FORM: TID4 = 'FORM';  // IFF Form
+  ID_LWOB: TID4 = 'LWOB';  // Lightwave Object version 1.0 - 5.x
+  ID_LWLO: TID4 = 'LWLO';  // Lightwave Layered Object
+  ID_LAYR: TID4 = 'LAYR';  // LAYER
+  ID_PNTS: TID4 = 'PNTS';  // Points chunk
+  ID_SRFS: TID4 = 'SRFS';  // Surface Names chunk
+  ID_POLS: TID4 = 'POLS';  // Polygons chunk
+  ID_CRVS: TID4 = 'CRVS';  // Curves chunk
+  ID_PCHS: TID4 = 'PCHS';  // Patches chunk
+  ID_SURF: TID4 = 'SURF';  // Surfaces chunk
+  ID_COLR: TID4 = 'COLR';  // Color chunk
 
-  ID_FLAG = 'FLAG';  // Surface Flags
+  ID_FLAG: TID4 = 'FLAG';  // Surface Flags
 
-  ID_LUMI = 'LUMI';  // Luminosity
-  ID_DIFF = 'DIFF';  // Diffuse
-  ID_SPEC = 'SPEC';  // Specular
-  ID_REFL = 'REFL';  // Reflective
-  ID_TRAN = 'TRAN';  // Transparency
+  ID_LUMI: TID4 = 'LUMI';  // Luminosity
+  ID_DIFF: TID4 = 'DIFF';  // Diffuse
+  ID_SPEC: TID4 = 'SPEC';  // Specular
+  ID_REFL: TID4 = 'REFL';  // Reflective
+  ID_TRAN: TID4 = 'TRAN';  // Transparency
 
-  ID_VLUM = 'VLUM';  // Luminosity
-  ID_VDIF = 'VDIF';  // Diffuse
-  ID_VSPC = 'VSPC';  // Specularity
-  ID_VRFL = 'VRFL';  // Reflective
-  ID_VTRN = 'VTRN';  // Transparency
+  ID_VLUM: TID4 = 'VLUM';  // Luminosity
+  ID_VDIF: TID4 = 'VDIF';  // Diffuse
+  ID_VSPC: TID4 = 'VSPC';  // Specularity
+  ID_VRFL: TID4 = 'VRFL';  // Reflective
+  ID_VTRN: TID4 = 'VTRN';  // Transparency
 
-  ID_GLOS = 'GLOS';  // Glossiness SmallInt
+  ID_GLOS: TID4 = 'GLOS';  // Glossiness SmallInt
 
-  ID_SIDE = 'SIDE';  // Sidedness
+  ID_SIDE: TID4 = 'SIDE';  // Sidedness
 
-  ID_RFLT = 'RFLT';  // REFLECTION MODE
-  ID_RIMG = 'RIMG';  // REFLECTION IMAGE
-  ID_RSAN = 'RSAN';  // REFLECTION MAP SEAM ANGLE
-  ID_RIND = 'RIND';  // REFRACTIVE INDEX
-  ID_EDGE = 'EDGE';  // EDGE TRANSPARENCY THRESHOLD
-  ID_SMAN = 'SMAN';  // SMOOTHING ANGLE RADIANS
-  ID_ALPH = 'ALPH';  // ALPHA MODE
-  ID_CTEX = 'CTEX';  // COLOR TEXTURE
-  ID_DTEX = 'DTEX';  // DIFFUSE TEXTURE
-  ID_STEX = 'STEX';  // SPECULAR TEXTURE
-  ID_RTEX = 'RTEX';  // REFLECTIION TEXTURE
-  ID_TTEX = 'TTEX';  // TRANSPARENCY TEXTURE
-  ID_LTEX = 'LTEX';  // LUMINANCE TEXTURE
-  ID_BTEX = 'BTEX';  // BUMP TEXTURE
-  ID_TFLG = 'TFLG';  // TEXTURE FLAGS
-  ID_TSIZ = 'TSIZ';  // TEXTURE SIZE
-  ID_TCTR = 'TCTR';  // TEXTURE CENTER
-  ID_TFAL = 'TFAL';  // TEXTURE FALLOFF
-  ID_TVEL = 'TVAL';  // TEXTURE VALUE
-  ID_TREF = 'TREF';  // TEXTURE REFERENCE
-  ID_TCLR = 'TCLR';  // TEXTURE COLOR
-  ID_TVAL = 'TVAL';  // TEXTURE VALUE
-  ID_TAMP = 'TAMP';  // TEXTURE AMPLITUDE
-  ID_TFP0 = 'TFP0';  // TEXTURE PARAMETERS
-  ID_TFP1 = 'TFP1';  //
-  ID_TFP2 = 'TFP2';  //
-  ID_TIP0 = 'TIP0';  //
-  ID_TIP1 = 'TIP1';  //
-  ID_TIP2 = 'TIP2';  //
-  ID_TSP0 = 'TSP0';  //
-  ID_TSP1 = 'TSP1';  //
-  ID_TSP2 = 'TSP2';  //
-  ID_TFRQ = 'TFRQ';  //
-  ID_TIMG = 'TIMG';  // TEXTURE IMG
-  ID_TALP = 'TALP';  //
-  ID_TWRP = 'TWRP';  // TEXTURE WRAP
-  ID_TAAS = 'TAAS';  //
-  ID_TOPC = 'TOPC';  //
-  ID_SHDR = 'SHDR';  //
-  ID_SDAT = 'SDAT';  //
-  ID_IMSQ = 'IMSQ';  // IMAGE SEQUENCE
-  ID_FLYR = 'FLYR';  // FLYER SEQUENCE
-  ID_IMCC = 'IMCC';  //
+  ID_RFLT: TID4 = 'RFLT';  // REFLECTION MODE
+  ID_RIMG: TID4 = 'RIMG';  // REFLECTION IMAGE
+  ID_RSAN: TID4 = 'RSAN';  // REFLECTION MAP SEAM ANGLE
+  ID_RIND: TID4 = 'RIND';  // REFRACTIVE INDEX
+  ID_EDGE: TID4 = 'EDGE';  // EDGE TRANSPARENCY THRESHOLD
+  ID_SMAN: TID4 = 'SMAN';  // SMOOTHING ANGLE RADIANS
+  ID_ALPH: TID4 = 'ALPH';  // ALPHA MODE
+  ID_CTEX: TID4 = 'CTEX';  // COLOR TEXTURE
+  ID_DTEX: TID4 = 'DTEX';  // DIFFUSE TEXTURE
+  ID_STEX: TID4 = 'STEX';  // SPECULAR TEXTURE
+  ID_RTEX: TID4 = 'RTEX';  // REFLECTIION TEXTURE
+  ID_TTEX: TID4 = 'TTEX';  // TRANSPARENCY TEXTURE
+  ID_LTEX: TID4 = 'LTEX';  // LUMINANCE TEXTURE
+  ID_BTEX: TID4 = 'BTEX';  // BUMP TEXTURE
+  ID_TFLG: TID4 = 'TFLG';  // TEXTURE FLAGS
+  ID_TSIZ: TID4 = 'TSIZ';  // TEXTURE SIZE
+  ID_TCTR: TID4 = 'TCTR';  // TEXTURE CENTER
+  ID_TFAL: TID4 = 'TFAL';  // TEXTURE FALLOFF
+  ID_TVEL: TID4 = 'TVAL';  // TEXTURE VALUE
+  ID_TREF: TID4 = 'TREF';  // TEXTURE REFERENCE
+  ID_TCLR: TID4 = 'TCLR';  // TEXTURE COLOR
+  ID_TVAL: TID4 = 'TVAL';  // TEXTURE VALUE
+  ID_TAMP: TID4 = 'TAMP';  // TEXTURE AMPLITUDE
+  ID_TFP0: TID4 = 'TFP0';  // TEXTURE PARAMETERS
+  ID_TFP1: TID4 = 'TFP1';  //
+  ID_TFP2: TID4 = 'TFP2';  //
+  ID_TIP0: TID4 = 'TIP0';  //
+  ID_TIP1: TID4 = 'TIP1';  //
+  ID_TIP2: TID4 = 'TIP2';  //
+  ID_TSP0: TID4 = 'TSP0';  //
+  ID_TSP1: TID4 = 'TSP1';  //
+  ID_TSP2: TID4 = 'TSP2';  //
+  ID_TFRQ: TID4 = 'TFRQ';  //
+  ID_TIMG: TID4 = 'TIMG';  // TEXTURE IMG
+  ID_TALP: TID4 = 'TALP';  //
+  ID_TWRP: TID4 = 'TWRP';  // TEXTURE WRAP
+  ID_TAAS: TID4 = 'TAAS';  //
+  ID_TOPC: TID4 = 'TOPC';  //
+  ID_SHDR: TID4 = 'SHDR';  //
+  ID_SDAT: TID4 = 'SDAT';  //
+  ID_IMSQ: TID4 = 'IMSQ';  // IMAGE SEQUENCE
+  ID_FLYR: TID4 = 'FLYR';  // FLYER SEQUENCE
+  ID_IMCC: TID4 = 'IMCC';  //
 
   SURF_FLAG_LUMINOUS        =     1;
   SURF_FLAG_OUTLINE         =     2;
@@ -333,56 +125,56 @@ const
   IMSQ_FLAG_LOOP      = 1;
   IMSQ_FLAG_INTERLACE = 2;
 
-  ID_LWO2  = 'LWO2';   // OBJECT
-  ID_VMAP =  'VMAP';   // VERTEX MAP
-  ID_TAGS =  'TAGS';   // TAGS?
-  ID_PTAG =  'PTAG';   // POLYGON TAG MAP
-  ID_VMAD =  'VMAD';   // DISCONTINUOUS VERTEX MAP
-  ID_ENVL =  'ENVL';   // ENVELOPE
-  ID_CLIP =  'CLIP';   // CLIP
-  ID_BBOX =  'BBOX';   // BOUNDING BOX
-  ID_DESC =  'DESC';   // DESCRIPTION
-  ID_TEXT =  'TEXT';   // TEXT
-  ID_ICON =  'ICON';   // ICON
+  ID_LWO2: TID4 = 'LWO2';   // OBJECT
+  ID_VMAP: TID4 =  'VMAP';   // VERTEX MAP
+  ID_TAGS: TID4 =  'TAGS';   // TAGS?
+  ID_PTAG: TID4 =  'PTAG';   // POLYGON TAG MAP
+  ID_VMAD: TID4 =  'VMAD';   // DISCONTINUOUS VERTEX MAP
+  ID_ENVL: TID4 =  'ENVL';   // ENVELOPE
+  ID_CLIP: TID4 =  'CLIP';   // CLIP
+  ID_BBOX: TID4 =  'BBOX';   // BOUNDING BOX
+  ID_DESC: TID4 =  'DESC';   // DESCRIPTION
+  ID_TEXT: TID4 =  'TEXT';   // TEXT
+  ID_ICON: TID4 =  'ICON';   // ICON
 
-  ENVL_PRE  = 'PRE'#0;   // PRE-BEHAVIOUR
-  ENVL_POST = 'POST';    // POST
-  ENVL_KEY  = 'KEY'#0;   // KEY
-  ENVL_SPAN = 'SPAN';    // SPAN
-  ENVL_CHAN = 'CHAN';    // CHAN
-  ENVL_NAME = 'NAME';    // NAME
+  ENVL_PRE: TID4  = 'PRE'#0;   // PRE-BEHAVIOUR
+  ENVL_POST: TID4 = 'POST';    // POST
+  ENVL_KEY: TID4  = 'KEY'#0;   // KEY
+  ENVL_SPAN: TID4 = 'SPAN';    // SPAN
+  ENVL_CHAN: TID4 = 'CHAN';    // CHAN
+  ENVL_NAME: TID4 = 'NAME';    // NAME
 
-  CLIP_STIL   = 'STIL';   // STILL IMAGE FILENAME
-  CLIP_ISEQ   = 'ISEQ';   // IMAGE SEQUENCE
-  CLIP_ANIM   = 'ANIM';   // PLUGIN ANIMATION
-  CLIP_STCC   = 'STCC';   // COLOR CYCLING STILL
-  CLIP_CONT   = 'CONT';   // CONTRAST
-  CLIP_BRIT   = 'BRIT';   // BRIGHTNESS
-  CLIP_SATR   = 'SATR';   // SATURATION
-  CLIP_HUE    = 'HUE'#0;  // HUE
-  CLIP_GAMMA  = 'GAMMA';  // GAMMA
-  CLIP_NEGA   = 'NEGA';   // NEGATIVE IMAGE
-  CLIP_IFLT   = 'IFLT';   // IMAGE PLUG-IN FILTER
-  CLIP_PFLT   = 'PFLT';   // PIXEL PLUG-IN FILTER
+  CLIP_STIL: TID4 = 'STIL';   // STILL IMAGE FILENAME
+  CLIP_ISEQ: TID4   = 'ISEQ';   // IMAGE SEQUENCE
+  CLIP_ANIM: TID4   = 'ANIM';   // PLUGIN ANIMATION
+  CLIP_STCC: TID4   = 'STCC';   // COLOR CYCLING STILL
+  CLIP_CONT: TID4   = 'CONT';   // CONTRAST
+  CLIP_BRIT: TID4   = 'BRIT';   // BRIGHTNESS
+  CLIP_SATR: TID4   = 'SATR';   // SATURATION
+  CLIP_HUE: TID4    = 'HUE'#0;  // HUE
+  CLIP_GAMMA: TID4  = 'GAMM';  // GAMMA
+  CLIP_NEGA: TID4   = 'NEGA';   // NEGATIVE IMAGE
+  CLIP_IFLT: TID4   = 'IFLT';   // IMAGE PLUG-IN FILTER
+  CLIP_PFLT: TID4   = 'PFLT';   // PIXEL PLUG-IN FILTER
 
-  POLS_TYPE_FACE = 'FACE';  // FACES
-  POLS_TYPE_CURV = 'CURV';  // CURVE
-  POLS_TYPE_PTCH = 'PTCH';  // PATCH
-  POLS_TYPE_MBAL = 'MBAL';  // METABALL
-  POLS_TYPE_BONE = 'BONE';  // SKELEGON?
+  POLS_TYPE_FACE: TID4 = 'FACE';  // FACES
+  POLS_TYPE_CURV: TID4 = 'CURV';  // CURVE
+  POLS_TYPE_PTCH: TID4 = 'PTCH';  // PATCH
+  POLS_TYPE_MBAL: TID4 = 'MBAL';  // METABALL
+  POLS_TYPE_BONE: TID4 = 'BONE';  // SKELEGON?
 
-  VMAP_TYPE_PICK = 'PICK';  // SELECTION SET
-  VMAP_TYPE_WGHT = 'WGHT';  // WEIGHT MAP
-  VMAP_TYPE_MNVW = 'MNVW';  // SUBPATCH WEIGHT MAP
-  VMAP_TYPE_TXUV = 'TXUV';  // UV MAP
-  VMAP_TYPE_RGB  = 'RGB'#0; // RGB MAP
-  VMAP_TYPE_RGBA = 'RGBA';  // RGBA MAP
-  VMAP_TYPE_MORF = 'MORF';  // MORPH MAP: RELATIVE VERTEX DISPLACEMENT
-  VMAP_TYPE_SPOT = 'SPOT';  // SPOT MAP: ABSOLUTE VERTEX POSITIONS
+  VMAP_TYPE_PICK: TID4 = 'PICK';  // SELECTION SET
+  VMAP_TYPE_WGHT: TID4 = 'WGHT';  // WEIGHT MAP
+  VMAP_TYPE_MNVW: TID4 = 'MNVW';  // SUBPATCH WEIGHT MAP
+  VMAP_TYPE_TXUV: TID4 = 'TXUV';  // UV MAP
+  VMAP_TYPE_RGB: TID4  = 'RGB'#0; // RGB MAP
+  VMAP_TYPE_RGBA: TID4 = 'RGBA';  // RGBA MAP
+  VMAP_TYPE_MORF: TID4 = 'MORF';  // MORPH MAP: RELATIVE VERTEX DISPLACEMENT
+  VMAP_TYPE_SPOT: TID4 = 'SPOT';  // SPOT MAP: ABSOLUTE VERTEX POSITIONS
 
-  PTAG_TYPE_SURF = 'SURF';  // SURFACE
-  PTAG_TYPE_PART = 'PART';  // PARENT PART
-  PTAG_TYPE_SMGP = 'SMGP';  // SMOOTH GROUP
+  PTAG_TYPE_SURF: TID4 = 'SURF';  // SURFACE
+  PTAG_TYPE_PART: TID4 = 'PART';  // PARENT PART
+  PTAG_TYPE_SMGP: TID4 = 'SMGP';  // SMOOTH GROUP
 
   PRE_POST_RESET         = 0; // RESET
   PRE_POST_CONSTANT      = 1; // CONSTANT
@@ -398,12 +190,8 @@ const
   SIDE_BACK  = 2;
   SIDE_FRONT_AND_BACK = SIDE_FRONT and SIDE_BACK;
 
+
 type
-
-  TID4 = array[0..3] of char;
-  PID4 = ^TID4;
-  TID4DynArray = array of TID4;
-
   TI1 = ShortInt;
   PI1 = ^TI1;
 
@@ -471,12 +259,21 @@ type
     data: Pointer;
   end;
 
-  TLWPolygon = record
-    vcount,
-    indices: PU2;
+  TLWPolsInfo = record
+    norm: TVec12;
+    vnorms: TVec12DynArray;
+    surfid: TU2;
   end;
+  TLWPolsInfoDynArray = array of TLWPolsInfo;
 
-  TLWPolyDynArray = TU2DynArray;
+  TLWPntsInfo = record
+    npols: TU2;
+    pols: TU2DynArray;
+  end;
+  TLWPntsInfoDynArray = array of TLWPntsInfo;
+
+
+  TLWPolsDynArray = TU2DynArray;
 
   TLWPolyTagMapDynArray = TU2DynArray;
   TLWPolyTagMap = record
@@ -490,18 +287,26 @@ type
     vert: TU2;
     values: TF4DynArray;
   end;
-
   TLWVertexMapDynArray = array of TLWVertexMap;
+
+  TLWChunkList = class;
+  TLWParentChunk = class;
+
 
   TLWChunk = class (TPersistent)
   private
     FData: Pointer;
     FID: TID4;
     FSize: TU4;
+    FParentChunk: TLWParentChunk;
+    FOwner: TLWChunkList;
+    function GetRootChunks: TLWChunkList;
+    function GetIndex: Integer;
   protected
     procedure Clear; virtual;
-    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord); 
+    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
             virtual;
+    procedure Loaded; virtual;
   public
     destructor Destroy; override;
     class function GetID: TID4; virtual;
@@ -509,35 +314,48 @@ type
     property Data: Pointer read FData;
     property ID: TID4 read FID;
     property Size: TU4 read FSize;
+    { ParentChunk may be nil indicating this is a root chunk. ie. TLWLayr }
+    property ParentChunk: TLWParentChunk read FParentChunk;
+    property RootChunks: TLWChunkList read GetRootChunks;
+    property Index: Integer read GetIndex;
+    property Owner: TLWChunkList read FOwner;
   end;
-  
+
   TLWChunkClass = class of TLWChunk;
 
   TLWSubChunk = class (TLWChunk)
   public
     procedure LoadFromStream(AStream: TStream); override;
   end;
-  
+
+  TLWChunkFind = procedure(AChunk: TLWChunk; Criteria: Pointer; var Found: boolean);
+
   TLWChunkList = class (TList)
   private
     FOwnsItems: Boolean;
+    FOwner: TObject;
     function GetItem(Index: integer): TLWChunk;
+  protected
+    procedure Loaded; virtual;
   public
-    constructor Create(AOwnsItems: boolean);
+    constructor Create(AOwnsItems: boolean; AOwner: TObject);
     destructor Destroy; override;
+    function Add(AChunk: TLWChunk): Integer;
     procedure Clear; override;
     procedure Delete(Index: Integer);
-    function FindChunk(AId: TID4; StartIndex: integer = 0): Integer;
+    function FindChunk(ChunkFind: TLWChunkFind; Criteria: Pointer; StartIndex: Integer = 0): Integer;
     property Items[Index: integer]: TLWChunk read GetItem; default;
     property OwnsItems: Boolean read FOwnsItems;
+    property Owner: TObject read FOwner;
   end;
-  
+
   TLWParentChunk = class (TLWChunk)
   private
     FItems: TLWChunkList;
     function GetItems: TLWChunkList;
   protected
     procedure Clear; override;
+    procedure Loaded; override;
   public
     property Items: TLWChunkList read GetItems;
   end;
@@ -547,43 +365,50 @@ type
 
   TLWPnts = class (TLWParentChunk)
   private
-    FPoints: TVEC12DynArray;
-    function GetCount: LongWord;
-  protected
-    procedure Clear; override;
-    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord); 
-            override;
-  public
-    class function GetID: TID4; override;
-    function GetVMap(VMapID: TID4; out VMap: TLWVMap): Boolean;
-    property Count: LongWord read GetCount;
-    property Points: TVEC12DynArray read FPoints;
-  end;
-  
-  TLWPols = class (TLWParentChunk)
-  private
-    FPolsType: TID4;
-    FPolys: TLWPolyDynArray;
-    FPolsCount: integer;
-    function GetPolsByIndex(Index: TU2): Integer;
-    function GetIndiceCount: TU4;
-    function GetIndice(Index: integer): TU2;
-    function GetPolsCount: integer;
-    procedure CalcPolsCount;
+    FPnts: TVEC12DynArray;
+    FPntsInfo: TLWPntsInfoDynArray;
+    function GetPntsCount: LongWord;
+    function AddPoly(PntIdx, PolyIdx: integer): integer;
   protected
     procedure Clear; override;
     procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
             override;
   public
     class function GetID: TID4; override;
-    function GetPolsByVertex(VertIdx: TU2; var VertPolys: TU2DynArray): integer;
+    function GetVMap(VMapID: TID4; out VMap: TLWVMap): Boolean;
+    property PntsCount: LongWord read GetPntsCount;
+    property Pnts: TVEC12DynArray read FPnts;
+    property PntsInfo: TLWPntsInfoDynArray read FPntsInfo;
+  end;
+  
+  TLWPols = class (TLWParentChunk)
+  private
+    FPolsType: TID4;
+    FPols: TLWPolsDynArray;
+    FPolsInfo: TLWPolsInfoDynArray;
+    FPolsCount: integer;
+    function GetPolsByIndex(Index: TU2): Integer;
+    function GetIndiceCount: TU4;
+    function GetIndice(Index: integer): TU2;
+    function GetPolsCount: integer;
+    procedure CalcPolsNormals;
+    procedure CalcPntsNormals;
+  protected
+    procedure Clear; override;
+    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
+            override;
+    procedure Loaded; override;
+  public
+    class function GetID: TID4; override;
+    function GetPolsByPntIdx(VertIdx: TU2; var VertPolys: TU2DynArray): integer;
     property PolsByIndex[Index: TU2]: Integer read GetPolsByIndex;
     property IndiceCount: TU4 read GetIndiceCount;
     property Indices[Index: integer]: TU2 read GetIndice;
     property PolsType: TID4 read FPolsType;
     property PolsCount: integer read GetPolsCount;
+    property PolsInfo: TLWPolsInfoDynArray read FPolsInfo;
   end;
-  
+
   TLWVMap = class (TLWChunk)
   private
     FDimensions: TU2;
@@ -594,7 +419,7 @@ type
     function GetValueCount: Integer;
   protected
     procedure Clear; override;
-    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord); 
+    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
             override;
   public
     class function GetID: TID4; override;
@@ -604,14 +429,14 @@ type
     property ValueCount: Integer read GetValueCount;
     property VMapType: TID4 read FVMapType;
   end;
-  
+
   TLWTags = class (TLWChunk)
   private
     FTags: TStrings;
     function GetTags: TStrings;
   protected
     procedure Clear; override;
-    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord); 
+    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
             override;
   public
     destructor Destroy; override;
@@ -619,23 +444,25 @@ type
     function TagToName(Tag: TU2): string;
     property Tags: TStrings read GetTags;
   end;
-  
+
   TLWSurf = class (TLWParentChunk)
   private
     FName: string;
     FSource: string;
     function GetParamAddr(Param: TID4): Pointer;
+    function GetSurfId: Integer;
   protected
-    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord); 
+    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
             override;
   public
     destructor Destroy; override;
     class function GetId: TID4; override;
+    property SurfId: Integer read GetSurfId;
     property Name: string read FName;
     property ParamAddr[Param: TID4]: Pointer read GetParamAddr;
     property Source: string read FSource;
   end;
-  
+
   TLWLayr = class (TLWParentChunk)
   private
     FFlags: TU2;
@@ -644,7 +471,7 @@ type
     FParent: TU2;
     FPivot: TVec12;
   protected
-    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord); 
+    procedure LoadData(AStream: TStream; DataStart, DataSize: LongWord);
             override;
   public
     destructor Destroy; override;
@@ -655,7 +482,7 @@ type
     property Parent: TU2 read FParent;
     property Pivot: TVec12 read FPivot;
   end;
-  
+
   TLWPTag = class (TLWChunk)
   private
     FMapType: TID4;
@@ -693,7 +520,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure LoadFromFile(const AFilename, ContentDir: string);
+    function TagToName(Tag: TU2): string;
+    procedure LoadFromFile(const AFilename: string);
     procedure LoadFromStream(AStream: TStream);
     property ChunkCount: Integer read GetCount;
     property Chunks: TLWChunkList read GetChunks;
@@ -701,7 +529,7 @@ type
     property SurfaceByName[Index: string]: TLWSurf read GetSurfaceByName;
     property SurfaceByTag[Index: TU2]: TLWSurf read GetSurfaceByTag;
   end;
-  
+
   TLWOReadCallback = procedure(Chunk: TLWChunkRec; Data: Pointer); cdecl;
 
   procedure RegisterChunkClass(ChunkClass: TLWChunkClass);
@@ -725,6 +553,11 @@ type
 
   function ID4ToInt(const Id: TID4): integer;
 
+  // ChunkFind procedures
+  procedure FindByChunkId(AChunk: TLWChunk; Data: Pointer; var Found: boolean);
+  procedure FindSurfaceByName(AChunk: TLWChunk; AName: Pointer; var Found: boolean);
+  procedure FindSurfaceByTag(AChunk: TLWChunk; ATag: Pointer; var Found: boolean);
+
 implementation
 
 uses SysUtils;
@@ -735,6 +568,95 @@ type
 
 var
   ChunkClasses: TList;
+
+
+procedure FindByChunkId(AChunk: TLWChunk; Data: Pointer; var Found: boolean);
+begin
+  if AChunk.FID = PID4(Data)^ then
+    Found := true
+  else
+    Found := false;
+end;
+
+procedure FindSurfaceByName(AChunk: TLWChunk; AName: Pointer; var Found: boolean);
+begin
+  if (AChunk is TLWSurf) and
+    (TLWSurf(AChunk).Name = PChar(AName)) then
+      Found := true;
+end;
+
+procedure FindSurfaceByTag(AChunk: TLWChunk; ATag: Pointer; var Found: boolean);
+begin
+  if (AChunk is TLWSurf) and
+    (TLWSurf(AChunk).SurfId = PU2(ATag)^) then
+      Found := true;
+end;
+
+function ArcTan2(const y, x : Single) : Single;
+asm
+      FLD  Y
+      FLD  X
+      FPATAN
+end;
+
+function ArcCos(X: single): single;
+begin
+  Result:=ArcTan2(Sqrt(1 - Sqr(X)), X);
+end;
+
+function VecAdd(v1,v2: TVec12):TVec12;
+begin
+  result[0]:=v1[0]+v2[0];
+  result[1]:=v1[1]+v2[1];
+  result[2]:=v1[2]+v2[2];
+end;
+
+function VecSub(v1,v2: TVec12): TVec12;
+begin
+  result[0]:=v1[0]-v2[0];
+  result[1]:=v1[1]-v2[1];
+  result[2]:=v1[2]-v2[2];
+end;
+
+function VecCross(v1,v2: TVec12): TVec12;
+begin
+  result[0]:=v1[1] * v2[2] - v1[2] * v2[1];
+  result[1]:=v1[2] * v2[0] - v1[0] * v2[2];
+  result[2]:=v1[0] * v2[1] - v1[1] * v2[0];
+end;
+
+function VecDot(v1, v2: TVec12): TF4;
+begin
+  result:=v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2];
+end;
+
+function VecNorm(v: TVec12) : TVec12;
+var
+  mag: TF4;
+begin
+  mag := Sqrt(VecDot(v,v));
+
+  if mag >0 then mag := 1/mag;
+
+  result[0]:=v[0]*mag;
+  result[1]:=v[1]*mag;
+  result[2]:=v[2]*mag;
+end;
+
+function CalcPlaneNormal(v1,v2,v3: TVec12): TVec12;
+var
+  e1, e2: TVec12;
+begin
+  e1 := VecSub(v2,v1);
+  e2 := VecSub(v3,v1);
+  result := VecCross(e1,e2);
+  result := VecNorm(result);
+end;
+
+procedure FindSurfByName(Chunk: TLWChunk; var Found: boolean);
+begin
+
+end;
 
 {-----------------------------------------------------------------------------
   Procedure: GetChunkClasses
@@ -1196,7 +1118,7 @@ begin
     ReadMotorolaNumber(AStream,@DataSize,4);
   
     DataStart := Position;
-  
+
     FSize := DataSize;
   
     LoadData(AStream, DataStart,DataSize);
@@ -1211,9 +1133,10 @@ end;
 {
 ********************************* TLWChunkList *********************************
 }
-constructor TLWChunkList.Create(AOwnsItems: boolean);
+constructor TLWChunkList.Create(AOwnsItems: boolean; AOwner: TObject);
 begin
   FOwnsItems := AOwnsItems;
+  FOwner := AOwner;
 end;
 
 destructor TLWChunkList.Destroy;
@@ -1239,20 +1162,6 @@ begin
   inherited Delete(Index);
 end;
 
-function TLWChunkList.FindChunk(AId: TID4; StartIndex: integer = 0): Integer;
-var
-  i: Integer;
-begin
-  result := -1;
-  for i := StartIndex to Count - 1 do
-  begin
-    if Items[i].ID = AId then
-    begin
-      result := i;
-      exit;
-    end;
-  end;
-end;
 
 function TLWChunkList.GetItem(Index: integer): TLWChunk;
 begin
@@ -1273,19 +1182,19 @@ end;
 
 destructor TLWObjectFile.Destroy;
 begin
-  
+
   FreeAndNil(FChunks);
 
   inherited;
-  
+
 end;
 
 function TLWObjectFile.GetChunks: TLWChunkList;
 begin
-  
+
   if FChunks = nil then
-    FChunks := TLWChunkList.Create(true);
-  
+    FChunks := TLWChunkList.Create(true,Self);
+
   result := FChunks;
   
 end;
@@ -1299,35 +1208,22 @@ function TLWObjectFile.GetSurfaceByName(Index: string): TLWSurf;
 var
   SurfIdx: Integer;
 begin
-  result := nil;
-  
-  SurfIdx := Chunks.FindChunk(ID_SURF,0);
-  
-  while SurfIdx <> -1 do
-  begin
-    if TLWSurf(Chunks[SurfIdx]).Name = Index then
-    begin
-      result := TLWSurf(Chunks[SurfIdx]);
-      exit;
-    end;
-    SurfIdx := Chunks.FindChunk(ID_SURF,SurfIdx + 1);
-
-  end;
+  SurfIdx := Chunks.FindChunk(FindSurfaceByName,PChar(Index),0);
+  if SurfIdx <> -1 then
+    result := TLWSurf(Chunks[SurfIdx])
+  else
+    result := nil;
 end;
 
 function TLWObjectFile.GetSurfaceByTag(Index: TU2): TLWSurf;
 var
-  TagsInd: Integer;
+  TagName: string;
 begin
-  TagsInd := Chunks.FindChunk(ID_TAGS,0);
-
-  if TagsInd <> -1 then
-    with TLWTags(Chunks[TagsInd]) do
-      result := SurfaceByName[Tags[Index]]
-  else result:=nil;
+  TagName := TagToName(Index);
+  result := SurfaceByName[TagName];
 end;
 
-procedure TLWObjectFile.LoadFromFile(const AFilename, ContentDir: string);
+procedure TLWObjectFile.LoadFromFile(const AFilename: string);
 var
   Stream: TMemoryStream;
 begin
@@ -1359,63 +1255,63 @@ begin
    CurPnts:=nil;
 
   AStream.Read(CurId,4);
-  
+
   ReadMotorolaNumber(AStream,@CurSize,4);
-  
+
   if UpperCase(CurId) = 'FORM' then
   begin
-  
+
     AStream.Read(CurId,4);
-  
+
     if CurId <> 'LWO2' then
       raise Exception.Create('Only Version 6.0+ version objects are supported.');
-  
+
   end else raise Exception.Create('Invalid magic number. Not a valid Lightwave Object');
-  
+
   CurItems := Chunks;
-  
+
   while AStream.Position < AStream.Size do
   begin
     AStream.Read(CurId,4);
-  
+
     if (CurId = ID_PTAG) then
     begin
       CurPols.Add(GetChunkClass(CurId, TLWChunk).Create);
-  
+
       with CurPols[CurPols.Count - 1] do
       begin
         FID := CurId;
         LoadFromStream(AStream);
       end;
-  
+
     end else
     if (CurId = ID_VMAP) or (CurId = ID_VMAD) then
     begin
       CurPnts.Add(GetChunkClass(CurId, TLWChunk).Create);
-  
+
       with CurPnts[CurPnts.Count - 1] do
       begin
-  
+
         FID := CurId;
         LoadFromStream(AStream);
-  
+
       end;
     end else
-  
+
     begin
-  
+
       if (CurId = ID_LAYR) or (CurId = ID_SURF) or (CurId = ID_TAGS) then CurItems := Chunks;
-  
+
       CurItems.Add(GetChunkClass(CurId, TLWChunk).Create);
-  
+
       with CurItems[CurItems.Count - 1] do
       begin
         FID := CurId;
         LoadFromStream(AStream);
       end;
-  
+
     end;
-  
+
     if CurId = ID_LAYR then
       CurItems := TLWParentChunk(CurItems[CurItems.Count - 1]).Items
     else if CurId = ID_POLS then
@@ -1423,6 +1319,7 @@ begin
     else if CurId = ID_PNTS then
       CurPnts := TLWParentChunk(CurItems[CurItems.Count - 1]).Items;
   end;
+  Chunks.Loaded;
 end;
 
 { TLWPnts }
@@ -1430,14 +1327,41 @@ end;
 {
 *********************************** TLWPnts ************************************
 }
-procedure TLWPnts.Clear;
+function TLWPnts.AddPoly(PntIdx, PolyIdx: integer): integer;
+var
+  i,L: Integer;
 begin
-  SetLength(FPoints,0);
+  {DONE: Pnts.AddPoly}
+
+  for i := 0 to FPntsInfo[PntIdx].npols -1 do
+  begin
+    if FPntsInfo[PntIdx].pols[i] = PolyIdx then
+    begin
+      result := i;
+      exit;
+    end;
+  end;
+
+  L := Length(FPntsInfo[PntIdx].pols);
+  SetLength(FPntsInfo[PntIdx].pols,L + 1);
+  FPntsInfo[PntIdx].npols := L + 1;
+  FPntsInfo[PntIdx].pols[L] := PolyIdx;
+  result := L;
 end;
 
-function TLWPnts.GetCount: LongWord;
+procedure TLWPnts.Clear;
+var
+  i: Integer;
 begin
-  result := Length(FPoints);
+  for i := 0 to PntsCount -1 do
+    SetLength(FPntsInfo[i].pols,0);
+  SetLength(FPntsInfo,0);
+  SetLength(FPnts,0);
+end;
+
+function TLWPnts.GetPntsCount: LongWord;
+begin
+  result := Length(FPnts);
 end;
 
 class function TLWPnts.GetID: TID4;
@@ -1466,8 +1390,9 @@ end;
 
 procedure TLWPnts.LoadData(AStream: TStream; DataStart, DataSize: LongWord);
 begin
-  SetLength(FPoints,DataSize div 12); // allocate storage for DataSize div 12 points
-  ReadMotorolaNumber(AStream,@FPoints[0],4,DataSize div 4); // read the point data
+  SetLength(FPnts,DataSize div 12); // allocate storage for DataSize div 12 points
+  SetLength(FPntsInfo,DataSize div 12); // Point info
+  ReadMotorolaNumber(AStream,@FPnts[0],4,DataSize div 4); // read the point data
 end;
 
 { TLWPols }
@@ -1475,27 +1400,45 @@ end;
 {
 *********************************** TLWPols ************************************
 }
-procedure TLWPols.CalcPolsCount;
+procedure TLWPols.CalcPolsNormals;
 var
-  i: integer;
+  i,j,PolyIdx: integer;
+  Pnts: TLWPnts;
 begin
-
-  FPolsCount := 0;
-  i := 0;
-
   if IndiceCount = 0 then exit;
 
-  while (Cardinal(i) < IndiceCount - 1) do
-  begin
-    Inc(i,Indices[i] + 1);
-    Inc(FPolsCount);
-  end;
+  with ParentChunk as TLWLayr do
+    Pnts := TLWPnts(Items[Items.FindChunk(FindByChunkId,@ID_PNTS,0)]);
 
+  for PolyIdx := 0 to FPolsCount - 1 do
+  begin
+    {DONE: call Pnts.AddPoly}
+    i := PolsByIndex[PolyIdx];
+
+    with Pnts do
+    begin
+
+      for j := 1 to Indices[i] do
+        AddPoly(Indices[i + j],PolyIdx);
+
+      SetLength(FPolsInfo[PolyIdx].vnorms,Indices[i]);
+
+      if Indices[PolyIdx]>2 then
+        FPolsInfo[PolyIdx].norm:=CalcPlaneNormal(Pnts[Indices[i+1]],Pnts[Indices[i+2]],Pnts[Indices[i+3]])
+      else
+        FPolsInfo[PolyIdx].norm := VecNorm(Pnts[Indices[i+1]]);
+    end;
+  end;
 end;
 
 procedure TLWPols.Clear;
+var
+  i: Integer;
 begin
-  SetLength(FPolys,0);
+  for i := 0 to FPolsCount-1 do
+    SetLength(FPolsInfo[i].vnorms,0);
+  SetLength(FPolsInfo,0);
+  SetLength(FPols,0);
 end;
 
 function TLWPols.GetPolsByIndex(Index: TU2): Integer;
@@ -1528,12 +1471,12 @@ end;
 
 function TLWPols.GetIndiceCount: TU4;
 begin
-  result := Length(FPolys);
+  result := Length(FPols);
 end;
 
 function TLWPols.GetIndice(Index: integer): TU2;
 begin
-  result := FPolys[Index];
+  result := FPols[Index];
 end;
 
 function TLWPols.GetPolsCount: integer;
@@ -1556,26 +1499,29 @@ begin
 
     Read(FPolsType,4);
 
-    SetLength(FPolys,(DataSize - 4) div 2);
+    // To avoid memory manager hits, set an estimate length of indices
+    SetLength(FPols,(DataSize - 4) div 2);
 
     while Position < EndPos do
     begin
 
-      ReadMotorolaNumber(AStream,@FPolys[Idx],2);
-      TmpU2 := FPolys[Idx] and POLS_VCOUNT_MASK;
+      ReadMotorolaNumber(AStream,@FPols[Idx],2);
+      TmpU2 := FPols[Idx] and POLS_VCOUNT_MASK;
 
-      ReadVXAsU2(AStream,@FPolys[Idx + 1],TmpU2);
-      Inc(Idx,FPolys[Idx] + 1);
-
+      ReadVXAsU2(AStream,@FPols[Idx + 1],TmpU2);
+      Inc(Idx,FPols[Idx] + 1);
+      Inc(FPolsCount);
     end;
 
-    // correct length guestimate errors if any
-    if (Idx + 1) < Cardinal(Length(FPolys)) then
-      SetLength(FPolys,Idx + 1);
+    // correct length estimate errors if any
+    if (Idx + 1) < Cardinal(Length(FPols)) then
+      SetLength(FPols,Idx + 1);
 
   end;
 
-  CalcPolsCount;
+  SetLength(FPolsInfo,FPolsCount);
+
+  CalcPolsNormals;
 
 end;
 
@@ -1605,7 +1551,7 @@ end;
 
 function TLWVMap.GetValue(Index: TU2): TLWVertexMap;
 begin
-  
+
   result := FValues[Index];
   
 end;
@@ -1691,7 +1637,7 @@ end;
 
 function TLWTags.TagToName(Tag: TU2): string;
 begin
-  result := Tags[Tag-1];
+  result := Tags[Tag];
 end;
 
 { TLWSubChunk }
@@ -1707,15 +1653,15 @@ begin
   
   with AStream do
   begin
-  
+
     ReadMotorolaNumber(AStream,@DataSize,2);
-  
+
     DataStart := Position;
-  
+
     FSize := DataSize;
-  
+
     LoadData(AStream,DataStart,DataSize);
-  
+
     Position := DataStart + DataSize + (DataStart + DataSize) mod 2;
   
   end;
@@ -1767,20 +1713,35 @@ function TLWSurf.GetParamAddr(Param: TID4): Pointer;
 var
   Idx: Integer;
 begin
-  
+
   result := nil;
-  
-  Idx := Items.FindChunk(Param,0);
+
+  Idx := Items.FindChunk(FindByChunkId,@Param,0);
   if Idx <> -1 then
     result := Items[Idx].Data;
-  
+
+end;
+
+function TLWSurf.GetSurfId: Integer;
+var
+  c, SurfIdx: Integer;
+begin
+  c := 0;
+  SurfIdx := Owner.FindChunk(FindByChunkId,@ID_SURF);
+
+  while (SurfIdx <> -1) and (Owner[SurfIdx] <> Self) do
+  begin
+    SurfIdx := Owner.FindChunk(FindByChunkId,@ID_SURF,SurfIdx + 1);
+    Inc(c);
+  end;
+  result := c;
 end;
 
 procedure TLWSurf.LoadData(AStream: TStream; DataStart, DataSize: LongWord);
 var
   CurId: TID4;
 begin
-  
+
   ReadS0(AStream,FName);
   
   ReadS0(AStream,FSource);
@@ -1940,6 +1901,8 @@ begin
   for i := 0 to TagMapCount -1 do
     AddTag(TagMaps[i].tag);
 
+
+
 end;
 
 { TLWParentChunk }
@@ -1956,12 +1919,12 @@ end;
 function TLWParentChunk.GetItems: TLWChunkList;
 begin
   if FItems = nil then
-    FItems := TLWChunkList.Create(true);
+    FItems := TLWChunkList.Create(true,Self);
   result := FItems;
 end;
 
 
-function TLWPols.GetPolsByVertex(VertIdx: TU2;
+function TLWPols.GetPolsByPntIdx(VertIdx: TU2;
   var VertPolys: TU2DynArray): integer;
 var
   i,j,L: integer;
@@ -1981,9 +1944,7 @@ begin
       begin
 
         L := Length(VertPolys);
-
         SetLength(VertPolys, L + 1);
-
         VertPolys[L] := i;
 
       end;
@@ -1994,6 +1955,139 @@ begin
 
   result := L;
 
+end;
+
+function TLWChunkList.Add(AChunk: TLWChunk): Integer;
+begin
+  if (FOwner<>nil) and (FOwner is TLWParentChunk) then
+    AChunk.FParentChunk := TLWParentChunk(FOwner);
+
+  AChunk.FOwner := self;
+  result := inherited Add(AChunk);
+end;
+
+procedure TLWPols.CalcPntsNormals;
+var
+  i,j,k,PntIdx,PolyIdx,SurfIdx: Integer;
+  Pnts: TLWPnts;
+//  PTags: TLWPTag;
+  TmpAddr: Pointer;
+  sman: TF4;
+begin
+  {Todo: CalcPntsNormals}
+
+  if IndiceCount = 0 then exit;
+
+  with ParentChunk as TLWLayr do
+    Pnts := TLWPnts(Items[Items.FindChunk(FindByChunkId,@ID_PNTS,0)]);
+
+  for PolyIdx := 0 to PolsCount-1 do
+  begin
+    i := PolsByIndex[PolyIdx];
+
+    SurfIdx := RootChunks.FindChunk(FindSurfaceByTag,@FPolsInfo[PolyIdx].surfid);
+
+    TmpAddr := TLWSurf(RootChunks[SurfIdx]).ParamAddr[ID_SMAN];
+
+    if TmpAddr <> nil then
+    begin
+      sman := PF4(TmpAddr)^;
+      ReverseByteOrder(@sman,4);
+    end else
+      sman := 0;
+
+    for j := 1 to Indices[i] do
+    begin
+
+      FPolsInfo[PolyIdx].vnorms[j-1] := FPolsInfo[PolyIdx].norm;
+
+      if sman <= 0 then continue;
+
+      PntIdx := Indices[i + j];
+
+
+      for k := 0 to Pnts.PntsInfo[PntIdx].npols -1 do
+      begin
+        if Pnts.PntsInfo[PntIdx].pols[k] = PolyIdx then continue;
+
+        if ArcCos(VecDot(FPolsInfo[PolyIdx].norm,FPolsInfo[Pnts.PntsInfo[PntIdx].pols[k]].norm)) > sman then continue;
+
+        FPolsInfo[PolyIdx].vnorms[j-1]:=VecAdd(FPolsInfo[PolyIdx].vnorms[j-1],FPolsInfo[Pnts.PntsInfo[PntIdx].pols[k]].norm);
+      end;
+
+      FPolsInfo[PolyIdx].vnorms[j-1]:=VecNorm(FPolsInfo[PolyIdx].vnorms[j-1]);
+
+    end;
+  end;
+end;
+
+function TLWChunk.GetRootChunks: TLWChunkList;
+var
+  Parent: TLWParentChunk;
+begin
+  Parent := FParentChunk;
+
+  while not(Parent.ParentChunk = nil) do
+    Parent := Parent.ParentChunk;
+  result := Parent.Owner;
+end;
+
+function TLWChunkList.FindChunk(ChunkFind: TLWChunkFind; Criteria: Pointer; StartIndex: Integer): Integer;
+var
+  Found: boolean;
+begin
+  Found := false;
+  result := -1;
+  while (StartIndex < Count) and (not Found) do
+  begin
+    ChunkFind(Items[StartIndex],Criteria,Found);
+    if Found then
+    begin
+      result := StartIndex;
+      exit;
+    end;
+    Inc(StartIndex);
+  end;
+end;
+
+function TLWChunk.GetIndex: Integer;
+begin
+  result := Owner.IndexOf(Self);
+end;
+
+procedure TLWChunk.Loaded;
+begin
+  // do nothing
+end;
+
+procedure TLWChunkList.Loaded;
+var
+  i: integer;
+begin
+  for i := 0 to Count-1 do
+  begin
+    Items[i].Loaded;
+  end;
+end;
+
+procedure TLWParentChunk.Loaded;
+begin
+  Items.Loaded;
+end;
+
+procedure TLWPols.Loaded;
+begin
+  inherited;
+  CalcPntsNormals;
+end;
+
+function TLWObjectFile.TagToName(Tag: TU2): string;
+var
+  TagsIdx: Integer;
+begin
+  TagsIdx := Chunks.FindChunk(FindByChunkId,@ID_TAGS);
+  if TagsIdx <> -1 then
+    result := TLWTags(Chunks[TagsIdx]).TagToName(Tag);
 end;
 
 initialization

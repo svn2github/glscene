@@ -3,6 +3,7 @@
     Support-code to load Lightwave LWO Files (v6.0+, partial support).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/11/02 - EG - Changes by BJ
       <li>14/11/02 - EG - Added header, fixed warnings
    </ul><p>
 
@@ -87,7 +88,7 @@ begin
     Mode := momFaceGroups;
 
     // pnts
-    Idx := Layr.Items.FindChunk(ID_PNTS);
+    Idx := Layr.Items.FindChunk(FindByChunkId,@ID_PNTS);
 
     Pnts := TLWPnts(Layr.Items[Idx]);
 
@@ -95,22 +96,22 @@ begin
       AddPnts(Pnts,Mesh);
 
     // vertex maps
-    Idx := TLWPnts(Layr.Items[Idx]).Items.FindChunk(ID_VMAP);
+    Idx := TLWPnts(Layr.Items[Idx]).Items.FindChunk(FindByChunkId,@ID_VMAP);
 
     while Idx <> -1 do
     begin
       AddVMap(TLWVMap(Pnts.Items[Idx]),Mesh);
-      Idx := Pnts.Items.FindChunk(ID_VMAP,Idx + 1);
+      Idx := Pnts.Items.FindChunk(FindByChunkId,@ID_VMAP,Idx + 1);
     end;
 
     // Polygons
-    Idx := Layr.Items.FindChunk(ID_POLS);
+    Idx := Layr.Items.FindChunk(FindByChunkId,@ID_POLS);
     while Idx <> -1 do
     begin
       AddPols(TLWPols(Layr.Items[Idx]),Mesh);
-      Idx := Layr.Items.FindChunk(ID_POLS, Idx + 1);
+      Idx := Layr.Items.FindChunk(FindByChunkId,@ID_POLS, Idx + 1);
     end;
-    Normals.Normalize;
+//    Normals.Normalize;
   end;
   FPnts := nil;
 end;
@@ -123,12 +124,12 @@ begin
   FPnts := Pnts;
   with Mesh do
   begin
-    Vertices.Capacity := Pnts.Count;
-    TexCoords.Capacity := Pnts.Count;
-    TexCoords.AddNulls(Pnts.Count);
+    Vertices.Capacity := Pnts.PntsCount;
+    TexCoords.Capacity := Pnts.PntsCount;
+    TexCoords.AddNulls(Pnts.PntsCount);
 
-    for i := 0 to Pnts.Count - 1 do
-        Vertices.Add(PAffineVector(@Pnts.Points[i])^);
+    for i := 0 to Pnts.PntsCount - 1 do
+        Vertices.Add(PAffineVector(@Pnts.Pnts[i])^);
 
   end;
 end;
@@ -137,12 +138,8 @@ procedure TGLLWOVectorFile.AddPols(Pols: TLWPols; Mesh: TMeshObject);
 var
   Idx: Integer;
   i,j,k, PolyIdx, NormIdx: Integer;
-  pdata: Pointer;
   TagPolys: TU2DynArray;
   FaceGrp: TFGVertexNormalTexIndexList;
-  sman: TF4;
-  norm: TVector3f;
-  v1,v2,v3: TVec12;
   VertPolys: TU2DynArray;
 begin
    SetLength(VertPolys, 0);
@@ -152,7 +149,7 @@ begin
     if PolsType = POLS_TYPE_FACE then
     begin
 
-      Idx := Items.FindChunk(ID_PTAG);
+      Idx := Items.FindChunk(FindByChunkId,@ID_PTAG);
       while Idx <> -1 do
       begin
         with TLWPTag(Items[Idx]) do
@@ -168,90 +165,22 @@ begin
               // get polygons using this tag
               if GetPolsByTag(Tags[i],TagPolys) > 0 then
               begin
-
-                
-
                 // make the facegroup and set the material name
                 FaceGrp := TFGVertexNormalTexIndexList.CreateOwned(Mesh.FaceGroups);
                 FaceGrp.MaterialName := FLWO.SurfaceByTag[Tags[i]].Name;
+                FaceGrp.Mode := fgmmTriangles;
 
-                // check for the existence of SMAN surface param
-                pdata := FLWO.SurfaceByTag[Tags[i]].ParamAddr[ID_SMAN];
-
-                if pdata <> nil then
-
-                  sman := PANG4(pdata)^
-
-                else
-
-                  sman := 0;
-
-                // if smoothing is zero or disabled
-                if sman = 0 then
+                // for each polygon in the current surface Tags[i]
+                for j := 0 to Length(TagPolys) - 1 do
                 begin
-                  FaceGrp.Mode := fgmmFlatTriangles;
-                  // for each polygon in the current surface Tags[i]
-                  for j := 0 to Length(TagPolys) - 1 do
+                  PolyIdx := PolsByIndex[TagPolys[j]];
+                  // is it a triangle?
+                  if (Indices[PolyIdx] = 3) then
                   begin
-                    PolyIdx := PolsByIndex[TagPolys[j]];
-
-                    // is it a triangle?
-                    if (Indices[PolyIdx] = 3) then
+                    for k := 1 to 3 do
                     begin
-
-                      // calc the face normal
-                      with FPnts do
-                      begin
-
-                        v1 := Points[Indices[PolyIdx+ 1]];
-                        v2 := Points[Indices[PolyIdx+ 2]];
-                        v3 := Points[Indices[PolyIdx+ 3]];
-
-                        norm := CalcTriNorm(v1,v2,v3);
-                        NormIdx := Mesh.Normals.Add(norm);
-                      end;
-
-                      // for each point index in the current polygon
-                      for k := 1 to 3 do
-                      begin
-                        // set vertex and normal indicex correspondingly
-                        FaceGrp.Add(Indices[PolyIdx + k],NormIdx,0)
-                      end;
-                    end;
-                  end;
-
-                // smoothing <> 0 or enabled
-                end else
-                begin
-                  // Smooth normals
-                  FaceGrp.Mode := fgmmTriangles;
-                  // for each polygon in the current surface Tags[i]
-
-                  for j := 0 to Length(TagPolys) - 1 do
-                  begin
-                    PolyIdx := PolsByIndex[TagPolys[j]];
-
-                    // is it a triangle?
-                    if (Indices[PolyIdx] = 3) then
-                    begin
-
-                      // calc the face normal
-                      with FPnts do
-                      begin
-                        v1 := Points[Indices[PolyIdx+ 1]];
-                        v2 := Points[Indices[PolyIdx+ 2]];
-                        v3 := Points[Indices[PolyIdx+ 3]];
-
-                        norm := CalcTriNorm(v1,v2,v3);
-                        NormIdx := Mesh.Normals.Add(norm);
-                      end;
-
-                      // for each point index in the current polygon
-                      for k := 1 to 3 do
-                      begin
-                        // set vertex and normal indicex correspondingly
-                        FaceGrp.Add(Indices[PolyIdx + k],NormIdx,0)
-                      end;
+                      NormIdx := Mesh.Normals.Add(PVector3f(@PolsInfo[TagPolys[j]].vnorms[k-1])^);
+                      FaceGrp.Add(Indices[PolyIdx + k],NormIdx,0);
                     end;
                   end;
 
@@ -275,10 +204,8 @@ begin
           begin
             {Todo: PTag Smooth Group}
 
-
-
           end;
-          Idx :=  Items.FindChunk(ID_PTAG,Idx + 1);
+          Idx :=  Items.FindChunk(FindByChunkId,@ID_PTAG,Idx + 1);
         end;
       end;
     end else
@@ -522,26 +449,26 @@ begin
     LoadFromStream(aStream);
   
     // Add Surfaces to material list
-    Ind := Chunks.FindChunk(ID_SURF,0);
+    Ind := Chunks.FindChunk(FindByChunkId,@ID_SURF,0);
 
     while Ind <> -1 do
     begin
 
       AddSurf(TLWSurf(Chunks[Ind]), FLWO);
   
-      Ind := Chunks.FindChunk(ID_SURF,Ind + 1);
+      Ind := Chunks.FindChunk(FindByChunkId,@ID_SURF,Ind + 1);
 
     end;
   
     // Lw layer
-    Ind := Chunks.FindChunk(ID_LAYR,0);
+    Ind := Chunks.FindChunk(FindByChunkId,@ID_LAYR,0);
   
     while Ind <> -1 do
     begin
 
       AddLayr(TLWLayr(Chunks[Ind]),FLWO);
   
-      Ind := Chunks.FindChunk(ID_LAYR,Ind + 1);
+      Ind := Chunks.FindChunk(FindByChunkId,@ID_LAYR,Ind + 1);
   
     end;
   
