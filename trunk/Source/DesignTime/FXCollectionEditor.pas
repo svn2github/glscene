@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>11/07/03 - DanB - Fixed crash when owner deleted        
       <li>27/02/02 - Egg - Fixed crash after item deletion
       <li>11/04/00 - Egg - Fixed crashes in IDE
 		<li>06/04/00 - Egg - Creation
@@ -133,15 +134,15 @@ end;
 procedure TXCollectionEditor.SetXCollection(aXCollection: TXCollection;
    designer: {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif});
 begin
-//	if Assigned(ownerComponent) then
-//		ownerComponent.RemoveFreeNotification(Self);
+	if Assigned(ownerComponent) then
+		ownerComponent.RemoveFreeNotification(Self);
 	FXCollection:=aXCollection;
 	FDesigner:=designer;
 	if Assigned(FXCollection) then begin
 		if Assigned(FXCollection.Owner) and (FXCollection.Owner is TComponent) then
-//		ownerComponent:=TComponent(FXCollection.Owner);
-//		if Assigned(ownerComponent) then
-//			ownerComponent.FreeNotification(Self);
+		ownerComponent:=TComponent(FXCollection.Owner);
+		if Assigned(ownerComponent) then
+			ownerComponent.FreeNotification(Self);
       Caption:=FXCollection.GetNamePath;
    end else begin
       ownerComponent:=nil;
