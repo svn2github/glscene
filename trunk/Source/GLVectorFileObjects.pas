@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>16/01/03 - EG - Updated multiples Bones per vertex transformation code,
+                          now makes use of CVAs 
       <li>14/01/03 - EG - Added DisableOpenGLArrays
       <li>09/01/03 - EG - Added Clear methods for MeshObjects
       <li>25/11/02 - EG - Colors and TexCoords lists now disabled if ignoreMaterials is true
@@ -1034,7 +1036,6 @@ type
             Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
             Allows to adjust/transfer subclass-specific features. }
          procedure PrepareVectorFile(aFile : TVectorFile); dynamic;
-
 
          {: Invoked after a mesh has been loaded.<p>
             Should auto-center according to the AutoCentering property. }
@@ -2824,6 +2825,8 @@ begin
          glDisableClientState(GL_TEXTURE_COORD_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
+      if GL_EXT_compiled_vertex_array then
+         glLockArraysEXT(0, vertices.Count);
       FArraysDeclared:=True;
    end;
 end;
@@ -2833,6 +2836,8 @@ end;
 procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
 begin
    if FArraysDeclared then begin
+      if GL_EXT_compiled_vertex_array then
+         glUnLockArraysEXT;
       if Vertices.Count>0 then
          glDisableClientState(GL_VERTEX_ARRAY);
       if Normals.Count>0 then
@@ -3314,6 +3319,7 @@ end;
 //
 procedure TMorphableMeshObject.MorphTo(morphTargetIndex : Integer);
 begin
+   if (morphTargetIndex=0) and (MorphTargets.Count=0) then Exit;
    Assert(Cardinal(morphTargetIndex)<Cardinal(MorphTargets.Count));
    with MorphTargets[morphTargetIndex] do begin
       if Vertices.Count>0 then
@@ -3555,7 +3561,7 @@ end;
 //
 procedure TSkeletonMeshObject.ApplyCurrentSkeletonFrame(normalize : Boolean);
 var
-   i, boneID : Integer;
+   i, j, boneID : Integer;
    refVertices, refNormals : TAffineVectorList;
    n : TVector;
    bone : TSkeletonBone;
@@ -3567,13 +3573,36 @@ begin
    end;
    skeleton:=Owner.Owner.Skeleton;
    n[3]:=0;
-   for i:=0 to refVertices.Count-1 do begin
-      boneID:=VerticesBonesWeights[i][0].BoneID;
-      bone:=skeleton.BoneByID(boneID);
-      Vertices.List[i]:=VectorTransform(refVertices.List[i], bone.GlobalMatrix);
-      PAffineVector(@n)^:=refNormals.List[i];
-      n:=VectorTransform(n, bone.GlobalMatrix);
-      Normals.List[i]:=PAffineVector(@n)^;
+   if BonesPerVertex=1 then begin
+      // simple case, one bone per vertex
+      for i:=0 to refVertices.Count-1 do begin
+         boneID:=VerticesBonesWeights[i][0].BoneID;
+         bone:=skeleton.BoneByID(boneID);
+         Vertices.List[i]:=VectorTransform(refVertices.List[i], bone.GlobalMatrix);
+         PAffineVector(@n)^:=refNormals.List[i];
+         n:=VectorTransform(n, bone.GlobalMatrix);
+         Normals.List[i]:=PAffineVector(@n)^;
+      end;
+   end else begin
+      // multiple bones per vertex
+      for i:=0 to refVertices.Count-1 do begin
+         for j:=0 to BonesPerVertex-1 do begin
+            Vertices.List[i]:=NullVector;
+            Normals.List[i]:=NullVector;
+            if VerticesBonesWeights[i][j].Weight<>0 then begin
+               boneID:=VerticesBonesWeights[i][j].BoneID;
+               bone:=skeleton.BoneByID(boneID);
+               CombineVector(Vertices.List[i],
+                             VectorTransform(refVertices.List[i], bone.GlobalMatrix),
+                             VerticesBonesWeights[i][j].Weight);
+               PAffineVector(@n)^:=refNormals.List[i];
+               n:=VectorTransform(n, bone.GlobalMatrix);
+               CombineVector(Normals.List[i],
+                             PAffineVector(@n)^,
+                             VerticesBonesWeights[i][j].Weight);
+            end;
+         end;
+      end;
    end;
    if normalize then
       Normals.Normalize;
@@ -3722,7 +3751,7 @@ begin
       fgmmTriangles, fgmmFlatTriangles : begin
          Owner.Owner.DeclareArraysToOpenGL(mrci, False);
          glDrawElements(GL_TRIANGLES, VertexIndices.Count,
-                        GL_UNSIGNED_INT, VertexIndices.List); 
+                        GL_UNSIGNED_INT, VertexIndices.List);
       end;
       fgmmTriangleStrip : begin
          Owner.Owner.DeclareArraysToOpenGL(mrci, False);
