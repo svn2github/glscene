@@ -1,135 +1,142 @@
 {: This is a basic use for the Dynamic Collision Engine (DCE) by Lucas Goraieb.<p>
 
      The engine pretty much works by creating a TGLDCEManager, and several
-     TGLBDCEBody behaviours on the objects that should interact. Each object
-     can be either an ellipsoid, cube, freeForm or terrain, have different
-     sizes and friction, respond differently to collisions, etc.
+     TGLDCEDynamic and TGLDCEStatic behaviours on the objects that should
+     interact. Each object can be either an ellipsoid, cube, freeForm or terrain,
+     have different sizes and friction, respond differently to collisions, etc.
 
      This means your next FPS project is pretty much done: All you have to do
      is keep loading object files into freeForms and letting DCE do the trick
      for you. The only "real" code in this demo is inside the onProgress event
      of the cadencer, that takes care of input.
-
 }
+
 unit Unit1;
 
 interface
 
 uses
-  glDCE, GLEllipseCollision, 
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, GLWin32Viewer, StdCtrls, ExtCtrls, GLHeightData, GLScene,
-  GLObjects, GLTerrainRenderer, GLGeomObjects, GLMisc, GLVectorFileObjects,
-  GLCadencer, vectorGeometry, glFile3ds, jpeg, keyboard, GLTexture, OpenGL1x;
+  Dialogs, GLDCE, GLScene, GLObjects, GLMisc, GLCadencer, GLWin32Viewer,
+  GLTexture, GLHeightData, GLTerrainRenderer, GLVectorFileObjects,
+  ExtCtrls, GLBitmapFont, GLWindowsFont, GLHUDObjects;
 
 type
   TForm1 = class(TForm)
-    GLCadencer1: TGLCadencer;
-    GLBitmapHDS1: TGLBitmapHDS;
-    GLSceneViewer1: TGLSceneViewer;
-    Panel1: TPanel;
-    cbEnemy: TCheckBox;
-    cbTerrain: TCheckBox;
-    cbEllipse: TCheckBox;
-    cbIce: TCheckBox;
-    cbBeer: TCheckBox;
-    cbMap: TCheckBox;
-    lbCollided: TLabel;
-    lbFPS: TLabel;
-    Memo1: TMemo;
     GLScene1: TGLScene;
-    Beer: TGLFreeForm;
-    normal: TGLArrowLine;
-    Map: TGLFreeForm;
-    Ice: TGLFreeForm;
-    Ellipsoid: TGLSphere;
-    Enemy: TGLSphere;
-    Player: TGLDummyCube;
-    plBody: TGLSphere;
+    GLSceneViewer1: TGLSceneViewer;
+    GLCadencer1: TGLCadencer;
     GLCamera1: TGLCamera;
-    GLLightSource1: TGLLightSource;
+    Player: TGLDummyCube;
+    GLDCEManager1: TGLDCEManager;
     Terrain: TGLTerrainRenderer;
-    DCEManager1: TGLDCEManager;
+    GLBitmapHDS1: TGLBitmapHDS;
+    GLMatlLib: TGLMaterialLibrary;
+    GLLightSource1: TGLLightSource;
+    GLActor1: TGLActor;
+    GLSphere1: TGLSphere;
+    GLLightSource2: TGLLightSource;
+    Balls: TGLDummyCube;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     Timer1: TTimer;
+    GLHUDText1: TGLHUDText;
+    Mushrooms: TGLDummyCube;
+    moMushroom: TGLFreeForm;
     GLDirectOpenGL1: TGLDirectOpenGL;
-    Box: TGLCube;
-    cbBox: TCheckBox;
-    procedure FormCreate(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
-    procedure DCEManager1Collision(Sender: TObject; object1,
-      object2: TGLBaseSceneObject; CollisionInfo: TDCECollision);
-    procedure Timer1Timer(Sender: TObject);
+    GLCube1: TGLCube;
+    Help: TGLHUDText;
+    HelpShadow: TGLHUDText;
+    Ground: TGLPlane;
+    procedure FormShow(Sender: TObject);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
-      Shift: TShiftState);
-    procedure FormKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure PlayerBehaviours0Collision(Sender: TObject;
       ObjectCollided: TGLBaseSceneObject; CollisionInfo: TDCECollision);
+    procedure Timer1Timer(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TRenderContextInfo);
   private
     { Private declarations }
   public
     { Public declarations }
-
     mx, my : Integer;
-    LastEnemyPos: TVector;
+    Jumped: boolean;
+    procedure Load;
+    procedure HandleKeys;
+    procedure HandleAnimation;
+    procedure AddBall;
+    procedure AddMushrooms;
   end;
 
 var
   Form1: TForm1;
-  CanJump: Boolean = True;
-  EnemyDistance: Single = 0;
-  EnemyTime: Single = 0;
-  EnemyStuck: Single = 1;
+
+const
+  cForce: Single = 250;
+  cSpread = 200;
+  cNbMushrooms = 20;
 
 implementation
 
+uses Jpeg, GLFileMD2, GLFile3DS, VectorGeometry, KeyBoard, GLProxyObjects,
+  OpenGL1x, GLEllipseCollision;
+
 {$R *.dfm}
 
-procedure TForm1.FormCreate(Sender: TObject);
+{ TForm1 }
+
+procedure TForm1.Load;
 begin
-  //Load room
-  Map.LoadFromFile('..\..\media\Map.3ds');
-  Map.Up.SetVector(0,1,0);
-  Map.BuildOctree;
-
-  //Load "frozen lake"
-  Ice.LoadFromFile('..\..\media\beer.3ds');
-  Ice.Up.SetVector(0,1,0);
-  Ice.BuildOctree;
-
-  //Load Beer
-  Beer.LoadFromFile('..\..\media\beer.3ds');
-  Beer.BuildOctree;
+  //Load Materials
+  with GLMatlLib do
+  begin
+    AddTextureMaterial('Terrain','..\..\media\snow512.jpg');
+    AddTextureMaterial('Actor','..\..\media\waste.jpg');
+  end;
 
   //Load Terrain
   GLBitmapHDS1.MaxPoolSize:=8*1024*1024;
   GLBitmapHDS1.Picture.LoadFromFile('..\..\media\terrain.bmp');
-  Terrain.Material.Texture.Image.LoadFromFile('..\..\media\snow512.jpg');
-  Terrain.Material.Texture.Disabled := False;
+  Terrain.Direction.SetVector(0,1,0);
+  Terrain.Material.LibMaterialName := 'Terrain';
   Terrain.TilesPerTexture:=256/Terrain.TileSize;
+  Terrain.Scale.SetVector(1,1,0.02);
 
-  //Used to calculate enemy jumps
-  LastEnemyPos := Enemy.AbsolutePosition;
+  Ground.Material.LibMaterialName := 'Terrain';
 
-  //The behaviour event can't be assigned in the ObjectInspector, don't know why
-  TGLBDCEBody(Player.Behaviours.Behaviour[0]).OnCollision := PlayerBehaviours0Collision;
-  //TGLBDCEBody(Player.Behaviours.Behaviour[0]).UseGravity := False;
-  //TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).Active := False;
+  // Load mushroom mesh
+  //Always use AutoScaling property or you may get some problems
+  moMushRoom.AutoScaling.SetPoint(0.1,0.1,0.1);
+  moMushRoom.LoadFromFile('..\..\media\Mushroom.3ds');
+  moMushRoom.Direction.SetVector(0,1,0);
+  moMushRoom.BuildOctree;
+
+  //Load player
+  Player.Position.SetPoint(0,3,0);
+  //Actor
+  GLActor1.LoadFromFile('..\..\media\Waste.md2');
+  GLActor1.Direction.SetVector(0,1,0);
+  GLActor1.Up.SetVector(1,0,0);
+  GLActor1.Scale.SetVector(0.05,0.05,0.05);
+  GLActor1.Material.LibMaterialName := 'Actor';
+  GLActor1.Animations.LoadFromFile('..\..\media\Quake2Animations.aaf');
+  // Define animation properties
+  GLActor1.AnimationMode:=aamLoop;
+  GLActor1.SwitchToAnimation('stand');
+  GLActor1.FrameInterpolation:=afpLinear;
+
+  //DCE Behaviour
+  GLSphere1.Scale.Assign(GetOrCreateDCEDynamic(Player).Size);
+  GetOrCreateDCEDynamic(Player).OnCollision := PlayerBehaviours0Collision;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
-var Force, Rotate: TAffineVector;
-    Dist: Single;
-const
-  cForce: Single = 80;
-  aForce: Single = 90;
-
+procedure TForm1.HandleKeys;
+var
+  Force: TAffineVector;
 begin
 
   Force := NullVector;
@@ -138,136 +145,218 @@ begin
   if IsKeyDown('a') then Force[0] := cForce;
   if IsKeyDown('d') then Force[0] := -cForce;
 
-  //Gravity forces
-  if IsKeyDown('x') then Force[1] := -cForce;
-  if IsKeyDown('g') then DCEManager1.Gravity.Y := 0
-  else DCEManager1.Gravity.Y := -9;
-
-  //Rotation
-  Rotate := NullVector;
-  if IsKeyDown(VK_RIGHT) then Rotate[1] := aForce * deltaTime;
-  if IsKeyDown(VK_LEFT) then Rotate[1] := -aForce * deltaTime;
-  if IsKeyDown(VK_UP) then Rotate[2] :=aForce * deltaTime;
-  if IsKeyDown(VK_DOWN) then Rotate[2] :=-aForce * deltaTime;
-
-  //Move player
-  Player.Turn(Rotate[1]);
-  TGLBDCEBody(Player.Behaviours.Behaviour[0]).AddForce(Force);
-
-  //Move Enemy
-  if Enemy.DistanceTo(Player) > 3 then
-  begin
-    EnemyTime := EnemyTime + (deltaTime * 0.5);
-    Dist := VectorDistance(Enemy.AbsolutePosition,LastEnemyPos);
-    EnemyDistance := EnemyDistance + Dist;
-    if EnemyDistance / EnemyTime < 5 then EnemyStuck := EnemyStuck - deltaTime;
-    LastEnemyPos := Enemy.AbsolutePosition;
-
-    //Check if the enemy is stucked and jump
-    if EnemyStuck < 0 then
-    begin
-      EnemyStuck := 1;
-      EnemyTime := 0;
-      EnemyDistance := 0;
-      TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).Jump(1.3,20);
-    end;
-
-    Enemy.PointTo(Player,VectorMake(0,0,0,0));
-    Force := AffineVectorMake(0,0,20);
-    TGLBDCEBody(Enemy.Behaviours.Behaviour[0]).AddForce(Force);
-  end;
-
+  GetOrCreateDCEDynamic(Player).ApplyAccel(Force);
 end;
 
-procedure TForm1.DCEManager1Collision(Sender: TObject; object1,
-  object2: TGLBaseSceneObject; CollisionInfo: TDCECollision);
+procedure TForm1.HandleAnimation;
+var anim: string;
 begin
-  //Example on how to use the Manager collision event
-  if object1.Name = 'Player' then
+  if VectorNorm(GetOrCreateDCEDynamic(Player).Speed) > 0.1 then
+    anim := 'run'
+  else
+    anim := 'stand';
+
+  if Jumped then
   begin
-    if object2.Name = 'Map' then cbMap.Checked := True;
-    if object2.Name = 'Beer' then cbBeer.Checked := True;
-    if object2.Name = 'Ice' then cbIce.Checked := True;
-    if object2.Name = 'Ellipsoid' then cbEllipse.Checked := True;
-    if object2.Name = 'Terrain' then cbTerrain.Checked := True;
-    if object2.Name = 'Enemy' then cbEnemy.Checked := True;
-    if object2.Name = 'Box' then cbBox.Checked := True;
+    if (not GetOrCreateDCEDynamic(Player).InGround) then
+      anim := 'jump'
+    else
+     Jumped := False;
+  end;
+
+  if anim = 'jump' then GLActor1.Interval := 500
+  else GLActor1.Interval := 100;
+
+   if GLActor1.CurrentAnimation<>anim then
+      GLActor1.SwitchToAnimation(anim);
+end;
+
+procedure TForm1.AddBall;
+var Ball: TGLSphere;
+    S: Single;
+begin
+  Ball := TGLSphere(Balls.AddNewChild(TGLSphere));
+  with Ball do
+  begin
+    Tag := 1; //set the identifier of a ball
+    Radius := 1;
+    S := (100+Random(900))/500;
+    Scale.SetVector(s,s,s);
+    Position.SetPoint(Random(40)-random(40),4+Random(10),Random(40)-random(40));
+    Material.FrontProperties.Diffuse.SetColor((100+Random(900))/1000,(100+Random(900))/1000,(100+Random(900))/1000);
+  end;
+  with GetOrCreateDCEDynamic(Ball) do
+  begin
+    Manager := GLDCEManager1;
+    BounceFactor := 0.75;
+    Friction := 0.1;
+    SlideOrBounce := csbBounce;
+    Size.Assign(Ball.Scale);
   end;
 end;
 
-procedure TForm1.Timer1Timer(Sender: TObject);
+procedure TForm1.AddMushrooms;
+var
+   i : Integer;
+   proxy : TGLFreeFormProxy;
+   s : TVector;
+   f : Single;
 begin
-  cbMap.Checked := False;
-  cbBeer.Checked := False;
-  cbIce.Checked := False;
-  cbEllipse.Checked := False;
-  cbTerrain.Checked := False;
-  cbEnemy.Checked := False;
-  cbBox.Checked := False;
+   // spawn some more mushrooms using proxy objects
+   for i:=0 to cNbMushrooms-1 do begin
+      // create a new proxy and set its MasterObject property
+      proxy:=TGLFreeFormProxy(MushRooms.AddNewChild(TGLFreeFormProxy));
+      with proxy do begin
+         ProxyOptions:=[pooObjects];
+         MasterObject:=moMushroom;
+         // retrieve reference attitude
+         Direction:=moMushroom.Direction;
+         Up:=moMushroom.Up;
+         // randomize scale
+         s:=moMushroom.Scale.AsVector;
+         f:=(2*Random+1);
+         ScaleVector(s, f);
+         Scale.AsVector:=s;
+         // randomize position
+         Position.SetPoint(Random(cSpread)-(cSpread/2),
+                           moMushroom.Position.z+1.5*f,
+                           Random(cSpread)-(cSpread/2));
+         // randomize orientation
+         RollAngle:=Random(360);
+         TransformationChanged;
+      end;
+      with GetOrCreateDCEStatic(Proxy) do
+      begin
+        Manager := GLDCEManager1;
+        BounceFactor := 0.75;
+        Friction := 10;
+        Shape := csFreeform;
+      end;
 
-  lbFPS.Caption := Format('FPS: %.3f',[GLSceneViewer1.FramesPerSecond]);
-  GLSceneViewer1.ResetPerformanceMonitor;
+   end;
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+  Load;
+  GLCadencer1.Enabled := true;
+  Help.Text :=
+   'Mouse Drag - Look'+#13+
+   'A,W,S,D - movement'+#13+
+   'SPACE - Jump'+#13+
+   'F1 - Add one ball'+#13+
+   'F2 - Add 10 balls'+#13+
+   'F3 - Add 20 mushrooms'+#13+
+   'F4 - Change ground to box'+#13+
+   'F5 - Toggle step mode'+#13+
+   'RETURN - Reset';
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
+  //Mouse look
   if ssLeft in Shift then
   begin
-    Player.Turn(-(mx-x));
-    GLCamera1.MoveAroundTarget(my-y,0);
+    GLCamera1.MoveAroundTarget((my-y),0);
+    Player.Turn(- (mx-x));
   end;
   mx:=x;
   my:=y;
 end;
 
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
 begin
-  //Jumping
-  if (Key = VK_SPACE) and (CanJump) then
-  begin
-    TGLBDCEBody(Player.Behaviours.Behaviour[0]).Jump(1.3,20);
-    CanJump := False;
-  end;
+  HandleKeys;
+  HandleAnimation;
+  //This shows the manual progress, don't need this if you use the automatic mode
+  if GLDCEManager1.ManualStep then GLDCEManager1.Step(deltaTime);
+
+  Help.ModulateColor.Alpha := Help.ModulateColor.Alpha - (deltaTime * 0.05);
+  if Help.ModulateColor.Alpha < 0.25 then Help.ModulateColor.Alpha := 0.25;
+  HelpShadow.ModulateColor.Alpha := Help.ModulateColor.Alpha;
+  HelpShadow.Text := Help.Text;
 end;
 
-procedure TForm1.FormKeyUp(Sender: TObject; var Key: Word;
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+var i: integer;
 begin
-   CanJump := True;
+  if Key = VK_F1 then AddBall;
+  if Key = VK_F2 then for i := 1 to 10 do AddBall;
+  if Key = VK_F3 then AddMushrooms;
+  if (Key = VK_Space) then
+  begin
+    GetOrCreateDCEDynamic(Player).Jump(1,20);
+    Jumped := true;
+  end;
+  if key = VK_F4 then
+  begin
+    Terrain.Visible := False;
+    Ground.Visible := true;
+    GetOrCreateDCEStatic(Terrain).Active := False;
+    GetOrCreateDCEStatic(Ground).Active := True;
+  end;
+  if key = VK_F5 then GLDCEManager1.ManualStep := not GLDCEManager1.ManualStep;
+
+  if (Key = VK_RETURN) then
+  begin
+    Player.Position.SetPoint(0,3,0);
+    Balls.DeleteChildren;
+    MushRooms.DeleteChildren;
+    Help.ModulateColor.Alpha := 1;
+    Terrain.Visible := True;
+    Ground.Visible := False;
+    GetOrCreateDCEStatic(Terrain).Active := True;
+    GetOrCreateDCEStatic(Ground).Active := False;
+  end;
 end;
 
 procedure TForm1.PlayerBehaviours0Collision(Sender: TObject;
   ObjectCollided: TGLBaseSceneObject; CollisionInfo: TDCECollision);
+var v: TAffineVector;
 begin
-  //Example on how to use the Behaviour collision event
-  lbCollided.Caption := ObjectCollided.Name;
-  if CollisionInfo.Nearest then
+  //Use some kind of identifier to know what object you are colliding
+  //You can use the Tag, TagFloat, Name, Class
+  if ObjectCollided.Tag = 1 then
   begin
-    normal.AbsoluteDirection := VectorMake(CollisionInfo.Normal);
-    normal.AbsolutePosition := VectorMake(CollisionInfo.Point);
+    v := AffineVectorMake(VectorSubtract(ObjectCollided.AbsolutePosition,Player.AbsolutePosition));
+    NormalizeVector(v);
+    ScaleVector(v,400);
+    GetOrCreateDCEDynamic(ObjectCollided).StopAbsAccel;
+    GetOrCreateDCEDynamic(ObjectCollided).ApplyAbsAccel(v);
   end;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+var s: string;
+begin
+  if GLDCEManager1.ManualStep then s := 'Manual'
+  else s := 'Automatic';
+  GLHUDText1.Text := Format('FPS: %.1f - Dynamics: %d - Statics: %d - Step mode: %s',
+    [GLSceneViewer1.FramesPerSecond, GLDCEManager1.DynamicCount,GLDCEManager1.StaticCount,s]);
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
   var rci: TRenderContextInfo);
-//var i: integer;
-//    p,n: TAffineVector;
+var i: integer;
+    p,n: TAffineVector;
 begin
+  //To use this you will need to enable the debug define in the
+  //GLEllipseCollision.pas, if you do, don't forget to clear the
+  //triangle list! -> SetLength(debug_tri,0);
+
   glPointSize(5.0);
   glColor3f(0,1,0);
   glPushAttrib(GL_LIGHTING_BIT);
   glDisable(GL_LIGHTING);
 
-  //Set GLDirectOpenGL1.Visible = True to see the Collision Triangles
-  //Change GLDCE.pas for d_TriList
-  //Change GLDCEMisc.pas for d_TriList[i].Collided
-  //Change GLEllispeCollision.pas for d_TriList[i].Collided
-  {for i := 0 to High(d_TriList) do
-  with d_TriList[i] do begin
+  for i := 0 to High(debug_tri) do
+  with debug_tri[i] do begin
 
-    if d_TriList[i].Collided then
+    {if d_TriList[i].Collided then
     begin
 
       glColor3f(1,0,0);
@@ -277,7 +366,7 @@ begin
         glVertex3f(p3[0],p3[1],p3[2]);
       glEnd;
 
-    end;
+    end;}
 
     glColor3f(0,0,0);
     glBegin(GL_LINE_STRIP);
@@ -299,11 +388,12 @@ begin
       glVertex3f(p[0]+n[0],p[1]+n[1],p[2]+n[2]);
     glEnd;
 
-  end; }
+  end; //}
 
   //glEnable(GL_DEPTH_TEST);
   glPopAttrib;
-
+  SetLength(debug_tri,0);
 end;
+
 
 end.
