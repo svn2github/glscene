@@ -26,7 +26,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLMisc, ExtCtrls, StdCtrls, GLWin32Viewer,
-  GLBitmapFont, GLWindowsFont;
+  GLBitmapFont, GLWindowsFont, GLTexture;
 
 type
   TForm1 = class(TForm)
@@ -45,12 +45,13 @@ type
     BURects: TButton;
     BUTextOut: TButton;
     WindowsBitmapFont: TGLWindowsBitmapFont;
-    procedure GLSceneViewerPostRender(Sender: TObject);
+    GLDirectOpenGL1: TGLDirectOpenGL;
     procedure BULinesClick(Sender: TObject);
     procedure BUEllipsesClick(Sender: TObject);
     procedure BUPointsClick(Sender: TObject);
     procedure BURectsClick(Sender: TObject);
     procedure BUTextOutClick(Sender: TObject);
+    procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
   private
     { Private declarations }
     procedure PaintTheBox;
@@ -135,7 +136,7 @@ begin
    LAGDI.Caption:=Format('GDI: %.1f msec', [StopPrecisionTimer(t)*1000]);
 end;
 
-procedure TForm1.GLSceneViewerPostRender(Sender: TObject);
+procedure TForm1.GLDirectOpenGL1Render(var rci: TRenderContextInfo);
 var
    i, x, y : Integer;
    glc : TGLCanvas;
@@ -179,7 +180,7 @@ begin
                color:=Random(256*256*256);
                x:=Random(256);
                y:=Random(256);
-               WindowsBitmapFont.TextOut(x, y, 'Hello', color);
+               WindowsBitmapFont.TextOut(rci, x, y, 'Hello', color);
             end;
          end;
       end;

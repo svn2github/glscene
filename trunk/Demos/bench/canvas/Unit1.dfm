@@ -64,7 +64,6 @@ object Form1: TForm1
     Width = 256
     Height = 256
     Camera = GLCamera1
-    PostRender = GLSceneViewerPostRender
     Buffer.Lighting = False
   end
   object RBPenWidth1: TRadioButton
@@ -115,6 +114,10 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 16
     Top = 72
+    object GLDirectOpenGL1: TGLDirectOpenGL
+      UseBuildList = False
+      OnRender = GLDirectOpenGL1Render
+    end
     object GLCamera1: TGLCamera
       DepthOfView = 100
       FocalLength = 50
