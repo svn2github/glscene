@@ -127,7 +127,7 @@ type
 
     procedure AfterProgress; override;
 
-    constructor CreateOwned(aOwner : TVerletWorld); override;
+    constructor CreateOwned(const aOwner : TVerletWorld); override;
     destructor Destroy; override;
   end;
 
@@ -282,7 +282,7 @@ end;
 
 { TMeshObjectVerletNode }
 
-constructor TMeshObjectVerletNode.CreateOwned(aOwner: TVerletWorld);
+constructor TMeshObjectVerletNode.CreateOwned(const aOwner: TVerletWorld);
 begin
   inherited;
   VertexIndices := TIntegerList.Create;
