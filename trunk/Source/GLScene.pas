@@ -3640,7 +3640,7 @@ procedure TGLBaseSceneObject.DoRender(var rci : TRenderContextInfo;
 begin
    // start rendering self
    if renderSelf then begin
-      if osDirectDraw in ObjectStyle then
+      if (osDirectDraw in ObjectStyle) or rci.amalgamating then
          BuildList(rci)
       else glCallList(GetHandle(rci));
    end;
@@ -4135,12 +4135,12 @@ begin
       if not rci.ignoreMaterials then begin
          FMaterial.Apply(rci);
          repeat
-            if osDirectDraw in ObjectStyle then
+            if (osDirectDraw in ObjectStyle) or rci.amalgamating then
                BuildList(rci)
             else glCallList(GetHandle(rci));
          until not FMaterial.UnApply(rci);
       end else begin
-         if osDirectDraw in ObjectStyle then
+         if (osDirectDraw in ObjectStyle) or rci.amalgamating then
             BuildList(rci)
          else glCallList(GetHandle(rci));
       end;

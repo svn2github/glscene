@@ -333,6 +333,7 @@ type
       bufferFaceCull : Boolean;
       proxySubObject : Boolean;
       ignoreMaterials : Boolean;
+      amalgamating : Boolean;
    end;
    PRenderContextInfo = ^TRenderContextInfo;
 

@@ -98,7 +98,7 @@ interface
 {$i GLScene.inc}
 
 uses Classes, Geometry, GLScene, GLTexture, GLMisc, OpenGL12, SysUtils,
-   VectorLists, GLCrossPlatform;
+   VectorLists, GLCrossPlatform, GLContext;
 
 type
 
@@ -106,21 +106,25 @@ type
 	//
 	{: A simple cube, invisible at run-time.<p>
       This is a usually non-visible object -except at design-time- used for
-      constructing hierarchies or groups, when some kind of joint or movement
+      building hierarchies or groups, when some kind of joint or movement
       mechanism needs be described, you can use DummyCubes.<br>
-		DummyCube's barycenter is its children's barycenter. }
+		DummyCube's barycenter is its children's barycenter.<br>
+      The DummyCube can optionnally amalgamate all its children into a single
+      display list (see Amalgamate property). }
 	TGLDummyCube = class (TGLImmaterialSceneObject)
 		private
 			{ Private Declarations }
 			FCubeSize : TGLFloat;
 			FEdgeColor : TGLColor;
-			FVisibleAtRunTime : Boolean;
+			FVisibleAtRunTime, FAmalgamate : Boolean;
+         FGroupList : TGLListHandle;
 
 		protected
 			{ Protected Declarations }
 			procedure SetCubeSize(const val : TGLFloat);
 			procedure SetEdgeColor(const val : TGLColor);
 			procedure SetVisibleAtRunTime(const val : Boolean);
+         procedure SetAmalgamate(const val : Boolean);
 
 		public
 			{ Public Declarations }
@@ -134,14 +138,33 @@ type
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
 			procedure BuildList(var rci : TRenderContextInfo); override;
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
+         procedure StructureChanged; override;
 			function BarycenterAbsolutePosition : TVector; override;
+
 
 		published
 			{ Published Declarations }
 			property CubeSize : TGLFloat read FCubeSize write SetCubeSize;
 			property EdgeColor : TGLColor read FEdgeColor write SetEdgeColor;
+         {: If true the dummycube's edges will be visible at runtime.<p>
+            The default behaviour of the dummycube is to be visible at design-time
+            only, and invisible at runtime. }
 			property VisibleAtRunTime : Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
-
+         {: Amalgamate the dummy's children in a single OpenGL entity.<p>
+            This activates a special rendering mode, which will compile
+            the rendering of all of the dummycube's children objects into a
+            single display list. This may provide a significant speed up in some
+            situations, however, this means that changes to the children will
+            be ignored untill you call StructureChanged on the dummy cube.<br>
+            Some objects, that have their own display list management, may not
+            be compatible with this behaviour. This will also prevents sorting
+            and culling to operate as usual.<p>
+            In short, this features is best used for static, non-transparent
+            geometry, or when the point of view won't change over a large
+            number of frames. }
+         property Amalgamate : Boolean read FAmalgamate write SetAmalgamate default False;
 	end;
 
    // TPlaneStyle
@@ -1204,12 +1227,14 @@ begin
 	FCubeSize:=1;
 	FEdgeColor:=TGLColor.Create(Self);
 	FEdgeColor.Initialize(clrWhite);
+   FGroupList:=TGLListHandle.Create;
 end;
 
 // Destroy
 //
 destructor TGLDummyCube.Destroy;
 begin
+   FGroupList.Free;
    FEdgeColor.Free;
    inherited;
 end;
@@ -1249,6 +1274,41 @@ procedure TGLDummyCube.BuildList(var rci : TRenderContextInfo);
 begin
  	if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
       CubeWireframeBuildList(FCubeSize, True, EdgeColor.Color);
+end;
+
+// DoRender
+//
+procedure TGLDummyCube.DoRender(var rci : TRenderContextInfo;
+                                renderSelf, renderChildren : Boolean);
+begin
+   if FAmalgamate and (not rci.amalgamating) then begin
+      if FGroupList.Handle=0 then begin
+         FGroupList.AllocateHandle;
+         Assert(FGroupList.Handle<>0, 'Handle=0 for '+ClassName);
+         glNewList(FGroupList.Handle, GL_COMPILE);
+         rci.amalgamating:=True;
+         try
+            inherited;
+         finally
+            rci.amalgamating:=False;
+            glEndList;
+         end;
+      end else begin
+         glCallList(FGroupList.Handle);
+      end;
+   end else begin
+      // proceed as usual
+      inherited;
+   end;
+end;
+
+// StructureChanged
+//
+procedure TGLDummyCube.StructureChanged;
+begin
+   if FAmalgamate then
+      FGroupList.DestroyHandle;
+   inherited;
 end;
 
 // BarycenterAbsolutePosition
@@ -1293,6 +1353,18 @@ begin
 		FVisibleAtRunTime:=val;
 		StructureChanged;
 	end;
+end;
+
+// SetAmalgamate
+//
+procedure TGLDummyCube.SetAmalgamate(const val : Boolean);
+begin
+   if val<>FAmalgamate then begin
+      FAmalgamate:=val;
+      if not val then
+         FGroupList.DestroyHandle;
+      inherited StructureChanged;
+   end;
 end;
 
 // ------------------

@@ -4693,13 +4693,13 @@ begin
          MeshObjects.PrepareBuildList(rci);
          Material.Apply(rci);
          repeat
-            if osDirectDraw in ObjectStyle then
+            if (osDirectDraw in ObjectStyle) or rci.amalgamating then
                BuildList(rci)
             else glCallList(GetHandle(rci));
          until not Material.UnApply(rci);
          rci.materialLibrary:=nil;
       end else begin
-         if osDirectDraw in ObjectStyle then
+         if (osDirectDraw in ObjectStyle) or rci.amalgamating then
             BuildList(rci)
          else glCallList(GetHandle(rci));
       end;

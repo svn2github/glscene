@@ -772,7 +772,7 @@ end;
 // DoRender
 //
 procedure TGLSkyDome.DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean);
+                              renderSelf, renderChildren : Boolean);
 var
    f : Single;
 begin
@@ -793,7 +793,7 @@ begin
    glTranslatef(-LocalMatrix[3][0], -LocalMatrix[3][1], -LocalMatrix[3][2]);
    glMultMatrixf(@LocalMatrix);
    // render
-   if sdoTwinkle in FOptions then
+   if (sdoTwinkle in FOptions) or rci.amalgamating then
       BuildList(rci)
    else glCallList(GetHandle(rci));
    // restore
