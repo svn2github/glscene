@@ -109,7 +109,7 @@ begin
    end;
    // don't drop through terrain!
    with DummyCube1.Position do
-      Y:=TerrainRenderer1.InterpolatedHeight(AsVector)+FCamHeight;
+      Y:=TerrainRenderer1.InterpolatedHeight(AsVector)/128+FCamHeight;
 end;
 
 // Standard mouse rotation & FPS code below
