@@ -108,20 +108,20 @@ begin
 		// ( note : VectorCombine(v1, v2, f1, f2)=v1*f1+v2*f2 )
 		newBallPos:=VectorCombine(Ball.Position.AsVector, ballVector, 1, deltaTime);
 		// check collision with edges
-		if newBallPos[0]<-7.05 then
-			ballVector[0]:=-ballVector[0]
-		else if newBallPos[0]>7.05 then
-			ballVector[0]:=-ballVector[0]
-		else if newBallPos[1]>4.55 then
-			ballVector[1]:=-ballVector[1];
+		if newBallPos.Coord[0]<-7.05 then
+			ballVector.Coord[0]:=-ballVector.Coord[0]
+		else if newBallPos.Coord[0]>7.05 then
+			ballVector.Coord[0]:=-ballVector.Coord[0]
+		else if newBallPos.Coord[1]>4.55 then
+			ballVector.Coord[1]:=-ballVector.Coord[1];
 		// check collision with pad
-		if newBallPos[1]<-4 then begin
-			if (newBallPos[0]>Pad.Position.X-1.25) and (newBallPos[0]<Pad.Position.X+1.25) then begin
+		if newBallPos.Coord[1]<-4 then begin
+			if (newBallPos.Coord[0]>Pad.Position.X-1.25) and (newBallPos.Coord[0]<Pad.Position.X+1.25) then begin
 				// when ball bumps the pad, it is accelerated and the vector
 				// is slightly randomized
-				ballVector[1]:=-ballVector[1];
-				ballVector[0]:=ballVector[0]+(Random(100)-50)/50;
-				ballVector[1]:=ballVector[1]+0.1;
+				ballVector.Coord[1]:=-ballVector.Coord[1];
+				ballVector.Coord[0]:=ballVector.Coord[0]+(Random(100)-50)/50;
+				ballVector.Coord[1]:=ballVector.Coord[1]+0.1;
 				// ...and of course a point is scored !
 				Inc(score);
 				SpaceText1.Text:=Format('%.3d', [score]);

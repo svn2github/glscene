@@ -86,9 +86,9 @@ begin
       for i:=0 to cNbPoints-1 do begin
          a:=DegToRad(4*i)+ab;
          SinCos(a, sa, ca);
-         v[0]:=2*ca;
-         v[1]:=2*Cos(f*a);
-         v[2]:=2*sa;
+         v.Coord[0]:=2*ca;
+         v.Coord[1]:=2*Cos(f*a);
+         v.Coord[2]:=2*sa;
          p[i]:=v;
       end;
       // replicate points in second set

@@ -136,8 +136,6 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  i : Integer;
 begin
   Randomize;
 
@@ -214,8 +212,6 @@ end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
-var
-  i : integer;
 begin
   // Step the verlet world (this is where the magic happens)
   VerletWorld.Progress(deltaTime, newTime);
@@ -240,28 +236,28 @@ procedure TForm1.OctreeRendererRender(Sender : TObject; var rci: TRenderContextI
     glLineWidth(w);
 
     glBegin(GL_LINE_STRIP);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
 
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
     glEnd;
 
     glBegin(GL_LINES);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
     glEnd;
   end;
 
@@ -282,7 +278,7 @@ procedure TForm1.OctreeRendererRender(Sender : TObject; var rci: TRenderContextI
     end else
     begin
       for i := 0 to Node.ChildCount-1 do
-        RenderOctreeNode(Node.Children[i]);
+        RenderOctreeNode(Node.Children.Child[i]);
     end;
   end;
 begin

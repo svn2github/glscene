@@ -92,10 +92,10 @@ procedure PreparePal(const fileName : String);
       p:=Pos(':', buf);
       n:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
       p:=Pos(',', buf);
-      c[0]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
+      c.Coord[0]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
       p:=Pos(',', buf);
-      c[1]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
-      c[2]:=StrToInt(buf);
+      c.Coord[1]:=StrToInt(Copy(buf, 1, p-1)); buf:=Copy(buf, p+1, MaxInt);
+      c.Coord[2]:=StrToInt(buf);
    end;
 
 var
@@ -113,7 +113,7 @@ var
       else d:=0;
       for cur:=prev to next do begin
          cC:=VectorLerp(pC, nC, (cur-prev)*d);
-         heightColor[cur]:=Color32(Round(cC[0]), Round(cC[1]), Round(cC[2]));
+         heightColor[cur]:=Color32(Round(cC.Coord[0]), Round(cC.Coord[1]), Round(cC.Coord[2]));
       end;
    end;
 

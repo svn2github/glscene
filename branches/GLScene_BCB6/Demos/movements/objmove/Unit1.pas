@@ -58,7 +58,7 @@ type
   end;
 
 const
-  SelectionColor: TColorVector = (0.243, 0.243, 0.243, 1.000);
+  SelectionColor: TColorVector = (X:0.243; Y:0.243; Z:0.243; W:1.000);
 
 var
   Form1: TForm1;
@@ -159,9 +159,9 @@ begin
          SetVector(objPos, currentPick.AbsolutePosition);
          canvas.TextOut(3, 3 + 1 * canvas.TextHeight('A'),
                         Format('New Object Position: Xn: %4.4f, Yn: %4.4f, Zn: %4.4f',
-                               [objPos[0], objPos[1], objPos[2]]));
+                               [objPos.Coord[0], objPos.Coord[1], objPos.Coord[2]]));
          winPos:=Scn.Buffer.WorldToScreen(objPos);
-         canvas.TextOut(Round(winPos[0]), Scn.Height-Round(winPos[1]),
+         canvas.TextOut(Round(winPos.Coord[0]), Scn.Height-Round(winPos.Coord[1]),
                         currentPick.Name);
       end else begin
          canvas.TextOut(3, 3+canvas.TextHeight('A'), 'No selected object');

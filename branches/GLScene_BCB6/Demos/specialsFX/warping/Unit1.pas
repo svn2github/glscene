@@ -96,13 +96,13 @@ begin
          dy:=y*d+warpY*(1-d);
       end;
       1 : begin // the "spin" effect
-         vec[0]:=x-warpX;
-         vec[1]:=0;
-         vec[2]:=y-warpY;
+         vec.Coord[0]:=x-warpX;
+         vec.Coord[1]:=0;
+         vec.Coord[2]:=y-warpY;
          d:=VectorNorm(vec);
          RotateVectorAroundY(vec, Sqr(warpRadius)/(d+1));
-         dx:=warpX+vec[0];
-         dy:=warpY+vec[2];
+         dx:=warpX+vec.Coord[0];
+         dy:=warpY+vec.Coord[2];
       end;
    else
       raise Exception.Create('Unknown warp effect '+IntToStr(warpEffect));

@@ -113,8 +113,8 @@ begin
    normalMapMaterial.Material.MaterialOptions:=[moNoLighting];
    n:=VectorNormalize(SPSun.AbsolutePosition);
    ScaleVector(n, 0.5);
-   n[1]:=-n[1];
-   n[2]:=-n[2];
+   n.Coord[1]:=-n.Coord[1];
+   n.Coord[2]:=-n.Coord[2];
    AddVector(n , 0.5);
    normalMapMaterial.Material.FrontProperties.Diffuse.Color:=n;
 end;

@@ -130,9 +130,9 @@ begin
   GLBaseSceneObject := aGLBaseSceneObject;
 
   // Set them all off in the same direction
-  Direction[0] := random;
-  Direction[1] := random;
-  Direction[2] := random;//}
+  Direction.Coord[0] := random;
+  Direction.Coord[1] := random;
+  Direction.Coord[2] := random;//}
 
   NormalizeVector(Direction);
 
@@ -157,28 +157,28 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
     glLineWidth(w);
 
     glBegin(GL_LINE_STRIP);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
 
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
     glEnd;
 
     glBegin(GL_LINES);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
     glEnd;
   end;
 
@@ -199,7 +199,7 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(Sender : TObject; var rci: TRende
     end else
     begin
       for i := 0 to Node.ChildCount-1 do
-        RenderOctreeNode(Node.Children[i]);
+        RenderOctreeNode(Node.Children.Child[i]);
     end;
   end;
 var
@@ -247,9 +247,9 @@ begin
   begin
     Leaf := TGLSpacePartitionLeaf(Octree.Leaves[i]);
     Cube := TGLCube(Leaf.GLBaseSceneObject);
-    Cube.Position.X := TestMove(Cube.Position.X, Leaf.Direction[0]);
-    Cube.Position.Y := TestMove(Cube.Position.Y, Leaf.Direction[1]);
-    Cube.Position.Z := TestMove(Cube.Position.Z, Leaf.Direction[2]);
+    Cube.Position.X := TestMove(Cube.Position.X, Leaf.Direction.Coord[0]);
+    Cube.Position.Y := TestMove(Cube.Position.Y, Leaf.Direction.Coord[1]);
+    Cube.Position.Z := TestMove(Cube.Position.Z, Leaf.Direction.Coord[2]);
 
     Leaf.Changed;
   end;//}

@@ -138,8 +138,8 @@ begin
    if PtInRect(GLSceneViewer1.ClientRect, mp) then begin
       GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXY(
               VectorMake(mp.x, GLSceneViewer1.Height-mp.y, 0), 0, ip);
-      tileX:=Round(ip[0]-0.5);
-      tileY:=Round(ip[1]-0.5);
+      tileX:=Round(ip.Coord[0]-0.5);
+      tileY:=Round(ip.Coord[1]-0.5);
       DCSelection.Position.SetPoint(tileX, tileY, 0);
 
       if shiftDown then begin

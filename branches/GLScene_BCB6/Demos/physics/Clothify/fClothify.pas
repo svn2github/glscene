@@ -213,9 +213,9 @@ var
     Cube := TVCCube.Create(VerletWorld);
     Cube.Location := AffineVectorMake(GLCube.AbsolutePosition);
     Cube.FrictionRatio := 0.1;
-    Sides[0] := GLCube.CubeWidth * 1.1;
-    Sides[1] := GLCube.CubeHeight * 1.1;
-    Sides[2] := GLCube.CubeDepth * 1.1;
+    Sides.Coord[0] := GLCube.CubeWidth * 1.1;
+    Sides.Coord[1] := GLCube.CubeHeight * 1.1;
+    Sides.Coord[2] := GLCube.CubeDepth * 1.1;
     Cube.Sides := Sides;//}
   end;
 
@@ -444,9 +444,9 @@ begin
          VCSphere.Location := GLSphere1.Position.AsAffineVector;
 
          dBodyAddForce(dGeomGetBody(ODESphere),
-                       VCSphere.KickbackForce[0],
-                       VCSphere.KickbackForce[1],
-                       VCSphere.KickbackForce[2]);
+                       VCSphere.KickbackForce.Coord[0],
+                       VCSphere.KickbackForce.Coord[1],
+                       VCSphere.KickbackForce.Coord[2]);
 
          dSpaceCollide (space,nil,nearCallback);
          dWorldStep(World, VerletWorld.MaxDeltaTime);
@@ -512,28 +512,28 @@ procedure TfrmClothify.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderC
     glLineWidth(w);
 
     glBegin(GL_LINE_STRIP);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.min[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
 
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
-      glVertex3f(AABB.min[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
     glEnd;
 
     glBegin(GL_LINES);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.min[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.min.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.max[1], AABB.max[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.max.Coord[1], AABB.max.Coord[2]);
 
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.min[2]);
-      glVertex3f(AABB.max[0],AABB.min[1], AABB.max[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.min.Coord[2]);
+      glVertex3f(AABB.max.Coord[0],AABB.min.Coord[1], AABB.max.Coord[2]);
     glEnd;
   end;
 
@@ -554,7 +554,7 @@ procedure TfrmClothify.GLDirectOpenGL1Render(Sender : TObject; var rci: TRenderC
     end else
     begin
       for i := 0 to Node.ChildCount-1 do
-        RenderOctreeNode(Node.Children[i]);
+        RenderOctreeNode(Node.Children.Child[i]);
     end;
   end;
 begin
