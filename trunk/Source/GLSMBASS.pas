@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/09/02 - EG - BASS activation errors no longer result in Asserts (ignored)
       <li>27/02/02 - EG - Added 3D Factors and Environment support
       <li>05/02/02 - EG - BASS 1.4 compatibility
       <li>05/02/01 - EG - Fixed TGLSMBASS.CPUUsagePercent
@@ -124,8 +125,14 @@ const
    c3DAlgo : array [algDefault..algLight] of Integer =
       (BASS_3DALG_DEFAULT, BASS_3DALG_OFF, BASS_3DALG_FULL, BASS_3DALG_LIGHT);
 begin
-   if not BASS_Init(0, OutputFrequency, BASS_DEVICE_3D, Application.Handle) then Assert(False);
-   if not BASS_Start then Assert(False);
+   if not BASS_Init(0, OutputFrequency, BASS_DEVICE_3D, Application.Handle) then begin
+      Result:=False;
+      Exit;
+   end;
+   if not BASS_Start then begin
+      Result:=False;
+      Exit;
+   end;
    FActivated:=True;
    BASS_Set3DAlgorithm(c3DAlgo[FAlgorithm3D]);
    NotifyMasterVolumeChange;
