@@ -6,6 +6,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
       <li>05/03/03 - EG - Added RemapIndicesToIndicesMap
       <li>20/01/03 - EG - Added UnifyTrianglesWinding
       <li>15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
@@ -229,7 +230,7 @@ var
 begin
    list.AdjustCapacityToAtLeast(list.Count+3*(indices.Count-2));
    stripList:=strip.List;
-   for i:=0 to strip.Count-3 do begin
+   for i:=0 to indices.Count-3 do begin
       if (i and 1)=0 then
          list.Add(stripList[indices[i+0]],
                   stripList[indices[i+1]],
