@@ -1081,6 +1081,7 @@ function IsInCube(const p, d : TVector) : Boolean; overload;
 function MinFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MinFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
+{: Returns the minimum of given values. }
 function MinFloat(const v1, v2 : Single) : Single; overload;
 function MinFloat(const v : array of Single) : Single; overload;
 function MinFloat(const v1, v2 : Double) : Double; overload;
@@ -1100,6 +1101,12 @@ function MaxFloat(const v1, v2 : Extended) : Extended; overload;
 function MaxFloat(const v1, v2, v3 : Single) : Single; overload;
 function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
 function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
+
+function MinInteger(const v1, v2 : Integer) : Integer; overload;
+function MinInteger(const v1, v2 : Cardinal) : Cardinal; overload;
+
+function MaxInteger(const v1, v2 : Integer) : Integer; overload;
+function MaxInteger(const v1, v2 : Cardinal) : Cardinal; overload;
 
 {: Computes the triangle's area. }
 function TriangleArea(const p1, p2, p3 : TAffineVector) : Single;
@@ -7516,6 +7523,42 @@ begin
    else if v3>=v1 then
       Result:=v3
    else result:=v1;
+end;
+
+// MinInteger (2 int)
+//
+function MinInteger(const v1, v2 : Integer) : Integer;
+begin
+   if v1<v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MinInteger (2 card)
+//
+function MinInteger(const v1, v2 : Cardinal) : Cardinal;
+begin
+   if v1<v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MaxInteger (2 int)
+//
+function MaxInteger(const v1, v2 : Integer) : Integer;
+begin
+   if v1>v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MaxInteger (2 card)
+//
+function MaxInteger(const v1, v2 : Cardinal) : Cardinal;
+begin
+   if v1>v2 then
+      Result:=v1
+   else Result:=v2;
 end;
 
 // TriangleArea
