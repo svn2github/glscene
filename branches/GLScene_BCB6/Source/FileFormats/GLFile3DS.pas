@@ -399,7 +399,7 @@ begin
          end;
          if hasLightMap then
             for j:=0 to mesh.TexCoords.Count-1 do
-               mesh.LightMapTexCoords.Add(mesh.TexCoords[j][0], mesh.TexCoords[j][1]);
+               mesh.LightMapTexCoords.Add(mesh.TexCoords[j].Coord[0], mesh.TexCoords[j].Coord[1]);
       end;
    finally
       Free;
