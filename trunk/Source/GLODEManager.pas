@@ -12,6 +12,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>09/12/04 - Mathx - Added getX and getOrCreateX functions.
     <li>19/11/04 - SG - Major structural changes/improvements,
                         Dropped TGLBaseSceneObject style object in favour of
                         TGLBehaviour style ones,
@@ -1161,6 +1162,12 @@ procedure RegisterGLSceneObject(anObject : TGLBaseSceneObject);
 procedure UnregisterGLSceneObject(anObject : TGLBaseSceneObject);
 function GetGLSceneObject(anObjectName : String) : TGLBaseSceneObject;
 
+// Get and GetOrCreate functions for ode behaviours
+function getOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+function getOrCreateOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+function getOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+function getOrCreateOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+
 var
   vGLODEObjectRegister : TList;
 
@@ -1255,6 +1262,33 @@ begin
     end;
 end;
 
+// GetOdeStaticBehaviour
+//
+function getOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+begin
+     result:= TGLODEStatic(obj.Behaviours.GetByClass(TGLODEStatic));
+end;
+
+// GetOrCreateOdeStaticBehaviour
+//
+function getOrCreateOdeStatic(obj: TGLBaseSceneObject): TGLODEStatic;
+begin
+     result:= TGLODEStatic(obj.GetOrCreateBehaviour(TGLODEStatic));
+end;
+
+// GetOdeDynBehaviour
+//
+function getOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+begin
+     result:= TGLODEDynamic(obj.Behaviours.GetByClass(TGLODEDynamic));
+end;
+
+// GetOrCreateOdeDynBehaviour
+//
+function getOrCreateOdeDynamic(obj: TGLBaseSceneObject): TGLODEDynamic;
+begin
+     result:= TGLODEDynamic(obj.GetOrCreateBehaviour(TGLODEDynamic));
+end;
 
 // ---------------
 // --------------- TGLODEManager ---------------
