@@ -18,7 +18,7 @@ unit GLCrossPlatform;
 
 interface
 
-{$include ../GLScene.inc}
+{$include ..\GLScene.inc}
 
 {$ifdef MSWINDOWS}
 uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;
