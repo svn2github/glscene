@@ -11,11 +11,11 @@ uniform samplerCube EnvironmentMap;
 varying half3 EyeVec;
 varying half3x3 ObjToTangentSpace;
 
-const half  cFresnelBias = 0.1;
-const half4 cDeepColor = vec4(0, 0.1, 0.2, 1);
-const half4 cShallowColor = vec4(0, 0.3, 0.4, 1);
+const float cFresnelBias = 0.1;
+const half3 cDeepColor = half3(0.0, 0.1, 0.2);
+const half3 cShallowColor = half3(0.0, 0.2, 0.4);
 
-const half3 cNormalCorrection = vec3(-1, -1, 0);
+const half3 cNormalCorrection = vec3(-1.0, -1.0, 0.0);
 
 void main()
 {
@@ -28,12 +28,12 @@ void main()
 
     half3 r = reflect(EyeVec, nW);
     half4 rColor = textureCube(EnvironmentMap, r);
-    rColor.a = 1.0+5.0*rColor.a;
+    half hdr = 1.0+5.0*rColor.a;
 
-    half facing = 1.0-max(dot(normalize(-EyeVec), nW), 0.0);
-    half4 waterColor = mix(cDeepColor, cShallowColor, facing);
+    half  facing = 1.0-max(dot(normalize(-EyeVec), nW), 0.0);
+    half3 waterColor = mix(cDeepColor, cShallowColor, facing);
 
-    half fresnel = cFresnelBias + (1-cFresnelBias)*pow(facing, 4.0);
+    half fresnel = cFresnelBias + (1.0-cFresnelBias)*pow(facing, 4.0);
 
-    gl_FragColor = vec4(waterColor.rgb + (fresnel*rColor.a)*rColor.rgb, 1.0); 
+    gl_FragColor = vec4(waterColor + (fresnel*hdr)*rColor.rgb, 1.0);
 }

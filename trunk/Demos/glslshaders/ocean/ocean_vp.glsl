@@ -12,8 +12,8 @@ uniform vec4  EyePos;
 varying half3   EyeVec;
 varying half3x3 ObjToTangentSpace;
 
-const half cTexScale = 0.15;
-const half cBumpScale = 0.2;
+const half cTexScale = 0.2;
+const half cBumpScale = 0.15;
 const half cBumpSpeed = 0.4;
 
 // Waves parameters
@@ -26,9 +26,9 @@ struct Wave {
   half2 dir;
 };
 Wave wave[NWAVES] = {
-	{ 0.2, 0.9, 12, half2(1, 0) },
-	{ 0.3, 0.7, 9,  half2(0.98, 0.2) },
-	{ 0.4, 0.5, 8,  half2(0.99, -0.15) }
+	{ 0.2, 0.9, 12.0, half2(1.0, 0.0) },
+	{ 0.3, 0.7, 9.0,  half2(0.98, 0.2) },
+	{ 0.4, 0.5, 8.0,  half2(0.99, -0.15) }
 };
 
 const int k = 2;
@@ -51,7 +51,7 @@ void main()
     vec4 P = gl_Vertex;
 
     // sum waves
-	vec2 dd = 0.0;
+	vec2 dd = vec2(0.0, 0.0);
 	for(int i=0; i<NWAVES; i++) {
     	vec2 waveEval = evaluateWave(wave[i], P.xy, Time);
     	P.z += waveEval.x;
