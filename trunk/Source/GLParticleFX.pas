@@ -300,6 +300,9 @@ type
 
          //: Instantaneously creates nb particles
          procedure Burst(time : Double; nb : Integer);
+         procedure RingExplosion(time : Double;
+                                 minInitialSpeed, maxInitialSpeed : Single;
+                                 nbParticles : Integer);
 
 		published
 			{ Published Declarations }
@@ -483,6 +486,29 @@ begin
             Result.Name:=name;
          end;
       end;
+   end;
+end;
+
+// RndHalf
+//
+function RndHalf(var f : Single) : Single;
+begin
+   Result:=(Random-0.5)*(2*f);
+end;
+
+// RndVector
+//
+procedure RndVector(const dispersion : TGLSourcePFXDispersionMode; var v : TAffineVector; var f : Single);
+var
+   f2 : Single;
+begin
+   case dispersion of
+      sdmFast : SetVector(v, RndHalf(f), RndHalf(f), RndHalf(f));
+   else
+      f2:=Sqr(f);
+      repeat
+         SetVector(v, RndHalf(f), RndHalf(f), RndHalf(f));
+      until VectorNorm(v)<=f2;
    end;
 end;
 
@@ -1093,29 +1119,35 @@ procedure TGLSourcePFXEffect.WriteToFiler(writer : TWriter);
 begin
    inherited;
    with writer do begin
-      WriteInteger(0); // ArchiveVersion 0
+      WriteInteger(1); // ArchiveVersion 1, added FDispersionMode
       FInitialVelocity.WriteToFiler(writer);
       FInitialPosition.WriteToFiler(writer);
       WriteFloat(FVelocityDispersion);
       WriteFloat(FPositionDispersion);
       WriteFloat(FParticleInterval);
       WriteInteger(Integer(FVelocityMode));
+      WriteInteger(Integer(FDispersionMode));
    end;
 end;
 
 // ReadFromFiler
 //
 procedure TGLSourcePFXEffect.ReadFromFiler(reader : TReader);
+var
+   archiveVersion : Integer;
 begin
    inherited;
    with reader do begin
-      Assert(ReadInteger=0);
+      archiveVersion:=ReadInteger;
+      Assert(archiveVersion in [0, 1]);
       FInitialVelocity.ReadFromFiler(reader);
       FInitialPosition.ReadFromFiler(reader);
       FVelocityDispersion:=ReadFloat;
       FPositionDispersion:=ReadFloat;
       FParticleInterval:=ReadFloat;
       FVelocityMode:=TGLSourcePFXVelocityMode(ReadInteger);
+      if archiveVersion>=1 then
+         FDispersionMode:=TGLSourcePFXDispersionMode(ReadInteger);
    end;
 end;
 
@@ -1154,8 +1186,7 @@ end;
 procedure TGLSourcePFXEffect.SetParticleInterval(const val : Single);
 begin
    FParticleInterval:=val;
-   // as of now, spawning a sustained 1000 particles/sec looks like a lot...
-   if FParticleInterval<0.001 then FParticleInterval:=0.001;
+   if FParticleInterval<0 then FParticleInterval:=0;
    OwnerBaseSceneObject.NotifyChange(Self);
 end;
 
@@ -1164,6 +1195,7 @@ end;
 procedure TGLSourcePFXEffect.DoProgress(const deltaTime, newTime : Double);
 begin
    if not Assigned(Manager) then Exit;
+   if FParticleInterval=0 then Exit;
    FTimeRemainder:=FTimeRemainder+deltaTime;
    while FTimeRemainder>FParticleInterval do begin
       Burst(newTime, 1);
@@ -1174,19 +1206,6 @@ end;
 // Burst
 //
 procedure TGLSourcePFXEffect.Burst(time : Double; nb : Integer);
-
-   function RndHalf(var f : Single) : Single;
-   begin
-      RndHalf:=(Random-0.5)*(2*f);
-   end;
-
-   procedure RndVector(var v : TAffineVector; var f : Single);
-   begin
-      repeat
-         SetVector(v, RndHalf(f), RndHalf(f), RndHalf(f));
-      until (DispersionMode=sdmFast) or (VectorNorm(v)<1);
-   end;
-
 var
    particle : TGLParticle;
    v : TVector;
@@ -1197,9 +1216,9 @@ begin
    AddVector(pos, InitialPosition.AsAffineVector);
    while nb>0 do begin
       particle:=Manager.CreateParticle;
-      RndVector(av, FPositionDispersion);
+      RndVector(DispersionMode, av, FPositionDispersion);
       particle.Position:=VectorAdd(pos, av);
-      RndVector(av, FVelocityDispersion);
+      RndVector(DispersionMode, av, FVelocityDispersion);
       particle.Velocity:=VectorAdd(InitialVelocity.AsAffineVector, av);
       if VelocityMode=svmRelative then begin
          SetVector(v, particle.Velocity);
@@ -1208,6 +1227,43 @@ begin
       end;
       particle.CreationTime:=time;
       Dec(nb);
+   end;
+end;
+
+// RingExplosion
+//
+procedure TGLSourcePFXEffect.RingExplosion(time : Double;
+                                           minInitialSpeed, maxInitialSpeed : Single;
+                                           nbParticles : Integer);
+var
+   particle : TGLParticle;
+   av, pos, tmp : TAffineVector;
+   ringVectorX, ringVectorY : TAffineVector;
+   fx, fy, d : Single;
+begin
+   if (Manager=nil) or (nbParticles<=0) then Exit;
+   SetVector(pos, OwnerBaseSceneObject.AbsolutePosition);
+   SetVector(ringVectorY, OwnerBaseSceneObject.AbsoluteUp);
+   SetVector(ringVectorX, OwnerBaseSceneObject.AbsoluteDirection);
+   ringVectorY:=VectorCrossProduct(ringVectorX, ringVectorY);
+   AddVector(pos, InitialPosition.AsAffineVector);
+   while (nbParticles>0) do begin
+      // okay, ain't exactly an "isotropic" ring...
+      fx:=Random-0.5;
+      fy:=Random-0.5;
+      d:=RSqrt(Sqr(fx)+Sqr(fy));
+      tmp:=VectorCombine(ringVectorX, ringVectorY, fx*d, fy*d);
+      ScaleVector(tmp, minInitialSpeed+Random*(maxInitialSpeed-minInitialSpeed));
+      AddVector(tmp, InitialVelocity.AsAffineVector);
+      particle:=Manager.CreateParticle;
+      with particle do begin
+         RndVector(DispersionMode, av, FPositionDispersion);
+         Position:=VectorAdd(pos, av);
+         RndVector(DispersionMode, av, FVelocityDispersion);
+         Velocity:=VectorAdd(tmp, av);
+         particle.CreationTime:=time;
+      end;
+      Dec(nbParticles);
    end;
 end;
 
@@ -1250,7 +1306,10 @@ end;
 //
 function TPFXLifeColor.GetDisplayName : String;
 begin
-	Result:=Format('LifeTime %f', [LifeTime]);
+	Result:=Format('LifeTime %f - Inner [%.2f, %.2f, %.2f, %.2f] - Outer [%.2f, %.2f, %.2f, %.2f]',
+                  [LifeTime,
+                   ColorInner.Red, ColorInner.Green, ColorInner.Blue, ColorInner.Alpha,
+                   ColorOuter.Red, ColorOuter.Green, ColorOuter.Blue, ColorOuter.Alpha]);
 end;
 
 // OnChanged
@@ -1486,7 +1545,7 @@ begin
    FVertices:=TAffineVectorList.Create;
    FVertices.Capacity:=FNbSides+2;
    for i:=0 to FNbSides do begin
-      SinCos(i*c2PI/FNbSides, FParticleSize, s, c);
+      SinCos(i*c2PI/FNbSides, s, c);
       FVertices.Add(VectorCombine(FVx, Fvy, c, s));
    end;
    FVertBuf:=TAffineVectorList.Create;
@@ -1532,7 +1591,7 @@ begin
          else
             lck:=LifeColors[k];
             lck1:=LifeColors[k-1];
-            f:=(lifeTime-lck1.LifeTime)*(lck.LifeTime-lck1.LifeTime);
+            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
