@@ -790,11 +790,11 @@ function CreateRotationMatrix(const anAxis : TVector; angle : Single) : TMatrix;
 function CreateAffineRotationMatrix(const anAxis: TAffineVector; angle: Single): TAffineMatrix;
 
 //: Multiplies two 3x3 matrices
-function MatrixMultiply(const M1, M2 : TAffineMatrix) : TAffineMatrix; overload
+function MatrixMultiply(const M1, M2 : TAffineMatrix) : TAffineMatrix; overload;
 //: Multiplies two 4x4 matrices
-function MatrixMultiply(const M1, M2 : TMatrix) : TMatrix; overload
+function MatrixMultiply(const M1, M2 : TMatrix) : TMatrix; overload;
 //: Multiplies M1 by M2 and places result in MResult
-procedure MatrixMultiply(const M1, M2 : TMatrix; var MResult : TMatrix); overload
+procedure MatrixMultiply(const M1, M2 : TMatrix; var MResult : TMatrix); overload;
 
 //: Transforms a homogeneous vector by multiplying it with a matrix
 function VectorTransform(const V: TVector; const M: TMatrix): TVector; overload;
