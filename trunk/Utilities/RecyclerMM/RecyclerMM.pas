@@ -91,7 +91,7 @@ uses Windows;
 // if set invalid pointers free/realloc will be defered to SysFreeMem
 // This allows a mixed mode where the RecyclerMM can replace the default
 // after it has started allocating, but also means the RMM cannot be unbound.
-{.$define DEFER_INVALIDATE_POINTERS}
+{$define DEFER_INVALIDATE_POINTERS}
 
 // compile options implicit dependency rules
 
