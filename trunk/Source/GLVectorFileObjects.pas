@@ -475,6 +475,7 @@ type
       frameIndex1, frameIndex2 : Integer;
       lerpFactor : Single;
       weight : Single;
+      externalFrame : PMatrixArray;
    end;
 
 	// TSkeleton
@@ -1411,32 +1412,23 @@ type
 	      property Items[index : Integer] : TActorAnimation read GetItems write SetItems; default;
    end;
 
-	// TGLAnimationControler
+	// TGLBaseAnimationControler
 	//
-   {: Controls the blending of an additionnal skeletal animation into an actor.<p>
-      The animation controler allows animating an actor with several animations
-      at a time, for instance, you could use a "run" animation as base animation
-      (in TGLActor), blend an animation that makes the arms move differently
-      depending on what the actor is carrying, along with an animation that will
-      make the head turn toward a target. }
-   TGLAnimationControler = class (TComponent)
+   {: Base class for skeletal animation control.<p> }
+   TGLBaseAnimationControler = class (TComponent)
 	   private
 	      { Private Declarations }
          FEnabled : Boolean;
          FActor : TGLActor;
-         FAnimationName : TActorAnimationName;
-         FRatio : Single;
 
 	   protected
 	      { Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure DoChange;
          procedure SetEnabled(const val : Boolean);
          procedure SetActor(const val : TGLActor);
-         procedure SetAnimationName(const val : TActorAnimationName);
-         procedure SetRatio(const val : Single);
 
-         function Apply(var lerpInfo : TBlendedLerpInfo) : Boolean;
+         procedure DoChange; virtual;
+         function Apply(var lerpInfo : TBlendedLerpInfo) : Boolean; virtual;
 
 	   public
 	      { Public Declarations }
@@ -1447,6 +1439,32 @@ type
          { Published Declarations }
          property Enabled : Boolean read FEnabled write SetEnabled default True;
          property Actor : TGLActor read FActor write SetActor;
+	end;
+
+	// TGLAnimationControler
+	//
+   {: Controls the blending of an additionnal skeletal animation into an actor.<p>
+      The animation controler allows animating an actor with several animations
+      at a time, for instance, you could use a "run" animation as base animation
+      (in TGLActor), blend an animation that makes the arms move differently
+      depending on what the actor is carrying, along with an animation that will
+      make the head turn toward a target. }
+   TGLAnimationControler = class (TGLBaseAnimationControler)
+	   private
+	      { Private Declarations }
+         FAnimationName : TActorAnimationName;
+         FRatio : Single;
+
+	   protected
+	      { Protected Declarations }
+         procedure SetAnimationName(const val : TActorAnimationName);
+         procedure SetRatio(const val : Single);
+
+         procedure DoChange; override;
+         function Apply(var lerpInfo : TBlendedLerpInfo) : Boolean; override;
+
+      published
+         { Published Declarations }
          property AnimationName : String read FAnimationName write SetAnimationName;
          property Ratio : Single read FRatio write SetRatio;
 	end;
@@ -1511,8 +1529,8 @@ type
          procedure PrepareMesh; override;
          procedure PrepareBuildList(var mrci : TRenderContextInfo); override;
 
-         procedure RegisterControler(aControler : TGLAnimationControler);
-         procedure UnRegisterControler(aControler : TGLAnimationControler);
+         procedure RegisterControler(aControler : TGLBaseAnimationControler);
+         procedure UnRegisterControler(aControler : TGLBaseAnimationControler);
 
       public
          { Public Declarations }
@@ -2967,7 +2985,7 @@ begin
                                            Frames[lerpInfos[i].frameIndex2].Rotation,
                                            lerpInfos[i].lerpFactor);
                   Rotation.AngleCombine(blendRotations, 1);
-                  Rotation.AngleCombine(Frames[0].Rotation, -1);
+                  //Rotation.AngleCombine(Frames[0].Rotation, -1);
                   Inc(i);
                end;
                blendRotations.Free;
@@ -6027,12 +6045,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLAnimationControler ------------------
+// ------------------ TGLBaseAnimationControler ------------------
 // ------------------
 
 // Create
 //
-constructor TGLAnimationControler.Create(AOwner: TComponent);
+constructor TGLBaseAnimationControler.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    FEnabled:=True;
@@ -6040,7 +6058,7 @@ end;
 
 // Destroy
 //
-destructor TGLAnimationControler.Destroy;
+destructor TGLBaseAnimationControler.Destroy;
 begin
    SetActor(nil);
 	inherited Destroy;
@@ -6048,7 +6066,7 @@ end;
 
 // Notification
 //
-procedure TGLAnimationControler.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLBaseAnimationControler.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if (AComponent=FActor) and (Operation=opRemove) then
       SetActor(nil);
@@ -6057,15 +6075,15 @@ end;
 
 // DoChange
 //
-procedure TGLAnimationControler.DoChange;
+procedure TGLBaseAnimationControler.DoChange;
 begin
-   if Assigned(FActor) and (AnimationName<>'') then
+   if Assigned(FActor) then
       FActor.NotifyChange(Self);
 end;
 
 // SetEnabled
 //
-procedure TGLAnimationControler.SetEnabled(const val : Boolean);
+procedure TGLBaseAnimationControler.SetEnabled(const val : Boolean);
 begin
    if val<>FEnabled then begin
       FEnabled:=val;
@@ -6075,7 +6093,7 @@ end;
 
 // SetActor
 //
-procedure TGLAnimationControler.SetActor(const val : TGLActor);
+procedure TGLBaseAnimationControler.SetActor(const val : TGLActor);
 begin
    if FActor<>val then begin
       if Assigned(FActor) then
@@ -6086,6 +6104,26 @@ begin
          DoChange;
       end;
    end;
+end;
+
+// Apply
+//
+function TGLBaseAnimationControler.Apply(var lerpInfo : TBlendedLerpInfo) : Boolean;
+begin
+   // virtual
+   Result:=False;
+end;
+
+// ------------------
+// ------------------ TGLAnimationControler ------------------
+// ------------------
+
+// DoChange
+//
+procedure TGLAnimationControler.DoChange;
+begin
+   if AnimationName<>'' then
+      inherited;
 end;
 
 // SetAnimationName
@@ -6185,7 +6223,7 @@ end;
 
 // RegisterControler
 //
-procedure TGLActor.RegisterControler(aControler : TGLAnimationControler);
+procedure TGLActor.RegisterControler(aControler : TGLBaseAnimationControler);
 begin
    if not Assigned(FControlers) then
       FControlers:=TList.Create;
@@ -6195,7 +6233,7 @@ end;
 
 // UnRegisterControler
 //
-procedure TGLActor.UnRegisterControler(aControler : TGLAnimationControler);
+procedure TGLActor.UnRegisterControler(aControler : TGLBaseAnimationControler);
 begin
    Assert(Assigned(FControlers));
    FControlers.Remove(aControler);
