@@ -120,6 +120,10 @@ type
 			procedure ApplyTorque(const deltaTime : Double; const turnTorque, rollTorque, pitchTorque : Single);
 			{: Inverts the translation vector.<p> }
 			procedure MirrorTranslation;
+         {: Bounce speed as if hitting a surface.<p>
+            restitution is the coefficient of restituted energy (1=no energy loss,
+            0=no bounce). The normal is NOT assumed to be normalized. }
+         procedure SurfaceBounce(const surfaceNormal : TVector; restitution : Single);
 
 		published
 			{ Published Declarations }
@@ -480,6 +484,21 @@ end;
 procedure TGLBInertia.MirrorTranslation;
 begin
 	FTranslationSpeed.Invert;
+end;
+
+// SurfaceBounce
+//
+procedure TGLBInertia.SurfaceBounce(const surfaceNormal : TVector; restitution : Single);
+var
+   f : Single;
+   nonComp, rightVec : TVector;
+begin
+   // does the current speed vector comply?
+   f:=VectorDotProduct(FTranslationSpeed.AsVector, surfaceNormal);
+   if f<0 then begin
+      // remove the non-complying part of the speed vector
+      FTranslationSpeed.AddScaledVector(-f/VectorNorm(surfaceNormal)*(1+restitution), surfaceNormal);
+   end;
 end;
 
 // ------------------------------------------------------------------
