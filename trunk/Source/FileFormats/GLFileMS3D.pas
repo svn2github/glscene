@@ -6,6 +6,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+	   <li>28/10/03 - SG - Partly implemented skeletal animation,
+                           asynchronous animations will fail however.
 	   <li>03/06/03 - EG - Added header, now self-registers
 	</ul></font>
 }
@@ -14,7 +16,8 @@ unit GLFileMS3D;
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects,  VectorTypes, gltexture;
+  Classes, SysUtils, GLVectorFileObjects,  VectorTypes, GLTexture, VectorGeometry,
+  VectorLists;
 
 type
    // TGLMS3DVectorFile
@@ -69,9 +72,12 @@ var
   iTotalFrames : integer;
 
   nNumJoints : word;
-  ms3d_joint : TMS3DJoint;
   ms3d_joints : PMS3DJointArray;
 
+  bonelist : TStringList;
+  bone : TSkeletonBone;
+  frame : TSkeletonFrame;
+  rot, pos : TVector3f;
 
   procedure AddFaceVertex(ID: integer);
   begin
@@ -81,6 +87,42 @@ var
     TexCoordID := MO.TexCoords.Add(ms3d_triangle.s[ID], -ms3d_triangle.t[ID]);
     // Add the vertex to the vertex list
     FaceGroup.Add(ms3d_triangle.vertexIndices[ID], NormalID, TexCoordID);
+  end;
+
+  function AddRotations(rot, baserot : TAffineVector) : TAffineVector;
+  var
+    mat1,mat2,rmat : TMatrix;
+    s,c : Single;
+    Trans : TTransformations;
+  begin
+    mat1:=IdentityHMGMatrix;
+    mat2:=IdentityHMGMatrix;
+
+    SinCos(rot[0],s,c);
+    rmat:=CreateRotationMatrixX(s,c);
+    mat1:=MatrixMultiply(mat1,rmat);
+    SinCos(rot[1],s,c);
+    rmat:=CreateRotationMatrixY(s,c);
+    mat1:=MatrixMultiply(mat1,rmat);
+    SinCos(rot[2],s,c);
+    rmat:=CreateRotationMatrixZ(s,c);
+    mat1:=MatrixMultiply(mat1,rmat);
+
+    SinCos(baserot[0],s,c);
+    rmat:=CreateRotationMatrixX(s,c);
+    mat2:=MatrixMultiply(mat2,rmat);
+    SinCos(baserot[1],s,c);
+    rmat:=CreateRotationMatrixY(s,c);
+    mat2:=MatrixMultiply(mat2,rmat);
+    SinCos(baserot[2],s,c);
+    rmat:=CreateRotationMatrixZ(s,c);
+    mat2:=MatrixMultiply(mat2,rmat);
+
+    mat1:=MatrixMultiply(mat1,mat2);
+    if MatrixDecompose(mat1,Trans) then
+      SetVector(Result,Trans[ttRotateX],Trans[ttRotateY],Trans[ttRotateZ])
+    else
+      Result:=NullVector;
   end;
 
 begin
@@ -100,7 +142,11 @@ begin
     aStream.ReadBuffer(nNumVertices, sizeof(nNumVertices));
 
     // Create the vertex list
-    MO := TMeshObject.CreateOwned(Owner.MeshObjects);
+    if Owner is TGLActor then begin
+      MO := TSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
+      TSkeletonMeshObject(MO).BonesPerVertex:=1;
+    end else
+      MO := TMeshObject.CreateOwned(Owner.MeshObjects);
     MO.Mode := momFaceGroups;
 
     // Then comes nNumVertices * sizeof (ms3d_vertex_t)
@@ -112,6 +158,8 @@ begin
       with ms3d_vertices[i] do  begin
         // Add the vertex to the vertexlist
         MO.Vertices.Add(vertex.v);
+        if Owner is TGLActor then
+          TSkeletonMeshObject(MO).AddWeightedBone(Byte(BoneID),1);
       end;
 
     // number of triangles
@@ -174,7 +222,14 @@ begin
       // Create the material, if there's a materiallibrary!
       if Assigned(Owner.MaterialLibrary) then
       begin
-        GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(ms3d_material.name, ms3d_material.texture);
+        if FileExists(ms3d_material.texture) then
+          GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(ms3d_material.name, ms3d_material.texture)
+        else begin
+          if not Owner.IgnoreMissingTextures then
+            Exception.Create('Texture file not found: '+ms3d_material.texture);
+          GLLibMaterial := Owner.MaterialLibrary.Materials.Add;
+          GLLibMaterial.Name := ms3d_material.name;
+        end;
         GLLibMaterial.Material.FrontProperties.Emission.Color := ms3d_material.emissive;
         GLLibMaterial.Material.FrontProperties.Ambient.Color := ms3d_material.ambient;
         GLLibMaterial.Material.FrontProperties.Diffuse.Color := ms3d_material.diffuse;
@@ -222,37 +277,35 @@ begin
     aStream.ReadBuffer(nNumJoints, sizeof(nNumJoints));
 
     // nNumJoints * sizeof (ms3d_joint_t)
-    ms3d_joints := AllocMem(sizeof(TMS3DJoint) * nNumTriangles);
+    ms3d_joints := AllocMem(sizeof(TMS3DJoint) * nNumJoints);
 
     // We have to read the joints one by one!
     for i := 0 to nNumJoints-1 do
     begin
-      ms3d_joint := ms3d_joints^[i];
-
       // Read the joint base
-      aStream.ReadBuffer(ms3d_joint.Base, sizeof(TMS3DJointBase));
+      aStream.ReadBuffer(ms3d_joints[i].Base, sizeof(TMS3DJointBase));
 
-      if ms3d_joint.base.numKeyFramesRot>0 then
+      if ms3d_joints[i].base.numKeyFramesRot>0 then
       begin
         //     ms3d_keyframe_rot_t keyFramesRot[numKeyFramesRot];      // local animation matrices
         // Allocate memory for the rotations
-        ms3d_joint.keyFramesRot := AllocMem(sizeof(TMS3DKeyframeRotation) * ms3d_joint.base.numKeyFramesRot);
+        ms3d_joints[i].keyFramesRot := AllocMem(sizeof(TMS3DKeyframeRotation) * ms3d_joints[i].base.numKeyFramesRot);
 
         // Read the rotations
-        aStream.ReadBuffer(ms3d_joint.keyFramesRot, sizeof(TMS3DKeyframeRotation) * ms3d_joint.base.numKeyFramesRot);
+        aStream.ReadBuffer(ms3d_joints[i].keyFramesRot^, sizeof(TMS3DKeyframeRotation) * ms3d_joints[i].base.numKeyFramesRot);
       end else
-        ms3d_joint.keyFramesRot := nil;
+        ms3d_joints[i].keyFramesRot := nil;
 
-      if ms3d_joint.base.numKeyFramesTrans>0 then
+      if ms3d_joints[i].base.numKeyFramesTrans>0 then
       begin
         //     ms3d_keyframe_pos_t keyFramesTrans[numKeyFramesTrans];  // local animation matrices
         // Allocate memory for the translations
-        ms3d_joint.keyFramesTrans := AllocMem(sizeof(TMS3DKeyframePosition) * ms3d_joint.base.numKeyFramesTrans);
+        ms3d_joints[i].keyFramesTrans := AllocMem(sizeof(TMS3DKeyframePosition) * ms3d_joints[i].base.numKeyFramesTrans);
 
         // Read the translations
-        aStream.ReadBuffer(ms3d_joint.keyFramesTrans, sizeof(TMS3DKeyframePosition) * ms3d_joint.base.numKeyFramesTrans);
+        aStream.ReadBuffer(ms3d_joints[i].keyFramesTrans^, sizeof(TMS3DKeyframePosition) * ms3d_joints[i].base.numKeyFramesTrans);
       end else
-        ms3d_joint.keyFramesTrans := nil;
+        ms3d_joints[i].keyFramesTrans := nil;
     end;
 
     // Right here, it's time to use the joints - this from the ms3d spec;
@@ -274,6 +327,68 @@ begin
     //
     // - Mete Ciragan
     // ***
+
+    if Owner is TGLActor then
+    begin
+
+      // Bone names are added to a list initally to sort out parents
+      bonelist:=TStringList.Create;
+      for i := 0 to nNumJoints-1 do
+        bonelist.Add(ms3d_joints[i].Base.Name);
+
+      // Find parent bones and add their children
+      for i := 0 to nNumJoints-1 do begin
+        j:=bonelist.IndexOf(ms3d_joints[i].Base.ParentName);
+        if j = -1 then
+          bone:=TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
+        else
+          bone:=TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones.BoneByID(j));
+        bone.Name:=ms3d_joints[i].Base.Name;
+        bone.BoneID:=i;
+      end;
+      bonelist.Free;
+
+      // Set up the base pose
+      frame:=TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
+      for i := 0 to nNumJoints-1 do
+      begin
+        pos:=ms3d_joints[i].Base.Position.V;
+        rot:=ms3d_joints[i].Base.Rotation.V;
+        frame.Position.Add(pos);
+        frame.Rotation.Add(rot);
+      end;
+
+      // Now load the animations
+      for i:=0 to nNumJoints-1 do
+      begin
+        if ms3d_joints[i].Base.NumKeyFramesTrans = ms3d_joints[i].Base.NumKeyFramesRot then
+        begin
+          for j:=0 to ms3d_joints[i].Base.NumKeyFramesTrans-1 do
+          begin
+            if (j+1) = Owner.Skeleton.Frames.Count then
+              frame:=TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames)
+            else
+              frame:=Owner.Skeleton.Frames[j+1];
+
+            // Set rootbone values to base pose
+            if ms3d_joints[i].Base.ParentName = '' then begin
+              pos:=ms3d_joints[i].Base.Position.V;
+              rot:=ms3d_joints[i].Base.Rotation.V;
+            end else begin
+              pos:=ms3d_joints[i].KeyFramesTrans[j].Position.V;
+              AddVector(pos,ms3d_joints[i].Base.Position.V);
+              rot:=ms3d_joints[i].KeyFramesRot[j].Rotation.V;
+              rot:=AddRotations(rot,ms3d_joints[i].Base.Rotation.V);
+            end;
+            frame.Position.Add(pos);
+            frame.Rotation.Add(rot);
+          end;
+        end;
+      end;
+
+      Owner.Skeleton.RootBones.PrepareGlobalMatrices;
+      TSkeletonMeshObject(MO).PrepareBoneMatrixInvertedMeshes;
+    end;
 
   finally
     if Assigned(ms3d_vertices) then
