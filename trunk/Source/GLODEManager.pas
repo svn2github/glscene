@@ -36,7 +36,7 @@ unit GLODEManager;
 interface
 
 uses
-  Classes, ODEImport, ODEGL, GLScene, GLMisc, Geometry, GLTexture, OpenGL12,
+  Classes, ODEImport, ODEGL, GLScene, GLMisc, Geometry, GLTexture, OpenGL1x,
   XOpenGL, SysUtils, GLObjects, XCollection, GLTerrainRenderer, PersistentClasses;
 
 type

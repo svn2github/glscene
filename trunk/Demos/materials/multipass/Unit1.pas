@@ -24,7 +24,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLMisc, GLTexture, OpenGL12,
+  Dialogs, GLScene, GLObjects, GLWin32Viewer, GLMisc, GLTexture, OpenGL1x,
   StdCtrls, GLGeomObjects;
 
 type

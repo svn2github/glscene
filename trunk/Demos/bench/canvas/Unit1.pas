@@ -66,7 +66,7 @@ implementation
 
 {$R *.dfm}
 
-uses GLCanvas, GLCrossPlatform, OpenGL12;
+uses GLCanvas, GLCrossPlatform, OpenGL1x;
 
 type
    TWhat = (wLines, wEllipses, wRects, wPoints, wTextOut);

@@ -14,7 +14,7 @@ interface
 
 uses
   Windows, Forms, Dialogs, SysUtils, GLScene, GLObjects, GLMisc, Classes, Controls, GLGraph,
-  GLCollision, GLTexture, OpenGL12, StdCtrls, ExtCtrls, Geometry, Graphics,
+  GLCollision, GLTexture, OpenGL1x, StdCtrls, ExtCtrls, Geometry, Graphics,
   GLVectorFileObjects, GLWin32Viewer, GLSpaceText, GLGeomObjects;
 
 type

@@ -7,7 +7,7 @@ interface
 {$IFNDEF LINUX} {$MESSAGE Error 'Unit is Linux specific'} {$ENDIF}
 
 uses
-  XLib, Classes, SysUtils, GLContext, QForms, OpenGL12, Qt;
+  XLib, Classes, SysUtils, GLContext, QForms, OpenGL1x, Qt;
 
 type
 

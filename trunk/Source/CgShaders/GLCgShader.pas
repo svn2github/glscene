@@ -289,7 +289,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL12, Dialogs;
+uses SysUtils, OpenGL1x, Dialogs;
 
 var
   vCgContextCount : Integer;

@@ -3,7 +3,7 @@ unit GLExplosionFx;
 interface
 
 uses
-     opengl12, geometry, glMisc, glScene, glVectorFileObjects, glTexture, VectorLists, XCollection;
+     OpenGL1x, geometry, glMisc, glScene, glVectorFileObjects, glTexture, VectorLists, XCollection;
 
 {
 TGLBExplosionFX Effect

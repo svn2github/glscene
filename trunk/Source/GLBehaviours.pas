@@ -166,7 +166,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL12;
+uses SysUtils, OpenGL1x;
 
 // GetOrCreateInertia (TGLBehaviours)
 //

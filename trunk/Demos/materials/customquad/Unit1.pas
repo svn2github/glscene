@@ -42,7 +42,7 @@ implementation
 
 {$R *.DFM}
 
-uses OpenGL12, JPeg;
+uses OpenGL1x, JPeg;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

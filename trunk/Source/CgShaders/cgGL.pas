@@ -105,7 +105,7 @@ unit cgGL;
 interface
 
 uses
-  OpenGL12{$IFNDEF COMPILER6_UP}, Windows{$ENDIF}, cg;
+  OpenGL1x{$IFNDEF COMPILER6_UP}, Windows{$ENDIF}, cg;
 
 (*$HPPEMIT '#include "cgGL.h"' *)
 

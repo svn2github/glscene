@@ -113,7 +113,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL12, GLCrossPlatform, XOpenGL;
+uses OpenGL1x, GLCrossPlatform, XOpenGL;
 
 procedure Register;
 begin

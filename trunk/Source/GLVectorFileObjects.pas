@@ -100,7 +100,7 @@ unit GLVectorFileObjects;
 
 interface
 
-uses Classes, GLScene, OpenGL12, Geometry, SysUtils, GLMisc, GLTexture,
+uses Classes, GLScene, OpenGL1x, Geometry, SysUtils, GLMisc, GLTexture,
    GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
    ApplicationFileIO, GLSilhouette;
 

@@ -16,7 +16,7 @@ interface
 
 uses
   Classes,  GLVectorFileObjects, VerletClasses, VectorTypes, VectorLists,
-  Geometry, GLTexture, OpenGL12, SysUtils;
+  Geometry, GLTexture, OpenGL1x, SysUtils;
 
 type
   {: Class that represents a face. This structure is not used for rendering, but

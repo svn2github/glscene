@@ -17,7 +17,7 @@ interface
 {$i GLScene.inc}
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
-uses Windows, Messages, Classes, GLScene, Graphics, OpenGL12, GLTexture, GLContext;
+uses Windows, Messages, Classes, GLScene, Graphics, OpenGL1x, GLTexture, GLContext;
 
 type
 
@@ -644,7 +644,7 @@ begin
 		   if FCurrentBase = 0 then
 			   raise Exception.Create('FontManager: no more display lists available');
          NewEntry.FVirtualHandle.AllocateHandle;
-		   if not OpenGL12.wglUseFontOutlines(MemDC, firstChar, nbLists,
+		   if not OpenGL1x.wglUseFontOutlines(MemDC, firstChar, nbLists,
                                             FCurrentBase, allowedDeviation,
                                             FExtrusion, WGL_FONT_POLYGONS,
                                             @NewEntry^.GlyphMetrics) then

@@ -200,7 +200,7 @@ implementation
 
 {$R *.DFM}
 
-uses GLSceneRegister, GLStrings, Info, OpenGL12, ClipBrd, GLWin32Viewer;
+uses GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer;
 
 resourcestring
    cGLSceneEditor = 'GLScene Editor';

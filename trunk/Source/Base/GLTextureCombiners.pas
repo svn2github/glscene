@@ -55,7 +55,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Classes, GLContext, OpenGL12;
+uses Classes, GLContext, OpenGL1x;
 
 // TCAssertCheck
 //

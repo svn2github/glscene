@@ -23,7 +23,7 @@ interface
 }
 
 uses
-  OpenGL12, Geometry, ODEImport, GLScene, VectorTypes, GLObjects;
+  OpenGL1x, Geometry, ODEImport, GLScene, VectorTypes, GLObjects;
 
   procedure DrawBox(Sides : TdVector3);
   procedure setTransform (pos : TdVector3; R : TdMatrix3);

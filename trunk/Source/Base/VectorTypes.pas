@@ -3,10 +3,10 @@
 //
 {: VectorTypes<p>
 
-   Defines base vector types for use in Geometry.pas and OpenGL12.pas.<p>
+   Defines base vector types for use in Geometry.pas and OpenGL1x.pas.<p>
 
    The sole aim of this unit is to limit dependency between the Geometry
-   and OpenGL12 units by introducing the base compatibility types
+   and OpenGL1x units by introducing the base compatibility types
    (and only the *base* types).<p>
 
    Conventions:<ul>

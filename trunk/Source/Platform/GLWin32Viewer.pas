@@ -298,7 +298,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL12, SysUtils, GLWin32Context, GLCrossPlatform, GLScreen;
+uses OpenGL1x, SysUtils, GLWin32Context, GLCrossPlatform, GLScreen;
 
 const
    cScreenDepthToBPP : array [sd8bits..sd32bits] of Integer = (8, 16, 24, 32);

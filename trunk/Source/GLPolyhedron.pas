@@ -9,7 +9,7 @@ unit GLPolyhedron;
 
 interface
 
-uses Classes, GLScene, GLTexture, Geometry, OpenGL12, GLMisc;
+uses Classes, GLScene, GLTexture, Geometry, OpenGL1x, GLMisc;
 
 type
 

@@ -9,7 +9,7 @@ unit GLGeomObjects;
 
 interface
 
-uses Classes, GLScene, GLTexture, Geometry, OpenGL12, GLMisc, GLObjects;
+uses Classes, GLScene, GLTexture, Geometry, OpenGL1x, GLMisc, GLObjects;
 
 type
 

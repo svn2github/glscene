@@ -17,7 +17,7 @@ interface
 
 uses
    Forms, Windows, Messages, SysUtils, Classes, GLMisc, GLScene, GLHudObjects,
-   GLTexture, OpenGL12, GLBitmapFont, GLWindowsFont, StdCtrls, Geometry,
+   GLTexture, OpenGL1x, GLBitmapFont, GLWindowsFont, StdCtrls, Geometry,
    Controls, GLGui, Graphics;
 
 type

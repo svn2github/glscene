@@ -143,7 +143,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Graphics, OpenGL12;
+uses Graphics, OpenGL1x;
 
 const
    cNoPrimitive = MaxInt;

@@ -34,7 +34,7 @@ unit GLMultiPolygon;
 interface
 
 uses
-   Classes, OpenGL12, Spline, Geometry, VectorLists, PersistentClasses,
+   Classes, OpenGL1x, Spline, Geometry, VectorLists, PersistentClasses,
    GLScene, GLObjects, GLMisc, GLTexture, GLGeomObjects;
 
 type

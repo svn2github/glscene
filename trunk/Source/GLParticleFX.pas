@@ -619,7 +619,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL12, GLCrossPlatform;
+uses SysUtils, OpenGL1x, GLCrossPlatform;
 
 // GetOrCreateSourcePFX
 //

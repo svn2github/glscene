@@ -59,7 +59,7 @@ unit GLMisc;
 
 interface
 
-uses Classes, Geometry, SysUtils, OpenGL12, Spline, VectorLists;
+uses Classes, Geometry, SysUtils, OpenGL1x, Spline, VectorLists;
 
 {$i GLScene.inc}
 

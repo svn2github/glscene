@@ -1976,7 +1976,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   GLStrings, XOpenGL, VectorTypes, OpenGL12, ApplicationFileIO;
+   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO;
 
 var
    vCounterFrequency : Int64;

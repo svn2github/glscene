@@ -23,7 +23,7 @@
       <li>26/01/02 - EG - Added xglBegin/EndUpdate mechanism
       <li>21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
       <li>18/12/01 - EG - Added xglEnableClientState
-      <li>24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL12)
+      <li>24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL1x)
       <li>17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall) 
       <li>16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
       <li>14/08/01 - EG - Added xglMapTexCoordToSecond
@@ -36,7 +36,7 @@ interface
 
 {.$define MULTITHREADOPENGL}
 
-uses OpenGL12;
+uses OpenGL1x;
 
 type
    TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond,

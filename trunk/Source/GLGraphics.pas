@@ -40,7 +40,7 @@ uses Classes,
 {$ifdef GLS_Graphics32_SUPPORT}
    GR32,
 {$endif}
-   GLMisc, OpenGL12, GLCrossPlatform;
+   GLMisc, OpenGL1x, GLCrossPlatform;
 
 type
 

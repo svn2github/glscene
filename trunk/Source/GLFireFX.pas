@@ -210,7 +210,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL12, VectorLists;
+uses SysUtils, OpenGL1x, VectorLists;
 
 // GetOrCreateFireFX (TGLObjectEffects)
 //

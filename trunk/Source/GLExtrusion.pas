@@ -29,7 +29,7 @@ unit GLExtrusion;
 
 interface
 
-uses Classes, OpenGL12, GLObjects, GLScene, GLMisc, GLTexture, GLMultiPolygon;
+uses Classes, OpenGL1x, GLObjects, GLScene, GLMisc, GLTexture, GLMultiPolygon;
 
 type
 

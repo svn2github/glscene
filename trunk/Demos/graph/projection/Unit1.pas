@@ -7,7 +7,7 @@
 
    The points and plane are rendered directly with regular scene objects,
    but the projection lines between the points and the plane are computed
-   and rendered on the fly in a TDirectOpenGL. This is a typical case where
+   and rendered on the fly in a TGLDirectOpenGL. This is a typical case where
    a little bit of custom code helps a lot: we could have used many TGLLines
    object to draw the lines, but this would have resulted in a lot of object
    creation and update code, and ultimately in rather poor performance.<br>
@@ -21,7 +21,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, GLScene, GLObjects,
-  GLWin32Viewer, GLMisc, OpenGL12, GLTexture, Geometry, GLGraph,
+  GLWin32Viewer, GLMisc, OpenGL1x, GLTexture, Geometry, GLGraph,
   GLGeomObjects;
 
 type

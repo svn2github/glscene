@@ -98,7 +98,7 @@ implementation
 
 {$R *.DFM}
 
-uses OpenGL12;
+uses OpenGL1x;
 
 { TForm1 }
 

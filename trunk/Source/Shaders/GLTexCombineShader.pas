@@ -76,7 +76,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLTextureCombiners, OpenGL12, XOpenGL, GLMisc, GLCrossPlatform;
+uses SysUtils, GLTextureCombiners, OpenGL1x, XOpenGL, GLMisc, GLCrossPlatform;
 
 procedure Register;
 begin

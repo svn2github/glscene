@@ -94,7 +94,7 @@ implementation
 
 {$R *.DFM}
 
-uses Keyboard, OpenGL12;
+uses Keyboard, OpenGL1x;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

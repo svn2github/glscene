@@ -54,7 +54,7 @@ interface
 {$i GLScene.inc}
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
-uses Windows, Classes, Graphics, GLMisc, OpenGL12, GLScene, Geometry, GLGraphics,
+uses Windows, Classes, Graphics, GLMisc, OpenGL1x, GLScene, Geometry, GLGraphics,
      Dialogs, SysUtils, GLObjects, GLBitmapFont, xopengl, GLTexture, GLWin32Viewer,
      GLContext, GLBehaviours, XCollection;
 

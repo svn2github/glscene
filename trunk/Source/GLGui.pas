@@ -14,7 +14,7 @@ interface
 
 uses
   Classes, Graphics, GLScene, GLMisc, GLBitmapFont, GLTexture, GLCrossPlatform,
-  OpenGL12, SysUtils, PersistentClasses;
+  OpenGL1x, SysUtils, PersistentClasses;
 
 Type
 

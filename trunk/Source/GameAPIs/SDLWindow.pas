@@ -194,7 +194,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses OpenGL12, SyncObjs;
+uses OpenGL1x, SyncObjs;
 
 var
    vSDLCS : TCriticalSection;

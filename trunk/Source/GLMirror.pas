@@ -19,7 +19,7 @@ unit GLMirror;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture;
+uses Classes, GLScene, Geometry, OpenGL1x, GLMisc, GLTexture;
 
 type
 

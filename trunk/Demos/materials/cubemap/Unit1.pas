@@ -47,7 +47,7 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, GLTexture, OpenGL12;
+uses Jpeg, GLTexture, OpenGL1x;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin

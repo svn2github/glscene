@@ -75,7 +75,7 @@ contains
   FRFaceEditor in '..\Source\DesignTime\FRFaceEditor.pas' {RFaceEditor: TFrame},
   FRMaterialPreview in '..\Source\DesignTime\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
   FMaterialEditorForm in '..\Source\DesignTime\FMaterialEditorForm.pas' {MaterialEditorForm},
-  OpenGL12 in '..\Source\Base\OpenGL12.pas',
+  OpenGL1x in '..\Source\Base\OpenGL1x.pas',
   GLVectorFileObjects in '..\Source\GLVectorFileObjects.pas',
   FLibMaterialPicker in '..\Source\DesignTime\FLibMaterialPicker.pas' {LibMaterialPicker},
   FRTextureEdit in '..\Source\DesignTime\FRTextureEdit.pas' {RTextureEdit: TFrame},

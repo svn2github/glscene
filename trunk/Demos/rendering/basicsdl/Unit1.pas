@@ -45,7 +45,7 @@ implementation
 
 {$R *.dfm}
 
-uses OpenGL12, Dialogs, GLTexture, Jpeg;
+uses OpenGL1x, Dialogs, GLTexture, Jpeg;
 
 procedure TDataModule1.DataModuleCreate(Sender: TObject);
 begin

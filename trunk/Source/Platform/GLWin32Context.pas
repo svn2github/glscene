@@ -97,7 +97,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Forms, OpenGL12, GLCrossPlatform, Messages;
+uses Forms, OpenGL1x, GLCrossPlatform, Messages;
 
 resourcestring
    cIncompatibleContexts =       'Incompatible contexts';

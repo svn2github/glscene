@@ -94,7 +94,7 @@ type
 
 implementation
 
-uses OpenGL12, SysUtils, ShellAPI;
+uses OpenGL1x, SysUtils, ShellAPI;
 
 {$R *.dfm}
 {$R Info.res}

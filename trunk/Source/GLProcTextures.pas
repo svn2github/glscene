@@ -19,7 +19,7 @@ unit GLProcTextures;
 
 interface
 
-uses Classes, GLTexture, GLGraphics, OpenGL12, GLCrossPlatform, SysUtils;
+uses Classes, GLTexture, GLGraphics, OpenGL1x, GLCrossPlatform, SysUtils;
 
 const
   GRADIENT_TABLE_SIZE = 256;

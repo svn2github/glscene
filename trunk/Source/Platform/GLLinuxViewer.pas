@@ -131,7 +131,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  OpenGL12, SysUtils, GLLinuxContext;
+  OpenGL1x, SysUtils, GLLinuxContext;
 
 // ------------------
 // ------------------ TGLLinuxSceneViewer ------------------

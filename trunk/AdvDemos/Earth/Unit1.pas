@@ -75,7 +75,7 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, OpenGL12, Geometry, GLContext;
+uses Jpeg, OpenGL1x, Geometry, GLContext;
    // accurate movements left for later... or the astute reader
    // USolarSystem;
 

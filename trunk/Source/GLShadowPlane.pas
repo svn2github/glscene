@@ -15,7 +15,7 @@ unit GLShadowPlane;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLObjects,
+uses Classes, GLScene, Geometry, OpenGL1x, GLMisc, GLTexture, GLObjects,
    GLCrossPlatform;
 
 type

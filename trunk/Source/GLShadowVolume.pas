@@ -14,7 +14,7 @@ unit GLShadowVolume;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLSilhouette, GLTexture,
+uses Classes, GLScene, Geometry, OpenGL1x, GLMisc, GLSilhouette, GLTexture,
   GLCrossPlatform,  PersistentClasses;
 
 type

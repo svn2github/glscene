@@ -372,7 +372,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL12, GLCrossPlatform;
+uses OpenGL1x, GLCrossPlatform;
 
 resourcestring
    cCannotAlterAnActiveContext = 'Cannot alter an active context';
