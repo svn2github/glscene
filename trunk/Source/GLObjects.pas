@@ -1006,13 +1006,16 @@ begin
    glLineWidth(1);
    ma:=0.5*size;
    mi:=-ma;
-   glColor3f(Color[0], Color[1], Color[2]);
+   ResetGLMaterialColors;
+   glColorMaterial(GL_FRONT, GL_EMISSION);
+   glEnable(GL_COLOR_MATERIAL);
+   glColor4fv(@color);
    glBegin(GL_LINE_STRIP);
       // front face
       glVertex3f(ma, mi, mi); glVertex3f(ma, ma, mi);
       glVertex3f(ma, ma, ma); glVertex3f(ma, mi, ma);
       glVertex3f(ma, mi, mi);
-      // partial up back fac
+      // partial up back face
       glVertex3f(mi, mi, mi); glVertex3f(mi, mi, ma);
       glVertex3f(mi, ma, ma); glVertex3f(mi, ma, mi);
       // right side low

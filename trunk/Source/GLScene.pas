@@ -6694,7 +6694,7 @@ procedure TGLSceneBuffer.SetAntiAliasing(const val : TGLAntiAliasing);
 begin
    if FAntiAliasing<>val then begin
       FAntiAliasing:=val;
-      NotifyChange(Self);
+      DoStructuralChange;
    end;
 end;
 
@@ -6704,7 +6704,7 @@ procedure TGLSceneBuffer.SetDepthPrecision(const val : TGLDepthPrecision);
 begin
    if FDepthPrecision<>val then begin
       FDepthPrecision:=val;
-      NotifyChange(Self);
+      DoStructuralChange;
    end;
 end;
 
@@ -6714,7 +6714,7 @@ procedure TGLSceneBuffer.SetColorDepth(const val : TGLColorDepth);
 begin
    if FColorDepth<>val then begin
       FColorDepth:=val;
-      NotifyChange(Self);
+      DoStructuralChange;
    end;
 end;
 
