@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/05/03 - EG - SetPenWidth now correctly stops the primitive
       <li>08/01/03 - EG - StopPrimitive now public
       <li>09/12/02 - EG - Now properly disables fog
       <li>20/11/02 - EG - Now uses Types/Windows TPoint (D5 & D6 tested only) 
@@ -322,6 +323,7 @@ begin
    if val<1 then Exit;
    if val<>FPenWidth then begin
       FPenWidth:=val;
+      StopPrimitive;
       glLineWidth(val);
       glPointSize(val);
    end;
