@@ -11,7 +11,8 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
-      <li>14/04/03 - SG - Added lsmBezierSpline to TGLLines.SplineMode
+      <li>01/05/03 - SG - Added NURBS Curve to TGLLines (color not supported yet)
+      <li>14/04/03 - SG - Added a Simple Bezier Spline to TGLLines (color not supported yet)
       <li>02/04/03 - EG - TGLPlane.RayCastIntersect fix (Erick Schuitema)
       <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
       <li>22/01/03 - EG - TGLCube.RayCastIntersect fixes (Dan Bartlett)
@@ -405,7 +406,7 @@ type
    // TLineSplineMode
    //
    {: Available spline modes for a TLine. }
-   TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline);
+   TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve);
 
    // TGLLinesNode
    //
@@ -524,6 +525,9 @@ type
          FOptions : TLinesOptions;
          FNodeSize : Single;
          FOldNodeColor : TColorVector;
+         FNURBSOrder : Integer;
+         FNURBSTolerance : Single;
+         FNURBSKnots : TSingleList;
 
 		protected
 			{ Protected Declarations }
@@ -535,6 +539,8 @@ type
          procedure SetNodes(const aNodes : TGLLinesNodes);
          procedure SetOptions(const val : TLinesOptions);
          procedure SetNodeSize(const val : Single);
+         procedure SetNURBSOrder(const val : Integer);
+         procedure SetNURBSTolerance(const val : Single);
          function StoreNodeSize : Boolean;
 
          procedure DrawNode(X, Y, Z: Single; Color: TGLColor);
@@ -553,6 +559,10 @@ type
          procedure AddNode(const X, Y, Z: TGLfloat); overload;
          procedure AddNode(const value : TVector); overload;
          procedure AddNode(const value : TAffineVector); overload;
+
+         property NURBSKnots : TSingleList read FNURBSKnots;
+         property NURBSOrder : Integer read FNURBSOrder write SetNURBSOrder;
+         property NURBSTolerance : Single read FNURBSTolerance write SetNURBSTolerance;
 
       published
 			{ Published Declarations }
@@ -2256,7 +2266,7 @@ end;
 //
 procedure TGLLineBase.SetupLineStyle;
 begin
-   glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT);
+   glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT or GL_COLOR_BUFFER_BIT or GL_EVAL_BIT);
    glDisable(GL_LIGHTING);
    if FLinePattern<>$FFFF then begin
       glEnable(GL_LINE_STIPPLE);
@@ -2372,6 +2382,9 @@ begin
    FNodesAspect:=lnaAxes;
    FSplineMode:=lsmLines;
    FNodeSize:=1;
+   FNURBSKnots:=TSingleList.Create;
+   FNURBSOrder:=0;
+   FNURBSTolerance:=50;
 end;
 
 // Destroy
@@ -2380,6 +2393,7 @@ destructor TGLLines.Destroy;
 begin
    FNodes.Free;
    FNodeColor.Free;
+   FNURBSKnots.Free;
    inherited Destroy;
 end;
 
@@ -2469,6 +2483,24 @@ begin
    end;
 end;
 
+// SetNURBSOrder
+procedure TGLLines.SetNURBSOrder(const val : Integer);
+begin
+   if val<>FNURBSOrder then begin
+      FNURBSOrder:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetNURBSTolerance
+procedure TGLLines.SetNURBSTolerance(const val : Single);
+begin
+   if val<>FNURBSTolerance then begin
+      FNURBSTolerance:=val;
+      StructureChanged;
+   end;
+end;
+
 // Assign
 //
 procedure TGLLines.Assign(Source: TPersistent);
@@ -2546,18 +2578,25 @@ var
    spline : TCubicSpline;
    vertexColor : TVector;
    nodeBuffer : array of TAffineVector;
+   nurbsRenderer : PGLUNurbs;
 begin
    if Nodes.Count>1 then begin
       // first, we setup the line color & stippling styles
       SetupLineStyle;
-      // start drawing the line
-      if FSplineMode=lsmBezierSpline then begin
+
+      // Set up the control point buffer for Bezier splines and NURBS curves.
+      // If required this could be optimized by storing a cached node buffer.
+      if (FSplineMode=lsmBezierSpline) or (FSplineMode=lsmNURBSCurve) then begin
          SetLength(nodeBuffer,Nodes.Count);
          for i:=0 to Nodes.Count-1 do
             nodeBuffer[i]:=Nodes[i].AsAffineVector;
+      end;
+      if (FSplineMode=lsmBezierSpline) then begin
          glMap1f(GL_MAP1_VERTEX_3,0,1,3,Nodes.Count,@nodeBuffer[0]);
          glEnable(GL_MAP1_VERTEX_3);
       end;
+
+      // start drawing the line
       glBegin(GL_LINE_STRIP);
          if (FDivision<2) or (FSplineMode=lsmLines) then begin
             // standard line(s), draw directly
@@ -2598,6 +2637,23 @@ begin
                glEvalCoord1f(i/FDivision);
          end;
       glEnd;
+
+      if (FSplineMode=lsmNURBSCurve) then begin
+         if (FNURBSOrder>0) and (FNURBSKnots.Count>0) then begin
+            nurbsRenderer:=gluNewNurbsRenderer;
+            gluNurbsProperty(nurbsRenderer,GLU_SAMPLING_TOLERANCE,FNURBSTolerance);
+            gluNurbsProperty(nurbsRenderer,GLU_DISPLAY_MODE,GLU_FILL);
+            gluBeginCurve(nurbsRenderer);
+               gluNurbsCurve(nurbsRenderer,
+                             FNURBSKnots.Count,@FNURBSKnots.List[0],
+                             3,@nodeBuffer[0],
+                             FNURBSOrder,
+                             GL_MAP1_VERTEX_3);
+            gluEndCurve(nurbsRenderer);
+            gluDeleteNurbsRenderer(nurbsRenderer);
+         end;
+      end;
+
       RestoreLineStyle;
       if FNodesAspect<>lnaInvisible then begin
          glPushAttrib(GL_ENABLE_BIT);
