@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/06/03 - Egg - Added roNoColorBufferClear
       <li>21/05/03 - Egg - RenderToBitmap RC setup fixes (Yurik)
       <li>07/05/03 - Egg - TGLSceneBuffer now invokes BeforeRender and PostRender
                            events even when no camera has been specified
@@ -259,10 +260,12 @@ type
      roStereo: enables stereo support in the driver (dunno if it works,
          I don't have a stereo device to test...)<br>
      roDestinationAlpha: request an Alpha channel for the rendered output<br>
-     roNoColorBuffer: don't request a color buffer (color depth setting ignored) }
+     roNoColorBuffer: don't request a color buffer (color depth setting ignored)<br>
+     roNoColorBufferClear: do not clear the color buffer automatically, if the
+         whole viewer is fully repainted each frame, this can improve framerate }
   TContextOption = (roDoubleBuffer, roStencilBuffer,
                     roRenderToWindow, roTwoSideLighting, roStereo,
-                    roDestinationAlpha, roNoColorBuffer);
+                    roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -6683,7 +6686,9 @@ procedure TGLSceneBuffer.ClearBuffers;
 var
    bufferBits : TGLBitfield;
 begin
-   bufferBits:=GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT;
+   bufferBits:=GL_DEPTH_BUFFER_BIT;
+   if ContextOptions*[roNoColorBuffer, roNoColorBufferClear]=[] then
+      bufferBits:=bufferBits or GL_COLOR_BUFFER_BIT;
    if roStencilBuffer in ContextOptions then
       bufferBits:=bufferBits or GL_STENCIL_BUFFER_BIT;
    glClear(BufferBits);

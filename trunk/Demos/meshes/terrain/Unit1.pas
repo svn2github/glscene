@@ -31,6 +31,10 @@
    being duplicated to create the illusion of an "infinite" terrain (at max
    range the visible area covers 1024x1024 height samples, and with tiles of
    size 16 or less, this is a lot of tiles to prepare).<p>
+
+   Misc. note: since the whole viewer is fully repainted at each frame,
+   it was possible to set roNoColorBufferClear in the Viewer.Buffer.ContextOptions,
+   which allows to gain a few more frames per second (try unsetting it). 
 }
 unit Unit1;
 
