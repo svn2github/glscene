@@ -213,8 +213,7 @@ type
 			FWidth, FHeight : TGLFloat;
 		   FXTiles, FYTiles : Cardinal;
          FStyle : TPlaneStyles;
-    FNoZWrite: boolean;
-    procedure SetNoZWrite(const Value: boolean);
+         FNoZWrite : Boolean;
 
 		protected
 			{ Protected Declarations }
@@ -262,7 +261,7 @@ type
          property YScope : TGLFloat read FYScope write SetYScope stored StoreYScope;
          property YTiles : Cardinal read FYTiles write SetYTiles default 1;
          property Style : TPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
-         property NoZWrite : boolean read FNoZWrite write SetNoZWrite;
+         property NoZWrite : Boolean read FNoZWrite write FNoZWrite;
    end;
 
 	// TGLSprite
@@ -1475,12 +1474,6 @@ begin
       StructureChanged;
    end;
 end;
-
-procedure TGLPlane.SetNoZWrite(const Value: boolean);
-begin
-  FNoZWrite := Value;
-end;
-
 
 // ------------------
 // ------------------ TGLSprite ------------------

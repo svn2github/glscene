@@ -2,9 +2,8 @@
 {: Procedural textures.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>26/03/03 - EG - Delphi 5 compatibility
-      <li>11/12/02 - EG - Initial, procedural perlin noise texture
-                          code by Tobias Peirick
+      <li>11/12/02 - ??? - Initial, procedural perlin noise texture
+                           code by Tobias Peirick
 	</ul></font><p>
 
   I used the following references for my implementation:<p>
