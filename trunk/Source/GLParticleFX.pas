@@ -362,6 +362,45 @@ type
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
    end;
 
+   // TGLDynamicPFXManager
+   //
+   {: An abstract PFX manager for simple dynamic particles.<p>
+      Adds properties and progress implementation for handling moving particles
+      (simple velocity and const acceleration integration). }
+   TGLDynamicPFXManager = class (TGLParticleFXManager)
+      private
+         { Private Declarations }
+         FAcceleration : TGLCoordinates;
+         FFriction : Single;
+         FCurrentTime : Double;           // NOT persistent
+
+      protected
+         { Protected Declarations }
+         procedure SetAcceleration(const val : TGLCoordinates);
+
+         {: Returns the maximum age for a particle.<p>
+            Particles older than that will be killed by DoProgress. }
+         function MaxParticleAge : Single; dynamic; abstract;
+
+      public
+         { Public Declarations }
+         constructor Create(aOwner : TComponent); override;
+         destructor Destroy; override;
+
+         procedure DoProgress(const progressTime : TProgressTimes); override;
+
+	   published
+	      { Published Declarations }
+         {: Oriented acceleration applied to the particles. }
+         property Acceleration : TGLCoordinates read FAcceleration write SetAcceleration;
+         {: Friction applied to the particles.<p>
+            Friction is applied as a speed scaling factor over 1 second, ie.
+            a friction of 0.5 will half speed over 1 second, a friction of 3
+            will triple speed over 1 second, and a friction of 1 (default
+            value) will have no effect. }
+         property Friction : Single read FFriction write FFriction;
+   end;
+
 	// TPFXLifeColor
 	//
 	TPFXLifeColor = class (TCollectionItem)
@@ -369,14 +408,17 @@ type
 	      { Private Declarations }
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
-         FLifeTime, FInvLifeTime : Double;
+         FLifeTime, FInvLifeTime : Single;
+         FSizeScale : Single;
+         FDoScale : Boolean;  // indirectly persistent
 
 	   protected
 	      { Protected Declarations }
          function GetDisplayName : String; override;
          procedure SetColorInner(const val : TGLColor);
          procedure SetColorOuter(const val : TGLColor);
-         procedure SetLifeTime(const val : Double);
+         procedure SetLifeTime(const val : Single);
+         procedure SetSizeScale(const val : Single);
 
          procedure OnChanged(Sender : TObject);
 
@@ -388,13 +430,14 @@ type
 	      procedure Assign(Source: TPersistent); override;
 
          {: Stores 1/LifeTime }
-         property InvLifeTime : Double read FInvLifeTime;
+         property InvLifeTime : Single read FInvLifeTime;
 
 	   published
 	      { Published Declarations }
          property ColorInner : TGLColor read FColorInner write SetColorInner;
          property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
-         property LifeTime : Double read FLifeTime write SetLifeTime;
+         property LifeTime : Single read FLifeTime write SetLifeTime;
+         property SizeScale : Single read FSizeScale write SetSizeScale;
 	end;
 
 	// TPFXLifeColors
@@ -418,37 +461,6 @@ type
          function MaxLifeTime : Double;
    end;
 
-   // TGLDynamicPFXManager
-   //
-   {: An abstract PFX manager for simple dynamic particles.<p>
-      Adds properties and progress implementation for handling moving particles
-      (simple velocity and const acceleration integration). }
-   TGLDynamicPFXManager = class (TGLParticleFXManager)
-      private
-         { Private Declarations }
-         FAcceleration : TGLCoordinates;
-         FCurrentTime : Double;           // NOT persistent
-
-      protected
-         { Protected Declarations }
-         procedure SetAcceleration(const val : TGLCoordinates);
-
-         {: Returns the maximum age for a particle.<p>
-            Particles older than that will be killed by DoProgress. }
-         function MaxParticleAge : Double; dynamic; abstract;
-
-      public
-         { Public Declarations }
-         constructor Create(aOwner : TComponent); override;
-         destructor Destroy; override;
-
-         procedure DoProgress(const progressTime : TProgressTimes); override;
-
-	   published
-	      { Published Declarations }
-         property Acceleration : TGLCoordinates read FAcceleration write SetAcceleration;
-   end;
-
    // TGLLifeColoredPFXManager
    //
    {: Base PFX manager for particles with life colors.<p>
@@ -461,11 +473,11 @@ type
          FLifeColorsInvTimeDiff : TSingleList;
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
-         FParticleSize : Double;
+         FParticleSize : Single;
 
       protected
          { Protected Declarations }
-         procedure SetParticleSize(const val : Double);
+         procedure SetParticleSize(const val : Single);
          procedure SetLifeColors(const val : TPFXLifeColors);
          procedure SetColorInner(const val : TGLColor);
          procedure SetColorOuter(const val : TGLColor);
@@ -473,18 +485,19 @@ type
          procedure InitializeRendering; override;
          procedure FinalizeRendering; override;
 
-         function MaxParticleAge : Double; override;
+         function MaxParticleAge : Single; override;
 
-         procedure ComputeColors(var lifeTime : Double; var inner, outer : TColorVector);
-         procedure ComputeInnerColor(var lifeTime : Double; var inner : TColorVector);
-         procedure ComputeOuterColor(var lifeTime : Double; var outer : TColorVector);
+         procedure ComputeColors(var lifeTime : Single; var inner, outer : TColorVector);
+         procedure ComputeInnerColor(var lifeTime : Single; var inner : TColorVector);
+         procedure ComputeOuterColor(var lifeTime : Single; var outer : TColorVector);
+         function ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
 
       public
          { Public Declarations }
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
-         property ParticleSize : Double read FParticleSize write SetParticleSize;
+         property ParticleSize : Single read FParticleSize write SetParticleSize;
          property ColorInner : TGLColor read FColorInner write SetColorInner;
          property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
          property LifeColors : TPFXLifeColors read FLifeColors write SetLifeColors;
@@ -1619,6 +1632,7 @@ begin
    FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector, OnChanged);
    FLifeTime:=1;
    FInvLifeTime:=1;
+   FSizeScale:=1;
 end;
 
 // Destroy
@@ -1674,13 +1688,23 @@ end;
 
 // SetLifeTime
 //
-procedure TPFXLifeColor.SetLifeTime(const val : Double);
+procedure TPFXLifeColor.SetLifeTime(const val : Single);
 begin
    if FLifeTime<>val then begin
       FLifeTime:=val;
       if FLifeTime<=0 then FLifeTime:=1e-6;
       FInvLifeTime:=1/FLifeTime;
       OnChanged(Self);
+   end;
+end;
+
+// SetSizeScale
+//
+procedure TPFXLifeColor.SetSizeScale(const val : Single);
+begin
+   if FSizeScale<>val then begin
+      FSizeScale:=val;
+      FDoScale:=(FSizeScale<>1);
    end;
 end;
 
@@ -1743,6 +1767,7 @@ constructor TGLDynamicPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
    FAcceleration:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
+   FFriction:=1;
 end;
 
 // Destroy
@@ -1763,11 +1788,18 @@ var
    accelVector : TAffineVector;
    dt : Single;
    list : PGLParticleArray;
+   doFriction : Boolean;
+   frictionScale : Single;
 begin
    maxAge:=MaxParticleAge;
    accelVector:=Acceleration.AsAffineVector;
    dt:=progressTime.deltaTime;
+   doFriction:=(FFriction<>1);
+   if doFriction then begin
+      frictionScale:=Power(FFriction, dt)
+   end else frictionScale:=1;
    FCurrentTime:=progressTime.newTime;
+
    list:=Particles.List;
    for i:=0 to Particles.ItemCount-1 do begin
       curParticle:=list[i];
@@ -1776,6 +1808,8 @@ begin
          with curParticle do begin
             CombineVector(FPosition, FVelocity, dt);
             CombineVector(FVelocity, accelVector, dt);
+            if doFriction then
+               ScaleVector(FVelocity, frictionScale);
          end;
       end else begin
          // kill particle
@@ -1821,7 +1855,7 @@ end;
 
 // SetParticleSize
 //
-procedure TGLLifeColoredPFXManager.SetParticleSize(const val : Double);
+procedure TGLLifeColoredPFXManager.SetParticleSize(const val : Single);
 begin
    if FParticleSize<>val then begin
       FParticleSize:=val;
@@ -1882,14 +1916,14 @@ end;
 
 // MaxParticleAge
 //
-function TGLLifeColoredPFXManager.MaxParticleAge : Double;
+function TGLLifeColoredPFXManager.MaxParticleAge : Single;
 begin
    Result:=LifeColors.MaxLifeTime;
 end;
 
 // ComputeColors
 //
-procedure TGLLifeColoredPFXManager.ComputeColors(var lifeTime : Double; var inner, outer : TColorVector);
+procedure TGLLifeColoredPFXManager.ComputeColors(var lifeTime : Single; var inner, outer : TColorVector);
 var
    i, k, n : Integer;
    f : Single;
@@ -1927,7 +1961,7 @@ end;
 
 // ComputeInnerColor
 //
-procedure TGLLifeColoredPFXManager.ComputeInnerColor(var lifeTime : Double; var inner : TColorVector);
+procedure TGLLifeColoredPFXManager.ComputeInnerColor(var lifeTime : Single; var inner : TColorVector);
 var
    i, k, n : Integer;
    f : Single;
@@ -1962,7 +1996,7 @@ end;
 
 // ComputeOuterColor
 //
-procedure TGLLifeColoredPFXManager.ComputeOuterColor(var lifeTime : Double; var outer : TColorVector);
+procedure TGLLifeColoredPFXManager.ComputeOuterColor(var lifeTime : Single; var outer : TColorVector);
 var
    i, k, n : Integer;
    f : Single;
@@ -1990,6 +2024,47 @@ begin
             lck1:=LifeColors[k-1];
             f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
+         end;
+      end;
+   end;
+end;
+
+// ComputeSize
+//
+function TGLLifeColoredPFXManager.ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
+var
+   i, k, n : Integer;
+   f : Single;
+   lck, lck1 : TPFXLifeColor;
+begin
+   with LifeColors do begin
+      n:=Count-1;
+      if n<0 then
+         Result:=False
+      else begin
+         if n>0 then begin
+            k:=-1;
+            for i:=0 to n do
+               if Items[i].LifeTime<lifeTime then k:=i;
+            if k<n then Inc(k);
+         end else k:=0;
+         case k of
+            0 : begin
+               lck:=LifeColors[k];
+               Result:=lck.FDoScale;
+               if Result then begin
+                  f:=lifeTime*lck.InvLifeTime;
+                  sizeScale:=Lerp(1, lck.SizeScale, f);
+               end;
+            end;
+         else
+            lck:=LifeColors[k];
+            lck1:=LifeColors[k-1];
+            Result:=lck.FDoScale and lck1.FDoScale;
+            if Result then begin
+               f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+               sizeScale:=Lerp(lck1.SizeScale, lck.SizeScale, f);
+            end;
          end;
       end;
    end;
@@ -2114,7 +2189,7 @@ end;
 procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
 var
    i : Integer;
-   lifeTime : Double;
+   lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
@@ -2126,6 +2201,9 @@ begin
 
    vertexList:=FVertBuf.List;
    VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+   if ComputeSizeScale(lifeTime, sizeScale) then
+      FVertBuf.Scale(sizeScale);
+
    glBegin(GL_TRIANGLE_FAN);
       glColor4fv(@inner);
       glVertex3fv(@pos);
@@ -2302,10 +2380,11 @@ end;
 //
 procedure TGLBaseSpritePFXManager.RenderParticle(aParticle : TGLParticle);
 var
-   lifeTime : Double;
+   lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
+   i : Integer;
 
    procedure IssueVertices;
    begin
@@ -2324,7 +2403,12 @@ begin
 
    pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
-   VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+   if ComputeSizeScale(lifeTime, sizeScale) then begin
+      for i:=0 to FVertBuf.Count-1 do
+         vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
+   end else begin
+      VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+   end;
 
    case ColorMode of
       scmFade : begin
