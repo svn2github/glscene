@@ -37,7 +37,7 @@
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-D&quot;&quot; -aa -Tpp -x -Gn -Gl -Gi"/>
+    <LFLAGS value="-D&quot;GLScene - FMOD Manager&quot; -aa -Tpp -x -Gn -Gl -Gi"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
@@ -85,16 +85,6 @@ LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
-
-[HistoryLists\hlIncludePath]
-
-[HistoryLists\hlLibraryPath]
-
-[HistoryLists\hlDebugSourcePath]
-
-[HistoryLists\hlIntOutputDir]
-
-[HistoryLists\hIBPIOutputDir]
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

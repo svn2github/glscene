@@ -374,18 +374,6 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 
-[HistoryLists\hlIncludePath]
-
-[HistoryLists\hlLibraryPath]
-
-[HistoryLists\hlDebugSourcePath]
-
-[HistoryLists\hlConditionals]
-
-[HistoryLists\hlIntOutputDir]
-
-[HistoryLists\hIBPIOutputDir]
-
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
 
