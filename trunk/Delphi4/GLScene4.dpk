@@ -116,5 +116,6 @@ contains
   SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
   SDL in '..\Source\GameAPIs\sdl.pas',
   GLROAMPatch in '..\Source\GLROAMPatch.pas',
-  HeightTileFile in '..\Source\Base\HeightTileFile.pas';
+  HeightTileFile in '..\Source\Base\HeightTileFile.pas',
+  GLSpaceText in '..\Source\GLSpaceText.pas';
 end.

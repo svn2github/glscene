@@ -27,7 +27,7 @@ package GLSS_BASS6;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl60,
+  vcl,
   GLScene6;
 
 contains

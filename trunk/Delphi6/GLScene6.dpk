@@ -17,7 +17,6 @@ package GLScene6;
 {$R '..\Source\AVIRecorder.dcr'}
 {$R '..\Source\GLThorFX.dcr'}
 {$R '..\Source\GLzBuffer.dcr'}
-{$R '..\Source\GameAPIs\SDLWindow.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -46,6 +45,8 @@ package GLScene6;
 requires
   vcl,
   designide;
+
+{%File '..\Source\GLScene.inc'}
 
 contains
   GLSceneRegister in '..\Source\DesignTime\GLSceneRegister.pas',
@@ -122,11 +123,9 @@ contains
   GLParticleFX in '..\Source\GLParticleFX.pas',
   GLzBuffer in '..\Source\GLzBuffer.pas',
   GLMirror in '..\Source\GLMirror.pas',
-  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
   GLWin32Viewer in '..\Source\Platform\GLWin32Viewer.pas',
-  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
-  SDL in '..\Source\GameAPIs\sdl.pas',
   GLROAMPatch in '..\Source\GLROAMPatch.pas',
-  HeightTileFile in '..\Source\Base\HeightTileFile.pas';
+  HeightTileFile in '..\Source\Base\HeightTileFile.pas',
+  GLSpaceText in '..\Source\GLSpaceText.pas';
 
 end.

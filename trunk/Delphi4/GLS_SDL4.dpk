@@ -1,8 +1,7 @@
-package GLSS_FMOD6;
+package GL_SDL4;
 
-{$R *.RES}
-{$R '..\Source\GLSMFMOD.dcr'}
-{$ALIGN ON}
+{$R *.res}
+{$R '..\Source\GameAPIs\SDLWindow.dcr'}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}
@@ -23,15 +22,17 @@ package GLSS_FMOD6;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DESCRIPTION 'GLScene - FMOD Manager'}
-{$IMPLICITBUILD ON}
+{$DESCRIPTION 'GLScene - SDL Driver'}
+{$DESIGNONLY}
+{$IMPLICITBUILD OFF}
 
 requires
-  vcl,
-  GLScene6;
+  vcl40,
+  GLScene4;
 
 contains
-  FMOD in '..\Source\SoundAPIs\fmod.pas',
-  GLSMFMOD in '..\Source\GLSMFMOD.pas';
+  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
+  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
+  SDL in '..\Source\GameAPIs\sdl.pas';
 
 end.
