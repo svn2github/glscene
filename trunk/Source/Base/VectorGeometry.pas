@@ -6706,7 +6706,7 @@ begin
       // Fast computation (approx 5.5x)
       alpha:=2*Sqr(Sin(d*0.5));
       beta:=Sin(d);
-      SinCos(startAngle, s[Low(s)], c[Low(s)]);
+      SinCos(startAngle*cPIdiv180, s[Low(s)], c[Low(s)]);
       for i:=Low(s) to High(s)-1 do begin
          // Make use of the incremental formulae:
          // cos (theta+delta) = cos(theta) - [alpha*cos(theta) + beta*sin(theta)]
@@ -6716,6 +6716,7 @@ begin
       end;
    end else begin
       // Slower, but maintains precision when steps are small
+      startAngle:=startAngle*cPIdiv180;
       for i:=Low(s) to High(s) do
          SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
    end;
