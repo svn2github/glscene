@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/10/02 - Egg - Camera.TargetObject explicitly registered for notifications
       <li>07/10/02 - Egg - Fixed Remove/Add/Insert (sublights registration bug) 
       <li>04/09/02 - Egg - BoundingBox computation now based on AABB code,
                            Fixed TGLSceneBuffer.PixelRayToWorld
@@ -4169,6 +4170,7 @@ end;
 //
 destructor TGLCamera.Destroy;
 begin
+   TargetObject:=nil;
    inherited;
 end;
 
@@ -4311,10 +4313,12 @@ begin
    end;
 end;
 
+// Notification
+//
 procedure TGLCamera.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    inherited;
-   if (Operation = opRemove) and (AComponent = FTargetObject) then
+   if (Operation=opRemove) and (AComponent=FTargetObject) then
       TargetObject:=nil;
 end;
 
@@ -4323,7 +4327,11 @@ end;
 procedure TGLCamera.SetTargetObject(const val : TGLBaseSceneObject);
 begin
    if (FTargetObject<>val) then begin
+      if Assigned(FTargetObject) then
+         FTargetObject.RemoveFreeNotification(Self);
       FTargetObject:=val;
+      if Assigned(FTargetObject) then
+         FTargetObject.FreeNotification(Self);
       if not (csLoading in ComponentState) then
          TransformationChanged;
    end;
