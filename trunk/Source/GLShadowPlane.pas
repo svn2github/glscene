@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/10/02 - EG - Fixed Stencil cleanup and shadow projection bug
       <li>02/10/02 - EG - Added spoScissor
       <li>23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
    </ul></font>
@@ -157,9 +158,10 @@ begin
 
          if (spoUseStencil in ShadowOptions) then begin
             glClearStencil(0);
+            glClear(GL_STENCIL_BUFFER_BIT);
             glEnable(GL_STENCIL_TEST);
             glStencilFunc(GL_ALWAYS, 1, 1);
-            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+            glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
          end;
 
          Material.Apply(rci);
@@ -171,6 +173,7 @@ begin
 
             glPushAttrib(GL_ENABLE_BIT);
             glPushMatrix;
+            glLoadIdentity;
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
 
             shadowMat:=MakeShadowMatrix(AbsolutePosition, AbsoluteDirection,
@@ -184,11 +187,11 @@ begin
 
             glDisable(GL_CULL_FACE);
             glEnable(GL_NORMALIZE);
+            glPolygonOffset(-1, -1);
+            glEnable(GL_POLYGON_OFFSET_FILL);
 
             oldIgnoreMaterials:=rci.ignoreMaterials;
             rci.ignoreMaterials:=True;
-            glPolygonOffset(-1, 0);
-            glEnable(GL_POLYGON_OFFSET_FILL);
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_LIGHTING);
 
@@ -201,14 +204,14 @@ begin
                glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
             end;
 
+            glMultMatrixf(@shadowMat);
+
             if Assigned(FShadowingObject) then begin
                if FShadowingObject.Parent<>nil then
                   glMultMatrixf(PGLFloat(FShadowingObject.Parent.AbsoluteMatrixAsAddress));
-               glMultMatrixf(@shadowMat);
                glMultMatrixf(@FShadowingObject.LocalMatrix);
                FShadowingObject.DoRender(rci, renderSelf, renderChildren);
             end else begin
-               glMultMatrixf(@shadowMat);
                Scene.Objects.DoRender(rci, renderSelf, renderChildren);
             end;
 
