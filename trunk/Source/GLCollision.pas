@@ -449,13 +449,17 @@ begin
 end;
 
 function FastCheckCubeVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;
-var
+{var
   aad1,aad2 : TVector;
   D1,D2,D : Double;
+}
 begin
 //DanB -this bit of code isn't needed (since collision code does BoundingBox elimination)
+//also is incorrect when objects further up the "object tree" are scaled
+{
   aad1 := obj1.AxisAlignedDimensions;
   aad2 := obj2.AxisAlignedDimensions;
+
   D1 := VectorLength(aad1);
   D2 := VectorLength(aad2);
   D  := Sqrt(obj1.SqrDistanceTo(obj2.AbsolutePosition));
@@ -465,11 +469,14 @@ begin
     D2 := MinAbsXYZComponent(aad2);
     if D<(D1+D2) then result := true
     else begin
+}
 //DanB
+
       result := DoCubesIntersectPrim(obj1,obj2) or
                 DoCubesIntersectPrim(obj2,obj1);
-    end;
+{    end;
   end;
+}
 end;
 
 
@@ -968,6 +975,7 @@ type
 
 constructor TCollisionNode.Create(const Collision:TGLBCollision;const AABB:TAABB);
 begin
+  inherited Create();
   Self.Collision:=Collision;
   Self.AABB:=AABB;
 end;
