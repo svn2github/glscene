@@ -2,7 +2,7 @@
 
 	Vector File related objects for GLScene<p>
 
-	<b>History : </b><font size=-1><ul>
+	<b>History :</b><font size=-1><ul>
       <li>22/03/02 - EG - TAnimationControler basics now functional
       <li>13/03/02 - EG - Octree support (experimental)
       <li>18/02/02 - EG - Fixed persistence of skeletal meshes
@@ -3259,23 +3259,23 @@ procedure TSkeletonMeshObject.ApplyCurrentSkeletonFrame;
 var
    i, boneID : Integer;
    refVertices, refNormals : TAffineVectorList;
-   p, n : TVector;
+   p : TVector;
    bone : TSkeletonBone;
    skeleton : TSkeleton;
 begin
-   refVertices:=TBaseMeshObject(FBoneMatrixInvertedMeshes[0]).Vertices;
-   refNormals:=TBaseMeshObject(FBoneMatrixInvertedMeshes[0]).Normals;
+   with TBaseMeshObject(FBoneMatrixInvertedMeshes[0]) do begin
+      refVertices:=Vertices;
+      refNormals:=Normals;
+   end;
    skeleton:=Owner.Owner.Skeleton;
    for i:=0 to refVertices.Count-1 do begin
       boneID:=VerticesBonesWeights[i][0].BoneID;
       bone:=skeleton.BoneByID(boneID);
-      MakePoint(p, refVertices[i]);
+      MakePoint(p, refVertices.List[i]);
       p:=VectorTransform(p, bone.GlobalMatrix);
-      Vertices[i]:=PAffineVector(@p)^;
-      MakeVector(n, refNormals[i]);
-      n:=VectorTransform(n, bone.GlobalMatrix);
-      Normals[i]:=PAffineVector(@n)^;
-   end;
+      Vertices.List[i]:=PAffineVector(@p)^;
+      Normals.List[i]:=VectorTransform(refNormals.List[i], bone.GlobalMatrix)
+   end; 
 end;
 
 // Clear

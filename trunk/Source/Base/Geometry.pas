@@ -610,6 +610,7 @@ function VectorAngleCosine(const V1, V2: TAffineVector) : Single;
 
 //: Negates the vector
 function VectorNegate(const v : TAffineVector) : TAffineVector; overload;
+function VectorNegate(const v : TVector) : TVector; overload;
 
 //: Negates the vector
 procedure NegateVector(var V : TAffineVector); overload;
@@ -3185,7 +3186,7 @@ asm
   // the result is expected in ST(0), if it's invalid, an error is raised
 end;
 
-// VectorNegate
+// VectorNegate (affine)
 //
 function VectorNegate(const v : TAffineVector) : TAffineVector;
 // EAX contains address of v
@@ -3200,6 +3201,26 @@ asm
       FLD DWORD PTR [EAX+8]
       FCHS
       FSTP DWORD PTR [EDX+8]
+end;
+
+// VectorNegate (hmg)
+//
+function VectorNegate(const v : TVector) : TVector;
+// EAX contains address of v
+// EDX contains address of Result
+asm
+      FLD DWORD PTR [EAX]
+      FCHS
+      FSTP DWORD PTR [EDX]
+      FLD DWORD PTR [EAX+4]
+      FCHS
+      FSTP DWORD PTR [EDX+4]
+      FLD DWORD PTR [EAX+8]
+      FCHS
+      FSTP DWORD PTR [EDX+8]
+      FLD DWORD PTR [EAX+12]
+      FCHS
+      FSTP DWORD PTR [EDX+12]
 end;
 
 // NegateVector
@@ -3604,31 +3625,8 @@ end;
 // VectorReflect
 //
 function VectorReflect(const V, N: TAffineVector): TAffineVector; assembler; register;
-// EAX contains address of V
-// EDX contains address of N
-// ECX contains address of the result
-//var Dot : Single;
-   {Dot:=VectorAffineDotProduct(V, N);
-   Result[X]:=V[X]-2 * Dot * N[X];
-   Result[Y]:=V[Y]-2 * Dot * N[Y];
-   Result[Z]:=V[Z]-2 * Dot * N[Z];}
-asm
-      CALL VectorDotProduct   // dot is now in ST(0)
-      FCHS                          // -dot
-      FADD ST, ST                   // -dot * 2
-      FLD DWORD PTR [EDX]           // ST:=N[X]
-      FMUL ST, ST(1)                // ST:=-2 * dot * N[X]
-      FADD DWORD PTR[EAX]           // ST:=V[X] - 2 * dot * N[X]
-      FSTP DWORD PTR [ECX]          // store result
-      FLD DWORD PTR [EDX + 4]       // etc.
-      FMUL ST, ST(1)
-      FADD DWORD PTR[EAX + 4]
-      FSTP DWORD PTR [ECX + 4]
-      FLD DWORD PTR [EDX + 8]
-      FMUL ST, ST(1)
-      FADD DWORD PTR[EAX + 8]
-      FSTP DWORD PTR [ECX + 8]
-      FSTP ST                       // clean FPU stack
+begin
+   Result:=VectorCombine(V, N, 1, -2*VectorDotProduct(V, N));
 end;
 
 // RotateVector

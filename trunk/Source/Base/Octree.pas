@@ -116,14 +116,19 @@ implementation
 
 uses GLVectorFileObjects;
 
-//Set a vector to length l
-procedure SetL(var v: TAffineFLTVector; l: single);
-var len: single;
+// ----------------------------------------------------------------------
+// Name  : CheckPointInSphere()
+// Input : point - point we wish to check for inclusion
+//         sO - Origin of sphere
+//         sR - radius of sphere
+// Notes :
+// Return: TRUE if point is in sphere, FALSE if not.
+// -----------------------------------------------------------------------
+
+function CheckPointInSphere(const point, sO: TVector; const sR: double): BOOLEAN;
 begin
- len := sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
- v[0] := v[0]* l/len;
- v[1] := v[1]* l/len;
- v[2] := v[2]* l/len;
+   //Allow small margin of error
+   Result:=(VectorDistance(point, sO)-0.01<=sR);
 end;
 
 // ----------------------------------------------------------------------
@@ -1050,24 +1055,24 @@ end;
 // 6. Else, find the point on the triangle that is closest to the plane intersection point; this becomes
 //    the polygon intersection point (ie: hit an edge or corner)
 // 7. Cast a ray from the polygon intersection point along the negative velocity vector of the sphere
+//    (note: for accuracy reasons - SphereIntersect replaced with PointInSphere)
 // 8. If there is no intersection, the sphere cannot possibly collide with this triangle
 // 9. Else, save the distance from step 8 if, and only if, it is the shortest collision distance so far.
-// 10. Return the polygon intersection point and the closest triangle's normal if hit.
 //
+// Return the polygon intersection point and the closest triangle's normal if hit.
 //
 function TOctree.SphereIntersectAABB(const rayStart, rayVector : TVector;
                                      const velocity, radius: single;
                                      intersectPoint : PVector = nil;
                                      intersectNormal : PVector = nil) : Boolean;
 const
-   cInitialMinD : Single = 1e40;
+   cInitialMinD2 : Single = 1e40;
+   cEpsilon : Single = 0.05;
 
 var
    i, t, k : Integer;
-   minD : Double;
-   sd: Double;
-   distanceToTravel: Double;
-   si1, si2: TVector;
+   minD2, sd2, radius2 : Single;
+   distanceToTravel, distanceToTravelMinusRadius2 : Single;
    p: POctreeNode;
    pNormal: TAffineVector;
    pNormal4: TVector;
@@ -1075,11 +1080,10 @@ var
    sIPoint: TVector;     //sphere intersection point
    pIPoint: TVector;     //plane intersection point
    polyIPoint: TVector;  //polygon intersection point
-   NEGVelocity: TVector;
-   velocityVector: TAffineVector;
+   NEGVelocity: TVector; //sphere's forward velocity
    directhit: Boolean;
 
-   p1, p2, p3: TAffineVector;
+   p1, p2, p3: PAffineVector;
 
    //response identifiers (for future use)
    //destinationPoint, newdestinationPoint: TVector;
@@ -1087,109 +1091,95 @@ var
    //newvelocityVector: TVector;
    //v: single;
    //L: double;
-
-
 begin
-   result:=FALSE;  //default: no collision
-   //Create a velocity vector of size velocity
-   SetVector(velocityVector, rayvector);
-   SetL(velocityVector, velocity);
+   //Note: Current implementation only accurate for FreeForm:Radius at 1:1 ratio.
 
-   //How far ahead to check for collisions
-   distanceToTravel := VectorLength(velocityVector)+radius;
+   Result:=False;  //default: no collision
 
-   //Negative velocity vector for use with ray-sphere check.
-   MakeVector(NEGVelocity, velocityVector);
-   NegateVector(NEGVelocity);
+   //How far ahead to check for collisions.
+   distanceToTravel:=velocity+radius+cEpsilon;
+   distanceToTravelMinusRadius2:=Sqr(velocity+cEpsilon);
+   radius2:=Sqr(radius);
 
    //Determine all the octree nodes this sphere intersects with.
    //NOTE: would be more efficient to find the bounding box that includes the
    //startpoint and endpoint (+sphere diameter)... especially with a large sphere
    //and/or a large velocity.
-
    WalkSphereToLeaf(RootNode, RayStart, distanceToTravel);
 
-   if resultarray = NIL then begin
-      exit;
-   end;
+   if not Assigned(resultarray) then exit;
 
-   sd:=cInitialMinD;
-   minD:=cInitialMinD;
+   //Negative velocity vector for use with ray-sphere check.
+   VectorScale(rayVector, -velocity/VectorLength(rayVector), NEGVelocity);
+
+   minD2:=cInitialMinD2;
    for i:=0 to High(resultarray) do begin
-     p:=ResultArray[i];
-     for t:=0 to High(p.TriArray) do begin
+      p:=ResultArray[i];
+      for t:=0 to High(p.TriArray) do begin
          k:=p.triarray[t];
          //These are the vertices of the triangle to check
-         p1:=trianglefiler.List[k];
-         p2:=trianglefiler.List[k+1];
-         p3:=trianglefiler.List[k+2];
+         p1:=@trianglefiler.List[k];
+         p2:=@trianglefiler.List[k+1];
+         p3:=@trianglefiler.List[k+2];
 
          //Create the normal for this triangle
-         pNormal:=CalcPlaneNormal(p1, p2, p3);
-
-         //Set the normal to the radius of the sphere
-         SetL(pNormal, radius);
-         //Make some TVectors
-         MakeVector(pNormal4, pNormal);
-         MakeVector(NEGpNormal4, pNormal);
-         NegateVector(NEGpNormal4);
+         pNormal:=CalcPlaneNormal(p1^, p2^, p3^);
 
          //Ignore backfacing planes
-         if VectorDotProduct(pNormal4, RayVector) > 0.0 then continue;
+         if VectorDotProduct(pNormal, PAffineVector(@rayVector)^)>0.0 then Continue;
+
+         //Set the normal to the radius of the sphere
+         ScaleVector(pNormal, radius);
+         //Make some TVectors
+         MakeVector(pNormal4, pNormal);
+         NEGpNormal4:=VectorNegate(pNormal4);
 
          //Calculate the plane intersection point (sphere origin to plane)
-         if RayCastPlaneIntersect(RayStart, NEGpNormal4, VectorMake(p1),
-                                  pNormal4, @pIPoint) then
-         begin
+         if RayCastPlaneIntersect(RayStart, NEGpNormal4, VectorMake(p1^),
+                                  pNormal4, @pIPoint) then begin
             directhit:=FALSE;
-            sd:=VectorDistance2(RayStart, pIPoint);
-            if sd < 0 then continue;  //plane is behind, forget it
+            sd2:=VectorDistance2(rayStart, pIPoint);
 
             //If sd <= radius, fall through to "not direct hit" code below with pIPoint
             //as the plane intersection point.  Sphere is embedded.
-
             //Otherwise...
-            if sd > radius then begin
-              //Calculate sphere intersection point (ie: point on sphere that hits plane)
-              SetVector(sIPoint, VectorSubtract(RayStart, pNormal4));
-              //Get new plane intersection point (in case not a direct hit)
-              RayCastPlaneIntersect(sIPoint, RayVector, VectorMake(p1), pNormal4, @pIPoint);
-              //Does the velocity vector directly hit the triangle? If yes then that is the
-              //polygon intersection point.
-              if RayCastTriangleIntersect(sIPoint, RayVector,
-                                          p1, p2, p3, @polyIPoint, @pNormal) then begin
-                 sd:=VectorDistance2(sIPoint, polyIPoint);
-                 if sd < 0 then continue;  //should not happen but catch anyways
-                 directhit:=TRUE;
-              end;
+            if sd2 > radius2 then begin
+               //Calculate sphere intersection point (ie: point on sphere that hits plane)
+               SetVector(sIPoint, VectorSubtract(RayStart, pNormal4));
+               //Get new plane intersection point (in case not a direct hit)
+               RayCastPlaneIntersect(sIPoint, RayVector, VectorMake(p1^), pNormal4, @pIPoint);
+               //Does the velocity vector directly hit the triangle? If yes then that is the
+               //polygon intersection point.
+               if RayCastTriangleIntersect(sIPoint, RayVector,
+                                           p1^, p2^, p3^, @polyIPoint, @pNormal4) then begin
+                  sd2:=VectorDistance2(sIPoint, polyIPoint);
+                  directhit:=True;
+               end;
             end;
 
             //If not a direct hit then check if sphere "nicks" the triangle's edge or corner...
             //If it does then that is the polygon intersection point.
             if not directhit then begin
-              SetVector(polyIPoint, ClosestPointOnTriangle(p1, p2, p3, AffineVectorMake(pIPoint)));
-              //Now cast a ray from the poly intersection point back towards the sphere along
-              //the negative velocity vector of travel.
-              if RayCastSphereIntersect(polyIPoint, NEGVelocity,
-                                        RayStart, radius, si1, si2) = 1 then
-                 sd:=VectorDistance2(polyIPoint, si1)
-              else
-                 sd:=-1;
+               SetVector(polyIPoint,
+                         ClosestPointOnTriangle(p1^, p2^, p3^,
+                                                PAffineVector(@pIPoint)^));
+               //See if this point + negative velocity vector lies within the sphere.
+               //(This implementation seems more accurate than RayCastSphereIntersect)
+               if not CheckPointInSphere(VectorAdd(polyIPoint, NEGVelocity), raystart, radius) then
+                  continue;
             end;
-         end
-         else begin
-             continue; //if the first ray cast didn't hit the plane, forget it.
-         end;
 
-         if (sd >= 0) and (sd <= distanceToTravel) then begin
-            result:=TRUE; //flag a collision
-            if (sd<minD) or (minD<0) then begin
-                minD:=sd;
-                if intersectPoint<>nil then intersectPoint^:=polyIPoint;
-                if intersectNormal<>nil then intersectNormal^:=pNormal4;
+            // Allow sphere to get close to triangle (less epsilon which is built into distanceToTravel)
+            if sd2 <= distanceToTravelMinusRadius2 then begin
+               Result:=True; //flag a collision
+               if sd2<minD2 then begin
+                  minD2:=sd2;
+                  if intersectPoint<>nil then intersectPoint^:=polyIPoint;
+                  if intersectNormal<>nil then intersectNormal^:=pNormal4;
+               end;
             end;
          end;
-     end;  //end for t triangles
+      end;  //end for t triangles
    end; //end for i nodes
 end;
 
