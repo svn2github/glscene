@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden)
       <li>10/07/02 - EG - Added support for "holes" in the elevation data
       <li>16/06/02 - EG - Added support for multi-material terrains
       <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
@@ -480,7 +481,7 @@ begin
    end;
    // if not, request it
    if canAllocate then begin
-      Result:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtByte);
+      Result:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtSmallInt);
       Result.RegisterUse;
       Result.OnDestroy:=OnTileDestroyed;
       if Result.DataState<>hdsNone then
