@@ -17,7 +17,12 @@
    External tangent bump space expects tangent data under
    GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.<p>
 
+   The boUseSecondaryTexCoords bump option tells the shader to use 
+   the secondary texture coordinates for the diffuse and specular
+   texture lookups.<p>
+
    <b>History : </b><font size=-1><ul>
+      <li>27/10/04 - SG - Added boUseSecondaryTexCoords option to BumpOptions
       <li>11/10/04 - SG - Added SpecularMode to define the specular highlight equation,
                           Removed the boDisableSpecular bump option (depricated).
       <li>06/10/04 - SG - Added special functions for generating the ARB programs
@@ -54,9 +59,11 @@ type
 
    TBumpSpace = (bsObject, bsTangentExternal, bsTangentQuaternion);
 
-   TBumpOption = (boDiffuseTexture2, boSpecularTexture3);
+   TBumpOption = (boDiffuseTexture2, boSpecularTexture3, boUseSecondaryTexCoords);
    TBumpOptions = set of TBumpOption;
    
+   TSpecularMode = (smOff, smBlinn, smPhong);
+
    TSpecularMode = (smOff, smBlinn, smPhong);
 
    // TGLBumpShader
@@ -170,6 +177,7 @@ function TGLBumpShader.GenerateVertexProgram : String;
 var
    VP : TStringList;
    DoTangent, DoSpecular : Boolean;
+   texcoord : Integer;
 begin
    DoSpecular:=(BumpMethod = bmBasicARBFP) and not (SpecularMode = smOff);
    DoTangent:=(BumpSpace = bsTangentExternal) or (BumpSpace = bsTangentQuaternion);
@@ -182,6 +190,8 @@ begin
    VP.Add('PARAM mvinv[4] = { state.matrix.modelview.inverse };');
    VP.Add('PARAM mvit[4] = { state.matrix.modelview.invtrans };');
    VP.Add('PARAM tex[4] = { state.matrix.texture[0] };');
+   if boUseSecondaryTexCoords in BumpOptions then
+     VP.Add('PARAM tex2[4] = { state.matrix.texture[1] };');
    VP.Add('PARAM lightPos = program.local[0];');
    if BumpSpace = bsTangentExternal then begin
       VP.Add('ATTRIB tangent = vertex.texcoord[1];');
@@ -243,7 +253,7 @@ begin
             VP.Add('   MAD temp.w, -temp2.y, eye.x, temp.x;');
             VP.Add('   MOV eye, temp.yzwy;');
          end;
-         
+
       end;
    end;
 
@@ -266,24 +276,38 @@ begin
          VP.Add('   MOV eye.w, 0.0;');
 
    end;
-   
+
+   texcoord:=0;
+
    VP.Add('   DP4 temp.x, vertex.texcoord[0], tex[0];');
    VP.Add('   DP4 temp.y, vertex.texcoord[0], tex[1];');
    VP.Add('   DP4 temp.z, vertex.texcoord[0], tex[2];');
    VP.Add('   DP4 temp.w, vertex.texcoord[0], tex[3];');
+   VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], temp;');
+   Inc(texcoord);
 
-   VP.Add('   MOV result.texcoord[0], temp;');
+   if boUseSecondaryTexCoords in BumpOptions then begin
+      VP.Add('   DP4 temp.x, vertex.texcoord[1], tex2[0];');
+      VP.Add('   DP4 temp.y, vertex.texcoord[1], tex2[1];');
+      VP.Add('   DP4 temp.z, vertex.texcoord[1], tex2[2];');
+      VP.Add('   DP4 temp.w, vertex.texcoord[1], tex2[3];');
+      VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], temp;');
+      Inc(texcoord);
+   end;
+
    if BumpMethod = bmDot3TexCombiner then begin
-      if boDiffuseTexture2 in BumpOptions then
-         VP.Add('   MOV result.texcoord[1], temp;');
+      if (boDiffuseTexture2 in BumpOptions)
+      and not (boUseSecondaryTexCoords in BumpOptions) then
+         VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], temp;');
    end else begin
-      VP.Add('   MOV result.texcoord[1], light;');
+      VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], light;');
+      Inc(texcoord);
       if DoSpecular then
-         VP.Add('   MOV result.texcoord[2], eye;');
+         VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], eye;');
    end;
 
    VP.Add('END');
-   
+
    FVertexProgram.Assign(VP);
    Result:=VP.Text;
    VP.Free;
@@ -295,13 +319,30 @@ function TGLBumpShader.GenerateFragmentProgram : String;
 var
    FP : TStringList;
    DoSpecular : Boolean;
+   texcoord,
+   normalTexCoords,
+   diffTexCoords,
+   specTexCoords,
+   lightTexCoords,
+   eyeTexCoords : Integer;
 begin
    DoSpecular:=not (SpecularMode = smOff);
+
+   texcoord:=0;
+   normalTexCoords:=texcoord;
+   if boUseSecondaryTexCoords in BumpOptions then
+      Inc(texcoord);
+   diffTexCoords:=texcoord;
+   specTexCoords:=texcoord;
+   Inc(texcoord);
+   lightTexCoords:=texcoord;
+   Inc(texcoord);
+   eyeTexCoords:=texcoord;
 
    FP:=TStringList.Create;
 
    FP.Add('!!ARBfp1.0');
-   
+
    FP.Add('PARAM lightDiffuse = program.local[0];');
    FP.Add('PARAM lightSpecular = program.local[1];');
    FP.Add('PARAM materialDiffuse = state.material.diffuse;');
@@ -310,31 +351,31 @@ begin
    FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec, textureColor, reflect;');
 
    // Get the normalized normal vector
-   FP.Add('   TEX textureColor, fragment.texcoord[0], texture[0], 2D;');
+   FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(normalTexCoords)+'], texture[0], 2D;');
    FP.Add('   MAD normal, textureColor, 2.0, -1.0;');
    FP.Add('   DP3 temp, normal, normal;');
    FP.Add('   RSQ temp, temp.x;');
    FP.Add('   MUL normal, normal, temp.x;');
 
    // Get the normalized light vector
-   FP.Add('   DP3 light, fragment.texcoord[1], fragment.texcoord[1];');
+   FP.Add('   DP3 light, fragment.texcoord['+IntToStr(lightTexCoords)+'], fragment.texcoord['+IntToStr(lightTexCoords)+'];');
    FP.Add('   RSQ light, light.x;');
-   FP.Add('   MUL light, fragment.texcoord[1], light.x;');
+   FP.Add('   MUL light, fragment.texcoord['+IntToStr(lightTexCoords)+'], light.x;');
 
    // Calculate the diffuse color
    FP.Add('   DP3 diff, normal, light;');
    FP.Add('   MUL diff, diff, lightDiffuse;');
    FP.Add('   MUL diff, diff, materialDiffuse;');
    if boDiffuseTexture2 in BumpOptions then begin
-      FP.Add('   TEX textureColor, fragment.texcoord[0], texture[1], 2D;');
+      FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(diffTexCoords)+'], texture[1], 2D;');
       FP.Add('   MUL diff, diff, textureColor;');
    end;
 
    if DoSpecular then begin
       // Get the eye vector
-      FP.Add('   DP3 eye, fragment.texcoord[2], fragment.texcoord[2];');
+      FP.Add('   DP3 eye, fragment.texcoord['+IntToStr(eyeTexCoords)+'], fragment.texcoord['+IntToStr(eyeTexCoords)+'];');
       FP.Add('   RSQ eye, eye.x;');
-      FP.Add('   MUL eye, fragment.texcoord[2], eye.x;');
+      FP.Add('   MUL eye, fragment.texcoord['+IntToStr(eyeTexCoords)+'], eye.x;');
       case SpecularMode of
          smBlinn : begin
             FP.Add('   ADD eye, eye, light;');
@@ -358,7 +399,7 @@ begin
       FP.Add('   MUL spec, spec, materialSpecular;');
       FP.Add('   MUL spec, spec, lightSpecular;');
       if boSpecularTexture3 in BumpOptions then begin
-         FP.Add('   TEX textureColor, fragment.texcoord[0], texture[2], 2D;');
+         FP.Add('   TEX textureColor, fragment.texcoord['+IntToStr(specTexCoords)+'], texture[2], 2D;');
          FP.Add('   MUL spec, spec, textureColor;');
       end;
    end;
@@ -456,8 +497,14 @@ begin
    try
       if not GL_ARB_multitexture then
          raise Exception.Create('This shader requires GL_ARB_multitexture.');
-      if  (maxTextures<3) and ((BumpMethod<>bmDot3TexCombiner) or (BumpSpace=bsTangentExternal)) then
+      if  (maxTextures<3) 
+      and ((BumpMethod<>bmDot3TexCombiner) or (BumpSpace=bsTangentExternal)) then
          raise Exception.Create('The current shader settings require 3 or more texture units.');
+      if  (maxTextures<4) 
+      and (BumpMethod<>bmDot3TexCombiner) 
+      and (boUseSecondaryTexCoords in BumpOptions) 
+      and (SpecularMode<>smOff) then
+         raise Exception.Create('The current shader settings require 4 or more texture units.');
 
    if Length(FVertexProgramHandles) = 0 then begin
          SetLength(FVertexProgramHandles, 1);

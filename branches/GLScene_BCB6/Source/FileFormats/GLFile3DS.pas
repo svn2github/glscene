@@ -6,6 +6,7 @@
 	3DStudio 3DS vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>25/10/04 - SG - Added lightmap (3DS IllumMap) support
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
 }
@@ -63,6 +64,7 @@ var
    CurrentVertexCount: Integer;
    SmoothIndices: PSmoothIndexArray;
    mesh : TMeshObject;
+   hasLightmap : Boolean;
 
    //--------------- local functions -------------------------------------------
 
@@ -89,7 +91,7 @@ var
                   specColor:=VectorMake(material.Specular.R, material.Specular.G, material.Specular.B, 1);
                   ScaleVector(specColor, 1 - material.Shininess);
                   Specular.Color:=specColor;
-                  Shininess:=Round((1 - material.ShinStrength) * 128);
+                  Shininess:=MaxInteger(0, Round((1 - material.ShinStrength) * 128));
                end;
                if Trim(material.Texture.Map.NameStr)<>'' then begin
                   try
@@ -108,6 +110,43 @@ var
             end;
          end else Result:='';
       end else Result:='';
+   end;
+
+   function GetOrAllocateLightMap(materials : TMaterialList; const name : String) : Integer;
+   var
+      material : PMaterial3DS;
+      matLib : TGLMaterialLibrary;
+      libMat : TGLLibMaterial;
+   begin
+      Result:=-1;
+      material:=Materials.MaterialByName[Name];
+      Assert(Assigned(material));
+      if GetOwner is TGLBaseMesh then begin
+         matLib:=TGLBaseMesh(GetOwner).LightmapLibrary;
+         if Assigned(matLib) then begin
+            if Trim(material.IllumMap.Map.NameStr)<>'' then begin
+               libMat:=matLib.Materials.GetLibMaterialByName(material.IllumMap.Map.NameStr);
+               if not Assigned(libMat) then begin
+                  libMat:=matLib.Materials.Add;
+                  libMat.Name:=material.IllumMap.Map.NameStr;
+                  try
+                     with libMat.Material.Texture do begin
+                        Image.LoadFromFile(material.IllumMap.Map.NameStr);
+                        Disabled:=False;
+                        TextureMode:=tmModulate;
+                     end;
+                  except
+                     on E: ETexture do begin
+                        if not Owner.IgnoreMissingTextures then
+                           raise;
+                     end;
+                  end;
+               end;
+               Result:=libmat.Index;
+               hasLightMap:=True;
+            end;
+         end;
+      end;
    end;
 
    //----------------------------------------------------------------------
@@ -206,6 +245,7 @@ begin
       standardNormalsOrientation:=not (NormalsOrientation=mnoDefault);
       for i:=0 to Objects.MeshCount-1 do with PMesh3DS(Objects.Mesh[I])^ do begin
          if IsHidden or (NVertices<3) then Continue;
+         hasLightMap:=False;
          mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
          mesh.Name:=PMesh3DS(Objects.Mesh[I])^.NameStr;
          with mesh do begin
@@ -344,6 +384,7 @@ begin
                aFaceGroup:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
                with aFaceGroup do begin
                   MaterialName:=GetOrAllocateMaterial(Materials, MatArray[iMaterial].NameStr);
+                  LightMapIndex:=GetOrAllocateLightMap(Materials, MatArray[iMaterial].NameStr);
                   // copy all vertices belonging to the current face into our index array,
                   // there won't be redundant vertices since this would mean a face has more than one
                   // material
@@ -356,6 +397,9 @@ begin
                end;
             end;
          end;
+         if hasLightMap then
+            for j:=0 to mesh.TexCoords.Count-1 do
+               mesh.LightMapTexCoords.Add(mesh.TexCoords[j][0], mesh.TexCoords[j][1]);
       end;
    finally
       Free;

@@ -303,6 +303,11 @@ type
       procedure Execute(var ExternalObject: TObject); override;
   end;
 
+  TGLBaseSceneObjectAddChildMethod = class(TInternalMethod)
+    public
+      procedure Execute(var ExternalObject: TObject); override;
+  end;
+
 
 // ----------
 // ---------- Vector/Matrix to/from IInfo helper functions ----------
@@ -749,6 +754,18 @@ begin
   TGLBaseSceneObject(ExternalObject).Move(Info['ADistance']);
 end;
 
+// TGLBaseSceneObject.AddChild
+procedure TGLBaseSceneObjectAddChildMethod.Execute(var ExternalObject: TObject);
+var
+  AChild : TObject;
+begin
+  ValidateExternalObject(ExternalObject, TGLBaseSceneObject);
+  AChild:=Info.GetExternalObjForVar('AChild');
+  if not Assigned(AChild) then raise Exception.Create('AChild parameter is unassigned.');
+  if not (AChild is TGLBaseSceneObject) then Exception.Create('AChild parameter is not inheriting from TGLBaseSceneObject.');
+  TGLBaseSceneObject(ExternalObject).AddChild(TGLBaseSceneObject(AChild));
+end;
+
 
 // ----------
 // ---------- Global procedures/functions ----------
@@ -909,6 +926,8 @@ begin
     TGLBaseSceneObjectRollMethod.Create(mkProcedure, [], 0, 'Roll', ['angle', 'Float'], '', ClassSym, SymbolTable);
   if not Assigned(ClassSym.Members.FindLocal('Move')) then
     TGLBaseSceneObjectMoveMethod.Create(mkProcedure, [], 0, 'Move', ['ADistance', 'Float'], '', ClassSym, SymbolTable);
+  if not Assigned(ClassSym.Members.FindLocal('AddChild')) then
+    TGLBaseSceneObjectAddChildMethod.Create(mkProcedure, [], 0, 'AddChild', ['AChild', 'TGLBaseSceneObject'], '', ClassSym, SymbolTable);
 
   // Properties
   AddPropertyToClass('Visible', 'Boolean', 'GetVisible', 'SetVisible', '', False, ClassSym, SymbolTable);
