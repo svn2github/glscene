@@ -442,6 +442,8 @@ type
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
+
+         function AxisAlignedDimensions : TVector; override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          procedure AddNode(const coords : TGLCoordinates); overload;
@@ -2064,6 +2066,18 @@ begin
       Assert(False)
    end;
    glPopMatrix;
+end;
+
+// AxisAlignedDimensions
+//
+function TLines.AxisAlignedDimensions : TVector;
+var
+   i : Integer;
+   v : TVector;
+begin
+   RstVector(Result);
+   for i:=0 to Nodes.Count-1 do
+      MaxVector(Result, VectorAbs(Nodes[i].AsVector));
 end;
 
 // BuildList
