@@ -171,7 +171,7 @@ uses SysUtils, Registry, Dialogs, Messages;
 
 procedure Register;
 begin
-	RegisterComponents('GLScene', [TScreenSaver]);
+	RegisterComponents('GLScene Utils', [TScreenSaver]);
 end;
 
 // GetSystemDirectory

@@ -146,7 +146,7 @@ implementation
 
 procedure Register;
 begin
-  RegisterComponents('GLScene', [TGLNavigator, TGLUserInterface]);
+  RegisterComponents('GLScene Utils', [TGLNavigator, TGLUserInterface]);
 end;
 
 Constructor TGLNavigator.Create(AOwner : TComponent);

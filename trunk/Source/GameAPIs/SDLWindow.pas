@@ -212,7 +212,7 @@ type
 
 procedure Register;
 begin
-	RegisterComponents('SDL', [TSDLWindow]);
+	RegisterComponents('GLScene Utils', [TSDLWindow]);
 end;
 
 // RaiseSDLError

@@ -119,7 +119,7 @@ resourcestring
 
 procedure Register;
 begin
-  RegisterComponents('GLScene', [TJoystick]);
+  RegisterComponents('GLScene Utils', [TJoystick]);
 end;
 
 // ------------------

@@ -343,7 +343,7 @@ end;
 //***********************************************************************************
 Procedure Register;   // a mettre dans GLSceneRegister
 begin
-  RegisterComponents('GLScene', [TGLTimeEventsMGR]);
+  RegisterComponents('GLScene Utils', [TGLTimeEventsMGR]);
 end;
 
 end.

@@ -119,7 +119,7 @@ uses SysUtils, Dialogs, Messages, GLGraphics;
 
 procedure Register;
 begin
-	RegisterComponents('GLScene', [TAVIRecorder]);
+	RegisterComponents('GLScene Utils', [TAVIRecorder]);
 end;
 
 // DIB support rountines for AVI output

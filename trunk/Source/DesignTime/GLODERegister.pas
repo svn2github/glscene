@@ -29,7 +29,7 @@ begin
   RegisterClasses([TGLODEManager, TGLODEJointList,
                    TGLODEDummy, TGLODEPlane,
                    TODEJoints, TODEElements]);
-  RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList]);
+  RegisterComponents('GLScene', [TGLODEManager, TGLODEJointList]);
 end;
 
 // ------------------------------------------------------------------

@@ -148,7 +148,7 @@ var
 
 procedure Register;
 begin
-	RegisterComponents('GLScene', [TApplicationFileIO]);
+	RegisterComponents('GLScene Utils', [TApplicationFileIO]);
 end;
 
 // CreateFileStream

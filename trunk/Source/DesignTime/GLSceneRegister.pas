@@ -1752,14 +1752,21 @@ begin
                        ,
                        TGLFullScreenViewer,
                        TGLGuiLayout,
-                       TGLCadencer, TAsyncTimer,
+                       TGLCadencer,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLBitmapFont, TGLWindowsBitmapFont,
-                       TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
-                       TCollisionManager, TGLFireFXManager, TGLThorFXManager,
-                       TGLAnimationControler
+                       TGLFireFXManager, TGLThorFXManager
                        {$endif}
                       ]);
+
+   {$ifdef WIN32}
+   RegisterComponents('GLScene Utils',
+                      [TAsyncTimer,
+                       TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
+                       TCollisionManager, TGLAnimationControler
+                      ]);
+   {$endif}
+
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);
