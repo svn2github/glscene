@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/01/02 - Egg - More graceful recovery for ICDs without pbuffer support
       <li>10/01/02 - Egg - Fixed init of stCullFace in SetupRenderingContext,
                            MoveAroundTarget/AdjustDistanceToTarget absolute pos fix
       <li>07/01/02 - Egg - Added some doc, reduced dependencies, RenderToBitmap fixes
@@ -5337,9 +5338,14 @@ begin
          AccumBits:=0;
          AuxBuffers:=0;
          PrepareGLContext;
-         if memoryContext then
-            CreateMemoryContext(deviceHandle, FViewPort.Width, FViewPort.Height)
-         else CreateContext(deviceHandle);
+         try
+            if memoryContext then
+               CreateMemoryContext(deviceHandle, FViewPort.Width, FViewPort.Height)
+            else CreateContext(deviceHandle);
+         except
+            FreeAndNil(FRenderingContext);
+            raise;
+         end;
       end;
       FRenderingContext.Activate;
       try

@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/01/02 - EG - More graceful recovery for ICDs without pbuffer support
       <li>07/01/02 - EG - DoCreateMemoryContext now retrieved topDC when needed
       <li>15/12/01 - EG - Added support for AlphaBits
       <li>30/11/01 - EG - Hardware acceleration support now detected
@@ -422,8 +423,9 @@ end;
 //
 procedure TGLWin32Context.DoDestroyContext;
 begin
-   if not wglDeleteContext(FRC) then
-      raise EGLContext.Create(cDeleteContextFailed);
+   if FRC<>0 then
+      if not wglDeleteContext(FRC) then
+         raise EGLContext.Create(cDeleteContextFailed);
    if FHPBUFFER<>0 then begin
       wglReleasePbufferDCARB(FHPBuffer, FDC);
       wglDestroyPbufferARB(FHPBUFFER);

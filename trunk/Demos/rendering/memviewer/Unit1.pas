@@ -87,12 +87,18 @@ end;
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 begin
    Inc(n);
-   if n>=textureFramerateRatio then begin
-      // render to the viewer
-      GLMemoryViewer1.Render;
-      // copy result to the textures
-      GLMemoryViewer1.CopyToTexture(Cube1.Material.Texture);
-      n:=0;
+   try
+      if n>=textureFramerateRatio then begin
+         // render to the viewer
+         GLMemoryViewer1.Render;
+         // copy result to the textures
+         GLMemoryViewer1.CopyToTexture(Cube1.Material.Texture);
+         n:=0;
+      end;
+   except
+      // pbuffer not supported...
+      GLSceneViewer1.AfterRender:=nil;
+      raise;
    end;
 end;
 
