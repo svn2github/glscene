@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 179
-  Top = 113
-  Width = 463
-  Height = 226
+  Left = 110
+  Top = 65
+  Width = 542
+  Height = 341
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,18 +17,18 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 328
-    Height = 197
+    Width = 407
+    Height = 312
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
   end
   object Panel1: TPanel
-    Left = 328
+    Left = 407
     Top = 0
     Width = 127
-    Height = 197
+    Height = 312
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
@@ -62,7 +62,7 @@ object Form1: TForm1
       Top = 52
       Width = 97
       Height = 17
-      Caption = 'Show Imposter'
+      Caption = 'Show Imposters'
       Checked = True
       State = cbChecked
       TabOrder = 1
@@ -128,10 +128,10 @@ object Form1: TForm1
       SpotCutOff = 180
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
+      DepthOfView = 200
       FocalLength = 70
       TargetObject = GLDirectOpenGL1
-      Position.Coordinates = {00004040000080400000A0400000803F}
+      Position.Coordinates = {00004040000000400000A0400000803F}
     end
   end
   object GLCadencer1: TGLCadencer

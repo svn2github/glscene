@@ -40,7 +40,6 @@ type
     { Private declarations }
   public
     { Public declarations }
-    imposter : TGLImposter;
     impBuilder : TGLStaticImposterBuilder;
     renderPoint : TGLRenderPoint;
     mx, my : Integer;
@@ -54,6 +53,8 @@ implementation
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
+//var
+//   x, y : Integer;
 begin
    renderPoint:=TGLRenderPoint(GLDummyCube1.AddNewChild(TGLRenderPoint));
 
@@ -63,38 +64,31 @@ begin
    impBuilder.Coronas.Items[0].Samples:=32;
    impBuilder.Coronas.Add(15, 24);
    impBuilder.Coronas.Add(30, 24);
-   impBuilder.Coronas.Add(45, 12);
-   impBuilder.Coronas.Add(60, 12);
-   impBuilder.Coronas.Add(75, 12);
-   impBuilder.Coronas.Add(89, 12);
+   impBuilder.Coronas.Add(45, 16);
+   impBuilder.Coronas.Add(60, 16);
+   impBuilder.Coronas.Add(85, 16);
    impBuilder.RenderPoint:=renderPoint;
 
-   imposter:=TGLImposter(GLScene1.Objects.AddNewChild(TGLImposter));
-   imposter.Builder:=impBuilder;
-   imposter.ImpostoredObject:=GLTeapot1;
-
-//   imposter:=impBuilder.CreateNewImposter;
+   impBuilder.RequestImposterFor(GLTeapot1);
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
   var rci: TRenderContextInfo);
 var
-   camPos : TVector;
+   camPos, pos : TVector;
+   imp : TImposter;
+   x, y : Integer;
 begin
-{   if imposter.Texture.Handle=0 then begin
-      impBuilder.Render(rci, GLTeapot1, imposter);
-      Caption:=Format('%d x %d - %.1f%%',
-                      [impBuilder.TextureSize.X, impBuilder.TextureSize.Y,
-                       impBuilder.TextureFillRatio*100]);
-   end;}
+   imp:=impBuilder.ImposterFor(GLTeapot1);
+   if (imp=nil) or (imp.Texture.Handle=0) then Exit;
 
-//   camPos:=XHmgVector;
-//   RotateVector(camPos, YHmgVector, GLCadencer1.CurrentTime*30*cPIdiv180);
-   camPos:=GLTeapot1.AbsoluteToLocal(GLCamera1.AbsolutePosition);
-
-{   imposter.BeginRender(rci);
-   imposter.Render(rci, NullHmgPoint, camPos, 5*0.75);
-   imposter.EndRender(rci);} 
+   imp.BeginRender(rci);
+   for x:=-30 to 30 do for y:=-30 to 30 do begin
+      MakePoint(pos, x*5, 0, y*4);
+      camPos:=VectorSubtract(rci.cameraPosition, pos);
+      imp.Render(rci, pos, camPos, 1.5);
+   end;
+   imp.EndRender(rci);
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -106,6 +100,8 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    Caption:=GLSceneViewer1.FramesPerSecondText;
+   if CBShowImposter.Checked then
+      Caption:=Caption+' - 3721 imposters';
    GLSceneViewer1.ResetPerformanceMonitor;
 
    Label1.Caption:=Format('%d x %d - %.1f%%',
@@ -137,7 +133,7 @@ end;
 
 procedure TForm1.CBShowImposterClick(Sender: TObject);
 begin
-   imposter.Visible:=CBShowImposter.Checked;
+   GLDirectOpenGL1.Visible:=CBShowImposter.Checked;
 end;
 
 procedure TForm1.CBShowTeapotClick(Sender: TObject);
