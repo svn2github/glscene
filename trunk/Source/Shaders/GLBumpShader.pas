@@ -137,6 +137,7 @@ begin
    FBumpMethod:=bmDot3TexCombiner;
    FBumpSpace:=bsObject;
    FBumpOptions:=[];
+   FSpecularMode:=smOff;
    ShaderStyle:=ssLowLevel;
    
    FVertexProgram:=TStringList.Create;
