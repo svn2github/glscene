@@ -286,6 +286,7 @@ var
    currentVariance : PIntegerArray;
    maxVarianceDepth : Integer;
    maxNonNullIndex : Integer;
+   invVariance : Single;
 
    function ROAMVariancePoint(anX, anY : Integer) : TROAMVariancePoint;
    begin
@@ -305,7 +306,7 @@ var
          X:=(left.X+right.X) shr 1;
          Y:=(left.Y+right.Y) shr 1;
          Z:=Integer(raster[Y][X]) shl 8;
-         Result:=Abs(((left.Z+right.Z) div 2)-Z) div variance;
+         Result:=ScaleAndRound(Abs(((left.Z+right.Z) div 2)-Z), invVariance);
       end;
 
       n2:=node shl 1;
@@ -340,6 +341,7 @@ var
 var
    s, p : Integer;
 begin
+   invVariance:=1/variance;
    s:=Sqr(FPatchSize);
    raster:=FHeightRaster;
    FMaxDepth:=1;
