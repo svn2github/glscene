@@ -14,6 +14,7 @@
 
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/12/04 - MF - Fixed AV error reported by DanB
       <li>03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
       <li>02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
                           streamlined frustum culling.
@@ -159,7 +160,8 @@ type
     QueryResult}
     function QueryFrustum(const Frustum : TFrustum) : integer; virtual;
     {: Query space for Leaves that intersect an extended frustum. Result is
-    returned through QueryResult}
+    returned through QueryResult. Extended frustum is slightly faster than the
+    regular frustum because it uses a bounding sphere for the frustum}
     function QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum) : integer; virtual;
 
     {: Once a query has been run, this number tells of how many inter object
@@ -327,8 +329,9 @@ type
     function AddLeaf(aLeaf : TSpacePartitionLeaf) : TSectorNode;
 
     {: Remove leaf will remove a leaf from this node. If it is determined that
-    this node has too few leaves after the delete, it may be collapsed }
-    procedure RemoveLeaf(aLeaf : TSpacePartitionLeaf; OwnerByThis : boolean);
+    this node has too few leaves after the delete, it may be collapsed. Returns
+    true if the node was actually collapsed}
+    function RemoveLeaf(aLeaf : TSpacePartitionLeaf; OwnerByThis : boolean) : boolean;
 
     {: Query the node and its children for leaves that match the AABB }
     procedure QueryAABB(const aAABB : TAABB; const QueryResult : TSpacePartitionLeafList);
@@ -1066,6 +1069,8 @@ begin
   for i := 0 to FChildCount-1 do
     FreeAndNil(FChildren[i]);
 
+  FChildCount := 0;
+
   FLeaves.Clear;
 end;
 
@@ -1093,8 +1098,8 @@ begin
   // The children have been added, now move all leaves to the children - if
   // we can
   OldLeaves := FLeaves;
-  FLeaves := TSpacePartitionLeafList.Create;
   try
+    FLeaves := TSpacePartitionLeafList.Create;
     for i := 0 to OldLeaves.Count-1 do
       PlaceLeafInChild(OldLeaves[i]);
   finally
@@ -1106,12 +1111,10 @@ procedure TSectorNode.CollapseNode;
 var
   i,j : integer;
 begin
-  for i := 0 to FChildCount-1 do
-  begin
+  for i := 0 to FChildCount-1 do begin
     FChildren[i].CollapseNode;
 
-    for j := 0 to FChildren[i].FLeaves.Count-1 do
-    begin
+    for j := 0 to FChildren[i].FLeaves.Count-1 do begin
       FChildren[i].FLeaves[j].FPartitionTag := self;
       FLeaves.Add(FChildren[i].FLeaves[j]);
     end;
@@ -1275,16 +1278,23 @@ begin
   end;//}
 end;
 
-procedure TSectorNode.RemoveLeaf(aLeaf: TSpacePartitionLeaf; OwnerByThis : boolean);
+function TSectorNode.RemoveLeaf(aLeaf: TSpacePartitionLeaf; OwnerByThis : boolean) : boolean;
 begin
+  result := false;
   dec(FRecursiveLeafCount);
 
   if OwnerByThis then
+  begin
+    aLeaf.FPartitionTag := nil;
     FLeaves.Remove(aLeaf);
+    ChildrenChanged;
+  end;
 
   // If there aren't enough leaves anymore, it's time to remove the node!
-  if not NoChildren and (FRecursiveLeafCount+1<FSectoredSpacePartition.FLeafThreshold) then
+  if not NoChildren and (FRecursiveLeafCount+1<FSectoredSpacePartition.FLeafThreshold) then begin
     CollapseNode;
+    result := true;
+  end;
 
   if Parent<>nil then
     Parent.RemoveLeaf(aLeaf, false);
@@ -1349,6 +1359,7 @@ var
   ChildNode : TSectorNode;
   ChildNodeIndex : integer;
 begin
+  Assert(FChildCount>0, 'There are no children in this node!');
   // Instead of looping through all children, we simply determine on which
   // side of the center node the child is located
   ChildNodeIndex := 0;
@@ -1364,15 +1375,17 @@ begin
   // Fore / Back
   if Location[0]>FBSphere.Center[0] then ChildNodeIndex := ChildNodeIndex or 1;
 
+  Assert((ChildNodeIndex>=0) and (ChildNodeIndex<=8),
+    Format('ChildNodeIndex is out of range (%d)!',[ChildNodeIndex]));
+
   ChildNode := FChildren[ChildNodeIndex];
 
-  if ChildNode.AABBFitsInNode(AABB) then
-  begin
-    result := ChildNode;
-    exit;
-  end;
+  Assert(Assigned(ChildNode),'ChildNode not assigned');
 
-  result := nil;
+  if ChildNode.AABBFitsInNode(AABB) then
+    result := ChildNode
+  else
+    result := nil;
 end;
 
 function TSectorNode.GetCenter: TAffineVector;
@@ -1538,7 +1551,7 @@ begin
   // children
   Node := TSectorNode(aLeaf.FPartitionTag);
 
-  Assert(Node<>nil);
+  Assert(Node<>nil,'No leaf node could be found!');
 
   if Node.AABBFitsInNode(aLeaf.FCachedAABB) then
   begin
@@ -1553,7 +1566,6 @@ begin
   end else
   begin
     Node.RemoveLeaf(aLeaf, true);
-    Node.ChildrenChanged;
 
     // Does this leaf still fit in the Octree?
     if not FRootNode.AABBFitsInNode(aLeaf.FCachedAABB) then
@@ -1773,6 +1785,8 @@ var
      end;
   end;
 begin
+  Assert(FChildCount=0, 'Children allready exist!');
+
   for i := 0 to 7 do
   begin
     FChildren[i] := FSectoredSpacePartition.CreateNewNode(self);
@@ -1843,44 +1857,37 @@ begin
   inherited;
 
   // Establish a baseline
-
-  if Leaves.Count>0 then
-  begin
+  if Leaves.Count>0 then begin
     newMin := Leaves[0].FCachedAABB.Min[1];
     newMax := Leaves[0].FCachedAABB.Max[1];
   end else
 
-  if FChildCount>0 then
-  begin
+  if FChildCount>0 then begin
     newMin := FChildren[0].AABB.Min[1];
     newMax := FChildren[0].AABB.Max[1];
-  end else
-  begin
+  end else begin
     // This should never happen!
     newMin := 1e9;
     newMax := -1e9;
   end;
 
-  for i := 0 to Leaves.Count-1 do
-  begin
+  for i := 0 to Leaves.Count-1 do begin
     newMin := min(newMin, Leaves[i].FCachedAABB.Min[1]);
     newMax := max(newMax, Leaves[i].FCachedAABB.Max[1]);
   end;
 
-  for i := 0 to FChildCount-1 do
-  begin
+  for i := 0 to FChildCount-1 do begin
     newMin := min(newMin, FChildren[i].AABB.Min[1]);
     newMax := max(newMax, FChildren[i].AABB.Max[1]);
   end;
 
-  if (AABB.max[1] <> newMax) and (AABB.min[1] <> newMin) then
-  begin
+  if (AABB.max[1] <> newMax) and (AABB.min[1] <> newMin) then begin
     FAABB.max[1] := newMax;
     FAABB.min[1] := newMin;
 
     // Make sure the parent updates it's bounds as well
     if Assigned(Parent) then
-      Parent.ChildrenChanged;
+      Parent.ChildrenChanged;//}
   end;
 end;
 
