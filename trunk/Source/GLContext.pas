@@ -746,12 +746,14 @@ end;
 //
 procedure TGLListHandle.DoDestroyHandle;
 begin
-   // reset error status
-   ClearGLError;
-   // delete
-   glDeleteLists(FHandle, 1);
-   // check for error
-   CheckOpenGLError;
+   if not vIgnoreContextActivationFailures then begin
+      // reset error status
+      ClearGLError;
+      // delete
+      glDeleteLists(FHandle, 1);
+      // check for error
+      CheckOpenGLError;
+   end;
 end;
 
 // ------------------
@@ -769,12 +771,14 @@ end;
 //
 procedure TGLTextureHandle.DoDestroyHandle;
 begin
-   // reset error status
-   glGetError;
-   // delete
- 	glDeleteTextures(1, @FHandle);
-   // check for error
-   CheckOpenGLError;
+   if not vIgnoreContextActivationFailures then begin
+      // reset error status
+      glGetError;
+      // delete
+ 	   glDeleteTextures(1, @FHandle);
+      // check for error
+      CheckOpenGLError;
+   end;
 end;
 
 // ------------------
