@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>01/02/03 - EG - Added State stack
       <li>01/07/02 - EG - Added mtcmUndefined, fixed initial state
       <li>03/01/02 - EG - Added xglDisableClientState
       <li>26/01/02 - EG - Added xglBegin/EndUpdate mechanism
@@ -50,6 +51,11 @@ procedure xglBeginUpdate;
 {: Applies xglMap calls if there were any since xglBeginUpdate was invoked.<p>
    Calls to xglBegin/EndUpdate may be nested. }
 procedure xglEndUpdate;
+
+{: Saves XOpenGL State on the stack. }
+procedure xglPushState;
+{: Restores XOpenGL State from the stack. }
+procedure xglPopState;
 
 {$ifdef MULTITHREADOPENGL}
 threadvar
@@ -93,6 +99,7 @@ implementation
 var
    vUpdCount : Integer;
    vUpdNewMode : TMapTexCoordMode;
+   vStateStack : array of TMapTexCoordMode;
 
 // ------------------------------------------------------------------
 // Multitexturing coordinates duplication functions
@@ -354,6 +361,8 @@ begin end;
 // Redirections management functions
 // ------------------------------------------------------------------
 
+// xglBeginUpdate
+//
 procedure xglBeginUpdate;
 begin
    if vUpdCount=0 then begin
@@ -362,6 +371,8 @@ begin
    end else Inc(vUpdCount);
 end;
 
+// xglEndUpdate
+//
 procedure xglEndUpdate;
 begin
    Dec(vUpdCount);
@@ -375,6 +386,36 @@ begin
          Assert(False);
       end;
    end;
+end;
+
+// xglPushState
+//
+procedure xglPushState;
+var
+   i : Integer;
+begin
+   Assert(vUpdCount=0);
+   i:=Length(vStateStack);
+   SetLength(vStateStack, i+1);
+   vStateStack[i]:=xglMapTexCoordMode;
+end;
+
+// xglPopState
+//
+procedure xglPopState;
+var
+   i : Integer;
+begin
+   Assert(vUpdCount=0);
+   i:=Length(vStateStack)-1;
+   Assert(i>=0);
+   case vStateStack[i] of
+      mtcmNull : xglMapTexCoordToNull;
+      mtcmMain : xglMapTexCoordToMain;
+      mtcmDual : xglMapTexCoordToDual;
+      mtcmSecond : xglMapTexCoordToSecond;
+   end;
+   SetLength(vStateStack, i);
 end;
 
 // xglMapTexCoordToNull
