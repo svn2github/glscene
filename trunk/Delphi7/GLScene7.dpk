@@ -184,6 +184,7 @@ contains
   GLWaterPlane in '..\Source\GLWaterPlane.pas',
   GLPerlinPFX in '..\Source\GLPerlinPFX.pas',
   PerlinNoise in '..\Source\Base\PerlinNoise.pas',
-  GLTexLensFlare in '..\Source\GLTexLensFlare.pas';
+  GLTexLensFlare in '..\Source\GLTexLensFlare.pas',
+  GLVfsPAK in '..\Source\FileFormats\GLVfsPAK.pas';
 
 end.
