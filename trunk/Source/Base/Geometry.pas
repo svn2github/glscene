@@ -860,7 +860,8 @@ function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Bo
 {: Computes algebraic distance between point and plane.<p>
    Value will be positive if the point is in the halfspace pointed by the normal,
    negative on the other side. }
-function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single;
+function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single; overload;
+function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single; overload;
 
 //------------------------------------------------------------------------------
 // Quaternion functions
@@ -5528,6 +5529,13 @@ end;
 // PointPlaneDistance
 //
 function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single;
+begin
+   Result:= (point[0]-planePoint[0])*planeNormal[0]
+           +(point[1]-planePoint[1])*planeNormal[1]
+           +(point[2]-planePoint[2])*planeNormal[2];
+end;
+
+function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single;
 begin
    Result:= (point[0]-planePoint[0])*planeNormal[0]
            +(point[1]-planePoint[1])*planeNormal[1]
