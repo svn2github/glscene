@@ -2,10 +2,21 @@ program sdl_test;
 
 {$APPTYPE gui}
 
-uses Forms, GLSCene, GLSDLContext, SDL, GLTeapot {$IFDEF FPC}, Interfaces{$ENDIF};
+uses Forms, GLScene, GLSDLContext, SDL, GLTeapot, SysUtils
+     {$IFDEF FPC}, Interfaces{$ENDIF};
+
+type
+   TMySDLViewer = class (TGLSDLViewer)
+      procedure EventPollDone(Sender : TObject);
+   end;
+
+procedure TMySDLViewer.EventPollDone(Sender : TObject);
+begin
+   Render;
+end;
 
 var
-   sdlViewer : TGLSDLViewer;
+   sdlViewer : TMySDLViewer;
    scene : TGLScene;
    camera : TGLCamera;
    teapot : TGLTeapot;
@@ -25,8 +36,9 @@ begin
    camera.SceneScale:=4;
    camera.Position.SetPoint(4, 2, 1);
 
-   sdlViewer:=TGLSDLViewer.Create(nil);
+   sdlViewer:=TMySDLViewer.Create(nil);
    sdlViewer.Camera:=camera;
+   sdlViewer.OnEventPollDone:=sdlViewer.EventPollDone;
 
    sdlViewer.Render;
    while sdlViewer.Active do begin
@@ -35,7 +47,7 @@ begin
       // Relinquish some of that CPU time
       SDL_Delay(1);
       // Slowly rotate the teapot
-//      Teapot1.RollAngle:=4*Frac(Now*24)*3600;
+      teapot.TurnAngle:=4*Frac(Now*24)*3600;
    end;
 
    sdlViewer.Free;
