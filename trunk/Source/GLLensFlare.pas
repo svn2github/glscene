@@ -2,6 +2,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/09/03 - EG - Increased occlusion testing robustness
       <li>20/09/03 - EG - Can now use occlusion testing/query for AutoZTest
       <li>19/09/03 - EG - Misc. cleanup, added PreRender
       <li>18/08/03 - SG - Added TGLTextureLensFlare (Tobias Peirick)
@@ -452,8 +453,11 @@ begin
             glEnable(GL_OCCLUSION_TEST_HP);
          end;
 
-         glBegin(GL_POINTS);
-         glVertex3f(posVector[0], posVector[1], 1);
+         glBegin(GL_QUADS);
+            glVertex3f(posVector[0]+2, posVector[1], 0.99);
+            glVertex3f(posVector[0], posVector[1]+2, 0.99);
+            glVertex3f(posVector[0]-2, posVector[1], 0.99);
+            glVertex3f(posVector[0], posVector[1]-2, 0.99);
          glEnd;
 
          if GL_NV_occlusion_query then begin
