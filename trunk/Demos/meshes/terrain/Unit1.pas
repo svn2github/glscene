@@ -258,6 +258,7 @@ var
    wolfPos : TVector;
    c, s : Single;
 begin
+   if not GLSMBASS1.Active then Exit;
    if SkyDome1.Stars.Count=0 then begin
       // wind blows around camera
       with GetOrCreateSoundEmitter(GLCamera1) do begin
