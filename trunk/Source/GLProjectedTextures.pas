@@ -179,7 +179,7 @@ procedure TGLTextureEmitterItem.Assign(Source: TPersistent);
 begin
    if Source is TGLTextureEmitterItem then begin
       FEmitter:=TGLTextureEmitterItem(Source).FEmitter;
-      TGLProjectedTextures(Collection.Owner).StructureChanged;
+      TGLProjectedTextures(TGLTextureEmitters(Collection).GetOwner).StructureChanged;
    end;
    inherited;
 end;
@@ -190,7 +190,7 @@ procedure TGLTextureEmitterItem.SetEmitter(const val : TGLTextureEmitter);
 begin
    if FEmitter<>val then begin
       FEmitter:=val;
-      TGLProjectedTextures(Collection.Owner).StructureChanged;
+      TGLProjectedTextures(TGLTextureEmitters(Collection).GetOwner).StructureChanged;
    end;
 end;
 
