@@ -754,7 +754,7 @@ begin
       else
       begin
         Messagedlg('A component named '+S+' already exists',mtWarning,[mbok],0);
-        Node.Text:=BaseSceneObject1.Name;
+        S:=BaseSceneObject1.Name;
       end;
       ShowBehavioursAndEffects(BaseSceneObject1);
 
