@@ -18,7 +18,7 @@ interface
 uses
    Forms, Windows, Messages, SysUtils, Classes, GLMisc, GLScene, GLHudObjects,
    GLTexture, OpenGL12, GLBitmapFont, GLWindowsFont, StdCtrls, Geometry,
-   Controls, GLGui;
+   Controls, GLGui, Graphics;
 
 type
 
@@ -95,7 +95,11 @@ type
   End;
 
   TGLFocusControl = class;
+  TGLBaseControl = class;
 
+  TGLMouseAction = (ma_mouseup,ma_mousedown,ma_mousemove);
+
+  TGLAcceptMouseQuery = procedure (Sender : TGLBaseControl; Shift: TShiftState; Action : TGLMouseAction; Button: TMouseButton; X, Y: Integer; var accept: boolean) of Object;
   TGLBaseControl = class(TGLBaseComponent)
   private
     FOnMouseDown: TMouseEvent;
@@ -104,6 +108,7 @@ type
     FKeepMouseEvents  : Boolean;
     FActiveControl    : TGLBaseControl;
     FFocusedControl   : TGLFocusControl;
+    FOnAcceptMouseQuery : TGLAcceptMouseQuery;
   protected
     procedure InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); Virtual;
     procedure InternalMouseUp(Shift: TShiftState; Button: TMouseButton; X, Y: Integer); Virtual;
@@ -125,6 +130,7 @@ type
     property  OnMouseDown     : TMouseEvent     read FOnMouseDown     write FOnMouseDown;
     property  OnMouseMove     : TMouseMoveEvent read FOnMouseMove     write FOnMouseMove;
     property  OnMouseUp       : TMouseEvent     read FOnMouseUp       write FOnMouseUp;
+    property  OnAcceptMouseQuery : TGLAcceptMouseQuery read FOnAcceptMouseQuery write FOnAcceptMouseQuery;
   End;
 
   TGLBaseFontControl = class(TGLBaseControl)
@@ -177,6 +183,7 @@ type
     Procedure SetFocusedColor(const Val : TColor);
   public
     procedure NotifyHide; override;
+    procedure ReGetRootControl;
     Procedure SetFocus;
     Procedure PrevControl;
     Procedure NextControl;
@@ -191,6 +198,40 @@ type
     property  OnKeyUp        : TKeyEvent        read FOnKeyUp    write FOnKeyUp;
     property  OnKeyPress     : TKeyPressEvent   read FOnKeyPress write FOnKeyPress;
   End;
+
+  TGLCustomControl = Class;
+  TGLCustomRenderEvent = procedure (sender : TGLCustomControl; Bitmap : TBitmap) of Object;
+  TGLCustomControl = Class(TGLFocusControl)
+  private
+    FCustomData   : Pointer;
+    FCustomObject : TObject;
+    FOnRender     : TGLCustomRenderEvent;
+    FMaterial     : TGLMaterial;
+    FBitmap       : TBitmap;
+    FInternalBitmap : TBitmap;
+    FBitmapChanged : Boolean;
+    FXTexCoord     : Single;
+    FYTexCoord     : Single;
+    FInvalidRenderCount : Integer;
+    FMaxInvalidRenderCount : Integer;
+  protected
+    Procedure   OnBitmapChanged(Sender : TObject);
+    Procedure   SetBitmap(ABitmap : TBitmap);
+  public
+    Constructor Create(AOwner : TComponent); override;
+    Destructor  Destroy; override;
+    procedure   InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
+    procedure   SetMaterial(AMaterial : TGLMaterial);
+    property    CustomData   : Pointer            read FCustomData write FCustomData;
+    property    CustomObject : TObject            read FCustomObject write FCustomObject;
+  Published
+    property    OnRender     : TGLCustomRenderEvent read FOnRender write FOnRender;
+    property    Material     : TGLMaterial read FMaterial write SetMaterial;
+    property    Bitmap       : TBitmap read FBitmap write SetBitmap;
+    property    MaxInvalidRenderCount : Integer read FMaxInvalidRenderCount write FMaxInvalidRenderCount;
+  end;
+
+
 
   TGLPopupMenu = class;
   TGLPopupMenuClick = procedure (Sender: TGLPopupMenu; index : Integer; const MenuItemText : String) of Object;
@@ -228,7 +269,7 @@ type
   TGLFormCloseOptions = (co_Hide, co_Ignore, co_Destroy);
   TGLFormCanClose     = procedure (Sender: TGLForm; var CanClose: TGLFormCloseOptions) of Object;
   TGLFormNotify       = procedure (Sender: TGLForm) of Object;
-
+  TGLFormMove         = procedure (Sender: TGLForm; Var Left, Top : Single) of Object;
 
   TGLForm = class(TGLBaseTextControl)
   private
@@ -237,6 +278,7 @@ type
     FOnCanClose    : TGLFormCanClose;
     FOnShow        : TGLFormNotify;
     FOnHide        : TGLFormNotify;
+    FOnMoving      : TGLFormMove;
     Moving         : Boolean;
     OldX           : Integer;
     OldY           : Integer;
@@ -263,6 +305,7 @@ type
     property  OnCanClose    : TGLFormCanClose        read FOnCanClose    write FOnCanClose;
     property  OnShow        : TGLFormNotify          read FOnShow        write FOnShow;
     property  OnHide        : TGLFormNotify          read FOnHide        write FOnHide;
+    property  OnMoving      : TGLFormMove            read FOnMoving      write FOnMoving;
   end;
 
   TGLPanel = class(TGLBaseControl)
@@ -611,6 +654,7 @@ Begin
     FGuiComponent := Nil;
     FGuiLayout := NewGui;
     If Assigned(FGuiLayout) then
+    If FGuiLayoutName <> '' then
     Begin
       FGuiComponent := FGuiLayout.GuiComponents.FindItem(FGuiLayoutName);
       If Assigned(FGuiLayout) then
@@ -927,10 +971,15 @@ End;
 Function  TGLBaseControl.MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer) : Boolean;
 Var
   Xc : Integer;
+  AcceptMouseEvent : Boolean;
+
 Begin
   Result := False;
-  If RecursiveVisible then
-  If (Position.X <= X) and (Position.X+Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y) then
+
+  AcceptMouseEvent := RecursiveVisible and ((Position.X <= X) and (Position.X+Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y));
+  If Assigned(OnAcceptMouseQuery) then OnAcceptMouseQuery(Self,shift,ma_mousedown,Button,X,Y,AcceptMouseEvent);
+
+  If AcceptMouseEvent then
   Begin
     Result := True;
     If not FKeepMouseEvents then
@@ -938,7 +987,7 @@ Begin
       If Assigned(FActiveControl) then
       If FActiveControl.MouseDown(Sender,Button,Shift,X,Y) then Exit;
 
-      For XC := 0 to count-1 do
+      For XC := count-1 downto 0 do
       If FActiveControl <> Children[XC] then
       Begin
         If Children[XC] is TGLBaseControl then
@@ -954,10 +1003,15 @@ End;
 Function  TGLBaseControl.MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer) : Boolean;
 Var
   Xc : Integer;
+  AcceptMouseEvent : Boolean;
+
 Begin
   Result := False;
-  If RecursiveVisible then
-  If (Position.X <= X) and (Position.X+Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y) then
+
+  AcceptMouseEvent := RecursiveVisible and ((Position.X <= X) and (Position.X+Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y));
+  If Assigned(OnAcceptMouseQuery) then OnAcceptMouseQuery(Self,shift,ma_mouseup,Button,X,Y,AcceptMouseEvent);
+
+  If AcceptMouseEvent then
   Begin
     Result := True;
     If not FKeepMouseEvents then
@@ -965,7 +1019,7 @@ Begin
       If Assigned(FActiveControl) then
       If FActiveControl.MouseUp(Sender,button,shift,x,y) then Exit;
 
-      For XC := 0 to count-1 do
+      For XC := count-1 downto 0 do
       If FActiveControl <> Children[XC] then
       Begin
         If Children[XC] is TGLBaseControl then
@@ -981,10 +1035,15 @@ End;
 Function  TGLBaseControl.MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer) : Boolean;
 Var
   Xc : Integer;
+  AcceptMouseEvent : Boolean;
+
 Begin
   Result := False;
-  If RecursiveVisible then
-  If (Position.X <= X) and (Position.X+Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y) then
+
+  AcceptMouseEvent := RecursiveVisible and ((Position.X <= X) and (Position.X+Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y));
+  If Assigned(OnAcceptMouseQuery) then OnAcceptMouseQuery(Self,shift,ma_mousemove,mbMiddle,X,Y,AcceptMouseEvent);
+
+  If AcceptMouseEvent then
   Begin
     Result := True;
     If not FKeepMouseEvents then
@@ -992,7 +1051,7 @@ Begin
       If Assigned(FActiveControl) then
       If FActiveControl.MouseMove(Sender,shift,x,y) then Exit;
 
-      For XC := 0 to count-1 do
+      For XC := count-1 downto 0 do
       If FActiveControl <> Children[XC] then
       Begin
         If Children[XC] is TGLBaseControl then
@@ -1073,6 +1132,12 @@ Begin
   Begin
     RootControl.FocusedControl.PrevControl;
   End;
+End;
+
+procedure TGLFocusControl.ReGetRootControl;
+
+Begin
+  FRootControl := FindFirstGui;
 End;
 
 Function  TGLFocusControl.GetFocusedColor : TColor;
@@ -1421,6 +1486,89 @@ Begin
   else Result := -1;
 End;
 
+Constructor TGLCustomControl.Create(AOwner : TComponent);
+
+Begin
+  inherited;
+  FMaterial := TGLMaterial.create(Self);
+  FBitmap   := TBitmap.create;
+  FBitmap.OnChange := OnBitmapChanged;
+  FInternalBitmap := Nil;
+  FInvalidRenderCount := 0;
+
+  FXTexCoord     := 1;
+  FYTexCoord     := 1;
+End;
+
+Destructor  TGLCustomControl.Destroy;
+Begin
+  If Assigned(FInternalBitmap) then FInternalBitmap.Free;
+  Bitmap.Free;
+  FMaterial.Free;
+  inherited;
+End;
+
+Procedure   TGLCustomControl.OnBitmapChanged(Sender : TObject);
+Begin
+  FBitmapChanged := True;
+End;
+
+Procedure   TGLCustomControl.SetBitmap(ABitmap : TBitmap);
+Begin
+  FBitmap.Assign(ABitmap);
+End;
+
+procedure   TGLCustomControl.InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
+
+Begin
+  If Assigned(OnRender) then
+  OnRender(self, FBitmap);
+
+  If FBitmapChanged then
+  If FInvalidRenderCount >= FMaxInvalidRenderCount then
+  Begin
+    FInvalidRenderCount := 0;
+    If not Assigned(FInternalBitmap) then FInternalBitmap := TBitmap.Create;
+
+    FInternalBitmap.PixelFormat := FBitmap.PixelFormat;
+    FInternalBitmap.Width  := RoundUpToPowerOf2(FBitmap.Width);
+    FInternalBitmap.Height := RoundUpToPowerOf2(FBitmap.Height);
+    FInternalBitmap.Canvas.CopyRect(FBitmap.Canvas.ClipRect,FBitmap.Canvas,FBitmap.Canvas.ClipRect);
+    FBitmapChanged := False;
+    With Material.GetActualPrimaryTexture do
+    Begin
+      Disabled := False;
+      Image.Assign(FInternalBitmap);
+    End;
+    FXTexCoord     := FBitmap.Width / FInternalBitmap.Width;
+    FYTexCoord     := FBitmap.Height / FInternalBitmap.Height;
+  End else Inc(FInvalidRenderCount);
+
+  Material.Apply(rci);
+  glBegin(GL_QUADS);
+    glTexCoord2f( 0, 0);
+    glVertex2f(0,0);
+
+    glTexCoord2f( 0, -FYTexCoord);
+    glVertex2f(0,-Height);
+
+    glTexCoord2f( FXTexCoord, -FYTexCoord);
+    glVertex2f(width,-Height);
+
+    glTexCoord2f( FXTexCoord, 0);
+    glVertex2f(width,0);
+  glEnd();
+
+
+  Material.UnApply(rci);
+End;
+
+procedure   TGLCustomControl.SetMaterial(AMaterial : TGLMaterial);
+
+Begin
+  FMaterial.Assign(AMaterial);
+End;
+
 Procedure   TGLPopupMenu.SetFocused(Value :Boolean);
 
 Begin
@@ -1606,7 +1754,7 @@ Var
 
 Begin
   YHere := Y - Position.Y;
-  If YHere < FRenderStatus[GLALTop].X2 then
+  If YHere < FRenderStatus[GLALTop].Y2 then
   Begin
     If Button = mbLeft then
     Begin
@@ -1649,7 +1797,8 @@ End;
 procedure TGLForm.InternalMouseMove(Shift: TShiftState; X, Y: Integer);
 
 Var
-  XRel, YRel : Integer;
+  XRel, YRel : Single;
+
 
 Begin
   If Moving then
@@ -1658,10 +1807,17 @@ Begin
     Begin
       XRel := X - OldX;
       YRel := Y - OldY;
-      MoveGUI(XRel,YRel);
 
+      XRel := XRel + Left;
+      YRel := YRel + Top;
+      If Assigned(OnMoving) then OnMoving(Self,XRel,YRel);
+      XRel := XRel - Left;
+      YRel := YRel - Top;
+
+      MoveGUI(XRel,YRel);
       OldX := X;
       OldY := Y;
+
     End;
   End else
   If Y - Position.Y < 27 then
@@ -3004,5 +3160,5 @@ Begin
 End;
 
 initialization
-   RegisterClasses([TGLBaseControl,TGLPopupMenu,TGLForm,TGLPanel,TGLButton,TGLCheckBox,TGLEdit,TGLLabel,TGLAdvancedLabel, TGLScrollbar, TGLStringGrid]);
+   RegisterClasses([TGLBaseControl,TGLPopupMenu,TGLForm,TGLPanel,TGLButton,TGLCheckBox,TGLEdit,TGLLabel,TGLAdvancedLabel, TGLScrollbar, TGLStringGrid, TGLCustomControl]);
 end.

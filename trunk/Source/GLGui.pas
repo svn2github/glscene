@@ -183,6 +183,7 @@ Begin
     FFileName := newName;
     If FileExists(FFileName) then
     Begin
+      Clear;
       loadFromFile(FFileName);
     End;
   End;
@@ -401,8 +402,6 @@ Begin
       Break;
     End;
   End;
-  If Result = nil then
-  raise Exception.Create('Layout not found: " '+Name+'" ');
 End;
 
 
