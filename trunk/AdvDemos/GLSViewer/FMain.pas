@@ -6,7 +6,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, Placemnt, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMisc,
   GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, Geometry,
-  GLTexture, OpenGL12, GLContext, ExtDlgs;
+  GLTexture, OpenGL12, GLContext, ExtDlgs, VectorLists, GLCadencer,
+  ExtCtrls;
 
 type
   TMain = class(TForm)
@@ -85,6 +86,15 @@ type
     N4: TMenuItem;
     Saveas1: TMenuItem;
     SaveDialog: TSaveDialog;
+    ACReverseRenderingOrder: TAction;
+    ReverseRenderingOrder1: TMenuItem;
+    ACConvertToIndexedTriangles: TAction;
+    ConverttoIndexedTriangles1: TMenuItem;
+    ACFPS: TAction;
+    FramesPerSecond1: TMenuItem;
+    GLCadencer: TGLCadencer;
+    Timer: TTimer;
+    GLLightmapLibrary: TGLMaterialLibrary;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -115,6 +125,12 @@ type
     procedure ACInvertNormalsExecute(Sender: TObject);
     procedure ACSaveAsExecute(Sender: TObject);
     procedure ACSaveAsUpdate(Sender: TObject);
+    procedure ACReverseRenderingOrderExecute(Sender: TObject);
+    procedure ACConvertToIndexedTrianglesExecute(Sender: TObject);
+    procedure GLCadencerProgress(Sender: TObject; const deltaTime,
+      newTime: Double);
+    procedure ACFPSExecute(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
@@ -124,6 +140,7 @@ type
     procedure ApplyFaceCull;
     procedure ApplyBgColor;
     procedure ApplyTexturing;
+    procedure ApplyFPS;
 
     procedure DoOpen(const fileName : String);
 
@@ -144,7 +161,7 @@ implementation
 {$R *.dfm}
 
 uses KeyBoard, GraphicEx, Registry, GLFileOBJ, GLFileSTL, GLFileLWO,
-  PersistentClasses;
+   GLFileQ3BSP, GLFileOCT, PersistentClasses, MeshUtils;
 
 type
 
@@ -409,6 +426,18 @@ begin
    FreeForm.StructureChanged;
 end;
 
+procedure TMain.ApplyFPS;
+begin
+   if ACFPS.Checked then begin
+      Timer.Enabled:=True;
+      GLCadencer.Enabled:=True;
+   end else begin
+      Timer.Enabled:=False;
+      GLCadencer.Enabled:=False;
+      StatusBar.Panels[1].Text:='--- FPS';
+   end;
+end;
+
 procedure TMain.DoOpen(const fileName : String);
 var
    i : Integer;
@@ -437,9 +466,10 @@ begin
    end;
    ApplyShadeMode;
    ApplyTexturing;
+   ApplyFPS;
 
    StatusBar.Panels[0].Text:=IntToStr(FreeForm.MeshObjects.TriangleCount)+' tris';
-   StatusBar.Panels[1].Text:=fileName;
+   StatusBar.Panels[2].Text:=fileName;
    lastFileName:=fileName;
    lastLoadWithTextures:=ACTexturing.Enabled;
 
@@ -604,6 +634,31 @@ begin
    FreeForm.StructureChanged;
 end;
 
+procedure TMain.ACReverseRenderingOrderExecute(Sender: TObject);
+var
+   i, j, n : Integer;
+   fg : TFaceGroup;
+begin
+   with FreeForm.MeshObjects do begin
+      // invert meshobjects order
+      for i:=0 to (Count div 2) do
+         Exchange(i, Count-1-i);
+      // for each mesh object
+      for i:=0 to Count-1 do with Items[i] do begin
+         // invert facegroups order
+         n:=FaceGroups.Count;
+         for j:=0 to (n div 2) do
+            Exchange(j, n-1-j);
+         // for each facegroup
+         for j:=0 to n-1 do begin
+            fg:=FaceGroups[j];
+            fg.Reverse;
+         end;
+      end;
+   end;
+   FreeForm.StructureChanged;
+end;
+
 procedure TMain.ACSaveAsExecute(Sender: TObject);
 var
    ext : String;
@@ -622,6 +677,54 @@ end;
 procedure TMain.ACSaveAsUpdate(Sender: TObject);
 begin
    ACSaveAs.Enabled:=(FreeForm.MeshObjects.Count>0);
+end;
+
+procedure TMain.ACConvertToIndexedTrianglesExecute(Sender: TObject);
+var
+   v : TAffineVectorList;
+   i : TIntegerList;
+   m : TMeshObject;
+   fg : TFGVertexIndexList;
+begin
+   v:=FreeForm.MeshObjects.ExtractTriangles;
+   try
+      i:=BuildVectorCountOptimizedIndices(v);
+      try
+         RemapAndCleanupReferences(v, i);
+         IncreaseCoherency(i, 8);
+         FreeForm.MeshObjects.Clean;
+         m:=TMeshObject.CreateOwned(FreeForm.MeshObjects);
+         m.Vertices:=v;
+         m.BuildNormals(i, momTriangles);
+         m.Mode:=momFaceGroups;
+         fg:=TFGVertexIndexList.CreateOwned(m.FaceGroups);
+         fg.VertexIndices:=i;
+         fg.Mode:=fgmmTriangles;
+         FreeForm.StructureChanged;
+      finally
+         i.Free;
+      end;
+   finally
+      v.Free;
+   end;
+end;
+
+procedure TMain.GLCadencerProgress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+   GLSceneViewer.Invalidate;
+end;
+
+procedure TMain.ACFPSExecute(Sender: TObject);
+begin
+   ACFPS.Checked:=not ACFPS.Checked;
+   ApplyFPS;
+end;
+
+procedure TMain.TimerTimer(Sender: TObject);
+begin
+   StatusBar.Panels[1].Text:=Format('%.1f FPS', [GLSceneViewer.FramesPerSecond]);
+   GLSceneViewer.ResetPerformanceMonitor;
 end;
 
 end.
