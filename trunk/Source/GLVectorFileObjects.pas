@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>09/01/03 - EG - Added Clear methods for MeshObjects
       <li>25/11/02 - EG - Colors and TexCoords lists now disabled if ignoreMaterials is true
       <li>23/10/02 - EG - Faster .GTS and .PLY imports (parsing)
       <li>22/10/02 - EG - Added actor options, fixed skeleton normals transform (thx Marcus)
@@ -127,6 +128,9 @@ type
 
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
+
+         {: Clears all mesh object data, submeshes, facegroups, etc. }
+         procedure Clear; dynamic;
 
          {: Translates all the vertices by the given delta. }
          procedure Translate(const delta : TAffineVector); dynamic;
@@ -459,6 +463,8 @@ type
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
+         procedure Clear; override;
+
          function ExtractTriangles : TAffineVectorList; override;
          {: Returns number of triangles in the mesh object. }
          function TriangleCount : Integer; dynamic;
@@ -603,6 +609,8 @@ type
 			procedure WriteToFiler(writer : TVirtualWriter); override;
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
+         procedure Clear; override;
+
          procedure Translate(const delta : TAffineVector); override;
 
          procedure MorphTo(morphTargetIndex : Integer);
@@ -656,6 +664,8 @@ type
 	      procedure WriteToFiler(writer : TVirtualWriter); override;
 	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
+	      procedure Clear; override;
+
          property VerticesBonesWeights : PVerticesBoneWeights read FVerticesBonesWeights;
          property VerticeBoneWeightCount : Integer read FVerticeBoneWeightCount write SetVerticeBoneWeightCount;
          property BonesPerVertex : Integer read FBonesPerVertex write SetBonesPerVertex;
@@ -665,7 +675,6 @@ type
          procedure AddWeightedBone(aBoneID : Integer; aWeight : Single);
          procedure PrepareBoneMatrixInvertedMeshes;
          procedure ApplyCurrentSkeletonFrame(normalize : Boolean);
-	      procedure Clear;
 	end;
 
    // TFaceGroup
@@ -1739,6 +1748,14 @@ begin
    end else RaiseFilerException(archiveVersion);
 end;
 
+// Clear
+//
+procedure TBaseMeshObject.Clear;
+begin
+   FNormals.Clear;
+   FVertices.Clear;
+end;
+
 // ContributeToBarycenter
 //
 procedure TBaseMeshObject.ContributeToBarycenter(var currentSum : TAffineVector;
@@ -2661,6 +2678,16 @@ begin
    end else RaiseFilerException(archiveVersion);
 end;
 
+// Clear;
+//
+procedure TMeshObject.Clear;
+begin
+   inherited;
+   FFaceGroups.Clear;
+   FColors.Clear;
+   FTexCoords.Clear;
+end;
+
 // ExtractTriangles
 //
 function TMeshObject.ExtractTriangles : TAffineVectorList;
@@ -3217,6 +3244,14 @@ begin
    end else RaiseFilerException(archiveVersion);
 end;
 
+// Clear;
+//
+procedure TMorphableMeshObject.Clear;
+begin
+   inherited;
+   FMorphTargets.Clear;
+end;
+
 // Translate
 //
 procedure TMorphableMeshObject.Translate(const delta : TAffineVector);
@@ -3315,6 +3350,21 @@ begin
       for i:=0 to FVerticeBoneWeightCount-1 do
          Read(FVerticesBonesWeights[i][0], FBonesPerVertex*SizeOf(TVertexBoneWeight));
 	end else RaiseFilerException(archiveVersion);
+end;
+
+// Clear
+//
+procedure TSkeletonMeshObject.Clear;
+var
+   i : Integer;
+begin
+   inherited;
+   FVerticeBoneWeightCount:=0;
+   FBonesPerVertex:=0;
+   ResizeVerticesBonesWeights;
+   for i:=0 to FBoneMatrixInvertedMeshes.Count-1 do
+      TBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
+   FBoneMatrixInvertedMeshes.Clear;
 end;
 
 // SetVerticeBoneWeightCount
@@ -3477,20 +3527,6 @@ begin
    end;
    if normalize then
       Normals.Normalize;
-end;
-
-// Clear
-//
-procedure TSkeletonMeshObject.Clear;
-var
-   i : Integer;
-begin
-   FVerticeBoneWeightCount:=0;
-   FBonesPerVertex:=0;
-   ResizeVerticesBonesWeights;
-   for i:=0 to FBoneMatrixInvertedMeshes.Count-1 do
-      TBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
-   FBoneMatrixInvertedMeshes.Clear;
 end;
 
 // ------------------
