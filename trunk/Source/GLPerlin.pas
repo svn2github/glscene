@@ -104,6 +104,7 @@ Type
     FNumber_Of_Octaves : Integer;
     FLines          : TStrings;
     FLinesChanged : Boolean;
+    FXStart, FYStart : Integer;
 
   public
     MaxValue, MinValue : Double;
@@ -119,6 +120,8 @@ Type
     property Persistence : Double read FPersistence write FPersistence;
     property Number_Of_Octaves : Integer read FNumber_Of_Octaves write FNumber_Of_Octaves;
     property MaxPoolSize;
+    property XStart : Integer read FXStart write FXStart;
+    property YStart : Integer read FYStart write FYStart;
   End;
 
   TGLPerlinHDSThread = class (THeightDataThread)
@@ -641,8 +644,8 @@ Begin
   Perlin := TGL2DPerlin.Create(Self);
   Perlin.Width  := HeightData.Size;
   Perlin.Height := HeightData.Size;
-  Perlin.XStart := heightData.XLeft;
-  Perlin.YStart := heightData.YTop;
+  Perlin.XStart := heightData.XLeft+XStart;
+  Perlin.YStart := heightData.YTop+YStart;
 
   Perlin.Interpolation := Interpolation;
   Perlin.Smoothing     := Smoothing;
