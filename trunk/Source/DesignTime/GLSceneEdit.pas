@@ -826,6 +826,7 @@ var
    allowed, keepChildren : Boolean;
    confirmMsg : String;
    buttons : TMsgDlgButtons;
+   i:integer;
 begin
   if FSelectedItems=BEHAVIOURS_SELECTED then
   begin
@@ -872,7 +873,12 @@ begin
       end;
       // deletion allowed?
       if allowed then begin
-         Tree.Selected.Free;
+         if keepChildren=true then
+           while Tree.Selected.Count>0 do
+             Tree.Selected.Item[0].MoveTo(Tree.Selected,naAdd);
+         //previous line should be "naInsert" if children are to remain in position of parent
+         // (would require changes to TGLBaseSceneObject.Remove)
+         Tree.Selected.free;
          FCurrentDesigner.SelectComponent(nil);
          anObject.Parent.Remove(anObject, keepChildren);
          anObject.Free;
