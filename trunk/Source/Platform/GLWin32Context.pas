@@ -74,6 +74,7 @@ resourcestring
    cDeleteContextFailed =        'Delete context failed';
    cContextActivationFailed =    'Context activation failed: %X';
    cContextDeactivationFailed =  'Context deactivation failed';
+   cUnableToCreateMemoryContext= 'Unable to create memory context, pbuffer probably not supported';
 
 // ------------------
 // ------------------ TGLWin32Context ------------------
@@ -343,65 +344,75 @@ begin
       tempWnd:=CreateWindowEx(WS_EX_TOOLWINDOW, vUtilWindowClass.lpszClassName,
                               '', WS_POPUP, 0, 0, 0, 0, 0, 0, HInstance, nil);
       tempDC:=GetDC(tempWnd);
-      DoCreateContext(tempDC);
       try
-         DoActivate;
          try
-            ClearGLError;
-            if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
-               ClearIAttribs;
-               AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
-               AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
-               AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
-               if StencilBits>0 then
-                  AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
-               AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
-               ClearFAttribs;
-               wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
-                                       32, @iFormats, @nbFormats);
-               if nbFormats=0 then begin
-                  // couldn't find 24 bits depth buffer, 16 bits one available?
-                  ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
+            DoCreateContext(tempDC);
+         except
+            on E: Exception do begin
+               raise Exception.Create(cUnableToCreateMemoryContext+#13#10
+                                      +E.ClassName+E.Message); 
+            end;
+         end;
+         try
+            DoActivate;
+            try
+               ClearGLError;
+               if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
+                  ClearIAttribs;
+                  AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+                  AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
+                  AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
+                  if StencilBits>0 then
+                     AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
+                  AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
+                  ClearFAttribs;
                   wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
                                           32, @iFormats, @nbFormats);
-               end;
-               if nbFormats=0 then
-                  raise Exception.Create('Format not supported for pbuffer operation.');
-               iPBufferAttribs[0]:=0;
+                  if nbFormats=0 then begin
+                     // couldn't find 24 bits depth buffer, 16 bits one available?
+                     ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
+                     wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
+                                             32, @iFormats, @nbFormats);
+                  end;
+                  if nbFormats=0 then
+                     raise Exception.Create('Format not supported for pbuffer operation.');
+                  iPBufferAttribs[0]:=0;
 
-               localHPBuffer:=wglCreatePbufferARB(outputDevice, iFormats[0], width, height,
-                                                  @iPBufferAttribs[0]);
-               if localHPBuffer=0 then
-                  raise Exception.Create('Unabled to create pbuffer.');
-               try
-                  localDC:=wglGetPbufferDCARB(localHPBuffer);
-                  if localDC=0 then
-                     raise Exception.Create('Unabled to create pbuffer''s DC.');
+                  localHPBuffer:=wglCreatePbufferARB(outputDevice, iFormats[0], width, height,
+                                                     @iPBufferAttribs[0]);
+                  if localHPBuffer=0 then
+                     raise Exception.Create('Unabled to create pbuffer.');
                   try
-                     localRC:=wglCreateContext(localDC);
-                     if localRC=0 then
-                        raise Exception.Create('Unabled to create pbuffer''s RC.');
+                     localDC:=wglGetPbufferDCARB(localHPBuffer);
+                     if localDC=0 then
+                        raise Exception.Create('Unabled to create pbuffer''s DC.');
+                     try
+                        localRC:=wglCreateContext(localDC);
+                        if localRC=0 then
+                           raise Exception.Create('Unabled to create pbuffer''s RC.');
+                     except
+                        wglReleasePbufferDCARB(localHPBuffer, localDC);
+                        raise;
+                     end;
                   except
-                     wglReleasePbufferDCARB(localHPBuffer, localDC);
+                     wglDestroyPbufferARB(localHPBuffer);
                      raise;
                   end;
-               except
-                  wglDestroyPbufferARB(localHPBuffer);
-                  raise;
-               end;
-            end else raise Exception.Create('WGL_ARB_pbuffer support required.');
-            CheckOpenGLError;
+               end else raise Exception.Create('WGL_ARB_pbuffer support required.');
+               CheckOpenGLError;
+            finally
+               DoDeactivate;
+            end;
          finally
-            DoDeactivate;
+            DoDestroyContext;
          end;
       finally
-         DoDestroyContext;
          ReleaseDC(0, tempDC);
          DestroyWindow(tempWnd);
+         FHPBUFFER:=localHPBuffer;
+         FDC:=localDC;
+         FRC:=localRC;
       end;
-      FHPBUFFER:=localHPBuffer;
-      FDC:=localDC;
-      FRC:=localRC;
       FAcceleration:=chaHardware;
 
    finally

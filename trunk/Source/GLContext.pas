@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>29/01/02 - EG - Improved recovery for context creation failures
       <li>28/01/02 - EG - Activation failures always ignored
       <li>21/01/02 - EG - Activation failures now ignored if application is
                           terminating (workaround for some weird ICDs)
@@ -410,7 +411,8 @@ end;
 //
 destructor TGLContext.Destroy;
 begin
-   DestroyContext;
+   if IsValid then
+      DestroyContext;
    GLContextManager.UnRegisterContext(Self);
    FOwnedHandles.Free;
    FSharedContexts.Free;
