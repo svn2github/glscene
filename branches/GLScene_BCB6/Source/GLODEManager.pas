@@ -2749,6 +2749,7 @@ begin
   finally
     FIsCalculating:=False;
   end;
+  NotifyChange(Self);
 end;
 
 // NotifyChange

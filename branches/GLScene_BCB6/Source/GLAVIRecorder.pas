@@ -3,7 +3,6 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>22/10/04 - EG - Can now operate without a SceneViewer
-      <li>02/08/04 - LR, YHC - BCB corrections: fixed conflict between vfw.pas Unit and C++ vfw.h Header
       <li>13/05/04 - EG - Added irmBitBlt mode (now the default mode)
       <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap,
                           Added OnPostProcessEvent
