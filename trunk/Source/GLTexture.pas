@@ -338,6 +338,7 @@ type
    {: Stores contextual info useful during rendering methods. }
    TRenderContextInfo = record
       scene : TObject;
+      buffer : TObject;
       cameraPosition : TVector;
       cameraDirection, cameraUp : TVector;
       modelViewMatrix : PMatrix;
