@@ -3190,8 +3190,8 @@ var
    i, k : Integer;
    lMin, lMax : TAffineVector;
 const
-   cBigValue : Single = 1e50;
-   cSmallValue : Single = -1e50;
+   cBigValue : Single = 1e30;
+   cSmallValue : Single = -1e30;
 begin
    SetVector(min, cBigValue, cBigValue, cBigValue);
    SetVector(max, cSmallValue, cSmallValue, cSmallValue);
