@@ -2,6 +2,8 @@
 {: Geometric objects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
+        Added GetTopRadius to facilitate silhouette.
       <li>24/10/03 - NelC - Fixed TGLTorus texture coord. bug
       <li>21/07/03 - EG - Creation from GLObjects split
    </ul></font>
@@ -10,7 +12,8 @@ unit GLGeomObjects;
 
 interface
 
-uses Classes, GLScene, GLTexture, VectorGeometry, OpenGL1x, GLMisc, GLObjects;
+uses Classes, GLScene, GLTexture, VectorGeometry, OpenGL1x, GLMisc, GLObjects,
+  GLSilhouette, VectorTypes;
 
 type
 
@@ -80,13 +83,14 @@ type
 			procedure SetSlices(aValue: TGLInt);
 			procedure SetStacks(aValue: TGLInt);
 			procedure SetLoops(aValue: TGLInt);
-
+      function GetTopRadius : single; virtual;
 		public
 			{ Public Declarations }
 			constructor Create(AOwner: TComponent); override;
 
 			procedure Assign(Source: TPersistent); override;
 
+      function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 		published
 			{ Published Declarations }
 			property BottomRadius: TGLFloat read FBottomRadius write SetBottomRadius;
@@ -113,6 +117,7 @@ type
 		protected
 			{ Protected Declarations }
 			procedure SetParts(aValue: TConeParts);
+      function GetTopRadius : single; override;
 
 		public
 			{ Public Declarations }
@@ -151,6 +156,7 @@ type
 			procedure SetTopRadius(const aValue : Single);
 			procedure SetParts(aValue : TCylinderParts);
          procedure SetAlignment(val : TCylinderAlignment);
+      function GetTopRadius : single; override;
 
 		public
 			{ Public Declarations }
@@ -568,6 +574,13 @@ begin
 	end;
 end;
 
+// GetTopRadius
+//
+function TGLCylinderBase.GetTopRadius : single;
+begin
+  result := FBottomRadius;
+end;
+
 // SetHeight
 //
 procedure TGLCylinderBase.SetHeight(const aValue : Single);
@@ -620,6 +633,67 @@ begin
 		FHeight:=TGLCylinderBase(Source).FHeight;
 	end;
 	inherited Assign(Source);
+end;
+
+// GenerateSilhouette
+//
+function TGLCylinderBase.GenerateSilhouette(
+  const silhouetteParameters: TGLSilhouetteParameters): TGLSilhouette;
+var
+  connectivity : TConnectivity;
+  sil : TGLSilhouette;
+  ShadowSlices : integer;
+
+  i : integer;
+  p : array[0..3] of TVector3f;
+  PiDivSlices : single;
+  a1, a2 : single;
+  c1, c2 : TVector3f;
+  ShadowTopRadius : single;
+begin
+  Connectivity := TConnectivity.Create(true);
+
+  ShadowSlices:= FSlices div 1;
+
+  if FSlices<5 then
+    FSlices := 5;
+
+  PiDivSlices := 2*Pi/ShadowSlices;
+
+  a1 := 0;
+
+  MakeVector(c1, 0, -FHeight/2, 0);
+  MakeVector(c2, 0,  FHeight/2, 0);
+
+  ShadowTopRadius  := GetTopRadius;
+
+  for i:=0 to ShadowSlices-1 do
+  begin
+    a2 := a1 + PiDivSlices;
+    MakeVector(p[0], FBottomRadius*sin(a2),-FHeight/2, FBottomRadius*cos(a2));
+    MakeVector(p[1], FBottomRadius*sin(a1),-FHeight/2, FBottomRadius*cos(a1));
+
+    MakeVector(p[2], ShadowTopRadius*sin(a1), FHeight/2, ShadowTopRadius*cos(a1));
+    MakeVector(p[3], ShadowTopRadius*sin(a2), FHeight/2, ShadowTopRadius*cos(a2));//}
+
+    // Circumpherens (sp?)
+    connectivity.AddFace(p[2], p[1], p[0]);
+    connectivity.AddFace(p[3], p[2], p[0]);
+
+    // Sides
+    connectivity.AddFace(c1, p[0], p[1]);
+    connectivity.AddFace(p[2], p[3], c2);
+
+    a1 := a1 + PiDivSlices;
+  end;
+
+   sil := nil;
+   Connectivity.CreateSilhouette(
+      silhouetteParameters, sil, false);
+
+   result := sil;
+
+   Connectivity.Free;
 end;
 
 // ------------------
@@ -686,6 +760,13 @@ begin
    Result:=VectorMake(r{*Scale.DirectX}, 0.5*FHeight{*Scale.DirectY}, r{*Scale.DirectZ});
 end;
 
+// GetTopRadius
+//
+function TGLCone.GetTopRadius: single;
+begin
+  result := 0;
+end;
+
 // ------------------
 // ------------------ TGLCylinder ------------------
 // ------------------
@@ -741,6 +822,13 @@ begin
       FTopRadius:=aValue;
       StructureChanged;
    end;
+end;
+
+// GetTopRadius
+//
+function TGLCylinder.GetTopRadius: single;
+begin
+  result := FTopRadius;
 end;
 
 // SetParts
@@ -1821,6 +1909,8 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
+
+
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
