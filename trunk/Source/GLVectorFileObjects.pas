@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>03/02/03 - EG - Faster PrepareBuildList logic
       <li>31/01/03 - EG - Added MaterialCache logic
       <li>30/01/03 - EG - Fixed color array enable/disable (Nelson Chu),
                           Normals extraction and extraction standardization
@@ -1099,6 +1100,13 @@ type
             Notifies that they all should forget their material library caches. }
          procedure DropMaterialLibraryCache;
 
+         {: Prepare the texture and materials before rendering.<p>
+            Invoked once, before building the list and NOT while building the list,
+            MaterialLibraryCache can be assumed to having been prepared if materials
+            are active. Default behaviour is to prepare build lists for the
+            meshobjects. }
+         procedure PrepareBuildList(var mrci : TRenderContextInfo); dynamic;
+
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
@@ -1446,6 +1454,8 @@ type
          procedure SetOptions(const val : TGLActorOptions);
 
          procedure PrepareMesh; override;
+         procedure PrepareBuildList(var mrci : TRenderContextInfo); override;
+
          procedure RegisterControler(aControler : TGLAnimationControler);
          procedure UnRegisterControler(aControler : TGLAnimationControler);
 
@@ -3008,13 +3018,11 @@ end;
 procedure TMeshObject.PrepareBuildList(var mrci : TRenderContextInfo);
 var
    i : Integer;
-   libMat : TGLLibMaterial;
 begin
    if (Mode=momFaceGroups) and Assigned(mrci.materialLibrary) then begin
-      for i:=0 to FaceGroups.Count-1 do with FaceGroups[i] do begin
-         libMat:=mrci.materialLibrary.Materials.GetLibMaterialByName(MaterialName);
-         if Assigned(libMat) then
-            libMat.PrepareBuildList;
+      for i:=0 to FaceGroups.Count-1 do with TFaceGroup(FaceGroups.List[i]) do begin
+         if MaterialCache<>nil then
+            MaterialCache.PrepareBuildList;
       end;
    end;
 end;
@@ -3978,11 +3986,13 @@ begin
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin
          Owner.Owner.DeclareArraysToOpenGL(mrci, False);
+         AttachOrDetachLightmap(mrci);
          glDrawElements(GL_TRIANGLES, VertexIndices.Count,
                         GL_UNSIGNED_INT, VertexIndices.List);
       end;
       fgmmTriangleStrip : begin
          Owner.Owner.DeclareArraysToOpenGL(mrci, False);
+         AttachOrDetachLightmap(mrci);
          glDrawElements(GL_TRIANGLE_STRIP, VertexIndices.Count,
                         GL_UNSIGNED_INT, VertexIndices.List);
       end;
@@ -5233,6 +5243,13 @@ begin
    end;
 end;
 
+// PrepareBuildList
+//
+procedure TGLBaseMesh.PrepareBuildList(var mrci : TRenderContextInfo);
+begin
+   MeshObjects.PrepareBuildList(mrci);
+end;
+
 // SetUseMeshMaterials
 //
 procedure TGLBaseMesh.SetUseMeshMaterials(const val : Boolean);
@@ -5263,7 +5280,7 @@ end;
 // DoRender
 //
 procedure TGLBaseMesh.DoRender(var rci : TRenderContextInfo;
-                             renderSelf, renderChildren : Boolean);
+                               renderSelf, renderChildren : Boolean);
 begin
    if Assigned(LightmapLibrary) then
       xglForbidSecondTextureUnit;
@@ -5284,7 +5301,7 @@ begin
          if Assigned(LightmapLibrary) then
             rci.lightmapLibrary:=LightmapLibrary
          else rci.lightmapLibrary:=nil;
-         MeshObjects.PrepareBuildList(rci);
+         PrepareBuildList(rci);
          Material.Apply(rci);
          repeat
             if (osDirectDraw in ObjectStyle) or rci.amalgamating then
@@ -6170,6 +6187,13 @@ begin
    FCurrentFrame:=0;
    if Assigned(FOnFrameChanged) then FOnFrameChanged(Self);
    inherited;
+end;
+
+// PrepareBuildList
+//
+procedure TGLActor.PrepareBuildList(var mrci : TRenderContextInfo);
+begin
+   // no preparation needed for actors, they don't use buildlists
 end;
 
 // FrameCount
