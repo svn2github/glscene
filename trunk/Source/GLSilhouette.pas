@@ -7,6 +7,7 @@
    CAUTION : both connectivity classes leak memory.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/03 - MF - Split up Connectivity classes
       <li>10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
 }
@@ -46,10 +47,11 @@ type
    end;
 
    // TBaseConnectivity
+   //
    TBaseConnectivity = class
-  private
-    FPrecomputeFaceNormal: boolean;
        private
+          FPrecomputeFaceNormal: boolean;
+
           function GetEdgeCount: integer; virtual;
           function GetFaceCount: integer; virtual;
        public
