@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/03/02 - EG - Added First/Last to TGLNodes
       <li>24/01/02 - EG - Added vUseDefaultSets mechanism
       <li>07/01/02 - EG - TGLNodes.Barycenter fix (thx Bob)
       <li>15/12/01 - EG - Added support for cube maps
@@ -332,6 +333,8 @@ type
          function Add : TGLNode;
 	      function FindItemID(ID : Integer) : TGLNode;
 	      property Items[index : Integer] : TGLNode read GetItems write SetItems; default;
+         function First : TGLNode;
+         function Last : TGLNode;
 
          procedure NotifyChange; virtual;
          procedure EndUpdate; override;
@@ -1378,6 +1381,27 @@ end;
 function TGLNodes.GetItems(index : Integer) : TGLNode;
 begin
 	Result:=TGLNode(inherited Items[index]);
+end;
+
+//First
+//
+function TGLNodes.First : TGLNode;
+begin
+   if Count>0 then
+      Result:=TGLNode(inherited Items[0])
+   else Result:=nil;
+end;
+
+// Last
+//
+function TGLNodes.Last : TGLNode;
+var
+   n : Integer;
+begin
+   n:=Count-1;
+   if n>=0 then
+      Result:=TGLNode(inherited Items[n])
+   else Result:=nil;
 end;
 
 // Update
