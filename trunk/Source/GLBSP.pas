@@ -174,7 +174,7 @@ begin
       TFGBSPNode(Owner[PositiveSubNodeIndex]).BuildListNoSort(bsprci);
    BuildList(bsprci.rci^);
    if NegativeSubNodeIndex>0 then
-      TFGBSPNode(Owner[PositiveSubNodeIndex]).BuildListNoSort(bsprci);
+      TFGBSPNode(Owner[NegativeSubNodeIndex]).BuildListNoSort(bsprci);
 end;
 
 // BuildListFrontToBack
