@@ -2,7 +2,7 @@ object RFaceEditor: TRFaceEditor
   Left = 0
   Top = 0
   Width = 305
-  Height = 162
+  Height = 186
   AutoSize = True
   TabOrder = 0
   object Label1: TLabel
@@ -12,19 +12,33 @@ object RFaceEditor: TRFaceEditor
     Height = 13
     Caption = 'Shininess'
   end
-  object PageControl: TPageControl
+  object Label2: TLabel
     Left = 0
     Top = 32
+    Width = 67
+    Height = 13
+    Caption = 'Polygon mode'
+  end
+  object PageControl: TPageControl
+    Left = 0
+    Top = 56
     Width = 305
     Height = 130
     ActivePage = TSAmbient
     Images = ImageList
     MultiLine = True
+    TabIndex = 0
     TabOrder = 0
     object TSAmbient: TTabSheet
       BorderWidth = 3
       Caption = 'Ambient'
       inline CEAmbiant: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
     object TSDiffuse: TTabSheet
@@ -32,6 +46,12 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Diffuse'
       ImageIndex = 1
       inline CEDiffuse: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
     object TSEmission: TTabSheet
@@ -39,6 +59,12 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Emission'
       ImageIndex = 2
       inline CEEmission: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
     object TSSpecular: TTabSheet
@@ -46,13 +72,21 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Specular'
       ImageIndex = 3
       inline CESpecular: TRColorEditor
+        Left = 0
+        Top = 0
+        Width = 289
+        Height = 95
+        AutoSize = True
+        TabOrder = 0
       end
     end
   end
   inline TBEShininess: TRTrackBarEdit
     Left = 52
+    Top = 0
     Width = 201
     Height = 21
+    AutoSize = True
     TabOrder = 1
     inherited TrackBar: TTrackBar
       Max = 128
@@ -62,6 +96,20 @@ object RFaceEditor: TRFaceEditor
     inherited Edit: TEdit
       Left = 160
     end
+  end
+  object CBPolygonMode: TComboBox
+    Left = 80
+    Top = 28
+    Width = 89
+    Height = 21
+    Style = csDropDownList
+    ItemHeight = 13
+    TabOrder = 2
+    OnChange = CBPolygonModeChange
+    Items.Strings = (
+      'pmFill'
+      'pmLines'
+      'pmPoints')
   end
   object ImageList: TImageList
     Left = 264

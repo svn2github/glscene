@@ -28,7 +28,10 @@ type
     CEDiffuse: TRColorEditor;
     CEEmission: TRColorEditor;
     CESpecular: TRColorEditor;
+    Label2: TLabel;
+    CBPolygonMode: TComboBox;
     procedure TBEShininessTrackBarChange(Sender: TObject);
+    procedure CBPolygonModeChange(Sender: TObject);
 
   private
     { Déclarations privées }
@@ -119,9 +122,17 @@ begin
    end;
 end;
 
-// SeTGLFaceProperties
+procedure TRFaceEditor.CBPolygonModeChange(Sender: TObject);
+begin
+   if not updating then begin
+      FFaceProperties.PolygonMode:=TPolygonMode(CBPolygonMode.ItemIndex);
+      if Assigned(FOnChange) then FOnChange(Self);
+   end;
+end;
+
+// SetGLFaceProperties
 //
-procedure TRFaceEditor.SeTGLFaceProperties(const val : TGLFaceProperties);
+procedure TRFaceEditor.SetGLFaceProperties(const val : TGLFaceProperties);
 begin
    updating:=True;
    try
@@ -130,6 +141,8 @@ begin
       CEEmission.Color:=val.Emission.Color;
       CESpecular.Color:=val.Specular.Color;
       TBEShininess.Value:=val.Shininess;
+      CBPolygonMode.ItemIndex:=Integer(val.PolygonMode);
+      FFaceProperties.PolygonMode:=val.PolygonMode;
    finally
       updating:=False;
    end;
