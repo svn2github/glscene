@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>30/11/01 - Egg - Hardware acceleration detection support
       <li>24/09/01 - Egg - TGLProxyObject loop rendering protection
       <li>14/09/01 - Egg - Use of vFileStreamClass
       <li>04/09/01 - Egg - Texture binding cache
@@ -1287,6 +1288,8 @@ type
          procedure ClearBuffers;
          procedure DestroyRC;
          procedure Resize(newWidth, newHeight : Integer);
+         //: Indicates hardware acceleration support
+         function Acceleration : TGLContextAcceleration;
 
          //: Fills the PickList with objects in Rect area
          procedure PickObjects(const Rect: TRect; PickList: TGLPickList; ObjectCountGuess: Integer);
@@ -5240,6 +5243,15 @@ begin
          FRenderingContext.Deactivate;
       end;
    end;
+end;
+
+// Acceleration
+//
+function TGLSceneBuffer.Acceleration : TGLContextAcceleration;
+begin
+   if Assigned(FRenderingContext) then
+      Result:=FRenderingContext.Acceleration
+   else Result:=chaUnknown;
 end;
 
 // ReadContextProperties

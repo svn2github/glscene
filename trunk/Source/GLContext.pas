@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>30/11/01 - EG - Added TGLContextAcceleration
       <li>06/09/01 - EG - Win32Context moved to new GLWin32Context unit
       <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
       <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
@@ -26,6 +27,10 @@ type
    TGLRCOptions = set of TGLRCOption;
 
    TGLContextManager = class;
+
+   // TGLContextAcceleration
+   //
+   TGLContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
    // TGLContext
    //
@@ -53,6 +58,8 @@ type
 
       protected
          { Protected Declarations }
+         FAcceleration : TGLContextAcceleration;
+
          procedure SetColorBits(const aColorBits : Integer);
          procedure SetStencilBits(const aStencilBits : Integer);
          procedure SetAccumBits(const aAccumBits : Integer);
@@ -91,6 +98,8 @@ type
             The methods of this property are just wrappers around calls
             to Activate and Deactivate. }
          property Active : Boolean read GetActive write SetActive;
+         {: Indicates if the context is hardware-accelerated. }
+         property Acceleration : TGLContextAcceleration read FAcceleration;
          {: Triggered whenever the context is destroyed.<p>
             This events happens *before* the context has been
             actually destroyed, OpenGL resource cleanup can
@@ -359,6 +368,7 @@ begin
    FOptions:=[];
    FSharedContexts:=TList.Create;
    FOwnedHandles:=TList.Create;
+   FAcceleration:=chaUnknown;
    GLContextManager.RegisterContext(Self);
 end;
 
@@ -443,6 +453,7 @@ procedure TGLContext.CreateContext(outputDevice : Integer);
 begin
    if IsValid then
       raise EGLContext.Create(cContextAlreadyCreated);
+   FAcceleration:=chaUnknown;
    DoCreateContext(outputDevice);
    FSharedContexts.Add(Self);
    Manager.ContextCreatedBy(Self);
@@ -454,6 +465,7 @@ procedure TGLContext.CreateMemoryContext(outputDevice, width, height : Integer);
 begin
    if IsValid then
       raise EGLContext.Create(cContextAlreadyCreated);
+   FAcceleration:=chaUnknown;
    DoCreateMemoryContext(outputDevice, width, height);
    FSharedContexts.Add(Self);
    Manager.ContextCreatedBy(Self);
@@ -547,6 +559,7 @@ begin
          if Assigned(oldContext) then
             oldContext.Activate;
       end;
+      FAcceleration:=chaUnknown;
    end else raise EGLContext.Create(cContextNotCreated);
 end;
 

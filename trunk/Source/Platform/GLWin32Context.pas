@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>30/11/01 - EG - Hardware acceleration support now detected
       <li>20/11/01 - EG - New temp HWnd code for memory contexts (improved compat.)
       <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
       <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
@@ -277,6 +278,10 @@ begin
       if (dwFlags and PFD_NEED_PALETTE) <> 0 then
          SetupPalette(outputDevice, PFDescriptor);
 
+   if (pfDescriptor.dwFlags and PFD_GENERIC_FORMAT)>0 then
+      FAcceleration:=chaSoftware
+   else FAcceleration:=chaHardware;
+
    FRC:=wglCreateContext(outputDevice);
    if FRC=0 then
       RaiseLastOSError
@@ -383,6 +388,7 @@ begin
    FHPBUFFER:=localHPBuffer;
    FDC:=localDC;
    FRC:=localRC;
+   FAcceleration:=chaHardware;
 end;
 
 // DoShareLists
