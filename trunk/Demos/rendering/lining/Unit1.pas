@@ -49,6 +49,8 @@ type
     Bevel1: TBevel;
     Panel2: TPanel;
     CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
+    Bevel2: TBevel;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -58,6 +60,7 @@ type
     procedure CheckBox3Click(Sender: TObject);
     procedure CheckBox4Click(Sender: TObject);
     procedure CheckBox5Click(Sender: TObject);
+    procedure CheckBox6Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -90,6 +93,14 @@ end;
 procedure TForm1.CheckBox5Click(Sender: TObject);
 begin
   GLHiddenLineShader2.SurfaceLit:=CheckBox5.Checked;
+end;
+
+procedure TForm1.CheckBox6Click(Sender: TObject);
+begin
+  if CheckBox6.Checked then
+    GLHiddenLineShader2.ShadeModel:=smFlat
+  else
+    GLHiddenLineShader2.ShadeModel:=smSmooth;
 end;
 
 procedure TForm1.CheckBox4Click(Sender: TObject);

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 234
-  Top = 131
+  Left = 206
+  Top = 117
   Width = 540
   Height = 353
   Caption = 'Lining Shaders'
@@ -40,35 +40,35 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 17
-      Top = 194
+      Top = 226
       Width = 50
       Height = 13
       Caption = 'Drag with:'
     end
     object Label2: TLabel
       Left = 17
-      Top = 210
+      Top = 242
       Width = 123
       Height = 13
       Caption = 'LMB - move around scene'
     end
     object Label3: TLabel
       Left = 17
-      Top = 226
+      Top = 258
       Width = 89
       Height = 13
       Caption = 'RMB - rotate torus'
     end
     object Bevel1: TBevel
       Left = 11
-      Top = 186
+      Top = 218
       Width = 131
       Height = 9
       Shape = bsTopLine
     end
     object CheckBox1: TCheckBox
       Left = 9
-      Top = 154
+      Top = 186
       Width = 131
       Height = 17
       Caption = 'Outline Shader Enabled'
@@ -81,7 +81,7 @@ object Form1: TForm1
       Left = 9
       Top = 58
       Width = 137
-      Height = 87
+      Height = 111
       Caption = 'Shader on Torus'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
@@ -90,6 +90,13 @@ object Form1: TForm1
       Font.Style = []
       ParentFont = False
       TabOrder = 1
+      object Bevel2: TBevel
+        Left = 8
+        Top = 52
+        Width = 117
+        Height = 9
+        Shape = bsTopLine
+      end
       object CheckBox2: TCheckBox
         Left = 10
         Top = 16
@@ -103,7 +110,7 @@ object Form1: TForm1
       end
       object CheckBox3: TCheckBox
         Left = 10
-        Top = 32
+        Top = 56
         Width = 97
         Height = 17
         Caption = 'Solid'
@@ -112,7 +119,7 @@ object Form1: TForm1
       end
       object CheckBox4: TCheckBox
         Left = 10
-        Top = 64
+        Top = 32
         Width = 113
         Height = 17
         Caption = 'Dotted Hidden Line'
@@ -122,13 +129,22 @@ object Form1: TForm1
         OnClick = CheckBox4Click
       end
       object CheckBox5: TCheckBox
-        Left = 10
-        Top = 48
-        Width = 111
+        Left = 26
+        Top = 72
+        Width = 79
         Height = 17
-        Caption = 'Surface Lit if Solid'
+        Caption = 'Surface Lit'
         TabOrder = 3
         OnClick = CheckBox5Click
+      end
+      object CheckBox6: TCheckBox
+        Left = 26
+        Top = 88
+        Width = 63
+        Height = 17
+        Caption = 'Flat'
+        TabOrder = 4
+        OnClick = CheckBox6Click
       end
     end
     object Panel2: TPanel
