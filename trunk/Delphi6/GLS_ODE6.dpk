@@ -37,7 +37,6 @@ contains
   ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
   GLODERegister in '..\Source\DesignTime\GLODERegister.pas',
   GLODECustomColliders in '..\Source\GLODECustomColliders.pas',
-  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas',
-  moduleloader in '..\Source\PhysicsAPIs\moduleloader.pas';
+  GLODESkeletonColliders in '..\Source\GLODESkeletonColliders.pas';
 
 end.
