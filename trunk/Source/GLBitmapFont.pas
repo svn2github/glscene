@@ -2,6 +2,9 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/08/02 - JAJ - Merged Dual Development, Alpha Channel and CharWidth are now side by side
+      <li>UNKNOWN  - EG - Added Alpha Channel.
+      <li>02/06/02 - JAJ - Modified to flexible character width
       <li>20/01/02 - EG - Dropped 'Graphics' dependency
       <li>10/09/01 - EG - Fixed visibility of tile 0
       <li>12/08/01 - EG - Completely rewritten handles management
@@ -14,7 +17,7 @@ unit GLBitmapFont;
 interface
 
 uses Classes, GLScene, Geometry, GLMisc, StdCtrls, GLContext, GLCrossPlatform,
-   VectorTypes, GLTexture;
+   GLTexture;
 
 type
 
@@ -37,6 +40,7 @@ type
          function GetDisplayName : String; override;
 
       public
+         Widths : Array of Integer;
 	      { Public Declarations }
 	      constructor Create(Collection : TCollection); override;
 	      destructor Destroy; override;
@@ -77,9 +81,9 @@ type
    {: Provides access to individual characters in a BitmapFont.<p>
       Only fixed-width bitmap fonts are supported, the characters are enumerated
       in a raster fashion (line then column).<br>
-      The transparency (alpha channel) is controled via the GlyphsAlpha property
-      and the 'color' parameter of the RenderString method.<p>
-      Performance note: as usual, for best performance, your base font bitmap
+      Transparency is all or nothing, the transparent color being that of the
+      top left pixel of the Glyphs bitmap.<p>
+      Performance note: as usual, for best performance, you base font bitmap
       dimensions should be close to a power of two, and have at least 1 pixel
       spacing between characters (horizontally and vertically) to avoid artefacts
       when rendering with linear filtering. }
@@ -116,24 +120,27 @@ type
 
 	      procedure InvalidateUsers;
 	      function CharactersPerRow : Integer;
-	      procedure TileIndexToTexCoords(tileIndex : Integer; var topLeft, bottomRight : TTexPoint);
+	      procedure TileIndexToTexCoords(tileIndex : Integer; var topLeft, bottomRight : TTexPoint; ThisCharWidth : Single = -1);
          procedure PrepareImage;
          procedure PrepareParams;
 
 	   public
+              MaxHeight   : Integer;
+
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+              Function  CalcCharWidth(Ch : Char) : Integer;
+              Function  CalcStringWidth(St : String) : Integer;
 
-	      procedure RegisterUser(anObject : TGLBaseSceneObject);
-	      procedure UnRegisterUser(anObject : TGLBaseSceneObject);
+	      procedure RegisterUser(anObject : TGLBaseSceneObject); virtual;
+	      procedure UnRegisterUser(anObject : TGLBaseSceneObject); virtual;
 
          {: Renders the given string at current position.<p>
             The current matrix is blindly used, meaning you can render all kinds
             of rotated and linear distorted text with this method. }
 	      procedure RenderString(const aString : String; alignment : TAlignment;
-                                layout : TTextLayout; const color : TColorVector);
-
+                                layout : TTextLayout; color : TColorVector; position : PVector = Nil);
 	   published
 	      { Published Declarations }
          {: A single bitmap containing all the characters.<p>
@@ -146,9 +153,6 @@ type
          {: Ranges allow converting between ASCII and tile indexes.<p>
             See TBitmapFontRange. }
          property Ranges : TBitmapFontRanges read FRanges write SetRanges;
-         {: Detremines how Glyphs alpha-transparency is determined.<p>
-            This controls per-pixel transparency. }
-         property GlyphsAlpha : TGLTextureImageAlpha read FGlyphsAlpha write SetGlyphsAlpha default tiaTopLeftPointColorTransparent;
 
          {: Width of a single character. }
          property CharWidth : Integer read FCharWidth write SetCharWidth default 16;
@@ -181,14 +185,15 @@ uses SysUtils, OpenGL12, GLGraphics, XOpenGL;
 //
 constructor TBitmapFontRange.Create(Collection : TCollection);
 begin
-	inherited Create(Collection);
+  inherited Create(Collection);
+  SetLength(Widths,0);
 end;
 
 // Destroy
 //
 destructor TBitmapFontRange.Destroy;
 begin
-	inherited;
+  inherited;
 end;
 
 // Assign
@@ -215,20 +220,40 @@ end;
 // SetStartASCII
 //
 procedure TBitmapFontRange.SetStartASCII(const val : Char);
+Var
+  XC : Integer;
 begin
-   FStartASCII:=val;
-   if FStartASCII>FStopASCII then
-      FStopASCII:=FStartASCII;
-   TBitmapFontRanges(Collection).NotifyChange;
+  FStartASCII:=val;
+  if FStartASCII>FStopASCII then
+    FStopASCII:=FStartASCII;
+  SetLength(Widths,Byte(FStopASCII)-Byte(FStartASCII)+1);
+  if Assigned(TBitmapFontRanges(Collection).owner) and (TBitmapFontRanges(Collection).owner is TBitmapFont) then
+  Begin
+    For XC := 0 to Length(Widths)-1 do
+    Begin
+      Widths[XC] := (TBitmapFontRanges(Collection).owner as TBitmapFont).charwidth;
+    End;
+  End;
+  TBitmapFontRanges(Collection).NotifyChange;
 end;
 
 // SetStopASCII
 //
 procedure TBitmapFontRange.SetStopASCII(const val : Char);
+Var
+  XC : Integer;
 begin
    FStopASCII:=val;
    if FStopASCII<FStartASCII then
       FStartASCII:=FStopASCII;
+   SetLength(Widths,Byte(FStopASCII)-Byte(FStartASCII)+1);
+   if Assigned(TBitmapFontRanges(Collection).owner) and (TBitmapFontRanges(Collection).owner is TBitmapFont) then
+   Begin
+     For XC := 0 to Length(Widths)-1 do
+     Begin
+       Widths[XC] := (TBitmapFontRanges(Collection).owner as TBitmapFont).charwidth;
+     End;
+   End;
    TBitmapFontRanges(Collection).NotifyChange;
 end;
 
@@ -311,7 +336,6 @@ begin
    FRanges:=TBitmapFontRanges.Create(Self);
    FGlyphs:=TGLPicture.Create;
    FGlyphs.OnChange:=OnGlyphsChanged;
-   FGlyphsAlpha:=tiaTopLeftPointColorTransparent;
    FCharWidth:=16;
    FCharHeight:=16;
    FHSpace:=1;
@@ -335,11 +359,41 @@ begin
    FUsers.Free;
 end;
 
+Function  TBitmapFont.CalcCharWidth(Ch : Char) : Integer;
+
+Var
+  I : Integer;
+Begin
+  for i:=0 to FRanges.Count-1 do
+  with FRanges.Items[i] do
+  if (Ch>=StartASCII) and (Ch<=StopASCII) then
+  begin
+    Result := FRanges.Items[i].Widths[Byte(Ch)-Byte(StartASCII)];
+    Break;
+  end;
+End;
+
+Function  TBitmapFont.CalcStringWidth(St : String) : Integer;
+
+Var
+  I : Integer;
+Begin
+  Result := 0;
+  for i:=1 to Length(St)-1 do
+  Begin
+    Result := Result+CalcCharWidth(St[i]);
+    Inc(Result,HSpace);
+  end;
+  If St <> '' then Dec(Result,HSpace);
+End;
+
+
 // SetRanges
 //
 procedure TBitmapFont.SetRanges(const val : TBitmapFontRanges);
 begin
    FRanges.Assign(val);
+   InvalidateUsers;
 end;
 
 // SetGlyphs
@@ -533,8 +587,7 @@ end;
 
 // RenderString
 //
-procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignment;
-                                   layout : TTextLayout; const color : TColorVector);
+procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignment; layout : TTextLayout; color : TColorVector; position : PVector = Nil);
 
    function AlignmentAdjustement(p : Integer) : Single;
    var
@@ -546,9 +599,11 @@ procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignmen
       end;
       case alignment of
          taLeftJustify : Result:=0;
-         taRightJustify : Result:=-(i*(CharWidth+HSpace)-HSpace)
+//         taRightJustify : Result:=-(i*(CharWidth+HSpace)-HSpace)
+         taRightJustify : Result:=-CalcStringWidth(Copy(aString,p-i,i))
       else // taCenter
-          Result:=-(i*(CharWidth+HSpace)-HSpace)/2;
+//          Result:=-(i*(CharWidth+HSpace)-HSpace)/2;
+          Result:=-CalcStringWidth(Copy(aString,p-i,i))/2;
       end;
    end;
 
@@ -559,6 +614,7 @@ procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignmen
       n:=1;
       for i:=1 to Length(aString) do
          if aString[i]=#13 then Inc(n);
+
       case layout of
          tlTop : Result:=0;
          tlBottom : Result:=(n*(CharHeight+VSpace)-VSpace);
@@ -567,7 +623,7 @@ procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignmen
       end;
    end;
 
-var
+Var
    i, idx : Integer;
    topLeft, bottomRight : TTexPoint;
    vTopLeft, vBottomRight : TVector;
@@ -575,15 +631,18 @@ var
 begin
    if (Glyphs.Width=0) or (aString='') then Exit;
    // prepare texture if necessary
-   if FHandleIsDirty then begin
+   if FHandleIsDirty then
+   begin
       // prepare handle
-      if FTextureHandle.Handle = 0 then begin
+      if FTextureHandle.Handle = 0 then
+      begin
          FTextureHandle.AllocateHandle;
          Assert(FTextureHandle.Handle<>0);
       end;
       SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
       // texture registration
-      if Glyphs.Width<>0 then begin
+      if Glyphs.Width<>0 then
+      begin
          PrepareImage;
          PrepareParams;
       end;
@@ -591,7 +650,10 @@ begin
    end;
    // precalcs
    MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
-   MakePoint(vBottomRight, vTopLeft[0]+CharWidth-1, vTopLeft[1]-(CharHeight-1), 0);
+
+   If Assigned(position) then
+   vTopLeft := VectorAdd(vTopLeft,position^);
+
    deltaH:=CharWidth+HSpace;
    deltaV:=-(CharHeight+VSpace);
    // set states
@@ -602,39 +664,47 @@ begin
    SetGLCurrentTexture(0, GL_TEXTURE_2D, FTextureHandle.Handle);
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
    // start rendering
-   glColor4fv(@color);
    glBegin(GL_QUADS);
-   for i:=1 to Length(aString) do begin
-      case aString[i] of
+   for i:=1 to Length(aString) do
+   begin
+     case aString[i] of
          #0..#12, #14..#31 : ; // ignore
-         #13 : begin
-            vTopLeft[0]:=AlignmentAdjustement(i+1);
+         #13 :
+         begin
+            vTopLeft[0]:=AlignmentAdjustement(i);
             vTopLeft[1]:=vTopLeft[1]+deltaV;
-            vBottomRight[0]:=vTopLeft[0]+CharWidth-1;
-            vBottomRight[1]:=vBottomRight[1]+deltaV;
-         end
-      else
-         idx:=Ranges.CharacterToTileIndex(aString[i]);
-         if idx>=0 then begin
-            TileIndexToTexCoords(idx, topLeft, bottomRight);
 
-            glTexCoord2fv(@topLeft);
-            glVertex4fv(@vTopLeft);
-
-            glTexCoord2f(topLeft.S, bottomRight.T);
-            glVertex2f(vTopLeft[0], vBottomRight[1]);
-
-            glTexCoord2fv(@bottomRight);
-            glVertex4fv(@vBottomRight);
-
-            glTexCoord2f(bottomRight.S, topLeft.T);
-            glVertex2f(vBottomRight[0], vTopLeft[1]);
+            If Assigned(position) then vTopLeft[0]:=vTopLeft[0]+position[0];
          end;
-         vTopLeft[0]:=vTopLeft[0]+deltaH;
-         vBottomRight[0]:=vBottomRight[0]+deltaH;
-      end;
-   end;
-   glEnd;
+         else
+         Begin
+            idx:=Ranges.CharacterToTileIndex(aString[i]);
+            deltaH := CalcCharWidth(aString[i]);
+            MakePoint(vBottomRight, vTopLeft[0]+deltaH-1, vTopLeft[1]-CharHeight, 0);
+            if idx>=0 then
+            begin
+              TileIndexToTexCoords(idx, topLeft, bottomRight, deltaH);
+
+              glColor4fv(@color); // nel
+
+
+              glTexCoord2fv(@topLeft);
+              glVertex4fv(@vTopLeft);
+
+              glTexCoord2f(topLeft.S, bottomRight.T);
+              glVertex2f(vTopLeft[0], vBottomRight[1]);
+
+              glTexCoord2fv(@bottomRight);
+              glVertex4fv(@vBottomRight);
+
+              glTexCoord2f(bottomRight.S, topLeft.T);
+              glVertex2f(vBottomRight[0], vTopLeft[1]);
+            end;
+            vTopLeft[0]:=vTopLeft[0]+deltaH+HSpace;
+         end;
+     End;
+  end;
+  glEnd;
 end;
 
 // CharactersPerRow
@@ -649,15 +719,29 @@ end;
 // TileIndexToTexCoords
 //
 procedure TBitmapFont.TileIndexToTexCoords(tileIndex : Integer;
-                                           var topLeft, bottomRight : TTexPoint);
+                                           var topLeft, bottomRight : TTexPoint; ThisCharWidth : Single = -1);
 var
    carX, carY : Integer;
 begin
+  If thisCharWidth = -1 then thisCharWidth := CharWidth;
+
+   carX:=(tileIndex mod CharactersPerRow)*(CharWidth+GlyphsIntervalX);
+   carY:=(tileIndex div CharactersPerRow)*(CharHeight+GlyphsIntervalY);
+   topLeft.S:=(carX+0.05)/FTextureWidth;
+   topLeft.T:=(FTextureHeight-(carY+0.05))/FTextureHeight;
+   bottomRight.S:=(carX+ThisCharWidth-1.05)/FTextureWidth;
+   bottomRight.T:=(FTextureHeight-(carY+CharHeight-0.05))/FTextureHeight;
+
+
+
+   exit;
+  If thisCharWidth = -1 then thisCharWidth := CharWidth;
+//  thisCharWidth := CharWidth;
    carX:=(tileIndex mod CharactersPerRow)*(CharWidth+GlyphsIntervalX);
    carY:=(tileIndex div CharactersPerRow)*(CharHeight+GlyphsIntervalY);
    topLeft.S:=(carX+0.05)/FTextureWidth;
    topLeft.T:=FTextureHeight-(carY+0.05)/FTextureHeight;
-   bottomRight.S:=(carX+CharWidth-1.05)/FTextureWidth;
+   bottomRight.S:=(carX-0.05-(thisCharWidth/CharWidth))/FTextureWidth;
    bottomRight.T:=FTextureHeight-(carY+CharHeight-1.05)/FTextureHeight;
 end;
 
