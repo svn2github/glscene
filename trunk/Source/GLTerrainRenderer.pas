@@ -473,24 +473,6 @@ begin
       xglPopState;
    end;
 
-   nbX:=Round((maxTilePosX-minTilePosX)/TileSize);
-   nbY:=Round((maxTilePosY-minTilePosY)/TileSize);
-   FLastTriangleCount:=0;
-
-   patchList:=TList.Create;
-   patchList.Capacity:=(nbX+1)*(nbY+1);
-   rowList:=TList.Create;
-   prevRow:=TList.Create;
-   if Assigned(FOnPatchPostRender) then
-      postRenderPatchList:=TList.Create
-   else postRenderPatchList:=nil;
-   if Assigned(FOnHeightDataPostRender) then
-      postRenderHeightDataList:=TList.Create
-   else postRenderHeightDataList:=nil;
-
-   MarkAllTilesAsUnused;
-   AbsoluteMatrix; // makes sure it is available
-
    if Assigned(FOnGetTerrainBounds) then begin
       // User-specified terrain bounds, may override ours
       t_l:=minTilePosX;
@@ -510,6 +492,24 @@ begin
       if minTilePosX<t_l then minTilePosX:=t_l;
       if minTilePosY<t_b then minTilePosY:=t_b;
    end;
+   nbX:=Round((maxTilePosX-minTilePosX)/TileSize);
+   nbY:=Round((maxTilePosY-minTilePosY)/TileSize);
+
+   FLastTriangleCount:=0;
+
+   patchList:=TList.Create;
+   patchList.Capacity:=(nbX+1)*(nbY+1);
+   rowList:=TList.Create;
+   prevRow:=TList.Create;
+   if Assigned(FOnPatchPostRender) then
+      postRenderPatchList:=TList.Create
+   else postRenderPatchList:=nil;
+   if Assigned(FOnHeightDataPostRender) then
+      postRenderHeightDataList:=TList.Create
+   else postRenderHeightDataList:=nil;
+
+   MarkAllTilesAsUnused;
+   AbsoluteMatrix; // makes sure it is available
 
    // determine orientation (to render front-to-back)
    if vEyeDirection[0]>=0 then
@@ -528,7 +528,7 @@ begin
    tileRadius:=tileRadius;
 
    tilePos[1]:=minTilePosY;
-   for iY:=0 to nbY do begin
+   for iY:=0 to nbY-1 do begin
       tilePos[0]:=minTilePosX;
       prevPatch:=nil;
       n:=0;
