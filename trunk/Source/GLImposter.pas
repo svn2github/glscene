@@ -20,7 +20,7 @@ type
 
    // TImposter
    //
-   TImposterOption = (impoBlended);
+   TImposterOption = (impoBlended, impoAlphaTest);
    TImposterOptions = set of TImposterOption;
 
    // TImposter
@@ -69,6 +69,7 @@ type
 
       protected
 			{ Protected Declarations }
+         procedure InitializeImpostorTexture(const textureSize : TGLPoint);
 
       public
 	      { Public Declarations }
@@ -126,7 +127,8 @@ type
 	      { Public Declarations }
 	      constructor Create(AOwner : TPersistent);
 
-         function Add : TGLStaticImposterBuilderCorona;
+         function Add : TGLStaticImposterBuilderCorona; overload;
+         function Add(const elevation : Single; samples : Integer) : TGLStaticImposterBuilderCorona; overload;
 	      property Items[index : Integer] : TGLStaticImposterBuilderCorona read GetItems write SetItems; default;
          function SampleCount : Integer;
 
@@ -161,11 +163,16 @@ type
          FSampleSize : Integer;
          FTextureSize : TGLPoint;
          FSamplesPerAxis : TGLPoint;
+         FSamplingRatioBias : Single;
 
       protected
 			{ Protected Declarations }
          procedure SetCoronas(val : TGLStaticImposterBuilderCoronas);
          procedure SetSampleSize(val : Integer);
+         procedure SetSamplingRatioBias(val : Single);
+
+         {: Computes the optimal texture size that would be able to hold all samples. }
+         function ComputeOptimalTextureSize : TGLPoint;
 
       public
 	      { Public Declarations }
@@ -179,6 +186,10 @@ type
                           impostoredObject : TGLBaseSceneObject;
                           buffer : TGLSceneBuffer;
                           destImposter : TImposter);
+         {: Ratio (0..1) of the texture that will be used by samples.<p>
+            If this value is below 1, you're wasting texture space and may
+            as well increase the number of samples. }
+         function TextureFillRatio : Single;
 
          {: Meaningful only after imposter texture has been prepared. }
          property TextureSize : TGLPoint read FTextureSize;
@@ -188,6 +199,7 @@ type
 	      { Published Declarations }
          property Coronas : TGLStaticImposterBuilderCoronas read FCoronas write SetCoronas;
          property SampleSize : Integer read FSampleSize write SetSampleSize default 32;
+         property SamplingRatioBias : Single read FSamplingRatioBias write SetSamplingRatioBias;
 
    end;
 
@@ -311,11 +323,15 @@ end;
 procedure TImposter.BeginRender(var rci : TRenderContextInfo);
 var
    mat : TMatrix;
+   filter : TGLEnum;
 begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_CULL_FACE);
-   glDisable(GL_ALPHA_TEST);
+
+   if impoAlphaTest in Options then
+      glEnable(GL_ALPHA_TEST)
+   else glDisable(GL_ALPHA_TEST);
 
    if impoBlended in Options then begin
       glEnable(GL_BLEND);
@@ -325,18 +341,12 @@ begin
    glEnable(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, Texture.Handle);
 
-   if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
-     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-   end else begin
-     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-   end;
+   filter:=GL_LINEAR;
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+ 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-   glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
+   glGetFloatv(GL_MODELVIEW_MATRIX, @mat[0][0]);
    FVx[0]:=mat[0][0];   FVy[0]:=mat[0][1];
    FVx[1]:=mat[1][0];   FVy[1]:=mat[1][1];
    FVx[2]:=mat[2][0];   FVy[2]:=mat[2][1];
@@ -410,6 +420,21 @@ begin
    for i:=0 to FImposterRegister.Count-1 do
       TImposter(FImposterRegister).Texture.DestroyHandle;
    inherited;
+end;
+
+// InitializeImpostorTexture
+//
+procedure TGLImposterBuilder.InitializeImpostorTexture(const textureSize : TGLPoint);
+var
+   memBuffer : Pointer;
+begin
+   memBuffer:=GetMemory(textureSize.X*textureSize.Y*4);
+   try
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
+                   GL_RGBA, GL_UNSIGNED_BYTE, memBuffer);
+   finally
+      FreeMemory(memBuffer);
+   end;
 end;
 
 // ----------
@@ -501,6 +526,16 @@ begin
 	Result:=(inherited Add) as TGLStaticImposterBuilderCorona;
 end;
 
+// Add (elevation, samples)
+//
+function TGLStaticImposterBuilderCoronas.Add(const elevation : Single;
+                              samples : Integer) : TGLStaticImposterBuilderCorona;
+begin
+	Result:=(inherited Add) as TGLStaticImposterBuilderCorona;
+   Result.Elevation:=elevation;
+   Result.Samples:=samples;
+end;
+
 // SetItems
 //
 procedure TGLStaticImposterBuilderCoronas.SetItems(index : Integer; const val : TGLStaticImposterBuilderCorona);
@@ -563,7 +598,7 @@ var
    elevationAngle, bestAngleDelta, angleDelta, azimuthAngle : Single;
    i : Integer;
    bestCorona : TGLStaticImposterBuilderCorona;
-   tx, ty, tdx, tdy : Single;
+   tx, ty, tdx, tdy, s : Single;
    siBuilder : TGLStaticImposterBuilder;
 begin
    // determine closest corona
@@ -584,7 +619,7 @@ begin
 
    // determine closest sample in corona
    azimuthAngle:=ArcTan2(localCameraPos[2], localCameraPos[0])+PI;
-   i:=Round(azimuthAngle*bestCorona.Samples*cInv2PI-0.5);
+   i:=Round(azimuthAngle*bestCorona.Samples*cInv2PI);
    if i<0 then i:=0;
    if i>=bestCorona.Samples then i:=bestCorona.Samples-1;
    i:=bestCorona.SampleBaseIndex+i;
@@ -593,13 +628,14 @@ begin
    tdy:=1/siBuilder.SamplesPerAxis.Y;
    tx:=tdx*(i mod siBuilder.SamplesPerAxis.X);
    ty:=tdy*(i div siBuilder.SamplesPerAxis.X);
+   s:=Size/siBuilder.SamplingRatioBias;
 
    // then render it
    glBegin(GL_QUADS);
-      glTexCoord2f(tx+tdx, ty+tdy); glVertex3f(FQuad[0][0]*size+objPos[0], FQuad[0][1]*size+objPos[1], FQuad[0][2]*size+objPos[2]);
-      glTexCoord2f(tx, ty+tdy);     glVertex3f(FQuad[1][0]*size+objPos[0], FQuad[1][1]*size+objPos[1], FQuad[1][2]*size+objPos[2]);
-      glTexCoord2f(tx, ty);         glVertex3f(FQuad[2][0]*size+objPos[0], FQuad[2][1]*size+objPos[1], FQuad[2][2]*size+objPos[2]);
-      glTexCoord2f(tx+tdx, ty);     glVertex3f(FQuad[3][0]*size+objPos[0], FQuad[3][1]*size+objPos[1], FQuad[3][2]*size+objPos[2]);
+      glTexCoord2f(tx+tdx, ty+tdy); glVertex3f(FQuad[0][0]*s+objPos[0], FQuad[0][1]*s+objPos[1], FQuad[0][2]*s+objPos[2]);
+      glTexCoord2f(tx, ty+tdy);     glVertex3f(FQuad[1][0]*s+objPos[0], FQuad[1][1]*s+objPos[1], FQuad[1][2]*s+objPos[2]);
+      glTexCoord2f(tx, ty);         glVertex3f(FQuad[2][0]*s+objPos[0], FQuad[2][1]*s+objPos[1], FQuad[2][2]*s+objPos[2]);
+      glTexCoord2f(tx+tdx, ty);     glVertex3f(FQuad[3][0]*s+objPos[0], FQuad[3][1]*s+objPos[1], FQuad[3][2]*s+objPos[2]);
    glEnd;
 end;
 
@@ -613,8 +649,9 @@ constructor TGLStaticImposterBuilder.Create(AOwner : TComponent);
 begin
    inherited;
    FCoronas:=TGLStaticImposterBuilderCoronas.Create(Self);
-   FSampleSize:=16;
    FCoronas.Add;
+   FSampleSize:=16;
+   FSamplingRatioBias:=1;
 end;
 
 // Destroy
@@ -630,6 +667,7 @@ end;
 function TGLStaticImposterBuilder.CreateNewImposter : TImposter;
 begin
    Result:=TStaticImposter.Create(Self);
+   Result.Options:=[impoBlended, impoAlphaTest];
 end;
 
 // SetCoronas
@@ -653,59 +691,39 @@ begin
    end;
 end;
 
+// SetSamplingRatioBias
+//
+procedure TGLStaticImposterBuilder.SetSamplingRatioBias(val : Single);
+begin
+   val:=ClampValue(val, 0.1, 10);
+   if val<>FSamplingRatioBias then begin
+      FSamplingRatioBias:=val;
+      NotifyChange(Self);
+   end;
+end;
+
 // Render
 //
 procedure TGLStaticImposterBuilder.Render(var rci : TRenderContextInfo;
             impostoredObject : TGLBaseSceneObject; buffer : TGLSceneBuffer;
             destImposter : TImposter);
 var
-   nbSamples, maxSamples, maxTexSize : Integer;
-   texDim, bestTexDim : TGLPoint;
-   requiredSurface, currentSurface, bestSurface : Integer;
    i, coronaIdx, curSample : Integer;
    radius : Single;
    cameraDirection, cameraOffset : TVector;
    xDest, xSrc, yDest, ySrc : Integer;
    corona : TGLStaticImposterBuilderCorona;
    fx, fy : Single;
-   memBuffer : Pointer;
 begin
-   nbSamples:=Coronas.SampleCount;
-   glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
-   maxSamples:=Sqr(maxTexSize div SampleSize);
-   Assert(nbSamples<maxSamples, 'Too many samples, can''t fit in a texture!');
-   requiredSurface:=nbSamples*SampleSize*SampleSize;
+   FTextureSize:=ComputeOptimalTextureSize;
+   FSamplesPerAxis.X:=FTextureSize.X div SampleSize;
+   FSamplesPerAxis.Y:=FTextureSize.Y div SampleSize;
 
-   // determine the texture size with the best fill ratio
-   bestSurface:=MaxInt;
-   texDim.X:=SampleSize; while texDim.X<=maxTexSize do begin
-      texDim.Y:=SampleSize; while texDim.Y<=maxTexSize do begin
-         currentSurface:=texDim.X*texDim.Y;
-         if currentSurface>=requiredSurface then begin
-            if currentSurface<bestSurface then begin
-               bestTexDim:=texDim;
-               bestSurface:=currentSurface;
-            end else if (currentSurface=bestSurface)
-                  and (MaxInteger(texDim.X, texDim.Y)<MaxInteger(bestTexDim.X, bestTexDim.Y)) then begin
-               bestTexDim:=texDim;
-               bestSurface:=currentSurface;
-            end else Break;
-         end;
-         texDim.Y:=texDim.Y*2;
-      end;
-      texDim.X:=texDim.X*2;
-   end;
-   Assert(bestSurface<>MaxInt);
-
-   FTextureSize:=bestTexDim;
-   FSamplesPerAxis.X:=bestTexDim.X div SampleSize;
-   FSamplesPerAxis.Y:=bestTexDim.Y div SampleSize;
-
-   radius:=impostoredObject.BoundingSphereRadius;
+   radius:=impostoredObject.BoundingSphereRadius/SamplingRatioBias;
 
    // Setup the buffer in a suitable fashion for our needs
    glPushAttrib(GL_ENABLE_BIT+GL_COLOR_BUFFER_BIT);
-   glClearColor(0, 0, 0, 0);
+   glClearColor(1, 1, 1, 0);
    //   glDisable(GL_LIGHTING);
 
    glMatrixMode(GL_PROJECTION);
@@ -723,20 +741,19 @@ begin
    // setup imposter texture
    if destImposter.Texture.Handle=0 then begin
       destImposter.PrepareTexture;
-      memBuffer:=GetMemory(bestSurface*4);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TextureSize.X, TextureSize.Y, 0,
-                   GL_RGBA, GL_UNSIGNED_BYTE, memBuffer);
-      FreeMemory(memBuffer);
+      InitializeImpostorTexture(FTextureSize);
    end else glBindTexture(GL_TEXTURE_2D, destImposter.Texture.Handle);
 
    // Now render each sample
    curSample:=0;
    for coronaIdx:=0 to Coronas.Count-1 do begin
       corona:=Coronas[coronaIdx];
+      cameraDirection:=XHmgVector;
+      RotateVector(cameraDirection, ZHmgPoint, corona.Elevation*cPIdiv180);
       for i:=0 to corona.Samples-1 do begin
-         cameraDirection:=XHmgVector;
-         RotateVector(cameraDirection, YHmgVector, (c2PI*i)/corona.Samples);
-         cameraOffset:=VectorScale(cameraDirection, radius*2);
+         cameraOffset:=cameraDirection;
+         RotateVector(cameraOffset, YHmgVector, (c2PI*i)/corona.Samples);
+         ScaleVector(cameraOffset, -radius*2);
 
          glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
          glLoadIdentity;
@@ -760,6 +777,57 @@ begin
    glMatrixMode(GL_MODELVIEW);
 
    glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
+end;
+
+// ComputeOptimalTextureSize
+//
+function TGLStaticImposterBuilder.ComputeOptimalTextureSize : TGLPoint;
+var
+   nbSamples, maxSamples, maxTexSize, baseSize : Integer;
+   texDim, bestTexDim : TGLPoint;
+   requiredSurface, currentSurface, bestSurface : Integer;
+begin
+   nbSamples:=Coronas.SampleCount;
+   glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
+   maxSamples:=Sqr(maxTexSize div SampleSize);
+   Assert(nbSamples<maxSamples, 'Too many samples, can''t fit in a texture!');
+   requiredSurface:=nbSamples*SampleSize*SampleSize;
+   baseSize:=RoundUpToPowerOf2(SampleSize);
+
+   // determine the texture size with the best fill ratio
+   bestSurface:=MaxInt;
+   texDim.X:=baseSize;
+   while texDim.X<=maxTexSize do begin
+      texDim.Y:=baseSize;
+      while texDim.Y<=maxTexSize do begin
+         currentSurface:=texDim.X*texDim.Y;
+         if currentSurface>=requiredSurface then begin
+            if currentSurface<bestSurface then begin
+               bestTexDim:=texDim;
+               bestSurface:=currentSurface;
+            end else if (currentSurface=bestSurface)
+                  and (MaxInteger(texDim.X, texDim.Y)<MaxInteger(bestTexDim.X, bestTexDim.Y)) then begin
+               bestTexDim:=texDim;
+               bestSurface:=currentSurface;
+            end else Break;
+         end;
+         texDim.Y:=texDim.Y*2;
+      end;
+      texDim.X:=texDim.X*2;
+   end;
+   Assert(bestSurface<>MaxInt);
+
+   Result:=bestTexDim;
+end;
+
+// TextureFillRatio
+//
+function TGLStaticImposterBuilder.TextureFillRatio : Single;
+var
+   texDim : TGLPoint;
+begin
+   texDim:=ComputeOptimalTextureSize;
+   Result:=(Coronas.SampleCount*SampleSize*SampleSize)/(texDim.X*texDim.Y);
 end;
 
 {
