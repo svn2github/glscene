@@ -92,9 +92,6 @@ begin
 
   GLTorus1.TurnAngle:=15*Sin(newTime*5);
   GLTorus1.PitchAngle:=15*Cos(newTime*5);
-
-  GLTexturedCelShader.LightPosition:=GLLightSource1.AbsolutePosition;
-  GLColoredCelShader.LightPosition:=GLLightSource1.AbsolutePosition;
 end;
 
 end.
