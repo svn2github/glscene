@@ -6,6 +6,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/08/03 - EG - Faster FastQuickSortLists
       <li>13/08/03 - SG - Added TQuaternionList
       <li>05/06/03 - EG - Added MinInteger, some TIntegerList optimizations
       <li>03/06/03 - EG - Added TIntegerList.BinarySearch and AddSorted (Mattias Fagerlund)
@@ -546,37 +547,43 @@ end;
 // FastQuickSortLists
 //
 procedure FastQuickSortLists(startIndex, endIndex : Integer;
-								 refList : TSingleList; objList : TList);
+								     refList : TSingleList; objList : TList);
 type
    PSingle = ^Single;
 var
 	I, J : Integer;
 	P : Integer;
    refInts : PIntegerArray;
+   ppl : PIntegerArray;
 begin
    // All singles are >=1, so IEEE format allows comparing them as if they were integers
-	if endIndex-startIndex>1 then begin
-      refInts:=PIntegerArray(@refList.List[0]);
+   refInts:=PIntegerArray(@refList.List[0]);
+	if endIndex>startIndex+1 then begin
 		repeat
 			I:=startIndex; J:=endIndex;
-			PSingle(@P)^:=refList.List[(I + J) shr 1];
+			P:=PInteger(@refList.List[(I + J) shr 1])^;
 			repeat
-				while refInts[I]<P do Inc(I);
-				while refInts[J]>P do Dec(J);
+            ppl:=refInts;
+				while ppl[I]<P do Inc(I);
+				while ppl[J]>P do Dec(J);
 				if I <= J then begin
-					refList.Exchange(I, J);
-					objList.Exchange(I, J);
+               P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
+               ppl:=PIntegerArray(objList.List);
+               P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
 					Inc(I); Dec(J);
 				end;
 			until I > J;
 			if startIndex < J then
-				QuickSortLists(startIndex, J, refList, objList);
+				FastQuickSortLists(startIndex, J, refList, objList);
 			startIndex:=I;
 		until I >= endIndex;
-	end else if endIndex-startIndex>0 then begin
-		if refList.List[endIndex]<refList.List[startIndex] then begin
-			refList.Exchange(startIndex, endIndex);
-			objList.Exchange(startIndex, endIndex);
+	end else if endIndex>startIndex then begin
+      ppl:=refInts;
+		if ppl[endIndex]<ppl[startIndex] then begin
+         P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
+         ppl:=PIntegerArray(objList.List);
+         P:=ppl[i]; ppl[i]:=ppl[j]; ppl[j]:=P;
+         Inc(I); Dec(J);
 		end;
 	end;
 end;
@@ -767,13 +774,23 @@ end;
 // Exchange
 //
 procedure TBaseList.Exchange(index1, index2: Integer);
+var
+   buf : Integer;
+   p : PIntegerArray;
 begin
 {$IFOPT R+}
 	Assert((Cardinal(index1)<Cardinal(FCount)) and (Cardinal(index2)<Cardinal(FCount)));
 {$ENDIF}
-   System.Move(FBaseList[index1*FItemSize], BufferItem[0], FItemSize);
-   System.Move(FBaseList[index2*FItemSize], FBaseList[index1*FItemSize], FItemSize);
-   System.Move(BufferItem[0], FBaseList[index2*FItemSize], FItemSize);
+   if FItemSize=4 then begin
+      p:=PIntegerArray(FBaseList);
+      buf:=p[index1];
+      p[index1]:=p[index2];
+      p[index2]:=buf;
+   end else begin
+      System.Move(FBaseList[index1*FItemSize], BufferItem[0], FItemSize);
+      System.Move(FBaseList[index2*FItemSize], FBaseList[index1*FItemSize], FItemSize);
+      System.Move(BufferItem[0], FBaseList[index2*FItemSize], FItemSize);
+   end;
 end;
 
 // Reverse
