@@ -1594,7 +1594,10 @@ type
          {: Converts an absolute world coordinate into screen coordinate.<p>
             This methods wraps a call to gluProject.<p>
             Note that screen coord (0,0) is the lower left corner. }
-         function WorldToScreen(const aPoint : TAffineVector) : TAffineVector;
+         function WorldToScreen(const aPoint : TAffineVector) : TAffineVector; overload;
+         function WorldToScreen(const aPoint : TVector) : TVector; overload;
+         {: Converts a set of point absolute world coordinates into screen coordinates.<p> }
+         procedure WorldToScreen(points : PVector; nbPoints : Integer); overload;
          {: Calculates the 3D vector corresponding to a 2D screen coordinate.<p>
             The vector originates from the camera's absolute position and is
             expressed in absolute coordinates.<p>
@@ -6311,6 +6314,47 @@ begin
                  @x, @y, @z);
       SetVector(Result, x, y, z);
    end else Result:=aPoint;
+end;
+
+// WorldToScreen
+//
+function TGLSceneBuffer.WorldToScreen(const aPoint : TVector) : TVector;
+var
+   proj, mv : THomogeneousDblMatrix;
+   x, y, z : Double;
+begin
+   if Assigned(FCamera) then begin
+      SetMatrix(proj, ProjectionMatrix);
+      SetMatrix(mv, ModelViewMatrix);
+      gluProject(aPoint[0], aPoint[1], aPoint[2],
+                 mv, proj, PHomogeneousIntVector(@FViewPort)^,
+                 @x, @y, @z);
+      SetVector(Result, x, y, z);
+   end else Result:=aPoint;
+end;
+
+// WorldToScreen
+//
+procedure TGLSceneBuffer.WorldToScreen(points : PVector; nbPoints : Integer);
+var
+   i : Integer;
+   proj, mv : THomogeneousDblMatrix;
+   x, y, z : Double;
+begin
+   if Assigned(FCamera) then begin
+      SetMatrix(proj, ProjectionMatrix);
+      SetMatrix(mv, ModelViewMatrix);
+      for i:=0 to nbPoints-1 do begin
+         gluProject(points[0], points[1], points[2],
+                    mv, proj, PHomogeneousIntVector(@FViewPort)^,
+                    @x, @y, @z);
+         points[0]:=x;
+         points[1]:=y;
+         points[2]:=z;
+         points[3]:=1;
+         Inc(points);
+      end;
+   end;
 end;
 
 // ScreenToVector (affine)
