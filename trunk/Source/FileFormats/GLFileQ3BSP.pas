@@ -224,9 +224,17 @@ begin
                // there are also per-leaf mesh references... dunno what they
                // are for, did not encounter them so far... If you have a BSP
                // that has some, and if you know how to make use of them, shout!
+               
+               // Copy the cluster index, used for visibility determination
+               fg.Cluster:=bsp.Leaves[i].Cluster;
             end;
          end;
       end;
+      
+      // Copy the visibility data
+      if bsp.VisData.numOfClusters>0 then
+         mo.ClusterVisibility.SetData(
+            @bsp.VisData.bitSets[0], bsp.VisData.numOfClusters);
    finally
       bsp.Free;
    end;

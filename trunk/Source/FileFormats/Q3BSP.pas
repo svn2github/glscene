@@ -91,6 +91,12 @@ type
       imageBits : array [0..49151] of Byte;     // The RGB data in a 128x128 image
    end;
    PBSPLightmap = ^TBSPLightmap;
+   
+   TBSPVisData = record
+      numOfClusters : Integer;
+      bytesPerCluster : Integer;
+      bitSets : array of Byte;
+   end;
 
    // TQ3BSP
    //
@@ -113,6 +119,7 @@ type
          Faces          : array of TBSPFace;
          Textures       : array of TBSPTexture; // texture names (without extension)
          Lightmaps      : array of TBSPLightmap;
+         VisData        : TBSPVisData;
 
          constructor Create(bspStream : TStream);
    end;
@@ -195,6 +202,14 @@ begin
    SetLength(Lightmaps, NumOfLightmaps);
    bspStream.Position:=lumps[kLightmaps].offset;
    bspStream.Read(Lightmaps[0], NumOfLightmaps*SizeOf(TBSPLightmap));
+
+   bspStream.Position:=lumps[kVisData].offset;
+   bspStream.Read(VisData.numOfClusters, SizeOf(Integer));
+   bspStream.Read(VisData.bytesPerCluster, SizeOf(Integer));
+   if VisData.numOfClusters*VisData.bytesPerCluster>0 then begin
+      SetLength(VisData.bitSets, VisData.numOfClusters*VisData.bytesPerCluster);
+      bspStream.Read(VisData.bitSets[0], VisData.numOfClusters*VisData.bytesPerCluster);
+   end;
 end;
 
 end.
