@@ -1218,7 +1218,9 @@ begin
    RestLength:=VectorDistance(NodeA.Location, NodeB.Location);
 end;
 
-{ TVFAirResistance }
+// ------------------
+// ------------------ TVFAirResistance ------------------
+// ------------------
 
 procedure TVFAirResistance.AddForceToNode(aNode: TVerletNode);
 var
@@ -1443,7 +1445,9 @@ begin
    end;
 end;
 
-{ TVCCube }
+// ------------------
+// ------------------ TVCCube ------------------
+// ------------------
 
 constructor TVCCube.Create(aOwner: TVerletAssembly);
 begin
@@ -1525,7 +1529,9 @@ begin
   FHalfSides := VectorScale(Sides, 0.5);
 end;
 
-{ TVCCapsule }
+// ------------------
+// ------------------ TVCCapsule ------------------
+// ------------------
 
 // SetAxis
 //
