@@ -6,8 +6,10 @@
   Open Dynamics Engine (http://opende.sourceforge.org)
   DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)
 
-  Note:
+  Notes:
   This code is still being developed so any part of it may change at anytime.
+  To install use the GLS_ODE6.dpk in the GLScene/Delphi6 folder. (Delphi6 only 
+  at the moment)
 
   History:
 
@@ -79,7 +81,7 @@ type
          steps. }
       procedure RegisterObject(aObject:TObject);
       {: Removes an object from the auto updating list. The object will no
-         longer update after the ODE World is steps. }
+         longer update after the ODE World steps. }
       procedure UnregisterObject(aObject:TObject);
     public
       constructor Create(AOwner:TComponent); override;
@@ -97,8 +99,8 @@ type
       {: This event occurs after the contact information has been filled out
          by the CalcContact procedure and before the contact joint is created.
          The HandleCollision parameter can be set to determine if a collision
-         is added the Contact Joints. Any 'last minute' to the collisions
-         behaviour can be made through the contact parameter. }
+         is added the Contact Joints. Any 'last minute' changes to the 
+         collisions behaviour can be made through the contact parameter. }
       property OnCollision : TODECollisionEvent read FOnCollision write FOnCollision;
   end;
 
@@ -2815,9 +2817,5 @@ begin
   if FJointID<>0 then
     dJointSetUniversalAxis2(FJointID,Value[0],Value[1],Value[2]);
 end;
-
-initialization
-
-  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
 
 end.
