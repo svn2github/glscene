@@ -2009,7 +2009,8 @@ begin
    Result:=TAffineVectorList.Create;
    if (Vertices.Count mod 3)=0 then begin
       Result.Assign(Vertices);
-      normals.Assign(Self.Normals);
+      if Assigned(normals) then
+         normals.Assign(Self.Normals);
    end;
 end;
 
