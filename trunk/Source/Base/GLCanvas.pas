@@ -8,6 +8,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/01/04 - EG - Polyline/Polygon fix
       <li>07/05/03 - EG - SetPenWidth now correctly stops the primitive
       <li>08/01/03 - EG - StopPrimitive now public
       <li>09/12/02 - EG - Now properly disables fog
@@ -398,6 +399,7 @@ begin
       glVertex2iv(@points[Low(points)]);
       for i:=Low(points)+1 to High(points) do
          glVertex2iv(@points[i]);
+      StopPrimitive;
    end;
 end;
 
@@ -413,6 +415,7 @@ begin
       glVertex2iv(@points[Low(points)]);
       for i:=Low(points)+1 to High(points) do
          glVertex2iv(@points[i]);
+      StopPrimitive;
    end;
 end;
 
