@@ -3,15 +3,6 @@ unit GLSkyBox;
 interface
 
 
-   {
-    NOTE : TO USE IT IN THE IDE YOU MUST ADD THE FOLLOWING LINES IN "GLSCEREGISTER.PAS":
-
-1)  Uses ... GLSkyBox;
-2)   ObjectManager.RegisterSceneObject(TGLSkyBox, 'GLSkyBox', 'Environment Objects');
-   }
-
-
-
 {: GLSkyBox<p>
 
    A TGLImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane) for use as a skybox always centered on the RCI.camera position.<p>
