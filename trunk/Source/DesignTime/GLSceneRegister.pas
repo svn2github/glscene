@@ -130,7 +130,7 @@ uses
    GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
    GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
    GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
-   GLWindows, GLShadowPlane, GLWindowsFont
+   GLWindows, GLShadowPlane, GLWindowsFont, GLLensFlare
 {$ifdef WIN32}
    , GLWin32Viewer
 {$endif}
@@ -1808,6 +1808,7 @@ initialization
 
       RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLFlatText, 'FlatText', glsOCSpecialObjects);
+      RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCSpecialObjects);
