@@ -37,22 +37,20 @@ object frmFurBall: TfrmFurBall
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseMove = GLSceneViewer1MouseMove
   end
-  object CheckBox_Release: TCheckBox
+  object CheckBox_LockBall: TCheckBox
     Left = 8
     Top = 0
     Width = 65
     Height = 17
-    Caption = 'Release'
-    Checked = True
-    State = cbChecked
+    Caption = '&Lock Ball'
     TabOrder = 1
   end
   object CheckBox_FurGravity: TCheckBox
-    Left = 72
+    Left = 80
     Top = 0
     Width = 81
     Height = 17
-    Caption = 'Fur Gravity'
+    Caption = 'Fur &Gravity'
     Checked = True
     State = cbChecked
     TabOrder = 2
@@ -63,7 +61,7 @@ object frmFurBall: TfrmFurBall
     Top = 0
     Width = 105
     Height = 17
-    Caption = 'Wind Resistence'
+    Caption = '&Wind Resistence'
     Checked = True
     State = cbChecked
     TabOrder = 3
@@ -74,7 +72,7 @@ object frmFurBall: TfrmFurBall
     Top = 0
     Width = 49
     Height = 17
-    Caption = 'Bald'
+    Caption = '&Bald'
     TabOrder = 4
     OnClick = CheckBox_BaldClick
   end

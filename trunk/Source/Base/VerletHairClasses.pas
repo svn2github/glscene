@@ -152,6 +152,7 @@ procedure TVerletHair.Clear;
 var
   i : integer;
 begin
+  ClearStiffness;
   for i := FNodeList.Count-1 downto 0 do
     FNodeList[i].Free;
 
@@ -165,6 +166,8 @@ var
 begin
   for i := 0 to FStiffnessList.Count-1 do
     TVerletConstraint(FStiffnessList[i]).Free;
+
+  FStiffnessList.Clear;
 end;
 
 constructor TVerletHair.Create(const AVerletWorld : TVerletWorld;

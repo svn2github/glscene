@@ -955,6 +955,8 @@ begin
       FNodeA:=nil;
    if FNodeB=aNode then
       FNodeB:=nil;
+   if (FNodeA=nil) and (FNodeA=nil) then
+      Free;
 end;
 
 // ------------------
@@ -1293,10 +1295,10 @@ begin
       FNodes.Remove(aNode);
       aNode.FOwner:=nil;
       // drop refs in constraints
-      for i:=0 to FConstraints.Count-1 do
+      for i:=FConstraints.Count-1 downto 0 do
          FConstraints[i].RemoveNode(aNode);
       // drop refs in forces
-      for i:=0 to FForces.Count-1 do
+      for i:=FForces.Count-1 downto 0 do
          FForces[i].RemoveNode(aNode);
    end;
 end;
@@ -1383,6 +1385,7 @@ end;
 //
 function TVerletWorld.CreateStick(const aNodeA, aNodeB : TVerletNode; const Slack : single = 0) : TVCStick;
 begin
+   Assert(aNodeA <> aNodeB, 'Can''t create stick between same node!');
    Result:=TVCStick.Create(Self);
    Result.NodeA:=aNodeA;
    Result.NodeB:=aNodeB;

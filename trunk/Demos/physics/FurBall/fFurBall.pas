@@ -24,7 +24,7 @@ type
     Sphere1: TGLSphere;
     DCShadowCaster: TGLDummyCube;
     FurBall: TGLSphere;
-    CheckBox_Release: TCheckBox;
+    CheckBox_LockBall: TCheckBox;
     Label1: TLabel;
     CheckBox_FurGravity: TCheckBox;
     CheckBox_WindResistence: TCheckBox;
@@ -82,7 +82,7 @@ uses ODEGL, GLVerletClasses;
 
 procedure nearCallback (data : pointer; o1, o2 : PdxGeom); cdecl;
 const
-  cCOL_MAX = 4;
+  cCOL_MAX = 1;
 var
   i, numc : integer;
   b1,b2 : PdxBody;
@@ -111,9 +111,6 @@ begin
   numc := dCollide (o1,o2,cCOL_MAX,contact[0].geom,sizeof(TdContact));
   if (numc>0) then
   begin
-    // dMatrix3 RI;
-    // dRSetIdentity (RI);
-    // const dReal ss[3] = {0.02,0.02,0.02};
     for i := 0 to numc-1 do
     begin
       c := dJointCreateContact (frmFurBall.world,frmFurBall.contactgroup,contact[i]);
@@ -185,13 +182,12 @@ begin
   begin
     PhysicsTime := PhysicsTime + cTIME_STEP;
 
-    if CheckBox_Release.Checked then
+    if not CheckBox_LockBall.Checked then
     begin
       dSpaceCollide (space,nil,nearCallback);
       dWorldStep (world, cTIME_STEP);//}
       // remove all contact joints
       dJointGroupEmpty (contactgroup);
-
 
       if IsKeyDown(VK_UP) then
         dBodyAddForce(odeFurBallBody, 0,0,2.5)
@@ -245,7 +241,6 @@ begin
   FoldMouseY := Y;
 end;
 
-
 procedure TfrmFurBall.CreateBall;
 var
   m : TdMass;
@@ -279,9 +274,6 @@ const
   cHairCount = 200;
   cRootDepth = 4;
 procedure TfrmFurBall.CreateFur;
-var
-  i : integer;
-
   // Much, MUCH easier that uniform distribution, and it looks fun.
   procedure CreateRandomHair;
   var
@@ -316,7 +308,19 @@ var
     Hair.Data := GLLines;
     HairList.Add(Hair);
   end;
+var
+  Hair : TVerletHair;
+  i : integer;
 begin
+  for i := 0 to HairList.Count-1 do
+  begin
+    Hair := TVerletHair(HairList[i]);
+    TGLLines(Hair.Data).Free;
+    Hair.Free;
+  end;
+
+  HairList.Clear;
+
   for i := 0 to cHairCount-1 do
     CreateRandomHair;
 end;
@@ -353,15 +357,20 @@ procedure TfrmFurBall.CheckBox_BaldClick(Sender: TObject);
 var
   i, j : integer;
 begin
-  for i := 0 to HairList.Count -1 do
+  if not CheckBox_Bald.Checked then
+    CreateFur else
   begin
-    with TVerletHair(HairList[i]) do
+    for i := 0 to HairList.Count -1 do
     begin
-      Anchor.NailedDown := not CheckBox_Bald.Checked;
-      Anchor.OldLocation := Anchor.Location;
-      Root.NailedDown := not CheckBox_Bald.Checked;
-      Root.OldLocation := Root.Location;
+      with TVerletHair(HairList[i]) do
+      begin
+        Anchor.NailedDown := not CheckBox_Bald.Checked;
+        Anchor.OldLocation := Anchor.Location;
+        Root.NailedDown := not CheckBox_Bald.Checked;
+        Root.OldLocation := Root.Location;
+      end;
     end;
   end;
 end;
+
 end.
