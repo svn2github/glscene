@@ -20,7 +20,12 @@ uses
 
 type
   TFace = class
+  public
     Vertices : array[0..2] of integer;
+    Normal : TAffineVector;
+    MeshObject : TMeshObject;
+
+    procedure UpdateNormal;
   end;
 
   TFaceList = class(TList)
@@ -31,7 +36,79 @@ type
     property Items[i : integer] : TFace read GetItems write SetItems; default;
   end;
 
+  TFaceExtractor = class
+  private
+    FFaceList : TFaceList;
+    FGLBaseMesh : TGLBaseMesh;
+    FNodeList : TVerletNodeList;
+    FWeldDistance: single;
+    FEdgeDoublesSkipped : integer;
+
+    procedure SetWeldDistance(const Value: single);
+  public
+    property FaceList : TFaceList read FFaceList;
+
+    procedure Clear; virtual;
+    procedure ProcessMesh; virtual;
+
+    property WeldDistance : single read FWeldDistance write SetWeldDistance;
+    property EdgeDoublesSkipped : integer read FEdgeDoublesSkipped;
+
+    property GLBaseMesh : TGLBaseMesh read FGLBaseMesh;
+
+    function AddFace(Vi0, Vi1, Vi2 : integer; MeshObject : TMeshObject) : TFace; virtual;
+
+    constructor Create(aGLBaseMesh : TGLBaseMesh); virtual;
+    destructor Destroy; override;
+  end;
+
+  // ************ FACE SMOOTHER
+
+  TVertexStat = class
+  private
+    FFaceList: TFaceList;
+    FMeshObject : TMeshObject;
+    FVertexIndex : integer;
+  public
+    property VertexIndex : integer read FVertexIndex;
+    property MeshObject : TMeshObject read FMeshObject;
+
+    property FaceList : TFaceList read FFaceList write FFaceList;
+
+    procedure UpdateNormal;
+
+    constructor Create(const aMeshObject : TMeshObject; const aVertexIndex : integer);
+    destructor Destroy; override;
+  end;
+
+  TVertextStatsList = class(TList)
+  private
+    function GetItems(i: integer): TVertexStat;
+    procedure SetItems(i: integer; const Value: TVertexStat);
+
+  public
+    property Items[i : integer] : TVertexStat read GetItems write SetItems; default;
+  end;
+
+  TFaceSmoother = class(TFaceExtractor)
+  private
+    FVertextStatsList: TVertextStatsList;
+  public
+    property VertextStatsList : TVertextStatsList read FVertextStatsList;
+    procedure UpdateNormals;
+
+    procedure Clear; override;
+
+    procedure ProcessMesh; override;
+
+    constructor Create(aGLBaseMesh : TGLBaseMesh); override;
+    destructor Destroy; override;
+  end;
+
+  // ************ EDGE DETECTOR
+
   TEdge = class
+  public
     Vertices : array[0..1] of integer;
     Faces : array[0..1] of TFace;
 
@@ -50,36 +127,28 @@ type
     property Items[i : integer] : TEdge read GetItems write SetItems; default;
   end;
 
-  TEdgeDetector = class
+  TEdgeDetector = class(TFaceExtractor)
   private
-    FGLBaseMesh : TGLBaseMesh;
-    FNodeList : TVerletNodeList;
-    FWeldDistance: single;
-    FEdgeDoublesSkipped : integer;
+    FEdgeList : TEdgeList;
 
     procedure BuildOpposingEdges;
-    procedure SetWeldDistance(const Value: single);
   public
-    FaceList : TFaceList;
-    EdgeList : TEdgeList;
+    property EdgeList : TEdgeList read FEdgeList;
 
-    procedure Clear;
-    procedure BuildEdgeList;
+    procedure Clear; override;
+    procedure ProcessMesh; override;
 
-    property WeldDistance : single read FWeldDistance write SetWeldDistance;
-    property EdgeDoublesSkipped : integer read FEdgeDoublesSkipped;
-
-    function AddFace(Vi0, Vi1, Vi2 : integer; MeshObject : TMeshObject) : TFace;
     function AddEdge(Vi0, Vi1 : integer; Face : TFace; MeshObject : TMeshObject) : TEdge;
-    function AddNode(VerletAssembly : TVerletAssembly; MeshObject : TMeshObject; VertexIndex : integer) : TVerletNode;
-
-    procedure RenderEdges(var rci : TRenderContextInfo);
+    function AddFace(Vi0, Vi1, Vi2 : integer; MeshObject : TMeshObject) : TFace; override;
+    function AddNode(VerletAssembly : TVerletAssembly; MeshObject : TMeshObject; VertexIndex : integer) : TVerletNode; virtual;
 
     function CreateVAEmpty : TVerletAssembly;
     function CreateVAWithSticks(Slack : single) : TVerletAssembly;
     function CreateVAWithForces(Strength, Damping, Slack : single) : TVerletAssembly;
 
-    constructor Create(aGLBaseMesh : TGLBaseMesh);
+    procedure RenderEdges(var rci : TRenderContextInfo);
+
+    constructor Create(aGLBaseMesh : TGLBaseMesh); override;
     destructor Destroy; override;
   end;
 
@@ -95,9 +164,9 @@ type
 
 implementation
 
-{ TEdgeDetector }
+{ TFaceExtractor }
 
-procedure TEdgeDetector.Clear;
+procedure TFaceExtractor.Clear;
 var
   i : integer;
 begin
@@ -105,34 +174,27 @@ begin
     FaceList[i].Free;
 
   FaceList.Clear;
-
-  for i := 0 to EdgeList.Count-1 do
-    EdgeList[i].Free;
-
-  EdgeList.Clear;
 end;
 
-constructor TEdgeDetector.Create(aGLBaseMesh : TGLBaseMesh);
+constructor TFaceExtractor.Create(aGLBaseMesh : TGLBaseMesh);
 begin
-  FaceList := TFaceList.Create;
-  EdgeList := TEdgeList.Create;
+  FFaceList := TFaceList.Create;
   FGLBaseMesh := aGLBaseMesh;
   FNodeList := TVerletNodeList.Create;
   FWeldDistance := 0.01;
 end;
 
-destructor TEdgeDetector.Destroy;
+destructor TFaceExtractor.Destroy;
 begin
   Clear;
 
-  FreeAndNil(FaceList);
-  FreeAndNil(EdgeList);
   FreeAndNil(FNodeList);
+  FreeAndNil(FFaceList);
 
   inherited;
 end;
 
-procedure TEdgeDetector.BuildEdgeList;
+procedure TFaceExtractor.ProcessMesh;
 var
   iMeshObject, iFaceGroup : integer;
   MeshObject : TMeshObject;
@@ -194,11 +256,9 @@ begin
     end else
       Assert(false);
   end;
-
-  BuildOpposingEdges;
 end;
 
-function TEdgeDetector.AddFace(Vi0, Vi1, Vi2: integer; MeshObject : TMeshObject) : TFace;
+function TFaceExtractor.AddFace(Vi0, Vi1, Vi2: integer; MeshObject : TMeshObject) : TFace;
 var
   Face : TFace;
   V0, V1, V2 : TAffineVector;
@@ -211,11 +271,94 @@ begin
   Face.Vertices[1] := Vi1;
   Face.Vertices[2] := Vi2;
 
-  AddEdge(Vi0, Vi1, Face, MeshObject);
-  AddEdge(Vi1, Vi2, Face, MeshObject);
-  AddEdge(Vi2, Vi0, Face, MeshObject);//}
-
   result := Face;
+end;
+
+procedure TFaceExtractor.SetWeldDistance(const Value: single);
+begin
+  FWeldDistance := Value;
+end;
+
+{ TFaceList }
+
+function TFaceList.GetItems(i: integer): TFace;
+begin
+  result := Get(i);
+end;
+
+procedure TFaceList.SetItems(i: integer; const Value: TFace);
+begin
+  Put(i, Value);
+end;
+
+{ TEdgeList }
+
+function TEdgeList.GetItems(i: integer): TEdge;
+begin
+  result := Get(i);
+end;
+
+procedure TEdgeList.SetItems(i: integer; const Value: TEdge);
+begin
+  Put(i, Value);
+end;
+
+{ TMeshObjectVerletNode }
+
+constructor TMeshObjectVerletNode.Create(aOwner: TVerletAssembly);
+begin
+  inherited;
+  VertexIndices := TIntegerList.Create;
+end;
+
+destructor TMeshObjectVerletNode.Destroy;
+begin
+  VertexIndices.Free;
+  inherited;
+end;
+
+procedure TMeshObjectVerletNode.Updated;
+var
+  i : integer;
+begin
+  // Update the actual vertex
+  for i := 0 to VertexIndices.Count-1 do
+    MeshObject.Vertices[VertexIndices[i]] := MeshObject.Owner.Owner.AbsoluteToLocal(Location);
+end;
+
+{ TEdge }
+
+function TEdge.SameSame(NodeList: TVerletNodeList): boolean;
+begin
+  result := NodeList[Vertices[0]] = NodeList[Vertices[1]];
+end;
+
+{ TEdgeDetector }
+
+procedure TEdgeDetector.Clear;
+var
+  i : integer;
+begin
+  inherited;
+
+  for i := 0 to EdgeList.Count-1 do
+    EdgeList[i].Free;
+
+  EdgeList.Clear;
+end;
+
+constructor TEdgeDetector.Create(aGLBaseMesh: TGLBaseMesh);
+begin
+  FEdgeList := TEdgeList.Create;
+
+  inherited;
+end;
+
+destructor TEdgeDetector.Destroy;
+begin
+  inherited;
+
+  FreeAndNil(FEdgeList);
 end;
 
 function TEdgeDetector.AddEdge(Vi0, Vi1: integer; Face: TFace; MeshObject : TMeshObject): TEdge;
@@ -250,6 +393,94 @@ begin
   EdgeList.Add(Edge);
 
   result := Edge;
+end;
+function TEdgeDetector.AddFace(Vi0, Vi1, Vi2: integer;
+  MeshObject: TMeshObject): TFace;
+var
+  Face : TFace;
+  V0, V1, V2 : TAffineVector;
+begin
+  Face := TFace.Create;
+
+  FaceList.Add(Face);
+
+  Face.Vertices[0] := Vi0;
+  Face.Vertices[1] := Vi1;
+  Face.Vertices[2] := Vi2;
+  Face.MeshObject := MeshObject;
+
+  AddEdge(Vi0, Vi1, Face, MeshObject);
+  AddEdge(Vi1, Vi2, Face, MeshObject);
+  AddEdge(Vi2, Vi0, Face, MeshObject);//}
+
+  result := Face;
+end;
+
+function TEdgeDetector.CreateVAEmpty : TVerletAssembly;
+var
+  i : integer;
+  VerletAssembly : TVerletAssembly;
+  MO : TMeshObject;
+begin
+  VerletAssembly := TVerletAssembly.Create;
+
+  MO := FGLBaseMesh.MeshObjects[0];
+
+  for i := 0 to MO.Vertices.Count-1 do
+    AddNode(VerletAssembly, MO, i);
+
+  Assert(FNodeList.Count = MO.Vertices.Count, Format('%d <> %d',[FNodeList.Count, MO.Vertices.Count]));
+
+  result := VerletAssembly;
+end;
+
+function TEdgeDetector.CreateVAWithForces(Strength,
+  Damping, Slack: single): TVerletAssembly;
+var
+  i : integer;
+  VerletAssembly : TVerletAssembly;
+begin
+  VerletAssembly := CreateVAEmpty;
+
+  for i := 0 to EdgeList.Count-1 do
+    if not EdgeList[i].SameSame(FNodeList) then
+    begin
+      VerletAssembly.CreateSpring(
+        FNodeList[EdgeList[i].Vertices[0]],
+        FNodeList[EdgeList[i].Vertices[1]],
+        Strength, Damping, Slack);
+
+      if EdgeList[i].Solid then
+        VerletAssembly.AddSolidEdge(
+          FNodeList[EdgeList[i].Vertices[0]],
+          FNodeList[EdgeList[i].Vertices[1]]);
+    end;
+
+  result := VerletAssembly;
+end;
+
+function TEdgeDetector.CreateVAWithSticks(Slack : single): TVerletAssembly;
+var
+  i : integer;
+  VerletAssembly : TVerletAssembly;
+begin
+  VerletAssembly := CreateVAEmpty;
+
+  for i := 0 to EdgeList.Count-1 do
+    if not EdgeList[i].SameSame(FNodeList) then
+    begin
+      VerletAssembly.CreateStick(
+        FNodeList[EdgeList[i].Vertices[0]],
+        FNodeList[EdgeList[i].Vertices[1]],
+        Slack);
+
+      if EdgeList[i].Solid then
+        VerletAssembly.AddSolidEdge(
+          FNodeList[EdgeList[i].Vertices[0]],
+          FNodeList[EdgeList[i].Vertices[1]]);
+    end;
+
+  result := VerletAssembly;
 end;
 
 procedure TEdgeDetector.RenderEdges(var rci: TRenderContextInfo);
@@ -347,73 +578,6 @@ begin
   end;
 end;
 
-function TEdgeDetector.CreateVAEmpty : TVerletAssembly;
-var
-  i : integer;
-  VerletAssembly : TVerletAssembly;
-  MO : TMeshObject;
-begin
-  VerletAssembly := TVerletAssembly.Create;
-
-  MO := FGLBaseMesh.MeshObjects[0];
-
-  for i := 0 to MO.Vertices.Count-1 do
-    AddNode(VerletAssembly, MO, i);
-
-  Assert(FNodeList.Count = MO.Vertices.Count, Format('%d <> %d',[FNodeList.Count, MO.Vertices.Count]));
-
-  result := VerletAssembly;
-end;
-
-function TEdgeDetector.CreateVAWithForces(Strength,
-  Damping, Slack: single): TVerletAssembly;
-var
-  i : integer;
-  VerletAssembly : TVerletAssembly;
-begin
-  VerletAssembly := CreateVAEmpty;
-
-  for i := 0 to EdgeList.Count-1 do
-    if not EdgeList[i].SameSame(FNodeList) then
-    begin
-      VerletAssembly.CreateSpring(
-        FNodeList[EdgeList[i].Vertices[0]],
-        FNodeList[EdgeList[i].Vertices[1]],
-        Strength, Damping, Slack);
-
-      if EdgeList[i].Solid then
-        VerletAssembly.AddSolidEdge(
-          FNodeList[EdgeList[i].Vertices[0]],
-          FNodeList[EdgeList[i].Vertices[1]]);
-    end;
-
-  result := VerletAssembly;
-end;
-
-function TEdgeDetector.CreateVAWithSticks(Slack : single): TVerletAssembly;
-var
-  i : integer;
-  VerletAssembly : TVerletAssembly;
-begin
-  VerletAssembly := CreateVAEmpty;
-
-  for i := 0 to EdgeList.Count-1 do
-    if not EdgeList[i].SameSame(FNodeList) then
-    begin
-      VerletAssembly.CreateStick(
-        FNodeList[EdgeList[i].Vertices[0]],
-        FNodeList[EdgeList[i].Vertices[1]],
-        Slack);
-
-      if EdgeList[i].Solid then
-        VerletAssembly.AddSolidEdge(
-          FNodeList[EdgeList[i].Vertices[0]],
-          FNodeList[EdgeList[i].Vertices[1]]);
-    end;
-
-  result := VerletAssembly;
-end;
-
 function TEdgeDetector.AddNode(VerletAssembly : TVerletAssembly; MeshObject: TMeshObject;
   VertexIndex: integer): TVerletNode;
 var
@@ -446,64 +610,106 @@ begin
   FNodeList.Add(aNode);
 end;
 
-procedure TEdgeDetector.SetWeldDistance(const Value: single);
-begin
-  FWeldDistance := Value;
-end;
-
-{ TFaceList }
-
-function TFaceList.GetItems(i: integer): TFace;
-begin
-  result := Get(i);
-end;
-
-procedure TFaceList.SetItems(i: integer; const Value: TFace);
-begin
-  Put(i, Value);
-end;
-
-{ TEdgeList }
-
-function TEdgeList.GetItems(i: integer): TEdge;
-begin
-  result := Get(i);
-end;
-
-procedure TEdgeList.SetItems(i: integer; const Value: TEdge);
-begin
-  Put(i, Value);
-end;
-
-{ TMeshObjectVerletNode }
-
-constructor TMeshObjectVerletNode.Create(aOwner: TVerletAssembly);
+procedure TEdgeDetector.ProcessMesh;
 begin
   inherited;
-  VertexIndices := TIntegerList.Create;
+
+  BuildOpposingEdges;
 end;
 
-destructor TMeshObjectVerletNode.Destroy;
+{ TVertexStat }
+
+constructor TVertexStat.Create(const aMeshObject : TMeshObject; const aVertexIndex : integer);
 begin
-  VertexIndices.Free;
-  inherited;
+  FFaceList := TFaceList.Create;
+  FMeshObject := aMeshObject;
+  FVertexIndex := aVertexIndex;
 end;
 
-procedure TMeshObjectVerletNode.Updated;
+destructor TVertexStat.Destroy;
+begin
+  FreeAndNil(FFaceList);
+end;
+
+procedure TVertexStat.UpdateNormal;
+begin
+end;
+
+{ TFaceSmoother }
+
+procedure TFaceSmoother.Clear;
 var
   i : integer;
 begin
-  // Update the actual vertex
-  for i := 0 to VertexIndices.Count-1 do
-    MeshObject.Vertices[VertexIndices[i]] := MeshObject.Owner.Owner.AbsoluteToLocal(Location);
+  inherited;
+
+  for i := 0 to VertextStatsList.Count-1 do
+    VertextStatsList[i].Free;
+
+  VertextStatsList.Clear;
 end;
 
-{ TEdge }
-
-function TEdge.SameSame(NodeList: TVerletNodeList): boolean;
+constructor TFaceSmoother.Create(aGLBaseMesh: TGLBaseMesh);
 begin
-  result := NodeList[Vertices[0]] = NodeList[Vertices[1]];
+  inherited;
+  FVertextStatsList := TVertextStatsList.Create;
 end;
 
+destructor TFaceSmoother.Destroy;
+begin
+  inherited;
+
+  FreeAndNil(FVertextStatsList);
+end;
+
+procedure TFaceSmoother.ProcessMesh;
+var
+  iMeshObject, iVertice : integer;
+  MeshObject : TMeshObject;
+  VertexStat : TVertexStat;
+begin
+  inherited;
+
+  for iMeshObject := 0 to GLBaseMesh.MeshObjects.Count-1 do
+  begin
+    MeshObject := GLBaseMesh.MeshObjects[iMeshObject];
+
+    for iVertice := 0 to MeshObject.Vertices.Count-1 do
+    begin
+      VertexStat := TVertexStat.Create(MeshObject, iVertice);
+      VertextStatsList.Add(VertexStat);
+    end;
+  end;
+
+  UpdateNormals;
+end;
+
+procedure TFaceSmoother.UpdateNormals;
+var
+  i : integer;
+begin
+  for i := 0 to FaceList.Count-1 do
+    FaceList[i].UpdateNormal;
+end;
+
+{ TFace }
+
+procedure TFace.UpdateNormal;
+begin
+  // Normal := Vector
+end;
+
+{ TVertextStatsList }
+
+function TVertextStatsList.GetItems(i: integer): TVertexStat;
+begin
+  result := Get(i);
+end;
+
+procedure TVertextStatsList.SetItems(i: integer;
+  const Value: TVertexStat);
+begin
+  put(i, Value);
+end;
 
 end.

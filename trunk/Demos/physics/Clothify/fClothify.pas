@@ -158,7 +158,7 @@ begin
     if not CheckBox_Weld.Checked then
       EdgeDetector.WeldDistance := -1;
       
-    EdgeDetector.BuildEdgeList;
+    EdgeDetector.ProcessMesh;
 
     if ComboBox_ConstraintType.ItemIndex=0 then
       VerletAssembly := EdgeDetector.CreateVAWithSticks(GetSlack)

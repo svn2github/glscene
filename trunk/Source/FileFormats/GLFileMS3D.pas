@@ -32,13 +32,6 @@ implementation
 uses
   TypesMS3D;
 
-// FOR DEBUGGING!
-{procedure AddString(s : string);
-begin
-  Form1.Memo1.Lines.Add(s);
-end;//}
-
-
 { TGLMS3DVectorFile }
 
 procedure TGLMS3DVectorFile.LoadFromStream(aStream: TStream);
