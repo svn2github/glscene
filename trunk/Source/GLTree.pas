@@ -196,6 +196,8 @@ type
          procedure SetLeafBackMaterialName(const Value : TGLLibMaterialName);
          procedure SetBranchMaterialName(const Value : TGLLibMaterialName);
 
+         procedure Loaded; override;
+
       public
          { Public Declarations }
          constructor Create(AOwner : TComponent); override;
@@ -672,7 +674,6 @@ end;
 //
 procedure TGLTreeBranches.Clear;
 begin
-   FRoot.Free;
    FSinList.Clear;
    FCosList.Clear;
    FVertices.Clear;
@@ -681,6 +682,7 @@ begin
    FIndices.Clear;
    FBranchCache.Clear;
    FBranchIndices.Clear;
+   FreeAndNil(FRoot);
    FCount:=0;
 end;
 
@@ -750,10 +752,6 @@ begin
    FLeaves:=TGLTreeLeaves.Create(Self);
    FBranches:=TGLTreeBranches.Create(Self);
    FNoise:=TGLTreeBranchNoise.Create;
-
-   FAxisAlignedDimensionsCache[0]:=-1;
-
-   FBranches.BuildBranches;
 end;
 
 // Destroy
@@ -764,6 +762,14 @@ begin
    FBranches.Free;
    FNoise.Free;
    inherited;
+end;
+
+// Loaded
+//
+procedure TGLTree.Loaded;
+begin
+   inherited;
+   FBranches.BuildBranches;
 end;
 
 // Notification
@@ -1147,7 +1153,8 @@ begin
    FNoise.Free;
    RandSeed:=FSeed;
    FNoise:=TGLTreeBranchNoise.Create;
-   FRebuildTree:=True;
+   FRebuildTree:=False;
+   FBranches.BuildBranches;
    StructureChanged;
 end;
 
