@@ -45,16 +45,14 @@ type
                                       tightButSlow : Boolean);
    end;
 
-   // TFaceGroupConnectivity
+   // TConnectivity = class
    //
-   TFaceGroupConnectivity = class
+   TConnectivity = class
        private
           { All storage of faces and adges are cut up into tiny pieces for a reason,
           it'd be nicer with Structs or classes, but it's actually faster this way.
           The reason it's faster is because of less cache overwrites when we only
           access a tiny bit of a triangle (for instance), not all data.}
-          FMeshObject : TMeshObject;
-
           FEdgeVertices : TIntegerList;
           FEdgeFaces : TIntegerList;
 
@@ -68,28 +66,48 @@ type
 
           FVertexMemory : TIntegerList;
 
-          procedure AddEdge(VertexIndex0, VertexIndex1 : word; FaceID: word);
-          procedure AddFace(Vi0, Vi1, Vi2 : word);
+          FVertices : TAffineVectorList;
 
           function GetEdgeCount: integer;
           function GetFaceCount: integer;
+
           function ReuseOrFindVertexID(SeenFrom : TAffineVector; aSilhouette: TGLSilhouette;
             Index: integer): integer;
-
        public
           {: Clears out all connectivity information. }
-          procedure Clear;
-
-          {: Builds the connectivity information. }
-          procedure RebuildEdgeList;
+          procedure Clear; virtual;
 
           procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean);
+
+          function AddIndexedEdge(VertexIndex0, VertexIndex1 : integer; FaceID: integer) : integer;
+          function AddIndexedFace(Vi0, Vi1, Vi2 : integer) : integer;
+
+          function AddFace(Vertex0, Vertex1, Vertex2 : TAffineVector) : integer;
+          function AddQuad(Vertex0, Vertex1, Vertex2, Vertex3 : TAffineVector) : integer;
 
           // TODO : Similar method for parallel lights
 
           property EdgeCount : integer read GetEdgeCount;
           property FaceCount : integer read GetFaceCount;
           property PrecomputeFaceNormal : boolean read FPrecomputeFaceNormal;
+
+          constructor Create(PrecomputeFaceNormal : boolean);
+          destructor Destroy; override;
+   end;
+
+
+
+   // TFaceGroupConnectivity
+   //
+   TFaceGroupConnectivity = class(TConnectivity)
+       private
+          FMeshObject : TMeshObject;
+
+       public
+          procedure Clear; override;
+
+          {: Builds the connectivity information. }
+          procedure RebuildEdgeList;
 
           constructor Create(aMeshObject : TMeshObject; PrecomputeFaceNormal : boolean);
           destructor Destroy; override;
@@ -169,10 +187,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TFaceGroupConnectivity ------------------
+// ------------------ TConnectivity ------------------
 // ------------------
 
-constructor TFaceGroupConnectivity.Create(aMeshObject : TMeshObject; PrecomputeFaceNormal : boolean);
+{ TConnectivity }
+
+constructor TConnectivity.Create(PrecomputeFaceNormal : boolean);
 begin
   FFaceVisible := TIntegerList.Create;
 
@@ -182,16 +202,14 @@ begin
   FEdgeVertices := TIntegerList.Create;
   FEdgeFaces := TIntegerList.Create;
 
-  FMeshObject := aMeshObject;
-
   FPrecomputeFaceNormal := PrecomputeFaceNormal;
 
   FVertexMemory := TIntegerList.Create;
 
-  RebuildEdgeList;
+  FVertices := TAffineVectorList.Create;
 end;
 
-destructor TFaceGroupConnectivity.Destroy;
+destructor TConnectivity.Destroy;
 begin
   Clear;
 
@@ -204,10 +222,13 @@ begin
 
   FVertexMemory.Free;
 
+  if Assigned(FVertices) then
+    FVertices.Free;
+
   inherited;
 end;
 
-procedure TFaceGroupConnectivity.Clear;
+procedure TConnectivity.Clear;
 begin
   FEdgeVertices.Clear;
   FEdgeFaces.Clear;
@@ -215,168 +236,12 @@ begin
   FFaceVertexIndex.Clear;
   FFaceNormal.Clear;
   FVertexMemory.Clear;
+
+  if FVertices<>nil then
+    FVertices.Clear;
 end;
 
-procedure TFaceGroupConnectivity.AddEdge(VertexIndex0,
-  VertexIndex1: word; FaceID: word);
-var
-  i : integer;
-  EdgeVi0, EdgeVi1 : word;
-begin
-  // Make sure that the edge doesn't already exists
-  for i := 0 to EdgeCount-1 do begin
-    // Retrieve the two vertices in the edge
-    EdgeVi0 := FEdgeVertices[i*2 + 0];
-    EdgeVi1 := FEdgeVertices[i*2 + 1];
-
-    if ((EdgeVi0 = VertexIndex0) and (EdgeVi1 = VertexIndex1)) or
-       ((EdgeVi0 = VertexIndex1) and (EdgeVi1 = VertexIndex0)) then begin
-      // Update the second Face of the edge and we're done (this _MAY_
-      // overwrite a previous Face in a broken mesh)
-      FEdgeFaces[i*2 + 1] := FaceID;
-
-      exit;
-    end;
-  end;
-
-  // No edge was found, create a new one
-  FEdgeVertices.Add(VertexIndex0);
-  FEdgeVertices.Add(VertexIndex1);
-
-  FEdgeFaces.Add(FaceID);
-  FEdgeFaces.Add(-1);
-end;
-
-procedure TFaceGroupConnectivity.AddFace(Vi0, Vi1, Vi2: word);
-var
-  FaceID : integer;
-  V0, V1, V2 : TAffineVector;
-begin
-  FFaceVertexIndex.Add(Vi0);
-  FFaceVertexIndex.Add(Vi1);
-  FFaceVertexIndex.Add(Vi2);
-
-  V0 := FMeshObject.Vertices[Vi0];
-  V1 := FMeshObject.Vertices[Vi1];
-  V2 := FMeshObject.Vertices[Vi2];
-
-  if FPrecomputeFaceNormal then
-    FFaceNormal.Add(CalcPlaneNormal(V0, V1, V2));
-
-  FaceID := FFaceVisible.Add(0);
-
-  AddEdge(Vi0, Vi1, FaceID);
-  AddEdge(Vi1, Vi2, FaceID);
-  AddEdge(Vi2, Vi0, FaceID);//}
-end;
-
-procedure TFaceGroupConnectivity.RebuildEdgeList;
-var
-  iFaceGroup, iFace, iVertex  : integer;
-  FaceGroup : TFGVertexIndexList;
-  List : PIntegerArray;
-begin
-  // Make sure that the connectivity information is empty
-  Clear;
-
-  // Create a list of edges for the meshobject
-  for iFaceGroup := 0 to FMeshObject.FaceGroups.Count-1 do
-  begin
-    Assert(FMeshObject.FaceGroups[iFaceGroup] is TFGVertexIndexList,'Method only works for descendants of TFGVertexIndexList.');
-    FaceGroup := TFGVertexIndexList(FMeshObject.FaceGroups[iFaceGroup]);
-
-    case FaceGroup.Mode of
-      fgmmTriangles, fgmmFlatTriangles :
-      begin
-        for iFace := 0 to FaceGroup.TriangleCount - 1 do
-        begin
-          List := @FaceGroup.VertexIndices.List[iFace * 3 + 0];
-          AddFace(List[0], List[1], List[2]);
-        end;
-      end;
-      fgmmTriangleStrip :
-      begin
-        for iFace:=0 to FaceGroup.VertexIndices.Count-3 do
-        begin
-          List := @FaceGroup.VertexIndices.List[iFace];
-          if (iFace and 1)=0 then
-             AddFace(List[0], List[1], List[2])
-          else
-             AddFace(List[2], List[1], List[0]);
-        end;
-      end;
-      fgmmTriangleFan :
-      begin
-        List := FaceGroup.VertexIndices.List;
-
-        for iVertex:=2 to FaceGroup.VertexIndices.Count-1 do
-          AddFace(List[0], List[iVertex-1], List[iVertex])
-      end;
-      else
-        Assert(false,'Not supported');
-    end;
-  end;
-end;
-
-function TFaceGroupConnectivity.ReuseOrFindVertexID(SeenFrom : TAffineVector; aSilhouette : TGLSilhouette; Index : integer) : integer;
-var
-  MemIndex, i : integer;
-  Vertex : TAffineVector;
-  OldCount  : integer;
-  List : PIntegerArray;
-begin
-  // DUMBO VERSION
-  // LScene generates;
-  //
-  // Non capped 146 fps
-  // 500 runs = 560,12 ms => 1,12 ms / run
-  // aSilhouette.Count=807, vertices=1614
-  //
-  // Capped 75 fps
-  // 500 runs = 1385,33 ms => 2,77 ms / run
-  // aSilhouette.Count=807, vertices=10191
-  {Vertex := FMeshObject.Owner.Owner.LocalToAbsolute(FMeshObject.Vertices[Index]);
-  result := aSilhouette.FVertices.Add(Vertex);
-  VertexFar := VectorAdd(Vertex, VectorScale(VectorSubtract(Vertex, SeenFrom), cEXTRUDE_LENGTH));
-  aSilhouette.FVertices.Add(VertexFar);
-  exit;//}
-
-  // SMARTO VERSION
-
-  //  LScene generates;
-  //
-  //  Non capped 146 fps
-  //  500 runs = 630,06 ms => 1,26 ms / run
-  //  aSilhouette.Count=807, vertices=807
-  //
-  //  Capped 88 fps
-  //  500 runs = 1013,29 ms => 2,03 ms / run
-  //  aSilhouette.Count=807, vertices=1873
-  if Index>=FVertexMemory.Count then
-  begin
-    OldCount := FVertexMemory.Count;
-    FVertexMemory.Count := Index+1;
-
-    List := FVertexMemory.List;
-    for i := OldCount to FVertexMemory.Count-1 do
-      List[i] := -1;
-  end;//}
-
-  MemIndex := FVertexMemory[Index];
-
-  if MemIndex=-1 then
-  begin
-    // Add the "near" vertex
-    Vertex := FMeshObject.Vertices[Index];
-    MemIndex := aSilhouette.Vertices.Add(Vertex, 1);
-
-    FVertexMemory[Index] := MemIndex;
-    result := MemIndex;
-  end else
-    result := MemIndex;//}
-end;
-
-procedure TFaceGroupConnectivity.CreateSilhouetteOmni(
+procedure TConnectivity.CreateSilhouetteOmni(
   SeenFrom: TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean);
 var
   i : integer;
@@ -406,15 +271,15 @@ begin
     Vi1 := FFaceVertexIndex[i * 3 + 1];
     Vi2 := FFaceVertexIndex[i * 3 + 2];
 
-    V0 := FMeshObject.Vertices[Vi0];
+    V0 := FVertices[Vi0];
 
     if FPrecomputeFaceNormal then
       FaceNormal := FFaceNormal[i]
     else
     begin
       // Retrieve the last vertices
-      V1 := FMeshObject.Vertices[Vi1];
-      V2 := FMeshObject.Vertices[Vi2];
+      V1 := FVertices[Vi1];
+      V2 := FVertices[Vi2];
 
       FaceNormal :=
         CalcPlaneNormal(V0, V1, V2);
@@ -469,14 +334,243 @@ begin
   end;
 end;
 
-function TFaceGroupConnectivity.GetEdgeCount: integer;
+function TConnectivity.GetEdgeCount: integer;
 begin
   result := FEdgeVertices.Count div 2;
 end;
 
-function TFaceGroupConnectivity.GetFaceCount: integer;
+function TConnectivity.GetFaceCount: integer;
 begin
   result := FFaceVisible.Count;
+end;
+
+function TConnectivity.ReuseOrFindVertexID(
+  SeenFrom: TAffineVector; aSilhouette: TGLSilhouette;
+  Index: integer): integer;
+var
+  MemIndex, i : integer;
+  Vertex : TAffineVector;
+  OldCount  : integer;
+  List : PIntegerArray;
+begin
+  // DUMBO VERSION
+  // LScene generates;
+  //
+  // Non capped 146 fps
+  // 500 runs = 560,12 ms => 1,12 ms / run
+  // aSilhouette.Count=807, vertices=1614
+  //
+  // Capped 75 fps
+  // 500 runs = 1385,33 ms => 2,77 ms / run
+  // aSilhouette.Count=807, vertices=10191
+  {Vertex := FMeshObject.Owner.Owner.LocalToAbsolute(FMeshObject.Vertices[Index]);
+  result := aSilhouette.FVertices.Add(Vertex);
+  VertexFar := VectorAdd(Vertex, VectorScale(VectorSubtract(Vertex, SeenFrom), cEXTRUDE_LENGTH));
+  aSilhouette.FVertices.Add(VertexFar);
+  exit;//}
+
+  // SMARTO VERSION
+
+  //  LScene generates;
+  //
+  //  Non capped 146 fps
+  //  500 runs = 630,06 ms => 1,26 ms / run
+  //  aSilhouette.Count=807, vertices=807
+  //
+  //  Capped 88 fps
+  //  500 runs = 1013,29 ms => 2,03 ms / run
+  //  aSilhouette.Count=807, vertices=1873
+  if Index>=FVertexMemory.Count then
+  begin
+    OldCount := FVertexMemory.Count;
+    FVertexMemory.Count := Index+1;
+
+    List := FVertexMemory.List;
+    for i := OldCount to FVertexMemory.Count-1 do
+      List[i] := -1;
+  end;//}
+
+  MemIndex := FVertexMemory[Index];
+
+  if MemIndex=-1 then
+  begin
+    // Add the "near" vertex
+    Vertex := FVertices[Index];
+    MemIndex := aSilhouette.Vertices.Add(Vertex, 1);
+
+    FVertexMemory[Index] := MemIndex;
+    result := MemIndex;
+  end else
+    result := MemIndex;//}
+end;
+
+function TConnectivity.AddIndexedEdge(VertexIndex0,
+  VertexIndex1: integer; FaceID: integer) : integer;
+var
+  i : integer;
+  EdgeVi0, EdgeVi1 : integer;
+begin
+  // Make sure that the edge doesn't already exists
+  for i := 0 to EdgeCount-1 do begin
+    // Retrieve the two vertices in the edge
+    EdgeVi0 := FEdgeVertices[i*2 + 0];
+    EdgeVi1 := FEdgeVertices[i*2 + 1];
+
+    if ((EdgeVi0 = VertexIndex0) and (EdgeVi1 = VertexIndex1)) or
+       ((EdgeVi0 = VertexIndex1) and (EdgeVi1 = VertexIndex0)) then begin
+      // Update the second Face of the edge and we're done (this _MAY_
+      // overwrite a previous Face in a broken mesh)
+      FEdgeFaces[i*2 + 1] := FaceID;
+
+      exit;
+    end;
+  end;
+
+  // No edge was found, create a new one
+  FEdgeVertices.Add(VertexIndex0);
+  FEdgeVertices.Add(VertexIndex1);
+
+  FEdgeFaces.Add(FaceID);
+  FEdgeFaces.Add(-1);
+
+  result := EdgeCount-1;
+end;
+
+function TConnectivity.AddIndexedFace(Vi0, Vi1, Vi2: integer) : integer;
+var
+  FaceID : integer;
+  V0, V1, V2 : TAffineVector;
+begin
+  FFaceVertexIndex.Add(Vi0);
+  FFaceVertexIndex.Add(Vi1);
+  FFaceVertexIndex.Add(Vi2);
+
+  V0 := FVertices[Vi0];
+  V1 := FVertices[Vi1];
+  V2 := FVertices[Vi2];
+
+  if FPrecomputeFaceNormal then
+    FFaceNormal.Add(CalcPlaneNormal(V0, V1, V2));
+
+  FaceID := FFaceVisible.Add(0);
+
+  AddIndexedEdge(Vi0, Vi1, FaceID);
+  AddIndexedEdge(Vi1, Vi2, FaceID);
+  AddIndexedEdge(Vi2, Vi0, FaceID);//}
+
+  result := FaceID;
+end;
+
+function TConnectivity.AddFace(Vertex0, Vertex1, Vertex2: TAffineVector) : integer;
+var
+  Vi0, Vi1, Vi2 : integer;
+begin
+  Vi0 := FVertices.FindOrAdd(Vertex0);
+  Vi1 := FVertices.FindOrAdd(Vertex1);
+  Vi2 := FVertices.FindOrAdd(Vertex2);
+
+  result := AddIndexedFace(Vi0, Vi1, Vi2);
+end;
+
+function TConnectivity.AddQuad(Vertex0, Vertex1, Vertex2,
+  Vertex3: TAffineVector): integer;
+var
+  Vi0, Vi1, Vi2, Vi3 : integer;
+begin
+  Vi0 := FVertices.FindOrAdd(Vertex0);
+  Vi1 := FVertices.FindOrAdd(Vertex1);
+  Vi2 := FVertices.FindOrAdd(Vertex2);
+  Vi3 := FVertices.FindOrAdd(Vertex3);
+
+  // First face
+  result := AddIndexedFace(Vi0, Vi1, Vi2);
+
+  // Second face
+  AddIndexedFace(Vi2, Vi3, Vi0);
+end;
+
+{ TFaceGroupConnectivity }
+
+// ------------------
+// ------------------ TFaceGroupConnectivity ------------------
+// ------------------
+
+procedure TFaceGroupConnectivity.Clear;
+begin
+  if Assigned(FVertices) then
+  begin
+    FVertices := nil;
+    inherited;
+    FVertices := FMeshObject.Vertices;
+  end else
+    inherited;
+end;
+
+constructor TFaceGroupConnectivity.Create(aMeshObject: TMeshObject;
+  PrecomputeFaceNormal: boolean);
+begin
+  inherited Create(PrecomputeFaceNormal);
+
+  FVertices.Free;
+  FMeshObject := aMeshObject;
+  FVertices := FMeshObject.Vertices;
+
+  RebuildEdgeList;
+end;
+
+destructor TFaceGroupConnectivity.Destroy;
+begin
+  // Protect FVertices, because it belongs to FMeshObject
+  FVertices := nil;
+  inherited;
+end;
+
+procedure TFaceGroupConnectivity.RebuildEdgeList;
+var
+  iFaceGroup, iFace, iVertex  : integer;
+  FaceGroup : TFGVertexIndexList;
+  List : PIntegerArray;
+begin
+  // Make sure that the connectivity information is empty
+  Clear;
+
+  // Create a list of edges for the meshobject
+  for iFaceGroup := 0 to FMeshObject.FaceGroups.Count-1 do
+  begin
+    Assert(FMeshObject.FaceGroups[iFaceGroup] is TFGVertexIndexList,'Method only works for descendants of TFGVertexIndexList.');
+    FaceGroup := TFGVertexIndexList(FMeshObject.FaceGroups[iFaceGroup]);
+
+    case FaceGroup.Mode of
+      fgmmTriangles, fgmmFlatTriangles :
+      begin
+        for iFace := 0 to FaceGroup.TriangleCount - 1 do
+        begin
+          List := @FaceGroup.VertexIndices.List[iFace * 3 + 0];
+          AddIndexedFace(List[0], List[1], List[2]);
+        end;
+      end;
+      fgmmTriangleStrip :
+      begin
+        for iFace:=0 to FaceGroup.VertexIndices.Count-3 do
+        begin
+          List := @FaceGroup.VertexIndices.List[iFace];
+          if (iFace and 1)=0 then
+             AddIndexedFace(List[0], List[1], List[2])
+          else
+             AddIndexedFace(List[2], List[1], List[0]);
+        end;
+      end;
+      fgmmTriangleFan :
+      begin
+        List := FaceGroup.VertexIndices.List;
+
+        for iVertex:=2 to FaceGroup.VertexIndices.Count-1 do
+          AddIndexedFace(List[0], List[iVertex-1], List[iVertex])
+      end;
+      else
+        Assert(false,'Not supported');
+    end;
+  end;
 end;
 
 // ------------------
@@ -579,5 +673,4 @@ function TGLBaseMeshConnectivity.GetFaceGroupConnectivity(
 begin
   result := TFaceGroupConnectivity(FFaceGroupConnectivityList[i]);
 end;
-
 end.

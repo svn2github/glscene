@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/03 - MF - Added TGLCube.GenerateSilhouette
       <li>13/06/03 - EG - Fixed TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
       <li>03/06/03 - EG - Added TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
       <li>01/05/03 - SG - Added NURBS Curve to TGLLines (color not supported yet)

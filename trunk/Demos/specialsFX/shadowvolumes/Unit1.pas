@@ -46,6 +46,7 @@ type
     CBRedLight: TCheckBox;
     DCSpheres: TGLDummyCube;
     GLFreeForm: TGLFreeForm;
+    GLCube1: TGLCube;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
