@@ -94,7 +94,7 @@ begin
    // all use automatic texture mapping corodinates, in ObjectLinear method
    // (ie. texture coordinates for a vertex depend on that vertex coordinates)
    bmp:=TBitmap.Create;
-   bmp.PixelFormat:=pf32bit;
+   bmp.PixelFormat:=pf24bit;
    bmp.Width:=256;
    bmp.Height:=1;
    // Black-White ramp, autotexture maps to Z coordinate
