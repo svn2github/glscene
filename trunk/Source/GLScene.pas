@@ -2292,7 +2292,7 @@ end;
 procedure TGLBaseSceneObject.RebuildMatrix;
 begin
    if ocTransformation in Changes then begin
-      FLocalMatrix[0]:=VectorCrossProduct(FUp.AsVector, FDirection.AsVector);
+      VectorCrossProduct(FUp.AsVector, FDirection.AsVector, FLocalMatrix[0]);
       ScaleVector(FLocalMatrix[0], Scale.X);
       VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix[1]);
       VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix[2]);
