@@ -475,7 +475,7 @@ begin
          rowBottom:=row[nx mod 3];
          x:=xBase;
          m:=0;
-         while x<XSamplingScale.Max do begin
+         while x<=XSamplingScale.Max do begin
             with rowBottom[m] do begin
                with texPoint do begin
                   S:=x;
