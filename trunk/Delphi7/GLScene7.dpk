@@ -213,6 +213,8 @@ contains
   VRMLParser in '..\Source\FileFormats\VRMLParser.pas',
   GLFileVRML in '..\Source\FileFormats\GLFileVRML.pas',
   LWObjects in '..\Source\FileFormats\LWObjects.pas',
-  GLFileLWO in '..\Source\FileFormats\GLFileLWO.pas';
+  GLFileLWO in '..\Source\FileFormats\GLFileLWO.pas',
+  PictureRegisteredFormats in '..\Source\Base\PictureRegisteredFormats.pas',
+  GLLinePFX in '..\Source\GLLinePFX.pas';
 
 end.
