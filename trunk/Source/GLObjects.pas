@@ -12,6 +12,7 @@
    </ul>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/07/01 - Egg - Updated AxisAlignedDimensions implems
       <li>16/03/01 - Egg - TCylinderBase, changed default Stacks from 8 to 4
       <li>27/02/01 - Egg - Fix in TCube texcoords, added TFrustrum (thx Robin Gerrets)
       <li>22/02/01 - Egg - Added AxisAlignedDimensions overrides by Uwe Raabe
@@ -1278,7 +1279,7 @@ end;
 //
 function TDummyCube.AxisAlignedDimensions : TVector;
 begin
-   VectorScale(XYZHmgVector, 0.5*Abs(FCubeSize), Result);
+   VectorScale(Scale.AsVector, 0.5*Abs(FCubeSize), Result);
 end;
 
 // BuildList
@@ -1456,7 +1457,8 @@ end;
 //
 function TPlane.AxisAlignedDimensions: TVector;
 begin
-   Result:=VectorMake(0.5*Abs(FWidth), 0.5*Abs(FHeight), 0);
+   Result:=VectorMake(0.5*Abs(FWidth)*Scale.DirectX,
+                      0.5*Abs(FHeight)*Scale.DirectY, 0);
 end;
 
 // ------------------
@@ -2178,7 +2180,9 @@ end;
 //
 function TCube.AxisAlignedDimensions : TVector;
 begin
-   VectorScale(VectorMake(Abs(FCubeWidth), Abs(FCubeHeight), Abs(FCubeDepth)),
+   VectorScale(VectorMake(Abs(FCubeWidth*Scale.DirectX),
+                          Abs(FCubeHeight*Scale.DirectY),
+                          Abs(FCubeDepth*Scale.DirectZ)),
                0.5, Result);
 end;
 
@@ -2791,7 +2795,7 @@ end;
 function TSphere.AxisAlignedDimensions : TVector;
 // ToDo: take bottom and top into account
 begin
-   VectorScale(XYZHmgVector, Abs(FRadius), Result);
+   VectorScale(Scale.AsVector, Abs(FRadius), Result);
 end;
 
 //----------------- TDisk ------------------------------------------------------
@@ -2913,7 +2917,7 @@ var
   r : TGLFloat;
 begin
    r:=Abs(FOuterRadius);
-   Result:=VectorMake(r, r, 0);
+   Result:=VectorMake(r*Scale.DirectX, r*Scale.DirectY, 0);
 end;
 
 //----------------- TCylinderBase ----------------------------------------------
@@ -3053,7 +3057,7 @@ var
    r : TGLFloat;
 begin
    r:=Abs(FBottomRadius);
-   Result:=VectorMake(r, 0.5*FHeight, r);
+   Result:=VectorMake(r*Scale.DirectX, 0.5*FHeight*Scale.DirectY, r*Scale.DirectZ);
 end;
 
 //----------------- TCylinder --------------------------------------------------
@@ -3136,6 +3140,7 @@ begin
   r1:=Abs(FTopRadius);
   if r1>r then r:=r1;
   Result:=VectorMake(r, 0.5*FHeight, r);
+  ScaleVector(Result, Scale.AsVector);
 end;
 
 //----------------- TAnnulus ---------------------------------------------------
@@ -3240,12 +3245,13 @@ end;
 //
 function TAnnulus.AxisAlignedDimensions : TVector;
 var
-  r, r1 : TGLFloat;
+   r, r1 : TGLFloat;
 begin
-  r:=Abs(FBottomRadius);
-  r1:=Abs(FTopRadius);
-  if r1>r then r:=r1;
-  Result:=VectorMake(r, 0.5*FHeight, r);
+   r:=Abs(FBottomRadius);
+   r1:=Abs(FTopRadius);
+   if r1>r then r:=r1;
+   Result:=VectorMake(r, 0.5*FHeight, r);
+   ScaleVector(Result, Scale.AsVector);
 end;
 
 //----------------- TTorus -----------------------------------------------------
@@ -3360,9 +3366,10 @@ function TTorus.AxisAlignedDimensions : TVector;
 var
   r, r1 : TGLFloat;
 begin
-  r:=Abs(FMajorRadius);
-  r1:=Abs(FMinorRadius);
-  Result:=VectorMake(r, r1, r);
+   r:=Abs(FMajorRadius);
+   r1:=Abs(FMinorRadius);
+   Result:=VectorMake(r, r1, r);
+   ScaleVector(Result, Scale.AsVector);
 end;
 
 //----------------- TTeapot ----------------------------------------------------
