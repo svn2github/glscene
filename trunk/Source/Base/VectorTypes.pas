@@ -19,10 +19,11 @@
    Note : D3D types untested.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
-      <li>24/08/03 - PP - Added smallint vectors
-      <li>04/07/01 - EG - Creation
-   </ul>
+    <li>19/12/04 - PhP - Added byte vectors
+    <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
+    <li>24/08/03 - PhP - Added smallint vectors
+    <li>04/07/01 - EG - Creation
+  </ul>
 }
 unit VectorTypes;
 
@@ -35,26 +36,31 @@ type
   TVector2f = array[0..1] of single;
   TVector2i = array[0..1] of longint;
   TVector2s = array[0..1] of smallint;
+  TVector2b = array[0..1] of byte;
 
   TVector3d = array[0..2] of double;
   TVector3f = array[0..2] of single;
   TVector3i = array[0..2] of longint;
   TVector3s = array[0..2] of smallint;
+  TVector3b = array[0..2] of byte;
 
   TVector4d = array[0..3] of double;
   TVector4f = array[0..3] of single;
   TVector4i = array[0..3] of longint;
   TVector4s = array[0..3] of smallint;
+  TVector4b = array[0..3] of byte;
 
   TMatrix3d = array[0..2] of TVector3d;
   TMatrix3f = array[0..2] of TVector3f;
   TMatrix3i = array[0..2] of TVector3i;
   TMatrix3s = array[0..2] of TVector3s;
+  TMatrix3b = array[0..2] of TVector3b;
 
   TMatrix4d = array[0..3] of TVector4d;
   TMatrix4f = array[0..3] of TVector4f;
   TMatrix4i = array[0..3] of TVector4i;
   TMatrix4s = array[0..3] of TVector4s;
+  TMatrix4b = array[0..3] of TVector4b;
 
   TD3DVector = packed record
     case Integer of
@@ -76,4 +82,4 @@ type
 implementation
 
 end.
- 
+
