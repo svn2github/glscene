@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>18/06/02 - EG - Added TGLShader
       <li>26/01/02 - EG - Makes use of new xglBegin/EndUpdate mechanism
       <li>24/01/02 - EG - Added vUseDefaultSets mechanism,
                           TGLPictureImage no longer systematically creates a TPicture 
@@ -652,6 +653,76 @@ type
 
    TGLLibMaterial = Class;
 
+   // TGLShaderStyle
+   //
+   {: Define GLShader style application relatively to a material.<ul>
+      <li>ssHighLevel: shader is applied before material application, and unapplied
+            after material unapplication
+      <li>ssLowLevel: shader is applied after material application, and unapplied
+            before material unapplication
+      <li>ssReplace: shader is applied in place of the material (and material
+            is completely ignored)
+      </ul> }
+   TGLShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
+
+   // TGLShader
+   //
+   {: Generic, abstract shader class.<p>
+      Shaders are modeled here as an abstract material-altering entity with
+      transaction-like behaviour. The base class provides basic context and user
+      tracking, as well as setup/application facilities.<br>
+      Subclasses are expected to provide implementation for DoInitialize,
+      DoApply, DoUnApply and DoFinalize. }
+   TGLShader = class (TGLUpdateAbleComponent)
+	   private
+	      { Protected Declarations }
+         FLibMatUsers : TList;
+         FVirtualHandle : TGLVirtualHandle;
+         FShaderStyle : TGLShaderStyle;
+         FShaderActive : Boolean;
+
+	   protected
+			{ Protected Declarations }
+         {: Invoked once, before the first call to DoApply.<p>
+            The call happens with the OpenGL context being active. }
+         procedure DoInitialize; dynamic; abstract;
+         {: Request to apply the shader.<p>
+            Always followed by a DoUnApply when the shader is no longer needed. }
+         procedure DoApply(var rci : TRenderContextInfo); virtual; abstract;
+         {: Request to un-apply the shader.<p>
+            Subclasses can assume the shader has been applied previously. }
+         procedure DoUnApply(var rci : TRenderContextInfo); virtual; abstract;
+         {: Invoked once, before the destruction of context or release of shader.<p>
+            The call happens with the OpenGL context being active. }
+         procedure DoFinalize; dynamic; abstract;
+
+         function GetShaderInitialized : Boolean;
+         procedure InitializeShader;
+         procedure FinalizeShader;
+         procedure OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
+         procedure OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+
+         property ShaderInitialized : Boolean read GetShaderInitialized;
+         property ShaderActive : Boolean read FShaderActive;
+
+      public
+	      { Public Declarations }
+	      constructor Create(AOwner : TComponent); override;
+         destructor Destroy; override;
+
+         {: Subclasses should invoke this function when shader properties are altered. }
+			procedure NotifyChange(Sender : TObject); override;
+
+         procedure Apply(var rci : TRenderContextInfo);
+         procedure UnApply(var rci : TRenderContextInfo);
+
+         procedure RegisterUser(libMat : TGLLibMaterial);
+         procedure UnRegisterUser(libMat : TGLLibMaterial);
+
+         {: Shader application style (default is ssLowLevel). }
+         property ShaderStyle : TGLShaderStyle read FShaderStyle write FShaderStyle;
+   end;
+
    // TGLTextureFormat
    //
    {: Texture format for OpenGL (rendering) use.<p>
@@ -986,6 +1057,7 @@ type
          FTextureMatrixIsIdentity : Boolean;
          FTextureMatrix : TMatrix;
          FTexture2Name : TGLLibMaterialName;
+         FShader : TGLShader;
          notifying : Boolean; // used for recursivity protection
          libMatTexture2 : TGLLibMaterial; // internal cache
 
@@ -999,6 +1071,7 @@ type
          procedure SetTextureOffset(const val : TGLCoordinates);
          procedure SetTextureScale(const val : TGLCoordinates);
          procedure SetTexture2Name(const val : TGLLibMaterialName);
+         procedure SetShader(const val : TGLShader);
 
          procedure CalculateTextureMatrix;
          procedure DestroyHandles;
@@ -1028,6 +1101,7 @@ type
 	      { Published Declarations }
          property Name : TGLLibMaterialName read FName write SetName;
          property Material : TGLMaterial read FMaterial write SetMaterial;
+
          {: Texture offset in texture coordinates.<p>
             The offset is applied <i>after</i> scaling. }
          property TextureOffset : TGLCoordinates read FTextureOffset write SetTextureOffset;
@@ -1043,6 +1117,8 @@ type
             if not supported). }
          property Texture2Name : TGLLibMaterialName read FTexture2Name write SetTexture2Name;
 
+         {: Optionnal shader for the material. }
+         property Shader : TGLShader read FShader write SetShader;
 	end;
 
 	// TGLLibMaterials
@@ -2258,6 +2334,145 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLShader ------------------
+// ------------------
+
+// Create
+//
+constructor TGLShader.Create(AOwner : TComponent);
+begin
+   FLibMatUsers:=TList.Create;
+   FVirtualHandle:=TGLVirtualHandle.Create;
+   FShaderStyle:=ssLowLevel;
+	inherited;
+end;
+
+// Destroy
+//
+destructor TGLShader.Destroy;
+var
+   i : Integer;
+   list : TList;
+begin
+	inherited;
+   list:=FLibMatUsers;
+   FLibMatUsers:=nil;
+   for i:=list.Count-1 downto 0 do
+      TGLLibMaterial(list[i]).Shader:=nil;
+   list.Free;
+   FinalizeShader;
+   FVirtualHandle.Free;
+end;
+
+// NotifyChange
+//
+procedure TGLShader.NotifyChange(Sender : TObject);
+var
+   i : Integer;
+begin
+   for i:=FLibMatUsers.Count-1 downto 0 do
+      TGLLibMaterial(FLibMatUsers[i]).NotifyUsers;
+end;
+
+// GetShaderInitialized
+//
+function TGLShader.GetShaderInitialized : Boolean;
+begin
+   Result:=(FVirtualHandle.Handle<>0);
+end;
+
+// InitializeShader
+//
+procedure TGLShader.InitializeShader;
+begin
+   if FVirtualHandle.Handle=0 then begin
+      FVirtualHandle:=TGLVirtualHandle.Create;
+      FVirtualHandle.OnAllocate:=OnVirtualHandleAllocate;
+      FVirtualHandle.OnDestroy:=OnVirtualHandleDestroy;
+      FVirtualHandle.AllocateHandle;
+      DoInitialize;
+   end;
+end;
+
+// FinalizeShader
+//
+procedure TGLShader.FinalizeShader;
+var
+   activateContext : Boolean;
+begin
+   if FVirtualHandle.Handle<>0 then begin
+      try
+         activateContext:=(not FVirtualHandle.RenderingContext.Active);
+         if activateContext then
+            FVirtualHandle.RenderingContext.Activate;
+         try
+            DoFinalize;
+         finally
+            if activateContext then
+               FVirtualHandle.RenderingContext.Deactivate;
+         end;
+      finally
+         FVirtualHandle.OnDestroy:=nil;
+         FVirtualHandle.Free;
+      end;
+   end;
+end;
+
+// Apply
+//
+procedure TGLShader.Apply(var rci : TRenderContextInfo);
+begin
+   Assert(not FShaderActive, 'Unbalanced shader application.');
+   if FVirtualHandle.Handle=0 then
+      InitializeShader;
+   DoApply(rci);
+   FShaderActive:=True;
+end;
+
+// UnApply
+//
+procedure TGLShader.UnApply(var rci : TRenderContextInfo);
+begin
+   Assert(FShaderActive, 'Unbalanced shader application.');
+   FShaderActive:=False;
+   DoUnApply(rci);
+end;
+
+// OnVirtualHandleDestroy
+//
+procedure TGLShader.OnVirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+begin
+   FinalizeShader;
+   handle:=0;
+end;
+
+// OnVirtualHandleAllocate
+//
+procedure TGLShader.OnVirtualHandleAllocate(sender : TGLVirtualHandle; var handle : Integer);
+begin
+   handle:=1;
+end;
+
+// RegisterUser
+//
+procedure TGLShader.RegisterUser(libMat : TGLLibMaterial);
+var
+   i : Integer;
+begin
+   i:=FLibMatUsers.IndexOf(libMat);
+   if i<0 then
+      FLibMatUsers.Add(libMat);
+end;
+
+// UnRegisterUser
+//
+procedure TGLShader.UnRegisterUser(libMat : TGLLibMaterial);
+begin
+   if Assigned(FLibMatUsers) then
+      FLibMatUsers.Remove(libMat);
+end;
+
+// ------------------
 // ------------------ TGLTexture ------------------
 // ------------------
 
@@ -3194,6 +3409,7 @@ destructor TGLLibMaterial.Destroy;
 var
    i : Integer;
 begin
+   Shader:=nil; // drop dependency
    Texture2Name:=''; // drop dependency
    for i:=0 to userList.Count-1 do
       TGLMaterial(userList[i]).NotifyLibMaterialDestruction;
@@ -3231,6 +3447,15 @@ procedure TGLLibMaterial.Apply(var rci : TRenderContextInfo);
 var
    multitextured : Boolean;
 begin
+   if Assigned(FShader) then begin
+      case Shader.ShaderStyle of
+         ssHighLevel : Shader.Apply(rci);
+         ssReplace : begin
+            Shader.Apply(rci);
+            Exit;
+         end;
+      end;
+   end;
    if (Texture2Name<>'') and GL_ARB_multitexture then begin
       if not Assigned(libMatTexture2) then begin
          libMatTexture2:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
@@ -3262,12 +3487,26 @@ begin
       else xglMapTexCoordToNull;
       xglEndUpdate;
    end;
+   if Assigned(FShader) then begin
+      case Shader.ShaderStyle of
+         ssLowLevel : Shader.Apply(rci);
+      end;
+   end;
 end;
 
 // UnApply
 //
 procedure TGLLibMaterial.UnApply(var rci : TRenderContextInfo);
 begin
+   if Assigned(FShader) then begin
+      case Shader.ShaderStyle of
+         ssLowLevel : Shader.UnApply(rci);
+         ssReplace : begin
+            Shader.UnApply(rci);
+            Exit;
+         end;
+      end;
+   end;
    if Assigned(libMatTexture2) then begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(libMatTexture2);
       xglMapTexCoordToMain;
@@ -3276,6 +3515,11 @@ begin
    if not Material.Texture.Disabled then
       if not FTextureMatrixIsIdentity then
          ResetGLTextureMatrix;
+   if Assigned(FShader) then begin
+      case Shader.ShaderStyle of
+         ssHighLevel : Shader.UnApply(rci);
+      end;
+   end;
 end;
 
 // RegisterUser
@@ -3417,6 +3661,19 @@ begin
       end;
       FTexture2Name:=val;
       NotifyUsers;
+   end;
+end;
+
+// SetShader
+//
+procedure TGLLibMaterial.SetShader(const val : TGLShader);
+begin
+   if val<>FShader then begin
+      if Assigned(FShader) then
+         FShader.UnRegisterUser(Self);
+      FShader:=val;
+      if Assigned(FShader) then
+         FShader.RegisterUser(Self);
    end;
 end;
 
