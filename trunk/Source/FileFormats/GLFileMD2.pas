@@ -70,24 +70,23 @@ begin
          faceGroup:=TFGIndexTexCoordList.CreateOwned(FaceGroups);
          with faceGroup do begin
             MaterialName:='';
-            VertexIndices.Capacity:=m_iTriangles*3;
-            TexCoords.Capacity:=m_iTriangles*3;
+            VertexIndices.Capacity:=iTriangles*3;
+            TexCoords.Capacity:=iTriangles*3;
             // copy the face list
-            for i:=0 to m_iTriangles-1 do with IndexList(m_index_list)[i] do begin
+            for i:=0 to iTriangles-1 do with IndexList(m_index_list)[i] do begin
                Add(a, a_s, -a_t);
                Add(b, b_s, -b_t);
                Add(c, c_s, -c_t);
             end;
          end;
          // retrieve frames data (morph targets)
-         for i:=0 to m_iFrames-1 do begin
+         for i:=0 to iFrames-1 do begin
             morphTarget:=TMeshMorphTarget.CreateOwned(MorphTargets);
             with morphTarget do begin
                Name:='Frame'+IntToStr(i);
-               Vertices.Capacity:=m_iVertices;
-               for j:=0 to m_iVertices-1 do
-                  with VertList(frameList(m_frame_list)[i].vertex)[j] do
-                     Vertices.Add(x, y, z);
+               Vertices.Capacity:=iVertices;
+               for j:=0 to iVertices-1 do
+                  Vertices.Add(VertexList(frameList(m_frame_list)[i])[j]);
                BuildNormals(faceGroup.VertexIndices, momTriangles);
             end;
          end;
@@ -100,7 +99,7 @@ begin
             StartFrame:=Integer(frameNames.Objects[i]);
             if i<frameNames.Count-1 then
                EndFrame:=Integer(frameNames.Objects[i+1])-1
-            else EndFrame:=m_iFrames-1;
+            else EndFrame:=iFrames-1;
          end;
       end;
       if mesh.MorphTargets.Count>0 then

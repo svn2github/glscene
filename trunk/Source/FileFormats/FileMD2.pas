@@ -6,6 +6,7 @@
 	MD2 file loader<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>25/08/03 - Php - Added FreeLists & degibbered LoadFromStream 
       <li>21/07/00 - Egg - Added frame names (Roger Cao/Carlos A. Rivero)
       <li>07/06/00 - Egg - Added Header, reduced dependencies,
                            LoadFromFile replaced with LoadFromStream,
@@ -21,27 +22,25 @@ interface
 uses Classes, TypesMD2;
 
 type
-
-   // TFileMD2
-   //
-   TFileMD2 = class
-      private
-         fm_iFrames, fm_iVertices, fm_iTriangles: LongInt;
-      public
-         m_index_list: PMake_index_list;
-         m_frame_list: PMake_frame_list;
-
-         frameNames : TStrings;
-
-         constructor Create; virtual;
-         destructor Destroy; override;
-
-         procedure LoadFromStream(aStream : TStream);
-
-         property m_iFrames: LongInt read fm_iFrames;
-         property m_iVertices: LongInt read fm_iVertices;
-         property m_iTriangles: LongInt read fm_iTriangles;
-   end;
+  // TFileMD2
+  //
+  TFileMD2 = class
+  private
+    FiFrames: longint;
+    FiVertices: longint;
+    FiTriangles: longint;
+    procedure FreeLists;
+  public
+    m_index_list: PMD2VertexIndex;
+    m_frame_list: PMD2Frames;
+    FrameNames : TStrings;
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure LoadFromStream(aStream : TStream);
+    property iFrames: longInt read FiFrames;
+    property iVertices: longInt read FiVertices;
+    property iTriangles: longInt read FiTriangles;
+  end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -51,7 +50,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Geometry;
+uses SysUtils, Geometry, VectorTypes;
 
 // ------------------
 // ------------------ TFileMD2 ------------------
@@ -61,104 +60,99 @@ uses SysUtils, Geometry;
 //
 constructor TFileMD2.Create;
 begin
-   inherited;
-   m_index_list := nil;
-   m_frame_list := nil;
-   fm_iFrames := 0;
-   fm_iVertices := 0;
-   fm_iTriangles := 0;
-   frameNames:=TStringList.Create;
+  inherited;
+  m_index_list := nil;
+  m_frame_list := nil;
+  FiFrames := 0;
+  FiVertices := 0;
+  FiTriangles := 0;
+  FrameNames := TStringList.Create;
 end;
 
 // Destroy
 //
 destructor TFileMD2.Destroy;
-var
-   i : Integer;
 begin
-   if Assigned(m_frame_list) then begin
-      for i:=0 to fm_iFrames-1 do
-         Dispose(FrameList(m_frame_list)[i].vertex);
-      Dispose(m_frame_list);
-      if Assigned(m_index_list) then
-         Dispose(m_index_list);
-   end;
-   frameNames.Free;
-   inherited;
+  FreeLists;
+  FrameNames.Free;
+  inherited;
+end;
+
+procedure TFileMD2.FreeLists;
+var
+  I: integer;
+
+begin
+  if Assigned(m_frame_list) then begin
+    for I := 0 to FiFrames - 1 do
+      Dispose(FrameList(m_frame_list)[i]);
+    Dispose(m_frame_list);
+    if Assigned(m_index_list) then
+      Dispose(m_index_list);
+  end;
 end;
 
 // LoadFromStream
 //
 procedure TFileMD2.LoadFromStream(aStream : TStream);
 var
-   g_skins: array[0..MAX_MD2SKINS-1, 0..63] of Char;
-   base_st: array[0..MAX_VERTS-1] of Tdstvert_t;
-   buffer: array[0..MAX_VERTS*4+128-1] of Byte;
-   modelheader: tdmdl_t;
-   tri: tdtriangle_t;
-   out_t: pdaliasframe_t;
-   i, j: Integer;
-   frameName : String;
+  Skins: array[0..MAX_MD2_SKINS - 1, 0..63] of char;
+  TextureCoords: array[0..MAX_MD2_VERTICES - 1] of TVector2s;
+  Buffer: array[0..MAX_MD2_VERTICES * 4 + 127] of byte;
+  Header: TMD2Header;
+  Triangle: TMD2Triangle;
+  I: integer;
+  J: integer;
+  Frame: PMD2AliasFrame;
+  FrameName : String;
+
 begin
-   if Assigned(m_frame_list) then begin
-      for i:=0 to fm_iFrames-1 do
-        Dispose(FrameList(m_frame_list)[i].vertex);
-      Dispose(m_frame_list);
-      if Assigned(m_index_list) then
-         Dispose(m_index_list);
-   end;
-
-   aStream.Read(ModelHeader, sizeof(ModelHeader));
-
-   ////////////////////////////////////////////////////
-
-   fm_iFrames := modelheader.num_frames;
-   fm_iVertices := modelheader.num_xyz;
-   fm_iTriangles := modelheader.num_tris;
-
-   m_index_list := AllocMem(sizeof(tmake_index_list) * modelheader.num_tris);
-   m_frame_list := AllocMem(Sizeof(tmake_frame_list) * modelheader.num_frames);
-
-   for i:=0 to modelheader.num_frames-1 do
-      frameList(m_frame_list)[i].vertex := AllocMem(sizeof(tmake_vertex_list) * modelheader.num_xyz);
-
-   ////////////////////////////////////////////////////
-
-   aStream.Read(g_Skins, modelheader.num_skins * MAX_SKINNAME);
-   aStream.Read(base_st, modelheader.num_st * sizeof(base_st[0]));
-
-   for i:=0 to modelheader.num_tris-1 do begin
-      aStream.Read(Tri, sizeof(tdtriangle_t));
-      with IndexList(m_index_list)[i] do begin
-         a := tri.index_xyz[2];
-         b := tri.index_xyz[1];
-         c := tri.index_xyz[0];
-         a_s := base_st[tri.index_st[2]].s/ModelHeader.skinwidth;
-         a_t := base_st[tri.index_st[2]].t/ModelHeader.skinHeight;
-         b_s := base_st[tri.index_st[1]].s/ModelHeader.skinwidth;
-         b_t := base_st[tri.index_st[1]].t/ModelHeader.skinHeight;
-         c_s := base_st[tri.index_st[0]].s/ModelHeader.skinwidth;
-         c_t := base_st[tri.index_st[0]].t/ModelHeader.skinHeight;
-      end;
-   end;
-
-   for i:=0 to modelheader.num_frames-1 do begin
-      out_t := pdaliasframe_t(@buffer);
-      aStream.Read(out_t^, modelheader.framesize);
-      frameName:=Trim(out_t^.name);
-      if Copy(frameName, Length(frameName)-1, 1)[1] in ['0'..'9'] then
-         frameName:=Copy(frameName, 1, Length(frameName)-2)
-      else frameName:=Copy(frameName, 1, Length(frameName)-1);
-      if frameNames.IndexOf(frameName)<0 then
-         frameNames.AddObject(frameName, Pointer(i));
-      for j:=0 to modelheader.num_xyz-1 do begin
-         with VertList(FrameList(m_frame_list)[i].vertex)[j] do begin
-            x := out_t^.verts[j].v[0] * out_t^.scale[0] + out_t^.translate[0];
-            y := out_t^.verts[j].v[1] * out_t^.scale[1] + out_t^.translate[1];
-            z := out_t^.verts[j].v[2] * out_t^.scale[2] + out_t^.translate[2];
-         end;
-      end;
-   end;
+  FreeLists;
+  // read the modelinfo
+  aStream.Read(Header, SizeOf(Header));
+  FiFrames := Header.Num_Frames;
+  FiVertices := Header.Num_Vertices;
+  FiTriangles := Header.Num_VertexIndices;
+  m_index_list := AllocMem(SizeOf(TMD2VertexIndex) * Header.Num_VertexIndices);
+  m_frame_list := AllocMem(SizeOf(TMD2Frames) * Header.Num_Frames);
+  for I := 0 to Header.Num_Frames - 1 do
+    FrameList(m_frame_list)[I] := AllocMem(SizeOf(TVector3f) * Header.Num_Vertices);
+  // get the skins...
+  aStream.Read(Skins, Header.Num_Skins * MAX_MD2_SKINNAME);
+  // ...and the texcoords
+  aStream.Read(TextureCoords, Header.Num_TextureCoords * SizeOf(TVector2s));
+  for I := 0 to Header.Num_VertexIndices - 1 do begin
+    aStream.Read(Triangle, SizeOf(TMD2Triangle));
+    with IndexList(m_index_list)[I] do begin
+      A := Triangle.VertexIndex[2];
+      B := Triangle.VertexIndex[1];
+      C := Triangle.VertexIndex[0];
+      A_S := TextureCoords[Triangle.TextureCoordIndex[2]][0] / Header.SkinWidth;
+      A_T := TextureCoords[Triangle.TextureCoordIndex[2]][1] / Header.SkinHeight;
+      B_S := TextureCoords[Triangle.TextureCoordIndex[1]][0] / Header.SkinWidth;
+      B_T := TextureCoords[Triangle.TextureCoordIndex[1]][1] / Header.SkinHeight;
+      C_S := TextureCoords[Triangle.TextureCoordIndex[0]][0] / Header.SkinWidth;
+      C_T := TextureCoords[Triangle.TextureCoordIndex[0]][1] / Header.SkinHeight;
+    end;
+  end;
+  for I := 0 to Header.Num_Frames - 1 do begin
+    Frame := PMD2AliasFrame(@Buffer);
+    // read animation / frame info
+    aStream.Read(Frame^, Header.FrameSize);
+    FrameName := Trim(Frame^.Name);
+    if Copy(FrameName, Length(FrameName) - 1, 1)[1] in ['0'..'9'] then
+      FrameName := Copy(FrameName, 1, Length(FrameName) - 2)
+    else
+      FrameName := Copy(FrameName, 1, Length(FrameName) - 1);
+    if FrameNames.IndexOf(FrameName) < 0 then
+      FrameNames.AddObject(FrameName, Pointer(I));
+    // fill the vertices list  
+    for J := 0 to Header.Num_Vertices - 1 do begin
+      VertexList(FrameList(m_frame_list)[I])[J][0] := Frame^.Vertices[J].V[0] * Frame^.Scale[0] + Frame^.Translate[0];
+      VertexList(FrameList(m_frame_list)[I])[J][1] := Frame^.Vertices[J].V[1] * Frame^.Scale[1] + Frame^.Translate[1];
+      VertexList(FrameList(m_frame_list)[I])[J][2] := Frame^.Vertices[J].V[2] * Frame^.Scale[2] + Frame^.Translate[2];
+    end;
+  end;
 end;
 
 end.

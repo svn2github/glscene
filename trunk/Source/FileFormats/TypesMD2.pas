@@ -3,99 +3,79 @@
 //
 unit TypesMD2;
 
+{ 25.08.2003 - PhP - dropped TTrivert_t & TDalias_t, cleaned code & degibbered declarations }
+
 interface
 
+uses
+  VectorTypes;
+
 const
-  MAX_TRIANGLES = 4096;
-  MAX_VERTS = 2048;
-  MAX_FRAMES = 512;
-  MAX_MD2SKINS = 32;
-  MAX_SKINNAME = 64;
+  MAX_MD2_TRIANGLES = 4096;
+  MAX_MD2_VERTICES = 2048;
+  MAX_MD2_FRAMES = 512;
+  MAX_MD2_SKINS = 32;
+  MAX_MD2_SKINNAME = 64;
 
 type
-  PMake_Index_List = ^TMake_Index_List;
-  TMake_Index_List = record
-    a, b, c: Integer;
-    a_s, a_t,
-    b_s, b_t,
-    c_s, c_t: Single;
+  PMD2VertexIndex = ^TMD2VertexIndex;
+  TMD2VertexIndex = record
+    A, B, C: integer;
+    A_S, A_T,
+    B_S, B_T,
+    C_S, C_T: single;
   end;
 
-  PMake_Vertex_List = ^TMake_Vertex_List;
-  TMake_Vertex_List = record
-    x, y, z: Single;
+  PMD2Vertex = ^TVector3f;
+
+  PMD2Frames = ^TMD2Frames;
+  TMD2Frames = PMD2Vertex;
+
+  TMD2Triangle = record
+    VertexIndex: TVector3s;
+    TextureCoordIndex: TVector3s;
   end;
 
-  PMake_Frame_List = ^TMake_Frame_List;
-  TMake_Frame_List = record
-    Vertex: PMake_vertex_list;
+  TMD2TriangleVertex = record
+    V: array[0..2] of byte;
+    LightnormalIndex: byte;
   end;
 
-  TVec3_T = record
-    V: array[0..2] of Single;
+  PMD2AliasFrame = ^TMD2AliasFrame;
+  TMD2AliasFrame = record
+    Scale: TVector3f;
+    Translate: TVector3f;
+    Name: array[0..15] of Char;
+    Vertices: array[0..0] of TMD2TriangleVertex;
   end;
 
-  TDstVert_T = record
-    s: SmallInt;
-    t: SmallInt;
+  TMD2Header = record
+    Ident: integer;
+    Version: integer;
+
+    SkinWidth: integer;
+    SkinHeight: integer;
+    FrameSize: integer;
+
+    Num_Skins: integer;
+    Num_Vertices: integer;
+    Num_TextureCoords: integer;
+    Num_VertexIndices: integer;
+    Num_GLCommdands: integer;
+    Num_Frames: integer;
+
+    Offset_skins: integer;
+    Offset_st: integer;
+    Offset_tris: integer;
+    Offset_frames: integer;
+    Offset_glcmds: integer;
+    Offset_end: integer;
   end;
 
-  TDtriangle_t = record
-    index_xyz: array[0..2] of SmallInt;
-    index_st: array[0..2] of SmallInt;
-  end;
+  FrameList = array of TMD2Frames;
+  IndexList = array of TMD2VertexIndex;
+  VertexList = array of TVector3f;
 
-  TDtrivertx_t = record
-    v: array[0..2] of Byte;
-    lightnormalindex: byte;
-  end;
-
-  PDaliasframe_t = ^Tdaliasframe_t;
-  Tdaliasframe_t = record
-    scale: array[0..2] of Single;
-    translate: array[0..2] of Single;
-    name: array[0..15] of Char;
-    verts: array[0..0] of Tdtrivertx_t;
-  end;
-
-  TDmdl_T = record
-    ident: Integer;
-    version: Integer;
-
-    skinwidth: Integer;
-    skinheight: Integer;
-    framesize: Integer;
-
-    num_skins: Integer;
-    num_xyz: Integer;
-    num_st: Integer;
-    num_tris: Integer;
-    num_glcmds: Integer;
-    num_frames: Integer;
-
-    ofs_skins: Integer;
-    ofs_st: Integer;
-    ofs_tris: Integer;
-    ofs_frames: Integer;
-    ofs_glcmds: Integer;
-    ofs_end: Integer;
-  end;
-
-  TTrivert_t = record
-    V: Tvec3_t;
-    lightnormalindex: Integer;
-  end;
-
-  TFrame_t = record
-    mins, maxs: TVec3_t;
-    name: array[0..15] of Char;
-    v: array[0..MAX_VERTS-1] of TTrivert_t;
-  end;
-
-  frameList = array of TMake_Frame_List;
-  indexList = array of TMake_Index_List;
-  VertList = array of TMake_Vertex_List;
-  
 implementation
 
 end.

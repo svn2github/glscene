@@ -34,6 +34,8 @@ uses
 
 { TGLMS3DVectorFile }
 
+// loadfromstream
+//
 procedure TGLMS3DVectorFile.LoadFromStream(aStream: TStream);
 var
   // GLScene
@@ -48,40 +50,39 @@ var
   GLLibMaterial : TGLLibMaterial;
 
   // Milkshape 3d
-  ms3d_header : ms3d_header_t;
+  ms3d_header : TMS3DHeader;
   nNumVertices : word;
-  // ms3d_vertex : ms3d_vertex_t;
-  ms3d_vertices : Pms3d_vertex_t_array;
+
+  ms3d_vertices : PMS3DVertexArray;
   nNumTriangles : word;
 
-  ms3d_triangle : ms3d_triangle_t;
-  ms3d_triangles : Pms3d_triangle_t_array;
+  ms3d_triangle : TMS3DTriangle;
+  ms3d_triangles : PMS3DTriangleArray;
 
   nNumGroups : word;
-  Group : Tms3d_group;
+  Group : TMS3DGroup;
   nNumMaterials : word;
-  ms3d_material : ms3d_material_t;
+  ms3d_material : TMS3DMaterial;
 
   fAnimationFPS : single;
   fCurrentTime : single;
   iTotalFrames : integer;
 
   nNumJoints : word;
-  ms3d_joints : Pms3d_joint_t_array;
-  ms3d_joint : ms3d_joint_t;
+  ms3d_joint : TMS3DJoint;
+  ms3d_joints : PMS3DJointArray;
 
 
-  procedure AddFaceVertex(ID : integer);
+  procedure AddFaceVertex(ID: integer);
   begin
     // Add the normal to the normals list
     NormalID := MO.Normals.Add(ms3d_triangle.vertexNormals[ID].v);
-
     // Add the texCoord
     TexCoordID := MO.TexCoords.Add(ms3d_triangle.s[ID], -ms3d_triangle.t[ID]);
-
     // Add the vertex to the vertex list
     FaceGroup.Add(ms3d_triangle.vertexIndices[ID], NormalID, TexCoordID);
-  end;//}
+  end;
+
 begin
   GroupList := TList.Create;
   FaceGroup := nil;
@@ -91,17 +92,12 @@ begin
 
   try
     // First comes the header.
-    aStream.ReadBuffer(ms3d_header, sizeof(ms3d_header_t));
+    aStream.ReadBuffer(ms3d_header, sizeof(TMS3DHeader));
 
-    //AddString(ms3d_header.id);
-    //AddString(Format('Version=%d',[ms3d_header.version]));
-
-    Assert(ms3d_header.version = 4,
-      Format('The MilkShape3D importer can only handle MS3D files of version 4, this is version ', [ms3d_header.id]));
+    Assert(ms3d_header.version = 4, Format('The MilkShape3D importer can only handle MS3D files of version 4, this is version ', [ms3d_header.id]));
 
     // Then comes the number of vertices
     aStream.ReadBuffer(nNumVertices, sizeof(nNumVertices));
-    //AddString(Format('nNumVertices=%d',[nNumVertices]));
 
     // Create the vertex list
     MO := TMeshObject.CreateOwned(Owner.MeshObjects);
@@ -109,51 +105,43 @@ begin
 
     // Then comes nNumVertices * sizeof (ms3d_vertex_t)
 
-    ms3d_vertices := AllocMem(sizeof(ms3d_vertex_t) * nNumVertices);
-    aStream.ReadBuffer(ms3d_vertices^, sizeof(ms3d_vertex_t) * nNumVertices);
+    ms3d_vertices := AllocMem(sizeof(TMS3DVertex) * nNumVertices);
+    aStream.ReadBuffer(ms3d_vertices^, sizeof(TMS3DVertex) * nNumVertices);
 
     for i := 0 to nNumVertices - 1 do
-      with ms3d_vertices[i] do
-      begin
-        //ms3d_vertex := ms3d_vertices[i];
-        //AddString(Format('  Vertex[%d]= (%f, %f, %f)',[i, vertex.x, vertex.y, vertex.z]));
-
+      with ms3d_vertices[i] do  begin
         // Add the vertex to the vertexlist
         MO.Vertices.Add(vertex.v);
       end;
 
     // number of triangles
     aStream.ReadBuffer(nNumTriangles, sizeof(nNumTriangles));
-    //AddString(Format('nNumTriangles=%d',[nNumTriangles]));
 
     // nNumTriangles * sizeof (ms3d_triangle_t)
-    ms3d_triangles := AllocMem(sizeof(ms3d_triangle_t) * nNumTriangles);
-    aStream.ReadBuffer(ms3d_triangles^, sizeof(ms3d_triangle_t) * nNumTriangles);
+    ms3d_triangles := AllocMem(sizeof(TMS3DTriangle) * nNumTriangles);
+    aStream.ReadBuffer(ms3d_triangles^, sizeof(TMS3DTriangle) * nNumTriangles);
 
     // Don't do anything with the triangles / faces just yet
 
     // number of groups
     aStream.ReadBuffer(nNumGroups, sizeof(nNumGroups));
-    //AddString(Format('nNumGroups=%d',[nNumGroups]));
 
     // nNumGroups * sizeof (ms3d_group_t)
     for i := 0 to nNumGroups - 1 do
     begin
       // Read the first part of the group
-      Group := Tms3d_group.Create;
+      Group := TMS3DGroup.Create;
       GroupList.Add(Group);
       aStream.ReadBuffer(Group.Flags, sizeof(Group.Flags));
       aStream.ReadBuffer(Group.name, sizeof(Group.name));
       aStream.ReadBuffer(Group.numtriangles, sizeof(Group.numtriangles));
 
-      //AddString('Group = ' + Group.Name);
 
       for j := 0 to Group.numtriangles - 1 do
       begin
         aStream.ReadBuffer(wtemp, sizeof(wtemp));
         itemp := wtemp;
         Group.triangleIndices.Add(pointer(itemp));
-        //AddString('  '+inttostr(integer(Group.triangleIndices[j])));
       end;
 
       aStream.ReadBuffer(Group.materialIndex, sizeof(Group.materialIndex));
@@ -176,23 +164,17 @@ begin
         end;
       end;
     end;
-
     // number of materials
-    //aStream.ReadBuffer(nNumMaterials, sizeof(nNumMaterials));
     aStream.ReadBuffer(nNumMaterials, sizeof(nNumMaterials));
-    //AddString(Format('nNumMaterials=%d',[nNumMaterials]));
-
     // nNumMaterials * sizeof (ms3d_material_t)
     for i := 0 to nNumMaterials-1 do
     begin
-      aStream.ReadBuffer(ms3d_material, sizeof(ms3d_material_t));
-      //AddString(Format('Material[%d] = %s, Tex=%s', [i, ms3d_material.name, ms3d_material.texture]));
+      aStream.ReadBuffer(ms3d_material, sizeof(TMS3DMaterial));
 
       // Create the material, if there's a materiallibrary!
       if Assigned(Owner.MaterialLibrary) then
       begin
         GLLibMaterial := Owner.MaterialLibrary.AddTextureMaterial(ms3d_material.name, ms3d_material.texture);
-
         GLLibMaterial.Material.FrontProperties.Emission.Color := ms3d_material.emissive;
         GLLibMaterial.Material.FrontProperties.Ambient.Color := ms3d_material.ambient;
         GLLibMaterial.Material.FrontProperties.Diffuse.Color := ms3d_material.diffuse;
@@ -213,7 +195,7 @@ begin
 
         for j := 0 to GroupList.Count-1 do
         begin
-          Group := Tms3d_group(GroupList[j]);
+          Group := TMS3DGroup(GroupList[j]);
           if Group.materialIndex = char(i) then
             for k := 0 to Group.numtriangles - 1 do
             begin
@@ -240,7 +222,7 @@ begin
     aStream.ReadBuffer(nNumJoints, sizeof(nNumJoints));
 
     // nNumJoints * sizeof (ms3d_joint_t)
-    ms3d_joints := AllocMem(sizeof(ms3d_joint_t) * nNumTriangles);
+    ms3d_joints := AllocMem(sizeof(TMS3DJoint) * nNumTriangles);
 
     // We have to read the joints one by one!
     for i := 0 to nNumJoints-1 do
@@ -248,19 +230,16 @@ begin
       ms3d_joint := ms3d_joints^[i];
 
       // Read the joint base
-      aStream.ReadBuffer(ms3d_joint.Base, sizeof(ms3d_joint_t_base));
-
-      //AddString(Format('Joint[%d]=%s (parent=%s)',[i,ms3d_joint.Base.name, ms3d_joint.Base.parentname]));
-      //AddString(Format('  Rots=%d, Transes=%d',[ms3d_joint.base.numKeyFramesRot, ms3d_joint.base.numKeyFramesTrans]));
+      aStream.ReadBuffer(ms3d_joint.Base, sizeof(TMS3DJointBase));
 
       if ms3d_joint.base.numKeyFramesRot>0 then
       begin
         //     ms3d_keyframe_rot_t keyFramesRot[numKeyFramesRot];      // local animation matrices
         // Allocate memory for the rotations
-        ms3d_joint.keyFramesRot := AllocMem(sizeof(ms3d_keyframe_rot_t) * ms3d_joint.base.numKeyFramesRot);
+        ms3d_joint.keyFramesRot := AllocMem(sizeof(TMS3DKeyframeRotation) * ms3d_joint.base.numKeyFramesRot);
 
         // Read the rotations
-        aStream.ReadBuffer(ms3d_joint.keyFramesRot, sizeof(ms3d_keyframe_rot_t) * ms3d_joint.base.numKeyFramesRot);
+        aStream.ReadBuffer(ms3d_joint.keyFramesRot, sizeof(TMS3DKeyframeRotation) * ms3d_joint.base.numKeyFramesRot);
       end else
         ms3d_joint.keyFramesRot := nil;
 
@@ -268,10 +247,10 @@ begin
       begin
         //     ms3d_keyframe_pos_t keyFramesTrans[numKeyFramesTrans];  // local animation matrices
         // Allocate memory for the translations
-        ms3d_joint.keyFramesTrans := AllocMem(sizeof(ms3d_keyframe_pos_t) * ms3d_joint.base.numKeyFramesTrans);
+        ms3d_joint.keyFramesTrans := AllocMem(sizeof(TMS3DKeyframePosition) * ms3d_joint.base.numKeyFramesTrans);
 
         // Read the translations
-        aStream.ReadBuffer(ms3d_joint.keyFramesTrans, sizeof(ms3d_keyframe_pos_t) * ms3d_joint.base.numKeyFramesTrans);
+        aStream.ReadBuffer(ms3d_joint.keyFramesTrans, sizeof(TMS3DKeyframePosition) * ms3d_joint.base.numKeyFramesTrans);
       end else
         ms3d_joint.keyFramesTrans := nil;
     end;
@@ -320,8 +299,8 @@ begin
 
     // Finalize
     for i := 0 to GroupList.Count-1 do
-      Tms3d_group(GroupList[i]).Free;
-      
+      TMS3DGroup(GroupList[i]).Free;
+
     GroupList.Free;
   end;
 end;

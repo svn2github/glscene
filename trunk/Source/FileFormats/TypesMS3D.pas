@@ -6,15 +6,15 @@ unit TypesMS3D;
 interface
 
 uses
-  Classes,  VectorTypes, gltexture;
+  Classes, VectorTypes, GLTexture;
 
 const
-  MAX_VERTICES   = 8192;
-  MAX_TRIANGLES  = 16384;
-  MAX_GROUPS     = 128;
-  MAX_MATERIALS  = 128;
-  MAX_JOINTS     = 128;
-  MAX_KEYFRAMES  = 216;
+  MAX_MS3D_VERTICES  = 8192;
+  MAX_MS3D_TRIANGLES = 16384;
+  MAX_MS3D_GROUPS    = 128;
+  MAX_MS3D_MATERIALS = 128;
+  MAX_MS3D_JOINTS    = 128;
+  MAX_MS3D_KEYFRAMES = 216;
 
 type
   // typedef struct
@@ -25,12 +25,12 @@ type
   //     word            triangleIndices[numtriangles];      // the groups group the triangles
   //     char            materialIndex;                      // -1 = no material
   // } ms3d_group_t;
-  Tms3d_group = class
-    flags : byte;
-    name : array[0..31] of char;
-    numtriangles : word;
-    triangleIndices : TList;
-    materialIndex : char;
+  TMS3DGroup = class
+    Flags: byte;
+    Name: array[0..31] of char;
+    NumTriangles: word;
+    TriangleIndices: TList;
+    MaterialIndex: char;
     constructor Create;
     destructor Destroy; override;
   end;
@@ -42,9 +42,9 @@ type
   // } ms3d_header_t;
   {$A-}
 
-  ms3d_header_t = record
-    id : array[0..9] of char;
-    version : integer;
+  TMS3DHeader = record
+    ID: array[0..9] of char;
+    Version: integer;
   end;
 
 
@@ -56,16 +56,15 @@ type
   //     byte    referenceCount;
   // } ms3d_vertex_t;
 
-  ms3d_vertex_t = record
-    flags : byte;
-    vertex : TD3DVector;
-    boneId : char;
-    referenceCount : byte;
+  TMS3DVertex = record
+    Flags: byte;
+    Vertex: TD3DVector;
+    BoneId: char;
+    ReferenceCount: byte;
   end;
 
-  ms3d_vertex_t_array = array[0..MAX_VERTICES-1] of ms3d_vertex_t;
-  Pms3d_vertex_t_array = ^ms3d_vertex_t_array;
-
+  PMS3DVertexArray = ^TMS3DVertexArray;
+  TMS3DVertexArray = array[0..MAX_MS3D_VERTICES - 1] of TMS3DVertex;
 
   // typedef struct
   // {
@@ -78,18 +77,18 @@ type
   //     byte    groupIndex;                                 //
   // } ms3d_triangle_t;
 
-  ms3d_triangle_t = record
-    flags : word;
-    vertexIndices : array[0..2] of word;
-    vertexNormals : array[0..2] of TD3DVector;
-    s : array[0..2] of single;
-    t : array[0..2] of single;
-    smoothingGroup : byte;  // 1 - 32
-    groupIndex : byte;
+  TMS3DTriangle = record
+    Flags: word;
+    VertexIndices: array[0..2] of word;
+    VertexNormals: array[0..2] of TD3DVector;
+    S: array[0..2] of single;
+    T: array[0..2] of single;
+    SmoothingGroup: byte;  // 1 - 32
+    GroupIndex: byte;
   end;
 
-  ms3d_triangle_t_array = array[0..MAX_TRIANGLES-1] of ms3d_triangle_t;
-  Pms3d_triangle_t_array = ^ms3d_triangle_t_array;
+  PMS3DTriangleArray = ^TMS3DTriangleArray;
+  TMS3DTriangleArray = array[0..MAX_MS3D_TRIANGLES - 1] of TMS3DTriangle;
 
   // typedef struct
   // {
@@ -104,17 +103,17 @@ type
   //     char            texture[128];                        // texture.bmp
   //     char            alphamap[128];                       // alpha.bmp
   // } ms3d_material_t;
-  ms3d_material_t = record
-    name : array[0..31] of char;
-    ambient : TColorVector;
-    diffuse : TColorVector;
-    specular : TColorVector;
-    emissive : TColorVector;
-    shininess : single;
-    transparency : single;
-    mode : char;
-    texture : array[0..127] of char;
-    alphamap : array[0..127] of char;
+  TMS3DMaterial = record
+    Name: array[0..31] of char;
+    Ambient: TColorVector;
+    Diffuse: TColorVector;
+    Specular: TColorVector;
+    Emissive: TColorVector;
+    Shininess: single;
+    Transparency: single;
+    Mode: char;
+    Texture: array[0..127] of char;
+    Alphamap: array[0..127] of char;
   end;
 
 
@@ -123,26 +122,26 @@ type
   //     float           time;                               // time in seconds
   //     float           rotation[3];                        // x, y, z angles
   // } ms3d_keyframe_rot_t;
-  ms3d_keyframe_rot_t = record
-    time : single;
-    rotation : TD3DVector;
+  TMS3DKeyframeRotation = record
+    Time: single;
+    Rotation: TD3DVector;
   end;
 
-  ms3d_keyframe_rot_t_array = array[0..MAX_KEYFRAMES-1] of ms3d_keyframe_rot_t;
-  Pms3d_keyframe_rot_t_array = ^ms3d_keyframe_rot_t_array;
+  PMS3DKeyframeRotationArray = ^TMS3DKeyframeRotationArray;
+  TMS3DKeyframeRotationArray = array[0..MAX_MS3D_KEYFRAMES - 1] of TMS3DKeyframeRotation;
 
   // typedef struct
   // {
   //     float           time;                               // time in seconds
   //     float           position[3];                        // local position
   // } ms3d_keyframe_pos_t;
-  ms3d_keyframe_pos_t = record
-    time : single;
-    position : TD3DVector;
+  TMS3DKeyframePosition = record
+    Time: single;
+    Position: TD3DVector;
   end;
 
-  ms3d_keyframe_pos_t_array = array[0..MAX_KEYFRAMES-1] of ms3d_keyframe_pos_t;
-  Pms3d_keyframe_pos_t_array = ^ms3d_keyframe_pos_t_array;
+  PMS3DKeyframePositionArray = ^TMS3DKeyframePositionArray;
+  TMS3DKeyframePositionArray = array[0..MAX_MS3D_KEYFRAMES - 1] of TMS3DKeyframePosition;
 
   // typedef struct
   // {
@@ -159,44 +158,44 @@ type
   //     ms3d_keyframe_pos_t keyFramesTrans[numKeyFramesTrans];  // local animation matrices
   // } ms3d_joint_t;
 
-  ms3d_joint_t_base = record
-    flags : byte;
-    name : array[0..31] of char;
-    parentName : array[0..31] of char;
-    rotation : TD3DVector;
-    position : TD3DVector;
-    numKeyFramesRot : word;
-    numKeyFramesTrans : word;
+  TMS3DJointBase = record
+    Flags: byte;
+    Name: array[0..31] of char;
+    ParentName: array[0..31] of char;
+    Rotation: TD3DVector;
+    Position: TD3DVector;
+    NumKeyFramesRot: word;
+    NumKeyFramesTrans: word;
   end;
 
-  ms3d_joint_t = record
-    Base : ms3d_joint_t_base;
-
-    keyFramesRot        : Pms3d_keyframe_rot_t_array;
-    keyFramesTrans   : Pms3d_keyframe_pos_t_array;
+  TMS3DJoint = record
+    Base : TMS3DJointBase;
+    KeyFramesRot: PMS3DKeyframeRotationArray;
+    KeyFramesTrans: PMS3DKeyframePositionArray;
   end;
 
-  ms3d_joint_t_array = array[0..MAX_JOINTS] of ms3d_joint_t;
-  Pms3d_joint_t_array = ^ms3d_joint_t_array;
+  PMS3DJointArray = ^TMS3DJointArray;
+  TMS3DJointArray = array[0..MAX_MS3D_JOINTS - 1] of TMS3DJoint;
 
   {$A+}
 
 implementation
 
+{ TMS3DGroup }
 
-{ Tms3d_group }
-
-constructor Tms3d_group.Create;
+// create
+//
+constructor TMS3DGroup.Create;
 begin
-  triangleIndices := TList.Create;
+  TriangleIndices := TList.Create;
 end;
 
-destructor Tms3d_group.Destroy;
+// destroy
+//
+destructor TMS3DGroup.Destroy;
 begin
-  triangleIndices.Free;
-
+  TriangleIndices.Free;
   inherited;
 end;
-
 
 end.
