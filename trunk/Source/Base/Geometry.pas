@@ -1028,7 +1028,8 @@ function ScaleAndRound(i : Integer; var s : Single) : Integer;
 function Sign(x : Single) : Integer;
 
 {: Returns True if x is in [a; b] }
-function IsInRange(const x, a, b : Single) : Boolean;
+function IsInRange(const x, a, b : Single) : Boolean; overload;
+function IsInRange(const x, a, b : Double) : Boolean; overload;
 
 {: Returns True if p is in the cube defined by d. }
 function IsInCube(const p, d : TAffineVector) : Boolean; overload;
@@ -6807,9 +6808,18 @@ begin
 {$endif}
 end;
 
-// IsInRange
+// IsInRange (single)
 //
 function IsInRange(const x, a, b : Single) : Boolean;
+begin
+   if a<b then
+      Result:=(a<=x) and (x<=b)
+   else Result:=(b<=x) and (x<=a);
+end;
+
+// IsInRange (double)
+//
+function IsInRange(const x, a, b : Double) : Boolean;
 begin
    if a<b then
       Result:=(a<=x) and (x<=b)
