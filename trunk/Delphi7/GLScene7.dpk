@@ -49,8 +49,7 @@ package GLScene7;
 
 requires
   vcl,
-  designide,
-  GR32_D7;
+  designide;
 
 {%File '..\Source\GLScene.inc'}
 
