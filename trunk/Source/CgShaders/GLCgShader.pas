@@ -2,6 +2,7 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>20/01/04 - NelC - Fixed dynamic array passing bug in CheckValueType.
       <li>03/01/04 - NelC - Shortened event handlers using 'VP' and 'FP'. Added
                             TCustomCgShader.LoadShaderPrograms and TCgProgram.
                             SetParam. Minor change in texture type checking.
@@ -43,8 +44,6 @@ type
   TCgShaderEvent = procedure (Sender : TCustomCgShader) of object;
 
   TcgProgramType = (ptVertex, ptFragment);
-
-  TCGtypes = array of TCGtype;
 
   // Available vertex program profile
   TCgVPProfile = ( vpDetectLatest, vp20, vp30, arbvp1);
@@ -152,7 +151,7 @@ type
   protected
     { Protected Declarations }
     procedure CheckValueType(aType : TCGtype); overload;
-    procedure CheckValueType(const types : TCGtypes); overload;
+    procedure CheckValueType(const types : array of TCGtype); overload;
 
     procedure SetAsVector2f(const val : TVector2f);
     procedure SetAsVector3f(const val : TVector3f);
@@ -605,7 +604,7 @@ end;
 procedure TCgProgram.SetParam(ParamName: string; TextureID: Cardinal);
 begin
   with ParamByName(ParamName) do begin
-    CheckValueType(@AllTextureTypes);
+    CheckValueType(AllTextureTypes);
     cgGLSetTextureParameter(Handle, TextureID);
   end;
 end;
@@ -647,7 +646,7 @@ end;
 
 // CheckValueType
 //
-procedure TCgParameter.CheckValueType(const types : TCGtypes);
+procedure TCgParameter.CheckValueType(const types : array of TCGtype);
   function DoCheck : Boolean;
   var
     i : Integer;
@@ -744,7 +743,7 @@ end;
 //
 procedure TCgParameter.DisableTexture;
 begin
-  CheckValueType(@AllTextureTypes);
+  CheckValueType(AllTextureTypes);
   cgGLDisableTextureParameter(FHandle);
 end;
 
@@ -752,7 +751,7 @@ end;
 //
 procedure TCgParameter.EnableTexture;
 begin
-  CheckValueType(@AllTextureTypes);
+  CheckValueType(AllTextureTypes);
   cgGLEnableTextureParameter(FHandle);
 end;
 
