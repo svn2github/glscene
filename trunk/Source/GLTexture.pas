@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/10/04 - NC - Added Material.TextureEx (texture extension)
       <li>04/10/04 - NC - Added TGLFloatDataImage  
       <li>03/07/04 - LR - Move InitWinColors to GLCrossPlatform
                           Replace TGraphics, TBitmap by TGLGraphics, TGLBitmap
@@ -998,6 +999,7 @@ type
          procedure UnApplyAsTextureN(n : Integer; var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
 
 			procedure Assign(Source: TPersistent); override;
+			procedure NotifyChange(Sender : TObject); override;
 
 			procedure DestroyHandles;
 
@@ -1109,6 +1111,75 @@ type
          property NormalMapScale : Single read FNormalMapScale write SetNormalMapScale stored StoreNormalMapScale;
 	end;
 
+  TGLTextureExItem = class (TCollectionItem)
+    private
+      { Private Decalarations }
+      FTexture : TGLTexture;
+      FTextureIndex : Integer;
+      FTextureOffset, FTextureScale : TGLCoordinates;
+      FTextureMatrixIsIdentity : Boolean;
+      FTextureMatrix : TMatrix;
+      FApplied : Boolean;
+
+    protected
+      { Protected Decalarations }
+      function GetDisplayName : String; override;
+      function GetOwner : TPersistent; override;
+      procedure SetTexture(const Value : TGLTexture);
+      procedure SetTextureIndex(const Value : Integer);
+      procedure SetTextureOffset(const Value : TGLCoordinates);
+      procedure SetTextureScale(const Value : TGLCoordinates);
+      procedure NotifyTexMapChange(Sender : TObject);
+
+      procedure CalculateTextureMatrix;
+
+      procedure OnNotifyChange(Sender : TObject);
+
+    public
+      { Public Decalarations }
+      constructor Create(ACollection : TCollection); override;
+      destructor Destroy; override;
+
+      procedure Assign(Source: TPersistent); override;
+      procedure NotifyChange(Sender : TObject);
+
+      procedure Apply(var rci : TRenderContextInfo);
+      procedure UnApply(var rci : TRenderContextInfo);
+
+    published
+      { Published Decalarations }
+      property Texture : TGLTexture read FTexture write SetTexture;
+      property TextureIndex : Integer read FTextureIndex write SetTextureIndex;
+      property TextureOffset : TGLCoordinates read FTextureOffset write SetTextureOffset;
+      property TextureScale : TGLCoordinates read FTextureScale write SetTextureScale;
+
+  end;
+
+  TGLTextureEx = class (TCollection)
+    private
+      FMaterial : TGLMaterial;
+
+    protected
+      { Protected Decalarations }
+      procedure SetItems(index : Integer; const Value : TGLTextureExItem);
+      function GetItems(index : Integer) : TGLTextureExItem;
+      function GetOwner : TPersistent; override;
+
+    public
+      { Public Decalarations }
+      constructor Create(AOwner : TGLMaterial);
+
+      procedure NotifyChange(Sender : TObject);
+      procedure Apply(var rci : TRenderContextInfo);
+      procedure UnApply(var rci : TRenderContextInfo);
+      function IsTextureEnabled(Index : Integer) : Boolean;
+
+      function Add : TGLTextureExItem;
+
+      property Items[index : Integer] : TGLTextureExItem read GetItems write SetItems; default;
+
+  end;
+
 	TShininess = 0..128;
    TPolygonMode = (pmFill, pmLines, pmPoints);
 
@@ -1139,7 +1210,7 @@ type
 			{ Public Declarations }
          constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
-         
+
          procedure Apply(var rci : TRenderContextInfo; aFace : TGLEnum);
          procedure ApplyNoLighting(var rci : TRenderContextInfo; aFace : TGLEnum);
          procedure Assign(Source: TPersistent); override;
@@ -1202,6 +1273,7 @@ type
          FMaterialOptions : TMaterialOptions;
          FFaceCulling : TFaceCulling;
          currentLibMaterial : TGLLibMaterial;
+         FTextureEx : TGLTextureEx;
 
 	   protected
 	      { Protected Declarations }
@@ -1215,6 +1287,7 @@ type
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure SetLibMaterialName(const val : TGLLibMaterialName);
          procedure SetFaceCulling(const val : TFaceCulling);
+         procedure SetTextureEx(const Value : TGLTextureEx);
 
 			procedure NotifyLibMaterialDestruction;
 			//: Back, Front, Texture and blending not stored if linked to a LibMaterial
@@ -1260,6 +1333,7 @@ type
 
 			property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
 			property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
+      property TextureEx : TGLTextureEx read FTextureEx write SetTextureEx;
 	  end;
 
 	// TGLLibMaterial
@@ -1541,7 +1615,7 @@ procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
 procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
 
 procedure RegisterTGraphicClassFileExtension(const extension : String;
-                                             const aClass : TGraphicClass);   
+                                             const aClass : TGraphicClass);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -3092,6 +3166,18 @@ begin
    end;
 end;
 
+// NotifyChange
+//
+procedure TGLTexture.NotifyChange(Sender : TObject);
+begin
+  if Assigned(Owner) then begin
+    if Owner is TGLTextureExItem then
+      TGLTextureExItem(Owner).NotifyChange(Sender);
+  end;
+
+  inherited;
+end;
+
 // NotifyImageChange
 //
 procedure TGLTexture.NotifyImageChange;
@@ -3246,9 +3332,12 @@ procedure TGLTexture.SetDisabled(AValue: Boolean);
 begin
 	if AValue <> FDisabled then begin
    	FDisabled:=AValue;
-      if Assigned(Owner) and (Owner is TGLMaterial) then
-         TGLMaterial(Owner).NotifyTexMapChange(Self)
-		else NotifyChange(Self);
+    if Assigned(Owner) or ((Owner is TGLMaterial) or (Owner is TGLTextureExItem)) then begin
+       if Owner is TGLMaterial then
+          TGLMaterial(Owner).NotifyTexMapChange(Self);
+       if Owner is TGLTextureExItem then
+          TGLTextureExItem(Owner).NotifyTexMapChange(Self);
+    end else NotifyChange(Self);
 	end;
 end;
 
@@ -3896,6 +3985,278 @@ begin
       FOnTextureNeeded(Sender, textureFileName);
 end;
 
+
+// ---------------
+// --------------- TGLTextureExItem ---------------
+// ---------------
+
+// Create
+//
+constructor TGLTextureExItem.Create(ACollection : TCollection);
+begin
+  inherited;
+
+  FTexture:=TGLTexture.Create(Self);
+  FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHMGVector);
+  FTextureOffset.OnNotifyChange:=OnNotifyChange;
+  FTextureScale:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector);
+  FTextureScale.OnNotifyChange:=OnNotifyChange;
+
+  FTextureIndex:=ID;
+  FTextureMatrix:=IdentityHMGMatrix;
+end;
+
+// Destroy
+//
+destructor TGLTextureExItem.Destroy;
+begin
+  FTexture.Free;
+  FTextureOffset.Free;
+  FTextureScale.Free;
+
+  inherited;
+end;
+
+// Assign
+//
+procedure TGLTextureExItem.Assign(Source: TPersistent);
+begin
+  if Source is TGLTextureExItem then begin
+    Texture:=TGLTextureExItem(Source).Texture;
+    TextureIndex:=TGLTextureExItem(Source).TextureIndex;
+    TextureOffset:=TGLTextureExItem(Source).TextureOffset;
+    TextureScale:=TGLTextureExItem(Source).TextureScale;
+    NotifyChange(Self);
+  end else inherited;
+end;
+
+// NotifyChange
+//
+procedure TGLTextureExItem.NotifyChange(Sender : TObject);
+begin
+  if Assigned(Collection) then
+    TGLTextureEx(Collection).NotifyChange(Sender);
+end;
+
+// Apply
+//
+procedure TGLTextureExItem.Apply(var rci : TRenderContextInfo);
+begin
+  FApplied:=False;
+  if FTexture.Enabled then begin
+    glActiveTextureARB(GL_TEXTURE0_ARB+FTextureIndex);
+    glMatrixMode(GL_TEXTURE);
+    glPushMatrix;
+    if FTextureMatrixIsIdentity then glLoadIdentity
+    else glLoadMatrixf(@FTextureMatrix[0][0]);
+    glMatrixMode(GL_MODELVIEW);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    if FTextureIndex = 0 then
+      FTexture.Apply(rci)
+    else if FTextureIndex = 1 then
+      FTexture.ApplyAsTexture2(rci, nil)
+    else if FTextureIndex >= 2 then
+      FTexture.ApplyAsTextureN(FTextureIndex+1, rci, nil);
+    FApplied:=True;
+  end;
+end;
+
+// UnApply
+//
+procedure TGLTextureExItem.UnApply(var rci : TRenderContextInfo);
+begin
+  if FApplied then begin
+    if FTextureIndex = 0 then
+      FTexture.UnApply(rci)
+    else if FTextureIndex = 1 then
+      FTexture.UnApplyAsTexture2(rci, nil)
+    else if FTextureIndex >= 2 then
+      FTexture.UnApplyAsTextureN(FTextureIndex+1, rci, nil);
+    glActiveTextureARB(GL_TEXTURE0_ARB+FTextureIndex);
+    glMatrixMode(GL_TEXTURE);
+    glPopMatrix;
+    glMatrixMode(GL_MODELVIEW);
+    glActiveTextureARB(GL_TEXTURE0_ARB);
+    FApplied:=False;
+  end;
+end;
+
+// GetDisplayName
+//
+function TGLTextureExItem.GetDisplayName : String;
+begin
+  Result:=Format('Tex [%d]', [FTextureIndex]);
+end;
+
+// GetOwner
+//
+function TGLTextureExItem.GetOwner : TPersistent;
+begin
+  Result:=Collection;
+end;
+
+// NotifyTexMapChange
+//
+procedure TGLTextureExItem.NotifyTexMapChange(Sender : TObject);
+begin
+  if Assigned(TGLTextureEx(Collection).FMaterial) then
+    TGLTextureEx(Collection).FMaterial.NotifyTexMapChange(Sender);
+end;
+
+// SetTexture
+//
+procedure TGLTextureExItem.SetTexture(const Value : TGLTexture);
+begin
+  FTexture.Assign(Value);
+  NotifyChange(Self);
+end;
+
+// SetTextureIndex
+//
+procedure TGLTextureExItem.SetTextureIndex(const Value : Integer);
+var
+  temp : Integer;
+begin
+  temp:=Value;
+  if temp<0 then temp:=0;
+  if temp<>FTextureIndex then begin
+    FTextureIndex:=temp;
+    NotifyChange(Self);
+  end;
+end;
+
+// SetTextureOffset
+//
+procedure TGLTextureExItem.SetTextureOffset(const Value : TGLCoordinates);
+begin
+  FTextureOffset.Assign(Value);
+  NotifyChange(Self);
+end;
+
+// SetTextureScale
+//
+procedure TGLTextureExItem.SetTextureScale(const Value : TGLCoordinates);
+begin
+  FTextureScale.Assign(Value);
+  NotifyChange(Self);
+end;
+
+// CalculateTextureMatrix
+//
+procedure TGLTextureExItem.CalculateTextureMatrix;
+begin
+  if TextureOffset.Equals(NullHmgVector) and TextureScale.Equals(XYZHmgVector) then
+    FTextureMatrixIsIdentity:=True
+  else begin
+    FTextureMatrixIsIdentity:=False;
+    FTextureMatrix:=CreateScaleAndTranslationMatrix(TextureScale.AsVector,
+                                                    TextureOffset.AsVector);
+  end;
+  NotifyChange(Self);
+end;
+
+// OnNotifyChange
+//
+procedure TGLTextureExItem.OnNotifyChange(Sender : TObject);
+begin
+   CalculateTextureMatrix;
+end;
+
+
+// ---------------
+// --------------- TGLTextureEx ---------------
+// ---------------
+
+// Create
+//
+constructor TGLTextureEx.Create(AOwner : TGLMaterial);
+begin
+  inherited Create(TGLTextureExItem);
+
+  FMaterial:=AOwner;
+end;
+
+// NotifyChange
+//
+procedure TGLTextureEx.NotifyChange(Sender : TObject);
+begin
+  if Assigned(FMaterial) then
+    FMaterial.NotifyChange(Sender);
+end;
+
+// Apply
+//
+procedure TGLTextureEx.Apply(var rci : TRenderContextInfo);
+var
+  i, texUnits : Integer;
+  units : Cardinal;
+begin
+  if not GL_ARB_multitexture then exit;
+
+  units:=0;
+  glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @texUnits);
+  for i:=0 to Count-1 do begin
+    if Items[i].TextureIndex<texUnits then begin
+      Items[i].Apply(rci);
+      if Items[i].FApplied then
+        if (Items[i].TextureIndex>0) and (Items[i].Texture.MappingMode=tmmUser) then
+          units:=units or (1 shl Items[i].TextureIndex);
+    end;
+  end;
+  if units>0 then
+    xglMapTexCoordToArbitraryAdd(units);
+end;
+
+// UnApply
+//
+procedure TGLTextureEx.UnApply(var rci : TRenderContextInfo);
+var
+  i : Integer;
+begin
+  if not GL_ARB_multitexture then exit;
+  for i:=0 to Count-1 do
+    Items[i].UnApply(rci);
+end;
+
+// Add
+//
+function TGLTextureEx.Add : TGLTextureExItem;
+begin
+  Result:=TGLTextureExItem(inherited Add);
+end;
+
+function TGLTextureEx.GetOwner : TPersistent;
+begin
+  Result:=nil;
+end;
+
+// SetItems
+//
+procedure TGLTextureEx.SetItems(index : Integer; const Value : TGLTextureExItem);
+begin
+  inherited SetItem(index, Value);
+end;
+
+// GetItems
+//
+function TGLTextureEx.GetItems(index : Integer) : TGLTextureExItem;
+begin
+  Result:=TGLTextureExItem(inherited GetItem(index));
+end;
+
+// IsTextureEnabled
+//
+function TGLTextureEx.IsTextureEnabled(Index : Integer) : Boolean;
+var
+  i : Integer;
+begin
+  Result:=False;
+  for i:=0 to Count-1 do
+    if Items[i].TextureIndex = Index then
+      Result:=Result or Items[i].Texture.Enabled;
+end;
+
+
 //----------------- TGLMaterial --------------------------------------------------
 
 // Create
@@ -3906,6 +4267,7 @@ begin
   FFrontProperties:=TGLFaceProperties.Create(Self);
   FTexture:=nil; // AutoCreate
   FFaceCulling:=fcBufferDefault;
+  FTextureEx:=TGLTextureEx.Create(Self);
 end;
 
 // Destroy
@@ -3917,6 +4279,7 @@ begin
    FGLBackProperties.Free;
    FFrontProperties.Free;
    FTexture.Free;
+   FTextureEx.Free;
    inherited Destroy;
 end;
 
@@ -4045,6 +4408,13 @@ begin
    end;
 end;
 
+// SetTextureEx
+//
+procedure TGLMaterial.SetTextureEx(const Value : TGLTextureEx);
+begin
+   TextureEx.Assign(Value);
+end;
+
 // NotifyLibMaterialDestruction
 //
 procedure TGLMaterial.NotifyLibMaterialDestruction;
@@ -4158,8 +4528,9 @@ begin
             Inc(rci.fogDisabledCounter);
          end;
       end;
-      if Assigned(FTexture) then
+      if Assigned(FTexture) and not FTextureEx.IsTextureEnabled(0) then
       	FTexture.Apply(rci);
+      FTextureEx.Apply(rci);
 	end;
 end;
 
@@ -4186,8 +4557,10 @@ begin
                rci.GLStates.SetGLState(stFog);
          end;
       end;
-      if Assigned(FTexture) and (not FTexture.Disabled) then
+      if Assigned(FTexture) and (not FTexture.Disabled)
+      and (not FTextureEx.IsTextureEnabled(0)) then
          FTexture.UnApply(rci);
+      FTextureEx.UnApply(rci);
       Result:=False;
    end;
 end;
@@ -4209,6 +4582,7 @@ begin
       FFaceCulling:=TGLMaterial(Source).FFaceCulling;
 		FMaterialLibrary:=TGLMaterial(Source).MaterialLibrary;
       SetLibMaterialName(TGLMaterial(Source).LibMaterialName);
+    TextureEx.Assign(TGLMaterial(Source).TextureEx);
    	NotifyChange(Self);
    end else inherited;
 end;
@@ -4381,15 +4755,25 @@ begin
       if not FTextureMatrixIsIdentity then
          rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
-      libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
-      // calculate and apply appropriate xgl mode
-      if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
+      if not Material.TextureEx.IsTextureEnabled(1) then begin
+         libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
+         // calculate and apply appropriate xgl mode
+
+         if (not Material.Texture.Disabled)
+         and (Material.Texture.MappingMode=tmmUser) then
+           xglMapTexCoordToArbitraryAdd(1);
          if libMatTexture2.Material.Texture.MappingMode=tmmUser then
-            xglMapTexCoordToDual
-         else xglMapTexCoordToMain
-      else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
-         xglMapTexCoordToSecond
-      else xglMapTexCoordToMain;
+           xglMapTexCoordToArbitraryAdd(2);
+
+         // OLD TEXCOORD MAPPING
+         //if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
+         //   if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+         //      xglMapTexCoordToDual
+         //   else xglMapTexCoordToMain
+         //else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+         //   xglMapTexCoordToSecond
+         //else xglMapTexCoordToMain;
+      end;
    end;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
@@ -4415,9 +4799,11 @@ begin
    end;
    if not Result then begin
       // if multipassing, this will occur upon last pass only
-      if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
-         libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
-         xglMapTexCoordToMain;
+      if not Material.TextureEx.IsTextureEnabled(1) then begin
+         if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
+            libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
+            xglMapTexCoordToMain;
+         end;
       end;
       Material.UnApply(rci);
       if not Material.Texture.Disabled then
@@ -4628,7 +5014,7 @@ begin
    else begin
       FTextureMatrixIsIdentity:=False;
       FTextureMatrix:=CreateScaleAndTranslationMatrix(TextureScale.AsVector,
-                                                      TextureOffset.AsVector);                     
+                                                      TextureOffset.AsVector);
    end;
    NotifyUsers;
 end;
@@ -4919,17 +5305,19 @@ end;
 //
 procedure TGLMaterialLibrary.WriteToFiler(writer : TVirtualWriter);
 var
-   i : Integer;
+   i, j : Integer;
    libMat : TGLLibMaterial;
    tex : TGLTexture;
    img : TGLTextureImage;
    pim : TGLPersistentImage;
    ss : TStringStream;
    bmp : TGLBitmap;
+   texExItem : TGLTextureExItem;
 begin
    with writer do begin
-      WriteInteger(1); // archive version 0, texture persistence only
+      WriteInteger(2); // archive version 0, texture persistence only
                        // archive version 1, libmat properties
+                       // archive version 2, Material.TextureEx properties
       WriteInteger(Materials.Count);
       for i:=0 to Materials.Count-1 do begin
          // version 0
@@ -4980,6 +5368,34 @@ begin
          Write(libMat.TextureOffset.AsAddress^, SizeOf(Single)*3);
          Write(libMat.TextureScale.AsAddress^, SizeOf(Single)*3);
          WriteString(libMat.Texture2Name);
+
+         // version 2
+         WriteInteger(libMat.Material.TextureEx.Count);
+         for j:=0 to libMat.Material.TextureEx.Count-1 do begin
+            texExItem:=libMat.Material.TextureEx[j];
+            img:=texExItem.Texture.Image;
+            pim:=TGLPersistentImage(img);
+            if texExItem.Texture.Enabled and (img is TGLPersistentImage)
+            and (pim.Picture.Graphic<>nil) then begin
+               WriteBoolean(True);
+               ss:=TStringStream.Create('');
+               try
+                  bmp:=TGLBitmap.Create;
+                  try
+                     bmp.Assign(pim.Picture.Graphic);
+                     bmp.SaveToStream(ss);
+                  finally
+                     bmp.Free;
+                  end;
+                  WriteString(ss.DataString);
+               finally
+                  ss.Free;
+               end;
+            end else WriteBoolean(False);
+            WriteInteger(texExItem.TextureIndex);
+            Write(texExItem.TextureOffset.AsAddress^, SizeOf(Single)*3);
+            Write(texExItem.TextureScale.AsAddress^, SizeOf(Single)*3);
+         end;
       end;
    end;
 end;
@@ -4990,13 +5406,14 @@ procedure TGLMaterialLibrary.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
    libMat : TGLLibMaterial;
-   i, n, size : Integer;
+   i, n, size, tex, texCount : Integer;
    name : String;
    ss : TStringStream;
    bmp : TGLBitmap;
+   texExItem : TGLTextureExItem;
 begin
    archiveVersion:=reader.ReadInteger;
-   if (archiveVersion=0) or (archiveVersion=1) then with reader do begin
+   if (archiveVersion>=0) and (archiveVersion<=2) then with reader do begin
       if not FDoNotClearMaterialsOnLoad then
          Materials.Clear;
       n:=ReadInteger;
@@ -5054,6 +5471,29 @@ begin
             Read(libMat.TextureOffset.AsAddress^, SizeOf(Single)*3);
             Read(libMat.TextureScale.AsAddress^, SizeOf(Single)*3);
             libMat.Texture2Name:=ReadString;
+         end;
+
+         // version 2
+         if archiveVersion = 2 then begin
+            texCount:=ReadInteger;
+            for tex:=0 to texCount-1 do begin
+               texExItem:=libMat.Material.TextureEx.Add;
+               if ReadBoolean then begin
+                  ss:=TStringStream.Create(ReadString);
+                  bmp:=TGLBitmap.Create;
+                  try
+                     bmp.LoadFromStream(ss);
+                     texExItem.Texture.Image.Assign(bmp);
+                     texExItem.Texture.Enabled:=True;
+                  finally
+                     bmp.Free;
+                     ss.Free;
+                  end;
+               end;
+               texExItem.TextureIndex:=ReadInteger;
+               Read(texExItem.TextureOffset.AsAddress^, SizeOf(Single)*3);
+               Read(texExItem.TextureScale.AsAddress^, SizeOf(Single)*3);
+            end;
          end;
       end;
    end else RaiseFilerException(Self.ClassType, archiveVersion);
