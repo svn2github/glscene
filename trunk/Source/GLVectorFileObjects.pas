@@ -3770,7 +3770,7 @@ end;
 //
 function TVectorFile.Owner : TBaseMesh;
 begin
-   Result:=TFreeForm(GetOwner);
+   Result:=TBaseMesh(GetOwner);
 end;
 
 // SetNormalsOrientation
