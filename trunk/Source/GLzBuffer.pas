@@ -66,7 +66,6 @@ type
   PAArray = ^TAArray;
   TAArrayIdx = array of PAArray;
 
-//  PSingle = ^Single;
   TOptimise=(opNone,op4in1,op9in1,op16in1);
 
   TGLzBuffer = class (TPersistent)
@@ -141,8 +140,6 @@ type
          FSkyShadow   :Boolean;
          FOptimise    :TOptimise;
 
-//         bmp32:TGLBitmap32;
-
          FData : PAArray;
          FDataIdx, FDataInvIdx : TAArrayIdx;
          FDataSize : Integer;
@@ -172,7 +169,7 @@ type
          procedure SetCaster(const val :TGLMemoryViewer);
          procedure CalcShadowTexture(var rci : TRenderContextInfo);
          function  HardSet(const res_X,res_Y :integer):Byte;
-         function  HardTest(const x,y:integer):Byte;
+//         function  HardTest(const x,y:integer):Byte;
          function  SoftTest(const x,y:integer):Byte;
          procedure SetXRes(const val :integer);
          procedure SetYRes(const val :integer);
@@ -292,7 +289,7 @@ begin
    SetLength(FDataInvIdx, FHeight);
    for i:=0 to FHeight-1 do begin
       FDataIdx[i]:=@FData[i*FWidth];                   // range: [0..height-1]
-      FDataInvIdx[i]:=@FData[(FHeight-i)*FWidth];      // range: [1..height]
+      FDataInvIdx[i]:=@FData[(FHeight-i-1)*FWidth];    // range: [0..height-1]
    end;
 end;
 
@@ -655,25 +652,11 @@ constructor TZShadows.Create(AOwner : TComponent);
 begin
    inherited;
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
-
-{
-//   Material.Texture.ImageClassName:='Blank Image';
-   material.Texture.Disabled:=False;
-   Material.Texture.TextureMode:=tmModulate;
-   Material.BlendingMode:=bmTransparency;
-   Material.Texture.TextureWrap:=twNone;
-}
-
-//   bmp32:=TGLBitmap32.Create;
    FColor:=TGLColor.Create(Self);
-
-
    self.FDataSize:=0;
-
    self.FXRes:=64;
    self.FYRes:=64;
    self.Tolerance:=0.015;
-
    FTexHandle:=TGLTextureHandle.Create;
 end;
 
@@ -682,12 +665,9 @@ destructor TzShadows.Destroy;
 begin
  ViewerZBuf.Free;
  CasterZBuf.Free;
-// bmp32.Free;
  FColor.Free;
  FTexHandle.Free;
-
  FreeMem(FData);
-
  inherited Destroy;
 end;
 
@@ -744,7 +724,7 @@ begin
    SetLength(FDataInvIdx, FYRes);
    for i:=0 to FYres-1 do begin
       FDataIdx[i]:=@FData[i*FXRes];                 // range: [0..height-1]
-      FDataInvIdx[i]:=@FData[(FYRes-i)*FXRes];      // range: [1..height]
+      FDataInvIdx[i]:=@FData[(FYRes-i-1)*FXRes];    // range: [1..height-1]
    end;
 end;
 
@@ -754,7 +734,6 @@ end;
 procedure TZShadows.DoRender(var rci : TRenderContextInfo;
                               renderSelf, renderChildren : Boolean);
 var vx, vy, vx1, vy1 : Single;
-//    state: TGLStates;
 begin
    if not assigned(FViewer) then exit;
    if not assigned(FCaster) then exit;
@@ -774,9 +753,6 @@ begin
    if FWidth >rci.viewPortSize.cx then Fwidth :=rci.viewPortSize.cx;
    if FHeight>rci.viewPortSize.cy then FHeight:=rci.viewPortSize.cy;
 
-//   bmp32.Width:= FXRes;
-//   bmp32.Height:=FYRes;
-
    //-----------------------
    CalcShadowTexture(rci);
    //-----------------------
@@ -788,12 +764,10 @@ begin
          glTexImage2D(GL_TEXTURE_2D,0,GL_ALPHA,FXRes,FYRes,0,GL_ALPHA,GL_UNSIGNED_BYTE,@Fdata[0]);
 {
    if not FTexturePrepared then begin
-//      glTexImage2D(GL_TEXTURE_2D,0,4,FXRes,FYRes,0,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
-      glTexImage2D(GL_TEXTURE_2D,0,GL_ALPHA,FXRes,FYRes,0,GL_ALPHA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
+      glTexImage2D(GL_TEXTURE_2D,0,GL_ALPHA,FXRes,FYRes,0,GL_ALPHA,GL_UNSIGNED_BYTE,@FData[0]);
       FTexturePrepared:=True;
    end else
-//      glTexSubImage2D(GL_TEXTURE_2D,0,0,0,FXRes,FYRes,GL_RGBA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
-      glTexSubImage2D(GL_TEXTURE_2D,0,0,0,FXRes,FYRes,GL_ALPHA,GL_UNSIGNED_BYTE,@bmp32.data[0]);
+      glTexSubImage2D(GL_TEXTURE_2D,0,0,0,FXRes,FYRes,GL_ALPHA,GL_UNSIGNED_BYTE,@FData[0]);
 }
 
 //   NotifyChange(Self);
@@ -841,19 +815,12 @@ end;
 Procedure TZShadows.CalcShadowTexture(var rci : TRenderContextInfo);
 var pix,p0,p1,p2,p3,p4:Byte;
     pM,pL,pT :Byte;
-//    pixa :PGLPixel32Array;
     pixa : PAArray;
     x,y,w,h :integer;
     xy :integer;
     fx,fy :single;
 begin
-  pixa:=FData;
-// pixa:=bmp32.data;
-// w:=bmp32.width;
-// h:=bmp32.height;
-
-// w:=self.Width;
-// h:=self.Height;
+ pixa:=FData;
  w:=fXres;
  h:=fYres;
 
@@ -867,39 +834,21 @@ begin
 
  //-----------No optimising-----------
  if FOptimise=opNone then begin
-{
-  y:=1;While y<h do begin
+
+  y:=0;While y<h do begin
     x:=0;While x<w do begin
-      pix:=HardTest(x,y);
-      pixa[x+(h-y)*w]:=pix;
+          HardSet(x,y);
     x:=x+1;end;
   y:=y+1;end;
-}
-  fy:=1;
-  y:=1;While y<fYres do begin
-    fx:=0;
-    x:=0;While x<fXres do begin
-//      pix:=HardTest(Round(fx),Round(fy));
-//      pixa[x+(fYres-y)*fXres]:=pix;
-
-        pix:=HardTest(Round(fx),Round(fy));
-        FData[x+(fYres-y)*fXres]:=pix;
-      fx:=fx+stepX;
-      x:=x+1;
-    end;//x
-    fy:=fy+stepY;
-    y:=y+1;
-  end;//y
-
  end else
 
  //-------Optimise 4in1--------
  if FOptimise=op4in1 then begin
-  for x:=0 to fXres-1 do HardSet(x,1);
+  for x:=0 to fXres-1 do HardSet(x,0);
   for x:=0 to fXres-1 do HardSet(x,fYres-1);
   for y:=1 to fYres-1 do HardSet(0,y);
   for y:=1 to fYres-1 do HardSet(fXres-1,y);
-  y:=3;
+  y:=2;
   While y<fYres do begin
     x:=2;
     p1:=HardSet(x-1,y-2);
@@ -908,14 +857,15 @@ begin
     While x<fXres do begin
       pix:=HardSet(x,y);
       if (pix=p1)and(pix=p0) then begin
-         pixa[x-1+(fYres-y)*fXres]:=pix;
-         pixa[x-1+(fYres-(y-1))*fXres]:=pix;
+           FDataInvIdx[y][x-1]:=pix;
+           FDataInvIdx[y-1][x-1]:=pix;
       end else begin
          HardSet(x-1,y);
          HardSet(x-1,y-1);
       end;
       p2:=SoftTest(x+1,y-2);
-      if (pix=p2) then pixa[x+(fYres-(y-1))*fXres]:=pix
+
+      if (pix=p2) then FDataInvIdx[y-1][x]:=pix
                       else HardSet(x,y-1);
       p1:=p2;
       p0:=pix;
@@ -927,30 +877,29 @@ begin
  end else
  //-------Optimise 9in1--------
  if FOptimise=op9in1 then begin
-  for x:=0 to fXres-1 do HardSet(x,1);
-  for x:=0 to fXres-1 do HardSet(x,fYres);
+  for x:=0 to fXres-1 do HardSet(x,0);
   for x:=0 to fXres-1 do HardSet(x,fYres-1);
   for y:=1 to fYres-1 do HardSet(fXres-1,y);
-  for y:=1 to fYres-1 do HardSet(fXres-2,y);
+//  for y:=1 to fYres-1 do HardSet(fXres-2,y);
 
-  y:=4;
-  While y<=fYres do begin
+  y:=3;
+  While y<fYres do begin
     x:=3;
     p1:=HardSet(x-3,y-3);
 //    p2:=HardSet(x  ,y-3);
     p3:=HardSet(x-3,y  );
-    While x<=fXres do begin
+    While x<fXres do begin
       p2:=SoftTest(x,y-3);
       p4:=HardSet(x,y);
       if ((p1=p2)and(p3=p4)and(p2=p4)) then begin
-         xy:=x+(fYres-(y-3))*fXres;
+         xy:=x+(fYres-(y-3)-1)*fXres;
           pixa[xy-2]:=p4;
           pixa[xy-1]:=p4;
-         xy:=x+(fYres-(y-2))*fXres;
+         xy:=x+(fYres-(y-2)-1)*fXres;
           pixa[xy-3]:=p4;
           pixa[xy-2]:=p4;
           pixa[xy-1]:=p4;
-         xy:=x+(fYres-(y-1))*fXres;
+         xy:=x+(fYres-(y-1)-1)*fXres;
           pixa[xy-3]:=p4;
           pixa[xy-2]:=p4;
           pixa[xy-1]:=p4;
@@ -978,21 +927,30 @@ begin
  //-----------16in1 optimising-----------
  if FOptimise=op16in1 then begin
 //  for x:=0 to fXres-1 do HardSet(x,fYres);  // out of range!
+
   for x:=0 to fXres-1 do HardSet(x,fYres-1);
   for x:=0 to fXres-1 do HardSet(x,fYres-2);
   for x:=0 to fXres-1 do HardSet(x,fYres-3);
-  y:=5;
+  for x:=0 to fXres-1 do HardSet(x,fYres-4);
+  for x:=0 to fXres-1 do HardSet(x,0);
+
+  for y:=0 to fYres-1 do HardSet(fXres-1,y);
+  for y:=0 to fYres-1 do HardSet(fXres-2,y);
+  for y:=0 to fYres-1 do HardSet(fXres-3,y);
+  for y:=0 to fYres-1 do HardSet(fXres-4,y);
+
+  y:=4;
   While y<fYres do begin
     x:=4;
     p1:=HardSet(x-4,y-4);
-//    p2:=HardSet(x  ,y-4);
+        HardSet(x  ,y-4); //p2
     p3:=HardSet(x-4,y  );
     While x<fXres do begin
       p2:=SoftTest(x,y-4);
       p4:=HardSet(x,y);
       //p4.r:=255;
       if ((p1=p2)and(p3=p4)and(p2=p4)) then begin
-         xy:=x+(h-(y-4))*w;
+         xy:=x+(h-(y-4)-1)*w;
           pixa[xy-3]:=p4;
           pixa[xy-2]:=p4;
           pixa[xy-1]:=p4;
@@ -1017,11 +975,11 @@ begin
           pL:=HardSet(x-4,y-2);
           pT:=HardSet(x-2,y-4);
 
-          xy:=x+(h-(y-4))*w;
+          xy:=x+(h-(y-4)-1)*w;
           if (p1=pT) then pixa[xy-3]:=pT else HardSet(x-3,y-4);
           if (p2=pT) then pixa[xy-1]:=pT else HardSet(x-1,y-4);
           xy:=xy-w;        //down
-          if (pL=pL) then pixa[xy-4]:=pL else HardSet(x-4,y-3);
+          if (pL=p1) then pixa[xy-4]:=pL else HardSet(x-4,y-3);
           if (p1=pM) then pixa[xy-3]:=pM else HardSet(x-3,y-3);
           if (p2=pM) then pixa[xy-1]:=pM else HardSet(x-1,y-3); //p2m
           if (pT=pM) then pixa[xy-2]:=pM else HardSet(x-2,y-3);
@@ -1043,26 +1001,13 @@ begin
  end;
 end;
 
-// res_X/resY are coordinates on the shadow overlay texture bitmap.
+// res_X/res_Y are coordinates on the shadow overlay texture bitmap.
 // They are converted to actual viewer coordinates, before calling HardTest,
 // since the overlay bitmap does not always have the same resolution as the viewer.
 
 function TZShadows.HardSet(const res_X,res_Y :integer):Byte;
- var pix :Byte;
-begin
- pix:=HardTest(Round(res_X*stepX) , Round(res_Y*stepY));
-// pix:=HardTest(Round(res_X) , Round(res_Y));
-// bmp32.data[res_X+(fYres-res_Y)*fXres]:=pix;
 
- FData[res_X+(fYres-res_Y)*fXres]:=pix;
-
- result:=pix;
-end;
-
-function TZShadows.HardTest(const x,y:integer):Byte;
 var  pix :Byte;
-//     width,height :integer;
-
     coord:TAffineVector;
 //    pixX,pixY :integer;
     ipixX,ipixY :integer;
@@ -1070,9 +1015,6 @@ var  pix :Byte;
     pixZ:single;
     IsInFrust :Boolean;
     ilum :Integer;
-
-//    d2,d4,d6,d8,d5 :single;
-//    shad :Integer;
     shad :single;
     Tol :Single;
 
@@ -1080,6 +1022,8 @@ var  pix :Byte;
 
     d2,d4,d5,d6,d8:single;
     shad2,shad4,shad5,shad6,shad8 :single;
+
+    x,y :integer;
 
     function ComputeIlum : Integer;
     begin
@@ -1093,10 +1037,13 @@ var  pix :Byte;
     end;
 
 begin
+//  x:=res_x;
+//  y:=res_y;
+ x:=Round(res_X*stepX);
+ y:=Round(res_Y*stepY);
      //---test pixel for shadow---
       if ViewerZBuf.GetPixelzDepth(x,y)<1 then begin
          coord:=ViewerZBuf.PixelToWorld(x,y);
-//         IsInFrust:=CasterZBuf.WorldToPixelZ(coord,pixX,pixY,pixZ);
          IsInFrust:=CasterZBuf.FloatWorldToPixelZ(coord,pixX,pixY,pixZ);
 
          //--- Tolerance scaling - reduces shadow-creeping at long-range and self-shadowing at short-range ---
@@ -1140,14 +1087,13 @@ begin
          if FSkyShadow then pix:=SCol.a                  // dark
                        else pix:=ComputeIlum;            // light
       end;
+
+      FDataInvIdx[res_Y][res_X]:=pix;
       result:=pix;
-//      bmp32.data[x+(iheight-y)*iwidth]:=pix;    // OPTIMISE used this to save directly when HardTesting
 end;
 
 function TZShadows.SoftTest(const x,y:integer):Byte;
 begin
-//  result:=bmp32.data[x+(fYres-y)*fXres];
-//   result:=Fdata[x+(fYres-y)*fXres];
    result:=FDataInvIdx[y][x];
 end;
 
