@@ -465,8 +465,12 @@ type
 
          function GetUniform1i(const index : String) : Integer;
          procedure SetUniform1i(const index : String; val : Integer);
+         function GetUniform1f(const index : String) : Single;
+         procedure SetUniform1f(const index : String; val : Single);
          function GetUniform3f(const index : String) : TAffineVector;
          procedure SetUniform3f(const index : String; const val : TAffineVector);
+         function GetUniform4f(const index : String) : TVector;
+         procedure SetUniform4f(const index : String; const val : TVector);
          function GetUniformMatrix4fv(const index : String) : TMatrix;
          procedure SetUniformMatrix4fv(const index : String; const val : TMatrix);
 
@@ -474,7 +478,8 @@ type
          { Public Declarations }
          {: Compile and attach a new shader.<p>
             Raises an EGLShader exception in case of failure. }
-         procedure AddShader(shaderType : TGLShaderHandleClass; const shaderSource : String);
+         procedure AddShader(shaderType : TGLShaderHandleClass; const shaderSource : String;
+                             treatWarningsAsErrors : Boolean = False);
 
          procedure AttachObject(shader : TGLShaderHandle);
          procedure BindAttribLocation(index : Integer; const name : String);
@@ -486,7 +491,9 @@ type
          procedure EndUseProgramObject;
 
          property Uniform1i[const index : String] : Integer read GetUniform1i write SetUniform1i;
+         property Uniform1f[const index : String] : Single read GetUniform1f write SetUniform1f;
          property Uniform3f[const index : String] : TAffineVector read GetUniform3f write SetUniform3f;
+         property Uniform4f[const index : String] : TVector read GetUniform4f write SetUniform4f;
          property UniformMatrix4fv[const index : String] : TMatrix read GetUniformMatrix4fv write SetUniformMatrix4fv;
    end;
 
@@ -1398,7 +1405,8 @@ end;
 
 // AddShader
 //
-procedure TGLProgramHandle.AddShader(shaderType : TGLShaderHandleClass; const shaderSource : String);
+procedure TGLProgramHandle.AddShader(shaderType : TGLShaderHandleClass; const shaderSource : String;
+                                     treatWarningsAsErrors : Boolean = False);
 var
    shader : TGLShaderHandle;
 begin
@@ -1407,8 +1415,9 @@ begin
       if shader.Handle=0 then
          raise EGLShader.Create('Couldn''t allocate '+shaderType.ClassName);
       shader.ShaderSource(shaderSource);
-      if not shader.CompileShader then
-         raise EGLShader.Create(shader.InfoLog);
+      if    (not shader.CompileShader)
+         or (treatWarningsAsErrors and (Pos('warning', LowerCase(shader.InfoLog))>0)) then
+         raise EGLShader.Create(shader.ClassName+': '+shader.InfoLog);
       AttachObject(shader);
    finally
       shader.Free;
@@ -1491,6 +1500,20 @@ begin
    glGetUniformivARB(FHandle, GetUniformLocation(index), @Result);
 end;
 
+// SetUniform1f
+//
+procedure TGLProgramHandle.SetUniform1f(const index : String; val : Single);
+begin
+   glUniform1fARB(GetUniformLocation(index), val);
+end;
+
+// GetUniform1f
+//
+function TGLProgramHandle.GetUniform1f(const index : String) : Single;
+begin
+   glGetUniformfvARB(FHandle, GetUniformLocation(index), @Result);
+end;
+
 // SetUniform1i
 //
 procedure TGLProgramHandle.SetUniform1i(const index : String; val : Integer);
@@ -1510,6 +1533,20 @@ end;
 procedure TGLProgramHandle.SetUniform3f(const index : String; const val : TAffineVector);
 begin
    glUniform3fARB(GetUniformLocation(index), val[0], val[1], val[2]);
+end;
+
+// GetUniform4f
+//
+function TGLProgramHandle.GetUniform4f(const index : String) : TVector;
+begin
+   glGetUniformfvARB(FHandle, GetUniformLocation(index), @Result);
+end;
+
+// SetUniform4f
+//
+procedure TGLProgramHandle.SetUniform4f(const index : String; const val : TVector);
+begin
+   glUniform4fARB(GetUniformLocation(index), val[0], val[1], val[2], val[3]);
 end;
 
 // GetUniformMatrix4fv
