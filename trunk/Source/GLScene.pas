@@ -238,7 +238,7 @@ interface
 uses
    Classes, GLMisc, GLTexture, SysUtils, VectorGeometry, XCollection,
    GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,
-   GLSilhouette;
+   GLSilhouette, PersistentClasses;
 
 type
 
@@ -358,7 +358,7 @@ type
          FParent : TGLBaseSceneObject;
          FScene : TGLScene;
 
-         FChildren : TList; // created on 1st use
+         FChildren : TPersistentObjectList; // created on 1st use
          FVisible : Boolean;
          FUpdateCount : Integer;
          FShowAxes : Boolean;
@@ -369,14 +369,13 @@ type
          FOnProgress : TGLProgressEvent;
          FGLBehaviours : TGLBehaviours;
          FGLObjectEffects : TGLObjectEffects;
-         FTagFloat: Single;
 
-         FSortDistList : TSingleList;
-         FSortObjList : TList;
+         FTagObject : TObject;
+         FTagFloat : Single;
 
-       //  FOriginalFiler: TFiler;   //used to allow persistent events in behaviours & effects
-       {If somebody could look at DefineProperties, ReadBehaviours, ReadEffects and verify code
-       is safe to use then it could be uncommented}
+         //  FOriginalFiler: TFiler;   //used to allow persistent events in behaviours & effects
+         {If somebody could look at DefineProperties, ReadBehaviours, ReadEffects and verify code
+         is safe to use then it could be uncommented}
 
          function Get(Index : Integer) : TGLBaseSceneObject;
          function GetCount : Integer;
@@ -681,6 +680,7 @@ type
             Note: for temporary backward compatibility only, migrate code!!!}
          property Data : pointer read GetData write SetData;
          {$endif}
+         property TagObject : TObject read FTagObject write FTagObject;
 
       published
          { Published Declarations }
@@ -2028,8 +2028,6 @@ uses
 var
    vCounterFrequency : Int64;
 
-//------------------ external global routines ----------------------------------
-
 // AxesBuildList
 //
 procedure AxesBuildList(var rci : TRenderContextInfo; pattern : Word; axisLen : Single);
@@ -2037,7 +2035,6 @@ begin
    glPushAttrib(GL_ENABLE_BIT or GL_LIGHTING_BIT or GL_LINE_BIT);
    glDisable(GL_LIGHTING);
    glEnable(GL_LINE_STIPPLE);
-//   glEnable(GL_LINE_SMOOTH);
    if not rci.ignoreBlendingRequests then begin
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2280,8 +2277,6 @@ begin
    FDirection.Free;
    FUp.Free;
    FScaling.Free;
-   FSortDistList.Free;
-   FSortObjList.Free;
    if Assigned(FParent) then FParent.Remove(Self, False);
    if Assigned(FChildren) then begin
       DeleteChildren;
@@ -2380,7 +2375,7 @@ var
 begin
    i:=0;
    if Assigned(FChildren) then while i<FChildren.Count do begin
-      child:=TGLBaseSceneObject(FChildren.Items[i]);
+      child:=TGLBaseSceneObject(FChildren.List[i]);
       child.DeleteChildCameras;
       if child is TGLCamera then begin
          Remove(child, True);
@@ -2399,9 +2394,8 @@ begin
    if Assigned(FScene) then
       FScene.RemoveLights(Self);
    if Assigned(FChildren) then while FChildren.Count>0 do begin
-      child:=TGLBaseSceneObject(FChildren.Items[FChildren.Count-1]);
+      child:=TGLBaseSceneObject(FChildren.Pop);
       child.FParent:=nil;
-      FChildren.Delete(FChildren.Count-1);
       child.Free;
    end;
 end;
@@ -2537,7 +2531,7 @@ var
 begin
    if Assigned(FChildren) then
       for i:=0 to FChildren.Count-1 do
-         AProc(FChildren[i]);
+         AProc(TComponent(FChildren.List[i]));
 end;
 
 // Get
@@ -2545,7 +2539,7 @@ end;
 function TGLBaseSceneObject.Get(Index: Integer): TGLBaseSceneObject;
 begin
    if Assigned(FChildren) then
-      Result:=FChildren[Index]
+      Result:=TGLBaseSceneObject(FChildren[Index])
    else Result:=nil;
 end;
 
@@ -2565,7 +2559,7 @@ begin
    if Assigned(FScene) then
       FScene.AddLights(aChild);
    if not Assigned(FChildren) then
-      FChildren:=TList.Create;
+      FChildren:=TPersistentObjectList.Create;
    FChildren.Add(aChild);
    aChild.FParent:=Self;
    aChild.SetScene(FScene);
@@ -2918,8 +2912,8 @@ begin
    //not tested for child objects
    if Assigned(FChildren) then begin
       for i:=0 to FChildren.Count-1 do begin
-         aabb:=TGLBaseSceneObject(FChildren[i]).AxisAlignedBoundingBoxUnscaled;
-         AABBTransform(aabb, TGLBaseSceneObject(FChildren[i]).Matrix);
+         aabb:=TGLBaseSceneObject(FChildren.List[i]).AxisAlignedBoundingBoxUnscaled;
+         AABBTransform(aabb, TGLBaseSceneObject(FChildren.List[i]).Matrix);
          AddAABB(Result, aabb);
       end;
    end;
@@ -3077,7 +3071,7 @@ begin
       if Assigned(Scene) then Scene.BeginUpdate;
       if Assigned(TGLBaseSceneObject(Source).FChildren) then begin
          for i:=0 to TGLBaseSceneObject(Source).FChildren.Count-1 do begin
-            child:=TGLBaseSceneObject(Source).FChildren[I];
+            child:=TGLBaseSceneObject(TGLBaseSceneObject(Source).FChildren[i]);
             newChild:=AddNewChild(TGLSceneObjectClass(child.ClassType));
             newChild.Assign(child);
          end;
@@ -3583,7 +3577,7 @@ end;
 procedure TGLBaseSceneObject.RecTransformationChanged;
 var
    i : Integer;
-   list : PPointerList;
+   list : PPointerObjectList;
    matSet : TObjectChanges;
 begin
    matSet:=[ocAbsoluteMatrix, ocInvAbsoluteMatrix];
@@ -3744,7 +3738,7 @@ end;
 procedure TGLBaseSceneObject.Insert(aIndex : Integer; aChild : TGLBaseSceneObject);
 begin
    if not Assigned(FChildren) then
-      FChildren:=TList.Create;
+      FChildren:=TPersistentObjectList.Create;
    with FChildren do begin
       if Assigned(aChild.FParent) then
          aChild.FParent.Remove(aChild, False);
@@ -3947,9 +3941,9 @@ procedure TGLBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex : In
                                             var rci : TRenderContextInfo);
 var
    i : Integer;
-   objList : TList;
+   objList : TPersistentObjectList;
    distList : TSingleList;
-   plist : PPointerList;
+   plist : PPointerObjectList;
    obj : TGLBaseSceneObject;
    oldSorting : TGLObjectsSorting;
    oldCulling : TGLVisibilityCulling;
@@ -3971,14 +3965,10 @@ begin
                TGLBaseSceneObject(plist[i]).Render(rci);
          end;
          osRenderFarthestFirst, osRenderBlendedLast, osRenderNearestFirst : begin
-            if not Assigned(FSortDistList) then
-               FSortDistList:=TSingleList.Create
-            else FSortDistList.Count:=0;
-            distList:=FSortDistList;
-            if not Assigned(FSortObjList) then
-               FSortObjList:=TList.Create
-            else FSortObjList.Count:=0;
-            objList:=TList.Create;
+            distList:=TSingleList.Create;
+            objList:=TPersistentObjectList.Create;
+            distList.GrowthDelta:=lastChildIndex+1;      // no reallocations
+            objList.GrowthDelta:=distList.GrowthDelta;
             try
                case rci.objectsSorting of
                   osRenderBlendedLast :
@@ -4013,13 +4003,14 @@ begin
                end;
                if distList.Count>0 then begin
                   if distList.Count>1 then
-                     FastQuickSortLists(0, distList.Count-1, FSortDistList, objList);
+                     FastQuickSortLists(0, distList.Count-1, distList, objList);
                   plist:=objList.List;
                   for i:=objList.Count-1 downto 0 do
                      TGLBaseSceneObject(plist[i]).Render(rci);
                end;
             finally
                objList.Free;
+               distList.Free;
             end;
          end;
       else
