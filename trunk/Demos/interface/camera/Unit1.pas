@@ -6,10 +6,12 @@
 
 	Movements in this sample are done by moving the mouse with a button
 	pressed, left button will translate the dummy cube (and the camera),
-	right button will rotate the camera around the target.<br>
+	right button will rotate the camera around the target, shift+right will
+   rotate the object in camera's axis.<br>
 	Mouse Wheel allows zooming in/out.<br>
-	Alternately, plus/minus and '8', '4', '6', '2' keys can be used for
-	camera movements.
+	'7', '9' rotate around the X vector (in red, absolute).<br>
+	'4', '6' rotate around the Y vector (in green, absolute).<br>
+	'1', '3' rotate around the Z vector (in blue, absolute).<br>
 }
 unit Unit1;
 
@@ -66,11 +68,17 @@ begin
 	// calculate delta since last move or last mousedown
 	dx:=mdx-x; dy:=mdy-y;
 	mdx:=x; mdy:=y;
-	if Shift=[ssRight] then
-		// right button changes camera angle
-		// (we're moving around the parent and target dummycube)
-		GLCamera1.MoveAroundTarget(dy, dx)
-	else if Shift=[ssLeft] then begin
+	if ssLeft in Shift then begin
+      if ssShift in Shift then begin
+         // right button with shift rotates the teapot
+         // (rotation happens around camera's axis)
+	   	GLCamera1.RotateObject(Teapot1, dy, dx);
+      end else begin
+   		// right button without shift changes camera angle
+	   	// (we're moving around the parent and target dummycube)
+		   GLCamera1.MoveAroundTarget(dy, dx)
+      end;
+	end else if Shift=[ssRight] then begin
 		// left button moves our target and parent dummycube
 		v:=GLCamera1.ScreenDeltaToVectorXY(dx, -dy,
 							0.12*GLCamera1.DistanceToTarget/GLCamera1.FocalLength);
@@ -90,13 +98,13 @@ end;
 
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
 begin
-	case Key of
-		'2' : GLCamera1.MoveAroundTarget( 3,  0);
-		'4' : GLCamera1.MoveAroundTarget( 0, -3);
-		'6' : GLCamera1.MoveAroundTarget( 0,  3);
-		'8' : GLCamera1.MoveAroundTarget(-3,  0);
-		'-' : GLCamera1.AdjustDistanceToTarget(1.1);
-		'+' : GLCamera1.AdjustDistanceToTarget(1/1.1);
+	with Teapot1 do case Key of
+		'7' : RotateAbsolute(-15,  0,  0);
+		'9' : RotateAbsolute(+15,  0,  0);
+      '4' : RotateAbsolute(  0,-15,  0);
+      '6' : RotateAbsolute(  0,+15,  0);
+      '1' : RotateAbsolute(  0,  0,-15);
+      '3' : RotateAbsolute(  0,  0,+15);
 	end;
 end;
 
