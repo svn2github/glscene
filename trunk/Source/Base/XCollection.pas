@@ -3,12 +3,13 @@
 
 	A polymorphism-enabled TCollection-like set of classes<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>02/02/01 - Egg - CanAdd now virtual
-      <li>09/06/00 - Egg - Added GetByClass
-      <li>23/05/00 - Egg - Added "Loaded" mechanism
-      <li>17/04/00 - Egg - Optimized TXCollection.Assign
-	   <li>16/04/00 - Egg - Creation from GLScene split
+	<b>History : </b><font size=-1><ul>
+      <li>18/02/01 - EG - Fixed TXCollectionItem.Destroy (count decrementation)
+      <li>02/02/01 - EG - CanAdd now virtual
+      <li>09/06/00 - EG - Added GetByClass
+      <li>23/05/00 - EG - Added "Loaded" mechanism
+      <li>17/04/00 - EG - Optimized TXCollection.Assign
+	   <li>16/04/00 - EG - Creation from GLScene split
 	</ul></font>
 }
 unit XCollection;
@@ -241,8 +242,10 @@ end;
 //
 destructor TXCollectionItem.Destroy;
 begin
-	if Assigned(FOwner) then
+	if Assigned(FOwner) then begin
 		FOwner.FList.Remove(Self);
+      FOwner.FCount:=FOwner.FList.Count;
+   end;
 	inherited Destroy;
 end;
 
