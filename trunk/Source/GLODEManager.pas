@@ -784,6 +784,9 @@ type
 
   end;
 
+  TJointOption = (joBothObjectsMustBeAssigned);
+  TJointOptions = set of TJointOption;
+
   // TODEJointBase
   //
   {: Base structures for ODE Joints. }
@@ -799,6 +802,7 @@ type
       FManagerName : String;
       FInitialized,
       FEnabled : Boolean;
+      FJointOptions : TJointOptions;
 
     protected
       { Protected Declarations }
@@ -819,6 +823,10 @@ type
       procedure SetObject1(const Value : TGLBaseSceneObject);
       procedure SetObject2(const Value : TGLBaseSceneObject);
       procedure SetEnabled(const Value : Boolean);
+
+      procedure SetJointOptions(const Value : TJointOptions);
+
+      property JointOptions : TJointOptions read FJointOptions write SetJointOptions;
 
     public
       { Public Declarations }
@@ -2171,19 +2179,30 @@ procedure TGLODEDynamic.WriteToFiler(writer : TWriter);
 begin
   inherited;
   with writer do begin
-    WriteInteger(0); // Archive version
+    WriteInteger(1); // Archive version
     FElements.WriteToFiler(writer);
+    writer.WriteBoolean(FEnabled);
   end;
 end;
 
 // ReadFromFiler
 //
 procedure TGLODEDynamic.ReadFromFiler(reader : TReader);
+var
+  archiveVersion : Integer;
 begin
   inherited;
   with reader do begin
-    Assert(ReadInteger = 0); // Archive version
+    archiveVersion:=ReadInteger;
+    Assert((archiveVersion >= 0) and (archiveVersion<=1)); // Archive version
+
+    // version 0
     FElements.ReadFromFiler(reader);
+
+    // version 1
+    if archiveVersion>=1 then begin
+      FEnabled:=ReadBoolean;
+    end;
   end;
 end;
 
@@ -2303,14 +2322,11 @@ end;
 //
 procedure TGLODEDynamic.SetEnabled(const Value : Boolean);
 begin
-  if Assigned(FBody) then
-    if Value <> Enabled then begin
-      FEnabled:=Value;
-      if Assigned(FBody) then begin
-        if FEnabled then dBodyEnable(FBody)
-        else dBodyDisable(FBody);
-      end;
-    end;
+  FEnabled:=Value;
+  if Assigned(FBody) then begin
+    if FEnabled then dBodyEnable(FBody)
+    else dBodyDisable(FBody);
+  end;
 end;
 
 // GetEnabled
@@ -4310,6 +4326,10 @@ begin
     Body2:=nil;
   end;
 
+  if (joBothObjectsMustBeAssigned in JointOptions) then
+    if not (Assigned(Body1) and Assigned(Body2)) then
+      Exit;
+
   dJointAttach(FJointID,Body1,Body2);
   if Assigned(Body1) or Assigned(Body2) then
     StructureChanged;
@@ -4392,7 +4412,20 @@ begin
   if JointID<>0 then begin
     body1:=dJointGetBody(JointID, 0);
     body2:=dJointGetBody(JointID, 1);
-    Result:=Assigned(body1) or Assigned(body2);
+    if joBothObjectsMustBeAssigned in JointOptions then
+      Result:=Assigned(body1) and Assigned(body2)
+    else
+      Result:=Assigned(body1) or Assigned(body2);
+  end;
+end;
+
+// SetJointOptions
+//
+procedure TODEJointBase.SetJointOptions(const Value : TJointOptions);
+begin
+  if Value<>FJointOptions then begin
+    FJointOptions:=Value;
+    Attach;
   end;
 end;
 
@@ -5178,6 +5211,8 @@ begin
   FAxis2Params:=TODEJointParams.Create(Self);
   FAxis2Params.SetCallback:=SetAxis2Param;
   FAxis2Params.GetCallback:=GetAxis2Param;
+
+  JointOptions:=[joBothObjectsMustBeAssigned];
 end;
 
 // Destroy
@@ -5390,6 +5425,8 @@ begin
   FAxis2Params:=TODEJointParams.Create(Self);
   FAxis2Params.SetCallback:=SetAxis2Param;
   FAxis2Params.GetCallback:=GetAxis2Param;
+
+  JointOptions:=[joBothObjectsMustBeAssigned];
 end;
 
 // Destroy
