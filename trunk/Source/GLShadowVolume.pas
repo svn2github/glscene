@@ -458,9 +458,10 @@ begin
             SetVector(silParams.SeenFrom, obj.AbsoluteToLocal(lightSource.AbsolutePosition));
 
             sil:=obj.GenerateSilhouette(silParams);
-            try
+            if Assigned(sil) then try
                glPushMatrix;
 
+               glLoadMatrixf(PGLFloat(rci.modelViewMatrix));
                mat:=obj.AbsoluteMatrix;
                glMultMatrixf(@mat);
 
