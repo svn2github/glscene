@@ -6,6 +6,7 @@
    Texture combiners setup utility functions.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/12/03 - EG - Alpha and RGB channels separate combination now supported
       <li>23/05/03 - EG - All tex units now accepted as target
       <li>22/05/03 - EG - Fixed GL_ADD_SIGNED_ARB parsing, better error reporting
       <li>16/05/03 - EG - Creation
@@ -62,7 +63,7 @@ uses Classes, GLContext, OpenGL1x;
 procedure TCAssertCheck(const b : Boolean; const errMsg : String);
 begin
    if not b then
-      raise ETextureCombinerError(errMsg);
+      raise ETextureCombinerError.Create(errMsg);
 end;
 
 // RemoveSpaces
@@ -90,16 +91,33 @@ end;
 procedure ProcessTextureCombinerArgument(arg : String; sourceEnum, operandEnum : Integer;
                                          const dest : String);
 var
-   sourceValue, operandValue, n : Integer;
+   sourceValue, operandValue, n, p : Integer;
+   origArg, qualifier : String;
 begin
+   origArg:=arg;
+   p:=Pos('.', arg);
+   if p>0 then begin
+      qualifier:=Copy(arg, p+1, MaxInt);
+      arg:=Copy(arg, 1, p-1);
+   end else qualifier:='rgb';
+   if qualifier='rgb' then begin
+      if Copy(arg, 1, 1)='~' then begin
+         operandValue:=GL_ONE_MINUS_SRC_COLOR;
+         arg:=Copy(arg, 2, MaxInt);
+      end else if Copy(arg, 1, 2)='1-' then begin
+         operandValue:=GL_ONE_MINUS_SRC_COLOR;
+         arg:=Copy(arg, 3, MaxInt);
+      end else operandValue:=GL_SRC_COLOR;
+   end else if Copy(qualifier, 1, 1)='a' then begin
+      if Copy(arg, 1, 1)='~' then begin
+         operandValue:=GL_ONE_MINUS_SRC_ALPHA;
+         arg:=Copy(arg, 2, MaxInt);
+      end else if Copy(arg, 1, 2)='1-' then begin
+         operandValue:=GL_ONE_MINUS_SRC_ALPHA;
+         arg:=Copy(arg, 3, MaxInt);
+      end else operandValue:=GL_SRC_ALPHA;
+   end else operandValue:=0;
    sourceValue:=0;
-   if Copy(arg, 1, 1)='~' then begin
-      operandValue:=GL_ONE_MINUS_SRC_COLOR;
-      arg:=Copy(arg, 2, MaxInt);
-   end else if Copy(arg, 1, 2)='1-' then begin
-      operandValue:=GL_ONE_MINUS_SRC_COLOR;
-      arg:=Copy(arg, 3, MaxInt);
-   end else operandValue:=GL_SRC_COLOR;
    if (arg='tex') or (arg=dest) then
       sourceValue:=GL_TEXTURE
    else if ((arg='tex0') and (dest='tex1')) or ((arg='tex1') and (dest='tex2'))
@@ -116,7 +134,8 @@ begin
       if n in [0..7] then
          sourceValue:=GL_TEXTURE0_ARB+n;
    end;
-   TCAssertCheck(sourceValue>0, 'invalid argument : "'+arg+'"');
+   TCAssertCheck((operandValue>0) and (sourceValue>0),
+                 'invalid argument : "'+origArg+'"');
    glTexEnvf(GL_TEXTURE_ENV, sourceEnum , sourceValue);
    glTexEnvf(GL_TEXTURE_ENV, operandEnum, operandValue);
    CheckOpenGLError;
