@@ -99,20 +99,6 @@ implementation
 
 {$R *.dfm}
 
-function myVectorMake(Vector : TVector) : TAffineVector;
-begin
-  result[0] := Vector[0];
-  result[1] := Vector[1];
-  result[2] := Vector[2];
-end;
-
-function myVectorMake2(x,y,z : single) : TAffineVector;
-begin
-  result[0] := x;
-  result[1] := y;
-  result[2] := z;
-end;
-
 procedure TfrmClothify.Button_LoadMeshClick(Sender: TObject);
 var
   Floor : TVCFloor;
@@ -126,7 +112,7 @@ var
   procedure CreateCubeFromGLCube(GLCube : TGLCube);
   begin
     Cube := TVCCube.Create(VerletWorld);
-    Cube.Location := myVectorMake(GLCube.AbsolutePosition);
+    Cube.Location := AffineVectorMake(GLCube.AbsolutePosition);
     Cube.FrictionRatio := 0.1;
     Sides[0] := GLCube.CubeWidth * 1.1;
     Sides[1] := GLCube.CubeHeight * 1.1;
@@ -231,7 +217,7 @@ begin
   TVFGravity.Create(VerletWorld);
 
   Floor := TVCFloor.Create(VerletWorld);
-  Floor.Location := VectorAdd(GLShadowPlane1.Position.AsAffineVector, myVectorMake2(0,0.1,0));
+  Floor.Location := VectorAdd(GLShadowPlane1.Position.AsAffineVector, AffineVectorMake(0,0.1,0));
   Floor.Normal := GLShadowPlane1.Direction.AsAffineVector;
 
   Floor.FrictionRatio := 0.6;
@@ -239,7 +225,7 @@ begin
   if GLSphere1.Visible then begin
      VCSphere := TVCSphere.Create(VerletWorld);
      VCSphere.Radius := GLSphere1.Radius;
-     VCSphere.Location := myVectorMake(GLSphere1.AbsolutePosition);
+     VCSphere.Location := AffineVectorMake(GLSphere1.AbsolutePosition);
   end;
 
   if GLCube1.Visible then begin

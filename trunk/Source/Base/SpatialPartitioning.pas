@@ -36,6 +36,21 @@ const
 type
   TBaseSpacePartition = class;
 
+  {: Describes a cone, and is used for cone collision}
+  TCone = record
+    {: The base of the cone }
+    Base : TAffineVector;
+
+    {: The axis of the cone }
+    Axis : TAffineVector;
+
+    {: Angle of the cone }
+    Angle : single;
+
+    {: Length of the cone }
+    Length : single;
+  end;
+
   {: Used to store the actual objects in the SpacePartition }
   TSpacePartitionLeaf = class(TPersistentObject)
   private
@@ -87,6 +102,10 @@ type
 
   {: Basic space partition, does not implement any actual space partitioning }
   TBaseSpacePartition = class(TPersistentObject)
+  private
+    {: Query space for Leaves that intersect a cone, result is returned through
+    QueryResult}
+    function QueryCone(const aCone : TCone) : integer; virtual;
   protected
     FQueryResult: TSpacePartitionLeafList;
     FQueryInterObjectTests : integer;
@@ -139,6 +158,9 @@ type
   private
     FLeaves : TSpacePartitionLeafList;
 
+    {: Query space for Leaves that intersect a cone, result is returned through
+    QueryResult}
+    function QueryCone(const aCone : TCone) : integer; virtual;
   public
     {: Clear all internal storage Leaves }
     procedure Clear; override;
@@ -416,6 +438,11 @@ type
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; override;
   end;
 
+  {: Determines to which extent one Cone contains an AABB}
+  function ConeContainsAABB(const Cone : TCone; AABB : TAABB) : TSpaceContains;
+  {: Determines to which extent one Cone contains an BSphere}
+  function ConeContainsBSphere(const Cone : TCone; BSphere : TBSphere) : TSpaceContains;
+
 implementation
 
 // This was copied from Octree.pas!
@@ -459,6 +486,51 @@ const
       (cMIN,cMIN,cMIN), //Lower Back Left
       (cMID,cMIN,cMIN)  //Lower Back Right
     );
+
+function ConeContainsAABB(const Cone : TCone; AABB : TAABB) : TSpaceContains;
+begin
+end;
+
+function ConeContainsBSphere(const Cone : TCone; BSphere : TBSphere) : TSpaceContains;
+var
+  U, D : TAffineVector;
+  e, dsqr : single;
+begin
+  // U = K.vertex - (Sphere.radius/K.sin)*K.axis;
+  U := VectorSubtract(Cone.Base, VectorScale(Cone.Axis, BSphere.Radius / sin(Cone.Angle)));
+
+  // D = S.center - U;
+  D := VectorSubtract(BSphere.Center, U);
+
+  // dsqr = Dot(D,D)
+  dsqr := VectorDotProduct(D, D);
+
+  // e = Dot(K.axis,D);
+  e := VectorDotProduct(Cone.Axis, D);
+
+  if (e > 0) and (e*e >= dsqr*sqr(cos(Cone.Angle))) then
+  begin
+    // D = S.center - K.vertex;
+    D := VectorSubtract(BSphere.Center, Cone.Base);
+
+    // dsqr = Dot(D,D);
+    dsqr := VectorDotProduct(D, D);
+
+    // e = -Dot(K.axis,D);
+    e := - VectorDotProduct(Cone.Axis, D);
+
+    if (e > 0) and (e*e >= dsqr*(sqr(sin(Cone.Angle)))) then
+    begin
+      if dsqr <= BSphere.radius*BSphere.radius then
+        result := scContainsPartially
+      else
+        result := scNoOverlap;
+    end
+    else
+      result := scContainsPartially;
+  end else
+    result := scNoOverlap;
+end;
 
 { TSpacePartitionLeaf }
 
@@ -575,6 +647,12 @@ begin
   result := 0;
 end;
 
+function TBaseSpacePartition.QueryCone(const aCone: TCone): integer;
+begin
+  // Virtual
+  result := 0;
+end;
+
 function TBaseSpacePartition.QueryLeaf(
   const aLeaf: TSpacePartitionLeaf): integer;
 begin
@@ -669,6 +747,24 @@ begin
 
     if Distance2<sqr(Leaf.FCachedBSphere.Radius + aBSphere.Radius) then
       FQueryResult.Add(Leaf);
+  end;
+
+  result := FQueryResult.Count;
+end;
+
+function TLeavedSpacePartition.QueryCone(const aCone: TCone): integer;
+var
+  i : integer;
+begin
+  // Very brute force!
+  FlushQueryResult;
+
+  for i := 0 to Leaves.Count-1 do
+  begin
+    inc(FQueryInterObjectTests);
+
+    if ConeContainsBSphere(aCone, Leaves[i].FCachedBSphere)<>scNoOverlap then
+      FQueryResult.Add(Leaves[i]);
   end;
 
   result := FQueryResult.Count;

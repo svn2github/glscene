@@ -401,6 +401,8 @@ type
    // TVerletWorld
    //
    TUpdateSpacePartion = (uspEveryIteration, uspEveryFrame, uspNever);
+   TCollisionConstraintTypes = (cctEdge, cctNode);
+   TCollisionConstraintTypesSet = set of TCollisionConstraintTypes;
    TVerletWorld = class
       private
 			{ Private Declarations }
@@ -416,6 +418,7 @@ type
          FSpacePartition: TBaseSpacePartition;
          FCurrentStepCount: integer;
          FUpdateSpacePartion: TUpdateSpacePartion;
+         FCollisionConstraintTypes: TCollisionConstraintTypesSet;
 
 		protected
 			{ Protected Declarations }
@@ -472,6 +475,8 @@ type
          property SpacePartition: TBaseSpacePartition read FSpacePartition;
 
          property UpdateSpacePartion : TUpdateSpacePartion read FUpdateSpacePartion write FUpdateSpacePartion;
+
+         property CollisionConstraintTypes : TCollisionConstraintTypesSet read FCollisionConstraintTypes write FCollisionConstraintTypes;
    end;
 
    // TVFGravity
@@ -986,12 +991,15 @@ var
    list : PPointerList;
 begin
    list:=Owner.Nodes.List;
-   for i:=0 to Owner.Nodes.Count-1 do begin
-      node:=TVerletNode(list[i]);
-      if not node.NailedDown then
-         SatisfyConstraintForNode(node, iteration, maxIterations);
-   end;//}
-   for i:=0 to Owner.SolidEdges.Count-1 do begin
+   if cctNode in Owner.CollisionConstraintTypes then
+     for i:=0 to Owner.Nodes.Count-1 do begin
+        node:=TVerletNode(list[i]);
+        if not node.NailedDown then
+           SatisfyConstraintForNode(node, iteration, maxIterations);
+     end;//}
+
+   if cctEdge in Owner.CollisionConstraintTypes then
+     for i:=0 to Owner.SolidEdges.Count-1 do begin
          SatisfyConstraintForEdge(Owner.SolidEdges[i], iteration, maxIterations);
    end;//}
 end;
@@ -1162,6 +1170,7 @@ begin
    FSpacePartition := TLeavedSpacePartition.Create;
    FCurrentStepCount := 0;
    FUpdateSpacePartion := uspNever;
+   FCollisionConstraintTypes := [cctEdge, cctNode];
 end;
 
 // Destroy
@@ -1418,12 +1427,12 @@ begin
          if Enabled then
             SatisfyConstraint(j, Iterations);//}
 
-     if UpdateSpacePartion=uspEveryIteration then
-      DoUpdateSpacePartition;
+      if UpdateSpacePartion=uspEveryIteration then
+        DoUpdateSpacePartition;
    end;
 
    if UpdateSpacePartion=uspEveryFrame then
-    DoUpdateSpacePartition;
+    DoUpdateSpacePartition;//}
 end;
 
 // Verlet
@@ -1432,8 +1441,14 @@ procedure TVerletWorld.Verlet(const deltaTime, newTime: Double);
 var
    i : Integer;
 begin
+   if UpdateSpacePartion<>uspNever then
+     inc(FCurrentStepCount);
+
    for i:=0 to FNodes.Count-1 do
       FNodes[i].Verlet(deltaTime, newTime);
+
+   if UpdateSpacePartion<>uspNever then
+    DoUpdateSpacePartition;
 end;
 
 // VerletNodeClass
@@ -2260,16 +2275,22 @@ begin
 
       if Leaf is TVerletNode then
       begin
-        node := Leaf as TVerletNode;
+        if cctNode in Owner.CollisionConstraintTypes then
+        begin
+          node := Leaf as TVerletNode;
 
-        if not node.NailedDown then
-           SatisfyConstraintForNode(node, iteration, maxIterations);
+          if not node.NailedDown then
+             SatisfyConstraintForNode(node, iteration, maxIterations);
+        end;
       end else
       if Leaf is TVerletEdge then
       begin
-        edge := Leaf as TVerletEdge;
+        if cctEdge in Owner.CollisionConstraintTypes then
+        begin
+          edge := Leaf as TVerletEdge;
 
-        SatisfyConstraintForEdge(edge, iteration, maxIterations);
+          SatisfyConstraintForEdge(edge, iteration, maxIterations);
+        end;
       end else
         Assert(false,'Bad objects in list!');
    end;//}

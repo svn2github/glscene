@@ -228,6 +228,7 @@ const
 var
   AABB : TAABB;
   BSphere : TBSphere;
+  Cone : TCone;
   Leaf, TestLeaf : TGLSpacePartitionLeaf;
   Cube : TGLCube;
   i, j, CollidingLeafCount : integer;
@@ -258,7 +259,7 @@ begin
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Green := 0;
   end;//}
 
-  //GLCube1.Position.AsAffineVector := randomPos;
+  // AABB collision
   AABB := GLCube1.AxisAlignedBoundingBox;
   AABB.min := GLCube1.LocalToAbsolute(AABB.min);
   AABB.max := GLCube1.LocalToAbsolute(AABB.max);
@@ -271,6 +272,7 @@ begin
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Red := 1;
   end;//}
 
+  // BSphere collision
   BSphere.Center := GLSphere1.Position.AsAffineVector;
   BSphere.Radius := GLSphere1.Radius;
 
@@ -282,6 +284,7 @@ begin
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Red := 1;
   end;//}
 
+  // Leaf - leaf collision
   CollidingLeafCount := 0;
   for i := 0 to Octree.Leaves.Count-1 do
   begin
@@ -298,6 +301,20 @@ begin
         inc(CollidingLeafCount);
       end;
     end;
+  end;//}//*)
+
+  // Cone collision
+  {Cone.Base := GLCone1.Position.AsAffineVector;
+  Cone.Axis := VectorScale(GLCone1.Up.AsAffineVector, -1);
+  Cone.Length := GLCone1.Height;
+  Cone.Angle := ArcTan(GLCone1.BottomRadius/GLCone1.Height);
+
+  Octree.QueryCone(Cone);
+
+  for i := 0 to Octree.QueryResult.Count-1 do
+  begin
+    Leaf := TGLSpacePartitionLeaf(Octree.QueryResult[i]);
+    TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Red := 1;
   end;//}
 
   Label1.Caption := Format('Nodes = %d, Colliding Leaves = %d',
@@ -359,5 +376,4 @@ begin
   Octree.UpdateStructureSize(0.05);
   Octree.GrowMethod := gmIncreaseToFitAll;
 end;
-
 end.
