@@ -2,20 +2,21 @@
 
 	Graph plotting objects for GLScene<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>16/07/02 - Egg - Fixed TGLHeightField backface polygon mode
-      <li>29/01/02 - Egg - Fixed TGLHeightField.BuildList when field is empty
-      <li>10/01/02 - Egg - Added OnGetHeight2
-      <li>30/11/01 - Egg - Color fix in TGLHeightField.BuildList (thx Marc Hull)
-      <li>19/07/01 - Egg - TGLHeightField no longer calls OnGetHeight in design mode
-      <li>06/03/01 - Egg - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
-      <li>25/02/01 - Egg - Minor T&L improvement for TGLHeightField
-      <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
-      <li>29/01/01 - Egg - Changed SamplingScale "Min" and "Max" default value
-                           to workaround the float property default value bug.
-      <li>05/11/00 - Egg - Fixed "property ZSamplingScale" (thx Davide Prade)
-      <li>15/07/00 - Egg - Added TXYGrid
-	   <li>06/07/00 - Egg - Creation (TGLSamplingScale & TGLHeightField)
+	<b>History : </b><font size=-1><ul>
+      <li>12/09/03 - EG - DefaultHeightField now defines color
+      <li>16/07/02 - EG - Fixed TGLHeightField backface polygon mode
+      <li>29/01/02 - EG - Fixed TGLHeightField.BuildList when field is empty
+      <li>10/01/02 - EG - Added OnGetHeight2
+      <li>30/11/01 - EG - Color fix in TGLHeightField.BuildList (thx Marc Hull)
+      <li>19/07/01 - EG - TGLHeightField no longer calls OnGetHeight in design mode
+      <li>06/03/01 - EG - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
+      <li>25/02/01 - EG - Minor T&L improvement for TGLHeightField
+      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+      <li>29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
+                          to workaround the float property default value bug.
+      <li>05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
+      <li>15/07/00 - EG - Added TXYGrid
+	   <li>06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
 	</ul></font>
 }
 unit GLGraph;
@@ -384,9 +385,9 @@ end;
 //
 procedure TGLHeightField.BuildList(var rci : TRenderContextInfo);
 type
-   TRowData = record
-      z : Single;
+   TRowData = packed record
       color : TColorVector;
+      z : Single;
       texPoint : TTexPoint;
       normal : TAffineVector;
    end;
@@ -580,6 +581,7 @@ procedure TGLHeightField.DefaultHeightField(const x, y : Single;
 begin
    z:=VectorNorm(x, y);
    z:=cos(z*12)/(2*(z*6.28+1));
+   color:=clrGray80;
 end;
 
 // Height2Field
