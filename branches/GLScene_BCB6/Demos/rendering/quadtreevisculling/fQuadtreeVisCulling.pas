@@ -108,7 +108,7 @@ end;
 
 procedure TfrmQuadtreeVisCulling.FormCreate(Sender: TObject);
 begin
-  SpacePartition := TQuadSpacePartition.Create;
+  SpacePartition := TQuadtreeSpacePartition.Create;
   SpacePartition.LeafThreshold := 50;
   SpacePartition.MaxTreeDepth := 10;//}
   SpacePartition.GrowGravy := 0.01;

@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 84
   Width = 696
   Height = 480
-  Caption = 'Form1'
+  Caption = 'Machine'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -121,6 +121,13 @@ object Form1: TForm1
     end
     object ODERenderPoint: TGLRenderPoint
     end
+    object GLHUDText1: TGLHUDText
+      Position.Coordinates = {0000204100002041000000000000803F}
+      BitmapFont = GLWindowsBitmapFont1
+      Alignment = taLeftJustify
+      Layout = tlTop
+      ModulateColor.Color = {0000000000000000000000000000803F}
+    end
   end
   object GLODEManager1: TGLODEManager
     Solver = osmQuickStep
@@ -166,8 +173,18 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
     Left = 8
+    Top = 40
+  end
+  object GLWindowsBitmapFont1: TGLWindowsBitmapFont
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    Left = 40
     Top = 40
   end
 end

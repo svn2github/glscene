@@ -104,9 +104,9 @@ object Form1: TForm1
     object TerrainRenderer1: TGLTerrainRenderer
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'ground'
-      Direction.Coordinates = {00000000D8B3DDB20000803F00000000}
+      Direction.Coordinates = {09260E19ECD96EB30000803F00000000}
       Scale.Coordinates = {00008040000080400000803E00000000}
-      Up.Coordinates = {000000000000803FD8B3DD3200000000}
+      Up.Coordinates = {E146A6250000803FECD96E3300000000}
       HeightDataSource = GLBitmapHDS1
       TileSize = 32
       TilesPerTexture = 1.000000000000000000
@@ -162,6 +162,7 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
     Left = 16
     Top = 16

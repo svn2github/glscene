@@ -28,6 +28,9 @@ type
     CheckBox2: TCheckBox;
     TrackBar1: TTrackBar;
     Label2: TLabel;
+    GLPlane1: TGLPlane;
+    ComboBox2: TComboBox;
+    Label3: TLabel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
@@ -40,6 +43,7 @@ type
     procedure CheckBox1Click(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
+    procedure ComboBox2Change(Sender: TObject);
   private
     { Private declarations }
   public
@@ -197,6 +201,7 @@ begin
     Length:=cone.Height;
     Direction.SetVector(0,1,0);
     Up.SetVector(0,0,1);
+    Position.SetPoint(0,-cone.Height/2,0);
   end;
 end;
 
@@ -220,6 +225,25 @@ procedure TForm1.TrackBar1Change(Sender: TObject);
 begin
   with TGLODEHeightField(GLHeightField1.Behaviours[0]) do
     ContactResolution:=0.25+(10-TrackBar1.Position)/20;
+end;
+
+procedure TForm1.ComboBox2Change(Sender: TObject);
+begin
+  if ComboBox2.ItemIndex = 0 then begin
+    GLPlane1.Visible:=True;
+    GetODEStatic(GLPlane1).Manager:=GLODEManager1;
+  end else begin
+    GLPlane1.Visible:=False;
+    GetODEStatic(GLPlane1).Manager:=nil;
+  end;
+
+  if ComboBox2.ItemIndex = 1 then begin
+    GLHeightField1.Visible:=True;
+    GetODEHeightField(GLHeightField1).Manager:=GLODEManager1;
+  end else begin
+    GLHeightField1.Visible:=False;
+    GetODEHeightField(GLHeightField1).Manager:=nil;
+  end;
 end;
 
 end.
