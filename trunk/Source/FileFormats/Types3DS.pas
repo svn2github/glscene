@@ -30,6 +30,9 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      PIntegerArray = ^TIntegerArray;
      TIntegerArray = array[0..MaxInt shr 3] of Integer;
 
+     PCardinalArray = ^TCardinalArray;
+     TCardinalArray = array[0..MaxInt shr 3] of Cardinal;
+
      PSingleList = ^TSingleList;
      TSingleList = array[0..MaxInt shr 3] of Single;
 
@@ -227,7 +230,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
                             lfTopFall,           // FallOff to the Top
                             lfBottomFall         // FallOff to the Bottom
                            );
-    
+
      PFogSettings3DS = ^TFogSettings3DS;         // Fog atmosphere parameters
      TFogSettings3DS = record
        NearPlane: Single;                        // near radius of Fog effect
@@ -453,7 +456,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
        LocMatrix: TMeshMatrix;                   // object orientation matrix
        NFaces: Word;                             // face count
        FaceArray: PFaceList;                     // list of faces
-       SmoothArray: PIntegerArray;               // smoothing group assignment list
+       SmoothArray: PCardinalArray;              // smoothing group assignment list
        UseBoxMap: Boolean;                       // used to indicate the use of box mapping
        BoxMap: array[0..5] of String;            // material names used in boxmapping
        MeshColor: Byte;                          // UI color assigned to the mesh
@@ -910,7 +913,7 @@ type TDumpLevel = (dlTerseDump, dlMediumDump, dlMaximumDump);
      PSmoothGroup = ^TSmoothGroup;
      TSmoothGroup = record
        Groups: Word;
-       GroupList: PIntegerArray;
+       GroupList: PCardinalArray;
      end;
 
      PTexVerts = ^TTexVerts;
