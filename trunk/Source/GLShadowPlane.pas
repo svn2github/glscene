@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/11/03 - EG - Scissors turned of if camera is withing bounding volume
       <li>30/10/02 - EG - Added OnBegin/EndRenderingShadows
       <li>25/10/02 - EG - Fixed Stencil cleanup and shadow projection bug
       <li>02/10/02 - EG - Added spoScissor
@@ -156,7 +157,8 @@ begin
          glPushAttrib(GL_ENABLE_BIT);
          
          // "Render" stencil mask
-         if spoScissor in ShadowOptions then begin
+         if     (spoScissor in ShadowOptions)
+            and (PointDistance(rci.cameraPosition)>BoundingSphereRadius) then begin
             sr:=ScreenRect;
             InflateGLRect(sr, 1, 1);
             IntersectGLRect(sr, GLRect(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy));
