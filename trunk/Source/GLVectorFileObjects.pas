@@ -1597,7 +1597,7 @@ uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO, GeometryBB,
 	  FileMD2, TypesMD2,
 
      // MS3D Support
-	  GLFileMS3D, FypesMS3D;
+	  GLFileMS3D, TypesMS3D;
 
 
 var
