@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/12/01 - EG - Fixed MakeReflectionMatrix
       <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)  
       <li>22/08/01 - EG - Some new overloads
       <li>19/08/01 - EG - Added sphere raycasting functions
@@ -5436,23 +5437,23 @@ begin
    pv2:=2*VectorDotProduct(planePoint, planeNormal);
    // 1st column
    Result[0][0]:=1-2*Sqr(planeNormal[0]);
-   Result[1][0]:=-2*planeNormal[0]*planeNormal[1];
-   Result[2][0]:=-2*planeNormal[0]*planeNormal[2];
-   Result[3][0]:=0;
-   // 2nd column
    Result[0][1]:=-2*planeNormal[0]*planeNormal[1];
-   Result[1][1]:=1-2*Sqr(planeNormal[1]);
-   Result[2][1]:=-2*planeNormal[1]*planeNormal[2];
-   Result[3][1]:=0;
-   // 3rd column
    Result[0][2]:=-2*planeNormal[0]*planeNormal[2];
-   Result[1][2]:=-2*planeNormal[1]*planeNormal[2];
-   Result[2][2]:=1-2*Sqr(planeNormal[2]);
-   Result[3][2]:=0;
+   Result[0][3]:=0;
    // 2nd column
-   Result[0][3]:=pv2*planeNormal[0];
-   Result[1][3]:=pv2*planeNormal[1];
-   Result[2][3]:=pv2*planeNormal[2];
+   Result[1][0]:=-2*planeNormal[1]*planeNormal[0];
+   Result[1][1]:=1-2*Sqr(planeNormal[1]);
+   Result[1][2]:=-2*planeNormal[1]*planeNormal[2];
+   Result[1][3]:=0;
+   // 3rd column
+   Result[2][0]:=-2*planeNormal[2]*planeNormal[0];
+   Result[2][1]:=-2*planeNormal[2]*planeNormal[1];
+   Result[2][2]:=1-2*Sqr(planeNormal[2]);
+   Result[2][3]:=0;
+   // 4th column
+   Result[3][0]:=pv2*planeNormal[0];
+   Result[3][1]:=pv2*planeNormal[1];
+   Result[3][2]:=pv2*planeNormal[2];
    Result[3][3]:=1;
 end;
 
