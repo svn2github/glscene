@@ -3,6 +3,7 @@
    Texture combiners setup utility functions.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/05/03 - EG - All tex units now accepted as target
       <li>22/05/03 - EG - Fixed GL_ADD_SIGNED_ARB parsing, better error reporting
       <li>16/05/03 - EG - Creation
    </ul></font>
@@ -146,11 +147,11 @@ begin
       end;
       dest:=Copy(dest, 1, p-1);
    end;
-   if dest='tex0' then
-      glActiveTextureARB(GL_TEXTURE0_ARB)
-   else if dest='tex1' then
-      glActiveTextureARB(GL_TEXTURE1_ARB)
-   else TCAssertCheck(False, 'invalid destination texture unit');
+   if Copy(dest, 1, 3)='tex' then begin
+      p:=StrToIntDef(Copy(dest, 4, MaxInt), -1);
+      TCAssertCheck(p>=0, 'Invalid destination texture unit "'+dest+'"');
+      glActiveTextureARB(GL_TEXTURE0_ARB+p)
+   end else TCAssertCheck(False, 'Invalid destination "'+dest+'"');
    // parse combiner operator
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
    CheckOpenGLError;
