@@ -39,7 +39,7 @@ void __fastcall TForm1::GLSceneViewer1MouseDown(TObject * Sender,
 void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
                                                 TShiftState Shift, int X, int Y)
 {
-  if(!Shift.Empty())
+  if(Shift.Contains(ssShift))
     MoveCenterNodeTo(X, Y);
 }
 

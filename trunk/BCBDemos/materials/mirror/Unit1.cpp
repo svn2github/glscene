@@ -68,7 +68,7 @@ void __fastcall TForm1::CBPlaneClipClick(TObject * Sender)
 
 void __fastcall TForm1::Timer1Timer(TObject * Sender)
 {
-  Caption = GLSceneViewer1->FramesPerSecondText();
+  Caption = GLSceneViewer1->FramesPerSecondText(1);
   //String(GLSceneViewer1->FramesPerSecond()) + " FPS";
   GLSceneViewer1->ResetPerformanceMonitor();
 }
@@ -107,7 +107,7 @@ void __fastcall TForm1::GLSceneViewer1MouseDown(TObject * Sender,
 void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
                                                 TShiftState Shift, int X, int Y)
 {
-  if(!Shift.Empty())
+  if(Shift.Contains(ssShift))
   {
     GLCamera1->MoveAroundTarget(my - Y, mx - X);
     mx = X;

@@ -372,7 +372,7 @@ void __fastcall TfrmFurBall::CheckBox_BaldClick(TObject * Sender)
 
 void __fastcall TfrmFurBall::Timer1Timer(TObject * Sender)
 {
-  Label_FPS->Caption = GLSceneViewer1->FramesPerSecondText();
+  Label_FPS->Caption = GLSceneViewer1->FramesPerSecondText(1);
   GLSceneViewer1->ResetPerformanceMonitor();
 }
 

@@ -1,64 +1,62 @@
 object frmFurBall: TfrmFurBall
   Left = 192
   Top = 114
-  Width = 640
-  Height = 437
+  Width = 743
+  Height = 512
   Caption = 'Fur Ball'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
   OnClose = FormClose
   OnMouseWheel = FormMouseWheel
-  DesignSize = (
-    632
-    405)
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object Label1: TLabel
-    Left = 327
+    Left = 402
     Top = 2
-    Width = 160
-    Height = 13
+    Width = 195
+    Height = 16
     Caption = '(Steer with A/D W/S UP/DOWN)'
   end
   object Label_FPS: TLabel
-    Left = 607
+    Left = 746
     Top = 2
-    Width = 20
-    Height = 13
+    Width = 129
+    Height = 16
     Alignment = taRightJustify
     Anchors = [akLeft, akTop, akRight]
     Caption = 'FPS'
   end
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 40
-    Width = 617
-    Height = 359
+    Left = 10
+    Top = 49
+    Width = 862
+    Height = 536
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Buffer.AntiAliasing = aa4xHQ
+    FieldOfView = 150.723449707031
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnMouseMove = GLSceneViewer1MouseMove
   end
   object CheckBox_LockBall: TCheckBox
-    Left = 8
+    Left = 10
     Top = 0
-    Width = 65
-    Height = 17
+    Width = 80
+    Height = 21
     Caption = '&Lock Ball'
     TabOrder = 1
   end
   object CheckBox_FurGravity: TCheckBox
-    Left = 80
+    Left = 98
     Top = 0
-    Width = 81
-    Height = 17
+    Width = 100
+    Height = 21
     Caption = 'Fur &Gravity'
     Checked = True
     State = cbChecked
@@ -66,10 +64,10 @@ object frmFurBall: TfrmFurBall
     OnClick = CheckBox_FurGravityClick
   end
   object CheckBox_WindResistence: TCheckBox
-    Left = 160
+    Left = 197
     Top = 0
-    Width = 105
-    Height = 17
+    Width = 129
+    Height = 21
     Caption = '&Wind Resistence'
     Checked = True
     State = cbChecked
@@ -77,28 +75,28 @@ object frmFurBall: TfrmFurBall
     OnClick = CheckBox_WindResistenceClick
   end
   object CheckBox_Bald: TCheckBox
-    Left = 272
+    Left = 335
     Top = 0
-    Width = 49
-    Height = 17
+    Width = 60
+    Height = 21
     Caption = '&Bald'
     TabOrder = 4
     OnClick = CheckBox_BaldClick
   end
   object CheckBox_Shadows: TCheckBox
-    Left = 496
+    Left = 610
     Top = 0
-    Width = 65
-    Height = 17
+    Width = 80
+    Height = 21
     Caption = '&Shadows'
     TabOrder = 5
     OnClick = CheckBox_ShadowsClick
   end
   object CheckBox_Inertia: TCheckBox
-    Left = 8
-    Top = 16
-    Width = 65
-    Height = 17
+    Left = 10
+    Top = 20
+    Width = 80
+    Height = 21
     Caption = 'Fur &Inertia'
     Checked = True
     State = cbChecked
@@ -106,10 +104,10 @@ object frmFurBall: TfrmFurBall
     OnClick = CheckBox_InertiaClick
   end
   object TrackBar_WindForce: TTrackBar
-    Left = 160
-    Top = 16
-    Width = 105
-    Height = 17
+    Left = 197
+    Top = 20
+    Width = 129
+    Height = 21
     Max = 100
     Orientation = trHorizontal
     Frequency = 1

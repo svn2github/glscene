@@ -1,41 +1,42 @@
 object Form1: TForm1
   Left = 192
   Top = 121
-  Width = 517
-  Height = 345
+  Width = 627
+  Height = 430
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object Label1: TLabel
-    Left = 408
-    Top = 32
-    Width = 73
-    Height = 13
+    Left = 502
+    Top = 39
+    Width = 93
+    Height = 16
     Caption = 'XY grid position'
   end
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 377
-    Height = 297
+    Left = 10
+    Top = 10
+    Width = 464
+    Height = 365
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.AntiAliasing = aa4xHQ
+    FieldOfView = 111.183052062988
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
   end
   object CheckBox1: TCheckBox
-    Left = 400
-    Top = 8
-    Width = 97
-    Height = 17
+    Left = 492
+    Top = 10
+    Width = 120
+    Height = 21
     Caption = 'Centered Grids'
     Checked = True
     State = cbChecked
@@ -43,10 +44,10 @@ object Form1: TForm1
     OnClick = CheckBox1Click
   end
   object TrackBar1: TTrackBar
-    Left = 424
-    Top = 48
-    Width = 45
-    Height = 257
+    Left = 522
+    Top = 59
+    Width = 55
+    Height = 316
     Min = -10
     Orientation = trVertical
     Frequency = 1

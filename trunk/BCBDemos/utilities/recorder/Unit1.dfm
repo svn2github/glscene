@@ -9,31 +9,29 @@ object Form1: TForm1
   Constraints.MinWidth = 320
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
   OnResize = FormResize
-  DesignSize = (
-    461
-    324)
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object GLSceneViewer1: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 445
-    Height = 286
+    Left = 10
+    Top = 10
+    Width = 548
+    Height = 352
     Camera = GLCamera1
     Buffer.BackgroundColor = clBtnShadow
     Buffer.AntiAliasing = aa4xHQ
+    FieldOfView = 120.79109954834
     Anchors = [akLeft, akTop, akRight, akBottom]
   end
   object TrackBar: TTrackBar
-    Left = 8
-    Top = 301
-    Width = 325
-    Height = 25
+    Left = 10
+    Top = 370
+    Width = 400
+    Height = 31
     Anchors = [akLeft, akRight, akBottom]
     Max = 360
     Orientation = trHorizontal
@@ -49,19 +47,19 @@ object Form1: TForm1
     OnChange = TrackBarChange
   end
   object StaticText1: TStaticText
-    Left = 16
-    Top = 16
-    Width = 45
-    Height = 17
+    Left = 20
+    Top = 20
+    Width = 54
+    Height = 20
     BorderStyle = sbsSingle
     Caption = '??? FPS'
     TabOrder = 2
   end
   object Button1: TButton
-    Left = 346
-    Top = 300
-    Width = 107
-    Height = 25
+    Left = 426
+    Top = 369
+    Width = 132
+    Height = 31
     Anchors = [akRight, akBottom]
     Caption = 'Record to AVI...'
     TabOrder = 3

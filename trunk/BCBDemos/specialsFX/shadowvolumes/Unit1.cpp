@@ -49,7 +49,7 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
   DCSpheres->MoveTo(GLShadowVolume);
   GLFreeForm->LoadFromFile("trinityrage.smd");
   GLFreeForm->BuildSilhouetteConnectivityData();
-  GLShadowVolume->Occluders->AddCaster(GLFreeForm);
+  GLShadowVolume->Occluders->AddCaster(GLFreeForm,0,scmRecursivelyVisible);
 }
 
 //---------------------------------------------------------------------------
@@ -122,7 +122,7 @@ void __fastcall TForm1::GLSceneViewerMouseMove(TObject * Sender,
 //---------------------------------------------------------------------------
 void __fastcall TForm1::Timer1Timer(TObject * Sender)
 {
-  Caption = GLSceneViewer->FramesPerSecondText();
+  Caption = GLSceneViewer->FramesPerSecondText(1);
   GLSceneViewer->ResetPerformanceMonitor();
 }
 

@@ -43,7 +43,7 @@ void __fastcall TForm1::TimerTimer(TObject * Sender)
   if((Timer->Tag & 1) != 0)
   {
     // "Sphere" explosion
-    e = GetOrCreateSourcePFX(DCBase);
+    e = GetOrCreateSourcePFX(DCBase,"");
     e->VelocityDispersion = 1.5;
     e->Burst(GLCadencer->CurrentTime, 200);
     e->VelocityDispersion = 0;
@@ -51,7 +51,7 @@ void __fastcall TForm1::TimerTimer(TObject * Sender)
   else
   {
     // Ring explosion
-    GetOrCreateSourcePFX(DCBase)->RingExplosion(GLCadencer->CurrentTime, 1, 1.2,
+    GetOrCreateSourcePFX(DCBase,"")->RingExplosion(GLCadencer->CurrentTime, 1, 1.2,
                                                 150);
   }
 }

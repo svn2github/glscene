@@ -68,17 +68,17 @@ __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 
   // Set up default textures
   TGLLibMaterial *lm =
-    GLMaterialLibrary1->AddTextureMaterial("LeafFront", "maple_multi.tga");
+    GLMaterialLibrary1->AddTextureMaterial("LeafFront", "maple_multi.tga", true);
   lm->Material->BlendingMode = bmAlphaTest50;
   lm->Material->Texture->TextureMode = tmModulate;
   lm->Material->Texture->TextureFormat = tfRGBA;
 
-  lm = GLMaterialLibrary1->AddTextureMaterial("LeafBack", "maple_multi.tga");
+  lm = GLMaterialLibrary1->AddTextureMaterial("LeafBack", "maple_multi.tga", true);
   lm->Material->BlendingMode = bmAlphaTest50;
   lm->Material->Texture->TextureMode = tmModulate;
   lm->Material->Texture->TextureFormat = tfRGBA;
 
-  lm = GLMaterialLibrary1->AddTextureMaterial("Branch", "zbark_016.jpg");
+  lm = GLMaterialLibrary1->AddTextureMaterial("Branch", "zbark_016.jpg", true);
   lm->Material->Texture->TextureMode = tmModulate;
 
   // Set a up a tree

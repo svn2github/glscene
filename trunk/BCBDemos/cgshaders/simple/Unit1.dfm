@@ -7,56 +7,55 @@ object Form1: TForm1
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object Splitter1: TSplitter
-    Left = 337
+    Left = 415
     Top = 0
     Width = 3
-    Height = 411
+    Height = 404
     Cursor = crHSplit
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 337
-    Height = 411
+    Width = 415
+    Height = 404
     Align = alLeft
     TabOrder = 0
     object PageControl1: TPageControl
       Left = 1
       Top = 1
-      Width = 335
-      Height = 409
+      Width = 413
+      Height = 402
       ActivePage = TabSheet2
       Align = alClient
-      TabIndex = 1
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Vertex Program'
         object Panel4: TPanel
           Left = 0
           Top = 0
-          Width = 327
-          Height = 33
+          Width = 402
+          Height = 41
           Align = alTop
           TabOrder = 0
           object VPName: TLabel
-            Left = 143
-            Top = 8
-            Width = 42
-            Height = 13
+            Left = 176
+            Top = 10
+            Width = 55
+            Height = 16
             Caption = 'VPName'
           end
           object CBVP: TCheckBox
-            Left = 16
-            Top = 8
-            Width = 97
-            Height = 17
+            Left = 20
+            Top = 10
+            Width = 119
+            Height = 21
             Caption = 'Enabled'
             TabOrder = 0
             OnClick = CBVPClick
@@ -64,50 +63,50 @@ object Form1: TForm1
         end
         object Panel5: TPanel
           Left = 0
-          Top = 33
-          Width = 327
-          Height = 24
+          Top = 41
+          Width = 402
+          Height = 29
           Align = alTop
           Caption = 'Vertex Shader Code'
           TabOrder = 1
         end
         object Panel6: TPanel
           Left = 0
-          Top = 280
-          Width = 327
-          Height = 101
+          Top = 345
+          Width = 402
+          Height = 124
           Align = alBottom
           TabOrder = 2
           object Label1: TLabel
-            Left = 264
-            Top = 16
-            Width = 27
-            Height = 13
+            Left = 325
+            Top = 20
+            Width = 33
+            Height = 16
             Caption = 'Show'
           end
           object Memo1: TMemo
             Left = 1
             Top = 1
-            Width = 256
-            Height = 99
+            Width = 315
+            Height = 122
             Align = alLeft
             ScrollBars = ssBoth
             TabOrder = 0
           end
           object Button2: TButton
-            Left = 264
-            Top = 32
-            Width = 59
-            Height = 25
+            Left = 325
+            Top = 39
+            Width = 73
+            Height = 31
             Caption = 'param'
             TabOrder = 1
             OnClick = Button2Click
           end
           object Button3: TButton
-            Left = 264
-            Top = 64
-            Width = 59
-            Height = 25
+            Left = 325
+            Top = 79
+            Width = 73
+            Height = 31
             Caption = 'asm'
             TabOrder = 2
             OnClick = Button3Click
@@ -115,16 +114,16 @@ object Form1: TForm1
         end
         object Panel7: TPanel
           Left = 0
-          Top = 248
-          Width = 327
-          Height = 32
+          Top = 305
+          Width = 402
+          Height = 40
           Align = alBottom
           TabOrder = 3
           object ApplyVP: TButton
-            Left = 216
-            Top = 4
-            Width = 75
-            Height = 25
+            Left = 266
+            Top = 5
+            Width = 92
+            Height = 31
             Caption = 'Apply'
             TabOrder = 0
             OnClick = ApplyVPClick
@@ -132,9 +131,9 @@ object Form1: TForm1
         end
         object VertexCode: TMemo
           Left = 0
-          Top = 57
-          Width = 327
-          Height = 191
+          Top = 70
+          Width = 402
+          Height = 235
           Align = alClient
           ScrollBars = ssBoth
           TabOrder = 4
@@ -148,22 +147,22 @@ object Form1: TForm1
         object Panel8: TPanel
           Left = 0
           Top = 0
-          Width = 327
-          Height = 33
+          Width = 405
+          Height = 41
           Align = alTop
           TabOrder = 0
           object FPName: TLabel
-            Left = 143
-            Top = 8
-            Width = 41
-            Height = 13
+            Left = 176
+            Top = 10
+            Width = 54
+            Height = 16
             Caption = 'FPName'
           end
           object CBFP: TCheckBox
-            Left = 16
-            Top = 8
-            Width = 97
-            Height = 17
+            Left = 20
+            Top = 10
+            Width = 119
+            Height = 21
             Caption = 'Enabled'
             TabOrder = 0
             OnClick = CBFPClick
@@ -171,50 +170,50 @@ object Form1: TForm1
         end
         object Panel9: TPanel
           Left = 0
-          Top = 33
-          Width = 327
-          Height = 24
+          Top = 41
+          Width = 405
+          Height = 29
           Align = alTop
           Caption = 'Fragment Shader Code'
           TabOrder = 1
         end
         object Panel10: TPanel
           Left = 0
-          Top = 280
-          Width = 327
-          Height = 101
+          Top = 247
+          Width = 405
+          Height = 124
           Align = alBottom
           TabOrder = 2
           object Label3: TLabel
-            Left = 264
-            Top = 16
-            Width = 27
-            Height = 13
+            Left = 325
+            Top = 20
+            Width = 33
+            Height = 16
             Caption = 'Show'
           end
           object Memo2: TMemo
             Left = 1
             Top = 1
-            Width = 256
-            Height = 99
+            Width = 315
+            Height = 122
             Align = alLeft
             ScrollBars = ssBoth
             TabOrder = 0
           end
           object Button4: TButton
-            Left = 264
-            Top = 32
-            Width = 59
-            Height = 25
+            Left = 325
+            Top = 39
+            Width = 73
+            Height = 31
             Caption = 'param'
             TabOrder = 1
             OnClick = Button4Click
           end
           object Button5: TButton
-            Left = 264
-            Top = 64
-            Width = 59
-            Height = 25
+            Left = 325
+            Top = 79
+            Width = 73
+            Height = 31
             Caption = 'asm'
             TabOrder = 2
             OnClick = Button5Click
@@ -222,16 +221,16 @@ object Form1: TForm1
         end
         object Panel11: TPanel
           Left = 0
-          Top = 248
-          Width = 327
-          Height = 32
+          Top = 208
+          Width = 405
+          Height = 39
           Align = alBottom
           TabOrder = 3
           object ApplyFP: TButton
-            Left = 216
-            Top = 4
-            Width = 75
-            Height = 25
+            Left = 266
+            Top = 5
+            Width = 92
+            Height = 31
             Caption = 'Apply'
             TabOrder = 0
             OnClick = ApplyFPClick
@@ -239,9 +238,9 @@ object Form1: TForm1
         end
         object FragmentCode: TMemo
           Left = 0
-          Top = 57
-          Width = 327
-          Height = 191
+          Top = 70
+          Width = 405
+          Height = 138
           Align = alClient
           ScrollBars = ssBoth
           TabOrder = 4
@@ -252,27 +251,28 @@ object Form1: TForm1
     end
   end
   object Panel2: TPanel
-    Left = 340
+    Left = 418
     Top = 0
-    Width = 421
-    Height = 411
+    Width = 343
+    Height = 404
     Align = alClient
     TabOrder = 1
     object Panel3: TPanel
       Left = 1
       Top = 1
-      Width = 419
-      Height = 41
+      Width = 341
+      Height = 51
       Align = alTop
       Caption = 'Cg Simple'
       TabOrder = 0
     end
     object GLSceneViewer1: TGLSceneViewer
       Left = 1
-      Top = 42
-      Width = 419
-      Height = 368
+      Top = 52
+      Width = 341
+      Height = 351
       Camera = GLCamera1
+      FieldOfView = 147.311904907227
       Align = alClient
       OnMouseDown = GLSceneViewer1MouseDown
       OnMouseMove = GLSceneViewer1MouseMove
@@ -295,6 +295,7 @@ object Form1: TForm1
       Scale.Coordinates = {8FC2F53C8FC2F53C8FC2F53C00000000}
       Up.Coordinates = {0000000000000000000080BF00000000}
       AutoCentering = [macCenterX, macCenterY]
+      Rendered = True
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -2

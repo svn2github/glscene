@@ -148,7 +148,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
 
 void __fastcall TForm1::Timer1Timer(TObject * Sender)
 {
-  Caption = GLSceneViewer1->FramesPerSecondText();
+  Caption = GLSceneViewer1->FramesPerSecondText(1);
   GLSceneViewer1->ResetPerformanceMonitor();
 }
 

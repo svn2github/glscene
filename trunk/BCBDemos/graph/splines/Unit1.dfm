@@ -1,26 +1,27 @@
 object Form1: TForm1
-  Left = 192
-  Top = 121
+  Left = 217
+  Top = 127
   Width = 334
   Height = 364
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
     Width = 326
-    Height = 334
+    Height = 327
     Camera = GLCamera1
-    Buffer.BackgroundColor = clDefault
+    Buffer.BackgroundColor = clBackground
     Buffer.AntiAliasing = aa4xHQ
+    FieldOfView = 162.560501098633
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove

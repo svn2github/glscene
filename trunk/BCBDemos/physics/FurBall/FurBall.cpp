@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 #pragma hdrstop
-//---------------------------------------------------------------------------
+USERES("FurBall.res");
 USEFORM("fFurBall.cpp", frmFurBall);
 //---------------------------------------------------------------------------
 WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
@@ -16,17 +16,6 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         catch (Exception &exception)
         {
                  Application->ShowException(&exception);
-        }
-        catch (...)
-        {
-                 try
-                 {
-                         throw Exception("");
-                 }
-                 catch (Exception &exception)
-                 {
-                         Application->ShowException(&exception);
-                 }
         }
         return 0;
 }

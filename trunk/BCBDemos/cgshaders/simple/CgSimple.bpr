@@ -2,63 +2,43 @@
 <!-- C++Builder XML Project -->
 <PROJECT>
   <MACROS>
-    <VERSION value="BCB.06.00"/>
+    <VERSION value="BCB.05.03"/>
     <PROJECT value="CgSimple.exe"/>
     <OBJFILES value="CgSimple.obj Unit1.obj"/>
     <RESFILES value="CgSimple.res"/>
-    <IDLFILES value=""/>
-    <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) Unit1.dfm"/>
-    <LIBFILES value="D:\Composants\BCB6\Lib\cg.lib D:\Composants\BCB6\Lib\cggl.lib"/>
-    <LIBRARIES value="GLCg_BCB6.lib GLSceneBCB6.lib rtl.lib vcl.lib"/>
-    <SPARELIBS value="vcl.lib rtl.lib GLSceneBCB6.lib GLCg_BCB6.lib"/>
-    <PACKAGES value=""/>
+    <LIBFILES value="..\..\..\..\Lib\cggl.lib ..\..\..\..\Lib\cg.lib"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="Vcl50.lib"/>
+    <PACKAGES value="Vcl50.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
     <PATHASM value=".;"/>
     <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
-    <LINKER value="ilink32"/>
-    <USERDEFINES value=""/>
-    <SYSDEFINES value="NO_STRICT"/>
+    <LINKER value="tlink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
     <MAINSOURCE value="CgSimple.cpp"/>
-    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;D:\Composants\BCB6\include"/>
-    <LIBPATH value="$(BCB)\lib\obj;$(BCB)\lib;D:\Composants\BCB6\Lib;D:\Composants\BCB6\dcu"/>  
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\include"/>
+    <LIBPATH value="$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\lib;..\..\..\..\dcu"/>
     <WARNINGS value="-w-par"/>
-    <OTHERFILES value=""/>
   </MACROS>
   <OPTIONS>
-    <IDLCFLAGS value="-IC:\GLScene\Source -IC:\GLScene\Source\Base -IC:\GLScene\Source\Platform 
-      -IC:\GLScene\Source\FileFormats -IC:\GLScene\Source\Shaders 
-      -IC:\GLScene\Source\PhysicsAPIs -IC:\GLScene\Source\SoundAPIs 
-      -IC:\GLScene\Source\VideoAPIs -IC:\GLScene\Source\GameAPIs 
-      -IC:\GLScene\Source\CgShaders -I$(BCB)\include -I$(BCB)\include\vcl 
-      -src_suffix cpp -boa"/>
-    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
-    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl50.csm -Hc -Vx -Ve -ff -X- -r- -a8 -6 -b- -k -y -v 
+      -vi- -c -tW -tWM"/>
+    <PFLAGS value="-$YD -$W -v -JPHNE -M"/>
     <RFLAGS value=""/>
-    <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
-    <OTHERFILES value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn -v"/>
   </OPTIONS>
   <LINKER>
-    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLOBJ value="c0w32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>
     <ALLRES value="$(RESFILES)"/>
-    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
-    <OTHERFILES value=""/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib"/>
   </LINKER>
-  <FILELIST>
-      <FILE FILENAME="CgSimple.res" FORMNAME="" UNITNAME="CgSimple.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="CgSimple.cpp" FORMNAME="" UNITNAME="CgSimple" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="Unit1.cpp" FORMNAME="Form1" UNITNAME="Unit1" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="cgGL_lib.lib" FORMNAME="" UNITNAME="cgGL_lib.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-      <FILE FILENAME="cg_lib.lib" FORMNAME="" UNITNAME="cg_lib.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
-  </FILELIST>
-  <BUILDTOOLS>
-  </BUILDTOOLS>
-
   <IDEOPTIONS>
 [Version Info]
 IncludeVerInfo=0
@@ -72,8 +52,8 @@ PreRelease=0
 Special=0
 Private=0
 DLL=0
-Locale=1028
-CodePage=950
+Locale=1036
+CodePage=1252
 
 [Version Info Keys]
 CompanyName=
@@ -88,37 +68,40 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
+Count=3
+Item0=$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\include
+Item1=$(BCB)\include;$(BCB)\include\vcl;D:\Composants\BCB5\include
+Item2=$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
+Count=4
+Item0=$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\lib;..\..\..\..\dcu
+Item1=$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\lib;..\..\..\..\dcu;D:\Composants\BCB5\Lib
+Item2=$(BCB)\lib\obj;$(BCB)\lib;D:\Composants\BCB5\lib;D:\Composants\BCB5\dcu
+Item3=$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
 
 [Parameters]
 RunParams=
-Launcher=
-UseLauncher=0
-DebugCWD=
 HostApplication=
 RemoteHost=
 RemotePath=
-RemoteLauncher=
-RemoteCWD=
 RemoteDebug=0
 
 [Compiler]
 ShowInfoMsgs=0
 LinkDebugVcl=0
 LinkCGLIB=0
-
-[CORBA]
-AddServerUnit=1
-AddClientUnit=1
-PrecompiledHeaders=1
 
 [Language]
 ActiveLang=

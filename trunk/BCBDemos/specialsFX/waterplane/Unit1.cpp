@@ -30,7 +30,7 @@ void TForm1::ClickWater(int x, int y)
   // create a ripple in the pond on a right-mousebutton click
   GLSceneViewer1->Buffer->
     ScreenVectorIntersectWithPlaneXZ(VectorMake
-                                     (x, GLSceneViewer1->Height - y, 0),
+                                     (x, GLSceneViewer1->Height - y, 0, 0),
                                      GLWaterPlane1->Position->Y, ip);
   GLWaterPlane1->CreateRippleAtWorldPos(ip);
 }
@@ -148,7 +148,7 @@ void __fastcall TForm1::Timer1Timer(TObject * Sender)
 {
   String s;
   s.printf(" / %.3f ms", GLWaterPlane1->LastIterationStepTime * 1000);
-  Caption = GLSceneViewer1->FramesPerSecondText() + s;
+  Caption = GLSceneViewer1->FramesPerSecondText(1) + s;
   GLSceneViewer1->ResetPerformanceMonitor();
 }
 

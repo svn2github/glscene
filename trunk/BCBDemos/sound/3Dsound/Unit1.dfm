@@ -7,27 +7,28 @@ object Form1: TForm1
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -13
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  PixelsPerInch = 96
-  TextHeight = 13
+  PixelsPerInch = 110
+  TextHeight = 16
   object GLSceneViewer: TGLSceneViewer
     Left = 0
-    Top = 66
+    Top = 81
     Width = 435
-    Height = 264
+    Height = 236
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.AntiAliasing = aaNone
+    FieldOfView = 134.072448730469
     Align = alClient
   end
   object TrackBar: TTrackBar
     Left = 0
-    Top = 330
+    Top = 317
     Width = 435
-    Height = 27
+    Height = 33
     Align = alBottom
     Max = 180
     Min = -180
@@ -45,9 +46,9 @@ object Form1: TForm1
   end
   object TrackBar1: TTrackBar
     Left = 0
-    Top = 33
+    Top = 41
     Width = 435
-    Height = 33
+    Height = 40
     Align = alTop
     Max = 50
     Min = -50
@@ -67,25 +68,22 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 435
-    Height = 33
+    Height = 41
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 3
-    DesignSize = (
-      435
-      33)
     object Label1: TLabel
       Left = 0
-      Top = 8
-      Width = 82
-      Height = 13
+      Top = 10
+      Width = 102
+      Height = 16
       Caption = 'Sound Manager :'
     end
     object RBBass: TRadioButton
-      Left = 96
-      Top = 8
-      Width = 57
-      Height = 17
+      Left = 118
+      Top = 10
+      Width = 70
+      Height = 21
       Caption = 'BASS'
       Checked = True
       TabOrder = 0
@@ -93,29 +91,29 @@ object Form1: TForm1
       OnClick = RBFMODClick
     end
     object RBFMOD: TRadioButton
-      Left = 152
-      Top = 8
-      Width = 57
-      Height = 17
+      Left = 187
+      Top = 10
+      Width = 70
+      Height = 21
       Caption = 'FMOD'
       TabOrder = 1
       OnClick = RBFMODClick
     end
     object Button1: TButton
-      Left = 352
-      Top = 4
-      Width = 83
-      Height = 25
+      Left = 433
+      Top = 5
+      Width = 102
+      Height = 31
       Anchors = [akTop, akRight]
       Caption = 'Chimes (WAV)'
       TabOrder = 2
       OnClick = Button1Click
     end
     object Button2: TButton
-      Left = 264
-      Top = 4
-      Width = 83
-      Height = 25
+      Left = 325
+      Top = 5
+      Width = 102
+      Height = 31
       Anchors = [akTop, akRight]
       Caption = 'Howl (MP3)'
       TabOrder = 3

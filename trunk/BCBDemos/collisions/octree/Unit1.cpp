@@ -53,7 +53,7 @@ void __fastcall TForm1::GLSceneViewer2MouseDown(TObject * Sender,
   SetVector(rayStart, GLCamera2->AbsolutePosition);
   SetVector(rayVector,
             GLSceneViewer2->Buffer->
-            ScreenToVector(AffineVectorMake(X, GLSceneViewer2->Height - Y, 0)));
+            ScreenToVector(AffineVectorMake(X, GLSceneViewer2->Height - Y, 0)),0);
   NormalizeVector(rayVector);
 
   t = StartPrecisionTimer();

@@ -52,7 +52,7 @@ void __fastcall TForm1::FormResize(TObject * Sender)
 
 void __fastcall TForm1::Button1Click(TObject * Sender)
 {
-  if(!AVIRecorder1->CreateAVIFile())
+  if(!AVIRecorder1->CreateAVIFile(0))
     return;
   // if AVIRecorder1.filename is empty, a dialog box will appear asking
   // for the filename. CreateAVIFile() will return a bool
