@@ -176,7 +176,7 @@ begin
 
    with TGLLineParticle(aParticle) do begin
       dir:=VectorNormalize(aParticle.Velocity);
-      f:=5;//Length*0.5;
+      f:=Length*0.5;
    end;
 
    start:=VectorCombine(pos, dir, 1, f);
