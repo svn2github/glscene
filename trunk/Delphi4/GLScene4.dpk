@@ -103,6 +103,18 @@ contains
   GLThorFX in '..\Source\GLThorFX.pas',
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
   VectorTypes in '..\Source\Base\VectorTypes.pas',
-  GeometryBB in '..\Source\Base\GeometryBB.pas';
-
+  GeometryBB in '..\Source\Base\GeometryBB.pas',
+  Polynomials in '..\Source\Base\Polynomials.pas',
+  GLContext in '..\Source\GLContext.pas',
+  GLWin32Context in '..\Source\Platform\GLWin32Context.pas',
+  GLCrossPlatform in '..\Source\Platform\GLCrossPlatform.pas',
+  GLParticleFX in '..\Source\GLParticleFX.pas',
+  GLzBuffer in '..\Source\GLzBuffer.pas',
+  GLMirror in '..\Source\GLMirror.pas',
+  GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
+  GLWin32Viewer in '..\Source\Platform\GLWin32Viewer.pas',
+  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
+  SDL in '..\Source\GameAPIs\sdl.pas',
+  GLROAMPatch in '..\Source\GLROAMPatch.pas',
+  HeightTileFile in '..\Source\Base\HeightTileFile.pas';
 end.

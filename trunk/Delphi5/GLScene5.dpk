@@ -123,7 +123,9 @@ contains
   GLMirror in '..\Source\GLMirror.pas',
   GLSDLContext in '..\Source\Platform\GLSDLContext.pas',
   GLWin32Viewer in '..\Source\Platform\GLWin32Viewer.pas',
+  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas',
   SDL in '..\Source\GameAPIs\sdl.pas',
-  SDLWindow in '..\Source\GameAPIs\SDLWindow.pas';
+  GLROAMPatch in '..\Source\GLROAMPatch.pas',
+  HeightTileFile in '..\Source\Base\HeightTileFile.pas';
 
 end.
