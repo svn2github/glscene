@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLWin32Viewer, GLMisc, Geometry, StdCtrls,
-  GeometryBB, GLTexture, OpenGL12, GLCadencer, SpacialPartitioning,
+  GeometryBB, GLTexture, OpenGL12, GLCadencer, SpatialPartitioning,
   ComCtrls;
 
 const
@@ -180,7 +180,7 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(var rci: TRenderContextInfo);
     glEnd;
   end;
 
-  procedure RenderOctreeNode(Node : TOctreeNode);
+  procedure RenderOctreeNode(Node : TSectorNode);
   var
     i : integer;
     AABB : TAABB;
@@ -196,7 +196,7 @@ procedure TfrmOctreeDemo.GLDirectOpenGL1Render(var rci: TRenderContextInfo);
 
     end else
     begin
-      for i := 0 to 7 do
+      for i := 0 to Node.ChildCount-1 do
         RenderOctreeNode(Node.Children[i]);
     end;
   end;
@@ -231,7 +231,7 @@ var
   BSphere : TBSphere;
   Leaf, TestLeaf : TGLSpacePartitionLeaf;
   Cube : TGLCube;
-  i, j, CollidingNodeCount : integer;
+  i, j, CollidingLeafCount : integer;
   Delta : TAffineVector;
   Scale : single;
 
@@ -285,7 +285,7 @@ begin
     TGLCube(Leaf.GLBaseSceneObject).Material.FrontProperties.Emission.Red := 1;
   end;//}
 
-  CollidingNodeCount := 0;
+  CollidingLeafCount := 0;
   for i := 0 to Octree.Leaves.Count-1 do
   begin
     Leaf := TGLSpacePartitionLeaf(Octree.Leaves[i]);
@@ -298,13 +298,13 @@ begin
       if TestLeaf<>Leaf then
       begin
         TGLCube(TestLeaf.GLBaseSceneObject).Material.FrontProperties.Emission.Green := 1;
-        inc(CollidingNodeCount);
+        inc(CollidingLeafCount);
       end;
     end;
   end;//}
 
-  Label1.Caption := Format('Nodes = %d, Colliding Nodes = %d',[Octree.GetNodeCount, CollidingNodeCount]);
-
+  Label1.Caption := Format('Nodes = %d, Colliding Leaves = %d',
+    [Octree.GetNodeCount, CollidingLeafCount]);
 end;
 
 procedure TfrmOctreeDemo.TrackBar_LeafThresholdChange(Sender: TObject);

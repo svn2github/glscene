@@ -144,22 +144,24 @@ type
     property Leaves : TSpacePartitionLeafList read FLeaves;
   end;
 
-  TOctreeSpacePartition = class;
-  TSPOctreeNode = class;
-  TSPOctreeNodeArray = array[0..7] of TSPOctreeNode;
+  TSectoredSpacePartition = class;
+  TSectorNode = class;
+  TSectorNodeArray = array[0..7] of TSectorNode;
 
-  {: Implements an Octree node. Each node can have 0 or 8 children, each child
-  being 1/8 of the size of the parent }
-  TSPOctreeNode = class
+  {: Implements a SectorNode node. Each node can have 0 or 8 children, each child
+  being a portion of the size of the parent. For quadtrees, that's 1/4, for
+  octrees, it's 1/8 }
+  TSectorNode = class
   private
-    FNoChildren : boolean;
-    FChildren : TSPOctreeNodeArray;
     FLeaves : TSpacePartitionLeafList;
     FAABB : TAABB;
-    FOctree : TOctreeSpacePartition;
+    FSectoredSpacePartition : TSectoredSpacePartition;
     FRecursiveLeafCount: integer;
-    FParent: TSPOctreeNode;
+    FParent: TSectorNode;
     FNodeDepth : integer;
+    FChildCount : integer;
+    FChildren: TSectorNodeArray;
+    function GetNoChildren: boolean;
   protected
     {: Recursively counts the RecursiveLeafCount, this should only be used in
     debugging purposes, because the proprtyu RecursiveLeafCount is always up to
@@ -168,7 +170,7 @@ type
 
     {: Places a leaf in one of the children of this node, or in the node itself
     if it doesn't fit in any of the children }
-    function PlaceLeafInChild(aLeaf : TSpacePartitionLeaf ) : TSPOctreeNode;
+    function PlaceLeafInChild(aLeaf : TSpacePartitionLeaf ) : TSectorNode;
 
     {: Debug method that checks that FRecursiveLeafCount and
     CalcRecursiveLeafCount actually agree }
@@ -182,20 +184,22 @@ type
     this box. }
     property AABB : TAABB read FAABB;
     {: NoChildren is true if the node has no children.}
-    property NoChildren : boolean read FNoChildren;
-    {: A list of the children for this node. If NoChildren is true, these should
-    not be accessed! }
-    property Children : TSPOctreeNodeArray read FChildren;
+    property NoChildren : boolean read GetNoChildren;
+    {: A list of the children for this node, only ChildCount children are none
+    nil }
+    property Children : TSectorNodeArray read FChildren;
+    {: The number of child sectors that have been created }
+    property ChildCount : integer read FChildCount;
 
     {: The leaves that are stored in this node }
     property Leaves : TSpacePartitionLeafList read FLeaves;
 
-    {: The Octree that owns this node }
-    property Octree : TOctreeSpacePartition read FOctree;
+    {: The Structure that owns this node }
+    property SectoredSpacePartition : TSectoredSpacePartition read FSectoredSpacePartition;
 
     {: The parent node of this node. If parent is nil, that means that this
     node is the root node }
-    property Parent : TSPOctreeNode read FParent;
+    property Parent : TSectorNode read FParent;
 
     {: The number of leaves stored in this node and all it's children.}
     property RecursiveLeafCount : integer read FRecursiveLeafCount;
@@ -219,7 +223,7 @@ type
     {: Adds leaf to this node - or one of it's children. If the node has enough
     leaves and has no children, children will be created and all leaves will be
     spread among the children. }
-    function AddLeaf(aLeaf : TSpacePartitionLeaf) : TSPOctreeNode;
+    function AddLeaf(aLeaf : TSpacePartitionLeaf) : TSectorNode;
 
     {: Remove leaf will remove a leaf from this node. If it is determined that
     this node has too few leaves after the delete, it may be collapsed }
@@ -236,23 +240,26 @@ type
     QueryBSphere determines that a node fits completely in the searched space}
     procedure AddAllLeavesRecursive(const QueryResult : TSpacePartitionLeafList);
 
-    {: Add children to this node }
-    procedure CreateChildren;
+    {: Add children to this node and spread the leaves among it's children }
+    procedure ExpandNode;
+
+    {: Create the number of children this node type needs }
+    procedure CreateChildren; virtual;
 
     {: Delete all children for this node, adding their leaves to this node }
-    procedure DeleteChildren;
+    procedure CollapseNode;
 
     {: Returns the number of nodes in the Octree }
     function GetNodeCount : integer;
 
-    constructor Create(aOctree : TOctreeSpacePartition; aParent : TSPOctreeNode);
+    constructor Create(aSectoredSpacePartition : TSectoredSpacePartition; aParent : TSectorNode);
     destructor Destroy; override;
   end;
 
-  {: Implements Octree space partitioning }
-  TOctreeSpacePartition = class(TLeavedSpacePartition)
+  {: Implements Sectored space partitioning }
+  TSectoredSpacePartition = class(TLeavedSpacePartition)
   private
-    FRootNode : TSPOctreeNode;
+    FRootNode : TSectorNode;
     FLeafThreshold: integer;
     FMaxTreeDepth: integer;
     FAutoGrow: boolean;
@@ -262,12 +269,12 @@ type
 
   public
     // ** Update space partition
-    {: Add a leaf to the Octree. If the leaf doesn't fit in the octree, the
-    octree is either grown or an exception is raised. If AutoGrow is set to
+    {: Add a leaf to the structure. If the leaf doesn't fit in the structure, the
+    structure is either grown or an exception is raised. If AutoGrow is set to
     true, the octree will be grown.}
     procedure AddLeaf(aLeaf : TSpacePartitionLeaf); override;
 
-    {: Remove a leaf from the Octree.}
+    {: Remove a leaf from the structure.}
     procedure RemoveLeaf(aLeaf : TSpacePartitionLeaf); override;
 
     {: Called by leaf when it has changed, the leaf will be moved to an
@@ -289,21 +296,25 @@ type
     of a leaf. Result is returned through QueryResult}
     function QueryLeaf(const aLeaf : TSpacePartitionLeaf) : integer; override;
 
-    {: Returns the number of nodes in the Octree }
+    {: Returns the number of nodes in the structure }
     function GetNodeCount : integer;
 
-    {: UpdateOctreeSize will grow and / or shrink the Octree to fit the current
-    leaves +-gravy}
-    procedure UpdateOctreeSize(Gravy : single);
+    {: UpdateOctreeSize will grow and / or shrink the structure to fit the
+    current leaves +-gravy}
+    procedure UpdateStructureSize(Gravy : single);
 
-    {: Returns the _total_ AABB in Octree }
+    {: Returns the _total_ AABB in structure }
     function GetAABB : TAABB;
+
+    {: CreateNewNode creates a new node of the TSectorNode subclass that this
+    structure requires }
+    function CreateNewNode(aParent : TSectorNode) : TSectorNode; virtual;
 
     constructor Create(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
     destructor Destroy; override;
   published
-    {: Root OctreeNode that all others stem from }
-    property RootNode : TSPOctreeNode read FRootNode;
+    {: Root TSectorNode that all others stem from }
+    property RootNode : TSectorNode read FRootNode;
 
     {: Determines how deep a tree should be allowed to grow. }
     property MaxTreeDepth : integer read FMaxTreeDepth write SetMaxTreeDepth;
@@ -311,14 +322,27 @@ type
     {: Determines when a node should be split up to form children. }
     property LeafThreshold : integer read FLeafThreshold write SetLeafThreshold;
 
-    {: Determines if the Octree should grow with new leaves, or if an exception
+    {: Determines if the structure should grow with new leaves, or if an exception
     should be raised }
     property AutoGrow : boolean read FAutoGrow;
 
-    {: When the Octree is recreated because it's no longer large enough to fit
+    {: When the structure is recreated because it's no longer large enough to fit
     all leafs, it will become large enough to safely fit all leafs, plus
     GrowGravy. This is to prevent too many grows }
     property GrowGravy : single read FGrowGravy write FGrowGravy;
+  end;
+
+  {: Implements sector node that handles octrees}
+  TSPOctreeNode = class(TSectorNode)
+  public
+    procedure CreateChildren; override;
+  end;
+
+  {: Implements octrees}
+  TOctreeSpacePartition = class(TSectoredSpacePartition)
+  public
+    {: CreateNewNode creates a new TSPOctreeNode }
+    function CreateNewNode(aParent : TSectorNode) : TSectorNode; override;
   end;
 
 implementation
@@ -573,36 +597,35 @@ begin
   result := FQueryResult.Count;
 end;
 
-{ TSPOctreeNode }
+{ TSectorNode }
 
-function TSPOctreeNode.AABBFitsInNode(const aAABB: TAABB): boolean;
+function TSectorNode.AABBFitsInNode(const aAABB: TAABB): boolean;
 begin
   result := AABBFitsInAABBAbsolute(aAABB, FAABB);
 end;
 
-function TSPOctreeNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
+function TSectorNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
 begin
   result := IntersectAABBsAbsolute(FAABB, aAABB);
 end;
 
-procedure TSPOctreeNode.AddAllLeavesRecursive(const QueryResult : TSpacePartitionLeafList);
+procedure TSectorNode.AddAllLeavesRecursive(const QueryResult : TSpacePartitionLeafList);
 var
   i : integer;
 begin
   for i := 0 to FLeaves.Count-1 do
     QueryResult.Add(FLEaves[i]);
 
-  if not FNoChildren then
-    for i := 0 to 7 do
-      FChildren[i].AddAllLeavesRecursive(QueryResult);
+  for i := 0 to FChildCount-1 do
+    FChildren[i].AddAllLeavesRecursive(QueryResult);
 end;
 
-function TSPOctreeNode.AddLeaf(aLeaf: TSpacePartitionLeaf): TSPOctreeNode;
+function TSectorNode.AddLeaf(aLeaf: TSpacePartitionLeaf): TSectorNode;
 begin
   // Time to grow the node?
-  if NoChildren and (FLeaves.Count>=Octree.FLeafThreshold) and (FNodeDepth<Octree.FMaxTreeDepth) then
+  if NoChildren and (FLeaves.Count>=FSectoredSpacePartition.FLeafThreshold) and (FNodeDepth<FSectoredSpacePartition.FMaxTreeDepth) then
   begin
-    CreateChildren;
+    ExpandNode;
   end;
 
   inc(FRecursiveLeafCount);
@@ -619,7 +642,7 @@ begin
   end;
 end;
 
-function TSPOctreeNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
+function TSectorNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
 var
   AABB : TAABB;
 begin
@@ -627,7 +650,7 @@ begin
   result := AABBFitsInAABBAbsolute(AABB, FAABB);
 end;
 
-function TSPOctreeNode.BSphereIntersectsNode(const BSphere: TBSphere): boolean;
+function TSectorNode.BSphereIntersectsNode(const BSphere: TBSphere): boolean;
 var
   AABB : TAABB;
 begin
@@ -635,40 +658,32 @@ begin
   result := IntersectAABBsAbsolute(AABB, FAABB);
 end;
 
-function TSPOctreeNode.CalcRecursiveLeafCount: integer;
+function TSectorNode.CalcRecursiveLeafCount: integer;
 var
   i : integer;
 begin
   result := FLeaves.Count;
 
-  if not FNoChildren then
-  begin
-    for i := 0 to 7 do
-      result := result + FChildren[i].CalcRecursiveLeafCount;
-  end;
+  for i := 0 to FChildCount-1 do
+    result := result + FChildren[i].CalcRecursiveLeafCount;
 end;
 
-procedure TSPOctreeNode.Clear;
+procedure TSectorNode.Clear;
 var
   i : integer;
 begin
-  if not FNoChildren then
-  begin
-    for i := 0 to 7 do
-      FreeAndNil(FChildren[i]);
-  end;
+  for i := 0 to FChildCount-1 do
+    FreeAndNil(FChildren[i]);
 
   FLeaves.Clear;
-
-  FNoChildren := true;
 end;
 
-constructor TSPOctreeNode.Create(aOctree : TOctreeSpacePartition; aParent : TSPOctreeNode);
+constructor TSectorNode.Create(aSectoredSpacePartition : TSectoredSpacePartition; aParent : TSectorNode);
 begin
   FLeaves := TSpacePartitionLeafList.Create;
-  FOctree := aOctree;
-  FNoChildren := true;
+  FChildCount := 0;
   FParent := aParent;
+  FSectoredSpacePartition := aSectoredSpacePartition;
 
   if aParent=nil then
     FNodeDepth := 0
@@ -676,99 +691,74 @@ begin
     FNodeDepth := aParent.FNodeDepth + 1;
 end;
 
-procedure TSPOctreeNode.CreateChildren;
+procedure TSectorNode.ExpandNode;
 var
   i : integer;
   OldLeaves : TSpacePartitionLeafList;
 
-  function GetExtent(const flags: array of byte): TAffineVector;
-  var
-    n: integer;
-  begin
-     for n:=0 to 2 do begin
-       case flags[n] of
-         cMIN: result[n]:=FAABB.min[n];
-         cMID: result[n]:=FAABB.min[n]/2+FAABB.max[n]/2;
-         cMAX: result[n]:=FAABB.max[n];
-       end;
-     end;
-  end;
 begin
-  if FNoChildren then
-  begin
-    for i := 0 to 7 do
-    begin
-      FChildren[i] := TSPOctreeNode.Create(FOctree, self);
+  CreateChildren;
 
-      //Generate new extents based on parent's extents
-      FChildren[i].FAABB.min:=GetExtent(cFlagMin[i]);
-      FChildren[i].FAABB.max:=GetExtent(cFlagMax[i]);
-    end;
+  // The children have been added, now move all leaves to the children - if
+  // we can
+  OldLeaves := FLeaves;
+  FLeaves := TSpacePartitionLeafList.Create;
 
-    // The children have been added, now move all leaves to the children - if
-    // we can
-    OldLeaves := FLeaves;
-    FLeaves := TSpacePartitionLeafList.Create;
+  for i := 0 to OldLeaves.Count-1 do
+    PlaceLeafInChild(OldLeaves[i]);
 
-    for i := 0 to OldLeaves.Count-1 do
-      PlaceLeafInChild(OldLeaves[i]);
-
-    OldLeaves.Clear;
-    OldLeaves.Free;
-
-    FNoChildren := false;
-  end;
+  OldLeaves.Free;
 end;
 
-procedure TSPOctreeNode.DeleteChildren;
+procedure TSectorNode.CollapseNode;
 var
   i,j : integer;
 begin
-  if not NoChildren then
-    for i := 0 to 7 do
+  for i := 0 to FChildCount-1 do
+  begin
+    FChildren[i].CollapseNode;
+
+    for j := 0 to FChildren[i].FLeaves.Count-1 do
     begin
-      FChildren[i].DeleteChildren;
-
-      for j := 0 to FChildren[i].FLeaves.Count-1 do
-      begin
-        FChildren[i].FLeaves[j].FPartitionTag := self;
-        FLeaves.Add(FChildren[i].FLeaves[j]);
-      end;
-
-      FChildren[i].FLeaves.Clear;
-
-      FreeAndNil(FChildren[i]);
+      FChildren[i].FLeaves[j].FPartitionTag := self;
+      FLeaves.Add(FChildren[i].FLeaves[j]);
     end;
 
-  FNoChildren := true;
+    FChildren[i].FLeaves.Clear;
+
+    FreeAndNil(FChildren[i]);
+  end;
+
+  FChildCount := 0;
 end;
 
-destructor TSPOctreeNode.Destroy;
+destructor TSectorNode.Destroy;
 begin
   Clear;
   FreeAndNil(FLeaves);
   inherited;
 end;
 
-function TSPOctreeNode.GetNodeCount: integer;
+function TSectorNode.GetNoChildren: boolean;
+begin
+  result := FChildCount=0;
+end;
+
+function TSectorNode.GetNodeCount: integer;
 var
   i : integer;
 begin
   result := 1;
-  if FNoChildren then
-    exit
-  else
-  begin
-    for i := 0 to 7 do
-      result := result + FChildren[i].GetNodeCount;
-  end;
+
+  for i := 0 to FChildCount-1 do
+    result := result + FChildren[i].GetNodeCount;
 end;
 
-function TSPOctreeNode.PlaceLeafInChild(aLeaf: TSpacePartitionLeaf)  : TSPOctreeNode;
+function TSectorNode.PlaceLeafInChild(aLeaf: TSpacePartitionLeaf)  : TSectorNode;
 var
   i : integer;
 begin
-  for i := 0 to 7 do
+  for i := 0 to FChildCount-1 do
   begin
     if FChildren[i].AABBFitsInNode(aLeaf.FCachedAABB) then
     begin
@@ -783,7 +773,7 @@ begin
   result := self;
 end;
 
-procedure TSPOctreeNode.QueryAABB(const aAABB: TAABB;
+procedure TSectorNode.QueryAABB(const aAABB: TAABB;
   const QueryResult: TSpacePartitionLeafList);
 var
   i : integer;
@@ -811,7 +801,7 @@ begin
   end;
 end;
 
-procedure TSPOctreeNode.QueryBSphere(const aBSphere: TBSphere;
+procedure TSectorNode.QueryBSphere(const aBSphere: TBSphere;
   const QueryResult: TSpacePartitionLeafList);
 var
   i : integer;
@@ -839,7 +829,7 @@ begin
   end;
 end;
 
-procedure TSPOctreeNode.RemoveLeaf(aLeaf: TSpacePartitionLeaf; OwnerByThis : boolean);
+procedure TSectorNode.RemoveLeaf(aLeaf: TSpacePartitionLeaf; OwnerByThis : boolean);
 begin
   dec(FRecursiveLeafCount);
 
@@ -847,14 +837,14 @@ begin
     FLeaves.Remove(aLeaf);
 
   // If there aren't enough leaves anymore, it's time to remove the node!
-  if not FNoChildren and (FRecursiveLeafCount+1<FOctree.FLeafThreshold) then
-    DeleteChildren;
+  if not NoChildren and (FRecursiveLeafCount+1<FSectoredSpacePartition.FLeafThreshold) then
+    CollapseNode;
 
   if Parent<>nil then
     Parent.RemoveLeaf(aLeaf, false);
 end;
 
-function TSPOctreeNode.VerifyRecursiveLeafCount : string;
+function TSectorNode.VerifyRecursiveLeafCount : string;
 var
   i : integer;
 begin
@@ -864,20 +854,22 @@ begin
     exit;
   end;
 
-  if not FNoChildren then
+  for i := 0 to FChildCount-1 do
   begin
-    for i := 0 to 7 do
-    begin
-      result := FChildren[i].VerifyRecursiveLeafCount;
-      if result<>'' then
-        exit;
-    end;
+    result := FChildren[i].VerifyRecursiveLeafCount;
+    if result<>'' then
+      exit;
   end;
 end;
 
-{ TOctreeSpacePartition }
+procedure TSectorNode.CreateChildren;
+begin
+  // VIRTUAL!
+end;
 
-procedure TOctreeSpacePartition.AddLeaf(aLeaf: TSpacePartitionLeaf);
+{ TSectoredSpacePartition }
+
+procedure TSectoredSpacePartition.AddLeaf(aLeaf: TSpacePartitionLeaf);
 begin
   inherited;
   FRootNode.AddLeaf(aLeaf);
@@ -885,18 +877,18 @@ begin
   if not FRootNode.AABBFitsInNode(aLeaf.FCachedAABB) then
   begin
     if FAutoGrow then
-      UpdateOctreeSize(GrowGravy)
+      UpdateStructureSize(GrowGravy)
     else
       Assert(False, 'Node is outside Octree!');
   end;
 end;
 
-constructor TOctreeSpacePartition.Create(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
+constructor TSectoredSpacePartition.Create(const XMin, YMin, ZMin, XMax, YMax, ZMax : single);
 begin
   FLeafThreshold := cOctree_LEAF_TRHESHOLD;
   FMaxTreeDepth := cOctree_MAX_TREE_DEPTH;
 
-  FRootNode := TSPOctreeNode.Create(self, nil);
+  FRootNode := CreateNewNode(nil);
   FAutoGrow := true;
 
   MakeVector(FRootNode.FAABB.min, XMin, YMin, ZMin);
@@ -907,13 +899,18 @@ begin
   inherited Create;
 end;
 
-destructor TOctreeSpacePartition.Destroy;
+function TSectoredSpacePartition.CreateNewNode(aParent : TSectorNode) : TSectorNode;
+begin
+  result := TSectorNode.Create(self, aParent);
+end;
+
+destructor TSectoredSpacePartition.Destroy;
 begin
   FRootNode.Free;
   inherited;
 end;
 
-function TOctreeSpacePartition.GetAABB: TAABB;
+function TSectoredSpacePartition.GetAABB: TAABB;
 var
   i : integer;
 begin
@@ -930,18 +927,18 @@ begin
   end;
 end;
 
-function TOctreeSpacePartition.GetNodeCount: integer;
+function TSectoredSpacePartition.GetNodeCount: integer;
 begin
   result := FRootNode.GetNodeCount;
 end;
 
-procedure TOctreeSpacePartition.LeafChanged(aLeaf: TSpacePartitionLeaf);
+procedure TSectoredSpacePartition.LeafChanged(aLeaf: TSpacePartitionLeaf);
 var
-  Node : TSPOctreeNode;
+  Node : TSectorNode;
 begin
   // If the leaf still fits in the old node, leave it there - or in one of the
   // children
-  Node := TSPOctreeNode(aLeaf.FPartitionTag);
+  Node := TSectorNode(aLeaf.FPartitionTag);
 
   Assert(Node<>nil);
 
@@ -962,7 +959,7 @@ begin
     if not FRootNode.AABBFitsInNode(aLeaf.FCachedAABB) then
     begin
       if FAutoGrow then
-        UpdateOctreeSize(cOctree_GROW_GRAVY)
+        UpdateStructureSize(cOctree_GROW_GRAVY)
       else
         Assert(False, 'Node is outside Octree!');
     end else
@@ -970,14 +967,14 @@ begin
   end;
 end;
 
-function TOctreeSpacePartition.QueryAABB(const aAABB: TAABB): integer;
+function TSectoredSpacePartition.QueryAABB(const aAABB: TAABB): integer;
 begin
   FlushQueryResult;
   FRootNode.QueryAABB(aAABB, FQueryResult);
   result := FQueryResult.Count;
 end;
 
-function TOctreeSpacePartition.QueryBSphere(
+function TSectoredSpacePartition.QueryBSphere(
   const aBSphere: TBSphere): integer;
 begin
   FlushQueryResult;
@@ -985,17 +982,17 @@ begin
   result := FQueryResult.Count;
 end;
 
-function TOctreeSpacePartition.QueryLeaf(
+function TSectoredSpacePartition.QueryLeaf(
   const aLeaf: TSpacePartitionLeaf): integer;
 var
   i : integer;
-  Node : TSPOctreeNode;
+  Node : TSectorNode;
 begin
   // Query current node and all nodes upwards until we find the root, no need
   // to check intersections, because we know that the leaf partially intersects
   // all it's parents.
 
-  Node := TSPOctreeNode(aLeaf.FPartitionTag);
+  Node := TSectorNode(aLeaf.FPartitionTag);
   FlushQueryResult;
 
   while Node<>nil do
@@ -1014,23 +1011,23 @@ begin
   result := QueryResult.Count;
 end;
 
-procedure TOctreeSpacePartition.RemoveLeaf(aLeaf: TSpacePartitionLeaf);
+procedure TSectoredSpacePartition.RemoveLeaf(aLeaf: TSpacePartitionLeaf);
 begin
   inherited;
-  TSPOctreeNode(aLeaf.FPartitionTag).RemoveLeaf(aLeaf, true);
+  TSectorNode(aLeaf.FPartitionTag).RemoveLeaf(aLeaf, true);
 end;
 
-procedure TOctreeSpacePartition.SetLeafThreshold(const Value: integer);
+procedure TSectoredSpacePartition.SetLeafThreshold(const Value: integer);
 begin
   FLeafThreshold := Value;
 end;
 
-procedure TOctreeSpacePartition.SetMaxTreeDepth(const Value: integer);
+procedure TSectoredSpacePartition.SetMaxTreeDepth(const Value: integer);
 begin
   FMaxTreeDepth := Value;
 end;
 
-procedure TOctreeSpacePartition.UpdateOctreeSize(Gravy: single);
+procedure TSectoredSpacePartition.UpdateStructureSize(Gravy: single);
 var
   i : integer;
   OldLeaves : TSpacePartitionLeafList;
@@ -1047,7 +1044,7 @@ begin
   NewAABB.min := VectorSubtract(MaxAABB.min, VectorScale(AABBSize, Gravy));
   NewAABB.max := VectorAdd(MaxAABB.max, VectorScale(AABBSize, Gravy));//}
 
-  FRootNode := TSPOctreeNode.Create(self, nil);
+  FRootNode := TSectorNode.Create(self, nil);
   FRootNode.FAABB := NewAABB;
 
   // Insert all nodes again
@@ -1061,4 +1058,43 @@ begin
 
   FAutoGrow := true;
 end;
+
+{ TSPOctreeNode }
+
+procedure TSPOctreeNode.CreateChildren;
+var
+  i : integer;
+  function GetExtent(const flags: array of byte): TAffineVector;
+  var
+    n: integer;
+  begin
+     for n:=0 to 2 do begin
+       case flags[n] of
+         cMIN: result[n]:=FAABB.min[n];
+         cMID: result[n]:=FAABB.min[n]/2+FAABB.max[n]/2;
+         cMAX: result[n]:=FAABB.max[n];
+       end;
+     end;
+  end;
+begin
+  for i := 0 to 7 do
+  begin
+    FChildren[i] := FSectoredSpacePartition.CreateNewNode(self);
+
+    //Generate new extents based on parent's extents
+    FChildren[i].FAABB.min:=GetExtent(cFlagMin[i]);
+    FChildren[i].FAABB.max:=GetExtent(cFlagMax[i]);
+  end;
+
+  FChildCount := 8;
+end;
+
+{ TOctreeSpacePartition }
+
+function TOctreeSpacePartition.CreateNewNode(
+  aParent: TSectorNode): TSectorNode;
+begin
+  result := TSPOctreeNode.Create(self, aParent);
+end;
+
 end.
