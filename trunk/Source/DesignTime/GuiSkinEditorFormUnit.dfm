@@ -18,7 +18,7 @@ object GUISkinEditor: TGUISkinEditor
   TextHeight = 13
   object StatusBar: TStatusBar
     Left = 0
-    Top = 341
+    Top = 346
     Width = 764
     Height = 19
     Panels = <
@@ -44,7 +44,7 @@ object GUISkinEditor: TGUISkinEditor
   end
   object panBottom: TPanel
     Left = 0
-    Top = 309
+    Top = 314
     Width = 764
     Height = 32
     Align = alBottom
@@ -78,7 +78,7 @@ object GUISkinEditor: TGUISkinEditor
     Left = 285
     Top = 0
     Width = 330
-    Height = 309
+    Height = 314
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
@@ -125,7 +125,7 @@ object GUISkinEditor: TGUISkinEditor
     Left = 615
     Top = 0
     Width = 149
-    Height = 309
+    Height = 314
     Align = alRight
     TabOrder = 3
     object Label5: TLabel
@@ -244,7 +244,7 @@ object GUISkinEditor: TGUISkinEditor
     Left = 0
     Top = 0
     Width = 285
-    Height = 309
+    Height = 314
     Align = alLeft
     TabOrder = 4
     object Bevel2: TBevel

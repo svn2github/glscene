@@ -286,7 +286,6 @@ procedure TGUISkinEditor.Render;
 Var
   BitMap : TBitmap;
   Image  : TGLBitmap32;
-  ARect: TRect;
 begin
   if CheckBox1.Checked then
   Begin
