@@ -540,6 +540,11 @@ type
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; virtual;
 
+         {: Request to generate silhouette outlines.<p>
+            Default implementation assumes the objects is a sphere of
+            AxisAlignedDimensionUnscaled size. }
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; virtual;
+
          property Children[Index: Integer]: TGLBaseSceneObject read Get; default;
          property Count: Integer read GetCount;
          property Index: Integer read GetIndex write SetIndex;
@@ -2861,6 +2866,51 @@ begin
          SetVector(intersectNormal^, i1);
       end;
    end else Result:=False;
+end;
+
+// GenerateSilhouette
+//
+function TGLBaseSceneObject.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+const
+   cNbSegments = 21;
+var
+   i, j : Integer;
+   d, r, r2, vr, s, c, angleFactor : Single;
+   sVec, tVec : TAffineVector;
+begin
+   r:=BoundingSphereRadiusUnscaled;
+   d:=VectorLength(silhouetteParameters.SeenFrom);
+   // determine visible radius
+   case silhouetteParameters.Style of
+      ssOmni : begin
+         r2:=Sqr(r);
+         vr:=Sqrt(r2-Sqr(r2)*r2/(4*Sqr(d)));
+      end;
+      ssParallel : vr:=r;
+   else
+      Assert(False);
+      vr:=r;
+   end;
+   // determine a local orthonormal matrix, viewer-oriented
+   sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, XVector);
+   if VectorLength(sVec)<1e-3 then
+      sVec:=VectorCrossProduct(silhouetteParameters.SeenFrom, YVector);
+   tVec:=VectorCrossProduct(sVec, silhouetteParameters.SeenFrom);
+   NormalizeVector(sVec);
+   NormalizeVector(tVec);
+   // generate the silhouette (outline and capping)
+   Result:=TGLBaseSilhouette.Create;
+   angleFactor:=(2*PI)/cNbSegments;
+   for i:=0 to cNbSegments-1 do begin
+      SinCos(i*angleFactor, vr, s, c);
+      Result.Vertices.Add(VectorCombine(sVec, tVec, s, c));
+      j:=(i+1) mod cNbSegments;
+      Result.Indices.Add(i, j);
+      if silhouetteParameters.CappingRequired then
+         Result.CapIndices.Add(cNbSegments, i, j)
+   end;
+   if silhouetteParameters.CappingRequired then
+      Result.Vertices.Add(NullVector);
 end;
 
 // Assign
