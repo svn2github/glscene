@@ -1,0 +1,78 @@
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, GLScene, GLObjects, GLMisc, GLTexture,  ExtCtrls,
+  GLCadencer, StdCtrls,jpeg, ComCtrls, GLWin32Viewer, GLTimeEventsMGR;
+
+type
+  TForm1 = class(TForm)
+    GLSceneViewer1: TGLSceneViewer;
+    GLScene1: TGLScene;
+    Camera1: TGLCamera;
+    Cube1: TCube;
+    Timer1: TTimer;
+    GLCadencer1: TGLCadencer;
+    GLTimeEventsMGR1: TGLTimeEventsMGR;
+    Cube2: TCube;
+    DummyCube1: TDummyCube;
+    Cube3: TCube;
+    procedure Timer1Timer(Sender: TObject);
+    procedure GLTimeEventsMGR1Events0Event(event: TTimeEvent);
+    procedure GLTimeEventsMGR1Events1Event(event: TTimeEvent);
+    procedure GLTimeEventsMGR1Events2Event(event: TTimeEvent);
+    procedure GLTimeEventsMGR1Events3Event(event: TTimeEvent);
+    procedure GLTimeEventsMGR1Events4Event(event: TTimeEvent);
+    procedure GLTimeEventsMGR1Events5Event(event: TTimeEvent);
+  private
+    { Déclarations privées }
+  public
+    { Déclarations publiques }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+	Caption:=Format('TIME: %.4f', [GLCadencer1.CurrentTime]);
+	GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+procedure TForm1.GLTimeEventsMGR1Events0Event(event: TTimeEvent);
+begin
+   cube1.RollAngle:=event.ElapsedTime*180/3;
+end;
+
+procedure TForm1.GLTimeEventsMGR1Events1Event(event: TTimeEvent);
+begin
+   cube2.RollAngle:=event.TickCount/499*180;
+end;
+
+procedure TForm1.GLTimeEventsMGR1Events2Event(event: TTimeEvent);
+begin
+   cube3.RollAngle:=90;
+end;
+
+procedure TForm1.GLTimeEventsMGR1Events3Event(event: TTimeEvent);
+begin
+   cube1.RollAngle:=event.TickCount/4*90;
+end;
+
+procedure TForm1.GLTimeEventsMGR1Events4Event(event: TTimeEvent);
+begin
+   cube2.RollAngle:=event.TickCount/20*90;
+end;
+
+procedure TForm1.GLTimeEventsMGR1Events5Event(event: TTimeEvent);
+begin
+   cube3.RollAngle:=event.TickCount/200*90;
+end;
+
+end.
