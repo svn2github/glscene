@@ -6,6 +6,7 @@ and again 21/06/03
 well and i add something in the middle on 02/24/2004 using tortoisecvs 1.6.3
 Test write from Stuart on 5-Mar-2003
 Another Test write from Stuart on 1-Apr-2003
+Test from stuart on the GLScene_BCB6 branch
 *Some stuff added by EG at the end 22/11/02*
 !!!!!!!
 
