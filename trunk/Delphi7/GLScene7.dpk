@@ -215,6 +215,8 @@ contains
   LWObjects in '..\Source\FileFormats\LWObjects.pas',
   GLFileLWO in '..\Source\FileFormats\GLFileLWO.pas',
   PictureRegisteredFormats in '..\Source\Base\PictureRegisteredFormats.pas',
-  GLLinePFX in '..\Source\GLLinePFX.pas';
+  GLLinePFX in '..\Source\GLLinePFX.pas',
+  GLGameMenu in '..\Source\GLGameMenu.pas',
+  GLCanvas in '..\Source\Base\GLCanvas.pas';
 
 end.
