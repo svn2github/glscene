@@ -4609,7 +4609,8 @@ begin
       SetNodes(TGLPolygonBase(Source).FNodes);
       FDivision:=TGLPolygonBase(Source).FDivision;
       FSplineMode:=TGLPolygonBase(Source).FSplineMode;
-   end else inherited Assign(Source);
+   end;
+   inherited Assign(Source);
 end;
 
 // NotifyChange
