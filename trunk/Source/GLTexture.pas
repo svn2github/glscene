@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>10/07/02 - EG - Added basic protection against cyclic material refs
       <li>08/07/02 - EG - Multipass support
       <li>18/06/02 - EG - Added TGLShader
       <li>26/01/02 - EG - Makes use of new xglBegin/EndUpdate mechanism
@@ -3256,6 +3257,23 @@ end;
 // SetLibMaterialName
 //
 procedure TGLMaterial.SetLibMaterialName(const val : TGLLibMaterialName);
+
+   function MaterialLoopFrom(curMat : TGLLibMaterial) : Boolean;
+   var
+      loopCount : Integer;
+   begin
+      loopCount:=0;
+      while Assigned(curMat) and (loopCount<16) do begin
+         with curMat.Material do begin
+            if MaterialLibrary<>nil then
+               curMat:=MaterialLibrary.Materials.GetLibMaterialByName(LibMaterialName)
+            else curMat:=nil;
+         end;
+         Inc(loopCount)
+      end;
+      Result:=(loopCount>=16);
+   end;
+
 var
    newLibMaterial : TGLLibMaterial;
 begin
@@ -3263,9 +3281,13 @@ begin
    if Assigned(FMaterialLibrary) then
       newLibMaterial:=MaterialLibrary.Materials.GetLibMaterialByName(val)
    else newLibMaterial:=nil;
+   // make sure new won't trigger an infinite loop
+   Assert(not MaterialLoopFrom(newLibMaterial),
+          'Error: Cyclic material reference detected!');
    FLibMaterialName:=val;
    // unregister if required
    if newLibMaterial<>currentLibMaterial then begin
+      // unregister from old
       if Assigned(currentLibMaterial) then
          currentLibMaterial.UnregisterUser(Self);
       currentLibMaterial:=newLibMaterial;
