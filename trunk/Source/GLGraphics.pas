@@ -34,7 +34,7 @@ interface
 
 uses Classes,
 {$ifdef GLS_Graphics32_SUPPORT}
-   G32,
+   GR32,
 {$endif}
    GLMisc, OpenGL12, GLCrossPlatform;
 
