@@ -307,11 +307,11 @@ begin
       BoxWidth:=5;
       BoxHeight:=5;
       BoxDepth:=5;
-      Position.SetPoint(2*Random+1,2*Random+1,2*Random+1);
+      Position.SetPoint(2*Random-1,2*Random-1,2*Random-1);
     end;
     with TODEElementSphere(AddNewElement(TODEElementSphere)) do begin
       Radius:=2.5;
-      Position.SetPoint(2*Random+1,2*Random+1,2*Random+1);
+      Position.SetPoint(2*Random-1,2*Random-1,2*Random-1);
     end;
 
     // Calibrating the center of mass moves the elements to get the

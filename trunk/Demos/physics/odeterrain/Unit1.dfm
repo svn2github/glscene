@@ -31,6 +31,7 @@ object Form1: TForm1
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
     Buffer.Lighting = False
+    Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
   end
