@@ -6,6 +6,8 @@
    Preliminary VRML vector file support for GLScene.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>18/01/05 - SG - Added polygon tessellation routine to decompose 
+                          a polygon mesh to a triangle mesh
       <li>14/01/05 - SG - Added to CVS
    </ul></font>
 }
@@ -32,6 +34,106 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+// TessellatePolygon
+//
+procedure TessellatePolygon(PolyVerts : TAffineVectorList;
+  PolyIndices, TriIndices : TIntegerList);
+
+  function IsPolyClockWise : Boolean;
+  var
+    i : Integer;
+    det : Single;
+    mat : TAffineMatrix;
+  begin
+    for i:=0 to PolyIndices.Count-1 do begin
+      mat[0]:=PolyVerts[PolyIndices[i]];
+      mat[1]:=PolyVerts[PolyIndices[i+1]];
+      if i = PolyIndices.Count-1 then
+        mat[2]:=PolyVerts[PolyIndices[0]]
+      else
+        mat[2]:=PolyVerts[PolyIndices[i+2]];
+      det:=det+MatrixDeterminant(mat);
+    end;
+    Result:=(det<0);
+  end;
+
+  function IsTriClockWise(v0, v1, v2 : TAffineVector) : Boolean;
+  var
+    mat : TAffineMatrix;
+  begin
+    mat[0]:=v0;
+    mat[1]:=v1;
+    mat[2]:=v2;
+    Result:=(MatrixDeterminant(mat)<0);
+  end;
+
+  function PointInTriangle(p,v0,v1,v2 : TAffineVector;
+    IsClockWise : Boolean = False) : Boolean;
+  begin
+    Result:=not ((IsTriClockWise(v1,v0,p) = IsClockWise) or
+                 (IsTriClockWise(v0,v2,p) = IsClockWise) or
+                 (IsTriClockWise(v2,v1,p) = IsClockWise));
+  end;
+
+var
+  i, j,
+  prev, next,
+  min_vert, min_prev, min_next : Integer;
+  PolyCW, NoPointsInTriangle : Boolean;
+  v : TAffineMatrix;
+  temp : TIntegerList;
+  min_dist, d : Single;
+begin
+  temp:=TIntegerList.Create;
+  try
+    PolyCW:=IsPolyClockWise;
+    temp.Assign(PolyIndices);
+    while temp.Count>3 do begin
+      min_dist:=10e7;
+      min_vert:=-1;
+      for i:=0 to temp.Count-1 do begin
+        prev:=i-1;
+        next:=i+1;
+        if prev<0 then prev:=temp.Count-1;
+        if next>temp.Count-1 then next:=0;
+        v[0]:=PolyVerts[temp[prev]];
+        v[1]:=PolyVerts[temp[i]];
+        v[2]:=PolyVerts[temp[next]];
+        if IsTriClockWise(v[0], v[1], v[2]) = PolyCW then begin
+          NoPointsInTriangle:=True;
+          for j:=0 to temp.Count-1 do begin
+            if (j<>i) and (j<>prev) and (j<>next) then begin
+              if PointInTriangle(PolyVerts[temp[j]], v[0], v[1], v[2], PolyCW) then begin
+                NoPointsInTriangle:=False;
+                Break;
+              end;
+            end;
+          end;
+          if NoPointsInTriangle then begin
+            d:=VectorDistance2(v[0], v[2]);
+            if d<min_dist then begin
+              min_dist:=d;
+              min_prev:=prev;
+              min_vert:=i;
+              min_next:=next;
+            end;
+          end;
+        end;
+      end;
+      if min_vert = -1 then begin
+        raise Exception.Create('Failed to tessellate polygon.');
+      end else begin
+        TriIndices.Add(temp[min_prev], temp[min_vert], temp[min_next]);
+        temp.Delete(min_vert);
+      end;
+    end;
+    TriIndices.Add(temp[0], temp[1], temp[2]);
+  finally
+    temp.Free;
+  end;
+end;
+
 
 // ------------------
 // ------------------ TGLVRMLVectorFile ------------------
@@ -119,7 +221,7 @@ var
     points : TSingleList;
     indices : TIntegerList;
     fg : TFGVertexIndexList;
-    face : array of Integer;
+    face : TIntegerList;
     normals : TAffineVectorList;
     tempLibMat : TGLLibMaterial;
     saveTransform, mat : TMatrix;
@@ -163,6 +265,7 @@ var
       mesh.Normals.Count:=mesh.Vertices.Count;
 
     end else if (node.Name = 'IndexedFaceSet') and (node.Count>0) and Assigned(mesh) then begin
+      face:=TIntegerList.Create;
       fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
       mesh.Mode:=momFaceGroups;
       if Assigned(currentMaterial) then
@@ -172,14 +275,15 @@ var
       n:=0;
       while i<indices.Count do begin
         if indices[i] = -1 then begin
-          for j:=0 to n-3 do
-            fg.VertexIndices.Add(face[0], face[j+1], face[j+2]);
-          n:=0;
+          if face.Count<=4 then begin
+            for j:=0 to face.Count-3 do
+              fg.VertexIndices.Add(face[0], face[j+1], face[j+2]);
+          end else begin
+            TessellatePolygon(mesh.Vertices, face, fg.VertexIndices);
+          end;
+          face.Clear;
         end else begin
-          if n > Length(face)-1 then
-            SetLength(face, n+1);
-          face[n]:=indices[i];
-          n:=n+1;
+          face.Add(indices[i]);
         end;
         i:=i+1;
       end;
@@ -187,6 +291,7 @@ var
       for i:=0 to fg.VertexIndices.Count-1 do
         mesh.Normals[fg.VertexIndices[i]]:=normals[fg.VertexIndices[i]];
       normals.Free;
+      face.Free;
 
     end else begin
       // Continue recursion through child nodes
