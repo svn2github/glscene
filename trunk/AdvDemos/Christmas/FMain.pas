@@ -25,7 +25,7 @@ uses
   Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer, GLMisc,
   GLTexture, ExtCtrls, GLCadencer, GLSkydome, GLParticleFX, Geometry,
   GLLensFlare, GLSound, GLSMBASS, GLBitmapFont, GLWindowsFont, GLHUDObjects,
-  ScreenSaver, GLShadowPlane, GLFile3DS;
+  ScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects;
 
 type
   TMain = class(TForm)
