@@ -1,3 +1,11 @@
+{: GLVectorFileObjects<p>
+
+	Vector File related objects for GLScene<p>
+
+	<b>History :</b><font size=-1><ul>
+      26/08/02 - EG - Added missing header, added glsUnknownExtension
+	</ul></font>
+}
 unit GLStrings;
 
 interface
@@ -34,6 +42,7 @@ resourcestring
   glsFailedOpenFile = 'Could not open file: %s';
   glsNoDescriptionAvailable = 'No description available';
   glsUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
+  glsUnknownExtension = 'Unknown file extension (%s)';
 
   // object categories
   glsOCBasicGeometry = 'Basic geometry';
