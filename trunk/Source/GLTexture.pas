@@ -1291,6 +1291,7 @@ type
 	      property Items[index : Integer] : TGLLibMaterial read GetItems write SetItems; default;
          function MakeUniqueName(const nameRoot : TGLLibMaterialName) : TGLLibMaterialName;
          function GetLibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
+         procedure PrepareBuildList;
          procedure SetNamesToTStrings(aStrings : TStrings);
          {: Deletes all the unused materials in the collection.<p>
             A material is considered unused if no other material references it. }
@@ -4514,6 +4515,16 @@ begin
       end;
    end;
    Result:=nil;
+end;
+
+// PrepareBuildList
+//
+procedure TGLLibMaterials.PrepareBuildList;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      TGLLibMaterial(inherited Items[i]).PrepareBuildList;
 end;
 
 // SetNamesToTStrings
