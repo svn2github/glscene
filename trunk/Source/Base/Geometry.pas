@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/05/03 - EG - NO_ASM variant creation completed
       <li>22/05/03 - EG - All vSIMD asm tests should now be under GEOMETRY_NO_ASM control
       <li>20/05/03 - EG - Added MakeParallelProjectionMatrix
       <li>13/05/03 - EG - 3DNow! optimization for ClampValue
@@ -6566,11 +6567,10 @@ begin
    SinCos(t, w, p[1], p[0]);
 end;
 
-// ------- NO_ASM alternatives end here !!!!!!!!!!!!!!! ---------------
-
 // Trunc64 (extended)
 //
 function Trunc64(v : Extended) : Int64; register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,12
       FSTCW   [ESP]
@@ -6581,11 +6581,16 @@ asm
       POP     ECX
       POP     EAX
       POP     EDX
+{$else}
+begin
+   Result:=System.Trunc(v);
+{$endif}
 end;
 
 // Trunc (single)
 //
 function Trunc(v : Single) : Integer; register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,8
       FSTCW   [ESP]
@@ -6595,11 +6600,16 @@ asm
       FLDCW   [ESP]
       POP     ECX
       POP     EAX
+{$else}
+begin
+   Result:=System.Trunc(v);
+{$endif}
 end;
 
 // Int (Extended)
 //
 function Int(v : Extended) : Extended;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,4
       FSTCW   [ESP]
@@ -6608,11 +6618,16 @@ asm
       FRNDINT
       FLDCW   [ESP]
       ADD     ESP,4
+{$else}
+begin
+   Result:=System.Int(v);
+{$endif}
 end;
 
 // Int (Single)
 //
 function Int(v : Single) : Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,4
       FSTCW   [ESP]
@@ -6621,11 +6636,16 @@ asm
       FRNDINT
       FLDCW   [ESP]
       ADD     ESP,4
+{$else}
+begin
+   Result:=System.Int(v);
+{$endif}
 end;
 
 // Frac (Extended)
 //
 function Frac(v : Extended) : Extended;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,4
       FSTCW   [ESP]
@@ -6636,11 +6656,16 @@ asm
       FSUB
       FLDCW   [ESP]
       ADD     ESP,4
+{$else}
+begin
+   Result:=System.Frac(v);
+{$endif}
 end;
 
 // Frac (Extended)
 //
 function Frac(v : Single) : Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,4
       FSTCW   [ESP]
@@ -6651,27 +6676,41 @@ asm
       FSUB
       FLDCW   [ESP]
       ADD     ESP,4
+{$else}
+begin
+   Result:=System.Frac(v);
+{$endif}
 end;
 
 // Round64 (Extended);
 //
 function Round64(v : Extended) : Int64; register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,8
       FLD     v
       FISTP   qword ptr [ESP]
       POP     EAX
       POP     EDX
+{$else}
+begin
+   Result:=System.Round(v);
+{$endif}
 end;
 
 // Round (Single);
 //
 function Round(v : Single) : Integer; register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,4
       FLD     v
       FISTP   dword ptr [ESP]
       POP     EAX
+{$else}
+begin
+   Result:=System.Round(v);
+{$endif}
 end;
 
 // Ceil64 (Extended)
@@ -6724,12 +6763,17 @@ end;
 // ScaleAndRound
 //
 function ScaleAndRound(i : Integer; var s : Single) : Integer;
+{$ifndef GEOMETRY_NO_ASM}
 asm
    push  eax
    fild  dword ptr [esp]
    fmul  dword ptr [edx]
    fistp dword ptr [esp]
    pop   eax
+{$else}
+begin
+   Result:=System.Round(i*s);
+{$endif}
 end;
 
 // IsInRange
@@ -7397,6 +7441,7 @@ function MakeAffineDblVector(var V: array of Double): TAffineDblVector; assemble
 // EAX contains address of V
 // ECX contains address to result vector
 // EDX contains highest index of V
+{$ifndef GEOMETRY_NO_ASM}
 asm
               PUSH EDI
               PUSH ESI
@@ -7406,6 +7451,12 @@ asm
               REP MOVSD
               POP ESI
               POP EDI
+{$else}
+begin
+   Result[0]:=V[0];
+   Result[1]:=V[1];
+   Result[2]:=V[2];
+{$endif}
 end;
 
 // MakeDblVector
@@ -7415,6 +7466,7 @@ function MakeDblVector(var v : array of Double) : THomogeneousDblVector; assembl
 // EAX contains address of V
 // ECX contains address to result vector
 // EDX contains highest index of V
+{$ifndef GEOMETRY_NO_ASM}
 asm
               PUSH EDI
               PUSH ESI
@@ -7424,6 +7476,13 @@ asm
               REP MOVSD
               POP ESI
               POP EDI
+{$else}
+begin
+   Result[0]:=V[0];
+   Result[1]:=V[1];
+   Result[2]:=V[2];
+   Result[3]:=V[3];
+{$endif}
 end;
 
 // PointInPolygon
@@ -7654,9 +7713,8 @@ end;
 // VectorDblToFlt
 //
 function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector; assembler;
-
 // converts a vector containing double sized values into a vector with single sized values
-
+{$ifndef GEOMETRY_NO_ASM}
 asm
               FLD  QWORD PTR [EAX]
               FSTP DWORD PTR [EDX]
@@ -7666,14 +7724,20 @@ asm
               FSTP DWORD PTR [EDX + 8]
               FLD  QWORD PTR [EAX + 24]
               FSTP DWORD PTR [EDX + 12]
+{$else}
+begin
+   Result[0]:=V[0];
+   Result[1]:=V[1];
+   Result[2]:=V[2];
+   Result[3]:=V[3];
+{$endif}
 end;
 
 // VectorAffineDblToFlt
 //
 function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector; assembler;
-
 // converts a vector containing double sized values into a vector with single sized values
-
+{$ifndef GEOMETRY_NO_ASM}
 asm
               FLD  QWORD PTR [EAX]
               FSTP DWORD PTR [EDX]
@@ -7681,14 +7745,19 @@ asm
               FSTP DWORD PTR [EDX + 4]
               FLD  QWORD PTR [EAX + 16]
               FSTP DWORD PTR [EDX + 8]
+{$else}
+begin
+   Result[0]:=V[0];
+   Result[1]:=V[1];
+   Result[2]:=V[2];
+{$endif}
 end;
 
 // VectorAffineFltToDbl
 //
 function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector; assembler;
-
 // converts a vector containing single sized values into a vector with double sized values
-
+{$ifndef GEOMETRY_NO_ASM}
 asm
               FLD  DWORD PTR [EAX]
               FSTP QWORD PTR [EDX]
@@ -7696,14 +7765,19 @@ asm
               FSTP QWORD PTR [EDX + 4]
               FLD  DWORD PTR [EAX + 16]
               FSTP QWORD PTR [EDX + 8]
+{$else}
+begin
+   Result[0]:=V[0];
+   Result[1]:=V[1];
+   Result[2]:=V[2];
+{$endif}
 end;
 
 // VectorFltToDbl
 //
 function VectorFltToDbl(const V: TVector): THomogeneousDblVector; assembler;
-
 // converts a vector containing single sized values into a vector with double sized values
-
+{$ifndef GEOMETRY_NO_ASM}
 asm
               FLD  DWORD PTR [EAX]
               FSTP QWORD PTR [EDX]
@@ -7713,6 +7787,13 @@ asm
               FSTP QWORD PTR [EDX + 8]
               FLD  DWORD PTR [EAX + 24]
               FSTP QWORD PTR [EDX + 12]
+{$else}
+begin
+   Result[0]:=V[0];
+   Result[1]:=V[1];
+   Result[2]:=V[2];
+   Result[3]:=V[3];
+{$endif}
 end;
 
 //----------------- coordinate system manipulation functions -----------------------------------------------------------
