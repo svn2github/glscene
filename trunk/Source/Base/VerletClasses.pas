@@ -58,7 +58,7 @@ type
 
    TVerletProgressTimes = packed record
       deltaTime, newTime : Double;
-      sqrDeltaTime : Double;
+      sqrDeltaTime, invSqrDeltaTime : Single;
    end;
 
    // TVerletNode
@@ -503,12 +503,15 @@ type
          constructor Create; virtual;
          destructor Destroy; override;
 
-         function AddNode(const aNode : TVerletNode) : Integer;
+         function  AddNode(const aNode : TVerletNode) : Integer;
          procedure RemoveNode(const aNode : TVerletNode);
-         function AddConstraint(const aConstraint : TVerletConstraint) : Integer;
+         
+         function  AddConstraint(const aConstraint : TVerletConstraint) : Integer;
          procedure RemoveConstraint(const aConstraint : TVerletConstraint);
-         function AddForce(const aForce : TVerletForce) : Integer;
+
+         function  AddForce(const aForce : TVerletForce) : Integer;
          procedure RemoveForce(const aForce : TVerletForce);
+
          procedure AddSolidEdge(const aNodeA, aNodeB : TVerletNode);
 
          procedure PauseInertia(const IterationSteps : Integer);
@@ -519,7 +522,7 @@ type
          function CreateStick(const aNodeA, aNodeB : TVerletNode;
                               const Slack : Single = 0) : TVCStick;
          function CreateSpring(const aNodeA, aNodeB : TVerletNode;
-                               const Strength, Dampening : Single; const Slack : Single = 0) : TVFSpring;
+                               const aStrength, aDamping : Single; const aSlack : Single = 0) : TVFSpring;
          function CreateSlider(const aNodeA, aNodeB : TVerletNode;
                                const aSlideDirection : TAffineVector) : TVCSlider;
 
@@ -601,13 +604,20 @@ type
          FSlack : Single;
          FForceFactor : Single;
 
+      protected
+         { Protected Declarations }
+         procedure SetSlack(const value : Single);
+
       public
 			{ Public Declarations }
-         procedure SetRestLengthToCurrent;
          procedure AddForce(const vpt : TVerletProgressTimes); override;
 
+         //: Must be invoked after adjust node locations or strength 
+         procedure SetRestLengthToCurrent;
+
+         property Strength : Single read FStrength write FStrength;
          property Damping : Single read FDamping write FDamping;
-         property Slack : Single read FSlack write FSlack;
+         property Slack : Single read FSlack write SetSlack;
    end;
 
    // TVCFloor
@@ -1514,15 +1524,15 @@ end;
 
 // CreateSpring
 //
-function TVerletWorld.CreateSpring(const aNodeA, aNodeB: TVerletNode;
-  const Strength, Dampening : Single; const Slack : Single=0): TVFSpring;
+function TVerletWorld.CreateSpring(const aNodeA, aNodeB : TVerletNode;
+              const aStrength, aDamping : Single; const aSlack : Single = 0) : TVFSpring;
 begin
    Result:=TVFSpring.Create(Self);
    Result.NodeA:=aNodeA;
    Result.NodeB:=aNodeB;
-   Result.FStrength := Strength;
-   Result.FDamping := Dampening;
-   Result.FSlack := Slack;
+   Result.Strength:=aStrength;
+   Result.Damping:=aDamping;
+   Result.Slack:=aSlack;
    Result.SetRestLengthToCurrent;
 end;
 
@@ -1558,11 +1568,12 @@ var
 begin
    ticks:=0;
    myDeltaTime:=FMaxDeltaTime;
-   FCurrentDeltaTime := FMaxDeltaTime;
-   FInvCurrentDeltaTime := 1 / FCurrentDeltaTime;
+   FCurrentDeltaTime:=FMaxDeltaTime;
+   FInvCurrentDeltaTime:=1/FCurrentDeltaTime;
 
    vpt.deltaTime:=myDeltaTime;
    vpt.sqrDeltaTime:=Sqr(myDeltaTime);
+   vpt.invSqrDeltaTime:=1/vpt.sqrDeltaTime;
 
    while FSimTime<newTime do begin
       Inc(ticks);
@@ -1678,24 +1689,33 @@ end;
 // ------------------ TVFSpring ------------------
 // ------------------
 
+// SetSlack
+//
+procedure TVFSpring.SetSlack(const value : Single);
+begin
+   if value<=0 then
+      FSlack:=0
+   else FSlack:=value;
+end;
+
 // AddForce
 //
 procedure TVFSpring.AddForce;
 var
    hTerm, dTerm : Single;
-   deltaP, deltaV, force : TAffineVector;
+   deltaV, force : TAffineVector;
    deltaLength : Single;
 begin
-   VectorSubtract(NodeA.Location, NodeB.Location, deltaP);
+   VectorSubtract(NodeA.Location, NodeB.Location, force);
    deltaLength:=VectorLength(deltaP);
 
    if deltaLength>FSlack then begin
      hTerm:=(FRestLength-deltaLength)*FForceFactor;
-     force:=VectorScale(deltaP, hTerm);
+     force:=VectorScale(deltaP, hTerm/deltaLength);
    end else force:=NullVector;
    if FDamping<>0 then begin
       VectorSubtract(NodeA.GetMovement, NodeB.GetMovement, deltaV);
-      dTerm:=-0.25*FDamping/vpt.sqrDeltaTime;
+      dTerm:=-0.25*FDamping*vpt.invSqrDeltaTime;
       CombineVector(force, deltaV, dTerm);
    end;
 
