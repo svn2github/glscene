@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/11/02 - EG - Fixed TGLMirror.DoRender transform
       <li>06/11/02 - EG - Fixed Stencil setup
       <li>30/10/02 - EG - Added OnBegin/EndRenderingMirrors
       <li>25/10/02 - EG - Fixed Stencil cleanup
@@ -215,6 +216,7 @@ begin
          if Assigned(FMirrorObject) then begin
             if FMirrorObject.Parent<>nil then
                glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
+            glMultMatrixf(@FMirrorObject.LocalMatrix);
             FMirrorObject.DoRender(rci, renderSelf, renderChildren);
          end else begin
             Scene.Objects.DoRender(rci, renderSelf, renderChildren);
