@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/10/02 - EG - Added MouseEnter/Leave/InControl
       <li>27/09/02 - EG - Added Ability to set display frequency
       <li>22/08/02 - EG - Added TGLSceneViewer.RecreateWnd
       <li>19/08/02 - EG - Added GetHandle
@@ -41,15 +42,20 @@ type
    TGLSceneViewer = class (TWinControl)
       private
          { Private Declarations }
-         FIsOpenGLAvailable : Boolean;
          FBuffer : TGLSceneBuffer;
          FVSync : TVSyncMode;
          FOwnDC : Cardinal;
+			FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
+         FMouseInControl : Boolean;
+         FIsOpenGLAvailable : Boolean;
 
          procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); Message WM_ERASEBKGND;
          procedure WMPaint(var Message: TWMPaint); Message WM_PAINT;
          procedure WMSize(var Message: TWMSize); Message WM_SIZE;
          procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
+
+	      procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
+	      procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
 
       protected
          { Protected Declarations }
@@ -89,6 +95,7 @@ type
          procedure ResetPerformanceMonitor;
 
          property RenderDC : Cardinal read FOwnDC;
+         property MouseInControl : Boolean read FMouseInControl;
 
       published
          { Public Declarations }
@@ -115,6 +122,9 @@ type
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
 
+			property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+			property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+         
          property Align;
          property Anchors;
          property DragCursor;
@@ -497,6 +507,24 @@ begin
       FOwnDC:=0;
    end;
    inherited;
+end;
+
+// CMMouseEnter
+//
+procedure TGLSceneViewer.CMMouseEnter(var msg: TMessage);
+begin
+   inherited;
+   FMouseInControl:=True;
+   if Assigned(FOnMouseEnter) then FOnMouseEnter(Self);
+end;
+
+// CMMouseLeave
+//
+procedure TGLSceneViewer.CMMouseLeave(var msg: TMessage);
+begin
+   inherited;
+   FMouseInControl:=False;
+   if Assigned(FOnMouseLeave) then FOnMouseLeave(Self);
 end;
 
 // Loaded
