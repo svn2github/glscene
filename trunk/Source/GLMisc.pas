@@ -3,6 +3,8 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>10/25/03 - Dave - Added TGLCoordinates.SetVector (TAffineVector)
+                            Added TGLCoordinates.SetVector (TVector)
       <li>05/09/03 - EG - TNotifyCollection moved in from GLMultiPolygon
       <li>21/08/03 - EG - Added osRenderNearestFirst
       <li>17/06/03 - EG - New TryStrToFloat, updated StrToFloatDef
@@ -257,6 +259,8 @@ type
          function  Equals(const aVector : TVector) : Boolean;
          procedure SetVector(const x, y, z : Single); overload;
          procedure SetVector(const x, y, z, w : Single); overload;
+         procedure SetVector(const v : TAffineVector); overload;
+         procedure SetVector(const v : TVector); overload;
          procedure SetPoint(const x, y, z : Single);
          procedure SetToZero;
 
@@ -1397,6 +1401,24 @@ procedure TGLCoordinates.SetVector(const x, y, z : Single);
 begin
    Assert(FStyle<>csPoint);
    Geometry.SetVector(FCoords, x, y, z);
+	NotifyChange(Self);
+end;
+
+// SetVector (TAffineVector)
+//
+procedure TGLCoordinates.SetVector(const v : TAffineVector);
+begin
+   Assert(FStyle<>csPoint);
+   Geometry.SetVector(FCoords, v);
+	NotifyChange(Self);
+end;
+
+// SetVector (TVector)
+//
+procedure TGLCoordinates.SetVector(const v : TVector);
+begin
+   Assert(FStyle<>csPoint);
+   Geometry.SetVector(FCoords, v);
 	NotifyChange(Self);
 end;
 
