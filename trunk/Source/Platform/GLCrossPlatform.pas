@@ -66,6 +66,9 @@ function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
 {: Pops up a simple save picture dialog. }
 function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
 
+{: Returns True if the application has been terminated. }
+function ApplicationTerminated : Boolean;
+
 procedure RaiseLastOSError;
 
 {$IFNDEF GLS_DELPHI5_UP}
@@ -196,6 +199,13 @@ begin
    finally
       saveDialog.Free;
    end;
+end;
+
+// ApplicationTerminated
+//
+function ApplicationTerminated : Boolean;
+begin
+   Result:=Application.Terminated;
 end;
 
 // RaiseLastOSError
