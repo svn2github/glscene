@@ -31,7 +31,7 @@ interface
 uses
   Windows, GLCadencer, GLVectorFileObjects, GLScene, GLObjects, GLMisc,
   StdCtrls, Buttons, Controls, ExtCtrls, ComCtrls, Classes, Forms,
-  GLWin32Viewer, GLFileMD2;
+  GLWin32Viewer, GLFileMD2, GLGeomObjects;
 
 type
   TForm1 = class(TForm)

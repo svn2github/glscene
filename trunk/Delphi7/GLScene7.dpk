@@ -170,6 +170,9 @@ contains
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
   GLSilhouette in '..\Source\GLSilhouette.pas',
   GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas',
-  GLStarRecord in '..\Source\FileFormats\GLStarRecord.pas';
+  GLStarRecord in '..\Source\FileFormats\GLStarRecord.pas',
+  GLGeomObjects in '..\Source\GLGeomObjects.pas',
+  GLPolyhedron in '..\Source\GLPolyhedron.pas',
+  GLTeapot in '..\Source\GLTeapot.pas';
 
 end.

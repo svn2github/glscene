@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 233
-  Top = 95
+  Left = 228
+  Top = 98
   Width = 344
   Height = 303
   BorderWidth = 3
@@ -35,8 +35,8 @@ object Form1: TForm1
       Material.Texture.MappingTCoordinates.Coordinates = {000000000000803F0000000000000000}
       MajorRadius = 3
       MinorRadius = 0.200000002980232
-      Rings = 16
-      Sides = 8
+      Rings = 36
+      Sides = 9
       BehavioursData = {
         0201060B54474C42496E657274696102000200050000000000000080FF3F0200
         08050000000000000000000005000000000000000000000500000000000000F0

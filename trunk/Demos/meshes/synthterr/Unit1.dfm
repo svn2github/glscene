@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 164
-  Top = 122
+  Left = 159
+  Top = 120
   Width = 611
   Height = 429
   Caption = 'Form1'
@@ -72,7 +72,6 @@ object Form1: TForm1
     Top = 16
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Materials = <>
     Left = 16
     Top = 56
   end

@@ -149,6 +149,9 @@ contains
   GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas',
   GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
   GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas',
-  GLStarRecord in '..\Source\FileFormats\GLStarRecord.pas';
+  GLStarRecord in '..\Source\FileFormats\GLStarRecord.pas',
+  GLGeomObjects in '..\Source\GLGeomObjects.pas',
+  GLPolyhedron in '..\Source\GLPolyhedron.pas',
+  GLTeapot in '..\Source\GLTeapot.pas';
 
 end.

@@ -22,7 +22,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLObjects, GLMisc, StdCtrls, ExtCtrls, GLTexture, GLCadencer,
-  GLWin32Viewer, ComCtrls;
+  GLWin32Viewer, ComCtrls, GLGeomObjects;
 
 type
   TForm1 = class(TForm)

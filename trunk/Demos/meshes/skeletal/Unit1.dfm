@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 264
-  Top = 108
+  Left = 237
+  Top = 105
   Width = 523
   Height = 445
   Caption = 'Form1'
@@ -113,6 +113,9 @@ object Form1: TForm1
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
+    DesignSize = (
+      515
+      41)
     object TrackBar1: TTrackBar
       Left = 64
       Top = 0
@@ -153,15 +156,10 @@ object Form1: TForm1
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {0000003F0000003F0000003F00000000}
       Up.Coordinates = {0000000000000080000080BF00000000}
-      StartFrame = 0
-      EndFrame = 0
-      CurrentFrame = 0
       AnimationMode = aamLoop
       Interval = 100
       OnEndFrameReached = Actor1EndFrameReached
-      Animations = <>
       MaterialLibrary = GLMaterialLibrary1
-      OverlaySkeleton = False
     end
     object DummyCube1: TGLDummyCube
       CubeSize = 1
@@ -191,7 +189,6 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Materials = <>
     Left = 16
     Top = 40
   end

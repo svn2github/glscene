@@ -1,8 +1,8 @@
 object frmOctreeDemo: TfrmOctreeDemo
-  Left = 300
-  Top = 191
-  Width = 800
-  Height = 612
+  Left = 14
+  Top = 13
+  Width = 778
+  Height = 580
   Caption = 'Octree Demo'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,12 +16,12 @@ object frmOctreeDemo: TfrmOctreeDemo
   OnDestroy = FormDestroy
   OnMouseWheel = FormMouseWheel
   DesignSize = (
-    792
-    583)
+    770
+    551)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 744
+    Left = 722
     Top = 8
     Width = 32
     Height = 13
@@ -47,9 +47,9 @@ object frmOctreeDemo: TfrmOctreeDemo
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 8
-    Top = 48
-    Width = 772
-    Height = 548
+    Top = 56
+    Width = 750
+    Height = 489
     Camera = GLCamera1
     Buffer.BackgroundColor = clWhite
     Buffer.FaceCulling = False
@@ -63,8 +63,13 @@ object frmOctreeDemo: TfrmOctreeDemo
     Height = 25
     Max = 20
     Min = 3
+    Orientation = trHorizontal
+    Frequency = 1
     Position = 10
+    SelEnd = 0
+    SelStart = 0
     TabOrder = 1
+    TickMarks = tmBottomRight
     TickStyle = tsNone
     OnChange = TrackBar_LeafThresholdChange
   end
@@ -81,7 +86,7 @@ object frmOctreeDemo: TfrmOctreeDemo
     Left = 96
     Top = 64
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1.000000000000000000
+      CubeSize = 1
     end
     object GLDirectOpenGL1: TGLDirectOpenGL
       UseBuildList = False
@@ -96,7 +101,7 @@ object frmOctreeDemo: TfrmOctreeDemo
       Position.Coordinates = {0000C0400000C0400000C0400000803F}
       Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCC4C3E}
       Material.BlendingMode = bmTransparency
-      Radius = 2.500000000000000000
+      Radius = 2.5
     end
     object GLPlane1: TGLPlane
       Direction.Coordinates = {0000000000000080000080BF00000000}
@@ -105,21 +110,21 @@ object frmOctreeDemo: TfrmOctreeDemo
       Visible = False
       Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3FCDCC4C3FCDCC4C3E}
       Material.BlendingMode = bmTransparency
-      Height = 40.000000000000000000
-      Width = 40.000000000000000000
+      Height = 40
+      Width = 40
     end
     object GLLines1: TGLLines
       Nodes = <>
       Options = []
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 75.000000000000000000
+      DepthOfView = 100
+      FocalLength = 75
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000404100008040000000410000803F}
       object GLLightSource1: TGLLightSource
-        ConstAttenuation = 1.000000000000000000
-        SpotCutOff = 180.000000000000000000
+        ConstAttenuation = 1
+        SpotCutOff = 180
       end
     end
   end

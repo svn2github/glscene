@@ -1,6 +1,6 @@
 object Form1: TForm1
   Left = 145
-  Top = 103
+  Top = 99
   Width = 526
   Height = 441
   Caption = 'Form1'
@@ -169,7 +169,7 @@ object Form1: TForm1
         ConstAttenuation = 1
         Position.Coordinates = {0000204100000000000020410000803F}
         LightStyle = lsOmni
-        SpotCutOff = 360
+        SpotCutOff = 180
       end
       object GLCamera1: TGLCamera
         DepthOfView = 1000
@@ -194,23 +194,13 @@ object Form1: TForm1
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmModulate
       Material.Texture.Disabled = False
-      StartFrame = 0
-      EndFrame = 0
-      CurrentFrame = 0
       Interval = 100
       OnFrameChanged = Actor1FrameChanged
-      Animations = <>
-      OverlaySkeleton = False
       object Actor2: TGLActor
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.Texture.MinFilter = miLinear
         Material.Texture.Disabled = False
-        StartFrame = 0
-        EndFrame = 0
-        CurrentFrame = 0
         Interval = 100
-        Animations = <>
-        OverlaySkeleton = False
       end
     end
   end

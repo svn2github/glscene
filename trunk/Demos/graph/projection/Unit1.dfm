@@ -1,6 +1,6 @@
 object Form1: TForm1
   Left = 160
-  Top = 73
+  Top = 79
   Width = 519
   Height = 386
   Caption = 'Form1'
@@ -57,6 +57,7 @@ object Form1: TForm1
     end
     object GLPoints: TGLPoints
       NoZWrite = False
+      Static = False
       Size = 5
       Style = psSmooth
     end

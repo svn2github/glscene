@@ -1,5 +1,5 @@
 object Form2: TForm2
-  Left = 203
+  Left = 209
   Top = 124
   BorderStyle = bsNone
   BorderWidth = 2

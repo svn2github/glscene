@@ -18,7 +18,7 @@ unit Unit1;
 interface
 
 uses
-  Windows, Forms, GLScene, GLObjects, GLMisc, Classes, Controls,
+  Windows, Forms, GLScene, GLObjects, GLMisc, Classes, Controls, GLTeapot,
   GLWin32Viewer;
 
 type

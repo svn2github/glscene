@@ -228,7 +228,6 @@ interface
 uses
    Classes, GLMisc, GLTexture, SysUtils, Geometry, XCollection,
    GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,
-   {$ifdef GLS_VCL}Graphics{$else}QGraphics{$endif},
    GLSilhouette;
 
 type

@@ -1,5 +1,5 @@
 object Form1: TForm1
-  Left = 191
+  Left = 185
   Top = 101
   Width = 452
   Height = 368
@@ -65,7 +65,6 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary: TGLMaterialLibrary
-    Materials = <>
     Left = 8
     Top = 40
   end

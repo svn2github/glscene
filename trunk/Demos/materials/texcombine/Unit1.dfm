@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 116
-  Top = 115
+  Left = 117
+  Top = 103
   BorderStyle = bsDialog
   Caption = 'TGLTexCombineShader demo'
   ClientHeight = 422

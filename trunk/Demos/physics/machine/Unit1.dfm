@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 192
-  Top = 107
+  Left = 83
+  Top = 84
   Width = 696
   Height = 480
   Caption = 'Form1'
@@ -18,7 +18,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 688
-    Height = 446
+    Height = 451
     Camera = GLCamera1
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown

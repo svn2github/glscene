@@ -1,6 +1,6 @@
 object Form1: TForm1
   Left = 219
-  Top = 105
+  Top = 107
   Width = 370
   Height = 299
   Caption = 'Bitmap Text with Color Properties'

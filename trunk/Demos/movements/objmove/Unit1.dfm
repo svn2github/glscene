@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 86
-  Top = 133
+  Left = 87
+  Top = 128
   Width = 696
   Height = 414
   Caption = 'Moving Objects with Mouse'
@@ -154,7 +154,6 @@ object Form1: TForm1
     end
     object DummyCube1: TGLDummyCube
       Position.Coordinates = {0000803F0000803F0000003F0000803F}
-      TransformationMode = tmParentWithPos
       CubeSize = 0.200000002980232
       EdgeColor.Color = {DEDD5D3FDEDD5D3FE9E8683F0000803F}
     end

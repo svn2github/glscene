@@ -55,6 +55,15 @@ const
    glpfDevice = pf32bit;
 {$endif}
 
+   // standard colors
+{$ifdef WIN32}
+   clBtnFace = Graphics.clBtnFace;
+{$endif}
+{$ifdef LINUX}
+   clBtnFace = QGraphics.clBtnFace;
+{$endif}
+
+
 function GLPoint(const x, y : Integer) : TGLPoint;
 
 {: Builds a TColor from Red Green Blue components. }

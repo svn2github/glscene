@@ -1,10 +1,10 @@
 object Form1: TForm1
   Left = 155
-  Top = 126
+  Top = 121
   Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
-  ClientHeight = 400
+  ClientHeight = 405
   ClientWidth = 603
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 603
-    Height = 400
+    Height = 405
     Camera = GLCamera1
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
     Buffer.FogEnvironment.FogStart = 200

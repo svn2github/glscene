@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 251
-  Top = 117
+  Left = 73
+  Top = 114
   Width = 728
   Height = 452
   Caption = 'Simple ODE Demo'
@@ -19,7 +19,7 @@ object Form1: TForm1
     Left = 209
     Top = 0
     Width = 511
-    Height = 418
+    Height = 423
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Align = alClient
@@ -30,13 +30,13 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 209
-    Height = 418
+    Height = 423
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
       Left = 40
       Top = 16
-      Width = 129
+      Width = 120
       Height = 16
       Alignment = taCenter
       Caption = 'Add ODE objects'

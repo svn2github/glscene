@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 184
-  Top = 89
+  Left = 180
+  Top = 93
   Width = 414
   Height = 284
   BorderWidth = 3
@@ -14,6 +14,9 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   OnResize = FormResize
+  DesignSize = (
+    400
+    249)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer

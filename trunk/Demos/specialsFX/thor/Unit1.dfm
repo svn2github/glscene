@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 198
-  Top = 86
+  Left = 176
+  Top = 84
   Width = 557
   Height = 468
   BorderWidth = 3
@@ -350,7 +350,7 @@ object Form1: TForm1
       object GLLightSource1: TGLLightSource
         ConstAttenuation = 1
         LightStyle = lsOmni
-        SpotCutOff = 100
+        SpotCutOff = 180
         SpotDirection.Coordinates = {00000000000080BF0000000000000000}
       end
     end

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 78
-  Top = 82
+  Left = 74
+  Top = 84
   Width = 706
   Height = 453
   Caption = 'Form1'
@@ -12,6 +12,9 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  DesignSize = (
+    698
+    424)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -173,7 +176,6 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Materials = <>
     Left = 528
   end
   object Timer1: TTimer

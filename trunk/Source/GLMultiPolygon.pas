@@ -35,7 +35,7 @@ interface
 
 uses
    Classes, OpenGL12, Spline, Geometry, VectorLists, PersistentClasses,
-   GLScene, GLObjects, GLMisc, GLTexture;
+   GLScene, GLObjects, GLMisc, GLTexture, GLGeomObjects;
 
 type
 

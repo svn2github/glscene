@@ -13,7 +13,7 @@ interface
 
 uses
   Forms, Controls, SysUtils, Classes, GLMisc, GLScene, GLObjects, GLWin32Viewer,
-  Graphics;
+  Graphics, GLTeapot;
 
 type
   TDataModule1 = class(TDataModule)

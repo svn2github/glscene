@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 232
-  Top = 91
+  Left = 233
+  Top = 95
   BorderStyle = bsDialog
   Caption = 'Form1'
   ClientHeight = 357
@@ -145,6 +145,7 @@ object Form1: TForm1
     Width = 800
     Height = 600
     Buffer.BackgroundColor = clBlack
+    RefreshRate = 0
     OnKeyPress = GLFullScreenViewerKeyPress
     OnDblClick = GLFullScreenViewerDblClick
     OnMouseMove = GLSceneViewerMouseMove

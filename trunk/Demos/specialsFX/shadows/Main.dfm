@@ -1,6 +1,6 @@
 object MainFm: TMainFm
-  Left = 132
-  Top = 53
+  Left = 135
+  Top = 57
   Width = 561
   Height = 470
   AutoSize = True

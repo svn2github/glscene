@@ -9,7 +9,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLScene, GLMisc, GLGraph, GLObjects, GLTexture, StdCtrls,
   ComCtrls,jpeg, glgraphics, VectorTypes, geometry, GLHUDObjects,
-  GLzBuffer, OpenGL12, GLCadencer, AsyncTimer, GLWin32Viewer;
+  GLzBuffer, OpenGL12, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
+  GLGeomObjects;
 
 type
   TMainFm = class(TForm)
