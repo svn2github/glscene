@@ -140,6 +140,7 @@ contains
   GLWin32FullScreenViewer in '..\Source\Platform\GLWin32FullScreenViewer.pas',
   GLMultiMaterialShader in '..\Source\Shaders\GLMultiMaterialShader.pas',
   GLUserShader in '..\Source\Shaders\GLUserShader.pas',
-  GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas';
+  GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas',
+  GLMultiProxy in '..\Source\GLMultiProxy.pas';
 
 end.
