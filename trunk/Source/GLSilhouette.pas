@@ -122,6 +122,8 @@ type
    TFaceGroupConnectivity = class(TConnectivity)
        private
           FMeshObject : TMeshObject;
+          FOwnsVertices : boolean;
+    procedure SetMeshObject(const Value: TMeshObject);
 
        public
           procedure Clear; override;
@@ -129,6 +131,10 @@ type
           {: Builds the connectivity information. }
           procedure RebuildEdgeList;
 
+
+          property MeshObject : TMeshObject read FMeshObject write SetMeshObject;
+
+          constructor Create(PrecomputeFaceNormal : boolean); override;
           constructor CreateFromMesh(aMeshObject : TMeshObject; precomputeFaceNormal : Boolean);
           destructor Destroy; override;
    end;
@@ -143,10 +149,12 @@ type
           function GetFaceCount: integer; override;
           function GetFaceGroupConnectivity(i: integer): TFaceGroupConnectivity;
           function GetConnectivityCount: integer;
+    procedure SetGLBaseMesh(const Value: TGLBaseMesh);
 
        public
           property ConnectivityCount : integer read GetConnectivityCount;
           property FaceGroupConnectivity[i : integer] : TFaceGroupConnectivity read GetFaceGroupConnectivity;
+          property GLBaseMesh : TGLBaseMesh read FGLBaseMesh write SetGLBaseMesh;
 
           procedure Clear(SaveFaceGroupConnectivity : boolean);
 
@@ -155,6 +163,7 @@ type
 
           procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); override;
 
+          constructor Create(PrecomputeFaceNormal : boolean); override;
           constructor CreateFromMesh(aGLBaseMesh : TGLBaseMesh);
           destructor Destroy; override;
    end;
@@ -556,21 +565,41 @@ begin
   begin
     FVertices := nil;
     inherited;
-    FVertices := FMeshObject.Vertices;
+    if FMeshObject<>nil then
+      FVertices := FMeshObject.Vertices;
   end else
     inherited;
+end;
+
+constructor TFaceGroupConnectivity.Create(PrecomputeFaceNormal: boolean);
+begin
+  inherited;
+
+  FOwnsVertices := true;
+end;
+
+procedure TFaceGroupConnectivity.SetMeshObject(const Value: TMeshObject);
+begin
+  Clear;
+
+  FMeshObject := Value;
+
+  if FOwnsVertices then
+    FVertices.Free;
+
+  FVertices := FMeshObject.Vertices;
+
+  FOwnsVertices := false;
+
+  RebuildEdgeList;
 end;
 
 constructor TFaceGroupConnectivity.CreateFromMesh(aMeshObject: TMeshObject;
   PrecomputeFaceNormal: boolean);
 begin
-  inherited Create(PrecomputeFaceNormal);
+  Create(PrecomputeFaceNormal);
 
-  FVertices.Free;
-  FMeshObject := aMeshObject;
-  FVertices := FMeshObject.Vertices;
-
-  RebuildEdgeList;
+  MeshObject := aMeshObject;
 end;
 
 destructor TFaceGroupConnectivity.Destroy;
@@ -657,21 +686,36 @@ begin
   end;
 end;
 
+constructor TGLBaseMeshConnectivity.Create(PrecomputeFaceNormal: boolean);
+begin
+  FFaceGroupConnectivityList := TList.Create;
+
+  inherited;
+end;
+
 constructor TGLBaseMeshConnectivity.CreateFromMesh(aGLBaseMesh: TGLBaseMesh);
+begin
+  Create(not (aGLBaseMesh is TGLActor));
+  GLBaseMesh := aGLBaseMesh;
+end;
+
+procedure TGLBaseMeshConnectivity.SetGLBaseMesh(const Value: TGLBaseMesh);
 var
   i : integer;
   MO : TMeshObject;
   Connectivity : TFaceGroupConnectivity;
 begin
-  FFaceGroupConnectivityList := TList.Create;
+  Clear(False);
+
+  FGLBaseMesh := Value;
 
   // Only precompute normals if the basemesh isn't an actor (because they change)
-  FPrecomputeFaceNormal := not (aGLBaseMesh is TGLActor);
-  FGLBaseMesh := aGLBaseMesh;
+  FPrecomputeFaceNormal := not (Value is TGLActor);
+  FGLBaseMesh := Value;
 
-  for i := 0 to aGLBaseMesh.MeshObjects.Count-1 do
+  for i := 0 to Value.MeshObjects.Count-1 do
   begin
-    MO := aGLBaseMesh.MeshObjects[i];
+    MO := Value.MeshObjects[i];
 
     Connectivity := TFaceGroupConnectivity.CreateFromMesh(MO, FPrecomputeFaceNormal);
 
