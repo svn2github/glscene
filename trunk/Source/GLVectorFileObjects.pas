@@ -1422,6 +1422,7 @@ type
    TGLAnimationControler = class (TComponent)
 	   private
 	      { Private Declarations }
+         FEnabled : Boolean;
          FActor : TGLActor;
          FAnimationName : TActorAnimationName;
          FRatio : Single;
@@ -1430,6 +1431,7 @@ type
 	      { Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          procedure DoChange;
+         procedure SetEnabled(const val : Boolean);
          procedure SetActor(const val : TGLActor);
          procedure SetAnimationName(const val : TActorAnimationName);
          procedure SetRatio(const val : Single);
@@ -1443,6 +1445,7 @@ type
 
       published
          { Published Declarations }
+         property Enabled : Boolean read FEnabled write SetEnabled default True;
          property Actor : TGLActor read FActor write SetActor;
          property AnimationName : String read FAnimationName write SetAnimationName;
          property Ratio : Single read FRatio write SetRatio;
@@ -2162,16 +2165,20 @@ begin
          sftRotation : begin
             FLocalMatrixList:=AllocMem(SizeOf(TMatrix)*Rotation.Count);
             for i:=0 to Rotation.Count-1 do begin
-               mat:=IdentityHmgMatrix;
-               SinCos(Rotation[i][0], s, c);
-               rmat:=CreateRotationMatrixX(s, c);
-               mat:=MatrixMultiply(mat, rmat);
-               SinCos(Rotation[i][1], s, c);
-               rmat:=CreateRotationMatrixY(s, c);
-               mat:=MatrixMultiply(mat, rmat);
-               SinCos(Rotation[i][2], s, c);
-               rmat:=CreateRotationMatrixZ(s, c);
-               mat:=MatrixMultiply(mat, rmat);
+               if Rotation[i][0]<>0 then begin
+                  SinCos(Rotation[i][0], s, c);
+                  mat:=CreateRotationMatrixX(s, c);
+               end else mat:=IdentityHmgMatrix;
+               if Rotation[i][1]<>0 then begin
+                  SinCos(Rotation[i][1], s, c);
+                  rmat:=CreateRotationMatrixY(s, c);
+                  mat:=MatrixMultiply(mat, rmat);
+               end;
+               if Rotation[i][2]<>0 then begin
+                  SinCos(Rotation[i][2], s, c);
+                  rmat:=CreateRotationMatrixZ(s, c);
+                  mat:=MatrixMultiply(mat, rmat);
+               end;
                mat[3][0]:=Position[i][0];
                mat[3][1]:=Position[i][1];
                mat[3][2]:=Position[i][2];
@@ -2960,6 +2967,7 @@ begin
                                            Frames[lerpInfos[i].frameIndex2].Rotation,
                                            lerpInfos[i].lerpFactor);
                   Rotation.AngleCombine(blendRotations, 1);
+                  Rotation.AngleCombine(Frames[0].Rotation, -1);
                   Inc(i);
                end;
                blendRotations.Free;
@@ -6027,6 +6035,7 @@ end;
 constructor TGLAnimationControler.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
+   FEnabled:=True;
 end;
 
 // Destroy
@@ -6052,6 +6061,16 @@ procedure TGLAnimationControler.DoChange;
 begin
    if Assigned(FActor) and (AnimationName<>'') then
       FActor.NotifyChange(Self);
+end;
+
+// SetEnabled
+//
+procedure TGLAnimationControler.SetEnabled(const val : Boolean);
+begin
+   if val<>FEnabled then begin
+      FEnabled:=val;
+      if Assigned(FActor) then DoChange;
+   end;
 end;
 
 // SetActor
@@ -6096,6 +6115,11 @@ var
    anim : TActorAnimation;
    baseDelta : Integer;
 begin
+   if not Enabled then begin
+      Result:=False;
+      Exit;
+   end;
+
    anim:=Actor.Animations.FindName(AnimationName);
    Result:=(anim<>nil);
    if not Result then Exit;
