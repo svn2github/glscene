@@ -90,6 +90,9 @@ type
     contactgroup : TdJointGroupID;
 
     VCSphere : TVCSphere;
+
+    procedure RecalcMeshNormals(BaseMesh : TGLBaseMesh);
+    procedure PrepareMeshForNormalsRecalc(BaseMesh : TGLBaseMesh);
   end;
 
 var
@@ -108,6 +111,7 @@ var
   s : string;
   f : single;
   p : Integer;
+  i : integer;
 
   procedure CreateCubeFromGLCube(GLCube : TGLCube);
   begin
@@ -171,6 +175,7 @@ begin
 
   GLActor1.AutoCentering := [macUseBarycenter];
   GLActor1.LoadFromFile(Trim(Copy(s, 1, p-1)));
+  PrepareMeshForNormalsRecalc(GLActor1);
   GLActor1.Reference := aarNone;
 
   GLActor1.Roll(random*360);
@@ -337,11 +342,6 @@ end;
 
 procedure TfrmClothify.GLCadencer1Progress(Sender: TObject;
   const deltaTime, newTime: Double);
-var
-   i, j, k : Integer;
-   mo : TMeshObject;
-   fg : TFGVertexIndexList;
-   n : TAffineVector;
 begin
    {if CheckBox_Pause.Checked then
       VerletWorld.SimTime := newTime
@@ -363,30 +363,67 @@ begin
 
       VerletWorld.Progress(VerletWorld.MaxDeltaTime, newTime);
 
-      // update normals
-      // (not very efficient, could use some work...)
-      for i:=0 to GLActor1.MeshObjects.Count-1 do begin
-         mo:=GLActor1.MeshObjects[i];
-         FillChar(mo.Normals.List[0], SizeOf(TAffineVector)*mo.Normals.Count, 0);
-         for j:=0 to mo.FaceGroups.Count-1 do begin
-            if mo.FaceGroups[j] is TFGVertexIndexList then begin
-               fg:=TFGVertexIndexList(mo.FaceGroups[j]);
-               k:=0; while k<=fg.VertexIndices.Count-3 do begin
-                  n:=CalcPlaneNormal(mo.Vertices.List[fg.VertexIndices.List[k]],
-                                     mo.Vertices.List[fg.VertexIndices.List[k+1]],
-                                     mo.Vertices.List[fg.VertexIndices.List[k+2]]);
-                  mo.Normals.TranslateItem(fg.VertexIndices.List[k], n);
-                  mo.Normals.TranslateItem(fg.VertexIndices.List[k+1], n);
-                  mo.Normals.TranslateItem(fg.VertexIndices.List[k+2], n);
-                  Inc(k, 3);
-               end;
-            end;
-         end;
-         mo.Normals.Normalize;
-      end;
 
-      GLActor1.StructureChanged;
+      RecalcMeshNormals(GLActor1);
    end;
+end;
+
+procedure TfrmClothify.PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
+var
+   i, j, k : Integer;
+   mo : TMeshObject;
+   fg : TFGVertexNormalTexIndexList;
+   n : TAffineVector;
+begin
+  // update normals
+  // (not very efficient, could use some work...)
+  for i:=0 to GLActor1.MeshObjects.Count-1 do begin
+     mo:=GLActor1.MeshObjects[i];
+
+     for j:=0 to mo.FaceGroups.Count-1 do begin
+        if mo.FaceGroups[j] is TFGVertexNormalTexIndexList then begin
+           fg:=TFGVertexNormalTexIndexList(mo.FaceGroups[j]);
+           for k := 0 to fg.VertexIndices.Count-1 do begin
+              fg.NormalIndices.List[k] := fg.VertexIndices.List[k];
+           end;
+        end;
+     end;
+  end;
+end;
+
+procedure TfrmClothify.RecalcMeshNormals(BaseMesh: TGLBaseMesh);
+var
+   i, j, k : Integer;
+   mo : TMeshObject;
+   fg : TFGVertexIndexList;
+   n : TAffineVector;
+begin
+  // update normals
+  // (not very efficient, could use some work...)
+  for i:=0 to GLActor1.MeshObjects.Count-1 do begin
+     mo:=GLActor1.MeshObjects[i];
+
+     FillChar(mo.Normals.List[0], SizeOf(TAffineVector)*mo.Normals.Count, 0);
+
+     for j:=0 to mo.FaceGroups.Count-1 do begin
+        if mo.FaceGroups[j] is TFGVertexIndexList then begin
+           fg:=TFGVertexIndexList(mo.FaceGroups[j]);
+           k:=0; while k<=fg.VertexIndices.Count-3 do begin
+              n:=CalcPlaneNormal(mo.Vertices.List[fg.VertexIndices.List[k]],
+                                 mo.Vertices.List[fg.VertexIndices.List[k+1]],
+                                 mo.Vertices.List[fg.VertexIndices.List[k+2]]);
+              mo.Normals.TranslateItem(fg.VertexIndices.List[k], n);
+              mo.Normals.TranslateItem(fg.VertexIndices.List[k+1], n);
+              mo.Normals.TranslateItem(fg.VertexIndices.List[k+2], n);//}
+
+              Inc(k, 3);
+           end;
+        end;
+     end;
+     mo.Normals.Normalize;
+  end;
+
+  BaseMesh.StructureChanged;
 end;
 
 procedure TfrmClothify.Timer1Timer(Sender: TObject);

@@ -103,7 +103,7 @@ object frmClothify: TfrmClothify
       'Trinityrage.smd, 0.15'
       'HalfSphere.ms3d, 2'
       'Cylinder.ms3d, 0.3'
-      'lgrid.3ds, 6'
+      'lgrid.3ds, 3'
       'BigHoleBox2.ms3d, 0.5'
       'mushroom.3ds, 0.08'
       'polyhedron.3ds, 2'
@@ -197,8 +197,6 @@ object frmClothify: TfrmClothify
     Width = 81
     Height = 17
     Caption = 'Use Octree'
-    Checked = True
-    State = cbChecked
     TabOrder = 10
   end
   object GLScene1: TGLScene
