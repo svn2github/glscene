@@ -1,3 +1,6 @@
+{: WaterPlane demo
+
+}
 unit Unit1;
 
 interface
@@ -58,7 +61,7 @@ begin
    GLSceneViewer1.Buffer.ScreenVectorIntersectWithPlaneXZ(
                            VectorMake(x, GLSceneViewer1.Height-y, 0),
                            GLWaterPlane1.Position.Y, ip);
-   GLWaterPlane1.CreateRippleAtWorldPos(ip[0], ip[1], ip[2]);
+   GLWaterPlane1.CreateRippleAtWorldPos(ip);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -130,7 +133,8 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=GLSceneViewer1.FramesPerSecondText;
+   Caption:= GLSceneViewer1.FramesPerSecondText
+            +Format(' / %.3f ms', [GLWaterPlane1.LastIterationStepTime*1000]);
    GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

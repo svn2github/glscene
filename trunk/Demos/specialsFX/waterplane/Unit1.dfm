@@ -50,13 +50,11 @@ object Form1: TForm1
       Material.LibMaterialName = 'CubeMap'
       Position.Coordinates = {00000000000080BF000000000000803F}
       Scale.Coordinates = {000070410000803F0000704100000000}
-      Active = True
-      RainTimeInterval = 500
       RainForce = 5000
       Viscosity = 0.990000009536743
       MaxWaveAmp = 900000
       Elastic = 10
-      SurfaceWave = 1
+      Resolution = 128
       SimulationFrequency = 100
     end
     object GLCamera1: TGLCamera
