@@ -3,6 +3,7 @@
  Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/03/05 - EG - FTextureEx now autocreated (like FTexture)
       <li>30/11/04 - EG - No longer stores TextureEx if empty
       <li>06/10/04 - NC - Corrected filtering param. setting for float texture, 
                           Now keep using GL_TEXTURE_RECTANGLE_NV for TGLFloatDataImage
@@ -349,6 +350,7 @@ type
    {: Stores contextual info useful during rendering methods. }
    TRenderContextInfo = record
       scene : TObject;
+      buffer : TObject;
       cameraPosition : TVector;
       cameraDirection, cameraUp : TVector;
       modelViewMatrix : PMatrix;
@@ -1204,7 +1206,7 @@ type
          property Items[index : Integer] : TGLTextureExItem read GetItems write SetItems; default;
    end;
 
- TShininess = 0..128;
+	TShininess = 0..128;
    TPolygonMode = (pmFill, pmLines, pmPoints);
 
    // TGLFaceProperties
@@ -1292,12 +1294,12 @@ type
          FFrontProperties, FGLBackProperties : TGLFaceProperties;
    FBlendingMode : TBlendingMode;
          FTexture : TGLTexture;
+         FTextureEx : TGLTextureEx;
          FMaterialLibrary : TGLMaterialLibrary;
          FLibMaterialName : TGLLibMaterialName;
          FMaterialOptions : TMaterialOptions;
          FFaceCulling : TFaceCulling;
          currentLibMaterial : TGLLibMaterial;
-         FTextureEx : TGLTextureEx;
 
     protected
        { Protected Declarations }
@@ -1311,8 +1313,9 @@ type
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure SetLibMaterialName(const val : TGLLibMaterialName);
          procedure SetFaceCulling(const val : TFaceCulling);
-         procedure SetTextureEx(const Value : TGLTextureEx);
-         function StoreTextureEx : Boolean;
+         function  GetTextureEx : TGLTextureEx;
+         procedure SetTextureEx(const value : TGLTextureEx);
+         function  StoreTextureEx : Boolean;
 
    procedure NotifyLibMaterialDestruction;
    //: Back, Front, Texture and blending not stored if linked to a LibMaterial
@@ -1360,7 +1363,7 @@ type
 
 			property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
 			property LibMaterialName : TGLLibMaterialName read FLibMaterialName write SetLibMaterialName;
-         property TextureEx : TGLTextureEx read FTextureEx write SetTextureEx stored StoreTextureEx;
+         property TextureEx : TGLTextureEx read GetTextureEx write SetTextureEx stored StoreTextureEx;
 	  end;
 
  // TGLLibMaterial
@@ -1600,8 +1603,7 @@ type
 
    ETexture = class (Exception);
 
-
-
+   
 function ColorManager: TGLColorManager;
 
 //: Converts a color vector (containing float values)
@@ -1653,7 +1655,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLStrings, XOpenGL, ApplicationFileIO;
+uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, PictureRegisteredFormats;
 
 {$Q-} // no range checking
 
@@ -1733,24 +1735,32 @@ var
    i : Integer;
    ext : String;
    fs : TStream;
+   graphicClass : TGraphicClass;
 begin
    Result:=nil;
    if FileStreamExists(fileName) then begin
+      graphicClass:=nil;
       ext:=LowerCase(ExtractFileExt(fileName));
       for i:=0 to High(vTGraphicFileExtension) do begin
          if vTGraphicFileExtension[i]=ext then begin
-            Result:=TGraphicClass(vTGraphicClass[i]).Create;
+            graphicClass:=TGraphicClass(vTGraphicClass[i]);
+            Break;
+         end;
+      end;
+      if graphicClass=nil then
+         graphicClass:=GraphicClassForExtension(ext);
+      if graphicClass<>nil then begin
+         Result:=graphicClass.Create;
+         try
+            fs:=CreateFileStream(fileName, fmOpenRead);
             try
-               fs:=CreateFileStream(fileName, fmOpenRead);
-               try
-                  Result.LoadFromStream(fs);
-               finally
-                  fs.Free;
-               end;
-            except
-               FreeAndNil(Result);
-               raise;
+               Result.LoadFromStream(fs);
+            finally
+               fs.Free;
             end;
+         except
+            FreeAndNil(Result);
+            raise;
          end;
       end;
    end;
@@ -4360,12 +4370,13 @@ end;
 //
 function TGLTextureEx.IsTextureEnabled(Index : Integer) : Boolean;
 var
-  i : Integer;
+   i : Integer;
 begin
-  Result:=False;
-  for i:=0 to Count-1 do
-    if Items[i].TextureIndex = Index then
-      Result:=Result or Items[i].Texture.Enabled;
+   Result:=False;
+   if Self=nil then Exit;
+   for i:=0 to Count-1 do
+      if Items[i].TextureIndex = Index then
+         Result:=Result or Items[i].Texture.Enabled;
 end;
 
 
@@ -4379,7 +4390,6 @@ begin
   FFrontProperties:=TGLFaceProperties.Create(Self);
   FTexture:=nil; // AutoCreate
   FFaceCulling:=fcBufferDefault;
-  FTextureEx:=TGLTextureEx.Create(Self);
 end;
 
 // Destroy
@@ -4520,18 +4530,28 @@ begin
    end;
 end;
 
+// GetTextureEx
+//
+function TGLMaterial.GetTextureEx : TGLTextureEx;
+begin
+   if not Assigned(FTextureEx) then
+      FTextureEx:=TGLTextureEx.Create(Self);
+   Result:=FTextureEx;
+end;
+
 // SetTextureEx
 //
 procedure TGLMaterial.SetTextureEx(const Value : TGLTextureEx);
 begin
-   TextureEx.Assign(Value);
+   if Assigned(Value) or Assigned(FTextureEx) then
+      TextureEx.Assign(Value);
 end;
 
 // StoreTextureEx
 //
 function TGLMaterial.StoreTextureEx : Boolean;
 begin
-   Result:=(TextureEx.Count>0);
+   Result:=(Assigned(FTextureEx) and (TextureEx.Count>0));
 end;
 
 // NotifyLibMaterialDestruction
@@ -4547,7 +4567,9 @@ end;
 //
 procedure TGLMaterial.Loaded;
 begin
-  TextureEx.Loaded;
+   inherited;
+   if Assigned(FTextureEx) then
+      TextureEx.Loaded;
 end;
 
 // StoreMaterialProps
@@ -4568,7 +4590,6 @@ end;
 // Apply
 //
 procedure TGLMaterial.Apply(var rci : TRenderContextInfo);
-
 begin
  if Assigned(currentLibMaterial) then
   currentLibMaterial.Apply(rci)
@@ -4619,16 +4640,16 @@ begin
             rci.GLStates.UnSetGLState(stBlend);
             rci.GLStates.UnSetGLState(stAlphaTest);
          end;
-   bmTransparency : begin
-    rci.GLStates.SetGLState(stBlend);
+			bmTransparency : begin
+				rci.GLStates.SetGLState(stBlend);
             rci.GLStates.SetGLState(stAlphaTest);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   end;
-   bmAdditive : begin
-    rci.GLStates.SetGLState(stBlend);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			end;
+			bmAdditive : begin
+				rci.GLStates.SetGLState(stBlend);
             rci.GLStates.SetGLState(stAlphaTest);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-   end;
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			end;
          bmAlphaTest50 : begin
             rci.GLStates.UnSetGLState(stBlend);
             rci.GLStates.SetGLState(stAlphaTest);
@@ -4654,10 +4675,16 @@ begin
             Inc(rci.fogDisabledCounter);
          end;
       end;
-      if Assigned(FTexture) and not FTextureEx.IsTextureEnabled(0) then
-       FTexture.Apply(rci);
-      FTextureEx.Apply(rci);
- end;
+      if not Assigned(FTextureEx) then begin
+         if Assigned(FTexture) then
+         	FTexture.Apply(rci)
+      end else begin
+         if Assigned(FTexture) and not FTextureEx.IsTextureEnabled(0) then
+         	FTexture.Apply(rci)
+         else if FTextureEx.Count>0 then
+            FTextureEx.Apply(rci);
+      end;
+	end;
 end;
 
 // UnApply
@@ -4683,10 +4710,10 @@ begin
                rci.GLStates.SetGLState(stFog);
          end;
       end;
-      if Assigned(FTexture) and (not FTexture.Disabled)
-      and (not FTextureEx.IsTextureEnabled(0)) then
-         FTexture.UnApply(rci);
-      FTextureEx.UnApply(rci);
+      if Assigned(FTexture) and (not FTexture.Disabled) and (not FTextureEx.IsTextureEnabled(0)) then
+         FTexture.UnApply(rci)
+      else if Assigned(FTextureEx) then
+         FTextureEx.UnApply(rci);
       Result:=False;
    end;
 end;
@@ -4881,13 +4908,27 @@ begin
       if not FTextureMatrixIsIdentity then
          rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
-      if not Material.TextureEx.IsTextureEnabled(1) then begin
+
+      libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
+      if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
+         if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+            xglMapTexCoordToDual
+         else xglMapTexCoordToMain
+      else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
+         xglMapTexCoordToSecond
+      else xglMapTexCoordToMain;
+
+      // EG: TextureEx stuff below doesn't seem to work for libmaterials,
+      //     and interferes with Texture2, not sure what should be done to get
+      //     it operational with shaders and a 2nd material active, so I just
+      //     restored classic behaviour
+{      if Assigned(Material.FTextureEx) and not Material.TextureEx.IsTextureEnabled(1) then begin
          libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
          // calculate and apply appropriate xgl mode
          if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
             xglMapTexCoordToArbitraryAdd(1);
          if libMatTexture2.Material.Texture.MappingMode=tmmUser then
-           xglMapTexCoordToArbitraryAdd(2);
+           xglMapTexCoordToArbitraryAdd(2); }
 
          // OLD TEXCOORD MAPPING
          //if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
@@ -4897,7 +4938,7 @@ begin
          //else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
          //   xglMapTexCoordToSecond
          //else xglMapTexCoordToMain;
-      end;
+//      end;
    end;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
@@ -4923,12 +4964,14 @@ begin
    end;
    if not Result then begin
       // if multipassing, this will occur upon last pass only
-      if not Material.TextureEx.IsTextureEnabled(1) then begin
-      if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
-         libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
-         xglMapTexCoordToMain;
-      end;
-      end;
+{      if Assigned(Material.FTextureEx) then begin
+         if not Material.TextureEx.IsTextureEnabled(1) then begin}
+            if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
+               libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
+               xglMapTexCoordToMain;
+            end;
+{         end;
+      end; }
       Material.UnApply(rci);
       if not Material.Texture.Disabled then
          if not FTextureMatrixIsIdentity then
@@ -6294,7 +6337,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

@@ -23,7 +23,8 @@ type
 
    // TGLSkyBoxStyle
    //
-   TGLSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds);
+   TGLSkyBoxStyle = (sbsFull, sbsTopHalf, sbsBottomHalf, sbTopTwoThirds,
+                     sbsTopHalfClamped);
 
    // TGLSkyBox
    //
@@ -157,7 +158,7 @@ begin
       glPushMatrix;
       case Style of
          sbsFull : ;
-         sbsTopHalf : begin
+         sbsTopHalf, sbsTopHalfClamped : begin
             glTranslatef(0, 0.5, 0);
             glScalef(1, 0.5, 1);
          end;
@@ -181,6 +182,12 @@ begin
                xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1, -1);
                xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1, -1);
                xglTexCoord2f(0.998, 0.998);  glVertex3f( 1,  1, -1);
+               if Style=sbsTopHalfClamped then begin
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1, -1);
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -3, -1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -3, -1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f( 1, -1, -1);
+               end;
             glEnd;
          until not libMat.UnApply(rci);
       end;
@@ -194,6 +201,12 @@ begin
                xglTexCoord2f(0.002, 0.002);  glVertex3f( 1, -1,  1);
                xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1,  1);
                xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1,  1);
+               if Style=sbsTopHalfClamped then begin
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f( 1, -1,  1);
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f( 1, -3,  1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -3,  1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1,  1);
+               end;
             glEnd;
          until not libMat.UnApply(rci);
       end;
@@ -233,6 +246,12 @@ begin
                xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
                xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1, -1);
                xglTexCoord2f(0.998, 0.998);  glVertex3f(-1,  1, -1);
+               if Style=sbsTopHalfClamped then begin
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -1,  1);
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f(-1, -3,  1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -3, -1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f(-1, -1, -1);
+               end;
             glEnd;
          until not libMat.UnApply(rci);
       end;
@@ -246,6 +265,12 @@ begin
                xglTexCoord2f(0.002, 0.002);  glVertex3f(1, -1, -1);
                xglTexCoord2f(0.998, 0.002);  glVertex3f(1, -1,  1);
                xglTexCoord2f(0.998, 0.998);  glVertex3f(1,  1,  1);
+               if Style=sbsTopHalfClamped then begin
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f(1, -1, -1);
+                  xglTexCoord2f(0.002, 0.002);  glVertex3f(1, -3, -1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f(1, -3,  1);
+                  xglTexCoord2f(0.998, 0.002);  glVertex3f(1, -1,  1);
+               end;
             glEnd;
          until not libMat.UnApply(rci);
       end;

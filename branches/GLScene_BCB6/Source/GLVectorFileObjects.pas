@@ -549,6 +549,7 @@ type
          procedure FlushBoneByIDCache;
          function BoneByID(anID : Integer) : TSkeletonBone;
          function BoneByName(const aName : String) : TSkeletonBone;
+         function BoneCount : Integer;
 
          procedure MorphTo(frameIndex : Integer); overload;
          procedure MorphTo(frame : TSkeletonFrame); overload;
@@ -882,7 +883,7 @@ type
 	   private
 	      { Private Declarations }
          FVerticesBonesWeights : PVerticesBoneWeights;
-         FVerticeBoneWeightCount : Integer;
+         FVerticeBoneWeightCount, FVerticeBoneWeightCapacity : Integer;
          FBonesPerVertex : Integer;
          FLastVerticeBoneWeightCount, FLastBonesPerVertex : Integer; // not persistent
          FBoneMatrixInvertedMeshes : TList; // not persistent
@@ -890,6 +891,7 @@ type
 	   protected
 	      { Protected Declarations }
          procedure SetVerticeBoneWeightCount(const val : Integer);
+         procedure SetVerticeBoneWeightCapacity(const val : Integer);
          procedure SetBonesPerVertex(const val : Integer);
 	      procedure ResizeVerticesBonesWeights;
 
@@ -905,6 +907,7 @@ type
 
          property VerticesBonesWeights : PVerticesBoneWeights read FVerticesBonesWeights;
          property VerticeBoneWeightCount : Integer read FVerticeBoneWeightCount write SetVerticeBoneWeightCount;
+         property VerticeBoneWeightCapacity : Integer read FVerticeBoneWeightCapacity write SetVerticeBoneWeightCapacity;
          property BonesPerVertex : Integer read FBonesPerVertex write SetBonesPerVertex;
 
          function FindOrAdd(boneID : Integer;
@@ -3050,6 +3053,13 @@ begin
    Result:=RootBones.BoneByName(aName);
 end;
 
+// BoneCount
+//
+function TSkeleton.BoneCount : Integer;
+begin
+   Result:=RootBones.BoneCount;
+end;
+
 // MorphTo
 //
 procedure TSkeleton.MorphTo(frameIndex : Integer);
@@ -4683,6 +4693,18 @@ procedure TSkeletonMeshObject.SetVerticeBoneWeightCount(const val : Integer);
 begin
    if val<>FVerticeBoneWeightCount then begin
       FVerticeBoneWeightCount:=val;
+      if FVerticeBoneWeightCount>FVerticeBoneWeightCapacity then
+         VerticeBoneWeightCapacity:=FVerticeBoneWeightCount+16;
+      FLastVerticeBoneWeightCount:=FVerticeBoneWeightCount;
+   end;
+end;
+
+// SetVerticeBoneWeightCapacity
+//
+procedure TSkeletonMeshObject.SetVerticeBoneWeightCapacity(const val : Integer);
+begin
+   if val<>FVerticeBoneWeightCapacity then begin
+      FVerticeBoneWeightCapacity:=val;
       ResizeVerticesBonesWeights;
    end;
 end;
@@ -4704,7 +4726,7 @@ var
    n, m, i, j : Integer;
    newArea : PVerticesBoneWeights;
 begin
-   n:=BonesPerVertex*VerticeBoneWeightCount;
+   n:=BonesPerVertex*VerticeBoneWeightCapacity;
    if n=0 then begin
       // release everything
       if Assigned(FVerticesBonesWeights) then begin
@@ -4714,9 +4736,9 @@ begin
       end;
    end else begin
       // allocate new area
-      newArea:=AllocMem(VerticeBoneWeightCount*SizeOf(PVertexBoneWeightArray));
+      GetMem(newArea, VerticeBoneWeightCapacity*SizeOf(PVertexBoneWeightArray));
       newArea[0]:=AllocMem(n*SizeOf(TVertexBoneWeight));
-      for i:=1 to VerticeBoneWeightCount-1 do
+      for i:=1 to VerticeBoneWeightCapacity-1 do
          newArea[i]:=PVertexBoneWeightArray(Integer(newArea[0])+i*SizeOf(TVertexBoneWeight)*BonesPerVertex);
       // transfer old data
       if FLastVerticeBoneWeightCount<VerticeBoneWeightCount then
@@ -4734,7 +4756,6 @@ begin
       end;
       FVerticesBonesWeights:=newArea;
    end;
-   FLastVerticeBoneWeightCount:=FVerticeBoneWeightCount;
    FLastBonesPerVertex:=FBonesPerVertex;
 end;
 
@@ -4786,8 +4807,8 @@ begin
    Result:=-1;
    for i:=0 to Vertices.Count-1 do
       if (VerticesBonesWeights[i][0].BoneID=boneID)
-            and VectorEquals(Vertices[i], vertex)
-            and VectorEquals(Normals[i], normal) then begin
+            and VectorEquals(Vertices.List[i], vertex)
+            and VectorEquals(Normals.List[i], normal) then begin
          Result:=i;
          Break;
       end;

@@ -1162,6 +1162,8 @@ type
          property Behaviours;
    end;
 
+   TGLProxyObjectClass = class of TGLProxyObject;
+
    // TLightStyle
    //
    {: Defines the various styles for lightsources.<p>
@@ -1715,6 +1717,8 @@ type
          FViewerBeforeRender : TNotifyEvent;
          FPostRender   : TNotifyEvent;
          FAfterRender  : TNotifyEvent;
+         FInitiateRendering : TDirectRenderEvent;
+         FWrapUpRendering : TDirectRenderEvent;
 
       protected
          { Protected Declarations }
@@ -1800,7 +1804,8 @@ type
             You do not need to call this method, unless you explicitly want a
             render at a specific time. If you just want the control to get
             refreshed, use Invalidate instead. }
-         procedure Render(baseObject : TGLBaseSceneObject = nil);
+         procedure Render(baseObject : TGLBaseSceneObject); overload;
+         procedure Render; overload;
          {: Render the scene to a bitmap at given DPI.<p>
             DPI = "dots per inch".<p>
             The "magic" DPI of the screen is 96 under Windows. }
@@ -2022,6 +2027,15 @@ type
             You may use this event to execute your own OpenGL rendering
             (usually background stuff). }
          property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender stored False;
+         {: Triggered after BeforeRender, before rendering objects.<p>
+            This one is fired after the rci has been initialized and can be used
+            to alter it or perform early renderings that require an rci,
+            the Sender is the buffer. }
+         property InitiateRendering : TDirectRenderEvent read FInitiateRendering write FInitiateRendering stored False;
+         {: Triggered after rendering all scene objects, before PostRender.<p>
+            This is the last point after which the rci becomes unavailable,
+            the Sender is the buffer. }
+         property WrapUpRendering : TDirectRenderEvent read FWrapUpRendering write FWrapUpRendering stored False;
          {: Triggered just after all the scene's objects have been rendered.<p>
             The OpenGL context is still active in this event, and you may use it
             to execute your own OpenGL rendering (usually for HUD, 2D overlays
@@ -2170,8 +2184,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses
-   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO, GLUtils;
+uses GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO, GLUtils;
 
 var
    vCounterFrequency : Int64;
@@ -2710,6 +2723,7 @@ begin
    aChild.FParent:=Self;
    aChild.SetScene(FScene);
    TransformationChanged;
+   aChild.TransformationChanged;
 end;
 
 // AddNewChild
@@ -2945,7 +2959,7 @@ end;
 //
 function TGLBaseSceneObject.LocalToAbsolute(const v : TVector) : TVector;
 begin
-   Result:=VectorTransform(v, AbsoluteMatrix);
+   Result:=VectorTransform(v, AbsoluteMatrixAsAddress^);
 end;
 
 // LocalToAbsolute (affine)
@@ -6049,6 +6063,7 @@ begin
    FCurrentBuffer:=aBuffer;
    FillChar(rci, SizeOf(rci), 0);
    rci.scene:=Self;
+   rci.buffer:=aBuffer;
    rci.objectsSorting:=FObjectsSorting;
    rci.visibilityCulling:=FVisibilityCulling;
    rci.bufferFaceCull:=aBuffer.FaceCulling;
@@ -6083,6 +6098,8 @@ begin
    if rci.ignoreMaterials then
       glColorMask(False, False, False, False)
    else glColorMask(True, True, True, True);
+   if Assigned(aBuffer.FInitiateRendering) then
+      aBuffer.FInitiateRendering(aBuffer, rci);
    if baseObject=nil then
       FObjects.Render(rci)
    else baseObject.Render(rci);
@@ -6090,6 +6107,8 @@ begin
    with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
          TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
+   if Assigned(aBuffer.FWrapUpRendering) then
+      aBuffer.FWrapUpRendering(aBuffer, rci);
    with rci.GLStates do begin
       UnSetGLState(stBlend);
       UnSetGLState(stTexture2D);
@@ -7014,6 +7033,8 @@ end;
 procedure TGLSceneBuffer.Freeze;
 begin
    if Freezed then Exit;
+   FFreezed:=True;
+   if RenderingContext=nil then Exit;
    Render;
    RenderingContext.Activate;
    try
@@ -7021,7 +7042,6 @@ begin
       glReadPixels(0, 0, FViewport.Width, FViewPort.Height,
                    GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
       FFreezedViewPort:=FViewPort;
-      FFreezed:=True;
    finally
       RenderingContext.Deactivate;
    end;
@@ -7650,7 +7670,14 @@ end;
 
 // Render
 //
-procedure TGLSceneBuffer.Render(baseObject : TGLBaseSceneObject = nil);
+procedure TGLSceneBuffer.Render;
+begin
+   Render(nil);
+end;
+
+// Render
+//
+procedure TGLSceneBuffer.Render(baseObject : TGLBaseSceneObject);
 var
    perfCounter, framePerf : Int64;
    backColor : TColorVector;
@@ -7660,7 +7687,7 @@ begin
 
    backColor:=ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
 
-   if Freezed then begin
+   if Freezed and (FFreezeBuffer<>nil) then begin
       RenderingContext.Activate;
       try
          glClearColor(backColor.Coord[0], backColor.Coord[1], backColor.Coord[2], backColor.Coord[3]);
@@ -7686,40 +7713,43 @@ begin
       FCamera.AbsoluteMatrixAsAddress;
       FCamera.FScene.AddBuffer(Self);
    end;
-   FRenderingContext.Activate;
    FRendering:=True;
    try
-      if FFrameCount=0 then
-         QueryPerformanceCounter(FFirstPerfCounter);
+      FRenderingContext.Activate;
+      try
+         if FFrameCount=0 then
+            QueryPerformanceCounter(FFirstPerfCounter);
 
-      FRenderDPI:=96; // default value for screen
-      ClearGLError;
-      SetupRenderingContext;
-      // clear the buffers
-      glClearColor(backColor.Coord[0], backColor.Coord[1], backColor.Coord[2], backColor.Coord[3]);
-      ClearBuffers;
-      CheckOpenGLError;
-      // render
-      DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
-      CheckOpenGLError;
-      if not (roNoSwapBuffers in ContextOptions) then
-         RenderingContext.SwapBuffers;
+         FRenderDPI:=96; // default value for screen
+         ClearGLError;
+         SetupRenderingContext;
+         // clear the buffers
+         glClearColor(backColor.Coord[0], backColor.Coord[1], backColor.Coord[2], backColor.Coord[3]);
+         ClearBuffers;
+         CheckOpenGLError;
+         // render
+         DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
+         CheckOpenGLError;
+         if not (roNoSwapBuffers in ContextOptions) then
+            RenderingContext.SwapBuffers;
 
-      // yes, calculate average frames per second...
-      Inc(FFrameCount);
-      QueryPerformanceCounter(perfCounter);
-      FLastFrameTime:=(perfCounter-framePerf)/vCounterFrequency;
-      Dec(perfCounter, FFirstPerfCounter);
-      if perfCounter>0 then
-         FFramesPerSecond:=(FFrameCount*vCounterFrequency)/perfCounter;
-      CheckOpenGLError;
+         // yes, calculate average frames per second...
+         Inc(FFrameCount);
+         QueryPerformanceCounter(perfCounter);
+         FLastFrameTime:=(perfCounter-framePerf)/vCounterFrequency;
+         Dec(perfCounter, FFirstPerfCounter);
+         if perfCounter>0 then
+            FFramesPerSecond:=(FFrameCount*vCounterFrequency)/perfCounter;
+         CheckOpenGLError;
+      finally
+         FRenderingContext.Deactivate;
+      end;
+      if Assigned(FAfterRender) and (Owner is TComponent) then
+         if not (csDesigning in TComponent(Owner).ComponentState) then
+            FAfterRender(Self);
    finally
       FRendering:=False;
-      FRenderingContext.Deactivate;
    end;
-   if Assigned(FAfterRender) and (Owner is TComponent) then
-      if not (csDesigning in TComponent(Owner).ComponentState) then
-         FAfterRender(Self);
 end;
 
 // SetBackgroundColor
@@ -7886,7 +7916,7 @@ end;
 //
 procedure TGLSceneBuffer.DoChange;
 begin
-   if Assigned(FOnChange) then
+   if (not FRendering) and Assigned(FOnChange) then
       FOnChange(Self);
 end;
 

@@ -16,6 +16,9 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+
+    <li>01/03/05 - Mrqzzz - Moved in TODEJointBase protected code from Loaded to
+                          public DoLoaded.
     <li>20/12/04 - SG - TGLODEStatic objects now realign geoms on step,
                         Fix for Hinge2 and Universal joints,
                         Fix for TGLODEDynamic.Enabled property persistence.
@@ -268,7 +271,6 @@ type
       FOnCollision : TODEObjectCollisionEvent;
       FInitialized : Boolean;
       FOwnerBaseSceneObject : TGLBaseSceneObject;
-
     protected
       { Protected Declarations }
       procedure Initialize; virtual;
@@ -813,8 +815,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; virtual;
-      procedure Finalize; virtual;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -841,10 +841,15 @@ type
       destructor Destroy; override;
       procedure StructureChanged; virtual;
 
+      procedure Initialize; virtual;
+      procedure Finalize; virtual;
       function IsAttached : Boolean;
+
+      procedure DoLoaded;
 
       property JointID : TdJointID read FJointID;
       property Initialized : Boolean read FInitialized;
+
 
     published
       { Published Declarations }
@@ -957,7 +962,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -977,6 +981,7 @@ type
       destructor Destroy; override;
       procedure StructureChanged; override;
 
+      procedure Initialize; override;
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
 
@@ -998,7 +1003,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1012,6 +1016,7 @@ type
       destructor Destroy; override;
 
       procedure StructureChanged; override;
+      procedure Initialize; override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1033,7 +1038,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1051,6 +1055,7 @@ type
       destructor Destroy; override;
 
       procedure StructureChanged; override;
+      procedure Initialize; override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1068,7 +1073,6 @@ type
   TODEJointFixed = class (TODEJointBase)
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1077,6 +1081,7 @@ type
       { Public Declarations }
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
+      procedure Initialize; override;
 
   end;
 
@@ -1094,7 +1099,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1119,6 +1123,7 @@ type
       destructor Destroy; override;
 
       procedure StructureChanged; override;
+      procedure Initialize; override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1147,7 +1152,6 @@ type
 
     protected
       { Protected Declarations }
-      procedure Initialize; override;
 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
@@ -1171,6 +1175,7 @@ type
       constructor Create(aOwner : TXCollection); override;
       destructor Destroy; override;
 
+      procedure Initialize; override;
       procedure StructureChanged; override;
 
       class function FriendlyName : String; override;
@@ -4261,30 +4266,8 @@ end;
 // Loaded
 //
 procedure TODEJointBase.Loaded;
-var
-  mng : TComponent;
-  obj : TGLBaseSceneObject;
 begin
-  inherited;
-  if FManagerName<>'' then begin
-    mng:=FindManager(TGLODEManager, FManagerName);
-    if Assigned(mng) then
-      Manager:=TGLODEManager(mng);
-    FManagerName:='';
-  end;
-  if FObject1Name<>'' then begin
-    obj:=GetGLSceneObject(FObject1Name);
-    if Assigned(obj) then
-      Object1:=obj;
-    FObject1Name:='';
-  end;
-  if FObject2Name<>'' then begin
-    obj:=GetGLSceneObject(FObject2Name);
-    if Assigned(obj) then
-      Object2:=obj;
-    FObject2Name:='';
-  end;
-  Attach;
+     DoLoaded;
 end;
 
 // RegisterJointWithObject
@@ -4413,6 +4396,36 @@ procedure TODEJointBase.StructureChanged;
 begin
   // nothing yet
 end;
+
+// DoLoaded (public proc for Loaded)
+//
+procedure TODEJointBase.DoLoaded;
+var
+  mng : TComponent;
+  obj : TGLBaseSceneObject;
+begin
+  inherited;
+  if FManagerName<>'' then begin
+    mng:=FindManager(TGLODEManager, FManagerName);
+    if Assigned(mng) then
+      Manager:=TGLODEManager(mng);
+    FManagerName:='';
+  end;
+  if FObject1Name<>'' then begin
+    obj:=GetGLSceneObject(FObject1Name);
+    if Assigned(obj) then
+      Object1:=obj;
+    FObject1Name:='';
+  end;
+  if FObject2Name<>'' then begin
+    obj:=GetGLSceneObject(FObject2Name);
+    if Assigned(obj) then
+      Object2:=obj;
+    FObject2Name:='';
+  end;
+  Attach;
+end;
+
 
 // IsAttached
 //
@@ -5633,6 +5646,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

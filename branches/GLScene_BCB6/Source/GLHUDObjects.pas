@@ -178,8 +178,12 @@ begin
    if rci.ignoreMaterials then Exit;
   	Material.Apply(rci);
    repeat
-      if AlphaChannel<>1 then
-         rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+      if AlphaChannel<>1 then begin
+         if rci.lightingDisabledCounter>0 then begin
+            with Material.FrontProperties.Diffuse do
+               glColor4f(Red, Green, Blue, AlphaChannel)
+         end else rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+      end;
       // Prepare matrices
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix;

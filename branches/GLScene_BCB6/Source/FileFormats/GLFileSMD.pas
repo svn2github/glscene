@@ -6,7 +6,8 @@
 	SMD vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array        
+      <li>24/01/05 - SG - Fix for comma decimal separator in save function (dikoe Kenguru)
+      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>30/03/04 - EG - Basic Half-Life2/XSI support
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
@@ -173,6 +174,8 @@ begin
       if (i<sl.Count) and (sl[i]='triangles') then begin
          // read optional mesh data
          Inc(i);
+         if mesh.BonesPerVertex<1 then
+            mesh.BonesPerVertex:=1;
          faceGroup:=nil;
          while sl[i]<>'end' do begin
             if (faceGroup=nil) or (faceGroup.MaterialName<>sl[i]) then begin
@@ -186,7 +189,6 @@ begin
                tl.CommaText:=sl[i];
                if tl.Count>=12 then begin
                   // Half-Life 2 SMD, specifies bones and weights
-                  //nbBones:=StrToInt(tl[9]);
                   boneID:=StrToInt(tl[10]);
                end else boneID:=StrToInt(tl[0]);
                nVert:=FindOrAdd(boneID,

@@ -151,7 +151,7 @@ uses
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
    GLFeedback, GLProjectedTextures, GLBlur, GLTrail, GLPerlin, GLLinePFX,
-   GLScriptBase,
+   GLScriptBase, GLGameMenu,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1872,6 +1872,7 @@ initialization
 
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
+      RegisterSceneObject(TGLGameMenu, 'GameMenu', glsOCHUDObjects);
 
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
       RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);

@@ -69,7 +69,7 @@ type
       private
          { Private Declarations }
          FID, FTag : Integer;
-         FOwner : TGLParticleList;  // NOT persistent
+         FManager : TGLParticleFXManager; // NOT persistent
          FPosition : TAffineVector;
          FVelocity : TAffineVector;
          FRotation : Single;
@@ -90,8 +90,8 @@ type
          procedure WriteToFiler(writer : TVirtualWriter); override;
          procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         {: Refers owner list }
-         property Owner : TGLParticleList read FOwner write FOwner;
+         property Manager : TGLParticleFXManager read FManager write FManager;
+         
          {: Particle's ID, given at birth.<p>
             ID is a value unique per manager. }
          property ID : Integer read FID;
@@ -333,7 +333,7 @@ type
    PParticleReference = ^TParticleReference;
    TParticleReferenceArray = packed array [0..MaxInt shr 4] of TParticleReference;
    PParticleReferenceArray = ^TParticleReferenceArray;
-   TPFXRegion = packed record
+   TPFXRegion = record
    {$NODEFINE TPFXRegion}
       count, capacity : Integer;
       particleRef : PParticleReferenceArray;
@@ -352,6 +352,10 @@ type
 
    PPFXRegion = ^TPFXRegion;
 
+   // TPFXSortAccuracy
+   //
+   TPFXSortAccuracy = (saLow, saOneTenth, saOneThird, saOneHalf, saHigh);
+
    // TGLParticleFXRenderer
    //
    {: Rendering interface for scene-wide particle FX.<p>
@@ -366,13 +370,18 @@ type
          { Private Declarations }
          FManagerList : TList;
          FLastSortTime : Double;
+         FLastParticleCount : Integer;
          FZWrite, FZTest, FZCull : Boolean;
+         FZSortAccuracy : TPFXSortAccuracy;
+         FZMaxDistance : Single;
 			FBlendingMode : TBlendingMode;
          FCurrentRCI : PRenderContextInfo;
          FRegions : array [0..cPFXNbRegions-1] of TPFXRegion;
 
       protected
          { Protected Declarations }
+         function StoreZMaxDistance : Boolean;
+
          {: Register a manager }
          procedure RegisterManager(aManager : TGLParticleFXManager);
          {: UnRegister a manager }
@@ -391,6 +400,8 @@ type
          property CurrentRCI : PRenderContextInfo read FCurrentRCI;
          {: Time (in msec) spent sorting the particles for last render. }
          property LastSortTime : Double read FLastSortTime;
+         {: Amount of particles during the last render. }
+         property LastParticleCount : Integer read FLastParticleCount;
 
 		published
    		{ Published Declarations }
@@ -403,6 +414,13 @@ type
          property ZTest : Boolean read FZTest write FZTest default True;
          {: If true the renderer will cull particles that are behind the camera. }
          property ZCull : Boolean read FZCull write FZCull default True;
+         {: If true particles will be accurately sorted back to front.<p>
+            When false, only a rough ordering is used, which can result in
+            visual glitches but may be faster. } 
+         property ZSortAccuracy : TPFXSortAccuracy read FZSortAccuracy write FZSortAccuracy default saHigh;
+         {: Maximum distance for rendering PFX particles.<p>
+            If zero, camera's DepthOfView is used. }
+         property ZMaxDistance : Single read FZMaxDistance write FZMaxDistance stored StoreZMaxDistance;
          {: Default blending mode for particles.<p>
             "Additive" blending is the usual mode (increases brightness and
             saturates), "transparency" may be used for smoke or systems that
@@ -444,15 +462,12 @@ type
          FDisabledIfOwnerInvisible: Boolean;
          FTimeRemainder : Double;
          FRotationDispersion: Single;
-         procedure SetRotationDispersion(const Value: Single);
 
       protected
          { Protected Declarations }
          procedure SetInitialVelocity(const val : TGLCoordinates);
          procedure SetInitialPosition(const val : TGLCoordinates);
          procedure SetPositionDispersionRange(const val : TGLCoordinates);
-         procedure SetVelocityDispersion(const val : Single);
-         procedure SetPositionDispersion(const val : Single);
          procedure SetParticleInterval(const val : Single);
          procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
@@ -478,15 +493,15 @@ type
 		published
 			{ Published Declarations }
          property InitialVelocity : TGLCoordinates read FInitialVelocity write SetInitialVelocity;
-         property VelocityDispersion : Single read FVelocityDispersion write SetVelocityDispersion;
+         property VelocityDispersion : Single read FVelocityDispersion write FVelocityDispersion;
          property InitialPosition : TGLCoordinates read FInitialPosition write SetInitialPosition;
-         property PositionDispersion : Single read FPositionDispersion write SetPositionDispersion;
+         property PositionDispersion : Single read FPositionDispersion write FPositionDispersion;
          property PositionDispersionRange : TGLCoordinates read FPositionDispersionRange write SetPositionDispersionRange;
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
          property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
          property PositionMode : TGLSourcePFXPositionMode read FPositionMode write FPositionMode default spmAbsoluteOffset;
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
-         property RotationDispersion : Single read FRotationDispersion write SetRotationDispersion;
+         property RotationDispersion : Single read FRotationDispersion write FRotationDispersion;
          property Enabled : boolean read FEnabled write FEnabled;
          property DisabledIfOwnerInvisible : boolean read FDisabledIfOwnerInvisible write FDisabledIfOwnerInvisible;
    end;
@@ -533,7 +548,6 @@ type
             will triple speed over 1 second, and a friction of 1 (default
             value) will have no effect. }
          property Friction : Single read FFriction write FFriction;
-         {: Rotation applied to the particle's velocity. }
    end;
 
 	// TPFXLifeColor
@@ -544,6 +558,7 @@ type
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
          FLifeTime, FInvLifeTime : Single;
+         FIntervalRatio : Single;
          FSizeScale : Single;
          FDoScale : Boolean;
          FDoRotate: boolean;
@@ -559,8 +574,6 @@ type
          procedure SetSizeScale(const val : Single);
          procedure SetRotateAngle(const Value: Single);  // indirectly persistent
 
-         procedure OnChanged(Sender : TObject);
-
       public
 	      { Public Declarations }
 	      constructor Create(Collection : TCollection); override;
@@ -570,6 +583,8 @@ type
 
          {: Stores 1/LifeTime }
          property InvLifeTime : Single read FInvLifeTime;
+         {: Stores 1/(LifeTime[Next]-LifeTime[Self]) }
+         property InvIntervalRatio : Single read FIntervalRatio;
 
 	   published
 	      { Published Declarations }
@@ -579,7 +594,7 @@ type
          property SizeScale : Single read FSizeScale write SetSizeScale;
          
          property RotateAngle : Single read FRotateAngle write SetRotateAngle;
-         
+
 	end;
 
 	// TPFXLifeColors
@@ -601,6 +616,8 @@ type
 	      property Items[index : Integer] : TPFXLifeColor read GetItems write SetItems; default;
 
          function MaxLifeTime : Double;
+         function RotationsDefined : Boolean;
+         procedure PrepareIntervalRatios;
    end;
 
    // TGLLifeColoredPFXManager
@@ -612,14 +629,13 @@ type
          { Private Declarations }
          FLifeColors : TPFXLifeColors;
          FLifeColorsLookup : TList;
-         FLifeColorsInvTimeDiff : TSingleList;
+         FLifeRotations : Boolean;
          FColorInner : TGLColor;
          FColorOuter : TGLColor;
          FParticleSize : Single;
 
       protected
          { Protected Declarations }
-         procedure SetParticleSize(const val : Single);
          procedure SetLifeColors(const val : TPFXLifeColors);
          procedure SetColorInner(const val : TGLColor);
          procedure SetColorOuter(const val : TGLColor);
@@ -632,16 +648,18 @@ type
          procedure ComputeColors(var lifeTime : Single; var inner, outer : TColorVector);
          procedure ComputeInnerColor(var lifeTime : Single; var inner : TColorVector);
          procedure ComputeOuterColor(var lifeTime : Single; var outer : TColorVector);
-         function ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
+         function  ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
+         function  ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
          
-         function ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
+         procedure RotateVertexBuf(buf : TAffineVectorList; lifeTime : Single;
+                                   const pos : TAffineVector);
 
       public
          { Public Declarations }
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
-         property ParticleSize : Single read FParticleSize write SetParticleSize;
+         property ParticleSize : Single read FParticleSize write FParticleSize;
          property ColorInner : TGLColor read FColorInner write SetColorInner;
          property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
          property LifeColors : TPFXLifeColors read FLifeColors write SetLifeColors;
@@ -983,7 +1001,7 @@ end;
 //
 constructor TGLParticle.Create;
 begin
-   FEffectScale :=1;
+   FEffectScale:=1;
    inherited Create;
 end;
 
@@ -1119,7 +1137,7 @@ end;
 //
 procedure TGLParticleList.AfterItemCreated(Sender : TObject);
 begin
-   (Sender as TGLParticle).Owner:=Self;
+   (Sender as TGLParticle).Manager:=Self.Owner;
 end;
 
 // ItemCount
@@ -1133,7 +1151,7 @@ end;
 //
 function  TGLParticleList.AddItem(aItem : TGLParticle) : Integer;
 begin
-   aItem.Owner:=Self;
+   aItem.Manager:=Self.Owner;
    Result:=FItemList.Add(aItem);
    FDirectList:=PGLParticleArray(FItemList.List);
 end;
@@ -1146,8 +1164,8 @@ var
 begin
    i:=FItemList.IndexOf(aItem);
    if i>=0 then begin
-      if aItem.Owner=Self then
-         aItem.Owner:=nil;
+      if aItem.Manager=Self.Owner then
+         aItem.Manager:=nil;
       aItem.Free;
       FItemList.List[i]:=nil;
    end;
@@ -1223,7 +1241,7 @@ begin
    Result:=ParticlesClass.Create;
    Result.FID:=FNextID;
    if Assigned(cadencer) then
-      Result.FCreationTime:=Cadencer.GetCurrentTime;   
+      Result.FCreationTime:=Cadencer.CurrentTime;
    Inc(FNextID);
    FParticles.AddItem(Result);
    if Assigned(FOnCreateParticle) then
@@ -1435,6 +1453,7 @@ begin
    ObjectStyle:=ObjectStyle+[osNoVisibilityCulling, osDirectDraw];
    FZTest:=True;
    FZCull:=True;
+   FZSortAccuracy:=saHigh;
    FManagerList:=TList.Create;
    FBlendingMode:=bmAdditive;
 end;
@@ -1540,20 +1559,19 @@ var
    end;
 
    procedure DistToRegionIdx; register;
-   begin
-//   asm
+   asm
+//   begin
       // fast version of
-      regionIdx := Trunc((dist - distDelta) * invRegionSize);
-{      FLD     dist
+//      regionIdx := Trunc((dist - distDelta) * invRegionSize);
+      FLD     dist
       FSUB    distDelta
       FMUL    invRegionSize
-      FISTP   regionIdx}
+      FISTP   regionIdx
    end;
 
 var
-   minDist, maxDist : Integer;
+   minDist, maxDist, sortMaxRegion : Integer;
    curManager : TGLParticleFXManager;
-   curManagerList : TGLParticleList;
    curList : PGLParticleArray;
    curParticle : TGLParticle;
    curRegion : PPFXRegion;
@@ -1569,8 +1587,13 @@ begin
    // precalcs
    with Scene.CurrentGLCamera do begin
       PSingle(@minDist)^:=NearPlane+1;
-      PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
-      invRegionSize:=(cPFXNbRegions-2)/DepthOfView;
+      if ZMaxDistance<=0 then begin
+         PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
+         invRegionSize:=(cPFXNbRegions-2)/DepthOfView;
+      end else begin
+         PSingle(@maxDist)^:=NearPlane+ZMaxDistance+1;
+         invRegionSize:=(cPFXNbRegions-2)/ZMaxDistance;
+      end;
       distDelta:=NearPlane+1+0.49999/invRegionSize
    end;
    SetVector(cameraPos, rci.cameraPosition);
@@ -1578,10 +1601,11 @@ begin
    try
       // Collect particles
       // only depth-clipping performed as of now.
-      for managerIdx:=0 to FManagerList.Count-1 do
-      begin
+      FLastParticleCount:=0;
+      for managerIdx:=0 to FManagerList.Count-1 do begin
          curManager:=TGLParticleFXManager(FManagerList[managerIdx]);
          curList:=curManager.FParticles.List;
+         Inc(FLastParticleCount, curManager.ParticleCount);
          for particleIdx:=0 to curManager.ParticleCount-1 do begin
             curParticle:=curList[particleIdx];
             dist:=PointProject(curParticle.FPosition, cameraPos, cameraVector)+1;
@@ -1589,8 +1613,7 @@ begin
                if PInteger(@dist)^<minDist then
                   PInteger(@dist)^:=minDist;
             end;
-            if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then
-            begin
+            if (PInteger(@dist)^>=minDist) and (PInteger(@dist)^<=maxDist) then begin
                DistToRegionIdx;
                curRegion:=@FRegions[regionIdx];
                // add particle to region
@@ -1608,6 +1631,14 @@ begin
          end;
       end;
       // Sort regions
+      case ZSortAccuracy of
+         saLow : sortMaxRegion:=0;
+         saOneTenth : sortMaxRegion:=cPFXNbRegions div 10;
+         saOneThird : sortMaxRegion:=cPFXNbRegions div 3;
+         saOneHalf : sortMaxRegion:=cPFXNbRegions div 2;
+      else
+         sortMaxRegion:=cPFXNbRegions;
+      end;
       for regionIdx:=0 to cPFXNbRegions-1 do begin
          curRegion:=@FRegions[regionIdx];
          if curRegion.count>1 then begin
@@ -1615,8 +1646,8 @@ begin
             with curRegion^ do for particleIdx:=0 to count-1 do
                particleOrder[particleIdx]:=@particleRef[particleIdx];
             // QuickSort
-//            if FBlendingMode<>bmAdditive then
-//               QuickSortRegion(0, curRegion.count-1, curRegion);
+            if (regionIdx<sortMaxRegion) and (FBlendingMode<>bmAdditive) then
+               QuickSortRegion(0, curRegion.count-1, curRegion);
          end else if curRegion.Count=1 then begin
             // Prepare order table
             curRegion.particleOrder[0]:=@curRegion.particleRef[0];
@@ -1628,10 +1659,13 @@ begin
       glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
 
       glPushAttrib(GL_ALL_ATTRIB_BITS);
+      
       glDisable(GL_CULL_FACE);
       glDisable(GL_TEXTURE_2D);
       currentTexturingMode:=0;
       glDisable(GL_LIGHTING);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
       case FBlendingMode of
          bmAdditive : begin
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -1655,28 +1689,26 @@ begin
       try
          // Initialize managers
          for managerIdx:=0 to FManagerList.Count-1 do
-            TGLParticleFXManager(FManagerList[managerIdx]).InitializeRendering;
+            TGLParticleFXManager(FManagerList.List[managerIdx]).InitializeRendering;
          // Start Rendering... at last ;)
          try
             curManager:=nil;
-            curManagerList:=nil;
             for regionIdx:=cPFXNbRegions-1 downto 0 do begin
                curRegion:=@FRegions[regionIdx];
                if curRegion.count>0 then begin
                   curParticleOrder:=@curRegion.particleOrder[0];
                   for particleIdx:=curRegion.count-1 downto 0 do begin
                      curParticle:=PParticleReference(curParticleOrder[particleIdx]).particle;
-                     if curParticle.Owner<>curManagerList then begin
+                     if curParticle.Manager<>curManager then begin
                         if Assigned(curManager) then
                            curManager.EndParticles;
-                        curManagerList:=curParticle.Owner;
-                        curManager:=curManagerList.Owner;
+                        curManager:=curParticle.Manager;
                         if curManager.TexturingMode<>currentTexturingMode then begin
                            if currentTexturingMode<>0 then
                               glDisable(currentTexturingMode);
                            currentTexturingMode:=curManager.TexturingMode;
-                           if currentTexturingMode<>0 then   // GRAHAM KENNEDY
-                           glEnable(currentTexturingMode);
+                           if currentTexturingMode<>0 then
+                              glEnable(currentTexturingMode);
                         end;
                         curManager.BeginParticles;
                      end;
@@ -1689,7 +1721,7 @@ begin
          finally
             // Finalize managers
             for managerIdx:=0 to FManagerList.Count-1 do
-               TGLParticleFXManager(FManagerList[managerIdx]).FinalizeRendering;
+               TGLParticleFXManager(FManagerList.List[managerIdx]).FinalizeRendering;
          end;
       finally
          if FZWrite then
@@ -1702,6 +1734,13 @@ begin
       for regionIdx:=cPFXNbRegions-1 downto 0 do
          FRegions[regionIdx].count:=0;
    end;
+end;
+
+// StoreZMaxDistance
+//
+function TGLParticleFXRenderer.StoreZMaxDistance : Boolean;
+begin
+   Result:=(FZMaxDistance<>0);
 end;
 
 // ------------------
@@ -1815,14 +1854,6 @@ begin
    FInitialVelocity.Assign(val);
 end;
 
-// SetVelocityDispersion
-//
-procedure TGLSourcePFXEffect.SetVelocityDispersion(const val : Single);
-begin
-   FVelocityDispersion:=val;
-   OwnerBaseSceneObject.NotifyChange(Self);
-end;
-
 // SetInitialPosition
 //
 procedure TGLSourcePFXEffect.SetInitialPosition(const val : TGLCoordinates);
@@ -1832,25 +1863,9 @@ end;
 
 // SetPositionDispersionRange
 //
-{!EK_start }
-procedure TGLSourcePFXEffect.SetRotationDispersion(const Value: Single);
-begin
-  FRotationDispersion := Value;
-  OwnerBaseSceneObject.NotifyChange(Self);
-end;
-{!EK_end }
-
 procedure TGLSourcePFXEffect.SetPositionDispersionRange(const val : TGLCoordinates);
 begin
    FPositionDispersionRange.Assign(val);
-end;
-
-// SetPositionDispersion
-//
-procedure TGLSourcePFXEffect.SetPositionDispersion(const val : Single);
-begin
-   FPositionDispersion:=val;
-   OwnerBaseSceneObject.NotifyChange(Self);
 end;
 
 // SetParticleInterval
@@ -1862,7 +1877,6 @@ begin
       if FParticleInterval<0 then FParticleInterval:=0;
       if FTimeRemainder>FParticleInterval then
          FTimeRemainder:=FParticleInterval;
-      OwnerBaseSceneObject.NotifyChange(Self);
    end;
 end;
 
@@ -1968,8 +1982,8 @@ end;
 constructor TPFXLifeColor.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
-   FColorInner:=TGLColor.CreateInitialized(Self, NullHmgVector, OnChanged);
-   FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector, OnChanged);
+   FColorInner:=TGLColor.CreateInitialized(Self, NullHmgVector);
+   FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector);
    FLifeTime:=1;
    FInvLifeTime:=1;
    FSizeScale:=1;
@@ -2010,13 +2024,6 @@ begin
                    ColorOuter.Red, ColorOuter.Green, ColorOuter.Blue, ColorOuter.Alpha]);
 end;
 
-// OnChanged
-//
-procedure TPFXLifeColor.OnChanged(Sender : TObject);
-begin
-   ((Collection as TPFXLifeColors).GetOwner as TGLParticleFXManager).NotifyChange(Self);
-end;
-
 // SetColorInner
 //
 procedure TPFXLifeColor.SetColorInner(const val : TGLColor);
@@ -2039,7 +2046,6 @@ begin
       FLifeTime:=val;
       if FLifeTime<=0 then FLifeTime:=1e-6;
       FInvLifeTime:=1/FLifeTime;
-      OnChanged(Self);
    end;
 end;
 
@@ -2106,6 +2112,31 @@ begin
    if Count>0 then
       Result:=Items[Count-1].LifeTime
    else Result:=1e30;
+end;
+
+// RotationsDefined
+//
+function TPFXLifeColors.RotationsDefined : Boolean;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do begin
+      if Items[i].RotateAngle<>0 then begin
+         Result:=True;
+         Exit;
+      end;
+   end;
+   Result:=False;
+end;
+
+// PrepareIntervalRatios
+//
+procedure TPFXLifeColors.PrepareIntervalRatios;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-2 do
+      Items[i].FIntervalRatio:=1/(Items[i+1].LifeTime-Items[i].LifeTime);
 end;
 
 // ------------------
@@ -2234,16 +2265,6 @@ begin
    inherited Destroy;
 end;
 
-// SetParticleSize
-//
-procedure TGLLifeColoredPFXManager.SetParticleSize(const val : Single);
-begin
-   if FParticleSize<>val then begin
-      FParticleSize:=val;
-      NotifyChange(Self);
-   end;
-end;
-
 // SetColorInner
 //
 procedure TGLLifeColoredPFXManager.SetColorInner(const val : TGLColor);
@@ -2270,21 +2291,14 @@ end;
 procedure TGLLifeColoredPFXManager.InitializeRendering;
 var
    i, n : Integer;
-   lt, ct : Single;
 begin
    n:=LifeColors.Count;
    FLifeColorsLookup:=TList.Create;
    FLifeColorsLookup.Capacity:=n;
    for i:=0 to n-1 do
       FLifeColorsLookup.Add(LifeColors[i]);
-   FLifeColorsInvTimeDiff:=TSingleList.Create;
-   FLifeColorsInvTimeDiff.Capacity:=n;
-   lt:=0;
-   for i:=0 to n-1 do begin
-      ct:=LifeColors[i].LifeTime;
-      FLifeColorsInvTimeDiff.Add(1/(ct-lt));
-      lt:=ct;
-   end;
+   FLifeRotations:=LifeColors.RotationsDefined;
+   LifeColors.PrepareIntervalRatios;
 end;
 
 // FinalizeRendering
@@ -2292,7 +2306,6 @@ end;
 procedure TGLLifeColoredPFXManager.FinalizeRendering;
 begin
    FLifeColorsLookup.Free;
-   FLifeColorsInvTimeDiff.Free;
 end;
 
 // MaxParticleAge
@@ -2319,7 +2332,7 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
@@ -2332,7 +2345,7 @@ begin
          else
             lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
             lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
-            f:=(lifeTime-lck1.LifeTime)*FLifeColorsInvTimeDiff.List[k];
+            f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
@@ -2347,28 +2360,28 @@ var
    i, k, n : Integer;
    f : Single;
    lck, lck1 : TPFXLifeColor;
+   lifeColorsLookupList : PPointerList;
 begin
    with LifeColors do begin
       n:=Count-1;
       if n<0 then
          inner:=ColorInner.Color
       else begin
+         lifeColorsLookupList:=FLifeColorsLookup.List;
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(lifeColorsLookupList[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
-         case k of
-            0 : begin
-               lck:=LifeColors[k];
-               f:=lifeTime*lck.InvLifeTime;
-               VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
-            end;
-         else
-            lck:=LifeColors[k];
-            lck1:=LifeColors[k-1];
-            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+         if k=0 then begin
+            lck:=TPFXLifeColor(lifeColorsLookupList[k]);
+            f:=lifeTime*lck.InvLifeTime;
+            VectorLerp(ColorInner.Color, lck.ColorInner.Color, f, inner);
+         end else begin
+            lck:=TPFXLifeColor(lifeColorsLookupList[k]);
+            lck1:=TPFXLifeColor(lifeColorsLookupList[k-1]);
+            f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorInner.Color, lck.ColorInner.Color, f, inner);
          end;
       end;
@@ -2391,26 +2404,26 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
             0 : begin
-               lck:=LifeColors[k];
+               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
                f:=lifeTime*lck.InvLifeTime;
                VectorLerp(ColorOuter.Color, lck.ColorOuter.Color, f, outer);
             end;
          else
-            lck:=LifeColors[k];
-            lck1:=LifeColors[k-1];
-            f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
+            f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
             VectorLerp(lck1.ColorOuter.Color, lck.ColorOuter.Color, f, outer);
          end;
       end;
    end;
 end;
 
-// ComputeSize
+// ComputeSizeScale
 //
 function TGLLifeColoredPFXManager.ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
 var
@@ -2426,12 +2439,12 @@ begin
          if n>0 then begin
             k:=-1;
             for i:=0 to n do
-               if Items[i].LifeTime<lifeTime then k:=i;
+               if TPFXLifeColor(FLifeColorsLookup.List[i]).LifeTime<lifeTime then k:=i;
             if k<n then Inc(k);
          end else k:=0;
          case k of
             0 : begin
-               lck:=LifeColors[k];
+               lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
                Result:=lck.FDoScale;
                if Result then begin
                   f:=lifeTime*lck.InvLifeTime;
@@ -2439,11 +2452,11 @@ begin
                end;
             end;
          else
-            lck:=LifeColors[k];
-            lck1:=LifeColors[k-1];
+            lck:=TPFXLifeColor(FLifeColorsLookup.List[k]);
+            lck1:=TPFXLifeColor(FLifeColorsLookup.List[k-1]);
             Result:=lck.FDoScale or lck1.FDoScale;
             if Result then begin
-               f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+               f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
                sizeScale:=Lerp(lck1.SizeScale, lck.SizeScale, f);
             end;
          end;
@@ -2451,9 +2464,8 @@ begin
    end;
 end;
 
-// ComputeSize
+// ComputeRotateAngle
 //
-
 function TGLLifeColoredPFXManager.ComputeRotateAngle(var lifeTime : Single; var rotateAngle : Single) : Boolean;
 var
    i, k, n : Integer;
@@ -2487,7 +2499,7 @@ begin
             Result:=lck.FDoScale or lck1.FDoRotate;
             if Result then
             begin
-               f:=(lifeTime-lck1.LifeTime)/(lck.LifeTime-lck1.LifeTime);
+               f:=(lifeTime-lck1.LifeTime)*lck1.InvIntervalRatio;
                rotateAngle := Lerp(lck1.rotateAngle, lck.rotateAngle, f);
             end;
          end;
@@ -2495,6 +2507,30 @@ begin
    end;
 end;
 
+// RotateVertexBuf
+//
+procedure TGLLifeColoredPFXManager.RotateVertexBuf(buf : TAffineVectorList;
+               lifeTime : Single; const pos : TAffineVector);
+var
+   rotateAngle : Single;
+   axis, p : TAffineVector;
+   rotMatrix : TMatrix;
+begin
+   if ComputeRotateAngle(lifeTime, rotateAngle) then begin
+      MakeVector(axis, 0, 0, 1);
+      axis := VectorTransform(axis, Renderer.Scene.CurrentBuffer.ModelViewMatrix);
+      NormalizeVector(axis);
+
+      // code below probably does it in the slowest fashion possible
+      rotMatrix := CreateRotationMatrix(axis, rotateAngle*c180divPI);
+      p.Coord[0] := -pos.Coord[0];
+      p.Coord[1] := -pos.Coord[1];
+      p.Coord[2] := -pos.Coord[2];
+      buf.Translate(p);
+      buf.TransformAsVectors(rotMatrix);
+      buf.Translate(pos);
+   end;
+end;
 
 // ------------------
 // ------------------ TGLCustomPFXManager ------------------
@@ -2664,13 +2700,10 @@ end;
 procedure TGLPolygonPFXManager.RenderParticle(aParticle : TGLParticle);
 var
    i : Integer;
-   lifeTime, sizeScale, rotateAngle : Single;
+   lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
    pos : TAffineVector;
    vertexList : PAffineVectorArray;
-   axis, p : TAffineVector;
-   rotMatrix : TMatrix;
-   diff : Single;
 begin
    lifeTime:=FCurrentTime-aParticle.CreationTime;
    ComputeColors(lifeTime, inner, outer);
@@ -2684,33 +2717,18 @@ begin
          VectorAdd(VectorScale(FVertices.List[i], aParticle.FEffectScale), pos, vertexList[i])
    end else VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
 
-   if ComputeRotateAngle(lifeTime, rotateAngle) and (Renderer <> nil) then begin
-      MakeVector(axis, 0, 0, 1);
-      axis := VectorTransform(axis, Renderer.Scene.CurrentBuffer.ModelViewMatrix);
-      NormalizeVector(axis);
+   if FLifeRotations then
+      RotateVertexBuf(FVertBuf, lifeTime, pos);
 
-      diff := DegToRad(rotateAngle);
-      rotMatrix := CreateRotationMatrix(axis, diff);
-      p.Coord[0] := -pos.Coord[0];
-      p.Coord[1] := -pos.Coord[1];
-      p.Coord[2] := -pos.Coord[2];
-      FVertBuf.Translate(p);
-      FVertBuf.TransformAsVectors(rotMatrix);
-      FVertBuf.Translate(pos);
-   end;
-   
    if ComputeSizeScale(lifeTime, sizeScale) then
       FVertBuf.Scale(sizeScale);
-
 
    glBegin(GL_TRIANGLE_FAN);
       glColor4fv(@inner);
       glVertex3fv(@pos);
       glColor4fv(@outer);
-      for i:=0 to FVertBuf.Count-1 do begin
-         //ScaleVector(vertexList[i],aParticle.EffectScale);
+      for i:=0 to FVertBuf.Count-1 do
          glVertex3fv(@vertexList[i]);
-      end;
 
       glVertex3fv(@vertexList[0]);
    glEnd;                 
@@ -2924,18 +2942,14 @@ const
                        ((S: 1.0; T: 0.5), (S: 0.5; T: 0.5), (S: 0.5; T: 0.0), (S: 1.0; T: 0.0)),
                        ((S: 0.5; T: 0.5), (S: 0.0; T: 0.5), (S: 0.0; T: 0.0), (S: 0.5; T: 0.0)));
 var
-   lifeTime, sizeScale, rotateAngle : Single;
+   lifeTime, sizeScale : Single;
    inner, outer : TColorVector;
-   pos : TAffineVector;
    vertexList : PAffineVectorArray;
    i : Integer;
    tcs : PTexCoordsSet;
    spt : TSpritesPerTexture;
-   axis, p : TAffineVector;
-   rotMatrix : TMatrix;
-   diff : Single;
 
-   procedure IssueVertices;
+   procedure IssueVertices(tcs : PTexCoordsSet; vertexList : PAffineVectorArray);
    begin
       glTexCoord2fv(@tcs[0]);
       glVertex3fv(@vertexList[0]);
@@ -2959,32 +2973,22 @@ begin
       tcs:=@cBaseTexCoordsSet;
    end;
 
-   pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
-   sizeScale :=1;
-   if ComputeSizeScale(lifeTime, sizeScale) or (aParticle.FEffectScale<>1) then begin
-      sizeScale := sizeScale*aParticle.FEffectScale;
+   if aParticle.FEffectScale<>1 then begin
+      if ComputeSizeScale(lifeTime, sizeScale) then
+         sizeScale:=sizeScale*aParticle.FEffectScale
+      else sizeScale:=aParticle.FEffectScale;
       for i:=0 to FVertBuf.Count-1 do
-         vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
+         vertexList[i]:=VectorCombine(FVertices.List[i], aParticle.Position, sizeScale, 1);
    end else begin
-      VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
-      {for i:=0 to FVertBuf.Count-1 do
-          ScaleVector(vertexList[i],aParticle.EffectScale);}
+      if ComputeSizeScale(lifeTime, sizeScale) then begin
+         for i:=0 to FVertBuf.Count-1 do
+            vertexList[i]:=VectorCombine(FVertices.List[i], aParticle.Position, sizeScale, 1);
+      end else VectorArrayAdd(FVertices.List, aParticle.Position, FVertBuf.Count, vertexList);
    end;
 
-   if ComputeRotateAngle(lifeTime, rotateAngle) then begin
-      SetVector(axis, Renderer.Scene.CurrentGLCamera.AbsolutePosition);
-      SetVector(axis, VectorSubtract(axis, pos));
-      NormalizeVector(axis);
-      diff := DegToRad(rotateAngle);
-      rotMatrix := CreateRotationMatrix(axis, diff);
-      p.Coord[0] := -pos.Coord[0];
-      p.Coord[1] := -pos.Coord[1];
-      p.Coord[2] := -pos.Coord[2];
-      FVertBuf.Translate(p);
-      FVertBuf.TransformAsVectors(rotMatrix);
-      FVertBuf.Translate(pos);
-   end;
+   if FLifeRotations then
+      RotateVertexBuf(FVertBuf, lifeTime, aParticle.Position);
 
    case ColorMode of
       scmFade : begin
@@ -2992,9 +2996,9 @@ begin
          glBegin(GL_TRIANGLE_FAN);
             glColor4fv(@inner);
             glTexCoord2f((tcs[0].S+tcs[2].S)*0.5, (tcs[0].T+tcs[2].T)*0.5);
-            glVertex3fv(@pos);
+            glVertex3fv(@aParticle.Position);
             glColor4fv(@outer);
-            IssueVertices;
+            IssueVertices(tcs, vertexList);
             glTexCoord2fv(@tcs[0]);
             glVertex3fv(@vertexList[0]);
          glEnd;
@@ -3002,19 +3006,19 @@ begin
       scmInner : begin
          ComputeInnerColor(lifeTime, inner);
          glColor4fv(@inner);
-         IssueVertices;
+         IssueVertices(tcs, vertexList);
       end;
       scmOuter : begin
          ComputeOuterColor(lifeTime, outer);
          glColor4fv(@outer);
-         IssueVertices;
+         IssueVertices(tcs, vertexList);
       end;
       scmNone : begin
-         IssueVertices;
+         IssueVertices(tcs, vertexList);
       end;
    else
       Assert(False);
-   end;
+   end;            
 end;
 
 // EndParticles
@@ -3023,7 +3027,7 @@ procedure TGLBaseSpritePFXManager.EndParticles;
 begin
    if ColorMode<>scmFade then
       glEnd;
-   UnapplyBlendingMode;
+   UnApplyBlendingMode;
 end;
 
 // FinalizeRendering

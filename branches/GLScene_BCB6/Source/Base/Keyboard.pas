@@ -31,6 +31,11 @@ type
 
    TVirtualKeyCode = Integer;
 
+const
+   // pseudo wheel keys (we squat F23/F24), see KeyboardNotifyWheelMoved
+   VK_MOUSEWHEELUP   = VK_F23;
+   VK_MOUSEWHEELDOWN = VK_F24;
+
 {: Check if the key corresponding to the given Char is down.<p>
    The character is mapped to the <i>main keyboard</i> only, and not to the
    numeric keypad.<br>
@@ -61,6 +66,13 @@ function KeyNameToVirtualKeyCode(const keyName : String) : TVirtualKeyCode;
    using the keyboard. }
 function CharToVirtualKeyCode(c : Char) : TVirtualKeyCode;
 
+{: Use this procedure to notify a wheel movement and have it resurfaced as key stroke.<p>
+   Honoured by IsKeyDown and KeyPressed }
+procedure KeyboardNotifyWheelMoved(wheelDelta : Integer);
+
+var
+   vLastWheelDelta : Integer;
+
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -83,6 +95,8 @@ const
    cPAGEDOWN = 'PAGE DOWN';
    cHOME = 'HOME';
    cEND = 'END';
+   cMOUSEWHEELUP = 'MWHEEL UP';
+   cMOUSEWHEELDOWN = 'MWHEEL DOWN';
 
 // IsKeyDown
 //
@@ -101,7 +115,18 @@ end;
 //
 function IsKeyDown(vk : TVirtualKeyCode) : Boolean;
 begin
-   Result:=(GetAsyncKeyState(vk)<0);
+   case vk of
+      VK_MOUSEWHEELUP : begin
+         Result:=(vLastWheelDelta>0);
+         if Result then vLastWheelDelta:=0;
+      end;
+      VK_MOUSEWHEELDOWN : begin
+         Result:=(vLastWheelDelta<0);
+         if Result then vLastWheelDelta:=0;
+      end;
+   else
+      Result:=(GetAsyncKeyState(vk)<0);
+   end;
 end;
 
 // KeyPressed
@@ -117,9 +142,15 @@ begin
       for i:=minVkCode to High(buf) do begin
          if (buf[i] and $80)<>0 then begin
             Result:=i;
-            Break;
+            Exit;
          end;
       end;
+   end;
+   if vLastWheelDelta<>0 then begin
+      if vLastWheelDelta>0 then
+         Result:=VK_MOUSEWHEELUP
+      else Result:=VK_MOUSEWHEELDOWN;
+      vLastWheelDelta:=0;
    end;
 end;
 
@@ -142,6 +173,8 @@ begin
       VK_NEXT : Result:=cPAGEDOWN;
       VK_HOME : Result:=cHOME;
       VK_END : Result:=cEND;
+      VK_MOUSEWHEELUP : Result:=cMOUSEWHEELUP;
+      VK_MOUSEWHEELDOWN : Result:=cMOUSEWHEELDOWN;
    else
       nSize:=32; // should be enough
       SetLength(Result, nSize);
@@ -163,6 +196,10 @@ begin
       Result:=VK_MBUTTON
    else if keyName=cRBUTTON then
       Result:=VK_RBUTTON
+   else if keyName=cMOUSEWHEELUP then
+      Result:=VK_MOUSEWHEELUP
+   else if keyName=cMOUSEWHEELDOWN then
+      Result:=VK_MOUSEWHEELDOWN
    else begin
       // ok, I admit this is plain ugly. 8)
       Result:=-1;
@@ -181,6 +218,13 @@ function CharToVirtualKeyCode(c : Char) : TVirtualKeyCode;
 begin
    Result:=VkKeyScan(c) and $FF;
    if Result=$FF then Result:=-1;
+end;
+
+// KeyboardNotifyWheelMoved
+//
+procedure KeyboardNotifyWheelMoved(wheelDelta : Integer);
+begin
+   vLastWheelDelta:=wheelDelta;
 end;
 
 end.

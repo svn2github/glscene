@@ -231,7 +231,7 @@ begin
          // italics aren't properly acknowledged in font width
          HSpaceFix:=-(CharWidth div 3);
          CharWidth:=CharWidth-HSpaceFix;
-      end;
+      end else HSpaceFix:=0;
    end;
 
    nbChars:=Ranges.CharacterCount;
