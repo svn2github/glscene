@@ -135,8 +135,6 @@ begin
 
       if renderSelf and (VectorDotProduct(VectorSubtract(rci.cameraPosition, AbsolutePosition), AbsoluteDirection)>0) then begin
 
-         glPushAttrib(GL_ENABLE_BIT);
-
          // "Render" stencil mask
          if (spoUseStencil in ShadowOptions) then begin
             glClearStencil(1);
@@ -152,6 +150,7 @@ begin
 
          if Assigned(FShadowedLight) then begin
 
+            glPushAttrib(GL_ENABLE_BIT);
             glPushMatrix;
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
 
@@ -200,12 +199,9 @@ begin
             glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
 
             glPopMatrix;
-            ResetGLMaterialColors;
-            ResetGLCurrentTexture;
+            glPopAttrib;
 
          end;
-
-         glPopAttrib;
 
          if spoUseStencil in ShadowOptions then begin
             glDisable(GL_STENCIL_TEST);
