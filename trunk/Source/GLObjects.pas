@@ -1509,8 +1509,7 @@ end;
 procedure TGLSprite.BuildList(var rci : TRenderContextInfo);
 var
    vx, vy : TAffineVector;
-   i : Integer;
-   w, h, c, s : Single;
+   w, h : Single;
    mat : TMatrix;
    u0, v0, u1, v1 : Integer;
 begin
