@@ -51,6 +51,7 @@ type
          procedure SetCelShaderOptions(const val : TGLCelShaderOptions);
          procedure SetOutlineWidth(const val : Integer);
          procedure BuildShadeTexture;
+         procedure Loaded; override;
 
       public
          constructor Create(AOwner : TComponent); override;
@@ -155,6 +156,14 @@ begin
       glDeleteProgramsARB(1, @FVertexProgramHandle);
    FShadeTexture.Free;
    inherited;
+end;
+
+// Loaded
+//
+procedure TGLCelShader.Loaded;
+begin
+   inherited;
+   BuildShadeTexture;
 end;
 
 // BuildShadeTexture
