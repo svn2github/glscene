@@ -29,7 +29,7 @@ type
    //
    {: Silouhette generation parameters.<p>
       SeenFrom and LightDirection are expected in local coordinates. }
-   TGLSilhouetteParameters = record
+   TGLSilhouetteParameters = packed record
       SeenFrom, LightDirection : TAffineVector;
       Style : TGLSilhouetteStyle;
       CappingRequired : Boolean;
