@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>05/11/01 - Egg - MoveAroundTarget fix (Phil Scadden)
+      <li>06/12/01 - Egg - Published OnDblClik and misc. events (Chris S)
+      <li>05/12/01 - Egg - MoveAroundTarget fix (Phil Scadden)
       <li>30/11/01 - Egg - Hardware acceleration detection support,
                            Added Camera.SceneScale (based on code by Chris S)
       <li>24/09/01 - Egg - TGLProxyObject loop rendering protection
@@ -1650,8 +1651,12 @@ type
          property Visible;
 
          property OnClick;
+         property OnContextPopup;
+         property OnDblClick;
          property OnDragDrop;
          property OnDragOver;
+         property OnStartDrag;
+         property OnEndDrag;
          property OnMouseDown;
          property OnMouseMove;
          property OnMouseUp;
@@ -6488,7 +6493,7 @@ begin
    inherited CreateParams(Params);
    with Params do begin
       Style:=Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
-      WindowClass.Style:=CS_VREDRAW or CS_HREDRAW or CS_OWNDC;
+      WindowClass.Style:=CS_VREDRAW or CS_HREDRAW or CS_OWNDC or CS_DBLCLKS;
    end;
 end;
 
