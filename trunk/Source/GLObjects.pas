@@ -354,12 +354,13 @@ type
          FSize : Single;
          FStyle : TGLPointStyle;
          FPointParameters : TGLPointParameters;
-         FNoZWrite : Boolean;
+         FNoZWrite, FStatic : Boolean;
 
 		protected
 			{ Protected Declarations }
          function StoreSize : Boolean;
          procedure SetNoZWrite(const val : Boolean);
+         procedure SetStatic(const val : Boolean);
          procedure SetSize(const val : Single);
          procedure SetPositions(const val : TAffineVectorList);
          procedure SetColors(const val : TVectorList);
@@ -390,6 +391,11 @@ type
 			{ Published Declarations }
          {: If true points do not write their Z to the depth buffer. }
          property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
+         {: Tells the component if point coordinates are static.<p>
+            If static, changes to the positions should be notified via an
+            explicit StructureChanged call, or may not refresh.<br>
+            Static sets of points may render faster than dynamic ones. }
+         property Static : Boolean read FStatic write SetStatic;
          {: Point size, all points have a fixed size. }
          property Size : Single read FSize write SetSize stored StoreSize;
          {: Points style.<p> }
@@ -2137,6 +2143,19 @@ procedure TGLPoints.SetNoZWrite(const val : Boolean);
 begin
    if FNoZWrite<>val then begin
       FNoZWrite:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetStatic
+//
+procedure TGLPoints.SetStatic(const val : Boolean);
+begin
+   if FStatic<>val then begin
+      FStatic:=val;
+      if val then
+         ObjectStyle:=ObjectStyle-[osDirectDraw]
+      else ObjectStyle:=ObjectStyle+[osDirectDraw];
       StructureChanged;
    end;
 end;

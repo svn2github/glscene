@@ -59,7 +59,6 @@ object Form1: TForm1
     Left = 8
     Top = 40
     object DummyCube1: TGLDummyCube
-      ShowAxes = True
       CubeSize = 1
       object GLPoints1: TGLPoints
         NoZWrite = True
@@ -90,5 +89,10 @@ object Form1: TForm1
     OnProgress = GLCadencer1Progress
     Left = 48
     Top = 40
+  end
+  object Timer1: TTimer
+    OnTimer = Timer1Timer
+    Left = 24
+    Top = 80
   end
 end
