@@ -15,7 +15,7 @@ interface
 
 uses
    Classes, SysUtils, GLTexture, GLContext, GLGraphics, GLUtils,
-   VectorGeometry, OpenGL1x;
+   VectorGeometry, OpenGL1x, ARBProgram;
 
 type
    // TGLCelShaderOption
@@ -40,8 +40,7 @@ type
       private
          FOutlineWidth : Single;
          FCelShaderOptions : TGLCelShaderOptions;
-         FVertexProgramHandle,
-         FVertexProgram2Handle : cardinal;
+         FVPHandle : Cardinal;
          FShadeTexture : TGLTexture;
          FOnGetIntensity : TGLCelShaderGetIntensity;
          FOutlinePass,
@@ -54,6 +53,8 @@ type
          procedure SetOutlineColor(const val : TGLColor);
          procedure BuildShadeTexture;
          procedure Loaded; override;
+         function GenerateVertexProgram : String;
+         procedure DestroyVertexProgram;
 
       public
          constructor Create(AOwner : TComponent); override;
@@ -80,66 +81,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-const
-   cDotToTex1DVertexProgram =
-      '!!ARBvp1.0'+#13#10+
-      'OPTION ARB_position_invariant;'+#13#10+
-      'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+#13#10+
-      'PARAM mv[4] = { state.matrix.modelview };'+#13#10+
-      'PARAM lightPos = state.light[0].position;'+#13#10+
-      'PARAM diffuse = state.material.diffuse;'+#13#10+
-      'TEMP R0, light, norm;'+#13#10+
-
-      '   MOV result.color, diffuse;'+#13#10+
-
-      '   DP3 norm.x, mvit[0], vertex.normal;'+#13#10+
-      '   DP3 norm.y, mvit[1], vertex.normal;'+#13#10+
-      '   DP3 norm.z, mvit[2], vertex.normal;'+#13#10+
-      '   DP3 R0.x, norm, norm;'+#13#10+
-      '   RSQ R0.x, R0.x;'+#13#10+
-      '   MUL norm, R0.x, norm;'+#13#10+
-
-      '   DP4 R0.x, mv[0], vertex.position;'+#13#10+
-      '   DP4 R0.y, mv[1], vertex.position;'+#13#10+
-      '   DP4 R0.z, mv[2], vertex.position;'+#13#10+
-      '   DP4 R0.w, mv[3], vertex.position;'+#13#10+
-      '   ADD light, lightPos, -R0;'+#13#10+
-      '   DP3 R0.x, light, light;'+#13#10+
-      '   RSQ R0.x, R0.x;'+#13#10+
-      '   MUL light, R0.x, light;'+#13#10+
-
-      '   DP3 result.texcoord.x, norm, light;'+#13#10+
-      'END';
-
-   cDotToTex1DVertexProgramWithTexture =
-      '!!ARBvp1.0'+#13#10+
-      'OPTION ARB_position_invariant;'+#13#10+
-      'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+#13#10+
-      'PARAM mv[4] = { state.matrix.modelview };'+#13#10+
-      'PARAM lightPos = state.light[0].position;'+#13#10+
-      'TEMP R0, light, norm;'+#13#10+
-
-      '   MOV result.texcoord[0], vertex.texcoord[0];'+#13#10+
-
-      '   DP3 norm.x, mvit[0], vertex.normal;'+#13#10+
-      '   DP3 norm.y, mvit[1], vertex.normal;'+#13#10+
-      '   DP3 norm.z, mvit[2], vertex.normal;'+#13#10+
-      '   DP3 R0.x, norm, norm;'+#13#10+
-      '   RSQ R0.x, R0.x;'+#13#10+
-      '   MUL norm, R0.x, norm;'+#13#10+
-
-      '   DP4 R0.x, mv[0], vertex.position;'+#13#10+
-      '   DP4 R0.y, mv[1], vertex.position;'+#13#10+
-      '   DP4 R0.z, mv[2], vertex.position;'+#13#10+
-      '   DP4 R0.w, mv[3], vertex.position;'+#13#10+
-      '   ADD light, lightPos, -R0;'+#13#10+
-      '   DP3 R0.x, light, light;'+#13#10+
-      '   RSQ R0.x, R0.x;'+#13#10+
-      '   MUL light, R0.x, light;'+#13#10+
-
-      '   DP3 result.texcoord[1].x, norm, light;'+#13#10+
-      'END';
 
 // Register
 //
@@ -181,8 +122,6 @@ end;
 //
 destructor TGLCelShader.Destroy;
 begin
-   if FVertexProgramHandle > 0 then
-      glDeleteProgramsARB(1, @FVertexProgramHandle);
    FShadeTexture.Free;
    FOutlineColor.Free;
    inherited;
@@ -232,42 +171,75 @@ begin
    end;
 end;
 
+// DestroyVertexProgram
+//
+procedure TGLCelShader.DestroyVertexProgram;
+begin
+   if FVPHandle > 0 then
+      glDeleteProgramsARB(1, @FVPHandle);
+end;
+
+// GenerateVertexProgram
+//
+function TGLCelShader.GenerateVertexProgram : String;
+var
+   VP : TStringList;
+begin
+   VP:=TStringList.Create;
+   
+   VP.Add('!!ARBvp1.0');
+   VP.Add('OPTION ARB_position_invariant;');
+
+   VP.Add('PARAM mvinv[4] = { state.matrix.modelview.inverse };');
+   VP.Add('PARAM lightPos = program.local[0];');
+   VP.Add('TEMP temp, light, normal;');
+
+   VP.Add('   DP4 light.x, mvinv[0], lightPos;');
+   VP.Add('   DP4 light.y, mvinv[1], lightPos;');
+   VP.Add('   DP4 light.z, mvinv[2], lightPos;');
+   VP.Add('   ADD light, light, -vertex.position;');
+   VP.Add('   DP3 temp.x, light, light;');
+   VP.Add('   RSQ temp.x, temp.x;');
+   VP.Add('   MUL light, temp.x, light;');
+
+   VP.Add('   DP3 temp, vertex.normal, vertex.normal;');
+   VP.Add('   RSQ temp.x, temp.x;');
+   VP.Add('   MUL normal, temp.x, vertex.normal;');
+
+   VP.Add('   MOV result.color, state.material.diffuse;');
+
+   if csoTextured in FCelShaderOptions then begin
+      VP.Add('   MOV result.texcoord[0], vertex.texcoord[0];');
+      VP.Add('   DP3 result.texcoord[1].x, normal, light;');
+   end else begin
+      VP.Add('   DP3 result.texcoord[0].x, normal, light;');
+   end;   
+    
+   VP.Add('END');
+   
+   Result:=VP.Text;
+   VP.Free;
+end;
+
 // DoApply
 //
 procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
-
-   procedure LoadVertexProgram(VPText : String; var VPHandle : cardinal);
-   var
-      errPos : Integer;
-      errString : String;
-   begin
-      if not GL_ARB_vertex_program then
-         raise Exception.Create('GL_ARB_vertex_program required!');
-      glGenProgramsARB(1, @VPHandle);
-      glBindProgramARB(GL_VERTEX_PROGRAM_ARB,VPHandle);
-      glProgramStringARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_FORMAT_ASCII_ARB,
-         Length(VPText), PChar(VPText));
-      glGetIntegerv(OpenGL1x.GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
-      if errPos>-1 then begin
-         errString:=glGetString(GL_PROGRAM_ERROR_STRING_ARB);
-         raise Exception.Create(PChar(errString));
-      end;
-      CheckOpenGLError;
-   end;
-
 var
-   VertexProgram : Cardinal;
+   success : Boolean;
+   str : String;
+   light : TVector;
 begin
    if (csDesigning in ComponentState) then exit;
 
-   if not (csoTextured in FCelShaderOptions) then begin
-      if FVertexProgramHandle = 0 then
-         LoadVertexProgram(cDotToTex1DVertexProgram, FVertexProgramHandle);
-      VertexProgram:=FVertexProgramHandle;
-   end else begin
-      if FVertexProgram2Handle = 0 then
-         LoadVertexProgram(cDotToTex1DVertexProgramWithTexture, FVertexProgram2Handle);
-      VertexProgram:=FVertexProgram2Handle;
+   if FVPHandle = 0 then begin
+      success:=false;
+      try
+         str:=GenerateVertexProgram;
+         LoadARBProgram(GL_VERTEX_PROGRAM_ARB, str, FVPHandle);
+         success:=True;
+      finally
+         if not success then Enabled:=False;  
+      end;
    end;
 
    glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_COLOR_BUFFER_BIT
@@ -275,7 +247,10 @@ begin
 
    glDisable(GL_LIGHTING);
    glEnable(GL_VERTEX_PROGRAM_ARB);
-   glBindProgramARB(GL_VERTEX_PROGRAM_ARB,VertexProgram);
+   glGetLightfv(GL_LIGHT0, GL_POSITION, @light[0]);
+   glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @light[0]);
+   glBindProgramARB(GL_VERTEX_PROGRAM_ARB, FVPHandle);
+   
 
    if (csoTextured in FCelShaderOptions) then
       FShadeTexture.ApplyAsTexture2(rci, nil)
@@ -293,6 +268,8 @@ begin
    Result:=False;
    if (csDesigning in ComponentState) then exit;
 
+   glDisable(GL_VERTEX_PROGRAM_ARB);
+
    if FUnApplyShadeTexture then begin
       if (csoTextured in FCelShaderOptions) then
          FShadeTexture.UnApplyAsTexture2(rci, nil)
@@ -302,7 +279,6 @@ begin
    end;
 
    if FOutlinePass then begin
-      glDisable(GL_VERTEX_PROGRAM_ARB);
       glDisable(GL_TEXTURE_2D);
 
       glEnable(GL_BLEND);
