@@ -1401,11 +1401,20 @@ end;
 // ReadInteger
 //
 function TBinaryReader.ReadInteger : Integer;
+type
+   PShortInt = ^ShortInt;
+   PSmallInt = ^SmallInt;
 begin
    Result:=0;
    case ReadValue of
-      vaInt8  : Read(Result, 1);
-      vaInt16 : Read(Result, 2);
+      vaInt8  : begin
+         Read(Result, 1);
+         Result:=PShortInt(@Result)^;  // sign extend
+      end;
+      vaInt16 : begin
+         Read(Result, 2);
+         Result:=PSmallInt(@Result)^;  // sign extend
+      end;
       vaInt32 : Read(Result, 4);
    else
       ReadTypeError;
