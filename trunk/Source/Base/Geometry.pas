@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>08/08/01 - EG - Added MaxFloat overloads
       <li>24/07/01 - EG - VectorAngle renamed to VectorAngleCosine to avoid confusions
       <li>06/07/01 - EG - Added NormalizeDegAngle
       <li>04/07/01 - EG - Now uses VectorTypes
@@ -851,6 +852,13 @@ function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overlo
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MaxFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
 function MaxFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
+{: Returns the maximum of given values. }
+function MaxFloat(const v1, v2 : Single) : Single; overload;
+function MaxFloat(const v1, v2 : Double) : Double; overload;
+function MaxFloat(const v1, v2 : Extended) : Extended; overload;
+function MaxFloat(const v1, v2, v3 : Single) : Single; overload;
+function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
+function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
 
 {: Returns the max of the X, Y and Z components of a vector (W is ignored). }
 function MaxXYZComponent(const v : TVector) : Single;
@@ -4631,17 +4639,89 @@ begin
    end else Result:=0;
 end;
 
+// MaxFloat
+//
+function MaxFloat(const v1, v2 : Single) : Single;
+begin
+   if v1>v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MaxFloat
+//
+function MaxFloat(const v1, v2 : Double) : Double;
+begin
+   if v1>v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MaxFloat
+//
+function MaxFloat(const v1, v2 : Extended) : Extended;
+begin
+   if v1>v2 then
+      Result:=v1
+   else Result:=v2;
+end;
+
+// MaxFloat
+//
+function MaxFloat(const v1, v2, v3 : Single) : Single;
+begin
+   if v1>=v2 then
+      if v1>=v3 then
+         Result:=v1
+      else if v3>=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2>=v3 then
+      Result:=v2
+   else if v3>=v1 then
+      Result:=v3
+   else result:=v1;
+end;
+
+// MaxFloat
+//
+function MaxFloat(const v1, v2, v3 : Double) : Double;
+begin
+   if v1>=v2 then
+      if v1>=v3 then
+         Result:=v1
+      else if v3>=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2>=v3 then
+      Result:=v2
+   else if v3>=v1 then
+      Result:=v3
+   else result:=v1;
+end;
+
+// MaxFloat
+//
+function MaxFloat(const v1, v2, v3 : Extended) : Extended;
+begin
+   if v1>=v2 then
+      if v1>=v3 then
+         Result:=v1
+      else if v3>=v2 then
+         Result:=v3
+      else Result:=v2
+   else if v2>=v3 then
+      Result:=v2
+   else if v3>=v1 then
+      Result:=v3
+   else result:=v1;
+end;
+
 // MaxXYZComponent
 //
 function MaxXYZComponent(const v : TVector) : Single;
 begin
-   if v[0]>=v[1] then
-      if v[0]>=v[2] then
-         Result:=v[0]
-      else Result:=v[2]
-   else if v[1]>=v[2] then
-      Result:=v[1]
-   else Result:=v[2];
+   Result:=MaxFloat(v[0], v[1], v[2]);
 end;
 
 // MaxXYZComponent
@@ -4651,10 +4731,14 @@ begin
    if v[0]<=v[1] then
       if v[0]<=v[2] then
          Result:=v[0]
-      else Result:=v[2]
+      else if v[2]<=v[1] then
+         Result:=v[2]
+      else Result:=v[1]
    else if v[1]<=v[2] then
       Result:=v[1]
-   else Result:=v[2];
+   else if v[2]<=v[0] then
+      Result:=v[2]
+   else Result:=v[0];
 end;
 
 // MaxAbsXYZComponent

@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>08/08/01 - Egg - Added TBaseMesh.AxisAlignedDimensions
       <li>19/07/01 - Egg - AutoCentering is now a property of TBaseMesh,
                            3DS loader no longer auto-centers,
                            Added ExtractTriangles and related methods
@@ -824,6 +825,7 @@ type
          FUseMeshMaterials : Boolean;
          FOverlaySkeleton : Boolean;
          FAutoCentering : TMeshAutoCenterings;
+         FAxisAlignedDimensionsCache : TVector;
 
       protected
          { Protected Declarations }
@@ -855,6 +857,8 @@ type
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
+         function AxisAlignedDimensions : TVector; override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
 			procedure DoRender(var rci : TRenderContextInfo;
@@ -3745,6 +3749,7 @@ begin
       FSkeleton:=TSkeleton.CreateOwned(Self);
    FUseMeshMaterials:=True;
    FAutoCentering:=[];
+   FAxisAlignedDimensionsCache[0]:=-1;
 end;
 
 // Destroy
@@ -3903,6 +3908,22 @@ begin
    inherited;
 end;
 
+// AxisAlignedDimensions
+//
+function TBaseMesh.AxisAlignedDimensions : TVector;
+var
+   dMin, dMax : TAffineVector;
+begin
+   if FAxisAlignedDimensionsCache[0]<0 then begin
+      MeshObjects.GetExtents(dMin, dMax);
+      FAxisAlignedDimensionsCache[0]:=MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
+      FAxisAlignedDimensionsCache[1]:=MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
+      FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+   end;
+   SetVector(Result, FAxisAlignedDimensionsCache);
+   ScaleVector(Result, Scale.DirectVector);
+end;
+
 // DoDestroyList
 //
 procedure TBaseMesh.DoDestroyList(glsceneOnly : Boolean);
@@ -4004,6 +4025,7 @@ end;
 //
 procedure TBaseMesh.StructureChanged;
 begin
+   FAxisAlignedDimensionsCache[0]:=-1;
    MeshObjects.Prepare;
    inherited;
 end;
