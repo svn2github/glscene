@@ -122,6 +122,8 @@ type
          //: Notifies removal of a node
          procedure RemoveNode(aNode : TVerletNode); virtual; abstract;
 
+         procedure BeforeIterations; virtual;
+
          property Owner : TVerletAssembly read FOwner;
          property Enabled : Boolean read FEnabled write FEnabled;
    end;
@@ -194,16 +196,19 @@ type
    TVerletGlobalConstraint = class (TVerletConstraint)
       private
 			{ Private Declarations }
+         FKickbackForce: TAffineVector;
 
       public
 			{ Public Declarations }
          procedure RemoveNode(aNode : TVerletNode); override;
+         procedure BeforeIterations; override;
 
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); override;
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                         const iteration, maxIterations : Integer); virtual; abstract;
          procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
                         const iteration, maxIterations : Integer); virtual;
+         property KickbackForce : TAffineVector read FKickbackForce write FKickbackForce;
    end;
 
    // TVerletGlobalFrictionConstraint
@@ -335,6 +340,7 @@ type
          FMaxDeltaTime, FSimTime : Single;
          FDrag : Single;
          FCurrentDeltaTime: single;
+         FInvCurrentDeltaTime : single;
          FSolidEdges: TVerletEdgeList;
 
 		protected
@@ -776,6 +782,11 @@ end;
 
 // Create
 //
+procedure TVerletConstraint.BeforeIterations;
+begin
+  // NADA!
+end;
+
 constructor TVerletConstraint.Create(aOwner : TVerletAssembly);
 begin
    inherited Create;
@@ -840,6 +851,12 @@ end;
 
 // RemoveNode
 //
+procedure TVerletGlobalConstraint.BeforeIterations;
+begin
+  inherited;
+  FKickbackForce := NullVector;
+end;
+
 procedure TVerletGlobalConstraint.RemoveNode(aNode : TVerletNode);
 begin
    // nothing to do here
@@ -1228,6 +1245,7 @@ begin
    ticks:=0;
    myDeltaTime:=FMaxDeltaTime;
    FCurrentDeltaTime := FMaxDeltaTime;
+   FInvCurrentDeltaTime := 1 / FCurrentDeltaTime;
 
    while FSimTime<newTime do begin
       Inc(ticks);
@@ -1251,6 +1269,9 @@ procedure TVerletAssembly.SatisfyConstraints(const deltaTime, newTime : Double);
 var
    i, j : Integer;
 begin
+   for i:=0 to FConstraints.Count-1 do with FConstraints[i] do
+     if Enabled then
+        BeforeIterations;//}
    for j:=0 to Iterations-1 do
    begin
       for i:=0 to FConstraints.Count-1 do with FConstraints[i] do
@@ -1545,6 +1566,11 @@ begin
 
       AddVector(aEdge.NodeA.FLocation, move);
       AddVector(aEdge.NodeB.FLocation, move);
+
+      // Add the force to the kickback
+      // F = a * m
+      // a = move / deltatime
+      AddVector(FKickbackForce, VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
   end;
 end;
 
@@ -1575,6 +1601,11 @@ begin
       VectorScale(delta, diff, move);
 
       AddVector(aNode.FLocation, move);
+
+      // Add the force to the kickback
+      // F = a * m
+      // a = move / deltatime
+      AddVector(FKickbackForce, VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
    end;
 end;
 
@@ -1675,6 +1706,7 @@ var
     end;
   end;
 begin
+  // DISABLED!
   exit;
 
   // Early out test
@@ -1884,6 +1916,8 @@ begin
       aNode.ApplyFriction(FFrictionRatio, penetrationDepth, VectorScale(move, 1/penetrationDepth));
 
       aNode.FLocation:=newLocation;
+
+      AddVector(FKickbackForce, VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
    end;
 end;
 
@@ -1929,6 +1963,8 @@ begin
 
       AddVector(aEdge.NodeA.FLocation, move);
       AddVector(aEdge.NodeB.FLocation, move);
+
+      AddVector(FKickbackForce, VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
   end;
 
 end;
