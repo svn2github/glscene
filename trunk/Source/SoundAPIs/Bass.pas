@@ -66,7 +66,6 @@ const
   BASS_ERROR_PLAYING      = 35;   // the channel is playing
   BASS_ERROR_NOOGG        = 36;   // OGG.DLL/VORBIS.DLL could not be loaded
   BASS_ERROR_NOTAVAIL     = 37;   // requested data is not available
-  BASS_ERROR_DECODE       = 38;   // the channel is a "decoding channel"
   BASS_ERROR_UNKNOWN      = -1;   // some other mystery error
 
   // Device setup flags
@@ -304,9 +303,9 @@ const
     data : param=0: LOWORD=order HIWORD=row, param=1: "x" value
   }
   BASS_SYNC_MESSAGE                 = $20000000;
-  { FLAG: post a Windows message (instead of callback)
-    When using a window message "callback", the message to post is given in the "proc"
-    parameter of BASS_ChannelSetSync, and is posted to the window specified in the BASS_Init
+  { FLAG: send a windows message (instead of callback)
+    When using a window message "callback", the message to send is given in the "proc"
+    parameter of BASS_ChannelSetSync, and is sent to the window specified in the BASS_Init
     call. The message parameters are: WPARAM = data, LPARAM = user.
   }
   BASS_SYNC_MIXTIME                 = $40000000;

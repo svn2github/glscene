@@ -178,9 +178,10 @@ begin
       i:=BASS_SAMPLE_VAM+BASS_SAMPLE_3D+BASS_SAMPLE_OVER_DIST;
       if aSource.NbLoops>1 then
          i:=i+BASS_SAMPLE_LOOP;
-      p.sample:=BASS_SampleLoad(True, aSource.Sample.Data.WAVData, 0, 0,
-                                MaxChannels, i+BASS_SAMPLE_OVER_DIST);
-      Assert(p.sample<>0);
+      p.sample:=BASS_SampleLoad(True, aSource.Sample.Data.WAVData, 0,
+                                aSource.Sample.Data.WAVDataSize,
+                                MaxChannels, i);
+      Assert(p.sample<>0, 'BASS Error '+IntToStr(BASS_ErrorGetCode));
       aSource.ManagerTag:=Integer(p);
    end;
    if aSource.Origin<>nil then begin
