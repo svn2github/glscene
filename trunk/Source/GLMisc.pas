@@ -154,7 +154,7 @@ type
 
 	// TGLCadenceAbleComponent
 	//
-	{: An base class describing the "cadencing" interface.<p> }
+	{: A base class describing the "cadenceing" interface.<p> }
 	TGLCadenceAbleComponent = class (TComponent)
 		public
 	      { Public Declarations }
@@ -166,7 +166,7 @@ type
 
 	// TGLUpdateAbleComponent
 	//
-	{: An base class describing the "update" interface.<p> }
+	{: A base class describing the "update" interface.<p> }
 	TGLUpdateAbleComponent = class (TGLCadenceAbleComponent)
 		public
 	      { Public Declarations }
@@ -886,6 +886,10 @@ begin
    if Assigned(Owner) then
       (Owner as TGLUpdateAbleComponent).NotifyChange(Self);
 end;
+
+// ------------------
+// ------------------ Misc. utility functions ------------------
+// ------------------
 
 // WordToIntegerArray
 //

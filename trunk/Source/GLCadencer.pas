@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>01/07/02 - EG - Added TGLCadencedComponent
       <li>05/12/01 - EG - Fix in subscription mechanism (D6 IDE freezes gone?)
       <li>30/11/01 - EG - Added IsBusy (thx Chris S)
       <li>08/09/01 - EG - Added MaxDeltaTime limiter
@@ -146,6 +147,35 @@ type
 			{: Happens AFTER scene was progressed. }
 			property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
 	end;
+
+	// TGLCustomCadencedComponent
+	//
+	{: Adds a property to connect/subscribe to a cadencer.<p> }
+	TGLCustomCadencedComponent = class (TGLUpdateAbleComponent)
+      private
+         { Private Declarations }
+         FCadencer : TGLCadencer;
+
+      protected
+         { Protected Declarations }
+         procedure SetCadencer(const val : TGLCadencer);
+
+         property Cadencer : TGLCadencer read FCadencer write SetCadencer;
+
+		public
+	      { Public Declarations }
+         destructor Destroy; override;
+
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+	end;
+
+	// TGLCadencedComponent
+	//
+	TGLCadencedComponent = class (TGLCustomCadencedComponent)
+		published
+			{ Published Declarations }
+         property Cadencer;
+   end;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -530,6 +560,40 @@ end;
 function TGLCadencer.IsBusy : Boolean;
 begin
    Result:=(FProgressing<>0);   
+end;
+
+// ------------------
+// ------------------ TGLCustomCadencedComponent ------------------
+// ------------------
+
+// Destroy
+//
+destructor TGLCustomCadencedComponent.Destroy;
+begin
+   Cadencer:=nil;
+   inherited Destroy;
+end;
+
+// Notification
+//
+procedure TGLCustomCadencedComponent.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   if (Operation=opRemove) and (AComponent=FCadencer) then
+      Cadencer:=nil;
+   inherited;
+end;
+
+// SetCadencer
+//
+procedure TGLCustomCadencedComponent.SetCadencer(const val : TGLCadencer);
+begin
+   if FCadencer<>val then begin
+      if Assigned(FCadencer) then
+         FCadencer.UnSubscribe(Self);
+      FCadencer:=val;
+      if Assigned(FCadencer) then
+         FCadencer.Subscribe(Self);
+   end;
 end;
 
 // ---------------------------------------------------------------------

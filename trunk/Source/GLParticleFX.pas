@@ -132,18 +132,16 @@ type
       Before subclassing, make sure you understood how the Initialize/Finalize
       Rendering, Begin/End Particles and RenderParticles methods (and also
       understood that rendering of manager's particles may be interwoven). }
-   TGLParticleFXManager = class (TGLUpdateAbleComponent)
+   TGLParticleFXManager = class (TGLCadencedComponent)
       private
          { Private Declarations }
          FRenderer : TGLParticleFXRenderer;
          FParticles : TGLParticleList;
-         FCadencer : TGLCadencer;
 
       protected
          { Protected Declarations }
          procedure SetRenderer(const val : TGLParticleFXRenderer);
          procedure SetParticles(const aParticles : TGLParticleList);
-         procedure SetCadencer(const val : TGLCadencer);
 
          {: Invoked when the particles of the manager will be rendered.<p>
             This method is fired with the "base" OpenGL states and matrices
@@ -176,7 +174,6 @@ type
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
-         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 			procedure NotifyChange(Sender : TObject); override;
 
          {: Creates a new particle controled by the manager. }
@@ -187,11 +184,12 @@ type
 
 		published
 			{ Published Declarations }
-         property Cadencer : TGLCadencer read FCadencer write SetCadencer;
          {: References the renderer.<p>
             The renderer takes care of ordering the particles of the manager
             (and other managers linked to it) and rendering them all depth-sorted. }
          property Renderer : TGLParticleFXRenderer read FRenderer write SetRenderer;
+
+         property Cadencer;
    end;
 
    // TGLParticleFXEffect
@@ -826,20 +824,10 @@ end;
 //
 destructor TGLParticleFXManager.Destroy;
 begin
+   inherited Destroy;
    DeRegisterManager(Self);
-   Cadencer:=nil;
    Renderer:=nil;
    FParticles.Free;
-   inherited Destroy;
-end;
-
-// Notification
-//
-procedure TGLParticleFXManager.Notification(AComponent: TComponent; Operation: TOperation);
-begin
-   if (Operation=opRemove) and (AComponent=FCadencer) then
-      Cadencer:=nil;
-   inherited;
 end;
 
 // NotifyChange
@@ -876,19 +864,6 @@ end;
 procedure TGLParticleFXManager.SetParticles(const aParticles : TGLParticleList);
 begin
    FParticles.Assign(aParticles);
-end;
-
-// SetCadencer
-//
-procedure TGLParticleFXManager.SetCadencer(const val : TGLCadencer);
-begin
-   if FCadencer<>val then begin
-      if Assigned(FCadencer) then
-         FCadencer.UnSubscribe(Self);
-      FCadencer:=val;
-      if Assigned(FCadencer) then
-         FCadencer.Subscribe(Self);
-   end;
 end;
 
 // ------------------
