@@ -4,6 +4,7 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
       <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
       <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
       <li>29/11/02 - EG - Added triangleInfo
@@ -112,22 +113,22 @@ type
 
          destructor Destroy;  override;
 
-         function RayCastIntersectAABB(const rayStart, rayVector : TVector;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
                                        intersectPoint : PVector = nil;
                                        intersectNormal : PVector = nil;
                                        triangleInfo : POctreeTriangleInfo = nil) : Boolean;
-         function SphereIntersectAABB(const rayStart, rayVector : TVector;
+         function SphereSweepIntersect(const rayStart, rayVector : TVector;
                                       const velocity, radius : single;
                                       intersectPoint : PVector = nil;
                                       intersectNormal : PVector = nil) : Boolean;
 
          function TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
          {: Returns all triangles in the AABB. }
-         function GetTrianglesInCube(const objAABB : TAABB;
+         function GetTrianglesFromNodesIntersectingCube(const objAABB : TAABB;
                                      const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
          {: Checks if an AABB intersects a face on the octree}
          function AABBIntersect(const AABB: TAABB; m1to2, m2to1: TMatrix; triangles: TAffineVectorList = nil): boolean;
-
+//         function SphereIntersect(position:TAffineVector; radius:single);
    end;
 
 // ------------------------------------------------------------------
@@ -191,10 +192,53 @@ end;
 //         c - third vertex in triangle
 //         p - point we wish to find closest point on triangle from
 // Notes :
+// Return: closest point on triangle
+// -----------------------------------------------------------------------
+
+function ClosestPointOnTriangle(const a, b, c, n, p: TAffineVector): TAffineVector;
+var
+   dAB, dBC, dCA : Single;
+   Rab, Rbc, Rca, intPoint : TAffineFLTVector;
+   hit:boolean;
+begin
+    //this would be faster if RayCastTriangleIntersect detected backwards hits
+    hit:=RayCastTriangleIntersect(VectorMake(p),VectorMake(n),a,b,c,@intPoint) or
+         RayCastTriangleIntersect(VectorMake(p),VectorMake(VectorNegate(n)),a,b,c,@intPoint);
+    if (hit) then
+    begin
+      Result:=intPoint;
+    end
+    else
+    begin
+    Rab:=ClosestPointOnLine(a, b, p);
+    Rbc:=ClosestPointOnLine(b, c, p);
+    Rca:=ClosestPointOnLine(c, a, p);
+
+    dAB:=VectorDistance2(p, Rab);
+    dBC:=VectorDistance2(p, Rbc);
+    dCA:=VectorDistance2(p, Rca);
+
+      if dBC<dAB then
+        if dCA<dBC then
+           Result:=Rca
+        else Result:=Rbc
+      else if dCA<dAB then
+        Result:=Rca
+      else Result:=Rab;
+    end;
+end;
+
+// ----------------------------------------------------------------------
+// Name  : ClosestPointOnTriangleEdge()
+// Input : a - first vertex in triangle
+//         b - second vertex in triangle
+//         c - third vertex in triangle
+//         p - point we wish to find closest point on triangle from
+// Notes :
 // Return: closest point on line triangle edge
 // -----------------------------------------------------------------------
 
-function ClosestPointOnTriangle(const a, b, c, p: TAffineVector): TAffineVector;
+function ClosestPointOnTriangleEdge(const a, b, c, p: TAffineVector): TAffineVector;
 var
    dAB, dBC, dCA : Single;
    Rab, Rbc, Rca : TAffineFLTVector;
@@ -208,12 +252,12 @@ begin
     dCA:=VectorDistance2(p, Rca);
 
     if dBC<dAB then
-      if dCA<dAB then
+      if dCA<dBC then
          Result:=Rca
-      else Result:=Rab
-    else if dCA<dBC then
+      else Result:=Rbc
+    else if dCA<dAB then
       Result:=Rca
-    else Result:=Rbc;
+    else Result:=Rab;
 end;
 
 // HitBoundingBox
@@ -1003,7 +1047,7 @@ end;
 
 // RayCastIntersectAABB
 //
-function TOctree.RayCastIntersectAABB(const rayStart, rayVector : TVector;
+function TOctree.RayCastIntersect(const rayStart, rayVector : TVector;
                                       intersectPoint : PVector = nil;
                                       intersectNormal : PVector = nil;
                                       triangleInfo : POctreeTriangleInfo = nil) : Boolean;
@@ -1083,7 +1127,7 @@ end;
 //
 // Return the polygon intersection point and the closest triangle's normal if hit.
 //
-function TOctree.SphereIntersectAABB(const rayStart, rayVector : TVector;
+function TOctree.SphereSweepIntersect(const rayStart, rayVector : TVector;
                                      const velocity, radius: single;
                                      intersectPoint : PVector = nil;
                                      intersectNormal : PVector = nil) : Boolean;
@@ -1183,8 +1227,9 @@ begin
             //If it does then that is the polygon intersection point.
             if not directHit then begin
                SetVector(polyIPoint,
-                         ClosestPointOnTriangle(p1^, p2^, p3^,
+                         ClosestPointOnTriangleEdge(p1^, p2^, p3^,
                                                 PAffineVector(@pIPoint)^));
+
                //See if this point + negative velocity vector lies within the sphere.
                //(This implementation seems more accurate than RayCastSphereIntersect)
                if not CheckPointInSphere(VectorAdd(polyIPoint, NEGVelocity), raystart, radius) then
@@ -1243,7 +1288,7 @@ var
   i: integer;
 begin
      //get triangles in nodes intersected by the aabb
-     triList:= GetTrianglesInCube(aabb, m1to2, m2to1);
+     triList:= GetTrianglesFromNodesIntersectingCube(aabb, m1to2, m2to1);
 
      result:= false;
      if Trilist.Count>0 then begin
@@ -1269,9 +1314,9 @@ begin
 end;
 
 
-// GetTrianglesInCube
+// GetTrianglesFromNodesIntersectingCube
 //
-function TOctree.GetTrianglesInCube(const objAABB : TAABB;
+function TOctree.GetTrianglesFromNodesIntersectingCube(const objAABB : TAABB;
                                     const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
 var
   AABB1 : TAABB;
