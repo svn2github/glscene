@@ -135,7 +135,7 @@ uses
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
-   GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter,
+   GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
@@ -1887,6 +1887,7 @@ initialization
       {$endif}
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);
       RegisterSceneObject(TGLTree, 'Tree', glsOCDoodad);
+      RegisterSceneObject(TGLWaterPlane, 'WaterPlane', glsOCDoodad);
 
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
