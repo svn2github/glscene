@@ -12,6 +12,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>15/04/04 - SG - Added OnCustomCollision event to TGLODEManager.
     <li>14/04/04 - SG - Minor DelphiODE compatibility changes.
     <li>30/03/04 - SG - Joint objects are now fully persistent.
     <li>05/03/04 - SG - SetSurfaceMode fix (Alex)
@@ -65,6 +66,8 @@ uses
 
 type
 
+  TODECustomCollisionEvent = procedure (Geom1, Geom2 : PdxGeom) of object;
+
   TODECollisionEvent = procedure (Sender : TObject; Object1, Object2 : TObject;
                                   var Contact:TdContact;
                                   var HandleCollision:Boolean) of object;
@@ -90,6 +93,7 @@ type
       FContactGroup      : TdJointGroupID;
       FGravity           : TGLCoordinates;
       FOnCollision       : TODECollisionEvent;
+      FOnCustomCollision : TODECustomCollisionEvent;
       FContactJointCount,
       FNumContactJoints  : integer;
       FDynamicObjectRegister,
@@ -140,6 +144,9 @@ type
          is added the Contact Joints. Any 'last minute' changes to the 
          collisions behaviour can be made through the contact parameter. }
       property OnCollision : TODECollisionEvent read FOnCollision write FOnCollision;
+      {: Use this event to override the collision handling procedure with your
+         own custom collision handling code. }
+      property OnCustomCollision : TODECustomCollisionEvent read FOnCustomCollision write FOnCustomCollision;
       //: dWorldStepFast1 properties
       property StepFast : Boolean read FStepFast write FStepFast;
       property FastIterations : Integer read FFastIterations write FFastIterations;
@@ -1206,6 +1213,12 @@ var
   Joint : TdJointID;
   HandleCollision : Boolean;
 begin
+  // Check for custom collision handling event
+  if Assigned(FOnCustomCollision) then begin
+    FOnCustomCollision(g1,g2);
+    exit;
+  end;
+
   Obj1:=dGeomGetData(g1);
   Obj2:=dGeomGetData(g2);
   b1:=dGeomGetBody(g1);
