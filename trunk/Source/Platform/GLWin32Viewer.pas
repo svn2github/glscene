@@ -95,6 +95,7 @@ type
          property IsOpenGLAvailable : Boolean read FIsOpenGLAvailable;
 
          function FramesPerSecond : Single;
+         function FramesPerSecondText(decimals : Integer = 1) : String;
          procedure ResetPerformanceMonitor;
 
          property RenderDC : Cardinal read FOwnDC;
@@ -435,6 +436,13 @@ end;
 function TGLSceneViewer.FramesPerSecond : Single;
 begin
    Result:=FBuffer.FramesPerSecond;
+end;
+
+// FramesPerSecondText
+//
+function TGLSceneViewer.FramesPerSecondText(decimals : Integer = 1) : String;
+begin
+   Result:=Format('%.*f FPS', [decimals, FBuffer.FramesPerSecond]);
 end;
 
 // ResetPerformanceMonitor
