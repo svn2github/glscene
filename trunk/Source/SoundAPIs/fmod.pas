@@ -27,9 +27,6 @@ unit FMod;
 
 {$IFDEF FPC}
   {$MODE DELPHI}
-  {$IFDEF WIN32}
-    {$DEFINE MSWINDOWS}
-  {$ENDIF}
   {$PACKRECORDS C}
 {$ENDIF}
 
@@ -73,13 +70,6 @@ uses Windows;
   Force four-byte enums
 }
 {$Z4}
-
-{
-  Disable warning for unsafe types in Delphi 7
-}
-{$IFDEF VER150}
-{$WARN UNSAFE_TYPE OFF}
-{$ENDIF}
 
 {$IFDEF DELPHI_5_OR_LOWER}
 type
@@ -1368,7 +1358,7 @@ const
 {$IFDEF LINUX}
   FMOD_DLL = 'libfmod.so';
 {$ELSE}
-{$IFDEF MSWINDOWS}
+{$IFDEF WIN32}
   FMOD_DLL = 'fmod.dll';
 {$ENDIF}
 {$ENDIF}
@@ -1392,7 +1382,7 @@ var
 
 function GetAddress(Handle: TFMODModuleHandle; FuncName: PChar): Pointer;
 begin
-{$IFDEF MSWINDOWS}
+{$IFDEF WIN32}
   Result := GetProcAddress(Handle, FuncName);
 {$ELSE}
   Result := dlsym(Handle, FuncName);
@@ -1412,7 +1402,7 @@ begin
     LibName := FMOD_DLL;
 
   { Load the library }
-{$IFDEF MSWINDOWS}
+{$IFDEF WIN32}
   FMODHandle := LoadLibrary(LibName);
 {$ELSE}
   FMODHandle := dlopen(LibName, RTLD_NOW);
@@ -1645,16 +1635,13 @@ procedure FMOD_Unload;
 begin
   { Only free the library if it was already loaded }
   if FMODHandle <> INVALID_MODULEHANDLE_VALUE then
-{$IFDEF MSWINDOWS}
+{$IFDEF WIN32}
     FreeLibrary(FMODHandle);
 {$ELSE}
     dlclose(FMODHandle);
 {$ENDIF}
   FMODHandle := INVALID_MODULEHANDLE_VALUE;
 end;
-
-var
-  Saved8087CW: Word;
 
 {$ifdef FPC} //FPC do not have this function in its RTL
 const
