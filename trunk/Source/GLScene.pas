@@ -2,10 +2,11 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/08/01 - Egg - Fixed ocStructure not being reset for osDirectDraw objects
       <li>20/08/01 - Egg - SetParentComponent now accepts 'nil' (Uwe Raabe)
       <li>19/08/01 - Egg - Default RayCastIntersect is now Sphere
       <li>16/08/01 - Egg - Dropped Prepare/FinishObject (became obsolete),
-                           new CameraStyle (Ortho2D
+                           new CameraStyle (Ortho2D)
       <li>12/08/01 - Egg - Completely rewritten handles management,
                            Faster camera switching 
       <li>29/07/01 - Egg - Added pooTransformation
@@ -1806,7 +1807,6 @@ begin
       finally
          glEndList;
       end;
-      FChanges:=FChanges-[ocStructure];
    end;
    Result:=FListHandle.Handle;
 end;
@@ -2901,6 +2901,7 @@ begin
             SetGLState(rci.currentStates, stDepthTest);
          end else DoRender(rci, False, shouldRenderChildren);
       end;
+      FChanges:=[];
       // Pop Matrix
       glPopMatrix;
    end;
