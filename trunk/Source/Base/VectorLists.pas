@@ -82,16 +82,16 @@ type
          procedure UseMemory(rangeStart : Pointer; rangeCapacity : Integer);
          procedure Clear;
 
-         procedure Delete(Index : Integer);
-         procedure Exchange(Index1, Index2 : Integer);
+         procedure Delete(index : Integer);
+         procedure Exchange(index1, index2 : Integer);
          procedure Reverse;
 
          {: Nb of items in the list.<p>
             When assigning a Count, added items are reset to zero. }
-			property Count: Integer read FCount write SetCount;
+			property Count : Integer read FCount write SetCount;
          {: Current list capacity.<p>
             Not persistent. }
-			property Capacity: Integer read FCapacity write SetCapacity;
+			property Capacity : Integer read FCapacity write SetCapacity;
 			{: List growth granularity.<p>
             Not persistent. }
 			property GrowthDelta : Integer read FGrowthDelta write FGrowthDelta;
@@ -609,28 +609,28 @@ end;
 
 // Delete
 //
-procedure TBaseList.Delete(Index: Integer);
+procedure TBaseList.Delete(index: Integer);
 begin
 {$IFOPT R+}
-   Assert(Cardinal(Index)<Cardinal(FCount));
+   Assert(Cardinal(index)<Cardinal(FCount));
 {$ENDIF}
 	Dec(FCount);
-	if Index < FCount then
-		System.Move(FBaseList[(Index+1)*FItemSize],
-                  FBaseList[Index*FItemSize],
-                  (FCount-Index)*FItemSize);
+	if index<FCount then
+		System.Move(FBaseList[(index+1)*FItemSize],
+                  FBaseList[index*FItemSize],
+                  (FCount-index)*FItemSize);
 end;
 
 // Exchange
 //
-procedure TBaseList.Exchange(Index1, Index2: Integer);
+procedure TBaseList.Exchange(index1, index2: Integer);
 begin
 {$IFOPT R+}
-	Assert((Cardinal(Index1)<Cardinal(FCount)) and (Cardinal(Index2)<Cardinal(FCount)));
+	Assert((Cardinal(index1)<Cardinal(FCount)) and (Cardinal(index2)<Cardinal(FCount)));
 {$ENDIF}
-   System.Move(FBaseList[Index1*FItemSize], BufferItem[0], FItemSize);
-   System.Move(FBaseList[Index2*FItemSize], FBaseList[Index1*FItemSize], FItemSize);
-   System.Move(BufferItem[0], FBaseList[Index2*FItemSize], FItemSize);
+   System.Move(FBaseList[index1*FItemSize], BufferItem[0], FItemSize);
+   System.Move(FBaseList[index2*FItemSize], FBaseList[index1*FItemSize], FItemSize);
+   System.Move(BufferItem[0], FBaseList[index2*FItemSize], FItemSize);
 end;
 
 // Reverse
