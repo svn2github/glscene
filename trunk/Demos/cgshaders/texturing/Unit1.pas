@@ -3,7 +3,8 @@
 
   Shows how to do texture coordinate shifting with a VP and blending with a FP.
 
-  09/07/03 - Nelson Chu
+  Last update: 02/01/04
+  Nelson Chu
 }
 unit Unit1;
 
@@ -88,13 +89,14 @@ type
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
+    CheckBox2: TCheckBox;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure CgShader1ApplyVertexProgram(Sender: TCgProgram);
+    procedure CgShader1ApplyVP(Sender: TCgProgram);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -110,9 +112,10 @@ type
     procedure ButtonApplyVPClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure CgShader1ApplyFragmentProgram(Sender: TCgProgram);
-    procedure CgShader1UnApplyFragmentProgram(Sender: TCgProgram);
+    procedure CgShader1ApplyFP(Sender: TCgProgram);
+    procedure CgShader1UnApplyFP(Sender: TCgProgram);
     procedure CgShader1Initialize(Sender: TCustomCgShader);
+    procedure CheckBox2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -148,12 +151,15 @@ end;
 
 procedure TForm1.CgShader1Initialize(Sender: TCustomCgShader);
 begin
-  // Set parameters that need to be set once
+  // Due to parameter shadowing (ref. Cg Manual), parameters that doesn't change
+  // can be assigned for once only. You can set those parameters on Initialize.
   with Sender.FragmentProgram, GLMatLib do begin
     ParamByName('Map0').SetAsTexture2D(Materials[0].Material.Texture.Handle);
     ParamByName('Map1').SetAsTexture2D(Materials[1].Material.Texture.Handle);
     ParamByName('Map2').SetAsTexture2D(Materials[2].Material.Texture.Handle);
     ParamByName('Map3').SetAsTexture2D(Materials[3].Material.Texture.Handle);
+    // Alternatively, you can set the parameters using SetParam, like:
+    // SetParam('Map0', Materials[3].Material.Texture.Handle);
   end;
 
   // Display profiles used
@@ -161,7 +167,7 @@ begin
   LabelFragProfile.Caption:='Using profile: ' + Sender.FragmentProgram.GetProfileString;
 end;
 
-procedure TForm1.CgShader1ApplyVertexProgram(Sender: TCgProgram);
+procedure TForm1.CgShader1ApplyVP(Sender: TCgProgram);
 var v : TVector;
 
   function conv(TrackBar : TTrackBar): single;
@@ -174,13 +180,15 @@ var v : TVector;
 begin
   with Sender.ParamByName('ModelViewProj') do
     SetAsStateMatrix( CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
+// Alternatively, you can set it using:
+//  Sender.SetParam('ModelViewProj', CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
 
   v:= vectormake( conv(TrackBar1), conv(TrackBar2), conv(TrackBar3), conv(TrackBar4) );
 
   Sender.ParamByName('shifts').SetAsVector(v);
 end;
 
-procedure TForm1.CgShader1ApplyFragmentProgram(Sender: TCgProgram);
+procedure TForm1.CgShader1ApplyFP(Sender: TCgProgram);
 var v : TVector;
 
   function conv(TrackBar : TTrackBar): single;
@@ -201,7 +209,7 @@ begin
   Sender.ParamByName('weights').SetAsVector(v);
 end;
 
-procedure TForm1.CgShader1UnApplyFragmentProgram(Sender: TCgProgram);
+procedure TForm1.CgShader1UnApplyFP(Sender: TCgProgram);
 begin
   with Sender do begin
     ParamByName('Map0').DisableTexture;
@@ -309,6 +317,11 @@ end;
 procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   if key=#27 then close;
+end;
+
+procedure TForm1.CheckBox2Click(Sender: TObject);
+begin
+  CgShader1.Enabled:=CheckBox2.Checked;
 end;
 
 end.

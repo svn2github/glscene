@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 29
-  Top = 60
+  Left = 203
+  Top = 110
   Width = 759
   Height = 484
   Caption = 'Cg Shader Demo'
@@ -21,9 +21,7 @@ object Form1: TForm1
   object Splitter1: TSplitter
     Left = 369
     Top = 0
-    Width = 3
-    Height = 455
-    Cursor = crHSplit
+    Height = 457
     Color = clBtnShadow
     ParentColor = False
   end
@@ -31,7 +29,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 369
-    Height = 455
+    Height = 457
     Align = alLeft
     BevelInner = bvRaised
     BevelOuter = bvLowered
@@ -40,7 +38,7 @@ object Form1: TForm1
       Left = 2
       Top = 2
       Width = 365
-      Height = 451
+      Height = 453
       ActivePage = TabSheet1
       Align = alClient
       Font.Charset = ANSI_CHARSET
@@ -49,13 +47,12 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabIndex = 0
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Vertex Program'
         object Splitter3: TSplitter
           Left = 0
-          Top = 316
+          Top = 318
           Width = 357
           Height = 3
           Cursor = crVSplit
@@ -98,7 +95,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 357
-          Height = 291
+          Height = 293
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -117,7 +114,7 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 355
-            Height = 248
+            Height = 250
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
@@ -132,7 +129,7 @@ object Form1: TForm1
           end
           object Panel13: TPanel
             Left = 1
-            Top = 265
+            Top = 267
             Width = 355
             Height = 25
             Align = alBottom
@@ -156,7 +153,7 @@ object Form1: TForm1
         end
         object Panel5: TPanel
           Left = 0
-          Top = 319
+          Top = 321
           Width = 357
           Height = 104
           Align = alBottom
@@ -218,7 +215,7 @@ object Form1: TForm1
         ImageIndex = 1
         object Splitter2: TSplitter
           Left = 0
-          Top = 316
+          Top = 318
           Width = 357
           Height = 3
           Cursor = crVSplit
@@ -255,7 +252,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 357
-          Height = 291
+          Height = 293
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -274,7 +271,7 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 355
-            Height = 248
+            Height = 250
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
@@ -289,7 +286,7 @@ object Form1: TForm1
           end
           object Panel3: TPanel
             Left = 1
-            Top = 265
+            Top = 267
             Width = 355
             Height = 25
             Align = alBottom
@@ -313,7 +310,7 @@ object Form1: TForm1
         end
         object Panel8: TPanel
           Left = 0
-          Top = 319
+          Top = 321
           Width = 357
           Height = 104
           Align = alBottom
@@ -376,7 +373,7 @@ object Form1: TForm1
     Left = 372
     Top = 0
     Width = 379
-    Height = 455
+    Height = 457
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -404,7 +401,7 @@ object Form1: TForm1
       Left = 1
       Top = 49
       Width = 377
-      Height = 405
+      Height = 407
       Camera = GLCamera1
       Buffer.AntiAliasing = aa4x
       Align = alClient
@@ -413,15 +410,15 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
-    Left = 352
+    Left = 416
     Top = 56
     object GLLightSource1: TGLLightSource
       Ambient.Color = {0000803F0000803F0000803F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000000000002041000000000000803F}
       LightStyle = lsOmni
       Specular.Color = {0000803F0000803F0000803F0000803F}
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
     end
     object GLFreeForm1: TGLFreeForm
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -432,23 +429,23 @@ object Form1: TForm1
       AutoCentering = [macCenterX, macCenterY]
     end
     object GLXYZGrid1: TGLXYZGrid
-      XSamplingScale.Min = -2
-      XSamplingScale.Max = 2
-      XSamplingScale.Step = 0.100000001490116
-      YSamplingScale.Step = 0.100000001490116
-      ZSamplingScale.Min = -2
-      ZSamplingScale.Max = 2
-      ZSamplingScale.Step = 0.100000001490116
+      XSamplingScale.Min = -2.000000000000000000
+      XSamplingScale.Max = 2.000000000000000000
+      XSamplingScale.Step = 0.100000001490116100
+      YSamplingScale.Step = 0.100000001490116100
+      ZSamplingScale.Min = -2.000000000000000000
+      ZSamplingScale.Max = 2.000000000000000000
+      ZSamplingScale.Step = 0.100000001490116100
       Parts = [gpX, gpZ]
       LinesSmoothing = False
     end
     object GLDummyCube1: TGLDummyCube
       Position.Coordinates = {000000003333333F000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = GLDummyCube1
       CameraStyle = csInfinitePerspective
       Position.Coordinates = {0000004000004040000080400000803F}
@@ -465,25 +462,25 @@ object Form1: TForm1
         Tag = 0
         Shader = CgShader1
       end>
-    Left = 320
+    Left = 384
     Top = 88
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 352
+    Left = 416
     Top = 88
   end
   object CgShader1: TCgShader
-    VertexProgram.OnApply = CgShader1ApplyVertexProgram
-    OnApplyVertexProgram = CgShader1ApplyVertexProgram
+    VertexProgram.OnApply = CgShader1ApplyVP
+    OnApplyVP = CgShader1ApplyVP
     OnInitialize = CgShader1Initialize
-    Left = 320
+    Left = 384
     Top = 56
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 388
+    Left = 452
     Top = 56
   end
 end

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 104
-  Top = 108
+  Left = 210
+  Top = 126
   Width = 662
   Height = 439
   Caption = 'Cg Shader Demo'
@@ -20,9 +20,7 @@ object Form1: TForm1
   object Splitter1: TSplitter
     Left = 313
     Top = 0
-    Width = 3
-    Height = 410
-    Cursor = crHSplit
+    Height = 412
     Color = clBtnShadow
     ParentColor = False
   end
@@ -30,7 +28,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 313
-    Height = 410
+    Height = 412
     Align = alLeft
     BevelInner = bvRaised
     BevelOuter = bvLowered
@@ -39,7 +37,7 @@ object Form1: TForm1
       Left = 2
       Top = 2
       Width = 309
-      Height = 406
+      Height = 408
       ActivePage = TabSheet1
       Align = alClient
       Font.Charset = ANSI_CHARSET
@@ -48,13 +46,12 @@ object Form1: TForm1
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
-      TabIndex = 0
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Vertex Program'
         object Splitter3: TSplitter
           Left = 0
-          Top = 285
+          Top = 287
           Width = 301
           Height = 3
           Cursor = crVSplit
@@ -99,7 +96,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 301
-          Height = 260
+          Height = 262
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -118,12 +115,12 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 299
-            Height = 217
+            Height = 219
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
-            Font.Name = 'Courier New'
+            Font.Name = 'Lucida Console'
             Font.Style = []
             ParentFont = False
             ScrollBars = ssBoth
@@ -133,7 +130,7 @@ object Form1: TForm1
           end
           object Panel13: TPanel
             Left = 1
-            Top = 234
+            Top = 236
             Width = 299
             Height = 25
             Align = alBottom
@@ -157,7 +154,7 @@ object Form1: TForm1
         end
         object Panel5: TPanel
           Left = 0
-          Top = 288
+          Top = 290
           Width = 301
           Height = 90
           Align = alBottom
@@ -183,8 +180,8 @@ object Form1: TForm1
             Color = clBtnFace
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Courier New'
+            Font.Height = -9
+            Font.Name = 'Lucida Console'
             Font.Style = []
             ParentFont = False
             ReadOnly = True
@@ -219,7 +216,7 @@ object Form1: TForm1
         ImageIndex = 1
         object Splitter2: TSplitter
           Left = 0
-          Top = 285
+          Top = 287
           Width = 301
           Height = 3
           Cursor = crVSplit
@@ -258,7 +255,7 @@ object Form1: TForm1
           Left = 0
           Top = 25
           Width = 301
-          Height = 260
+          Height = 262
           Align = alClient
           Caption = 'Panel6'
           TabOrder = 1
@@ -277,7 +274,7 @@ object Form1: TForm1
             Left = 1
             Top = 17
             Width = 299
-            Height = 217
+            Height = 219
             Align = alClient
             Font.Charset = ANSI_CHARSET
             Font.Color = clWindowText
@@ -292,7 +289,7 @@ object Form1: TForm1
           end
           object Panel3: TPanel
             Left = 1
-            Top = 234
+            Top = 236
             Width = 299
             Height = 25
             Align = alBottom
@@ -316,7 +313,7 @@ object Form1: TForm1
         end
         object Panel8: TPanel
           Left = 0
-          Top = 288
+          Top = 290
           Width = 301
           Height = 90
           Align = alBottom
@@ -378,17 +375,17 @@ object Form1: TForm1
         ImageIndex = 2
         DesignSize = (
           301
-          378)
+          380)
         object Label16: TLabel
           Left = 8
-          Top = 240
-          Width = 278
+          Top = 272
+          Width = 282
           Height = 13
-          Caption = 'Note: NV2x class hardware doesn'#39't honor negative values'
+          Caption = 'Note: NV2x class hardware may not honor negative values'
         end
         object GroupBox1: TGroupBox
           Left = 8
-          Top = 8
+          Top = 40
           Width = 281
           Height = 105
           Anchors = [akLeft, akTop, akRight]
@@ -463,11 +460,7 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 50
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 0
             ThumbLength = 12
             TickMarks = tmBoth
@@ -480,11 +473,7 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 50
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 1
             ThumbLength = 12
             TickMarks = tmBoth
@@ -497,11 +486,7 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 50
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 2
             ThumbLength = 12
             TickMarks = tmBoth
@@ -514,11 +499,7 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 50
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 3
             ThumbLength = 12
             TickMarks = tmBoth
@@ -527,7 +508,7 @@ object Form1: TForm1
         end
         object GroupBox2: TGroupBox
           Left = 8
-          Top = 128
+          Top = 160
           Width = 281
           Height = 105
           Anchors = [akLeft, akTop, akRight]
@@ -596,11 +577,7 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 75
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 0
             ThumbLength = 12
             TickMarks = tmBoth
@@ -613,11 +590,7 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 75
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 1
             ThumbLength = 12
             TickMarks = tmBoth
@@ -630,11 +603,7 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 75
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 2
             ThumbLength = 12
             TickMarks = tmBoth
@@ -647,16 +616,29 @@ object Form1: TForm1
             Height = 15
             Anchors = [akLeft, akTop, akRight]
             Max = 100
-            Orientation = trHorizontal
-            Frequency = 1
             Position = 65
-            SelEnd = 0
-            SelStart = 0
             TabOrder = 3
             ThumbLength = 12
             TickMarks = tmBoth
             TickStyle = tsNone
           end
+        end
+        object CheckBox2: TCheckBox
+          Left = 14
+          Top = 12
+          Width = 131
+          Height = 17
+          Caption = 'CgShader Enabled'
+          Checked = True
+          Font.Charset = ANSI_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          State = cbChecked
+          TabOrder = 2
+          OnClick = CheckBox2Click
         end
       end
     end
@@ -665,7 +647,7 @@ object Form1: TForm1
     Left = 316
     Top = 0
     Width = 338
-    Height = 410
+    Height = 412
     Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -693,7 +675,7 @@ object Form1: TForm1
       Left = 1
       Top = 49
       Width = 336
-      Height = 360
+      Height = 362
       Camera = GLCamera1
       Buffer.Lighting = False
       Buffer.AntiAliasing = aa4xHQ
@@ -707,29 +689,30 @@ object Form1: TForm1
     Top = 56
     object GLXYZGrid1: TGLXYZGrid
       Position.Coordinates = {000000006F12033B000000000000803F}
-      LineColor.Color = {CDCC4C3FF8FEFE3EACC8483E0000803F}
-      XSamplingScale.Min = -2
-      XSamplingScale.Max = 2
-      XSamplingScale.Step = 0.100000001490116
-      YSamplingScale.Step = 0.100000001490116
-      ZSamplingScale.Min = -2
-      ZSamplingScale.Max = 2
-      ZSamplingScale.Step = 0.100000001490116
+      LineColor.Color = {938C0C3E938E0E3F938C0C3E0000803F}
+      XSamplingScale.Min = -2.000000000000000000
+      XSamplingScale.Max = 2.000000000000000000
+      XSamplingScale.Step = 0.100000001490116100
+      YSamplingScale.Step = 0.100000001490116100
+      ZSamplingScale.Min = -2.000000000000000000
+      ZSamplingScale.Max = 2.000000000000000000
+      ZSamplingScale.Step = 0.100000001490116100
       Parts = [gpX, gpZ]
       LinesSmoothing = False
     end
     object GLPlane1: TGLPlane
       Direction.Coordinates = {000000000000803F0000000000000000}
-      PitchAngle = 90
+      PitchAngle = 90.000000000000000000
       Up.Coordinates = {0000000000000000000080BF00000000}
       Material.MaterialLibrary = GLMatLib
       Material.LibMaterialName = 'LibMaterial'
-      Height = 1
-      Width = 1
+      Height = 1.000000000000000000
+      Width = 1.000000000000000000
+      NoZWrite = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 100
-      FocalLength = 50
+      DepthOfView = 100.000000000000000000
+      FocalLength = 50.000000000000000000
       TargetObject = GLPlane1
       CameraStyle = csInfinitePerspective
       Position.Coordinates = {000000000000C03F0000803F0000803F}
@@ -742,12 +725,12 @@ object Form1: TForm1
     Top = 88
   end
   object CgShader1: TCgShader
-    VertexProgram.OnApply = CgShader1ApplyVertexProgram
-    FragmentProgram.OnApply = CgShader1ApplyFragmentProgram
-    FragmentProgram.OnUnApply = CgShader1UnApplyFragmentProgram
-    OnApplyVertexProgram = CgShader1ApplyVertexProgram
-    OnApplyFragmentProgram = CgShader1ApplyFragmentProgram
-    OnUnApplyFragmentProgram = CgShader1UnApplyFragmentProgram
+    VertexProgram.OnApply = CgShader1ApplyVP
+    FragmentProgram.OnApply = CgShader1ApplyFP
+    FragmentProgram.OnUnApply = CgShader1UnApplyFP
+    OnApplyVP = CgShader1ApplyVP
+    OnApplyFP = CgShader1ApplyFP
+    OnUnApplyFP = CgShader1UnApplyFP
     OnInitialize = CgShader1Initialize
     Left = 320
     Top = 56

@@ -5,7 +5,8 @@
 
   Try to get an ATI feel by editing the vertex shader code. ;)
 
-  09/07/03 - Nelson Chu
+  Last update: 02/01/04
+  Nelson Chu
 }
 unit Unit1;
 
@@ -71,7 +72,7 @@ type
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure CgShader1ApplyVertexProgram(Sender: TCgProgram);
+    procedure CgShader1ApplyVP(Sender: TCgProgram);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
@@ -102,7 +103,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.CgShader1ApplyVertexProgram(Sender: TCgProgram);
+procedure TForm1.CgShader1ApplyVP(Sender: TCgProgram);
 var
   v : TVector;
   Param: TCgParameter;
