@@ -40,7 +40,8 @@ type
    TGLWin32Context = class (TGLContext)
       private
          { Private Declarations }
-         FRC, FDC, FHPBUFFER : Cardinal;
+         FRC, FDC : Cardinal;
+         FHPBUFFER : Integer;
          FiAttribs : packed array of Integer;
          FfAttribs : packed array of Single;
          FLegacyContextsOnly : Boolean;
