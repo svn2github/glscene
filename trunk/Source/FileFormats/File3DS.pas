@@ -270,6 +270,7 @@ end;
 destructor TMaterialList.Destroy;
 
 begin
+  ClearList;
   FLocalList.Free;
   inherited Destroy;
 end;
