@@ -212,7 +212,7 @@ begin
    for i:=0 to Ranges.Count-1 do begin
       fontRange:=Ranges.Items[i];
       for ch:=fontRange.StartASCII to fontRange.StopASCII do begin
-         cw:=bitmap.Canvas.TextWidth(ch)+1-HSpaceFix;
+         cw:=bitmap.Canvas.TextWidth(ch)-HSpaceFix;
          SetCharWidths(Integer(ch), cw);
       end;
    end;
