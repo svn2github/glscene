@@ -5818,7 +5818,7 @@ begin
       FOverlaySkeleton:=TGLBaseMesh(Source).FOverlaySkeleton;
       FIgnoreMissingTextures:=TGLBaseMesh(Source).FIgnoreMissingTextures;
       FAutoCentering:=TGLBaseMesh(Source).FAutoCentering;
-      FAutoScaling:=TGLBaseMesh(Source).FAutoScaling;
+      FAutoScaling.Assign(TGLBaseMesh(Source).FAutoScaling);
       FSkeleton.Assign(TGLBaseMesh(Source).FSkeleton);
       FMeshObjects.Assign(TGLBaseMesh(Source).FMeshObjects);
    end;
