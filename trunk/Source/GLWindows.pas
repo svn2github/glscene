@@ -903,7 +903,7 @@ Function  TGLBaseFontControl.GetFontHeight : Integer;
 Begin
   If Assigned(FBitmapFont) then
     If FBitmapFont is TWindowsBitmapFont then
-      Result := (FBitmapFont as TWindowsBitmapFont).MaxHeight
+      Result := Abs((FBitmapFont as TWindowsBitmapFont).Font.Height)
     else
       Result := FBitmapFont.CharHeight
   else Result := -1;

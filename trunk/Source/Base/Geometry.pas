@@ -156,10 +156,10 @@ type
    PExtended = ^Extended;
    PPointer = ^Pointer;
 
-  	PTexPoint    = ^TTexPoint;
-	TTexPoint    = packed record
-						  S,T : Single;
-						end;
+  	PTexPoint = ^TTexPoint;
+	TTexPoint = packed record
+                  S, T : Single;
+               end;
 
    // types to specify continous streams of a specific type
    // switch off range checking to access values beyond the limits
@@ -337,10 +337,7 @@ type
    end;
 
    TRectangle = record
-     Left,
-     Top,
-     Width,
-     Height: Integer;
+     Left, Top, Width, Height: Integer;
    end;
 
    TTransType = (ttScaleX, ttScaleY, ttScaleZ,

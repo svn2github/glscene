@@ -87,12 +87,6 @@ object Form1: TForm1
     Font.Height = -17
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Ranges = <
-      item
-        StartASCII = ' '
-        StopASCII = 'z'
-        StartGlyphIdx = 0
-      end>
     Left = 48
     Top = 16
   end
@@ -100,8 +94,12 @@ object Form1: TForm1
     Left = 112
     Top = 48
     object MIPickFont: TMenuItem
-      Caption = 'Pick Font...'
+      Caption = 'Pick Font'
       OnClick = MIPickFontClick
+    end
+    object MIViewTexture: TMenuItem
+      Caption = 'View Texture'
+      OnClick = MIViewTextureClick
     end
   end
   object FontDialog1: TFontDialog

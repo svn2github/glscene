@@ -2,9 +2,9 @@
 {: TFont Import into a BitmapFont using variable width...<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>28/09/02 - EG - Fixed transparency, style fixes, prop defaults fixed,
+      <li>29/09/02 - EG - Fixed transparency, style fixes, prop defaults fixed,
                           dropped interface dependency, texture size auto computed,
-                          fixed italics spacing
+                          fixed italics spacing, uses LUM+ALPHA texture
       <li>06/09/02 - JAJ - Fixed alot of bugs... Expecially designtime updating bugs..
       <li>12/08/02 - JAJ - Made into a standalone unit...
 	</ul></font>
@@ -25,21 +25,23 @@ Type
       to which indexes, however here you also set the Font property to any TFont
       available to the system and it renders in GLScene as close to that font
       as posible, on some font types this is 100% on some a slight difference
-      in spacing can occur at most 1 pixel per char on some char combinations.<br>
-      This component should be ready for cross-platform development.
-   }
+      in spacing can occur at most 1 pixel per char on some char combinations.<p>
+      Ranges must be sorted in ascending ASCII order and should not overlap.
+      As the font texture is automatically layed out, the Ranges StartGlyphIdx
+      property is ignored and replaced appropriately. }
    TWindowsBitmapFont = class (TGLCustomBitmapFont)
       private
 	      { Private Declarations }
          FFont : TFont;
-         FMaxHeight : Integer;
 
       protected
 	      { Protected Declarations }
          procedure SetFont(value : TFont);
          procedure LoadWindowsFont;
+         function StoreRanges : Boolean;
 
          procedure PrepareImage; override;
+         function TextureFormat : Integer; override;
 
       public
 	      { Public Declarations }
@@ -48,9 +50,10 @@ Type
 
          procedure NotifyChange(Sender : TObject); override;
 
-         property MaxHeight : Integer read FMaxHeight;
          function FontTextureWidth : Integer;
          function FontTextureHeight : Integer;
+
+         property Glyphs;
 
       published
 	      { Published Declarations }
@@ -60,7 +63,7 @@ Type
 
 			property MagFilter;
 			property MinFilter;
-         property Ranges;
+         property Ranges stored StoreRanges;
    end;
 
 // ------------------------------------------------------------------
@@ -71,7 +74,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Geometry;
+uses SysUtils, Geometry, OpenGL12;
 
 // ------------------
 // ------------------ TWindowsBitmapFont ------------------
@@ -88,7 +91,7 @@ begin
    FFont.OnChange:=NotifyChange;
    GlyphsAlpha:=tiaAlphaFromIntensity;
 
-   Ranges.Add('!', '}');
+   Ranges.Add(' ', '}');
 
    LoadWindowsFont;   
 end;
@@ -134,54 +137,67 @@ end;
 // LoadWindowsFont
 //
 procedure TWindowsBitmapFont.LoadWindowsFont;
+var
+   textureWidth, textureHeight : Integer;
 
-   procedure FixOverlappingFontRangeWidths;
+   function ComputeCharRects(x, y : Integer; canvas : TCanvas) : Integer;
    var
-      fontRange : TBitMapFontRange;
-      checkingFontRange : TBitMapFontRange;
-      xC, yC : Integer;
-      thisEnd, checkingEnd : Integer;
-      posi : Integer;
+      px, py, cw, n : Integer;
+      rect : TGLRect;
    begin
-      for xC:=Ranges.Count-1 downto 1 do begin
-         fontRange:=Ranges[xC];
-         thisEnd:=fontRange.StartGlyphIdx+Byte(fontRange.StopASCII)-Byte(fontRange.StartASCII);
-         for yC:=xC-1 downto 0 do begin
-            checkingFontRange:=Ranges[yC];
-            checkingEnd:=CheckingFontRange.StartGlyphIdx+Byte(CheckingFontRange.StopASCII)
-                                                        -Byte(CheckingFontRange.StartASCII);
-            if (fontRange.StartGlyphIdx<=checkingEnd) and (checkingFontRange.StartGlyphIdx<=thisEnd) then begin
-               for posi:=fontRange.StartGlyphIdx to thisEnd do begin
-                  if (posi<=checkingEnd) and (checkingFontRange.StartGlyphIdx<=posi) then
-                     checkingFontRange.Widths[posi-checkingFontRange.StartGlyphIdx]:=fontRange.Widths[posi-fontRange.StartGlyphIdx];
-               end;
+      Result:=0;
+      n:=0;
+      px:=0;
+      py:=0;
+      while n<256 do begin
+         cw:=CharWidths[n];
+         if cw>0 then begin
+            Inc(cw, 2);
+            if Assigned(canvas) then begin
+               SetCharRects(n, VectorMake((px+0.05)/textureWidth,
+                                          (textureHeight-(py+0.05))/textureHeight,
+                                          (px+cw-3.05)/textureWidth,
+                                          (textureHeight-(py+CharHeight-0.05))/textureHeight));
+               rect.Left:=px;
+               rect.Top:=py;
+               rect.Right:=px+cw;
+               rect.Bottom:=py+CharHeight;
+               // Draw the Char, the trailing space is to properly handle the italics.
+               canvas.TextRect(rect, px+1, py+1, Char(n)+' ');
             end;
+            if ((n<255) and (px+cw+CharWidths[n+1]+2<=x)) or (n=255) then
+               Inc(px, cw)
+            else begin
+               px:=0;
+               Inc(py, CharHeight);
+               if py+2*CharHeight>y then Break;
+            end;
+            Inc(Result);
          end;
+         Inc(n);
       end;
    end;
+
 
 var
    bitmap : TBitMap;
    fontRange  : TBitmapFontRange;
    ch : Char;
-   tilePosi : Integer;
-   x, y, xC, th : Integer;
-   charsPerRow, maxChars, nbChars, n : Integer;
-   charRect : TGLRect;
-   fillRatio, bestFillRatio : Single;
-   bestX, bestY : Integer;
+   x, y, i, cw : Integer;
+   nbChars, n : Integer;
+   texMem, bestTexMem : Integer;
 begin
+   InvalidateUsers;
    bitmap:=Glyphs.Bitmap;
+   Glyphs.OnChange:=nil;
 
    bitmap.PixelFormat:=pf32bit;
    with bitmap.Canvas do begin
       Font:=Self.Font;
       Font.Color:=clWhite;
-
       // get characters dimensions for the font
       CharWidth:=Round(2+MaxFloat(TextWidth('M'), TextWidth('W'), TextWidth('_')));
       CharHeight:=2+TextHeight('"_pI|,');
-
       if fsItalic in Font.Style then begin
          // italics aren't properly acknowledged in font width
          HSpaceFix:=-(CharWidth div 3);
@@ -191,19 +207,31 @@ begin
 
    nbChars:=Ranges.CharacterCount;
 
-   // compute texture size (look for best fill ratio)
-   bestFillRatio:=0;
-   bestX:=0;
-   bestY:=0;
+   // Retrieve width of all characters (texture width)
+   ResetCharWidths(0);
+   for i:=0 to Ranges.Count-1 do begin
+      fontRange:=Ranges.Items[i];
+      for ch:=fontRange.StartASCII to fontRange.StopASCII do begin
+         cw:=bitmap.Canvas.TextWidth(ch)+1-HSpaceFix;
+         SetCharWidths(Integer(ch), cw);
+      end;
+   end;
+
+   // compute texture size: look for best fill ratio
+   // and as square a texture as possible
+   bestTexMem:=MaxInt;
+   textureWidth:=0;
+   textureHeight:=0;
    y:=64; while y<=512 do begin
       x:=64; while x<=512 do begin
-         n:=(x div CharWidth)*(y div CharHeight);
-         if n>=nbChars then begin
-            fillRatio:=(n*CharWidth*CharHeight)/(x*y);
-            if fillRatio>bestFillRatio then begin
-               bestX:=x;
-               bestY:=y;
-               bestFillRatio:=fillRatio;
+         // compute the number of characters that fit
+         n:=ComputeCharRects(x, y, nil);
+         if n=nbChars then begin
+            texMem:=x*y;
+            if (texMem<bestTexMem) or ((texMem=bestTexMem) and (Abs(x-y)<Abs(textureWidth-textureHeight))) then begin
+               textureWidth:=x;
+               textureHeight:=y;
+               bestTexMem:=texMem;
             end;
          end;
          x:=2*x;
@@ -211,55 +239,28 @@ begin
       y:=y*2;
    end;
 
-   if bestFillRatio=0 then
+   if bestTexMem=MaxInt then
       raise Exception.Create('Characters are too large or too many. Unable to create font texture.');
 
-   bitmap.Width:=bestX;
-   bitmap.Height:=bestY;
+   bitmap.Width:=textureWidth;
+   bitmap.Height:=textureHeight;
 
    with bitmap.Canvas do begin
       Brush.Style:=bsSolid;
       Brush.Color:=clBlack;
-      FillRect(Rect(0,0, bestX, bestY));
+      FillRect(Rect(0, 0, textureWidth, textureHeight));
    end;
 
-   charsPerRow:=bestX div CharWidth; // calculate how many chars that can be on one row.
-   maxChars:=charsPerRow*(bestY div CharHeight); // calculate how many chars that can be within Width & Height
+   ComputeCharRects(textureWidth, textureHeight, bitmap.Canvas);
 
-   FMaxHeight:=0;
+   Glyphs.OnChange:=OnGlyphsChanged;
+end;
 
-   // run through the ranges...
-   for xC:=0 to Ranges.Count-1 do begin
-      fontRange:=Ranges.Items[xC];
-      tilePosi:=FontRange.StartGlyphIdx;
-      // run through the chars in each range...
-      for ch:=fontRange.StartASCII to fontRange.StopASCII do begin
-         fontRange.Widths[Byte(ch)-Byte(fontRange.StartASCII)]:=bitmap.Canvas.TextWidth(ch)+1-HSpaceFix;
-
-         th:=bitmap.Canvas.TextHeight(ch);
-         if th>FMaxHeight then
-            FMaxHeight:=th;
-
-         Assert(tilePosi<maxChars, 'MatchWindowsFont: Too many chars on a too small Image... Use higher width and height settings...');
-
-         x:=(tilePosi mod CharsPerRow); // calc x grid
-         y:=(tilePosi div CharsPerRow); // calc y grid
-
-         x:=x*CharWidth;  // calc grid x pixel position
-         y:=y*CharHeight; // calc grid y pixel position
-
-         CharRect:=Rect(x, y, x+CharWidth, y+CharHeight); // Calc Grid Rect!
-         // clear this char! Needed if uppercase and lowercase is on same spot!
-         bitmap.Canvas.FillRect(CharRect);
-         // Draw the Char! The trailing space is to properly handle the italics!
-         bitmap.Canvas.TextRect(CharRect, x+1, y+1, ch+' ');
-         CharRect.Right:=CharRect.Left+FontRange.Widths[Byte(ch)-Byte(fontRange.StartASCII)];
-
-         Inc(tilePosi); // goto next tile...
-      end;
-   end;
-
-   FixOverlappingFontRangeWidths; // allows a..z ontop A..Z shown correctly...
+// StoreRanges
+//
+function TWindowsBitmapFont.StoreRanges : Boolean;
+begin
+   Result:=(Ranges.Count<>1) or (Ranges[0].StartASCII<>' ') or (Ranges[0].StopASCII<>'}');
 end;
 
 // PrepareImage
@@ -268,6 +269,13 @@ procedure TWindowsBitmapFont.PrepareImage;
 begin
    LoadWindowsFont;
    inherited;
+end;
+
+// TextureFormat
+//
+function TWindowsBitmapFont.TextureFormat : Integer;
+begin
+   Result:=GL_LUMINANCE6_ALPHA2;
 end;
 
 // ------------------------------------------------------------------

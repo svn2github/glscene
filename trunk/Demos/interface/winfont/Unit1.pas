@@ -10,7 +10,7 @@
 
    Clicking on the viewer will hide/show the teapot (when teapot is on, the
    framerate is much lower, f.i. on my GF3 / K7 1.2, the rating can easily
-   reach 700FPS with teapot off)
+   reach 950FPS with teapot off)
 }
 unit Unit1;
 
@@ -37,12 +37,14 @@ type
     MainMenu1: TMainMenu;
     MIPickFont: TMenuItem;
     FontDialog1: TFontDialog;
+    MIViewTexture: TMenuItem;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1Click(Sender: TObject);
     procedure MIPickFontClick(Sender: TObject);
+    procedure MIViewTextureClick(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -53,6 +55,8 @@ var
   Form1: TForm1;
 
 implementation
+
+uses Unit2;
 
 {$R *.DFM}
 
@@ -67,7 +71,7 @@ begin
                   +'esse cillum dolore eu fugiat nulla pariatur. Excepteur sint'#13#10
                   +'occaecat cupidatat non proident, sunt in culpa qui officia'#13#10
                   +'deserunt mollit anim id est laborum.'#13#10
-                  +'Woblis ten caracuro Zapothek et Setag!'; // I needed an uppercase 'W' too...
+                  +'Woblis ten caracuro Zapothek it Setag!'; // I needed an uppercase 'W' too...
 end;
 
 procedure TForm1.MIPickFontClick(Sender: TObject);
@@ -77,6 +81,16 @@ begin
       WindowsBitmapFont1.Font:=FontDialog1.Font;
       HUDText1.ModulateColor.AsWinColor:=FontDialog1.Font.Color;
    end;
+end;
+
+procedure TForm1.MIViewTextureClick(Sender: TObject);
+begin
+   with Form2.Image1 do begin
+      Picture:=WindowsBitmapFont1.Glyphs;
+      Form2.Width:=Picture.Width;
+      Form2.Height:=Picture.Height;
+   end;
+   Form2.Show;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

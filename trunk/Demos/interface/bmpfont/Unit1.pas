@@ -12,7 +12,7 @@
 
    Clicking on the viewer will hide/show the teapot (when teapot is on, the
    framerate is much lower, f.i. on my GF3 / K7 1.2, the rating can reach
-   950FPS with teapot off) 
+   1050FPS with teapot off)
 }
 unit Unit1;
 
