@@ -147,6 +147,7 @@ uses
    GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
    GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
    AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS, GLAnimatedSprite,
+   GLFeedback,
 
 {$ifdef WIN32}
    GLSound, GLSoundFileObjects, GLSpaceText,
@@ -1901,6 +1902,7 @@ initialization
       RegisterSceneObject(TGLRenderPoint, 'Render Point', '');
       RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
       RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', '');
+      RegisterSceneObject(TGLFeedback, 'OpenGL Feedback', '');
    end;
 
 finalization

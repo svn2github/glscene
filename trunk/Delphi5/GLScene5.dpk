@@ -169,6 +169,7 @@ contains
   GLFPSMovement in '..\Source\GLFPSMovement.pas',
   GLCelShader in '..\Source\Shaders\GLCelShader.pas',
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
-  GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas';
+  GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
+  GLFeedback in '..\Source\GLFeedback.pas';
 
 end.

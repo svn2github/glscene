@@ -196,6 +196,7 @@ contains
   BumpMapping in '..\Source\Base\BumpMapping.pas',
   GLPerlinBase in '..\Source\GLPerlinBase.pas',  
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
-  GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas';
+  GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
+  GLFeedback in '..\Source\GLFeedback.pas';
 
 end.
