@@ -5,6 +5,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>24/08/01 - EG - Fixed PropagateSharedContext
       <li>12/08/01 - EG - Handles management completed
       <li>22/07/01 - EG - Creation (glcontext.omm)
    </ul></font>
@@ -470,10 +471,12 @@ var
    i, j : Integer;
 begin
    for i:=0 to FSharedContexts.Count-1 do begin
-      with TGLContext(FSharedContexts[i]).FSharedContexts do begin
-         Clear;
-         for j:=0 to FSharedContexts.Count-1 do
-            Add(FSharedContexts[j]);
+      if TGLContext(FSharedContexts[i])<>Self then begin
+         with TGLContext(FSharedContexts[i]).FSharedContexts do begin
+            Clear;
+            for j:=0 to FSharedContexts.Count-1 do
+               Add(FSharedContexts[j]);
+         end;
       end;
    end;
 end;
