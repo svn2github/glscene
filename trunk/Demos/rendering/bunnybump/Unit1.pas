@@ -92,8 +92,6 @@ begin
   // Load the normal map
   with GLMaterialLibrary1.Materials[0].Material.Texture.Image do
     LoadFromFile('bunnynormals.jpg');
-  with GLMaterialLibrary1.Materials[1].Material.Texture.Image do
-    LoadFromFile('glscene.bmp');
 
   // Link the lights to their toggles
   CheckBox1.Tag:=Integer(WhiteLight);

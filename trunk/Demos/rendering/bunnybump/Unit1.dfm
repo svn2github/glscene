@@ -183,13 +183,7 @@ object Form1: TForm1
         Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
         Material.Texture.Disabled = False
         Tag = 0
-        Texture2Name = 'Texture'
         Shader = GLBumpShader1
-      end
-      item
-        Name = 'Texture'
-        Material.Texture.Disabled = False
-        Tag = 0
       end>
     Left = 40
     Top = 64
@@ -198,6 +192,7 @@ object Form1: TForm1
     BumpMethod = bmDot3TexCombiner
     BumpSpace = bsObject
     BumpOptions = []
+    DesignTimeEnabled = False
     Left = 40
     Top = 96
   end
