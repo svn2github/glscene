@@ -455,60 +455,6 @@ type
          procedure ExtrudeVerticesToInfinity(const origin : TAffineVector);
    end;
 
-(*   // TGLSilhouette
-   //
-   {: Standard silhouette class.<p>
-      This class introduces helper methods for constructing the indexed
-      vertices sets for the silhouette and the cap. }
-   TGLSilhouette = class (TGLBaseSilhouette)
-      private
-         { Private Declarations }
-         FVertices: TAffineVectorList;
-         FEndVertices: TAffineVectorList;
-         FVertexIndices: TIntegerList;
-         FCapVertexIndices : TIntegerList;
-         FSilhouetteStyle: TSilhouetteStyle;
-         FMisc : TIntegerList;
-         procedure SetVertexIndices(const Value: TIntegerList);
-         procedure SetVertices(const Value: TAffineVectorList);
-
-      protected
-         { Protected Declarations }
-         FSeenFrom : TAffineVector;
-         FLightDirection : TAffineVector;
-         FEndVertexStart: integer;
-      public
-         constructor Create;
-         destructor Destroy; override;
-         property Vertices : TAffineVectorList read FVertices write SetVertices;
-         property VertexIndices : TIntegerList read FVertexIndices write SetVertexIndices;
-         property SilhouetteStyle : TSilhouetteStyle read FSilhouetteStyle;
-
-         {: If FreeAllMemory is false, only a flush is performed - this saves
-         performance down the line.}
-         procedure Clear(FreeAllMemory : boolean);
-
-         {: Should be called when the Silhouette is finished, removes excess storage
-         left by previous flush (=Clear(False))}
-         procedure LimitListSizes;
-
-         function Count : integer;
-         function CapCount : integer;
-
-         {: Adds an edge (two vertices) to the silhouette. If TightButSlow is true,
-         no vertices will be doubled in the silhoette list. This should only be used
-         when creating re-usable silhoettes, because it's much slower }
-         procedure AddEdgeToSilhouette(Vertex0, Vertex1 : TAffineVector; TightButSlow : boolean);
-         procedure GetEdge(EdgeIndex : integer; var Vertex0, Vertex1, Vertex0End, Vertex1End : TAffineVector); overload;
-
-         procedure AddCapToSilhouette(Vertex0, Vertex1, Vertex2 : TAffineVector; TightButSlow : boolean);
-         procedure GetCap(CapIndex : integer; var Vertex0, Vertex1, Vertex2, Vertex0end, Vertex1end, Vertex2end : TAffineVector);
-
-         procedure RenderLines;
-         procedure RenderVolume(OldMethod : boolean);
-
-   end; *)
-
 	TSqrt255Array = array [0..255] of Byte;
 	PSqrt255Array = ^TSqrt255Array;
 
