@@ -2949,6 +2949,7 @@ begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
+      // with lightmap texcoords units active, wee seem to actually lose performance...
       if GL_EXT_compiled_vertex_array and (LighmapTexCoords.Count=0) then
          glLockArraysEXT(0, vertices.Count);
       FArraysDeclared:=True;
@@ -3874,8 +3875,8 @@ begin
          // attach and activate lightmap
          Assert(lightMapIndex<mrci.lightmapLibrary.Materials.Count);
          libMat:=mrci.lightmapLibrary.Materials[lightMapIndex];
-         Owner.Owner.EnableLightMapArray(mrci);
          AttachLightmap(libMat.Material.Texture, mrci);
+         Owner.Owner.EnableLightMapArray(mrci);
       end else begin
          // desactivate lightmap
          Owner.Owner.DisableLightMapArray(mrci);
@@ -5263,16 +5264,8 @@ end;
 // BuildList
 //
 procedure TGLBaseMesh.BuildList(var rci : TRenderContextInfo);
-var
-   states : TGLStates;
 begin
-   if rci.materialLibrary<>nil then begin
-      states:=rci.currentStates;
-      glPushAttrib(GL_ENABLE_BIT);
-      MeshObjects.BuildList(rci);
-      glPopAttrib;
-      rci.currentStates:=states;
-   end else MeshObjects.BuildList(rci);
+   MeshObjects.BuildList(rci);
 end;
 
 // DoRender
