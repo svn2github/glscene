@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/02/04 - SG - Added roNoSwapBuffers option to TContextOptions (Juergen Abel)
       <li>09/01/04 - EG - Added TGLCameraInvariantObject
       <li>06/12/03 - EG - TGLColorProxy moved to new GLProxyObjects unit,
                           GLVectorFileObjects dependency cut. 
@@ -286,10 +287,12 @@ type
      roDestinationAlpha: request an Alpha channel for the rendered output<br>
      roNoColorBuffer: don't request a color buffer (color depth setting ignored)<br>
      roNoColorBufferClear: do not clear the color buffer automatically, if the
-         whole viewer is fully repainted each frame, this can improve framerate }
+         whole viewer is fully repainted each frame, this can improve framerate<br>
+     roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering }
   TContextOption = (roDoubleBuffer, roStencilBuffer,
                     roRenderToWindow, roTwoSideLighting, roStereo,
-                    roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear);
+                    roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
+                    roNoSwapBuffers);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -7360,7 +7363,8 @@ begin
          glRasterPos2i(-50, 0);
          glDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
                       GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
-         RenderingContext.SwapBuffers;
+         if not (roNoSwapBuffers in ContextOptions) then
+            RenderingContext.SwapBuffers;
       finally
          RenderingContext.Deactivate;
       end;
@@ -7388,7 +7392,8 @@ begin
       // render
       DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
       CheckOpenGLError;
-      RenderingContext.SwapBuffers;
+      if not (roNoSwapBuffers in ContextOptions) then
+         RenderingContext.SwapBuffers;
 
       // yes, calculate average frames per second...
       Inc(FFrameCount);
