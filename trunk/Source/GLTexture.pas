@@ -2830,7 +2830,6 @@ end;
 procedure TGLShader.InitializeShader;
 begin
    if FVirtualHandle.Handle=0 then begin
-      FVirtualHandle:=TGLVirtualHandle.Create;
       FVirtualHandle.OnAllocate:=OnVirtualHandleAllocate;
       FVirtualHandle.OnDestroy:=OnVirtualHandleDestroy;
       FVirtualHandle.AllocateHandle;
