@@ -173,6 +173,7 @@ type
     property OnTravelStop: TNotifyEvent Read FOnTravelStop Write FOnTravelStop;
   published
     property Name: string Read FName Write FName;
+    {: This property is currently ignored. }
     property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode;
 
     property StartTime: double Read FStartTime Write SetStartTime;
