@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>04/09/03 - Egg - BoundingBox computation now based on AABB code
+      <li>04/09/03 - Egg - BoundingBox computation now based on AABB code,
+                           Fixed TGLSceneBuffer.PixelRayToWorld
       <li>27/08/02 - Egg - Added TGLProxyObject.RayCastIntersect (Matheus Degiovani),
                            Fixed PixelRayToWorld
       <li>22/08/02 - Egg - Fixed src LocalMatrix computation on Assign
@@ -6427,6 +6428,7 @@ begin
    //SubtractVector(targ,cam);
    pix[0]:=FViewPort.Width/2;
    pix[1]:=FViewPort.Height/2;
+   pix[2]:=0;
    targ:=self.ScreenToVector(pix);
 
    camAng:=VectorAngleCosine(targ,vec);
