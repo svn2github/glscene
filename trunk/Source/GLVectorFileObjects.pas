@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>24/10/03 - SG - Various fixes for multiple bones per vertex
       <li>21/09/03 - MRQZZZ - Added "aamLoopBackward" to AnimationMode property
       <li>19/09/03 - EG - "Lighmap" -&gt; "LightMap"
       <li>01/09/03 - SG - Added skeleton frame conversion methods to convert between
@@ -3772,7 +3773,7 @@ begin
       newArea:=AllocMem(VerticeBoneWeightCount*SizeOf(PVertexBoneWeightArray));
       newArea[0]:=AllocMem(n*SizeOf(TVertexBoneWeight));
       for i:=1 to VerticeBoneWeightCount-1 do
-         newArea[i]:=PVertexBoneWeightArray(Integer(newArea[0])+i*SizeOf(TVertexBoneWeight));
+         newArea[i]:=PVertexBoneWeightArray(Integer(newArea[0])+i*SizeOf(TVertexBoneWeight)*BonesPerVertex);
       // transfer old data
       if FLastVerticeBoneWeightCount<VerticeBoneWeightCount then
          n:=FLastVerticeBoneWeightCount
@@ -3796,14 +3797,10 @@ end;
 // AddWeightedBone
 //
 procedure TSkeletonMeshObject.AddWeightedBone(aBoneID : Integer; aWeight : Single);
-var
-   i,j : integer;
 begin
    if BonesPerVertex<1 then BonesPerVertex:=1;
    VerticeBoneWeightCount:=VerticeBoneWeightCount+1;
-   i:=(VerticeBoneWeightCount-1) div BonesPerVertex;
-   j:=(VerticeBoneWeightCount-1) mod BonesPerVertex;
-   with VerticesBonesWeights[i][j] do 
+   with VerticesBonesWeights[VerticeBoneWeightCount-1][0] do 
    begin
       BoneID:=aBoneID;
       Weight:=aWeight;
@@ -3880,6 +3877,8 @@ var
    n, nt : TVector;
    bone : TSkeletonBone;
    skeleton : TSkeleton;
+   tempvert,
+   tempnorm : TAffineVector;
 begin
    with TBaseMeshObject(FBoneMatrixInvertedMeshes[0]) do begin
       refVertices:=Vertices;
@@ -3900,21 +3899,25 @@ begin
    end else begin
       // multiple bones per vertex
       for i:=0 to refVertices.Count-1 do begin
+         Vertices.List[i]:=NullVector;
+         Normals.List[i]:=NullVector;
          for j:=0 to BonesPerVertex-1 do begin
-            Vertices.List[i]:=NullVector;
-            Normals.List[i]:=NullVector;
+            tempvert:=NullVector;
+            tempnorm:=NullVector;
             if VerticesBonesWeights[i][j].Weight<>0 then begin
                boneID:=VerticesBonesWeights[i][j].BoneID;
                bone:=skeleton.BoneByID(boneID);
-               CombineVector(Vertices.List[i],
+               CombineVector(tempvert,
                              VectorTransform(refVertices.List[i], bone.GlobalMatrix),
                              VerticesBonesWeights[i][j].Weight);
                PAffineVector(@n)^:=refNormals.List[i];
                n:=VectorTransform(n, bone.GlobalMatrix);
-               CombineVector(Normals.List[i],
+               CombineVector(tempnorm,
                              PAffineVector(@n)^,
                              VerticesBonesWeights[i][j].Weight);
             end;
+            AddVector(Vertices.List[i],tempvert);
+            AddVector(Normals.List[i],tempnorm);
          end;
       end;
    end;
