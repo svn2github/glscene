@@ -2,6 +2,12 @@
 {: Procedural textures.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/10/04 - ilh - Added SetPermFromData and SetPermToDefault
+                            moved PERM array to protected from inside Noise procedure
+                            so it can be changed by SetPermFromData and SetPermToDefault
+                           Added FNoiseRandSeed property so a Seed can be set
+                            Starts with a random Generated Seed...
+                            One must be set to BE Seeded
       <li>11/12/02 - ??? - Initial, procedural perlin noise texture
                            code by Tobias Peirick
 	</ul></font><p>
@@ -34,16 +40,19 @@ type
    FNoiseSharpness : Single;
    FNoiseAnimate   : Single;
    FSeamless       : Boolean;
+   FNoiseRandSeed  : Longint;
  protected
    FGradients: array [0..GRADIENT_TABLE_SIZE*3 - 1] of Single;
+   PERM: array [0..GRADIENT_TABLE_SIZE-1] of Byte;
    function GetWidth: Integer; override;
    function GetHeight: Integer; override;
    function  Noise(x, y: Single): Single;
    procedure SetMinCut(const val : Byte);
-   procedure SetNoiseSharpness(const val : Single);
+   procedure SetSeamless(const val : Boolean);
    procedure SetWidth(const val : Integer);
    procedure SetHeight(const val : Integer);
-   procedure SetSeamless(const val : Boolean);
+   procedure SetNoiseSharpness(const val : Single);
+   procedure SetNoiseRandSeed(const val : Longint);
    procedure UpdateNoise;
  public
    constructor Create(AOwner : TPersistent); override;
@@ -56,12 +65,15 @@ type
    procedure SaveToFile(const fileName : String); override;
    procedure LoadFromFile(const fileName : String); override;
    procedure NoiseAnimate( speed : Single );
+   procedure SetPermFromData(inPERM: array of Byte);
+   Procedure SetPermToDefault;
  published
    property Width : Integer read GetWidth write SetWidth default 128;
    property Height : Integer read GetHeight write SetHeight default 128;
    property MinCut : Byte read FMinCut write SetMinCut;
    property NoiseSharpness : Single read FNoiseSharpness write SetNoiseSharpness;
    property Seamless : Boolean read FSeamless write SetSeamless;
+   property NoiseRandSeed : Longint read FNoiseRandSeed write SetNoiseRandSeed;
  end;
 
    // TGLBlankTIE
@@ -83,8 +95,14 @@ implementation
 uses VectorGeometry, GLUtils;
 
 constructor TGLProcTextureNoise.Create(AOwner: TPersistent);
+  { PERM array Borrowed from Darwyn Peachey.
+    The gradient table is indexed with an XYZ triplet, which is first turned
+    into a single random index using a lookup in PERM array. The PERM array simply
+    contains all numbers in [0..255] in random order. }
+  //Can now be set to a different set of Random arrangement
 var
   i: Integer;
+   seedBackup : Longint;
   z, r, theta: Single;
 begin
   inherited;
@@ -93,10 +111,11 @@ begin
   FMinCut := 0;
   FNoiseSharpness := 0.99;
   FSeamless := False;
-
+  seedBackup:=RandSeed;
   Randomize;
-  RandSeed := Random(10000);
-
+  FNoiseRandSeed :=  Random(2147483647); //Random(10000);
+  RandSeed := FNoiseRandSeed;
+  SetPermToDefault;
   // Generate random gradient vectors.
   for i := 0 to GRADIENT_TABLE_SIZE - 1 do
   begin
@@ -107,7 +126,9 @@ begin
     FGradients[i*3 + 1] := r*sin(theta);
     FGradients[i*3 + 2] := z;
   end;
+  RandSeed:=seedBackup;
 end;
+
 
 destructor TGLProcTextureNoise.Destroy;
 begin
@@ -169,6 +190,7 @@ begin
         // Noise Sharpness
         n := 255 - Round(IntPower(FNoiseSharpness, C) * 255);
       end;
+      //if n < 13 then n:=13;
       // Write the result to the texture image.
       Line[x].r := n;
       Line[x].g := n;
@@ -228,7 +250,7 @@ end;
 
 procedure TGLProcTextureNoise.SaveToFile(const fileName: String);
 begin
-
+   {Nothing here}
 end;
 
 function TGLProcTextureNoise.GetHeight: Integer;
@@ -259,6 +281,7 @@ begin
    end;
 end;
 
+
 procedure TGLProcTextureNoise.SetMinCut(const val: Byte);
 begin
    if val<>FMinCut then begin
@@ -276,6 +299,33 @@ begin
    end;
 end;
 
+procedure TGLProcTextureNoise.SetNoiseRandSeed(const val: Longint);
+var i:Integer;
+   seedBackup : Longint;
+  z, r, theta: Single;
+begin
+  if val<>FNoiseRandSeed then begin
+     seedBackup:=RandSeed;
+    FNoiseRandSeed:=val;
+    //Dunno, might be ok to be negative
+    if FNoiseRandSeed<1 then FNoiseRandSeed:=1;
+    RandSeed := FNoiseRandSeed;
+    //didnt change so added/copied FGradients here... to get Seed to work
+    // Generate random gradient vectors.
+    for i := 0 to GRADIENT_TABLE_SIZE - 1 do
+    begin
+      z := 1 - 2*Random;
+      r := sqrt(1 - z*z);
+      theta := 2*PI*Random;
+      FGradients[i*3] := r*cos(theta);
+      FGradients[i*3 + 1] := r*sin(theta);
+      FGradients[i*3 + 2] := z;
+    end;
+    RandSeed:=seedBackup;
+    Invalidate;
+  end;
+end;
+
 
 procedure TGLProcTextureNoise.Assign(Source: TPersistent);
 begin
@@ -285,6 +335,7 @@ begin
      FHeight:=TGLProcTextureNoise(Source).FHeight;
      FMinCut := TGLProcTextureNoise(Source).FMinCut;
      FNoiseSharpness := TGLProcTextureNoise(Source).FNoiseSharpness;
+     FNoiseRandSeed  := TGLProcTextureNoise(Source).FNoiseRandSeed;
      Invalidate;
   end else inherited;
 end;
@@ -297,29 +348,6 @@ end;
 
 
 function TGLProcTextureNoise.Noise(x, y : Single): Single;
-const
-  { Borrowed from Darwyn Peachey.
-    The gradient table is indexed with an XYZ triplet, which is first turned
-    into a single random index using a lookup in this table. The table simply
-    contains all numbers in [0..255] in random order. }
-  PERM: array [0..GRADIENT_TABLE_SIZE-1] of Byte = (
-      225,155,210,108,175,199,221,144,203,116, 70,213, 69,158, 33,252,
-        5, 82,173,133,222,139,174, 27,  9, 71, 90,246, 75,130, 91,191,
-      169,138,  2,151,194,235, 81,  7, 25,113,228,159,205,253,134,142,
-      248, 65,224,217, 22,121,229, 63, 89,103, 96,104,156, 17,201,129,
-       36,  8,165,110,237,117,231, 56,132,211,152, 20,181,111,239,218,
-      170,163, 51,172,157, 47, 80,212,176,250, 87, 49, 99,242,136,189,
-      162,115, 44, 43,124, 94,150, 16,141,247, 32, 10,198,223,255, 72,
-       53,131, 84, 57,220,197, 58, 50,208, 11,241, 28,  3,192, 62,202,
-       18,215,153, 24, 76, 41, 15,179, 39, 46, 55,  6,128,167, 23,188,
-      106, 34,187,140,164, 73,112,182,244,195,227, 13, 35, 77,196,185,
-       26,200,226,119, 31,123,168,125,249, 68,183,230,177,135,160,180,
-       12,  1,243,148,102,166, 38,238,251, 37,240,126, 64, 74,161, 40,
-      184,149,171,178,101, 66, 29, 59,146, 61,254,107, 42, 86,154,  4,
-      236,232,120, 21,233,209, 45, 98,193,114, 78, 19,206, 14,118,127,
-       48, 79,147, 85, 30,207,219, 54, 88,234,190,122, 95, 67,143,109,
-      137,214,145, 93, 92,100,245,  0,216,186, 60, 83,105, 97,204, 52
-    );         
 var
   ix, iy, iz: Integer;
   fx0, fx1, fy0, fy1, fz0, fz1: Single;
@@ -404,6 +432,83 @@ begin
   Result := Lerp(wz, vz0, vz1);
 end;
 
+procedure TGLProcTextureNoise.SetPermFromData(inPERM: array of Byte);
+var I:Integer;
+Begin
+  For I := 0 to 255 do
+     PERM[I]:=inPERM[I];
+   Invalidate;
+End;
+
+Procedure TGLProcTextureNoise.SetPermToDefault;
+begin
+      //225,155,210,108,175,199,221,144,203,116, 70,213, 69,158, 33,252,
+  PERM[0]:=225;   PERM[1]:=155;  PERM[2]:=210;  PERM[3]:=108;  PERM[4]:=175;
+  PERM[5]:=199;   PERM[6]:=221;  PERM[7]:=144;  PERM[8]:=203;  PERM[9]:=116;
+  PERM[10]:=70;  PERM[11]:=213;  PERM[12]:=69;  PERM[13]:=158;  PERM[14]:=33;  PERM[15]:=252;
+//5, 82,173,133,222,139,174, 27,  9, 71, 90,246, 75,130, 91,191,
+  PERM[16]:=5;  PERM[17]:=82;  PERM[18]:=173;  PERM[19]:=133;  PERM[20]:=222;
+  PERM[21]:=139;  PERM[22]:=174;  PERM[23]:=27;  PERM[24]:=9;  PERM[25]:=71;
+  PERM[26]:=90;  PERM[27]:=246;  PERM[28]:=75;  PERM[29]:=130;  PERM[30]:=91;  PERM[31]:=191;
+//169,138,  2,151,194,235, 81,  7, 25,113,228,159,205,253,134,142,
+  PERM[32]:=169;  PERM[33]:=138;  PERM[34]:=2;  PERM[35]:=151;  PERM[36]:=194;
+  PERM[37]:=235;  PERM[38]:=81;  PERM[39]:=7;  PERM[40]:=25;  PERM[41]:=113;
+  PERM[42]:=228;  PERM[43]:=159;  PERM[44]:=205;  PERM[45]:=253;  PERM[46]:=134;  PERM[47]:=142;
+//248, 65,224,217, 22,121,229, 63, 89,103, 96,104,156, 17,201,129,
+  PERM[48]:=248;  PERM[49]:=65;  PERM[50]:=224;  PERM[51]:=217;  PERM[52]:=22;
+  PERM[53]:=121;  PERM[54]:=229;  PERM[55]:=63;  PERM[56]:=89;  PERM[57]:=103;
+  PERM[58]:=96;  PERM[59]:=104;  PERM[60]:=156;  PERM[61]:=17;  PERM[62]:=201;   PERM[63]:=129;
+//36,  8,165,110,237,117,231, 56,132,211,152, 20,181,111,239,218,
+  PERM[64]:=36;  PERM[65]:=8;  PERM[66]:=165;  PERM[67]:=110;  PERM[68]:=237;
+  PERM[69]:=117;  PERM[70]:=231;  PERM[71]:=56;  PERM[72]:=132;  PERM[73]:=211;
+  PERM[74]:=152;  PERM[75]:=20;  PERM[76]:=181;  PERM[77]:=111;  PERM[78]:=239;  PERM[79]:=218;
+// 170,163, 51,172,157, 47, 80,212,176,250, 87, 49, 99,242,136,189,
+  PERM[80]:=170;  PERM[81]:=163;  PERM[82]:=51;  PERM[83]:=172;  PERM[84]:=157;
+  PERM[85]:=47;  PERM[86]:=80;  PERM[86]:=212;  PERM[88]:=176;   PERM[89]:=250;
+  PERM[90]:=87;   PERM[91]:=49;  PERM[92]:=99;  PERM[93]:=242;  PERM[94]:=136;   PERM[95]:=189;
+//162,115, 44, 43,124, 94,150, 16,141,247, 32, 10,198,223,255, 72,
+  PERM[96]:=162;  PERM[97]:=115;  PERM[98]:=44;  PERM[99]:=43;  PERM[100]:=124;
+  PERM[101]:=94;  PERM[102]:=150;  PERM[103]:=16;  PERM[104]:=141;  PERM[105]:=247;
+  PERM[106]:=32;  PERM[107]:=10;  PERM[108]:=198;  PERM[109]:=223;   PERM[110]:=255;  PERM[111]:=72;
+//53,131, 84, 57,220,197, 58, 50,208, 11,241, 28,  3,192, 62,202,
+  PERM[112]:=53;  PERM[113]:=131;  PERM[114]:=84;  PERM[115]:=57;  PERM[116]:=220;
+  PERM[117]:=197;  PERM[118]:=58;  PERM[119]:=50;  PERM[120]:=208;  PERM[121]:=11;
+  PERM[122]:=241;  PERM[123]:=28;  PERM[124]:=3;   PERM[125]:=192;  PERM[126]:=62;  PERM[127]:=202;
+//18,215,153, 24, 76, 41, 15,179, 39, 46, 55,  6,128,167, 23,188,
+  PERM[128]:=18;  PERM[129]:=215;  PERM[130]:=153;  PERM[131]:=24;  PERM[132]:=76;
+  PERM[133]:=41;  PERM[134]:=15;  PERM[135]:=179;  PERM[136]:=39;  PERM[137]:=46;
+  PERM[138]:=55;  PERM[139]:=6;  PERM[140]:=128;  PERM[141]:=167;  PERM[142]:=23;  PERM[143]:=188;
+// 106, 34,187,140,164, 73,112,182,244,195,227, 13, 35, 77,196,185,
+  PERM[144]:=106;  PERM[145]:=34;  PERM[146]:=187;  PERM[147]:=140;  PERM[148]:=164;
+  PERM[149]:=73;  PERM[150]:=112;  PERM[151]:=182;  PERM[152]:=244;  PERM[153]:=195;
+  PERM[154]:=227;  PERM[155]:=13;  PERM[156]:=35;  PERM[157]:=77;  PERM[158]:=196;  PERM[159]:=185;
+//26,200,226,119, 31,123,168,125,249, 68,183,230,177,135,160,180,
+  PERM[160]:=26;  PERM[161]:=200;  PERM[162]:=226;  PERM[163]:=119;  PERM[164]:=31;
+  PERM[165]:=123;  PERM[166]:=168;  PERM[167]:=125;  PERM[168]:=249;  PERM[169]:=68;
+  PERM[170]:=183;  PERM[171]:=230;  PERM[172]:=177;  PERM[173]:=135;  PERM[174]:=160;  PERM[175]:=180;
+// 12,  1,243,148,102,166, 38,238,251, 37,240,126, 64, 74,161, 40,
+  PERM[176]:=12;  PERM[177]:=1;  PERM[178]:=243;   PERM[179]:=148;  PERM[180]:=102;
+  PERM[181]:=166;  PERM[182]:=38;  PERM[183]:=238;  PERM[184]:=251;  PERM[185]:=37;
+  PERM[186]:=240;  PERM[187]:=126;  PERM[188]:=64;  PERM[189]:=74;  PERM[190]:=161;  PERM[191]:=40;
+// 184,149,171,178,101, 66, 29, 59,146, 61,254,107, 42, 86,154,  4,
+  PERM[192]:=184;  PERM[193]:=149;  PERM[194]:=171;  PERM[195]:=178;  PERM[196]:=101;
+  PERM[197]:=66;  PERM[198]:=29;  PERM[199]:=59;  PERM[200]:=146;  PERM[201]:=61;
+  PERM[202]:=254;  PERM[203]:=107;  PERM[204]:=42;  PERM[205]:=86;  PERM[206]:=154;   PERM[207]:=4;
+//  236,232,120, 21,233,209, 45, 98,193,114, 78, 19,206, 14,118,127,
+  PERM[208]:=236;  PERM[209]:=232;  PERM[210]:=120;  PERM[211]:=21;  PERM[212]:=233;
+  PERM[213]:=209;  PERM[214]:=45;  PERM[215]:=98;  PERM[216]:=193;  PERM[217]:=114;
+  PERM[218]:=78;  PERM[219]:=19;  PERM[220]:=206;  PERM[221]:=14;  PERM[222]:=118;  PERM[223]:=127;
+// 48, 79,147, 85, 30,207,219, 54, 88,234,190,122, 95, 67,143,109,
+  PERM[224]:=48;  PERM[225]:=79;  PERM[226]:=147;  PERM[227]:=85;  PERM[228]:=30;
+  PERM[229]:=207;  PERM[230]:=219;  PERM[231]:=54;  PERM[232]:=88;  PERM[233]:=234;
+  PERM[234]:=190;  PERM[235]:=122;  PERM[236]:=95;  PERM[237]:=67;  PERM[238]:=143;  PERM[239]:=109;
+  // 137,214,145, 93, 92,100,245,  0,216,186, 60, 83,105, 97,204, 52
+  PERM[240]:=137;  PERM[241]:=214;  PERM[242]:=145;  PERM[243]:=93;  PERM[244]:=92;
+  PERM[245]:=100;  PERM[246]:=245;  PERM[247]:=0;  PERM[248]:=216;  PERM[249]:=186;
+  PERM[250]:=60;  PERM[251]:=83;  PERM[252]:=105;  PERM[253]:=97;  PERM[254]:=204;  PERM[255]:=52;
+end;
+
+
 // Edit
 //
 class function TGLProcTextureNoiseTIE.Edit(aTexImage : TGLTextureImage) : Boolean;
@@ -421,6 +526,9 @@ begin
          FMinCut := StrToIntDef(buf, 0);
          buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Noise Sharpness', FloatToStr(FNoiseSharpness));
          FNoiseSharpness := StrToFloatDef(buf, 0.9);
+         buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Random Seed', IntToStr(FNoiseRandSeed));
+         FNoiseRandSeed := StrToIntDef(buf, 0);
+         RandSeed := FNoiseRandSeed;
          buf := InputDlg(TGLProcTextureNoise.FriendlyName, 'Generate Seamless Texture (0,1)', IntToStr(Ord(FSeamless)));
          FSeamless := (buf<>'0');
          Result:=True;
@@ -431,6 +539,8 @@ begin
       end;
    end;
 end;
+
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

@@ -59,8 +59,6 @@ type
    
    TSpecularMode = (smOff, smBlinn, smPhong);
 
-   TSpecularMode = (smOff, smBlinn, smPhong);
-
    // TGLBumpShader
    //
    {: A generic bump shader.<p> }

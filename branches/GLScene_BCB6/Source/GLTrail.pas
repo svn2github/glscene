@@ -220,8 +220,8 @@ begin
 
     if distance = 0 then
     begin
-         apoint1 := AffineVectorMake(fLastp1[0],fLastp1[1],fLastp1[2]);
-         apoint2 := AffineVectorMake(fLastp2[0],fLastp2[1],fLastp2[2]);
+         apoint1 := AffineVectorMake(fLastp1.Coord[0],fLastp1.Coord[1],fLastp1.Coord[2]);
+         apoint2 := AffineVectorMake(fLastp2.Coord[0],fLastp2.Coord[1],fLastp2.Coord[2]);
     end;
 
     uvsize :=  distance / fUVScale; // scale UV's
@@ -301,16 +301,16 @@ begin
                   currentvert := (i + fVertStart);
 
               if fAlphaFade then
-                 color[3] :=  (ramp * i)
+                 color.Coord[3] :=  (ramp * i)
               else
-                  color[3] := fAlpha;
+                  color.Coord[3] := fAlpha;
               // add a tiny bit of offset to help prevent z-fighting..
               // need a better solution here
               // as this will get out of whack on really long trails
               // and is dependant on scene scale
-              TinyOffset[0] := 0.0000266 * i;
-              TinyOffset[1] := 0.0000266 * i;
-              TinyOffset[2] := 0.0000266 * i;
+              TinyOffset.Coord[0] := 0.0000266 * i;
+              TinyOffset.Coord[1] := 0.0000266 * i;
+              TinyOffset.Coord[2] := 0.0000266 * i;
               TinyOffset :=  VectorAdd( fVerts[ currentvert ],Tinyoffset);
               //TinyOffset := fVerts[ currentvert]; // bypass
               Vertices.AddVertex( TinyOffset, NullVector, Color, fUVs[currentvert]  );

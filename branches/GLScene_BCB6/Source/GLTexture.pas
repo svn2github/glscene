@@ -317,6 +317,12 @@ const
 
    cDefaultNormalMapScale = 0.125;
 
+   {$IFDEF GLS_CPPB}
+     cmtPX = 0; cmtNX = 1; 
+     cmtPY = 2; cmtNY = 3;
+     cmtPZ = 4; cmtNZ = 5;
+   {$ENDIF}    
+
 type
 
  PRGBColor = ^TRGBColor;
@@ -678,7 +684,12 @@ type
 
    // TGLCubeMapTarget
    //
+   {$IFDEF GLS_DELPHI}
    TGLCubeMapTarget = (cmtPX, cmtNX, cmtPY, cmtNY, cmtPZ, cmtNZ);
+   {$ENDIF}
+   {$IFDEF GLS_CPPB}
+   TGLCubeMapTarget = integer;
+   {$ENDIF}   
 
  // TGLCubeMapImage
  //
@@ -4306,7 +4317,7 @@ end;
 //
 function TGLTextureEx.GetOwner : TPersistent;
 begin
-  Result:=nil;
+  Result:=FMaterial;
 end;
 
 // SetItems
@@ -5539,7 +5550,7 @@ begin
          end;
 
          // version 1
-         if archiveVersion = 1 then begin
+         if archiveVersion >= 1 then begin
             with libMat.Material.FrontProperties do begin
                Read(FShininess,1);
                PolygonMode:=TPolygonMode(ReadInteger);
@@ -5561,7 +5572,7 @@ begin
          end;
 
          // version 2
-         if archiveVersion = 2 then begin
+         if archiveVersion >= 2 then begin
             texCount:=ReadInteger;
             for tex:=0 to texCount-1 do begin
                texExItem:=libMat.Material.TextureEx.Add;
