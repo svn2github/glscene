@@ -25,11 +25,11 @@ object Form1: TForm1
     Width = 505
     Height = 413
     Camera = Camera
-    Buffer.FogEnvironment.FogColor.Color = {E5D0423FD9CE573F6210783F0000803F}
-    Buffer.FogEnvironment.FogStart = 3000
-    Buffer.FogEnvironment.FogEnd = 5000
+    Buffer.FogEnvironment.FogColor.Color = {9CC4403FFED4583F48E17A3F0000803F}
+    Buffer.FogEnvironment.FogStart = 2000.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 7500.000000000000000000
     Buffer.BackgroundColor = 16242626
-    Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
+    Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roDestinationAlpha, roNoColorBufferClear]
     Buffer.FogEnable = True
     Buffer.Lighting = False
     Buffer.AntiAliasing = aaNone
@@ -46,34 +46,42 @@ object Form1: TForm1
       OnRender = DOInitializeReflectionRender
     end
     object EarthSkyDome: TGLEarthSkyDome
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {0000000000000000000080BF00000000}
+      Direction.Coordinates = {000000000000803F0100003300000000}
+      RollAngle = 45.000000000000000000
+      Up.Coordinates = {F30435BFF404B532F30435BF00000000}
       Bands = <>
       Stars = <>
-      SunElevation = 60
-      Turbidity = 15
+      SunElevation = 30.000000000000000000
+      Turbidity = 20.000000000000000000
+      SunZenithColor.Color = {0000803F0000803F0000803F0AD7233C}
+      SunDawnColor.Color = {0000803F0000803F0000403F0AD7233C}
+      HazeColor.Color = {6666663F3333733F0000803F0000803F}
+      SkyColor.Color = {6666E63E6666263F0000803F6666663F}
+      NightColor.Color = {0000000000000000000000000000803F}
+      DeepColor.Color = {9CC4403FFED4583F48E17A3F0000803F}
       Slices = 48
       Stacks = 24
     end
     object Light: TGLLightSource
       Ambient.Color = {CDCC4C3FCDCC4C3FCDCC4C3F0000803F}
-      ConstAttenuation = 1
+      ConstAttenuation = 1.000000000000000000
       LightStyle = lsParallel
-      SpotCutOff = 180
+      SpotCutOff = 180.000000000000000000
       SpotDirection.Coordinates = {00000000000000000000803F00000000}
     end
     object Terrain: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
-      Position.Coordinates = {0000204500008442000020C50000803F}
-      Scale.Coordinates = {00002041000020410000204000000000}
+      Position.Coordinates = {0000204500007042000020C50000803F}
+      Scale.Coordinates = {0000A0400000A0400000204000000000}
       Up.Coordinates = {00000000000000800000803F00000000}
-      HeightDataSource = GLBitmapHDS1
+      HeightDataSource = GLHeightTileFileHDS
       TileSize = 64
-      TilesPerTexture = 8
+      TilesPerTexture = 16.000000000000000000
       MaterialLibrary = MLTerrain
-      QualityDistance = 500
+      QualityDistance = 250.000000000000000000
       QualityStyle = hrsTesselated
-      CLODPrecision = 15
+      MaxCLODTriangles = 165536
+      CLODPrecision = 10
       OnGetTerrainBounds = TerrainGetTerrainBounds
     end
     object DOClassicWaterPlane: TGLDirectOpenGL
@@ -100,12 +108,10 @@ object Form1: TForm1
       ModulateColor.Color = {48E13A3F0AD7233E8FC2753F0000803F}
     end
     object Camera: TGLCamera
-      DepthOfView = 5000
-      FocalLength = 50
-      CameraStyle = csInfinitePerspective
-      Position.Coordinates = {0080D4C3000000000080BBC40000803F}
-      Direction.Coordinates = {F304353F00000000F304353F00000000}
-      Up.Coordinates = {00000000FFFF7F3F0000008000000000}
+      DepthOfView = 7500.000000000000000000
+      FocalLength = 50.000000000000000000
+      Direction.Coordinates = {0000803F000000000000000000000000}
+      Up.Coordinates = {000000000000803F0000008000000000}
     end
   end
   object MLTrees: TGLMaterialLibrary
@@ -137,32 +143,32 @@ object Form1: TForm1
     BuildOffset.Coordinates = {000000009A99193F000000000000803F}
     ImposterOptions = [impoBlended, impoAlphaTest, impoPerspectiveCorrection]
     ImposterReference = irBottom
-    AlphaTreshold = 0.5
+    AlphaTreshold = 0.500000000000000000
     OnLoadingImposter = SIBTreeLoadingImposter
     OnImposterLoaded = SIBTreeImposterLoaded
     Coronas = <
       item
         Samples = 13
-        Elevation = -15
+        Elevation = -15.000000000000000000
       end
       item
         Samples = 13
       end
       item
         Samples = 13
-        Elevation = 15
+        Elevation = 15.000000000000000000
       end
       item
         Samples = 13
-        Elevation = 28
+        Elevation = 28.000000000000000000
       end
       item
         Samples = 12
-        Elevation = 40
+        Elevation = 40.000000000000000000
       end>
     SampleSize = 128
-    SamplingRatioBias = 1.14999997615814
-    SamplesAlphaScale = 5
+    SamplingRatioBias = 1.149999976158142000
+    SamplesAlphaScale = 5.000000000000000000
     Left = 208
     Top = 40
   end
@@ -170,18 +176,18 @@ object Form1: TForm1
     Cadencer = GLCadencer
     Renderer = RenderTrees
     OnCreateParticle = PFXTreesCreateParticle
-    Friction = 1
+    Friction = 1.000000000000000000
     BlendingMode = bmTransparency
     OnBeginParticles = PFXTreesBeginParticles
     OnRenderParticle = PFXTreesRenderParticle
     OnEndParticles = PFXTreesEndParticles
     OnProgress = PFXTreesProgress
     OnGetParticleCountEvent = PFXTreesGetParticleCountEvent
-    ParticleSize = 1
+    ParticleSize = 1.000000000000000000
     LifeColors = <
       item
-        LifeTime = 3
-        SizeScale = 1
+        LifeTime = 3.000000000000000000
+        SizeScale = 1.000000000000000000
       end>
     Left = 208
     Top = 72
@@ -219,9 +225,13 @@ object Form1: TForm1
     Left = 152
     Top = 8
   end
-  object GLBitmapHDS1: TGLBitmapHDS
+  object GLHeightTileFileHDS: TGLHeightTileFileHDS
+    HTFFileName = 'media\volcano.htf'
+    InfiniteWrap = False
+    MinElevation = -3000
     MaxPoolSize = 0
-    Left = 104
+    DefaultHeight = -9999.000000000000000000
+    Left = 152
     Top = 40
   end
 end

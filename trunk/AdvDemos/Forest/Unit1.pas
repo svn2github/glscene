@@ -8,7 +8,8 @@ uses
    GLHeightData, GLObjects, VectorGeometry, GLTree, JPEG, TGA, Keyboard,
    VectorLists, GLBitmapFont, GLContext,
    GLWindowsFont, GLHUDObjects, GLSkydome, GLImposter, GLParticleFX, GLGraphics,
-   PersistentClasses, OpenGL1x, ExtCtrls, GLUtils, GLTextureCombiners, XOpenGL;
+   PersistentClasses, OpenGL1x, ExtCtrls, GLUtils, GLTextureCombiners, XOpenGL,
+   GLHeightTileFileHDS;
 
 type
    TForm1 = class(TForm)
@@ -33,7 +34,7 @@ type
     DOInitializeReflection: TGLDirectOpenGL;
     DOGLSLWaterPlane: TGLDirectOpenGL;
     DOClassicWaterPlane: TGLDirectOpenGL;
-    GLBitmapHDS1: TGLBitmapHDS;
+    GLHeightTileFileHDS: TGLHeightTileFileHDS;
       procedure FormCreate(Sender: TObject);
       procedure FormDestroy(Sender: TObject);
       procedure TerrainGetTerrainBounds(var l, t, r, b: Single);
@@ -81,8 +82,10 @@ type
       imposter : TImposter;
       densityBitmap : TBitmap;
       mirrorTexture : TGLTextureHandle;
+      mirrorTexType : TGLEnum;
       reflectionProgram : TGLProgramHandle;
-      enableGLSLWater : Boolean;
+      supportsGLSL : Boolean;
+      enableGLSL : Boolean;
       enableReflection : Boolean;
    end;
 
@@ -95,8 +98,9 @@ implementation
 
 const
    cImposterCacheFile : String = 'media\imposters.bmp';
-   cMapWidth : Integer = 512;
-   cMapHeight : Integer = 512;
+   cMapWidth : Integer = 1024;
+   cMapHeight : Integer = 1024;
+   cBaseSpeed : Single = 50;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
@@ -104,9 +108,7 @@ var
 begin
    SetCurrentDir(ExtractFilePath(Application.ExeName));
 
-   GLBitmapHDS1.Picture.LoadFromFile('media\trees_HF.bmp');
-
-   with MLTerrain.AddTextureMaterial('Terrain', 'media\trees_TX.jpg') do
+   with MLTerrain.AddTextureMaterial('Terrain', 'media\volcano_TX_low.jpg') do
       Texture2Name:='Detail';
    with MLTerrain.AddTextureMaterial('Detail', 'media\detailmap.jpg') do begin
       Material.Texture.TextureMode:=tmModulate;
@@ -151,7 +153,7 @@ begin
       densityBitmap.PixelFormat:=pf24bit;
       Density:=TPicture.Create;
       try
-         Density.LoadFromFile('media\treemap.jpg');
+         Density.LoadFromFile('media\volcano_trees.jpg');
          densityBitmap.Width:=Density.Width;
          densityBitmap.Height:=Density.Height;
          densityBitmap.Canvas.Draw(0, 0, Density.Graphic);
@@ -188,11 +190,88 @@ begin
    Camera.FocalLength:=Width*50/800;
 end;
 
+procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
+  newTime: Double);
+var
+   speed, z : Single;
+   nmp : TPoint;
+begin
+   // Camera movement
+   if IsKeyDown(VK_SHIFT) then
+      speed:=deltaTime*cBaseSpeed*10
+   else speed:=deltaTime*cBaseSpeed;
+
+   if IsKeyDown(VK_UP) or IsKeyDown('W') or IsKeyDown('Z') then
+      Camera.Move(speed)
+   else if IsKeyDown(VK_DOWN) or IsKeyDown('S') then
+      Camera.Move(-speed);
+      
+   if IsKeyDown(VK_LEFT) or IsKeyDown('A') or IsKeyDown('Q') then
+      Camera.Slide(-speed)
+   else if IsKeyDown(VK_RIGHT) or IsKeyDown('D') then
+      Camera.Slide(speed);
+
+   z:=Terrain.Position.Y+Terrain.InterpolatedHeight(Camera.Position.AsVector);
+   if z<0 then z:=0;
+   z:=z+10;
+   if Camera.Position.Y<z then
+      Camera.Position.Y:=z;
+
+   GetCursorPos(nmp);
+   camTurn:=camTurn-(lmp.X-nmp.X)*0.2;
+   camPitch:=camPitch+(lmp.Y-nmp.Y)*0.2;
+   camTime:=camTime+deltaTime;
+   while camTime>0 do begin
+      curTurn:=Lerp(curTurn, camTurn, 0.2);
+      curPitch:=Lerp(curPitch, camPitch, 0.2);
+      Camera.Position.Y:=Lerp(Camera.Position.Y, z, 0.2);
+      camTime:=camTime-0.01;
+   end;
+   Camera.ResetRotations;
+   Camera.Turn(curTurn);
+   Camera.Pitch(curPitch);
+   SetCursorPos(lmp.X, lmp.Y);
+
+   SceneViewer.Invalidate;
+end;
+
+procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+   case key of
+      VK_ESCAPE : Form1.Close;
+      VK_ADD : if TreesShown<PFXTrees.Particles.ItemCount then
+         TreesShown:=TreesShown+100;
+      VK_SUBTRACT : if TreesShown>0 then
+          TreesShown:=TreesShown-100;
+      Word('R') : enableReflection:=not enableReflection;
+      Word('G') : if supportsGLSL then begin
+         enableGLSL:=not enableGLSL;
+         enableReflection:=True;
+      end;
+   end;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+var
+   hud : String;
+begin
+   hud:=Format('%.1f FPS - %d trees',
+               [SceneViewer.FramesPerSecond, TreesShown]);
+   if enableReflection then
+      hud:=hud+#13#10+'Water reflections';
+   if enableGLSL and enableReflection then
+      hud:=hud+#13#10+'GLSL water';
+   GLHUDText1.Text:=hud;
+   SceneViewer.ResetPerformanceMonitor;
+   Caption:=Format('%.2f', [RenderTrees.LastSortTime]);
+end;
+
 procedure TForm1.PFXTreesCreateParticle(Sender: TObject;
   aParticle: TGLParticle);
 var
    u, v, p : Single;
-   x, y, i, j, dark : Integer;
+//   x, y, i, j, dark : Integer;
    pixelX, pixelY : Integer;
 begin
    repeat
@@ -211,8 +290,8 @@ begin
    aParticle.Tag:=Random(360);
 
    // Remove probablility for current location
-   densityBitmap.Canvas.Pixels[pixelX, pixelY]:=
-      RGB(0, GetRValue(densityBitmap.Canvas.Pixels[pixelX, pixelY]) div 2, 0);
+//   densityBitmap.Canvas.Pixels[pixelX, pixelY]:=
+//      RGB(0, GetRValue(densityBitmap.Canvas.Pixels[pixelX, pixelY]) div 2, 0);
 
    // Blob shadow beneath tree
 {   with MLTerrain.Materials[0].Material.Texture do begin
@@ -305,79 +384,6 @@ begin
    b:=0;
 end;
 
-procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
-  newTime: Double);
-var
-   speed, z : Single;
-   nmp : TPoint;
-begin
-   // Camera movement
-   if IsKeyDown(VK_SHIFT) then
-      speed:=deltaTime*150
-   else speed:=deltaTime*15;
-
-   if IsKeyDown(VK_UP) or IsKeyDown('W') or IsKeyDown('Z') then
-      Camera.Move(speed)
-   else if IsKeyDown(VK_DOWN) or IsKeyDown('S') then
-      Camera.Move(-speed);
-      
-   if IsKeyDown(VK_LEFT) or IsKeyDown('A') or IsKeyDown('Q') then
-      Camera.Slide(-speed)
-   else if IsKeyDown(VK_RIGHT) or IsKeyDown('D') then
-      Camera.Slide(speed);
-
-   z:=Terrain.Position.Y+Terrain.InterpolatedHeight(Camera.Position.AsVector);
-   if z<0 then z:=0;
-   z:=z+10;
-   if Camera.Position.Y<z then
-      Camera.Position.Y:=z;
-
-   GetCursorPos(nmp);
-   camTurn:=camTurn-(lmp.X-nmp.X)*0.2;
-   camPitch:=camPitch+(lmp.Y-nmp.Y)*0.2;
-   camTime:=camTime+deltaTime;
-   while camTime>0 do begin
-      curTurn:=Lerp(curTurn, camTurn, 0.2);
-      curPitch:=Lerp(curPitch, camPitch, 0.2);
-      Camera.Position.Y:=Lerp(Camera.Position.Y, z, 0.2);
-      camTime:=camTime-0.01;
-   end;
-   Camera.ResetRotations;
-   Camera.Turn(curTurn);
-   Camera.Pitch(curPitch);
-   SetCursorPos(lmp.X, lmp.Y);
-
-   SceneViewer.Invalidate;
-end;
-
-procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-   case key of
-      VK_ESCAPE : Form1.Close;
-      VK_ADD : if TreesShown<PFXTrees.Particles.ItemCount then
-         TreesShown:=TreesShown+100;
-      VK_SUBTRACT : if TreesShown>0 then
-          TreesShown:=TreesShown-100;
-      Word('R') : enableReflection:=not enableReflection;
-   end;
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-var
-   hud : String;
-begin
-   hud:=Format('%.1f FPS - %d trees',
-               [SceneViewer.FramesPerSecond, TreesShown]);
-   if enableReflection then
-      hud:=hud+#13#10+'Water reflections';
-   if enableGLSLWater then
-      hud:=hud+#13#10+'GLSL water';
-   GLHUDText1.Text:=hud;
-   SceneViewer.ResetPerformanceMonitor;
-   Caption:=Format('%.2f', [RenderTrees.LastSortTime]);
-end;
-
 function TForm1.SIBTreeLoadingImposter(Sender: TObject;
   impostoredObject: TGLBaseSceneObject;
   destImposter: TImposter): TGLBitmap32;
@@ -427,6 +433,100 @@ begin
    defaultProgress:=False;
 end;
 
+procedure TForm1.DOInitializeReflectionRender(Sender: TObject;
+  var rci: TRenderContextInfo);
+var
+   w, h : Integer;
+   refMat, curMat : TMatrix;
+   cameraPosBackup, cameraDirectionBackup : TVector;
+   frustumBackup : TFrustum;
+   clipPlane : TDoubleHmgPlane;
+begin
+   supportsGLSL:=GL_ARB_shader_objects and GL_ARB_fragment_shader and GL_ARB_vertex_shader;
+
+   if not enableReflection then Exit;
+
+   if not Assigned(mirrorTexture) then
+      mirrorTexture:=TGLTextureHandle.Create;
+
+   glPushAttrib(GL_ENABLE_BIT);
+   glPushMatrix;
+
+   // Mirror coordinates
+   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
+   refMat:=MakeReflectionMatrix(NullVector, YVector);
+   glMultMatrixf(@refMat);
+   glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
+   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
+   GLScene.CurrentBuffer.PushModelViewMatrix(curMat);
+
+   glFrontFace(GL_CW);
+
+   glEnable(GL_CLIP_PLANE0);
+   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 1, 0), VectorNegate(YVector)));
+   glClipPlane(GL_CLIP_PLANE0, @clipPlane); 
+
+   cameraPosBackup:=rci.cameraPosition;
+   cameraDirectionBackup:=rci.cameraDirection;
+   frustumBackup:=rci.rcci.frustum;
+   rci.cameraPosition:=VectorTransform(rci.cameraPosition, refMat);
+   rci.cameraDirection:=VectorTransform(rci.cameraDirection, refMat);
+   with rci.rcci.frustum do begin
+      pLeft:=VectorTransform(pLeft, refMat);
+      pRight:=VectorTransform(pRight, refMat);
+      pTop:=VectorTransform(pTop, refMat);
+      pBottom:=VectorTransform(pBottom, refMat);
+      pNear:=VectorTransform(pNear, refMat);
+      pFar:=VectorTransform(pFar, refMat);
+   end;
+
+   glLoadIdentity;
+   Camera.Apply;
+   glMultMatrixf(@refMat);
+
+   EarthSkyDome.DoRender(rci, True, False);
+   glMultMatrixf(PGLFloat(Terrain.AbsoluteMatrixAsAddress));
+   Terrain.DoRender(rci, True, False);
+
+   rci.cameraPosition:=cameraPosBackup;
+   rci.cameraDirection:=cameraDirectionBackup;
+   rci.rcci.frustum:=frustumBackup;
+
+   // Restore to "normal"
+   GLScene.CurrentBuffer.PopModelViewMatrix;
+   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
+   GLScene.SetupLights(GLScene.CurrentBuffer.LimitOf[limLights]);
+
+   glFrontFace(GL_CCW);
+   glPopMatrix;
+   glPopAttrib;
+   rci.GLStates.ResetGLMaterialColors;
+   rci.GLStates.ResetGLCurrentTexture;
+
+   w:=RoundUpToPowerOf2(SceneViewer.Width);
+   h:=RoundUpToPowerOf2(SceneViewer.Height);
+
+   if mirrorTexture.Handle=0 then begin
+      mirrorTexture.AllocateHandle;
+      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
+
+     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+   	glCopyTexImage2d(GL_TEXTURE_2D, 0, GL_RGBA,
+                       0, 0, w, h, 0);
+   end else begin
+      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
+
+      glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+                          0, 0, w, h);
+   end;
+
+   glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT+GL_STENCIL_BUFFER_BIT);
+end;
+
 procedure TForm1.DOClassicWaterPlaneRender(Sender: TObject;
   var rci: TRenderContextInfo);
 const
@@ -440,7 +540,7 @@ var
    tex : TTexPoint;
    x, y : Integer;
 begin
-   if enableGLSLWater then Exit;
+   if enableGLSL and enableReflection then Exit;
 
    tWave:=GLCadencer.CurrentTime*cWaveSpeed;
 
@@ -530,106 +630,12 @@ begin
    glPopAttrib;
 end;
 
-procedure TForm1.DOInitializeReflectionRender(Sender: TObject;
-  var rci: TRenderContextInfo);
-var
-   w, h : Integer;
-   refMat, curMat : TMatrix;
-   cameraPosBackup, cameraDirectionBackup : TVector;
-   frustumBackup : TFrustum;
-   clipPlane : TDoubleHmgPlane;
-begin
-   enableGLSLWater:=GL_ARB_shader_objects and GL_ARB_fragment_shader and GL_ARB_vertex_shader;
-
-   if not enableReflection then Exit;
-
-   if not Assigned(mirrorTexture) then
-      mirrorTexture:=TGLTextureHandle.Create;
-
-   glPushAttrib(GL_ENABLE_BIT);
-   glPushMatrix;
-
-   // Mirror coordinates
-   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
-   refMat:=MakeReflectionMatrix(NullVector, YVector);
-   glMultMatrixf(@refMat);
-   glGetFloatv(GL_MODELVIEW_MATRIX, @curMat);
-   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
-   GLScene.CurrentBuffer.PushModelViewMatrix(curMat);
-
-   glFrontFace(GL_CW);
-
-   glEnable(GL_CLIP_PLANE0);
-   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 1, 0), VectorNegate(YVector)));
-   glClipPlane(GL_CLIP_PLANE0, @clipPlane); 
-
-   cameraPosBackup:=rci.cameraPosition;
-   cameraDirectionBackup:=rci.cameraDirection;
-   frustumBackup:=rci.rcci.frustum;
-   rci.cameraPosition:=VectorTransform(rci.cameraPosition, refMat);
-   rci.cameraDirection:=VectorTransform(rci.cameraDirection, refMat);
-   with rci.rcci.frustum do begin
-      pLeft:=VectorTransform(pLeft, refMat);
-      pRight:=VectorTransform(pRight, refMat);
-      pTop:=VectorTransform(pTop, refMat);
-      pBottom:=VectorTransform(pBottom, refMat);
-      pNear:=VectorTransform(pNear, refMat);
-      pFar:=VectorTransform(pFar, refMat);
-   end;
-
-   glLoadIdentity;
-   Camera.Apply;
-   glMultMatrixf(@refMat);
-
-   EarthSkyDome.DoRender(rci, True, False);
-   glMultMatrixf(PGLFloat(Terrain.AbsoluteMatrixAsAddress));
-   Terrain.DoRender(rci, True, False);
-
-   rci.cameraPosition:=cameraPosBackup;
-   rci.cameraDirection:=cameraDirectionBackup;
-   rci.rcci.frustum:=frustumBackup;
-
-   // Restore to "normal"
-   GLScene.CurrentBuffer.PopModelViewMatrix;
-   glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
-   GLScene.SetupLights(GLScene.CurrentBuffer.LimitOf[limLights]);
-
-   glFrontFace(GL_CCW);
-   glPopMatrix;
-   glPopAttrib;
-   rci.GLStates.ResetGLMaterialColors;
-   rci.GLStates.ResetGLCurrentTexture;
-
-   w:=RoundUpToPowerOf2(SceneViewer.Width);
-   h:=RoundUpToPowerOf2(SceneViewer.Height);
-
-   if mirrorTexture.Handle=0 then begin
-      mirrorTexture.AllocateHandle;
-      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
-
-     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-   	glCopyTexImage2d(GL_TEXTURE_2D, 0, GL_RGB,
-                       0, 0, w, h, 0);
-   end else begin
-      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
-
-      glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
-                          0, 0, w, h);
-   end;
-
-   glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
-end;
-
 procedure TForm1.DOGLSLWaterPlaneRender(Sender: TObject;
   var rci: TRenderContextInfo);
 var
    x, y : Integer;
 begin
-   if not enableGLSLWater then Exit;
+   if not (enableGLSL and enableReflection) then Exit;
 
    if not Assigned(reflectionProgram) then begin
       reflectionProgram:=TGLProgramHandle.CreateAndAllocate;
@@ -641,6 +647,25 @@ begin
       if not reflectionProgram.ValidateProgram then
          raise Exception.Create(reflectionProgram.InfoLog);
    end;
+
+{   glEnable(GL_STENCIL_TEST);
+   glColorMask(False, False, False, False);
+   glStencilFunc(GL_ALWAYS, 255, 255);
+   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+   for y:=-5 to 5-1 do begin
+      glBegin(GL_QUAD_STRIP);
+      for x:=-5 to 5 do begin
+         glVertex3f(x*1500, 0, y*1500);
+         glVertex3f(x*1500, 0, (y+1)*1500);
+      end;
+      glEnd;
+   end;
+
+   glColorMask(True, True, True, True);
+   glStencilFunc(GL_EQUAL, 255, 255);
+   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+   glDisable(GL_DEPTH_TEST); }
 
    glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
    glEnable(GL_TEXTURE_2D);
@@ -662,12 +687,11 @@ begin
 
 //   reflectionProgram.EndUseProgramObject;
 
-   glDisable(GL_CULL_FACE);
-   for y:=-20 to 20-1 do begin
+   for y:=-5 to 5-1 do begin
       glBegin(GL_QUAD_STRIP);
-      for x:=-20 to 20 do begin
-         glVertex3f(x*500, 0, y*500);
-         glVertex3f(x*500, 0, (y+1)*500);
+      for x:=-5 to 5 do begin
+         glVertex3f(x*1500, 0, y*1500);
+         glVertex3f(x*1500, 0, (y+1)*1500);
       end;
       glEnd;
    end;
@@ -679,6 +703,9 @@ begin
    glMatrixMode(GL_MODELVIEW);
 
    glDisable(GL_TEXTURE_2D);
+
+   glEnable(GL_DEPTH_TEST);
+   glDisable(GL_STENCIL_TEST);
 end;
 
 // SetupReflectionMatrix
