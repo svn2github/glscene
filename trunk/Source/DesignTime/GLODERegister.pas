@@ -10,7 +10,7 @@ unit GLODERegister;
 interface
 
 uses
-  Classes, GLODEManager, GLSceneRegister, XCollection;
+  Classes, GLODEManager, GLSceneRegister;
 
 procedure Register;
 
@@ -40,7 +40,6 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
   {
   // There is a problem here when the package is installed and then
   // removed, the scene objects remain in the list without the classes
@@ -61,7 +60,6 @@ finalization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
   {
   // See the comments above
   with ObjectManager do begin

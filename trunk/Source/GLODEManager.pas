@@ -336,25 +336,16 @@ type
   TODEElements:
   -------------
   This is the list class that stores the ODEElements for GLODEDummy
-  and GLODEDynamicBehaviour objects. When Remove or Delete is called the
-  element is destroyed before being removed from the list.
+  and GLODEDynamicBehaviour objects.
   }
-  TODEElements = class(TPersistent)
+  TODEElements = class(TXCollection)
     private
-      FOwner : TPersistent;
-      FList  : TList;
-      function GetItem(index: integer): TODEBaseElement;
+      function GetElement(index : integer) : TODEBaseElement;
     public
-      constructor Create(AOwner:TPersistent);
-      destructor Destroy; override;
+      class function ItemsClass : TXCollectionItemClass; override;
       procedure Initialize;
       procedure Deinitialize;
-      function Add(item:TODEBaseElement) : integer;
-      function Count : integer;
-      procedure Delete(index:integer);
-      procedure Remove(item:TODEBaseElement);
-      property Owner : TPersistent read FOwner;
-      property Items[index:integer]:TODEBaseElement read GetItem; default;
+      property Element[index : integer] : TODEBaseElement read GetElement;
   end;
 
   {
@@ -366,9 +357,8 @@ type
   and Up or use Matrix. The ODE component of the object will be
   aligned to any changes made to these properties.
   }
-  TODEBaseElement = class (TPersistent)
+  TODEBaseElement = class (TXCollectionItem)
     private
-      FOwner : TODEElements;
       FMass  : TdMass;
       FDensity : single;
       FGeomTransform,
@@ -391,7 +381,7 @@ type
       function CalculateMass : TdMass; virtual;
       procedure ODERebuild; virtual;
     public
-      constructor Create(AOwner:TODEElements); virtual;
+      constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
       procedure BuildList(var rci : TRenderContextInfo); virtual;
       function AbsoluteMatrix:TMatrix;
@@ -400,7 +390,6 @@ type
       property GeomTransform : PdxGeom read FGeomTransform;
       property Geom : PdxGeom read FGeomElement;
     published
-      property Owner : TODEElements read FOwner;
       property Density : single read FDensity write SetDensity;
       property Position : TGLCoordinates read FPosition;
       property Direction : TGLCoordinates read FDirection;
@@ -428,8 +417,11 @@ type
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
     public
-      constructor Create(AOwner:TODEElements); override;
+      constructor Create(AOwner : TXCollection); override;
       procedure BuildList(var rci : TRenderContextInfo); override;
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
+      class function ItemCategory : String; override;
     published
       property BoxWidth : single read GetBoxWidth write SetBoxWidth;
       property BoxHeight : single read GetBoxHeight write SetBoxHeight;
@@ -451,8 +443,11 @@ type
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
     public
-      constructor Create(AOwner:TODEElements); override;
+      constructor Create(AOwner : TXCollection); override;
       procedure BuildList(var rci : TRenderContextInfo); override;
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
+      class function ItemCategory : String; override;
     published
       property Radius : single read GetRadius write SetRadius;
   end;
@@ -475,8 +470,11 @@ type
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
     public
-      constructor Create(AOwner:TODEElements); override;
+      constructor Create(AOwner : TXCollection); override;
       procedure BuildList(var rci : TRenderContextInfo); override;
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
+      class function ItemCategory : String; override;
     published
       property Radius : single read GetRadius write SetRadius;
       property Length : single read GetLength write SetLength;
@@ -503,6 +501,9 @@ type
     public
       constructor Create(AOwner:TODEElements); override;
       procedure BuildList(var rci : TRenderContextInfo); override;
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
+      class function ItemCategory : String; override;
     published
       property Radius : single read GetRadius write SetRadius;
       property Length : single read GetLength write SetLength;
@@ -570,22 +571,15 @@ type
   -----------
   This is the list class that stores the ODE Joints.
   }
-  TODEJoints = class(TPersistent)
+  TODEJoints = class(TXCollection)
     private
-      FOwner : TPersistent;
-      FList  : TList;
-      function GetItem(index: integer): TODEBaseJoint;
+      function GetJoint(index: integer): TODEBaseJoint;
     public
-      constructor Create(AOwner:TPersistent);
+      class function ItemsClass : TXCollectionItemClass; override;
       destructor Destroy; override;
       procedure Initialize;
       procedure Deinitialize;
-      function Add(item:TODEBaseJoint) : integer;
-      function Count : integer;
-      procedure Delete(index:integer);
-      procedure Remove(item:TODEBaseJoint);
-      property Items[index:integer] : TODEBaseJoint read GetItem; default;
-      property Owner : TPersistent read FOwner;
+      property Joint[index:integer] : TODEBaseJoint read GetJoint; default;
   end;
 
   TGLODEJointList = class(TComponent)
@@ -603,9 +597,8 @@ type
   --------------
   Base structures for ODE Joints.
   }
-  TODEBaseJoint = class (TPersistent)
+  TODEBaseJoint = class (TXCollectionItem)
     private
-      FOwner   : TODEJoints;
       FJointID : TdJointID;
       FObject1,
       FObject2 : TObject;
@@ -627,13 +620,12 @@ type
       property Axis : TGLCoordinates read FAxis;
       property Axis2 : TGLCoordinates read FAxis2;
     public
-      constructor CreateOwned(AOwner:TODEJoints);
+      constructor Create(aOwner : TXCollection); override;
       destructor Destroy; override;
       procedure Attach(Obj1, Obj2 : TObject);
       property JointID : TdJointID read FJointID;
       property Object1 : TObject read FObject1;
       property Object2 : TObject read FObject2;
-      property Owner   : TODEJoints read FOwner;
     published
       property Manager : TGLODEManager read FManager write SetManager;
   end;
@@ -648,6 +640,9 @@ type
       procedure Initialize; override;
       procedure SetAnchor(Value : TAffineVector); override;
       procedure SetAxis(Value : TAffineVector); override;
+    public
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
     published
       property Anchor;
       property Axis;
@@ -662,6 +657,9 @@ type
     protected
       procedure Initialize; override;
       procedure SetAnchor(Value : TAffineVector); override;
+    public
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
     published
       property Anchor;
   end;
@@ -675,6 +673,9 @@ type
     protected
       procedure Initialize; override;
       procedure SetAxis(Value : TAffineVector); override;
+    public
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
     published
       property Axis;
   end;
@@ -687,6 +688,9 @@ type
   TODEJointFixed = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
+    public
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
   end;
 
   {
@@ -700,6 +704,9 @@ type
       procedure SetAnchor(Value : TAffineVector); override;
       procedure SetAxis(Value : TAffineVector); override;
       procedure SetAxis2(Value : TAffineVector); override;
+    public
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
     published
       property Anchor;
       property Axis;
@@ -717,6 +724,9 @@ type
       procedure SetAnchor(Value : TAffineVector); override;
       procedure SetAxis(Value : TAffineVector); override;
       procedure SetAxis2(Value : TAffineVector); override;
+    public
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
     published
       property Anchor;
       property Axis;
@@ -1540,7 +1550,7 @@ begin
   glColor4fv(FColor.AsAddress);
 
   for i:=0 to FElements.Count-1 do begin
-    FElements.Items[i].BuildList(rci);
+    TODEBaseElement(FElements.Items[i]).BuildList(rci);
   end;
 
   glPopAttrib;
@@ -1595,7 +1605,7 @@ var
 begin
   dMassSetZero(FMass);
   for i:=0 to Elements.Count-1 do begin
-    m:=Elements[i].CalculateMass;
+    m:=TODEBaseElement(Elements[i]).CalculateMass;
     dMassAdd(FMass,m);
   end;
   Result:=FMass;
@@ -1628,7 +1638,7 @@ begin
   SetAffineVector(pos,FMass.c[0],FMass.c[1],FMass.c[2]);
   NegateVector(pos);
   for i:=0 to FElements.Count-1 do
-    FElements[i].Position.Translate(pos);
+    TODEBaseElement(FElements[i]).Position.Translate(pos);
 end;
 
 
@@ -1797,7 +1807,7 @@ var
 begin
   dMassSetZero(FMass);
   for i:=0 to Elements.Count-1 do begin
-    m:=Elements[i].CalculateMass;
+    m:=TODEBaseElement(Elements[i]).CalculateMass;
     dMassAdd(FMass,m);
   end;
   Result:=FMass;
@@ -1813,7 +1823,7 @@ begin
   SetAffineVector(pos,FMass.c[0],FMass.c[1],FMass.c[2]);
   NegateVector(pos);
   for i:=0 to FElements.Count-1 do
-    FElements[i].Position.Translate(pos);
+    TODEBaseElement(FElements[i]).Position.Translate(pos);
 end;
 
 // GetMass
@@ -1842,44 +1852,18 @@ end;
 // TODEElements Methods
 // ------------------------------------------------------------------
 
-// Add
+// GetElement
 //
-function TODEElements.Add(item: TODEBaseElement): integer;
+function TODEElements.GetElement(index : integer) : TODEBaseElement;
 begin
-  result:=FList.Add(item);
+  result:=TODEBaseElement(Items[index]);
 end;
 
-// Create
+// ItemsClass
 //
-constructor TODEElements.Create(AOwner:TPersistent);
+class function TODEElements.ItemsClass : TXCollectionItemClass;
 begin
-  inherited Create;
-  FOwner:=AOwner;
-  FList:=TList.Create;
-end;
-
-// Delete
-//
-procedure TODEElements.Delete(index: integer);
-begin
-  if Assigned(Items[index]) then
-    Items[index].Free;
-  FList.Delete(index);
-end;
-
-// Count
-//
-function TODEElements.Count: integer;
-begin
-  Result:=FList.Count;
-end;
-
-// Destroy
-//
-destructor TODEElements.Destroy;
-begin
-  FList.Free;
-  inherited;
+  Result:=TODEBaseElement;
 end;
 
 // Initialize
@@ -1888,8 +1872,8 @@ procedure TODEElements.Initialize;
 var
   i : integer;
 begin
-  for i:=0 to FList.Count-1 do
-    Items[i].Initialize;
+  for i:=0 to Count-1 do
+    TODEBaseElement(Items[i]).Initialize;
 end;
 
 // Deintialize
@@ -1898,23 +1882,8 @@ procedure TODEElements.Deinitialize;
 var
   i : integer;
 begin
-  for i:=0 to FList.Count-1 do
-    Items[i].Deinitialize;
-end;
-
-// GetItem
-//
-function TODEElements.GetItem(index: integer): TODEBaseElement;
-begin
-  Result:=TODEBaseElement(FList.Items[index]);
-end;
-
-// Remove
-//
-procedure TODEElements.Remove(item: TODEBaseElement);
-begin
-  item.Free;
-  FList.Remove(item);
+  for i:=0 to Count-1 do
+    TODEBaseElement(Items[i]).Deinitialize;
 end;
 
 
@@ -1928,10 +1897,10 @@ var
   Mat : TMatrix;
 begin
   Mat:=IdentityHMGMatrix;
-  if FOwner.Owner is TGLODEDummy then
-    Mat:=TGLODEDummy(FOwner.Owner).AbsoluteMatrix;
-  if FOwner.Owner is TGLODEDynamicBehaviour then
-    Mat:=TGLODEDynamicBehaviour(FOwner.Owner).AbsoluteMatrix;
+  if Owner.Owner is TGLODEDummy then
+    Mat:=TGLODEDummy(Owner.Owner).AbsoluteMatrix;
+  if Owner.Owner is TGLODEDynamicBehaviour then
+    Mat:=TGLODEDynamicBehaviour(Owner.Owner).AbsoluteMatrix;
   Result:=MatrixMultiply(Mat,FLocalMatrix);
 end;
 
@@ -1965,10 +1934,9 @@ end;
 
 // Create
 //
-constructor TODEBaseElement.Create(AOwner: TODEElements);
+constructor TODEBaseElement.Create(AOwner : TXCollection);
 begin
-  inherited Create;
-  FOwner:=AOwner;
+  inherited;
   FPosition:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
   FPosition.OnNotifyChange:=NotifyChange;
   FDirection:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
@@ -1997,13 +1965,13 @@ var
 begin
   Manager:=nil;
   Body:=nil;
-  if FOwner.Owner is TGLODEDummy then begin
-    Manager:=TGLODEDummy(FOwner.Owner).Manager;
-    Body:=TGLODEDummy(FOwner.Owner).Body;
+  if Owner.Owner is TGLODEDummy then begin
+    Manager:=TGLODEDummy(Owner.Owner).Manager;
+    Body:=TGLODEDummy(Owner.Owner).Body;
   end;
-  if FOwner.Owner is TGLODEDynamicBehaviour then begin
-    Manager:=TGLODEDynamicBehaviour(FOwner.Owner).Manager;
-    Body:=TGLODEDynamicBehaviour(FOwner.Owner).Body;
+  if Owner.Owner is TGLODEDynamicBehaviour then begin
+    Manager:=TGLODEDynamicBehaviour(Owner.Owner).Manager;
+    Body:=TGLODEDynamicBehaviour(Owner.Owner).Body;
   end;
   if not (Assigned(Manager) and Assigned(Body)) then exit;
 
@@ -2011,7 +1979,7 @@ begin
   dGeomSetBody(FGeomTransform,Body);
   dGeomTransformSetCleanup(FGeomTransform,1);
   dGeomTransformSetGeom(FGeomTransform,FGeomElement);
-  dGeomSetData(FGeomTransform,FOwner.Owner);
+  dGeomSetData(FGeomTransform,Owner.Owner);
   FInitialized:=True;
 end;
 
@@ -2127,7 +2095,7 @@ end;
 
 // Create
 //
-constructor TODEElementBox.Create(AOwner: TODEElements);
+constructor TODEElementBox.Create(AOwner : TXCollection);
 begin
   inherited;
   BoxWidth:=1;
@@ -2141,6 +2109,27 @@ procedure TODEElementBox.Initialize;
 begin
   FGeomElement:=dCreateBox(nil,FBoxWidth,FBoxHeight,FBoxDepth);
   inherited;
+end;
+
+// FriendlyName
+//
+class function TODEElementBox.FriendlyName : String;
+begin
+  Result:='Box';
+end;
+
+// FriendlyDescription
+//
+class function TODEElementBox.FriendlyDescription : String;
+begin
+  Result:='The ODE box element implementation';
+end;
+
+// ItemCategory
+//
+class function TODEElementBox.ItemCategory : String;
+begin
+  Result:='Primitives';
 end;
 
 // CalculateMass
@@ -2297,7 +2286,7 @@ end;
 
 // Create
 //
-constructor TODEElementSphere.Create(AOwner: TODEElements);
+constructor TODEElementSphere.Create(AOwner : TXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -2309,6 +2298,27 @@ procedure TODEElementSphere.Initialize;
 begin
   FGeomElement:=dCreateSphere(nil,FRadius);
   inherited;
+end;
+
+// FriendlyName
+//
+class function TODEElementSphere.FriendlyName : String;
+begin
+  Result:='Sphere';
+end;
+
+// FriendlyDescription
+//
+class function TODEElementSphere.FriendlyDescription : String;
+begin
+  Result:='The ODE sphere element implementation';
+end;
+
+// ItemCategory
+//
+class function TODEElementSphere.ItemCategory : String;
+begin
+  Result:='Primitives';
 end;
 
 // CalculateMass
@@ -2404,7 +2414,7 @@ end;
 
 // Create
 //
-constructor TODEElementCapsule.Create(AOwner: TODEElements);
+constructor TODEElementCapsule.Create(AOwner : TXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -2417,6 +2427,27 @@ procedure TODEElementCapsule.Initialize;
 begin
   FGeomElement:=dCreateCCylinder(nil,FRadius,FLength);
   inherited;
+end;
+
+// FriendlyName
+//
+class function TODEElementCapsule.FriendlyName : String;
+begin
+  Result:='Capsule';
+end;
+
+// FriendlyDescription
+//
+class function TODEElementCapsule.FriendlyDescription : String;
+begin
+  Result:='The ODE capped cylinder element implementation';
+end;
+
+// ItemCategory
+//
+class function TODEElementCapsule.ItemCategory : String;
+begin
+  Result:='Primitives';
 end;
 
 // CalculateMass
@@ -2546,6 +2577,27 @@ procedure TODEElementCylinder.Initialize;
 begin
   FGeomElement:=dCreateCylinder(nil,FRadius,FLength);
   inherited;
+end;
+
+// FriendlyName
+//
+class function TODEElementCylinder.FriendlyName : String;
+begin
+  Result:='Cylinder';
+end;
+
+// FriendlyDescription
+//
+class function TODEElementCylinder.FriendlyDescription : String;
+begin
+  Result:='The ODE cylinder element implementation';
+end;
+
+// ItemCategory
+//
+class function TODEElementCylinder.ItemCategory : String;
+begin
+  Result:='Primitives';
 end;
 
 // CalculateMass
@@ -2710,38 +2762,14 @@ end;
 
 
 // ------------------------------------------------------------------
-// TGLODEJoints Methods
+// TODEJoints Methods
 // ------------------------------------------------------------------
 
-// Add
+// ItemsClass
 //
-function TODEJoints.Add(item: TODEBaseJoint): integer;
+class function TODEJoints.ItemsClass : TXCollectionItemClass;
 begin
-  result:=FList.Add(item);
-end;
-
-// Create
-//
-constructor TODEJoints.Create(AOwner:TPersistent);
-begin
-  FOwner:=AOwner;
-  FList:=TList.Create;
-end;
-
-// Delete
-//
-procedure TODEJoints.Delete(index: integer);
-begin
-  if Assigned(Items[index]) then
-    Items[index].Free;
-  FList.Delete(index);
-end;
-
-// Count
-//
-function TODEJoints.Count: integer;
-begin
-  Result:=FList.Count;
+  Result:=TODEBaseJoint;
 end;
 
 // Destroy
@@ -2749,7 +2777,6 @@ end;
 destructor TODEJoints.Destroy;
 begin
   Deinitialize;
-  FList.Free;
   inherited;
 end;
 
@@ -2759,8 +2786,8 @@ procedure TODEJoints.Initialize;
 var
   i : integer;
 begin
-  for i:=0 to FList.Count-1 do
-    Items[i].Initialize;
+  for i:=0 to Count-1 do
+    Joint[i].Initialize;
 end;
 
 // Deintialize
@@ -2769,23 +2796,15 @@ procedure TODEJoints.Deinitialize;
 var
   i : integer;
 begin
-  for i:=0 to FList.Count-1 do
-    Items[i].Deinitialize;
+  for i:=0 to Count-1 do
+    Joint[i].Deinitialize;
 end;
 
-// GetItem
+// GetJoint
 //
-function TODEJoints.GetItem(index: integer): TODEBaseJoint;
+function TODEJoints.GetJoint(index: integer): TODEBaseJoint;
 begin
-  Result:=TODEBaseJoint(FList.Items[index]);
-end;
-
-// Remove
-//
-procedure TODEJoints.Remove(item: TODEBaseJoint);
-begin
-  item.Free;
-  FList.Remove(item);
+  Result:=TODEBaseJoint(Items[index]);
 end;
 
 
@@ -2814,12 +2833,11 @@ end;
 // TODEBaseJoint
 // ------------------------------------------------------------------
 
-// CreateOwned
+// Create
 //
-constructor TODEBaseJoint.CreateOwned(AOwner : TODEJoints);
+constructor TODEBaseJoint.Create(AOwner : TXCollection);
 begin
-  FOwner:=AOwner;
-  FOwner.Add(Self);
+  inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
   FAnchor.OnNotifyChange:=AnchorChange;
   FAxis:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
@@ -2958,6 +2976,16 @@ begin
     dJointSetHingeAxis(FJointID,Value[0],Value[1],Value[2]);
 end;
 
+class function TODEJointHinge.FriendlyName : String;
+begin
+  Result:='Hinge';
+end;
+
+class function TODEJointHinge.FriendlyDescription : String;
+begin
+  Result:='ODE Hinge joint implementation';
+end;
+
 
 // ------------------------------------------------------------------
 // TODEJointBall
@@ -2978,6 +3006,16 @@ procedure TODEJointBall.SetAnchor(Value : TAffineVector);
 begin
   if FJointID<>0 then
     dJointSetBallAnchor(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+class function TODEJointBall.FriendlyName : String;
+begin
+  Result:='Ball';
+end;
+
+class function TODEJointBall.FriendlyDescription : String;
+begin
+  Result:='ODE Ball joint implementation';
 end;
 
 
@@ -3002,6 +3040,16 @@ begin
     dJointSetSliderAxis(FJointID,Value[0],Value[1],Value[2]);
 end;
 
+class function TODEJointSlider.FriendlyName : String;
+begin
+  Result:='Slider';
+end;
+
+class function TODEJointSlider.FriendlyDescription : String;
+begin
+  Result:='ODE Slider joint implementation';
+end;
+
 
 // ------------------------------------------------------------------
 // TODEJointFixed
@@ -3014,6 +3062,16 @@ begin
   if not Assigned(FManager) then exit;
   if FJointID=0 then
     FJointID:=dJointCreateFixed(FManager.World,0);
+end;
+
+class function TODEJointFixed.FriendlyName : String;
+begin
+  Result:='Fixed';
+end;
+
+class function TODEJointFixed.FriendlyDescription : String;
+begin
+  Result:='ODE Fixed joint implementation';
 end;
 
 
@@ -3054,6 +3112,16 @@ begin
     dJointSetHinge2Axis2(FJointID,Value[0],Value[1],Value[2]);
 end;
 
+class function TODEJointHinge2.FriendlyName : String;
+begin
+  Result:='Hinge2';
+end;
+
+class function TODEJointHinge2.FriendlyDescription : String;
+begin
+  Result:='ODE Double Axis Hinge joint implementation';
+end;
+
 
 // ------------------------------------------------------------------
 // TODEJointUniversal
@@ -3091,5 +3159,58 @@ begin
   if FJointID<>0 then
     dJointSetUniversalAxis2(FJointID,Value[0],Value[1],Value[2]);
 end;
+
+class function TODEJointUniversal.FriendlyName : String;
+begin
+  Result:='Universal';
+end;
+
+class function TODEJointUniversal.FriendlyDescription : String;
+begin
+  Result:='ODE Universal joint implementation';
+end;
+
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+initialization
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
+  RegisterXCollectionItemClass(TODEElementBox);
+  RegisterXCollectionItemClass(TODEElementSphere);
+  RegisterXCollectionItemClass(TODEElementCapsule);
+  //RegisterXCollectionItemClass(TODEElementCylinder);
+
+  RegisterXCollectionItemClass(TODEJointHinge);
+  RegisterXCollectionItemClass(TODEJointBall);
+  RegisterXCollectionItemClass(TODEJointSlider);
+  RegisterXCollectionItemClass(TODEJointFixed);
+  RegisterXCollectionItemClass(TODEJointHinge2);
+  RegisterXCollectionItemClass(TODEJointUniversal);
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+finalization
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
+  UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
+  UnregisterXCollectionItemClass(TODEElementBox);
+  UnregisterXCollectionItemClass(TODEElementSphere);
+  UnregisterXCollectionItemClass(TODEElementCapsule);
+  //UnregisterXCollectionItemClass(TODEElementCylinder);
+
+  UnregisterXCollectionItemClass(TODEJointHinge);
+  UnregisterXCollectionItemClass(TODEJointBall);
+  UnregisterXCollectionItemClass(TODEJointSlider);
+  UnregisterXCollectionItemClass(TODEJointFixed);
+  UnregisterXCollectionItemClass(TODEJointHinge2);
+  UnregisterXCollectionItemClass(TODEJointUniversal);
 
 end.
