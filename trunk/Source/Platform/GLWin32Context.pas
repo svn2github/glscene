@@ -464,7 +464,6 @@ begin
 
    // WGL_ARB_pixel_format is used if available
    //
-   FLegacyContextsOnly:=True;
    if not (FLegacyContextsOnly or (aType in cMemoryDCs)) then begin
       // the WGL mechanism is a little awkward: we first create a dummy context
       // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
