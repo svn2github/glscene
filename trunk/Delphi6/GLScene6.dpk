@@ -162,6 +162,8 @@ contains
   GLFile3DS in '..\Source\FileFormats\GLFile3DS.pas',
   GLFilePLY in '..\Source\FileFormats\GLFilePLY.pas',
   GLFileTIN in '..\Source\FileFormats\GLFileTIN.pas',
-  GLFileGTS in '..\Source\FileFormats\GLFileGTS.pas';
+  GLFileGTS in '..\Source\FileFormats\GLFileGTS.pas',
+  GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
+  GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas';
 
 end.
