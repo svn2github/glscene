@@ -84,6 +84,7 @@ type
 
          procedure AddNulls(nbVals : Integer);
          procedure AdjustCapacityToAtLeast(const size : Integer);
+         function DataSize : Integer;
          {: Tell the list to use the specified range instead of its own.<p>
             rangeCapacity should be expressed in bytes.<p>
             The allocated memory is NOT managed by the list, current content
@@ -697,6 +698,13 @@ procedure TBaseList.AdjustCapacityToAtLeast(const size : Integer);
 begin
    if Capacity<size then
       Capacity:=size;
+end;
+
+// DataSize
+//
+function TBaseList.DataSize : Integer;
+begin
+   Result:=FItemSize*FCount;
 end;
 
 // BufferItem
