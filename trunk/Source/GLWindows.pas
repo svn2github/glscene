@@ -264,12 +264,6 @@ implementation
 
 uses GLObjects;
 
-Function Contains(Min, Max, Value : TGLFloat) :Boolean;
-
-Begin
-  Result := (Min <= Value) and (Max >= value);
-End;
-
 procedure TGLBaseComponent.SetGUIRedraw(value : Boolean);
 
 Begin

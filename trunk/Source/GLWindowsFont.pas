@@ -10,7 +10,7 @@ unit GLWindowsFont;
 interface
 
 Uses
-  GLBitMapFont, Graphics, Classes, GLScene, Types, GLTexture;
+  GLBitMapFont, Graphics, Classes, GLScene, GLTexture, GLCrossPlatform;
 
 Type
 
@@ -132,7 +132,7 @@ Var
   XC : Integer;
   CharsPerRow : Integer;
   MaxChars    : Integer;
-  CharRect    : TRect;
+  CharRect    : TGLRect;
 
 Begin
   BitMap := Glyphs.Bitmap;  // First Get the Bitmap with which you're working...

@@ -11,7 +11,8 @@ unit GLGui;
 interface
 
 uses
-  Types, Classes, Graphics, GLScene, GLMisc, GLBitmapFont, GLTexture, OpenGL12, SysUtils, persistentclasses;
+  Classes, Graphics, GLScene, GLMisc, GLBitmapFont, GLTexture, GLCrossPlatform,
+  OpenGL12, SysUtils, PersistentClasses;
 
 Type
   TGUIAlignments = (GLAlTopLeft, GLAlTop, GLAlTopRight, GLAlLeft,GLAlCenter, GLAlRight, GLAlBottomLeft,GLAlBottom, GLAlBottomRight, GLAlBorder);
@@ -54,9 +55,10 @@ Type
   protected
     procedure SetItems(index : Integer; const val : TGLGuiElement);
     function GetItems(index : Integer) : TGLGuiElement;
-    function  GetOwner: TPersistent; override;
   public
     Constructor Create(AOwner : TGLGuiComponent);
+
+    function  GetOwner: TPersistent; override;
     property Items[index : Integer] : TGLGuiElement read GetItems write SetItems; default;
   end;
 
@@ -85,11 +87,12 @@ Type
   private
     FLayout : TGLGuiLayout;
   protected
-    function  GetOwner: TPersistent; override;
     procedure SetItems(index : Integer; const val : TGLGuiComponent);
     function GetItems(index : Integer) : TGLGuiComponent;
   public
     Constructor Create(AOwner : TGLGuiLayout);
+    
+    function  GetOwner: TPersistent; override;
     function  FindItem(name : TGLGuiComponentName) : TGLGuiComponent;
     property Items[index : Integer] : TGLGuiComponent read GetItems write SetItems; default;
   end;

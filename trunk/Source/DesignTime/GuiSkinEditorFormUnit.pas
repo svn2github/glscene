@@ -3,7 +3,7 @@ unit GuiSkinEditorFormUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects,
   GLWindows, GLHUDObjects, GLMisc, GLWin32Viewer, GLGui;
 
@@ -113,11 +113,11 @@ Var
 
 begin
   TheGuiComponent := GuiComponent;
-  GuiLayout := (GuiComponent.Owner as TGLGuiComponent).Owner.Owner as TGLGuiLayout;
+  GuiLayout := (GuiComponent.GetOwner as TGLGuiComponent).Owner.GetOwner as TGLGuiLayout;
   Mat := GuiLayout.Material;
   GLPanel1.Visible := True;
   GLPanel1.GuiLayout := GuiLayout;
-  GLPanel1.GuiLayoutName := (GuiComponent.Owner as TGLGuiComponent).Name;
+  GLPanel1.GuiLayoutName := (GuiComponent.GetOwner as TGLGuiComponent).Name;
   Zoom := 1.0;
 
   If (Assigned(mat.MaterialLibrary) and (Mat.LibMaterialName <> '')) then
@@ -233,7 +233,7 @@ procedure TGUISkinEditor.WidthEditChange(Sender: TObject);
 Var
   Val : Integer;
 begin
-  If TryStrToInt(WidthEdit.Text,Val) then
+  val:=StrToIntDef(WidthEdit.Text, 0);
   If Val > 0 then
   Begin
     Width := Val;
@@ -255,7 +255,7 @@ procedure TGUISkinEditor.HeightEditChange(Sender: TObject);
 Var
   Val : Integer;
 begin
-  If TryStrToInt(HeightEdit.Text,Val) then
+  val:=StrToIntDef(HeightEdit.Text, 0);
   If Val > 0 then
   Begin
     Height := Val;
@@ -296,7 +296,7 @@ end;
 
 procedure TGUISkinEditor.ListBox1Click(Sender: TObject);
 begin
-  If (ListBox1.ItemIndex >= 0) and (ListBox1.ItemIndex < ListBox1.Count) then
+  If (ListBox1.ItemIndex >= 0) and (ListBox1.ItemIndex < ListBox1.Items.Count) then
   Begin
     SelectedElement := TheGuiComponent.Items[ListBox1.ItemIndex];
     ComboBox1.ItemIndex := Integer(SelectedElement.Align);
@@ -322,12 +322,12 @@ Var
   Index : Integer;
 
 begin
-  If (ListBox1.ItemIndex >= 0) and (ListBox1.ItemIndex < ListBox1.Count) then
+  If (ListBox1.ItemIndex >= 0) and (ListBox1.ItemIndex < ListBox1.Items.Count) then
   Begin
     Index := ListBox1.ItemIndex;
     TheGuiComponent.Delete(Index);
     ListBox1.Items.Delete(Index);
-    If (ListBox1.ItemIndex >= 0) and (ListBox1.ItemIndex < ListBox1.Count) then
+    If (ListBox1.ItemIndex >= 0) and (ListBox1.ItemIndex < ListBox1.Items.Count) then
     Begin
       SelectedElement := TheGuiComponent.Items[ListBox1.ItemIndex];
       ComboBox1.ItemIndex := Integer(SelectedElement.Align);
@@ -378,7 +378,8 @@ begin
   End;
   If key = vk_right then
   Begin
-    If ListBox1.ItemIndex+1 < ListBox1.Count then ListBox1.ItemIndex := ListBox1.ItemIndex +1;
+    If ListBox1.ItemIndex+1 < ListBox1.Items.Count then
+      ListBox1.ItemIndex := ListBox1.ItemIndex +1;
     key := VK_CANCEL;
   End;
     
@@ -392,31 +393,33 @@ begin
 end;
 
 procedure TGUISkinEditor.ScaleXEditChange(Sender: TObject);
-Var
-  Res : Double;
+var
+   res : Single;
 begin
-  if TryStrToFloat(ScaleXEdit.Text,Res) then
-  If Assigned(SelectedElement) then
-  Begin
-    SelectedElement.Scale.X := Res;
-    GLPanel1.ReBuildGui := True;
-    GLPanel1.GUIRedraw := True;
-    Render;
-  End;
+   if Assigned(SelectedElement) then begin
+      res:=StrToFloatDef(ScaleXEdit.Text, 0);
+      if res>0 then begin
+         SelectedElement.Scale.X:=Res;
+         GLPanel1.ReBuildGui:=True;
+         GLPanel1.GUIRedraw:=True;
+         Render;
+      end;
+   end;
 end;
 
 procedure TGUISkinEditor.ScaleYEditChange(Sender: TObject);
-Var
-  Res : Double;
+var
+   res : Single;
 begin
-  if TryStrToFloat(ScaleXEdit.Text,Res) then
-  If Assigned(SelectedElement) then
-  Begin
-    SelectedElement.Scale.X := Res;
-    GLPanel1.ReBuildGui := True;
-    GLPanel1.GUIRedraw := True;
-    Render;
-  End;
+   if Assigned(SelectedElement) then begin
+      res:=StrToFloatDef(ScaleYEdit.Text, 0);
+      if res>0 then begin
+         SelectedElement.Scale.Y:=Res;
+         GLPanel1.ReBuildGui:=True;
+         GLPanel1.GUIRedraw:=True;
+         Render;
+      end;
+   end;
 end;
 
 end.
