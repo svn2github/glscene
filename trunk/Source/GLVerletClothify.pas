@@ -280,7 +280,6 @@ end;
 function TFaceExtractor.AddFace(const Vi0, Vi1, Vi2: integer; const MeshObject : TMeshObject) : TFace;
 var
   Face : TFace;
-  V0, V1, V2 : TAffineVector;
 begin
   Face := TFace.Create(MeshObject);
 
@@ -419,7 +418,6 @@ function TEdgeDetector.AddFace(const Vi0, Vi1, Vi2: integer;
   const MeshObject: TMeshObject): TFace;
 var
   Face : TFace;
-  V0, V1, V2 : TAffineVector;
 begin
   Face := TFace.Create(MeshObject);
 
@@ -617,7 +615,8 @@ begin
     begin
       FNodeList.Add(aNode);
       aNode.VertexIndices.Add(VertexIndex);
-      exit;
+      Result:=aNode;
+      Exit;
     end;
   end;//}
 
@@ -628,6 +627,7 @@ begin
   aNode.OldLocation := Location;
 
   FNodeList.Add(aNode);
+  Result:=aNode;
 end;
 
 procedure TEdgeDetector.ProcessMesh;
