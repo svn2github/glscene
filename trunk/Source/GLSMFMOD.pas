@@ -6,9 +6,11 @@
       <li>sound source velocity
       <li>looping (sounds are played either once or forever)
       <li>sound cones
+      <li>environments (not available in the Delphi API unit...)
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/02/02 - EG - Updated to FMOD 3.5, added 3D Factors
       <li>05/02/02 - EG - Updated to FMOD 3.4, now uses DSound by default
       <li>13/01/01 - EG - Updated for API 3.3 compatibility
 	   <li>09/06/00 - EG - Creation
@@ -27,12 +29,15 @@ type
 	TGLSMFMOD = class (TGLSoundManager)
 	   private
 	      { Private Declarations }
+         FActivated : Boolean;
 
 	   protected
 	      { Protected Declarations }
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
+         procedure Notify3DFactorsChanged; override;
+         procedure NotifyEnvironmentChanged; override;
 
          procedure KillSource(aSource : TGLBaseSoundSource); override;
          procedure UpdateSource(aSource : TGLBaseSoundSource); override;
@@ -47,6 +52,7 @@ type
          procedure UpdateSources; override;
 
          function CPUUsagePercent : Single; override;
+         function EAXSupported : Boolean; override;
 
 	   published
 	      { Published Declarations }
@@ -68,7 +74,7 @@ uses SysUtils, FMod, Geometry;
 type
    TFMODInfo =  record
       channel : Integer;
-      pfs : pFSOUND_SAMPLE;
+      pfs : PFSoundSample;
    end;
    PFMODInfo = ^TFMODInfo;
 
@@ -112,6 +118,8 @@ begin
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then Assert(False);
    if not FSOUND_SetDriver(0) then Assert(False);
    if not FSOUND_Init(OutputFrequency, MaxChannels, 0) then Assert(False);
+   NotifyMasterVolumeChange;
+   Notify3DFactorsChanged;
    Result:=True;
 end;
 
@@ -127,7 +135,26 @@ end;
 //
 procedure TGLSMFMOD.NotifyMasterVolumeChange;
 begin
-   FSOUND_SetSFXMasterVolume(Round(MasterVolume*255));
+   if FActivated then
+      FSOUND_SetSFXMasterVolume(Round(MasterVolume*255));
+end;
+
+// Notify3DFactorsChanged
+//
+procedure TGLSMFMOD.Notify3DFactorsChanged;
+begin
+   if FActivated then begin
+      FSOUND_3D_Listener_SetDistanceFactor(DistanceFactor);
+      FSOUND_3D_Listener_SetRolloffFactor(RollOffFactor);
+      FSOUND_3D_Listener_SetDopplerFactor(DopplerFactor);
+   end;
+end;
+
+// NotifyEnvironmentChanged
+//
+procedure TGLSMFMOD.NotifyEnvironmentChanged;
+begin
+   // nothing
 end;
 
 // KillSource
@@ -240,6 +267,17 @@ end;
 function TGLSMFMOD.CPUUsagePercent : Single;
 begin
    Result:=FSOUND_GetCPUUsage;
+end;
+
+// EAXSupported
+//
+function TGLSMFMOD.EAXSupported : Boolean;
+var
+   cap : Cardinal;
+begin
+   cap:=0;
+   FSOUND_GetDriverCaps(FSOUND_CAPS_EAX2, cap);
+   Result:=(cap<>0);
 end;
 
 end.

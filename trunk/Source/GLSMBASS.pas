@@ -8,10 +8,11 @@
       <li>source priorities (not relevant, channels are not limited)
    </ul><p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>05/02/02 - Egg - BASS 1.4 compatibility
-      <li>05/02/01 - Egg - Fixed TGLSMBASS.CPUUsagePercent
-	   <li>13/01/01 - Egg - Creation (compat BASS 0.8)
+	<b>History : </b><font size=-1><ul>
+      <li>27/02/02 - EG - Added 3D Factors and Environment support
+      <li>05/02/02 - EG - BASS 1.4 compatibility
+      <li>05/02/01 - EG - Fixed TGLSMBASS.CPUUsagePercent
+	   <li>13/01/01 - EG - Creation (compat BASS 0.8)
 	</ul></font>
 }
 unit GLSMBASS;
@@ -31,6 +32,7 @@ type
 	TGLSMBASS = class (TGLSoundManager)
 	   private
 	      { Private Declarations }
+         FActivated : Boolean;
          FAlgorithm3D : TBASS3DAlgorithm;
 
 	   protected
@@ -38,6 +40,8 @@ type
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
+         procedure Notify3DFactorsChanged; override;
+         procedure NotifyEnvironmentChanged; override;
 
          procedure KillSource(aSource : TGLBaseSoundSource); override;
          procedure UpdateSource(aSource : TGLBaseSoundSource); override;
@@ -52,6 +56,7 @@ type
          procedure UpdateSources; override;
 
          function CPUUsagePercent : Single; override;
+         function EAXSupported : Boolean; override;
 
 	   published
 	      { Published Declarations }
@@ -119,9 +124,14 @@ const
    c3DAlgo : array [algDefault..algLight] of Integer =
       (BASS_3DALG_DEFAULT, BASS_3DALG_OFF, BASS_3DALG_FULL, BASS_3DALG_LIGHT);
 begin
-   if not BASS_Init(-1, OutputFrequency, BASS_DEVICE_3D, Application.Handle) then Assert(False);
+   if not BASS_Init(0, OutputFrequency, BASS_DEVICE_3D, Application.Handle) then Assert(False);
    if not BASS_Start then Assert(False);
+   FActivated:=True;
    BASS_Set3DAlgorithm(c3DAlgo[FAlgorithm3D]);
+   NotifyMasterVolumeChange;
+   Notify3DFactorsChanged;
+   if Environment<>seDefault then
+      NotifyEnvironmentChanged;
    Result:=True;
 end;
 
@@ -129,6 +139,7 @@ end;
 //
 procedure TGLSMBASS.DoDeActivate;
 begin
+   FActivated:=False;
    BASS_Stop;
    BASS_Free;
 end;
@@ -137,7 +148,35 @@ end;
 //
 procedure TGLSMBASS.NotifyMasterVolumeChange;
 begin
-   BASS_SetVolume(Round(MasterVolume*100));
+   if FActivated then
+      BASS_SetVolume(Round(MasterVolume*100));
+end;
+
+// Notify3DFactorsChanged
+//
+procedure TGLSMBASS.Notify3DFactorsChanged;
+begin
+   if FActivated then
+      BASS_Set3DFactors(DistanceFactor, RollOffFactor, DopplerFactor);
+end;
+
+// NotifyEnvironmentChanged
+//
+procedure TGLSMBASS.NotifyEnvironmentChanged;
+const
+   cEnvironmentToBASSConstant : array [seDefault..sePsychotic] of Integer = (
+      EAX_ENVIRONMENT_GENERIC, EAX_ENVIRONMENT_PADDEDCELL, EAX_ENVIRONMENT_ROOM,
+      EAX_ENVIRONMENT_BATHROOM, EAX_ENVIRONMENT_LIVINGROOM, EAX_ENVIRONMENT_STONEROOM,
+      EAX_ENVIRONMENT_AUDITORIUM, EAX_ENVIRONMENT_CONCERTHALL, EAX_ENVIRONMENT_CAVE,
+      EAX_ENVIRONMENT_ARENA, EAX_ENVIRONMENT_HANGAR, EAX_ENVIRONMENT_CARPETEDHALLWAY,
+      EAX_ENVIRONMENT_HALLWAY, EAX_ENVIRONMENT_STONECORRIDOR, EAX_ENVIRONMENT_ALLEY,
+      EAX_ENVIRONMENT_FOREST, EAX_ENVIRONMENT_CITY, EAX_ENVIRONMENT_MOUNTAINS,
+      EAX_ENVIRONMENT_QUARRY, EAX_ENVIRONMENT_PLAIN, EAX_ENVIRONMENT_PARKINGLOT,
+      EAX_ENVIRONMENT_SEWERPIPE, EAX_ENVIRONMENT_UNDERWATER, EAX_ENVIRONMENT_DRUGGED,
+      EAX_ENVIRONMENT_DIZZY, EAX_ENVIRONMENT_PSYCHOTIC);
+begin
+   if FActivated and EAXSupported then
+      BASS_EAXPreset(cEnvironmentToBASSConstant[Environment]);
 end;
 
 // KillSource
@@ -265,6 +304,16 @@ end;
 function TGLSMBASS.CPUUsagePercent : Single;
 begin
    Result:=BASS_GetCPU*100;
+end;
+
+// EAXSupported
+//
+function TGLSMBASS.EAXSupported : Boolean;
+var
+   c : Cardinal;
+   s : Single;
+begin
+   Result:=BASS_GetEAXParameters(c, s, s, s);
 end;
 
 end.

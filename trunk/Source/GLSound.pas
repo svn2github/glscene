@@ -1,12 +1,12 @@
-// GLSound
-{: Revolution<p>
+{: GLSound<p>
 
 	Base classes and interface for GLScene Sound System<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>13/01/01 - Egg - Added CPUUsagePercent
-      <li>09/06/00 - Egg - Various enhancements
-	   <li>04/06/00 - Egg - Creation
+	<b>History : </b><font size=-1><ul>
+      <li>27/02/02 - EG - Added 3D Factors, special listener-is-camera support
+      <li>13/01/01 - EG - Added CPUUsagePercent
+      <li>09/06/00 - EG - Various enhancements
+	   <li>04/06/00 - EG - Creation
 	</ul></font>
 }
 unit GLSound;
@@ -249,6 +249,17 @@ type
 	      property Items[index : Integer] : TGLSoundSource read GetItems write SetItems; default;
    end;
 
+   // TGLSoundEnvironment
+   //
+   {: EAX standard sound environments. }
+   TGLSoundEnvironment = (seDefault, sePaddedCell, seRoom, seBathroom,
+                          seLivingRoom, seStoneroom, seAuditorium,
+                          seConcertHall, seCave, seArena, seHangar,
+                          seCarpetedHallway, seHallway, seStoneCorridor,
+                          seAlley, seForest, seCity, seMountains, seQuarry,
+                          sePlain, seParkingLot, seSewerPipe, seUnderWater,
+                          seDrugged, seDizzy, sePsychotic);
+
 	// TGLSoundManager
 	//
    {: Base class for sound manager components.<p>
@@ -271,11 +282,17 @@ type
          FMaxChannels : Integer;
          FOutputFrequency : Integer;
          FUpdateFrequency : Single;
+         FDistanceFactor : Single;
+         FRollOffFactor : Single;
+         FDopplerFactor : Single;
+         FSoundEnvironment : TGLSoundEnvironment;
          FLastUpdateTime, FLastDeltaTime : Single; // last time UpdateSources was fired, not persistent
          FCadencer : TGLCadencer;
          procedure SetActive(const val : Boolean);
          procedure SetMute(const val : Boolean);
          procedure SetPause(const val : Boolean);
+         procedure WriteDoppler(writer : TWriter);
+         procedure ReadDoppler(reader : TReader);
 
 	   protected
 	      { Protected Declarations }
@@ -288,7 +305,16 @@ type
          procedure SetUpdateFrequency(const val : Single);
          function StoreUpdateFrequency : Boolean;
          procedure SetCadencer(const val : TGLCadencer);
+         procedure SetDistanceFactor(const val : Single);
+         function StoreDistanceFactor : Boolean;
+         procedure SetRollOffFactor(const val : Single);
+         function StoreRollOffFactor : Boolean;
+         procedure SetDopplerFactor(const val : Single);
+         procedure SetSoundEnvironment(const val : TGLSoundEnvironment);
 
+         procedure Loaded; override;
+         procedure DefineProperties(Filer: TFiler); override;
+         
          procedure ListenerCoordinates(var position, velocity, direction, up : TVector);
 
 	      function DoActivate : Boolean; dynamic;
@@ -310,7 +336,10 @@ type
             Default implementation call PauseSource for all non-paused sources
             with "True" as parameter. }
 	      procedure DoUnPause; dynamic;
+
          procedure NotifyMasterVolumeChange; dynamic;
+         procedure Notify3DFactorsChanged; dynamic;
+         procedure NotifyEnvironmentChanged; dynamic;
 
          //: Called when a source will be freed
          procedure KillSource(aSource : TGLBaseSoundSource); virtual;
@@ -339,6 +368,8 @@ type
          {: Sound manager API reported CPU Usage.<p>
             Returns -1 when unsupported. }
          function CPUUsagePercent : Single; virtual;
+         {: True if EAX is supported. }
+         function EAXSupported : Boolean; dynamic;
 
 	   published
 	      { Published Declarations }
@@ -386,6 +417,21 @@ type
          property UpdateFrequency : Single read FUpdateFrequency write SetUpdateFrequency stored StoreUpdateFrequency;
          {: Cadencer for time-based control.<p> }
          property Cadencer : TGLCadencer read FCadencer write SetCadencer;
+         {: Engine relative distance factor, compared to 1.0 meters.<p>
+            Equates to 'how many units per meter' your engine has. }
+         property DistanceFactor : Single read FDistanceFactor write SetDistanceFactor stored StoreDistanceFactor;
+         {: Sets the global attenuation rolloff factor.<p>
+            Normally volume for a sample will scale at 1 / distance.
+            This gives a logarithmic attenuation of volume as the source gets
+            further away (or closer).<br>
+            Setting this value makes the sound drop off faster or slower.
+            The higher the value, the faster volume will fall off. }
+         property RollOffFactor : Single read FRollOffFactor write SetRollOffFactor stored StoreRollOffFactor;
+         {: Engine relative Doppler factor, compared to 1.0 meters.<p>
+            Equates to 'how many units per meter' your engine has. }
+         property DopplerFactor : Single read FDopplerFactor write SetDopplerFactor stored False;
+         {: Sound environment (requires EAX compatible soundboard). }
+         property Environment : TGLSoundEnvironment read FSoundEnvironment write SetSoundEnvironment default seDefault;
 	end;
 
 	// TGLBSoundEmitter
@@ -1079,6 +1125,8 @@ end;
 // ------------------ TGLSoundManager ------------------
 // ------------------
 
+// Create
+//
 constructor TGLSoundManager.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
@@ -1088,8 +1136,13 @@ begin
    FMaxChannels:=8;
    FUpdateFrequency:=10;
    FLastUpdateTime:=-1e30;
+   FDistanceFactor:=1.0;
+   FRollOffFactor:=1.0;
+   FDopplerFactor:=1.0;
 end;
 
+// Destroy
+//
 destructor TGLSoundManager.Destroy;
 begin
    Active:=False;
@@ -1113,7 +1166,7 @@ end;
 //
 procedure TGLSoundManager.SetActive(const val : Boolean);
 begin
-   if csDesigning in ComponentState then
+   if (csDesigning in ComponentState) or (csLoading in ComponentState) then
       FActive:=val
    else if val<>FActive then begin
       if val then begin
@@ -1198,6 +1251,39 @@ begin
    end;
 end;
 
+// Loaded
+//
+procedure TGLSoundManager.Loaded;
+begin
+   inherited;
+   if Active and (not (csDesigning in ComponentState)) then begin
+      FActive:=False;
+      Active:=True;
+   end;
+end;
+
+// DefineProperties
+//
+procedure TGLSoundManager.DefineProperties(Filer: TFiler);
+begin
+   inherited;
+   Filer.DefineProperty('Doppler', ReadDoppler, WriteDoppler, (DopplerFactor<>1));
+end;
+
+// WriteDoppler
+//
+procedure TGLSoundManager.WriteDoppler(writer : TWriter);
+begin
+   writer.WriteFloat(DopplerFactor);
+end;
+
+// ReadDoppler
+//
+procedure TGLSoundManager.ReadDoppler(reader : TReader);
+begin
+   FDopplerFactor:=reader.ReadFloat;
+end;
+
 // DoPause
 //
 function TGLSoundManager.DoPause : Boolean;
@@ -1228,6 +1314,7 @@ begin
    else if val>1 then
       FMasterVolume:=1
    else FMasterVolume:=val;
+   NotifyMasterVolumeChange;
 end;
 
 // SetMaxChannels
@@ -1279,9 +1366,67 @@ begin
    end;
 end;
 
+// SetDistanceFactor
+//
+procedure TGLSoundManager.SetDistanceFactor(const val : Single);
+begin
+   if val<=0 then
+      FDistanceFactor:=1
+   else FDistanceFactor:=val;
+   Notify3DFactorsChanged;
+end;
+
+// StoreDistanceFactor
+//
+function TGLSoundManager.StoreDistanceFactor : Boolean;
+begin
+   Result:=(FDistanceFactor<>1);
+end;
+
+// SetRollOffFactor
+//
+procedure TGLSoundManager.SetRollOffFactor(const val : Single);
+begin
+   if val<=0 then
+      FRollOffFactor:=1
+   else FRollOffFactor:=val;
+   Notify3DFactorsChanged;
+end;
+
+// StoreRollOffFactor
+//
+function TGLSoundManager.StoreRollOffFactor : Boolean;
+begin
+   Result:=(FRollOffFactor<>1);
+end;
+
+// SetDopplerFactor
+//
+procedure TGLSoundManager.SetDopplerFactor(const val : Single);
+begin
+   if val<0 then
+      FDopplerFactor:=0
+   else if val>10 then
+      FDopplerFactor:=10
+   else FDopplerFactor:=val;
+   Notify3DFactorsChanged;
+end;
+
+// SetSoundEnvironment
+//
+procedure TGLSoundManager.SetSoundEnvironment(const val : TGLSoundEnvironment);
+begin
+   if val<>FSoundEnvironment then begin
+      FSoundEnvironment:=val;
+      NotifyEnvironmentChanged;
+   end;
+end;
+
 // ListenerCoordinates
 //
 procedure TGLSoundManager.ListenerCoordinates(var position, velocity, direction, up : TVector);
+var
+   right : TVector;
 begin
    if Listener<>nil then begin
       position:=Listener.AbsolutePosition;
@@ -1290,8 +1435,17 @@ begin
          ScaleVector(velocity, 1/FLastDeltaTime);
       end;
       FLastListenerPosition:=position;
-      direction:=Listener.AbsoluteZVector;
-      up:=Listener.AbsoluteYVector;
+      if (Listener is TGLCamera) and (TGLCamera(Listener).TargetObject<>nil) then begin
+         // special case of the camera targeting something
+         direction:=TGLCamera(Listener).AbsoluteVectorToTarget;
+         NormalizeVector(direction);
+         up:=Listener.AbsoluteYVector;
+         right:=VectorCrossProduct(direction, up);
+         up:=VectorCrossProduct(right, direction);
+      end else begin
+         direction:=Listener.AbsoluteZVector;
+         up:=Listener.AbsoluteYVector;
+      end;
    end else begin
       position:=NullHmgPoint;
       velocity:=NullHmgVector;
@@ -1303,6 +1457,20 @@ end;
 // NotifyMasterVolumeChange
 //
 procedure TGLSoundManager.NotifyMasterVolumeChange;
+begin
+   // nothing
+end;
+
+// Notify3DFactorsChanged
+//
+procedure TGLSoundManager.Notify3DFactorsChanged;
+begin
+   // nothing
+end;
+
+// NotifyEnvironmentChanged
+//
+procedure TGLSoundManager.NotifyEnvironmentChanged;
 begin
    // nothing
 end;
@@ -1393,6 +1561,13 @@ end;
 function TGLSoundManager.CPUUsagePercent : Single;
 begin
    Result:=-1;
+end;
+
+// EAXSupported
+//
+function TGLSoundManager.EAXSupported : Boolean;
+begin
+   Result:=False;
 end;
 
 // ------------------
