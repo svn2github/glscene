@@ -7030,6 +7030,8 @@ end;
 procedure TGLSceneBuffer.Freeze;
 begin
    if Freezed then Exit;
+   FFreezed:=True;
+   if RenderingContext=nil then Exit;
    Render;
    RenderingContext.Activate;
    try
@@ -7037,7 +7039,6 @@ begin
       glReadPixels(0, 0, FViewport.Width, FViewPort.Height,
                    GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
       FFreezedViewPort:=FViewPort;
-      FFreezed:=True;
    finally
       RenderingContext.Deactivate;
    end;
@@ -7683,7 +7684,7 @@ begin
 
    backColor:=ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
 
-   if Freezed then begin
+   if Freezed and (FFreezeBuffer<>nil) then begin
       RenderingContext.Activate;
       try
          glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
