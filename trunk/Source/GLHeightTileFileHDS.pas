@@ -131,10 +131,10 @@ begin
       end else begin
          oldType:=DataType;
          Allocate(hdtSmallInt);
-         Move(htfTile.data[0], SmallIntData^, Size*Size*2);
+         Move(htfTile.data[0], SmallIntData^, DataSize);
          if oldType<>hdtSmallInt then
             DataType:=oldType;
-         inherited;
+         DataState:=hdsReady;
       end;
    end;
 end;
