@@ -15,6 +15,7 @@
    though.<p>
    
    <b>History : </b><font size=-1><ul>
+      <li>20/08/03 - SG - Weighted control points.
       <li>18/07/03 - SG - Creation.
    </ul></font>
 }
@@ -42,7 +43,8 @@ type
 
   TMOParametricSurface = class (TMeshObject)
     private
-      FControlPoints : TAffineVectorList;
+      FControlPoints,
+      FWeightedControlPoints : TAffineVectorList;
       FKnotsU,
       FKnotsV,
       FWeights : TSingleList;
@@ -118,6 +120,7 @@ begin
   inherited;
 
   FControlPoints:=TAffineVectorList.Create;
+  FWeightedControlPoints:=TAffineVectorList.Create;
   FKnotsU:=TSingleList.Create;
   FKnotsV:=TSingleList.Create;
   FWeights:=TSingleList.Create;
@@ -130,6 +133,7 @@ end;
 destructor TMOParametricSurface.Destroy;
 begin
   FControlPoints.Free;
+  FWeightedControlPoints.Free;
   FKnotsU.Free;
   FKnotsV.Free;
   FWeights.Free;
@@ -202,7 +206,7 @@ begin
         psbBezier : begin
           glMapGrid2f(FResolution,0,1,FResolution,0,1);
           //glMap2f(GL_MAP2_TEXTURE_COORD_3,0,1,3,2,0,1,6,2,@TexCoords.List[0]);
-          glMap2f(GL_MAP2_VERTEX_3,0,1,3,FCountU,0,1,3*FCountU,FCountV,@FControlPoints.List[0]);
+          glMap2f(GL_MAP2_VERTEX_3,0,1,3,FCountU,0,1,3*FCountU,FCountV,@FWeightedControlPoints.List[0]);
           glEvalMesh2(GL_FILL,0,FResolution,0,FResolution);
         end;
 
@@ -219,14 +223,14 @@ begin
                             FKnotsU.Count, @FKnotsU.List[0],
                             FKnotsV.Count, @FKnotsV.List[0],
                             3, FCountU*3,
-                            @FControlPoints.List[0],
+                            @FWeightedControlPoints.List[0],
                             FOrderU, FOrderV,
                             GL_MAP2_TEXTURE_COORD_3);//}
             gluNurbsSurface(NurbsRenderer,
                             FKnotsU.Count, @FKnotsU.List[0],
                             FKnotsV.Count, @FKnotsV.List[0],
                             3, FCountU*3,
-                            @FControlPoints.List[0],
+                            @FWeightedControlPoints.List[0],
                             FOrderU, FOrderV,
                             GL_MAP2_VERTEX_3);
           gluEndSurface(NurbsRenderer);
@@ -242,10 +246,18 @@ end;
 // Prepare
 //
 procedure TMOParametricSurface.Prepare;
+var
+  i : integer;
 begin
   // We want to clear everything but the parametric surface
   // data (control points and knot vectors).
   inherited Clear;
+  
+  // Apply weights to control points
+  FWeightedControlPoints.Assign(FControlPoints);
+  if FWeights.Count=FControlPoints.Count then
+    for i:=0 to FWeightedControlPoints.Count-1 do
+      FWeightedControlPoints[i]:=VectorScale(FWeightedControlPoints[i],FWeights[i]);
 
   case FRenderer of
     psrGLScene : begin
@@ -278,27 +290,20 @@ var
   i,j : Integer;
   fg : TFGVertexIndexList;
 begin
-  // Make sure there are equal weights to control points
-  while FWeights.Count<>FControlPoints.Count do
-    if FWeights.Count>FControlPoints.Count then
-      FWeights.Delete(FWeights.Count-1)
-    else
-      FWeights.Add(1);
-  
   case FBasis of
     psbBezier  : begin
       if FAutoKnots then begin
         FKnotsU.Clear;
         FKnotsV.Clear;
       end;
-      GenerateBezierSurface(FResolution,FCountU,FCountV,FWeights,FControlPoints,Vertices);
+      GenerateBezierSurface(FResolution,FCountU,FCountV,FControlPoints,Vertices);
     end;
     psbBSpline : begin
       if FAutoKnots then begin
         GenerateKnotVector(FKnotsU,FCountU,FOrderU,FContinuity);
         GenerateKnotVector(FKnotsV,FCountV,FOrderV,FContinuity);
       end;
-      GenerateBSplineSurface(FResolution,FOrderU,FOrderV,FCountU,FCountV,FKnotsU,FKnotsV,FWeights,FControlPoints,Vertices);
+      GenerateBSplineSurface(FResolution,FOrderU,FOrderV,FCountU,FCountV,FKnotsU,FKnotsV,FControlPoints,Vertices);
     end;
   end;
 
