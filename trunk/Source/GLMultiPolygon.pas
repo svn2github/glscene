@@ -3,6 +3,8 @@
    Object with support for complex polygons.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>19/12/01 - Egg - Removed dependency to contnrs (D4 compatibility,
+                           TObjectList replaced with TPersistentObjectList)
       <li>29/03/01 - Uwe - Fixes and improvements to TMultiPolygon
       <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
       <li>08/01/01 - Egg - Compatibility fix (TGLLineNodes change),
@@ -30,7 +32,7 @@ unit GLMultiPolygon;
 interface
 
 uses
-   Classes, Contnrs, OpenGL12, Spline, Geometry, VectorLists,
+   Classes, OpenGL12, Spline, Geometry, VectorLists, PersistentClasses,
    GLScene, GLObjects, GLMisc, GLTexture;
 
 type
@@ -108,17 +110,20 @@ type
          function Add: TGLContour;
          function FindItemID(ID: Integer): TGLContour;
          property Items[index : Integer] : TGLContour read GetItems write SetItems; default;
-  end;
+   end;
 
-  TPolygonList = class (TObjectList)
-  private
-    FAktList: TAffineVectorList;
-    function GetList(I: Integer): TAffineVectorList;
-  public
-    procedure Add;
-    property AktList:TAffineVectorList read FAktList;
-    property List[I:Integer]:TAffineVectorList read GetList;
-  end;
+   // TPolygonList
+   //
+   TPolygonList = class (TPersistentObjectList)
+      private
+         FAktList: TAffineVectorList;
+         function GetList(I: Integer): TAffineVectorList;
+
+      public
+         procedure Add;
+         property AktList:TAffineVectorList read FAktList;
+         property List[I:Integer]:TAffineVectorList read GetList;
+   end;
 
    // TMultiPolygonBase
    //
