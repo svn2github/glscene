@@ -211,6 +211,8 @@ contains
   GLTrail in '..\Source\GLTrail.pas',
   GLScriptBase in '..\Source\GLScriptBase.pas',
   GLFileMD5 in '..\Source\FileFormats\GLFileMD5.pas',
+  GLGameMenu in '..\Source\GLGameMenu.pas',
+  PictureRegisteredFormats in '..\Source\Base\PictureRegisteredFormats.pas',
   GLSpatialPartitioning in '..\Source\GLSpatialPartitioning.pas',
   VRMLParser in '..\Source\FileFormats\VRMLParser.pas',
   GLFileVRML in '..\Source\FileFormats\GLFileVRML.pas',
