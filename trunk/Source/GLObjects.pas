@@ -298,7 +298,9 @@ type
 
 	// TGLPointParameters
 	//
-	{: Point parameters as in ARB_point_parameters.<p> }
+	{: Point parameters as in ARB_point_parameters.<p>
+      Make sure to read the ARB_point_parameters spec if you want to understand
+      what each parameter does. }
 	TGLPointParameters = class (TGLUpdateAbleObject)
 		private
 			{ Private Declarations }
@@ -335,6 +337,7 @@ type
          property MinSize : Single read FMinSize write SetMinSize stored False;
          property MaxSize : Single read FMaxSize write SetMaxSize stored False;
          property FadeTresholdSize : Single read FFadeTresholdSize write SetFadeTresholdSize stored False;
+         {: Components XYZ are for constant, linear and quadratic attenuation. }
          property DistanceAttenuation : TGLCoordinates read FDistanceAttenuation write SetDistanceAttenuation;
    end;
 
