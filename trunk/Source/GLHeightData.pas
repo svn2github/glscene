@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/01/03 - EG - Fixed ByteHeight normalization scaling
       <li>07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
       <li>03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
       <li>25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
@@ -1085,7 +1086,7 @@ end;
 function THeightData.ByteHeight(x, y : Integer) : Byte;
 begin
    Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
-	Result:=ByteRaster[y][x];
+	Result:=(ByteRaster[y][x]-128) shl 7;
 end;
 
 // SmallIntHeight
