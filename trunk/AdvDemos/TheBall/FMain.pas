@@ -17,7 +17,7 @@ uses
   GLObjects, GLShadowPlane, GLWin32Viewer, GLMisc, GLTexture, GLMirror,
   ODEImport, ODEGL, GLCadencer, ExtCtrls, Jpeg, Geometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
-  GLParticleFX, KeyBoard;
+  GLParticleFX, KeyBoard, GLSound, GLSMBASS;
 
 type
    TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost); 
@@ -50,6 +50,8 @@ type
     PFXFire: TGLPointLightPFXManager;
     ALStart: TGLArrowLine;
     DCMapTransparent: TGLDummyCube;
+    GLSMBASS: TGLSMBASS;
+    SoundLibrary: TGLSoundLibrary;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime,
@@ -84,7 +86,7 @@ type
     isMouseDown : Boolean;
 
     currentLevelIdx : Integer;
-    currentLevel : TList;
+    currentLevelStrucs : TTheBallStructures;
     currentLevelName : String;
     gameStatus : TGameStatus;
 
@@ -118,7 +120,7 @@ const
 
 procedure TMain.FormCreate(Sender: TObject);
 begin
-   currentLevel:=TList.Create;
+   currentLevelStrucs:=TTheBallStructures.Create;
 
    // create world
    world:=dWorldCreate;
@@ -127,7 +129,7 @@ begin
 
    // initialize world
    dWorldSetGravity(world, 0, 0, 0);
-   dWorldSetCFM(world, 1e-5);
+   dWorldSetCFM(world, 1e-4);
    dWorldSetERP(world, 0.3);
 
    planeGeom:=dCreateGeomTransform(space);
@@ -154,20 +156,20 @@ begin
    dSpaceDestroy(space);
    dWorldDestroy(world);
 
-   currentLevel.Free;
+   currentLevelStrucs.Free;
 end;
 
 procedure TMain.ClearCurrentLevel;
 var
    i : Integer;
 begin
-   for i:=0 to currentLevel.Count-1 do begin
-      with TTheBallStructure(currentLevel[i]) do begin
+   for i:=0 to currentLevelStrucs.Count-1 do begin
+      with currentLevelStrucs[i] do begin
          Release;
          Free;
       end;
    end;
-   currentLevel.Clear;
+   currentLevelStrucs.Clear;
 end;
 
 procedure TMain.LoadLevel(const fileName : String);
@@ -180,11 +182,11 @@ begin
    RandSeed:=0;
    levelWidth:=10;
    levelDepth:=10;
-   ParseTheBallMap(LoadStringFromFile(fileName), currentLevel, currentLevelName);
+   ParseTheBallMap(LoadStringFromFile(fileName), currentLevelStrucs, currentLevelName);
    pt.deltaTime:=0;
    pt.newTime:=0;
-   for i:=0 to currentLevel.Count-1 do begin
-      with TTheBallStructure(currentLevel[i]) do begin
+   for i:=0 to currentLevelStrucs.Count-1 do begin
+      with TTheBallStructure(currentLevelStrucs[i]) do begin
          Instantiate;
          Progress(pt);
       end;
@@ -215,7 +217,7 @@ begin
       ALStart.Position.AsAffineVector:=sp.Position;
       ALStart.Move(1);
    end;
-   DCBallAbsolute.Position.AsAffineVector:=sp.Position;
+   DCBallAbsolute.Position.AsAffineVector:=SPHBall.AbsolutePosition;
    Camera.TargetObject:=DCTable;
    HUDText.Visible:=True;
    HUDText.Text:='Level '+IntToStr(currentLevelIdx)+#13#10#13#10+currentLevelName;
@@ -273,6 +275,13 @@ begin
    Camera.Position.AsVector:=cCameraPos;
    SPHBall.Visible:=True;
    spawnTime:=Now;
+
+   with GetOrCreateSoundEmitter(Camera) do begin
+      Source.SoundLibrary:=SoundLibrary;
+      Source.SoundName:='thump1.wav';
+      Playing:=True;
+   end;
+
    gameStatus:=gsPlaying;
 end;
 
@@ -281,9 +290,9 @@ var
    i : Integer;
 begin
    Result:=nil;
-   for i:=0 to currentLevel.Count-1 do begin
-      if TObject(currentLevel[i]).InheritsFrom(aSpecial) then begin
-         Result:=TTheBallStructure(currentLevel[i]);
+   for i:=0 to currentLevelStrucs.Count-1 do begin
+      if currentLevelStrucs[i].InheritsFrom(aSpecial) then begin
+         Result:=currentLevelStrucs[i];
          Break;
       end;
    end;
@@ -298,6 +307,11 @@ begin
       HUDText.Text:='Level won!';
       HUDText2.Text:='Level won!';
       HUDText.Visible:=True;
+      with GetOrCreateSoundEmitter(Camera) do begin
+         Source.SoundLibrary:=SoundLibrary;
+         Source.SoundName:='applause.wav';
+         Playing:=True;
+      end;
       gameStatus:=gsLevelWon;
    end;
 end;
@@ -391,9 +405,9 @@ begin
       if isMouseDown then begin
          GetCursorPos(mp);
          d:=0.02/deltaTime;
-         dmx:=ClampValue(mouseDownX-mp.X, -d, d);
+         dmx:=ClampValue((mouseDownX-mp.X), -d, d);
          mouseDownX:=mouseDownX-dmx;
-         dmy:=ClampValue(mp.Y-mouseDownY, -d, d);
+         dmy:=ClampValue((mp.Y-mouseDownY), -d, d);
          mouseDownY:=mouseDownY+dmy;
       end else begin
          if IsKeyDown(VK_DOWN) then dmy:=1
@@ -404,8 +418,8 @@ begin
          else dmx:=0;
       end;
 
-      tablePitch:=ClampValue(tablePitch+dmx*deltaTime*30, -15, 15);
-      tableRoll:=ClampValue(tableRoll+dmy*deltaTime*30, -15, 15);
+      tablePitch:=ClampValue(tablePitch+dmx*deltaTime*10, -15, 15);
+      tableRoll:=ClampValue(tableRoll+dmy*deltaTime*10, -15, 15);
 
       // update ball position
       PositionSceneObject(DCBallAbsolute, ballGeom);
@@ -441,8 +455,8 @@ begin
    // update map strucs
    pt.deltaTime:=deltaTime;
    pt.newTime:=newTime;
-   for i:=0 to currentLevel.Count-1 do begin
-      with TTheBallStructure(currentLevel[i]) do begin
+   for i:=0 to currentLevelStrucs.Count-1 do begin
+      with currentLevelStrucs[i] do begin
          Progress(pt);
       end;
    end;

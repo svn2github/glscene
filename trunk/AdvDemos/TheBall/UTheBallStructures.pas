@@ -13,11 +13,28 @@ uses Classes, GLScene, GLMisc, GLObjects, Geometry, ODEImport, GLBitmapFont;
 
 type
 
+   TTheBallStructure = class;
+
+   // TTheBallStructures
+   //
+   TTheBallStructures = class (TList)
+	   protected
+	      { Protected Declarations }
+         function GetItems(index : Integer) : TTheBallStructure;
+
+	   public
+	      { Public Declarations }
+         property Items[index : Integer] : TTheBallStructure read GetItems; default;
+
+         function StructureByName(const aName : String) : TTheBallStructure;
+   end;
+
 	// TTheBallStructure
 	//
 	TTheBallStructure = class (TPersistent)
 	   private
 	      { Private Declarations }
+         FOwner : TTheBallStructures;
          FName : String;
 
 	   protected
@@ -26,15 +43,17 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor Create; virtual;
+	      constructor Create(aOwner : TTheBallStructures); virtual;
          destructor Destroy; override;
 
+         property Owner : TTheBallStructures read FOwner;
          property Name : String read FName;
 
          procedure Parse(const vals : TStringList); dynamic;
          procedure Instantiate; dynamic; abstract;
          procedure Release; dynamic; abstract;
          procedure Progress(const progressTime : TProgressTimes); virtual;
+         procedure SetTransparency(alpha : Single); dynamic;
 	end;
 
    TTheBallStructureClass = class of TTheBallStructure;
@@ -56,7 +75,7 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor Create; override;
+	      constructor Create(aOwner : TTheBallStructures); override;
          destructor Destroy; override;
 
          procedure Parse(const vals : TStringList); override;
@@ -77,7 +96,7 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor Create; override;
+	      constructor Create(aOwner : TTheBallStructures); override;
          destructor Destroy; override;
 
          procedure Parse(const vals : TStringList); override;
@@ -138,6 +157,23 @@ type
          procedure Progress(const progressTime : TProgressTimes); override;
    end;
 
+   // TTBTrigger
+	//
+	TTBTrigger = class (TTBCubeArea)
+	   private
+	      { Private Declarations }
+         FActionStartTime : Double;
+         FDisk : TGLDisk;
+         FTarget, FAction, FSound : String;
+
+	   public
+	      { Public Declarations }
+         procedure Parse(const vals : TStringList); override;
+         procedure Instantiate; override;
+         procedure Release; override;
+         procedure Progress(const progressTime : TProgressTimes); override;
+   end;
+
 	// TTBBlock
 	//
 	TTBBlock = class (TTBCubeArea)
@@ -151,7 +187,7 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor Create; override;
+	      constructor Create(aOwner : TTheBallStructures); override;
          destructor Destroy; override;
 
          procedure Parse(const vals : TStringList); override;
@@ -171,9 +207,17 @@ type
 	// TTBTransparentBlock
 	//
 	TTBTransparentBlock = class (TTBBlock)
+	   private
+	      { Private Declarations }
+         FInitialAlpha : Single;
+
 	   protected
 	      { Protected Declarations }
          function ParentObject : TGLBaseSceneObject; override;
+         
+	   public
+	      { Public Declarations }
+         procedure SetTransparency(alpha : Single); override;
 	end;
 
 	// TTBGlassBlock
@@ -184,7 +228,7 @@ type
          procedure Instantiate; override;
 	end;
 
-procedure ParseTheBallMap(const mapData : String; strucList : TList;
+procedure ParseTheBallMap(const mapData : String; strucList : TTheBallStructures;
                           var mapTitle : String);
 
 // ------------------------------------------------------------------
@@ -195,11 +239,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, FMain, GLTexture, ODEGL, GLParticleFX;
+uses SysUtils, FMain, GLTexture, ODEGL, GLParticleFX, GLSound;
 
 // ParseTheBallMap
 //
-procedure ParseTheBallMap(const mapData : String; strucList : TList;
+procedure ParseTheBallMap(const mapData : String; strucList : TTheBallStructures;
                           var mapTitle : String);
 var
    i, p : Integer;
@@ -220,7 +264,7 @@ begin
          if CompareText(className, 'TTBTitle')=0 then
             mapTitle:=Trim(Copy(line, p+1, MaxInt))
          else begin
-            struc:=TTheBallStructureClass(FindClass(className)).Create;
+            struc:=TTheBallStructureClass(FindClass(className)).Create(strucList);
             vals.CommaText:=Trim(Copy(line, p+1, MaxInt));
             struc.Parse(vals);
             strucList.Add(struc);
@@ -233,14 +277,40 @@ begin
 end;
 
 // ------------------
+// ------------------ TTheBallStructures ------------------
+// ------------------
+
+// GetItems
+//
+function TTheBallStructures.GetItems(index : Integer) : TTheBallStructure;
+begin
+   Result:=TTheBallStructure(inherited Items[index]);
+end;
+
+// StructureByName
+//
+function TTheBallStructures.StructureByName(const aName : String) : TTheBallStructure;
+var
+   i : Integer;
+begin
+   Result:=nil;
+   for i:=0 to Count-1 do
+      if CompareText(aName, Items[i].Name)=0 then begin
+         Result:=Items[i];
+         Break;
+      end;
+end;
+
+// ------------------
 // ------------------ TTheBallStructure ------------------
 // ------------------
 
 // Create
 //
-constructor TTheBallStructure.Create;
+constructor TTheBallStructure.Create(aOwner : TTheBallStructures);
 begin
 	inherited Create;
+   FOwner:=aOwner;
 end;
 
 // Destroy
@@ -271,15 +341,22 @@ begin
    // nothing
 end;
 
+// SetTransparency
+//
+procedure TTheBallStructure.SetTransparency(alpha : Single);
+begin
+   // nothing
+end;
+
 // ------------------
 // ------------------ TTBTableText ------------------
 // ------------------
 
 // Create
 //
-constructor TTBTableText.Create;
+constructor TTBTableText.Create(aOwner : TTheBallStructures);
 begin
-	inherited Create;
+	inherited;
 end;
 
 // Destroy
@@ -334,9 +411,9 @@ end;
 
 // Create
 //
-constructor TTBCubeArea.Create;
+constructor TTBCubeArea.Create(aOwner : TTheBallStructures);
 begin
-	inherited Create;
+	inherited;
 end;
 
 // Destroy
@@ -532,14 +609,87 @@ begin
 end;
 
 // ------------------
+// ------------------ TTBTrigger ------------------
+// ------------------
+
+// Parse
+//
+procedure TTBTrigger.Parse(const vals : TStringList);
+begin
+   inherited;
+   FTarget:=vals.Values['Target'];
+   FAction:=vals.Values['Action'];
+   FSound:=vals.Values['Sound'];
+end;
+
+// Instantiate
+//
+procedure TTBTrigger.Instantiate;
+begin
+   FActionStartTime:=-1;
+   FDisk:=TGLDisk(ParentObject.AddNewChild(TGLDisk));
+   FDisk.Direction.AsVector:=YHmgVector;
+   FDisk.Position.AsAffineVector:=Position;
+   FDisk.Loops:=1;
+   FDisk.Slices:=6;
+   FDisk.OuterRadius:=VectorLength(FSize)*0.4;
+   FDisk.Material.MaterialLibrary:=Main.MaterialLibrary;
+   FDisk.Material.LibMaterialName:='wood';
+end;
+
+// Release
+//
+procedure TTBTrigger.Release;
+begin
+   FreeAndNil(FDisk);
+end;
+
+// Progress
+//
+procedure TTBTrigger.Progress(const progressTime : TProgressTimes);
+var
+   trg : TTheBallStructure;
+   d : Single;
+begin
+   if FActionStartTime=-1 then begin
+      if FDisk.DistanceTo(Main.DCBallAbsolute)<VectorLength(FSize)*0.7 then begin
+         FActionStartTime:=progressTime.newTime;
+         FDisk.Position.Y:=FDisk.Position.Y-0.05;
+         if FSound<>'' then begin
+            with GetOrCreateSoundEmitter(FDisk) do begin
+               Source.SoundLibrary:=Main.SoundLibrary;
+               Source.SoundName:=FSound;
+               Playing:=True;
+            end;
+         end;
+      end;
+   end;
+   if FActionStartTime>=0 then begin
+      trg:=Owner.StructureByName(FTarget);
+      if Assigned(trg) then begin
+         if CompareText(FAction, 'Vanish')=0 then begin
+            d:=FActionStartTime+3-progressTime.newTime;
+            if (d>=0) and (d<=3) then
+               trg.SetTransparency(Sqr(d)*0.5)
+            else begin
+               Owner.Remove(trg);
+               trg.Release;
+               FActionStartTime:=-2;
+            end;
+         end;
+      end;
+   end;
+end;
+
+// ------------------
 // ------------------ TTBBlock ------------------
 // ------------------
 
 // Create
 //
-constructor TTBBlock.Create;
+constructor TTBBlock.Create(aOwner : TTheBallStructures);
 begin
-	inherited Create;
+	inherited;
 end;
 
 // Destroy
@@ -618,6 +768,23 @@ begin
    Result:=Main.DCMapTransparent;
 end;
 
+// SetTransparency
+//
+procedure TTBTransparentBlock.SetTransparency(alpha : Single);
+var
+   n : String;
+begin
+   n:=FBlock.Material.LibMaterialName;
+   if n<>'' then begin
+      // clone material locally
+      FBlock.Material:=Main.MaterialLibrary.Materials.GetLibMaterialByName(n).Material;
+      FBlock.Material.FrontProperties.Emission.Color:=clrGray50;
+   end;
+   if FInitialAlpha=0 then
+      FInitialAlpha:=FBlock.Material.FrontProperties.Diffuse.Alpha;
+   FBlock.Material.FrontProperties.Diffuse.Alpha:=alpha*FInitialAlpha;
+end;
+
 // ------------------
 // ------------------ TTBGlassBlock ------------------
 // ------------------
@@ -643,7 +810,7 @@ initialization
 
 	// class registrations
    RegisterClasses([TTBMarbleBlock, TTBSpawnPoint, TTBBallExit, TTBSpikes,
-                    TTBFire, TTBGlassBlock, TTBTableText]);
+                    TTBFire, TTBGlassBlock, TTBTableText, TTBTrigger]);
 
 end.
 
