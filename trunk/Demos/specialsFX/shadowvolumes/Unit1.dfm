@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 192
-  Top = 109
+  Left = 70
+  Top = 58
   Width = 703
   Height = 485
   Caption = 'Form1'
@@ -202,6 +202,12 @@ object Form1: TForm1
         YTiles = 9
         Style = [psTileTexture]
       end
+      object GLFreeForm: TGLFreeForm
+        Direction.Coordinates = {000000000000803F0000000000000000}
+        Scale.Coordinates = {295C8F3D295C8F3D295C8F3D00000000}
+        Up.Coordinates = {0000000000000000000080BF00000000}
+        AutoCentering = [macCenterX, macCenterY, macCenterZ]
+      end
     end
     object DCLight2: TGLDummyCube
       Direction.Coordinates = {00000000431DAF3EB28F703F00000000}
@@ -243,6 +249,9 @@ object Form1: TForm1
           Radius = 0.150000005960464
         end
       end
+    end
+    object DCSpheres: TGLDummyCube
+      CubeSize = 1
     end
     object GLCamera: TGLCamera
       DepthOfView = 1.00000001504747E30

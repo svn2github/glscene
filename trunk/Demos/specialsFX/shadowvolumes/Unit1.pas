@@ -1,4 +1,6 @@
 {
+   This demo is under construction...
+
    246
 }
 unit Unit1;
@@ -8,7 +10,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCadencer, GLMisc, GLWin32Viewer, GLShadowVolume,
-  ExtCtrls, StdCtrls;
+  ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD;
 
 type
   TForm1 = class(TForm)
@@ -42,6 +44,8 @@ type
     GLLightSource3: TGLLightSource;
     GLSphere3: TGLSphere;
     CBRedLight: TCheckBox;
+    DCSpheres: TGLDummyCube;
+    GLFreeForm: TGLFreeForm;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -79,19 +83,24 @@ var
    x, y, z : Integer;
    sphere : TGLSphere;
 begin
+   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
+
    // Dynamically construct an array of spheres, and make them shadow casters
    // Note that as the spheres are children of the shadowvolume component,
    // they are thus also shadow receivers. If they were created as child of
    // another object (not under the shadow volume), they would not receive
    // shadows (which can sometimes be interesting).
-   for x:=-cNb to cNb do
+{   for x:=-cNb to cNb do
       for y:=-cNb to cNb do
          for z:=-cNb to cNb do begin
-            sphere:=TGLSphere(GLShadowVolume.AddNewChild(TGLSphere));
+            sphere:=TGLSphere(DCSpheres.AddNewChild(TGLSphere));
             sphere.Position.SetPoint(x*cSpacing, y*cSpacing, z*cSpacing);
             sphere.Radius:=cRadius;
             GLShadowVolume.Casters.AddCaster(sphere);
          end;
+   DCSpheres.MoveTo(GLShadowVolume);}
+   GLFreeForm.LoadFromFile('trinityrage.smd');
+   GLShadowVolume.Casters.AddCaster(GLFreeForm);
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,

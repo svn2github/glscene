@@ -2,7 +2,8 @@ program shadowvolumes;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1};
+  Unit1 in 'Unit1.pas' {Form1},
+  GLSilhouette in '..\..\..\Source\GLSilhouette.pas';
 
 {$R *.res}
 
