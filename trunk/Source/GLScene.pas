@@ -2734,13 +2734,14 @@ var
    i : Integer;
    aabb : TAABB;
 begin
-   SetAABB(Result, AxisAlignedDimensions);
+   SetAABB(Result, AxisAlignedDimensionsUnscaled);
    //not tested for child objects
    for i:=0 to FChildren.Count-1 do begin
-      aabb:=TGLBaseSceneObject(FChildren[i]).AxisAlignedBoundingBox;
+      aabb:=TGLBaseSceneObject(FChildren[i]).AxisAlignedBoundingBoxUnscaled;
       AABBTransform(aabb, TGLBaseSceneObject(FChildren[i]).Matrix);
       AddAABB(Result, aabb);
    end;
+   AABBScale(Result,Scale.AsAffineVector);
 end;
 
 // AxisAlignedBoundingBoxUnscaled
