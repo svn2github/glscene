@@ -219,10 +219,18 @@ function TDMDXPExpertModule.FPCLocateFile(const fileName : String) : String;
    var
       sr : TSearchRec;
    begin
-      if FindFirst(directory+'\'+fileName, faAnyFile, sr)=0 then
-         Result:=directory+'\'+sr.Name
-      else Result:='';
-      FindClose(sr);
+      if directory<>'' then begin
+         if directory[Length(directory)]='\' then begin
+            if FindFirst(directory+fileName, faAnyFile, sr)=0 then
+               Result:=directory+sr.Name
+            else Result:='';
+         end else begin
+            if FindFirst(directory+'\'+fileName, faAnyFile, sr)=0 then
+               Result:=directory+'\'+sr.Name
+            else Result:='';
+         end;
+         FindClose(sr);
+      end else Result:='';
    end;
 
 var
@@ -322,6 +330,7 @@ begin
       cfgFile.CommaText:=configOptions;
       cfgFile.Insert(0, '# DXP');
       cfgFile.Insert(1, '-Sd');
+//      cfgFile.Insert(1, '-Mobjfpc');
       cfgFile.Insert(2, '-l');
       Result:= vFPC_BinaryPath+'\fpc.exe '+extraOptions
               +' -Fe'+FPCErrorFile;
