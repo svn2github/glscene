@@ -24,11 +24,19 @@ uses Classes;
 
 type
 
+   PByte = ^Byte;
+
+   TIntegerArray = array [0..MaxInt shr 3] of Integer;
+   PIntegerArray = ^TIntegerArray;
+   PInteger = ^Integer;
+
    TSmallIntArray = array [0..MaxInt shr 2] of SmallInt;
    PSmallIntArray = ^TSmallIntArray;
+   PSmallInt = ^SmallInt;
 
    TShortIntArray = array [0..MaxInt shr 2] of ShortInt;
    PShortIntArray = ^TShortIntArray;
+   PShortInt = ^ShortInt;
 
    // THeightTileInfo
    //
