@@ -2543,14 +2543,8 @@ end;
 // AbsoluteToLocal (hmg)
 //
 function TGLBaseSceneObject.AbsoluteToLocal(const v : TVector) : TVector;
-var
-   locV : TVector;
 begin
-   locV[0]:=v[0];
-   locV[1]:=v[1];
-   locV[2]:=v[2];
-   locV[3]:=1;
-   Result:=VectorTransform(locV, InvAbsoluteMatrixAsAddress^);
+   Result:=VectorTransform(v, InvAbsoluteMatrixAsAddress^);
 end;
 
 // AbsoluteToLocal (affine)
@@ -3588,6 +3582,7 @@ begin
                ResetGLPolygonMode;
                ResetGLMaterialColors;
                ResetGLCurrentTexture;
+               ResetGLFrontFace;
             end;
          end;
       end else begin
