@@ -766,8 +766,8 @@ type
       <li>tfLuminanceAlpha : 16 bits Luminance and Alpha channel (8, 8)
       <li>tfIntensity : 8 bits Intensity only
       </ul><br>The actual representation may differ, f.i. old 16bits boards
-      will convert everything to 16bit formats, GeForce boards don't have
-      a 24 bits format and will convert to 32 bits, etc. }
+      may convert everything to 16bit formats, GeForce boards don't have
+      a 24 bits format internally and will convert to 32 bits, etc. }
    TGLTextureFormat = (tfDefault, tfRGB, tfRGBA, tfRGB16, tfRGBA16, tfAlpha,
                        tfLuminance, tfLuminanceAlpha, tfIntensity);
 
@@ -3170,8 +3170,8 @@ end;
 function TGLTexture.OpenGLTextureFormat : Integer;
 const
    cTextureFormatToOpenGL : array [tfRGB..tfIntensity] of Integer =
-      (GL_RGB, GL_RGBA, GL_RGB5, GL_RGBA4, GL_ALPHA, GL_LUMINANCE,
-       GL_LUMINANCE_ALPHA, GL_INTENSITY);
+      (GL_RGB8, GL_RGBA8, GL_RGB5, GL_RGBA4, GL_ALPHA8, GL_LUMINANCE8,
+       GL_LUMINANCE8_ALPHA8, GL_INTENSITY8);
    cCompressedTextureFormatToOpenGL : array [tfRGB..tfIntensity] of Integer =
       (GL_COMPRESSED_RGB_ARB, GL_COMPRESSED_RGBA_ARB, GL_COMPRESSED_RGB_ARB,
        GL_COMPRESSED_RGBA_ARB, GL_COMPRESSED_ALPHA_ARB, GL_COMPRESSED_LUMINANCE_ARB,
