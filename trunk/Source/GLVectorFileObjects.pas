@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>29/01/04 - SG - Fix for ApplyCurrentSkeletonFrame with multiple bones per vertex. 
+                          Mesh reassembles correctly now (tested up to 4 bones per vertex).
       <li>03/12/03 - SG - Added TSkeletonCollider and TSkeletonColliderList
                           Added Colliders (TSkeletonColliderList) to TSkeleton
       <li>24/10/03 - SG - Various fixes for multiple bones per vertex
@@ -4154,6 +4156,10 @@ begin
          Vertices.List[i]:=NullVector;
          Normals.List[i]:=NullVector;
          for j:=0 to BonesPerVertex-1 do begin
+            with TBaseMeshObject(FBoneMatrixInvertedMeshes[j]) do begin
+               refVertices:=Vertices;
+               refNormals:=Normals;
+            end;
             tempvert:=NullVector;
             tempnorm:=NullVector;
             if VerticesBonesWeights[i][j].Weight<>0 then begin
