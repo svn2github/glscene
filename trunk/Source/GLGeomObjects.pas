@@ -650,6 +650,7 @@ var
   a1, a2 : single;
   c1, c2 : TVector3f;
   cosa1, cosa2, sina1, sina2 : single;
+  HalfHeight : single;
   ShadowTopRadius : single;
 begin
   Connectivity := TConnectivity.Create(true);
@@ -663,8 +664,11 @@ begin
 
   a1 := 0;
 
-  MakeVector(c1, 0, -FHeight/2, 0);
-  MakeVector(c2, 0,  FHeight/2, 0);
+  // Is this a speed improvement or just a waste of code?
+  HalfHeight := FHeight/2;
+
+  MakeVector(c1, 0, -HalfHeight, 0);
+  MakeVector(c2, 0,  HalfHeight, 0);
 
   ShadowTopRadius  := GetTopRadius;
 
@@ -678,12 +682,15 @@ begin
 
     // Generate the four "corners";
     // Bottom corners
-    MakeVector(p[0], FBottomRadius*sina2,-FHeight/2, FBottomRadius*cosa2);
-    MakeVector(p[1], FBottomRadius*sina1,-FHeight/2, FBottomRadius*cosa1);
+    MakeVector(p[0], FBottomRadius*sina2,-HalfHeight, FBottomRadius*cosa2);
+    MakeVector(p[1], FBottomRadius*sina1,-HalfHeight, FBottomRadius*cosa1);
 
     // Top corners
-    MakeVector(p[2], ShadowTopRadius*sina1, FHeight/2, ShadowTopRadius*cosa1);
-    MakeVector(p[3], ShadowTopRadius*sina2, FHeight/2, ShadowTopRadius*cosa2);//}
+    MakeVector(p[2], ShadowTopRadius*sina1, HalfHeight, ShadowTopRadius*cosa1);
+    MakeVector(p[3], ShadowTopRadius*sina2, HalfHeight, ShadowTopRadius*cosa2);//}
+
+    // This should be optimized to use AddIndexedFace, because this method
+    // searches for each of the vertices and adds them or re-uses them.
 
     // Skin
     connectivity.AddFace(p[2], p[1], p[0]);
