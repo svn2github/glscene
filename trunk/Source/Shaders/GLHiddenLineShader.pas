@@ -72,7 +72,7 @@ type
       procedure SetShadeModel(const val : TGLShadeModel);
 
     protected
-      procedure DoApply(var rci : TRenderContextInfo); override;
+      procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
       function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
 
     public
@@ -232,7 +232,7 @@ end;
 
 // DoApply
 //
-procedure TGLHiddenLineShader.DoApply(var rci: TRenderContextInfo);
+procedure TGLHiddenLineShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
 begin
    FPassCount:=1;
 

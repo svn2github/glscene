@@ -41,7 +41,7 @@ type
 
       protected
          { Protected Declarations }
-         procedure DoApply(var rci : TRenderContextInfo); override;
+         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
          function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
 
       public
@@ -99,7 +99,7 @@ end;
 
 // DoApply
 //
-procedure TGLOutlineShader.DoApply(var rci: TRenderContextInfo);
+procedure TGLOutlineShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
 begin
   // We first draw the object as usual in the first pass. This allows objects
   // with color alpha < 1 to be rendered correctly with outline.

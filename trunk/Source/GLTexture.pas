@@ -753,7 +753,7 @@ type
          procedure DoInitialize; dynamic;
          {: Request to apply the shader.<p>
             Always followed by a DoUnApply when the shader is no longer needed. }
-         procedure DoApply(var rci : TRenderContextInfo); virtual; abstract;
+         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); virtual; abstract;
          {: Request to un-apply the shader.<p>
             Subclasses can assume the shader has been applied previously.<br>
             Return True to request a multipass. }
@@ -786,7 +786,7 @@ type
          procedure EndUpdate;
 
          {: Apply shader to OpenGL state machine.}
-         procedure Apply(var rci : TRenderContextInfo);
+         procedure Apply(var rci : TRenderContextInfo; Sender : TObject);
          {: UnApply shader.<p>
             When returning True, the caller is expected to perform a multipass
             rendering by re-rendering then invoking UnApply again, until a
@@ -2812,13 +2812,13 @@ end;
 
 // Apply
 //
-procedure TGLShader.Apply(var rci : TRenderContextInfo);
+procedure TGLShader.Apply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    Assert(not FShaderActive, 'Unbalanced shader application.');
    if Enabled then begin
       if FVirtualHandle.Handle=0 then
          InitializeShader;
-      DoApply(rci);
+      DoApply(rci, Sender);
    end;
    FShaderActive:=True;
 end;
@@ -4107,9 +4107,9 @@ begin
    xglBeginUpdate;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
-         ssHighLevel : Shader.Apply(rci);
+         ssHighLevel : Shader.Apply(rci, Self);
          ssReplace : begin
-            Shader.Apply(rci);
+            Shader.Apply(rci, Self);
             Exit;
          end;
       end;
@@ -4147,7 +4147,7 @@ begin
    end;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
-         ssLowLevel : Shader.Apply(rci);
+         ssLowLevel : Shader.Apply(rci, Self);
       end;
    end;
    xglEndUpdate;

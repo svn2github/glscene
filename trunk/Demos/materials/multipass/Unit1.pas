@@ -67,7 +67,7 @@ type
          BackgroundColor, LineColor : TColorVector;
          PassCount : Integer;
       public
-         procedure DoApply(var rci : TRenderContextInfo); override;
+         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
          function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
    end;
 
@@ -78,11 +78,11 @@ type
          OutlineWidth, Oldlinewidth : Single;
          PassCount : Integer;
       public
-         procedure DoApply(var rci : TRenderContextInfo); override;
+         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
          function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
    end;
 
-procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo);
+procedure THiddenLineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    // new object getting rendered, 1st pass
    PassCount:=1;
@@ -91,7 +91,7 @@ begin
    glPushAttrib(GL_ENABLE_BIT);
    // disable lighting, this is a solid fill
    glDisable(GL_LIGHTING);
-   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+   rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    // use background color
    glColor3fv(@BackgroundColor);
    // enable and adjust polygon offset
@@ -107,7 +107,7 @@ begin
          PassCount:=2;
 
          // switch to wireframe and its color
-         SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+         rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
          glColor3fv(@LineColor);
          // disable polygon offset
          glDisable(GL_POLYGON_OFFSET_LINE);
@@ -128,7 +128,7 @@ begin
    end;
 end;
 
-procedure TOutLineShader.DoApply(var rci : TRenderContextInfo);
+procedure TOutLineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 begin
    PassCount:=1;
    glPushAttrib(GL_ENABLE_BIT);

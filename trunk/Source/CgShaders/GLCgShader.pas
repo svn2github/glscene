@@ -252,7 +252,7 @@ type
 
     procedure DoInitialize; override;
     procedure DoFinalize; override;
-    procedure DoApply(var rci : TRenderContextInfo); override;
+    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
     function  DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
 
   public
@@ -940,7 +940,7 @@ end;
 
 // DoApply
 //
-procedure TCustomCgShader.DoApply(var rci : TRenderContextInfo);
+procedure TCustomCgShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 begin
   if (csDesigning in ComponentState) and (not FDesignEnable) then
     Exit;

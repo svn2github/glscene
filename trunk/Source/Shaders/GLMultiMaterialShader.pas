@@ -23,7 +23,7 @@ type
     protected
       procedure SetDesignTimeEnabled(const val : Boolean);
       procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
-      procedure DoApply(var rci : TRenderContextInfo); override;
+      procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
       function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
     public
       constructor Create(aOwner : TComponent); override;
@@ -64,7 +64,7 @@ end;
 
 // DoApply
 //
-procedure TGLMultiMaterialShader.DoApply(var rci: TRenderContextInfo);
+procedure TGLMultiMaterialShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
 begin
   if not Assigned(FMaterialLibrary) then exit;
 

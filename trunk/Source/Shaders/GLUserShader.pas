@@ -27,7 +27,7 @@ type
       FOnDoApply : TOnDoApplyEvent;
       FOnDoUnApply : TOnDoUnApplyEvent;
     protected
-      procedure DoApply(var rci : TRenderContextInfo); override;
+      procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
       function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
     published
       property OnDoApply : TOnDoApplyEvent read FOnDoApply write FOnDoApply;
@@ -56,7 +56,7 @@ end;
 
 // DoApply
 //
-procedure TGLUserShader.DoApply(var rci: TRenderContextInfo);
+procedure TGLUserShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
 begin
   FPass:=1;
   if Assigned(FOnDoApply) and (not (csDesigning in ComponentState)) then

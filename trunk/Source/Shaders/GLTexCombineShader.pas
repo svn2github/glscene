@@ -45,7 +45,7 @@ type
          procedure NotifyLibMaterial4Destruction;
 
          procedure DoInitialize; override;
-         procedure DoApply(var rci : TRenderContextInfo); override;
+         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
          function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
          procedure DoFinalize; override;
 
@@ -211,7 +211,7 @@ end;
 
 // DoApply
 //
-procedure TGLTexCombineShader.DoApply(var rci : TRenderContextInfo);
+procedure TGLTexCombineShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
 var
    n, units : Integer;
 begin
