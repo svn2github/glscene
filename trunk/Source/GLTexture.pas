@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/06/03 - EG - cubemap images can now be saved/restored as a whole
       <li>05/06/03 - EG - Assign fixes (Andrzej Kaluza)
       <li>23/05/03 - EG - More generic libmaterial registration
       <li>08/12/02 - EG - Added tiaInverseLuminance
@@ -663,7 +664,7 @@ type
 				Each invokation MUST be balanced by a call to EndUpdate. }
 			procedure BeginUpdate;
 			procedure EndUpdate;
-         
+
 			function Edit : Boolean; override;
 			procedure SaveToFile(const fileName : String); override;
 			procedure LoadFromFile(const fileName : String); override;
@@ -672,6 +673,15 @@ type
 
          {: Indexed access to the cube map's sub pictures. }
          property Picture[index : TGLCubeMapTarget] : TGLPicture read GetPicture write SetPicture;
+
+		published
+         { Public Declarations }
+         property PicturePX : TGLPicture index cmtPX read GetPicture write SetPicture;
+         property PictureNX : TGLPicture index cmtNX read GetPicture write SetPicture;
+         property PicturePY : TGLPicture index cmtPY read GetPicture write SetPicture;
+         property PictureNY : TGLPicture index cmtNY read GetPicture write SetPicture;
+         property PicturePZ : TGLPicture index cmtPZ read GetPicture write SetPicture;
+         property PictureNZ : TGLPicture index cmtNZ read GetPicture write SetPicture;
 	end;
 
    TGLLibMaterial = Class;
@@ -2402,15 +2412,49 @@ end;
 // SaveToFile
 //
 procedure TGLCubeMapImage.SaveToFile(const fileName : String);
+var
+   fs : TFileStream;
+   bmp : TBitmap;
+   i : TGLCubeMapTarget;
+   version : Word;
 begin
-   InformationDlg('Not supported... yet');
+   fs:=TFileStream.Create(fileName, fmCreate);
+   bmp:=TBitmap.Create;
+   try
+      version:=$0100;
+      fs.Write(version, 2);
+      for i:=Low(FPicture) to High(FPicture) do begin
+         bmp.Assign(FPicture[i].Graphic);
+         bmp.SaveToStream(fs);
+      end;
+   finally
+      bmp.Free;
+      fs.Free;
+   end;
 end;
 
 // LoadFromFile
 //
 procedure TGLCubeMapImage.LoadFromFile(const fileName : String);
+var
+   fs : TFileStream;
+   bmp : TBitmap;
+   i : TGLCubeMapTarget;
+   version : Word;
 begin
-   InformationDlg('Not supported... yet');
+   fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyWrite);
+   bmp:=TBitmap.Create;
+   try
+      fs.Read(version, 2);
+      Assert(version=$0100);
+      for i:=Low(FPicture) to High(FPicture) do begin
+         bmp.LoadFromStream(fs);
+         FPicture[i].Graphic:=bmp;
+      end;
+   finally
+      bmp.Free;
+      fs.Free;
+   end;
 end;
 
 // FriendlyName
