@@ -99,7 +99,7 @@ type
          {: Builds (smoothed) normals for the vertex list.<p>
             If normalIndices is nil, the method assumes a bijection between
             vertices and normals sets, and when exiting Normals and Vertices
-            list will have the same number of itmes (whatever previously was in
+            list will have the same number of items (whatever previously was in
             the Normals list is ignored/removed).<p>
             If normalIndices is defined, normals will be added to the list and
             their indices will be added to normalIndices. Already defined

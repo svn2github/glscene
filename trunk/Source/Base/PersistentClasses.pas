@@ -9,6 +9,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/08/01 - EG - Big update with addition of Virtual filers
       <li>24/07/01 - EG - D6-related changes
 	   <li>15/03/01 - EG - Creation
 	</ul></font><p>
@@ -20,6 +21,64 @@ interface
 uses Classes, SysUtils;
 
 type
+
+   // TVirtualReader
+   //
+   {: Virtual layer similar to VCL's TReader (but reusable) }
+   TVirtualReader = class
+	   private
+	      { Private Declarations }
+         FStream : TStream;
+
+      public
+	      { Public Declarations }
+         constructor Create(Stream: TStream); virtual;
+
+         property Stream : TStream read FStream;
+
+         procedure Read(var Buf; Count: Longint); virtual; abstract;
+         function NextValue : TValueType; virtual; abstract;
+
+         function ReadInteger : Integer; virtual; abstract;
+         function ReadBoolean : Boolean; virtual; abstract;
+         function ReadString : String; virtual; abstract;
+         function ReadFloat : Extended; virtual; abstract;
+
+         procedure ReadListBegin; virtual; abstract;
+         procedure ReadListEnd; virtual; abstract;
+         function EndOfList : Boolean; virtual; abstract;
+
+         procedure ReadTStrings(aStrings : TStrings);
+   end;
+
+   // TVirtualWriter
+   //
+   {: Virtual layer similar to VCL's TWriter (but reusable) }
+   TVirtualWriter = class
+	   private
+	      { Private Declarations }
+         FStream : TStream;
+
+      public
+	      { Public Declarations }
+         constructor Create(Stream: TStream); virtual;
+
+         property Stream : TStream read FStream;
+
+         procedure Write(const Buf; Count: Longint); virtual; abstract;
+         procedure WriteInteger(anInteger : Integer); virtual; abstract;
+         procedure WriteBoolean(aBoolean : Boolean); virtual; abstract;
+         procedure WriteString(const aString : String); virtual; abstract;
+         procedure WriteFloat(const aFloat : Extended); virtual; abstract;
+
+         procedure WriteListBegin; virtual; abstract;
+         procedure WriteListEnd; virtual; abstract;
+
+         procedure WriteTStrings(const aStrings : TStrings; storeObjects : Boolean = True);
+   end;
+
+   TVirtualReaderClass = class of TVirtualReader;
+   TVirtualWriterClass = class of TVirtualWriter;
 
 	// TPersistentObject
 	//
@@ -40,21 +99,25 @@ type
 	   public
 	      { Public Declarations }
 	      constructor Create; virtual;
+         constructor CreateFromFiler(reader : TVirtualReader);
          destructor Destroy; override;
 
          procedure Assign(source : TPersistent); override;
          function CreateClone : TPersistentObject; dynamic;
 
          class function FileSignature : String; virtual;
-	      procedure WriteToFiler(writer : TWriter); dynamic;
-	      procedure ReadFromFiler(reader : TReader); dynamic;
+         class function FileVirtualWriter : TVirtualWriterClass; virtual;
+         class function FileVirtualReader : TVirtualReaderClass; virtual;
 
-         procedure SaveToStream(stream : TStream); dynamic;
-         procedure LoadFromStream(stream : TStream); dynamic;
-         procedure SaveToFile(const fileName : String); dynamic;
-         procedure LoadFromFile(const fileName : String); dynamic;
-         function SaveToString : String; dynamic;
-         procedure LoadFromString(const data : String); dynamic;
+	      procedure WriteToFiler(writer : TVirtualWriter); dynamic;
+	      procedure ReadFromFiler(reader : TVirtualReader); dynamic;
+
+         procedure SaveToStream(stream : TStream; writerClass : TVirtualWriterClass = nil); dynamic;
+         procedure LoadFromStream(stream : TStream; readerClass : TVirtualReaderClass = nil); dynamic;
+         procedure SaveToFile(const fileName : String; writerClass : TVirtualWriterClass = nil); dynamic;
+         procedure LoadFromFile(const fileName : String; readerClass : TVirtualReaderClass = nil); dynamic;
+         function SaveToString(writerClass : TVirtualWriterClass = nil) : String; dynamic;
+         procedure LoadFromString(const data : String; readerClass : TVirtualReaderClass = nil); dynamic;
 	end;
 
    TPersistentObjectClass = class of TPersistentObject;
@@ -98,9 +161,9 @@ type
 			constructor Create; override;
 			destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
-			procedure ReadFromFilerWithEvent(reader : TReader;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
+			procedure ReadFromFilerWithEvent(reader : TVirtualReader;
 													   afterSenderObjectCreated : TNotifyEvent);
 
 			function Add(const Item: TObject) : Integer;
@@ -140,6 +203,119 @@ type
 			procedure Pack;
 	end;
 
+   // TBinaryReader
+   //
+   {: Wraps a standard TReader. }
+   TBinaryReader = class (TVirtualReader)
+		private
+	      { Private Declarations }
+         FReader : TReader;
+
+		protected
+	      { Protected Declarations }
+
+		public
+	      { Public Declarations }
+         constructor Create(Stream: TStream); override;
+         destructor Destroy; override;
+
+         procedure Read(var Buf; Count: Longint); override;
+         function NextValue : TValueType; override;
+
+         function ReadInteger : Integer; override;
+         function ReadBoolean : Boolean; override;
+         function ReadString : String; override;
+         function ReadFloat : Extended; override;
+
+         procedure ReadListBegin; override;
+         procedure ReadListEnd; override;
+         function EndOfList : Boolean; override;
+   end;
+
+   // TBinaryWriter
+   //
+   {: Wraps a standard TWriter. }
+   TBinaryWriter = class (TVirtualWriter)
+		private
+	      { Private Declarations }
+         FWriter : TWriter;
+
+		protected
+	      { Protected Declarations }
+
+		public
+	      { Public Declarations }
+         constructor Create(Stream: TStream); override;
+         destructor Destroy; override;
+
+         procedure Write(const Buf; Count: Longint); override;
+         procedure WriteInteger(anInteger : Integer); override;
+         procedure WriteBoolean(aBoolean : Boolean); override;
+         procedure WriteString(const aString : String); override;
+         procedure WriteFloat(const aFloat : Extended); override;
+
+         procedure WriteListBegin; override;
+         procedure WriteListEnd; override;
+   end;
+
+   // TTextReader
+   //
+   {: Reads object persistence in Text format. }
+   TTextReader = class (TVirtualReader)
+		private
+	      { Private Declarations }
+         FValueType : String;
+         FData : String;
+
+		protected
+	      { Protected Declarations }
+         procedure ReadLine(const requestedType : String = '');
+
+		public
+	      { Public Declarations }
+         constructor Create(Stream: TStream); override;
+         destructor Destroy; override;
+
+         procedure Read(var Buf; Count: Longint); override;
+         function NextValue : TValueType; override;
+
+         function ReadInteger : Integer; override;
+         function ReadBoolean : Boolean; override;
+         function ReadString : String; override;
+         function ReadFloat : Extended; override;
+
+         procedure ReadListBegin; override;
+         procedure ReadListEnd; override;
+         function EndOfList : Boolean; override;
+   end;
+
+   // TTextWriter
+   //
+   {: Writes object persistence in Text format. }
+   TTextWriter = class (TVirtualWriter)
+		private
+	      { Private Declarations }
+         FIndentLevel : Integer;
+
+		protected
+	      { Protected Declarations }
+         procedure WriteLine(const valueType, data : String);
+
+		public
+	      { Public Declarations }
+         constructor Create(Stream: TStream); override;
+         destructor Destroy; override;
+
+         procedure Write(const Buf; Count: Longint); override;
+         procedure WriteInteger(anInteger : Integer); override;
+         procedure WriteBoolean(aBoolean : Boolean); override;
+         procedure WriteString(const aString : String); override;
+         procedure WriteFloat(const aFloat : Extended); override;
+
+         procedure WriteListBegin; override;
+         procedure WriteListEnd; override;
+   end;
+
    // EInvalidFileSignature
    //
    {: Triggered when file signature does not match. }
@@ -171,6 +347,78 @@ resourcestring
 const
    cDefaultListGrowthDelta = 16;
 
+const
+   cVTInteger     = 'Int';
+   cVTFloat       = 'Float';
+   cVTString      = 'Str';
+   cVTBoolean     = 'Bool';
+   cVTRaw         = 'Raw';
+   cVTListBegin   = '{';
+   cVTListEnd     = '}';
+
+   cTrue    = 'True';
+   cFalse   = 'False';
+
+// ------------------
+// ------------------ TVirtualReader ------------------
+// ------------------
+
+// Create
+//
+constructor TVirtualReader.Create(Stream: TStream);
+begin
+   FStream:=Stream;
+end;
+
+// ReadTStrings
+//
+procedure TVirtualReader.ReadTStrings(aStrings : TStrings);
+var
+	i : Integer;
+	objectsStored : Boolean;
+begin
+   aStrings.BeginUpdate;
+   aStrings.Clear;
+   objectsStored:=ReadBoolean;
+   i:=ReadInteger;
+   if objectsStored then while i>0 do begin
+      aStrings.AddObject(ReadString, Pointer(ReadInteger));
+      Dec(i);
+   end else while i>0 do begin
+      aStrings.Add(ReadString);
+      Dec(i);
+   end;
+   aStrings.EndUpdate;
+end;
+
+// ------------------
+// ------------------ TVirtualWriter ------------------
+// ------------------
+
+// Create
+//
+constructor TVirtualWriter.Create(Stream: TStream);
+begin
+   FStream:=Stream;
+end;
+
+// WriteTStrings
+//
+procedure TVirtualWriter.WriteTStrings(const aStrings : TStrings;
+               								storeObjects : Boolean = True);
+var
+	i : Integer;
+begin
+   writeBoolean(storeObjects);
+   if Assigned(aStrings) then begin
+      WriteInteger(aStrings.Count);
+      if storeObjects then for i:=0 to aStrings.Count-1 do begin
+         WriteString(aStrings[i]);
+         WriteInteger(Integer(aStrings.Objects[i]));
+      end else for i:=0 to aStrings.Count-1 do WriteString(aStrings[i]);
+   end else WriteInteger(0);
+end;
+
 // ------------------
 // ------------------ TPersistentObject ------------------
 // ------------------
@@ -180,6 +428,14 @@ const
 constructor TPersistentObject.Create;
 begin
 	inherited Create;
+end;
+
+// CreateFromFiler
+//
+constructor TPersistentObject.CreateFromFiler(reader : TVirtualReader);
+begin
+   Create;
+   ReadFromFiler(reader);
 end;
 
 // Destroy
@@ -222,16 +478,30 @@ begin
    Result:='';
 end;
 
+// FileVirtualWriter
+//
+class function TPersistentObject.FileVirtualWriter : TVirtualWriterClass;
+begin
+   Result:=TBinaryWriter;
+end;
+
+// FileVirtualReader
+//
+class function TPersistentObject.FileVirtualReader : TVirtualReaderClass;
+begin
+   Result:=TBinaryReader;
+end;
+
 // WriteToFiler
 //
-procedure TPersistentObject.WriteToFiler(writer : TWriter);
+procedure TPersistentObject.WriteToFiler(writer : TVirtualWriter);
 begin
    // nothing
 end;
 
 // ReadFromFiler
 //
-procedure TPersistentObject.ReadFromFiler(reader : TReader);
+procedure TPersistentObject.ReadFromFiler(reader : TVirtualReader);
 begin
    // nothing
 end;
@@ -245,11 +515,13 @@ end;
 
 // SaveToStream
 //
-procedure TPersistentObject.SaveToStream(stream : TStream);
+procedure TPersistentObject.SaveToStream(stream : TStream; writerClass : TVirtualWriterClass = nil);
 var
-   wr : TWriter;
+   wr : TVirtualWriter;
 begin
-   wr:=TWriter.Create(stream, 16384);
+   if writerClass=nil then
+      writerClass:=TBinaryWriter;
+   wr:=writerClass.Create(stream);
    try
       if FileSignature<>'' then
          wr.Write(FileSignature[1], Length(FileSignature));
@@ -261,12 +533,14 @@ end;
 
 // LoadFromStream
 //
-procedure TPersistentObject.LoadFromStream(stream : TStream);
+procedure TPersistentObject.LoadFromStream(stream : TStream; readerClass : TVirtualReaderClass = nil);
 var
-   rd : TReader;
+   rd : TVirtualReader;
    sig : String;
 begin
-   rd:=TReader.Create(stream, 16384);
+   if readerClass=nil then
+      readerClass:=TBinaryReader;
+   rd:=readerClass.Create(stream);
    try
       if FileSignature<>'' then begin
          SetLength(sig, Length(FileSignature));
@@ -282,13 +556,15 @@ end;
 
 // SaveToFile
 //
-procedure TPersistentObject.SaveToFile(const fileName : String);
+procedure TPersistentObject.SaveToFile(const fileName : String; writerClass : TVirtualWriterClass = nil);
 var
    fs : TFileStream;
 begin
+   if writerClass=nil then
+      writerClass:=FileVirtualWriter;
    fs:=TFileStream.Create(fileName, fmCreate);
    try
-      SaveToStream(fs);
+      SaveToStream(fs, writerClass);
    finally
       fs.Free;
    end;
@@ -296,13 +572,15 @@ end;
 
 // LoadFromFile
 //
-procedure TPersistentObject.LoadFromFile(const fileName : String);
+procedure TPersistentObject.LoadFromFile(const fileName : String; readerClass : TVirtualReaderClass = nil);
 var
    fs : TFileStream;
 begin
+   if readerClass=nil then
+      readerClass:=FileVirtualReader;
    fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyWrite);
    try
-      LoadFromStream(fs);
+      LoadFromStream(fs, readerClass);
    finally
       fs.Free;
    end;
@@ -310,13 +588,14 @@ end;
 
 // SaveToString
 //
-function TPersistentObject.SaveToString : String;
+function TPersistentObject.SaveToString(writerClass : TVirtualWriterClass = nil) : String;
 var
    ss : TStringStream;
 begin
    ss:=TStringStream.Create('');
    try
-      SaveToStream(ss);
+      SaveToStream(ss, writerClass);
+      Result:=ss.DataString;
    finally
       ss.Free;
    end;
@@ -324,13 +603,13 @@ end;
 
 // LoadFromString
 //
-procedure TPersistentObject.LoadFromString(const data : String);
+procedure TPersistentObject.LoadFromString(const data : String; readerClass : TVirtualReaderClass = nil);
 var
    ss : TStringStream;
 begin
    ss:=TStringStream.Create(data);
    try
-      LoadFromStream(ss);
+      LoadFromStream(ss, readerClass);
    finally
       ss.Free;
    end;
@@ -654,7 +933,7 @@ end;
 
 // WriteToFiler
 //
-procedure TPersistentObjectList.WriteToFiler(writer : TWriter);
+procedure TPersistentObjectList.WriteToFiler(writer : TVirtualWriter);
    (*
       Object List Filer Format :
 
@@ -711,7 +990,7 @@ end;
 
 // ReadFromFilerWithEvent
 //
-procedure TPersistentObjectList.ReadFromFilerWithEvent(reader : TReader; afterSenderObjectCreated : TNotifyEvent);
+procedure TPersistentObjectList.ReadFromFilerWithEvent(reader : TVirtualReader; afterSenderObjectCreated : TNotifyEvent);
 var
 	obj : TPersistentObject;
 	m : TPersistentObjectClass;
@@ -763,7 +1042,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TPersistentObjectList.ReadFromFiler(reader : TReader);
+procedure TPersistentObjectList.ReadFromFiler(reader : TVirtualReader);
 begin
 	ReadFromFilerWithEvent(reader, nil);
 end;
@@ -783,6 +1062,431 @@ begin
 		Result:=GetLast;
 		Delete(FCount-1);
 	end else Result:=nil;
+end;
+
+// ------------------
+// ------------------ TBinaryReader ------------------
+// ------------------
+
+// Create
+//
+constructor TBinaryReader.Create(Stream: TStream);
+begin
+   inherited;
+   FReader:=TReader.Create(Stream, 16384);
+end;
+
+// Destroy
+//
+destructor TBinaryReader.Destroy;
+begin
+   FReader.Free;
+end;
+
+// Read
+//
+procedure TBinaryReader.Read(var Buf; Count: Longint);
+begin
+   FReader.Read(Buf, Count);
+end;
+
+// NextValue
+//
+function TBinaryReader.NextValue : TValueType;
+begin
+   Result:=FReader.NextValue;
+end;
+
+// ReadInteger
+//
+function TBinaryReader.ReadInteger : Integer;
+begin
+   Result:=FReader.ReadInteger;
+end;
+
+// ReadBoolean
+//
+function TBinaryReader.ReadBoolean : Boolean;
+begin
+   Result:=FReader.ReadBoolean;
+end;
+
+// ReadString
+//
+function TBinaryReader.ReadString : String;
+begin
+   Result:=FReader.ReadString;
+end;
+
+// ReadFloat
+//
+function TBinaryReader.ReadFloat : Extended;
+begin
+   Result:=FReader.ReadFloat;
+end;
+
+// ReadListBegin
+//
+procedure TBinaryReader.ReadListBegin;
+begin
+   FReader.ReadListBegin;
+end;
+
+// ReadListEnd
+//
+procedure TBinaryReader.ReadListEnd;
+begin
+   FReader.ReadListEnd;
+end;
+
+// EndOfList
+//
+function TBinaryReader.EndOfList : Boolean;
+begin
+   Result:=FReader.EndOfList;
+end;
+
+// ------------------
+// ------------------ TBinaryWriter ------------------
+// ------------------
+
+// Create
+//
+constructor TBinaryWriter.Create(Stream: TStream);
+begin
+   inherited;
+   FWriter:=TWriter.Create(Stream, 16384);
+end;
+
+// Destroy
+//
+destructor TBinaryWriter.Destroy;
+begin
+   FWriter.Free;
+end;
+
+// Write
+//
+procedure TBinaryWriter.Write(const Buf; Count: Longint);
+begin
+   FWriter.Write(Buf, Count);
+end;
+
+// WriteInteger
+//
+procedure TBinaryWriter.WriteInteger(anInteger : Integer);
+begin
+   FWriter.WriteInteger(anInteger);
+end;
+
+// WriteBoolean
+//
+procedure TBinaryWriter.WriteBoolean(aBoolean : Boolean);
+begin
+   FWriter.WriteBoolean(aBoolean);
+end;
+
+// WriteString
+//
+procedure TBinaryWriter.WriteString(const aString : String);
+begin
+   FWriter.WriteString(aString);
+end;
+
+// WriteFloat
+//
+procedure TBinaryWriter.WriteFloat(const aFloat : Extended);
+begin
+   FWriter.WriteFloat(aFloat);
+end;
+
+// WriteListBegin
+//
+procedure TBinaryWriter.WriteListBegin;
+begin
+   FWriter.WriteListBegin;
+end;
+
+// WriteListEnd
+//
+procedure TBinaryWriter.WriteListEnd;
+begin
+   FWriter.WriteListEnd;
+end;
+
+// ------------------
+// ------------------ TTextReader ------------------
+// ------------------
+
+// Create
+//
+constructor TTextReader.Create(Stream: TStream);
+begin
+   inherited;
+end;
+
+// Destroy
+//
+destructor TTextReader.Destroy;
+begin
+   inherited;
+end;
+
+// ReadLine
+//
+procedure TTextReader.ReadLine(const requestedType : String = '');
+var
+   line : String;
+   c : Char;
+   p : Integer;
+begin
+   // will need speed upgrade, someday...
+   line:='';
+   repeat
+      Stream.Read(c, 1);
+      if c>=#32 then
+         line:=line+c;
+   until c=#10;
+   line:=Trim(line);
+   p:=Pos(' ', line);
+   if p>0 then begin
+      FValueType:=Copy(line, 1, p-1);
+      FData:=Trim(Copy(line, p+1, MaxInt));
+   end else begin
+      FValueType:=line;
+      FData:='';
+   end;
+   if requestedType<>'' then
+      if requestedType<>FValueType then
+         raise EFilerException.Create('Invalid type, expected "'
+                                      +requestedType+'", found "FValueType".');
+end;
+
+// Read
+//
+procedure TTextReader.Read(var Buf; Count: Longint);
+
+   function HexCharToInt(const c : Char) : Integer;
+   begin
+      if c<='9' then
+         Result:=Integer(c)-Integer('0')
+      else if c<'a' then
+         Result:=Integer(c)-Integer('A')+10
+      else Result:=Integer(c)-Integer('a')+10;
+   end;
+
+var
+   i, j : Integer;
+begin
+   ReadLine(cVTRaw);
+   j:=1;
+   for i:=0 to Count-1 do begin
+      PChar(@Buf)[i]:=Char((HexCharToInt(FData[j]) shl 4)
+                           +HexCharToInt(FData[j+1]));
+      Inc(j, 2);
+   end;
+end;
+
+// NextValue
+//
+function TTextReader.NextValue : TValueType;
+var
+   p : Integer;
+begin
+   p:=Stream.Position;
+   ReadLine;
+   if FValueType=cVTInteger then
+      Result:=vaInt32
+   else if FValueType=cVTFloat then
+      Result:=vaExtended
+   else if FValueType=cVTString then
+      Result:=vaString
+   else if FValueType=cVTBoolean then
+      if FData=cTrue then
+         Result:=vaTrue
+      else Result:=vaFalse
+   else if FValueType=cVTRaw then
+      Result:=vaBinary
+   else if FValueType=cVTListBegin then
+      Result:=vaList
+   else Result:=vaNULL;
+   Stream.Position:=p;
+end;
+
+// ReadInteger
+//
+function TTextReader.ReadInteger : Integer;
+begin
+   ReadLine(cVTInteger);
+   Result:=StrToInt(FData);
+end;
+
+// ReadBoolean
+//
+function TTextReader.ReadBoolean : Boolean;
+begin
+   ReadLine(cVTBoolean);
+   Result:=(FData=cTrue);
+end;
+
+// ReadString
+//
+function TTextReader.ReadString : String;
+var
+   i : Integer;
+begin
+   ReadLine(cVTString);
+   Result:='';
+   i:=1;
+   while i<Length(FData) do begin
+      if FData[i]='#' then begin
+         Result:=Result+Char(StrToInt(Copy(FData, i+1, 3)));
+         Inc(i, 3);
+      end else Result:=Result+FData[i];
+      Inc(i);
+   end;
+   Assert(FData[i]='.', 'Invalid stored string.');
+end;
+
+// ReadFloat
+//
+function TTextReader.ReadFloat : Extended;
+var
+   oldDc : Char;
+begin
+   ReadLine(cVTInteger);
+   oldDc:=DecimalSeparator;
+   DecimalSeparator:='.';
+   Result:=StrToFloat(FData);
+   DecimalSeparator:=oldDc;
+end;
+
+// ReadListBegin
+//
+procedure TTextReader.ReadListBegin;
+begin
+   ReadLine(cVTListBegin);
+end;
+
+// ReadListEnd
+//
+procedure TTextReader.ReadListEnd;
+begin
+   ReadLine(cVTListEnd);
+end;
+
+// EndOfList
+//
+function TTextReader.EndOfList : Boolean;
+var
+   p : Integer;
+begin
+   p:=Stream.Position;
+   ReadLine;
+   Result:=(FValueType=cVTListEnd);
+   Stream.Position:=p;
+end;
+
+// ------------------
+// ------------------ TTextWriter ------------------
+// ------------------
+
+// Create
+//
+constructor TTextWriter.Create(Stream: TStream);
+begin
+   inherited;
+end;
+
+// Destroy
+//
+destructor TTextWriter.Destroy;
+begin
+   inherited;
+end;
+
+// WriteLine
+//
+procedure TTextWriter.WriteLine(const valueType, data : String);
+var
+   buf : String;
+begin
+   buf:=StringOfChar(' ', FIndentLevel)+valueType+' '+data+#13#10;
+   Stream.Write(buf[1], Length(buf));
+end;
+
+// Write
+//
+procedure TTextWriter.Write(const Buf; Count: Longint);
+const
+   cNibbleToHex : PChar = '0123456789ABCDEF';
+var
+   i, j, b : Integer;
+   data : String;
+begin
+   SetLength(data, Count*2);
+   j:=1;
+   for i:=0 to Count-1 do begin
+      b:=Integer(PChar(@buf)[i]);
+      data[j]:=cNibbleToHex[b shr 4];
+      data[j+1]:=cNibbleToHex[b and 15];
+      Inc(j, 2);
+   end;
+   WriteLine(cVTRaw, data);
+end;
+
+// WriteInteger
+//
+procedure TTextWriter.WriteInteger(anInteger : Integer);
+begin
+   WriteLine(cVTInteger, IntToStr(anInteger));
+end;
+
+// WriteBoolean
+//
+procedure TTextWriter.WriteBoolean(aBoolean : Boolean);
+begin
+   if aBoolean then
+      WriteLine(cVTBoolean, cTrue)
+   else WriteLine(cVTBoolean, cFalse);
+end;
+
+// WriteString
+//
+procedure TTextWriter.WriteString(const aString : String);
+var
+   i : Integer;
+   s : String;
+begin
+   s:='';
+   for i:=1 to Length(aString) do
+      if aString[i]>=#32 then
+         s:=s+aString[i]
+      else s:=s+Format('#%.3d', [Integer(aString[i])]);
+   WriteLine(cVTString, s+'.');
+end;
+
+// WriteFloat
+//
+procedure TTextWriter.WriteFloat(const aFloat : Extended);
+begin
+   WriteLine(cVTInteger, FloatToStr(aFloat));
+end;
+
+// WriteListBegin
+//
+procedure TTextWriter.WriteListBegin;
+begin
+   WriteLine(cVTListBegin, '');
+   Inc(FIndentLevel, 3);
+end;
+
+// WriteListEnd
+//
+procedure TTextWriter.WriteListEnd;
+begin
+   Dec(FIndentLevel, 3);
+   WriteLine(cVTListEnd, '');
 end;
 
 // ------------------------------------------------------------------

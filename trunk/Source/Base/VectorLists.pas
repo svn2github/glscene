@@ -3,13 +3,14 @@
 	Lists of vectors<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>19/07/01 - Egg - Added TAffineVectorList.Add (list variant)
-      <li>18/03/01 - Egg - Additions and enhancements
-      <li>16/03/01 - Egg - Introduced new PersistentClasses
-      <li>04/03/01 - Egg - Optimized TAffineVectorList.Normalize (x2 speed on K7)
-      <li>26/02/01 - Egg - VectorArrayLerp 3DNow optimized (x2 speed on K7) 
-      <li>08/08/00 - Egg - Added TSingleList
-	   <li>20/07/00 - Egg - Creation
+      <li>03/08/01 - EG - Added TIntegerList.AddSerie
+      <li>19/07/01 - EG - Added TAffineVectorList.Add (list variant)
+      <li>18/03/01 - EG - Additions and enhancements
+      <li>16/03/01 - EG - Introduced new PersistentClasses
+      <li>04/03/01 - EG - Optimized TAffineVectorList.Normalize (x2 speed on K7)
+      <li>26/02/01 - EG - VectorArrayLerp 3DNow optimized (x2 speed on K7)
+      <li>08/08/00 - EG - Added TSingleList
+	   <li>20/07/00 - EG - Creation
 	</ul></font>
 }
 unit VectorLists;
@@ -242,6 +243,10 @@ type
 
 			property Items[Index: Integer] : Integer read Get write Put; default;
 			property List: PIntegerArray read FList;
+
+         {: Adds count items in an arithmetic serie.<p>
+            Items are (aBase), (aBase+aDelta) ... (aBase+(aCount-1)*aDelta) }
+         procedure AddSerie(const aBase, aDelta, aCount : Integer);
 	end;
 
    TSingleArray = array [0..MaxInt shr 4] of Single;
@@ -1141,6 +1146,22 @@ begin
 		Result:=Get(FCount-1);
 		Delete(FCount-1);
 	end else Result:=0;
+end;
+
+// AddSerie
+//
+procedure TIntegerList.AddSerie(const aBase, aDelta, aCount : Integer);
+var
+   i, v : Integer;
+begin
+   if aCount<=0 then Exit;
+   AdjustCapacityToAtLeast(Count+aCount);
+   v:=base;
+   for i:=Count to Count+aCount-1 do begin
+      FList^[i]:=v;
+      Inc(v, aDelta);
+   end;
+   FCount:=Count+aCount;
 end;
 
 // ------------------
