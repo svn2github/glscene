@@ -369,29 +369,6 @@ begin
   RegisterComponents('GLScene Shaders', [TGLBumpShader]);
 end;
 
-// LoadARBProgram
-//
-procedure LoadARBProgram(target : GLenum; vptext : String; var vphandle : cardinal);
-var
-   errPos : Integer;
-   errString : String;
-begin
-   if (target = GL_VERTEX_PROGRAM_ARB) and not GL_ARB_vertex_program then
-      raise Exception.Create('GL_ARB_vertex_program required!');
-   if (target = GL_FRAGMENT_PROGRAM_ARB) and not GL_ARB_fragment_program then
-      raise Exception.Create('GL_ARB_fragment_program required!');
-   glGenProgramsARB(1, @vphandle);
-   glBindProgramARB(target,vphandle);
-   glProgramStringARB(target,GL_PROGRAM_FORMAT_ASCII_ARB,
-      Length(vptext), PChar(vptext));
-   glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
-   if errPos>-1 then begin
-      errString:=glGetString(GL_PROGRAM_ERROR_STRING_ARB);
-      raise Exception.CreateFmt('ARB Program Error - [Handle: %d][Pos: %d][Error %s]', [vphandle, errPos, errString]);
-   end;
-   CheckOpenGLError;
-end;
-
 // ------------------
 // ------------------ TGLBumpShader ------------------
 // ------------------
@@ -428,58 +405,90 @@ end;
 // DoApply
 //
 procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+
+   procedure LoadARBProgram(target : GLenum; vptext : String; var vphandle : cardinal);
+   var
+      errPos : Integer;
+      errString : String;
+   begin
+      if (target = GL_VERTEX_PROGRAM_ARB) and not GL_ARB_vertex_program then
+         raise Exception.Create('GL_ARB_vertex_program required!');
+      if (target = GL_FRAGMENT_PROGRAM_ARB) and not GL_ARB_fragment_program then
+         raise Exception.Create('GL_ARB_fragment_program required!');
+      glGenProgramsARB(1, @vphandle);
+      glBindProgramARB(target,vphandle);
+      glProgramStringARB(target,GL_PROGRAM_FORMAT_ASCII_ARB,
+         Length(vptext), PChar(vptext));
+      glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
+      if errPos>-1 then begin
+         errString:=glGetString(GL_PROGRAM_ERROR_STRING_ARB);
+         raise Exception.CreateFmt('ARB Program Error - [Handle: %d][Pos: %d][Error %s]', [vphandle, errPos, errString]);
+      end;
+      CheckOpenGLError;
+   end;
+
 var
    maxLights, maxTextures, i : Integer;
    lightEnabled : GLboolean;
    ambient, materialAmbient : TColorVector;
+   success : Boolean;
 begin
    if (csDesigning in ComponentState) then exit;
 
    glGetIntegerv(GL_MAX_LIGHTS, @maxLights);
    glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @maxTextures);
 
-   if maxTextures<3 then
-      raise Exception.Create('Not enough texture units!');
+   success:=False;
+   try
+      if maxTextures<3 then
+         raise Exception.Create('Not enough texture units!');
 
-   glPushAttrib(GL_ENABLE_BIT or
-                GL_TEXTURE_BIT or
-                GL_DEPTH_BUFFER_BIT or
-                GL_COLOR_BUFFER_BIT);
+      glPushAttrib(GL_ENABLE_BIT or
+                   GL_TEXTURE_BIT or
+                   GL_DEPTH_BUFFER_BIT or
+                   GL_COLOR_BUFFER_BIT);
 
-   if Length(FVertexProgramHandles) = 0 then begin
-      SetLength(FVertexProgramHandles, maxLights);
-      for i:=0 to maxLights-1 do
-        case FBumpSpace of
-           bsObject : begin
-              case FBumpMethod of
-                 bmDot3TexCombiner :
-                    LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cObjectToDot3,[i]), FVertexProgramHandles[i]);
-                 bmBasicARBFP :
-                    LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cObjectToBasicARBFP,[i]), FVertexProgramHandles[i]);
-              end;
-           end;
-           bsTangentQuaternion :
-              LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentQuaternionToDot3,[i]), FVertexProgramHandles[i]);
-           bsTangentExternal : begin
-              case FBumpMethod of
-                 bmDot3TexCombiner :
-                    LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentExternalToDot3,[i]), FVertexProgramHandles[i]);
-                 bmBasicARBFP :
-                    LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentExternalToBasicARBFP,[i]), FVertexProgramHandles[i]);
-              end;
-           end;
-        end;
-   end;
-
-   if Length(FFragmentProgramHandles) = 0 then
-      if FBumpMethod = bmBasicARBFP then begin
-         SetLength(FFragmentProgramHandles, maxLights);
+      if Length(FVertexProgramHandles) = 0 then begin
+         SetLength(FVertexProgramHandles, maxLights);
          for i:=0 to maxLights-1 do
-            if boDiffuseTexture2 in FBumpOptions then
-              LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, Format(cTexturedARBFP, [i,i]), FFragmentProgramHandles[i])
-            else
-              LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, Format(cBasicARBFP, [i,i]), FFragmentProgramHandles[i]);
+            case FBumpSpace of
+               bsObject : begin
+                  case FBumpMethod of
+                     bmDot3TexCombiner :
+                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cObjectToDot3,[i]), FVertexProgramHandles[i]);
+                     bmBasicARBFP :
+                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cObjectToBasicARBFP,[i]), FVertexProgramHandles[i]);
+                  end;
+               end;
+               bsTangentQuaternion :
+                  LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentQuaternionToDot3,[i]), FVertexProgramHandles[i]);
+               bsTangentExternal : begin
+                  case FBumpMethod of
+                     bmDot3TexCombiner :
+                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentExternalToDot3,[i]), FVertexProgramHandles[i]);
+                     bmBasicARBFP :
+                        LoadARBProgram(GL_VERTEX_PROGRAM_ARB, Format(cTangentExternalToBasicARBFP,[i]), FVertexProgramHandles[i]);
+                  end;
+               end;
+            end;
       end;
+
+      if Length(FFragmentProgramHandles) = 0 then
+         if FBumpMethod = bmBasicARBFP then begin
+            SetLength(FFragmentProgramHandles, maxLights);
+            for i:=0 to maxLights-1 do
+               if boDiffuseTexture2 in FBumpOptions then
+                  LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, Format(cTexturedARBFP, [i,i]), FFragmentProgramHandles[i])
+               else
+                  LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, Format(cBasicARBFP, [i,i]), FFragmentProgramHandles[i]);
+         end;
+
+      success:=True;
+
+   finally
+      if not success then
+         Enabled:=False;
+   end;
 
    FLightIDs.Clear;
    for i:=0 to maxLights-1 do begin
@@ -588,7 +597,8 @@ begin
    end;
 
    glDisable(GL_VERTEX_PROGRAM_ARB);
-   glDisable(GL_FRAGMENT_PROGRAM_ARB);
+   if BumpMethod = bmBasicARBFP then
+      glDisable(GL_FRAGMENT_PROGRAM_ARB);
 
    glPopAttrib;
 end;
