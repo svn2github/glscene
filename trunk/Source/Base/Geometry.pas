@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)3
       <li>22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
       <li>12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
       <li>11/02/02 - EG - Non-spinned QuaternionSlerp (Alex Grigny de Castro)
@@ -442,23 +443,23 @@ procedure MakeVector(var v : TVector; const av : TAffineVector); overload;
 procedure MakeVector(var v : TVector; const av : TVector); overload;
 
 //: Returns the sum of two affine vectors
-function VectorAdd(const V1, V2 : TAffineVector) : TAffineVector; overload;
+function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector; overload;
 //: Adds two vectors and places result in vr
-procedure VectorAdd(const V1, V2 : TAffineVector; var vr : TAffineVector); overload;
-procedure VectorAdd(const V1, V2 : TAffineVector; vr : PAffineVector); overload;
+procedure VectorAdd(const v1, v2 : TAffineVector; var vr : TAffineVector); overload;
+procedure VectorAdd(const v1, v2 : TAffineVector; vr : PAffineVector); overload;
 //: Returns the sum of two homogeneous vectors
-function VectorAdd(const V1, V2 : TVector) : TVector; overload;
-procedure VectorAdd(const V1, V2 : TVector; var vr : TVector); overload;
+function VectorAdd(const v1, v2 : TVector) : TVector; overload;
+procedure VectorAdd(const v1, v2 : TVector; var vr : TVector); overload;
 //: Sums up f to each component of the vector
 function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector; overload;
 //: Sums up f to each component of the vector
 function VectorAdd(const v : TVector; const f : Single) : TVector; overload;
 //: Adds V2 to V1, result is placed in V1
-procedure AddVector(var V1 : TAffineVector; const V2 : TAffineVector); overload;
+procedure AddVector(var v1 : TAffineVector; const v2 : TAffineVector); overload;
 //: Adds V2 to V1, result is placed in V1
-procedure AddVector(var V1 : TAffineVector; const V2 : TVector); overload;
+procedure AddVector(var v1 : TAffineVector; const v2 : TVector); overload;
 //: Adds V2 to V1, result is placed in V1
-procedure AddVector(var V1 : TVector; const V2 : TVector); overload;
+procedure AddVector(var v1 : TVector; const v2 : TVector); overload;
 //: Sums up f to each component of the vector
 procedure AddVector(var v : TAffineVector; const f : Single); overload;
 //: Sums up f to each component of the vector
@@ -1145,6 +1146,10 @@ var
    // + 2 : use Intel SSE code (Pentium III, NOT IMPLEMENTED YET !)
    vSIMD : Byte = 0;
 
+// define for turning off assembly routines in this unit
+// *experimental* and incomplete
+{.$define GEOMETRY_NO_ASM}
+
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -1429,10 +1434,11 @@ end;
 
 // VectorAdd (func, affine)
 //
-function VectorAdd(const V1, V2 : TAffineVector) : TAffineVector; register;
+function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector; register;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EAX]
          FADD DWORD PTR [EDX]
@@ -1443,14 +1449,21 @@ asm
          FLD  DWORD PTR [EAX+8]
          FADD DWORD PTR [EDX+8]
          FSTP DWORD PTR [ECX+8]
+{$else}
+begin
+   Result[0]:=v1[0]+v2[0];
+   Result[1]:=v1[1]+v2[1];
+   Result[2]:=v1[2]+v2[2];
+{$endif}
 end;
 
 // VectorAdd (proc, affine)
 //
-procedure VectorAdd(const V1, V2 : TAffineVector; var vr : TAffineVector); overload;
+procedure VectorAdd(const v1, v2 : TAffineVector; var vr : TAffineVector); overload;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EAX]
          FADD DWORD PTR [EDX]
@@ -1461,14 +1474,21 @@ asm
          FLD  DWORD PTR [EAX+8]
          FADD DWORD PTR [EDX+8]
          FSTP DWORD PTR [ECX+8]
+{$else}
+begin
+   vr[0]:=v1[0]+v2[0];
+   vr[1]:=v1[1]+v2[1];
+   vr[2]:=v1[2]+v2[2];
+{$endif}
 end;
 
 // VectorAdd (proc, affine)
 //
-procedure VectorAdd(const V1, V2 : TAffineVector; vr : PAffineVector); overload;
+procedure VectorAdd(const v1, v2 : TAffineVector; vr : PAffineVector); overload;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EAX]
          FADD DWORD PTR [EDX]
@@ -1479,14 +1499,21 @@ asm
          FLD  DWORD PTR [EAX+8]
          FADD DWORD PTR [EDX+8]
          FSTP DWORD PTR [ECX+8]
+{$else}
+begin
+   vr[0]:=v1[0]+v2[0];
+   vr[1]:=v1[1]+v2[1];
+   vr[2]:=v1[2]+v2[2];
+{$endif}
 end;
 
 // VectorAdd (hmg)
 //
-function VectorAdd(const V1, V2: TVector): TVector; register;
+function VectorAdd(const v1, v2: TVector): TVector; register;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
          test vSIMD, 1
          jz @@FPU
@@ -1513,14 +1540,22 @@ asm
          FLD  DWORD PTR [EAX+12]
          FADD DWORD PTR [EDX+12]
          FSTP DWORD PTR [ECX+12]
+{$else}
+begin
+   Result[0]:=v1[0]+v2[0];
+   Result[1]:=v1[1]+v2[1];
+   Result[2]:=v1[2]+v2[2];
+   Result[3]:=v1[3]+v2[3];
+{$endif}
 end;
 
 // VectorAdd (hmg, proc)
 //
-procedure VectorAdd(const V1, V2: TVector; var vr : TVector); register;
+procedure VectorAdd(const v1, v2: TVector; var vr : TVector); register;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
          test vSIMD, 1
          jz @@FPU
@@ -1547,6 +1582,13 @@ asm
          FLD  DWORD PTR [EAX+12]
          FADD DWORD PTR [EDX+12]
          FSTP DWORD PTR [ECX+12]
+{$else}
+begin
+   vr[0]:=v1[0]+v2[0];
+   vr[1]:=v1[1]+v2[1];
+   vr[2]:=v1[2]+v2[2];
+   vr[3]:=v1[3]+v2[3];
+{$endif}
 end;
 
 // VectorAdd (affine, single)
@@ -1570,9 +1612,10 @@ end;
 
 // AddVector (affine)
 //
-procedure AddVector(var V1 : TAffineVector; const V2 : TAffineVector); register;
+procedure AddVector(var v1 : TAffineVector; const v2 : TAffineVector); register;
 // EAX contains address of V1
 // EDX contains address of V2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FADD DWORD PTR [EDX]
@@ -1583,13 +1626,20 @@ asm
       FLD  DWORD PTR [EAX+8]
       FADD DWORD PTR [EDX+8]
       FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   v1[0]:=v1[0]+v2[0];
+   v1[1]:=v1[1]+v2[1];
+   v1[2]:=v1[2]+v2[2];
+{$endif}
 end;
 
 // AddVector (affine)
 //
-procedure AddVector(var V1 : TAffineVector; const V2 : TVector); register;
+procedure AddVector(var v1 : TAffineVector; const v2 : TVector); register;
 // EAX contains address of V1
 // EDX contains address of V2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FADD DWORD PTR [EDX]
@@ -1600,6 +1650,12 @@ asm
       FLD  DWORD PTR [EAX+8]
       FADD DWORD PTR [EDX+8]
       FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   v1[0]:=v1[0]+v2[0];
+   v1[1]:=v1[1]+v2[1];
+   v1[2]:=v1[2]+v2[2];
+{$endif}
 end;
 
 // AddVector (hmg)
@@ -1607,6 +1663,7 @@ end;
 procedure AddVector(var v1 : TVector; const v2 : TVector); register;
 // EAX contains address of V1
 // EDX contains address of V2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -1632,6 +1689,13 @@ asm
       FLD  DWORD PTR [EAX+12]
       FADD DWORD PTR [EDX+12]
       FSTP DWORD PTR [EAX+12]
+{$else}
+begin
+   v1[0]:=v1[0]+v2[0];
+   v1[1]:=v1[1]+v2[1];
+   v1[2]:=v1[2]+v2[2];
+   v1[3]:=v1[3]+v2[3];
+{$endif}
 end;
 
 // AddVector (affine)
@@ -1658,6 +1722,7 @@ end;
 procedure TexPointArrayAdd(const src : PTexPointArray; const delta : TTexPoint;
                            const nb : Integer;
                            dest : PTexPointArray); overload;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       or    ecx, ecx
       jz    @@End
@@ -1701,11 +1766,23 @@ asm
       db $0F,$0E               /// femms
 
 @@End:
+{$else}
+var
+   i : Integer;
+begin
+   for i:=0 to nb-1 do begin
+      dest[i].S:=src[i].S+delta.S;
+      dest[i].T:=src[i].T+delta.T;
+   end;
+{$endif}
 end;
 
+// TexPointArrayScaleAndAdd
+//
 procedure TexPointArrayScaleAndAdd(const src : PTexPointArray; const delta : TTexPoint;
                                    const nb : Integer; const scale : TTexPoint;
                                    dest : PTexPointArray); overload;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       or    ecx, ecx
       jz    @@End
@@ -1756,12 +1833,22 @@ asm
 
       db $0F,$0E               /// femms 
 @@End:
+{$else}
+var
+   i : Integer;
+begin
+   for i:=0 to nb-1 do begin
+      dest[i].S:=src[i].S*scale.S+delta.S;
+      dest[i].T:=src[i].T*scale.T+delta.T;
+   end;
+{$endif}
 end;
 
 // VectorArrayAdd
 //
 procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVector;
                          const nb : Integer; dest : PAffineVectorArray); register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       or    ecx, ecx
       jz    @@End
@@ -1812,14 +1899,25 @@ asm
       db $0F,$0E               /// femms
 
 @@End:
+{$else}
+var
+   i : Integer;
+begin
+   for i:=0 to nb-1 do begin
+      dest[i][0]:=src[i][0]+delta[0];
+      dest[i][1]:=src[i][1]+delta[1];
+      dest[i][2]:=src[i][2]+delta[2];
+   end;
+{$endif}
 end;
 
 // VectorSubtract (func, affine)
 //
-function VectorSubtract(const V1, V2: TAffineVector): TAffineVector; register;
+function VectorSubtract(const v1, v2 : TAffineVector): TAffineVector; register;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -1830,6 +1928,12 @@ asm
       FLD  DWORD PTR [EAX+8]
       FSUB DWORD PTR [EDX+8]
       FSTP DWORD PTR [ECX+8]
+{$else}
+begin
+   Result[0]:=v1[0]-v2[0];
+   Result[1]:=v1[1]-v2[1];
+   Result[2]:=v1[2]-v2[2];
+{$endif}
 end;
 
 // VectorSubtract (proc, affine)
@@ -1838,6 +1942,7 @@ procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVecto
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -1848,6 +1953,12 @@ asm
       FLD  DWORD PTR [EAX+8]
       FSUB DWORD PTR [EDX+8]
       FSTP DWORD PTR [ECX+8]
+{$else}
+begin
+   result[0]:=v1[0]-v2[0];
+   result[1]:=v1[1]-v2[1];
+   result[2]:=v1[2]-v2[2];
+{$endif}
 end;
 
 // VectorSubtract (proc, affine-hmg)
@@ -1856,6 +1967,7 @@ procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TVector); ov
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -1868,6 +1980,13 @@ asm
       FSTP DWORD PTR [ECX+8]
       xor   eax, eax
       mov   [ECX+12], eax
+{$else}
+begin
+   result[0]:=v1[0]-v2[0];
+   result[1]:=v1[1]-v2[1];
+   result[2]:=v1[2]-v2[2];
+   result[3]:=0;
+{$endif}
 end;
 
 // VectorSubtract
@@ -1876,6 +1995,7 @@ procedure VectorSubtract(const v1 : TVector; v2 : TAffineVector; var result : TV
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -1888,14 +2008,22 @@ asm
       FSTP DWORD PTR [ECX+8]
       mov   edx, [eax+12]
       mov   [ECX+12], eax
+{$else}
+begin
+   result[0]:=v1[0]-v2[0];
+   result[1]:=v1[1]-v2[1];
+   result[2]:=v1[2]-v2[2];
+   result[3]:=v1[0];
+{$endif}
 end;
 
 // VectorSubtract (hmg)
 //
-function VectorSubtract(const V1, V2: TVector): TVector; register;
+function VectorSubtract(const v1, v2 : TVector) : TVector; register;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -1921,6 +2049,12 @@ asm
       FLD  DWORD PTR [EAX+12]
       FSUB DWORD PTR [EDX+12]
       FSTP DWORD PTR [ECX+12]
+{$else}
+begin
+   Result[0]:=v1[0]-v2[0];
+   Result[1]:=v1[1]-v2[1];
+   Result[2]:=v1[2]-v2[2];
+{$endif}
 end;
 
 // VectorSubtract (proc, hmg)
@@ -1929,6 +2063,7 @@ procedure VectorSubtract(const v1, v2 : TVector; var result : TVector); register
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -1954,6 +2089,13 @@ asm
       FLD  DWORD PTR [EAX+12]
       FSUB DWORD PTR [EDX+12]
       FSTP DWORD PTR [ECX+12]
+{$else}
+begin
+   result[0]:=v1[0]-v2[0];
+   result[1]:=v1[1]-v2[1];
+   result[2]:=v1[2]-v2[2];
+   result[3]:=v1[3]-v2[3];
+{$endif}
 end;
 
 // VectorSubtract (proc, affine)
@@ -1962,6 +2104,7 @@ procedure VectorSubtract(const v1, v2 : TVector; var result : TAffineVector); ov
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EAX]
          FSUB DWORD PTR [EDX]
@@ -1972,6 +2115,12 @@ asm
          FLD  DWORD PTR [EAX+8]
          FSUB DWORD PTR [EDX+8]
          FSTP DWORD PTR [ECX+8]
+{$else}
+begin
+   result[0]:=v1[0]-v2[0];
+   result[1]:=v1[1]-v2[1];
+   result[2]:=v1[2]-v2[2];
+{$endif}
 end;
 
 // SubtractVector (affine)
@@ -1979,6 +2128,7 @@ end;
 procedure SubtractVector(var V1 : TAffineVector; const V2 : TAffineVector); register;
 // EAX contains address of V1
 // EDX contains address of V2
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EAX]
          FSUB DWORD PTR [EDX]
@@ -1989,6 +2139,12 @@ asm
          FLD  DWORD PTR [EAX+8]
          FSUB DWORD PTR [EDX+8]
          FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   v1[0]:=v1[0]-v2[0];
+   v1[1]:=v1[1]-v2[1];
+   v1[2]:=v1[2]-v2[2];
+{$endif}
 end;
 
 // SubtractVector (hmg)
@@ -1996,6 +2152,7 @@ end;
 procedure SubtractVector(var V1 : TVector; const V2 : TVector); register;
 // EAX contains address of V1
 // EDX contains address of V2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -2021,6 +2178,13 @@ asm
       FLD  DWORD PTR [EAX+12]
       FSUB DWORD PTR [EDX+12]
       FSTP DWORD PTR [EAX+12]
+{$else}
+begin
+   v1[0]:=v1[0]-v2[0];
+   v1[1]:=v1[1]-v2[1];
+   v1[2]:=v1[2]-v2[2];
+   v1[3]:=v1[3]-v2[3];
+{$endif}
 end;
 
 // CombineVector (var)
@@ -2029,6 +2193,7 @@ procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; var f :
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EDX]
          FMUL DWORD PTR [ECX]
@@ -2042,6 +2207,12 @@ asm
          FMUL DWORD PTR [ECX]
          FADD DWORD PTR [EAX+8]
          FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   vr[0]:=vr[0]+v[0]*f;
+   vr[1]:=vr[1]+v[1]*f;
+   vr[2]:=vr[2]+v[2]*f;
+{$endif}
 end;
 
 // CombineVector (pointer)
@@ -2050,6 +2221,7 @@ procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PF
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EDX]
          FMUL DWORD PTR [ECX]
@@ -2063,6 +2235,12 @@ asm
          FMUL DWORD PTR [ECX]
          FADD DWORD PTR [EAX+8]
          FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   vr[0]:=vr[0]+v[0]*pf^;
+   vr[1]:=vr[1]+v[1]*pf^;
+   vr[2]:=vr[2]+v[2]*pf^;
+{$endif}
 end;
 
 // VectorCombine
@@ -2089,6 +2267,7 @@ procedure CombineVector(var vr : TVector; const v : TVector; var f : Single); ov
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -2122,6 +2301,13 @@ asm
       FMUL DWORD PTR [ECX]
       FADD DWORD PTR [EAX+12]
       FSTP DWORD PTR [EAX+12]
+{$else}
+begin
+   vr[0]:=vr[0]+v[0]*f;
+   vr[1]:=vr[1]+v[1]*f;
+   vr[2]:=vr[2]+v[2]*f;
+   vr[3]:=vr[3]+v[3]*f;
+{$endif}
 end;
 
 // CombineVector
@@ -2130,6 +2316,7 @@ procedure CombineVector(var vr : TVector; const v : TAffineVector; var f : Singl
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EDX]
       FMUL DWORD PTR [ECX]
@@ -2143,6 +2330,12 @@ asm
       FMUL DWORD PTR [ECX]
       FADD DWORD PTR [EAX+8]
       FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   vr[0]:=vr[0]+v[0]*f;
+   vr[1]:=vr[1]+v[1]*f;
+   vr[2]:=vr[2]+v[2]*f;
+{$endif}
 end;
 
 // VectorCombine
@@ -3394,7 +3587,7 @@ asm
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+8]
       FLD  DWORD PTR [EAX+12]
-      FMUL DWORD PTR [EBP+12]
+      FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+12]
 end;
 
@@ -3412,7 +3605,7 @@ asm
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+8]
       FLD  DWORD PTR [EAX+12]
-      FMUL DWORD PTR [EBP+12]
+      FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+12]
 end;
 
@@ -4027,6 +4220,7 @@ end;
 //
 function MatrixMultiply(const M1, M2: TMatrix): TMatrix; register;
 begin
+{$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
       asm
          xchg eax, ecx
@@ -4147,7 +4341,7 @@ begin
          db $0F,$7F,$58,$38       /// movq        [eax+56],mm3
          db $0F,$0E               /// femms
       end;
-   end else begin
+   end else {$endif} begin
       Result[X,X]:=M1[X,X]*M2[X,X]+M1[X,Y]*M2[Y,X]+M1[X,Z]*M2[Z,X]+M1[X,W]*M2[W,X];
       Result[X,Y]:=M1[X,X]*M2[X,Y]+M1[X,Y]*M2[Y,Y]+M1[X,Z]*M2[Z,Y]+M1[X,W]*M2[W,Y];
       Result[X,Z]:=M1[X,X]*M2[X,Z]+M1[X,Y]*M2[Y,Z]+M1[X,Z]*M2[Z,Z]+M1[X,W]*M2[W,Z];
@@ -4178,6 +4372,7 @@ end;
 //
 function VectorTransform(const V: TVector; const M: TMatrix) : TVector; register;
 begin
+{$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
       asm
         db $0F,$6F,$00           /// movq        mm0,[eax]
@@ -4211,7 +4406,7 @@ begin
         db $0F,$7F,$59,$08       /// movq        [ecx+8],mm3
         db $0F,$0E               /// femms
       end
-   end else begin
+   end else {$endif} begin
       Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X] + V[W] * M[W, X];
       Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y] + V[W] * M[W, Y];
       Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z] + V[W] * M[W, Z];
@@ -4242,6 +4437,7 @@ end;
 //
 function VectorTransform(const V: TAffineVector; const M: TAffineMatrix): TAffineVector; register;
 begin
+{$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
       asm
         db $0F,$6F,$00           /// movq        mm0,[eax]
@@ -4267,7 +4463,7 @@ begin
         db $0F,$7F,$19           /// movq        [ecx],mm3
         db $0F,$0E               /// femms
       end;
-   end else begin
+   end else {$endif} begin
       Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X];
       Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y];
       Result[Z]:=V[X] * M[X, Z] + V[Y] * M[Y, Z] + V[Z] * M[Z, Z];
@@ -6104,6 +6300,8 @@ end;
 
 //----------------- miscellaneous vector functions ---------------------------------------------------------------------
 
+// MakeAffineDblVector
+//
 function MakeAffineDblVector(var V: array of Double): TAffineDblVector; assembler;
 // creates a vector from given values
 // EAX contains address of V
@@ -6363,8 +6561,8 @@ begin
    NormalizeQuaternion(Result);
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// VectorDblToFlt
+//
 function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector; assembler;
 
 // converts a vector containing double sized values into a vector with single sized values
@@ -6380,8 +6578,8 @@ asm
               FSTP DWORD PTR [EDX + 12]
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// VectorAffineDblToFlt
+//
 function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector; assembler;
 
 // converts a vector containing double sized values into a vector with single sized values
@@ -6395,8 +6593,8 @@ asm
               FSTP DWORD PTR [EDX + 8]
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// VectorAffineFltToDbl
+//
 function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector; assembler;
 
 // converts a vector containing single sized values into a vector with double sized values
@@ -6410,8 +6608,8 @@ asm
               FSTP QWORD PTR [EDX + 8]
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// VectorFltToDbl
+//
 function VectorFltToDbl(const V: TVector): THomogeneousDblVector; assembler;
 
 // converts a vector containing single sized values into a vector with double sized values
