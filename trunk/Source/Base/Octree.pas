@@ -768,6 +768,8 @@ procedure TOctree.DisposeTree;
 begin
    WalkDispose(RootNode);
    RootNode:=nil;
+   triangleFiler.free;
+   triangleFiler:= nil;   
 end;
 
 // CreateTree
