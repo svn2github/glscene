@@ -1,8 +1,9 @@
 {: GLFileNurbs<p>
 
-	Nurbs surface vector file loading.<p>
+	Nurbs surfaces vector file loading.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>11/08/03 - SG - Some minor changes
       <li>05/08/03 - SG - Initial, adapted LoadFromStream from earlier tests
                           with GLNurbsSurface (depricated), originally coded
                           by Eric Grange.
@@ -94,7 +95,7 @@ procedure TGLNurbsVectorFile.LoadFromStream(stream : TStream);
             if buf=']' then Break;
             vals.CommaText:=buf;
             if vals.Count>=3 then
-               list.Add(StrToFloatDef(vals[0],0), StrToFloatDef(vals[2],0), StrToFloatDef(vals[1],0));
+               list.Add(StrToFloatDef(vals[0],0), StrToFloatDef(vals[1],0), StrToFloatDef(vals[2],0));
             Inc(idx);
          end;
          Result:=idx;
@@ -145,11 +146,6 @@ begin
          end;
          Inc(i);
       end;
-
-      // Reverse control point order in U direction
-      for j:=0 to surface.CountV-1 do
-        for i:=0 to (surface.CountU div 2)-1 do
-          surface.ControlPoints.Exchange(i+j*surface.CountU,(surface.CountU-i)-1+j*surface.CountU);
 
    finally
       buf.Free;
