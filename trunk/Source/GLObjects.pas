@@ -635,6 +635,7 @@ type
 			{ Public Declarations }
          constructor Create(AOwner: TComponent); override;
 
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
          procedure Assign(Source: TPersistent); override;
@@ -1211,7 +1212,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Consts, GLStrings, Spline, XOpenGL, Polynomials;
+uses Consts, GLStrings, Spline, XOpenGL, Polynomials, GLSilhouette;
 
 const
    cDefaultPointSize : Single = 1.0;
@@ -2811,6 +2812,83 @@ begin
       xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, -hh,  hd);
    end;
    glEnd;
+end;
+
+// GenerateSilhouette
+//
+function TGLCube.GenerateSilhouette(
+  const silhouetteParameters: TGLSilhouetteParameters): TGLBaseSilhouette;
+var
+	hw, hh, hd, nd  : TGLFloat;
+  Connectivity : TConnectivity;
+  sil : TGLSilhouette;
+
+    function MakeVector(x,y,z : single) : TAffineVector;
+    begin
+      result[0] := x;
+      result[1] := y;
+      result[2] := z;
+    end;
+begin
+   Connectivity := TConnectivity.Create(true);
+
+   if FNormalDirection=ndInside then
+      nd:=-1
+   else nd:=1;
+   hw:=FCubeSize[0]*0.5;
+   hh:=FCubeSize[1]*0.5;
+   hd:=FCubeSize[2]*0.5;
+
+   if cpFront in FParts then begin
+      Connectivity.AddQuad(
+        MakeVector( hw,  hh, hd),
+        MakeVector(-hw,  hh, hd),
+        MakeVector(-hw, -hh, hd),
+        MakeVector( hw, -hh, hd));
+   end;
+   if cpBack in FParts then begin
+      Connectivity.AddQuad(
+        MakeVector(hw,  hh, -hd),
+        MakeVector( hw, -hh, -hd),
+        MakeVector(-hw, -hh, -hd),
+        MakeVector(-hw,  hh, -hd));
+   end;
+   if cpLeft in FParts then begin
+      Connectivity.AddQuad(
+        MakeVector(-hw,  hh,  hd),
+        MakeVector(-hw,  hh, -hd),
+        MakeVector(-hw, -hh, -hd),
+        MakeVector(-hw, -hh,  hd));
+   end;
+   if cpRight in FParts then begin
+      Connectivity.AddQuad(
+        MakeVector(hw,  hh,  hd),
+        MakeVector(hw, -hh,  hd),
+        MakeVector(hw, -hh, -hd),
+        MakeVector(hw,  hh, -hd));
+   end;
+   if cpTop in FParts then begin
+      Connectivity.AddQuad(
+        MakeVector(-hw, hh, -hd),
+        MakeVector(-hw, hh,  hd),
+        MakeVector( hw, hh,  hd),
+        MakeVector( hw, hh, -hd));
+   end;
+   if cpBottom in FParts then begin
+      Connectivity.AddQuad(
+        MakeVector(-hw, -hh, -hd),
+        MakeVector( hw, -hh, -hd),
+        MakeVector( hw, -hh,  hd),
+        MakeVector(-hw, -hh,  hd));
+   end;
+
+   sil := nil;
+   Connectivity.CreateSilhouetteOmni(
+      silhouetteParameters.SeenFrom, sil, false, silhouetteParameters.CappingRequired);
+
+   result := sil;
+
+   Connectivity.Free;
 end;
 
 // SetCubeWidth
@@ -5126,6 +5204,8 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
+
+
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
