@@ -5,11 +5,10 @@ interface
 uses
    Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
    GLWin32Viewer, GLCadencer, GLTexture, GLMisc, GLScene, GLTerrainRenderer,
-   GLHeightData, GLObjects, VectorGeometry, GLTree, GLL3DTHDS, L3DTFileIO,
-   JPEG, TGA, Keyboard, VectorLists, GLBitmapFont, GLContext,
+   GLHeightData, GLObjects, VectorGeometry, GLTree, JPEG, TGA, Keyboard,
+   VectorLists, GLBitmapFont, GLContext,
    GLWindowsFont, GLHUDObjects, GLSkydome, GLImposter, GLParticleFX, GLGraphics,
-   PersistentClasses, OpenGL1x, ExtCtrls, GLUtils, GLUserShader,
-   GLTextureCombiners, XOpenGL;
+   PersistentClasses, OpenGL1x, ExtCtrls, GLUtils, GLTextureCombiners, XOpenGL;
 
 type
    TForm1 = class(TForm)
@@ -30,11 +29,11 @@ type
       PFXTrees: TGLCustomPFXManager;
       RenderTrees: TGLParticleFXRenderer;
       Timer1: TTimer;
-      WaterPlane: TGLPlane;
       MLWater: TGLMaterialLibrary;
-    WaterShader: TGLUserShader;
     DOInitializeReflection: TGLDirectOpenGL;
-    DOWaterPlane: TGLDirectOpenGL;
+    DOGLSLWaterPlane: TGLDirectOpenGL;
+    DOClassicWaterPlane: TGLDirectOpenGL;
+    GLBitmapHDS1: TGLBitmapHDS;
       procedure FormCreate(Sender: TObject);
       procedure FormDestroy(Sender: TObject);
       procedure TerrainGetTerrainBounds(var l, t, r, b: Single);
@@ -60,23 +59,22 @@ type
       procedure PFXTreesProgress(Sender: TObject;
         const progressTime: TProgressTimes; var defaultProgress: Boolean);
       function PFXTreesGetParticleCountEvent(Sender: TObject): Integer;
-    procedure WaterShaderDoApply(Sender: TObject;
-      var rci: TRenderContextInfo);
-    procedure WaterShaderDoUnApply(Sender: TObject; Pass: Integer;
-      var rci: TRenderContextInfo; var Continue: Boolean);
     procedure FormResize(Sender: TObject);
     procedure DOInitializeReflectionRender(Sender: TObject;
       var rci: TRenderContextInfo);
-    procedure DOWaterPlaneRender(Sender: TObject;
+    procedure DOGLSLWaterPlaneRender(Sender: TObject;
+      var rci: TRenderContextInfo);
+    procedure DOClassicWaterPlaneRender(Sender: TObject;
       var rci: TRenderContextInfo);
    private
       { Private declarations }
-      hscale, vscale, mapwidth, mapheight : Single;
+//      hscale, mapwidth, mapheight : Single;
       lmp : TPoint;
       camPitch, camTurn, camTime, curPitch, curTurn : Single;
+
+      procedure SetupReflectionMatrix;
    public
       { Public declarations }
-      L3DTHeightDataSource : TGLL3DTHDS;
       TestTree : TGLTree;
       TreesShown : Integer;
       nearTrees : TPersistentObjectList;
@@ -84,6 +82,8 @@ type
       densityBitmap : TBitmap;
       mirrorTexture : TGLTextureHandle;
       reflectionProgram : TGLProgramHandle;
+      enableGLSLWater : Boolean;
+      enableReflection : Boolean;
    end;
 
 var
@@ -94,47 +94,26 @@ implementation
 {$R *.dfm}
 
 const
-   cImposterCacheFile : string = 'media\imposters.bmp';
+   cImposterCacheFile : String = 'media\imposters.bmp';
+   cMapWidth : Integer = 512;
+   cMapHeight : Integer = 512;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   heightmap : TL3DTHeightMap;
-   Density : TPicture;
+   density : TPicture;
 begin
    SetCurrentDir(ExtractFilePath(Application.ExeName));
 
-   // Load L3DT map group
-   L3DTHeightDataSource:=TGLL3DTHDS.Create(nil);
-   hscale:=1;
-   mapwidth:=0;
-   mapheight:=0;
-   with L3DTHeightDataSource do begin
-      L3DTMapGroup.FileName:='media\trees.mgf';
-      L3DTMapGroup.Load;
-      MLTextures:=MLTerrain;
-      heightmap:=TL3DTHeightMap(L3DTMapGroup.GetMapByPoint(0,0,TL3DTHeightMap));
-      if Assigned(heightmap) then begin
-         heightmap.Load;
-         hscale:=heightmap.HorzScale;
-         vscale:=heightmap.VertScale;
-         mapwidth:=heightmap.Width;
-         mapheight:=heightmap.Height;
-         Terrain.Scale.SetVector(hscale,hscale,vscale*128);
-         Terrain.Position.SetPoint(hscale*mapwidth/2,0,-hscale*mapheight/2);
-      end;
-   end;
-   L3DTHeightDataSource.PreLoad(0, 0, Round(mapwidth), hdtSmallInt);
-   WaterPlane.Width:=hscale*mapwidth*5;
-   WaterPlane.Height:=hscale*mapwidth*5;
+   GLBitmapHDS1.Picture.LoadFromFile('media\trees_HF.bmp');
 
-   with MLTerrain.AddTextureMaterial('Detail','media\detailmap.jpg') do begin
+   with MLTerrain.AddTextureMaterial('Terrain', 'media\trees_TX.jpg') do
+      Texture2Name:='Detail';
+   with MLTerrain.AddTextureMaterial('Detail', 'media\detailmap.jpg') do begin
       Material.Texture.TextureMode:=tmModulate;
       TextureScale.SetVector(128,128,128);
    end;
-   MLTerrain.Materials[0].Texture2Name:='Detail';
-
-   // Assign height data source to the terrain renderer
-   Terrain.HeightDataSource:=L3DTHeightDataSource;
+   Terrain.Material.MaterialLibrary:=MLTerrain;
+   Terrain.Material.LibMaterialName:='Terrain';
 
    // Load tree textures
    with MLTrees.AddTextureMaterial('Leaf','media\leaf.tga') do begin
@@ -195,32 +174,60 @@ begin
    nearTrees:=TPersistentObjectList.Create;
 
    camTurn:=-60;
+   enableReflection:=False;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
    ShowCursor(True);
    nearTrees.Free;
-   L3DTHeightDataSource.Free;
+end;
+
+procedure TForm1.FormResize(Sender: TObject);
+begin
+   Camera.FocalLength:=Width*50/800;
 end;
 
 procedure TForm1.PFXTreesCreateParticle(Sender: TObject;
   aParticle: TGLParticle);
 var
    u, v, p : Single;
+   x, y, i, j, dark : Integer;
+   pixelX, pixelY : Integer;
 begin
    repeat
-      u:=Random*0.88+0.06;
-      v:=Random*0.88+0.06;
-      p:=((densityBitmap.Canvas.Pixels[Round(u*densityBitmap.Width),
-                                       Round(v*densityBitmap.Height)] shr 8) and 255)/255;
-   until p>ClampValue(Random, 0.3, 1);
-
-   aParticle.PosX:=(0.5-u)*hscale*mapwidth-2;
-   aParticle.PosY:=0;
-   aParticle.PosZ:=(0.5-v)*hscale*mapheight;
-   aParticle.PosY:=Terrain.InterpolatedHeight(aParticle.Position);
+      repeat
+         u:=Random*0.88+0.06;
+         v:=Random*0.88+0.06;
+         pixelX:=Round(u*densityBitmap.Width);
+         pixelY:=Round(v*densityBitmap.Height);
+         p:=((densityBitmap.Canvas.Pixels[pixelX, pixelY] shr 8) and 255)/255;
+      until p>Random;
+      aParticle.PosX:=(0.5-u)*Terrain.Scale.X*cMapWidth;
+      aParticle.PosY:=0;
+      aParticle.PosZ:=(0.5-(1-v))*Terrain.Scale.Y*cMapHeight;
+      aParticle.PosY:=Terrain.InterpolatedHeight(aParticle.Position);
+   until True;//aParticle.PosY>0;
    aParticle.Tag:=Random(360);
+
+   // Remove probablility for current location
+   densityBitmap.Canvas.Pixels[pixelX, pixelY]:=
+      RGB(0, GetRValue(densityBitmap.Canvas.Pixels[pixelX, pixelY]) div 2, 0);
+
+   // Blob shadow beneath tree
+   with MLTerrain.Materials[0].Material.Texture do begin
+      with Image.GetBitmap32(GL_TEXTURE_2D) do begin
+         x:=Round(u*(Image.Width-1));
+         y:=Round((1-v)*(Image.Height-1));
+         for i:=-8 to 8 do
+            for j:=-8 to 8 do with ScanLine[y+j][x+i] do begin
+               dark:=20;
+               r:=MaxInteger(r-dark,0);
+               g:=MaxInteger(g-dark,0);
+               b:=MaxInteger(b-dark,0);
+            end;
+      end;
+   end;     
 end;
 
 procedure TForm1.PFXTreesBeginParticles(Sender: TObject;
@@ -290,8 +297,10 @@ end;
 
 procedure TForm1.TerrainGetTerrainBounds(var l, t, r, b: Single);
 begin
-  if L3DTHeightDataSource.L3DTMapGroup.IsLoaded then
-    L3DTHeightDataSource.L3DTMapGroup.GetMapBounds(l,t,r,b);
+   l:=0;
+   t:=cMapHeight;
+   r:=cMapWidth;
+   b:=0;
 end;
 
 procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
@@ -348,13 +357,21 @@ begin
          TreesShown:=TreesShown+100;
       VK_SUBTRACT : if TreesShown>0 then
           TreesShown:=TreesShown-100;
+      Word('R') : enableReflection:=not enableReflection;
    end;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
+var
+   hud : String;
 begin
-   GLHUDText1.Text:=Format('%.1f FPS - %d trees',
-                           [SceneViewer.FramesPerSecond, TreesShown]);
+   hud:=Format('%.1f FPS - %d trees',
+               [SceneViewer.FramesPerSecond, TreesShown]);
+   if enableReflection then
+      hud:=hud+#13#10+'Water reflections';
+   if enableGLSLWater then
+      hud:=hud+#13#10+'GLSL water';
+   GLHUDText1.Text:=hud;
    SceneViewer.ResetPerformanceMonitor;
    Caption:=Format('%.2f', [RenderTrees.LastSortTime]);
 end;
@@ -408,7 +425,7 @@ begin
    defaultProgress:=False;
 end;
 
-procedure TForm1.WaterShaderDoApply(Sender: TObject;
+procedure TForm1.DOClassicWaterPlaneRender(Sender: TObject;
   var rci: TRenderContextInfo);
 const
    cWaveScale = 7;
@@ -417,8 +434,15 @@ const
 var
    tex0Matrix, tex1Matrix : TMatrix;
    tWave : Single;
+   pos : TAffineVector;
+   tex : TTexPoint;
+   x, y : Integer;
 begin
+   if enableGLSLWater then Exit;
+
    tWave:=GLCadencer.CurrentTime*cWaveSpeed;
+
+   glPushAttrib(GL_ENABLE_BIT);
 
    glMatrixMode(GL_TEXTURE);
 
@@ -428,6 +452,8 @@ begin
    tex0Matrix[3][0]:=tWave*1.1;
    tex0Matrix[3][1]:=tWave*1.06;
    glLoadMatrixf(@tex0Matrix);
+   glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
+   glEnable(GL_TEXTURE_2D);
 
    glActiveTextureARB(GL_TEXTURE1_ARB);
 
@@ -440,24 +466,58 @@ begin
    glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
    glEnable(GL_TEXTURE_2D);
 
+   if enableReflection then begin
+      glActiveTextureARB(GL_TEXTURE2_ARB);
+
+      glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
+      glEnable(GL_TEXTURE_2D);
+
+      SetupReflectionMatrix;
+   end;
+
    glActiveTextureARB(GL_TEXTURE0_ARB);
 
    glMatrixMode(GL_MODELVIEW);
 
-   SetupTextureCombiners( 'Tex0:=Tex1*Tex0;'#13#10
-                         +'Tex1:=Tex0+Col;');
-   xglMapTexCoordToDual;
-end;
+   if enableReflection then begin
+      SetupTextureCombiners( 'Tex0:=Tex1*Tex0;'#13#10
+                            +'Tex1:=Tex0+Col;'#13#10
+                            +'Tex2:=Tex1+Tex2-0.5;');
+      glColor4f(0.0, 0.3, 0.3, 1);
+   end else begin
+      SetupTextureCombiners( 'Tex0:=Tex1*Tex0;'#13#10
+                            +'Tex1:=Tex0+Col;');
+      glColor4f(0.0, 0.4, 0.7, 1);
+   end;
 
-procedure TForm1.WaterShaderDoUnApply(Sender: TObject; Pass: Integer;
-  var rci: TRenderContextInfo; var Continue: Boolean);
-begin
-   xglMapTexCoordToMain;
+   glDisable(GL_CULL_FACE);
+   for y:=-20 to 20-1 do begin
+      glBegin(GL_QUAD_STRIP);
+      for x:=-20 to 20 do begin
+         SetVector(pos, x*500, 0, y*500);
+         tex:=TexPointMake(x, y);
+         glMultiTexCoord2fvARB(GL_TEXTURE0_ARB, @tex);
+         glMultiTexCoord2fvARB(GL_TEXTURE1_ARB, @tex);
+         glMultiTexCoord3fvARB(GL_TEXTURE2_ARB, @pos);
+         glVertex3fv(@pos);
+         SetVector(pos, x*500, 0, (y+1)*500);
+         tex:=TexPointMake(x, (y+1));
+         glMultiTexCoord3fvARB(GL_TEXTURE0_ARB, @tex);
+         glMultiTexCoord3fvARB(GL_TEXTURE1_ARB, @tex);
+         glMultiTexCoord3fvARB(GL_TEXTURE2_ARB, @pos);
+         glVertex3fv(@pos);
+      end;
+      glEnd;
+   end;
 
    glMatrixMode(GL_TEXTURE);
 
+   if enableReflection then begin
+      glActiveTextureARB(GL_TEXTURE2_ARB);
+      glLoadIdentity;
+   end;
+
    glActiveTextureARB(GL_TEXTURE1_ARB);
-   glDisable(GL_TEXTURE_2D);
    glLoadIdentity;
 
    glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -465,12 +525,7 @@ begin
 
    glMatrixMode(GL_MODELVIEW);
 
-   Continue:=False;
-end;
-
-procedure TForm1.FormResize(Sender: TObject);
-begin
-   Camera.FocalLength:=Width*50/800;
+   glPopAttrib;
 end;
 
 procedure TForm1.DOInitializeReflectionRender(Sender: TObject;
@@ -482,19 +537,12 @@ var
    frustumBackup : TFrustum;
    clipPlane : TDoubleHmgPlane;
 begin
+   enableGLSLWater:=GL_ARB_shader_objects and GL_ARB_fragment_shader and GL_ARB_vertex_shader;
+
+   if not enableReflection then Exit;
+
    if not Assigned(mirrorTexture) then
       mirrorTexture:=TGLTextureHandle.Create;
-
-   if not Assigned(reflectionProgram) then begin
-      reflectionProgram:=TGLProgramHandle.CreateAndAllocate;
-
-      reflectionProgram.AddShader(TGLVertexShaderHandle, LoadStringFromFile('media\water_vp.glsl'));
-      reflectionProgram.AddShader(TGLFragmentShaderHandle, LoadStringFromFile('media\water_fp.glsl'));
-      if not reflectionProgram.LinkProgram then
-         raise Exception.Create(reflectionProgram.InfoLog);
-      if not reflectionProgram.ValidateProgram then
-         raise Exception.Create(reflectionProgram.InfoLog);
-   end;
 
    glPushAttrib(GL_ENABLE_BIT);
    glPushMatrix;
@@ -507,11 +555,10 @@ begin
    glLoadMatrixf(@GLScene.CurrentBuffer.ModelViewMatrix);
    GLScene.CurrentBuffer.PushModelViewMatrix(curMat);
 
-//   glDisable(GL_CULL_FACE);
    glFrontFace(GL_CW);
 
    glEnable(GL_CLIP_PLANE0);
-   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 10, 0), VectorNegate(YVector)));
+   SetPlane(clipPlane, PlaneMake(AffineVectorMake(0, 5, 0), VectorNegate(YVector)));
    glClipPlane(GL_CLIP_PLANE0, @clipPlane); 
 
    cameraPosBackup:=rci.cameraPosition;
@@ -575,25 +622,31 @@ begin
    glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
 end;
 
-procedure TForm1.DOWaterPlaneRender(Sender: TObject;
+procedure TForm1.DOGLSLWaterPlaneRender(Sender: TObject;
   var rci: TRenderContextInfo);
 var
    x, y : Integer;
-   w, h : Single;
 begin
+   if not enableGLSLWater then Exit;
+
+   if not Assigned(reflectionProgram) then begin
+      reflectionProgram:=TGLProgramHandle.CreateAndAllocate;
+
+      reflectionProgram.AddShader(TGLVertexShaderHandle, LoadStringFromFile('media\water_vp.glsl'));
+      reflectionProgram.AddShader(TGLFragmentShaderHandle, LoadStringFromFile('media\water_fp.glsl'));
+      if not reflectionProgram.LinkProgram then
+         raise Exception.Create(reflectionProgram.InfoLog);
+      if not reflectionProgram.ValidateProgram then
+         raise Exception.Create(reflectionProgram.InfoLog);
+   end;
+
    glBindTexture(GL_TEXTURE_2D, mirrorTexture.Handle);
    glEnable(GL_TEXTURE_2D);
 
-   w:=0.5*SceneViewer.Width/RoundUpToPowerOf2(SceneViewer.Width);
-   h:=0.5*SceneViewer.Height/RoundUpToPowerOf2(SceneViewer.Height);
-
    glMatrixMode(GL_TEXTURE);
-      glLoadIdentity;
-      glTranslatef(w, h, 0);
-      glScalef(w, h, 0);
-      Camera.ApplyPerspective(SceneViewer.Buffer.ViewPort, SceneViewer.Width, SceneViewer.Height, 96);
-      Camera.Apply;
-      glScalef(1, -1, 1);
+   
+   SetupReflectionMatrix;
+   
    glMatrixMode(GL_MODELVIEW);
 
    reflectionProgram.UseProgramObject;
@@ -624,6 +677,23 @@ begin
    glMatrixMode(GL_MODELVIEW);
 
    glDisable(GL_TEXTURE_2D);
+end;
+
+// SetupReflectionMatrix
+//
+procedure TForm1.SetupReflectionMatrix;
+var
+   w, h : Single;
+begin
+   w:=0.5*SceneViewer.Width/RoundUpToPowerOf2(SceneViewer.Width);
+   h:=0.5*SceneViewer.Height/RoundUpToPowerOf2(SceneViewer.Height);
+
+   glLoadIdentity;
+   glTranslatef(w, h, 0);
+   glScalef(w, h, 0);
+   Camera.ApplyPerspective(SceneViewer.Buffer.ViewPort, SceneViewer.Width, SceneViewer.Height, 96);
+   Camera.Apply;
+   glScalef(1, -1, 1);
 end;
 
 end.

@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 298
-  Top = 107
+  Left = 249
+  Top = 100
   Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
@@ -26,8 +26,8 @@ object Form1: TForm1
     Height = 413
     Camera = Camera
     Buffer.FogEnvironment.FogColor.Color = {E5D0423FD9CE573F6210783F0000803F}
-    Buffer.FogEnvironment.FogStart = 3000.000000000000000000
-    Buffer.FogEnvironment.FogEnd = 5000.000000000000000000
+    Buffer.FogEnvironment.FogStart = 3000
+    Buffer.FogEnvironment.FogEnd = 5000
     Buffer.BackgroundColor = 16242626
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roDestinationAlpha]
     Buffer.FogEnable = True
@@ -50,44 +50,39 @@ object Form1: TForm1
       Up.Coordinates = {0000000000000000000080BF00000000}
       Bands = <>
       Stars = <>
-      SunElevation = 60.000000000000000000
-      Turbidity = 15.000000000000000000
+      SunElevation = 60
+      Turbidity = 15
       Slices = 48
       Stacks = 24
     end
     object Light: TGLLightSource
       Ambient.Color = {CDCC4C3FCDCC4C3FCDCC4C3F0000803F}
-      ConstAttenuation = 1.000000000000000000
+      ConstAttenuation = 1
       LightStyle = lsParallel
-      SpotCutOff = 180.000000000000000000
+      SpotCutOff = 180
       SpotDirection.Coordinates = {00000000000000000000803F00000000}
     end
     object Terrain: TGLTerrainRenderer
       Direction.Coordinates = {000000000000803F0000000000000000}
+      Position.Coordinates = {0000204500008242000020C50000803F}
+      Scale.Coordinates = {00002041000020410000204000000000}
       Up.Coordinates = {00000000000000800000803F00000000}
-      TilesPerTexture = 1.000000000000000000
+      HeightDataSource = GLBitmapHDS1
+      TileSize = 64
+      TilesPerTexture = 8
       MaterialLibrary = MLTerrain
-      QualityDistance = 500.000000000000000000
+      QualityDistance = 500
       QualityStyle = hrsTesselated
       CLODPrecision = 30
       OnGetTerrainBounds = TerrainGetTerrainBounds
     end
-    object WaterPlane: TGLPlane
-      Material.MaterialLibrary = MLWater
-      Material.LibMaterialName = 'Water'
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {00000000000000000000803F00000000}
-      Visible = False
-      Height = 1.000000000000000000
-      Width = 1.000000000000000000
-      XTiles = 20
-      YTiles = 20
-      Style = [psTileTexture]
-      NoZWrite = False
-    end
-    object DOWaterPlane: TGLDirectOpenGL
+    object DOClassicWaterPlane: TGLDirectOpenGL
       UseBuildList = False
-      OnRender = DOWaterPlaneRender
+      OnRender = DOClassicWaterPlaneRender
+    end
+    object DOGLSLWaterPlane: TGLDirectOpenGL
+      UseBuildList = False
+      OnRender = DOGLSLWaterPlaneRender
     end
     object RenderTrees: TGLParticleFXRenderer
       ZCull = False
@@ -105,19 +100,20 @@ object Form1: TForm1
       ModulateColor.Color = {48E13A3F0AD7233E8FC2753F0000803F}
     end
     object Camera: TGLCamera
-      DepthOfView = 5000.000000000000000000
-      FocalLength = 50.000000000000000000
+      DepthOfView = 5000
+      FocalLength = 50
       CameraStyle = csInfinitePerspective
+      Position.Coordinates = {0080D4C3000000000080BBC40000803F}
       Direction.Coordinates = {F304353F00000000F304353F00000000}
       Up.Coordinates = {00000000FFFF7F3F0000008000000000}
     end
   end
   object MLTrees: TGLMaterialLibrary
-    Left = 104
+    Left = 208
     Top = 8
   end
   object MLTerrain: TGLMaterialLibrary
-    Left = 40
+    Left = 104
     Top = 8
   end
   object GLCadencer: TGLCadencer
@@ -133,7 +129,7 @@ object Form1: TForm1
     Font.Name = 'MS Sans Serif'
     Font.Style = [fsBold]
     Left = 40
-    Top = 40
+    Top = 8
   end
   object SIBTree: TGLStaticImposterBuilder
     RenderPoint = GLRenderPoint
@@ -141,53 +137,53 @@ object Form1: TForm1
     BuildOffset.Coordinates = {000000009A99193F000000000000803F}
     ImposterOptions = [impoBlended, impoAlphaTest, impoPerspectiveCorrection]
     ImposterReference = irBottom
-    AlphaTreshold = 0.500000000000000000
+    AlphaTreshold = 0.5
     OnLoadingImposter = SIBTreeLoadingImposter
     OnImposterLoaded = SIBTreeImposterLoaded
     Coronas = <
       item
         Samples = 13
-        Elevation = -15.000000000000000000
+        Elevation = -15
       end
       item
         Samples = 13
       end
       item
         Samples = 13
-        Elevation = 15.000000000000000000
+        Elevation = 15
       end
       item
         Samples = 13
-        Elevation = 28.000000000000000000
+        Elevation = 28
       end
       item
         Samples = 12
-        Elevation = 40.000000000000000000
+        Elevation = 40
       end>
     SampleSize = 128
-    SamplingRatioBias = 1.149999976158142000
-    SamplesAlphaScale = 5.000000000000000000
-    Left = 104
+    SamplingRatioBias = 1.14999997615814
+    SamplesAlphaScale = 5
+    Left = 208
     Top = 40
   end
   object PFXTrees: TGLCustomPFXManager
     Cadencer = GLCadencer
     Renderer = RenderTrees
     OnCreateParticle = PFXTreesCreateParticle
-    Friction = 1.000000000000000000
+    Friction = 1
     BlendingMode = bmTransparency
     OnBeginParticles = PFXTreesBeginParticles
     OnRenderParticle = PFXTreesRenderParticle
     OnEndParticles = PFXTreesEndParticles
     OnProgress = PFXTreesProgress
     OnGetParticleCountEvent = PFXTreesGetParticleCountEvent
-    ParticleSize = 1.000000000000000000
+    ParticleSize = 1
     LifeColors = <
       item
-        LifeTime = 3.000000000000000000
-        SizeScale = 1.000000000000000000
+        LifeTime = 3
+        SizeScale = 1
       end>
-    Left = 104
+    Left = 208
     Top = 72
   end
   object Timer1: TTimer
@@ -200,7 +196,7 @@ object Form1: TForm1
       item
         Name = 'Water'
         Material.BackProperties.Diffuse.Color = {CDCC4C3ECDCCCC3ECDCC4C3FCDCCCC3E}
-        Material.FrontProperties.Diffuse.Color = {CDCC4C3ECDCCCC3E0000803F0000003F}
+        Material.FrontProperties.Diffuse.Color = {CDCC4C3E0000003F0000803F0000803F}
         Material.BlendingMode = bmTransparency
         Material.MaterialOptions = [moNoLighting]
         Material.Texture.ImageClassName = 'TGLPicFileImage'
@@ -210,7 +206,6 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Material.FaceCulling = fcNoCull
         Tag = 0
-        Shader = WaterShader
       end
       item
         Name = 'WaterBump'
@@ -221,14 +216,12 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Tag = 0
       end>
-    Left = 168
+    Left = 152
     Top = 8
   end
-  object WaterShader: TGLUserShader
-    OnDoApply = WaterShaderDoApply
-    OnDoUnApply = WaterShaderDoUnApply
-    ShaderStyle = ssLowLevel
-    Left = 200
-    Top = 8
+  object GLBitmapHDS1: TGLBitmapHDS
+    MaxPoolSize = 0
+    Left = 104
+    Top = 40
   end
 end
