@@ -2816,4 +2816,8 @@ begin
     dJointSetUniversalAxis2(FJointID,Value[0],Value[1],Value[2]);
 end;
 
+initialization
+
+  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
+
 end.
