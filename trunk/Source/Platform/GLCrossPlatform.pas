@@ -89,6 +89,7 @@ procedure InformationDlg(const msg : String);
 function QuestionDlg(const msg : String) : Boolean;
 {: Posp a simple dialog with a string input. }
 function InputDlg(const aCaption, aPrompt, aDefault : String) : String;
+
 {: Pops up a simple save picture dialog. }
 function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
 {: Pops up a simple open picture dialog. }
@@ -229,14 +230,17 @@ end;
 // IntersectGLRect
 //
 procedure IntersectGLRect(var aRect : TGLRect; const rect2 : TGLRect);
+var
+   a : Integer;
 begin
    if (aRect.Left>rect2.Right) or (aRect.Right<rect2.Left)
       or (aRect.Top>rect2.Bottom) or (aRect.Bottom<rect2.Top) then begin
       // no intersection
-      aRect.Left:=0;
-      aRect.Right:=0;
-      aRect.Top:=0;
-      aRect.Bottom:=0;
+      a:=0;
+      aRect.Left:=a;
+      aRect.Right:=a;
+      aRect.Top:=a;
+      aRect.Bottom:=a;
    end else begin
       if aRect.Left<rect2.Left then
          aRect.Left:=rect2.Left;
