@@ -1138,11 +1138,13 @@ procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
 procedure ScaleFloatArray(var values : TSingleArray;
                           factor : Single); overload;
 
-{: Adds delta to values in the array.<p> }
+{: Adds delta to values in the array.<p>
+   Array size must be a multiple of four. }
 procedure OffsetFloatArray(values : PSingleArray; nb : Integer;
                            var delta : Single); overload;
 procedure OffsetFloatArray(var values : array of Single;
                            delta : Single); overload;
+procedure OffsetFloatArray(valuesDest, valuesDelta : PSingleArray; nb : Integer); overload;
 
 {: Returns the max of the X, Y and Z components of a vector (W is ignored). }
 function MaxXYZComponent(const v : TVector) : Single; overload;
@@ -7996,6 +7998,31 @@ procedure OffsetFloatArray(var values : array of Single;
 begin
    if Length(values)>0 then
       ScaleFloatArray(@values[0], Length(values), delta);
+end;
+
+// OffsetFloatArray (raw, raw)
+//
+procedure OffsetFloatArray(valuesDest, valuesDelta : PSingleArray; nb : Integer);
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      test  ecx, ecx
+      jz    @@End
+
+@@FPULoop:
+      dec   ecx
+      fld   dword ptr [eax+ecx*4]
+      fadd  dword ptr [edx+ecx*4]
+      fstp  dword ptr [eax+ecx*4]
+      jnz   @@FPULoop
+
+@@End:
+{$else}
+var
+   i : Integer;
+begin
+   for i:=0 to nb-1 do
+      valuesDest[i]:=valuesDest[i]+valuesDelta[i];
+{$endif}
 end;
 
 // MaxXYZComponent
