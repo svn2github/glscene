@@ -633,6 +633,7 @@ begin
    SetLength(normalsCount, reference.Count);
    refList:=reference.List;
    indicesList:=indices.List;
+   resultList:=Result.List;
    // 1st step, calculate triangle normals and sum
    i:=0; while i<indices.Count do begin
       v:=CalcPlaneNormal(refList[indicesList[i]],
@@ -640,13 +641,12 @@ begin
                          refList[indicesList[i+2]]);
       for n:=i to i+2 do begin
          k:=indicesList[n];
-         Result.TranslateItem(k, v);
+         AddVector(resultList[k], v);
          Inc(normalsCount[k]);
       end;
       Inc(i, 3);
    end;
    // 2nd step, average normals
-   resultList:=Result.List;
    reciproquals:=Get0to255reciproquals;
    for i:=0 to reference.Count-1 do
       ScaleVector(resultList[i], reciproquals[normalsCount[i]]);
