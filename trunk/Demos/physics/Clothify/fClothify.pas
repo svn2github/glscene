@@ -3,11 +3,11 @@ unit fClothify;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer, GLMisc,
-  GLFileMS3D, VerletClasses, VectorTypes, VectorLists, Geometry, GLTexture, OpenGL12,
-  StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane, GLVerletClothify,
-  ComCtrls, jpeg, GLFile3DS, GLODEManager, GLShadowVolume;
+  GLFileMS3D, VerletClasses, VectorTypes, VectorLists, Geometry, GLTexture,
+  OpenGL12, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
+  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, GLShadowVolume;
 
 type
   TfrmClothify = class(TForm)
@@ -77,8 +77,6 @@ var
 
 implementation
 
-uses StrFunctions;
-
 {$R *.dfm}
 
 function myVectorMake(Vector : TVector) : TAffineVector;
@@ -99,12 +97,12 @@ procedure TfrmClothify.Button_LoadMeshClick(Sender: TObject);
 var
   Floor : TVCFloor;
   Sphere : TVCSphere;
-  Cylinder : TVCCylinder;
   Capsule : TVCCapsule;
   Sides : TAffineVector;
   Cube : TVCCube;
   s : string;
   f : single;
+  p : Integer;
 
   procedure CreateCubeFromGLCube(GLCube : TGLCube);
   begin
@@ -116,6 +114,7 @@ var
     Sides[2] := GLCube.CubeDepth * 1.1;
     Cube.Sides := Sides;//}
   end;
+
 begin
   randomize;
 
@@ -126,15 +125,14 @@ begin
 
   DecimalSeparator := '.';
 
-  if GetAfter(',', s) <> '' then
-  begin
-    f := StrToFloat(GetAfter(',', s));
-    GLActor1.Scale.AsVector := Geometry.VectorMake(f,f,f,0)
-  end else
-    GLActor1.Scale.AsVector := Geometry.VectorMake(1,1,1,0);
+  p:=Pos(',', s);
+  if p>0 then begin
+      f := StrToFloatDef(Trim(Copy(s, p+1, MaxInt)), 1);
+      GLActor1.Scale.AsVector := VectorMake(f,f,f,0)
+  end else GLActor1.Scale.AsVector := XYZHmgVector;
 
   GLActor1.AutoCentering := [macUseBarycenter];
-  GLActor1.LoadFromFile(GetBefore(',',s+','));
+  GLActor1.LoadFromFile(Trim(Copy(s, 1, p-1)));
 
   GLActor1.Roll(random*360);
   GLActor1.Turn(random*360);//}
