@@ -7,7 +7,7 @@
    and a virtual heap (large blocks).<br>
    Supports Shared Memory (like ShareMem, but no DLL required).<p>
 
-   Copyright 2003 - Creative IT / Eric Grange<br>
+   Copyright 2003-2004 / Creative IT / Eric Grange<br>
    Default licensing is GPL, use under MPL can be granted (on request, for free)
    for users/companies "supporting" Open Source (purely subjective decision by us)<p>
 
@@ -126,7 +126,7 @@ uses Windows;
 
 // If set RMMUsageSnapShot functions will be available.
 // These functions allow generating a diagnostic and memory map report
-{$define ALLOW_USAGE_SNAPSHOT}
+{.$define ALLOW_USAGE_SNAPSHOT}
 
 // If set benchmarking will happen and track number of call and their duration
 // This has a performance penalty though, and may inflate memory management
