@@ -2,7 +2,6 @@ package GLSceneK3;
 
 {$R *.res}
 {$R '../Source/GLScene.dcr'}
-{$R '../Source/DesignTime/GLSceneRegister.dcr'}
 {$R '../Source/GLHeightData.dcr'}
 {$R '../Source/GLTerrainRenderer.dcr'}
 {$R '../Source/GLExtrusion.dcr'}
