@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>23/10/02 - EG - Faster .GTS and .PLY imports (parsing)
       <li>22/10/02 - EG - Added actor options, fixed skeleton normals transform (thx Marcus)
       <li>21/10/02 - EG - Read support for .GTS (GNU Triangulated Surface library) 
       <li>18/10/02 - EG - FindExtByIndex (Adem)
@@ -5694,7 +5695,7 @@ end;
 procedure TGLGTSVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nv, ne, nf, k, ei : Integer;
-   sl, tl : TStringList;
+   sl : TStringList;
    mesh : TMeshObject;
    fg : TFGVertexIndexList;
    buf : String;
@@ -5702,7 +5703,6 @@ var
    pEdge, pTri, p : PChar;
 begin
    sl:=TStringList.Create;
-   tl:=TStringList.Create;
    try
       sl.LoadFromStream(aStream);
       mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
@@ -5714,8 +5714,8 @@ begin
          nf:=ParseInteger(p);
          if (nv or nf or ne)=0 then Exit;
          for i:=1 to nv do begin
-            tl.CommaText:=sl[i];
-            mesh.Vertices.Add(StrToFloatDef(tl[0]), StrToFloatDef(tl[1]), StrToFloatDef(tl[2]))
+            p:=PChar(sl[i]);
+            mesh.Vertices.Add(ParseFloat(p), ParseFloat(p), ParseFloat(p));
          end;
          fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
          for i:=1+nv+ne to nv+ne+nf do begin
@@ -5740,7 +5740,6 @@ begin
          mesh.BuildNormals(fg.VertexIndices, momTriangles);
       end;
    finally
-      tl.Free;
       sl.Free;
    end;
 end;
@@ -5754,12 +5753,12 @@ end;
 procedure TGLPLYVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nbVertices, nbFaces : Integer;
-   sl, tl : TStringList;
+   sl : TStringList;
    mesh : TMeshObject;
    fg : TFGVertexIndexList;
+   p : PChar;
 begin
    sl:=TStringList.Create;
-   tl:=TStringList.Create;
    try
       sl.LoadFromStream(aStream);
       mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
@@ -5781,10 +5780,8 @@ begin
       // vertices
       mesh.Vertices.Capacity:=nbVertices;
       while (i<sl.Count) and (nbVertices>0) do begin
-         tl.CommaText:=sl[i];
-         if tl.Count<3 then
-            raise Exception.Create('Unsupported PLY variant.');
-         mesh.Vertices.Add(AffineVectorMake(StrToFloatDef(tl[0]), StrToFloatDef(tl[1]), StrToFloatDef(tl[2])));
+         p:=PChar(sl[i]);
+         mesh.Vertices.Add(ParseFloat(p), ParseFloat(p), ParseFloat(p));//AffineVectorMake(StrToFloatDef(tl[0]), StrToFloatDef(tl[1]), StrToFloatDef(tl[2])));}
          Dec(nbVertices);
          Inc(i);
       end;
@@ -5793,20 +5790,14 @@ begin
       fg.Mode:=fgmmTriangles;
       fg.VertexIndices.Capacity:=nbFaces*3;
       while (i<sl.Count) and (nbFaces>0) do begin
-         tl.CommaText:=sl[i];
-         if tl[0]<>'3' then
-            raise Exception.Create('Unsupported PLY variant.');
-         with fg.VertexIndices do begin
-            Add(StrToInt(tl[1]));
-            Add(StrToInt(tl[2]));
-            Add(StrToInt(tl[3]));
-         end;
+         p:=PChar(sl[i]);
+         ParseInteger(p); // skip index
+         fg.VertexIndices.Add(ParseInteger(p), ParseInteger(p), ParseInteger(p));
          Dec(nbFaces);
          Inc(i);
       end;
       mesh.BuildNormals(fg.VertexIndices, momTriangles);
    finally
-      tl.Free;
       sl.Free;
    end;
 end;
