@@ -5597,7 +5597,7 @@ var
    vec, cam, targ, rayhit : TAffineVector;
    camAng :real;
 begin
-   if Camera.Style=csOrtho2D then
+   if Camera.CameraStyle=csOrtho2D then
       dov:=2
    else dov:=Camera.DepthOfView;
    np :=Camera.NearPlane;
@@ -5836,7 +5836,7 @@ function TGLSceneViewer.PixelDepthToDistance(aDepth : Single) : Single;
 var
    dov, np, fp : Single;
 begin
-   if Camera.Style=csOrtho2D then
+   if Camera.CameraStyle=csOrtho2D then
       dov:=2
    else dov:=Camera.DepthOfView;    // Depth of View (from np to fp)
    np :=Camera.NearPlane;           // Near plane distance
