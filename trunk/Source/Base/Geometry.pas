@@ -1236,6 +1236,10 @@ function RayCastSphereIntersect(const rayStart, rayVector : TVector;
                                 const sphereCenter : TVector;
                                 const sphereRadius : Single;
                                 var i1, i2 : TVector) : Integer;
+{: Computes the visible radius of a sphere in a perspective projection.<p>
+   This radius can be used for occlusion culling (cone extrusion) or 2D
+   intersection testing. }
+function SphereVisibleRadius(distance, radius : Single) : Single;
 
 //: Determines if volume is clipped or not
 function IsVolumeClipped(const objPos : TVector; const objRadius : Single;
@@ -8334,6 +8338,27 @@ begin
    end;
    Result:=0;
 end;
+
+// SphereVisibleRadius
+//
+function SphereVisibleRadius(distance, radius : Single) : Single;
+var
+   d2, r2, ir, tr : Single;
+begin
+   {  ir² + r² = d²
+      r² + tr² = vr²
+      vr² + d² = (ir+tr)² = ir² + 2.ir.tr + tr²
+
+      ir² + 2.ir.tr + tr² = d² + r² + tr²
+      2.ir.tr = d² + r² - ir²  }
+   d2:=distance*distance;
+   r2:=radius*radius;
+   ir:=Sqrt(d2-r2);
+   tr:=(d2+r2-Sqr(ir))/(2*ir);
+
+   Result:=Sqrt(r2+Sqr(tr));
+end;
+
 
 // IntersectLinePlane
 //
