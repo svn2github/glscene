@@ -71,6 +71,8 @@ function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer =
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
 procedure RestoreDefaultMode;
 
+function CurrentScreenColorDepth : Integer;
+
 var
    vVideoModes        : array of TVideoMode;
    vNumberVideoModes  : Integer = 0;
@@ -102,6 +104,20 @@ const NumberLowResModes = 15;
        (Width:512;Height:384;ColorDepth: 8),(Width:512;Height:384;ColorDepth:15),(Width:512;Height:384;ColorDepth:16),
        (Width:512;Height:384;ColorDepth:24),(Width:512;Height:384;ColorDepth:32)
       );
+
+// CurrentScreenColorDepth
+//
+function CurrentScreenColorDepth : Integer;
+var
+	DC : HDC;
+begin
+	DC:=GetDC(0);
+	try
+		Result:=(GetDeviceCaps(DC, PLANES)*GetDeviceCaps(DC, BITSPIXEL));
+	finally
+		ReleaseDC(0, DC);
+	end;
+end;
 
 // Assign
 //
