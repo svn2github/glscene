@@ -1204,8 +1204,6 @@ type
          FAutoScaling: TGLCoordinates;
          FMaterialLibraryCachesPrepared : Boolean;
          FConnectivity : TObject;
-         FRendered: Boolean;
-
 
       protected
          { Protected Declarations }
@@ -1217,7 +1215,6 @@ type
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
          procedure SetAutoScaling(const Value: TGLCoordinates);
-	 procedure SetRendered(const Value: Boolean);
          procedure DestroyHandle; override;
 
          {: Invoked after creating a TVectorFile and before loading.<p>
@@ -1353,9 +1350,6 @@ type
          {: Request rendering of skeleton bones over the mesh. }
          property OverlaySkeleton : Boolean read FOverlaySkeleton write SetOverlaySkeleton default False;
 
-         {: If False, Prevents rendering of self but not of children }
-         property Rendered : Boolean read FRendered write SetRendered;
-
    end;
 
    // TGLFreeForm
@@ -1407,7 +1401,6 @@ type
          property LightmapLibrary;
          property UseMeshMaterials;
          property NormalsOrientation;
-	 property Rendered;
    end;
 
    // TGLActorOption
@@ -5802,7 +5795,6 @@ begin
    FAutoCentering:=[];
    FAxisAlignedDimensionsCache[0]:=-1;
    FAutoScaling:=TGLCoordinates.CreateInitialized(Self, XYZWHmgVector, csPoint);   
-   FRendered := True;
 end;
 
 // Destroy
@@ -6049,25 +6041,12 @@ begin
    end;
 end;
 
-// SetRendered
-//
-procedure TGLBaseMesh.SetRendered(const Value: Boolean);
-begin
-  if FRendered<>Value then
-  begin
-     FRendered := Value;
-     StructureChanged;
-  end;
-end;
-
-
 // SetAutoScaling
 //
 procedure TGLBaseMesh.SetAutoScaling(const Value: TGLCoordinates);
 begin
-  FAutoScaling.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
+   FAutoScaling.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
 end;
-
 
 // Notification
 //
@@ -6235,7 +6214,7 @@ procedure TGLBaseMesh.DoRender(var rci : TRenderContextInfo;
 begin
    if Assigned(LightmapLibrary) then
       xglForbidSecondTextureUnit;
-   if renderSelf and Rendered then begin
+   if renderSelf then begin
       // set winding
       case FNormalsOrientation of
          mnoDefault : ;// nothing
