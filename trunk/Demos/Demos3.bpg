@@ -11,7 +11,8 @@ BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
 PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
   shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe texcombine.exe \
-  subdivide.exe machine.exe simple.exe Project1.exe CgSimple.exe CgTexture.exe
+  subdivide.exe machine.exe simple.exe Project1.exe CgSimple.exe CgTexture.exe \
+  multimaterial.exe ducky.exe fog.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -61,4 +62,11 @@ CgSimple.exe: cgshaders\simple\CgSimple.dpr
 CgTexture.exe: cgshaders\texturing\CgTexture.dpr
   $(DCC)
 
+multimaterial.exe: materials\multimaterial\multimaterial.dpr
+  $(DCC)
 
+ducky.exe: meshes\ducky\ducky.dpr
+  $(DCC)
+
+fog.exe: rendering\fog\fog.dpr
+  $(DCC)
