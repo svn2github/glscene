@@ -4,6 +4,7 @@
 	Collision-detection management for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>09/05/03 - DanB - Added FastCheckCubeVsFace (Matheus Degiovani)
       <li>13/02/03 - DanB - New collision code, and support for scaled objects
       <li>22/02/01 - Egg - Included new collision code by Uwe Raabe
       <li>08/08/00 - Egg - Fixed TGLBCollision.Assign
@@ -152,8 +153,8 @@ const
        (FastCheckPointVsPoint,      FastCheckPointVsSphere,       FastCheckPointVsEllipsoid,       FastCheckPointVsCube,      FastCheckPointVsCube),
        (FastCheckSphereVsPoint,     FastCheckSphereVsSphere,      FastCheckSphereVsEllipsoid,      FastCheckSphereVsCube,     FastCheckSphereVsCube),
        (FastCheckEllipsoidVsPoint,  FastCheckEllipsoidVsSphere,   FastCheckEllipsoidVsEllipsoid,   FastCheckEllipsoidVsCube,  FastCheckEllipsoidVsCube),
-       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        IntersectCubes,            IntersectCubes{FastCheckCubeVsFace}),
-       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        IntersectCubes{FastCheckFaceVsCube},       FastCheckFaceVsFace)
+       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        FastCheckCubeVsCube,       FastCheckCubeVsFace),
+       (FastCheckCubeVsPoint,       FastCheckCubeVsSphere,        FastCheckCubeVsEllipsoid,        FastCheckFaceVsCube,       FastCheckFaceVsFace)
       );
 
 // Collision utility routines
@@ -465,10 +466,11 @@ begin
 end;
 
 
-//  FastCheckCubeVsFace - by Dan Bartlett
+//  FastCheckCubeVsFace
 //
 //  Behaviour - Checks for collisions between Faces and cube by Checking
-//              whether triangles on the mesh have a point inside the cube
+//              whether triangles on the mesh have a point inside the cube,
+//              or a triangle intersects the side
 //
 //  Issues -  Checks whether triangles on the mesh have a point inside the cube
 //            1)  When the cube is completely inside a mesh, it will contain
@@ -479,9 +481,9 @@ end;
 
 function FastCheckCubeVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 var
-   triList : TAffineVectorList;
-   m1to2, m2to1 : TMatrix;
-   i:integer;
+//   triList : TAffineVectorList;
+//   m1to2, m2to1 : TMatrix;
+//   i:integer;
    v:TVector;
 begin
    result:= false;
@@ -490,38 +492,8 @@ begin
       if not Assigned(TGLFreeForm(obj2).Octree) then
          TGLFreeForm(obj2).BuildOctree;
 
-      // Check triangles against the other object
-      // check only the one that are near the destination object (using octree of obj2)
-      // get the 'hot' ones using the tree
-
-      MatrixMultiply(obj2.AbsoluteMatrix, obj1.InvAbsoluteMatrix, m1to2);
-      MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m2to1);
-
-      //does this return Triangles inside cube or triangles near cube?
-      triList:=TGLFreeForm(obj2).Octree.GetTrianglesFromNodesIntersectingCube(obj1.AxisAlignedBoundingBox, m2to1, m1to2);
-
-      if Trilist.Count>0 then   //this should have been enough to return true
-      begin
-//        trilist.TransformAsPoints(obj2.AbsoluteMatrix);
-//        trilist.TransformAsPoints(obj1.InvAbsoluteMatrix);
-        trilist.TransformAsPoints(m1to2);
-        for i:=0 to TriList.Count-1 do
-        begin
-          // calc vector expressed in local coordinates (for obj2)
-          v:=VectorMake(TriList.Items[i]);
-          // rescale to unit dimensions
-          DivideVector(v, obj1.AxisAlignedDimensionsUnscaled);
-          // if abs() of all components are below 1, collision
-          if (MaxAbsXYZComponent(v)<=1)then
-          begin
-            Result:=True;
-            Break;
-          end;
-        end;
-      end;
-
-      TriList.Free;
-
+      Result:=TGLFreeForm(obj2).OctreeAABBIntersect(obj1.AxisAlignedBoundingBoxUnscaled,obj1.AbsoluteMatrix,obj1.InvAbsoluteMatrix)
+      //could then analyse triangles and return contact points
    end else begin
       // CubeVsFace only works if one is FreeForm Object
       Result:=IntersectCubes(obj1, obj2);
