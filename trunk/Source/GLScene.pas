@@ -1031,6 +1031,7 @@ type
          property TransformationMode;
          property TurnAngle;
          property Up;
+         property Visible;
          property OnProgress;
          property Behaviours;
    end;
