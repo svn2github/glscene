@@ -6,6 +6,7 @@
    or the casters will be rendered incorrectly.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/12/04 - MF - Added some documentation
       <li>23/03/04 - EG - Added Active property
       <li>29/11/03 - MF - Removed a "feature" that would draw the shadow of
                           (hierarchially) invisible objects
@@ -26,6 +27,20 @@ type
 
    TGLShadowVolume = class;
 
+   {: Determines when a shadow volume should generate a cap at the beginning and
+    end of the volume. This is ONLY necessary when there's a chance that the
+    camera could end up inside the shadow _or_ between the light source and
+    the camera. If those two situations can't occur then not using capping is
+    the best option.<br>
+    Note that if you use the capping, you must either set the depth of view of
+    your camera to something very large (f.i. 1e9), or you could use the infinite
+    mode (csInfinitePerspective) of your camera.
+    <ul>
+      <li>svcDefault : Default behaviour
+      <li>svcAlways : Always generates caps
+      <li>svcNever : Never generates caps
+    </ul>
+    }
    TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
    {: Determines when a caster should actually produce a shadow;
@@ -193,7 +208,14 @@ type
    {: Simple shadow volumes.<p>
       Shadow receiving objects are the ShadowVolume's children, shadow casters
       (opaque objects or lights) must be explicitly specified in the Casters
-      collection. }
+      collection.<p>
+      Shadow volumes require that the buffer allows stencil buffers,
+      GLSceneViewer.Buffer.ContextOptions contain roStencinBuffer. Without stencil
+      buffers, shadow volumes will not work properly.<p>
+      Another issue to look out for is the fact that shadow volume capping requires
+      that the camera depth of view is either very high (fi 1e9) or that the
+      camera style is csInfinitePerspective.
+       }
 	TGLShadowVolume = class (TGLImmaterialSceneObject)
 	   private
 			{ Private Declarations }
