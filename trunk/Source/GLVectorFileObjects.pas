@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
       <li>24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
                           Added TexCoordsEx, Binormals, Tangents,
                           Added BuildTangentSpace function (experimental).
@@ -5773,6 +5774,7 @@ begin
    DropMaterialLibraryCache;
    FSkeleton.Free;
    FMeshObjects.Free;
+   FAutoScaling.Free;
    inherited Destroy;
 end;
 
