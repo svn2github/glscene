@@ -1,3 +1,20 @@
+{: TGLTilePlane demo.<p>
+
+   Illustrates the use of TGLTilePlane to render an area made of tiled
+   textures placed in a grid. The components links to a materiallibrary
+   (containing tile materials, referred by index) and renders the area
+   with quads sorted by material.<br>
+   The size of the area for TGLTilePlane is infinite (i.e. limited by
+   available memory) and adjusts itself dynamically.<p>
+
+   The tile overlap can be adjusted by the texture coordinates scaling
+   of the material, for instance, the "marbletiles" texture covers 4 tiles
+   and the "walkway" texture covers 2 tiles in this demo.<p>
+
+   Note that if you don't have a "pro" OpenGL card, the grid with its smoothed
+   lines may cost you a lot of FPS, so you may want to turn it off for
+   performance assessments.
+}
 unit Unit1;
 
 interface
@@ -27,6 +44,9 @@ type
     DCSelection: TGLDummyCube;
     GLLines1: TGLLines;
     BUPack: TButton;
+    Label2: TLabel;
+    CBShowGrid: TCheckBox;
+    CBSortByMaterials: TCheckBox;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -37,6 +57,8 @@ type
       newTime: Double);
     procedure GLDirectOpenGLRender(var rci: TRenderContextInfo);
     procedure BUPackClick(Sender: TObject);
+    procedure CBShowGridClick(Sender: TObject);
+    procedure CBSortByMaterialsClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -60,12 +82,16 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
    i, j : Integer;
 begin
+   // adjust the path
    GLMaterialLibrary.TexturePaths:=ExtractFilePath(Application.ExeName)+'..\..\media';
 
+   // fill the tiled area with random tiles
    RandSeed:=0;
    for i:=-20 to 20 do for j:=-20 to 20 do
       GLTilePlane.Tiles[i, j]:=Random(GLMaterialLibrary.Materials.Count-1)+1;
 
+   // set all tile materials to anisotropic,
+   // add them to the material selection combo      
    for i:=1 to GLMaterialLibrary.Materials.Count-1 do
       with GLMaterialLibrary.Materials[i] do begin
          Material.Texture.FilteringQuality:=tfAnisotropic;
@@ -92,12 +118,6 @@ procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
    GLCamera.AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
-end;
-
-procedure TForm1.Timer1Timer(Sender: TObject);
-begin
-   Caption:=GLSceneViewer1.FramesPerSecondText;
-   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -144,7 +164,6 @@ begin
             GLTilePlane.StructureChanged;
          end;
       end;
-//      mip:=ip;
       mx:=mp.x;
       my:=mp.y;
    end;
@@ -154,12 +173,31 @@ end;
 
 procedure TForm1.GLDirectOpenGLRender(var rci: TRenderContextInfo);
 begin
+   // we clear the depth buffer, so that the grid is always in front of the
+   // tile plane and won't Z-Fight with it
    glClear(GL_DEPTH_BUFFER_BIT);
 end;
 
 procedure TForm1.BUPackClick(Sender: TObject);
 begin
+   // packing a tile area removes unused area from the in-memory structures
    GLTilePlane.Tiles.Pack;
+end;
+
+procedure TForm1.CBShowGridClick(Sender: TObject);
+begin
+   GLXYZGrid.Visible:=CBShowGrid.Checked;
+end;
+
+procedure TForm1.CBSortByMaterialsClick(Sender: TObject);
+begin
+   GLTilePlane.SortByMaterials:=CBSortByMaterials.Checked;
+end;
+
+procedure TForm1.Timer1Timer(Sender: TObject);
+begin
+   Caption:=GLSceneViewer1.FramesPerSecondText;
+   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
 end.
