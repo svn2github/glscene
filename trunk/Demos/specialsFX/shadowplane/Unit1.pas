@@ -93,8 +93,8 @@ end;
 procedure TForm1.CBStencilClick(Sender: TObject);
 begin
    if CBStencil.Checked then
-      GLShadowPlane1.ShadowOptions:=[spoUseStencil]
-   else GLShadowPlane1.ShadowOptions:=[];
+      GLShadowPlane1.ShadowOptions:=[spoUseStencil, spoScissor]
+   else GLShadowPlane1.ShadowOptions:=[spoScissor];
    GLShadowPlane2.ShadowOptions:=GLShadowPlane1.ShadowOptions;
    GLShadowPlane3.ShadowOptions:=GLShadowPlane1.ShadowOptions;
 end;
