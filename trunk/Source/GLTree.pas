@@ -626,6 +626,10 @@ begin
    FRoot.FCentralLeader:=Owner.CentralLeader;
    FRoot.BuildBranch(Owner.Noise,IdentityHMGMatrix,0,0,0);
 
+   delta:=AffineVectorMake(0,0,-Owner.BranchRadius);
+   Vertices.Translate(delta);
+   Owner.Leaves.Vertices.Translate(delta);
+
    if Owner.AutoCenter then begin
       Owner.GetExtents(min, max);
       delta:=VectorCombine(min,max,-0.5,-0.5);
