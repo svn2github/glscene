@@ -1,6 +1,6 @@
 ====================================================
 FMOD Sound/Music API for Windows 95/98/NT
-VERSION 3.5
+VERSION 3.6
 Copyright (c) FireLight Multimedia 1999-2002
 See http://www.fmod.org for more information
 ====================================================

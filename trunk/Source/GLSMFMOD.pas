@@ -10,6 +10,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/08/02 - EG - Updated to FMOD 3.6
       <li>27/02/02 - EG - Updated to FMOD 3.5, added 3D Factors
       <li>05/02/02 - EG - Updated to FMOD 3.4, now uses DSound by default
       <li>13/01/01 - EG - Updated for API 3.3 compatibility
@@ -195,7 +196,7 @@ begin
                                 FSOUND_HW3D+FSOUND_LOOP_OFF+FSOUND_LOADMEMORY,
                                 aSource.Sample.Data.WAVDataSize);
       if aSource.NbLoops>1 then
-         FSOUND_Sample_SetLoopMode(p.pfs, FSOUND_LOOP_NORMAL);
+         FSOUND_Sample_SetMode(p.pfs, FSOUND_LOOP_NORMAL);
       FSOUND_Sample_SetMinMaxDistance(p.pfs, aSource.MinDistance, aSource.MaxDistance);
       aSource.ManagerTag:=Integer(p);
    end;

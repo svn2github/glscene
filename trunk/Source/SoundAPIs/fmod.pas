@@ -2,30 +2,6 @@
 { FMOD Main header file. Copyright (c), FireLight Technologies Pty, Ltd. 1999-2002.               }
 { =============================================================================================== }
 
-{ =============================================================================================== }
-{ HISTORY                                                                                         }
-{ =============================================================================================== }
-{
-  3.50
-  - Removed legacy types
-  + TFSoundAllocCallback, TFSoundReallocCallback, TFSoundFreeCallback for custom memory management
-  - FMOD_ERR_NO_EAX2 removed from errors
-  + FSOUND_OUTPUT_XBOX in TFSoundOutputTypes (Xbox only)
-  + FSOUND_MIXER_MONO, FSOUND_MIXER_QUALITY_MONO in TFSoundMixerTypes (Windows CE only)
-  - FSOUND_CAPS_EAX2 removed from caps
-  + FSOUND_SYSTEM_CHANNEL
-  + FSOUND_MPEGHALFRATE (Windows CE only)
-  + TFSoundReverbProperties
-  + FSOUND_REVERB_PROPERTYFLAGS
-  + TFSoundReverbChannelProperties structure added
-  * FSOUND_FX_* changed to TFSoundFXModes enumeration
-  + FSOUND_SetMemorySystem for custom memory allocation
-  + FSOUND_GetLoopMode returns current sample loop mode
-  * CD functions have new drive parameter
-  * New reverb functions
-}
-{ =============================================================================================== }
-
 unit fmod;
 
 interface
@@ -45,7 +21,7 @@ uses
 {$Z4}
 
 const
-  FMOD_VERSION: Single = 3.5;
+  FMOD_VERSION: Single = 3.6;
 
 {
   FMOD defined types
@@ -56,8 +32,6 @@ type
   PFSoundStream = Pointer;
   PFSoundDSPUnit = Pointer;
   PFMusicModule = Pointer;
-  PFSoundMaterial = Pointer;
-  PFSoundGeomList = Pointer;
 
   PFSoundVector = ^TFSoundVector;
   TFSoundVector = record
@@ -82,7 +56,7 @@ type
 
   TFSoundAllocCallback    = function(Size: Cardinal): Pointer; cdecl;
   TFSoundReallocCallback  = function(Ptr: Pointer; Size: Cardinal): Pointer; cdecl;
-  TFSoundFreeCallback     = procedure(Ptr: Pointer);
+  TFSoundFreeCallback     = procedure(Ptr: Pointer); cdecl;
 
 {
 [ENUM]
@@ -140,13 +114,16 @@ type
     FSOUND_OUTPUT_NOSOUND,  // NoSound driver, all calls to this succeed but do nothing.
     FSOUND_OUTPUT_WINMM,    // Windows Multimedia driver.
     FSOUND_OUTPUT_DSOUND,   // DirectSound driver.  You need this to get EAX2 or EAX3 support, or FX api support.
-    FSOUND_OUTPUT_A3D,      // A3D driver.  You need this to get geometry support.
+    FSOUND_OUTPUT_A3D,      // A3D driver.  not supported any more.
 
     FSOUND_OUTPUT_OSS,      // Linux/Unix OSS (Open Sound System) driver, i.e. the kernel sound drivers.
     FSOUND_OUTPUT_ESD,      // Linux/Unix ESD (Enlightment Sound Daemon) driver.
     FSOUND_OUTPUT_ALSA,     // Linux Alsa driver.
 
-    FSOUND_OUTPUT_XBOX      // Xbox driver
+    FSOUND_OUTPUT_ASIO,     // Low latency ASIO driver
+    FSOUND_OUTPUT_XBOX,     // Xbox driver
+    FSOUND_OUTPUT_PS2,      // PlayStation 2 driver
+    FSOUND_OUTPUT_MAC       // Mac SoundMager driver
   );
 
 {
@@ -245,8 +222,6 @@ const
 const
   FSOUND_CAPS_HARDWARE              = $1;  // This driver supports hardware accelerated 3d sound.
   FSOUND_CAPS_EAX2                  = $2;  // This driver supports EAX 2 reverb
-  FSOUND_CAPS_GEOMETRY_OCCLUSIONS   = $4;  // This driver supports (A3D) geometry occlusions
-  FSOUND_CAPS_GEOMETRY_REFLECTIONS  = $8;  // This driver supports (A3D) geometry reflections
   FSOUND_CAPS_EAX3                  = $10; // This driver supports EAX 3 reverb
 // [DEFINE_END]
 
@@ -300,17 +275,13 @@ const
   FSOUND_FORCEMONO    = $00040000;  // For forcing stereo streams and samples to be mono - needed if using FSOUND_HW3D and stereo data - incurs a small speed hit for streams
   FSOUND_HW2D         = $00080000;  // 2D hardware sounds.  allows hardware specific effects
   FSOUND_ENABLEFX     = $00100000;  // Allows DX8 FX to be played back on a sound.  Requires DirectX 8 - Note these sounds cannot be played more than once, be 8 bit, be less than a certain size, or have a changing frequency
-
   FSOUND_MPEGHALFRATE = $00200000;  // For FMODCE only - decodes mpeg streams using a lower quality decode, but faster execution
   FSOUND_XADPCM       = $00400000;  // For XBOX only - Describes a user sample that its contents are compressed as XADPCM 
+  FSOUND_VAG          = $00800000;   // For PS2 only - Describes a user sample that its contents are compressed as Sony VAG format
+  FSOUND_NONBLOCKING  = $01000000;   // For FSOUND_Stream_OpenFile - Causes stream to open in the background and not block the foreground app - stream plays only when ready.
 
-{
-    FSOUND_NORMAL is a default sample type.  Loop off, 8bit mono, signed, not hardware
-    accelerated.  Some API functions ignore 8bits and mono, as it may be an mpeg/wav/etc which
-    has its format predetermined.
-}
 const
-  FSOUND_NORMAL = (FSOUND_LOOP_OFF or FSOUND_8BITS or FSOUND_MONO);
+  FSOUND_NORMAL = (FSOUND_16BITS or FSOUND_SIGNED or FSOUND_MONO);
 // [DEFINE_END]
 
 
@@ -346,7 +317,7 @@ const
 
   [SEE_ALSO]
   FSOUND_PlaySound
-  FSOUND_PlaySound3DAttrib
+  FSOUND_PlaySoundEx
   FSOUND_Sample_Alloc
   FSOUND_Sample_Load
   FSOUND_SetPan
@@ -358,6 +329,7 @@ const
   FSOUND_ALL            = -3;     // for a channel index , this flag will affect ALL channels available! Not supported by every function.
   FSOUND_STEREOPAN      = -1;     // value for FSOUND_SetPan so that stereo sounds are not played at half volume. See FSOUND_SetPan for more on this.
   FSOUND_SYSTEM_CHANNEL = -1000;  // special 'channel' ID for all channel based functions that want to alter the global FSOUND software mixing output
+  FSOUND_SYSTEMSAMPLE   = -1000;  // special 'sample' ID for all sample based functions that want to alter the global FSOUND software mixing output sample
 // [DEFINE_END]
 
 
@@ -444,24 +416,29 @@ const
   FSOUND_REVERBFLAGS_DECAYHFLIMIT           = $00000020;  // AirAbsorptionHF affects DecayHFRatio
   FSOUND_REVERBFLAGS_ECHOTIMESCALE          = $00000040;  // EnvironmentSize affects echo time
   FSOUND_REVERBFLAGS_MODULATIONTIMESCALE    = $00000080;  // EnvironmentSize affects modulation time
+  FSOUND_REVERB_FLAGS_CORE0                 = $00000100;  // PS2 Only - Reverb is applied to CORE0 (hw voices 0-23)
+  FSOUND_REVERB_FLAGS_CORE1                 = $00000200;  // PS2 Only - Reverb is applied to CORE1 (hw voices 24-47)
   FSOUND_REVERBFLAGS_DEFAULT                = FSOUND_REVERBFLAGS_DECAYTIMESCALE or FSOUND_REVERBFLAGS_REFLECTIONSSCALE or
                                               FSOUND_REVERBFLAGS_REFLECTIONSDELAYSCALE or FSOUND_REVERBFLAGS_REVERBSCALE or
-                                              FSOUND_REVERBFLAGS_REVERBDELAYSCALE or FSOUND_REVERBFLAGS_DECAYHFLIMIT;
+                                              FSOUND_REVERBFLAGS_REVERBDELAYSCALE or FSOUND_REVERBFLAGS_DECAYHFLIMIT or
+                                              FSOUND_REVERB_FLAGS_CORE0 or FSOUND_REVERB_FLAGS_CORE1;
 // [DEFINE_END]
 
 
 {
 [DEFINE_START]
 [
-  [NAME]
-  FSOUND_REVERB_PRESETS
+    [NAME]
+    FSOUND_REVERB_PRESETS
 
-  [DESCRIPTION]
-  A set of predefined environment PARAMETERS, created by Creative Labs
-  These can be placed directly into the FSOUND_Reverb_SetEnvironment call
+    [DESCRIPTION]
+    A set of predefined environment PARAMETERS, created by Creative Labs
+    These are used to initialize an FSOUND_REVERB_PROPERTIES structure statically.
+    ie 
+    FSOUND_REVERB_PROPERTIES prop = FSOUND_PRESET_GENERIC;
 
-  [SEE_ALSO]
-  FSOUND_Reverb_SetEnvironment
+    [SEE_ALSO]
+    FSOUND_Reverb_SetProperties
 ]
 }
 {
@@ -579,26 +556,6 @@ const
 {
 [DEFINE_START]
 [
-  [NAME]
-  FSOUND_GEOMETRY_MODES
-
-  [DESCRIPTION]
-  Geometry flags, used as the mode flag in FSOUND_Geometry_AddPolygon
-
-  [SEE_ALSO]
-  FSOUND_Geometry_AddPolygon
-]
-}
-const
-  FSOUND_GEOMETRY_NORMAL            = $00;  // Default geometry type. Occluding polygon
-  FSOUND_GEOMETRY_REFLECTIVE        = $01;  // This polygon is reflective
-  FSOUND_GEOMETRY_OPENING           = $02;  // Overlays a transparency over the previous polygon. The 'openingfactor' value supplied is copied internally.
-  FSOUND_GEOMETRY_OPENING_REFERENCE = $04;  // Overlays a transparency over the previous polygon. The 'openingfactor' supplied is pointed to (for access when building a list)
-// [DEFINE_END]
-
-{
-[DEFINE_START]
-[
 [ENUM] 
 [
 	[DESCRIPTION]
@@ -638,24 +595,27 @@ type
 [
 	[DESCRIPTION]
 	These are speaker types defined for use with the FSOUND_SetSpeakerMode command.
-    Note that this only works with FSOUND_OUTPUT_DSOUND output mode.
 
 	[SEE_ALSO]
     FSOUND_SetSpeakerMode
 
     [REMARKS]
-    Only works with FSOUND_OUTPUT_DSOUND output mode.
+    Note - Only reliably works with FSOUND_OUTPUT_DSOUND or FSOUND_OUTPUT_XBOX output modes.  Other output modes will only 
+    interpret FSOUND_SPEAKERMODE_MONO and set everything else to be stereo.
+
+    Using either DolbyDigital or DTS will use whatever 5.1 digital mode is available if destination hardware is unsure.
 ]
 }
 type
   TFSoundSpeakerModes =
   (
-    FSOUND_SPEAKERMODE_5POINT1,       // The audio is played through a speaker arrangement of surround speakers with a subwoofer.
-    FSOUND_SPEAKERMODE_HEADPHONE,     // The speakers are headphones.
+    FSOUND_SPEAKERMODE_DOLBYDIGITAL,  // The audio is played through a speaker arrangement of surround speakers with a subwoofer.
+    FSOUND_SPEAKERMODE_HEADPHONES,    // The speakers are headphones.
     FSOUND_SPEAKERMODE_MONO,          // The speakers are monaural.
     FSOUND_SPEAKERMODE_QUAD,          // The speakers are quadraphonic.
     FSOUND_SPEAKERMODE_STEREO,        // The speakers are stereo (default value).
-    FSOUND_SPEAKERMODE_SURROUND       // The speakers are surround sound.
+    FSOUND_SPEAKERMODE_SURROUND,      // The speakers are surround sound.
+    FSOUND_SPEAKERMODE_DTS            // The audio is played through a speaker arrangement of surround speakers with a subwoofer.
   );
   FSOUND_SPEAKERMODES = TFSoundSpeakerModes;
 
@@ -682,7 +642,9 @@ const
   FSOUND_INIT_USEDEFAULTMIDISYNTH  = $01;  // Causes MIDI playback to force software decoding.
   FSOUND_INIT_GLOBALFOCUS          = $02;  // For DirectSound output - sound is not muted when window is out of focus.
   FSOUND_INIT_ENABLEOUTPUTFX       = $04;  // For DirectSound output - Allows FSOUND_FX api to be used on global software mixer output!
-  FSOUND_INIT_ACCURATEGETCURRENTVU = $08;  // This latency adjusts FSOUND_GetCurrentVU, but incurs a cpu and very small memory hit
+  FSOUND_INIT_ACCURATEVULEVELS     = $08;  // This latency adjusts FSOUND_GetCurrentLevels, but incurs a small cpu and memory hit
+  FSOUND_INIT_DISABLE_CORE0_REVERB = $10;  // PS2 only - Disable reverb on CORE 0 to regain SRAM
+  FSOUND_INIT_DISABLE_CORE1_REVERB = $20;  // PS2 only - Disable reverb on CORE 1 to regain SRAM
 
 // [DEFINE_END]
 
@@ -711,10 +673,11 @@ function FSOUND_SetMemorySystem(Pool: Pointer; PoolLen: Integer;
         UserRealloc: TFSoundReallocCallback;
         UserFree: TFSoundFreeCallback): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 {
-  Main initialization / closedown functions
-  Note : Use FSOUND_INIT_USEDEFAULTMIDISYNTH with FSOUND_Init for software override with MIDI playback.
-       : Use FSOUND_INIT_GLOBALFOCUS with FSOUND_Init to make sound audible
-         no matter which window is in focus. (FSOUND_OUTPUT_DSOUND only)
+    Main initialization / closedown functions.
+    Note : Use FSOUND_INIT_USEDEFAULTMIDISYNTH with FSOUND_Init for software override 
+           with MIDI playback.
+         : Use FSOUND_INIT_GLOBALFOCUS with FSOUND_Init to make sound audible no matter 
+           which window is in focus. (FSOUND_OUTPUT_DSOUND only)
 }
 
 function FSOUND_Init(MixRate: Integer; MaxSoftwareChannels: Integer; Flags: Cardinal): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -794,7 +757,7 @@ function FSOUND_Sample_Unlock(Sptr: PFSoundSample;
   Sample control functions
 }
 
-function FSOUND_Sample_SetLoopMode(Sptr: PFSoundSample; LoopMode: Cardinal): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_Sample_SetMode(Sptr: PFSoundSample; Mode: Cardinal): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_SetLoopPoints(Sptr: PFSoundSample; LoopStart, LoopEnd: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_SetDefaults(Sptr: PFSoundSample; DefFreq, DefVol, DefPan, DefPri: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_Sample_SetMinMaxDistance(Sptr: PFSoundSample; Min, Max: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -830,7 +793,8 @@ function FSOUND_PlaySoundEx(Channel: Integer; Sptr: PFSoundSample; Dsp: PFSoundD
 function FSOUND_StopSound(Channel: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 {
-  Functions to control playback of a channel.
+    Functions to control playback of a channel.
+    Note : FSOUND_ALL can be used on most of these functions as a channel value.
 }
 
 function FSOUND_SetFrequency(Channel: Integer; Freq: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
@@ -844,33 +808,6 @@ function FSOUND_SetReserved(Channel: Integer; Reserved: ByteBool): ByteBool; {$I
 function FSOUND_SetPaused(Channel: Integer; Paused: ByteBool): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_SetLoopMode(Channel: Integer; LoopMode: Cardinal): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_SetCurrentPosition(Channel: Integer; Offset: Cardinal): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-
-{
-    Functions to control DX8 only effects processing.
-
-    - FX enabled samples can only be played once at a time, not multiple times at once.
-    - Sounds have to be created with FSOUND_HW2D or FSOUND_HW3D for this to work.
-    - FSOUND_INIT_ENABLEOUTPUTFX can be used to apply hardware effect processing to the
-      global mixed output of FMOD's software channels.
-    - FSOUND_FX_Enable returns an FX handle that you can use to alter fx parameters.
-    - FSOUND_FX_Enable can be called multiple times in a row, even on the same FX type,
-      it will return a unique handle for each FX.
-    - FSOUND_FX_Enable cannot be called if the sound is playing or locked.
-    - Stopping or starting a sound resets all FX and they must be re-enabled each time
-      if this happens.
-}
-
-function FSOUND_FX_Enable(Channel: Integer; Fx: Cardinal): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};    { Set bits to enable following fx }
-
-function FSOUND_FX_SetChorus(FXId: Integer; WetDryMix, Depth, Feedback, Frequency: Single; Waveform: Integer; Delay: Single; Phase: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetCompressor(FXId: Integer; Gain, Attack, Release, Threshold, Ratio, Predelay: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetDistortion(FXId: Integer; Gain, Edge, PostEQCenterFrequency, PostEQBandwidth, PreLowpassCutoff: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetEcho(FXId: Integer; WetDryMix, Feedback, LeftDelay, RightDelay: Single; PanDelay: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetFlanger(FXId: Integer; WetDryMix, Depth, Feedback, Frequency: Single; Waveform: Integer; Delay: Single; Phase: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetGargle(FXId, RateHz, WaveShape: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetI3DL2Reverb(FXId, Room, RoomHF: Integer; RoomRolloffFactor, DecayTime, DecayHFRatio: Single; Reflections: Integer; ReflectionsDelay: Single; Reverb: Integer; ReverbDelay, Diffusion, Density, HFReference: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetParamEQ(FXId: Integer; Center, Bandwidth, Gain: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_FX_SetWavesReverb(FXId: Integer; InGain, ReverbMix, ReverbTime, HighFreqRTRatio: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 {
   Channel information functions
@@ -888,7 +825,35 @@ function FSOUND_GetPaused(Channel: Integer): ByteBool; {$IFDEF LINUX} cdecl {$EL
 function FSOUND_GetLoopMode(Channel: Integer): Cardinal; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_GetCurrentPosition(Channel: Integer): Cardinal; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_GetCurrentSample(Channel: Integer): PFSoundSample; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_GetCurrentVU(Channel: Integer): Single; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_GetCurrentLevels(Channel: Integer; l, r: PSingle): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+
+
+{
+    Functions to control DX8 only effects processing.
+
+    - FX enabled samples can only be played once at a time, not multiple times at once.
+    - Sounds have to be created with FSOUND_HW2D or FSOUND_HW3D for this to work.
+    - FSOUND_INIT_ENABLEOUTPUTFX can be used to apply hardware effect processing to the
+      global mixed output of FMOD's software channels.
+    - FSOUND_FX_Enable returns an FX handle that you can use to alter fx parameters.
+    - FSOUND_FX_Enable can be called multiple times in a row, even on the same FX type,
+      it will return a unique handle for each FX.
+    - FSOUND_FX_Enable cannot be called if the sound is playing or locked.
+    - FSOUND_FX_Disable must be called to reset/clear the FX from a channel.
+}
+
+function FSOUND_FX_Enable(Channel: Integer; Fx: Cardinal): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_Disable(Channel: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};    
+
+function FSOUND_FX_SetChorus(FXId: Integer; WetDryMix, Depth, Feedback, Frequency: Single; Waveform: Integer; Delay: Single; Phase: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetCompressor(FXId: Integer; Gain, Attack, Release, Threshold, Ratio, Predelay: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetDistortion(FXId: Integer; Gain, Edge, PostEQCenterFrequency, PostEQBandwidth, PreLowpassCutoff: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetEcho(FXId: Integer; WetDryMix, Feedback, LeftDelay, RightDelay: Single; PanDelay: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetFlanger(FXId: Integer; WetDryMix, Depth, Feedback, Frequency: Single; Waveform: Integer; Delay: Single; Phase: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetGargle(FXId, RateHz, WaveShape: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetI3DL2Reverb(FXId, Room, RoomHF: Integer; RoomRolloffFactor, DecayTime, DecayHFRatio: Single; Reflections: Integer; ReflectionsDelay: Single; Reverb: Integer; ReverbDelay, Diffusion, Density, HFReference: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetParamEQ(FXId: Integer; Center, Bandwidth, Gain: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FSOUND_FX_SetWavesReverb(FXId: Integer; InGain, ReverbMix, ReverbTime, HighFreqRTRatio: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 { =================== }
 { 3D sound functions. }
@@ -983,21 +948,7 @@ function FSOUND_CD_GetNumTracks(Drive: Byte): Integer; {$IFDEF LINUX} cdecl {$EL
 function FSOUND_CD_GetVolume(Drive: Byte): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_CD_GetTrackLength(Drive: Byte; Track: Integer): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FSOUND_CD_GetTrackTime(Drive: Byte): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-(*
-function FSOUND_CD_Play(Track: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-procedure FSOUND_CD_SetPlayMode(Mode: Integer); {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_Stop: ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_SetPaused(Paused: ByteBool): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_SetVolume(Volume: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_Eject: ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
-function FSOUND_CD_GetPaused: ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_GetTrack: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_GetNumTracks: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_GetVolume: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_GetTrackLength(Track: Integer): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_CD_GetTrackTime: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-*)
 { ============== }
 { DSP functions. }
 { ============== }
@@ -1043,51 +994,6 @@ function FSOUND_DSP_GetBufferLength: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdca
 function FSOUND_DSP_GetBufferLengthTotal: Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF}; { Total buffer length due to FSOUND_SetBufferSize }
 function FSOUND_DSP_GetSpectrum: PSingle; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};          { Array of 512 floats - call FSOUND_DSP_SetActive(FSOUND_DSP_GetFFTUnit(), TRUE)) for this to work. }
 
-{ ================================================ }
-{ Geometry functions.  (NOT SUPPORTED IN LINUX/CE) }
-{ ================================================ }
-
-{
-  Scene/polygon functions
-}
-
-function FSOUND_Geometry_AddPolygon(P1: PFSoundVector;
-  P2: PFSoundVector;
-  P3: PFSoundVector;
-  P4: PFSoundVector;
-  Normal: PFSoundVector;
-  Mode: Cardinal;
-  OpeningFactor: PSingle): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_AddList(GeomList: PFSoundGeomList): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-
-{
-  Polygon list functions
-}
-
-function FSOUND_Geometry_List_Create(BoundingVolume: ByteBool): PFSoundGeomList; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_List_Free(GeomList: PFSoundGeomList): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_List_Begin(GeomList: PFSoundGeomList): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_List_End(GeomList: PFSoundGeomList): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_List_Add(GeomList: PFSoundGeomList): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-
-{
-  Material functions
-}
-
-function FSOUND_Geometry_Material_Create: PFSoundMaterial; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_Material_Free(Material: PFSoundMaterial): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_Material_SetAttributes(Material: PFSoundMaterial;
-  ReflectanceGain: Single;
-  ReflectanceFreq: Single;
-  TransmittanceGain: Single;
-  TransmittanceFreq: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_Material_GetAttributes(Material: PFSoundMaterial;
-  var ReflectanceGain: Single;
-  var ReflectanceFreq: Single;
-  var TransmittanceGain: Single;
-  var TransmittanceFreq: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-function FSOUND_Geometry_Material_Set(Material: PFSoundMaterial): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
-
 { ========================================================================== }
 { Reverb functions. (eax2/3 reverb)  (NOT SUPPORTED IN LINUX/CE)               }
 { ========================================================================== }
@@ -1102,7 +1008,7 @@ function FSOUND_Reverb_SetChannelProperties(Channel: Integer; var Prop: TFSoundR
 function FSOUND_Reverb_GetChannelProperties(Channel: Integer; var Prop: TFSoundReverbChannelProperties): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 { ================================================ }
-{ Recording functions  (NOT SUPPORTED IN LINUX/CE) }
+{ Recording functions  (NOT SUPPORTED IN LINUX/MAC) }
 { ================================================ }
 
 {
@@ -1150,9 +1056,11 @@ function FMUSIC_OptimizeChannels(Module: PFMusicModule; MaxChannels: Integer; Mi
 }
 
 function FMUSIC_SetReverb(Reverb: ByteBool): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FMUSIC_SetLooping(Module: PFMusicModule; Looping: ByteBool): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_SetOrder(Module: PFMusicModule; Order: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_SetPaused(Module: PFMusicModule; Pause: ByteBool): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_SetMasterVolume(Module: PFMusicModule; Volume: Integer): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FMUSIC_SetMasterSpeed(Module: PFMusicModule; speed: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_SetPanSeperation(Module: PFMusicModule; PanSep: Single): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 {
@@ -1184,12 +1092,13 @@ function FMUSIC_GetBPM(Module: PFMusicModule): Integer; {$IFDEF LINUX} cdecl {$E
 function FMUSIC_GetRow(Module: PFMusicModule): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_GetPaused(Module: PFMusicModule): ByteBool; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 function FMUSIC_GetTime(Module: PFMusicModule): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
+function FMUSIC_GetRealChannel(Module: PFMusicModule; modchannel: Integer): Integer; {$IFDEF LINUX} cdecl {$ELSE} stdcall {$ENDIF};
 
 implementation
 
 const
 {$IFDEF LINUX}
-  FMOD_DLL = 'libfmod-3.5.so';
+  FMOD_DLL = 'libfmod-3.6.so';
 {$ELSE}
   FMOD_DLL = 'fmod.dll';
 {$ENDIF}
@@ -1230,7 +1139,7 @@ procedure FSOUND_Sample_Free; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sam
 function FSOUND_Sample_Upload; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_Upload@12' {$ENDIF};
 function FSOUND_Sample_Lock; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_Lock@28' {$ENDIF};
 function FSOUND_Sample_Unlock; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_Unlock@20' {$ENDIF};
-function FSOUND_Sample_SetLoopMode; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_SetLoopMode@8' {$ENDIF};
+function FSOUND_Sample_SetMode; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_SetMode@8' {$ENDIF};
 function FSOUND_Sample_SetLoopPoints; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_SetLoopPoints@12' {$ENDIF};
 function FSOUND_Sample_SetDefaults; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_SetDefaults@20' {$ENDIF};
 function FSOUND_Sample_SetMinMaxDistance; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Sample_SetMinMaxDistance@12' {$ENDIF};
@@ -1266,8 +1175,9 @@ function FSOUND_GetLoopMode; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_GetL
 function FSOUND_GetCurrentPosition; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_GetCurrentPosition@4' {$ENDIF};
 function FSOUND_SetCurrentPosition; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_SetCurrentPosition@8' {$ENDIF};
 function FSOUND_GetCurrentSample; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_GetCurrentSample@4' {$ENDIF};
-function FSOUND_GetCurrentVU; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_GetCurrentVU@4' {$ENDIF};
+function FSOUND_GetCurrentLevels; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_GetCurrentLevels@12' {$ENDIF};
 function FSOUND_FX_Enable; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_Enable@8' {$ENDIF};
+function FSOUND_FX_Disable; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_Disable@4' {$ENDIF};
 function FSOUND_FX_SetChorus; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetChorus@32' {$ENDIF};
 function FSOUND_FX_SetCompressor; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetCompressor@28' {$ENDIF};
 function FSOUND_FX_SetDistortion; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetDistortion@24' {$ENDIF};
@@ -1275,7 +1185,7 @@ function FSOUND_FX_SetEcho; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_Se
 function FSOUND_FX_SetFlanger; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetFlanger@32' {$ENDIF};
 function FSOUND_FX_SetGargle; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetGargle@12' {$ENDIF};
 function FSOUND_FX_SetI3DL2Reverb; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetI3DL2Reverb@52' {$ENDIF};
-function FSOUND_FX_SetParamEq; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetParamEq@16' {$ENDIF};
+function FSOUND_FX_SetParamEQ; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetParamEQ@16' {$ENDIF};
 function FSOUND_FX_SetWavesReverb; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_FX_SetWavesReverb@20' {$ENDIF};
 procedure FSOUND_3D_Update; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_3D_Update@0' {$ENDIF};
 function FSOUND_3D_SetAttributes; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_3D_SetAttributes@12' {$ENDIF};
@@ -1330,18 +1240,6 @@ procedure FSOUND_DSP_ClearMixBuffer; external FMOD_DLL {$IFDEF WIN32} name '_FSO
 function FSOUND_DSP_GetBufferLength; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_DSP_GetBufferLength@0' {$ENDIF};
 function FSOUND_DSP_GetBufferLengthTotal; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_DSP_GetBufferLengthTotal@0' {$ENDIF};
 function FSOUND_DSP_GetSpectrum; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_DSP_GetSpectrum@0' {$ENDIF};
-function FSOUND_Geometry_AddPolygon; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_AddPolygon@28' {$ENDIF};
-function FSOUND_Geometry_AddList; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_AddList@4' {$ENDIF};
-function FSOUND_Geometry_List_Create; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_List_Create@4' {$ENDIF};
-function FSOUND_Geometry_List_Free; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_List_Free@4' {$ENDIF};
-function FSOUND_Geometry_List_Begin; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_List_Begin@4' {$ENDIF};
-function FSOUND_Geometry_List_End; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_List_End@4' {$ENDIF};
-function FSOUND_Geometry_List_Add; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_List_Add@4' {$ENDIF};
-function FSOUND_Geometry_Material_Create; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_Material_Create@0' {$ENDIF};
-function FSOUND_Geometry_Material_Free; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_Material_Free@4' {$ENDIF};
-function FSOUND_Geometry_Material_SetAttributes; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_Material_SetAttributes@20' {$ENDIF};
-function FSOUND_Geometry_Material_GetAttributes; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_Material_GetAttributes@20' {$ENDIF};
-function FSOUND_Geometry_Material_Set; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Geometry_Material_Set@4' {$ENDIF};
 function FSOUND_Reverb_SetProperties; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Reverb_SetProperties@4' {$ENDIF};
 function FSOUND_Reverb_GetProperties; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Reverb_GetProperties@4' {$ENDIF};
 function FSOUND_Reverb_SetChannelProperties; external FMOD_DLL {$IFDEF WIN32} name '_FSOUND_Reverb_SetChannelProperties@8' {$ENDIF};
@@ -1367,9 +1265,11 @@ function FMUSIC_SetInstCallback; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_
 function FMUSIC_SetSample; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetSample@12' {$ENDIF};
 function FMUSIC_OptimizeChannels; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_OptimizeChannels@12' {$ENDIF};
 function FMUSIC_SetReverb; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetReverb@4' {$ENDIF};
+function FMUSIC_SetLooping; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetLooping@8' {$ENDIF};
 function FMUSIC_SetOrder; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetOrder@8' {$ENDIF};
 function FMUSIC_SetPaused; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetPaused@8' {$ENDIF};
 function FMUSIC_SetMasterVolume; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetMasterVolume@8' {$ENDIF};
+function FMUSIC_SetMasterSpeed; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetMasterSpeed@8' {$ENDIF};
 function FMUSIC_SetPanSeperation; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_SetPanSeperation@8' {$ENDIF};
 function FMUSIC_GetName; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_GetName@4' {$ENDIF};
 function FMUSIC_GetType; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_GetType@4' {$ENDIF};
@@ -1391,6 +1291,7 @@ function FMUSIC_GetBPM; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_GetBPM@4'
 function FMUSIC_GetRow; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_GetRow@4' {$ENDIF};
 function FMUSIC_GetPaused; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_GetPaused@4' {$ENDIF};
 function FMUSIC_GetTime; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_GetTime@4' {$ENDIF};
+function FMUSIC_GetRealChannel; external FMOD_DLL {$IFDEF WIN32} name '_FMUSIC_GetRealChannel@8' {$ENDIF};
 
 var
   Saved8087CW: Word;
