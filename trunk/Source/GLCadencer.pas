@@ -4,6 +4,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>23/08/01 - Egg - No more "deprecated" warning for Delphi6
       <li>12/08/01 - Egg - Protection against "timer flood"
       <li>19/07/01 - Egg - Fixed Memory Leak in RegisterASAPCadencer,
                            Added speed limiter TASAPHandler.WndProc
@@ -17,6 +18,8 @@
 unit GLCadencer;
 
 interface
+
+{$i ..\GLScene.inc}
 
 uses Windows, Classes, Controls, Messages, GLScene, StdCtrls, Forms, GLMisc;
 
@@ -194,7 +197,11 @@ end;
 constructor TASAPHandler.Create;
 begin
 	inherited Create;
+{$ifdef GLS_DELPHI_6_UP}
+   FWindowHandle:=Classes.AllocateHWnd(WndProc);
+{$else}
    FWindowHandle:=AllocateHWnd(WndProc);
+{$endif}
 	PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
 end;
 
@@ -204,7 +211,11 @@ destructor TASAPHandler.Destroy;
 begin
    if FTimer<>0 then
       KillTimer(FWindowHandle, FTimer);
+{$ifdef GLS_DELPHI_6_UP}
+ 	Classes.DeallocateHWnd(FWindowHandle);
+{$else}
  	DeallocateHWnd(FWindowHandle);
+{$endif}
    inherited Destroy;
 end;
 
