@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>01/07/02 - EG - Added mtcmUndefined, fixed initial state
       <li>03/01/02 - EG - Added xglDisableClientState
       <li>26/01/02 - EG - Added xglBegin/EndUpdate mechanism
       <li>21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
@@ -32,7 +33,7 @@ interface
 uses OpenGL12;
 
 type
-   TMapTexCoordMode = (mtcmNull, mtcmMain, mtcmDual, mtcmSecond);
+   TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond);
 
 {: xglTexCoord functions will be ignored. }
 procedure xglMapTexCoordToNull;
@@ -506,6 +507,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+   xglMapTexCoordMode:=mtcmUndefined;
    xglMapTexCoordToNull;
 
 end.
