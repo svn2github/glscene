@@ -29,7 +29,7 @@ type
     GLSceneViewer: TGLSceneViewer;
     GLCamera: TGLCamera;
     SPEarth: TGLSphere;
-    GLLightSource1: TGLLightSource;
+    LSSun: TGLLightSource;
     GLDirectOpenGL1: TGLDirectOpenGL;
     GLCadencer: TGLCadencer;
     Timer1: TTimer;
@@ -75,7 +75,7 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, OpenGL12, Geometry, GLContext;
+uses Jpeg, OpenGL12, Geometry, GLContext, USolarSystem;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
@@ -184,7 +184,7 @@ var
    cosCache, sinCache : array [0..cSlices] of Single;
    pVertex, pColor : PVectorArray;
 begin
-   sunPos:=GLLightSource1.AbsolutePosition;
+   sunPos:=LSSun.AbsolutePosition;
    eyepos:=GLCamera.AbsolutePosition;
 
    diskNormal:=VectorNegate(eyePos);
@@ -303,12 +303,26 @@ end;
 
 procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
+var
+   d : Double;
+   p : TAffineVector;
 begin
+   d:=GMTDateTimeToJulianDay(Now-2+newTime*timeMultiplier);
    // make earth rotate
-   SPEarth.TurnAngle:=SPEarth.TurnAngle+deltaTime*timeMultiplier;
+//   SPEarth.TurnAngle:=SPEarth.TurnAngle+deltaTime*timeMultiplier;
+
+   p:=ComputePlanetPosition(cSunOrbitalElements, d);
+   ScaleVector(p, 0.5*cAUToKilometers*(1/cEarthRadius));
+   LSSun.Position.AsAffineVector:=p;
+
    // moon rotates on itself and around earth (not sure about the rotation direction!)
-   DCMoon.TurnAngle:=DCMoon.TurnAngle+deltaTime*timeMultiplier/29.5;
-   SPMoon.TurnAngle:=180-DCMoon.TurnAngle;
+
+   p:=ComputePlanetPosition(cMoonOrbitalElements, d);
+   ScaleVector(p, 0.5*cAUToKilometers*(1/cEarthRadius));
+
+
+//   DCMoon.TurnAngle:=DCMoon.TurnAngle+deltaTime*timeMultiplier/29.5;
+//   SPMoon.TurnAngle:=180-DCMoon.TurnAngle;
    // honour camera movements
    if (dmy<>0) or (dmx<>0) then begin
       GLCameraControler.MoveAroundTarget(ClampValue(dmy*0.3, -5, 5),
