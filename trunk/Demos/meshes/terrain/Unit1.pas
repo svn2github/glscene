@@ -75,6 +75,8 @@ begin
    TerrainRenderer1.TilesPerTexture:=256/TerrainRenderer1.TileSize;
    // load Bitmap Font
    BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
+   // Could've been done at design time, but it the, it hurts the eyes ;)
+   GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
