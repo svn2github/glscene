@@ -28,7 +28,8 @@
    routines if you want to support these. All AMD processors after K5, and
    all Intel processors after Pentium should be immune to this.<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
       <li>12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
       <li>11/02/02 - EG - Non-spinned QuaternionSlerp (Alex Grigny de Castro)
       <li>07/02/02 - EG - Added AnglePreservingMatrixInvert
@@ -2287,7 +2288,7 @@ begin
    d:=stop-start;
    if d>PI then begin
       // positive d, angle on opposite side, becomes negative i.e. changes direction
-      d:=d-c2PI;
+      d:=-d-c2PI;
    end else if d<-PI then begin
       // negative d, angle on opposite side, becomes positive i.e. changes direction
       d:=d+c2PI;
@@ -2414,10 +2415,23 @@ end;
 // VectorAngleLerp
 //
 function VectorAngleLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector;
+var
+   q1, q2, qr : TQuaternion;
+   m : TMatrix;
+   tran : TTransformations;
 begin
+   q1:=QuaternionFromEuler(RadToDeg(v1[0]), RadToDeg(v1[1]), RadToDeg(v1[2]), eulZYX);
+   q2:=QuaternionFromEuler(RadToDeg(v2[0]), RadToDeg(v2[1]), RadToDeg(v2[2]), eulZYX);
+   qr:=QuaternionSlerp(q1, q2, t);
+   m:=QuaternionToMatrix(qr);
+   MatrixDecompose(m, tran);
+   Result[0]:=tran[ttRotateX];
+   Result[1]:=tran[ttRotateY];
+   Result[2]:=tran[ttRotateZ];
+{
    Result[0]:=AngleLerp(v1[0], v2[0], t);
    Result[1]:=AngleLerp(v1[1], v2[1], t);
-   Result[2]:=AngleLerp(v1[2], v2[2], t);
+   Result[2]:=AngleLerp(v1[2], v2[2], t); }
 end;
 
 // VectorArrayLerp_3DNow (hmg)
