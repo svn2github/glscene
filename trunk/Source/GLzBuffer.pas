@@ -1007,13 +1007,20 @@ end;
 
 Function TZShadows.CastShadow :Boolean;
 begin
- if not assigned(CasterZBuf) then begin
-    CasterZBuf:=TGLZBuffer.Create;
-    CasterZBuf.LinkToViewer(FCaster);
- end;
- FCaster.Render;
- CasterZBuf.Refresh;
- Result:=False;
+   if Caster<>nil then begin
+      if not assigned(CasterZBuf) then begin
+         CasterZBuf:=TGLZBuffer.Create;
+         CasterZBuf.LinkToViewer(FCaster);
+      end;
+      try
+         FCaster.Render;
+      except
+         Caster:=nil; // prevents further attempts
+         raise;
+      end;
+      CasterZBuf.Refresh;
+      Result:=False;
+   end else Result:=True;
 end;
 
 procedure TZShadows.SetXRes(const val :integer);
