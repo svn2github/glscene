@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>05/09/03 - EG - Added TGLBitmap32.DownSampleByFactor2
       <li>04/07/03 - EG - Added RGBA brightness/gamma correction support
       <li>13/05/03 - EG - Added GrayScaleToNormalMap
       <li>26/08/02 - EG - Fixed loading of 1D horiz textures from 24 bits bitmaps
@@ -160,6 +161,10 @@ type
          procedure BrightnessCorrection(const factor : Single);
          {: Apply a gamma correction to the RGB components. }
          procedure GammaCorrection(const gamma : Single);
+
+         {: Downsample the bitmap by a factor of 2 in both dimensions.<p>
+            If one of the dimensions is 1 or less, does nothing. }
+         procedure DownSampleByFactor2;
 
          {: Registers the bitmap's content as an OpenGL texture map.<p>
             Legal values for bytesPerPixel are :<ul>
@@ -814,6 +819,90 @@ procedure TGLBitmap32.GammaCorrection(const gamma : Single);
 begin
    if Assigned(FData) then
       GammaCorrectRGBAArray(FData, FDataSize div 4, gamma);
+end;
+
+// DownSampleByFactor2
+//
+procedure TGLBitmap32.DownSampleByFactor2;
+type
+   T2Pixel32 = packed array [0..1] of TGLPixel32;
+   P2Pixel32 = ^T2Pixel32;
+
+   procedure ProcessRow(pDest : PGLPixel32; pLineA, pLineB : P2Pixel32; n : Integer);
+{   asm     // MMX version slightly faster, but not by much...
+      push        ebx
+
+      mov         ebx, n
+
+      pxor        mm0, mm0
+
+@@Loop:
+      movq        mm1, [edx]
+      movq        mm3, mm1
+      movq        mm2, [ecx]
+      movq        mm4, mm2
+
+      punpcklbw   mm1, mm0
+      punpckhbw   mm3, mm0
+
+      punpcklbw   mm2, mm0
+      punpckhbw   mm4, mm0
+
+      paddw       mm3, mm4
+      paddw       mm1, mm2
+      paddw       mm1, mm3
+
+      add         edx, 8
+      add         ecx, 8
+
+      psrlw       mm1, 2
+      packuswb    mm1, mm1
+      movd        [eax], mm1
+
+      add         eax, 4
+
+      dec         ebx
+      jnz         @@Loop
+
+      emms
+
+      pop         ebx
+   end;//}
+   var
+      i : Integer;
+   begin
+      for i:=0 to n-1 do begin
+         pDest.r:=(pLineA[0].r+pLineA[1].r+pLineB[0].r+pLineB[1].r) shr 2;
+         pDest.g:=(pLineA[0].g+pLineA[1].g+pLineB[0].g+pLineB[1].g) shr 2;
+         pDest.b:=(pLineA[0].b+pLineA[1].b+pLineB[0].b+pLineB[1].b) shr 2;
+         pDest.a:=(pLineA[0].a+pLineA[1].a+pLineB[0].a+pLineB[1].a) shr 2;
+         Inc(pLineA);
+         Inc(pLineB);
+         Inc(pDest);
+      end;
+   end;// }
+
+var
+   y, w2, h2 : Integer;
+   pDest : PGLPixel32;
+   pLineA, pLineB : P2Pixel32;
+begin
+   if (FWidth<=1) or (FHeight<=1) then Exit;
+   w2:=FWidth shr 1;
+   h2:=FHeight shr 1;
+   pDest:=@FData[0];
+   pLineA:=@FData[0];
+   pLineB:=@FData[Width];
+   for y:=0 to h2-1 do begin
+      ProcessRow(pDest, pLineA, pLineB, w2);
+      Inc(pDest, w2);
+      Inc(pLineA, Width);
+      Inc(pLineB, Width);
+   end;
+   FWidth:=w2;
+   FHeight:=h2;
+   FDataSize:=FWidth*FHeight*4;
+   ReallocMem(FData, FDataSize);
 end;
 
 // RegisterAsOpenGLTexture
