@@ -40,7 +40,7 @@
       <li>21/08/02 - EG - Added Pack/UnPackRotationMatrix
       <li>13/08/02 - EG - Added Area functions
       <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits 
-      <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)3
+      <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)
       <li>22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
       <li>12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
       <li>11/02/02 - EG - Non-spinned QuaternionSlerp (Alex Grigny de Castro)
@@ -1268,7 +1268,7 @@ implementation
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
-uses SysUtils;
+uses SysUtils{$ifdef GEOMETRY_NO_ASM}, Math{$endif};
 
 const
   // FPU status flags (high order byte)
@@ -2587,6 +2587,7 @@ asm
       FADD
       FSTP DWORD PTR [ECX+12]
 {$else}
+begin
    vr[0]:=(F1 * V1[0]) + (F2 * V2[0]);
    vr[1]:=(F1 * V1[1]) + (F2 * V2[1]);
    vr[2]:=(F1 * V1[2]) + (F2 * V2[2]);
@@ -2687,6 +2688,7 @@ asm
          FMUL DWORD PTR [EDX + 8]
          FADDP
 {$else}
+begin
    Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];
 {$endif}
 end;
@@ -2711,6 +2713,7 @@ asm
          FMUL DWORD PTR [EDX + 12]
          FADDP
 {$else}
+begin
    Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2]+V1[3]*V2[3];
 {$endif}
 end;
@@ -2732,6 +2735,7 @@ asm
          FMUL DWORD PTR [EDX + 8]
          FADDP
 {$else}
+begin
    Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];
 {$endif}
 end;
@@ -3633,10 +3637,10 @@ var
    invLen : Single;
 begin
    invLen:=RSqrt(VectorNorm(v));
-   v[0]:=v[0]*invLen;
-   v[1]:=v[1]*invLen;
-   v[2]:=v[2]*invLen;
-   v[3]:=0;
+   Result[0]:=v[0]*invLen;
+   Result[1]:=v[1]*invLen;
+   Result[2]:=v[2]*invLen;
+   Result[3]:=0;
 {$endif}
 end;
 
@@ -3807,11 +3811,10 @@ begin
 {$endif}
 end;
 
-// ------- NO_ASM alternatives end here !!!!!!!!!!!!!!! ---------------
-
 // ScaleVector (affine)
 //
 procedure ScaleVector(var v : TAffineVector; factor: Single); register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FMUL DWORD PTR [EBP+8]
@@ -3822,11 +3825,18 @@ asm
       FLD  DWORD PTR [EAX+8]
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EAX+8]
+{$else}
+begin
+   v[0]:=v[0]*factor;
+   v[1]:=v[1]*factor;
+   v[2]:=v[2]*factor;
+{$endif}
 end;
 
 // ScaleVector (hmg)
 //
 procedure ScaleVector(var v : TVector; factor: Single); register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FMUL DWORD PTR [EBP+8]
@@ -3840,6 +3850,13 @@ asm
       FLD  DWORD PTR [EAX+12]
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EAX+12]
+{$else}
+begin
+   v[0]:=v[0]*factor;
+   v[1]:=v[1]*factor;
+   v[2]:=v[2]*factor;
+   v[3]:=v[3]*factor;
+{$endif}
 end;
 
 // ScaleVector (affine vector)
@@ -3864,6 +3881,7 @@ end;
 // VectorScale (affine)
 //
 function VectorScale(const v : TAffineVector; factor : Single) : TAffineVector; register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FMUL DWORD PTR [EBP+8]
@@ -3874,11 +3892,18 @@ asm
       FLD  DWORD PTR [EAX+8]
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+8]
+{$else}
+begin
+   Result[0]:=v[0]*factor;
+   Result[1]:=v[1]*factor;
+   Result[2]:=v[2]*factor;
+{$endif}
 end;
 
 // VectorScale (proc, affine)
 //
 procedure VectorScale(const v : TAffineVector; factor : Single; var vr : TAffineVector); register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FMUL DWORD PTR [EBP+8]
@@ -3889,11 +3914,18 @@ asm
       FLD  DWORD PTR [EAX+8]
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+8]
+{$else}
+begin
+   vr[0]:=v[0]*factor;
+   vr[1]:=v[1]*factor;
+   vr[2]:=v[2]*factor;
+{$endif}
 end;
 
 // VectorScale (hmg)
 //
 function VectorScale(const v : TVector; factor : Single) : TVector; register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FMUL DWORD PTR [EBP+8]
@@ -3907,11 +3939,19 @@ asm
       FLD  DWORD PTR [EAX+12]
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+12]
+{$else}
+begin
+   Result[0]:=v[0]*factor;
+   Result[1]:=v[1]*factor;
+   Result[2]:=v[2]*factor;
+   Result[3]:=v[3]*factor;
+{$endif}
 end;
 
 // VectorScale (proc, hmg)
 //
 procedure VectorScale(const v : TVector; factor : Single; var vr : TVector); register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FMUL DWORD PTR [EBP+8]
@@ -3925,11 +3965,19 @@ asm
       FLD  DWORD PTR [EAX+12]
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+12]
+{$else}
+begin
+   vr[0]:=v[0]*factor;
+   vr[1]:=v[1]*factor;
+   vr[2]:=v[2]*factor;
+   vr[3]:=v[3]*factor;
+{$endif}
 end;
 
 // VectorScale (proc, hmg-affine)
 //
 procedure VectorScale(const v : TVector; factor : Single; var vr : TAffineVector); register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FMUL DWORD PTR [EBP+8]
@@ -3940,6 +3988,12 @@ asm
       FLD  DWORD PTR [EAX+8]
       FMUL DWORD PTR [EBP+8]
       FSTP DWORD PTR [EDX+8]
+{$else}
+begin
+   vr[0]:=v[0]*factor;
+   vr[1]:=v[1]*factor;
+   vr[2]:=v[2]*factor;
+{$endif}
 end;
 
 // DivideVector
@@ -3957,6 +4011,7 @@ end;
 function VectorEquals(const V1, V2: TVector) : Boolean;
 // EAX contains address of v1
 // EDX contains highest of v2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       mov ecx, eax
       mov eax, [edx]
@@ -3977,6 +4032,10 @@ asm
 @@Diff:
       xor eax, eax
 @@End:
+{$else}
+begin
+   Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]) and (v1[3]=v2[3]);
+{$endif}
 end;
 
 // VectorEquals (affine vector)
@@ -3984,6 +4043,7 @@ end;
 function VectorEquals(const V1, V2: TAffineVector) : Boolean; register;
 // EAX contains address of v1
 // EDX contains highest of v2
+{$ifndef GEOMETRY_NO_ASM}
 asm
       mov ecx, eax
       mov eax, [edx]
@@ -4001,6 +4061,10 @@ asm
 @@Diff:
       xor eax, eax
 @@End:
+{$else}
+begin
+   Result:=(v1[0]=v2[0]) and (v1[1]=v2[1]) and (v1[2]=v2[2]);
+{$endif}
 end;
 
 // VectorIsNull (hmg)
@@ -4023,6 +4087,7 @@ function VectorSpacing(const v1, v2 : TTexPoint): Single; overload;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -4031,6 +4096,10 @@ asm
       FSUB DWORD PTR [EDX+4]
       FABS
       FADD
+{$else}
+begin
+   Result:=Abs(v2.S-v1.S)+Abs(v2.T-v1.T);
+{$endif}
 end;
 
 // VectorSpacing (affine)
@@ -4039,6 +4108,7 @@ function VectorSpacing(const v1, v2 : TAffineVector) : Single; register;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -4051,6 +4121,10 @@ asm
       FSUB DWORD PTR [EDX+8]
       FABS
       FADD
+{$else}
+begin
+   Result:=Abs(v2[0]-v1[0])+Abs(v2[1]-v1[1])+Abs(v2[2]-v1[2]);
+{$endif}
 end;
 
 // VectorSpacing (Hmg)
@@ -4059,6 +4133,7 @@ function VectorSpacing(const v1, v2 : TVector) : Single; register;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -4075,6 +4150,10 @@ asm
       FSUB DWORD PTR [EDX+12]
       FABS
       FADD
+{$else}
+begin
+   Result:=Abs(v2[0]-v1[0])+Abs(v2[1]-v1[1])+Abs(v2[2]-v1[2])+Abs(v2[3]-v1[3]);
+{$endif}
 end;
 
 // VectorDistance (affine)
@@ -4083,6 +4162,7 @@ function VectorDistance(const v1, v2 : TAffineVector) : Single; register;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -4096,6 +4176,10 @@ asm
       FMUL ST, ST
       FADD
       FSQRT
+{$else}
+begin
+   Result:=Sqrt(Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]));
+{$endif}
 end;
 
 // VectorDistance (hmg)
@@ -4104,6 +4188,7 @@ function VectorDistance(const v1, v2 : TVector) : Single; register;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -4117,6 +4202,10 @@ asm
       FMUL ST, ST
       FADD
       FSQRT
+{$else}
+begin
+   Result:=Sqrt(Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]));
+{$endif}
 end;
 
 // VectorDistance2 (affine)
@@ -4125,6 +4214,7 @@ function VectorDistance2(const v1, v2 : TAffineVector) : Single; register;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -4137,6 +4227,10 @@ asm
       FSUB DWORD PTR [EDX+8]
       FMUL ST, ST
       FADD
+{$else}
+begin
+   Result:=Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]);
+{$endif}
 end;
 
 // VectorDistance2 (hmg)
@@ -4145,6 +4239,7 @@ function VectorDistance2(const v1, v2 : TVector) : Single; register;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
       FSUB DWORD PTR [EDX]
@@ -4157,11 +4252,15 @@ asm
       FSUB DWORD PTR [EDX+8]
       FMUL ST, ST
       FADD
+{$else}
+begin
+   Result:=Sqr(v2[0]-v1[0])+Sqr(v2[1]-v1[1])+Sqr(v2[2]-v1[2]);
+{$endif}
 end;
 
 // VectorPerpendicular
 //
-function VectorPerpendicular(const V, N : TAffineVector): TAffineVector;
+function VectorPerpendicular(const V, N : TAffineVector) : TAffineVector;
 var
    dot : Single;
 begin
@@ -4499,6 +4598,7 @@ end;
 //
 function MatrixMultiply(const M1, M2 : TAffineMatrix) : TAffineMatrix; register;
 begin
+{$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
       asm
          db $0F,$0E               /// femms
@@ -4566,7 +4666,7 @@ begin
          db $0F,$7F,$50,$18       /// movq        [eax+24],mm2
          db $0F,$0E               /// femms
       end;
-   end else begin
+   end else {$endif} begin
       Result[X, X]:= M1[X, X]*M2[X, X]+M1[X, Y]*M2[Y, X]+M1[X, Z]*M2[Z, X];
       Result[X, Y]:= M1[X, X]*M2[X, Y]+M1[X, Y]*M2[Y, Y]+M1[X, Z]*M2[Z, Y];
       Result[X, Z]:= M1[X, X]*M2[X, Z]+M1[X, Y]*M2[Y, Z]+M1[X, Z]*M2[Z, Z];
@@ -5044,6 +5144,7 @@ procedure transpose_scale_m33(const src : TMatrix; var dest : TMatrix; var scale
 // EDX dest
 // ECX scale
 begin
+{$ifndef GEOMETRY_NO_ASM}
    asm
       //   dest[0][0]:=scale*src[0][0];
       fld   dword ptr [ecx]
@@ -5084,6 +5185,17 @@ begin
       fmul  dword ptr [eax+40]
       fstp  dword ptr [edx+40]
    end;
+{$else}
+   dest[0][0]:=scale*src[0][0];
+   dest[1][0]:=scale*src[0][1];
+   dest[2][0]:=scale*src[0][2];
+   dest[0][1]:=scale*src[1][0];
+   dest[1][1]:=scale*src[1][1];
+   dest[2][1]:=scale*src[1][2];
+   dest[0][2]:=scale*src[2][0];
+   dest[1][2]:=scale*src[2][1];
+   dest[2][2]:=scale*src[2][2];
+{$endif}
 end;
 
 // AnglePreservingMatrixInvert
@@ -5327,6 +5439,7 @@ function PlaneEvaluatePoint(const plane : THmgPlane; const point : TAffineVector
 // EAX contains address of plane
 // EDX contains address of point
 // result is stored in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]
       FMUL DWORD PTR [EDX]
@@ -5338,6 +5451,10 @@ asm
       FADDP
       FLD DWORD PTR [EAX + 12]
       FADDP
+{$else}
+begin
+   Result:=plane[0]*point[0]+plane[1]*point[1]+plane[2]*point[2]+plane[3];
+{$endif}
 end;
 
 // PlaneEvaluatePoint (hmg)
@@ -5346,6 +5463,7 @@ function PlaneEvaluatePoint(const plane : THmgPlane; const point : TVector) : Si
 // EAX contains address of plane
 // EDX contains address of point
 // result is stored in ST(0)
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]
       FMUL DWORD PTR [EDX]
@@ -5357,6 +5475,10 @@ asm
       FADDP
       FLD DWORD PTR [EAX + 12]
       FADDP
+{$else}
+begin
+   Result:=plane[0]*point[0]+plane[1]*point[1]+plane[2]*point[2]+plane[3];
+{$endif}
 end;
 
 // PointIsInHalfSpace
@@ -5382,6 +5504,7 @@ function QuaternionMake(Imag: array of Single; Real: Single): TQuaternion; assem
 // ECX contains address to result vector
 // EDX contains highest index of Imag
 // Real part is passed on the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
       PUSH EDI
       PUSH ESI
@@ -5394,6 +5517,16 @@ asm
       MOV [EDI], EAX
       POP ESI
       POP EDI
+{$else}
+var
+   n : Integer;
+begin
+   n:=Length(Imag);
+   if n>=1 then Result.ImagPart[0]:=Imag[0];
+   if n>=2 then Result.ImagPart[1]:=Imag[1];
+   if n>=3 then Result.ImagPart[2]:=Imag[2];
+   Result.RealPart:=real;
+{$endif}
 end;
 
 // QuaternionConjugate
@@ -5401,6 +5534,7 @@ end;
 function QuaternionConjugate(const Q: TQuaternion): TQuaternion; assembler;
 // EAX contains address of Q
 // EDX contains address of result
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD DWORD PTR [EAX]
       FCHS
@@ -5413,6 +5547,13 @@ asm
       FSTP DWORD PTR [EDX + 8]
       MOV EAX, [EAX + 12]
       MOV [EDX + 12], EAX
+{$else}
+begin
+   Result.Vector[0]:=-Q.Vector[0];
+   Result.Vector[1]:=-Q.Vector[1];
+   Result.Vector[2]:=-Q.Vector[2];
+   Result.Vector[3]:=Q.Vector[3];
+{$endif}
 end;
 
 // QuaternionMagnitude
@@ -5674,11 +5815,12 @@ end;
 // LnXP1
 //
 function LnXP1(X: Extended): Extended;
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLDLN2
-        MOV     AX,WORD PTR X+8               { exponent }
+        MOV     AX, WORD PTR X+8  // exponent
         FLD     X
-        CMP     AX,$3FFD                      { .4225 }
+        CMP     AX, $3FFD         // .4225
         JB      @@1
         FLD1
         FADD
@@ -5688,40 +5830,60 @@ asm
         FYL2XP1
 @@2:
         FWAIT
+{$else}
+begin
+   Result:=Math.LnXP1(X);
+{$endif}
 end;
 
 // Log10
 //
 function Log10(X: Extended): Extended;
 // Log.10(X):=Log.2(X) * Log.10(2)
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLDLG2     { Log base ten of 2 }
         FLD     X
         FYL2X
+{$else}
+begin
+   Result:=Math.Log10(X);
+{$endif}
 end;
 
 // Log2
 //
 function Log2(X: Extended): Extended;
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
         FYL2X
+{$else}
+begin
+   Result:=Math.Log2(X);
+{$endif}
 end;
 
 // Log2
 //
 function Log2(X: Single): Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
         FYL2X
+{$else}
+begin
+   Result:=Math.Log2(X);
+{$endif}
 end;
 
 // LogN
 //
 function LogN(Base, X: Extended): Extended;
 // Log.N(X):=Log.2(X) / Log.2(N)
+{$ifndef GEOMETRY_NO_ASM}
 asm
         FLD1
         FLD     X
@@ -5730,11 +5892,16 @@ asm
         FLD     Base
         FYL2X
         FDIV
+{$else}
+begin
+   Result:=Math.LogN(Base, X);
+{$endif}
 end;
 
 // IntPower
 //
 function IntPower(Base: Extended; Exponent: Integer): Extended; register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
         cdq
@@ -5755,7 +5922,10 @@ asm
         fld1
         fdivrp                    { Result:=1 / Result }
 @@3:
-        fwait
+{$else}
+begin
+   Result:=Math.IntPower(Base, Exponent);
+{$endif}
 end;
 
 // Power
@@ -5772,6 +5942,7 @@ end;
 // Power (int exponent)
 //
 function Power(Base: Single; Exponent: Integer): Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
         cdq
@@ -5792,13 +5963,17 @@ asm
         fld1
         fdivrp                    { Result:=1 / Result }
 @@3:
+{$else}
+begin
+   Result:=Math.Power(Base, Exponent);
+{$endif}
 end;
 
 // DegToRad (extended)
 //
 function DegToRad(const Degrees: Extended): Extended;
 begin
-   Result:=Degrees * (PI / 180);
+   Result:=Degrees*(PI/180);
 end;
 
 // DegToRad (single)
@@ -5807,16 +5982,21 @@ function DegToRad(const Degrees : Single) : Single; register;
 //   Result:=Degrees * cPIdiv180;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EBP+8]
       FMUL cPIdiv180
+{$else}
+begin
+   Result:=Degrees*cPIdiv180;
+{$endif}
 end;
 
 // RadToDeg (extended)
 //
 function RadToDeg(const Radians: Extended): Extended;
 begin
-   Result:=Radians * (180 / PI);
+   Result:=Radians*(180/PI);
 end;
 
 // RadToDeg (single)
@@ -5825,9 +6005,14 @@ function RadToDeg(const Radians: Single): Single;
 //   Result:=Radians * c180divPI;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EBP+8]
       FMUL c180divPI
+{$else}
+begin
+   Result:=Radians*c180divPI;
+{$endif}
 end;
 
 // NormalizeAngle
@@ -5858,11 +6043,16 @@ procedure SinCos(const Theta: Extended; var Sin, Cos: Extended); register;
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
    FSINCOS
    FSTP TBYTE PTR [EDX]    // cosine
    FSTP TBYTE PTR [EAX]    // sine
+{$else}
+begin
+   Math.SinCos(Theta, Sin, Cos);
+{$endif}
 end;
 
 // SinCos (Double)
@@ -5871,11 +6061,19 @@ procedure SinCos(const Theta: Double; var Sin, Cos: Double); register;
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
    FSINCOS
    FSTP QWORD PTR [EDX]    // cosine
    FSTP QWORD PTR [EAX]    // sine
+{$else}
+var
+   s, c : Extended;
+begin
+   Math.SinCos(Theta, s, c);
+   Sin:=s; Cos:=c;
+{$endif}
 end;
 
 // SinCos (Single)
@@ -5884,11 +6082,19 @@ procedure SinCos(const Theta: Single; var Sin, Cos: Single); register;
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  Theta
    FSINCOS
    FSTP DWORD PTR [EDX]    // cosine
    FSTP DWORD PTR [EAX]    // sine
+{$else}
+var
+   s, c : Extended;
+begin
+   Math.SinCos(Theta, s, c);
+   Sin:=s; Cos:=c;
+{$endif}
 end;
 
 // SinCos (Extended w radius)
@@ -5897,6 +6103,7 @@ procedure SinCos(const theta, radius : Double; var Sin, Cos: Extended); register
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
    FSINCOS
@@ -5904,6 +6111,13 @@ asm
    FSTP TBYTE PTR [EDX]    // cosine
    FMUL radius
    FSTP TBYTE PTR [EAX]    // sine
+{$else}
+var
+   s, c : Extended;
+begin
+   Math.SinCos(Theta, s, c);
+   Sin:=s*radius; Cos:=c*radius;
+{$endif}
 end;
 
 // SinCos (Double w radius)
@@ -5912,6 +6126,7 @@ procedure SinCos(const theta, radius : Double; var Sin, Cos: Double); register;
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
    FSINCOS
@@ -5919,6 +6134,13 @@ asm
    FSTP QWORD PTR [EDX]    // cosine
    FMUL radius
    FSTP QWORD PTR [EAX]    // sine
+{$else}
+var
+   s, c : Extended;
+begin
+   Math.SinCos(Theta, s, c);
+   Sin:=s*radius; Cos:=c*radius;
+{$endif}
 end;
 
 // SinCos (Single w radius)
@@ -5927,6 +6149,7 @@ procedure SinCos(const theta, radius : Single; var Sin, Cos: Single); register;
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
+{$ifndef GEOMETRY_NO_ASM}
 asm
    FLD  theta
    FSINCOS
@@ -5934,6 +6157,13 @@ asm
    FSTP DWORD PTR [EDX]    // cosine
    FMUL radius
    FSTP DWORD PTR [EAX]    // sine
+{$else}
+var
+   s, c : Extended;
+begin
+   Math.SinCos(Theta, s, c);
+   Sin:=s*radius; Cos:=c*radius;
+{$endif}
 end;
 
 // PrepareSinCosCache
@@ -5980,6 +6210,7 @@ end;
 //
 function ArcCos(const x : Single): Single; register;
 // Result:=ArcTan2(Sqrt(c1 - X * X), X);
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD   X
       FMUL  ST, ST
@@ -5987,6 +6218,10 @@ asm
       FSQRT
       FLD   X
       FPATAN
+{$else}
+begin
+   Result:=Math.ArcCos(X);
+{$endif}
 end;
 
 // ArcSin (Extended)
@@ -6000,6 +6235,7 @@ end;
 //
 function ArcSin(const x : Single) : Single;
 //   Result:=ArcTan2(X, Sqrt(1 - X * X))
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD   X
       FLD   ST
@@ -6007,60 +6243,94 @@ asm
       FSUBR cOne
       FSQRT
       FPATAN
+{$else}
+begin
+   Result:=Math.ArcSin(X);
+{$endif}
 end;
 
 // ArcTan2 (Extended)
 //
 function ArcTan2(const y, x : Extended) : Extended;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  Y
       FLD  X
       FPATAN
+{$else}
+begin
+   Result:=Math.ArcTan2(y, x);
+{$endif}
 end;
 
 // ArcTan2 (Single)
 //
 function ArcTan2(const y, x : Single) : Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  Y
       FLD  X
       FPATAN
+{$else}
+begin
+   Result:=Math.ArcTan2(y, x);
+{$endif}
 end;
 
 // Tan (Extended)
 //
 function Tan(const x : Extended) : Extended;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
       FPTAN
       FSTP ST(0)      // FPTAN pushes 1.0 after result
+{$else}
+begin
+   Result:=Math.Tan(x);
+{$endif}
 end;
 
 // Tan (Single)
 //
 function Tan(const x : Single) : Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
       FPTAN
       FSTP ST(0)      // FPTAN pushes 1.0 after result
+{$else}
+begin
+   Result:=Math.Tan(x);
+{$endif}
 end;
 
 // CoTan (Extended)
 //
 function CoTan(const x : Extended) : Extended;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
       FPTAN
       FDIVRP
+{$else}
+begin
+   Result:=Math.CoTan(x);
+{$endif}
 end;
 
 // CoTan (Single)
 //
 function CoTan(const x : Single) : Single;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  X
       FPTAN
       FDIVRP
+{$else}
+begin
+   Result:=Math.CoTan(x);
+{$endif}
 end;
 
 // Sinh
@@ -6138,6 +6408,7 @@ end;
 // RSqrt
 //
 function RSqrt(v : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -6162,13 +6433,16 @@ asm
       fld1
       fdivr
 @@End:
+{$else}
+begin
+   Result:=1/Sqrt(v);
+{$endif}
 end;
 
 // ISqrt
 //
 function ISqrt(i : Integer) : Integer; register;
-//begin
-//   Result:=Round(Sqrt(i));
+{$ifdef GEOMETRY_NO_ASM}
 asm
       push     eax
       test     vSIMD, 1
@@ -6188,11 +6462,16 @@ asm
       fsqrt
       fistp    dword ptr [esp]
       pop      eax
+{$else}
+begin
+   Result:=Round(Sqrt(i));
+{$endif}
 end;
 
 // ILength
 //
 function ILength(x, y : Integer) : Integer;
+{$ifdef GEOMETRY_NO_ASM}
 asm
       push     edx
       push     eax
@@ -6205,11 +6484,16 @@ asm
       fistp    dword ptr [esp+4]
       pop      edx
       pop      eax
+{$else}
+begin
+   Result:=Round(Sqrt(x*x+y*y));
+{$endif}
 end;
 
 // ILength
 //
 function ILength(x, y, z : Integer) : Integer;
+{$ifdef GEOMETRY_NO_ASM}
 asm
       push     ecx
       push     edx
@@ -6227,33 +6511,17 @@ asm
       pop      ecx
       pop      edx
       pop      eax
+{$else}
+begin
+   Result:=Round(Sqrt(x*x+y*y+z*z));
+{$endif}
 end;
 
 // RLength
 //
 function RLength(x, y : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
 asm
-      test vSIMD, 1
-      jz @@FPU
-@@3DNow:
-{      test vSIMD, 1
-      jz @@FPU
-@@3DNow:
-      movd        mm0, dword ptr [ebp+8]
-      punpckldq   mm0, qword ptr [ebp+12]
-      pfmul       mm0, mm0
-      pfacc       mm0, mm0
-      pfrsqrt     mm1, mm0
-      movq        mm2, mm1
-      pfmul       mm2, mm1
-      pfrsqit1    mm0, mm2
-      pfrcpit2    mm0, mm1
-      movd        dword ptr [ebp-4], mm0
-      femms
-      fld         dword ptr [ebp-4]
-      jmp @@End           }
-
-@@FPU:
       fld  x
       fmul x
       fld  y
@@ -6262,7 +6530,10 @@ asm
       fsqrt
       fld1
       fdivr
-@@End:
+{$else}
+begin
+   Result:=1/Sqrt(x*x+y*y);
+{$endif}
 end;
 
 // RegisterBasedExp
@@ -6293,6 +6564,8 @@ begin
    w:=Sqrt(1-p[2]*p[2]);
    SinCos(t, w, p[1], p[0]);
 end;
+
+// ------- NO_ASM alternatives end here !!!!!!!!!!!!!!! ---------------
 
 // Trunc64 (extended)
 //
@@ -7828,6 +8101,7 @@ initialization
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
+{$ifndef GEOMETRY_NO_ASM}
    try
       // detect 3DNow! capable CPU (adapted from AMD's "3DNow! Porting Guide")
       asm
@@ -7848,5 +8122,8 @@ initialization
       // trap for old/exotics CPUs
       vSIMD:=0;
    end;
+{$else}
+   vSIMD:=0;
+{$endif}
 
 end.
