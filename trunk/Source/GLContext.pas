@@ -224,10 +224,8 @@ type
 
       public
          { Public Declarations }
-{$W-}
          constructor Create; virtual;
-         constructor CreateAndAllocate;
-{W+}
+         constructor CreateAndAllocate(failIfAllocationFailed : Boolean = True);
          destructor Destroy; override;
 
          property Handle : Integer read FHandle;
@@ -954,10 +952,12 @@ end;
 
 // CreateAndAllocate
 //
-constructor TGLContextHandle.CreateAndAllocate;
+constructor TGLContextHandle.CreateAndAllocate(failIfAllocationFailed : Boolean = True);
 begin
    Create;
    AllocateHandle;
+   if failIfAllocationFailed and (Handle=0) then
+      raise EGLContext.Create('Auto-allocation failed');
 end;
 
 // Destroy

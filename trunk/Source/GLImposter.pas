@@ -21,12 +21,27 @@ uses
 type
    // TImposterOptions
    //
+   {: Imposter rendering options.<p>
+      Following options are supported:<ul>
+      <li>impoBlended : the imposters are transparently blended during renders,
+      this will smooth their edges but requires them to be rendered sorted
+      from back to front
+      <li>impoAlphaTest : alpha test is used to eliminate transparent pixels,
+      the alpha treshold is adjusted by the AlphaTreshold property
+      <li>impoNearestFiltering : use nearest texture filtering (the alternative
+      is linear filtering)
+      <li>impoPerspectiveCorrection : activates a special imposter rendering
+      projection suitable for distorting the sprites when seen from a level
+      angle of view with a wide focal camera (think trees/grass when walking
+      in a forest), if not active, the imposter sprites are camera-facing
+      </ul>
+   }
    TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering,
-                      impoNoPerspectiveCorrection);
+                      impoPerspectiveCorrection);
    TImposterOptions = set of TImposterOption;
 
 const
-   cDefaultImposterOptions = [impoBlended, impoAlphaTest, impoNoPerspectiveCorrection];
+   cDefaultImposterOptions = [impoBlended, impoAlphaTest];
 
 type
    TGLImposterBuilder = class;
@@ -467,7 +482,7 @@ procedure TImposter.BeginRender(var rci : TRenderContextInfo);
 var
    mat : TMatrix;
    filter : TGLEnum;
-   fx, fy, yOffset, cosAlpha : Single;
+   fx, fy, yOffset, cosAlpha, dynScale : Single;
 begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
@@ -505,15 +520,19 @@ begin
    FVy[0]:=mat[0][1];
    FVy[1]:=mat[1][1];
    FVy[2]:=mat[2][1];
-   if not (impoNoPerspectiveCorrection in Builder.ImposterOptions) then
-      FVy:=VectorLerp(FVy, YHmgVector, Abs(FVy[1]));
    NormalizeVector(FVy);
+   if impoPerspectiveCorrection in Builder.ImposterOptions then begin
+      cosAlpha:=VectorDotProduct(FVy, YHmgVector);
+      FVy:=VectorLerp(FVy, YHmgVector, Abs(cosAlpha));
+      NormalizeVector(FVy);
+      dynScale:=ClampValue(1/cosAlpha, 1, 1.414);
+   end else dynScale:=1;
 
    fx:=Sqrt(FAspectRatio);
    fy:=1/fx;
    yOffset:=cReferenceToPos[Builder.ImposterReference]*FStaticScale*fy;
-   fx:=fx*FStaticScale;
-   fy:=fy*FStaticScale;
+   fx:=fx*FStaticScale*dynScale;
+   fy:=fy*FStaticScale*dynScale;
 
    FQuad[0]:=VectorSubtract(VectorCombine(FVx, FVy,  fx,  fy+yOffset), FStaticOffset);
    FQuad[1]:=VectorSubtract(VectorCombine(FVx, FVy, -fx,  fy+yOffset), FStaticOffset);
