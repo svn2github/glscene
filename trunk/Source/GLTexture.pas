@@ -4251,7 +4251,7 @@ end;
 //
 function TGLTextureEx.GetOwner : TPersistent;
 begin
-  Result:=nil;
+  Result:=FMaterial;
 end;
 
 // SetItems
