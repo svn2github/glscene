@@ -106,10 +106,9 @@ end;
 
 procedure TForm1.WindowsFont1Click(Sender: TObject);
 begin
-  If FontDialog1.Execute then
-  Begin
-    WindowsBitmapFont1.Font := FontDialog1.Font;
-  End;
+   FontDialog1.Font:=WindowsBitmapFont1.Font;
+   if FontDialog1.Execute then
+      WindowsBitmapFont1.Font:=FontDialog1.Font;
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;

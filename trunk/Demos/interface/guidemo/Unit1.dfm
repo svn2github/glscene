@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 195
-  Top = 179
+  Left = 182
+  Top = 91
   Width = 513
   Height = 403
   Caption = 'Form1'
@@ -21,7 +21,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 505
-    Height = 357
+    Height = 354
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Align = alClient
@@ -121,6 +121,11 @@ object Form1: TForm1
     Top = 80
   end
   object WindowsBitmapFont1: TWindowsBitmapFont
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = []
     Left = 48
     Top = 48
   end
@@ -151,6 +156,274 @@ object Form1: TForm1
     Material.MaterialLibrary = GLMaterialLibrary1
     Material.LibMaterialName = 'Gui'
     GuiComponents = <
+      item
+        Elements = <
+          item
+            TopLeft.Coordinates = {00003041000082420000000000000000}
+            BottomRight.Coordinates = {000020420000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlCenter
+            Name = 'center1'
+          end
+          item
+            TopLeft.Coordinates = {00000000000000000000000000000000}
+            BottomRight.Coordinates = {000088410000F0410000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopLeft
+            Name = 'TopLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00008841000000000000000000000000}
+            BottomRight.Coordinates = {0000E0420000F0410000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTop
+            Name = 'Top1'
+          end
+          item
+            TopLeft.Coordinates = {000000000000F8410000000000000000}
+            BottomRight.Coordinates = {000000410000DA420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlLeft
+            Name = 'Left1'
+          end
+          item
+            TopLeft.Coordinates = {0000E042000000000000000000000000}
+            BottomRight.Coordinates = {000000430000F0410000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopRight
+            Name = 'TopRight1'
+          end
+          item
+            TopLeft.Coordinates = {0000F0420000F0410000000000000000}
+            BottomRight.Coordinates = {000000430000DE420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlRight
+            Name = 'Right1'
+          end
+          item
+            TopLeft.Coordinates = {000000000000E2420000000000000000}
+            BottomRight.Coordinates = {00007041000000430000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomLeft
+            Name = 'BottomLeft1'
+          end
+          item
+            TopLeft.Coordinates = {000070410000F0420000000000000000}
+            BottomRight.Coordinates = {0000E242000000430000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottom
+            Name = 'Bottom1'
+          end
+          item
+            TopLeft.Coordinates = {0000E2420000E2420000000000000000}
+            BottomRight.Coordinates = {00000043000000430000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomRight
+            Name = 'BottomRight1'
+          end>
+        Name = 'form'
+      end
+      item
+        Elements = <
+          item
+            TopLeft.Coordinates = {00003041000082420000000000000000}
+            BottomRight.Coordinates = {000020420000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlCenter
+            Name = 'center1'
+          end
+          item
+            TopLeft.Coordinates = {00000041000078420000000000000000}
+            BottomRight.Coordinates = {00005041000086420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopLeft
+            Name = 'TopLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00003041000078420000000000000000}
+            BottomRight.Coordinates = {00002042000084420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTop
+            Name = 'Top1'
+          end
+          item
+            TopLeft.Coordinates = {00000041000082420000000000000000}
+            BottomRight.Coordinates = {000040410000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlLeft
+            Name = 'Left1'
+          end
+          item
+            TopLeft.Coordinates = {00001842000078420000000000000000}
+            BottomRight.Coordinates = {00002C42000086420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopRight
+            Name = 'TopRight1'
+          end
+          item
+            TopLeft.Coordinates = {00001C42000082420000000000000000}
+            BottomRight.Coordinates = {00002C420000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlRight
+            Name = 'Right1'
+          end
+          item
+            TopLeft.Coordinates = {000000410000B8420000000000000000}
+            BottomRight.Coordinates = {000050410000C2420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomLeft
+            Name = 'BottomLeft1'
+          end
+          item
+            TopLeft.Coordinates = {000030410000BA420000000000000000}
+            BottomRight.Coordinates = {000020420000C2420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottom
+            Name = 'Bottom1'
+          end
+          item
+            TopLeft.Coordinates = {000018420000B8420000000000000000}
+            BottomRight.Coordinates = {00002C420000C2420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomRight
+            Name = 'BottomRight1'
+          end>
+        Name = 'panel'
+      end
+      item
+        Elements = <
+          item
+            TopLeft.Coordinates = {00003041000082420000000000000000}
+            BottomRight.Coordinates = {000020420000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlCenter
+            Name = 'center1'
+          end
+          item
+            TopLeft.Coordinates = {00000000000000000000000000000000}
+            BottomRight.Coordinates = {000088410000F0410000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopLeft
+            Name = 'TopLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00008841000000000000000000000000}
+            BottomRight.Coordinates = {0000E0420000F0410000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTop
+            Name = 'Top1'
+          end
+          item
+            TopLeft.Coordinates = {000000000000F8410000000000000000}
+            BottomRight.Coordinates = {000000410000DA420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlLeft
+            Name = 'Left1'
+          end
+          item
+            TopLeft.Coordinates = {0000E042000000000000000000000000}
+            BottomRight.Coordinates = {000000430000F0410000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopRight
+            Name = 'TopRight1'
+          end
+          item
+            TopLeft.Coordinates = {0000F0420000F0410000000000000000}
+            BottomRight.Coordinates = {000000430000DE420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlRight
+            Name = 'Right1'
+          end
+          item
+            TopLeft.Coordinates = {000000000000E2420000000000000000}
+            BottomRight.Coordinates = {00007041000000430000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomLeft
+            Name = 'BottomLeft1'
+          end
+          item
+            TopLeft.Coordinates = {000070410000F0420000000000000000}
+            BottomRight.Coordinates = {0000E242000000430000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottom
+            Name = 'Bottom1'
+          end
+          item
+            TopLeft.Coordinates = {0000E2420000E2420000000000000000}
+            BottomRight.Coordinates = {00000043000000430000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomRight
+            Name = 'BottomRight1'
+          end>
+        Name = 'form'
+      end
+      item
+        Elements = <
+          item
+            TopLeft.Coordinates = {00003041000082420000000000000000}
+            BottomRight.Coordinates = {000020420000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlCenter
+            Name = 'center1'
+          end
+          item
+            TopLeft.Coordinates = {00000041000078420000000000000000}
+            BottomRight.Coordinates = {00005041000086420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopLeft
+            Name = 'TopLeft1'
+          end
+          item
+            TopLeft.Coordinates = {00003041000078420000000000000000}
+            BottomRight.Coordinates = {00002042000084420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTop
+            Name = 'Top1'
+          end
+          item
+            TopLeft.Coordinates = {00000041000082420000000000000000}
+            BottomRight.Coordinates = {000040410000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlLeft
+            Name = 'Left1'
+          end
+          item
+            TopLeft.Coordinates = {00001842000078420000000000000000}
+            BottomRight.Coordinates = {00002C42000086420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlTopRight
+            Name = 'TopRight1'
+          end
+          item
+            TopLeft.Coordinates = {00001C42000082420000000000000000}
+            BottomRight.Coordinates = {00002C420000BC420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlRight
+            Name = 'Right1'
+          end
+          item
+            TopLeft.Coordinates = {000000410000B8420000000000000000}
+            BottomRight.Coordinates = {000050410000C2420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomLeft
+            Name = 'BottomLeft1'
+          end
+          item
+            TopLeft.Coordinates = {000030410000BA420000000000000000}
+            BottomRight.Coordinates = {000020420000C2420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottom
+            Name = 'Bottom1'
+          end
+          item
+            TopLeft.Coordinates = {000018420000B8420000000000000000}
+            BottomRight.Coordinates = {00002C420000C2420000000000000000}
+            Scale.Coordinates = {0000803F0000803F0000000000000000}
+            Align = GLAlBottomRight
+            Name = 'BottomRight1'
+          end>
+        Name = 'panel'
+      end
       item
         Elements = <
           item
