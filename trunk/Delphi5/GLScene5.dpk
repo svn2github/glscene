@@ -143,6 +143,15 @@ contains
   GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas',
   GLMultiProxy in '..\Source\GLMultiProxy.pas',
   GLSkyBox in '..\Source\GLSkyBox.pas',
-  GLHiddenLineShader in '..\Source\Shaders\GLHiddenLineShader.pas';
+  GLHiddenLineShader in '..\Source\Shaders\GLHiddenLineShader.pas',
+  CurvesAndSurfaces in '..\Source\Base\CurvesAndSurfaces.pas',
+  GLParametricSurfaces in '..\Source\GLParametricSurfaces.pas',
+  GLFileNurbs in '..\Source\FileFormats\GLFileNurbs.pas',
+  VerletClasses in '..\Source\Base\VerletClasses.pas',
+  SpatialPartitioning in '..\Source\Base\SpatialPartitioning.pas',
+  GLVerletClothify in '..\Source\GLVerletClothify.pas',
+  GLTree in '..\Source\GLTree.pas',
+  GLMeshCSG in '..\Source\GLMeshCSG.pas',
+  GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas';
 
 end.
