@@ -8,13 +8,16 @@
    The secondary texture is used for the diffuse texture,
    to enable set boDiffuseTexture2 in the BumpOptions property.<p>
 
-   Quaternion tangents and Basic ARBFP are currently
-   incompatible, if set bump method will be forced to Dot3.<p>
+   The tertiary texture is used for the specular texture,
+   to enable set boSpecularTexture3 in the BumpOptions property.
+   The boDisableSpecular with disable specular lighting altogether.<p>
 
    External tangent bump space expects tangent data under
    GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/10/04 - SG - Added special functions for generating the ARB programs
+                          which replace the string constants.
       <li>02/10/04 - SG - Changed render order a little, minimum texture units
                           is now 2 for dot3 texcombiner bump method.
                           Changed vertex programs to accept local program
@@ -46,7 +49,7 @@ type
 
    TBumpSpace = (bsObject, bsTangentExternal, bsTangentQuaternion);
 
-   TBumpOption = (boDiffuseTexture2);
+   TBumpOption = (boDiffuseTexture2, boSpecularTexture3, boDisableSpecular);
    TBumpOptions = set of TBumpOption;
 
    // TGLBumpShader
@@ -64,7 +67,11 @@ type
          FDesignTimeEnabled : Boolean;
          FAmbientPass : Boolean;
          FDiffusePass : Boolean;
+         FVertexProgram : TStringList;
+         FFragmentProgram : TStringList;
 
+         function GenerateVertexProgram : String;
+         function GenerateFragmentProgram : String;
          procedure DoLightPass(lightID : Cardinal);
 
       protected
@@ -101,305 +108,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-const
-   cObjectToDot3 =
-      '!!ARBvp1.0'+#13#10+
-      'OPTION ARB_position_invariant;'+#13#10+
-      'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
-      'PARAM tex[4] = { state.matrix.texture[0] };'+
-      'PARAM lightPos = program.local[0];'+
-      'TEMP temp, light, eye;'+
-
-      // Get light vector in object space
-      '   DP4 light.x, mvinv[0], lightPos;'+
-      '   DP4 light.y, mvinv[1], lightPos;'+
-      '   DP4 light.z, mvinv[2], lightPos;'+
-      '   ADD light, light, -vertex.position;'+
-
-      // Normalize the light vector
-      '   DP3 temp.x, light, light;'+
-      '   RSQ temp, temp.x;'+
-      '   MUL light, temp.x, light;'+
-
-      // Scale and bias the light vector for storing in the primary color
-      '   ADD temp, light, 1.0;'+
-      '   MUL temp, 0.5, temp;'+
-
-      // Output
-      '   MOV result.color, temp;'+
-      '   MOV result.color.w, 1.0;'+
-      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
-      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
-      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
-      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
-      '   MOV result.texcoord[0], temp;'+
-      '   MOV result.texcoord[1], temp;'+
-
-      'END';
-
-   cObjectToBasicARBFP =
-      '!!ARBvp1.0'+#13#10+
-      'OPTION ARB_position_invariant;'+#13#10+
-      'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
-      'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+
-      'PARAM tex[4] = { state.matrix.texture[0] };'+
-      'PARAM lightPos = program.local[0];'+
-      'TEMP temp, light, eye;'+
-
-      // Get light vector in object space
-      '   DP4 light.x, lightPos, mvinv[0];'+
-      '   DP4 light.y, lightPos, mvinv[1];'+
-      '   DP4 light.z, lightPos, mvinv[2];'+
-      '   ADD light, light, -vertex.position;'+
-      '   MOV light.w, 0.0;'+
-
-      // Get eye vector
-      '   ADD eye, mvit[3], -vertex.position;'+
-      '   MOV eye.w, 0.0;'+
-
-      // Output
-      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
-      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
-      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
-      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
-      '   MOV result.texcoord[0], temp;'+
-      '   MOV result.texcoord[1], light;'+
-      '   MOV result.texcoord[2], eye;'+
-
-      'END';
-
-   cTangentQuaternionToDot3 =
-      '!!ARBvp1.0'+
-      'OPTION ARB_position_invariant;'+#13#10+
-      'PARAM c0 = { 0, 0, 1, 0 };'+
-      'PARAM c1 = { 0.5, 0.0, 0, 0 };'+
-      'TEMP R0, R1, R2;'+
-      'ATTRIB v24 = vertex.texcoord[0];'+
-      'ATTRIB v18 = vertex.normal;'+
-      'ATTRIB v16 = vertex.position;'+
-      'PARAM s18 = program.local[0];'+
-      'PARAM s359[4] = { state.matrix.modelview[0].inverse };'+
-      'PARAM tex[4] = { state.matrix.texture[0] };'+
-      '   DP4 R0.x, v24, tex[0];'+
-      '   DP4 R0.y, v24, tex[1];'+
-      '   DP4 R0.z, v24, tex[2];'+
-      '   DP4 R0.w, v24, tex[3];'+
-      '   MOV result.texcoord[0], R0;'+
-      '   MOV result.texcoord[1], R0;'+
-      '   MOV R1, s18;'+
-      '   DP4 R0.x, s359[0], R1;'+
-      '   DP4 R0.y, s359[1], R1;'+
-      '   DP4 R0.z, s359[2], R1;'+
-      '   DP4 R0.w, s359[3], R1;'+
-      '   ADD R1, R0, -v16;'+
-      '   DP4 R0.x, R1, R1;'+
-      '   RSQ R0.x, R0.x;'+
-      '   MUL R2.xyz, R0.x, R1;'+
-      '   ADD R1.y, c0.x, -v18.x;'+
-      '   MOV R1.z, c0.x;'+
-      '   MOV R1.x, v18.yzzz;'+
-      '   DP3 R0.x, R1.xyzx, R2.xyzx;'+
-      '   MUL R0.x, R1.y, R2.z;'+
-      '   MAD R0.y, v18.z, R2.x, R0.x;'+
-      '   MUL R0.x, v18.y, R2.z;'+
-      '   MAD R0.z, v18.z, R2.y, -R0.x;'+
-      '   MUL R0.x, v18.y, R2.y;'+
-      '   MAD R0.x, v18.z, R2.z, R0.x;'+
-      '   MAD R0.w, -R1.y, R2.x, R0.x;'+
-      '   ADD R0.xyz, R0.yzwy, c0.z;'+
-      '   MUL result.color.xyz, R0.xyzx, c1.x;'+
-      '   MOV result.color.w, c0.zxxz;'+
-      'END';
-
-   cTangentExternalToDot3 =
-      '!!ARBvp1.0'+#13#10+
-      'OPTION ARB_position_invariant;'+#13#10+
-      'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
-      'PARAM tex[4] = { state.matrix.texture[0] };'+
-      'PARAM lightPos = program.local[0];'+
-      'ATTRIB tangent = vertex.texcoord[1];'+
-      'ATTRIB binormal = vertex.texcoord[2];'+
-      'ATTRIB normal = vertex.normal;'+
-      'TEMP temp, light, eye;'+
-
-      // Get light position in object space
-      '   DP4 light.x, mvinv[0], lightPos;'+
-      '   DP4 light.y, mvinv[1], lightPos;'+
-      '   DP4 light.z, mvinv[2], lightPos;'+
-      '   ADD light, light, -vertex.position;'+
-
-      // Transform into tangent space
-      '   DP3 temp.x, light, tangent;'+
-      '   DP3 temp.y, light, binormal;'+
-      '   DP3 temp.z, light, normal;'+
-      '   MOV light, temp;'+
-
-      // Normalize the light vector
-      '   DP3 temp.x, light, light;'+
-      '   RSQ temp, temp.x;'+
-      '   MUL light, temp.x, light;'+
-
-      // Pack the light vector into the primary color for the
-      // dot3 texture combiner operation
-      '   ADD temp, light, 1.0;'+
-      '   MUL temp, 0.5, temp;'+
-
-      // Output
-      '   MOV result.color, temp;'+
-      '   MOV result.color.w, 1.0;'+
-      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
-      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
-      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
-      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
-      '   MOV result.texcoord[0], temp;'+
-      '   MOV result.texcoord[1], temp;'+
-
-      'END';
-
-   cTangentExternalToBasicARBFP =
-      '!!ARBvp1.0'+#13#10+
-      'OPTION ARB_position_invariant;'+#13#10+
-      'PARAM mvinv[4] = { state.matrix.modelview.inverse };'+
-      'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+
-      'PARAM tex[4] = { state.matrix.texture[0] };'+
-      'PARAM lightPos = program.local[0];'+
-      'ATTRIB tangent = vertex.texcoord[1];'+
-      'ATTRIB binormal = vertex.texcoord[2];'+
-      'ATTRIB normal = vertex.normal;'+
-      'TEMP temp, light, eye;'+
-
-      // Get light vector in object space
-      '   DP4 light.x, lightPos, mvinv[0];'+
-      '   DP4 light.y, lightPos, mvinv[1];'+
-      '   DP4 light.z, lightPos, mvinv[2];'+
-      '   ADD light, light, -vertex.position;'+
-
-      // Transform light vector into tangent space
-      '   DP3 temp.x, light, tangent;'+
-      '   DP3 temp.y, light, binormal;'+
-      '   DP3 temp.z, light, normal;'+
-      '   MOV light, temp;'+
-      '   MOV light.w, 0.0;'+
-
-      // Get eye vector in object space
-      '   ADD eye, mvit[3], -vertex.position;'+
-
-      // Transform eye vector into tangent space
-      '   DP3 temp.x, eye, tangent;'+
-      '   DP3 temp.y, eye, binormal;'+
-      '   DP3 temp.z, eye, normal;'+
-      '   MOV eye, temp;'+
-      '   MOV eye.w, 0.0;'+
-
-      // Output
-      '   DP4 temp.x, vertex.texcoord[0], tex[0];'+
-      '   DP4 temp.y, vertex.texcoord[0], tex[1];'+
-      '   DP4 temp.z, vertex.texcoord[0], tex[2];'+
-      '   DP4 temp.w, vertex.texcoord[0], tex[3];'+
-      '   MOV result.texcoord[0], temp;'+
-      '   MOV result.texcoord[1], light;'+
-      '   MOV result.texcoord[2], eye;'+
-
-      'END';
-
-   cBasicARBFP =
-      '!!ARBfp1.0'+#13#10+
-      'PARAM lightDiffuse = program.local[0];'+
-      'PARAM lightSpecular = program.local[1];'+
-      'PARAM materialDiffuse = state.material.diffuse;'+
-      'PARAM materialSpecular = state.material.specular;'+
-      'PARAM shininess = state.material.shininess;'+
-      'TEMP temp, tex, light, eye, normal, col, diff, spec;'+
-
-      // Get the normalized normal vector
-      '   TEX normal, fragment.texcoord[0], texture[0], 2D;'+
-      '   MAD normal, normal, 2.0, -1.0;'+
-      '   DP3 temp, normal, normal;'+
-      '   RSQ temp, temp.x;'+
-      '   MUL normal, normal, temp.x;'+
-
-      // Get the normalized light vector
-      '   DP3 light, fragment.texcoord[1], fragment.texcoord[1];'+
-      '   RSQ light, light.x;'+
-      '   MUL light, fragment.texcoord[1], light.x;'+
-
-      // Get the normalized half vector (eye+light)
-      '   DP3 eye, fragment.texcoord[2], fragment.texcoord[2];'+
-      '   RSQ eye, eye.x;'+
-      '   MUL eye, fragment.texcoord[2], eye.x;'+
-      '   ADD eye, eye, light;'+
-      '   DP3 temp, eye, eye;'+
-      '   RSQ temp, temp.x;'+
-      '   MUL eye, eye, temp.x;'+
-
-      // Calculate the diffuse color
-      '   DP3 diff, normal, light;'+
-      '   MUL diff, diff, lightDiffuse;'+
-      '   MUL diff, diff, materialDiffuse;'+
-
-      // Calculate the specular color
-      '   DP3 spec, normal, eye;'+
-      '   POW spec, spec.x, shininess.x;'+
-      '   MUL spec, spec, materialSpecular;'+
-      '   MUL spec, spec, lightSpecular;'+
-
-      // Output
-      '   ADD_SAT result.color, diff, spec;'+
-      '   MOV result.color.w, 1.0;'+
-
-      'END';
-
-   cTexturedARBFP =
-      '!!ARBfp1.0'+#13#10+
-      'PARAM lightDiffuse = program.local[0];'+
-      'PARAM lightSpecular = program.local[1];'+
-      'PARAM materialDiffuse = state.material.diffuse;'+
-      'PARAM materialSpecular = state.material.specular;'+
-      'PARAM shininess = state.material.shininess;'+
-      'TEMP temp, tex, light, eye, normal, col, diff, spec, textureDiffuse;'+
-
-      // Get the normalized normal vector
-      '   TEX normal, fragment.texcoord[0], texture[0], 2D;'+
-      '   MAD normal, normal, 2.0, -1.0;'+
-      '   DP3 temp, normal, normal;'+
-      '   RSQ temp, temp.x;'+
-      '   MUL normal, normal, temp.x;'+
-
-      // Get the normalized light vector
-      '   DP3 light, fragment.texcoord[1], fragment.texcoord[1];'+
-      '   RSQ light, light.x;'+
-      '   MUL light, fragment.texcoord[1], light.x;'+
-
-      // Get the normalized half vector (eye+light)
-      '   DP3 eye, fragment.texcoord[2], fragment.texcoord[2];'+
-      '   RSQ eye, eye.x;'+
-      '   MUL eye, fragment.texcoord[2], eye.x;'+
-      '   ADD eye, eye, light;'+
-      '   DP3 temp, eye, eye;'+
-      '   RSQ temp, temp.x;'+
-      '   MUL eye, eye, temp.x;'+
-
-      // Get the diffuse texture color
-      '   TEX textureDiffuse, fragment.texcoord[0], texture[1], 2D;'+
-
-      // Calculate the diffuse color
-      '   DP3 diff, normal, light;'+
-      '   MUL diff, diff, lightDiffuse;'+
-      '   MUL diff, diff, materialDiffuse;'+
-      '   MUL diff, diff, textureDiffuse;'+
-
-      // Calculate the specular color
-      '   DP3 spec, normal, eye;'+
-      '   POW spec, spec.x, shininess.x;'+
-      '   MUL spec, spec, materialSpecular;'+
-      '   MUL spec, spec, lightSpecular;'+
-
-      // Output
-      '   ADD_SAT result.color, diff, spec;'+
-      '   MOV result.color.w, 1.0;'+
-
-      'END';
-
 // Register
 //
 procedure Register;
@@ -421,6 +129,9 @@ begin
    FBumpSpace:=bsObject;
    FBumpOptions:=[];
    ShaderStyle:=ssLowLevel;
+   
+   FVertexProgram:=TStringList.Create;
+   FFragmentProgram:=TStringList.Create;
 end;
 
 // Destroy
@@ -430,6 +141,8 @@ begin
    DeleteVertexPrograms;
    DeleteFragmentPrograms;
    FLightIDs.Free;
+   FVertexProgram.Free;
+   FFragmentProgram.Free;
    inherited;
 end;
 
@@ -438,6 +151,207 @@ end;
 procedure TGLBumpShader.Loaded;
 begin
    inherited;
+end;
+
+// GenerateVertexProgram
+//
+function TGLBumpShader.GenerateVertexProgram : String;
+var
+   VP : TStringList;
+   DoTangent, DoSpecular : Boolean;
+begin
+   DoSpecular:=(BumpMethod = bmBasicARBFP) and not (boDisableSpecular in BumpOptions);
+   DoTangent:=(BumpSpace = bsTangentExternal) or (BumpSpace = bsTangentQuaternion);
+
+   VP:=TStringList.Create;
+
+   VP.Add('!!ARBvp1.0');
+   VP.Add('OPTION ARB_position_invariant;');
+
+   VP.Add('PARAM mvinv[4] = { state.matrix.modelview.inverse };');
+   VP.Add('PARAM mvit[4] = { state.matrix.modelview.invtrans };');
+   VP.Add('PARAM tex[4] = { state.matrix.texture[0] };');
+   VP.Add('PARAM lightPos = program.local[0];');
+   if BumpSpace = bsTangentExternal then begin
+      VP.Add('ATTRIB tangent = vertex.texcoord[1];');
+      VP.Add('ATTRIB binormal = vertex.texcoord[2];');
+      VP.Add('ATTRIB normal = vertex.normal;');
+   end;
+   VP.Add('TEMP temp, temp2, light, eye;');
+
+   VP.Add('   DP4 light.x, mvinv[0], lightPos;');
+   VP.Add('   DP4 light.y, mvinv[1], lightPos;');
+   VP.Add('   DP4 light.z, mvinv[2], lightPos;');
+   VP.Add('   ADD light, light, -vertex.position;');
+
+   if DoSpecular then
+      VP.Add('   ADD eye, mvit[3], -vertex.position;');
+
+   if DoTangent then begin
+      if BumpSpace = bsTangentExternal then begin
+
+         VP.Add('   DP3 temp.x, light, tangent;');
+         VP.Add('   DP3 temp.y, light, binormal;');
+         VP.Add('   DP3 temp.z, light, normal;');
+         VP.Add('   MOV light, temp;');
+         if DoSpecular then begin
+            VP.Add('   DP3 temp.x, eye, tangent;');
+            VP.Add('   DP3 temp.y, eye, binormal;');
+            VP.Add('   DP3 temp.z, eye, normal;');
+            VP.Add('   MOV eye, temp;');
+         end;
+
+      end else if BumpSpace = bsTangentQuaternion then begin
+
+         VP.Add('   DP3 temp.x, light, light;');
+         VP.Add('   RSQ temp.x, temp.x;');
+         VP.Add('   MUL light, temp.x, light;');
+
+         VP.Add('   MOV temp2.x, vertex.normal.y;');
+         VP.Add('   ADD temp2.y, 0.0, -vertex.normal.x;');
+         VP.Add('   MOV temp2.z, 0.0;');
+
+         VP.Add('   DP3 temp.x, temp2, light;');
+         VP.Add('   MUL temp.x, temp2.y, light.z;');
+         VP.Add('   MAD temp.y, vertex.normal.z, light.x, temp.x;');
+         VP.Add('   MUL temp.x, vertex.normal.y, light.z;');
+         VP.Add('   MAD temp.z, vertex.normal.z, light.y, -temp.x;');
+         VP.Add('   MUL temp.x, vertex.normal.y, light.y;');
+         VP.Add('   MAD temp.x, vertex.normal.z, light.z, temp.x;');
+         VP.Add('   MAD temp.w, -temp2.y, light.x, temp.x;');
+         VP.Add('   MOV light, temp.yzwy;');
+
+         if DoSpecular then begin
+            VP.Add('   DP3 temp.x, temp2, eye;');
+            VP.Add('   MUL temp.x, temp2.y, eye.z;');
+            VP.Add('   MAD temp.y, vertex.normal.z, eye.x, temp.x;');
+            VP.Add('   MUL temp.x, vertex.normal.y, eye.z;');
+            VP.Add('   MAD temp.z, vertex.normal.z, eye.y, -temp.x;');
+            VP.Add('   MUL temp.x, vertex.normal.y, eye.y;');
+            VP.Add('   MAD temp.x, vertex.normal.z, eye.z, temp.x;');
+            VP.Add('   MAD temp.w, -temp2.y, eye.x, temp.x;');
+            VP.Add('   MOV eye, temp.yzwy;');
+         end;
+         
+      end;
+   end;
+
+   if BumpMethod = bmDot3TexCombiner then begin
+
+      if BumpSpace<>bsTangentQuaternion then begin
+         VP.Add('   DP3 temp.x, light, light;');
+         VP.Add('   RSQ temp, temp.x;');
+         VP.Add('   MUL light, temp.x, light;');
+      end;
+      VP.Add('   ADD temp, light, 1.0;');
+      VP.Add('   MUL temp, 0.5, temp;');
+      VP.Add('   MOV result.color, temp;');
+      VP.Add('   MOV result.color.w, 1.0;');
+
+   end else if BumpMethod = bmBasicARBFP then begin
+
+      VP.Add('   MOV light.w, 0.0;');
+      if DoSpecular then
+         VP.Add('   MOV eye.w, 0.0;');
+
+   end;
+   
+   VP.Add('   DP4 temp.x, vertex.texcoord[0], tex[0];');
+   VP.Add('   DP4 temp.y, vertex.texcoord[0], tex[1];');
+   VP.Add('   DP4 temp.z, vertex.texcoord[0], tex[2];');
+   VP.Add('   DP4 temp.w, vertex.texcoord[0], tex[3];');
+
+   VP.Add('   MOV result.texcoord[0], temp;');
+   if BumpMethod = bmDot3TexCombiner then begin
+      if boDiffuseTexture2 in BumpOptions then
+         VP.Add('   MOV result.texcoord[1], temp;');
+   end else begin
+      VP.Add('   MOV result.texcoord[1], light;');
+      if DoSpecular then
+         VP.Add('   MOV result.texcoord[2], eye;');
+   end;
+
+   VP.Add('END');
+   
+   FVertexProgram.Assign(VP);
+   Result:=VP.Text;
+   VP.Free;
+end;
+
+// GenerateFragmentProgram
+//
+function TGLBumpShader.GenerateFragmentProgram : String;
+var
+   FP : TStringList;
+   DoSpecular : Boolean;
+begin
+   DoSpecular:=not (boDisableSpecular in BumpOptions);
+
+   FP:=TStringList.Create;
+
+   FP.Add('!!ARBfp1.0');
+   
+   FP.Add('PARAM lightDiffuse = program.local[0];');
+   FP.Add('PARAM lightSpecular = program.local[1];');
+   FP.Add('PARAM materialDiffuse = state.material.diffuse;');
+   FP.Add('PARAM materialSpecular = state.material.specular;');
+   FP.Add('PARAM shininess = state.material.shininess;');
+   FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec, textureColor;');
+
+   // Get the normalized normal vector
+   FP.Add('   TEX textureColor, fragment.texcoord[0], texture[0], 2D;');
+   FP.Add('   MAD normal, textureColor, 2.0, -1.0;');
+   FP.Add('   DP3 temp, normal, normal;');
+   FP.Add('   RSQ temp, temp.x;');
+   FP.Add('   MUL normal, normal, temp.x;');
+
+   // Get the normalized light vector
+   FP.Add('   DP3 light, fragment.texcoord[1], fragment.texcoord[1];');
+   FP.Add('   RSQ light, light.x;');
+   FP.Add('   MUL light, fragment.texcoord[1], light.x;');
+
+   // Calculate the diffuse color
+   FP.Add('   DP3 diff, normal, light;');
+   FP.Add('   MUL diff, diff, lightDiffuse;');
+   FP.Add('   MUL diff, diff, materialDiffuse;');
+   if boDiffuseTexture2 in BumpOptions then begin
+      FP.Add('   TEX textureColor, fragment.texcoord[0], texture[1], 2D;');
+      FP.Add('   MUL diff, diff, textureColor;');
+   end;
+
+   if DoSpecular then begin
+      // Get the normalized half vector (eye+light)
+      FP.Add('   DP3 eye, fragment.texcoord[2], fragment.texcoord[2];');
+      FP.Add('   RSQ eye, eye.x;');
+      FP.Add('   MUL eye, fragment.texcoord[2], eye.x;');
+      FP.Add('   ADD eye, eye, light;');
+      FP.Add('   DP3 temp, eye, eye;');
+      FP.Add('   RSQ temp, temp.x;');
+      FP.Add('   MUL eye, eye, temp.x;');
+
+      // Calculate the specular color
+      FP.Add('   DP3 spec, normal, eye;');
+      FP.Add('   POW spec, spec.x, shininess.x;');
+      FP.Add('   MUL spec, spec, materialSpecular;');
+      FP.Add('   MUL spec, spec, lightSpecular;');
+      if boSpecularTexture3 in BumpOptions then begin
+         FP.Add('   TEX textureColor, fragment.texcoord[0], texture[2], 2D;');
+         FP.Add('   MUL spec, spec, textureColor;');
+      end;
+   end;
+
+   // Output
+   if DoSpecular then
+      FP.Add('   ADD_SAT result.color, diff, spec;')
+   else
+      FP.Add('   MOV result.color, diff;');
+   FP.Add('   MOV result.color.w, 1.0;');
+
+   FP.Add('END');
+
+   FFragmentProgram.Assign(FP);
+   Result:=FP.Text;
+   FP.Free;
 end;
 
 // DoLightPass
@@ -479,6 +393,9 @@ begin
          glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
          glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
 
+         glActiveTextureARB(GL_TEXTURE2_ARB);
+         glDisable(GL_TEXTURE_2D);
+
          glActiveTextureARB(GL_TEXTURE0_ARB);
       end;
 
@@ -500,7 +417,7 @@ end;
 //
 procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
 
-   procedure LoadARBProgram(target : GLenum; vptext : String; var vphandle : cardinal);
+   procedure LoadARBProgram(target : GLenum; programText : String; var vphandle : cardinal);
    var
       errPos : Integer;
       errString : String;
@@ -512,7 +429,7 @@ procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
       glGenProgramsARB(1, @vphandle);
       glBindProgramARB(target, vphandle);
       glProgramStringARB(target, GL_PROGRAM_FORMAT_ASCII_ARB,
-         Length(vptext), PChar(vptext));
+         Length(programText), PChar(programText));
       glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
       if errPos>-1 then begin
          errString:=glGetString(GL_PROGRAM_ERROR_STRING_ARB);
@@ -526,6 +443,7 @@ var
    lightEnabled : GLboolean;
    ambient, materialAmbient : TColorVector;
    success : Boolean;
+   str : String;
 begin
    if (csDesigning in ComponentState) and not DesignTimeEnabled then exit;
    if not Enabled then exit;
@@ -542,35 +460,15 @@ begin
 
       if Length(FVertexProgramHandles) = 0 then begin
          SetLength(FVertexProgramHandles, 1);
-         case FBumpSpace of
-            bsObject : begin
-               case FBumpMethod of
-                  bmDot3TexCombiner :
-                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cObjectToDot3, FVertexProgramHandles[0]);
-                  bmBasicARBFP :
-                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cObjectToBasicARBFP, FVertexProgramHandles[0]);
-               end;
-            end;
-            bsTangentQuaternion :
-               LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cTangentQuaternionToDot3, FVertexProgramHandles[0]);
-            bsTangentExternal : begin
-               case FBumpMethod of
-                  bmDot3TexCombiner :
-                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cTangentExternalToDot3, FVertexProgramHandles[0]);
-                  bmBasicARBFP :
-                     LoadARBProgram(GL_VERTEX_PROGRAM_ARB, cTangentExternalToBasicARBFP, FVertexProgramHandles[0]);
-               end;
-            end;
-         end;
+         str:=GenerateVertexProgram;
+         LoadARBProgram(GL_VERTEX_PROGRAM_ARB, str, FVertexProgramHandles[0]);
       end;
 
       if Length(FFragmentProgramHandles) = 0 then
          if FBumpMethod = bmBasicARBFP then begin
             SetLength(FFragmentProgramHandles, 1);
-            if boDiffuseTexture2 in FBumpOptions then
-               LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, cTexturedARBFP, FFragmentProgramHandles[0])
-            else
-               LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, cBasicARBFP, FFragmentProgramHandles[0]);
+            str:=GenerateFragmentProgram;
+            LoadARBProgram(GL_FRAGMENT_PROGRAM_ARB, str, FFragmentProgramHandles[0])
          end;
 
       success:=True;
@@ -614,6 +512,8 @@ begin
       glDisable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE1_ARB);
       glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE2_ARB);
+      glDisable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE0_ARB);
 
       glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
@@ -655,11 +555,15 @@ begin
 
       glEnable(GL_BLEND);
       glBlendFunc(GL_DST_COLOR, GL_ZERO);
+
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+      glDisable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE1_ARB);
       glEnable(GL_TEXTURE_2D);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-      glActiveTextureARB(GL_TEXTURE0_ARB);
+      glActiveTextureARB(GL_TEXTURE2_ARB);
       glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
 
       FDiffusePass:=True;
       Result:=True;
@@ -675,6 +579,8 @@ begin
       glActiveTextureARB(GL_TEXTURE0_ARB);
       glDisable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE1_ARB);
+      glDisable(GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE2_ARB);
       glDisable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE0_ARB);
 
@@ -711,6 +617,7 @@ begin
         Length(FVertexProgramHandles), @FVertexProgramHandles[0]);
       SetLength(FVertexProgramHandles, 0);
    end;
+   FVertexProgram.Clear;
 end;
 
 // DeleteFragmentPrograms
@@ -722,6 +629,7 @@ begin
         Length(FFragmentProgramHandles), @FFragmentProgramHandles[0]);
       SetLength(FFragmentProgramHandles, 0);
    end;
+   FFragmentProgram.Clear;
 end;
 
 // SetBumpMethod
@@ -729,10 +637,7 @@ end;
 procedure TGLBumpShader.SetBumpMethod(const Value: TBumpMethod);
 begin
    if Value<>FBumpMethod then begin
-      if FBumpSpace = bsTangentQuaternion then
-         FBumpMethod:=bmDot3TexCombiner
-      else
-         FBumpMethod:=Value;
+      FBumpMethod:=Value;
       DeleteVertexPrograms;
       DeleteFragmentPrograms;
       NotifyChange(Self);
@@ -747,8 +652,6 @@ begin
       FBumpSpace:=Value;
       DeleteVertexPrograms;
       DeleteFragmentPrograms;
-      if FBumpSpace = bsTangentQuaternion then
-         BumpMethod:=bmDot3TexCombiner;
       NotifyChange(Self);
    end;
 end;
