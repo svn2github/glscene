@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/09/03 - EG - TNotifyCollection moved in from GLMultiPolygon
       <li>21/08/03 - EG - Added osRenderNearestFirst
       <li>17/06/03 - EG - New TryStrToFloat, updated StrToFloatDef
       <li>05/06/03 - EG - TDataFile moved out to ApplicationFileIO,
@@ -413,6 +414,20 @@ type
    end;
 
    TGLNodesClass = class of TGLNodes;
+
+   // TNotifyCollection
+   //
+   TNotifyCollection = class (TOwnedCollection)
+      private
+         FOnNotifyChange: TNotifyEvent;
+
+      protected
+         procedure Update(Item: TCollectionItem); override;
+
+      public
+         constructor Create(AOwner : TPersistent; ItemClass : TCollectionItemClass);
+         property OnNotifyChange : TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
+   end;
 
 	TSqrt255Array = array [0..255] of Byte;
 	PSqrt255Array = ^TSqrt255Array;
@@ -2003,6 +2018,28 @@ begin
          FreeMem(newVertices);
       gluDeleteTess(tess);
    end;
+end;
+
+// ------------------
+// ------------------ TNotifyCollection ------------------
+// ------------------
+
+// Create
+//
+constructor TNotifyCollection.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
+begin
+   inherited Create(AOwner,ItemClass);
+   if Assigned(AOwner) and (AOwner is TGLUpdateAbleComponent) then
+      OnNotifyChange:=TGLUpdateAbleComponent(AOwner).NotifyChange;
+end;
+
+// Update
+//
+procedure TNotifyCollection.Update(Item: TCollectionItem);
+begin
+   inherited;
+   if Assigned(FOnNotifyChange) then
+      FOnNotifyChange(Self);
 end;
 
 //------------------------------------------------------------------------------

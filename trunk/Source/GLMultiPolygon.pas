@@ -2,17 +2,18 @@
 
    Object with support for complex polygons.<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>14/07/02 - Egg - Code cleanups, dropped 'absolutes', fixed mem leaks
-      <li>28/12/01 - Egg - Added registration (Philipp Pammler)
-      <li>19/12/01 - Egg - Removed dependency to contnrs (D4 compatibility,
+	<b>History : </b><font size=-1><ul>
+      <li>05/09/03 - EG - TNotifyCollection moved to GLMisc
+      <li>14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
+      <li>28/12/01 - EG - Added registration (Philipp Pammler)
+      <li>19/12/01 - EG - Removed dependency to contnrs (D4 compatibility,
                            TObjectList replaced with TPersistentObjectList)
       <li>29/03/01 - Uwe - Fixes and improvements to TGLMultiPolygon
-      <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
-      <li>08/01/01 - Egg - Compatibility fix (TGLLineNodes change),
+      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+      <li>08/01/01 - EG - Compatibility fix (TGLLineNodes change),
                            Delphi 4 compatibility (removed TVectorPool) and
                            added/renamed some properties, various fixes
-      <li>08/10/00 - Egg - Added header, code contributed by Uwe Raabe
+      <li>08/10/00 - EG - Added header, code contributed by Uwe Raabe
    </ul>
 }
 { TODO
@@ -38,20 +39,6 @@ uses
    GLScene, GLObjects, GLMisc, GLTexture, GLGeomObjects;
 
 type
-
-   // TNotifyCollection
-   //
-   TNotifyCollection = class (TOwnedCollection)
-      private
-         FOnNotifyChange: TNotifyEvent;
-
-      protected
-         procedure Update(Item: TCollectionItem); override;
-
-      public
-         constructor Create(AOwner : TPersistent; ItemClass : TCollectionItemClass);
-         property OnNotifyChange : TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
-   end;
 
    // TGLContourNodes
    //
@@ -296,28 +283,6 @@ end;
 function TPolygonList.GetList(i : Integer): TAffineVectorList;
 begin
    Result:=TAffineVectorList(Items[i]);
-end;
-
-// ------------------
-// ------------------ TNotifyCollection ------------------
-// ------------------
-
-// Create
-//
-constructor TNotifyCollection.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
-begin
-   inherited Create(AOwner,ItemClass);
-   if Assigned(AOwner) and (AOwner is TGLUpdateAbleComponent) then
-      OnNotifyChange:=TGLUpdateAbleComponent(AOwner).NotifyChange;
-end;
-
-// Update
-//
-procedure TNotifyCollection.Update(Item: TCollectionItem);
-begin
-   inherited;
-   if Assigned(FOnNotifyChange) then
-      FOnNotifyChange(Self);
 end;
 
 // ------------------
