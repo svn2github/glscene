@@ -2,6 +2,7 @@
 {: Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/02/03 - EG - Adaptative variance computation
       <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
       <li>15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
       <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
@@ -42,7 +43,8 @@ type
          FHeightData : THeightData; // Referred, not owned
          FHeightRaster : PSmallIntRaster;
          FTLNode, FBRNode : PROAMTriangleNode;
-         FMaxVariance : Integer;
+         FMaxDepth : Integer;
+         FMaxTLVarianceDepth, FMaxBRVarianceDepth : Integer;
          FTLVariance, FBRVariance : array of Cardinal;
          FPatchSize, FTriangleCount : Integer;
          FListHandle : TGLListHandle;
@@ -282,6 +284,8 @@ procedure TGLROAMPatch.ComputeVariance(variance : Integer);
 var
    raster : PSmallIntRaster;
    currentVariance : PIntegerArray;
+   maxVarianceDepth : Integer;
+   maxNonNullIndex : Integer;
 
    function ROAMVariancePoint(anX, anY : Integer) : TROAMVariancePoint;
    begin
@@ -305,7 +309,7 @@ var
       end;
 
       n2:=node shl 1;
-      if n2<FMaxVariance then begin
+      if n2<maxVarianceDepth then begin
          v:=RecursComputeVariance(apex,  left, half,   n2);
          if v>Result then Result:=v;
          v:=RecursComputeVariance(right, apex, half, 1+n2);
@@ -315,12 +319,18 @@ var
    end;
 
    procedure ScaleVariance(n, d : Integer);
+   var
+      newVal : Integer;
    begin
       if d>=0 then
-         currentVariance[n]:=(currentVariance[n] shl (d shr 1))
-      else currentVariance[n]:=(currentVariance[n] shr (-d shr 1));
+         newVal:=(currentVariance[n] shl (d shr 1))
+      else newVal:=(currentVariance[n] shr (-d shr 1));
+      currentVariance[n]:=newVal;
+      if newVal>0 then
+         if n>maxNonNullIndex then
+            maxNonNullIndex:=n;
       n:=n shl 1;
-    	if n<FMaxVariance then begin
+    	if n<maxVarianceDepth then begin
          Dec(d);
          ScaleVariance(n,   d);
          ScaleVariance(n+1, d);
@@ -332,24 +342,31 @@ var
 begin
    s:=Sqr(FPatchSize);
    raster:=FHeightRaster;
-   FMaxVariance:=1;
+   FMaxDepth:=1;
    p:=-1-8;
    repeat
-      FMaxVariance:=FMaxVariance shl 2;
+      FMaxDepth:=FMaxDepth shl 2;
       Inc(p);
-   until FMaxVariance>=s;
-   SetLength(FTLVariance, FMaxVariance);
-   SetLength(FBRVariance, FMaxVariance);
+   until FMaxDepth>=s;
+   maxVarianceDepth:=FMaxDepth shr 1;
+   SetLength(FTLVariance, maxVarianceDepth);
+   SetLength(FBRVariance, maxVarianceDepth);
 
    s:=FPatchSize;
    currentVariance:=@FTLVariance[0];
+   maxNonNullIndex:=1;
    RecursComputeVariance(ROAMVariancePoint(0, s), ROAMVariancePoint(s, 0),
                          ROAMVariancePoint(0, 0), 1);
    ScaleVariance(1, p);
+   FMaxTLVarianceDepth:=maxNonNullIndex+1;
+   SetLength(FTLVariance, FMaxTLVarianceDepth);
    currentVariance:=@FBRVariance[0];
+   maxNonNullIndex:=1;
    RecursComputeVariance(ROAMVariancePoint(s, 0), ROAMVariancePoint(0, s),
                          ROAMVariancePoint(s, s), 1);
    ScaleVariance(1, p);
+   FMaxBRVarianceDepth:=maxNonNullIndex+1;
+   SetLength(FBRVariance, FMaxBRVarianceDepth);
 end;
 
 // ResetTessellation
@@ -375,6 +392,7 @@ end;
 var
    tessFrameVarianceDelta : Integer;
    tessMaxVariance : Cardinal;
+   tessMaxDepth : Cardinal;
    tessCurrentVariance : PIntegerArray;
 
 procedure RecursTessellate(tri : PROAMTriangleNode;
@@ -413,7 +431,7 @@ procedure TGLROAMPatch.Tesselate;
    begin
       if Split(tri) then begin
          n:=n shl 1;
-         if n<tessMaxVariance then
+         if n<tessMaxDepth then
             FullBaseTess(tri.leftChild, n);
       end;
    end;
@@ -422,7 +440,7 @@ procedure TGLROAMPatch.Tesselate;
    begin
       if Split(tri) then begin
          n:=n shl 1;
-         if n<tessMaxVariance then
+         if n<tessMaxDepth then
             FullBaseTess(tri.rightChild, n);
       end;
    end;
@@ -431,7 +449,7 @@ procedure TGLROAMPatch.Tesselate;
    begin
       if Split(tri) then begin
          n:=n shl 1;
-         if n<tessMaxVariance then begin
+         if n<tessMaxDepth then begin
             FullRightTess(tri.leftChild, n);
             FullLeftTess(tri.rightChild, n);
          end;
@@ -443,7 +461,7 @@ var
 begin
    if HighRes then Exit;
 
-   tessMaxVariance:=FMaxVariance;
+   tessMaxDepth:=FMaxDepth;
 
    if Assigned(FNorth) and FNorth.HighRes then
       FullRightTess(FTLNode, 1);
@@ -454,12 +472,14 @@ begin
    if Assigned(FWest) and FWest.HighRes then
       FullLeftTess(FTLNode, 1);
    if FObserverPosition[2]>0 then
-      tessFrameVarianceDelta:=Sqr(FObserverPosition[2] shr 2)
+      tessFrameVarianceDelta:=Sqr(FObserverPosition[2] shr 1)
    else tessFrameVarianceDelta:=0;
    s:=FPatchSize;
    tessCurrentVariance:=@FTLVariance[0];
+   tessMaxVariance:=FMaxTLVarianceDepth;
    RecursTessellate(FTLNode, 1, VertexDist(0, s), VertexDist(s, 0), VertexDist(0, 0));
    tessCurrentVariance:=@FBRVariance[0];
+   tessMaxVariance:=FMaxBRVarianceDepth;
    RecursTessellate(FBRNode, 1, VertexDist(s, 0), VertexDist(0, s), VertexDist(s, s));
 end;
 
