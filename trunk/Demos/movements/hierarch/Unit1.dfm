@@ -15,6 +15,9 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCloseQuery = FormCloseQuery
   OnResize = FormResize
+  DesignSize = (
+    449
+    314)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -53,15 +56,6 @@ object Form1: TForm1
     Anchors = [akLeft, akBottom]
     Caption = 'Play'
     TabOrder = 2
-  end
-  object StaticText1: TStaticText
-    Left = 16
-    Top = 16
-    Width = 45
-    Height = 17
-    BorderStyle = sbsSingle
-    Caption = '??? FPS'
-    TabOrder = 3
   end
   object GLScene1: TGLScene
     Left = 16

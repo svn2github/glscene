@@ -29,7 +29,6 @@ type
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     CBPlay: TCheckBox;
-    StaticText1: TStaticText;
     DummyCube1: TGLDummyCube;
     DummyCube2: TGLDummyCube;
     GLCadencer1: TGLCadencer;
@@ -66,8 +65,6 @@ begin
 	// "moon" rotates around earth and spins
 	DummyCube2.RollAngle:=3*t;
 	Cube3.TurnAngle:=4*t;
-   // update FPS count
-   StaticText1.Caption:=IntToStr(Trunc(GLSceneViewer1.FramesPerSecond))+' FPS';
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
