@@ -409,7 +409,7 @@ const
    cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
 var
    pfDescriptor : TPixelFormatDescriptor;
-   pixelFormat, nbFormats : Integer;
+   pixelFormat, nbFormats, softwarePixelFormat : Integer;
    aType : DWORD;
    iFormats : array [0..31] of Integer;
    tempWnd : HWND;
@@ -469,7 +469,7 @@ begin
 
    // WGL_ARB_pixel_format is used if available
    //
-   if not (FLegacyContextsOnly or (aType in cMemoryDCs)) then begin
+   if not (True or FLegacyContextsOnly or (aType in cMemoryDCs)) then begin
       // the WGL mechanism is a little awkward: we first create a dummy context
       // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
       // our stuff, etc.
@@ -524,8 +524,10 @@ begin
    if pixelFormat=0 then begin
       // Legacy pixel format selection
       pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
-      if (not (aType in cMemoryDCs)) and (not CurrentPixelFormatIsHardwareAccelerated) then
+      if (not (aType in cMemoryDCs)) and (not CurrentPixelFormatIsHardwareAccelerated) then begin
+         softwarePixelFormat:=pixelFormat;
          pixelFormat:=0;
+      end else softwarePixelFormat:=0;
       if pixelFormat=0 then begin
          // Failed on default params, try with 16 bits depth buffer
          PFDescriptor.cDepthBits:=16;
@@ -537,8 +539,10 @@ begin
             PFDescriptor.cColorBits:=16;
             pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
          end;
-         // Fallback to 24bits color, 24bits depth, should be supported by software
-         pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
+         if not CurrentPixelFormatIsHardwareAccelerated then begin
+            // Fallback to original, should be supported by software
+            pixelFormat:=softwarePixelFormat;
+         end;
          if pixelFormat=0 then RaiseLastOSError;
       end;
       ClearGLError;
