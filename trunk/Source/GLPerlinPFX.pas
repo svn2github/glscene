@@ -202,7 +202,7 @@ var
    s, s2 : Integer;
    x, y, d : Integer;
    is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
-   brScale, brOffset, invGamma : Single;
+   invGamma : Single;
    scanLine : PGLPixel32Array;
    noise : TPerlin3DNoise;
    gotIntensityCorrection : Boolean;
@@ -219,13 +219,6 @@ begin
       nAmp:=FNoiseAmplitude*(0.01);
       nBase:=1-nAmp*0.5;
 
-      if FBrightness>1 then begin
-         brScale:=1/FBrightness;
-         brOffset:=1-brScale;
-      end else begin
-         brScale:=FBrightness;
-         brOffset:=0;
-      end;
       if Gamma<0.1 then
          invGamma:=10
       else invGamma:=1/Gamma;
