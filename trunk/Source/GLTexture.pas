@@ -113,7 +113,7 @@ interface
 
 uses
   Classes, OpenGL12, Geometry, SysUtils, GLMisc, GLGraphics, GLContext,
-  GLCrossPlatform;
+  GLCrossPlatform, PersistentClasses;
 
 type
 
@@ -1219,7 +1219,7 @@ type
       thus reducing memory needs and rendering time.<p>
       Materials in a material library also feature advanced control properties
       like texture coordinates transforms. }  
-   TGLMaterialLibrary = class (TGLCadenceAbleComponent)
+   TGLMaterialLibrary = class (TGLCadenceAbleComponent, IPersistentObject)
 	   private
 	      { Protected Declarations }
          FMaterials : TGLLibMaterials;
@@ -1241,9 +1241,15 @@ type
          destructor Destroy; override;
          procedure DestroyHandles;
 
+         procedure WriteToFiler(writer : TVirtualWriter);
+   	   procedure ReadFromFiler(reader : TVirtualReader);
 	      procedure SaveToStream(aStream : TStream); dynamic;
 	      procedure LoadFromStream(aStream : TStream); dynamic;
-         {: Recommended extension : .GLL }
+         
+         {: Save library content to a file.<p>
+            Recommended extension : .GLML<br>
+            Currently saves only texture, ambient, diffuse, emission
+            and specular colors. }
 	      procedure SaveToFile(const fileName : String);
 	      procedure LoadFromFile(const fileName : String);
 
@@ -4205,15 +4211,106 @@ begin
    end;
 end;
 
+// WriteToFiler
+//
+procedure TGLMaterialLibrary.WriteToFiler(writer : TVirtualWriter);
+var
+   i : Integer;
+   libMat : TGLLibMaterial;
+   tex : TGLTexture;
+   img : TGLTextureImage;
+   pim : TGLPersistentImage;
+   ss : TStringStream;
+   bmp : TBitmap;
+begin
+   with writer do begin
+      WriteInteger(0); // archive version 0, texture persistence only
+      WriteInteger(Materials.Count);
+      for i:=0 to Materials.Count-1 do begin
+         libMat:=Materials[i];
+         WriteString(libMat.Name);
+         tex:=libMat.Material.Texture;
+         img:=tex.Image;
+         pim:=TGLPersistentImage(img);
+         if tex.Enabled and (img is TGLPersistentImage) and (pim.Picture.Graphic<>nil) then begin
+            WriteBoolean(true);
+            ss:=TStringStream.Create('');
+            try
+               bmp:=TBitmap.Create;
+               try
+                  bmp.Assign(pim.Picture.Graphic);
+                  bmp.SaveToStream(ss);
+               finally
+                  bmp.Free;
+               end;
+               WriteString(ss.DataString);
+            finally
+               ss.Free;
+            end;
+         end else WriteBoolean(False);
+         with libMat.Material.FrontProperties do begin
+            Write(Ambient.AsAddress^, SizeOf(Single)*3);
+            Write(Diffuse.AsAddress^, SizeOf(Single)*4);
+            Write(Emission.AsAddress^, SizeOf(Single)*3);
+            Write(Specular.AsAddress^, SizeOf(Single)*3);
+         end;
+      end;
+   end;
+end;
+
+// ReadFromFiler
+//
+procedure TGLMaterialLibrary.ReadFromFiler(reader : TVirtualReader);
+var
+   archiveVersion : Integer;
+   libMat : TGLLibMaterial;
+   i, n : Integer;
+   name : String;
+   ss : TStringStream;
+   bmp : TBitmap;
+begin
+   archiveVersion:=reader.ReadInteger;
+   if archiveVersion=0 then with reader do begin
+      Materials.Clear;
+      n:=ReadInteger;
+      for i:=0 to n-1 do begin
+         name:=ReadString;
+         if ReadBoolean then begin
+            ss:=TStringStream.Create(ReadString);
+            try
+               bmp:=TBitmap.Create;
+               try
+                  bmp.LoadFromStream(ss);
+                  libMat:=AddTextureMaterial(name, bmp);
+               finally
+                  bmp.Free;
+               end;
+            finally
+               ss.Free;
+            end;
+         end else begin
+            libMat:=Materials.Add;
+            libMat.Name:=name;
+         end;
+         with libMat.Material.FrontProperties do begin
+            Read(Ambient.AsAddress^, SizeOf(Single)*3);
+            Read(Diffuse.AsAddress^, SizeOf(Single)*4);
+            Read(Emission.AsAddress^, SizeOf(Single)*3);
+            Read(Specular.AsAddress^, SizeOf(Single)*3);
+         end;
+      end;
+   end else RaiseFilerException(Self.ClassType, archiveVersion);
+end;
+
 // SaveToStream
 //
 procedure TGLMaterialLibrary.SaveToStream(aStream : TStream);
 var
-   wr : TWriter;
+   wr : TBinaryWriter;
 begin
-   wr:=TWriter.Create(aStream, 16384);
+   wr:=TBinaryWriter.Create(aStream);
    try
-      wr.WriteComponent(Self);
+      Self.WriteToFiler(wr);
    finally
       wr.Free;
    end;
@@ -4223,14 +4320,11 @@ end;
 //
 procedure TGLMaterialLibrary.LoadFromStream(aStream : TStream);
 var
-   rd : TReader;
+   rd : TBinaryReader;
 begin
-   rd:=TReader.Create(aStream, 16384);
+   rd:=TBinaryReader.Create(aStream);
    try
-      rd.BeginReferences;      // creates the loaded and fixup lists
-      rd.ReadComponent(Self);
-      rd.FixupReferences;
-      rd.EndReferences;        // frees fixups and both lists
+      Self.ReadFromFiler(rd);
    finally
       rd.Free;
    end;

@@ -397,7 +397,9 @@ begin
    FBufferTexPoints.Capacity:=n;
 
    xglPushState;
-   xglMapTexCoordToDual;
+   if GL_ARB_multitexture then
+      xglMapTexCoordToDual
+   else xglMapTexCoordToMain;
 
    glPushMatrix;
    glScalef(1, 1, 1/128);
@@ -526,7 +528,9 @@ begin
    end;
 
    xglPushState;
-   xglMapTexCoordToDual;
+   if GL_ARB_multitexture then
+      xglMapTexCoordToDual
+   else xglMapTexCoordToMain;
 
    glDisableClientState(GL_VERTEX_ARRAY);
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
