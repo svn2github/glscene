@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/06/03 - EG - Updated TVCCapsule
       <li>18/06/03 - MF - Updated TVCFloor to use a normal and a point
       <li>18/06/03 - MF - Added TVCCapsule
       <li>17/06/03 - MF - Added TVFAirResistance
@@ -514,20 +515,26 @@ type
    {: Capsule collision constraint. }
    TVCCapsule = class (TVerletGlobalConstraint)
       private
-    FRadius: single;
-    FBase: TAffineVector;
-    FAxis: TAffineVector;
-    FLength: single;
 			{ Private Declarations }
+         FBase : TAffineVector;
+         FAxis : TAffineVector;
+         FRadius, FRadius2, FLength, FLengthDiv2 : Single;
+
+      protected
+			{ Protected Declarations }
+         procedure SetAxis(const val : TAffineVector);
+         procedure SetRadius(const val : Single);
+         procedure SetLength(const val : Single);
+
       public
 			{ Public Declarations }
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
 
          property Base : TAffineVector read FBase write FBase;
-         property Axis : TAffineVector read FAxis write FAxis;
-         property Radius : single read FRadius write FRadius;
-         property Length : single read FLength write FLength;
+         property Axis : TAffineVector read FAxis write SetAxis;
+         property Radius : single read FRadius write SetRadius;
+         property Length : single read FLength write SetLength;
    end;
 
 
@@ -1212,6 +1219,40 @@ begin
    RestLength:=VectorDistance(NodeA.Location, NodeB.Location);
 end;
 
+{ TVFAirResistance }
+
+procedure TVFAirResistance.AddForceToNode(aNode: TVerletNode);
+var
+  s, F : TAffineVector;
+  sMag : single;
+  r : single;
+begin
+  // CombineVector(aNode.FForce, Gravity, @aNode.Weight);
+
+  // Fd = DragCoefficient * LiquidDensity * Velocity2 * Area / 2
+  s := aNode.Speed;
+  sMag := VectorLength(s);
+
+  r := aNode.Radius + 1;
+
+  if sMag<> 0 then
+  begin
+    F := VectorScale(s, - sqr(sMag) * sqr(r) * pi * FDragCoeff);
+
+    aNode.FForce := VectorAdd(aNode.FForce, F);
+  end;
+end;
+
+constructor TVFAirResistance.Create(aOwner: TVerletAssembly);
+begin
+  inherited;
+
+  FDragCoeff := 0.001;
+  FWindDirection[0] := 0;
+  FWindDirection[1] := 0;
+  FWindDirection[2] := 0;
+end;
+
 // ------------------
 // ------------------ TVCFloor ------------------
 // ------------------
@@ -1486,50 +1527,63 @@ begin
   FHalfSides := VectorScale(Sides, 0.5);
 end;
 
-{ TVFAirResistance }
+{ TVCCapsule }
 
-procedure TVFAirResistance.AddForceToNode(aNode: TVerletNode);
-var
-  s, F : TAffineVector;
-  sMag : single;
-  r : single;
+// SetAxis
+//
+procedure TVCCapsule.SetAxis(const val : TAffineVector);
 begin
-  // CombineVector(aNode.FForce, Gravity, @aNode.Weight);
-
-  // Fd = DragCoefficient * LiquidDensity * Velocity2 * Area / 2
-  s := aNode.Speed;
-  sMag := VectorLength(s);
-
-  r := aNode.Radius + 1;
-
-  if sMag<> 0 then
-  begin
-    F := VectorScale(s, - sqr(sMag) * sqr(r) * pi * FDragCoeff);
-
-    aNode.FForce := VectorAdd(aNode.FForce, F);
-  end;
+   FAxis:=VectorNormalize(val);
 end;
 
-constructor TVFAirResistance.Create(aOwner: TVerletAssembly);
+// SetLength
+//
+procedure TVCCapsule.SetLength(const val : Single);
 begin
-  inherited;
-
-  FDragCoeff := 0.001;
-  FWindDirection[0] := 0;
-  FWindDirection[1] := 0;
-  FWindDirection[2] := 0;
+   FLength:=val;
+   FLengthDiv2:=val*0.5;
 end;
 
+<<<<<<< VerletClasses.pas
+// SetRadius
+//
+procedure TVCCapsule.SetRadius(const val : Single);
+begin
+   FRadius:=val;
+   FRadius2:=Sqr(val);
+end;
+
+// SatisfyConstraintForNode
+//
+procedure TVCCapsule.SatisfyConstraintForNode(aNode : TVerletNode;
+                                              const iteration, maxIterations : Integer);
+=======
 { TVCCapsule }
 
 procedure TVCCapsule.SatisfyConstraintForNode(aNode: TVerletNode;
   const iteration, maxIterations: Integer);
+>>>>>>> 1.15
 var
-  ClosestPosition, SegmentStart, SegmentStop : TAffineVector;
+   p, n2  : Single;
+   closest, v : TAffineVector;
 
   delta, move : TAffineVector;
   deltaLength, diff : Single;
 begin
+<<<<<<< VerletClasses.pas
+   // Find the closest point to location on the capsule axis
+   p:=ClampValue(PointProject(aNode.Location, FBase, FAxis),
+                 -FLengthDiv2, FLengthDiv2);
+   closest:=VectorCombine(FBase, FAxis, 1, p);
+
+   // vector from closest to location
+   VectorSubtract(aNode.Location, closest, v);
+
+   // should it be altered?
+   n2:=VectorNorm(v);
+   if n2<FRadius2 then
+      aNode.FLocation:=VectorCombine(closest, v, 1, Sqrt(FRadius2/n2));
+=======
   // Find the closest location on the capsule axis
   // This could all be cached!
   SegmentStart := VectorAdd(FBase, VectorScale(FAxis, FLength / 2));
@@ -1556,5 +1610,6 @@ begin
 
       AddVector(aNode.FLocation, move);
    end;
+>>>>>>> 1.15
 end;
 end.
