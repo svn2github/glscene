@@ -3,6 +3,9 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
+                          Added TexCoordsEx, Binormals, Tangents,
+                          Added BuildTangentSpace function (experimental).
       <li>23/07/04 - SG - Added fgmmQuad case for TFGVertexIndexList.TraingleCount
                           (Thanks fig).
       <li>18/07/04 - LR - Suppress Consts in uses
@@ -593,6 +596,9 @@ type
          FArraysDeclared : Boolean; // not persistent
          FLightMapArrayEnabled : Boolean; // not persistent
          FLastLightMapIndex : Integer; // not persistent
+         FTexCoordsEx : TList;
+         FBinormalsTexCoordIndex : Integer;
+         FTangentsTexCoordIndex : Integer;
 
       protected
          { Protected Declarations }
@@ -606,6 +612,16 @@ type
 
          procedure EnableLightMapArray(var mrci : TRenderContextInfo);
          procedure DisableLightMapArray(var mrci : TRenderContextInfo);
+
+         procedure SetTexCoordsEx(index : Integer; const val : TVectorList);
+         function GetTexCoordsEx(index : Integer) : TVectorList;
+
+         procedure SetBinormals(const val : TVectorList);
+         function GetBinormals : TVectorList;
+         procedure SetBinormalsTexCoordIndex(const val : Integer);
+         procedure SetTangents(const val : TVectorList);
+         function GetTangents : TVectorList;
+         procedure SetTangentsTexCoordIndex(const val : Integer);
 
       public
          { Public Declarations }
@@ -641,6 +657,25 @@ type
 
          function PointInObject(const aPoint : TAffineVector) : Boolean; virtual;
 
+         //: Returns the triangle data for a given triangle
+         procedure GetTriangleData(tri : Integer; list : TAffineVectorList; 
+            var v0, v1, v2 : TAffineVector); overload;
+         procedure GetTriangleData(tri : Integer; list : TVectorList; 
+            var v0, v1, v2 : TVector); overload;
+
+         //: Sets the triangle data of a given triangle
+         procedure SetTriangleData(tri : Integer; list : TAffineVectorList; 
+            const v0, v1, v2 : TAffineVector); overload;
+         procedure SetTriangleData(tri : Integer; list : TVectorList; 
+            const v0, v1, v2 : TVector); overload;
+
+         {: Build the tangent space from the mesh object's vertex, normal 
+            and texcoord data, filling the binormals and tangents where
+            specified. }
+         procedure BuildTangentSpace(
+            buildBinormals : Boolean = True; 
+            buildTangents : Boolean = True);
+
          property Owner : TMeshObjectList read FOwner;
          property Mode : TMeshObjectMode read FMode write FMode;
          property TexCoords : TAffineVectorList read FTexCoords write SetTexCoords;
@@ -648,6 +683,29 @@ type
          property Colors : TVectorList read FColors write SetColors;
          property FaceGroups : TFaceGroups read FFaceGroups;
          property RenderingOptions : TMeshObjectRenderingOptions read FRenderingOptions write FRenderingOptions;
+
+         {: The TexCoords Extension is a list of vector lists that are used 
+            to extend the vertex data applied during rendering.<p>
+            
+            The lists are applied to the GL_TEXTURE0_ARB + index texture 
+            environment. This means that if TexCoordsEx 0 or 1 have data it
+            will override the TexCoords or LightMapTexCoords repectively. 
+            Lists are created on demand, meaning that if you request
+            TexCoordsEx[4] it will create the list up to and including 4.
+            The extensions are only applied to the texture environment if
+            they contain data. }
+         property TexCoordsEx[index : Integer] : TVectorList read GetTexCoordsEx write SetTexCoordsEx;
+
+         {: A TexCoordsEx list wrapper for binormals usage, 
+            returns TexCoordsEx[BinormalsTexCoordIndex]. }
+         property Binormals : TVectorList read GetBinormals write SetBinormals;
+         {: A TexCoordsEx list wrapper for tangents usage, 
+            returns TexCoordsEx[BinormalsTexCoordIndex]. }
+         property Tangents : TVectorList read GetTangents write SetTangents;
+         //: Specify the texcoord extension index for binormals (default = 2)
+         property BinormalsTexCoordIndex : Integer read FBinormalsTexCoordIndex write SetBinormalsTexCoordIndex;
+         //: Specify the texcoord extension index for tangents (default = 3)
+         property TangentsTexCoordIndex : Integer read FTangentsTexCoordIndex write SetTangentsTexCoordIndex;
 
    end;
 
@@ -3195,17 +3253,24 @@ begin
    FLightMapTexCoords:=TTexPointList.Create;
    FColors:=TVectorList.Create;
    FFaceGroups:=TFaceGroups.CreateOwned(Self);
+   FTexCoordsEx:=TList.Create;
+   FBinormalsTexCoordIndex:=2;
+   FTangentsTexCoordIndex:=3;
    inherited;
 end;
 
 // Destroy
 //
 destructor TMeshObject.Destroy;
+var
+   i : Integer;
 begin
    FFaceGroups.Free;
    FColors.Free;
    FTexCoords.Free;
    FLightMapTexCoords.Free;
+   for i:=0 to FTexCoordsEx.Count-1 do
+      TVectorList(FTexCoordsEx[i]).Free;
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
@@ -3214,22 +3279,24 @@ end;
 // WriteToFiler
 //
 procedure TMeshObject.WriteToFiler(writer : TVirtualWriter);
+var
+   i : Integer;
 begin
    inherited WriteToFiler(writer);
    with writer do begin
-      if LightMapTexCoords.Count>0 then begin
-         WriteInteger(1);        // Archive Version 1, added FLightMapTexCoords
-         FTexCoords.WriteToFiler(writer);
-         FLightMapTexCoords.WriteToFiler(writer);
-      end else begin
-         WriteInteger(0);        // Archive Version 0
-         FTexCoords.WriteToFiler(writer);
-      end;
+      WriteInteger(2);        // Archive Version 2
+      FTexCoords.WriteToFiler(writer);
+      FLightMapTexCoords.WriteToFiler(writer);
       FColors.WriteToFiler(writer);
       FFaceGroups.WriteToFiler(writer);
       WriteInteger(Integer(FMode));
       WriteInteger(SizeOf(FRenderingOptions));
       Write(FRenderingOptions, SizeOf(FRenderingOptions));
+      WriteInteger(FTexCoordsEx.Count);
+      for i:=0 to FTexCoordsEx.Count-1 do
+         TexCoordsEx[i].WriteToFiler(writer);
+      WriteInteger(BinormalsTexCoordIndex);
+      WriteInteger(TangentsTexCoordIndex);
    end;
 end;
 
@@ -3237,11 +3304,11 @@ end;
 //
 procedure TMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
-   archiveVersion : Integer;
+   i, Count, archiveVersion : Integer;
 begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
-   if archiveVersion in [0..1] then with reader do begin
+   if archiveVersion in [0..2] then with reader do begin
       FTexCoords.ReadFromFiler(reader);
       if archiveVersion>=1 then
          FLightMapTexCoords.ReadFromFiler(reader)
@@ -3251,18 +3318,29 @@ begin
       FMode:=TMeshObjectMode(ReadInteger);
       if ReadInteger<>SizeOf(FRenderingOptions) then Assert(False);
       Read(FRenderingOptions, SizeOf(FRenderingOptions));
+      if archiveVersion>=2 then begin
+         Count:=ReadInteger;
+         for i:=0 to Count-1 do
+            TexCoordsEx[i].ReadFromFiler(reader);
+         BinormalsTexCoordIndex:=ReadInteger;
+         TangentsTexCoordIndex:=ReadInteger;
+      end;
    end else RaiseFilerException(archiveVersion);
 end;
 
 // Clear;
 //
 procedure TMeshObject.Clear;
+var
+   i : Integer;
 begin
    inherited;
    FFaceGroups.Clear;
    FColors.Clear;
    FTexCoords.Clear;
    FLightMapTexCoords.Clear;
+   for i:=0 to FTexCoordsEx.Count-1 do
+      TexCoordsEx[i].Clear;
 end;
 
 // ExtractTriangles
@@ -3383,9 +3461,432 @@ begin
    FColors.Assign(val);
 end;
 
+// SetTexCoordsEx
+//
+procedure TMeshObject.SetTexCoordsEx(index : Integer; const val : TVectorList);
+begin
+   TexCoordsEx[index].Assign(val);
+end;
+
+// GetTexCoordsEx
+//
+function TMeshObject.GetTexCoordsEx(index : Integer) : TVectorList;
+var
+   i : Integer;
+begin
+   if index>FTexCoordsEx.Count-1 then
+      for i:=FTexCoordsEx.Count-1 to index do
+         FTexCoordsEx.Add(TVectorList.Create);
+   Result:=TVectorList(FTexCoordsEx[index]);
+end;
+
+// SetBinormals
+//
+procedure TMeshObject.SetBinormals(const val : TVectorList);
+begin
+   Binormals.Assign(val);
+end;
+
+// GetBinormals
+//
+function TMeshObject.GetBinormals : TVectorList;
+begin
+   Result:=TexCoordsEx[BinormalsTexCoordIndex];
+end;
+
+// SetBinormalsTexCoordIndex
+//
+procedure TMeshObject.SetBinormalsTexCoordIndex(const val : Integer);
+begin
+   Assert(val>=0);
+   if val<>FBinormalsTexCoordIndex then begin
+      FBinormalsTexCoordIndex:=val;
+   end;
+end;
+
+// SetTangents
+//
+procedure TMeshObject.SetTangents(const val : TVectorList);
+begin
+   Tangents.Assign(val);
+end;
+
+// GetTangents
+//
+function TMeshObject.GetTangents : TVectorList;
+begin
+   Result:=TexCoordsEx[TangentsTexCoordIndex];
+end;
+
+// SetTangentsTexCoordIndex
+//
+procedure TMeshObject.SetTangentsTexCoordIndex(const val : Integer);
+begin
+   Assert(val>=0);
+   if val<>FTangentsTexCoordIndex then begin
+      FTangentsTexCoordIndex:=val;
+   end;
+end;
+
+// GetTriangleData
+//
+procedure TMeshObject.GetTriangleData(tri : Integer; 
+   list : TAffineVectorList; var v0, v1, v2 : TAffineVector);
+var
+   i, LastCount, Count : Integer;
+   fg : TFGVertexIndexList;
+begin
+   case Mode of
+      momTriangles : begin
+         v0:=list[3*tri];
+         v1:=list[3*tri+1];
+         v2:=list[3*tri+2];
+      end;
+      momTriangleStrip : begin
+         v0:=list[tri];
+         v1:=list[tri+1];
+         v2:=list[tri+2];
+      end;
+      momFaceGroups : begin
+         Count:=0;
+         for i:=0 to FaceGroups.Count-1 do begin
+            LastCount:=Count;
+            fg:=TFGVertexIndexList(FaceGroups[i]);
+            Count:=Count+fg.TriangleCount;
+            if Count>tri then begin
+               Count:=tri-LastCount;
+               case fg.Mode of
+                  fgmmTriangles, fgmmFlatTriangles : begin
+                     v0:=list[fg.VertexIndices[3*Count]];
+                     v1:=list[fg.VertexIndices[3*Count+1]];
+                     v2:=list[fg.VertexIndices[3*Count+2]];
+                  end;
+                  fgmmTriangleStrip : begin
+                     v0:=list[fg.VertexIndices[Count]];
+                     v1:=list[fg.VertexIndices[Count+1]];
+                     v2:=list[fg.VertexIndices[Count+2]];
+                  end;
+                  fgmmTriangleFan : begin
+                     v0:=list[fg.VertexIndices[0]];
+                     v1:=list[fg.VertexIndices[Count+1]];
+                     v2:=list[fg.VertexIndices[Count+2]];
+                  end;
+                  fgmmQuads : begin
+                     if Count mod 2 = 0 then begin
+                        v0:=list[fg.VertexIndices[4*(Count div 2)]];
+                        v1:=list[fg.VertexIndices[4*(Count div 2)+1]];
+                        v2:=list[fg.VertexIndices[4*(Count div 2)+2]];
+                     end else begin
+                        v0:=list[fg.VertexIndices[4*(Count div 2)]];
+                        v1:=list[fg.VertexIndices[4*(Count div 2)+2]];
+                        v2:=list[fg.VertexIndices[4*(Count div 2)+3]];
+                     end;
+                  end;
+               else
+                  Assert(False);
+               end;
+               break;
+            end;
+         end;
+         
+      end;
+   else
+      Assert(False);
+   end;
+end;
+
+// GetTriangleData
+//
+procedure TMeshObject.GetTriangleData(tri : Integer; 
+   list : TVectorList; var v0, v1, v2 : TVector);
+var
+   i, LastCount, Count : Integer;
+   fg : TFGVertexIndexList;
+begin
+   case Mode of
+      momTriangles : begin
+         v0:=list[3*tri];
+         v1:=list[3*tri+1];
+         v2:=list[3*tri+2];
+      end;
+      momTriangleStrip : begin
+         v0:=list[tri];
+         v1:=list[tri+1];
+         v2:=list[tri+2];
+      end;
+      momFaceGroups : begin
+         Count:=0;
+         for i:=0 to FaceGroups.Count-1 do begin
+            LastCount:=Count;
+            fg:=TFGVertexIndexList(FaceGroups[i]);
+            Count:=Count+fg.TriangleCount;
+            if Count>tri then begin
+               Count:=tri-LastCount;
+               case fg.Mode of
+                  fgmmTriangles, fgmmFlatTriangles : begin
+                     v0:=list[fg.VertexIndices[3*Count]];
+                     v1:=list[fg.VertexIndices[3*Count+1]];
+                     v2:=list[fg.VertexIndices[3*Count+2]];
+                  end;
+                  fgmmTriangleStrip : begin
+                     v0:=list[fg.VertexIndices[Count]];
+                     v1:=list[fg.VertexIndices[Count+1]];
+                     v2:=list[fg.VertexIndices[Count+2]];
+                  end;
+                  fgmmTriangleFan : begin
+                     v0:=list[fg.VertexIndices[0]];
+                     v1:=list[fg.VertexIndices[Count+1]];
+                     v2:=list[fg.VertexIndices[Count+2]];
+                  end;
+                  fgmmQuads : begin
+                     if Count mod 2 = 0 then begin
+                        v0:=list[fg.VertexIndices[4*(Count div 2)]];
+                        v1:=list[fg.VertexIndices[4*(Count div 2)+1]];
+                        v2:=list[fg.VertexIndices[4*(Count div 2)+2]];
+                     end else begin
+                        v0:=list[fg.VertexIndices[4*(Count div 2)]];
+                        v1:=list[fg.VertexIndices[4*(Count div 2)+2]];
+                        v2:=list[fg.VertexIndices[4*(Count div 2)+3]];
+                     end;
+                  end;
+               else
+                  Assert(False);
+               end;
+               break;
+            end;
+         end;
+         
+      end;
+   else
+      Assert(False);
+   end;
+end;
+
+// SetTriangleData
+//
+procedure TMeshObject.SetTriangleData(tri : Integer; 
+   list : TAffineVectorList; const v0, v1, v2 : TAffineVector);
+var
+   i, LastCount, Count : Integer;
+   fg : TFGVertexIndexList;
+begin
+   case Mode of
+      momTriangles : begin
+         list[3*tri]:=v0;
+         list[3*tri+1]:=v1;
+         list[3*tri+2]:=v2;
+      end;
+      momTriangleStrip : begin
+         list[tri]:=v0;
+         list[tri+1]:=v1;
+         list[tri+2]:=v2;
+      end;
+      momFaceGroups : begin
+         Count:=0;
+         for i:=0 to FaceGroups.Count-1 do begin
+            LastCount:=Count;
+            fg:=TFGVertexIndexList(FaceGroups[i]);
+            Count:=Count+fg.TriangleCount;
+            if Count>tri then begin
+               Count:=tri-LastCount;
+               case fg.Mode of
+                  fgmmTriangles, fgmmFlatTriangles : begin
+                     list[fg.VertexIndices[3*Count]]:=v0;
+                     list[fg.VertexIndices[3*Count+1]]:=v1;
+                     list[fg.VertexIndices[3*Count+2]]:=v2;
+                  end;
+                  fgmmTriangleStrip : begin
+                     list[fg.VertexIndices[Count]]:=v0;
+                     list[fg.VertexIndices[Count+1]]:=v1;
+                     list[fg.VertexIndices[Count+2]]:=v2;
+                  end;
+                  fgmmTriangleFan : begin
+                     list[fg.VertexIndices[0]]:=v0;
+                     list[fg.VertexIndices[Count+1]]:=v1;
+                     list[fg.VertexIndices[Count+2]]:=v2;
+                  end;
+                  fgmmQuads : begin
+                     if Count mod 2 = 0 then begin
+                        list[fg.VertexIndices[4*(Count div 2)]]:=v0;
+                        list[fg.VertexIndices[4*(Count div 2)+1]]:=v1;
+                        list[fg.VertexIndices[4*(Count div 2)+2]]:=v2;
+                     end else begin
+                        list[fg.VertexIndices[4*(Count div 2)]]:=v0;
+                        list[fg.VertexIndices[4*(Count div 2)+2]]:=v1;
+                        list[fg.VertexIndices[4*(Count div 2)+3]]:=v2;
+                     end;
+                  end;
+               else
+                  Assert(False);
+               end;
+               break;
+            end;
+         end;
+         
+      end;
+   else
+      Assert(False);
+   end;
+end;
+
+// SetTriangleData
+//
+procedure TMeshObject.SetTriangleData(tri : Integer; 
+   list : TVectorList; const v0, v1, v2 : TVector);
+var
+   i, LastCount, Count : Integer;
+   fg : TFGVertexIndexList;
+begin
+   case Mode of
+      momTriangles : begin
+         list[3*tri]:=v0;
+         list[3*tri+1]:=v1;
+         list[3*tri+2]:=v2;
+      end;
+      momTriangleStrip : begin
+         list[tri]:=v0;
+         list[tri+1]:=v1;
+         list[tri+2]:=v2;
+      end;
+      momFaceGroups : begin
+         Count:=0;
+         for i:=0 to FaceGroups.Count-1 do begin
+            LastCount:=Count;
+            fg:=TFGVertexIndexList(FaceGroups[i]);
+            Count:=Count+fg.TriangleCount;
+            if Count>tri then begin
+               Count:=tri-LastCount;
+               case fg.Mode of
+                  fgmmTriangles, fgmmFlatTriangles : begin
+                     list[fg.VertexIndices[3*Count]]:=v0;
+                     list[fg.VertexIndices[3*Count+1]]:=v1;
+                     list[fg.VertexIndices[3*Count+2]]:=v2;
+                  end;
+                  fgmmTriangleStrip : begin
+                     list[fg.VertexIndices[Count]]:=v0;
+                     list[fg.VertexIndices[Count+1]]:=v1;
+                     list[fg.VertexIndices[Count+2]]:=v2;
+                  end;
+                  fgmmTriangleFan : begin
+                     list[fg.VertexIndices[0]]:=v0;
+                     list[fg.VertexIndices[Count+1]]:=v1;
+                     list[fg.VertexIndices[Count+2]]:=v2;
+                  end;
+                  fgmmQuads : begin
+                     if Count mod 2 = 0 then begin
+                        list[fg.VertexIndices[4*(Count div 2)]]:=v0;
+                        list[fg.VertexIndices[4*(Count div 2)+1]]:=v1;
+                        list[fg.VertexIndices[4*(Count div 2)+2]]:=v2;
+                     end else begin
+                        list[fg.VertexIndices[4*(Count div 2)]]:=v0;
+                        list[fg.VertexIndices[4*(Count div 2)+2]]:=v1;
+                        list[fg.VertexIndices[4*(Count div 2)+3]]:=v2;
+                     end;
+                  end;
+               else
+                  Assert(False);
+               end;
+               break;
+            end;
+         end;
+         
+      end;
+   else
+      Assert(False);
+   end;
+end;
+
+// BuildTangentSpace
+//
+procedure TMeshObject.BuildTangentSpace(
+   buildBinormals : Boolean = True; 
+   buildTangents : Boolean = True);
+var
+   i,j        : Integer;
+   v,n,t      : array[0..2] of TAffineVector;
+   tangent,
+   binormal   : array[0..2] of TVector;
+   vt,tt      : TAffineVector;
+   interp,dot : Single;
+
+   procedure SortVertexData(sortidx : Integer);
+   begin
+      if t[0][sortidx]<t[1][sortidx] then begin
+         vt:=v[0];   tt:=t[0];
+         v[0]:=v[1]; t[0]:=t[1];
+         v[1]:=vt;   t[1]:=tt;
+      end;
+      if t[0][sortidx]<t[2][sortidx] then begin
+         vt:=v[0];   tt:=t[0];
+         v[0]:=v[2]; t[0]:=t[2];
+         v[2]:=vt;   t[2]:=tt;
+      end;
+      if t[1][sortidx]<t[2][sortidx] then begin
+         vt:=v[1];   tt:=t[1];
+         v[1]:=v[2]; t[1]:=t[2];
+         v[2]:=vt;   t[2]:=tt;
+      end;
+   end;
+
+begin
+   Tangents.Clear;
+   Binormals.Clear;
+   if buildTangents then Tangents.Count:=Vertices.Count;
+   if buildBinormals then Binormals.Count:=Vertices.Count;
+   for i:=0 to TriangleCount-1 do begin
+      // Get triangle data
+      GetTriangleData(i,Vertices,v[0],v[1],v[2]);
+      GetTriangleData(i,Normals,n[0],n[1],n[2]);
+      GetTriangleData(i,TexCoords,t[0],t[1],t[2]);
+
+      for j:=0 to 2 do begin
+         // Compute tangent
+         if buildTangents then begin
+            SortVertexData(1);
+
+            if (t[2][1]-t[0][1]) = 0 then interp:=1
+            else interp:=(t[1][1]-t[0][1])/(t[2][1]-t[0][1]);
+
+            vt:=VectorLerp(v[0],v[2],interp);
+            interp:=t[0][0]+(t[2][0]-t[0][0])*interp;
+            vt:=VectorSubtract(vt,v[1]);
+            if t[1][0]<interp then vt:=VectorNegate(vt);
+            dot:=VectorDotProduct(vt,n[j]);
+            vt[0]:=vt[0]-n[j][0]*dot;
+            vt[1]:=vt[1]-n[j][1]*dot;
+            vt[2]:=vt[2]-n[j][2]*dot;
+            tangent[j]:=VectorMake(VectorNormalize(vt),0);
+         end;
+
+         // Compute Bi-Normal
+         if buildBinormals then begin
+            SortVertexData(0);
+
+            if (t[2][0]-t[0][0]) = 0 then interp:=1
+            else interp:=(t[1][0]-t[0][0])/(t[2][0]-t[0][0]);
+
+            vt:=VectorLerp(v[0],v[2],interp);
+            interp:=t[0][1]+(t[2][1]-t[0][1])*interp;
+            vt:=VectorSubtract(vt,v[1]);
+            if t[1][1]<interp then vt:=VectorNegate(vt);
+            dot:=VectorDotProduct(vt,n[j]);
+            vt[0]:=vt[0]-n[j][0]*dot;
+            vt[1]:=vt[1]-n[j][1]*dot;
+            vt[2]:=vt[2]-n[j][2]*dot;
+            binormal[j]:=VectorMake(VectorNormalize(vt),0);
+         end;
+      end;
+      
+      if buildTangents then SetTriangleData(i,Tangents,tangent[0],tangent[1],tangent[2]);
+      if buildBinormals then SetTriangleData(i,Binormals,binormal[0],binormal[1],binormal[2]);
+   end;
+end;
+
 // DeclareArraysToOpenGL
 //
 procedure TMeshObject.DeclareArraysToOpenGL(var mrci : TRenderContextInfo; evenIfAlreadyDeclared : Boolean = False);
+var
+   i : Integer;
 begin
    if evenIfAlreadyDeclared or (not FArraysDeclared) then begin
       if Vertices.Count>0 then begin
@@ -3405,10 +3906,19 @@ begin
             xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
             xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
          end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-         if GL_ARB_multitexture and (LightMapTexCoords.Count>0) then begin
-            glClientActiveTextureARB(GL_TEXTURE1_ARB);
-            glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LightMapTexCoords.List);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+         if GL_ARB_multitexture then begin
+            if LightMapTexCoords.Count>0 then begin
+               glClientActiveTextureARB(GL_TEXTURE1_ARB);
+               glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LightMapTexCoords.List);
+               glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            end;
+            for i:=0 to FTexCoordsEx.Count-1 do begin
+               if TexCoordsEx[i].Count>0 then begin
+                  glClientActiveTextureARB(GL_TEXTURE0_ARB + i);
+                  glTexCoordPointer(4, GL_FLOAT, SizeOf(TVector), TexCoordsEx[i].List);
+                  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+               end;
+            end;
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
          end;
       end else begin
@@ -3427,6 +3937,8 @@ end;
 // DisableOpenGLArrays
 //
 procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
+var
+   i : Integer;
 begin
    if FArraysDeclared then begin
       DisableLightMapArray(mrci);
@@ -3441,9 +3953,17 @@ begin
             glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then
             xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-         if GL_ARB_multitexture and (LightMapTexCoords.Count>0) then begin
-            glClientActiveTextureARB(GL_TEXTURE1_ARB);
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         if GL_ARB_multitexture then begin
+            if LightMapTexCoords.Count>0 then begin
+               glClientActiveTextureARB(GL_TEXTURE1_ARB);
+               glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            end;
+            for i:=0 to FTexCoordsEx.Count-1 do begin
+               if TexCoordsEx[i].Count>0 then begin
+                  glClientActiveTextureARB(GL_TEXTURE0_ARB + i);
+                  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+               end;
+            end;
             glClientActiveTextureARB(GL_TEXTURE0_ARB);
          end;
       end;
@@ -3498,6 +4018,7 @@ procedure TMeshObject.BuildList(var mrci : TRenderContextInfo);
 var
    i, j, groupID, nbGroups : Integer;
    gotNormals, gotTexCoords, gotColor : Boolean;
+   gotTexCoordsEx : array of Boolean;
    libMat : TGLLibMaterial;
    fg : TFaceGroup;
 begin
@@ -3514,6 +4035,9 @@ begin
          DeclareArraysToOpenGL(mrci);
          gotNormals:=(Vertices.Count=Normals.Count);
          gotTexCoords:=(Vertices.Count=TexCoords.Count);
+         SetLength(gotTexCoordsEx, FTexCoordsEx.Count);
+         for i:=0 to FTexCoordsEx.Count-1 do
+            gotTexCoordsEx[i]:=(TexCoordsEx[i].Count>0) and GL_ARB_multitexture;
          if Mode=momTriangles then
             glBegin(GL_TRIANGLES)
          else glBegin(GL_TRIANGLE_STRIP);
@@ -3521,6 +4045,9 @@ begin
             if gotNormals   then glNormal3fv(@Normals.List[i]);
             if gotTexCoords then xglTexCoord2fv(@TexCoords.List[i]);
             if gotColor     then glColor4fv(@Colors.List[i]);
+            for j:=0 to FTexCoordsEx.Count-1 do
+               if gotTexCoordsEx[j] then 
+                  glMultiTexCoord4fvARB(GL_TEXTURE0_ARB+j, @TexCoordsEx[j].List[i]);
             glVertex3fv(@Vertices.List[i]);
          end;
          glEnd;
