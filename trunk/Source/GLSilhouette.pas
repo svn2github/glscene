@@ -45,9 +45,26 @@ type
                                       tightButSlow : Boolean);
    end;
 
-   // TConnectivity = class
+   // TBaseConnectivity
+   TBaseConnectivity = class
+  private
+    FPrecomputeFaceNormal: boolean;
+       private
+          function GetEdgeCount: integer; virtual;
+          function GetFaceCount: integer; virtual;
+       public
+          property EdgeCount : integer read GetEdgeCount;
+          property FaceCount : integer read GetFaceCount;
+
+          property PrecomputeFaceNormal : boolean read FPrecomputeFaceNormal;
+          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean); virtual;
+
+          constructor Create(PrecomputeFaceNormal : boolean); virtual;
+   end;
+
+   // TConnectivity
    //
-   TConnectivity = class
+   TConnectivity = class(TBaseConnectivity)
        private
           { All storage of faces and adges are cut up into tiny pieces for a reason,
           it'd be nicer with Structs or classes, but it's actually faster this way.
@@ -62,14 +79,12 @@ type
 
           FFaceNormal : TAffineVectorList;
 
-          FPrecomputeFaceNormal : boolean;
-
           FVertexMemory : TIntegerList;
 
           FVertices : TAffineVectorList;
 
-          function GetEdgeCount: integer;
-          function GetFaceCount: integer;
+          function GetEdgeCount: integer; override;
+          function GetFaceCount: integer; override;
 
           function ReuseOrFindVertexID(SeenFrom : TAffineVector; aSilhouette: TGLSilhouette;
             Index: integer): integer;
@@ -77,7 +92,7 @@ type
           {: Clears out all connectivity information. }
           procedure Clear; virtual;
 
-          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean);
+          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean); override;
 
           function AddIndexedEdge(VertexIndex0, VertexIndex1 : integer; FaceID: integer) : integer;
           function AddIndexedFace(Vi0, Vi1, Vi2 : integer) : integer;
@@ -89,9 +104,8 @@ type
 
           property EdgeCount : integer read GetEdgeCount;
           property FaceCount : integer read GetFaceCount;
-          property PrecomputeFaceNormal : boolean read FPrecomputeFaceNormal;
 
-          constructor Create(PrecomputeFaceNormal : boolean);
+          constructor Create(PrecomputeFaceNormal : boolean); override;
           destructor Destroy; override;
    end;
 
@@ -115,23 +129,17 @@ type
 
    // TGLBaseMeshConnectivity
    //
-   TGLBaseMeshConnectivity = class
+   TGLBaseMeshConnectivity = class(TBaseConnectivity)
        private
           FGLBaseMesh : TGLBaseMesh;
           FFaceGroupConnectivityList : TList;
-          FPrecomputeFaceNormal: boolean;
-          function GetEdgeCount: integer;
-          function GetFaceCount: integer;
+          function GetEdgeCount: integer; override;
+          function GetFaceCount: integer; override;
           function GetFaceGroupConnectivity(i: integer): TFaceGroupConnectivity;
           function GetConnectivityCount: integer;
 
        public
-          property PrecomputeFaceNormal : boolean read FPrecomputeFaceNormal;
-
-          property EdgeCount : integer read GetEdgeCount;
-          property FaceCount : integer read GetFaceCount;
           property ConnectivityCount : integer read GetConnectivityCount;
-
           property FaceGroupConnectivity[i : integer] : TFaceGroupConnectivity read GetFaceGroupConnectivity;
 
           procedure Clear(SaveFaceGroupConnectivity : boolean);
@@ -139,8 +147,7 @@ type
           {: Builds the connectivity information. }
           procedure RebuildEdgeList;
 
-          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; AddCap : boolean;
-                                         var aSilhouette : TGLSilhouette);
+          procedure CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean); override;
 
           constructor Create(aGLBaseMesh : TGLBaseMesh);
           destructor Destroy; override;
@@ -187,8 +194,35 @@ begin
 end;
 
 // ------------------
+// ------------------ TBaseConnectivity ------------------
+// ------------------
+
+{ TBaseConnectivity }
+
+constructor TBaseConnectivity.Create(PrecomputeFaceNormal: boolean);
+begin
+  FPrecomputeFaceNormal := PrecomputeFaceNormal;
+end;
+
+procedure TBaseConnectivity.CreateSilhouetteOmni(SeenFrom: TAffineVector;
+  var aSilhouette: TGLSilhouette; AddToSilhouette, AddCap: boolean);
+begin
+  // Purely virtual!
+end;
+
+// ------------------
 // ------------------ TConnectivity ------------------
 // ------------------
+
+function TBaseConnectivity.GetEdgeCount: integer;
+begin
+  result := 0;
+end;
+
+function TBaseConnectivity.GetFaceCount: integer;
+begin
+  result := 0;
+end;
 
 { TConnectivity }
 
@@ -624,7 +658,8 @@ begin
   end;
 end;
 
-procedure TGLBaseMeshConnectivity.CreateSilhouetteOmni(SeenFrom : TAffineVector; AddCap : boolean; var aSilhouette : TGLSilhouette);
+procedure TGLBaseMeshConnectivity.CreateSilhouetteOmni(SeenFrom : TAffineVector; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean; AddCap : boolean);
+
 var
   i : integer;
 begin

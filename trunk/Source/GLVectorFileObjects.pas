@@ -5099,14 +5099,16 @@ begin
    if Assigned(FConnectivity) then begin
       mc:=TGLBaseMeshConnectivity(FConnectivity);
       mc.CreateSilhouetteOmni(silhouetteParameters.SeenFrom,
-                              silhouetteParameters.CappingRequired,
-                              sil);
+                              sil,
+                              true,
+                              silhouetteParameters.CappingRequired);
    end else begin
       mc:=TGLBaseMeshConnectivity.Create(Self);
       try
          mc.CreateSilhouetteOmni(silhouetteParameters.SeenFrom,
-                                 silhouetteParameters.CappingRequired,
-                                 sil);
+                                 sil,
+                                 true,
+                                 silhouetteParameters.CappingRequired);
       finally
          mc.Free;
       end;
