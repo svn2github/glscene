@@ -76,27 +76,27 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 8
       Top = 32
-      Width = 103
-      Height = 13
+      Width = 100
+      Height = 14
       Caption = 'OpenGL scene view'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsItalic]
+      Font.Name = 'Arial'
+      Font.Style = []
       ParentFont = False
     end
     object Label3: TLabel
       Left = 288
       Top = 32
-      Width = 141
-      Height = 13
+      Width = 136
+      Height = 14
       Caption = 'RayCasted/RayTraced view'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = [fsItalic]
+      Font.Name = 'Arial'
+      Font.Style = []
       ParentFont = False
     end
   end
