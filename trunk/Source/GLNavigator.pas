@@ -3,7 +3,7 @@
    Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>14/07/02 - EG - InvertMouse (Joen Joensen)
+      <li>14/07/02 - EG - InvertMouse (Joen A. Joensen)
       <li>18/03/02 - EG - Added MouseLookActive property, Fixed framerate dependency
       <li>15/03/02 - JAJ - Structure Change - Mouselook moved to newly created TGLUserInterface.
       <li>15/03/02 - RMCH - Added Mouselook capability.
