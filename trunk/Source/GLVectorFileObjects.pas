@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>23/07/04 - SG - Added fgmmQuad case for TFGVertexIndexList.TraingleCount
+                          (Thanks fig).
       <li>18/07/04 - LR - Suppress Consts in uses
       <li>20/06/04 - MRQZZZ - Added AutoScaling property to GLBaseMesh to scale a mesh after loading (like Autocentering) 
       <li>30/03/04 - EG - Added TSkeletonBoneList.BoneCount
@@ -4644,6 +4646,8 @@ begin
          Result:=VertexIndices.Count-2;
          if Result<0 then Result:=0;
       end;
+      fgmmQuads:
+        result:=VertexIndices.Count div 2;
    else
       Result:=0;
       Assert(False);
