@@ -2,7 +2,8 @@
 
 	Vector File related objects for GLScene<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>13/03/02 - EG - Octree support (experimental)
       <li>18/02/02 - EG - Fixed persistence of skeletal meshes
       <li>04/01/02 - EG - Added basic RayCastIntersect implementation
       <li>17/12/01 - EG - Upgraded TActor.Synchronize (smooth transitions support)
@@ -71,7 +72,7 @@ unit GLVectorFileObjects;
 interface
 
 uses Classes, GLScene, OpenGL12, Geometry, SysUtils, GLMisc, GLTexture,
-   GLMesh, VectorLists, PersistentClasses;
+   GLMesh, VectorLists, PersistentClasses, Octree;
 
 type
 
@@ -1054,15 +1055,25 @@ type
    TFreeForm = class (TBaseMesh)
       private
          { Private Declarations }
+         FOctree : TOctree;
 
       protected
          { Protected Declarations }
+         function GetOctree : TOctree;
 
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
+         function OctreeRayCastIntersect(const rayStart, rayVector : TVector;
+                                         intersectPoint : PVector = nil;
+                                         intersectNormal : PVector = nil) : Boolean;
+
+         {: Octree support *experimental*.<p>
+            Use only if you understand what you're doing! }
+         property Octree : TOctree read GetOctree;
+         procedure BuildOctree;
 
       published
          { Published Declarations }
@@ -4495,7 +4506,60 @@ end;
 //
 destructor TFreeForm.Destroy;
 begin
+   FOctree.Free;
    inherited Destroy;
+end;
+
+// GetOctree
+//
+function TFreeForm.GetOctree : TOctree;
+begin
+   if not Assigned(FOctree) then
+      FOctree:=TOctree.Create;
+   Result:=FOctree;
+end;
+
+// BuildOctree
+//
+procedure TFreeForm.BuildOctree;
+var
+   emin, emax : TAffineVector;
+   tl : TAffineVectorList;
+begin
+   GetExtents(emin, emax);
+   tl:=MeshObjects.ExtractTriangles;
+   try
+      with Octree do begin
+         DisposeTree;
+         InitializeTree(emin, emax, tl, 3);
+      end;
+   finally
+      tl.Free;
+   end;
+end;
+
+// RayCastIntersectAABB
+//
+function TFreeForm.OctreeRayCastIntersect(const rayStart, rayVector : TVector;
+                                          intersectPoint : PVector = nil;
+                                          intersectNormal : PVector = nil) : Boolean;
+var
+   locRayStart, locRayVector : TVector;
+begin
+   Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
+   SetVector(locRayStart,  AbsoluteToLocal(rayStart));
+   SetVector(locRayVector, AbsoluteToLocal(rayVector));
+   Result:=Octree.RayCastIntersectAABB(locRayStart, locRayVector,
+                                       intersectPoint, intersectNormal);
+   if Result then begin
+      if intersectPoint<>nil then
+         SetVector(intersectPoint^,  LocalToAbsolute(intersectPoint^));
+      if intersectNormal<>nil then begin
+         SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
+         if NormalsOrientation=mnoInvert then
+            NegateVector(intersectNormal^);
+      end;
+   end;
 end;
 
 // ------------------

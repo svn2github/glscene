@@ -91,10 +91,9 @@ type
          procedure InitializeTree(const worldMinExtent, worldMaxExtent : TAffineVector;
                                   const triangles : TAffineVectorList;
                                   const treeDepth : Integer);
-
-         constructor CreateOwned(AOwner: TComponent);
-         destructor Destroy;  override;
          procedure DisposeTree;
+
+         destructor Destroy;  override;
 
          function RayCastIntersectAABB(const rayStart, rayVector : TVector;
                                        intersectPoint : PVector = nil;
@@ -545,14 +544,6 @@ const
        (MAX,MAX,MAX), //Upper right corner
        (MAX,MAX,MIN), //Bottom right corner
        (MAX,MIN,MIN));
-
-// CreateOwned
-//
-constructor TOctree.CreateOwned(AOwner: TComponent);
-begin
-   Create;
-   MaxOlevel:=0;  //initialize max depth.
-end;
 
 // Destroy
 //
