@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="terrain.exe"/>
+    <OBJFILES value="terrain.obj Unit1.obj"/>
+    <RESFILES value="terrain.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) Unit1.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value=""/>
+    <PACKAGES value=""/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="terrain.cpp"/>
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders"/>
+    <LIBPATH value="$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I$(BCB)\include -I$(BCB)\include\vcl -IC:\GLScene\Source 
+      -IC:\GLScene\Source\Base -IC:\GLScene\Source\Platform 
+      -IC:\GLScene\Source\FileFormats -IC:\GLScene\Source\Shaders 
+      -IC:\GLScene\Source\PhysicsAPIs -IC:\GLScene\Source\SoundAPIs 
+      -IC:\GLScene\Source\VideoAPIs -IC:\GLScene\Source\GameAPIs 
+      -IC:\GLScene\Source\CgShaders -src_suffix cpp -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="terrain.res" FORMNAME="" UNITNAME="terrain.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="terrain.cpp" FORMNAME="" UNITNAME="terrain" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Unit1.cpp" FORMNAME="Form1" UNITNAME="Unit1" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1028
+CodePage=950
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=4
+Item0=$(BCB)\include;$(BCB)\include\vcl;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
+Item1=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
+Item2=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;
+Item3=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=4
+Item0=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
+Item1=$(BCB)\Projects\Lib;C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
+Item2=$(BCB)\Projects\Lib;C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;
+Item3=$(BCB)\Projects\Lib;C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>
