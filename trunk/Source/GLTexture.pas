@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>08/12/02 - EG - Added tiaInverseLuminance
       <li>13/11/02 - EG - Added tmmCubeMapLight0
       <li>18/10/02 - EG - CubeMap texture matrix now setup for 2nd texture unit too
       <li>24/07/02 - EG - Added TGLLibMaterials.DeleteUnusedMaterials
@@ -401,7 +402,8 @@ type
 	TGLTextureImageAlpha = (tiaDefault, tiaAlphaFromIntensity,
 									tiaSuperBlackTransparent, tiaLuminance,
 									tiaLuminanceSqrt, tiaOpaque,
-                           tiaTopLeftPointColorTransparent);
+                           tiaTopLeftPointColorTransparent,
+                           tiaInverseLuminance, tiaInverseLuminanceSqrt);
 
 	// TGLTextureImage
 	//
@@ -3192,6 +3194,10 @@ begin
          bitmap32.SetAlphaToValue(255);
       tiaTopLeftPointColorTransparent :
          bitmap32.SetAlphaTransparentForColor(bitmap32.Data[0]);
+      tiaInverseLuminance : begin
+         bitmap32.SetAlphaFromIntensity;
+         bitmap32.InvertAlpha;
+      end;
    else
       Assert(False);
    end;
