@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/09/02 - EG - FMOD activation errors no longer result in Asserts (ignored)
       <li>28/08/02 - EG - Fixed EAX capability detection
       <li>27/08/02 - EG - Now uses dynamically linked version by Steve Williams,
                           Added support for EAX environments
@@ -122,13 +123,20 @@ var
    cap : Cardinal;
 begin
    FMOD_Load;
-   if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then Assert(False);
-   if not FSOUND_SetDriver(0) then Assert(False);
+   if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then begin
+      Result:=False;
+      Exit;
+   end;
+   if not FSOUND_SetDriver(0) then begin
+      Result:=False;
+      Exit;
+   end;
    cap:=0;
    if FSOUND_GetDriverCaps(0, cap) then
       FEAXCapable:=((cap and (FSOUND_CAPS_EAX2 or FSOUND_CAPS_EAX3))>0)
-   else Assert(False);
-   if not FSOUND_Init(OutputFrequency, MaxChannels, 0) then Assert(False);
+   else Assert(False, 'Failed to retrieve driver Caps.');
+   if not FSOUND_Init(OutputFrequency, MaxChannels, 0) then
+      Assert(False, 'FSOUND_Init failed.');
    FActivated:=True;
    NotifyMasterVolumeChange;
    Notify3DFactorsChanged;
