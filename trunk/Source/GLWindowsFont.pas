@@ -2,6 +2,7 @@
 {: TFont Import into a BitmapFont using variable width...<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/15/04 - Eugene Kryukov - Added TGLStoredBitmapFont
       <li>03/07/04 - LR - Added ifdef for Graphics uses
       <li>29/09/02 - EG - Fixed transparency, style fixes, prop defaults fixed,
                           dropped interface dependency, texture size auto computed,
@@ -47,7 +48,7 @@ type
       protected
 	      { Protected Declarations }
          procedure SetFont(value : TFont);
-         procedure LoadWindowsFont;
+         procedure LoadWindowsFont; virtual;
          function StoreRanges : Boolean;
 
          procedure PrepareImage; override;
@@ -76,6 +77,24 @@ type
          property Ranges stored StoreRanges;
    end;
 
+   {: Inheritance from TGLWindowsBitmapFont which can load from file.<p>
+   }
+   TGLStoredBitmapFont = class (TGLWindowsBitmapFont)
+      private
+        FLoaded: boolean;
+      protected
+      public
+	      { Public Declarations }
+         constructor Create(AOwner : TComponent); override;
+         destructor  Destroy; override;
+         procedure NotifyChange(Sender : TObject); override;
+         procedure LoadWindowsFont; override;
+         procedure LoadFromFile(AFileName: string);
+         procedure SaveToFile(AFileName: string);
+      published
+	      { Published Declarations }
+   end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -84,7 +103,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, VectorGeometry, OpenGL1x;
+uses SysUtils, VectorGeometry, OpenGL1x, ApplicationFileIO;
 
 // ------------------
 // ------------------ TGLWindowsBitmapFont ------------------
@@ -257,7 +276,8 @@ begin
    bitmap.Width:=textureWidth;
    bitmap.Height:=textureHeight;
 
-   with bitmap.Canvas do begin
+   with bitmap.Canvas do
+   begin
       Brush.Style:=bsSolid;
       Brush.Color:=clBlack;
       FillRect(Rect(0, 0, textureWidth, textureHeight));
@@ -293,12 +313,126 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+{ TGLStoredBitmapFont }
+
+constructor TGLStoredBitmapFont.Create(AOwner: TComponent);
+begin
+  inherited;
+end;
+
+destructor TGLStoredBitmapFont.Destroy;
+begin
+  inherited;
+end;
+
+procedure TGLStoredBitmapFont.NotifyChange(Sender: TObject);
+begin
+  inherited;
+end;
+
+procedure TGLStoredBitmapFont.LoadFromFile(AFileName: string);
+var
+  S: TStream;
+  Count, i: integer;
+  F1, F2, F3, F4: single;
+  I1: integer;
+  Bmp: TBitmap;
+begin
+  if FileStreamExists(AFileName) then
+  begin
+    S := CreateFileStream(AFileName, fmOpenRead);
+    try
+      FLoaded := true;
+      { Load Glyphs }
+      Bmp := TBitmap.Create;
+      Bmp.LoadFromStream(S);
+      Glyphs.Assign(Bmp);
+      Bmp.Free;
+
+      FreeTextureHandle;
+      InvalidateUsers;
+      { Load font settings }
+      // char props
+      S.Read(I1, SizeOf(CharWidth));
+      CharWidth := I1;
+      S.Read(I1, SizeOf(CharHeight));
+      CharHeight := I1;
+      // char rects
+      S.Read(Count, SizeOf(Count));
+      SetLength(FCharRects, Count);
+      for i := 0 to High(FCharRects) do
+      begin
+        S.Read(F1, SizeOf(FCharRects[i][0]));
+        S.Read(F2, SizeOf(FCharRects[i][1]));
+        S.Read(F3, SizeOf(FCharRects[i][2]));
+        S.Read(F4, SizeOf(FCharRects[i][3]));
+        SetCharRects(i, VectorMake(F1, F2, F3, F4));
+      end;
+      // char wds
+      S.Read(Count, SizeOf(Count));
+      for i := 0 to High(CharWidths) do
+      begin
+        S.Read(I1, SizeOf(CharWidths[i]));
+        SetCharWidths(i, I1);
+      end;
+    finally
+      S.Free;
+    end;
+  end;
+end;
+
+procedure TGLStoredBitmapFont.SaveToFile(AFileName: string);
+var
+  S: TStream;
+  i, Count: integer;
+  Bmp: TBitmap;
+begin
+  if Glyphs.Graphic = nil then Exit;
+  
+  S := CreateFileStream(AFileName, fmCreate);
+  try
+    { Save glyphs }
+    Bmp := TBitmap.Create;
+    Bmp.Assign(Glyphs.Graphic);
+    Bmp.SaveToStream(S);
+    Bmp.Free;
+    { Save settings }
+    // char props
+    S.Write(CharWidth, SizeOf(CharWidth));
+    S.Write(CharHeight, SizeOf(CharHeight));
+    // char rects
+    Count := Length(FCharRects);
+    S.Write(Count, SizeOf(Count));
+    for i := 0 to High(FCharRects) do
+    begin
+      S.Write(FCharRects[i][0], SizeOf(FCharRects[i][0]));
+      S.Write(FCharRects[i][1], SizeOf(FCharRects[i][1]));
+      S.Write(FCharRects[i][2], SizeOf(FCharRects[i][2]));
+      S.Write(FCharRects[i][3], SizeOf(FCharRects[i][3]));
+    end;
+    // char wds
+    Count := Length(CharWidths);
+    S.Write(Count, SizeOf(Count));
+    for i := 0 to High(CharWidths) do
+      S.Write(CharWidths[i], SizeOf(CharWidths[i]));
+  finally
+    S.Free;
+  end;
+end;
+
+procedure TGLStoredBitmapFont.LoadWindowsFont;
+begin
+  if not FLoaded then
+    inherited ;
+end;
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClasses([TGLWindowsBitmapFont]);
+   RegisterClasses([TGLWindowsBitmapFont, TGLStoredBitmapFont]);
 
 end.

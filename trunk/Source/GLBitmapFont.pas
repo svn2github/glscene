@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/15/04 - Eugene Kryukov - Moved FCharRects to protected declaration in TGLCustomBitmapFont
       <li>18/10/04 - NelC - Fixed a texture reset bug in RenderString
       <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/06/04 - NelC - Added TGLFlatText.Assign
@@ -125,10 +126,9 @@ type
          FTextureWidth, FTextureHeight : Integer;
          FGlyphsAlpha : TGLTextureImageAlpha;
          FCharWidths : TDynIntegerArray;
-         FCharRects : array of TVector;
-
 	   protected
 	      { Protected Declarations }
+         FCharRects : array of TVector;
          property CharWidths : TDynIntegerArray read FCharWidths write FCharWidths;
          procedure ResetCharWidths(w : Integer = -1);
          procedure SetCharWidths(index, value : Integer);
