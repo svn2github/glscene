@@ -72,8 +72,9 @@ procedure TGLQ3BSPVectorFile.LoadFromStream(aStream : TStream);
                   if FileStreamExists(matName+'.jpg') then texName:=matName+'.jpg';
                   if FileStreamExists(matName+'.tga') then texName:=matName+'.tga';
                end else texName:=matName;
-               libMat:=matLib.AddTextureMaterial(matName, texName);
-               libMat.Material.Texture.TextureMode:=tmModulate;
+               with matLib.AddTextureMaterial(matName, texName) do begin
+//                  Material.Texture.TextureMode:=tmModulate;
+               end;
             end;
          end else Result:='';
       end else Result:='';
@@ -152,6 +153,9 @@ begin
    finally
       bsp.Free;
    end;
+   // Some BSP end up with empty nodes/leaves (information unused, incorrept BSP...)
+   // This call takes care of cleaning up all the empty nodes
+   mo.CleanupUnusedNodes;
 end;
 
 // ------------------------------------------------------------------

@@ -5,7 +5,7 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-	   <li>31/01/03 - EG - Materials support
+	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes
 	   <li>30/01/03 - EG - Creation
 	</ul></font>
 }
@@ -50,6 +50,11 @@ type
          destructor Destroy; override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
+
+         {: Drops all unused nodes from the facegroups list.<p>
+            An unused node is a node that renders nothing and whose children
+            render nothing. Indices are remapped in the process. }
+         procedure CleanupUnusedNodes;
 
          {: Rendering sort mode.<p>
             This sort mode can currently *not* blend with the sort by materials
@@ -104,6 +109,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+uses VectorLists;
+
 // ------------------
 // ------------------ TBSPMeshObject ------------------
 // ------------------
@@ -128,10 +135,12 @@ end;
 //
 procedure TBSPMeshObject.BuildList(var mrci : TRenderContextInfo);
 var
-   i : Integer;
+   i, j, k, n : Integer;
    bsprci : TBSPRenderContextInfo;
    libMat : TGLLibMaterial;
    materials : TGLLibMaterials;
+   faceGroupList : TList;
+   bspNodeList : PPointerList;
 begin
    if Mode<>momFaceGroups then begin
       inherited BuildList(mrci);
@@ -141,8 +150,9 @@ begin
    if FaceGroups.Count>0 then begin
       bsprci.cameraLocal:=Owner.Owner.AbsoluteToLocal(mrci.cameraPosition);
       bsprci.rci:=@mrci;
-      bsprci.faceGroups:=TList.Create;
+      faceGroupList:=TList.Create;
       try
+         bsprci.faceGroups:=faceGroupList;
          bsprci.faceGroups.Capacity:=FaceGroups.Count div 2;
          // collect all facegroups
          case RenderSort of
@@ -153,20 +163,104 @@ begin
             Assert(False);
          end;
          // render facegroups
-         // todo: grouping facegroups by material
          materials:=mrci.materialLibrary.Materials;
-         for i:=0 to bsprci.faceGroups.Count-1 do with TFGBSPNode(bsprci.faceGroups[i]) do begin
+         bspNodeList:=faceGroupList.List;
+         n:=bsprci.faceGroups.Count;
+         i:=0;
+         while i<n do with TFGBSPNode(bspNodeList[i]) do begin
             libMat:=materials.GetLibMaterialByName(MaterialName);
             if Assigned(libMat) then begin
+               j:=i+1;
+               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialName=MaterialName) do
+                  Inc(j);
                libMat.Apply(mrci);
                repeat
-                  BuildList(mrci);
+                  for k:=i to j-1 do
+                     TFGBSPNode(bspNodeList[k]).BuildList(mrci);
                until not libMat.UnApply(mrci);
-            end else BuildList(mrci);
+            end else begin
+               j:=i;
+               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialName=MaterialName) do begin
+                  TFGBSPNode(bspNodeList[j]).BuildList(mrci);
+                  Inc(j);
+               end;
+            end;
+            i:=j;
          end;
       finally
-         bsprci.faceGroups.Free;
+         faceGroupList.Free;
       end;
+   end;
+end;
+
+// CleanupUnusedNodes
+//
+procedure TBSPMeshObject.CleanupUnusedNodes;
+var
+   i, j, n : Integer;
+   nodeParents : array of Integer;
+   remapIndex : array of Integer;
+   indicesToCheck : TIntegerList;
+   node : TFGBSPNode;
+begin
+   n:=FaceGroups.Count;
+   if n=0 then Exit;
+   SetLength(nodeParents, n);
+   indicesToCheck:=TIntegerList.Create;
+   try
+      // build nodes parent information
+      FillChar(nodeParents[0], SizeOf(Integer)*n, 255);
+      for i:=0 to n-1 do with TFGBSPNode(FaceGroups[i]) do begin
+         if PositiveSubNodeIndex>0 then
+            nodeParents[PositiveSubNodeIndex]:=i;
+         if NegativeSubNodeIndex>0 then
+            nodeParents[NegativeSubNodeIndex]:=i;
+      end;
+      // now proceed to deleting all the unused nodes
+      indicesToCheck.AddSerie(n-1, -1, n);
+      while indicesToCheck.Count>0 do begin
+         i:=indicesToCheck.Pop;
+         node:=TFGBSPNode(FaceGroups[i]);
+         if Assigned(node) then begin
+            if node.PositiveSubNodeIndex>0 then begin
+               if TFGBSPNode(FaceGroups[node.PositiveSubNodeIndex])=nil then
+                  node.PositiveSubNodeIndex:=0;
+            end;
+            if node.NegativeSubNodeIndex>0 then begin
+               if TFGBSPNode(FaceGroups[node.NegativeSubNodeIndex])=nil then
+                  node.NegativeSubNodeIndex:=0;
+            end;
+            if (node.PositiveSubNodeIndex<=0) and (node.NegativeSubNodeIndex<=0) then begin
+               if node.VertexIndices.Count=0 then begin
+                  if nodeParents[i]>=0 then
+                     indicesToCheck.Push(nodeParents[i]);
+                  FaceGroups.List[i]:=nil;
+                  node.Owner:=nil;
+                  node.Free;
+               end;
+            end;
+         end;
+      end;
+      // build a remap index
+      SetLength(remapIndex, n);
+      j:=0;
+      for i:=0 to n-1 do begin
+         remapIndex[i]:=j;
+         if FaceGroups[i]<>nil then
+            Inc(j);
+      end;
+      // apply remap index
+      for i:=0 to n-1 do begin
+         node:=TFGBSPNode(FaceGroups[i]);
+         if Assigned(node) then begin
+            node.PositiveSubNodeIndex:=remapIndex[node.PositiveSubNodeIndex];
+            node.NegativeSubNodeIndex:=remapIndex[node.NegativeSubNodeIndex];
+         end;
+      end;
+      // and pack then FaceGroups, done, pfew!! The things we do to remain fast...
+      FaceGroups.Pack;
+   finally
+      indicesToCheck.Free;
    end;
 end;
 
