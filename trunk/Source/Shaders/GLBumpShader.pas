@@ -55,11 +55,13 @@ type
          FBumpMethod : TBumpMethod;
          FBumpSpace : TBumpSpace;
          FBumpOptions : TBumpOptions;
+         FDesignTimeEnabled : Boolean;
 
       protected
          procedure SetBumpMethod(const Value : TBumpMethod);
          procedure SetBumpSpace(const Value : TBumpSpace);
          procedure SetBumpOptions(const Value : TBumpOptions);
+         procedure SetDesignTimeEnabled(const Value : Boolean);
          procedure Loaded; override;
          procedure DeleteVertexPrograms;
          procedure DeleteFragmentPrograms;
@@ -75,6 +77,7 @@ type
          property BumpMethod : TBumpMethod read FBumpMethod write SetBumpMethod;
          property BumpSpace : TBumpSpace read FBumpSpace write SetBumpSpace;
          property BumpOptions : TBumpOptions read FBumpOptions write SetBumpOptions;
+         property DesignTimeEnabled : Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
 
    end;
 
@@ -416,8 +419,8 @@ procedure TGLBumpShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
       if (target = GL_FRAGMENT_PROGRAM_ARB) and not GL_ARB_fragment_program then
          raise Exception.Create('GL_ARB_fragment_program required!');
       glGenProgramsARB(1, @vphandle);
-      glBindProgramARB(target,vphandle);
-      glProgramStringARB(target,GL_PROGRAM_FORMAT_ASCII_ARB,
+      glBindProgramARB(target, vphandle);
+      glProgramStringARB(target, GL_PROGRAM_FORMAT_ASCII_ARB,
          Length(vptext), PChar(vptext));
       glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
       if errPos>-1 then begin
@@ -433,7 +436,8 @@ var
    ambient, materialAmbient : TColorVector;
    success : Boolean;
 begin
-   if (csDesigning in ComponentState) then exit;
+   if (csDesigning in ComponentState) and not DesignTimeEnabled then exit;
+   if not Enabled then exit;
 
    glGetIntegerv(GL_MAX_LIGHTS, @maxLights);
    glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @maxTextures);
@@ -442,11 +446,6 @@ begin
    try
       if maxTextures<3 then
          raise Exception.Create('Not enough texture units!');
-
-      glPushAttrib(GL_ENABLE_BIT or
-                   GL_TEXTURE_BIT or
-                   GL_DEPTH_BUFFER_BIT or
-                   GL_COLOR_BUFFER_BIT);
 
       if Length(FVertexProgramHandles) = 0 then begin
          SetLength(FVertexProgramHandles, maxLights);
@@ -486,9 +485,16 @@ begin
       success:=True;
 
    finally
-      if not success then
+      if not success then begin
          Enabled:=False;
+         DesignTimeEnabled:=False;
+      end;
    end;
+
+   glPushAttrib(GL_ENABLE_BIT or
+                GL_TEXTURE_BIT or
+                GL_DEPTH_BUFFER_BIT or
+                GL_COLOR_BUFFER_BIT);
 
    FLightIDs.Clear;
    for i:=0 to maxLights-1 do begin
@@ -521,7 +527,8 @@ var
    dummyHandle, tempHandle : Integer;
 begin
    Result:=False;
-   if (csDesigning in ComponentState) then exit;
+   if (csDesigning in ComponentState) and not DesignTimeEnabled then exit;
+   if not Enabled then exit;
 
    if FLightIDs.Count>0 then begin
       glDepthFunc(GL_EQUAL);
@@ -662,6 +669,16 @@ begin
       FBumpOptions:=Value;
       DeleteVertexPrograms;
       DeleteFragmentPrograms;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetDesignTimeEnabled
+//
+procedure TGLBumpShader.SetDesignTimeEnabled(const Value: Boolean);
+begin
+   if Value<>FDesignTimeEnabled then begin
+      FDesignTimeEnabled:=Value;
       NotifyChange(Self);
    end;
 end;
