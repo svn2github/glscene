@@ -1374,8 +1374,10 @@ implementation
 uses SysUtils{$ifdef GEOMETRY_NO_ASM}, Math{$endif};
 
 const
+{$ifndef GEOMETRY_NO_ASM}
   // FPU status flags (high order byte)
   cwChop : Word = $1F3F;
+{$endif}
 
   // to be used as descriptive indices
   X = 0;
