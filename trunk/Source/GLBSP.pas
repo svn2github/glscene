@@ -5,7 +5,8 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-	   <li>30/01/03 - Egg - Creation
+	   <li>31/01/03 - EG - Materials support
+	   <li>30/01/03 - EG - Creation
 	</ul></font>
 }
 unit GLBSP;
@@ -22,6 +23,7 @@ type
       //: Local coordinates of the camera (can be a vector or point)
       cameraLocal : TVector;
       rci : PRenderContextInfo;
+      faceGroups : TList;
    end;
 
    // TBSPRenderSort
@@ -77,9 +79,9 @@ type
 	      constructor CreateOwned(AOwner : TFaceGroups); override;
          destructor Destroy; override;
 
-         procedure BuildListNoSort(var bsprci : TBSPRenderContextInfo);
-         procedure BuildListFrontToBack(var bsprci : TBSPRenderContextInfo);
-         procedure BuildListBackToFront(var bsprci : TBSPRenderContextInfo);
+         procedure CollectNoSort(var bsprci : TBSPRenderContextInfo);
+         procedure CollectFrontToBack(var bsprci : TBSPRenderContextInfo);
+         procedure CollectBackToFront(var bsprci : TBSPRenderContextInfo);
 
          {: BSP node split plane.<p>
             Divides space between positive and negative half-space, positive
@@ -126,7 +128,10 @@ end;
 //
 procedure TBSPMeshObject.BuildList(var mrci : TRenderContextInfo);
 var
+   i : Integer;
    bsprci : TBSPRenderContextInfo;
+   libMat : TGLLibMaterial;
+   materials : TGLLibMaterials;
 begin
    if Mode<>momFaceGroups then begin
       inherited BuildList(mrci);
@@ -136,12 +141,31 @@ begin
    if FaceGroups.Count>0 then begin
       bsprci.cameraLocal:=Owner.Owner.AbsoluteToLocal(mrci.cameraPosition);
       bsprci.rci:=@mrci;
-      case RenderSort of
-         rsNone        : (FaceGroups[0] as TFGBSPNode).BuildListNoSort(bsprci);
-         rsBackToFront : (FaceGroups[0] as TFGBSPNode).BuildListBackToFront(bsprci);
-         rsFrontToBack : (FaceGroups[0] as TFGBSPNode).BuildListFrontToBack(bsprci);
-      else
-         Assert(False);
+      bsprci.faceGroups:=TList.Create;
+      try
+         bsprci.faceGroups.Capacity:=FaceGroups.Count div 2;
+         // collect all facegroups
+         case RenderSort of
+            rsNone        : (FaceGroups[0] as TFGBSPNode).CollectNoSort(bsprci);
+            rsBackToFront : (FaceGroups[0] as TFGBSPNode).CollectBackToFront(bsprci);
+            rsFrontToBack : (FaceGroups[0] as TFGBSPNode).CollectFrontToBack(bsprci);
+         else
+            Assert(False);
+         end;
+         // render facegroups
+         // todo: grouping facegroups by material
+         materials:=mrci.materialLibrary.Materials;
+         for i:=0 to bsprci.faceGroups.Count-1 do with TFGBSPNode(bsprci.faceGroups[i]) do begin
+            libMat:=materials.GetLibMaterialByName(MaterialName);
+            if Assigned(libMat) then begin
+               libMat.Apply(mrci);
+               repeat
+                  BuildList(mrci);
+               until not libMat.UnApply(mrci);
+            end else BuildList(mrci);
+         end;
+      finally
+         bsprci.faceGroups.Free;
       end;
    end;
 end;
@@ -166,52 +190,57 @@ begin
 	inherited;
 end;
 
-// BuildListNoSort
+// CollectNoSort
 //
-procedure TFGBSPNode.BuildListNoSort(var bsprci : TBSPRenderContextInfo);
+procedure TFGBSPNode.CollectNoSort(var bsprci : TBSPRenderContextInfo);
 begin
    if PositiveSubNodeIndex>0 then
-      TFGBSPNode(Owner[PositiveSubNodeIndex]).BuildListNoSort(bsprci);
-   BuildList(bsprci.rci^);
+      TFGBSPNode(Owner[PositiveSubNodeIndex]).CollectNoSort(bsprci);
+   if VertexIndices.Count>0 then
+      bsprci.faceGroups.Add(Self);
    if NegativeSubNodeIndex>0 then
-      TFGBSPNode(Owner[NegativeSubNodeIndex]).BuildListNoSort(bsprci);
+      TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectNoSort(bsprci);
 end;
 
-// BuildListFrontToBack
+// CollectFrontToBack
 //
-procedure TFGBSPNode.BuildListFrontToBack(var bsprci : TBSPRenderContextInfo);
+procedure TFGBSPNode.CollectFrontToBack(var bsprci : TBSPRenderContextInfo);
 begin
    if PlaneEvaluatePoint(SplitPlane, bsprci.cameraLocal)>=0 then begin
       if PositiveSubNodeIndex>0 then
-         TFGBSPNode(Owner[PositiveSubNodeIndex]).BuildListNoSort(bsprci);
-      BuildList(bsprci.rci^);
+         TFGBSPNode(Owner[PositiveSubNodeIndex]).CollectFrontToBack(bsprci);
+      if VertexIndices.Count>0 then
+         bsprci.faceGroups.Add(Self);
       if NegativeSubNodeIndex>0 then
-         TFGBSPNode(Owner[NegativeSubNodeIndex]).BuildListNoSort(bsprci);
+         TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectFrontToBack(bsprci);
    end else begin
       if NegativeSubNodeIndex>0 then
-         TFGBSPNode(Owner[NegativeSubNodeIndex]).BuildListNoSort(bsprci);
-      BuildList(bsprci.rci^);
+         TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectFrontToBack(bsprci);
+      if VertexIndices.Count>0 then
+         bsprci.faceGroups.Add(Self);
       if PositiveSubNodeIndex>0 then
-         TFGBSPNode(Owner[PositiveSubNodeIndex]).BuildListNoSort(bsprci);
+         TFGBSPNode(Owner[PositiveSubNodeIndex]).CollectFrontToBack(bsprci);
    end;
 end;
 
-// BuildListBackToFront
+// CollectBackToFront
 //
-procedure TFGBSPNode.BuildListBackToFront(var bsprci : TBSPRenderContextInfo);
+procedure TFGBSPNode.CollectBackToFront(var bsprci : TBSPRenderContextInfo);
 begin
    if PlaneEvaluatePoint(SplitPlane, bsprci.cameraLocal)>=0 then begin
       if NegativeSubNodeIndex>0 then
-         TFGBSPNode(Owner[NegativeSubNodeIndex]).BuildListNoSort(bsprci);
-      BuildList(bsprci.rci^);
+         TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectBackToFront(bsprci);
+      if VertexIndices.Count>0 then
+         bsprci.faceGroups.Add(Self);
       if PositiveSubNodeIndex>0 then
-         TFGBSPNode(Owner[PositiveSubNodeIndex]).BuildListNoSort(bsprci);
+         TFGBSPNode(Owner[PositiveSubNodeIndex]).CollectBackToFront(bsprci);
    end else begin
       if PositiveSubNodeIndex>0 then
-         TFGBSPNode(Owner[PositiveSubNodeIndex]).BuildListNoSort(bsprci);
-      BuildList(bsprci.rci^);
+         TFGBSPNode(Owner[PositiveSubNodeIndex]).CollectBackToFront(bsprci);
+      if VertexIndices.Count>0 then
+         bsprci.faceGroups.Add(Self);
       if NegativeSubNodeIndex>0 then
-         TFGBSPNode(Owner[NegativeSubNodeIndex]).BuildListNoSort(bsprci);
+         TFGBSPNode(Owner[NegativeSubNodeIndex]).CollectBackToFront(bsprci);
    end;
 end;
 

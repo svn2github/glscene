@@ -5,6 +5,7 @@
     to enable support for OBJ & OBJF at run-time.<p>
 
 	<b>History : </b><font size=-1><ul>
+	   <li>31/01/03 - EG - Materials support
       <li>30/01/03 - EG - Creation
    </ul><p>
 }
@@ -35,7 +36,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Q3BSP, Geometry, VectorLists, SysUtils, GLBSP;
+uses Q3BSP, Geometry, VectorLists, SysUtils, GLBSP, GLTexture, ApplicationFileIO;
 
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
@@ -51,17 +52,48 @@ end;
 // LoadFromStream
 //
 procedure TGLQ3BSPVectorFile.LoadFromStream(aStream : TStream);
+
+   function GetOrAllocateMaterial(const matName : String) : String;
+   var
+      matLib : TGLMaterialLibrary;
+      libMat : TGLLibMaterial;
+      texName : String;
+   begin
+      if GetOwner is TGLBaseMesh then begin
+         // got a linked material library?
+         matLib:=TGLBaseMesh(GetOwner).MaterialLibrary;
+         if Assigned(matLib) then begin
+            Result:=matName;
+            libMat:=matLib.Materials.GetLibMaterialByName(matName);
+            if not Assigned(libMat) then begin
+               if Pos('.', matName)<1 then begin
+                  texName:='';
+                  if FileStreamExists(matName+'.bmp') then texName:=matName+'.bmp';
+                  if FileStreamExists(matName+'.jpg') then texName:=matName+'.jpg';
+                  if FileStreamExists(matName+'.tga') then texName:=matName+'.tga';
+               end else texName:=matName;
+               libMat:=matLib.AddTextureMaterial(matName, texName);
+               libMat.Material.Texture.TextureMode:=tmModulate;
+            end;
+         end else Result:='';
+      end else Result:='';
+   end;
+
 var
    bsp : TQ3BSP;
    mo : TBSPMeshObject;
-   fg : TFGBSPNode;
-   i, j, k : Integer;
+   fg, lastfg : TFGBSPNode;
+   i, j, n : Integer;
    facePtr : PBSPFace;
 begin
    bsp:=TQ3BSP.Create(aStream);
    try
       mo:=TBSPMeshObject.CreateOwned(Owner.MeshObjects);
-      // import all geometry first
+      // import all materials
+      for i:=0 to High(bsp.Textures) do begin
+         GetOrAllocateMaterial(Trim(StrPas(bsp.Textures[i].TextureName)));
+      end;
+      // import all geometry
       mo.Vertices.AdjustCapacityToAtLeast(bsp.NumOfVerts);
       mo.Normals.AdjustCapacityToAtLeast(bsp.NumOfVerts);
       mo.TexCoords.AdjustCapacityToAtLeast(bsp.NumOfVerts);
@@ -70,9 +102,9 @@ begin
          mo.Normals.Add(bsp.Vertices[i].Normal);
          mo.TexCoords.Add(bsp.Vertices[i].TextureCoord);
       end;
+      mo.RenderSort:=rsBackToFront;
       // Q3 BSP separates tree nodes from leafy nodes, we don't,
       // so we place nodes first, then all leafs afterwards
-      // now import all nodes
       for i:=0 to bsp.NumOfNodes-1 do begin
          fg:=TFGBSPNode.CreateOwned(mo.FaceGroups);
          fg.SplitPlane:=bsp.Planes[bsp.Nodes[i].plane];
@@ -87,18 +119,30 @@ begin
          Assert(fg.NegativeSubNodeIndex<bsp.NumOfNodes+bsp.NumOfLeaves);
          Assert(fg.NegativeSubNodeIndex>0);
       end;
-      // import faces
+      // import all leaves
+      for i:=0 to bsp.NumOfLeaves-1 do
+         TFGBSPNode.CreateOwned(mo.FaceGroups);
+      // import all faces into leaves & subnodes
       for i:=0 to bsp.NumOfLeaves-1 do begin
-         fg:=TFGBSPNode.CreateOwned(mo.FaceGroups);
+         lastfg:=nil;
          for j:=0 to bsp.Leaves[i].NumFaces-1 do begin
-            facePtr:=@bsp.Faces[bsp.Leaves[i].FirstFace+j];
+            n:=bsp.Leaves[i].FirstFace+j;
+            if n>=bsp.NumOfFaces then Break; // corrupted BSP?
+            facePtr:=@bsp.Faces[n];
             if facePtr.FaceType=FACE_POLYGON then begin
-               // Q3 Faces are fans, convert them to regular triangles
-               // (may be updated later on)
-               for k:=2 to facePtr.numOfVerts-1 do
-                  fg.VertexIndices.Add(facePtr.startVertIndex,
-                                       facePtr.startVertIndex+k-1,
-                                       facePtr.startVertIndex+k);
+               if lastfg=nil then
+                  fg:=TFGBSPNode(mo.FaceGroups[i+bsp.NumOfNodes])
+               else begin
+                  lastfg.PositiveSubNodeIndex:=mo.FaceGroups.Count;
+                  fg:=TFGBSPNode.CreateOwned(mo.FaceGroups);
+               end;
+               // check for BSP corruption
+               if Cardinal(facePtr.textureID)<=Cardinal(bsp.NumOfTextures) then
+                  fg.MaterialName:=Trim(StrPas(bsp.Textures[facePtr.textureID].TextureName));
+               lastfg:=fg;
+               // Q3 Polygon Faces are actually fans
+               fg.Mode:=fgmmTriangleFan;
+               fg.VertexIndices.AddSerie(facePtr.startVertIndex, 1, facePtr.numOfVerts);
                // there are also per-leaf mesh references... dunno what they
                // are for, did not encounter them so far... If you have a BSP
                // that has some, and if you know how to make use of them, shout!
