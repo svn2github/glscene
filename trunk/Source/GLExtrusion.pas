@@ -1042,7 +1042,7 @@ begin
                                                  Frac(t))
                else rows[curRow].color:=TGLPipeNodes(Nodes)[k].Color.Color;
             end;
-            rows[curRow].color:=TGLPipeNodes(Nodes)[curRow].Color.Color;
+            //rows[curRow].color:=TGLPipeNodes(Nodes)[curRow].Color.Color;
             if ppOutside in Parts then
                RenderSides(@rows[curRow xor 1], @rows[curRow]);
             if ppInside in Parts then
