@@ -135,7 +135,7 @@ uses
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
-   GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree,
+   GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
@@ -1891,6 +1891,8 @@ initialization
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
       RegisterSceneObject(TGLMultiProxy, 'MultiProxy', '');
+      RegisterSceneObject(TGLImposterBuilder, 'Imposter Builder', '');
+      RegisterSceneObject(TGLImposter, 'Imposter Sprite', '');
    end;
 
 finalization
