@@ -237,6 +237,7 @@ type
 	      { Protected Declarations }
          FThread : THeightDataThread; // thread used for multi-threaded processing (if any)
 
+         procedure Allocate(const val : THeightDataType);
          procedure SetDataType(const val : THeightDataType);
 
 	   public
@@ -771,25 +772,6 @@ begin
    FSize:=aSize;
    FDataType:=aDataType;
    FDataState:=hdsQueued;
-   case DataType of
-      hdtByte : begin
-         FDataSize:=Size*Size*SizeOf(Byte);
-         GetMem(FByteData, FDataSize);
-         BuildByteRaster;
-      end;
-      hdtSmallInt : begin
-         FDataSize:=Size*Size*SizeOf(SmallInt);
-         GetMem(FSmallIntData, FDataSize);
-         BuildSmallIntRaster;
-      end;
-      hdtSingle : begin
-         FDataSize:=Size*Size*SizeOf(Single);
-         GetMem(FSingleData, FDataSize);
-         BuildSingleRaster;
-      end;
-   else
-      Assert(False);
-   end;
 end;
 
 // Destroy
@@ -851,6 +833,33 @@ begin
       FUseCounter:=0;
       FOwner.Release(Self);
    end;
+end;
+
+// Allocate
+//
+procedure THeightData.Allocate(const val : THeightDataType);
+begin
+   Assert(FDataSize=0);
+   case val of
+      hdtByte : begin
+         FDataSize:=Size*Size*SizeOf(Byte);
+         GetMem(FByteData, FDataSize);
+         BuildByteRaster;
+      end;
+      hdtSmallInt : begin
+         FDataSize:=Size*Size*SizeOf(SmallInt);
+         GetMem(FSmallIntData, FDataSize);
+         BuildSmallIntRaster;
+      end;
+      hdtSingle : begin
+         FDataSize:=Size*Size*SizeOf(Single);
+         GetMem(FSingleData, FDataSize);
+         BuildSingleRaster;
+      end;
+   else
+      Assert(False);
+   end;
+   FDataType:=val;
 end;
 
 // SetDataType
@@ -995,7 +1004,7 @@ begin
    FSingleRaster:=nil;
    FByteData:=Pointer(FSingleData);
    for i:=0 to Size*Size-1 do
-      FByteData[i]:=Round(FSingleData[i]) div 128+128;
+      FByteData[i]:=(Round(FSingleData[i]) div 128)+128;
    FDataSize:=Size*Size*SizeOf(Byte);
    ReallocMem(FByteData, FDataSize);
    FSingleData:=nil;
@@ -1257,12 +1266,13 @@ var
    b : Byte;
 begin
    if FBitmap=nil then Exit;
+   heightData.FDataState:=hdsPreparing;
    bmpSize:=FBitmap.Width;
    wrapMask:=bmpSize-1;
    // retrieve data
    with heightData do begin
       oldType:=DataType;
-      DataType:=hdtByte;
+      Allocate(hdtByte);
       for y:=YTop to YTop+Size-1 do begin
          bitmapLine:=GetScanLine(y and wrapMask);
          rasterLine:=ByteRaster[y-YTop];
@@ -1317,7 +1327,7 @@ begin
       // retrieve data
       with heightData do begin
          oldType:=DataType;
-         DataType:=hdtSmallInt;
+         Allocate(hdtSmallInt);
          for y:=YTop to YTop+Size-1 do begin
             offset:=(y mod cTBHeight)*(cTBWidth*2);
             rasterLine:=SmallIntRaster[y-YTop];

@@ -212,7 +212,7 @@ var
 begin
    if Assigned(HeightDataSource) then begin
       pLocal:=AbsoluteToLocal(p);
-      Result:=(HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1])-128)*Scale.Z;
+      Result:=HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1])*Scale.Z;
    end else Result:=0;
 end;
 
@@ -261,6 +261,7 @@ begin
    glTranslatef(-0.5*TileSize, -0.5*TileSize, 0);
    glEnableClientState(GL_VERTEX_ARRAY);
    xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   glDisableClientState(GL_COLOR_ARRAY);
    glDisableClientState(GL_NORMAL_ARRAY);
 
    glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.List);
