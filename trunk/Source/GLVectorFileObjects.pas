@@ -3,7 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
-      <li>30/03/04 - MRQZZZ - Added AutoScaling property to GLBaseMesh to scale a mesh after loading (like Autocentering) 
+      <li>20/06/04 - MRQZZZ - Added AutoScaling property to GLBaseMesh to scale a mesh after loading (like Autocentering) 
       <li>30/03/04 - EG - Added TSkeletonBoneList.BoneCount
       <li>23/03/04 - SG - External positions added to skeleton blended lerps.
                           AutoUpdate flag added to skeleton collider list.
