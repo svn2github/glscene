@@ -3,7 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>28/07/03 - aidave - Added TGLColor.RandomColor;
+      <li>02/09/03 - EG - Added TGLColor.HSVA
+      <li>28/07/03 - aidave - Added TGLColor.RandomColor
       <li>24/07/03 - EG - Introduced TGLTextureImageEditor mechanism
       <li>04/07/03 - EG - Material.Texture now autocreating,
                           added per-texture brightness and gamma correction
@@ -289,10 +290,10 @@ const
    clrMediumPurple        : TColorVector = (0.73,     0.16,     0.96,     1);
    clrLightPurple         : TColorVector = (0.87,     0.58,     0.98,     1);
    clrVeryLightPurple     : TColorVector = (0.94,     0.81,     0.99,     1);
-   clrGreen               : TColorVector = (0,        1,        0,        1);
-   clrOlive               : TColorVector = (0,        1,        1,        1);
+   clrGreen               : TColorVector = (0,        0.5,      0,        1);
+   clrOlive               : TColorVector = (0.5,      0.5,      1,        1);
    clrPurple              : TColorVector = (1,        0,        1,        1);
-   clrTeal                : TColorVector = (0,        1,        1,        1);
+   clrTeal                : TColorVector = (0,        0.5,      0.5,      1);
    clrRed                 : TColorVector = (1,        0,        0,        1);
    clrLime                : TColorVector = (0,        1,        0,        1);
    clrYellow              : TColorVector = (1,        1,        0,        1);
@@ -355,8 +356,8 @@ type
       private
 			FColor : TColorVector;
          FPDefaultColor : PColorVector;
-			procedure SetColor(const aColor: TColorVector);
-			procedure SetColorComponent(Index: Integer; Value: TGLFloat);
+			procedure SetColor(const aColor : TColorVector);
+			procedure SetColorComponent(index : Integer; value : TGLFloat);
 			procedure SetAsWinColor(const val : TColor);
 			function GetAsWinColor : TColor;
 
@@ -364,6 +365,9 @@ type
 			procedure DefineProperties(Filer: TFiler); override;
 			procedure ReadData(Stream: TStream);
 			procedure WriteData(Stream: TStream);
+
+         function GetHSVA : TVector;
+         procedure SetHSVA(const hsva : TVector);
 
 		public
          { Public Properties }
@@ -375,18 +379,19 @@ type
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
 			function AsAddress : PGLFloat;
-      procedure RandomColor;
+         procedure RandomColor;
 
 			property Color : TColorVector read FColor write SetColor;
 			property AsWinColor : TColor read GetAsWinColor write SetAsWinColor;
+         property HSVA : TVector read GetHSVA write SetHSVA;
 
          property DefaultColor : TColorVector read FColor;
 
 		published
-			property Red:   TGLFloat index 0 read FColor[0] write SetColorComponent stored False;
-			property Green: TGLFloat index 1 read FColor[1] write SetColorComponent stored False;
-			property Blue:  TGLFloat index 2 read FColor[2] write SetColorComponent stored False;
-			property Alpha: TGLFloat index 3 read FColor[3] write SetColorComponent stored False;
+			property Red :   TGLFloat index 0 read FColor[0] write SetColorComponent stored False;
+			property Green : TGLFloat index 1 read FColor[1] write SetColorComponent stored False;
+			property Blue :  TGLFloat index 2 read FColor[2] write SetColorComponent stored False;
+			property Alpha : TGLFloat index 3 read FColor[3] write SetColorComponent stored False;
 	end;
 
    // TTextureNeededEvent
@@ -1634,23 +1639,20 @@ begin
    end;
 end;
 
-procedure TGLColor.RandomColor;
-begin
-  Red := Random;
-  Green := Random;
-  Blue := Random;
-end;
-
-procedure TGLColor.SetColor(const aColor: TColorVector);
+// SetColor
+//
+procedure TGLColor.SetColor(const aColor : TColorVector);
 begin
    SetVector(FColor, AColor);
 	NotifyChange(Self);
 end;
 
-procedure TGLColor.SetColorComponent(Index: Integer; Value: TGLFloat);
+// SetColorComponent
+//
+procedure TGLColor.SetColorComponent(index : Integer; value : TGLFloat);
 begin
-	if FColor[Index]<>Value then begin
-		FColor[Index]:=Value;
+	if FColor[index]<>value then begin
+		FColor[index]:=value;
 		NotifyChange(Self);
 	end;
 end;
@@ -1721,21 +1723,131 @@ begin
 	Result:=@FColor;
 end;
 
-//----------------- TGLFaceProperties --------------------------------------------
-
-constructor TGLFaceProperties.Create(AOwner: TPersistent);
+// RandomColor
+//
+procedure TGLColor.RandomColor;
 begin
-  inherited;
-  // OpenGL default colors
-  FAmbient:=TGLColor.Create(Self);
-  FAmbient.Initialize(clrGray20);
-  FDiffuse:=TGLColor.Create(Self);
-  FDiffuse.Initialize(clrGray80);
-  FEmission:=TGLColor.Create(Self);
-  FSpecular:=TGLColor.Create(Self);
-  FShininess:=0;
+   Red:=Random;
+   Green:=Random;
+   Blue:=Random;
 end;
 
+// GetHSVA
+//
+function TGLColor.GetHSVA : TVector;
+var
+   delta, min : Single;
+const
+   H = 0;
+   S = 1;
+   V = 2;
+begin
+   min:=MinFloat(PFloatVector(@FColor), 3);
+   Result[V]:=MaxFloat(PFloatVector(@FColor), 3);
+   delta:=Result[V]-min;
+
+  // saturation is zero if R, G & B are zero
+  // hue undefined (zero) if saturation is zero or color is gray (delta=zero)
+   if (Result[V]=0) or (delta=0) then begin
+      Result[S]:=0;
+      Result[H]:=0;
+   end else begin
+      Result[S]:=delta/Result[V];
+      if Red=Result[V] then
+         // between yellow and magenta
+         Result[H]:=60*(Green-Blue)/delta
+      else if Green=Result[V] then
+         // between cyan and yellow
+         Result[H]:=120+60*(Blue-Red)/delta
+      else // between magenta and cyan
+         Result[H]:=240+60*(Red-Green)/delta;
+      if Result[H]<0 then  // normalize H
+         Result[H]:=Result[H]+360;
+   end;
+   Result[3]:=Alpha;
+end;
+
+// SetHSVA
+//
+procedure TGLColor.SetHSVA(const hsva : TVector);
+var
+   f, hTemp, p, q, t : Single;
+const
+   H = 0;
+   S = 1;
+   V = 2;
+begin
+   if hsva[S]=0 then begin
+      // gray (ignore hue)
+      FColor[0]:=hsva[V];
+      FColor[1]:=hsva[V];
+      FColor[2]:=hsva[V];
+   end else begin
+      hTemp:=hsva[H]*(1/60);
+      f:=Frac(hTemp);
+
+      p:=hsva[V]*(1-hsva[S]);
+      q:=hsva[V]*(1-(hsva[S]*f));
+      t:=hsva[V]*(1-(hsva[S]*(1-f)));
+
+      case Trunc(hTemp) mod 6 of
+         0 : begin
+            FColor[0]:=hsva[V];
+            FColor[1]:=t;
+            FColor[2]:=p;
+         end;
+         1 : begin
+            FColor[0]:=q;
+            FColor[1]:=hsva[V];
+            FColor[2]:=p;
+         end;
+         2 : begin
+            FColor[0]:=p;
+            FColor[1]:=hsva[V];
+            FColor[2]:=t;
+         end;
+         3 : begin
+            FColor[0]:=p;
+            FColor[1]:=q;
+            FColor[2]:=hsva[V];
+         end;
+         4 : begin
+            FColor[0]:=t;
+            FColor[1]:=p;
+            FColor[2]:=hsva[V];
+         end;
+         5 : begin
+            FColor[0]:=hsva[V];
+            FColor[1]:=p;
+            FColor[2]:=q;
+         end;
+      end
+   end;
+   FColor[3]:=hsva[3];
+   NotifyChange(Self);
+end;
+
+// ------------------
+// ------------------ TGLFaceProperties ------------------
+// ------------------
+
+// Create
+//
+constructor TGLFaceProperties.Create(aOwner : TPersistent);
+begin
+   inherited;
+   // OpenGL default colors
+   FAmbient:=TGLColor.Create(Self);
+   FAmbient.Initialize(clrGray20);
+   FDiffuse:=TGLColor.Create(Self);
+   FDiffuse.Initialize(clrGray80);
+   FEmission:=TGLColor.Create(Self);
+   FSpecular:=TGLColor.Create(Self);
+   FShininess:=0;
+end;
+
+// Destroy
+//
 destructor TGLFaceProperties.Destroy;
 begin
    FAmbient.Free;
