@@ -5,10 +5,10 @@
    The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>07/03/03 - EG - T-junctions now properly supported and repaired 
+      <li>07/03/03 - EG - T-junctions now properly supported and repaired
       <li>05/03/03 - EG - Preliminary BSP splitting support
 	   <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
-                          MaterialCache support 
+                          MaterialCache support
 	   <li>30/01/03 - EG - Creation
 	</ul></font>
 }
@@ -40,6 +40,36 @@ type
    //
    TBSPRenderSort = (rsNone, rsBackToFront, rsFrontToBack);
 
+   // TBSPNodeVisibility
+   //
+   TBSPClusterVisibility = class
+      private
+         { Private Declarations }
+         FData : PByteArray;
+         FSize,
+         FBytesPerCluster,
+         FCount : Integer;
+
+      protected
+         { Protected Declarations }
+         procedure SetCount(NumClusters : Integer);
+         function GetVisibility(Source, Destination : Integer) : Boolean;
+         procedure SetVisibility(Source, Destination : Integer; const Value : Boolean);
+
+      public
+         { Public Declarations }
+         constructor Create;
+         destructor Destroy; override;
+
+         procedure SetData(Source : PByte; NumClusters : Integer);
+
+         property Count : Integer read FCount write SetCount;
+         property Visibility[src, dst : Integer] : Boolean read GetVisibility write SetVisibility;
+
+   end;
+
+   TFGBSPNode = class;
+
    // TBSPMeshObject
    //
    {: A BSP mesh object.<p>
@@ -50,6 +80,8 @@ type
       private
          { Private Declarations }
          FRenderSort : TBSPRenderSort;
+         FClusterVisibility : TBSPClusterVisibility;
+         FUseClusterVisibility : Boolean;
 
       protected
          { Protected Declarations }
@@ -71,12 +103,24 @@ type
             of tree balancing (structurally speaking, not polygon-wise). }
          function AverageDepth : Single;
 
+         {: Traverses the tree to the given point and returns the node index. }
+         function FindNodeByPoint(aPoint : TVector) : TFGBSPNode;
+
          {: Rendering sort mode.<p>
             This sort mode can currently *not* blend with the sort by materials
             flag, default mode is rsBackToFront.<br>
             Note that in rsNone mode, the hierarchical nature of the tree is
             still honoured (positive subnode, self, then negative subnode). }
          property RenderSort : TBSPRenderSort read FRenderSort write FRenderSort;
+
+         {: Cluster visibility.<p>
+            A property for defining node cluster-cluster visibility potential. }
+         property ClusterVisibility : TBSPClusterVisibility read FClusterVisibility;
+
+         {: Use cluster visibility.<p>
+            Toggles the use of the visibility set for culling clusters of nodes
+            when rendering. }
+         property UseClusterVisibility : Boolean read FUseClusterVisibility write FUseClusterVisibility;
    end;
 
 	// TFGBSPNode
@@ -90,6 +134,7 @@ type
          FSplitPlane : THmgPlane;
          FPositiveSubNodeIndex : Integer;
          FNegativeSubNodeIndex : Integer;
+         FCluster : Integer;
 
 	   protected
 	      { Protected Declarations }
@@ -141,6 +186,9 @@ type
          {: Index of the negative sub-node index in the list.<p>
             Zero if empty. }
          property NegativeSubNodeIndex : Integer read FNegativeSubNodeIndex write FNegativeSubNodeIndex;
+         {: The index of the cluster that this node belongs to.
+            Used for visibility determination. }
+         property Cluster : Integer read FCluster write FCluster;
 	end;
 
 // ------------------------------------------------------------------
@@ -158,6 +206,92 @@ const
    cTJunctionEpsilon = 1e-4;
 
 // ------------------
+// ------------------ TBSPClusterVisibility ------------------
+// ------------------
+
+// Create
+//
+constructor TBSPClusterVisibility.Create;
+begin
+   inherited;
+end;
+
+// Destroy
+//
+destructor TBSPClusterVisibility.Destroy;
+begin
+   if Assigned(FData) then Dispose(FData);
+   inherited;
+end;
+
+// SetCount
+//
+procedure TBSPClusterVisibility.SetCount(NumClusters : Integer);
+var
+   NewSize : Integer;
+   NewData : PByteArray;
+begin
+   if FCount = NumClusters then Exit;
+   FCount:=NumClusters;
+   FBytesPerCluster:=(NumClusters div 8 + 2);
+   NewSize:=NumClusters*FBytesPerCluster;
+   if NewSize<>FSize then begin
+      if NewSize>0 then begin
+         GetMem(NewData, NewSize);
+         if Assigned(FData) then begin
+            Move(FData[0], NewData[0], FSize);
+            Dispose(FData);
+         end;
+         FData:=@NewData^;
+      end else begin
+         if Assigned(FData) then begin
+            Dispose(FData);
+            FData:=nil;
+         end;
+      end;
+      FSize:=NewSize;
+   end;
+end;
+
+// GetVisibility
+//
+function TBSPClusterVisibility.GetVisibility(Source, 
+  Destination : Integer) : Boolean;
+var
+   ByteIdx, BitIdx : Integer;
+begin
+   Assert((Source<Count) and (Destination<Count) and
+          (Source>=0) and (Destination>=0), 'Node index out of bounds!');
+   ByteIdx:=Source*FBytesPerCluster + Destination div 8;
+   BitIdx:=Destination mod 8;
+   Result:=(FData[ByteIdx] and (1 shl BitIdx)) > 0;
+end;
+
+// SetVisibility
+//
+procedure TBSPClusterVisibility.SetVisibility(Source,
+  Destination : Integer; const Value : Boolean);
+var
+   ByteIdx, BitIdx : Integer;
+begin
+   Assert((Source<Count) and (Destination<Count) and
+          (Source>=0) and (Destination>=0), 'Node index out of bounds!');
+   ByteIdx:=Source*FBytesPerCluster + Destination div 8;
+   BitIdx:=Destination mod 8;
+   if Value then
+      FData[ByteIdx]:=FData[ByteIdx] or (1 shl BitIdx)
+   else
+      FData[ByteIdx]:=FData[ByteIdx] and not (1 shl BitIdx);
+end;
+
+procedure TBSPClusterVisibility.SetData(Source : PByte; NumClusters : Integer);
+begin
+   Count:=NumClusters;
+   Move(Source^, FData[0], FSize);
+end;
+
+
+// ------------------
 // ------------------ TBSPMeshObject ------------------
 // ------------------
 
@@ -168,12 +302,15 @@ begin
 	inherited;
    Mode:=momFaceGroups;
    RenderSort:=rsBackToFront;
+   FClusterVisibility:=TBSPClusterVisibility.Create;
+   FUseClusterVisibility:=False;
 end;
 
 // Destroy
 //
 destructor TBSPMeshObject.Destroy;
 begin
+   FClusterVisibility.Free;
 	inherited;
 end;
 
@@ -181,11 +318,13 @@ end;
 //
 procedure TBSPMeshObject.BuildList(var mrci : TRenderContextInfo);
 var
-   i, j, k, n : Integer;
+   i, j, k, n, camCluster : Integer;
    bsprci : TBSPRenderContextInfo;
    libMat : TGLLibMaterial;
    faceGroupList : TList;
    bspNodeList : PPointerList;
+   renderNode : Boolean;
+   camNode : TFGBSPNode;
 
    procedure AbsoluteSphereToLocal(const absPos : TVector; absRadius : Single;
                                    var local : TBSPCullingSphere);
@@ -227,26 +366,39 @@ begin
          else
             Assert(False);
          end;
+         camCluster:=0;
+         camNode:=nil;
+         if UseClusterVisibility then begin
+            camNode:=FindNodeByPoint(Owner.Owner.AbsoluteToLocal(mrci.cameraPosition));
+            if Assigned(camNode) then
+               camCluster:=camNode.Cluster;
+         end;
          // render facegroups
          bspNodeList:=faceGroupList.List;
          n:=bsprci.faceGroups.Count;
-         i:=0;
-         while i<n do with TFGBSPNode(bspNodeList[i]) do begin
-            libMat:=MaterialCache;
-            if Assigned(libMat) then begin
-               j:=i+1;
-               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=libMat) do
-                  Inc(j);
-               libMat.Apply(mrci);
-               repeat
-                  for k:=i to j-1 do
-                     TFGBSPNode(bspNodeList[k]).BuildList(mrci);
-               until not libMat.UnApply(mrci);
-            end else begin
-               j:=i;
-               while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=nil) do begin
-                  TFGBSPNode(bspNodeList[j]).BuildList(mrci);
-                  Inc(j);
+         i:=0; j:=0;
+         while i<n do begin
+            if UseClusterVisibility and Assigned(camNode) then
+               renderNode:=ClusterVisibility.Visibility[camCluster,TFGBSPNode(bspNodeList[i]).Cluster]
+            else
+               renderNode:=True;
+            if renderNode then with TFGBSPNode(bspNodeList[i]) do begin
+               libMat:=MaterialCache;
+               if Assigned(libMat) then begin
+                  j:=i+1;
+                  while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=libMat) do
+                     Inc(j);
+                  libMat.Apply(mrci);
+                  repeat
+                     for k:=i to j-1 do
+                        TFGBSPNode(bspNodeList[k]).BuildList(mrci);
+                  until not libMat.UnApply(mrci);
+               end else begin
+                  j:=i;
+                  while (j<n) and (TFGBSPNode(bspNodeList[j]).MaterialCache=nil) do begin
+                     TFGBSPNode(bspNodeList[j]).BuildList(mrci);
+                     Inc(j);
+                  end;
                end;
             end;
             i:=j;
@@ -363,6 +515,47 @@ begin
       Result:=depthSum/endNodesCount;
    end;
 end;
+
+// FindNodeByPoint
+//
+function TBSPMeshObject.FindNodeByPoint(aPoint : TVector) : TFGBSPNode;
+
+   function Traverse(nodeIndex : Integer) : Integer;
+   var
+      idx : Integer;
+      node : TFGBSPNode;
+      eval : Single;
+   begin
+      node:=TFGBSPNode(FaceGroups[nodeIndex]);
+      if node.VertexIndices.Count > 0 then
+         Result:=nodeIndex
+      else begin
+         eval:=node.SplitPlane[0]*aPoint[0]+
+               node.SplitPlane[1]*aPoint[1]+
+               node.SplitPlane[2]*aPoint[2]-
+               node.SplitPlane[3];
+         if eval>=0 then
+            idx:=node.PositiveSubNodeIndex
+         else
+            idx:=node.NegativeSubNodeIndex;
+         if idx>0 then
+            Result:=Traverse(idx)
+         else
+            Result:=-1;
+      end;
+   end;
+
+var
+   idx : Integer;
+begin
+   Result:=nil;
+   idx:=-1;
+   if FaceGroups.Count>0 then
+      idx:=Traverse(0);
+   if idx>=0 then
+      Result:=TFGBSPNode(FaceGroups[idx]);
+end;
+
 
 // ------------------
 // ------------------ TFGBSPNode ------------------
