@@ -3,6 +3,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/06/03 - EG - Added MinInteger, some TIntegerList optimizations
       <li>03/06/03 - EG - Added TIntegerList.BinarySearch and AddSorted (Mattias Fagerlund)
       <li>22/01/03 - EG - Added AddIntegers
       <li>20/01/03 - EG - Added TIntegerList.SortAndRemoveDuplicates
@@ -331,6 +332,8 @@ type
          {: Add all integers from anArray into the list. }
          procedure AddIntegers(const anArray : array of Integer); overload;
 
+         {: Returns the minimum integer item, zero if list is empty. }
+         function MinInteger : Integer;
          {: Returns the maximum integer item, zero if list is empty. }
          function MaxInteger : Integer;
          {: Sort items in ascending order. }
@@ -1734,36 +1737,51 @@ begin
       AddIntegers(@anArray[0], n);
 end;
 
+// IntegerSearch
+//
+function IntegerSearch(item : Integer; list : PIntegerVector; count : Integer) : Integer; register;
+asm
+      push edi;
+
+      test ecx, ecx
+      jz @@NotFound
+
+      mov edi, edx;
+      mov edx, ecx;
+      repne scasd;
+      je @@FoundIt
+@@NotFound:
+      xor eax, eax
+      dec eax
+      jmp @@End;
+@@FoundIt:
+      sub edx, ecx;
+      dec edx;
+      mov eax, edx;
+@@End:
+      pop edi;
+end;
+
 // IndexOf
 //
-function TIntegerList.IndexOf(Item: integer): Integer;
-var
-	c : Integer;
-	p : ^Integer;
+function TIntegerList.IndexOf(item : Integer) : Integer; register;
 begin
-	if FCount<=0 then
-		Result:=-1
-	else begin
-		c:=FCount;
-		p:=@FList^[0];
-		asm
-			mov eax, Item;
-			mov ecx, c;
-         mov edx, ecx;
-			push edi;
-			mov edi, p;
-			repne scasd;
-			je @@FoundIt
-			mov edx, -1;
-			jmp @@SetResult;
-		@@FoundIt:
-			sub edx, ecx;
-			dec edx;
-		@@SetResult:
-			mov Result, edx;
-			pop edi;
-		end;
-	end;
+   Result:=IntegerSearch(item, FList, FCount);
+end;
+
+// MinInteger
+//
+function TIntegerList.MinInteger : Integer;
+var
+   i : Integer;
+   locList : PIntegerVector;
+begin
+   if FCount>0 then begin
+      locList:=FList;
+      Result:=locList[0];
+      for i:=1 to FCount-1 do
+         if locList[i]<Result then Result:=locList[i];
+   end else Result:=0;
 end;
 
 // MaxInteger
@@ -1771,37 +1789,41 @@ end;
 function TIntegerList.MaxInteger : Integer;
 var
    i : Integer;
+   locList : PIntegerVector;
 begin
    if FCount>0 then begin
-      Result:=FList^[0];
+      locList:=FList;
+      Result:=locList[0];
       for i:=1 to FCount-1 do
-         if FList^[i]>Result then Result:=FList^[i];
+         if locList[i]>Result then Result:=locList[i];
    end else Result:=0;
 end;
 
 // IntegerQuickSort
 //
-procedure IntegerQuickSort(SortList: PIntegerArray; L, R: Integer);
+procedure IntegerQuickSort(sortList : PIntegerArray; left, right : Integer);
 var
-	I, J: Integer;
-	P, T: integer;
+	i, j : Integer;
+	p, t : Integer;
 begin
 	repeat
-		I := L; J := R;
-		P := SortList^[(L + R) shr 1];
+		i:=left;
+      j:=right;
+		p:=sortList[(left+right) shr 1];
 		repeat
-			while SortList^[I] < P do Inc(I);
-			while SortList^[J] > P do Dec(J);
-			if I <= J then	begin
-				T := SortList^[I];
-				SortList^[I] := SortList^[J];
-				SortList^[J] := T;
-				Inc(I); Dec(J);
+			while sortList[i]<p do Inc(i);
+			while sortList[j]>p do Dec(j);
+			if i<=j then begin
+				t:=sortList[i];
+				sortList[i]:=sortList[j];
+				sortList[j]:=t;
+				Inc(i); Dec(j);
 			end;
-		until I > J;
-		if L < J then IntegerQuickSort(SortList, L, J);
-		L := I;
-	until I >= R;
+		until i>j;
+		if left<j then
+         IntegerQuickSort(sortList, left, j);
+		left:=i;
+	until i>=right;
 end;
 
 // Sort
