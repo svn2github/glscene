@@ -206,11 +206,13 @@ type
 			procedure SetAsVector(const value : TVector);
 			procedure SetAsAffineVector(const value : TAffineVector);
          function GetAsAffineVector : TAffineVector;
-			procedure SetCoordinate(Index: Integer; AValue: TGLFloat);
+			procedure SetCoordinate(index : Integer; const aValue : TGLFloat);
          function GetAsString : String;
 
 		protected
 			{ Protected Declarations }
+         procedure SetDirectVector(const v : TVector);
+
 			procedure DefineProperties(Filer: TFiler); override;
 			procedure ReadData(Stream: TStream);
 			procedure WriteData(Stream: TStream);
@@ -270,7 +272,7 @@ type
          property AsString : String read GetAsString;
          
          //: Similar to AsVector but does not trigger notification events
-         property DirectVector : TVector read FCoords write FCoords;
+         property DirectVector : TVector read FCoords write SetDirectVector;
          property DirectX : TGLFloat read FCoords[0] write FCoords[0];
          property DirectY : TGLFloat read FCoords[1] write FCoords[1];
          property DirectZ : TGLFloat read FCoords[2] write FCoords[2];
@@ -1387,14 +1389,26 @@ begin
 	NotifyChange(Self);
 end;
 
+// SetDirectVector
+//
+procedure TGLCoordinates.SetDirectVector(const v : TVector);
+begin
+   FCoords[0]:=v[0];
+   FCoords[1]:=v[1];
+   FCoords[2]:=v[2];
+   FCoords[3]:=v[3];
+end;
+
 // SetToZero
 //
 procedure TGLCoordinates.SetToZero;
 begin
-   FCoords[0] := 0;
-   FCoords[1] := 0;
-   FCoords[2] := 0;
-   FCoords[3] := 0;
+   FCoords[0]:=0;
+   FCoords[1]:=0;
+   FCoords[2]:=0;
+   if FStyle=csPoint then
+      FCoords[3]:=1
+   else FCoords[3]:=0;
 	NotifyChange(Self);
 end;
 
@@ -1447,9 +1461,9 @@ end;
 
 // SetCoordinate
 //
-procedure TGLCoordinates.SetCoordinate(Index: Integer; AValue: TGLFloat);
+procedure TGLCoordinates.SetCoordinate(index : Integer; const aValue : TGLFloat);
 begin
-	FCoords[Index]:=AValue;
+	FCoords[index]:=aValue;
 	NotifyChange(Self);
 end;
 

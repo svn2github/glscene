@@ -847,7 +847,7 @@ begin
    glScalef(f, f, f);
    // compensate local position
    glTranslatef(-LocalMatrix[3][0], -LocalMatrix[3][1], -LocalMatrix[3][2]);
-   glMultMatrixf(@LocalMatrix);
+   glMultMatrixf(PGLFloat(LocalMatrix));
 
    glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
    Scene.CurrentBuffer.PushModelViewMatrix(mvMat);

@@ -3748,7 +3748,7 @@ begin
 {$endif}
 end;
 
-// VectorNormalize (hmg)
+// VectorNormalize (hmg, func)
 //
 function VectorNormalize(const v : TVector) : TVector; register;
 {$ifndef GEOMETRY_NO_ASM}

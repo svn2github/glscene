@@ -218,7 +218,7 @@ begin
             if Assigned(FShadowingObject) then begin
                if FShadowingObject.Parent<>nil then
                   glMultMatrixf(PGLFloat(FShadowingObject.Parent.AbsoluteMatrixAsAddress));
-               glMultMatrixf(@FShadowingObject.LocalMatrix);
+               glMultMatrixf(PGLFloat(FShadowingObject.LocalMatrix));
                FShadowingObject.DoRender(rci, renderSelf, renderChildren);
             end else begin
                Scene.Objects.DoRender(rci, renderSelf, renderChildren);
