@@ -59,6 +59,7 @@ object Form1: TForm1
     Left = 8
     Top = 40
     object DummyCube1: TGLDummyCube
+      ShowAxes = True
       CubeSize = 1
       object GLPoints1: TGLPoints
         NoZWrite = True
