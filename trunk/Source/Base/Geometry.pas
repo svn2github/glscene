@@ -3984,17 +3984,40 @@ end;
 procedure ScaleVector(var v : TVector; factor: Single); register;
 {$ifndef GEOMETRY_NO_ASM}
 asm
+      test     vSIMD, 1
+      jz @@FPU
+
+@@3DNow:      // 121824
+
+      db $0F,$6E,$4D,$08       /// movd        mm1, [ebp+8]
+      db $0F,$62,$C9           /// punpckldq   mm1, mm1
+
+      db $0F,$6F,$00           /// movq        mm0, [eax]
+      db $0F,$6F,$50,$08       /// movq        mm2, [eax+8]
+      db $0F,$0F,$C1,$B4       /// pfmul       mm0, mm1
+      db $0F,$0F,$D1,$B4       /// pfmul       mm2, mm1
+      db $0F,$7F,$00           /// movq        [eax], mm0
+      db $0F,$7F,$50,$08       /// movq        [eax+8], mm2
+
+      db $0F,$0E               /// femms
+
+      pop   ebp
+      ret   $04
+
+@@FPU:        // 155843
+      FLD  DWORD PTR [EBP+8]
+
       FLD  DWORD PTR [EAX]
-      FMUL DWORD PTR [EBP+8]
+      FMUL ST, ST(1)
       FSTP DWORD PTR [EAX]
       FLD  DWORD PTR [EAX+4]
-      FMUL DWORD PTR [EBP+8]
+      FMUL ST, ST(1)
       FSTP DWORD PTR [EAX+4]
       FLD  DWORD PTR [EAX+8]
-      FMUL DWORD PTR [EBP+8]
+      FMUL ST, ST(1)
       FSTP DWORD PTR [EAX+8]
       FLD  DWORD PTR [EAX+12]
-      FMUL DWORD PTR [EBP+8]
+      FMULP
       FSTP DWORD PTR [EAX+12]
 {$else}
 begin
@@ -8282,9 +8305,11 @@ function RayCastSphereIntersect(const rayStart, rayVector : TVector;
 var
    proj, d2 : Single;
    id2 : Integer;
+   projPoint : TVector;
 begin
    proj:=PointProject(sphereCenter, rayStart, rayVector);
-   d2:=Sqr(sphereRadius)-VectorDistance2(sphereCenter, VectorCombine(rayStart, rayVector, 1, proj));
+   VectorCombine(rayStart, rayVector, proj, projPoint);
+   d2:=sphereRadius*sphereRadius-VectorDistance2(sphereCenter, projPoint);
    id2:=PInteger(@d2)^;
    if id2>=0 then begin
       if id2=0 then begin
