@@ -609,8 +609,8 @@ end;
 procedure TGLFullScreenViewer.DoBufferChange(Sender : TObject);
 begin
    if Assigned(FForm) and (not Buffer.Rendering) then
-      Render;
-//      FForm.Invalidate;
+//      Render;
+      FForm.Invalidate;
 end;
 
 // DoBufferStructuralChange
