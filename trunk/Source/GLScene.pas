@@ -1799,7 +1799,8 @@ type
             You do not need to call this method, unless you explicitly want a
             render at a specific time. If you just want the control to get
             refreshed, use Invalidate instead. }
-         procedure Render(baseObject : TGLBaseSceneObject = nil);
+         procedure Render(baseObject : TGLBaseSceneObject); overload;
+         procedure Render; overload;
          {: Render the scene to a bitmap at given DPI.<p>
             DPI = "dots per inch".<p>
             The "magic" DPI of the screen is 96 under Windows. }
@@ -7649,7 +7650,14 @@ end;
 
 // Render
 //
-procedure TGLSceneBuffer.Render(baseObject : TGLBaseSceneObject = nil);
+procedure TGLSceneBuffer.Render;
+begin
+   Render(nil);
+end;
+
+// Render
+//
+procedure TGLSceneBuffer.Render(baseObject : TGLBaseSceneObject);
 var
    perfCounter, framePerf : Int64;
    backColor : TColorVector;
@@ -7685,40 +7693,43 @@ begin
       FCamera.AbsoluteMatrixAsAddress;
       FCamera.FScene.AddBuffer(Self);
    end;
-   FRenderingContext.Activate;
    FRendering:=True;
    try
-      if FFrameCount=0 then
-         QueryPerformanceCounter(FFirstPerfCounter);
+      FRenderingContext.Activate;
+      try
+         if FFrameCount=0 then
+            QueryPerformanceCounter(FFirstPerfCounter);
 
-      FRenderDPI:=96; // default value for screen
-      ClearGLError;
-      SetupRenderingContext;
-      // clear the buffers
-      glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
-      ClearBuffers;
-      CheckOpenGLError;
-      // render
-      DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
-      CheckOpenGLError;
-      if not (roNoSwapBuffers in ContextOptions) then
-         RenderingContext.SwapBuffers;
+         FRenderDPI:=96; // default value for screen
+         ClearGLError;
+         SetupRenderingContext;
+         // clear the buffers
+         glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
+         ClearBuffers;
+         CheckOpenGLError;
+         // render
+         DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
+         CheckOpenGLError;
+         if not (roNoSwapBuffers in ContextOptions) then
+            RenderingContext.SwapBuffers;
 
-      // yes, calculate average frames per second...
-      Inc(FFrameCount);
-      QueryPerformanceCounter(perfCounter);
-      FLastFrameTime:=(perfCounter-framePerf)/vCounterFrequency;
-      Dec(perfCounter, FFirstPerfCounter);
-      if perfCounter>0 then
-         FFramesPerSecond:=(FFrameCount*vCounterFrequency)/perfCounter;
-      CheckOpenGLError;
+         // yes, calculate average frames per second...
+         Inc(FFrameCount);
+         QueryPerformanceCounter(perfCounter);
+         FLastFrameTime:=(perfCounter-framePerf)/vCounterFrequency;
+         Dec(perfCounter, FFirstPerfCounter);
+         if perfCounter>0 then
+            FFramesPerSecond:=(FFrameCount*vCounterFrequency)/perfCounter;
+         CheckOpenGLError;
+      finally
+         FRenderingContext.Deactivate;
+      end;
+      if Assigned(FAfterRender) and (Owner is TComponent) then
+         if not (csDesigning in TComponent(Owner).ComponentState) then
+            FAfterRender(Self);
    finally
       FRendering:=False;
-      FRenderingContext.Deactivate;
    end;
-   if Assigned(FAfterRender) and (Owner is TComponent) then
-      if not (csDesigning in TComponent(Owner).ComponentState) then
-         FAfterRender(Self);
 end;
 
 // SetBackgroundColor
@@ -7885,7 +7896,7 @@ end;
 //
 procedure TGLSceneBuffer.DoChange;
 begin
-   if Assigned(FOnChange) then
+   if (not FRendering) and Assigned(FOnChange) then
       FOnChange(Self);
 end;
 
