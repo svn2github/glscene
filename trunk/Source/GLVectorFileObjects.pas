@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>11/01/05 - SG - Fix for TGLBaseMesh.Assign when assigning actors
       <li>26/11/04 - MRQZZZ - by Uwe Raabe : fixed TBaseMeshObject.BuildNormals
       <li>26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order to prevent rendering of the GLBaseMesh but allowing the rendering of it's children
       <li>25/11/04 - SG - Fixed memory leak in TMeshObject (kenguru)
@@ -5820,6 +5821,7 @@ begin
       FAutoCentering:=TGLBaseMesh(Source).FAutoCentering;
       FAutoScaling.Assign(TGLBaseMesh(Source).FAutoScaling);
       FSkeleton.Assign(TGLBaseMesh(Source).FSkeleton);
+      FSkeleton.RootBones.PrepareGlobalMatrices;
       FMeshObjects.Assign(TGLBaseMesh(Source).FMeshObjects);
    end;
    inherited Assign(Source);
