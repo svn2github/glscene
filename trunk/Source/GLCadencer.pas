@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/07/03 - EG - Improved TimeMultiplier transitions (supports zero)
       <li>06/06/03 - EG - Added cmApplicationIdle Mode
       <li>19/05/03 - EG - Added Reset (Roberto Bussola)
       <li>04/03/02 - EG - Added SetTimeMultiplier
@@ -76,7 +77,7 @@ type
          FSubscribedCadenceableComponents : TList;
 			FScene : TGLScene;
 			FTimeMultiplier : Double;
-			lastTime, downTime : Double;
+			lastTime, downTime, lastMultiplier : Double;
 			FEnabled : Boolean;
 			FSleepLength : Integer;
 			FMode : TGLCadencerMode;
@@ -490,11 +491,23 @@ procedure TGLCadencer.SetTimeMultiplier(const val : Double);
 var
    rawRef : Double;
 begin
-   if (val<>FTimeMultiplier) and (FTimeMultiplier<>0) then begin
-      rawRef:=GetRawReferenceTime;
-      // continuity of time:
-      // (rawRef-newOriginTime)*val = (rawRef-FOriginTime)*FTimeMultiplier
-      FOriginTime:=rawRef-(rawRef-FOriginTime)*FTimeMultiplier/val;
+   if val<>FTimeMultiplier then begin
+      if val=0 then begin
+         lastMultiplier:=FTimeMultiplier;
+         Enabled:=False;
+      end else begin
+         rawRef:=GetRawReferenceTime;
+         if FTimeMultiplier=0 then begin
+            Enabled:=True;
+            // continuity of time:
+            // (rawRef-newOriginTime)*val = (rawRef-FOriginTime)*lastMultiplier
+            FOriginTime:=rawRef-(rawRef-FOriginTime)*lastMultiplier/val;
+         end else begin
+            // continuity of time:
+            // (rawRef-newOriginTime)*val = (rawRef-FOriginTime)*FTimeMultiplier
+            FOriginTime:=rawRef-(rawRef-FOriginTime)*FTimeMultiplier/val;
+         end;
+      end;
       FTimeMultiplier:=val;
    end;
 end;
