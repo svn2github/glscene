@@ -16,6 +16,7 @@
   - Solid = An object can still get the collision event but it "walks-thru"
 
   <b>History : </b><font size=-1><ul>
+    <li>19/01/05 - Mathx - Normalizing body.GroundNormal on moveEllipsoid
     <li>17/11/04 - LucasG. - Added support for static box colliders
     <li>17/11/04 - LucasG. - Added UseGravity property to behaviour
     <li>14/11/04 - LucasG. - Fixed average friction calculation
@@ -234,6 +235,7 @@ var NewPosition: TVector;
     result := VectorMake(MovePack.ResultPos);
     Body.FInGround := MovePack.InGround;
     Body.FGroundNormal := MovePack.ColNormal;
+    NormalizeVector(body.FGroundNormal);
     Body.FGroundBounce := MovePack.ColBounce;
 
     //Get friction
