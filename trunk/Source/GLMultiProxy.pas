@@ -2,6 +2,7 @@
 {: Implements a multi-proxy objects, useful for discreet LOD.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/11/03 - EG - Added bounding, raycast and silhouette proxying
       <li>25/11/03 - EG - Added per-master visibility boolean
       <li>24/11/03 - EG - Creation
    </ul></font>
@@ -10,7 +11,7 @@ unit GLMultiProxy;
 
 interface
 
-uses Classes, GLScene, VectorGeometry, GLMisc, GLTexture;
+uses Classes, GLScene, VectorGeometry, GLMisc, GLTexture, GLSilhouette;
 
 type
 
@@ -60,6 +61,7 @@ type
 
 	// TGLMultiProxyMasters
 	//
+   {: Collection of TGLMultiProxyMaster. }
 	TGLMultiProxyMasters = class (TOwnedCollection)
 	   private
 	      { Private Declarations }
@@ -90,7 +92,9 @@ type
       This proxy has multiple master objects, which are individually made visible
       depending on a distance to the camera criterion. It can be used to implement
       discreet level of detail directly for static objects, or objects that
-      go through cyclic animation. }
+      go through cyclic animation.<p>
+      For dimensionsn raycasting and silhouette purposes, the first master is used
+      (item zero in the MasterObjects collection). }
    TGLMultiProxy = class (TGLSceneObject)
       private
 			{ Private Declarations }
@@ -102,6 +106,8 @@ type
          procedure SetMasterObjects(const val : TGLMultiProxyMasters);
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
+         function PrimaryMaster : TGLBaseSceneObject;
+
       public
 			{ Public Declarations }
          constructor Create(AOwner: TComponent); override;
@@ -111,6 +117,12 @@ type
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
                             
+         function AxisAlignedDimensionsUnscaled : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
+
       published
          { Published Declarations }
          property MasterObjects : TGLMultiProxyMasters read FMasterObjects write SetMasterObjects;
@@ -410,6 +422,71 @@ begin
       FRendering:=False;
    end;
    ClearStructureChanged;
+end;
+
+// PrimaryMaster
+//
+function TGLMultiProxy.PrimaryMaster : TGLBaseSceneObject;
+begin
+   if MasterObjects.Count>0 then
+      Result:=MasterObjects[0].MasterObject
+   else Result:=nil;
+end;
+
+// AxisAlignedDimensions
+//
+function TGLMultiProxy.AxisAlignedDimensionsUnscaled : TVector;
+var
+   master : TGLBaseSceneObject;
+begin
+   master:=PrimaryMaster;
+   if Assigned(master) then begin
+      Result:=master.AxisAlignedDimensionsUnscaled;
+   end else Result:=inherited AxisAlignedDimensionsUnscaled;
+end;
+
+// RayCastIntersect
+//
+function TGLMultiProxy.RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
+var
+   localRayStart, localRayVector : TVector;
+   master : TGLBaseSceneObject;
+begin
+   master:=PrimaryMaster;
+   if Assigned(master) then begin
+      SetVector(localRayStart, AbsoluteToLocal(rayStart));
+      SetVector(localRayStart, master.LocalToAbsolute(localRayStart));
+      SetVector(localRayVector, AbsoluteToLocal(rayVector));
+      SetVector(localRayVector, master.LocalToAbsolute(localRayVector));
+      NormalizeVector(localRayVector);
+
+      Result:=master.RayCastIntersect(localRayStart, localRayVector,
+                                            intersectPoint, intersectNormal);
+      if Result then begin
+         if Assigned(intersectPoint) then begin
+            SetVector(intersectPoint^, master.AbsoluteToLocal(intersectPoint^));
+            SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
+         end;
+         if Assigned(intersectNormal) then begin
+            SetVector(intersectNormal^, master.AbsoluteToLocal(intersectNormal^));
+            SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
+         end;
+      end;
+   end else Result:=False;
+end;
+
+// GenerateSilhouette
+//
+function TGLMultiProxy.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette;
+var
+   master : TGLBaseSceneObject;
+begin
+   master:=PrimaryMaster;
+   if Assigned(master) then
+      Result:=master.GenerateSilhouette(silhouetteParameters)
+   else Result:=nil;
 end;
 
 //-------------------------------------------------------------
