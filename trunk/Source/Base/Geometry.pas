@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/02/03 - EG - Added ScaleAndRound
       <li>28/01/03 - EG - Affine matrix inversion and related functions (Dan Barlett)
       <li>29/10/02 - EG - New MinFloat overloads (Bob)
       <li>04/09/02 - EG - New Abs/Max functions, VectorTransform(affine, hmgMatrix)
@@ -988,6 +989,9 @@ function Ceil(v : Single) : Integer; overload;
 function Ceil64(v : Extended) : Int64; overload;
 function Floor(v : Single) : Integer; overload;
 function Floor64(v : Extended) : Int64; overload;
+
+{: Multiples i by s and returns the rounded result.<p> }
+function ScaleAndRound(i : Integer; var s : Single) : Integer;
 
 {: Returns the sign of the x value using the (-1, 0, +1) convention }
 function Sign(x : Single) : Integer;
@@ -6124,6 +6128,17 @@ begin
    else if x>0 then
       Result:=1
    else Result:=0;
+end;
+
+// ScaleAndRound
+//
+function ScaleAndRound(i : Integer; var s : Single) : Integer;
+asm
+   push  eax
+   fild  dword ptr [esp]
+   fmul  dword ptr [edx]
+   fistp dword ptr [esp]
+   pop   eax
 end;
 
 // IsInRange
