@@ -544,6 +544,7 @@ begin
    if Result.BlockStart=nil then begin
       SysFreeMem(Result);
       Result:=nil;
+      Exit;
    end;
    Result.BlockSize:=blkSize;
    Result.ReallocDownSizingSize:=blkSize div cLGBReallocDownSizing;
