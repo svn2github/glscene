@@ -1,16 +1,20 @@
 // GLODEManager
 {: An ODE Manager for GLScene.<p>
 
-  Where can I find ... ?
-  GLScene              (http://glscene.org)
-  Open Dynamics Engine (http://opende.sourceforge.org)
-  DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)<p>
+  Where can I find ... ?<ul>
+    <li>GLScene              (http://glscene.org)
+    <li>Open Dynamics Engine (http://opende.sourceforge.org)
+    <li>DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)
+  </ul>
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>13/11/03 - SG - Fixed bug with destroying geoms, manager now forces
+                        registered objects to Deinitialize.
+                        Fixed up some comments.
     <li>12/11/03 - SG - Fixed bug with TGLODEManager.Collision
     <li>01/09/03 - SG - Changed all relevant floating point types to TdReal,
                         Changed Read/Write Single/Double to Read/Write Float.
@@ -47,7 +51,8 @@ interface
 
 uses
   Classes, ODEImport, ODEGL, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
-  XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses;
+  XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses,
+  GLVectorFileObjects;
 
 type
 
@@ -218,7 +223,7 @@ type
       {: The link to the GLODEManager, which houses the ODE collision Space
          and dynamic World pointers. }
       property Manager : TGLODEManager read FManager write SetManager;
-      {: The collision surface describes how this object should react in a 
+      {: The collision surface describes how this object should react in a
          collision. When it collides with another object the surfaces from
          both objects are mixed to produce the ODE contact parameters, which
          are used by ODE to handle collisions. }
@@ -243,11 +248,9 @@ type
       property Name;
   end;
 
-  {
-  TGLODEDynamicObject:
-  --------------------
-  This object provides decendant classes for dynamic ODE implementations.
-  }
+  // TGLODEDynamicObject
+  //
+  {: Provides decendant classes for dynamic ODE implementations. }
   TGLODEDynamicObject = class (TGLODEBaseObject)
     private
       FBody       : PdxBody;
@@ -275,13 +278,11 @@ type
       property Enabled : Boolean read GetEnabled write SetEnabled;
   end;
 
-  {
-  TGLODEDummy:
-  ------------
-  This is the main object of GLODEManager. It is basically a composite
-  object built from it's child elements. To add elements at run-time
-  use the AddNewElement function.
-  }
+  // TGLODEDummy
+  //
+  {: The main object of GLODEManager. It is basically a composite object
+     built from it's child elements. To add elements at run-time use the 
+     AddNewElement function. }
   TGLODEDummy = class (TGLODEDynamicObject)
     private
       FElements : TODEElements;
@@ -308,11 +309,9 @@ type
       property Elements : TODEElements read FElements;
   end;
 
-  {
-  TGLODEBaseBehaviour:
-  ----------------
-  Basis structures for GLScene behaviour style implementations.
-  }
+  // TGLODEBaseBehaviour
+  //
+  {: Basis structures for GLScene behaviour style implementations. }
   TGLODEBaseBehaviour = class (TGLBehaviour)
     private
       FManager : TGLODEManager;
@@ -338,12 +337,10 @@ type
       property OnCollision : TODEObjectCollisionEvent read FOnCollision write FOnCollision;
   end;
 
-  {
-  TGLODEDynamicBehaviour:
-  -----------------------
-  GLScene behaviour style implementation of the GLODEDummy, used for linking
-  a GLScene object to ODE control through GLScene behaviours.
-  }
+  // TGLODEDynamicBehaviour
+  //
+  {: GLScene behaviour style implementation of the GLODEDummy, used for
+     linking a GLScene object to ODE control through GLScene behaviours. }
   TGLODEDynamicBehaviour = class (TGLODEBaseBehaviour)
     private
       FBody : PdxBody;
@@ -387,12 +384,10 @@ type
       property Enabled : Boolean read GetEnabled write SetEnabled;
   end;
 
-  {
-  TODEElements:
-  -------------
-  This is the list class that stores the ODEElements for GLODEDummy
-  and GLODEDynamicBehaviour objects.
-  }
+  // TODEElements
+  //
+  {: This is the list class that stores the ODEElements for GLODEDummy
+     and GLODEDynamicBehaviour objects. }
   TODEElements = class(TXCollection)
     private
       function GetElement(index : integer) : TODEBaseElement;
@@ -403,15 +398,13 @@ type
       property Element[index : integer] : TODEBaseElement read GetElement;
   end;
 
-  {
-  TODEBaseElement:
-  ----------------
-  This class is the basis for all ODEElements. It provides common
-  ODE properties like Mass, Density and a Geom to decended classes.
-  To orient the object inside the GLODEDummy use Position, Direction
-  and Up or use Matrix. The ODE component of the object will be
-  aligned to any changes made to these properties.
-  }
+  // TODEBaseElement
+  //
+  {: This class is the basis for all ODEElements. It provides common ODE 
+     properties like Mass, Density and a Geom to decended classes. To
+     orient the object inside the GLODEDummy use Position, Direction and 
+     Up or use Matrix. The ODE component of the object will be aligned to 
+     any changes made to these properties. }
   TODEBaseElement = class (TXCollectionItem)
     private
       FMass  : TdMass;
@@ -455,11 +448,9 @@ type
       property Up : TGLCoordinates read FUp;
   end;
 
-  {
-  TODEElementBox:
-  ---------------
-  ODE box implementation.
-  }
+  // TODEElementBox
+  //
+  {: ODE box implementation. }
   TODEElementBox = class (TODEBaseElement)
     private
       FBoxWidth,
@@ -489,11 +480,9 @@ type
       property BoxDepth : TdReal read GetBoxDepth write SetBoxDepth;
   end;
 
-  {
-  TODEElementSphere:
-  ------------------
-  ODE sphere implementation.
-  }
+  // TODEElementSphere
+  //
+  {: ODE sphere implementation. }
   TODEElementSphere = class (TODEBaseElement)
     private
       FRadius : TdReal;
@@ -515,11 +504,9 @@ type
       property Radius : TdReal read GetRadius write SetRadius;
   end;
 
-  {
-  TODEElementCapsule:
-  -------------------
-  ODE capped cylinder implementation.
-  }
+  // TODEElementCapsule
+  //
+  {: ODE capped cylinder implementation. }
   TODEElementCapsule = class (TODEBaseElement)
     private
       FRadius,
@@ -545,13 +532,10 @@ type
       property Length : TdReal read GetLength write SetLength;
   end;
 
-  {
-  TODEElementCylinder:
-  --------------------
-  ODE cylinder implementation.
-  }
-  { Commented out because of instability
-  TODEElementCylinder = class (TODEBaseElement)
+  // TODEElementCylinder
+  //
+  {: ODE cylinder implementation. }
+  {TODEElementCylinder = class (TODEBaseElement)
     private
       FRadius,
       FLength : TdReal;
@@ -576,12 +560,10 @@ type
       property Length : TdReal read GetLength write SetLength;
   end; //}
 
-  {
-  TGLODEStaticObject:
-  -------------------
-  This object provides decendant classes for static ODE implementations
-  which have a geom for collisions but no body or mass for motion.
-  }
+  // TGLODEStaticObject
+  //
+  {: This object provides decendant classes for static ODE implementations
+     which have a geom for collisions but no body or mass for motion. }
   TGLODEStaticObject = class (TGLODEBaseObject)
     private
       FGeom : PdxGeom;
@@ -591,12 +573,10 @@ type
       property Geom : PdxGeom read FGeom;
   end;
 
-  {
-  TGLODEPlane:
-  ------------
-  The ODE plane geom implementation. Use the direction and position to set
-  up the plane (just like a normal GLScene plane).
-  }
+  // TGLODEPlane
+  //
+  {: The ODE plane geom implementation. Use the direction and position to set
+     up the plane (just like a normal GLScene plane). }
   TGLODEPlane = class (TGLODEStaticObject)
     private
       procedure AlignODEPlane;
@@ -606,11 +586,9 @@ type
       procedure NotifyChange(Sender:TObject); override;
   end;
 
-  {
-  TGLODEJoints:
-  -------------
-  This is the list class that stores the ODE Joints.
-  }
+  // TGLODEJoints
+  //
+  {: An XCollection decendant for ODE Joints. }
   TODEJoints = class(TXCollection)
     private
       function GetJoint(index: integer): TODEBaseJoint;
@@ -621,6 +599,9 @@ type
       property Joint[index:integer] : TODEBaseJoint read GetJoint; default;
   end;
 
+  // TGLODEJointList
+  //
+  {: Component front-end for storing ODE Joints. }
   TGLODEJointList = class(TComponent)
     private
       FJoints : TODEJoints;
@@ -636,13 +617,9 @@ type
       property Joints : TODEJoints read FJoints;
   end;
 
-  TODEObjectName = String;
-
-  {
-  TODEBaseJoint:
-  --------------
-  Base structures for ODE Joints.
-  }
+  // TODEBaseJoint
+  //
+  {: Base structures for ODE Joints. }
   TODEBaseJoint = class (TXCollectionItem)
     private
       FJointID : TdJointID;
@@ -682,11 +659,9 @@ type
       property Manager : TGLODEManager read FManager write SetManager;
   end;
 
-  {
-  TODEJointHinge:
-  ---------------
-  ODE hinge joint implementation.
-  }
+  // TODEJointHinge
+  //
+  {: ODE hinge joint implementation. }
   TODEJointHinge = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
@@ -700,11 +675,9 @@ type
       property Axis;
   end;
 
-  {
-  TODEJointBall:
-  --------------
-  ODE ball joint implementation.
-  }
+  // TODEJointBall
+  //
+  {: ODE ball joint implementation. }
   TODEJointBall = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
@@ -716,11 +689,9 @@ type
       property Anchor;
   end;
 
-  {
-  TODEJointSlider:
-  ----------------
-  ODE slider joint implementation.
-  }
+  // TODEJointSlider
+  //
+  {: ODE slider joint implementation. }
   TODEJointSlider = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
@@ -732,11 +703,9 @@ type
       property Axis;
   end;
 
-  {
-  TODEJointFixed:
-  ---------------
-  ODE fixed joint implementation.
-  }
+  // TODEJointFixed
+  //
+  {: ODE fixed joint implementation. }
   TODEJointFixed = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
@@ -745,11 +714,9 @@ type
       class function FriendlyDescription : String; override;
   end;
 
-  {
-  TODEJointHinge2:
-  ----------------
-  ODE hinge2 joint implementation.
-  }
+  // TODEJointHinge2
+  //
+  {: ODE hinge2 joint implementation. }
   TODEJointHinge2 = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
@@ -765,11 +732,9 @@ type
       property Axis2;
   end;
 
-  {
-  TODEJointUniversal:
-  -------------------
-  ODE universal joint implementation.
-  }
+  // TODEJointUniversal
+  //
+  {: ODE universal joint implementation. }
   TODEJointUniversal = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
@@ -892,6 +857,16 @@ end;
 //
 destructor TGLODEManager.Destroy;
 begin
+  // Unregister everything
+  while FDynamicObjectRegister.Count>0 do begin
+    if FDynamicObjectRegister[0] is TGLODEBaseObject then
+      TGLODEBaseObject(FDynamicObjectRegister[0]).Manager:=nil
+    else if FDynamicObjectRegister[0] is TGLODEBaseBehaviour then
+      TGLODEBaseBehaviour(FDynamicObjectRegister[0]).Manager:=nil
+    else FDynamicObjectRegister.Delete(0);
+  end;
+
+  // Clean up everything
   FDynamicObjectRegister.Free;
   FJointRegister.Free;
   FGravity.Free;
@@ -1590,10 +1565,16 @@ end;
 //
 procedure TGLODEDummy.Deinitialize;
 begin
+  if not FInitialized then exit;
   FElements.Deinitialize;
+  if Assigned(FBody) then begin
+    dBodyDestroy(FBody);
+    FBody:=nil;
+  end;
+  dMassSetZero(FMass);
   if Assigned(FManager) then
     FManager.UnregisterObject(self);
-  
+
   inherited;
 end;
 
@@ -1820,7 +1801,7 @@ begin
   CalculateMass;
   dBodySetMass(FBody,FMass);
   Manager.RegisterObject(self);
-  
+
   inherited;
 end;
 
@@ -1828,7 +1809,13 @@ end;
 //
 procedure TGLODEDynamicBehaviour.Deinitialize;
 begin
+  if not FInitialized then exit;
   FElements.Deinitialize;
+  if Assigned(FBody) then begin
+    dBodyDestroy(FBody);
+    FBody:=nil;
+  end;
+  dMassSetZero(FMass);
   if Assigned(Manager) then
     Manager.UnregisterObject(self);
 
@@ -2141,6 +2128,7 @@ end;
 //
 destructor TODEBaseElement.Destroy;
 begin
+  if FInitialized then Deinitialize;
   FPosition.Free;
   FDirection.Free;
   FUp.Free;
@@ -2178,6 +2166,12 @@ end;
 //
 procedure TODEBaseElement.Deinitialize;
 begin
+  if not FInitialized then exit;
+  if Assigned(FGeomTransform) then begin
+    dGeomDestroy(FGeomTransform);
+    FGeomTransform:=nil;
+    FGeomElement:=nil;
+  end;
   FInitialized:=False;
 end;
 
@@ -2636,6 +2630,7 @@ begin
   FRadius:=Value;
   ODERebuild;
 end;
+
 
 // ------------------------------------------------------------------
 // TODEElementCapsule
