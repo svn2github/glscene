@@ -10,7 +10,7 @@ unit GLCgShader;
 
 interface
 
-uses Classes, Geometry, GLTexture, GLMisc, Cg, CgGL;
+uses Classes, Geometry, GLTexture, GLMisc, CgGL;
 
 type
 
