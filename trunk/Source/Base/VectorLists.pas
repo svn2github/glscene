@@ -235,10 +235,12 @@ type
 			constructor Create; override;
 			procedure Assign(Src: TPersistent); override;
 
-			function Add(const item : TVector): Integer; overload;
-			function Add(const item : TAffineVector; w : Single): Integer; overload;
+			function Add(const item : TVector) : Integer; overload;
+			function Add(const item : TAffineVector; w : Single) : Integer; overload;
 			function Add(const x, y, z, w : Single): Integer; overload;
 			procedure Add(const i1, i2, i3 : TAffineVector; w : Single); overload;
+			function AddVector(const item : TAffineVector) : Integer; overload;
+			function AddPoint(const item : TAffineVector) : Integer; overload;
 			procedure Push(const val : TVector);
 			function Pop : TVector;
 			procedure Insert(Index: Integer; const item : TVector);
@@ -1286,6 +1288,20 @@ begin
 	PAffineVector(@FList[FCount-3])^:=i1;   FList[FCount-3][3]:=w;
 	PAffineVector(@FList[FCount-2])^:=i2;   FList[FCount-2][3]:=w;
 	PAffineVector(@FList[FCount-1])^:=i3;   FList[FCount-1][3]:=w;
+end;
+
+// AddVector
+//
+function TVectorList.AddVector(const item : TAffineVector) : Integer;
+begin
+   Result:=Add(VectorMake(item));
+end;
+
+// AddPoint
+//
+function TVectorList.AddPoint(const item : TAffineVector) : Integer;
+begin
+   Result:=Add(PointMake(item));
 end;
 
 // Get
