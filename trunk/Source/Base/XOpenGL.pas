@@ -803,7 +803,7 @@ end;
 //
 procedure xglMapTexCoordToArbitraryAdd(const bitWiseUnits : Cardinal);
 var
-   i, n : Integer;
+   i, n : Cardinal;
    mode : TMapTexCoordMode;
 begin
    if vUpdCount>0 then
