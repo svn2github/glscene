@@ -41,7 +41,7 @@ uses Classes,
 {$ifdef GLS_Graphics32_SUPPORT}
    GR32,
 {$endif}
-   OpenGL1x, GLUtils, GLCrossPlatform;
+   OpenGL1x, GLUtils, GLCrossPlatform, GLContext;
 
 type
 
@@ -109,6 +109,13 @@ type
             If you're after speed, don't forget to set the bitmap's dimensions
             to a power of two! }
          procedure AssignFromBitmap24WithoutRGBSwap(aBitmap : TGLBitmap);
+         {: Assigns from a 2D Texture.<p>
+            The context which holds the texture must be active and the texture
+            handle valid. }
+         procedure AssignFromTexture2D(textureHandle : Cardinal); overload;
+         {: Assigns from a Texture handle.<p>
+            If the handle is invalid, the bitmap32 will be empty. }
+         procedure AssignFromTexture2D(textureHandle : TGLTextureHandle); overload;
 
          {: Create a 32 bits TBitmap from self content. }
          function Create32BitsBitmap : TGLBitmap;
@@ -652,6 +659,53 @@ begin
    end;
 end;
 {$endif}
+
+// AssignFromTexture2D
+//
+procedure TGLBitmap32.AssignFromTexture2D(textureHandle : Cardinal);
+var
+   oldTex : Cardinal;
+   texWidth, texHeight : Integer;
+begin
+   glGetIntegerv(GL_TEXTURE_2D_BINDING_EXT, @oldTex);
+   glBindTexture(GL_TEXTURE_2D, textureHandle);
+   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @texWidth);
+   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @texHeight);
+   Width:=texWidth;
+   Height:=texHeight;
+   glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, FData);
+   glBindTexture(GL_TEXTURE_2D, oldTex);
+end;
+
+// AssignFromTexture2D
+//
+procedure TGLBitmap32.AssignFromTexture2D(textureHandle : TGLTextureHandle);
+var
+   oldContext : TGLContext;
+   contextActivate : Boolean;
+begin
+   if Assigned(textureHandle) and (textureHandle.Handle<>0) then begin
+      oldContext:=CurrentGLContext;
+      contextActivate:=(oldContext<>textureHandle.RenderingContext);
+      if contextActivate then begin
+         if Assigned(oldContext) then
+            oldContext.Deactivate;
+         textureHandle.RenderingContext.Activate;
+      end;
+      try
+         AssignFromTexture2D(textureHandle.Handle);
+      finally
+         if contextActivate then begin
+            textureHandle.RenderingContext.Deactivate;
+            if Assigned(oldContext) then
+               oldContext.Activate;
+         end;
+      end;
+   end else begin
+      Width:=0;
+      Height:=0;
+   end;
+end;
 
 // Create32BitsBitmap
 //
