@@ -79,13 +79,6 @@ begin
    Result:=(Abs(v)<=cEpsilon);
 end;
 
-// IsZero
-//
-function IsZero(var v : Extended) : Boolean; overload;
-begin
-   Result:=(Abs(v)<=cEpsilon);
-end;
-
 // EvalPolynom
 //
 function EvalPolynom(const poly : TDoubleArray; const x : Double) : Double;
