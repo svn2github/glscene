@@ -156,8 +156,15 @@ object Form1: TForm1
         end
       end
     end
-    object GLDummyCube1: TGLDummyCube
+    object DCCamera: TGLDummyCube
       CubeSize = 1
+      object GLCamera: TGLCamera
+        DepthOfView = 1.00000001504747E30
+        FocalLength = 50
+        TargetObject = DCCamera
+        CameraStyle = csInfinitePerspective
+        Position.Coordinates = {000020410000E0400000A0400000803F}
+      end
     end
     object GLShadowVolume: TGLShadowVolume
       Casters = <
@@ -172,7 +179,7 @@ object Form1: TForm1
           Caster = GLLightSource3
         end>
       object GLPlane1: TGLPlane
-        Position.Coordinates = {0000000000000000000020C10000803F}
+        Position.Coordinates = {000000000000A040000020C10000803F}
         Material.FrontProperties.Ambient.Color = {00000000000000001283003F0000803F}
         Height = 20
         Width = 20
@@ -182,7 +189,7 @@ object Form1: TForm1
       end
       object GLPlane2: TGLPlane
         Direction.Coordinates = {0000803F000000000000000000000000}
-        Position.Coordinates = {000020C100000000000000000000803F}
+        Position.Coordinates = {000020C10000A040000000000000803F}
         Up.Coordinates = {00000000FFFF7F3F0000008000000000}
         Material.FrontProperties.Ambient.Color = {D7A3703E00000000000000000000803F}
         Height = 20
@@ -193,7 +200,7 @@ object Form1: TForm1
       end
       object GLPlane3: TGLPlane
         Direction.Coordinates = {000000000000803F0000000000000000}
-        Position.Coordinates = {00000000000020C1000000000000803F}
+        Position.Coordinates = {000000000000A0C0000000000000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
         Material.FrontProperties.Ambient.Color = {000000001283803E000000000000803F}
         Height = 20
@@ -252,13 +259,6 @@ object Form1: TForm1
     end
     object DCSpheres: TGLDummyCube
       CubeSize = 1
-    end
-    object GLCamera: TGLCamera
-      DepthOfView = 1.00000001504747E30
-      FocalLength = 50
-      TargetObject = GLDummyCube1
-      CameraStyle = csInfinitePerspective
-      Position.Coordinates = {0000E0400000A040000080400000803F}
     end
   end
   object GLCadencer1: TGLCadencer

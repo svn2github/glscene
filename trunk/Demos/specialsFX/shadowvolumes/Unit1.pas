@@ -18,7 +18,7 @@ type
     GLScene1: TGLScene;
     GLCadencer1: TGLCadencer;
     GLCamera: TGLCamera;
-    GLDummyCube1: TGLDummyCube;
+    DCCamera: TGLDummyCube;
     GLLightSource1: TGLLightSource;
     GLShadowVolume: TGLShadowVolume;
     GLSphere1: TGLSphere;
@@ -90,15 +90,15 @@ begin
    // they are thus also shadow receivers. If they were created as child of
    // another object (not under the shadow volume), they would not receive
    // shadows (which can sometimes be interesting).
-{   for x:=-cNb to cNb do
+   for x:=-cNb to cNb do
       for y:=-cNb to cNb do
-         for z:=-cNb to cNb do begin
-            sphere:=TGLSphere(DCSpheres.AddNewChild(TGLSphere));
+         for z:=-cNb to cNb do if (x and y and z)<>0 then begin
+{            sphere:=TGLSphere(DCSpheres.AddNewChild(TGLSphere));
             sphere.Position.SetPoint(x*cSpacing, y*cSpacing, z*cSpacing);
             sphere.Radius:=cRadius;
-            GLShadowVolume.Casters.AddCaster(sphere);
+            GLShadowVolume.Casters.AddCaster(sphere);}
          end;
-   DCSpheres.MoveTo(GLShadowVolume);}
+   DCSpheres.MoveTo(GLShadowVolume);
    GLFreeForm.LoadFromFile('trinityrage.smd');
    GLShadowVolume.Casters.AddCaster(GLFreeForm);
 end;
