@@ -273,7 +273,8 @@ type
                 limTextureSize, limTextureStack, limViewportDims, limAccumAlphaBits,
                 limAccumBlueBits, limAccumGreenBits, limAccumRedBits, limAlphaBits,
                 limAuxBuffers, limBlueBits, limGreenBits, limRedBits, limIndexBits,
-                limStereo, limDoubleBuffer, limSubpixelBits, limDepthBits, limStencilBits);
+                limStereo, limDoubleBuffer, limSubpixelBits, limDepthBits, limStencilBits,
+                limNbTextureUnits);
 
    TGLBaseSceneObject = class;
    TGLSceneObjectClass = class of TGLBaseSceneObject;
@@ -6193,6 +6194,10 @@ begin
       glGetIntegerv(GL_DOUBLEBUFFER, @Result);
     limSubpixelBits:
       glGetIntegerv(GL_SUBPIXEL_BITS, @Result);
+    limNbTextureUnits:
+      if GL_ARB_multitexture then
+         glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result)
+      else Result:=1;
   else
     Result:=0;
   end;

@@ -2,6 +2,7 @@
 {: Information sur le driver OpenGL courant<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/05/03 - EG - Added Texture Units info
       <li>21/07/02 - EG - No longer modal
       <li>03/02/02 - EG - InfoForm registration mechanism
       <li>24/08/01 - EG - Compatibility with new Buffer classes
@@ -78,6 +79,8 @@ type
     Label20: TLabel;
     TabSheet1: TTabSheet;
     Extensions: TMemo;
+    Label4: TLabel;
+    TexUnitsLabel: TLabel;
     procedure CloseButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -185,12 +188,14 @@ begin
       IntLimitToLabel(LightLabel, limLights);
       IntLimitToLabel(ListLabel, limListNesting);
       IntLimitToLabel(ModelLabel, limModelViewStack);
+      IntLimitToLabel(ViewLabel, limViewportDims);
+
       IntLimitToLabel(NameLabel, limNameStack);
       IntLimitToLabel(PixelLabel, limPixelMapTable);
       IntLimitToLabel(ProjLabel, limProjectionStack);
       IntLimitToLabel(TexSizeLabel, limTextureSize);
       IntLimitToLabel(TexStackLabel, limTextureStack);
-      IntLimitToLabel(ViewLabel, limViewportDims);
+      IntLimitToLabel(TexUnitsLabel, limNbTextureUnits);
    end;
 end;
 

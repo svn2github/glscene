@@ -50,6 +50,7 @@ object InfoForm: TInfoForm
     Height = 225
     ActivePage = Sheet1
     HotTrack = True
+    TabIndex = 0
     TabOrder = 0
     object Sheet1: TTabSheet
       Caption = 'Common'
@@ -753,7 +754,7 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label35: TLabel
-        Left = 195
+        Left = 10
         Top = 124
         Width = 126
         Height = 14
@@ -767,6 +768,34 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object ViewLabel: TLabel
+        Left = 137
+        Top = 124
+        Width = 22
+        Height = 13
+        Caption = '???'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clTeal
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object Label4: TLabel
+        Left = 195
+        Top = 124
+        Width = 80
+        Height = 14
+        Caption = 'Texture units :'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Arial'
+        Font.Style = [fsBold]
+        ParentFont = False
+        Transparent = True
+      end
+      object TexUnitsLabel: TLabel
         Left = 322
         Top = 124
         Width = 22
