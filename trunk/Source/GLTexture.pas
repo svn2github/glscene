@@ -332,7 +332,7 @@ type
    TRenderContextInfo = record
       scene : TObject;
       cameraPosition : TVector;
-      cameraDirection : TVector;
+      cameraDirection, cameraUp : TVector;
       modelViewMatrix : PMatrix;
       viewPortSize : TGLSize;
       renderDPI : Integer;
@@ -850,7 +850,7 @@ type
    //
    TGLTextureMappingMode = (tmmUser, tmmObjectLinear, tmmEyeLinear, tmmSphere,
                             tmmCubeMapReflection, tmmCubeMapNormal,
-                            tmmCubeMapLight0);
+                            tmmCubeMapLight0, tmmCubeMapCamera);
 
 	// TGLTexture
 	//
@@ -882,6 +882,7 @@ type
          FRequiredMemorySize  : Integer;
          FFilteringQuality    : TGLTextureFilteringQuality;
          FTexWidth, FTexHeight : Integer;
+         FEnvColor            : TGLColor;
 
 		protected
 			{ Protected Declarations }
@@ -908,6 +909,7 @@ type
 			procedure SetDisabled(AValue: Boolean);
          procedure SetEnabled(const val : Boolean);
          function GetEnabled : Boolean;
+         procedure SetEnvColor(const val : TGLColor);
 
          function StoreImageClassName : Boolean;
 
@@ -1033,6 +1035,9 @@ type
             This property stores the coordinates for automatic texture
             coordinates generation. }
          property MappingTCoordinates : TGLCoordinates4 read GetMappingTCoordinates write SetMappingTCoordinates;
+
+         {: Texture Environment color. }
+         property EnvColor : TGLColor read FEnvColor write SetEnvColor;
 
          {: If true, the texture is disabled (not used). }
 			property Disabled: Boolean read FDisabled write SetDisabled default True;
@@ -1886,10 +1891,8 @@ constructor TGLFaceProperties.Create(aOwner : TPersistent);
 begin
    inherited;
    // OpenGL default colors
-   FAmbient:=TGLColor.Create(Self);
-   FAmbient.Initialize(clrGray20);
-   FDiffuse:=TGLColor.Create(Self);
-   FDiffuse.Initialize(clrGray80);
+   FAmbient:=TGLColor.CreateInitialized(Self, clrGray20);
+   FDiffuse:=TGLColor.CreateInitialized(Self, clrGray80);
    FEmission:=TGLColor.Create(Self);
    FSpecular:=TGLColor.Create(Self);
    FShininess:=0;
@@ -2958,12 +2961,14 @@ begin
    FRequiredMemorySize:=-1;
    FTextureHandle:=TGLTextureHandle.Create;
    FMappingMode:=tmmUser;
+   FEnvColor:=TGLColor.CreateInitialized(Self, clrTransparent);
 end;
 
 // Destroy
 //
 destructor TGLTexture.Destroy;
 begin
+   FEnvColor.Free;
    FMapSCoordinates.Free;
    FMapTCoordinates.Free;
 	DestroyHandles;
@@ -3174,6 +3179,14 @@ begin
    Result:=not Disabled;
 end;
 
+// SetEnvColor
+//
+procedure TGLTexture.SetEnvColor(const val : TGLColor);
+begin
+   FEnvColor.Assign(val);
+   NotifyChange(Self);
+end;
+
 // SetTextureWrap
 //
 procedure TGLTexture.SetTextureWrap(AValue: TGLTextureWrap);
@@ -3311,7 +3324,7 @@ begin
          glEnable(GL_TEXTURE_GEN_S);
          glEnable(GL_TEXTURE_GEN_T);
       end;
-      tmmCubeMapReflection : if GL_ARB_texture_cube_map then begin
+      tmmCubeMapReflection, tmmCubeMapCamera : if GL_ARB_texture_cube_map then begin
          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
@@ -3387,13 +3400,29 @@ begin
                   glMultMatrixf(@m);
                end;
             end;
-            tmmUser : ;
-         else
-//            Assert(False, 'Texture MappingMode invalid for a cubemap');
+            tmmCubeMapCamera : begin
+               m[0]:=VectorCrossProduct(rci.cameraUp, rci.cameraDirection);
+               m[1]:=VectorNegate(rci.cameraDirection);
+               m[2]:=rci.cameraUp;
+               m[3]:=WHmgPoint;
+               if GL_ARB_transpose_matrix then
+                  glLoadTransposeMatrixfARB(@m)
+               else begin
+                  TransposeMatrix(m);
+                  glLoadMatrixf(@m);
+               end;
+
+               m:=rci.modelViewMatrix^;
+               NormalizeMatrix(m);
+               TransposeMatrix(m);
+               glMultMatrixf(@m);
+            end;
          end;
          glMatrixMode(GL_MODELVIEW);
       end;
    	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+    	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+
       ApplyMappingMode;
       xglMapTexCoordToMain;
 	end else begin
@@ -3469,6 +3498,8 @@ begin
       end;
 
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+    	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+      
       ApplyMappingMode;
       glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
