@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/07/03 - aidave - Added TGLColor.RandomColor;
       <li>24/07/03 - EG - Introduced TGLTextureImageEditor mechanism
       <li>04/07/03 - EG - Material.Texture now autocreating,
                           added per-texture brightness and gamma correction
@@ -374,6 +375,7 @@ type
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
 			function AsAddress : PGLFloat;
+      procedure RandomColor;
 
 			property Color : TColorVector read FColor write SetColor;
 			property AsWinColor : TColor read GetAsWinColor write SetAsWinColor;
@@ -1626,6 +1628,13 @@ begin
       New(FPDefaultColor);
    	FPDefaultColor^:=color;
    end;
+end;
+
+procedure TGLColor.RandomColor;
+begin
+  Red := Random;
+  Green := Random;
+  Blue := Random;
 end;
 
 procedure TGLColor.SetColor(const aColor: TColorVector);
