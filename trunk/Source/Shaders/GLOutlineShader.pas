@@ -10,6 +10,7 @@
      <li> 3. Doesn't Works with visible backfaces.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/06/04 - NelC - Fixed bug with textured object
       <li>14/12/03 - NelC - Removed BlendLine, automatically determine if blend   
       <li>20/10/03 - NelC - Removed unnecessary properties. Shader now honors
                             rci.ignoreMaterials.
@@ -67,7 +68,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x;
+uses OpenGL1x, GLState;
 
 procedure Register;
 begin
@@ -142,6 +143,11 @@ begin
          glPolygonMode(GL_BACK, GL_LINE);
          glCullFace(GL_FRONT);
          glDepthFunc(GL_LEQUAL);
+
+         with rci.GLStates do begin
+           UnSetGLState(stTexture2D);
+           UnSetGLState(stTextureCubeMap);
+         end;
 
          FPassCount:=2;
          Result:=True;  // go for next pass
