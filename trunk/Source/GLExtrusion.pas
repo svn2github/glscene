@@ -659,7 +659,7 @@ begin
 	if Source is TGLPipeNode then begin
       FRadiusFactor:=TGLPipeNode(Source).FRadiusFactor
 	end;
-	inherited Destroy;
+	inherited;
 end;
 
 // GetDisplayName
@@ -813,6 +813,8 @@ begin
    if Source is TGLPipe then begin
       FSlices:=TGLPipe(Source).FSlices;
       FParts:=TGLPipe(Source).FParts;
+      FRadius:=TGLPipe(Source).FRadius;
+      FNodesColorMode:=TGLPipe(Source).FNodesColorMode;
    end;
    inherited Assign(Source);
 end;
