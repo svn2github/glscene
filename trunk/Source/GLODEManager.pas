@@ -637,6 +637,7 @@ type
 
     protected
       procedure Deinitialize; override;
+      procedure SetGeom(const Value : PdxGeom);
 
     public
       property Geom : PdxGeom read FGeom;
@@ -3484,6 +3485,13 @@ begin
   if not FInitialized then exit;
   dGeomDestroy(FGeom);
   inherited;
+end;
+
+// SetGeom
+//
+procedure TGLODEStaticObject.SetGeom(const Value : PdxGeom);
+begin
+  FGeom:=Value;
 end;
 
 
