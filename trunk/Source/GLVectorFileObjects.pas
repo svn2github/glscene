@@ -269,8 +269,10 @@ type
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          //: As the name states; Convert Quaternions to Rotations or vice-versa.
-         procedure ConvertQuaternionsToRotations(KeepQuaternions : Boolean = True);
-         procedure ConvertRotationsToQuaternions(KeepRotations : Boolean = True);
+         procedure ConvertQuaternionsToRotations(
+           KeepQuaternions : Boolean = True; SetTransformMode : Boolean = True);
+         procedure ConvertRotationsToQuaternions(
+           KeepRotations : Boolean = True; SetTransformMode : Boolean = True);
 
          property Owner : TPersistent read FOwner;
          procedure Clear; override;
@@ -1554,7 +1556,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, 
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils,
   GLBaseMeshSilhouette;
 
 var
@@ -2216,22 +2218,28 @@ end;
 
 // ConvertQuaternionsToRotations
 //
-procedure TSkeletonFrameList.ConvertQuaternionsToRotations(KeepQuaternions : Boolean = True);
+procedure TSkeletonFrameList.ConvertQuaternionsToRotations(KeepQuaternions : Boolean = True; SetTransformMode : Boolean = True);
 var
   i : integer;
 begin
-  for i:=0 to Count-1 do
+  for i:=0 to Count-1 do begin
     Items[i].ConvertQuaternionsToRotations(KeepQuaternions);
+    if SetTransformMode then
+      Items[i].TransformMode:=sftRotation;
+  end;
 end;
 
 // ConvertRotationsToQuaternions
 //
-procedure TSkeletonFrameList.ConvertRotationsToQuaternions(KeepRotations : Boolean = True);
+procedure TSkeletonFrameList.ConvertRotationsToQuaternions(KeepRotations : Boolean = True; SetTransformMode : Boolean = True);
 var
   i : integer;
 begin
-  for i:=0 to Count-1 do
+  for i:=0 to Count-1 do begin
     Items[i].ConvertRotationsToQuaternions(KeepRotations);
+    if SetTransformMode then
+      Items[i].TransformMode:=sftQuaternion;
+  end;
 end;
 
 // ------------------
