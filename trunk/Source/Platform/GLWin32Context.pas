@@ -657,10 +657,16 @@ end;
 // DoShareLists
 //
 procedure TGLWin32Context.DoShareLists(aContext : TGLContext);
+var
+   otherRC : Cardinal;
 begin
-   if aContext is TGLWin32Context then
-      wglShareLists(FRC, TGLWin32Context(aContext).FRC)
-   else raise Exception.Create(cIncompatibleContexts);
+   if aContext is TGLWin32Context then begin
+      otherRC:=TGLWin32Context(aContext).FRC;
+      // some drivers fail (access violation) when requesting to share
+      // a context with itself
+      if FRC<>otherRC then
+         wglShareLists(FRC, otherRC);
+   end else raise Exception.Create(cIncompatibleContexts);
 end;
 
 // DoDestroyContext
