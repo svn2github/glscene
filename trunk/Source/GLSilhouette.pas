@@ -7,6 +7,7 @@
    CAUTION : both connectivity classes leak memory.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/09/03 - EG - Improved performance of TConnectivity data construction
       <li>19/06/03 - MF - Split up Connectivity classes
       <li>10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
@@ -115,33 +116,28 @@ type
           access a tiny bit of a triangle (for instance), not all data.}
           FEdgeVertices : TIntegerList;
           FEdgeFaces : TIntegerList;
-
-          FFaceVisible : TIntegerList;
-
+          FFaceVisible : TByteList;
           FFaceVertexIndex : TIntegerList;
-
           FFaceNormal : TAffineVectorList;
-
           FVertexMemory : TIntegerList;
-
           FVertices : TAffineVectorList;
 
           function GetEdgeCount: integer; override;
           function GetFaceCount: integer; override;
 
-          function ReuseOrFindVertexID(SeenFrom : TAffineVector; aSilhouette: TGLSilhouette;
-            Index: integer): integer;
+          function ReuseOrFindVertexID(const seenFrom : TAffineVector;
+                     aSilhouette : TGLSilhouette; index : Integer) : Integer;
        public
           {: Clears out all connectivity information. }
           procedure Clear; virtual;
 
           procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); override;
 
-          function AddIndexedEdge(VertexIndex0, VertexIndex1 : integer; FaceID: integer) : integer;
-          function AddIndexedFace(Vi0, Vi1, Vi2 : integer) : integer;
+          function AddIndexedEdge(vertexIndex0, vertexIndex1 : integer; FaceID: integer) : integer;
+          function AddIndexedFace(vi0, vi1, vi2 : integer) : integer;
 
-          function AddFace(Vertex0, Vertex1, Vertex2 : TAffineVector) : integer;
-          function AddQuad(Vertex0, Vertex1, Vertex2, Vertex3 : TAffineVector) : integer;
+          function AddFace(const vertex0, vertex1, vertex2 : TAffineVector) : integer;
+          function AddQuad(const vertex0, vertex1, vertex2, vertex3 : TAffineVector) : integer;
 
           property EdgeCount : integer read GetEdgeCount;
           property FaceCount : integer read GetFaceCount;
@@ -343,7 +339,7 @@ end;
 
 constructor TConnectivity.Create(PrecomputeFaceNormal : boolean);
 begin
-  FFaceVisible := TIntegerList.Create;
+  FFaceVisible := TByteList.Create;
 
   FFaceVertexIndex := TIntegerList.Create;
   FFaceNormal := TAffineVectorList.Create;
@@ -390,98 +386,76 @@ begin
     FVertices.Clear;
 end;
 
+// CreateSilhouette
+//
 procedure TConnectivity.CreateSilhouette(
-  const silhouetteParameters : TGLSilhouetteParameters;
-  var aSilhouette : TGLSilhouette; AddToSilhouette : boolean);
+            const silhouetteParameters : TGLSilhouetteParameters;
+            var aSilhouette : TGLSilhouette; addToSilhouette : boolean);
 var
-  i : integer;
-  V0, V1, V2 : TAffineVector;
-  Vi0, Vi1, Vi2 : integer;
-  tVi0, tVi1, tVi2 : integer;
-  FaceNormal : TAffineVector;
-
-  dot : single;
-
-  Face0ID, Face1ID : integer;
+   i : Integer;
+   vis : PIntegerArray;
+   tVi0, tVi1 : Integer;
+   faceNormal : TAffineVector;
+   face0ID, face1ID : Integer;
+   faceIsVisible : Boolean;
+   verticesList : PAffineVectorArray;
 begin
-  if aSilhouette=nil then
-    aSilhouette:=TGLSilhouette.Create;
+   if not Assigned(aSilhouette) then
+      aSilhouette:=TGLSilhouette.Create
+   else if not AddToSilhouette then
+      aSilhouette.Flush;
 
-  if not AddToSilhouette then
-    aSilhouette.Flush;
+   // Clear the vertex memory
+   FVertexMemory.Flush;
 
-  // Clear the vertex memory
-  FVertexMemory.Flush;
+   // Update visibility information for all Faces
+   vis:=FFaceVertexIndex.List;
+   for i:=0 to FaceCount-1 do begin
+      if FPrecomputeFaceNormal then
+         faceIsVisible:=(PointProject(silhouetteParameters.SeenFrom,
+                                      FVertices.List[vis[0]],
+                                      FFaceNormal.List[i])
+                         >=0)
+      else begin
+         verticesList:=FVertices.List;
+         faceNormal:=CalcPlaneNormal(verticesList[vis[0]],
+                                     verticesList[vis[1]],
+                                     verticesList[vis[2]]);
+         faceIsVisible:=(PointProject(silhouetteParameters.SeenFrom,
+                                      FVertices.List[vis[0]], faceNormal)
+                         >=0);
+      end;
 
-  // Update visibility information for all Faces
-  for i := 0 to FaceCount-1 do
-  begin
-    // Retrieve the vertex indices
-    Vi0 := FFaceVertexIndex[i * 3 + 0];
-    Vi1 := FFaceVertexIndex[i * 3 + 1];
-    Vi2 := FFaceVertexIndex[i * 3 + 2];
+      FFaceVisible[i]:=Byte(faceIsVisible);
 
-    V0 := FVertices[Vi0];
+      if (not faceIsVisible) and silhouetteParameters.CappingRequired then
+         aSilhouette.CapIndices.Add(ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, vis[0]),
+                                    ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, vis[1]),
+                                    ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, vis[2]));
+      vis:=@vis[3];      
+   end;
 
-    if FPrecomputeFaceNormal then
-      FaceNormal := FFaceNormal[i]
-    else
-    begin
-      // Retrieve the last vertices
-      V1 := FVertices[Vi1];
-      V2 := FVertices[Vi2];
+   for i:=0 to EdgeCount-1 do  begin
+      face0ID:=FEdgeFaces[i*2+0];
+      face1ID:=FEdgeFaces[i*2+1];
 
-      FaceNormal :=
-        CalcPlaneNormal(V0, V1, V2);
-    end;
+      if (face1ID=-1) or (FFaceVisible.List[face0ID]<>FFaceVisible.List[face1ID]) then begin
+         // Retrieve the two vertice values add add them to the Silhouette list
+         vis:=@FEdgeVertices.List[i*2];
 
-    dot := PointProject(silhouetteParameters.SeenFrom, V0, FaceNormal);
-
-    if (dot>=0) then
-      FFaceVisible[i] := 1
-    else
-      FFaceVisible[i] := 0;
-
-    if silhouetteParameters.CappingRequired and (dot<0) then
-    begin
-      tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi0);
-      tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi1);
-      tVi2 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi2);
-
-      aSilhouette.CapIndices.Add(tVi0, tVi1, tVi2);
-    end;
-  end;
-
-  for i := 0 to EdgeCount-1 do
-  begin
-    Face0ID := FEdgeFaces[i * 2 + 0];
-    Face1ID := FEdgeFaces[i * 2 + 1];//}
-
-    if (Face1ID = -1) or (FFaceVisible[Face0ID] <> FFaceVisible[Face1ID]) then
-    begin
-      // Retrieve the two vertice values add add them to the Silhouette list
-      Vi0 := FEdgeVertices[i*2 + 0];
-      Vi1 := FEdgeVertices[i*2 + 1];
-
-      // In this moment, we _know_ what vertex id the vertex had in the old
-      // mesh. We can remember this information and re-use it for a speedup
-      if (FFaceVisible[Face0ID]=0) then
-      begin
-        tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi0);
-        tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi1);
-
-        aSilhouette.Indices.Add(tVi0, tVi1);
-      end
-      else
-        if Face1ID>-1 then
-        begin
-          tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi0);
-          tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, Vi1);
-
-          aSilhouette.Indices.Add(tVi1, tVi0);
-        end;
-    end;
-  end;
+         // In this moment, we _know_ what vertex id the vertex had in the old
+         // mesh. We can remember this information and re-use it for a speedup
+         if FFaceVisible.List[Face0ID]=0 then begin
+            tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, vis[0]);
+            tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, vis[1]);
+            aSilhouette.Indices.Add(tVi0, tVi1);
+         end else if Face1ID>-1 then begin
+            tVi0 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, vis[0]);
+            tVi1 := ReuseOrFindVertexID(silhouetteParameters.SeenFrom, aSilhouette, vis[1]);
+            aSilhouette.Indices.Add(tVi1, tVi0);
+         end;
+      end;
+   end;
 end;
 
 function TConnectivity.GetEdgeCount: integer;
@@ -494,124 +468,88 @@ begin
   result := FFaceVisible.Count;
 end;
 
+// ReuseOrFindVertexID
+//
 function TConnectivity.ReuseOrFindVertexID(
-  SeenFrom: TAffineVector; aSilhouette: TGLSilhouette;
-  Index: integer): integer;
+     const seenFrom : TAffineVector; aSilhouette : TGLSilhouette; index : Integer) : Integer;
 var
-  MemIndex, i : integer;
-  Vertex : TAffineVector;
-  OldCount  : integer;
-  List : PIntegerArray;
+   pMemIndex : PInteger;
+   memIndex, i : Integer;
+   oldCount : Integer;
+   list : PIntegerArray;
 begin
-  // DUMBO VERSION
-  // LScene generates;
-  //
-  // Non capped 146 fps
-  // 500 runs = 560,12 ms => 1,12 ms / run
-  // aSilhouette.Count=807, vertices=1614
-  //
-  // Capped 75 fps
-  // 500 runs = 1385,33 ms => 2,77 ms / run
-  // aSilhouette.Count=807, vertices=10191
-  {Vertex := FMeshObject.Owner.Owner.LocalToAbsolute(FMeshObject.Vertices[Index]);
-  result := aSilhouette.FVertices.Add(Vertex);
-  VertexFar := VectorAdd(Vertex, VectorScale(VectorSubtract(Vertex, SeenFrom), cEXTRUDE_LENGTH));
-  aSilhouette.FVertices.Add(VertexFar);
-  exit;//}
+   if index>=FVertexMemory.Count then begin
+      oldCount:=FVertexMemory.Count;
+      FVertexMemory.Count:=index+1;
 
-  // SMARTO VERSION
+      list:=FVertexMemory.List;
+      for i:=OldCount to FVertexMemory.Count-1 do
+         list[i]:=-1;
+   end;
 
-  //  LScene generates;
-  //
-  //  Non capped 146 fps
-  //  500 runs = 630,06 ms => 1,26 ms / run
-  //  aSilhouette.Count=807, vertices=807
-  //
-  //  Capped 88 fps
-  //  500 runs = 1013,29 ms => 2,03 ms / run
-  //  aSilhouette.Count=807, vertices=1873
-  if Index>=FVertexMemory.Count then
-  begin
-    OldCount := FVertexMemory.Count;
-    FVertexMemory.Count := Index+1;
+   pMemIndex:=@FVertexMemory.List[index];
 
-    List := FVertexMemory.List;
-    for i := OldCount to FVertexMemory.Count-1 do
-      List[i] := -1;
-  end;//}
-
-  MemIndex := FVertexMemory[Index];
-
-  if MemIndex=-1 then
-  begin
-    // Add the "near" vertex
-    Vertex := FVertices[Index];
-    MemIndex := aSilhouette.Vertices.Add(Vertex, 1);
-
-    FVertexMemory[Index] := MemIndex;
-    result := MemIndex;
-  end else
-    result := MemIndex;//}
+   if pMemIndex^=-1 then begin
+      // Add the "near" vertex
+      memIndex:=aSilhouette.Vertices.Add(FVertices.List[index], 1);
+      pMemIndex^:=memIndex;
+      Result:=memIndex;
+   end else Result:=pMemIndex^;
 end;
 
-function TConnectivity.AddIndexedEdge(VertexIndex0,
-  VertexIndex1: integer; FaceID: integer) : integer;
+// AddIndexedEdge
+//
+function TConnectivity.AddIndexedEdge(
+            vertexIndex0, vertexIndex1 : Integer; faceID : Integer) : Integer;
 var
-  i : integer;
-  EdgeVi0, EdgeVi1 : integer;
+   i : Integer;
+   edgesVertices : PIntegerArray;
 begin
-  // Make sure that the edge doesn't already exists
-  for i := 0 to EdgeCount-1 do begin
-    // Retrieve the two vertices in the edge
-    EdgeVi0 := FEdgeVertices[i*2 + 0];
-    EdgeVi1 := FEdgeVertices[i*2 + 1];
+   // Make sure that the edge doesn't already exists
+   edgesVertices:=FEdgeVertices.List;
+   for i:=0 to EdgeCount-1 do begin
+      // Retrieve the two vertices in the edge
+      if    ((edgesVertices[0]=vertexIndex0) and (edgesVertices[1]=vertexIndex1))
+         or ((edgesVertices[0]=vertexIndex1) and (edgesVertices[1]=vertexIndex0)) then begin
+         // Update the second Face of the edge and we're done (this _MAY_
+         // overwrite a previous Face in a broken mesh)
+         FEdgeFaces[i*2+1]:=faceID;
+         Result:=i*2+1;
+         Exit;
+      end;
+      edgesVertices:=@edgesVertices[2];
+   end;
 
-    if ((EdgeVi0 = VertexIndex0) and (EdgeVi1 = VertexIndex1)) or
-       ((EdgeVi0 = VertexIndex1) and (EdgeVi1 = VertexIndex0)) then begin
-      // Update the second Face of the edge and we're done (this _MAY_
-      // overwrite a previous Face in a broken mesh)
-      FEdgeFaces[i*2 + 1] := FaceID;
-      Result:=i*2+1;
-      exit;
-    end;
-  end;
+   // No edge was found, create a new one
+   FEdgeVertices.Add(vertexIndex0, vertexIndex1);
+   FEdgeFaces.Add(faceID, -1);
 
-  // No edge was found, create a new one
-  FEdgeVertices.Add(VertexIndex0);
-  FEdgeVertices.Add(VertexIndex1);
-
-  FEdgeFaces.Add(FaceID);
-  FEdgeFaces.Add(-1);
-
-  result := EdgeCount-1;
+   Result:=EdgeCount-1;
 end;
 
-function TConnectivity.AddIndexedFace(Vi0, Vi1, Vi2: integer) : integer;
+// AddIndexedFace
+//
+function TConnectivity.AddIndexedFace(vi0, vi1, vi2 : Integer) : Integer;
 var
-  FaceID : integer;
-  V0, V1, V2 : TAffineVector;
+   faceID : integer;
 begin
-  FFaceVertexIndex.Add(Vi0);
-  FFaceVertexIndex.Add(Vi1);
-  FFaceVertexIndex.Add(Vi2);
+   FFaceVertexIndex.Add(vi0, vi1, vi2);
 
-  V0 := FVertices[Vi0];
-  V1 := FVertices[Vi1];
-  V2 := FVertices[Vi2];
+   if FPrecomputeFaceNormal then
+      FFaceNormal.Add(CalcPlaneNormal(FVertices.List[Vi0],
+                                      FVertices.List[Vi1],
+                                      FVertices.List[Vi2]));
 
-  if FPrecomputeFaceNormal then
-    FFaceNormal.Add(CalcPlaneNormal(V0, V1, V2));
+   faceID:=FFaceVisible.Add(0);
 
-  FaceID := FFaceVisible.Add(0);
+   AddIndexedEdge(vi0, vi1, faceID);
+   AddIndexedEdge(vi1, vi2, faceID);
+   AddIndexedEdge(vi2, vi0, faceID);
 
-  AddIndexedEdge(Vi0, Vi1, FaceID);
-  AddIndexedEdge(Vi1, Vi2, FaceID);
-  AddIndexedEdge(Vi2, Vi0, FaceID);//}
-
-  result := FaceID;
+   result:=faceID;
 end;
 
-function TConnectivity.AddFace(Vertex0, Vertex1, Vertex2: TAffineVector) : integer;
+function TConnectivity.AddFace(const Vertex0, Vertex1, Vertex2: TAffineVector) : integer;
 var
   Vi0, Vi1, Vi2 : integer;
 begin
@@ -622,7 +560,7 @@ begin
   result := AddIndexedFace(Vi0, Vi1, Vi2);
 end;
 
-function TConnectivity.AddQuad(Vertex0, Vertex1, Vertex2,
+function TConnectivity.AddQuad(const Vertex0, Vertex1, Vertex2,
   Vertex3: TAffineVector): integer;
 var
   Vi0, Vi1, Vi2, Vi3 : integer;
