@@ -553,6 +553,8 @@ type
          {: Applies current frame to morph all mesh objects. }
          procedure MorphMesh(normalize : Boolean);
 
+         {: Copy bone rotations from reference skeleton. }
+         procedure Synchronize(reference : TSkeleton);
          {: Release bones and frames info. }
          procedure Clear;
 	end;
@@ -3131,6 +3133,14 @@ begin
             TSkeletonMeshObject(mesh).ApplyCurrentSkeletonFrame(normalize);
       end;
    end;
+end;
+
+// Synchronize
+//
+procedure TSkeleton.Synchronize(reference : TSkeleton);
+begin
+   CurrentFrame.Assign(reference.CurrentFrame);
+   MorphMesh(True);
 end;
 
 // Clear
@@ -6748,6 +6758,7 @@ begin
       if referenceActor.FTargetSmoothAnimation<>nil then
          FTargetSmoothAnimation:=Animations.FindName(referenceActor.FTargetSmoothAnimation.Name)
       else FTargetSmoothAnimation:=nil;
+      Skeleton.Synchronize(referenceActor.Skeleton);
    end;
 end;
 
