@@ -8,7 +8,7 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>19/06/03 - MF - Added TVerletGlobalConstraint.SatisfyConstraintForEdge
-                          and implemented for TVCSphere 
+                          and implemented for TVCSphere and TVCCapsule 
       <li>19/06/03 - MF - Added friction to TVCCylinder
       <li>19/06/03 - MF - Added surface normals to all colliders - surface
                           normal is identical to Normalize(Movement)!
@@ -531,9 +531,6 @@ type
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
 
-         procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
-                        const iteration, maxIterations : Integer); override;
-
          {: A base point on the cylinder axis.<p>
             Can theoretically be anywhere, however, to reduce floating point
             precision issues, choose it in the area where collision detection
@@ -588,6 +585,9 @@ type
 			{ Public Declarations }
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
+
+         procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
+                        const iteration, maxIterations : Integer); override;
 
          property Base : TAffineVector read FBase write FBase;
          property Axis : TAffineVector read FAxis write SetAxis;
@@ -1758,35 +1758,44 @@ begin
    end;
 end;
 
-procedure TVCCylinder.SatisfyConstraintForEdge(aEdge: TVerletEdge;
+
+procedure TVCCapsule.SatisfyConstraintForEdge(aEdge: TVerletEdge;
   const iteration, maxIterations: Integer);
 var
-   closestLocation, dummy, delta, move, contactNormal : TAffineVector;
+   sphereLocation, closestPoint, dummy, delta, move, contactNormal : TAffineVector;
+   Ax0, Ax1 : TAffineVector;
    deltaLength, diff : Single;
 begin
-{   SEgme
-   closestLocation
-   VectorSubtract(aNode.Location, Location, delta);
+  VectorScale(FAxis, FLengthDiv2, Ax0);
+  VectorScale(FAxis, -FLengthDiv2, Ax1);
 
-   // Is it inside the sphere?
-   deltaLength:=VectorLength(delta)-aNode.Radius;
-   if Abs(deltaLength)<Radius then begin
-      if deltaLength>0 then begin
-         contactNormal := VectorScale(delta, 1/deltaLength);
-         aNode.ApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength), contactNormal);
-      end
-      else
-        // Slow it down - this part should not be fired
-        aNode.OldApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength));
+   SegmentSegmentClosestPoint(
+    aEdge.NodeA.FLocation,
+    aEdge.NodeB.FLocation,
+    Ax0,
+    Ax1,
+    dummy,
+    sphereLocation);
 
+  // If the edge penetrates the sphere, try pushing the nodes until it no
+  // longer does
+  closestPoint := PointSegmentClosestPoint(sphereLocation, aEdge.NodeA.FLocation, aEdge.NodeB.FLocation);
+
+  // Find the distance between the two
+  VectorSubtract(closestPoint, sphereLocation, delta);
+
+  deltaLength := VectorLength(delta);
+
+  if deltaLength<Radius then  begin
       // Move it outside the sphere!
       diff:=(Radius-deltaLength)/deltaLength;
       VectorScale(delta, diff, move);
 
-      AddVector(aNode.FLocation, move);
-   end;//}
-end;
+      AddVector(aEdge.NodeA.FLocation, move);
+      AddVector(aEdge.NodeB.FLocation, move);
+  end;
 
+end;
 // ------------------
 // ------------------ TVerletEdge ------------------
 // ------------------
