@@ -10,7 +10,7 @@
     <IDLGENFILES value=""/>
     <DEFFILE value=""/>
     <RESDEPEN value="$(RESFILES) Unit1.dfm"/>
-    <LIBFILES value="cgGL_lib.lib cg_lib.lib"/>
+    <LIBFILES value="D:\Composants\BCB6\Lib\cg.lib D:\Composants\BCB6\Lib\cggl.lib"/>
     <LIBRARIES value="GLCg_BCB6.lib GLSceneBCB6.lib rtl.lib vcl.lib"/>
     <SPARELIBS value="vcl.lib rtl.lib GLSceneBCB6.lib GLCg_BCB6.lib"/>
     <PACKAGES value=""/>
@@ -24,8 +24,8 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="NO_STRICT"/>
     <MAINSOURCE value="CgSimple.cpp"/>
-    <INCLUDEPATH value="C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl"/>
-    <LIBPATH value="C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;D:\Composants\BCB6\include"/>
+    <LIBPATH value="$(BCB)\lib\obj;$(BCB)\lib;D:\Composants\BCB6\Lib;D:\Composants\BCB6\dcu"/>  
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -88,24 +88,12 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=3
-Item0=C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;$(BCB)\include;$(BCB)\include\vcl
-Item1=C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;C:\GLScene\BCB6_Demos\cgshaders\simple;$(BCB)\include;$(BCB)\include\vcl
-Item2=C:\Program Files\Borland\CBuilder6\Projects;C:\GLScene\BCB6_Demos\cgshaders\simple;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=3
-Item0=C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item1=C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;C:\GLScene\BCB6_Demos\cgshaders\simple;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
-Item2=C:\Program Files\Borland\CBuilder6\Projects;C:\GLScene\BCB6_Demos\cgshaders\simple;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
-Count=1
-Item0=_DEBUG
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl

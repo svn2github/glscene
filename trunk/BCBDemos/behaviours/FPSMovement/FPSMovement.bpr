@@ -24,8 +24,8 @@
     <USERDEFINES value=""/>
     <SYSDEFINES value="NO_STRICT"/>
     <MAINSOURCE value="FPSMovement.cpp"/>
-    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders"/>
-    <LIBPATH value="$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders"/>
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;D:\Composants\BCB6\include"/>
+    <LIBPATH value="$(BCB)\lib\obj;$(BCB)\lib;D:\Composants\BCB6\Lib;D:\Composants\BCB6\dcu"/>
     <WARNINGS value="-w-par"/>
     <OTHERFILES value=""/>
   </MACROS>
@@ -86,25 +86,12 @@ ProductVersion=1.0.0.0
 Comments=
 
 [HistoryLists\hlIncludePath]
-Count=3
-Item0=$(BCB)\include;$(BCB)\include\vcl;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
-Item1=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
-Item2=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\include;$(BCB)\include\vcl
 
 [HistoryLists\hlLibraryPath]
-Count=4
-Item0=$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
-Item1=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders
-Item2=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\lib\obj;$(BCB)\lib;C:\GLScene\Source;C:\GLScene\Source\Base;C:\GLScene\Source\Platform;C:\GLScene\Source\FileFormats;C:\GLScene\Source\Shaders;C:\GLScene\Source\PhysicsAPIs;C:\GLScene\Source\SoundAPIs;C:\GLScene\Source\VideoAPIs;C:\GLScene\Source\GameAPIs;C:\GLScene\Source\CgShaders;
-Item3=C:\Program Files\Borland\CBuilder6\Projects;$(BCB)\lib\obj;$(BCB)\lib
 
 [HistoryLists\hlDebugSourcePath]
-Count=1
-Item0=$(BCB)\source\vcl
 
 [HistoryLists\hlConditionals]
-Count=1
-Item0=_DEBUG
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
@@ -124,16 +111,5 @@ RemoteDebug=0
 [Compiler]
 ShowInfoMsgs=0
 LinkDebugVcl=0
-LinkCGLIB=0
-
-[CORBA]
-AddServerUnit=1
-AddClientUnit=1
-PrecompiledHeaders=1
-
-[Language]
-ActiveLang=
-ProjectLang=
-RootDir=
   </IDEOPTIONS>
 </PROJECT>

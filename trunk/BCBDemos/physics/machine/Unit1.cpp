@@ -20,7 +20,7 @@ int my, mx;
 __fastcall TForm1::TForm1(TComponent * Owner):TForm(Owner)
 {
   TAffineVector av={-250,0,0};
-  ((TGLODEDynamicBehaviour*)Pin2->Behaviours->Items[0])->AddForce(av);
+  ((TGLODEDynamic*)Pin2->Behaviours->Items[0])->AddForce(av);
 }
 
 //---------------------------------------------------------------------------

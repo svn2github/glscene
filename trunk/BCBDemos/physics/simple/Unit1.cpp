@@ -96,7 +96,7 @@ void __fastcall TForm1::Button1Click(TObject * Sender)
   };
   cube->Material->FrontProperties->Diffuse->Color = v;
 
-  TGLODEDynamicBehaviour *db = new TGLODEDynamicBehaviour(cube->Behaviours);
+  TGLODEDynamic *db = new TGLODEDynamic(cube->Behaviours);
   db->Manager = GLODEManager1;
 
   TODEElementBox *eb =
