@@ -1172,7 +1172,7 @@ type
          { Private Declarations }
          FUpdateCount : Integer;
          FObjects : TGLSceneRootObject;
-         FCameras : TGLBaseSceneObject;
+         FCameras : TGLSceneRootObject;
          FBaseContext : TGLContext; //reference, not owned!
          FLights, FBuffers : TList;
          FCurrentGLCamera : TGLCamera;
@@ -1246,10 +1246,10 @@ type
             See LoadFromFile for details. }
          procedure LoadFromTextFile(const fileName : String);
 
-         property Cameras: TGLBaseSceneObject read FCameras;
-         property CurrentGLCamera: TGLCamera read FCurrentGLCamera;
-         property Lights: TList read FLights;
-         property Objects: TGLSceneRootObject read FObjects;
+         property Cameras : TGLSceneRootObject read FCameras;
+         property CurrentGLCamera : TGLCamera read FCurrentGLCamera;
+         property Lights : TList read FLights;
+         property Objects : TGLSceneRootObject read FObjects;
          property CurrentBuffer : TGLSceneBuffer read FCurrentBuffer;
 
       published
@@ -5072,7 +5072,9 @@ end;
 procedure TGLScene.SetObjectsSorting(const val : TGLObjectsSorting);
 begin
    if FObjectsSorting<>val then begin
-      FObjectsSorting:=val;
+      if val=osInherited then
+         FObjectsSorting:=osRenderBlendedLast
+      else FObjectsSorting:=val;
       NotifyChange(Self);
    end;
 end;
@@ -5082,7 +5084,9 @@ end;
 procedure TGLScene.SetVisibilityCulling(const val : TGLVisibilityCulling);
 begin
    if FVisibilityCulling<>val then begin
-      FVisibilityCulling:=val;
+      if val=vcInherited then
+         FVisibilityCulling:=vcNone
+      else FVisibilityCulling:=val;
       NotifyChange(Self);
    end;
 end;
