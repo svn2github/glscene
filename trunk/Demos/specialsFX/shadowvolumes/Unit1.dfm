@@ -155,6 +155,15 @@ object Form1: TForm1
       TabOrder = 8
       OnChange = ScrollBar_ShadowResolutionChange
     end
+    object Button_GenerateSilhouette: TButton
+      Left = 16
+      Top = 328
+      Width = 105
+      Height = 25
+      Caption = 'Generate Silhouette'
+      TabOrder = 9
+      OnClick = Button_GenerateSilhouetteClick
+    end
   end
   object GLScene1: TGLScene
     Left = 16
@@ -170,9 +179,9 @@ object Form1: TForm1
           Position.Coordinates = {0000000000008040000000000000803F}
           SpotCutOff = 180.000000000000000000
           object GLSphere1: TGLSphere
-            ShowAxes = True
             Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
             Material.MaterialOptions = [moNoLighting]
+            ShowAxes = True
             Radius = 0.150000005960464500
             Slices = 11
             Stacks = 11
@@ -255,8 +264,8 @@ object Form1: TForm1
         end>
       Options = [svoCacheSilhouettes, svoScissorClips, svoDesignVisible]
       object GLPlane1: TGLPlane
-        Position.Coordinates = {000000000000A040000020C10000803F}
         Material.FrontProperties.Ambient.Color = {00000000000000001283003F0000803F}
+        Position.Coordinates = {000000000000A040000020C10000803F}
         Height = 20.000000000000000000
         Width = 20.000000000000000000
         XTiles = 9
@@ -265,10 +274,10 @@ object Form1: TForm1
         NoZWrite = False
       end
       object GLPlane2: TGLPlane
+        Material.FrontProperties.Ambient.Color = {D7A3703E00000000000000000000803F}
         Direction.Coordinates = {0000803F000000000000000000000000}
         Position.Coordinates = {000020C10000A040000000000000803F}
         Up.Coordinates = {00000000FFFF7F3F0000008000000000}
-        Material.FrontProperties.Ambient.Color = {D7A3703E00000000000000000000803F}
         Height = 20.000000000000000000
         Width = 20.000000000000000000
         XTiles = 9
@@ -277,10 +286,10 @@ object Form1: TForm1
         NoZWrite = False
       end
       object GLPlane3: TGLPlane
+        Material.FrontProperties.Ambient.Color = {000000001283803E000000000000803F}
         Direction.Coordinates = {000000000000803F0000000000000000}
         Position.Coordinates = {00000000295C9FC0000000000000803F}
         Up.Coordinates = {0000000000000000000080BF00000000}
-        Material.FrontProperties.Ambient.Color = {000000001283803E000000000000803F}
         Height = 20.000000000000000000
         Width = 20.000000000000000000
         XTiles = 20
@@ -307,7 +316,7 @@ object Form1: TForm1
         Up.Coordinates = {0000803F000000000000000000000000}
         BottomRadius = 0.600000023841857900
         Height = 6.000000000000000000
-        TopRadius = 0.800000011920929000
+        TopRadius = 0.800000011920928900
       end
       object GLSphere4: TGLSphere
         Position.Coordinates = {00000000000000000000C0C00000803F}
@@ -319,6 +328,13 @@ object Form1: TForm1
           Stacks = 5
         end
       end
+    end
+    object GLLines1: TGLLines
+      LineWidth = 2.000000000000000000
+      Nodes = <>
+      NodesAspect = lnaInvisible
+      SplineMode = lsmSegments
+      Options = []
     end
   end
   object GLCadencer1: TGLCadencer

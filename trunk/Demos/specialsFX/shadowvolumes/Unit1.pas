@@ -6,7 +6,7 @@
 
    <b>History : </b><font size=-1><ul>
       <li>29/11/03 - MF - Items now self shadow, and a new cylinder was added.
-        Both changes are intended to demonstrate the problems of darkening. 
+        Both changes are intended to demonstrate the problems of darkening.
       <li>?/?/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
 }
@@ -18,7 +18,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCadencer, GLMisc, GLWin32Viewer, GLShadowVolume,
   ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD, GLTexture,
-  GLGeomObjects;
+  GLGeomObjects, GLSilhouette, VectorGeometry;
 
 type
   TForm1 = class(TForm)
@@ -61,6 +61,8 @@ type
     GLSphere_Shadow: TGLSphere;
     Label2: TLabel;
     ScrollBar_ShadowResolution: TScrollBar;
+    Button_GenerateSilhouette: TButton;
+    GLLines1: TGLLines;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -76,6 +78,7 @@ type
     procedure CBBlueLightClick(Sender: TObject);
     procedure CBRedLightClick(Sender: TObject);
     procedure ScrollBar_ShadowResolutionChange(Sender: TObject);
+    procedure Button_GenerateSilhouetteClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -203,4 +206,34 @@ begin
   GLSphere_Shadow.Slices := ScrollBar_ShadowResolution.Position;
   GLShadowVolume.FlushSilhouetteCache;
 end;
+
+procedure TForm1.Button_GenerateSilhouetteClick(Sender: TObject);
+var
+  silhouetteParameters : TGLSilhouetteParameters;
+  Silhouette : TGLSilhouette;
+  i : integer;
+  Target : TGLSceneObject;
+begin
+  Target := GLSphere4;
+
+  silhouetteParameters.CappingRequired := false;
+  silhouetteParameters.LightDirection :=
+    AffineVectorMake(
+      VectorSubtract(
+        Target.AbsolutePosition,
+        GLCamera.AbsolutePosition));
+  NormalizeVector(silhouetteParameters.LightDirection);
+  silhouetteParameters.SeenFrom := AffineVectorMake(GLCamera.AbsolutePosition);
+  silhouetteParameters.Style := ssOmni;
+
+  Silhouette := Target.GenerateSilhouette(silhouetteParameters);
+
+  GLLines1.Nodes.Clear;
+
+  for i := 0 to Silhouette.Indices.Count-1 do
+    GLLines1.Nodes.AddNode(Target.LocalToAbsolute(Silhouette.Vertices[Silhouette.Indices[i]]));
+
+  FreeAndNil(Silhouette);
+end;
+
 end.
