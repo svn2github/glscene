@@ -6832,7 +6832,7 @@ function FastArcTan2(y, x : Single) : Single;
 const
    cEpsilon : Single = 1e-10;
 var
-   abs_y, angle, r : Single;
+   abs_y : Single;
 begin
    abs_y:=Abs(y)+cEpsilon;      // prevent 0/0 condition
    if y<0 then begin
