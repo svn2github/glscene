@@ -41,9 +41,6 @@ object MainForm: TMainForm
     Height = 93
     Align = alTop
     TabOrder = 1
-    DesignSize = (
-      549
-      93)
     object Label1: TLabel
       Left = 8
       Top = 67
@@ -243,9 +240,6 @@ object MainForm: TMainForm
     Top = 144
     Width = 129
     Height = 21
-    BevelEdges = []
-    BevelInner = bvNone
-    BevelOuter = bvNone
     DropDownCount = 24
     ItemHeight = 13
     TabOrder = 4

@@ -14,7 +14,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, HeightTileFile, ActnList, StdCtrls, ExtCtrls, ComCtrls, ImgList,
-  ToolWin, G32_Image, G32, Menus;
+  ToolWin, G32_Image, G32, Menus, GR32_Image;
 
 type
   TViewerForm = class(TForm)
