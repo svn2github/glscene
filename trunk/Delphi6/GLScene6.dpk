@@ -135,6 +135,7 @@ contains
   GLGui in '..\Source\GLGui.pas',
   GLWindows in '..\Source\GLWindows.pas',
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
-  GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas' {GUISkinEditor};
+  GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas' {GUISkinEditor},
+  GLShadowPlane in '..\Source\GLShadowPlane.pas';
 
 end.
