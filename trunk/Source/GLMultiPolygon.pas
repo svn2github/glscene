@@ -3,6 +3,7 @@
    Object with support for complex polygons.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/07/02 - Egg - Code cleanups, dropped 'absolutes', fixed mem leaks
       <li>28/12/01 - Egg - Added registration (Philipp Pammler)
       <li>19/12/01 - Egg - Removed dependency to contnrs (D4 compatibility,
                            TObjectList replaced with TPersistentObjectList)
@@ -117,13 +118,13 @@ type
    //
    TPolygonList = class (TPersistentObjectList)
       private
-         FAktList: TAffineVectorList;
-         function GetList(I: Integer): TAffineVectorList;
+         FAktList : TAffineVectorList;
+         function GetList(I : Integer) : TAffineVectorList;
 
       public
          procedure Add;
-         property AktList:TAffineVectorList read FAktList;
-         property List[I:Integer]:TAffineVectorList read GetList;
+         property AktList : TAffineVectorList read FAktList;
+         property List[I : Integer] : TAffineVectorList read GetList;
    end;
 
    // TMultiPolygonBase
@@ -151,7 +152,7 @@ type
          procedure SetContours(const Value: TGLContours);
          function GetPath(i: Integer): TGLContourNodes;
          procedure SetPath(i: Integer; const value: TGLContourNodes);
-         function GetOutline: TPolygonList;
+         function GetOutline : TPolygonList;
          procedure SetContoursNormal(const Value: TAffineVector);
 
       protected
@@ -278,45 +279,50 @@ begin
   P := @(FAktArray[(FUsedEntries-1)*FEntrySize]);
 end;
 
-{ TPolygonList }
+// ------------------
+// ------------------ TPolygonList ------------------
+// ------------------
 
+// Add
+//
 procedure TPolygonList.Add;
 begin
-  FAktList := TAffineVectorList.Create;
-  inherited Add(FAktList);
+   FAktList:=TAffineVectorList.Create;
+   inherited Add(FAktList);
 end;
 
-function TPolygonList.GetList(I: Integer): TAffineVectorList;
+// GetList
+//
+function TPolygonList.GetList(i : Integer): TAffineVectorList;
 begin
-  result := TAffineVectorList(Items[I]);
+   Result:=TAffineVectorList(Items[i]);
 end;
 
-{ TNotifyCollection }
+// ------------------
+// ------------------ TNotifyCollection ------------------
+// ------------------
 
+// Create
+//
 constructor TNotifyCollection.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
 begin
-  inherited Create(AOwner,ItemClass);
-  if Assigned(AOwner) and (AOwner is TGLUpdateAbleComponent) then
-    OnNotifyChange := TGLUpdateAbleComponent(AOwner).NotifyChange;
+   inherited Create(AOwner,ItemClass);
+   if Assigned(AOwner) and (AOwner is TGLUpdateAbleComponent) then
+      OnNotifyChange:=TGLUpdateAbleComponent(AOwner).NotifyChange;
 end;
 
+// Update
+//
 procedure TNotifyCollection.Update(Item: TCollectionItem);
 begin
-  inherited;
-  if Assigned(FOnNotifyChange) then FOnNotifyChange(Self);
+   inherited;
+   if Assigned(FOnNotifyChange) then
+      FOnNotifyChange(Self);
 end;
 
-{ TGLContour }
-
-procedure TGLContour.Assign(Source: TPersistent);
-begin
-  if Source is TGLContour then begin
-    FNodes.Assign(TGLContour(Source).FNodes);
-    FDivision := TGLContour(Source).FDivision;
-    FSplineMode := TGLContour(Source).FSplineMode;
-    FDescription := TGLContour(Source).FDescription;
-  end else inherited;
-end;
+// ------------------
+// ------------------ TGLContour ------------------
+// ------------------
 
 constructor TGLContour.Create(Collection: TCollection);
 begin
@@ -335,6 +341,16 @@ destructor TGLContour.Destroy;
 begin
   FNodes.Free;
   inherited;
+end;
+
+procedure TGLContour.Assign(Source: TPersistent);
+begin
+  if Source is TGLContour then begin
+    FNodes.Assign(TGLContour(Source).FNodes);
+    FDivision := TGLContour(Source).FDivision;
+    FSplineMode := TGLContour(Source).FSplineMode;
+    FDescription := TGLContour(Source).FDescription;
+  end else inherited;
 end;
 
 function TGLContour.GetDisplayName: String;
@@ -405,19 +421,22 @@ end;
 
 { TMultiPolygonBase }
 
+// Create
+//
 constructor TMultiPolygonBase.Create(AOwner: TComponent);
 begin
-  inherited;
-  FContours := TGLContours.Create(Self);
-  FContours.OnNotifyChange := ContourChanged;
-  FContoursNormal := AffineVectorMake(0,0,1);
+   inherited;
+   FContours:=TGLContours.Create(Self);
+   FContours.OnNotifyChange:=ContourChanged;
+   FContoursNormal:=AffineVectorMake(0,0,1);
 end;
 
 // Destroy
 //
 destructor TMultiPolygonBase.Destroy;
 begin
-   FContours.Free; FContours := nil;
+   FOutline.Free;
+   FContours.Free;
    inherited;
 end;
 
@@ -425,80 +444,88 @@ end;
 //
 procedure TMultiPolygonBase.Assign(Source: TPersistent);
 begin
-  if Source is TMultiPolygonBase then begin
-    FContours.Assign(TMultiPolygonBase(Source).FContours);
-  end;
-  inherited;
+   if Source is TMultiPolygonBase then begin
+      FContours.Assign(TMultiPolygonBase(Source).FContours);
+   end;
+   inherited;
 end;
 
+// ContourChanged
+//
 procedure TMultiPolygonBase.ContourChanged(Sender: TObject);
 begin
-  // force a RetrieveOutline with next Render
-  FOutline.Free;
-  FOutline:=nil;
-  StructureChanged;
+   if Assigned(FOutline) then begin
+      // force a RetrieveOutline with next Render
+      FOutline.CleanFree;
+      FOutline:=nil;
+      StructureChanged;
+   end;
 end;
 
 // AddNode (vector)
 //
 procedure TMultiPolygonBase.AddNode(const i : Integer; const value : TVector);
 begin
-  Path[i].AddNode(value);
+   Path[i].AddNode(value);
 end;
 
 // AddNode (float)
 //
 procedure TMultiPolygonBase.AddNode(const i : Integer; const x, y, z : TGLfloat);
 begin
-  Path[i].AddNode(x, y, z);
+   Path[i].AddNode(x, y, z);
 end;
 
 // AddNode (coords)
 //
 procedure TMultiPolygonBase.AddNode(const i : Integer; const coords : TGLCoordinates);
 begin
-  Path[i].AddNode(coords);
+   Path[i].AddNode(coords);
 end;
 
 // AddNode (affine vector)
 //
 procedure TMultiPolygonBase.AddNode(const I: Integer; const value: TAffineVector);
 begin
-  Path[i].AddNode(value);
+   Path[i].AddNode(value);
 end;
 
 // Assign
 //
 procedure TMultiPolygonBase.SetContours(const Value: TGLContours);
 begin
-  FContours.Assign(Value);
+   FContours.Assign(Value);
 end;
 
-function TMultiPolygonBase.GetOutline: TPolygonList;
+// GetOutline
+//
+function TMultiPolygonBase.GetOutline : TPolygonList;
 begin
-  if not Assigned(FOutline) then begin
-    FOutline := TPolygonList.Create;
-    RetrieveOutline(FOutline);
-  end;
-  result := FOutline;
+   if not Assigned(FOutline) then begin
+      FOutline:=TPolygonList.Create;
+      RetrieveOutline(FOutline);
+   end;
+   Result:=FOutline;
 end;
 
 // GetContour
 //
 function TMultiPolygonBase.GetPath(i : Integer): TGLContourNodes;
 begin
-  Assert(i>=0);
-  while i>=Contours.Count do Contours.Add;
-  Result:=Contours[i].Nodes;
+   Assert(i>=0);
+   while i>=Contours.Count do
+      Contours.Add;
+   Result:=Contours[i].Nodes;
 end;
 
 // SetContour
 //
 procedure TMultiPolygonBase.SetPath(i : Integer; const value: TGLContourNodes);
 begin
-  Assert(i>=0);
-  while i>=Contours.Count do Contours.Add;
-  Contours[i].Nodes.Assign(value);
+   Assert(i>=0);
+   while i>=Contours.Count do
+      Contours.Add;
+   Contours[i].Nodes.Assign(value);
 end;
 
 //
@@ -506,124 +533,132 @@ end;
 //
 
 var
-  vVertexPool : TVectorPool;
+   vVertexPool : TVectorPool;
 
 procedure tessError(errno : TGLEnum); stdcall;
 begin
-  Assert(False, IntToStr(errno)+' : '+gluErrorString(errno));
+   Assert(False, IntToStr(errno)+' : '+gluErrorString(errno));
 end;
 
 procedure tessIssueVertex(vertexData : Pointer); stdcall;
 begin
-  xglTexCoord2fv(vertexData);
-  glVertex3fv(vertexData);
+   xglTexCoord2fv(vertexData);
+   glVertex3fv(vertexData);
 end;
 
 procedure tessCombine(coords : PDoubleVector; vertex_data : Pointer;
                       weight : PGLFloat; var outData : Pointer); stdcall;
 begin
-  vVertexPool.GetNewVector(outData);
-  SetVector(PAffineVector(outData)^, coords[0], coords[1], coords[2]);
+   vVertexPool.GetNewVector(outData);
+   SetVector(PAffineVector(outData)^, coords[0], coords[1], coords[2]);
 end;
 
-procedure tessBeginList(typ:TGLEnum; polygonData:Pointer); stdcall;
-var
-  List : ^TPolygonList absolute polygonData;
+procedure tessBeginList(typ : TGLEnum; polygonData : Pointer); stdcall;
 begin
-  List.Add;
+   TPolygonList(polygonData).Add;
 end;
 
-procedure tessIssueVertexList(vertexData : Pointer; polygonData:Pointer); stdcall;
-var
-  List : ^TPolygonList absolute polygonData;
-  Pvtx : PAffineVector absolute vertexData;
+procedure tessIssueVertexList(vertexData : Pointer; polygonData : Pointer); stdcall;
 begin
-  List.AktList.Add(Pvtx^);
+   TPolygonList(polygonData).AktList.Add(PAffineVector(vertexData)^);
 end;
 
 procedure TMultiPolygonBase.RetrieveOutline(List: TPolygonList);
 var
-  i,n : Integer;
-  tess : PGLUTesselator;
+   i, n : Integer;
+   tess : PGLUTesselator;
 
-  procedure TesselatePath(contour:TGLContour; inverted:Boolean);
+   procedure TesselatePath(contour:TGLContour; inverted:Boolean);
 
-    procedure IssueVertex(v:TAffineVector);
-    var
-      dblVector : TAffineDblVector;
-      p : PAffineVector;
-    begin
-      vVertexPool.GetNewVector(Pointer(p));
-      p^ := v;
-      SetVector(dblVector, v);
-      gluTessVertex(tess, dblVector, p);
-    end;
-
-  var
-    i,n : integer;
-    spline : TCubicSpline;
-    f : Single;
-    splineDivisions : Integer;
-    nodes : TGLContourNodes;
-  begin
-    gluTessBeginContour(tess);
-    nodes := contour.Nodes;
-    if contour.SplineMode=lsmLines then splineDivisions := 0
-    else splineDivisions := contour.Division;
-    if splineDivisions>1 then begin
-      spline := nodes.CreateNewCubicSpline;
-      try
-        f:=1/splineDivisions;
-        n := splineDivisions*(nodes.Count-1);
-        if inverted then for i:=n downto 0 do IssueVertex(spline.SplineAffineVector(i*f))
-        else for i:=0 to n do IssueVertex(spline.SplineAffineVector(i*f));
-      finally
-        spline.Free;
+      procedure IssueVertex(v : TAffineVector);
+      var
+         dblVector : TAffineDblVector;
+         p : PAffineVector;
+      begin
+         vVertexPool.GetNewVector(Pointer(p));
+         p^:=v;
+         SetVector(dblVector, v);
+         gluTessVertex(tess, dblVector, p);
       end;
-    end else begin
-      n := nodes.Count-1;
-      if inverted then for i:=n downto 0 do IssueVertex(nodes[i].AsAffineVector)
-      else for i:=0 to n do IssueVertex(nodes[i].AsAffineVector);
-    end;
-    gluTessEndContour(tess);
-  end;
+
+   var
+      i, n : Integer;
+      spline : TCubicSpline;
+      f : Single;
+      splineDivisions : Integer;
+      nodes : TGLContourNodes;
+   begin
+      gluTessBeginContour(tess);
+      nodes:=contour.Nodes;
+      if contour.SplineMode=lsmLines then
+         splineDivisions:=0
+      else splineDivisions:=contour.Division;
+      if splineDivisions>1 then begin
+         spline:=nodes.CreateNewCubicSpline;
+         try
+            f:=1/splineDivisions;
+            n:=splineDivisions*(nodes.Count-1);
+            if inverted then begin
+               for i:=n downto 0 do
+                  IssueVertex(spline.SplineAffineVector(i*f))
+            end else begin
+               for i:=0 to n do
+                  IssueVertex(spline.SplineAffineVector(i*f));
+            end;
+        finally
+           spline.Free;
+        end;
+      end else begin
+         n:=nodes.Count-1;
+         if inverted then begin
+            for i:=n downto 0 do
+               IssueVertex(nodes[i].AsAffineVector)
+         end else begin
+            for i:=0 to n do
+               IssueVertex(nodes[i].AsAffineVector);
+         end;
+      end;
+      gluTessEndContour(tess);
+   end;
 
 begin
-  List.Clear;
-  if (Contours.Count>0) and (Path[0].Count>2) then begin
-    // Vertex count
-    n:=0;
-    for i:=0 to Contours.Count-1 do n:=n+Path[i].Count;
-    // Create and initialize the GLU tesselator
-    vVertexPool := TVectorPool.Create(n,Sizeof(TAffineVector));
-    tess:=gluNewTess;
-    try
-      // register callbacks
-      gluTessCallback(tess, GLU_TESS_BEGIN_DATA, @tessBeginList);
-      gluTessCallback(tess, GLU_TESS_END_DATA, nil);
-      gluTessCallback(tess, GLU_TESS_VERTEX_DATA, @tessIssueVertexList);
-      gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
-      gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
+   List.Clear;
+   if (Contours.Count>0) and (Path[0].Count>2) then begin
+      // Vertex count
+      n:=0;
+      for i:=0 to Contours.Count-1 do
+         n:=n+Path[i].Count;
+      // Create and initialize the GLU tesselator
+      vVertexPool:=TVectorPool.Create(n, SizeOf(TAffineVector));
+      tess:=gluNewTess;
+      try
+         // register callbacks
+         gluTessCallback(tess, GLU_TESS_BEGIN_DATA, @tessBeginList);
+         gluTessCallback(tess, GLU_TESS_END_DATA, nil);
+         gluTessCallback(tess, GLU_TESS_VERTEX_DATA, @tessIssueVertexList);
+         gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
+         gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
 
-      // issue normal
-      gluTessNormal(tess, FContoursNormal[0], FContoursNormal[1], FContoursNormal[2]);
+         // issue normal
+         gluTessNormal(tess, FContoursNormal[0], FContoursNormal[1], FContoursNormal[2]);
 
-      // set properties
-      gluTessProperty(Tess,GLU_TESS_WINDING_RULE,GLU_TESS_WINDING_POSITIVE);
-      gluTessProperty(Tess,GLU_TESS_BOUNDARY_ONLY,GL_TRUE);
+         // set properties
+         gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
+         gluTessProperty(Tess, GLU_TESS_BOUNDARY_ONLY, GL_TRUE);
 
-      gluTessBeginPolygon(tess, @List);
-      // outside contour
-      TesselatePath(Contours[0],false);
-      // inside contours
-      for n:=1 to Contours.Count-1 do TesselatePath(Contours[n],true);
-      gluTessEndPolygon(tess);
-    finally
-      gluDeleteTess(tess);
-      vVertexPool.Free;
-      vVertexPool:=nil;
-    end;
-  end;
+         gluTessBeginPolygon(tess, List);
+         // outside contour
+         TesselatePath(Contours[0], False);
+         // inside contours
+         for n:=1 to Contours.Count-1 do
+            TesselatePath(Contours[n], True);
+         gluTessEndPolygon(tess);
+      finally
+         gluDeleteTess(tess);
+         vVertexPool.Free;
+         vVertexPool:=nil;
+      end;
+   end;
 end;
 
 // RenderTesselatedPolygon

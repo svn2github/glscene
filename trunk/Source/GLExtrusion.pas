@@ -1198,52 +1198,55 @@ var
    invertedNormals : Boolean;
    normal : TAffineVector;
 begin
-  if Outline.Count<1 then Exit;
-  deltaZ:=FHeight/FStacks;
-  deltaS:=1/FStacks;
-  invertedNormals:=(FNormalDirection=ndInside);
-  FTriangleCount:=0;
-  // generate sides
-  if (FHeight<>0) and ((espInside in FParts) or (espOutside in FParts)) then begin
-    for n:=0 to Outline.Count-1 do begin
-      with Outline.List[n] do
-      if count>1 then begin
-        if espInside in Parts then begin
-          CalcNormal(List[count-1],List[0],lastNormal);
-          if not InvertedNormals then NegateVector(lastNormal);
-          for i:=0 to Count-2 do begin
-            BuildStep(List[i],List[i+1], not invertedNormals, i/(Count-1), (i+1)/(Count-1));
-          end;
-          BuildStep(List[count-1],List[0], not invertedNormals, 1, 0);
-        end;
-        if espOutside in Parts then begin
-          CalcNormal(List[count-1],List[0],lastNormal);
-          if InvertedNormals then NegateVector(lastNormal);
-          for i:=0 to Count-2 do begin
-            BuildStep(List[i],List[i+1], invertedNormals, i/(Count-1), (i+1)/(Count-1));
-          end;
-          BuildStep(List[count-1],List[0], invertedNormals, 1, 0);
-        end;
+   if Outline.Count<1 then Exit;
+   deltaZ:=FHeight/FStacks;
+   deltaS:=1/FStacks;
+   invertedNormals:=(FNormalDirection=ndInside);
+   FTriangleCount:=0;
+   // generate sides
+   if (FHeight<>0) and ((espInside in FParts) or (espOutside in FParts)) then begin
+      for n:=0 to Outline.Count-1 do begin
+         with Outline.List[n] do if count>1 then begin
+            if espInside in Parts then begin
+               CalcNormal(List[count-1],List[0],lastNormal);
+               if not InvertedNormals then
+                  NegateVector(lastNormal);
+               for i:=0 to Count-2 do begin
+                  BuildStep(List[i], List[i+1], not invertedNormals,
+                            i/(Count-1), (i+1)/(Count-1));
+               end;
+               BuildStep(List[count-1], List[0], not invertedNormals, 1, 0);
+            end;
+            if espOutside in Parts then begin
+               CalcNormal(List[count-1], List[0], lastNormal);
+               if InvertedNormals then
+                  NegateVector(lastNormal);
+               for i:=0 to Count-2 do begin
+                  BuildStep(List[i],List[i+1], invertedNormals,
+                            i/(Count-1), (i+1)/(Count-1));
+               end;
+               BuildStep(List[count-1],List[0], invertedNormals, 1, 0);
+            end;
+         end;
       end;
-    end;
-    xglTexCoord2fv(@NullTexPoint);
-  end;
-  // tessellate start/stop polygons
-  if (espStartPolygon in FParts) or (espStopPolygon in FParts) then begin
-     normal:=ContoursNormal;
-     // tessellate stop polygon
-     if espStopPolygon in FParts then begin
-       glPushMatrix;
-       glTranslatef(0, 0, FHeight);
-       RenderTesselatedPolygon(true, @normal, invertedNormals);
-       glPopMatrix;
-     end;
-     // tessellate start polygon
-     if espStartPolygon in FParts then begin
-       NegateVector(normal);
-       RenderTesselatedPolygon(true, @normal, not invertedNormals);
-     end;
-  end;
+      xglTexCoord2fv(@NullTexPoint);
+   end;
+   // tessellate start/stop polygons
+   if (espStartPolygon in FParts) or (espStopPolygon in FParts) then begin
+      normal:=ContoursNormal;
+      // tessellate stop polygon
+      if espStopPolygon in FParts then begin
+         glPushMatrix;
+         glTranslatef(0, 0, FHeight);
+         RenderTesselatedPolygon(true, @normal, invertedNormals);
+         glPopMatrix;
+      end;
+      // tessellate start polygon
+      if espStartPolygon in FParts then begin
+         NegateVector(normal);
+         RenderTesselatedPolygon(true, @normal, not invertedNormals);
+      end;
+   end;
 end;
 
 // Create
