@@ -6624,229 +6624,229 @@ var
    glIsFenceNV: function(fence: TGLuint): TGLboolean; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glGetFenceivNV: procedure(fence: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
 
-  // GL_MESA_resize_buffers
-  glResizeBuffersMESA: procedure; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glResizeBuffersMESA}
+   // GL_MESA_resize_buffers
+   glResizeBuffersMESA: procedure; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glResizeBuffersMESA}
 
-  // GL_MESA_window_pos
-  glWindowPos2dMESA: procedure(x, y: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2dMESA}
-  glWindowPos2dvMESA: procedure(v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2dvMESA}
-  glWindowPos2fMESA: procedure(x, y: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2fMESA}
-  glWindowPos2fvMESA: procedure(v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2fvMESA}
-  glWindowPos2iMESA: procedure(x, y: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2iMESA}
-  glWindowPos2ivMESA: procedure(v: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2ivMESA}
-  glWindowPos2sMESA: procedure(x, y: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2sMESA}
-  glWindowPos2svMESA: procedure(v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos2svMESA}
-  glWindowPos3dMESA: procedure(x, y, z: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3dMESA}
-  glWindowPos3dvMESA: procedure(v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3dvMESA}
-  glWindowPos3fMESA: procedure(x, y, z: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3fMESA}
-  glWindowPos3fvMESA: procedure(v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3fvMESA}
-  glWindowPos3iMESA: procedure(x, y, z: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3iMESA}
-  glWindowPos3ivMESA: procedure(v: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3ivMESA}
-  glWindowPos3sMESA: procedure(x, y, z: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3sMESA}
-  glWindowPos3svMESA: procedure(v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos3svMESA}
-  glWindowPos4dMESA: procedure(x, y, z, w: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4dMESA}
-  glWindowPos4dvMESA: procedure(v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4dvMESA}
-  glWindowPos4fMESA: procedure(x, y, z, w: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4fMESA}
-  glWindowPos4fvMESA: procedure(v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4fvMESA}
-  glWindowPos4iMESA: procedure(x, y, z, w: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4iMESA}
-  glWindowPos4ivMESA: procedure(v: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4ivMESA}
-  glWindowPos4sMESA: procedure(x, y, z, w: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4sMESA}
-  glWindowPos4svMESA: procedure(v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glWindowPos4svMESA}
+   // GL_MESA_window_pos
+   glWindowPos2dMESA: procedure(x, y: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2dMESA}
+   glWindowPos2dvMESA: procedure(v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2dvMESA}
+   glWindowPos2fMESA: procedure(x, y: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2fMESA}
+   glWindowPos2fvMESA: procedure(v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2fvMESA}
+   glWindowPos2iMESA: procedure(x, y: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2iMESA}
+   glWindowPos2ivMESA: procedure(v: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2ivMESA}
+   glWindowPos2sMESA: procedure(x, y: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2sMESA}
+   glWindowPos2svMESA: procedure(v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos2svMESA}
+   glWindowPos3dMESA: procedure(x, y, z: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3dMESA}
+   glWindowPos3dvMESA: procedure(v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3dvMESA}
+   glWindowPos3fMESA: procedure(x, y, z: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3fMESA}
+   glWindowPos3fvMESA: procedure(v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3fvMESA}
+   glWindowPos3iMESA: procedure(x, y, z: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3iMESA}
+   glWindowPos3ivMESA: procedure(v: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3ivMESA}
+   glWindowPos3sMESA: procedure(x, y, z: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3sMESA}
+   glWindowPos3svMESA: procedure(v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos3svMESA}
+   glWindowPos4dMESA: procedure(x, y, z, w: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4dMESA}
+   glWindowPos4dvMESA: procedure(v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4dvMESA}
+   glWindowPos4fMESA: procedure(x, y, z, w: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4fMESA}
+   glWindowPos4fvMESA: procedure(v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4fvMESA}
+   glWindowPos4iMESA: procedure(x, y, z, w: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4iMESA}
+   glWindowPos4ivMESA: procedure(v: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4ivMESA}
+   glWindowPos4sMESA: procedure(x, y, z, w: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4sMESA}
+   glWindowPos4svMESA: procedure(v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glWindowPos4svMESA}
 
-  // GL_IBM_multimode_draw_arrays
-  glMultiModeDrawArraysIBM: procedure(mode: TGLenum; First: PGLint; Count: PGLsizei; primcount: TGLsizei; modestride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glMultiModeDrawArraysIBM}
-  glMultiModeDrawElementsIBM: procedure(mode: PGLenum; Count: PGLsizei; Atype: TGLenum; var indices; primcount: TGLsizei; modestride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glMultiModeDrawElementsIBM}
+   // GL_IBM_multimode_draw_arrays
+   glMultiModeDrawArraysIBM: procedure(mode: TGLenum; First: PGLint; Count: PGLsizei; primcount: TGLsizei; modestride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glMultiModeDrawArraysIBM}
+   glMultiModeDrawElementsIBM: procedure(mode: PGLenum; Count: PGLsizei; Atype: TGLenum; var indices; primcount: TGLsizei; modestride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glMultiModeDrawElementsIBM}
 
-  // GL_IBM_vertex_array_lists
-  glColorPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glColorPointerListIBM}
-  glSecondaryColorPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glSecondaryColorPointerListIBM}
-  glEdgeFlagPointerListIBM: procedure(stride: TGLint; var p: PGLboolean; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glEdgeFlagPointerListIBM}
-  glFogCoordPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glFogCoordPointerListIBM}
-  glIndexPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glIndexPointerListIBM}
-  glNormalPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glNormalPointerListIBM}
-  glTexCoordPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glTexCoordPointerListIBM}
-  glVertexPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexPointerListIBM}
+   // GL_IBM_vertex_array_lists
+   glColorPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glColorPointerListIBM}
+   glSecondaryColorPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glSecondaryColorPointerListIBM}
+   glEdgeFlagPointerListIBM: procedure(stride: TGLint; var p: PGLboolean; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glEdgeFlagPointerListIBM}
+   glFogCoordPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glFogCoordPointerListIBM}
+   glIndexPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glIndexPointerListIBM}
+   glNormalPointerListIBM: procedure(Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glNormalPointerListIBM}
+   glTexCoordPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glTexCoordPointerListIBM}
+   glVertexPointerListIBM: procedure(Size: TGLint; Atype: TGLenum; stride: TGLint; var p; ptrstride: TGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexPointerListIBM}
 
-  // GL_3DFX_tbuffer
-  glTbufferMask3DFX: procedure(mask: TGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glTbufferMask3DFX}
+   // GL_3DFX_tbuffer
+   glTbufferMask3DFX: procedure(mask: TGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glTbufferMask3DFX}
 
-  // GL_EXT_multisample
-  glSampleMaskEXT: procedure(Value: TGLclampf; invert: TGLboolean); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glSampleMaskEXT}
-  glSamplePatternEXT: procedure(pattern: TGLenum); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glSamplePatternEXT}
+   // GL_EXT_multisample
+   glSampleMaskEXT: procedure(Value: TGLclampf; invert: TGLboolean); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glSampleMaskEXT}
+   glSamplePatternEXT: procedure(pattern: TGLenum); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glSamplePatternEXT}
 
-  // GL_SGIS_texture_color_mask
-  glTextureColorMaskSGIS: procedure(red, green, blue, alpha: TGLboolean); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glTextureColorMaskSGIS}
+   // GL_SGIS_texture_color_mask
+   glTextureColorMaskSGIS: procedure(red, green, blue, alpha: TGLboolean); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glTextureColorMaskSGIS}
 
-  // GL_SGIX_igloo_interface
-  glIglooInterfaceSGIX: procedure(pname: TGLenum; params: pointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glIglooInterfaceSGIX}
+   // GL_SGIX_igloo_interface
+   glIglooInterfaceSGIX: procedure(pname: TGLenum; params: pointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glIglooInterfaceSGIX}
 
-  // GL_NV_vertex_program
-  glAreProgramsResidentNV: procedure(n: TGLSizei; programs: PGLuint; residences: PGLboolean); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glAreProgramsResidentNV}
-  glBindProgramNV: procedure(target: TGLenum; id: TGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glBindProgramNV}
-  glDeleteProgramsNV: procedure(n: TGLSizei; programs: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glDeleteProgramsNV}
-  glExecuteProgramNV: procedure(target: TGLenum; id: TGLuint; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glExecuteProgramNV}
-  glGenProgramsNV: procedure(n: TGLSizei; programs: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGenProgramsNV}
-  glGetProgramParameterdvNV: procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetProgramParameterdvNV}
-  glGetProgramParameterfvNV: procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetProgramParameterfvNV}
-  glGetProgramivNV: procedure (id: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetProgramivNV}
-  glGetProgramStringNV: procedure (id: TGLuint; pname: TGLenum; programIdx: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetProgramStringNV}
-  glGetTrackMatrixivNV: procedure (target: TGLenum; address: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetTrackMatrixivNV}
-  glGetVertexAttribdvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetVertexAttribdvNV}
-  glGetVertexAttribfvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetVertexAttribfvNV}
-  glGetVertexAttribivNV: procedure (index: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetVertexAttribivNV}
-  glGetVertexAttribPointervNV: procedure (index: TGLuint; pname: TGLenum; pointer: PPointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glGetVertexAttribPointervNV}
-  glIsProgramNV: function (id: TGLuint): TGLboolean; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glIsProgramNV}
-  glLoadProgramNV: procedure (target: TGLenum; id: TGLuint; len: TGLSizei; programIdx: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glLoadProgramNV}
-  glProgramParameter4dNV: procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glProgramParameter4dNV}
-  glProgramParameter4dvNV: procedure (target: TGLenum; index: TGLuint; v: PGLdouble ); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glProgramParameter4dvNV}
-  glProgramParameter4fNV: procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glProgramParameter4fNV}
-  glProgramParameter4fvNV: procedure (target: TGLenum; index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glProgramParameter4fvNV}
-  glProgramParameters4dvNV: procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glProgramParameters4dvNV}
-  glProgramParameters4fvNV: procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glProgramParameters4fvNV}
-  glRequestResidentProgramsNV: procedure (n: TGLSizei; programs: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glRequestResidentProgramsNV}
-  glTrackMatrixNV: procedure (target: TGLenum; address: TGLuint; matrix: TGLenum; transform: TGLenum); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glTrackMatrixNV}
-  glVertexAttribPointerNV: procedure (index: TGLuint; fsize: TGLint; vertextype: TGLenum; stride: TGLSizei; pointer: Pointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribPointerNV}
-  glVertexAttrib1dNV: procedure (index: TGLuint; x: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib1dNV}
-  glVertexAttrib1dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib1dvNV}
-  glVertexAttrib1fNV: procedure (index: TGLuint; x: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib1fNV}
-  glVertexAttrib1fvNV: procedure (index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib1fvNV}
-  glVertexAttrib1sNV: procedure (index: TGLuint; x: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib1sNV}
-  glVertexAttrib1svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib1svNV}
-  glVertexAttrib2dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib2dNV}
-  glVertexAttrib2dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib2dvNV}
-  glVertexAttrib2fNV: procedure (index: TGLuint; x: TGLfloat; y: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib2fNV}
-  glVertexAttrib2fvNV: procedure (index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib2fvNV}
-  glVertexAttrib2sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib2sNV}
-  glVertexAttrib2svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib2svNV}
-  glVertexAttrib3dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib3dNV}
-  glVertexAttrib3dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib3dvNV}
-  glVertexAttrib3fNV: procedure (index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib3fNV}
-  glVertexAttrib3fvNV: procedure (index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib3fvNV}
-  glVertexAttrib3sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib3sNV}
-  glVertexAttrib3svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib3svNV}
-  glVertexAttrib4dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib4dNV}
-  glVertexAttrib4dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib4dvNV}
-  glVertexAttrib4fNV: procedure(index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat; w: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib4fNV}
-  glVertexAttrib4fvNV: procedure(index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib4fvNV}
-  glVertexAttrib4sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLdouble; w: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib4sNV}
-  glVertexAttrib4svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib4svNV}
-  glVertexAttrib4ubvNV: procedure (index: TGLuint; v: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttrib4ubvNV}
-  glVertexAttribs1dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs1dvNV}
-  glVertexAttribs1fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs1fvNV}
-  glVertexAttribs1svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs1svNV}
-  glVertexAttribs2dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs2dvNV}
-  glVertexAttribs2fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs2fvNV}
-  glVertexAttribs2svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs2svNV}
-  glVertexAttribs3dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs3dvNV}
-  glVertexAttribs3fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs3fvNV}
-  glVertexAttribs3svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs3svNV}
-  glVertexAttribs4dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs4dvNV}
-  glVertexAttribs4fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs4fvNV}
-  glVertexAttribs4svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs4svNV}
-  glVertexAttribs4ubvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glVertexAttribs4ubvNV}
+   // GL_NV_vertex_program
+   glAreProgramsResidentNV: procedure(n: TGLSizei; programs: PGLuint; residences: PGLboolean); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glAreProgramsResidentNV}
+   glBindProgramNV: procedure(target: TGLenum; id: TGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glBindProgramNV}
+   glDeleteProgramsNV: procedure(n: TGLSizei; programs: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glDeleteProgramsNV}
+   glExecuteProgramNV: procedure(target: TGLenum; id: TGLuint; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glExecuteProgramNV}
+   glGenProgramsNV: procedure(n: TGLSizei; programs: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGenProgramsNV}
+   glGetProgramParameterdvNV: procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetProgramParameterdvNV}
+   glGetProgramParameterfvNV: procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetProgramParameterfvNV}
+   glGetProgramivNV: procedure (id: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetProgramivNV}
+   glGetProgramStringNV: procedure (id: TGLuint; pname: TGLenum; programIdx: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetProgramStringNV}
+   glGetTrackMatrixivNV: procedure (target: TGLenum; address: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetTrackMatrixivNV}
+   glGetVertexAttribdvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetVertexAttribdvNV}
+   glGetVertexAttribfvNV: procedure (index: TGLuint; pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetVertexAttribfvNV}
+   glGetVertexAttribivNV: procedure (index: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetVertexAttribivNV}
+   glGetVertexAttribPointervNV: procedure (index: TGLuint; pname: TGLenum; pointer: PPointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glGetVertexAttribPointervNV}
+   glIsProgramNV: function (id: TGLuint): TGLboolean; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glIsProgramNV}
+   glLoadProgramNV: procedure (target: TGLenum; id: TGLuint; len: TGLSizei; programIdx: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glLoadProgramNV}
+   glProgramParameter4dNV: procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glProgramParameter4dNV}
+   glProgramParameter4dvNV: procedure (target: TGLenum; index: TGLuint; v: PGLdouble ); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glProgramParameter4dvNV}
+   glProgramParameter4fNV: procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glProgramParameter4fNV}
+   glProgramParameter4fvNV: procedure (target: TGLenum; index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glProgramParameter4fvNV}
+   glProgramParameters4dvNV: procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glProgramParameters4dvNV}
+   glProgramParameters4fvNV: procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glProgramParameters4fvNV}
+   glRequestResidentProgramsNV: procedure (n: TGLSizei; programs: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glRequestResidentProgramsNV}
+   glTrackMatrixNV: procedure (target: TGLenum; address: TGLuint; matrix: TGLenum; transform: TGLenum); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glTrackMatrixNV}
+   glVertexAttribPointerNV: procedure (index: TGLuint; fsize: TGLint; vertextype: TGLenum; stride: TGLSizei; pointer: Pointer); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribPointerNV}
+   glVertexAttrib1dNV: procedure (index: TGLuint; x: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib1dNV}
+   glVertexAttrib1dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib1dvNV}
+   glVertexAttrib1fNV: procedure (index: TGLuint; x: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib1fNV}
+   glVertexAttrib1fvNV: procedure (index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib1fvNV}
+   glVertexAttrib1sNV: procedure (index: TGLuint; x: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib1sNV}
+   glVertexAttrib1svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib1svNV}
+   glVertexAttrib2dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib2dNV}
+   glVertexAttrib2dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib2dvNV}
+   glVertexAttrib2fNV: procedure (index: TGLuint; x: TGLfloat; y: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib2fNV}
+   glVertexAttrib2fvNV: procedure (index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib2fvNV}
+   glVertexAttrib2sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib2sNV}
+   glVertexAttrib2svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib2svNV}
+   glVertexAttrib3dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib3dNV}
+   glVertexAttrib3dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib3dvNV}
+   glVertexAttrib3fNV: procedure (index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib3fNV}
+   glVertexAttrib3fvNV: procedure (index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib3fvNV}
+   glVertexAttrib3sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib3sNV}
+   glVertexAttrib3svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib3svNV}
+   glVertexAttrib4dNV: procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib4dNV}
+   glVertexAttrib4dvNV: procedure (index: TGLuint; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib4dvNV}
+   glVertexAttrib4fNV: procedure(index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat; w: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib4fNV}
+   glVertexAttrib4fvNV: procedure(index: TGLuint; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib4fvNV}
+   glVertexAttrib4sNV: procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLdouble; w: TGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib4sNV}
+   glVertexAttrib4svNV: procedure (index: TGLuint; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib4svNV}
+   glVertexAttrib4ubvNV: procedure (index: TGLuint; v: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttrib4ubvNV}
+   glVertexAttribs1dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs1dvNV}
+   glVertexAttribs1fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs1fvNV}
+   glVertexAttribs1svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs1svNV}
+   glVertexAttribs2dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs2dvNV}
+   glVertexAttribs2fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs2fvNV}
+   glVertexAttribs2svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs2svNV}
+   glVertexAttribs3dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs3dvNV}
+   glVertexAttribs3fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs3fvNV}
+   glVertexAttribs3svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs3svNV}
+   glVertexAttribs4dvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs4dvNV}
+   glVertexAttribs4fvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs4fvNV}
+   glVertexAttribs4svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs4svNV}
+   glVertexAttribs4ubvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLubyte); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   {$EXTERNALSYM glVertexAttribs4ubvNV}
 
 {$ifdef LINUX}
 type
@@ -6978,9 +6978,11 @@ function IsOpenGLInitialized: Boolean;
 
 // Compatibility routines
 procedure UnloadOpenGL;
-function LoadOpenGL: Boolean;
+function LoadOpenGL : Boolean;
 function LoadOpenGLFromLibrary(GLName, GLUName: String): Boolean;
-function IsOpenGLLoaded: Boolean;
+//: True if OpenGL is loaded
+function IsOpenGLLoaded : Boolean;
+function IsMesaGL : Boolean;
 
 {$ifdef Win32}
 procedure ActivateRenderingContext(DC: HDC; RC: HGLRC); 
@@ -7077,7 +7079,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure LoadProcAddresses; 
+procedure LoadProcAddresses;
 var
   Handle: Cardinal;
 begin
@@ -7098,7 +7100,7 @@ begin
     glClear := GetProcAddress(Handle, 'glClear'); 
     glClearAccum := GetProcAddress(Handle, 'glClearAccum'); 
     glClearColor := GetProcAddress(Handle, 'glClearColor'); 
-    glClearDepth := GetProcAddress(Handle, 'glClearDepth'); 
+    glClearDepth := GetProcAddress(Handle, 'glClearDepth');
     glClearIndex := GetProcAddress(Handle, 'glClearIndex'); 
     glClearStencil := GetProcAddress(Handle, 'glClearStencil'); 
     glClipPlane := GetProcAddress(Handle, 'glClipPlane'); 
@@ -7119,7 +7121,7 @@ begin
     glColor3us := GetProcAddress(Handle, 'glColor3us');
     glColor3usv := GetProcAddress(Handle, 'glColor3usv'); 
     glColor4b := GetProcAddress(Handle, 'glColor4b'); 
-    glColor4bv := GetProcAddress(Handle, 'glColor4bv'); 
+    glColor4bv := GetProcAddress(Handle, 'glColor4bv');
     glColor4d := GetProcAddress(Handle, 'glColor4d'); 
     glColor4dv := GetProcAddress(Handle, 'glColor4dv'); 
     glColor4f := GetProcAddress(Handle, 'glColor4f'); 
@@ -7140,7 +7142,7 @@ begin
     glCopyPixels := GetProcAddress(Handle, 'glCopyPixels'); 
     glCopyTexImage1D := GetProcAddress(Handle, 'glCopyTexImage1D'); 
     glCopyTexImage2D := GetProcAddress(Handle, 'glCopyTexImage2D');
-    glCopyTexSubImage1D := GetProcAddress(Handle, 'glCopyTexSubImage1D'); 
+    glCopyTexSubImage1D := GetProcAddress(Handle, 'glCopyTexSubImage1D');
     glCopyTexSubImage2D := GetProcAddress(Handle, 'glCopyTexSubImage2D'); 
     glCullFace := GetProcAddress(Handle, 'glCullFace'); 
     glDeleteLists := GetProcAddress(Handle, 'glDeleteLists'); 
@@ -7161,7 +7163,7 @@ begin
     glEnableClientState := GetProcAddress(Handle, 'glEnableClientState'); 
     glEnd := GetProcAddress(Handle, 'glEnd');
     glEndList := GetProcAddress(Handle, 'glEndList'); 
-    glEvalCoord1d := GetProcAddress(Handle, 'glEvalCoord1d'); 
+    glEvalCoord1d := GetProcAddress(Handle, 'glEvalCoord1d');
     glEvalCoord1dv := GetProcAddress(Handle, 'glEvalCoord1dv');
     glEvalCoord1f := GetProcAddress(Handle, 'glEvalCoord1f'); 
     glEvalCoord1fv := GetProcAddress(Handle, 'glEvalCoord1fv'); 
@@ -7182,7 +7184,7 @@ begin
     glFogiv := GetProcAddress(Handle, 'glFogiv'); 
     glFrontFace := GetProcAddress(Handle, 'glFrontFace'); 
     glFrustum := GetProcAddress(Handle, 'glFrustum'); 
-    glGenLists := GetProcAddress(Handle, 'glGenLists'); 
+    glGenLists := GetProcAddress(Handle, 'glGenLists');
     glGenTextures := GetProcAddress(Handle, 'glGenTextures'); 
     glGetBooleanv := GetProcAddress(Handle, 'glGetBooleanv');
     glGetClipPlane := GetProcAddress(Handle, 'glGetClipPlane');
@@ -7203,7 +7205,7 @@ begin
     glGetPointerv := GetProcAddress(Handle, 'glGetPointerv'); 
     glGetPolygonStipple := GetProcAddress(Handle, 'glGetPolygonStipple'); 
     glGetString := GetProcAddress(Handle, 'glGetString'); 
-    glGetTexEnvfv := GetProcAddress(Handle, 'glGetTexEnvfv'); 
+    glGetTexEnvfv := GetProcAddress(Handle, 'glGetTexEnvfv');
     glGetTexEnviv := GetProcAddress(Handle, 'glGetTexEnviv'); 
     glGetTexGendv := GetProcAddress(Handle, 'glGetTexGendv'); 
     glGetTexGenfv := GetProcAddress(Handle, 'glGetTexGenfv'); 
@@ -7224,7 +7226,7 @@ begin
     glIndexiv := GetProcAddress(Handle, 'glIndexiv'); 
     glIndexs := GetProcAddress(Handle, 'glIndexs'); 
     glIndexsv := GetProcAddress(Handle, 'glIndexsv'); 
-    glIndexub := GetProcAddress(Handle, 'glIndexub'); 
+    glIndexub := GetProcAddress(Handle, 'glIndexub');
     glIndexubv := GetProcAddress(Handle, 'glIndexubv'); 
     glInitNames := GetProcAddress(Handle, 'glInitNames'); 
     glInterleavedArrays := GetProcAddress(Handle, 'glInterleavedArrays'); 
@@ -7245,7 +7247,7 @@ begin
     glLoadIdentity := GetProcAddress(Handle, 'glLoadIdentity'); 
     glLoadMatrixd := GetProcAddress(Handle, 'glLoadMatrixd'); 
     glLoadMatrixf := GetProcAddress(Handle, 'glLoadMatrixf'); 
-    glLoadName := GetProcAddress(Handle, 'glLoadName'); 
+    glLoadName := GetProcAddress(Handle, 'glLoadName');
     glLogicOp := GetProcAddress(Handle, 'glLogicOp'); 
     glMap1d := GetProcAddress(Handle, 'glMap1d'); 
     glMap1f := GetProcAddress(Handle, 'glMap1f'); 
@@ -7266,7 +7268,7 @@ begin
     glNormal3b := GetProcAddress(Handle, 'glNormal3b'); 
     glNormal3bv := GetProcAddress(Handle, 'glNormal3bv'); 
     glNormal3d := GetProcAddress(Handle, 'glNormal3d'); 
-    glNormal3dv := GetProcAddress(Handle, 'glNormal3dv'); 
+    glNormal3dv := GetProcAddress(Handle, 'glNormal3dv');
     glNormal3f := GetProcAddress(Handle, 'glNormal3f'); 
     glNormal3fv := GetProcAddress(Handle, 'glNormal3fv'); 
     glNormal3i := GetProcAddress(Handle, 'glNormal3i'); 
@@ -7287,7 +7289,7 @@ begin
     glPointSize := GetProcAddress(Handle, 'glPointSize');
     glPolygonMode := GetProcAddress(Handle, 'glPolygonMode'); 
     glPolygonOffset := GetProcAddress(Handle, 'glPolygonOffset'); 
-    glPolygonStipple := GetProcAddress(Handle, 'glPolygonStipple'); 
+    glPolygonStipple := GetProcAddress(Handle, 'glPolygonStipple');
     glPopAttrib := GetProcAddress(Handle, 'glPopAttrib'); 
     glPopClientAttrib := GetProcAddress(Handle, 'glPopClientAttrib'); 
     glPopMatrix := GetProcAddress(Handle, 'glPopMatrix'); 
@@ -7308,7 +7310,7 @@ begin
     glRasterPos3d := GetProcAddress(Handle, 'glRasterPos3d'); 
     glRasterPos3dv := GetProcAddress(Handle, 'glRasterPos3dv'); 
     glRasterPos3f := GetProcAddress(Handle, 'glRasterPos3f'); 
-    glRasterPos3fv := GetProcAddress(Handle, 'glRasterPos3fv'); 
+    glRasterPos3fv := GetProcAddress(Handle, 'glRasterPos3fv');
     glRasterPos3i := GetProcAddress(Handle, 'glRasterPos3i');
     glRasterPos3iv := GetProcAddress(Handle, 'glRasterPos3iv'); 
     glRasterPos3s := GetProcAddress(Handle, 'glRasterPos3s'); 
@@ -7329,7 +7331,7 @@ begin
     glRectfv := GetProcAddress(Handle, 'glRectfv'); 
     glRecti := GetProcAddress(Handle, 'glRecti'); 
     glRectiv := GetProcAddress(Handle, 'glRectiv'); 
-    glRects := GetProcAddress(Handle, 'glRects'); 
+    glRects := GetProcAddress(Handle, 'glRects');
     glRectsv := GetProcAddress(Handle, 'glRectsv'); 
     glRenderMode := GetProcAddress(Handle, 'glRenderMode'); 
     glRotated := GetProcAddress(Handle, 'glRotated'); 
@@ -7350,7 +7352,7 @@ begin
     glTexCoord1iv := GetProcAddress(Handle, 'glTexCoord1iv'); 
     glTexCoord1s := GetProcAddress(Handle, 'glTexCoord1s'); 
     glTexCoord1sv := GetProcAddress(Handle, 'glTexCoord1sv'); 
-    glTexCoord2d := GetProcAddress(Handle, 'glTexCoord2d'); 
+    glTexCoord2d := GetProcAddress(Handle, 'glTexCoord2d');
     glTexCoord2dv := GetProcAddress(Handle, 'glTexCoord2dv'); 
     glTexCoord2f := GetProcAddress(Handle, 'glTexCoord2f'); 
     glTexCoord2fv := GetProcAddress(Handle, 'glTexCoord2fv'); 
@@ -7371,7 +7373,7 @@ begin
     glTexCoord4f := GetProcAddress(Handle, 'glTexCoord4f'); 
     glTexCoord4fv := GetProcAddress(Handle, 'glTexCoord4fv');
     glTexCoord4i := GetProcAddress(Handle, 'glTexCoord4i'); 
-    glTexCoord4iv := GetProcAddress(Handle, 'glTexCoord4iv'); 
+    glTexCoord4iv := GetProcAddress(Handle, 'glTexCoord4iv');
     glTexCoord4s := GetProcAddress(Handle, 'glTexCoord4s'); 
     glTexCoord4sv := GetProcAddress(Handle, 'glTexCoord4sv'); 
     glTexCoordPointer := GetProcAddress(Handle, 'glTexCoordPointer'); 
@@ -7413,7 +7415,7 @@ begin
     glVertex3sv := GetProcAddress(Handle, 'glVertex3sv'); 
     glVertex4d := GetProcAddress(Handle, 'glVertex4d'); 
     glVertex4dv := GetProcAddress(Handle, 'glVertex4dv'); 
-    glVertex4f := GetProcAddress(Handle, 'glVertex4f'); 
+    glVertex4f := GetProcAddress(Handle, 'glVertex4f');
     glVertex4fv := GetProcAddress(Handle, 'glVertex4fv'); 
     glVertex4i := GetProcAddress(Handle, 'glVertex4i');
     glVertex4iv := GetProcAddress(Handle, 'glVertex4iv'); 
@@ -7455,7 +7457,7 @@ begin
     glBlendColor := GetProcAddress(Handle, 'glBlendColor'); 
     glBlendEquation := GetProcAddress(Handle, 'glBlendEquation'); 
     glColorSubTable := GetProcAddress(Handle, 'glColorSubTable'); 
-    glCopyColorSubTable := GetProcAddress(Handle, 'glCopyColorSubTable'); 
+    glCopyColorSubTable := GetProcAddress(Handle, 'glCopyColorSubTable');
     glColorTable := GetProcAddress(Handle, 'glCopyColorSubTable'); 
     glCopyColorTable := GetProcAddress(Handle, 'glCopyColorTable'); 
     glColorTableParameteriv := GetProcAddress(Handle, 'glColorTableParameteriv'); 
@@ -7476,7 +7478,7 @@ begin
     glConvolutionParameterfv := GetProcAddress(Handle, 'glConvolutionParameterfv'); 
     glGetConvolutionParameteriv := GetProcAddress(Handle, 'glGetConvolutionParameteriv'); 
     glGetConvolutionParameterfv := GetProcAddress(Handle, 'glGetConvolutionParameterfv'); 
-    glHistogram := GetProcAddress(Handle, 'glHistogram'); 
+    glHistogram := GetProcAddress(Handle, 'glHistogram');
     glResetHistogram := GetProcAddress(Handle, 'glResetHistogram');
     glGetHistogram := GetProcAddress(Handle, 'glGetHistogram');
     glGetHistogramParameteriv := GetProcAddress(Handle, 'glGetHistogramParameteriv'); 
@@ -7497,7 +7499,7 @@ begin
     glXCreateGLXPixmap := GetProcAddress(Handle, 'glXCreateGLXPixmap'); 
     glXDestroyGLXPixmap := GetProcAddress(Handle, 'glXDestroyGLXPixmap'); 
     glXQueryExtension := GetProcAddress(Handle, 'glXQueryExtension'); 
-    glXQueryVersion := GetProcAddress(Handle, 'glXQueryVersion'); 
+    glXQueryVersion := GetProcAddress(Handle, 'glXQueryVersion');
     glXIsDirect := GetProcAddress(Handle, 'glXIsDirect'); 
     glXGetConfig := GetProcAddress(Handle, 'glXGetConfig'); 
     glXGetCurrentContext := GetProcAddress(Handle, 'glXGetCurrentContext'); 
@@ -7518,7 +7520,7 @@ begin
     glXCreatePixmap := GetProcAddress(Handle, 'glXCreatePixmap'); 
     glXDestroyPixmap := GetProcAddress(Handle, 'glXDestroyPixmap'); 
     glXCreatePbuffer := GetProcAddress(Handle, 'glXCreatePbuffer'); 
-    glXDestroyPbuffer := GetProcAddress(Handle, 'glXDestroyPbuffer'); 
+    glXDestroyPbuffer := GetProcAddress(Handle, 'glXDestroyPbuffer');
     glXQueryDrawable := GetProcAddress(Handle, 'glXQueryDrawable'); 
     glXCreateNewContext := GetProcAddress(Handle, 'glXCreateNewContext'); 
     glXMakeContextCurrent := GetProcAddress(Handle, 'glXMakeContextCurrent'); 
@@ -7560,7 +7562,7 @@ begin
     gluEndSurface := GetProcAddress(Handle, 'gluEndSurface'); 
     gluEndTrim := GetProcAddress(Handle, 'gluEndTrim'); 
     gluErrorString := GetProcAddress(Handle, 'gluErrorString');
-    gluGetNurbsProperty := GetProcAddress(Handle, 'gluGetNurbsProperty'); 
+    gluGetNurbsProperty := GetProcAddress(Handle, 'gluGetNurbsProperty');
     gluGetString := GetProcAddress(Handle, 'gluGetString'); 
     gluGetTessProperty := GetProcAddress(Handle, 'gluGetTessProperty'); 
     gluLoadSamplingMatrices := GetProcAddress(Handle, 'gluLoadSamplingMatrices'); 
@@ -7581,7 +7583,7 @@ begin
     gluPwlCurve := GetProcAddress(Handle, 'gluPwlCurve'); 
     gluQuadricCallback := GetProcAddress(Handle, 'gluQuadricCallback'); 
     gluQuadricDrawStyle := GetProcAddress(Handle, 'gluQuadricDrawStyle'); 
-    gluQuadricNormals := GetProcAddress(Handle, 'gluQuadricNormals'); 
+    gluQuadricNormals := GetProcAddress(Handle, 'gluQuadricNormals');
     gluQuadricOrientation := GetProcAddress(Handle, 'gluQuadricOrientation'); 
     gluQuadricTexture := GetProcAddress(Handle, 'gluQuadricTexture'); 
     gluScaleImage := GetProcAddress(Handle, 'gluScaleImage');
@@ -8079,7 +8081,7 @@ begin
   glGetFenceivNV := wglGetProcAddress('glGetFenceivNV');
 
   // GL_MESA_resize_buffers
-  glResizeBuffersMESA := wglGetProcAddress('glResizeBuffersMESA'); 
+  glResizeBuffersMESA := wglGetProcAddress('glResizeBuffersMESA');
 
   // GL_MESA_window_pos
   glWindowPos2dMESA := wglGetProcAddress('glWindowPos2dMESA'); 
@@ -8793,14 +8795,14 @@ function CurrentDC: HDC;
 // Returns the device context which is used for the current rendering context of the caller thread.
 
 begin
-  Result := wglGetCurrentDC; 
+  Result := wglGetCurrentDC;
 end;
 
 {$endif}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure CloseOpenGL; 
+procedure CloseOpenGL;
 
 begin
   if GLHandle <> INVALID_MODULEHANDLE then
@@ -8835,12 +8837,12 @@ end;
 function InitOpenGLFromLibrary(GLName, GLUName: string): Boolean;
 
 begin
-  Result := False; 
+  Result := False;
   CloseOpenGL;
 
   {$ifdef Win32}
-    GLHandle := LoadLibrary(PChar(GLName)); 
-    GLUHandle := LoadLibrary(PChar(GLUName)); 
+    GLHandle := LoadLibrary(PChar(GLName));
+    GLUHandle := LoadLibrary(PChar(GLUName));
   {$endif}
 
   {$ifdef LINUX}
@@ -8851,16 +8853,16 @@ begin
   if (GLHandle <> INVALID_MODULEHANDLE) and (GLUHandle <> INVALID_MODULEHANDLE) then
   begin
     LoadProcAddresses;
-    Result := True; 
+    Result := True;
   end
   else
   begin
     if GLHandle <>  INVALID_MODULEHANDLE then
-      FreeLibrary(Cardinal(GLHandle)); 
+      FreeLibrary(Cardinal(GLHandle));
 
     if GLUHandle <>  INVALID_MODULEHANDLE then
-      FreeLibrary(Cardinal(GLUHandle)); 
-  end; 
+      FreeLibrary(Cardinal(GLUHandle));
+  end;
 end; 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -8901,23 +8903,26 @@ begin
   Result := InitOpenGLFromLibrary(GLName, GLUName);
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// IsOpenGLLoaded
+//
 function IsOpenGLLoaded: Boolean;
-
-// compatibility routine
-
 begin
-  Result := GLHandle <> INVALID_MODULEHANDLE; 
-end; 
+   // compatibility routine
+  Result := GLHandle <> INVALID_MODULEHANDLE;
+end;
 
-//----------------------------------------------------------------------------------------------------------------------
+// IsMesaGL
+//
+function IsMesaGL : Boolean;
+begin
+   Result:=(GL_MESA_resize_buffers or GL_MESA_window_pos);
+end;
 
 initialization
-  ContextList := TThreadList.Create; 
-  Set8087CW($133F); 
+  ContextList := TThreadList.Create;
+  Set8087CW($133F);
 finalization
-  CloseOpenGL; 
+  CloseOpenGL;
   ContextList.Free; 
   // We don't need to reset the FPU control word as the previous set call is process specific.
 end.
