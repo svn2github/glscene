@@ -372,9 +372,10 @@ begin
                   vASAPCadencerList:=nil;
                   vHandler.Free;
                   vHandler:=nil;
+               end else begin
+                  // Prepare the return of the infernal loop...
+                  PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
                end;
-               // Prepare the return of the infernal loop...
-               PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
             end;
          finally
             vWndProcInLoop:=False;
@@ -599,7 +600,7 @@ begin
             // ...and progress !
             newTime:=GetCurrentTime;
             deltaTime:=newTime-lastTime;
-            if (deltaTime>=MinDeltaTime) and (deltaTime>=FixedDeltaTime) then begin
+            if (deltaTime>0) and (deltaTime>=MinDeltaTime) and (deltaTime>=FixedDeltaTime) then begin
                if FMaxDeltaTime>0 then begin
                   if deltaTime>FMaxDeltaTime then begin
                      FOriginTime:=FOriginTime+(deltaTime-FMaxDeltaTime)/FTimeMultiplier;
