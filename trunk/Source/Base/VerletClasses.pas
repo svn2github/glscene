@@ -231,10 +231,13 @@ type
          <p>
          EM(b) = EM(a) + EF x VectorSubtract(b, a). <p>
          <P>
-         Simply adding the torque to the body will NOT work correctly. }
+         Simply adding the torque to the body will NOT work correctly. See
+         TranslateKickbackTorque}
          property KickbackTorque : TAffineVector read FKickbackTorque write FKickbackTorque;
 
          procedure AddKickbackForceAt(const Pos : TAffineVector; const Force : TAffineVector);
+
+         function TranslateKickbackTorque(TorqueCenter : TAffineVector) : TAffineVector;
    end;
 
    // TVerletGlobalFrictionConstraint
@@ -882,6 +885,15 @@ begin
   // Sum torques
   dPos := VectorSubtract(Pos, FLocation);
   AddVector(FKickbackTorque, VectorCrossProduct(dPos, Force));
+end;
+
+function TVerletGlobalConstraint.TranslateKickbackTorque(
+  TorqueCenter: TAffineVector): TAffineVector;
+var
+  Torque : TAffineVector;
+begin
+  // EM(b) = EM(a) + EF x VectorSubtract(b, a). <p>
+  Torque := VectorAdd(FKickbackTorque, VectorCrossProduct(VectorSubtract(TorqueCenter, FLocation), FKickbackForce));
 end;
 
 procedure TVerletGlobalConstraint.BeforeIterations;
