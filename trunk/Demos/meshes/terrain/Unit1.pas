@@ -12,7 +12,7 @@
    fact in any way: it considers just an infinite terrain.<p>
 
    Controls:<ul>
-   <li>Direction keys move the camera (shift to speedup)
+   <li>Direction keys move the came nora (shift to speedup)
    <li>PageUp/PageDown move the camera up and down
    <li>Orient the camera freely by holding down the left button
    <li>Toggle wireframe mode with 'w'
