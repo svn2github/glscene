@@ -2094,15 +2094,12 @@ begin
    list:=Particles.List;
    for i:=0 to Particles.ItemCount-1 do begin
       curParticle:=list[i];
-      if (progressTime.newTime-curParticle.CreationTime)<maxAge then
-      begin
+      if (progressTime.newTime-curParticle.CreationTime)<maxAge then begin
          // particle alive, just update velocity and position
-         with curParticle do
-         begin
+         with curParticle do begin
             CombineVector(FPosition, FVelocity, dt);
-            
-            if (FRotation <> 0) and (Renderer <> nil) then
-            begin
+
+            if (FRotation <> 0) and (Renderer <> nil) then begin
               pos := FPosition;
               pos1 := FPosition;
               ff := 1;
