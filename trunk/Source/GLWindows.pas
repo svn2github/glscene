@@ -15,6 +15,9 @@
                           Added function GLOKMessageBox to avoid the uses of Forms
                           Replace TColor, TBitmap, TMouseEvent, TKeyEvent, ...
                           by TGLColor, TGLBitmap, TGLMouseEvent, TGLKeyEvent, ...
+      <li>25/01/05 - AX - Corrected AlphaChannel default value, must be 1
+                          TGLButton, TGLForm - AlphaChannel behaviour text.
+                          Added events OnMouseEnter/OnMouseLeave for all controls
 	</ul></font>
 }
 
@@ -123,6 +126,9 @@ type
     FActiveControl    : TGLBaseControl;
     FFocusedControl   : TGLFocusControl;
     FOnAcceptMouseQuery : TGLAcceptMouseQuery;
+    FOnMouseLeave: TNotifyEvent;
+    FOnMouseEnter: TNotifyEvent;
+    FEnteredControl: TGLBaseControl;
   protected
     procedure InternalMouseDown(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); Virtual;
     procedure InternalMouseUp(Shift: TShiftState; Button: TGLMouseButton; X, Y: Integer); Virtual;
@@ -130,6 +136,9 @@ type
     Procedure SetActiveControl(NewControl : TGLBaseControl);
     Procedure SetFocusedControl(NewControl : TGLFocusControl);
     Function  FindFirstGui : TGLBaseControl;
+
+    procedure DoMouseEnter;
+    procedure DoMouseLeave;
   public
     Function  MouseDown(Sender: TObject; Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer) : Boolean; virtual;
     Function  MouseUp(Sender: TObject; Button: TGLMouseButton; Shift: TShiftState; X, Y: Integer) : Boolean; virtual;
@@ -144,6 +153,8 @@ type
     property  OnMouseDown     : TGLMouseEvent     read FOnMouseDown     write FOnMouseDown;
     property  OnMouseMove     : TGLMouseMoveEvent read FOnMouseMove     write FOnMouseMove;
     property  OnMouseUp       : TGLMouseEvent     read FOnMouseUp       write FOnMouseUp;
+    property  OnMouseEnter    : TNotifyEvent      read FOnMouseEnter    write FOnMouseEnter;
+    property  OnMouseLeave    : TNotifyEvent      read FOnMouseLeave    write FOnMouseLeave;
     property  OnAcceptMouseQuery : TGLAcceptMouseQuery read FOnAcceptMouseQuery write FOnAcceptMouseQuery;
   End;
 
@@ -428,10 +439,16 @@ type
 
   TGLLabel = class(TGLBaseTextControl)
   private
+    FAlignment: TAlignment;
+    FTextLayout: TGLTextLayout;
+    procedure SetAlignment(const Value: TAlignment);
+    procedure SetTextLayout(const Value: TGLTextLayout);
   protected
   public
     procedure InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
   published
+    property Alignment : TAlignment read FAlignment write SetAlignment;
+    property TextLayout: TGLTextLayout read FTextLayout write SetTextLayout;
   end;
 
   TGLAdvancedLabel = class(TGLFocusControl)
@@ -776,6 +793,7 @@ Begin
   Height     := 50;
   FReBuildGui := True;
   GuiDestroying := False;
+  FAlphaChannel := 1;
 End;
 
 Destructor  TGLBaseComponent.Destroy;
@@ -1071,8 +1089,9 @@ Var
 Begin
   Result := False;
 
-  AcceptMouseEvent := RecursiveVisible and ((Position.X <= X) and (Position.X+Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y));
-  If Assigned(OnAcceptMouseQuery) then OnAcceptMouseQuery(Self,shift,ma_mousemove,mbMiddle,X,Y,AcceptMouseEvent);
+  AcceptMouseEvent := RecursiveVisible and ((Position.X <= X) and (Position.X + Width > X) and (Position.Y <= Y) and (Position.Y+Height > Y));
+  If Assigned(OnAcceptMouseQuery) then
+    OnAcceptMouseQuery(Self, shift, ma_mousemove, mbMiddle, X, Y, AcceptMouseEvent);
 
   If AcceptMouseEvent then
   Begin
@@ -1083,15 +1102,39 @@ Begin
       If FActiveControl.MouseMove(Sender,shift,x,y) then Exit;
 
       For XC := count-1 downto 0 do
-      If FActiveControl <> Children[XC] then
-      Begin
-        If Children[XC] is TGLBaseControl then
+        If FActiveControl <> Children[XC] then
         Begin
-          If (Children[XC] as TGLBaseControl).MouseMove(Sender,shift,x,y) then
-            Exit;
+          If Children[XC] is TGLBaseControl then
+          Begin
+            If (Children[XC] as TGLBaseControl).MouseMove(Sender,shift,x,y) then
+            begin
+              if FEnteredControl <> (Children[XC] as TGLBaseControl) then
+              begin
+                if FEnteredControl <> nil then
+                begin
+                  FEnteredControl.DoMouseLeave;
+                end;
+
+                FEnteredControl := (Children[XC] as TGLBaseControl);
+
+                if FEnteredControl <> nil then
+                begin
+                  FEnteredControl.DoMouseEnter;
+                end;
+              end;
+
+              Exit;
+            end;
+          End;
         End;
-      End;
     End;
+
+    if FEnteredControl <> nil then
+    begin
+      FEnteredControl.DoMouseLeave;
+      FEnteredControl := nil;
+    end;
+
     InternalMouseMove(Shift,X,Y);
   End;
 End;
@@ -1135,6 +1178,25 @@ Procedure TGLFocusControl.InternalKeyUp(var Key: Word; Shift: TShiftState);
 Begin
   if assigned(FOnKeyUp) then FOnKeyUp(Self,Key,shift);
 End;
+
+procedure TGLBaseControl.DoMouseEnter;
+begin
+  if Assigned(OnMouseEnter) then
+    OnMouseEnter(Self);
+end;
+
+procedure TGLBaseControl.DoMouseLeave;
+begin
+  //leave all child controls
+  if FEnteredControl <> nil then
+  begin
+    FEnteredControl.DoMouseLeave;
+    FEnteredControl := nil;
+  end;
+
+  if Assigned(OnMouseLeave) then
+    OnMouseLeave(Self);
+end;
 
 Procedure TGLFocusControl.SetFocused(Value :Boolean);
 Begin
@@ -1454,6 +1516,7 @@ procedure TGLBaseFontControl.SetDefaultColor(value : TDelphiColor);
 Begin
   FDefaultColor := ConvertWinColor(value);
   GUIRedraw := True;
+  NotifyChange(Self);
 End;
 
 procedure TGLBaseFontControl.Notification(AComponent: TComponent; Operation: TOperation);
@@ -1979,11 +2042,17 @@ Begin
 End;
 
 procedure TGLForm.InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
+var
+  ATitleColor: TColorVector;  
 Begin
   If Assigned(FGuiComponent) then
   Begin
     FGuiComponent.RenderToArea(0,0,Width,Height, FRenderStatus, FReBuildGui);
-    WriteTextAt(rci, ((FRenderStatus[GLAlTop].X2+FRenderStatus[GLAlTop].X1-BitmapFont.CalcStringWidth(Caption))*0.5),-((FRenderStatus[GLAlTop].Y2+FRenderStatus[GLAlTop].Y1-GetFontHeight)*0.5)+TitleOffset,Caption,FTitleColor);
+
+    ATitleColor := FTitleColor;
+    ATitleColor[3] := AlphaChannel;
+
+    WriteTextAt(rci, ((FRenderStatus[GLAlTop].X2+FRenderStatus[GLAlTop].X1-BitmapFont.CalcStringWidth(Caption))*0.5),-((FRenderStatus[GLAlTop].Y2+FRenderStatus[GLAlTop].Y1-GetFontHeight)*0.5)+TitleOffset,Caption,ATitleColor);
   End;
 End;
 
@@ -2293,6 +2362,7 @@ Var
   TexHeight : Integer;
   Material : TGLMaterial;
   LibMaterial : TGLLibMaterial;
+  TextColor: TColorVector;
 
 Begin
   if Pressed then
@@ -2373,13 +2443,22 @@ Begin
 
    If Assigned(BitmapFont) then
    Begin
+
      If FFocused then
      Begin
-       WriteTextAt(rci, FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FFocusedColor);
+       TextColor := FFocusedColor;
      End else
      Begin
-       WriteTextAt(rci, FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FDefaultColor);
+       TextColor := FDefaultColor;
      End;
+     TextColor[3] := AlphaChannel;
+
+     WriteTextAt(rci, FRenderStatus[GLALCenter].X1,
+                      FRenderStatus[GLALCenter].Y1,
+                      FRenderStatus[GLALCenter].X2,
+                      FRenderStatus[GLALCenter].Y2,
+                      Caption,
+                      TextColor);
    End;
 End;
 
@@ -2575,15 +2654,40 @@ procedure TGLLabel.InternalRender(var rci : TRenderContextInfo; renderSelf, rend
 Var
   TekstPos : TVector;
   Tekst : String;
-
+  TextColor: TColorVector;
 Begin
   If Assigned(BitmapFont) then
   Begin
     SetVector(TekstPos,8,-((Height-GetFontHeight) / 2)+1,0);
+//    SetVector(TekstPos, 0, 0, 0);
+    
     Tekst := Caption;
-    BitmapFont.RenderString(rci, Tekst,taLeftJustify,tlTop, FDefaultColor, @TekstPos);
+
+    TextColor := FDefaultColor;
+    TextColor[3] := AlphaChannel;
+
+    BitmapFont.RenderString(rci, Tekst, FAlignment, FTextLayout, TextColor, @TekstPos);
   End;
 End;
+
+procedure TGLLabel.SetAlignment(const Value: TAlignment);
+begin
+  if FAlignment <> Value then
+  begin
+    FAlignment := Value;
+    NotifyChange(Self);
+  end;
+end;
+
+procedure TGLLabel.SetTextLayout(const Value: TGLTextLayout);
+begin
+  if FTextLayout <> Value then
+  begin
+    FTextLayout := Value;
+    NotifyChange(Self);
+  end;
+end;
+
 
 procedure TGLAdvancedLabel.InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
