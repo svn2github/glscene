@@ -553,7 +553,7 @@ type
          procedure SetNURBSTolerance(const val : Single);
          function StoreNodeSize : Boolean;
 
-         procedure DrawNode(X, Y, Z: Single; Color: TGLColor);
+         procedure DrawNode(var rci : TRenderContextInfo; X, Y, Z: Single; Color: TGLColor);
 
       public
 			{ Public Declarations }
@@ -2540,13 +2540,13 @@ end;
 
 // DrawNode
 //
-procedure TGLLines.DrawNode(X, Y, Z: Single; Color: TGLColor);
+procedure TGLLines.DrawNode(var rci : TRenderContextInfo; X, Y, Z: Single; Color: TGLColor);
 begin
    glPushMatrix;
    glTranslatef(x, y, z);
    case NodesAspect of
       lnaAxes :
-         AxesBuildList($CCCC, FNodeSize*0.5);
+         AxesBuildList(rci, $CCCC, FNodeSize*0.5);
       lnaCube :
          CubeWireframeBuildList(FNodeSize, False, Color.Color);
       lnaDodecahedron : begin
@@ -2682,10 +2682,12 @@ begin
 
       if FNodesAspect<>lnaInvisible then begin
          glPushAttrib(GL_ENABLE_BIT);
-         glEnable(GL_BLEND);
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         if not rci.ignoreBlendingRequests then begin
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         end;
          for i:=0 to Nodes.Count-1 do with TGLLinesNode(Nodes[i]) do
-            DrawNode(X, Y, Z, Color);
+            DrawNode(rci, X, Y, Z, Color);
          glPopAttrib;
       end;
    end;
