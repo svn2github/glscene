@@ -151,10 +151,6 @@ begin
 
   // Load the cape
   Cape.LoadFromFile('cape.3ds');
-  with Cape.Material.Texture do begin
-    Image.LoadFromFile('leather_cape.jpg');
-    Disabled:=False;
-  end;
   Cape.Position.Y:=GLActor1.BoundingSphereRadius*0.5-10;
   PrepareMeshForNormalsRecalc(Cape);
   Cape.BuildSilhouetteConnectivityData;
