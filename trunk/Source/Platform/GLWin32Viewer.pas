@@ -230,7 +230,7 @@ end;
 //
 procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if (Operation = opRemove) and (AComponent = Camera) then
+   if (Operation=opRemove) and (FBuffer<>nil) and (AComponent=Camera) then
       Camera:=nil;
    inherited;
 end;
