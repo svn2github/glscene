@@ -66,9 +66,8 @@ type
          FUpper : TIntegerList;
          FCentralLeader : Boolean;
 
-         procedure BuildBranch(
-            BranchNoise : TGLTreeBranchNoise; Matrix : TMatrix;
-            TexCoordY, Twist : Single; Level : Integer);
+         procedure BuildBranch(branchNoise : TGLTreeBranchNoise; const Matrix : TMatrix;
+                               TexCoordY, Twist : Single; Level : Integer);
 
       public
          { Public Declarations }
@@ -424,9 +423,8 @@ end;
 
 // BuildBranch
 //
-procedure TGLTreeBranch.BuildBranch(
-   BranchNoise : TGLTreeBranchNoise; Matrix : TMatrix;
-   TexCoordY, Twist : Single; Level : Integer);
+procedure TGLTreeBranch.BuildBranch(branchNoise : TGLTreeBranchNoise; const Matrix : TMatrix;
+                                    TexCoordY, Twist : Single; Level : Integer);
 var
    i : Integer;
    Tree : TGLTree;
@@ -659,15 +657,14 @@ begin
    glEnableClientState(GL_NORMAL_ARRAY);
    xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-   for i:=0 to (FIndices.Count div stride)-1 do
-      glDrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
+   repeat
+      for i:=0 to (FIndices.Count div stride)-1 do
+         glDrawElements(GL_TRIANGLE_STRIP, stride, GL_UNSIGNED_INT, @FIndices.List[stride*i]);
+   until (not Assigned(libMat)) or (not libMat.UnApply(rci));
 
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
    glDisableClientState(GL_NORMAL_ARRAY);
    glDisableClientState(GL_VERTEX_ARRAY);
-
-   if Assigned(libMat) then
-      libMat.UnApply(rci);
 end;
 
 // Clear
