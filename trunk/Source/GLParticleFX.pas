@@ -1109,7 +1109,7 @@ begin
    with Scene.CurrentGLCamera do begin
       PSingle(@minDist)^:=NearPlane+1;
       PSingle(@maxDist)^:=NearPlane+DepthOfView+1;
-      invRegionSize:=(cNbRegions-1)/DepthOfView;
+      invRegionSize:=(cNbRegions-2)/DepthOfView;
       distDelta:=NearPlane+1+0.49999/invRegionSize
    end;
    SetVector(cameraPos, rci.cameraPosition);
