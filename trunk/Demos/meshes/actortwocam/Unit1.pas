@@ -12,10 +12,10 @@
    GLScene :), a fair share of rendering power is lost in projecting
    objects that are out of the viewing frustum.<p>
 
-   TODO : 3rd person view with quaternion interpolation (smoother mvt)
-          More mvt options (duck, jump...)
-          Smooth animation transition for TActor
-          HUD in 1st person view
+   TODO : 3rd person view with quaternion interpolation (smoother mvt)<br>
+          More mvt options (duck, jump...)<br>
+          Smooth animation transition for TActor<br>
+          HUD in 1st person view<p>
 
    Carlos Arteaga Rivero <carteaga@superele.gov.bo>
 }
@@ -54,10 +54,15 @@ type
     procedure HandleKeys(const deltaTime: Double);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
+    procedure GLSceneViewer1MouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+      X, Y: Integer);
   private
     procedure AddMushrooms;
   public
     { Déclarations privées }
+    mx, my : Integer;
   end;
 
 var
@@ -220,6 +225,23 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    Caption:=Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+   mx:=x; my:=y;
+end;
+
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+begin
+   if GLSceneViewer1.Camera=GLCamera1 then begin
+      if Shift<>[] then begin
+         GLCamera1.MoveAroundTarget(my-y, mx-x);
+      end;
+      mx:=x; my:=y;
+   end;
 end;
 
 end.
