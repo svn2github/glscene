@@ -1347,6 +1347,9 @@ type
          function CreateSnapShot : TGLBitmap32;
 
          procedure SetViewPort(X, Y, W, H: Integer);
+         function Width : Integer;
+         function Height : Integer;
+
          {: Displays a window with info on current OpenGL ICD and context. }
          procedure ShowInfo;
 
@@ -5511,6 +5514,20 @@ begin
       Height:=H;
    end;
    NotifyChange(Self);
+end;
+
+// Width
+//
+function TGLSceneBuffer.Width : Integer;
+begin
+   Result:=FViewPort.Width;
+end;
+
+// Height
+//
+function TGLSceneBuffer.Height : Integer;
+begin
+   Result:=FViewPort.Width;
 end;
 
 // RenderToBitmap
