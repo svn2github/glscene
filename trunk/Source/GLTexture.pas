@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/10/04 - NC - Added TGLFloatDataImage  
       <li>03/07/04 - LR - Move InitWinColors to GLCrossPlatform
                           Replace TGraphics, TBitmap by TGLGraphics, TGLBitmap
       <li>29/06/04 - SG - Added bmModulate blending mode
@@ -725,6 +726,50 @@ type
          {$endif}
 	end;
 
+	// TGLFloatDataImage
+	//
+	{: A texture image of float data type.<p>
+      Currently only support dynamic nvidia 32bit/16bit RGBA. }
+	TGLFloatDataImage = class(TGLTextureImage)
+		private
+         { Private Declarations }
+			FBitmap : TGLBitmap32;
+         FWidth, FHeight : Integer;
+
+		protected
+         { Protected Declarations }
+         procedure SetWidth(val : Integer);
+		   function GetWidth: Integer; override;
+         procedure SetHeight(val : Integer);
+			function GetHeight: Integer; override;
+
+// 			property Picture;
+
+		public
+         { Public Declarations }
+			constructor Create(AOwner: TPersistent); override;
+			destructor Destroy; override;
+
+			procedure Assign(Source: TPersistent); override;
+
+			function GetBitmap32(target : TGLUInt) : TGLBitmap32; override;
+			procedure ReleaseBitmap32; override;
+
+			procedure SaveToFile(const fileName : String); override;
+			procedure LoadFromFile(const fileName : String); override;
+			class function FriendlyName : String; override;
+			class function FriendlyDescription : String; override;
+
+			class function NativeTextureTarget : TGLUInt; override;      
+		published
+         { Published Declarations }
+         {: Width of the blank image (for memory allocation). }
+			property Width : Integer read GetWidth write SetWidth default 256;
+         {: Width of the blank image (for memory allocation). }
+			property Height : Integer read GetHeight write SetHeight default 256;
+	end;
+
+
    TGLLibMaterial = Class;
 
    // TGLShaderStyle
@@ -836,8 +881,8 @@ type
       may convert everything to 16bit formats, GeForce boards don't have
       a 24 bits format internally and will convert to 32 bits, etc. }
    TGLTextureFormat = (tfDefault, tfRGB, tfRGBA, tfRGB16, tfRGBA16, tfAlpha,
-                       tfLuminance, tfLuminanceAlpha, tfIntensity,
-                       tfNormalMap);
+                       tfLuminance, tfLuminanceAlpha, tfIntensity, tfNormalMap,
+                       tfRGBAFloat16, tfRGBAFloat32); // float_type
 
    // TGLTextureCompression
    //
@@ -972,6 +1017,8 @@ type
          function IsHandleAllocated : Boolean;
          {: Returns OpenGL texture format corresponding to current options. }
          function OpenGLTextureFormat : Integer;
+         {: Returns if of float data type}
+         function IsFloatType: boolean;
 
          {: Is the texture enabled?.<p>
             Always equals to 'not Disabled'. }
@@ -3102,8 +3149,8 @@ end;
 //
 function TGLTexture.TextureImageRequiredMemory : Integer;
 const
-   cTextureFormatToPixelSize : array [tfRGB..tfNormalMap] of Integer = (
-                                                     3, 4, 2, 2, 1, 1, 2, 1, 3);
+   cTextureFormatToPixelSize : array [tfRGB..high(TGLTextureFormat)] of Integer = ( // float_type
+                                                     3, 4, 2, 2, 1, 8, 16, 1, 2, 1, 3);
 var
    tf : TGLTextureFormat;
 begin
@@ -3418,11 +3465,19 @@ var
 begin
 	if not Disabled then begin
       if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
-   		rci.GLStates.SetGLState(stTexture2D);
+   		 rci.GLStates.SetGLState(stTexture2D);
    	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
-      end else if GL_ARB_texture_cube_map then begin
+      end
+      else
+      // float32 // doesn't affect ATI_float 
+        if Image.NativeTextureTarget=GL_TEXTURE_RECTANGLE_NV then begin
+   		   rci.GLStates.SetGLState(stTextureRect); // float32
+     	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_RECTANGLE_NV, Handle);
+        end
+      else
+      if GL_ARB_texture_cube_map then begin
          rci.GLStates.SetGLState(stTextureCubeMap);
-   	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
+   	     rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
          // compute model view matrix for proper viewing
          glMatrixMode(GL_TEXTURE);
          case MappingMode of
@@ -3472,15 +3527,16 @@ begin
                glMultMatrixf(@m);
             end;
          end;
-         glMatrixMode(GL_MODELVIEW);
-      end;
-   	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-    	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
 
+         glMatrixMode(GL_MODELVIEW);
+      end; // if GL_ARB_texture_cube_map
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+    	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
       xglMapTexCoordToMain;
-	end else begin
+	end else begin //if disabled
       rci.GLStates.UnSetGLState(stTexture2D);
+      rci.GLStates.UnSetGLState(stTextureRECT);
       xglMapTexCoordToMain;
    end;
 end;
@@ -3495,7 +3551,12 @@ begin
          glMatrixMode(GL_TEXTURE);
          glLoadIdentity;
          glMatrixMode(GL_MODELVIEW);
-      end else rci.GLStates.UnSetGLState(stTexture2D);
+      end else
+      if stTexture2D in rci.GLStates.States then  
+        rci.GLStates.UnSetGLState(stTexture2D)
+      else
+        rci.GLStates.UnSetGLState(stTextureRECT);
+
       UnApplyMappingMode;
    end;
 end;
@@ -3647,18 +3708,24 @@ begin
    FRequiredMemorySize:=-1;
 end;
 
+function TGLTexture.IsFloatType: boolean;
+begin
+  result:=TextureFormat in [tfRGBAFloat16, tfRGBAFloat32];
+end;
+
 // OpenGLTextureFormat
 //
 function TGLTexture.OpenGLTextureFormat : Integer;
 const
-   cTextureFormatToOpenGL : array [tfRGB..tfNormalMap] of Integer =
+   cTextureFormatToOpenGL : array [tfRGB..high(TGLTextureFormat)] of Integer =
       (GL_RGB8, GL_RGBA8, GL_RGB5, GL_RGBA4, GL_ALPHA8, GL_LUMINANCE8,
-       GL_LUMINANCE8_ALPHA8, GL_INTENSITY8, GL_RGB8);
-   cCompressedTextureFormatToOpenGL : array [tfRGB..tfNormalMap] of Integer =
+       GL_LUMINANCE8_ALPHA8, GL_INTENSITY8, GL_RGB8,
+       GL_RGBA_FLOAT16_ATI, GL_RGBA_FLOAT32_ATI); // float_type default is ATI types
+   cCompressedTextureFormatToOpenGL : array [tfRGB..high(TGLTextureFormat)] of Integer =
       (GL_COMPRESSED_RGB_ARB, GL_COMPRESSED_RGBA_ARB, GL_COMPRESSED_RGB_ARB,
        GL_COMPRESSED_RGBA_ARB, GL_COMPRESSED_ALPHA_ARB, GL_COMPRESSED_LUMINANCE_ARB,
        GL_COMPRESSED_LUMINANCE_ALPHA_ARB, GL_COMPRESSED_INTENSITY_ARB,
-       GL_COMPRESSED_RGB_ARB);
+       GL_COMPRESSED_RGB_ARB, 0, 0); // compression not supported for float_type 
 var
    texForm : TGLTextureFormat;
    texComp : TGLTextureCompression;
@@ -3668,6 +3735,7 @@ begin
          texForm:=tfRGBA
       else texForm:=vDefaultTextureFormat
    else texForm:=TextureFormat;
+
    if GL_ARB_texture_compression then begin
       if Compression=tcDefault then
          if vDefaultTextureCompression=tcDefault then
@@ -3675,6 +3743,9 @@ begin
          else texComp:=vDefaultTextureCompression
       else texComp:=Compression;
    end else texComp:=tcNone;
+
+   if IsFloatType then texComp:=tcNone; // no compression support for float_type
+
    if texComp<>tcNone then begin
       case texComp of
          tcStandard : glHint(GL_TEXTURE_COMPRESSION_HINT_ARB, GL_DONT_CARE);
@@ -3685,6 +3756,13 @@ begin
       end;
       Result:=cCompressedTextureFormatToOpenGL[texForm];
    end else Result:=cTextureFormatToOpenGL[texForm];
+
+   if IsFloatType and not GL_ATI_texture_float then begin // override if NV
+     case texForm of
+       tfRGBAFloat16 : Result:=GL_FLOAT_RGBA16_NV;
+       tfRGBAFloat32 : Result:=GL_FLOAT_RGBA32_NV;
+     end;
+   end;
 end;
 
 // PrepareImage
@@ -3695,6 +3773,7 @@ var
    targetFormat : Integer;
 begin
    bitmap32:=Image.GetBitmap32(target);
+
    if (bitmap32=nil) or bitmap32.IsEmpty then Exit;
    // select targetFormat from texture format & compression options
    targetFormat:=OpenGLTextureFormat;
@@ -3783,20 +3862,30 @@ begin
    	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapARB[FTextureWrap]);
 	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapARB[FTextureWrap]);
    end else }
-   if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
-   	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
-	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
-   end else begin
-   	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
-	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
-   end;
-   
-	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
-	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
 
-   if GL_EXT_texture_filter_anisotropic then
-      glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                      cFilteringQuality[FFilteringQuality]);
+   if target=GL_TEXTURE_RECTANGLE_NV then begin // float_type
+     // Note: HW accerl. only with GL_CLAMP_TO_EDGE for Nvidia GPUs
+     glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+     glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+     // Linear interpolation works with ATI_Float only
+	   glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+     glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   end else begin
+     if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
+       glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
+       glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
+     end else begin
+       glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
+       glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
+     end;
+
+	   glTexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+	   glTexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+
+     if GL_EXT_texture_filter_anisotropic then
+       glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                       cFilteringQuality[FFilteringQuality]);
+   end;
 end;
 
 // DoOnTextureNeeded
@@ -4036,12 +4125,12 @@ begin
          end;
 			bmTransparency : begin
 				rci.GLStates.SetGLState(stBlend);
-            rci.GLStates.SetGLState(stAlphaTest);
+        rci.GLStates.SetGLState(stAlphaTest);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			end;
 			bmAdditive : begin
 				rci.GLStates.SetGLState(stBlend);
-            rci.GLStates.SetGLState(stAlphaTest);
+        rci.GLStates.SetGLState(stAlphaTest);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			end;
          bmAlphaTest50 : begin
@@ -5487,9 +5576,155 @@ begin
    ColorManager.RemoveColor(AName);
 end;
 
+
+// ------------------
+// ------------------ TGLFloatDataImage ------------------
+// ------------------
+
+// Create
+//
+constructor TGLFloatDataImage.Create(AOwner: TPersistent);
+begin
+	inherited;
+	FWidth:=256;
+	FHeight:=256;
+end;
+
+// Destroy
+//
+destructor TGLFloatDataImage.Destroy;
+begin
+	ReleaseBitmap32;
+	inherited Destroy;
+end;
+
+// Assign
+//
+procedure TGLFloatDataImage.Assign(Source: TPersistent);
+begin
+	if Assigned(Source) then begin
+      if (Source is TGLFloatDataImage) then begin
+         FWidth:=TGLFloatDataImage(Source).FWidth;
+         FHeight:=TGLFloatDataImage(Source).FHeight;
+         Invalidate;
+      end else inherited;
+	end else inherited;
+end;
+
+// SetWidth
+//
+procedure TGLFloatDataImage.SetWidth(val : Integer);
+begin
+   if val<>FWidth then begin
+      FWidth:=val;
+      if FWidth<1 then FWidth:=1;
+      Invalidate;
+   end;
+end;
+
+// GetWidth
+//
+function TGLFloatDataImage.GetWidth: Integer;
+begin
+	Result:=FWidth;
+end;
+
+// SetHeight
+//
+procedure TGLFloatDataImage.SetHeight(val : Integer);
+begin
+   if val<>FHeight then begin
+      FHeight:=val;
+      if FHeight<1 then FHeight:=1;
+      Invalidate;
+   end;
+end;
+
+// GetHeight
+//
+function TGLFloatDataImage.GetHeight: Integer;
+begin
+	Result:=FHeight;
+end;
+
+// GetBitmap32
+//
+function TGLFloatDataImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
+begin
+	if not Assigned(FBitmap) then begin
+      FBitmap:=TGLBitmap32.Create;
+      FBitmap.Width:=FWidth;
+      FBitmap.Height:=FHeight;
+	end;
+	Result:=FBitmap;
+end;
+
+// ReleaseBitmap32
+//
+procedure TGLFloatDataImage.ReleaseBitmap32;
+begin
+	if Assigned(FBitmap) then begin
+   	FBitmap.Free;
+		FBitmap:=nil;
+	end;
+end;
+
+// SaveToFile
+//
+procedure TGLFloatDataImage.SaveToFile(const fileName : String);
+begin
+   SaveStringToFile(fileName, '[FloatDataImage]'#13#10'Width='+IntToStr(Width)
+                              +#13#10'Height='+IntToStr(Height));
+end;
+
+// LoadFromFile
+//
+procedure TGLFloatDataImage.LoadFromFile(const fileName : String);
+var
+   sl : TStringList;
+   buf : String;
+begin
+   buf:=fileName;
+   if Assigned(FOnTextureNeeded) then
+      FOnTextureNeeded(Self, buf);
+   if FileExists(buf) then begin
+      sl:=TStringList.Create;
+      try
+         sl.LoadFromFile(buf);
+         FWidth:=StrToInt(sl.Values['Width']);
+         FHeight:=StrToInt(sl.Values['Height']);
+      finally
+         sl.Free;
+      end;
+   end else begin
+      Assert(False, Format(glsFailedOpenFile, [fileName]));
+   end;
+end;
+
+// FriendlyName
+//
+class function TGLFloatDataImage.FriendlyName : String;
+begin
+   Result:='FloatData Image';
+end;
+
+// FriendlyDescription
+//
+class function TGLFloatDataImage.FriendlyDescription : String;
+begin
+   Result:='Image to be dynamically generated by OpenGL';
+end;
+
+class function TGLFloatDataImage.NativeTextureTarget: TGLUInt;
+begin
+   Result:=GL_TEXTURE_RECTANGLE_NV;
+end;
+
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -5500,6 +5735,7 @@ initialization
 	RegisterGLTextureImageClass(TGLPersistentImage);
 	RegisterGLTextureImageClass(TGLPicFileImage);
 	RegisterGLTextureImageClass(TGLCubeMapImage);
+	RegisterGLTextureImageClass(TGLFloatDataImage);
    RegisterClasses([TGLMaterialLibrary]);
    RegisterTGraphicClassFileExtension('.bmp', TGLBitmap);
 
