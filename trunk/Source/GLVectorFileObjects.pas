@@ -1425,6 +1425,7 @@ type
          procedure LoadFromFile(const fileName : String);
 
 	      property Items[index : Integer] : TActorAnimation read GetItems write SetItems; default;
+         function Last : TActorAnimation;
    end;
 
 	// TGLBaseAnimationControler
@@ -6045,6 +6046,15 @@ end;
 function TActorAnimations.GetItems(index : Integer) : TActorAnimation;
 begin
 	Result:=TActorAnimation(inherited Items[index]);
+end;
+
+// Last
+//
+function TActorAnimations.Last : TActorAnimation;
+begin
+   if Count>0 then
+      Result:=TActorAnimation(inherited Items[Count-1])
+   else Result:=nil;
 end;
 
 // Add
