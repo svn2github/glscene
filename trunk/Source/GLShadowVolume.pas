@@ -505,7 +505,8 @@ var
 begin
    if FRendering then Exit;
    if not (renderSelf or renderChildren) then Exit;
-   if (csDesigning in ComponentState) or (Mode=svmOff) then begin
+   if    (csDesigning in ComponentState) or (Mode=svmOff)
+      or (rci.drawState=dsPicking) then begin
       inherited;
       Exit;
    end;
