@@ -1351,13 +1351,13 @@ asm
          test vSIMD, 1
          jz @@FPU
 @@3DNow:
-         movq  mm0, [eax]
-         pfadd mm0, [edx]
-         movq  [ecx], mm0
-         movq  mm1, [eax+8]
-         pfadd mm1, [edx+8]
-         movq  [ecx+8], mm1
-         femms
+         db $0F,$6F,$00           /// movq  mm0, [eax]
+         db $0F,$0F,$02,$9E       /// pfadd mm0, [edx]
+         db $0F,$7F,$01           /// movq  [ecx], mm0
+         db $0F,$6F,$48,$08       /// movq  mm1, [eax+8]
+         db $0F,$0F,$4A,$08,$9E   /// pfadd mm1, [edx+8]
+         db $0F,$7F,$49,$08       /// movq  [ecx+8], mm1
+         db $0F,$0E               /// femms
          ret
 
 @@FPU:
