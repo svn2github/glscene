@@ -11,8 +11,8 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
-      <li>20/07/02 - Egg - TCylinder.RayCastIntersect
-      <li>20/07/02 - Egg - TPlane.RayCastIntersect
+      <li>23/07/02 - Egg - Added TGLPoints (experimental)
+      <li>20/07/02 - Egg - TCylinder.RayCastIntersect and TPlane.RayCastIntersect
       <li>18/07/02 - Egg - Added TCylinder.Align methods
       <li>07/07/02 - Egg - Added TPlane.Style
       <li>03/07/02 - Egg - TPolygon now properly setups normals (filippo)
@@ -95,7 +95,8 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, Geometry, GLScene, GLTexture, GLMisc, OpenGL12, SysUtils;
+uses Classes, Geometry, GLScene, GLTexture, GLMisc, OpenGL12, SysUtils,
+   VectorLists;
 
 type
 
@@ -193,7 +194,7 @@ type
          property Style : TPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
    end;
 
-	// Sprite
+	// TSprite
 	//
 	{: A rectangular area, perspective projected, but always facing the camera.<p>
       A TSprite is perspective projected and as such is scaled with distance,
@@ -241,6 +242,56 @@ type
          {: If True, sprite will not write to Z-Buffer.<p>
             Sprite will STILL be maskable by ZBuffer test. }
          property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
+	end;
+
+   // TGLPointStyle
+   //
+   TGLPointStyle = (psSquare, psRound);
+
+	// TGLPoints
+	//
+	{: Renders a set of non-transparent colored points.<p> }
+	TGLPoints = class (TGLImmaterialSceneObject)
+		private
+			{ Private Declarations }
+         FPositions : TAffineVectorList;
+         FColors : TVectorList;
+         FSize : Single;
+         FStyle : TGLPointStyle;
+
+		protected
+			{ Protected Declarations }
+         function StoreSize : Boolean;
+         procedure SetSize(const val : Single);
+         procedure SetPositions(const val : TAffineVectorList);
+         procedure SetColors(const val : TVectorList);
+         procedure SetStyle(const val : TGLPointStyle);
+
+		public
+			{ Public Declarations }
+			constructor Create(AOwner : TComponent); override;
+         destructor Destroy; override;
+
+			procedure Assign(Source: TPersistent); override;
+			procedure BuildList(var rci : TRenderContextInfo); override;
+
+         {: Points positions.<p> }
+         property Positions : TAffineVectorList read FPositions write SetPositions;
+         {: Defines the points colors.<p>
+            <ul>
+            <li>if empty, no points will be rendered
+            <li>if contains a single color, all points will use that color
+            <li>if contains N colors, the first N points (at max) will be rendered
+                using the corresponding colors.
+            </ul> }
+         property Colors : TVectorList read FColors write SetColors;
+
+		published
+			{ Published Declarations }
+         {: Point size, all points have a fixed size. }
+         property Size : Single read FSize write SetSize stored StoreSize;
+         {: Points style.<p> }
+         property Style : TGLPointStyle read FStyle write SetStyle default psSquare;
 	end;
 
    // TLineNodesAspect
@@ -1015,6 +1066,9 @@ implementation
 
 uses Consts, GLStrings, Spline, XOpenGL, Polynomials;
 
+const
+   cDefaultPointSize : Single = 1.0;
+
 // CubeWireframeBuildList
 //
 procedure CubeWireframeBuildList(size : TGLFloat; stipple : Boolean;
@@ -1527,6 +1581,137 @@ begin
 	FWidth:=size;
 	FHeight:=size;
    NotifyChange(Self);
+end;
+
+// ------------------
+// ------------------ TGLPoints ------------------
+// ------------------
+
+// Create
+//
+constructor TGLPoints.Create(AOwner : TComponent);
+begin
+	inherited Create(AOwner);
+   ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
+   FStyle:=psSquare;
+   FSize:=cDefaultPointSize;
+   FPositions:=TAffineVectorList.Create;
+   FColors:=TVectorList.Create;
+   FColors.Add(clrWhite);
+end;
+
+// Destroy
+//
+destructor TGLPoints.Destroy;
+begin
+   FColors.Free;
+   FPositions.Free;
+   inherited;
+end;
+
+// Assign
+//
+procedure TGLPoints.Assign(Source : TPersistent);
+begin
+	if Source is TGLPoints then begin
+      FSize:=TGLPoints(Source).FSize;
+      FStyle:=TGLPoints(Source).FStyle;
+      FPositions.Assign(TGLPoints(Source).FPositions);
+      FColors.Assign(TGLPoints(Source).FColors);
+      StructureChanged
+	end;
+	inherited Assign(Source);
+end;
+
+// BuildList
+//
+procedure TGLPoints.BuildList(var rci : TRenderContextInfo);
+var
+   n : Integer;
+begin
+   n:=FPositions.Count;
+   if n=0 then Exit;
+   case FColors.Count of
+      0 : Exit;
+      1 : glColor4fv(PGLFloat(FColors.List));
+   else
+      if FColors.Count<n then
+         n:=FColors.Count;
+      glColorPointer(4, GL_FLOAT, 0, FColors.List);
+      glEnableClientState(GL_COLOR_ARRAY);
+   end;
+   glPushAttrib(GL_ENABLE_BIT);
+   glDisable(GL_LIGHTING);
+   glDisable(GL_BLEND);
+   glVertexPointer(3, GL_FLOAT, 0, FPositions.List);
+   glEnableClientState(GL_VERTEX_ARRAY);
+   glPointSize(FSize);
+   if GL_EXT_compiled_vertex_array then
+      glLockArraysEXT(0, n);
+   case FStyle of
+      psSquare : begin
+         // square point (simplest method, fastest)
+         glDrawArrays(GL_POINTS, 0, n);
+      end;
+      psRound : begin
+         // round points (via smoothing and alpha test, slower)
+         glEnable(GL_POINT_SMOOTH);
+         glEnable(GL_ALPHA_TEST);
+         glAlphaFunc(GL_GREATER, 0.5);
+         glDrawArrays(GL_POINTS, 0, n);
+      end;
+   else
+      Assert(False);
+   end;
+   if GL_EXT_compiled_vertex_array then
+      glUnlockArraysEXT;
+   glDisableClientState(GL_VERTEX_ARRAY);
+   if FColors.Count>1 then
+      glDisableClientState(GL_COLOR_ARRAY);
+   glPopAttrib;
+end;
+
+// StoreSize
+//
+function TGLPoints.StoreSize : Boolean;
+begin
+   Result:=(FSize<>cDefaultPointSize);
+end;
+
+// SetSize
+//
+procedure TGLPoints.SetSize(const val : Single);
+begin
+   if FSize<>val then begin
+      FSize:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetPositions
+//
+procedure TGLPoints.SetPositions(const val : TAffineVectorList);
+begin
+   FPositions.Assign(val);
+   StructureChanged;
+end;
+
+// SetColors
+//
+procedure TGLPoints.SetColors(const val : TVectorList);
+begin
+   FColors.Assign(val);
+   StructureChanged;
+end;
+
+// SetStyle
+//
+procedure TGLPoints.SetStyle(const val : TGLPointStyle);
+begin
+   if FStyle<>val then begin
+      FStyle:=val;
+      StructureChanged;
+   end;
 end;
 
 // ------------------
