@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/11/03 - Dave - Added Data pointer to GLSceneBaseObject
       <li>24/10/03 - NelC - Fixed texture-flipped bug in cubemap generation 
       <li>21/08/03 - EG - Added osRenderNearestFirst
       <li>28/07/03 - aidave - Added TGLColorProxyObject
@@ -340,7 +341,7 @@ type
       move and delete them). Using the regular TComponent methods is not
       encouraged. }
    TGLBaseSceneObject = class (TGLUpdateAbleComponent)
-      private
+      private 
          { Private Declarations }
          FAbsoluteMatrix, FInvAbsoluteMatrix : PMatrix;
          FLocalMatrix : PMatrix;
@@ -352,6 +353,7 @@ type
          FChanges : TObjectChanges;
          FParent : TGLBaseSceneObject;
          FScene : TGLScene;
+         FData : pointer;
 
          FChildren : TList; // created on 1st use
          FVisible : Boolean;
@@ -667,6 +669,8 @@ type
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
          property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
          property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
+         // a pointer to attach your data to GLScene
+         property Data : pointer read FData write FData;
 
       published
          { Published Declarations }
