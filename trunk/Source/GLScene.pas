@@ -328,13 +328,15 @@ type
          procedure DestroyHandles; virtual;
          procedure DeleteChildCameras;
 
-         property ObjectStyle : TGLObjectStyles read FObjectStyle write FObjectStyle;
-
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
+
+         {: Controls and adjusts internal optimizations based on object's style.<p>
+            Advanced user only. }
+         property ObjectStyle : TGLObjectStyles read FObjectStyle write FObjectStyle;
 
          {: Holds the local transformation (relative to parent). }
          property LocalMatrix : TMatrix read FLocalMatrix;

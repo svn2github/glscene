@@ -19,7 +19,7 @@ unit GLCadencer;
 
 interface
 
-{$i ..\GLScene.inc}
+{$i GLScene.inc}
 
 uses Windows, Classes, Controls, Messages, GLScene, StdCtrls, Forms, GLMisc;
 
