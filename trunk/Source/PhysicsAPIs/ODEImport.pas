@@ -23,7 +23,7 @@ unit odeimport;
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.10                                       *
+ * ODE Delphi Import unit : 0.8.11                                       *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -39,6 +39,8 @@ unit odeimport;
  *  for information http://opende.sourceforge.net/ode-docs.html          *
  *                                                                       *
  *************************************************************************}
+
+ {CommentMarker}
 
  {
   Some notes;
@@ -62,8 +64,10 @@ unit odeimport;
 
   Change history
 
+  2004.04.21 - CH - New single and double dll. Now handles Capped Cylinder vs Trimesh collision
+                    Added dJointGetUniversalAngle and dJointGetUniversalAngleRate, ...
   2004.04.08 - DL - Changed calling convention of dJointCreateContact and
-    dBodySetMass to require pointers. Again for compatability reasons.
+                    dBodySetMass to require pointers. Again for compatability reasons.
   2004.04.08 - DL - Minor compatibilit fixes (performed by MF) 
   2004.04.05 - CH - New single and double dll. Now handles trimesh/trimesh collision
   2004.03.30 - DL - better crossplatform Module loading support using moduleloader.pas
@@ -77,28 +81,22 @@ unit odeimport;
   2003.07.23 - CH - New single dll, now handles Plane2D
   2003.07.18 - CH - Added set and get UniversalParam, new dll deployed
   2003.07.07 - MF - DelphiODE now defaults to Single precision, because TriMesh
-    only works with Single precision. We're hoping this will be corrected in the
-    future
+                    only works with Single precision. We're hoping this will be corrected in the
+                    future
   2003.07.05 - CH - updated file to support new tri-collider code
-  2003.06.13 - CH - Creted new DLL, adding dWorldStepFast and
-    dJointTypePlane2D
+  2003.06.13 - CH - Created new DLL, adding dWorldStepFast and dJointTypePlane2D
   2003.06.12 - MF - fixed Single support, which was slightly broken
-  2003.06.10 - MF - Removed GeomTransformGroup as they're not in
-    the DLL.
+  2003.06.10 - MF - Removed GeomTransformGroup as they're not in the DLL.
   2003.02.11 - JV - added syntax enforcement on some enumerated types
-  2003.02.01 - CH - removed dGeomGroup and all it's procedures / functions
-    due to deprecation
+  2003.02.01 - CH - removed dGeomGroup and all it's procedures / functions due to deprecation
   2003.02.01 - MF - added a few new functions
   2003.01.20 - CH - compiled a new DLL and added the new functions.
-  2002.10.31 - CH - compiled a new dll version, with some minor updates to
-    friction among other things
-  2002.10.10 - MF - added the functions needed to support cylinder and
-    GeomTransformGroup.
-  2002.10.10 - CH - compiled a new DLL with the new cylinder geom and the
-    new GeomTransformGroup.
-  2002.09.25 - MF - I'm having issues with the single precision DLL, it seems less
-    stable. DelphiODE will still default to double precision. The goal is single
-    precision though, so the Tri-Collider can be used.
+  2002.10.31 - CH - compiled a new dll version, with some minor updates to friction among other things
+  2002.10.10 - MF - added the functions needed to support cylinder and GeomTransformGroup.
+  2002.10.10 - CH - compiled a new DLL with the new cylinder geom and the new GeomTransformGroup.
+  2002.09.25 - MF - I'm having issues with the single precision DLL, it seems less stable.
+                    DelphiODE will still default to double precision. The goal is single
+                    precision though, so the Tri-Collider can be used.
   2002.09.24 - CH - New Single and Double precision DLLs created
   2002.09.22 - DL - Preliminary Linux support
   2002.09.16 - MF & CH - Conversion started
@@ -109,24 +107,6 @@ unit odeimport;
   DL = Dominique Louis
   EG = Eric Grange
  }
-{
-  $Log$
-  Revision 1.30  2004/04/08 21:09:35  mattias
-  *** empty log message ***
-
-  Revision 1.28  2004/04/08 21:08:20  mattias
-  *** empty log message ***
-
-  Revision 1.27  2004/04/08 21:06:36  mattias
-  *** empty log message ***
-
-  Revision 1.26  2004/03/31 05:07:27  mattias
-  *** empty log message ***
-
-  Revision 1.25  2004/03/11 20:44:34  mattias
-  *** empty log message ***
-
-}
 
 {$I delphiode.inc}
 
@@ -951,7 +931,6 @@ dMessage
 dFactorCholesky
 dFactorLDLT
 dPlaneSpace
-dInfinityValue
 dInvertPDMatrix
 dIsPositiveDefinite
 dLDLTAddTL
@@ -1080,6 +1059,10 @@ dSolveLDLT}
   procedure dJointGetUniversalAxis1(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAxis1'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dJointGetUniversalAxis2(const dJointID : TdJointID; var result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAxis2'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dJointGetUniversalParam(const dJointID : TdJointID; const parameter: TJointParams): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalParam'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle1(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle2(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle2'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle1Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle1Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dJointGetUniversalAngle2Rate(const dJointID : TdJointID): TdReal; cdecl; external {$IFDEF __GPC__}name 'dJointGetUniversalAngle2Rate'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dJointGroupCreate(const max_size: Integer): TdJointGroupID; cdecl; external {$IFDEF __GPC__}name 'dJointGroupCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dJointGroupDestroy(const dJointGroupID : TdJointGroupID); cdecl; external {$IFDEF __GPC__}name 'dJointGroupDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dJointGroupEmpty(const dJointGroupID : TdJointGroupID); cdecl; external {$IFDEF __GPC__}name 'dJointGroupEmpty'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1166,7 +1149,6 @@ dSolveLDLT}
   //function dGeomGetSpaceAABB(const Geom : PdxGeom): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomGetSpaceAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   // Deprecated!
-  //procedure dGeomGroupAdd (const GeomGroup, Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomGroupAdd'{$ELSE} ODEDLL{$ENDIF __GPC__};
   //function dGeomGroupGetGeom(const Geom : PdxGeom; const i: Integer): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dGeomGroupGetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
   //function dGeomGroupGetNumGeoms(const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomGroupGetNumGeoms'{$ELSE} ODEDLL{$ENDIF __GPC__};
   //procedure dGeomGroupRemove(const group, x: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomGroupRemove'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1205,8 +1187,6 @@ dSolveLDLT}
 
   // A strange fix, so the class ids can be updated
   // ***************
-  // Deprecated
-  //function dCreateGeomGroup(const Space : PdxSpace): PdxGeom; cdecl;
   function dCreateSphere(const Space : PdxSpace; const radius: TdReal): PdxGeom; cdecl;
   function dCreateBox(const Space : PdxSpace; const lx, ly, lz: TdReal): PdxGeom; cdecl;
   function dCreatePlane(const Space : PdxSpace; const a, b, c, d: TdReal): PdxGeom; cdecl;
@@ -1229,8 +1209,9 @@ dSolveLDLT}
   function EXT_dCreateTerrainZ(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl; external ODEDLL name 'dCreateTerrainZ';
   function EXT_dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateRay';
   function EXT_dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl; external ODEDLL name 'dCreateGeomTransform';
+
 var
-   EXT_dCreateTriMesh : function(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;// external ODEDLL name 'dCreateTriMesh';
+   EXT_dCreateTriMesh : function(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
   // ***************
 
   // dCone
@@ -1281,7 +1262,8 @@ var
   dGeomTriMeshSetCallback : procedure(g: PdxGeom; Callback: Pointer); cdecl;
   dGeomTriMeshSetRayCallback : procedure(g: PdxGeom; RayCallback: Pointer); cdecl;
   dGeomTriMeshSetData : procedure(g: PdxGeom; Data: PdxTriMeshData); cdecl;
-  dGeomTriMeshGetData : function(g: PdxGeom): PdxTriMeshData; cdecl;
+
+  {MethodVariables}
 
   //----- dSpace -----
   procedure dSpaceAdd(const Space : PdxSpace; const Geom : PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dSpaceAdd'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1293,6 +1275,7 @@ var
   function dHashSpaceCreate(Space : PdxSpace): PdxSpace; cdecl; external {$IFDEF __GPC__}name 'dHashSpaceCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dQuadTreeSpaceCreate(const Space : PdxSpace; const Center, Extents : TdVector3; const Depth : Integer): PdxSpace; cdecl; external {$IFDEF __GPC__}name 'dQuadTreeSpaceCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dHashSpaceSetLevels(const Space: PdxSpace; const minlevel, maxlevel: Integer); cdecl; external {$IFDEF __GPC__}name 'dHashSpaceSetLevels'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dHashSpaceGetLevels(const Space: PdxSpace; var minlevel, maxlevel: Integer); cdecl; external {$IFDEF __GPC__}name 'dHashSpaceGetLevels'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dInfiniteAABB(geom : PdxGeom; var aabb : TdAABB); cdecl; external {$IFDEF __GPC__}name 'dInfiniteAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dSpaceGetNumGeoms (const Space: PdxSpace) : integer; cdecl; external {$IFDEF __GPC__}name 'dSpaceGetNumGeoms'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dSpaceGetGeom (const Space: PdxSpace; const i: Integer) : PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dSpaceGetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1343,9 +1326,7 @@ var
   //----- Misc -----
   procedure dClosestLineSegmentPoints (const a1, a2, b1, b2 : TdVector3; var cp1, cp2 : TdVector3); cdecl; external {$IFDEF __GPC__}name 'dClosestLineSegmentPoints'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  function dBoxTouchesBox (const _p1 : TdVector3; const R1 : TdMatrix3;
-                    const side1 : TdVector3; const _p2 : TdVector3;
-                    const R2 : TdMatrix3; const side2 : TdVector3) : integer; cdecl; external {$IFDEF __GPC__}name 'dBoxTouchesBox'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBoxTouchesBox (const _p1 : TdVector3; const R1 : TdMatrix3; const side1 : TdVector3; const _p2 : TdVector3; const R2 : TdMatrix3; const side2 : TdVector3) : integer; cdecl; external {$IFDEF __GPC__}name 'dBoxTouchesBox'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   function dMaxDifference (A, B : PdReal; n, m : integer) : TdReal; cdecl; external {$IFDEF __GPC__}name 'dMaxDifference'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMakeRandomVector(var n1 : TdVector3; a : integer; f : TdReal); cdecl; external {$IFDEF __GPC__}name 'dMakeRandomVector'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1369,9 +1350,6 @@ var
   procedure dTestMatrixComparison; cdecl; external {$IFDEF __GPC__}name 'dTestMatrixComparison'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dTestSolveLCP; cdecl; external {$IFDEF __GPC__}name 'dTestSolveLCP'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  // How can this be imported? I can't find it in the source!
-  //function dInfinityValue : TdReal; cdecl; external {$IFDEF __GPC__}name 'dInfinityValue'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
   //----- Recreated -----
   function dDot (const a, b : TdVector3) : TdReal; overload;
   function dDot (const a, b : PdVector3) : TdReal; overload;
@@ -1392,6 +1370,8 @@ var
   procedure DisableStillBodies(World : PdxWorld; Threshold : TdReal=0.0001);
 
   procedure VerifyDelphiODE(Body : PdxBody; Geom : PdxGeom);
+
+  {ExportInitODEMarker}
 
 var
   // These must be set up, so I catch the first time a user creates a new
@@ -1867,7 +1847,8 @@ begin
   dGeomTriMeshSetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetRayCallback' );
 
   dGeomTriMeshSetData := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetData' );
-  dGeomTriMeshGetData := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetData' );
+
+  {DynamicLoadMarker}
 end;
 
 procedure CloseODE;
