@@ -3660,7 +3660,7 @@ begin
          end;
       end;
    end;
-   if (Texture2Name<>'') and GL_ARB_multitexture then begin
+   if (Texture2Name<>'') and GL_ARB_multitexture and (not vSecondTextureUnitForbidden) then begin
       if not Assigned(libMatTexture2) then begin
          libMatTexture2:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
          if Assigned(libMatTexture2) then
@@ -3716,7 +3716,7 @@ begin
    end;
    if not Result then begin
       // if multipassing, this will occur upon last pass only
-      if Assigned(libMatTexture2) then begin
+      if Assigned(libMatTexture2) and (not vSecondTextureUnitForbidden) then begin
          libMatTexture2.Material.Texture.UnApplyAsTexture2(rci, libMatTexture2);
          xglMapTexCoordToMain;
       end;
