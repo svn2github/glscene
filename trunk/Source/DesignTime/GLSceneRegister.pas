@@ -135,6 +135,7 @@ uses
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
+   GLSkyBox,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
@@ -1849,6 +1850,8 @@ initialization
 
       RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCEnvironmentObjects);
+      RegisterSceneObject(TGLSkyBox, 'GLSkyBox', glsOCEnvironmentObjects);
+
 
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
