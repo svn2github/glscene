@@ -96,7 +96,10 @@ type
 	// TDummyCube
 	//
 	{: A simple cube, invisible at run-time.<p>
-		DummyCube's barycenter is their children's barycenter. }
+      This is a usually non-visible object -except at design-time- used for
+      constructing hierarchies or groups, when some kind of joint or movement
+      mechanism needs be described, you can use DummyCubes.<br>
+		DummyCube's barycenter is its children's barycenter. }
 	TDummyCube = class (TGLImmaterialSceneObject)
 		private
 			{ Private Declarations }
