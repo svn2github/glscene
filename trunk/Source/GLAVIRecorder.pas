@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/05/04 - EG - Added irmBitBlt mode (now the default mode)
       <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap,
                           Added OnPostProcessEvent
       <li>08/07/03 - NelC - Fixed access violation on exit (thx Solerman Kaplon)
@@ -31,7 +32,17 @@ type
 
    TAVIRecorderState = (rsNone, rsRecording);
 
-   TAVIImageRetrievalMode = (irmSnapShot, irmRenderToBitmap);
+   // TAVIImageRetrievalMode
+   //
+   {: Image retrieval mode for frame capture.<p>
+      Following modes are supported:<p>
+      <li>irmSnapShot : retrieve OpenGL framebuffer content using glReadPixels
+      <li>irmRenderToBitmap : renders the whole scene to a bitmap, this is
+         the slowest mode, but it won't be affected by driver-side specifics.
+      <li>irmBitBlt : tranfers the framebuffer using the BitBlt function,
+         usually the fastest solution
+      </ul> }
+   TAVIImageRetrievalMode = (irmSnapShot, irmRenderToBitmap, irmBitBlt);
 
    TAVIRecorderPostProcessEvent = procedure (Sender : TObject; frame : TBitmap) of object;
 
@@ -110,7 +121,7 @@ type
        property Filename : String read FAVIFilename write FAVIFilename;
        property Compressor : TAVICompressor read FCompressor write FCompressor default acDefault;
        property SizeRestriction : TAVISizeRestriction read FSizeRestriction write SetSizeRestriction default srForceBlock8x8;
-       property ImageRetrievalMode : TAVIImageRetrievalMode read FImageRetrievalMode write FImageRetrievalMode default irmRenderToBitmap;
+       property ImageRetrievalMode : TAVIImageRetrievalMode read FImageRetrievalMode write FImageRetrievalMode default irmBitBlt;
 
        property OnPostProcessEvent : TAVIRecorderPostProcessEvent read FOnPostProcessEvent write FOnPostProcessEvent;
 
@@ -195,7 +206,7 @@ begin
    FCompressor:=acDefault;
    RecorderState:=rsNone;
    FSizeRestriction:=srForceBlock8x8;
-   FImageRetrievalMode:=irmRenderToBitmap;
+   FImageRetrievalMode:=irmBitBlt;
 end;
 
 destructor TAVIRecorder.Destroy;
@@ -255,10 +266,25 @@ begin
    case ImageRetrievalMode of
       irmSnapShot : begin
          bmp32:=GLSceneViewer.Buffer.CreateSnapShot;
-         bmp:=bmp32.Create32BitsBitmap;
-         AVIBitmap.Canvas.Draw(0, 0, bmp);
-         bmp.Free;
-         bmp32.Free;
+         try
+            bmp:=bmp32.Create32BitsBitmap;
+            try
+               AVIBitmap.Canvas.Draw(0, 0, bmp);
+            finally
+               bmp.Free;
+            end;
+         finally
+            bmp32.Free;
+         end;
+      end;
+      irmBitBlt : begin
+         GLSceneViewer.Buffer.RenderingContext.Activate;
+         try
+            BitBlt(AVIBitmap.Canvas.Handle, 0, 0, AVIBitmap.Width, AVIBitmap.Height,
+                   wglGetCurrentDC, 0, 0, SRCCOPY);
+         finally
+            GLSceneViewer.Buffer.RenderingContext.Deactivate;
+         end;
       end;
       irmRenderToBitmap : begin
          GLSceneViewer.Buffer.RenderToBitmap(AVIBitmap, AVI_DPI);

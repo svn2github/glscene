@@ -22,7 +22,8 @@ interface
 
 {$i GLScene.inc}
 
-uses Windows, Forms, Messages, Classes, GLScene, Controls, Menus;
+uses Windows, Graphics, Forms, Messages, Classes, GLScene, Controls, Menus,
+   GLContext;
 
 type
 
@@ -108,6 +109,8 @@ type
          function FramesPerSecond : Single;
          function FramesPerSecondText(decimals : Integer = 1) : String;
          procedure ResetPerformanceMonitor;
+
+         function CreateSnapShotBitmap : TBitmap;
 
          property RenderDC : Cardinal read FOwnDC;
          property MouseInControl : Boolean read FMouseInControl;
@@ -468,6 +471,19 @@ end;
 procedure TGLSceneViewer.ResetPerformanceMonitor;
 begin
    FBuffer.ResetPerformanceMonitor;
+end;
+
+// CreateSnapShotBitmap
+//
+function TGLSceneViewer.CreateSnapShotBitmap : TBitmap;
+begin
+   Result:=TBitmap.Create;
+   Result.PixelFormat:=pf24bit;
+   Result.Width:=Width;
+   Result.Height:=Height;
+
+   BitBlt(Result.Canvas.Handle, 0, 0, Width, Height,
+          RenderDC, 0, 0, SRCCOPY);
 end;
 
 // ------------------------------------------------------------------
