@@ -17,7 +17,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLScene, GLMisc, GLObjects, GLExtrusion, GLWin32Viewer;
+  GLScene, GLMisc, GLObjects, GLExtrusion, GLWin32Viewer, Geometry;
 
 type
   TForm1 = class(TForm)
@@ -38,6 +38,8 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
     { Déclarations privées }
   public
@@ -64,6 +66,12 @@ begin
    if Shift<>[] then
       GLCamera1.MoveAroundTarget(my-y, mx-x);
    mx:=x; my:=y;
+end;
+
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+   GLCamera1.AdjustDistanceToTarget(Power(1.05, WheelDelta div 120));
 end;
 
 end.
