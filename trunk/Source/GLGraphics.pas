@@ -987,13 +987,13 @@ procedure TGLBitmap32.RegisterAsOpenGLTexture(target : TGLUInt;
                                               minFilter : TGLMinFilter;
                                               texFormat : Integer;
                                               var texWidth, texHeight : Integer);
-  function IsFloat(texFormat : Integer) : boolean;
-  // Currently only support 16bit and 32bit RGBA formats
-  // NV and ATI float types would later be replaced by ARB float types
-  begin
-   result:=(texFormat=GL_FLOAT_RGBA16_NV) or (texFormat=GL_FLOAT_RGBA32_NV) or
-           (texFormat=GL_RGBA_FLOAT16_ATI) or (texFormat=GL_RGBA_FLOAT32_ATI);
-  end;
+   function IsFloat(texFormat : Integer) : boolean;
+   begin
+      // Currently only support 16bit and 32bit RGBA formats
+      // NV and ATI float types would later be replaced by ARB float types
+      Result:=   (texFormat=GL_FLOAT_RGBA16_NV) or (texFormat=GL_FLOAT_RGBA32_NV)
+              or (texFormat=GL_RGBA_FLOAT16_ATI) or (texFormat=GL_RGBA_FLOAT32_ATI);
+   end;
 
 var
    w2, h2, maxSize : Integer;
@@ -1009,44 +1009,40 @@ begin
       texHeight:=h2;
 
       if not IsFloat(texFormat) then begin // Non-power-of-two for float_type
-        if (w2<>Width) or (h2<>Height) then begin
-           GetMem(buffer, w2*h2*4);
-           gluScaleImage(GL_RGBA, Width, Height, GL_UNSIGNED_BYTE, Data, w2, h2,
-                         GL_UNSIGNED_BYTE, buffer);
-          end
-        else
-          buffer:=Pointer(FData);
-        end
-      else
-        buffer:=Pointer(FData);
+         if (w2<>Width) or (h2<>Height) then begin
+            GetMem(buffer, w2*h2*4);
+            gluScaleImage(GL_RGBA, Width, Height, GL_UNSIGNED_BYTE, Data, w2, h2,
+                          GL_UNSIGNED_BYTE, buffer);
+         end else buffer:=Pointer(FData);
+      end else buffer:=Pointer(FData);
 
       try
-        if IsFloat(texFormat) then begin // float_type
-         // Note: see note in TGLFloatDataImage.NativeTextureTarget
+         if IsFloat(texFormat) then begin // float_type
+            // Note: see note in TGLFloatDataImage.NativeTextureTarget
 //            if GL_ATI_texture_float then
 //              assert(target=GL_TEXTURE_2D, 'ATI Float-type texture must use GL_TEXTURE_2D')
 //            else
-              assert(target=GL_TEXTURE_RECTANGLE_NV, 'NV Float-type texture must use GL_TEXTURE_RECTANGLE_NV');
+            Assert(target=GL_TEXTURE_RECTANGLE_NV, 'NV Float-type texture must use GL_TEXTURE_RECTANGLE_NV');
             // currently doesn't support
         		glTexImage2d( target, 0, texFormat, w2, h2, 0, GL_RGBA, GL_FLOAT, nil)
-          end
-        else
-   		case minFilter of
-			   miNearest, miLinear :
-		   		glTexImage2d(target, 0, texFormat, w2, h2, 0,
-	   							 GL_RGBA, GL_UNSIGNED_BYTE, buffer)
-   		else
-            if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
-               // hardware-accelerated when supported
-               glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-		   		glTexImage2d(target, 0, texFormat, w2, h2, 0,
-	   							 GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-            end else begin
-               // slower (software mode)
-   		   	gluBuild2DMipmaps(target, texFormat, w2, h2,
-	      								GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+         end else begin
+            case minFilter of
+               miNearest, miLinear :
+                  glTexImage2d(target, 0, texFormat, w2, h2, 0,
+                               GL_RGBA, GL_UNSIGNED_BYTE, buffer)
+            else
+               if GL_SGIS_generate_mipmap and (target=GL_TEXTURE_2D) then begin
+                  // hardware-accelerated when supported
+                  glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+                  glTexImage2d(target, 0, texFormat, w2, h2, 0,
+                               GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+               end else begin
+                  // slower (software mode)
+                  gluBuild2DMipmaps(target, texFormat, w2, h2,
+                                    GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+               end;
             end;
-   		end;
+         end;
 		finally
          if buffer<>Pointer(FData) then
    			FreeMem(buffer);
