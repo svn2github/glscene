@@ -197,7 +197,9 @@ type
          {: Converts a grayscale 'elevation' bitmap to normal map.<p>
             Actually, only the Green component in the original bitmap is used,
             and the elevation map is assumed to be wrapping }
-         function GrayScaleToNormalMap(const scale : Single) : Boolean;
+         procedure GrayScaleToNormalMap(const scale : Single);
+         {: Assumes the bitmap content is a normal map and normalizes all pixels.<p> }
+         procedure NormalizeNormalMap;
 	end;
 
 procedure BGR24ToRGB24(src, dest : Pointer; pixelCount : Integer);
@@ -991,7 +993,7 @@ end;
 
 // TGLBitmap32
 //
-function TGLBitmap32.GrayScaleToNormalMap(const scale : Single) : Boolean;
+procedure TGLBitmap32.GrayScaleToNormalMap(const scale : Single);
 var
    x, y : Integer;
    p1, p2, p3 : Single;
@@ -1001,8 +1003,6 @@ var
    curRowZeroG : Byte;
    backupRowZero : PGLPixel32Array;
 begin
-   Result := True;
-
    if Assigned(FData) then begin
       nextRow:=FData;
       backupRowZero:=AllocMem(Width*4);
@@ -1035,6 +1035,35 @@ begin
          end;
       end;
       FreeMem(backupRowZero);
+   end;
+end;
+
+// NormalizeNormalMap
+//
+procedure TGLBitmap32.NormalizeNormalMap;
+var
+   x, y : Integer;
+   sr, sg, sb : Single;
+   invLen : Single;
+   curRow : PGLPixel32Array;
+   p : PGLPixel32;
+const
+   cInv128 : Single = 1/128;
+begin
+   if Assigned(FData) then begin
+      for y:=0 to Height-1 do begin
+         curRow:=@FData[y*Width];
+         for x:=0 to Width-1 do begin
+            p:=@curRow[x];
+            sr:=(p.r-128)*cInv128;
+            sg:=(p.g-128)*cInv128;
+            sb:=(p.b-128)*cInv128;
+            invLen:=RSqrt(sr*sr+sg*sg+sb*sb);
+            p.r:=Round(128+127*ClampValue(sr*invLen, -1, 1));
+            p.g:=Round(128+127*ClampValue(sg*invLen, -1, 1));
+            p.b:=Round(128+127*ClampValue(sb*invLen, -1, 1));
+         end;
+      end;
    end;
 end;
 
