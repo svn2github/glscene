@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>27/01/05 - Mathx - BuildOctree can now specify an (optional) TreeDepth.
       <li>11/01/05 - SG - Another fix for TGLBaseMesh.Assign (dikoe Kenguru)
       <li>11/01/05 - SG - Fix for TGLBaseMesh.Assign when assigning actors
       <li>26/11/04 - MRQZZZ - by Uwe Raabe : fixed TBaseMeshObject.BuildNormals
@@ -1396,8 +1397,8 @@ type
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
          property Octree : TOctree read GetOctree;
-         procedure BuildOctree;
-
+         procedure BuildOctree(TreeDepth: integer = 3);
+                                                
       published
          { Published Declarations }
          property AutoCentering;
@@ -6414,7 +6415,7 @@ end;
 
 // BuildOctree
 //
-procedure TGLFreeForm.BuildOctree;
+procedure TGLFreeForm.BuildOctree(TreeDepth: integer = 3);
 var
    emin, emax : TAffineVector;
    tl : TAffineVectorList;
@@ -6427,7 +6428,7 @@ begin
    try
       with Octree do begin
          DisposeTree;
-         InitializeTree(emin, emax, tl, 3);
+         InitializeTree(emin, emax, tl, TreeDepth);
       end;
    finally
       tl.Free;
