@@ -2955,7 +2955,7 @@ end;
 //
 function TGLBaseSceneObject.LocalToAbsolute(const v : TVector) : TVector;
 begin
-   Result:=VectorTransform(v, AbsoluteMatrix);
+   Result:=VectorTransform(v, AbsoluteMatrixAsAddress^);
 end;
 
 // LocalToAbsolute (affine)
