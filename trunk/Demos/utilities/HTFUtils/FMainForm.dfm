@@ -252,6 +252,7 @@ object MainForm: TMainForm
     OnChange = CBTypeChange
     Items.Strings = (
       '16 bits (Intel)'
+      '16 bits unsigned (Intel)'
       '16 bits (non-Intel)'
       'VTP'#39's BT (single)'
       'BMP (Windows)'

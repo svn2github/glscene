@@ -339,6 +339,8 @@ begin
          sources[i].format:=4
       else if Pos('BMP', row[3])>0 then
          sources[i].format:=3
+      else if Pos('unsigned', row[3])>0 then
+         sources[i].format:=5
       else sources[i].format:=0;
    end;
 end;
@@ -399,6 +401,14 @@ begin
             fs.Read(buf[0], len*4);
             for i:=0 to len-1 do
                PSmallInt(Integer(dest)+i*2)^:=Round((buf[i]-0.5)*32000);
+         end;
+         5 : begin // 16bits unsigned Intel
+            fs.Position:=(relX+relY*w)*2;
+            fs.Read(dest^, len*2);
+            for i:=0 to len-1 do begin
+               wd:=PWord(Integer(dest)+i*2)^;
+               PSmallInt(Integer(dest)+i*2)^:=Integer(wd)-32768;
+            end;
          end;
       end;
    end;
