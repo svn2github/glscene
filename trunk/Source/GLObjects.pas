@@ -11,7 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
-      <li>09/01/03 - EG - TGLCube.RayCastIntersect (Stuart Gooding, experimental)
+      <li>10/01/03 - EG - TGLCube.RayCastIntersect (Stuart Gooding)
       <li>08/01/03 - RC - Added TGLPlane.XScope and YScope, to use just a part of the texture
       <li>27/09/02 - EG - Added TGLPointParameters
       <li>24/07/02 - EG - Added TGLCylinder.Alignment
@@ -2753,31 +2753,30 @@ var
    p       : array [0..5] of TVector;
    rs,rv,r : TVector;
    i       : Integer;
-   t       : Single;
+   t,e     : Single;
 begin
    rs:=AbsoluteToLocal(rayStart);
-   rv:=AbsoluteToLocal(VectorNormalize(rayVector));
-   p[0]:=VectorMake( 1,  0,  0, 0.5*FCubeSize[0]);
-   p[1]:=VectorMake( 0,  1,  0, 0.5*FCubeSize[1]);
-   p[2]:=VectorMake( 0,  0,  1, 0.5*FCubeSize[2]);
-   p[3]:=VectorMake(-1,  0,  0, 0.5*FCubeSize[0]);
-   p[4]:=VectorMake( 0, -1,  0, 0.5*FCubeSize[1]);
-   p[5]:=VectorMake( 0,  0, -1, 0.5*FCubeSize[2]);
+   rv:=VectorNormalize(AbsoluteToLocal(rayVector));
+   e:=0.0001; //Small value for floating point imprecisions
+   p[0]:=VectorMake( 1,  0,  0);
+   p[1]:=VectorMake( 0,  1,  0);
+   p[2]:=VectorMake( 0,  0,  1);
+   p[3]:=VectorMake(-1,  0,  0);
+   p[4]:=VectorMake( 0, -1,  0);
+   p[5]:=VectorMake( 0,  0, -1);
    Result:=False;
    for i:=0 to 5 do begin
       if (VectorDotProduct(p[i], rv)>0) then begin
-         t:=- (p[i][0]*rs[0]+p[i][1]*rs[1]+p[i][2]*rs[2]+p[i][3])
+         t:=- (p[i][0]*rs[0]+p[i][1]*rs[1]+p[i][2]*rs[2]+0.5*FCubeSize[i mod 3])
              /(p[i][0]*rv[0]+p[i][1]*rv[1]+p[i][2]*rv[2]);
          r:=VectorMake(rs[0]+t*rv[0], rs[1]+t*rv[1], rs[2]+t*rv[2]);
-         if     (Abs(r[0])<=FCubeSize[0]*0.5)
-            and (Abs(r[1])<=FCubeSize[1]*0.5)
-            and (Abs(r[2])<=FCubeSize[2]*0.5) then begin
+         if     (Abs(r[0])<=FCubeSize[0]*(0.5+e))
+            and (Abs(r[1])<=FCubeSize[1]*(0.5+e))
+            and (Abs(r[2])<=FCubeSize[2]*(0.5+e)) then begin
             if Assigned(intersectPoint) then
-               intersectPoint^:=LocalToAbsolute(r);
-            if Assigned(intersectNormal) then begin
-               p[i][3]:=0;
-               intersectNormal^:=LocalToAbsolute(p[i]);
-            end;
+               intersectPoint^:=VectorMake(LocalToAbsolute(AffineVectorMake(r)));
+            if Assigned(intersectNormal) then
+               intersectNormal^:=LocalToAbsolute(VectorNegate(p[i]));
             Result:=true;
             Exit;
          end;
