@@ -10,7 +10,7 @@ unit FileOCT;
 
 interface
 
-uses Classes, Geometry;
+uses Classes, Geometry, VectorLists;
 
 type
 
@@ -73,6 +73,14 @@ type
          {: Saves content to stream in OCT format.<p>
             The Header is automatically prepared before streaming. }
          procedure SaveToStream(aStream : TStream);
+
+         procedure AddTriangles(vertexCoords : TAffineVectorList;
+                                texMapCoords : TAffineVectorList;
+                                const textureName : String);
+         procedure AddLight(const lightPos : TAffineVector;
+                            const lightColor : TVector;
+                            lightIntensity : Integer);
+
    end;
 
 // ------------------------------------------------------------------
@@ -83,7 +91,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils;
+uses SysUtils, MeshUtils;
 
 // ------------------
 // ------------------ TOCTFile ------------------
@@ -143,6 +151,60 @@ begin
       Write(Lightmaps[0], numLightmaps*SizeOf(TOCTLightmap));
       Write(Lights[0], numLights*SizeOf(TOCTLight));
       Write(PlayerPos, SizeOf(PlayerPos))
+   end;
+end;
+
+// AddTriangles
+//
+procedure TOCTFile.AddTriangles(vertexCoords : TAffineVectorList;
+                                texMapCoords : TAffineVectorList;
+                                const textureName : String);
+var
+   i : Integer;
+   baseIdx, texIdx : Integer;
+begin
+   Assert((texMapCoords=nil) or (texMapCoords.Count=vertexCoords.Count));
+
+   texIdx:=Length(Textures);
+   SetLength(Textures, texIdx+1);
+   Move(textureName[1], Textures[texIdx].Name[0], Length(textureName));
+   SetLength(Lightmaps, 1);
+
+   baseIdx:=Length(Vertices);
+   SetLength(Vertices, baseIdx+vertexCoords.Count);
+   for i:=0 to vertexCoords.Count-1 do with Vertices[baseIdx+i] do begin
+      pos:=vertexCoords.List[i];
+      if Assigned(texMapCoords) then
+         tv:=PTexPoint(@texMapCoords.List[i])^;
+   end;
+
+   SetLength(Faces, vertexCoords.Count div 3);
+   i:=0; while i<vertexCoords.Count do begin
+      with Faces[i div 3] do begin
+         start:=baseIdx+i;
+         num:=3;
+         id:=texIdx;
+         p:=PlaneMake(vertexCoords[i],
+                      CalcPlaneNormal(vertexCoords[i], vertexCoords[i+1], vertexCoords[i+2]));
+      end;
+      Inc(i, 3);
+   end;
+end;
+
+// AddLight
+//
+procedure TOCTFile.AddLight(const lightPos : TAffineVector;
+                            const lightColor : TVector;
+                            lightIntensity : Integer);
+var
+   n : Integer;
+begin
+   n:=Length(Lights);
+   SetLength(Lights, n+1);
+   with Lights[n] do begin
+      pos:=lightPos;
+      color:=PAffineVector(@lightColor)^;
+      intensity:=lightIntensity;
    end;
 end;
 
