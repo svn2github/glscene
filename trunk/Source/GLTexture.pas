@@ -2874,7 +2874,7 @@ begin
          glEnable(GL_TEXTURE_GEN_T);
   	      glEnable(GL_TEXTURE_GEN_R);
       end;
-      tmmCubeMapNormal : begin
+      tmmCubeMapNormal : if GL_ARB_texture_cube_map then begin
          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP_ARB);
