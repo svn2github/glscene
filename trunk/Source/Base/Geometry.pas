@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/08/02 - EG - Added Pack/UnPackRotationMatrix
       <li>13/08/02 - EG - Added Area functions
       <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits 
       <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)3
@@ -359,6 +360,8 @@ type
       viewPortRadius : Single; // viewport bounding radius per distance unit
       farClippingDistance : Single;
    end;
+
+   TPackedRotationMatrix = array [0..2] of SmallInt;
 
 const
   // useful constants
@@ -1157,6 +1160,17 @@ function MakeShadowMatrix(const planePoint, planeNormal, lightPos : TVector) : T
 {: Builds a reflection matrix for the given plane.<p>
    Reflection matrix allow implementing planar reflectors in OpenGL (mirrors). }
 function MakeReflectionMatrix(const planePoint, planeNormal : TAffineVector) : TMatrix;
+
+{: Packs an homogeneous rotation matrix to 6 bytes.<p>
+   The 6:64 (or 6:36) compression ratio is achieved by computing the quaternion
+   associated to the matrix and storing its Imaginary components at 16 bits
+   precision each.<br>
+   Deviation is typically below 0.01% and around 0.1% in worst case situations.<p>
+   Note: quaternion conversion is faster and more robust than an angle decomposition. }
+function PackRotationMatrix(const mat : TMatrix) : TPackedRotationMatrix;
+{: Restores a packed rotation matrix.<p>
+   See PackRotationMatrix. }
+function UnPackRotationMatrix(const packedMatrix : TPackedRotationMatrix) : TMatrix;
 
 const
    cPIdiv180 : Single =  0.017453292;
@@ -7087,6 +7101,45 @@ begin
    Result[3][1]:=pv2*planeNormal[1];
    Result[3][2]:=pv2*planeNormal[2];
    Result[3][3]:=1;
+end;
+
+// PackRotationMatrix
+//
+function PackRotationMatrix(const mat : TMatrix) : TPackedRotationMatrix;
+var
+   q : TQuaternion;
+const
+   cFact : Single = 32767;
+begin
+   q:=QuaternionFromMatrix(mat);
+   NormalizeQuaternion(q);
+   if q.RealPart<0 then begin
+      Result[0]:=Round(-q.ImagPart[0]*cFact);
+      Result[1]:=Round(-q.ImagPart[1]*cFact);
+      Result[2]:=Round(-q.ImagPart[2]*cFact);
+   end else begin
+      Result[0]:=Round(q.ImagPart[0]*cFact);
+      Result[1]:=Round(q.ImagPart[1]*cFact);
+      Result[2]:=Round(q.ImagPart[2]*cFact);
+   end;
+end;
+
+// UnPackRotationMatrix
+//
+function UnPackRotationMatrix(const packedMatrix : TPackedRotationMatrix) : TMatrix;
+var
+   q : TQuaternion;
+const
+   cFact : Single = 1/32767;
+begin
+   q.ImagPart[0]:=packedMatrix[0]*cFact;
+   q.ImagPart[1]:=packedMatrix[1]*cFact;
+   q.ImagPart[2]:=packedMatrix[2]*cFact;
+   q.RealPart:=1-VectorNorm(q.ImagPart);
+   if q.RealPart<0 then
+      q.RealPart:=0
+   else q.RealPart:=Sqrt(q.RealPart);
+   Result:=QuaternionToMatrix(q);
 end;
 
 //--------------------------------------------------------------
