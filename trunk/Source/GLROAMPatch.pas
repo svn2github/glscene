@@ -112,7 +112,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses{>>GpProfile U} GpProf, {GpProfile U>>} OpenGL1x, XOpenGL, SysUtils;
+uses OpenGL1x, XOpenGL, SysUtils;
 
 type
 
@@ -244,32 +244,32 @@ end;
 // Create
 //
 constructor TGLROAMPatch.Create;
-begin{>>GpProfile} ProfilerEnterProc(1); try {GpProfile>>}
+begin
 	inherited Create;
    FListHandle:=TGLListHandle.Create;
-{>>GpProfile} finally ProfilerExitProc(1); end; {GpProfile>>}end;
+end;
 
 // Destroy
 //
 destructor TGLROAMPatch.Destroy;
-begin{>>GpProfile} ProfilerEnterProc(2); try {GpProfile>>}
+begin
    FListHandle.Free;
 	inherited Destroy;
-{>>GpProfile} finally ProfilerExitProc(2); end; {GpProfile>>}end;
+end;
 
 // SetHeightData
 //
 procedure TGLROAMPatch.SetHeightData(val : THeightData);
-begin{>>GpProfile} ProfilerEnterProc(3); try {GpProfile>>}
+begin
    FHeightData:=val;
    FPatchSize:=FHeightData.Size-1;
    FHeightRaster:=val.SmallIntRaster;
-{>>GpProfile} finally ProfilerExitProc(3); end; {GpProfile>>}end;
+end;
 
 // ConnectToTheWest
 //
 procedure TGLROAMPatch.ConnectToTheWest(westPatch : TGLROAMPatch);
-begin{>>GpProfile} ProfilerEnterProc(4); try {GpProfile>>}
+begin
    if Assigned(westPatch) then begin
       if not (westPatch.HighRes or HighRes) then begin
          FTLNode.left:=westPatch.FBRNode;
@@ -278,12 +278,12 @@ begin{>>GpProfile} ProfilerEnterProc(4); try {GpProfile>>}
       FWest:=westPatch;
       westPatch.FEast:=Self;
    end;
-{>>GpProfile} finally ProfilerExitProc(4); end; {GpProfile>>}end;
+end;
 
 // ConnectToTheNorth
 //
 procedure TGLROAMPatch.ConnectToTheNorth(northPatch : TGLROAMPatch);
-begin{>>GpProfile} ProfilerEnterProc(5); try {GpProfile>>}
+begin
    if Assigned(northPatch) then begin
       if not (northPatch.HighRes or HighRes) then begin
          FTLNode.right:=northPatch.FBRNode;
@@ -292,7 +292,7 @@ begin{>>GpProfile} ProfilerEnterProc(5); try {GpProfile>>}
       FNorth:=northPatch;
       northPatch.FSouth:=Self;
    end;
-{>>GpProfile} finally ProfilerExitProc(5); end; {GpProfile>>}end;
+end;
 
 // ComputeVariance
 //
@@ -305,11 +305,11 @@ var
    invVariance : Single;
 
    function ROAMVariancePoint(anX, anY : Integer) : TROAMVariancePoint;
-   begin{>>GpProfile} ProfilerEnterProc(6); try {GpProfile>>}
+   begin
       Result.X:=anX;
       Result.Y:=anY;
       Result.Z:=(Integer(FHeightRaster[anY][anX]) shl 8);
-   {>>GpProfile} finally ProfilerExitProc(6); end; {GpProfile>>}end;
+   end;
 
    function RecursComputeVariance(const left, right, apex : TROAMVariancePoint;
                                   node : Integer) : Cardinal;
@@ -317,7 +317,7 @@ var
       half : TROAMVariancePoint;
       v : Cardinal;
       n2 : Integer;
-   begin{>>GpProfile} ProfilerEnterProc(7); try {GpProfile>>}
+   begin
       with half do begin
          X:=(left.X+right.X) shr 1;
          Y:=(left.Y+right.Y) shr 1;
@@ -333,12 +333,12 @@ var
          if v>Result then Result:=v;
       end;
       currentVariance[node]:=Result;
-   {>>GpProfile} finally ProfilerExitProc(7); end; {GpProfile>>}end;
+   end;
 
    procedure ScaleVariance(n, d : Integer);
    var
       newVal : Integer;
-   begin{>>GpProfile} ProfilerEnterProc(8); try {GpProfile>>}
+   begin
       if d>=0 then
          newVal:=(currentVariance[n] shl (d shr 1))
       else newVal:=(currentVariance[n] shr (-d shr 1));
@@ -352,11 +352,11 @@ var
          ScaleVariance(n,   d);
          ScaleVariance(n+1, d);
       end;
-   {>>GpProfile} finally ProfilerExitProc(8); end; {GpProfile>>}end;
+   end;
 
 var
    s, p : Integer;
-begin{>>GpProfile} ProfilerEnterProc(9); try {GpProfile>>}
+begin
    invVariance:=1/variance;
    s:=Sqr(FPatchSize);
    raster:=FHeightRaster;
@@ -385,12 +385,12 @@ begin{>>GpProfile} ProfilerEnterProc(9); try {GpProfile>>}
    ScaleVariance(1, p);
    FMaxBRVarianceDepth:=maxNonNullIndex+1;
    SetLength(FBRVariance, FMaxBRVarianceDepth);
-{>>GpProfile} finally ProfilerExitProc(9); end; {GpProfile>>}end;
+end;
 
 // ResetTessellation
 //
 procedure TGLROAMPatch.ResetTessellation;
-begin{>>GpProfile} ProfilerEnterProc(10); try {GpProfile>>}
+begin
    FTLNode:=AllocTriangleNode;
    FBRNode:=AllocTriangleNode;
    FTLNode.base:=FBRNode;
@@ -403,7 +403,7 @@ begin{>>GpProfile} ProfilerEnterProc(10); try {GpProfile>>}
    FSouth:=nil;
    FWest:=nil;
    FEast:=nil;
-{>>GpProfile} finally ProfilerExitProc(10); end; {GpProfile>>}end;
+end;
 
 // Tesselate
 //
@@ -439,33 +439,33 @@ procedure TGLROAMPatch.Tesselate;
       f : Single;
    const
       c1Div100 : Single = 0.01;
-   begin{>>GpProfile} ProfilerEnterProc(11); try {GpProfile>>}
+   begin
       f:=Sqr(x-tessObserverPosX)+Sqr(y-tessObserverPosY)+tessFrameVarianceDelta;
       Result:=Round(Sqrt(f)+f*c1Div100);
-   {>>GpProfile} finally ProfilerExitProc(11); end; {GpProfile>>}end;
+   end;
 
    procedure FullBaseTess(tri : PROAMTriangleNode; n : Cardinal); forward;
 
    procedure FullLeftTess(tri : PROAMTriangleNode; n : Cardinal);
-   begin{>>GpProfile} ProfilerEnterProc(12); try {GpProfile>>}
+   begin
       if Split(tri) then begin
          n:=n shl 1;
          if n<tessMaxDepth then
             FullBaseTess(tri.leftChild, n);
       end;
-   {>>GpProfile} finally ProfilerExitProc(12); end; {GpProfile>>}end;
+   end;
 
    procedure FullRightTess(tri : PROAMTriangleNode; n : Cardinal);
-   begin{>>GpProfile} ProfilerEnterProc(13); try {GpProfile>>}
+   begin
       if Split(tri) then begin
          n:=n shl 1;
          if n<tessMaxDepth then
             FullBaseTess(tri.rightChild, n);
       end;
-   {>>GpProfile} finally ProfilerExitProc(13); end; {GpProfile>>}end;
+   end;
 
    procedure FullBaseTess(tri : PROAMTriangleNode; n : Cardinal);
-   begin{>>GpProfile} ProfilerEnterProc(14); try {GpProfile>>}
+   begin
       if Split(tri) then begin
          n:=n shl 1;
          if n<tessMaxDepth then begin
@@ -473,11 +473,11 @@ procedure TGLROAMPatch.Tesselate;
             FullLeftTess(tri.rightChild, n);
          end;
       end;
-   {>>GpProfile} finally ProfilerExitProc(14); end; {GpProfile>>}end;
+   end;
 
 var
    s : Integer;
-begin{>>GpProfile} ProfilerEnterProc(15); try {GpProfile>>}
+begin
    if HighRes then Exit;
 
    tessMaxDepth:=FMaxDepth;
@@ -502,14 +502,14 @@ begin{>>GpProfile} ProfilerEnterProc(15); try {GpProfile>>}
    tessCurrentVariance:=@FBRVariance[0];
    tessMaxVariance:=FMaxBRVarianceDepth;
    RecursTessellate(FBRNode, 1, VertexDist(s, 0), VertexDist(0, s), VertexDist(s, s));
-{>>GpProfile} finally ProfilerExitProc(15); end; {GpProfile>>}end;
+end;
 
 // Render
 //
 procedure TGLROAMPatch.Render(vertices : TAffineVectorList;
                               vertexIndices : TIntegerList;
                               texCoords : TTexPointList);
-begin{>>GpProfile} ProfilerEnterProc(16); try {GpProfile>>}
+begin
    if FNoDetails then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
       glDisable(GL_TEXTURE_2D);
@@ -552,7 +552,7 @@ begin{>>GpProfile} ProfilerEnterProc(16); try {GpProfile>>}
       glEnable(GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
-{>>GpProfile} finally ProfilerExitProc(16); end; {GpProfile>>}end;
+end;
 
 // RenderROAM
 //
@@ -591,16 +591,16 @@ procedure TGLROAMPatch.RenderROAM(vertices : TAffineVectorList;
                                   texCoords : TTexPointList);
 
    procedure ROAMRenderPoint(var p : TROAMRenderPoint; anX, anY : Integer);
-   begin{>>GpProfile} ProfilerEnterProc(17); try {GpProfile>>}
+   begin
       p.X:=anX;
       p.Y:=anY;
       p.Idx:=vertices.Add(anX, anY, renderRaster[anY][anX]);
       texCoords.Add(anX, anY);
-   {>>GpProfile} finally ProfilerExitProc(17); end; {GpProfile>>}end;
+   end;
 
 var
    rtl, rtr, rbl, rbr : TROAMRenderPoint;
-begin{>>GpProfile} ProfilerEnterProc(18); try {GpProfile>>}
+begin
    vertices.Count:=0;
    texCoords.Count:=0;
    renderVertices:=vertices;
@@ -621,7 +621,7 @@ begin{>>GpProfile} ProfilerEnterProc(18); try {GpProfile>>}
    RecursRender(FBRNode, rtr, rbl, rbr);
 
    vertexIndices.Count:=(Integer(renderIndices)-Integer(vertexIndices.List)) div SizeOf(Integer);
-{>>GpProfile} finally ProfilerExitProc(18); end; {GpProfile>>}end;
+end;
 
 // RenderAsStrips
 //
@@ -638,7 +638,7 @@ var
    verticesList : PAffineVector;
    texCoordsList : PTexPoint;
    indicesList : PInteger;
-begin{>>GpProfile} ProfilerEnterProc(19); try {GpProfile>>}
+begin
    raster:=FHeightData.SmallIntRaster;
    rowLength:=FPatchSize+1;
    // prepare vertex data
@@ -689,7 +689,7 @@ begin{>>GpProfile} ProfilerEnterProc(19); try {GpProfile>>}
       Inc(y, 2);
    end;
    vertexIndices.Count:=vertexIndices.Count-1;
-{>>GpProfile} finally ProfilerExitProc(19); end; {GpProfile>>}end;
+end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
