@@ -721,7 +721,7 @@ procedure TGLCustomBitmapFont.RenderString(const aString : String; alignment : T
          taLeftJustify : Result:=0;
          taRightJustify : Result:=-CalcStringWidth(Copy(aString, p-i, i))
       else // taCenter
-          Result:=-CalcStringWidth(Copy(aString, p-i, i))*0.5;
+          Result:=Round(-CalcStringWidth(Copy(aString, p-i, i))*0.5);
       end;
    end;
 
@@ -736,7 +736,7 @@ procedure TGLCustomBitmapFont.RenderString(const aString : String; alignment : T
          tlTop : Result:=0;
          tlBottom : Result:=(n*(CharHeight+VSpace)-VSpace);
       else // tlCenter
-         Result:=(n*(CharHeight+VSpace)-VSpace)*0.5;
+         Result:=Round((n*(CharHeight+VSpace)-VSpace)*0.5);
       end;
    end;
 
