@@ -102,7 +102,6 @@ type
       FGravity           : TGLCoordinates;
       FOnCollision       : TODECollisionEvent;
       FOnCustomCollision : TODECustomCollisionEvent;
-      FContactJointCount,
       FNumContactJoints,
       FMaxContacts : Integer;
       FDynamicObjectRegister,
@@ -1306,7 +1305,7 @@ begin
       Joint:=dJointCreateContact(FWorld,FContactGroup,@FContacts[i]);
       dJointAttach(Joint,b1,b2);
       // Increment the number of contact joints this step
-      Inc(FContactJointCount);
+      Inc(FNumContactJoints);
     end;
   end;
 end;
@@ -1323,7 +1322,7 @@ begin
   if not Assigned(World) then exit;
 
   // Reset the contact joint counter
-  FContactJointCount:=0;
+  FNumContactJoints:=0;
 
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace,Self,nearCallback);
