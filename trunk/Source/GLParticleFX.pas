@@ -8,6 +8,7 @@
 
    <b>History : </b><font size=-1><ul>
 
+      <li>25/09/20 - Graham Kennedy - Fixed restore of currentTexturingMode
       <li>09/09/04 - Mrqzzz - added property TGLParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TGLParticleFXEffect.ArchiveVersion updated to 1
       <li>29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
       <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
@@ -1570,7 +1571,8 @@ begin
                            if currentTexturingMode<>0 then
                               glDisable(currentTexturingMode);
                            currentTexturingMode:=curManager.TexturingMode;
-                           glEnable(currentTexturingMode);
+                           if currentTexturingMode<>0 then   // GRAHAM KENNEDY
+                              glEnable(currentTexturingMode);
                         end;
                         curManager.BeginParticles;
                      end;

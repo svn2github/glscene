@@ -2,6 +2,8 @@
 {: Geometric objects.<p>
 
 	<b>History : </b><font size=-1><ul>
+
+      <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,AxisAlignedBoundingBoxUnscaled,AxisAlignedDimensionsUnscaled
       <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
         Added GetTopRadius to facilitate silhouette.
       <li>24/10/03 - NelC - Fixed TGLTorus texture coord. bug
@@ -13,7 +15,7 @@ unit GLGeomObjects;
 interface
 
 uses Classes, GLScene, GLTexture, VectorGeometry, OpenGL1x, GLMisc, GLObjects,
-  GLSilhouette, VectorTypes;
+  GLSilhouette, VectorTypes,GeometryBB;
 
 type
 
@@ -388,10 +390,11 @@ type
          constructor Create(AOwner: TComponent); override;
          procedure BuildList(var rci: TRenderContextInfo); override;
          procedure Assign(Source: TPersistent); override;
-
          function TopDepth: TGLFloat;
          function TopWidth: TGLFloat;
-
+         function AxisAlignedBoundingBox: TAABB;
+         function AxisAlignedBoundingBoxUnscaled: TAABB;
+         function AxisAlignedDimensionsUnscaled: TVector;
       published
 			{ Published Declarations }
          property ApexHeight: TGLFloat read FApexHeight write SetApexHeight stored False;
@@ -1854,6 +1857,40 @@ begin
     Write(FHeight, SizeOf(FHeight));
   end;
 end;
+
+
+function TGLFrustrum.AxisAlignedBoundingBoxUnscaled : TAABB ;
+var
+   aabb              : TAABB ;
+   child             : TGLBaseSceneObject ;
+   i                 : Integer ;
+begin
+   SetAABB(Result, AxisAlignedDimensionsUnscaled) ;
+   OffsetAABB(Result, VectorMake(0, FHeight * 0.5, 0)) ;
+
+   // not tested for child objects
+   for i := 0 to Count - 1 do begin
+     child := TGLBaseSceneObject(Children[i]) ;
+     aabb := child.AxisAlignedBoundingBoxUnscaled ;
+     AABBTransform(aabb, child.Matrix) ;
+     AddAABB(Result, aabb) ;
+   end ;
+end ;
+
+function TGLFrustrum.AxisAlignedBoundingBox : TAABB ;
+begin
+   Result := AxisAlignedBoundingBoxUnscaled ;
+   AABBScale(Result, Scale.AsAffineVector) ;
+end ;
+
+function TGLFrustrum.AxisAlignedDimensionsUnscaled : TVector ;
+begin
+   Result[0] := FBaseWidth * 0.5 ;
+   Result[1] := FHeight * 0.5 ;
+   Result[2] := FBaseDepth * 0.5 ;
+   Result[3] := 0 ;
+end ;
+
 
 // ------------------
 // ------------------ TGLPolygon ------------------
