@@ -5,6 +5,7 @@
    implements more efficient (though more complex) mesh tools.<p> 
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/07/02 - EG - Mesh vertex lock only performed if context is active
       <li>18/03/02 - EG - Color "leak" fix (Nelson Chu)
       <li>21/01/02 - EG - TVertexList.OnNotifyChange now handled
       <li>21/02/01 - EG - Now XOpenGL based (multitexture)
@@ -184,7 +185,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLStrings, XOpenGL;
+uses SysUtils, GLStrings, XOpenGL, GLContext;
 
 //----------------- TVertexList ------------------------------------------------
 
@@ -301,7 +302,7 @@ var
 begin
    if val<>Locked then begin
       // Only supported with NVidia's right now
-      if GL_NV_vertex_array_range then begin
+      if GL_NV_vertex_array_range and (CurrentGLContext<>nil) then begin
          size:=FCount*SizeOf(TVertexData);
          if val then begin
             // Lock

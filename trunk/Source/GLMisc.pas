@@ -863,7 +863,9 @@ begin
    end;
 end;
 
-//---------------------- TGLCadenceAbleComponent -------------------------------
+// ------------------
+// ------------------ TGLCadenceAbleComponent ------------------
+// ------------------
 
 {$ifndef GLS_DELPHI_5_UP}
 // RemoveFreeNotification
@@ -885,6 +887,8 @@ end;
 // ------------------ TGLUpdateAbleObject ------------------
 // ------------------
 
+// NotifyChange
+//
 procedure TGLUpdateAbleComponent.NotifyChange(Sender : TObject);
 begin
    if Assigned(Owner) then
