@@ -230,20 +230,23 @@ begin
          libMat.UnApply(rci);
       end;
 
-      // process childs
+      glDepthMask(True); // restore
+      if stLighting in oldStates then
+         SetGLState(rci.currentStates, stLighting);
+      if stFog in oldStates then
+         SetGLState(rci.currentStates, stFog);
+
+      // process children
       if renderChildren then begin
          f:=1/f;
          glScalef(f, f, f);
          Self.RenderChildren(0, Count-1, rci);
       end;
 
-      glDepthMask(True); // restore
       if stDepthTest in oldStates then
          SetGLState(rci.currentStates, stDepthTest);
-      if stLighting in oldStates then
-         SetGLState(rci.currentStates, stLighting);
-      if stFog in oldStates then
-         SetGLState(rci.currentStates, stFog);
+
+
    finally
       Scene.CurrentBuffer.PopModelViewMatrix;
    end;
