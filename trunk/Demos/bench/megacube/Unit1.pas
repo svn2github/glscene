@@ -9,6 +9,9 @@
 
 	Size	 Triangles     FPS	    CPU      OpenGL     ColorDepth
 
+
+	  5      15972     174.9     K7-2200+   GF3 Ti200     32Bits   Amalgamate = False
+   --- 07/01/04 --- 2004 bench
 	  5      15972     200.5     K7-1800+   GF2 Pro       32Bits   Amalgamate = True
 	  5      15972     158.6     K7-1800+   GF2 Pro       32Bits
    --- 29/11/02 --- Long time no bench, added 'Amalgamate' score
