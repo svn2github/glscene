@@ -1,6 +1,7 @@
 {: Basic terrain rendering demo.<p>
 
-   This demo showcases the TerrainRenderer and some of the SkyDome features.<br>
+   This demo showcases the TerrainRenderer, some of the SkyDome features
+   and bits of 3D sound 'cause I got carried over ;)<br>
    The terrain HeightData is provided by a TGLBitmapHDS (HDS stands for
    "Height Data Source"), and displayed by a TTerrainRenderer.<p>
 
@@ -268,7 +269,7 @@ begin
    end else begin
       // wolf howl at some distance, at ground level
       wolfPos:=GLCamera1.AbsolutePosition;
-      SinCos(Random*c2PI, Random(500), s, c);
+      SinCos(Random*c2PI, 100+Random(1000), s, c);
       wolfPos[0]:=wolfPos[0]+c;
       wolfPos[2]:=wolfPos[2]+s;
       wolfPos[1]:=TerrainRenderer1.InterpolatedHeight(wolfPos);
@@ -276,8 +277,8 @@ begin
       with GetOrCreateSoundEmitter(DCSound) do begin
          Source.SoundLibrary:=GLSoundLibrary;
          Source.SoundName:=GLSoundLibrary.Samples[1].Name;
-         Source.MinDistance:=50;
-         Source.MaxDistance:=550;
+         Source.MinDistance:=100;
+         Source.MaxDistance:=4000;
          Playing:=True;
       end;
    end;
