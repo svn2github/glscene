@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/07/03 - EG - Further InterpolatedHeight fixes
       <li>26/06/03 - EG - Fixed InterpolatedHeight HDS selection
       <li>06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
       <li>24/01/03 - EG - Fixed ByteHeight normalization scaling
@@ -849,7 +850,7 @@ begin
          for i:=0 to Count-1 do begin
             hd:=THeightData(List[i]);
             if (hd.XLeft<=x) and (hd.YTop<=y)
-                  and (hd.XLeft+hd.Size-1>=x+1) and (hd.YTop+hd.Size-1>=y+1) then begin
+                  and (hd.XLeft+hd.Size-1>=x) and (hd.YTop+hd.Size-1>=y) then begin
                foundHd:=hd;
                Break;
             end;
@@ -860,7 +861,13 @@ begin
    end;
    if (foundHd=nil) or foundHd.Dirty then begin
       // not found, request one... slowest mode (should be avoided)
-      foundHd:=GetData(Trunc(x)-1, Trunc(y)-1, tileSize, hdtDefault);
+      if tileSize>1 then
+         foundHd:=GetData(Round(x/(tileSize-1)-0.5)*(tileSize-1),
+                          Round(y/(tileSize-1)-0.5)*(tileSize-1), tileSize, hdtDefault)
+      else begin
+         Result:=DefaultHeight;
+         Exit;
+      end;
    end else begin
       // request it using "standard" way (takes care of threads)
       foundHd:=GetData(foundHd.XLeft, foundHd.YTop, foundHd.Size, foundHd.DataType);
@@ -988,27 +995,30 @@ end;
 procedure THeightData.SetDataType(const val : THeightDataType);
 begin
    if (val<>FDataType) and (val<>hdtDefault) then begin
-      if DataState<>hdsNone then case FDataType of
-         hdtByte : case val of
-               hdtSmallInt : ConvertByteToSmallInt;
-               hdtSingle : ConvertByteToSingle;
-            else
-               Assert(False);
-            end;
-         hdtSmallInt : case val of
-               hdtByte : ConvertSmallIntToByte;
-               hdtSingle : ConvertSmallIntToSingle;
-            else
-               Assert(False);
-            end;
-         hdtSingle : case val of
-               hdtByte : ConvertSingleToByte;
-               hdtSmallInt : ConvertSingleToSmallInt;
-            else
-               Assert(False);
-            end;
-      else
-         Assert(False);
+      if DataState<>hdsNone then begin
+         case FDataType of
+            hdtByte : case val of
+                  hdtSmallInt : ConvertByteToSmallInt;
+                  hdtSingle : ConvertByteToSingle;
+               else
+                  Assert(False);
+               end;
+            hdtSmallInt : case val of
+                  hdtByte : ConvertSmallIntToByte;
+                  hdtSingle : ConvertSmallIntToSingle;
+               else
+                  Assert(False);
+               end;
+            hdtSingle : case val of
+                  hdtByte : ConvertSingleToByte;
+                  hdtSmallInt : ConvertSingleToSmallInt;
+               else
+                  Assert(False);
+               end;
+            hdtDefault : ; // nothing, assume StartPreparingData knows what it's doing
+         else
+            Assert(False);
+         end;
       end;
       FDataType:=val;
    end;
