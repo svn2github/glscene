@@ -350,7 +350,9 @@ type
          {: Add integer to a sorted list.<p>
             Maintains the list sorted. If you have to add "a lot" of integers
             at once, use the Add method then Sort the list for better performance. }
-         function AddSorted(const Value: integer; const IgnoreDuplicates : boolean = false) : integer;
+         function AddSorted(const value : Integer; const ignoreDuplicates : Boolean = False) : Integer;
+         {: Removes an integer from a sorted list.<p> }
+         procedure RemoveSorted(const value : Integer);
 
          {: Adds delta to all items in the list. }
          procedure Offset(delta : Integer);
@@ -1900,6 +1902,17 @@ begin
       Insert(index+1, Value);
       Result:=index+1;
    end;
+end;
+
+// RemoveSorted
+//
+procedure TIntegerList.RemoveSorted(const value : Integer);
+var
+   index : Integer;
+begin
+   index:=BinarySearch(value);
+   if index>=0 then
+      Delete(index);
 end;
 
 // Offset
