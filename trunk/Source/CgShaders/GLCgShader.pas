@@ -2,6 +2,8 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>13/02/04 - NelC - Replaced two overloaded TCgProgram.SetParam's with
+                            SetStateMatrix and SetTexture
       <li>05/02/04 - NelC - Fixed type checking for Half and Fixed,
                             Added TCgParameter.SetToTextureOf
       <li>01/02/04 - NelC - Now reports source CgProgram or CgParameter of errors
@@ -118,8 +120,8 @@ type
     procedure SetParam(ParamName: string; const Vector2fVal : TVector2f); overload;
     procedure SetParam(ParamName: string; const Vector3fVal : TVector3f); overload;
     procedure SetParam(ParamName: string; const Vector4fVal : TVector4f); overload;
-    procedure SetParam(ParamName: string; matrix, Transform: Cardinal); overload;
-    procedure SetParam(ParamName: string; TextureID : Cardinal); overload;
+    procedure SetStateMatrix(ParamName: string; matrix, Transform: Cardinal);
+    procedure SetTexture(ParamName: string; TextureID : Cardinal);
 
     // retruns ShaderName.[program type].ProgramName
     function LongName : string;
@@ -174,12 +176,15 @@ type
 
     procedure SetAsStateMatrix(matrix, Transform: Cardinal);
 
+    // checks for all texture types
+    procedure SetAsTexture(TextureID : Cardinal);
+    // checks for specific type
     procedure SetAsTexture1D(TextureID : Cardinal);
     procedure SetAsTexture2D(TextureID : Cardinal);
     procedure SetAsTexture3D(TextureID : Cardinal);
     procedure SetAsTextureCUBE(TextureID : Cardinal);
     procedure SetAsTextureRECT(TextureID : Cardinal);
-    
+    // for easy use with TGLLibMaterial; determines texture type on-the-fly
     procedure SetToTextureOf(LibMaterial  : TGLLibMaterial);
 
     procedure EnableTexture;
@@ -335,7 +340,7 @@ procedure ErrorCallBack; cdecl;
 var  Msg : string;
 begin
   with CurCgProgram do
-    Msg:= #10'[' + LongName + '] ' + cgGetErrorString(cgGetError) + #10 + cgGetLastListing(FCgContext);
+    Msg:='[' + LongName + '] ' + cgGetErrorString(cgGetError) + #10 + cgGetLastListing(FCgContext);
   raise Exception.Create(Msg);
 end;
 
@@ -614,22 +619,23 @@ begin
   ParamByName(ParamName).SetAsScalar(SingleVal);
 end;
 
-procedure TCgProgram.SetParam(ParamName: string; TextureID: Cardinal);
+procedure TCgProgram.SetParam(ParamName: string; const Vector4fVal: TVector4f);
 begin
-  with ParamByName(ParamName) do begin
-    CheckValueType(AllTextureTypes);
-    cgGLSetTextureParameter(Handle, TextureID);
-  end;
+  ParamByName(ParamName).SetAsVector4f(Vector4fVal);
 end;
 
-procedure TCgProgram.SetParam(ParamName: string; matrix, Transform: Cardinal);
+// SetStateMatrix
+//
+procedure TCgProgram.SetStateMatrix(ParamName: string; matrix, Transform: Cardinal);
 begin
   ParamByName(ParamName).SetAsStateMatrix(matrix, Transform);
 end;
 
-procedure TCgProgram.SetParam(ParamName: string; const Vector4fVal: TVector4f);
+// SetTexture
+//
+procedure TCgProgram.SetTexture(ParamName: string; TextureID: Cardinal);
 begin
-  ParamByName(ParamName).SetAsVector4f(Vector4fVal);
+  ParamByName(ParamName).SetAsTexture(TextureID);
 end;
 
 // LongName
@@ -743,6 +749,12 @@ end;
 
 // SetAsTexture*
 //
+procedure TCgParameter.SetAsTexture(TextureID: Cardinal);
+begin
+  CheckValueType(AllTextureTypes);
+  cgGLSetTextureParameter(FHandle, TextureID);
+end;
+
 procedure TCgParameter.SetAsTexture1D(TextureID: Cardinal);
 begin
   CheckValueType(CG_SAMPLER1D);
@@ -784,8 +796,10 @@ begin
     GL_TEXTURE_RECTANGLE_NV : TexType:=CG_SAMPLERRECT;
     GL_TEXTURE_1D : TexType:=CG_SAMPLER1D;
     GL_TEXTURE_3D : TexType:=CG_SAMPLER3D;
-  else
-    TexType:=CG_SAMPLER2D;
+  else begin
+      assert(false, 'Unknown texture target');
+      TexType:=CG_SAMPLER2D; // to subpress compilation warning
+    end;
   end;
 
   CheckValueType(TexType);
