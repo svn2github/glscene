@@ -571,6 +571,7 @@ var
 begin
    if FRendering then Exit;
    if not (renderSelf or renderChildren) then Exit;
+   ClearStructureChanged;
    if    ((csDesigning in ComponentState) and not (svoDesignVisible in Options))
       or (Mode=svmOff)
       or (rci.drawState=dsPicking) then begin
@@ -578,7 +579,9 @@ begin
       Exit;
    end;
    if svoWorldScissorClip in Options then begin
+      // compute shadow receiving world AABB in absolute coordinates
       worldAABB:=Self.AxisAlignedBoundingBox;
+      AABBTransform(worldAABB, AbsoluteMatrix);
       pWorldAABB:=@worldAABB;
    end else pWorldAABB:=nil;
    opaques:=TList.Create;
