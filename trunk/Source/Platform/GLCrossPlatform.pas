@@ -6,6 +6,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/05/03 - EG - Added RDTSC and RDTSC-based precision timing for non-WIN32
       <li>22/01/02 - EG - Added OpenPictureDialog, ApplicationTerminated
       <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog,
                           Added PrecisionTimer funcs 
@@ -118,6 +119,9 @@ function PrecisionTimerLap(const precisionTimer : Int64) : Double;
 {: Computes time elapsed since timer start and stop timer.<p>
    Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer : Int64) : Double;
+{: Returns the number of CPU cycles since startup.<p>
+   Use the similarly named CPU instruction. }
+function RDTSC : Int64;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -126,6 +130,10 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
+var
+   vInvPerformanceCounterFrequency : Double;
+   vInvPerformanceCounterFrequencyReady : Boolean = False;
 
 // GLPoint
 //
@@ -345,14 +353,34 @@ end;
 //
 procedure QueryPerformanceCounter(var val : Int64);
 begin
+{$ifdef WIN32}
    Windows.QueryPerformanceCounter(val);
+{$else}
+   val:=RDTSC;
+{$endif}
 end;
 
 // QueryPerformanceFrequency
 //
 procedure QueryPerformanceFrequency(var val : Int64);
+{$ifndef WIN32}
+var
+   startCycles, endCycles : Int64;
+   aTime, refTime : TDateTime;
+{$endif}
 begin
+{$ifdef WIN32}
    Windows.QueryPerformanceFrequency(val);
+{$else}
+   aTime:=Now;
+   while aTime=Now do ;
+   startCycles:=RDTSC;
+   refTime:=Now;
+   while refTime=Now do ;
+   endCycles:=RDTSC;
+   aTime:=Now;
+   val:=Round((endCycles-startCycles)/((aTime-refTime)*(3600*24)));
+{$endif}
 end;
 
 // StartPrecisionTimer
@@ -365,12 +393,9 @@ end;
 // PrecisionTimeLap
 //
 function PrecisionTimerLap(const precisionTimer : Int64) : Double;
-var
-   cur, freq : Int64;
 begin
-   QueryPerformanceCounter(cur);
-   QueryPerformanceFrequency(freq);
-   Result:=(cur-precisionTimer)/freq;
+   // we can do this, because we don't really stop anything
+   Result:=StopPrecisionTimer(precisionTimer);
 end;
 
 // StopPrecisionTimer
@@ -380,8 +405,19 @@ var
    cur, freq : Int64;
 begin
    QueryPerformanceCounter(cur);
-   QueryPerformanceFrequency(freq);
-   Result:=(cur-precisionTimer)/freq;
+   if not vInvPerformanceCounterFrequencyReady then begin
+      QueryPerformanceFrequency(freq);
+      vInvPerformanceCounterFrequency:=1/freq;
+      vInvPerformanceCounterFrequencyReady:=True;
+   end;
+   Result:=(cur-precisionTimer)*vInvPerformanceCounterFrequency;
+end;
+
+// RDTSC
+//
+function RDTSC : Int64;
+asm
+   db $0f, $31
 end;
 
 end.
