@@ -1048,7 +1048,7 @@ begin
            SatisfyConstraintForNode(node, iteration, maxIterations);
      end;//}
 
-   {if cctEdge in Owner.CollisionConstraintTypes then
+   if cctEdge in Owner.CollisionConstraintTypes then
      for i:=0 to Owner.SolidEdges.Count-1 do begin
          SatisfyConstraintForEdge(Owner.SolidEdges[i], iteration, maxIterations);
    end;//}
