@@ -154,9 +154,9 @@ var
          if cw>0 then begin
             Inc(cw, 2);
             if Assigned(canvas) then begin
-               SetCharRects(n, VectorMake((px+0.05)/textureWidth,
+               SetCharRects(n, VectorMake((px+1.05)/textureWidth,
                                           (textureHeight-(py+0.05))/textureHeight,
-                                          (px+cw-3.05)/textureWidth,
+                                          (px+cw-2.05)/textureWidth,
                                           (textureHeight-(py+CharHeight-0.05))/textureHeight));
                rect.Left:=px;
                rect.Top:=py;
@@ -170,7 +170,7 @@ var
             else begin
                px:=0;
                Inc(py, CharHeight);
-               if py+2*CharHeight>y then Break;
+               if py+CharHeight>y then Break;
             end;
             Inc(Result);
          end;
@@ -239,8 +239,10 @@ begin
       y:=y*2;
    end;
 
-   if bestTexMem=MaxInt then
+   if bestTexMem=MaxInt then begin
+      Font.Size:=6;
       raise Exception.Create('Characters are too large or too many. Unable to create font texture.');
+   end;
 
    bitmap.Width:=textureWidth;
    bitmap.Height:=textureHeight;
@@ -275,7 +277,7 @@ end;
 //
 function TWindowsBitmapFont.TextureFormat : Integer;
 begin
-   Result:=GL_LUMINANCE6_ALPHA2;
+   Result:=GL_ALPHA;
 end;
 
 // ------------------------------------------------------------------
