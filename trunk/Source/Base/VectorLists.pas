@@ -240,10 +240,11 @@ type
 
 			function Add(const item : TVector) : Integer; overload;
 			function Add(const item : TAffineVector; w : Single) : Integer; overload;
-			function Add(const x, y, z, w : Single): Integer; overload;
+			function Add(const x, y, z, w : Single) : Integer; overload;
 			procedure Add(const i1, i2, i3 : TAffineVector; w : Single); overload;
 			function AddVector(const item : TAffineVector) : Integer; overload;
 			function AddPoint(const item : TAffineVector) : Integer; overload;
+			function AddPoint(const x, y : Single; const z : Single = 0) : Integer; overload;
 			procedure Push(const val : TVector);
 			function  Pop : TVector;
          function  IndexOf(const item : TVector) : Integer;
@@ -1308,6 +1309,13 @@ end;
 function TVectorList.AddPoint(const item : TAffineVector) : Integer;
 begin
    Result:=Add(PointMake(item));
+end;
+
+// AddPoint
+//
+function TVectorList.AddPoint(const x, y : Single; const z : Single = 0) : Integer;
+begin
+   Result:=Add(PointMake(x, y, z));
 end;
 
 // Get
