@@ -311,7 +311,7 @@ begin
   if IsOpenGLAvailable then
   begin
     // Don't call render during design time (probably sync problem).
-    if not (csDesigning in ComponentState) then
+//    if not (csDesigning in ComponentState) then
       FBuffer.Render;
   end
   else

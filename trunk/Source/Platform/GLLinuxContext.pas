@@ -56,7 +56,6 @@ resourcestring
 var
 //   vLastPixelFormat : Integer;
    vLastVendor : String;
-   First: boolean = true;
 
 // DoCreateContext
 //
@@ -80,6 +79,8 @@ begin
     FRenderingContext := glXCreateContext(Application.Display, vi, nil, True);
     if RenderingContext = nil then
       raise Exception.Create('Failed to create rendering context');
+    if integer(RenderingContext) = GLX_BAD_CONTEXT then
+      raise Exception.Create('bad context');
 end;
 
 // DoCreateMemoryContext
@@ -119,11 +120,10 @@ begin
    // contexts of a given pixel format share the same extension function addresses.
 //   pixelFormat:=GetPixelFormat(FDC);
 //   if PixelFormat<>vLastPixelFormat then begin
-      if First or (glGetString(GL_VENDOR)<>vLastVendor) then begin
+      if glGetString(GL_VENDOR)<>vLastVendor then begin
          ReadExtensions;
          ReadImplementationProperties;
          vLastVendor:=glGetString(GL_VENDOR);
-         First := false;
       end
 //      else begin
 //         ReadWGLExtensions;

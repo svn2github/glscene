@@ -10,6 +10,9 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>05/07/04 - LR - Corrections for Linux. Now glX function are directly load
+                          by external action (like for Windows). So i suppress
+                          the function LoadLinuxOpenGL.
       <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
       <li>24/06/04 - SG - Added GL_ARB_fragment_program
       <li>17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
@@ -127,6 +130,20 @@ type
    end;
    TWGLSwap = _WGLSWAP;
    WGLSWAP = _WGLSWAP;
+   {$endif}
+
+   // Linux type
+   {$ifdef LINUX}
+   GLXContext    = Pointer;
+   GLXPixmap     = XID;
+   GLXDrawable   = XID;
+
+   // GLX 1.3 and later
+   GLXFBConfig   = Pointer;
+   GLXFBConfigID = XID;
+   GLXContextID  = XID;
+   GLXWindow     = XID;
+   GLXPbuffer    = XID;
    {$endif}
 
 {$ifdef MULTITHREADOPENGL}
@@ -2735,6 +2752,65 @@ type
    function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: Single; p7: Integer; p8: PGlyphMetricsFloat): BOOL; stdcall; external opengl32 name 'wglUseFontOutlinesA';
    {$endif}
 
+   // Linux support functions
+   {$ifdef LINUX}
+   function glXChooseVisual(dpy: PDisplay; screen: TGLint; attribList: PGLint): PXVisualInfo; cdecl; external opengl32;
+   function glXCreateContext(dpy: PDisplay; vis: PXVisualInfo; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl; external opengl32;
+   procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl; external opengl32;
+   function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl; external opengl32;
+   procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: TGLuint); cdecl; external opengl32;
+   procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl; external opengl32;
+   function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo; pixmap: Pixmap): GLXPixmap; cdecl; external opengl32;
+   procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
+   function glXQueryExtension(dpy: PDisplay; errorb: PGLInt; event: PGLInt): TGLboolean; cdecl; external opengl32;
+   function glXQueryVersion(dpy: PDisplay; maj: PGLInt; min: PGLINT): TGLboolean; cdecl; external opengl32;
+   function glXIsDirect(dpy: PDisplay; ctx: GLXContext): TGLboolean; cdecl; external opengl32;
+   function glXGetConfig(dpy: PDisplay; visual: PXVisualInfo; attrib: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
+   function glXGetCurrentContext: GLXContext; cdecl; external opengl32;
+   function glXGetCurrentDrawable: GLXDrawable; cdecl; external opengl32;
+   procedure glXWaitGL; cdecl; external opengl32;
+   procedure glXWaitX; cdecl; external opengl32;
+   procedure glXUseXFont(font: Font; first: TGLInt; count: TGLInt; list: TGLint); cdecl; external opengl32;
+
+   // GLX 1.1 and later
+   function glXQueryExtensionsString(dpy: PDisplay; screen: TGLInt): PChar; cdecl; external opengl32;
+   function glXQueryServerString(dpy: PDisplay; screen: TGLInt; name: TGLInt): PChar; cdecl; external opengl32;
+   function glXGetClientString(dpy: PDisplay; name: TGLInt): PChar; cdecl; external opengl32;
+
+   // GLX 1.2 and later
+   function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
+
+   // GLX 1.3 and later
+   function glXChooseFBConfig(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl; external opengl32;
+   function glXGetFBConfigAttrib(dpy: PDisplay; config: GLXFBConfig; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
+   function glXGetFBConfigs(dpy: PDisplay; screen: TGLInt; nelements: PGLInt): GLXFBConfig; cdecl; external opengl32;
+   function glXGetVisualFromFBConfig(dpy: PDisplay; config: GLXFBConfig): PXVisualInfo; cdecl; external opengl32;
+   function glXCreateWindow(dpy: PDisplay; config: GLXFBConfig; win: Window; const attribList: PGLInt): GLXWindow; cdecl; external opengl32;
+   procedure glXDestroyWindow(dpy: PDisplay; window: GLXWindow); cdecl; external opengl32;
+   function glXCreatePixmap(dpy: PDisplay; config: GLXFBConfig; pixmap: Pixmap; attribList: PGLInt): GLXPixmap; cdecl; external opengl32;
+   procedure glXDestroyPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
+   function glXCreatePbuffer(dpy: PDisplay; config: GLXFBConfig; attribList: PGLInt): GLXPBuffer; cdecl; external opengl32;
+   procedure glXDestroyPbuffer(dpy: PDisplay; pbuf: GLXPBuffer); cdecl; external opengl32;
+   procedure glXQueryDrawable(dpy: PDisplay; draw: GLXDrawable; attribute: TGLInt; value: PGLuint); cdecl; external opengl32;
+   function glXCreateNewContext(dpy: PDisplay; config: GLXFBConfig; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl; external opengl32;
+   function glXMakeContextCurrent(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl; external opengl32;
+   function glXGetCurrentReadDrawable: GLXDrawable; cdecl; external opengl32;
+   function glXQueryContext(dpy: PDisplay; ctx: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
+   procedure glXSelectEvent(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl; external opengl32;
+   procedure glXGetSelectedEvent(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl; external opengl32;
+   function glXGetVideoSyncSGI(count: PGLuint): TGLInt; cdecl; external opengl32;
+   function glXWaitVideoSyncSGI(divisor: TGLInt; remainder: TGLInt; count: PGLuint): TGLInt; cdecl; external opengl32;
+   procedure glXFreeContextEXT(dpy: PDisplay; context: GLXContext); cdecl; external opengl32;
+   function glXGetContextIDEXT(const context: GLXContext): GLXContextID; cdecl; external opengl32;
+   function glXGetCurrentDisplayEXT: PDisplay; cdecl; external opengl32;
+   function glXImportContextEXT(dpy: PDisplay; contextID: GLXContextID): GLXContext; cdecl; external opengl32;
+   function glXQueryContextInfoEXT(dpy: PDisplay; context: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl; external opengl32;
+   procedure glXCopySubBufferMESA(dpy: PDisplay; drawable: GLXDrawable; x: TGLInt; y: TGLInt; width: TGLInt; height: TGLInt); cdecl; external opengl32;
+   function glXCreateGLXPixmapMESA(dpy: PDisplay; visual: PXVisualInfo; pixmap: Pixmap; cmap: Colormap): GLXPixmap; cdecl; external opengl32;
+   function glXReleaseBuffersMESA(dpy: PDisplay; d: GLXDrawable): TGLboolean; cdecl; external opengl32;
+   function glXSet3DfxModeMESA(mode: TGLint): TGLboolean; cdecl; external opengl32;
+{$endif}
+
 {$ifdef MULTITHREADOPENGL}
 threadvar
 {$else}
@@ -3211,81 +3287,6 @@ var
    glVertexAttribs4svNV: procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
    glVertexAttribs4ubvNV: procedure (index: TGLuint; count: TGLSizei; v: PGLubyte); {$ifdef MSWINDOWS} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
 
-{$ifdef LINUX}
-type
-   GLXContext    = Pointer;
-   GLXPixmap     = XID;
-   GLXDrawable   = XID;
-
-   // GLX 1.3 and later
-   GLXFBConfig   = Pointer;
-   GLXFBConfigID = XID;
-   GLXContextID  = XID;
-   GLXWindow     = XID;
-   GLXPbuffer    = XID;
-
-{$ifdef MULTITHREADOPENGL}
-threadvar
-{$else}
-var
-{$endif}
-   glXChooseVisual: function (dpy: PDisplay; screen: TGLint; attribList: PGLint): PXVisualInfo; cdecl;
-   glXCreateContext: function(dpy: PDisplay; vis: PXVisualInfo; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
-   glXDestroyContext: procedure(dpy: PDisplay; ctx: GLXContext); cdecl;
-   glXMakeCurrent: function(dpy: PDisplay; drawable: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
-   glXCopyContext: procedure(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: TGLuint); cdecl;
-   glXSwapBuffers: procedure(dpy: PDisplay; drawable: GLXDrawable); cdecl;
-   glXCreateGLXPixmap: function(dpy: PDisplay; visual: PXVisualInfo; pixmap: Pixmap): GLXPixmap; cdecl;
-   glXDestroyGLXPixmap: procedure(dpy: PDisplay; pixmap: GLXPixmap); cdecl;
-   glXQueryExtension: function(dpy: PDisplay; errorb: PGLInt; event: PGLInt): TGLboolean; cdecl;
-   glXQueryVersion: function(dpy: PDisplay; maj: PGLInt; min: PGLINT): TGLboolean; cdecl;
-   glXIsDirect: function(dpy: PDisplay; ctx: GLXContext): TGLboolean; cdecl;
-   glXGetConfig: function(dpy: PDisplay; visual: PXVisualInfo; attrib: TGLInt; value: PGLInt): TGLInt; cdecl;
-   glXGetCurrentContext: function: GLXContext; cdecl;
-   glXGetCurrentDrawable: function: GLXDrawable; cdecl;
-   glXWaitGL: procedure; cdecl;
-   glXWaitX: procedure; cdecl;
-   glXUseXFont: procedure(font: Font; first: TGLInt; count: TGLInt; list: TGLint); cdecl;
-
-   // GLX 1.1 and later
-   glXQueryExtensionsString: function(dpy: PDisplay; screen: TGLInt): PChar; cdecl;
-   glXQueryServerString: function(dpy: PDisplay; screen: TGLInt; name: TGLInt): PChar; cdecl;
-   glXGetClientString: function(dpy: PDisplay; name: TGLInt): PChar; cdecl;
-
-   // GLX 1.2 and later
-   glXGetCurrentDisplay: function: PDisplay; cdecl;
-
-   // GLX 1.3 and later
-   glXChooseFBConfig: function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl;
-   glXGetFBConfigAttrib: function(dpy: PDisplay; config: GLXFBConfig; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
-   glXGetFBConfigs: function(dpy: PDisplay; screen: TGLInt; nelements: PGLInt): GLXFBConfig; cdecl;
-   glXGetVisualFromFBConfig: function(dpy: PDisplay; config: GLXFBConfig): PXVisualInfo; cdecl;
-   glXCreateWindow: function(dpy: PDisplay; config: GLXFBConfig; win: Window; const attribList: PGLInt): GLXWindow; cdecl;
-   glXDestroyWindow: procedure(dpy: PDisplay; window: GLXWindow); cdecl;
-   glXCreatePixmap: function(dpy: PDisplay; config: GLXFBConfig; pixmap: Pixmap; attribList: PGLInt): GLXPixmap; cdecl;
-   glXDestroyPixmap: procedure(dpy: PDisplay; pixmap: GLXPixmap); cdecl;
-   glXCreatePbuffer: function(dpy: PDisplay; config: GLXFBConfig; attribList: PGLInt): GLXPBuffer; cdecl;
-   glXDestroyPbuffer: procedure(dpy: PDisplay; pbuf: GLXPBuffer); cdecl;
-   glXQueryDrawable: procedure(dpy: PDisplay; draw: GLXDrawable; attribute: TGLInt; value: PGLuint); cdecl;
-   glXCreateNewContext: function(dpy: PDisplay; config: GLXFBConfig; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
-   glXMakeContextCurrent: function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
-   glXGetCurrentReadDrawable: function: GLXDrawable; cdecl;
-   glXQueryContext: function(dpy: PDisplay; ctx: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
-   glXSelectEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
-   glXGetSelectedEvent: procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
-   glXGetVideoSyncSGI: function(count: PGLuint): TGLInt; cdecl;
-   glXWaitVideoSyncSGI: function(divisor: TGLInt; remainder: TGLInt; count: PGLuint): TGLInt; cdecl;
-   glXFreeContextEXT: procedure(dpy: PDisplay; context: GLXContext); cdecl;
-   glXGetContextIDEXT: function(const context: GLXContext): GLXContextID; cdecl;
-   glXGetCurrentDisplayEXT: function: PDisplay; cdecl;
-   glXImportContextEXT: function(dpy: PDisplay; contextID: GLXContextID): GLXContext; cdecl;
-   glXQueryContextInfoEXT: function(dpy: PDisplay; context: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
-   glXCopySubBufferMESA: procedure(dpy: PDisplay; drawable: GLXDrawable; x: TGLInt; y: TGLInt; width: TGLInt; height: TGLInt); cdecl;
-   glXCreateGLXPixmapMESA: function(dpy: PDisplay; visual: PXVisualInfo; pixmap: Pixmap; cmap: Colormap): GLXPixmap; cdecl;
-   glXReleaseBuffersMESA: function(dpy: PDisplay; d: GLXDrawable): TGLboolean; cdecl;
-   glXSet3DfxModeMESA: function(mode: TGLint): TGLboolean; cdecl;
-{$endif}
-
 //------------------------------------------------------------------------------
 
 procedure CloseOpenGL;
@@ -3355,62 +3356,10 @@ function GLGetProcAddress(ProcName: PChar):Pointer;
 begin
   result := GetProcAddress(Cardinal(GLHandle),ProcName);
 end;
-
-procedure LoadLinuxOpenGL;
-begin
-   glXChooseVisual := GLGetProcAddress('glXChooseVisual');
-   glXCreateContext := GLGetProcAddress('glXCreateContext');
-   glXDestroyContext := GLGetProcAddress('glXDestroyContext');
-   glXMakeCurrent := GLGetProcAddress('glXMakeCurrent'); 
-   glXCopyContext := GLGetProcAddress('glXCopyContext');
-   glXSwapBuffers := GLGetProcAddress('glXSwapBuffers'); 
-   glXCreateGLXPixmap := GLGetProcAddress('glXCreateGLXPixmap');
-   glXDestroyGLXPixmap := GLGetProcAddress('glXDestroyGLXPixmap'); 
-   glXQueryExtension := GLGetProcAddress('glXQueryExtension');
-   glXQueryVersion := GLGetProcAddress('glXQueryVersion');
-   glXIsDirect := GLGetProcAddress('glXIsDirect');
-   glXGetConfig := GLGetProcAddress('glXGetConfig'); 
-   glXGetCurrentContext := GLGetProcAddress('glXGetCurrentContext');
-   glXGetCurrentDrawable := GLGetProcAddress('glXGetCurrentDrawable'); 
-   glXWaitGL := GLGetProcAddress('glXWaitGL');
-   glXWaitX := GLGetProcAddress('glXWaitX'); 
-   glXUseXFont := GLGetProcAddress('glXUseXFont');
-   glXQueryExtensionsString := GLGetProcAddress('glXQueryExtensionsString'); 
-   glXQueryServerString := GLGetProcAddress('glXQueryServerString');
-   glXGetClientString := GLGetProcAddress('glXGetClientString');
-   glXGetCurrentDisplay := GLGetProcAddress('glXGetCurrentDisplay');
-   glXChooseFBConfig := GLGetProcAddress('glXChooseFBConfig');
-   glXGetFBConfigAttrib := GLGetProcAddress('glXGetFBConfigAttrib');
-   glXGetFBConfigs := GLGetProcAddress('glXGetFBConfigs');
-   glXGetVisualFromFBConfig := GLGetProcAddress('glXGetVisualFromFBConfig');
-   glXCreateWindow := GLGetProcAddress('glXCreateWindow');
-   glXDestroyWindow := GLGetProcAddress('glXDestroyWindow');
-   glXCreatePixmap := GLGetProcAddress('glXCreatePixmap');
-   glXDestroyPixmap := GLGetProcAddress('glXDestroyPixmap');
-   glXCreatePbuffer := GLGetProcAddress('glXCreatePbuffer'); 
-   glXDestroyPbuffer := GLGetProcAddress('glXDestroyPbuffer');
-   glXQueryDrawable := GLGetProcAddress('glXQueryDrawable'); 
-   glXCreateNewContext := GLGetProcAddress('glXCreateNewContext');
-   glXMakeContextCurrent := GLGetProcAddress('glXMakeContextCurrent'); 
-   glXGetCurrentReadDrawable := GLGetProcAddress('glXGetCurrentReadDrawable');
-   glXQueryContext := GLGetProcAddress('glXQueryContext'); 
-   glXSelectEvent := GLGetProcAddress('glXSelectEvent');
-   glXGetSelectedEvent := GLGetProcAddress('glXGetSelectedEvent');
-   glXGetVideoSyncSGI := GLGetProcAddress('glXGetVideoSyncSGI');
-   glXWaitVideoSyncSGI := GLGetProcAddress('glXWaitVideoSyncSGI'); 
-   glXFreeContextEXT := GLGetProcAddress('glXFreeContextEXT');
-   glXGetContextIDEXT := GLGetProcAddress('glXGetContextIDEXT'); 
-   glXGetCurrentDisplayEXT := GLGetProcAddress('glXGetCurrentDisplayEXT');
-   glXImportContextEXT := GLGetProcAddress('glXImportContextEXT');
-   glXQueryContextInfoEXT := GLGetProcAddress('glXQueryContextInfoEXT');
-   glXCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
-   glXCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
-   glXReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
-   glXSet3DfxModeMESA := GLGetProcAddress('glXSet3DfxModeMESA');
-end;
-   
 {$endif}
 
+
+// ************** Extensions ********************
 
 // ReadExtensions
 //
@@ -4146,12 +4095,9 @@ begin
    GLUHandle:=dlopen(PChar(GLUName), RTLD_GLOBAL or RTLD_LAZY);
    {$endif}
 
-   if (GLHandle<>INVALID_MODULEHANDLE) and (GLUHandle<>INVALID_MODULEHANDLE) then begin
-     {$ifdef LINUX}
-     LoadLinuxOpenGL;
-     {$endif}
-     Result:=True;
-   end else begin
+   if (GLHandle<>INVALID_MODULEHANDLE) and (GLUHandle<>INVALID_MODULEHANDLE) then
+     Result:=True
+   else begin
       if GLHandle<>INVALID_MODULEHANDLE then
          FreeLibrary(Cardinal(GLHandle));
       if GLUHandle<>INVALID_MODULEHANDLE then
