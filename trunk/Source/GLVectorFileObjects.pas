@@ -3255,8 +3255,6 @@ end;
 // BuildList
 //
 procedure TFGVertexIndexList.BuildList(var mrci : TRenderContextInfo);
-var
-   i : Integer;
 begin
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin

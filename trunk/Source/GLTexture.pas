@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>16/08/01 - Egg - drawState now part of TRenderContextInfo
       <li>15/08/01 - Egg - TexGen support (object_linear, eye_linear and sphere_map)
       <li>13/08/01 - Egg - Fixed OnTextureNeeded handling (paths for mat lib)
       <li>12/08/01 - Egg - Completely rewritten handles management
@@ -283,10 +284,13 @@ type
 	TGLMaterial        = class;
    TGLMaterialLibrary = class;
 
+   TDrawState = (dsRendering, dsPicking, dsPrinting);
+
    // TRenderContextInfo
    //
    {: Stores contextual info useful during rendering methods. }
    TRenderContextInfo = record
+      drawState: TDrawState;
       objectsSorting : TGLObjectsSorting;
       visibilityCulling : TGLVisibilityCulling;
       cameraPosition : TVector;
@@ -2001,8 +2005,10 @@ end;
 procedure TGLTexture.SetDisabled(AValue: Boolean);
 begin
 	if AValue <> FDisabled then begin
-		FDisabled:=AValue;
-		NotifyChange(Self);
+   	FDisabled:=AValue;
+      if Assigned(Owner) and (Owner is TGLMaterial) then
+         TGLMaterial(Owner).NotifyTexMapChange(Self)
+		else NotifyChange(Self);
 	end;
 end;
 

@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
       <li>14/08/01 - EG - Added xglMapTexCoordToSecond
       <li>21/02/01 - EG - Added TexGen and vertex arrays mappings
    </ul>
@@ -26,7 +27,7 @@ type
    TMapTexCoordMode = (mtcmNull, mtcmMain, mtcmDual, mtcmSecond);
 
 var
-   xglMapTextCoordMode : TMapTexCoordMode;
+   xglMapTexCoordMode : TMapTexCoordMode;
 
 {: xglTexCoord functions will be ignored. }
 procedure xglMapTexCoordToNull;
@@ -295,8 +296,8 @@ begin end;
 //
 procedure xglMapTexCoordToNull;
 begin
-   if xglMapTextCoordMode<>mtcmNull then begin
-      xglMapTextCoordMode:=mtcmNull;
+   if xglMapTexCoordMode<>mtcmNull then begin
+      xglMapTexCoordMode:=mtcmNull;
 
       xglTexCoord2f:=glTexCoord2f_Null;
       xglTexCoord2fv:=glTexCoord2fv_Null;
@@ -321,8 +322,8 @@ end;
 //
 procedure xglMapTexCoordToMain;
 begin
-   if xglMapTextCoordMode<>mtcmMain then begin
-      xglMapTextCoordMode:=mtcmMain;
+   if xglMapTexCoordMode<>mtcmMain then begin
+      xglMapTexCoordMode:=mtcmMain;
 
       xglTexCoord2f:=glTexCoord2f;
       xglTexCoord2fv:=glTexCoord2fv;
@@ -347,8 +348,8 @@ end;
 //
 procedure xglMapTexCoordToSecond;
 begin
-   if xglMapTextCoordMode<>mtcmSecond then begin
-      xglMapTextCoordMode:=mtcmSecond;
+   if xglMapTexCoordMode<>mtcmSecond then begin
+      xglMapTexCoordMode:=mtcmSecond;
       Assert(GL_ARB_multitexture);
 
       xglTexCoord2f:=glTexCoord2f_Second;
@@ -374,8 +375,8 @@ end;
 //
 procedure xglMapTexCoordToDual;
 begin
-   if xglMapTextCoordMode<>mtcmDual then begin
-      xglMapTextCoordMode:=mtcmDual;
+   if xglMapTexCoordMode<>mtcmDual then begin
+      xglMapTexCoordMode:=mtcmDual;
       Assert(GL_ARB_multitexture);
 
       xglTexCoord2f:=glTexCoord2f_Dual;

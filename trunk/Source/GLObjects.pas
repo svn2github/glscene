@@ -832,7 +832,8 @@ type
          destructor Destroy; override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
-         procedure PrepareObject(var rci : TRenderContextInfo); override;
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
 
 		published
 			{ Published Declarations }
@@ -3542,9 +3543,10 @@ begin
    inherited;
 end;
 
-// PrepareObject
+// DoRender
 //
-procedure TSpaceText.PrepareObject(var rci : TRenderContextInfo);
+procedure TSpaceText.DoRender(var rci : TRenderContextInfo;
+                              renderSelf, renderChildren : Boolean);
 var
 	firstChar, lastChar : Integer;
 begin
@@ -3562,7 +3564,7 @@ begin
 			firstChar:=0; lastChar:=255;
 		end;
 		BaseList:=FontManager.GetFontBase(Name, Style, FExtrusion,
-														FAllowedDeviation, firstChar, lastChar);
+													 FAllowedDeviation, firstChar, lastChar);
 		FontChanged:=False;
 	end;
 	inherited;

@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/08/01 - Egg - Dropped Prepare/FinishObject (became obsolete),
+                           new CameraStyle (Ortho2D
       <li>12/08/01 - Egg - Completely rewritten handles management,
                            Faster camera switching 
       <li>29/07/01 - Egg - Added pooTransformation
@@ -438,8 +440,6 @@ type
          //: Moves camera along the right vector (move left and right)
          procedure Slide(ADistance: Single);
 
-         procedure PrepareObject(var rci : TRenderContextInfo); virtual;
-         procedure FinishObject(var rci : TRenderContextInfo); virtual;
          procedure Render(var rci : TRenderContextInfo);
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); virtual;
@@ -868,7 +868,7 @@ type
 
    // TGLCameraStyle
    //
-   TGLCameraStyle = (csPerspective, csOrthogonal);
+   TGLCameraStyle = (csPerspective, csOrthogonal, csOrtho2D);
 
    // TGLCamera
    //
@@ -953,7 +953,8 @@ type
             objects (increase the value) of Z-Buffer crawling (decrease the
             value). Z-Buffer crawling happens when depth of view is too large
             and the Z-Buffer precision cannot account for all that depth
-            accurately : objects farther overlap closer objects and vice-versa. }
+            accurately : objects farther overlap closer objects and vice-versa.<p>
+            Note that this value is ignored in cSOrtho2D mode. }
          property DepthOfView: Single read FDepthOfView write SetDepthOfView;
          {: Focal Length of the camera.<p>
             Adjusting this value allows for zooming effects. }
@@ -963,9 +964,12 @@ type
             and the Up vector is used as an absolute vector to the up. }
          property TargetObject : TGLBaseSceneObject read FTargetObject write SetTargetObject;
          {: Adjust the camera style.<p>
-            Two styles are available : csPerspective, the default value for
-            perspective projection and csOrthogonal for orthogonal (or isometric)
-            projection. } 
+            Three styles are available :<ul>
+            <li>csPerspective, the default value for perspective projection
+            <li>csOrthogonal, for orthogonal (or isometric) projection.
+            <li>csOrtho2D, setups orthogonal 2D projection in which 1 unit
+               (in x or y) represents 1 pixel. 
+            </ul> }
          property CameraStyle : TGLCameraStyle read FCameraStyle write SetCameraStyle default csPerspective;
 
          property Position;
@@ -1016,7 +1020,8 @@ type
          procedure AddViewer(AViewer: TGLSceneViewer);
          procedure BeginUpdate;
          procedure RenderScene(AViewer: TGLSceneViewer;
-                               const viewPortSizeX, viewPortSizeY : Integer);
+                               const viewPortSizeX, viewPortSizeY : Integer;
+                               drawState : TDrawState);
          procedure EndUpdate;
          function  IsUpdating: Boolean;
          procedure NotifyChange(Sender : TObject); override;
@@ -1098,8 +1103,6 @@ type
          property NearDistance[Index: Integer]: Single read GetNear;
          property SubObjects[Index: Integer]: TPickSubObjects read GetSubObjects;
    end;
-
-   TDrawState = (dsNone, dsRendering, dsPicking, dsPrinting);
 
    // TFogMode
    //
@@ -1195,9 +1198,9 @@ type
 
          // private variables
          FRenderDC : HDC;
+         FRendering : Boolean;
          FFrames: Longint;          // used to perform monitoring
          FTicks: TLargeInteger;     // used to perform monitoring
-         FState: TDrawState;
          FMonitor: Boolean;
          FFramesPerSecond: Single;
          FViewPort: TRectangle;
@@ -1230,7 +1233,8 @@ type
 
          procedure PrepareRenderingMatrices(const aViewPort : TRectangle;
                               resolution : Integer; pickingRect : PRect = nil);
-         procedure DoBaseRender(const aViewPort : TRectangle; resolution : Integer);
+         procedure DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
+                                drawState : TDrawState);
 
          procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); Message WM_ERASEBKGND;
          procedure WMPaint(var Message: TWMPaint); Message WM_PAINT;
@@ -1383,7 +1387,6 @@ type
          property LimitOf[Which : TLimitType] : Integer read GetLimit;
          property MaxLightSources : Integer read FMaxLightSources;
          property RenderingContext : TGLContext read FRenderingContext;
-         property State: TDrawState read FState;
 
       published
          { Public Declarations }
@@ -2787,25 +2790,6 @@ begin
    end;
 end;
 
-// PrepareObject
-//
-procedure TGLBaseSceneObject.PrepareObject(var rci : TRenderContextInfo);
-begin
-   glPushMatrix;
-   glMultMatrixf(@FLocalMatrix);
-   if FScene.FCurrentViewer.State=dsPicking then
-      if rci.proxySubObject then
-         glPushName(Integer(Self))
-      else glLoadName(Integer(Self));
-end;
-
-// FinishObject
-//
-procedure TGLBaseSceneObject.FinishObject(var rci : TRenderContextInfo);
-begin
-   glPopMatrix;
-end;
-
 // Render
 //
 procedure TGLBaseSceneObject.Render(var rci : TRenderContextInfo);
@@ -2838,35 +2822,53 @@ begin
          shouldRenderSelf:=True;
          shouldRenderChildren:=True;
       end;
-      // start rendering
-      PrepareObject(rci);
-      if FShowAxes and shouldRenderSelf then
-         DrawAxes($CCCC);
-      if shouldRenderSelf and (Effects.Count>0) then begin
-         glPushMatrix;
-         Effects.RenderPreEffects(Scene.CurrentViewer, rci);
-         glPopMatrix;
-         glPushMatrix;
-         if Scene.CurrentViewer.DepthTest and (osIgnoreDepthBuffer in ObjectStyle) then begin
-            UnSetGLState(rci.currentStates, stDepthTest);
-            DoRender(rci, shouldRenderSelf, shouldRenderChildren);
-            SetGLState(rci.currentStates, stDepthTest);
-         end else DoRender(rci, shouldRenderSelf, shouldRenderChildren);
-         Effects.RenderPostEffects(Scene.CurrentViewer, rci);
-         glPopMatrix;
+      // Prepare Matrix and PickList stuff
+      glPushMatrix;
+      glMultMatrixf(@FLocalMatrix);
+      if rci.drawState=dsPicking then
+         if rci.proxySubObject then
+            glPushName(Integer(Self))
+         else glLoadName(Integer(Self));
+      // Start rendering
+      if shouldRenderSelf then begin
+         if FShowAxes then
+            DrawAxes($CCCC);
+         if Effects.Count>0 then begin
+            glPushMatrix;
+            Effects.RenderPreEffects(Scene.CurrentViewer, rci);
+            glPopMatrix;
+            glPushMatrix;
+            if Scene.CurrentViewer.DepthTest and (osIgnoreDepthBuffer in ObjectStyle) then begin
+               UnSetGLState(rci.currentStates, stDepthTest);
+               DoRender(rci, True, shouldRenderChildren);
+               SetGLState(rci.currentStates, stDepthTest);
+            end else DoRender(rci, True, shouldRenderChildren);
+            if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then begin
+               ResetGLPolygonMode;
+               ResetGLMaterialColors;
+            end;
+            Effects.RenderPostEffects(Scene.CurrentViewer, rci);
+            glPopMatrix;
+         end else begin
+            if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentViewer.DepthTest then begin
+               UnSetGLState(rci.currentStates, stDepthTest);
+               DoRender(rci, True, shouldRenderChildren);
+               SetGLState(rci.currentStates, stDepthTest);
+            end else DoRender(rci, True, shouldRenderChildren);
+            if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then begin
+               ResetGLPolygonMode;
+               ResetGLMaterialColors;
+            end;
+         end;
       end else begin
-         if Scene.CurrentViewer.DepthTest and (osIgnoreDepthBuffer in ObjectStyle) then begin
+         if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentViewer.DepthTest then begin
             UnSetGLState(rci.currentStates, stDepthTest);
-            DoRender(rci, shouldRenderSelf, shouldRenderChildren);
+            DoRender(rci, False, shouldRenderChildren);
             SetGLState(rci.currentStates, stDepthTest);
-         end else DoRender(rci, shouldRenderSelf, shouldRenderChildren);
+         end else DoRender(rci, False, shouldRenderChildren);
       end;
-      if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then begin
-         ResetGLPolygonMode;
-         ResetGLMaterialColors;
-      end;
-      FinishObject(rci);
-      Exclude(FChanges, ocStructure);
+      // Pop Matrix
+      glPopMatrix;
    end;
 end;
 
@@ -3437,60 +3439,66 @@ procedure TGLCamera.ApplyPerspective(Viewport: TRectangle; Width, Height: Intege
 var
    Left, Right, Top, Bottom, zFar, MaxDim, Ratio, f: Double;
 begin
-   // determine biggest dimension and resolution (height or width)
-   MaxDim:=Width;
-   if Height > MaxDim then
-      MaxDim:=Height;
+   if CameraStyle=csOrtho2D then begin
+      gluOrtho2D (0, Width, 0, Height);
+      FNearPlane:=-1;
+      FViewPortRadius:=VectorLength(Width, Height)/2;
+   end else begin
+      // determine biggest dimension and resolution (height or width)
+      MaxDim:=Width;
+      if Height > MaxDim then
+         MaxDim:=Height;
 
-   // calculate near plane distance and extensions;
-   // Scene ratio is determined by the window ratio. The viewport is just a
-   // specific part of the entire window and has therefore no influence on the
-   // scene ratio. What we need to know, though, is the ratio between the window
-   // borders (left, top, right and bottom) and the viewport borders.
-   // Note: viewport.top is actually bottom, because the window (and viewport) origin
-   // in OGL is the lower left corner
+      // calculate near plane distance and extensions;
+      // Scene ratio is determined by the window ratio. The viewport is just a
+      // specific part of the entire window and has therefore no influence on the
+      // scene ratio. What we need to know, though, is the ratio between the window
+      // borders (left, top, right and bottom) and the viewport borders.
+      // Note: viewport.top is actually bottom, because the window (and viewport) origin
+      // in OGL is the lower left corner
 
-   if CameraStyle=csPerspective then
-      f:=1/Width
-   else f:=100/(focalLength*Width);
+      if CameraStyle=csPerspective then
+         f:=1/Width
+      else f:=100/(focalLength*Width);
 
-   // calculate window/viewport ratio for right extent
-   Ratio:=(2 * Viewport.Width + 2 * Viewport.Left - Width) * f;
-   // calculate aspect ratio correct right value of the view frustum and take
-   // the window/viewport ratio also into account
-   Right:=Ratio * Width / (2 * MaxDim);
+      // calculate window/viewport ratio for right extent
+      Ratio:=(2 * Viewport.Width + 2 * Viewport.Left - Width) * f;
+      // calculate aspect ratio correct right value of the view frustum and take
+      // the window/viewport ratio also into account
+      Right:=Ratio * Width / (2 * MaxDim);
 
-   // the same goes here for the other three extents
-   // left extent:
-   Ratio:=(Width - 2 * Viewport.Left) * f;
-   Left:=-Ratio * Width / (2 * MaxDim);
+      // the same goes here for the other three extents
+      // left extent:
+      Ratio:=(Width - 2 * Viewport.Left) * f;
+      Left:=-Ratio * Width / (2 * MaxDim);
 
-   if CameraStyle=csPerspective then
-      f:=1/Height
-   else f:=100/(focalLength*Height);
+      if CameraStyle=csPerspective then
+         f:=1/Height
+      else f:=100/(focalLength*Height);
 
-   // top extent (keep in mind the origin is left lower corner):
-   Ratio:=(2 * Viewport.Height + 2 * Viewport.Top - Height) * f;
-   Top:=Ratio * Height / (2 * MaxDim);
+      // top extent (keep in mind the origin is left lower corner):
+      Ratio:=(2 * Viewport.Height + 2 * Viewport.Top - Height) * f;
+      Top:=Ratio * Height / (2 * MaxDim);
 
-   // bottom extent:
-   Ratio:=(Height - 2 * Viewport.Top) * f;
-   Bottom:=-Ratio * Height / (2 * MaxDim);
+      // bottom extent:
+      Ratio:=(Height - 2 * Viewport.Top) * f;
+      Bottom:=-Ratio * Height / (2 * MaxDim);
 
-   FNearPlane:=FFocalLength * 2 * DPI / (25.4 * MaxDim);
-   zFar:=FNearPlane + FDepthOfView;
+      FNearPlane:=FFocalLength * 2 * DPI / (25.4 * MaxDim);
+      zFar:=FNearPlane + FDepthOfView;
 
-   // finally create view frustum (perspective or orthogonal)
-   case CameraStyle of
-      csPerspective :
-         glFrustum(Left, Right, Bottom, Top, FNearPlane, zFar);
-      csOrthogonal :
-         glOrtho(Left, Right, Bottom, Top, FNearPlane, zFar);
-   else
-      Assert(False);
+      // finally create view frustum (perspective or orthogonal)
+      case CameraStyle of
+         csPerspective :
+            glFrustum(Left, Right, Bottom, Top, FNearPlane, zFar);
+         csOrthogonal :
+            glOrtho(Left, Right, Bottom, Top, FNearPlane, zFar);
+      else
+         Assert(False);
+      end;
+
+      FViewPortRadius:=VectorLength(Right, Top)/FNearPlane;
    end;
-
-   FViewPortRadius:=VectorLength(Right, Top)/FNearPlane;
 end;
 
 //------------------------------------------------------------------------------
@@ -4391,7 +4399,8 @@ end;
 // RenderScene
 //
 procedure TGLScene.RenderScene(aViewer: TGLSceneViewer;
-                               const viewPortSizeX, viewPortSizeY : Integer);
+                               const viewPortSizeX, viewPortSizeY : Integer;
+                               drawState : TDrawState);
 var
    i : Integer;
    rci : TRenderContextInfo;
@@ -4402,6 +4411,7 @@ begin
    FCurrentViewer:=AViewer;
    rci.objectsSorting:=FObjectsSorting;
    rci.visibilityCulling:=FVisibilityCulling;
+   rci.drawState:=drawState;
    with AViewer.Camera do begin
       rci.cameraPosition:=aViewer.FCameraAbsolutePosition;
       rci.cameraDirection:=FLastDirection;
@@ -4822,7 +4832,6 @@ begin
    // performance check off
    FMonitor:=False;
    ResetPerformanceMonitor;
-   FState:=dsNone;
 end;
 
 // Destroy
@@ -4874,7 +4883,7 @@ begin
    if IsOpenGLAvailable then begin
       // initialize and activate the OpenGL rendering context
       // need to do this only once per window creation as we have a private DC
-      FState:=dsRendering;
+      FRendering:=True;
       try
          locOptions:=[];
          if roDoubleBuffer in ContextOptions then
@@ -4923,7 +4932,7 @@ begin
                             SWP_NOCOPYBITS or SWP_NOMOVE or SWP_NOSIZE);
          end;
       finally
-         FState:=dsNone;
+         FRendering:=False;
       end;
    end;
    invalidated:=False;
@@ -5236,7 +5245,7 @@ var
   SaveAllowed: Boolean;
   FName: String;
 begin
-   Assert((FState = dsNone), glsAlreadyRendering);
+   Assert((not FRendering), glsAlreadyRendering);
    SaveDialog:=nil;
    ABitmap:=TBitmap.Create;
    try
@@ -5276,7 +5285,7 @@ var
    SaveAllowed: Boolean;
    FName: String;
 begin
-   Assert((FState = dsNone), glsAlreadyRendering);
+   Assert((not FRendering), glsAlreadyRendering);
    SaveDialog:=nil;
    ABitmap:=TBitmap.Create;
    try
@@ -5359,8 +5368,8 @@ var
    LastStates: TGLStates;
    Resolution: Integer;
 begin
-   Assert((FState = dsNone), glsAlreadyRendering);
-   FState:=dsPrinting;
+   Assert((not FRendering), glsAlreadyRendering);
+   FRendering:=True;
    try
       case ABitmap.PixelFormat of
          pfCustom, pfDevice :  // use current color depth
@@ -5405,7 +5414,7 @@ begin
             if Resolution=0 then
                Resolution:=GetDeviceCaps(ABitmap.Canvas.Handle, LOGPIXELSX);
             // render
-            DoBaseRender(viewport, Resolution);
+            DoBaseRender(viewport, Resolution, dsPrinting);
             glFinish;
          finally
             bmpContext.Deactivate;
@@ -5416,7 +5425,7 @@ begin
          bmpContext.Free;
       end;
    finally
-      FState:=dsNone;
+      FRendering:=False;
    end;
    if Assigned(FAfterRender) then FAfterRender(Self);
 end;
@@ -5588,7 +5597,9 @@ var
    vec, cam, targ, rayhit : TAffineVector;
    camAng :real;
 begin
-   dov:=Camera.DepthOfView;
+   if Camera.Style=csOrtho2D then
+      dov:=2
+   else dov:=Camera.DepthOfView;
    np :=Camera.NearPlane;
    fp :=Camera.NearPlane+dov;
    z  :=GetPixelDepth(x,y);
@@ -5694,10 +5705,10 @@ var
    subObjIndex : Cardinal;
 begin
    if not Assigned(FCamera) then Exit;
-   Assert((FState = dsNone), glsAlreadyRendering);
+   Assert((not FRendering), glsAlreadyRendering);
    Assert(Assigned(PickList));
    FRenderingContext.Activate;
-   FState:=dsPicking;
+   FRendering:=True;
    try
       buffer:=nil;
       try
@@ -5723,7 +5734,7 @@ begin
             glPushName(0);
             // render the scene (in select mode, nothing is drawn)
             if Assigned(FCamera) and Assigned(FCamera.FScene) then
-               FCamera.FScene.RenderScene(Self, Width, Height);
+               FCamera.FScene.RenderScene(Self, Width, Height, dsPicking);
             glFlush;
             Hits:=glRenderMode(GL_RENDER);
          until Hits>-1; // try again with larger selection buffer
@@ -5751,7 +5762,7 @@ begin
          FreeMem(Buffer);
       end;
    finally
-      FState:=dsNone;
+      FRendering:=True;
       FRenderingContext.Deactivate;
    end;
 end;
@@ -5825,10 +5836,12 @@ function TGLSceneViewer.PixelDepthToDistance(aDepth : Single) : Single;
 var
    dov, np, fp : Single;
 begin
-   dov:=Camera.DepthOfView;    // Depth of View (from np to fp)
-   np :=Camera.NearPlane;      // Near plane distance
-   fp :=np+dov;                // Far plane distance
-   Result:=(fp*np)/(fp-aDepth*dov);  // calculate world distance from z-buffer value
+   if Camera.Style=csOrtho2D then
+      dov:=2
+   else dov:=Camera.DepthOfView;    // Depth of View (from np to fp)
+   np :=Camera.NearPlane;           // Near plane distance
+   fp :=np+dov;                     // Far plane distance
+   Result:=(fp*np)/(fp-aDepth*dov); // calculate world distance from z-buffer value
 end;
 
 // PrepareRenderingMatrices
@@ -5859,7 +5872,8 @@ end;
 
 // DoBaseRender
 //
-procedure TGLSceneViewer.DoBaseRender(const aViewPort : TRectangle; resolution : Integer);
+procedure TGLSceneViewer.DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
+                                      drawState : TDrawState);
 begin
    if (not Assigned(FCamera)) or (not Assigned(FCamera.FScene)) then Exit;
    PrepareRenderingMatrices(aViewPort, resolution);
@@ -5870,7 +5884,7 @@ begin
          glEnable(GL_FOG);
          FogEnvironment.ApplyFog;
       end else glDisable(GL_FOG);
-      RenderScene(Self, Width, Height);
+      RenderScene(Self, Width, Height, drawState);
    end;
    if Assigned(FPostRender) then FPostRender(Self);
 end;
@@ -5882,11 +5896,11 @@ var
    Counter1, Counter2: TLargeInteger;
    BackColor : TColorVector;
 begin
-   if ((not Visible) and (not (csDesigning in ComponentState))) or (FState<>dsNone) then Exit;
+   if ((not Visible) and (not (csDesigning in ComponentState))) or FRendering then Exit;
    if Assigned(FCamera) and Assigned(FCamera.FScene) then
       FCamera.FScene.AddViewer(Self);
    FRenderingContext.Activate;
-   FState:=dsRendering;
+   FRendering:=True;
    try
       // performance data demanded?
       if FMonitor then QueryPerformanceCounter(Counter1);
@@ -5896,7 +5910,7 @@ begin
       ClearBuffers;
       // render
       glEnable(GL_MULTISAMPLE_ARB);
-      DoBaseRender(FViewport, GetDeviceCaps(RenderDC, LOGPIXELSX));
+      DoBaseRender(FViewport, GetDeviceCaps(RenderDC, LOGPIXELSX), dsRendering);
       glFlush;
       if FDoubleBuffered then SwapBuffers(RenderDC);
 
@@ -5916,7 +5930,7 @@ begin
          end;
       end;
    finally
-      FState:=dsNone;
+      FRendering:=False;
       FRenderingContext.Deactivate;
    end;
    if Assigned(FAfterRender) then FAfterRender(Self);
