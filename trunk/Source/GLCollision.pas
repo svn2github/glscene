@@ -142,7 +142,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLMisc;
+uses SysUtils, GLMisc, Octree;
 
 const
    cEpsilon : Single = 1e-6;
@@ -498,7 +498,7 @@ begin
       MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m2to1);
 
       //does this return Triangles inside cube or triangles near cube?
-      triList:=TGLFreeForm(obj2).Octree.GetTrianglesInCube(obj1.AxisAlignedBoundingBox, m2to1, m1to2);
+      triList:=TGLFreeForm(obj2).Octree.GetTrianglesFromNodesIntersectingCube(obj1.AxisAlignedBoundingBox, m2to1, m1to2);
 
       if Trilist.Count>0 then   //this should have been enough to return true
       begin
@@ -565,7 +565,7 @@ begin
       MatrixMultiply(obj1.AbsoluteMatrix, obj2.InvAbsoluteMatrix, m2to1);
 
       AABB2:=obj2.AxisAlignedBoundingBoxUnscaled;
-      triList:=TGLFreeForm(obj1).Octree.GetTrianglesInCube({obj2.AxisAlignedBoundingBox}AABB2, m1to2, m2to1);
+      triList:=TGLFreeForm(obj1).Octree.GetTrianglesFromNodesIntersectingCube(AABB2, m1to2, m2to1);
 
       //in the list originally are the local coords, TransformAsPoints-> now we have obj1 absolute coords
       triList.TransformAsPoints(obj1.AbsoluteMatrix); //Transform to Absolute Coords
