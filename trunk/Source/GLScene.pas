@@ -744,6 +744,8 @@ type
          { Public Declarations }
          constructor Create(aOwner : TPersistent); override;
 
+         function GetNamePath : String;override;
+
          class function ItemsClass : TXCollectionItemClass; override;
 
          property Behaviour[index : Integer] : TGLBehaviour read GetBehaviour; default;
@@ -818,6 +820,8 @@ type
       public
          { Public Declarations }
          constructor Create(aOwner : TPersistent); override;
+
+         function GetNamePath : String;override;
 
          class function ItemsClass : TXCollectionItemClass; override;
 
@@ -4240,6 +4244,19 @@ begin
    inherited Create(aOwner);
 end;
 
+// GetNamePath
+//
+function TGLBehaviours.GetNamePath : String;
+var
+   s : String;
+begin
+   Result:=ClassName;
+   if GetOwner=nil then Exit;
+   s:=GetOwner.GetNamePath;
+   if s='' then Exit;
+   Result:=s+'.Behaviours';
+end;
+
 // ItemsClass
 //
 class function TGLBehaviours.ItemsClass : TXCollectionItemClass;
@@ -4314,6 +4331,19 @@ constructor TGLObjectEffects.Create(aOwner : TPersistent);
 begin
    Assert(aOwner is TGLBaseSceneObject);
    inherited Create(aOwner);
+end;
+
+// GetNamePath
+//
+function TGLObjectEffects.GetNamePath : String;
+var
+   s : String;
+begin
+   Result:=ClassName;
+   if GetOwner=nil then Exit;
+   s:=GetOwner.GetNamePath;
+   if s='' then Exit;
+   Result:=s+'.Effects';
 end;
 
 // ItemsClass
