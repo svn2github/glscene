@@ -34,3 +34,4 @@ TGLPerlinPFXManager BITMAP vcl\glscene_icon_TGLPerlinPFXManager.bmp
 TGLVfsPAK BITMAP vcl\glscene_icon_TGLVfsPAK.bmp
 TGLStaticImposterBuilder BITMAP vcl\glscene_icon_TGLStaticImposterBuilder.bmp
 TGLCelShader BITMAP vcl\glscene_icon_TGLCelShader.bmp
+TGLFPSMovementManager BITMAP vcl\glscene_icon_TGLFPSMovementManager.bmp
