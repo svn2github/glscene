@@ -3,7 +3,7 @@
 
   Shows how to do texture coordinate shifting with a VP and blending with a FP.
 
-  08/07/03 - Nelson Chu
+  09/07/03 - Nelson Chu
 }
 unit Unit1;
 
@@ -85,6 +85,9 @@ type
     Label14: TLabel;
     Label13: TLabel;
     Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -144,8 +147,8 @@ begin
 end;
 
 procedure TForm1.CgShader1Initialize(Sender: TCustomCgShader);
-// Set parameters that need to be set once
 begin
+  // Set parameters that need to be set once
   with Sender.FragmentProgram, GLMatLib do begin
     ParamByName('Map0').SetAsTexture2D(Materials[0].Material.Texture.Handle);
     ParamByName('Map1').SetAsTexture2D(Materials[1].Material.Texture.Handle);
@@ -153,6 +156,7 @@ begin
     ParamByName('Map3').SetAsTexture2D(Materials[3].Material.Texture.Handle);
   end;
 
+  // Display profiles used
   LabelVertProfile.Caption:='Using profile: ' + Sender.VertexProgram.GetProfileString;
   LabelFragProfile.Caption:='Using profile: ' + Sender.FragmentProgram.GetProfileString;
 end;
