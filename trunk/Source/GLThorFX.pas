@@ -143,6 +143,9 @@ type
          //property Target: TGLCoordinates read FTarget write SetTarget;
 	end;
 
+        {: Returns or creates the TGLBThorFX within the given object's effects.<p> }
+function GetOrCreateThorFX(obj : TGLBaseSceneObject; const name : String = '') : TGLBThorFX;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -670,6 +673,32 @@ begin
    glPopMatrix;
    glPopAttrib;
 end;
+
+// GetOrCreateThorFX
+//
+function GetOrCreateThorFX(obj : TGLBaseSceneObject; const name : String = '') : TGLBThorFX;
+var
+	i : Integer;
+begin
+   with obj.Effects do begin
+      if name='' then begin
+      	i:=IndexOfClass(TGLBThorFX);
+      	if i>=0 then
+	      	Result:=TGLBThorFX(Items[i])
+      	else Result:=TGLBThorFX.Create(obj.Effects);
+      end else begin
+         i:=IndexOfName(name);
+         if i>=0 then
+            Result:=(Items[i] as TGLBThorFX)
+         else begin
+            Result:=TGLBThorFX.Create(obj.Effects);
+            Result.Name:=name;
+         end;
+      end;
+   end;
+end;
+
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
