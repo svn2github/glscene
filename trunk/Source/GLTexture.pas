@@ -2732,7 +2732,7 @@ end;
 //
 procedure TGLTexture.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) then begin
+   if Assigned(Source) then begin
       if (Source is TGLTexture) then begin
 		   if Source<>Self then begin
 			   FImageAlpha:=TGLTexture(Source).FImageAlpha;
@@ -2753,8 +2753,12 @@ begin
          Image.Assign(Source);
       end else if (Source is TGLPicture) then begin
          Image.Assign(TGLPicture(Source).Graphic);
-      end;
-	end else inherited Assign(Source);
+      end else inherited Assign(Source);
+   end else begin
+      FDisabled:=True;
+  		SetImage(nil);
+     	FChanges:=[tcParams, tcImage];
+   end;
 end;
 
 // NotifyImageChange
@@ -2769,12 +2773,18 @@ end;
 //
 procedure TGLTexture.SetImage(AValue: TGLTextureImage);
 begin
-	if FImage.ClassType<>AValue.ClassType then begin
-		FImage.Free;
-		FImage:=TGLTextureImageClass(AValue.ClassType).Create(Self);
-      FImage.OnTextureNeeded:=DoOnTextureNeeded;
-	end;
-	FImage.Assign(AValue);
+   if Assigned(aValue) then begin
+   	if FImage.ClassType<>AValue.ClassType then begin
+	   	FImage.Free;
+		   FImage:=TGLTextureImageClass(AValue.ClassType).Create(Self);
+         FImage.OnTextureNeeded:=DoOnTextureNeeded;
+	   end;
+   	FImage.Assign(AValue);
+   end else begin
+      FImage.Free;
+   	FImage:=TGLPersistentImage.Create(Self);
+      FImage.FOnTextureNeeded:=DoOnTextureNeeded;
+   end;
 end;
 
 // SetImageClassName
@@ -3741,7 +3751,9 @@ begin
       FFrontProperties.Assign(TGLMaterial(Source).FFrontProperties);
 		FBlendingMode:=TGLMaterial(Source).FBlendingMode;
       FMaterialOptions:=TGLMaterial(Source).FMaterialOptions;
-      Texture.Assign(TGLMaterial(Source).FTexture);
+      if Assigned(TGLMaterial(Source).FTexture) then
+         Texture.Assign(TGLMaterial(Source).FTexture)
+      else FreeAndNil(FTexture);
       FFaceCulling:=TGLMaterial(Source).FFaceCulling;
 		FMaterialLibrary:=TGLMaterial(Source).MaterialLibrary;
       SetLibMaterialName(TGLMaterial(Source).LibMaterialName);
