@@ -31,7 +31,8 @@ package GLScene7;
 
 requires
   vcl,
-  designide;
+  designide,
+  rtl;
 
 {%File '..\Source\GLScene.inc'}
 
@@ -166,5 +167,8 @@ contains
   VerletClasses in '..\Source\Base\VerletClasses.pas',
   SpatialPartitioning in '..\Source\Base\SpatialPartitioning.pas',
   GLOutlineShader in '..\Source\Shaders\GLOutlineShader.pas',
-  GLVerletClothify in '..\Source\GLVerletClothify.pas';
+  GLVerletClothify in '..\Source\GLVerletClothify.pas',
+  GLMultiProxy in '..\Source\GLMultiProxy.pas',
+  GLSkyBox in '..\Source\GLSkyBox.pas';
+
 end.
