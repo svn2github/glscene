@@ -56,6 +56,8 @@ end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
+   GLMaterialLibrary1.Materials.Clear;
+   GLCube1.Material.MaterialLibrary := GLMaterialLibrary1;
    GLMaterialScripter1.Script := Memo1.Lines;
    GLMaterialScripter1.CompileScript;
    GLCube1.Material.LibMaterialName := 'TestMat';
