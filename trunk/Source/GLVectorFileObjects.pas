@@ -3293,8 +3293,7 @@ begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
-      // with lightmap texcoords units active, we seem to actually lose performance...
-      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
+      if GL_EXT_compiled_vertex_array then
          glLockArraysEXT(0, vertices.Count);
       FLastLightMapIndex:=-1;
       FArraysDeclared:=True;
@@ -3308,7 +3307,7 @@ procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
 begin
    if FArraysDeclared then begin
       DisableLightMapArray(mrci);
-      if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count=0) then
+      if GL_EXT_compiled_vertex_array then
          glUnLockArraysEXT;
       if Vertices.Count>0 then
          glDisableClientState(GL_VERTEX_ARRAY);
@@ -3374,9 +3373,10 @@ end;
 //
 procedure TMeshObject.BuildList(var mrci : TRenderContextInfo);
 var
-   i, j, groupID : Integer;
+   i, j, groupID, nbGroups : Integer;
    gotNormals, gotTexCoords, gotColor : Boolean;
    libMat : TGLLibMaterial;
+   fg : TFaceGroup;
 begin
    FArraysDeclared:=False;
    gotColor:=(Vertices.Count=Colors.Count);
@@ -3426,15 +3426,27 @@ begin
                   end;
                end;
             end else begin
-               // canonical rendering
-               for i:=0 to FaceGroups.Count-1 do with FaceGroups[i] do begin
-                  libMat:=FMaterialCache;
+               // canonical rendering (regroups only contiguous facegroups)
+               i:=0;
+               nbGroups:=FaceGroups.Count;
+               while i<nbGroups do begin
+                  libMat:=FaceGroups[i].FMaterialCache;
                   if Assigned(libMat) then begin
                      libMat.Apply(mrci);
                      repeat
-                        BuildList(mrci);
+                        j:=i;
+                        while j<nbGroups do begin
+                           fg:=FaceGroups[j];
+                           if fg.MaterialCache<>libMat then Break;
+                           fg.BuildList(mrci);
+                           Inc(j);
+                        end;
                      until not libMat.UnApply(mrci);
-                  end else BuildList(mrci);
+                     i:=j;
+                  end else begin
+                     BuildList(mrci);
+                     Inc(i);
+                  end;
                end;
             end;
             // restore faceculling
@@ -4265,7 +4277,7 @@ end;
 //
 procedure TFaceGroup.PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
 begin
-   if FMaterialName<>'' then
+   if (FMaterialName<>'') and (matLib<>nil) then
       FMaterialCache:=matLib.Materials.GetLibMaterialByName(FMaterialName)
    else FMaterialCache:=nil;
 end;
@@ -4915,6 +4927,8 @@ begin
    Result:=nil;
 end;
 
+// CompareMaterials
+//
 function CompareMaterials(item1, item2 : TObject) : Integer;
 
    function MaterialIsOpaque(fg : TFaceGroup) : Boolean;
@@ -4926,18 +4940,17 @@ function CompareMaterials(item1, item2 : TObject) : Integer;
    end;
 
 var
+   fg1, fg2 : TFaceGroup;
    opaque1, opaque2 : Boolean;
 begin
-   opaque1:=MaterialIsOpaque(TFaceGroup(item1));
-   opaque2:=MaterialIsOpaque(TFaceGroup(item2));
+   fg1:=TFaceGroup(item1);
+   opaque1:=MaterialIsOpaque(fg1);
+   fg2:=TFaceGroup(item2);
+   opaque2:=MaterialIsOpaque(fg2);
    if opaque1=opaque2 then begin
-      Result:=CompareStr(TFaceGroup(item1).MaterialName, TFaceGroup(item2).MaterialName);
-      if Result=0 then begin
-         if TFaceGroup(item1).LightMapIndex<TFaceGroup(item2).LightMapIndex then
-            Result:=-1
-         else if TFaceGroup(item1).LightMapIndex>TFaceGroup(item2).LightMapIndex then
-            Result:=1
-      end;
+      Result:=CompareStr(fg1.MaterialName, fg2.MaterialName);
+      if Result=0 then
+         result:=fg1.LightMapIndex-fg2.LightMapIndex;
    end else if opaque1 then
       Result:=-1
    else Result:=1;
