@@ -25,8 +25,12 @@ uses Windows, Graphics, Dialogs, SysUtils;//, GLWin32Context;
 
 type
 
+   TGLPoint = TPoint;
+   PGLPoint = ^TGLPoint;
    TGLRect = TRect;
    PGLRect = ^TGLRect;
+
+function GLPoint(const x, y : Integer) : TGLPoint;
 
 {: Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b : Byte) : TColor;
@@ -63,6 +67,14 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+
+// GLPoint
+//
+function GLPoint(const x, y : Integer) : TGLPoint;
+begin
+   Result.X:=x;
+   Result.Y:=y;
+end;
 
 // RGB
 //
