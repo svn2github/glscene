@@ -490,7 +490,7 @@ type
          function TriangleCount : Integer; dynamic;
 
          procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
-         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache;
          
          {: Prepare the texture and materials before rendering.<p>
             Invoked once, before building the list and NOT while building the list. }
@@ -536,7 +536,7 @@ type
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
-         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache;
 
          {: Prepare the texture and materials before rendering.<p>
             Invoked once, before building the list and NOT while building the list. }
@@ -737,7 +737,7 @@ type
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
-         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache;
 
          procedure BuildList(var mrci : TRenderContextInfo); virtual; abstract;
 
@@ -810,6 +810,9 @@ type
 
          procedure Add(idx : Integer);
          procedure GetExtents(var min, max : TAffineVector);
+         {: If mode is strip or fan, convert the indices to triangle list indices. }
+         procedure ConvertToList;
+
          //: Return the normal from the 1st three points in the facegroup
          function  GetNormal : TAffineVector;
 
@@ -905,7 +908,7 @@ type
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
-         procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+         procedure DropMaterialLibraryCache;
          
          property Owner : TMeshObject read FOwner;
          procedure Clear; override;
@@ -2866,9 +2869,9 @@ end;
 
 // DropMaterialLibraryCache
 //
-procedure TMeshObject.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+procedure TMeshObject.DropMaterialLibraryCache;
 begin
-   FaceGroups.PrepareMaterialLibraryCache(matLib);
+   FaceGroups.DropMaterialLibraryCache;
 end;
 
 // GetExtents
@@ -3156,12 +3159,12 @@ end;
 
 // DropMaterialLibraryCache
 //
-procedure TMeshObjectList.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+procedure TMeshObjectList.DropMaterialLibraryCache;
 var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TMeshObject(List[i]).PrepareMaterialLibraryCache(matLib);
+      TMeshObject(List[i]).DropMaterialLibraryCache;
 end;
 
 // PrepareBuildList
@@ -3228,6 +3231,7 @@ procedure TMeshObjectList.Clear;
 var
    i : Integer;
 begin
+   DropMaterialLibraryCache;
    for i:=0 to Count-1 do with Items[i] do begin
       FOwner:=nil;
       Free;
@@ -3898,7 +3902,7 @@ end;
 
 // DropMaterialLibraryCache
 //
-procedure TFaceGroup.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+procedure TFaceGroup.DropMaterialLibraryCache;
 begin
    FMaterialCache:=nil;
 end;
@@ -4109,6 +4113,40 @@ begin
          f:=ref[k];
          if f<min[k] then min[k]:=f;
          if f>max[k] then max[k]:=f;
+      end;
+   end;
+end;
+
+// ConvertToList
+//
+procedure TFGVertexIndexList.ConvertToList;
+var
+   i : Integer;
+   bufList : TIntegerList;
+begin
+   if VertexIndices.Count>=3 then begin
+      case Mode of
+         fgmmTriangleStrip : begin
+            bufList:=TIntegerList.Create;
+            try
+               ConvertStripToList(VertexIndices, bufList);
+               VertexIndices:=bufList;
+            finally
+               bufList.Free;
+            end;
+            FMode:=fgmmTriangles;
+         end;
+         fgmmTriangleFan : begin
+            bufList:=TIntegerList.Create;
+            try
+               for i:=0 to VertexIndices.Count-3 do
+                  bufList.Add(VertexIndices[0], VertexIndices[i], VertexIndices[i+1]);
+               VertexIndices:=bufList;
+            finally
+               bufList.Free;
+            end;
+            FMode:=fgmmTriangles;
+         end;
       end;
    end;
 end;
@@ -4453,12 +4491,12 @@ end;
 
 // DropMaterialLibraryCache
 //
-procedure TFaceGroups.DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
+procedure TFaceGroups.DropMaterialLibraryCache;
 var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TFaceGroup(List[i]).PrepareMaterialLibraryCache(matLib);
+      TFaceGroup(List[i]).DropMaterialLibraryCache;
 end;
 
 // AddToTriangles
@@ -5264,7 +5302,7 @@ end;
 procedure TGLBaseMesh.DropMaterialLibraryCache;
 begin
    if FMaterialLibraryCachesPrepared then begin
-      MeshObjects.DropMaterialLibraryCache(FMaterialLibrary);
+      MeshObjects.DropMaterialLibraryCache;
       FMaterialLibraryCachesPrepared:=False;
    end;
 end;
