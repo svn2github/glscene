@@ -145,6 +145,10 @@ function BSphereContainsBSphere(const mainBSphere, testBSphere : TBSphere) : TSp
 function AABBContainsBSphere(const mainAABB : TAABB; const testBSphere : TBSphere) : TSpaceContains;
 {: Determines to which extent a plane contains a BSphere}
 function PlaneContainsBSphere(const Location, Normal : TAffineVector; const testBSphere : TBSphere) : TSpaceContains;
+{: Determines to which extent a frustum contains a BSphere}
+function FrustumContainsBSphere(const Frustum : TFrustum; const testBSphere : TBSphere) : TSpaceContains;
+{: Determines to which extent a frustum contains an AABB}
+function FrustumContainsAABB(const Frustum : TFrustum; const testAABB : TAABB) : TSpaceContains;
 {: Clips a position to an AABB }
 function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector;
 
@@ -836,6 +840,81 @@ begin
     result := scContainsPartially
   else
     result := scContainsFully;
+end;
+
+// FrustumContainsBSphere
+//
+function FrustumContainsBSphere(const Frustum : TFrustum; const testBSphere : TBSphere) : TSpaceContains;
+var
+  negRadius : Single;
+  HitCount : integer;
+  Distance : single;
+  i : integer;
+type
+  TPlaneArray = array[0..5] of THmgPlane;
+begin
+  negRadius:=-testBSphere.Radius;
+
+  HitCount := 0;
+
+  // This would be fractionally faster to unroll, but oh so ugly!?
+  for i := 0 to 5 do
+  begin
+    Distance := PlaneEvaluatePoint(TPlaneArray(frustum)[i], testBSphere.Center);
+    if Distance<negRadius then begin
+      result := scNoOverlap;
+      exit;
+    end else if Distance >= testBSphere.Radius then
+      inc(HitCount);
+  end;//}
+
+  if HitCount=6 then
+    result := scContainsFully
+  else
+    result := scContainsPartially;
+end;
+
+// FrustumContainsBSphere
+//
+function FrustumContainsAABB(const Frustum : TFrustum; const testAABB : TAABB) : TSpaceContains;
+type
+  TPlaneArray = array[0..5] of THmgPlane;
+var
+  iPlane, iCorner : integer;
+  PointIn : boolean;
+  AABBCorners : TAABBCorners;
+  InCount : integer;
+  TotalIn : integer;
+begin
+  ExtractAABBCorners(testAABB, AABBCorners);
+
+  TotalIn := 0;
+  // test all 8 corners against the 6 sides
+	// if all points are behind 1 specific plane, we are out
+	// if we are in with all points, then we are fully in
+  for iPlane := 0 to 5 do begin
+    InCount := 8;
+    PointIn := true;
+
+    for iCorner := 0 to 7 do
+      if PlaneEvaluatePoint(TPlaneArray(Frustum)[iPlane], AABBCorners[iCorner])<0 then begin
+        PointIn := false;
+        dec(InCount);
+      end;
+
+    if InCount=0 then begin
+      result := scNoOverlap;
+      exit;
+    end;
+
+    if PointIn then
+      inc(TotalIn);
+  end;
+
+  if TotalIn=6 then
+    result := scContainsFully
+  else
+    result := scContainsPartially;
 end;
 
 //  BSphereContainsAABB

@@ -14,7 +14,9 @@
 
 
 	<b>History : </b><font size=-1><ul>
-      <li>02/12/04 - HRLI - Added cone testing (reworked by MF)
+      <li>02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
+                          streamlined frustum culling.
+      <li>01/12/04 - HRLI - Added rcci/frustum culling
       <li>23/06/03 - MF - Separated functionality for Octrees and general
                           sectored space partitions so Quadtrees will be easy
                           to add.
@@ -50,6 +52,12 @@ type
 
     {: Length of the cone }
     Length : single;
+  end;
+
+  TExtendedFrustum = record
+    Frustum : TFrustum;
+    BSphere : TBSphere;
+    Cone : TSPCone;
   end;
 
   {: Used to store the actual objects in the SpacePartition }
@@ -477,6 +485,9 @@ type
   {: Determines to which extent one Cone contains an BSphere}
   function ConeContainsBSphere(const Cone : TSPCone; BSphere : TBSphere) : TSpaceContains;
 
+  {: Create a extended frustum from a regular frustum}
+  function MakeExtendedFrustum(const Frustum : TFrustum) : TExtendedFrustum;
+
 implementation
 
 // This was copied from Octree.pas!
@@ -563,6 +574,43 @@ begin
   end else
     result := scNoOverlap;
 end;//}
+
+function MakeExtendedFrustum(const Frustum : TFrustum) : TExtendedFrustum;
+var
+  ViewLen : single;
+begin
+  result.Frustum := Frustum;
+  {result.BSphere
+
+  // calculate the radius of the frustum sphere
+  float fViewLen = m_fFarPlane - m_fNearPlane;
+
+  // use some trig to find the height of the frustum at the far plane
+  float fHeight = fViewLen * tan(m_fFovRadians * 0.5f);
+
+  // with an aspect ratio of 1, the width will be the same
+  float fWidth = fHeight;
+
+  // halfway point between near/far planes starting at the origin and extending along the z axis
+  Vector3f P(0.0f, 0.0f, m_fNearPlane + fViewLen * 0.5f);
+
+  // the calculate far corner of the frustum
+  Vector3f Q(fWidth, fHeight, fViewLen);
+
+  // the vector between P and Q
+  Vector3f vDiff(P - Q);
+
+  // the radius becomes the length of this vector
+  m_frusSphere.Radius() = vDiff.getLength();
+
+  // get the look vector of the camera from the view matrix
+  Vector3f vLookVector;
+  m_mxView.LookVector(&vLookVector);
+
+  // calculate the center of the sphere
+  m_frusSphere.Center() = m_vCameraPosition + (vLookVector * (fViewLen * 0.5f) + m_fNearPlane);//}
+
+end;
 
 { TSpacePartitionLeaf }
 
@@ -951,11 +999,12 @@ begin
   // we can
   OldLeaves := FLeaves;
   FLeaves := TSpacePartitionLeafList.Create;
-
-  for i := 0 to OldLeaves.Count-1 do
-    PlaceLeafInChild(OldLeaves[i]);
-
-  OldLeaves.Free;
+  try
+    for i := 0 to OldLeaves.Count-1 do
+      PlaceLeafInChild(OldLeaves[i]);
+  finally
+    OldLeaves.Free;
+  end;
 end;
 
 procedure TSectorNode.CollapseNode;
@@ -1079,19 +1128,18 @@ begin
     if FSectoredSpacePartition.CullingMode = cmFineCulling then
     begin
       for i := 0 to FLeaves.Count-1 do
+      begin
+        inc(FSectoredSpacePartition.FQueryInterObjectTests);
         if BSphereContainsAABB(aBSphere, FLeaves[i].FCachedAABB) <> scNoOverlap then
           QueryResult.Add(FLeaves[i]);
+      end;
     end else
       for i := 0 to FLeaves.Count-1 do
         QueryResult.Add(FLeaves[i]);
 
     // Recursively let the children add their leaves
     for i := 0 to FChildCount-1 do
-    begin
-      inc(FSectoredSpacePartition.FQueryInterObjectTests);
-
       FChildren[i].QueryBSphere(aBSphere, QueryResult);
-    end;
   end;
 end;
 
@@ -1236,45 +1284,42 @@ begin
   result := FBSphere.Center;
 end;
 
+// I'd like to introduce a frustum bsphere and a cone as per
+// http://www.flipcode.com/articles/article_frustumculling.shtml , but it
+// requires a number of values that I don't currently have access to!?
 procedure TSectorNode.QueryFrustum(const Frustum: TFrustum;
   const QueryResult: TSpacePartitionLeafList);
 var
-  i : integer;                    
-  //SpaceContains : TSpaceContains;
-  function IsAllInVolume(const objPos : TAffineVector; const objRadius : Single;
-                         const Frustum: TFrustum) : Boolean;
-  begin
-     Result:= (PlaneEvaluatePoint(frustum.pLeft, objPos)>=objRadius)
-             and (PlaneEvaluatePoint(frustum.pTop, objPos)>=objRadius)
-             and (PlaneEvaluatePoint(frustum.pRight, objPos)>=objRadius)
-             and (PlaneEvaluatePoint(frustum.pBottom, objPos)>=objRadius)
-             and (PlaneEvaluatePoint(frustum.pNear, objPos)>=objRadius)
-             and (PlaneEvaluatePoint(frustum.pFar, objPos)>=objRadius);
-  end;
-
+  SpaceContains : TSpaceContains;
+  i : integer;
 begin
   inc(FSectoredSpacePartition.FQueryNodeTests);
 
-  if IsVolumeClipped(BSphere.Center, BSphere.Radius, Frustum ) then exit;
+  SpaceContains := FrustumContainsBSphere(frustum, BSphere);
 
-  if IsAllInVolume(BSphere.Center,BSphere.Radius,Frustum) then
-  begin
-    {inc(FSectoredSpacePartition.FQueryNodeTests);
-    for i := 0 to FLeaves.Count-1 do
-      QueryResult.Add(FLeaves[i]);//}
+  // This method is supposedly more clever but I can't detect any speed change.
+  {if IsVolumeClipped(BSphere.Center, BSphere.Radius, Frustum) then exit;
+  SpaceContains := FrustumContainsAABB(frustum, AABB);//}
+
+  // If the frustum fully contains the leaf, then we need not check every piece,
+  // just add them all
+  if SpaceContains=scContainsFully then begin
     AddAllLeavesRecursive(QueryResult);
   end else
-  begin
-    for i := 0 to FLeaves.Count-1 do
+
+  // If the frustum partiall contains the leaf, then we should add the leaves
+  // that intersect the frustum and recurse for all children
+  if SpaceContains=scContainsPartially then begin
+    for i := 0 to FLeaves.Count-1 do begin
+      inc(FSectoredSpacePartition.FQueryInterObjectTests);
+
       if not IsVolumeClipped(FLeaves[i].FCachedBSphere.Center,FLeaves[i].FCachedBSphere.Radius,Frustum) then
         QueryResult.Add(FLeaves[i]);
+    end;
 
     // Recursively let the children add their leaves
     for i := 0 to FChildCount-1 do
-    begin
-      inc(FSectoredSpacePartition.FQueryInterObjectTests);
       FChildren[i].QueryFrustum(Frustum,QueryResult);
-    end;
   end;
 end;
 
