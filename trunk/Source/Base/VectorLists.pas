@@ -242,7 +242,10 @@ type
 			function AddVector(const item : TAffineVector) : Integer; overload;
 			function AddPoint(const item : TAffineVector) : Integer; overload;
 			procedure Push(const val : TVector);
-			function Pop : TVector;
+			function  Pop : TVector;
+         function  IndexOf(const item : TVector) : Integer;
+         function  FindOrAdd(const item : TVector) : Integer;
+         function  FindOrAddPoint(const item : TAffineVector) : Integer;
 			procedure Insert(Index: Integer; const item : TVector);
 
 			property Items[Index: Integer] : TVector read Get write Put; default;
@@ -1362,6 +1365,38 @@ begin
 		Result:=Get(FCount-1);
 		Delete(FCount-1);
 	end else Result:=NullHmgVector;
+end;
+
+// IndexOf
+//
+function TVectorList.IndexOf(const item : TVector) : Integer;
+var
+   i : Integer;
+begin
+   Result:=-1;
+   for i:=0 to Count-1 do if VectorEquals(item, FList^[i]) then begin
+      Result:=i;
+      Break;
+   end;
+end;
+
+// FindOrAdd
+//
+function TVectorList.FindOrAdd(const item : TVector) : Integer;
+begin
+   Result:=IndexOf(item);
+   if Result<0 then Result:=Add(item);
+end;
+
+// FindOrAddPoint
+//
+function TVectorList.FindOrAddPoint(const item : TAffineVector) : Integer;
+var
+   ptItem : TVector;
+begin
+   MakePoint(ptItem, item);
+   Result:=IndexOf(ptItem);
+   if Result<0 then Result:=Add(ptItem);
 end;
 
 // Lerp
