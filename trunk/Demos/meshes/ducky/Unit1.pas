@@ -1,7 +1,14 @@
 {: Loading NURBS into a GLScene FreeForm object<p>
 
-   The bottom of his beak is wound wrong, I'll sort that out
-   soon.<p>
+   A very simple parametric model of a duck, comprised of 3 NURBS
+   surfaces. The Nurbs format is essentially the NurbsSurface geometry 
+   type used in VRML. One limitation at the moment is the Control points
+   must each be on a separate line. Inverted surfaces are handled with 
+   the ccw FALSE statement in the .nurbs file (duck3.nurbs uses this 
+   setting).<p>
+   
+   Use the resolution slider to increase or decrease the models triangle
+   count dynamically.<p>
 }
 unit Unit1;
 
@@ -53,7 +60,6 @@ begin
   GLFreeForm1.LoadFromFile('..\..\media\duck1.nurbs');
   GLFreeForm1.AddDataFromFile('..\..\media\duck2.nurbs');
   GLFreeForm1.AddDataFromFile('..\..\media\duck3.nurbs');
-  GLFreeForm1.SaveToFile('');
 
   { Translate FreeForm based on the first mesh object's average
     control point. Quick and dirty ... or maybe just dirty :P }
