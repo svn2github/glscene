@@ -1366,6 +1366,7 @@ const
    c180 :      Single = 180;
    c360 :      Single = 360;
    cOneHalf :  Single = 0.5;
+   cLn10 :     Single = 2.302585093;
 
    // Ranges of the IEEE floating point types, including denormals
    // with Math.pas compatible name
