@@ -2,6 +2,7 @@
 {: Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
       <li>15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
       <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
       <li>10/09/01 - EG - Creation
@@ -497,7 +498,7 @@ begin
       texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
                                   PTexPoint(@TextureOffset)^);
       if GL_EXT_compiled_vertex_array then begin
-         glLockArraysEXT(0, vertices.Count-1);
+         glLockArraysEXT(0, vertices.Count);
          glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
          glUnLockArraysEXT;
       end else begin
