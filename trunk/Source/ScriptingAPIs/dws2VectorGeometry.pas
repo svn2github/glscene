@@ -170,7 +170,7 @@ begin
 
   TInvertMatrixFunction.Create(SymbolTable, 'InvertMatrix', ['@mat', 'TMatrix'], '');
   TTransposeMatrixFunction.Create(SymbolTable, 'TransposeMatrix', ['@mat', 'TMatrix'], '');
-  TMatrixMultiplyFunction.Create(SymbolTable, 'TransposeMatrix', ['m1', 'TMatrix', 'm2', 'TMatrix'], 'TMatrix');
+  TMatrixMultiplyFunction.Create(SymbolTable, 'MatrixMultiply', ['m1', 'TMatrix', 'm2', 'TMatrix'], 'TMatrix');
 end;
 
 constructor Tdws2VectorGeometryUnit.Create(AOwner: TComponent);
