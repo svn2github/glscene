@@ -308,7 +308,6 @@ begin
       Exit;
    end;
 
-   glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
    glPopAttrib;
 end;
 
