@@ -135,6 +135,7 @@ contains
   GLWindows in '..\Source\GLWindows.pas',
   GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas',
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
-  TGA in '..\Source\FileFormats\TGA.pas';
+  TGA in '..\Source\FileFormats\TGA.pas',
+  GLLensFlare in '..\Source\GLLensFlare.pas';
 
 end.
