@@ -28,7 +28,7 @@ type
    end;
 
 var
-   vGLFileOCTLightmapBrightness : Single = 3;      // Mrqzzz : scaling factor, 1.0 = unchanged
+   vGLFileOCTLightmapBrightness : Single = 1;      // Mrqzzz : scaling factor, 1.0 = unchanged
    vGLFileOCTLightmapGammaCorrection : Single = 1; // Mrqzzz : scaling factor, 1.0 = unchanged
    vGLFileOCTAllocateMaterials : boolean = True;   // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
 
