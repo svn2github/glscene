@@ -135,6 +135,8 @@ procedure Register;
 
 implementation
 
+uses GLCrossPlatform;
+
 type
    PSmallInt = ^SmallInt;
 
