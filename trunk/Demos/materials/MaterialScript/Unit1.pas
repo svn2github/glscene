@@ -44,6 +44,8 @@ implementation
 
 {$R *.dfm}
 
+uses JPEG;
+
 procedure TForm1.Button1Click(Sender: TObject);
 begin
    OpenDialog1.InitialDir := ExtractFilePath(Application.ExeName);
