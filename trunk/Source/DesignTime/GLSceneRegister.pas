@@ -1888,11 +1888,10 @@ initialization
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
+      {$ifdef WIN32}      
       RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', glsOCSpecialObjects);
       RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', glsOCSpecialObjects);
       RegisterSceneObject(TGLBlur, 'GLBlur', glsOCSpecialObjects);
-
-      {$ifdef WIN32}
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);
       {$endif}
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);

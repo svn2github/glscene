@@ -19,8 +19,6 @@ unit GLEllipseCollision;
 
 interface
 
-{$I glscene.inc}
-
 uses {$IFNDEF GLS_DELPHI_5}Types,{$ENDIF} VectorGeometry, GLTerrainRenderer;
 
 type
