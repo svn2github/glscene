@@ -74,6 +74,8 @@ type
     procedure UnHookIDE;
 
     procedure WarpTo(const moduleName : String; col, line : Integer);
+
+    function FPCLocateFile(const fileName : String) : String;
   end;
 
 implementation
@@ -209,6 +211,42 @@ begin
          end;
       end;
    end;
+end;
+
+function TDMDXPExpertModule.FPCLocateFile(const fileName : String) : String;
+
+   function LocateInDirectory(const fileName, directory : String) : String;
+   var
+      sr : TSearchRec;
+   begin
+      if FindFirst(directory+'\'+fileName, faAnyFile, sr)=0 then
+         Result:=directory+'\'+sr.Name
+      else Result:='';
+      FindClose(sr);
+   end;
+
+var
+   i : Integer;
+   paths : TStringList;
+   prj : IOTAProject;
+begin
+   prj:=GetProject;
+   if prj<>nil then begin
+      Result:=LocateInDirectory(fileName, ExtractFilePath(prj.FileName));
+      if Result<>'' then Exit;
+   end;
+   paths:=TStringList.Create;
+   try
+      paths.Delimiter:=';';
+      paths.CommaText:=vFPC_SourcePaths;
+      for i:=0 to paths.Count-1 do begin
+         Result:=LocateInDirectory(fileName, paths[i]);
+         if Result<>'' then Exit;
+      end;
+   finally
+      paths.Free;
+   end;
+   Result:=fileName;
 end;
 
 function TDMDXPExpertModule.FPCConfig : TDXPFPCConfig;

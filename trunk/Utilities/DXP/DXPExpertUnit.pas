@@ -12,7 +12,7 @@ unit DXPExpertUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, ToolsApi, Menus;
+  Windows, Messages, SysUtils, Classes, ToolsApi, DXPExpertModule, Menus;
 
 type
 
@@ -36,6 +36,8 @@ type
          destructor Destroy; override;
   end;
 
+function DMDXPExpertModule : TDMDXPExpertModule;
+
 procedure Register;
 
 // -----------------------------------------------------------------
@@ -46,7 +48,7 @@ implementation
 // -----------------------------------------------------------------
 // -----------------------------------------------------------------
 
-uses Dialogs, DXPExpertModule, FDXPCompileLog;
+uses Dialogs, FDXPCompileLog;
 
 var
    vModule : TDMDXPExpertModule;
@@ -54,6 +56,13 @@ var
 procedure Register;
 begin
    RegisterPackageWizard(TDXPExpert.Create);
+end;
+
+// DMDXPExpertModule
+//
+function DMDXPExpertModule : TDMDXPExpertModule;
+begin
+   Result:=vModule;
 end;
 
 // ------------------

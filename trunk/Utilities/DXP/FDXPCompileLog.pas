@@ -36,7 +36,7 @@ implementation
 
 {$R *.dfm}
 
-uses ToolsAPI, DXPGlobals;
+uses ToolsAPI, DXPExpertUnit, DXPGlobals;
 
 var
    vDXPCompileLog : TDXPCompileLog;
@@ -148,7 +148,8 @@ begin
             SubItems.Add(location);
             SubItems.Add(msgText);
          end;
-         msgServices.AddCompilerMessage(fName, msgText, 'FPC',
+         msgServices.AddCompilerMessage(DMDXPExpertModule.FPCLocateFile(fName),
+                                        msgText, 'FPC',
                                         msgKind, lineNb, colNb, nil, lineRef);
       end else if CompareText(Copy(line, 1, 6), 'Fatal:')=0 then begin
          msgServices.AddCompilerMessage(prjFileName, line, 'FPC',
