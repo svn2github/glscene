@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>20/09/03 - EG - Added TGLOcclusionQueryHandle
       <li>30/01/02 - EG - Added TGLVirtualHandle
       <li>29/01/02 - EG - Improved recovery for context creation failures
       <li>28/01/02 - EG - Activation failures always ignored
@@ -281,6 +282,28 @@ type
 
       public
          { Public Declarations }
+   end;
+
+   // TGLOcclusionQueryHandle
+   //
+   {: Manages a handle to an NV_occlusion_query.<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user. }
+   TGLOcclusionQueryHandle = class (TGLContextHandle)
+      private
+         { Private Declarations }
+
+      protected
+         { Protected Declarations }
+         function DoAllocateHandle : Integer; override;
+         procedure DoDestroyHandle; override;
+
+      public
+         { Public Declarations }
+         procedure BeginOcclusionQuery;
+         procedure EndOcclusionQuery;
+
+         function PixelCount : Integer;
    end;
 
    // TGLContextNotification
@@ -887,6 +910,56 @@ begin
       // check for error
       CheckOpenGLError;
    end;
+end;
+
+// ------------------
+// ------------------ TGLOcclusionQueryHandle ------------------
+// ------------------
+
+// DoAllocateHandle
+//
+function TGLOcclusionQueryHandle.DoAllocateHandle : Integer;
+begin
+   glGenOcclusionQueriesNV(1, @Result);
+end;
+
+// DoDestroyHandle
+//
+procedure TGLOcclusionQueryHandle.DoDestroyHandle;
+begin
+   if not vIgnoreContextActivationFailures then begin
+      // reset error status
+      glGetError;
+      // delete
+ 	   glDeleteOcclusionQueriesNV(1, @FHandle);
+      // check for error
+      CheckOpenGLError;
+   end;
+end;
+
+// BeginOcclusionQuery
+//
+procedure TGLOcclusionQueryHandle.BeginOcclusionQuery;
+begin
+   Assert(Handle<>0);
+   glBeginOcclusionQueryNV(Handle);
+end;
+
+// EndOcclusionQuery
+//
+procedure TGLOcclusionQueryHandle.EndOcclusionQuery;
+begin
+   Assert(Handle<>0);
+   glEndOcclusionQueryNV;
+end;
+
+// PixelCount
+//
+function TGLOcclusionQueryHandle.PixelCount : Integer;
+begin
+   Assert(FHandle<>0);
+   Result:=0;
+   glGetOcclusionQueryuivNV(Handle, GL_PIXEL_COUNT_NV, @Result);
 end;
 
 // ------------------
