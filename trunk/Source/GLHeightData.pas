@@ -148,7 +148,7 @@ type
          {: Notification that the data is no longer used by the renderer.<p>
             Default behaviour is just to change DataState to hdsReady (ie. return
             the data to the pool) }
-         procedure Release(aHeightData : THeightData);
+         procedure Release(aHeightData : THeightData); virtual;
          {: Marks the given area as "dirty" (ie source data changed).<p>
             All loaded and in-cache tiles overlapping the area are flushed. }
          procedure MarkDirty(const area : TGLRect); overload; virtual;

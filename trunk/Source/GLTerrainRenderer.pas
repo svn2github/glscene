@@ -297,6 +297,7 @@ begin
    for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
       for k:=Count-1 downto 0 do begin
          hd:=THeightData(List[k]);
+         hd.OnDestroy:=nil;
          hd.Release;
       end;
       Clear;
@@ -306,13 +307,17 @@ end;
 // OnTileDestroyed
 //
 procedure TGLTerrainRenderer.OnTileDestroyed(sender : TObject);
+var
+   list : TList;
 begin
    with sender as THeightData do begin
       if ObjectTag<>nil then begin
          ObjectTag.Free;
          ObjectTag:=nil;
       end;
-      FTilesHash[HashKey(XLeft, YTop)].Remove(Sender);
+      list:=FTilesHash[HashKey(XLeft, YTop)];
+      Assert(Assigned(list));
+      list.Remove(Sender);
    end;
 end;
 
@@ -594,6 +599,7 @@ begin
          hd:=THeightData(hashList.List[j]);
          if hd.Tag=0 then begin
             hashList.Delete(j);
+            hd.OnDestroy:=nil;
             hd.Release;
          end;
       end;
