@@ -923,6 +923,11 @@ function  CoTan(const X : Single) : Single; overload;
 function RSqrt(v : Single) : Single;
 {: Computes 1/Sqrt(Sqr(x)+Sqr(y)). }
 function RLength(x, y : Single) : Single;
+{: Computes an integer sqrt approximation.<p> }
+function ISqrt(i : Integer) : Integer;
+{: Computes an integer length Result:=Sqrt(x*x+y*y). }
+function ILength(x, y : Integer) : Integer; overload;
+function ILength(x, y, z : Integer) : Integer; overload;
 
 {: Generates a random point on the unit sphere.<p>
    Point repartition is correctly isotropic with no privilegied direction. }
@@ -5363,10 +5368,78 @@ asm
 @@End:
 end;
 
+// ISqrt
+//
+function ISqrt(i : Integer) : Integer; register;
+//begin
+//   Result:=Round(Sqrt(i));
+asm
+      push     eax
+      test     vSIMD, 1
+      jz @@FPU
+@@3DNow:
+      movd     mm0, [esp]
+      pi2fd    mm1, mm0
+      pfrsqrt  mm2, mm1
+      pfrcp    mm3, mm2
+      pf2id    mm4, mm3
+      movd     [esp], mm4
+      femms
+      pop      eax
+      ret
+@@FPU:
+      fild     dword ptr [esp]
+      fsqrt
+      fistp    dword ptr [esp]
+      pop      eax
+end;
+
+// ILength
+//
+function ILength(x, y : Integer) : Integer;
+asm
+      push     edx
+      push     eax
+      fild     dword ptr [esp]
+      fmul     ST(0), ST(0)
+      fild     dword ptr [esp+4]
+      fmul     ST(0), ST(0)
+      faddp
+      fsqrt
+      fistp    dword ptr [esp+4]
+      pop      edx
+      pop      eax
+end;
+
+// ILength
+//
+function ILength(x, y, z : Integer) : Integer;
+asm
+      push     ecx
+      push     edx
+      push     eax
+      fild     dword ptr [esp]
+      fmul     ST(0), ST(0)
+      fild     dword ptr [esp+4]
+      fmul     ST(0), ST(0)
+      faddp
+      fild     dword ptr [esp+8]
+      fmul     ST(0), ST(0)
+      faddp
+      fsqrt
+      fistp    dword ptr [esp+8]
+      pop      ecx
+      pop      edx
+      pop      eax
+end;
+
 // RLength
 //
 function RLength(x, y : Single) : Single;
 asm
+      test vSIMD, 1
+      jz @@FPU
+@@3DNow:
 {      test vSIMD, 1
       jz @@FPU
 @@3DNow:

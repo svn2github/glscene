@@ -954,6 +954,9 @@ type
 			procedure NotifyTexMapChange(Sender : TObject);
          procedure DestroyHandles;
 
+         //: True if the material has a secondary texture
+         function HasSecondaryTexture : Boolean;
+
 		published
 			{ Published Declarations }
 			property BackProperties: TGLFaceProperties read GetBackProperties write SetBackProperties stored StoreMaterialProps;
@@ -3157,6 +3160,13 @@ begin
    Texture.DestroyHandles;
 end;
 
+// HasSecondaryTexture
+//
+function TGLMaterial.HasSecondaryTexture : Boolean;
+begin
+   Result:=Assigned(currentLibMaterial) and Assigned(currentLibMaterial.libMatTexture2);
+end;
+
 // ------------------
 // ------------------ TGLLibMaterial ------------------
 // ------------------
@@ -3294,7 +3304,7 @@ end;
 //
 procedure TGLLibMaterial.UnRegisterUser(libMaterial : TGLLibMaterial);
 begin
-   userList.Remove(material);
+   userList.Remove(libMaterial);
 end;
 
 // NotifyUsers

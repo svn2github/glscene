@@ -475,9 +475,9 @@ end;
 procedure TBaseList.SetCount(val : Integer);
 begin
    Assert(val>=0);
-   if val>FCount then
-      AddNulls(val-FCount)
-   else FCount:=val;
+   if val>FCapacity then
+      SetCapacity(val);
+   FCount:=val;
 end;
 
 // SetCapacity
