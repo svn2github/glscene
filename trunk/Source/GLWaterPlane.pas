@@ -18,7 +18,7 @@ unit GLWaterPlane;
 interface
 
 uses Classes, Types, VectorTypes, VectorGeometry, GLScene, GLTexture,
-   GLMisc, OpenGL1x, VectorLists;
+   GLMisc, OpenGL1x, VectorLists, GLCrossPlatform, PersistentClasses;
 
 type
 
@@ -33,17 +33,19 @@ type
          FActive : Boolean;
          FMaxWaveAmp : Integer;
          FElastic : Single;
-         FResolution : Integer;
+         FResolution, FResolutionSqr : Integer;
          FResolutionInv : Single;
          FSimulationFrequency, FTimeToNextUpdate : Single;
          FTimeToNextRainDrop : Single;
          FMaximumCatchupIterations : Integer;
-         FPositions, FVelocity : array of Single;
-         FPlaneQuadIndices : TIntegerList;
+         FPositions, FVelocity : packed array of Single;
+         FLocks : packed array of ByteBool;
+         FPlaneQuadIndices : TPersistentObjectList;
          FPlaneQuadTexCoords : TTexPointList;
          FPlaneQuadVertices : TAffineVectorList;
          FPlaneQuadNormals : TAffineVectorList;
          FLastIterationStepTime : Single;
+         FMask : TGLPicture;
 
       protected
          { Protected Declarations }
@@ -54,7 +56,9 @@ type
          procedure SetViscosity(const val : Single);
          procedure SetRainForce(const val : Single);
          procedure SetSimulationFrequency(const val : Single);
+         procedure SetMask(val : TGLPicture);
 
+         procedure DoMaskChanged(Sender : TObject);
          procedure InitResolution;
 
          procedure Iterate;
@@ -91,6 +95,12 @@ type
          property Elastic : Single read FElastic write SetElastic;
          property Resolution : Integer read FResolution write SetResolution default 64;
 
+         {: A picture whose pixels determine what part of the waterplane is active.<p>
+            Pixels with a green/gray component beyond 128 are active, the others
+            are not (in short, white = active, black = inactive).<p>
+            The picture will automatically be stretched to match the resolution. }
+         property Mask : TGLPicture read FMask write SetMask;
+
          {: Maximum frequency (in Hz) at which simulation iterations happen. }
          property SimulationFrequency : Single read FSimulationFrequency write SetSimulationFrequency;
          {: Maximum number of simulation iterations during catchups.<p>
@@ -107,15 +117,13 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses GLCrossPlatform;
-
 // Create
 //
-constructor TGLWaterPlane.Create(AOwner:Tcomponent);
+constructor TGLWaterPlane.Create(AOwner : TComponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw];
-   
+
    FMaxWaveAmp:=900000;
    FElastic:=10;
    FActive:=True;
@@ -125,10 +133,12 @@ begin
    FSimulationFrequency:=100; // 100 Hz
    FMaximumCatchupIterations:=1;
 
-   FPlaneQuadIndices:=TIntegerList.Create;
+   FPlaneQuadIndices:=TPersistentObjectList.Create;
    FPlaneQuadTexCoords:=TTexPointList.Create;
    FPlaneQuadVertices:=TAffineVectorList.Create;
    FPlaneQuadNormals:=TAffineVectorList.Create;
+   FMask:=TGLPicture.Create;
+   FMask.OnChange:=DoMaskChanged;
 
    SetResolution(64);
 end;
@@ -137,10 +147,11 @@ end;
 //
 destructor TGLWaterPlane.Destroy;
 begin
+   FMask.Free;
    FPlaneQuadNormals.Free;
    FPlaneQuadVertices.Free;
    FPlaneQuadTexCoords.Free;
-   FPlaneQuadIndices.Free;
+   FPlaneQuadIndices.CleanFree;
    inherited;
 end;
 
@@ -161,7 +172,7 @@ begin
             FTimeToNextRainDrop:=FTimeToNextRainDrop+FRainTimeInterval*0.001;
             Dec(i);
             if i<0 then begin
-               if FTimeToNextRainDrop<0 then FTimeToNextRainDrop:=0;
+               if FTimeToNextRainDrop<0 then FTimeToNextRainDrop:=FRainTimeInterval*0.001;
                Break;
             end;
          end;
@@ -175,7 +186,7 @@ begin
             FTimeToNextUpdate:=FTimeToNextUpdate+1/FSimulationFrequency;
             Dec(i);
             if i<0 then begin
-               if FTimeToNextUpdate<0 then FTimeToNextUpdate:=0;
+               if FTimeToNextUpdate<0 then FTimeToNextUpdate:=1/FSimulationFrequency;
                Break;
             end;
          end;
@@ -186,9 +197,9 @@ end;
 
 // CreateRippleAtGridPos
 //
-procedure TGLWaterPlane.CreateRippleAtGridPos(X, Y : Integer);
+procedure TGLWaterPlane.CreateRippleAtGridPos(x, y : Integer);
 begin
-   if (X>=0) and (Y>=0) and (x<=Resolution) and (Y<=Resolution) then
+   if (x>0) and (y>0) and (x<Resolution-1) and (y<Resolution-1) then
       FVelocity[x+y*Resolution]:=FRainForce;
 end;
 
@@ -226,17 +237,14 @@ end;
 procedure TGLWaterPlane.InitResolution;
 var
    i, j : Integer;
+   v : TAffineVector;
 begin
-   FPlaneQuadIndices.Clear;
-   FPlaneQuadIndices.Capacity:=Resolution*Resolution*2;
+   FPlaneQuadIndices.Capacity:=FResolutionSqr*2;
    FPlaneQuadTexCoords.Clear;
-   FPlaneQuadTexCoords.Capacity:=Resolution*Resolution;
+   FPlaneQuadTexCoords.Capacity:=FResolutionSqr;
    FPlaneQuadVertices.Clear;
-   FPlaneQuadVertices.Capacity:=Resolution*Resolution;
+   FPlaneQuadVertices.Capacity:=FResolutionSqr;
 
-   for j:=0 to Resolution-2 do
-      for i:=0 to Resolution-1 do
-         FPlaneQuadIndices.Add(i+(j+1)*Resolution, i+j*Resolution);
    for j:=0 to Resolution-1 do begin
       for i:=0 to Resolution-1 do begin
          FPlaneQuadTexCoords.Add(i*FResolutionInv, j*FResolutionInv);
@@ -246,16 +254,16 @@ begin
       end;
    end;
 
-   FPlaneQuadNormals.Count:=Resolution*Resolution;
-   for i:=0 to Resolution-1 do begin
-      FPlaneQuadNormals[i]:=YVector;
-      FPlaneQuadNormals[Resolution*(Resolution-1)+i]:=YVector;
-      FPlaneQuadNormals[Resolution*i]:=YVector;
-      FPlaneQuadNormals[Resolution*i+Resolution-1]:=YVector;
-   end;
+   FPlaneQuadNormals.Count:=FResolutionSqr;
+   v[0]:=0;
+   v[1]:=2048;
+   v[2]:=0;
+   for i:=0 to FPlaneQuadNormals.Count-1 do
+      FPlaneQuadNormals.List[i]:=v;
 
-   SetLength(FPositions, Resolution*Resolution);
-   SetLength(FVelocity, Resolution*Resolution);
+   SetLength(FPositions, FResolutionSqr);
+   SetLength(FVelocity, FResolutionSqr);
+   SetLength(FLocks, FResolutionSqr);
 
    Reset;
    Iterate;
@@ -267,11 +275,56 @@ end;
 //
 procedure TGLWaterPlane.Reset;
 var
-   i : Integer;
+   i, j, ij : Integer;
+   maskBmp : TGLBitmap;
+   scanLine : PIntegerArray;
+   il : TIntegerList;
+   locked : Boolean;
 begin
-   for i:=0 to Resolution*Resolution-1 do begin
+   for i:=0 to FResolutionSqr-1 do begin
       FPositions[i]:=0;
       FVelocity[i]:=0;
+      FLocks[i]:=False;
+   end;
+   if FMask.Width>0 then begin
+      maskBmp:=TGLBitmap.Create;
+      try
+         maskBmp.PixelFormat:=glpf32bit;
+         maskBmp.Width:=Resolution;
+         maskBmp.Height:=Resolution;
+         maskBmp.Canvas.StretchDraw(Rect(0, 0, Resolution, Resolution), FMask.Graphic);
+         for j:=0 to Resolution-1 do begin
+            scanLine:=maskBmp.ScanLine[Resolution-1-j];
+            for i:=0 to Resolution-1 do
+               FLocks[i+j*Resolution]:=(((scanLine[i] shr 8) and $FF)<128);
+         end;
+      finally
+         maskBmp.Free;
+      end;
+   end;
+
+   FPlaneQuadIndices.Clean;
+   for j:=0 to Resolution-2 do begin
+      il:=TIntegerList.Create;
+      for i:=0 to Resolution-1 do begin
+         ij:=i+j*Resolution;
+         if (il.Count and 2)<>0 then
+            locked:=False
+         else begin
+            locked:=FLocks[ij] and FLocks[ij+Resolution];
+            if locked and (i<Resolution-1) then
+               locked:=FLocks[ij+1] and FLocks[ij+Resolution+1];
+         end;
+         if not locked then
+            il.Add(ij, ij+Resolution)
+         else if il.Count>0 then begin
+            FPlaneQuadIndices.Add(il);
+            il:=TIntegerList.Create;
+         end;
+      end;
+      if il.Count>0 then
+         FPlaneQuadIndices.Add(il)
+      else il.Free;
    end;
 end;
 
@@ -283,20 +336,20 @@ var
    f, f1, f2 : Single;
    coeff : Single;
    t : Int64;
-   v : TAffineVector;
+   pv : PAffineVector;
 begin
    if not Visible then Exit;
 
    t:=StartPrecisionTimer;
 
-   coeff:=0.01;
-   f1:=coeff*5; //(self.Scale.X / Resolution) / 250;
-   f2:=coeff*FElastic; //(self.Scale.X / Resolution) / 70;
+   f1:=0.05;
+   f2:=0.01*FElastic;
 
    // Calculate new velocity
    for i:=1 to Resolution-2 do begin
       for j:=1 to Resolution-2 do begin
          ij:=i+j*Resolution;
+         if FLocks[ij] then continue;
          FVelocity[ij]:= FVelocity[ij]
                         +f2*( FPositions[ij]
                              -f1*(4*( FPositions[ij-1]         +FPositions[ij+1]
@@ -308,23 +361,24 @@ begin
    
    // Calculate the new ripple positions and update vertex coordinates
    coeff:=0.02*Resolution;
-   f:=0.0009765625*FResolutionInv;
-   for ij:=0 to Resolution*Resolution-1 do begin
-      FPositions[ij]:=FPositions[ij]-(FVelocity[ij]*coeff);
-      FVelocity[ij]:=FVelocity[ij]*FViscosity;
-      while Abs(FPositions[ij])>FMaxWaveAmp do
-         FPositions[ij]:=FPositions[ij]*0.8;
+   f:=1e-4*FResolutionInv;
+   for ij:=0 to FResolutionSqr-1 do begin
+      if not FLocks[ij] then begin
+         FPositions[ij]:=FPositions[ij]-coeff*FVelocity[ij];
+         FVelocity[ij]:=FVelocity[ij]*FViscosity;
+         while Abs(FPositions[ij])>FMaxWaveAmp do
+            FPositions[ij]:=FPositions[ij]*0.8;
+      end;
       FPlaneQuadVertices.List[ij][1]:=FPositions[ij]*f;
    end;
 
-   // Calculate the new vertex normals
-   v[1]:=-2048;
+   // Calculate the new vertex normals (not normalized, the hardware will handle that)
    for i:=1 to Resolution-2 do begin
       for j:=1 to Resolution-2 do begin
          ij:=i+j*Resolution;
-         v[0]:=FPositions[ij+1]-FPositions[ij-1];
-         v[2]:=FPositions[ij+Resolution]-FPositions[ij-Resolution];
-         FPlaneQuadNormals[ij]:=VectorNormalize(v);
+         pv:=@FPlaneQuadNormals.List[ij];
+         pv[0]:=FPositions[ij+1]-FPositions[ij-1];
+         pv[2]:=FPositions[ij+Resolution]-FPositions[ij-Resolution];
       end;
    end;
 
@@ -336,6 +390,7 @@ end;
 procedure TGLWaterPlane.BuildList(var rci : TRenderContextInfo);
 var
    i : Integer;
+   il : TIntegerList;
 begin
    glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 
@@ -346,9 +401,10 @@ begin
    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
    glTexCoordPointer(2, GL_FLOAT, 0, FPlaneQuadTexCoords.List);
 
-   for i:=0 to Resolution-1 do
-      glDrawElements(GL_QUAD_STRIP, Resolution*2, GL_UNSIGNED_INT,
-                     @FPlaneQuadIndices.List[i*Resolution*2]);
+   for i:=0 to FPlaneQuadIndices.Count-1 do begin
+      il:=TIntegerList(FPlaneQuadIndices[i]);
+      glDrawElements(GL_QUAD_STRIP, il.Count, GL_UNSIGNED_INT, il.List);
+   end;
 
    glPopClientAttrib;
 end;
@@ -388,6 +444,7 @@ begin
    if value<>FResolution then begin
       FResolution:=Value;
       if FResolution<16 then FResolution:=16;
+      FResolutionSqr:=FResolution*FResolution;
       FResolutionInv:=1/FResolution;
       InitResolution;
    end;
@@ -426,6 +483,21 @@ begin
       if FSimulationFrequency<1 then FSimulationFrequency:=1;
       FTimeToNextUpdate:=0;
    end;
+end;
+
+// SetMask
+//
+procedure TGLWaterPlane.SetMask(val : TGLPicture);
+begin
+   FMask.Assign(val);
+end;
+
+// DoMaskChanged
+//
+procedure TGLWaterPlane.DoMaskChanged(Sender : TObject);
+begin
+   Reset;
+   StructureChanged;
 end;
 
 //-------------------------------------------------------------
