@@ -42,6 +42,7 @@ package GLScene6;
 {$IMPLICITBUILD OFF}
 
 requires
+  vcl,
   designide;
 
 contains
@@ -112,6 +113,7 @@ contains
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
   VectorTypes in '..\Source\Base\VectorTypes.pas',
   GeometryBB in '..\Source\Base\GeometryBB.pas',
-  GLContext in '..\Source\GLContext.pas';
+  GLContext in '..\Source\GLContext.pas',
+  Polynomials in '..\Source\Base\Polynomials.pas';
 
 end.
