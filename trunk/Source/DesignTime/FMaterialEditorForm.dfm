@@ -29,17 +29,10 @@ object MaterialEditorForm: TMaterialEditorForm
     Height = 217
     ActivePage = TSFront
     Style = tsButtons
-    TabIndex = 0
     TabOrder = 0
     object TSFront: TTabSheet
       Caption = 'Front'
       inline FEFront: TRFaceEditor
-        Left = 0
-        Top = 0
-        Width = 305
-        Height = 186
-        AutoSize = True
-        TabOrder = 0
         inherited ImageList: TImageList
           Top = 0
         end
@@ -49,26 +42,15 @@ object MaterialEditorForm: TMaterialEditorForm
       Caption = 'Back'
       ImageIndex = 1
       inline FEBack: TRFaceEditor
-        Left = 0
-        Top = 0
-        Width = 305
-        Height = 186
-        AutoSize = True
-        TabOrder = 0
       end
     end
     object TSTexture: TTabSheet
       Caption = 'Texture'
       ImageIndex = 2
       inline RTextureEdit: TRTextureEdit
-        Left = 0
-        Top = 0
         Width = 305
         Height = 186
         Align = alClient
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 0
         inherited SBEditImage: TSpeedButton
           Left = 287
         end
@@ -88,10 +70,6 @@ object MaterialEditorForm: TMaterialEditorForm
     inline MPPreview: TRMaterialPreview
       Left = 16
       Top = 22
-      Width = 202
-      Height = 203
-      AutoSize = True
-      TabOrder = 0
       inherited GLScene1: TGLScene
         inherited Cube: TGLCube
           Direction.Coordinates = {FCFAF0B1D8B35D3FFEFFFF3E00000000}

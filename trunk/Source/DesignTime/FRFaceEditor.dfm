@@ -27,18 +27,11 @@ object RFaceEditor: TRFaceEditor
     ActivePage = TSAmbient
     Images = ImageList
     MultiLine = True
-    TabIndex = 0
     TabOrder = 0
     object TSAmbient: TTabSheet
       BorderWidth = 3
       Caption = 'Ambient'
       inline CEAmbiant: TRColorEditor
-        Left = 0
-        Top = 0
-        Width = 289
-        Height = 95
-        AutoSize = True
-        TabOrder = 0
       end
     end
     object TSDiffuse: TTabSheet
@@ -46,12 +39,6 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Diffuse'
       ImageIndex = 1
       inline CEDiffuse: TRColorEditor
-        Left = 0
-        Top = 0
-        Width = 289
-        Height = 95
-        AutoSize = True
-        TabOrder = 0
       end
     end
     object TSEmission: TTabSheet
@@ -59,12 +46,6 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Emission'
       ImageIndex = 2
       inline CEEmission: TRColorEditor
-        Left = 0
-        Top = 0
-        Width = 289
-        Height = 95
-        AutoSize = True
-        TabOrder = 0
       end
     end
     object TSSpecular: TTabSheet
@@ -72,21 +53,13 @@ object RFaceEditor: TRFaceEditor
       Caption = 'Specular'
       ImageIndex = 3
       inline CESpecular: TRColorEditor
-        Left = 0
-        Top = 0
-        Width = 289
-        Height = 95
-        AutoSize = True
-        TabOrder = 0
       end
     end
   end
   inline TBEShininess: TRTrackBarEdit
     Left = 52
-    Top = 0
     Width = 201
     Height = 21
-    AutoSize = True
     TabOrder = 1
     inherited TrackBar: TTrackBar
       Max = 128
