@@ -6464,10 +6464,9 @@ begin
       VectorSubtract(planePoint, rayStart, sp);
       d:=1/d; // will keep one FPU unit busy during dot product calculation
       t:=VectorDotProduct(sp, planeNormal)*d;
-      if t>0 then begin
-         SetVector(intersectPoint^, rayStart);
-         CombineVector(intersectPoint^, rayVector, t);
-      end else Result:=False;
+      if t>0 then
+         VectorCombine(rayStart, rayVector, 1, t, intersectPoint^)
+      else Result:=False;
    end;
 end;
 

@@ -125,10 +125,10 @@ uses GLVectorFileObjects;
 // Return: TRUE if point is in sphere, FALSE if not.
 // -----------------------------------------------------------------------
 
-function CheckPointInSphere(const point, sO: TVector; const sR: double): BOOLEAN;
+function CheckPointInSphere(const point, sO : TVector; const sR : Single) : Boolean;
 begin
    //Allow small margin of error
-   Result:=(VectorDistance(point, sO)-0.01<=sR);
+   Result:=(VectorDistance2(point, sO)<=Sqr(sR));
 end;
 
 // ----------------------------------------------------------------------
@@ -173,32 +173,25 @@ end;
 // -----------------------------------------------------------------------
 
 function ClosestPointOnTriangle(const a, b, c, p: TAffineVector): TAffineVector;
-var dAB, dBC, dCA, min: double;
-    sAB, sBC, sCA: TAffineFLTVector;
-    Rab, Rbc, Rca: TAffineFLTVector;
+var
+   dAB, dBC, dCA : Single;
+   Rab, Rbc, Rca : TAffineFLTVector;
 begin
-    Rab:=closestPointOnLine(a, b, p);
-    Rbc:=closestPointOnLine(b, c, p);
-    Rca:=closestPointOnLine(c, a, p);
+    Rab:=ClosestPointOnLine(a, b, p);
+    Rbc:=ClosestPointOnLine(b, c, p);
+    Rca:=ClosestPointOnLine(c, a, p);
 
-    VectorSubtract(p, Rab, sAB);
-    dAB:=VectorLength(sAB);
+    dAB:=VectorDistance2(p, Rab);
+    dBC:=VectorDistance2(p, Rbc);
+    dCA:=VectorDistance2(p, Rca);
 
-    VectorSubtract(p, Rbc, sBC);
-    dBC:=VectorLength(sBC);
-
-    VectorSubtract(p, Rca, sCA);
-    dCA:=VectorLength(sCA);
-
-    min:=dAB;
-    result:=Rab;
-
-    if (dBC < min) then begin
-      min:=dBC;
-      result:=Rbc;
-    end;
-
-    if (dCA < min) then result:= Rca;
+    if dBC<dAB then
+      if dCA<dAB then
+         Result:=Rca
+      else Result:=Rab
+    else if dCA<dBC then
+      Result:=Rca
+    else Result:=Rbc;
 end;
 
 // HitBoundingBox
@@ -1081,7 +1074,7 @@ var
    pIPoint: TVector;     //plane intersection point
    polyIPoint: TVector;  //polygon intersection point
    NEGVelocity: TVector; //sphere's forward velocity
-   directhit: Boolean;
+   directHit : Boolean;
 
    p1, p2, p3: PAffineVector;
 
@@ -1137,7 +1130,7 @@ begin
          //Calculate the plane intersection point (sphere origin to plane)
          if RayCastPlaneIntersect(RayStart, NEGpNormal4, VectorMake(p1^),
                                   pNormal4, @pIPoint) then begin
-            directhit:=FALSE;
+            directHit:=False;
             sd2:=VectorDistance2(rayStart, pIPoint);
 
             //If sd <= radius, fall through to "not direct hit" code below with pIPoint
@@ -1153,13 +1146,13 @@ begin
                if RayCastTriangleIntersect(sIPoint, RayVector,
                                            p1^, p2^, p3^, @polyIPoint, @pNormal4) then begin
                   sd2:=VectorDistance2(sIPoint, polyIPoint);
-                  directhit:=True;
+                  directHit:=True;
                end;
             end;
 
             //If not a direct hit then check if sphere "nicks" the triangle's edge or corner...
             //If it does then that is the polygon intersection point.
-            if not directhit then begin
+            if not directHit then begin
                SetVector(polyIPoint,
                          ClosestPointOnTriangle(p1^, p2^, p3^,
                                                 PAffineVector(@pIPoint)^));
@@ -1167,15 +1160,17 @@ begin
                //(This implementation seems more accurate than RayCastSphereIntersect)
                if not CheckPointInSphere(VectorAdd(polyIPoint, NEGVelocity), raystart, radius) then
                   continue;
+               sd2:=0;
             end;
 
             // Allow sphere to get close to triangle (less epsilon which is built into distanceToTravel)
-            if sd2 <= distanceToTravelMinusRadius2 then begin
+            if sd2<=distanceToTravelMinusRadius2 then begin
                Result:=True; //flag a collision
                if sd2<minD2 then begin
                   minD2:=sd2;
                   if intersectPoint<>nil then intersectPoint^:=polyIPoint;
                   if intersectNormal<>nil then intersectNormal^:=pNormal4;
+                  if sd2=0 then Exit;
                end;
             end;
          end;
