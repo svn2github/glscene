@@ -5,6 +5,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/10/02 - EG - Added Polygon & Polyline
       <li>04/03/02 - EG - Added FrameRect and FillRect
       <li>31/01/02 - EG - Texture3D/CubeMap only disabled if supported
       <li>24/01/02 - EG - Added PenAlpha
@@ -20,6 +21,11 @@ uses Classes, Geometry;
 type
 
    TColor = Integer;
+
+   TPoint = record
+      X : Integer;
+      Y : Integer;
+   end;
 
 	// TGLCanvas
 	//
@@ -90,6 +96,13 @@ type
             The current position is NOT updated. }
 	      procedure Line(const x1, y1, x2, y2 : Integer); overload;
 	      procedure Line(const x1, y1, x2, y2 : Single); overload;
+
+         {: Draws the set of lines defined by connecting the points.<p>
+            Similar to invoking MoveTo on the first point, then LineTo
+            on all the following points. }
+         procedure Polyline(const points : array of TPoint);
+         {: Similar to Polyline but also connects the last point to the first. }
+         procedure Polygon(const points : array of TPoint);
 
          {: Plots a pixel at given coordinate.<p>
             PenWidth affects pixel size.<br>
@@ -358,6 +371,36 @@ begin
    StartPrimitive(GL_LINES);
    glVertex2f(x1, y1);
    glVertex2f(x2, y2);
+end;
+
+// Polyline
+//
+procedure TGLCanvas.Polyline(const points : array of TPoint);
+var
+   i, n : Integer;
+begin
+   n:=Length(Points);
+   if n>1 then begin
+      StartPrimitive(GL_LINE_STRIP);
+      glVertex2iv(@points[Low(points)]);
+      for i:=Low(points)+1 to High(points) do
+         glVertex2iv(@points[i]);
+   end;
+end;
+
+// Polygon
+//
+procedure TGLCanvas.Polygon(const points : array of TPoint);
+var
+   i, n : Integer;
+begin
+   n:=Length(Points);
+   if n>1 then begin
+      StartPrimitive(GL_LINE_LOOP);
+      glVertex2iv(@points[Low(points)]);
+      for i:=Low(points)+1 to High(points) do
+         glVertex2iv(@points[i]);
+   end;
 end;
 
 // PlotPixel
