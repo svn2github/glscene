@@ -100,10 +100,10 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses OpenGL12;
+uses Graphics, OpenGL12;
 
 const
-   cNoPrimitive = 0;
+   cNoPrimitive = MaxInt;
 
 // ConvertColorVector
 //
@@ -188,6 +188,7 @@ begin
    glDisable(GL_TEXTURE_2D);
    glDisable(GL_TEXTURE_3D);
    glDisable(GL_LINE_SMOOTH);
+   glDisable(GL_POINT_SMOOTH);
 
    // Setup and backup pen stuff
    glGetFloatv(GL_CURRENT_COLOR, @FColorBackup);
@@ -349,7 +350,7 @@ var
    i, n : Integer;
    s, c : array of Single;
 begin
-   n:=Round(MaxFloat(xRadius, yRadius)*0.1)+6;
+   n:=Round(MaxFloat(xRadius, yRadius)*0.1)+5;
    SetLength(s, n);
    SetLength(c, n);
    Dec(n);
