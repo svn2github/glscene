@@ -21,7 +21,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLCadencer, GLObjects, GLScene, ExtCtrls, GLMisc, GLWin32Viewer,
-  GLHUDObjects, StdCtrls;
+  GLHUDObjects, StdCtrls, GLSpaceText;
 
 type
   TForm1 = class(TForm)
@@ -40,6 +40,7 @@ type
     BUBitmapx2: TButton;
     BUBitmap600: TButton;
     BUBitmap300: TButton;
+    SpaceText1: TSpaceText;
     procedure Sphere1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
