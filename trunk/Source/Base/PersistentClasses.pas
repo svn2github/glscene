@@ -993,7 +993,7 @@ var
    nc : Integer;
 begin
 {$IFOPT R+}
-   Assert(Cardinal(Index)<Cardinal(FCount));
+   Assert(Cardinal(Index)<=Cardinal(FCount));
 {$ENDIF}
    if nbVals>0 then begin
       nc:=FCount+Integer(nbVals);
