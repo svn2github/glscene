@@ -4860,7 +4860,7 @@ begin
          Extent:=FViewport.Height*0.25
       else Extent:=FViewport.Width*0.25;
    end;
-   FPosition.SetVector(0, 0, FNearPlane*Extent, 1);
+   FPosition.SetPoint(0, 0, FNearPlane*Extent);
    FDirection.SetVector(0, 0, -1, 0);
    TransformationChanged;
 end;
