@@ -12,7 +12,7 @@ unit GLEllipseCollision;
 
 interface
 
-uses Types, VectorGeometry, Octree, VectorLists;
+uses VectorGeometry, Octree, VectorLists;
 
 type
   TECPlane = class
