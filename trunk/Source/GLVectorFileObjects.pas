@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>21/09/03 - MRQZZZ - Added "aamLoopBackward" to AnimationMode property
       <li>19/09/03 - EG - "Lighmap" -&gt; "LightMap"
       <li>01/09/03 - SG - Added skeleton frame conversion methods to convert between
                           Rotations and Quaternions.
@@ -1382,7 +1383,7 @@ type
          frame has been reached, switches to aamBounceForward
       </ul> }
    TActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward,
-                          aamBounceBackward);
+                          aamBounceBackward,aamLoopBackward);
 
    // TGLActor
    //
@@ -6012,7 +6013,7 @@ begin
                Result:=EndFrame;
          end;
       end;
-      aamBounceBackward : begin
+      aamBounceBackward,aamLoopBackward : begin
          if FTargetSmoothAnimation<>nil then
             Result:=FTargetSmoothAnimation.StartFrame
          else begin
