@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>27/08/03 - SG - Fixed AddWeightedBone for multiple bones per vertex
       <li>13/08/03 - SG - Added quaternion transforms for skeletal animation
       <li>12/08/03 - SG - Fixed a tiny bug in TSkeleton.MorphMesh
       <li>08/07/03 - EG - Fixed puny bug in skeletal normals transformation 
@@ -3710,10 +3711,15 @@ end;
 // AddWeightedBone
 //
 procedure TSkeletonMeshObject.AddWeightedBone(aBoneID : Integer; aWeight : Single);
+var
+   i,j : integer;
 begin
    if BonesPerVertex<1 then BonesPerVertex:=1;
    VerticeBoneWeightCount:=VerticeBoneWeightCount+1;
-   with VerticesBonesWeights[VerticeBoneWeightCount-1][0] do begin
+   i:=(VerticeBoneWeightCount-1) div BonesPerVertex;
+   j:=(VerticeBoneWeightCount-1) mod BonesPerVertex;
+   with VerticesBonesWeights[i][j] do 
+   begin
       BoneID:=aBoneID;
       Weight:=aWeight;
    end;
