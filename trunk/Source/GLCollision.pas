@@ -1026,22 +1026,24 @@ begin
      CollisionNode1:=TCollisionNode(NodeList[i]);
      cli1:=CollisionNode1.Collision;
      grp1:=cli1.GroupIndex;
-     obj1:=cli1.OwnerBaseSceneObject;
 
       for j:=i+1 to NodeList.Count-1 do begin
        CollisionNode2:=TCollisionNode(NodeList[j]);
        cli2:=CollisionNode2.Collision;
-       grp2:=cli2.GroupIndex;
-       // if either one GroupIndex=0 or both are different, check for collision
-       if ((grp1=0) or (grp2=0) or (grp1<>grp2))=false then Break;
-
+       
        //Check BBox1 and BBox2 overlap in the z-direction
        if (CollisionNode2.AABB.min[2]>CollisionNode1.AABB.max[2]) then
          Break;
 
+       grp2:=cli2.GroupIndex;
+       
+       // if either one GroupIndex=0 or both are different, check for collision
+       if ((grp1=0) or (grp2=0) or (grp1<>grp2))=false then Continue;
+
        //check whether box1 and box2 overlap in the XY Plane
          if IntersectAABBsAbsoluteXY(CollisionNode1.AABB,CollisionNode2.AABB) then
          begin
+           obj1:=cli1.OwnerBaseSceneObject;
            obj2:=cli2.OwnerBaseSceneObject;
             if cFastCollisionChecker[cli1.BoundingMode, cli2.BoundingMode](obj1, obj2) then
               FOnCollision(Self, obj1, obj2);
