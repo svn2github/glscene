@@ -823,7 +823,8 @@ type
    end;
 
 {: Issues OpenGL for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildList(size : TGLFloat; stipple : Boolean;
+procedure CubeWireframeBuildList(var rci : TRenderContextInfo;
+                                 size : TGLFloat; stipple : Boolean;
                                  const color : TColorVector);
 {: Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
@@ -843,7 +844,8 @@ const
 
 // CubeWireframeBuildList
 //
-procedure CubeWireframeBuildList(size : TGLFloat; stipple : Boolean;
+procedure CubeWireframeBuildList(var rci : TRenderContextInfo;
+                                 size : TGLFloat; stipple : Boolean;
                                  const color : TColorVector);
 var
 	mi, ma : Single;
@@ -860,7 +862,7 @@ begin
    glLineWidth(1);
    ma:=0.5*size;
    mi:=-ma;
-   ResetGLMaterialColors;
+   rci.GLStates.ResetGLMaterialColors;
    glColorMaterial(GL_FRONT, GL_EMISSION);
    glEnable(GL_COLOR_MATERIAL);
    glColor4fv(@color);
@@ -991,7 +993,7 @@ end;
 procedure TGLDummyCube.BuildList(var rci : TRenderContextInfo);
 begin
  	if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
-      CubeWireframeBuildList(FCubeSize, True, EdgeColor.Color);
+      CubeWireframeBuildList(rci, FCubeSize, True, EdgeColor.Color);
 end;
 
 // DoRender
@@ -1459,7 +1461,7 @@ var
    u0, v0, u1, v1 : Integer;
 begin
    if FAlphaChannel<>1 then
-      SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
+      rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
    if NoZWrite then
       glDepthMask(False);
    glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
@@ -2229,16 +2231,16 @@ begin
       lnaAxes :
          AxesBuildList(rci, $CCCC, FNodeSize*0.5);
       lnaCube :
-         CubeWireframeBuildList(FNodeSize, False, Color.Color);
+         CubeWireframeBuildList(rci, FNodeSize, False, Color.Color);
       lnaDodecahedron : begin
          if FNodeSize<>1 then begin
             glPushMatrix;
             glScalef(FNodeSize, FNodeSize, FNodeSize);
-            SetGLMaterialColors(GL_FRONT, @clrBlack, @clrGray20, Color.AsAddress, @clrBlack, 0);
+            rci.GLStates.SetGLMaterialColors(GL_FRONT, clrBlack, clrGray20, Color.Color, clrBlack, 0);
             DodecahedronBuildList;
             glPopMatrix;
          end else begin
-            SetGLMaterialColors(GL_FRONT, @clrBlack, @clrGray20, Color.AsAddress, @clrBlack, 0);
+            rci.GLStates.SetGLMaterialColors(GL_FRONT, clrBlack, clrGray20, Color.Color, clrBlack, 0);
             DodecahedronBuildList;
          end;
       end;
@@ -2898,7 +2900,7 @@ begin
    DoReverse:=(FNormalDirection=ndInside);
    glPushAttrib(GL_POLYGON_BIT);
    if DoReverse then
-      InvertGLFrontFace;
+      rci.GLStates.InvertGLFrontFace;
 
    // common settings
    AngTop:=DegToRad(FTop);
@@ -3024,7 +3026,7 @@ begin
       glEnd;
    end;
    if DoReverse then
-      InvertGLFrontFace;
+      rci.GLStates.InvertGLFrontFace;
    glPopMatrix;
    glPopAttrib;
 end;

@@ -15,6 +15,11 @@ uses Classes, VectorGeometry, SysUtils, OpenGL1x;
 {$i GLScene.inc}
 
 type
+	TGLMinFilter   = (miNearest, miLinear, miNearestMipmapNearest,
+							miLinearMipmapNearest, miNearestMipmapLinear,
+							miLinearMipmapLinear);
+	TGLMagFilter   = (maNearest, maLinear);
+   
 	TSqrt255Array = array [0..255] of Byte;
 	PSqrt255Array = ^TSqrt255Array;
 

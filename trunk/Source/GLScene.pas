@@ -1543,7 +1543,7 @@ type
       private
          { Private Declarations }
          // Internal state
-         FCurrentStates : TGLStates;
+         FGLStates : TGLStateCache;
          FRendering : Boolean;
          FRenderingContext : TGLContext;
          FAfterRenderEffects : TPersistentObjectList;
@@ -1787,7 +1787,7 @@ type
             some boards (either from compression or resolution approximations). }
          function PixelRayToWorld(x,y : Integer) : TAffineVector;
 
-         property CurrentStates : TGLStates read FCurrentStates;
+         property GLStates : TGLStateCache read FGLStates;
 
          {: Current FramesPerSecond rendering speed.<p>
             You must keep the renderer busy to get accurate figures from this
@@ -2022,7 +2022,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO;
+   GLStrings, XOpenGL, VectorTypes, OpenGL1x, ApplicationFileIO, GLUtils;
 
 var
    vCounterFrequency : Int64;
@@ -3808,88 +3808,78 @@ var
    shouldRenderSelf, shouldRenderChildren : Boolean;
    aabb : TAABB;
 begin
-   if FVisible then begin
-      // visibility culling determination
-      case rci.visibilityCulling of
-         vcNone, vcInherited : begin
-            shouldRenderSelf:=True;
-            shouldRenderChildren:=Assigned(FChildren);
-         end;
-         vcObjectBased : begin
-            shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
-                              or (not IsVolumeClipped(AbsolutePosition,
-                                                      BoundingSphereRadius*Scale.VectorLength,
-                                                      rci.rcci));
-            shouldRenderChildren:=Assigned(FChildren);
-         end;
-         vcHierarchical : begin
-            aabb:=AxisAlignedBoundingBox;
-            shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
-                              or (not IsVolumeClipped(aabb.min, aabb.max, rci.rcci));
-            shouldRenderChildren:=shouldRenderSelf and Assigned(FChildren);
-         end;
-      else
-         Assert(False, 'Unknown visibility culling option');
+   // visibility culling determination
+   case rci.visibilityCulling of
+      vcNone, vcInherited : begin
          shouldRenderSelf:=True;
          shouldRenderChildren:=Assigned(FChildren);
       end;
-      // Prepare Matrix and PickList stuff
-      glPushMatrix;
-      if ocTransformation in FChanges then
-         RebuildMatrix;
-      glMultMatrixf(PGLfloat(FLocalMatrix));
-      if rci.drawState=dsPicking then
-         if rci.proxySubObject then
-            glPushName(Integer(Self))
-         else glLoadName(Integer(Self));
-      // Start rendering
-      if shouldRenderSelf then begin
-         if FShowAxes then
-            DrawAxes(rci, $CCCC);
-         if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0) then begin
-            glPushMatrix;
-            FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
-            glPopMatrix;
-            glPushMatrix;
-            if osIgnoreDepthBuffer in ObjectStyle then begin
-               UnSetGLState(rci.currentStates, stDepthTest);
-               DoRender(rci, True, shouldRenderChildren);
-               SetGLState(rci.currentStates, stDepthTest);
-            end else DoRender(rci, True, shouldRenderChildren);
-            if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then begin
-               ResetGLPolygonMode;
-               ResetGLMaterialColors;
-               ResetGLCurrentTexture;
-               ResetGLFrontFace;
-            end;
-            FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, rci);
-            glPopMatrix;
-         end else begin
-            if osIgnoreDepthBuffer in ObjectStyle then begin
-               UnSetGLState(rci.currentStates, stDepthTest);
-               DoRender(rci, True, shouldRenderChildren);
-               SetGLState(rci.currentStates, stDepthTest);
-            end else DoRender(rci, True, shouldRenderChildren);
-            if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then begin
-               ResetGLPolygonMode;
-               ResetGLMaterialColors;
-               ResetGLCurrentTexture;
-               ResetGLFrontFace;
-            end;
-         end;
-      end else begin
-         if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentBuffer.DepthTest then begin
-            UnSetGLState(rci.currentStates, stDepthTest);
-            DoRender(rci, False, shouldRenderChildren);
-            SetGLState(rci.currentStates, stDepthTest);
-         end else DoRender(rci, False, shouldRenderChildren);
+      vcObjectBased : begin
+         shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
+                           or (not IsVolumeClipped(AbsolutePosition,
+                                                   BoundingSphereRadius*Scale.VectorLength,
+                                                   rci.rcci));
+         shouldRenderChildren:=Assigned(FChildren);
       end;
-      // Pop Name & Matrix
-      if rci.drawState=dsPicking then
-         if rci.proxySubObject then
-            glPopName;
-      glPopMatrix;
+      vcHierarchical : begin
+         aabb:=AxisAlignedBoundingBox;
+         shouldRenderSelf:=(osNoVisibilityCulling in ObjectStyle)
+                           or (not IsVolumeClipped(aabb.min, aabb.max, rci.rcci));
+         shouldRenderChildren:=shouldRenderSelf and Assigned(FChildren);
+      end;
+   else
+      Assert(False, 'Unknown visibility culling option');
+      shouldRenderSelf:=True;
+      shouldRenderChildren:=Assigned(FChildren);
    end;
+   // Prepare Matrix and PickList stuff
+   glPushMatrix;
+   if ocTransformation in FChanges then
+      RebuildMatrix;
+   glMultMatrixf(PGLfloat(FLocalMatrix));
+   if rci.drawState=dsPicking then
+      if rci.proxySubObject then
+         glPushName(Integer(Self))
+      else glLoadName(Integer(Self));
+   // Start rendering
+   if shouldRenderSelf then begin
+      if FShowAxes then
+         DrawAxes(rci, $CCCC);
+      if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count>0) then begin
+         glPushMatrix;
+         FGLObjectEffects.RenderPreEffects(Scene.CurrentBuffer, rci);
+         glPopMatrix;
+         glPushMatrix;
+         if osIgnoreDepthBuffer in ObjectStyle then begin
+            rci.GLStates.UnSetGLState(stDepthTest);
+            DoRender(rci, True, shouldRenderChildren);
+            rci.GLStates.SetGLState(stDepthTest);
+         end else DoRender(rci, True, shouldRenderChildren);
+         if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
+            rci.GLStates.ResetAll;
+         FGLObjectEffects.RenderPostEffects(Scene.CurrentBuffer, rci);
+         glPopMatrix;
+      end else begin
+         if osIgnoreDepthBuffer in ObjectStyle then begin
+            rci.GLStates.UnSetGLState(stDepthTest);
+            DoRender(rci, True, shouldRenderChildren);
+            rci.GLStates.SetGLState(stDepthTest);
+         end else DoRender(rci, True, shouldRenderChildren);
+         if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then
+            rci.GLStates.ResetAll;
+      end;
+   end else begin
+      if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentBuffer.DepthTest then begin
+         rci.GLStates.UnSetGLState(stDepthTest);
+         DoRender(rci, False, shouldRenderChildren);
+         rci.GLStates.SetGLState(stDepthTest);
+      end else DoRender(rci, False, shouldRenderChildren);
+   end;
+   // Pop Name & Matrix
+   if rci.drawState=dsPicking then
+      if rci.proxySubObject then
+         glPopName;
+   glPopMatrix;
 end;
 
 // DoRender
@@ -3925,17 +3915,22 @@ begin
    oldCulling:=rci.visibilityCulling;
    if Self.VisibilityCulling<>vcInherited then
       rci.visibilityCulling:=Self.VisibilityCulling;
-   if lastChildIndex=firstChildIndex then
-      Get(firstChildIndex).Render(rci)
-   else if lastChildIndex>firstChildIndex then begin
+   if lastChildIndex=firstChildIndex then begin
+      obj:=TGLBaseSceneObject(FChildren.List[firstChildIndex]);
+      if obj.Visible then
+         obj.Render(rci)
+   end else if lastChildIndex>firstChildIndex then begin
       oldSorting:=rci.objectsSorting;
       if Self.ObjectsSorting<>osInherited then
          rci.objectsSorting:=Self.ObjectsSorting;
       case rci.objectsSorting of
          osNone : begin
             plist:=FChildren.List;
-            for i:=firstChildIndex to lastChildIndex do
-               TGLBaseSceneObject(plist[i]).Render(rci);
+            for i:=firstChildIndex to lastChildIndex do begin
+               obj:=TGLBaseSceneObject(plist[i]);
+               if obj.Visible then
+                  obj.Render(rci);
+            end;
          end;
          osRenderFarthestFirst, osRenderBlendedLast, osRenderNearestFirst : begin
             distList:=TSingleList.Create;
@@ -3948,11 +3943,13 @@ begin
                      // render opaque stuff
                      for i:=firstChildIndex to lastChildIndex do begin
                         obj:=TGLBaseSceneObject(FChildren.List[i]);
-                        if not obj.Blended then
-                           obj.Render(rci)
-                        else if obj.Visible then begin
-                           objList.Add(obj);
-                           distList.Add(1+obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                        if obj.Visible then begin
+                           if not obj.Blended then
+                              obj.Render(rci)
+                           else begin
+                              objList.Add(obj);
+                              distList.Add(1+obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                           end;
                         end;
                      end;
                   osRenderFarthestFirst :
@@ -5631,10 +5628,6 @@ var
    i : Integer;
    rci : TRenderContextInfo;
 begin
-   ResetGLPolygonMode;
-   ResetGLMaterialColors;
-   ResetGLCurrentTexture;
-   ResetGLFrontFace;
    aBuffer.FAfterRenderEffects.Clear;
    FCurrentBuffer:=aBuffer;
    FillChar(rci, SizeOf(rci), 0);
@@ -5661,7 +5654,8 @@ begin
    rci.viewPortSize.cy:=viewPortSizeY;
    rci.renderDPI:=aBuffer.RenderDPI;
    rci.modelViewMatrix:=@aBuffer.FModelViewMatrix;
-   rci.currentStates:=aBuffer.FCurrentStates;
+   rci.GLStates:=aBuffer.GLStates;
+   rci.GLStates.ResetAll;
    rci.proxySubObject:=False;
    rci.ignoreMaterials:=   (roNoColorBuffer in aBuffer.ContextOptions)
                         or (rci.drawState=dsPicking);
@@ -5675,9 +5669,11 @@ begin
    with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
          TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
-   UnSetGLState(rci.currentStates, stBlend);
-   UnSetGLState(rci.currentStates, stTexture2D);
-   SetGLState(rci.currentStates, stAlphaTest);
+   with rci.GLStates do begin
+      UnSetGLState(stBlend);
+      UnSetGLState(stTexture2D);
+      SetGLState(stAlphaTest);
+   end;
    glAlphaFunc(GL_GREATER, 0);
 end;
 
@@ -6125,6 +6121,7 @@ begin
    FShadeModel:=smDefault;
    FFogEnable:=False;
    FAfterRenderEffects:=TPersistentObjectList.Create;
+   FGLStates:=TGLStateCache.Create;
 
    FContextOptions:=[roDoubleBuffer, roRenderToWindow];
 
@@ -6135,6 +6132,7 @@ end;
 //
 destructor TGLSceneBuffer.Destroy;
 begin
+   FGLStates.Free;
    // clean up and terminate
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
       FCamera.FScene.RemoveBuffer(Self);
@@ -6293,10 +6291,10 @@ procedure TGLSceneBuffer.SetupRenderingContext;
    procedure PerformEnable(bool : Boolean; csState : TGLState; glState : TGLEnum);
    begin
       if bool then begin
-         Include(FCurrentStates, csState);
+         GLStates.SetGLState(csState);
          glEnable(glState);
       end else begin
-         Exclude(FCurrentStates, csState);
+         GLStates.UnSetGLState(csState);
          glDisable(glState);
       end;
    end;
@@ -6309,9 +6307,8 @@ begin
       glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
    else glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
 
-   glEnable(GL_NORMALIZE);
-   Include(FCurrentStates, stNormalize);
-   
+   PerformEnable(True, stNormalize, GL_NORMALIZE);
+
    PerformEnable(DepthTest, stDepthTest, GL_DEPTH_TEST);
    PerformEnable(FaceCulling, stCullFace, GL_CULL_FACE);
    PerformEnable(Lighting, stLighting, GL_LIGHTING);
@@ -6502,7 +6499,7 @@ begin
          if createTexture then
             handle:=aTexture.AllocateHandle
          else handle:=aTexture.Handle;
-         SetGLCurrentTexture(0, target, handle);
+         GLStates.SetGLCurrentTexture(0, target, handle);
          if createTexture then begin
             GetMem(buf, Width*Height*4);
             try
@@ -6594,11 +6591,11 @@ end;
 //
 procedure TGLSceneBuffer.RenderToBitmap(ABitmap: TGLBitmap; DPI: Integer);
 var
-   bmpContext: TGLContext;
-   BackColor: TColorVector;
-   aColorBits: Integer;
-   viewport, viewportBackup: TRectangle;
-   LastStates: TGLStates;
+   bmpContext : TGLContext;
+   backColor : TColorVector;
+   aColorBits : Integer;
+   viewport, viewportBackup : TRectangle;
+   lastStates : TGLStateCache;
 begin
    Assert((not FRendering), glsAlreadyRendering);
    FRendering:=True;
@@ -6616,10 +6613,11 @@ begin
       end;
       try
          // save current window context states
-         lastStates:=FCurrentStates;
          // we must free the lists before changeing context, or it will have no effect
          GLContextManager.DestroyAllHandles;
          bmpContext.Activate;
+         lastStates:=FGLStates;
+         FGLStates:=TGLStateCache.Create;
          try
             SetupRenderingContext;
             BackColor:=ConvertWinColor(FBackgroundColor);
@@ -6633,9 +6631,6 @@ begin
                glViewport(Left, Top, Width, Height);
             end;
             ClearBuffers;
-            ResetGLPolygonMode;
-            ResetGLMaterialColors;
-            ResetGLCurrentTexture;
             FRenderDPI:=DPI;
             if FRenderDPI=0 then
                FRenderDPI:=GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle));
@@ -6646,8 +6641,9 @@ begin
             FViewport:=viewportBackup;
             glFinish;
          finally
+            FGLStates.Free;
+            FGLStates:=lastStates;
             bmpContext.Deactivate;
-            FCurrentStates:=LastStates;
          end;
          GLContextManager.DestroyAllHandles;
       finally
@@ -7491,7 +7487,7 @@ begin
                handle:=aTexture.AllocateHandle
             else handle:=aTexture.Handle;
          end else handle:=aTexture.Handle;
-         SetGLCurrentTexture(0, target, handle);
+         Buffer.GLStates.SetGLCurrentTexture(0, target, handle);
          if target=GL_TEXTURE_CUBE_MAP_ARB then
             target:=GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB+FCubeMapRotIdx;
          if FCreateTexture then begin

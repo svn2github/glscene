@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/04 - EG - Introduced TGLStateCache
       <li>05/09/03 - EG - Creation from GLMisc split
    </ul></font>
 }
@@ -16,15 +17,9 @@ uses Classes, VectorGeometry, SysUtils, OpenGL1x;
 
 type
 
-	TGLMinFilter   = (miNearest, miLinear, miNearestMipmapNearest,
-							miLinearMipmapNearest, miNearestMipmapLinear,
-							miLinearMipmapLinear);
-	TGLMagFilter   = (maNearest, maLinear);
-
-	// used to describe what kind of winding has a front face
-	TFaceWinding = (fwCounterClockWise, fwClockWise);
-
-	// used to reflect all relevant (binary) states of OpenGL subsystem
+   // TGLState
+   //
+	//: Reflects all relevant (binary) states of OpenGL subsystem
 	TGLState = (stAlphaTest, stAutoNormal,
 					stBlend, stColorMaterial, stCullFace, stDepthTest, stDither,
 					stFog, stLighting, stLineSmooth, stLineStipple,
@@ -33,40 +28,81 @@ type
 					stTexture1D, stTexture2D, stTextureCubeMap);
 	TGLStates = set of TGLState;
 
-//: Update the GLState machine if necessary
-procedure SetGLState(var states : TGLStates; const aState : TGLState);
-//: Update the GLState machine if necessary
-procedure UnSetGLState(var states : TGLStates; const aState : TGLState);
+   // TFaceWinding
+   //
+	//: Describe what kind of winding has a front face
+	TFaceWinding = (fwCounterClockWise, fwClockWise);
 
-//: Defines the GLPolygonMode if necessary
-procedure SetGLPolygonMode(const aFace, mode : TGLEnum);
-//: Reset GLPolygonMode, next calls to SetGLPolygonMode WILL do something
-procedure ResetGLPolygonMode;
+   // TGLStateCache
+   //
+   {: Manages an application-side cache of OpenGL states and parameters.<p>
+      Purpose of this class is to eliminate redundant state and parameter
+      changes, and there will typically be no more than one state cache per
+      OpenGL context. }
+   TGLStateCache = class
+ 		private
+         { Private Declarations }
+         FFrontBackColors : array [0..1, 0..3] of TVector;
+         FFrontBackShininess : array [0..1] of Integer;
+         FStates : TGLStates;
+         FTextureHandle : array [0..7] of Integer;
+         FLastFrontMode, FLastBackMode : TGLEnum;
+         FFrontFaceCCW : Boolean;
+         FTextureMatrixIsIdenty : Boolean;
 
-procedure SetGLMaterialColors(const aFace : TGLEnum;
-                        const emission, ambient, diffuse, specular : PGLFloat;
-                        const shininess : Integer);
-procedure SetGLMaterialAlphaChannel(const aFace : TGLEnum; const alpha : TGLFloat);
-procedure ResetGLMaterialColors;
+		protected
+         { Protected Declarations }
 
-procedure SetGLCurrentTexture(const textureUnit, target, handle : Integer);
-procedure ResetGLCurrentTexture;
+		public
+         { Public Declarations }
+         constructor Create; virtual;
+         destructor Destroy; override;
 
-{: Defines the OpenGL texture matrix.<p>
-   Assumed texture mode is GL_MODELVIEW. }
-procedure SetGLTextureMatrix(const matrix : TMatrix);
-{: Resets the OpenGL texture matrix to Identity.<p>
-   Assumed texture mode is GL_MODELVIEW. }
-procedure ResetGLTextureMatrix;
+         procedure SetGLState(const aState : TGLState);
+         procedure UnSetGLState(const aState : TGLState);
 
-{: Inverts front face winding (CCW/CW). }
-procedure InvertGLFrontFace;
-{: Reset to default front face winding (CCW). }
-procedure ResetGLFrontFace;
-{: Set front face winding to ClockWise. }
-procedure SetGLFrontFaceCW;
-{: Set front face winding to Counter-ClockWise. }
-procedure SetGLFrontFaceCCW;
+         {: Adjusts PolygonMode for a face }
+         procedure SetGLPolygonMode(const aFace, mode : TGLEnum);
+         //: Reset GLPolygonMode, next calls to SetGLPolygonMode WILL do something
+         procedure ResetGLPolygonMode;
+
+         {: Adjusts material colors for a face. }
+         procedure SetGLMaterialColors(const aFace : TGLEnum;
+                                       const emission, ambient, diffuse, specular : TVector;
+                                       const shininess : Integer);
+         {: Adjusts material alpha channel for a face. }
+         procedure SetGLMaterialAlphaChannel(const aFace : TGLEnum; const alpha : TGLFloat);
+         //: Reset GLMaterial colors, next calls to SetGLMaterial WILL do something
+         procedure ResetGLMaterialColors;
+
+         {: Specify a new texture handle for the target of textureUnit.<p>
+            Does NOT perform glActiveTextureARB calls. } 
+         procedure SetGLCurrentTexture(const textureUnit, target, handle : Integer);
+         procedure ResetGLCurrentTexture;
+
+         {: Defines the OpenGL texture matrix.<p>
+            Assumed texture mode is GL_MODELVIEW. }
+         procedure SetGLTextureMatrix(const matrix : TMatrix);
+         {: Resets the OpenGL texture matrix to Identity.<p>
+            Assumed texture mode is GL_MODELVIEW. }
+         procedure ResetGLTextureMatrix;
+
+         {: Inverts front face winding (CCW/CW). }
+         procedure InvertGLFrontFace;
+         {: Reset to default front face winding (CCW). }
+         procedure ResetGLFrontFace;
+         {: Set front face winding to ClockWise. }
+         procedure SetGLFrontFaceCW;
+         {: Set front face winding to Counter-ClockWise. }
+         procedure SetGLFrontFaceCCW;
+
+         {: Invokes all Reset methods. }
+         procedure ResetAll;
+
+         // read only properties
+
+         property States : TGLStates read FStates;
+   end;
 
 //------------------------------------------------------
 //------------------------------------------------------
@@ -84,103 +120,125 @@ const
 		 GL_POLYGON_SMOOTH, GL_POLYGON_STIPPLE, GL_SCISSOR_TEST, GL_STENCIL_TEST,
 		 GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_CUBE_MAP_ARB);
 
+// ------------------
+// ------------------ TGLStateCache ------------------
+// ------------------
+
+// Create
+//
+constructor TGLStateCache.Create;
+begin
+   inherited;
+   FTextureMatrixIsIdenty:=True;
+   FFrontFaceCCW:=True;
+end;
+
+// Destroy
+//
+destructor TGLStateCache.Destroy;
+begin
+   inherited;
+end;
+
+// SetGLState
+//
+procedure TGLStateCache.SetGLState(const aState : TGLState);
+begin
+	if not (aState in FStates) then begin
+		Include(FStates, aState);
+		glEnable(cGLStateToGLEnum[aState]);
+	end;
+end;
+
+// UnSetGLState
+//
+procedure TGLStateCache.UnSetGLState(const aState : TGLState);
+begin
+	if (aState in FStates) then begin
+		Exclude(FStates, aState);
+		glDisable(cGLStateToGLEnum[aState]);
+	end;
+end;
+
 // SetGLPolygonMode
 //
-var
-   vLastFrontMode, vLastBackMode : TGLEnum;
-procedure SetGLPolygonMode(const aFace, mode : TGLEnum);
+procedure TGLStateCache.SetGLPolygonMode(const aFace, mode : TGLEnum);
 begin
    case aFace of
       GL_FRONT :
-         if mode<>vLastFrontMode then begin
+         if mode<>FLastFrontMode then begin
+            FLastFrontMode:=mode;
             glPolygonMode(aFace, mode);
-            vLastFrontMode:=mode;
          end;
       GL_BACK :
-         if mode<>vLastBackMode then begin
+         if mode<>FLastBackMode then begin
+            FLastBackMode:=mode;
             glPolygonMode(aFace, mode);
-            vLastBackMode:=mode;
          end;
       GL_FRONT_AND_BACK :
-         if (mode<>vLastFrontMode) or (mode<>vLastBackMode) then begin
+         if (mode<>FLastFrontMode) or (mode<>FLastBackMode) then begin
+            FLastFrontMode:=mode;
+            FLastBackMode:=mode;
             glPolygonMode(aFace, mode);
-            vLastFrontMode:=mode;
-            vLastBackMode:=mode;
          end;
    end;
 end;
 
 // ResetGLPolygonMode
 //
-procedure ResetGLPolygonMode;
+procedure TGLStateCache.ResetGLPolygonMode ;
 begin
-   vLastFrontMode:=0;
-   vLastBackMode:=0;
+   FLastFrontMode:=0;
+   FLastBackMode:=0;
 end;
 
 // SetGLMaterialColors
 //
-type
-   THomogeneousFltVectorArray = array [0..3] of THomogeneousFltVector;
-   PHomogeneousFltVectorArray = ^THomogeneousFltVectorArray;
-var
-   vFrontColors, vBackColors : THomogeneousFltVectorArray;
-   vFrontShininess, vBackShininess : Integer;
-procedure SetGLMaterialColors(const aFace : TGLEnum;
-                              const emission, ambient, diffuse, specular : PGLFloat;
+procedure TGLStateCache.SetGLMaterialColors(const aFace : TGLEnum;
+                              const emission, ambient, diffuse, specular : TVector;
                               const shininess : Integer);
 var
-   ar : PHomogeneousFltVectorArray;
+   i : Integer;
 begin
-   if aFace=GL_FRONT then begin
-      ar:=@vFrontColors;
-      if vFrontShininess<>shininess then begin
-       	glMateriali(AFace, GL_SHININESS, shininess);
-         vFrontShininess:=shininess;
-      end;
-   end else begin
-      ar:=@vBackColors;
-      if vBackShininess<>shininess then begin
-       	glMateriali(AFace, GL_SHININESS, shininess);
-         vBackShininess:=shininess;
-      end;
+   i:=aFace-GL_FRONT;
+   if FFrontBackShininess[i]<>shininess then begin
+    	glMateriali(AFace, GL_SHININESS, shininess);
+      FFrontBackShininess[i]:=shininess;
    end;
-   if not VectorEquals(PAffineVector(@ar[0])^, PAffineVector(emission)^) then begin
-     	glMaterialfv(aFace, GL_EMISSION, emission);
-      SetVector(ar[0], PHomogeneousFltVector(emission)^);
+   if not AffineVectorEquals(FFrontBackColors[i][0], emission) then begin
+     	glMaterialfv(aFace, GL_EMISSION, @emission);
+      SetVector(FFrontBackColors[i][0], emission);
    end;
-   if not VectorEquals(PAffineVector(@ar[1])^, PAffineVector(ambient)^) then begin
-     	glMaterialfv(aFace, GL_AMBIENT, ambient);
-      SetVector(ar[1], PHomogeneousFltVector(ambient)^);
+   if not AffineVectorEquals(FFrontBackColors[i][1], ambient) then begin
+     	glMaterialfv(aFace, GL_AMBIENT, @ambient);
+      SetVector(FFrontBackColors[i][1], ambient);
    end;
-   if not VectorEquals(PVector(@ar[2])^, PVector(diffuse)^) then begin
-     	glMaterialfv(aFace, GL_DIFFUSE, diffuse);
-      SetVector(ar[2], PHomogeneousFltVector(diffuse)^);
+   if not VectorEquals(FFrontBackColors[i][2], diffuse) then begin
+     	glMaterialfv(aFace, GL_DIFFUSE, @diffuse);
+      SetVector(FFrontBackColors[i][2], diffuse);
    end;
-   if not VectorEquals(PAffineVector(@ar[3])^, PAffineVector(specular)^) then begin
-     	glMaterialfv(aFace, GL_SPECULAR, specular);
-      SetVector(ar[3], PHomogeneousFltVector(specular)^);
+   if not AffineVectorEquals(FFrontBackColors[i][3], specular) then begin
+     	glMaterialfv(aFace, GL_SPECULAR, @specular);
+      SetVector(FFrontBackColors[i][3], specular);
    end;
 end;
 
 // SetGLMaterialAlphaChannel
 //
-procedure SetGLMaterialAlphaChannel(const aFace : TGLEnum; const alpha : TGLFloat);
+procedure TGLStateCache.SetGLMaterialAlphaChannel(const aFace : TGLEnum; const alpha : TGLFloat);
 var
-   ar : PHomogeneousFltVectorArray;
+   i : Integer;
 begin
-   if aFace=GL_FRONT then
-      ar:=@vFrontColors
-   else ar:=@vBackColors;
-   if ar[2][3]<>alpha then begin
-      ar[2][3]:=alpha;
-     	glMaterialfv(aFace, GL_DIFFUSE, @ar[2]);
+   i:=aFace-GL_FRONT;
+   if FFrontBackColors[i][2][3]<>alpha then begin
+      FFrontBackColors[i][2][3]:=alpha;
+     	glMaterialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
    end;
 end;
 
 // ResetGLMaterialColors
 //
-procedure ResetGLMaterialColors;
+procedure TGLStateCache.ResetGLMaterialColors;
 const
    clrBlack  : TVector = (0,    0,    0,    1);
    clrGray20 : TVector = (0.20, 0.20, 0.20, 1);
@@ -191,41 +249,36 @@ begin
   	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, @clrBlack);
   	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, @clrBlack);
  	glMateriali(GL_FRONT_AND_BACK,  GL_SHININESS, 0);
-   FillChar(vFrontColors, SizeOf(THomogeneousFltVectorArray), 127);
-   FillChar(vBackColors, SizeOf(THomogeneousFltVectorArray), 127);
-   vFrontShininess:=0;
-   vBackShininess:=0;
+   FillChar(FFrontBackColors, SizeOf(FFrontBackColors), 127);
+   FFrontBackShininess[0]:=0;
+   FFrontBackShininess[1]:=0;
 end;
 
 // SetGLCurrentTexture
 //
-var
-   lastTextureHandle : array [0..7] of Integer;
-procedure SetGLCurrentTexture(const textureUnit, target, handle : Integer);
+procedure TGLStateCache.SetGLCurrentTexture(const textureUnit, target, handle : Integer);
 begin
-   if handle<>lastTextureHandle[textureUnit] then begin
-      glBindTexture(target, Handle);
-      lastTextureHandle[textureUnit]:=handle;
+   if handle<>FTextureHandle[textureUnit] then begin
+      glBindTexture(target, handle);
+      FTextureHandle[textureUnit]:=handle;
    end;
 end;
 
 // ResetGLCurrentTexture
 //
-procedure ResetGLCurrentTexture;
+procedure TGLStateCache.ResetGLCurrentTexture;
 var
    i : Integer;
 begin
    for i:=0 to 7 do
-      lastTextureHandle[i]:=-1;
+      FTextureHandle[i]:=-1;
 end;
 
 // SetGLTextureMatrix
 //
-var
-   vTextureMatrixIsIdenty : Boolean = True;
-procedure SetGLTextureMatrix(const matrix : TMatrix);
+procedure TGLStateCache.SetGLTextureMatrix(const matrix : TMatrix);
 begin
-   vTextureMatrixIsIdenty:=False;
+   FTextureMatrixIsIdenty:=False;
    glMatrixMode(GL_TEXTURE);
    glLoadMatrixf(PGLFloat(@matrix[0][0]));
    glMatrixMode(GL_MODELVIEW);
@@ -233,74 +286,62 @@ end;
 
 // ResetGLTextureMatrix
 //
-procedure ResetGLTextureMatrix;
+procedure TGLStateCache.ResetGLTextureMatrix;
 begin
-   if not vTextureMatrixIsIdenty then begin
+   if not FTextureMatrixIsIdenty then begin
       glMatrixMode(GL_TEXTURE);
       glLoadIdentity;
       glMatrixMode(GL_MODELVIEW);
-      vTextureMatrixIsIdenty:=True;
+      FTextureMatrixIsIdenty:=True;
    end;
 end;
 
 // InvertGLFrontFace
 //
-var
-   vFrontFaceCCW : Boolean = True;
-procedure InvertGLFrontFace;
+procedure TGLStateCache.InvertGLFrontFace;
 begin
-   vFrontFaceCCW:=not vFrontFaceCCW;
-   if vFrontFaceCCW then
+   FFrontFaceCCW:=not FFrontFaceCCW;
+   if FFrontFaceCCW then
       glFrontFace(GL_CCW)
    else glFrontFace(GL_CW);
 end;
 
 // ResetGLFrontFace
 //
-procedure ResetGLFrontFace;
+procedure TGLStateCache.ResetGLFrontFace;
 begin
    glFrontFace(GL_CCW);
-   vFrontFaceCCW:=True;
+   FFrontFaceCCW:=True;
 end;
 
 // SetGLFrontFaceCW
 //
-procedure SetGLFrontFaceCW;
+procedure TGLStateCache.SetGLFrontFaceCW;
 begin
-   if vFrontFaceCCW then begin
+   if FFrontFaceCCW then begin
       glFrontFace(GL_CW);
-      vFrontFaceCCW:=False;
+      FFrontFaceCCW:=False;
    end;
 end;
 
 // SetGLFrontFaceCCW
 //
-procedure SetGLFrontFaceCCW;
+procedure TGLStateCache.SetGLFrontFaceCCW;
 begin
-   if not vFrontFaceCCW then begin
+   if not FFrontFaceCCW then begin
       glFrontFace(GL_CCW);
-      vFrontFaceCCW:=True;
+      FFrontFaceCCW:=True;
    end;
 end;
 
-// SetGLState
+// ResetAll
 //
-procedure SetGLState(var states : TGLStates; const aState : TGLState);
+procedure TGLStateCache.ResetAll;
 begin
-	if not (aState in states) then begin
-		glEnable(cGLStateToGLEnum[aState]);
-		Include(states, aState);
-	end;
-end;
-
-// UnSetGLState
-//
-procedure UnSetGLState(var states : TGLStates; const aState : TGLState);
-begin
-	if (aState in states) then begin
-		glDisable(cGLStateToGLEnum[aState]);
-		Exclude(states, aState);
-	end;
+   ResetGLPolygonMode;
+   ResetGLMaterialColors;
+   ResetGLCurrentTexture;
+   ResetGLFrontFace;
 end;
 
 end.

@@ -122,7 +122,7 @@ interface
 
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
-  GLCrossPlatform, PersistentClasses, GLState;
+  GLCrossPlatform, PersistentClasses, GLUtils, GLState;
 
 {$i GLScene.inc}
 
@@ -341,7 +341,7 @@ type
       drawState : TDrawState;
       objectsSorting : TGLObjectsSorting;
       visibilityCulling : TGLVisibilityCulling;
-      currentStates : TGLStates;
+      GLStates : TGLStateCache;
       rcci : TRenderContextClippingInfo;
       sceneAmbientColor : TColorVector;
       bufferFaceCull : Boolean;
@@ -1064,7 +1064,8 @@ type
          constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
          
-         procedure Apply(aFace : TGLEnum; lightingOn : Boolean);
+         procedure Apply(var rci : TRenderContextInfo; aFace : TGLEnum);
+         procedure ApplyNoLighting(var rci : TRenderContextInfo; aFace : TGLEnum);
          procedure Assign(Source: TPersistent); override;
 
       published
@@ -1465,7 +1466,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, GLUtils
+uses GLScene, GLStrings, XOpenGL, ApplicationFileIO
    {$ifdef MSWINDOWS}, Graphics{$endif} // for standard application colors
    ;
 
@@ -1881,18 +1882,25 @@ end;
 
 // Apply
 //
-procedure TGLFaceProperties.Apply(aFace : TGLEnum; lightingOn : Boolean);
+procedure TGLFaceProperties.Apply(var rci : TRenderContextInfo;
+                                  aFace : TGLEnum);
 const
    cPolygonMode : array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
 begin
-   if lightingOn then begin
-      SetGLMaterialColors(aFace, @Emission.FColor, @Ambient.FColor, @Diffuse.FColor,
-                                 @Specular.FColor,
-                          FShininess);
-   end else begin
-      glColor4fv(@Diffuse.FColor)
-   end;
-   SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
+   rci.GLStates.SetGLMaterialColors(aFace,
+      Emission.FColor, Ambient.FColor, Diffuse.FColor, Specular.FColor, FShininess);
+   rci.GLStates.SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
+end;
+
+// ApplyNoLighting
+//
+procedure TGLFaceProperties.ApplyNoLighting(var rci : TRenderContextInfo;
+                                            aFace : TGLEnum);
+const
+   cPolygonMode : array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
+begin
+   glColor4fv(@Diffuse.FColor);
+   rci.GLStates.SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
 end;
 
 // Assign
@@ -3290,11 +3298,11 @@ var
 begin
 	if not Disabled then begin
       if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
-   		SetGLState(rci.currentStates, stTexture2D);
-   	   SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
+   		rci.GLStates.SetGLState(stTexture2D);
+   	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
       end else if GL_ARB_texture_cube_map then begin
-         SetGLState(rci.currentStates, stTextureCubeMap);
-   	   SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
+         rci.GLStates.SetGLState(stTextureCubeMap);
+   	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
          // compute model view matrix for proper viewing
          glMatrixMode(GL_TEXTURE);
          case MappingMode of
@@ -3335,7 +3343,7 @@ begin
       ApplyMappingMode;
       xglMapTexCoordToMain;
 	end else begin
-      UnSetGLState(rci.currentStates, stTexture2D);
+      rci.GLStates.UnSetGLState(stTexture2D);
       xglMapTexCoordToMain;
    end;
 end;
@@ -3345,12 +3353,12 @@ end;
 procedure TGLTexture.UnApply(var rci : TRenderContextInfo);
 begin
    if not Disabled then begin
-      if stTextureCubeMap in rci.currentStates then begin
-         UnSetGLState(rci.currentStates, stTextureCubeMap);
+      if stTextureCubeMap in rci.GLStates.States then begin
+         rci.GLStates.UnSetGLState(stTextureCubeMap);
          glMatrixMode(GL_TEXTURE);
          glLoadIdentity;
          glMatrixMode(GL_MODELVIEW);
-      end else UnSetGLState(rci.currentStates, stTexture2D);
+      end else rci.GLStates.UnSetGLState(stTexture2D);
       UnApplyMappingMode;
    end;
 end;
@@ -3380,7 +3388,7 @@ begin
 
       if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
          glEnable(Image.NativeTextureTarget);
-         SetGLCurrentTexture(n-1, Image.NativeTextureTarget, Handle);
+         rci.GLStates.SetGLCurrentTexture(n-1, Image.NativeTextureTarget, Handle);
 
          if Assigned(libMaterial) and (not libMaterial.FTextureMatrixIsIdentity) then begin
             glMatrixMode(GL_TEXTURE);
@@ -3390,7 +3398,7 @@ begin
 
       end else if GL_ARB_texture_cube_map then begin
          glEnable(Image.NativeTextureTarget);
-         SetGLCurrentTexture(n-1, Image.NativeTextureTarget, Handle);
+         rci.GLStates.SetGLCurrentTexture(n-1, Image.NativeTextureTarget, Handle);
 
          // compute model view matrix for proper viewing
          glMatrixMode(GL_TEXTURE);
@@ -3832,25 +3840,24 @@ begin
 	else begin
       // Lighting switch
       if moNoLighting in MaterialOptions then begin
-         if stLighting in rci.currentStates then begin
-            UnSetGLState(rci.currentStates, stLighting);
+         if stLighting in rci.GLStates.States then begin
+            rci.GLStates.UnSetGLState(stLighting);
             Inc(rci.lightingDisabledCounter);
          end;
-      end;
-      // Apply FrontProperties (always)
- 		FFrontProperties.Apply(GL_FRONT, (stLighting in rci.currentStates));
+    		FFrontProperties.ApplyNoLighting(rci, GL_FRONT);
+      end else FFrontProperties.Apply(rci, GL_FRONT);
       // Apply FaceCulling and BackProperties (if needs be)
-      if (stCullFace in rci.currentStates) then begin
+      if (stCullFace in rci.GLStates.States) then begin
          // currently culling
          case FFaceCulling of
             fcBufferDefault : if not rci.bufferFaceCull then begin
-               UnSetGLState(rci.currentStates, stCullFace);
-               BackProperties.Apply(GL_BACK, True);
+               rci.GLStates.UnSetGLState(stCullFace);
+               BackProperties.Apply(rci, GL_BACK);
             end;
             fcCull : ; // nothing to do
             fcNoCull : begin
-               UnSetGLState(rci.currentStates, stCullFace);
-               BackProperties.Apply(GL_BACK, True);
+               rci.GLStates.UnSetGLState(stCullFace);
+               BackProperties.Apply(rci, GL_BACK);
             end;
          else
             Assert(False);
@@ -3860,11 +3867,11 @@ begin
          case FFaceCulling of
             fcBufferDefault : begin
                if rci.bufferFaceCull then
-                  SetGLState(rci.currentStates, stCullFace)
-               else BackProperties.Apply(GL_BACK, True);
+                  rci.GLStates.SetGLState(stCullFace)
+               else BackProperties.Apply(rci, GL_BACK);
             end;
-            fcCull : SetGLState(rci.currentStates, stCullFace);
-            fcNoCull : BackProperties.Apply(GL_BACK, True);
+            fcCull : rci.GLStates.SetGLState(stCullFace);
+            fcNoCull : BackProperties.Apply(rci, GL_BACK);
          else
             Assert(False);
          end;
@@ -3872,27 +3879,27 @@ begin
       // Apply Blending mode
       if not rci.ignoreBlendingRequests then case FBlendingMode of
 			bmOpaque : begin
-            UnSetGLState(rci.currentStates, stBlend);
-            UnSetGLState(rci.currentStates, stAlphaTest);
+            rci.GLStates.UnSetGLState(stBlend);
+            rci.GLStates.UnSetGLState(stAlphaTest);
          end;
 			bmTransparency : begin
-				SetGLState(rci.currentStates, stBlend);
-            SetGLState(rci.currentStates, stAlphaTest);
+				rci.GLStates.SetGLState(stBlend);
+            rci.GLStates.SetGLState(stAlphaTest);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			end;
 			bmAdditive : begin
-				SetGLState(rci.currentStates, stBlend);
-            SetGLState(rci.currentStates, stAlphaTest);
+				rci.GLStates.SetGLState(stBlend);
+            rci.GLStates.SetGLState(stAlphaTest);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			end;
          bmAlphaTest50 : begin
-            UnSetGLState(rci.currentStates, stBlend);
-            SetGLState(rci.currentStates, stAlphaTest);
+            rci.GLStates.UnSetGLState(stBlend);
+            rci.GLStates.SetGLState(stAlphaTest);
             glAlphaFunc(GL_GEQUAL, 0.5);
          end;
          bmAlphaTest100 : begin
-            UnSetGLState(rci.currentStates, stBlend);
-            SetGLState(rci.currentStates, stAlphaTest);
+            rci.GLStates.UnSetGLState(stBlend);
+            rci.GLStates.SetGLState(stAlphaTest);
             glAlphaFunc(GL_GEQUAL, 1.0);
          end;
       else
@@ -3900,8 +3907,8 @@ begin
 		end;
       // Fog switch
       if moIgnoreFog in MaterialOptions then begin
-         if stFog in rci.currentStates then begin
-            UnSetGLState(rci.currentStates, stFog);
+         if stFog in rci.GLStates.States then begin
+            rci.GLStates.UnSetGLState(stFog);
             Inc(rci.fogDisabledCounter);
          end;
       end;
@@ -3923,14 +3930,14 @@ begin
          if rci.lightingDisabledCounter>0 then begin
             Dec(rci.lightingDisabledCounter);
             if rci.lightingDisabledCounter=0 then
-               SetGLState(rci.currentStates, stLighting);
+               rci.GLStates.SetGLState(stLighting);
          end;
       end;
       if moIgnoreFog in MaterialOptions then begin
          if rci.fogDisabledCounter>0 then begin
             Dec(rci.fogDisabledCounter);
             if rci.fogDisabledCounter=0 then
-               SetGLState(rci.currentStates, stFog);
+               rci.GLStates.SetGLState(stFog);
          end;
       end;
       if Assigned(FTexture) and (not FTexture.Disabled) then
@@ -4121,12 +4128,12 @@ begin
       // no multitexturing ("standard" mode)
       if not Material.Texture.Disabled then
          if not FTextureMatrixIsIdentity then
-            SetGLTextureMatrix(FTextureMatrix);
+            rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
    end else begin
       // multitexturing is ON
       if not FTextureMatrixIsIdentity then
-         SetGLTextureMatrix(FTextureMatrix);
+         rci.GLStates.SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
       libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
       // calculate and apply appropriate xgl mode
@@ -4169,7 +4176,7 @@ begin
       Material.UnApply(rci);
       if not Material.Texture.Disabled then
          if not FTextureMatrixIsIdentity then
-            ResetGLTextureMatrix;
+            rci.GLStates.ResetGLTextureMatrix;
       if Assigned(FShader) then begin
          case Shader.ShaderStyle of
             ssHighLevel : Result:=Shader.UnApply(rci);
