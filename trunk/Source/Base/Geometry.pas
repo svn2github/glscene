@@ -32,6 +32,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/06/03 - MF - Added PointSegmentClosestPoint, PointSegmentDistance,
+                          PointLineClosestPoint and PointLineDistance.
       <li>26/05/03 - EG - NO_ASM variant creation completed
       <li>22/05/03 - EG - All vSIMD asm tests should now be under GEOMETRY_NO_ASM control
       <li>20/05/03 - EG - Added MakeParallelProjectionMatrix

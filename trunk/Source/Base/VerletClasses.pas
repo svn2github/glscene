@@ -1522,26 +1522,6 @@ end;
 
 { TVCCapsule }
 
-function ClosestPointOnSegmentFromPoint(SegmentStart, SegmentStop, Point : TAffineVector) : TAffineVector;
-var
-  w, LinePoint, LineDirection : TAffineVector;
-  c1, c2, b, mMax : double;
-begin
-  LineDirection := VectorSubtract(SegmentStop, SegmentStart);
-  w := VectorSubtract(Point, SegmentStart);
-
-  c1 := VectorDotProduct(w, LineDirection);
-  c2 := VectorDotProduct(LineDirection, LineDirection);
-  b := c1 / c2;
-
-  if b>1 then
-    b := 1
-  else if b<0 then
-    b := 0;
-
-  result := VectorAdd(SegmentStart, VectorScale(LineDirection, b));
-end;
-
 procedure TVCCapsule.SatisfyConstraintForNode(aNode: TVerletNode;
   const iteration, maxIterations: Integer);
 var
@@ -1556,10 +1536,10 @@ begin
   SegmentStop := VectorSubtract(FBase, VectorScale(FAxis, FLength / 2));
 
   ClosestPosition :=
-    ClosestPointOnSegmentFromPoint(
+    PointSegmentClosestPoint(
+      aNode.Location,
       SegmentStart,
-      SegmentStop,
-      aNode.Location);
+      SegmentStop);
 
    // Find the distance between the two
    VectorSubtract(aNode.Location, ClosestPosition, delta);
