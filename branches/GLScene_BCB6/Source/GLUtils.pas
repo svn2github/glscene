@@ -325,11 +325,14 @@ end;
 //
 procedure SaveStringToFile(const fileName, data : String);
 var
+   n : Cardinal;
 	fs : TStream;
 begin
 	fs:=CreateFileStream(fileName, fmCreate);
    try
-   	fs.Write(data[1], Length(data));
+      n:=Length(data);
+      if n>0 then
+      	fs.Write(data[1], n);
    finally
    	fs.Free;
    end;
@@ -339,13 +342,16 @@ end;
 //
 function LoadStringFromFile(const fileName : String) : String;
 var
+   n : Cardinal;
 	fs : TStream;
 begin
    if FileExists(fileName) then begin
    	fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
       try
-   	   SetLength(Result, fs.Size);
-      	fs.Read(Result[1], fs.Size);
+         n:=fs.Size;
+   	   SetLength(Result, n);
+         if n>0 then
+         	fs.Read(Result[1], n);
       finally
    	   fs.Free;
       end;
