@@ -6,6 +6,7 @@
 	SMD vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>24/01/05 - SG - Fix for comma decimal separator in save function (dikoe Kenguru)
       <li>30/03/04 - EG - Basic Half-Life2/XSI support
       <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
 	</ul></font>
@@ -245,7 +246,10 @@ begin
             for j:=0 to Owner.Skeleton.Frames[i].Position.Count-1 do begin
                p:=Owner.Skeleton.Frames[i].Position[j];
                r:=Owner.Skeleton.Frames[i].Rotation[j];
-               str.Add(Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',[j,p[0],p[1],p[2],r[0],r[1],r[2]]));
+               str.Add(StringReplace(
+                 Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',
+                        [j,p[0],p[1],p[2],r[0],r[1],r[2]]),
+                 ',', '.', [rfReplaceAll]));
             end;
          end;
          str.Add('end');
@@ -266,7 +270,10 @@ begin
                      n:=Normals[NormalIndices[3*k+l]];
                      t:=TexCoords[TexCoordIndices[3*k+l]];
                      b:=VerticesBonesWeights[VertexIndices[3*k+l]][0].BoneID;
-                     str.Add(Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',[b,v[0],v[1],v[2],n[0],n[1],n[2],t[0],t[1]]));
+                     str.Add(StringReplace(
+                       Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',
+                              [b,v[0],v[1],v[2],n[0],n[1],n[2],t[0],t[1]]),
+                       ',', '.', [rfReplaceAll]));
                   end;
                end;
             end;
