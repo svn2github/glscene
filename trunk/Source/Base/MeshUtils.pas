@@ -3,6 +3,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>15/01/03 - EG - Added ConvertStripToList, improved subdivision
       <li>13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
                           SubdivideTriangles 
       <li>10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
@@ -18,13 +19,20 @@ interface
 
 uses PersistentClasses, VectorLists, Geometry;
 
+{: Converts a triangle strips into a triangle list.<p>
+   Vertices are added to list, based on the content of strip. Both non-indexed
+   and indexed variants are available, the output is *always* non indexed. }
+procedure ConvertStripToList(strip, list : TAffineVectorList); overload;
+procedure ConvertStripToList(strip, list : TAffineVectorList; indices : TIntegerList); overload;
+
 {: Builds a vector-count optimized indices list.<p>
    The returned list (to be freed by caller) contains an "optimized" indices
    list in which duplicates coordinates in the original vertices list are used
    only once (the first available duplicate in the list is used).<br>
    The vertices list is left untouched, to remap/cleanup, you may use the
    RemapAndCleanupReferences function. }
-function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList) : TIntegerList;
+function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
+                                          const texCoords : TAffineVectorList = nil) : TIntegerList;
 
 {: Alters a reference/indice pair and removes unused reference values.<p>
    This functions scans the reference list and removes all values that aren't
@@ -100,9 +108,9 @@ procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
    artistic purposes.<p>
    The procedure is not intended for real-time use. }
 procedure SubdivideTriangles(smoothFactor : Single;
-                             vertices, normals : TAffineVectorList;
+                             vertices : TAffineVectorList;
                              triangleIndices : TIntegerList;
-                             texCoords : TAffineVectorList = nil);
+                             normals : TAffineVectorList = nil);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -114,15 +122,53 @@ implementation
 
 uses SysUtils;
 
+// ConvertStripToList (non-indexed variant)
+//
+procedure ConvertStripToList(strip, list : TAffineVectorList);
+var
+   i : Integer;
+   stripList : PAffineVectorArray;
+begin
+   list.AdjustCapacityToAtLeast(list.Count+3*(strip.Count-2));
+   stripList:=strip.List;
+   for i:=0 to strip.Count-3 do begin
+      if (i and 1)=0 then
+         list.Add(stripList[i+0], stripList[i+1], stripList[i+2])
+      else list.Add(stripList[i+2], stripList[i+1], stripList[i+0]);
+   end;
+end;
+
+// ConvertStripToList (indexed variant)
+//
+procedure ConvertStripToList(strip, list : TAffineVectorList; indices : TIntegerList);
+var
+   i : Integer;
+   stripList : PAffineVectorArray;
+begin
+   list.AdjustCapacityToAtLeast(list.Count+3*(indices.Count-2));
+   stripList:=strip.List;
+   for i:=0 to strip.Count-3 do begin
+      if (i and 1)=0 then
+         list.Add(stripList[indices[i+0]],
+                  stripList[indices[i+1]],
+                  stripList[indices[i+2]])
+      else list.Add(stripList[indices[i+2]],
+                    stripList[indices[i+1]],
+                    stripList[indices[i+0]])
+   end;
+end;
+
 // BuildVectorCountOptimizedIndices
 //
-function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList) : TIntegerList;
+function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
+                                          const texCoords : TAffineVectorList = nil) : TIntegerList;
 var
-   i, j : Integer;
+   i, j, k : Integer;
    found : Boolean;
    hashSize : Integer;
    hashTable : array of TIntegerlist;
    list : TIntegerList;
+   verticesList, texCoordsList : PAffineVectorArray;
 const
    cVerticesPerHashKey = 48;
 
@@ -137,50 +183,65 @@ begin
    Result:=TIntegerList.Create;
    Result.Capacity:=vertices.Count;
 
-   if vertices.Count<128 then begin
-      // not a lot of stuff, we can go brute force
-      // (this method is sluggish when there are thousandth of vertices)
-      for i:=0 to vertices.Count-1 do
-          Result.Add(vertices.IndexOf(vertices[i]));
-   end else begin
-      // That may be a big one, prep up the artillery, just in case...
-      // This method is very fast, at the price of memory requirement its
-      // complexity is only O(n) (it's a kind of bucket-sort hellspawn)
+   if Assigned(texCoords) then begin
+      Assert(texCoords.Count>=vertices.Count);
+      texCoordsList:=texCoords.List
+   end else texCoordsList:=nil;
 
-      // Initialize data structures for a hash table
-      // (each vertex will only be compared to vertices of similar hash value)
-      hashSize:=Trunc(Power(2, Trunc(log2(vertices.Count/cVerticesPerHashKey))))-1;
-      if hashSize>65535 then hashSize:=65535;
-      SetLength(hashTable, hashSize+1);
-      // allocate and fill our hashtable (will store "reference" vertex indices)
-      for i:=0 to hashSize do begin
-         hashTable[i]:=TIntegerList.Create;
-         hashTable[i].GrowthDelta:=cVerticesPerHashKey div 2;
-      end;
-      // here we go for all vertices
-      for i:=0 to vertices.Count-1 do begin
-         list:=hashTable[HashKey(vertices.List[i])];
-         found:=False;
-         // Check each vertex against its hashkey siblings
-         for j:=0 to list.Count-1 do begin
-            if VectorEquals(vertices.List[list.List[j]], vertices.List[i]) then begin
-               // vertex known, just store its index
-               Result.Add(list.List[j]);
-               found:=True;
-               Break;
+   verticesList:=vertices.List;
+
+   // This method is very fast, at the price of memory requirement its
+   // probable complexity is only O(n) (it's a kind of bucket-sort hellspawn)
+
+   // Initialize data structures for a hash table
+   // (each vertex will only be compared to vertices of similar hash value)
+   hashSize:=Trunc(Power(2, Trunc(log2(vertices.Count/cVerticesPerHashKey))))-1;
+   if hashSize>65535 then hashSize:=65535;
+   SetLength(hashTable, hashSize+1);
+   // allocate and fill our hashtable (will store "reference" vertex indices)
+   for i:=0 to hashSize do begin
+      hashTable[i]:=TIntegerList.Create;
+      hashTable[i].GrowthDelta:=cVerticesPerHashKey div 2;
+   end;
+   // here we go for all vertices
+   for i:=0 to vertices.Count-1 do begin
+      list:=hashTable[HashKey(verticesList[i])];
+      found:=False;
+      // Check each vertex against its hashkey siblings
+      if list.Count>0 then begin
+         if Assigned(texCoords) then begin
+            for j:=0 to list.Count-1 do begin
+               k:=list.List[j];
+               if     VectorEquals(verticesList[k], verticesList[i])
+                  and VectorEquals(texCoordsList[k], texCoordsList[i]) then begin
+                  // vertex known, just store its index
+                  Result.Add(k);
+                  found:=True;
+                  Break;
+               end;
+            end;
+         end else begin
+            for j:=0 to list.Count-1 do begin
+               k:=list.List[j];
+               if VectorEquals(verticesList[k], verticesList[i]) then begin
+                  // vertex known, just store its index
+                  Result.Add(k);
+                  found:=True;
+                  Break;
+               end;
             end;
          end;
-         if not found then begin
-            // vertex unknown, store index and add to the hashTable's list
-            list.Add(i);
-            Result.Add(i);
-         end;
       end;
-      // free hash data
-      for i:=0 to hashSize do
-         hashTable[i].Free;
-      SetLength(hashTable, 0);
+      if not found then begin
+         // vertex unknown, store index and add to the hashTable's list
+         list.Add(i);
+         Result.Add(i);
+      end;
    end;
+   // free hash data
+   for i:=0 to hashSize do
+      hashTable[i].Free;
+   SetLength(hashTable, 0);
 end;
 
 // RemapAndCleanupReferences
@@ -623,9 +684,9 @@ end;
 // SubdivideTriangles
 //
 procedure SubdivideTriangles(smoothFactor : Single;
-                             vertices, normals : TAffineVectorList;
+                             vertices : TAffineVectorList;
                              triangleIndices : TIntegerList;
-                             texCoords : TAffineVectorList = nil);
+                             normals : TAffineVectorList = nil);
 var
    i, a, b, c, nv : Integer;
    edges : TIntegerList;
@@ -645,22 +706,22 @@ begin
             a:=edges[i];
             b:=edges[i+1];
             p:=VectorLerp(vertices[a], vertices[b], 0.5);
-            n:=VectorNormalize(VectorLerp(normals[a], normals[b], 0.5));
-            if smoothFactor<>0 then begin
-               f:=0.25*smoothFactor*VectorDistance(vertices[a], vertices[b])
-                  *(1-VectorDotProduct(normals[a], normals[b]));
-               if VectorDotProduct(normals[a], VectorSubtract(vertices[b], vertices[a]))
-                  +VectorDotProduct(normals[b], VectorSubtract(vertices[a], vertices[b]))>0 then
-                  f:=-f;
-               CombineVector(p, n, f);
+            if Assigned(normals) then begin
+               n:=VectorNormalize(VectorLerp(normals[a], normals[b], 0.5));
+               normals.Add(n);
+               if smoothFactor<>0 then begin
+                  f:=0.25*smoothFactor*VectorDistance(vertices[a], vertices[b])
+                     *(1-VectorDotProduct(normals[a], normals[b]));
+                  if VectorDotProduct(normals[a], VectorSubtract(vertices[b], vertices[a]))
+                     +VectorDotProduct(normals[b], VectorSubtract(vertices[a], vertices[b]))>0 then
+                     f:=-f;
+                  CombineVector(p, n, f);
+               end;
             end;
-            if Assigned(texCoords) then
-               texCoords.Add(VectorLerp(texCoords[a], texCoords[b], 0.5));
             vertices.Add(p);
-            normals.Add(n);
             Inc(i, 2);
          end;
-         // spawn new triangles
+         // spawn new triangles geometry
          i:=triangleIndices.Count-3;
          while i>=0 do begin
             a:=nv+triangleEdges[i+0] div 2;
