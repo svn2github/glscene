@@ -2572,7 +2572,20 @@ begin
    pos:=aParticle.Position;
 
    vertexList:=FVertBuf.List;
-   VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+
+
+   if aParticle.EffectScale<>1 then
+   begin
+        for i:=0 to FVertBuf.Count-1 do
+        begin
+             VectorAdd(VectorScale(FVertices.List[i],aParticle.EffectScale),pos,vertexList[i])
+        end;
+   end
+   else
+   begin
+        VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+   end;
+
 
    
    if ComputeRotateAngle(lifeTime, rotateAngle) and (Renderer <> nil) then
@@ -2603,7 +2616,7 @@ begin
       glColor4fv(@outer);
       for i:=0 to FVertBuf.Count-1 do
       begin
-           ScaleVector(vertexList[i],aParticle.EffectScale);
+           //ScaleVector(vertexList[i],aParticle.EffectScale);
            glVertex3fv(@vertexList[i]);
       end;
 
@@ -2856,17 +2869,18 @@ begin
 
    pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
-   if ComputeSizeScale(lifeTime, sizeScale) then
+   sizeScale :=1;
+   if ComputeSizeScale(lifeTime, sizeScale) or (aParticle.EffectScale<>1) then
    begin
         sizeScale := sizeScale*aParticle.EffectScale;
-      for i:=0 to FVertBuf.Count-1 do
-         vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
+        for i:=0 to FVertBuf.Count-1 do
+            vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
    end
    else
    begin
         VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
-        for i:=0 to FVertBuf.Count-1 do
-            ScaleVector(vertexList[i],aParticle.EffectScale);
+        {for i:=0 to FVertBuf.Count-1 do
+            ScaleVector(vertexList[i],aParticle.EffectScale);}
    end;
 
    if ComputeRotateAngle(lifeTime, rotateAngle) then
