@@ -2,6 +2,7 @@
 {: Bezier and B-Spline Curve and Surface Routines.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>18/08/03 - SG - Added weights to calculations.
       <li>17/07/03 - SG - Added surface routines. 
                           Minor changes to procedure parameters.
       <li>10/07/03 - SG - Creation
@@ -111,12 +112,12 @@ var
   t : single;
 begin
   Result:=0;
-  if k=0 then begin
+  if k=1 then begin
     if (u>=knots[i]) and (u<knots[i+1]) then Result:=1;
   end else begin
-    t:=(knots[i+k]-knots[i]);
+    t:=(knots[i+k-1]-knots[i]);
     if t<>0 then Result:=(u-knots[i])*BSplineBasis(i,k-1,u,knots)/t;
-    t:=(knots[i+k+1]-knots[i+1]);
+    t:=(knots[i+k]-knots[i+1]);
     if t<>0 then Result:=Result+(knots[i+k]-u)*BSplineBasis(i+1,k-1,u,knots)/t;
   end;
 end;
