@@ -1,4 +1,4 @@
-{: Loading NURBS into a GLScene FreeForm object<p>
+{: Loading NURBS into a GLScene FreeForm/Actor object<p>
 
    A very simple parametric model of a duck, comprised of 3 NURBS
    surfaces. The Nurbs format is essentially the NurbsSurface geometry 
@@ -17,25 +17,27 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer, GLMisc,
-  ExtCtrls, ComCtrls, StdCtrls;
+  ExtCtrls, ComCtrls, StdCtrls, GLTexture;
 
 type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLDummyCube1: TGLDummyCube;
-    GLFreeForm1: TGLFreeForm;
     GLLightSource1: TGLLightSource;
     Panel1: TPanel;
     GLSceneViewer1: TGLSceneViewer;
     TrackBar1: TTrackBar;
     Label1: TLabel;
+    CheckBox1: TCheckBox;
+    GLActor1: TGLActor;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
+    procedure CheckBox1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -57,14 +59,14 @@ var
   cp : TAffineVectorList;
 begin
   // Load the nurbs data
-  GLFreeForm1.LoadFromFile('..\..\media\duck1.nurbs');
-  GLFreeForm1.AddDataFromFile('..\..\media\duck2.nurbs');
-  GLFreeForm1.AddDataFromFile('..\..\media\duck3.nurbs');
+  GLActor1.LoadFromFile('..\..\media\duck1.nurbs');
+  GLActor1.AddDataFromFile('..\..\media\duck2.nurbs');
+  GLActor1.AddDataFromFile('..\..\media\duck3.nurbs');
 
-  { Translate FreeForm based on the first mesh object's average
+  { Translate Actor based on the first mesh object's average
     control point. Quick and dirty ... or maybe just dirty :P }
-  cp:=TMOParametricSurface(GLFreeForm1.MeshObjects[0]).ControlPoints;
-  GLFreeForm1.Position.Translate(VectorNegate(VectorScale(cp.Sum,1/cp.Count)));
+  cp:=TMOParametricSurface(GLActor1.MeshObjects[0]).ControlPoints;
+  GLActor1.Position.Translate(VectorNegate(VectorScale(cp.Sum,1/cp.Count)));
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -88,8 +90,21 @@ var
   i : integer;
 begin
   for i:=0 to 2 do
-    TMOParametricSurface(GLFreeForm1.MeshObjects[i]).Resolution:=TrackBar1.Position;
-  GLFreeForm1.StructureChanged;
+    TMOParametricSurface(GLActor1.MeshObjects[i]).Resolution:=TrackBar1.Position;
+  GLActor1.StructureChanged;
+end;
+
+procedure TForm1.CheckBox1Click(Sender: TObject);
+begin
+  with GLActor1.Material do begin
+    if Checkbox1.Checked then begin
+      FrontProperties.PolygonMode:=pmLines;
+      FaceCulling:=fcNoCull;
+    end else begin
+      FrontProperties.PolygonMode:=pmFill;
+      FaceCulling:=fcBufferDefault;
+    end;
+  end;
 end;
 
 end.

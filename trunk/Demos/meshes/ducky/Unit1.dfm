@@ -18,7 +18,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 161
-    Height = 406
+    Height = 408
     Align = alLeft
     TabOrder = 0
     object Label1: TLabel
@@ -46,12 +46,21 @@ object Form1: TForm1
       TickStyle = tsManual
       OnChange = TrackBar1Change
     end
+    object CheckBox1: TCheckBox
+      Left = 16
+      Top = 80
+      Width = 97
+      Height = 17
+      Caption = 'Wireframe'
+      TabOrder = 1
+      OnClick = CheckBox1Click
+    end
   end
   object GLSceneViewer1: TGLSceneViewer
     Left = 161
     Top = 0
     Width = 497
-    Height = 406
+    Height = 408
     Camera = GLCamera1
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
@@ -76,10 +85,12 @@ object Form1: TForm1
         end
       end
     end
-    object GLFreeForm1: TGLFreeForm
+    object GLActor1: TGLActor
+      Material.BackProperties.PolygonMode = pmLines
       Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
       Material.FrontProperties.Shininess = 50
       Material.FrontProperties.Specular.Color = {0000803F0000803F0000803F0000803F}
+      Interval = 100
     end
   end
 end
