@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
       <li>06/04/04 - EG - Added GL_ARB_shader_objects, GL_ARB_vertex_shader
                           and GL_ARB_fragment_shader, dropped a few oldies
       <li>13/02/04 - EG - Added GL_NV_texture_rectangle 
@@ -195,7 +196,6 @@ var
    GL_EXT_texture_lod_bias,
    GL_EXT_texture_object,
    GL_EXT_texture3D,
-   GL_EXT_vertex_array,
 
    GL_HP_occlusion_test,
 
@@ -983,40 +983,6 @@ var
    GL_UNSIGNED_SHORT_5_5_5_1_EXT                     = $8034;
    GL_UNSIGNED_INT_8_8_8_8_EXT                       = $8035;
    GL_UNSIGNED_INT_10_10_10_2_EXT                    = $8036;
-
-   // EXT_vertex_array
-   GL_VERTEX_ARRAY_EXT                               = $8074;
-   GL_NORMAL_ARRAY_EXT                               = $8075;
-   GL_COLOR_ARRAY_EXT                                = $8076;
-   GL_INDEX_ARRAY_EXT                                = $8077;
-   GL_TEXTURE_COORD_ARRAY_EXT                        = $8078;
-   GL_EDGE_FLAG_ARRAY_EXT                            = $8079;
-   GL_VERTEX_ARRAY_SIZE_EXT                          = $807A;
-   GL_VERTEX_ARRAY_TYPE_EXT                          = $807B;
-   GL_VERTEX_ARRAY_STRIDE_EXT                        = $807C;
-   GL_VERTEX_ARRAY_COUNT_EXT                         = $807D;
-   GL_NORMAL_ARRAY_TYPE_EXT                          = $807E;
-   GL_NORMAL_ARRAY_STRIDE_EXT                        = $807F;
-   GL_NORMAL_ARRAY_COUNT_EXT                         = $8080;
-   GL_COLOR_ARRAY_SIZE_EXT                           = $8081;
-   GL_COLOR_ARRAY_TYPE_EXT                           = $8082;
-   GL_COLOR_ARRAY_STRIDE_EXT                         = $8083;
-   GL_COLOR_ARRAY_COUNT_EXT                          = $8084;
-   GL_INDEX_ARRAY_TYPE_EXT                           = $8085;
-   GL_INDEX_ARRAY_STRIDE_EXT                         = $8086;
-   GL_INDEX_ARRAY_COUNT_EXT                          = $8087;
-   GL_TEXTURE_COORD_ARRAY_SIZE_EXT                   = $8088;
-   GL_TEXTURE_COORD_ARRAY_TYPE_EXT                   = $8089;
-   GL_TEXTURE_COORD_ARRAY_STRIDE_EXT                 = $808A;
-   GL_TEXTURE_COORD_ARRAY_COUNT_EXT                  = $808B;
-   GL_EDGE_FLAG_ARRAY_STRIDE_EXT                     = $808C;
-   GL_EDGE_FLAG_ARRAY_COUNT_EXT                      = $808D;
-   GL_VERTEX_ARRAY_POINTER_EXT                       = $808E;
-   GL_NORMAL_ARRAY_POINTER_EXT                       = $808F;
-   GL_COLOR_ARRAY_POINTER_EXT                        = $8090;
-   GL_INDEX_ARRAY_POINTER_EXT                        = $8091;
-   GL_TEXTURE_COORD_ARRAY_POINTER_EXT                = $8092;
-   GL_EDGE_FLAG_ARRAY_POINTER_EXT                    = $8093;
 
    // EXT_bgra
    GL_BGR_EXT                                        = $80E0;
@@ -2905,17 +2871,6 @@ var
    glLockArraysEXT: procedure(first: TGLint; count: TGLsizei); stdcall;
    glUnlockArraysEXT: procedure; stdcall;
 
-   // EXT_vertex_array
-   glArrayElementEXT: procedure(I: TGLint); stdcall;
-   glColorPointerEXT: procedure(size: TGLInt; atype: TGLenum; stride, count: TGLsizei; data: Pointer); stdcall;
-   glDrawArraysEXT: procedure(mode: TGLenum; first: TGLInt; count: TGLsizei); stdcall;
-   glEdgeFlagPointerEXT: procedure(stride, count: TGLsizei; data: PGLboolean); stdcall;
-   glGetPointervEXT: procedure(pname: TGLEnum; var params); stdcall;
-   glIndexPointerEXT: procedure(AType: TGLEnum; stride, count: TGLsizei; P: Pointer); stdcall;
-   glNormalPointerEXT: procedure(AType: TGLsizei; stride, count: TGLsizei; P: Pointer); stdcall;
-   glTexCoordPointerEXT: procedure(size: TGLint; AType: TGLenum;  stride, count: TGLsizei; P: Pointer); stdcall;
-   glVertexPointerEXT: procedure(size: TGLint; AType: TGLenum; stride, count: TGLsizei; P: Pointer); stdcall;
-
    // EXT_stencil_two_side
    glActiveStencilFaceEXT: procedure(face: TGLenum); stdcall;
 
@@ -3502,21 +3457,10 @@ begin
    glLockArraysEXT := wglGetProcAddress('glLockArraysEXT');
    glUnlockArraysEXT := wglGetProcAddress('glUnlockArraysEXT');
 
-   // EXT_vertex_array
-   glArrayElementEXT := wglGetProcAddress('glArrayElementEXT');
-   glColorPointerEXT := wglGetProcAddress('glColorPointerEXT');
-   glDrawArraysEXT := wglGetProcAddress('glDrawArraysEXT');
-   glEdgeFlagPointerEXT := wglGetProcAddress('glEdgeFlagPointerEXT'); 
-   glGetPointervEXT := wglGetProcAddress('glGetPointervEXT'); 
-   glIndexPointerEXT := wglGetProcAddress('glIndexPointerEXT');
-   glNormalPointerEXT := wglGetProcAddress('glNormalPointerEXT');
-   glTexCoordPointerEXT := wglGetProcAddress('glTexCoordPointerEXT'); 
-   glVertexPointerEXT := wglGetProcAddress('glVertexPointerEXT'); 
-
    // ARB_multitexture
-   glMultiTexCoord1dARB := wglGetProcAddress('glMultiTexCoord1dARB'); 
+   glMultiTexCoord1dARB := wglGetProcAddress('glMultiTexCoord1dARB');
    glMultiTexCoord1dVARB := wglGetProcAddress('glMultiTexCoord1dVARB');
-   glMultiTexCoord1fARBP := wglGetProcAddress('glMultiTexCoord1fARBP'); 
+   glMultiTexCoord1fARBP := wglGetProcAddress('glMultiTexCoord1fARBP');
    glMultiTexCoord1fVARB := wglGetProcAddress('glMultiTexCoord1fVARB'); 
    glMultiTexCoord1iARB := wglGetProcAddress('glMultiTexCoord1iARB'); 
    glMultiTexCoord1iVARB := wglGetProcAddress('glMultiTexCoord1iVARB'); 
@@ -4044,7 +3988,6 @@ begin
    GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
    GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
    GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D');
-   GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array');
 
    GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test'); 
 
