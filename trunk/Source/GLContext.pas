@@ -347,8 +347,12 @@ procedure RegisterGLContextClass(aGLContextClass : TGLContextClass);
 
 function CurrentGLContext : TGLContext;
 
+{: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
 procedure CheckOpenGLError;
+{: Clears all pending OpenGL errors. }
 procedure ClearGLError;
+{: Raises an EOpenGLError with 'msg' error string. }
+procedure RaiseOpenGLError(const msg : String);
 
 var
    GLContextManager : TGLContextManager;
@@ -416,6 +420,13 @@ var
 begin
    n:=0;
    while (glGetError<>GL_NO_ERROR) and (n<6) do Inc(n);
+end;
+
+// RaiseOpenGLError
+//
+procedure RaiseOpenGLError(const msg : String);
+begin
+   raise EOpenGLError.Create(msg);
 end;
 
 // RegisterGLContextClass

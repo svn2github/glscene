@@ -1906,13 +1906,6 @@ type
 
    TInvokeInfoForm  = procedure (aSceneBuffer : TGLSceneBuffer);
 
-{: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
-procedure CheckOpenGLError;
-{: Clears all pending OpenGL errors. }
-procedure ClearGLError;
-{: Raises an EOpenGLError with 'msg' error string. }
-procedure RaiseOpenGLError(const msg : String);
-
 {: Register an event handler triggered by any TGLBaseSceneObject Name change.<p>
    *INCOMPLETE*, currently allows for only 1 (one) event, and is used by
    GLSceneEdit in the IDE. }
@@ -1950,40 +1943,6 @@ var
    vCounterFrequency : Int64;
 
 //------------------ external global routines ----------------------------------
-
-// CheckOpenGLError
-//
-procedure CheckOpenGLError;
-var
-   err : Cardinal;
-   count : Word;
-begin
-   err:=glGetError;
-   if err<>GL_NO_ERROR then begin
-      count:=0;
-      // Because under some circumstances reading the error code creates a new error
-      // and thus hanging up the thread, we limit the loop to 6 reads.
-      try
-         while (glGetError<>GL_NO_ERROR) and (count<6) do Inc(count);
-      except
-         // Egg : ignore exceptions here, will perhaps avoid problem expressed before
-      end;
-      raise EOpenGLError.Create(gluErrorString(err));
-   end;
-end;
-
-procedure ClearGLError;
-var
-   n : Integer;
-begin
-   n:=0;
-   while (glGetError<>GL_NO_ERROR) and (n<16) do Inc(n);
-end;
-
-procedure RaiseOpenGLError(const msg : String);
-begin
-   raise EOpenGLError.Create(msg);
-end;
 
 // AxesBuildList
 //
