@@ -181,6 +181,7 @@ contains
   GLVerletClasses in '..\Source\GLVerletClasses.pas',
   VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
   GLImposter in '..\Source\GLImposter.pas',
-  GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas';
+  GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas',
+  GLWaterPlane in '..\Source\GLWaterPlane.pas';
 
 end.
