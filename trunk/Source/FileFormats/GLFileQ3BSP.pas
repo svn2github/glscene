@@ -169,7 +169,7 @@ begin
          mo.Normals.Add(bsp.Vertices[i].Normal);
          mo.TexCoords.Add(bsp.Vertices[i].TextureCoord);
          if Assigned(lightMapLib) and vGLFileQ3BSPLoadMaterials then
-            mo.LighmapTexCoords.Add(bsp.Vertices[i].LightmapCoord)
+            mo.LightMapTexCoords.Add(bsp.Vertices[i].LightmapCoord)
       end;
       mo.TexCoords.Scale(AffineVectorMake(1, -1, 0));
       mo.TexCoords.Translate(YVector);

@@ -570,7 +570,7 @@ begin
          Add(VectorCombine(List[iA], List[iB], fA, fB));
       with TexCoords do if Count>0 then
          Add(VectorCombine(List[iA], List[iB], fA, fB));
-      with LighmapTexCoords do if Count>0 then
+      with LightMapTexCoords do if Count>0 then
          Add(TexPointCombine(List[iA], List[iB], fA, fB));
    end;
 end;
@@ -602,7 +602,7 @@ begin
          midTexCoord:=VectorLerp(List[iA], List[iB], f);
          spawn:=spawn or (VectorSpacing(midTexCoord, List[iMid])>cTJunctionEpsilon);
       end;
-      with LighmapTexCoords do if Count>0 then begin
+      with LightMapTexCoords do if Count>0 then begin
          midLightmapTexCoord:=TexPointLerp(List[iA], List[iB], f);
          spawn:=spawn or (VectorSpacing(midLightmapTexCoord, List[iMid])>cTJunctionEpsilon);
       end;
@@ -614,7 +614,7 @@ begin
             Add(midColor);
          with TexCoords do if Count>0 then
             Add(midTexCoord);
-         with LighmapTexCoords do if Count>0 then
+         with LightMapTexCoords do if Count>0 then
             Add(midLightmapTexCoord);
       end else Result:=iMid;
    end;

@@ -1144,7 +1144,7 @@ type
          {: Defines wether materials declared in the vector file mesh are used.<p>
             You must also define the MaterialLibrary property. }
          property UseMeshMaterials : Boolean read FUseMeshMaterials write SetUseMeshMaterials default True;
-         {: Lighmap library where lightmaps will be stored/retrieved.<p>
+         {: LightMap library where lightmaps will be stored/retrieved.<p>
             If this property is not defined, lightmaps won't be used.
             Lightmaps currently *always* use the second texture unit (unit 1),
             and may interfere with multi-texture materials. }
@@ -2847,7 +2847,7 @@ begin
    inherited WriteToFiler(writer);
    with writer do begin
       if LightMapTexCoords.Count>0 then begin
-         WriteInteger(1);        // Archive Version 1, added FLighmapTexCoords
+         WriteInteger(1);        // Archive Version 1, added FLightMapTexCoords
          FTexCoords.WriteToFiler(writer);
          FLightMapTexCoords.WriteToFiler(writer);
       end else begin
