@@ -40,7 +40,7 @@ interface
 
 uses
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, GLScene, GLTexture,
-  GLCadencer, GLMisc, GLObjects, GLParticles, ExtCtrls, GLBehaviours, Geometry,
+  GLCadencer, GLMisc, GLObjects, GLParticles, ExtCtrls, GLBehaviours, VectorGeometry,
   GLWin32Viewer;
 
 type

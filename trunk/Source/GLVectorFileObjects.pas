@@ -108,7 +108,7 @@ unit GLVectorFileObjects;
 
 interface
 
-uses Classes, GLScene, OpenGL1x, Geometry, SysUtils, GLMisc, GLTexture,
+uses Classes, GLScene, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLTexture,
    GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB,
    ApplicationFileIO, GLSilhouette;
 
@@ -5847,9 +5847,9 @@ begin
       end else begin
          baseDelta:=anim.EndFrame-anim.StartFrame;
          lerpFactor:=anim.StartFrame+baseDelta*Ratio;
-         frameIndex1:=Geometry.Trunc(lerpFactor);
+         frameIndex1:=VectorGeometry.Trunc(lerpFactor);
          frameIndex2:=frameIndex1+1;
-         lerpFactor:=Geometry.Frac(lerpFactor);
+         lerpFactor:=VectorGeometry.Frac(lerpFactor);
       end;
       weight:=1;
    end;

@@ -74,7 +74,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Geometry, OpenGL1x;
+uses SysUtils, VectorGeometry, OpenGL1x;
 
 // ------------------
 // ------------------ TGLWindowsBitmapFont ------------------

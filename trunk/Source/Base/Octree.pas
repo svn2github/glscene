@@ -22,7 +22,7 @@ unit Octree;
 
 interface
 
-uses Classes, Geometry, VectorLists, GeometryBB;
+uses Classes, VectorGeometry, VectorLists, GeometryBB;
 
 type
 

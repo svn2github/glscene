@@ -65,7 +65,7 @@ implementation
 
 {$R *.DFM}
 
-uses SysUtils, Geometry, GLMisc;
+uses SysUtils, VectorGeometry, GLMisc;
 
 var
 	vVectorEditorForm : TVectorEditorForm;

@@ -16,7 +16,7 @@ unit FileGL2;
 interface
 
 uses
-  Classes,VectorTypes,SysUtils,Geometry;
+  Classes,VectorTypes,SysUtils,VectorGeometry;
 
 type
   TGLMHeader = record

@@ -79,7 +79,7 @@ implementation
 // ---------------------------------------------------------------------
 
 
-uses SysUtils, FMod, Geometry;
+uses SysUtils, FMod, VectorGeometry;
 
 type
    TFMODInfo =  record

@@ -23,7 +23,7 @@ unit MeshUtils;
 
 interface
 
-uses PersistentClasses, VectorLists, Geometry;
+uses PersistentClasses, VectorLists, VectorGeometry;
 
 {: Converts a triangle strips into a triangle list.<p>
    Vertices are added to list, based on the content of strip. Both non-indexed

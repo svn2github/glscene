@@ -27,7 +27,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, VectorLists,
-  GLSkydome, GLWin32Viewer, Geometry, GLHeightTileFileHDS, GLWindowsFont,
+  GLSkydome, GLWin32Viewer, VectorGeometry, GLHeightTileFileHDS, GLWindowsFont,
   GLBitmapFont, ComCtrls, GLRoamPatch, GLVectorFileObjects;
 
 type

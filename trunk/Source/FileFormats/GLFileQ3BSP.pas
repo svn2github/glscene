@@ -44,7 +44,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Q3BSP, Geometry, VectorLists, SysUtils, GLBSP, GLTexture, GLGraphics,
+uses Q3BSP, VectorGeometry, VectorLists, SysUtils, GLBSP, GLTexture, GLGraphics,
    Graphics;
 
 // ------------------

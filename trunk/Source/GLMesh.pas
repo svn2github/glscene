@@ -21,7 +21,7 @@ unit GLMesh;
 
 interface
 
-uses Classes, GLMisc, GLScene, Geometry, OpenGL1x, GLTexture;
+uses Classes, GLMisc, GLScene, VectorGeometry, OpenGL1x, GLTexture;
 
 type
 

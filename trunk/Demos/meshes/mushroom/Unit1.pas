@@ -60,7 +60,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry, GLTexture, JPeg, GLFile3DS;
+uses VectorGeometry, GLTexture, JPeg, GLFile3DS;
 
 const
    cSpread = 90;

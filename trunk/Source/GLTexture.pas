@@ -121,7 +121,7 @@ unit GLTexture;
 interface
 
 uses
-  Classes, OpenGL1x, Geometry, SysUtils, GLMisc, GLGraphics, GLContext,
+  Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
   GLCrossPlatform, PersistentClasses;
 
 type

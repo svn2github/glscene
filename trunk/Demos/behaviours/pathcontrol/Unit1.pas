@@ -41,7 +41,7 @@ implementation
 {$R *.DFM}
 
 uses
-   SysUtils, Geometry, GLCrossPlatform;
+   SysUtils, VectorGeometry, GLCrossPlatform;
 
 procedure TForm1.FormActivate(Sender: TObject);
 var

@@ -12,7 +12,7 @@
    equivalent (even with VSync on, to limit the framerate).<p>
 
    Never forget a memory viewer will use 3D board memory, thus reducing
-   available space for geometry and textures... try using only one memory
+   available space for VectorGeometry and textures... try using only one memory
    viewer and maximize its use.
 
    This sample will only work on 3D boards that support WGL_ARB_pbuffer, which

@@ -8,7 +8,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ExtCtrls, GLScene, GLMisc, GLGraph, GLObjects, GLTexture, StdCtrls,
-  ComCtrls,jpeg, glgraphics, VectorTypes, geometry, GLHUDObjects,
+  ComCtrls,jpeg, glgraphics, VectorTypes, VectorGeometry, GLHUDObjects,
   GLzBuffer, OpenGL1x, GLCadencer, AsyncTimer, GLWin32Viewer, GLTeapot,
   GLGeomObjects;
 

@@ -5,7 +5,7 @@ unit TypesSTL;
 
 interface
 
-uses Geometry;
+uses VectorGeometry;
 
 type
 

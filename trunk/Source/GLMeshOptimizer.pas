@@ -10,7 +10,7 @@ unit GLMeshOptimizer;
 
 interface
 
-uses Geometry, GLVectorFileObjects;
+uses VectorGeometry, GLVectorFileObjects;
 
 type
 

@@ -63,7 +63,7 @@ var
 
 implementation
 
-uses Geometry;
+uses VectorGeometry;
 
 {$R *.DFM}
 

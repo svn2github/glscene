@@ -13,7 +13,7 @@ unit GLPerlin;
 interface
 
 uses
-  Classes, SysUtils, Graphics, Geometry, GLPerlinBase, GLHeightData;
+  Classes, SysUtils, Graphics, VectorGeometry, GLPerlinBase, GLHeightData;
 
 Type
   TGLPerlinInterpolation = (pi_none, pi_simple, pi_linear,pi_Smoothed, pi_Cosine, pi_cubic);

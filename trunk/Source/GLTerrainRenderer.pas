@@ -24,7 +24,7 @@ unit GLTerrainRenderer;
 
 interface
 
-uses Classes, GLScene, GLHeightData, GLTexture, Geometry, GLContext, GLROAMPatch,
+uses Classes, GLScene, GLHeightData, GLTexture, VectorGeometry, GLContext, GLROAMPatch,
    VectorLists;
 
 type

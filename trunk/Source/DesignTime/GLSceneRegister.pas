@@ -130,7 +130,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-   Geometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
+   VectorGeometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,

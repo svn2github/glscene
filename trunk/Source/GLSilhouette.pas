@@ -16,7 +16,7 @@ unit GLSilhouette;
 
 interface
 
-uses Classes, GLMisc, Geometry, VectorLists;
+uses Classes, GLMisc, VectorGeometry, VectorLists;
 
 type
    // TGLSilhouetteStyle

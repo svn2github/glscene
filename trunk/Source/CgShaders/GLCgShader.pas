@@ -29,7 +29,7 @@ unit GLCgShader;
 interface
 
 uses
-  Classes, Geometry, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
+  Classes, VectorGeometry, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
 
 type
   TCustomCgShader = class;

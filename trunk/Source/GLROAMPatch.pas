@@ -13,7 +13,7 @@ unit GLROAMPatch;
 
 interface
 
-uses Geometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext;
+uses VectorGeometry, GLHeightData, VectorLists, GLCrossPlatform, GLContext;
 
 type
 

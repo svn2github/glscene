@@ -17,7 +17,7 @@ unit BumpMapping;
 interface
 
 uses
-  Geometry, VectorLists, Graphics;
+  VectorGeometry, VectorLists, Graphics;
 
 type
   TNormalMapSpace = (nmsObject, nmsTangent);

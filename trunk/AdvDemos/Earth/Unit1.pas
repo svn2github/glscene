@@ -75,7 +75,7 @@ implementation
 
 {$R *.dfm}
 
-uses Jpeg, OpenGL1x, Geometry, GLContext;
+uses Jpeg, OpenGL1x, VectorGeometry, GLContext;
    // accurate movements left for later... or the astute reader
    // USolarSystem;
 
@@ -305,9 +305,9 @@ end;
 
 procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
-var
-   d : Double;
-   p : TAffineVector;
+//var
+//   d : Double;
+//   p : TAffineVector;
 begin
 //   d:=GMTDateTimeToJulianDay(Now-2+newTime*timeMultiplier);
    // make earth rotate

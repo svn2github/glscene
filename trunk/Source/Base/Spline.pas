@@ -17,7 +17,7 @@ unit Spline;
 
 interface
 
-uses Geometry;
+uses VectorGeometry;
 
 type
 

@@ -39,7 +39,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry;
+uses VectorGeometry;
 
 procedure TForm1.MoveCenterNodeTo(x, y : Integer);
 begin

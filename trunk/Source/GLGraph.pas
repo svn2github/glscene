@@ -23,7 +23,7 @@ unit GLGraph;
 
 interface
 
-uses Classes, GLScene, Geometry, GLMisc, GLTexture, GLObjects, VectorLists;
+uses Classes, GLScene, VectorGeometry, GLMisc, GLTexture, GLObjects, VectorLists;
 
 type
 

@@ -10,7 +10,7 @@ unit GLBaseMeshSilhouette;
 
 interface
 
-uses Classes, GLMisc, Geometry, VectorLists, GLVectorFileObjects, GLSilhouette;
+uses Classes, GLMisc, VectorGeometry, VectorLists, GLVectorFileObjects, GLSilhouette;
 
 type
    // TFaceGroupConnectivity

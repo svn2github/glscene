@@ -14,7 +14,7 @@ unit GLPortal;
 
 interface
 
-uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, Geometry;
+uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, VectorGeometry;
 
 type
 

@@ -15,7 +15,7 @@ interface
 
 uses
   Classes, SysUtils, GLVectorFileObjects, GLTexture, ApplicationFileIO,
-  Geometry, File3DS, Types3DS;
+  VectorGeometry, File3DS, Types3DS;
 
 type
    // TGL3DSVectorFile

@@ -65,7 +65,7 @@ unit GLMisc;
 
 interface
 
-uses Classes, Geometry, SysUtils, OpenGL1x, Spline, VectorLists;
+uses Classes, VectorGeometry, SysUtils, OpenGL1x, Spline, VectorLists;
 
 {$i GLScene.inc}
 
@@ -1382,14 +1382,14 @@ end;
 //
 function TGLCoordinates.VectorLength : TGLFloat;
 begin
-   Result:=Geometry.VectorLength(FCoords);
+   Result:=VectorGeometry.VectorLength(FCoords);
 end;
 
 // VectorNorm
 //
 function TGLCoordinates.VectorNorm : TGLFloat;
 begin
-   Result:=Geometry.VectorNorm(FCoords);
+   Result:=VectorGeometry.VectorNorm(FCoords);
 end;
 
 // Equals
@@ -1404,7 +1404,7 @@ end;
 procedure TGLCoordinates.SetVector(const x, y, z : Single);
 begin
    Assert(FStyle<>csPoint);
-   Geometry.SetVector(FCoords, x, y, z);
+   VectorGeometry.SetVector(FCoords, x, y, z);
 	NotifyChange(Self);
 end;
 
@@ -1413,7 +1413,7 @@ end;
 procedure TGLCoordinates.SetVector(const v : TAffineVector);
 begin
    Assert(FStyle<>csPoint);
-   Geometry.SetVector(FCoords, v);
+   VectorGeometry.SetVector(FCoords, v);
 	NotifyChange(Self);
 end;
 
@@ -1422,7 +1422,7 @@ end;
 procedure TGLCoordinates.SetVector(const v : TVector);
 begin
    Assert(FStyle<>csPoint);
-   Geometry.SetVector(FCoords, v);
+   VectorGeometry.SetVector(FCoords, v);
 	NotifyChange(Self);
 end;
 
@@ -1431,7 +1431,7 @@ end;
 procedure TGLCoordinates.SetVector(const x, y, z, w : Single);
 begin
    Assert(FStyle<>csPoint);
-   Geometry.SetVector(FCoords, x, y, z, w);
+   VectorGeometry.SetVector(FCoords, x, y, z, w);
 	NotifyChange(Self);
 end;
 
@@ -1463,7 +1463,7 @@ end;
 procedure TGLCoordinates.SetPoint(const x, y, z : Single);
 begin
    Assert(FStyle<>csVector);
-   Geometry.MakePoint(FCoords, x, y, z);
+   VectorGeometry.MakePoint(FCoords, x, y, z);
 	NotifyChange(Self);
 end;
 
@@ -1472,7 +1472,7 @@ end;
 procedure TGLCoordinates.SetPoint(const v : TAffineVector);
 begin
    Assert(FStyle<>csVector);
-   Geometry.MakePoint(FCoords, v);
+   VectorGeometry.MakePoint(FCoords, v);
 	NotifyChange(Self);
 end;
 
@@ -1481,7 +1481,7 @@ end;
 procedure TGLCoordinates.SetPoint(const v : TVector);
 begin
    Assert(FStyle<>csVector);
-   Geometry.MakePoint(FCoords, v);
+   VectorGeometry.MakePoint(FCoords, v);
 	NotifyChange(Self);
 end;
 
@@ -1520,7 +1520,7 @@ end;
 //
 function TGLCoordinates.GetAsAffineVector : TAffineVector;
 begin
-   Geometry.SetVector(Result, FCoords);
+   VectorGeometry.SetVector(Result, FCoords);
 end;
 
 // SetCoordinate
@@ -1596,7 +1596,7 @@ end;
 //
 procedure TGLNode.SetAsAffineVector(const value : TAffineVector);
 begin
-   Geometry.SetVector(FCoords, value);
+   VectorGeometry.SetVector(FCoords, value);
    (Collection as TGLNodes).NotifyChange;
 end;
 
@@ -1604,7 +1604,7 @@ end;
 //
 function TGLNode.GetAsAffineVector : TAffineVector;
 begin
-   Geometry.SetVector(Result, FCoords);
+   VectorGeometry.SetVector(Result, FCoords);
 end;
 
 // SetCoordinate

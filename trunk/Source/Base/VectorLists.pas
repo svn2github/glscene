@@ -36,7 +36,7 @@ unit VectorLists;
 
 interface
 
-uses Classes, VectorTypes, Geometry, PersistentClasses;
+uses Classes, VectorTypes, VectorGeometry, PersistentClasses;
 
 type
 

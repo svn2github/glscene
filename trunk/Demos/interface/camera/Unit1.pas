@@ -50,7 +50,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry, Math;
+uses VectorGeometry, Math;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

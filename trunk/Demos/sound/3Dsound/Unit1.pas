@@ -97,7 +97,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry, SysUtils;
+uses VectorGeometry, SysUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

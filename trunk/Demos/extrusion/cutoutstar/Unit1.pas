@@ -18,7 +18,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  GLCadencer, GLScene, GLExtrusion, GLMisc, Geometry, ExtCtrls, GLMultiPolygon,
+  GLCadencer, GLScene, GLExtrusion, GLMisc, VectorGeometry, ExtCtrls, GLMultiPolygon,
   GLWin32Viewer;
 
 type

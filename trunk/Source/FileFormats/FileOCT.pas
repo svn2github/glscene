@@ -13,7 +13,7 @@ unit FileOCT;
 
 interface
 
-uses Classes, Geometry, VectorLists;
+uses Classes, VectorGeometry, VectorLists;
 
 type
 

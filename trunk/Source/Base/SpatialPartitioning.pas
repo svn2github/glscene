@@ -26,7 +26,7 @@ unit SpatialPartitioning;
 interface
 
 uses
-  Classes, Geometry, SysUtils, GeometryBB, PersistentClasses;
+  Classes, VectorGeometry, SysUtils, GeometryBB, PersistentClasses;
 
 const
   cOctree_LEAF_TRHESHOLD = 30;

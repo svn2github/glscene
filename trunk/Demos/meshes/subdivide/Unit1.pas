@@ -58,7 +58,7 @@ implementation
 
 {$R *.dfm}
 
-uses MeshUtils, Geometry, Jpeg, TGA, GLFileObj, GLCrossPlatform, 
+uses MeshUtils, VectorGeometry, Jpeg, TGA, GLFileObj, GLCrossPlatform, 
      GLFile3DS, GLFileMD2, GLFileSMD;
 
 procedure TForm1.BULoadClick(Sender: TObject);

@@ -14,7 +14,7 @@ unit GLFileTIN;
 interface
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, ApplicationFileIO, Geometry;
+  Classes, SysUtils, GLVectorFileObjects, ApplicationFileIO, VectorGeometry;
 
 type
    // TGLTINVectorFile

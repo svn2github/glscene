@@ -11,7 +11,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer, GLMisc,
-  GLFileMS3D, VerletClasses, VectorTypes, VectorLists, Geometry, GLTexture,
+  GLFileMS3D, VerletClasses, VectorTypes, VectorLists, VectorGeometry, GLTexture,
   OpenGL1x, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
   GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL,
   GeometryBB, SpatialPartitioning, GLGeomObjects;

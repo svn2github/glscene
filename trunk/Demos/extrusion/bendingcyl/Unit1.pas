@@ -53,7 +53,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry;
+uses VectorGeometry;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);

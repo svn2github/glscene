@@ -16,7 +16,7 @@ unit GLNavigator;
 
 interface
 
-uses SysUtils, Classes, Geometry, GLScene, GLMisc, Windows, Forms;
+uses SysUtils, Classes, VectorGeometry, GLScene, GLMisc, Windows, Forms;
 
 type
 

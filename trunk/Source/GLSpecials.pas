@@ -8,7 +8,7 @@ unit GLSpecials;
 
 interface
 
-uses Windows, Classes, Geometry, GLScene, OpenGL1x, GLTexture;
+uses Windows, Classes, VectorGeometry, GLScene, OpenGL1x, GLTexture;
 
 type // lens flares, used in TLightSource
      PFlare = ^TFlare;

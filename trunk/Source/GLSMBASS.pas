@@ -76,7 +76,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses Forms, SysUtils, Bass, Geometry, Dialogs;
+uses Forms, SysUtils, Bass, VectorGeometry, Dialogs;
 
 type
    TBASSInfo =  record

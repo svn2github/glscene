@@ -47,7 +47,7 @@ implementation
 
 {$R *.dfm}
 
-uses Geometry, GLFile3DS;
+uses VectorGeometry, GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

@@ -23,7 +23,7 @@ interface
 
 uses
   Windows, Forms, GLScene, GLObjects, GLMisc, Classes, Controls, SysUtils, Graphics,
-  GLWin32Viewer, ExtCtrls, Geometry, StdCtrls, GLSpaceText,
+  GLWin32Viewer, ExtCtrls, VectorGeometry, StdCtrls, GLSpaceText,
   ComCtrls, GLCollision, GLVectorFileObjects, GLCrossPlatform, VectorLists,
   Grids, GLFile3DS;
 

@@ -23,7 +23,7 @@ interface
 }
 
 uses
-  OpenGL1x, Geometry, ODEImport, GLScene, VectorTypes, VectorLists,
+  OpenGL1x, VectorGeometry, ODEImport, GLScene, VectorTypes, VectorLists,
   GLObjects, GLVerletClothify, GLVectorFileObjects;
 
   procedure DrawBox(Sides : TdVector3);

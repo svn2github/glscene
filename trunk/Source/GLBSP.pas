@@ -16,7 +16,8 @@ unit GLBSP;
 
 interface
 
-uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, Geometry, VectorLists;
+uses Classes, GLVectorFileObjects, GLScene, GLTexture, GLMisc, VectorGeometry,
+   VectorLists;
 
 type
 

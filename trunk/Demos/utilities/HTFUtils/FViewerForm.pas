@@ -74,7 +74,7 @@ implementation
 
 {$R *.dfm}
 
-uses FNavForm, Geometry;
+uses FNavForm, VectorGeometry;
 
 { Quick'n dirty parser for palette file format '.pal', in which each line defines
   nodes in the color ramp palette:

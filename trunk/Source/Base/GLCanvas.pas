@@ -25,7 +25,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, Geometry
+uses Classes, VectorGeometry
    {$ifdef GLS_COMPILER_6_UP}, Types{$endif}
    {$ifdef WIN32}, Windows{$endif};
 

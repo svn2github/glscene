@@ -62,7 +62,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry, Polynomials, GLCrossPlatform;
+uses VectorGeometry, Polynomials, GLCrossPlatform;
 
 procedure TForm1.BUCastClick(Sender: TObject);
 var

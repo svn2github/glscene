@@ -266,7 +266,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Geometry, Spline, VectorLists, XOpenGL;
+uses SysUtils, VectorGeometry, Spline, VectorLists, XOpenGL;
 
 // ------------------
 // ------------------ TGLRevolutionSolid ------------------

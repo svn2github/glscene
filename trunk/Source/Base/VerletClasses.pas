@@ -42,7 +42,7 @@ unit VerletClasses;
 
 interface
 
-uses Classes, Geometry, SysUtils, VectorLists, SpatialPartitioning,
+uses Classes, VectorGeometry, SysUtils, VectorLists, SpatialPartitioning,
   GeometryBB;
 
 const

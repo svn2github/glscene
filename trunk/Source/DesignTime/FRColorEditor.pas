@@ -12,7 +12,7 @@ interface
 
 uses
   Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEdit, Dialogs, Controls,
-  Classes, Geometry, Graphics, SysUtils;
+  Classes, VectorGeometry, Graphics, SysUtils;
 
 type
 

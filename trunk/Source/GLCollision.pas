@@ -17,7 +17,7 @@ unit GLCollision;
 
 interface
 
-uses Classes, GLScene, XCollection, Geometry, VectorLists, GLVectorFileObjects,
+uses Classes, GLScene, XCollection, VectorGeometry, VectorLists, GLVectorFileObjects,
    GeometryBB, GLCrossPlatform, dialogs;
 
 type

@@ -53,7 +53,7 @@ implementation
 
 {$R *.dfm}
 
-uses Geometry, VectorTypes;
+uses VectorGeometry, VectorTypes;
 
 var
   FadeOutCount : integer;

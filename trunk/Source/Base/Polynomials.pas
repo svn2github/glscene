@@ -32,7 +32,7 @@ unit Polynomials;
 
 interface
 
-uses Geometry;
+uses VectorGeometry;
 
 type
    TDoubleArray = array of Double;

@@ -17,7 +17,7 @@ unit Q3MD3;
 interface
 
 uses
-  Classes,SysUtils,ApplicationFileIO,Geometry,GLVectorFileObjects,
+  Classes,SysUtils,ApplicationFileIO,VectorGeometry,GLVectorFileObjects,
   VectorLists,GLTexture,FileMD3;
 
 type

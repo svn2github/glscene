@@ -23,7 +23,7 @@ unit GLParticleFX;
 
 interface
 
-uses Classes, PersistentClasses, GLScene, Geometry, XCollection, GLTexture,
+uses Classes, PersistentClasses, GLScene, VectorGeometry, XCollection, GLTexture,
      GLCadencer, GLMisc, VectorLists, GLGraphics, GLContext;
 
 type

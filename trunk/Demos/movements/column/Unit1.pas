@@ -55,7 +55,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry, SysUtils;
+uses VectorGeometry, SysUtils;
 
 const
 	cNbPlanes = 30;

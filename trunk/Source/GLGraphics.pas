@@ -218,7 +218,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Geometry;
+uses SysUtils, VectorGeometry;
 
 // GammaCorrectRGBArray
 //

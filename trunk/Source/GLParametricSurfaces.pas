@@ -24,7 +24,7 @@ unit GLParametricSurfaces;
 interface
 
 uses
-  GLVectorFileObjects, CurvesAndSurfaces, Geometry, VectorLists,
+  GLVectorFileObjects, CurvesAndSurfaces, VectorGeometry, VectorLists,
   PersistentClasses, GLTexture, OpenGL1x;
 
 type

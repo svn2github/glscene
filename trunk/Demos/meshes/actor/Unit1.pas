@@ -86,7 +86,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry, SysUtils, Jpeg;
+uses VectorGeometry, SysUtils, Jpeg;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

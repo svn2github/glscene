@@ -107,7 +107,7 @@ var
 
 implementation
 
-uses GLTexture, Geometry;
+uses GLTexture, VectorGeometry;
 
 {$R *.dfm}
 

@@ -15,7 +15,7 @@ interface
 
 uses
   Classes, SysUtils, GLVectorFileObjects, GLMisc, GLTexture, ApplicationFileIO,
-  Geometry, FileMD3;
+  VectorGeometry, FileMD3;
 
 type
 

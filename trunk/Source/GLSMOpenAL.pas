@@ -74,7 +74,7 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses Forms, Geometry, Dialogs, al, alut, alTypes;
+uses Forms, VectorGeometry, Dialogs, al, alut, alTypes;
 
 procedure Register;
 begin

@@ -22,7 +22,7 @@ unit GLLensFlare;
 interface
 
 uses
-   Classes, GLScene, Geometry, GLObjects, GLTexture, OpenGL1x, GLMisc, GLContext;
+   Classes, GLScene, VectorGeometry, GLObjects, GLTexture, OpenGL1x, GLMisc, GLContext;
 
 type
 

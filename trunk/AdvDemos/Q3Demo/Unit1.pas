@@ -10,7 +10,7 @@ interface
 uses
   Windows,Forms,ExtCtrls,GLCadencer,GLScene,GLObjects,GLMisc,
   ComCtrls,Classes,Controls,GLWin32Viewer,SysUtils,StdCtrls,
-  GLVectorFileObjects,GLShadowPlane,Geometry,GLTexture,
+  GLVectorFileObjects,GLShadowPlane,VectorGeometry,GLTexture,
   GLParticleFX,JPeg,Dialogs,
 
   GLFileMD3, // MD3 loading into GLScene
@@ -227,8 +227,8 @@ begin
 end;
 
 procedure TForm1.BuildModel;
-var
-   t: integer;
+//var
+//   t: integer;
 begin
   // Load model data from MD3 files into the actor
   //

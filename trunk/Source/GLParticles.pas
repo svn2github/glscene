@@ -14,7 +14,7 @@ unit GLParticles;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL1x, GLTexture, GLMisc;
+uses Classes, GLScene, VectorGeometry, OpenGL1x, GLTexture, GLMisc;
 
 type
 

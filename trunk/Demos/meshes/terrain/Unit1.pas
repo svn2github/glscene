@@ -44,7 +44,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, Geometry, GLLensFlare;
+  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, VectorGeometry, GLLensFlare;
 
 type
   TForm1 = class(TForm)

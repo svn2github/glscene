@@ -34,7 +34,7 @@ unit GLHeightData;
 
 interface
 
-uses Classes, Graphics, Geometry, GLCrossPlatform;
+uses Classes, Graphics, VectorGeometry, GLCrossPlatform;
 
 {$i GLScene.inc}
 

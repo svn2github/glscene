@@ -16,7 +16,7 @@ unit GLSound;
 
 interface
 
-uses Classes, GLSoundFileObjects, GLScene, XCollection, Geometry, GLCadencer,
+uses Classes, GLSoundFileObjects, GLScene, XCollection, VectorGeometry, GLCadencer,
      GLMisc;
 
 {$i GLScene.inc}

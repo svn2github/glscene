@@ -15,7 +15,7 @@ unit GLMovement;
 interface
 
 uses
-  Classes, GLScene, Geometry, GLMisc, XCollection, OpenGL1x, Spline, GLObjects;
+  Classes, GLScene, VectorGeometry, GLMisc, XCollection, OpenGL1x, Spline, GLObjects;
 
 type
 

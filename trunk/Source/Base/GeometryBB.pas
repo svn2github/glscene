@@ -23,7 +23,7 @@ unit GeometryBB;
 
 interface
 
-uses Geometry;
+uses VectorGeometry;
 
 type
 

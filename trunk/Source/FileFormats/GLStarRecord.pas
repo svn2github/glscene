@@ -10,7 +10,7 @@ unit GLStarRecord;
 
 interface
 
-uses Geometry;
+uses VectorGeometry;
 
 type
    TGLStarRecord = packed record

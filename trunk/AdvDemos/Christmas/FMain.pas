@@ -23,7 +23,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer, GLMisc,
-  GLTexture, ExtCtrls, GLCadencer, GLSkydome, GLParticleFX, Geometry,
+  GLTexture, ExtCtrls, GLCadencer, GLSkydome, GLParticleFX, VectorGeometry,
   GLLensFlare, GLSound, GLSMBASS, GLBitmapFont, GLWindowsFont, GLHUDObjects,
   ScreenSaver, GLShadowPlane, GLFile3DS, GLGeomObjects;
 

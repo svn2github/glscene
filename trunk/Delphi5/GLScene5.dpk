@@ -39,7 +39,7 @@ contains
   GLStrings in '..\Source\GLStrings.pas',
   GLTexture in '..\Source\GLTexture.pas',
   GLScreen in '..\Source\GLScreen.pas',
-  Geometry in '..\Source\Base\Geometry.pas',
+  VectorGeometry in '..\Source\Base\VectorGeometry.pas',
   GLSceneEdit in '..\Source\DesignTime\GLSceneEdit.pas' {GLSceneEditForm},
   PlugInIntf in '..\Source\PlugIn\PlugInIntf.pas',
   PlugInManager in '..\Source\PlugIn\PlugInManager.pas',

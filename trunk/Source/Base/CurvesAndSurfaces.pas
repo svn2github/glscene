@@ -16,7 +16,7 @@ unit CurvesAndSurfaces;
 interface
 
 uses
-  SysUtils, Geometry, VectorLists;
+  SysUtils, VectorGeometry, VectorLists;
 
 type
   TBSplineContinuity = (bscUniformNonPeriodic, bscUniformPeriodic);
