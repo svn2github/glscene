@@ -164,6 +164,10 @@ const
 
 {$i GLScene.inc}
 
+// define for turning off assembly routines in this unit
+// *experimental* and incomplete
+{.$define GEOMETRY_NO_ASM}
+
 type
    // data types needed for 3D graphics calculation,
    // included are 'C like' aliases for each type (to be
@@ -1377,9 +1381,6 @@ var
    // + 2 : use Intel SSE code (Pentium III, NOT IMPLEMENTED YET !)
    vSIMD : Byte = 0;
 
-// define for turning off assembly routines in this unit
-// *experimental* and incomplete
-{.$define GEOMETRY_NO_ASM}
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
