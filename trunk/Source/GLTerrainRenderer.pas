@@ -192,8 +192,8 @@ var
    pLocal : TVector;
 begin
    if Assigned(HeightDataSource) then begin
-      pLocal:=VectorTransform(p, InvAbsoluteMatrix);
-      Result:=(HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1])-128)*Scale.Z;
+      pLocal:=AbsoluteToLocal(p);
+      Result:=(HeightDataSource.InterpolatedHeight(pLocal[0]-TileSize*0.5, pLocal[1]-TileSize*0.5)-128)*Scale.Z;
    end else Result:=0;
 end;
 

@@ -1087,7 +1087,7 @@ begin
    // some picture formats trigger a "change" when drawed
    Picture.OnChange:=nil;
    try
-      FBitmap.Canvas.StretchDraw(Rect(0, 0, size-1, size-1), Picture.Graphic);
+      FBitmap.Canvas.StretchDraw(Rect(0, 0, size, size), Picture.Graphic);
    finally
       Picture.OnChange:=OnPictureChanged;
    end;
