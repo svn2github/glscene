@@ -2,7 +2,10 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
-      <li>07/09/04 - NelC - Added profiles VP40, FP40 from Cg 1.3 beta 2,
+      <li>24/10/04 - NelC - Added SetAsScalar for boolean input, IncludeFilePath
+      <li>10/09/04 - NelC - Added global function IsCgProfileSupported
+      <li>07/09/04 - NelC - Added TCgProgram.Precision (Cg 1.3)
+      <li>07/09/04 - NelC - Added profiles VP40, FP40 (Cg 1.3 beta 2),
                             Added option OutputCompilerWarnings
       <li>23/04/04 - NelC - Now ManageTexture is false by default (Cg 1.2.1)
       <li>24/03/04 - NelC - Added GetLatestProfile
@@ -47,13 +50,9 @@ uses
 {$Include GLScene.inc}
 
 {.$DEFINE OutputCompilerWarnings}
-{ Define OutputCompilerWarnings to output Cg compiler warnings to a file. Edit
-  the string WarningFilename for the output filename. Useful for detecting bugs
-  caused by using uninitialized value, implicit type cast, etc. }
-  
-{$IFDEF OutputCompilerWarnings}
-const WarningFilename = 'C:\CG_Warnings.txt';
-{$ENDIF}
+
+{ Define OutputCompilerWarnings to output Cg compiler warnings to a file. Useful
+  for detecting bugs caused by using uninitialized value, implicit type cast, etc. }
 
 type
   TCustomCgShader = class;
@@ -71,6 +70,8 @@ type
 
   // Available fragment program profile
   TCgFPProfile = (fpDetectLatest, fp20, fp30, fp40, arbfp1);
+
+  TPrecisionSetting = (psFull, psFast);
 
   // TCgProgram
   //
@@ -90,6 +91,8 @@ type
 
     FEnabled : boolean;
     FDetectProfile : boolean;
+    FPrecision: TPrecisionSetting;
+    procedure SetPrecision(const Value: TPrecisionSetting);
 
   protected
     { Protected Declarations }
@@ -161,6 +164,10 @@ type
     property Code : TStrings read FCode write SetCode;
     property ProgramName : String read FProgramName write SetProgramName;
     property Enabled : boolean read FEnabled write FEnabled default True;
+    {: Precision controls data precision of GPU operation. <p>
+       Possible options are 16-bit (psFast) or 32-bit (psFull). 16-bit operation
+       is generally faster. }
+    property Precision : TPrecisionSetting read FPrecision write SetPrecision default psFull;
     property OnApply : TCgApplyEvent read FOnApply write FOnApply;
     property OnUnApply : TCgUnApplyEvent read FOnUnApply write FOnUnApply;
   end;
@@ -193,7 +200,8 @@ type
 
     {: Procedures for setting uniform pamareters.<p>
        Implicitly check for data type. }
-    procedure SetAsScalar(const val : Single);
+    procedure SetAsScalar(const val : Single); overload;
+    procedure SetAsScalar(const val : boolean); overload;
     procedure SetAsVector(const val : TVector2f); overload;
     procedure SetAsVector(const val : TVector3f); overload;
     procedure SetAsVector(const val : TVector4f); overload;
@@ -311,12 +319,12 @@ type
     procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
     function  DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
 
+    // IsProfileSupported to be obsoleted by global function IsCgProfileSupported
+    function IsProfileSupported(Profile: TcgProfile): boolean;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
-    function IsProfileSupported(Profile: TcgProfile): boolean;
 
     procedure LoadShaderPrograms(VPFilename, FPFilename : string);
 
@@ -353,6 +361,21 @@ type
     property OnInitialize;
   end;
 
+// global variables/functions
+var
+  {: Set IncludeFilePath to indicate where to find your include file for your
+     Cg source files. This avoids error from the Cg Compiler when the current
+     directory is not the right path as the shader is being compiled. }
+  IncludeFilePath : string;
+{$IFDEF OutputCompilerWarnings}
+  {: Edit the string WarningFilePath for the output filename. Default
+     WarningFilePath is set to application path. }
+  WarningFilePath : string;
+{$ENDIF}
+
+// Misc. global functions
+  function IsCgProfileSupported(Profile: TcgProfile): boolean;
+
 procedure Register;
 
 // ------------------------------------------------------------------
@@ -363,7 +386,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, Dialogs;
+uses SysUtils, OpenGL1x, Dialogs, Forms;
 
 const
   // For checking data type
@@ -382,6 +405,13 @@ var
 procedure Register;
 begin
   RegisterComponents('GLScene Shaders', [TCgShader]);
+end;
+
+// IsCgProfileSupported
+//
+function IsCgProfileSupported(Profile: TcgProfile): boolean;
+begin
+  result:=cgGLIsProfileSupported(Profile)=CG_TRUE;
 end;
 
 {$IFDEF OutputCompilerWarnings}
@@ -462,8 +492,8 @@ begin
     FOwner := Self;
     FName  := StrPas(cgGetParameterName(Param));
     FHandle := Param;
-    FValueType := cgGetParameterType(Param); 
-    FDirection := cgGetParameterDirection(Param); 
+    FValueType := cgGetParameterType(Param);
+    FDirection := cgGetParameterDirection(Param);
     FVariability := cgGetParameterVariability(Param);
   end;
   FParams.Add(newParamObj);
@@ -540,21 +570,41 @@ end;
 procedure TCgProgram.Initialize;
 var
   buf : String;
+  Arg : array of PChar;
+  PArg : PPChar;
 begin
   Assert(FCgContext=nil);
-  
+
   buf := Trim(Code.Text);
   if buf='' then exit;
+
+  if Precision=psFast then begin
+      setlength(Arg, 2);
+      Arg[0]:=PChar('-fastprecision');
+      Arg[1]:=nil;
+      PArg:=@Arg[0];
+    end
+  else
+    PArg:=nil;
+
+// To force 'if' statement, use sth. like:
+//      setlength(Arg, 3);
+//      Arg[0]:=PChar('-ifcvt');
+//      Arg[1]:=PChar('none');
+//      Arg[2]:=nil;
+//      PArg:=@Arg[0];
+
   // get a new context
   FCgContext := cgCreateContext;
   Inc(vCgContextCount);
   CurCgProgram:=self;
   try
+    if IncludeFilePath<>'' then SetCurrentDir(IncludeFilePath);
     if FDetectProfile then FProfile:=GetLatestProfile;
     cgGLSetOptimalOptions(FProfile);
     if FProgramName='' then FProgramName:='main'; // default program name
     FHandle := cgCreateProgram( FCgContext, CG_SOURCE, PChar(buf), FProfile,
-                                PChar(FProgramName), nil);
+                                PChar(FProgramName), PArg);
     cgGLLoadProgram(FHandle);
     // build parameter list for the selected program
     BuildParamsList;
@@ -644,7 +694,10 @@ procedure TCgProgram.ListCompilation(Output: TStrings);
 begin
   Output.BeginUpdate;
   Output.Clear;
-  OutputAsTStrings(cgGetProgramString(FHandle, CG_COMPILED_PROGRAM));
+  if FCgContext<>nil then
+    OutputAsTStrings(cgGetProgramString(FHandle, CG_COMPILED_PROGRAM))
+  else
+    Output.add('Cg program not yet initialized');
   Output.EndUpdate;
 end;
 
@@ -690,6 +743,16 @@ function TCgProgram.LongName: string;
 const ProTypeStr : array[ptVertex..ptFragment] of string = ('VP', 'FP');
 begin
  result:=(Owner as TCgShader).Name + '.' + ProTypeStr[FProgramType] + '.' + ProgramName;
+end;
+
+// SetPrecision
+//
+procedure TCgProgram.SetPrecision(const Value: TPrecisionSetting);
+begin
+  if FPrecision<>Value then begin
+    FPrecision := Value;
+    NotifyChange(Self);
+  end;
 end;
 
 // ------------------
@@ -756,6 +819,13 @@ procedure TCgParameter.SetAsScalar(const val : Single);
 begin
   CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED{$ifdef GLS_DELPHI_6_UP}, CG_BOOL{$endif}]);
   cgGLSetParameter1f(FHandle, val);
+end;
+
+procedure TCgParameter.SetAsScalar(const val: boolean);
+const BoolToFloat : array[false..true] of single = (CG_FALSE, CG_TRUE);
+begin
+  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED{$ifdef GLS_DELPHI_6_UP}, CG_BOOL{$endif}]);
+  cgGLSetParameter1f(FHandle, BoolToFloat[val]);
 end;
 
 // SetAsVector*
@@ -879,7 +949,7 @@ const
   MinFixedA = CG_FIXED1x1; MaxFixedA = CG_FIXED4x4;
 begin
   Assert( ( (FValueType>=MinFloatA) and (FValueType<=MaxFloatA) or
-            (FValueType>=MinHalfA) and (FValueType<=MaxHalfA) or
+            (FValueType>=MinHalfA)  and (FValueType<=MaxHalfA)  or
             (FValueType>=MinFixedA) and (FValueType<=MaxFixedA) ), TypeMismatchMessage);
   cgGLSetStateMatrixParameter( Fhandle, matrix, Transform);
 end;
@@ -1026,13 +1096,6 @@ begin
   FFragmentProgram.Free;
 end;
 
-// IsProfileSupported
-//
-function TCustomCgShader.IsProfileSupported(Profile: TcgProfile): boolean;
-begin
-  result:=cgGLIsProfileSupported(Profile)=CG_TRUE;
-end;
-
 // SetVertexProgram
 //
 procedure TCustomCgShader.SetVertexProgram(const val : TCgVertexProgram);
@@ -1168,6 +1231,13 @@ begin
   FragmentProgram.LoadFromFile(FPFilename);
 end;
 
+// IsProfileSupported
+//
+function TCustomCgShader.IsProfileSupported(Profile: TcgProfile): boolean;
+begin
+  result:=cgGLIsProfileSupported(Profile)=CG_TRUE;
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1183,11 +1253,13 @@ initialization
 
 {$IFDEF OutputCompilerWarnings}
   CompilerMsg:=TStringList.Create;
+  // default WarningFilePath is set to app. path
+  WarningFilePath := extractfilepath(Application.ExeName);
 {$ENDIF}
 
 finalization
 {$IFDEF OutputCompilerWarnings}
-  CompilerMsg.SaveToFile(WarningFilename);
+  CompilerMsg.SaveToFile(WarningFilePath + 'CG_Warnings.txt');
   CompilerMsg.free;
 {$ENDIF}
 
