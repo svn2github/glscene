@@ -891,6 +891,7 @@ begin
    FHazeColor.Free;
    FSkyColor.Free;
    FNightColor.Free;
+   FDeepColor.Free;
 	inherited Destroy;
 end;
 
