@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/06/03 - EG - Fixed PolygonMode (Carlos Ferreira)
       <li>26/02/02 - EG - Enhanced star support (generation and twinkle),
                           Skydome now 'exports' its coordinate system to children 
       <li>21/01/02 - EG - Skydome position now properly ignored
@@ -785,6 +786,7 @@ begin
    glDisable(GL_CULL_FACE);
    glDepthMask(False);
    glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    // compensate camera
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
    with Scene.CurrentGLCamera do
