@@ -236,8 +236,6 @@ const
    cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
 
 type
-  TObjectHandle = Cardinal; // a display list name or GL_LIGHTx constant
-
   TNormalDirection = (ndInside, ndOutside);
   TTransformationMode = (tmLocal, tmParentNoPos, tmParentWithPos);
 
@@ -409,7 +407,7 @@ type
 
          procedure DrawAxes(Pattern: Word);
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
-         function  GetHandle(var rci : TRenderContextInfo) : TObjectHandle; virtual;
+         function  GetHandle(var rci : TRenderContextInfo) : Cardinal; virtual;
          //: Should the object be considered as blended for sorting purposes?
          function  Blended : Boolean; virtual;
          //: Returns Up and Direction vectors depending on the transformation mode
@@ -1033,7 +1031,7 @@ type
    TGLLightSource = class(TGLBaseSceneObject)
       private
          { Private Declarations }
-         FLightID: TObjectHandle;
+         FLightID : Cardinal;
          FSpotDirection: TGLCoordinates;
          FSpotExponent, FSpotCutOff: Single;
          FConstAttenuation, FLinearAttenuation, FQuadraticAttenuation: Single;
@@ -1044,7 +1042,7 @@ type
       protected
          { Protected Declarations }
          //: light sources have different handle types than normal scene objects
-         function GetHandle(var rci : TRenderContextInfo) : TObjectHandle; override;
+         function GetHandle(var rci : TRenderContextInfo) : Cardinal; override;
 
          procedure SetAmbient(AValue: TGLColor);
          procedure SetDiffuse(AValue: TGLColor);
@@ -1069,6 +1067,8 @@ type
                                    intersectNormal : PVector = nil) : Boolean; override;
          procedure CoordinateChanged(Sender: TGLCoordinates); override;
 
+         property LightID : Cardinal read FLightID;
+         
       published
          { Published Declarations }
          property Ambient: TGLColor read FAmbient write SetAmbient;
@@ -2206,7 +2206,7 @@ end;
 
 // GetHandle
 //
-function TGLBaseSceneObject.GetHandle(var rci : TRenderContextInfo) : TObjectHandle;
+function TGLBaseSceneObject.GetHandle(var rci : TRenderContextInfo) : Cardinal;
 
    procedure DoBuild(var rci : TRenderContextInfo);
    begin
@@ -5110,7 +5110,7 @@ end;
 
 // GetHandle
 //
-function TGLLightSource.GetHandle(var rci : TRenderContextInfo) : TObjectHandle;
+function TGLLightSource.GetHandle(var rci : TRenderContextInfo) : Cardinal;
 begin
    Result:=0;
 end;
