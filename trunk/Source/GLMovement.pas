@@ -748,7 +748,6 @@ begin
   Node := Nodes[Index];
   if Assigned(Node) then
   begin
-    Node.Free;
     FNodes.Delete(Index);
     if FCurrentNodeIndex < 0 then
       exit;
