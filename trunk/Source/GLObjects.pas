@@ -188,6 +188,10 @@ type
             Returned extents are NOT limited to any physical screen extents. }
          function ScreenRect : TGLRect;
 
+         {: Computes the signed distance to the point.<p>
+            Point coordinates are expected in absolute coordinates. }
+         function PointDistance(const aPoint : TVector) : Single;
+
 		published
 			{ Public Declarations }
 			property Height : TGLFloat read FHeight write SetHeight;
@@ -1464,6 +1468,14 @@ begin
       Result.Top   :=Round(MinFloat([v[0][1], v[1][1], v[2][1], v[3][1]]));
       Result.Bottom:=Round(MaxFloat([v[0][1], v[1][1], v[2][1], v[3][1]]));
    end else FillChar(Result, SizeOf(TGLRect), 0);
+end;
+
+// PointDistance
+//
+function TGLPlane.PointDistance(const aPoint : TVector) : Single;
+begin
+   Result:=VectorDotProduct(VectorSubtract(aPoint, AbsolutePosition),
+                            Up.AsAffineVector);
 end;
 
 // SetHeight
