@@ -2,6 +2,7 @@
 {: In GL windows management classes and structures<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/07/03 - EG - TGLBaseGuiObject moved in along with RecursiveVisible mechanism
       <li>25/11/02 - EG - TGLGuiLayout.Clear fix (Sternas Stefanos)
       <li>06/09/02 - JAJ - Updated and added to CVS..
       <li>01/06/02 - JAJ - Base Unit built..
@@ -16,6 +17,45 @@ uses
   OpenGL12, SysUtils, PersistentClasses;
 
 Type
+
+   TGLBaseGuiObject = class (TGLBaseSceneObject)
+      private
+         FRecursiveVisible : Boolean;
+         FWidth : Single;
+         FHeight : Single;
+
+      protected
+         //: self notification on hide. Also notifies children.
+         procedure NotifyHide; dynamic;
+         //: child notification on show. Also notifies children.
+         procedure NotifyShow; dynamic;
+
+         procedure SetLeft(const val : Single);
+         Function  GetLeft : Single;
+         procedure SetTop(const val : Single);
+         Function  GetTop : Single;
+         procedure SetWidth(const val : Single);
+         procedure SetHeight(const val : Single);
+         procedure SetVisible(aValue : Boolean); override;
+
+      public
+         constructor Create(AOwner: TComponent); override;
+
+         procedure AddChild(AChild: TGLBaseSceneObject); override;
+         procedure Insert(aIndex : Integer; aChild : TGLBaseSceneObject); override;
+
+         {: GuiComponent Width in 3D world units. }
+         property Width : Single read FWidth write SetWidth;
+         {: GuiComponent Height in 3D world units. }
+         property Height : Single read FHeight write SetHeight;
+         {: GuiComponent Left in 3D world units. }
+         property Left : Single read GetLeft write SetLeft;
+         {: GuiComponent Top in 3D world units. }
+         property Top : Single read GetTop write SetTop;
+
+         property RecursiveVisible : Boolean read FRecursiveVisible;
+   end;
+
   TGUIAlignments = (GLAlTopLeft, GLAlTop, GLAlTopRight, GLAlLeft,GLAlCenter, GLAlRight, GLAlBottomLeft,GLAlBottom, GLAlBottomRight, GLAlBorder);
   TGUIRect       = Record
     X1 : TGLFloat;
@@ -147,6 +187,151 @@ Function IsInRect(Const R : TGUIRect; X,Y : Single) : Boolean;
 Begin
   Result := (R.X1 <= X) and (R.X2 >= X) and (R.Y1 <= Y) and (R.Y2 >= Y);
 End;
+
+// ------------------
+// ------------------ TGLBaseGuiObject ------------------
+// ------------------
+
+// Create
+//
+constructor TGLBaseGuiObject.Create(AOwner: TComponent);
+begin
+   inherited Create(AOwner);
+   FRecursiveVisible:=Visible;
+end;
+
+// SetLeft
+//
+procedure TGLBaseGuiObject.SetLeft(const val : TGLFloat);
+begin
+	if Position.X<>val then begin
+		Position.X:=val;
+	end;
+end;
+
+// GetLeft
+//
+Function  TGLBaseGuiObject.GetLeft : Single;
+begin
+   Result := Position.X;
+end;
+
+// SetTop
+//
+procedure TGLBaseGuiObject.SetTop(const val : TGLFloat);
+begin
+	if Position.Y<>val then begin
+		Position.Y:=val;
+	end;
+end;
+
+// GetTop
+//
+Function  TGLBaseGuiObject.GetTop : Single;
+begin
+   Result := Position.Y;
+end;
+
+// SetWidth
+//
+procedure TGLBaseGuiObject.SetWidth(const val : TGLFloat);
+begin
+	if FWidth<>val then begin
+		FWidth:=val;
+      NotifyChange(Self);
+	end;
+end;
+
+// SetHeight
+//
+procedure TGLBaseGuiObject.SetHeight(const val : TGLFloat);
+begin
+	if FHeight<>val then begin
+		FHeight:=val;
+      NotifyChange(Self);
+	end;
+end;
+
+// NotifyHide
+//
+procedure TGLBaseGuiObject.NotifyHide;
+var
+   child : TGLBaseSceneObject;
+   xc : Integer;
+begin
+   if RecursiveVisible then begin
+      FRecursiveVisible:=False;
+      for xc := 0 to Count-1 do begin
+         child:=Children[xc];
+         if child is TGLBaseGuiObject then
+            TGLBaseGuiObject(child).NotifyHide;
+      end;
+   end;
+end;
+
+// NotifyShow
+//
+procedure TGLBaseGuiObject.NotifyShow;
+var
+   child : TGLBaseSceneObject;
+   xc : Integer;
+begin
+  If not RecursiveVisible then begin
+     FRecursiveVisible := True;
+     For xc := 0 to Count-1 do begin
+        child:=Children[xc];
+        if child is TGLBaseGuiObject then
+           TGLBaseGuiObject(child).NotifyShow;
+     end;
+  end;
+end;
+
+// AddChild
+//
+procedure TGLBaseGuiObject.AddChild(aChild : TGLBaseSceneObject);
+begin
+   inherited;
+   if AChild is TGLBaseGuiObject then begin
+      if RecursiveVisible then
+         TGLBaseGuiObject(AChild).NotifyShow
+      else TGLBaseGuiObject(AChild).NotifyHide;
+   end;
+end;
+
+// Insert
+//
+procedure TGLBaseGuiObject.Insert(aIndex : Integer; aChild : TGLBaseSceneObject);
+begin
+   inherited;
+   if AChild is TGLBaseGuiObject then begin
+      if RecursiveVisible then
+         TGLBaseGuiObject(AChild).NotifyShow
+      else TGLBaseGuiObject(AChild).NotifyHide;
+   end;
+end;
+
+// SetVisible
+//
+procedure TGLBaseGuiObject.SetVisible(aValue : Boolean);
+begin
+   if Visible<>aValue then begin
+      inherited SetVisible(aValue);
+      if aValue then begin
+         if Parent<>nil then
+            if Parent is TGLBaseGuiObject then begin
+               if TGLBaseGuiObject(Parent).RecursiveVisible then
+                  NotifyShow;
+            end else begin
+               if Parent.Visible then
+                  NotifyShow;
+            end;
+      end else begin
+         if RecursiveVisible then
+            NotifyHide;
+      end;
+   end;
+end;
+
 
 Function GUIComponentDialog(GuiComponent : TGLGuiElementList) : Boolean;
 

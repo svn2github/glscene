@@ -747,8 +747,8 @@ Begin
   BlockRendering := False;
   BlockedCount := 0;
   RenderingCount := 0;
-  FWidth      := 50;
-  FHeight     := 50;
+  Width      := 50;
+  Height     := 50;
   FReBuildGui := True;
   GuiDestroying := False;
 End;

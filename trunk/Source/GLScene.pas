@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/07/03 - EG - TGLBaseGuiObject moved to GLGui along with RecursiveVisible mechanism
       <li>19/06/03 - DanB - Added TGLBaseSceneObject.GetOrCreateBehaviour/Effect
       <li>11/06/03 - Egg - Added CopyToTexture for buffer
       <li>10/06/03 - Egg - Fixed issue with SetXxxxAngle (Domin)
@@ -349,7 +350,6 @@ type
          FScene : TGLScene;
          FChildren : TList;
          FVisible : Boolean;
-         FRecursiveVisible : Boolean;
          FUpdateCount : Integer;
          FShowAxes : Boolean;
          FRotation: TGLCoordinates; // current rotation angles
@@ -390,7 +390,6 @@ type
 
          procedure SetShowAxes(AValue: Boolean);
          procedure SetScaling(AValue: TGLCoordinates);
-         procedure SetVisible(AValue: Boolean);
          procedure SetObjectsSorting(const val : TGLObjectsSorting);
          procedure SetVisibilityCulling(const val : TGLVisibilityCulling);
          procedure SetBehaviours(const val : TGLBehaviours);
@@ -402,11 +401,6 @@ type
       protected
          { Protected Declarations }
          procedure Loaded; override;
-         //: self notification on hide. Also notifies children.
-         procedure NotifyHide; dynamic;
-         //: child notification on show. Also notifies children.
-         procedure NotifyShow; dynamic;
-
 
          procedure DefineProperties(Filer: TFiler); override;
          procedure WriteBehaviours(stream : TStream);
@@ -415,6 +409,8 @@ type
          procedure ReadEffects(stream : TStream);
          procedure WriteRotations(stream : TStream);
          procedure ReadRotations(stream : TStream);
+
+         procedure SetVisible(aValue : Boolean); virtual;
 
          procedure SetAbsolutePosition(const v : TVector);
          function GetAbsolutePosition : TVector;
@@ -668,8 +664,7 @@ type
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
          property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
          property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
-         property RecursiveVisible : Boolean read FRecursiveVisible;
-         
+
       published
          { Published Declarations }
          property TagFloat: Single read FTagFloat write FTagFloat;
@@ -883,27 +878,6 @@ type
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
-   end;
-
-   TGLBaseGuiObject = class (TGLBaseSceneObject)
-      protected
-         FWidth : Single;
-         FHeight : Single;
-         procedure SetLeft(const val : Single);
-         Function  GetLeft : Single;
-         procedure SetTop(const val : Single);
-         Function  GetTop : Single;
-         procedure SetWidth(const val : Single);
-         procedure SetHeight(const val : Single);
-      public
-         {: GuiComponent Width in 3D world units. }
-         property Width : Single read FWidth write SetWidth;
-         {: GuiComponent Height in 3D world units. }
-         property Height : Single read FHeight write SetHeight;
-         {: GuiComponent Left in 3D world units. }
-         property Left : Single read GetLeft write SetLeft;
-         {: GuiComponent Top in 3D world units. }
-         property Top : Single read GetTop write SetTop;
    end;
 
    // TGLImmaterialSceneObject
@@ -2383,38 +2357,6 @@ begin
       FGLObjectEffects.Loaded;
 end;
 
-// NotifyHide
-//
-procedure TGLBaseSceneObject.NotifyHide;
-var
-   child : TGLBaseSceneObject;
-   xc : Integer;
-begin
-  If RecursiveVisible then begin
-     FRecursiveVisible := false;
-     For xc := 0 to FChildren.Count-1 do begin
-        child:=TGLBaseSceneObject(FChildren.Items[xc]);
-        child.NotifyHide;
-     end;
-  end;
-end;
-
-// NotifyShow
-//
-procedure TGLBaseSceneObject.NotifyShow;
-var
-   child : TGLBaseSceneObject;
-   xc : Integer;
-begin
-  If not RecursiveVisible then begin
-     FRecursiveVisible := True;
-     For xc := 0 to FChildren.Count-1 do begin
-        child:=TGLBaseSceneObject(FChildren.Items[xc]);
-        child.NotifyShow;
-     end;
-  end;
-end;
-
 // DefineProperties
 //
 procedure TGLBaseSceneObject.DefineProperties(Filer: TFiler);
@@ -2560,10 +2502,6 @@ begin
    AChild.FParent:=Self;
    AChild.SetScene(FScene);
    TransformationChanged;
-   if RecursiveVisible then
-      AChild.NotifyShow
-   else
-      AChild.NotifyHide;
 end;
 
 // AddNewChild
@@ -3092,11 +3030,6 @@ begin
    if Assigned(FScene) then
       FScene.AddLights(aChild);
    AChild.TransformationChanged;
-
-   if RecursiveVisible then
-      AChild.NotifyShow
-   else
-      AChild.NotifyHide;
 end;
 
 // IsUpdating
@@ -4098,19 +4031,13 @@ begin
       FUp.SetVector(AVector.DirectX, AVector.DirectY, AVector.DirectZ);
 end;
 
-procedure TGLBaseSceneObject.SetVisible(AValue: Boolean);
+// SetVisible
+//
+procedure TGLBaseSceneObject.SetVisible(aValue : Boolean);
 begin
-   if FVisible <> AValue then begin
+   if FVisible<>aValue then begin
       FVisible:=AValue;
       NotifyChange(Self);
-      If AValue then begin
-         If Parent <> nil then
-            If Parent.RecursiveVisible then
-               NotifyShow;
-      end else begin
-         If RecursiveVisible then
-            NotifyHide;
-      End;
    end;
 end;
 
@@ -4519,65 +4446,10 @@ end;
 //
 constructor TGLSceneRootObject.Create(AOwner: TComponent);
 begin
+   Assert(AOwner is TGLScene);
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw];
-   FRecursiveVisible := True;
-end;
-
-// ------------------
-// ------------------ TGLBaseGuiObject ------------------
-// ------------------
-
-// SetLeft
-//
-procedure TGLBaseGuiObject.SetLeft(const val : TGLFloat);
-begin
-	if Position.X<>val then begin
-		Position.X:=val;
-	end;
-end;
-
-// GetLeft
-//
-Function  TGLBaseGuiObject.GetLeft : Single;
-begin
-   Result := Position.X;
-end;
-
-// SetTop
-//
-procedure TGLBaseGuiObject.SetTop(const val : TGLFloat);
-begin
-	if Position.Y<>val then begin
-		Position.Y:=val;
-	end;
-end;
-
-// GetTop
-//
-Function  TGLBaseGuiObject.GetTop : Single;
-begin
-   Result := Position.Y;
-end;
-
-// SetWidth
-//
-procedure TGLBaseGuiObject.SetWidth(const val : TGLFloat);
-begin
-	if FWidth<>val then begin
-		FWidth:=val;
-      NotifyChange(Self);
-	end;
-end;
-
-// SetHeight
-//
-procedure TGLBaseGuiObject.SetHeight(const val : TGLFloat);
-begin
-	if FHeight<>val then begin
-		FHeight:=val;
-      NotifyChange(Self);
-	end;
+   FScene:=TGLScene(AOwner);
 end;
 
 // ------------------
@@ -5490,10 +5362,8 @@ begin
    // root creation
    FObjects:=TGLSceneRootObject.Create(Self);
    FObjects.Name:='ObjectRoot';
-   FObjects.FScene:=Self;
    FCameras:=TGLSceneRootObject.Create(Self);
    FCameras.Name:='CameraRoot';
-   FCameras.FScene:=Self;
    FLights:=TList.Create;
    FObjectsSorting:=osRenderBlendedLast;
    FVisibilityCulling:=vcNone;
@@ -7230,6 +7100,8 @@ end;
 //
 procedure TGLSceneBuffer.DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
                                       drawState : TDrawState);
+var
+   maxLights : Integer;
 begin
    PrepareRenderingMatrices(aViewPort, resolution);
    xglMapTexCoordToNull; // force XGL rebind
@@ -7242,7 +7114,8 @@ begin
             FBeforeRender(Self);
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
       with FCamera.FScene do begin
-         SetupLights(LimitOf[limLights]);
+         glGetIntegerv(GL_MAX_LIGHTS, @maxLights);
+         SetupLights(maxLights);
          if FogEnable then begin
             glEnable(GL_FOG);
             FogEnvironment.ApplyFog;
