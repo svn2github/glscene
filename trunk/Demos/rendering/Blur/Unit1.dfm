@@ -91,6 +91,7 @@ object Form1: TForm1
     end
   end
   object GLScene1: TGLScene
+    ObjectsSorting = osRenderFarthestFirst
     Left = 188
     Top = 48
     object GLLightSource1: TGLLightSource
