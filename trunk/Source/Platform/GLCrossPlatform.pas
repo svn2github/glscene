@@ -24,7 +24,7 @@ interface
 uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;
 {$endif}
 {$ifdef LINUX}
-uses QGraphics;
+uses QGraphics, libc;
 {$endif}
 
 type
@@ -346,7 +346,11 @@ end;
 //
 procedure Sleep(length : Cardinal);
 begin
+{$ifdef WIN32}
    Windows.Sleep(length);
+{$else}
+   usleep(length*1000);
+{$endif}
 end;
 
 // QueryPerformanceCounter
