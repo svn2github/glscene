@@ -207,6 +207,8 @@ contains
   GLPerlinBase in '..\Source\GLPerlinBase.pas',
   GLPerlin in '..\Source\GLPerlin.pas',
   ARBProgram in '..\Source\Base\ARBProgram.pas',
-  GLPhongShader in '..\Source\Shaders\GLPhongShader.pas';
+  GLPhongShader in '..\Source\Shaders\GLPhongShader.pas',
+  GLScriptBase in '..\Source\GLScriptBase.pas',
+  GLTrail in '..\Source\GLTrail.pas';
 
 end.
