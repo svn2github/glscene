@@ -78,6 +78,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure TISoundTimer(Sender: TObject);
+    procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -313,5 +314,10 @@ begin
       end;
    end;
 end; }
+
+procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
+begin
+   GLLensFlare.PreRender(Sender as TGLSceneBuffer);
+end;
 
 end.

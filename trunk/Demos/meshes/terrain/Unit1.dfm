@@ -23,6 +23,7 @@ object Form1: TForm1
     Width = 603
     Height = 405
     Camera = GLCamera1
+    BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
     Buffer.FogEnvironment.FogStart = 200
     Buffer.FogEnvironment.FogEnd = 650
@@ -46,6 +47,7 @@ object Form1: TForm1
     object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
+      Visible = False
       Bands = <
         item
           StartAngle = -5
@@ -77,6 +79,8 @@ object Form1: TForm1
         Width = 30
         Height = 30
         NoZWrite = True
+        MirrorU = False
+        MirrorV = False
       end
       object SPSun: TGLSprite
         Position.Coordinates = {00000C430000C842000096420000803F}
@@ -91,6 +95,8 @@ object Form1: TForm1
         Width = 60
         Height = 60
         NoZWrite = True
+        MirrorU = False
+        MirrorV = False
       end
     end
     object DummyCube1: TGLDummyCube
