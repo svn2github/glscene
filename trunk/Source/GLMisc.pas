@@ -507,6 +507,10 @@ procedure ResetGLTextureMatrix;
 procedure InvertGLFrontFace;
 {: Reset to default front face winding (CCW). }
 procedure ResetGLFrontFace;
+{: Set front face winding to ClockWise. }
+procedure SetGLFrontFaceCW;
+{: Set front face winding to Counter-ClockWise. }
+procedure SetGLFrontFaceCCW;
 
 procedure RegisterManager(aManager : TComponent);
 procedure DeRegisterManager(aManager : TComponent);
@@ -761,6 +765,26 @@ procedure ResetGLFrontFace;
 begin
    glFrontFace(GL_CCW);
    vFrontFaceCCW:=True;
+end;
+
+// SetGLFrontFaceCW
+//
+procedure SetGLFrontFaceCW;
+begin
+   if vFrontFaceCCW then begin
+      glFrontFace(GL_CW);
+      vFrontFaceCCW:=False;
+   end;
+end;
+
+// SetGLFrontFaceCCW
+//
+procedure SetGLFrontFaceCCW;
+begin
+   if not vFrontFaceCCW then begin
+      glFrontFace(GL_CCW);
+      vFrontFaceCCW:=True;
+   end;
 end;
 
 // SetGLState

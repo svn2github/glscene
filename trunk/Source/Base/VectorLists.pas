@@ -166,6 +166,7 @@ type
 			procedure Assign(Src: TPersistent); override;
 
 			function  Add(const item : TAffineVector) : Integer; overload;
+			function  Add(const item : TVector) : Integer; overload;
 			procedure Add(const i1, i2 : TAffineVector); overload;
 			procedure Add(const i1, i2, i3 : TAffineVector); overload;
 			function  Add(const item : TVector2f) : Integer; overload;
@@ -193,6 +194,8 @@ type
          //: Translates given items
          procedure TranslateItems(index : Integer; const delta : TAffineVector;
                                   nb : Integer);
+         //: Combines the given item
+         procedure CombineItem(index : Integer; const vector : TAffineVector; const f : Single);
 
          {: Transforms all items by the matrix as if they were points.<p>
             ie. the translation component of the matrix is honoured. }
@@ -872,6 +875,13 @@ begin
   	Inc(FCount);
 end;
 
+// Add (hmg)
+//
+function TAffineVectorList.Add(const item : TVector) : Integer;
+begin
+   Result:=Add(PAffineVector(@item)^);
+end;
+
 // Add (2 affine)
 //
 procedure TAffineVectorList.Add(const i1, i2 : TAffineVector);
@@ -1100,7 +1110,7 @@ end;
 procedure TAffineVectorList.TranslateItem(index : Integer; const delta : TAffineVector);
 begin
 {$IFOPT R+}
-   Assert(Cardinal(Index) < Cardinal(FCount));
+   Assert(Cardinal(Index)<Cardinal(FCount));
 {$ENDIF}
    AddVector(FList^[Index], delta);
 end;
@@ -1117,6 +1127,16 @@ begin
       nb:=FCount;
 {$ENDIF}
    VectorArrayAdd(@FList[index], delta, nb-index, @FList[index]);
+end;
+
+// CombineItem
+//
+procedure TAffineVectorList.CombineItem(index : Integer; const vector : TAffineVector; const f : Single);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+   CombineVector(FList^[Index], vector, @f);
 end;
 
 // TransformAsPoints

@@ -605,6 +605,7 @@ begin
       vmVN   : glInterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData), FVertices.FirstNormal);
       vmVNC  : glInterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TVertexData), FVertices.FirstColor);
       vmVNT, vmVNCT : glInterleavedArrays(GL_T2F_C4F_N3F_V3F, 0, FVertices.FirstEntry);
+      vmVT   : glInterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
    else
       Assert(False, glsInterleaveNotSupported);
    end;
