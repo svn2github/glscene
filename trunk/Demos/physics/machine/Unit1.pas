@@ -1,3 +1,19 @@
+{: Creating ODE joints with GLODEManager.<p>
+   
+   This demo shows how to create connections between ODE objects using
+   joints. At the moment, the only way to initialize a joint between two
+   objects is the ODEJoint.Attach method. A way around this is being
+   looked into and will be implemented into this demo when it's been
+   worked out.<p>
+   
+   In this demo, the GLODEDynamicBehaviour object was used to pass the
+   control of GLScene objects to ODE. The same methods can be used to 
+   join GLODEDummy objects to other GLODEDummy objects, or to
+   GLODEDynamicBehaviours through their Body properties.<p>
+   
+   A joint can be fixed to space by attaching to nil, as done with the
+   WheelBehaviour.<p>
+}
 unit Unit1;
 
 interface
@@ -43,7 +59,7 @@ var
 
 implementation
 
-uses ODEImport;
+uses Geometry;
 
 {$R *.dfm}
 
@@ -116,8 +132,8 @@ begin
     Axis.SetVector(1,0,0);
   end;
 
-  //dBodyAddTorque(WheelBehaviour.Body,0,1000,0);
-  dBodyAddForce(Pin2Behaviour.Body,-1000,0,0);
+  //WheelBehaviour.AddTorque(AffineVectorMake(0,1000,0));
+  Pin2Behaviour.AddForce(AffineVectorMake(-1000,0,0));
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
