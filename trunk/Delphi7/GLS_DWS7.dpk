@@ -34,6 +34,7 @@ requires
   dws2Runtime;
 
 contains
+  GLScriptDWS2 in '..\Source\GLScriptDWS2.pas',
   GLDWS2Objects in '..\Source\GLDWS2Objects.pas',
   dws2HelperFunc in '..\Source\ScriptingAPIs\dws2HelperFunc.pas',
   dws2Classes in '..\Source\ScriptingAPIs\dws2Classes.pas',
