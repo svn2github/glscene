@@ -562,8 +562,8 @@ begin
           y1:=y0+Anim.FrameHeight;
         end;
         if (TexWidth>0) and (TexHeight>0) and (x0<>x1) and (y0<>y1) then begin
-          u0:=x0/TexWidth; v0:=y0/TexHeight;
-          u1:=x1/TexWidth; v1:=y1/TexHeight;
+          u0:=x0/TexWidth; v0:=1-y1/TexHeight;
+          u1:=x1/TexWidth; v1:=1-y0/TexHeight;
           w:=0.5*(x1-x0)/FPixelRatio;
           h:=0.5*(y1-y0)/FPixelRatio;
         end;
