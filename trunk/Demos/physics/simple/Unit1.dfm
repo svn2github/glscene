@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 73
-  Top = 114
-  Width = 728
-  Height = 452
+  Left = 192
+  Top = 105
+  Width = 694
+  Height = 510
   Caption = 'Simple ODE Demo'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,16 +12,16 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
-    Left = 209
+    Left = 153
     Top = 0
-    Width = 511
-    Height = 425
+    Width = 533
+    Height = 483
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    FieldOfView = 2.733282804489136000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -29,158 +29,140 @@ object Form1: TForm1
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 209
-    Height = 425
+    Width = 153
+    Height = 483
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
-      Left = 40
-      Top = 16
-      Width = 120
-      Height = 16
-      Alignment = taCenter
-      Caption = 'Add ODE objects'
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
-      ParentFont = False
+      Left = 8
+      Top = 8
+      Width = 83
+      Height = 13
+      Caption = 'Choose an object'
+    end
+    object Label2: TLabel
+      Left = 8
+      Top = 160
+      Width = 105
+      Height = 25
+      Caption = 'HeightField Contact Resolution'
       WordWrap = True
     end
-    object Button1: TButton
-      Left = 48
-      Top = 144
-      Width = 115
+    object Spawn: TButton
+      Left = 40
+      Top = 56
+      Width = 75
       Height = 25
-      Caption = 'Add composite'
+      Caption = 'Spawn'
       TabOrder = 0
-      OnClick = Button1Click
+      OnClick = SpawnClick
     end
-    object GroupBox1: TGroupBox
+    object ComboBox1: TComboBox
       Left = 8
-      Top = 184
-      Width = 193
-      Height = 81
-      Caption = 'GLODEPlane1 Collision Surface'
+      Top = 24
+      Width = 137
+      Height = 21
+      Style = csDropDownList
+      ItemHeight = 13
+      ItemIndex = 0
       TabOrder = 1
-      object CheckBoxBounce: TCheckBox
-        Left = 8
-        Top = 24
-        Width = 65
-        Height = 17
-        Alignment = taLeftJustify
-        Caption = 'Bounce'
-        Checked = True
-        State = cbChecked
-        TabOrder = 0
-        OnClick = CheckBoxClick
-      end
-      object TrackBarBounce: TTrackBar
-        Left = 72
-        Top = 24
-        Width = 110
-        Height = 17
-        Max = 100
-        Orientation = trHorizontal
-        Frequency = 1
-        Position = 100
-        SelEnd = 0
-        SelStart = 0
-        TabOrder = 1
-        ThumbLength = 10
-        TickMarks = tmBottomRight
-        TickStyle = tsNone
-        OnChange = TrackBarBounceChange
-      end
-      object CheckBoxSoftCFM: TCheckBox
-        Left = 8
-        Top = 48
-        Width = 65
-        Height = 17
-        Alignment = taLeftJustify
-        Caption = 'SoftCFM'
-        TabOrder = 2
-        OnClick = CheckBoxClick
-      end
-      object TrackBarSoftCFM: TTrackBar
-        Left = 72
-        Top = 48
-        Width = 110
-        Height = 17
-        Max = 100
-        Orientation = trHorizontal
-        Frequency = 1
-        Position = 50
-        SelEnd = 0
-        SelStart = 0
-        TabOrder = 3
-        ThumbLength = 10
-        TickMarks = tmBottomRight
-        TickStyle = tsNone
-        OnChange = TrackBarSoftCFMChange
-      end
+      Text = 'Sphere'
+      Items.Strings = (
+        'Sphere'
+        'Box'
+        'Capsule (CCylinder)'
+        'Cylinder'
+        'Cone')
     end
-    object Button2: TButton
-      Left = 48
-      Top = 112
-      Width = 113
-      Height = 25
-      Caption = 'Add capsule'
+    object CheckBox1: TCheckBox
+      Left = 8
+      Top = 96
+      Width = 129
+      Height = 17
+      Caption = 'Show ODE Elements'
       TabOrder = 2
-      OnClick = Button2Click
+      OnClick = CheckBox1Click
     end
-    object Button3: TButton
-      Left = 48
-      Top = 80
-      Width = 113
-      Height = 25
-      Caption = 'Add sphere'
+    object CheckBox2: TCheckBox
+      Left = 8
+      Top = 120
+      Width = 129
+      Height = 33
+      Caption = 'Show HeightField Contacts'
       TabOrder = 3
-      OnClick = Button3Click
+      WordWrap = True
+      OnClick = CheckBox2Click
     end
-    object Button4: TButton
-      Left = 48
-      Top = 48
-      Width = 113
-      Height = 25
-      Caption = 'Add box'
+    object TrackBar1: TTrackBar
+      Left = 8
+      Top = 192
+      Width = 137
+      Height = 34
       TabOrder = 4
-      OnClick = Button4Click
+      ThumbLength = 10
+      TickMarks = tmBoth
+      OnChange = TrackBar1Change
     end
   end
   object GLScene1: TGLScene
-    Left = 216
+    Left = 168
     Top = 8
     object GLDummyCube1: TGLDummyCube
       Position.Coordinates = {000000000000803F000000000000803F}
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 50
+        DepthOfView = 100.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = GLDummyCube1
         Position.Coordinates = {0000803F000040400000A0400000803F}
         object GLLightSource1: TGLLightSource
-          ConstAttenuation = 1
+          ConstAttenuation = 1.000000000000000000
           LightStyle = lsOmni
-          SpotCutOff = 180
+          SpotCutOff = 180.000000000000000000
         end
       end
     end
+    object GLHeightField1: TGLHeightField
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Up.Coordinates = {00000000000000000000803F00000000}
+      XSamplingScale.Min = -10.000000000000000000
+      XSamplingScale.Max = 10.000000000000000000
+      XSamplingScale.Step = 0.500000000000000000
+      YSamplingScale.Min = -10.000000000000000000
+      YSamplingScale.Max = 10.000000000000000000
+      YSamplingScale.Step = 0.500000000000000000
+      Options = []
+      OnGetHeight = GLHeightField1GetHeight
+      BehavioursData = {
+        0201061154474C4F44454865696768744669656C6402000200060D474C4F4445
+        4D616E616765723102000500000000006F1283F53F0800000500000000000000
+        FA08400500000000000000000000050000000000000000000005000000000000
+        0000000005000000000000000000000500000000000000000000050000000000
+        0000000000050000000000000000000005000000000000000000000500000000
+        0000000000000200050000000000000080FF3F080500000000000000C0004000
+        00803F0200}
+    end
     object ODEObjects: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
+    end
+    object GLRenderPoint1: TGLRenderPoint
     end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 248
+    Left = 200
     Top = 8
   end
   object GLODEManager1: TGLODEManager
+    Gravity.Coordinates = {00000000C3F51CC1000000000000803F}
     Solver = osmQuickStep
     Iterations = 3
-    Left = 216
+    MaxContacts = 8
+    RenderPoint = GLRenderPoint1
+    Visible = False
+    VisibleAtRunTime = True
+    Left = 168
     Top = 40
   end
 end

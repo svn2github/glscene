@@ -1,10 +1,11 @@
 object Form1: TForm1
   Left = 192
-  Top = 115
+  Top = 108
+  Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
-  ClientHeight = 415
-  ClientWidth = 603
+  ClientHeight = 444
+  ClientWidth = 521
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,17 +20,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 603
-    Height = 415
+    Width = 521
+    Height = 444
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
-    Buffer.FogEnvironment.FogStart = 200
-    Buffer.FogEnvironment.FogEnd = 650
+    Buffer.FogEnvironment.FogStart = 200.000000000000000000
+    Buffer.FogEnvironment.FogEnd = 650.000000000000000000
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
-    Buffer.Lighting = False
+    FieldOfView = 2.698534965515137000
     Align = alClient
   end
   object GLBitmapHDS1: TGLBitmapHDS
@@ -41,18 +42,24 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 56
     Top = 56
+    object GLLightSource1: TGLLightSource
+      ConstAttenuation = 1.000000000000000000
+      LightStyle = lsParallel
+      SpotCutOff = 180.000000000000000000
+      SpotDirection.Coordinates = {00000000F4FD34BFF4FD343F00000000}
+    end
     object SkyDome1: TGLSkyDome
       Up.Coordinates = {000000000000803F0000008000000000}
       Bands = <
         item
-          StartAngle = -5
+          StartAngle = -5.000000000000000000
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 25
+          StopAngle = 25.000000000000000000
           Slices = 9
         end
         item
-          StartAngle = 25
-          StopAngle = 90
+          StartAngle = 25.000000000000000000
+          StopAngle = 90.000000000000000000
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Slices = 9
           Stacks = 4
@@ -71,8 +78,8 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Position.Coordinates = {00000C430000C842000096420000803F}
         Visible = False
-        Width = 30
-        Height = 30
+        Width = 30.000000000000000000
+        Height = 30.000000000000000000
         NoZWrite = True
         MirrorU = False
         MirrorV = False
@@ -87,8 +94,8 @@ object Form1: TForm1
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
         Position.Coordinates = {00000C430000C842000096420000803F}
-        Width = 60
-        Height = 60
+        Width = 60.000000000000000000
+        Height = 60.000000000000000000
         NoZWrite = True
         MirrorU = False
         MirrorV = False
@@ -97,12 +104,26 @@ object Form1: TForm1
     object TerrainRenderer1: TGLTerrainRenderer
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'ground'
+      Direction.Coordinates = {00000000D8B3DDB20000803F00000000}
       Scale.Coordinates = {00008040000080400000803E00000000}
-      Up.Coordinates = {000000000000803F0000008000000000}
+      Up.Coordinates = {000000000000803FD8B3DD3200000000}
       HeightDataSource = GLBitmapHDS1
       TileSize = 32
-      TilesPerTexture = 1
-      QualityDistance = 150
+      TilesPerTexture = 1.000000000000000000
+      QualityDistance = 150.000000000000000000
+      BehavioursData = {
+        0201061154474C4F44454865696768744669656C6402000200060D474C4F4445
+        4D616E616765723102000500000000006F1283F53F0800000500000000000000
+        FA08400500000000000000000000050000000000000000000005000000000000
+        0000000005000000000000000000000500000000000000000000050000000000
+        0000000000050000000000000000000005000000000000000000000500000000
+        0000000000000200050000000000000080FF3F080500000000000000C0004000
+        00803F0200}
+    end
+    object ODEObjects: TGLDummyCube
+      CubeSize = 1.000000000000000000
+      object ODERenderPoint: TGLRenderPoint
+      end
     end
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
@@ -117,21 +138,20 @@ object Form1: TForm1
       Position.Coordinates = {9A620252C9B28B51B743BAD10000803F}
       Visible = False
       object GLDummyCube1: TGLDummyCube
-        CubeSize = 100
+        CubeSize = 100.000000000000000000
         VisibleAtRunTime = True
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 650
-      FocalLength = 50
-      Position.Coordinates = {000000000000C841000020410000803F}
+      DepthOfView = 650.000000000000000000
+      FocalLength = 50.000000000000000000
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
       Left = 264
       Top = 160
       object ODEDrop: TGLDummyCube
         Position.Coordinates = {0000000000000000000020410000803F}
-        CubeSize = 1
+        CubeSize = 1.000000000000000000
       end
     end
   end
@@ -191,6 +211,11 @@ object Form1: TForm1
     Gravity.Coordinates = {0000000000000000C3F51CC10000803F}
     Solver = osmQuickStep
     Iterations = 3
+    MaxContacts = 8
+    RenderPoint = ODERenderPoint
+    Visible = True
+    VisibleAtRunTime = True
+    GeomColor.Color = {ACC8483ECDCC4C3FACC8483E0000803F}
     Left = 96
     Top = 16
   end
@@ -207,7 +232,7 @@ object Form1: TForm1
   end
   object GLUserInterface1: TGLUserInterface
     InvertMouse = False
-    MouseSpeed = 25
+    MouseSpeed = 25.000000000000000000
     GLNavigator = GLNavigator1
     GLVertNavigator = GLNavigator1
     Left = 96

@@ -1,16 +1,3 @@
-{: Getting a GLODEManager and GLTerrainRenderer talking.<p>
-
-   The GLODETerrainCollider is a custom ODE collider that gets its
-   collision information from an assigned TerrainRenderer. Currently
-   only boxes and spheres collide with the terrain collider, but more 
-   can/will be added in the future.<p>
-   
-   This demo is a slightly modified terrain demo. The camera controls
-   are handled with a TGLNavigator and the sound has been removed. Use 
-   the 'b','s' and 'c' keys to drop a boxes, spheres and composite 
-   objects (a box and sphere combined) from just in front of the
-   camera.<p>
-}
 unit Unit1;
 
 interface
@@ -43,6 +30,9 @@ type
     GLNavigator1: TGLNavigator;
     ODEDrop: TGLDummyCube;
     GLUserInterface1: TGLUserInterface;
+    ODEObjects: TGLDummyCube;
+    GLLightSource1: TGLLightSource;
+    ODERenderPoint: TGLRenderPoint;
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -53,9 +43,7 @@ type
     { Déclarations privées }
   public
     { Déclarations publiques }
-    procedure DropSphere;
-    procedure DropBox;
-    procedure DropComposite;
+    procedure DropODEObject(anElementClass : TODEElementClass);
   end;
 
 var
@@ -82,15 +70,6 @@ begin
    BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    GLNavigator1.TurnHorizontal(90);
-
-   // Create the terrain collider
-   with TGLODETerrainCollider(GLScene1.Objects.AddNewChild(TGLODETerrainCollider)) do begin
-     // Once a manager is assigned the collider gets initialized in ODE
-     Manager:=GLODEManager1;
-     // The terrain renderer provides the collider with the height and
-     // normals required to generate contact joints in ODE
-     TerrainRenderer:=TerrainRenderer1;
-   end;
 
    GLUserInterface1.MouseLookActivate;
 end;
@@ -210,9 +189,11 @@ begin
          else Options:=Options+[sdoTwinkle];
       end;
       'l' : with GLLensFlare do Visible:=(not Visible) and SPSun.Visible;
-      'b','B' : DropBox;
-      's','S' : DropSphere;
-      'c','C' : DropComposite;
+      '1' : DropODEObject(TODEElementSphere);
+      '2' : DropODEObject(TODEElementBox);
+      '3' : DropODEObject(TODEElementCapsule);
+      '4' : DropODEObject(TODEElementCylinder);
+      '5' : DropODEObject(TODEElementCone);
    end;
    Key:=#0;
 end;
@@ -222,81 +203,16 @@ begin
    GLLensFlare.PreRender(Sender as TGLSceneBuffer);
 end;
 
-// ODE object dropping code
-
-procedure TForm1.DropSphere;
+procedure TForm1.DropODEObject(anElementClass : TODEElementClass);
+var
+  dummy : TGLBaseSceneObject;
+  dyn : TGLODEDynamic;
 begin
-  // Add the dummy object to the scene
-  with TGLODEDummy(GLScene1.Objects.AddNewChild(TGLODEDummy)) do begin
-    // Initialize it in ODE
-    Manager:=GLODEManager1;
-
-    // Set the dummy's position to be just in front of the camera
-    Position.AsVector:=ODEDrop.AbsolutePosition;
-
-    // Add a collision element
-    with TODEElementSphere(AddNewElement(TODEElementSphere)) do begin
-      Radius:=2.5;
-      Position.SetToZero;
-    end;
-
-    // Allow the element collision boundaries to be seen at runtime
-    VisibleAtRunTime:=True;
-  end;
-end;
-
-procedure TForm1.DropBox;
-begin
-  // Add the dummy object to the scene
-  with TGLODEDummy(GLScene1.Objects.AddNewChild(TGLODEDummy)) do begin
-    // Initialize it in ODE
-    Manager:=GLODEManager1;
-
-    // Set the dummy's position to be just in front of the camera
-    Position.AsVector:=ODEDrop.AbsolutePosition;
-
-    // Add a collision element
-    with TODEElementBox(AddNewElement(TODEElementBox)) do begin
-      BoxWidth:=5;
-      BoxHeight:=5;
-      BoxDepth:=5;
-      Position.SetToZero;
-    end;
-
-    // Allow the element collision boundaries to be seen at runtime
-    VisibleAtRunTime:=True;
-  end;
-end;
-
-procedure TForm1.DropComposite;
-begin
-  // Add the dummy object to the scene
-  with TGLODEDummy(GLScene1.Objects.AddNewChild(TGLODEDummy)) do begin
-    // Initialize it in ODE
-    Manager:=GLODEManager1;
-
-    // Set the dummy's position to be just in front of the camera
-    Position.AsVector:=ODEDrop.AbsolutePosition;
-
-    // Add a collision elements
-    with TODEElementBox(AddNewElement(TODEElementBox)) do begin
-      BoxWidth:=5;
-      BoxHeight:=5;
-      BoxDepth:=5;
-      Position.SetPoint(2*Random-1,2*Random-1,2*Random-1);
-    end;
-    with TODEElementSphere(AddNewElement(TODEElementSphere)) do begin
-      Radius:=2.5;
-      Position.SetPoint(2*Random-1,2*Random-1,2*Random-1);
-    end;
-
-    // Calibrating the center of mass moves the elements to get the
-    // center of mass aligned with the center of the dummy object
-    CalibrateCenterOfMass;
-
-    // Allow the element collision boundaries to be seen at runtime
-    VisibleAtRunTime:=True;
-  end;
+  dummy:=ODEObjects.AddNewChild(TGLDummyCube);
+  dummy.Position.AsVector:=ODEDrop.AbsolutePosition;
+  dyn:=TGLODEDynamic.Create(dummy.Behaviours);
+  dyn.Manager:=GLODEManager1;
+  dyn.AddNewElement(anElementClass);
 end;
 
 end.

@@ -1,36 +1,12 @@
-{: Setting up simple ODE physics with the GLODEManager.<p>
-   
-   The GLODEDummy is a GLScene heirachal object that is controlled by
-   ODE through the GLODEManager. ODE handles physics through Body, Mass
-   and Geoms. The Body and Mass are used to control the dynamics of 
-   moving objects, and the Geom defines the collision boundary.<p>
-
-   The Elements property allows for a more complex collision boundary 
-   definition. Elements are a list of geoms that combine to form a 
-   'composite' geom, shown with the 'Add composite' button. Just add
-   one element if you only want a single geom for the dummy.<p>
-   
-   The Surface property is used to define how the objects behave when
-   they collide with each other. When 2 objects collide the values in
-   their collision surfaces are averaged to produce a single contact
-   definition that is fed to ODE to let it know how the collision 
-   between the objects should be handled. I'm not sure of the accuracy
-   of averaging the surfaces but it allows for a GLODEDummy object to
-   have a distinct collision surface.<p>
-   
-   The GLODEDynamicBehaviour is the equivalent to a GLODEDummy in a
-   GLScene behaviour. This allows for a GLScene object to be 
-   controlled by ODE.<p>
-}
 unit Unit1;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLODEManager, GLScene, GLObjects, GLCadencer,
+  Dialogs, GLODEManager, GLScene, GLObjects, GLGeomObjects, GLCadencer,
   GLWin32Viewer, GLMisc, GLShadowPlane, StdCtrls, ComCtrls,
-  ExtCtrls, VectorGeometry;
+  ExtCtrls, GLGraph, VectorTypes, VectorGeometry, GLODECustomColliders;
 
 type
   TForm1 = class(TForm)
@@ -42,37 +18,39 @@ type
     GLLightSource1: TGLLightSource;
     ODEObjects: TGLDummyCube;
     Panel1: TPanel;
-    Button1: TButton;
-    GroupBox1: TGroupBox;
-    CheckBoxBounce: TCheckBox;
-    TrackBarBounce: TTrackBar;
-    CheckBoxSoftCFM: TCheckBox;
-    TrackBarSoftCFM: TTrackBar;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
-    Label1: TLabel;
     GLODEManager1: TGLODEManager;
-    procedure FormCreate(Sender: TObject);
+    Spawn: TButton;
+    ComboBox1: TComboBox;
+    Label1: TLabel;
+    GLRenderPoint1: TGLRenderPoint;
+    GLHeightField1: TGLHeightField;
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    TrackBar1: TTrackBar;
+    Label2: TLabel;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure Button1Click(Sender: TObject);
-    procedure CheckBoxClick(Sender: TObject);
-    procedure TrackBarSoftCFMChange(Sender: TObject);
-    procedure TrackBarBounceChange(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure SpawnClick(Sender: TObject);
+    procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
+      var color: TVector4f; var texPoint: TTexPoint);
+    procedure CheckBox1Click(Sender: TObject);
+    procedure CheckBox2Click(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
-    GLODEPlane1 : TGLODEPlane;
     mx,my : integer;
+
+    procedure DoSphere;
+    procedure DoBox;
+    procedure DoCapsule;
+    procedure DoCylinder;
+    procedure DoCone;
   end;
 
 var
@@ -81,26 +59,6 @@ var
 implementation
 
 {$R *.dfm}
-
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  GLODEManager1.Gravity.Y:=-9.81;
-
-  GLODEPlane1:=TGLODEPlane(ODEObjects.AddNewChild(TGLODEPlane));
-  with GLODEPlane1 do begin
-    Manager:=GLODEManager1;
-    Direction.SetVector(0,1,0);
-    Position.SetPoint(0,-1,0);
-    Surface.SurfaceMode:=[csmBounce];
-    Surface.Bounce:=1;
-    Surface.Bounce_Vel:=0.5;
-    Surface.SoftCFM:=0.5;
-    with TGLPlane(AddNewChild(TGLPlane)) do begin
-      Width:=10;
-      Height:=10;
-    end;
-  end;
-end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
@@ -124,112 +82,144 @@ begin
   my:=y;
 end;
 
-procedure TForm1.Button4Click(Sender: TObject);
+procedure TForm1.SpawnClick(Sender: TObject);
 begin
-  with TGLCube(ODEObjects.AddNewChild(TGLCube)) do begin
-    Position.SetPoint(Random,Random+3,Random);
-    CubeWidth:=Random+0.5;
-    CubeHeight:=Random+0.5;
-    CubeDepth:=Random+0.5;
-    Material.FrontProperties.Diffuse.Color:=VectorMake(0.5*Random+0.5, 0.5*Random+0.5, 0.5*Random+0.5, 0.5*Random+0.5);
-
-    with TGLODEDynamicBehaviour.Create(Behaviours) do begin
-      Manager:=GLODEManager1;
-      with TODEElementBox(AddNewElement(TODEElementBox)) do begin
-        Position.SetPoint(0,0,0);
-        BoxWidth:=CubeWidth;
-        BoxHeight:=CubeHeight;
-        BoxDepth:=CubeDepth;
-      end;
-    end;
+  case ComboBox1.ItemIndex of
+    0 : DoSphere;
+    1 : DoBox;
+    2 : DoCapsule;
+    3 : DoCylinder;
+    4 : DoCone;
   end;
 end;
 
-procedure TForm1.Button3Click(Sender: TObject);
-begin
-  with TGLODEDummy(ODEObjects.AddNewChild(TGLODEDummy)) do begin
-    Manager:=GLODEManager1;
-    Position.SetPoint(Random,Random+3,Random);
-    Surface.RollingFrictionEnabled:=True;
-    Surface.RollingFrictionCoeff:=0.0005;
-    with TODEElementSphere(AddNewElement(TODEElementSphere)) do begin
-      Position.SetPoint(0,0,0);
-      Radius:=0.5*Random+0.25;
-    end;
-    Color.Red:=0.5*Random+0.5;
-    Color.Green:=0.5*Random+0.5;
-    Color.Blue:=0.5*Random+0.5;
-    VisibleAtRuntime:=True;
-  end;
-end;
-
-procedure TForm1.Button2Click(Sender: TObject);
-begin
-  with TGLODEDummy(ODEObjects.AddNewChild(TGLODEDummy)) do begin
-    Manager:=GLODEManager1;
-    Position.SetPoint(Random,Random+3,Random);
-    with TODEElementCapsule(AddNewElement(TODEElementCapsule)) do begin
-      Position.SetPoint(0,0,0);
-      Radius:=0.5*Random+0.25;
-      Length:=Random+0.5;
-    end;
-    Color.Red:=0.5*Random+0.5;
-    Color.Green:=0.5*Random+0.5;
-    Color.Blue:=0.5*Random+0.5;
-
-    VisibleAtRuntime:=True;
-  end;
-end;
-
-procedure TForm1.Button1Click(Sender: TObject);
-begin
-  with TGLODEDummy(ODEObjects.AddNewChild(TGLODEDummy)) do begin
-    Manager:=GLODEManager1;
-    Position.SetPoint(Random,Random+3,Random);
-    with TODEElementBox(AddNewElement(TODEElementBox)) do begin
-      Position.SetPoint(0.5*Random-0.25,0.5*Random-0.25,0.5*Random-0.25);
-      BoxWidth:=Random+0.5;
-      BoxHeight:=Random+0.5;
-      BoxDepth:=Random+0.5;
-    end;
-    with TODEElementSphere(AddNewElement(TODEElementSphere)) do begin
-      Position.SetPoint(0.5*Random-0.25,0.5*Random-0.25,0.5*Random-0.25);
-      Radius:=0.5*Random+0.25;
-    end;
-    with TODEElementCapsule(AddNewElement(TODEElementCapsule)) do begin
-      Position.SetPoint(0.5*Random-0.25,0.5*Random-0.25,0.5*Random-0.25);
-      Radius:=0.5*Random+0.25;
-      Length:=Random+0.5;
-    end;
-    Color.Red:=0.5*Random+0.5;
-    Color.Green:=0.5*Random+0.5;
-    Color.Blue:=0.5*Random+0.5;
-    CalibrateCenterOfMass;
-
-    VisibleAtRuntime:=True;
-  end;
-end;
-
-procedure TForm1.CheckBoxClick(Sender: TObject);
+procedure TForm1.DoSphere;
 var
-  SurfaceMode : TSurfaceModes;
+  sphere : TGLSphere;
+  dyn : TGLODEDynamic;
 begin
-  SurfaceMode:=[];
-  if CheckBoxBounce.Checked then
-    SurfaceMode:=SurfaceMode+[csmBounce];
-  if CheckBoxSoftCFM.Checked then
-    SurfaceMode:=SurfaceMode+[csmSoftCFM];
-  GLODEPlane1.Surface.SurfaceMode:=SurfaceMode;
+  sphere:=TGLSphere(ODEObjects.AddNewChild(TGLSphere));
+  sphere.Position.SetPoint(5*random-2.5,2,5*random-2.5);
+  sphere.Radius:=0.3*(Random+1);
+  dyn:=TGLODEDynamic.Create(sphere.Behaviours);
+  dyn.Manager:=GLODEManager1;
+  with TODEElementSphere(dyn.AddNewElement(TODEElementSphere)) do
+    Radius:=sphere.Radius;
 end;
 
-procedure TForm1.TrackBarSoftCFMChange(Sender: TObject);
+procedure TForm1.DoBox;
+var
+  cube : TGLCube;
+  dyn : TGLODEDynamic;
 begin
-  GLODEPlane1.Surface.SoftCFM:=TrackBarSoftCFM.Position/100;
+  cube:=TGLCube(ODEObjects.AddNewChild(TGLCube));
+  cube.Position.SetPoint(5*random-2.5,2,5*random-2.5);
+  cube.CubeWidth:=0.5*(Random+1);
+  cube.CubeHeight:=0.5*(Random+1);
+  cube.CubeDepth:=0.5*(Random+1);
+  dyn:=TGLODEDynamic.Create(cube.Behaviours);
+  dyn.Manager:=GLODEManager1;
+  with TODEElementBox(dyn.AddNewElement(TODEElementBox)) do begin
+    BoxWidth:=cube.CubeWidth;
+    BoxHeight:=cube.CubeHeight;
+    BoxDepth:=cube.CubeDepth;
+  end;
 end;
 
-procedure TForm1.TrackBarBounceChange(Sender: TObject);
+procedure TForm1.DoCapsule;
+var
+  capsule : TGLCylinder;
+  dyn : TGLODEDynamic;
 begin
-  GLODEPlane1.Surface.Bounce:=TrackBarBounce.Position/100;
+  capsule:=TGLCylinder(ODEObjects.AddNewChild(TGLCylinder));
+  with capsule do begin
+    Position.SetPoint(5*random-2.5,2,5*random-2.5);
+    BottomRadius:=0.25*(Random+1);
+    TopRadius:=BottomRadius;
+    Height:=random+1;
+    Parts:=[cySides];
+    with TGLSphere(AddNewChild(TGLSphere)) do begin
+      Position.Y:=0.5*Height;
+      Radius:=BottomRadius;
+      Bottom:=0;
+    end;
+    with TGLSphere(AddNewChild(TGLSphere)) do begin
+      Position.Y:=-0.5*Height;
+      Radius:=BottomRadius;
+      Top:=0;
+    end;
+  end;
+  dyn:=TGLODEDynamic.Create(capsule.Behaviours);
+  dyn.Manager:=GLODEManager1;
+  with TODEElementCapsule(dyn.AddNewElement(TODEElementCapsule)) do begin
+    Radius:=capsule.BottomRadius;
+    Length:=capsule.Height;
+    Direction.SetVector(0,1,0);
+    Up.SetVector(0,0,1);
+  end;
+end;
+
+procedure TForm1.DoCylinder;
+var
+  cylinder : TGLCylinder;
+  dyn : TGLODEDynamic;
+begin
+  cylinder:=TGLCylinder(ODEObjects.AddNewChild(TGLCylinder));
+  with cylinder do begin
+    Position.SetPoint(5*random-2.5,2,5*random-2.5);
+    BottomRadius:=0.25*(Random+1);
+    TopRadius:=BottomRadius;
+    Height:=random+1;
+  end;
+  dyn:=TGLODEDynamic.Create(cylinder.Behaviours);
+  dyn.Manager:=GLODEManager1;
+  with TODEElementCylinder(dyn.AddNewElement(TODEElementCylinder)) do begin
+    Radius:=cylinder.BottomRadius;
+    Length:=cylinder.Height;
+  end;
+end;
+
+procedure TForm1.DoCone;
+var
+  cone : TGLCone;
+  dyn : TGLODEDynamic;
+begin
+  cone:=TGLCone(ODEObjects.AddNewChild(TGLCone));
+  with cone do begin
+    Position.SetPoint(5*random-2.5,2,5*random-2.5);
+    BottomRadius:=0.25*(Random+1);
+    Height:=random+1;
+  end;
+  dyn:=TGLODEDynamic.Create(cone.Behaviours);
+  dyn.Manager:=GLODEManager1;
+  with TODEElementCone(dyn.AddNewElement(TODEElementCone)) do begin
+    Radius:=cone.BottomRadius;
+    Length:=cone.Height;
+    Direction.SetVector(0,1,0);
+    Up.SetVector(0,0,1);
+  end;
+end;
+
+procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;
+  var color: TVector4f; var texPoint: TTexPoint);
+begin
+  z:=0.5*cos(x)*sin(y);
+end;
+
+procedure TForm1.CheckBox1Click(Sender: TObject);
+begin
+  GLODEManager1.Visible:=CheckBox1.Checked;
+end;
+
+procedure TForm1.CheckBox2Click(Sender: TObject);
+begin
+  TGLODEHeightField(GLHeightField1.Behaviours[0]).RenderContacts:=CheckBox2.Checked;
+end;
+
+procedure TForm1.TrackBar1Change(Sender: TObject);
+begin
+  with TGLODEHeightField(GLHeightField1.Behaviours[0]) do
+    ContactResolution:=0.25+(10-TrackBar1.Position)/20;
 end;
 
 end.
