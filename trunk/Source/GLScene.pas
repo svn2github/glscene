@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>08/03/02 - Egg - Fixed InvAbsoluteMatrix/AbsoluteMatrix separation
       <li>05/03/02 - Egg - Added MoveObjectAround
       <li>04/03/02 - Egg - CoordinateChanged default rightVector based on X, then Y
       <li>27/02/02 - Egg - Added DepthPrecision and ColorDepth to buffer,
@@ -2447,6 +2448,7 @@ begin
             GetMem(FAbsoluteMatrix, SizeOf(TMatrix)*2);
             FInvAbsoluteMatrix:=PMatrix(Integer(FAbsoluteMatrix)+SizeOf(TMatrix));
          end;
+         RebuildMatrix;
          if Parent<>nil then
             FInvAbsoluteMatrix^:=MatrixMultiply(Parent.InvAbsoluteMatrixAsAddress^,
                                                 AnglePreservingMatrixInvert(FLocalMatrix))
@@ -3236,10 +3238,11 @@ procedure TGLBaseSceneObject.RecTransformationChanged;
 var
    i : Integer;
    list : PPointerList;
+   matSet : TObjectChanges;
 begin
-   if not (ocAbsoluteMatrix in FChanges) then begin
-      Include(FChanges, ocAbsoluteMatrix);
-      Include(FChanges, ocInvAbsoluteMatrix);
+   matSet:=[ocAbsoluteMatrix, ocInvAbsoluteMatrix];
+   if matSet*FChanges<>matSet then begin
+      FChanges:=FChanges+matSet;
       list:=FChildren.List;
       for i:=0 to FChildren.Count-1 do
          TGLBaseSceneObject(list[i]).RecTransformationChanged;
@@ -3683,23 +3686,19 @@ end;
 
 procedure TGLBaseSceneObject.SetPosition(APosition: TGLCoordinates);
 begin
-   FPosition.SetPoint(APosition.X, APosition.Y, APosition.Z);
+   FPosition.SetPoint(APosition.DirectX, APosition.DirectY, APosition.DirectZ);
 end;
 
 procedure TGLBaseSceneObject.SetDirection(AVector: TGLCoordinates);
 begin
-   if not VectorIsNull(AVector.DirectVector) then begin
-      FDirection.SetVector(AVector.X, AVector.Y, AVector.Z);
-      TransformationChanged;
-   end;
+   if not VectorIsNull(AVector.DirectVector) then
+      FDirection.SetVector(AVector.DirectX, AVector.DirectY, AVector.DirectZ);
 end;
 
 procedure TGLBaseSceneObject.SetUp(AVector: TGLCoordinates);
 begin
-   if not VectorIsNull(AVector.DirectVector) then begin
-      FUp.SetVector(AVector.X, AVector.Y, AVector.Z, 0);
-      TransformationChanged;
-   end;
+   if not VectorIsNull(AVector.DirectVector) then
+      FUp.SetVector(AVector.DirectX, AVector.DirectY, AVector.DirectZ);
 end;
 
 procedure TGLBaseSceneObject.SetVisible(AValue: Boolean);
