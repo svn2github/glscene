@@ -56,10 +56,10 @@ finalization
 // ------------------------------------------------------------------
 
 //  UnregisterXCollectionItemClass(TGLODEDynamicBehaviour);
-
+{
   with ObjectManager do begin
     UnregisterSceneObject(TGLODEDummy);
     UnregisterSceneObject(TGLODEPlane);
   end;
-
+ }
 end.
