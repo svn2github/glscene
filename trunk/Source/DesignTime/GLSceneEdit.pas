@@ -540,14 +540,13 @@ end;
 procedure TGLSceneEditorForm.AddBehaviourClick(Sender: TObject);
 var
 	XCollectionItemClass : TXCollectionItemClass;
-	XCollectionItem : TXCollectionItem;
-        AParent: TGLBaseSceneObject;
+   AParent: TGLBaseSceneObject;
 begin
         if Assigned(Tree.Selected) then
         begin
         AParent:=TGLBaseSceneObject(Tree.Selected.Data);
 	XCollectionItemClass:=TXCollectionItemClass((Sender as TMenuItem).Tag);
-	XCollectionItem:=XCollectionItemClass.Create(AParent.Behaviours);
+	XCollectionItemClass.Create(AParent.Behaviours);
        	//PrepareListView;
         ShowBehaviours(AParent);
 	//ListView.Selected:=ListView.FindData(0, XCollectionItem, True, False);
@@ -559,7 +558,6 @@ end;
 procedure TGLSceneEditorForm.AddEffectClick(Sender: TObject);
 var
 	XCollectionItemClass : TXCollectionItemClass;
-	XCollectionItem : TXCollectionItem;
         AParent: TGLBaseSceneObject;
 begin
         if Assigned(Tree.Selected) then
@@ -567,7 +565,7 @@ begin
 
         AParent:=TGLBaseSceneObject(Tree.Selected.Data);
 	XCollectionItemClass:=TXCollectionItemClass((Sender as TMenuItem).Tag);
-	XCollectionItem:=XCollectionItemClass.Create(AParent.Effects);
+	XCollectionItemClass.Create(AParent.Effects);
        	//PrepareListView;
         ShowEffects(AParent);
 	//ListView.Selected:=ListView.FindData(0, XCollectionItem, True, False);

@@ -2858,67 +2858,57 @@ end;
 function TGLCube.GenerateSilhouette(
   const silhouetteParameters: TGLSilhouetteParameters): TGLBaseSilhouette;
 var
-	hw, hh, hd, nd  : TGLFloat;
-  Connectivity : TConnectivity;
-  sil : TGLSilhouette;
-
-    function MakeVector(x,y,z : single) : TAffineVector;
-    begin
-      result[0] := x;
-      result[1] := y;
-      result[2] := z;
-    end;
+	hw, hh, hd : TGLFloat;
+   connectivity : TConnectivity;
+   sil : TGLSilhouette;
 begin
    Connectivity := TConnectivity.Create(true);
 
-   if FNormalDirection=ndInside then
-      nd:=-1
-   else nd:=1;
    hw:=FCubeSize[0]*0.5;
    hh:=FCubeSize[1]*0.5;
    hd:=FCubeSize[2]*0.5;
 
    if cpFront in FParts then begin
       Connectivity.AddQuad(
-        MakeVector( hw,  hh, hd),
-        MakeVector(-hw,  hh, hd),
-        MakeVector(-hw, -hh, hd),
-        MakeVector( hw, -hh, hd));
+        AffineVectorMake( hw,  hh, hd),
+        AffineVectorMake(-hw,  hh, hd),
+        AffineVectorMake(-hw, -hh, hd),
+        AffineVectorMake( hw, -hh, hd));
    end;
    if cpBack in FParts then begin
       Connectivity.AddQuad(
-        MakeVector(hw,  hh, -hd),
-        MakeVector( hw, -hh, -hd),
-        MakeVector(-hw, -hh, -hd),
-        MakeVector(-hw,  hh, -hd));
+        AffineVectorMake(hw,  hh, -hd),
+        AffineVectorMake( hw, -hh, -hd),
+        AffineVectorMake(-hw, -hh, -hd),
+        AffineVectorMake(-hw,  hh, -hd));
    end;
    if cpLeft in FParts then begin
       Connectivity.AddQuad(
-        MakeVector(-hw,  hh,  hd),
-        MakeVector(-hw,  hh, -hd),
-        MakeVector(-hw, -hh, -hd),
-        MakeVector(-hw, -hh,  hd));
+        AffineVectorMake(-hw,  hh,  hd),
+        AffineVectorMake(-hw,  hh, -hd),
+        AffineVectorMake(-hw, -hh, -hd),
+        AffineVectorMake(-hw, -hh,  hd));
    end;
    if cpRight in FParts then begin
       Connectivity.AddQuad(
-        MakeVector(hw,  hh,  hd),
-        MakeVector(hw, -hh,  hd),
-        MakeVector(hw, -hh, -hd),
-        MakeVector(hw,  hh, -hd));
+        AffineVectorMake(hw,  hh,  hd),
+        AffineVectorMake(hw, -hh,  hd),
+        AffineVectorMake(hw, -hh, -hd),
+        AffineVectorMake(hw,  hh, -hd));
    end;
    if cpTop in FParts then begin
       Connectivity.AddQuad(
-        MakeVector(-hw, hh, -hd),
-        MakeVector(-hw, hh,  hd),
-        MakeVector( hw, hh,  hd),
-        MakeVector( hw, hh, -hd));
+        AffineVectorMake(-hw, hh, -hd),
+        AffineVectorMake(-hw, hh,  hd),
+        AffineVectorMake( hw, hh,  hd),
+        AffineVectorMake( hw, hh, -hd));
    end;
    if cpBottom in FParts then begin
       Connectivity.AddQuad(
-        MakeVector(-hw, -hh, -hd),
-        MakeVector( hw, -hh, -hd),
-        MakeVector( hw, -hh,  hd),
-        MakeVector(-hw, -hh,  hd));
+        AffineVectorMake(-hw, -hh, -hd),
+        AffineVectorMake( hw, -hh, -hd),
+        AffineVectorMake( hw, -hh,  hd),
+        AffineVectorMake(-hw, -hh,  hd));
    end;
 
    sil := nil;

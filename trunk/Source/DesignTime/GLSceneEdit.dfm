@@ -20,13 +20,14 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 265
     Top = 26
     Width = 4
-    Height = 363
+    Height = 368
+    Cursor = crHSplit
   end
   object Tree: TTreeView
     Left = 0
     Top = 26
     Width = 265
-    Height = 363
+    Height = 368
     Align = alLeft
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -179,7 +180,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 269
     Top = 26
     Width = 203
-    Height = 363
+    Height = 368
     Align = alClient
     Caption = 'Panel1'
     TabOrder = 2
@@ -227,7 +228,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Left = 1
       Top = 194
       Width = 201
-      Height = 168
+      Height = 173
       Align = alClient
       Columns = <>
       ReadOnly = True

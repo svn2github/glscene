@@ -198,7 +198,7 @@ end;
 // Notes :
 // Return: closest point on triangle
 // -----------------------------------------------------------------------
-
+{
 function ClosestPointOnTriangle(const a, b, c, n, p: TAffineVector): TAffineVector;
 var
    dAB, dBC, dCA : Single;
@@ -231,6 +231,7 @@ begin
       else Result:=Rab;
     end;
 end;
+}
 
 // ----------------------------------------------------------------------
 // Name  : ClosestPointOnTriangleEdge()
