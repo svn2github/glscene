@@ -149,6 +149,7 @@ type
          FForm : TForm;
          FScreenDepth : TGLScreenDepth;
          FActive : Boolean;
+         FSwitchedResolution : Boolean;
          FUpdateCount : Integer;
          FOnMouseDown : TMouseEvent;
          FOnMouseUp : TMouseEvent;
@@ -641,11 +642,15 @@ begin
       BindFormEvents;
       FOldWndProc:=WindowProc;
       WindowProc:=WndProc;
-
-      SetFullscreenMode(res);
-
-      Show;
    end;
+
+   if (Screen.Width<>Width) or (Screen.Height<>Height)
+         or (GetCurrentColorDepth<>cScreenDepthToBPP[ScreenDepth]) then begin
+      SetFullscreenMode(res);
+      FSwitchedResolution:=True;
+   end else FSwitchedResolution:=False;
+
+   FForm.Show;
 
    Buffer.Resize(Width, Height);
    dc:=GetDC(FForm.Handle);
@@ -665,10 +670,12 @@ begin
       Buffer.DestroyRC;
       f:=FForm;
       FForm:=nil;
+      f.WindowProc:=FOldWndProc;
       f.Release;
    finally
       // attempt that, at the very least...
-      RestoreDefaultMode;
+      if FSwitchedResolution then
+         RestoreDefaultMode;
    end;
    FActive:=False;
 end;
@@ -689,9 +696,9 @@ begin
       OnClose:=FOnClose;
       OnActivate:=DoActivate;
       OnDeactivate:=DoDeactivate;
-      FOnKeyUp:=OnKeyUp;
-      FOnKeyDown:=OnKeyDown;
-      FOnKeyPress:=OnKeyPress;
+      OnKeyUp:=FOnKeyUp;
+      OnKeyDown:=FOnKeyDown;
+      OnKeyPress:=FOnKeyPress;
    end;
 end;
 
@@ -708,7 +715,8 @@ end;
 //
 procedure TGLFullScreenViewer.DoPaint(Sender : TObject);
 begin
-   Render;
+   if Assigned(FForm) then
+      Render;
 end;
 
 // WndProc
