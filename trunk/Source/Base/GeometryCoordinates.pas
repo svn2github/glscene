@@ -47,6 +47,7 @@ procedure Spherical_Cartesian(const r,theta,phi:double;var x,y,z:double;
 
 {: Convert cartesian to spherical [single]}
 procedure Cartesian_Spherical(const x,y,z:single; var r,theta,phi:single);overload;
+procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single); overload;
 {: Convert cartesion to spherical [double]}
 procedure Cartesian_Spherical(const x,y,z:double; var r,theta,phi:double);overload;
 
@@ -259,6 +260,7 @@ begin
     geometry.sincos(theta,a,y,x); // x = a*cos(theta), y = a*sin(theta)}
   end;
 end;
+
 // ----- Cartesian_Spherical ---------------------------------------------------
 {** convert Cartesian to Spherical, no checks, single
 Ref: http://mathworld.wolfram.com/SphericalCoordinates.html
@@ -271,6 +273,16 @@ begin
   theta := geometry.arctan2(y,x);
   phi := geometry.arccos(z/r);
 end;
+
+// Cartesian_Spherical
+//
+procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single);
+begin
+   r:=VectorLength(v);
+   theta:=ArcTan2(v[1], v[0]);
+   phi:=ArcCos(v[2]/r);
+end;
+
 // ----- Cartesian_Spherical ---------------------------------------------------
 {** convert Cartesian to Spherical, no checks, double
 Ref: http://mathworld.wolfram.com/SphericalCoordinates.html
