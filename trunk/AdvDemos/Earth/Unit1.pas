@@ -94,6 +94,7 @@ end;
 
 procedure TForm1.GLSceneViewerBeforeRender(Sender: TObject);
 begin
+   GLLensFlare1.PreRender(Sender as TGLSceneBuffer);
    // if no multitexturing or no combiner support, turn off city lights
    if GL_ARB_multitexture and GL_ARB_texture_env_combine then begin
       GLMaterialLibrary.Materials[0].Shader:=EarthCombiner;
@@ -204,7 +205,6 @@ begin
    GetMem(pColor, 2*(cSlices+1)*SizeOf(TVector));
 
    glPushAttrib(GL_ENABLE_BIT);
-//   glPolygonMode(GL_FRONT, GL_LINE);
    glDepthMask(False);
    glDisable(GL_LIGHTING);
    glEnable(GL_BLEND);
