@@ -6,10 +6,9 @@ uses
    Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
    GLWin32Viewer, GLCadencer, GLTexture, GLMisc, GLScene, GLTerrainRenderer,
    GLHeightData, GLObjects, VectorGeometry, GLTree, JPEG, TGA, Keyboard,
-   VectorLists, GLBitmapFont, GLContext,
-   GLWindowsFont, GLHUDObjects, GLSkydome, GLImposter, GLParticleFX, GLGraphics,
-   PersistentClasses, OpenGL1x, ExtCtrls, GLUtils, GLTextureCombiners, XOpenGL,
-   GLHeightTileFileHDS;
+   VectorLists, GLBitmapFont, GLContext, GLWindowsFont, GLHUDObjects, GLSkydome,
+   GLImposter, GLParticleFX, GLGraphics, PersistentClasses, OpenGL1x, ExtCtrls,
+   GLUtils, GLTextureCombiners, XOpenGL, GLHeightTileFileHDS;
 
 type
    TForm1 = class(TForm)
@@ -396,7 +395,7 @@ begin
    if not FileExists(cImposterCacheFile) then Exit;
    cacheAge:=FileDateToDateTime(FileAge(cImposterCacheFile));
    exeAge:=FileDateToDateTime(FileAge(Application.ExeName));
-//   if cacheAge<exeAge then Exit;
+   if cacheAge<exeAge then Exit;
 
    Tag:=0;
    bmp:=TBitmap.Create;
