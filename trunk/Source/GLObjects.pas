@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>02/04/03 - EG - TGLPlane.RayCastIntersect fix (Erick Schuitema)
       <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
       <li>22/01/03 - EG - TGLCube.RayCastIntersect fixes (Dan Bartlett)
       <li>10/01/03 - EG - TGLCube.RayCastIntersect (Stuart Gooding)
@@ -1454,8 +1455,8 @@ end;
 // RayCastIntersect
 //
 function TGLPlane.RayCastIntersect(const rayStart, rayVector : TVector;
-                                 intersectPoint : PVector = nil;
-                                 intersectNormal : PVector = nil) : Boolean;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean;
 var
    locRayStart, locRayVector, ip : TVector;
    t : Single;
@@ -1489,6 +1490,7 @@ begin
    end;
    if Result and Assigned(intersectPoint) then begin
       ip[2]:=0;
+      ip[3]:=1;
       intersectPoint^:=LocalToAbsolute(ip);
    end;
 end;
