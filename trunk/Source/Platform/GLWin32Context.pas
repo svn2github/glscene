@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/03/02 - EG - Fixed aaNone mode (AA specifically off)
       <li>01/03/02 - EG - Fixed CurrentPixelFormatIsHardwareAccelerated
       <li>22/02/02 - EG - Unified ChooseWGLFormat for visual & non-visual
       <li>21/02/02 - EG - AntiAliasing support *experimental* (Chris N. Strahm)
@@ -358,8 +359,12 @@ begin
    if AuxBuffers>0 then
       AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
    if (AntiAliasing<>aaDefault) and WGL_ARB_multisample and GL_ARB_multisample then begin
-       AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_TRUE);
-       AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
+      if AntiAliasing=aaNone then
+         AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_FALSE)
+      else begin
+         AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_TRUE);
+         AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
+      end;
    end;
    ClearFAttribs;
    ChoosePixelFormat;
@@ -401,7 +406,7 @@ const
    cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
 var
    pfDescriptor : TPixelFormatDescriptor;
-   pixelFormat, nbFormats, legacyFormat : Integer;
+   pixelFormat, nbFormats : Integer;
    aType : DWORD;
    iFormats : array [0..31] of Integer;
    tempWnd : HWND;
