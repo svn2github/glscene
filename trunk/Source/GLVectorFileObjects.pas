@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>15/08/01 - Egg - FaceGroups can now be rendered by material group
+                           (activate with RenderingOption "moroGroupByMaterial")
       <li>14/08/01 - Egg - Added TSkeletonBoneList and support for skeleton with
                            multiple root bones, updated SMD loader 
       <li>13/08/01 - Egg - Improved/fixed SMD loader
@@ -373,6 +375,18 @@ type
          procedure Clear;
 	end;
 
+   // TMeshObjectRenderingOption
+   //
+   {: Rendering options per TMeshObject.<p>
+   <ul>
+   <li>moroGroupByMaterial : if set, the facegroups will be rendered by material
+      in batchs, this will optimize rendering by reducing material switches, but
+      also implies that facegroups will not be rendered in the order they are in
+      the list.
+   </ul> }
+   TMeshObjectRenderingOption = (moroGroupByMaterial);
+   TMeshObjectRenderingOptions = set of TMeshObjectRenderingOption;
+
    // TMeshObject
    //
    {: Base mesh class.<p>
@@ -386,6 +400,7 @@ type
          FColors : TVectorList;
          FFaceGroups: TFaceGroups;
          FMode : TMeshObjectMode;
+         FRenderingOptions : TMeshObjectRenderingOptions;
          FArraysDeclared : Boolean; // not persistent
 
       protected
@@ -424,6 +439,8 @@ type
          property TexCoords : TAffineVectorList read FTexCoords write SetTexCoords;
          property Colors : TVectorList read FColors write SetColors;
          property FaceGroups : TFaceGroups read FFaceGroups;
+         property RenderingOptions : TMeshObjectRenderingOptions read FRenderingOptions write FRenderingOptions;
+
    end;
 
    // TMeshObjectList
@@ -618,6 +635,7 @@ type
          { Private Declarations }
          FOwner : TFaceGroups;
          FMaterialName : String;
+         FRenderGroupID : Integer; // NOT Persistent, internal use only (rendering options)
 
       public
          { Public Declarations }
@@ -1273,6 +1291,7 @@ uses GLStrings, consts, XOpenGL,
 
 var
    vVectorFileFormats : TVectorFileFormatsList;
+   vNextRenderGroupID : Integer = 1;
 
 const
    cAAFHeader = 'AAF';
@@ -2309,6 +2328,8 @@ begin
       FColors.WriteToFiler(writer);
       FFaceGroups.WriteToFiler(writer);
       WriteInteger(Integer(FMode));
+      WriteInteger(SizeOf(FRenderingOptions));
+      Write(FRenderingOptions, SizeOf(FRenderingOptions));
    end;
 end;
 
@@ -2325,6 +2346,8 @@ begin
       FColors.ReadFromFiler(reader);
       FFaceGroups.ReadFromFiler(reader);
       FMode:=TMeshObjectMode(ReadInteger);
+      if ReadInteger<>SizeOf(FRenderingOptions) then Assert(False);
+      Read(FRenderingOptions, SizeOf(FRenderingOptions));
    end else RaiseFilerException(archiveVersion);
 end;
 
@@ -2444,9 +2467,11 @@ end;
 //
 procedure TMeshObject.BuildList(var mrci : TRenderContextInfo);
 var
-   i : Integer;
+   i, j, groupID : Integer;
    gotNormals, gotTexCoords, gotColor : Boolean;
    libMat : TGLLibMaterial;
+   currentMaterialName : String;
+   materials : TGLLibMaterials;
 begin
    FArraysDeclared:=False;
    case Mode of
@@ -2475,13 +2500,40 @@ begin
       end;
       momFaceGroups : begin
          if Assigned(mrci.materialLibrary) then begin
-            for i:=0 to FaceGroups.Count-1 do with FaceGroups[i] do begin
-               libMat:=mrci.materialLibrary.Materials.GetLibMaterialByName(MaterialName);
-               if Assigned(libMat) then begin
-                  libMat.Apply(mrci);
-                  BuildList(mrci);
-                  libMat.UnApply(mrci);
-               end else BuildList(mrci);
+            if moroGroupByMaterial in RenderingOptions then begin
+               // group-by-material rendering, reduces material switches,
+               // but alters rendering order
+               groupID:=vNextRenderGroupID;
+               Inc(vNextRenderGroupID);
+               materials:=mrci.materialLibrary.Materials;
+               for i:=0 to FaceGroups.Count-1 do begin
+                  if FaceGroups[i].FRenderGroupID<>groupID then begin
+                     currentMaterialName:=FaceGroups[i].MaterialName;
+                     libMat:=materials.GetLibMaterialByName(currentMaterialName);
+                     if Assigned(libMat) then
+                        libMat.Apply(mrci);
+                     for j:=i to FaceGroups.Count-1 do with FaceGroups[j] do begin
+                        if (FRenderGroupID<>groupID)
+                              and (MaterialName=currentMaterialName) then begin
+                           FRenderGroupID:=groupID;
+                           BuildList(mrci);
+                        end;
+                     end;
+                     if Assigned(libMat) then
+                        libMat.UnApply(mrci);
+                  end;
+               end;
+            end else begin
+               // canonical rendering
+               materials:=mrci.materialLibrary.Materials;
+               for i:=0 to FaceGroups.Count-1 do with FaceGroups[i] do begin
+                  libMat:=materials.GetLibMaterialByName(MaterialName);
+                  if Assigned(libMat) then begin
+                     libMat.Apply(mrci);
+                     BuildList(mrci);
+                     libMat.UnApply(mrci);
+                  end else BuildList(mrci);
+               end;
             end;
          end else for i:=0 to FaceGroups.Count-1 do
             FaceGroups[i].BuildList(mrci);
