@@ -2,6 +2,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/04/04 - EG - Added StreakAngle
       <li>15/04/04 - EG - Texture-based Lens-flare moved to GLTexLensFlare,
                           replaced gradient arrays with design-time editable colors 
       <li>25/09/03 - EG - Increased occlusion testing robustness
@@ -77,7 +78,7 @@ type
          FSeed        : Integer;
          FSqueeze     : Single;
          FNumStreaks  : Integer;
-         FStreakWidth : Single;
+         FStreakWidth, FStreakAngle : Single;
          FNumSecs     : Integer;
          FResolution  : Integer;
          FAutoZTest   : Boolean;
@@ -107,6 +108,7 @@ type
          procedure SetNumStreaks(aValue : Integer);
          procedure SetStreakWidth(aValue : Single);
          function  StoreStreakWidth : Boolean;
+         procedure SetStreakAngle(aValue : Single);
          procedure SetNumSecs(aValue : Integer);
          procedure SetResolution(aValue : Integer);
          procedure SetAutoZTest(aValue : Boolean);
@@ -116,6 +118,9 @@ type
          procedure RestoreRenderingOptions;
 
          procedure RenderRays(const size : Single);
+         procedure RenderStreaks;
+         procedure RenderRing;
+         procedure RenderSecondaries(const posVector : TAffineVector);
 
       public
          { Public Declarations }
@@ -155,6 +160,8 @@ type
          property NumStreaks : Integer read FNumStreaks write SetNumStreaks default 4;
          //: Width of the streaks.
          property StreakWidth : Single read FStreakWidth write SetStreakWidth stored StoreStreakWidth;
+         //: Angle of the streaks (in degrees)
+         property StreakAngle : Single read FStreakAngle write SetStreakAngle;
          //: Number of secondary flares.
          property NumSecs : Integer read FNumSecs write SetNumSecs default 8;
          //: Number of segments used when rendering circles.
@@ -338,12 +345,107 @@ begin
    glEnd;
 end;
 
+// RenderStreak
+//
+procedure TGLLensFlare.RenderStreaks;
+var
+   i : Integer;
+   a, f, s, c : Single;
+begin
+   glEnable(GL_LINE_SMOOTH);
+   glLineWidth(StreakWidth);
+   a:=c2PI/NumStreaks;
+   f:=1.5*FCurrSize;
+   glBegin(GL_LINES);
+   for i:=0 to NumStreaks-1 do begin
+      SinCos(StreakAngle*cPIdiv180+a*i, f, s, c);
+      glColor4fv(StreaksGradient.FromColor.AsAddress);
+      glVertex3fv(@NullVector);
+      glColor4fv(StreaksGradient.ToColor.AsAddress);
+      glVertex2f(c, Squeeze*s);
+   end;
+   glEnd;
+   glDisable(GL_LINE_SMOOTH);
+end;
+
+// RenderRing
+//
+procedure TGLLensFlare.RenderRing;
+var
+   i : Integer;
+   rW, s0, c0, s, c : Single;
+begin
+   rW:=FCurrSize*(1/15);  // Ring width
+   glBegin(GL_QUADS);
+   s0:=0;
+   c0:=0.6;
+   for i:=0 to Resolution-1 do begin
+      s:=s0;
+      c:=c0;
+      s0:=FSinRes[i]*0.6*Squeeze;
+      c0:=FCosRes[i]*0.6;
+
+      glColor4fv(GlowGradient.ToColor.AsAddress);
+      glVertex2f((FCurrSize-rW)*c, (FCurrSize-rW)*s);
+      glColor4fv(RingGradient.FromColor.AsAddress);
+      glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
+
+      glVertex2f(FCurrSize*c0, FCurrSize*s0);
+      glColor4fv(GlowGradient.ToColor.AsAddress);
+      glVertex2f((FCurrSize-rW)*c0, (FCurrSize-rW)*s0);
+
+      glColor4fv(RingGradient.FromColor.AsAddress);
+      glVertex2f(FCurrSize*c, FCurrSize*s);
+      glVertex2f(FCurrSize*c0, FCurrSize*s0);
+
+      glColor4fv(GlowGradient.ToColor.AsAddress);
+      glVertex2f((FCurrSize+rW)*c0, (FCurrSize+rW)*s0);
+      glVertex2f((FCurrSize+rW)*c, (FCurrSize+rW)*s);
+   end;
+   glEnd;
+end;
+
+// RenderSecondaries
+//
+procedure TGLLensFlare.RenderSecondaries(const posVector : TAffineVector);
+var
+   i, j : Integer;
+   rnd : Single;
+   v : TAffineVector;
+   grad : TGLFlareGradient;
+begin
+   // Other secondaries (plain gradiented circles, like the glow):
+   for j:=1 to NumSecs do begin
+      rnd:=2*Random-1;
+      // If rnd < 0 then the secondary glow will end up on the other side
+      // of the origin. In this case, we can push it really far away from
+      // the flare. If  the secondary is on the flare's side, we pull it
+      // slightly towards the origin to avoid it winding up in the middle
+      // of the flare.
+      if rnd<0 then
+         v:=VectorScale(posVector, rnd)
+      else v:=VectorScale(posVector, 0.8*rnd);
+      if j mod 3=0 then
+         grad:=GlowGradient
+      else grad:=SecondariesGradient;
+      rnd:=(Random+0.1)*FCurrSize*0.25;
+
+      glBegin(GL_TRIANGLE_FAN);
+         glColor4fv(grad.FromColor.AsAddress);
+         glVertex2f(v[0], v[1]);
+         glColor4fv(grad.ToColor.AsAddress);
+         for i:=0 to Resolution-1 do
+            glVertex2f(FCosRes[i]*rnd+v[0], FSinRes[i]*rnd+v[1]);
+      glEnd;
+   end;
+end;
+
 // BuildList
 //
 procedure TGLLensFlare.BuildList(var rci : TRenderContextInfo);
 var
-   i, j : Integer;
-   a, s, c, s1, c1, f, rW, rnd, depth : Single;
+   i : Integer;
+   depth : Single;
    posVector, v, rv : TAffineVector;
    screenPos : TAffineVector;
    flareInViewPort : Boolean;
@@ -371,14 +473,14 @@ begin
    end;
 
    // Prepare matrices
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix;
-   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
    glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
+
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix;
+   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
 
    MakeVector(posVector,
               screenPos[0]-rci.viewPortSize.cx*0.5,
@@ -442,7 +544,6 @@ begin
       SetupRenderingOptions;
 
       if [feGlow, feStreaks, feRays, feRing]*Elements<>[] then begin
-         glMatrixMode(GL_MODELVIEW);
          glPushMatrix;
          glTranslatef(posVector[0], posVector[1], posVector[2]);
 
@@ -458,24 +559,8 @@ begin
             glEnd;
          end;
 
-         // Streaks (randomly oriented, but evenly spaced, antialiased lines from the origin):
-         if feStreaks in Elements then begin
-            glEnable(GL_LINE_SMOOTH);
-            glLineWidth(StreakWidth);
-            a:=2*pi/NumStreaks;
-            rnd:=Random*(pi/NumStreaks);
-            f:=1.5*FCurrSize;
-            glBegin(GL_LINES);
-            for i:=0 to NumStreaks-1 do begin
-               SinCos(rnd+a*i, f, s, c);
-               glColor4fv(StreaksGradient.FromColor.AsAddress);
-               glVertex2f(0, 0);
-               glColor4fv(StreaksGradient.ToColor.AsAddress);
-               glVertex2f(c, Squeeze*s);
-            end;
-            glEnd;
-            glDisable(GL_LINE_SMOOTH);
-         end;
+         if feStreaks in Elements then
+            RenderStreaks;
 
          // Rays (random-length lines from the origin):
          if feRays in Elements then begin
@@ -495,70 +580,14 @@ begin
             end else RenderRays(FCurrSize);
          end;
 
-         // Ring (Three circles, the outer two are transparent):
-         if feRing in Elements then begin
-            rW:=FCurrSize*(1/15);  // Ring width
-            glBegin(GL_QUADS);
-            s1:=0;
-            c1:=0.6;
-            for i:=0 to Resolution-1 do begin
-               s:=s1;
-               c:=c1;
-               s1:=FSinRes[i]*0.6*Squeeze;
-               c1:=FCosRes[i]*0.6;
-
-               glColor4fv(GlowGradient.ToColor.AsAddress);
-               glVertex2f((FCurrSize-rW)*c, (FCurrSize-rW)*s);
-               glColor4fv(RingGradient.FromColor.AsAddress);
-               glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
-
-               glVertex2f(FCurrSize*c1, FCurrSize*s1);
-               glColor4fv(GlowGradient.ToColor.AsAddress);
-               glVertex2f((FCurrSize-rW)*c1, (FCurrSize-rW)*s1);
-
-               glColor4fv(RingGradient.FromColor.AsAddress);
-               glVertex2f(FCurrSize*c, FCurrSize*s);
-               glVertex2f(FCurrSize*c1, FCurrSize*s1);
-               
-               glColor4fv(GlowGradient.ToColor.AsAddress);
-               glVertex2f((FCurrSize+rW)*c1, (FCurrSize+rW)*s1);
-               glVertex2f((FCurrSize+rW)*c, (FCurrSize+rW)*s);
-            end;
-            glEnd;
-         end;
+         if feRing in Elements then
+            RenderRing;
 
          glPopMatrix;
-         glMatrixMode(GL_PROJECTION);
       end;
 
-      if feSecondaries in Elements then begin
-         // Other secondaries (plain gradiented circles, like the glow):
-         for j:=1 to NumSecs do begin
-            rnd:=2*Random-1;
-            // If rnd < 0 then the secondary glow will end up on the other side
-            // of the origin. In this case, we can push it really far away from
-            // the flare. If  the secondary is on the flare's side, we pull it
-            // slightly towards the origin to avoid it winding up in the middle
-            // of the flare.
-            if rnd<0 then
-               v:=VectorScale(posVector, rnd)
-            else v:=VectorScale(posVector, 0.8*rnd);
-            glBegin(GL_TRIANGLE_FAN);
-            if j mod 3=0 then begin
-               glColor4fv(GlowGradient.FromColor.AsAddress);
-               glVertex2f(v[0], v[1]);
-               glColor4fv(GlowGradient.ToColor.AsAddress);
-            end else begin
-               glColor4fv(SecondariesGradient.FromColor.AsAddress);
-               glVertex2f(v[0], v[1]);
-               glColor4fv(SecondariesGradient.ToColor.AsAddress);
-            end;
-            rnd:=(Random+0.1)*FCurrSize*0.25;
-            for i:=0 to Resolution-1 do
-               glVertex2f(FCosRes[i]*rnd+v[0], FSinRes[i]*rnd+v[1]);
-            glEnd;
-         end;
-      end;
+      if feSecondaries in Elements then
+         RenderSecondaries(posVector);
 
       // restore state
       RestoreRenderingOptions;
@@ -566,6 +595,7 @@ begin
       RandSeed:=oldSeed;
    end;
 
+   glMatrixMode(GL_PROJECTION);
    glPopMatrix;
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix;
@@ -741,6 +771,14 @@ end;
 function TGLLensFlare.StoreStreakWidth : Boolean;
 begin
    Result:=(FStreakWidth<>2);
+end;
+
+// SetStreakAngle
+//
+procedure TGLLensFlare.SetStreakAngle(aValue : Single);
+begin
+   FStreakAngle:=aValue;
+   StructureChanged;
 end;
 
 // SetNumSecs
