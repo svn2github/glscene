@@ -4268,6 +4268,8 @@ var
    Draw1,Draw2	:boolean;
 begin
    Result:=False;
+   FirstIntersected:=False;
+   SetLength(tmpRoots, 0);
    locRayStart:=AbsoluteToLocal(rayStart);
    locRayVector:=AbsoluteToLocal(rayVector);
 
