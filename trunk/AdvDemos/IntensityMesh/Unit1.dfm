@@ -37,9 +37,6 @@ object Form1: TForm1
     Height = 422
     Align = alRight
     TabOrder = 1
-    DesignSize = (
-      87
-      422)
     object Label1: TLabel
       Left = 8
       Top = 64

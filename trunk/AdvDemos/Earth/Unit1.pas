@@ -75,7 +75,9 @@ implementation
 
 {$R *.dfm}
 
+{$IFNDEF VER130}
 {$WARN UNIT_PLATFORM OFF}
+{$ENDIF}
 
 uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext;
    // accurate movements left for later... or the astute reader

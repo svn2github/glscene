@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 250
-  Top = 176
+  Left = 35
+  Top = 37
   Width = 725
   Height = 539
   Caption = 'Quake3 Actor Demo'
@@ -63,7 +63,6 @@ object Form1: TForm1
       Top = 32
       Width = 169
       Height = 21
-      AutoComplete = False
       Style = csDropDownList
       ItemHeight = 13
       TabOrder = 0
@@ -74,7 +73,6 @@ object Form1: TForm1
       Top = 32
       Width = 145
       Height = 21
-      AutoComplete = False
       Style = csDropDownList
       ItemHeight = 13
       TabOrder = 1
@@ -150,7 +148,6 @@ object Form1: TForm1
       Width = 85
       Height = 21
       ItemHeight = 13
-      ItemIndex = 0
       TabOrder = 6
       Text = 'Default'
       OnChange = ComboSkinChange
@@ -164,7 +161,7 @@ object Form1: TForm1
     Left = 0
     Top = 73
     Width = 717
-    Height = 439
+    Height = 437
     Camera = GLCamera1
     Buffer.BackgroundColor = clSilver
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
@@ -223,6 +220,7 @@ object Form1: TForm1
       Position.Coordinates = {0000000000000000000080BF0000803F}
       Height = 10
       Width = 10
+      NoZWrite = False
       ShadowingObject = ModelCube
       ShadowedLight = GLLightSource1
     end

@@ -140,6 +140,8 @@ uses GLTexture, GLGraphics, VectorGeometry;
 
 procedure TTTBMain.FormCreate(Sender: TObject);
 begin
+   CBWidth.ItemIndex:=8;
+   CBHeight.ItemIndex:=8;
    ResetAlpha;
 end;
 
