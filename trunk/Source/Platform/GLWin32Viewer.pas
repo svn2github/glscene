@@ -2,6 +2,7 @@
 {: Win32 specific.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
       <li>24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
       <li>11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
       <li>29/10/02 - EG - Added MouseEnter/Leave/InControl
@@ -58,7 +59,7 @@ type
          FBuffer : TGLSceneBuffer;
          FVSync : TVSyncMode;
          FOwnDC : Cardinal;
-			FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
+         FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
          FMouseInControl : Boolean;
          FIsOpenGLAvailable : Boolean;
          FLastScreenPos : TPoint;
@@ -70,6 +71,8 @@ type
 
 	      procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
 	      procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
+        function GetFieldOfView: single;
+    procedure SetFieldOfView(const Value: single);
 
       protected
          { Protected Declarations }
@@ -140,8 +143,14 @@ type
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
 
-			property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
-			property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+         {: Returns or sets the field of view for the viewer, in radians.<p>
+         This value depends on the camera and the width and height of the scene.
+         The value isn't persisted, if the width/height or camera.focallength is
+         changed, FieldOfView is changed also. }
+         property FieldOfView : single read GetFieldOfView write SetFieldOfView;
+
+			   property OnMouseLeave : TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
+			   property OnMouseEnter : TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
          
          property Align;
          property Anchors;
@@ -486,9 +495,37 @@ begin
           RenderDC, 0, 0, SRCCOPY);
 end;
 
+// GetFieldOfView
+//
+function TGLSceneViewer.GetFieldOfView: single;
+begin
+  if not Assigned(Camera) then
+    result := 0
+
+  else if Width<Height then
+    result := Camera.GetFieldOfView(Width)
+
+  else
+    result := Camera.GetFieldOfView(Height);
+end;
+
+procedure TGLSceneViewer.SetFieldOfView(const Value: single);
+begin
+  if Assigned(Camera) then
+  begin
+    if Width<Height then
+      Camera.SetFieldOfView(Value, Width)
+
+    else
+      Camera.SetFieldOfView(Value, Height);
+  end;
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
