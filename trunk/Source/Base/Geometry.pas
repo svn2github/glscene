@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>13/08/03 - SG - Added TQuaternionArray, PQuaternionArray and PQuaternion
       <li>21/07/03 - EG - Added RoundInt, faster Round/Round64, updated Power
       <li>04/07/03 - EG - New VectorCombine overload, some optimizations
       <li>18/06/03 - MF - Added PointSegmentClosestPoint, PointSegmentDistance,
@@ -342,6 +343,7 @@ type
    TDoubleHmgPlane = THomogeneousDblVector;
 
    // q = ([x, y, z], w)
+   PQuaternion = ^TQuaternion;
    TQuaternion = record
      case Integer of
        0:
@@ -350,6 +352,9 @@ type
        1:
          (Vector: TVector4f);
    end;
+
+   PQuaternionArray = ^TQuaternionArray;
+   TQuaternionArray = array[0..MAXINT shr 5] of TQuaternion;
 
    TRectangle = record
      Left, Top, Width, Height: Integer;
