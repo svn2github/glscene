@@ -3,6 +3,7 @@
    Editor fram for a TGLFaceProperties.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
@@ -10,9 +11,19 @@ unit FRFaceEditor;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
+uses
+  Windows, Forms, ComCtrls, FRTrackBarEdit, StdCtrls, FRColorEditor, ImgList, Controls,
+  Classes, GLTexture;
+{$ENDIF}
+{$IFDEF LINUX}
 uses 
-  Windows, Forms, ComCtrls, FRTrackBarEdit, StdCtrls, FRColorEditor, ImgList,
-  Controls, Classes, GLTexture;
+  QForms, QComCtrls, FRTrackBarEdit, QStdCtrls, FRColorEditor, QImgList, QControls, 
+  Classes, GLTexture; 
+{$ENDIF}
+
 
 type
   TRFaceEditor = class(TFrame)
@@ -53,9 +64,22 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses Graphics;
+
+uses
+{$IFDEF MSWINDOWS}
+  Graphics; 
+{$ENDIF}
+{$IFDEF LINUX}
+  QGraphics, Types;
+{$ENDIF}
+
 
 constructor TRFaceEditor.Create(AOwner : TComponent);
 begin
@@ -65,7 +89,9 @@ begin
    CEDiffuse.OnChange:=OnColorChange;
    CEEmission.OnChange:=OnColorChange;
    CESpecular.OnChange:=OnColorChange;
+   {$IFDEF MSWINDOWS}
    PageControl.DoubleBuffered:=True;
+   {$ENDIF}
 end;
 
 destructor TRFaceEditor.Destroy;
@@ -150,3 +176,6 @@ begin
 end;
 
 end.
+
+
+

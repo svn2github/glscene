@@ -6,6 +6,13 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
+                          Added function GLOKMessageBox to avoid the uses of Forms
+                          Added other abstraction calls
+                          Added procedure ShowHTMLUrl for unit Info.pas
+                          Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
+                          GLGetScreenWidth, GLGetScreenHeight for GLNavigation
+                          Added GLGetTickCount for GLFPSMovement
       <li>28/06/04 - LR - Added TGLTextLayout, GLLoadBitmapFromInstance
                           Added GetDeviceCapabilities to replace the old function
       <li>30/05/03 - EG - Added RDTSC and RDTSC-based precision timing for non-WIN32
@@ -22,12 +29,16 @@ interface
 
 {$include GLScene.inc}
 
-{$ifdef MSWINDOWS}
-uses Windows, SysUtils, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtDlgs;
-{$endif}
-{$ifdef LINUX}
-uses libc, SysUtils, QGraphics, QControls, QForms, QDialogs, QStdCtrls, Types;
-{$endif}
+{$IFDEF MSWINDOWS}
+uses
+  Windows, Classes, SysUtils, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtDlgs, Consts;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  libc, Classes, SysUtils, Qt, QGraphics, QControls, QForms,
+  QDialogs, QStdCtrls, Types, QConsts;
+{$ENDIF}
 
 type
 
@@ -44,8 +55,16 @@ type
    TGLPicture = TPicture;
    TGLGraphic = TGraphic;
    TGLBitmap = TBitmap;
+   TGraphicClass = class of TGraphic;
 
    TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
+
+   TGLMouseButton = (mbLeft, mbRight, mbMiddle); // idem TMouseButton;
+   TGLMouseEvent = procedure(Sender: TObject; Button: TGLMouseButton;
+    Shift: TShiftState; X, Y: Integer) of object;
+   TGLMouseMoveEvent = TMouseMoveEvent;
+   TGLKeyEvent = TKeyEvent;
+   TGLKeyPressEvent = TKeyPressEvent;
 
 {$ifdef GLS_DELPHI_5}
    EGLOSError = EWin32Error;
@@ -59,11 +78,13 @@ type
 
 const
 {$ifdef WIN32}
+   glpf8Bit = pf8bit;
    glpf24bit = pf24bit;
    glpf32Bit = pf32bit;
    glpfDevice = pfDevice;
 {$endif}
 {$ifdef LINUX}
+   glpf8Bit = pf8bit;
    glpf24bit = pf32bit;
    glpf32Bit = pf32bit;
    glpfDevice = pf32bit;
@@ -72,10 +93,46 @@ const
    // standard colors
 {$ifdef WIN32}
    clBtnFace = Graphics.clBtnFace;
+   clRed = Graphics.clRed;
+   clGreen = Graphics.clGreen;
+   clBlue = Graphics.clBlue;
+   clSilver = Graphics.clSilver;
 {$endif}
 {$ifdef LINUX}
    clBtnFace = QGraphics.clBtnFace;
+   clRed = QGraphics.clRed;
+   clGreen = QGraphics.clGreen;
+   clBlue = QGraphics.clBlue;
+   clSilver = QGraphics.clSilver;
 {$endif}
+
+// standard keyboard
+{$ifdef WIN32}
+  glKey_TAB = VK_TAB;
+  glKey_SPACE = VK_SPACE;
+  glKey_RETURN = VK_RETURN;
+  glKey_DELETE = VK_DELETE;
+  glKey_LEFT = VK_LEFT;
+  glKey_RIGHT = VK_RIGHT;
+  glKey_HOME = VK_HOME;
+  glKey_END = VK_END;
+  glKey_CANCEL = VK_CANCEL;
+{$endif}
+{$ifdef LINUX}
+  glKey_TAB = Key_Tab;
+  glKey_SPACE = Key_Space;
+  glKey_RETURN = Key_Return;
+  glKey_DELETE = Key_Delete;
+  glKey_LEFT = Key_Left;
+  glKey_RIGHT = Key_Right;
+  glKey_HOME = Key_Home;
+  glKey_END = Key_End;
+  glKey_CANCEL = Key_Escape;   // ?
+{$endif}
+
+// Several define from unit Consts
+const
+  glsAllFilter: string = sAllFilter;
 
 
 function GLPoint(const x, y : Integer) : TGLPoint;
@@ -88,6 +145,7 @@ function ColorToRGB(color : TColor) : TColor;
 function GetRValue(rgb: DWORD): Byte;
 function GetGValue(rgb: DWORD): Byte;
 function GetBValue(rgb: DWORD): Byte;
+procedure InitWinColors;
 
 function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;
 {: Increases or decreases the width and height of the specified rectangle.<p>
@@ -162,6 +220,14 @@ function StopPrecisionTimer(const precisionTimer : Int64) : Double;
 function RDTSC : Int64;
 
 procedure GLLoadBitmapFromInstance(ABitmap: TBitmap; AName: string);
+function GLOKMessageBox(const Text, Caption: string): Integer;
+procedure ShowHTMLUrl(Url: String);
+procedure GLShowCursor(AShow: boolean);
+procedure GLSetCursorPos(AScreenX, AScreenY: integer);
+procedure GLGetCursorPos(var point: TGLPoint);
+function GLGetScreenWidth:integer;
+function GLGetScreenHeight:integer;
+function GLGetTickCount:int64;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -171,8 +237,12 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-{$ifdef LINUX}
-uses Qt;
+{$IFDEF MSWINDOWS}
+uses
+  ShellApi, GLTexture;
+{$ENDIF}
+{$IFDEF LINUX}
+
 {$ENDIF}
 
 var
@@ -186,6 +256,229 @@ begin
 {$ENDIF}
 {$IFDEF LINUX}
   ABitmap.LoadFromResourceName(HInstance, PChar(AName));
+{$ENDIF}
+end;
+
+function GLOKMessageBox(const Text, Caption: string): Integer;
+begin
+{$IFDEF MSWINDOWS}
+  result := Application.MessageBox(PChar(Text),PChar(Caption));
+{$ENDIF}
+{$IFDEF LINUX}
+  result := integer(Application.MessageBox(Text,Caption));
+{$ENDIF}
+end;
+
+procedure GLShowCursor(AShow: boolean);
+begin
+{$IFDEF MSWINDOWS}
+  ShowCursor(AShow);
+{$ENDIF}
+{$IFDEF LINUX}
+  {$MESSAGE Warn 'ShowCursor: Needs to be implemented'}
+{$ENDIF}
+end;
+
+procedure GLSetCursorPos(AScreenX, AScreenY: integer);
+begin
+{$IFDEF MSWINDOWS}
+  SetCursorPos(AScreenX, AScreenY);
+{$ENDIF}
+{$IFDEF LINUX}
+  {$MESSAGE Warn 'SetCursorPos: Needs to be implemented'}
+{$ENDIF}
+end;
+
+procedure GLGetCursorPos(var point: TGLPoint);
+begin
+{$IFDEF MSWINDOWS}
+  GetCursorPos(point);
+{$ENDIF}
+{$IFDEF LINUX}
+  {$MESSAGE Warn 'GetCursorPos: Needs to be implemented'}
+{$ENDIF}
+end;
+
+function GLGetScreenWidth:integer;
+begin
+  result := Screen.Width;
+end;
+
+function GLGetScreenHeight:integer;
+begin
+  result := Screen.Height;
+end;
+
+function GLGetTickCount:int64;
+begin
+{$IFDEF MSWINDOWS}
+  result := GetTickCount;
+{$ENDIF}
+{$IFDEF LINUX}
+  QueryPerformanceCounter(result);
+{$ENDIF}
+end;
+
+{$IFDEF LINUX}
+function QueryCombo(const ACaption, APrompt: string; Alist:TStringList;
+                          var Index: integer; var Value: string): Boolean;
+var
+  Form: TForm;
+  Prompt: TLabel;
+  Combo: TComboBox;
+  Dialogfrms: TPoint;
+  ButtonTop, ButtonWidth, ButtonHeight: Integer;
+begin
+  Result := False;
+  Form := TForm.Create(Application);
+  with Form do
+    try
+      Scaled := false;
+      Canvas.Font := Font;
+      Dialogfrms := Point(Canvas.TextWidth('L'),Canvas.TextHeight('R'));
+      BorderStyle := fbsDialog;
+      Caption := ACaption;
+      ClientWidth := MulDiv(180, Dialogfrms.X, 4);
+      ClientHeight := MulDiv(63, Dialogfrms.Y, 8);
+      Position := poScreenCenter;
+      Prompt := TLabel.Create(Form);
+      with Prompt do
+      begin
+        Parent := Form;
+        AutoSize := True;
+        Left := MulDiv(8, Dialogfrms.X, 4);
+        Top := MulDiv(8, Dialogfrms.Y, 8);
+        Caption := APrompt;
+      end;
+      Combo := TComboBox.Create(Form);
+      with Combo do
+      begin
+        Parent := Form;
+        Left := Prompt.Left;
+        Top := MulDiv(19, Dialogfrms.Y, 8);
+        Width := MulDiv(164, Dialogfrms.X, 4);
+        DropDownCount := 3;
+        Items.AddStrings(AList);
+        Combo.ItemIndex := index;
+      end;
+      ButtonTop := MulDiv(41, Dialogfrms.Y, 8);
+      ButtonWidth := MulDiv(50, Dialogfrms.X, 4);
+      ButtonHeight := MulDiv(14, Dialogfrms.Y, 8);
+      with TButton.Create(Form) do
+      begin
+        Parent := Form;
+        Caption := SMsgDlgOK;
+        ModalResult := mrOk;
+        Default := True;
+        SetBounds(MulDiv(38, Dialogfrms.X, 4), ButtonTop, ButtonWidth,
+          ButtonHeight);
+        TabOrder := 0;
+      end;
+      with TButton.Create(Form) do
+      begin
+        Parent := Form;
+        Caption := SMsgDlgCancel;
+        ModalResult := mrCancel;
+        Cancel := True;
+        SetBounds(MulDiv(92, Dialogfrms.X, 4), ButtonTop, ButtonWidth,
+          ButtonHeight);
+      end;
+      if ShowModal = mrOk then
+      begin
+        Value := Combo.Text;
+        index := Combo.ItemIndex;
+        Result := True;
+      end;
+    finally
+      Form.Free;
+    end;
+end;
+
+resourcestring
+  sFileName = '/tmp/delete-me.txt';
+
+// Code inspired from unit Misc.pas of TPlot component of Mat Ballard
+function CheckForRPM(AnRPM: String): String;
+var
+  TmpFile: TStringList;
+begin
+  Result := '';
+  TmpFile := TStringList.Create;
+  Libc.system(PChar('rpm -ql ' + AnRPM + ' > ' + sFileName));
+  TmpFile.LoadFromFile(sFileName);
+  if (Length(TmpFile.Strings[0]) > 0) then
+    if (Pos('not installed', TmpFile.Strings[0]) = 0) then
+      Result := TmpFile.Strings[0];
+  DeleteFile(sFileName);
+  TmpFile.Free;
+end;
+
+function GetBrowser: String;
+var
+  Index: Integer;
+  AProgram,
+  ExeName: String;
+  BrowserList: TStringList;
+begin
+{Get the $BROWSER environment variable:}
+  ExeName := getenv('BROWSER');
+
+  if (Length(ExeName) = 0) then
+  begin
+{Get the various possible browsers:}
+    BrowserList := TStringList.Create;
+
+    try
+      if (FileExists('/usr/bin/konqueror')) then
+        BrowserList.Add('/usr/bin/konqueror');
+
+      AProgram := CheckForRPM('mozilla');
+      if (Length(AProgram) > 0) then
+        BrowserList.Add(AProgram);
+      AProgram := CheckForRPM('netscape-common');
+      if (Length(AProgram) > 0) then
+        BrowserList.Add(AProgram);
+      AProgram := CheckForRPM('opera');
+      if (Length(AProgram) > 0) then
+        BrowserList.Add(AProgram);
+      AProgram := CheckForRPM('lynx');
+      if (Length(AProgram) > 0) then
+        BrowserList.Add(AProgram);
+      AProgram := CheckForRPM('links');
+      if (Length(AProgram) > 0) then
+        BrowserList.Add(AProgram);
+
+      Index := 0;
+      if QueryCombo('Browser Selection', 'Which Web Browser Program To Use ?',
+        BrowserList, Index, AProgram) then
+      begin
+        ExeName := AProgram;
+        Libc.putenv(PChar('BROWSER=' + ExeName));
+      end;
+
+    finally
+      BrowserList.Free;
+    end;
+  end;
+
+  Result := ExeName;
+end;
+{$ENDIF}
+
+procedure ShowHTMLUrl(Url: String);
+{$IFDEF LINUX}
+var
+  TheBrowser: String;
+{$ENDIF}
+begin
+{$IFDEF MSWINDOWS}
+  ShellExecute(0, 'open', PChar(Url), Nil, Nil, SW_SHOW);
+{$ENDIF}
+{$IFDEF LINUX}
+  TheBrowser := GetBrowser;
+{the ' &' means immediately continue:}
+  if (Length(TheBrowser) > 0) then
+    Libc.system(PChar(TheBrowser + ' ' + Url + ' &'));
 {$ENDIF}
 end;
 
@@ -236,6 +529,39 @@ end;
 function GetBValue(rgb: DWORD): Byte;
 begin
    Result:=Byte(rgb shr 16);
+end;
+
+// InitWinColors
+//
+procedure InitWinColors;
+begin
+   {$ifdef MSWINDOWS}
+   clrScrollBar:=ConvertWinColor(clScrollBar);
+   clrBackground:=ConvertWinColor(clBackground);
+   clrActiveCaption:=ConvertWinColor(clActiveCaption);
+   clrInactiveCaption:=ConvertWinColor(clInactiveCaption);
+   clrMenu:=ConvertWinColor(clMenu);
+   clrWindow:=ConvertWinColor(clWindow);
+   clrWindowFrame:=ConvertWinColor(clWindowFrame);
+   clrMenuText:=ConvertWinColor(clMenuText);
+   clrWindowText:=ConvertWinColor(clWindowText);
+   clrCaptionText:=ConvertWinColor(clCaptionText);
+   clrActiveBorder:=ConvertWinColor(clActiveBorder);
+   clrInactiveBorder:=ConvertWinColor(clInactiveBorder);
+   clrAppWorkSpace:=ConvertWinColor(clAppWorkSpace);
+   clrHighlight:=ConvertWinColor(clHighlight);
+   clrHighlightText:=ConvertWinColor(clHighlightText);
+   clrBtnFace:=ConvertWinColor(clBtnFace);
+   clrBtnShadow:=ConvertWinColor(clBtnShadow);
+   clrGrayText:=ConvertWinColor(clGrayText);
+   clrBtnText:=ConvertWinColor(clBtnText);
+   clrInactiveCaptionText:=ConvertWinColor(clInactiveCaptionText);
+   clrBtnHighlight:=ConvertWinColor(clBtnHighlight);
+   clr3DDkShadow:=ConvertWinColor(cl3DDkShadow);
+   clr3DLight:=ConvertWinColor(cl3DLight);
+   clrInfoText:=ConvertWinColor(clInfoText);
+   clrInfoBk:=ConvertWinColor(clInfoBk);
+   {$endif}
 end;
 
 // GLRect

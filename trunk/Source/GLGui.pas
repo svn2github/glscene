@@ -13,7 +13,7 @@ unit GLGui;
 interface
 
 uses
-  Classes, Graphics, GLScene, GLMisc, GLBitmapFont, GLTexture, GLCrossPlatform,
+  Classes, GLScene, GLMisc, GLBitmapFont, GLTexture, GLCrossPlatform,
   OpenGL1x, SysUtils, PersistentClasses;
 
 Type

@@ -3,6 +3,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>14/12/03 - EG - Paste fix (Mrqzzz)
       <li>31/06/03 - EG - Cosmetic changes, form position/state now saved to the
                           registry 
@@ -32,17 +33,24 @@ unit GLSceneEdit;
 interface
 
 {$i GLScene.inc}
-{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
+{$IFDEF MSWINDOWS}
 uses
    XCollection, Registry,
-   {$IFDEF GLS_CLX}
-   QDialogs, QImgList, QActnList, QForms, QMenus, QTypes, QComCtrls, QControls, Types,
-   {$ELSE}
-   Controls, Windows, Forms, ComCtrls, ImgList, Dialogs, Menus, ActnList, ToolWin,
+  Controls, Windows, Forms, ComCtrls, ImgList, 
+  Dialogs, Menus, ActnList, ToolWin,
+  GLScene, Classes, SysUtils, ExtCtrls,
+  StdCtrls, {$ifdef GLS_DELPHI_6_UP} DesignIntf, VCLEditors {$else} DsgnIntf {$endif};
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  XCollection,
+  QDialogs, QImgList, QActnList, QForms, QMenus, QTypes, 
+  QComCtrls, QControls, Types,
+  GLScene, Classes, SysUtils, QExtCtrls,
+  QStdCtrls, DesignIntf, VCLEditors; 
    {$ENDIF}
-   GLScene, Classes, sysutils, ExtCtrls, StdCtrls,
-   {$ifdef GLS_DELPHI_6_UP} DesignIntf, VCLEditors {$else} DsgnIntf {$endif};
+
 
 const
   SCENE_SELECTED=0;
@@ -121,7 +129,6 @@ type
     TBEffectsPanel: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
-    procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
     procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
     procedure TreeDragDrop(Sender, Source: TObject; X, Y: Integer);
     procedure TreeChange(Sender: TObject; Node: TTreeNode);
@@ -194,6 +201,15 @@ type
     function UniqueName(Component: TComponent): string;
 {$endif}
 
+    // We can not use the IDE to define this event because the
+    // prototype is not the same between Delphi and Kylix !!
+    {$IFDEF MSWINDOWS}
+    procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
+    {$ENDIF}
+    {$IFDEF LINUX}
+    procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: WideString);
+    {$ENDIF}
+
   protected
 	 procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
@@ -213,9 +229,22 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer;
+
+uses
+{$IFDEF MSWINDOWS}
+  GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer; 
+{$ENDIF}
+{$IFDEF LINUX}
+  GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer; 
+{$ENDIF}
+
 
 resourcestring
    cGLSceneEditor = 'GLScene Editor';
@@ -241,6 +270,7 @@ begin
    end;
 end;
 
+{$IFDEF MSWINDOWS}
 function ReadRegistryInteger(reg : TRegistry; const name : String;
                              defaultValue : Integer) : Integer;
 begin
@@ -248,6 +278,7 @@ begin
       Result:=reg.ReadInteger(name)
    else Result:=defaultValue;
 end;
+{$ENDIF}
 
 // FindNodeByData
 //
@@ -340,7 +371,9 @@ end;
 procedure TGLSceneEditorForm.FormCreate(Sender: TObject);
 var
    CurrentNode: TTreeNode;
+   {$IFDEF MSWINDOWS}
    reg : TRegistry;
+   {$ENDIF}
 begin
 	RegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
    Tree.Images:=ObjectManager.ObjectIcons;
@@ -368,7 +401,9 @@ begin
    // Build SubMenus
    SetObjectsSubItems(MIAddObject);
 {$ifdef GLS_DELPHI_5_UP}
+{$IFDEF MSWINDOWS}
 	MIAddObject.SubMenuImages:=ObjectManager.ObjectIcons;
+{$ENDIF}
 {$endif}
 {$ifndef GLS_DELPHI_6_UP}
    ACCut.Visible:=False;
@@ -383,6 +418,7 @@ begin
    SetEffectsSubItems(MIAddEffect, nil);
    SetEffectsSubItems(PMEffectsToolBar.Items, nil);
 
+   {$IFDEF MSWINDOWS}
    reg:=TRegistry.Create;
    try
       if reg.OpenKey(cRegistryKey, True) then begin
@@ -397,16 +433,23 @@ begin
    finally
       reg.Free;
    end;
+   {$ENDIF}
+
+   // Trigger the event OnEdited manualy
+   Tree.OnEdited := TreeEdited;
 end;
 
 // FormDestroy
 //
 procedure TGLSceneEditorForm.FormDestroy(Sender: TObject);
+{$IFDEF MSWINDOWS}
 var
    reg : TRegistry;
+{$ENDIF}
 begin
 	DeRegisterGLBaseSceneObjectNameChangeEvent(OnBaseSceneObjectNameChanged);
 
+   {$IFDEF MSWINDOWS}
    reg:=TRegistry.Create;
    try
       if reg.OpenKey(cRegistryKey, True) then begin
@@ -419,6 +462,7 @@ begin
    finally
       reg.Free;
    end;
+   {$ENDIF}
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -761,7 +805,12 @@ end;
 
 // TreeEdited
 //
+{$IFDEF MSWINDOWS}
 procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
+{$ENDIF}
+{$IFDEF LINUX}
+procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S: WideString);
+{$ENDIF}
 var
   BaseSceneObject1:TGLBaseSceneObject;
 begin
@@ -860,15 +909,23 @@ begin
       else ConfirmMsg:='Delete the marked object';
       buttons:=[mbOK, mbCancel];
       // are there children to care for?
+      // mbAll exist only on Windows ...
+      {$IFDEF MSWINDOWS}
       if anObject.Count>0 then begin
          confirmMsg:=ConfirmMsg+' only or with ALL its children?';
          buttons:=[mbAll]+Buttons;
       end else confirmMsg:=confirmMsg+'?';
+      {$ENDIF}
+      {$IFDEF LINUX}
+      confirmMsg:=confirmMsg+'?';
+      {$ENDIF}
       case MessageDlg(confirmMsg, mtConfirmation, buttons, 0) of
+        {$IFDEF MSWINDOWS}
          mrAll : begin
             keepChildren:=False;
             allowed:=True;
 			end;
+         {$ENDIF}
          mrOK : begin
             keepChildren:=True;
             allowed:=True;
@@ -1058,7 +1115,10 @@ var
 begin
    selNode:=Tree.Selected;
 
-   if (selNode<>nil) and (selNode.Parent<>nil) and (ClipBoard.HasFormat(CF_COMPONENT) or (Clipboard.HasFormat(CF_TEXT) and PossibleStream(Clipboard.AsText))) then begin
+   if (selNode<>nil) and (selNode.Parent<>nil)
+      {$IFDEF MSWINDOWS}
+      and (ClipBoard.HasFormat(CF_COMPONENT) or (Clipboard.HasFormat(CF_TEXT) and
+      PossibleStream(Clipboard.AsText))) {$ENDIF} then begin
       TmpContainer := TComponent.Create(self);
       try
          ComponentList := TDesignerSelections.Create;
@@ -1421,3 +1481,4 @@ finalization
    ReleaseGLSceneEditorForm;
 
 end.
+

@@ -3,6 +3,8 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Move InitWinColors to GLCrossPlatform
+                          Replace TGraphics, TBitmap by TGLGraphics, TGLBitmap
       <li>29/06/04 - SG - Added bmModulate blending mode
       <li>08/04/04 - EG - Added AddMaterialsFromXxxx logic
       <li>04/09/03 - EG - Added TGLShader.Enabled
@@ -126,10 +128,7 @@ interface
 
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
-  GLCrossPlatform, PersistentClasses, GLUtils, GLState
-  {$ifdef MSWINDOWS}, Graphics {$endif} // for standard application colors
-  {$ifdef LINUX}, QGraphics {$endif} 
-  ;
+  GLCrossPlatform, PersistentClasses, GLUtils, GLState;
 
 type
 	PColorVector = ^TColorVector;
@@ -1392,7 +1391,7 @@ type
          function AddTextureMaterial(const materialName, fileName : String;
                                      persistent : Boolean = True) : TGLLibMaterial; overload;
          {: Add a "standard" texture material.<p>
-            TGraphic based variant. }
+            TGLGraphic based variant. }
          function AddTextureMaterial(const materialName : String; graphic : TGLGraphic) : TGLLibMaterial; overload;
 
          {: Returns libMaterial of given name if any exists. }
@@ -1453,7 +1452,7 @@ type
 
    ETexture = class (Exception);
 
-   TGraphicClass = class of TGraphic;
+
 
 function ColorManager: TGLColorManager;
 
@@ -2409,7 +2408,7 @@ var
    i : Integer;
    buf, ext : String;
    fs : TStream;
-   gr : TGraphic;
+   gr : TGLGraphic;
 
 begin
    buf:=fileName;
@@ -5429,39 +5428,6 @@ begin
    else Result[3]:=1;
 end;
 
-// InitWinColors
-//
-procedure InitWinColors;
-begin
-   {$ifdef MSWINDOWS} 
-   clrScrollBar:=ConvertWinColor(clScrollBar);
-   clrBackground:=ConvertWinColor(clBackground);
-   clrActiveCaption:=ConvertWinColor(clActiveCaption);
-   clrInactiveCaption:=ConvertWinColor(clInactiveCaption);
-   clrMenu:=ConvertWinColor(clMenu);
-   clrWindow:=ConvertWinColor(clWindow);
-   clrWindowFrame:=ConvertWinColor(clWindowFrame);
-   clrMenuText:=ConvertWinColor(clMenuText);
-   clrWindowText:=ConvertWinColor(clWindowText);
-   clrCaptionText:=ConvertWinColor(clCaptionText);
-   clrActiveBorder:=ConvertWinColor(clActiveBorder);
-   clrInactiveBorder:=ConvertWinColor(clInactiveBorder);
-   clrAppWorkSpace:=ConvertWinColor(clAppWorkSpace);
-   clrHighlight:=ConvertWinColor(clHighlight);
-   clrHighlightText:=ConvertWinColor(clHighlightText);
-   clrBtnFace:=ConvertWinColor(clBtnFace);
-   clrBtnShadow:=ConvertWinColor(clBtnShadow);
-   clrGrayText:=ConvertWinColor(clGrayText);
-   clrBtnText:=ConvertWinColor(clBtnText);
-   clrInactiveCaptionText:=ConvertWinColor(clInactiveCaptionText);
-   clrBtnHighlight:=ConvertWinColor(clBtnHighlight);
-   clr3DDkShadow:=ConvertWinColor(cl3DDkShadow);
-   clr3DLight:=ConvertWinColor(cl3DLight);
-   clrInfoText:=ConvertWinColor(clInfoText);
-   clrInfoBk:=ConvertWinColor(clInfoBk);
-   {$endif}
-end;
-
 // RegisterColor
 //
 procedure RegisterColor(const aName : String; const aColor : TColorVector);
@@ -5490,7 +5456,7 @@ initialization
 	RegisterGLTextureImageClass(TGLPicFileImage);
 	RegisterGLTextureImageClass(TGLCubeMapImage);
    RegisterClasses([TGLMaterialLibrary]);
-   RegisterTGraphicClassFileExtension('.bmp', TBitmap);
+   RegisterTGraphicClassFileExtension('.bmp', TGLBitmap);
 
 finalization
 

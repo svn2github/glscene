@@ -6,6 +6,8 @@
    FPS-like movement behaviour and manager.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Corrections for Linux compatibility
+                          Replace GetTickCount by GLGetTickCount
       <li>19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
       <li>14/06/04 - MathD - Preventing repeated maps when adding through maps.addMap
       <li>09/06/04 - MathD - Creation
@@ -16,9 +18,9 @@ unit GLFPSMovement;
 interface
 
 uses
-     OpenGL1x, VectorGeometry, glMisc, glScene, glVectorFileObjects, glTexture,
-     windows, VectorLists, XCollection, classes, glGeomObjects, sysUtils,
-     GLNavigator, graphics;
+     OpenGL1x, VectorGeometry, GLMisc, GLScene, GLVectorFileObjects, GLTexture,
+     VectorLists, XCollection, Classes, GLGeomObjects, SysUtils,
+     GLNavigator;
 
 type
      TContactPoint = record
@@ -189,6 +191,8 @@ function GetOrCreateFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overl
 procedure Register;
 
 implementation
+
+uses GLCrossPlatform;
 
 procedure register;
 begin
@@ -553,7 +557,7 @@ begin
       CollisionState.Position:=oldPosition;
       CollisionState.Contact.intNormal:=intNormal;
       CollisionState.Contact.intPoint:=intPoint;
-      CollisionState.Time:=GetTickCount();
+      CollisionState.Time:=GLGetTickCount();
 
       behaviour.CollisionStates.Add(CollisionState);
 
@@ -574,7 +578,7 @@ end;
 
 constructor TGLBFPSMovement.Create(aOwner : TXCollection);
 
-     procedure setupArrow(arrow: TGLArrowLine; color: TColor);
+     procedure setupArrow(arrow: TGLArrowLine; color: TDelphiColor);
      begin with arrow do begin
           slices:= 16; stacks:= 4; TopArrowHeadHeight:= 0.1;
           TopArrowHeadRadius:= 0.04; TopRadius:= 0.02;
@@ -789,7 +793,7 @@ begin
      if CollisionStates.Count>0 then
      begin
        CollisionState:=TCollisionState(CollisionStates.First);
-       TickCount:=GetTickCount;
+       TickCount:=GLGetTickCount();
        //remove all old states
        while (CollisionState<>nil)and(CollisionState.Time<TickCount-manager.DisplayTime) do
        begin

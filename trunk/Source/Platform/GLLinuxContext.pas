@@ -53,6 +53,11 @@ resourcestring
 // ------------------ TGLLinuxContext ------------------
 // ------------------
 
+var
+//   vLastPixelFormat : Integer;
+   vLastVendor : String;
+   First: boolean = true;
+
 // DoCreateContext
 //
 procedure TGLLinuxContext.DoCreateContext(outputDevice : Integer);
@@ -81,14 +86,14 @@ end;
 //
 procedure TGLLinuxContext.DoCreateMemoryContext(outputDevice, width, height : Integer);
 begin
-  {$MESSAGE Warn 'Needs to be implemented'}
+  {$MESSAGE Warn 'DoCreateMemoryContext: Needs to be implemented'}
 end;
 
 // DoShareLists
 //
 procedure TGLLinuxContext.DoShareLists(aContext : TGLContext);
 begin
-  {$MESSAGE Warn 'Needs to be implemented'}
+  {$MESSAGE Warn 'DoShareLists: Needs to be implemented'}
 end;
 
 // DoDestroyContext
@@ -110,20 +115,22 @@ begin
    if not glXMakeCurrent(Application.Display, QWidget_winId(FoutputDevice), RenderingContext) then
      raise EGLContext.Create(Format(cContextActivationFailed, [GetLastError]));
 
-{???   // The extension function addresses are unique for each pixel format. All rendering
+   // The extension function addresses are unique for each pixel format. All rendering
    // contexts of a given pixel format share the same extension function addresses.
-   pixelFormat:=GetPixelFormat(FDC);
-   if PixelFormat<>vLastPixelFormat then begin
-      if glGetString(GL_VENDOR)<>vLastVendor then begin
+//   pixelFormat:=GetPixelFormat(FDC);
+//   if PixelFormat<>vLastPixelFormat then begin
+      if First or (glGetString(GL_VENDOR)<>vLastVendor) then begin
          ReadExtensions;
          ReadImplementationProperties;
          vLastVendor:=glGetString(GL_VENDOR);
-      end else begin
-         ReadWGLExtensions;
-         ReadWGLImplementationProperties;
-      end;
-      vLastPixelFormat:=pixelFormat;
-   end;}
+         First := false;
+      end
+//      else begin
+//         ReadWGLExtensions;
+//         ReadWGLImplementationProperties;
+//      end;
+//      vLastPixelFormat:=pixelFormat;
+//   end;
 end;
 
 // Deactivate

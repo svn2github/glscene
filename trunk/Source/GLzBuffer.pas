@@ -5,6 +5,7 @@
    By René Lindsay.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Added ifdef for Linux
       <li>07/03/02 - Lin - Removed XRes/YRes properties - Shadow-res now always matches viewer-res. 
       <li>21/02/02 - Lin - Now uses 1 Byte per pixel, instead of 4. Faster, and uses less Video Ram.
       <li>14/02/02 - Lin - Bugfix: No longer stalls the Cadencer + small speed improvements
@@ -52,11 +53,17 @@ unit GLzBuffer;
 interface
 
 {$i GLScene.inc}
-{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
-uses Windows, Classes, Graphics, GLMisc, OpenGL1x, GLScene, VectorGeometry, GLGraphics,
-     Dialogs, SysUtils, GLObjects, GLBitmapFont, xopengl, GLTexture, GLWin32Viewer,
-     GLContext, GLBehaviours, XCollection, GLState;
+uses  Classes, GLMisc, OpenGL1x, GLScene, VectorGeometry, GLGraphics,
+     SysUtils, GLObjects, GLBitmapFont, XOpenGL, GLTexture, 
+     GLContext, GLBehaviours, XCollection, GLState,
+     {$IFDEF MSWINDOWS}
+     Dialogs, GLWin32Viewer
+     {$ENDIF}
+     {$IFDEF LINUX}
+     QDialogs, GLLinuxViewer
+     {$ENDIF}
+     ;
 
 type
   TZArray = array [0..MaxInt shr 3] of Single;
@@ -369,7 +376,7 @@ var  axs :TAffineVector;
 begin
   if not assigned(Buffer) then exit;
   if not assigned(cam) then begin
-     showMessage('No Camera!');
+     ShowMessage('No Camera!');
      exit;
   end;
 //  if (FWidth=0) then showMessage('No Width!');

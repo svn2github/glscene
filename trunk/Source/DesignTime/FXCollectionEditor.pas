@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>12/07/03 - DanB - Fixed crash when owner deleted        
       <li>27/02/02 - Egg - Fixed crash after item deletion
       <li>11/04/00 - Egg - Fixed crashes in IDE
@@ -14,12 +15,20 @@ unit FXCollectionEditor;
 
 interface
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
+{$IFDEF MSWINDOWS}
 uses
-  Windows, Forms, XCollection, Messages, ImgList, Controls, Classes,
-  ActnList, Menus, ComCtrls, ToolWin,
+  Windows, Forms, XCollection, Messages, ImgList, Controls, Classes, ActnList, 
+  Menus, ComCtrls, ToolWin, 
   {$ifdef GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$else} DsgnIntf {$endif};
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, XCollection, QImgList, QControls, Classes, QActnList, 
+  QMenus, QComCtrls, DesignEditors, DesignIntf; 
+{$ENDIF}
+
 
 type
   TXCollectionEditor = class(TForm)
@@ -84,9 +93,22 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses GLMisc, SysUtils, GLBehaviours, GLScene, Dialogs;
+
+uses
+{$IFDEF MSWINDOWS}
+  GLMisc, SysUtils, GLBehaviours, GLScene, Dialogs; 
+{$ENDIF}
+{$IFDEF LINUX}
+  GLMisc, SysUtils, GLBehaviours, GLScene, QDialogs; 
+{$ENDIF}
+
 
 resourcestring
    cXCollectionEditor = 'XCollection editor';
@@ -354,4 +376,5 @@ finalization
    ReleaseXCollectionEditor;
 
 end.
+
 

@@ -3,6 +3,8 @@
    Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
+                          GLGetScreenWidth, GLGetScreenHeight for Linux compatibility       
       <li>11/05/04 - JAJ - Added some features and fixed a bug.
       <li>01/06/03 - JAJ - Added notification to movingobject...
       <li>01/06/03 - fig - CurrentHangle implementet...
@@ -17,7 +19,7 @@ unit GLNavigator;
 
 interface
 
-uses SysUtils, Classes, VectorGeometry, GLScene, GLMisc, Windows, Forms;
+uses SysUtils, Classes, VectorGeometry, GLScene, GLMisc, GLCrossPlatform;
 
 type
 
@@ -116,7 +118,7 @@ type
 
    TGLUserInterface = class(TComponent)
    private
-     point1: TPoint;
+     point1: TGLPoint;
      midScreenX, midScreenY: integer;
      FMouseActive       : Boolean;
      FMouseSpeed       : Single;
@@ -446,7 +448,7 @@ begin
    if not FMouseActive then begin
       FMouseActive := True;
       MouseInitialize;
-      ShowCursor(False);
+      GLShowCursor(False);
    end;
 end;
 
@@ -454,17 +456,17 @@ procedure TGLUserInterface.MouseLookDeactivate;
 begin
    if FMouseActive then begin
       FMouseActive := False;
-      ShowCursor(True);
+      GLShowCursor(True);
    end;
 end;
 
 procedure TGLUserInterface.MouseInitialize;
 begin
-   midScreenX:=Screen.Width div 2;
-   midScreenY:=Screen.Height div 2;
+   midScreenX:=GLGetScreenWidth div 2;
+   midScreenY:=GLGetScreenHeight div 2;
 
    point1.x:=midScreenX; point1.Y:=midScreenY;
-   SetCursorPos(midScreenX, midScreenY);
+   GLSetCursorPos(midScreenX, midScreenY);
 end;
 
 // SetMouseLookActive
@@ -480,7 +482,7 @@ end;
 procedure TGLUserInterface.MouseUpdate;
 begin
    if FMouseActive then
-   windows.GetCursorPos(point1);
+     GLGetCursorPos(point1);
 end;
 
 // Mouselook
@@ -506,7 +508,7 @@ begin
    end;
 
    if (point1.x <> midScreenX) or (point1.y <> midScreenY) then
-      SetCursorPos(midScreenX, midScreenY);
+      GLSetCursorPos(midScreenX, midScreenY);
 end;
 
 Constructor TGLUserInterface.Create(AOwner : TComponent);
@@ -514,8 +516,8 @@ Begin
   inherited;
   FMouseSpeed :=0;
   FMouseActive:=False;
-  midScreenX:=Screen.Width div 2;
-  midScreenY:=Screen.Height div 2;
+  midScreenX:=GLGetScreenWidth div 2;
+  midScreenY:=GLGetScreenHeight div 2;
   point1.x:=midScreenX; point1.Y:=midScreenY;
 End;
 

@@ -3,6 +3,8 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Completly review to take account designtime for Linux
+                          Note a problem with TGLColorProperty
       <li>28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
       <li>12/04/04 - EG - LibMaterialName property editor for SkyBox
       <li>22/08/02 - EG - RegisterPropertiesInCategory (Robin Gerrets)
@@ -43,23 +45,25 @@ interface
 
 {$i GLScene.inc}
 
-uses
-   GLScene, Classes,
 {$ifdef WIN32}
-   Windows, Controls, StdCtrls,
+uses
+   Windows, Classes, Controls, StdCtrls, GLScene,
    {$ifdef GLS_DELPHI_5_UP}
       FMaterialEditorForm, FLibMaterialPicker,
    {$endif}
-{$endif}
-{$ifdef LINUX}
-   QControls, QImgList, QGraphics,
-{$endif}
-
 {$ifdef GLS_DELPHI_6_UP}
    DesignIntf, DesignEditors, VCLEditors
 {$else}
    DsgnIntf
 {$endif};
+{$endif}
+{$ifdef LINUX}
+uses
+   Classes, QControls, QStdCtrls, QImgList, GLScene,
+   FMaterialEditorForm, FLibMaterialPicker,
+   DesignIntf, DesignEditors, VCLEditors;
+{$endif}
+
 
 type
 
@@ -134,28 +138,23 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-   VectorGeometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
+   TypInfo, VectorGeometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
    GLSkyBox, GLState, GLUtils, GLTilePlane, GLTree, GLImposter, GLWaterPlane,
-   GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX,
+   GLPerlinPFX, GLTexLensFlare, GLFireFX, GLThorFX, GLSceneEdit, FVectorEditor,
+   GLCadencer, GLCollision, GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
+   AsyncTimer, GLWindows, GLWindowsFont, GLHeightTileFileHDS,
 
 {$ifdef WIN32}
-   FVectorEditor, GLSound,
-   TypInfo, GLCadencer, GLCollision,
-   GLSoundFileObjects, 
-   GLHeightData, GLzBuffer, GLGui, GLBumpmapHDS,
-   GLSpaceText, AsyncTimer,
-
-   GLWindows, GLWindowsFont, GLHeightTileFileHDS,
-
-   GLSceneEdit, Graphics, Dialogs, ExtDlgs, Forms,
+   GLSound, GLSoundFileObjects, GLSpaceText,
+   Graphics, Dialogs, ExtDlgs, Forms,
    GLWin32Viewer, GLWin32FullScreenViewer
 {$endif}
 {$ifdef LINUX}
-   GLLinuxViewer
+   QGraphics, QDialogs, Types, GLLinuxViewer
 {$endif}
    ;
 
@@ -212,7 +211,6 @@ type
 			function GetVerbCount: Integer; override;
    end;
 
-{$ifdef WIN32}
    // TResolutionProperty
    //
    TResolutionProperty = class (TPropertyEditor)
@@ -223,7 +221,6 @@ type
 	      procedure GetValues(Proc: TGetStrProc); override;
    	   procedure SetValue(const Value: String); override;
    end;
-{$endif}
 
    // TClassProperty
    //
@@ -256,15 +253,19 @@ type
 			procedure SetValue(const value : String); override;
 	end;
 
-{$ifdef WIN32}
    {$ifdef GLS_COMPILER_5_UP}
    // TGLColorProperty
    //
-   {$ifndef GLS_COMPILER_6_UP}
+   {$ifdef GLS_COMPILER_5}
    TGLColorProperty = class (TClassProperty)
    {$else}
+     {$ifdef WIN32}
    TGLColorProperty = class (TClassProperty,
                              ICustomPropertyDrawing, ICustomPropertyListDrawing)
+   {$endif}
+     {$ifdef LINUX}
+       TGLColorProperty = class (TClassProperty)
+     {$endif}
    {$endif}
       private
 			{ Private Declarations }
@@ -283,6 +284,8 @@ type
 	      procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
 	      {$endif}
 	      {$ifdef GLS_COMPILER_6_UP}
+         // Well, i don't know why it's doesn't work with Kylix ...
+         {$ifdef WIN32}
          // ICustomPropertyListDrawing  stuff
          procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas; var AHeight: Integer);
          procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas; var AWidth: Integer);
@@ -291,14 +294,13 @@ type
          procedure PropDrawName(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
          procedure PropDrawValue(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
          {$endif}
+         {$endif}
 
 	      function GetValue: String; override;
 	      procedure SetValue(const Value: string); override;
    end;
    {$endif}
-{$endif}
 
-{$ifdef WIN32}
    // TVectorFileProperty
    //
    TVectorFileProperty = class (TClassProperty)
@@ -310,6 +312,7 @@ type
          procedure SetValue(const Value: string); override;
    end;
 
+{$ifdef WIN32}
    // TSoundFileProperty
    //
    TSoundFileProperty = class (TClassProperty)
@@ -328,6 +331,7 @@ type
          function GetAttributes : TPropertyAttributes; override;
       	procedure GetValues(Proc: TGetStrProc); override;
    end;
+{$endif}
 
    // TGLCoordinatesProperty
    //
@@ -383,7 +387,6 @@ type
          { Public Declarations }
          procedure Edit; override;
    end;
-{$endif}
 
    // TGLMaterialLibraryEditor
    //
@@ -393,8 +396,7 @@ type
 {$ifdef GLS_DELPHI_6_UP}
          procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
 {$else}
-         procedure EditProperty(PropertyEditor: TPropertyEditor;
-										  var Continue, FreeEditor: Boolean); override;
+         procedure EditProperty(PropertyEditor: TPropertyEditor; var Continue, FreeEditor: Boolean); override;
 {$endif}
 	end;
 
@@ -419,7 +421,7 @@ type
 			{ Public Declarations }
 	end;
 
-{$endif}
+{$endif GLS_DELPHI_5_UP}
 
 //----------------- TObjectManager ---------------------------------------------
 
@@ -677,14 +679,10 @@ end;
 //
 procedure TGLSceneEditor.Edit;
 begin
-   {$ifdef WIN32}
    with GLSceneEditorForm do begin
       SetScene(Self.Component as TGLScene, Self.Designer);
       Show;
    end;
-   {$else}
-   InformationDlg('Unsupported on this platform');
-   {$endif}
 end;
 
 // ExecuteVerb
@@ -713,8 +711,6 @@ begin
 end;
 
 //----------------- TResolutionProperty ----------------------------------------
-
-{$ifdef WIN32}
 
 // GetAttributes
 //
@@ -799,7 +795,6 @@ begin
   end
   else SetOrdValue(0);
 end;
-{$endif}
 
 //----------------- TGLTextureProperty -----------------------------------------
 
@@ -874,7 +869,6 @@ end;
 
 //----------------- TGLColorproperty -----------------------------------------------------------------------------------
 
-{$ifdef WIN32}
 {$ifdef GLS_COMPILER_5_UP}
 procedure TGLColorProperty.Edit;
 var
@@ -884,7 +878,9 @@ begin
    colorDialog:=TColorDialog.Create(nil);
    try
       glColor:=TGLColor(GetOrdValue);
+      {$ifdef WIN32}
       colorDialog.Options:=[cdFullOpen];
+      {$endif}
       colorDialog.Color:=ConvertColorVector(glColor.Color);
       if colorDialog.Execute then begin
          glColor.Color:=ConvertWinColor(colorDialog.Color);
@@ -967,6 +963,7 @@ end;
 {$endif}
 
 {$ifdef GLS_COMPILER_6_UP}
+{$ifdef WIN32}
 procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
 begin
    if GetVisualValue <> '' then
@@ -1021,13 +1018,12 @@ procedure TGLColorProperty.PropDrawName(ACanvas: TCanvas; const ARect: TRect;
 begin
    DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
-{$endif}
-{$endif}
-{$endif}
+{$endif WIN32}
+{$endif GLS_COMPILER_6_UP}
+{$endif GLS_COMPILER_5_UP}
 
 //----------------- TVectorFileProperty ----------------------------------------
 
-{$ifdef WIN32}
 // GetAttributes
 //
 function TVectorFileProperty.GetAttributes: TPropertyAttributes;
@@ -1070,7 +1066,6 @@ procedure TVectorFileProperty.SetValue(const Value: string);
 begin
    SetStrValue(Value);
 end;
-{$endif}
 
 //----------------- TSoundFileProperty -----------------------------------------
 
@@ -1115,11 +1110,9 @@ begin
       ODialog.Free;
    end;
 end;
-{$endif}
 
 //----------------- TSoundNameProperty -----------------------------------------
 
-{$ifdef WIN32}
 // GetAttributes
 //
 function TSoundNameProperty.GetAttributes: TPropertyAttributes;
@@ -1138,11 +1131,10 @@ begin
    if Assigned(source.SoundLibrary) then with source.SoundLibrary do
       for i:=0 to Samples.Count-1 do Proc(Samples[i].Name);
 end;
-{$endif}
+{$endif WIN32}
 
 //----------------- TGLCoordinatesProperty -------------------------------------
 
-{$ifdef WIN32}
 // GetAttributes
 //
 function TGLCoordinatesProperty.GetAttributes: TPropertyAttributes;
@@ -1166,9 +1158,7 @@ begin
 		Modified;
 	end;
 end;
-{$endif}
 
-{$ifdef WIN32}
 {$ifdef GLS_DELPHI_5_UP}
 
 //----------------- TGLMaterialProperty --------------------------------------------------------------------------------
@@ -1389,8 +1379,6 @@ begin
 		SetStrValue(buf);
 end;
 
-{$endif}
-
 //----------------- TGLAnimationNameProperty -----------------------------------
 
 // GetAttributes
@@ -1436,13 +1424,14 @@ type
   sVisualCategoryName = TVisualCategory;
 {$endif}
 begin
-   {$ifdef WIN32}
 
    { GLWin32Viewer }
    // property types
+   {$ifdef WIN32}
    RegisterPropertiesInCategory(sOpenGLCategoryName,
      [TypeInfo(TGLCamera), TypeInfo(TGLSceneBuffer), TypeInfo(TVSyncMode),
-     TypeInfo(TGLScreenDepth)]);
+     TypeInfo(TGLScreenDepth)]);  // TGLScreenDepth in GLWin32FullScreenViewer
+   {$endif}
    // TGLSceneViewer
    RegisterPropertiesInCategory(sOpenGLCategoryName, TGLSceneViewer,
      ['*Render']);
@@ -1484,6 +1473,7 @@ begin
    RegisterPropertiesInCategory(sOpenGLCategoryName,
      [TypeInfo(TGLLinesNodes), TypeInfo(TLineNodesAspect), TypeInfo(TLineSplineMode),
      TypeInfo(TLinesOptions)]);
+   {$ifdef WIN32}  // unit GLSpaceText
    RegisterPropertiesInCategory(sLayoutCategoryName,
      [TypeInfo(TGLTextAdjust)]);
    RegisterPropertiesInCategory(sLocalizableCategoryName,
@@ -1491,6 +1481,8 @@ begin
    RegisterPropertiesInCategory(sVisualCategoryName,
      [TypeInfo(TLineSplineMode), TypeInfo(TCapType), TypeInfo(TNormalSmoothing),
      TypeInfo(TArrowHeadStackingStyle), TypeInfo(TGLTextAdjust)]);
+   {$endif}
+
    // TGLDummyCube
    RegisterPropertiesInCategory(sLayoutCategoryName, TGLDummyCube,
      ['VisibleAtRunTime']);
@@ -1519,8 +1511,10 @@ begin
    RegisterPropertiesInCategory(sVisualCategoryName, TGLFrustrum,
      ['ApexHeight', 'Base*']);
    // TGLSpaceText
+   {$ifdef WIN32}  // unit GLSpaceText
    RegisterPropertiesInCategory(sVisualCategoryName, TGLSpaceText,
      ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
+   {$endif}
    // TGLSphere
    RegisterPropertiesInCategory(sVisualCategoryName, TGLSphere,
      ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
@@ -1666,11 +1660,13 @@ begin
    RegisterPropertiesInCategory(sVisualCategoryName, TGLTerrainRenderer,
      ['*CLOD*', 'QualityDistance', 'Tile*']);
 
+
    { GLzBuffer }
    RegisterPropertiesInCategory(sOpenGLCategoryName,
      [TypeInfo(TGLMemoryViewer), TypeInfo(TGLSceneViewer), TypeInfo(TOptimise)]);
    RegisterPropertiesInCategory(sVisualCategoryName,
      [TypeInfo(TOptimise)]);
+
    // TGLZShadows
    RegisterPropertiesInCategory(sVisualCategoryName, TGLZShadows,
      ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
@@ -1678,10 +1674,11 @@ begin
    { GLHUDObjects }
    RegisterPropertiesInCategory(sLayoutCategoryName,
      [TypeInfo(TTextLayout)]);
-   RegisterPropertiesInCategory(sLocalizableCategoryName,
-     [TypeInfo(TGLBitmapFont)]);
    RegisterPropertiesInCategory(sVisualCategoryName,
      [TypeInfo(TGLBitmapFont), TypeInfo(TTextLayout)]);
+
+   RegisterPropertiesInCategory(sLocalizableCategoryName,
+     [TypeInfo(TGLBitmapFont)]);
 
    { GLTexture }
    RegisterPropertiesInCategory(sOpenGLCategoryName,
@@ -1743,7 +1740,6 @@ begin
    RegisterPropertiesInCategory(sVisualCategoryName, TGLBitmapHDS,
      ['Picture']);
 
-   {$endif}
 end;
 {$endif}
 
@@ -1752,13 +1748,13 @@ begin
    RegisterComponents('GLScene',
                       [TGLScene,
                        TGLSceneViewer, TGLMemoryViewer,
-                       TGLMaterialLibrary
-                       {$ifdef MSWINDOWS}
-                       ,
+                       TGLMaterialLibrary,
                        TGLCadencer,
-                       TGLFullScreenViewer,
                        TGLGuiLayout,
                        TGLBitmapFont, TGLWindowsBitmapFont
+                       {$ifdef WIN32}
+                       ,
+                       TGLFullScreenViewer
                        {$endif}
                       ]);
 
@@ -1771,7 +1767,6 @@ begin
                        TGLFireFXManager, TGLThorFXManager
                       ]);
 
-   {$ifdef WIN32}
    RegisterComponents('GLScene Utils',
                       [TAsyncTimer,
                        TGLStaticImposterBuilder,
@@ -1779,27 +1774,25 @@ begin
                        TGLBumpmapHDS,
                        TCollisionManager, TGLAnimationControler
                       ]);
-   {$endif}
-
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);
 
 {$ifdef GLS_DELPHI_5_UP}
    GLRegisterPropertiesInCategories;
-   {$ifdef WIN32}
 	RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
    {$endif}
-{$endif}
 
-{$ifdef WIN32}
 	RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
 	RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);
 	RegisterPropertyEditor(TypeInfo(TGLTextureImage), TGLTexture, '', TGLTextureImageProperty);
 	RegisterPropertyEditor(TypeInfo(String), TGLTexture, 'ImageClassName', TGLImageClassProperty);
+   {$ifdef WIN32}
 	RegisterPropertyEditor(TypeInfo(TGLSoundFile), TGLSoundSample, '', TSoundFileProperty);
 	RegisterPropertyEditor(TypeInfo(String), TGLBaseSoundSource, 'SoundName', TSoundNameProperty);
+   {$endif}
 	RegisterPropertyEditor(TypeInfo(TGLCoordinates), nil, '', TGLCoordinatesProperty);
+
 {$ifdef GLS_DELPHI_5_UP}
 	RegisterPropertyEditor(TypeInfo(TGLColor), nil, '', TGLColorProperty);
 	RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
@@ -1809,7 +1802,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
    RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
-{$endif}
+
 end;
 
 // ------------------------------------------------------------------
@@ -1840,9 +1833,10 @@ initialization
       RegisterSceneObject(TGLCone, 'Cone', glsOCBasicGeometry);
       RegisterSceneObject(TGLCylinder, 'Cylinder', glsOCBasicGeometry);
       RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', glsOCBasicGeometry);
-      {$ifdef WIN32}
+      {$ifdef WIN32}  // Unknown resource
       RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry);
       {$endif}
+
       RegisterSceneObject(TGLArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLAnnulus, 'Annulus', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLExtrusionSolid, 'ExtrusionSolid', glsOCAdvancedGeometry);
@@ -1872,7 +1866,6 @@ initialization
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
 
-      {$ifdef WIN32}
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
       RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);
       RegisterSceneObject(TGLForm, 'GLForm', glsOCGuiObjects);
@@ -1885,18 +1878,15 @@ initialization
       RegisterSceneObject(TGLScrollbar, 'GLScrollbar', glsOCGuiObjects);
       RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects);
       RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', glsOCGuiObjects);
-      {$endif}
 
       RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
-      {$ifdef WIN32}
+      {$ifdef WIN32}  // Unknown resource
       RegisterSceneObject(TGLTextureLensFlare, 'TextureLensFlare', glsOCSpecialObjects);
       {$endif}
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
-      {$ifdef WIN32}
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
-      {$endif}
 
       {$ifdef WIN32}
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);

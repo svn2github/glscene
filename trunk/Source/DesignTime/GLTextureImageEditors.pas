@@ -3,6 +3,7 @@
 	Standard texture image editors for standard texture image classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>24/07/03 - EG - Creation
    </ul></font>
 }
@@ -10,7 +11,11 @@ unit GLTextureImageEditors;
 
 interface
 
-uses GLTexture;
+{$i GLScene.inc}
+
+uses
+  GLTexture; 
+
 
 type
 
@@ -46,7 +51,9 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses SysUtils, GLCrossPlatform;
+uses
+  SysUtils, GLCrossPlatform; 
+
 
 // ------------------
 // ------------------ TGLBlankTIE ------------------
@@ -129,3 +136,4 @@ finalization
 	UnRegisterGLTextureImageEditor(TGLPicFileTIE);
 
 end.
+

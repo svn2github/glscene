@@ -4,6 +4,7 @@
 	Basic editing frame for TGLTexture<p>
 
 	<b>Historique : </b><font size=-1><ul>
+	        <li>03/07/04 - LR - Make change for Linux
 		<li>17/03/00 - Egg - Added ImageAlpha combo
 		<li>13/03/00 - Egg - Creation
 	</ul></font>
@@ -13,8 +14,17 @@ unit FRTextureEdit;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, GLTexture, GLUtils;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, QStdCtrls, QButtons, QControls, Classes, GLTexture, GLUtils; 
+{$ENDIF}
+
 
 type
   TRTextureEdit = class(TFrame)
@@ -64,9 +74,17 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses SysUtils, GLMisc, GLState;
+
+uses
+  SysUtils, GLMisc, GLState; 
+
 
 // Create
 //
@@ -188,3 +206,6 @@ begin
 end;
 
 end.
+
+
+

@@ -4,6 +4,7 @@
 	Allows choosing a material in a material library<p>
 
 	<b>Historique : </b><font size=-1><ul>
+	   <li>03/07/04 - LR - Make change for Linux
 	   <li>14/02/00 - Egg - Creation
 	</ul></font>
 }
@@ -11,9 +12,17 @@ unit FLibMaterialPicker;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses
-  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture,
-  GLWin32Viewer;
+  Forms, StdCtrls, Buttons, FRMaterialPreview, Controls, Classes, GLTexture, GLWin32Viewer;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, QStdCtrls, QButtons, FRMaterialPreview, QControls, Classes, GLTexture, GLLinuxViewer; 
+{$ENDIF}
+
 
 type
   TLibMaterialPicker = class(TForm)
@@ -38,7 +47,13 @@ procedure ReleaseLibMaterialPicker;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
+
 
 var
 	vLibMaterialPicker : TLibMaterialPicker;
@@ -97,3 +112,6 @@ finalization
    ReleaseLibMaterialPicker;
 
 end.
+
+
+

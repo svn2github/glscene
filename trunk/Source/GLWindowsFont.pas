@@ -2,6 +2,7 @@
 {: TFont Import into a BitmapFont using variable width...<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Added ifdef for Graphics uses
       <li>29/09/02 - EG - Fixed transparency, style fixes, prop defaults fixed,
                           dropped interface dependency, texture size auto computed,
                           fixed italics spacing, uses LUM+ALPHA texture
@@ -13,10 +14,19 @@ unit GLWindowsFont;
 
 interface
 
-Uses
-  GLBitmapFont, Graphics, Classes, GLScene, GLTexture, GLCrossPlatform;
+{$include GLScene.inc}
 
-Type
+uses
+  GLBitmapFont, Classes, GLScene, GLTexture, GLCrossPlatform,
+  {$IFDEF MSWINDOWS}
+  Graphics
+  {$ENDIF}
+  {$IFDEF LINUX}
+  QGraphics
+  {$ENDIF}
+  ;
+
+type
 
    // TGLWindowsBitmapFont
    //
@@ -191,7 +201,7 @@ begin
    bitmap:=Glyphs.Bitmap;
    Glyphs.OnChange:=nil;
 
-   bitmap.PixelFormat:=pf32bit;
+   bitmap.PixelFormat:=glpf32bit;
    with bitmap.Canvas do begin
       Font:=Self.Font;
       Font.Color:=clWhite;

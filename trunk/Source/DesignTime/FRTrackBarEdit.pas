@@ -3,6 +3,7 @@
    Frame combining a TrackBar and an Edit.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
@@ -10,8 +11,17 @@ unit FRTrackBarEdit;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses 
   Forms, StdCtrls, ComCtrls, Classes, Controls;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, QStdCtrls, QComCtrls, Classes, QControls; 
+{$ENDIF}
+
 
 type
   TRTrackBarEdit = class(TFrame)
@@ -36,9 +46,17 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses SysUtils;
+
+uses
+  SysUtils; 
+
 
 procedure TRTrackBarEdit.TrackBarChange(Sender: TObject);
 begin
@@ -100,3 +118,6 @@ begin
 end;
 
 end.
+
+
+

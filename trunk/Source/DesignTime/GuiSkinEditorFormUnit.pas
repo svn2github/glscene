@@ -1,12 +1,31 @@
+{: GuiSkinEditorFormUnit<p>
+
+   Editor for Gui skin.<p>
+
+   <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
+      <li>?/?/? -  - Creation
+   </ul></font>
+}
 unit GuiSkinEditorFormUnit;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects,
-  GLWindows, GLHUDObjects, GLMisc, GLWin32Viewer, GLGui, GLGraphics,
-  GLUtils;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, 
+  StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects, 
+  GLMisc, GLWin32Viewer, GLGui, GLGraphics, GLUtils;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  SysUtils, Classes, QGraphics, QControls, QForms, QDialogs, 
+  QStdCtrls, QComCtrls, QExtCtrls, GLTexture, GLScene, GLObjects, GLWindows, GLHUDObjects, 
+  GLMisc, GLLinuxViewer, GLGui, GLGraphics, GLUtils; 
+{$ENDIF}
+
 
 type
   TGUISkinEditor = class(TForm)
@@ -102,7 +121,15 @@ var
 
 implementation
 
+{$IFDEF MSWINDOWS}
 {$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
+
+uses GLCrossPlatform;
+
 
 procedure TGUISkinEditor.FormCreate(Sender: TObject);
 begin
@@ -171,8 +198,10 @@ begin
   Label2.Caption := FormatFloat('####0.0',Zoom);
 //  panel3.Invalidate;
 
+  {$IFDEF MSWINDOWS}
   ScrollBar1.PageSize := Round(256/Zoom);
   ScrollBar2.PageSize := Round(256/Zoom);
+  {$ENDIF}
   Render;
 end;
 
@@ -182,8 +211,10 @@ begin
   Label2.Caption := FormatFloat('####0.0',Zoom);
 //  panel3.Invalidate;
 
+  {$IFDEF MSWINDOWS}
   ScrollBar1.PageSize := Round(256/Zoom);
   ScrollBar2.PageSize := Round(256/Zoom);
+  {$ENDIF}
   Render;
 end;
 
@@ -219,18 +250,24 @@ begin
     If Assigned(SelectedElement) then
     Begin
       Image1.Canvas.Brush.Color := clWhite;
+      {$IFDEF MSWINDOWS}
       Image1.Canvas.FrameRect(Rect(Round((1-ScrollBar2.position+SelectedElement.TopLeft.X)*Zoom),Round((1-ScrollBar1.position+SelectedElement.TopLeft.Y)*Zoom),Round((1-ScrollBar2.position+SelectedElement.BottomRight.X)*Zoom),Round((1-ScrollBar1.position+SelectedElement.BottomRight.Y)*Zoom)));
+      {$ENDIF}
+      {$IFDEF LINUX}
+      Image1.Canvas.FillRect(Rect(Round((1-ScrollBar2.position+SelectedElement.TopLeft.X)*Zoom),Round((1-ScrollBar1.position+SelectedElement.TopLeft.Y)*Zoom),Round((1-ScrollBar2.position+SelectedElement.BottomRight.X)*Zoom),Round((1-ScrollBar1.position+SelectedElement.BottomRight.Y)*Zoom)));
+      {$ENDIF}
     End;
   End;
 end;
 
 Procedure TGUISkinEditor.SetMax(Scrollbar : TScrollbar; Val : Integer);
-
 Begin
+  {$IFDEF MSWINDOWS}
   if Scrollbar.Position+Scrollbar.PageSize >= val then
   Begin
     Scrollbar.Position := val-Scrollbar.PageSize+1;
   End;
+  {$ENDIF}
   Scrollbar.Max := val;
 End;
 
@@ -238,8 +275,10 @@ End;
 procedure TGUISkinEditor.ScrollBarScroll(Sender: TObject;
   ScrollCode: TScrollCode; var ScrollPos: Integer);
 begin
+  {$IFDEF MSWINDOWS}
   If ScrollPos+(Sender as TScrollBar).PageSize > (Sender as TScrollBar).Max then
   ScrollPos := (Sender as TScrollBar).Max-(Sender as TScrollBar).PageSize+1;
+  {$ENDIF}
 end;
 
 procedure TGUISkinEditor.ScrollbarChange(Sender: TObject);
@@ -361,7 +400,7 @@ end;
 procedure TGUISkinEditor.Image1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  If Button = mbLeft then
+  If Button = TMouseButton(mbLeft) then
   if not CheckBox1.Checked then
   If Assigned(SelectedElement) then
   Begin
@@ -373,7 +412,7 @@ end;
 procedure TGUISkinEditor.Image1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  If Button = mbLeft then
+  If Button = TMouseButton(mbLeft) then
   if not CheckBox1.Checked then
   If Assigned(SelectedElement) then
   Begin
@@ -393,16 +432,16 @@ end;
 procedure TGUISkinEditor.ListBox1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  If key = vk_left then
+  If key = glKey_LEFT then
   Begin
     If ListBox1.ItemIndex > 0 then ListBox1.ItemIndex := ListBox1.ItemIndex -1;
-    key := VK_CANCEL;
+    key := glKey_CANCEL;
   End;
-  If key = vk_right then
+  If key = glKey_RIGHT then
   Begin
     If ListBox1.ItemIndex+1 < ListBox1.Items.Count then
       ListBox1.ItemIndex := ListBox1.ItemIndex +1;
-    key := VK_CANCEL;
+    key := glKey_CANCEL;
   End;
     
 end;
@@ -525,3 +564,6 @@ begin
 end;
 
 end.
+
+
+

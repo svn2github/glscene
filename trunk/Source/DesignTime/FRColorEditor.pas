@@ -3,6 +3,7 @@
    RGB+Alpha color editor.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
@@ -10,9 +11,19 @@ unit FRColorEditor;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses
   Windows, Forms, StdCtrls, ComCtrls, ExtCtrls, FRTrackBarEdit, Dialogs, Controls,
   Classes, VectorGeometry, Graphics, SysUtils;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, QStdCtrls, QComCtrls, QExtCtrls, FRTrackBarEdit, QDialogs, QControls, 
+  Classes, VectorGeometry, QGraphics, SysUtils; 
+{$ENDIF}
+
 
 type
 
@@ -69,9 +80,17 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses  GLTexture;
+
+uses
+  GLTexture, GLCrossPlatform;
+
 
 const
   MaxColorValue = 255;
@@ -146,9 +165,11 @@ end;
 constructor TRColorEditor.Create(AOwner: TComponent);
 begin
   inherited;
-  WorkBitmap := tBitmap.Create;
-  WorkBitmap.PixelFormat := pf24bit;
+  WorkBitmap := TBitmap.Create;
+  WorkBitmap.PixelFormat := glpf24bit;
+  {$IFDEF MSWINDOWS}
   WorkBitmap.HandleType := bmDib;
+  {$ENDIF}
   RedValue := 200;
   GreenValue := 120;
   BlueValue := 60;
@@ -252,10 +273,12 @@ begin
 }
     Brush.Color := clBlack;
 
+    {$IFDEF MSWINDOWS}
     FrameRect(Rect(ColorSliderLeft,RTop,ColorSliderLeft+ColorSliderWidth,RTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,GTop,ColorSliderLeft+ColorSliderWidth,GTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,BTop,ColorSliderLeft+ColorSliderWidth,BTop+ColorViewHeight));
     FrameRect(Rect(ColorSliderLeft,ATop,ColorSliderLeft+ColorSliderWidth,ATop+ColorViewHeight));
+    {$ENDIF}
 
     // Color View Frames
     Pen.Color := clBtnShadow;
@@ -381,7 +404,7 @@ procedure TRColorEditor.ColorEditorPaintBoxMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   DraggingValue := None;
-  If Button = mbLeft then
+  If Button = TMouseButton(mbLeft) then
   begin
     if (X > ColorSliderLeft-5) and ( X < (ColorSliderLeft+ColorSliderMaxValue+5)) then
     begin
@@ -435,7 +458,7 @@ end;
 procedure TRColorEditor.ColorEditorPaintBoxMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  If Button = mbLeft then DraggingValue := None;
+  If Button = TMouseButton(mbLeft) then DraggingValue := None;
 end;
 
 procedure TRColorEditor.RedEditChange(Sender: TObject);
@@ -515,3 +538,5 @@ begin
 end;
 
 end.
+
+

@@ -6,6 +6,7 @@
 	Register TXCollection property editor<p>
 
 	<b>History : </b><font size=-1><ul>
+           <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
 	   <li>16/04/00 - Egg - Creation
 	</ul></font>
 }
@@ -13,7 +14,7 @@ unit RegisterXCollection;
 
 interface
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 uses Classes, XCollection,
    {$ifdef GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$else} DsgnIntf {$endif};

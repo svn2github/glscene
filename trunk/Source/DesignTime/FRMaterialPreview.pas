@@ -3,6 +3,7 @@
    Material Preview frame.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>06/02/00 - Egg - Creation
    </ul></font>
 }
@@ -10,9 +11,19 @@ unit FRMaterialPreview;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses
   Windows, Forms, StdCtrls, GLScene, GLObjects, Classes, Controls, GLTexture,
   GLMisc, GLWin32Viewer;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, QStdCtrls, GLScene, GLObjects, Classes, QControls, GLTexture, 
+  GLMisc, GLLinuxViewer; 
+{$ENDIF}
+
 
 type
   TRMaterialPreview = class(TFrame)
@@ -49,9 +60,22 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses Graphics;
+
+uses
+{$IFDEF MSWINDOWS}
+  Graphics; 
+{$ENDIF}
+{$IFDEF LINUX}
+  QGraphics; 
+{$ENDIF}
+
 
 constructor TRMaterialPreview.Create(AOwner : TComponent);
 begin
@@ -111,3 +135,6 @@ begin
 end;
 
 end.
+
+
+

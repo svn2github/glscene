@@ -45,7 +45,6 @@ object GLSceneEditorForm: TGLSceneEditorForm
     OnChange = TreeChange
     OnDragDrop = TreeDragDrop
     OnDragOver = TreeDragOver
-    OnEdited = TreeEdited
     OnEditing = TreeEditing
     OnEnter = TreeEnter
     OnMouseDown = TreeMouseDown

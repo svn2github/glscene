@@ -12,6 +12,8 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Corrections for Linux compatibility
+                          CreateMonochromeBitmap NOT implemented for Linux
       <li>12/07/03 - EG - Further InterpolatedHeight fixes
       <li>26/06/03 - EG - Fixed InterpolatedHeight HDS selection
       <li>06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
@@ -34,9 +36,9 @@ unit GLHeightData;
 
 interface
 
-uses Classes, Graphics, VectorGeometry, GLCrossPlatform;
-
 {$i GLScene.inc}
+
+uses Classes, VectorGeometry, GLCrossPlatform;
 
 type
 
@@ -420,13 +422,13 @@ type
 	   private
 	      { Private Declarations }
          FScanLineCache : array of PByteArray;
-         FBitmap : Graphics.TBitmap;
-         FPicture : TPicture;
+         FBitmap : TGLBitmap;
+         FPicture : TGLPicture;
          FInfiniteWrap : Boolean;
 
 	   protected
 	      { Protected Declarations }
-         procedure SetPicture(const val : TPicture);
+         procedure SetPicture(const val : TGLPicture);
          procedure OnPictureChanged(Sender : TObject);
          procedure SetInfiniteWrap(val : Boolean);
 
@@ -449,7 +451,7 @@ type
             The picture is (if not already) internally converted to a 8 bit
             bitmap (grayscale). For better performance and to save memory,
             feed it this format! }
-         property Picture : TPicture read FPicture write SetPicture;
+         property Picture : TGLPicture read FPicture write SetPicture;
          {: If true the height field is wrapped indefinetely. }
          property InfiniteWrap : Boolean read FInfiniteWrap write SetInfiniteWrap default True;
 
@@ -525,7 +527,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Windows, GLMisc, ApplicationFileIO, GLUtils;
+uses SysUtils, GLMisc, ApplicationFileIO, GLUtils
+  {$IFDEF MSWINDOWS}
+  , Windows  // for CreateMonochromeBitmap
+  {$ENDIF}
+  ;
 
 // ------------------
 // ------------------ THeightDataSourceThread ------------------
@@ -1355,7 +1361,7 @@ end;
 constructor TGLBitmapHDS.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
-   FPicture:=TPicture.Create;
+   FPicture:=TGLPicture.Create;
    FPicture.OnChange:=OnPictureChanged;
    FInfiniteWrap:=True;
 end;
@@ -1371,7 +1377,7 @@ end;
 
 // SetPicture
 //
-procedure TGLBitmapHDS.SetPicture(const val : TPicture);
+procedure TGLBitmapHDS.SetPicture(const val : TGLPicture);
 begin
    FPicture.Assign(val);
 end;
@@ -1421,6 +1427,7 @@ end;
 // CreateMonochromeBitmap
 //
 procedure TGLBitmapHDS.CreateMonochromeBitmap(size : Integer);
+{$IFDEF MSWINDOWS}
 type
    TPaletteEntryArray = array [0..255] of TPaletteEntry;
    PPaletteEntryArray = ^TPaletteEntryArray;
@@ -1435,8 +1442,8 @@ var
    hPal : HPalette;
 begin
    size:=RoundUpToPowerOf2(size);
-   FBitmap:=Graphics.TBitmap.Create;
-   FBitmap.PixelFormat:=pf8bit;
+   FBitmap:=TGLBitmap.Create;
+   FBitmap.PixelFormat:=glpf8bit;
    FBitmap.Width:=size;
    FBitmap.Height:=size;
    for x:=0 to 255 do with PPaletteEntryArray(@logPal.lpal.palPalEntry[0])[x] do begin
@@ -1462,6 +1469,13 @@ begin
    SetLength(FScanLineCache, 0); // clear the cache
    SetLength(FScanLineCache, size);
 end;
+{$ENDIF}
+{$IFDEF LINUX}
+begin
+  {$MESSAGE Warn 'CreateMonochromeBitmap: Needs to be implemented'}
+end;
+{$ENDIF}
+
 
 // FreeMonochromeBitmap
 //

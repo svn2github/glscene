@@ -2,6 +2,7 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>21/02/04 - EG - Added extensions popup menu and hyperlink to
                           Delphi3D's hardware registry
       <li>08/02/04 - NelC - Added option for modal
@@ -19,8 +20,19 @@ unit Info;
 
 interface
 
-uses Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls,
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
+uses
+  Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls, 
      CommCtrl, ExtCtrls, Graphics, Menus;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, GLScene, Classes, QControls, QButtons, QStdCtrls, QComCtrls, 
+  CommCtrl, QExtCtrls, QGraphics, QMenus; 
+{$ENDIF}
+
 
 type
 
@@ -106,9 +118,16 @@ type
 
 implementation
 
-uses OpenGL1x, SysUtils, ShellAPI;
+uses
+  OpenGL1x, SysUtils, GLCrossPlatform;
 
+{$IFDEF MSWINDOWS}
 {$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
+
 {$R Info.res}
 
 // ShowInfoForm
@@ -137,6 +156,7 @@ end;
 // GetInfoFrom
 //
 procedure TInfoForm.GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
+{$IFDEF MSWINDOWS}
 const
    DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
 var
@@ -214,6 +234,11 @@ begin
       IntLimitToLabel(TexUnitsLabel, limNbTextureUnits);
    end;
 end;
+{$ENDIF}
+{$IFDEF LINUX}
+begin
+end;
+{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -249,9 +274,11 @@ begin
       NewB:=Round(I*b/175); if NewB > b then NewB:=b;
       NewColors[I]:=RGB(NewR,NewG,NewB);
     end;
+    {$IFDEF MSWINDOWS}
     BM.Handle:=CreateMappedRes(HInstance,'INFO_BACK',OldColors,NewColors);
 	 for Y:=0 to Image1.Height div BM.Height do
       for X:=0 to Image1.Width div BM.Width do Image1.Canvas.Draw(X*BM.Width,Y*BM.Height,BM);
+    {$ENDIF}
     Image2.Picture:=Image1.Picture;
     Image3.Picture:=Image1.Picture;
   finally
@@ -289,7 +316,7 @@ begin
    buf:=Copy(url, 1, p-1);
    url:= 'http://oss.sgi.com/projects/ogl-sample/registry/'
         +buf+'/'+Copy(url, p+1, 255)+'.txt';
-   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOW);
+   ShowHTMLUrl(url);
 end;
 
 procedure TInfoForm.MIDelphi3DClick(Sender: TObject);
@@ -300,7 +327,7 @@ begin
       if ItemIndex<0 then Exit;
       url:='http://www.delphi3d.net/hardware/extsupport.php?extension='+Items[ItemIndex];
    end;
-   ShellExecute(0, 'open', PChar(url), nil, nil, SW_SHOW);
+   ShowHTMLUrl(url);
 end;
 
 procedure TInfoForm.ExtensionsClick(Sender: TObject);
@@ -333,4 +360,7 @@ initialization
    RegisterInfoForm(ShowInfoForm);
 
 end.
+
+
+
 

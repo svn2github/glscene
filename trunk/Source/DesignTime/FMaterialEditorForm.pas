@@ -3,6 +3,7 @@
    Editor window for a material (with preview).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
       <li>24/03/00 - Egg - Added Blending
       <li>06/02/00 - Egg - Creation
    </ul></font>
@@ -11,9 +12,19 @@ unit FMaterialEditorForm;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses
-  Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls,
-  Controls, Classes, GLTexture, Buttons, FRTextureEdit, GLWin32Viewer;
+  Windows, Forms, FRMaterialPreview, FRColorEditor, ComCtrls, FRFaceEditor, StdCtrls, Controls, 
+  Classes, GLTexture, Buttons, FRTextureEdit, GLWin32Viewer;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, FRMaterialPreview, FRColorEditor, QComCtrls, FRFaceEditor, QStdCtrls, QControls, 
+  Classes, GLTexture, QButtons, FRTextureEdit, GLLinuxViewer; 
+{$ENDIF}
+
 
 type
   TMaterialEditorForm = class(TForm)
@@ -45,7 +56,13 @@ procedure ReleaseMaterialEditorForm;
 
 implementation
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
+
 
 var
 	vMaterialEditorForm : TMaterialEditorForm;
@@ -120,3 +137,6 @@ finalization
    ReleaseMaterialEditorForm;
 
 end.
+
+
+

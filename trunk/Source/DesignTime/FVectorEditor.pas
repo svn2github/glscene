@@ -1,10 +1,29 @@
+{: FVectorEditor<p>
+
+   Editor for a vector.<p>
+
+   <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Make change for Linux
+      <li>?/?/? -  - Creation
+   </ul></font>
+}
 unit FVectorEditor;
 
 interface
 
+{$i GLScene.inc}
+
+{$IFDEF MSWINDOWS}
 uses
-  Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics,
-  Controls, Classes;
+  Forms, ComCtrls, StdCtrls, ToolWin, ExtCtrls, Buttons, Graphics, Controls, 
+  Classes;
+{$ENDIF}
+{$IFDEF LINUX}
+uses
+  QForms, QComCtrls, QStdCtrls, QExtCtrls, QButtons, QGraphics, QControls, 
+  Classes; 
+{$ENDIF}
+
 
 type
   TVectorEditorForm = class(TForm)
@@ -63,9 +82,17 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$R *.DFM}
+{$IFDEF MSWINDOWS}
+{$R *.dfm}
+{$ENDIF}
+{$IFDEF LINUX}
+{$R *.xfm}
+{$ENDIF}
 
-uses SysUtils, VectorGeometry, GLUtils;
+
+uses
+  SysUtils, VectorGeometry, GLUtils; 
+
 
 var
 	vVectorEditorForm : TVectorEditorForm;
@@ -209,3 +236,6 @@ finalization
    ReleaseVectorEditorForm;
 
 end.
+
+
+

@@ -6,6 +6,7 @@
 	A polymorphism-enabled TCollection-like set of classes<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
       <li>12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
       <li>19/06/03 - DanB - Added TXCollection.GetOrCreate
       <li>18/02/01 - EG - Fixed TXCollectionItem.Destroy (count decrementation)
@@ -22,7 +23,7 @@ interface
 
 uses Classes, SysUtils;
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 type
 

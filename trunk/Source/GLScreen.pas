@@ -3,6 +3,7 @@
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>03/07/04 - LR - Suppress CurrentScreenColorDepth because there are in GLCrossPlatform
       <li>24/07/03 - EG - Video modes now read on request only, removed
                           the non-standard low-res video modes
       <li>27/09/02 - EG - Added Ability to set display frequency
@@ -20,8 +21,10 @@ unit GLScreen;
 
 interface
 
+{$include GLScene.inc}
+
 uses
-   Windows, Classes, VectorGeometry, Graphics;
+   Windows, Classes, Graphics, VectorGeometry;
 
 const
    MaxVideoModes = 200;
@@ -71,8 +74,6 @@ function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer =
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
 procedure RestoreDefaultMode;
 
-function CurrentScreenColorDepth : Integer;
-
 var
    vVideoModes        : array of TVideoMode;
    vNumberVideoModes  : Integer = 0;
@@ -86,7 +87,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses Forms, GLScene, SysUtils;
+uses GLScene, SysUtils, Forms;
 
 type TLowResMode = packed record
                      Width : Word;
@@ -104,20 +105,6 @@ const NumberLowResModes = 15;
        (Width:512;Height:384;ColorDepth: 8),(Width:512;Height:384;ColorDepth:15),(Width:512;Height:384;ColorDepth:16),
        (Width:512;Height:384;ColorDepth:24),(Width:512;Height:384;ColorDepth:32)
       );
-
-// CurrentScreenColorDepth
-//
-function CurrentScreenColorDepth : Integer;
-var
-	DC : HDC;
-begin
-	DC:=GetDC(0);
-	try
-		Result:=(GetDeviceCaps(DC, PLANES)*GetDeviceCaps(DC, BITSPIXEL));
-	finally
-		ReleaseDC(0, DC);
-	end;
-end;
 
 // Assign
 //
