@@ -2,6 +2,8 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>07/09/04 - NelC - Added profiles VP40, FP40 from Cg 1.3 beta 2,
+                            Added option OutputCompilerWarnings
       <li>23/04/04 - NelC - Now ManageTexture is false by default (Cg 1.2.1)
       <li>24/03/04 - NelC - Added GetLatestProfile
       <li>21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
@@ -42,6 +44,17 @@ interface
 uses
   Classes, VectorGeometry, VectorLists, VectorTypes, GLTexture, GLMisc, Cg, CgGL;
 
+{$Include GLScene.inc}
+
+{.$DEFINE OutputCompilerWarnings}
+{ Define OutputCompilerWarnings to output Cg compiler warnings to a file. Edit
+  the string WarningFilename for the output filename. Useful for detecting bugs
+  caused by using uninitialized value, implicit type cast, etc. }
+  
+{$IFDEF OutputCompilerWarnings}
+const WarningFilename = 'C:\CG_Warnings.txt';
+{$ENDIF}
+
 type
   TCustomCgShader = class;
   TCgProgram = class;
@@ -54,10 +67,10 @@ type
   TcgProgramType = (ptVertex, ptFragment);
 
   // Available vertex program profile
-  TCgVPProfile = ( vpDetectLatest, vp20, vp30, arbvp1);
+  TCgVPProfile = (vpDetectLatest, vp20, vp30, vp40, arbvp1);
 
   // Available fragment program profile
-  TCgFPProfile = ( fpDetectLatest, fp20, fp30, arbfp1);
+  TCgFPProfile = (fpDetectLatest, fp20, fp30, fp40, arbfp1);
 
   // TCgProgram
   //
@@ -361,12 +374,23 @@ const
 
 var
   vCgContextCount : Integer;
-  CurCgProgram    : TCgProgram; // for reporting error
+  CurCgProgram    : TCgProgram;  // for reporting error
+{$IFDEF OutputCompilerWarnings}
+  CompilerMsg     : TStringList; // useful for seeing compiler warnings
+{$ENDIF}
 
 procedure Register;
 begin
   RegisterComponents('GLScene Shaders', [TCgShader]);
 end;
+
+{$IFDEF OutputCompilerWarnings}
+procedure RecordWarnings;
+begin
+  with CurCgProgram do
+    CompilerMsg.Add('[' + LongName + '] ' + cgGetErrorString(cgGetError) + #10 + cgGetLastListing(FCgContext));
+end;
+{$ENDIF}
 
 procedure ErrorCallBack; cdecl;
 var  Msg : string;
@@ -534,6 +558,9 @@ begin
     cgGLLoadProgram(FHandle);
     // build parameter list for the selected program
     BuildParamsList;
+{$IFDEF OutputCompilerWarnings}
+    RecordWarnings;
+{$ENDIF}
   except
     cgDestroyContext(FCgContext);
     FCgContext := nil;
@@ -727,7 +754,7 @@ end;
 //
 procedure TCgParameter.SetAsScalar(const val : Single);
 begin
-  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED]);
+  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED{$ifdef GLS_DELPHI_6_UP}, CG_BOOL{$endif}]);
   cgGLSetParameter1f(FHandle, val);
 end;
 
@@ -914,6 +941,7 @@ begin
   case v of
     vp20   : FProfile := CG_PROFILE_VP20;
     vp30   : FProfile := CG_PROFILE_VP30;
+    vp40   : FProfile := CG_PROFILE_VP40;    
     arbvp1 : FProfile := CG_PROFILE_ARBVP1;
   end;
 
@@ -969,7 +997,8 @@ begin
   FFPProfile:=v;
   case v of
     fp20   : FProfile := CG_PROFILE_FP20;
-    fp30   : FProfile := CG_PROFILE_fP30;
+    fp30   : FProfile := CG_PROFILE_FP30;
+    fp40   : FProfile := CG_PROFILE_FP40;
     arbfp1 : FProfile := CG_PROFILE_ARBFP1;
   end;
   FDetectProfile:= v=fpDetectLatest;
@@ -1151,5 +1180,16 @@ initialization
   RegisterClass(TCustomCgShader);
 
   cgSetErrorCallBack(ErrorCallBack);
+
+{$IFDEF OutputCompilerWarnings}
+  CompilerMsg:=TStringList.Create;
+{$ENDIF}
+
+finalization
+{$IFDEF OutputCompilerWarnings}
+  CompilerMsg.SaveToFile(WarningFilename);
+  CompilerMsg.free;
+{$ENDIF}
+
 end.
 
