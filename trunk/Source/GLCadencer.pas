@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/06/03 - EG - Added cmApplicationIdle Mode
       <li>19/05/03 - EG - Added Reset (Roberto Bussola)
       <li>04/03/02 - EG - Added SetTimeMultiplier
       <li>01/07/02 - EG - Added TGLCadencedComponent
@@ -42,8 +43,10 @@ type
 	{: Determines how the TGLCadencer operates.<p>
 		- cmManual : you must trigger progress manually (in your code)<br>
 		- cmASAP : progress is triggered As Soon As Possible after a previous
-			progress (uses windows messages). }
-	TGLCadencerMode = (cmManual, cmASAP);
+			progress (uses windows messages).
+      - cmApplicationIdle : will hook Application.OnIdle, this will overwrite
+         any previous event handle, and only one cadencer may be in this mode. }
+	TGLCadencerMode = (cmManual, cmASAP, cmApplicationIdle);
 
 	// TGLCadencerTimeReference
 	//
@@ -97,6 +100,8 @@ type
 			function GetRawReferenceTime : Double;
          procedure RestartASAP;
          procedure Loaded; override;
+
+         procedure OnIdleEvent(Sender: TObject; var Done: Boolean);
 
 		public
 			{ Public Declarations }
@@ -229,29 +234,32 @@ const
 //
 procedure RegisterASAPCadencer(aCadencer : TGLCadencer);
 begin
-//   Windows.Beep(880, 1000); Sleep(500);
-   if not Assigned(vASAPCadencerList) then
-      vASAPCadencerList:=TList.Create;
-   if vASAPCadencerList.IndexOf(aCadencer)<0 then begin
-      vASAPCadencerList.Add(aCadencer);
-      if not Assigned(vHandler) then
-         vHandler:=TASAPHandler.Create;
-   end;
+   if aCadencer.Mode=cmASAP then begin
+      if not Assigned(vASAPCadencerList) then
+         vASAPCadencerList:=TList.Create;
+      if vASAPCadencerList.IndexOf(aCadencer)<0 then begin
+         vASAPCadencerList.Add(aCadencer);
+         if not Assigned(vHandler) then
+            vHandler:=TASAPHandler.Create;
+      end;
+   end else Application.OnIdle:=aCadencer.OnIdleEvent;
 end;
 
 // UnRegisterASAPCadencer
 //
 procedure UnRegisterASAPCadencer(aCadencer : TGLCadencer);
 begin
-   if Assigned(vASAPCadencerList) then begin
-      vASAPCadencerList.Remove(aCadencer);
-      if vASAPCadencerList.Count=0 then begin
-         vASAPCadencerList.Free;
-         vASAPCadencerList:=nil;
-         vHandler.Free;
-         vHandler:=nil;
+   if aCadencer.Mode=cmASAP then begin
+      if Assigned(vASAPCadencerList) then begin
+         vASAPCadencerList.Remove(aCadencer);
+         if vASAPCadencerList.Count=0 then begin
+            vASAPCadencerList.Free;
+            vASAPCadencerList:=nil;
+            vHandler.Free;
+            vHandler:=nil;
+         end;
       end;
-   end;
+   end else Application.OnIdle:=nil;
 end;
 
 // ------------------
@@ -424,13 +432,21 @@ begin
    RestartASAP;
 end;
 
+// OnIdleEvent
+//
+procedure TGLCadencer.OnIdleEvent(Sender: TObject; var Done: Boolean);
+begin
+   Progress;
+   Done:=False;
+end;
+
 // RestartASAP
 //
 procedure TGLCadencer.RestartASAP;
 begin
    if not (csLoading in ComponentState) then begin
       {$ifdef WIN32}
-      if (Mode=cmASAP) and (not (csDesigning in ComponentState))
+      if (Mode in [cmASAP, cmApplicationIdle]) and (not (csDesigning in ComponentState))
          and Assigned(FScene) and Enabled then
             RegisterASAPCadencer(Self)
       else UnRegisterASAPCadencer(Self);
@@ -494,6 +510,8 @@ end;
 procedure TGLCadencer.SetMode(const val : TGLCadencerMode);
 begin
 	if FMode<>val then begin
+      if FMode<>cmManual then
+         UnRegisterASAPCadencer(Self);
 		FMode:=val;
       RestartASAP;
 	end;
@@ -525,6 +543,7 @@ begin
 			if SleepLength>=0 then
 				Sleep(SleepLength);
 			// in manual mode, the user is supposed to make sure messages are handled
+         // in Idle mode, this processing is implicit
          if (FProgressing=1) and (Mode=cmASAP) then
    			Application.ProcessMessages;
          // One of the processed messages might have disabled us
