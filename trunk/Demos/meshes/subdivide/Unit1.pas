@@ -1,9 +1,15 @@
+{: Early mesh subdivision refinement demo.<p>
+
+   Yes, it's slow, the edge data construction is not optimized, and the MD2
+   format isn't really suited for refinement (that's approx 200 frames we have
+   to subdivide and keep in memory... but it's good for benchmarking!).<p>
+}
 unit Unit1;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, GLScene, GLVectorFileObjects, GLObjects, GLTexture,
   GLWin32Viewer, GLMisc, VectorLists, ComCtrls, ExtCtrls, GLCadencer;
 
@@ -16,7 +22,7 @@ type
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
     Panel1: TPanel;
-    Button1: TButton;
+    BULoad: TButton;
     BUSubdivide: TButton;
     TrackBar1: TTrackBar;
     RBWireFrame: TRadioButton;
@@ -24,7 +30,8 @@ type
     CBAnimate: TCheckBox;
     GLActor1: TGLActor;
     Label1: TLabel;
-    procedure Button1Click(Sender: TObject);
+    LASubdivideTime: TLabel;
+    procedure BULoadClick(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -50,10 +57,12 @@ implementation
 
 {$R *.dfm}
 
-uses MeshUtils, Geometry, Jpeg, TGA, GLFileObj;
+uses MeshUtils, Geometry, Jpeg, TGA, GLFileObj, GLCrossPlatform;
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.BULoadClick(Sender: TObject);
 begin
+   BUSubdivide.Enabled:=True;
+
    GLMaterialLibrary1.TexturePaths:='..\..\media';
 
 //   GLFreeForm1.LoadFromFile('e:\sf\glscene\demos\media\polyhedron.3ds');
@@ -72,17 +81,24 @@ end;
 
 procedure TForm1.BUSubdivideClick(Sender: TObject);
 var
-   i : Integer;
-   tris, norms, tex, buf : TAffineVectorList;
+   i, j : Integer;
+   tris, norms, tex, buf, morphTris, morphNorms : TAffineVectorList;
    indices, texIndices : TIntegerlist;
+   firstRemap, subdivideRemap, bufRemap : TIntegerList;
+   t : Int64;
 begin
+   BUSubdivide.Enabled:=False;
+
+   Screen.Cursor:=crHourGlass;
+   t:=StartPrecisionTimer;
+
    for i:=0 to GLActor1.MeshObjects.Count-1 do begin
       tex:=TAffineVectorList.Create;
       with GLActor1.MeshObjects[i] do begin
          tris:=ExtractTriangles(tex);
       end;
       indices:=BuildVectorCountOptimizedIndices(tris);
-
+      firstRemap:=TIntegerList(indices.CreateClone);
       RemapAndCleanupReferences(tris, indices);
 
       norms:=BuildNormals(tris, indices);
@@ -114,6 +130,7 @@ begin
       // Pack & Optimize the expanded stuff
       indices.Free;
       indices:=BuildVectorCountOptimizedIndices(tris, norms, tex);
+      subdivideRemap:=TIntegerList(indices.CreateClone);
       RemapReferences(norms, indices);
       RemapReferences(tex, indices);
       RemapAndCleanupReferences(tris, indices);
@@ -121,6 +138,37 @@ begin
       IncreaseCoherency(indices, 13);
 
       with GLActor1.MeshObjects[i] as TMorphableMeshObject do begin
+
+         bufRemap:=TIntegerList.Create;
+         for j:=0 to MorphTargets.Count-1 do begin
+            MorphTo(j);
+
+            morphTris:=ExtractTriangles;
+            bufRemap.Assign(firstRemap);
+            RemapAndCleanupReferences(morphTris, bufRemap);
+
+            morphNorms:=MeshUtils.BuildNormals(morphTris, bufRemap);
+            try
+               SubdivideTriangles(TrackBar1.Position*0.1, morphTris, bufRemap, morphNorms);
+            finally
+               morphNorms.Free;
+            end;
+
+            buf:=TAffineVectorList.Create;
+            try
+               ConvertIndexedListToList(morphTris, bufRemap, buf);
+               morphTris.Assign(buf);
+            finally
+               buf.Free;
+            end;
+            RemapReferences(morphTris, subdivideRemap);
+
+            MorphTargets[j].Vertices:=morphTris;
+
+            morphTris.Free;
+         end;
+         bufRemap.Free;
+
          Vertices:=tris;
          Normals:=norms;
          TexCoords:=tex;
@@ -131,11 +179,19 @@ begin
          end;
       end;
 
+      subdivideRemap.Free;
+      firstRemap.Free;
       tex.Free;
       indices.Free;
       norms.Free;
       tris.Free;
    end;
+
+   LASubdivideTime.Caption:=Format('%f.1 ms', [StopPrecisionTimer(t)*1000]);
+   // Initial perf: 1412 ms
+   // Basic Edges Hash: 478 ms
+   Screen.Cursor:=crDefault;
+
    GLActor1.StructureChanged;
 end;
 
@@ -186,6 +242,8 @@ end;
 
 procedure TForm1.CBAnimateClick(Sender: TObject);
 begin
+   // not only turns on/off animation, but also forces the TGLActor
+   // to generate a display list when animation is off
    if CBAnimate.Checked then begin
       GLActor1.AnimationMode:=aamLoop;
       GLActor1.ObjectStyle:=GLActor1.ObjectStyle+[osDirectDraw];

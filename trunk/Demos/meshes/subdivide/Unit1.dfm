@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 172
-  Top = 99
+  Left = 173
+  Top = 96
   Width = 511
   Height = 357
   BorderWidth = 2
@@ -43,14 +43,23 @@ object Form1: TForm1
     Align = alRight
     BevelOuter = bvLowered
     TabOrder = 1
-    object Button1: TButton
+    object LASubdivideTime: TLabel
+      Left = 8
+      Top = 168
+      Width = 97
+      Height = 13
+      Alignment = taCenter
+      AutoSize = False
+      Caption = 'LASubdivideTime'
+    end
+    object BULoad: TButton
       Left = 16
       Top = 8
       Width = 83
       Height = 25
       Caption = 'Load'
       TabOrder = 0
-      OnClick = Button1Click
+      OnClick = BULoadClick
     end
     object BUSubdivide: TButton
       Left = 8
@@ -58,6 +67,7 @@ object Form1: TForm1
       Width = 99
       Height = 25
       Caption = 'Subdivide'
+      Enabled = False
       TabOrder = 1
       OnClick = BUSubdivideClick
     end
@@ -103,7 +113,6 @@ object Form1: TForm1
       Width = 81
       Height = 17
       Caption = 'Animate'
-      Enabled = False
       TabOrder = 5
       OnClick = CBAnimateClick
     end
@@ -117,7 +126,6 @@ object Form1: TForm1
       Up.Coordinates = {0000000000000000000080BF00000000}
       Material.Texture.TextureMode = tmReplace
       Interval = 100
-      Animations = <>
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100
@@ -127,7 +135,6 @@ object Form1: TForm1
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary
-    Materials = <>
     Left = 48
     Top = 16
   end
