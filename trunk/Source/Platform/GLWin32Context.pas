@@ -577,7 +577,8 @@ var
    nbFormats : Integer;
    iFormats : array [0..31] of Integer;
    iPBufferAttribs : array [0..0] of Integer;
-   localHPBuffer, localDC, localRC, tempDC : Integer;
+   localHPBuffer : Integer;
+   localDC, localRC, tempDC : Cardinal;
    tempWnd : HWND;
 begin
    localHPBuffer:=0;

@@ -2,7 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>08/03/02 - Egg - Fixed InvAbsoluteMatrix/AbsoluteMatrix separation
+      <li>08/03/02 - Egg - Fixed InvAbsoluteMatrix/AbsoluteMatrix decoupling
       <li>05/03/02 - Egg - Added MoveObjectAround
       <li>04/03/02 - Egg - CoordinateChanged default rightVector based on X, then Y
       <li>27/02/02 - Egg - Added DepthPrecision and ColorDepth to buffer,
