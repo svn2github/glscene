@@ -576,7 +576,6 @@ type
       function GetJoint(index: integer): TODEBaseJoint;
     public
       class function ItemsClass : TXCollectionItemClass; override;
-      destructor Destroy; override;
       procedure Initialize;
       procedure Deinitialize;
       property Joint[index:integer] : TODEBaseJoint read GetJoint; default;
@@ -2772,14 +2771,6 @@ begin
   Result:=TODEBaseJoint;
 end;
 
-// Destroy
-//
-destructor TODEJoints.Destroy;
-begin
-  Deinitialize;
-  inherited;
-end;
-
 // Initialize
 //
 procedure TODEJoints.Initialize;
@@ -2849,7 +2840,6 @@ end;
 // Destroy
 destructor TODEBaseJoint.Destroy;
 begin
-  Deinitialize;
   FAnchor.Free;
   FAxis.Free;
   FAxis2.Free;
