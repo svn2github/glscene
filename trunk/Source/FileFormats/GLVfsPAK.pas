@@ -2,14 +2,16 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {: GLVfsPAK<p>
-                                                                      
+
 	Support-code for loading files from Quake II PAK Files.<p>
    When instance is created all LoadFromFile methods using
    ApplicationFileIO mechanism will be pointed into PAK file.<p>
-   You can change current PAK file by ActivePak variable.<p> 
+   You can change current PAK file by ActivePak variable.<p>
 
 	<b>History :</b><font size=-1><ul>
-      <li>04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed. 
+      <li>18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk. 
+      <li>14/10/2004 - Orchestraman - PAKCreateFileStream, PAKFileStreamExists procedures redirect the streaming to hard disk if pack file does not exist.
+      <li>04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed.
       <li>04/10/2004 - Orchestraman - Fixed bug in Constructor. The inherited constructor of TComponent didn't run when the component was created by the component pallete.
       <li>03/08/2004 - Orchestraman - Add LZRW1 compression.
       <li>19/04/04 - PSz - Creation
@@ -161,8 +163,27 @@ begin
          FStream:=TFileStream(FStreamList[i]);
          Result:=GetFile(BackToSlash(fileName));
          Exit;
+      end
+      else begin
+        if SysUtils.FileExists(fileName) then begin
+          Result := TFileStream.Create(FileName, fmOpenReadWrite or fmShareDenyWrite);
+          Exit;
+         end
+         else begin
+            Result := TFileStream.Create(FileName, fmCreate or fmShareDenyWrite);
+            Exit;
+         end;
       end;
    end;
+   if SysUtils.FileExists(fileName) then begin
+      Result := TFileStream.Create(FileName, fmOpenReadWrite or fmShareDenyWrite);
+      Exit;
+   end
+   else begin
+      Result := TFileStream.Create(FileName, fmCreate or fmShareDenyWrite);
+      Exit;
+   end;
+   
    Result:=nil;
 end;
 
@@ -178,7 +199,7 @@ begin
          Exit;
       end;
    end;
-   Result:=False;
+   Result := SysUtils.FileExists(fileName);
 end;
 // ApplicationFileIO end
 
