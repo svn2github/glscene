@@ -3,6 +3,7 @@
 	Lists of vectors<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>20/01/02 - EG - Now uses new funcs Add/ScaleVectorArray and VectorArrayAdd
       <li>06/12/01 - EG - Added Sort & MaxInteger to TIntegerList
       <li>04/12/01 - EG - Added TIntegerList.IndexOf
       <li>18/08/01 - EG - Fixed TAffineVectorList.Add (list)
@@ -78,7 +79,7 @@ type
 
    // TBaseVectorList
    //
-   {: Base class for lists, introduces common behaviours. }
+   {: Base class for vector lists, introduces common behaviours. }
    TBaseVectorList = class (TBaseList)
 		private
          { Private Declarations }
@@ -101,7 +102,7 @@ type
 
          {: Replace content of the list with lerp results between the two given lists.<p>
             Note: you can't Lerp with Self!!! }
-         procedure Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); dynamic;
+         procedure Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); dynamic; abstract;
          {: Replace content of the list with angle lerp between the two given lists.<p>
             Note: you can't Lerp with Self!!! }
          procedure AngleLerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); dynamic;
@@ -147,6 +148,8 @@ type
 
 			property Items[Index: Integer] : TAffineVector read Get write Put; default;
 			property List : PAffineVectorArray read FList;
+
+         procedure Translate(const delta : TAffineVector); overload; override;
 
          //: Translates the given item
          procedure TranslateItem(index : Integer; const delta : TAffineVector);
@@ -300,6 +303,9 @@ type
 
 			property Items[Index: Integer] : Single read Get write Put; default;
 			property List: PSingleArray read FList;
+
+	      procedure Offset(delta : Single);
+	      procedure Scale(factor : Single);
 	end;
 
 {: Sort the refList in ascending order, ordering objList on the way. }
@@ -616,22 +622,6 @@ begin
       AddVector(PAffineVector(ItemAddress[i])^, PAffineVector(delta.ItemAddress[i])^);
 end;
 
-// Lerp
-//
-procedure TBaseVectorList.Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single);
-var
-   i : Integer;
-begin
-   Assert(list1.Count=list2.Count);
-   Clear;
-   Capacity:=list1.Count;
-   FCount:=list1.Count;
-   for i:=0 to list1.Count-1 do
-      VectorLerp(PAffineVector(list1.ItemAddress[i])^,
-                 PAffineVector(list2.ItemAddress[i])^,
-                 lerpFactor, PAffineVector(ItemAddress[i])^);
-end;
-
 // AngleLerp
 //
 procedure TBaseVectorList.AngleLerp(const list1, list2 : TBaseVectorList; lerpFactor : Single);
@@ -841,6 +831,13 @@ begin
 	end else Result:=NullVector;
 end;
 
+// Translate (delta)
+//
+procedure TAffineVectorList.Translate(const delta : TAffineVector);
+begin
+   VectorArrayAdd(FList, delta, Count, FList);
+end;
+
 // TranslateItem
 //
 procedure TAffineVectorList.TranslateItem(index : Integer; const delta : TAffineVector);
@@ -862,10 +859,7 @@ begin
    if nb>FCount then
       nb:=FCount;
 {$ENDIF}
-   while index<nb do begin
-      AddVector(FList^[index], delta);
-      Inc(index);
-   end;
+   VectorArrayAdd(@FList[index], delta, nb-index-1, @FList[index]);
 end;
 
 // Normalize
@@ -891,11 +885,9 @@ end;
 // Scale
 //
 procedure TAffineVectorList.Scale(factor : Single);
-var
-   i : Integer;
 begin
-   if factor<>1 then for i:=0 to Count-1 do
-      ScaleVector(FList[i], factor);
+   if (Count>0) and (factor<>1) then
+      ScaleFloatArray(@FList[0][0], Count*3, factor);
 end;
 
 // ------------------
@@ -1467,6 +1459,20 @@ begin
 	end else Result:=0;
 end;
 
+// Offset
+//
+procedure TSingleList.Offset(delta : Single);
+begin
+   OffsetFloatArray(PFloatVector(FList), FCount, delta);
+end;
+
+// Scale
+//
+procedure TSingleList.Scale(factor : Single);
+begin
+   ScaleFloatArray(PFloatVector(FList), FCount, factor);
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -1475,6 +1481,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+   RegisterClasses([TAffineVectorList, TVectorList, TTexPointList, TIntegerList, TSingleList]);
 
 end.
 

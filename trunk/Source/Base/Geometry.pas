@@ -29,7 +29,8 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>11/01/02 - Eg - 3DNow Optim for VectorAdd (hmg)
+      <li>20/01/02 - EG - Added VectorArrayAdd, ScaleFloatArray, OffsetFloatArray
+      <li>11/01/02 - EG - 3DNow Optim for VectorAdd (hmg)
       <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1"),
                           3DNow optims for vector mormalizations (affine),
                           Added RSqrt
@@ -448,6 +449,11 @@ procedure AddVector(var v : TAffineVector; const f : Single); overload;
 //: Sums up f to each component of the vector
 procedure AddVector(var v : TVector; const f : Single); overload;
 
+//: Adds delta to nb vectors in src and places result in dest
+procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVector;
+                         const nb : Integer;
+                         dest : PAffineVectorArray); overload;
+
 //: Returns V1-V2
 function VectorSubtract(const V1, V2 : TAffineVector) : TAffineVector; overload;
 //: Subtracts V2 from V1 and return value in result
@@ -678,11 +684,14 @@ function CreateTranslationMatrix(const V : TVector): TMatrix; overload;
    Scale is applied BEFORE applying offset }
 function CreateScaleAndTranslationMatrix(const scale, offset : TVector): TMatrix; overload;
 //: Creates matrix for rotation about x-axis
-function CreateRotationMatrixX(const Sine, Cosine: Single) : TMatrix;
+function CreateRotationMatrixX(const sine, cosine: Single) : TMatrix; overload;
+function CreateRotationMatrixX(const angle: Single) : TMatrix; overload;
 //: Creates matrix for rotation about y-axis
-function CreateRotationMatrixY(const Sine, Cosine: Single) : TMatrix;
+function CreateRotationMatrixY(const sine, cosine: Single) : TMatrix; overload;
+function CreateRotationMatrixY(const angle: Single) : TMatrix; overload;
 //: Creates matrix for rotation about z-axis
-function CreateRotationMatrixZ(const Sine, Cosine: Single) : TMatrix;
+function CreateRotationMatrixZ(const sine, cosine: Single) : TMatrix; overload;
+function CreateRotationMatrixZ(const angle: Single) : TMatrix; overload;
 //: Creates a rotation matrix along the given Axis by the given Angle in radians.
 function CreateRotationMatrix(Axis: TAffineVector; Angle: Single): TMatrix;
 //: Creates a rotation matrix along the given Axis by the given Angle in radians.
@@ -864,19 +873,19 @@ function  CoTan(const X : Single) : Single; overload;
 {: Computes 1/Sqrt(v).<p> }
 function RSqrt(v : Single) : Single;
 
-function Trunc(v : Extended) : Int64; overload;
 function Trunc(v : Single) : Integer; overload;
-function Int(v : Extended) : Extended; overload;
+function Trunc64(v : Extended) : Int64; overload;
 function Int(v : Single) : Single; overload;
-function Frac(v : Extended) : Extended; overload;
+function Int(v : Extended) : Extended; overload;
 function Frac(v : Single) : Single; overload;
-function Round(v : Extended) : Int64; overload;
+function Frac(v : Extended) : Extended; overload;
 function Round(v : Single) : Integer; overload;
+function Round64(v : Extended) : Int64; overload;
 
-function Ceil(v : Extended) : Int64; overload;
 function Ceil(v : Single) : Integer; overload;
-function Floor(v : Extended) : Int64; overload;
+function Ceil64(v : Extended) : Int64; overload;
 function Floor(v : Single) : Integer; overload;
+function Floor64(v : Extended) : Int64; overload;
 
 {: Returns the sign of the x value using the (-1, 0, +1) convention }
 function Sign(x : Single) : Integer;
@@ -904,6 +913,22 @@ function MaxFloat(const v1, v2 : Extended) : Extended; overload;
 function MaxFloat(const v1, v2, v3 : Single) : Single; overload;
 function MaxFloat(const v1, v2, v3 : Double) : Double; overload;
 function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
+
+{: Multiplies values in the array by factor.<p>
+   This function is especially efficient for large arrays, it is not recommended
+   for arrays that have less than 10 items.<br>
+   Expected performance is 4 to 5 times that of a Deliph-compiled loop on AMD
+   CPUs, and 2 to 3 when 3DNow! isn't available. }
+procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
+                          var factor : Single); overload;
+procedure ScaleFloatArray(var values : array of Single;
+                          factor : Single); overload;
+
+{: Adds delta to values in the array.<p> }
+procedure OffsetFloatArray(values : PSingleArray; nb : Integer;
+                           var delta : Single); overload;
+procedure OffsetFloatArray(var values : array of Single;
+                           delta : Single); overload;
 
 {: Returns the max of the X, Y and Z components of a vector (W is ignored). }
 function MaxXYZComponent(const v : TVector) : Single;
@@ -1492,6 +1517,62 @@ begin
    v[3]:=v[3]+f;
 end;
 
+// VectorArrayAdd
+//
+procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVector;
+                         const nb : Integer; dest : PAffineVectorArray); register;
+asm
+      or    ecx, ecx
+      jz    @@End
+
+      test  vSIMD, 1
+      jnz   @@3DNow
+
+      push edi
+      mov   edi, dest
+
+@@FPULoop:
+      fld   dword ptr [eax]
+      fadd  dword ptr [edx]
+      fstp  dword ptr [edi]
+      fld   dword ptr [eax+4]
+      fadd  dword ptr [edx+4]
+      fstp  dword ptr [edi+4]
+      fld   dword ptr [eax+8]
+      fadd  dword ptr [edx+8]
+      fstp  dword ptr [edi+8]
+
+      add   eax, 12
+      add   edi, 12
+      dec   ecx
+      jnz   @@FPULoop
+
+      pop edi
+      jmp   @@End
+
+@@3DNow:
+      movq  mm0, [edx]
+      movd  mm1, [edx+8]
+      mov   edx, dest
+
+@@3DNowLoop:
+      movq  mm2, [eax]
+      movd  mm3, [eax+8]
+      pfadd mm2, mm0
+      pfadd mm3, mm1
+      movq  [edx], mm2
+      movd  [edx+8], mm3
+
+      add   eax, 12
+      add   edx, 12
+      dec   ecx
+      jnz   @@3DNowLoop 
+
+      femms
+
+@@End:
+end;
+
 // VectorSubtract (func, affine)
 //
 function VectorSubtract(const V1, V2: TAffineVector): TAffineVector; register;
@@ -1499,15 +1580,15 @@ function VectorSubtract(const V1, V2: TAffineVector): TAffineVector; register;
 // EDX contains address of V2
 // ECX contains the result
 asm
-         FLD  DWORD PTR [EAX]
-         FSUB DWORD PTR [EDX]
-         FSTP DWORD PTR [ECX]
-         FLD  DWORD PTR [EAX+4]
-         FSUB DWORD PTR [EDX+4]
-         FSTP DWORD PTR [ECX+4]
-         FLD  DWORD PTR [EAX+8]
-         FSUB DWORD PTR [EDX+8]
-         FSTP DWORD PTR [ECX+8]
+      FLD  DWORD PTR [EAX]
+      FSUB DWORD PTR [EDX]
+      FSTP DWORD PTR [ECX]
+      FLD  DWORD PTR [EAX+4]
+      FSUB DWORD PTR [EDX+4]
+      FSTP DWORD PTR [ECX+4]
+      FLD  DWORD PTR [EAX+8]
+      FSUB DWORD PTR [EDX+8]
+      FSTP DWORD PTR [ECX+8]
 end;
 
 // VectorSubtract (proc, affine)
@@ -3424,41 +3505,71 @@ end;
 
 // CreateRotationMatrixX
 //
-function CreateRotationMatrixX(const Sine, Cosine: Single) : TMatrix; register;
+function CreateRotationMatrixX(const sine, cosine: Single) : TMatrix; register;
 begin
    Result:=EmptyHmgMatrix;
    Result[X, X]:=1;
-   Result[Y, Y]:=Cosine;
-   Result[Y, Z]:=Sine;
-   Result[Z, Y]:=-Sine;
-   Result[Z, Z]:=Cosine;
+   Result[Y, Y]:=cosine;
+   Result[Y, Z]:=sine;
+   Result[Z, Y]:=-sine;
+   Result[Z, Z]:=cosine;
+   Result[W, W]:=1;
+end;
+
+// CreateRotationMatrixX
+//
+function CreateRotationMatrixX(const angle : Single) : TMatrix; register;
+var
+   s, c : Single;
+begin
+   SinCos(angle, s, c);
+   Result:=CreateRotationMatrixX(s, c);
+end;
+
+// CreateRotationMatrixY
+//
+function CreateRotationMatrixY(const sine, cosine: Single): TMatrix; register;
+begin
+   Result:=EmptyHmgMatrix;
+   Result[X, X]:=cosine;
+   Result[X, Z]:=-sine;
+   Result[Y, Y]:=1;
+   Result[Z, X]:=sine;
+   Result[Z, Z]:=cosine;
    Result[W, W]:=1;
 end;
 
 // CreateRotationMatrixY
 //
-function CreateRotationMatrixY(const Sine, Cosine: Single): TMatrix; register;
+function CreateRotationMatrixY(const angle : Single) : TMatrix; register;
+var
+   s, c : Single;
+begin
+   SinCos(angle, s, c);
+   Result:=CreateRotationMatrixY(s, c);
+end;
+
+// CreateRotationMatrixZ
+//
+function CreateRotationMatrixZ(const sine, cosine: Single): TMatrix; register;
 begin
    Result:=EmptyHmgMatrix;
-   Result[X, X]:=Cosine;
-   Result[X, Z]:=-Sine;
-   Result[Y, Y]:=1;
-   Result[Z, X]:=Sine;
-   Result[Z, Z]:=Cosine;
+   Result[X, X]:=cosine;
+   Result[X, Y]:=sine;
+   Result[Y, X]:=-sine;
+   Result[Y, Y]:=cosine;
+   Result[Z, Z]:=1;
    Result[W, W]:=1;
 end;
 
 // CreateRotationMatrixZ
 //
-function CreateRotationMatrixZ(const Sine, Cosine: Single): TMatrix; register;
+function CreateRotationMatrixZ(const angle : Single) : TMatrix; register;
+var
+   s, c : Single;
 begin
-   Result:=EmptyHmgMatrix;
-   Result[X, X]:=Cosine;
-   Result[X, Y]:=Sine;
-   Result[Y, X]:=-Sine;
-   Result[Y, Y]:=Cosine;
-   Result[Z, Z]:=1;
-   Result[W, W]:=1;
+   SinCos(angle, s, c);
+   Result:=CreateRotationMatrixZ(s, c);
 end;
 
 // CreateRotationMatrix
@@ -3820,8 +3931,6 @@ function VectorTransform(const V: TAffineVector; const M: TAffineMatrix): TAffin
 begin
    if vSIMD=1 then begin
       asm
-        db $0F,$0E               /// femms
-
         db $0F,$6F,$00           /// movq        mm0,[eax]
         db $0F,$6E,$48,$08       /// movd        mm1,[eax+8]
         db $0F,$6E,$62,$08       /// movd        mm4,[edx+8]
@@ -4786,9 +4895,9 @@ asm
 @@End:
 end;
 
-// Trunc (extended)
+// Trunc64 (extended)
 //
-function Trunc(v : Extended) : Int64; register;
+function Trunc64(v : Extended) : Int64; register;
 asm
       SUB     ESP,12
       FSTCW   [ESP]
@@ -4871,9 +4980,9 @@ asm
       ADD     ESP,4
 end;
 
-// Round (Extended);
+// Round64 (Extended);
 //
-function Round(v : Extended) : Int64; register;
+function Round64(v : Extended) : Int64; register;
 asm
       SUB     ESP,8
       FLD     v
@@ -4892,9 +5001,9 @@ asm
       POP     EAX
 end;
 
-// Ceil (Extended)
+// Ceil64 (Extended)
 //
-function Ceil(v : Extended) : Int64; overload;
+function Ceil64(v : Extended) : Int64; overload;
 begin
    if Frac(v)>0 then
       Result:=Trunc(v)+1
@@ -4910,9 +5019,9 @@ begin
    else Result:=Trunc(v)
 end;
 
-// Floor (Extended)
+// Floor64 (Extended)
 //
-function Floor(v : Extended) : Int64; overload;
+function Floor64(v : Extended) : Int64; overload;
 begin
   if Frac(v)<0 then
       Result:=Trunc(v)-1
@@ -5129,6 +5238,150 @@ begin
    else if v3>=v1 then
       Result:=v3
    else result:=v1;
+end;
+
+// ScaleFloatArray (raw)
+//
+procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
+                          var factor : Single);
+asm
+      test vSIMD, 1
+      jz @@FPU
+
+      push  edx
+      shr   edx, 2
+      or    edx, edx
+      jz    @@FPU
+
+      movd  mm7, [ecx]
+      punpckldq   mm7, mm7
+
+@@3DNowLoop:
+      prefetchw [eax+64]
+      movq  mm0, [eax]
+      movq  mm1, [eax+8]
+      pfmul mm0, mm7
+      pfmul mm1, mm7
+      movq  [eax], mm0
+      movq  [eax+8], mm1
+
+      add   eax, 16
+      dec   edx
+      jnz   @@3DNowLoop
+
+      pop   edx
+      and   edx, 3
+      femms
+
+@@FPU:
+      push  edx
+      shr   edx, 1
+      or    edx, edx
+      jz    @@FPULone
+
+@@FPULoop:
+      fld   dword ptr [eax]
+      fmul  dword ptr [ecx]
+      fstp  dword ptr [eax]
+      fld   dword ptr [eax+4]
+      fmul  dword ptr [ecx]
+      fstp  dword ptr [eax+4]
+
+      add   eax, 8
+      dec   edx
+      jnz   @@FPULoop
+
+@@FPULone:
+      pop   edx
+      test  edx, 1
+      jz    @@End
+
+      fld   dword ptr [eax]
+      fmul  dword ptr [ecx]
+      fstp  dword ptr [eax]
+
+@@End:
+end;
+
+// ScaleFloatArray (array)
+//
+procedure ScaleFloatArray(var values : array of Single;
+                          factor : Single);
+begin
+   if Length(values)>0 then
+      ScaleFloatArray(@values[0], Length(values), factor);
+end;
+
+// OffsetFloatArray (raw)
+//
+procedure OffsetFloatArray(values : PSingleArray; nb : Integer;
+                           var delta : Single);
+asm
+      test vSIMD, 1
+      jz @@FPU
+
+      push  edx
+      shr   edx, 2
+      or    edx, edx
+      jz    @@FPU
+
+      movd  mm7, [ecx]
+      punpckldq   mm7, mm7
+
+@@3DNowLoop:
+      prefetchw [eax+64]
+      movq  mm0, [eax]
+      movq  mm1, [eax+8]
+      pfadd mm0, mm7
+      pfadd mm1, mm7
+      movq  [eax], mm0
+      movq  [eax+8], mm1
+
+      add   eax, 16
+      dec   edx
+      jnz   @@3DNowLoop
+
+      pop   edx
+      and   edx, 3
+      femms
+
+@@FPU:
+      push  edx
+      shr   edx, 1
+      or    edx, edx
+      jz    @@FPULone
+
+@@FPULoop:
+      fld   dword ptr [eax]
+      fadd  dword ptr [ecx]
+      fstp  dword ptr [eax]
+      fld   dword ptr [eax+4]
+      fadd  dword ptr [ecx]
+      fstp  dword ptr [eax+4]
+
+      add   eax, 8
+      dec   edx
+      jnz   @@FPULoop
+
+@@FPULone:
+      pop   edx
+      test  edx, 1
+      jz    @@End
+
+      fld   dword ptr [eax]
+      fadd  dword ptr [ecx]
+      fstp  dword ptr [eax]
+
+@@End:
+end;
+
+// ScaleFloatArray (array)
+//
+procedure OffsetFloatArray(var values : array of Single;
+                           delta : Single);
+begin
+   if Length(values)>0 then
+      ScaleFloatArray(@values[0], Length(values), delta);
 end;
 
 // MaxXYZComponent
@@ -5808,5 +6061,3 @@ initialization
    end;
 
 end.
-
-
