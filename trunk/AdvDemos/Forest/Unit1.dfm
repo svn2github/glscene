@@ -12,11 +12,15 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   Font.Style = []
+  FormStyle = fsStayOnTop
   OldCreateOrder = False
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnDeactivate = FormDeactivate
   OnKeyDown = FormKeyDown
   OnResize = FormResize
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object SceneViewer: TGLSceneViewer
@@ -26,8 +30,8 @@ object Form1: TForm1
     Height = 413
     Camera = Camera
     Buffer.FogEnvironment.FogColor.Color = {9CC4403FFED4583F48E17A3F0000803F}
-    Buffer.FogEnvironment.FogStart = 2000.000000000000000000
-    Buffer.FogEnvironment.FogEnd = 7500.000000000000000000
+    Buffer.FogEnvironment.FogStart = 2000
+    Buffer.FogEnvironment.FogEnd = 7500
     Buffer.BackgroundColor = 16242626
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow, roDestinationAlpha, roNoColorBufferClear]
     Buffer.FogEnable = True
@@ -47,12 +51,12 @@ object Form1: TForm1
     end
     object EarthSkyDome: TGLEarthSkyDome
       Direction.Coordinates = {000000000000803F0100003300000000}
-      RollAngle = 45.000000000000000000
+      RollAngle = 45
       Up.Coordinates = {F30435BFF404B532F30435BF00000000}
       Bands = <>
       Stars = <>
-      SunElevation = 30.000000000000000000
-      Turbidity = 20.000000000000000000
+      SunElevation = 30
+      Turbidity = 20
       SunZenithColor.Color = {0000803F0000803F0000803F0AD7233C}
       SunDawnColor.Color = {0000803F0000803F0000403F0AD7233C}
       HazeColor.Color = {6666663F3333733F0000803F0000803F}
@@ -64,9 +68,9 @@ object Form1: TForm1
     end
     object Light: TGLLightSource
       Ambient.Color = {CDCC4C3FCDCC4C3FCDCC4C3F0000803F}
-      ConstAttenuation = 1.000000000000000000
+      ConstAttenuation = 1
       LightStyle = lsParallel
-      SpotCutOff = 180.000000000000000000
+      SpotCutOff = 180
       SpotDirection.Coordinates = {00000000000000000000803F00000000}
     end
     object Terrain: TGLTerrainRenderer
@@ -76,9 +80,9 @@ object Form1: TForm1
       Up.Coordinates = {00000000000000800000803F00000000}
       HeightDataSource = GLHeightTileFileHDS
       TileSize = 32
-      TilesPerTexture = 32.000000000000000000
+      TilesPerTexture = 32
       MaterialLibrary = MLTerrain
-      QualityDistance = 250.000000000000000000
+      QualityDistance = 250
       QualityStyle = hrsTesselated
       MaxCLODTriangles = 165536
       CLODPrecision = 10
@@ -108,8 +112,8 @@ object Form1: TForm1
       ModulateColor.Color = {48E13A3F0AD7233E8FC2753F0000803F}
     end
     object Camera: TGLCamera
-      DepthOfView = 7500.000000000000000000
-      FocalLength = 50.000000000000000000
+      DepthOfView = 7500
+      FocalLength = 50
       Direction.Coordinates = {0000803F000000000000000000000000}
       Up.Coordinates = {000000000000803F0000008000000000}
     end
@@ -143,32 +147,32 @@ object Form1: TForm1
     BuildOffset.Coordinates = {000000009A99193F000000000000803F}
     ImposterOptions = [impoBlended, impoAlphaTest, impoPerspectiveCorrection]
     ImposterReference = irBottom
-    AlphaTreshold = 0.500000000000000000
+    AlphaTreshold = 0.5
     OnLoadingImposter = SIBTreeLoadingImposter
     OnImposterLoaded = SIBTreeImposterLoaded
     Coronas = <
       item
         Samples = 13
-        Elevation = -15.000000000000000000
+        Elevation = -15
       end
       item
         Samples = 13
       end
       item
         Samples = 13
-        Elevation = 15.000000000000000000
+        Elevation = 15
       end
       item
         Samples = 13
-        Elevation = 28.000000000000000000
+        Elevation = 28
       end
       item
         Samples = 12
-        Elevation = 40.000000000000000000
+        Elevation = 40
       end>
     SampleSize = 128
-    SamplingRatioBias = 1.149999976158142000
-    SamplesAlphaScale = 5.000000000000000000
+    SamplingRatioBias = 1.14999997615814
+    SamplesAlphaScale = 5
     Left = 208
     Top = 40
   end
@@ -176,18 +180,18 @@ object Form1: TForm1
     Cadencer = GLCadencer
     Renderer = RenderTrees
     OnCreateParticle = PFXTreesCreateParticle
-    Friction = 1.000000000000000000
+    Friction = 1
     BlendingMode = bmTransparency
     OnBeginParticles = PFXTreesBeginParticles
     OnRenderParticle = PFXTreesRenderParticle
     OnEndParticles = PFXTreesEndParticles
     OnProgress = PFXTreesProgress
     OnGetParticleCountEvent = PFXTreesGetParticleCountEvent
-    ParticleSize = 1.000000000000000000
+    ParticleSize = 1
     LifeColors = <
       item
-        LifeTime = 3.000000000000000000
-        SizeScale = 1.000000000000000000
+        LifeTime = 3
+        SizeScale = 1
       end>
     Left = 208
     Top = 72
@@ -230,7 +234,7 @@ object Form1: TForm1
     InfiniteWrap = False
     MinElevation = -3000
     MaxPoolSize = 0
-    DefaultHeight = -9999.000000000000000000
+    DefaultHeight = -9999
     Left = 152
     Top = 40
   end

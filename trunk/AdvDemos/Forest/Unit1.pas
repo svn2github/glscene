@@ -66,6 +66,8 @@ type
       var rci: TRenderContextInfo);
     procedure DOClassicWaterPlaneRender(Sender: TObject;
       var rci: TRenderContextInfo);
+    procedure FormDeactivate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
    private
       { Private declarations }
 //      hscale, mapwidth, mapheight : Single;
@@ -85,7 +87,7 @@ type
       reflectionProgram : TGLProgramHandle;
       supportsGLSL : Boolean;
       enableGLSL : Boolean;
-      enableReflection : Boolean;
+      enableRectReflection, enableTex2DReflection : Boolean;
    end;
 
 var
@@ -94,6 +96,8 @@ var
 implementation
 
 {$R *.dfm}
+
+uses GLScreen;
 
 const
    cImposterCacheFile : String = 'media\imposters.bmp';
@@ -105,6 +109,10 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
    density : TPicture;
 begin
+   // go to 1024x768x32
+   SetFullscreenMode(GetIndexFromResolution(800, 600, 32), 85);
+   Application.OnDeactivate:=FormDeactivate;
+
    SetCurrentDir(ExtractFilePath(Application.ExeName));
 
    with MLTerrain.AddTextureMaterial('Terrain', 'media\volcano_TX_low.jpg') do
@@ -175,11 +183,14 @@ begin
    nearTrees:=TPersistentObjectList.Create;
 
    camTurn:=-60;
-   enableReflection:=False;
+   enableRectReflection:=False;
+   enableTex2DReflection:=False;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
+   RestoreDefaultMode;
+
    ShowCursor(True);
    nearTrees.Free;
 end;
@@ -187,6 +198,16 @@ end;
 procedure TForm1.FormResize(Sender: TObject);
 begin
    Camera.FocalLength:=Width*50/800;
+end;
+
+procedure TForm1.FormDeactivate(Sender: TObject);
+begin
+   Close;
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+   SetFocus;
 end;
 
 procedure TForm1.GLCadencerProgress(Sender: TObject; const deltaTime,
@@ -243,10 +264,10 @@ begin
          TreesShown:=TreesShown+100;
       VK_SUBTRACT : if TreesShown>0 then
           TreesShown:=TreesShown-100;
-      Word('R') : enableReflection:=not enableReflection;
+      Word('R') : enableTex2DReflection:=not enableTex2DReflection;
       Word('G') : if supportsGLSL then begin
          enableGLSL:=not enableGLSL;
-         enableReflection:=True;
+         enableTex2DReflection:=True;
       end;
    end;
 end;
@@ -257,9 +278,11 @@ var
 begin
    hud:=Format('%.1f FPS - %d trees',
                [SceneViewer.FramesPerSecond, TreesShown]);
-   if enableReflection then
+   if enableTex2DReflection then
       hud:=hud+#13#10+'Water reflections';
-   if enableGLSL and enableReflection then
+   if enableRectReflection then
+      hud:=hud+' (RECT)';
+   if enableGLSL and enableTex2DReflection then
       hud:=hud+#13#10+'GLSL water';
    GLHUDText1.Text:=hud;
    SceneViewer.ResetPerformanceMonitor;
@@ -442,8 +465,9 @@ var
    clipPlane : TDoubleHmgPlane;
 begin
    supportsGLSL:=GL_ARB_shader_objects and GL_ARB_fragment_shader and GL_ARB_vertex_shader;
+   enableRectReflection:=GL_NV_texture_rectangle;
 
-   if not enableReflection then Exit;
+   if not enableTex2DReflection then Exit;
 
    if not Assigned(mirrorTexture) then
       mirrorTexture:=TGLTextureHandle.Create;
@@ -502,7 +526,7 @@ begin
    rci.GLStates.ResetGLMaterialColors;
    rci.GLStates.ResetGLCurrentTexture;
 
-   if GL_NV_texture_rectangle then begin
+   if enableRectReflection then begin
       mirrorTexType:=GL_TEXTURE_RECTANGLE_NV;
       w:=SceneViewer.Width;
       h:=SceneViewer.Height;
@@ -521,7 +545,7 @@ begin
      	glTexParameteri(mirrorTexType, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	   glTexParameteri(mirrorTexType, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-   	glCopyTexImage2d(mirrorTexType, 0, GL_RGBA,
+   	glCopyTexImage2d(mirrorTexType, 0, GL_RGBA8,
                        0, 0, w, h, 0);
    end else begin
       glBindTexture(mirrorTexType, mirrorTexture.Handle);
@@ -546,7 +570,7 @@ var
    tex : TTexPoint;
    x, y : Integer;
 begin
-   if enableGLSL and enableReflection then Exit;
+   if enableGLSL and enableTex2DReflection then Exit;
 
    tWave:=GLCadencer.CurrentTime*cWaveSpeed;
 
@@ -574,7 +598,7 @@ begin
    glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
    glEnable(GL_TEXTURE_2D);
 
-   if enableReflection then begin
+   if enableTex2DReflection then begin
       glActiveTextureARB(GL_TEXTURE2_ARB);
 
       glBindTexture(mirrorTexType, mirrorTexture.Handle);
@@ -587,7 +611,7 @@ begin
 
    glMatrixMode(GL_MODELVIEW);
 
-   if enableReflection then begin
+   if enableTex2DReflection then begin
       SetupTextureCombiners( 'Tex0:=Tex1*Tex0;'#13#10
                             +'Tex1:=Tex0+Col;'#13#10
                             +'Tex2:=Tex1+Tex2-0.5;');
@@ -620,7 +644,7 @@ begin
 
    glMatrixMode(GL_TEXTURE);
 
-   if enableReflection then begin
+   if enableTex2DReflection then begin
       glActiveTextureARB(GL_TEXTURE2_ARB);
       glLoadIdentity;
    end;
@@ -641,7 +665,7 @@ procedure TForm1.DOGLSLWaterPlaneRender(Sender: TObject;
 var
    x, y : Integer;
 begin
-   if not (enableGLSL and enableReflection) then Exit;
+   if not (enableGLSL and enableTex2DReflection) then Exit;
 
    if not Assigned(reflectionProgram) then begin
       reflectionProgram:=TGLProgramHandle.CreateAndAllocate;
