@@ -21,7 +21,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 137
     Width = 583
-    Height = 267
+    Height = 268
     Align = alClient
     BorderStyle = bsNone
     ColCount = 4
@@ -321,7 +321,7 @@ object MainForm: TMainForm
   end
   object Panel2: TPanel
     Left = 0
-    Top = 404
+    Top = 405
     Width = 583
     Height = 20
     Align = alBottom

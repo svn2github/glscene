@@ -508,11 +508,11 @@ begin
    n:=0;
    ProgressBar.Position:=0;
    y:=0; while y<wy do begin
-      ty:=wy-y;
+      ty:=wy+overlap-y;
       if ty>ts then
          ty:=ts;
       x:=0; while x<wx do begin
-         tx:=wx-x;
+         tx:=wx+overlap-x;
          if (not CBWholeOnly.Checked) or ((tx>=ts) and ((wy-y)>=ts)) then begin
             if tx>ts then
                tx:=ts;
