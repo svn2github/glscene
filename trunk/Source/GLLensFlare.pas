@@ -631,7 +631,7 @@ end;
 //
 procedure TGLLensFlare.PreRender(activeBuffer : TGLSceneBuffer);
 var
-   texSize, maxSize : Integer;
+   i, texSize, maxSize : Integer;
    buf : Pointer;
 begin
    if FTexRays.Handle<>0 then Exit;
@@ -647,14 +647,18 @@ begin
    SetupRenderingOptions;
 
    texSize:=RoundUpToPowerOf2(Size);
+   if texSize<Size*1.5 then
+      texSize:=texSize*2;
    glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
    if texSize>maxSize then texSize:=maxSize;
 
    glDisable(GL_BLEND);
    glColor3f(0, 0, 0);
    glBegin(GL_QUADS);
-   glVertex2f(0, 0); glVertex2f(texSize, 0);
-   glVertex2f(texSize, texSize); glVertex2f(0, texSize);
+      glVertex2f(0, 0);
+      glVertex2f(texSize+1, 0);
+      glVertex2f(texSize+1, texSize+1);
+      glVertex2f(0, texSize+1);
    glEnd;
    glEnable(GL_BLEND);
 
@@ -663,14 +667,12 @@ begin
 
    FTexRays.AllocateHandle;
    glBindTexture(GL_TEXTURE_2D, FTexRays.Handle);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-   if GL_SGIS_generate_mipmap then begin
-      glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-   end else begin
-   	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   end;
+   if GL_EXT_texture_edge_clamp then
+      i:=GL_CLAMP_TO_EDGE
+   else i:=GL_CLAMP;
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
    GetMem(buf, texSize*texSize*4);
