@@ -53,6 +53,11 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   if Joystick1.Capture=False then begin
+      ShowMessage('Connect a Joystick!');
+      Application.Terminate;
+      Exit;
+   end;
    // setup default sphere colors
    Joystick1JoystickButtonChange(Self, Joystick1.JoystickID, [], 0, 0);
 end;
