@@ -947,24 +947,24 @@ begin
 
   case AnimationMode of
     samLoop, samBounceForward, samPlayOnce : begin
-      Inc(currentFrame);
       if (currentFrame = endFrame) and Assigned(FOnEndFrameReached) then
         FOnEndFrameReached(Self);
+      Inc(currentFrame);
     end;
     samBounceBackward, samLoopBackward : begin
-      Dec(CurrentFrame);
       if (currentFrame = startFrame) and Assigned(FOnStartFrameReached) then
         FOnStartFrameReached(Self);
+      Dec(CurrentFrame);
     end;
   end;
 
   if (AnimationMode<>samNone) and Assigned(FOnFrameChanged) then
     FOnFrameChanged(Self);
-  
+
   case AnimationMode of
 
     samPlayOnce : begin
-      if currentFrame = endFrame then
+      if currentFrame > endFrame then
         AnimationMode:=samNone;
     end;
 
@@ -1030,6 +1030,14 @@ begin
   if val<>FAnimationIndex then begin
     FAnimationIndex:=val;
     if FAnimationIndex<0 then FAnimationIndex:=-1;
+    if (FAnimationIndex<>-1) and (FAnimationIndex<Animations.Count) then
+      with TSpriteAnimation(Animations[FAnimationIndex]) do
+        case AnimationMode of
+          samNone, samPlayOnce, samLoop, samBounceForward:
+            CurrentFrame:=StartFrame;
+          samLoopBackward, samBounceBackward:
+            CurrentFrame:=EndFrame;
+        end;
     NotifyChange(Self);
   end;
 end;
