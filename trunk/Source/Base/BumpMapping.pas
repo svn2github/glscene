@@ -5,6 +5,7 @@
 {: Some useful methods for setting up bump maps.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/09/03 - SG - Partially fixed tangent space normal map creation
       <li>18/09/03 - SG - Added methods for creating normal maps,
                           CreateTangentSpaceNormalMap is a little buggy
       <li>28/07/03 - SG - Creation
@@ -410,20 +411,24 @@ begin
         if xe<xs then begin
           x:=xs; xs:=xe; xe:=x;
         end;
-        for x:=xs to xe do begin
+        for x:=xs to xe-1 do begin
           n:=NormalToTangentSpace(NormalMap[x+y*Width],x,y,x1,y1,x2,y2,x3,y3,m1,m2,m3);
+          NormalizeVector(n);
+          n[0]:=-n[0];
           NormalMap[x+y*Width]:=n;
         end;
       end;
     if y2<y3 then
-      for y:=y2 to y3 do begin
+      for y:=y2+1 to y3 do begin
         xs:=Round(x2+(x3-x2)*((y-y2)/(y3-y2)));
         xe:=Round(x1+(x3-x1)*((y-y1)/(y3-y1)));
         if xe<xs then begin
           x:=xs; xs:=xe; xe:=x;
         end;
-        for x:=xs to xe do begin
+        for x:=xs to xe-1 do begin
           n:=NormalToTangentSpace(NormalMap[x+y*Width],x,y,x1,y1,x2,y2,x3,y3,m1,m2,m3);
+          NormalizeVector(n);
+          n[0]:=-n[0];
           NormalMap[x+y*Width]:=n;
         end;
       end;
