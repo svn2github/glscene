@@ -1,7 +1,7 @@
 object Form1: TForm1
   Left = 193
   Top = 135
-  Width = 629
+  Width = 635
   Height = 403
   Caption = 'Form1'
   Color = clBtnFace
@@ -18,7 +18,7 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 621
+    Width = 627
     Height = 354
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
@@ -84,7 +84,7 @@ object Form1: TForm1
   object WindowsBitmapFont1: TWindowsBitmapFont
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
-    Font.Height = -17
+    Font.Height = -20
     Font.Name = 'Arial'
     Font.Style = [fsBold]
     Left = 48
