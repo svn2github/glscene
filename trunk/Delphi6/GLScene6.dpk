@@ -191,6 +191,10 @@ contains
   GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas',
   GLCelShader in '..\Source\Shaders\GLCelShader.pas',
   GLFPSMovement in '..\Source\GLFPSMovement.pas',
+  GLPerlin in '..\Source\GLPerlin.pas',
+  GLCanvas in '..\Source\Base\GLCanvas.pas',
+  BumpMapping in '..\Source\Base\BumpMapping.pas',
+  GLPerlinBase in '..\Source\GLPerlinBase.pas',  
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas';
 
