@@ -57,10 +57,12 @@ function GetRValue(rgb: DWORD): Byte;
 function GetGValue(rgb: DWORD): Byte;
 function GetBValue(rgb: DWORD): Byte;
 
+function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;
 {: Increases or decreases the width and height of the specified rectangle.<p>
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
 procedure InflateGLRect(var aRect : TGLRect; dx, dy : Integer);
+procedure IntersectGLRect(var aRect : TGLRect; const rect2 : TGLRect);
 
 {: Pops up a simple dialog with msg and an Ok button. }
 procedure InformationDlg(const msg : String);
@@ -168,16 +170,51 @@ begin
    Result:=Byte(rgb shr 16);
 end;
 
+// GLRect
+//
+function GLRect(const aLeft, aTop, aRight, aBottom : Integer) : TGLRect;
+begin
+   Result.Left:=aLeft;
+   Result.Top:=aTop;
+   Result.Right:=aRight;
+   Result.Bottom:=aBottom;
+end;
+
 // InflateRect
 //
 procedure InflateGLRect(var aRect : TGLRect; dx, dy : Integer);
 begin
-   aRect.Left:=aRect.Left+dx;
+   aRect.Left:=aRect.Left-dx;
    aRect.Right:=aRect.Right+dx;
-   if aRect.Right<aRect.Left then aRect.Left:=aRect.Right;
-   aRect.Top:=aRect.Top+dy;
+   if aRect.Right<aRect.Left then
+      aRect.Right:=aRect.Left;
+   aRect.Top:=aRect.Top-dy;
    aRect.Bottom:=aRect.Bottom+dy;
-   if aRect.Bottom<aRect.Top then aRect.Top:=aRect.Bottom;
+   if aRect.Bottom<aRect.Top then
+      aRect.Bottom:=aRect.Top;
+end;
+
+// IntersectGLRect
+//
+procedure IntersectGLRect(var aRect : TGLRect; const rect2 : TGLRect);
+begin
+   if (aRect.Left>rect2.Right) or (aRect.Right<rect2.Left)
+      or (aRect.Top>rect2.Bottom) or (aRect.Bottom<rect2.Top) then begin
+      // no intersection
+      aRect.Left:=0;
+      aRect.Right:=0;
+      aRect.Top:=0;
+      aRect.Bottom:=0;
+   end else begin
+      if aRect.Left<rect2.Left then
+         aRect.Left:=rect2.Left;
+      if aRect.Right>rect2.Right then
+         aRect.Right:=rect2.Right;
+      if aRect.Top<rect2.Top then
+         aRect.Top:=rect2.Top;
+      if aRect.Bottom>rect2.Bottom then
+         aRect.Bottom:=rect2.Bottom;
+   end;
 end;
 
 // InformationDlg
