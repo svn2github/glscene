@@ -1,7 +1,6 @@
-{: GLContext<p>
+{: GLWin32Context<p>
 
-   Prototypes and base implementation of TGLContext.<p>
-   Currently NOT thread-safe.<p>
+   Win32 specific Context and Viewer.<p>
 
    <b>Historique : </b><font size=-1><ul>
       <li>30/11/01 - EG - Hardware acceleration support now detected
