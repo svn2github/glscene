@@ -41,7 +41,7 @@
     <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
     <RFLAGS value=""/>
     <AFLAGS value="/mx /w2 /zn"/>
-    <LFLAGS value="-D&quot;GLScene - ODE Manager&quot; -aa -Tpp -Gpd -x -Gn -Gl -Gi"/>
+    <LFLAGS value="-D&quot;GLScene - ODE Manager&quot; -aa -Tpp -x -Gn -Gl -Gi"/>
     <OTHERFILES value=""/>
   </OPTIONS>
   <LINKER>
