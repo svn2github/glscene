@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>21/10/02 - EG - Read support for .GTS (GNU Triangulated Surface library) 
       <li>18/10/02 - EG - FindExtByIndex (Adem)
       <li>17/10/02 - EG - TGLSTLVectorFile moved to new GLFileSTL unit
       <li>04/09/02 - EG - Fixed TBaseMesh.AxisAlignedDimensions 
@@ -910,6 +911,21 @@ type
       no texturing (there may be more, but I never saw anything in this files).<p>
       This format is encountered in the DEM/DTED world and used in place of grids. }
    TGLTINVectorFile = class(TVectorFile)
+      public
+         { Public Declarations }
+         procedure LoadFromStream(aStream: TStream); override;
+   end;
+
+   // TGLGTSVectorFile
+   //
+   {: The GTS vector file (GNU Triangulated Surface library).<p>
+      It is a simple text format, with indexed vertices. The first line contains
+      the number of vertices, the number of edges and the number of faces separated
+      by spaces.<br>
+      Following lines contain the x/y/z coordinates of vertices, then the edges
+      (two indices) and the faces (three indices).<br>
+      http://gts.sourceforge.net/ }
+   TGLGTSVectorFile = class(TVectorFile)
       public
          { Public Declarations }
          procedure LoadFromStream(aStream: TStream); override;
@@ -5635,6 +5651,66 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLGTSVectorFile ------------------
+// ------------------
+
+// LoadFromStream
+//
+procedure TGLGTSVectorFile.LoadFromStream(aStream : TStream);
+var
+   i, nv, ne, nf, k, p, ei : Integer;
+   sl, tl : TStringList;
+   mesh : TMeshObject;
+   fg : TFGVertexIndexList;
+   buf : String;
+   vertIndices : array [0..5] of Integer;
+begin
+   sl:=TStringList.Create;
+   tl:=TStringList.Create;
+   try
+      sl.LoadFromStream(aStream);
+      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh.Mode:=momFaceGroups;
+      if sl.Count>0 then begin
+         tl.CommaText:=sl[0];
+         if tl.Count<3 then Exit;
+         nv:=StrToIntDef(tl[0], 0);
+         ne:=StrToIntDef(tl[1], 0);
+         nf:=StrToIntDef(tl[2], 0);
+         if (nv or nf)=0 then Exit;
+         for i:=1 to nv do begin
+            tl.CommaText:=sl[i];
+            mesh.Vertices.Add(StrToFloatDef(tl[0]), StrToFloatDef(tl[1]), StrToFloatDef(tl[2]))
+         end;
+         fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
+         for i:=1+nv+ne to nv+ne+nf do begin
+            tl.CommaText:=sl[i];
+            for k:=0 to 2 do begin
+               ei:=StrToInt(tl[k]);
+               buf:=sl[nv+ei];
+               p:=Pos(' ', buf);
+               vertIndices[k*2+0]:=StrToInt(Copy(buf, 1, p-1))-1;
+               vertIndices[k*2+1]:=StrToInt(Copy(buf, p+1, MaxInt))-1;
+            end;
+            if (vertIndices[0]=vertIndices[2]) or (vertIndices[0]=vertIndices[3]) then
+               fg.VertexIndices.Add(vertIndices[0])
+            else fg.VertexIndices.Add(vertIndices[1]);
+            if (vertIndices[2]=vertIndices[4]) or (vertIndices[2]=vertIndices[5]) then
+               fg.VertexIndices.Add(vertIndices[2])
+            else fg.VertexIndices.Add(vertIndices[3]);
+            if (vertIndices[4]=vertIndices[0]) or (vertIndices[4]=vertIndices[1]) then
+               fg.VertexIndices.Add(vertIndices[4])
+            else fg.VertexIndices.Add(vertIndices[5]);
+         end;
+         mesh.BuildNormals(fg.VertexIndices, momTriangles);
+      end;
+   finally
+      tl.Free;
+      sl.Free;
+   end;
+end;
+
+// ------------------
 // ------------------ TGLPLYVectorFile ------------------
 // ------------------
 
@@ -5844,12 +5920,13 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterVectorFileFormat('md2', 'Quake II model files', TGLMD2VectorFile);
    RegisterVectorFileFormat('3ds', '3D Studio files', TGL3DSVectorFile);
-   RegisterVectorFileFormat('prj', '3D Studio project files', TGL3DSVectorFile);
-   RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);
-   RegisterVectorFileFormat('smd', 'Half-Life SMD files', TGLSMDVectorFile);
+   RegisterVectorFileFormat('gts', 'GNU Triangulated Surface', TGLGTSVectorFile);
+   RegisterVectorFileFormat('md2', 'Quake II model files', TGLMD2VectorFile);
    RegisterVectorFileFormat('ply', 'Stanford triangle format', TGLPLYVectorFile);
+   RegisterVectorFileFormat('prj', '3D Studio project files', TGL3DSVectorFile);
+   RegisterVectorFileFormat('smd', 'Half-Life SMD files', TGLSMDVectorFile);
+   RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);
 
    RegisterClasses([TGLFreeForm, TGLActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
                     TSkeletonMeshObject, TMeshObject, TSkeletonFrame,
