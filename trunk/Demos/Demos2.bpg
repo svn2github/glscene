@@ -1,0 +1,87 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering.exe \
+  warping.exe raycast.exe memviewer.exe volcano.exe shadows.exe tentacles.exe \
+  pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe tobitmap.exe meshhit.exe \
+  mirror.exe canvas.exe spiral.exe fullscreen.exe megaglasscube.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+candles.exe: specialsFX\candles\candles.dpr
+  $(DCC)
+
+Thor.exe: specialsFX\thor\Thor.dpr
+  $(DCC)
+
+cutoutstar.exe: extrusion\cutoutstar\cutoutstar.dpr
+  $(DCC)
+
+texanim.exe: materials\texanim\texanim.dpr
+  $(DCC)
+
+culling.exe: rendering\culling\culling.dpr
+  $(DCC)
+
+centering.exe: meshes\centering\centering.dpr
+  $(DCC)
+
+warping.exe: specialsFX\warping\warping.dpr
+  $(DCC)
+
+raycast.exe: collisions\raycast\raycast.dpr
+  $(DCC)
+
+memviewer.exe: rendering\memviewer\memviewer.dpr
+  $(DCC)
+
+volcano.exe: bench\volcano\volcano.dpr
+  $(DCC)
+
+shadows.exe: specialsFX\shadows\shadows.dpr
+  $(DCC)
+
+tentacles.exe: extrusion\tentacles\tentacles.dpr
+  $(DCC)
+
+pointto.exe: movements\pointto\pointto.dpr
+  $(DCC)
+
+cubemap.exe: materials\cubemap\cubemap.dpr
+  $(DCC)
+
+basicsdl.exe: rendering\basicsdl\basicsdl.dpr
+  $(DCC)
+
+dyncubemap.exe: materials\dyncubemap\dyncubemap.dpr
+  $(DCC)
+
+tobitmap.exe: rendering\tobitmap\tobitmap.dpr
+  $(DCC)
+
+meshhit.exe: collisions\meshhit\meshhit.dpr
+  $(DCC)
+
+mirror.exe: materials\mirror\mirror.dpr
+  $(DCC)
+
+canvas.exe: bench\canvas\canvas.dpr
+  $(DCC)
+
+spiral.exe: specialsFX\spiral\spiral.dpr
+  $(DCC)
+
+fullscreen.exe: rendering\fullscreen\fullscreen.dpr
+  $(DCC)
+
+megaglasscube.exe: bench\megaglasscube\megaglasscube.dpr
+  $(DCC)
