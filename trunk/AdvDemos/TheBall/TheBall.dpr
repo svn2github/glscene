@@ -8,7 +8,7 @@ uses
 {$R *.res}
 
 begin
-   if CurrentScreenColorDepth<=32 then begin
+   if CurrentScreenColorDepth<24 then begin
       ShowMessage( 'Your current desktop color depth is below 24 bits,'#13#10
                   +'this may affect performance of this demo.');
    end;
