@@ -273,6 +273,9 @@ type
 
       public
          { Public Declarations }
+         procedure NewList(mode : Cardinal);
+         procedure EndList;
+         procedure CallList;
    end;
 
    // TGLTextureHandle
@@ -970,6 +973,27 @@ begin
       // check for error
       CheckOpenGLError;
    end;
+end;
+
+// NewList
+//
+procedure TGLListHandle.NewList(mode : Cardinal);
+begin
+   glNewList(FHandle, mode);
+end;
+
+// EndList
+//
+procedure TGLListHandle.EndList;
+begin
+   glEndList;
+end;
+
+// CallList
+//
+procedure TGLListHandle.CallList;
+begin
+   glCallList(FHandle);
 end;
 
 // ------------------
