@@ -12,6 +12,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>14/04/04 - SG - Minor DelphiODE compatibility changes.
     <li>30/03/04 - SG - Joint objects are now fully persistent.
     <li>05/03/04 - SG - SetSurfaceMode fix (Alex)
     <li>25/02/04 - SG - Added the GLODEStaticBehaviour.
@@ -1254,7 +1255,7 @@ begin
     end;
     if HandleCollision then begin
       // Create and assign the contact joint
-      Joint:=dJointCreateContact(FWorld,FContactGroup,contact[i]);
+      Joint:=dJointCreateContact(FWorld,FContactGroup,@contact[i]);
       dJointAttach(Joint,b1,b2);
       // Increment the number of contact joints this step
       FContactJointCount:=FContactJointCount+1;
@@ -1615,7 +1616,7 @@ end;
 procedure TGLODEDynamicObject.SetMass(const value: TdMass);
 begin
   FMass:=value;
-  dBodySetMass(FBody,FMass);
+  dBodySetMass(FBody,@FMass);
 end;
 
 // SetEnabled
@@ -1712,13 +1713,16 @@ end;
 // AddNewElement
 //
 function TGLODEDummy.AddNewElement(AChild: TODEElementClass): TODEBaseElement;
+var
+  calcmass : TdMass;
 begin
   Result:=nil;
   if not Assigned(Manager) then exit;
   Result:=AChild.Create(FElements);
   FElements.Add(Result);
   Result.Initialize;
-  dBodySetMass(FBody,CalculateMass);
+  calcmass:=CalculateMass;
+  dBodySetMass(FBody,@calcmass);
 end;
 
 // AlignObject
@@ -1790,6 +1794,8 @@ end;
 // Initialize
 //
 procedure TGLODEDummy.Initialize;
+var
+  calcmass : TdMass;
 begin
   if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then
     exit;
@@ -1798,7 +1804,8 @@ begin
   AlignBodyToMatrix(AbsoluteMatrix);
   dMassSetZero(FMass);
   FElements.Initialize;
-  dBodySetMass(FBody,CalculateMass);
+  calcmass:=CalculateMass;
+  dBodySetMass(FBody,@calcmass);
   Manager.RegisterObject(self);
   
   inherited;
@@ -1885,9 +1892,13 @@ end;
 // StructureChanged
 //
 procedure TGLODEDummy.StructureChanged;
+var
+  calcmass : TdMass;
 begin
-  if Assigned(FBody) then
-    dBodySetMass(FBody,CalculateMass);
+  if Assigned(FBody) then begin
+    calcmass:=CalculateMass;
+    dBodySetMass(FBody,@calcmass);
+  end;
   inherited;
 end;
 
@@ -2056,7 +2067,7 @@ begin
   dMassSetZero(FMass);
   FElements.Initialize;
   CalculateMass;
-  dBodySetMass(FBody,FMass);
+  dBodySetMass(FBody,@FMass);
   Manager.RegisterObject(self);
 
   inherited;
@@ -2104,13 +2115,16 @@ end;
 // AddNewElement
 //
 function TGLODEDynamicBehaviour.AddNewElement(AChild:TODEElementClass):TODEBaseElement;
+var
+  calcmass : TdMass;
 begin
   Result:=nil;
   if not Assigned(Manager) then exit;
   Result:=AChild.Create(FElements);
   FElements.Add(Result);
   Result.Initialize;
-  dBodySetMass(FBody,CalculateMass);
+  calcmass:=CalculateMass;
+  dBodySetMass(FBody,@calcmass);
 end;
 
 // AlignObject
@@ -2189,7 +2203,7 @@ end;
 procedure TGLODEDynamicBehaviour.SetMass(const value: TdMass);
 begin
   FMass:=value;
-  dBodySetMass(FBody,FMass);
+  dBodySetMass(FBody,@FMass);
 end;
 
 class function TGLODEDynamicBehaviour.UniqueItem : Boolean;

@@ -277,7 +277,7 @@ begin
    dBodySetRotation(ballBody, odeMat);
 
    dGeomSetBody(ballGeom, ballBody);
-   dBodySetMass(ballBody, m);
+   dBodySetMass(ballBody, @m);
 
    DCBallLag.Position:=DCBallAbsolute.Position;
 
@@ -399,7 +399,7 @@ begin
 
    numc:=dCollide(o1, o2, 3, contact[0].geom, SizeOf(TdContact));
    for i:=0 to numc-1 do begin
-      c:=dJointCreateContact(Main.world, Main.contactgroup, contact[i]);
+      c:=dJointCreateContact(Main.world, Main.contactgroup, @contact[i]);
       dJointAttach(c, b1, b2);
    end;
 end;
