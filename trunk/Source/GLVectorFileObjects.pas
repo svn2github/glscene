@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>18/10/02 - EG - FindExtByIndex (Adem)
       <li>17/10/02 - EG - TGLSTLVectorFile moved to new GLFileSTL unit
       <li>04/09/02 - EG - Fixed TBaseMesh.AxisAlignedDimensions 
       <li>23/08/02 - EG - Added TBaseMesh.Visible
@@ -1385,13 +1386,18 @@ type
          function FindFromFileName(const fileName : String) : TVectorFileClass;
          procedure Remove(AClass: TVectorFileClass);
          procedure BuildFilterStrings(VectorFileClass: TVectorFileClass; var Descriptions, Filters: string);
+         function FindExtByIndex(index : Integer) : String;
    end;
 
    EInvalidVectorFile = class(Exception);
 
+//: Read access to the list of registered vector file formats
 function GetVectorFileFormats : TVectorFileFormatsList;
 //: A file extension filter suitable for dialog's 'Filter' property
 function VectorFileFormatsFilter : String;
+{: Returns an extension by its index in the vector files dialogs filter.<p>
+   Use VectorFileFormatsFilter to obtain the filter. }
+function VectorFileFormatExtensionByIndex(index : Integer) : String;
 
 procedure RegisterVectorFileFormat(const aExtension, aDescription: String;
                                    aClass : TVectorFileClass);
@@ -1450,6 +1456,13 @@ procedure UnregisterVectorFileClass(AClass: TVectorFileClass);
 begin
 	if Assigned(vVectorFileFormats) then
 		vVectorFileFormats.Remove(AClass);
+end;
+
+// VectorFileFormatExtensionByIndex
+//
+function VectorFileFormatExtensionByIndex(index : Integer) : String;
+begin
+   Result:=GetVectorFileFormats.FindExtByIndex(index);
 end;
 
 //----------------- vector format support --------------------------------------
@@ -1560,6 +1573,15 @@ begin
       end;
   end;
   if C > 1 then FmtStr(Descriptions, '%s (%s)|%1:s|%s', [sAllFilter, Filters, Descriptions]);
+end;
+
+// FindExtByIndex
+//
+function TVectorFileFormatsList.FindExtByIndex(index : Integer) : String;
+begin
+   Result:='';
+   if (index>=0) and (index<Count) then
+      Result:=PVectorFileFormat(Items[index]).Extension;
 end;
 
 // ------------------
