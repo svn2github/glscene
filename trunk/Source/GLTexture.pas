@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/07/02 - EG - Improved materials when lighting is off
       <li>10/07/02 - EG - Added basic protection against cyclic material refs
       <li>08/07/02 - EG - Multipass support
       <li>18/06/02 - EG - Added TGLShader
@@ -319,14 +320,15 @@ type
       renderDPI : Integer;
       materialLibrary : TGLMaterialLibrary;
       fogDisabledCounter : Integer;
+      lightingDisabledCounter : Integer;
       drawState : TDrawState;
       objectsSorting : TGLObjectsSorting;
       visibilityCulling : TGLVisibilityCulling;
       currentStates : TGLStates;
+      rcci : TRenderContextClippingInfo;
       bufferFaceCull : Boolean;
       proxySubObject : Boolean;
       ignoreMaterials : Boolean;
-      rcci : TRenderContextClippingInfo;
    end;
    PRenderContextInfo = ^TRenderContextInfo;
 
@@ -952,11 +954,13 @@ type
       polygon mode (lines / fill). }
 	TGLFaceProperties = class (TGLUpdateAbleObject)
 	   private
+	      { Private Declarations }
          FAmbient, FDiffuse, FSpecular, FEmission  : TGLColor;
          FPolygonMode : TPolygonMode;
          FShininess : TShininess;
 
       protected
+	      { Protected Declarations }
          procedure SetAmbient(AValue: TGLColor);
          procedure SetDiffuse(AValue: TGLColor);
          procedure SetEmission(AValue: TGLColor);
@@ -965,18 +969,21 @@ type
          procedure SetShininess(AValue: TShininess);
 
 	   public
+			{ Public Declarations }
          constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
-         procedure Apply(AFace: TGLEnum);
+         
+         procedure Apply(aFace : TGLEnum; lightingOn : Boolean);
          procedure Assign(Source: TPersistent); override;
 
       published
-         property Ambient: TGLColor read FAmbient write SetAmbient;
-         property Diffuse: TGLColor read FDiffuse write SetDiffuse;
-         property Emission: TGLColor read FEmission write SetEmission;
-         property Shininess: TShininess read FShininess write SetShininess default 0;
-         property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode default pmFill;
-         property Specular: TGLColor read FSpecular write SetSpecular;
+			{ Published Declarations }
+         property Ambient : TGLColor read FAmbient write SetAmbient;
+         property Diffuse : TGLColor read FDiffuse write SetDiffuse;
+         property Emission : TGLColor read FEmission write SetEmission;
+         property Shininess : TShininess read FShininess write SetShininess default 0;
+         property PolygonMode : TPolygonMode read FPolygonMode write SetPolygonMode default pmFill;
+         property Specular : TGLColor read FSpecular write SetSpecular;
    end;
 
    TGLLibMaterialName = String;
@@ -997,7 +1004,7 @@ type
    //
    {: Control special rendering options for a material.<p>
       moIgnoreFog : fog is deactivated when the material is rendered }
-   TMaterialOption = (moIgnoreFog);
+   TMaterialOption = (moIgnoreFog, moNoLighting);
    TMaterialOptions = set of TMaterialOption;
 
 	// TGLMaterial
@@ -1089,6 +1096,7 @@ type
          FShader : TGLShader;
          notifying : Boolean; // used for recursivity protection
          libMatTexture2 : TGLLibMaterial; // internal cache
+         FTag : Integer;
 
 	   protected
 	      { Protected Declarations }
@@ -1130,6 +1138,7 @@ type
 	      { Published Declarations }
          property Name : TGLLibMaterialName read FName write SetName;
          property Material : TGLMaterial read FMaterial write SetMaterial;
+         property Tag : Integer read FTag write FTag;
 
          {: Texture offset in texture coordinates.<p>
             The offset is applied <i>after</i> scaling. }
@@ -1252,24 +1261,29 @@ type
 
    end;
 
-     PColorEntry = ^TColorEntry;
-	  TColorEntry = record
-                     Name  : String[31];
-                     Color : TColorVector;
-                   end;
+   PColorEntry = ^TColorEntry;
+   TColorEntry = record
+                   Name  : String[31];
+                   Color : TColorVector;
+                 end;
 
-     TGLColorManager = class(TList)
-     public
-       destructor Destroy; override;
-       procedure AddColor(const aName: String; const aColor: TColorVector);
-       procedure EnumColors(Proc: TGetStrProc);
-       function  FindColor(const aName: String): TColorVector;
-       {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
-		 function  GetColor(const aName: String): TColorVector;
-       function  GetColorName(const aColor: TColorVector): String;
-       procedure RegisterDefaultColors;
-       procedure RemoveColor(const aName: String);
-     end;
+   // TGLColorManager
+   //
+   TGLColorManager = class (TList)
+      public
+         destructor Destroy; override;
+         
+         procedure AddColor(const aName: String; const aColor: TColorVector);
+         procedure EnumColors(Proc: TGetStrProc);
+         function  FindColor(const aName: String): TColorVector;
+         {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
+         function  GetColor(const aName: String): TColorVector;
+         function  GetColorName(const aColor: TColorVector): String;
+         procedure RegisterDefaultColors;
+         procedure RemoveColor(const aName: String);
+   end;
+
+   ETexture = class (Exception);
 
 function ColorManager: TGLColorManager;
 
@@ -1561,14 +1575,18 @@ end;
 
 // Apply
 //
-procedure TGLFaceProperties.Apply(AFace: TGLEnum);
+procedure TGLFaceProperties.Apply(aFace : TGLEnum; lightingOn : Boolean);
 const
    cPolygonMode : array [pmFill..pmPoints] of TGLEnum = (GL_FILL, GL_LINE, GL_POINT);
 begin
-   SetGLMaterialColors(AFace, @Emission.FColor, @Ambient.FColor, @Diffuse.FColor,
-                              @Specular.FColor,
-                       FShininess);
-   SetGLPolygonMode(AFace, cPolygonMode[FPolygonMode]);
+   if lightingOn then begin
+      SetGLMaterialColors(aFace, @Emission.FColor, @Ambient.FColor, @Diffuse.FColor,
+                                 @Specular.FColor,
+                          FShininess);
+   end else begin
+      glColor4fv(@Diffuse.FColor)
+   end;
+   SetGLPolygonMode(aFace, cPolygonMode[FPolygonMode]);
 end;
 
 // Assign
@@ -2037,7 +2055,7 @@ begin
       Picture.LoadFromFile(buf)
    else begin
       Picture.Graphic:=nil;
-      Assert(False, Format(glsFailedOpenFile, [fileName]));
+      raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
    end;
 end;
 
@@ -3330,20 +3348,27 @@ begin
 	if Assigned(currentLibMaterial) then
 		currentLibMaterial.Apply(rci)
 	else begin
+      // Lighting switch
+      if moNoLighting in MaterialOptions then begin
+         if stLighting in rci.currentStates then begin
+            UnSetGLState(rci.currentStates, stLighting);
+            Inc(rci.lightingDisabledCounter);
+         end;
+      end;
       // Apply FrontProperties (always)
-		FFrontProperties.Apply(GL_FRONT);
+ 		FFrontProperties.Apply(GL_FRONT, (stLighting in rci.currentStates));
       // Apply FaceCulling and BackProperties (if needs be)
       if (stCullFace in rci.currentStates) then begin
          // currently culling
          case FFaceCulling of
             fcBufferDefault : if not rci.bufferFaceCull then begin
                UnSetGLState(rci.currentStates, stCullFace);
-               BackProperties.Apply(GL_BACK);
+               BackProperties.Apply(GL_BACK, True);
             end;
             fcCull : ; // nothing to do
             fcNoCull : begin
                UnSetGLState(rci.currentStates, stCullFace);
-               BackProperties.Apply(GL_BACK);
+               BackProperties.Apply(GL_BACK, True);
             end;
          else
             Assert(False);
@@ -3354,10 +3379,10 @@ begin
             fcBufferDefault : begin
                if rci.bufferFaceCull then
                   SetGLState(rci.currentStates, stCullFace)
-               else BackProperties.Apply(GL_BACK);
+               else BackProperties.Apply(GL_BACK, True);
             end;
             fcCull : SetGLState(rci.currentStates, stCullFace);
-            fcNoCull : BackProperties.Apply(GL_BACK);
+            fcNoCull : BackProperties.Apply(GL_BACK, True);
          else
             Assert(False);
          end;
@@ -3383,7 +3408,7 @@ begin
             UnSetGLState(rci.currentStates, stFog);
             Inc(rci.fogDisabledCounter);
          end;
-      end; 
+      end;
    	FTexture.Apply(rci);
 	end;
 end;
@@ -3395,6 +3420,13 @@ begin
 	if Assigned(currentLibMaterial) then
 		Result:=currentLibMaterial.UnApply(rci)
    else begin
+      if moNoLighting in MaterialOptions then begin
+         if rci.lightingDisabledCounter>0 then begin
+            Dec(rci.lightingDisabledCounter);
+            if rci.lightingDisabledCounter=0 then
+               SetGLState(rci.currentStates, stLighting);
+         end;
+      end;
       if moIgnoreFog in MaterialOptions then begin
          if rci.fogDisabledCounter>0 then begin
             Dec(rci.fogDisabledCounter);
@@ -4164,50 +4196,49 @@ begin
       end;
 end;
 
-//------------------------------------------------------------------------------
-
-function TGLColorManager.GetColor(const aName: String): TColorVector;
+// GetColor
+//
+function TGLColorManager.GetColor(const aName : String): TColorVector;
 var
-   WorkCopy  : String;
-   Delimiter : Integer;
+   workCopy  : String;
+   delimiter : Integer;
 begin
-  WorkCopy:=Trim(AName);
-  if AName[1] in ['(','[','<'] then WorkCopy:=Copy(WorkCopy,2,Length(AName)-2);
-  if CompareText(Copy(WorkCopy,1,3),'clr') = 0 then Result:=FindColor(WorkCopy)
-                                               else
-  try
-    // initialize result
-    Result:=clrBlack;
-    WorkCopy:=Trim(WorkCopy);
-    Delimiter:=Pos(' ',WorkCopy);
-    if (Length(WorkCopy) > 0) and (Delimiter > 0) then
-    begin
-      Result[0]:=StrToFloat(Copy(WorkCopy,1,Delimiter-1));
-      System.Delete(WorkCopy,1,Delimiter);
-      WorkCopy:=TrimLeft(WorkCopy);
-      Delimiter:=Pos(' ',WorkCopy);
-      if (Length(WorkCopy) > 0) and (Delimiter > 0) then
-      begin
-        Result[1]:=StrToFloat(Copy(WorkCopy,1,Delimiter-1));
-        System.Delete(WorkCopy,1,Delimiter);
-        WorkCopy:=TrimLeft(WorkCopy);
-        Delimiter:=Pos(' ',WorkCopy);
-        if (Length(WorkCopy) > 0) and (Delimiter > 0) then
-        begin
-          Result[2]:=StrToFloat(Copy(WorkCopy,1,Delimiter-1));
-          System.Delete(WorkCopy,1,Delimiter);
-          WorkCopy:=TrimLeft(WorkCopy);
-          Result[3]:=StrToFloat(WorkCopy);
-        end
-        else Result[2]:=StrToFloat(WorkCopy);
-      end
-      else Result[1]:=StrToFloat(WorkCopy);
-    end
-    else Result[0]:=StrToFloat(WorkCopy);
-  except
-    InformationDlg('Wrong vector format. Use: ''<red green blue alpha>''!');
-    Abort;
-  end;
+   if aName='' then
+      Result:=clrBlack
+   else begin
+      workCopy:=Trim(AName);
+      if AName[1] in ['(','[','<'] then
+         workCopy:=Copy(workCopy, 2, Length(AName)-2);
+      if CompareText(Copy(workCopy,1,3),'clr')=0 then
+         Result:=FindColor(workCopy)
+      else try
+         // initialize result
+         Result:=clrBlack;
+         workCopy:=Trim(workCopy);
+         delimiter:=Pos(' ', workCopy);
+         if (Length(workCopy)>0) and (delimiter>0) then begin
+            Result[0]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+            System.Delete(workCopy, 1, delimiter);
+            workCopy:=TrimLeft(workCopy);
+            delimiter:=Pos(' ',workCopy);
+            if (Length(workCopy)>0) and (delimiter>0) then begin
+               Result[1]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+               System.Delete(workCopy, 1, delimiter);
+               workCopy:=TrimLeft(workCopy);
+               delimiter:=Pos(' ', workCopy);
+               if (Length(workCopy)>0) and (delimiter>0) then begin
+                  Result[2]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+                  System.Delete(workCopy, 1, delimiter);
+                  workCopy:=TrimLeft(workCopy);
+                  Result[3]:=StrToFloat(workCopy);
+               end else Result[2]:=StrToFloat(workCopy);
+            end else Result[1]:=StrToFloat(workCopy);
+         end else Result[0]:=StrToFloat(workCopy);
+      except
+         InformationDlg('Wrong vector format. Use: ''<red green blue alpha>''!');
+         Abort;
+      end;
+   end;
 end;
 
 //------------------------------------------------------------------------------
