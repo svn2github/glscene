@@ -37,7 +37,7 @@ type
   TBaseSpacePartition = class;
 
   {: Describes a cone, and is used for cone collision}
-  TCone = record
+  TSPCone = record
     {: The base of the cone }
     Base : TAffineVector;
 
@@ -109,7 +109,7 @@ type
     FCullingMode: TCullingMode;
     {: Query space for Leaves that intersect a cone, result is returned through
     QueryResult}
-    function QueryCone(const aCone : TCone) : integer; virtual;
+    function QueryCone(const aCone : TSPCone) : integer; virtual;
   protected
     FQueryResult: TSpacePartitionLeafList;
     FQueryInterObjectTests : integer;
@@ -171,7 +171,7 @@ type
 
     {: Query space for Leaves that intersect a cone, result is returned through
     QueryResult}
-    function QueryCone(const aCone : TCone) : integer; override;
+    function QueryCone(const aCone : TSPCone) : integer; override;
   public
     {: Clear all internal storage Leaves }
     procedure Clear; override;
@@ -463,7 +463,7 @@ type
   end;
 
   {: Determines to which extent one Cone contains an BSphere}
-  function ConeContainsBSphere(const Cone : TCone; BSphere : TBSphere) : TSpaceContains;
+  function ConeContainsBSphere(const Cone : TSPCone; BSphere : TBSphere) : TSpaceContains;
 
 implementation
 
@@ -509,7 +509,7 @@ const
       (cMID,cMIN,cMIN)  //Lower Back Right
     );
 
-function ConeContainsBSphere(const Cone : TCone; BSphere : TBSphere) : TSpaceContains;
+function ConeContainsBSphere(const Cone : TSPCone; BSphere : TBSphere) : TSpaceContains;
 var
   U, D : TAffineVector;
   e, dsqr : single;
@@ -674,7 +674,7 @@ begin
   result := 0;
 end;
 
-function TBaseSpacePartition.QueryCone(const aCone: TCone): integer;
+function TBaseSpacePartition.QueryCone(const aCone: TSPCone): integer;
 begin
   // Virtual
   result := 0;
@@ -786,7 +786,7 @@ begin
   result := FQueryResult.Count;
 end;
 
-function TLeavedSpacePartition.QueryCone(const aCone: TCone): integer;
+function TLeavedSpacePartition.QueryCone(const aCone: TSPCone): integer;
 var
   i : integer;
 begin
