@@ -2754,7 +2754,6 @@ end;
 //
 function TGLBaseSceneObject.AxisAlignedDimensions : TVector;
 begin
-//   VectorScale(Scale.AsVector, 0.5, Result);
    Result:=AxisAlignedDimensionsUnscaled();
    ScaleVector(Result,Scale.AsVector);
 end;
@@ -2766,6 +2765,7 @@ begin
   Result[0]:=0.5;
   Result[1]:=0.5;
   Result[2]:=0.5;
+  Result[3]:=0;
 end;
 
 // AxisAlignedBoundingBox
