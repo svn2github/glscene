@@ -25,9 +25,15 @@ unit GLCadencer;
 interface
 
 {$i GLScene.inc}
-{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
-uses Windows, Classes, Controls, Messages, GLScene, StdCtrls, Forms, GLMisc;
+uses GLScene, Classes, GLMisc, GLCrossPlatform,
+   {$ifdef WIN32}
+   Windows, Controls, Messages, StdCtrls, Forms
+   {$endif}
+   {$ifdef LINUX}
+   QForms
+   {$endif}
+   ;
 
 type
 
@@ -195,6 +201,10 @@ implementation
 
 uses SysUtils;
 
+var
+	vCounterFrequency : Int64;
+
+{$ifdef WIN32}
 type
    TASAPHandler = class
    	FWindowHandle : HWND;
@@ -208,7 +218,6 @@ type
    end;
 
 var
-	vCounterFrequency : TLargeInteger;
 	vWMTickCadencer : Cardinal;
    vASAPCadencerList : TList;
    vHandler : TASAPHandler;
@@ -337,6 +346,7 @@ begin
 		Result:=0;
 	end;
 end;
+{$endif}
 
 // ------------------
 // ------------------ TGLCadencer ------------------
@@ -360,7 +370,9 @@ end;
 //
 destructor TGLCadencer.Destroy;
 begin
+   {$ifdef WIN32}
    UnRegisterASAPCadencer(Self);
+   {$endif}
    FSubscribedCadenceableComponents.Free;
    FSubscribedCadenceableComponents:=nil;
 	inherited Destroy;
@@ -417,10 +429,12 @@ end;
 procedure TGLCadencer.RestartASAP;
 begin
    if not (csLoading in ComponentState) then begin
+      {$ifdef WIN32}
       if (Mode=cmASAP) and (not (csDesigning in ComponentState))
          and Assigned(FScene) and Enabled then
             RegisterASAPCadencer(Self)
       else UnRegisterASAPCadencer(Self);
+      {$endif}
    end;
 end;
 
@@ -553,12 +567,12 @@ end;
 //
 function TGLCadencer.GetRawReferenceTime : Double;
 var
-	counter : TLargeInteger;
+	counter : Int64;
 begin
 	case FTimeReference of
 		cmRTC : // Real Time Clock
 			Result:=Now*(3600*24);
-		cmPerformanceCounter : begin // Windows HiRes Performance Counter
+		cmPerformanceCounter : begin // HiRes Performance Counter
 			QueryPerformanceCounter(counter);
 			Result:=counter/vCounterFrequency;
 		end;
@@ -637,7 +651,9 @@ initialization
 // ---------------------------------------------------------------------
 
 	// Get our Windows message ID
+   {$ifdef WIN32}
 	vWMTickCadencer:=RegisterWindowMessage(cTickGLCadencer);
+   {$endif}
 
 	// Preparation for high resolution timer
 	if not QueryPerformanceFrequency(vCounterFrequency) then

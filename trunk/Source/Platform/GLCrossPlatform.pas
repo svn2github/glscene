@@ -24,7 +24,7 @@ interface
 uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;
 {$endif}
 {$ifdef LINUX}
-uses QGraphics, libc;
+uses QForms, QGraphics, QControls, QDialogs, Types, SysUtils, libc;
 {$endif}
 
 type
@@ -44,8 +44,16 @@ type
    TGLBitmap = TBitmap;
 
 const
+{$ifdef WIN32}
    glpf24bit = pf24bit;
    glpf32Bit = pf32bit;
+   glpfDevice = pfDevice;
+{$endif}
+{$ifdef LINUX}
+   glpf24bit = pf32bit;
+   glpf32Bit = pf32bit;
+   glpfDevice = pf32bit;
+{$endif}
 
 function GLPoint(const x, y : Integer) : TGLPoint;
 
@@ -91,6 +99,8 @@ procedure FreeAndNil(var anObject);
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 {: Number of bits per pixel for the current desktop resolution. }
 function GetCurrentColorDepth : Integer;
+{: Returns the number of color bits associated to the given pixel format. }
+function PixelFormatToColorBits(aPixelFormat : TPixelFormat) : Integer;
 
 {: Suspends thread execution for length milliseconds.<p>
    If length is zero, only the remaining time in the current thread's time
@@ -103,8 +113,9 @@ procedure Sleep(length : Cardinal);
    allocate specific system resources. }
 procedure QueryPerformanceCounter(var val : Int64);
 {: Returns the frequency of the counter used by QueryPerformanceCounter.<p>
-   Return value is in ticks per second (Hz). }
-procedure QueryPerformanceFrequency(var val : Int64);
+   Return value is in ticks per second (Hz), returns False if no precision
+   counter is available. }
+function QueryPerformanceFrequency(var val : Int64) : Boolean;
 
 {: Starts a precision timer.<p>
    Returned value should just be considered as 'handle', even if it ain't so.
@@ -154,7 +165,11 @@ end;
 //
 function ColorToRGB(color : TColor) : TColor;
 begin
+   {$ifdef Win32}
    Result:=Graphics.ColorToRGB(color);
+   {$else}
+   Result:=QGraphics.ColorToRGB(color);
+   {$endif}
 end;
 
 // GetRValue
@@ -249,6 +264,7 @@ end;
 // SavePictureDialog
 //
 function SavePictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+{$ifdef WIN32}
 var
    saveDialog : TSavePictureDialog;
 begin
@@ -266,11 +282,17 @@ begin
    finally
       saveDialog.Free;
    end;
+{$else}
+begin
+   InformationDlg('SavePictureDialog not supported on this platform.');
+   Result:=False;
+{$endif}
 end;
 
 // OpenPictureDialog
 //
 function OpenPictureDialog(var aFileName : String; const aTitle : String = '') : Boolean;
+{$ifdef WIN32}
 var
    openDialog : TOpenPictureDialog;
 begin
@@ -288,6 +310,11 @@ begin
    finally
       openDialog.Free;
    end;
+{$else}
+begin
+   InformationDlg('OpenPictureDialog not supported on this platform.');
+   Result:=False;
+{$endif}
 end;
 
 // ApplicationTerminated
@@ -325,12 +352,17 @@ end;
 //
 function GetDeviceLogicalPixelsX(device : Cardinal) : Integer;
 begin
+   {$ifdef WIN32}
    Result:=GetDeviceCaps(device, LOGPIXELSX);
+   {$else}
+   Result:=96; // dunno how to do it properly, so I fake it
+   {$endif}
 end;
 
 // GetCurrentColorDepth
 //
 function GetCurrentColorDepth : Integer;
+{$ifdef WIN32}
 var
    topDC : HDC;
 begin
@@ -339,6 +371,30 @@ begin
       Result:=GetDeviceCaps(topDC, BITSPIXEL)*GetDeviceCaps(topDC, PLANES);
    finally
       ReleaseDC(0, topDC);
+   end;
+{$else}
+begin
+   Result:=32; // dunno how to do it properly, so I fake it
+{$endif}
+end;
+
+// PixelFormatToColorBits
+//
+function PixelFormatToColorBits(aPixelFormat : TPixelFormat) : Integer;
+begin
+   case aPixelFormat of
+      pfCustom {$ifdef WIN32}, pfDevice{$ENDIF} :  // use current color depth
+         Result:=GetCurrentColorDepth;
+      pf1bit  : Result:=1;
+{$ifdef WIN32}
+      pf4bit  : Result:=4;
+      pf15bit : Result:=15;
+{$endif}
+      pf8bit  : Result:=8;
+      pf16bit : Result:=16;
+      pf32bit : Result:=32;
+   else
+      Result:=24;
    end;
 end;
 
@@ -366,7 +422,7 @@ end;
 
 // QueryPerformanceFrequency
 //
-procedure QueryPerformanceFrequency(var val : Int64);
+function QueryPerformanceFrequency(var val : Int64) : Boolean;
 {$ifndef WIN32}
 var
    startCycles, endCycles : Int64;
@@ -374,7 +430,7 @@ var
 {$endif}
 begin
 {$ifdef WIN32}
-   Windows.QueryPerformanceFrequency(val);
+   Result:=Windows.QueryPerformanceFrequency(val);
 {$else}
    aTime:=Now;
    while aTime=Now do ;
@@ -384,6 +440,7 @@ begin
    endCycles:=RDTSC;
    aTime:=Now;
    val:=Round((endCycles-startCycles)/((aTime-refTime)*(3600*24)));
+   Result:=True;
 {$endif}
 end;
 

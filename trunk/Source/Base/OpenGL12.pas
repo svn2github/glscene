@@ -208,7 +208,7 @@ interface
 
 // Deactived by Eric Grange - GLScene is not thread-safe, so get best performance
 {.$define MULTITHREADOPENGL}
-{$i ..\GLScene.inc}
+{$i ../GLScene.inc}
 
 uses
    VectorTypes, // Added by Eric Grange for GLScene Compatibility
@@ -256,8 +256,8 @@ type
   TGLsizei    = Integer;
   PGLsizei    = ^TGLsizei;
 
-  GLubyte     = UCHAR;
-  TGLubyte    = UCHAR;
+  GLubyte     = Byte;
+  TGLubyte    = Byte;
   PGLubyte    = ^TGLubyte;
 
   GLushort    = Word;
@@ -5514,7 +5514,7 @@ begin
     GLU_VERSION_1_1 := True; 
     if MinorVersion > 1 then
     begin
-      GLU_VERSION_1_2 := True; 
+      GLU_VERSION_1_2 := True;
       if MinorVersion > 2 then
         GLU_VERSION_1_3 := True; 
     end;
@@ -6090,8 +6090,7 @@ end;
 //
 function IsMesaGL : Boolean;
 begin
-   Result:=(GetProcAddress(GLHandle, 'glResizeBuffersMESA')<>nil);
-//   Result:=(GL_MESA_resize_buffers or GL_MESA_window_pos);
+   Result:=(GetProcAddress(Cardinal(GLHandle), 'glResizeBuffersMESA')<>nil);
 end;
 
 initialization

@@ -1505,7 +1505,6 @@ type
          FFreezeBuffer : Pointer;
          FFreezed : Boolean;
          FFreezedViewPort : TRectangle;
-         FFreezedWithBufferRegion : Boolean;
 
          // Monitoring
          FFrames : Longint;
@@ -6208,16 +6207,16 @@ end;
 //
 procedure TGLSceneBuffer.RenderToFile(const aFile : String; DPI : Integer);
 var
-   aBitmap : Graphics.TBitmap;
+   aBitmap : TGLBitmap;
    saveAllowed : Boolean;
    fileName: String;
 begin
    Assert((not FRendering), glsAlreadyRendering);
-   aBitmap:=Graphics.TBitmap.Create;
+   aBitmap:=TGLBitmap.Create;
    try
       aBitmap.Width:=FViewPort.Width;
       aBitmap.Height:=FViewPort.Height;
-      aBitmap.PixelFormat:=pf24Bit;
+      aBitmap.PixelFormat:=glpf24Bit;
       RenderToBitmap(ABitmap, DPI);
       fileName:=aFile;
       if fileName='' then
@@ -6238,17 +6237,17 @@ end;
 //
 procedure TGLSceneBuffer.RenderToFile(const AFile: String; bmpWidth, bmpHeight : Integer);
 var
-   aBitmap: Graphics.TBitmap;
-   saveAllowed: Boolean;
-   fileName: String;
+   aBitmap : TGLBitmap;
+   saveAllowed : Boolean;
+   fileName : String;
 begin
    Assert((not FRendering), glsAlreadyRendering);
-   aBitmap:=Graphics.TBitmap.Create;
+   aBitmap:=TGLBitmap.Create;
    try
       aBitmap.Width:=bmpWidth;
       aBitmap.Height:=bmpHeight;
-      aBitmap.PixelFormat:=pf24Bit;
-      RenderToBitmap(aBitmap, (GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle)*bmpWidth) div FViewPort.Width);
+      aBitmap.PixelFormat:=glpf24Bit;
+      RenderToBitmap(aBitmap, (GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle))*bmpWidth) div FViewPort.Width);
       fileName:=AFile;
       if fileName='' then
          saveAllowed:=SavePictureDialog(fileName)
@@ -6310,27 +6309,14 @@ end;
 // Freeze
 //
 procedure TGLSceneBuffer.Freeze;
-var
-   hr : Integer;
 begin
    if Freezed then Exit;
    Render;
    RenderingContext.Activate;
    try
-      if WGL_ARB_buffer_region and (RenderingContext.RenderOutputDevice<>0) then begin
-         hr:=wglCreateBufferRegionARB(RenderingContext.RenderOutputDevice, 0,
-                                      WGL_FRONT_COLOR_BUFFER_BIT_ARB);
-         FFreezeBuffer:=Pointer(hr);
-         wglSaveBufferRegionARB(hr,
-                                FViewPort.Left, FViewPort.Top+FViewPort.Height,
-                                FViewport.Width, FViewPort.Height);
-         FFreezedWithBufferRegion:=True;
-      end else begin
-         FFreezeBuffer:=GetMemory(FViewPort.Width*FViewPort.Height*4);
-         glReadPixels(0, 0, FViewport.Width, FViewPort.Height,
-                      GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
-         FFreezedWithBufferRegion:=False;
-      end;
+      FFreezeBuffer:=GetMemory(FViewPort.Width*FViewPort.Height*4);
+      glReadPixels(0, 0, FViewport.Width, FViewPort.Height,
+                   GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
       FFreezedViewPort:=FViewPort;
       FFreezed:=True;
    finally
@@ -6343,24 +6329,13 @@ end;
 procedure TGLSceneBuffer.Melt;
 begin
    if not Freezed then Exit;
-   if FFreezedWithBufferRegion then begin
-      if RenderingContext.IsValid then begin
-         RenderingContext.Activate;
-         try
-            wglDeleteBufferRegionARB(Integer(FFreezeBuffer));
-         finally
-            RenderingContext.Deactivate;
-         end;
-      end;
-   end else begin
-      FreeMemory(FFreezeBuffer);
-   end;
+   FreeMemory(FFreezeBuffer);
    FFreezed:=False;
 end;
 
 // RenderToBitmap
 //
-procedure TGLSceneBuffer.RenderToBitmap(ABitmap: Graphics.TBitmap; DPI: Integer);
+procedure TGLSceneBuffer.RenderToBitmap(ABitmap: TGLBitmap; DPI: Integer);
 var
    bmpContext: TGLContext;
    BackColor: TColorVector;
@@ -6371,26 +6346,16 @@ begin
    Assert((not FRendering), glsAlreadyRendering);
    FRendering:=True;
    try
-      case ABitmap.PixelFormat of
-         pfCustom, pfDevice :  // use current color depth
-            aColorBits:=GetCurrentColorDepth;
-         pf1bit, pf4bit : // OpenGL needs at least 4 bits
-            aColorBits:=4;
-         pf8bit : aColorBits:=8;
-         pf15bit : aColorBits:=15;
-         pf16bit : aColorBits:=16;
-         pf24bit : aColorBits:=24;
-         pf32bit : aColorBits:=32;
-      else
-         aColorBits:=24;
-      end;
+      aColorBits:=PixelFormatToColorBits(ABitmap.PixelFormat);
+      if aColorBits<8 then
+         aColorBits:=8;
       bmpContext:=GLContextManager.CreateContext;
       SetupRCOptions(bmpContext);
       with bmpContext do begin
          Options:=[];            // no such things for bitmap rendering
          ColorBits:=aColorBits;  // honour Bitmap's pixel depth
          AntiAliasing:=aaNone;   // no AA for bitmap rendering
-         CreateContext(ABitmap.Canvas.Handle);
+         CreateContext(Cardinal(ABitmap.Canvas.Handle));
       end;
       try
          // save current window context states
@@ -6416,7 +6381,7 @@ begin
             ResetGLCurrentTexture;
             FRenderDPI:=DPI;
             if FRenderDPI=0 then
-               FRenderDPI:=GetDeviceLogicalPixelsX(ABitmap.Canvas.Handle);
+               FRenderDPI:=GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle));
             // render
             viewportBackup:=FViewPort;
             FViewport:=viewport;
@@ -6986,16 +6951,9 @@ begin
             gluOrtho2D(Left, Width, Height, Top);
          glMatrixMode(GL_MODELVIEW);
          glLoadIdentity;
-         if FFreezedWithBufferRegion then begin
-            wglRestoreBufferRegionARB(Integer(FFreezeBuffer),
-                                      FFreezedViewPort.Left, FFreezedViewPort.Top,
-                                      FFreezedViewPort.Width, FFreezedViewPort.Height,
-                                      FFreezedViewPort.Left, FFreezedViewPort.Top);
-         end else begin
-            glRasterPos2i(-50, 0);
-            glDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
-                         GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
-         end;
+         glRasterPos2i(-50, 0);
+         glDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
+                      GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
          glFlush;
          RenderingContext.SwapBuffers;
       finally

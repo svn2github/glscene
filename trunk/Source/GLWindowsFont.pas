@@ -180,7 +180,7 @@ var
 
 
 var
-   bitmap : TBitMap;
+   bitmap : TGLBitMap;
    fontRange  : TBitmapFontRange;
    ch : Char;
    x, y, i, cw : Integer;

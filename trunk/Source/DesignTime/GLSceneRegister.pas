@@ -39,12 +39,20 @@ unit GLSceneRegister;
 
 interface
 
-{$i ..\GLScene.inc}
+{$i GLScene.inc}
 
-uses Windows, GLScene, Controls, Classes, StdCtrls,
-{$ifdef GLS_DELPHI_5_UP}
-   FMaterialEditorForm, FLibMaterialPicker,
+uses
+   GLScene, Classes,
+{$ifdef WIN32}
+   Windows, Controls, StdCtrls,
+   {$ifdef GLS_DELPHI_5_UP}
+      FMaterialEditorForm, FLibMaterialPicker,
+   {$endif}
 {$endif}
+{$ifdef LINUX}
+   QControls, QImgList, QGraphics,
+{$endif}
+
 {$ifdef GLS_DELPHI_6_UP}
    DesignIntf, DesignEditors, VCLEditors
 {$else}
@@ -124,15 +132,24 @@ implementation
 {$R GLSceneRegister.res}
 
 uses
-   GLScreen, GLObjects, GLTexture, SysUtils, Dialogs, GLVectorFileObjects,
-   ExtDlgs, Forms, GLSceneEdit, Graphics, AsyncTimer, FVectorEditor, Geometry,
-   TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
-   GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
-   GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
-   GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
-   GLWindows, GLShadowPlane, GLWindowsFont, GLLensFlare, GLHeightTileFileHDS, GLGui
+   Geometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
+   GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
+   GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
+   GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer,
+
 {$ifdef WIN32}
-   , GLWin32Viewer
+   FVectorEditor, GLSound,
+   TypInfo, GLCadencer, GLCollision,
+   GLSoundFileObjects, GLFireFX, GLThorFX,
+   GLHeightData, GLzBuffer, GLGui,
+
+   GLWindows, GLWindowsFont, GLHeightTileFileHDS,
+
+   GLSceneEdit, Graphics, Dialogs, ExtDlgs, Forms,
+   GLWin32Viewer, GLSpaceText, AsyncTimer
+{$endif}
+{$ifdef LINUX}
+   GLLinuxViewer
 {$endif}
    ;
 
@@ -189,16 +206,7 @@ type
 			function GetVerbCount: Integer; override;
    end;
 
-(*   // TPlugInProperty
-   //
-   TPlugInProperty = class (TPropertyEditor)
-      public
-         { Public Declarations }
-         procedure Edit; override;
-         function GetAttributes: TPropertyAttributes; override;
-         function GetValue: String; override;
-   end; *)
-
+{$ifdef WIN32}
    // TResolutionProperty
    //
    TResolutionProperty = class (TPropertyEditor)
@@ -209,6 +217,7 @@ type
 	      procedure GetValues(Proc: TGetStrProc); override;
    	   procedure SetValue(const Value: String); override;
    end;
+{$endif}
 
    // TClassProperty
    //
@@ -241,6 +250,7 @@ type
 			procedure SetValue(const value : String); override;
 	end;
 
+{$ifdef WIN32}
    {$ifdef GLS_COMPILER_5_UP}
    // TGLColorProperty
    //
@@ -270,17 +280,19 @@ type
          // ICustomPropertyListDrawing  stuff
          procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas; var AHeight: Integer);
          procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas; var AWidth: Integer);
-         procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+         procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
          // CustomPropertyDrawing
-         procedure PropDrawName(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
-         procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+         procedure PropDrawName(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
+         procedure PropDrawValue(ACanvas: TCanvas; const ARect: TGLRect; ASelected: Boolean);
          {$endif}
 
 	      function GetValue: String; override;
 	      procedure SetValue(const Value: string); override;
    end;
    {$endif}
+{$endif}
 
+{$ifdef WIN32}
    // TVectorFileProperty
    //
    TVectorFileProperty = class (TClassProperty)
@@ -365,6 +377,7 @@ type
          { Public Declarations }
          procedure Edit; override;
    end;
+{$endif}
 
    // TGLMaterialLibraryEditor
    //
@@ -524,14 +537,17 @@ begin
             NewEntry^.Category:=aCategory;
             Index:=FSceneObjectList.Count;
             resBitmapName:=ASceneObject.ClassName;
+            {$ifdef WIN32}
+            // dunno how to load from a resource in Kylix
             Pic.Bitmap.Handle:=LoadBitmap(HInstance, PChar(resBitmapName));
+            {$endif}
             bmp:=TBitmap.Create;
-            bmp.PixelFormat:=pf24bit;
+            bmp.PixelFormat:=glpf24bit;
             bmp.Width:=24; bmp.Height:=24;
             bmp.Canvas.Draw(0, 0, Pic.Bitmap);
             Pic.Bitmap:=bmp;
             bmp.Free;
-            if Pic.Bitmap.Handle<>0 then begin
+            if Cardinal(Pic.Bitmap.Handle)<>0 then begin
                FObjectIcons.AddMasked(Pic.Bitmap, Pic.Bitmap.Canvas.Pixels[0, 0]);
                ImageIndex:=FObjectIcons.Count-1;
             end else ImageIndex:=0;
@@ -568,8 +584,11 @@ var
 begin
    pic:=TPicture.Create;
    // load first pic to get size
+   {$ifdef WIN32}
    pic.Bitmap.Handle:=LoadBitmap(HInstance, 'GLS_CROSS_16');
+   {$endif}
    FObjectIcons:=TImageList.CreateSize(Pic.Width, Pic.height);
+   {$ifdef WIN32}
    with FObjectIcons, pic.Bitmap.Canvas do begin
       try
          // There's a more direct way for loading images into the image list, but
@@ -589,6 +608,7 @@ begin
          Pic.Free;
       end;
    end;
+   {$endif}
 end;
 
 // DestroySceneObjectList
@@ -654,10 +674,14 @@ end;
 //
 procedure TGLSceneEditor.Edit;
 begin
+   {$ifdef WIN32}
    with GLSceneEditorForm do begin
       SetScene(Self.Component as TGLScene, Self.Designer);
       Show;
    end;
+   {$else}
+   InformationDlg('Unsupported on this platform');
+   {$endif}
 end;
 
 // ExecuteVerb
@@ -685,59 +709,36 @@ begin
    Result:=1;
 end;
 
-//----------------- TPlugInProperty ------------------------------------------------------------------------------------
-{
-procedure TPlugInProperty.Edit;
-var
-   Manager: TPlugInManager;
-begin
-   Manager:=TPlugInList(GetOrdValue).Owner;
-   Manager.EditPlugInList;
-end;
+//----------------- TResolutionProperty ----------------------------------------
+
+{$ifdef WIN32}
 
 // GetAttributes
 //
-function TPlugInProperty.GetAttributes: TPropertyAttributes;
+function TResolutionProperty.GetAttributes: TPropertyAttributes;
 begin
-   Result:=[paDialog];
+   Result:=[paValueList];
+end;
+
+// GetValue
+//
+function TResolutionProperty.GetValue : String;
+begin
+   Result:=VideoModes[GetOrdValue].Description;
 end;
 
 // GetValues
 //
-function TPlugInProperty.GetValue: String;
-begin
-   Result:='registered : ' + IntToStr(TStringList(GetOrdValue).Count);
-end;
-}
-//----------------- TResolutionProperty --------------------------------------------------------------------------------
-
-function TResolutionProperty.GetAttributes: TPropertyAttributes;
-
-begin
-  Result:=[paValueList];
-end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-function TResolutionProperty.GetValue : String;
-
-begin
-  Result:=VideoModes[GetOrdValue].Description;
-end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
 procedure TResolutionProperty.GetValues(Proc: TGetStrProc);
-
 var
-  I: Integer;
-
+   i : Integer;
 begin
-  for I:=0 to NumberVideoModes-1 do Proc(VideoModes[I].Description);
+   for i:=0 to NumberVideoModes-1 do
+      Proc(VideoModes[i].Description);
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// SetValue
+//
 procedure TResolutionProperty.SetValue(const Value: String);
 
 const Nums = ['0'..'9'];
@@ -795,7 +796,8 @@ begin
   end
   else SetOrdValue(0);
 end;
-                           
+{$endif}
+
 //----------------- TGLTextureProperty -----------------------------------------
 
 function TGLTextureProperty.GetAttributes: TPropertyAttributes;
@@ -869,6 +871,7 @@ end;
 
 //----------------- TGLColorproperty -----------------------------------------------------------------------------------
 
+{$ifdef WIN32}
 {$ifdef GLS_COMPILER_5_UP}
 procedure TGLColorProperty.Edit;
 var
@@ -1017,8 +1020,11 @@ begin
 end;
 {$endif}
 {$endif}
+{$endif}
+
 //----------------- TVectorFileProperty ----------------------------------------
 
+{$ifdef WIN32}
 // GetAttributes
 //
 function TVectorFileProperty.GetAttributes: TPropertyAttributes;
@@ -1061,9 +1067,11 @@ procedure TVectorFileProperty.SetValue(const Value: string);
 begin
    SetStrValue(Value);
 end;
+{$endif}
 
 //----------------- TSoundFileProperty -----------------------------------------
 
+{$ifdef WIN32}
 // GetAttributes
 //
 function TSoundFileProperty.GetAttributes: TPropertyAttributes;
@@ -1104,9 +1112,11 @@ begin
       ODialog.Free;
    end;
 end;
+{$endif}
 
 //----------------- TSoundNameProperty -----------------------------------------
 
+{$ifdef WIN32}
 // GetAttributes
 //
 function TSoundNameProperty.GetAttributes: TPropertyAttributes;
@@ -1125,9 +1135,11 @@ begin
    if Assigned(source.SoundLibrary) then with source.SoundLibrary do
       for i:=0 to Samples.Count-1 do Proc(Samples[i].Name);
 end;
+{$endif}
 
 //----------------- TGLCoordinatesProperty -------------------------------------
 
+{$ifdef WIN32}
 // GetAttributes
 //
 function TGLCoordinatesProperty.GetAttributes: TPropertyAttributes;
@@ -1151,7 +1163,9 @@ begin
 		Modified;
 	end;
 end;
+{$endif}
 
+{$ifdef WIN32}
 {$ifdef GLS_DELPHI_5_UP}
 
 //----------------- TGLMaterialProperty --------------------------------------------------------------------------------
@@ -1370,6 +1384,8 @@ begin
 		SetStrValue(buf);
 end;
 
+{$endif}
+
 //----------------- TGLAnimationNameProperty -----------------------------------
 
 // GetAttributes
@@ -1415,311 +1431,314 @@ type
   sVisualCategoryName = TVisualCategory;
 {$endif}
 begin
-  { GLWin32Viewer }
-  // property types
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLCamera), TypeInfo(TGLSceneBuffer), TypeInfo(TVSyncMode),
-    TypeInfo(TGLScreenDepth)]);
-  // TGLSceneViewer
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLSceneViewer,
-    ['*Render']);
+   {$ifdef WIN32}
 
+   { GLWin32Viewer }
+   // property types
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLCamera), TypeInfo(TGLSceneBuffer), TypeInfo(TVSyncMode),
+     TypeInfo(TGLScreenDepth)]);
+   // TGLSceneViewer
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLSceneViewer,
+     ['*Render']);
 
-  { GLScene }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLObjectsSorting), TypeInfo(TGLProgressEvent), TypeInfo(TGLBehaviours),
-    TypeInfo(TGLObjectEffects), TypeInfo(TDirectRenderEvent), TypeInfo(TGLCameraStyle),
-    TypeInfo(TOnCustomPerspective), TypeInfo(TGLScene)]);
-  RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TGLObjectsSorting), TypeInfo(TTransformationMode), TypeInfo(TNormalDirection)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TGLVisibilityCulling), TypeInfo(TLightStyle), TypeInfo(TGLColor),
-    TypeInfo(TNormalDirection), TypeInfo(TGLCameraStyle)]);
-  // TGLBaseSceneObject
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLBaseSceneObject,
-    ['Rotation', 'Direction', 'Position', 'Up', 'Scale', '*Angle', 'ShowAxes', 'FocalLength']);
-  // TGLSceneObject
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLSceneObject,
-    ['Parts']);
-  // TGLDirectOpenGL
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLDirectOpenGL, ['UseBuildList']);
-  // TGLProxyObject
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLProxyObjectOptions)]);
-  // TGLLightSource
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLLightSource,
-    ['*Attenuation', 'Shining', 'Spot*']);
-  // TGLCamera
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLCamera,
-    ['TargetObject']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLCamera,
-    ['DepthOfView', 'SceneScale']);
-  // TGLNonVisualViewer
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLNonVisualViewer,
-    ['*Render']);
+   { GLScene }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLObjectsSorting), TypeInfo(TGLProgressEvent), TypeInfo(TGLBehaviours),
+     TypeInfo(TGLObjectEffects), TypeInfo(TDirectRenderEvent), TypeInfo(TGLCameraStyle),
+     TypeInfo(TOnCustomPerspective), TypeInfo(TGLScene)]);
+   RegisterPropertiesInCategory(sLayoutCategoryName,
+     [TypeInfo(TGLObjectsSorting), TypeInfo(TTransformationMode), TypeInfo(TNormalDirection)]);
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(TGLVisibilityCulling), TypeInfo(TLightStyle), TypeInfo(TGLColor),
+     TypeInfo(TNormalDirection), TypeInfo(TGLCameraStyle)]);
+   // TGLBaseSceneObject
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLBaseSceneObject,
+     ['Rotation', 'Direction', 'Position', 'Up', 'Scale', '*Angle', 'ShowAxes', 'FocalLength']);
+   // TGLSceneObject
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLSceneObject,
+     ['Parts']);
+   // TGLDirectOpenGL
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLDirectOpenGL, ['UseBuildList']);
+   // TGLProxyObject
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLProxyObjectOptions)]);
+   // TGLLightSource
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLLightSource,
+     ['*Attenuation', 'Shining', 'Spot*']);
+   // TGLCamera
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLCamera,
+     ['TargetObject']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLCamera,
+     ['DepthOfView', 'SceneScale']);
+   // TGLNonVisualViewer
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLNonVisualViewer,
+     ['*Render']);
 
-  { GLObjects }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLLinesNodes), TypeInfo(TLineNodesAspect), TypeInfo(TLineSplineMode),
-    TypeInfo(TLinesOptions)]);
-  RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TGLTextAdjust)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TSpaceTextCharRange)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TLineSplineMode), TypeInfo(TCapType), TypeInfo(TNormalSmoothing),
-    TypeInfo(TArrowHeadStackingStyle), TypeInfo(TGLTextAdjust)]);
-  // TGLDummyCube
-  RegisterPropertiesInCategory(sLayoutCategoryName, TGLDummyCube,
-    ['VisibleAtRunTime']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLDummyCube,
-    ['CubeSize', 'VisibleAtRunTime']);
-  // TGLPlane
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLPlane,
-    ['*Offset', '*Tiles']);
-  // TGLSprite
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLSprite,
-    ['NoZWrite']);
-  RegisterPropertiesInCategory(sLayoutCategoryName, TGLSprite,
-    ['NoZWrite']);
- RegisterPropertiesInCategory(sVisualCategoryName, TGLSprite,
-    ['AlphaChannel', 'Rotation']);
-  // TGLNode
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLNode,
-    ['X', 'Y', 'Z']);
-  // TGLLines
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLLines,
-    ['Antialiased', 'Division', 'Line*', 'NodeSize']);
-  //  TGLCube
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLCube,
-    ['Cube*']);
-  // TGLFrustrum
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLFrustrum,
-    ['ApexHeight', 'Base*']);
-  // TGLSpaceText
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLSpaceText,
-    ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
-  // TGLSphere
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLSphere,
-    ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
-  // TGLDisk
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLDisk,
-    ['*Radius', 'Loops', 'Slices']);
-  // TGLCone
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLCone,
-    ['BottomRadius', 'Loops', 'Slices', 'Stacks']);
-  // TGLCylinder
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLCylinder,
-    ['*Radius', 'Loops', 'Slices', 'Stacks']);
-  // TGLAnnulus
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLAnnulus,
-    ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
-  // TGLTorus
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLTorus,
-    ['*Radius', 'Rings', 'Sides']);
-  // TGLArrowLine
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLArrowLine,
-    ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
-  // TGLPolygon
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLPolygon,
-    ['Division']);
+   { GLObjects }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLLinesNodes), TypeInfo(TLineNodesAspect), TypeInfo(TLineSplineMode),
+     TypeInfo(TLinesOptions)]);
+   RegisterPropertiesInCategory(sLayoutCategoryName,
+     [TypeInfo(TGLTextAdjust)]);
+   RegisterPropertiesInCategory(sLocalizableCategoryName,
+     [TypeInfo(TSpaceTextCharRange)]);
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(TLineSplineMode), TypeInfo(TCapType), TypeInfo(TNormalSmoothing),
+     TypeInfo(TArrowHeadStackingStyle), TypeInfo(TGLTextAdjust)]);
+   // TGLDummyCube
+   RegisterPropertiesInCategory(sLayoutCategoryName, TGLDummyCube,
+     ['VisibleAtRunTime']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLDummyCube,
+     ['CubeSize', 'VisibleAtRunTime']);
+   // TGLPlane
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLPlane,
+     ['*Offset', '*Tiles']);
+   // TGLSprite
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLSprite,
+     ['NoZWrite']);
+   RegisterPropertiesInCategory(sLayoutCategoryName, TGLSprite,
+     ['NoZWrite']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TGLSprite,
+     ['AlphaChannel', 'Rotation']);
+   // TGLNode
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLNode,
+     ['X', 'Y', 'Z']);
+   // TGLLines
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLLines,
+     ['Antialiased', 'Division', 'Line*', 'NodeSize']);
+   //  TGLCube
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLCube,
+     ['Cube*']);
+   // TGLFrustrum
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLFrustrum,
+     ['ApexHeight', 'Base*']);
+   // TGLSpaceText
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLSpaceText,
+     ['AllowedDeviation', 'AspectRatio', 'Extrusion', 'Oblique', 'TextHeight']);
+   // TGLSphere
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLSphere,
+     ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
+   // TGLDisk
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLDisk,
+     ['*Radius', 'Loops', 'Slices']);
+   // TGLCone
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLCone,
+     ['BottomRadius', 'Loops', 'Slices', 'Stacks']);
+   // TGLCylinder
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLCylinder,
+     ['*Radius', 'Loops', 'Slices', 'Stacks']);
+   // TGLAnnulus
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLAnnulus,
+     ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
+   // TGLTorus
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLTorus,
+     ['*Radius', 'Rings', 'Sides']);
+   // TGLArrowLine
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLArrowLine,
+     ['Bottom*', 'Loops', 'Slices', 'Stacks', 'Top*']);
+   // TGLPolygon
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLPolygon,
+     ['Division']);
 
-  { GLMultiPolygon }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLContourNodes), TypeInfo(TGLContours)]);
-  // TGLMultiPolygon
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLContour,
-    ['Division']);
+   { GLMultiPolygon }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLContourNodes), TypeInfo(TGLContours)]);
+   // TGLMultiPolygon
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLContour,
+     ['Division']);
 
-  { GLExtrusion }
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TGLNodes), TypeInfo(TPipeNodesColorMode)]);
-  // TGLRevolutionSolid
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLRevolutionSolid,
-    ['Division', 'Slices', 'YOffsetPerTurn']);
-  // TGLExtrusionSolid
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLExtrusionSolid,
-    ['Stacks']);
-  // TGLPipe
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLPipeNode,
-    ['RadiusFactor']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLPipe,
-    ['Division', 'Radius', 'Slices']);
+   { GLExtrusion }
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(TGLNodes), TypeInfo(TPipeNodesColorMode)]);
+   // TGLRevolutionSolid
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLRevolutionSolid,
+     ['Division', 'Slices', 'YOffsetPerTurn']);
+   // TGLExtrusionSolid
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLExtrusionSolid,
+     ['Stacks']);
+   // TGLPipe
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLPipeNode,
+     ['RadiusFactor']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLPipe,
+     ['Division', 'Radius', 'Slices']);
 
-  { GLVectorFileObjects }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TActorAnimationMode), TypeInfo(TActorAnimations),
-    TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
-    TypeInfo(TActorAnimationReference), TypeInfo(TGLActor)]);
-  RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TMeshNormalsOrientation)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TMeshAutoCenterings), TypeInfo(TActorAnimationReference),
-    TypeInfo(TMeshNormalsOrientation)]);
-  // TGLFreeForm
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFreeForm,
-    ['UseMeshmaterials']);
-  // TGLAnimationControler
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLAnimationControler,
-    ['AnimationName']);
-  RegisterPropertiesInCategory(sLinkageCategoryName, TGLAnimationControler,
-    ['AnimationName']);
-  // TGLActor
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TActorAnimation,
-    ['*Frame']);
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLActor,
-    ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLActor,
-    ['OverlaySkeleton']);
+   { GLVectorFileObjects }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TActorAnimationMode), TypeInfo(TActorAnimations),
+     TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
+     TypeInfo(TActorAnimationReference), TypeInfo(TGLActor)]);
+   RegisterPropertiesInCategory(sLayoutCategoryName,
+     [TypeInfo(TMeshNormalsOrientation)]);
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(TMeshAutoCenterings), TypeInfo(TActorAnimationReference),
+     TypeInfo(TMeshNormalsOrientation)]);
+   // TGLFreeForm
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFreeForm,
+     ['UseMeshmaterials']);
+   // TGLAnimationControler
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLAnimationControler,
+     ['AnimationName']);
+   RegisterPropertiesInCategory(sLinkageCategoryName, TGLAnimationControler,
+     ['AnimationName']);
+   // TGLActor
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TActorAnimation,
+     ['*Frame']);
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLActor,
+     ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLActor,
+     ['OverlaySkeleton']);
 
-  { GLMesh }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TMeshMode), TypeInfo(TVertexMode)]);
+   { GLMesh }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TMeshMode), TypeInfo(TVertexMode)]);
 
-  { GLGraph }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(THeightFieldOptions)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(THeightFieldColorMode), TypeInfo(TGLSamplingScale),
-    TypeInfo(TXYZGridLinesStyle), TypeInfo(TXYZGridParts)]);
-  // TGLXYZGrid
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLXYZGrid,
-    ['Antialiased']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLXYZGrid,
-    ['Antialiased', 'Line*']);
+   { GLGraph }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(THeightFieldOptions)]);
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(THeightFieldColorMode), TypeInfo(TGLSamplingScale),
+     TypeInfo(TXYZGridLinesStyle), TypeInfo(TXYZGridParts)]);
+   // TGLXYZGrid
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLXYZGrid,
+     ['Antialiased']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLXYZGrid,
+     ['Antialiased', 'Line*']);
 
-  { GLParticles }
-  // TGLParticles
-  RegisterPropertiesInCategory(sLayoutCategoryName, TGLParticles,
-    ['VisibleAtRunTime']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLParticles,
-    ['*Size', 'VisibleAtRunTime']);
+   { GLParticles }
+   // TGLParticles
+   RegisterPropertiesInCategory(sLayoutCategoryName, TGLParticles,
+     ['VisibleAtRunTime']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLParticles,
+     ['*Size', 'VisibleAtRunTime']);
 
-  { GLSkydome }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TSkyDomeBands), TypeInfo(TSkyDomeOptions), TypeInfo(TSkyDomeStars)]);
-  // TSkyDomeBand
-  RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeBand,
-    ['Slices', 'Stacks', '*Angle']);
-  // TSkyDomeStar
-  RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeStar,
-    ['Dec', 'Magnitude', 'RA']);
-  // TGLEarthSkyDome
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLEarthSkyDome,
-    ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
+   { GLSkydome }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TSkyDomeBands), TypeInfo(TSkyDomeOptions), TypeInfo(TSkyDomeStars)]);
+   // TSkyDomeBand
+   RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeBand,
+     ['Slices', 'Stacks', '*Angle']);
+   // TSkyDomeStar
+   RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeStar,
+     ['Dec', 'Magnitude', 'RA']);
+   // TGLEarthSkyDome
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLEarthSkyDome,
+     ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
 
-  { GLMirror }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TMirrorOptions), TypeInfo(TGLBaseSceneObject)]);
+   { GLMirror }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TMirrorOptions), TypeInfo(TGLBaseSceneObject)]);
 
-  { GLParticleFX }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TBlendingMode)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TBlendingMode), TypeInfo(TPFXLifeColors), TypeInfo(TSpriteColorMode)]);
-  // TGLParticleFXRenderer
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLParticleFXRenderer,
-    ['ZWrite']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLParticleFXRenderer,
-    ['ZWrite']);
-  //  TPFXLifeColor
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TPFXLifeColor,
-    ['LifeTime']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TPFXLifeColor,
-    ['LifeTime']);
-  // TGLLifeColoredPFXManager
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLLifeColoredPFXManager,
-    ['Acceleration', 'ParticleSize']);
-  // GLPolygonPFXManager
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLPolygonPFXManager,
-    ['NbSides']);
-  // TGLPointLightPFXManager
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLPointLightPFXManager,
-    ['TexMapSize']);
+   { GLParticleFX }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TBlendingMode)]);
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(TBlendingMode), TypeInfo(TPFXLifeColors), TypeInfo(TSpriteColorMode)]);
+   // TGLParticleFXRenderer
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLParticleFXRenderer,
+     ['ZWrite']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLParticleFXRenderer,
+     ['ZWrite']);
+   //  TPFXLifeColor
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TPFXLifeColor,
+     ['LifeTime']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TPFXLifeColor,
+     ['LifeTime']);
+   // TGLLifeColoredPFXManager
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLLifeColoredPFXManager,
+     ['Acceleration', 'ParticleSize']);
+   // GLPolygonPFXManager
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLPolygonPFXManager,
+     ['NbSides']);
+   // TGLPointLightPFXManager
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLPointLightPFXManager,
+     ['TexMapSize']);
 
-  { GLTerrainRenderer }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(THeightDataSource)]);
-  // TGLTerrainRenderer
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLTerrainRenderer,
-    ['*CLOD*', 'QualityDistance', 'Tile*']);
+   { GLTerrainRenderer }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(THeightDataSource)]);
+   // TGLTerrainRenderer
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLTerrainRenderer,
+     ['*CLOD*', 'QualityDistance', 'Tile*']);
 
-  { GLzBuffer }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLMemoryViewer), TypeInfo(TGLSceneViewer), TypeInfo(TOptimise)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TOptimise)]);
-  // TGLZShadows
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLZShadows,
-    ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
+   { GLzBuffer }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLMemoryViewer), TypeInfo(TGLSceneViewer), TypeInfo(TOptimise)]);
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(TOptimise)]);
+   // TGLZShadows
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLZShadows,
+     ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
 
-  { GLHUDObjects }
-  RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TTextLayout)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TGLBitmapFont)]);
-  RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TGLBitmapFont), TypeInfo(TTextLayout)]);
+   { GLHUDObjects }
+   RegisterPropertiesInCategory(sLayoutCategoryName,
+     [TypeInfo(TTextLayout)]);
+   RegisterPropertiesInCategory(sLocalizableCategoryName,
+     [TypeInfo(TGLBitmapFont)]);
+   RegisterPropertiesInCategory(sVisualCategoryName,
+     [TypeInfo(TGLBitmapFont), TypeInfo(TTextLayout)]);
 
-  { GLTexture }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLMaterial), TypeInfo(TGLMaterialLibrary), TypeInfo(TGLLibMaterials),
-    TypeInfo(TTextureNeededEvent)]);
-  // TGLLibMaterial
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLLibMaterial,
-    ['Texture2Name']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLLibMaterial,
-    ['TextureOffset', 'TextureScale']);
-  // TGLMaterialLibrary
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLMaterialLibrary,
-    ['TexturePaths']);
+   { GLTexture }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLMaterial), TypeInfo(TGLMaterialLibrary), TypeInfo(TGLLibMaterials),
+     TypeInfo(TTextureNeededEvent)]);
+   // TGLLibMaterial
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLLibMaterial,
+     ['Texture2Name']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLLibMaterial,
+     ['TextureOffset', 'TextureScale']);
+   // TGLMaterialLibrary
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLMaterialLibrary,
+     ['TexturePaths']);
 
-  { GLCadencer }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLCadencer)]);
+   { GLCadencer }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLCadencer)]);
 
-  { GLCollision }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TObjectCollisionEvent)]);
+   { GLCollision }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TObjectCollisionEvent)]);
 
-  { GLFireFX }
-  // TGLFireFXManager
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFireFXManager,
-    ['MaxParticles', 'NoZWrite', 'Paused', 'UseInterval']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLFireFXManager,
-    ['Fire*', 'InitialDir', 'NoZWrite', 'Particle*', 'Paused']);
+   { GLFireFX }
+   // TGLFireFXManager
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFireFXManager,
+     ['MaxParticles', 'NoZWrite', 'Paused', 'UseInterval']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLFireFXManager,
+     ['Fire*', 'InitialDir', 'NoZWrite', 'Particle*', 'Paused']);
 
-  { GLThorFX }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TCalcPointEvent)]);
-  // GLThorFXManager
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLThorFXManager,
-    ['Maxpoints', 'Paused']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLThorFXManager,
-    ['Core', 'Glow*', 'Paused', 'Target', 'Vibrate', 'Wildness']);
+   { GLThorFX }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TCalcPointEvent)]);
+   // GLThorFXManager
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLThorFXManager,
+     ['Maxpoints', 'Paused']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLThorFXManager,
+     ['Core', 'Glow*', 'Paused', 'Target', 'Vibrate', 'Wildness']);
 
-  { GLBitmapFont }
-  RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TGLMagFilter), TypeInfo(TGLMinFilter)]);
-  RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TBitmapFontRanges)]);
-  // TBitmapFontRange
-  RegisterPropertiesInCategory(sLocalizableCategoryName, TBitmapFontRange,
-    ['*ASCII']);
-  // TGLBitmapFont
-  RegisterPropertiesInCategory(sLayoutCategoryName, TGLBitmapFont,
-    ['Char*', '*Interval*', '*Space']);
-  RegisterPropertiesInCategory(sLocalizableCategoryName, TGLBitmapFont,
-    ['Glyphs']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLBitmapFont,
-    ['Char*', '*Interval*', '*Space', 'Glyphs']);
+   { GLBitmapFont }
+   RegisterPropertiesInCategory(sOpenGLCategoryName,
+     [TypeInfo(TGLMagFilter), TypeInfo(TGLMinFilter)]);
+   RegisterPropertiesInCategory(sLocalizableCategoryName,
+     [TypeInfo(TBitmapFontRanges)]);
+   // TBitmapFontRange
+   RegisterPropertiesInCategory(sLocalizableCategoryName, TBitmapFontRange,
+     ['*ASCII']);
+   // TGLBitmapFont
+   RegisterPropertiesInCategory(sLayoutCategoryName, TGLBitmapFont,
+     ['Char*', '*Interval*', '*Space']);
+   RegisterPropertiesInCategory(sLocalizableCategoryName, TGLBitmapFont,
+     ['Glyphs']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLBitmapFont,
+     ['Char*', '*Interval*', '*Space', 'Glyphs']);
 
-  { GLHeightData }
-  // TGLBitmapHDS
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLBitmapHDS,
-    ['MaxPoolSize']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TGLBitmapHDS,
-    ['Picture']);
+   { GLHeightData }
+   // TGLBitmapHDS
+   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLBitmapHDS,
+     ['MaxPoolSize']);
+   RegisterPropertiesInCategory(sVisualCategoryName, TGLBitmapHDS,
+     ['Picture']);
+
+   {$endif}
 end;
 {$endif}
 
@@ -1727,23 +1746,32 @@ procedure Register;
 begin
    RegisterComponents('GLScene',
                       [TGLScene,
-                       TGLSceneViewer, TGLMemoryViewer, TGLFullScreenViewer,
-                       TGLMaterialLibrary, TGLGuiLayout,
+                       TGLSceneViewer, TGLMemoryViewer,
+                       TGLMaterialLibrary
+                       {$ifdef WIN32}
+                       ,
+                       TGLFullScreenViewer,
+                       TGLGuiLayout,
                        TGLCadencer, TAsyncTimer,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLBitmapFont, TGLWindowsBitmapFont,
                        TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
                        TCollisionManager, TGLFireFXManager, TGLThorFXManager,
-                       TGLAnimationControler]);
+                       TGLAnimationControler
+                       {$endif}
+                      ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);
 
 {$ifdef GLS_DELPHI_5_UP}
    GLRegisterPropertiesInCategories;
+   {$ifdef WIN32}
 	RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
+   {$endif}
 {$endif}
 
+{$ifdef WIN32}
 	RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
 	RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);
 	RegisterPropertyEditor(TypeInfo(TGLTextureImage), TGLTexture, '', TGLTextureImageProperty);
@@ -1759,7 +1787,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
    RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
-
+{$endif}
 end;
 
 // ------------------------------------------------------------------
@@ -1813,15 +1841,20 @@ initialization
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCSpecialObjects);
       RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
+      {$ifdef WIN32}
       RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCSpecialObjects);
+      {$endif}
       RegisterSceneObject(TGLTeapot, 'Teapot', glsOCSpecialObjects);
       RegisterSceneObject(TGLTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);
       RegisterSceneObject(TGLXYZGrid, 'XYZGrid', glsOCSpecialObjects);
+      {$ifdef WIN32}
       RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
+      {$endif}
 
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
 
+      {$ifdef WIN32}
       RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
       RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', glsOCGuiObjects);
       RegisterSceneObject(TGLForm, 'GLForm', glsOCGuiObjects);
@@ -1834,6 +1867,7 @@ initialization
       RegisterSceneObject(TGLScrollbar, 'GLScrollbar', glsOCGuiObjects);
       RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects);
       RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', glsOCGuiObjects);
+      {$endif}
 
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');

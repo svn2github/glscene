@@ -35,7 +35,6 @@ interface
 uses Classes, Graphics, Geometry, GLCrossPlatform;
 
 {$i GLScene.inc}
-{$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 type
 

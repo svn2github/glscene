@@ -55,7 +55,7 @@ resourcestring
 
 // DoCreateContext
 //
-procedure TGLLinuxContext.DoCreateContext(AoutputDevice : Integer);
+procedure TGLLinuxContext.DoCreateContext(outputDevice : Integer);
 var
   winattr: XWindowAttributes;
   vitemp: xlib.XVisualInfo;
@@ -66,7 +66,7 @@ begin
    // Just in case it didn't happen already.
    if not InitOpenGL then RaiseLastOSError;
     { Create OpenGL context }
-    FOutputDevice := QWidgetH(AOutputDevice);
+    FOutputDevice := QWidgetH(outputDevice);
     glwin := QWidget_winId(FOutputDevice);
     xlib.XGetWindowAttributes(Application.Display, glwin, @winattr);
     vitemp.visual := winattr.visual;
@@ -79,7 +79,7 @@ end;
 
 // DoCreateMemoryContext
 //
-procedure TGLLinuxContext.DoCreateMemoryContext(AoutputDevice, width, height : Integer);
+procedure TGLLinuxContext.DoCreateMemoryContext(outputDevice, width, height : Integer);
 begin
   {$MESSAGE Warn 'Needs to be implemented'}
 end;

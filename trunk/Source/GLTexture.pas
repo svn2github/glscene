@@ -1377,7 +1377,9 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLStrings, XOpenGL, Graphics, ApplicationFileIO;
+uses GLScene, GLStrings, XOpenGL, ApplicationFileIO
+   {$ifdef WIN32}, Graphics{$endif} // for standard application colors
+   ;
 
 var
 	vGLTextureImageClasses : TList;
@@ -1958,7 +1960,7 @@ end;
 //
 procedure TGLPictureImage.Assign(Source: TPersistent);
 var
-   bmp : TBitmap;
+   bmp : TGLBitmap;
 begin
 	if Assigned(Source) then begin
       if (Source is TGLPersistentImage) then
@@ -2672,8 +2674,8 @@ begin
    		end;
       end else if (Source is TGLGraphic) then begin
          Image.Assign(Source);
-      end else if (Source is TPicture) then begin
-         Image.Assign(TPicture(Source).Graphic);
+      end else if (Source is TGLPicture) then begin
+         Image.Assign(TGLPicture(Source).Graphic);
       end;
 	end else inherited Assign(Source);
 end;
@@ -4305,7 +4307,7 @@ var
    img : TGLTextureImage;
    pim : TGLPersistentImage;
    ss : TStringStream;
-   bmp : TBitmap;
+   bmp : TGLBitmap;
 begin
    with writer do begin
       WriteInteger(0); // archive version 0, texture persistence only
@@ -4320,7 +4322,7 @@ begin
             WriteBoolean(true);
             ss:=TStringStream.Create('');
             try
-               bmp:=TBitmap.Create;
+               bmp:=TGLBitmap.Create;
                try
                   bmp.Assign(pim.Picture.Graphic);
                   bmp.SaveToStream(ss);
@@ -4351,7 +4353,7 @@ var
    i, n : Integer;
    name : String;
    ss : TStringStream;
-   bmp : TBitmap;
+   bmp : TGLBitmap;
 begin
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
@@ -4362,7 +4364,7 @@ begin
          if ReadBoolean then begin
             ss:=TStringStream.Create(ReadString);
             try
-               bmp:=TBitmap.Create;
+               bmp:=TGLBitmap.Create;
                try
                   bmp.LoadFromStream(ss);
                   libMat:=AddTextureMaterial(name, bmp);
@@ -4867,6 +4869,7 @@ end;
 //
 procedure InitWinColors;
 begin
+   {$ifdef WIN32}
    clrScrollBar:=ConvertWinColor(clScrollBar);
    clrBackground:=ConvertWinColor(clBackground);
    clrActiveCaption:=ConvertWinColor(clActiveCaption);
@@ -4892,6 +4895,7 @@ begin
    clr3DLight:=ConvertWinColor(cl3DLight);
    clrInfoText:=ConvertWinColor(clInfoText);
    clrInfoBk:=ConvertWinColor(clInfoBk);
+   {$endif}
 end;
 
 // RegisterColor
