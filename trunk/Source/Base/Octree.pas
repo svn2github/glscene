@@ -4,6 +4,7 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
       <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
       <li>29/11/02 - EG - Added triangleInfo
       <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
@@ -119,10 +120,14 @@ type
                                       const velocity, radius : single;
                                       intersectPoint : PVector = nil;
                                       intersectNormal : PVector = nil) : Boolean;
+
          function TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
          {: Returns all triangles in the AABB. }
          function GetTrianglesInCube(const objAABB : TAABB;
                                      const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
+         {: Checks if an AABB intersects a face on the octree}
+         function AABBIntersect(const AABB: TAABB; m1to2, m2to1: TMatrix; triangles: TAffineVectorList = nil): boolean;
+
    end;
 
 // ------------------------------------------------------------------
@@ -1228,6 +1233,41 @@ begin
       end;  //end for t triangles
    end; //end for i nodes
 end;
+
+// AABBIntersect
+//
+function TOctree.AABBIntersect(const AABB: TAABB;
+m1to2, m2to1: TMatrix; triangles: TAffineVectorList = nil): boolean;
+var
+  triList: TAffineVectorList;
+  i: integer;
+begin
+     //get triangles in nodes intersected by the aabb
+     triList:= GetTrianglesInCube(aabb, m1to2, m2to1);
+
+     result:= false;
+     if Trilist.Count>0 then begin
+          trilist.TransformAsPoints(m2to1);
+          i:= 0;
+          //run all faces and check if they're inside the aabb
+          //uncoment the * and comment the {//} to check only vertices
+     {//} while i < triList.Count -1 do begin
+          //*for i:= 0 to triList.count -1 do begin
+          //*  v:=VectorMake(TriList.Items[i]);
+          //*  if pointInAABB(AffinevectorMake(v), aabb) then
+          {//} if TriangleIntersectAABB(aabb, triList[i], triList[i+1], trilist[i+2]) then begin
+                    Result:=True;
+                    if not Assigned(triangles) then break
+                    else
+                      triangles.Add(triList[i], triList[i+1], trilist[i+2]);
+               end;
+          {//} i:= i+3;
+          end;
+      end;
+
+     triList.Free;
+end;
+
 
 // GetTrianglesInCube
 //

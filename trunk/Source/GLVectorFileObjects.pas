@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>08/05/03 - DanB - added OctreeAABBIntersect (Matheus Degiovani)
       <li>07/05/03 - SG - Added TGLSMDVectorFile.SaveToFile method and [read,write] capabilities
       <li>17/04/03 - SG - Added TMeshObjectList.FindMeshByName method
       <li>01/04/03 - SG - Fixed TGLBaseMesh.Assign
@@ -96,7 +97,7 @@ unit GLVectorFileObjects;
 interface
 
 uses Classes, GLScene, OpenGL12, Geometry, SysUtils, GLMisc, GLTexture,
-   GLMesh, VectorLists, PersistentClasses, Octree;
+   GLMesh, VectorLists, PersistentClasses, Octree, GeometryBB;
 
 type
 
@@ -1242,6 +1243,7 @@ type
                                         intersectPoint : PVector = nil;
                                         intersectNormal : PVector = nil) : Boolean;
          function OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+         function OctreeAABBIntersect(const AABB: TAABB; objMatrix,invObjMatrix: TMatrix; triangles:TAffineVectorList=nil): boolean;
 
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
@@ -1602,7 +1604,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO, GeometryBB,
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO,
      MeshUtils,
      // 3DS Support
 	  File3DS, Types3DS,
@@ -5573,6 +5575,8 @@ begin
    end;
 end;
 
+// OctreeTriangleIntersect
+//
 function TGLFreeForm.OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
 var
   t1, t2, t3: TAffineVector;
@@ -5583,6 +5587,25 @@ begin
 
    Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
    Result:= Octree.TriangleIntersect(t1, t2, t3);
+end;
+
+
+// OctreeAABBIntersect
+//
+function TGLFreeForm.OctreeAABBIntersect(const AABB: TAABB;
+objMatrix, invObjMatrix: TMatrix; triangles:TAffineVectorList = nil): boolean;
+var
+  m1to2, m2to1: TMatrix;
+begin
+     Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
+
+     //get matrixes needed
+     //object to self
+     MatrixMultiply(objMatrix, InvAbsoluteMatrix, m1to2);
+     //self to object
+     MatrixMultiply( AbsoluteMatrix,invObjMatrix, m2to1);
+
+     result:=octree.AABBIntersect(aabb,m1to2,m2to1,triangles);
 end;
 
 // ------------------
