@@ -41,6 +41,7 @@ type
          FBuilder : TGLImposterBuilder;
          FTexture : TGLTextureHandle;
          FImpostoredObject : TGLBaseSceneObject;
+         FAspectRatio : Single;
 
 		protected
 			{ Protected Declarations }
@@ -61,6 +62,7 @@ type
                           size : Single); virtual;
          procedure EndRender(var rci : TRenderContextInfo); virtual;
 
+         property AspectRatio : Single read FAspectRatio write FAspectRatio;
          property Builder : TGLImposterBuilder read FBuilder;
          property Texture : TGLTextureHandle read FTexture;
          property ImpostoredObject : TGLBaseSceneObject read FImpostoredObject write FImpostoredObject;
@@ -340,6 +342,7 @@ begin
    FBuilder:=aBuilder;
    FTexture:=TGLTextureHandle.Create;
    aBuilder.FImposterRegister.Add(Self);
+   FAspectRatio:=1;
 end;
 
 // Destroy
@@ -377,6 +380,7 @@ procedure TImposter.BeginRender(var rci : TRenderContextInfo);
 var
    mat : TMatrix;
    filter : TGLEnum;
+   fx, fy : Single;
 begin
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
@@ -409,12 +413,13 @@ begin
    NormalizeVector(FVx);
    NormalizeVector(FVy);
 
-   FStaticOffset:=Builder.BuildOffset.DirectVector;
+   fx:=Sqrt(FAspectRatio);
+   fy:=1/fx;
 
-   FQuad[0]:=VectorCombine(FVx, FVy,  1,  1);
-   FQuad[1]:=VectorCombine(FVx, FVy, -1,  1);
-   FQuad[2]:=VectorCombine(FVx, FVy, -1, -1);
-   FQuad[3]:=VectorCombine(FVx, FVy,  1, -1);
+   FQuad[0]:=VectorCombine(FVx, FVy,  fx,  fy);
+   FQuad[1]:=VectorCombine(FVx, FVy, -fx,  fy);
+   FQuad[2]:=VectorCombine(FVx, FVy, -fx, -fy);
+   FQuad[3]:=VectorCombine(FVx, FVy,  fx, -fy);
 end;
 
 // Render
@@ -877,6 +882,7 @@ begin
    FCoronas.Add;
    FSampleSize:=16;
    FSamplingRatioBias:=1;
+   FInvSamplingRatioBias:=1;
    FLighting:=siblStaticLighting;
 end;
 
@@ -987,6 +993,7 @@ begin
    glOrtho(-radius*fx, radius*fx, -radius*fy, radius*fy, radius*0.5, radius*5);
    xSrc:=(viewPort[2]-SampleSize) div 2;
    ySrc:=(viewPort[3]-SampleSize) div 2;
+   destImposter.FStaticOffset:=VectorScale(FBuildOffset.DirectVector, 0.5/(radius*SamplingRatioBias));
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
