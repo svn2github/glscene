@@ -47,7 +47,6 @@ object Form1: TForm1
     object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
-      Visible = False
       Bands = <
         item
           StartAngle = -5
