@@ -30,6 +30,9 @@ interface
 uses Classes, GLScene, GLHeightData, GLTexture, VectorGeometry, GLContext,
    GLROAMPatch, VectorLists;
 
+const
+   cTilesHashSize = 511;
+
 type
 
    TGetTerrainBoundsEvent = procedure(var l, t, r, b : Single) of object;
@@ -69,12 +72,11 @@ type
 
 	   protected
 	      { Protected Declarations }
-         FTilesHash : array [0..1023] of TList;
+         FTilesHash : packed array [0..cTilesHashSize] of TList;
 
          procedure MarkAllTilesAsUnused;
          procedure ReleaseAllUnusedTiles;
          procedure MarkHashedTileAsUsed(const tilePos : TAffineVector);
-         function HashKey(const xLeft, yTop : Integer) : Integer;
          function HashedTile(const tilePos : TAffineVector; canAllocate : Boolean = True) : THeightData; overload;
          function HashedTile(const xLeft, yTop : Integer; canAllocate : Boolean = True) : THeightData; overload;
 
@@ -203,6 +205,15 @@ implementation
 
 uses SysUtils, OpenGL1x, GLMisc, XOpenGL, GLUtils;
 
+// HashKey
+//
+function HashKey(const xLeft, yTop : Integer) : Integer;
+begin
+   Result:=( xLeft+(xLeft shr 8)+(xLeft shr 16)
+            +(yTop shl 1)+(yTop shr 9)+(yTop shr 17)) and cTilesHashSize;
+end;
+
+
 // ------------------
 // ------------------ TGLTerrainRenderer ------------------
 // ------------------
@@ -214,7 +225,7 @@ var
    i : Integer;
 begin
 	inherited Create(AOwner);
-   for i:=0 to High(FTilesHash) do
+   for i:=0 to cTilesHashSize do
       FTilesHash[i]:=TList.Create;
    ObjectStyle:=ObjectStyle+[osDirectDraw];
    FTileSize:=16;
@@ -238,7 +249,7 @@ begin
    FBufferTexPoints.Free;
    FBufferVertexIndices.Free;
    ReleaseAllTiles;
-   for i:=0 to High(FTilesHash) do begin
+   for i:=0 to cTilesHashSize do begin
       FTilesHash[i].Free;
       FTilesHash[i]:=nil;
    end;
@@ -340,7 +351,7 @@ var
    i, k : Integer;
    hd : THeightData;
 begin
-   for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
+   for i:=0 to cTilesHashSize do with FTilesHash[i] do begin
       for k:=Count-1 downto 0 do begin
          hd:=THeightData(List[k]);
          OnTileDestroyed(hd);
@@ -625,7 +636,7 @@ begin
       end;
    end;
    if FBufferVertexIndices.Count>0 then
-      patch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
+      TGLROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
 
    xglPushState;
    try
@@ -666,7 +677,7 @@ var
    i, j, zero : Integer;
    pList : PPointerList;
 begin
-   for i:=Low(FTilesHash) to High(FTilesHash) do with FTilesHash[i] do begin
+   for i:=0 to cTilesHashSize do with FTilesHash[i] do begin
       pList:=List;
       zero:=0;
       for j:=Count-1 downto 0 do
@@ -682,7 +693,7 @@ var
    hashList : TList;
    hd : THeightData;
 begin
-   for i:=Low(FTilesHash) to High(FTilesHash) do begin
+   for i:=0 to cTilesHashSize do begin
       hashList:=FTilesHash[i];
       for j:=hashList.Count-1 downto 0 do begin
          hd:=THeightData(hashList.List[j]);
@@ -704,14 +715,6 @@ var
 begin
    hd:=HashedTile(tilePos);
    if Assigned(hd) then hd.Tag:=1;
-end;
-
-// HashKey
-//
-function TGLTerrainRenderer.HashKey(const xLeft, yTop : Integer) : Integer;
-begin
-   Result:=( xLeft+(xLeft shr 6)+(xLeft shr 12)
-            +(yTop shl 1)+(yTop shr 5)+(yTop shr 11)) and High(FTilesHash);
 end;
 
 // HashedTile
@@ -856,7 +859,7 @@ begin
       FCLODPrecision:=val;
       if FCLODPrecision<1 then FCLODPrecision:=1;
       // drop all ROAM data (CLOD has changed, rebuild required)
-      for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
+      for i:=0 to cTilesHashSize do with FTilesHash[i] do begin
          for k:=Count-1 downto 0 do begin
             hd:=THeightData(List[k]);
             if Assigned(hd.ObjectTag) then begin
@@ -899,7 +902,7 @@ begin
    if val<0 then val:=0;
    if FOcclusionFrameSkip<>val then begin
       FOcclusionFrameSkip:=val;
-      for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
+      for i:=0 to cTilesHashSize do with FTilesHash[i] do begin
          for k:=Count-1 downto 0 do begin
             hd:=THeightData(List[k]);
             if hd.ObjectTag<>nil then
