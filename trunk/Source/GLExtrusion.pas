@@ -5,6 +5,7 @@
    surface described by a moving curve.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>02/11/01 - Egg - TPipe.BuildList now has a "persistent" cache
       <li>25/11/01 - Egg - TPipe nodes can now be colored
       <li>19/07/01 - Egg - Fix in TRevolutionSolid due to RotateAround change
       <li>29/03/01 - Uwe - Added a TExtrusionSolid based on TMultiPolygonBase,
@@ -818,6 +819,8 @@ end;
 
 // BuildList
 //
+var
+   vSinCache, vCosCache : array of Single;
 procedure TPipe.BuildList(var rci : TRenderContextInfo);
 type
    TNodeData = record
@@ -829,8 +832,6 @@ type
       color : TColorVector;
    end;
    PRowData = ^TRowData;
-var
-   sinCache, cosCache : array of Single;
 const
    cPNCMtoEnum : array [pncmEmission..pncmAmbientAndDiffuse] of TGLEnum =
       (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
@@ -862,7 +863,7 @@ const
       ScaleVector(vy, FRadius);
       // generate the circle
       for i:=0 to High(row.node) do begin
-         row.node[i].normal:=VectorCombine(vx, vy, cosCache[i], sinCache[i]);
+         row.node[i].normal:=VectorCombine(vx, vy, vCosCache[i], vSinCache[i]);
          row.node[i].pos:=VectorCombine(PAffineVector(@center)^,
                                         row.node[i].normal, 1, radius);
       end;
@@ -986,9 +987,11 @@ begin
    if Nodes.Count=0 then Exit;
    SetLength(rows[0].node, Slices+1);
    SetLength(rows[1].node, Slices+1);
-   SetLength(sinCache, Slices+1);
-   SetLength(cosCache, Slices+1);
-   PrepareSinCosCache(sinCache, cosCache, 0, 360);
+   if (Length(vSinCache)<>Slices+1) or (Length(vCosCache)<>Slices+1) then begin
+      SetLength(vSinCache, Slices+1);
+      SetLength(vCosCache, Slices+1);
+      PrepareSinCosCache(vSinCache, vCosCache, 0, 360);
+   end;
    if (SplineMode=lsmCubicSpline) and (Nodes.Count>1) then begin
       // create position spline
       posSpline:=Nodes.CreateNewCubicSpline;

@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)  
       <li>22/08/01 - EG - Some new overloads
       <li>19/08/01 - EG - Added sphere raycasting functions
       <li>08/08/01 - EG - Added MaxFloat overloads
@@ -811,7 +812,9 @@ procedure SinCos(const theta, radius : Double; var Sin, Cos: Double); overload;
    sin and cos values calculated from theta are multiplicated by radius. }
 procedure SinCos(const theta, radius : Single; var Sin, Cos: Single); overload;
 
-//: Fills up the two given dynamic arrays with sin cos values
+{: Fills up the two given dynamic arrays with sin cos values.<p>
+   start and stop angles must be given in degrees, the number of steps is
+   determined by the length of the given arrays. }
 procedure PrepareSinCosCache(var s, c : array of Single;
                              startAngle, stopAngle : Single);
 
@@ -4350,15 +4353,31 @@ procedure PrepareSinCosCache(var s, c : array of Single;
                              startAngle, stopAngle : Single);
 var
    i : Integer;
-   d : Single;
+   d, alpha, beta : Single;
 begin
    Assert((High(s)=High(c)) and (Low(s)=Low(c)));
    stopAngle:=stopAngle+1e-5;
    if High(s)>Low(s) then
       d:=cPIdiv180*(stopAngle-startAngle)/(High(s)-Low(s))
    else d:=0;
-   for i:=Low(s) to High(s) do
-      SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
+
+   if High(s)-Low(s)<1000 then begin
+      // Fast computation (approx 5.5x)
+      alpha:=2*Sqr(Sin(d*0.5));
+      beta:=Sin(d);
+      SinCos(startAngle, s[Low(s)], c[Low(s)]);
+      for i:=Low(s) to High(s)-1 do begin
+         // Make use of the incremental formulae:
+         // cos (theta+delta) = cos(theta) - [alpha*cos(theta) + beta*sin(theta)]
+         // sin (theta+delta) = sin(theta) - [alpha*sin(theta) - beta*cos(theta)]
+         c[i+1]:= c[i] - alpha * c[i] - beta * s[i];
+         s[i+1]:= s[i] - alpha * s[i] + beta * c[i];
+      end;
+   end else begin
+      // Slower, but maintains precision when steps are small
+      for i:=Low(s) to High(s) do
+         SinCos((i-Low(s))*d+startAngle, s[i], c[i]);
+   end;
 end;
 
 // ArcCos (Extended)
