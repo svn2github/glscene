@@ -4667,7 +4667,6 @@ begin
       if not Result then
          FLastAppliedMaterial:=nil;
    end else Result:=False;
-   // else Assert(False, 'Unbalanced material un-application');
 end;
 
 // ------------------
@@ -4753,15 +4752,15 @@ begin
       Result:=Format('<%.3f %.3f %.3f %.3f>',[AColor[0],AColor[1],AColor[2],AColor[3]]);
 end;
 
-//------------------------------------------------------------------------------
-
+// Destroy
+//
 destructor TGLColorManager.Destroy;
-
-var I : Integer;
-
+var
+   i : Integer;
 begin
-  for I:=0 to Count-1 do FreeMem(Items[I],SizeOf(TColorEntry));
-  inherited Destroy;
+   for i:=0 to Count-1 do
+      FreeMem(Items[i], SizeOf(TColorEntry));
+   inherited Destroy;
 end;
 
 //------------------------------------------------------------------------------
@@ -4781,14 +4780,14 @@ begin
   Add(NewEntry);
 end;
 
-//------------------------------------------------------------------------------
-
+// EnumColors
+//
 procedure TGLColorManager.EnumColors(Proc: TGetStrProc);
-
-var I : Integer;
-
+var
+   i : Integer;
 begin
-  for I:=0 to Count-1 do Proc(TColorEntry(Items[I]^).Name);
+   for i:=0 to Count-1 do
+      Proc(TColorEntry(Items[i]^).Name);
 end;
 
 // RegisterDefaultColors
@@ -4983,21 +4982,21 @@ end;
 
 // ConvertColorVector
 //
-function ConvertColorVector(const AColor: TColorVector): TColor;
+function ConvertColorVector(const aColor : TColorVector) : TColor;
 begin
-   Result := RGB(Round(255 * AColor[0]),
-                 Round(255 * AColor[1]),
-                 Round(255 * AColor[2]));
+   Result:=RGB(Round(255*aColor[0]),
+               Round(255*aColor[1]),
+               Round(255*aColor[2]));
 end;
 
 // ConvertColorVector
 //
-function ConvertColorVector(const AColor: TColorVector; intensity : Single) : TColor;
+function ConvertColorVector(const aColor: TColorVector; intensity : Single) : TColor;
 begin
    intensity:=255*intensity;
-   Result:=RGB(Round(intensity * AColor[0]),
-               Round(intensity * AColor[1]),
-               Round(intensity * AColor[2]));
+   Result:=RGB(Round(intensity*aColor[0]),
+               Round(intensity*aColor[1]),
+               Round(intensity*aColor[2]));
 end;
 
 // ConvertRGBColor
