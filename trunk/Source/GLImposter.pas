@@ -213,7 +213,7 @@ type
          FTextureSize : TGLPoint;
          FSamplesPerAxis : TGLPoint;
          FInvSamplesPerAxis : TVector2f;
-         FSamplingRatioBias : Single;
+         FSamplingRatioBias, FInvSamplingRatioBias : Single;
          FLighting : TSIBLigthing;
 
       protected
@@ -821,6 +821,7 @@ procedure TStaticImposter.Render(var rci : TRenderContextInfo;
 var
    azimuthAngle : Single;
    i : Integer;
+   x, y : Word;
    bestCorona : TGLStaticImposterBuilderCorona;
    tx, ty, tdx, tdy, s : Single;
    siBuilder : TGLStaticImposterBuilder;
@@ -833,7 +834,7 @@ begin                  // inherited; exit;
                      localCameraPos[1]/VectorLength(localCameraPos[0], localCameraPos[2]));
 
    // determine closest sample in corona
-   azimuthAngle:=FastArcTan2(localCameraPos[2], localCameraPos[0])+PI;
+   azimuthAngle:=FastArcTan2(localCameraPos[2], localCameraPos[0])+cPI;
    i:=Round(azimuthAngle*bestCorona.Samples*cInv2PI);
    if i<0 then
       i:=0
@@ -843,9 +844,10 @@ begin                  // inherited; exit;
 
    tdx:=siBuilder.FInvSamplesPerAxis[0];
    tdy:=siBuilder.FInvSamplesPerAxis[1];
-   tx:=tdx*(i mod siBuilder.SamplesPerAxis.X);
-   ty:=tdy*(i div siBuilder.SamplesPerAxis.X);
-   s:=Size/siBuilder.SamplingRatioBias;
+   DivMod(i, siBuilder.SamplesPerAxis.X, y, x);
+   tx:=tdx*x;
+   ty:=tdy*y;
+   s:=Size*siBuilder.FInvSamplingRatioBias;
 
    for i:=0 to 3 do begin
       locQuad[i][0]:=FQuad[i][0]*s+objPos[0]-FStaticOffset[0];
@@ -921,6 +923,7 @@ begin
    val:=ClampValue(val, 0.1, 10);
    if val<>FSamplingRatioBias then begin
       FSamplingRatioBias:=val;
+      FInvSamplingRatioBias:=1/val;
       NotifyChange(Self);
    end;
 end;
