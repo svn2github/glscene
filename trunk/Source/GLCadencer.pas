@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/03/02 - EG - Added SetTimeMultiplier
       <li>01/07/02 - EG - Added TGLCadencedComponent
       <li>05/12/01 - EG - Fix in subscription mechanism (D6 IDE freezes gone?)
       <li>30/11/01 - EG - Added IsBusy (thx Chris S)
@@ -84,6 +85,7 @@ type
 			procedure SetScene(const val : TGLScene);
 			procedure SetMode(const val : TGLCadencerMode);
 			procedure SetTimeReference(const val : TGLCadencerTimeReference);
+         procedure SetTimeMultiplier(const val : Double);
 			{: Returns raw ref time (no multiplier, no offset) }
 			function GetRawReferenceTime : Double;
          procedure RestartASAP;
@@ -127,8 +129,10 @@ type
 				Dynamically changeing the TimeReference may cause a "jump".  }
 			property TimeReference : TGLCadencerTimeReference read FTimeReference write SetTimeReference default cmPerformanceCounter;
 			{: Multiplier applied to the time reference.<p>
-				Dynamically changeing the TimeMultiplier may cause a "jump". }
-			property TimeMultiplier : Double read FTimeMultiplier write FTimeMultiplier stored StoreTimeMultiplier;
+            Zero isn't an allowed value, and be aware that if negative values
+            are accepted, they may not be supported by other GLScene objects.<br>
+				Changing the TimeMultiplier will alter OriginTime. }
+			property TimeMultiplier : Double read FTimeMultiplier write SetTimeMultiplier stored StoreTimeMultiplier;
          {: Maximum value for deltaTime in progression events.<p>
             If null or negative, no max deltaTime is defined, otherwise, whenever
             an event whose actual deltaTime would be superior to MaxDeltaTime
@@ -443,6 +447,21 @@ begin
          FScene.FreeNotification(Self);
       RestartASAP;
 	end;
+end;
+
+// SetTimeMultiplier
+//
+procedure TGLCadencer.SetTimeMultiplier(const val : Double);
+var
+   rawRef : Double;
+begin
+   if (val<>FTimeMultiplier) and (FTimeMultiplier<>0) then begin
+      rawRef:=GetRawReferenceTime;
+      // continuity of time:
+      // (rawRef-newOriginTime)*val = (rawRef-FOriginTime)*FTimeMultiplier
+      FOriginTime:=rawRef-(rawRef-FOriginTime)*FTimeMultiplier/val;
+      FTimeMultiplier:=val;
+   end;
 end;
 
 // StoreTimeMultiplier
