@@ -19,7 +19,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 374
-    Height = 277
+    Height = 270
     Camera = GLCamera1
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
@@ -29,15 +29,15 @@ object Form1: TForm1
     Left = 8
     Top = 8
     object GLDummyCube1: TGLDummyCube
-      CubeSize = 1
+      CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
-        DepthOfView = 100
-        FocalLength = 50
+        DepthOfView = 100.000000000000000000
+        FocalLength = 50.000000000000000000
         TargetObject = GLDummyCube1
         Position.Coordinates = {0000803F000040400000A0C00000803F}
         object GLLightSource1: TGLLightSource
-          ConstAttenuation = 1
-          SpotCutOff = 180
+          ConstAttenuation = 1.000000000000000000
+          SpotCutOff = 180.000000000000000000
         end
       end
     end
@@ -66,5 +66,18 @@ object Form1: TForm1
     DesignTimeEnabled = False
     Left = 8
     Top = 40
+  end
+  object GLCadencer1: TGLCadencer
+    Scene = GLScene1
+    OnProgress = GLCadencer1Progress
+    Left = 8
+    Top = 72
+  end
+  object GLTexCombineShader1: TGLTexCombineShader
+    Combiners.Strings = (
+      'Tex0:=PrimaryColor dot3 Tex0;')
+    DesignTimeEnabled = False
+    Left = 40
+    Top = 72
   end
 end
