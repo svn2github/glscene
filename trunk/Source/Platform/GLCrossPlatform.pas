@@ -265,7 +265,7 @@ end;
 function GLOKMessageBox(const Text, Caption: string): Integer;
 begin
 {$IFDEF MSWINDOWS}
-  result := Application.MessageBox(PChar(Text),PChar(Caption));
+  result := Application.MessageBox(PChar(Text),PChar(Caption),MB_OK);
 {$ENDIF}
 {$IFDEF LINUX}
   result := integer(Application.MessageBox(Text,Caption));
