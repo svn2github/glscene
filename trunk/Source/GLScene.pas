@@ -2770,7 +2770,7 @@ begin
    AChild.SetScene(FScene);
    if Assigned(FScene) then
       FScene.AddLights(aChild);
-   TransformationChanged;
+   AChild.TransformationChanged;
 end;
 
 // IsUpdating
