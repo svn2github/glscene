@@ -863,6 +863,16 @@ function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Bo
 function PointPlaneDistance(const point, planePoint, planeNormal : TVector) : Single; overload;
 function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single; overload;
 
+{: Computes closest point on a segment (a segment is a limited line).}
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector;
+{: Computes algebraic distance between segment and line (a segment is a limited line).}
+function PointSegmentDistance(point, segmentStart, segmentStop : TAffineVector) : single;
+{: Computes closest point on a line.}
+function PointLineClosestPoint(const point, linePoint, lineDirection : TAffineVector) : TAffineVector;
+{: Computes algebraic distance between point and line.}
+function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : single;
+
+
 //------------------------------------------------------------------------------
 // Quaternion functions
 //------------------------------------------------------------------------------
@@ -5540,6 +5550,66 @@ begin
    Result:= (point[0]-planePoint[0])*planeNormal[0]
            +(point[1]-planePoint[1])*planeNormal[1]
            +(point[2]-planePoint[2])*planeNormal[2];
+end;
+
+// PointLineClosestPoint
+//
+function PointLineClosestPoint(const point, linePoint, lineDirection : TAffineVector) : TAffineVector;
+var
+  w : TAffineVector;
+  c1, c2, b : double;
+begin
+  w := VectorSubtract(Point, linePoint);
+
+  c1 := VectorDotProduct(w, LineDirection);
+  c2 := VectorDotProduct(LineDirection, lineDirection);
+  b := c1 / c2;
+
+  result := VectorAdd(linePoint, VectorScale(lineDirection, b));
+end;
+
+// PointLineDistance
+//
+function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : single;
+var
+  Pb : TAffineVector;
+begin
+  Pb := PointLineClosestPoint(point, linePoint, lineDirection);
+
+  result := VectorLength(VectorSubtract(point, Pb));
+end;
+
+// PointSegmentClosestPoint
+//
+function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector;
+var
+  w, lineDirection : TAffineVector;
+  c1, c2, b, mMax : double;
+begin
+  LineDirection := VectorSubtract(segmentStop, segmentStart);
+  w := VectorSubtract(point, segmentStart);
+
+  c1 := VectorDotProduct(w, lineDirection);
+  c2 := VectorDotProduct(lineDirection, lineDirection);
+  b := c1 / c2;
+
+  if b>1 then
+    b := 1
+  else if b<0 then
+    b := 0;
+
+  result := VectorAdd(segmentStart, VectorScale(lineDirection, b));
+end;
+
+// PointSegmentDistance
+//
+function PointSegmentDistance(point, segmentStart, segmentStop : TAffineVector) : single;
+var
+  Pb : TAffineVector;
+begin
+  Pb := PointSegmentClosestPoint(segmentStart, segmentStop, Point);
+
+  result := VectorLength(VectorSubtract(point, Pb));
 end;
 
 // QuaternionMake
