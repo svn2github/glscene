@@ -119,7 +119,9 @@ end;
 
 destructor TFaceGroupConnectivity.Destroy;
 begin
-  // Protect FVertices, because it belongs to FMeshObject
+  if FOwnsVertices then
+    FVertices.Free;
+
   FVertices := nil;
   inherited;
 end;
