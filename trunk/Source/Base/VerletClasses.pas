@@ -697,6 +697,14 @@ type
       private
 			{ Private Declarations }
          FNodeParams : array of TAffineVector;
+         FNodeCoords : array of TAffineVector;
+         FNatMatrix, FInvNatMatrix : TAffineMatrix;
+
+      protected
+			{ Protected Declarations }
+         procedure ComputeBarycenter(var barycenter : TAffineVector);
+         procedure ComputeNaturals(const barycenter : TAffineVector;
+                                   var natX, natY, natZ : TAffineVector);
 
       public
 			{ Public Declarations }
@@ -1961,12 +1969,11 @@ end;
 // ------------------ TVCRigidBody ------------------
 // ------------------
 
-// ComputeRigidityParameters
+// ComputeBarycenter
 //
-procedure TVCRigidBody.ComputeRigidityParameters;
+procedure TVCRigidBody.ComputeBarycenter(var barycenter : TAffineVector);
 var
    i : Integer;
-   barycenter : TAffineVector;
    totWeight : Single;
 begin
    // first we compute the barycenter
@@ -1978,58 +1985,121 @@ begin
    end;
    if totWeight>0 then
       ScaleVector(barycenter, 1/totWeight);
-   // next the parameters (which are distances from barycenter to node)
+end;
+
+// ComputeNaturals
+//
+procedure TVCRigidBody.ComputeNaturals(const barycenter : TAffineVector;
+                                       var natX, natY, natZ : TAffineVector);
+var
+   i : Integer;
+   delta : TAffineVector;
+begin
+   natX:=NullVector;
+   natY:=NullVector;
+   natZ:=NullVector;
+   for i:=0 to Nodes.Count-1 do begin
+      delta:=VectorSubtract(Nodes[i].Location, barycenter);
+      CombineVector(natX, delta, FNodeParams[i][0]);
+      CombineVector(natY, delta, FNodeParams[i][1]);
+      CombineVector(natZ, delta, FNodeParams[i][2]);
+   end;
+end;
+
+// ComputeRigidityParameters
+//
+procedure TVCRigidBody.ComputeRigidityParameters;
+var
+   i : Integer;
+   barycenter, delta : TAffineVector;
+   d : Single;
+begin
+   // first we compute the barycenter
+   ComputeBarycenter(barycenter);
+   // next the parameters
    SetLength(FNodeParams, Nodes.Count);
-   for i:=0 to Nodes.Count-1 do
-      FNodeParams[i]:=VectorSubtract(Nodes[i].Location, barycenter);
+   SetLength(FNodeCoords, Nodes.Count);
+   for i:=0 to Nodes.Count-1 do begin
+      FNodeCoords[i]:=VectorSubtract(Nodes[i].Location, barycenter);
+      d:=Nodes[i].Weight/VectorLength(FNodeCoords[i]);
+      FNodeParams[i][0]:=FNodeCoords[i][0]*d;
+      FNodeParams[i][1]:=FNodeCoords[i][1]*d;
+      FNodeParams[i][2]:=FNodeCoords[i][2]*d;
+   end;
+
+   ComputeNaturals(barycenter, FNatMatrix[0], FNatMatrix[1], FNatMatrix[2]);
+
+   FNatMatrix[2]:=VectorCrossProduct(FNatMatrix[0], FNatMatrix[1]);
+   FNatMatrix[1]:=VectorCrossProduct(FNatMatrix[2], FNatMatrix[0]);
+   NormalizeVector(FNatMatrix[0]);
+   NormalizeVector(FNatMatrix[1]);
+   NormalizeVector(FNatMatrix[2]);   
+
+   FInvNatMatrix:=FNatMatrix;
+//   TransposeMatrix(FInvNatMatrix);
+   InvertMatrix(FInvNatMatrix);
 end;
 
 // SatisfyConstraint
 //
 procedure TVCRigidBody.SatisfyConstraint(const iteration, maxIterations : Integer);
 var
-   i, j : Integer;
+   i : Integer;
    barycenter, delta : TAffineVector;
-   totWeight, f : Single;
+   nrjBase, nrjAdjust : TaffineVector;
    natural : array [0..2] of TAffineVector;
-   vectNorm : array [0..2] of Single;
+   deltas : array of TAffineVector;
 begin
    Assert(Nodes.Count=Length(FNodeParams), 'You forgot to call ComputeRigidityParameters!');
    // compute the barycenter
-   totWeight:=0;
-   barycenter:=NullVector;
-   for i:=0 to Nodes.Count-1 do with Nodes[i] do begin
-      CombineVector(barycenter, Location, @Weight);
-      totWeight:=totWeight+Weight;
-   end;
-   if totWeight>0 then
-      ScaleVector(barycenter, 1/totWeight);
+   ComputeBarycenter(barycenter);
    // compute the natural axises
-   for i:=0 to 2 do
-      natural[i]:=NullVector;
-   for i:=0 to Nodes.Count-1 do begin
-      delta:=VectorSubtract(Nodes[i].Location, barycenter);
-      for j:=0 to 2 do begin
-         f:=FNodeParams[i][j]*Nodes[i].Weight;
-         CombineVector(natural[j], delta, f);
-      end;
-   end;
-   // make the natural axises orthonormal, by picking the longest two
-   for i:=0 to 2 do
-      vectNorm[i]:=VectorNorm(natural[i]);
-   if (vectNorm[0]<vectNorm[1]) and (vectNorm[0]<vectNorm[2]) then
-      natural[0]:=VectorCrossProduct(natural[1], natural[2])
-   else if (vectNorm[1]<vectNorm[0]) and (vectNorm[1]<vectNorm[2]) then
-      natural[1]:=VectorCrossProduct(natural[2], natural[0])
-   else natural[2]:=VectorCrossProduct(natural[0], natural[1]);
+   ComputeNaturals(barycenter, natural[0], natural[1], natural[2]);
+
+   natural[2]:=VectorCrossProduct(natural[0], natural[1]);
+   natural[1]:=VectorCrossProduct(natural[2], natural[0]);
    for i:=0 to 2 do
       NormalizeVector(natural[i]);
+
+   natural[0]:=VectorTransform(natural[0], FInvNatMatrix);
+   natural[1]:=VectorTransform(natural[1], FInvNatMatrix);
+   natural[2]:=VectorTransform(natural[2], FInvNatMatrix);
+   // make the natural axises orthonormal, by picking the longest two
+{   for i:=0 to 2 do
+      vectNorm[i]:=VectorNorm(natural[i]);
+   if (vectNorm[0]<vectNorm[1]) and (vectNorm[0]<vectNorm[2]) then begin
+      natural[0]:=VectorCrossProduct(natural[1], natural[2]);
+      natural[1]:=VectorCrossProduct(natural[2], natural[0]);
+   end else if (vectNorm[1]<vectNorm[0]) and (vectNorm[1]<vectNorm[2]) then begin
+      natural[1]:=VectorCrossProduct(natural[2], natural[0]);
+      natural[2]:=VectorCrossProduct(natural[0], natural[1]);
+   end else begin
+      natural[2]:=VectorCrossProduct(natural[0], natural[1]);
+      natural[0]:=VectorCrossProduct(natural[1], natural[2]);
+   end; }
+
    // now the axises are back, recompute the position of all points
+   SetLength(deltas, Nodes.Count);
+   nrjBase:=NullVector;
+   for i:=0 to Nodes.Count-1 do begin
+      nrjBase:=VectorAdd(nrjBase, VectorCrossProduct(VectorSubtract(Nodes[i].Location, barycenter),
+                                                     Nodes[i].GetMovement));
+   end;
+
+   nrjAdjust:=NullVector;
    for i:=0 to Nodes.Count-1 do begin
       delta:=VectorCombine3(natural[0], natural[1], natural[2],
-                            FNodeParams[i][0], FNodeParams[i][1], FNodeParams[i][2]);
-      Nodes[i].Location:=VectorAdd(barycenter, delta);
+                            FNodeCoords[i][0], FNodeCoords[i][1], FNodeCoords[i][2]);
+      deltas[i]:=VectorSubtract(VectorAdd(barycenter, delta), Nodes[i].Location);
+      nrjAdjust:=VectorAdd(nrjBase, VectorCrossProduct(VectorSubtract(Nodes[i].Location, barycenter),
+                                                       deltas[i]));
+      Nodes[i].Location:=VectorAdd(Nodes[i].Location, deltas[i]);
+      Nodes[i].FOldLocation:=VectorAdd(Nodes[i].FOldLocation, deltas[i]);
+//      Nodes[i].FOldLocation:=Nodes[i].Location;
    end;
+
+   deltas[0]:=nrjBase;
+   deltas[1]:=nrjAdjust;
 end;
 
 // ------------------
