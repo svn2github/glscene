@@ -800,22 +800,24 @@ begin
          #32 : vTopLeft[0]:=vTopLeft[0]+spaceDeltaH;
       else
          deltaH:=GetCharWidth(currentChar);
-         GetCharTexCoords(currentChar, topLeft, bottomRight);
-         vBottomRight[0]:=vTopLeft[0]+deltaH;
+         if deltaH>0 then begin
+            GetCharTexCoords(currentChar, topLeft, bottomRight);
+            vBottomRight[0]:=vTopLeft[0]+deltaH;
 
-         glTexCoord2fv(@topLeft);
-         glVertex4fv(@vTopLeft);
+            glTexCoord2fv(@topLeft);
+            glVertex4fv(@vTopLeft);
 
-         glTexCoord2f(topLeft.S, bottomRight.T);
-         glVertex2f(vTopLeft[0], vBottomRight[1]);
+            glTexCoord2f(topLeft.S, bottomRight.T);
+            glVertex2f(vTopLeft[0], vBottomRight[1]);
 
-         glTexCoord2fv(@bottomRight);
-         glVertex4fv(@vBottomRight);
+            glTexCoord2fv(@bottomRight);
+            glVertex4fv(@vBottomRight);
 
-         glTexCoord2f(bottomRight.S, topLeft.T);
-         glVertex2f(vBottomRight[0], vTopLeft[1]);
+            glTexCoord2f(bottomRight.S, topLeft.T);
+            glVertex2f(vBottomRight[0], vTopLeft[1]);
 
-         vTopLeft[0]:=vTopLeft[0]+deltaH+HSpaceFix;
+            vTopLeft[0]:=vTopLeft[0]+deltaH+HSpaceFix;
+         end;
       end;
    end;
    glEnd;
