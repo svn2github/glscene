@@ -416,6 +416,7 @@ const
   YHmgVector : THomogeneousVector = (0, 1, 0, 0);
   ZHmgVector : THomogeneousVector = (0, 0, 1, 0);
   WHmgVector : THomogeneousVector = (0, 0, 0, 1);
+  XYHmgVector  : THomogeneousVector =  (1, 1, 0, 0);
   XYZHmgVector  : THomogeneousVector = (1, 1, 1, 0);
   XYZWHmgVector : THomogeneousVector = (1, 1, 1, 1);
   NullHmgVector : THomogeneousVector = (0, 0, 0, 0);
@@ -2891,19 +2892,20 @@ function VectorDotProduct(const V1, V2 : TAffineVector): Single;
 // result is stored in ST(0)
 {$ifndef GEOMETRY_NO_ASM}
 asm
-         FLD DWORD PTR [EAX]
-         FMUL DWORD PTR [EDX]
-         FLD DWORD PTR [EAX + 4]
-         FMUL DWORD PTR [EDX + 4]
-         FADDP
-         FLD DWORD PTR [EAX + 8]
-         FMUL DWORD PTR [EDX + 8]
-         FADDP
+       FLD DWORD PTR [eax]
+       FMUL DWORD PTR [edx]
+       FLD DWORD PTR [eax+4]
+       FMUL DWORD PTR [edx+4]
+       faddp
+       FLD DWORD PTR [eax+8]
+       FMUL DWORD PTR [edx+8]
+       faddp
+end;
 {$else}
 begin
    Result:=V1[0]*V2[0]+V1[1]*V2[1]+V1[2]*V2[2];
-{$endif}
 end;
+{$endif}
 
 // VectorDotProduct (hmg)
 //
@@ -3107,10 +3109,38 @@ end;
 // VectorAffineLerp
 //
 function VectorLerp(const V1, V2: TAffineVector; t: Single): TAffineVector;
+{$ifndef GEOMETRY_NO_ASM}
+asm
+   fld   t
+
+   fld   [eax+0]
+   fld   [edx+0]
+   fsub  st(0), st(1)
+   fmul  st(0), st(2)
+   faddp
+   fstp  [ecx+0]
+
+   fld   [eax+4]
+   fld   [edx+4]
+   fsub  st(0), st(1)
+   fmul  st(0), st(2)
+   faddp
+   fstp  [ecx+4]
+
+   fld   [eax+8]
+   fld   [edx+8]
+   fsub  st(0), st(1)
+   fmul  st(0), st(2)
+   faddp
+   fstp  [ecx+8]
+
+   ffree st(0)
+{$else}
 begin
    Result[X]:=V1[X]+(V2[X]-V1[X])*t;
    Result[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
    Result[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
+{$endif}
 end;
 
 // VectorLerp
@@ -3120,97 +3150,58 @@ procedure VectorLerp(const v1, v2 : TAffineVector; t : Single; var vr : TAffineV
 // EDX contains address of v2
 // EBX contains address of t
 // ECX contains address of vr
-var
-   pt : ^Single;
-begin
-   pt:=@t;
 {$ifndef GEOMETRY_NO_ASM}
-   asm
-      test vSIMD, 1
-      jz @@FPU
-@@3DNow:    // 185 !
-      db $0F,$6E,$3B           /// MOVD  MM7, [EBX]
-      db $0F,$6F,$00           /// MOVQ  MM0, [EAX]
-      db $0F,$6F,$0A           /// MOVQ  MM1, [EDX]
-      db $0F,$62,$FF           /// PUNPCKLDQ MM7, MM7
-      db $0F,$0F,$C8,$9A       /// PFSUB MM1, MM0
-      db $0F,$6E,$50,$08       /// MOVD  MM2, [EAX+8]
-      db $0F,$0F,$CF,$B4       /// PFMUL MM1, MM7
-      db $0F,$0F,$C1,$9E       /// PFADD MM0, MM1
-      db $0F,$6F,$5A,$08       /// MOVQ  MM3, [EDX+8]
-      db $0F,$0F,$DA,$9A       /// PFSUB MM3, MM2
-      db $0F,$0F,$DF,$B4       /// PFMUL MM3, MM7
-      db $0F,$7F,$01           /// MOVQ  [ECX], MM0
-      db $0F,$0F,$D3,$9E       /// PFADD MM2, MM3
-      db $0F,$7E,$51,$08       /// MOVD  [ECX+8], MM2
+asm
+      fld   t
 
-      db $0F,$0E               /// FEMMS
-      pop ebx
-      pop ebp
-      ret $04
-@@FPU:      // 811 !!!
-   end;
+      fld   [eax+0]
+      fld   [edx+0]
+      fsub  st(0), st(1)
+      fmul  st(0), st(2)
+      faddp
+      fstp  [ecx+0]
+
+      fld   [eax+4]
+      fld   [edx+4]
+      fsub  st(0), st(1)
+      fmul  st(0), st(2)
+      faddp
+      fstp  [ecx+4]
+
+      fld   [eax+8]
+      fld   [edx+8]
+      fsub  st(0), st(1)
+      fmul  st(0), st(2)
+      faddp
+      fstp  [ecx+8]
+
+      ffree st(0)
+{$else}
+begin
+   vr[X]:=V1[X]+(V2[X]-V1[X])*t;
+   vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
+   vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
 {$endif}
-   vr[X]:=V1[X]+(V2[X]-V1[X])*pt^;
-   vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*pt^;
-   vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*pt^;
 end;
 
 // VectorLerp
 //
 function VectorLerp(const V1, V2: TVector; t: Single): TVector;
-var
-   pt : ^Single;
 begin
-   pt:=@t;
-   Result[X]:=V1[X]+(V2[X]-V1[X])*pt^;
-   Result[Y]:=V1[Y]+(V2[Y]-V1[Y])*pt^;
-   Result[Z]:=V1[Z]+(V2[Z]-V1[Z])*pt^;
-   Result[W]:=V1[W]+(V2[W]-V1[W])*pt^;
+   Result[X]:=V1[X]+(V2[X]-V1[X])*t;
+   Result[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
+   Result[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
+   Result[W]:=V1[W]+(V2[W]-V1[W])*t;
 end;
 
 // VectorLerp
 //
 procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector);
-// EAX contains address of v1
-// EDX contains address of v2
-// EBX contains address of t
-// ECX contains address of vr
-var
-   pt : ^Single;
 begin
-   pt:=@t;
-{$ifndef GEOMETRY_NO_ASM}
-   asm
-      test vSIMD, 1
-      jz @@FPU
-@@3DNow:    // 173
-      db $0F,$6E,$3B           /// MOVD  MM7, [EBX]
-      db $0F,$6F,$00           /// MOVQ  MM0, [EAX]
-      db $0F,$6F,$0A           /// MOVQ  MM1, [EDX]
-      db $0F,$62,$FF           /// PUNPCKLDQ MM7, MM7
-      db $0F,$0F,$C8,$9A       /// PFSUB MM1, MM0
-      db $0F,$0F,$CF,$B4       /// PFMUL MM1, MM7
-      db $0F,$6F,$50,$08       /// MOVQ  MM2, [EAX+8]
-      db $0F,$6F,$5A,$08       /// MOVQ  MM3, [EDX+8]
-      db $0F,$0F,$C1,$9E       /// PFADD MM0, MM1
-      db $0F,$0F,$DA,$9A       /// PFSUB MM3, MM2
-      db $0F,$0F,$DF,$B4       /// PFMUL MM3, MM7
-      db $0F,$7F,$01           /// MOVQ  [ECX], MM0
-      db $0F,$0F,$D3,$9E       /// PFADD MM2, MM3
-      db $0F,$7F,$51,$08       /// MOVQ  [ECX+8], MM2
-
-      db $0F,$0E               /// FEMMS
-      pop ebx
-      pop ebp
-      ret $04
-@@FPU:      // 242
-   end;
-{$endif}
-   vr[X]:=V1[X]+(V2[X]-V1[X])*pt^;
-   vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*pt^;
-   vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*pt^;
-   vr[W]:=V1[W]+(V2[W]-V1[W])*pt^;
+   vr[X]:=V1[X]+(V2[X]-V1[X])*t;
+   vr[Y]:=V1[Y]+(V2[Y]-V1[Y])*t;
+   vr[Z]:=V1[Z]+(V2[Z]-V1[Z])*t;
+   vr[W]:=V1[W]+(V2[W]-V1[W])*t;
 end;
 
 // VectorAngleLerp
@@ -8240,33 +8231,39 @@ end;
 // ClampValue (min-max)
 //
 function ClampValue(const aValue, aMin, aMax : Single) : Single;
-begin
+//begin
 {$ifndef GEOMETRY_NO_ASM}
-   asm
-      test vSIMD, 1
-      jz @@FPU
+asm   // 118
+      fld   aValue
+      fcom  aMin
+      fstsw ax
+      sahf
+      jb    @@ReturnMin
+@@CompMax:
+      fcom  aMax
+      fstsw ax
+      sahf
+      jnbe  @@ReturnMax
+      pop   ebp
+      ret   $0C
 
-      db $0F,$6E,$45,$10       /// movd  mm0, [EBP+$10]
-      db $0F,$6E,$4D,$0C       /// movd  mm1, [EBP+$C]
-      db $0F,$6E,$55,$08       /// movd  mm2, [EBP+$8]
-      db $0F,$0F,$C1,$A4       /// pfmax mm0, mm1
-      db $0F,$0F,$C2,$94       /// pfmin mm0, mm2
-      db $0F,$7E,$45,$10       /// movd  [EBP+$10], mm0
-      db $0F,$0E               /// femms
-      pop ecx
-      fld   dword ptr [EBP+$10]
-
-      pop ebp
-      ret $C
-@@FPU:
-   end;
-{$endif}
+@@ReturnMax:
+      fld   aMax
+      jmp @@End
+@@ReturnMin:
+      fld   aMin
+@@End:
+      ffree st(1)
+end;
+{$else}
+begin // 134
    if aValue<aMin then
       Result:=aMin
    else if aValue>aMax then
       Result:=aMax
    else Result:=aValue;
-end;
+end;              
+{$endif}
 
 // ClampValue (min-)
 //
