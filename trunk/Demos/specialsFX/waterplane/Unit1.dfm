@@ -55,10 +55,10 @@ object Form1: TForm1
       Up.Coordinates = {2FBD3B3302000033000080BF00000000}
       XSamplingScale.Min = -63
       XSamplingScale.Max = 63
-      XSamplingScale.Step = 1
+      XSamplingScale.Step = 2
       YSamplingScale.Min = -63
       YSamplingScale.Max = 63
-      YSamplingScale.Step = 1
+      YSamplingScale.Step = 2
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLWaterPlane1: TGLWaterPlane
