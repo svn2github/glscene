@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>30/04/03 - EG - Hyperbolic trig functions (Aaron Hochwimmer)
       <li>14/02/03 - EG - Added ScaleAndRound
       <li>28/01/03 - EG - Affine matrix inversion and related functions (Dan Barlett)
       <li>29/10/02 - EG - New MinFloat overloads (Bob)
@@ -965,6 +966,15 @@ function  CoTan(const X : Extended) : Extended; overload;
 function  CoTan(const X : Single) : Single; overload;
 
 //------------------------------------------------------------------------------
+// Hyperbolic Trigonometric functions
+//------------------------------------------------------------------------------
+
+function  Sinh(const x : Single) : Single; overload;
+function  Sinh(const x : Double) : Double; overload;
+function  Cosh(const x : Single) : Single; overload;
+function  Cosh(const x : Double) : Double; overload;
+
+//------------------------------------------------------------------------------
 // Miscellanious math functions
 //------------------------------------------------------------------------------
 
@@ -977,6 +987,9 @@ function ISqrt(i : Integer) : Integer;
 {: Computes an integer length Result:=Sqrt(x*x+y*y). }
 function ILength(x, y : Integer) : Integer; overload;
 function ILength(x, y, z : Integer) : Integer; overload;
+
+{: Computes Exp(ST(0)) and leaves result on ST(0) }
+procedure RegisterBasedExp;
 
 {: Generates a random point on the unit sphere.<p>
    Point repartition is correctly isotropic with no privilegied direction. }
@@ -1254,7 +1267,6 @@ const
   C3 = $40;
   cwChop : Word = $1F3F;
 
-
   // to be used as descriptive indices
   X = 0;
   Y = 1;
@@ -1263,6 +1275,7 @@ const
 
   cZero : Single = 0.0;
   cOne : Single = 1.0;
+  cOneDotFive : Single = 0.5;
 
 type
 
@@ -5875,6 +5888,78 @@ asm
       FDIVRP
 end;
 
+// Sinh
+//
+function Sinh(const x : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   Result:=0.5*(Exp(x)-Exp(-x));
+{$else}
+asm
+      fld   x
+      call  RegisterBasedExp
+      fld   x
+      fchs
+      call  RegisterBasedExp
+      fsub
+      fmul  cOneDotFive
+{$endif}
+end;
+
+// Sinh
+//
+function Sinh(const x : Double) : Double;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   Result:=0.5*(Exp(x)-Exp(-x));
+{$else}
+asm
+      fld   x
+      call  RegisterBasedExp
+      fld   x
+      fchs
+      call  RegisterBasedExp
+      fsub
+      fmul  cOneDotFive
+{$endif}
+end;
+
+// Cosh
+//
+function Cosh(const x : Single) : Single;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   Result:=0.5*(Exp(x)+Exp(-x));
+{$else}
+asm
+      fld   x
+      call  RegisterBasedExp
+      fld   x
+      fchs
+      call  RegisterBasedExp
+      fadd
+      fmul  cOneDotFive
+{$endif}
+end;
+
+// Cosh
+//
+function Cosh(const x : Double) : Double;
+{$ifdef GEOMETRY_NO_ASM}
+begin
+   Result:=0.5*(Exp(x)+Exp(-x));
+{$else}
+asm
+      fld   x
+      call  RegisterBasedExp
+      fld   x
+      fchs
+      call  RegisterBasedExp
+      fadd
+      fmul  cOneDotFive
+{$endif}
+end;
+
 // RSqrt
 //
 function RSqrt(v : Single) : Single;
@@ -6003,6 +6088,23 @@ asm
       fld1
       fdivr
 @@End:
+end;
+
+// RegisterBasedExp
+//
+procedure RegisterBasedExp;
+asm   // Exp(x) = 2^(x.log2(e))
+      fldl2e
+      fmul
+      fld      st(0)
+      frndint
+      fsub     st(1), st
+      fxch     st(1)
+      f2xm1
+      fld1
+      fadd
+      fscale
+      fstp     st(1)
 end;
 
 // RandomPointOnSphere
