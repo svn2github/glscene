@@ -254,7 +254,7 @@ type
          { Private Declarations }
          FManagerList : TList;
          FLastSortTime : Double;
-         FZWrite : Boolean;
+         FZWrite, FZTest : Boolean;
 			FBlendingMode : TBlendingMode;
          FCurrentRCI : PRenderContextInfo;
 
@@ -286,6 +286,8 @@ type
             it is not necessary to write to the ZBuffer since the particles
             are depth-sorted. Writing to the ZBuffer has a performance penalty. }
          property ZWrite : Boolean read FZWrite write FZWrite default False;
+         {: Specifies if particles should write to test ZBuffer.<p> }
+         property ZTest : Boolean read FZTest write FZTest default True;
          {: Default blending mode for particles.<p>
             "Additive" blending is the usual mode (increases brightness and
             saturates), "transparency" may be used for smoke or systems that
@@ -312,6 +314,7 @@ type
          { Private Declarations }
          FInitialVelocity : TGLCoordinates;
          FInitialPosition : TGLCoordinates;
+         FPositionDispersionRange : TGLCoordinates;
          FVelocityDispersion : Single;
          FPositionDispersion : Single;
          FParticleInterval : Single;
@@ -323,6 +326,7 @@ type
          { Protected Declarations }
          procedure SetInitialVelocity(const val : TGLCoordinates);
          procedure SetInitialPosition(const val : TGLCoordinates);
+         procedure SetPositionDispersionRange(const val : TGLCoordinates);
          procedure SetVelocityDispersion(const val : Single);
          procedure SetPositionDispersion(const val : Single);
          procedure SetParticleInterval(const val : Single);
@@ -352,6 +356,7 @@ type
          property VelocityDispersion : Single read FVelocityDispersion write SetVelocityDispersion;
          property InitialPosition : TGLCoordinates read FInitialPosition write SetInitialPosition;
          property PositionDispersion : Single read FPositionDispersion write SetPositionDispersion;
+         property PositionDispersionRange : TGLCoordinates read FPositionDispersionRange write SetPositionDispersionRange;
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
          property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
@@ -718,24 +723,33 @@ end;
 
 // RndVector
 //
-procedure RndVector(const dispersion : TGLSourcePFXDispersionMode; var v : TAffineVector; var f : Single);
+procedure RndVector(const dispersion : TGLSourcePFXDispersionMode;
+                    var v : TAffineVector; var f : Single;
+                    dispersionRange : TGLCoordinates);
 var
    f2, fsq : Single;
+   p : TVector;
 begin
    f2:=2*f;
+   if Assigned(dispersionRange) then
+      p:=VectorScale(dispersionRange.DirectVector, f2)
+   else p:=VectorScale(XYZHmgVector, f2);
    case dispersion of
       sdmFast : begin
-         v[0]:=(Random-0.5)*f2;
-         v[1]:=(Random-0.5)*f2;
-         v[2]:=(Random-0.5)*f2;
+         v[0]:=(Random-0.5)*p[0];
+         v[1]:=(Random-0.5)*p[1];
+         v[2]:=(Random-0.5)*p[2];
       end;
    else
-      fsq:=Sqr(f);
+      fsq:=Sqr(0.5);
       repeat
-         v[0]:=(Random-0.5)*f2;
-         v[1]:=(Random-0.5)*f2;
-         v[2]:=(Random-0.5)*f2;
+         v[0]:=(Random-0.5);
+         v[1]:=(Random-0.5);
+         v[2]:=(Random-0.5);
       until VectorNorm(v)<=fsq;
+      v[0]:=v[0]*p[0];
+      v[1]:=v[1]*p[1];
+      v[2]:=v[2]*p[2];
    end;
 end;
 
@@ -1099,6 +1113,7 @@ constructor TGLParticleFXRenderer.Create(aOwner : TComponent);
 begin
    inherited;
    ObjectStyle:=ObjectStyle+[osNoVisibilityCulling, osDirectDraw];
+   FZTest:=True;
    FManagerList:=TList.Create;
    FBlendingMode:=bmAdditive;
 end;
@@ -1319,6 +1334,8 @@ begin
          glGetBooleanv(GL_DEPTH_WRITEMASK, @oldDepthMask);
          glDepthMask(False);
       end;
+      if not FZTest then
+         glDisable(GL_DEPTH_TEST);
 
       try
          // Initialize managers
@@ -1385,6 +1402,7 @@ begin
    inherited;
    FInitialVelocity:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
    FInitialPosition:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
+   FPositionDispersionRange:=TGLCoordinates.CreateInitialized(Self, XYZHmgVector, csPoint);
    FVelocityDispersion:=0;
    FPositionDispersion:=0;
    FParticleInterval:=0.1;
@@ -1396,6 +1414,7 @@ end;
 //
 destructor TGLSourcePFXEffect.Destroy;
 begin
+   FPositionDispersionRange.Free;
    FInitialVelocity.Free;
    FInitialPosition.Free;
    inherited Destroy;
@@ -1421,9 +1440,11 @@ procedure TGLSourcePFXEffect.WriteToFiler(writer : TWriter);
 begin
    inherited;
    with writer do begin
-      WriteInteger(1); // ArchiveVersion 1, added FDispersionMode
+      WriteInteger(2);  // ArchiveVersion 2, added FPositionDispersionRange
+                        // ArchiveVersion 1, added FDispersionMode
       FInitialVelocity.WriteToFiler(writer);
       FInitialPosition.WriteToFiler(writer);
+      FPositionDispersionRange.WriteToFiler(writer);
       WriteFloat(FVelocityDispersion);
       WriteFloat(FPositionDispersion);
       WriteFloat(FParticleInterval);
@@ -1441,9 +1462,11 @@ begin
    inherited;
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0, 1]);
+      Assert(archiveVersion in [0..2]);
       FInitialVelocity.ReadFromFiler(reader);
       FInitialPosition.ReadFromFiler(reader);
+      if archiveVersion>=2 then
+         FPositionDispersionRange.ReadFromFiler(reader);
       FVelocityDispersion:=ReadFloat;
       FPositionDispersion:=ReadFloat;
       FParticleInterval:=ReadFloat;
@@ -1473,6 +1496,13 @@ end;
 procedure TGLSourcePFXEffect.SetInitialPosition(const val : TGLCoordinates);
 begin
    FInitialPosition.Assign(val);
+end;
+
+// SetPositionDispersionRange
+//
+procedure TGLSourcePFXEffect.SetPositionDispersionRange(const val : TGLCoordinates);
+begin
+   FPositionDispersionRange.Assign(val);
 end;
 
 // SetPositionDispersion
@@ -1526,9 +1556,9 @@ begin
    AddVector(pos, InitialPosition.AsAffineVector);
    while nb>0 do begin
       particle:=Manager.CreateParticle;
-      RndVector(DispersionMode, av, FPositionDispersion);
+      RndVector(DispersionMode, av, FPositionDispersion, FPositionDispersionRange);
       VectorAdd(pos, av, @particle.Position);
-      RndVector(DispersionMode, av, FVelocityDispersion);
+      RndVector(DispersionMode, av, FVelocityDispersion, nil);
       VectorAdd(InitialVelocity.AsAffineVector, av, @particle.Velocity);
       if VelocityMode=svmRelative then
          particle.FVelocity:=OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity);
@@ -1564,9 +1594,9 @@ begin
       AddVector(tmp, InitialVelocity.AsVector);
       particle:=Manager.CreateParticle;
       with particle do begin
-         RndVector(DispersionMode, av, FPositionDispersion);
+         RndVector(DispersionMode, av, FPositionDispersion, FPositionDispersionRange);
          VectorAdd(pos, av, @Position);
-         RndVector(DispersionMode, av, FVelocityDispersion);
+         RndVector(DispersionMode, av, FVelocityDispersion, nil);
          VectorAdd(tmp, av, @Velocity);
          if VelocityMode=svmRelative then
             Velocity:=OwnerBaseSceneObject.LocalToAbsolute(Velocity);
@@ -2020,6 +2050,7 @@ end;
 constructor TGLPolygonPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
+   FNbSides:=6;
 end;
 
 // Destroy
