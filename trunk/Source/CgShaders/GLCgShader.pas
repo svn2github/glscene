@@ -2,6 +2,7 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>25/09/02 - EG - Cg Beta 2/2.1 compatible, now uses ARBVP
       <li>19/06/02 - EG - Improved OO wrapper
       <li>18/06/02 - EG - Creation
    </ul></font>
@@ -193,8 +194,6 @@ var
    vCgNextProgID : Integer = 1;
    vCgContextCount : Integer;
 
-{$R *.dcr}
-
 procedure Register;
 begin
    RegisterComponents('GLScene-Cg', [TCgShader]);
@@ -288,26 +287,23 @@ procedure TCgProgram.BuildParamsList;
 var
    bindIter, oldIter : PcgBindIter;
    paramName, paramStart : String;
-   lenStart, arraySize : Integer;
+   arraySize : Integer;
    newParam : TCgParameter;
 begin
    ClearParams;
    paramStart:=FProgramName+'.';
-   lenStart:=Length(paramStart);
    // build params list
    oldIter:=nil;
    bindIter:=cgGetNextBind(FProgramIter, oldIter);
    while Assigned(bindIter) do begin
       paramName:=StrPas(cgGetBindParamName(bindIter));
-      if Copy(paramName, 1, lenStart)=paramStart then begin
-         newParam:=TCgParameter.Create;
-         newParam.FOwner:=Self;
-         newParam.FName:=Copy(paramName, lenStart+1, MaxInt);
-         newParam.FParamType:=cgGetBindParamType(bindIter);
-         newParam.FValueType:=cgGetBindValueType(bindIter, arraySize);
-         newParam.FBindIter:=nil; // late bind
-         FParams.Add(newParam);
-      end;
+      newParam:=TCgParameter.Create;
+      newParam.FOwner:=Self;
+      newParam.FName:=paramName;
+      newParam.FParamType:=cgGetBindParamType(bindIter);
+      newParam.FValueType:=cgGetBindValueType(bindIter, arraySize);
+      newParam.FBindIter:=nil; // late bind
+      FParams.Add(newParam);
       oldIter:=bindIter;
       bindIter:=cgGetNextBind(FProgramIter, bindIter);
    end;
@@ -330,23 +326,34 @@ end;
 function TCgProgram.GetParam(index : String) : TCgParameter;
 begin
    Result:=ParamByName(index);
-   Assert(Result<>nil, ClassName+': Invalid parameter name.');
+   Assert(Result<>nil, ClassName+': Invalid parameter name "'+index+'"');
 end;
 
 // ParamByName
 //
 function TCgProgram.ParamByName(const name : String) : TCgParameter;
 var
-   i : Integer;
+   i, arraySize : Integer;
    list : PPointerList;
+   bindIter : PcgBindIter;
 begin
    Result:=nil;
    list:=FParams.List;
    for i:=0 to FParams.Count-1 do begin
       if TCgParameter(list[i]).Name=name then begin
          Result:=TCgParameter(list[i]);
-         Break;
+         Exit;
       end;
+   end;
+   // attempt a bind (Cg beta bug workaround)
+   bindIter:=cgGetBindByName(FProgramIter, PChar(FProgramName+'.'+name));
+   if Assigned(bindIter) then begin
+      Result:=TCgParameter.Create;
+      FParams.Add(Result);
+      Result.FBindIter:=bindIter;
+      Result.FName:=name;
+      Result.FParamType:=cgGetBindParamType(bindIter);
+      Result.FValueType:=cgGetBindValueType(bindIter, arraySize);
    end;
 end;
 
@@ -389,13 +396,13 @@ begin
          Assert((FProgramName<>''),
                 ClassName+': Unable to retrieve Program iterator.');
          FProgramIter:=cgProgramByName(FCgContext, PChar(FProgramName));
-         // build parameter list for the selected program
-         BuildParamsList;
          // load program
          glGetError;
          FProgramID:=GetCgNextProgID;
          ret:=cgGLLoadProgram(FProgramIter, FProgramID);
          Assert((ret=cgNoError), ClassName+': Failed to load VertexProgram.');
+         // build parameter list for the selected program
+         BuildParamsList;
       except
          cgFreeContext(FCgContext);
          FCgContext:=nil;
@@ -488,7 +495,7 @@ end;
 procedure TCgParameter.Bind;
 begin
    if not Assigned(FBindIter) then begin
-      FBindIter:=cgGetBindByName(Owner.ProgramIter, PChar(Owner.ProgramName+'.'+Name));
+      FBindIter:=cgGetBindByName(Owner.ProgramIter, PChar(Name));
       Assert(Assigned(FBindIter), ClassName+': Failed to bind "'+Name+'"');
    end;
 end;
@@ -521,7 +528,7 @@ end;
 //
 constructor TCgVertexProgram.Create;
 begin
-   FProfileType:=cgVertexProfile;
+   FProfileType:=cgARBVertexProfile;
 	inherited;
 end;
 
