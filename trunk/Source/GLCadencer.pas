@@ -1,18 +1,18 @@
-// GLCadencer
-{: Egg<p>
+{: GLCadencer<p>
 
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>23/08/01 - Egg - No more "deprecated" warning for Delphi6
-      <li>12/08/01 - Egg - Protection against "timer flood"
-      <li>19/07/01 - Egg - Fixed Memory Leak in RegisterASAPCadencer,
-                           Added speed limiter TASAPHandler.WndProc
-      <li>01/02/01 - Egg - Fixed "Freezing" when Enabled set to False
-      <li>08/10/00 - Egg - Added TASAPHandler to support multiple ASAP cadencers
-      <li>19/06/00 - Egg - Fixed TGLCadencer.Notification
-		<li>14/04/00 - Egg - Minor fixes
-		<li>13/04/00 - Egg - Creation
+      <li>08/09/01 - EG - Added MaxDeltaTime limiter
+      <li>23/08/01 - EG - No more "deprecated" warning for Delphi6
+      <li>12/08/01 - EG - Protection against "timer flood"
+      <li>19/07/01 - EG - Fixed Memory Leak in RegisterASAPCadencer,
+                          Added speed limiter TASAPHandler.WndProc
+      <li>01/02/01 - EG - Fixed "Freezing" when Enabled set to False
+      <li>08/10/00 - EG - Added TASAPHandler to support multiple ASAP cadencers
+      <li>19/06/00 - EG - Fixed TGLCadencer.Notification
+		<li>14/04/00 - EG - Minor fixes
+		<li>13/04/00 - EG - Creation
 	</ul></font>
 }
 unit GLCadencer;
@@ -67,6 +67,7 @@ type
 			FTimeReference : TGLCadencerTimeReference;
 			FCurrentTime : Double;
 			FOriginTime : Double;
+         FMaxDeltaTime : Double;
 			FOnProgress : TGLProgressEvent;
 			progressing : Integer;
 
@@ -118,6 +119,14 @@ type
 			{: Multiplier applied to the time reference.<p>
 				Dynamically changeing the TimeMultiplier may cause a "jump". }
 			property TimeMultiplier : Double read FTimeMultiplier write FTimeMultiplier stored StoreTimeMultiplier;
+         {: Maximum value for deltaTime in progression events.<p>
+            If null or negative, no max deltaTime is defined, otherwise, whenever
+            an event whose actual deltaTime would be superior to MaxDeltaTime
+            occurs, deltaTime is clamped to this max, and the extra time is hidden
+            by the cadencer (it isn't visible in CurrentTime either.<br>
+            This option allows to limit progression rate in simulations where
+            high values would provide errors/random behaviour. }
+         property MaxDeltaTime : Double read FMaxDeltaTime write FMaxDeltaTime;
 			{: Adjusts how progression events are triggered.<p>
 				See TGLCadencerMode. }
 			property Mode : TGLCadencerMode read FMode write SetMode default cmASAP;
@@ -438,6 +447,13 @@ begin
 			// ...and progress !
 			newTime:=GetCurrentTime;
 			deltaTime:=newTime-lastTime;
+         if FMaxDeltaTime>0 then begin
+            if deltaTime>FMaxDeltaTime then begin
+               FOriginTime:=FOriginTime+(deltaTime-FMaxDeltaTime)/FTimeMultiplier;
+               deltaTime:=FMaxDeltaTime;
+               newTime:=lastTime+deltaTime;
+            end;
+         end;
 			if Assigned(FScene) and (deltaTime<>0) then begin
             progressing:=-progressing;
             try
