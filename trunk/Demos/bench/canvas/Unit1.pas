@@ -2,15 +2,15 @@
 
    This project pits TGLCanvas against TCanvas in direct mode (no double
    buffering, and hardware acceleration should be available on both sides).<p>
-   You may usually bet on TGLCanvas being 3 to 5 times faster, but on some
-   fast 3D hardware, or when PenWidth is not 1, the performance ratio can
-   be much higher.<p>
+   You may usually bet on TGLCanvas being 3 to 5 times faster, but on fast 3D
+   hardware, or when PenWidth is not 1, the performance ratio can reach 1:100.<p>
 
-   Figures for PenWidth = 1<p>
+   Figures for PenWidth = 1, GLCanvas / GDI<p>
 
    CPU         Graphics Board    Lines          Ellipses         Points
 
-   Duron 800   TNT2 M64          105 / 571      400 / 1148       126 / 676
+   Tbird 1.2   GF2 Pro           7.1 / 162       92 /  557        40 / 223
+   Duron 800   TNT2 M64        105.0 / 571      400 / 1148       126 / 676
    ----21/01/02 - Initial
 }
 unit Unit1;
@@ -95,12 +95,14 @@ begin
    else vPenWidth:=2;
 
    Application.ProcessMessages;
+   RandSeed:=0;
 
    t:=StartPrecisionTimer;
    GLSceneViewer.Refresh;
-   LAGLCanvas.Caption:=Format('GLCanvas: %.1f msec', [StopPrecisionTimer(t)*1000]);
+   LAGLCanvas.Caption:=Format('GLCanvas: %.2f msec', [StopPrecisionTimer(t)*1000]);
 
    Application.ProcessMessages;
+   RandSeed:=0;
 
    t:=StartPrecisionTimer;
    PaintTheBox;
