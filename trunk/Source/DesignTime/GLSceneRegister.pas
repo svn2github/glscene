@@ -129,7 +129,7 @@ uses
    TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
    GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
    GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
-   GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText
+   GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText, GLWindows
 {$ifdef WIN32}
    , GLWin32Viewer
 {$endif}
@@ -1774,6 +1774,7 @@ initialization
       RegisterSceneObject(TGLCamera, 'Camera', '');
       RegisterSceneObject(TGLLightSource, 'LightSource', '');
       RegisterSceneObject(TDummyCube, 'DummyCube', '');
+
       RegisterSceneObject(TSprite, 'Sprite', glsOCBasicGeometry);
       RegisterSceneObject(TLines, 'Lines', glsOCBasicGeometry);
       RegisterSceneObject(TPlane, 'Plane', glsOCBasicGeometry);
@@ -1785,6 +1786,7 @@ initialization
       RegisterSceneObject(TCone, 'Cone', glsOCBasicGeometry);
       RegisterSceneObject(TCylinder, 'Cylinder', glsOCBasicGeometry);
       RegisterSceneObject(TDodecahedron, 'Dodecahedron', glsOCBasicGeometry);
+
       RegisterSceneObject(TArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TAnnulus, 'Annulus', glsOCAdvancedGeometry);
       RegisterSceneObject(TExtrusionSolid, 'ExtrusionSolid', glsOCAdvancedGeometry);
@@ -1792,12 +1794,15 @@ initialization
       RegisterSceneObject(TPipe, 'Pipe', glsOCAdvancedGeometry);
       RegisterSceneObject(TRevolutionSolid, 'RevolutionSolid', glsOCAdvancedGeometry);
       RegisterSceneObject(TTorus, 'Torus', glsOCAdvancedGeometry);
+
       RegisterSceneObject(TActor, 'Actor', glsOCMeshObjects);
       RegisterSceneObject(TFreeForm, 'FreeForm', glsOCMeshObjects);
       RegisterSceneObject(TMesh, 'Mesh', glsOCMeshObjects);
       RegisterSceneObject(TPortal, 'Portal', glsOCMeshObjects);
+
       RegisterSceneObject(THeightField, 'HeightField', glsOCProceduralObjects);
       RegisterSceneObject(TGLParticles, 'Particles', glsOCProceduralObjects);
+
       RegisterSceneObject(TEarthSkyDome, 'EarthSkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TSkyDome, 'SkyDome', glsOCSpecialObjects);
@@ -1807,8 +1812,19 @@ initialization
       RegisterSceneObject(TTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);
       RegisterSceneObject(TXYZGrid, 'XYZGrid', glsOCSpecialObjects);
       RegisterSceneObject(TZShadows, 'ZShadows', glsOCSpecialObjects);
+
       RegisterSceneObject(THUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(THUDText, 'HUDText', glsOCHUDObjects);
+
+      RegisterSceneObject(TGLBaseControl, 'Root Control', glsOCGuiObjects);
+      RegisterSceneObject(TGLForm, 'TGLForm', glsOCGuiObjects);
+      RegisterSceneObject(TGLPanel, 'TGLPanel', glsOCGuiObjects);
+      RegisterSceneObject(TGLButton, 'TGLButton', glsOCGuiObjects);
+      RegisterSceneObject(TGLCheckBox, 'TGLCheckBox', glsOCGuiObjects);
+      RegisterSceneObject(TGLEdit, 'TGLEdit', glsOCGuiObjects);
+      RegisterSceneObject(TGLLabel, 'TGLLabel', glsOCGuiObjects);
+      RegisterSceneObject(TGLAdvancedLabel, 'TGLAdvancedLabel', glsOCGuiObjects);
+
       RegisterSceneObject(TDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');
    end;

@@ -52,6 +52,7 @@ resourcestring
   glsOCSpecialObjects = 'Special objects';
   glsOCGraphPlottingObjects = 'Graph-plotting objects';
   glsOCHUDObjects = 'HUD objects';
+  glsOCGuiObjects = 'GUI objects';
 
 implementation
 

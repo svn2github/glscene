@@ -131,6 +131,10 @@ contains
   GLSpaceText in '..\Source\GLSpaceText.pas',
   GLTimeEventsMGR in '..\Source\GLTimeEventsMGR.pas',
   Octree in '..\Source\Base\Octree.pas',
-  GLExplosionFX in '..\Source\GLExplosionFX.pas';
+  GLExplosionFX in '..\Source\GLExplosionFX.pas',
+  GLGui in '..\Source\GLGui.pas',
+  GLWindows in '..\Source\GLWindows.pas',
+  GLWindowsFont in '..\Source\GLWindowsFont.pas',
+  GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas' {GUISkinEditor};
 
 end.
