@@ -11,76 +11,77 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
-      <li>24/07/02 - Egg - Added TCylinder.Alignment
-      <li>23/07/02 - Egg - Added TGLPoints (experimental)
-      <li>20/07/02 - Egg - TCylinder.RayCastIntersect and TPlane.RayCastIntersect
-      <li>18/07/02 - Egg - Added TCylinder.Align methods
-      <li>07/07/02 - Egg - Added TPlane.Style
-      <li>03/07/02 - Egg - TPolygon now properly setups normals (filippo)
-      <li>17/03/02 - Egg - Support for transparent lines
-      <li>02/02/02 - Egg - Fixed TSprite change notification
-      <li>26/01/02 - Egg - TPlane & TCube now osDirectDraw
-      <li>20/01/02 - Egg - TSpaceText moved to GLSpaceText
-      <li>22/08/01 - Egg - TTorus.RayCastIntersect fixes
-      <li>30/07/01 - Egg - Updated AxisAlignedDimensions implems
-      <li>16/03/01 - Egg - TCylinderBase, changed default Stacks from 8 to 4
-      <li>27/02/01 - Egg - Fix in TCube texcoords, added TFrustrum (thx Robin Gerrets)
-      <li>22/02/01 - Egg - Added AxisAlignedDimensions overrides by Uwe Raabe
-      <li>05/02/01 - Egg - Minor changes to TCube.BuildList
-      <li>21/01/01 - Egg - BaseProjectionMatrix fix for THUDSprite (picking issue),
-                           THUDSprite moved to GLHUDObjects
-      <li>14/01/01 - Egg - Fixed TSphere texture coordinates
-      <li>13/01/01 - Egg - TSprite matrix compatibility update
-      <li>09/01/01 - Egg - TSpaceText now handles its TFont.OnFontChange
-      <li>08/01/01 - Egg - Added TGLLinesNode (color support) and Node size control
-      <li>22/12/00 - Egg - Sprites are no longer texture enabled by default,
-                           updated TSprite.BuildList to work with new matrices
-      <li>14/11/00 - Egg - Added TDummyCube.Destroy (thx Airatz)
-      <li>08/10/00 - Egg - Fixed call to wglUseFontOutlines
-      <li>06/08/00 - Egg - TRotationSolid renamed to TRevolutionSolid & moved to GLExtrusion
-      <li>04/08/00 - Egg - Fixed sphere main body texture coords + slight speedup
-      <li>02/08/00 - Egg - Added TPolygonBase
-      <li>19/07/00 - Egg - Added THUDSprite
-      <li>18/07/00 - Egg - Added TRevolutionSolid
-      <li>15/07/00 - Egg - Code reduction and minor speedup for all quadric objects,
-                           Added TLineBase (split of TLines),
-                           TDummyCube now uses osDirectDraw instead of special behaviour
-      <li>13/07/00 - Egg - Added TArrowLine (code by Aaron Hochwimmer)
-      <li>28/06/00 - Egg - Support for "ObjectStyle"
-      <li>23/06/00 - Egg - Reduced default Loop count for TDisk
-      <li>18/06/00 - Egg - TMesh and accompanying stuff moved to GLMesh
-      <li>14/06/00 - Egg - Added Capacity to TVertexList
-      <li>09/06/00 - Egg - First row of Geometry-related upgrades
-      <li>08/06/00 - Egg - Added ReleaseFontManager, fixed TSpaceText DestroyList,
-      <li>01/06/00 - Egg - Added TAnnulus (code by Aaron Hochwimmer)
-      <li>29/05/00 - Egg - TLines now uses TGLNode/TGLNodes
-      <li>28/05/00 - Egg - Added persistence ability to TLines,
-                           Added defaults for all TLines properties
-      <li>27/05/00 - Egg - Moved in RogerCao's TLines object, added a TLineNode
-                           class (currently private) and various enhancements + fixes,
-                           DodecahedronBuildList now available as a procedure,
-                           CubeWireframeBuildList now available as a procedure
+      <li>27/09/02 - EG - Added TGLPointParameters
+      <li>24/07/02 - EG - Added TCylinder.Alignment
+      <li>23/07/02 - EG - Added TGLPoints (experimental)
+      <li>20/07/02 - EG - TCylinder.RayCastIntersect and TPlane.RayCastIntersect
+      <li>18/07/02 - EG - Added TCylinder.Align methods
+      <li>07/07/02 - EG - Added TPlane.Style
+      <li>03/07/02 - EG - TPolygon now properly setups normals (filippo)
+      <li>17/03/02 - EG - Support for transparent lines
+      <li>02/02/02 - EG - Fixed TSprite change notification
+      <li>26/01/02 - EG - TPlane & TCube now osDirectDraw
+      <li>20/01/02 - EG - TSpaceText moved to GLSpaceText
+      <li>22/08/01 - EG - TTorus.RayCastIntersect fixes
+      <li>30/07/01 - EG - Updated AxisAlignedDimensions implems
+      <li>16/03/01 - EG - TCylinderBase, changed default Stacks from 8 to 4
+      <li>27/02/01 - EG - Fix in TCube texcoords, added TFrustrum (thx Robin Gerrets)
+      <li>22/02/01 - EG - Added AxisAlignedDimensions overrides by Uwe Raabe
+      <li>05/02/01 - EG - Minor changes to TCube.BuildList
+      <li>21/01/01 - EG - BaseProjectionMatrix fix for THUDSprite (picking issue),
+                          THUDSprite moved to GLHUDObjects
+      <li>14/01/01 - EG - Fixed TSphere texture coordinates
+      <li>13/01/01 - EG - TSprite matrix compatibility update
+      <li>09/01/01 - EG - TSpaceText now handles its TFont.OnFontChange
+      <li>08/01/01 - EG - Added TGLLinesNode (color support) and Node size control
+      <li>22/12/00 - EG - Sprites are no longer texture enabled by default,
+                          updated TSprite.BuildList to work with new matrices
+      <li>14/11/00 - EG - Added TDummyCube.Destroy (thx Airatz)
+      <li>08/10/00 - EG - Fixed call to wglUseFontOutlines
+      <li>06/08/00 - EG - TRotationSolid renamed to TRevolutionSolid & moved to GLExtrusion
+      <li>04/08/00 - EG - Fixed sphere main body texture coords + slight speedup
+      <li>02/08/00 - EG - Added TPolygonBase
+      <li>19/07/00 - EG - Added THUDSprite
+      <li>18/07/00 - EG - Added TRevolutionSolid
+      <li>15/07/00 - EG - Code reduction and minor speedup for all quadric objects,
+                          Added TLineBase (split of TLines),
+                          TDummyCube now uses osDirectDraw instead of special behaviour
+      <li>13/07/00 - EG - Added TArrowLine (code by Aaron Hochwimmer)
+      <li>28/06/00 - EG - Support for "ObjectStyle"
+      <li>23/06/00 - EG - Reduced default Loop count for TDisk
+      <li>18/06/00 - EG - TMesh and accompanying stuff moved to GLMesh
+      <li>14/06/00 - EG - Added Capacity to TVertexList
+      <li>09/06/00 - EG - First row of Geometry-related upgrades
+      <li>08/06/00 - EG - Added ReleaseFontManager, fixed TSpaceText DestroyList,
+      <li>01/06/00 - EG - Added TAnnulus (code by Aaron Hochwimmer)
+      <li>29/05/00 - EG - TLines now uses TGLNode/TGLNodes
+      <li>28/05/00 - EG - Added persistence ability to TLines,
+                          Added defaults for all TLines properties
+      <li>27/05/00 - EG - Moved in RogerCao's TLines object, added a TLineNode
+                          class (currently private) and various enhancements + fixes,
+                          DodecahedronBuildList now available as a procedure,
+                          CubeWireframeBuildList now available as a procedure
       <li>26/05/00 - RoC - Added division property to TLines, and Spline supported
-      <li>26/05/00 - Egg - Moved vectorfile remnants to GLVectorFiles
-      <li>14/05/00 - Egg - Removed Top/Bottom checks for TSphere,
-                           Added mmTriangleStrip support in CalcNormals
-      <li>08/05/00 - Egg - Uncommented DisableAutoTexture in TSpaceText.BuildList
+      <li>26/05/00 - EG - Moved vectorfile remnants to GLVectorFiles
+      <li>14/05/00 - EG - Removed Top/Bottom checks for TSphere,
+                          Added mmTriangleStrip support in CalcNormals
+      <li>08/05/00 - EG - Uncommented DisableAutoTexture in TSpaceText.BuildList
       <li>07/05/00 - RoC - TLines added, to show a list of vertex
-		<li>26/04/00 - Egg - Reactivated stuff in SetupQuadricParams (thanks Nelson Chu)
-		<li>18/04/00 - Egg - Overriden TDummyCube.Render
-		<li>16/04/00 - Egg - FontManager now published and auto-creating
-		<li>12/04/00 - Egg - Added TCylinderBase.Loops (fixes a bug, thanks Uwe)
-      <li>24/03/00 - Egg - Added Rotation to TSprite, fixed sprite size
-		<li>20/03/00 - Egg - Enhanced FontManager
-		<li>17/03/00 - Egg - Fixed SpaceText glBaseList bug,
-									TSprite now uses a transposition of the globalmatrix
-		<li>16/03/00 - Egg - Enhanced TFontManager to allow lower quality
-		<li>14/03/00 - Egg - Added subobjects Barycenter support for TDummyCube
-      <li>09/02/00 - Egg - ObjectManager stuff moved to GLSceneRegister,
-                           FreeForm and vector file stuff moved to new GLVectorFileObjects
-      <li>08/02/00 - Egg - Added TDummyCube
-      <li>05/02/00 - Egg - Javadocisation, fixes and enhancements :
-                           TVertexList.AddVertex, "default"s to properties
+		<li>26/04/00 - EG - Reactivated stuff in SetupQuadricParams (thanks Nelson Chu)
+		<li>18/04/00 - EG - Overriden TDummyCube.Render
+		<li>16/04/00 - EG - FontManager now published and auto-creating
+		<li>12/04/00 - EG - Added TCylinderBase.Loops (fixes a bug, thanks Uwe)
+      <li>24/03/00 - EG - Added Rotation to TSprite, fixed sprite size
+		<li>20/03/00 - EG - Enhanced FontManager
+		<li>17/03/00 - EG - Fixed SpaceText glBaseList bug,
+								  TSprite now uses a transposition of the globalmatrix
+		<li>16/03/00 - EG - Enhanced TFontManager to allow lower quality
+		<li>14/03/00 - EG - Added subobjects Barycenter support for TDummyCube
+      <li>09/02/00 - EG - ObjectManager stuff moved to GLSceneRegister,
+                          FreeForm and vector file stuff moved to new GLVectorFileObjects
+      <li>08/02/00 - EG - Added TDummyCube
+      <li>05/02/00 - EG - Javadocisation, fixes and enhancements :
+                          TVertexList.AddVertex, "default"s to properties
    </ul></font>
 }
 unit GLObjects;
@@ -247,11 +248,55 @@ type
 
    // TGLPointStyle
    //
-   TGLPointStyle = (psSquare, psRound);
+   TGLPointStyle = (psSquare, psRound, psSmooth, psSmoothAdditive);
+
+	// TGLPointParameters
+	//
+	{: Point parameters as in ARB_point_parameters.<p> }
+	TGLPointParameters = class (TGLUpdateAbleObject)
+		private
+			{ Private Declarations }
+         FEnabled : Boolean;
+         FMinSize, FMaxSize : Single;
+         FFadeTresholdSize : Single;
+         FDistanceAttenuation : TGLCoordinates;
+
+		protected
+			{ Protected Declarations }
+         procedure SetEnabled(const val : Boolean);
+         procedure SetMinSize(const val : Single);
+         procedure SetMaxSize(const val : Single);
+         procedure SetFadeTresholdSize(const val : Single);
+         procedure SetDistanceAttenuation(const val : TGLCoordinates);
+
+			procedure DefineProperties(Filer: TFiler); override;
+			procedure ReadData(Stream: TStream);
+			procedure WriteData(Stream: TStream);
+
+		public
+			{ Public Declarations }
+         constructor Create(AOwner : TPersistent); override;
+         destructor Destroy; override;
+
+         procedure Assign(Source : TPersistent); override;
+
+         procedure Apply;
+         procedure UnApply;
+
+		published
+			{ Published Declarations }
+         property Enabled : Boolean read FEnabled write SetEnabled default False;
+         property MinSize : Single read FMinSize write SetMinSize stored False;
+         property MaxSize : Single read FMaxSize write SetMaxSize stored False;
+         property FadeTresholdSize : Single read FFadeTresholdSize write SetFadeTresholdSize stored False;
+         property DistanceAttenuation : TGLCoordinates read FDistanceAttenuation write SetDistanceAttenuation;
+   end;
 
 	// TGLPoints
 	//
-	{: Renders a set of non-transparent colored points.<p> }
+	{: Renders a set of non-transparent colored points.<p>
+      The points positions and their color are defined through the Positions
+      and Colors properties. }
 	TGLPoints = class (TGLImmaterialSceneObject)
 		private
 			{ Private Declarations }
@@ -259,14 +304,18 @@ type
          FColors : TVectorList;
          FSize : Single;
          FStyle : TGLPointStyle;
+         FPointParameters : TGLPointParameters;
+         FNoZWrite : Boolean;
 
 		protected
 			{ Protected Declarations }
          function StoreSize : Boolean;
+         procedure SetNoZWrite(const val : Boolean);
          procedure SetSize(const val : Single);
          procedure SetPositions(const val : TAffineVectorList);
          procedure SetColors(const val : TVectorList);
          procedure SetStyle(const val : TGLPointStyle);
+         procedure SetPointParameters(const val : TGLPointParameters);
 
 		public
 			{ Public Declarations }
@@ -276,11 +325,12 @@ type
 			procedure Assign(Source: TPersistent); override;
 			procedure BuildList(var rci : TRenderContextInfo); override;
 
-         {: Points positions.<p> }
+         {: Points positions.<p>
+            If empty, a single point is assumed at (0, 0, 0) }
          property Positions : TAffineVectorList read FPositions write SetPositions;
          {: Defines the points colors.<p>
             <ul>
-            <li>if empty, no points will be rendered
+            <li>if empty, point color will be opaque white
             <li>if contains a single color, all points will use that color
             <li>if contains N colors, the first N points (at max) will be rendered
                 using the corresponding colors.
@@ -289,10 +339,17 @@ type
 
 		published
 			{ Published Declarations }
+         {: If true points do not write their Z to the depth buffer. }
+         property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
          {: Point size, all points have a fixed size. }
          property Size : Single read FSize write SetSize stored StoreSize;
          {: Points style.<p> }
          property Style : TGLPointStyle read FStyle write SetStyle default psSquare;
+         {: Point parameters as of ARB_point_parameters.<p>
+            Allows to vary the size and transparency of points depending
+            on their distance to the observer. }
+         property PointParameters : TGLPointParameters read FPointParameters write SetPointParameters;
+
 	end;
 
    // TLineNodesAspect
@@ -1597,6 +1654,152 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLPointParameters ------------------
+// ------------------
+
+// Create
+//
+constructor TGLPointParameters.Create(AOwner : TPersistent);
+begin
+	inherited Create(AOwner);
+   FMinSize:=0;
+   FMaxSize:=128;
+   FFadeTresholdSize:=1;
+   FDistanceAttenuation:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
+end;
+
+// Destroy
+//
+destructor TGLPointParameters.Destroy;
+begin
+   FDistanceAttenuation.Free;
+   inherited;
+end;
+
+// Assign
+//
+procedure TGLPointParameters.Assign(Source : TPersistent);
+begin
+	if Source is TGLPointParameters then begin
+      FMinSize:=TGLPointParameters(Source).FMinSize;
+      FMaxSize:=TGLPointParameters(Source).FMaxSize;
+      FFadeTresholdSize:=TGLPointParameters(Source).FFadeTresholdSize;
+      FDistanceAttenuation.Assign(TGLPointParameters(Source).DistanceAttenuation);
+	end;
+end;
+
+// DefineProperties
+//
+procedure TGLPointParameters.DefineProperties(Filer: TFiler);
+var
+   defaultParams : Boolean;
+begin
+   inherited;
+   defaultParams:=(FMaxSize=128) and (FMinSize=0) and (FFadeTresholdSize=1);
+   Filer.DefineBinaryProperty('PointParams', ReadData, WriteData,
+                              not defaultParams);
+end;
+
+// ReadData
+//
+procedure TGLPointParameters.ReadData(Stream: TStream);
+begin
+   with Stream do begin
+      Read(FMinSize, SizeOf(Single));
+      Read(FMaxSize, SizeOf(Single));
+      Read(FFadeTresholdSize, SizeOf(Single));
+   end;
+end;
+
+// WriteData
+//
+procedure TGLPointParameters.WriteData(Stream: TStream);
+begin
+   with Stream do begin
+      Write(FMinSize, SizeOf(Single));
+      Write(FMaxSize, SizeOf(Single));
+      Write(FFadeTresholdSize, SizeOf(Single));
+   end;
+end;
+
+// Apply
+//
+procedure TGLPointParameters.Apply;
+begin
+   if Enabled and GL_ARB_point_parameters then begin
+      glPointParameterfARB(GL_POINT_SIZE_MIN_ARB, FMinSize);
+      glPointParameterfARB(GL_POINT_SIZE_MAX_ARB, FMaxSize);
+      glPointParameterfARB(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
+      glPointParameterfvARB(GL_DISTANCE_ATTENUATION_ARB, FDistanceAttenuation.AsAddress);
+   end;
+end;
+
+// UnApply
+//
+procedure TGLPointParameters.UnApply;
+begin
+   if Enabled and GL_ARB_point_parameters then begin
+      glPointParameterfARB(GL_POINT_SIZE_MIN_ARB, 0);
+      glPointParameterfARB(GL_POINT_SIZE_MAX_ARB, 128);
+      glPointParameterfARB(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
+      glPointParameterfvARB(GL_DISTANCE_ATTENUATION_ARB, @XVector);
+   end;
+end;
+
+// SetEnabled
+//
+procedure TGLPointParameters.SetEnabled(const val : Boolean);
+begin
+   if val<>FEnabled then begin
+      FEnabled:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetMinSize
+//
+procedure TGLPointParameters.SetMinSize(const val : Single);
+begin
+   if val<>FMinSize then begin
+      if val<0 then
+         FMinSize:=0
+      else FMinSize:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetMaxSize
+//
+procedure TGLPointParameters.SetMaxSize(const val : Single);
+begin
+   if val<>FMaxSize then begin
+      if val<0 then
+         FMaxSize:=0
+      else FMaxSize:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetFadeTresholdSize
+//
+procedure TGLPointParameters.SetFadeTresholdSize(const val : Single);
+begin
+   if val<>FFadeTresholdSize then begin
+      if val<0 then
+         FFadeTresholdSize:=0
+      else FFadeTresholdSize:=val;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetDistanceAttenuation
+//
+procedure TGLPointParameters.SetDistanceAttenuation(const val : TGLCoordinates);
+begin
+   FDistanceAttenuation.Assign(val);
+end;
+
+// ------------------
 // ------------------ TGLPoints ------------------
 // ------------------
 
@@ -1610,13 +1813,14 @@ begin
    FSize:=cDefaultPointSize;
    FPositions:=TAffineVectorList.Create;
    FColors:=TVectorList.Create;
-   FColors.Add(clrWhite);
+   FPointParameters:=TGLPointParameters.Create(Self);
 end;
 
 // Destroy
 //
 destructor TGLPoints.Destroy;
 begin
+   FPointParameters.Free;
    FColors.Free;
    FPositions.Free;
    inherited;
@@ -1641,11 +1845,11 @@ end;
 procedure TGLPoints.BuildList(var rci : TRenderContextInfo);
 var
    n : Integer;
+   v : TVector;
 begin
    n:=FPositions.Count;
-   if n=0 then Exit;
    case FColors.Count of
-      0 : Exit;
+      0 : glColor4f(1, 1, 1, 1);
       1 : glColor4fv(PGLFloat(FColors.List));
    else
       if FColors.Count<n then
@@ -1655,29 +1859,52 @@ begin
    end;
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
-   glDisable(GL_BLEND);
-   glVertexPointer(3, GL_FLOAT, 0, FPositions.List);
+   if n=0 then begin
+      v:=NullHmgPoint;
+      glVertexPointer(3, GL_FLOAT, 0, @v);
+      n:=1;
+   end else glVertexPointer(3, GL_FLOAT, 0, FPositions.List);
    glEnableClientState(GL_VERTEX_ARRAY);
+   if NoZWrite then
+      glDepthMask(False);
    glPointSize(FSize);
-   if GL_EXT_compiled_vertex_array then
+   PointParameters.Apply;
+   if GL_EXT_compiled_vertex_array and (n>64) then
       glLockArraysEXT(0, n);
    case FStyle of
       psSquare : begin
          // square point (simplest method, fastest)
-         glDrawArrays(GL_POINTS, 0, n);
+         glDisable(GL_BLEND);
       end;
       psRound : begin
-         // round points (via smoothing and alpha test, slower)
          glEnable(GL_POINT_SMOOTH);
          glEnable(GL_ALPHA_TEST);
          glAlphaFunc(GL_GREATER, 0.5);
-         glDrawArrays(GL_POINTS, 0, n);
+         glDisable(GL_BLEND);
+      end;
+      psSmooth : begin
+         glEnable(GL_POINT_SMOOTH);
+         glEnable(GL_ALPHA_TEST);
+         glAlphaFunc(GL_NOTEQUAL, 0.0);
+         glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      end;
+      psSmoothAdditive : begin
+         glEnable(GL_POINT_SMOOTH);
+         glEnable(GL_ALPHA_TEST);
+         glAlphaFunc(GL_NOTEQUAL, 0.0);
+         glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
       end;
    else
       Assert(False);
    end;
-   if GL_EXT_compiled_vertex_array then
+   glDrawArrays(GL_POINTS, 0, n);
+   if GL_EXT_compiled_vertex_array and (n>64) then
       glUnlockArraysEXT;
+   PointParameters.UnApply;
+   if NoZWrite then
+      glDepthMask(True);
    glDisableClientState(GL_VERTEX_ARRAY);
    if FColors.Count>1 then
       glDisableClientState(GL_COLOR_ARRAY);
@@ -1689,6 +1916,16 @@ end;
 function TGLPoints.StoreSize : Boolean;
 begin
    Result:=(FSize<>cDefaultPointSize);
+end;
+
+// SetNoZWrite
+//
+procedure TGLPoints.SetNoZWrite(const val : Boolean);
+begin
+   if FNoZWrite<>val then begin
+      FNoZWrite:=val;
+      StructureChanged;
+   end;
 end;
 
 // SetSize
@@ -1725,6 +1962,13 @@ begin
       FStyle:=val;
       StructureChanged;
    end;
+end;
+
+// SetPointParameters
+//
+procedure TGLPoints.SetPointParameters(const val : TGLPointParameters);
+begin
+   FPointParameters.Assign(val);
 end;
 
 // ------------------
@@ -4322,7 +4566,7 @@ initialization
 //-------------------------------------------------------------
 
    RegisterClasses([TSphere, TCube, TFrustrum, TCylinder, TCone, TTorus,
-                    TTeapot, TDodecahedron, TDisk, TPlane, TSprite,
+                    TTeapot, TDodecahedron, TDisk, TPlane, TSprite, TGLPoints,
                     TDummyCube, TLines, TAnnulus, TArrowLine, TPolygon]);
 
 end.

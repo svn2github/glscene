@@ -1777,6 +1777,7 @@ initialization
       RegisterSceneObject(TDummyCube, 'DummyCube', '');
 
       RegisterSceneObject(TSprite, 'Sprite', glsOCBasicGeometry);
+      RegisterSceneObject(TGLPoints, 'Points', glsOCBasicGeometry);
       RegisterSceneObject(TLines, 'Lines', glsOCBasicGeometry);
       RegisterSceneObject(TPlane, 'Plane', glsOCBasicGeometry);
       RegisterSceneObject(TPolygon, 'Polygon', glsOCBasicGeometry);

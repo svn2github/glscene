@@ -1,3 +1,5 @@
+// 27/09/02 - EG - Added EXT_point_parameter promoted to ARB_point_parameter,
+//                 Dropped GL_SGIS_point_parameters
 // 23/02/02 - EG - Added GL_NV_fence
 {******************************************************************************}
 {                                                       	               }
@@ -335,6 +337,7 @@ var
   GL_ARB_texture_cube_map,
   GL_ARB_transpose_matrix,
   GL_ARB_vertex_blend,
+  GL_ARB_point_parameters,
 
   GL_EXT_422_pixels,
   GL_EXT_abgr,
@@ -367,7 +370,6 @@ var
   GL_EXT_packed_pixels,
   GL_EXT_paletted_texture,
   GL_EXT_pixel_transform,
-  GL_EXT_point_parameters,
   GL_EXT_polygon_offset,
   GL_EXT_rescale_normal,
   GL_EXT_scene_marker,
@@ -439,7 +441,6 @@ var
   GL_SGIS_multitexture,
   GL_SGIS_pixel_texture,
   GL_SGIS_point_line_texgen,
-  GL_SGIS_point_parameters,
   GL_SGIS_sharpen_texture,
   GL_SGIS_texture_border_clamp,
   GL_SGIS_texture_color_mask,
@@ -2299,6 +2300,12 @@ const
   GL_COLOR_TABLE_INTENSITY_SIZE_SGI                 = $80DF;
   {$EXTERNALSYM GL_COLOR_TABLE_INTENSITY_SIZE_SGI}
 
+  // ARB_point_parameters
+  GL_POINT_SIZE_MIN_ARB                             = $8126;
+  GL_POINT_SIZE_MAX_ARB                             = $8127;
+  GL_POINT_FADE_THRESHOLD_SIZE_ARB                  = $8128;
+  GL_DISTANCE_ATTENUATION_ARB                       = $8129;
+
   // EXT_cmyka
   GL_CMYK_EXT                                       = $800C;
   {$EXTERNALSYM GL_CMYK_EXT}
@@ -2408,16 +2415,6 @@ const
   {$EXTERNALSYM GLU_OBJECT_PARAMETRIC_ERROR_EXT}
   GLU_OBJECT_PATH_LENGTH_EXT                        = 100209;
   {$EXTERNALSYM GLU_OBJECT_PATH_LENGTH_EXT}
-
-  // EXT_point_parameters
-  GL_POINT_SIZE_MIN_EXT                             = $8126;
-  {$EXTERNALSYM GL_POINT_SIZE_MIN_EXT}
-  GL_POINT_SIZE_MAX_EXT                             = $8127;
-  {$EXTERNALSYM GL_POINT_SIZE_MAX_EXT}
-  GL_POINT_FADE_THRESHOLD_SIZE_EXT                  = $8128;
-  {$EXTERNALSYM GL_POINT_FADE_THRESHOLD_SIZE_EXT}
-  GL_DISTANCE_ATTENUATION_EXT                       = $8129;
-  {$EXTERNALSYM GL_DISTANCE_ATTENUATION_EXT}
 
   // EXT_compiled_vertex_array
   GL_ARRAY_ELEMENT_LOCK_FIRST_EXT                   = $81A8;
@@ -3026,16 +3023,6 @@ const
   // GL_SGIX_texture_multi_buffer
   GL_TEXTURE_MULTI_BUFFER_HINT_SGIX                 = $812E;
   {$EXTERNALSYM GL_TEXTURE_MULTI_BUFFER_HINT_SGIX}
-
-  // GL_SGIS_point_parameters
-  GL_POINT_SIZE_MIN_SGIS                            = $8126;
-  {$EXTERNALSYM GL_POINT_SIZE_MIN_SGIS}
-  GL_POINT_SIZE_MAX_SGIS                            = $8127;
-  {$EXTERNALSYM GL_POINT_SIZE_MAX_SGIS}
-  GL_POINT_FADE_THRESHOLD_SIZE_SGIS                 = $8128;
-  {$EXTERNALSYM GL_POINT_FADE_THRESHOLD_SIZE_SGIS}
-  GL_DISTANCE_ATTENUATION_SGIS                      = $8129;
-  {$EXTERNALSYM GL_DISTANCE_ATTENUATION_SGIS}
 
   // GL_SGIX_instruments
   GL_INSTRUMENT_BUFFER_POINTER_SGIX                 = $8180;
@@ -5988,11 +5975,9 @@ var
   glAddSwapHintRectWIN: procedure(x, y: TGLint; width, height: TGLsizei); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glAddSwapHintRectWIN}
 
-  // EXT_point_parameter
-  glPointParameterfEXT: procedure(pname: TGLenum; param: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glPointParameterfEXT}
-  glPointParameterfvEXT: procedure(pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glPointParameterfvEXT}
+  // GL_ARB_point_parameter
+  glPointParameterfARB: procedure(pname: TGLenum; param: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+  glPointParameterfvARB: procedure(pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
 
   // GL_ARB_transpose_matrix
   glLoadTransposeMatrixfARB: procedure(m: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
@@ -6161,12 +6146,6 @@ var
   {$EXTERNALSYM glSpriteParameteriSGIX}
   glSpriteParameterivSGIX: procedure(pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glSpriteParameterivSGIX}
-
-  // GL_EXT_point_parameters
-  glPointParameterfSGIS: procedure(pname: TGLenum; param: TGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glPointParameterfSGIS}
-  glPointParameterfvSGIS: procedure(pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
-  {$EXTERNALSYM glPointParameterfvSGIS}
 
   // GL_SGIX_instruments
   glGetInstrumentsSGIX: procedure; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
@@ -7747,9 +7726,9 @@ begin
   // WIN_swap_hint
   glAddSwapHintRectWIN := wglGetProcAddress('glAddSwapHintRectWIN'); 
 
-  // EXT_point_parameter
-  glPointParameterfEXT := wglGetProcAddress('glPointParameterfEXT'); 
-  glPointParameterfvEXT := wglGetProcAddress('glPointParameterfvEXT'); 
+  // GL_ARB_point_parameter
+  glPointParameterfARB := wglGetProcAddress('glPointParameterfARB');
+  glPointParameterfvARB := wglGetProcAddress('glPointParameterfvARB');
 
   // GL_ARB_transpose_matrix
   glLoadTransposeMatrixfARB := wglGetProcAddress('glLoadTransposeMatrixfARB');
@@ -7850,10 +7829,6 @@ begin
   glSpriteParameterfvSGIX := wglGetProcAddress('glSpriteParameterfvSGIX'); 
   glSpriteParameteriSGIX := wglGetProcAddress('glSpriteParameteriSGIX'); 
   glSpriteParameterivSGIX := wglGetProcAddress('glSpriteParameterivSGIX'); 
-
-  // GL_EXT_point_parameters
-  glPointParameterfSGIS := wglGetProcAddress('glPointParameterfSGIS');
-  glPointParameterfvSGIS := wglGetProcAddress('glPointParameterfvSGIS'); 
 
   // GL_SGIX_instruments
   glGetInstrumentsSGIX := wglGetProcAddress('glGetInstrumentsSGIX'); 
@@ -8401,8 +8376,9 @@ begin
   GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture'); 
   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
   GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
-  GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix'); 
-  GL_ARB_vertex_blend := CheckExtension('GL_ARB_vertex_blend'); 
+  GL_ARB_transpose_matrix := CheckExtension('GL_ARB_transpose_matrix');
+  GL_ARB_vertex_blend := CheckExtension('GL_ARB_vertex_blend');
+  GL_ARB_point_parameters := CheckExtension('GL_ARB_point_parameters');
 
   GL_EXT_422_pixels := CheckExtension('GL_EXT_422_pixels'); 
   GL_EXT_abgr := CheckExtension('GL_EXT_abgr'); 
@@ -8435,7 +8411,6 @@ begin
   GL_EXT_packed_pixels := CheckExtension('GL_EXT_packed_pixels'); 
   GL_EXT_paletted_texture := CheckExtension('GL_EXT_paletted_texture');
   GL_EXT_pixel_transform := CheckExtension('GL_EXT_pixel_transform'); 
-  GL_EXT_point_parameters := CheckExtension('GL_EXT_point_parameters'); 
   GL_EXT_polygon_offset := CheckExtension('GL_EXT_polygon_offset');
   GL_EXT_rescale_normal := CheckExtension('GL_EXT_rescale_normal'); 
   GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker'); 
@@ -8507,7 +8482,6 @@ begin
   GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture');
   GL_SGIS_pixel_texture := CheckExtension('GL_SGIS_pixel_texture');
   GL_SGIS_point_line_texgen := CheckExtension('GL_SGIS_point_line_texgen');
-  GL_SGIS_point_parameters := CheckExtension('GL_SGIS_point_parameters');
   GL_SGIS_sharpen_texture := CheckExtension('GL_SGIS_sharpen_texture');
   GL_SGIS_texture_border_clamp := CheckExtension('GL_SGIS_texture_border_clamp');
   GL_SGIS_texture_color_mask := CheckExtension('GL_SGIS_texture_color_mask');
