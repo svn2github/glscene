@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>19/06/03 - DanB - Added TGLBaseSceneObject.GetOrCreateBehaviour/Effect
       <li>11/06/03 - Egg - Added CopyToTexture for buffer
       <li>10/06/03 - Egg - Fixed issue with SetXxxxAngle (Domin)
       <li>07/06/03 - Egg - Added Buffer.AmbientColor
@@ -284,7 +285,11 @@ type
    TGLSceneObjectClass = class of TGLBaseSceneObject;
    TGLCustomSceneObject = class;
    TGLScene = class;
+   TGLBehaviour=class;
+   TGLBehaviourClass = class of TGLBehaviour;
    TGLBehaviours = class;
+   TGLObjectEffect=class;
+   TGLObjectEffectClass = class of TGLObjectEffect;
    TGLObjectEffects = class;
    TGLSceneBuffer = class;
 
@@ -562,6 +567,13 @@ type
          //: Create a new scene object and add it to this object as first child
          function AddNewChildFirst(AChild: TGLSceneObjectClass): TGLBaseSceneObject; dynamic;
          procedure AddChild(AChild: TGLBaseSceneObject); dynamic;
+
+         function GetOrCreateBehaviour(aBehaviour:TGLBehaviourClass) : TGLBehaviour;
+         function AddNewBehaviour(aBehaviour:TGLBehaviourClass) : TGLBehaviour;
+
+         function GetOrCreateEffect(anEffect:TGLObjectEffectClass) : TGLObjectEffect;
+         function AddNewEffect(anEffect:TGLObjectEffectClass) : TGLObjectEffect;
+
          procedure DeleteChildren; dynamic;
          procedure Insert(AIndex: Integer; AChild: TGLBaseSceneObject); dynamic;
          {: Takes a scene object out of the child list, but doesn't destroy it.<p>
@@ -711,10 +723,10 @@ type
       rendereing and non-rendering behaviours. Rendereing behaviours are named
       "TGLObjectEffect", non-rendering effects (like inertia) are simply named
       "TGLBehaviour". }
+
    TGLBehaviour = class (TGLBaseBehaviour)
    end;
 
-   TGLBehaviourClass = class of TGLBehaviour;
 
    // TGLBehaviours
    //
@@ -737,6 +749,7 @@ type
          property Behaviour[index : Integer] : TGLBehaviour read GetBehaviour; default;
 
          function CanAdd(aClass : TXCollectionItemClass) : Boolean; override;
+
          procedure DoProgress(const progressTimes : TProgressTimes);
    end;
 
@@ -756,7 +769,9 @@ type
       <li>Subclasses must be registered using the RegisterXCollectionItemClass
          function
       </ul> }
-   TGLObjectEffect = class (TGLBehaviour)
+//   TGLObjectEffectClass = class of TGLObjectEffect;
+
+   TGLObjectEffect = class (TGLBaseBehaviour)
       protected
          { Protected Declarations }
          {: Override this function to write subclass data. }
@@ -809,6 +824,7 @@ type
          property ObjectEffect[index : Integer] : TGLObjectEffect read GetEffect; default;
 
          function CanAdd(aClass : TXCollectionItemClass) : Boolean; override;
+
          procedure DoProgress(const progressTime : TProgressTimes);
          procedure RenderPreEffects(sceneBuffer : TGLSceneBuffer;
                                     var rci : TRenderContextInfo);
@@ -2546,6 +2562,36 @@ function TGLBaseSceneObject.AddNewChildFirst(AChild: TGLSceneObjectClass): TGLBa
 begin
    Result:=AChild.Create(Self);
    Insert(0, Result);
+end;
+
+// GetOrCreateBehaviour
+//
+function TGLBaseSceneObject.GetOrCreateBehaviour(aBehaviour:TGLBehaviourClass) : TGLBehaviour;
+begin
+  Result:=TGLBehaviour(Behaviours.GetOrCreate(aBehaviour));
+end;
+
+// AddNewBehaviour
+//
+function TGLBaseSceneObject.AddNewBehaviour(aBehaviour:TGLBehaviourClass) : TGLBehaviour;
+begin
+  Assert(Behaviours.CanAdd(aBehaviour));
+  result:= aBehaviour.Create(Behaviours)
+end;
+
+// GetOrCreateEffect
+//
+function TGLBaseSceneObject.GetOrCreateEffect(anEffect:TGLObjectEffectClass) : TGLObjectEffect;
+begin
+  Result:=TGLObjectEffect(Effects.GetOrCreate(anEffect));
+end;
+
+// AddNewEffect
+//
+function TGLBaseSceneObject.AddNewEffect(anEffect:TGLObjectEffectClass) : TGLObjectEffect;
+begin
+  Assert(Effects.CanAdd(anEffect));
+  result:= anEffect.Create(Effects)
 end;
 
 // RebuildMatrix
