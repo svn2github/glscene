@@ -5772,7 +5772,7 @@ asm
    fmul  dword ptr [ecx+8]
    faddp
    ftst
-   fstsw
+   fstsw ax
    sahf
    setnbe al
    ffree st(0)
