@@ -278,14 +278,14 @@ end;
 //
 function THeightTileFile.QuadTableX(x : Integer) : Integer;
 begin
-   Result:=(x*(cHTFQuadTableSize+1)) div (SizeX+1);
+   Result:=((x*(cHTFQuadTableSize+1)) div (SizeX+1)) and cHTFQuadTableSize;
 end;
 
 // QuadTableY
 //
 function THeightTileFile.QuadTableY(y : Integer) : Integer;
 begin
-   Result:=(y*(cHTFQuadTableSize+1)) div (SizeY+1);
+   Result:=((y*(cHTFQuadTableSize+1)) div (SizeY+1)) and cHTFQuadTableSize;
 end;
 
 // PackTile
@@ -529,7 +529,7 @@ begin
    src:=PShortInt(source);
    n:=0;
    for y:=0 to FHeightTile.info.height-1 do begin
-      method:=src^;
+      method:=Byte(src^);
       Inc(src);
       unpackWidth:=tileWidth;
       // Process left pack if any
