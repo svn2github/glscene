@@ -122,7 +122,9 @@ interface
 
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
-  GLCrossPlatform, PersistentClasses, GLUtils, GLState;
+  GLCrossPlatform, PersistentClasses, GLUtils, GLState
+  {$ifdef MSWINDOWS}, Graphics{$endif} // for standard application colors
+  ;
 
 {$i GLScene.inc}
 
@@ -1419,6 +1421,8 @@ type
 
    ETexture = class (Exception);
 
+   TGraphicClass = class of TGraphic;
+
 function ColorManager: TGLColorManager;
 
 //: Converts a color vector (containing float values)
@@ -1458,6 +1462,9 @@ procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
                                        texImageEditor : TGLTextureImageEditorClass);
 procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorClass);
 
+procedure RegisterTGraphicClassFileExtension(const extension : String;
+                                             const aClass : TGraphicClass);   
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1466,9 +1473,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLStrings, XOpenGL, ApplicationFileIO
-   {$ifdef MSWINDOWS}, Graphics{$endif} // for standard application colors
-   ;
+uses GLScene, GLStrings, XOpenGL, ApplicationFileIO;
 
 {$Q-} // no range checking
 
@@ -1480,6 +1485,24 @@ var
 const
 	cTextureMode : array [tmDecal..tmReplace] of TGLEnum =
 							( GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE );
+
+var
+   vTGraphicFileExtension : array of String;
+   vTGraphicClass : array of TGraphicClass;
+
+// RegisterTGraphicClassFileExtension
+//
+procedure RegisterTGraphicClassFileExtension(const extension : String;
+                                             const aClass : TGraphicClass);
+var
+   n : Integer;
+begin
+   n:=Length(vTGraphicFileExtension);
+   SetLength(vTGraphicFileExtension, n+1);
+   SetLength(vTGraphicClass, n+1);
+   vTGraphicFileExtension[n]:=LowerCase(extension);
+   vTGraphicClass[n]:=aClass;
+end;
 
 // EditGLTextureImage
 //
@@ -2342,17 +2365,42 @@ end;
 //
 procedure TGLPersistentImage.LoadFromFile(const fileName : String);
 var
-   buf : String;
+   i : Integer;
+   buf, ext : String;
+   fs : TStream;
+   gr : TGraphic;
+
 begin
    buf:=fileName;
    if Assigned(FOnTextureNeeded) then
       FOnTextureNeeded(Self, buf);
-   if FileExists(buf) then
-      Picture.LoadFromFile(buf)
-   else begin
-      Picture.Graphic:=nil;
-      raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
+   if Assigned(vAFIOCreateFileStream) then begin
+      if FileStreamExists(buf) then begin
+         ext:=LowerCase(ExtractFileExt(fileName));
+         for i:=0 to High(vTGraphicFileExtension) do begin
+            if vTGraphicFileExtension[i]=ext then begin
+               gr:=TGraphicClass(vTGraphicClass[i]).Create;
+               try
+                  fs:=CreateFileStream(fileName, fmOpenRead);
+                  try
+                     gr.LoadFromStream(fs);
+                  finally
+                     fs.Free;
+                  end;
+                  Picture.Graphic:=gr;
+               finally
+                  gr.Free;
+               end;
+               Exit;
+            end;
+         end;
+      end;
+   end else if FileExists(buf) then begin
+      Picture.LoadFromFile(buf);
+      Exit;
    end;
+   Picture.Graphic:=nil;
+   raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
 end;
 
 // FriendlyName
@@ -5298,6 +5346,7 @@ initialization
 	RegisterGLTextureImageClass(TGLPicFileImage);
 	RegisterGLTextureImageClass(TGLCubeMapImage);
    RegisterClasses([TGLMaterialLibrary]);
+   RegisterTGraphicClassFileExtension('.bmp', TBitmap);
 
 finalization
 
