@@ -175,7 +175,7 @@ const
    cLGBReallocDownSizing   = 4;
    // Ratio for upsizing (1 = allocate only what's needed, 2 = allocate twice the
    //                     needed space, etc. Must be >= 1.0 or things will go banana )
-   cReallocUpSizing        = 1.1;
+   cReallocUpSizing        = 1.2;
    cReallocUpSizing256     = Round(cReallocUpSizing*256); // what's actualy used internally
    cReallocUpSizingLimit   = Cardinal(1 shl 31) div cReallocUpSizing256;
 
