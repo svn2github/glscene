@@ -72,7 +72,7 @@ type
 	      procedure CMMouseEnter(var msg: TMessage); message CM_MOUSEENTER;
 	      procedure CMMouseLeave(var msg: TMessage); message CM_MOUSELEAVE;
         function GetFieldOfView: single;
-    procedure SetFieldOfView(const Value: single);
+        procedure SetFieldOfView(const Value: single);
 
       protected
          { Protected Declarations }
