@@ -35,12 +35,21 @@ type
       min, max : TAffineVector;
    end;
 
+   // TBSphere
+   //
    {: Structure for storing BoundingSpheres. Similar to TAABB}
    TBSphere = record
       {: Center of Bounding Sphere }
       Center : TAffineVector;
       {: Radius of Bounding Sphere }
       Radius : single;
+   end;
+
+   // TClipRect
+   //
+   TClipRect = record
+      Left, Top : Single;
+      Right, Bottom : Single;
    end;
 
    {: Result type for space intersection tests, like AABBContainsAABB or
@@ -111,7 +120,8 @@ procedure ExtractAABBCorners(const AABB: TAABB; var AABBCorners : TAABBCorners);
 {: Convert an AABB to a BSphere}
 procedure AABBToBSphere(const AABB : TAABB; var BSphere : TBSphere);
 {: Convert a BSphere to an AABB }
-procedure BSphereToAABB(const BSphere : TBSphere; var AABB : TAABB);
+procedure BSphereToAABB(const BSphere : TBSphere; var AABB : TAABB); overload;
+function BSphereToAABB(const center : TAffineVector; radius : Single) : TAABB; overload;
 
 {: Determines to which extent one AABB contains another AABB}
 function AABBContainsAABB(const mainAABB, testAABB : TAABB) : TSpaceContains;
@@ -125,6 +135,12 @@ function AABBContainsBSphere(const mainAABB : TAABB; const testBSphere : TBSpher
 function PlaneContainsBSphere(const Location, Normal : TAffineVector; const testBSphere : TBSphere) : TSpaceContains;
 {: Clips a position to an AABB }
 function ClipToAABB(const v : TAffineVector; const AABB : TAABB) : TAffineVector;
+
+{: Extend the clip rect to include given coordinate. }
+procedure IncludeInClipRect(var clipRect : TClipRect; x, y : Single);
+{: Projects an AABB and determines the extent of its projection as a clip rect. }
+function AABBToClipRect(const aabb : TAABB; modelViewProjection : TMatrix;
+                        viewportSizeX, viewportSizeY : Integer) : TClipRect;
 
 type
    TPlanIndices = array [0..3] of Integer;
@@ -698,13 +714,16 @@ end;
 //
 procedure BSphereToAABB(const BSphere : TBSphere; var AABB : TAABB);
 begin
-  AABB.min[0] := BSphere.Center[0] - BSphere.Radius;
-  AABB.min[1] := BSphere.Center[1] - BSphere.Radius;
-  AABB.min[2] := BSphere.Center[2] - BSphere.Radius;
+   AABB.min:=VectorSubtract(BSphere.Center, BSphere.Radius);
+   AABB.max:=VectorAdd(BSphere.Center, BSphere.Radius);
+end;
 
-  AABB.max[0] := BSphere.Center[0] + BSphere.Radius;
-  AABB.max[1] := BSphere.Center[1] + BSphere.Radius;
-  AABB.max[2] := BSphere.Center[2] + BSphere.Radius;
+// BSphereToAABB
+//
+function BSphereToAABB(const center : TAffineVector; radius : Single) : TAABB;
+begin
+   Result.min:=VectorSubtract(center, radius);
+   Result.max:=VectorAdd(center, radius);
 end;
 
 //  AABBContainsAABB
@@ -831,4 +850,50 @@ begin
   if result[1]>AABB.max[1] then result[1] := AABB.max[1];
   if result[2]>AABB.max[2] then result[2] := AABB.max[2];
 end;
+
+// IncludeInClipRect
+//
+procedure IncludeInClipRect(var clipRect : TClipRect; x, y : Single);
+begin
+   with clipRect do begin
+      if x<Left then Left:=x;
+      if x>Right then Right:=x;
+      if y<Top then Top:=y;
+      if y>Bottom then Bottom:=y;
+   end;
+end;
+
+// AABBToClipRect
+//
+function AABBToClipRect(const aabb : TAABB; modelViewProjection : TMatrix;
+                        viewportSizeX, viewportSizeY : Integer) : TClipRect;
+var
+   i : Integer;
+   v, vt : TVector;
+   minmax : array [0..1] of PAffineVector;
+begin
+   minmax[0]:=@aabb.min;
+   minmax[1]:=@aabb.max;
+   v[3]:=1;
+   for i:=0 to 7 do begin
+      v[0]:=minmax[i and 1][0];
+      v[1]:=minmax[(i shr 1) and 1][1];
+      v[2]:=minmax[(i shr 2) and 1][2];
+
+      // Project
+      vt:=VectorTransform(v, modelViewProjection);
+      ScaleVector(vt, 1/vt[3]);
+
+      // Convert to screen coordinates
+      if i>0 then
+         IncludeInClipRect(Result, viewportSizeX*(vt[0]+1)*0.5, viewportSizeY*(vt[1]+1)*0.5)
+      else begin
+         Result.Left:=viewportSizeX*(vt[0]+1)*0.5;
+         Result.Top:=viewportSizeY*(vt[1]+1)*0.5;
+         Result.Right:=Result.Left;
+         Result.Bottom:=Result.Top;
+      end;
+   end;
+end;
+
 end.
