@@ -111,6 +111,7 @@ contains
   GLThorFX in '..\Source\GLThorFX.pas',
   PersistentClasses in '..\Source\Base\PersistentClasses.pas',
   VectorTypes in '..\Source\Base\VectorTypes.pas',
-  GeometryBB in '..\Source\Base\GeometryBB.pas';
+  GeometryBB in '..\Source\Base\GeometryBB.pas',
+  GLContext in '..\Source\GLContext.pas';
 
 end.
