@@ -1,15 +1,16 @@
 // GLLensFlare
 {: Lens flare object.<p>
 
-   Author  : Tobias Peirick<br>
-   eMail   : peirick@onlinehome.de<br>
-   Homepage: http://www.TobSoft.de<p>
-
 	<b>History : </b><font size=-1><ul>
+      <li>08/12/02 - EG - Added AutoZTest
       <li>29/10/02 - EG - Initial, added defaults and encapsulation,
                           fixed positionning, RandSeed now preserved,
-                          minor speedup 
-	</ul></font>
+                          minor speedup
+	</ul></font><p>
+   
+   Author  : Tobias Peirick<br>
+   eMail   : peirick@onlinehome.de<br>
+   Homepage: http://www.TobSoft.de
 }
 unit GLLensFlare;
 
@@ -49,6 +50,7 @@ type
          FStreakWidth : Single;
          FNumSecs     : Integer;
          FResolution  : Integer;
+         FAutoZTest   : Boolean;
          FElements    : TFlareElements;
 
       protected
@@ -62,6 +64,7 @@ type
          function  StoreStreakWidth : Boolean;
          procedure SetNumSecs(aValue : Integer);
          procedure SetResolution(aValue : Integer);
+         procedure SetAutoZTest(aValue : Boolean);
          procedure SetElements(aValue : TFlareElements);
 
       public
@@ -87,6 +90,7 @@ type
          property NumSecs : Integer read FNumSecs write SetNumSecs default 8;
          //: Number of segments used when rendering circles.
          property Resolution : Integer read FResolution write SetResolution default 64;
+         property AutoZTest : Boolean read FAutoZTest write SetAutoZTest default True;
          //: Which elements should be rendered?
          property Elements : TFlareElements read FElements write SetElements default cDefaultFlareElements;
          
@@ -134,6 +138,7 @@ begin
   FStreakWidth := 2;
   FNumSecs := 8;
   FResolution := 64;
+  FAutoZTest := True;
   // Render all elements by default.
   FElements := [feGlow, feRing, feStreaks, feRays, feSecondaries];
   // Setup default gradients:
@@ -201,6 +206,16 @@ begin
   StructureChanged;
 end;
 
+// SetAutoZTest
+//
+procedure TGLLensFlare.SetAutoZTest(aValue : Boolean);
+begin
+   if FAutoZTest<>aValue then begin
+      FAutoZTest:=aValue;
+      StructureChanged;
+   end;
+end;
+
 // SetElements
 //
 procedure TGLLensFlare.SetElements(aValue : TFlareElements);
@@ -238,12 +253,14 @@ begin
       screenPos:=Scene.CurrentBuffer.WorldToScreen(v);
       if     (screenPos[0]<rci.viewPortSize.cx) and (screenPos[0]>=0)
          and (screenPos[1]<rci.viewPortSize.cy) and (screenPos[1]>=0) then begin
-         depth:=Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),
-                                                  Round(rci.viewPortSize.cy-ScreenPos[1]));
-         // but is it behind something?
-         if screenPos[2]>=1 then
-            flag:=(depth>=1)
-         else flag:=(depth>=screenPos[2]);
+         if FAutoZTest then begin
+            depth:=Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),
+                                                     Round(rci.viewPortSize.cy-ScreenPos[1]));
+            // but is it behind something?
+            if screenPos[2]>=1 then
+               flag:=(depth>=1)
+            else flag:=(depth>=screenPos[2]);
+         end else flag:=True;
       end else flag:=False;
    end else flag:=False;
 
