@@ -988,10 +988,12 @@ function MinFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MinFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
 function MinFloat(const v1, v2 : Single) : Single; overload;
+function MinFloat(const v : array of Single) : Single; overload;
 {: Returns the maximum value of the array. }
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MaxFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
 function MaxFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
+function MaxFloat(const v : array of Single) : Single; overload;
 {: Returns the maximum of given values. }
 function MaxFloat(const v1, v2 : Single) : Single; overload;
 function MaxFloat(const v1, v2 : Double) : Double; overload;
@@ -6081,6 +6083,19 @@ begin
    else Result:=v2;
 end;
 
+// MinFloat
+//
+function MinFloat(const v : array of Single) : Single;
+var
+   i : Integer;
+begin
+   if Length(v)>0 then begin
+      Result:=v[0];
+      for i:=1 to High(v) do
+         if v[i]<Result then Result:=v[i];
+   end else Result:=0;
+end;
+
 // MaxFloat (single)
 //
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
@@ -6117,6 +6132,19 @@ begin
       Result:=values[0];
       for i:=1 to nbItems-1 do
          if values[i]>Result then Result:=values[i];
+   end else Result:=0;
+end;
+
+// MaxFloat
+//
+function MaxFloat(const v : array of Single) : Single;
+var
+   i : Integer;
+begin
+   if Length(v)>0 then begin
+      Result:=v[0];
+      for i:=1 to High(v) do
+         if v[i]>Result then Result:=v[i];
    end else Result:=0;
 end;
 
