@@ -129,7 +129,7 @@ type
           {: Builds the connectivity information. }
           procedure RebuildEdgeList;
 
-          constructor Create(aMeshObject : TMeshObject; PrecomputeFaceNormal : boolean);
+          constructor CreateFromMesh(aMeshObject : TMeshObject; precomputeFaceNormal : Boolean);
           destructor Destroy; override;
    end;
 
@@ -155,7 +155,7 @@ type
 
           procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); override;
 
-          constructor Create(aGLBaseMesh : TGLBaseMesh);
+          constructor CreateFromMesh(aGLBaseMesh : TGLBaseMesh);
           destructor Destroy; override;
    end;
 
@@ -476,7 +476,7 @@ begin
       // Update the second Face of the edge and we're done (this _MAY_
       // overwrite a previous Face in a broken mesh)
       FEdgeFaces[i*2 + 1] := FaceID;
-
+      Result:=i*2+1;
       exit;
     end;
   end;
@@ -561,7 +561,7 @@ begin
     inherited;
 end;
 
-constructor TFaceGroupConnectivity.Create(aMeshObject: TMeshObject;
+constructor TFaceGroupConnectivity.CreateFromMesh(aMeshObject: TMeshObject;
   PrecomputeFaceNormal: boolean);
 begin
   inherited Create(PrecomputeFaceNormal);
@@ -657,7 +657,7 @@ begin
   end;
 end;
 
-constructor TGLBaseMeshConnectivity.Create(aGLBaseMesh: TGLBaseMesh);
+constructor TGLBaseMeshConnectivity.CreateFromMesh(aGLBaseMesh: TGLBaseMesh);
 var
   i : integer;
   MO : TMeshObject;
@@ -673,7 +673,7 @@ begin
   begin
     MO := aGLBaseMesh.MeshObjects[i];
 
-    Connectivity := TFaceGroupConnectivity.Create(MO, FPrecomputeFaceNormal);
+    Connectivity := TFaceGroupConnectivity.CreateFromMesh(MO, FPrecomputeFaceNormal);
 
     FFaceGroupConnectivityList.Add(Connectivity);
   end;

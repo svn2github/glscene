@@ -5102,7 +5102,7 @@ begin
                               sil,
                               true);
    end else begin
-      mc:=TGLBaseMeshConnectivity.Create(Self);
+      mc:=TGLBaseMeshConnectivity.CreateFromMesh(Self);
       try
          mc.CreateSilhouette(silhouetteParameters,
                                  sil,
@@ -5129,7 +5129,7 @@ begin
       for j:=0 to mo.FaceGroups.Count-1 do
          if not mo.FaceGroups[j].InheritsFrom(TFGVertexIndexList) then Exit;
    end;
-   FConnectivity:=TGLBaseMeshConnectivity.Create(Self);
+   FConnectivity:=TGLBaseMeshConnectivity.CreateFromMesh(Self);
 end;
 
 // ------------------

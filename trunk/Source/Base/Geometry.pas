@@ -5591,7 +5591,7 @@ end;
 function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector;
 var
   w, lineDirection : TAffineVector;
-  c1, c2, b, mMax : double;
+  c1, c2, b : double;
 begin
   LineDirection := VectorSubtract(segmentStop, segmentStart);
   w := VectorSubtract(point, segmentStart);
@@ -5627,7 +5627,7 @@ const
   cSMALL_NUM = 0.000000001;
 var
   u, v,w : TAffineVector;
-  a,b,c,smalld,e, largeD, sc, sn, sD, tc, tb, tN, tD, dP : single;
+  a,b,c,smalld,e, largeD, sc, sn, sD, tc, tN, tD : single;
 begin
   VectorSubtract(S0Stop, S0Start, u);
   VectorSubtract(S1Stop, S1Start, v);
@@ -5640,8 +5640,8 @@ begin
   e := VectorDotProduct(v,w);
   largeD := a*c - b*b;
 
-  sc := largeD; sN := largeD; sD := largeD;
-  tc := largeD; tN := largeD; tD := largeD;
+  sD := largeD;
+  tD := largeD;
 
   if LargeD<cSMALL_NUM then
   begin
