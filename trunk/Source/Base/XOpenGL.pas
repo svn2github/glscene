@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>23/05/03 - EG - Support for arbitrary (complex) mappings
       <li>01/02/03 - EG - Added State stack
       <li>01/07/02 - EG - Added mtcmUndefined, fixed initial state
       <li>03/01/02 - EG - Added xglDisableClientState
@@ -34,7 +35,8 @@ interface
 uses OpenGL12;
 
 type
-   TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond);
+   TMapTexCoordMode = (mtcmUndefined, mtcmNull, mtcmMain, mtcmDual, mtcmSecond,
+                       mtcmArbitrary);
 
 {: xglTexCoord functions will be ignored. }
 procedure xglMapTexCoordToNull;
@@ -44,6 +46,10 @@ procedure xglMapTexCoordToMain;
 procedure xglMapTexCoordToSecond;
 {: xglTexCoord functions will define the two first texture units coordinates. }
 procedure xglMapTexCoordToDual;
+{: xglTexCoord functions will define the specified texture units coordinates. }
+procedure xglMapTexCoordToArbitrary(const units : array of Cardinal); overload;
+procedure xglMapTexCoordToArbitrary(const bitWiseUnits : Cardinal); overload;
+procedure xglMapTexCoordToArbitraryAdd(const bitWiseUnits : Cardinal); 
 
 {: Defers xglMap calls execution until xglEndUpdate is met.<p>
    Calls to xglBegin/EndUpdate may be nested. }
@@ -108,10 +114,161 @@ var
    vUpdCount : Integer;
    vUpdNewMode : TMapTexCoordMode;
    vStateStack : array of TMapTexCoordMode;
+   vComplexMapping : array of Cardinal;
+   vComplexMappingN : Integer;
 
 // ------------------------------------------------------------------
 // Multitexturing coordinates duplication functions
 // ------------------------------------------------------------------
+
+// --------- Complex (arbitrary) mapping
+
+procedure glTexCoord2f_Arbitrary(s, t: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do
+      glMultiTexCoord2fARB(vComplexMapping[i], s, t);
+end;
+
+procedure glTexCoord2fv_Arbitrary(v: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do
+      glMultiTexCoord2fvARB(vComplexMapping[i], v);
+end;
+
+procedure glTexCoord3f_Arbitrary(s, t, r: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do
+      glMultiTexCoord3fARB(vComplexMapping[i], s, t, r);
+end;
+
+procedure glTexCoord3fv_Arbitrary(v: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do
+      glMultiTexCoord3fvARB(vComplexMapping[i], v);
+end;
+
+procedure glTexCoord4f_Arbitrary(s, t, r, q: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do
+      glMultiTexCoord4fARB(vComplexMapping[i], s, t, r, q);
+end;
+
+procedure glTexCoord4fv_Arbitrary(v: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do
+      glMultiTexCoord4fvARB(vComplexMapping[i], v);
+end;
+
+procedure glTexGenf_Arbitrary(coord, pname: TGLEnum; param: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glActiveTextureARB(vComplexMapping[i]);
+      glTexGenf(coord, pname, param);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glTexGenfv_Arbitrary(coord, pname: TGLEnum; params: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glActiveTextureARB(vComplexMapping[i]);
+      glTexGenfv(coord, pname, params);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glTexGeni_Arbitrary(coord, pname: TGLEnum; param: TGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glActiveTextureARB(vComplexMapping[i]);
+      glTexGeni(coord, pname, param);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glTexGeniv_Arbitrary(coord, pname: TGLEnum; params: PGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glActiveTextureARB(vComplexMapping[i]);
+      glTexGeniv(coord, pname, params);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glEnable_Arbitrary(cap: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glActiveTextureARB(vComplexMapping[i]);
+      glEnable(cap);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure glDisable_Arbitrary(cap: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glActiveTextureARB(vComplexMapping[i]);
+      glDisable(cap);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure xglTexCoordPointer_Arbitrary(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glClientActiveTextureARB(vComplexMapping[i]);
+      glTexCoordPointer(size, atype, stride, data);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure xglEnableClientState_Arbitrary(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glClientActiveTextureARB(vComplexMapping[i]);
+      glEnableClientState(aArray);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
+
+procedure xglDisableClientState_Arbitrary(aArray: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+var
+   i : Integer;
+begin
+   for i:=0 to vComplexMappingN do begin
+      glClientActiveTextureARB(vComplexMapping[i]);
+      glDisableClientState(aArray);
+   end;
+   glActiveTextureARB(GL_TEXTURE0_ARB);
+end;
 
 // --------- Second unit Texturing
 
@@ -386,10 +543,11 @@ begin
    Dec(vUpdCount);
    if (vUpdCount=0) and (vUpdNewMode<>xglMapTexCoordMode) then begin
       case vUpdNewMode of
-         mtcmNull   : xglMapTexCoordToNull;
-         mtcmMain   : xglMapTexCoordToMain;
-         mtcmDual   : xglMapTexCoordToDual;
-         mtcmSecond : xglMapTexCoordToSecond;
+         mtcmNull      : xglMapTexCoordToNull;
+         mtcmMain      : xglMapTexCoordToMain;
+         mtcmDual      : xglMapTexCoordToDual;
+         mtcmSecond    : xglMapTexCoordToSecond;
+         mtcmArbitrary : xglMapTexCoordToArbitrary(vComplexMapping);
       else
          Assert(False);
       end;
@@ -418,10 +576,13 @@ begin
    i:=Length(vStateStack)-1;
    Assert(i>=0);
    case vStateStack[i] of
-      mtcmNull : xglMapTexCoordToNull;
-      mtcmMain : xglMapTexCoordToMain;
-      mtcmDual : xglMapTexCoordToDual;
-      mtcmSecond : xglMapTexCoordToSecond;
+      mtcmNull      : xglMapTexCoordToNull;
+      mtcmMain      : xglMapTexCoordToMain;
+      mtcmDual      : xglMapTexCoordToDual;
+      mtcmSecond    : xglMapTexCoordToSecond;
+      mtcmArbitrary : xglMapTexCoordToArbitrary(vComplexMapping);
+   else
+      Assert(False);
    end;
    SetLength(vStateStack, i);
 end;
@@ -568,6 +729,99 @@ begin
       xglEnable:=glEnable_Dual;
       xglDisable:=glDisable_Dual;
    end;
+end;
+
+// xglMapTexCoordToArbitrary (array)
+//
+procedure xglMapTexCoordToArbitrary(const units : array of Cardinal);
+var
+   i, j, n : Integer;
+begin
+   n:=Length(units);
+   SetLength(vComplexMapping, n);
+   j:=0;
+   vComplexMappingN:=n-1;
+   for i:=0 to vComplexMappingN do begin
+      if (not vSecondTextureUnitForbidden) or (units[i]<>GL_TEXTURE1_ARB) then begin
+         vComplexMapping[j]:=units[i];
+         Inc(j);
+      end;
+   end;
+
+   if vUpdCount<>0 then
+      vUpdNewMode:=mtcmArbitrary
+   else if xglMapTexCoordMode<>mtcmArbitrary then begin
+
+      xglMapTexCoordMode:=mtcmArbitrary;
+      Assert(GL_ARB_multitexture);
+
+      xglTexCoord2f:=glTexCoord2f_Arbitrary;
+      xglTexCoord2fv:=glTexCoord2fv_Arbitrary;
+      xglTexCoord3f:=glTexCoord3f_Arbitrary;
+      xglTexCoord3fv:=glTexCoord3fv_Arbitrary;
+      xglTexCoord4f:=glTexCoord4f_Arbitrary;
+      xglTexCoord4fv:=glTexCoord4fv_Arbitrary;
+
+      xglTexGenf:=glTexGenf_Arbitrary;
+      xglTexGenfv:=glTexGenfv_Arbitrary;
+      xglTexGeni:=glTexGeni_Arbitrary;
+      xglTexGeniv:=glTexGeniv_Arbitrary;
+
+      xglTexCoordPointer:=xglTexCoordPointer_Arbitrary;
+      xglEnableClientState:=xglEnableClientState_Arbitrary;
+      xglDisableClientState:=xglDisableClientState_Arbitrary;
+
+      xglEnable:=glEnable_Arbitrary;
+      xglDisable:=glDisable_Arbitrary;
+   end;
+end;
+
+// xglMapTexCoordToArbitrary (bitwise)
+//
+procedure xglMapTexCoordToArbitrary(const bitWiseUnits : Cardinal);
+var
+   i, n : Integer;
+   units : array of Cardinal;
+begin
+   n:=0;
+   for i:=0 to 7 do begin
+      if (bitWiseUnits and (1 shl i))<>0 then
+         Inc(n);
+   end;
+   SetLength(units, n);
+   n:=0;
+   for i:=0 to 7 do begin
+      if (bitWiseUnits and (1 shl i))<>0 then begin
+         units[n]:=GL_TEXTURE0_ARB+i;
+         Inc(n);
+      end;
+   end;
+   xglMapTexCoordToArbitrary(units);
+end;
+
+// xglMapTexCoordToArbitrary (bitwise)
+//
+procedure xglMapTexCoordToArbitraryAdd(const bitWiseUnits : Cardinal);
+var
+   i, n : Integer;
+   mode : TMapTexCoordMode;
+begin
+   if vUpdCount>0 then
+      mode:=vUpdNewMode
+   else mode:=xglMapTexCoordMode;
+   n:=0;
+   case mode of
+      mtcmMain       : n:=1;
+      mtcmDual       : n:=3;
+      mtcmSecond     : n:=2;
+      mtcmArbitrary : begin
+         for i:=0 to vComplexMappingN do
+            n:=n or (1 shl (vComplexMapping[i]-GL_TEXTURE0_ARB));
+      end;
+   else
+      Assert(False);
+   end;
+   xglMapTexCoordToArbitrary(n or bitWiseUnits);
 end;
 
 // ------------------------------------------------------------------
