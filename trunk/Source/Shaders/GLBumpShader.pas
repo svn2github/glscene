@@ -282,6 +282,7 @@ begin
    VP.Add('   DP4 temp.w, vertex.texcoord[0], tex[3];');
    VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], temp;');
    Inc(texcoord);
+
    if boUseSecondaryTexCoords in BumpOptions then begin
       VP.Add('   DP4 temp.x, vertex.texcoord[1], tex2[0];');
       VP.Add('   DP4 temp.y, vertex.texcoord[1], tex2[1];');
@@ -292,7 +293,8 @@ begin
    end;
 
    if BumpMethod = bmDot3TexCombiner then begin
-      if boDiffuseTexture2 in BumpOptions then
+      if (boDiffuseTexture2 in BumpOptions)
+      and not (boUseSecondaryTexCoords in BumpOptions) then
          VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], temp;');
    end else begin
       VP.Add('   MOV result.texcoord['+IntToStr(texcoord)+'], light;');
@@ -492,13 +494,13 @@ begin
    try
       if not GL_ARB_multitexture then
          raise Exception.Create('This shader requires GL_ARB_multitexture.');
-      if (maxTextures<3) and
-         ((BumpMethod<>bmDot3TexCombiner) or (BumpSpace=bsTangentExternal)) then
+      if  (maxTextures<3) 
+      and ((BumpMethod<>bmDot3TexCombiner) or (BumpSpace=bsTangentExternal)) then
          raise Exception.Create('The current shader settings require 3 or more texture units.');
-      if (maxTextures<4) and
-         (BumpMethod<>bmDot3TexCombiner) and
-         (boUseSecondaryTexCoords in BumpOptions) and
-         (SpecularMode<>smOff) then
+      if  (maxTextures<4) 
+      and (BumpMethod<>bmDot3TexCombiner) 
+      and (boUseSecondaryTexCoords in BumpOptions) 
+      and (SpecularMode<>smOff) then
          raise Exception.Create('The current shader settings require 4 or more texture units.');
 
       if Length(FVertexProgramHandles) = 0 then begin
