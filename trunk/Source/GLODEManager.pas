@@ -11,6 +11,7 @@
 
   History:
 
+    13/06/03 - SG - Added more joints.
     11/06/03 - SG - Base joint classes implemented and added hinge joint.
     09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
     08/06/03 - SG - Added rolling friction (experimental).
@@ -225,8 +226,6 @@ type
   TGLODEStaticObject = class (TGLODEBaseObject)
     private
       FGeom : PdxGeom;
-    protected
-      procedure Deinitialize; override;
     public
       property Geom : PdxGeom read FGeom;
   end;
@@ -262,12 +261,7 @@ type
       procedure AlignBodyToMatrix(Mat: TMatrix);
       procedure SetMass(const value:TdMass);
       function GetMass : TdMass;
-    protected
-      procedure Initialize; override;
-      procedure Deinitialize; override;
     public
-      constructor Create(AOwner:TComponent); override;
-      destructor Destroy; override;
       procedure BuildList(var rci : TRenderContextInfo); override;
       procedure StructureChanged; override;
 
@@ -455,7 +449,6 @@ type
       procedure SetBoxDepth(const Value: single);
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
     public
@@ -479,7 +472,6 @@ type
       procedure SetRadius(const Value: single);
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
     public
@@ -504,7 +496,6 @@ type
       procedure SetLength(const Value: single);
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
     public
@@ -531,7 +522,6 @@ type
       procedure SetLength(const Value: single);
     protected
       procedure Initialize; override;
-      procedure Deinitialize; override;
       function CalculateMass : TdMass; override;
       procedure ODERebuild; override;
     public
@@ -567,6 +557,11 @@ type
       property Owner : TPersistent read FOwner;
   end;
 
+  {
+  TGLODEJoints:
+  -----------
+  This is the list class that stores the ODE Joints.
+  }
   TGLODEJointList = class(TComponent)
     private
       FJoints : TODEJoints;
@@ -590,15 +585,21 @@ type
       FObject2 : TObject;
       FManager : TGLODEManager;
       FAnchor,
-      FAxis    : TGLCoordinates;
+      FAxis,
+      FAxis2   : TGLCoordinates;
       procedure AnchorChange(Sender : TObject);
       procedure AxisChange(Sender : TObject);
+      procedure Axis2Change(Sender : TObject);
       procedure SetManager(Value : TGLODEManager);
     protected
       procedure Initialize; virtual;
       procedure Deinitialize; virtual;
       procedure SetAnchor(Value : TAffineVector); virtual;
       procedure SetAxis(Value : TAffineVector); virtual;
+      procedure SetAxis2(Value : TAffineVector); virtual;
+      property Anchor : TGLCoordinates read FAnchor;
+      property Axis : TGLCoordinates read FAxis;
+      property Axis2 : TGLCoordinates read FAxis2;
     public
       constructor CreateOwned(AOwner:TODEJoints);
       destructor Destroy; override;
@@ -609,8 +610,6 @@ type
       property Owner   : TODEJoints read FOwner;
     published
       property Manager : TGLODEManager read FManager write SetManager;
-      property Anchor : TGLCoordinates read FAnchor;
-      property Axis : TGLCoordinates read FAxis;
   end;
 
   {
@@ -623,28 +622,35 @@ type
       procedure Initialize; override;
       procedure SetAnchor(Value : TAffineVector); override;
       procedure SetAxis(Value : TAffineVector); override;
+    published
+      property Anchor;
+      property Axis;
   end;
 
   {
   TODEJointBall:
-  ---------------
+  --------------
   ODE ball joint implementation.
   }
   TODEJointBall = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
       procedure SetAnchor(Value : TAffineVector); override;
+    published
+      property Anchor;
   end;
 
   {
   TODEJointSlider:
-  ---------------
+  ----------------
   ODE slider joint implementation.
   }
   TODEJointSlider = class (TODEBaseJoint)
     protected
       procedure Initialize; override;
       procedure SetAxis(Value : TAffineVector); override;
+    published
+      property Axis;
   end;
 
   {
@@ -657,9 +663,42 @@ type
       procedure Initialize; override;
   end;
 
+  {
+  TODEJointHinge2:
+  ---------------
+  ODE hinge2 joint implementation.
+  }
+  TODEJointHinge2 = class (TODEBaseJoint)
+    protected
+      procedure Initialize; override;
+      procedure SetAnchor(Value : TAffineVector); override;
+      procedure SetAxis(Value : TAffineVector); override;
+      procedure SetAxis2(Value : TAffineVector); override;
+    published
+      property Anchor;
+      property Axis;
+      property Axis2;
+  end;
+
+  {
+  TODEJointUniversal:
+  -------------------
+  ODE universal joint implementation.
+  }
+  TODEJointUniversal = class (TODEBaseJoint)
+    protected
+      procedure Initialize; override;
+      procedure SetAnchor(Value : TAffineVector); override;
+      procedure SetAxis(Value : TAffineVector); override;
+      procedure SetAxis2(Value : TAffineVector); override;
+    published
+      property Anchor;
+      property Axis;
+      property Axis2;
+  end;
+
 
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
-procedure Register;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -668,19 +707,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-// ------------------------------------------------------------------
-// Global Procedures
-// ------------------------------------------------------------------
-
-// Register
-//
-procedure Register;
-begin
-  RegisterClasses([TGLODEManager, TGLODEDummy, TGLODEPlane]);
-  RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList]);
-end;
-
 
 // ------------------------------------------------------------------
 // Misc Procedures
@@ -1200,39 +1226,6 @@ begin
   inherited;
 end;
 
-// Create
-//
-constructor TGLODEDynamicObject.Create(AOwner: TComponent);
-begin
-  inherited;
-  //
-end;
-
-// Destroy
-//
-destructor TGLODEDynamicObject.Destroy;
-begin
-  //This causes access violations, why?
-  //FBody.Free;
-  inherited;
-end;
-
-// Deinitialize
-//
-procedure TGLODEDynamicObject.Deinitialize;
-begin
-  //
-  inherited;
-end;
-
-// Initialize
-//
-procedure TGLODEDynamicObject.Initialize;
-begin
-  inherited;
-  //
-end;
-
 // StructureChanged
 //
 procedure TGLODEDynamicObject.StructureChanged;
@@ -1351,9 +1344,22 @@ end;
 destructor TGLODEDummy.Destroy;
 begin
   Deinitialize;
-  FColor.Free;
   FElements.Free;
+  FColor.Free;
   inherited;
+end;
+
+// Initialize
+//
+procedure TGLODEDummy.Initialize;
+begin
+  if (not Assigned(Manager)) or Assigned(FBody) then exit;
+  FBody:=dBodyCreate(Manager.World);
+  AlignBodyToMatrix(AbsoluteMatrix);
+  dMassSetZero(FMass);
+  FElements.Initialize;
+  dBodySetMass(FBody,CalculateMass);
+  Manager.RegisterObject(self);
 end;
 
 // Deinitialize
@@ -1362,20 +1368,6 @@ procedure TGLODEDummy.Deinitialize;
 begin
   FElements.Deinitialize;
   FManager.UnregisterObject(self);
-  inherited;
-end;
-
-// Initialize
-//
-procedure TGLODEDummy.Initialize;
-begin
-  inherited;
-  FBody:=dBodyCreate(Manager.World);
-  AlignBodyToMatrix(AbsoluteMatrix);
-  dMassSetZero(FMass);
-  FElements.Initialize;
-  dBodySetMass(FBody,CalculateMass);
-  Manager.RegisterObject(self);
 end;
 
 // CalculateMass
@@ -1440,7 +1432,6 @@ end;
 //
 destructor TGLODEBaseBehaviour.Destroy;
 begin
-  Deinitialize;
   FSurface.Free;
   inherited;
 end;
@@ -1514,7 +1505,8 @@ end;
 //
 procedure TGLODEDynamicBehaviour.Initialize;
 begin
-  if not Assigned(Manager) then exit;
+  if (not Assigned(Manager)) or Assigned(FBody) then
+    exit;
 
   FBody:=dBodyCreate(Manager.World);
   AlignBodyToMatrix(TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix);
@@ -1806,7 +1798,7 @@ end;
 //
 procedure TODEBaseElement.Deinitialize;
 begin
-  //
+  // virtual
 end;
 
 // CalculateMass
@@ -1927,13 +1919,6 @@ end;
 procedure TODEElementBox.Initialize;
 begin
   FGeomElement:=dCreateBox(nil,FBoxWidth,FBoxHeight,FBoxDepth);
-  inherited;
-end;
-
-// Deinitialization
-//
-procedure TODEElementBox.Deinitialize;
-begin
   inherited;
 end;
 
@@ -2105,13 +2090,6 @@ begin
   inherited;
 end;
 
-// Deinitialization
-//
-procedure TODEElementSphere.Deinitialize;
-begin
-  inherited;
-end;
-
 // CalculateMass
 //
 function TODEElementSphere.CalculateMass: TdMass;
@@ -2217,13 +2195,6 @@ end;
 procedure TODEElementCapsule.Initialize;
 begin
   FGeomElement:=dCreateCCylinder(nil,FRadius,FLength);
-  inherited;
-end;
-
-// Deinitialization
-//
-procedure TODEElementCapsule.Deinitialize;
-begin
   inherited;
 end;
 
@@ -2356,13 +2327,6 @@ begin
   inherited;
 end;
 
-// Deinitialization
-//
-procedure TODEElementCylinder.Deinitialize;
-begin
-  inherited;
-end;
-
 // CalculateMass
 //
 function TODEElementCylinder.CalculateMass: TdMass;
@@ -2422,20 +2386,6 @@ begin
   ODERebuild;
 end;
 //}
-
-// ------------------------------------------------------------------
-// TGLODEStaticObject
-// ------------------------------------------------------------------
-
-// Deinitiailize
-//
-procedure TGLODEStaticObject.Deinitialize;
-begin
-  if Assigned(FGeom) then
-    dGeomDestroy(FGeom);
-  inherited;
-end;
-
 
 // ------------------------------------------------------------------
 // TGLODEPlane
@@ -2598,13 +2548,17 @@ begin
   FAnchor.OnNotifyChange:=AnchorChange;
   FAxis:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
   FAxis.OnNotifyChange:=AxisChange;
+  FAxis2:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
+  FAxis2.OnNotifyChange:=Axis2Change;
 end;
 
 // Destroy
 destructor TODEBaseJoint.Destroy;
 begin
+  Deinitialize;
   FAnchor.Free;
   FAxis.Free;
+  FAxis2.Free;
   inherited;
 end;
 
@@ -2612,7 +2566,7 @@ end;
 //
 procedure TODEBaseJoint.Initialize;
 begin
-   //
+  // virtual
 end;
 
 // Deinitialize
@@ -2639,6 +2593,14 @@ begin
     SetAxis(FAxis.AsAffineVector);
 end;
 
+// Axis2Change
+//
+procedure TODEBaseJoint.Axis2Change(Sender : TObject);
+begin
+  if FJointID<>0 then
+    SetAxis2(FAxis2.AsAffineVector);
+end;
+
 // Attach
 //
 procedure TODEBaseJoint.Attach(Obj1, Obj2: TObject);
@@ -2658,14 +2620,21 @@ end;
 //
 procedure TODEBaseJoint.SetAnchor(Value: TAffineVector);
 begin
-  //
+  // virtual
 end;
 
 // SetAxis
 //
 procedure TODEBaseJoint.SetAxis(Value: TAffineVector);
 begin
-  //
+  // virtual
+end;
+
+// SetAxis2
+//
+procedure TODEBaseJoint.SetAxis2(Value: TAffineVector);
+begin
+  // virtual
 end;
 
 // SetManager
@@ -2693,7 +2662,8 @@ end;
 procedure TODEJointHinge.Initialize;
 begin
   if not Assigned(FManager) then exit;
-  FJointID:=dJointCreateHinge(FManager.World,0);
+  if FJointID=0 then
+    FJointID:=dJointCreateHinge(FManager.World,0);
 end;
 
 // SetAnchor
@@ -2722,7 +2692,8 @@ end;
 procedure TODEJointBall.Initialize;
 begin
   if not Assigned(FManager) then exit;
-  FJointID:=dJointCreateBall(FManager.World,0);
+  if FJointID=0 then
+    FJointID:=dJointCreateBall(FManager.World,0);
 end;
 
 // SetAnchor
@@ -2743,7 +2714,8 @@ end;
 procedure TODEJointSlider.Initialize;
 begin
   if not Assigned(FManager) then exit;
-  FJointID:=dJointCreateSlider(FManager.World,0);
+  if FJointID=0 then
+    FJointID:=dJointCreateSlider(FManager.World,0);
 end;
 
 // SetAxis
@@ -2764,18 +2736,84 @@ end;
 procedure TODEJointFixed.Initialize;
 begin
   if not Assigned(FManager) then exit;
-  FJointID:=dJointCreateFixed(FManager.World,0);
+  if FJointID=0 then
+    FJointID:=dJointCreateFixed(FManager.World,0);
 end;
 
 
 // ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-initialization
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
+// TODEJointHinge2
 // ------------------------------------------------------------------
 
-  RegisterXCollectionItemClass(TGLODEDynamicBehaviour);
+// Initialize
+//
+procedure TODEJointHinge2.Initialize;
+begin
+  if not Assigned(FManager) then exit;
+  if FJointID=0 then
+    FJointID:=dJointCreateHinge2(FManager.World,0);
+end;
+
+// SetAnchor
+//
+procedure TODEJointHinge2.SetAnchor(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetHinge2Anchor(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+// SetAxis
+//
+procedure TODEJointHinge2.SetAxis(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetHinge2Axis1(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+// SetAxis2
+//
+procedure TODEJointHinge2.SetAxis2(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetHinge2Axis2(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+
+// ------------------------------------------------------------------
+// TODEJointUniversal
+// ------------------------------------------------------------------
+
+// Initialize
+//
+procedure TODEJointUniversal.Initialize;
+begin
+  if not Assigned(FManager) then exit;
+  if FJointID=0 then
+    FJointID:=dJointCreateUniversal(FManager.World,0);
+end;
+
+// SetAnchor
+//
+procedure TODEJointUniversal.SetAnchor(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetUniversalAnchor(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+// SetAxis
+//
+procedure TODEJointUniversal.SetAxis(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetUniversalAxis1(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+// SetAxis2
+//
+procedure TODEJointUniversal.SetAxis2(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetUniversalAxis2(FJointID,Value[0],Value[1],Value[2]);
+end;
 
 end.
