@@ -510,6 +510,8 @@ procedure SubtractVector(var V1 : TVector; const V2 : TVector); overload;
 //: Combine the first vector with the second : vr:=vr+v*f
 procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; var f : Single); overload;
 procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PFloat); overload;
+//: Makes a linear combination of two texpoints
+function TexPointCombine(const t1, t2 : TTexPoint; f1, f2 : Single) : TTexPoint;
 //: Makes a linear combination of two vectors and return the result
 function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; overload;
 //: Makes a linear combination of three vectors and return the result
@@ -563,6 +565,8 @@ function AngleLerp(start, stop, t : Single) : Single;
    Result is in the [0; PI] range. }
 function DistanceBetweenAngles(angle1, angle2 : Single) : Single;
 
+//: Calculates linear interpolation between texpoint1 and texpoint2 at point t
+function TexPointLerp(const t1, t2 : TTexPoint; t : Single) : TTexPoint; overload;
 //: Calculates linear interpolation between vector1 and vector2 at point t
 function VectorLerp(const v1, v2 : TAffineVector; t : Single) : TAffineVector; overload;
 //: Calculates linear interpolation between vector1 and vector2 at point t, places result in vr
@@ -2367,6 +2371,14 @@ begin
 {$endif}
 end;
 
+// TexPointCombine
+//
+function TexPointCombine(const t1, t2 : TTexPoint; f1, f2 : Single) : TTexPoint;
+begin
+   Result.S:=(f1 * t1.S) + (f2 * t2.S);
+   Result.T:=(f1 * t1.T) + (f2 * t2.T);
+end;
+
 // VectorCombine
 //
 function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; register;
@@ -2767,6 +2779,14 @@ begin
    Result:=Abs(angle2-angle1);
    if Result>PI then
       Result:=c2PI-Result;
+end;
+
+// TexPointLerp
+//
+function TexPointLerp(const t1, t2 : TTexPoint; t : Single) : TTexPoint; overload;
+begin
+   Result.S:=t1.S+(t2.S-t1.S)*t;
+   Result.T:=t1.T+(t2.T-t1.T)*t;
 end;
 
 // VectorAffineLerp
