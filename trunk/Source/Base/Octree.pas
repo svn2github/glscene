@@ -8,6 +8,7 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
       <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
       <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
       <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
@@ -128,6 +129,8 @@ type
 
          function TriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
          {: Returns all triangles in the AABB. }
+         function GetTrianglesFromNodesIntersectingAABB(const objAABB : TAABB) : TAffineVectorList;
+         {: Returns all triangles in an arbitrarily placed cube}         
          function GetTrianglesFromNodesIntersectingCube(const objAABB : TAABB;
                                      const objToSelf, selfToObj : TMatrix) : TAffineVectorList;
          {: Checks if an AABB intersects a face on the octree}
@@ -156,6 +159,42 @@ function CheckPointInSphere(const point, sO : TVector; const sR : Single) : Bool
 begin
    //Allow small margin of error
    Result:=(VectorDistance2(point, sO)<=Sqr(sR));
+end;
+
+// ----------------------------------------------------------------------
+// Name  : CheckPointInTriangle()
+// Input : point - point we wish to check for inclusion
+//         a - first vertex in triangle
+//         b - second vertex in triangle 
+//         c - third vertex in triangle
+// Notes : Triangle should be defined in clockwise order a,b,c
+// Return: TRUE if point is in triangle, FALSE if not.
+// -----------------------------------------------------------------------  
+
+function CheckPointInTriangle(point, a, b, c: TAffineVector):boolean;
+var
+  total_angles:Single;
+  v1,v2,v3:TAffineVector;
+begin
+  total_angles := 0;
+
+  // make the 3 vectors
+  v1 := VectorSubtract(point,a);
+  v2 := VectorSubtract(point,b);
+  v3 := VectorSubtract(point,c);
+
+  normalizeVector(v1);
+  normalizeVector(v2);
+  normalizeVector(v3);
+
+  total_angles := total_angles + arccos(VectorDotProduct(v1,v2));
+  total_angles := total_angles + arccos(VectorDotProduct(v2,v3));
+  total_angles := total_angles + arccos(VectorDotProduct(v3,v1));
+
+  if (abs(total_angles-2*PI) <= 0.005) then
+    result:= TRUE
+  else
+    result:=FALSE;
 end;
 
 // ----------------------------------------------------------------------
@@ -1148,7 +1187,7 @@ var
    pNormal: TAffineVector;
    pNormal4: TVector;
    NEGpNormal4: TVector;
-   sIPoint: TVector;     //sphere intersection point
+   sIPoint, sIPoint2: TVector;     //sphere intersection point
    pIPoint: TVector;     //plane intersection point
    polyIPoint: TVector;  //polygon intersection point
    NEGVelocity: TVector; //sphere's forward velocity
@@ -1156,6 +1195,8 @@ var
 
    p1, p2, p3: PAffineVector;
 
+   //SphereSweepAABB:TAABB;
+   
    //response identifiers (for future use)
    //destinationPoint, newdestinationPoint: TVector;
    //slidePlaneOrigin, slidePlaneNormal: TVector;
@@ -1167,6 +1208,8 @@ begin
 
    Result:=False;  //default: no collision
 
+   //quit if no movement
+   if velocity=0 then Exit;
    //How far ahead to check for collisions.
    distanceToTravel:=velocity+radius+cEpsilon;
    distanceToTravelMinusRadius2:=Sqr(velocity+cEpsilon);
@@ -1177,6 +1220,12 @@ begin
    //startpoint and endpoint (+sphere diameter)... especially with a large sphere
    //and/or a large velocity.
    WalkSphereToLeaf(RootNode, RayStart, distanceToTravel);
+
+//   This method may be more effective if sphere sweeps from one point to another and stops.
+//   NOTE: If it recursively slides of planes, then WalkSphereToLeaf would probably be better, as
+//   it will determine all possible triangles that could intersect over the whole motion
+//   AABBFromSweep(SphereSweepAABB,rayStart,destinationPoint,Radius+cEpsilon);
+//   GetTrianglesFromNodesIntersectingAABB(SphereSweepAABB);
 
    if not Assigned(resultarray) then exit;
 
@@ -1231,15 +1280,30 @@ begin
             //If not a direct hit then check if sphere "nicks" the triangle's edge or corner...
             //If it does then that is the polygon intersection point.
             if not directHit then begin
+               if not CheckPointInTriangle(AffineVectorMake(piPoint),p1^,p2^,p3^) then
                SetVector(polyIPoint,
                          ClosestPointOnTriangleEdge(p1^, p2^, p3^,
-                                                PAffineVector(@pIPoint)^));
+                                                PAffineVector(@pIPoint)^))
+               else
+                 polyIPoint:=piPoint;
 
                //See if this point + negative velocity vector lies within the sphere.
                //(This implementation seems more accurate than RayCastSphereIntersect)
-               if not CheckPointInSphere(VectorAdd(polyIPoint, NEGVelocity), raystart, radius) then
+              { if not CheckPointInSphere(VectorAdd(polyIPoint, NEGVelocity), raystart, radius) then
                   continue;
-               sd2:=0;
+              // sd2:=0;  //stops the test too soon (noticable on triangle edges in flat planes)
+               sd2:=sqr(VectorDistance(raystart, polyIPoint)-Radius);
+              }
+               //see if this point + negative velocity vector intersect the sphere.
+               //(PointInSphere doesn't work for fast motion)
+               if VectorDistance2(polyIPoint,rayStart)>radius2 then
+               begin
+                 if RayCastSphereIntersect(polyIPoint,VectorNormalize(NEGVelocity),rayStart,radius,sIPoint,sIPoint2)=0 then
+                   continue;
+                 sd2:=VectorDistance2(sIPoint,polyIPoint);
+               end
+               else
+                 sd2:=0;
             end;
 
             // Allow sphere to get close to triangle (less epsilon which is built into distanceToTravel)
@@ -1318,6 +1382,63 @@ begin
      triList.Free;
 end;
 
+// GetTrianglesFromNodesIntersectingAABB
+//
+function TOctree.GetTrianglesFromNodesIntersectingAABB(const objAABB : TAABB) : TAffineVectorList;
+var
+  AABB1 : TAABB;
+
+   procedure HandleNode(Onode: POctreeNode);
+   var
+      AABB2: TAABB;
+      i: integer;
+   begin
+      AABB2.min:=Onode.MinExtent;
+      AABB2.max:=Onode.MaxExtent;
+
+      if IntersectAABBsAbsolute(AABB1, AABB2) then begin
+         if Assigned(Onode.ChildArray[0]) then begin
+            for i:=0 to 7 do
+               HandleNode(Onode.ChildArray[i])
+         end else begin
+            SetLength(ResultArray, Length(ResultArray)+1);
+            ResultArray[High(ResultArray)]:=Onode;
+         end;
+      end;
+   end;
+
+var
+   i, k : Integer;
+   p : POctreeNode;
+   triangleIndices : TIntegerList;
+
+begin
+   //Calc AABBs
+   AABB1:=objAABB;
+   
+   SetLength(ResultArray, 0);
+   if Assigned(RootNode) then
+      HandleNode(RootNode);
+
+   Result:=TAffineVectorList.Create;
+   triangleIndices:=TIntegerList.Create;
+   try
+      //fill the triangles from all nodes in the resultarray to AL
+      for i:=0 to High(ResultArray) do begin
+         p:=ResultArray[i];
+         triangleIndices.AddIntegers(p.TriArray);
+      end;
+      triangleIndices.SortAndRemoveDuplicates;
+      Result.Capacity:=triangleIndices.Count*3;
+      for i:=0 to triangleIndices.Count-1 do begin
+         k:=triangleIndices[i];
+         Result.Add(triangleFiler.List[k], triangleFiler.List[k+1], triangleFiler.List[k+2]);
+      end;
+   finally
+      triangleIndices.Free;
+   end;
+
+end;
 
 // GetTrianglesFromNodesIntersectingCube
 //
