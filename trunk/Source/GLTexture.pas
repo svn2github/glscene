@@ -3,88 +3,89 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>04/09/01 - Egg - Texture binding cache
-      <li>31/08/01 - Egg - tiaDefault wasn't honoured (Rene Lindsay)
-      <li>25/08/01 - Egg - Added TGLBlankImage
-      <li>16/08/01 - Egg - drawState now part of TRenderContextInfo
-      <li>15/08/01 - Egg - TexGen support (object_linear, eye_linear and sphere_map)
-      <li>13/08/01 - Egg - Fixed OnTextureNeeded handling (paths for mat lib)
-      <li>12/08/01 - Egg - Completely rewritten handles management
-      <li>27/07/01 - Egg - TGLLibMaterials now a TOwnedCollection
-      <li>19/07/01 - Egg - Added "Enabled" to TGLTexture
-      <li>28/06/01 - Egg - Added AddTextureMaterial TGraphic variant
-      <li>14/03/01 - Egg - Streaming fixes by Uwe Raabe
-      <li>08/03/01 - Egg - TGLPicFileImage.GetBitmap32 now resets filename if not found
-      <li>01/03/01 - Egg - Fixed TGLMaterial.DestroyHandle,
-                           Added Texture2 notifications and material cacheing
-      <li>26/02/01 - Egg - Added support for GL_EXT_texture_filter_anisotropic
-      <li>23/02/01 - Egg - Fixed texture matrix messup (second was using first)
-      <li>21/02/01 - Egg - Minor fix for TextureImageRequiredMemory,
-                           TexGen calls now based on XOpenGL
-      <li>14/02/01 - Egg - Added support for texture format & texture compression
-      <li>31/01/01 - Egg - Added Multitexture support
-      <li>28/01/01 - Egg - Added MaterialOptions
-      <li>15/01/01 - Egg - Enhanced TGLPicFileImage.LoadFromFile
-      <li>13/01/01 - Egg - New helper functions for TGLMaterialLibrary
-      <li>08/01/01 - Egg - Not-so-clean fix for TGLTexture.Destroy... better fix
-                           will require awareness of rendering contexts...
-      <li>06/12/00 - Egg - Added PrepareBuildList mechanism
-      <li>16/10/00 - Egg - Fix in TGLPictureImage.Assign
-      <li>25/09/00 - Egg - New texture management implemented
-      <li>13/08/00 - Egg - Added AddTextureMaterial
-      <li>06/08/00 - Egg - File not found error now happens only once per texture,
-                           also added some more doc and texture transforms support
-                           to TGLLibMaterial
-      <li>27/07/00 - Egg - TGLPictureImage.Assign now accepts TGraphic & TPicture,
-                           Added max texture size clamping
-      <li>15/07/00 - Egg - Upgrade for new list/handle destruction scheme
-      <li>05/07/00 - Egg - Added tiaTopLeftPointColorTransparent
-      <li>28/06/00 - Egg - Added asserts for missing texture files
-      <li>01/06/00 - Egg - Added ReloadTexture (support for texture library),
-                           Fixed persistence of material names in a texture library
-      <li>28/05/00 - Egg - TGLColor now has NotifyChange support for TGLBaseSceneObject
-      <li>23/04/00 - Egg - Fixed bugs with TGLPicFileImage & TGLPersistentImage,
-                           Added tiaOpaque
-		<li>17/04/00 - Egg - Added Assign to DummyCube and Sprite 
-      <li>16/04/00 - Egg - Added TGLPicFileImage.Assign
-      <li>26/03/00 - Egg - Finally fixed nasty bug in TGLMaterial.Free
-		<li>22/03/00 - Egg - Added BeginUpdate/EndUpdate to TGLPictureImage,
-									Made use of [Un]SetGLState in TGLMaterial
-									(gain = 7-10% on T&L intensive rendering),
-                           TGLTexBaseClass is no more (RIP)
-		<li>21/03/00 - Egg - TGLMaterial props are now longer stored when it is
-									linked to a material library entry,
-									Added TGLPictureImage (split from TGLPersistentImage),
-									TGLPicFileImage has been updated and reactivated,
-									ColorManager is now autocreated and non longer force-linked.
-      <li>19/03/00 - Egg - Added SaveToXxxx & LoadFromXxxx to TGLMaterialLibrary
-		<li>18/03/00 - Egg - Added GetGLTextureImageClassesAsStrings,
-									Added FindGLTextureImageClassByFriendlyName,
-									FChanges states now ignored in TGLTexture.GetHandle,
-									Added SaveToFile/LoadFromFile to TextureImage
-		<li>17/03/00 - Egg - Added tiaLuminance
-		<li>14/03/00 - Egg - Added RegisterGLTextureImageClass stuff,
-									Added ImageAlpha
-		<li>13/03/00 - Egg - Changed TGLTextureImage image persistence again,
-									Added "Edit" method for texture image classes, 
-									TMagFilter/TMinFilter -> TGLMagFilter/TGLMinFilter
-		<li>03/03/00 - Egg - Removed TImagePath,
-									Started major rework of the whole TGLTextureImage stuff,
-									Fixed and optimized TGLTexture.PrepareImage
-		<li>12/02/00 - Egg - Added Material Library
-      <li>10/02/00 - Egg - Fixed crash when texture is empty
-		<li>08/02/00 - Egg - Added AsWinColor & DeclareCurrentAsDefault to TGLColor,
-									fixed notification on material property setXxx methods,
-									Objects now begin with 'TGL'
-		<li>07/02/00 - Egg - "Update"s renamed to "NotifyChange"s
-		<li>06/02/00 - Egg - RoundUpToPowerOf2, RoundDownToPowerOf2 and
-                           IsPowerOf2 moved to GLMisc, added TGLPersistentImage.Assign,
-                           fixed TGLMaterial.Assign,
-                           disable inheritance stuff in TGLFaceProperties.Apply (needs fixing),
-                           Diffuse & ambient color now default to openGL values
-      <li>05/02/00 - Egg - Javadocisation, fixes and enhancements :<br>
-                           TGLColor.Update, ConvertWinColor, TPicImage,
-									TGLMaterial.Apply
+      <li>06/09/01 - EG - No longers depends on 'Windows'
+      <li>04/09/01 - EG - Texture binding cache
+      <li>31/08/01 - EG - tiaDefault wasn't honoured (Rene Lindsay)
+      <li>25/08/01 - EG - Added TGLBlankImage
+      <li>16/08/01 - EG - drawState now part of TRenderContextInfo
+      <li>15/08/01 - EG - TexGen support (object_linear, eye_linear and sphere_map)
+      <li>13/08/01 - EG - Fixed OnTextureNeeded handling (paths for mat lib)
+      <li>12/08/01 - EG - Completely rewritten handles management
+      <li>27/07/01 - EG - TGLLibMaterials now a TOwnedCollection
+      <li>19/07/01 - EG - Added "Enabled" to TGLTexture
+      <li>28/06/01 - EG - Added AddTextureMaterial TGraphic variant
+      <li>14/03/01 - EG - Streaming fixes by Uwe Raabe
+      <li>08/03/01 - EG - TGLPicFileImage.GetBitmap32 now resets filename if not found
+      <li>01/03/01 - EG - Fixed TGLMaterial.DestroyHandle,
+                          Added Texture2 notifications and material cacheing
+      <li>26/02/01 - EG - Added support for GL_EXT_texture_filter_anisotropic
+      <li>23/02/01 - EG - Fixed texture matrix messup (second was using first)
+      <li>21/02/01 - EG - Minor fix for TextureImageRequiredMemory,
+                          TexGen calls now based on XOpenGL
+      <li>14/02/01 - EG - Added support for texture format & texture compression
+      <li>31/01/01 - EG - Added Multitexture support
+      <li>28/01/01 - EG - Added MaterialOptions
+      <li>15/01/01 - EG - Enhanced TGLPicFileImage.LoadFromFile
+      <li>13/01/01 - EG - New helper functions for TGLMaterialLibrary
+      <li>08/01/01 - EG - Not-so-clean fix for TGLTexture.Destroy... better fix
+                          will require awareness of rendering contexts...
+      <li>06/12/00 - EG - Added PrepareBuildList mechanism
+      <li>16/10/00 - EG - Fix in TGLPictureImage.Assign
+      <li>25/09/00 - EG - New texture management implemented
+      <li>13/08/00 - EG - Added AddTextureMaterial
+      <li>06/08/00 - EG - File not found error now happens only once per texture,
+                          also added some more doc and texture transforms support
+                          to TGLLibMaterial
+      <li>27/07/00 - EG - TGLPictureImage.Assign now accepts TGraphic & TPicture,
+                          Added max texture size clamping
+      <li>15/07/00 - EG - Upgrade for new list/handle destruction scheme
+      <li>05/07/00 - EG - Added tiaTopLeftPointColorTransparent
+      <li>28/06/00 - EG - Added asserts for missing texture files
+      <li>01/06/00 - EG - Added ReloadTexture (support for texture library),
+                          Fixed persistence of material names in a texture library
+      <li>28/05/00 - EG - TGLColor now has NotifyChange support for TGLBaseSceneObject
+      <li>23/04/00 - EG - Fixed bugs with TGLPicFileImage & TGLPersistentImage,
+                          Added tiaOpaque
+		<li>17/04/00 - EG - Added Assign to DummyCube and Sprite
+      <li>16/04/00 - EG - Added TGLPicFileImage.Assign
+      <li>26/03/00 - EG - Finally fixed nasty bug in TGLMaterial.Free
+		<li>22/03/00 - EG - Added BeginUpdate/EndUpdate to TGLPictureImage,
+								  Made use of [Un]SetGLState in TGLMaterial
+								  (gain = 7-10% on T&L intensive rendering),
+                          TGLTexBaseClass is no more (RIP)
+		<li>21/03/00 - EG - TGLMaterial props are now longer stored when it is
+								  linked to a material library entry,
+								  Added TGLPictureImage (split from TGLPersistentImage),
+								  TGLPicFileImage has been updated and reactivated,
+								  ColorManager is now autocreated and non longer force-linked.
+      <li>19/03/00 - EG - Added SaveToXxxx & LoadFromXxxx to TGLMaterialLibrary
+		<li>18/03/00 - EG - Added GetGLTextureImageClassesAsStrings,
+								  Added FindGLTextureImageClassByFriendlyName,
+								  FChanges states now ignored in TGLTexture.GetHandle,
+								  Added SaveToFile/LoadFromFile to TextureImage
+		<li>17/03/00 - EG - Added tiaLuminance
+		<li>14/03/00 - EG - Added RegisterGLTextureImageClass stuff,
+								  Added ImageAlpha
+		<li>13/03/00 - EG - Changed TGLTextureImage image persistence again,
+								  Added "Edit" method for texture image classes,
+								  TMagFilter/TMinFilter -> TGLMagFilter/TGLMinFilter
+		<li>03/03/00 - EG - Removed TImagePath,
+								  Started major rework of the whole TGLTextureImage stuff,
+								  Fixed and optimized TGLTexture.PrepareImage
+		<li>12/02/00 - EG - Added Material Library
+      <li>10/02/00 - EG - Fixed crash when texture is empty
+		<li>08/02/00 - EG - Added AsWinColor & DeclareCurrentAsDefault to TGLColor,
+								  fixed notification on material property setXxx methods,
+								  Objects now begin with 'TGL'
+		<li>07/02/00 - EG - "Update"s renamed to "NotifyChange"s
+		<li>06/02/00 - EG - RoundUpToPowerOf2, RoundDownToPowerOf2 and
+                          IsPowerOf2 moved to GLMisc, added TGLPersistentImage.Assign,
+                          fixed TGLMaterial.Assign,
+                          disable inheritance stuff in TGLFaceProperties.Apply (needs fixing),
+                          Diffuse & ambient color now default to openGL values
+      <li>05/02/00 - EG - Javadocisation, fixes and enhancements :<br>
+                          TGLColor.Update, ConvertWinColor, TPicImage,
+								  TGLMaterial.Apply
    </ul></font>
 }
 unit GLTexture;
@@ -98,7 +99,7 @@ unit GLTexture;
 interface
 
 uses
-  Windows, Classes, OpenGL12, Graphics, Geometry, SysUtils, GLMisc, GLGraphics,
+  Classes, OpenGL12, Graphics, Geometry, SysUtils, GLMisc, GLGraphics,
   GLContext;
 
 type
@@ -289,6 +290,11 @@ type
 
    TDrawState = (dsRendering, dsPicking, dsPrinting);
 
+   TGLSize = record
+      cx : Longint;
+      cy : Longint;
+   end;
+
    // TRenderContextInfo
    //
    {: Stores contextual info useful during rendering methods. }
@@ -299,7 +305,7 @@ type
       cameraPosition : TVector;
       cameraDirection : TVector;
       rcci : TRenderContextClippingInfo;
-      viewPortSize : TSize;
+      viewPortSize : TGLSize;
       currentStates : TGLStates;
       materialLibrary : TGLMaterialLibrary;
       fogDisabledCounter : Integer;
@@ -1135,7 +1141,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses Dialogs, GLScene, GLScreen, GLStrings, ExtDlgs, XOpenGL;
+uses Dialogs, GLScene, GLScreen, GLStrings, ExtDlgs, XOpenGL, GLCrossPlatform;
 
 var
 	vGLTextureImageClasses : TList;
@@ -1144,7 +1150,7 @@ var
 const
 	cTextureMode : array [tmDecal..tmReplace] of TGLEnum =
 							( GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE );
-   
+
 // ColorManager
 //
 function ColorManager : TGLColorManager;

@@ -5,8 +5,8 @@ unit GLThorFX;       //--René Lindsay 09/03/2001--
 
 interface
 
-uses Windows, Classes, GLScene, GLMisc, XCollection, Geometry, Graphics,
-   GLTexture, GLCadencer;
+uses Classes, GLScene, GLMisc, XCollection, Geometry, Graphics, GLTexture,
+     GLCadencer;
 
 type
 

@@ -3,69 +3,69 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>18/08/01 - Egg - Added TriangleCount methods, STL export, PLY import
-      <li>15/08/01 - Egg - FaceGroups can now be rendered by material group
-                           (activate with RenderingOption "moroGroupByMaterial")
-      <li>14/08/01 - Egg - Added TSkeletonBoneList and support for skeleton with
-                           multiple root bones, updated SMD loader 
-      <li>13/08/01 - Egg - Improved/fixed SMD loader
-      <li>12/08/01 - Egg - Completely rewritten handles management,
-                           Fixed TActorAnimation.Assign,
-                           Fixed persistence
-      <li>08/08/01 - Egg - Added TBaseMesh.AxisAlignedDimensions
-      <li>19/07/01 - Egg - AutoCentering is now a property of TBaseMesh,
-                           3DS loader no longer auto-centers,
-                           Added ExtractTriangles and related methods
-      <li>18/07/01 - Egg - VisibilityCulling compatibility changes
-      <li>19/06/01 - Egg - StrToFloat outlawed and replaced by StrToFloatDef
-      <li>25/03/01 - Egg - Added TAnimationControler
-      <li>18/03/01 - Egg - Added basic Skeleton structures & SMD importer
-      <li>16/03/01 - Egg - Introduced new PersistentClasses
-      <li>15/03/01 - Egg - Fix in TActorAnimation.SetEndFrame (thx David Costa)
-      <li>08/03/01 - Egg - TGL3DSVectorFile now loads materials for TBaseMesh
-      <li>26/02/01 - Egg - Added TBaseMeshObject & BuildNormals, MD2 normals auto-builded
-      <li>21/02/01 - Egg - Now XOpenGL based (multitexture)
-      <li>15/01/01 - Egg - Added Translate methods
-      <li>10/01/01 - Egg - Fixed in TBaseMesh.DoRender for RenderChildren states
-      <li>08/01/01 - Egg - Fixed TBaseMesh.BuildList messup of attrib states
-      <li>22/12/00 - Egg - Fixed non-interpolated TActor animation (was freezing),
-                           Fixed TBaseMesh.DoRender messup of attrib states
-      <li>18/12/00 - Egg - TFGIndexTexCoordList now supports normals (automatically),
-                           NormalsOrientation code moved to TBaseMesh
-      <li>11/12/00 - Egg - Fix for NormalOrientation (3DS importer)
-      <li>06/12/00 - Egg - Added PrepareBuildList mechanism
-      <li>08/10/00 - Egg - Removed TGLOBJVectorFile, use GLFileOBJ instead
-      <li>13/08/00 - Egg - Enhancements for Portal Rendering support,
-                           Added utility methods & triangle fans
-      <li>10/08/00 - Egg - Added CurrentAnimation, fixed TMeshObject.GetExtents
-      <li>21/07/00 - Egg - Vastly improved memory use and mechanisms for MD2/TActor
-      <li>19/07/00 - Egg - Introduced enhanced mesh structure
-      <li>16/07/00 - Egg - Made use of new TDataFile class
-      <li>15/07/00 - Egg - FreeForm can now handle 3DS files with multiple textures,
-                           Added TBaseMesh.GetExtents
-      <li>28/06/00 - Egg - Support for "ObjectStyle"
-      <li>23/06/00 - Egg - Reversed "t" texture coord for MD2,
-                           TActorAnimations can now load/save
-      <li>21/06/00 - Egg - Added frame change events to TActor,
-                           Added TActorAnimations collection
-      <li>19/06/00 - Egg - Completed smooth movement interpolation for TActor
-      <li>07/06/00 - Egg - TVectorFile now longers assumes a TFreeForm as Owner,
-                           Added generic TVectorFile.LoadFromFile
-      <li>26/05/00 - Egg - Removed dependency to GLObjects,
-                           TFreeForm now may use InterleavedArrays instead of
-                           IndexedArrays (better BuildList compatibility)
-      <li>22/04/00 - Egg - Fixed Material handlings in TFreeForm, inverted CCW/CW
-                           convention for 3DS Release3
-		<li>11/04/00 - Egg - Removed unnecessary code in finalization (thanks Uwe)
-	   <li>09/02/00 - Egg - Creation from split of GLObjects,
-                           fixed class registrations and formats unregistration
+      <li>18/08/01 - EG - Added TriangleCount methods, STL export, PLY import
+      <li>15/08/01 - EG - FaceGroups can now be rendered by material group
+                          (activate with RenderingOption "moroGroupByMaterial")
+      <li>14/08/01 - EG - Added TSkeletonBoneList and support for skeleton with
+                          multiple root bones, updated SMD loader
+      <li>13/08/01 - EG - Improved/fixed SMD loader
+      <li>12/08/01 - EG - Completely rewritten handles management,
+                          Fixed TActorAnimation.Assign,
+                          Fixed persistence
+      <li>08/08/01 - EG - Added TBaseMesh.AxisAlignedDimensions
+      <li>19/07/01 - EG - AutoCentering is now a property of TBaseMesh,
+                          3DS loader no longer auto-centers,
+                          Added ExtractTriangles and related methods
+      <li>18/07/01 - EG - VisibilityCulling compatibility changes
+      <li>19/06/01 - EG - StrToFloat outlawed and replaced by StrToFloatDef
+      <li>25/03/01 - EG - Added TAnimationControler
+      <li>18/03/01 - EG - Added basic Skeleton structures & SMD importer
+      <li>16/03/01 - EG - Introduced new PersistentClasses
+      <li>15/03/01 - EG - Fix in TActorAnimation.SetEndFrame (thx David Costa)
+      <li>08/03/01 - EG - TGL3DSVectorFile now loads materials for TBaseMesh
+      <li>26/02/01 - EG - Added TBaseMeshObject & BuildNormals, MD2 normals auto-builded
+      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
+      <li>15/01/01 - EG - Added Translate methods
+      <li>10/01/01 - EG - Fixed in TBaseMesh.DoRender for RenderChildren states
+      <li>08/01/01 - EG - Fixed TBaseMesh.BuildList messup of attrib states
+      <li>22/12/00 - EG - Fixed non-interpolated TActor animation (was freezing),
+                          Fixed TBaseMesh.DoRender messup of attrib states
+      <li>18/12/00 - EG - TFGIndexTexCoordList now supports normals (automatically),
+                          NormalsOrientation code moved to TBaseMesh
+      <li>11/12/00 - EG - Fix for NormalOrientation (3DS importer)
+      <li>06/12/00 - EG - Added PrepareBuildList mechanism
+      <li>08/10/00 - EG - Removed TGLOBJVectorFile, use GLFileOBJ instead
+      <li>13/08/00 - EG - Enhancements for Portal Rendering support,
+                          Added utility methods & triangle fans
+      <li>10/08/00 - EG - Added CurrentAnimation, fixed TMeshObject.GetExtents
+      <li>21/07/00 - EG - Vastly improved memory use and mechanisms for MD2/TActor
+      <li>19/07/00 - EG - Introduced enhanced mesh structure
+      <li>16/07/00 - EG - Made use of new TDataFile class
+      <li>15/07/00 - EG - FreeForm can now handle 3DS files with multiple textures,
+                          Added TBaseMesh.GetExtents
+      <li>28/06/00 - EG - Support for "ObjectStyle"
+      <li>23/06/00 - EG - Reversed "t" texture coord for MD2,
+                          TActorAnimations can now load/save
+      <li>21/06/00 - EG - Added frame change events to TActor,
+                          Added TActorAnimations collection
+      <li>19/06/00 - EG - Completed smooth movement interpolation for TActor
+      <li>07/06/00 - EG - TVectorFile now longers assumes a TFreeForm as Owner,
+                          Added generic TVectorFile.LoadFromFile
+      <li>26/05/00 - EG - Removed dependency to GLObjects,
+                          TFreeForm now may use InterleavedArrays instead of
+                          IndexedArrays (better BuildList compatibility)
+      <li>22/04/00 - EG - Fixed Material handlings in TFreeForm, inverted CCW/CW
+                          convention for 3DS Release3
+		<li>11/04/00 - EG - Removed unnecessary code in finalization (thanks Uwe)
+	   <li>09/02/00 - EG - Creation from split of GLObjects,
+                          fixed class registrations and formats unregistration
 	</ul></font>
 }
 unit GLVectorFileObjects;
 
 interface
 
-uses Windows, Classes, GLScene, OpenGL12, Geometry, SysUtils, GLMisc, GLTexture,
+uses Classes, GLScene, OpenGL12, Geometry, SysUtils, GLMisc, GLTexture,
    GLMesh, VectorLists, PersistentClasses;
 
 type
@@ -1318,7 +1318,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL,
+uses GLStrings, consts, XOpenGL, GLCrossPlatform,
      // 3DS Support
 	  File3DS, Types3DS,
      // STL Support

@@ -166,8 +166,8 @@ interface
 
 {$i GLScene.inc}
 
-uses Windows, Classes, Controls, GLScreen, GLMisc, GLTexture, SysUtils,
-   Graphics, Messages, Geometry, XCollection, GLGraphics, GeometryBB, GLContext;
+uses Windows, Classes, Controls, GLScreen, GLMisc, GLTexture, SysUtils, Graphics,
+   Messages, Geometry, XCollection, GLGraphics, GeometryBB, GLContext;
 
 type
 

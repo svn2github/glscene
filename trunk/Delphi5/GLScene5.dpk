@@ -113,6 +113,8 @@ contains
   VectorTypes in '..\Source\Base\VectorTypes.pas',
   GeometryBB in '..\Source\Base\GeometryBB.pas',
   Polynomials in '..\Source\Base\Polynomials.pas',
-  GLContext in '..\Source\GLContext.pas';
+  GLContext in '..\Source\GLContext.pas',
+  GLWin32Context in '..\Source\Platform\GLWin32Context.pas',
+  GLCrossPlatform in '..\Source\Platform\GLCrossPlatform.pas';
 
 end.

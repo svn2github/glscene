@@ -1,5 +1,4 @@
-// GLGraphics
-{: Egg<p>
+{: GLGraphics<p>
 
 	Fonction utilitaires graphiques<p>
 
@@ -19,7 +18,7 @@ unit GLGraphics;
 
 interface
 
-uses Windows, Classes, Graphics, GLMisc, OpenGL12;
+uses Classes, Graphics, GLMisc, OpenGL12, GLCrossPlatform;
 
 type
 
@@ -138,7 +137,7 @@ type
             The best spot for reading pixels is within a SceneViewer's PostRender
             event : the scene has been fully rendered and the OpenGL context
             is still active. } 
-         procedure ReadPixels(const area : TRect);
+         procedure ReadPixels(const area : TGLRect);
          {: Draws the whole bitmap at given position in the current OpenGL context.<p>
             This function must be called with a rendering context active.<p>
             Blending and Alpha channel functions are not altered by this function
@@ -483,7 +482,7 @@ end;
 
 // ReadPixels
 //
-procedure TGLBitmap32.ReadPixels(const area : TRect);
+procedure TGLBitmap32.ReadPixels(const area : TGLRect);
 begin
    FWidth:=(area.Right-area.Left) and $FFFC;
    FHeight:=(area.Bottom-area.Top);

@@ -20,7 +20,7 @@ unit GLHeightData;
 
 interface
 
-uses Windows, Classes, Graphics, Geometry;
+uses Classes, Graphics, Geometry;
 
 {$i GLScene.inc}
 
@@ -368,7 +368,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLMisc;
+uses SysUtils, GLMisc, Windows;
 
 // ------------------
 // ------------------ THeightDataSourceThread ------------------
@@ -1039,7 +1039,7 @@ var
    logpal : TLogPal;
 begin
    size:=RoundUpToPowerOf2(size);
-   FBitmap:=TBitmap.Create;
+   FBitmap:=Graphics.TBitmap.Create;
    FBitmap.PixelFormat:=pf8bit;
    FBitmap.Width:=size;
    FBitmap.Height:=size;
@@ -1108,6 +1108,6 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClass(TGLBitmapHDS);
+   Classes.RegisterClass(TGLBitmapHDS);
 
 end.

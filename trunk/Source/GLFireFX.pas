@@ -18,8 +18,8 @@ unit GLFireFX;
 
 interface
 
-uses Windows, Classes, GLScene, GLMisc, XCollection, Geometry, Graphics,
-   GLTexture, GLCadencer;
+uses Classes, GLScene, GLMisc, XCollection, Geometry, Graphics, GLTexture,
+     GLCadencer;
 
 type
 

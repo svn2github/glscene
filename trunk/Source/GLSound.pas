@@ -13,8 +13,8 @@ unit GLSound;
 
 interface
 
-uses Windows, Classes, GLSoundFileObjects, GLScene, XCollection, Geometry,
-   GLCadencer, GLMisc;
+uses Classes, GLSoundFileObjects, GLScene, XCollection, Geometry, GLCadencer,
+     GLMisc;
 
 {$i GLScene.inc}
 
@@ -478,7 +478,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, MMSystem;
+uses SysUtils, MMSystem, GLCrossPlatform;
 
 var
    vActiveSoundManager : TGLSoundManager;
@@ -1501,7 +1501,7 @@ begin
             FPlayingSource.Origin:=OwnerBaseSceneObject;
          end else FPlayingSource.Free;
       end;
-   end else MessageBox(0, 'No Active Sound Manager.'#13#10'Make sure manager is created before emitter', '', MB_OK);
+   end else InformationDlg('No Active Sound Manager.'#13#10'Make sure manager is created before emitter');
 end;
 
 // GetPlaying

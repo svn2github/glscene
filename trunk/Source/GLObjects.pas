@@ -85,8 +85,8 @@ unit GLObjects;
 
 interface
 
-uses Windows, Classes, Geometry, GLScene, GLTexture, GLMisc, Graphics,
-   OpenGL12, SysUtils, extctrls;
+uses Classes, Geometry, GLScene, GLTexture, GLMisc, Graphics, OpenGL12,
+   SysUtils, extctrls;
 
 type
 
@@ -1063,7 +1063,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Consts, Dialogs, Forms, GLStrings, Spline, XOpenGL, Polynomials;
+uses Windows, Consts, Dialogs, Forms, GLStrings, Spline, XOpenGL, Polynomials;
 
 var
 	vFontManager : TFontManager;
