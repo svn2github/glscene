@@ -144,27 +144,27 @@ begin
      movementScale:= Movmanager.movementScale;
 
      //then update position according to keys being pressed
-     if iskeydown('W') then behav.MoveForward(MovementScale*deltaTime);
-     if iskeydown('S') then behav.MoveForward(-MovementScale*deltaTime);
-     if iskeydown('A') then behav.StrafeHorizontal(-MovementScale*deltaTime);
-     if iskeydown('D') then behav.StrafeHorizontal(MovementScale*deltaTime);
+     if IsKeyDown('W') or IsKeyDown('Z') then behav.MoveForward(MovementScale*deltaTime);
+     if IsKeyDown('S') then behav.MoveForward(-MovementScale*deltaTime);
+     if IsKeyDown('A') or IsKeyDown('Q') then behav.StrafeHorizontal(-MovementScale*deltaTime);
+     if IsKeyDown('D') then behav.StrafeHorizontal(MovementScale*deltaTime);
 
      //move up/down (for debugging)
-     if iskeydown(VK_PRIOR)or iskeydown(VK_SPACE) then behav.StrafeVertical(MovementScale*deltaTime);
-     if iskeydown(VK_NEXT) then behav.StrafeVertical(-MovementScale*deltaTime);
+     if IsKeyDown(VK_PRIOR)or IsKeyDown(VK_SPACE) then behav.StrafeVertical(MovementScale*deltaTime);
+     if IsKeyDown(VK_NEXT) then behav.StrafeVertical(-MovementScale*deltaTime);
 
      //move bot
-     if iskeydown('I') then behav2.MoveForward(MovementScale*deltaTime);
-     if iskeydown('K') then behav2.MoveForward(-MovementScale*deltaTime);
-     if iskeydown('J') then behav2.StrafeHorizontal(-MovementScale*deltaTime);
-     if iskeydown('L') then behav2.StrafeHorizontal(MovementScale*deltaTime);
-     if iskeydown('O') then behav2.StrafeVertical(MovementScale*deltaTime);
-     if iskeydown('P') then behav.StrafeVertical(-MovementScale*deltaTime);
+     if IsKeyDown('I') then behav2.MoveForward(MovementScale*deltaTime);
+     if IsKeyDown('K') then behav2.MoveForward(-MovementScale*deltaTime);
+     if IsKeyDown('J') then behav2.StrafeHorizontal(-MovementScale*deltaTime);
+     if IsKeyDown('L') then behav2.StrafeHorizontal(MovementScale*deltaTime);
+     if IsKeyDown('O') then behav2.StrafeVertical(MovementScale*deltaTime);
+     if IsKeyDown('P') then behav.StrafeVertical(-MovementScale*deltaTime);
 
-     if isKeyDown(VK_LEFT) then behav.TurnHorizontal(-70*deltatime);
-     if isKeyDown(VK_RIGHT) then behav.TurnHorizontal(70*deltatime);
-     if isKeyDown(VK_UP) then behav.turnVertical(-70*deltatime);
-     if isKeyDown(VK_DOWN) then behav.turnVertical(70*deltatime);
+     if IsKeyDown(VK_LEFT) then behav.TurnHorizontal(-70*deltatime);
+     if IsKeyDown(VK_RIGHT) then behav.TurnHorizontal(70*deltatime);
+     if IsKeyDown(VK_UP) then behav.turnVertical(-70*deltatime);
+     if IsKeyDown(VK_DOWN) then behav.turnVertical(70*deltatime);
 
      //update mouse view
      xangle:=mouse.CursorPos.X-screen.Width/2;
