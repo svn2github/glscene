@@ -122,6 +122,8 @@ const
 
 procedure TMain.FormCreate(Sender: TObject);
 begin
+   DecimalSeparator := '.';
+
    currentLevelStrucs:=TTheBallStructures.Create;
 
    // create world
