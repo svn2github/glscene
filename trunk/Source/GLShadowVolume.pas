@@ -492,7 +492,7 @@ end;
 procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
                                    renderSelf, renderChildren : Boolean);
 var
-   i, j, k, n, nv : Integer;
+   i, k, n     : Integer;
    lightSource : TGLLightSource;
    lightCaster : TGLShadowVolumeLight;
    sil : TGLSilhouette;
