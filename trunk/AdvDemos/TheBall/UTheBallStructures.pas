@@ -9,7 +9,7 @@ unit UTheBallStructures;
 
 interface
 
-uses Classes, GLScene, GLMisc, GLObjects, Geometry, ODEImport;
+uses Classes, GLScene, GLMisc, GLObjects, Geometry, ODEImport, GLBitmapFont;
 
 type
 
@@ -18,20 +18,51 @@ type
 	TTheBallStructure = class (TPersistent)
 	   private
 	      { Private Declarations }
+         FName : String;
+
 	   protected
 	      { Protected Declarations }
+         function ParentObject : TGLBaseSceneObject; dynamic;
+
 	   public
 	      { Public Declarations }
 	      constructor Create; virtual;
          destructor Destroy; override;
 
-         procedure Parse(const vals : TStringList); dynamic; abstract;
-         procedure Instantiate(const parent : TGLBaseSceneObject); dynamic; abstract;
+         property Name : String read FName;
+
+         procedure Parse(const vals : TStringList); dynamic;
+         procedure Instantiate; dynamic; abstract;
          procedure Release; dynamic; abstract;
          procedure Progress(const progressTime : TProgressTimes); virtual;
 	end;
 
    TTheBallStructureClass = class of TTheBallStructure;
+
+	// TTBTableText
+	//
+	TTBTableText = class (TTheBallStructure)
+	   private
+	      { Private Declarations }
+         FFlatText : TGLFlatText;
+         FPosition : TAffineVector;
+         FOrientation : TAffineVector;
+         FSize : Single;
+         FColor : Integer;
+         FText : String;
+
+	   protected
+	      { Protected Declarations }
+
+	   public
+	      { Public Declarations }
+	      constructor Create; override;
+         destructor Destroy; override;
+
+         procedure Parse(const vals : TStringList); override;
+         procedure Instantiate; override;
+         procedure Release; override;
+	end;
 
 	// TTBCubeArea
 	//
@@ -50,7 +81,7 @@ type
          destructor Destroy; override;
 
          procedure Parse(const vals : TStringList); override;
-         procedure Instantiate(const parent : TGLBaseSceneObject); override;
+         procedure Instantiate; override;
          procedure Release; override;
 
          property Position : TAffineVector read FPosition;
@@ -71,7 +102,7 @@ type
          
 	   public
 	      { Public Declarations }
-         procedure Instantiate(const parent : TGLBaseSceneObject); override;
+         procedure Instantiate; override;
          procedure Release; override;
          procedure Progress(const progressTime : TProgressTimes); override;
    end;
@@ -87,7 +118,7 @@ type
 	   public
 	      { Public Declarations }
          procedure Parse(const vals : TStringList); override;
-         procedure Instantiate(const parent : TGLBaseSceneObject); override;
+         procedure Instantiate; override;
          procedure Release; override;
          procedure Progress(const progressTime : TProgressTimes); override;
    end;
@@ -102,7 +133,7 @@ type
 	   public
 	      { Public Declarations }
          procedure Parse(const vals : TStringList); override;
-         procedure Instantiate(const parent : TGLBaseSceneObject); override;
+         procedure Instantiate; override;
          procedure Release; override;
          procedure Progress(const progressTime : TProgressTimes); override;
    end;
@@ -124,7 +155,7 @@ type
          destructor Destroy; override;
 
          procedure Parse(const vals : TStringList); override;
-         procedure Instantiate(const parent : TGLBaseSceneObject); override;
+         procedure Instantiate; override;
          procedure Release; override;
          procedure Progress(const progressTime : TProgressTimes); override;
 	end;
@@ -132,18 +163,25 @@ type
 	// TTBMarbleBlock
 	//
 	TTBMarbleBlock = class (TTBBlock)
-	   private
-	      { Private Declarations }
-	   protected
-	      { Protected Declarations }
 	   public
 	      { Public Declarations }
-	      constructor Create; override;
-         destructor Destroy; override;
+         procedure Instantiate; override;
+	end;
 
-         procedure Parse(const vals : TStringList); override;
-         procedure Instantiate(const parent : TGLBaseSceneObject); override;
-         procedure Release; override;
+	// TTBTransparentBlock
+	//
+	TTBTransparentBlock = class (TTBBlock)
+	   protected
+	      { Protected Declarations }
+         function ParentObject : TGLBaseSceneObject; override;
+	end;
+
+	// TTBGlassBlock
+	//
+	TTBGlassBlock = class (TTBTransparentBlock)
+	   public
+	      { Public Declarations }
+         procedure Instantiate; override;
 	end;
 
 procedure ParseTheBallMap(const mapData : String; strucList : TList;
@@ -212,11 +250,82 @@ begin
 	inherited Destroy;
 end;
 
+// ParentObject
+//
+function TTheBallStructure.ParentObject : TGLBaseSceneObject;
+begin
+   Result:=Main.DCMap;
+end;
+
+// Parse
+//
+procedure TTheBallStructure.Parse(const vals : TStringList);
+begin
+   FName:=vals.Values['Name'];
+end;
+
 // Progress
 //
 procedure TTheBallStructure.Progress(const progressTime : TProgressTimes);
 begin
    // nothing
+end;
+
+// ------------------
+// ------------------ TTBTableText ------------------
+// ------------------
+
+// Create
+//
+constructor TTBTableText.Create;
+begin
+	inherited Create;
+end;
+
+// Destroy
+//
+destructor TTBTableText.Destroy;
+begin
+	inherited Destroy;
+end;
+
+// Parse
+//
+procedure TTBTableText.Parse(const vals : TStringList);
+begin
+   inherited;
+   FPosition[0]:=StrToFloatDef(vals.Values['X'], 0);
+   FPosition[1]:=StrToFloatDef(vals.Values['Y'], 0.01);
+   FPosition[2]:=StrToFloatDef(vals.Values['Z'], 0);
+   FOrientation[0]:=StrToFloatDef(vals.Values['OX'], 1);
+   FOrientation[1]:=StrToFloatDef(vals.Values['OY'], 0);
+   FOrientation[2]:=StrToFloatDef(vals.Values['OZ'], 0);
+   NormalizeVector(FOrientation);
+   FSize:=StrToFloatDef(vals.Values['Size'], 1)*0.01;
+   FColor:=StrToIntDef(vals.Values['Color'], 0);
+   FText:=vals.Values['Text'];
+end;
+
+// Instantiate
+//
+procedure TTBTableText.Instantiate;
+begin
+   FFlatText:=TGLFlatText(ParentObject.AddNewChild(TGLFlatText));
+   FFlatText.Position.AsAffineVector:=FPosition;
+   FFlatText.Direction.AsVector:=YHmgVector;
+   FFlatText.Up.AsAffineVector:=FOrientation;
+   FFlatText.Roll(180);
+   FFlatText.Scale.SetVector(FSize, FSize, FSize);
+   FFlatText.BitmapFont:=Main.WindowsBitmapFont;
+   FFlatText.Text:=FText;
+   FFlatText.ModulateColor.AsWinColor:=FColor;
+end;
+
+// Release
+//
+procedure TTBTableText.Release;
+begin
+   FreeAndNil(FFlatText);
 end;
 
 // ------------------
@@ -241,6 +350,7 @@ end;
 //
 procedure TTBCubeArea.Parse(const vals : TStringList);
 begin
+   inherited;
    FPosition[0]:=StrToFloatDef(vals.Values['X'], 0);
    FPosition[1]:=StrToFloatDef(vals.Values['Y'], 0.5);
    FPosition[2]:=StrToFloatDef(vals.Values['Z'], 0);
@@ -251,7 +361,7 @@ end;
 
 // Instantiate
 //
-procedure TTBCubeArea.Instantiate(const parent : TGLBaseSceneObject);
+procedure TTBCubeArea.Instantiate;
 begin
    // nothing
 end;
@@ -269,11 +379,11 @@ end;
 
 // Instantiate
 //
-procedure TTBBallExit.Instantiate(const parent : TGLBaseSceneObject);
+procedure TTBBallExit.Instantiate;
 var
    src : TGLSourcePFXEffect;
 begin
-   FDummy:=TGLDummyCube(parent.AddNewChild(TGLDummyCube));
+   FDummy:=TGLDummyCube(ParentObject.AddNewChild(TGLDummyCube));
    FDummy.Position.AsAffineVector:=Position;
    
    src:=GetOrCreateSourcePFX(FDummy);
@@ -319,12 +429,12 @@ end;
 
 // Instantiate
 //
-procedure TTBSpikes.Instantiate(const parent : TGLBaseSceneObject);
+procedure TTBSpikes.Instantiate;
 var
    i : Integer;
    spike : TGLCone;
 begin
-   FDummy:=TGLDummyCube(parent.AddNewChild(TGLDummyCube));
+   FDummy:=TGLDummyCube(ParentObject.AddNewChild(TGLDummyCube));
    FDummy.Position.AsAffineVector:=Position;
 
    for i:=1 to FNB do begin
@@ -376,11 +486,11 @@ end;
 
 // Instantiate
 //
-procedure TTBFire.Instantiate(const parent : TGLBaseSceneObject);
+procedure TTBFire.Instantiate;
 var
    src : TGLSourcePFXEffect;
 begin
-   FDisk:=TGLDisk(parent.AddNewChild(TGLDisk));
+   FDisk:=TGLDisk(ParentObject.AddNewChild(TGLDisk));
    FDisk.Direction.AsVector:=YHmgVector;
    FDisk.Position.AsAffineVector:=Position;
    FDisk.Loops:=1;
@@ -450,9 +560,9 @@ end;
 
 // Instantiate
 //
-procedure TTBBlock.Instantiate(const parent : TGLBaseSceneObject);
+procedure TTBBlock.Instantiate;
 begin
-   FBlock:=TGLCube(parent.AddNewChild(TGLCube));
+   FBlock:=TGLCube(ParentObject.AddNewChild(TGLCube));
    FBlock.Position.AsAffineVector:=FPosition;
    FBlock.CubeWidth:=FSize[0];
    FBlock.CubeHeight:=FSize[1];
@@ -486,30 +596,9 @@ end;
 // ------------------ TTBMarbleBlock ------------------
 // ------------------
 
-// Create
-//
-constructor TTBMarbleBlock.Create;
-begin
-	inherited Create;
-end;
-
-// Destroy
-//
-destructor TTBMarbleBlock.Destroy;
-begin
-	inherited Destroy;
-end;
-
-// Parse
-//
-procedure TTBMarbleBlock.Parse(const vals : TStringList);
-begin
-   inherited;
-end;
-
 // Instantiate
 //
-procedure TTBMarbleBlock.Instantiate(const parent : TGLBaseSceneObject);
+procedure TTBMarbleBlock.Instantiate;
 begin
    inherited;
    with FBlock.Material do begin
@@ -518,11 +607,30 @@ begin
    end;
 end;
 
-// Release
+// ------------------
+// ------------------ TTBTransparentBlock ------------------
+// ------------------
+
+// Instantiate
 //
-procedure TTBMarbleBlock.Release;
+function TTBTransparentBlock.ParentObject : TGLBaseSceneObject;
+begin
+   Result:=Main.DCMapTransparent;
+end;
+
+// ------------------
+// ------------------ TTBGlassBlock ------------------
+// ------------------
+
+// Instantiate
+//
+procedure TTBGlassBlock.Instantiate;
 begin
    inherited;
+   with FBlock.Material do begin
+      MaterialLibrary:=Main.MaterialLibrary;
+      LibMaterialName:='glassblock';
+   end;
 end;
 
 // ------------------------------------------------------------------
@@ -535,7 +643,7 @@ initialization
 
 	// class registrations
    RegisterClasses([TTBMarbleBlock, TTBSpawnPoint, TTBBallExit, TTBSpikes,
-                    TTBFire]);
+                    TTBFire, TTBGlassBlock, TTBTableText]);
 
 end.
 

@@ -1,5 +1,5 @@
 //
-// TheBall - Level 1
+// TheBall
 //
 Title: Fire and Spikes
 

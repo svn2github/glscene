@@ -1,5 +1,12 @@
 {: A simple ODE-based game of a ball rolling on a plane you can incline.<p>
 
+   Under construction, missing:
+   - main screen and time/score charts
+   - levels and levels ordering
+   - additionnal structures
+
+   Eric Grange (egrange@glscene.org)
+   http://glscene.org
 }
 unit FMain;
 
@@ -34,14 +41,15 @@ type
     SPRBallFlare: TGLSprite;
     HUDText: TGLHUDText;
     HUDText2: TGLHUDText;
-    WindowsBitmapFont: TWindowsBitmapFont;
+    WindowsBitmapFont: TGLWindowsBitmapFont;
     DCMap: TGLDummyCube;
     HTTimer: TGLHUDText;
     PFXExit: TGLPointLightPFXManager;
-    ParticleFXRenderer: TGLParticleFXRenderer;
+    PFXRenderer: TGLParticleFXRenderer;
     HSTimerBkGnd: TGLHUDSprite;
     PFXFire: TGLPointLightPFXManager;
     ALStart: TGLArrowLine;
+    DCMapTransparent: TGLDummyCube;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime,
@@ -53,6 +61,8 @@ type
     procedure SceneViewerMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure MirrorBeginRenderingMirrors(Sender: TObject);
+    procedure MirrorEndRenderingMirrors(Sender: TObject);
   private
     { Private declarations }
   public
@@ -61,6 +71,7 @@ type
     space : PdxSpace;
     contactGroup, jointGroup : TdJointGroupID;
     tablePitchSpring, tableRollSpring, tableBall : TdJointID;
+    levelWidth, levelDepth : Single;
 
     planeGeom : PdxGeom;
     planeBox : PdxGeom;
@@ -167,12 +178,14 @@ var
 begin
    ClearCurrentLevel;
    RandSeed:=0;
+   levelWidth:=10;
+   levelDepth:=10;
    ParseTheBallMap(LoadStringFromFile(fileName), currentLevel, currentLevelName);
    pt.deltaTime:=0;
    pt.newTime:=0;
    for i:=0 to currentLevel.Count-1 do begin
       with TTheBallStructure(currentLevel[i]) do begin
-         Instantiate(DCObstacles);
+         Instantiate;
          Progress(pt);
       end;
    end;
@@ -188,6 +201,10 @@ begin
 
    // setup preview mode
    gameStatus:=gsLevelPreview;
+   Mirror.Width:=levelWidth;
+   Mirror.Height:=levelDepth;
+   SPTable.Width:=levelWidth;
+   SPTable.Height:=levelDepth;
    HTTimer.Text:='00:00.000';
    SPHBall.Visible:=False;
    SPHBall.Effects.Clear;
@@ -196,7 +213,7 @@ begin
       SPHBall.AbsolutePosition:=PointMake(sp.Position);
       ALStart.Visible:=True;
       ALStart.Position.AsAffineVector:=sp.Position;
-      ALStart.Move(2);
+      ALStart.Move(1);
    end;
    DCBallAbsolute.Position.AsVector:=SPHBall.AbsolutePosition;
    Camera.TargetObject:=DCTable;
@@ -312,9 +329,9 @@ begin
       bp:=dBodyGetPosition(ballBody);
       bpv:=AffineVectorMake(bp[0], bp[1], bp[2]);
       d:=VectorDotProduct(bpv, a);
-      if Abs(d)>5 then Exit;
+      if Abs(d)>levelWidth*0.5 then Exit;
       d:=VectorDotProduct(bpv, VectorCrossProduct(a, b));
-      if Abs(d)>5 then Exit;
+      if Abs(d)>levelDepth*0.5 then Exit;
       hFix:=VectorDotProduct(bpv, b)-(SPHBall.Radius*0.2);
       if hFix>-5 then begin
          if hFix<0 then
@@ -549,6 +566,16 @@ begin
             LevelWarmup;
       end;
    end;
+end;
+
+procedure TMain.MirrorBeginRenderingMirrors(Sender: TObject);
+begin
+   DCMapTransparent.Visible:=False;
+end;
+
+procedure TMain.MirrorEndRenderingMirrors(Sender: TObject);
+begin
+   DCMapTransparent.Visible:=True;
 end;
 
 end.
