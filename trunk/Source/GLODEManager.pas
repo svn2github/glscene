@@ -12,6 +12,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>23/04/04 - SG - Fixes for object registration,
+                        Exception raised now if ODE fails to initialize at run-time.
     <li>21/04/04 - SG - Changed to dynamic linking DelphiODE,
                         Design-time no longer makes any DelphiODE calls.
     <li>15/04/04 - SG - Added OnCustomCollision event to TGLODEManager.
@@ -483,6 +485,7 @@ type
       procedure ODERebuild; virtual;
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
+      function IsODEInitialized : Boolean;
     public
       constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
@@ -827,6 +830,7 @@ type
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
       procedure Loaded; override;
+      function IsODEInitialized : Boolean;
     public
       constructor Create(aOwner : TXCollection); override;
       destructor Destroy; override;
@@ -1077,20 +1081,21 @@ constructor TGLODEManager.Create(AOwner:TComponent);
 begin
   inherited;
 
-  if not (csDesigning in ComponentState) then begin
-    InitODE;
-    FWorld:=dWorldCreate;
-    FSpace:=dHashSpaceCreate(nil);
-    dWorldSetCFM(FWorld,1e-5);
-    FContactGroup:=dJointGroupCreate(100);
-  end;
-
   FDynamicObjectRegister:=TPersistentObjectList.Create;
   FJointRegister:=TPersistentObjectList.Create;
   FRFContactList:=TList.Create;
 
   FGravity:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
   FGravity.OnNotifyChange:=GravityChange;
+
+  if not (csDesigning in ComponentState) then begin
+    if not InitODE('') then
+      raise Exception.Create('ODE failed to initialize.');
+    FWorld:=dWorldCreate;
+    FSpace:=dHashSpaceCreate(nil);
+    dWorldSetCFM(FWorld,1e-5);
+    FContactGroup:=dJointGroupCreate(100);
+  end;
 
   FStepFast:=False;
   FFastIterations:=5;
@@ -1117,7 +1122,7 @@ begin
   FGravity.Free;
   FRFContactList.Free;
 
-  if not (csDesigning in ComponentState) then begin
+  if Assigned(FWorld) then begin
     dJointGroupEmpty(FContactGroup);
     dJointGroupDestroy(FContactGroup);
     dSpaceDestroy(FSpace);
@@ -1175,7 +1180,7 @@ end;
 //
 procedure TGLODEManager.GravityChange(Sender:TObject);
 begin
-  if not (csDesigning in ComponentState) then
+  if Assigned(FWorld) then
     dWorldSetGravity(FWorld,FGravity.X,FGravity.Y,FGravity.Z);
 end;
 
@@ -1301,6 +1306,8 @@ var
   body  : PdxBody;
   Coeff : Single;
 begin
+  if not Assigned(World) then exit;
+
   // Reset the contact joint counter
   FContactJointCount:=0;
 
@@ -1543,6 +1550,7 @@ end;
 //
 procedure TGLODEBaseObject.Initialize;
 begin
+  Manager.RegisterObject(self);
   FInitialized:=True;
 end;
 
@@ -1550,6 +1558,8 @@ end;
 //
 procedure TGLODEBaseObject.Deinitialize;
 begin
+  if Assigned(FManager) then
+    FManager.UnregisterObject(self);
   FInitialized:=False;
 end;
 
@@ -1843,8 +1853,8 @@ procedure TGLODEDummy.Initialize;
 var
   calcmass : TdMass;
 begin
-  if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then
-    exit;
+  if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then exit;
+  if not Assigned(Manager.World) then exit;
 
   FBody:=dBodyCreate(Manager.World);
   AlignBodyToMatrix(AbsoluteMatrix);
@@ -1852,8 +1862,7 @@ begin
   FElements.Initialize;
   calcmass:=CalculateMass;
   dBodySetMass(FBody,@calcmass);
-  Manager.RegisterObject(self);
-  
+
   inherited;
 end;
 
@@ -1868,8 +1877,6 @@ begin
     FBody:=nil;
   end;
   dMassSetZero(FMass);
-  if Assigned(FManager) then
-    FManager.UnregisterObject(self);
 
   inherited;
 end;
@@ -2106,8 +2113,8 @@ end;
 //
 procedure TGLODEDynamicBehaviour.Initialize;
 begin
-  if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then
-    exit;
+  if (not Assigned(Manager)) or Assigned(FBody) or (FInitialized) then exit;
+  if not Assigned(Manager.World) then exit;
 
   FBody:=dBodyCreate(Manager.World);
   AlignBodyToMatrix(OwnerBaseSceneObject.AbsoluteMatrix);
@@ -2116,7 +2123,7 @@ begin
   CalculateMass;
   dBodySetMass(FBody,@FMass);
   Manager.RegisterObject(self);
-  
+
   Enabled:=FEnabled;
 
   inherited;
@@ -2390,8 +2397,8 @@ end;
 //
 procedure TGLODEStaticBehaviour.Initialize;
 begin
-  if (not Assigned(Manager)) or (FInitialized) then
-    exit;
+  if (not Assigned(Manager)) or (FInitialized) then exit;
+  if not Assigned(Manager.Space) then exit;
 
   FElements.Initialize;
   Manager.RegisterObject(self);
@@ -2607,6 +2614,8 @@ begin
     if not Assigned(Body) then exit;
   end;
 
+  if not Assigned(Manager.World) then exit;
+
   FGeomTransform:=dCreateGeomTransform(Manager.Space);
   if FDynamic then dGeomSetBody(FGeomTransform,Body);
   dGeomTransformSetCleanup(FGeomTransform,0);
@@ -2661,6 +2670,22 @@ begin
     FUp.ReadFromFiler(reader);
     Density:=ReadFloat;
   end;
+end;
+
+// IsODEInitialized
+//
+function TODEBaseElement.IsODEInitialized : Boolean;
+var
+  Manager : TGLODEManager;
+begin
+  Result:=False;
+  Manager:=nil;
+  if (Owner.Owner is TGLODEBaseObject) then
+    Manager:=TGLODEBaseObject(Owner.Owner).Manager;
+  if Owner.Owner is TGLODEBaseBehaviour then
+    Manager:=TGLODEBaseBehaviour(Owner.Owner).Manager;
+  if not Assigned(Manager) then exit;
+  Result:=Assigned(Manager.Space);
 end;
 
 // CalculateMass
@@ -2793,6 +2818,7 @@ end;
 procedure TODEElementBox.Initialize;
 begin
   if FInitialized then exit;
+  if not IsODEInitialized then exit;
 
   FGeomElement:=dCreateBox(nil,FBoxWidth,FBoxHeight,FBoxDepth);
   inherited;
@@ -3010,6 +3036,7 @@ end;
 procedure TODEElementSphere.Initialize;
 begin
   if FInitialized then exit;
+  if not IsODEInitialized then exit;
 
   FGeomElement:=dCreateSphere(nil,FRadius);
   inherited;
@@ -3164,7 +3191,8 @@ end;
 procedure TODEElementCapsule.Initialize;
 begin
   if FInitialized then exit;
-  
+  if not IsODEInitialized then exit;
+
   FGeomElement:=dCreateCCylinder(nil,FRadius,FLength);
   inherited;
 end;
@@ -3340,6 +3368,7 @@ end;
 procedure TODEElementCylinder.Initialize;
 begin
   if FInitialized then exit;
+  if not IsODEInitialized then exit;
 
   FGeomElement:=dCreateCylinder(nil,FRadius,FLength);
   inherited;
@@ -3515,6 +3544,7 @@ end;
 procedure TODEElementCone.Initialize;
 begin
   if FInitialized then exit;
+  if not IsODEInitialized then exit;
 
   FGeomElement:=dCreateCone(nil,FRadius,FLength);
   inherited;
@@ -3651,6 +3681,7 @@ end;
 //
 procedure TODEElementTriMesh.Initialize;
 begin
+  if not IsODEInitialized then exit;
   if FInitialized or not ((FVertices.Count>0) and (FIndices.Count>0)) then exit;
 
   Assert(SizeOf(TdReal) = SizeOf(Single),'The tri-mesh collider is currently only available with single precision ODE.');
@@ -3789,9 +3820,11 @@ end;
 procedure TGLODEPlane.Initialize;
 begin
   if FInitialized or not Assigned(Manager) then exit;
+  if not Assigned(Manager.Space) then exit;
   FGeom:=dCreatePlane(Manager.Space,0,1,0,0);
   dGeomSetData(FGeom,Self);
   AlignODEPlane;
+  inherited;
 end;
 
 // NotifyChange
@@ -3851,6 +3884,7 @@ end;
 procedure TGLODETerrain.Initialize;
 begin
   if FInitialized or (not Assigned(Manager)) then exit;
+  if not IsODEInitialized then exit;
   if NumNodesPerSide<=0 then exit;
 
   FGeom:=dCreateTerrainY(Manager.Space, FData, Length, NumNodesPerSide, 1, 1);
@@ -3978,8 +4012,8 @@ end;
 //
 procedure TGLODEStaticDummy.Initialize;
 begin
-  if (not Assigned(Manager)) or (FInitialized) then
-    exit;
+  if (not Assigned(Manager)) or (FInitialized) then exit;
+  if not Assigned(Manager.Space) then exit;
 
   FElements.Initialize;
   Manager.RegisterObject(self);
@@ -4204,7 +4238,7 @@ end;
 //
 procedure TODEBaseJoint.Initialize;
 begin
-  if not Assigned(FManager) then exit;
+  if not IsODEInitialized then exit;
   Attach(FObject1, FObject2);
   FManager.RegisterJoint(Self);
   FInitialized:=True;
@@ -4289,6 +4323,13 @@ begin
   AnchorChange(Self);
   AxisChange(Self);
   Axis2Change(Self);
+end;
+
+function TODEBaseJoint.IsODEInitialized : Boolean;
+begin
+  Result:=False;
+  if not Assigned(Manager) then exit;
+  Result:=Assigned(Manager.World);
 end;
 
 // AnchorChange
@@ -4406,7 +4447,7 @@ end;
 //
 procedure TODEJointHinge.Initialize;
 begin
-  if (not Assigned(FManager)) or (FInitialized) then exit;
+  if (not IsODEInitialized) or (FInitialized) then exit;
   if FJointID=0 then
     FJointID:=dJointCreateHinge(FManager.World,0);
   inherited;
@@ -4451,7 +4492,7 @@ end;
 //
 procedure TODEJointBall.Initialize;
 begin
-  if (not Assigned(FManager)) or (FInitialized) then exit;
+  if (not IsODEInitialized) or (FInitialized) then exit;
   if FJointID=0 then
     FJointID:=dJointCreateBall(FManager.World,0);
   inherited;
@@ -4488,7 +4529,7 @@ end;
 //
 procedure TODEJointSlider.Initialize;
 begin
-  if (not Assigned(FManager)) or (FInitialized) then exit;
+  if (not IsODEInitialized) or (FInitialized) then exit;
   if FJointID=0 then
     FJointID:=dJointCreateSlider(FManager.World,0);
   inherited;
@@ -4525,7 +4566,7 @@ end;
 //
 procedure TODEJointFixed.Initialize;
 begin
-  if (not Assigned(FManager)) or (FInitialized) then exit;
+  if (not IsODEInitialized) or (FInitialized) then exit;
   if FJointID=0 then
     FJointID:=dJointCreateFixed(FManager.World,0);
   inherited;
@@ -4554,7 +4595,7 @@ end;
 //
 procedure TODEJointHinge2.Initialize;
 begin
-  if (not Assigned(FManager)) or (FInitialized) then exit;
+  if (not IsODEInitialized) or (FInitialized) then exit;
   if FJointID=0 then
     FJointID:=dJointCreateHinge2(FManager.World,0);
   inherited;
@@ -4607,7 +4648,7 @@ end;
 //
 procedure TODEJointUniversal.Initialize;
 begin
-  if (not Assigned(FManager)) or (FInitialized) then exit;
+  if (not IsODEInitialized) or (FInitialized) then exit;
   if FJointID=0 then
     FJointID:=dJointCreateUniversal(FManager.World,0);
   inherited;
