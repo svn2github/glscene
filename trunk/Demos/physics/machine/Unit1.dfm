@@ -166,6 +166,7 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
     Left = 8
     Top = 40

@@ -43,8 +43,8 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 8
       Top = 160
-      Width = 105
-      Height = 25
+      Width = 96
+      Height = 26
       Caption = 'HeightField Contact Resolution'
       WordWrap = True
     end
@@ -150,6 +150,7 @@ object Form1: TForm1
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
+    MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
     Left = 200
     Top = 8
