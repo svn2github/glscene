@@ -94,6 +94,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+// 07-Sep-04 - Nelson Chu:
+//   - Added profiles vp40 and fp40 from Cg 1.3 beta 2 
 // 23-Apr-04 - Nelson Chu:
 //   - Adopted to use with GLScene (jedi.inc -> GLScene.inc)
 // 04-Mar-04 - Alexey Barkovoy:
@@ -110,7 +112,7 @@ interface
 uses Windows;
 
 {$Include GLScene.inc}
-{$ifdef GLS_DELPHI_6}
+{$ifdef GLS_DELPHI_6_UP}
   {$DEFINE COMPILER6_UP}
 {$endif}
 
@@ -1079,6 +1081,8 @@ type
     CG_PROFILE_FP30   = 6149, // CG_PROFILE_MACRO(Fragment,fp30,FP30,"fp30",6149,0)
     CG_PROFILE_ARBVP1 = 6150, // CG_PROFILE_MACRO(ARBVertex,arbvp1,ARBVP1,"arbvp1",6150,1)
     CG_PROFILE_ARBFP1 = 7000, // CG_PROFILE_MACRO(ARBFragment,arbfp1,ARBFP1,"arbfp1",7000,0)
+    CG_PROFILE_VP40   = 7001, // CG_PROFILE_MACRO(Vertex40,vp40,VP40,"vp40",7001,1)
+    CG_PROFILE_FP40   = 6151, // CG_PROFILE_MACRO(Fragment40,fp40,FP40,"fp40",6151,0)
 
     CG_PROFILE_VS_1_1 = 6153, // CG_PROFILE_MACRO(DX9Vertex11,vs_1_1,VS_1_1,"vs_1_1",6153,1)
     CG_PROFILE_VS_2_0 = 6154, // CG_PROFILE_MACRO(DX9Vertex20,vs_2_0,VS_2_0,"vs_2_0",6154,1)
@@ -1115,6 +1119,10 @@ const
   {$EXTERNALSYM CG_PROFILE_ARBVP1}
   CG_PROFILE_ARBFP1 = 7000; // CG_PROFILE_MACRO(ARBFragment,arbfp1,ARBFP1,"arbfp1",7000,0)
   {$EXTERNALSYM CG_PROFILE_ARBFP1}
+  CG_PROFILE_VP40   = 7001; // CG_PROFILE_MACRO(Vertex40,vp40,VP40,"vp40",7001,1)
+  {$EXTERNALSYM CG_PROFILE_VP40}
+  CG_PROFILE_FP40   = 6151; // CG_PROFILE_MACRO(Fragment40,fp40,FP40,"fp40",6151,0)
+  {$EXTERNALSYM CG_PROFILE_FP40}
 
   CG_PROFILE_VS_1_1 = 6153; // CG_PROFILE_MACRO(DX9Vertex11,vs_1_1,VS_1_1,"vs_1_1",6153,1)
   {$EXTERNALSYM CG_PROFILE_VS_1_1}
