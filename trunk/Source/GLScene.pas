@@ -544,7 +544,8 @@ type
 
          {: Request to generate silhouette outlines.<p>
             Default implementation assumes the objects is a sphere of
-            AxisAlignedDimensionUnscaled size. }
+            AxisAlignedDimensionUnscaled size. Subclasses may choose to return
+            nil instead, which will be understood as an empty silhouette. }
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; virtual;
 
          property Children[Index: Integer]: TGLBaseSceneObject read Get; default;
@@ -985,11 +986,11 @@ type
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
 
-//         function AxisAlignedDimensions : TVector; override;
          function AxisAlignedDimensionsUnscaled : TVector; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                  intersectPoint : PVector = nil;
                                  intersectNormal : PVector = nil) : Boolean; override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
 
       published
          { Published Declarations }
@@ -1076,6 +1077,7 @@ type
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
          procedure CoordinateChanged(Sender: TGLCoordinates); override;
+         function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
 
          property LightID : Cardinal read FLightID;
          
@@ -2886,7 +2888,7 @@ const
    cNbSegments = 21;
 var
    i, j : Integer;
-   d, r, r2, vr, s, c, angleFactor : Single;
+   ir, tr, d, r, r2, vr, s, c, angleFactor : Single;
    sVec, tVec : TAffineVector;
 begin
    r:=BoundingSphereRadiusUnscaled;
@@ -2894,8 +2896,20 @@ begin
    // determine visible radius
    case silhouetteParameters.Style of
       ssOmni : begin
-         r2:=Sqr(r);
-         vr:=Sqrt(r2-Sqr(r2)*r2/(4*Sqr(d)));
+         ir:=Sqrt(Sqr(d)-Sqr(r));
+         tr:=(Sqr(d)+Sqr(r)-Sqr(ir))/(2*ir);
+{
+         ir² + r² = d²
+         r² + tr² = vr²
+         vr² + d² = (ir+tr)² = ir² + 2.ir.tr + tr²
+
+         ir² + 2.ir.tr + tr² = d² + r² + tr²
+         2.ir.tr = d² + r² - ir²
+                                     }
+
+         vr:=Sqrt(Sqr(r)+Sqr(tr));
+{         r2:=Sqr(r);
+         vr:=Sqrt(r2-Sqr(r2)*r2/(4*Sqr(d)));}
       end;
       ssParallel : vr:=r;
    else
@@ -5054,16 +5068,6 @@ end;
 
 // AxisAlignedDimensions
 //
-{function TGLProxyObject.AxisAlignedDimensions : TVector;
-begin
-   if Assigned(FMasterObject) then begin
-      Result:=FMasterObject.AxisAlignedDimensions;
-      ScaleVector(Result, Scale.AsVector);
-   end else Result:=inherited AxisAlignedDimensions;
-end;
-}
-// AxisAlignedDimensions
-//
 function TGLProxyObject.AxisAlignedDimensionsUnscaled : TVector;
 begin
    if Assigned(FMasterObject) then begin
@@ -5140,6 +5144,15 @@ begin
    end else Result:=False;
 end;
 
+// GenerateSilhouette
+//
+function TGLProxyObject.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+begin
+   if Assigned(MasterObject) then
+      Result:=MasterObject.GenerateSilhouette(silhouetteParameters)
+   else Result:=nil;
+end;
+
 // ------------------
 // ------------------ TGLLightSource ------------------
 // ------------------
@@ -5202,6 +5215,13 @@ begin
    inherited;
    if Sender=FSpotDirection then
       TransformationChanged;
+end;
+
+// GenerateSilhouette
+//
+function TGLLightSource.GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette;
+begin
+   Result:=nil;
 end;
 
 // GetHandle
