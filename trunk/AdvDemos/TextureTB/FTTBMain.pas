@@ -66,6 +66,9 @@ type
     Alphamaperosion1: TMenuItem;
     ACExport: TAction;
     ToolButton1: TToolButton;
+    N2: TMenuItem;
+    ACAlphaDilatation: TAction;
+    AlphamapDilatation1: TMenuItem;
     procedure PAPreviewResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ACImportExecute(Sender: TObject);
@@ -82,6 +85,7 @@ type
     procedure ACColorDilatationExecute(Sender: TObject);
     procedure ACAlphaErosionExecute(Sender: TObject);
     procedure ACExportExecute(Sender: TObject);
+    procedure ACAlphaDilatationExecute(Sender: TObject);
 
   private
     { Private declarations }
@@ -103,7 +107,7 @@ var
 
 implementation
 
-uses GLTexture;
+uses GLTexture, Geometry;
 
 {$R *.dfm}
 
@@ -432,6 +436,7 @@ procedure TTTBMain.ACAlphaErosionExecute(Sender: TObject);
 var
    x, y, sx, sy : Integer;
    bmp, bmAlpha : TBitmap;
+   minNeighbour : Integer;
 begin
    // make fully transparent all pixels in the color for all pixels in the alpha map
    // that are adjacent to a fully transparent one
@@ -440,14 +445,34 @@ begin
    sy:=StrToInt(CBHeight.Text);
    bmp:=SpawnBitmap;
    for y:=0 to sy-1 do begin
-      for x:=0 to sx-1 do begin
-         if bmAlpha.Canvas.Pixels[x, y]<>0 then with bmAlpha.Canvas do begin
-            if                         (Pixels[x  , y-1]=0)
-               or (Pixels[x-1, y  ]=0)                      or (Pixels[x+1, y  ]=0)
-                                    or (Pixels[x  , y+1]=0)  then
-               bmp.Canvas.Pixels[x, y]:=0
-            else bmp.Canvas.Pixels[x, y]:=bmAlpha.Canvas.Pixels[x, y];
-         end else bmp.Canvas.Pixels[x, y]:=0;
+      for x:=0 to sx-1 do with bmAlpha.Canvas do begin
+         minNeighbour:=MinInteger(MinInteger(Pixels[x, y-1], Pixels[x, y+1]),
+                                  MinInteger(Pixels[x-1, y], Pixels[x+1, y]));
+         bmp.Canvas.Pixels[x, y]:=minNeighbour;
+      end;
+   end;
+   IMAlpha.Picture.Bitmap:=bmp;
+   bmp.Free;
+   TextureChanged;
+end;
+
+procedure TTTBMain.ACAlphaDilatationExecute(Sender: TObject);
+var
+   x, y, sx, sy : Integer;
+   bmp, bmAlpha : TBitmap;
+   maxNeighbour : Integer;
+begin
+   // make fully transparent all pixels in the color for all pixels in the alpha map
+   // that are adjacent to a fully transparent one
+   bmAlpha:=IMAlpha.Picture.Bitmap;
+   sx:=StrToInt(CBWidth.Text);
+   sy:=StrToInt(CBHeight.Text);
+   bmp:=SpawnBitmap;
+   for y:=0 to sy-1 do begin
+      for x:=0 to sx-1 do with bmAlpha.Canvas do begin
+         maxNeighbour:=MaxInteger(MaxInteger(Pixels[x, y-1], Pixels[x, y+1]),
+                                  MaxInteger(Pixels[x-1, y], Pixels[x+1, y]));
+         bmp.Canvas.Pixels[x, y]:=maxNeighbour;
       end;
    end;
    IMAlpha.Picture.Bitmap:=bmp;
