@@ -749,9 +749,9 @@ var
 begin
    if (Glyphs.Width=0) or (aString='') then Exit;
    // prepare texture if necessary
-   if FHandleIsDirty then begin
+   if FHandleIsDirty or (FTextureHandle.Handle=0) then begin
       // prepare handle
-      if FTextureHandle.Handle = 0 then begin
+      if FTextureHandle.Handle=0 then begin
          FTextureHandle.AllocateHandle;
          Assert(FTextureHandle.Handle<>0);
       end;
