@@ -15,7 +15,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, GLScene,
   GLObjects, GLShadowPlane, GLWin32Viewer, GLMisc, GLTexture, GLMirror,
-  ODEImport, ODEGL, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
+  dynode, dynodegl, GLCadencer, ExtCtrls, Jpeg, VectorGeometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
   GLParticleFX, KeyBoard, GLSound, GLSMBASS, Dialogs, GLGeomObjects;
 
@@ -124,6 +124,8 @@ const
 
 procedure TMain.FormCreate(Sender: TObject);
 begin
+   InitODE('');
+   
    currentLevelStrucs:=TTheBallStructures.Create;
 
    // create world
@@ -161,6 +163,8 @@ begin
    dWorldDestroy(world);
 
    currentLevelStrucs.Free;
+   
+   CloseODE;
 end;
 
 procedure TMain.ClearCurrentLevel;
