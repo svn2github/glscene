@@ -12,6 +12,7 @@
    key code constants (VK_* constants are declared in the "Windows" unit).<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/11/03 - Egg - Fixed IsKeyDown (VK) (A. P. Mohrenweiser)
       <li>09/10/00 - Egg - Fixed VirtualKeyCodeToKeyName
 	   <li>03/08/00 - Egg - Creation, partly based Silicon Commander code
 	</ul></font>
@@ -92,7 +93,7 @@ end;
 //
 function IsKeyDown(vk : TVirtualKeyCode) : Boolean;
 begin
-   Result:=(GetAsyncKeyState(vk)<>0);
+   Result:=(GetAsyncKeyState(vk)<0);
 end;
 
 // KeyPressed
