@@ -85,7 +85,7 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
 	// Mouse moved, get what's underneath
-	pickedObject:=GLSceneViewer1.GetPickedObject(x, y);
+	pickedObject:=GLSceneViewer1.Buffer.GetPickedObject(x, y);
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
