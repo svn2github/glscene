@@ -13,6 +13,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/12/03 - EG - TBinaryReader/Writer no longer rely on VCL TReader/TWriter 
       <li>26/12/03 - EG - Added sorting support to TPersistentObjectList + misc. changes
       <li>04/09/03 - EG - Improved some TPersistentObjectList methods
       <li>12/02/03 - EG - Added IPersistentObject
@@ -29,7 +30,7 @@ interface
 
 uses Classes, SysUtils;
 
-{$i GLScene.inc}
+{$i ..\GLScene.inc}
 
 type
 
@@ -48,6 +49,8 @@ type
          constructor Create(Stream: TStream); virtual;
 
          property Stream : TStream read FStream;
+
+         procedure ReadTypeError;
 
          procedure Read(var Buf; Count: Longint); virtual; abstract;
          function NextValue : TValueType; virtual; abstract;
@@ -246,20 +249,18 @@ type
 
    // TBinaryReader
    //
-   {: Wraps a standard TReader. }
+   {: Wraps a TReader-compatible reader. }
    TBinaryReader = class (TVirtualReader)
 		private
 	      { Private Declarations }
-         FReader : TReader;
 
 		protected
 	      { Protected Declarations }
+         function ReadValue : TValueType;
+         function ReadWideString(vType : TValueType) : WideString;
 
 		public
 	      { Public Declarations }
-         constructor Create(Stream: TStream); override;
-         destructor Destroy; override;
-
          procedure Read(var Buf; Count: Longint); override;
          function NextValue : TValueType; override;
 
@@ -275,20 +276,16 @@ type
 
    // TBinaryWriter
    //
-   {: Wraps a standard TWriter. }
+   {: Wraps a TWriter-compatible writer. }
    TBinaryWriter = class (TVirtualWriter)
 		private
 	      { Private Declarations }
-         FWriter : TWriter;
 
 		protected
 	      { Protected Declarations }
 
 		public
 	      { Public Declarations }
-         constructor Create(Stream: TStream); override;
-         destructor Destroy; override;
-
          procedure Write(const Buf; Count: Longint); override;
          procedure WriteInteger(anInteger : Integer); override;
          procedure WriteBoolean(aBoolean : Boolean); override;
@@ -314,9 +311,6 @@ type
 
 		public
 	      { Public Declarations }
-         constructor Create(Stream: TStream); override;
-         destructor Destroy; override;
-
          procedure Read(var Buf; Count: Longint); override;
          function NextValue : TValueType; override;
 
@@ -370,6 +364,7 @@ type
 	end;
 
 procedure RaiseFilerException(aClass : TClass; archiveVersion : Integer);
+function UTF8ToWideString(const s : AnsiString) : WideString;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -409,6 +404,75 @@ begin
    raise EFilerException.Create(aClass.ClassName+cUnknownArchiveVersion+IntToStr(archiveVersion));
 end;
 
+// UTF8ToWideString
+//
+function UTF8ToWideString(const s : AnsiString) : WideString;
+// Based on Mike Lischke's function (Unicode.pas unit, http://www.delphi-gems.com)
+const
+   bytesFromUTF8 : packed array [0..255] of Byte = (
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5);
+  offsetsFromUTF8 : array[0..5] of Cardinal = (
+      $00000000, $00003080, $000E2080, $03C82080, $FA082080, $82082080);
+  MaximumUCS2 : Cardinal = $0000FFFF;
+  MaximumUCS4 : Cardinal = $7FFFFFFF;
+  ReplacementCharacter : Cardinal = $0000FFFD;
+  halfShift : Integer = 10;
+  halfBase  : Cardinal = $0010000;
+  halfMask  : Cardinal = $3FF;
+  SurrogateHighStart : Cardinal = $D800;
+  SurrogateHighEnd   : Cardinal = $DBFF;
+  SurrogateLowStart  : Cardinal = $DC00;
+var
+   sLength, L, J, T : Cardinal;
+   ch : Cardinal;
+   extraBytesToWrite : Word;
+begin
+   sLength:=Length(s);
+   if sLength=0 then begin
+      Result:='';
+      Exit;
+   end;
+
+   SetLength(Result, sLength); // create enough room
+
+   L:=1;
+   T:=1;
+   while L<=Cardinal(sLength) do begin
+      ch := 0;
+      extraBytesToWrite := bytesFromUTF8[Ord(S[L])];
+      for J:=extraBytesToWrite downto 1 do begin
+         ch:=ch+Ord(S[L]);
+         Inc(L);
+         ch:=ch shl 6;
+      end;
+      ch:=ch+Ord(S[L]);
+      Inc(L);
+      ch:=ch-offsetsFromUTF8[extraBytesToWrite];
+
+      if ch<=MaximumUCS2 then begin
+         Result[T]:=WideChar(ch);
+         Inc(T);
+      end else if ch>MaximumUCS4 then begin
+         Result[T]:=WideChar(ReplacementCharacter);
+         Inc(T);
+      end else begin
+         ch:=ch-halfBase;
+         Result[T]:=WideChar((ch shr halfShift)+SurrogateHighStart);
+         Inc(T);
+         Result[T]:=WideChar((ch and halfMask)+SurrogateLowStart);
+         Inc(T);
+      end;
+   end;
+   SetLength(Result, T-1); // now fix up length
+end;
+
 // ------------------
 // ------------------ TVirtualReader ------------------
 // ------------------
@@ -418,6 +482,13 @@ end;
 constructor TVirtualReader.Create(Stream: TStream);
 begin
    FStream:=Stream;
+end;
+
+// ReadTypeError
+//
+procedure TVirtualReader.ReadTypeError;
+begin
+   raise EReadError.CreateFmt('%s, read type error', [ClassName]);
 end;
 
 // ReadTStrings
@@ -1231,169 +1302,242 @@ end;
 // ------------------ TBinaryReader ------------------
 // ------------------
 
-// Create
-//
-constructor TBinaryReader.Create(Stream: TStream);
-begin
-   inherited;
-   FReader:=TReader.Create(Stream, 16384);
-end;
-
-// Destroy
-//
-destructor TBinaryReader.Destroy;
-begin
-   FReader.Free;
-end;
-
 // Read
 //
 procedure TBinaryReader.Read(var Buf; Count: Longint);
 begin
-   FReader.Read(Buf, Count);
+   FStream.Read(Buf, Count);
+end;
+
+// ReadValue
+//
+function TBinaryReader.ReadValue : TValueType;
+begin
+   FStream.Read(Result, SizeOf(Result));
 end;
 
 // NextValue
 //
 function TBinaryReader.NextValue : TValueType;
+var
+   pos : Cardinal;
 begin
-   Result:=FReader.NextValue;
+   pos:=FStream.Position;
+   Result:=ReadValue;
+   FStream.Position:=pos;
 end;
 
 // ReadInteger
 //
 function TBinaryReader.ReadInteger : Integer;
 begin
-   Result:=FReader.ReadInteger;
+   Result:=0;
+   case ReadValue of
+      vaInt8  : Read(Result, 1);
+      vaInt16 : Read(Result, 2);
+      vaInt32 : Read(Result, 4);
+   else
+      ReadTypeError;
+   end;
 end;
 
 // ReadBoolean
 //
 function TBinaryReader.ReadBoolean : Boolean;
 begin
-   Result:=FReader.ReadBoolean;
+   case ReadValue of
+      vaTrue : Result:=True;
+      vaFalse : Result:=False;
+   else
+      ReadTypeError;
+      Result:=False;
+   end;
 end;
 
 // ReadString
 //
 function TBinaryReader.ReadString : String;
+var
+   n : Cardinal;
+   vType : TValueType;
 begin
-   Result:=FReader.ReadString;
+   n:=0;
+   vType:=ReadValue;
+   case Cardinal(vType) of
+      Cardinal(vaWString),
+      Cardinal(vaInt64)+1 : begin // vaUTF8String
+         Result:=ReadWideString(vType);
+         Exit;
+      end;
+      Cardinal(vaString) :  Read(n, 1);
+      Cardinal(vaLString) : Read(n, 4);
+   else
+      ReadTypeError;
+   end;
+   SetLength(Result, n);
+   Read(Result[1], n);
+end;
+
+// ReadWideString
+//
+function TBinaryReader.ReadWideString(vType : TValueType) : WideString;
+var
+   n : Cardinal;
+   utf8buf : String;
+begin
+   Read(n , 4);
+   case Cardinal(vType) of
+      Cardinal(vaWString) : begin
+         SetLength(Result, n);
+         Read(Result[1], n*2);
+      end;
+      Cardinal(vaInt64)+1 : begin // vaUTF8String
+         SetLength(utf8buf, n);
+         Read(utf8buf[1], n);
+         Result:=UTF8ToWideString(utf8buf);
+      end;
+   else
+      ReadTypeError;
+   end;
 end;
 
 // ReadFloat
 //
 function TBinaryReader.ReadFloat : Extended;
 begin
-   Result:=FReader.ReadFloat;
+   if ReadValue=vaExtended then
+      Read(Result, SizeOf(Result))
+   else ReadTypeError;
 end;
 
 // ReadListBegin
 //
 procedure TBinaryReader.ReadListBegin;
 begin
-   FReader.ReadListBegin;
+   if ReadValue<>vaList then
+      ReadTypeError;
 end;
 
 // ReadListEnd
 //
 procedure TBinaryReader.ReadListEnd;
 begin
-   FReader.ReadListEnd;
+   if ReadValue<>vaNull then
+      ReadTypeError;
 end;
 
 // EndOfList
 //
 function TBinaryReader.EndOfList : Boolean;
 begin
-   Result:=FReader.EndOfList;
+   Result:=(NextValue=vaNull);
 end;
 
 // ------------------
 // ------------------ TBinaryWriter ------------------
 // ------------------
 
-// Create
-//
-constructor TBinaryWriter.Create(Stream: TStream);
-begin
-   inherited;
-   FWriter:=TWriter.Create(Stream, 16384);
-end;
-
-// Destroy
-//
-destructor TBinaryWriter.Destroy;
-begin
-   FWriter.Free;
-end;
-
 // Write
 //
 procedure TBinaryWriter.Write(const Buf; Count: Longint);
 begin
-   FWriter.Write(Buf, Count);
+   FStream.Write(Buf, Count);
 end;
 
 // WriteInteger
 //
 procedure TBinaryWriter.WriteInteger(anInteger : Integer);
+type
+   TIntStruct = packed record
+      typ : TValueType;
+      val : Integer;
+   end;
+var
+   ins : TIntStruct;
 begin
-   FWriter.WriteInteger(anInteger);
+   ins.val:=anInteger;
+   if (anInteger>=Low(ShortInt)) and (anInteger<=High(ShortInt)) then begin
+      ins.typ:=vaInt8;
+      Write(ins, 2);
+   end else if (anInteger>=Low(SmallInt)) and (anInteger<=High(SmallInt)) then begin
+      ins.typ:=vaInt16;
+      Write(ins, 3);
+   end else begin
+      ins.typ:=vaInt32;
+      Write(ins, 5);
+   end;
 end;
 
 // WriteBoolean
 //
 procedure TBinaryWriter.WriteBoolean(aBoolean : Boolean);
+const
+   cBoolToType : array [False..True] of TValueType = (vaFalse, vaTrue);
 begin
-   FWriter.WriteBoolean(aBoolean);
+   Write(cBoolToType[aBoolean], 1);
 end;
 
 // WriteString
 //
 procedure TBinaryWriter.WriteString(const aString : String);
+type
+   TStringHeader = packed record
+      typ : TValueType;
+      length : Integer;
+   end;
+var
+   sh : TStringHeader;
 begin
-   FWriter.WriteString(aString);
+   sh.Length:=Length(aString);
+   if sh.Length<=255 then begin
+      sh.typ:=vaString;
+      Write(sh, 2);
+      if sh.Length>0 then
+         Write(aString[1], sh.Length);
+   end else begin
+      sh.typ:=vaLString;
+      Write(sh, 5);
+      Write(aString[1], sh.Length);
+   end;
 end;
 
 // WriteFloat
 //
 procedure TBinaryWriter.WriteFloat(const aFloat : Extended);
+type
+   TExtendedStruct = packed record
+      typ : TValueType;
+      val : Extended;
+   end;
+var
+   str : TExtendedStruct;
 begin
-   FWriter.WriteFloat(aFloat);
+   str.typ:=vaExtended;
+   str.val:=aFloat;
+   Write(str, SizeOf(str));
 end;
 
 // WriteListBegin
 //
 procedure TBinaryWriter.WriteListBegin;
+const
+   buf : TValueType = vaList;
 begin
-   FWriter.WriteListBegin;
+   Write(buf, 1);
 end;
 
 // WriteListEnd
 //
 procedure TBinaryWriter.WriteListEnd;
+const
+   buf : TValueType = vaNull;
 begin
-   FWriter.WriteListEnd;
+   Write(buf, 1);
 end;
 
 // ------------------
 // ------------------ TTextReader ------------------
 // ------------------
-
-// Create
-//
-constructor TTextReader.Create(Stream: TStream);
-begin
-   inherited;
-end;
-
-// Destroy
-//
-destructor TTextReader.Destroy;
-begin
-   inherited;
-end;
 
 // ReadLine
 //
