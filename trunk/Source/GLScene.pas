@@ -2944,8 +2944,8 @@ var
 begin
    dim:=AxisAlignedDimensions;
    localPt:=VectorTransform(point, InvAbsoluteMatrix);
-   Result:=(Abs(localPt[0])<=dim[0]) and (Abs(localPt[1])<=dim[1])
-           and (Abs(localPt[2])<=dim[2]);
+   Result:=(Abs(localPt[0]*Scale.X)<=dim[0]) and (Abs(localPt[1]*Scale.Y)<=dim[1])
+           and (Abs(localPt[2]*Scale.Z)<=dim[2]);
 end;
 
 // RayCastIntersect
