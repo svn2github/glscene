@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/10/04 - NC - Added float texture support
       <li>03/07/02 - EG - ChooseWGLFormat Kyro fix (Patrick Chevalley)
       <li>13/03/02 - EG - aaDefault now prefers non-AA when possible
       <li>03/03/02 - EG - Fixed aaNone mode (AA specifically off)
@@ -11,7 +12,7 @@
       <li>21/02/02 - EG - AntiAliasing support *experimental* (Chris N. Strahm)
       <li>05/02/02 - EG - Fixed UnTrackWindow
       <li>03/02/02 - EG - Added experimental Hook-based window tracking
-      <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support 
+      <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support
       <li>21/01/02 - EG - More graceful recovery for ICDs without pbuffer support
       <li>07/01/02 - EG - DoCreateMemoryContext now retrieved topDC when needed
       <li>15/12/01 - EG - Added support for AlphaBits
@@ -81,6 +82,9 @@ type
          property DC : Cardinal read FDC;
          property RC : Cardinal read FRC;
    end;
+
+
+function CreateTempWnd : HWND;
 
 var
    { This boolean controls a hook-based tracking of top-level forms destruction,
@@ -354,12 +358,30 @@ const
          nNumFormats:=0;
    end;
 
+var
+   float : boolean;
+
 begin
+   float:= (ColorBits = 64) or (ColorBits = 128);   // float_type
+
    // request hardware acceleration
    AddIAttrib(WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB);
+
+   if float then begin    // float_type
+     if GL_ATI_texture_float then begin // NV40 uses ATI_float, with linear filtering
+       AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_FLOAT_ATI);
+       end
+     else begin
+       AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB);
+       AddIAttrib(WGL_FLOAT_COMPONENTS_NV, GL_TRUE);
+     end;
+   end;
+
+//   if Multi_buffer>0 then AddIAttrib(WGL_AUX_BUFFERS_ARB, Multi_buffer);
+
    AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
    if AlphaBits>0 then
-      AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
+     AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
    AddIAttrib(WGL_DEPTH_BITS_ARB, DepthBits);
    if StencilBits>0 then
       AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
@@ -375,6 +397,7 @@ begin
          AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
       end;
    end;
+
    ClearFAttribs;
    ChoosePixelFormat;
    if (nNumFormats=0) and (AntiAliasing<>aaDefault) then begin
