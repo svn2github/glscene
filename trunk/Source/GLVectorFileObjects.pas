@@ -3,6 +3,8 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/08/01 - Egg - Added TSkeletonBoneList and support for skeleton with
+                           multiple root bones, updated SMD loader 
       <li>13/08/01 - Egg - Improved/fixed SMD loader
       <li>12/08/01 - Egg - Completely rewritten handles management,
                            Fixed TActorAnimation.Assign,
@@ -197,6 +199,63 @@ type
    end;
 
    TSkeleton = class;
+   TSkeletonBone = class;
+
+	// TSkeletonBoneList
+	//
+   {: A list of skeleton bones.<p> }
+	TSkeletonBoneList = class (TPersistentObjectList)
+	   private
+	      { Private Declarations }
+         FSkeleton : TSkeleton;     // not persistent
+
+	   protected
+	      { Protected Declarations }
+         function GetSkeletonBone(Index: Integer) : TSkeletonBone;
+         procedure AfterObjectCreatedByReader(Sender : TObject); override;
+
+	   public
+	      { Public Declarations }
+	      constructor CreateOwned(aOwner : TSkeleton);
+	      constructor Create; override;
+         destructor Destroy; override;
+
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
+
+         property Skeleton : TSkeleton read FSkeleton;
+         property Items[Index: Integer] : TSkeletonBone read GetSkeletonBone; default;
+
+         {: Returns a bone by its BoneID, nil if not found. }
+         function BoneByID(anID : Integer) : TSkeletonBone; virtual;
+
+         //: Render skeleton wireframe
+         procedure BuildList(var mrci : TRenderContextInfo); virtual; abstract;
+         procedure PrepareGlobalMatrices; virtual;
+	end;
+
+	// TSkeletonRootBoneList
+	//
+   {: This list store skeleton root bones exclusively.<p> }
+	TSkeletonRootBoneList = class (TSkeletonBoneList)
+	   private
+	      { Private Declarations }
+
+	   protected
+	      { Protected Declarations }
+
+	   public
+	      { Public Declarations }
+	      constructor Create; override;
+         destructor Destroy; override;
+
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
+
+         //: Render skeleton wireframe
+         procedure BuildList(var mrci : TRenderContextInfo); override;
+   end;
+
 
 	// TSkeletonBone
 	//
@@ -204,12 +263,11 @@ type
       This class is the base item of the bones hierarchy in a skeletal model.
       The joint values are stored in a TSkeletonFrame, but the calculated bone
       matrices are stored here. }
-	TSkeletonBone = class (TPersistentObjectList)
+	TSkeletonBone = class (TSkeletonBoneList)
 	   private
 	      { Private Declarations }
-         FOwner : TSkeletonBone;    // indirectly persistent
-         FSkeleton : TSkeleton;     // not persistent
-         FBoneIndex : Integer;
+         FOwner : TSkeletonBoneList;    // indirectly persistent
+         FBoneID : Integer;
          FName : String;
          FColor : Cardinal;
          FGlobalMatrix : TMatrix;
@@ -221,7 +279,7 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor CreateOwned(aOwner : TSkeletonBone);
+	      constructor CreateOwned(aOwner : TSkeletonBoneList);
 	      constructor Create; override;
          destructor Destroy; override;
 
@@ -229,27 +287,27 @@ type
 	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
          //: Render skeleton wireframe
-         procedure BuildList(var mrci : TRenderContextInfo);
+         procedure BuildList(var mrci : TRenderContextInfo); override;
 
-         property Owner : TSkeletonBone read FOwner;
+         property Owner : TSkeletonBoneList read FOwner;
          property Skeleton : TSkeleton read FSkeleton;
          property Name : String read FName write FName;
-         property BoneIndex : Integer read FBoneIndex write FBoneIndex;
+         property BoneID : Integer read FBoneID write FBoneID;
          property Color : Cardinal read FColor write SetColor;
          property Items[Index: Integer] : TSkeletonBone read GetSkeletonBone; default;
 
-         {: Returns a bone by its BoneIndex, nil if not found. }
-         function BoneByIndex(anIndex : Integer) : TSkeletonBone;
+         {: Returns a bone by its BoneID, nil if not found. }
+         function BoneByID(anID : Integer) : TSkeletonBone; override;
 
          {: Calculates the global matrix for the bone and its sub-bone.<p>
             Call this function directly only the RootBone. }
-         procedure PrepareGlobalMatrices;
+         procedure PrepareGlobalMatrices; override;
          {: Global Matrix for the bone in the current frame.<p>
             Global matrices must be prepared by invoking PrepareGlobalMatrices
             on the root bone. }
          property GlobalMatrix : TMatrix read FGlobalMatrix;
 
-         {: Free all sub bones and reset BoneIndex and Name. }
+         {: Free all sub bones and reset BoneID and Name. }
          procedure Clean; override;
 	end;
 
@@ -274,14 +332,14 @@ type
 	   private
 	      { Private Declarations }
          FOwner : TBaseMesh;
-         FRootBone : TSkeletonBone;
+         FRootBones : TSkeletonRootBoneList;
          FFrames : TSkeletonFrameList;
          FCurrentFrame : TSkeletonFrame; // not persistent
-         FBonesByIndexCache : TList;
+         FBonesByIDCache : TList;
 
 	   protected
 	      { Protected Declarations }
-         procedure SetRootBone(const val : TSkeletonBone);
+         procedure SetRootBones(const val : TSkeletonRootBoneList);
          procedure SetFrames(const val : TSkeletonFrameList);
          function GetCurrentFrame : TSkeletonFrame;
          procedure SetCurrentFrame(val : TSkeletonFrame);
@@ -296,12 +354,12 @@ type
 	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
          property Owner : TBaseMesh read FOwner;
-         property RootBone : TSkeletonBone read FRootBone write SetRootBone;
+         property RootBones : TSkeletonRootBoneList read FRootBones write SetRootBones;
          property Frames : TSkeletonFrameList read FFrames write SetFrames;
          property CurrentFrame : TSkeletonFrame read GetCurrentFrame write SetCurrentFrame;
 
-         procedure FlushBoneByIndexCache;
-         function BoneByIndex(index : Integer) : TSkeletonBone;
+         procedure FlushBoneByIDCache;
+         function BoneByID(anID : Integer) : TSkeletonBone;
 
          procedure MorphTo(frameIndex : Integer);
          procedure Lerp(frameIndex1, frameIndex2 : Integer;
@@ -494,7 +552,7 @@ type
    // TVertexBoneWeight
    //
    TVertexBoneWeight = packed record
-      BoneIndex : Integer;
+      BoneID : Integer;
       Weight : Single;
    end;
 
@@ -539,9 +597,9 @@ type
          property VerticeBoneWeightCount : Integer read FVerticeBoneWeightCount write SetVerticeBoneWeightCount;
          property BonesPerVertex : Integer read FBonesPerVertex write SetBonesPerVertex;
 
-         function FindOrAdd(boneIndex : Integer; const vertex, normal : TAffineVector) : Integer;
+         function FindOrAdd(boneID : Integer; const vertex, normal : TAffineVector) : Integer;
 
-         procedure AddWeightedBone(aBoneIndex : Integer; aWeight : Single);
+         procedure AddWeightedBone(aBoneID : Integer; aWeight : Single);
          procedure PrepareBoneMatrixInvertedMeshes;
          procedure ApplyCurrentSkeletonFrame;
 	      procedure Clear;
@@ -1703,12 +1761,162 @@ begin
 end;
 
 // ------------------
+// ------------------ TSkeletonBoneList ------------------
+// ------------------
+
+// CreateOwned
+//
+constructor TSkeletonBoneList.CreateOwned(aOwner : TSkeleton);
+begin
+   FSkeleton:=aOwner;
+	Create;
+end;
+
+// Create
+//
+constructor TSkeletonBoneList.Create;
+begin
+	inherited;
+end;
+
+// Destroy
+//
+destructor TSkeletonBoneList.Destroy;
+begin
+	inherited;
+end;
+
+// WriteToFiler
+//
+procedure TSkeletonBoneList.WriteToFiler(writer : TVirtualWriter);
+begin
+   inherited WriteToFiler(writer);
+   with writer do begin
+      WriteInteger(0); // Archive Version 0
+      // nothing, yet
+   end;
+end;
+
+// ReadFromFiler
+//
+procedure TSkeletonBoneList.ReadFromFiler(reader : TVirtualReader);
+var
+	archiveVersion, i : integer;
+begin
+   inherited ReadFromFiler(reader);
+   archiveVersion:=reader.ReadInteger;
+	if archiveVersion=0 then with reader do begin
+      // nothing, yet
+	end else RaiseFilerException(archiveVersion);
+   for i:=0 to Count-1 do Items[i].FOwner:=Self;
+end;
+
+// AfterObjectCreatedByReader
+//
+procedure TSkeletonBoneList.AfterObjectCreatedByReader(Sender : TObject);
+begin
+   with (Sender as TSkeletonBone) do begin
+      FOwner:=Self;
+      FSkeleton:=Self.Skeleton;
+   end;
+end;
+
+// GetSkeletonBone
+//
+function TSkeletonBoneList.GetSkeletonBone(Index : Integer) : TSkeletonBone;
+begin
+   Result:=TSkeletonBone(List^[Index]);
+end;
+
+// BoneByID
+//
+function TSkeletonBoneList.BoneByID(anID : Integer) : TSkeletonBone;
+var
+   i : Integer;
+begin
+   Result:=nil;
+   for i:=0 to Count-1 do begin
+      Result:=Items[i].BoneByID(anID);
+      if Assigned(Result) then Break;
+   end;
+end;
+
+// PrepareGlobalMatrices
+//
+procedure TSkeletonBoneList.PrepareGlobalMatrices;
+var
+   i : Integer;
+begin
+   for i:=0 to Count-1 do
+      Items[i].PrepareGlobalMatrices;
+end;
+
+// ------------------
+// ------------------ TSkeletonRootBoneList ------------------
+// ------------------
+
+// Create
+//
+constructor TSkeletonRootBoneList.Create;
+begin
+	inherited;
+end;
+
+// Destroy
+//
+destructor TSkeletonRootBoneList.Destroy;
+begin
+	inherited;
+end;
+
+// WriteToFiler
+//
+procedure TSkeletonRootBoneList.WriteToFiler(writer : TVirtualWriter);
+begin
+   inherited WriteToFiler(writer);
+   with writer do begin
+      WriteInteger(0); // Archive Version 0
+      // nothing, yet
+   end;
+end;
+
+// ReadFromFiler
+//
+procedure TSkeletonRootBoneList.ReadFromFiler(reader : TVirtualReader);
+var
+	archiveVersion, i : integer;
+begin
+   inherited ReadFromFiler(reader);
+   archiveVersion:=reader.ReadInteger;
+	if archiveVersion=0 then with reader do begin
+      // nothing, yet
+	end else RaiseFilerException(archiveVersion);
+   for i:=0 to Count-1 do Items[i].FOwner:=Self;
+end;
+
+// BuildList
+//
+procedure TSkeletonRootBoneList.BuildList(var mrci : TRenderContextInfo);
+var
+   i : Integer;
+begin
+   // root node setups and restore OpenGL stuff
+   glPushAttrib(GL_ENABLE_BIT);
+   glDisable(GL_COLOR_MATERIAL);
+   glDisable(GL_LIGHTING);
+   // render root-bones
+   for i:=0 to Count-1 do
+      Items[i].BuildList(mrci);
+   glPopAttrib;
+end;
+
+// ------------------
 // ------------------ TSkeletonBone ------------------
 // ------------------
 
 // CreateOwned
 //
-constructor TSkeletonBone.CreateOwned(aOwner : TSkeletonBone);
+constructor TSkeletonBone.CreateOwned(aOwner : TSkeletonBoneList);
 begin
    FOwner:=aOwner;
    aOwner.Add(Self);
@@ -1727,10 +1935,7 @@ end;
 // Destroy
 //
 destructor TSkeletonBone.Destroy;
-var
-   i : Integer;
 begin
-   for i:=0 to Count-1 do Items[i].FOwner:=nil;
    if Assigned(Owner) then
       Owner.Remove(Self);
 	inherited Destroy;
@@ -1744,7 +1949,7 @@ begin
    with writer do begin
       WriteInteger(0); // Archive Version 0
       WriteString(FName);
-      WriteInteger(FBoneIndex);
+      WriteInteger(FBoneID);
       WriteInteger(FColor);
    end;
 end;
@@ -1759,7 +1964,7 @@ begin
    archiveVersion:=reader.ReadInteger;
 	if archiveVersion=0 then with reader do begin
       FName:=ReadString;
-      FBoneIndex:=ReadInteger;
+      FBoneID:=ReadInteger;
       FColor:=ReadInteger;
 	end else RaiseFilerException(archiveVersion);
    for i:=0 to Count-1 do Items[i].FOwner:=Self;
@@ -1778,12 +1983,6 @@ procedure TSkeletonBone.BuildList(var mrci : TRenderContextInfo);
 var
    i : Integer;
 begin
-   if Owner=nil then begin
-      // root node setups and restore OpenGL stuff
-      glPushAttrib(GL_ENABLE_BIT);
-      glDisable(GL_COLOR_MATERIAL);
-      glDisable(GL_LIGHTING);
-   end;
    // point for self
    glPointSize(5);
    glBegin(GL_POINTS);
@@ -1791,19 +1990,16 @@ begin
       glVertex3fv(@GlobalMatrix[3][0]);
    glEnd;
    glPointSize(1);
-   // parent-bone
-   if Assigned(Owner) then begin
+   // parent-self bone line
+   if Owner is TSkeletonBone then begin
       glBegin(GL_LINES);
-         glVertex3fv(@Owner.GlobalMatrix[3][0]);
+         glVertex3fv(@TSkeletonBone(Owner).GlobalMatrix[3][0]);
          glVertex3fv(@GlobalMatrix[3][0]);
       glEnd;
    end;
    // render sub-bones
    for i:=0 to Count-1 do
       Items[i].BuildList(mrci);
-   if Owner=nil then begin
-      glPopAttrib;
-   end;
 end;
 
 // GetSkeletonBone
@@ -1820,28 +2016,20 @@ begin
    FColor:=val;
 end;
 
-// BoneByIndex
+// BoneByID
 //
-function TSkeletonBone.BoneByIndex(anIndex : Integer) : TSkeletonBone;
-var
-   i : Integer;
+function TSkeletonBone.BoneByID(anID : Integer) : TSkeletonBone;
 begin
-   if BoneIndex=anIndex then
+   if BoneID=anID then
       Result:=Self
-   else begin
-      Result:=nil;
-      for i:=0 to Count-1 do begin
-         Result:=Items[i].BoneByIndex(anIndex);
-         if Assigned(Result) then Break;
-      end;
-   end;
+   else Result:=inherited BoneByID(anID);
 end;
 
 // Clean
 //
 procedure TSkeletonBone.Clean;
 begin
-   BoneIndex:=0;
+   BoneID:=0;
    Name:='';
    inherited;
 end;
@@ -1849,15 +2037,12 @@ end;
 // PrepareGlobalMatrices
 //
 procedure TSkeletonBone.PrepareGlobalMatrices;
-var
-   i : Integer;
 begin
-   if Owner=nil then
-      FGlobalMatrix:=Skeleton.CurrentFrame.LocalMatrixList[BoneIndex]
-   else FGlobalMatrix:=MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList[BoneIndex],
-                                      Owner.FGlobalMatrix);
-   for i:=0 to Count-1 do
-      Items[i].PrepareGlobalMatrices;
+   if Owner is TSkeletonBone then
+      FGlobalMatrix:=MatrixMultiply(Skeleton.CurrentFrame.LocalMatrixList[BoneID],
+                                    TSkeletonBone(Owner).FGlobalMatrix)
+   else FGlobalMatrix:=Skeleton.CurrentFrame.LocalMatrixList[BoneID];
+   inherited;
 end;
 
 // ------------------
@@ -1877,8 +2062,7 @@ end;
 constructor TSkeleton.Create;
 begin
 	inherited Create;
-   FRootBone:=TSkeletonBone.Create;
-   FRootBone.FSkeleton:=Self;
+   FRootBones:=TSkeletonRootBoneList.CreateOwned(Self);
    FFrames:=TSkeletonFrameList.CreateOwned(Self);
 end;
 
@@ -1886,10 +2070,10 @@ end;
 //
 destructor TSkeleton.Destroy;
 begin
-   FlushBoneByIndexCache;
+   FlushBoneByIDCache;
    FCurrentFrame.Free;
    FFrames.Free;
-   FRootBone.Free;
+   FRootBones.Free;
 	inherited Destroy;
 end;
 
@@ -1900,7 +2084,7 @@ begin
    inherited WriteToFiler(writer);
    with writer do begin
       WriteInteger(0); // Archive Version 0
-      FRootBone.WriteToFiler(writer);
+      FRootBones.WriteToFiler(writer);
       FFrames.WriteToFiler(writer);
    end;
 end;
@@ -1914,16 +2098,16 @@ begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
 	if archiveVersion=0 then with reader do begin
-      FRootBone.ReadFromFiler(reader);
+      FRootBones.ReadFromFiler(reader);
       FFrames.ReadFromFiler(reader);
 	end else RaiseFilerException(archiveVersion);
 end;
 
-// SetRootBone
+// SetRootBones
 //
-procedure TSkeleton.SetRootBone(const val : TSkeletonBone);
+procedure TSkeleton.SetRootBones(const val : TSkeletonRootBoneList);
 begin
-   FRootBone.Assign(val);
+   FRootBones.Assign(val);
 end;
 
 // SetFrames
@@ -1951,35 +2135,38 @@ begin
    FCurrentFrame:=TSkeletonFrame(val.CreateClone);
 end;
 
-// FlushBoneByIndexCache
+// FlushBoneByIDCache
 //
-procedure TSkeleton.FlushBoneByIndexCache;
+procedure TSkeleton.FlushBoneByIDCache;
 begin
-   FBonesByIndexCache.Free;
-   FBonesByIndexCache:=nil;
+   FBonesByIDCache.Free;
+   FBonesByIDCache:=nil;
 end;
 
-// BoneByIndex
+// BoneByID
 //
-function TSkeleton.BoneByIndex(index : Integer) : TSkeletonBone;
+function TSkeleton.BoneByID(anID : Integer) : TSkeletonBone;
 
    procedure CollectBones(bone : TSkeletonBone);
    var
       i : Integer;
    begin
-      if bone.BoneIndex>=FBonesByIndexCache.Count then
-         FBonesByIndexCache.Count:=bone.BoneIndex+1;
-      FBonesByIndexCache[bone.BoneIndex]:=bone;
+      if bone.BoneID>=FBonesByIDCache.Count then
+         FBonesByIDCache.Count:=bone.BoneID+1;
+      FBonesByIDCache[bone.BoneID]:=bone;
       for i:=0 to bone.Count-1 do
          CollectBones(bone[i]);
    end;
 
+var
+   i : Integer;
 begin
-   if not Assigned(FBonesByIndexCache) then begin
-      FBonesByIndexCache:=TList.Create;
-      CollectBones(RootBone);
+   if not Assigned(FBonesByIDCache) then begin
+      FBonesByIDCache:=TList.Create;
+      for i:=0 to RootBones.Count-1 do
+         CollectBones(RootBones[i]);
    end;
-   Result:=TSkeletonBone(FBonesByIndexCache[index])
+   Result:=TSkeletonBone(FBonesByIDCache[anID])
 end;
 
 // MorphTo
@@ -2054,7 +2241,7 @@ var
    mesh : TBaseMeshObject;
 begin
    if Owner.MeshObjects.Count>0 then begin
-      RootBone.PrepareGlobalMatrices;
+      RootBones.PrepareGlobalMatrices;
       for i:=0 to Owner.MeshObjects.Count-1 do begin
          mesh:=Owner.MeshObjects.Items[0];
          if mesh is TSkeletonMeshObject then
@@ -2067,8 +2254,8 @@ end;
 //
 procedure TSkeleton.Clear;
 begin
-   FlushBoneByIndexCache;
-   RootBone.Clean;
+   FlushBoneByIDCache;
+   RootBones.Clean;
    Frames.Clear;
    FCurrentFrame.Free;
    FCurrentFrame:=nil;
@@ -2781,32 +2968,32 @@ end;
 
 // AddWeightedBone
 //
-procedure TSkeletonMeshObject.AddWeightedBone(aBoneIndex : Integer; aWeight : Single);
+procedure TSkeletonMeshObject.AddWeightedBone(aBoneID : Integer; aWeight : Single);
 begin
    if BonesPerVertex<1 then BonesPerVertex:=1;
    VerticeBoneWeightCount:=VerticeBoneWeightCount+1;
    with VerticesBonesWeights[VerticeBoneWeightCount-1][0] do begin
-      BoneIndex:=aBoneIndex;
+      BoneID:=aBoneID;
       Weight:=aWeight;
    end;
 end;
 
 // FindOrAdd
 //
-function TSkeletonMeshObject.FindOrAdd(boneIndex : Integer; const vertex, normal : TAffineVector) : Integer;
+function TSkeletonMeshObject.FindOrAdd(boneID : Integer; const vertex, normal : TAffineVector) : Integer;
 var
    i : Integer;
 begin
    Result:=-1;
    for i:=0 to Vertices.Count-1 do
-      if (VerticesBonesWeights[i][0].BoneIndex=boneIndex)
+      if (VerticesBonesWeights[i][0].BoneID=boneID)
             and VectorEquals(Vertices[i], vertex)
             and VectorEquals(Normals[i], normal) then begin
          Result:=i;
          Break;
       end;
    if Result<0 then begin
-      AddWeightedBone(boneIndex, 1);
+      AddWeightedBone(boneID, 1);
       Vertices.Add(vertex);
       Result:=Normals.Add(normal);
    end;
@@ -2833,8 +3020,8 @@ begin
       invMesh.Vertices:=Vertices;
       invMesh.Normals:=Normals;
       for i:=0 to Vertices.Count-1 do begin
-         boneIndex:=VerticesBonesWeights[i][k].BoneIndex;
-         bone:=Owner.Owner.Skeleton.RootBone.BoneByIndex(boneIndex);
+         boneIndex:=VerticesBonesWeights[i][k].BoneID;
+         bone:=Owner.Owner.Skeleton.RootBones.BoneByID(boneIndex);
          // transform point
          MakePoint(p, Vertices[i]);
          invMat:=bone.GlobalMatrix;
@@ -2856,7 +3043,7 @@ end;
 //
 procedure TSkeletonMeshObject.ApplyCurrentSkeletonFrame;
 var
-   i, boneIndex : Integer;
+   i, boneID : Integer;
    refVertices, refNormals : TAffineVectorList;
    p, n : TVector;
    bone : TSkeletonBone;
@@ -2866,8 +3053,8 @@ begin
    refNormals:=TBaseMeshObject(FBoneMatrixInvertedMeshes[0]).Normals;
    skeleton:=Owner.Owner.Skeleton;
    for i:=0 to refVertices.Count-1 do begin
-      boneIndex:=VerticesBonesWeights[i][0].BoneIndex;
-      bone:=skeleton.BoneByIndex(boneIndex);
+      boneID:=VerticesBonesWeights[i][0].BoneID;
+      bone:=skeleton.BoneByID(boneID);
       MakePoint(p, refVertices[i]);
       p:=VectorTransform(p, bone.GlobalMatrix);
       Vertices[i]:=PAffineVector(@p)^;
@@ -4563,7 +4750,7 @@ begin
    if OverlaySkeleton then begin
       glPushAttrib(GL_ENABLE_BIT);
       glDisable(GL_DEPTH_TEST);
-      Skeleton.RootBone.BuildList(rci);
+      Skeleton.RootBones.BuildList(rci);
       glPopAttrib;
    end;
 end;
@@ -4847,22 +5034,24 @@ begin
       else raise Exception.Create('SMD is an animation, load model SMD first.');
       // read skeleton nodes
       i:=2;
-      if Owner.Skeleton.RootBone.Name='' then begin
+      if Owner.Skeleton.RootBones.Count=0 then begin
+         // new bone structure
          while sl[i]<>'end' do begin
             tl.CommaText:=sl[i];
             with Owner.Skeleton do
                if (tl[2]<>'-1') then
-                  bone:=TSkeletonBone.CreateOwned(RootBone.BoneByIndex(StrToInt(tl[2])))
-               else if RootBone.Name='' then
-                  bone:=RootBone
-               else bone:=nil; // ignore extra root bones (invalid?)
+                  bone:=TSkeletonBone.CreateOwned(RootBones.BoneByID(StrToInt(tl[2])))
+               else bone:=TSkeletonBone.CreateOwned(RootBones);
             if Assigned(bone) then begin
-               bone.BoneIndex:=StrToInt(tl[0]);
+               bone.BoneID:=StrToInt(tl[0]);
                bone.Name:=tl[1];
             end;
             Inc(i);
          end;
-      end else while sl[i]<>'end' do Inc(i);
+      end else begin
+         // animation file, skip structure
+         while sl[i]<>'end' do Inc(i);
+      end;
       Inc(i);
       if sl[i]<>'skeleton' then
          raise Exception.Create('skeleton not found');
@@ -4916,7 +5105,7 @@ begin
                Inc(i);
             end;
          end;
-         Owner.Skeleton.RootBone.PrepareGlobalMatrices;
+         Owner.Skeleton.RootBones.PrepareGlobalMatrices;
          mesh.PrepareBoneMatrixInvertedMeshes;
       end;
    finally

@@ -9,6 +9,7 @@
    Internal Note: stripped down versions of XClasses & XLists.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/08/01 - EG - Added AfterObjectCreatedByReader
       <li>03/08/01 - EG - Big update with addition of Virtual filers
       <li>24/07/01 - EG - D6-related changes
 	   <li>15/03/01 - EG - Creation
@@ -155,6 +156,9 @@ type
 			procedure SetFirst(item : TObject);
 			function GetLast : TObject;
 			procedure SetLast(item : TObject);
+
+         //: Default event for ReadFromFiler
+         procedure AfterObjectCreatedByReader(Sender : TObject); virtual;
 
 		public
 	      { Public Declarations }
@@ -1044,7 +1048,14 @@ end;
 //
 procedure TPersistentObjectList.ReadFromFiler(reader : TVirtualReader);
 begin
-	ReadFromFilerWithEvent(reader, nil);
+	ReadFromFilerWithEvent(reader, AfterObjectCreatedByReader);
+end;
+
+// AfterObjectCreatedByReader
+//
+procedure TPersistentObjectList.AfterObjectCreatedByReader(Sender : TObject);
+begin
+   // nothing
 end;
 
 // Push
