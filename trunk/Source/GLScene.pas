@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/12/03 - EG - New FramesPerSecond logic
       <li>04/12/03 - Dave - Added ProxyObject.OctreeRayCastIntersect
       <li>26/12/03 - EG - Removed last TList dependencies
       <li>05/12/03 - Dave - Added GLCamera.PointInFront
@@ -1587,10 +1588,9 @@ type
          FFreezedViewPort : TRectangle;
 
          // Monitoring
-         FFrames : Longint;
-         FTicks  : Cardinal;
+         FFrameCount : Longint;
          FFramesPerSecond : Single;
-         FLastPerfCounter : Int64;
+         FFirstPerfCounter : Int64;
 
          // Events
          FOnChange : TNotifyEvent;
@@ -6706,8 +6706,8 @@ end;
 procedure TGLSceneBuffer.ResetPerformanceMonitor;
 begin
    FFramesPerSecond:=0;
-   FFrames:=0;
-   FTicks:=0;
+   FFrameCount:=0;
+   FFirstPerfCounter:=0;
 end;
 
 // PushModelViewMatrix
@@ -7250,7 +7250,6 @@ begin
       Exit;
    end;
 
-
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
       FCamera.AbsoluteMatrixAsAddress;
       FCamera.FScene.AddBuffer(Self);
@@ -7258,6 +7257,9 @@ begin
    FRenderingContext.Activate;
    FRendering:=True;
    try
+      if FFrameCount=0 then
+         QueryPerformanceCounter(FFirstPerfCounter);
+
       FRenderDPI:=96; // default value for screen
       ClearGLError;
       SetupRenderingContext;
@@ -7272,27 +7274,19 @@ begin
       RenderingContext.SwapBuffers;
 
       // yes, calculate average frames per second...
-      Inc(FFrames);
-      perfCounter:=FLastPerfCounter;
-      QueryPerformanceCounter(FLastPerfCounter);
-      if FFrames>1 then begin // ...but leave out the very first frame
-         // in second run take an 'average' value for the first run into account
-         // by simply using twice the time from this run
-         if FFrames=2 then
-            FTicks:=FTicks+2*(FLastPerfCounter-perfCounter)
-         else FTicks:=FTicks+(FLastPerfCounter-perfCounter);
-         if FTicks>0 then
-            FFramesPerSecond:=FFrames*vCounterFrequency/FTicks;
-      end;
+      Inc(FFrameCount);
+      QueryPerformanceCounter(perfCounter);
+      Dec(perfCounter, FFirstPerfCounter);
+      if perfCounter>0 then
+         FFramesPerSecond:=(FFrameCount*vCounterFrequency)/perfCounter;
       CheckOpenGLError;
    finally
       FRendering:=False;
       FRenderingContext.Deactivate;
    end;
-   if Assigned(FAfterRender) then
-      if Owner is TComponent then
-         if not (csDesigning in TComponent(Owner).ComponentState) then
-            FAfterRender(Self);
+   if Assigned(FAfterRender) and (Owner is TComponent) then
+      if not (csDesigning in TComponent(Owner).ComponentState) then
+         FAfterRender(Self);
 end;
 
 // SetBackgroundColor
