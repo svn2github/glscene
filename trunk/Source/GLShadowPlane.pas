@@ -77,11 +77,10 @@ type
 
          {: Controls rendering options.<p>
             <ul>
-            <li>moUseStencil: mirror area is stenciled, prevents shadowing
+            <li>spoUseStencil: plane area is stenciled, prevents shadowing
                objects to be visible on the sides of the mirror (stencil buffer
-               must be active in the viewer)
-            <li>spoShadowPlaneClip: a ClipPlane is defined to prevent shadows
-               from popping out of the mirror (for objects behind or halfway through)
+               must be active in the viewer too). It also allows shadows to
+               be partial (blended).
             </ul>
          }
          property ShadowOptions : TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
