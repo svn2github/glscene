@@ -1005,12 +1005,20 @@ var
    i : Integer;
 begin
    Assert(list1.Count=list2.Count);
-   Capacity:=list1.Count;
-   FCount:=list1.Count;
-   for i:=0 to list1.Count-1 do
-      PAffineVector(ItemAddress[i])^:=VectorAngleLerp(PAffineVector(list1.ItemAddress[i])^,
-                                                      PAffineVector(list2.ItemAddress[i])^,
-                                                      lerpFactor);
+   if list1<>list2 then begin
+      if lerpFactor=0 then
+         Assign(list1)
+      else if lerpFactor=1 then
+         Assign(list2)
+      else begin
+         Capacity:=list1.Count;
+         FCount:=list1.Count;
+         for i:=0 to list1.Count-1 do
+            PAffineVector(ItemAddress[i])^:=VectorAngleLerp(PAffineVector(list1.ItemAddress[i])^,
+                                                            PAffineVector(list2.ItemAddress[i])^,
+                                                            lerpFactor);
+      end;
+   end else Assign(list1);
 end;
 
 // AngleCombine
