@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/04/04 - EG - Added AddMaterialsFromXxxx logic
       <li>04/09/03 - EG - Added TGLShader.Enabled
       <li>02/09/03 - EG - Added TGLColor.HSVA
       <li>28/07/03 - aidave - Added TGLColor.RandomColor
@@ -4824,13 +4825,18 @@ begin
       n:=ReadInteger;
       for i:=0 to n-1 do begin
          name:=ReadString;
+         if FDoNotClearMaterialsOnLoad then
+            libMat:=LibMaterialByName(name)
+         else libMat:=nil;
          if ReadBoolean then begin
             ss:=TStringStream.Create(ReadString);
             try
                bmp:=TGLBitmap.Create;
                try
                   bmp.LoadFromStream(ss);
-                  libMat:=AddTextureMaterial(name, bmp);
+                  if libMat=nil then
+                     libMat:=AddTextureMaterial(name, bmp)
+                  else libMat.Material.Texture.Image.Assign(bmp);
                finally
                   bmp.Free;
                end;
@@ -4838,8 +4844,10 @@ begin
                ss.Free;
             end;
          end else begin
-            libMat:=Materials.Add;
-            libMat.Name:=name;
+            if libMat=nil then begin
+               libMat:=Materials.Add;
+               libMat.Name:=name;
+            end;
          end;
          with libMat.Material.FrontProperties do begin
             Read(Ambient.AsAddress^, SizeOf(Single)*3);
