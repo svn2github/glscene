@@ -1,7 +1,7 @@
 package GLSS_BASS7;
 
 {$R *.res}
-{$R '..\Source\GLSMBASS.dcr'}
+{$R '..\Source\SoundAPIs\GLSceneVCLBass.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

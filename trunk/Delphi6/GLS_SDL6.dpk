@@ -1,7 +1,7 @@
 package GLS_SDL6;
 
 {$R *.res}
-{$R '..\Source\GameAPIs\SDLWindow.dcr'}
+{$R '..\Source\GameAPIs\GLSceneVCLSDL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

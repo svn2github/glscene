@@ -1,7 +1,7 @@
 package GLSS_FMOD5;
 
 {$R *.RES}
-{$R '..\Source\GLSMFMOD.dcr'}
+{$R '..\Source\SoundAPIS\GLSceneVCLFMOD.dcr'}
 {$ALIGN ON}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}

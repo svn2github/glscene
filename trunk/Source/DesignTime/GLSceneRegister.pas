@@ -129,8 +129,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$R GLSceneRegister.res}
-
 uses
    Geometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
@@ -587,7 +585,7 @@ begin
    pic:=TPicture.Create;
    // load first pic to get size
    {$ifdef WIN32}
-   pic.Bitmap.Handle:=LoadBitmap(HInstance, 'GLS_CROSS_16');
+   pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_cross');
    {$endif}
    FObjectIcons:=TImageList.CreateSize(Pic.Width, Pic.height);
    {$ifdef WIN32}
@@ -597,13 +595,13 @@ begin
          // the image quality suffers too much
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FOverlayIndex:=Count-1;
          Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'GLS_UNIVERSE2_16');
+         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_root');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FSceneRootIndex:=Count-1;
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'GLS_CAMERA2_16');
+         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_camera');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FCameraRootIndex:=Count-1;
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'GLS_LAMPS2_16');
+         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_lights');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FLightsourceRootIndex:=Count-1;
-         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'GLS_OBJECTS2_16');
+         Pic.Bitmap.Handle:=LoadBitmap(HInstance, 'gls_objects');
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FObjectRootIndex:=Count-1;
          AddMasked(Pic.Bitmap, Pixels[0, 0]); FStockObjectRootIndex:=Count-1;
       finally
