@@ -7066,17 +7066,19 @@ var
    locProcName : String;
    p : Pointer;
 begin
-   locProcName:='_'+StrPas(ProcName)+'@';
-   Result:=nil;
-   i:=0;
-   repeat
-      p:=GetProcAddress(GLHandle, PChar(locProcName+IntToStr(i)));
-      if Assigned(p) then begin
-         Result:=p;
-         Break;
-      end;
-      Inc(i, 4);
-   until i>64;
+   Result:=GetProcAddress(GLHandle, ProcName);
+   if Result=nil then begin
+      locProcName:='_'+StrPas(ProcName)+'@';
+      i:=0;
+      repeat
+         p:=GetProcAddress(GLHandle, PChar(locProcName+IntToStr(i)));
+         if Assigned(p) then begin
+            Result:=p;
+            Break;
+         end;
+         Inc(i, 4);
+      until i>64;
+   end;
 end;
 {$endif}
 
@@ -7101,7 +7103,7 @@ begin
     glCallList := GetProcAddress(Handle, 'glCallList');
     glCallLists := GetProcAddress(Handle, 'glCallLists'); 
     glClear := GetProcAddress(Handle, 'glClear'); 
-    glClearAccum := GetProcAddress(Handle, 'glClearAccum'); 
+    glClearAccum := GetProcAddress(Handle, 'glClearAccum');
     glClearColor := GetProcAddress(Handle, 'glClearColor'); 
     glClearDepth := GetProcAddress(Handle, 'glClearDepth');
     glClearIndex := GetProcAddress(Handle, 'glClearIndex'); 
@@ -7123,7 +7125,7 @@ begin
     glColor3uiv := GetProcAddress(Handle, 'glColor3uiv'); 
     glColor3us := GetProcAddress(Handle, 'glColor3us');
     glColor3usv := GetProcAddress(Handle, 'glColor3usv'); 
-    glColor4b := GetProcAddress(Handle, 'glColor4b'); 
+    glColor4b := GetProcAddress(Handle, 'glColor4b');
     glColor4bv := GetProcAddress(Handle, 'glColor4bv');
     glColor4d := GetProcAddress(Handle, 'glColor4d'); 
     glColor4dv := GetProcAddress(Handle, 'glColor4dv'); 
@@ -8927,16 +8929,21 @@ end;
 //
 function IsMesaGL : Boolean;
 begin
-   Result:=(GL_MESA_resize_buffers or GL_MESA_window_pos);
+   Result:=(GetProcAddress(GLHandle, 'glResizeBuffersMESA')<>nil);
+//   Result:=(GL_MESA_resize_buffers or GL_MESA_window_pos);
 end;
 
 initialization
+
   ContextList := TThreadList.Create;
   Set8087CW($133F);
+
 finalization
+
   CloseOpenGL;
-  ContextList.Free; 
+  ContextList.Free;
   // We don't need to reset the FPU control word as the previous set call is process specific.
+  
 end.
 
 
