@@ -22,14 +22,15 @@
    <li>Increase/decrease CLOD precision with '*' and '/'.
    <li>Increase/decrease QualityDistance with '9' and '8'.
    <li>'n' turns on 'night' mode, 'd' turns back to 'day' mode.
-   <li>Toggle star twinkle with 't' (night mode only) 
+   <li>Toggle star twinkle with 't' (night mode only)
+   <li>'l' turns on/off the lens flares 
    </ul><p>
 
    When increasing the range, or moving after having increased the range you
    may notice a one-time slowdown, this originates in the base height data
    being duplicated to create the illusion of an "infinite" terrain (at max
    range the visible area covers 1024x1024 height samples, and with tiles of
-   size 16 or less, this is a lot of tiles to prepare).
+   size 16 or less, this is a lot of tiles to prepare).<p>
 }
 unit Unit1;
 
@@ -39,7 +40,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, Geometry;
+  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, Geometry, GLLensFlare;
 
 type
   TForm1 = class(TForm)
@@ -61,6 +62,8 @@ type
     GLSMBASS1: TGLSMBASS;
     TISound: TTimer;
     GLSoundLibrary: TGLSoundLibrary;
+    GLLensFlare: TGLLensFlare;
+    GLDummyCube1: TGLDummyCube;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -226,6 +229,7 @@ begin
          end;
          SPMoon.Visible:=True;
          SPSun.Visible:=False;
+         GLLensFlare.Visible:=False;
       end;
       'd', 'D' : with SkyDome1 do if Stars.Count>0 then begin
          // turn on 'day' mode
@@ -248,7 +252,7 @@ begin
             Options:=Options-[sdoTwinkle]
          else Options:=Options+[sdoTwinkle];
       end;
-
+      'l' : with GLLensFlare do Visible:=(not Visible) and SPSun.Visible;
    end;
    Key:=#0;
 end;

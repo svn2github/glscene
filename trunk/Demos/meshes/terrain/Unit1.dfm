@@ -125,6 +125,16 @@ object Form1: TForm1
     object DCSound: TGLDummyCube
       CubeSize = 1
     end
+    object GLLensFlare: TGLLensFlare
+      Size = 100
+      Seed = 978
+      Position.Coordinates = {9A620252C9B28B51B743BAD10000803F}
+      Visible = False
+      object GLDummyCube1: TGLDummyCube
+        CubeSize = 100
+        VisibleAtRunTime = True
+      end
+    end
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
