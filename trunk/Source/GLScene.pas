@@ -183,8 +183,9 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, GLScreen, GLMisc, GLTexture, SysUtils, Graphics, Messages,
-   Geometry, XCollection, GLGraphics, GeometryBB, GLContext, GLCrossPlatform;
+uses
+   Classes, GLScreen, GLMisc, GLTexture, SysUtils, Graphics, Geometry,
+   XCollection, GLGraphics, GeometryBB, GLContext, GLCrossPlatform;
 
 type
 
@@ -1363,7 +1364,6 @@ type
          procedure DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
                                 drawState : TDrawState);
 
-         procedure ReadContextProperties;
          procedure SetupRenderingContext;
          procedure PrepareGLContext;
 
@@ -1422,7 +1422,7 @@ type
          {: Render the scene to a bitmap at given DPI.<p>
             DPI = "dots per inch".<p>
             The "magic" DPI of the screen is 96 under Windows. }
-         procedure RenderToBitmap(ABitmap: TBitmap; DPI: Integer = 0);
+         procedure RenderToBitmap(ABitmap: TGLBitmap; DPI: Integer = 0);
          {: Render the scene to a bitmap at given DPI and saves it to a file.<p>
             DPI = "dots per inch".<p>
             The "magic" DPI of the screen is 96 under Windows. }
@@ -4826,7 +4826,8 @@ begin
    with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
          TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
-   aBuffer.FCurrentStates:=rci.currentStates;
+   UnSetGLState(rci.currentStates, stBlend);
+   UnSetGLState(rci.currentStates, stTexture2D);
 end;
 
 // ValidateTransformation
@@ -5349,7 +5350,6 @@ begin
          // is posted before the rendering context has been created
          glViewport(0, 0, FViewPort.Width, FViewPort.Height);
          // set up initial context states
-         ReadContextProperties;
          SetupRenderingContext;
          BackColor:=ConvertWinColor(FBackgroundColor);
          glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
@@ -5398,20 +5398,6 @@ begin
    else Result:=chaUnknown;
 end;
 
-// ReadContextProperties
-//
-procedure TGLSceneBuffer.ReadContextProperties;
-begin
-   if glIsEnabled(GL_DEPTH_TEST) then
-      Include(FCurrentStates, stDepthTest);
-   if glIsEnabled(GL_CULL_FACE) then
-      Include(FCurrentStates, stCullFace);
-   if glIsEnabled(GL_LIGHTING) then
-      Include(FCurrentStates, stLighting);
-   if glIsEnabled(GL_FOG) then
-      Include(FCurrentStates, stFog);
-end;
-
 // SetupRenderingContext
 //
 procedure TGLSceneBuffer.SetupRenderingContext;
@@ -5422,7 +5408,7 @@ begin
       glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
    else glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
    glEnable(GL_NORMALIZE);
-   FCurrentStates:=[stNormalize];
+   Include(FCurrentStates, stNormalize);
    if DepthTest then begin
       Include(FCurrentStates, stDepthTest);
       glEnable(GL_DEPTH_TEST)
