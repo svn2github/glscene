@@ -163,7 +163,7 @@ end;
 
 procedure TForm1.PauseBoxClick(Sender: TObject);
 begin
-   GLThorFXManager1.Paused:=PauseBox.checked;
+   GLThorFXManager1.Disabled:=PauseBox.checked;
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
