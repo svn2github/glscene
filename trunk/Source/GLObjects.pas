@@ -1361,8 +1361,12 @@ procedure TGLDummyCube.SetAmalgamate(const val : Boolean);
 begin
    if val<>FAmalgamate then begin
       FAmalgamate:=val;
-      if not val then
+      if val then
+         ObjectStyle:=ObjectStyle+[osDoesTemperWithColorsOrFaceWinding]
+      else begin
          FGroupList.DestroyHandle;
+         ObjectStyle:=ObjectStyle-[osDoesTemperWithColorsOrFaceWinding]
+      end;
       inherited StructureChanged;
    end;
 end;
