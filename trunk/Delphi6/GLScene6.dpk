@@ -140,6 +140,7 @@ contains
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
   TGA in '..\Source\FileFormats\TGA.pas',
   GLLensFlare in '..\Source\GLLensFlare.pas',
-  GLProcTextures in '..\Source\GLProcTextures.pas';
+  GLProcTextures in '..\Source\GLProcTextures.pas',
+  MeshUtils in '..\Source\Base\MeshUtils.pas';
 
 end.
