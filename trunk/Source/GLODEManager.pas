@@ -4,13 +4,15 @@
   Where can I find ... ?
   GLScene              (http://glscene.org)
   Open Dynamics Engine (http://opende.sourceforge.org)
-  DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)
+  DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)<p>
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
-  To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.
+  To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>19/08/03 - SG - Added GetBodyFromGLSceneObject (Dan Bartlett),
+                        Added StepFast and FastIterations to GLODEManager.
     <li>11/08/03 - SG - Added some force/torque methods to dynamic objects.
     <li>30/07/03 - SG - Split terrain collider into GLODECustomColliders unit.
     <li>25/07/03 - SG - Fixed Manager property persistence, other minor changes.
@@ -78,6 +80,8 @@ type
       FDynamicObjectRegister,
       FJointRegister : TPersistentObjectList;
       FRFContactList     : TList; // Rolling friction list
+      FStepFast : Boolean;
+      FFastIterations : Integer;
       procedure SetGravity(value:TGLCoordinates);
       procedure GravityChange(Sender:TObject);
     protected
@@ -119,6 +123,9 @@ type
          is added the Contact Joints. Any 'last minute' changes to the 
          collisions behaviour can be made through the contact parameter. }
       property OnCollision : TODECollisionEvent read FOnCollision write FOnCollision;
+      //: dWorldStepFast properties
+      property StepFast : Boolean read FStepFast write FStepFast;
+      property FastIterations : Integer read FFastIterations write FFastIterations;
   end;
 
   {
@@ -783,6 +790,11 @@ type
 {: ODE nearCallBack, throws near callback to the collision procedure
    of the ODE manager linked by the Data pointer. }
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
+{: Helper functions for extracting data from objects with different
+   inheritance. }
+function GetBodyFromODEObject(Obj:TObject):PdxBody;
+function GetSurfaceFromODEObject(Obj:TObject):TODECollisionSurface;
+function GetBodyFromGLSceneObject(Obj:TGLBaseSceneObject):PdxBody;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -829,6 +841,25 @@ begin
   end;
 end;
 
+// GetBodyFromGLSceneObject
+//
+function GetBodyFromGLSceneObject(Obj:TGLBaseSceneObject):PdxBody;
+var
+  GLOB:TGLODEDynamicBehaviour;
+begin
+  Result:=nil;
+  if Assigned(Obj) then begin
+    if Obj is TGLODEDynamicObject then
+      Result:=TGLODEDynamicObject(Obj).Body
+    else
+    begin
+      GLOB:=TGLODEDynamicBehaviour(Obj.Behaviours.GetByClass(TGLODEDynamicBehaviour));
+      if GLOB<>nil then
+        Result:=GLOB.Body;
+    end;
+  end;
+end;
+
 
 // ------------------------------------------------------------------
 // TGLODEManager Methods
@@ -851,6 +882,9 @@ begin
   FRFContactList:=TList.Create;
 
   dWorldSetCFM(FWorld,1e-5);
+  
+  FStepFast:=False;
+  FFastIterations:=5;
 
   RegisterManager(Self);
 end;
@@ -984,8 +1018,6 @@ begin
   for i:=0 to numc-1 do begin
     HandleCollision:=True;
 
-    // Increment the number of contact joints this step
-    FContactJointCount:=FContactJointCount+1;
     if Assigned(Obj1) and Assigned(Obj2) then begin
       // Calculate the contact based on Obj1 and Obj2 surface info
       CalcContact(Obj1,Obj2,Contact[i]);
@@ -1013,8 +1045,11 @@ begin
       contact[i].surface.mu:=1000;
     end;
     if HandleCollision then begin
+      // Create and assign the contact joint
       Joint:=dJointCreateContact(FWorld,FContactGroup,contact[i]);
       dJointAttach(Joint,b1,b2);
+      // Increment the number of contact joints this step
+      FContactJointCount:=FContactJointCount+1;
     end;
   end;
 end;
@@ -1028,9 +1063,15 @@ var
   body  : PdxBody;
   Coeff : Single;
 begin
+  // Reset the contact joint counter
+  FContactJointCount:=0;
+
   // Run ODE collisions and step the scene
   dSpaceCollide(FSpace,Self,nearCallback);
-  dWorldStep(FWorld,deltaTime);
+  if FStepFast then
+    dWorldStepFast(FWorld, deltaTime, FFastIterations)
+  else
+    dWorldStep (FWorld, deltaTime);
   dJointGroupEmpty(FContactGroup);
 
   // Align dynamic objects to their ODE bodies
