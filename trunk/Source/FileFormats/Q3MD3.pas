@@ -3,6 +3,7 @@
   
   History :
     17/02/03 - SG - Creation
+    01/04/03 - Mrqzzz -  "LEGS_" animations red from .CFG fixed
 }
 
 unit Q3MD3;
@@ -64,6 +65,7 @@ var
   strindex,valindex,i : integer;
   GotValues:Boolean;
   commatext,str1 : string;
+  TorsoStartFrame,LegsStartFrame : integer; // Used to Fix LEGS Frame values red from CFG file
 
   function StrIsNumber(str:string):boolean;
   var
@@ -82,7 +84,8 @@ var
 
 begin
   anim:=TStringList.Create;
-
+  TorsoStartFrame := 0;
+  LegsStartFrame  := 0;
   for strindex:=0 to Strings.Count-1 do begin
     commatext:=Strings.Strings[strindex];
     while Pos('  ',commatext)>0 do
@@ -95,6 +98,13 @@ begin
     if anim.Count>=5 then begin
       for i:=0 to Anim.Count-1 do begin
         if GotValues then begin
+
+          // Store start values to Fix LEGS
+          if (TorsoStartFrame=0) and (pos('TORSO_',Uppercase(Anim.Strings[i]))>0) then
+               TorsoStartFrame := val[0];
+          if (LegsStartFrame=0) and (pos('LEGS_',Uppercase(Anim.Strings[i]))>0) then
+               LegsStartFrame := val[0];
+
           if (Anim.Strings[i]<>'//')
           and (Pos(NamePrefix+'_',Anim.Strings[i])>0) then begin
             str1:=StringReplace(Anim.Strings[i],'//','',[rfReplaceAll]);
@@ -112,6 +122,10 @@ begin
     if GotValues and (str1<>'') then begin
       // Values ready for new animation.
       with Animations.Add do begin
+        // Fix frame value for Legs
+        if Uppercase(NamePrefix)='LEGS' then
+             val[0] := val[0]-LegsStartFrame+TorsoStartFrame;
+             
         Name:=str1;
         StartFrame:=val[0];
         EndFrame:=val[0]+val[1]-1;
