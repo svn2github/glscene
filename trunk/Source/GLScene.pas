@@ -437,6 +437,7 @@ type
          procedure DrawAxes(var rci : TRenderContextInfo; pattern : Word);
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
          function  GetHandle(var rci : TRenderContextInfo) : Cardinal; virtual;
+         function  ListHandleAllocated : Boolean;
          //: Should the object be considered as blended for sorting purposes?
          function  Blended : Boolean; virtual;
          procedure RebuildMatrix;
@@ -2290,6 +2291,15 @@ begin
       DoBuild(rci);
       Result:=FListHandle.Handle;
    end;
+end;
+
+// ListHandleAllocated
+//
+function TGLBaseSceneObject.ListHandleAllocated : Boolean;
+begin
+   Result:=    Assigned(FListHandle)
+           and (FListHandle.Handle<>0)
+           and not (ocStructure in FChanges);
 end;
 
 // DestroyHandle
