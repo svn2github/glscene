@@ -3,7 +3,7 @@
    Prototypes and base implementation of TGLContext.<p>
    Currently NOT thread-safe.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
       <li>30/01/02 - EG - Added TGLVirtualHandle
       <li>29/01/02 - EG - Improved recovery for context creation failures
       <li>28/01/02 - EG - Activation failures always ignored
@@ -231,6 +231,7 @@ type
 
    // TGLVirtualHandle
    //
+   {: A context handle with event-based handle allocation and destruction. }
    TGLVirtualHandle = class (TGLContextHandle)
       private
          { Private Declarations }
@@ -252,6 +253,7 @@ type
 
    // TGLListHandle
    //
+   {: Manages a handle to a display list. } 
    TGLListHandle = class (TGLContextHandle)
       private
          { Private Declarations }
@@ -267,6 +269,7 @@ type
 
    // TGLTextureHandle
    //
+   {: Manages a handle to a texture. } 
    TGLTextureHandle = class (TGLContextHandle)
       private
          { Private Declarations }
@@ -337,6 +340,8 @@ type
          procedure DestroyAllHandles;
    end;
 
+   // EGLContext
+   //
    EGLContext = class (Exception)
    end;
 
@@ -344,7 +349,8 @@ type
 
 {: Drivers should register themselves via this function. }
 procedure RegisterGLContextClass(aGLContextClass : TGLContextClass);
-
+{: The TGLContext that is the currently active context, if any.<p>
+   Returns nil if no context is active. }
 function CurrentGLContext : TGLContext;
 
 {: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
