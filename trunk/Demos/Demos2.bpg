@@ -13,7 +13,7 @@ PROJECTS = candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering
   warping.exe raycast.exe memviewer.exe volcano.exe shadows.exe tentacles.exe \
   pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe tobitmap.exe meshhit.exe \
   mirror.exe canvas.exe spiral.exe fullscreen.exe megaglasscube.exe events.exe \
-  fire2d.exe octreedemo.exe
+  fire2d.exe octreedemo.exe boxedin.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -94,4 +94,7 @@ fire2d.exe: materials\fire2d\fire2d.dpr
   $(DCC)
 
 octreedemo.exe: collisions\octree\octreedemo.dpr
+  $(DCC)
+
+boxedin.exe: collisions\boxedin\boxedin.dpr
   $(DCC)
