@@ -2,8 +2,7 @@ program GLSViewer;
 
 uses
   Forms,
-  FMain in 'FMain.pas' {Main},
-  GLFileSTL in '..\..\Source\FileFormats\GLFileSTL.pas';
+  FMain in 'FMain.pas' {Main};
 
 {$R *.res}
 
