@@ -6,6 +6,7 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/06/03 - MF - Added IntersectAABBsAbsolute
       <li>08/05/03 - DanB - Added Plane/Triangle-AABB collisions (Matheus Degiovani)
       <li>07/02/03 - EG - Added IntersectAABBsAbsoluteXY (Dan Bartlett)
       <li>22/01/03 - EG - IntersectAABBs moved in (Bernd Klaiber)
@@ -67,6 +68,11 @@ function AABBToBB(const anAABB : TAABB; const m : TMatrix) : THmgBoundingBox; ov
 function IntersectAABBs(const aabb1, aabb2 : TAABB; const m1To2, m2To1 : TMatrix) : Boolean; overload;
 {: Checks whether two Bounding boxes aligned with the world axes collide in the XY plane.<p> }
 function IntersectAABBsAbsoluteXY(const aabb1, aabb2 : TAABB) : Boolean;
+{: Checks whether two Bounding boxes aligned with the world axes collide.<p> }
+function IntersectAABBsAbsolute(const aabb1, aabb2 : TAABB) : Boolean;
+{: Checks whether one Bounding box aligned with the world axes fits within
+another Bounding box.<p> }
+function AABBFitsInAABBAbsolute(const aabb1, aabb2 : TAABB) : Boolean;
 
 {: Checks if a point "p" is inside an AABB}
 function PointInAABB(const p: TAffineVector; const aabb: TAABB): boolean;
@@ -456,6 +462,38 @@ begin
   else if (AABB2.max[0]<AABB1.min[0])or (AABB2.max[1]<AABB1.min[1]) then Exit
   else Result:=true;
 
+end;
+
+// IntersectAABBsAbsolute
+//
+function IntersectAABBsAbsolute(const aabb1, aabb2 : TAABB) : Boolean;
+begin
+  result := not
+   ((AABB1.min[0]>AABB2.max[0]) or
+    (AABB1.min[1]>AABB2.max[1]) or
+    (AABB1.min[2]>AABB2.max[2]) or
+
+    (AABB2.min[0]>AABB1.max[0]) or
+    (AABB2.min[1]>AABB1.max[1]) or
+    (AABB2.min[2]>AABB1.max[2]));
+end;
+
+// IntersectAABBsAbsolute
+//
+function AABBFitsInAABBAbsolute(const aabb1, aabb2 : TAABB) : Boolean;
+begin
+  // AABB1 fits completely inside AABB2?
+  // AABB1 min must be >= to AABB2 min
+  // AABB1 max must be <= to AABB2 max
+
+  result :=
+    (AABB1.min[0]>=AABB2.min[0]) and
+    (AABB1.min[1]>=AABB2.min[1]) and
+    (AABB1.min[2]>=AABB2.min[2]) and
+
+    (AABB1.max[0]<=AABB2.max[0]) and
+    (AABB1.max[1]<=AABB2.max[1]) and
+    (AABB1.max[2]<=AABB2.max[2]);
 end;
 
 // PointInAABB

@@ -1675,6 +1675,8 @@ var
     end;
   end;
 begin
+  exit;
+
   // Early out test
   EdgeRelative[0] := VectorSubtract(aEdge.FNodeA.FLocation, FLocation);
   EdgeRelative[1] := VectorSubtract(aEdge.FNodeB.FLocation, FLocation);
