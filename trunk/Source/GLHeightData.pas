@@ -1086,7 +1086,7 @@ end;
 function THeightData.ByteHeight(x, y : Integer) : Byte;
 begin
    Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
-	Result:=(ByteRaster[y][x]-128) shl 7;
+	Result:=ByteRaster[y][x];
 end;
 
 // SmallIntHeight
@@ -1138,7 +1138,7 @@ end;
 function THeightData.Height(x, y : Integer) : Single;
 begin
    case DataType of
-      hdtByte : Result:=ByteHeight(x, y);
+      hdtByte : Result:=(ByteHeight(x, y)-128) shl 7;
       hdtSmallInt : Result:=SmallIntHeight(x, y);
       hdtSingle : Result:=SingleHeight(x, y);
    else
