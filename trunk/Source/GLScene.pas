@@ -349,7 +349,7 @@ type
       other children manipulations methods and properties are provided (to browse,
       move and delete them). Using the regular TComponent methods is not
       encouraged. }
-   TGLBaseSceneObject = class (TGLUpdateAbleComponent)
+   TGLBaseSceneObject = class (TGLCoordinatesUpdateAbleComponent)
       private
          { Private Declarations }
          FAbsoluteMatrix, FInvAbsoluteMatrix : PMatrix;
@@ -667,7 +667,7 @@ type
          procedure ClearStructureChanged;
 
          //: Recalculate an orthonormal system
-         procedure CoordinateChanged(Sender: TGLCoordinates); virtual;
+         procedure CoordinateChanged(Sender: TGLCoordinates); override;
          procedure TransformationChanged;
          procedure NotifyChange(Sender : TObject); override;
 
@@ -4664,7 +4664,7 @@ begin
       FUp.Normalize;
       // adjust local coordinates
       FDirection.DirectVector:=VectorCrossProduct(FUp.AsVector, rightVector);
-      FRotation.Z:=-RadToDeg(arctan2(Rightvector[1], Sqrt(Sqr(RightVector[0])+Sqr(RightVector[2]))));
+      FRotation.Z:=-RadToDeg(ArcTan2(RightVector[1], VectorLength(RightVector[0], RightVector[2])));
    end;
 end;
 
@@ -7733,7 +7733,7 @@ initialization
                     TGLScene, TGLDirectOpenGL, TGLMemoryViewer]);
 
    // preparation for high resolution timer
-   QueryPerformanceFrequency(vCounterFrequency);
+   QueryPerformanceFrequency(vCounterFrequency); 
 
 end.
 

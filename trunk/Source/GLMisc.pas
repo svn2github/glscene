@@ -67,7 +67,7 @@ unit GLMisc;
 
 interface
 
-uses Classes, VectorGeometry, SysUtils, OpenGL1x, Spline, VectorLists, GLState;
+uses Classes, VectorGeometry, OpenGL1x, Spline, VectorLists, GLState;
 
 {$i GLScene.inc}
 
@@ -276,8 +276,10 @@ type
          property DirectZ : TGLFloat read FCoords[2] write FCoords[2];
          property DirectW : TGLFloat read FCoords[3] write FCoords[3];
 
+{$ifndef FPC}
 		published
 			{ Published Declarations }
+{$endif}
 			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate stored False;
 			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate stored False;
 			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate stored False;
@@ -288,9 +290,19 @@ type
    //
    {: A TGLCoordinates that publishes W property. }
 	TGLCoordinates4 = class (TGLCoordinates)
+{$ifndef FPC}
 		published
 			{ Published Declarations }
          property W;
+{$endif}
+   end;
+
+   // TGLCoordinatesUpdateAbleComponent
+   //
+   TGLCoordinatesUpdateAbleComponent = class (TGLUpdateAbleComponent)
+      public
+	      { Public Declarations }
+         procedure CoordinateChanged(Sender: TGLCoordinates); virtual; abstract;
    end;
 
 	// TGLNode
@@ -327,6 +339,7 @@ type
             The W component is automatically adjustes depending on style. }
 			property AsAffineVector : TAffineVector read GetAsAffineVector write SetAsAffineVector;
 
+{$ifndef FPC}
 			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate stored StoreCoordinate;
 
 	   published
@@ -334,7 +347,34 @@ type
 			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate stored StoreCoordinate;
 			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate stored StoreCoordinate;
 			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate stored StoreCoordinate;
+{$else}
+			property X: TGLFloat index 0 read FCoords[0] write SetCoordinate;
+			property Y: TGLFloat index 1 read FCoords[1] write SetCoordinate;
+			property Z: TGLFloat index 2 read FCoords[2] write SetCoordinate;
+			property W: TGLFloat index 3 read FCoords[3] write SetCoordinate;
+{$endif}
 	end;
+
+{$ifdef FPC}
+   TOwnedCollection = class(TCollection)
+      private
+	      { Private Declarations }
+         FOwner : TPersistent;
+         FUpdateCount : Integer;
+
+      protected
+	      { Protected Declarations }
+         function GetOwner : TPersistent; override;
+         property UpdateCount : Integer read FUpdateCount;
+
+      public
+	      { Public Declarations }
+         constructor Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
+
+         procedure BeginUpdate; virtual;
+         procedure EndUpdate; virtual;
+   end;
+{$endif}
 
 	// TGLNodes
 	//
@@ -411,12 +451,15 @@ type
    //
    TNotifyCollection = class (TOwnedCollection)
       private
-         FOnNotifyChange: TNotifyEvent;
+	      { Private Declarations }
+         FOnNotifyChange : TNotifyEvent;
 
       protected
-         procedure Update(Item: TCollectionItem); override;
+	      { Protected Declarations }
+         procedure Update(item : TCollectionItem); override;
 
       public
+	      { Public Declarations }
          constructor Create(AOwner : TPersistent; ItemClass : TCollectionItemClass);
          property OnNotifyChange : TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
    end;
@@ -438,7 +481,7 @@ implementation
 //------------------------------------------------------
 //------------------------------------------------------
 
-uses GLScene, XOpenGL, ApplicationFileIO;
+uses SysUtils, XOpenGL;
 
 var
    vManagers : TList;
@@ -615,19 +658,23 @@ begin
       else writeCoords:=True;
       WriteBoolean(writeCoords);
       if writeCoords then
-         Write(FCoords, SizeOf(FCoords));
+         Write(FCoords[0], SizeOf(FCoords));
    end;
 end;
 
 // ReadFromFiler
 //
 procedure TGLCoordinates.ReadFromFiler(reader : TReader);
+var
+   n : Integer;
 begin
    with reader do begin
       ReadInteger; // Ignore ArchiveVersion
-      if ReadBoolean then
-         Read(FCoords, SizeOf(FCoords))
-      else if Assigned(FPDefaultCoords) then
+      if ReadBoolean then begin
+         n:=SizeOf(FCoords);
+         Assert(n=4*SizeOf(Single));
+         Read(FCoords[0], n);
+      end else if Assigned(FPDefaultCoords) then
          FCoords:=FPDefaultCoords^;
    end;
 end;
@@ -659,8 +706,8 @@ end;
 //
 procedure TGLCoordinates.NotifyChange(Sender : TObject);
 begin
-	if (Owner is TGLBaseSceneObject) then begin
- 		TGLBaseSceneObject(Owner).CoordinateChanged(Self);
+	if (Owner is TGLCoordinatesUpdateAbleComponent) then begin
+ 		TGLCoordinatesUpdateAbleComponent(Owner).CoordinateChanged(Self);
 	end else inherited NotifyChange(Sender);
 end;
 
@@ -990,6 +1037,40 @@ begin
    Result:=(FCoords[Index]<>0);
 end;
 
+// ------------------
+// ------------------ TOwnedCollection ------------------
+// ------------------
+{$ifdef FPC}
+// Create
+//
+constructor TOwnedCollection.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
+begin
+   inherited Create(ItemClass);
+   FOwner:=AOwner;
+end;
+
+// GetOwner
+//
+function TOwnedCollection.GetOwner : TPersistent;
+begin
+   Result:=FOwner;
+end;
+
+// BeginUpdate
+//
+procedure TOwnedCollection.BeginUpdate;
+begin
+   Inc(FUpdateCount);
+end;
+
+// EndUpdate
+//
+procedure TOwnedCollection.EndUpdate;
+begin
+   Dec(FUpdateCount);
+   Assert(FUpdateCount>=0, 'Unabalanced Begin/EndUpdate');
+end;
+{$endif}
 // ------------------
 // ------------------ TGLNodes ------------------
 // ------------------
