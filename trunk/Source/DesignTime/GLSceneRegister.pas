@@ -130,7 +130,7 @@ uses
    GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
    GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
    GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
-   GLWindows, GLShadowPlane
+   GLWindows, GLShadowPlane, GLWindowsFont
 {$ifdef WIN32}
    , GLWin32Viewer
 {$endif}
@@ -1732,7 +1732,8 @@ begin
                        TGLCadencer, TAsyncTimer,
                        TCollisionManager, TGLFireFXManager, TGLThorFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
-                       TBitmapFont, TGLBitmapHDS, TGLCustomHDS,
+                       TBitmapFont, TWindowsBitmapFont,
+                       TGLBitmapHDS, TGLCustomHDS,
                        TAnimationControler]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);

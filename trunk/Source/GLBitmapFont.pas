@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/09/02 - EG - Introduced TGLCustomBitmapFont
       <li>06/09/02 - JAJ - Prepared for TWindowsBitmapFont
       <li>28/08/02 - EG - Repaired fixed CharWidth, variable CharWidth not yet repaired
       <li>12/08/02 - JAJ - Merged Dual Development, Alpha Channel and CharWidth are now side by side
@@ -51,6 +52,7 @@ type
 	      destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
          property Widths[index : Integer] : Integer read GetWidth write SetWidth;
+
 	   published
 	      { Published Declarations }
          property StartASCII : Char read FStartASCII write SetStartASCII;
@@ -61,7 +63,6 @@ type
 	// TBitmapFontRanges
 	//
 	TBitmapFontRanges = class (TCollection)
-      private
 	   protected
 	      { Protected Declarations }
 	      owner : TComponent;
@@ -74,17 +75,22 @@ type
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent);
 	      destructor  Destroy; override;
-         function Add: TBitmapFontRange;
-	      function FindItemID(ID: Integer): TBitmapFontRange;
+
+         function Add : TBitmapFontRange; overload;
+         function Add(startASCII, stopASCII : Char) : TBitmapFontRange; overload;
+	      function FindItemID(ID : Integer) : TBitmapFontRange;
 	      property Items[index : Integer] : TBitmapFontRange read GetItems write SetItems; default;
 
          {: Converts an ASCII character into a tile index.<p>
             Return -1 if character cannot be rendered. }
 	      function CharacterToTileIndex(aChar : Char) : Integer;
          procedure NotifyChange;
+
+         //: Total number of characters in the ranges
+         function CharacterCount : Integer;
    end;
 
-	// TBitmapFont
+	// TGLCustomBitmapFont
 	//
    {: Provides access to individual characters in a BitmapFont.<p>
       Only fixed-width bitmap fonts are supported, the characters are enumerated
@@ -95,14 +101,14 @@ type
       dimensions should be close to a power of two, and have at least 1 pixel
       spacing between characters (horizontally and vertically) to avoid artefacts
       when rendering with linear filtering. }
-	TBitmapFont = class (TGLUpdateAbleComponent)
+	TGLCustomBitmapFont = class (TGLUpdateAbleComponent)
 	   private
 	      { Private Declarations }
          FRanges : TBitmapFontRanges;
          FGlyphs : TGLPicture;
          FCharWidth, FCharHeight : Integer;
          FGlyphsIntervalX, FGlyphsIntervalY : Integer;
-         FHSpace, FVSpace : Integer;
+         FHSpace, FVSpace, FHSpaceFix : Integer;
          FUsers : TList;
          FTextureHandle : TGLTextureHandle;
          FHandleIsDirty : Boolean;
@@ -133,6 +139,33 @@ type
 	      procedure TileIndexToTexCoords(tileIndex : Integer; var topLeft, bottomRight : TTexPoint; ThisCharWidth : Single = -1); // JAJ: is it safe to remove the default value? still there for compatibility...
          procedure PrepareImage; virtual;
          procedure PrepareParams;
+
+         {: A single bitmap containing all the characters.<p>
+            The transparent color is that of the top left pixel. }
+         property Glyphs : TGLPicture read FGlyphs write SetGlyphs;
+         {: Nb of horizontal pixels between two columns in the Glyphs. }
+         property GlyphsIntervalX : Integer read FGlyphsIntervalX write SetGlyphsIntervalX;
+         {: Nb of vertical pixels between two rows in the Glyphs. }
+         property GlyphsIntervalY : Integer read FGlyphsIntervalY write SetGlyphsIntervalY;
+         {: Ranges allow converting between ASCII and tile indexes.<p>
+            See TGLCustomBitmapFontRange. }
+         property Ranges : TBitmapFontRanges read FRanges write SetRanges;
+
+         {: Width of a single character. }
+         property CharWidth : Integer read FCharWidth write SetCharWidth default 16;
+         {: Pixels in between rendered characters (horizontally). }
+         property HSpace : Integer read FHSpace write SetHSpace default 1;
+         {: Pixels in between rendered lines (vertically). }
+         property VSpace : Integer read FVSpace write SetVSpace default 1;
+         {: Horizontal spacing fix offset.<p>
+            This property is for internal use, and is added to the hspacing
+            of each character when rendering, typically to fix extra spacing. }
+         property HSpaceFix : Integer read FHSpaceFix write FHSpaceFix;
+
+			property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maLinear;
+			property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miLinear;
+         property GlyphsAlpha: TGLTextureImageAlpha read FGlyphsAlpha write FGlyphsAlpha default tiaDefault;
+
 	   public
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
@@ -151,31 +184,28 @@ type
          {: Get the actual pixel width for this string. }
          function  CalcStringWidth(const st : String) : Integer;
 
-	   published
-	      { Published Declarations }
-         {: A single bitmap containing all the characters.<p>
-            The transparent color is that of the top left pixel. }
-         property Glyphs : TGLPicture read FGlyphs write SetGlyphs;
-         {: Nb of horizontal pixels between two columns in the Glyphs. }
-         property GlyphsIntervalX : Integer read FGlyphsIntervalX write SetGlyphsIntervalX;
-         {: Nb of vertical pixels between two rows in the Glyphs. }
-         property GlyphsIntervalY : Integer read FGlyphsIntervalY write SetGlyphsIntervalY;
-         {: Ranges allow converting between ASCII and tile indexes.<p>
-            See TBitmapFontRange. }
-         property Ranges : TBitmapFontRanges read FRanges write SetRanges;
-
-         {: Width of a single character. }
-         property CharWidth : Integer read FCharWidth write SetCharWidth default 16;
          {: Height of a single character. }
          property CharHeight : Integer read FCharHeight write SetCharHeight default 16;
-         {: Pixels in between rendered characters (horizontally). }
-         property HSpace : Integer read FHSpace write SetHSpace default 1;
-         {: Pixels in between rendered lines (vertically). }
-         property VSpace : Integer read FVSpace write SetVSpace default 1;
+	end;
 
-			property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default maLinear;
-			property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default miLinear;
-         property GlyphsAlpha: TGLTextureImageAlpha read FGlyphsAlpha write FGlyphsAlpha default tiaDefault;
+	// TBitmapFont
+	//
+   {: See TGLCustomBitmapFont.<p>
+      This class only publuishes some of the properties. }
+	TBitmapFont = class (TGLCustomBitmapFont)
+	   published
+	      { Published Declarations }
+         property Glyphs;
+         property GlyphsIntervalX;
+         property GlyphsIntervalY;
+         property Ranges;
+         property CharWidth;
+         property CharHeight;
+         property HSpace;
+         property VSpace;
+			property MagFilter;
+			property MinFilter;
+         property GlyphsAlpha;
 	end;
 
 // ------------------------------------------------------------------
@@ -247,13 +277,13 @@ end;
 procedure TBitmapFontRange.PrepareWidths;
 var
    n, xc : Integer;
-   bf : TBitmapFont;
+   bf : TGLCustomBitmapFont;
 begin
    n:=Byte(FStopASCII)-Byte(FStartASCII)+1;
    SetLength(FWidths, n);
    if Assigned(TBitmapFontRanges(Collection).Owner) then begin
-      bf:=TBitmapFont(TBitmapFontRanges(Collection).Owner);
-      if TObject(bf) is TBitmapFont then begin
+      bf:=TGLCustomBitmapFont(TBitmapFontRanges(Collection).Owner);
+      if TObject(bf) is TGLCustomBitmapFont then begin
          for xc:=0 to n-1 do begin
             FWidths[XC]:=bf.CharWidth;
          end;
@@ -341,6 +371,15 @@ begin
 	Result:=(inherited Add) as TBitmapFontRange;
 end;
 
+// Add
+//
+function TBitmapFontRanges.Add(startASCII, stopASCII : Char) : TBitmapFontRange;
+begin
+   Result:=Add;
+   Result.StartASCII:=startASCII;
+   Result.StopASCII:=stopASCII;
+end;
+
 // FindItemID
 //
 function TBitmapFontRanges.FindItemID(ID: Integer): TBitmapFontRange;
@@ -371,13 +410,24 @@ begin
       TGLBaseSceneObject(Owner).StructureChanged;
 end;
 
+// CharacterCount
+//
+function TBitmapFontRanges.CharacterCount : Integer;
+var
+   i : Integer;
+begin
+   Result:=0;
+   for i:=0 to Count-1 do with Items[i] do
+      Inc(Result, Integer(StopASCII)-Integer(StartASCII)+1);
+end;
+
 // ------------------
-// ------------------ TBitmapFont ------------------
+// ------------------ TGLCustomBitmapFont ------------------
 // ------------------
 
 // Creat
 //
-constructor TBitmapFont.Create(AOwner: TComponent);
+constructor TGLCustomBitmapFont.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    FRanges:=TBitmapFontRanges.Create(Self);
@@ -396,7 +446,7 @@ end;
 
 // Destroy
 //
-destructor TBitmapFont.Destroy;
+destructor TGLCustomBitmapFont.Destroy;
 begin
 	inherited Destroy;
    FTextureHandle.Free;
@@ -408,7 +458,7 @@ end;
 
 // CalcCharWidth
 //
-function TBitmapFont.CalcCharWidth(ch : Char) : Integer;
+function TGLCustomBitmapFont.CalcCharWidth(ch : Char) : Integer;
 var
    i : Integer;
 begin
@@ -423,13 +473,13 @@ end;
 
 // CalcStringWidth
 //
-function TBitmapFont.CalcStringWidth(const st : String) : Integer;
+function TGLCustomBitmapFont.CalcStringWidth(const st : String) : Integer;
 var
    i : Integer;
 begin
    Result:=0;
    for i:=1 to Length(St) do begin
-      Result:=Result+CalcCharWidth(St[i]);
+      Result:=Result+CalcCharWidth(St[i])+HSpaceFix;
       Inc(Result, HSpace);
    end;
    if st<>'' then Dec(Result, HSpace+1); //dont really understand this +1, but it results in the correct center!
@@ -437,7 +487,7 @@ end;
 
 // SetRanges
 //
-procedure TBitmapFont.SetRanges(const val : TBitmapFontRanges);
+procedure TGLCustomBitmapFont.SetRanges(const val : TBitmapFontRanges);
 begin
    FRanges.Assign(val);
    InvalidateUsers;
@@ -445,14 +495,14 @@ end;
 
 // SetGlyphs
 //
-procedure TBitmapFont.SetGlyphs(const val : TGLPicture);
+procedure TGLCustomBitmapFont.SetGlyphs(const val : TGLPicture);
 begin
    FGlyphs.Assign(val);
 end;
 
 // SetCharWidth
 //
-procedure TBitmapFont.SetCharWidth(const val : Integer);
+procedure TGLCustomBitmapFont.SetCharWidth(const val : Integer);
 Var
   xc : Integer;
 begin
@@ -469,7 +519,7 @@ end;
 
 // SetCharHeight
 //
-procedure TBitmapFont.SetCharHeight(const val : Integer);
+procedure TGLCustomBitmapFont.SetCharHeight(const val : Integer);
 begin
    if val>1 then
       FCharHeight:=val
@@ -479,7 +529,7 @@ end;
 
 // SetGlyphsIntervalX
 //
-procedure TBitmapFont.SetGlyphsIntervalX(const val : Integer);
+procedure TGLCustomBitmapFont.SetGlyphsIntervalX(const val : Integer);
 begin
    if val>0 then
       FGlyphsIntervalX:=val
@@ -489,7 +539,7 @@ end;
 
 // SetGlyphsIntervalY
 //
-procedure TBitmapFont.SetGlyphsIntervalY(const val : Integer);
+procedure TGLCustomBitmapFont.SetGlyphsIntervalY(const val : Integer);
 begin
    if val>0 then
       FGlyphsIntervalY:=val
@@ -499,7 +549,7 @@ end;
 
 // SetHSpace
 //
-procedure TBitmapFont.SetHSpace(const val : Integer);
+procedure TGLCustomBitmapFont.SetHSpace(const val : Integer);
 begin
    if val>0 then
       FHSpace:=val
@@ -509,7 +559,7 @@ end;
 
 // SetVSpace
 //
-procedure TBitmapFont.SetVSpace(const val : Integer);
+procedure TGLCustomBitmapFont.SetVSpace(const val : Integer);
 begin
    if val>0 then
       FVSpace:=val
@@ -519,7 +569,7 @@ end;
 
 // SetMagFilter
 //
-procedure TBitmapFont.SetMagFilter(AValue: TGLMagFilter);
+procedure TGLCustomBitmapFont.SetMagFilter(AValue: TGLMagFilter);
 begin
 	if AValue <> FMagFilter then begin
 		FMagFilter:=AValue;
@@ -530,7 +580,7 @@ end;
 
 // SetMinFilter
 //
-procedure TBitmapFont.SetMinFilter(AValue: TGLMinFilter);
+procedure TGLCustomBitmapFont.SetMinFilter(AValue: TGLMinFilter);
 begin
 	if AValue <> FMinFilter then begin
 		FMinFilter:=AValue;
@@ -541,7 +591,7 @@ end;
 
 // SetGlyphsAlpha
 //
-procedure TBitmapFont.SetGlyphsAlpha(val : TGLTextureImageAlpha);
+procedure TGLCustomBitmapFont.SetGlyphsAlpha(val : TGLTextureImageAlpha);
 begin
 	if val<>FGlyphsAlpha then begin
 		FGlyphsAlpha:=val;
@@ -552,14 +602,14 @@ end;
 
 // OnGlyphsChanged
 //
-procedure TBitmapFont.OnGlyphsChanged(Sender : TObject);
+procedure TGLCustomBitmapFont.OnGlyphsChanged(Sender : TObject);
 begin
    InvalidateUsers;
 end;
 
 // RegisterUser
 //
-procedure TBitmapFont.RegisterUser(anObject : TGLBaseSceneObject);
+procedure TGLCustomBitmapFont.RegisterUser(anObject : TGLBaseSceneObject);
 begin
    Assert(FUsers.IndexOf(anObject)<0);
    FUsers.Add(anObject);
@@ -567,14 +617,14 @@ end;
 
 // UnRegisterUser
 //
-procedure TBitmapFont.UnRegisterUser(anObject : TGLBaseSceneObject);
+procedure TGLCustomBitmapFont.UnRegisterUser(anObject : TGLBaseSceneObject);
 begin
    FUsers.Remove(anObject);
 end;
 
 // PrepareImage
 //
-procedure TBitmapFont.PrepareImage;
+procedure TGLCustomBitmapFont.PrepareImage;
 var
    bitmap : TGLBitmap;
    bitmap32 : TGLBitmap32;
@@ -618,7 +668,7 @@ end;
 
 // PrepareParams
 //
-procedure TBitmapFont.PrepareParams;
+procedure TGLCustomBitmapFont.PrepareParams;
 const
 	cTextureMagFilter : array [maNearest..maLinear] of TGLEnum =
 							( GL_NEAREST, GL_LINEAR );
@@ -642,7 +692,7 @@ end;
 
 // RenderString
 //
-procedure TBitmapFont.RenderString(const aString : String; alignment : TAlignment;
+procedure TGLCustomBitmapFont.RenderString(const aString : String; alignment : TAlignment;
                                    layout : TTextLayout; const color : TColorVector; position : PVector = Nil);
 
    function AlignmentAdjustement(p : Integer) : Single;
@@ -682,7 +732,6 @@ var
    vTopLeft, vBottomRight : TVector;
    deltaH, deltaV : Single;
    vcurrentChar : Char;
-
 begin
    if (Glyphs.Width=0) or (aString='') then Exit;
    // prepare texture if necessary
@@ -701,10 +750,9 @@ begin
       FHandleIsDirty:=False;
    end;
    // precalcs
-   If assigned(position) then
+   if Assigned(position) then
       MakePoint(vTopLeft, position^[0]+AlignmentAdjustement(1),position^[1]+LayoutAdjustement, 0)
-   else
-      MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
+   else MakePoint(vTopLeft, AlignmentAdjustement(1),  LayoutAdjustement, 0);
    deltaV:=-(CharHeight+VSpace);
    // set states
 	glEnable(GL_TEXTURE_2D);
@@ -747,7 +795,7 @@ begin
             glTexCoord2f(bottomRight.S, topLeft.T);
             glVertex2f(vBottomRight[0], vTopLeft[1]);
          end;
-         vTopLeft[0]:=vTopLeft[0]+deltaH+HSpace;
+         vTopLeft[0]:=vTopLeft[0]+deltaH+HSpace+HSpaceFix;
       end;
    end;
    glEnd;
@@ -755,7 +803,7 @@ end;
 
 // CharactersPerRow
 //
-function TBitmapFont.CharactersPerRow : Integer;
+function TGLCustomBitmapFont.CharactersPerRow : Integer;
 begin
    if FGlyphs.Width>0 then
    	Result:=(FGlyphs.Width+FGlyphsIntervalX) div (FGlyphsIntervalX+FCharWidth)
@@ -764,7 +812,7 @@ end;
 
 // TileIndexToTexCoords
 //
-procedure TBitmapFont.TileIndexToTexCoords(tileIndex : Integer;
+procedure TGLCustomBitmapFont.TileIndexToTexCoords(tileIndex : Integer;
                                            var topLeft, bottomRight : TTexPoint;
                                            thisCharWidth : Single = -1);
 var
@@ -780,7 +828,7 @@ end;
 
 // InvalidateUsers
 //
-procedure TBitmapFont.InvalidateUsers;
+procedure TGLCustomBitmapFont.InvalidateUsers;
 var
    i : Integer;
 begin
@@ -788,12 +836,13 @@ begin
       TGLBaseSceneObject(FUsers[i]).NotifyChange(Self);
 end;
 
-procedure TBitmapFont.FreeTextureHandle;
-
-Begin
-  FTextureHandle.DestroyHandle;
-  FHandleIsDirty := True;
-End;
+// FreeTextureHandle
+//
+procedure TGLCustomBitmapFont.FreeTextureHandle;
+begin
+   FTextureHandle.DestroyHandle;
+   FHandleIsDirty := True;
+end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

@@ -57,7 +57,7 @@ type
 	THUDText = class (TGLImmaterialSceneObject)
 	   private
 	      { Private Declarations }
-         FBitmapFont : TBitmapFont;
+         FBitmapFont : TGLCustomBitmapFont;
          FText : String;
          FRotation : Single;
          FAlignment : TAlignment;
@@ -66,7 +66,7 @@ type
 
 	   protected
 	      { Protected Declarations }
-         procedure SetBitmapFont(const val : TBitmapFont);
+         procedure SetBitmapFont(const val : TGLCustomBitmapFont);
          procedure SetText(const val : String);
          procedure SetRotation(const val : Single);
          procedure SetAlignment(const val : TAlignment);
@@ -88,7 +88,7 @@ type
          {: Refers the bitmap font to use.<p>
             The referred bitmap font component stores and allows access to
             individual character bitmaps. }
-         property BitmapFont : TBitmapFont read FBitmapFont write SetBitmapFont;
+         property BitmapFont : TGLCustomBitmapFont read FBitmapFont write SetBitmapFont;
          {: Text to render.<p>
             Be aware that only the characters available in the bitmap font will
             be rendered. CR LF sequences are allowed. }
@@ -213,7 +213,7 @@ end;
 
 // SetBitmapFont
 //
-procedure THUDText.SetBitmapFont(const val : TBitmapFont);
+procedure THUDText.SetBitmapFont(const val : TGLCustomBitmapFont);
 begin
    if val<>FBitmapFont then begin
       if Assigned(FBitmapFont) then
