@@ -3,6 +3,7 @@
 	Lists of vectors<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>06/12/01 - EG - Added Sort & MaxInteger to TIntegerList
       <li>04/12/01 - EG - Added TIntegerList.IndexOf
       <li>18/08/01 - EG - Fixed TAffineVectorList.Add (list)
       <li>03/08/01 - EG - Added TIntegerList.AddSerie
@@ -261,6 +262,10 @@ type
          {: Adds count items in an arithmetic serie.<p>
             Items are (aBase), (aBase+aDelta) ... (aBase+(aCount-1)*aDelta) }
          procedure AddSerie(const aBase, aDelta, aCount : Integer);
+         {: Returns the maximum integer item, zero if list is empty. }
+         function MaxInteger : Integer;
+         {: Sort items in ascending order. }
+         procedure Sort;
 	end;
 
    TSingleArray = array [0..MaxInt shr 4] of Single;
@@ -1298,6 +1303,52 @@ begin
 			pop edi;
 		end;
 	end;
+end;
+
+// MaxInteger
+//
+function TIntegerList.MaxInteger : Integer;
+var
+   i : Integer;
+begin
+   if FCount>0 then begin
+      Result:=FList^[0];
+      for i:=1 to FCount-1 do
+         if FList^[i]>Result then Result:=FList^[i];
+   end else Result:=0;
+end;
+
+// IntegerQuickSort
+//
+procedure IntegerQuickSort(SortList: PIntegerArray; L, R: Integer);
+var
+	I, J: Integer;
+	P, T: integer;
+begin
+	repeat
+		I := L; J := R;
+		P := SortList^[(L + R) shr 1];
+		repeat
+			while SortList^[I] < P do Inc(I);
+			while SortList^[J] > P do Dec(J);
+			if I <= J then	begin
+				T := SortList^[I];
+				SortList^[I] := SortList^[J];
+				SortList^[J] := T;
+				Inc(I); Dec(J);
+			end;
+		until I > J;
+		if L < J then IntegerQuickSort(SortList, L, J);
+		L := I;
+	until I >= R;
+end;
+
+// Sort
+//
+procedure TIntegerList.Sort;
+begin
+	if (FList <> nil) and (Count > 1) then
+		IntegerQuickSort(FList, 0, Count - 1);
 end;
 
 // ------------------
