@@ -95,16 +95,26 @@ begin
 end;
 
 procedure TDXPPathsDialog.BBUpClick(Sender: TObject);
+var
+   i : Integer;
 begin
-   with LBPaths do
-      Items.Move(ItemIndex, ItemIndex-1);
+   with LBPaths do begin
+      i:=ItemIndex;
+      Items.Move(i, i-1);
+      ItemIndex:=i-1;
+   end;
    LBPathsClick(Self);
 end;
 
 procedure TDXPPathsDialog.BBDownClick(Sender: TObject);
+var
+   i : Integer;
 begin
-   with LBPaths do
-      Items.Move(ItemIndex, ItemIndex-1);
+   with LBPaths do begin
+      i:=ItemIndex;
+      Items.Move(i, i+1);
+      ItemIndex:=i+1;
+   end;
    LBPathsClick(Self);
 end;
 
