@@ -596,7 +596,6 @@ begin
    if (Result=nil) or (Assigned(Result) and (Result.FVirtualHandle.Handle=0)) then begin
       // no entry found, or entry was purged
       nbLists:=lastChar-firstChar+1;
-      nbLists:=lastChar-firstChar+1;
       if not Assigned(newEntry) then begin
          // no entry found, so create one
          New(NewEntry);

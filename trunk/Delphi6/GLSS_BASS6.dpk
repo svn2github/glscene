@@ -1,8 +1,8 @@
 package GLSS_BASS6;
 
-{$R *.RES}
+{$R *.res}
 {$R '..\Source\GLSMBASS.dcr'}
-{$ALIGN ON}
+{$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
 {$DEBUGINFO ON}

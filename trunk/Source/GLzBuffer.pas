@@ -122,10 +122,10 @@ type
     property DataInvIdx : TZArrayIdx read FDataIdx;
 
     procedure Refresh;
-    function FastScreenToVector(x,y :integer):TAffineVector;
-    function FastVectorToScreen(vec :TAffineVector):TAffineVector;
+    function FastScreenToVector(x,y : Integer):TAffineVector;
+    function FastVectorToScreen(vec : TAffineVector):TAffineVector;
 //    function PixelToWorld_OLD(x,y :integer):TAffineVector;
-    function PixelToWorld(const x,y :cardinal):TAffineVector;
+    function PixelToWorld(const x,y : Integer):TAffineVector;
     function WorldToPixel(const aPoint :TAffineVector;out pixX,pixY:integer;out pixZ:single):boolean;
     function WorldToPixelZ(const aPoint :TAffineVector;out pixX,pixY:integer;out pixZ:single):boolean; overload;
     function WorldToPixelZ(const aPoint :TAffineVector;out pixX,pixY:single;out pixZ:single):boolean;  overload;
@@ -505,10 +505,11 @@ begin
  result:=VectorCombine(campos,vec,1,wrpdst);
 end;
 }
-function TGLzBuffer.PixelToWorld(const x,y :Cardinal):TAffineVector;
-var z, dst :single;
-    fy :integer;
-    camvec :TVector;
+function TGLzBuffer.PixelToWorld(const x,y : Integer) : TAffineVector;
+var
+   z, dst :single;
+   fy :integer;
+   camvec :TVector;
 begin
 // if (Cardinal(x)<Cardinal(FWidth)) and (Cardinal(y)<Cardinal(FWidth)) then begin       //xres,yres?
  if (x<FWidth) and (y<FHeight) then begin
@@ -635,7 +636,7 @@ end;
 
 function TGLzBuffer.OrthWorldToPixelZ(const aPoint :TAffineVector;out pixX,pixY:single;out pixZ:single):boolean;
 var camPos :TVector;
-    x,y,z, invZ, v0,v1 ,zscal:single;
+    x,y,z:single;
 begin
    campos:=cam.AbsolutePosition;
    x:=apoint[0]-camPos[0];
