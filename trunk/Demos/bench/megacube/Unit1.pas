@@ -9,9 +9,11 @@
 
 	Size	 Triangles     FPS	    CPU      OpenGL     ColorDepth
 
+	  5      15972     139.3     K7-1145    GF2 Pro       32Bits
+   --- 26/01/02 --- XOpenGL flexes its muscles, more memory optimizations
 	  5      15972     110.4     K7-1145    GF2 Pro       32Bits
 	  5      15972      30.1     Du-800     TNT2 M64      32Bits
-   --- 24/01/02 --- Several structural optimizations (memory use & access)
+   --- 23/01/02 --- Several structural optimizations (memory use & access)
 	  5      15972      92.2     K7-1145    GF2 Pro       32Bits
    --- 20/01/02 --- Long time no bench, fair improvement though :)
 	  5      15972      80.1     K7-1066    GF2 Pro       32Bits
