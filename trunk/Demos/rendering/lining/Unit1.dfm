@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 224
-  Top = 145
+  Left = 234
+  Top = 131
   Width = 540
   Height = 353
   Caption = 'Lining Shaders'
@@ -19,6 +19,7 @@ object Form1: TForm1
     Width = 377
     Height = 326
     Camera = GLCamera1
+    Buffer.AntiAliasing = aa4xHQ
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -39,35 +40,35 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 17
-      Top = 178
+      Top = 194
       Width = 50
       Height = 13
       Caption = 'Drag with:'
     end
     object Label2: TLabel
       Left = 17
-      Top = 194
+      Top = 210
       Width = 123
       Height = 13
       Caption = 'LMB - move around scene'
     end
     object Label3: TLabel
       Left = 17
-      Top = 210
+      Top = 226
       Width = 89
       Height = 13
       Caption = 'RMB - rotate torus'
     end
     object Bevel1: TBevel
       Left = 11
-      Top = 170
+      Top = 186
       Width = 131
       Height = 9
       Shape = bsTopLine
     end
     object CheckBox1: TCheckBox
       Left = 9
-      Top = 138
+      Top = 154
       Width = 131
       Height = 17
       Caption = 'Outline Shader Enabled'
@@ -80,7 +81,7 @@ object Form1: TForm1
       Left = 9
       Top = 58
       Width = 137
-      Height = 73
+      Height = 87
       Caption = 'Shader on Torus'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
@@ -111,7 +112,7 @@ object Form1: TForm1
       end
       object CheckBox4: TCheckBox
         Left = 10
-        Top = 48
+        Top = 64
         Width = 113
         Height = 17
         Caption = 'Dotted Hidden Line'
@@ -119,6 +120,15 @@ object Form1: TForm1
         State = cbChecked
         TabOrder = 2
         OnClick = CheckBox4Click
+      end
+      object CheckBox5: TCheckBox
+        Left = 10
+        Top = 48
+        Width = 111
+        Height = 17
+        Caption = 'Surface Lit if Solid'
+        TabOrder = 3
+        OnClick = CheckBox5Click
       end
     end
     object Panel2: TPanel
@@ -144,8 +154,10 @@ object Form1: TForm1
     Left = 8
     Top = 8
     object GLLightSource1: TGLLightSource
+      Ambient.Color = {0000803F0000803F0000803F0000803F}
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {00002041000000410000E0400000803F}
+      Specular.Color = {0000803F0000803F0000803F0000803F}
       SpotCutOff = 180.000000000000000000
     end
     object Torus1: TGLTorus
@@ -216,8 +228,9 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'LibMaterial'
-        Material.FrontProperties.Ambient.Color = {9F9E1E3FCDCC4C3EE2E1613F0000803F}
+        Material.FrontProperties.Ambient.Color = {9190903D9190903D8786863E0000803F}
         Material.FrontProperties.Diffuse.Color = {9796163F0000803F0000803F0000803F}
+        Material.FrontProperties.Shininess = 128
         Tag = 0
         Shader = GLOutlineShader1
       end
@@ -228,6 +241,11 @@ object Form1: TForm1
       end
       item
         Name = 'LibMaterial2'
+        Material.FrontProperties.Ambient.Color = {C5C4443EBFBEBE3EB5B4343E0000803F}
+        Material.FrontProperties.Diffuse.Color = {0000803FEBEAEA3E8180803C0000803F}
+        Material.FrontProperties.Shininess = 128
+        Material.FrontProperties.Specular.Color = {0000803F0000803F0000803F0000803F}
+        Material.BlendingMode = bmTransparency
         Tag = 0
         Shader = GLHiddenLineShader2
       end
@@ -243,6 +261,8 @@ object Form1: TForm1
       end
       item
         Name = 'LibMaterial5'
+        Material.FrontProperties.Diffuse.Color = {9998183E9796163F9190103E17D92E3F}
+        Material.BlendingMode = bmTransparency
         Tag = 0
         Shader = GLHiddenLineShader5
       end>
@@ -275,6 +295,7 @@ object Form1: TForm1
     BackLine.Pattern = 65280
     LineSmooth = True
     BlendLine = True
+    SurfaceLit = False
     Left = 40
     Top = 40
   end
@@ -308,6 +329,7 @@ object Form1: TForm1
     BlendLine = True
     Solid = True
     BackgroundColor.Color = {938C0C3E938E0E3F938C0C3E3333333F}
+    SurfaceLit = False
     Left = 72
     Top = 40
   end
