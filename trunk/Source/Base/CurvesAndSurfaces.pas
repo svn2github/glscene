@@ -189,7 +189,7 @@ begin
   Vertices.Clear;
   Vertices.Count:=Steps;
   for i:=0 to Steps-1 do
-    Vertices[i]:=BSplinePoint(i/(Steps-1),ControlPoints.Count,Order+1,KnotVector.List,ControlPoints.List);
+    Vertices[i]:=BSplinePoint(i/(Steps-1),ControlPoints.Count,Order+1,@KnotVector.List[0],ControlPoints.List);
 end;
 
 procedure GenerateBSplineSurface(Steps, UOrder, VOrder, Width, Height : Integer; UKnotVector, VKnotVector : TSingleList; ControlPoints, Vertices : TAffineVectorList);
@@ -200,7 +200,7 @@ begin
   Vertices.Count:=Steps*Steps;
   for j:=0 to Steps-1 do
     for i:=0 to Steps-1 do
-      Vertices[i+j*Steps]:=BSplineSurfacePoint(i/(Steps-1),j/(Steps-1),Width,Height,UOrder+1,VOrder+1,UKnotVector.List,VKnotVector.List,ControlPoints.List);
+      Vertices[i+j*Steps]:=BSplineSurfacePoint(i/(Steps-1),j/(Steps-1),Width,Height,UOrder+1,VOrder+1,@UKnotVector.List[0],@VKnotVector.List[0],ControlPoints.List);
 end;
 
 procedure GenerateKnotVector(KnotVector : TSingleList; NumberOfPoints, Order : Integer; Continuity : TBSplineContinuity);
