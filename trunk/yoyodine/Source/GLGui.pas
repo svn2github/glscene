@@ -80,6 +80,7 @@ Type
     procedure SetName(const val : TGLGuiElementName);
   public
     constructor Create(Collection: TCollection); override;
+    procedure   AssignTo(Dest: TPersistent); override;
   published
     property TopLeft      : TGLCoordinates read FTopLeft       write FTopLeft;
     property BottomRight  : TGLCoordinates read FBottomRight   write FBottomRight;
@@ -98,6 +99,7 @@ Type
     function GetItems(index : Integer) : TGLGuiElement;
   public
     Constructor Create(AOwner : TGLGuiComponent);
+    procedure   AssignTo(Dest: TPersistent); override;
 
     function  GetOwner: TPersistent; override;
     property Items[index : Integer] : TGLGuiElement read GetItems write SetItems; default;
@@ -115,6 +117,7 @@ Type
     procedure SetName(const val : TGLGuiComponentName);
   public
     constructor Create(Collection: TCollection); override;
+    procedure   AssignTo(Dest: TPersistent); override;
     Procedure RenderToArea(X1,Y1,X2,Y2 : TGLFloat; Var Res : TGUIDrawResult; Refresh : Boolean = True; Scale : TGLFloat = 1);
     Function GetOwnerList : TGLGuiComponentList;
     property Owner : TGLGuiComponentList read GetOwnerList;
@@ -608,7 +611,6 @@ Var
   TexWidth,
   TexHeight   : TGLFloat;
   AlignCount  : TGUIAlignments;
-//  TmpElement  : TGLGuiElement;
 
 Procedure Prepare;
 
@@ -1074,6 +1076,43 @@ begin
    inherited;
 end;
 
+procedure TGLGuiComponent.AssignTo(Dest: TPersistent);
+begin
+   if Dest is TGLGuiComponent then
+   Begin
+     TGLGuiComponent(Dest).Elements.Assign(Elements);
+   End else inherited;
+end;
 
+procedure TGLGuiElementList.AssignTo(Dest: TPersistent);
+Var
+   i : Integer;
+   //element : TGLGuiElement;
+begin
+   if Dest is TGLGuiElementList then
+   Begin
+      for i := 0 to Count-1 do
+      Begin
+         TGLGuiElementList(Dest).Add.Assign(Items[i]);
+      End;
+   End else inherited;
+end;
+
+procedure TGLGuiElement.AssignTo(Dest: TPersistent);
+Var
+   //i : Integer;
+   element : TGLGuiElement;
+begin
+   if Dest is TGLGuiElement then
+   Begin
+      element := TGLGuiElement(Dest);
+
+      element.TopLeft.Assign(TopLeft);
+      element.BottomRight.Assign(BottomRight);
+      element.Scale.Assign(Scale);
+      element.Align := Align;
+      element.Name  := Name;
+   End else inherited;
+end;
 
 end.

@@ -76,6 +76,8 @@ procedure xglPopState;
 procedure xglForbidSecondTextureUnit;
 {: Allow XOpenGL to use the second texture unit again. } 
 procedure xglAllowSecondTextureUnit;
+{: Returns the complex mapping in bitwise form. }
+function xglGetBitWiseMapping : Cardinal;
 
 {$ifdef MULTITHREADOPENGL}
 threadvar
@@ -810,6 +812,16 @@ end;
 //
 procedure xglMapTexCoordToArbitraryAdd(const bitWiseUnits : Cardinal);
 var
+   n : Cardinal;
+begin
+   n:=xglGetBitWiseMapping;
+   xglMapTexCoordToArbitrary(n or bitWiseUnits);
+end;
+
+// xglGetBitWiseMapping
+//
+function xglGetBitWiseMapping : Cardinal;
+var
    i, n : Cardinal;
    mode : TMapTexCoordMode;
 begin
@@ -828,7 +840,7 @@ begin
    else
       Assert(False);
    end;
-   xglMapTexCoordToArbitrary(n or bitWiseUnits);
+   Result:=n;
 end;
 
 // ------------------------------------------------------------------

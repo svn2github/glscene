@@ -8,6 +8,8 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>06/10/04 - NC - Now uses GL_TEXTURE_RECTANGLE_NV for all float texture types 
+      <li>04/10/04 - NC - Added support for float texture
       <li>05/09/03 - EG - Added TGLBitmap32.DownSampleByFactor2
       <li>04/07/03 - EG - Added RGBA brightness/gamma correction support
       <li>13/05/03 - EG - Added GrayScaleToNormalMap
@@ -985,11 +987,19 @@ procedure TGLBitmap32.RegisterAsOpenGLTexture(target : TGLUInt;
                                               minFilter : TGLMinFilter;
                                               texFormat : Integer;
                                               var texWidth, texHeight : Integer);
+  function IsFloat(texFormat : Integer) : boolean;
+  // Currently only support 16bit and 32bit RGBA formats
+  // NV and ATI float types would later be replaced by ARB float types
+  begin
+   result:=(texFormat=GL_FLOAT_RGBA16_NV) or (texFormat=GL_FLOAT_RGBA32_NV) or
+           (texFormat=GL_RGBA_FLOAT16_ATI) or (texFormat=GL_RGBA_FLOAT32_ATI);
+  end;
+
 var
    w2, h2, maxSize : Integer;
    buffer : Pointer;
 begin
-   if DataSize>0 then begin
+   if (DataSize>0) then begin
       w2:=RoundUpToPowerOf2(Width);
       h2:=RoundUpToPowerOf2(Height);
       glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
@@ -997,12 +1007,30 @@ begin
       if h2>maxSize then h2:=maxSize;
       texWidth:=w2;
       texHeight:=h2;
+
+      if not IsFloat(texFormat) then begin // Non-power-of-two for float_type
       if (w2<>Width) or (h2<>Height) then begin
          GetMem(buffer, w2*h2*4);
          gluScaleImage(GL_RGBA, Width, Height, GL_UNSIGNED_BYTE, Data, w2, h2,
                        GL_UNSIGNED_BYTE, buffer);
-      end else buffer:=Pointer(FData);
+          end
+        else
+          buffer:=Pointer(FData);
+        end
+      else
+        buffer:=Pointer(FData);
+
       try
+        if IsFloat(texFormat) then begin // float_type
+         // Note: see note in TGLFloatDataImage.NativeTextureTarget
+//            if GL_ATI_texture_float then
+//              assert(target=GL_TEXTURE_2D, 'ATI Float-type texture must use GL_TEXTURE_2D')
+//            else
+              assert(target=GL_TEXTURE_RECTANGLE_NV, 'NV Float-type texture must use GL_TEXTURE_RECTANGLE_NV');
+            // currently doesn't support
+        		glTexImage2d( target, 0, texFormat, w2, h2, 0, GL_RGBA, GL_FLOAT, nil)
+          end
+        else
    		case minFilter of
 			   miNearest, miLinear :
 		   		glTexImage2d(target, 0, texFormat, w2, h2, 0,

@@ -8,6 +8,7 @@
    TODO: move the many public vars/fields to private/protected<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public	
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
       <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
@@ -61,7 +62,6 @@ type
 {$ifdef DEBUG}
          intersections: integer;    //for debugging  - number of triangles intersecting an AABB plane
 {$endif}
-         triangleFiler : TAffineVectorList;
 
       protected
          { Protected Declarations }
@@ -88,7 +88,6 @@ type
          //Main "walking" routines.  Walks the item through the Octree down to a leaf node.
          procedure WalkPointToLeaf(ONode: POctreeNode; const p : TAffineVector);
          procedure WalkTriToLeaf(Onode: POctreeNode; const v1, v2, v3 : TAffineVector);
-         procedure WalkSphereToLeaf(Onode: POctreeNode; const p : TVector; radius : Single);
          procedure WalkRayToLeaf(Onode: POctreeNode; const p, v : TVector);
 
          //: Example of how to process each node in the tree
@@ -108,6 +107,10 @@ type
          MeshCount : Integer;  //number of meshes currently cut into the Octree
 
          ResultArray : array of POctreeNode;  //holds the result nodes of various calls
+
+         {19/06/2004 - Lucas G. - Needed this change - Used in ECMisc.pas}
+         triangleFiler : TAffineVectorList;
+         procedure WalkSphereToLeaf(Onode: POctreeNode; const p : TVector; radius : Single);
 
          {: Initializes the tree from the triangle list.<p>
             All triangles must be contained in the world extent to be properly
@@ -914,7 +917,7 @@ end;
 
 // PointInNode
 //
-function TOctree.PointInNode(const min, max, aPoint: TAffineFLTVector) : Boolean;
+function TOctree.PointInNode(const min, max, aPoint: TAffineFLTVector) : BOOLEAN;
 begin
    Result:=(aPoint.Coord[0]>=min.Coord[0]) and (aPoint.Coord[1]>=min.Coord[1]) and (aPoint.Coord[2]>=min.Coord[2])
            and (aPoint.Coord[0]<=max.Coord[0]) and (aPoint.Coord[1]<=max.Coord[1]) and (aPoint.Coord[2]<=max.Coord[2]);

@@ -7,17 +7,22 @@
    for Delphi.<p>
    
    Note:<br>
-   Does not support DXTC compression and only the main
-   surface is loaded (mipmap levels, volume textures and
-   cubic environment maps are currently ignored).<p>
+   Only the main surface is loaded (mipmap levels, volume 
+   textures and cubic environment maps are currently 
+   ignored). Saves out to 24 or 32 bit uncompressed only.<p>
 
    Supported pixel formats:<ul>
       <li>16 bit (565, 1555, 4444)
       <li>24 bit (888)
       <li>32 bit (8888)
+      <li>DXT1 (alpha and color)
+      <li>DXT3
+      <li>DXT5
    </ul>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/09/04 - SG - Delphi 5 compatibilty fixes (Ivan Lee Herring)
+      <li>01/09/04 - SG - Added support for DXTC compression (DXT1, DXT3 and DXT5)
       <li>31/08/04 - SG - Added support for 16 bit textures,
                           it should support most uncompressed files now
       <li>31/08/04 - SG - Creation
@@ -29,7 +34,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, SysUtils, GLCrossPlatform;
+uses Classes, SysUtils, GLCrossPlatform, VectorGeometry, DXTC;
 
 type
 
@@ -118,13 +123,11 @@ type
 
    TFOURCC = array[0..3] of char;
 
-// ------------------
-// ------------------ TDDSImage ------------------
-// ------------------
+const
+   FOURCC_DXT1 = $31545844; // 'DXT1'
+   FOURCC_DXT3 = $33545844; // 'DXT3'
+   FOURCC_DXT5 = $35545844; // 'DXT5'
 
-// LoadFromStream
-//
-procedure TDDSImage.LoadFromStream(stream : TStream);
 
    function GetBitsFromMask(Mask : Cardinal) : Byte;
    var
@@ -134,7 +137,6 @@ procedure TDDSImage.LoadFromStream(stream : TStream);
         Result:=0;
         exit;
       end;
-
       temp:=Mask;
       for i:=0 to 31 do begin
          if (Temp and 1) = 1 then
@@ -144,72 +146,94 @@ procedure TDDSImage.LoadFromStream(stream : TStream);
       Result:=i;
    end;
 
+
+// ------------------
+// ------------------ TDDSImage ------------------
+// ------------------
+
+// LoadFromStream
+//
+procedure TDDSImage.LoadFromStream(stream : TStream);
 var
    header : TDDSHeader;
    i, j, rowSize, ddsPixelSize, imgPixelSize : Integer;
-   buf : PByteArray;
+   buf, decoded : PByteArray;
    col : PCardinal;
    RedShift, RedMult,
    GreenShift, GreenMult,
    BlueShift, BlueMult,
    AlphaShift, AlphaMult : Byte;
+   trans : Boolean;
 begin
    stream.Read(header, Sizeof(TDDSHeader));
+
+   if TFOURCC(header.Magic) <> 'DDS ' then
+      raise EDDSException.Create('Invalid DDS file');
 
    with header.SurfaceFormat do begin
       if (ddsCaps.dwCaps1 and DDSCAPS_TEXTURE)=0 then
          raise EDDSException.Create('Unsupported DDSCAPS settings');
-      if (ddpfPixelFormat.dwFlags and DDPF_FOURCC)>0 then
-         raise EDDSException.Create('DXTC compression is not yet supported');
 
-      case ddpfPixelFormat.dwRGBBitCount of
-         16 : begin
-            if (ddpfPixelFormat.dwFlags and DDPF_ALPHAPIXELS)>0 then begin
+      PixelFormat:=glpf32bit;
+      if (ddpfPixelFormat.dwFlags and DDPF_ALPHAPIXELS)>0 then
                Transparent:=True;
-               PixelFormat:=glpf32bit;
-            end else begin
-               Transparent:=False;
-               PixelFormat:=glpf24bit;
-            end;
-         end;
-         24 : PixelFormat:=glpf24bit;
-         32 : begin
-            PixelFormat:=glpf32bit;
-            if (ddpfPixelFormat.dwFlags and DDPF_ALPHAPIXELS)>0 then begin
-               Transparent:=True;
-               PixelFormat:=glpf32bit;
-            end else begin
-               Transparent:=False;
-               PixelFormat:=glpf24bit;
-            end;
-         end;
-      else
-         raise EDDSException.Create('Unsupported DDS pixel format');
-      end;
-
-      case PixelFormat of
-         {$IFDEF MSWINDOWS}
-         glpf24bit : imgPixelSize:=3;
-         {$ENDIF}
-         glpf32bit : imgPixelSize:=4;
-      end;
 
       Width:=dwWidth;
       Height:=dwHeight;
 
+      if (ddpfPixelFormat.dwFlags and DDPF_FOURCC)>0 then begin
+         GetMem(buf, dwPitchOrLinearSize);
+         GetMem(decoded, Width*Height*4);
+         Stream.Read(buf[0], dwPitchOrLinearSize);
+         try
+            case ddpfPixelFormat.dwFourCC of
+               FOURCC_DXT1 : begin
+                  DecodeDXT1toBitmap32(buf, decoded, Width, Height, trans);
+                  Transparent:=trans;
+            end;
+               FOURCC_DXT3 : begin
+                  DecodeDXT3toBitmap32(buf, decoded, Width, Height);
+                  Transparent:=True;
+         end;
+               FOURCC_DXT5 : begin
+                  DecodeDXT5toBitmap32(buf, decoded, Width, Height);
+               Transparent:=True;
+         end;
+      else
+               raise EDDSException.CreateFmt('Unsupported compression type: %s',[TFOURCC(ddpfPixelFormat.dwFourCC)]);
+      end;
+            for j:=0 to Height-1 do
+               System.Move(decoded[4*j*Width], PCardinal(ScanLine[j])^, Width*4);
+         finally
+            FreeMem(decoded);
+            FreeMem(buf);
+      end;
+      end else begin
+         imgPixelSize:=4;
       ddsPixelSize:=(ddpfPixelFormat.dwRGBBitCount div 8);
-      rowSize:=ddsPixelSize*dwWidth;
+         rowSize:=ddsPixelSize*Integer(dwWidth);
 
       RedShift:=GetBitsFromMask(ddpfPixelFormat.dwRBitMask);
       GreenShift:=GetBitsFromMask(ddpfPixelFormat.dwGBitMask);
       BlueShift:=GetBitsFromMask(ddpfPixelFormat.dwBBitMask);
       if Transparent then
-         AlphaShift:=GetBitsFromMask(ddpfPixelFormat.dwRGBAlphaBitMask);
+            AlphaShift:=GetBitsFromMask(ddpfPixelFormat.dwRGBAlphaBitMask)
+         else
+            AlphaShift:=0;
 
+         RedMult:=1;
+         GreenMult:=1;
+         BlueMult:=1;
+         AlphaMult:=1;
+
+         if (ddpfPixelFormat.dwRBitMask shr RedShift)>0 then
       RedMult  :=255 div (ddpfPixelFormat.dwRBitMask shr RedShift);
+         if (ddpfPixelFormat.dwGBitMask shr GreenShift)>0 then
       GreenMult:=255 div (ddpfPixelFormat.dwGBitMask shr GreenShift);
+         if (ddpfPixelFormat.dwBBitMask shr BlueShift)>0 then
       BlueMult :=255 div(ddpfPixelFormat.dwBBitMask shr BlueShift);
       if Transparent then
+            if (ddpfPixelFormat.dwRGBAlphaBitMask shr AlphaShift)>0 then
          AlphaMult:=255 div (ddpfPixelFormat.dwRGBAlphaBitMask shr AlphaShift);
 
       GetMem(buf, rowSize);
@@ -231,15 +255,19 @@ begin
       FreeMem(buf);
    end;
 end;
+end;
 
 // SaveToStream
 //
 procedure TDDSImage.SaveToStream(stream : TStream);
 var
+   magic : TFOURCC;
    header : TDDSHeader;
    i, rowSize : Integer;
 begin
    FillChar(header, SizeOf(TDDSHeader), 0);
+   magic:='DDS ';
+   header.magic:=Cardinal(magic);
    with header.SurfaceFormat do begin
       dwSize:=124;
       dwFlags:=DDSD_CAPS +

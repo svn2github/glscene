@@ -166,6 +166,10 @@ const
 
 {$i GLScene.inc}
 
+// define for turning off assembly routines in this unit
+// *experimental* and incomplete
+{.$define GEOMETRY_NO_ASM}
+
 type
    // data types needed for 3D graphics calculation,
    // included are 'C like' aliases for each type (to be
@@ -174,6 +178,7 @@ type
    PByte = ^Byte;
    PWord = ^Word;
    PInteger = ^Integer;
+   PCardinal = ^Cardinal;
    PSingle = ^Single;
    PDouble = ^Double;
    PExtended = ^Extended;
@@ -290,9 +295,8 @@ type
    PVertex    = ^TVertex;
 	TVertex    = TAffineVector;
 
-   // arrays of vectors
-	PTexPointArray = ^TTexPointArray;
-	TTexPointArray = array [0..MaxInt shr 4] of TTexPoint;
+   PTexPointArray = ^TTexPointArray;
+   TTexPointArray = array [0..MaxInt shr 4] of TTexPoint;
 
    // matrices
    THomogeneousByteMatrix = array[0..3] of THomogeneousByteVector;
@@ -1369,9 +1373,6 @@ var
    // + 2 : use Intel SSE code (Pentium III, NOT IMPLEMENTED YET !)
    vSIMD : Byte = 0;
 
-// define for turning off assembly routines in this unit
-// *experimental* and incomplete
-{.$define GEOMETRY_NO_ASM}
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------

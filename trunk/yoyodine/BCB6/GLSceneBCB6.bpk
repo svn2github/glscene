@@ -91,7 +91,11 @@
       ..\Source\GLFeedback.obj ..\Source\GLAnimatedSprite.obj 
       ..\Source\Base\VerletHairClasses.obj ..\Source\GLVerletClasses.obj 
       ..\Source\GLGLUTesselation.obj ..\Source\GLMeshBuilder.obj
-      ..\Source\FileFormats\DDS.obj"/>
+      ..\Source\FileFormats\DDS.obj ..\Source\FileFormats\DXTC.pas
+      ..\Source\GLMaterialScript.pas ..\Source\GLDCEMisc.pas
+      ..\Source\GLEllipseCollision.pas ..\Source\GLDCE.pas
+      ..\Source\GLProjectedTextures.pas ..\Source\GLBlur.pas
+      ..\Source\GLPerlinBase.pas ..\Source\GLPerlin.pas"/>
     <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
       ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
     <IDLFILES value=""/>
@@ -321,6 +325,15 @@
       <FILE FILENAME="..\Source\GLGLUTesselation.pas" FORMNAME="" UNITNAME="GLGLUTesselation" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLMeshBuilder.pas" FORMNAME="" UNITNAME="GLMeshBuilder" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\FileFormats\DDS.pas" FORMNAME="" UNITNAME="DDS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\DXTC.pas" FORMNAME="" UNITNAME="DXTC" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMaterialScript.pas" FORMNAME="" UNITNAME="GLMaterialScript" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLDCEMisc.pas" FORMNAME="" UNITNAME="GLDCEMisc" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLEllipseCollision.pas" FORMNAME="" UNITNAME="GLEllipseCollision" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLDCE.pas" FORMNAME="" UNITNAME="GLDCE" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLProjectedTextures.pas" FORMNAME="" UNITNAME="GLProjectedTextures" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLBlur.pas" FORMNAME="" UNITNAME="GLBlur" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLPerlinBase.pas" FORMNAME="" UNITNAME="GLPerlinBase" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLPerlin.pas" FORMNAME="" UNITNAME="GLPerlin" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
   </FILELIST>
   <BUILDTOOLS>
   </BUILDTOOLS>

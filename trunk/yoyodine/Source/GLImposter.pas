@@ -20,8 +20,6 @@ uses
   Classes, GLScene, GLContext, GLTexture, VectorTypes, VectorGeometry,
   GeometryBB, GLMisc, PersistentClasses, GLCrossPlatform, GLGraphics;
 
-{$i GLScene.inc}
-
 type
    // TImposterOptions
    //
@@ -55,7 +53,9 @@ type
    {: Base class for imposters manipulation and handling.<br>
       Rendering imposters is performed by three methods, BeginRender must
       be invoked first, then Render for each of the impostr
-      This class assumes a single impostor per texture. }
+      This class assumes a single impostor per texture. 
+      
+      Note: Remeber to enable Destination Alpha on your viewer.}
    TImposter = class (TObject)
       private
 	      { Private Declarations }

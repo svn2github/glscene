@@ -4,6 +4,7 @@
    and shade definition texture.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/09/04 - SG - Vertex program now uses ARB_position_invariant option.
       <li>09/06/04 - SG - Added OutlineColor, vertex programs now use GL state.
       <li>28/05/04 - SG - Creation.
    </ul></font>
@@ -83,17 +84,12 @@ implementation
 const
    cDotToTex1DVertexProgram =
       '!!ARBvp1.0'+#13#10+
-      'PARAM mvproj[4] = { state.matrix.mvp };'+#13#10+
+      'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+#13#10+
       'PARAM mv[4] = { state.matrix.modelview };'+#13#10+
       'PARAM lightPos = state.light[0].position;'+#13#10+
       'PARAM diffuse = state.material.diffuse;'+#13#10+
       'TEMP R0, light, norm;'+#13#10+
-
-      '   DP4 result.position.x, mvproj[0], vertex.position;'+#13#10+
-      '   DP4 result.position.y, mvproj[1], vertex.position;'+#13#10+
-      '   DP4 result.position.z, mvproj[2], vertex.position;'+#13#10+
-      '   DP4 result.position.w, mvproj[3], vertex.position;'+#13#10+
 
       '   MOV result.color, diffuse;'+#13#10+
 
@@ -118,16 +114,11 @@ const
 
    cDotToTex1DVertexProgramWithTexture =
       '!!ARBvp1.0'+#13#10+
-      'PARAM mvproj[4] = { state.matrix.mvp };'+#13#10+
+      'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvit[4] = { state.matrix.modelview.invtrans };'+#13#10+
       'PARAM mv[4] = { state.matrix.modelview };'+#13#10+
       'PARAM lightPos = state.light[0].position;'+#13#10+
       'TEMP R0, light, norm;'+#13#10+
-
-      '   DP4 result.position.x, mvproj[0], vertex.position;'+#13#10+
-      '   DP4 result.position.y, mvproj[1], vertex.position;'+#13#10+
-      '   DP4 result.position.z, mvproj[2], vertex.position;'+#13#10+
-      '   DP4 result.position.w, mvproj[3], vertex.position;'+#13#10+
 
       '   MOV result.texcoord[0], vertex.texcoord[0];'+#13#10+
 
@@ -250,10 +241,8 @@ procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
       errPos : Integer;
       errString : String;
    begin
-      if not GL_ARB_vertex_program then begin
-         Exception.Create('GL_ARB_vertex_program required!');
-         Exit;
-      end;
+      if not GL_ARB_vertex_program then
+         raise Exception.Create('GL_ARB_vertex_program required!');
       glGenProgramsARB(1, @VPHandle);
       glBindProgramARB(GL_VERTEX_PROGRAM_ARB,VPHandle);
       glProgramStringARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_FORMAT_ASCII_ARB,

@@ -132,17 +132,10 @@ Type
     Procedure Execute; override;
   end;
 
-procedure Register;
-
 implementation
 
 type
    PSmallInt = ^SmallInt;
-
-procedure Register;
-begin
-  RegisterComponents('GLScene',[TGLPerlinHDS]);
-end;
 
 function TGLBasePerlin.PerlinNoise_1D(x : Double) : Double;
 
@@ -728,5 +721,8 @@ Procedure TGLPerlinHDSThread.OpdateOutSide;
 Begin
 End;
 
+initialization
+
+  RegisterClasses([TGLPerlinHDS]);
 
 end.

@@ -2,6 +2,8 @@
 {: A plane simulating animated water<p>
 
 	<b>History : </b><font size=-1><ul>
+
+      <li>22/09/04 - R.Cao - Added AxisAlignedDimensionsUnscaled to fix visibility culling	
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array         
       <li>02/04/03 - EG - More optimizations, mask support
       <li>01/04/03 - EG - Cleanup and optimizations
@@ -85,6 +87,8 @@ type
          procedure DoProgress(const progressTime : TProgressTimes); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
          procedure Assign(Source: TPersistent); override;
+         function AxisAlignedDimensionsUnscaled : TVector; override;
+
          
          procedure CreateRippleAtGridPos(X,Y:integer);
          procedure CreateRippleAtWorldPos(const x, y, z : Single); overload;
@@ -490,6 +494,16 @@ begin
    inherited Assign(Source);
 end;
 
+// AxisAlignedDimensionsUnscaled
+//
+function TGLWaterPlane.AxisAlignedDimensionsUnscaled : TVector;
+begin
+  Result.Coord[0]:=0.5*Abs(Resolution);
+  Result.Coord[1]:=0;
+  Result.Coord[2]:=0.5*Abs(FResolution);
+end;
+
+
 // SetElastic
 //
 procedure TGLWaterPlane.SetElastic(const Value: single);
@@ -571,6 +585,7 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
+
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------

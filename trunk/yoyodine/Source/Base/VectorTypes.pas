@@ -156,7 +156,7 @@ type
       1 : (M : TMatrix4f);
   end;
 
-
+  // arrays of vectors
   PAffineVectorArray = ^TAffineVectorArray;
   TAffineVectorArray = array[0..MAXINT shr 4] of TVector3f;
 
