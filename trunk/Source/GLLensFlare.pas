@@ -2,6 +2,8 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>15/04/04 - EG - Texture-based Lens-flare moved to GLTexLensFlare,
+                          replaced gradient arrays with design-time editable colors 
       <li>25/09/03 - EG - Increased occlusion testing robustness
       <li>20/09/03 - EG - Can now use occlusion testing/query for AutoZTest
       <li>19/09/03 - EG - Misc. cleanup, added PreRender
@@ -34,17 +36,39 @@ type
    {: The actual gradients between two colors are, of course, calculated by OpenGL.<p>
       The start and end colors of a gradient are stored to represent the color of
       lens flare elements. }
-   TGradient = record
-      CFrom, CTo: TColorVector;
+   TGLFlareGradient = class (TGLUpdateAbleObject)
+      private
+         { Private Declarations }
+         FFromColor : TGLColor;
+         FToColor : TGLColor;
+
+      protected
+         { Protected Declarations }
+         procedure SetFromColor(const val : TGLColor);
+         procedure SetToColor(const val : TGLColor);
+
+      public
+         { Public Declarations }
+         constructor Create(AOwner: TPersistent); override;
+         constructor CreateInitialized(AOwner: TPersistent;
+                                       const fromColor, toColor : TColorVector);
+         destructor Destroy; override;
+			procedure Assign(Source: TPersistent); override;
+
+      published
+         { Public Declarations }
+         property FromColor : TGLColor read FFromColor write SetFromColor;
+         property ToColor : TGLColor read FToColor write SetToColor;
    end;
 
 const
    cDefaultFlareElements = [feGlow, feRing, feStreaks, feRays, feSecondaries];
 
 type
+
    // TGLLensFlare
    //
-  TGLLensFlare = class(TGLBaseSceneObject)
+   TGLLensFlare = class(TGLBaseSceneObject)
       private
          { Private Declarations }
          FSize        : Integer;
@@ -63,9 +87,19 @@ type
          FTexRays : TGLTextureHandle;
          FFlareIsNotOccluded : Boolean;
          FOcclusionQuery : TGLOcclusionQueryHandle;
+         FGlowGradient : TGLFlareGradient;
+         FRingGradient : TGLFlareGradient;
+         FStreaksGradient : TGLFlareGradient;
+         FRaysGradient : TGLFlareGradient;
+         FSecondariesGradient : TGLFlareGradient;
 
       protected
          { Protected Declarations }
+         procedure SetGlowGradient(const val : TGLFlareGradient);
+         procedure SetRingGradient(const val : TGLFlareGradient);
+         procedure SetStreaksGradient(const val : TGLFlareGradient);
+         procedure SetRaysGradient(const val : TGLFlareGradient);
+         procedure SetSecondariesGradient(const val : TGLFlareGradient);
          procedure SetSize(aValue : Integer);
          procedure SetSeed(aValue : Integer);
          procedure SetSqueeze(aValue : Single);
@@ -85,7 +119,6 @@ type
 
       public
          { Public Declarations }
-         Gradients: array [TFlareElement] of TGradient;  // And what color should they have?
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
@@ -103,9 +136,15 @@ type
             If false the flare will fade away, if true, it will fade in and stay.
             This value is automatically updated if AutoZTest is set. }
          property FlareIsNotOccluded : Boolean read FFlareIsNotOccluded write FFlareIsNotOccluded;
-         
+
       published
          { Public Declarations }
+         property GlowGradient : TGLFlareGradient read FGlowGradient write SetGlowGradient;
+         property RingGradient : TGLFlareGradient read FRingGradient;
+         property StreaksGradient : TGLFlareGradient read FStreaksGradient;
+         property RaysGradient : TGLFlareGradient read FRaysGradient;
+         property SecondariesGradient : TGLFlareGradient read FSecondariesGradient;
+
          //: MaxRadius of the flare.
          property Size : Integer read FSize write SetSize default 50;
          //: Random seed
@@ -135,64 +174,6 @@ type
          property Effects;
    end;
 
-   // TGLTextureLensFlare
-   //
-   TGLTextureLensFlare = class(TGLBaseSceneObject)
-      private
-         { Private Declarations }
-         FSize: integer;
-         FCurrSize: Single;
-         FNumSecs: integer;
-         FAutoZTest: boolean;
-         //used for internal calculation
-         FDeltaTime : Double;
-         FImgSecondaries: TGLTexture;
-         FImgRays: TGLTexture;
-         FImgRing: TGLTexture;
-         FImgGlow: TGLTexture;
-         FSeed: Integer;
-         procedure SetImgGlow(const Value: TGLTexture);
-         procedure SetImgRays(const Value: TGLTexture);
-         procedure SetImgRing(const Value: TGLTexture);
-         procedure SetImgSecondaries(const Value: TGLTexture);
-         procedure SetSeed(const Value: Integer);
-      protected
-         { Protected Declarations }
-         procedure SetSize(aValue: integer);
-         procedure SetNumSecs(aValue: integer);
-         procedure SetAutoZTest(aValue: boolean);
-      public
-         { Public Declarations }    
-         constructor Create(AOwner: TComponent); override;
-         destructor Destroy; override;
-         procedure BuildList(var rci: TRenderContextInfo); override;
-         procedure DoProgress(const progressTime : TProgressTimes); override;
-      published
-         { Public Declarations }
-         //: MaxRadius of the flare.
-         property Size: integer read FSize write SetSize default 50;
-         //: Random seed
-         property Seed : Integer read FSeed write SetSeed;
-         //: Number of secondary flares.
-         property NumSecs: integer read FNumSecs write SetNumSecs default 8;
-         //: Number of segments used when rendering circles.
-         //property Resolution: integer read FResolution write SetResolution default 64;
-         property AutoZTest: boolean read FAutoZTest write SetAutoZTest default True;
-         // The Textures
-         property ImgGlow: TGLTexture read FImgGlow write SetImgGlow;
-         property ImgRays: TGLTexture read FImgRays write SetImgRays;
-         property ImgRing: TGLTexture read FImgRing write SetImgRing;
-         property ImgSecondaries: TGLTexture read FImgSecondaries write SetImgSecondaries;
-
-         property ObjectsSorting;
-         property Position;
-         property Visible;
-         property OnProgress;
-         property Behaviours;
-         property Effects;
-   end;
-
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -204,20 +185,69 @@ implementation
 uses GLUtils;
 
 // ------------------
-// ------------------ TLensFlare ------------------
+// ------------------ TGLFlareGradient ------------------
 // ------------------
 
+// Create
+//
+constructor TGLFlareGradient.Create(AOwner: TPersistent);
+begin
+	inherited;
+   FFromColor:=TGLColor.Create(Self);
+   FToColor:=TGLColor.Create(Self);
+end;
+
+// CreateInitialized
+//
+constructor TGLFlareGradient.CreateInitialized(AOwner: TPersistent;
+                                       const fromColor, toColor : TColorVector);
+begin
+   Create(AOwner);
+   FFromColor.Initialize(fromColor);
+   FToColor.Initialize(toColor);
+end;
+
+// Destroy
+//
+destructor TGLFlareGradient.Destroy;
+begin
+   FToColor.Free;
+   FFromColor.Free;
+   inherited;
+end;
+
+// Assign
+//
+procedure TGLFlareGradient.Assign(Source: TPersistent);
+begin
+   if Source is TGLFlareGradient then begin
+      FromColor:=TGLFlareGradient(Source).FromColor;
+      ToColor:=TGLFlareGradient(Source).ToColor;
+   end;
+   inherited;
+end;
+
+// SetFromColor
+//
+procedure TGLFlareGradient.SetFromColor(const val : TGLColor);
+begin
+   FFromColor.Assign(val);
+end;
+
+// SetToColor
+//
+procedure TGLFlareGradient.SetToColor(const val : TGLColor);
+begin
+   FToColor.Assign(val);
+end;
+
+// ------------------
+// ------------------ TGLLensFlare ------------------
+// ------------------
+
+// Create
+//
 constructor TGLLensFlare.Create;
-
-    function lfGradient(c1, c2: TColorVector): TGradient;
-    begin
-      with Result do
-      begin
-        CFrom := c1;
-        CTo := c2;
-      end;
-    end;
-
 begin
   inherited;
   // Set default parameters:
@@ -236,12 +266,16 @@ begin
   // Render all elements by default.
   FElements := [feGlow, feRing, feStreaks, feRays, feSecondaries];
   // Setup default gradients:
-  Gradients[feGlow] := lfGradient(VectorMake(1, 1, 0.8, 0.3), VectorMake(1, 0.2, 0, 0));
-  Gradients[feRing] := lfGradient(VectorMake(0.5, 0.2, 0, 0.1), VectorMake(0.5, 0.4, 0, 0.1));
-  Gradients[feStreaks] := lfGradient(VectorMake(1, 1, 1, 0.2), VectorMake(0.2, 0, 1, 0));
-  Gradients[feRays] := lfGradient(VectorMake(1, 0.8, 0.5, 0.05), VectorMake(0.5, 0.2, 0, 0));
-  Gradients[feSecondaries] := lfGradient(VectorMake(0.5, 0.5, 0.5, 0.5), VectorMake(0.5, 0.5, 0.5, 0.5));
-  Gradients[feSecondaries] := lfGradient(VectorMake(0, 0.2, 1, 0), VectorMake(0, 0.8, 0.2, 0.15));
+  FGlowGradient:=TGLFlareGradient.CreateInitialized(Self,
+                           VectorMake(1, 1, 0.8, 0.3), VectorMake(1, 0.2, 0, 0));
+  FRingGradient:=TGLFlareGradient.CreateInitialized(Self,
+                           VectorMake(0.5, 0.2, 0, 0.1), VectorMake(0.5, 0.4, 0, 0.1));
+  FStreaksGradient:=TGLFlareGradient.CreateInitialized(Self,
+                           VectorMake(1, 1, 1, 0.2), VectorMake(0.2, 0, 1, 0));
+  FRaysGradient:=TGLFlareGradient.CreateInitialized(Self,
+                           VectorMake(1, 0.8, 0.5, 0.05), VectorMake(0.5, 0.2, 0, 0));
+  FSecondariesGradient:=TGLFlareGradient.CreateInitialized(Self,
+                           VectorMake(0, 0.2, 1, 0), VectorMake(0, 0.8, 0.2, 0.15));
 
   FTexRays:=TGLTextureHandle.Create;
 end;
@@ -250,96 +284,14 @@ end;
 //
 destructor TGLLensFlare.Destroy;
 begin
+   FGlowGradient.Free;
+   FRingGradient.Free;
+   FStreaksGradient.Free;
+   FRaysGradient.Free;
+   FSecondariesGradient.Free;
    FOcclusionQuery.Free;
    FTexRays.Free;
    inherited;
-end;
-
-
-procedure TGLLensFlare.SetSize( aValue : Integer);
-begin
-  FSize := aValue;
-  StructureChanged;
-end;
-
-procedure TGLLensFlare.SetSeed( aValue : Integer);
-begin
-  FSeed := aValue;
-  StructureChanged;
-end;
-
-procedure TGLLensFlare.SetSqueeze( aValue : Single);
-begin
-  FSqueeze := aValue;
-  StructureChanged;
-end;
-
-// StoreSqueeze
-//
-function TGLLensFlare.StoreSqueeze : Boolean;
-begin
-   Result:=(FSqueeze<>1);
-end;
-
-procedure TGLLensFlare.SetNumStreaks(aValue : Integer);
-begin
-  FNumStreaks := aValue;
-  StructureChanged;
-end;
-
-procedure TGLLensFlare.SetStreakWidth(aValue : Single);
-begin
-  FStreakWidth := aValue;
-  StructureChanged;
-end;
-
-// StoreStreakWidth
-//
-function TGLLensFlare.StoreStreakWidth : Boolean;
-begin
-   Result:=(FStreakWidth<>2);
-end;
-
-procedure TGLLensFlare.SetNumSecs(aValue : Integer);
-begin
-  FNumSecs := aValue;
-  StructureChanged;
-end;
-
-// SetResolution
-//
-procedure TGLLensFlare.SetResolution(aValue : Integer);
-begin
-   if FResolution<>aValue then begin
-      FResolution:=aValue;
-      StructureChanged;
-      SetLength(FSin20Res, 20*FResolution);
-      SetLength(FCos20Res, 20*FResolution);
-      PrepareSinCosCache(FSin20Res, FCos20Res, 0, 360);
-      SetLength(FSinRes, FResolution);
-      SetLength(FCosRes, FResolution);
-      PrepareSinCosCache(FSinRes, FCosRes, 0, 360);
-   end;
-end;
-
-// SetAutoZTest
-//
-procedure TGLLensFlare.SetAutoZTest(aValue : Boolean);
-begin
-   if FAutoZTest<>aValue then begin
-      FAutoZTest:=aValue;
-      StructureChanged;
-   end;
-end;
-
-// SetElements
-//
-procedure TGLLensFlare.SetElements(aValue : TFlareElements);
-begin
-   if FElements<>aValue then begin
-      FElements:=aValue;
-      StructureChanged;
-   end;
 end;
 
 // SetupRenderingOptions
@@ -378,9 +330,9 @@ begin
       if (i and 1)<>0 then
          rnd:=1.5*Random*size
       else rnd:=Random*size;
-      glColor4fv(@Gradients[feRays].CFrom);
+      glColor4fv(RaysGradient.FromColor.AsAddress);
       glVertex2f(0, 0);
-      glColor4fv(@Gradients[feRays].CTo);
+      glColor4fv(RaysGradient.ToColor.AsAddress);
       glVertex2f(rnd*FCos20Res[i], rnd*FSin20Res[i]*Squeeze);
    end;
    glEnd;
@@ -490,15 +442,16 @@ begin
       SetupRenderingOptions;
 
       if [feGlow, feStreaks, feRays, feRing]*Elements<>[] then begin
+         glMatrixMode(GL_MODELVIEW);
          glPushMatrix;
          glTranslatef(posVector[0], posVector[1], posVector[2]);
 
          // Glow (a circle with transparent edges):
          if feGlow in Elements then begin
             glBegin(GL_TRIANGLE_FAN);
-            glColor4fv(@Gradients[feGlow].CFrom);
+            glColor4fv(GlowGradient.FromColor.AsAddress);
             glVertex2f(0, 0);
-            glColor4fv(@Gradients[feGlow].CTo);
+            glColor4fv(GlowGradient.ToColor.AsAddress);
             for i:=0 to Resolution-1 do
                glVertex2f(FCurrSize*FCosRes[i],
                           Squeeze*FCurrSize*FSinRes[i]);
@@ -515,9 +468,9 @@ begin
             glBegin(GL_LINES);
             for i:=0 to NumStreaks-1 do begin
                SinCos(rnd+a*i, f, s, c);
-               glColor4fv(@Gradients[feStreaks].CFrom);
+               glColor4fv(StreaksGradient.FromColor.AsAddress);
                glVertex2f(0, 0);
-               glColor4fv(@Gradients[feStreaks].CTo);
+               glColor4fv(StreaksGradient.ToColor.AsAddress);
                glVertex2f(c, Squeeze*s);
             end;
             glEnd;
@@ -532,10 +485,10 @@ begin
             	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
                glBegin(GL_QUADS);
-                 glTexCoord2f(0, 0); glVertex2f(-FCurrSize,-FCurrSize);
-                 glTexCoord2f(1, 0); glVertex2f( FCurrSize,-FCurrSize);
-                 glTexCoord2f(1, 1); glVertex2f( FCurrSize, FCurrSize);
-                 glTexCoord2f(0, 1); glVertex2f(-FCurrSize, FCurrSize);
+                  glTexCoord2f(0, 0); glVertex2f(-FCurrSize,-FCurrSize);
+                  glTexCoord2f(1, 0); glVertex2f( FCurrSize,-FCurrSize);
+                  glTexCoord2f(1, 1); glVertex2f( FCurrSize, FCurrSize);
+                  glTexCoord2f(0, 1); glVertex2f(-FCurrSize, FCurrSize);
                glEnd;
 
                glDisable(GL_TEXTURE_2D);
@@ -554,20 +507,20 @@ begin
                s1:=FSinRes[i]*0.6*Squeeze;
                c1:=FCosRes[i]*0.6;
 
-               glColor4fv(@Gradients[feGlow].CTo);
+               glColor4fv(GlowGradient.ToColor.AsAddress);
                glVertex2f((FCurrSize-rW)*c, (FCurrSize-rW)*s);
-               glColor4fv(@Gradients[feRing].CFrom);
+               glColor4fv(RingGradient.FromColor.AsAddress);
                glVertex2f(FCurrSize*c, Squeeze*FCurrSize*s);
 
                glVertex2f(FCurrSize*c1, FCurrSize*s1);
-               glColor4fv(@Gradients[feGlow].CTo);
+               glColor4fv(GlowGradient.ToColor.AsAddress);
                glVertex2f((FCurrSize-rW)*c1, (FCurrSize-rW)*s1);
 
-               glColor4fv(@Gradients[feRing].CFrom);
+               glColor4fv(RingGradient.FromColor.AsAddress);
                glVertex2f(FCurrSize*c, FCurrSize*s);
                glVertex2f(FCurrSize*c1, FCurrSize*s1);
                
-               glColor4fv(@Gradients[feGlow].CTo);
+               glColor4fv(GlowGradient.ToColor.AsAddress);
                glVertex2f((FCurrSize+rW)*c1, (FCurrSize+rW)*s1);
                glVertex2f((FCurrSize+rW)*c, (FCurrSize+rW)*s);
             end;
@@ -575,6 +528,7 @@ begin
          end;
 
          glPopMatrix;
+         glMatrixMode(GL_PROJECTION);
       end;
 
       if feSecondaries in Elements then begin
@@ -591,13 +545,13 @@ begin
             else v:=VectorScale(posVector, 0.8*rnd);
             glBegin(GL_TRIANGLE_FAN);
             if j mod 3=0 then begin
-               glColor4fv(@Gradients[feGlow].CFrom);
+               glColor4fv(GlowGradient.FromColor.AsAddress);
                glVertex2f(v[0], v[1]);
-               glColor4fv(@Gradients[feGlow].CTo);
+               glColor4fv(GlowGradient.ToColor.AsAddress);
             end else begin
-               glColor4fv(@Gradients[feSecondaries].CFrom);
+               glColor4fv(SecondariesGradient.FromColor.AsAddress);
                glVertex2f(v[0], v[1]);
-               glColor4fv(@Gradients[feSecondaries].CTo);
+               glColor4fv(SecondariesGradient.ToColor.AsAddress);
             end;
             rnd:=(Random+0.1)*FCurrSize*0.25;
             for i:=0 to Resolution-1 do
@@ -610,7 +564,6 @@ begin
       RestoreRenderingOptions;
 
       RandSeed:=oldSeed;
-
    end;
 
    glPopMatrix;
@@ -696,260 +649,142 @@ begin
    CheckOpenGLError;
 end;
 
-// ------------------
-// ------------------ TGLTextureLensFlare ------------------
-// ------------------
-
-constructor TGLTextureLensFlare.Create;
+// SetGlowGradient
+//
+procedure TGLLensFlare.SetGlowGradient(const val : TGLFlareGradient);
 begin
-  inherited;
-  Randomize;
-  FSeed := Random(2000)+465;
-  
-  // Set default parameters:
-  ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
-  FSize := 50;
-  FCurrSize := FSize;
-  FNumSecs := 8;
-  FAutoZTest := True;
-
-  FImgRays := TGLTexture.Create(Self);
-  FImgSecondaries := TGLTexture.Create(Self);
-  FImgRing := TGLTexture.Create(Self);
-  FImgGlow := TGLTexture.Create(Self);
+   FGlowGradient.Assign(val);
+   StructureChanged;
 end;
 
-procedure TGLTextureLensFlare.SetSize(aValue: integer);
+// SetRingGradient
+//
+procedure TGLLensFlare.SetRingGradient(const val : TGLFlareGradient);
 begin
-  if FSize <> aValue then
-  begin
-    FSize := aValue;
-    FCurrSize := FSize;
-    StructureChanged;
-  end;
+   FRingGradient.Assign(val);
+   StructureChanged;
 end;
 
-
-procedure TGLTextureLensFlare.SetNumSecs(aValue: integer);
+// SetStreaksGradient
+//
+procedure TGLLensFlare.SetStreaksGradient(const val : TGLFlareGradient);
 begin
-  if FNumSecs <> aValue then
-  begin
-    FNumSecs := aValue;
-    StructureChanged;
-  end;
+   FStreaksGradient.Assign(val);
+   StructureChanged;
+end;
+
+// SetRaysGradient
+//
+procedure TGLLensFlare.SetRaysGradient(const val : TGLFlareGradient);
+begin
+   FRaysGradient.Assign(val);
+   StructureChanged;
+end;
+
+// SetSecondariesGradient
+//
+procedure TGLLensFlare.SetSecondariesGradient(const val : TGLFlareGradient);
+begin
+   FSecondariesGradient.Assign(val);
+   StructureChanged;
+end;
+
+// SetSize
+//
+procedure TGLLensFlare.SetSize(aValue : Integer);
+begin
+   FSize:=aValue;
+   StructureChanged;
+end;
+
+// SetSeed
+//
+procedure TGLLensFlare.SetSeed(aValue : Integer);
+begin
+   FSeed:=aValue;
+   StructureChanged;
+end;
+
+// SetSqueeze
+//
+procedure TGLLensFlare.SetSqueeze(aValue : Single);
+begin
+   FSqueeze:=aValue;
+   StructureChanged;
+end;
+
+// StoreSqueeze
+//
+function TGLLensFlare.StoreSqueeze : Boolean;
+begin
+   Result:=(FSqueeze<>1);
+end;
+
+// SetNumStreaks
+//
+procedure TGLLensFlare.SetNumStreaks(aValue : Integer);
+begin
+   FNumStreaks:=aValue;
+   StructureChanged;
+end;
+
+// SetStreakWidth
+//
+procedure TGLLensFlare.SetStreakWidth(aValue : Single);
+begin
+   FStreakWidth:=aValue;
+   StructureChanged;
+end;
+
+// StoreStreakWidth
+//
+function TGLLensFlare.StoreStreakWidth : Boolean;
+begin
+   Result:=(FStreakWidth<>2);
+end;
+
+// SetNumSecs
+//
+procedure TGLLensFlare.SetNumSecs(aValue : Integer);
+begin
+   FNumSecs:=aValue;
+   StructureChanged;
+end;
+
+// SetResolution
+//
+procedure TGLLensFlare.SetResolution(aValue : Integer);
+begin
+   if FResolution<>aValue then begin
+      FResolution:=aValue;
+      StructureChanged;
+      SetLength(FSin20Res, 20*FResolution);
+      SetLength(FCos20Res, 20*FResolution);
+      PrepareSinCosCache(FSin20Res, FCos20Res, 0, 360);
+      SetLength(FSinRes, FResolution);
+      SetLength(FCosRes, FResolution);
+      PrepareSinCosCache(FSinRes, FCosRes, 0, 360);
+   end;
 end;
 
 // SetAutoZTest
 //
-procedure TGLTextureLensFlare.SetAutoZTest(aValue: boolean);
+procedure TGLLensFlare.SetAutoZTest(aValue : Boolean);
 begin
-  if FAutoZTest <> aValue then
-  begin
-    FAutoZTest := aValue;
-    StructureChanged;
-  end;
+   if FAutoZTest<>aValue then begin
+      FAutoZTest:=aValue;
+      StructureChanged;
+   end;
 end;
 
-// BuildList
+// SetElements
 //
-procedure TGLTextureLensFlare.BuildList(var rci: TRenderContextInfo);
-var
-  v, rv, screenPos, posVector : TAffineVector;
-  depth, rnd : Single;
-  flag : Boolean;
-  i : Integer;
+procedure TGLLensFlare.SetElements(aValue : TFlareElements);
 begin
-  SetVector(v, AbsolutePosition);
-  // are we looking towards the flare?
-  rv := VectorSubtract(v, PAffineVector(@rci.cameraPosition)^);
-  if VectorDotProduct(rci.cameraDirection, rv) > 0 then
-  begin
-    // find out where it is on the screen.
-    screenPos := Scene.CurrentBuffer.WorldToScreen(v);
-    if (screenPos[0] < rci.viewPortSize.cx) and (screenPos[0] >= 0)
-      and (screenPos[1] < rci.viewPortSize.cy) and (screenPos[1] >= 0) then
-    begin
-      if FAutoZTest then
-      begin
-        depth := Scene.CurrentBuffer.GetPixelDepth(Round(ScreenPos[0]),
-          Round(rci.viewPortSize.cy - ScreenPos[1]));
-        // but is it behind something?
-        if screenPos[2] >= 1 then
-          flag := (depth >= 1)
-        else
-          flag := (depth >= screenPos[2]);
-      end
-      else
-        flag := True;
-    end
-    else
-      flag := False;
-  end
-  else
-    flag := False;
-
-  MakeVector(posVector,
-    screenPos[0] - rci.viewPortSize.cx / 2,
-    screenPos[1] - rci.viewPortSize.cy / 2,0);
-
-  // make the glow appear/disappear progressively
-
-  if Flag then
-    if FCurrSize < FSize then
-       FCurrSize := FCurrSize + FDeltaTime * 200{FSize * 4};
-  if not Flag then
-    if FCurrSize > 0 then
-       FCurrSize := FCurrSize - FDeltaTime * 200{FSize * 4};
-  if FCurrSize <= 0 then Exit;
-
-
-  // Prepare matrices
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix;
-  glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix;
-  glLoadIdentity;
-  glScalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-
-
-  glPushAttrib(GL_ENABLE_BIT);
-  glDisable(GL_LIGHTING);
-  glDisable(GL_DEPTH_TEST);  
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE,GL_ONE);
-
-  //Rays and Glow on Same Position
-  glPushMatrix;
-  glTranslatef(posVector[0], posVector[1], posVector[2]);
-
-  if not ImgGlow.Disabled and Assigned(ImgGlow.Image) then
-  begin
-        ImgGlow.Apply(rci);
-        glbegin(GL_QUADS);
-          glTexCoord2f(0,0);glVertex3f(-FCurrSize,-FCurrSize,0);
-          glTexCoord2f(1,0);glVertex3f( FCurrSize,-FCurrSize,0);
-          glTexCoord2f(1,1);glVertex3f( FCurrSize, FCurrSize,0);
-          glTexCoord2f(0,1);glVertex3f(-FCurrSize, FCurrSize,0);
-        glend;
-        ImgGlow.UnApply(rci);
-  end;
-
-  if not ImgRays.Disabled and Assigned(ImgRays.Image) then
-  begin
-        ImgRays.Apply(rci);
-        glbegin(GL_QUADS);
-          glTexCoord2f(0,0);glVertex3f(-FCurrSize,-FCurrSize,0);
-          glTexCoord2f(1,0);glVertex3f( FCurrSize,-FCurrSize,0);
-          glTexCoord2f(1,1);glVertex3f( FCurrSize, FCurrSize,0);
-          glTexCoord2f(0,1);glVertex3f(-FCurrSize, FCurrSize,0);
-        glend;
-        ImgRays.UnApply(rci);
-  end;
-  glPopMatrix;
-
-  if not ImgRing.Disabled and Assigned(ImgRing.Image) then
-  begin
-        glPushMatrix;
-          glTranslatef(posVector[0]*1.1, posVector[1]*1.1, posVector[2]);
-          ImgRing.Apply(rci);
-          glbegin(GL_QUADS);
-            glTexCoord2f(0,0);glVertex3f(-FCurrSize,-FCurrSize,0);
-            glTexCoord2f(1,0);glVertex3f( FCurrSize,-FCurrSize,0);
-            glTexCoord2f(1,1);glVertex3f( FCurrSize, FCurrSize,0);
-            glTexCoord2f(0,1);glVertex3f(-FCurrSize, FCurrSize,0);
-          glend;
-          ImgRing.UnApply(rci);
-        glPopMatrix;
-  end;
-
-  if not ImgSecondaries.Disabled and Assigned(ImgSecondaries.Image) then
-  begin
-        RandSeed := FSeed;
-        glPushMatrix;
-          ImgSecondaries.Apply(rci);
-          for i := 1 to FNumSecs do
-          begin
-             rnd := 2 * Random - 1;
-             v:=PosVector;
-             if rnd<0 then
-                ScaleVector(V, rnd)
-             else ScaleVector(V, 0.8*rnd);
-             glPushMatrix;
-               glTranslatef(v[0], v[1],v[2]);
-
-               rnd := random*0.5+0.1;
-               glbegin(GL_QUADS);
-                 glTexCoord2f(0,0);glVertex3f(-FCurrSize*rnd,-FCurrSize*rnd,0);
-                 glTexCoord2f(1,0);glVertex3f( FCurrSize*rnd,-FCurrSize*rnd,0);
-                 glTexCoord2f(1,1);glVertex3f( FCurrSize*rnd, FCurrSize*rnd,0);
-                 glTexCoord2f(0,1);glVertex3f(-FCurrSize*rnd, FCurrSize*rnd,0);
-               glend;
-             glPopMatrix
-          end;
-          ImgSecondaries.UnApply(rci);
-        glPopMatrix;
-  end;
-
-   // restore state
-
-  glPopAttrib;
-  glPopMatrix;
-  glMatrixMode(GL_MODELVIEW);
-  glPopMatrix;
-
-  if Count > 0 then
-    Self.RenderChildren(0, Count - 1, rci);
-end;
-
-
-// DoProgress
-//
-procedure TGLTextureLensFlare.DoProgress(const progressTime: TProgressTimes);
-begin
-  FDeltaTime:=progressTime.deltaTime;
-  inherited;  
-end;
-
-procedure TGLTextureLensFlare.SetImgGlow(const Value: TGLTexture);
-begin
-  FImgGlow.Assign(Value);
-  StructureChanged;
-end;
-
-procedure TGLTextureLensFlare.SetImgRays(const Value: TGLTexture);
-begin
-  FImgRays.Assign(Value);
-  StructureChanged;
-end;
-
-procedure TGLTextureLensFlare.SetImgRing(const Value: TGLTexture);
-begin
-  FImgRing.Assign(Value);
-  StructureChanged;
-end;
-
-procedure TGLTextureLensFlare.SetImgSecondaries(const Value: TGLTexture);
-begin
-  FImgSecondaries.Assign(Value);
-  StructureChanged;
-end;
-
-
-destructor TGLTextureLensFlare.Destroy;
-begin   
-  FImgRays.Free;
-  FImgSecondaries.Free;
-  FImgRing.Free;
-  FImgGlow.Free;
-  inherited;
-end;
-
-procedure TGLTextureLensFlare.SetSeed(const Value: Integer);
-begin
-  FSeed := Value;
-  StructureChanged;
+   if FElements<>aValue then begin
+      FElements:=aValue;
+      StructureChanged;
+   end;
 end;
 
 // ------------------------------------------------------------------
@@ -960,6 +795,6 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterClasses([TGLLensFlare, TGLTextureLensFlare]);
+   RegisterClasses([TGLLensFlare]);
 
 end.
