@@ -1753,7 +1753,7 @@ begin
                        TGLMaterialLibrary,
                        TGLCadencer,
                        TGLGuiLayout,
-                       TGLBitmapFont, TGLWindowsBitmapFont,
+                       TGLBitmapFont, TGLWindowsBitmapFont, TGLStoredBitmapFont,
                        TGLScriptLibrary
                        {$ifdef WIN32}
                        ,
