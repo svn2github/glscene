@@ -480,7 +480,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Windows, GLMisc;
+uses SysUtils, Windows, GLMisc, ApplicationFileIO;
 
 // ------------------
 // ------------------ THeightDataSourceThread ------------------
@@ -1428,10 +1428,10 @@ var
    rasterLine : PSmallIntArray;
    oldType : THeightDataType;
    b : SmallInt;
-   fs : TFileStream;
+   fs : TStream;
 begin
    if not FileExists('tbase.bin') then Exit;
-   fs:=TFileStream.Create('tbase.bin', fmOpenRead+fmShareDenyNone);
+   fs:=CreateFileStream('tbase.bin', fmOpenRead+fmShareDenyNone);
    try
       // retrieve data
       with heightData do begin

@@ -346,6 +346,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+uses ApplicationFileIO;
+
 resourcestring
    cInvalidFileSignature = 'Invalid file signature';
    cUnknownArchiveVersion = ' : unknown archive version ';
@@ -566,11 +568,11 @@ end;
 //
 procedure TPersistentObject.SaveToFile(const fileName : String; writerClass : TVirtualWriterClass = nil);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
    if writerClass=nil then
       writerClass:=FileVirtualWriter;
-   fs:=TFileStream.Create(fileName, fmCreate);
+   fs:=CreateFileStream(fileName, fmCreate);
    try
       SaveToStream(fs, writerClass);
    finally
@@ -582,11 +584,11 @@ end;
 //
 procedure TPersistentObject.LoadFromFile(const fileName : String; readerClass : TVirtualReaderClass = nil);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
    if readerClass=nil then
       readerClass:=FileVirtualReader;
-   fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyWrite);
+   fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyWrite);
    try
       LoadFromStream(fs, readerClass);
    finally

@@ -77,7 +77,7 @@ type
    THeightTileFile = class (TObject)
       private
          { Private Declarations }
-         FFile : TFileStream;
+         FFile : TStream;
          FHeader : THTFHeader;
          FTileIndex : packed array of THeightTileInfo;
          FTileMark : array of Cardinal;
@@ -157,7 +157,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils;
+uses SysUtils, ApplicationFileIO;
 
 const
    cFileVersion = 'HTF100';
@@ -202,7 +202,7 @@ begin
       SizeY:=aSizeY;
       TileSize:=aTileSize;
    end;
-   FFile:=TFileStream.Create(fileName, fmCreate);
+   FFile:=CreateFileStream(fileName, fmCreate);
    FFile.Write(FHeader, SizeOf(FHeader));
    FCreating:=True;
    SetLength(FHeightTile.data, aTileSize*aTileSize);
@@ -214,7 +214,7 @@ constructor THeightTileFile.Create(const fileName : String);
 var
    n, i, key, qx, qy : Integer;
 begin
-   FFile:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyNone);
+   FFile:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
    // Read Header
    FFile.Read(FHeader, SizeOf(FHeader));
    if FHeader.FileVersion<>cFileVersion then

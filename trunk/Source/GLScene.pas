@@ -1888,7 +1888,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   GLStrings, XOpenGL, VectorTypes, OpenGL12;
+   GLStrings, XOpenGL, VectorTypes, OpenGL12, ApplicationFileIO;
 
 var
    vCounterFrequency : Int64;
@@ -5393,9 +5393,9 @@ end;
 //
 procedure TGLScene.SaveToFile(const fileName : String);
 var
-   stream : TFileStream;
+   stream : TStream;
 begin
-   stream:=vFileStreamClass.Create(fileName, fmCreate);
+   stream:=CreateFileStream(fileName, fmCreate);
    try
       SaveToStream(stream);
    finally
@@ -5419,9 +5419,9 @@ procedure TGLScene.LoadFromFile(const fileName : String);
    end;
 
 var
-   stream : TFileStream;
+   stream : TStream;
 begin
-   stream:=vFileStreamClass.Create(fileName, fmOpenRead);
+   stream:=CreateFileStream(fileName, fmOpenRead);
    try
       CheckResFileStream(stream);
       LoadFromStream(stream);
@@ -5434,19 +5434,19 @@ end;
 //
 procedure TGLScene.SaveToTextFile(const fileName : String);
 var
-  Mem : TMemoryStream;
-  Fil : TFileStream;
+   mem : TMemoryStream;
+   fil : TStream;
 begin
-  Mem := TMemoryStream.Create;
-  Fil := vFileStreamClass.Create(fileName,fmCreate);
-  try
-    SaveToStream(Mem);
-    Mem.Position := 0;
-    ObjectBinaryToText(Mem,Fil);
-  finally
-    Fil.Free;
-    Mem.Free;
-  end;
+   mem:=TMemoryStream.Create;
+   fil:=CreateFileStream(fileName, fmCreate);
+   try
+      SaveToStream(mem);
+      mem.Position:=0;
+      ObjectBinaryToText(mem, fil);
+   finally
+      fil.Free;
+      mem.Free;
+   end;
 end;
 
 // LoadFromTextFile
@@ -5454,10 +5454,10 @@ end;
 procedure TGLScene.LoadFromTextFile(const fileName: string);
 var
   Mem : TMemoryStream;
-  Fil : TFileStream;
+  Fil : TStream;
 begin
   Mem := TMemoryStream.Create;
-  Fil := vFileStreamClass.Create(fileName,fmOpenRead);
+  Fil := CreateFileStream(fileName,fmOpenRead);
   try
     ObjectTextToBinary(Fil,Mem);
     Mem.Position := 0;

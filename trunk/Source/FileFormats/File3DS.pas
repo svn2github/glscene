@@ -152,6 +152,7 @@ type TFile3DS = class;
        FNodeList: PNodeList;
        FDatabase: TDatabase3DS;
        FStream: TStream;
+       FOwnStream : Boolean;
        FMaterialList: TMaterialList;
        FObjectList: TObjectList;
        FKeyFramer: TKeyFramer;
@@ -180,6 +181,7 @@ type TFile3DS = class;
        procedure ReadXDataEntryChildren(Parent: PChunk3DS);
        procedure ReleaseDatabase;
        procedure ReleaseNodeList;
+       procedure ReleaseStream;
      public
        constructor Create; virtual;
        constructor CreateFromFile(const FileName: String); virtual;
@@ -188,8 +190,8 @@ type TFile3DS = class;
 
        // database methods
        procedure DumpDataBase(Strings: TStrings; DumpLevel: TDumpLevel);
-       procedure LoadFromFile(const FileName: String);
-       procedure LoadFromStream(const AStream: TStream);
+       procedure LoadFromFile(const fileName : String);
+       procedure LoadFromStream(const aStream : TStream);
 
        // basic access methods
        function  ReadByte: Byte;
@@ -249,7 +251,7 @@ type TFile3DS = class;
 
 implementation
 
-uses Const3DS, Utils3DS, SysUtils;
+uses Const3DS, Utils3DS, SysUtils, ApplicationFileIO;
 
 //----------------- TMaterialList -------------------------------------------------------------------------------------
 
@@ -695,29 +697,27 @@ begin
   FKeyFramer := TKeyFramer.Create(Self);
 end;
 
-//---------------------------------------------------------------------------------------------------------------------
-
+// CreateFromFile
+//
 constructor TFile3DS.CreateFromFile(const FileName: String);
-
 begin
-  Create;
-  FFileName := FileName;
-  FStream := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
-  InitDatabase;
-  CreateDatabase;
+   Create;
+   FFileName:=FileName;
+   FStream:=CreateFileStream(FileName, fmOpenRead or fmShareDenyWrite);
+   InitDatabase;
+   CreateDatabase;
 end;
 
-//------------------------------------------------------------------------------
-
+// Destroy
+//
 destructor TFile3DS.Destroy;
-
 begin
-  FKeyFramer.Free;
-  FObjectList.Free;
-  FMaterialList.Free;
-  ReleaseDatabase;
-//  FStream.Free;
-  inherited Destroy;
+   FKeyFramer.Free;
+   FObjectList.Free;
+   FMaterialList.Free;
+   ReleaseDatabase;
+   ReleaseStream;
+   inherited Destroy;
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1058,6 +1058,17 @@ begin
   end;
 end;
 
+// ReleaseStream
+//
+procedure TFile3DS.ReleaseStream;
+begin
+   if FOwnStream then
+      FreeAndNil(FStream)
+   else FStream:=nil;
+   FOwnStream:=False;
+end;
+
+
 //---------------------------------------------------------------------------------------------------------------------
 
 procedure TFile3DS.CreateDatabase;
@@ -1114,29 +1125,29 @@ begin
   ReleaseDatabase;
 end;
 
-//---------------------------------------------------------------------------------------------------------------------
-
-procedure TFile3DS.LoadFromFile(const FileName: String);
-
+// LoadFromFile
+//
+procedure TFile3DS.LoadFromFile(const fileName : String);
 begin
-  ClearLists;
-  FStream.Free;
-  FFileName := FileName;
-  FStream := TFileStream.Create(FileName, fmOpenRead or fmShareDenyWrite);
-  InitDatabase;
-  CreateDatabase;
+   ClearLists;
+   ReleaseStream;
+   FFileName:=FileName;
+   FStream:=CreateFileStream(FileName, fmOpenRead or fmShareDenyWrite);
+   FOwnStream:=True;
+   InitDatabase;
+   CreateDatabase;
 end;
 
-//---------------------------------------------------------------------------------------------------------------------
-
-procedure TFile3DS.LoadFromStream(const AStream: TStream);
+// LoadFromStream
+//
+procedure TFile3DS.LoadFromStream(const aStream : TStream);
 begin
-//  FStream.Free;
-  ClearLists;
-  FFileName := '';
-  FStream := AStream;
-  InitDatabase;
-  CreateDatabase;
+   ReleaseStream;
+   ClearLists;
+   FFileName:='';
+   FStream:=aStream;
+   InitDatabase;
+   CreateDatabase;
 end;
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -1610,20 +1621,19 @@ begin
   FStream.WriteBuffer(AValue, SizeOf(AValue));
 end;
 
-//---------------------------------------------------------------------------------------------------------------------
-
+// WriteData
+//
 procedure TFile3DS.WriteData(Size: Integer; Data: Pointer);
-
 begin
-  if assigned(Data) then FStream.WriteBuffer(Data^, Size);
+   if Assigned(Data) then
+      FStream.WriteBuffer(Data^, Size);
 end;
 
-//---------------------------------------------------------------------------------------------------------------------
-
+// ReadData
+//
 procedure TFile3DS.ReadData(Size: Integer; Data: Pointer);
-
 begin
-  FStream.ReadBuffer(Data^, Size);
+   FStream.ReadBuffer(Data^, Size);
 end;
 
 //---------------------------------------------------------------------------------------------------------------------

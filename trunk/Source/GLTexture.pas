@@ -1338,7 +1338,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLStrings, XOpenGL, Graphics;
+uses GLScene, GLStrings, XOpenGL, Graphics, ApplicationFileIO;
 
 var
 	vGLTextureImageClasses : TList;
@@ -4193,9 +4193,9 @@ end;
 //
 procedure TGLMaterialLibrary.SaveToFile(const fileName : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
-   fs:=vFileStreamClass.Create(fileName, fmCreate);
+   fs:=CreateFileStream(fileName, fmCreate);
    try
       SaveToStream(fs);
    finally
@@ -4207,9 +4207,9 @@ end;
 //
 procedure TGLMaterialLibrary.LoadFromFile(const fileName : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
-   fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
+   fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
    try
       LoadFromStream(fs);
    finally

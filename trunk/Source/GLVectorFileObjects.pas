@@ -1449,7 +1449,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform,
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO,
      // 3DS Support
 	  File3DS, Types3DS,
      // MD2 Support
@@ -4336,10 +4336,10 @@ end;
 //
 procedure TGLBaseMesh.LoadFromFile(const filename : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
-   if fileName <> '' then begin
-      fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyWrite);
+   if fileName<>'' then begin
+      fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyWrite);
       try
          LoadFromStream(fileName, fs);
       finally
@@ -4381,10 +4381,10 @@ end;
 //
 procedure TGLBaseMesh.SaveToFile(const filename : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
-   if fileName <> '' then begin
-      fs:=vFileStreamClass.Create(fileName, fmCreate);
+   if fileName<>'' then begin
+      fs:=CreateFileStream(fileName, fmCreate);
       try
          SaveToStream(fileName, fs);
       finally
@@ -4417,10 +4417,10 @@ end;
 //
 procedure TGLBaseMesh.AddDataFromFile(const filename : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
-   if fileName <> '' then begin
-      fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyWrite);
+   if fileName<>'' then begin
+      fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyWrite);
       try
          AddDataFromStream(fileName, fs);
       finally
@@ -5087,9 +5087,9 @@ end;
 //
 procedure TActorAnimations.SaveToFile(const fileName : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
-   fs:=vFileStreamClass.Create(fileName, fmCreate);
+   fs:=CreateFileStream(fileName, fmCreate);
    try
       SaveToStream(fs);
    finally
@@ -5101,9 +5101,9 @@ end;
 //
 procedure TActorAnimations.LoadFromFile(const fileName : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
-   fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyWrite);
+   fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyWrite);
    try
       LoadFromStream(fs);
    finally
@@ -5346,7 +5346,7 @@ begin
             Result:=FTargetSmoothAnimation.StartFrame
          else begin
             Result:=CurrentFrame+1;
-            if Result>EndFrame then begin
+            if Result>EndFrame-1 then begin
                Result:=StartFrame+(Result-EndFrame-1);
                if Result>EndFrame then
                   Result:=EndFrame;
@@ -5417,7 +5417,9 @@ begin
          aarMorph : begin
             case FrameInterpolation of
                afpLinear :
-                  MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
+                  if (nextFrameIdx=0) and (CurrentFrame>0) then
+                     MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
+                  else MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
             else
                MeshObjects.MorphTo(CurrentFrame);
             end;

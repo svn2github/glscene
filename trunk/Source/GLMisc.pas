@@ -441,8 +441,6 @@ type
 	TSqrt255Array = array [0..255] of Byte;
 	PSqrt255Array = ^TSqrt255Array;
 
-   TFileStreamClass = class of TFileStream;
-
 //: Copies the values of Source to Dest (converting word values to integer values)
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
 //: Round ups to the nearest power of two, value must be positive
@@ -514,8 +512,6 @@ procedure DeRegisterManager(aManager : TComponent);
 function FindManager(classType : TComponentClass; const managerName : String) : TComponent;
 
 var
-   // Class of file streams to use throughout all of GLScene
-   vFileStreamClass : TFileStreamClass = TFileStream;
    // Specifies if TGLCoordinates, TGLColor, etc. should allocate memory for
    // their default values (ie. design-time) or not (run-time)
    vUseDefaultSets : Boolean = False;
@@ -527,7 +523,7 @@ implementation
 //------------------------------------------------------
 //------------------------------------------------------
 
-uses GLScene, XOpenGL;
+uses GLScene, XOpenGL, ApplicationFileIO;
 
 const
 	cGLStateToGLEnum : array [stAlphaTest..stTextureCubeMap] of TGLEnum =
@@ -790,24 +786,30 @@ end;
 //
 procedure SaveStringToFile(const fileName, data : String);
 var
-	fs : TFileStream;
+	fs : TStream;
 begin
-	fs:=vFileStreamClass.Create(fileName, fmCreate);
-	fs.Write(data[1], Length(data));
-	fs.Free;
+	fs:=CreateFileStream(fileName, fmCreate);
+   try
+   	fs.Write(data[1], Length(data));
+   finally
+   	fs.Free;
+   end;
 end;
 
 // LoadStringFromFile
 //
 function LoadStringFromFile(const fileName : String) : String;
 var
-	fs : TFileStream;
+	fs : TStream;
 begin
    if FileExists(fileName) then begin
-   	fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
-	   SetLength(Result, fs.Size);
-   	fs.Read(Result[1], fs.Size);
-	   fs.Free;
+   	fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
+      try
+   	   SetLength(Result, fs.Size);
+      	fs.Read(Result[1], fs.Size);
+      finally
+   	   fs.Free;
+      end;
    end else Result:='';
 end;
 
@@ -815,12 +817,15 @@ end;
 //
 function SizeOfFile(const fileName : String) : Integer;
 var
-	fs : TFileStream;
+	fs : TStream;
 begin
    if FileExists(fileName) then begin
-   	fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
-      Result:=fs.Size;
-	   fs.Free;
+   	fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
+      try
+         Result:=fs.Size;
+      finally
+   	   fs.Free;
+      end;
    end else Result:=0;
 end;
 
@@ -1946,10 +1951,10 @@ end;
 //
 procedure TDataFile.LoadFromFile(const fileName : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
    ResourceName:=ExtractFileName(fileName);
-   fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
+   fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
    try
       LoadFromStream(fs);
    finally
@@ -1961,10 +1966,10 @@ end;
 //
 procedure TDataFile.SaveToFile(const fileName : String);
 var
-   fs : TFileStream;
+   fs : TStream;
 begin
    ResourceName:=ExtractFileName(fileName);
-   fs:=vFileStreamClass.Create(fileName, fmCreate);
+   fs:=CreateFileStream(fileName, fmCreate);
    try
       SaveToStream(fs);
    finally
