@@ -248,9 +248,11 @@ type
 	      { Protected Declarations }
          FThread : THeightDataThread; // thread used for multi-threaded processing (if any)
 
+
          procedure SetDataType(const val : THeightDataType);
 
 	   public
+
 	      { Public Declarations }
 	      constructor Create(aOwner : THeightDataSource;
                             aXLeft, aYTop, aSize : Integer;
@@ -273,8 +275,8 @@ type
             immediately after performing their own cleanups. }
          procedure RegisterUse;
          {: Allocate memory and prepare lookup tables for current datatype.<p>
-            Fails if already allocated. }
-         procedure Allocate(const val : THeightDataType);
+            Fails if already allocated. Made Dynamic to allow descendants }
+         procedure Allocate(const val : THeightDataType); dynamic;
          {: Decrements UseCounter.<p>
             When the counter reaches zero, notifies the Owner THeightDataSource
             that the data is no longer used.<p>
@@ -349,6 +351,8 @@ type
          property Tag : Integer read FTag write FTag;
          {: Reserved for renderer use. }
          property Tag2 : Integer read FTag2 write FTag2;
+         {: Used by perlin HDS. }
+         property Thread : THeightDataThread read FThread write FThread;
 	end;
 
    // THeightDataThread
@@ -366,6 +370,10 @@ type
       public
 	      { Public Declarations }
          destructor Destroy; override;
+         {: The Height Data the thread is to prepare.<p> }
+         property HeightData : THeightData read FHeightData write FHeightData;
+
+
    end;
 
 	// TGLBitmapHDS

@@ -607,7 +607,7 @@ type
          property TransformationMode: TTransformationMode read FTransMode write FTransMode default tmLocal;
 
          property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
-         property Changes: TObjectChanges read FChanges;
+         property Changes: TObjectChanges read FChanges write FChanges;
          property Parent: TGLBaseSceneObject read FParent write SetParent;
          property Position: TGLCoordinates read FPosition write SetPosition;
          property Direction: TGLCoordinates read FDirection write SetDirection;

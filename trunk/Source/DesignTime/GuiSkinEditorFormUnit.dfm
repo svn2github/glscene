@@ -186,7 +186,7 @@ object GUISkinEditor: TGUISkinEditor
     OnChange = HeightEditChange
   end
   object Button5: TButton
-    Left = 688
+    Left = 624
     Top = 320
     Width = 75
     Height = 25
@@ -195,7 +195,7 @@ object GUISkinEditor: TGUISkinEditor
     TabOrder = 8
   end
   object Button6: TButton
-    Left = 768
+    Left = 712
     Top = 320
     Width = 75
     Height = 25
@@ -204,14 +204,14 @@ object GUISkinEditor: TGUISkinEditor
     TabOrder = 9
   end
   object GroupBox1: TGroupBox
-    Left = 464
+    Left = 440
     Top = 8
-    Width = 385
+    Width = 361
     Height = 305
     Caption = 'Element List'
     TabOrder = 10
     object Label3: TLabel
-      Left = 184
+      Left = 160
       Top = 16
       Width = 81
       Height = 13
@@ -273,7 +273,7 @@ object GUISkinEditor: TGUISkinEditor
       Caption = 'Bottom'
     end
     object ListBox1: TListBox
-      Left = 184
+      Left = 160
       Top = 40
       Width = 193
       Height = 257
@@ -283,7 +283,7 @@ object GUISkinEditor: TGUISkinEditor
       OnKeyDown = ListBox1KeyDown
     end
     object Button1: TButton
-      Left = 280
+      Left = 256
       Top = 16
       Width = 49
       Height = 17
@@ -298,7 +298,7 @@ object GUISkinEditor: TGUISkinEditor
       OnClick = Button1Click
     end
     object Button2: TButton
-      Left = 336
+      Left = 312
       Top = 16
       Width = 41
       Height = 17
@@ -313,7 +313,7 @@ object GUISkinEditor: TGUISkinEditor
       OnClick = Button2Click
     end
     object ComboBox1: TComboBox
-      Left = 96
+      Left = 72
       Top = 40
       Width = 81
       Height = 21
@@ -333,7 +333,7 @@ object GUISkinEditor: TGUISkinEditor
         'BottomRight')
     end
     object LeftEdit: TEdit
-      Left = 96
+      Left = 72
       Top = 72
       Width = 81
       Height = 21
@@ -342,7 +342,7 @@ object GUISkinEditor: TGUISkinEditor
       OnChange = LeftEditChange
     end
     object TopEdit: TEdit
-      Left = 96
+      Left = 72
       Top = 96
       Width = 81
       Height = 21
@@ -351,7 +351,7 @@ object GUISkinEditor: TGUISkinEditor
       OnChange = TopEditChange
     end
     object RightEdit: TEdit
-      Left = 96
+      Left = 72
       Top = 120
       Width = 81
       Height = 21
@@ -360,7 +360,7 @@ object GUISkinEditor: TGUISkinEditor
       OnChange = RightEditChange
     end
     object BottomEdit: TEdit
-      Left = 96
+      Left = 72
       Top = 144
       Width = 81
       Height = 21
@@ -369,7 +369,7 @@ object GUISkinEditor: TGUISkinEditor
       OnChange = BottomEditChange
     end
     object ScaleXEdit: TEdit
-      Left = 96
+      Left = 72
       Top = 168
       Width = 81
       Height = 21
@@ -378,7 +378,7 @@ object GUISkinEditor: TGUISkinEditor
       OnChange = ScaleXEditChange
     end
     object ScaleYEdit: TEdit
-      Left = 96
+      Left = 72
       Top = 196
       Width = 81
       Height = 21
