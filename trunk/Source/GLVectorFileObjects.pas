@@ -546,7 +546,8 @@ type
          function BoneByID(anID : Integer) : TSkeletonBone;
          function BoneByName(const aName : String) : TSkeletonBone;
 
-         procedure MorphTo(frameIndex : Integer);
+         procedure MorphTo(frameIndex : Integer); overload;
+         procedure MorphTo(frame : TSkeletonFrame); overload;
          procedure Lerp(frameIndex1, frameIndex2 : Integer;
                         lerpFactor : Single);
          procedure BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
@@ -1601,9 +1602,10 @@ type
          has been reached, switches to aamBounceBackward
       <li>aamBounceBackward : play from current frame to StartFrame, once start
          frame has been reached, switches to aamBounceForward
+      <li>aamExternal : Allows for external animation control
       </ul> }
    TActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward,
-                          aamBounceBackward,aamLoopBackward);
+                          aamBounceBackward,aamLoopBackward, aamExternal);
 
    // TGLActor
    //
@@ -3058,6 +3060,13 @@ begin
    CurrentFrame:=Frames[frameIndex];
 end;
 
+// MorphTo
+//
+procedure TSkeleton.MorphTo(frame: TSkeletonFrame);
+begin
+   CurrentFrame:=frame;
+end;
+
 // Lerp
 //
 procedure TSkeleton.Lerp(frameIndex1, frameIndex2 : Integer; lerpFactor : Single);
@@ -3069,7 +3078,7 @@ begin
    with FCurrentFrame do begin
       Position.Lerp(Frames[frameIndex1].Position,
                     Frames[frameIndex2].Position, lerpFactor);
-      case TransformMode of 
+      case TransformMode of
          sftRotation   : Rotation.AngleLerp(Frames[frameIndex1].Rotation,
                                           Frames[frameIndex2].Rotation, lerpFactor);
          sftQuaternion : Quaternion.Lerp(Frames[frameIndex1].Quaternion,
@@ -7196,6 +7205,7 @@ begin
             end;
          end;
       end;
+      aamExternal : ; // Do nothing
    else
       Result:=CurrentFrame;
       Assert(False);
@@ -7253,7 +7263,7 @@ begin
          end;
       end;
       aarSkeleton : if Skeleton.Frames.Count>0 then begin
-         if Assigned(FControlers) then begin
+         if Assigned(FControlers) and (AnimationMode<>aamExternal) then begin
             // Blended Skeletal Lerping
             SetLength(lerpInfos, FControlers.Count+1);
             if nextFrameIdx>=0 then begin
@@ -7286,7 +7296,7 @@ begin
                   Inc(k);
             SetLength(lerpInfos, k);
             Skeleton.BlendedLerps(lerpInfos);
-         end else if nextFrameIdx>=0 then begin
+         end else if (nextFrameIdx>=0) and (AnimationMode<>aamExternal) then begin
             // Single Skeletal Lerp
             case FrameInterpolation of
                afpLinear :
@@ -7450,8 +7460,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
