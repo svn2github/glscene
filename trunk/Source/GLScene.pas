@@ -2410,6 +2410,8 @@ begin
       VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix[2]);
       SetVector(FLocalMatrix[3], FPosition.AsVector);
       Exclude(FChanges, ocTransformation);
+      Include(FChanges, ocAbsoluteMatrix);
+      Include(FChanges, ocInvAbsoluteMatrix);
    end;
 end;
 
@@ -2535,8 +2537,14 @@ end;
 // AbsoluteToLocal (hmg)
 //
 function TGLBaseSceneObject.AbsoluteToLocal(const v : TVector) : TVector;
+var
+   locV : TVector;
 begin
-   Result:=VectorTransform(v, InvAbsoluteMatrixAsAddress^);
+   locV[0]:=v[0];
+   locV[1]:=v[1];
+   locV[2]:=v[2];
+   locV[3]:=1;
+   Result:=VectorTransform(locV, InvAbsoluteMatrixAsAddress^);
 end;
 
 // AbsoluteToLocal (affine)
@@ -6270,6 +6278,7 @@ begin
       SetVector(v, ScreenToVector(aScreenPoint));
       Result:=RayCastPlaneIntersect(FCameraAbsolutePosition,
                                     v, planePoint, planeNormal, @intersectPoint);
+      intersectPoint[3]:=1;
    end else Result:=False;
 end;
 
@@ -6281,6 +6290,7 @@ function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXY(
 begin
    Result:=ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, 0, z),
                                           ZHmgVector, intersectPoint);
+   intersectPoint[3]:=0;
 end;
 
 // ScreenVectorIntersectWithPlaneYZ
@@ -6291,6 +6301,7 @@ function TGLSceneBuffer.ScreenVectorIntersectWithPlaneYZ(
 begin
    Result:=ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(x, 0, 0),
                                           XHmgVector, intersectPoint);
+   intersectPoint[3]:=0;
 end;
 
 // ScreenVectorIntersectWithPlaneXZ
@@ -6301,6 +6312,7 @@ function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXZ(
 begin
    Result:=ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, y, 0),
                                           YHmgVector, intersectPoint);
+   intersectPoint[3]:=0;
 end;
 
 
