@@ -428,7 +428,7 @@ object Form1: TForm1
       item
         Name = 'Gui'
         Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'd:\3d\glscene\demos\media\DefaultSkin.bmp'
+        Material.Texture.Image.PictureFileName = '..\..\media\DefaultSkin.bmp'
         Material.Texture.ImageAlpha = tiaOpaque
         Material.Texture.Disabled = False
         Tag = 0
