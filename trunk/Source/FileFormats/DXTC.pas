@@ -7,6 +7,7 @@
    Adapted from DevIL image library (http://openil.sourceforge.net)<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/09/04 - SG - Delphi 5 compatibilty fixes (Ivan Lee Herring)
       <li>01/09/04 - SG - Creation
    </ul></font>
 }
@@ -15,7 +16,7 @@ unit DXTC;
 interface
 
 uses
-   SysUtils;
+   SysUtils, VectorGeometry;
 
 procedure DecodeDXT1toBitmap32(
    encData, decData : PByteArray;
