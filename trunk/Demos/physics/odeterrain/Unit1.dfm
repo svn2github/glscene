@@ -32,8 +32,6 @@ object Form1: TForm1
     Buffer.FogEnable = True
     Buffer.Lighting = False
     Align = alClient
-    OnMouseDown = GLSceneViewer1MouseDown
-    OnMouseMove = GLSceneViewer1MouseMove
   end
   object GLBitmapHDS1: TGLBitmapHDS
     MaxPoolSize = 0
@@ -193,7 +191,7 @@ object Form1: TForm1
     StepFast = False
     FastIterations = 5
     Left = 96
-    Top = 56
+    Top = 16
   end
   object GLNavigator1: TGLNavigator
     VirtualUp.Coordinates = {00000000000000000000803F0000803F}
@@ -201,6 +199,14 @@ object Form1: TForm1
     UseVirtualUp = True
     AutoUpdateObject = True
     AngleLock = False
+    Left = 96
+    Top = 56
+  end
+  object GLUserInterface1: TGLUserInterface
+    InvertMouse = False
+    MouseSpeed = 25.000000000000000000
+    GLNavigator = GLNavigator1
+    GLVertNavigator = GLNavigator1
     Left = 96
     Top = 96
   end

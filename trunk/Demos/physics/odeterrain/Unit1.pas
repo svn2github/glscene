@@ -42,10 +42,7 @@ type
     GLODEManager1: TGLODEManager;
     GLNavigator1: TGLNavigator;
     ODEDrop: TGLDummyCube;
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-      X, Y: Integer);
+    GLUserInterface1: TGLUserInterface;
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -56,8 +53,6 @@ type
     { Déclarations privées }
   public
     { Déclarations publiques }
-    mx, my : Integer;
-
     procedure DropSphere;
     procedure DropBox;
     procedure DropComposite;
@@ -90,10 +85,7 @@ begin
 
    // Set up the physics
 
-   // Gravity must be set manually (for now)
    GLODEManager1.Gravity.SetVector(0,0,-9.81);
-
-   // StepFast provides better stability
    GLODEManager1.StepFast:=True;
 
    // Create the terrain collider
@@ -104,12 +96,14 @@ begin
      // normals required to generate contact joints in ODE
      TerrainRenderer:=TerrainRenderer1;
    end;
+
+   GLUserInterface1.MouseLookActivate;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
-   speed : Single;
+   speed, interpolated_height : Single;
 begin
    // handle keypresses
    if IsKeyDown(VK_SHIFT) then
@@ -129,29 +123,16 @@ begin
       if IsKeyDown(VK_NEXT) then
          GLNavigator1.StrafeVertical(-speed);
       if IsKeyDown(VK_ESCAPE) then Close;
+
+      interpolated_height:=TerrainRenderer1.InterpolatedHeight(AsVector);
+      if Z<interpolated_height+5 then
+         Z:=interpolated_height+5;
    end;
 
    GLODEManager1.Step(deltaTime);
-end;
 
-// GLNavigator mouse controls & FPS code below
-
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-   mx:=x;
-   my:=y;
-end;
-
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
-begin
-   if ssLeft in Shift then begin
-      GLNavigator1.TurnHorizontal(x-mx);
-      GLNavigator1.TurnVertical(my-y);
-      mx:=x;
-      my:=y;
-   end;
+   GLUserInterface1.MouseUpdate;
+   GLUserInterface1.MouseLook;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
