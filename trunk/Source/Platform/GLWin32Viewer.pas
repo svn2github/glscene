@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>27/09/02 - EG - Added Ability to set display frequency
       <li>22/08/02 - EG - Added TGLSceneViewer.RecreateWnd
       <li>19/08/02 - EG - Added GetHandle
       <li>14/03/02 - EG - No longer invalidates while rendering
@@ -175,6 +176,7 @@ type
          FOldWndProc : TWndMethod;
          FStayOnTop : Boolean;
          FVSync : TVSyncMode;
+         FRefreshRate : Integer;
          FCursor : TCursor;
          FPopupMenu : TPopupMenu;
 
@@ -251,6 +253,15 @@ type
             If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
             extension, this property is ignored.  }
          property VSync : TVSyncMode read FVSync write FVSync default vsmSync;
+         {: Screen refresh rate.<p>
+            Use zero for system default. This property allows you to work around
+            the WinXP bug that limits uses a refresh rate of 60Hz when changeing
+            resolution. It is however suggested to give the user the opportunity
+            to adjust it instead of having a fixed value (expecially beyond
+            75Hz or for resolutions beyond 1024x768).<p>
+            The value will be automatically clamped to the highest value
+            *reported* compatible with the monitor. }
+         property RefreshRate : Integer read FRefreshRate write FRefreshRate;
 
          property Cursor : TCursor read FCursor write SetCursor default crDefault;
          property PopupMenu : TPopupMenu read FPopupMenu write SetPopupMenu;
@@ -689,7 +700,7 @@ begin
 
    if (Screen.Width<>Width) or (Screen.Height<>Height)
          or (GetCurrentColorDepth<>cScreenDepthToBPP[ScreenDepth]) then begin
-      SetFullscreenMode(res);
+      SetFullscreenMode(res, FRefreshRate);
       FSwitchedResolution:=True;
    end else FSwitchedResolution:=False;
 

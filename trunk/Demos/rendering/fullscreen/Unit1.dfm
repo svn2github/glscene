@@ -1,10 +1,10 @@
 object DataModule1: TDataModule1
   OldCreateOrder = False
   OnCreate = DataModuleCreate
-  Left = 226
-  Top = 114
-  Height = 107
-  Width = 246
+  Left = 285
+  Top = 161
+  Height = 479
+  Width = 741
   object GLScene1: TGLScene
     Left = 16
     Top = 8
@@ -41,7 +41,9 @@ object DataModule1: TDataModule1
     Height = 600
     PostRender = GLFullScreenViewer1PostRender
     Buffer.BackgroundColor = clBlack
+    Buffer.AntiAliasing = aaNone
     StayOnTop = True
+    RefreshRate = 100
     OnKeyPress = GLFullScreenViewer1KeyPress
     Left = 104
     Top = 8

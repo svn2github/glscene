@@ -3,9 +3,10 @@
    Routines to interact with the screen/desktop.<p>
 
    <b>Historique : </b><font size=-1><ul>
-      <li>27/07/01 - Egg - Removed the "absolute" in RestoreDefaultMode
-      <li>08/02/00 - Egg - TLowResMode & TVideoMode packed (wins 5 kb)
-      <li>06/02/00 - Egg - Javadocisation, added "default"s to properties
+      <li>27/09/02 - EG - Added Ability to set display frequency
+      <li>27/07/01 - EG - Removed the "absolute" in RestoreDefaultMode
+      <li>08/02/00 - EG - TLowResMode & TVideoMode packed (wins 5 kb)
+      <li>06/02/00 - EG - Javadocisation, added "default"s to properties
    </ul></font>
 }
 unit GLScreen;
@@ -51,22 +52,26 @@ type
          property WindowFitting: TWindowFitting read FWindowFitting write FWindowFitting default wfDefault;
    end;
 
-     TVideoMode = packed record
-                    Width : Word;
-                    Height : Word;
-                    ColorDepth  : Byte;
-                    Description : String;
-                  end;
+   TVideoMode = packed record
+      Width : Word;
+      Height : Word;
+      ColorDepth  : Byte;
+      MaxFrequency : Byte;
+      Description : String;
+   end;
+   PVideoMode = ^TVideoMode;
 
 function GetIndexFromResolution(XRes,YRes,BPP: Integer): TResolution;
-function SetFullscreenMode(ModeIndex: TResolution): Boolean;
+//: Changes to the video mode given by 'Index'
+function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer = 0) : Boolean;
 
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer; SrcRect: TRectangle);
 procedure RestoreDefaultMode;
 
-var VideoModes        : array[0..MaxVideoModes] of TVideoMode;
-    NumberVideomodes  : Integer = 1;
-    CurrentVideoMode  : Integer = 0;
+var
+   VideoModes        : array [0..MaxVideoModes] of TVideoMode;
+   NumberVideomodes  : Integer = 1;
+   CurrentVideoMode  : Integer = 0;
 
 //------------------------------------------------------------------------------
 
@@ -123,35 +128,42 @@ begin
   else inherited Assign(Source);
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TryToAddToList(DeviceMode: TDevMode);
-
+// TryToAddToList
+//
+procedure TryToAddToList(deviceMode : TDevMode);
 // Adds a video mode to the list if it's not a duplicate and can actually be set.
-
-var I : Integer;
-
+var
+   i : Integer;
+   vm : PVideoMode;
 begin
-  // See if this is a duplicate mode (can happen because of refresh
-  // rates, or because we explicitly try all the low-res modes)
-  for I:=1 to NumberVideomodes-1 do
-    with DeviceMode do
-      if ((dmBitsPerPel = VideoModes[I].ColorDepth) and
-          (dmPelsWidth  = VideoModes[I].Width)      and
-          (dmPelsHeight = VideoModes[I].Height))    then Exit; // it's a duplicate mode
+   // See if this is a duplicate mode (can happen because of refresh
+   // rates, or because we explicitly try all the low-res modes)
+   for i:=1 to NumberVideomodes-1 do with DeviceMode do begin
+      vm:=@VideoModes[i];
+      if (    (dmBitsPerPel=vm.ColorDepth)
+          and (dmPelsWidth =vm.Width)
+          and (dmPelsHeight=vm.Height)) then begin
+         // it's a duplicate mode, higher frequency?
+         if dmDisplayFrequency>vm.MaxFrequency then
+            vm.MaxFrequency:=dmDisplayFrequency;
+         Exit;
+      end;
+   end;
 
-  // do a mode set test (doesn't actually do the mode set, but reports whether it would have succeeded).
-  if ChangeDisplaySettings(DeviceMode,CDS_TEST or CDS_FULLSCREEN) <> DISP_CHANGE_SUCCESSFUL then Exit;
+   // do a mode set test (doesn't actually do the mode set, but reports whether it would have succeeded).
+   if ChangeDisplaySettings(DeviceMode,CDS_TEST or CDS_FULLSCREEN) <> DISP_CHANGE_SUCCESSFUL then Exit;
 
-  // it's a new, valid mode, so add this to the list
-  with DeviceMode do
-  begin
-    VideoModes[NumberVideomodes].ColorDepth:=dmBitsPerPel;
-    VideoModes[NumberVideomodes].Width:=dmPelsWidth;
-    VideoModes[NumberVideomodes].Height:=dmPelsHeight;
-    VideoModes[NumberVideomodes].Description:=Format('%d x %d, %d bpp',[dmPelsWidth,dmPelsHeight,dmBitsPerPel]);
-  end;
-  Inc(NumberVideomodes);
+   // it's a new, valid mode, so add this to the list
+   vm:=@VideoModes[NumberVideomodes];
+   with DeviceMode do begin
+      vm.ColorDepth:=dmBitsPerPel;
+      vm.Width:=dmPelsWidth;
+      vm.Height:=dmPelsHeight;
+      vm.MaxFrequency:=dmDisplayFrequency;
+      vm.Description:=Format('%d x %d, %d bpp',
+                             [dmPelsWidth, dmPelsHeight, dmBitsPerPel]);
+   end;
+   Inc(NumberVideomodes);
 end;
 
 
@@ -243,26 +255,28 @@ begin
     end;
 end;
 
-//------------------------------------------------------------------------------
-
-function SetFullscreenMode(ModeIndex: TResolution) : Boolean;
-
-// changes to the video mode given by 'Index'
-
-var DeviceMode : TDevMode;
-
+// SetFullscreenMode
+//
+function SetFullscreenMode(modeIndex : TResolution; displayFrequency : Integer = 0) : Boolean;
+var
+   deviceMode : TDevMode;
 begin
-  with DeviceMode do
-  begin
-    dmSize:=SizeOf(DeviceMode);
-    dmBitsPerPel:=VideoModes[ModeIndex].ColorDepth;
-    dmPelsWidth:=VideoModes[ModeIndex].Width;
-    dmPelsHeight:=VideoModes[ModeIndex].Height;
-    dmFields:=DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
-    // if mode set failed, we'll just run in windowed mode
-    Result:=ChangeDisplaySettings(DeviceMode,CDS_FULLSCREEN) = DISP_CHANGE_SUCCESSFUL;
-    if Result then CurrentVideoMode:=ModeIndex;
-  end;
+   with deviceMode do begin
+      dmSize:=SizeOf(DeviceMode);
+      dmBitsPerPel:=VideoModes[ModeIndex].ColorDepth;
+      dmPelsWidth:=VideoModes[ModeIndex].Width;
+      dmPelsHeight:=VideoModes[ModeIndex].Height;
+      dmFields:=DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
+      if displayFrequency>0 then begin
+         dmFields:=dmFields or DM_DISPLAYFREQUENCY;
+         if displayFrequency>VideoModes[ModeIndex].MaxFrequency then
+            displayFrequency:=VideoModes[ModeIndex].MaxFrequency;
+         dmDisplayFrequency:=displayFrequency;
+      end;
+   end;
+   Result:=ChangeDisplaySettings(deviceMode, CDS_FULLSCREEN) = DISP_CHANGE_SUCCESSFUL;
+   if Result then
+      CurrentVideoMode:=ModeIndex;
 end;
 
 //------------------------------------------------------------------------------
