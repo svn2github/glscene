@@ -8,7 +8,7 @@
    In short: access to raw height data is performed by a THeightDataSource
    subclass, that must take care of performing all necessary data access,
    cacheing and manipulation to provide THeightData objects. A THeightData
-   is basicly a square, poxer of two dimensionned raster heightfield, and
+   is basicly a square, power of two dimensionned raster heightfield, and
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
@@ -192,6 +192,7 @@ type
          FXLeft, FYTop : Integer;
          FUseCounter : Integer;
          FDataType : THeightDataType;
+         FDataSize : Integer;
          FByteData : PByteArray;
          FByteRaster : PByteRaster;
          FWordData : PWordArray;
@@ -258,7 +259,7 @@ type
          property Size : Integer read FSize;
 
          {: Memory size of the raw data in bytes. }
-         function DataSize : Integer;
+         property DataSize : Integer read FDataSize;
 
          {: Access to data as a byte array (n = y*Size+x).<p>
             If THeightData is not of type hdtByte, this value is nil. }
@@ -524,7 +525,7 @@ begin
             hd:=THeightData(Items[i]);
             if (hd.XLeft=xLeft) and (hd.YTop=yTop) and (hd.Size=size) and (hd.DataType=dataType) then begin
                Result:=hd;
-               Break;               
+               Break;
             end;
          end;
       finally
@@ -549,7 +550,7 @@ begin
       end;
    end;
    // got one... can be used ?
-   while Result.DataState<>hdsReady do Sleep(0);
+   while Result.DataState<>hdsReady do Sleep(1);
    Result.RegisterUse;
 end;
 
@@ -595,7 +596,7 @@ begin
                   if usedMemory<=MaxPoolSize then Break;
                end;
             end;
-         end;
+         end; 
       finally
          FData.UnlockList;
       end;
@@ -674,15 +675,18 @@ begin
    FDataState:=hdsQueued;
    case DataType of
       hdtByte : begin
-         FByteData:=AllocMem(Size*Size*SizeOf(Byte));
+         FDataSize:=Size*Size*SizeOf(Byte);
+         GetMem(FByteData, FDataSize);
          BuildByteRaster;
       end;
       hdtWord : begin
-         FWordData:=AllocMem(Size*Size*SizeOf(Word));
+         FDataSize:=Size*Size*SizeOf(Word);
+         GetMem(FWordData, FDataSize);
          BuildWordRaster;
       end;
       hdtSingle : begin
-         FSingleData:=AllocMem(Size*Size*SizeOf(Single));
+         FDataSize:=Size*Size*SizeOf(Single);
+         GetMem(FSingleData, FDataSize);
          BuildSingleRaster;
       end;
    else
@@ -768,27 +772,13 @@ begin
    end;
 end;
 
-// DataSize
-//
-function THeightData.DataSize : Integer;
-begin
-   case DataType of
-      hdtByte : Result:=Size*Size*SizeOf(Byte);
-      hdtWord : Result:=Size*Size*SizeOf(Word);
-      hdtSingle : Result:=Size*Size*SizeOf(Single);
-   else
-      Result:=0;
-      Assert(False);
-   end;
-end;
-
 // BuildByteRaster
 //
 procedure THeightData.BuildByteRaster;
 var
    i : Integer;
 begin
-   FByteRaster:=AllocMem(Size*SizeOf(PByteArray));
+   GetMem(FByteRaster, Size*SizeOf(PByteArray));
    for i:=0 to Size-1 do
       FByteRaster[i]:=@FByteData[i*Size]
 end;
@@ -799,7 +789,7 @@ procedure THeightData.BuildWordRaster;
 var
    i : Integer;
 begin
-   FWordRaster:=AllocMem(Size*SizeOf(PWordArray));
+   GetMem(FWordRaster, Size*SizeOf(PWordArray));
    for i:=0 to Size-1 do
       FWordRaster[i]:=@FWordData[i*Size]
 end;
@@ -810,7 +800,7 @@ procedure THeightData.BuildSingleRaster;
 var
    i : Integer;
 begin
-   FSingleRaster:=AllocMem(Size*SizeOf(PSingleArray));
+   GetMem(FSingleRaster, Size*SizeOf(PSingleArray));
    for i:=0 to Size-1 do
       FSingleRaster[i]:=@FSingleData[i*Size]
 end;
@@ -823,7 +813,8 @@ var
 begin
    FreeMem(FByteRaster);
    FByteRaster:=nil;
-   FWordData:=AllocMem(Size*Size*SizeOf(Word));
+   FDataSize:=Size*Size*SizeOf(Word);
+   GetMem(FWordData, FDataSize);
    for i:=0 to Size*Size-1 do
       FWordData[i]:=FByteData[i];
    FreeMem(FByteData);
@@ -839,7 +830,8 @@ var
 begin
    FreeMem(FByteRaster);
    FByteRaster:=nil;
-   FSingleData:=AllocMem(Size*Size*SizeOf(Single));
+   FDataSize:=Size*Size*SizeOf(Single);
+   GetMem(FSingleData, FDataSize);
    for i:=0 to Size*Size-1 do
       FSingleData[i]:=FByteData[i];
    FreeMem(FByteData);
@@ -858,7 +850,8 @@ begin
    FByteData:=Pointer(FWordData);
    for i:=0 to Size*Size-1 do
       FByteData[i]:=FWordData[i] shr 8;
-   ReallocMem(FByteData, Size*Size*SizeOf(Byte));
+   FDataSize:=Size*Size*SizeOf(Byte);
+   ReallocMem(FByteData, FDataSize);
    FWordData:=nil;
    BuildByteRaster;
 end;
@@ -871,7 +864,8 @@ var
 begin
    FreeMem(FWordRaster);
    FWordRaster:=nil;
-   FSingleData:=AllocMem(Size*Size*SizeOf(Single));
+   FDataSize:=Size*Size*SizeOf(Single);
+   GetMem(FSingleData, FDataSize);
    for i:=0 to Size*Size-1 do
       FSingleData[i]:=FWordData[i];
    FreeMem(FWordData);
@@ -890,7 +884,8 @@ begin
    FByteData:=Pointer(FSingleData);
    for i:=0 to Size*Size-1 do
       FByteData[i]:=Round(FSingleData[i]);
-   ReallocMem(FByteData, Size*Size*SizeOf(Byte));
+   FDataSize:=Size*Size*SizeOf(Byte);
+   ReallocMem(FByteData, FDataSize);
    FSingleData:=nil;
    BuildByteRaster;
 end;
@@ -906,7 +901,8 @@ begin
    FWordData:=Pointer(FSingleData);
    for i:=0 to Size*Size-1 do
       FWordData[i]:=Round(FSingleData[i]);
-   ReallocMem(FWordData, Size*Size*SizeOf(Word));
+   FDataSize:=Size*Size*SizeOf(Word);
+   ReallocMem(FWordData, FDataSize);
    FSingleData:=nil;
    BuildWordRaster;
 end;
