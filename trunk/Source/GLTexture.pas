@@ -1176,6 +1176,15 @@ begin
 	SetGLTextureImageClassesToStrings(Result);
 end;
 
+// IncludeTrailingBackslash
+//
+function IncludeTrailingBackslash(const s : string): string;
+begin
+   if IsDelimiter('\', Result, Length(Result)-1) then
+      Result:=s+'\'
+   else Result:=s;
+end;
+
 //---------------------- TGLColor ----------------------------------------------
 
 constructor TGLColor.Create(AOwner: TPersistent);
@@ -3608,6 +3617,6 @@ initialization
 finalization
 
 	vColorManager.Free;
-	vGLTextureImageClasses.Free;
+	vGLTextureImageClasses.Free; 
 
 end.

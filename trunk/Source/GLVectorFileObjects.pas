@@ -259,7 +259,6 @@ type
          procedure BuildList(var mrci : TRenderContextInfo); override;
    end;
 
-
 	// TSkeletonBone
 	//
    {: A skeleton bone or node and its children.<p>
@@ -293,7 +292,6 @@ type
          procedure BuildList(var mrci : TRenderContextInfo); override;
 
          property Owner : TSkeletonBoneList read FOwner;
-         property Skeleton : TSkeleton read FSkeleton;
          property Name : String read FName write FName;
          property BoneID : Integer read FBoneID write FBoneID;
          property Color : Cardinal read FColor write SetColor;

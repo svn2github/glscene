@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/08/01 - EG - D6 related changes
       <li>08/07/01 - EG - Register for TExtrusionSolid (Uwe Raabe)
       <li>18/02/01 - EG - Added Terrain/HeightData objects
       <li>21/01/01 - EG - Enhanced GetAttributes for some property editors
@@ -37,7 +38,7 @@ interface
 
 {$i ..\GLScene.inc}
 
-uses Windows, PlugInManager, GLScene, Controls, Classes;
+uses Windows, GLScene, Controls, Classes;
 
 type
 
@@ -54,7 +55,7 @@ type
 
 	// TObjectManager
    //
-   TObjectManager = class(TResourceManager)
+   TObjectManager = class (TObject)
       private
          { Private Declarations }
          FSceneObjectList : TList;
@@ -75,7 +76,7 @@ type
 
       public
          { Public Declarations }
-         constructor Create(Aowner: TComponent); override;
+         constructor Create;
 			destructor Destroy; override;
 
 			function GetClassFromIndex(Index: Integer): TGLSceneObjectClass;
@@ -86,7 +87,7 @@ type
 			procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory : String);
          //: Unregisters a stock object and removes it from the stock object list
 			procedure UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
-         procedure Notify(Sender: TPlugInManager; Operation: TOperation; PlugIn: Integer); override;
+//         procedure Notify(Sender: TPlugInManager; Operation: TOperation; PlugIn: Integer); override;
 
          property ObjectIcons: TImageList read FObjectIcons;
          property SceneRootIndex: Integer read FSceneRootIndex;
@@ -121,7 +122,7 @@ uses
   GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
   GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
   GLTerrainRenderer,
-{$ifdef GLS_DELPHI_6_UP} DesignEditors, DesignIntf {$else} DsgnIntf {$endif};
+{$ifdef GLS_DELPHI_6_UP} DesignIntf, DesignEditors {$else} DsgnIntf {$endif};
 
 var
 	vObjectManager : TObjectManager;
@@ -129,9 +130,10 @@ var
 function ObjectManager : TObjectManager;
 begin
    if not Assigned(vObjectManager) then
-      vObjectManager:=TObjectManager.Create(nil);
+      vObjectManager:=TObjectManager.Create;
    Result:=vObjectManager;
 end;
+
 
 { TODO : Moving property editors to the public interface }
 
@@ -149,29 +151,39 @@ type
 
    // TGLSceneEditor
    //
-   TGLSceneEditor = class(TComponentEditor)
+   TGLSceneEditor = class (TComponentEditor)
       public
          { Public Declarations }
          procedure Edit; override;
    end;
 
-  TPlugInProperty = class(TPropertyEditor)
-  public
-    procedure Edit; override;
-    function GetAttributes: TPropertyAttributes; override;
-    function GetValue: String; override;
-  end;
+(*   // TPlugInProperty
+   //
+   TPlugInProperty = class (TPropertyEditor)
+      public
+         { Public Declarations }
+         procedure Edit; override;
+         function GetAttributes: TPropertyAttributes; override;
+         function GetValue: String; override;
+   end; *)
 
-  TResolutionProperty = class(TPropertyEditor)
-	 function GetAttributes: TPropertyAttributes; override;
-	 function GetValue : String; override;
-	 procedure GetValues(Proc: TGetStrProc); override;
-	 procedure SetValue(const Value: String); override;
-  end;
+   // TResolutionProperty
+   //
+   TResolutionProperty = class (TPropertyEditor)
+      public
+         { Public Declarations }
+   	   function GetAttributes: TPropertyAttributes; override;
+	      function GetValue : String; override;
+	      procedure GetValues(Proc: TGetStrProc); override;
+   	   procedure SetValue(const Value: String); override;
+   end;
 
-  TGLTextureProperty = class(TClassProperty)
-  protected
-	 function GetAttributes: TPropertyAttributes; override;
+   // TClassProperty
+   //
+   TGLTextureProperty = class (TClassProperty)
+      protected
+			{ Protected Declarations }
+	      function GetAttributes: TPropertyAttributes; override;
   end;
 
 	// TGLTextureImageProperty
@@ -300,7 +312,7 @@ type
    // TGLMaterialLibraryEditor
    //
    {: Editor for material library.<p> }
-   TGLMaterialLibraryEditor = class(TReuseableDefaultEditor)
+   TGLMaterialLibraryEditor = class(TReuseableDefaultEditor{$ifdef GLS_DELPHI_6_UP}, IDefaultEditor{$endif})
       protected
 {$ifdef GLS_DELPHI_6_UP}
          procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
@@ -337,9 +349,9 @@ type
 
 // Create
 //
-constructor TObjectManager.Create(AOwner: TComponent);
+constructor TObjectManager.Create;
 begin
-  inherited Create(AOwner);
+  inherited;
   FSceneObjectList:=TList.Create;
   CreateDefaultObjectIcons;
 end;
@@ -355,9 +367,9 @@ end;
 
 // Notify
 //
-procedure TObjectManager.Notify(Sender: TPlugInManager; Operation: TOperation; PlugIn: Integer);
-begin
-end;
+//procedure TObjectManager.Notify(Sender: TPlugInManager; Operation: TOperation; PlugIn: Integer);
+//begin
+//end;
 
 // FindSceneObjectClass
 //
@@ -535,42 +547,40 @@ begin
 	end;
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
+//----------------- TGLSceneViewerEditor ---------------------------------------
 
-procedure TGLSceneViewerEditor.ExecuteVerb(Index: Integer);
-
+// ExecuteVerb
+//
+procedure TGLSceneViewerEditor.ExecuteVerb(Index : Integer);
 var
-  Source: TGLSceneViewer;
-
+   source : TGLSceneViewer;
 begin
-  Source:=Component as TGLSceneViewer;
-  case Index of
-    0:
-      Source.ShowInfo;
-  end;
+   source:=Component as TGLSceneViewer;
+   case Index of
+      0 : source.ShowInfo;
+   end;
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
-function TGLSceneViewerEditor.GetVerb(Index: Integer): string;
-
+// GetVerb
+//
+function TGLSceneViewerEditor.GetVerb(Index : Integer) : String;
 begin
-  case Index of
-    0:
-      Result:='Show context info';
-  end;
+   case Index of
+      0 : Result:='Show context info';
+   end;
 end;
 
-//----------------------------------------------------------------------------------------------------------------------
-
+// GetVerbCount
+//
 function TGLSceneViewerEditor.GetVerbCount: Integer;
-
 begin
-  Result:=1;
+   Result:=1;
 end;
 
-//----------------- TGLSceneEditor -------------------------------------------------------------------------------------
+//----------------- TGLSceneEditor ---------------------------------------------
 
+// Edit
+//
 procedure TGLSceneEditor.Edit;
 begin
    with GLSceneEditorForm do begin
@@ -580,7 +590,7 @@ begin
 end;
 
 //----------------- TPlugInProperty ------------------------------------------------------------------------------------
-
+{
 procedure TPlugInProperty.Edit;
 var
    Manager: TPlugInManager;
@@ -602,7 +612,7 @@ function TPlugInProperty.GetValue: String;
 begin
    Result:='registered : ' + IntToStr(TStringList(GetOrdValue).Count);
 end;
-
+}
 //----------------- TResolutionProperty --------------------------------------------------------------------------------
 
 function TResolutionProperty.GetAttributes: TPropertyAttributes;
@@ -1241,17 +1251,17 @@ procedure Register;
 begin
    RegisterComponents('GLScene',
                       [TGLScene, TGLSceneViewer, TGLMaterialLibrary, TGLCadencer,
-                       TPlugInManager, TAsyncTimer, TCollisionManager,
-                       TGLFireFXManager, TBitmapFont, TGLBitmapHDS,
-                       TGLThorFXManager, TAnimationControler]);
+                       TAsyncTimer, TCollisionManager, TGLFireFXManager,
+                       TBitmapFont, TGLBitmapHDS, TGLThorFXManager,
+                       TAnimationControler]); 
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);
+
 {$ifdef GLS_DELPHI_5_UP}
 	RegisterComponentEditor(TGLMaterialLibrary, TGLMaterialLibraryEditor);
 {$endif}
 
-	RegisterPropertyEditor(TypeInfo(TPlugInList), TPlugInManager, 'PlugIns', TPlugInProperty);
 	RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
 	RegisterPropertyEditor(TypeInfo(TGLColor), nil, '', TGLColorProperty);
 	RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '', TGLTextureProperty);

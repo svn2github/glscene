@@ -5536,7 +5536,7 @@ begin
       FRenderingContext.Activate;
       // most info is available with active context only
       try
-         infoForm.GetInfoFrom(Self);
+//         infoForm.GetInfoFrom(Self);
       finally
          FRenderingContext.Deactivate;
       end;

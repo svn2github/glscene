@@ -1772,7 +1772,8 @@ initialization
 
 finalization
 
-   vManagers.Free; vManagers:=nil;
+   vManagers.Free;
+   vManagers:=nil;
 
 end.
 

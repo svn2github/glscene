@@ -157,7 +157,8 @@ end;
 procedure ReleaseGLSceneEditorForm;
 begin
 	if Assigned(vGLSceneEditorForm) then begin
-		vGLSceneEditorForm.Free; vGLSceneEditorForm:=nil;
+		vGLSceneEditorForm.Free;
+      vGLSceneEditorForm:=nil;
    end;
 end;
 

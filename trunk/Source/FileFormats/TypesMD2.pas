@@ -92,6 +92,7 @@ type
   frameList = array of TMake_Frame_List;
   indexList = array of TMake_Index_List;
   VertList = array of TMake_Vertex_List;
+  
 implementation
 
 end.
