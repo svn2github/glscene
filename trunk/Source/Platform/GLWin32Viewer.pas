@@ -2,6 +2,7 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/08/02 - EG - Added GetHandle
       <li>14/03/02 - EG - No longer invalidates while rendering
       <li>11/02/02 - EG - Fixed BeforeRender
       <li>29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
@@ -189,6 +190,7 @@ type
          procedure SetStayOnTop(const val : Boolean);
          procedure SetCursor(const val : TCursor);
          procedure SetPopupMenu(const val : TPopupMenu);
+         function  GetHandle : HWND;
 
          procedure DoBeforeRender(Sender : TObject);
          procedure DoBufferChange(Sender : TObject); override;
@@ -220,6 +222,10 @@ type
 
          {: Activates/deactivates full screen mode.<p> }
          property Active : Boolean read FActive write SetActive;
+         {: Read access to the underlying form handle.<p>
+            Returns 0 (zero) if the viewer is not active or has not yet
+            instantiated its form. }
+         property Handle : HWND read GetHandle;
 
       published
          { Public Declarations }
@@ -899,6 +905,15 @@ begin
       if Assigned(FForm) then
          FForm.PopupMenu:=val;
    end;
+end;
+
+// GetHandle
+//
+function TGLFullScreenViewer.GetHandle : HWND;
+begin
+   if Assigned(FForm) then
+      Result:=FForm.Handle
+   else Result:=0;
 end;
 
 // ------------------------------------------------------------------
