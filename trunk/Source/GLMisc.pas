@@ -144,6 +144,12 @@ type
          property OnNotifyChange : TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
 	end;
 
+   // TProgressTimes
+   //
+   TProgressTimes = record
+      deltaTime, newTime : Double
+   end;
+
 	// TGLCadenceAbleComponent
 	//
 	{: An base class describing the "cadencing" interface.<p> }
@@ -153,7 +159,7 @@ type
 {$ifndef GLS_DELPHI_5_UP}
          procedure RemoveFreeNotification(AComponent: TComponent);
 {$endif}
-			procedure DoProgress(const deltaTime, newTime : Double); virtual;
+			procedure DoProgress(const progressTime : TProgressTimes); virtual;
 	end;
 
 	// TGLUpdateAbleComponent
@@ -604,8 +610,8 @@ var
    vFrontColors, vBackColors : THomogeneousFltVectorArray;
    vFrontShininess, vBackShininess : Integer;
 procedure SetGLMaterialColors(const aFace : TGLEnum;
-                        const emission, ambient, diffuse, specular : PGLFloat;
-                        const shininess : Integer);
+                              const emission, ambient, diffuse, specular : PGLFloat;
+                              const shininess : Integer);
 var
    ar : PHomogeneousFltVectorArray;
 begin
@@ -860,7 +866,7 @@ end;
 
 // DoProgress
 //
-procedure TGLCadenceAbleComponent.DoProgress(const deltaTime, newTime : Double);
+procedure TGLCadenceAbleComponent.DoProgress(const progressTime : TProgressTimes);
 begin
    // nothing
 end;

@@ -112,6 +112,7 @@ type
 			{ Private Declarations }
 			FOwner : TPersistent;
 			FList : TList;
+         FCount : Integer;
 
 		protected
 			{ Protected Declarations }
@@ -139,7 +140,7 @@ type
          class function ItemsClass : TXCollectionItemClass; virtual;
 
 			property Items[index : Integer] : TXCollectionItem read GetItems; default;
-			function Count : Integer;
+         property Count : Integer read FCount;
 			function Add(anItem : TXCollectionItem) : Integer;
 			procedure Delete(index : Integer);
 			procedure Remove(anItem : TXCollectionItem);
@@ -518,13 +519,6 @@ begin
    Result:=s+'.XCollection';
 end;
 
-// Count
-//
-function TXCollection.Count : Integer;
-begin
-	Result:=FList.Count;
-end;
-
 // Add
 //
 function TXCollection.Add(anItem : TXCollectionItem) : Integer;
@@ -535,6 +529,7 @@ begin
 		anItem.FOwner.FList.Remove(anItem);
 	anItem.FOwner:=Self;
 	Result:=FList.Add(anItem);
+   FCount:=FList.Count;
 end;
 
 // Delete
@@ -548,6 +543,7 @@ begin
 		Free;
 	end;
 	FList.Delete(index);
+   FCount:=FList.Count;
 end;
 
 // Remove
@@ -573,6 +569,7 @@ begin
 			Free;
 		end;
 	FList.Clear;
+   FCount:=0;
 end;
 
 // IndexOf

@@ -446,6 +446,7 @@ procedure TGLCadencer.Progress;
 var
 	deltaTime, newTime : Double;
    i : Integer;
+   pt : TProgressTimes;
 begin
 	// basic protection against infinite loops,
    // shall never happen, unless there is a bug in user code
@@ -480,10 +481,12 @@ begin
                   lastTime:=newTime;
                end;
             end;
+            pt.deltaTime:=deltaTime;
+            pt.newTime:=newTime;
             if Assigned(FSubscribedCadenceableComponents) then
                for i:=0 to FSubscribedCadenceableComponents.Count-1 do
                   with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
-                     DoProgress(deltaTime, newTime);
+                     DoProgress(pt);
             if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
                FOnProgress(Self, deltaTime, newTime);
          end;

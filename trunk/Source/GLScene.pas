@@ -353,6 +353,8 @@ type
          procedure DrawAxes(Pattern: Word);
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
          function  GetHandle(var rci : TRenderContextInfo) : TObjectHandle; virtual;
+         //: Should the object be considered as blended for sorting purposes?
+         function  Blended : Boolean; virtual;
          //: Returns Up and Direction vectors depending on the transformation mode
          procedure GetOrientationVectors(var up, direction: TAffineVector);
          procedure RebuildMatrix;
@@ -475,7 +477,7 @@ type
          procedure MoveChildUp(anIndex : Integer);
          procedure MoveChildDown(anIndex : Integer);
 
-         procedure DoProgress(const deltaTime, newTime : Double); override;
+         procedure DoProgress(const progressTime : TProgressTimes); override;
          procedure MoveTo(newParent : TGLBaseSceneObject); dynamic;
          procedure MoveUp;
          procedure MoveDown;
@@ -587,7 +589,7 @@ type
          constructor Create(aOwner : TXCollection); override;
          destructor Destroy; override;
 
-         procedure DoProgress(const deltaTime, newTime : Double); virtual;
+         procedure DoProgress(const progressTime : TProgressTimes); virtual;
    end;
 
    // TGLBehaviour
@@ -623,7 +625,7 @@ type
          property Behaviour[index : Integer] : TGLBehaviour read GetBehaviour; default;
 
          function CanAdd(aClass : TXCollectionItemClass) : Boolean; override;
-         procedure DoProgress(const deltaTime, newTime : Double);
+         procedure DoProgress(const progressTimes : TProgressTimes);
    end;
 
    // TGLObjectEffect
@@ -695,7 +697,7 @@ type
          property ObjectEffect[index : Integer] : TGLObjectEffect read GetEffect; default;
 
          function CanAdd(aClass : TXCollectionItemClass) : Boolean; override;
-         procedure DoProgress(const deltaTime, newTime : Double);
+         procedure DoProgress(const progressTime : TProgressTimes);
          procedure RenderPreEffects(sceneBuffer : TGLSceneBuffer;
                                     var rci : TRenderContextInfo);
          {: Also take care of registering after effects with the GLSceneViewer. }
@@ -716,6 +718,8 @@ type
 
       protected
          { Protected Declarations }
+         function  Blended : Boolean; override;
+
          procedure SetGLMaterial(AValue: TGLMaterial);
          procedure DestroyHandles; override;
 
@@ -743,6 +747,8 @@ type
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
+
+         procedure ValidateTransformation; override;
    end;
 
    // TGLImmaterialSceneObject
@@ -1914,9 +1920,9 @@ procedure TGLPickList.Clear;
 var
    i : Integer;
 begin
-   for I:=0 to Count-1 do begin
-      PPickRecord(Items[I]).SubObjects:=nil;
-      Dispose(PPickRecord(Items[I]));
+   for i:=0 to Count-1 do begin
+      PPickRecord(Items[i]).SubObjects:=nil;
+      Dispose(PPickRecord(Items[i]));
    end;
    inherited Clear;
 end;
@@ -2017,12 +2023,12 @@ end;
 // GetHandle
 //
 function TGLBaseSceneObject.GetHandle(var rci : TRenderContextInfo) : TObjectHandle;
-begin
-   if (ocStructure in FChanges) or (FListHandle.Handle=0) then begin
-      if FListHandle.Handle=0 then begin
+
+   procedure DoBuild;
+   begin
+      if FListHandle.Handle=0 then
          FListHandle.AllocateHandle;
-         Assert(FListHandle.Handle<>0, 'Handle=0 for '+ClassName);
-      end;
+      Assert(FListHandle.Handle<>0, 'Handle=0 for '+ClassName);
       glNewList(FListHandle.Handle, GL_COMPILE);
       try
          BuildList(rci);
@@ -2031,7 +2037,13 @@ begin
       end;
       Exclude(FChanges, ocStructure);
    end;
+
+begin
    Result:=FListHandle.Handle;
+   if (Result=0) or (ocStructure in FChanges) then begin
+      DoBuild;
+      Result:=FListHandle.Handle;
+   end;
 end;
 
 // DestroyHandles
@@ -2043,6 +2055,13 @@ begin
    for i:=0 to Count-1 do
       Children[i].DestroyHandles;
    FListHandle.DestroyHandle;
+end;
+
+// Blended
+//
+function TGLBaseSceneObject.Blended : Boolean;
+begin
+   Result:=False;
 end;
 
 // BeginUpdate
@@ -3024,17 +3043,19 @@ end;
 
 // DoProgress
 //
-procedure TGLBaseSceneObject.DoProgress(const deltaTime, newTime : Double);
+procedure TGLBaseSceneObject.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
+   list : PPointerList;
 begin
-   for i:=FChildren.Count-1 downto 0 do
-      TGLBaseSceneObject(FChildren[i]).DoProgress(deltaTime, newTime);
+   list:=FChildren.List;
+   for i:=FChildren.Count-1 downto 0 do 
+      TGLBaseSceneObject(list[i]).DoProgress(progressTime);
    if Behaviours.Count>0 then
-      Behaviours.DoProgress(deltaTime, newTime);
+      Behaviours.DoProgress(progressTime);
    if Effects.Count>0 then
-      Effects.DoProgress(deltaTime, newTime);
-   if Assigned(FOnProgress) then
+      Effects.DoProgress(progressTime);
+   if Assigned(FOnProgress) then with progressTime do
       FOnProgress(Self, deltaTime, newTime);
 end;
 
@@ -3209,7 +3230,7 @@ begin
    end;
    // start rendering children (if any)
    if renderChildren then begin
-      if Count>0 then
+      if FChildren.Count>0 then
          Self.RenderChildren(0, Count-1, rci);
    end;
 end;
@@ -3247,8 +3268,8 @@ begin
                if rci.objectsSorting=osRenderBlendedLast then begin
                   // render opaque stuff
                   for i:=firstChildIndex to lastChildIndex do begin
-                     obj:=Get(i);
-                     if (not (obj is TGLCustomSceneObject)) or (TGLCustomSceneObject(obj).Material.BlendingMode=bmOpaque) then
+                     obj:=TGLBaseSceneObject(FChildren.List[i]);
+                     if not obj.Blended then
                         obj.Render(rci)
                      else if obj.Visible then begin
                         objList.Add(obj);
@@ -3262,10 +3283,11 @@ begin
                      distList.Add(obj.BarycenterSqrDistanceTo(rci.cameraPosition));
                   end;
                end;
-               if distList.Count>1 then
+               if distList.Count>1 then begin
                   QuickSortLists(0, distList.Count-1, distList, objList);
-               for i:=objList.Count-1 downto 0 do
-                  TGLBaseSceneObject(objList[i]).Render(rci);
+                  for i:=objList.Count-1 downto 0 do
+                     TGLBaseSceneObject(objList.List[i]).Render(rci);
+               end;
             finally
                distList.Free;
                objList.Free;
@@ -3292,24 +3314,21 @@ end;
 procedure TGLBaseSceneObject.ValidateTransformation;
 var
    i : Integer;
+   list : PPointerList;
 begin
-   // determine predecessor in transformation pipeline
-   if not Assigned(FParent) then begin
-      if ocTransformation in Changes then
-         RebuildMatrix;
+   if ocTransformation in Changes then begin
+      RebuildMatrix;
+      Exclude(FChanges, ocTransformation);
    end else begin
-      if ocTransformation in Changes then
-         RebuildMatrix
-      else begin
-         FAbsoluteMatrixDirty:=FParent.FAbsoluteMatrixDirty or FAbsoluteMatrixDirty;
+      if not FAbsoluteMatrixDirty then begin
+         FAbsoluteMatrixDirty:=FParent.FAbsoluteMatrixDirty;
          FInvAbsoluteMatrixDirty:=FAbsoluteMatrixDirty or FInvAbsoluteMatrixDirty;
       end;
    end;
    // validate for children
-   for i:=0 to Count-1 do
-      Self[i].ValidateTransformation;
-   // all done
-   Exclude(FChanges, ocTransformation);
+   list:=FChildren.List;
+   for i:=FChildren.Count-1 downto 0 do
+      TGLBaseSceneObject(list[i]).ValidateTransformation;
 end;
 
 // GetMatrix
@@ -3479,7 +3498,7 @@ end;
 
 // DoProgress
 //
-procedure TGLBaseBehaviour.DoProgress(const deltaTime, newTime : Double);
+procedure TGLBaseBehaviour.DoProgress(const progressTime : TProgressTimes);
 begin
    // does nothing
 end;
@@ -3519,12 +3538,12 @@ end;
 
 // DoProgress
 //
-procedure TGLBehaviours.DoProgress(const deltaTime, newTime : Double);
+procedure TGLBehaviours.DoProgress(const progressTimes : TProgressTimes);
 var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TGLBehaviour(Items[i]).DoProgress(deltaTime, newTime);
+      TGLBehaviour(Items[i]).DoProgress(progressTimes);
 end;
 
 // ------------------
@@ -3594,12 +3613,12 @@ end;
 
 // DoProgress
 //
-procedure TGLObjectEffects.DoProgress(const deltaTime, newTime : Double);
+procedure TGLObjectEffects.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TGLBehaviour(Items[i]).DoProgress(deltaTime, newTime);
+      TGLBehaviour(Items[i]).DoProgress(progressTime);
 end;
 
 // RenderPreEffects
@@ -3665,6 +3684,13 @@ begin
    inherited Assign(Source);
 end;
 
+// Blended
+//
+function TGLCustomSceneObject.Blended : Boolean;
+begin
+   Result:=(Material.BlendingMode<>bmOpaque);
+end;
+
 // SetGLMaterial
 //
 procedure TGLCustomSceneObject.SetGLMaterial(AValue: TGLMaterial);
@@ -3696,8 +3722,8 @@ begin
    end;
    // start rendering children (if any)
    if renderChildren then begin
-      if Count>0 then
-         Self.RenderChildren(0, Count-1, rci);
+      if FChildren.Count>0 then
+         Self.RenderChildren(0, FChildren.Count-1, rci);
    end;
 end;
 
@@ -3711,6 +3737,23 @@ constructor TGLSceneRootObject.Create(AOwner: TComponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw];
+end;
+
+// ValidateTransformation
+//
+procedure TGLSceneRootObject.ValidateTransformation;
+var
+   i : Integer;
+   list : PPointerList;
+begin
+   if ocTransformation in Changes then begin
+      RebuildMatrix;
+      Exclude(FChanges, ocTransformation);
+   end;
+   // validate for children
+   list:=FChildren.List;
+   for i:=Count-1 downto 0 do
+      TGLBaseSceneObject(list[i]).ValidateTransformation;
 end;
 
 // ------------------
@@ -4594,7 +4637,7 @@ begin
   FObjects:=TGLSceneRootObject.Create(Self);
   FObjects.Name:='ObjectRoot';
   FObjects.FScene:=Self;
-  FCameras:=TGLBaseSceneObject.Create(Self);
+  FCameras:=TGLSceneRootObject.Create(Self);
   FCameras.Name:='CameraRoot';
   FCameras.FScene:=Self;
   FLights:=TList.Create;
@@ -4847,9 +4890,13 @@ end;
 // Progress
 //
 procedure TGLScene.Progress(const deltaTime, newTime : Double);
+var
+   pt : TProgressTimes;
 begin
-   FObjects.DoProgress(deltaTime, newTime);
-   FCameras.DoProgress(deltaTime, newTime);
+   pt.deltaTime:=deltaTime;
+   pt.newTime:=newTime;
+   FObjects.DoProgress(pt);
+   FCameras.DoProgress(pt);
 end;
 
 // SaveToFile

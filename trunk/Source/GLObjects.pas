@@ -1844,8 +1844,12 @@ begin
    StructureChanged;
 end;
 
-//----------------- TCube ------------------------------------------------------
+// ------------------
+// ------------------ TCube ------------------
+// ------------------
 
+// Create
+//
 constructor TCube.Create(AOwner:Tcomponent);
 begin
   inherited Create(AOwner);
@@ -1856,61 +1860,61 @@ begin
   FNormalDirection:=ndOutside;
 end;
 
-//------------------------------------------------------------------------------
-
+// BuildList
+//
 procedure TCube.BuildList(var rci : TRenderContextInfo);
 var
 	hw, hh, hd, nd  : TGLFloat;
 begin
-   if FNormalDirection = ndInside then
+   if FNormalDirection=ndInside then
       nd:=-1
    else nd:=1;
-   hw:= FCubeWidth*0.5;
-   hh:= FCubeHeight*0.5;
-   hd:= FCubeDepth*0.5;
+   hw:=FCubeWidth*0.5;
+   hh:=FCubeHeight*0.5;
+   hd:=FCubeDepth*0.5;
 
    glBegin(GL_QUADS);
    if cpFront in FParts then begin
       glNormal3f(  0,  0, nd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw, hh, hd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, hh, hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw,  hh, hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw,  hh, hd);
       xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, -hh, hd);
       xglTexCoord2fv(@XTexPoint);      glVertex3f( hw, -hh, hd);
    end;
    if cpBack in FParts then begin
       glNormal3f(  0,  0, -nd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f( hw, hh, -hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f( hw,  hh, -hd);
       xglTexCoord2fv(@NullTexPoint);   glVertex3f( hw, -hh, -hd);
       xglTexCoord2fv(@XTexPoint);      glVertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw, hh, -hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw,  hh, -hd);
    end;
    if cpLeft in FParts then begin
       glNormal3f(-nd,  0,  0);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw, hh, hd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, hh, -hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f(-hw,  hh,  hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw,  hh, -hd);
       xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f(-hw, -hh, hd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f(-hw, -hh,  hd);
    end;
    if cpRight in FParts then begin
       glNormal3f(nd,  0,  0);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(hw, hh, hd);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f(hw, -hh, hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(hw,  hh,  hd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f(hw, -hh,  hd);
       xglTexCoord2fv(@XTexPoint);      glVertex3f(hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f(hw, hh, -hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f(hw,  hh, -hd);
    end;
    if cpTop in FParts then begin
       glNormal3f(  0, nd,  0);
       xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, hh, -hd);
-      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, hh, hd);
-      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw, hh, hd);
+      xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, hh,  hd);
+      xglTexCoord2fv(@XTexPoint);      glVertex3f( hw, hh,  hd);
       xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw, hh, -hd);
    end;
    if cpBottom in FParts then begin
       glNormal3f(  0, -nd,  0);
       xglTexCoord2fv(@NullTexPoint);   glVertex3f(-hw, -hh, -hd);
       xglTexCoord2fv(@XTexPoint);      glVertex3f( hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw, -hh, hd);
-      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, -hh, hd);
+      xglTexCoord2fv(@XYTexPoint);     glVertex3f( hw, -hh,  hd);
+      xglTexCoord2fv(@YTexPoint);      glVertex3f(-hw, -hh,  hd);
    end;
    glEnd;
 end;
@@ -1983,10 +1987,10 @@ end;
 //
 function TCube.AxisAlignedDimensions : TVector;
 begin
-   VectorScale(VectorMake(Abs(FCubeWidth*Scale.DirectX),
-                          Abs(FCubeHeight*Scale.DirectY),
-                          Abs(FCubeDepth*Scale.DirectZ)),
-               0.5, Result);
+   Result[0]:= FCubeWidth*Scale.DirectX*0.5;
+   Result[1]:=FCubeHeight*Scale.DirectY*0.5;
+   Result[2]:= FCubeDepth*Scale.DirectZ*0.5;
+   Result[3]:=0;
 end;
 
 // DefineProperties
@@ -2020,7 +2024,7 @@ begin
    end;
 end;
 
-//----------------- TCube ------------------------------------------------------
+//----------------- TFrustrum --------------------------------------------------
 
 constructor TFrustrum.Create(AOwner: TComponent);
 begin

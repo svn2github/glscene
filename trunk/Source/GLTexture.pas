@@ -2588,13 +2588,15 @@ end;
 //
 procedure TGLTexture.UnApply(var rci : TRenderContextInfo);
 begin
-   if stTextureCubeMap in rci.currentStates then begin
-      UnSetGLState(rci.currentStates, stTextureCubeMap);
-      glMatrixMode(GL_TEXTURE);
-      glLoadIdentity;
-      glMatrixMode(GL_MODELVIEW);
+   if not Disabled then begin
+      if stTextureCubeMap in rci.currentStates then begin
+         UnSetGLState(rci.currentStates, stTextureCubeMap);
+         glMatrixMode(GL_TEXTURE);
+         glLoadIdentity;
+         glMatrixMode(GL_MODELVIEW);
+      end;
+      UnApplyMappingMode;
    end;
-   UnApplyMappingMode;
 end;
 
 // ApplyAsTexture2
