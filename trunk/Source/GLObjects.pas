@@ -11,6 +11,7 @@
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/04/03 - SG - Added lsmBezierSpline to TGLLines.SplineMode
       <li>02/04/03 - EG - TGLPlane.RayCastIntersect fix (Erick Schuitema)
       <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
       <li>22/01/03 - EG - TGLCube.RayCastIntersect fixes (Dan Bartlett)
@@ -404,7 +405,7 @@ type
    // TLineSplineMode
    //
    {: Available spline modes for a TLine. }
-   TLineSplineMode = (lsmLines, lsmCubicSpline);
+   TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline);
 
    // TGLLinesNode
    //
@@ -2544,11 +2545,19 @@ var
    f : Single;
    spline : TCubicSpline;
    vertexColor : TVector;
+   nodeBuffer : array of TAffineVector;
 begin
-  if Nodes.Count>1 then begin
+   if Nodes.Count>1 then begin
       // first, we setup the line color & stippling styles
       SetupLineStyle;
       // start drawing the line
+      if FSplineMode=lsmBezierSpline then begin
+         SetLength(nodeBuffer,Nodes.Count);
+         for i:=0 to Nodes.Count-1 do
+            nodeBuffer[i]:=Nodes[i].AsAffineVector;
+         glMap1f(GL_MAP1_VERTEX_3,0,1,3,Nodes.Count,@nodeBuffer[0]);
+         glEnable(GL_MAP1_VERTEX_3);
+      end;
       glBegin(GL_LINE_STRIP);
          if (FDivision<2) or (FSplineMode=lsmLines) then begin
             // standard line(s), draw directly
@@ -2563,7 +2572,7 @@ begin
                for i:=0 to Nodes.Count-1 do with Nodes[i] do
                   glVertex3f(X, Y, Z);
             end;
-         end else begin
+         end else if (FSplineMode=lsmCubicSpline) then begin
             // cubic spline
             spline:=Nodes.CreateNewCubicSpline;
             try
@@ -2584,6 +2593,9 @@ begin
             finally
                Spline.Free;
             end;
+         end else if (FSplineMode=lsmBezierSpline) then begin
+            for i:=0 to FDivision do
+               glEvalCoord1f(i/FDivision);
          end;
       glEnd;
       RestoreLineStyle;
