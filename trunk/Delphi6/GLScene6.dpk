@@ -169,6 +169,7 @@ contains
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
   GLSilhouette in '..\Source\GLSilhouette.pas',
   GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas',
-  GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas';
+  GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
+  GLStarRecord in '..\Source\FileFormats\GLStarRecord.pas';
 
 end.

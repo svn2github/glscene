@@ -146,6 +146,9 @@ contains
   GLFileMS3D in '..\Source\FileFormats\GLFileMS3D.pas',
   GLShadowVolume in '..\Source\GLShadowVolume.pas',
   GLSilhouette in '..\Source\GLSilhouette.pas',
-  GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas';
+  GLBaseMeshSilhouette in '..\Source\GLBaseMeshSilhouette.pas',
+  GLTexCombineShader in '..\Source\Shaders\GLTexCombineShader.pas',
+  GLTextureCombiners in '..\Source\Base\GLTextureCombiners.pas',
+  GLStarRecord in '..\Source\FileFormats\GLStarRecord.pas';
 
 end.
