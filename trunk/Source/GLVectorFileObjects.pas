@@ -1001,6 +1001,7 @@ type
          FIgnoreMissingTextures : Boolean;
          FAutoCentering : TMeshAutoCenterings;
          FMaterialLibraryCachesPrepared : Boolean;
+         FConnectivity : TObject;
 
       protected
          { Protected Declarations }
@@ -1065,6 +1066,7 @@ type
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLBaseSilhouette; override;
+         procedure BuildSilhouetteConnectivityData;
 
          property MeshObjects : TMeshObjectList read FMeshObjects;
          property Skeleton : TSkeleton read FSkeleton;
@@ -4602,6 +4604,7 @@ end;
 //
 destructor TGLBaseMesh.Destroy;
 begin
+   FConnectivity.Free;
    DropMaterialLibraryCache;
    FSkeleton.Free;
    FMeshObjects.Free;
@@ -5093,12 +5096,40 @@ var
    sil : TGLSilhouette;
 begin
    sil:=nil;
-   mc:=TGLBaseMeshConnectivity.Create(Self);
-   mc.CreateSilhouetteOmni(silhouetteParameters.SeenFrom,
-                           silhouetteParameters.CappingRequired,
-                           sil);
-   mc.Free;
+   if Assigned(FConnectivity) then begin
+      mc:=TGLBaseMeshConnectivity(FConnectivity);
+      mc.CreateSilhouetteOmni(silhouetteParameters.SeenFrom,
+                              silhouetteParameters.CappingRequired,
+                              sil);
+   end else begin
+      mc:=TGLBaseMeshConnectivity.Create(Self);
+      try
+         mc.CreateSilhouetteOmni(silhouetteParameters.SeenFrom,
+                                 silhouetteParameters.CappingRequired,
+                                 sil);
+      finally
+         mc.Free;
+      end;
+   end;
    Result:=sil;
+end;
+
+// BuildSilhouetteConnectivityData
+//
+procedure TGLBaseMesh.BuildSilhouetteConnectivityData;
+var
+   i, j : Integer;
+   mo : TMeshObject;
+begin
+   FreeAndNil(FConnectivity);
+   // connectivity data works only on facegroups of TFGVertexIndexList class
+   for i:=0 to MeshObjects.Count-1 do begin
+      mo:=(MeshObjects[i] as TMeshObject);
+      if mo.Mode<>momFacegroups then Exit;
+      for j:=0 to mo.FaceGroups.Count-1 do
+         if not mo.FaceGroups[j].InheritsFrom(TFGVertexIndexList) then Exit;
+   end;
+   FConnectivity:=TGLBaseMeshConnectivity.Create(Self);
 end;
 
 // ------------------
