@@ -80,7 +80,7 @@ uses
    {$IFDEF LINUX}GLLinuxViewer,{$ENDIF}
 
    GLMisc, GLCrossPlatform, GLStrings, GLObjects, GLGeomObjects,
-   GLTeapot;
+   GLTeapot, GLTexture;
 
 var
    vObjectManager : TObjectManager;
@@ -435,7 +435,8 @@ procedure Register;
 begin
    RegisterComponents('GLScene',
                       [TGLScene,
-                       TGLSceneViewer
+                       TGLSceneViewer,
+                       TGLMaterialLibrary
                       ]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
