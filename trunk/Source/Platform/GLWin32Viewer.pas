@@ -143,7 +143,7 @@ type
          {: Access to buffer properties. }
          property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
 
-         {: Returns or sets the field of view for the viewer, in radians.<p>
+         {: Returns or sets the field of view for the viewer, in degrees.<p>
          This value depends on the camera and the width and height of the scene.
          The value isn't persisted, if the width/height or camera.focallength is
          changed, FieldOfView is changed also. }
