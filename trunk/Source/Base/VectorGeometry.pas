@@ -2286,7 +2286,7 @@ asm
       FSUB DWORD PTR [EDX+8]
       FSTP DWORD PTR [ECX+8]
       mov   edx, [eax+12]
-      mov   [ECX+12], eax
+      mov   [ECX+12], edx
 {$else}
 begin
    result[0]:=v1[0]-v2[0];
