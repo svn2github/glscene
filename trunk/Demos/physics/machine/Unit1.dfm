@@ -108,8 +108,8 @@ object Form1: TForm1
     end
   end
   object GLODEManager1: TGLODEManager
-    StepFast = False
-    FastIterations = 5
+    Solver = osmQuickStep
+    Iterations = 3
     Left = 40
     Top = 8
   end

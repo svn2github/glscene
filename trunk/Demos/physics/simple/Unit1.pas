@@ -104,13 +104,8 @@ end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
-const
-  cStep = 0.001;
-var
-  i : integer;
 begin
-  for i:=0 to Trunc(deltaTime/cStep) do
-    GLODEManager1.Step(cStep);
+  GLODEManager1.Step(deltaTime);
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;

@@ -1,7 +1,6 @@
 object Form1: TForm1
   Left = 192
   Top = 115
-  Align = alClient
   BorderStyle = bsNone
   Caption = 'Form1'
   ClientHeight = 415
@@ -25,8 +24,8 @@ object Form1: TForm1
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
-    Buffer.FogEnvironment.FogStart = 200.000000000000000000
-    Buffer.FogEnvironment.FogEnd = 650.000000000000000000
+    Buffer.FogEnvironment.FogStart = 200
+    Buffer.FogEnvironment.FogEnd = 650
     Buffer.FogEnvironment.FogDistance = fdEyeRadial
     Buffer.BackgroundColor = clGray
     Buffer.FogEnable = True
@@ -46,14 +45,14 @@ object Form1: TForm1
       Up.Coordinates = {000000000000803F0000008000000000}
       Bands = <
         item
-          StartAngle = -5.000000000000000000
+          StartAngle = -5
           StartColor.Color = {0000803F0000803F0000803F0000803F}
-          StopAngle = 25.000000000000000000
+          StopAngle = 25
           Slices = 9
         end
         item
-          StartAngle = 25.000000000000000000
-          StopAngle = 90.000000000000000000
+          StartAngle = 25
+          StopAngle = 90
           StopColor.Color = {938C0C3E938C0C3E938E0E3F0000803F}
           Slices = 9
           Stacks = 4
@@ -61,8 +60,6 @@ object Form1: TForm1
       Stars = <>
       Options = [sdoTwinkle]
       object SPMoon: TGLSprite
-        Position.Coordinates = {00000C430000C842000096420000803F}
-        Visible = False
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
@@ -72,14 +69,15 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Width = 30.000000000000000000
-        Height = 30.000000000000000000
+        Position.Coordinates = {00000C430000C842000096420000803F}
+        Visible = False
+        Width = 30
+        Height = 30
         NoZWrite = True
         MirrorU = False
         MirrorV = False
       end
       object SPSun: TGLSprite
-        Position.Coordinates = {00000C430000C842000096420000803F}
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.BlendingMode = bmAdditive
@@ -88,22 +86,23 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
-        Width = 60.000000000000000000
-        Height = 60.000000000000000000
+        Position.Coordinates = {00000C430000C842000096420000803F}
+        Width = 60
+        Height = 60
         NoZWrite = True
         MirrorU = False
         MirrorV = False
       end
     end
     object TerrainRenderer1: TGLTerrainRenderer
-      Scale.Coordinates = {00008040000080400000803E00000000}
-      Up.Coordinates = {000000000000803F0000008000000000}
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'ground'
+      Scale.Coordinates = {00008040000080400000803E00000000}
+      Up.Coordinates = {000000000000803F0000008000000000}
       HeightDataSource = GLBitmapHDS1
       TileSize = 32
-      TilesPerTexture = 1.000000000000000000
-      QualityDistance = 150.000000000000000000
+      TilesPerTexture = 1
+      QualityDistance = 150
     end
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}
@@ -114,16 +113,17 @@ object Form1: TForm1
     object GLLensFlare: TGLLensFlare
       Size = 100
       Seed = 978
+      FlareIsNotOccluded = True
       Position.Coordinates = {9A620252C9B28B51B743BAD10000803F}
       Visible = False
       object GLDummyCube1: TGLDummyCube
-        CubeSize = 100.000000000000000000
+        CubeSize = 100
         VisibleAtRunTime = True
       end
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 650.000000000000000000
-      FocalLength = 50.000000000000000000
+      DepthOfView = 650
+      FocalLength = 50
       Position.Coordinates = {000000000000C841000020410000803F}
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
@@ -131,7 +131,7 @@ object Form1: TForm1
       Top = 160
       object ODEDrop: TGLDummyCube
         Position.Coordinates = {0000000000000000000020410000803F}
-        CubeSize = 1.000000000000000000
+        CubeSize = 1
       end
     end
   end
@@ -188,12 +188,15 @@ object Form1: TForm1
     Top = 96
   end
   object GLODEManager1: TGLODEManager
-    StepFast = False
-    FastIterations = 5
+    Gravity.Coordinates = {0000000000000000C3F51CC10000803F}
+    Solver = osmQuickStep
+    Iterations = 3
     Left = 96
     Top = 16
   end
   object GLNavigator1: TGLNavigator
+    MoveUpWhenMovingForward = False
+    InvertHorizontalSteeringWhenUpsideDown = False
     VirtualUp.Coordinates = {00000000000000000000803F0000803F}
     MovingObject = GLCamera1
     UseVirtualUp = True
@@ -204,7 +207,7 @@ object Form1: TForm1
   end
   object GLUserInterface1: TGLUserInterface
     InvertMouse = False
-    MouseSpeed = 25.000000000000000000
+    MouseSpeed = 25
     GLNavigator = GLNavigator1
     GLVertNavigator = GLNavigator1
     Left = 96

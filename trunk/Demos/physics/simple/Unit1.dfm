@@ -19,7 +19,7 @@ object Form1: TForm1
     Left = 209
     Top = 0
     Width = 511
-    Height = 423
+    Height = 425
     Camera = GLCamera1
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
     Align = alClient
@@ -30,7 +30,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 209
-    Height = 423
+    Height = 425
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
@@ -178,6 +178,8 @@ object Form1: TForm1
     Top = 8
   end
   object GLODEManager1: TGLODEManager
+    Solver = osmQuickStep
+    Iterations = 3
     Left = 216
     Top = 40
   end

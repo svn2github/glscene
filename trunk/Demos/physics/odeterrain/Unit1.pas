@@ -83,11 +83,6 @@ begin
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    GLNavigator1.TurnHorizontal(90);
 
-   // Set up the physics
-
-   GLODEManager1.Gravity.SetVector(0,0,-9.81);
-   GLODEManager1.StepFast:=True;
-
    // Create the terrain collider
    with TGLODETerrainCollider(GLScene1.Objects.AddNewChild(TGLODETerrainCollider)) do begin
      // Once a manager is assigned the collider gets initialized in ODE

@@ -61,7 +61,7 @@ uses VectorGeometry;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  TGLODEDynamicBehaviour(Pin2.Behaviours[0]).AddForce(AffineVectorMake(-50,0,0));
+  TGLODEDynamicBehaviour(Pin2.Behaviours[0]).AddForce(AffineVectorMake(-250,0,0));
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
