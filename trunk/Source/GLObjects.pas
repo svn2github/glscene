@@ -9,6 +9,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/07/04 - SG - TGLCube.RayCastIntersect fix (Eric Pascual)
       <li>20/01/04 - SG - Added IcosahedronBuildList
       <li>30/11/03 - MF - Added TGLSphere.GenerateSilhouette - it now takes the
                           stacks/slices of the sphere into account 
@@ -2804,7 +2805,10 @@ begin
          t:=- (p[i][0]*rs[0]+p[i][1]*rs[1]+p[i][2]*rs[2]+0.5*FCubeSize[i mod 3])
              /(p[i][0]*rv[0]+p[i][1]*rv[1]+p[i][2]*rv[2]);
          MakePoint(r, rs[0]+t*rv[0], rs[1]+t*rv[1], rs[2]+t*rv[2]);
-         if (Abs(r[0])<=eSize[0]) and (Abs(r[1])<=eSize[1]) and (Abs(r[2])<=eSize[2]) then begin
+         if  (Abs(r[0])<=eSize[0]) 
+         and (Abs(r[1])<=eSize[1]) 
+         and (Abs(r[2])<=eSize[2])
+         and (VectorDotProduct(VectorSubtract(r,rs),rv)>0) then begin
             if Assigned(intersectPoint) then
                MakePoint(intersectPoint^, LocalToAbsolute(r));
             if Assigned(intersectNormal) then
