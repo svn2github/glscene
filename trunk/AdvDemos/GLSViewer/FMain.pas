@@ -115,7 +115,7 @@ type
     N6: TMenuItem;
     ACLighting: TAction;
     Lighting1: TMenuItem;
-    ToolButton14: TToolButton;
+    TBLighting: TToolButton;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -815,7 +815,8 @@ end;
 procedure TMain.ACLightingExecute(Sender: TObject);
 begin
    ACLighting.Checked:=not ACLighting.Checked;
-   GLSceneViewer.Buffer.Lighting:=ACLighting.Checked;
+//   TBLighting
+   ApplyShadeMode;
 end;
 
 procedure TMain.TimerTimer(Sender: TObject);
