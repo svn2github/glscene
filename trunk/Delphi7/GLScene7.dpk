@@ -178,6 +178,7 @@ contains
   GLState in '..\Source\GLState.pas',
   GLUtils in '..\Source\GLUtils.pas',
   GLTilePlane in '..\Source\GLTilePlane.pas',
-  GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas';
+  GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas',
+  GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas';
 
 end.
