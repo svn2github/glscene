@@ -588,7 +588,8 @@ type
 
 	// TGLPicFileImage
 	//
-	{: Uses a picture whose data is found in a file (only filename is stored). }
+	{: Uses a picture whose data is found in a file (only filename is stored).<p>
+      The image is unloaded after upload to OpenGL. }
 	TGLPicFileImage = class(TGLPictureImage)
 		private
 			FPictureFileName : String;
@@ -1102,6 +1103,7 @@ type
 	      { Private Declarations }
          userList : TList;
          FName : TGLLibMaterialName;
+         FNameHashKey : Integer;
          FMaterial : TGLMaterial;
          FTextureOffset, FTextureScale : TGLCoordinates;
          FTextureMatrixIsIdentity : Boolean;
@@ -1116,6 +1118,8 @@ type
 	      { Protected Declarations }
          function GetDisplayName : String; override;
          procedure Loaded;
+
+         class function ComputeNameHashKey(const name : String) : Integer;
 
          procedure SetName(const val : TGLLibMaterialName);
          procedure SetMaterial(const val : TGLMaterial);
@@ -1147,6 +1151,8 @@ type
 			procedure UnregisterUser(libMaterial : TGLLibMaterial); overload;
          procedure NotifyUsers;
          procedure NotifyUsersOfTexMapChange;
+
+         property NameHashKey : Integer read FNameHashKey;
 
 	   published
 	      { Published Declarations }
@@ -1243,11 +1249,19 @@ type
 
          {: Add a "standard" texture material.<p>
             "standard" means linear texturing mode with mipmaps and texture
-            modulation mode with default-strength color components. }
-         function AddTextureMaterial(const materialName, fileName : String) : TGLLibMaterial; overload;
+            modulation mode with default-strength color components.<br>
+            If persistent is True, the image will be loaded oersistently in memory
+            (via a TGLPersistentImage), if false, it will be unloaded after upload
+            to OpenGL (via TGLPicFileImage). }
+         function AddTextureMaterial(const materialName, fileName : String;
+                                     persistent : Boolean = True) : TGLLibMaterial; overload;
          {: Add a "standard" texture material.<p>
             TGraphic based variant. }
          function AddTextureMaterial(const materialName : String; graphic : TGLGraphic) : TGLLibMaterial; overload;
+
+         {: Returns libMaterial of given name if any exists. }
+         function LibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
+
          {: Applies the material of given name.<p>
             Returns False if the material could not be found. ake sure this
             call is balanced with a corresponding UnApplyMaterial (or an
@@ -1976,12 +1990,14 @@ begin
       FBitmap:=TGLBitmap32.Create;
       // we need to deactivate OnChange, due to a "glitch" in some TGraphics,
       // for instance, TJPegImage triggers an OnChange when it is drawn...
-      Picture.OnChange:=nil;
-      try
-         FBitmap.Assign(Picture.Graphic);
-      finally
-         Picture.OnChange:=PictureChanged;
-      end;
+      if Assigned(Picture.OnChange) then begin
+         Picture.OnChange:=nil;
+         try
+            FBitmap.Assign(Picture.Graphic);
+         finally
+            Picture.OnChange:=PictureChanged;
+         end;
+      end else FBitmap.Assign(Picture.Graphic);
 	end;
 	Result:=FBitmap;
 end;
@@ -2000,7 +2016,7 @@ end;
 //
 procedure TGLPictureImage.PictureChanged(Sender: TObject);
 begin
-	Invalidate;
+ 	Invalidate;
 end;
 
 // GetPicture
@@ -2158,15 +2174,16 @@ begin
          if FileExists(buf) then
    			Picture.LoadFromFile(buf)
          else begin
-            Picture.Graphic:=nil;
             FPictureFileName:='';
+            Picture.Graphic:=nil;
             Assert(False, Format(glsFailedOpenFile, [PictureFileName]));
          end;
+         Result:=inherited GetBitmap32(target);
+         Picture.Graphic:=nil;
 		finally
 			Picture.OnChange:=PictureChanged;
 		end;
-	end;
-  	Result:=inherited GetBitmap32(target);
+	end else	Result:=inherited GetBitmap32(target);
 end;
 
 // Edit
@@ -3590,6 +3607,7 @@ begin
 	inherited Create(Collection);
    userList:=TList.Create;
    FName:=TGLLibMaterials(Collection).MakeUniqueName('LibMaterial');
+   FNameHashKey:=ComputeNameHashKey(FName);
    FMaterial:=TGLMaterial.Create(Self);
    FMaterial.Texture.OnTextureNeeded:=DoOnTextureNeeded;
    FTextureOffset:=TGLCoordinates.CreateInitialized(Self, NullHmgVector);
@@ -3824,6 +3842,18 @@ begin
    CalculateTextureMatrix;
 end;
 
+// ComputeNameHashKey
+//
+class function TGLLibMaterial.ComputeNameHashKey(const name : String) : Integer;
+var
+   i, n : Integer;
+begin
+   n:=Length(name);
+   Result:=n;
+   for i:=1 to n do
+      Result:=(Result shl 1)+Ord(name[i]);
+end;
+
 // SetName
 //
 procedure TGLLibMaterial.SetName(const val : TGLLibMaterialName);
@@ -3834,6 +3864,7 @@ begin
             FName:=TGLLibMaterials(Collection).MakeUniqueName(val)
          else FName:=val;
       end else FName:=val;
+      FNameHashKey:=ComputeNameHashKey(FName);
    end;
 end;
 
@@ -4033,17 +4064,18 @@ end;
 //
 function TGLLibMaterials.GetLibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
 var
-   i : Integer;
+   i, hk : Integer;
    lm : TGLLibMaterial;
 begin
-   Result:=nil;
+   hk:=TGLLibMaterial.ComputeNameHashKey(name);
    for i:=0 to Count-1 do begin
       lm:=TGLLibMaterial(inherited Items[i]);
-      if lm.Name=name then begin
+      if (lm.NameHashKey=hk) and (lm.Name=name) then begin
          Result:=lm;
-         Break;
+         Exit;
       end;
    end;
+   Result:=nil;
 end;
 
 // SetNamesToTStrings
@@ -4234,7 +4266,8 @@ end;
 
 // AddTextureMaterial
 //
-function TGLMaterialLibrary.AddTextureMaterial(const materialName, fileName : String) : TGLLibMaterial;
+function TGLMaterialLibrary.AddTextureMaterial(const materialName, fileName : String;
+                                               persistent : Boolean = True) : TGLLibMaterial;
 begin
    Result:=Materials.Add;
    with Result do begin
@@ -4244,8 +4277,14 @@ begin
          MagFilter:=maLinear;
          TextureMode:=tmModulate;
          Disabled:=False;
-         if fileName<>'' then
-            Image.LoadFromFile(fileName);
+         if persistent then begin
+            ImageClassName:=TGLPersistentImage.ClassName;
+            if fileName<>'' then
+               Image.LoadFromFile(fileName);
+         end else begin
+            ImageClassName:=TGLPicFileImage.ClassName;
+            TGLPicFileImage(Image).PictureFileName:=fileName;
+         end;
       end;
    end;
 end;
@@ -4267,11 +4306,17 @@ begin
    end;
 end;
 
+// LibMaterialByName
+//
+function TGLMaterialLibrary.LibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
+begin
+   Result:=Materials.GetLibMaterialByName(name);
+end;
+
 // ApplyMaterial
 //
 function TGLMaterialLibrary.ApplyMaterial(const materialName : String; var rci : TRenderContextInfo) : Boolean;
 begin
-//   Assert(FLastAppliedMaterial=nil, 'Unbalanced material application');
    FLastAppliedMaterial:=Materials.GetLibMaterialByName(materialName);
    Result:=Assigned(FLastAppliedMaterial);
    if Result then
