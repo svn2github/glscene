@@ -168,6 +168,7 @@ type
 			function  Add(const x, y, z : Single) : Integer; overload;
 			function  Add(const x, y, z : Integer) : Integer; overload;
 			function  AddNC(const x, y, z : Integer) : Integer; overload;
+			function  Add(const xy : PIntegerArray; const z : Integer) : Integer; overload;
 			function  AddNC(const xy : PIntegerArray; const z : Integer) : Integer; overload;
          procedure Add(const list : TAffineVectorList); overload;
 			procedure Push(const val : TAffineVector);
@@ -261,6 +262,7 @@ type
 			function Add(const texS, texT : Single) : Integer; overload;
 			function Add(const texS, texT : Integer) : Integer; overload;
 			function AddNC(const texS, texT : Integer) : Integer; overload;
+			function Add(const texST : PIntegerArray) : Integer; overload;
 			function AddNC(const texST : PIntegerArray) : Integer; overload;
 			procedure Push(const val : TTexPoint);
 			function  Pop : TTexPoint;
@@ -927,7 +929,22 @@ begin
   	Inc(FCount);
 end;
 
-// Add (2 ints in array + 1, no capacity check)
+// Add (2 ints in array + 1)
+//
+function TAffineVectorList.Add(const xy : PIntegerArray; const z : Integer) : Integer;
+var
+   v : PAffineVector;
+begin
+	Result:=FCount;
+	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+   v:=@List[Result];
+   v[0]:=xy[0];
+	v[1]:=xy[1];
+	v[2]:=z;
+  	Inc(FCount);
+end;
+
+// AddNC (2 ints in array + 1, no capacity check)
 //
 function TAffineVectorList.AddNC(const xy : PIntegerArray; const z : Integer) : Integer;
 var
@@ -1325,6 +1342,19 @@ begin
    with FList^[Result] do begin
       s:=texS;
       t:=texT;
+   end;
+ 	Inc(FCount);
+end;
+
+// Add
+//
+function TTexPointList.Add(const texST : PIntegerArray) : Integer;
+begin
+	Result:=FCount;
+	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
+   with FList^[Result] do begin
+      s:=texST[0];
+      t:=texST[1];
    end;
  	Inc(FCount);
 end;
