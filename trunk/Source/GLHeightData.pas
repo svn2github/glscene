@@ -695,7 +695,7 @@ begin
       end;
    end;
    // got one... can be used ?
-   while not (Result.DataState in [hdsReady, hdsNone]) do Sleep(1);
+   while not (Result.DataState in [hdsReady, hdsNone]) do Sleep(0);
 end;
 
 // PreLoad
