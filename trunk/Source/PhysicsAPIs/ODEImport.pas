@@ -22,7 +22,7 @@
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.7.2                                        *
+ * ODE Delphi Import unit : 0.7.3                                        *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -71,7 +71,7 @@
     new GeomTransformGroup.
   2002.10.10 Mattias added the functions needed to support cylinder and
     GeomTransformGroup.
-  2002.10.31 Chroma compiled a new dll version, with some minor updates to
+  2002.10.31 Christophe compiled a new dll version, with some minor updates to
     friction among other things
   2003.01.20 Christophe compiled a new DLL and added the new functions.
   2003.02.01 Mattias added a few new functions
@@ -81,6 +81,8 @@
   2003.06.10 Mattias Fagerlund removed GeomTransformGroup as they're not in
     the DLL.
   2003.06.12 Mattias Fagerlund fixed Single support, which was slightly broken
+  2003.06.13 Christophe Hosten delivered new DLL, adding dWorldStepFast and
+    dJointTypePlane2D
  }
 
 unit ODEImport;
@@ -115,6 +117,7 @@ type
   //   COULD BE SINGLE _OR_ DOUBLE - DEPENDS ON COMPILE!
   // typedef double dReal;
   {define cSINGLE} // Add a "$" before "define" to make DelphiODE single based
+  {define cTRILIST}
 
   {$ifdef cSINGLE}
   TdReal = single;
@@ -766,6 +769,17 @@ enum {
     // dParamGroup * 2 + dParamBounce = dParamBounce2
     dParamGroup: TJointParams = $100;
 
+
+  type
+    // Tri-list collider
+    TdcVector3 = record
+      x, y, z: Single;
+    end;
+    PdcVector3 = ^TdcVector3;
+
+    TdcVector3Array = array[0..65535] of TdcVector3;
+    PdcVector3Array = ^TdcVector3Array;
+
 { TODO :
 // How does one import integers?
 dBoxClass
@@ -833,6 +847,11 @@ dWtoDQ}
   procedure dWorldSetGravity(const World: PdxWorld; const x, y, z: TdReal); cdecl; external ODEDLL;
   procedure dWorldStep(const World: PdxWorld; const stepsize: TdReal); cdecl; external ODEDLL;
   procedure dCloseODE; cdecl; external ODEDLL;
+
+  // Stepfast
+  procedure dWorldStepFast(const World: PdxWorld; const stepsize: TdReal; const iterations: Integer); cdecl; external ODEDLL;
+  procedure dWorldSetAutoEnableDepth(const World: PdxWorld; autodepth: Integer); cdecl; external ODEDLL;
+  function dWorldGetAutoEnableDepth(const World: PdxWorld): Integer; cdecl; external ODEDLL;
 
   //----- dBody -----
   procedure dBodyAddForce(const Body: PdxBody; const fx, fy, fz: TdReal); cdecl; external ODEDLL;
@@ -951,6 +970,16 @@ dWtoDQ}
   procedure dJointSetFeedback (const dJointID : TdJointID; Feedback : PTdJointFeedback); cdecl; external ODEDLL;
   function dJointGetFeedback (const dJointID : TdJointID) : PTdJointFeedback; cdecl; external ODEDLL;
 
+  // dJointTypePlane2D
+
+  {$ifndef cSINGLE}
+  // JointPlane2D isn't currently defined in the single dll
+  function dJointCreatePlane2D(const World : PdxWorld; dJointGroupID : TdJointGroupID): TdJointID; cdecl; external ODEDLL;
+  procedure dJointSetPlane2DXParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external ODEDLL;
+  procedure dJointSetPlane2DYParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external ODEDLL;
+  procedure dJointSetPlane2DAngleParam(const dJointID : TdJointID; const parameter: Integer; const value: TdReal); cdecl; external ODEDLL;
+  {$endif}
+
   //----- dGeom -----
   procedure dGeomBoxGetLengths(const Geom : PdxGeom; result: TdVector3); cdecl; external ODEDLL;
   procedure dGeomBoxSetLengths(const Geom : PdxGeom; const lx, ly, lz: TdReal); cdecl; external ODEDLL;
@@ -987,8 +1016,6 @@ dWtoDQ}
   procedure dGeomTransformSetInfo (const Geom : PdxGeom; mode : integer); cdecl; external ODEDLL;
   function dGeomTransformGetInfo (const Geom : PdxGeom) : integer; cdecl; external ODEDLL;
 
-  // These methods are not currently available in the ODE.dll, since they require
-  // additional changes! They're placed here to prepare for these changes
   function dGeomIsSpace (const Geom : PdxGeom) : integer; cdecl; external ODEDLL;
   procedure dGeomSetCategoryBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external ODEDLL;
   procedure dGeomSetCollideBits (const Geom : PdxGeom; bits : Cardinal); cdecl; external ODEDLL;
@@ -1051,7 +1078,7 @@ dWtoDQ}
   procedure dGeomRayGet(const Geom : PdxGeom; var start, dir: TdVector3); cdecl; external ODEDLL;
 
   function dCreateGeomClass(const classptr : TdGeomClass) : Integer; cdecl; external ODEDLL;
-  function dGeomGetClassData(o : PdxGeom) : Pointer; cdecl; external ODEDLL;    
+  function dGeomGetClassData(o : PdxGeom) : Pointer; cdecl; external ODEDLL;
   function dCreateGeom (classnum : Integer) : PdxGeom; cdecl; external ODEDLL;    
 
 
@@ -1080,6 +1107,22 @@ dWtoDQ}
   procedure dMassSetSphere(var m: TdMass; density, radius: TdReal); cdecl; external ODEDLL;
   procedure dMassSetZero(var m: TdMass); cdecl; external ODEDLL;
   procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external ODEDLL;
+  procedure dMassSetCylinder(var m: TdMass; density: TdReal; direction: Integer; a, b: TdReal); cdecl; external ODEDLL;
+
+  //----- dTrilistCollider -----
+  {$ifdef cTRILIST}
+  // dxGeom* dCreateTriList(dSpaceID space, dTriCallback* Callback, dTriArrayCallback* ArrayCallback){
+  //function dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer; RayCallback: Pointer): PdxGeom; cdecl;
+
+  function dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer): PdxGeom; cdecl;
+  function EXT_dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer): PdxGeom; cdecl; external ODEDLL name 'dCreateTriList';
+
+  // void dGeomTriListBuild(dGeomID g, const dcVector3* Vertices, int VertexCount, const int* Indices, int IndexCount)
+  // procedure dGeomTriListBuild(Geom : PdxGeom; Vertices: PdxVector3Array; VertexStride, VertexCount: Integer; Indices: PIntegerArray; IndexStride, IndexCount, TriStride: Integer); cdecl; external ODEDLL;
+  procedure dGeomTriListBuild(Geom : PdxGeom; Vertices: PdcVector3Array; VertexCount: Integer; Indices: PIntegerArray; IndexCount : Integer); cdecl; external ODEDLL;
+  // void dGeomTriListGetTriangle(dGeomID g, int Index, dVector3* v0, dVector3* v1, dVector3* v2);
+  // procedure dGeomTriListGetTriangle(Geom : PdxGeom; Index : Integer; var v0, v1, v2 : TdcVector3); cdecl; external ODEDLL;
+  {$endif}
 
   //----- Rotation.h -----
   procedure dQFromAxisAndAngle (var q : TdQuaternion; ax, ay ,az, angle : TdReal); cdecl; external ODEDLL;
@@ -1157,6 +1200,7 @@ var
   dCylinderClass : integer=-1;
   dRayClass : integer=-1;
   dGeomTransformGroupClass : integer=-1;
+  dTriListClass : integer=-1;
 
 implementation
 
@@ -1164,11 +1208,11 @@ var
   WasStillBefore, WasStillBeforeOld : TList;
 
 const
-  // to be used as descriptive indices (from GLScene)
-  X = 0;
-  Y = 1;
-  Z = 2;
-  W = 3;
+  // to be used as descriptive indices
+  IndexX = 0;
+  IndexY = 1;
+  IndexZ = 2;
+  IndexW = 3;
 
 { TBodyList }
 
@@ -1321,9 +1365,9 @@ end;
 
 function Vector3Cross(V1, V2 : TdVector3) : TdVector3;
 begin
-   Result[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
-   Result[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
-   Result[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+   Result[IndexX]:=V1[IndexY] * V2[IndexZ] - V1[IndexZ] * V2[IndexY];
+   Result[IndexY]:=V1[IndexZ] * V2[IndexX] - V1[IndexX] * V2[IndexZ];
+   Result[IndexZ]:=V1[IndexX] * V2[IndexY] - V1[IndexY] * V2[IndexX];
 end;
 
 function Vector3Make(x,y,z : TdReal) : TdVector3;
@@ -1397,6 +1441,17 @@ begin
   if dRayClass=-1 then
     dRayClass := dGeomGetClass(result);
 end;
+
+{$ifdef cTRILIST}
+function dCreateTriList(const Space : PdxSpace; Callback: Pointer; ArrayCallback: Pointer): PdxGeom; cdecl;
+begin
+  result := EXT_dCreateTriList(Space, Callback, ArrayCallback);
+
+  if dTriListClass=-1 then
+    dTriListClass := dGeomGetClass(result);
+end;
+{$endif}
+
 
 {function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
 begin
