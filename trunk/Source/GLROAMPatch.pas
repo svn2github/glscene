@@ -104,9 +104,9 @@ type
                                autoFlushVertexCount : Integer);
          {: Render all vertices accumulated in the arrays and set their count
             back to zero. }
-         procedure FlushAccum(vertices : TAffineVectorList;
-                              vertexIndices : TIntegerList;
-                              texCoords : TTexPointList);
+         class procedure FlushAccum(vertices : TAffineVectorList;
+                                    vertexIndices : TIntegerList;
+                                    texCoords : TTexPointList);
 
          property HeightData : THeightData read FHeightData write SetHeightData;
          property VertexScale : TAffineVector read FVertexScale write FVertexScale;
@@ -470,7 +470,7 @@ var
 
 procedure RecursTessellate(tri : PROAMTriangleNode;
                            n : Cardinal;
-                           const left, right, apex : Cardinal); register;
+                           const left, right, apex : Cardinal);
 var
    d : Integer;
 begin
@@ -659,9 +659,9 @@ end;
 
 // FlushAccum
 //
-procedure TGLROAMPatch.FlushAccum(vertices : TAffineVectorList;
-                                  vertexIndices : TIntegerList;
-                                  texCoords : TTexPointList);
+class procedure TGLROAMPatch.FlushAccum(vertices : TAffineVectorList;
+                                        vertexIndices : TIntegerList;
+                                        texCoords : TTexPointList);
 begin
 //   if GL_ARB_vertex_buffer_object then begin
    if False then begin // VBO currently off (slower)
@@ -744,8 +744,6 @@ procedure TGLROAMPatch.RenderROAM(vertices : TAffineVectorList;
 var
    rtl, rtr, rbl, rbr : TROAMRenderPoint;
 begin
-//   vertices.Count:=0;
-//   texCoords.Count:=0;
    renderVertices:=vertices;
    renderTexCoords:=texCoords;
    vertexIndices.AdjustCapacityToAtLeast(Sqr(FPatchSize)*6+15000);
