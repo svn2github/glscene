@@ -10,7 +10,7 @@ uses
   GLVectorFileObjects, VectorTypes,GLObjects, GLBitmapFont,
   GLMisc, GLUtils,GLCadencer,  GLTexture,JPeg, GLNavigator,
   ExtCtrls, GLGeomObjects, Keyboard, GLSpaceText,
-  GLBehaviours,GLPerlinPFX, StdCtrls, UGLExtraObjects, GLBlur;
+  GLBehaviours,GLPerlinPFX, StdCtrls, GLBlur;
 
 const
      cRunBoost = 10;
