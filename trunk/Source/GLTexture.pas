@@ -2615,7 +2615,7 @@ begin
       if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
    		SetGLState(rci.currentStates, stTexture2D);
    	   SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
-      end else begin
+      end else if GL_ARB_texture_cube_map then begin
          SetGLState(rci.currentStates, stTextureCubeMap);
    	   SetGLCurrentTexture(0, GL_TEXTURE_CUBE_MAP_ARB, Handle);
          // compute model view matrix for proper viewing
