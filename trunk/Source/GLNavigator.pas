@@ -3,6 +3,7 @@
    Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>14/07/02 - EG - InvertMouse (Joen Joensen)
       <li>18/03/02 - EG - Added MouseLookActive property, Fixed framerate dependency
       <li>15/03/02 - JAJ - Structure Change - Mouselook moved to newly created TGLUserInterface.
       <li>15/03/02 - RMCH - Added Mouselook capability.
@@ -103,6 +104,7 @@ type
      FMouseSpeed       : Single;
      FGLNavigator      : TGLNavigator;
      FGLVertNavigator  : TGLNavigator;
+     FInvertMouse      : Boolean;
 
      procedure   MouseInitialize;
      procedure   SetMouseLookActive(const val : Boolean);
@@ -110,7 +112,7 @@ type
    public
      constructor Create(AOwner : TComponent); override;
      destructor  Destroy; override;
-     
+
      procedure   MouseUpdate;
      function    MouseLook : Boolean;
      procedure   MouseLookActiveToggle(q: Boolean);
@@ -120,9 +122,11 @@ type
      procedure   TurnHorizontal(Angle : Double);
      procedure   TurnVertical(Angle : Double);
 
+
      property    MouseLookActive : Boolean read FMouseActive write SetMouseLookActive;
 
    published
+     property    InvertMouse     : Boolean read FInvertMouse write FInvertMouse;
      property    MouseSpeed      : Single read FMouseSpeed write FMouseSpeed;
      property    GLNavigator     : TGLNavigator read FGLNavigator write FGLNavigator;
      property    GLVertNavigator : TGLNavigator read FGLVertNavigator write FGLVertNavigator;
@@ -410,7 +414,8 @@ end;
 
 procedure TGLUserInterface.MouseUpdate;
 begin
-   if FMouseActive then GetCursorPos(point1);
+   if FMouseActive then
+   windows.GetCursorPos(point1);
 end;
 
 // Mouselook
@@ -424,6 +429,7 @@ begin
 
    deltax:=(point1.x-midscreenX)*mousespeed;
    deltay:=-(point1.y-midscreenY)*mousespeed;
+   If InvertMouse then deltay:=-deltay;
 
    if deltax <> 0 then begin
      TurnHorizontal(deltax*0.01);
