@@ -360,7 +360,7 @@ end;
 procedure TGLCadencer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    if Operation=opRemove then begin
-   	if AComponent=FScene then Scene:=nil;
+   	if AComponent=FScene then FScene:=nil;
       if Assigned(FSubscribedCadenceableComponents) then
          FSubscribedCadenceableComponents.Remove(AComponent);
    end;
