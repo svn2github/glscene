@@ -2,6 +2,7 @@
 {: Lens flare object.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/03/03 - EG - Framerate independant glow transitions (Tobias Peirick)
       <li>08/12/02 - EG - Added AutoZTest
       <li>29/10/02 - EG - Initial, added defaults and encapsulation,
                           fixed positionning, RandSeed now preserved,
@@ -43,7 +44,8 @@ type
       private
          { Private Declarations }
          FSize        : Integer;
-         FCurrSize    : Integer;
+         FDeltaTime   : Double;
+         FCurrSize    : Double;
          FSeed        : Integer;
          FSqueeze     : Single;
          FNumStreaks  : Integer;
@@ -73,6 +75,7 @@ type
          constructor Create(AOwner: TComponent); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
+         procedure DoProgress(const progressTime: TProgressTimes); override;
 
       published
          { Public Declarations }
@@ -269,14 +272,17 @@ begin
               screenPos[1]-rci.viewPortSize.cy/2,0);
 
    // make the glow appear/disappear progressively
-   // [EG, TODO: this code needs fixing, it's heavily framerate dependant]
-   if Flag then
+   if Flag then begin
       if FCurrSize<Size then
-         Inc(FCurrSize, 5);
-   if not Flag then
+         FCurrSize:=FCurrSize+FDeltaTime*500;
+   end else begin
       if FCurrSize>0 then
-         Dec(FCurrSize, 5);
-   if FCurrSize<=0 then Exit;
+         FCurrSize:=FCurrSize-FDeltaTime*500;
+   end;
+   if FCurrSize<=0 then begin
+      FCurrSize:=0;
+      Exit;
+   end;
 
    // Prepare matrices
    glMatrixMode(GL_MODELVIEW);
@@ -432,6 +438,15 @@ begin
       Self.RenderChildren(0, Count-1, rci);
       
    RandSeed:=oldSeed;
+end;
+
+// DoProgress
+//
+procedure TGLLensFlare.DoProgress(const progressTime: TProgressTimes);
+begin
+  inherited;
+  if AutoZTest then
+     FDeltaTime := progressTime.deltaTime;
 end;
 
 // ------------------------------------------------------------------
