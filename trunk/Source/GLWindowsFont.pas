@@ -18,7 +18,7 @@ Uses
 
 Type
 
-   // TWindowsBitmapFont
+   // TGLWindowsBitmapFont
    //
    {: A bitmap font automatically built from a TFont.<p>
       It works like a TGLBitmapfont, you set ranges and which chars are assigned
@@ -29,7 +29,7 @@ Type
       Ranges must be sorted in ascending ASCII order and should not overlap.
       As the font texture is automatically layed out, the Ranges StartGlyphIdx
       property is ignored and replaced appropriately. }
-   TWindowsBitmapFont = class (TGLCustomBitmapFont)
+   TGLWindowsBitmapFont = class (TGLCustomBitmapFont)
       private
 	      { Private Declarations }
          FFont : TFont;
@@ -77,12 +77,12 @@ implementation
 uses SysUtils, Geometry, OpenGL12;
 
 // ------------------
-// ------------------ TWindowsBitmapFont ------------------
+// ------------------ TGLWindowsBitmapFont ------------------
 // ------------------
 
 // Create
 //
-constructor TWindowsBitmapFont.Create(AOwner: TComponent);
+constructor TGLWindowsBitmapFont.Create(AOwner: TComponent);
 begin
    inherited;
 
@@ -98,7 +98,7 @@ end;
 
 // Destroy
 //
-destructor TWindowsBitmapFont.Destroy;
+destructor TGLWindowsBitmapFont.Destroy;
 begin
    FFont.Free;
    inherited;
@@ -106,28 +106,28 @@ end;
 
 // FontTextureWidth
 //
-function TWindowsBitmapFont.FontTextureWidth : Integer;
+function TGLWindowsBitmapFont.FontTextureWidth : Integer;
 begin
    Result:=Glyphs.Width;
 end;
 
 // FontTextureHeight
 //
-function TWindowsBitmapFont.FontTextureHeight : Integer;
+function TGLWindowsBitmapFont.FontTextureHeight : Integer;
 begin
    Result:=Glyphs.Height;
 end;
 
 // SetFont
 //
-procedure TWindowsBitmapFont.SetFont(value: TFont);
+procedure TGLWindowsBitmapFont.SetFont(value: TFont);
 begin
    FFont.Assign(value);
 end;
 
 // NotifyChange
 //
-procedure TWindowsBitmapFont.NotifyChange(Sender : TObject);
+procedure TGLWindowsBitmapFont.NotifyChange(Sender : TObject);
 begin
    FreeTextureHandle;
    InvalidateUsers;
@@ -136,7 +136,7 @@ end;
 
 // LoadWindowsFont
 //
-procedure TWindowsBitmapFont.LoadWindowsFont;
+procedure TGLWindowsBitmapFont.LoadWindowsFont;
 var
    textureWidth, textureHeight : Integer;
 
@@ -260,14 +260,14 @@ end;
 
 // StoreRanges
 //
-function TWindowsBitmapFont.StoreRanges : Boolean;
+function TGLWindowsBitmapFont.StoreRanges : Boolean;
 begin
    Result:=(Ranges.Count<>1) or (Ranges[0].StartASCII<>' ') or (Ranges[0].StopASCII<>'}');
 end;
 
 // PrepareImage
 //
-procedure TWindowsBitmapFont.PrepareImage;
+procedure TGLWindowsBitmapFont.PrepareImage;
 begin
    LoadWindowsFont;
    inherited;
@@ -275,7 +275,7 @@ end;
 
 // TextureFormat
 //
-function TWindowsBitmapFont.TextureFormat : Integer;
+function TGLWindowsBitmapFont.TextureFormat : Integer;
 begin
    Result:=GL_ALPHA;
 end;
@@ -289,6 +289,6 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClasses([TWindowsBitmapFont]);
+   RegisterClasses([TGLWindowsBitmapFont]);
 
 end.

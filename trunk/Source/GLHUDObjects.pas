@@ -51,7 +51,7 @@ type
    // TGLHUDText
    //
    {: A 2D text displayed and positionned in 2D coordinates.<p>
-      The HUDText uses a character font defined and stored by a TBitmapFont
+      The HUDText uses a character font defined and stored by a TGLBitmapFont
       component. The text can be scaled and rotated (2D), the layout and
       alignment can also be controled. }
 	TGLHUDText = class (TGLImmaterialSceneObject)
@@ -271,30 +271,31 @@ end;
 procedure TGLHUDText.DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean);
 begin
-   if (not Assigned(FBitmapFont)) or (Text='') then Exit;
-   SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-   // Prepare matrices
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix;
-   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
-   glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
-   glTranslatef(Position.X-rci.viewPortSize.cx/2,
-                rci.viewPortSize.cy/2-Position.Y, Position.Z);
-   if FRotation<>0 then
-      glRotatef(FRotation, 0, 0, 1);
-   glScalef(Scale.DirectX, Scale.DirectY, 1);
-   glMatrixMode(GL_PROJECTION);
-   glPushMatrix;
-   glLoadIdentity;
-   glPushAttrib(GL_ENABLE_BIT);
-   glDisable(GL_DEPTH_TEST);
-   // render text
-   FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
-   // restore state
-   glPopAttrib;
-   glPopMatrix;
-   glMatrixMode(GL_MODELVIEW);
-   glPopMatrix;
+   if Assigned(FBitmapFont) and (Text<>'') then begin
+      SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      // Prepare matrices
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix;
+      glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
+      glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
+      glTranslatef(Position.X-rci.viewPortSize.cx/2,
+                   rci.viewPortSize.cy/2-Position.Y, Position.Z);
+      if FRotation<>0 then
+         glRotatef(FRotation, 0, 0, 1);
+      glScalef(Scale.DirectX, Scale.DirectY, 1);
+      glMatrixMode(GL_PROJECTION);
+      glPushMatrix;
+      glLoadIdentity;
+      glPushAttrib(GL_ENABLE_BIT);
+      glDisable(GL_DEPTH_TEST);
+      // render text
+      FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
+      // restore state
+      glPopAttrib;
+      glPopMatrix;
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix;
+   end;
    if Count>0 then
       Self.RenderChildren(0, Count-1, rci);
 end;
