@@ -431,7 +431,7 @@ end;
 //
 procedure TGLSceneViewer.DoBufferChange(Sender : TObject);
 begin
-   if not Buffer.Rendering then
+   if (not Buffer.Rendering) and (not Buffer.Freezed) then
       Invalidate;
 end;
 
