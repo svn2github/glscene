@@ -11,7 +11,7 @@
       <li>24/07/02 - EG - Added TVCCylinder
       <li>18/07/02 - EG - Improved forces & constraints
       <li>23/06/02 - EG - Stricter encapsulation, fixed some leaks,
-                          Various optimizations (+25%) 
+                          Various optimizations (+25%)
       <li>21/06/02 - EG - Creation (original code by Mattias Fagerlund)
    </ul>
 }
@@ -19,7 +19,7 @@ unit VerletClasses;
 
 interface
 
-uses Classes, Geometry, SysUtils;
+uses Classes, Geometry, SysUtils, VectorLists;
 
 const
    G_DRAG = 0.005;
@@ -152,7 +152,7 @@ type
       public
 			{ Public Declarations }
          procedure RemoveNode(aNode : TVerletNode); override;
-         
+
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); override;
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                         const iteration, maxIterations : Integer); virtual; abstract;
@@ -348,7 +348,7 @@ type
    // TVCFloor
    //
    {: Floor collision constraint.<p>
-      The floor is in the XZ plane with a Y+ normal. }
+      The floor is in the XZ plane with a Y+ normal. Highly un-pretty.}
    TVCFloor = class (TVerletGlobalConstraint)
       private
 			{ Private Declarations }
@@ -445,6 +445,29 @@ type
          property Axis : TAffineVector read FAxis write FAxis;
          {: Cylinder radius. }
          property Radius : Single read FRadius write SetRadius;
+   end;
+
+   // TVCCube
+   //
+   {: Cube collision constraint. }
+   TVCCube = class (TVerletGlobalConstraint)
+      private
+			{ Private Declarations }
+         FLocation : TAffineVector;
+         FRadius  : Single;
+    FSides: TAffineVector;
+    FFrictionRatio: Single;
+
+      public
+			{ Public Declarations }
+         procedure SatisfyConstraintForNode(aNode : TVerletNode;
+                           const iteration, maxIterations : Integer); override;
+
+         property Location : TAffineVector read FLocation write FLocation;
+         property Sides : TAffineVector read FSides write FSides;
+         property FrictionRatio : Single read FFrictionRatio write FFrictionRatio;
+
+         constructor Create(aOwner : TVerletAssembly); override;
    end;
 
 // ------------------------------------------------------------------
@@ -1008,10 +1031,11 @@ begin
    while FSimTime<newTime do begin
       Inc(ticks);
       FSimTime:=FSimTime+myDeltaTime;
-      AccumulateForces(myDeltaTime, FSimTime);
       Verlet(myDeltaTime, FSimTime);
+      AccumulateForces(myDeltaTime, FSimTime);
       SatisfyConstraints(myDeltaTime, FSimTime);
-      Break;
+
+      //Break; // Why a break here? Looks like a debug instruction left my mistake!
    end;
 
    Result:=ticks;
@@ -1027,9 +1051,11 @@ var
    i, j : Integer;
 begin
    for j:=0 to Iterations-1 do
+   begin
       for i:=0 to FConstraints.Count-1 do with FConstraints[i] do
          if Enabled then
-            SatisfyConstraint(j, Iterations);
+            SatisfyConstraint(j, Iterations);//}
+   end;
 end;
 
 // Verlet
@@ -1277,4 +1303,103 @@ begin
       VectorLerp(proj, aNode.Location, FRadius*RSqrt(dist2), aNode.FLocation);
    end;
 end;
+{ TVCCube }
+
+constructor TVCCube.Create(aOwner: TVerletAssembly);
+begin
+  inherited;
+  FFrictionRatio := 0.6;
+end;
+
+procedure TVCCube.SatisfyConstraintForNode(aNode: TVerletNode;
+  const iteration, maxIterations: Integer);
+var
+  p, dp, q, absq : TAffineVector;
+begin
+  // p[0] = x - b->pos[0];
+  // p[1] = y - b->pos[1];
+  // p[2] = z - b->pos[2];
+  p := VectorSubtract(FLocation, aNode.FLocation);
+
+  // dMULTIPLY1_331 (q,b->R,p);
+  // SKIP FOR NOW
+  q := p;
+
+  // dReal dx = b->side[0]*0.5 - dFabs(q[0]);
+  // dReal dy = b->side[1]*0.5 - dFabs(q[1]);
+  // dReal dz = b->side[2]*0.5 - dFabs(q[2]);
+  AbsVector(q);
+  dp := VectorSubtract(VectorScale(Sides, 0.5), q);
+
+  if (dp[0] < dp[1]) then
+  begin
+    if (dp[0] < dp[2]) then
+    begin
+      // dp[0] is shortest!
+      if dp[0]>0 then
+      begin
+        
+      end;
+    end else
+    begin
+      // dp[2] is shortest!
+    end;
+  end else
+  begin
+    if (dp[1] < dp[2]) then
+    begin
+      // dp[1] is shortest!
+    end else
+    begin
+      // dp[2] is shortest!
+    end;
+  end;
+
+{var
+  penetrationDepth : Single;
+  currentPenetrationDepth, d : Single;
+begin
+
+
+   currentPenetrationDepth:=FLocation[1]-(aNode.Location[1]-aNode.Radius);
+
+   // Record how far down the node goes
+   penetrationDepth:=currentPenetrationDepth;
+   // Correct the node location
+   if currentPenetrationDepth>0 then
+   begin
+     aNode.FLocation[1]:=FLocation[1]+aNode.Radius;
+     if FrictionRatio>0 then
+        aNode.ApplyFriction(FrictionRatio, penetrationDepth, YVector);
+   end;
+
+
+  {
+
+var
+  p, move, dp : TAffineVector;
+begin
+  p := VectorSubtract(Location, aNode.Location);
+  if (abs(p[0])<Sides[0]/2) and (abs(p[1])<Sides[1]/2) and (abs(p[2])<Sides[2]/2) then
+  begin
+    dp := VectorSubtract(p, VectorScale(Sides, 0.5));
+
+    //if (abs(p[1])<Sides[1]/2) then
+    if dp[1]<0 then
+    begin
+      aNode.OldApplyFriction(0.05, p[1]);
+
+      Move[0] := 0;
+      Move[1] := - p[1];
+      Move[2] := 0;
+
+      AddVector(aNode.FLocation, move);
+    end;
+  end;//}
+{  dp := VectorSubtract(VectorScale(Sides, 0.5), p);
+  absdp[0] := abs(dp[0]);
+  absdp[1] := abs(dp[1]);
+  absdp[2] := abs(dp[2]);//}
+end;
+
 end.
