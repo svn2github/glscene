@@ -134,7 +134,7 @@ begin
          raise Exception.Create('skeleton not found');
       Inc(i);
       // read animation time frames
-      nbBones:=Owner.Skeleton.RootBones.BoneCount;
+      nbBones:=Owner.Skeleton.RootBones.BoneCount-1;
       firstFrame:=Owner.Skeleton.Frames.Count;
       while sl[i]<>'end' do begin
          if Copy(sl[i], 1, 5)<>'time ' then
