@@ -1087,9 +1087,7 @@ begin
    //How far ahead to check for collisions
    distanceToTravel := VectorLength(velocityVector);
 
-   //The reverse velocity vector for ray-sphere intersection checks
    NEGnormalizedVelocity := Velocityvector;
-   NegateVector(VelocityVector);
 
    //Determine all the octree nodes this sphere intersects with.
    //NOTE: may be more efficient to find the bounding box that includes the
