@@ -30,8 +30,8 @@ interface
 
 uses
   Windows, Forms, ComCtrls, GLScene, Menus, ActnList, ToolWin,
-  Controls, Classes, ImgList, Dialogs, DesignIntf;
-//  {$ifdef GLS_DELPHI_6_UP} WinEditors {$else} DsgnIntf {$endif};
+  Controls, Classes, ImgList, Dialogs,
+  {$ifdef GLS_DELPHI_6_UP} DesignIntf {$else} DsgnIntf {$endif};
 
 type
 

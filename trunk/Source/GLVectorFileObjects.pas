@@ -92,8 +92,8 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          {: Translates all the vertices by the given delta. }
          procedure Translate(const delta : TAffineVector); dynamic;
          {: Builds (smoothed) normals for the vertex list.<p>
@@ -147,8 +147,8 @@ type
 	      constructor Create; override;
          destructor Destroy; override;
 
-	      procedure WriteToFiler(writer : TWriter); override;
-	      procedure ReadFromFiler(reader : TReader); override;
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
          property Owner : TSkeletonFrameList read FOwner;
          property Name : String read FName write FName;
@@ -184,7 +184,7 @@ type
          constructor CreateOwned(AOwner : TPersistent);
          destructor Destroy; override;
 
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          property Owner : TPersistent read FOwner;
          procedure Clear; override;
@@ -220,8 +220,8 @@ type
 	      constructor Create; override;
          destructor Destroy; override;
 
-	      procedure WriteToFiler(writer : TWriter); override;
-	      procedure ReadFromFiler(reader : TReader); override;
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
          //: Render skeleton wireframe
          procedure BuildList(var mrci : TRenderContextInfo);
@@ -287,8 +287,8 @@ type
 	      constructor Create; override;
          destructor Destroy; override;
 
-	      procedure WriteToFiler(writer : TWriter); override;
-	      procedure ReadFromFiler(reader : TReader); override;
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
          property Owner : TBaseMesh read FOwner;
          property RootBone : TSkeletonBone read FRootBone write SetRootBone;
@@ -338,8 +338,8 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          function ExtractTriangles : TAffineVectorList; override;
 
          {: Prepare the texture and materials before rendering.<p>
@@ -380,7 +380,7 @@ type
          constructor CreateOwned(aOwner : TBaseMesh);
          destructor Destroy; override;
 
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          {: Prepare the texture and materials before rendering.<p>
             Invoked once, before building the list and NOT while building the list. }
@@ -425,8 +425,8 @@ type
          constructor CreateOwned(AOwner : TMeshMorphTargetList);
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          property Owner : TMeshMorphTargetList read FOwner;
    end;
@@ -448,7 +448,7 @@ type
          constructor CreateOwned(AOwner : TPersistent);
          destructor Destroy; override;
 
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure Translate(const delta : TAffineVector);
 
@@ -475,8 +475,8 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          procedure Translate(const delta : TAffineVector); override;
 
          procedure MorphTo(morphTargetIndex : Integer);
@@ -527,8 +527,8 @@ type
 	      constructor Create; override;
          destructor Destroy; override;
 
-	      procedure WriteToFiler(writer : TWriter); override;
-	      procedure ReadFromFiler(reader : TReader); override;
+	      procedure WriteToFiler(writer : TVirtualWriter); override;
+	      procedure ReadFromFiler(reader : TVirtualReader); override;
 
          property VerticesBonesWeights : PVerticesBoneWeights read FVerticesBonesWeights;
          property VerticeBoneWeightCount : Integer read FVerticeBoneWeightCount write SetVerticeBoneWeightCount;
@@ -561,8 +561,8 @@ type
          constructor CreateOwned(AOwner : TFaceGroups); virtual;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          procedure BuildList(var mrci : TRenderContextInfo); virtual;
 
          {: Add to the list the triangles corresponding to the facegroup.<p>
@@ -609,8 +609,8 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
          procedure AddToTriangles(aList : TAffineVectorList); override;
@@ -644,8 +644,8 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          procedure BuildList(var mrci : TRenderContextInfo); override;
          procedure AddToTriangles(aList : TAffineVectorList); override;
 
@@ -674,8 +674,8 @@ type
          constructor Create; override;
          destructor Destroy; override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          procedure BuildList(var mrci : TRenderContextInfo); override;
          procedure AddToTriangles(aList : TAffineVectorList); override;
 
@@ -1362,7 +1362,7 @@ end;
 
 // WriteToFiler
 //
-procedure TBaseMeshObject.WriteToFiler(writer : TWriter);
+procedure TBaseMeshObject.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -1375,7 +1375,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TBaseMeshObject.ReadFromFiler(reader : TReader);
+procedure TBaseMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -1560,7 +1560,7 @@ end;
 
 // WriteToFiler
 //
-procedure TSkeletonFrame.WriteToFiler(writer : TWriter);
+procedure TSkeletonFrame.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -1573,7 +1573,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TSkeletonFrame.ReadFromFiler(reader : TReader);
+procedure TSkeletonFrame.ReadFromFiler(reader : TVirtualReader);
 var
 	archiveVersion : integer;
 begin
@@ -1663,7 +1663,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TSkeletonFrameList.ReadFromFiler(reader : TReader);
+procedure TSkeletonFrameList.ReadFromFiler(reader : TVirtualReader);
 var
    i : Integer;
 begin
@@ -1727,7 +1727,7 @@ end;
 
 // WriteToFiler
 //
-procedure TSkeletonBone.WriteToFiler(writer : TWriter);
+procedure TSkeletonBone.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -1740,7 +1740,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TSkeletonBone.ReadFromFiler(reader : TReader);
+procedure TSkeletonBone.ReadFromFiler(reader : TVirtualReader);
 var
 	archiveVersion, i : integer;
 begin
@@ -1884,7 +1884,7 @@ end;
 
 // WriteToFiler
 //
-procedure TSkeleton.WriteToFiler(writer : TWriter);
+procedure TSkeleton.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -1896,7 +1896,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TSkeleton.ReadFromFiler(reader : TReader);
+procedure TSkeleton.ReadFromFiler(reader : TVirtualReader);
 var
 	archiveVersion : integer;
 begin
@@ -2102,7 +2102,7 @@ end;
 
 // WriteToFiler
 //
-procedure TMeshObject.WriteToFiler(writer : TWriter);
+procedure TMeshObject.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -2116,7 +2116,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TMeshObject.ReadFromFiler(reader : TReader);
+procedure TMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -2314,7 +2314,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TMeshObjectList.ReadFromFiler(reader : TReader);
+procedure TMeshObjectList.ReadFromFiler(reader : TVirtualReader);
 var
    i : Integer;
 begin
@@ -2482,7 +2482,7 @@ end;
 
 // WriteToFiler
 //
-procedure TMeshMorphTarget.WriteToFiler(writer : TWriter);
+procedure TMeshMorphTarget.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -2493,7 +2493,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TMeshMorphTarget.ReadFromFiler(reader : TReader);
+procedure TMeshMorphTarget.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -2525,7 +2525,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TMeshMorphTargetList.ReadFromFiler(reader : TReader);
+procedure TMeshMorphTargetList.ReadFromFiler(reader : TVirtualReader);
 var
    i : Integer;
 begin
@@ -2585,7 +2585,7 @@ end;
 
 // WriteToFiler
 //
-procedure TMorphableMeshObject.WriteToFiler(writer : TWriter);
+procedure TMorphableMeshObject.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -2596,7 +2596,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TMorphableMeshObject.ReadFromFiler(reader : TReader);
+procedure TMorphableMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -2675,7 +2675,7 @@ end;
 
 // WriteToFiler
 //
-procedure TSkeletonMeshObject.WriteToFiler(writer : TWriter);
+procedure TSkeletonMeshObject.WriteToFiler(writer : TVirtualWriter);
 var
    i : Integer;
 begin
@@ -2691,7 +2691,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TSkeletonMeshObject.ReadFromFiler(reader : TReader);
+procedure TSkeletonMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
 	archiveVersion, i : integer;
 begin
@@ -2904,7 +2904,7 @@ end;
 
 // WriteToFiler
 //
-procedure TFaceGroup.WriteToFiler(writer : TWriter);
+procedure TFaceGroup.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -2915,7 +2915,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TFaceGroup.ReadFromFiler(reader : TReader);
+procedure TFaceGroup.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -2969,7 +2969,7 @@ end;
 
 // WriteToFiler
 //
-procedure TFGVertexIndexList.WriteToFiler(writer : TWriter);
+procedure TFGVertexIndexList.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -2981,7 +2981,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TFGVertexIndexList.ReadFromFiler(reader : TReader);
+procedure TFGVertexIndexList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -3129,7 +3129,7 @@ end;
 
 // WriteToFiler
 //
-procedure TFGVertexNormalTexIndexList.WriteToFiler(writer : TWriter);
+procedure TFGVertexNormalTexIndexList.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -3141,7 +3141,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TFGVertexNormalTexIndexList.ReadFromFiler(reader : TReader);
+procedure TFGVertexNormalTexIndexList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -3233,7 +3233,7 @@ end;
 
 // WriteToFiler
 //
-procedure TFGIndexTexCoordList.WriteToFiler(writer : TWriter);
+procedure TFGIndexTexCoordList.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
@@ -3244,7 +3244,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TFGIndexTexCoordList.ReadFromFiler(reader : TReader);
+procedure TFGIndexTexCoordList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin

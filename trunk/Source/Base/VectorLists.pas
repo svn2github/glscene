@@ -51,8 +51,8 @@ type
 			destructor Destroy; override;
          procedure Assign(Src: TPersistent); override;
 
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          procedure AddNulls(nbVals : Integer);
          procedure AdjustCapacityToAtLeast(const size : Integer);
          procedure Clear;
@@ -84,8 +84,8 @@ type
 
 		public
          { Public Declarations }
-			procedure WriteToFiler(writer : TWriter); override;
-			procedure ReadFromFiler(reader : TReader); override;
+			procedure WriteToFiler(writer : TVirtualWriter); override;
+			procedure ReadFromFiler(reader : TVirtualReader); override;
          procedure GetExtents(var min, max : TAffineVector); dynamic;
          function Sum : TAffineVector; dynamic;
          procedure Normalize; dynamic;
@@ -359,7 +359,7 @@ end;
 
 // WriteToFiler
 //
-procedure TBaseList.WriteToFiler(writer : TWriter);
+procedure TBaseList.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited;
    with writer do begin
@@ -373,7 +373,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TBaseList.ReadFromFiler(reader : TReader);
+procedure TBaseList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -478,7 +478,7 @@ end;
 
 // WriteToFiler
 //
-procedure TBaseVectorList.WriteToFiler(writer : TWriter);
+procedure TBaseVectorList.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited;
    with writer do begin
@@ -489,7 +489,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TBaseVectorList.ReadFromFiler(reader : TReader);
+procedure TBaseVectorList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
@@ -1156,7 +1156,7 @@ var
 begin
    if aCount<=0 then Exit;
    AdjustCapacityToAtLeast(Count+aCount);
-   v:=base;
+   v:=aBase;
    for i:=Count to Count+aCount-1 do begin
       FList^[i]:=v;
       Inc(v, aDelta);

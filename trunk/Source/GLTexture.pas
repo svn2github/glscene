@@ -905,6 +905,8 @@ type
 	      { Public Declarations }
 	      constructor Create(AOwner : TComponent);
 
+         function Owner : TPersistent;
+
          function Add: TGLLibMaterial;
 	      function FindItemID(ID: Integer): TGLLibMaterial;
 	      property Items[index : Integer] : TGLLibMaterial read GetItems write SetItems; default;
@@ -2776,6 +2778,13 @@ var
 begin
    for i:=0 to Count-1 do
       Items[i].DestroyHandle(glsceneOnly);
+end;
+
+// Owner
+//
+function TGLLibMaterials.Owner : TPersistent;
+begin
+   Result:=GetOwner;
 end;
 
 // Add
