@@ -166,6 +166,7 @@ type
    PFloatArray = PFloatVector;
    PSingleArray = PFloatArray;
    TFloatVector = array[0..cMaxArray] of Single;
+   TSingleArray = array of Single;
 
    PDoubleVector = ^TDoubleVector;
    PDoubleArray = PDoubleVector;
@@ -920,8 +921,8 @@ function MaxFloat(const v1, v2, v3 : Extended) : Extended; overload;
    Expected performance is 4 to 5 times that of a Deliph-compiled loop on AMD
    CPUs, and 2 to 3 when 3DNow! isn't available. }
 procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
-                          var factor : Single); overload;
-procedure ScaleFloatArray(var values : array of Single;
+                          var factor : Single); register; overload;
+procedure ScaleFloatArray(var values : TSingleArray;
                           factor : Single); overload;
 
 {: Adds delta to values in the array.<p> }
@@ -5243,7 +5244,7 @@ end;
 // ScaleFloatArray (raw)
 //
 procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
-                          var factor : Single);
+                          var factor : Single); register;
 asm
       test vSIMD, 1
       jz @@FPU
@@ -5305,7 +5306,7 @@ end;
 
 // ScaleFloatArray (array)
 //
-procedure ScaleFloatArray(var values : array of Single;
+procedure ScaleFloatArray(var values : TSingleArray;
                           factor : Single);
 begin
    if Length(values)>0 then

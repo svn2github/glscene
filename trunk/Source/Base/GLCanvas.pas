@@ -89,7 +89,7 @@ type
 	      procedure Ellipse(const x1, y1, x2, y2 : Integer); overload;
          {: Draws and ellipse centered at (x, y) with given radiuses. }
 	      procedure Ellipse(const x, y : Integer; const xRadius, yRadius : Single); overload;
-	      procedure Ellipse(const x, y, xRadius, yRadius : Single); overload;
+	      procedure Ellipse(x, y, xRadius, yRadius : Single); overload;
 	end;
 
 //-------------------------------------------------------------
@@ -345,10 +345,10 @@ end;
 
 // Ellipse
 //
-procedure TGLCanvas.Ellipse(const x, y, xRadius, yRadius : Single);
+procedure TGLCanvas.Ellipse(x, y, xRadius, yRadius : Single);
 var
    i, n : Integer;
-   s, c : array of Single;
+   s, c : TSingleArray;
 begin
    n:=Round(MaxFloat(xRadius, yRadius)*0.1)+5;
    SetLength(s, n);
