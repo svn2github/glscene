@@ -154,6 +154,8 @@ contains
   TypesMS3D in '..\Source\FileFormats\TypesMS3D.pas',
   Q3MD3 in '..\Source\FileFormats\Q3MD3.pas',
   GLFileMD3 in '..\Source\FileFormats\GLFileMD3.pas',
-  FileMD3 in '..\Source\FileFormats\FileMD3.pas';
+  FileMD3 in '..\Source\FileFormats\FileMD3.pas',
+  GLFileNMF in '..\Source\FileFormats\GLFileNMF.pas',
+  FileNMF in '..\Source\FileFormats\FileNMF.pas';
 
 end.
