@@ -225,6 +225,8 @@ type
 
 	   protected
 	      { Protected Declarations }
+         procedure Loaded; override;
+
          procedure SetSunElevation(const val : Single);
          procedure SetTurbidity(const val : Single);
          procedure SetSunZenithColor(const val : TGLColor);
@@ -860,8 +862,8 @@ begin
    FTurbidity:=15;
    FSunZenithColor:=TGLColor.CreateInitialized(Self, clrWhite, OnColorChanged);
    FSunDawnColor:=TGLColor.CreateInitialized(Self, clrCoral, OnColorChanged);
-   FHazeColor:=TGLColor.CreateInitialized(Self, clrWhite, OnColorChanged);
-   FSkyColor:=TGLColor.CreateInitialized(Self, clrBlue, OnColorChanged);
+   FHazeColor:=TGLColor.CreateInitialized(Self, VectorMake(0.9, 0.95, 1, 1), OnColorChanged);
+   FSkyColor:=TGLColor.CreateInitialized(Self, VectorMake(0.45, 0.6, 0.9, 1), OnColorChanged);
    FNightColor:=TGLColor.CreateInitialized(Self, clrBlack, OnColorChanged);
    FStacks:=24;
    FSlices:=48;
@@ -897,6 +899,14 @@ begin
       PreCalculate;
    end;
    inherited;
+end;
+
+// Loaded
+//
+procedure TGLEarthSkyDome.Loaded;
+begin
+   inherited;
+   PreCalculate;
 end;
 
 // SetSunElevation
@@ -978,9 +988,29 @@ end;
 // BuildList
 //
 procedure TGLEarthSkyDome.BuildList(var rci : TRenderContextInfo);
+var
+   f : Single;
 begin
+   // setup states
+   glPushMatrix;
+   glPushAttrib(GL_ENABLE_BIT);
+   glDisable(GL_LIGHTING);
+   glDisable(GL_DEPTH_TEST);
+   glDisable(GL_FOG);
+   glDisable(GL_CULL_FACE);
+   glDepthMask(False);
+
+   with Scene.CurrentGLCamera do
+      f:=(NearPlane+DepthOfView)*0.95;
+   glScalef(f, f, f);
+
    RenderDome;
-   inherited;
+   Stars.BuildList(rci, (sdoTwinkle in FOptions));
+
+   // restore
+   glDepthMask(True);
+   glPopAttrib;
+   glPopMatrix;
 end;
 
 // OnColorChanged
@@ -999,11 +1029,11 @@ var
 begin
    ts:=DegToRad(90-SunElevation);
    // Precompose base colors
-   fts:=exp(-3*(PI/2-ts));
-   VectorLerp(clrWhite, clrYellow, fts, FCurSunColor);
-   fts:=1-cos(ts-0.5);
-   VectorLerp(clrWhite, clrBlack, fts, FCurHazeColor);
-   VectorLerp(clrBlue, clrBlack, fts, FCurSkyColor);
+   fts:=exp(-6*(PI/2-ts));
+   VectorLerp(SunZenithColor.Color, SunDawnColor.Color, fts, FCurSunColor);
+   fts:=Power(1-cos(ts-0.5), 2);
+   VectorLerp(HazeColor.Color, NightColor.Color, fts, FCurHazeColor);
+   VectorLerp(SkyColor.Color, NightColor.Color, fts, FCurSkyColor);
    // Precalculate Turbidity factors
    FCurHazeTurbid:=-sqrt(121-Turbidity)*2;
    FCurSunSkyTurbid:=-(121-Turbidity);
@@ -1018,9 +1048,9 @@ var
 begin
    t:=PI/2-theta;
    // mix to get haze/sky
-   VectorLerp(FCurSkyColor, FCurHazeColor, exp(FCurHazeTurbid*t), Result);
+   VectorLerp(FCurSkyColor, FCurHazeColor, ClampValue(exp(FCurHazeTurbid*t), 0, 1), Result);
    // then mix sky with sun
-   VectorLerp(Result, FCurSunColor, exp(FCurSunSkyTurbid*cosGamma*(1+t)), Result);
+   VectorLerp(Result, FCurSunColor, ClampValue(exp(FCurSunSkyTurbid*cosGamma*(1+t))*1.1, 0, 1), Result);
 end;
 
 // SetSunElevation
