@@ -221,8 +221,8 @@ begin
       CamHeight:=CamHeight+DCCamera.Position.Y-alpha;
    end;
    GetCursorPos(newMousePos);
-   GLCamera.MoveAroundTarget((Screen.Height div 2-newMousePos.Y)*0.3,
-                             (Screen.Width div 2-newMousePos.X)*0.3);
+   GLCamera.MoveAroundTarget((Screen.Height div 2-newMousePos.Y)*0.25,
+                             (Screen.Width div 2-newMousePos.X)*0.25);
    ResetMousePos;
 
    // don't drop our target through terrain!
@@ -343,7 +343,7 @@ begin
          offset.T:=-n*0.25;
          heightData.TextureCoordinatesOffset:=offset;
          heightData.TextureCoordinatesScale:=TexPointMake(0.25, 0.25);
-         Assert(heightData.DataType=hdtSmallInt);
+         heightData.DataType:=hdtSmallInt;
          htfHD.DataType:=hdtSmallInt;
          heightData.Allocate(hdtSmallInt);
          Move(htfHD.SmallIntData^, heightData.SmallIntData^, htfHD.DataSize);
