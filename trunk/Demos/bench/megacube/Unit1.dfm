@@ -30,6 +30,7 @@ object Form1: TForm1
     object DummyCube1: TGLDummyCube
       ObjectsSorting = osNone
       CubeSize = 10
+      Amalgamate = True
     end
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1

@@ -9,6 +9,9 @@
 
 	Size	 Triangles     FPS	    CPU      OpenGL     ColorDepth
 
+	  5      15972     200.5     K7-1800+   GF2 Pro       32Bits   Amalgamate = True
+	  5      15972     158.6     K7-1800+   GF2 Pro       32Bits
+   --- 29/11/02 --- Long time no bench, added 'Amalgamate' score
 	  5      15972     139.3     K7-1145    GF2 Pro       32Bits
 	  5      15972      33.6     Du-800     TNT2 M64      32Bits
    --- 26/01/02 --- XOpenGL flexes its muscles, more memory optimizations
