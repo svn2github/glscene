@@ -42,7 +42,7 @@ object frmClothify: TfrmClothify
     Caption = 'Iterations'
   end
   object Label7: TLabel
-    Left = 184
+    Left = 192
     Top = 0
     Width = 34
     Height = 13
@@ -185,7 +185,7 @@ object frmClothify: TfrmClothify
     end
   end
   object Button_OpenLoadForm: TButton
-    Left = 352
+    Left = 360
     Top = 11
     Width = 51
     Height = 21
@@ -216,7 +216,7 @@ object frmClothify: TfrmClothify
     OnChange = TrackBar_IterationsChange
   end
   object TrackBar_Friction: TTrackBar
-    Left = 176
+    Left = 184
     Top = 14
     Width = 81
     Height = 25
@@ -227,7 +227,7 @@ object frmClothify: TfrmClothify
     OnChange = TrackBar_FrictionChange
   end
   object CheckBox_ShowOctree: TCheckBox
-    Left = 264
+    Left = 272
     Top = 15
     Width = 81
     Height = 17

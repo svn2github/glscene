@@ -341,6 +341,10 @@ begin
   TrackBar_FrictionChange(nil);
 
   GroupBox_LoadForm.Hide;
+
+  CheckBox_ShowOctree.Enabled := CheckBox_UseOctree.Checked;
+  TrackBar_Iterations.Enabled := (ComboBox_ConstraintType.ItemIndex=0);
+  TrackBar_Slack.Enabled := (ComboBox_ConstraintType.ItemIndex=0);
 end;
 
 procedure TfrmClothify.GLSceneViewer1MouseMove(Sender: TObject;
@@ -435,7 +439,6 @@ begin
 
   Button_LoadMesh.Click;
   TrackBar_IterationsChange(nil);
-  CheckBox_UseOctreeClick(nil);
 end;
 
 procedure TfrmClothify.TrackBar_SlackChange(Sender: TObject);
