@@ -1328,6 +1328,7 @@ type
    TGLMaterialLibrary = class (TGLCadenceAbleComponent)
 	   private
 	      { Private Declarations }
+         FDoNotClearMaterialsOnLoad : Boolean;
          FMaterials : TGLLibMaterials;
          FTexturePaths : String;
          FOnTextureNeeded : TTextureNeededEvent;
@@ -1351,13 +1352,15 @@ type
    	   procedure ReadFromFiler(reader : TVirtualReader);
 	      procedure SaveToStream(aStream : TStream); dynamic;
 	      procedure LoadFromStream(aStream : TStream); dynamic;
-         
+         procedure AddMaterialsFromStream(aStream : TStream);
+
          {: Save library content to a file.<p>
             Recommended extension : .GLML<br>
             Currently saves only texture, ambient, diffuse, emission
             and specular colors. }
 	      procedure SaveToFile(const fileName : String);
 	      procedure LoadFromFile(const fileName : String);
+         procedure AddMaterialsFromFile(const fileName : String);
 
          {: Add a "standard" texture material.<p>
             "standard" means linear texturing mode with mipmaps and texture
@@ -4816,7 +4819,8 @@ var
 begin
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
-      Materials.Clear;
+      if not FDoNotClearMaterialsOnLoad then
+         Materials.Clear;
       n:=ReadInteger;
       for i:=0 to n-1 do begin
          name:=ReadString;
@@ -4875,6 +4879,18 @@ begin
    end;
 end;
 
+// AddMaterialsFromStream
+//
+procedure TGLMaterialLibrary.AddMaterialsFromStream(aStream : TStream);
+begin
+   FDoNotClearMaterialsOnLoad:=True;
+   try
+      LoadFromStream(aStream);
+   finally
+      FDoNotClearMaterialsOnLoad:=False;
+   end;
+end;
+
 // SaveToFile
 //
 procedure TGLMaterialLibrary.SaveToFile(const fileName : String);
@@ -4898,6 +4914,20 @@ begin
    fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
    try
       LoadFromStream(fs);
+   finally
+      fs.Free;
+   end;
+end;
+
+// AddMaterialsFromFile
+//
+procedure TGLMaterialLibrary.AddMaterialsFromFile(const fileName : String);
+var
+   fs : TStream;
+begin
+   fs:=CreateFileStream(fileName, fmOpenRead+fmShareDenyNone);
+   try
+      AddMaterialsFromStream(fs);
    finally
       fs.Free;
    end;
