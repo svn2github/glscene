@@ -22,7 +22,7 @@ unit GLVfsPAK;
 
 // Activate support for LZRW1 compression. This line could be moved to GLScene.inc file.
 // Remove the "." characted in order to activate compression features.
-{$DEFINE GLS_LZRW_SUPPORT}
+{.$DEFINE GLS_LZRW_SUPPORT}
 
 interface
 
