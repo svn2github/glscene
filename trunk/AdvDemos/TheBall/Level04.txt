@@ -1,18 +1,18 @@
 //
 // TheBall
 //
-Title: Basic Training - Rollin'Around
+Title: Fire and Spikes
 
 SpawnPoint:X=-3.5,Y=4,Z=-3.5
 
 BallExit:X=3.5,Y=1,Z=3.5,SX=1.2,SY=1,SZ=1.2
 
 // left wall
-MarbleBlock:Y=0.2,Z=5,SX=10,SY=0.39,SZ=0.4
+MarbleBlock:Y=0.2,Z=5,SX=10,SY=0.4,SZ=0.4
 // top wall
 MarbleBlock:Y=0.2,X=-5,SX=0.4,SY=0.4,SZ=10
 // right wall
-MarbleBlock:Y=0.2,Z=-5,SX=10,SY=0.39,SZ=0.4
+MarbleBlock:Y=0.2,Z=-5,SX=10,SY=0.4,SZ=0.4
 // bottom wall
 MarbleBlock:Y=0.2,X=5,SX=0.4,SY=0.4,SZ=10
 
@@ -20,3 +20,10 @@ MarbleBlock:Y=0.2,X=5,SX=0.4,SY=0.4,SZ=10
 MarbleBlock:X=1.3,Y=0.2,Z=2,SX=7,SY=0.4,SZ=0.4
 // right separator
 MarbleBlock:X=-1.3,Y=0.2,Z=-2,SX=7,SY=0.4,SZ=0.4
+
+// spikes
+Spikes:X=-1.5,Y=0,Z=1.4,SX=0.5,SY=0.5,SZ=0.5,NB=8
+Spikes:X=-1.5,Y=0,Z=-1.5,SX=0.5,SY=0.5,SZ=0.5,NB=8
+
+// fire
+Fire:X=2,Y=0.05,Z=0,SX=0.5,SY=0.5,SZ=0.5
