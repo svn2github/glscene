@@ -93,7 +93,9 @@ type
 
    // TBaseMeshObject
    //
-   {: A base class for mesh objects. }
+   {: A base class for mesh objects.<p>
+      The class introduces a set of vertices and normals for the object but
+      does no rendering of its own. }
    TBaseMeshObject = class (TPersistentObject)
       private
          { Private Declarations }
@@ -121,13 +123,14 @@ type
          procedure Translate(const delta : TAffineVector); dynamic;
          {: Builds (smoothed) normals for the vertex list.<p>
             If normalIndices is nil, the method assumes a bijection between
-            vertices and normals sets, and when exiting Normals and Vertices
+            vertices and normals sets, and when existing Normals and Vertices
             list will have the same number of items (whatever previously was in
             the Normals list is ignored/removed).<p>
             If normalIndices is defined, normals will be added to the list and
             their indices will be added to normalIndices. Already defined
             normals and indices are preserved.<p>
-            The only valid modes are currently momTriangles and momTriangleStrip }
+            The only valid modes are currently momTriangles and momTriangleStrip
+            (ie. momFaceGroups not supported). }
          procedure BuildNormals(vertexIndices : TIntegerList; mode : TMeshObjectMode;
                                 normalIndices : TIntegerList = nil);
          {: Extracts all mesh triangles as a triangles list.<p>
@@ -380,7 +383,17 @@ type
                         lerpFactor : Single);
          procedure BlendedLerps(const lerpInfos : array of TBlendedLerpInfo);
 
+         {: Linearly removes the translation component between skeletal frames.<p>
+            This function will compute the translation of the first bone (index 0)
+            and linearly subtract this translation in all frames between startFrame
+            and endFrame. Its purpose is essentially to remove the 'slide' that
+            exists in some animation formats (f.i. SMD). }
          procedure MakeSkeletalTranslationStatic(startFrame, endFrame : Integer);
+         {: Removes the absolute rotation component of the skeletal frames.<p>
+            Some formats will store frames with absolute rotation information,
+            if this correct if the animation is the "main" animation.<br>
+            This function removes that absolute information, making the animation
+            frames suitable for blending purposes. }
          procedure MakeSkeletalRotationDelta(startFrame, endFrame : Integer);
 
          {: Applies current frame to morph all mesh objects. }
@@ -1142,14 +1155,28 @@ type
          property AsString : String read GetAsString write SetAsString;
 
          function OwnerActor : TActor;
+         
+         {: Linearly removes the translation component between skeletal frames.<p>
+            This function will compute the translation of the first bone (index 0)
+            and linearly subtract this translation in all frames between startFrame
+            and endFrame. Its purpose is essentially to remove the 'slide' that
+            exists in some animation formats (f.i. SMD). }
          procedure MakeSkeletalTranslationStatic;
+         {: Removes the absolute rotation component of the skeletal frames.<p>
+            Some formats will store frames with absolute rotation information,
+            if this correct if the animation is the "main" animation.<br>
+            This function removes that absolute information, making the animation
+            frames suitable for blending purposes. }
          procedure MakeSkeletalRotationDelta;
 
 	   published
 	      { Published Declarations }
          property Name : String read FName write FName;
+         {: Index of the initial frame of the animation. }
          property StartFrame : Integer read FStartFrame write SetStartFrame;
+         {: Index of the final frame of the animation. }
          property EndFrame : Integer read FEndFrame write SetEndFrame;
+         {: Indicates if this is a skeletal or a morph-based animation. }
          property Reference : TActorAnimationReference read FReference write SetReference default aarMorph;
 	end;
 
@@ -1188,7 +1215,13 @@ type
 
 	// TAnimationControler
 	//
-	TAnimationControler = class (TComponent)
+   {: Controls the blending of an additionnal skeletal animation into an actor.<p>
+      The animation controler allows animating an actor with several animations
+      at a time, for instance, you could use a "run" animation as base animation
+      (in TActor), blend an animation that makes the arms move differently
+      depending on what the actor is carrying, along with an animation that will
+      make the head turn toward a target. }
+   TAnimationControler = class (TComponent)
 	   private
 	      { Private Declarations }
          FActor : TActor;
@@ -1305,14 +1338,16 @@ type
          { Published Declarations }
          property StartFrame : Integer read FStartFrame write SetStartFrame;
          property EndFrame : Integer read FEndFrame write SetEndFrame;
+         
          {: Reference Frame Animation mode.<p>
             Allows specifying if the model is primarily morph or skeleton based. }
          property Reference : TActorAnimationReference read FReference write FReference default aarMorph;
 
+         {: Current animation frame. }
          property CurrentFrame : Integer read FCurrentFrame write SetCurrentFrame;
          {: Value in the [0; 1] range expressing the delta to the next frame.<p> }
          property CurrentFrameDelta : Single read FCurrentFrameDelta write FCurrentFrameDelta;
-
+         {: Frame interpolation mode (afpNone/afpLinear). }
          property FrameInterpolation : TActorFrameInterpolation read FFrameInterpolation write FFrameInterpolation default afpLinear;
 
          {: See TActorAnimationMode.<p> }
@@ -1337,6 +1372,8 @@ type
          property OverlaySkeleton;
    end;
 
+   // TVectorFileFormat
+   //
    PVectorFileFormat = ^TVectorFileFormat;
    TVectorFileFormat = record
       VectorFileClass : TVectorFileClass;
@@ -1347,6 +1384,7 @@ type
 
    // TVectorFileFormatsList
    //
+   {: Stores registered vector file formats. }
    TVectorFileFormatsList = class(TList)
       public
          { Public Declarations }
