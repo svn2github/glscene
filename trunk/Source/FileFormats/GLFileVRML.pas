@@ -6,6 +6,9 @@
    Preliminary VRML vector file support for GLScene.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>25/01/05 - SG - Improved auto-normal generation using creaseAngle,
+                          Added Normal and TexCoord reading,
+                          Fixes for the polygon tessellation routine (Carsten Pohl)
       <li>18/01/05 - SG - Added polygon tessellation routine to decompose 
                           a polygon mesh to a triangle mesh
       <li>14/01/05 - SG - Added to CVS
@@ -42,18 +45,17 @@ procedure TessellatePolygon(PolyVerts : TAffineVectorList;
 
   function IsPolyClockWise : Boolean;
   var
-    i : Integer;
+    i,j : Integer;
     det : Single;
     mat : TAffineMatrix;
   begin
     det:=0;
     for i:=0 to PolyIndices.Count-1 do begin
-      mat[0]:=PolyVerts[PolyIndices[i]];
-      mat[1]:=PolyVerts[PolyIndices[i+1]];
-      if i = PolyIndices.Count-1 then
-        mat[2]:=PolyVerts[PolyIndices[0]]
-      else
-        mat[2]:=PolyVerts[PolyIndices[i+2]];
+      for j:=0 to 2 do
+        if (i+j)>=PolyIndices.Count then
+          mat[j]:=PolyVerts[PolyIndices[i+j-PolyIndices.Count]]
+        else
+          mat[j]:=PolyVerts[PolyIndices[i+j]];
       det:=det+MatrixDeterminant(mat);
     end;
     Result:=(det<0);
@@ -84,7 +86,7 @@ var
   PolyCW, NoPointsInTriangle : Boolean;
   v : TAffineMatrix;
   temp : TIntegerList;
-  min_dist, d : Single;
+  min_dist, d, area : Single;
 begin
   temp:=TIntegerList.Create;
   try
@@ -92,8 +94,8 @@ begin
     temp.Assign(PolyIndices);
     while temp.Count>3 do begin
       min_dist:=10e7;
-      min_prev:=-1;
       min_vert:=-1;
+      min_prev:=-1;
       min_next:=-1;
       for i:=0 to temp.Count-1 do begin
         prev:=i-1;
@@ -113,7 +115,10 @@ begin
               end;
             end;
           end;
-          if NoPointsInTriangle then begin
+
+          area:=TriangleArea(v[0],v[1],v[2]);
+
+          if NoPointsInTriangle and (area>0) then begin
             d:=VectorDistance2(v[0], v[2]);
             if d<min_dist then begin
               min_dist:=d;
@@ -157,6 +162,7 @@ var
   uniqueMatID : Integer;
   currentMaterial : TGLLibMaterial;
   currentTransform : TMatrix;
+  creaseAngle : Single;
 
   function GetUniqueMaterialName : String;
   var
@@ -218,14 +224,194 @@ var
       Result.Material.BlendingMode:=bmTransparency;
   end;
 
+  procedure RebuildMesh;
+  var
+    i,j,k,l : Integer;
+    newfg : TFGVertexIndexList;
+    fg : TFGVertexNormalTexIndexList;
+    vertices, normals, texcoords, triNormals,
+    newVertices, newNormals, newTexCoords : TAffineVectorList;
+    optimized : TIntegerList;
+    cosAngle : Single;
+    normal,norm1,norm2 : TAffineVector;
+    s, t : array[0..2] of Integer;
+    n : array[0..2] of TIntegerList;
+    smooth,
+    hasVertices, hasVertexIndices,
+    hasNormals, hasNormalIndices,
+    hasTexCoords, hasTexCoordIndices : Boolean;
+  begin
+    if not Assigned(mesh) then Exit;
+
+    hasVertices:=mesh.Vertices.Count>0;
+    hasNormals:=mesh.Normals.Count>0;
+    hasTexCoords:=mesh.TexCoords.Count>0;
+
+    if not hasVertices then Exit;
+
+    vertices:=TAffineVectorList.Create;
+    normals:=TAffineVectorList.Create;
+    texcoords:=TAffineVectorList.Create;
+    newVertices:=TAffineVectorList.Create;
+    newNormals:=TAffineVectorList.Create;
+    newTexCoords:=TAffineVectorList.Create;
+    triNormals:=TAffineVectorList.Create;
+    n[0]:=TIntegerList.Create;
+    n[1]:=TIntegerList.Create;
+    n[2]:=TIntegerList.Create;
+    for i:=0 to mesh.FaceGroups.Count-1 do begin
+      fg:=TFGVertexNormalTexIndexList(mesh.FaceGroups[i]);
+
+      hasVertexIndices:=fg.VertexIndices.Count>0;
+      hasNormalIndices:=fg.NormalIndices.Count>0;
+      hasTexCoordIndices:=fg.TexCoordIndices.Count>0;
+
+      vertices.Clear;
+      normals.Clear;
+      texcoords.Clear;
+      triNormals.Clear;
+
+      if not hasNormals then begin
+        for j:=0 to (fg.VertexIndices.Count div 3)-1 do begin
+          normal:=VectorCrossProduct(
+            VectorNormalize(VectorSubtract(
+              mesh.Vertices[fg.VertexIndices[3*j+1]],
+              mesh.Vertices[fg.VertexIndices[3*j]])),
+            VectorNormalize(VectorSubtract(
+              mesh.Vertices[fg.VertexIndices[3*j+2]],
+              mesh.Vertices[fg.VertexIndices[3*j]])));
+          triNormals.Add(VectorNormalize(normal));
+        end;
+      end;
+
+      for j:=0 to (fg.VertexIndices.Count div 3)-1 do begin
+        vertices.Add(
+          mesh.Vertices[fg.VertexIndices[3*j]],
+          mesh.Vertices[fg.VertexIndices[3*j+1]],
+          mesh.Vertices[fg.VertexIndices[3*j+2]]);
+
+        if hasNormals then begin
+          if hasNormalIndices then begin
+            normals.Add(
+              mesh.Normals[fg.NormalIndices[3*j]],
+              mesh.Normals[fg.NormalIndices[3*j+1]],
+              mesh.Normals[fg.NormalIndices[3*j+2]]);
+          end else begin
+            normals.Add(
+              mesh.Normals[fg.VertexIndices[3*j]],
+              mesh.Normals[fg.VertexIndices[3*j+1]],
+              mesh.Normals[fg.VertexIndices[3*j+2]]);
+          end;
+        end else begin
+          // No normal data, generate the normals
+          n[0].Clear;
+          n[1].Clear;
+          n[2].Clear;
+          s[0]:=fg.VertexIndices[3*j];
+          s[1]:=fg.VertexIndices[3*j+1];
+          s[2]:=fg.VertexIndices[3*j+2];
+          for k:=0 to (fg.VertexIndices.Count div 3)-1 do
+          if j<>k then begin
+            t[0]:=fg.VertexIndices[3*k];
+            t[1]:=fg.VertexIndices[3*k+1];
+            t[2]:=fg.VertexIndices[3*k+2];
+            if (s[0]=t[0]) or (s[0]=t[1]) or (s[0]=t[2]) then
+              n[0].Add(k);
+            if (s[1]=t[0]) or (s[1]=t[1]) or (s[1]=t[2]) then
+              n[1].Add(k);
+            if (s[2]=t[0]) or (s[2]=t[1]) or (s[2]=t[2]) then
+              n[2].Add(k);
+          end;
+
+          for k:=0 to 2 do begin
+            if n[k].Count>0 then begin
+              smooth:=True;
+              for l:=0 to n[k].Count-1 do begin
+                cosAngle:=VectorAngleCosine(triNormals[j], triNormals[n[k][l]]);
+                smooth:=smooth and (cosAngle>Cos(creaseAngle));
+                if not Smooth then Break;
+              end;
+              if smooth then begin
+                normal:=triNormals[j];
+                for l:=0 to n[k].Count-1 do
+                  AddVector(normal, triNormals[n[k][l]]);
+                ScaleVector(normal, 1/(n[k].Count+1));
+                normals.Add(VectorNormalize(normal));
+              end else
+                normals.Add(triNormals[j]);
+            end else begin
+              normals.Add(triNormals[j]);
+            end;
+          end;
+        end;
+
+        if hasTexCoords then begin
+          if hasTexCoordIndices then begin
+            texcoords.Add(
+              mesh.TexCoords[fg.TexCoordIndices[3*j]],
+              mesh.TexCoords[fg.TexCoordIndices[3*j+1]],
+              mesh.TexCoords[fg.TexCoordIndices[3*j+2]]);
+          end else begin
+            texcoords.Add(
+              mesh.TexCoords[fg.VertexIndices[3*j]],
+              mesh.TexCoords[fg.VertexIndices[3*j+1]],
+              mesh.TexCoords[fg.VertexIndices[3*j+2]]);
+          end;
+        end;
+
+      end;
+
+      // Optimize the mesh
+      if hasTexCoords then begin
+        optimized:=BuildVectorCountOptimizedIndices(vertices, normals, texcoords);
+        RemapReferences(texcoords, optimized);
+      end else
+        optimized:=BuildVectorCountOptimizedIndices(vertices, normals);
+      RemapReferences(normals, optimized);
+      RemapAndCleanupReferences(vertices, optimized);
+      optimized.Offset(newVertices.Count);
+
+      // Replace the facegroup with a vertex-only index list
+      newfg:=TFGVertexIndexList.Create;
+      newfg.Owner:=mesh.FaceGroups;
+      newfg.Mode:=fg.Mode;
+      newfg.MaterialName:=fg.MaterialName;
+      newfg.VertexIndices.Assign(optimized);
+      mesh.FaceGroups.Insert(i, newfg);
+      mesh.FaceGroups.RemoveAndFree(fg);
+      optimized.Free;
+
+      newVertices.Add(vertices);
+      newNormals.Add(normals);
+      newTexCoords.Add(texcoords);
+    end;
+    vertices.Free;
+    normals.Free;
+    texcoords.Free;
+    n[0].Free;
+    n[1].Free;
+    n[2].Free;
+    triNormals.Free;
+
+    if newVertices.Count>0 then
+      mesh.Vertices.Assign(newVertices);
+    if newNormals.Count>0 then
+      mesh.Normals.Assign(newNormals);
+    if newTexCoords.Count>0 then
+      mesh.TexCoords.Assign(newTexCoords);
+
+    newVertices.Free;
+    newNormals.Free;
+    newTexCoords.Free;
+  end;
+
   procedure RecursNodes(node : TVRMLNode);
   var
-    i,j : Integer;
+    i,j,n : Integer;
     points : TSingleList;
-    indices : TIntegerList;
-    fg : TFGVertexIndexList;
+    indices, fgindices : TIntegerList;
+    fg : TFGVertexNormalTexIndexList;
     face : TIntegerList;
-    normals : TAffineVectorList;
     tempLibMat : TGLLibMaterial;
     saveTransform, mat : TMatrix;
     saveMaterial : TGLLibMaterial;
@@ -252,6 +438,8 @@ var
         currentTransform:=MatrixMultiply(mat, currentTransform);
       end else if node[i] is TVRMLMaterial then begin
         currentMaterial:=AddMaterialToLibrary(TVRMLMaterial(node[i]));
+      end else if node[i] is TVRMLShapeHints then begin
+        creaseAngle:=TVRMLShapeHints(node[i]).CreaseAngle;
       end else if node[i] is TVRMLUse then begin
         tempLibMat:=Owner.MaterialLibrary.Materials.GetLibMaterialByName(TVRMLUse(node[i]).Value);
         if Assigned(tempLibMat) then
@@ -260,39 +448,60 @@ var
 
     // Read node data
     if (node.Name = 'Coordinate3') and (node.Count>0) then begin
+      RebuildMesh;
       mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
       points:=TVRMLSingleArray(node[0]).Values;
       for i:=0 to (points.Count div 3) - 1 do
         mesh.Vertices.Add(points[3*i], points[3*i+1], points[3*i+2]);
       mesh.Vertices.TransformAsPoints(currentTransform);
-      mesh.Normals.Count:=mesh.Vertices.Count;
+
+    end else if (node.Name = 'Normal') and (node.Count>0) and Assigned(mesh) then begin
+      points:=TVRMLSingleArray(node[0]).Values;
+      for i:=0 to (points.Count div 3) - 1 do
+        mesh.Normals.Add(points[3*i], points[3*i+1], points[3*i+2]);
+      mesh.Normals.TransformAsVectors(currentTransform);
+
+    end else if (node.Name = 'TextureCoordinate2') and (node.Count>0) and Assigned(mesh) then begin
+      points:=TVRMLSingleArray(node[0]).Values;
+      for i:=0 to (points.Count div 2) - 1 do
+        mesh.TexCoords.Add(points[2*i], points[2*i+1], 0);
 
     end else if (node.Name = 'IndexedFaceSet') and (node.Count>0) and Assigned(mesh) then begin
-      face:=TIntegerList.Create;
-      fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
+      fg:=TFGVertexNormalTexIndexList.CreateOwned(mesh.FaceGroups);
       mesh.Mode:=momFaceGroups;
+      face:=TIntegerList.Create;
       if Assigned(currentMaterial) then
         fg.MaterialName:=currentMaterial.Name;
-      indices:=TVRMLIntegerArray(node[0]).Values;
-      i:=0;
-      while i<indices.Count do begin
-        if indices[i] = -1 then begin
-          if face.Count<=4 then begin
-            for j:=0 to face.Count-3 do
-              fg.VertexIndices.Add(face[0], face[j+1], face[j+2]);
+      for n:=0 to node.Count-1 do begin
+        if node[n].Name = 'CoordIndexArray' then
+          fgindices:=fg.VertexIndices
+        else if node[n].Name = 'NormalIndexArray' then
+          fgindices:=fg.NormalIndices
+        else if node[n].Name = 'TextureCoordIndexArray' then
+          fgindices:=fg.TexCoordIndices
+        else
+          fgindices:=nil;
+
+        if not Assigned(fgindices) then Continue;
+
+        indices:=TVRMLIntegerArray(node[0]).Values;
+        i:=0;
+        while i<indices.Count do begin
+          if indices[i] = -1 then begin
+            if face.Count<=4 then begin
+              for j:=0 to face.Count-3 do
+                fgindices.Add(face[0], face[j+1], face[j+2]);
+            end else begin
+              TessellatePolygon(mesh.Vertices, face, fgindices);
+            end;
+            face.Clear;
           end else begin
-            TessellatePolygon(mesh.Vertices, face, fg.VertexIndices);
+            face.Add(indices[i]);
           end;
-          face.Clear;
-        end else begin
-          face.Add(indices[i]);
+          i:=i+1;
         end;
-        i:=i+1;
       end;
-      normals:=BuildNormals(mesh.Vertices, fg.VertexIndices);
-      for i:=0 to fg.VertexIndices.Count-1 do
-        mesh.Normals[fg.VertexIndices[i]]:=normals[fg.VertexIndices[i]];
-      normals.Free;
+
       face.Free;
 
     end else begin
@@ -312,17 +521,17 @@ var
 begin
   str:=TStringList.Create;
   parser:=TVRMLParser.Create;
-
   currentMaterial:=nil;
   currentTransform:=IdentityHMGMatrix;
-
+  creaseAngle:=0.5;
+  mesh:=nil;
+  uniqueMatID:=0;
   try
     str.LoadFromStream(aStream);
     parser.Parse(str.Text);
-
     currentMaterial:=nil;
     RecursNodes(parser.RootNode);
-
+    RebuildMesh;
   finally
     str.Free;
     parser.Free;
