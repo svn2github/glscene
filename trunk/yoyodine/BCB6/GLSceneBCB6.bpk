@@ -1,0 +1,424 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="GLSceneBCB6.bpl"/>
+    <OBJFILES value="GLSceneBCB6.obj ..\Source\Base\PersistentClasses.obj 
+      ..\Source\Base\ApplicationFileIO.obj 
+      ..\Source\Base\SpatialPartitioning.obj ..\Source\Base\AsyncTimer.obj 
+      ..\Source\Platform\GLCrossPlatform.obj 
+      ..\Source\Base\CurvesAndSurfaces.obj ..\Source\Base\GeometryBB.obj 
+      ..\Source\Base\GLTextureCombiners.obj ..\Source\Base\OpenGL1x.obj 
+      ..\Source\GLContext.obj ..\Source\Base\HeightTileFile.obj 
+      ..\Source\Base\MeshUtils.obj ..\Source\Base\Joystick.obj 
+      ..\Source\Base\Keyboard.obj ..\Source\Base\Octree.obj 
+      ..\Source\Base\Polynomials.obj ..\Source\Base\ScreenSaver.obj 
+      ..\Source\Base\VectorTypes.obj ..\Source\Base\Spline.obj 
+      ..\Source\Base\VectorGeometry.obj ..\Source\Base\VectorLists.obj 
+      ..\Source\Base\VerletClasses.obj ..\Source\Base\XCollection.obj 
+      ..\Source\Base\XOpenGL.obj ..\Source\GLState.obj ..\Source\GLMisc.obj 
+      ..\Source\GLScreen.obj ..\Source\GLTexture.obj ..\Source\GLScene.obj 
+      ..\Source\GLMirror.obj ..\Source\GLGraphics.obj 
+      ..\Source\VideoAPIs\vfw.obj ..\Source\Platform\GLWin32Context.obj 
+      ..\Source\Platform\GLWin32Viewer.obj 
+      ..\Source\Platform\GLWin32FullScreenViewer.obj ..\Source\GLAVIRecorder.obj 
+      ..\Source\GLBaseMeshSilhouette.obj ..\Source\GLBehaviours.obj 
+      ..\Source\GLBitmapFont.obj ..\Source\GLBSP.obj ..\Source\GLExplosionFx.obj 
+      ..\Source\GLExtrusion.obj ..\Source\GLFireFX.obj 
+      ..\Source\GLGeomObjects.obj ..\Source\GLGraph.obj 
+      ..\Source\GLHeightData.obj ..\Source\GLHeightTileFileHDS.obj 
+      ..\Source\GLHUDObjects.obj ..\Source\GLLensFlare.obj 
+      ..\Source\GLMeshCSG.obj ..\Source\GLMovement.obj 
+      ..\Source\GLMultiProxy.obj ..\Source\GLNavigator.obj 
+      ..\Source\GLParametricSurfaces.obj ..\Source\GLParticleFX.obj 
+      ..\Source\GLParticles.obj ..\Source\GLPolyhedron.obj 
+      ..\Source\GLPortal.obj ..\Source\GLProcTextures.obj 
+      ..\Source\GLProxyObjects.obj ..\Source\GLROAMPatch.obj 
+      ..\Source\GLShadowPlane.obj ..\Source\GLShadowVolume.obj 
+      ..\Source\GLSkyBox.obj ..\Source\GLSkydome.obj 
+      ..\Source\FileFormats\GLStarRecord.obj ..\Source\GLSound.obj 
+      ..\Source\GLSoundFileObjects.obj ..\Source\GLSpaceText.obj 
+      ..\Source\GLTeapot.obj ..\Source\GLTerrainRenderer.obj 
+      ..\Source\GLThorFX.obj ..\Source\GLTimeEventsMgr.obj ..\Source\GLTree.obj 
+      ..\Source\GLVerletClothify.obj ..\Source\GLVerletSkeletonColliders.obj 
+      ..\Source\GLWindowsFont.obj ..\Source\GLzBuffer.obj ..\Source\GLGui.obj 
+      ..\Source\GLCollision.obj ..\Source\GLWindows.obj 
+      ..\Source\FileFormats\Const3DS.obj ..\Source\FileFormats\File3DS.obj 
+      ..\Source\FileFormats\FileMD2.obj ..\Source\FileFormats\FileMD3.obj 
+      ..\Source\FileFormats\FileNMF.obj ..\Source\FileFormats\FileOCT.obj 
+      ..\Source\FileFormats\GLFile3DS.obj ..\Source\FileFormats\GLFileGTS.obj 
+      ..\Source\FileFormats\GLFileMD2.obj ..\Source\FileFormats\GLFileMD3.obj 
+      ..\Source\FileFormats\GLFileMS3D.obj ..\Source\FileFormats\GLFileTIN.obj 
+      ..\Source\FileFormats\GLFileOBJ.obj ..\Source\FileFormats\GLFileOCT.obj 
+      ..\Source\FileFormats\GLFilePLY.obj ..\Source\FileFormats\GLFileQ3BSP.obj 
+      ..\Source\FileFormats\GLFileSMD.obj ..\Source\FileFormats\GLFileSTL.obj 
+      ..\Source\FileFormats\TGA.obj ..\Source\FileFormats\Q3MD3.obj 
+      ..\Source\DesignTime\FRColorEditor.obj 
+      ..\Source\DesignTime\FRTrackBarEdit.obj 
+      ..\Source\DesignTime\FRFaceEditor.obj ..\Source\GLUtils.obj 
+      ..\Source\GLStrings.obj ..\Source\GLCadencer.obj ..\Source\GLMesh.obj 
+      ..\Source\GLMultiPolygon.obj ..\Source\GLObjects.obj 
+      ..\Source\GLSilhouette.obj ..\Source\GLVectorFileObjects.obj 
+      ..\Source\Base\GLCanvas.obj ..\Source\Base\RegisterXCollection.obj 
+      ..\Source\FileFormats\GLFileNMF.obj ..\Source\FileFormats\GLFileNurbs.obj 
+      ..\Source\FileFormats\Q3BSP.obj ..\Source\FileFormats\Utils3DS.obj 
+      ..\Source\FileFormats\Types3DS.obj ..\Source\FileFormats\TypesMD2.obj 
+      ..\Source\FileFormats\TypesMS3D.obj ..\Source\FileFormats\TypesSTL.obj 
+      ..\Source\DesignTime\FRTextureEdit.obj 
+      ..\Source\DesignTime\FVectorEditor.obj 
+      ..\Source\DesignTime\GLSceneEdit.obj ..\Source\DesignTime\GLTextureImageEditors.obj 
+      ..\Source\DesignTime\Info.obj ..\Source\DesignTime\GLSceneRegister.obj 
+      ..\Source\Shaders\GLHiddenLineShader.obj 
+      ..\Source\Shaders\GLMultiMaterialShader.obj 
+      ..\Source\Shaders\GLOutlineShader.obj 
+      ..\Source\Shaders\GLTexCombineShader.obj 
+      ..\Source\Shaders\GLUserShader.obj ..\Source\PlugIn\PlugInIntf.obj 
+      ..\Source\PlugIn\PlugInManager.obj 
+      ..\Source\PlugIn\PlugInManagerPropEditor.obj 
+      ..\Source\DesignTime\FXCollectionEditor.obj 
+      ..\Source\DesignTime\FRMaterialPreview.obj 
+      ..\Source\DesignTime\FMaterialEditorForm.obj 
+      ..\Source\DesignTime\FLibMaterialPicker.obj 
+      ..\Source\DesignTime\GuiSkinEditorFormUnit.obj ..\Source\GLTilePlane.obj 
+      ..\Source\GLBumpmapHDS.obj ..\Source\GLWaterPlane.obj 
+      ..\Source\Base\BumpMapping.obj ..\Source\FileFormats\GLVfsPAK.obj 
+      ..\Source\GLMeshOptimizer.obj ..\Source\FileFormats\TypesMDC.obj 
+      ..\Source\FileFormats\GLFileMDC.obj ..\Source\Shaders\GLCelShader.obj 
+      ..\Source\GLFPSMovement.obj ..\Source\Shaders\GLBumpShader.obj 
+      ..\Source\Base\PerlinNoise.obj ..\Source\GLTexLensFlare.obj 
+      ..\Source\GLPerlinPFX.obj ..\Source\GLImposter.obj 
+      ..\Source\GLFeedback.obj ..\Source\GLAnimatedSprite.obj 
+      ..\Source\Base\VerletHairClasses.obj ..\Source\GLVerletClasses.obj 
+      ..\Source\GLGLUTesselation.obj ..\Source\GLMeshBuilder.obj"/>
+    <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
+      ..\Source\DesignTime\GLSceneObjects.dcr ..\Source\DesignTime\GLSceneVCL.dcr"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) ..\Source\DesignTime\FRColorEditor.dfm 
+      ..\Source\DesignTime\FRTrackBarEdit.dfm 
+      ..\Source\DesignTime\FRFaceEditor.dfm 
+      ..\Source\DesignTime\FRTextureEdit.dfm 
+      ..\Source\DesignTime\FVectorEditor.dfm 
+      ..\Source\DesignTime\GLSceneEdit.dfm ..\Source\DesignTime\Info.dfm 
+      ..\Source\PlugIn\PlugInManagerPropEditor.dfm 
+      ..\Source\DesignTime\FXCollectionEditor.dfm 
+      ..\Source\DesignTime\FRMaterialPreview.dfm 
+      ..\Source\DesignTime\FMaterialEditorForm.dfm 
+      ..\Source\DesignTime\FLibMaterialPicker.dfm 
+      ..\Source\DesignTime\GuiSkinEditorFormUnit.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value=""/>
+    <PACKAGES value="rtl.bpi vcl.bpi designide.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;..\Source\Base;..\Source\Platform;..\Source;..\Source\VideoAPIs;..\Source\FileFormats;..\Source\DesignTime;..\Source\Shaders;..\Source\PlugIn"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT;USEPACKAGES"/>
+    <MAINSOURCE value="GLSceneBCB6.cpp"/>
+    <INCLUDEPATH value="..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
+    <LIBPATH value="$(BCB)\Projects\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\Source -I..\Source\Base -I..\Source\Platform -I..\Source\PlugIn 
+      -I..\Source\Shaders -I..\Source\DesignTime -I..\Source\FileFormats 
+      -I..\Source\VideoAPIs -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I$(BCB)\Source\Toolsapi -src_suffix cpp -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -p -a8 -6 -b- -k- -vi -c -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;GLScene RunTime and DesignTime&quot; -aa -Tpp -Gpd -x -Gn -Gl -Gi"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0pkg32.obj $(PACKAGES) sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="GLSceneBCB6.res" FORMNAME="" UNITNAME="GLSceneBCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GLSceneBCB6.cpp" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\PersistentClasses.pas" FORMNAME="" UNITNAME="PersistentClasses" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\ApplicationFileIO.pas" FORMNAME="" UNITNAME="ApplicationFileIO" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\SpatialPartitioning.pas" FORMNAME="" UNITNAME="SpatialPartitioning" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\AsyncTimer.pas" FORMNAME="" UNITNAME="AsyncTimer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Platform\GLCrossPlatform.pas" FORMNAME="" UNITNAME="GLCrossPlatform" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\vcl.bpi" FORMNAME="" UNITNAME="vcl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\CurvesAndSurfaces.pas" FORMNAME="" UNITNAME="CurvesAndSurfaces" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\GeometryBB.pas" FORMNAME="" UNITNAME="GeometryBB" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\GLTextureCombiners.pas" FORMNAME="" UNITNAME="GLTextureCombiners" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\OpenGL1x.pas" FORMNAME="" UNITNAME="OpenGL1x" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLContext.pas" FORMNAME="" UNITNAME="GLContext" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\HeightTileFile.pas" FORMNAME="" UNITNAME="HeightTileFile" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\MeshUtils.pas" FORMNAME="" UNITNAME="MeshUtils" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\Joystick.pas" FORMNAME="" UNITNAME="Joystick" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\Keyboard.pas" FORMNAME="" UNITNAME="Keyboard" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\Octree.pas" FORMNAME="" UNITNAME="Octree" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\Polynomials.pas" FORMNAME="" UNITNAME="Polynomials" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\ScreenSaver.pas" FORMNAME="" UNITNAME="ScreenSaver" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\VectorTypes.pas" FORMNAME="" UNITNAME="VectorTypes" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\Spline.pas" FORMNAME="" UNITNAME="Spline" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\VectorGeometry.pas" FORMNAME="" UNITNAME="VectorGeometry" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\VectorLists.pas" FORMNAME="" UNITNAME="VectorLists" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\VerletClasses.pas" FORMNAME="" UNITNAME="VerletClasses" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\XCollection.pas" FORMNAME="" UNITNAME="XCollection" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\XOpenGL.pas" FORMNAME="" UNITNAME="XOpenGL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLState.pas" FORMNAME="" UNITNAME="GLState" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMisc.pas" FORMNAME="" UNITNAME="GLMisc" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLScreen.pas" FORMNAME="" UNITNAME="GLScreen" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLTexture.pas" FORMNAME="" UNITNAME="GLTexture" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLScene.pas" FORMNAME="" UNITNAME="GLScene" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMirror.pas" FORMNAME="" UNITNAME="GLMirror" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLGraphics.pas" FORMNAME="" UNITNAME="GLGraphics" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\VideoAPIs\vfw.pas" FORMNAME="" UNITNAME="VFW" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Platform\GLWin32Context.pas" FORMNAME="" UNITNAME="GLWin32Context" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Platform\GLWin32Viewer.pas" FORMNAME="" UNITNAME="GLWin32Viewer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Platform\GLWin32FullScreenViewer.pas" FORMNAME="" UNITNAME="GLWin32FullScreenViewer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLAVIRecorder.pas" FORMNAME="" UNITNAME="GLAVIRecorder" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLBaseMeshSilhouette.pas" FORMNAME="" UNITNAME="GLBaseMeshSilhouette" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\bcbsmp.bpi" FORMNAME="" UNITNAME="bcbsmp" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\bcbie.bpi" FORMNAME="" UNITNAME="bcbie" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLBehaviours.pas" FORMNAME="" UNITNAME="GLBehaviours" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLBitmapFont.pas" FORMNAME="" UNITNAME="GLBitmapFont" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLBSP.pas" FORMNAME="" UNITNAME="GLBSP" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLExplosionFx.pas" FORMNAME="" UNITNAME="GLExplosionFx" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLExtrusion.pas" FORMNAME="" UNITNAME="GLExtrusion" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLFireFX.pas" FORMNAME="" UNITNAME="GLFireFX" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLGeomObjects.pas" FORMNAME="" UNITNAME="GLGeomObjects" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLGraph.pas" FORMNAME="" UNITNAME="GLGraph" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLHeightData.pas" FORMNAME="" UNITNAME="GLHeightData" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLHeightTileFileHDS.pas" FORMNAME="" UNITNAME="GLHeightTileFileHDS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLHUDObjects.pas" FORMNAME="" UNITNAME="GLHUDObjects" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLLensFlare.pas" FORMNAME="" UNITNAME="GLLensFlare" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMeshCSG.pas" FORMNAME="" UNITNAME="GLMeshCSG" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMovement.pas" FORMNAME="" UNITNAME="GLMovement" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMultiProxy.pas" FORMNAME="" UNITNAME="GLMultiProxy" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLNavigator.pas" FORMNAME="" UNITNAME="GLNavigator" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLParametricSurfaces.pas" FORMNAME="" UNITNAME="GLParametricSurfaces" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLParticleFX.pas" FORMNAME="" UNITNAME="GLParticleFX" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLParticles.pas" FORMNAME="" UNITNAME="GLParticles" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLPolyhedron.pas" FORMNAME="" UNITNAME="GLPolyhedron" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLPortal.pas" FORMNAME="" UNITNAME="GLPortal" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLProcTextures.pas" FORMNAME="" UNITNAME="GLProcTextures" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLProxyObjects.pas" FORMNAME="" UNITNAME="GLProxyObjects" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLROAMPatch.pas" FORMNAME="" UNITNAME="GLROAMPatch" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLShadowPlane.pas" FORMNAME="" UNITNAME="GLShadowPlane" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLShadowVolume.pas" FORMNAME="" UNITNAME="GLShadowVolume" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSkyBox.pas" FORMNAME="" UNITNAME="GLSkyBox" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSkydome.pas" FORMNAME="" UNITNAME="GLSkydome" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLStarRecord.pas" FORMNAME="" UNITNAME="GLStarRecord" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSound.pas" FORMNAME="" UNITNAME="GLSound" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSoundFileObjects.pas" FORMNAME="" UNITNAME="GLSoundFileObjects" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSpaceText.pas" FORMNAME="" UNITNAME="GLSpaceText" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLTeapot.pas" FORMNAME="" UNITNAME="GLTeapot" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLTerrainRenderer.pas" FORMNAME="" UNITNAME="GLTerrainRenderer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLThorFX.pas" FORMNAME="" UNITNAME="GLThorFX" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLTimeEventsMgr.pas" FORMNAME="" UNITNAME="GLTimeEventsMgr" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLTree.pas" FORMNAME="" UNITNAME="GLTree" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLVerletClothify.pas" FORMNAME="" UNITNAME="GLVerletClothify" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLVerletSkeletonColliders.pas" FORMNAME="" UNITNAME="GLVerletSkeletonColliders" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLWindowsFont.pas" FORMNAME="" UNITNAME="GLWindowsFont" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLzBuffer.pas" FORMNAME="" UNITNAME="GLzBuffer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLGui.pas" FORMNAME="" UNITNAME="GLGui" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLCollision.pas" FORMNAME="" UNITNAME="GLCollision" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLWindows.pas" FORMNAME="" UNITNAME="GLWindows" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\Const3DS.pas" FORMNAME="" UNITNAME="Const3DS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\File3DS.pas" FORMNAME="" UNITNAME="File3DS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\FileMD2.pas" FORMNAME="" UNITNAME="FileMD2" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\FileMD3.pas" FORMNAME="" UNITNAME="FileMD3" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\FileNMF.pas" FORMNAME="" UNITNAME="FileNMF" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\FileOCT.pas" FORMNAME="" UNITNAME="FileOCT" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFile3DS.pas" FORMNAME="" UNITNAME="GLFile3DS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileGTS.pas" FORMNAME="" UNITNAME="GLFileGTS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileMD2.pas" FORMNAME="" UNITNAME="GLFileMD2" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileMD3.pas" FORMNAME="" UNITNAME="GLFileMD3" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileMS3D.pas" FORMNAME="" UNITNAME="GLFileMS3D" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileTIN.pas" FORMNAME="" UNITNAME="GLFileTIN" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileOBJ.pas" FORMNAME="" UNITNAME="GLFileObj" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileOCT.pas" FORMNAME="" UNITNAME="GLFileOCT" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFilePLY.pas" FORMNAME="" UNITNAME="GLFilePLY" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileQ3BSP.pas" FORMNAME="" UNITNAME="GLFileQ3BSP" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileSMD.pas" FORMNAME="" UNITNAME="GLFileSMD" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileSTL.pas" FORMNAME="" UNITNAME="GLFileSTL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\TGA.pas" FORMNAME="" UNITNAME="TGA" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\Q3MD3.pas" FORMNAME="" UNITNAME="Q3MD3" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FRColorEditor.pas" FORMNAME="RColorEditor" UNITNAME="FRColorEditor" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FRTrackBarEdit.pas" FORMNAME="RTrackBarEdit" UNITNAME="FRTrackBarEdit" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FRFaceEditor.pas" FORMNAME="RFaceEditor" UNITNAME="FRFaceEditor" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\designide.bpi" FORMNAME="" UNITNAME="designide" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLUtils.pas" FORMNAME="" UNITNAME="GLUtils" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLStrings.pas" FORMNAME="" UNITNAME="GLStrings" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLCadencer.pas" FORMNAME="" UNITNAME="GLCadencer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMesh.pas" FORMNAME="" UNITNAME="GLMesh" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMultiPolygon.pas" FORMNAME="" UNITNAME="GLMultiPolygon" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLObjects.pas" FORMNAME="" UNITNAME="GLObjects" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLScene.inc" FORMNAME="" UNITNAME="GLScene.inc" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLSilhouette.pas" FORMNAME="" UNITNAME="GLSilhouette" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLVectorFileObjects.pas" FORMNAME="" UNITNAME="GLVectorFileObjects" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\GLCanvas.pas" FORMNAME="" UNITNAME="GLCanvas" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\RegisterXCollection.pas" FORMNAME="" UNITNAME="RegisterXCollection" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileNMF.pas" FORMNAME="" UNITNAME="GLFileNMF" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileNurbs.pas" FORMNAME="" UNITNAME="GLFileNurbs" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\Q3BSP.pas" FORMNAME="" UNITNAME="Q3BSP" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\Utils3DS.pas" FORMNAME="" UNITNAME="Utils3DS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\Types3DS.pas" FORMNAME="" UNITNAME="Types3DS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\TypesMD2.pas" FORMNAME="" UNITNAME="TypesMD2" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\TypesMS3D.pas" FORMNAME="" UNITNAME="TypesMS3D" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\TypesSTL.pas" FORMNAME="" UNITNAME="TypesSTL" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FRTextureEdit.pas" FORMNAME="RTextureEdit" UNITNAME="FRTextureEdit" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FVectorEditor.pas" FORMNAME="VectorEditorForm" UNITNAME="FVectorEditor" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\GLSceneEdit.pas" FORMNAME="GLSceneEditorForm" UNITNAME="GLSceneEdit" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\GLTextureImageEditors.pas" FORMNAME="" UNITNAME="GLTextureImageEditors" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\Info.pas" FORMNAME="InfoForm" UNITNAME="Info" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\GLSceneRegister.pas" FORMNAME="" UNITNAME="GLSceneRegister" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Shaders\GLHiddenLineShader.pas" FORMNAME="" UNITNAME="GLHiddenLineShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Shaders\GLMultiMaterialShader.pas" FORMNAME="" UNITNAME="GLMultiMaterialShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Shaders\GLOutlineShader.pas" FORMNAME="" UNITNAME="GLOutlineShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Shaders\GLTexCombineShader.pas" FORMNAME="" UNITNAME="GLTexCombineShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Shaders\GLUserShader.pas" FORMNAME="" UNITNAME="GLUserShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\nonGLSceneVCL.dcr" FORMNAME="" UNITNAME="nonGLSceneVCL" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PlugIn\PlugInIntf.pas" FORMNAME="" UNITNAME="PlugInIntf" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PlugIn\PlugInManager.pas" FORMNAME="" UNITNAME="PlugInManager" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PlugIn\PlugInManagerPropEditor.pas" FORMNAME="PlugInManagerPropForm" UNITNAME="PlugInManagerPropEditor" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\GLSceneObjects.dcr" FORMNAME="" UNITNAME="GLSceneObjects" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\GLSceneVCL.dcr" FORMNAME="" UNITNAME="GLSceneVCL" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FXCollectionEditor.pas" FORMNAME="XCollectionEditor" UNITNAME="FXCollectionEditor" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FRMaterialPreview.pas" FORMNAME="RMaterialPreview" UNITNAME="FRMaterialPreview" CONTAINERID="PascalCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FMaterialEditorForm.pas" FORMNAME="MaterialEditorForm" UNITNAME="FMaterialEditorForm" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\FLibMaterialPicker.pas" FORMNAME="LibMaterialPicker" UNITNAME="FLibMaterialPicker" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\GuiSkinEditorFormUnit.pas" FORMNAME="GUISkinEditor" UNITNAME="GuiSkinEditorFormUnit" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLTilePlane.pas" FORMNAME="" UNITNAME="GLTilePlane" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLBumpmapHDS.pas" FORMNAME="" UNITNAME="GLBumpmapHDS" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLWaterPlane.pas" FORMNAME="" UNITNAME="GLWaterPlane" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\BumpMapping.pas" FORMNAME="" UNITNAME="BumpMapping" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLVfsPAK.pas" FORMNAME="" UNITNAME="GLVfsPAK" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMeshOptimizer.pas" FORMNAME="" UNITNAME="GLMeshOptimizer" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\TypesMDC.pas" FORMNAME="" UNITNAME="TypesMDC" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\FileFormats\GLFileMDC.pas" FORMNAME="" UNITNAME="GLFileMDC" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Shaders\GLCelShader.pas" FORMNAME="" UNITNAME="GLCelShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLFPSMovement.pas" FORMNAME="" UNITNAME="GLFPSMovement" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Shaders\GLBumpShader.pas" FORMNAME="" UNITNAME="GLBumpShader" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\PerlinNoise.pas" FORMNAME="" UNITNAME="PerlinNoise" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLTexLensFlare.pas" FORMNAME="" UNITNAME="GLTexLensFlare" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLPerlinPFX.pas" FORMNAME="" UNITNAME="GLPerlinPFX" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLImposter.pas" FORMNAME="" UNITNAME="GLImposter" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLFeedback.pas" FORMNAME="" UNITNAME="GLFeedback" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLAnimatedSprite.pas" FORMNAME="" UNITNAME="GLAnimatedSprite" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\VerletHairClasses.pas" FORMNAME="" UNITNAME="VerletHairClasses" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLVerletClasses.pas" FORMNAME="" UNITNAME="GLVerletClasses" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLGLUTesselation.pas" FORMNAME="" UNITNAME="GLGLUTesselation" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLMeshBuilder.pas" FORMNAME="" UNITNAME="GLMeshBuilder" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1036
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+
+[Excluded Packages]
+C:\Borland\ComposantsC6\Lib\Misc300_Full.bpl=Chemware Miscellaneous Components (Runtime and Designtime)
+C:\Borland\ComposantsC6\Lib\Plot300_Full.bpl=Chemware Scientific Plotting Component (Runtime and Designtime)
+
+[HistoryLists\hlIncludePath]
+Count=10
+Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi;..\..\Toolsapi
+Item1=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi
+Item2=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\include;$(BCB)\include\vcl;$(BCB)\Source\Toolsapi
+Item3=..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
+Item4=..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
+Item5=..\Source\VideoAPIs;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
+Item6=..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base;$(BCB)\Source\Toolsapi
+Item7=..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base
+Item8=$(BCB)\include;$(BCB)\include\vcl;..\Source;..\Source\Base
+Item9=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=11
+Item0=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi;..\..\Toolsapi
+Item1=$(BCB)\Projects\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
+Item2=$(BCB)\Projects\Lib;..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
+Item3=..\Source;..\Source\Base;..\Source\Platform;..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
+Item4=..\Source\PlugIn;..\Source\Shaders;..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
+Item5=..\Source\DesignTime;..\Source\FileFormats;..\Source\VideoAPIs;..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
+Item6=..\Source\VideoAPIs;..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
+Item7=..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib;$(BCB)\Source\Toolsapi
+Item8=..\Source;..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib
+Item9=..\Source\Platform;..\Source\Base;$(BCB)\lib\obj;$(BCB)\lib
+Item10=$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=..\..\dcu
+
+[HistoryLists\hIBPIOutputDir]
+Count=1
+Item0=..\..\Lib
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+
+[Linker]
+LibPrefix=
+LibSuffix=
+LibVersion=
+  </IDEOPTIONS>
+</PROJECT>

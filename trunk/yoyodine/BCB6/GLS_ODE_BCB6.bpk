@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="GLS_ODE_BCB6.bpl"/>
+    <OBJFILES value="GLS_ODE_BCB6.obj ..\Source\GLODESkeletonColliders.obj 
+      ..\Source\GLODECustomColliders.obj ..\Source\GLODEManager.obj 
+      ..\Source\DesignTime\GLODERegister.obj ..\Source\PhysicsAPIs\dynodegl.obj 
+      ..\Source\PhysicsAPIs\dynode.obj"/>
+    <RESFILES value="GLS_ODE_BCB6.res ..\Source\PhysicsAPIs\GLSceneVCLODE.dcr"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="rtl.lib"/>
+    <PACKAGES value="rtl.bpi GLSceneBCB6.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;..\Source;..\Source\DesignTime;..\Source\PhysicsAPIs"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT;_RTLDLL;USEPACKAGES"/>
+    <MAINSOURCE value="GLS_ODE_BCB6.cpp"/>
+    <INCLUDEPATH value="..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\Source\DesignTime -I..\Source\Base -I..\Source\PhysicsAPIs 
+      -I..\Source -I..\Source\Platform -I..\Source\FileFormats 
+      -I$(BCB)\Source\Toolsapi -I$(BCB)\include -I$(BCB)\include\vcl -src_suffix 
+      cpp -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -k- -vi -c -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpp -Gpd -x -Gn -Gl -Gi"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0pkg32.obj $(PACKAGES) Memmgr.Lib sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mti.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="GLS_ODE_BCB6.res" FORMNAME="" UNITNAME="GLS_ODE_BCB6.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="GLS_ODE_BCB6.cpp" FORMNAME="" UNITNAME="GLS_ODE_BCB6" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="rtl.bpi" FORMNAME="" UNITNAME="rtl" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="c:\program files\borland\cbuilder6\Projects\Lib\GLSceneBCB6.bpi" FORMNAME="" UNITNAME="GLSceneBCB6" CONTAINERID="BPITool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PhysicsAPIs\GLSceneVCLODE.dcr" FORMNAME="" UNITNAME="GLSceneVCLODE" CONTAINERID="DcrTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLODESkeletonColliders.pas" FORMNAME="" UNITNAME="GLODESkeletonColliders" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLODECustomColliders.pas" FORMNAME="" UNITNAME="GLODECustomColliders" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLODEManager.pas" FORMNAME="" UNITNAME="GLODEManager" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\DesignTime\GLODERegister.pas" FORMNAME="" UNITNAME="GLODERegister" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PhysicsAPIs\dynodegl.pas" FORMNAME="" UNITNAME="dynodegl" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\PhysicsAPIs\dynode.pas" FORMNAME="" UNITNAME="dynode" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1028
+CodePage=950
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=8
+Item0=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl
+Item1=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Source\Toolsapi;$(BCB)\include;$(BCB)\include\vcl
+Item2=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl
+Item3=..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\include;$(BCB)\include\vcl
+Item4=..\Source\Base;..\Source\PhysicsAPIs;..\Source;$(BCB)\include;$(BCB)\include\vcl
+Item5=..\Source\PhysicsAPIs;$(BCB)\include;$(BCB)\include\vcl
+Item6=$(BCB)\include;$(BCB)\include\vcl
+Item7=$(BCB)\Projects;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=8
+Item0=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;..\Source\FileFormats;$(BCB)\Source\Toolsapi;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Source\Toolsapi;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item2=..\Source\DesignTime;..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item3=..\Source\Base;..\Source\PhysicsAPIs;..\Source;..\Source\Platform;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item4=..\Source\Base;..\Source\PhysicsAPIs;..\Source;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item5=$(BCB)\Projects\Lib;..\Source\PhysicsAPIs;$(BCB)\lib\obj;$(BCB)\lib
+Item6=$(BCB)\lib\obj;$(BCB)\lib
+Item7=$(BCB)\Projects;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+
+[Linker]
+LibPrefix=
+LibSuffix=
+LibVersion=
+  </IDEOPTIONS>
+</PROJECT>
