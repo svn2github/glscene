@@ -1,3 +1,4 @@
+// 07/06/03 - EG - Adde EXT_stencil_two_side
 // 15/05/03 - EG - Added GL_ARB_texture_env_combine, GL_ARB_texture_env_crossbar
 // 13/05/03 - EG - Added GL_ARB_texture_env_dot3
 // 27/09/02 - EG - Added EXT_point_parameter promoted to ARB_point_parameter,
@@ -370,6 +371,7 @@ var
   GL_EXT_separate_specular_color,
   GL_EXT_shared_texture_palette,
   GL_EXT_stencil_wrap,
+  GL_EXT_stencil_two_side,
   GL_EXT_subtexture,
   GL_EXT_texture_color_table,
   GL_EXT_texture_compression_s3tc,
@@ -1578,6 +1580,10 @@ const
   // EXT_stencil_wrap
   GL_INCR_WRAP_EXT                                  = $8507;
   GL_DECR_WRAP_EXT                                  = $8508;
+
+  // EXT_stencil_two_side
+  GL_STENCIL_TEST_TWO_SIDE_EXT                      = $8910;
+  GL_ACTIVE_STENCIL_FACE_EXT                        = $8911;
 
   // NV_texgen_reflection
   GL_NORMAL_MAP_NV                                  = $8511;
@@ -3546,6 +3552,9 @@ var
   glCullParameterdvEXT: procedure(pname: TGLenum; params: PGLdouble); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   glCullParameterfvEXT: procedure(pname: TGLenum; params: PGLfloat); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
 
+  // EXT_stencil_two_side
+  glActiveStencilFaceEXT: procedure(face: TGLenum); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+
   // WIN_swap_hint
   glAddSwapHintRectWIN: procedure(x, y: TGLint; width, height: TGLsizei); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
 
@@ -4883,8 +4892,11 @@ begin
   glClientActiveTextureARB := wglGetProcAddress('glClientActiveTextureARB');
 
   // EXT_cull_vertex
-  glCullParameterdvEXT := wglGetProcAddress('glCullParameterdvEXT'); 
-  glCullParameterfvEXT := wglGetProcAddress('glCullParameterfvEXT'); 
+  glCullParameterdvEXT := wglGetProcAddress('glCullParameterdvEXT');
+  glCullParameterfvEXT := wglGetProcAddress('glCullParameterfvEXT');
+
+  // EXT_stencil_two_side
+  glActiveStencilFaceEXT := wglGetProcAddress('glActiveStencilFaceEXT');
 
   // WIN_swap_hint
   glAddSwapHintRectWIN := wglGetProcAddress('glAddSwapHintRectWIN'); 
@@ -5582,6 +5594,7 @@ begin
   GL_EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color');
   GL_EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette');
   GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap');
+  GL_EXT_stencil_two_side := CheckExtension('EXT_stencil_two_side');
   GL_EXT_subtexture := CheckExtension('GL_EXT_subtexture');
   GL_EXT_texture_color_table := CheckExtension('GL_EXT_texture_color_table');
   GL_EXT_texture_compression_s3tc := CheckExtension('GL_EXT_texture_compression_s3tc');
