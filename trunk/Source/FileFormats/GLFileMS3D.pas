@@ -328,7 +328,7 @@ begin
     // - Mete Ciragan
     // ***
 
-    if Owner is TGLActor then
+    if (Owner is TGLActor) and (nNumJoints>0) then
     begin
 
       // Bone names are added to a list initally to sort out parents
