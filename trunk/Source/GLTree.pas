@@ -5,6 +5,7 @@
    http://developer.nvidia.com/object/Procedural_Tree.html<p>
 
    History:<ul>
+     <li>03/03/04 - SG - Added GetExtents and AxisAlignedDimensionsUnscaled.
      <li>24/11/03 - SG - Creation.
    </ul>
 }
@@ -72,7 +73,7 @@ type
          { Public Declarations }
          constructor Create(AOwner : TGLTreeBranches; AParent : TGLTreeBranch);
          destructor Destroy; override;
-
+         
          property Owner : TGLTreeBranches read FOwner;
          property Left : TGLTreeBranch read FLeft;
          property Right : TGLTreeBranch read FRight;
@@ -168,6 +169,8 @@ type
          FBranchMaterialName : TGLLibMaterialName;
 
          FRebuildTree : Boolean;
+         
+         FAxisAlignedDimensionsCache : TVector;
 
       protected
          { Protected Declarations }
@@ -199,11 +202,15 @@ type
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
-      
+         procedure StructureChanged; override;
+
          procedure BuildMesh(GLBaseMesh : TGLBaseMesh);
          procedure RebuildTree;
          procedure ForceTotalRebuild;
          procedure Clear;
+
+         procedure GetExtents(var min, max : TAffineVector);
+         function AxisAlignedDimensionsUnscaled : TVector; override;
 
          procedure LoadFromStream(aStream : TStream);
          procedure SaveToStream(aStream : TStream);
@@ -729,6 +736,8 @@ begin
    FNoise:=TGLTreeBranchNoise.Create;
 
    FRebuildTree:=True;
+   
+   FAxisAlignedDimensionsCache[0]:=-1;
 end;
 
 // Destroy
@@ -771,6 +780,14 @@ begin
    end;
    Branches.BuildList(rci);
    Leaves.BuildList(rci);
+end;
+
+// StructureChanged
+//
+procedure TGLTree.StructureChanged;
+begin
+  FAxisAlignedDimensionsCache[0]:=-1;
+  inherited;
 end;
 
 // BuildMesh
@@ -1218,6 +1235,39 @@ begin
    finally
       stream.Free;
    end;
+end;
+
+// GetExtents
+procedure TGLTree.GetExtents(var min, max : TAffineVector);
+var
+  lmin, lmax,
+  bmin, bmax : TAffineVector;
+begin
+   Leaves.Vertices.GetExtents(lmin, lmax);
+   Branches.Vertices.GetExtents(bmin, bmax);
+
+   min[0]:=MinFloat([lmin[0], lmax[0], bmin[0], bmax[0]]);
+   min[1]:=MinFloat([lmin[1], lmax[1], bmin[1], bmax[1]]);
+   min[2]:=MinFloat([lmin[2], lmax[2], bmin[2], bmax[2]]);
+
+   max[0]:=MaxFloat([lmin[0], lmax[0], bmin[0], bmax[0]]);
+   max[1]:=MaxFloat([lmin[1], lmax[1], bmin[1], bmax[1]]);
+   max[2]:=MaxFloat([lmin[2], lmax[2], bmin[2], bmax[2]]);
+end;
+
+// AxisAlignedDimensionsUnscaled
+//
+function TGLTree.AxisAlignedDimensionsUnscaled : TVector;
+var
+   dMin, dMax : TAffineVector;
+begin
+   if FAxisAlignedDimensionsCache[0]<0 then begin
+      GetExtents(dMin, dMax);
+      FAxisAlignedDimensionsCache[0]:=MaxFloat(Abs(dMin[0]), Abs(dMax[0]));
+      FAxisAlignedDimensionsCache[1]:=MaxFloat(Abs(dMin[1]), Abs(dMax[1]));
+      FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
+   end;
+   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
 
 end.
