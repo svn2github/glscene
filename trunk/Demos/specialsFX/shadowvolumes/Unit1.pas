@@ -5,7 +5,7 @@
    246 (what?)
 
    <b>History : </b><font size=-1><ul>
-      <li>29/11/03 - MF - Items now self shadow, and a new oblong sphere, both
+      <li>29/11/03 - MF - Items now self shadow, and a new cylinder, both
         changes demonstrate the problems of darkening. 
       <li>?/?/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
@@ -17,7 +17,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLCadencer, GLMisc, GLWin32Viewer, GLShadowVolume,
-  ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD, GLTexture;
+  ExtCtrls, StdCtrls, GLVectorFileObjects, GLFileSMD, GLTexture,
+  GLGeomObjects;
 
 type
   TForm1 = class(TForm)
@@ -55,7 +56,8 @@ type
     GLFreeForm: TGLFreeForm;
     GLCube1: TGLCube;
     GLMaterialLibrary1: TGLMaterialLibrary;
-    GLSphere4: TGLSphere;
+    GLCylinder1: TGLCylinder;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -70,6 +72,7 @@ type
     procedure CBMainLightClick(Sender: TObject);
     procedure CBBlueLightClick(Sender: TObject);
     procedure CBRedLightClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -189,6 +192,11 @@ end;
 procedure TForm1.CBRedLightClick(Sender: TObject);
 begin
    GLLightSource3.Shining:=CBRedLight.Checked;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+begin
+  GLCylinder1.Free;
 end;
 
 end.

@@ -131,6 +131,15 @@ object Form1: TForm1
       TabOrder = 7
       OnClick = CBRedLightClick
     end
+    object Button1: TButton
+      Left = 16
+      Top = 320
+      Width = 75
+      Height = 25
+      Caption = 'Button1'
+      TabOrder = 8
+      OnClick = Button1Click
+    end
   end
   object GLScene1: TGLScene
     Left = 16
@@ -223,7 +232,7 @@ object Form1: TForm1
           Caster = GLCube1
         end
         item
-          Caster = GLSphere4
+          Caster = GLCylinder1
         end>
       Options = [svoCacheSilhouettes, svoScissorClips, svoDesignVisible]
       object GLPlane1: TGLPlane
@@ -273,10 +282,13 @@ object Form1: TForm1
       object DCSpheres: TGLDummyCube
         CubeSize = 1.000000000000000000
       end
-      object GLSphere4: TGLSphere
-        Position.Coordinates = {00000040000080C0000000000000803F}
-        Scale.Coordinates = {000000400000803F0000803F00000000}
-        Radius = 0.800000011920928900
+      object GLCylinder1: TGLCylinder
+        Direction.Coordinates = {00000000000000800000803F00000000}
+        Position.Coordinates = {00004040000080C0000000000000803F}
+        Up.Coordinates = {0000803F000000000000000000000000}
+        BottomRadius = 0.600000023841857900
+        Height = 6.000000000000000000
+        TopRadius = 0.800000011920929000
       end
     end
   end
