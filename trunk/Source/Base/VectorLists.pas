@@ -1611,7 +1611,7 @@ end;
 function TIntegerList.Pop : Integer;
 begin
 	if FCount>0 then begin
-		Result:=Get(FCount-1);
+   	Result:=FList^[FCount-1];
 		Delete(FCount-1);
 	end else Result:=0;
 end;
@@ -1620,16 +1620,15 @@ end;
 //
 procedure TIntegerList.AddSerie(aBase, aDelta, aCount : Integer);
 var
-   list : PIntegerArray;
-   i, dList : Integer;
+   list : PInteger;
+   i : Integer;
 begin
    if aCount<=0 then Exit;
    AdjustCapacityToAtLeast(Count+aCount);
-   dList:=aDelta*SizeOf(Integer);
-   list:=FList;
+   list:=@FList[Count];
    for i:=Count to Count+aCount-1 do begin
-      list[0]:=aBase;
-      list:=PIntegerArray(Integer(list)+dList);
+      list^:=aBase;
+      Inc(list);
       aBase:=aBase+aDelta;
    end;
    FCount:=Count+aCount;

@@ -730,7 +730,7 @@ type
          //: Precalculate whatever is needed for rendering, called once
          procedure Prepare; dynamic;
 
-         property Owner : TFaceGroups read FOwner;
+         property Owner : TFaceGroups read FOwner write FOwner;
          property MaterialName : String read FMaterialName write FMaterialName;
    end;
 
