@@ -5531,7 +5531,7 @@ end;
 function MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean;
 var
    I, J: Integer;
-   LocMat, pmat, invpmat, tinvpmat: TMatrix;
+   LocMat, pmat, invpmat : TMatrix;
    prhs, psol: TVector;
    row0, row1, row2 : TAffineVector;
    f : Single;
@@ -5568,7 +5568,7 @@ begin
     invpmat:=pmat;
     InvertMatrix(invpmat);
     TransposeMatrix(invpmat);
-    psol:=VectorTransform(prhs, tinvpmat);
+    psol:=VectorTransform(prhs, invpmat);
 
     // stuff the answer away
     Tran[ttPerspectiveX]:=psol[X];
@@ -6081,36 +6081,37 @@ end;
 function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
 // the matrix must be a rotation matrix!
 var
-   traceMat, s: Extended;
+   traceMat, s, invS : Double;
 begin
    traceMat := 1 + mat[0,0] + mat[1,1] + mat[2,2];
-   if traceMat > EPSILON2 then begin
-      s := Sqrt(traceMat) * 2;
-      Result.ImagPart[0] := ( mat[1,2] - mat[2,1] ) / s;
-      Result.ImagPart[1] := ( mat[2,0] - mat[0,2] ) / s;
-      Result.ImagPart[2] := ( mat[0,1] - mat[1,0] ) / s;
-      Result.RealPart := 0.25 * s;
-   end else if (mat[0,0] > mat[1,1]) and (mat[0,0] > mat[2,2]) then
-   begin  // Row 0:
-      s := Sqrt(MaxFloat(EPSILON2, 1.0 + mat[0,0] - mat[1,1] - mat[2,2])) * 2;
-      Result.ImagPart[0] := 0.25 * s;
-      Result.ImagPart[1] := (mat[0,1] + mat[1,0]) / s;
-      Result.ImagPart[2] := (mat[2,0] + mat[0,2]) / s;
-      Result.RealPart := (mat[1,2] - mat[2,1]) / s;
-   end else if (mat[1,1] > mat[2,2]) then
-   begin  // Row 1:
-      s := sqrt(MaxFloat(EPSILON2, 1.0 + mat[1,1] - mat[0,0] - mat[2,2])) * 2;
-      Result.ImagPart[0] := (mat[0,1] + mat[1,0]) / s;
-      Result.ImagPart[1] := 0.25 * s;
-      Result.ImagPart[2] := (mat[1,2] + mat[2,1]) / s;
-      Result.RealPart := (mat[2,0] - mat[0,2]) / s;
-   end else
-   begin  // Row 2:
-      s := sqrt(MaxFloat(EPSILON2, 1.0 + mat[2,2] - mat[0,0] - mat[1,1])) * 2;
-      Result.ImagPart[0] := (mat[2,0] + mat[0,2] ) / s;
-      Result.ImagPart[1] := (mat[1,2] + mat[2,1] ) / s;
-      Result.ImagPart[2] := 0.25 * s;
-      Result.RealPart := (mat[0,1] - mat[1,0] ) / s;
+   if traceMat>EPSILON2 then begin
+      s:=Sqrt(traceMat)*2;
+      invS:=1/s;
+      Result.ImagPart[0]:=(mat[1,2]-mat[2,1])*invS;
+      Result.ImagPart[1]:=(mat[2,0]-mat[0,2])*invS;
+      Result.ImagPart[2]:=(mat[0,1]-mat[1,0])*invS;
+      Result.RealPart   :=0.25*s;
+   end else if (mat[0,0]>mat[1,1]) and (mat[0,0]>mat[2,2]) then begin  // Row 0:
+      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat[0,0]-mat[1,1]-mat[2,2]))*2;
+      invS:=1/s;
+      Result.ImagPart[0]:=0.25*s;
+      Result.ImagPart[1]:=(mat[0,1]+mat[1,0])*invS;
+      Result.ImagPart[2]:=(mat[2,0]+mat[0,2])*invS;
+      Result.RealPart   :=(mat[1,2]-mat[2,1])*invS;
+   end else if (mat[1,1]>mat[2,2]) then begin  // Row 1:
+      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat[1,1]-mat[0,0]-mat[2,2]))*2;
+      invS:=1/s;
+      Result.ImagPart[0]:=(mat[0,1]+mat[1,0])*invS;
+      Result.ImagPart[1]:=0.25*s;
+      Result.ImagPart[2]:=(mat[1,2]+mat[2,1])*invS;
+      Result.RealPart   :=(mat[2,0]-mat[0,2])*invS;
+   end else begin  // Row 2:
+      s:=Sqrt(MaxFloat(EPSILON2, cOne+mat[2,2]-mat[0,0]-mat[1,1]))*2;
+      invS:=1/s;
+      Result.ImagPart[0]:=(mat[2,0]+mat[0,2])*invS;
+      Result.ImagPart[1]:=(mat[1,2]+mat[2,1])*invS;
+      Result.ImagPart[2]:=0.25*s;
+      Result.RealPart   :=(mat[0,1]-mat[1,0])*invS;
    end;
    NormalizeQuaternion(Result);
 end;
