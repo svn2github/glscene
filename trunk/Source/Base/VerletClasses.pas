@@ -7,6 +7,7 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/06/03 - MF - Added TVFAirResistance
       <li>17/06/03 - MF - Added TVCCube collider
       <li>16/06/03 - MF - Fixed TVFSpring.SetRestlengthToCurrent
       <li>24/07/02 - EG - Added TVCCylinder
@@ -1066,7 +1067,7 @@ begin
       AccumulateForces(myDeltaTime, FSimTime);
       SatisfyConstraints(myDeltaTime, FSimTime);
 
-      //Break; // Why a break here? Looks like a debug instruction left my mistake!
+      Break; // Why a break here? Looks like a debug instruction left my mistake!
    end;
 
    Result:=ticks;
@@ -1434,9 +1435,9 @@ begin
 
   if sMag<> 0 then
   begin
-    F := VectorScale(s, -1000000 * sqr(sMag) * sqr(r) * pi * FDragCoeff);
+    F := VectorScale(s, - sqr(sMag) * sqr(r) * pi * FDragCoeff);
 
-    VectorAdd(aNode.FForce, F);
+    aNode.FForce := VectorAdd(aNode.FForce, F);
   end;
 end;
 
