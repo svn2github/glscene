@@ -797,23 +797,6 @@ end;
 function TGLODEHeightField.Collide(aPos : TAffineVector;
   var Depth : Single; var cPos, cNorm : TAffineVector) : Boolean;
 
-  function GetHeight(pos : TVector; var height : Single) : Boolean;
-  var
-    dummy1 : TVector;
-    dummy2 : TTexPoint;
-  begin
-    Result:=False;
-    if Owner.Owner is TGLTerrainRenderer then begin
-      height:=TGLTerrainRenderer(Owner.Owner).InterpolatedHeight(pos);
-      Result:=True;
-    end else if Owner.Owner is TGLHeightField then begin
-      if Assigned(TGLHeightField(Owner.Owner).OnGetHeight) then begin
-        TGLHeightField(Owner.Owner).OnGetHeight(pos[0], pos[1], height, dummy1, dummy2);
-        Result:=True;
-      end;
-    end;
-  end;
-
   function AbsoluteToLocal(vec : TVector) : TVector;
   var
     mat : TMatrix;
@@ -841,6 +824,23 @@ function TGLODEHeightField.Collide(aPos : TAffineVector;
       Result:=VectorTransform(vec, mat);
     end else
       Assert(False);
+  end;
+
+  function GetHeight(pos : TVector; var height : Single) : Boolean;
+  var
+    dummy1 : TVector;
+    dummy2 : TTexPoint;
+  begin
+    Result:=False;
+    if Owner.Owner is TGLTerrainRenderer then begin
+      height:=TGLTerrainRenderer(Owner.Owner).InterpolatedHeight(LocalToAbsolute(pos));
+      Result:=True;
+    end else if Owner.Owner is TGLHeightField then begin
+      if Assigned(TGLHeightField(Owner.Owner).OnGetHeight) then begin
+        TGLHeightField(Owner.Owner).OnGetHeight(pos[0], pos[1], height, dummy1, dummy2);
+        Result:=True;
+      end;
+    end;
   end;
 
 const
