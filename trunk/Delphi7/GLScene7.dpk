@@ -187,6 +187,7 @@ contains
   GLTexLensFlare in '..\Source\GLTexLensFlare.pas',
   GLVfsPAK in '..\Source\FileFormats\GLVfsPAK.pas',
   TypesMDC in '..\Source\FileFormats\TypesMDC.pas',
-  GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas';
+  GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas',
+  GLCelShader in '..\Source\Shaders\GLCelShader.pas';
 
 end.
