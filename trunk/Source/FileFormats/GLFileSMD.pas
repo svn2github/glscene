@@ -85,7 +85,8 @@ procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
    end;
 
 var
-   i, k, nVert, nTex, firstFrame, nbBones : Integer;
+   i, k, nVert, nTex, firstFrame : Integer;
+   nbBones, boneID : Integer;
    mesh : TSkeletonMeshObject;
    sl, tl : TStringList;
    bone : TSkeletonBone;
@@ -182,7 +183,12 @@ begin
             Inc(i);
             for k:=1 to 3 do with mesh do begin
                tl.CommaText:=sl[i];
-               nVert:=FindOrAdd(StrToInt(tl[0]),
+               if tl.Count>=12 then begin
+                  // Half-Life 2 SMD, specifies bones and weights
+                  //nbBones:=StrToInt(tl[9]);
+                  boneID:=StrToInt(tl[10]);
+               end else boneID:=StrToInt(tl[0]);
+               nVert:=FindOrAdd(boneID,
                                 AffineVectorMake(StrToFloatDef(tl[1]), StrToFloatDef(tl[2]), StrToFloatDef(tl[3])),
                                 AffineVectorMake(StrToFloatDef(tl[4]), StrToFloatDef(tl[5]), StrToFloatDef(tl[6])));
                nTex:=TexCoords.FindOrAdd(AffineVectorMake(StrToFloatDef(tl[7]), StrToFloatDef(tl[8]), 0));
