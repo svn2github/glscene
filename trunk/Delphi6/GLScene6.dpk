@@ -198,6 +198,7 @@ contains
   GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
   GLFeedback in '..\Source\GLFeedback.pas',
-  DDS in '..\Source\FileFormats\DDS.pas';
+  DDS in '..\Source\FileFormats\DDS.pas',
+  DXTC in '..\Source\FileFormats\DXTC.pas';
 
 end.
