@@ -480,21 +480,27 @@ end;
 //
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
                                    triangleEdges : TIntegerList) : TIntegerList;
+var
+   edgesHash : array [0..127] of TIntegerList;
 
    function ProcessEdge(a, b : Integer; edges : TIntegerList) : Integer;
    var
-      n : Integer;
+      i, n : Integer;
+      hashKey : Integer;
    begin
       if a<=b then begin
-         n:=0;
-         while n<edges.Count do begin
-            if (edges[n]=a) and (edges[n+1]=b) then begin
-               Result:=n;
-               Exit;
+         hashKey:=(a xor b) and 127;
+         with edgesHash[hashKey] do begin
+            for i:=0 to Count-1 do begin
+               n:=List[i];
+               if (edges[n]=a) and (edges[n+1]=b) then begin
+                  Result:=n;
+                  Exit;
+               end;
             end;
-            Inc(n, 2);
+            Result:=edges.Count;
+            Add(Result);
          end;
-         Result:=edges.Count;
          edges.Add(a, b);
       end else Result:=ProcessEdge(b, a, edges);
    end;
@@ -507,6 +513,9 @@ begin
    Result.GrowthDelta:=1024;
    if Assigned(triangleEdges) then
       triangleEdges.Count:=triangleIndices.Count;
+   // Create Hash
+   for i:=0 to High(edgesHash) do
+      edgesHash[i]:=TIntegerList.Create;
    // collect all edges
    i:=0;
    if Assigned(triangleEdges) then begin
@@ -535,8 +544,9 @@ begin
       end;
       Inc(i, 2);
    end;
-   // Build triangles edges index
-      if Assigned(triangleEdges) then
+   // Destroy Hash
+   for i:=0 to High(edgesHash) do
+      edgesHash[i]:=TIntegerList.Create;
 end;
 
 // IncreaseCoherency
