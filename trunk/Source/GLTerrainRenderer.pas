@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>06/02/03 - EG - Fixed speculative range computation, better hashkey
       <li>14/01/03 - EG - RayCastIntersect normals fix (Stuart Gooding)
       <li>24/09/02 - EG - Added RayCastIntersect (Stuart Gooding)
       <li>28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden),
@@ -60,11 +61,12 @@ type
 
 	   protected
 	      { Protected Declarations }
-         FTilesHash : array [0..255] of TList;
+         FTilesHash : array [0..511] of TList;
 
          procedure MarkAllTilesAsUnused;
          procedure ReleaseAllUnusedTiles;
          procedure MarkHashedTileAsUsed(const tilePos : TAffineVector);
+         function HashKey(const xLeft, yTop : Integer) : Integer;
          function HashedTile(const tilePos : TAffineVector; canAllocate : Boolean = True) : THeightData; overload;
          function HashedTile(const xLeft, yTop : Integer; canAllocate : Boolean = True) : THeightData; overload;
 
@@ -300,15 +302,14 @@ end;
 // OnTileDestroyed
 //
 procedure TGLTerrainRenderer.OnTileDestroyed(sender : TObject);
-var
-   i : Integer;
 begin
-   with sender as THeightData do if ObjectTag<>nil then begin
-      ObjectTag.Free;
-      ObjectTag:=nil;
+   with sender as THeightData do begin
+      if ObjectTag<>nil then begin
+         ObjectTag.Free;
+         ObjectTag:=nil;
+      end;
+      FTilesHash[HashKey(XLeft, YTop)].Remove(Sender);
    end;
-   for i:=0 to High(FTilesHash) do
-      FTilesHash[i].Remove(Pointer(sender));
 end;
 
 // InterpolatedHeight
@@ -330,7 +331,7 @@ var
    vEye : TVector;
    tilePos, absTilePos, observer : TAffineVector;
    delta, n, rpIdxDelta : Integer;
-   f, tileRadius, texFactor, tileDist, qDist : Single;
+   f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist : Single;
    patch, prevPatch : TGLROAMPatch;
    patchList, rowList, prevRow, buf : TList;
    postRenderPatchList, postRenderHeightDataList : TList;
@@ -370,12 +371,14 @@ begin
    SetVector(observer, vEye);
    vEye[0]:=Round(vEye[0]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
    vEye[1]:=Round(vEye[1]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
-   tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(512*Scale.Z))*1.3;
+   tileGroundRadius:=Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y);
+   tileRadius:=Sqrt(tileGroundRadius+Sqr(256*Scale.Z))*1.3;
+   tileGroundRadius:=Sqrt(tileGroundRadius);
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
    delta:=TileSize;
    tilePos[2]:=0;
-   f:=(rci.rcci.farClippingDistance+tileRadius)/Scale.X;
+   f:=(rci.rcci.farClippingDistance+tileGroundRadius)/Scale.X;
    f:=Round(f*FinvTileSize+1.0)*TileSize;
    maxTilePosX:=vEye[0]+f;
    maxTilePosY:=vEye[1]+f;
@@ -595,6 +598,13 @@ begin
    if Assigned(hd) then hd.Tag:=1;
 end;
 
+// HashKey
+//
+function TGLTerrainRenderer.HashKey(const xLeft, yTop : Integer) : Integer;
+begin
+   Result:=(xLeft+(xLeft shr 8)+(yTop shl 1)+(yTop shr 7)) and High(FTilesHash);
+end;
+
 // HashedTile
 //
 function TGLTerrainRenderer.HashedTile(const tilePos : TAffineVector; canAllocate : Boolean = True) : THeightData;
@@ -610,15 +620,13 @@ end;
 //
 function TGLTerrainRenderer.HashedTile(const xLeft, yTop : Integer; canAllocate : Boolean = True) : THeightData;
 var
-   i, hash : Integer;
+   i : Integer;
    hd : THeightData;
    hashList : TList;
    pList : PPointerList;
 begin
    // is the tile already in our list?
-   hash:=( xLeft+(xLeft shr 8)+(xLeft shr 16)
-          +yTop+(yTop shr 8)+(yTop shr 16)) and 255;
-   hashList:=FTilesHash[hash];
+   hashList:=FTilesHash[HashKey(xLeft, yTop)];
    pList:=hashList.List;
    for i:=hashList.Count-1 downto 0 do begin
       hd:=THeightData(pList[i]);
@@ -634,7 +642,7 @@ begin
       Result.OnDestroy:=OnTileDestroyed;
       if Result.DataState<>hdsNone then
          Result.DataType:=hdtSmallInt;
-      FTilesHash[hash].Add(Result);
+      FTilesHash[HashKey(xLeft, yTop)].Add(Result);
    end else Result:=nil;
 end;
 
