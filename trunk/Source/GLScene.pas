@@ -2859,6 +2859,7 @@ begin
    FLocalMatrix[0][0]:=Scale.DirectX;
    FLocalMatrix[1][1]:=Scale.DirectY;
    FLocalMatrix[2][2]:=Scale.DirectZ;
+   FLocalMatrix[3]:=Position.DirectVector;
    FRotation.DirectVector:=NullHmgPoint;
    FDirection.DirectVector:=ZHmgVector;
    FUp.DirectVector:=YHmgVector;
