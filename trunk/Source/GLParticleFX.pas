@@ -7,6 +7,8 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>15/04/04 - EG - AspectRatio and Rotation added to sprite PFX,
+                          improved texturing mode switches 
       <li>26/05/03 - EG - Improved TGLParticleFXRenderer.BuildList
       <li>05/11/02 - EG - Enable per-manager blending mode control
       <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
@@ -145,6 +147,12 @@ type
          { Protected Declarations }
          procedure SetRenderer(const val : TGLParticleFXRenderer);
          procedure SetParticles(const aParticles : TGLParticleList);
+
+         {: Texturing mode for the particles.<p>
+            Subclasses should return GL_TEXTURE_1D, 2D or 3D depending on their
+            needs, and zero if they don't use texturing. This method is used
+            to reduce the number of texturing activations/deactivations. }
+         function TexturingMode : Cardinal; virtual; abstract;
 
          {: Invoked when the particles of the manager will be rendered.<p>
             This method is fired with the "base" OpenGL states and matrices
@@ -497,6 +505,7 @@ type
          { Protected Declarations }
          procedure SetNbSides(const val : Integer);
 
+         function TexturingMode : Cardinal; override;
          procedure InitializeRendering; override;
          procedure BeginParticles; override;
          procedure RenderParticle(aParticle : TGLParticle); override;
@@ -556,6 +565,7 @@ type
          function StoreAspectRatio : Boolean;
          procedure SetRotation(const val : Single);
 
+         function TexturingMode : Cardinal; override;
          procedure InitializeRendering; override;
          procedure BeginParticles; override;
          procedure RenderParticle(aParticle : TGLParticle); override;
@@ -1177,6 +1187,7 @@ var
    cameraPos, cameraVector : TAffineVector;
    timer : Int64;
    oldDepthMask : TGLboolean;
+   currentTexturingMode : Cardinal;
 begin
    if csDesigning in ComponentState then Exit;
    timer:=StartPrecisionTimer;
@@ -1240,6 +1251,7 @@ begin
       glPushAttrib(GL_ALL_ATTRIB_BITS);
       glDisable(GL_CULL_FACE);
       glDisable(GL_TEXTURE_2D);
+      currentTexturingMode:=0;
       glDisable(GL_LIGHTING);
       case FBlendingMode of
          bmAdditive : begin
@@ -1278,6 +1290,12 @@ begin
                            curManager.EndParticles;
                         curManagerList:=curParticle.Owner;
                         curManager:=curManagerList.Owner;
+                        if curManager.TexturingMode<>currentTexturingMode then begin
+                           if currentTexturingMode<>0 then
+                              glDisable(currentTexturingMode);
+                           currentTexturingMode:=curManager.TexturingMode;
+                           glEnable(currentTexturingMode);
+                        end;
                         curManager.BeginParticles;
                      end;
                      curManager.RenderParticle(curParticle);
@@ -1928,6 +1946,13 @@ begin
    end;
 end;
 
+// TexturingMode
+//
+function TGLPolygonPFXManager.TexturingMode : Cardinal;
+begin
+   Result:=0;
+end;
+
 // InitializeRendering
 //
 procedure TGLPolygonPFXManager.InitializeRendering;
@@ -2094,6 +2119,13 @@ begin
    end else glBindTexture(GL_TEXTURE_2D, FTexHandle.Handle);
 end;
 
+// TexturingMode
+//
+function TGLBaseSpritePFXManager.TexturingMode : Cardinal;
+begin
+   Result:=GL_TEXTURE_2D;
+end;
+
 // InitializeRendering
 //
 procedure TGLBaseSpritePFXManager.InitializeRendering;
@@ -2132,7 +2164,6 @@ end;
 //
 procedure TGLBaseSpritePFXManager.BeginParticles;
 begin
-   glEnable(GL_TEXTURE_2D);
    BindTexture;
    if ColorMode=scmNone then
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
@@ -2208,7 +2239,6 @@ begin
    if ColorMode<>scmFade then
       glEnd;
    UnapplyBlendingMode;
-   glDisable(GL_TEXTURE_2D);
 end;
 
 // FinalizeRendering
