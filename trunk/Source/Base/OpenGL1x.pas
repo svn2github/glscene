@@ -172,6 +172,7 @@ var
    GL_EXT_blend_logic_op,
    GL_EXT_blend_minmax,
    GL_EXT_blend_subtract,
+   GL_EXT_Cg_shader,
    GL_EXT_compiled_vertex_array,
    GL_EXT_copy_texture,
    GL_EXT_draw_range_elements,
@@ -3964,6 +3965,7 @@ begin
    GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op');
    GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax');
    GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract');
+   GL_EXT_Cg_shader := CheckExtension('GL_EXT_Cg_shader');
    GL_EXT_compiled_vertex_array := CheckExtension('GL_EXT_compiled_vertex_array');
    GL_EXT_copy_texture := CheckExtension('GL_EXT_copy_texture');
    GL_EXT_draw_range_elements := CheckExtension('GL_EXT_draw_range_elements');
