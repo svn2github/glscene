@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/02/02 - EG - Fixed UnTrackWindow
       <li>03/02/02 - EG - Added experimental Hook-based window tracking
       <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support 
       <li>21/01/02 - EG - More graceful recovery for ICDs without pbuffer support
@@ -141,6 +142,7 @@ var
    i, k : Integer;
 begin
    if not IsWindow(h) then Exit;
+   if vTrackingCount=0 then Exit;
    k:=0;
    for i:=0 to vTrackingCount-1 do if vTrackedHwnd[i]<>h then begin
       vTrackedHwnd[k]:=vTrackedHwnd[i];

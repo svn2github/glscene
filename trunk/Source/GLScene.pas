@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/02/02 - Egg - Added roNoColorBuffer
       <li>03/02/02 - Egg - InfoForm registration mechanism,
                            AbsolutePosition promoted to read/write property
       <li>27/01/02 - Egg - Added TGLCamera.RotateObject, fixed SetMatrix,
@@ -230,10 +231,11 @@ type
      roTwoSideLighting: enables two-side lighting model.<br>
      roStereo: enables stereo support in the driver (dunno if it works,
          I don't have a stereo device to test...)<br>
-     roDestinationAlpha: request an Alpha channel for the rendered output }
+     roDestinationAlpha: request an Alpha channel for the rendered output<br>
+     roNoColorBuffer: don't request a color buffer }
   TContextOption = (roDoubleBuffer, roStencilBuffer,
                     roRenderToWindow, roTwoSideLighting, roStereo,
-                    roDestinationAlpha);
+                    roDestinationAlpha, roNoColorBuffer);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -5602,7 +5604,7 @@ procedure TGLSceneBuffer.CreateRC(deviceHandle : Cardinal; memoryContext : Boole
 var
    backColor: TColorVector;
    locOptions: TGLRCOptions;
-   locStencilBits, locAlphaBits : Integer;
+   locStencilBits, locAlphaBits, locColorBits : Integer;
 begin
    DestroyRC;
    FRendering:=True;
@@ -5612,6 +5614,9 @@ begin
          locOptions:=locOptions+[rcoDoubleBuffered];
       if roStereo in ContextOptions then
          locOptions:=locOptions+[rcoStereo];
+      if roNoColorBuffer in ContextOptions then
+         locColorBits:=0
+      else locColorBits:=24;
       if roStencilBuffer in ContextOptions then
          locStencilBits:=8
       else locStencilBits:=0;
@@ -5624,7 +5629,7 @@ begin
          raise Exception.Create('Failed to create RenderingContext.');
       with FRenderingContext do begin
          Options:=locOptions;
-         ColorBits:=24;
+         ColorBits:=locColorBits;
          StencilBits:=locStencilBits;
          AlphaBits:=locAlphaBits;
          AccumBits:=0;
