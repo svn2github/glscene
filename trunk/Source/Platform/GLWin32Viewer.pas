@@ -104,6 +104,7 @@ type
 
          property IsOpenGLAvailable : Boolean read FIsOpenGLAvailable;
 
+         function LastFrameTime : Single;
          function FramesPerSecond : Single;
          function FramesPerSecondText(decimals : Integer = 1) : String;
          procedure ResetPerformanceMonitor;
@@ -439,6 +440,13 @@ end;
 procedure TGLSceneViewer.DoBufferStructuralChange(Sender : TObject);
 begin
    RecreateWnd;
+end;
+
+// LastFrameTime
+//
+function TGLSceneViewer.LastFrameTime : Single;
+begin
+   Result:=FBuffer.LastFrameTime;
 end;
 
 // FramesPerSecond

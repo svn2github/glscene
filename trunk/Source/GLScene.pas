@@ -1647,6 +1647,7 @@ type
          FFrameCount : Longint;
          FFramesPerSecond : Single;
          FFirstPerfCounter : Int64;
+         FLastFrameTime : Single;
 
          // Events
          FOnChange : TNotifyEvent;
@@ -1860,6 +1861,12 @@ type
 
          property GLStates : TGLStateCache read FGLStates;
 
+         {: Time (in second) spent to issue rendering order for the last frame.<p>
+            Be aware that since execution by the hardware isn't synchronous,
+            this value may not be an accurate measurement of the time it took
+            to render the last frame, it's a measurement of only the time it
+            took to issue rendering orders. }
+         property LastFrameTime : Single read FLastFrameTime;
          {: Current FramesPerSecond rendering speed.<p>
             You must keep the renderer busy to get accurate figures from this
             property.<br>
@@ -7416,7 +7423,7 @@ end;
 //
 procedure TGLSceneBuffer.Render(baseObject : TGLBaseSceneObject = nil);
 var
-   perfCounter : Int64;
+   perfCounter, framePerf : Int64;
    backColor : TColorVector;
 begin
    if FRendering then Exit;
@@ -7440,6 +7447,8 @@ begin
       end;
       Exit;
    end;
+
+   QueryPerformanceCounter(framePerf);
 
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
       FCamera.AbsoluteMatrixAsAddress;
@@ -7468,6 +7477,7 @@ begin
       // yes, calculate average frames per second...
       Inc(FFrameCount);
       QueryPerformanceCounter(perfCounter);
+      FLastFrameTime:=(perfCounter-framePerf)/vCounterFrequency;
       Dec(perfCounter, FFirstPerfCounter);
       if perfCounter>0 then
          FFramesPerSecond:=(FFrameCount*vCounterFrequency)/perfCounter;
