@@ -408,6 +408,9 @@ const
   YZVector :   TAffineVector = (0, 1, 1);
   XYZVector :  TAffineVector = (1, 1, 1);
   NullVector : TAffineVector = (0, 0, 0);
+  MinusXVector : TAffineVector = (-1,  0,  0);
+  MinusYVector : TAffineVector = ( 0, -1,  0);
+  MinusZVector : TAffineVector = ( 0,  0, -1);
   // standard homogeneous vectors
   XHmgVector : THomogeneousVector = (1, 0, 0, 0);
   YHmgVector : THomogeneousVector = (0, 1, 0, 0);
