@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>30/01/03 - EG - Fixed color array enable/disable (Nelson Chu)
       <li>27/01/03 - EG - Assign support, fixed MorphableMeshObjects persistence
       <li>16/01/03 - EG - Updated multiples Bones per vertex transformation code,
                           now makes use of CVAs 
@@ -2823,13 +2824,13 @@ begin
          if (Colors.Count>0) and (not mrci.ignoreMaterials) then begin
             glEnableClientState(GL_COLOR_ARRAY);
             glColorPointer(4, GL_FLOAT, 0, Colors.List);
-         end else glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         end else glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then begin
             xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
             xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
          end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end else begin
-         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
       if GL_EXT_compiled_vertex_array then
@@ -2851,11 +2852,11 @@ begin
          glDisableClientState(GL_NORMAL_ARRAY);
       if not mrci.ignoreMaterials then begin
          if (Colors.Count>0) and (not mrci.ignoreMaterials) then
-            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+            glDisableClientState(GL_COLOR_ARRAY);
          if TexCoords.Count>0 then
             xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end else begin
-         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
       FArraysDeclared:=False;
