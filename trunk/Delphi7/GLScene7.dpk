@@ -22,6 +22,7 @@ package GLScene7;
 {$R '..\Source\GLWindows.dcr'}
 {$R '..\Source\Base\ApplicationFileIO.dcr'}
 {$R '..\Source\Shaders\GLTexCombineShader.dcr'}
+{$R '..\Source\Shaders\GLMultiMaterialShader.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -175,6 +176,7 @@ contains
   GLPolyhedron in '..\Source\GLPolyhedron.pas',
   GLTeapot in '..\Source\GLTeapot.pas',
   GLTextureImageEditors in '..\Source\DesignTime\GLTextureImageEditors.pas',
-  GLWin32FullScreenViewer in '..\Source\Platform\GLWin32FullScreenViewer.pas';
+  GLWin32FullScreenViewer in '..\Source\Platform\GLWin32FullScreenViewer.pas',
+  GLMultiMaterialShader in '..\Source\Shaders\GLMultiMaterialShader.pas';
 
 end.
