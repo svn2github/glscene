@@ -414,6 +414,34 @@ type
          function  Sum : Single;
 	end;
 
+  	// TByteList
+	//
+	{: A list of bytes.<p>
+		Similar to TList, but using Byte as items.<p> }
+	TByteList = class (TBaseList)
+		private
+         { Private Declarations }
+			FList: PByteArray;
+
+		protected
+         { Protected Declarations }
+			function  Get(Index: Integer) : Byte;
+			procedure Put(Index: Integer; const item : Byte);
+			procedure SetCapacity(NewCapacity: Integer); override;
+
+		public
+         { Public Declarations }
+			constructor Create; override;
+			procedure Assign(Src : TPersistent); override;
+
+			function Add(const item : Byte) : Integer;
+			procedure Insert(Index : Integer; const item : Byte);
+
+			property Items[Index: Integer] : Byte read Get write Put; default;
+			property List : PByteArray read FList;
+
+	end;
+
   	// TQuaternionList
 	//
 	{: A list of TQuaternion.<p>
@@ -1036,7 +1064,7 @@ function TAffineVectorList.Add(const item : TAffineVector): Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-	FList^[Result] := Item;
+	FList[Result] := Item;
   	Inc(FCount);
 end;
 
@@ -1189,7 +1217,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$endif}
-	Result := FList^[Index];
+	Result := FList[Index];
 end;
 
 // Insert
@@ -1201,9 +1229,9 @@ begin
 {$ENDIF}
 	if FCount = FCapacity then SetCapacity(FCapacity + FGrowthDelta);
 	if Index < FCount then
-		System.Move(FList^[Index], FList^[Index + 1],
+		System.Move(FList[Index], FList[Index + 1],
 						(FCount - Index) * SizeOf(TAffineVector));
-	FList^[Index] := Item;
+	FList[Index] := Item;
 	Inc(FCount);
 end;
 
@@ -1214,7 +1242,7 @@ var
    i : Integer;
 begin
    Result:=-1;
-   for i:=0 to Count-1 do if VectorEquals(item, FList^[i]) then begin
+   for i:=0 to Count-1 do if VectorEquals(item, FList[i]) then begin
       Result:=i;
       Break;
    end;
@@ -1235,7 +1263,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
-	FList^[Index] := Item;
+	FList[Index] := Item;
 end;
 
 // SetCapacity
@@ -1277,7 +1305,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$ENDIF}
-   AddVector(FList^[Index], delta);
+   AddVector(FList[Index], delta);
 end;
 
 // TranslateItems
@@ -1301,7 +1329,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$ENDIF}
-   CombineVector(FList^[Index], vector, @f);
+   CombineVector(FList[Index], vector, @f);
 end;
 
 // TransformAsPoints
@@ -1404,7 +1432,7 @@ function TVectorList.Add(const item : TVector): Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-	FList^[Result] := Item;
+	FList[Result] := Item;
   	Inc(FCount);
 end;
 
@@ -1461,7 +1489,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$endif}
-	Result := FList^[Index];
+	Result := FList[Index];
 end;
 
 // Insert
@@ -1473,9 +1501,9 @@ begin
 {$ENDIF}
 	if FCount = FCapacity then SetCapacity(FCapacity + FGrowthDelta);
 	if Index < FCount then
-		System.Move(FList^[Index], FList^[Index + 1],
+		System.Move(FList[Index], FList[Index + 1],
 						(FCount - Index) * SizeOf(TVector));
-	FList^[Index] := Item;
+	FList[Index] := Item;
 	Inc(FCount);
 end;
 
@@ -1486,7 +1514,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
-	FList^[Index] := Item;
+	FList[Index] := Item;
 end;
 
 // SetCapacity
@@ -1521,7 +1549,7 @@ var
    i : Integer;
 begin
    Result:=-1;
-   for i:=0 to Count-1 do if VectorEquals(item, FList^[i]) then begin
+   for i:=0 to Count-1 do if VectorEquals(item, FList[i]) then begin
       Result:=i;
       Break;
    end;
@@ -1589,7 +1617,7 @@ function TTexPointList.Add(const item : TTexPoint): Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-	FList^[Result] := Item;
+	FList[Result] := Item;
   	Inc(FCount);
 end;
 
@@ -1599,7 +1627,7 @@ function TTexPointList.Add(const item : TVector2f): Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity+FGrowthDelta);
-	FList^[Result]:=PTexPoint(@Item)^;
+	FList[Result]:=PTexPoint(@Item)^;
   	Inc(FCount);
 end;
 
@@ -1609,7 +1637,7 @@ function TTexPointList.Add(const texS, texT : Single) : Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-   with FList^[Result] do begin
+   with FList[Result] do begin
       s:=texS;
       t:=texT;
    end;
@@ -1622,7 +1650,7 @@ function TTexPointList.Add(const texS, texT : Integer) : Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-   with FList^[Result] do begin
+   with FList[Result] do begin
       s:=texS;
       t:=texT;
    end;
@@ -1634,7 +1662,7 @@ end;
 function TTexPointList.AddNC(const texS, texT : Integer) : Integer;
 begin
 	Result:=FCount;
-   with FList^[Result] do begin
+   with FList[Result] do begin
       s:=texS;
       t:=texT;
    end;
@@ -1647,7 +1675,7 @@ function TTexPointList.Add(const texST : PIntegerArray) : Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-   with FList^[Result] do begin
+   with FList[Result] do begin
       s:=texST[0];
       t:=texST[1];
    end;
@@ -1659,7 +1687,7 @@ end;
 function TTexPointList.AddNC(const texST : PIntegerArray) : Integer;
 begin
 	Result:=FCount;
-   with FList^[Result] do begin
+   with FList[Result] do begin
       s:=texST[0];
       t:=texST[1];
    end;
@@ -1673,7 +1701,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$endif}
-	Result := FList^[Index];
+	Result := FList[Index];
 end;
 
 // Insert
@@ -1685,9 +1713,9 @@ begin
 {$ENDIF}
 	if FCount = FCapacity then SetCapacity(FCapacity + FGrowthDelta);
 	if Index < FCount then
-		System.Move(FList^[Index], FList^[Index + 1],
+		System.Move(FList[Index], FList[Index + 1],
 						(FCount - Index) * SizeOf(TTexPoint));
-	FList^[Index] := Item;
+	FList[Index] := Item;
 	Inc(FCount);
 end;
 
@@ -1698,7 +1726,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
-	FList^[Index] := Item;
+	FList[Index] := Item;
 end;
 
 // SetCapacity
@@ -1829,7 +1857,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$endif}
-	Result := FList^[Index];
+	Result := FList[Index];
 end;
 
 // Insert
@@ -1841,9 +1869,9 @@ begin
 {$ENDIF}
 	if FCount = FCapacity then SetCapacity(FCapacity + FGrowthDelta);
 	if Index < FCount then
-		System.Move(FList^[Index], FList^[Index + 1],
+		System.Move(FList[Index], FList[Index + 1],
 						(FCount - Index) * SizeOf(Integer));
-	FList^[Index] := Item;
+	FList[Index] := Item;
 	Inc(FCount);
 end;
 
@@ -1854,8 +1882,8 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do begin
-      if FList^[i]=item then begin
-         System.Move(FList^[i+1], FList^[i], (FCount-1-i)*SizeOf(Integer));
+      if FList[i]=item then begin
+         System.Move(FList[i+1], FList[i], (FCount-1-i)*SizeOf(Integer));
          Dec(FCount);
          Break;
       end;
@@ -1869,7 +1897,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
-	FList^[Index] := Item;
+	FList[Index] := Item;
 end;
 
 // SetCapacity
@@ -1892,7 +1920,7 @@ end;
 function TIntegerList.Pop : Integer;
 begin
 	if FCount>0 then begin
-   	Result:=FList^[FCount-1];
+   	Result:=FList[FCount-1];
 		Delete(FCount-1);
 	end else Result:=0;
 end;
@@ -2187,7 +2215,7 @@ begin
 	Result:=FCount;
 	if Result=FCapacity then
       SetCapacity(FCapacity+FGrowthDelta);
-	FList^[Result]:=Item;
+	FList[Result]:=Item;
   	Inc(FCount);
 end;
 
@@ -2198,7 +2226,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$endif}
-	Result := FList^[Index];
+	Result := FList[Index];
 end;
 
 // Insert
@@ -2210,9 +2238,9 @@ begin
 {$ENDIF}
 	if FCount=FCapacity then SetCapacity(FCapacity+FGrowthDelta);
 	if Index<FCount then
-		System.Move(FList^[Index], FList^[Index + 1],
+		System.Move(FList[Index], FList[Index + 1],
 						(FCount-Index)*SizeOf(Single));
-	FList^[Index]:=Item;
+	FList[Index]:=Item;
 	Inc(FCount);
 end;
 
@@ -2223,7 +2251,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$ENDIF}
-	FList^[Index] := Item;
+	FList[Index] := Item;
 end;
 
 // SetCapacity
@@ -2272,7 +2300,85 @@ var
    i : Integer;
 begin
    Result:=0;
-   for i:=0 to FCount-1 do Result:=Result+FList^[i];
+   for i:=0 to FCount-1 do Result:=Result+FList[i];
+end;
+
+// ------------------
+// ------------------ TByteList ------------------
+// ------------------
+
+// Create
+//
+constructor TByteList.Create;
+begin
+   FItemSize:=SizeOf(Byte);
+	inherited Create;
+	FGrowthDelta:=cDefaultListGrowthDelta;
+end;
+
+// Assign
+//
+procedure TByteList.Assign(Src : TPersistent);
+begin
+	if Assigned(Src) then begin
+      inherited;
+		if (Src is TByteList) then
+			System.Move(TByteList(Src).FList^, FList^, FCount*SizeOf(Byte));
+	end else Clear;
+end;
+
+// Add
+//
+function TByteList.Add(const item : Byte): Integer;
+begin
+	Result:=FCount;
+	if Result=FCapacity then
+      SetCapacity(FCapacity+FGrowthDelta);
+	FList[Result]:=Item;
+  	Inc(FCount);
+end;
+
+// Get
+//
+function TByteList.Get(Index : Integer) : Byte;
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$endif}
+	Result:=FList[Index];
+end;
+
+// Insert
+//
+procedure TByteList.Insert(Index : Integer; const Item : Byte);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+	if FCount=FCapacity then SetCapacity(FCapacity+FGrowthDelta);
+	if Index<FCount then
+		System.Move(FList[Index], FList[Index+1],
+						(FCount-Index)*SizeOf(Byte));
+	FList[Index]:=Item;
+	Inc(FCount);
+end;
+
+// Put
+//
+procedure TByteList.Put(Index : Integer; const Item : Byte);
+begin
+{$IFOPT R+}
+   Assert(Cardinal(Index)<Cardinal(FCount));
+{$ENDIF}
+	FList[Index]:=Item;
+end;
+
+// SetCapacity
+//
+procedure TByteList.SetCapacity(NewCapacity : Integer);
+begin
+   inherited;
+   FList:=PByteArray(FBaseList);
 end;
 
 // ------------------
@@ -2305,7 +2411,7 @@ function TQuaternionList.Add(const item : TQuaternion): Integer;
 begin
 	Result:=FCount;
 	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-	FList^[Result] := Item;
+	FList[Result] := Item;
   	Inc(FCount);
 end;
 
@@ -2330,7 +2436,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index)<Cardinal(FCount));
 {$endif}
-	Result := FList^[Index];
+	Result := FList[Index];
 end;
 
 // Insert
@@ -2342,9 +2448,9 @@ begin
 {$ENDIF}
 	if FCount = FCapacity then SetCapacity(FCapacity + FGrowthDelta);
 	if Index < FCount then
-		System.Move(FList^[Index], FList^[Index + 1],
+		System.Move(FList[Index], FList[Index + 1],
 						(FCount - Index) * SizeOf(TQuaternion));
-	FList^[Index] := Item;
+	FList[Index] := Item;
 	Inc(FCount);
 end;
 
@@ -2355,7 +2461,7 @@ begin
 {$IFOPT R+}
    Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
-	FList^[Index] := Item;
+	FList[Index] := Item;
 end;
 
 // SetCapacity
@@ -2390,7 +2496,7 @@ var
    i : Integer;
 begin
    Result:=-1;
-   for i:=0 to Count-1 do if VectorEquals(item.vector, FList^[i].vector) then begin
+   for i:=0 to Count-1 do if VectorEquals(item.vector, FList[i].vector) then begin
       Result:=i;
       Break;
    end;
