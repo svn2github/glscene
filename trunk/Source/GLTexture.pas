@@ -359,6 +359,7 @@ type
    {: Wraps an OpenGL color. }
    TGLColor = class(TGLUpdateAbleObject)
       private
+         { Private Properties }
 			FColor : TColorVector;
          FPDefaultColor : PColorVector;
 			procedure SetColor(const aColor : TColorVector);
@@ -367,6 +368,7 @@ type
 			function GetAsWinColor : TColor;
 
 		protected
+         { Protected Properties }
 			procedure DefineProperties(Filer: TFiler); override;
 			procedure ReadData(Stream: TStream);
 			procedure WriteData(Stream: TStream);
@@ -3385,8 +3387,9 @@ begin
                   glMultMatrixf(@m);
                end;
             end;
+            tmmUser : ;
          else
-            Assert(False);
+//            Assert(False, 'Texture MappingMode invalid for a cubemap');
          end;
          glMatrixMode(GL_MODELVIEW);
       end;
@@ -3895,8 +3898,10 @@ begin
             rci.GLStates.UnSetGLState(stLighting);
             Inc(rci.lightingDisabledCounter);
          end;
-    		FFrontProperties.ApplyNoLighting(rci, GL_FRONT);
-      end else FFrontProperties.Apply(rci, GL_FRONT);
+      end;
+      if stLighting in rci.GLStates.States then
+         FFrontProperties.Apply(rci, GL_FRONT)
+      else FFrontProperties.ApplyNoLighting(rci, GL_FRONT);
       // Apply FaceCulling and BackProperties (if needs be)
       if (stCullFace in rci.GLStates.States) then begin
          // currently culling
