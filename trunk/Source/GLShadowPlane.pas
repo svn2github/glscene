@@ -227,6 +227,7 @@ begin
             rci.ignoreMaterials:=True;
             glDisable(GL_TEXTURE_2D);
             glDisable(GL_LIGHTING);
+            glDisable(GL_FOG);
 
             glColor4fv(ShadowColor.AsAddress);
 
