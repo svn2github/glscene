@@ -2998,7 +2998,7 @@ begin
       // register with new
       if Assigned(currentLibMaterial) then
          currentLibMaterial.RegisterUser(Self);
-      NotifyChange(Self);
+      NotifyTexMapChange(Self);
    end;
 end;
 
