@@ -525,14 +525,14 @@ begin
       cosAlpha:=VectorDotProduct(FVy, YHmgVector);
       FVy:=VectorLerp(FVy, YHmgVector, Abs(cosAlpha));
       NormalizeVector(FVy);
-      dynScale:=ClampValue(1/cosAlpha, 1, 1.414);
-   end else dynScale:=1;
+      dynScale:=ClampValue(1/cosAlpha, 1, 1.414)*FStaticScale;
+   end else dynScale:=FStaticScale;
 
    fx:=Sqrt(FAspectRatio);
    fy:=1/fx;
-   yOffset:=cReferenceToPos[Builder.ImposterReference]*FStaticScale*fy;
-   fx:=fx*FStaticScale*dynScale;
-   fy:=fy*FStaticScale*dynScale;
+   yOffset:=cReferenceToPos[Builder.ImposterReference]*dynScale*fy;
+   fx:=fx*dynScale;
+   fy:=fy*dynScale;
 
    FQuad[0]:=VectorSubtract(VectorCombine(FVx, FVy,  fx,  fy+yOffset), FStaticOffset);
    FQuad[1]:=VectorSubtract(VectorCombine(FVx, FVy, -fx,  fy+yOffset), FStaticOffset);
@@ -1235,6 +1235,8 @@ begin
    ComputeStaticParams(destImposter);
 
    radius:=impostoredObject.BoundingSphereRadius/SamplingRatioBias;
+   if ImposterReference<>irCenter then
+      radius:=radius*0.5;
 
    glGetIntegerv(GL_MAX_LIGHTS, @maxLight);
    glGetIntegerv(GL_VIEWPORT, @viewPort);
@@ -1283,15 +1285,15 @@ begin
 
          glClear(GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT);
          glLoadIdentity;
-         gluLookAt(cameraOffset[0], cameraOffset[1], cameraOffset[2], 0, 0, 0, 0, 1, 0);
+         gluLookAt(cameraOffset[0], cameraOffset[1], cameraOffset[2],
+                   0, 0, 0, 0, 1, 0);
          if Lighting=siblStaticLighting then
             (rci.scene as TGLScene).SetupLights(maxLight);
-         if ImposterReference<>irCenter then
-            glScalef(2, 2, 2);
          glTranslatef(FBuildOffset.X, FBuildOffset.Y, FBuildOffset.Z);
          impostoredObject.Render(rci);
+         rci.GLStates.ResetAll;
          CheckOpenGLError;
-         
+
          xDest:=(curSample mod FSamplesPerAxis.X)*SampleSize;
          yDest:=(curSample div FSamplesPerAxis.X)*SampleSize;
 
