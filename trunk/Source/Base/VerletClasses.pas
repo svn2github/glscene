@@ -8,7 +8,8 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>24/06/03 - MF - Added force kickbacks for integration with external
-                          physics. Needs to be split into force+torque!
+                          physics. Needs to be split into force+torque and add
+                          friction to the kickback
       <li>19/06/03 - MF - Added TVerletGlobalConstraint.SatisfyConstraintForEdge
                           and implemented for TVCSphere and TVCCapsule 
       <li>19/06/03 - MF - Added friction to TVCCylinder
@@ -199,6 +200,8 @@ type
       private
 			{ Private Declarations }
          FKickbackForce: TAffineVector;
+         FKickbackTorque : TAffineVector;
+         FLocation: TAffineVector;
 
       public
 			{ Public Declarations }
@@ -211,10 +214,12 @@ type
          procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
                         const iteration, maxIterations : Integer); virtual;
 
-         property KickbackForce : TAffineVector read FKickbackForce write FKickbackForce;
+         property Location : TAffineVector read FLocation write FLocation;
 
-         procedure AddForce(Force : TAffineVector);
-         procedure AddForceAt(Force : TAffineVector);
+         property KickbackForce : TAffineVector read FKickbackForce write FKickbackForce;
+         property KickbackTorque : TAffineVector read FKickbackTorque write FKickbackTorque;
+
+         procedure AddKickbackForceAt(const Pos : TAffineVector; const Force : TAffineVector);
    end;
 
    // TVerletGlobalFrictionConstraint
@@ -453,7 +458,7 @@ type
       private
 			{ Private Declarations }
          FBounceRatio : Single;
-         FLocation, FNormal : TAffineVector;
+         FNormal : TAffineVector;
     procedure SetNormal(const Value: TAffineVector);
 
       public
@@ -463,7 +468,6 @@ type
 
          property BounceRatio : Single read FBounceRatio write FBounceRatio;
 
-         property Location : TAffineVector read FLocation write FLocation;
          property Normal : TAffineVector read FNormal write SetNormal;
 
          constructor Create(aOwner : TVerletAssembly); override;
@@ -509,7 +513,6 @@ type
    TVCSphere = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
-         FLocation : TAffineVector;
          FRadius  : Single;
 
       public
@@ -520,7 +523,6 @@ type
          procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
                         const iteration, maxIterations : Integer); override;
 
-         property Location : TAffineVector read FLocation write FLocation;
          property Radius : Single read FRadius write FRadius;
    end;
 
@@ -531,7 +533,7 @@ type
    TVCCylinder = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
-         FBase, FAxis : TAffineVector;
+         FAxis : TAffineVector;
          FRadius, FRadius2  : Single;
 
       protected
@@ -547,7 +549,7 @@ type
             Can theoretically be anywhere, however, to reduce floating point
             precision issues, choose it in the area where collision detection
             will occur. }
-         property Base : TAffineVector read FBase write FBase;
+         //property Base : TAffineVector read FBase write FBase;
          {: Cylinder axis vector.<p>
             Must be normalized. }
          property Axis : TAffineVector read FAxis write FAxis;
@@ -561,7 +563,6 @@ type
    TVCCube = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
-         FLocation : TAffineVector;
          FHalfSides : TAffineVector;
          FSides: TAffineVector;
          FDirection: TAffineVector;
@@ -577,7 +578,6 @@ type
                         const iteration, maxIterations : Integer); override;//}
 
          property Direction : TAffineVector read FDirection write FDirection;
-         property Location : TAffineVector read FLocation write FLocation;
          property Sides : TAffineVector read FSides write SetSides;
    end;
 
@@ -587,7 +587,6 @@ type
    TVCCapsule = class (TVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
-         FBase : TAffineVector;
          FAxis : TAffineVector;
          FRadius, FRadius2, FLength, FLengthDiv2 : Single;
 
@@ -605,7 +604,7 @@ type
          procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
                         const iteration, maxIterations : Integer); override;
 
-         property Base : TAffineVector read FBase write FBase;
+         // property Base : TAffineVector read FBase write FBase;
          property Axis : TAffineVector read FAxis write SetAxis;
          property Radius : single read FRadius write SetRadius;
          property Length : single read FLength write SetLength;
@@ -857,21 +856,24 @@ end;
 
 // RemoveNode
 //
-procedure TVerletGlobalConstraint.AddForce(Force: TAffineVector);
-begin
-  AddVector(FKickbackForce, Force);
-end;
 
-procedure TVerletGlobalConstraint.AddForceAt(Force: TAffineVector);
+procedure TVerletGlobalConstraint.AddKickbackForceAt(const Pos : TAffineVector; const Force: TAffineVector);
+var
+  dPos : TAffineVector;
 begin
-  // BAD BAD!
+  // Sum forces
   AddVector(FKickbackForce, Force);
+
+  // Sum torques
+  dPos := VectorSubtract(Pos, FLocation);
+  AddVector(FKickbackTorque, VectorCrossProduct(dPos, Force));
 end;
 
 procedure TVerletGlobalConstraint.BeforeIterations;
 begin
   inherited;
   FKickbackForce := NullVector;
+  FKickbackTorque := NullVector;
 end;
 
 procedure TVerletGlobalConstraint.RemoveNode(aNode : TVerletNode);
@@ -1587,7 +1589,9 @@ begin
       // Add the force to the kickback
       // F = a * m
       // a = move / deltatime
-      AddForce(VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
+      AddKickbackForceAt(
+        FLocation,
+        VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
   end;
 end;
 
@@ -1622,7 +1626,9 @@ begin
       // Add the force to the kickback
       // F = a * m
       // a = move / deltatime
-      AddForce(VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
+      AddKickbackForceAt(
+        FLocation,
+        VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
    end;
 end;
 
@@ -1647,8 +1653,8 @@ var
    f, dist2, penetrationDepth : Single;
 begin
    // Compute projection of node position on the axis
-   f:=PointProject(aNode.Location, Base, axis);
-   proj:=VectorCombine(Base, Axis, 1, f);
+   f:=PointProject(aNode.Location, FLocation, FAxis);
+   proj:=VectorCombine(FLocation, FAxis, 1, f);
 
    // Sqr distance
    dist2:=VectorDistance2(proj, aNode.Location);
@@ -1911,9 +1917,9 @@ var
 
 begin
    // Find the closest point to location on the capsule axis
-   p:=ClampValue(PointProject(aNode.Location, FBase, FAxis),
+   p:=ClampValue(PointProject(aNode.Location, FLocation, FAxis),
                  -FLengthDiv2, FLengthDiv2);
-   closest:=VectorCombine(FBase, FAxis, 1, p);
+   closest:=VectorCombine(FLocation, FAxis, 1, p);
 
    // vector from closest to location
    VectorSubtract(aNode.Location, closest, v);
@@ -1934,7 +1940,9 @@ begin
 
       aNode.FLocation:=newLocation;
 
-      AddForce(VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
+      AddKickbackForceAt(
+        FLocation,
+        VectorScale(move, -aNode.FWeight * Owner.FInvCurrentDeltaTime));
    end;
 end;
 
@@ -1947,9 +1955,9 @@ var
    deltaLength, diff, penetrationDepth : Single;
 begin
   VectorScale(FAxis, FLengthDiv2, Ax0);
-  AddVector(Ax0, FBase);
+  AddVector(Ax0, FLocation);
   VectorScale(FAxis, -FLengthDiv2, Ax1);
-  AddVector(Ax1, FBase);
+  AddVector(Ax1, FLocation);
 
    SegmentSegmentClosestPoint(
     aEdge.NodeA.FLocation,
@@ -1981,7 +1989,9 @@ begin
       AddVector(aEdge.NodeA.FLocation, move);
       AddVector(aEdge.NodeB.FLocation, move);
 
-      AddForce(VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
+      AddKickbackForceAt(
+        FLocation,
+        VectorScale(move, -(aEdge.NodeA.FWeight + aEdge.NodeB.FWeight)  * Owner.FInvCurrentDeltaTime));
   end;
 
 end;
@@ -2012,6 +2022,4 @@ procedure TVerletEdgeList.SetItems(i: integer; const Value: TVerletEdge);
 begin
   put(i, Value);
 end;
-
-
 end.

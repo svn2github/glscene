@@ -2,8 +2,7 @@ program Clothify;
 
 uses
   Forms,
-  fClothify in 'fClothify.pas' {frmClothify},
-  StrFunctions in 'StrFunctions.PAS';
+  fClothify in 'fClothify.pas' {frmClothify};
 
 {$R *.res}
 

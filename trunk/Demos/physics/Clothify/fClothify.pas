@@ -133,7 +133,7 @@ var
     dWorldSetGravity (world,0,-9.81,0);
 
     contactgroup := dJointGroupCreate (0);
-    space := dHashSpaceCreate(0);
+    space := dHashSpaceCreate(nil);
     body := dBodyCreate(world);
     dMassSetSphere (m,0.1,GLSphere1.Radius);
     dCreatePlane (space,0,1,0,GLShadowPlane1.Position.Y);
@@ -236,7 +236,7 @@ begin
 
      Capsule := TVCCapsule.Create(VerletAssembly);
      Capsule.Radius := GLCylinder1.TopRadius;
-     Capsule.Base := AffineVectorMake(GLCylinder1.AbsolutePosition);
+     Capsule.Location := AffineVectorMake(GLCylinder1.AbsolutePosition);
      Capsule.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
      Capsule.Length := 20;
      Capsule.FrictionRatio := 0.6;
@@ -245,7 +245,7 @@ begin
   if GL_Capsule.Visible then begin
      Capsule := TVCCapsule.Create(VerletAssembly);
      Capsule.Radius := GL_Capsule.TopRadius;
-     Capsule.Base := AffineVectorMake(GL_Capsule.AbsolutePosition);
+     Capsule.Location := AffineVectorMake(GL_Capsule.AbsolutePosition);
      Capsule.Axis := AffineVectorMake(GL_Capsule.AbsoluteUp);//}
      Capsule.Length := GL_Capsule.Height;
      Capsule.FrictionRatio := 0.6;
@@ -344,11 +344,11 @@ begin
         VCSphere.KickbackForce[2]);
 
       dSpaceCollide (space,nil,nearCallback);
-      dWorldStep(World, deltaTime);
+      dWorldStep(World, VerletAssembly.MaxDeltaTime);
       dJointGroupEmpty (contactgroup);
     end;
 
-    VerletAssembly.Progress(deltaTime, newTime);
+    VerletAssembly.Progress(VerletAssembly.MaxDeltaTime, newTime);
 
     GLActor1.StructureChanged;
   end;
