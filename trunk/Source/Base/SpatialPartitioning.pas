@@ -433,7 +433,8 @@ begin
   // only have easy access to a bounding sphere, or only an axis aligned
   // bounding box, you can easily convert from one to the other by using
   // AABBToBSphere and BSphereToAABB.
-  // You MUST set both FCachedAABB _and_ FCachedBSphere
+  //
+  // You MUST set both FCachedAABB AND FCachedBSphere
   Assert(false, 'You MUST override TSpacePartitionLeaf.UpdateCachedAABBAndBSphere!');
 end;
 
