@@ -2,6 +2,7 @@
 {: Bitmap Fonts management classes for GLScene<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/10/04 - NelC - Fixed a texture reset bug in RenderString
       <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
       <li>27/06/04 - NelC - Added TGLFlatText.Assign
       <li>01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
@@ -897,6 +898,7 @@ begin
    end;
    glEnd;
    glPopAttrib;
+   rci.GLStates.ResetGLCurrentTexture;
 end;
 
 // TextOut
