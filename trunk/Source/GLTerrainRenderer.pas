@@ -39,6 +39,9 @@ type
 	      { Protected Declarations }
          FTilesHash : array [0..255] of TList;
 
+         function HashedTiled(const tilePos : TAffineVector) : THeightData; overload;
+         function HashedTiled(const xLeft, yTop : Integer) : THeightData; overload;
+
          procedure SetHeightDataSource(const val : THeightDataSource);
          procedure SetTileSize(const val : Integer);
          procedure SetTilesPerTexture(const val : Single);
@@ -196,7 +199,7 @@ var
 begin
    if Assigned(HeightDataSource) then begin
       pLocal:=AbsoluteToLocal(p);
-      Result:=(HeightDataSource.InterpolatedHeight(pLocal[0]-TileSize*0.5, pLocal[1]-TileSize*0.5)-128)*Scale.Z;
+      Result:=(HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1])-128)*Scale.Z;
    end else Result:=0;
 end;
 
@@ -206,13 +209,14 @@ procedure TTerrainRenderer.BuildList(var rci : TRenderContextInfo);
 var
    vEye : TVector;
    tilePos, absTilePos, observer : TAffineVector;
-   delta, n : Integer;
-   f, tileRadius, texFactor : Single;
+   delta, n, rpIdxDelta : Integer;
+   f, tileRadius, texFactor, maxTilePosX : Single;
    patch, prevPatch : TGLROAMPatch;
    vertices : TAffineVectorList;
    vertexIndices : TIntegerList;
    texPoints : TTexPointList;
    patchList, rowList, prevRow, buf : TList;
+   rcci : TRenderContextClippingInfo;
 begin
    texFactor:=1/(TilesPerTexture*TileSize);
    if csDesigning in ComponentState then Exit;
@@ -223,38 +227,39 @@ begin
    vEye[0]:=Round(vEye[0]/TileSize-0.5)*TileSize+TileSize*0.5;
    vEye[1]:=Round(vEye[1]/TileSize-0.5)*TileSize+TileSize*0.5;
    tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(128*Scale.Z))*2;
-   // mark all tiles as unused
-//   for n:=0 to FTiles.Count-1 do
-//      THeightData(FTiles[n]).ObjectTag:=nil;
-   FLastTriangleCount:=0;
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
    delta:=TileSize;
    tilePos[2]:=0;
    f:=(rci.rcci.farClippingDistance+tileRadius)/Scale.X;
-   f:=Round(f/TileSize+0.5)*TileSize;
-   tilePos[1]:=vEye[1]-f;
+   f:=Round(f/TileSize+1.0)*TileSize;
+   maxTilePosX:=vEye[0]+f;
+   rcci:=rci.rcci;
 
    SetROAMTrianglesCapacity(900000);
    patchList:=TList.Create;
    rowList:=TList.Create;
    prevRow:=TList.Create;
 
+   tilePos[1]:=vEye[1]-f;
    while tilePos[1]<=vEye[1]+f do begin
       tilePos[0]:=vEye[0]-f;
       prevPatch:=nil;
       n:=0;
-      while tilePos[0]<=vEye[0]+f do begin
-         absTilePos:=VectorAdd(tilePos, delta*0.5);
-         absTilePos:=VectorTransform(absTilePos, AbsoluteMatrix);
-         if not IsVolumeClipped(absTilePos, tileRadius, rci.rcci) then begin
+      while tilePos[0]<=maxTilePosX do begin
+         absTilePos:=VectorTransform(tilePos, DirectAbsoluteMatrix^);
+         if not IsVolumeClipped(absTilePos, tileRadius, rcci) then begin
 //            RenderTile(tilePos, VectorDistance(absTilePos, AffineVectorMake(rci.cameraPosition)), texFactor);
+//            RenderTileAsTriangleStrip(
             patch:=RenderTile2(tilePos, observer, texFactor);
+
+            patch.HighRes:=True and (VectorDistance(AffineVectorMake(rcci.origin), absTilePos)<QualityDistance);
+            
             if Assigned(prevPatch) then
-               patch.ConnectToTheLeft(prevPatch);
+               patch.ConnectToTheWest(prevPatch);
             if prevRow.Count>n then
                if prevRow.List[n]<>nil then
-                  patch.ConnectToTheTop(TGLROAMPatch(prevRow.List[n]));
+                  patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
             prevPatch:=patch;
             patchList.Add(patch);
             rowList.Add(patch);
@@ -272,39 +277,52 @@ begin
       rowList.Count:=0;
    end;
 
+   n:=Sqr(TileSize+1)*2;
    vertices:=TAffineVectorList.Create;
-   vertices.Capacity:=Sqr(TileSize+1)*2;
+   vertices.Capacity:=n;
    texPoints:=TTexPointList.Create;
-   texPoints.Capacity:=Sqr(TileSize+1)*2;
+   texPoints.Capacity:=n;
+
    vertexIndices:=TIntegerList.Create;
 
-   for n:=0 to patchList.Count-1 do begin
-      patch:=TGLROAMPatch(patchList[n]);
-      patch.Tesselate(150);
-   end;
+   rpIdxDelta:=Round(2*f/delta)+2;
 
+   glPushMatrix;
+   glScalef(1, 1, 1/128);
+   glTranslatef(-0.5*TileSize, -0.5*TileSize, 0);
    glEnableClientState(GL_VERTEX_ARRAY);
    xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+   glDisableClientState(GL_NORMAL_ARRAY);
 
-   xglTexCoordPointer(2, GL_FLOAT, 0, texPoints.List);
    glVertexPointer(3, GL_FLOAT, 0, vertices.List);
+   xglTexCoordPointer(2, GL_FLOAT, 0, texPoints.List);
+   FLastTriangleCount:=0;
 
-   for n:=0 to patchList.Count-1 do begin
-      patch:=TGLROAMPatch(patchList[n]);
+   for n:=0 to patchList.Count-1+rpIdxDelta do begin
+      if n<patchList.Count then begin
+         patch:=TGLROAMPatch(patchList[n]);
+         patch.Tesselate;
+      end;
 
-      texPoints.Count:=0;
-      vertexIndices.Count:=0;
-      vertices.Count:=0;
-      patch.Render(vertices, vertexIndices, texPoints);
-      vertices.Translate(patch.VertexOffset);
-      glLockArraysEXT(0, vertices.Count);
-      glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
-      glUnlockArraysEXT;
+      if n>=rpIdxDelta then begin
+         patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
 
-      FLastTriangleCount:=FLastTriangleCount+vertexIndices.Count div 3;
+         vertices.Count:=0;
+         texPoints.Count:=0;
+         vertexIndices.Count:=0;
+//         patch.Render(vertices, vertexIndices, texPoints);
+         patch.Render(vertices, vertexIndices, texPoints);
+
+//         glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
+
+         FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
+
+      end;
    end;
 
    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+   glPopMatrix;
 
    texPoints.Free;
    vertexIndices.Free;
@@ -314,61 +332,76 @@ begin
    prevRow.Free;
    patchList.Free;
 
-   // release all unused tiles
-{   for n:=FTiles.Count-1 downto 0 do
-      if THeightData(FTiles[n]).ObjectTag=nil then begin
-         THeightData(FTiles[n]).Release;
-         FTiles.Delete(n);
-      end;}
+   FLastTriangleCount:=FLastTriangleCount;// div 3;
 end;
 
-function TTerrainRenderer.RenderTile2(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
+// HashedTiled
+//
+function TTerrainRenderer.HashedTiled(const tilePos : TAffineVector) : THeightData;
 var
-   i, hash : Integer;
-   hd, tile : THeightData;
    xLeft, yTop : Integer;
-   patch : TGLROAMPatch;
-//   vertices : TAffineVectorList;
-//   vertexIndices : TIntegerList;
-//   texPoints : TTexPointList;
 begin
    xLeft:=Round(tilePos[0]/(TileSize)-0.5)*(TileSize);
    yTop:=Round(tilePos[1]/(TileSize)-0.5)*(TileSize);
+   Result:=HashedTiled(xLeft, yTop);
+end;
+
+// HashedTiled
+//
+function TTerrainRenderer.HashedTiled(const xLeft, yTop : Integer) : THeightData;
+var
+   i, hash : Integer;
+   hd : THeightData;
+begin
    // is the tile already in our list?
    hash:=( xLeft+(xLeft shr 8)+(xLeft shr 16)
           +yTop+(yTop shr 8)+(yTop shr 16)) and 255;
-   tile:=nil;
-   patch:=nil;
+   Result:=nil;
    with FTilesHash[hash] do begin
       for i:=0 to Count-1 do begin
          hd:=THeightData(List[i]);
          if (hd.XLeft=xLeft) and (hd.YTop=yTop) then begin
-            tile:=hd;
-            patch:=TGLROAMPatch(tile.ObjectTag);
+            Result:=hd;
             Break;
          end;
       end;
    end;
    // if not, request it
-   if not Assigned(tile) then begin
-      tile:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtByte);
-      tile.RegisterUse;
-      tile.OnDestroy:=OnTileDestroyed;
-      tile.DataType:=hdtSmallInt;
-      FTilesHash[hash].Add(tile);
+   if not Assigned(Result) then begin
+      Result:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtByte);
+      Result.RegisterUse;
+      Result.OnDestroy:=OnTileDestroyed;
+      Result.DataType:=hdtSmallInt;
+      FTilesHash[hash].Add(Result);
+   end;
+end;
+
+// RenderTile2
+//
+function TTerrainRenderer.RenderTile2(const tilePos, eyePos : TAffineVector; texFactor : Single) : TGLROAMPatch;
+var
+   tile : THeightData;
+   patch : TGLROAMPatch;
+   xLeft, yTop : Integer;
+begin
+   xLeft:=Round(tilePos[0]/(TileSize)-0.5)*(TileSize);
+   yTop:=Round(tilePos[1]/(TileSize)-0.5)*(TileSize);
+   tile:=HashedTiled(xLeft, yTop);
+   patch:=TGLROAMPatch(tile.ObjectTag);
+   if not Assigned(patch) then begin
       // spawn ROAM patch
       patch:=TGLROAMPatch.Create;
       tile.ObjectTag:=patch;
       patch.HeightData:=tile;
       patch.VertexScale:=XYZVector;
       patch.VertexOffset:=tilePos;
-      patch.TextureScale:=AffineVectorMake(texFactor, texFactor, texFactor);
+      patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
       patch.TextureOffset:=AffineVectorMake(xLeft*texFactor, 1-yTop*texFactor, 0);
-      patch.ComputeVariance(11);
+      patch.ComputeVariance(11, 175);
    end;
-   PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-xLeft-TileSize shr 1);
-   PAffineIntVector(@patch.ObserverPosition)[1]:=Round(eyePos[1]-yTop-TileSize shr 1);
-   PAffineIntVector(@patch.ObserverPosition)[2]:=Round(eyePos[2]);
+   PAffineIntVector(@patch.ObserverPosition)[0]:=Round(eyePos[0]-xLeft-(TileSize shr 1));
+   PAffineIntVector(@patch.ObserverPosition)[1]:=Round(eyePos[1]-yTop-(TileSize shr 1));
+   PAffineIntVector(@patch.ObserverPosition)[2]:=Round(eyePos[2])*128;
    patch.ResetTessellation;
    Result:=patch;
 end;
@@ -448,23 +481,22 @@ procedure TTerrainRenderer.RenderTileAsTriangleStrip(aTile : THeightData;
 var
    x, y, dx, ex : Integer;
    pTop, pBottom : TAffineVector;
-   bottomRow, topRow : GLHeightData.PByteArray;
+   bottomRow, topRow : PSmallIntArray;
+   raster : PSmallIntRaster;
 
    procedure IssueVertex(const n, v : TAffineVector);
    begin
-//      glNormal3fv(@n);
       xglTexCoord2f(v[0]*texFactor, -v[1]*texFactor);
       glVertex3fv(@v);
    end;
 
 begin
-   // to optimize : normals calculation is slooooowwww
-   // the cacheing takes care of it, but still...
+   raster:=aTile.SmallIntRaster;
    for y:=1 to aTile.Size-3 do begin
       pTop[1]:=leftTop[1]+y*scale[1];
       pBottom[1]:=leftTop[1]+(y+1)*scale[1];
-      bottomRow:=aTile.ByteRaster[y+1];
-      topRow:=aTile.ByteRaster[y];
+      bottomRow:=raster[y+1];
+      topRow:=raster[y];
       if (y and 1)=0 then begin
          x:=aTile.Size-2;
          ex:=0;
