@@ -12,6 +12,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>28/01/04 - SG - Added TGLODEStaticDummy. Fixed Element alignment code.
+                        Other minor fixes/changes.
     <li>13/11/03 - SG - Fixed bug with destroying geoms, manager now forces
                         registered objects to Deinitialize.
                         Fixed up some comments.
@@ -417,7 +419,9 @@ type
       FLocalMatrix : TMatrix;
       FRealignODE : Boolean;
       FInitialized : Boolean;
-      procedure AlignGeomToMatrix(Mat:TMatrix);
+      FDynamic : Boolean;
+      procedure AlignGeomElementToMatrix(Mat:TMatrix);
+      procedure AlignGeomTransformToMatrix(Mat:TMatrix);
       procedure SetDensity(const Value: TdReal);
       procedure SetMatrix(const Value: TMatrix);
       function GetMatrix: TMatrix;
@@ -560,6 +564,30 @@ type
       property Length : TdReal read GetLength write SetLength;
   end; //}
 
+  // TODEElementTriMesh
+  //
+  {: ODE tri-mesh implementation. }
+  {TODEElementTriMesh = class (TODEBaseElement)
+    private
+      FVertices : PdVector3Array;
+      FIndices : PdIntegerArray;
+      FGLBaseMesh : TGLBaseMesh;
+      procedure SetGLBaseMesh(const Value: TGLBaseMesh);
+    protected
+      procedure Initialize; override;
+      procedure Deinitialize; override;
+      function CalculateMass : TdMass; override;
+      procedure WriteToFiler(writer : TWriter); override;
+      procedure ReadFromFiler(reader : TReader); override;
+    public
+      destructor Destroy; override;
+      class function FriendlyName : String; override;
+      class function FriendlyDescription : String; override;
+      class function ItemCategory : String; override;
+    published
+      property GLBaseMesh : TGLBaseMesh read FGLBaseMesh write SetGLBaseMesh;
+  end;//}
+
   // TGLODEStaticObject
   //
   {: This object provides decendant classes for static ODE implementations
@@ -584,6 +612,34 @@ type
       procedure Initialize; override;
     public
       procedure NotifyChange(Sender:TObject); override;
+  end;
+  
+  // TGLODEStaticDummy
+  //
+  //: A static version of the TGLODEDummy.
+  TGLODEStaticDummy = class (TGLODEBaseObject)
+    private
+      FElements : TODEElements;
+      FColor : TGLColor;
+      procedure SetColor(const Value: TGLColor);
+    protected
+      procedure Initialize; override;
+      procedure Deinitialize; override;
+      procedure DefineProperties(Filer: TFiler); override;
+      procedure WriteElements(stream : TStream);
+      procedure ReadElements(stream : TStream);
+      procedure AlignElementsToMatrix(Mat:TMatrix);
+    public
+      constructor Create(AOwner:TComponent); override;
+      destructor Destroy; override;
+      procedure BuildList(var rci : TRenderContextInfo); override;
+      procedure StructureChanged; override;
+      procedure NotifyChange(Sender:TObject); override;
+
+      function AddNewElement(AChild:TODEElementClass):TODEBaseElement;
+    published
+      property Color : TGLColor read FColor write SetColor;
+      property Elements : TODEElements read FElements;
   end;
 
   // TGLODEJoints
@@ -777,6 +833,14 @@ implementation
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
 begin
   TGLODEManager(Data).Collision(o1,o2);
+end;
+
+// IsDynamic
+//
+function IsDynamic(Obj:TObject) : Boolean;
+begin
+  Result:=   (Obj is TGLODEDynamicObject)
+          or (Obj is TGLODEDynamicBehaviour);
 end;
 
 // GetBodyFromODEObject
@@ -2074,8 +2138,8 @@ var
   Mat : TMatrix;
 begin
   Mat:=IdentityHMGMatrix;
-  if Owner.Owner is TGLODEDummy then
-    Mat:=TGLODEDummy(Owner.Owner).AbsoluteMatrix;
+  if Owner.Owner is TGLODEBaseObject then
+    Mat:=TGLODEBaseObject(Owner.Owner).AbsoluteMatrix;
   if Owner.Owner is TGLODEDynamicBehaviour then
     Mat:=TGLODEDynamicBehaviour(Owner.Owner).AbsoluteMatrix;
   Result:=MatrixMultiply(Mat,FLocalMatrix);
@@ -2084,21 +2148,36 @@ end;
 // AbsolutePosition
 function TODEBaseElement.AbsolutePosition: TAffineVector;
 begin
-
+  Result:=AffineVectorMake(AbsoluteMatrix[3]);
 end;
 
-// AlignGeomToMatrix
+// AlignGeomElementToMatrix
 //
-procedure TODEBaseElement.AlignGeomToMatrix(Mat: TMatrix);
+procedure TODEBaseElement.AlignGeomElementToMatrix(Mat: TMatrix);
 var
   R : TdMatrix3;
 begin
   if not Assigned(FGeomElement) then exit;
-  R[0]:=Mat[0][0]; R[1]:=Mat[0][1]; R[2]:= Mat[0][2]; R[3]:= 0;
-  R[4]:=Mat[1][0]; R[5]:=Mat[1][1]; R[6]:= Mat[1][2]; R[7]:= 0;
-  R[8]:=Mat[2][0]; R[9]:=Mat[2][1]; R[10]:=Mat[2][2]; R[11]:=0;
-  dGeomSetPosition(Geom,Mat[3][0],Mat[3][1],Mat[3][2]);
-  dGeomSetRotation(Geom,R);
+  dGeomSetPosition(FGeomElement,Mat[3][0],Mat[3][1],Mat[3][2]);
+  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
+  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
+  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  dGeomSetRotation(FGeomElement,R);
+  FRealignODE:=False;
+end;
+
+// AlignGeomTransformToMatrix
+//
+procedure TODEBaseElement.AlignGeomTransformToMatrix(Mat: TMatrix);
+var
+  R : TdMatrix3;
+begin
+  if not Assigned(FGeomTransform) then exit;
+  dGeomSetPosition(FGeomTransform,Mat[3][0],Mat[3][1],Mat[3][2]);
+  R[0]:=Mat[0][0]; R[1]:=Mat[1][0]; R[2]:= Mat[2][0]; R[3]:= 0;
+  R[4]:=Mat[0][1]; R[5]:=Mat[1][1]; R[6]:= Mat[2][1]; R[7]:= 0;
+  R[8]:=Mat[0][2]; R[9]:=Mat[1][2]; R[10]:=Mat[2][2]; R[11]:=0;
+  dGeomSetRotation(FGeomTransform,R);
   FRealignODE:=False;
 end;
 
@@ -2122,6 +2201,7 @@ begin
   FUp.OnNotifyChange:=NotifyChange;
   FDensity:=1;
   FInitialized:=False;
+  FDynamic:=IsDynamic(Owner.Owner);
 end;
 
 // Destroy
@@ -2144,21 +2224,32 @@ var
 begin
   Manager:=nil;
   Body:=nil;
-  if Owner.Owner is TGLODEDummy then begin
-    Manager:=TGLODEDummy(Owner.Owner).Manager;
-    Body:=TGLODEDummy(Owner.Owner).Body;
+
+  if (Owner.Owner is TGLODEBaseObject) then
+    Manager:=TGLODEBaseObject(Owner.Owner).Manager;
+  if Owner.Owner is TGLODEBaseBehaviour then
+    Manager:=TGLODEBaseBehaviour(Owner.Owner).Manager;
+  if not Assigned(Manager) then exit;
+
+  if FDynamic then begin
+    if (Owner.Owner is TGLODEDummy) then
+      Body:=TGLODEDummy(Owner.Owner).Body;
+    if Owner.Owner is TGLODEDynamicBehaviour then
+      Body:=TGLODEDynamicBehaviour(Owner.Owner).Body;
+    if not Assigned(Body) then exit;
   end;
-  if Owner.Owner is TGLODEDynamicBehaviour then begin
-    Manager:=TGLODEDynamicBehaviour(Owner.Owner).Manager;
-    Body:=TGLODEDynamicBehaviour(Owner.Owner).Body;
-  end;
-  if not (Assigned(Manager) and Assigned(Body)) then exit;
 
   FGeomTransform:=dCreateGeomTransform(Manager.Space);
-  dGeomSetBody(FGeomTransform,Body);
+  if FDynamic then dGeomSetBody(FGeomTransform,Body);
   dGeomTransformSetCleanup(FGeomTransform,1);
   dGeomTransformSetGeom(FGeomTransform,FGeomElement);
   dGeomSetData(FGeomTransform,Owner.Owner);
+
+  if not FDynamic then begin
+    if Owner.Owner is TGLODEBaseObject then
+      AlignGeomTransformToMatrix(TGLODEBaseObject(Owner.Owner).AbsoluteMatrix);
+  end;
+
   FInitialized:=True;
 end;
 
@@ -2271,8 +2362,8 @@ end;
 //
 procedure TODEBaseElement.ODERebuild;
 begin
-  AlignGeomToMatrix(FLocalMatrix);
-  CalculateMass;
+  AlignGeomElementToMatrix(FLocalMatrix);
+  if FDynamic then CalculateMass;
 end;
 
 
@@ -2990,6 +3081,107 @@ end;
 
 
 // ------------------------------------------------------------------
+// TODEElementTriMesh
+// ------------------------------------------------------------------
+{
+// Create
+//
+destructor TODEElementTriMesh.Destroy;
+begin
+  inherited;
+end;
+
+// Initialize
+//
+procedure TODEElementTriMesh.Initialize;
+begin
+  if FInitialized then exit;
+  if not Assigned(FGLBaseMesh) then exit;
+
+  Assert(SizeOf(TdReal)=SizeOf(Single), 'Tri-mesh element is only available with Single precision ODE.');
+  FGeomElement:=CreateTriMeshFromBaseMesh(FGLBaseMesh, nil, FVertices, FIndices);
+  inherited;
+end;
+
+// Deinitialize
+//
+procedure TODEElementTriMesh.Deinitialize;
+begin
+  if not FInitialized then exit;
+  
+  if Assigned(FVertices) then FreeMem(FVertices);
+  if Assigned(FIndices) then FreeMem(FIndices);
+  
+  inherited;
+end;
+
+// WriteToFiler
+//
+procedure TODEElementTriMesh.WriteToFiler(writer : TWriter);
+begin
+  inherited;
+  with writer do begin
+    WriteInteger(0); // Archive version
+  end;
+end;
+
+// ReadFromFiler
+//
+procedure TODEElementTriMesh.ReadFromFiler(reader : TReader);
+begin
+  inherited;
+  with reader do begin
+    Assert(ReadInteger = 0); // Archive version
+  end;
+end;
+
+// FriendlyName
+//
+class function TODEElementTriMesh.FriendlyName : String;
+begin
+  Result:='Tri-Mesh';
+end;
+
+// FriendlyDescription
+//
+class function TODEElementTriMesh.FriendlyDescription : String;
+begin
+  Result:='The ODE tri-mesh element implementation';
+end;
+
+// ItemCategory
+//
+class function TODEElementTriMesh.ItemCategory : String;
+begin
+  Result:='Meshes';
+end;
+
+// CalculateMass
+//
+function TODEElementTriMesh.CalculateMass: TdMass;
+begin
+  if Assigned(FGLBaseMesh) then
+    dMassSetSphere(FMass,FDensity,FGLBaseMesh.BoundingSphereRadius)
+  else
+    dMassSetSphere(FMass,FDensity,0.5);
+  result:=inherited CalculateMass;
+end;
+
+// SetGLBaseMesh
+//
+procedure TODEElementTriMesh.SetGLBaseMesh(const Value: TGLBaseMesh);
+begin
+  if FGLBaseMesh<>Value then begin
+    FGLBaseMesh:=Value;
+    if FInitialized then begin
+      Deinitialize;
+      Initialize;
+    end;
+  end;
+end;
+//}
+
+// ------------------------------------------------------------------
 // TGLODEStaticObject
 // ------------------------------------------------------------------
 
@@ -3034,6 +3226,174 @@ procedure TGLODEPlane.NotifyChange(Sender: TObject);
 begin
   inherited;
   AlignODEPlane;
+end;
+
+
+// ------------------------------------------------------------------
+// TGLODEStaticDummy
+// ------------------------------------------------------------------
+
+// AddNewElement
+//
+function TGLODEStaticDummy.AddNewElement(AChild: TODEElementClass): TODEBaseElement;
+begin
+  Result:=nil;
+  if not Assigned(Manager) then exit;
+  Result:=AChild.Create(FElements);
+  FElements.Add(Result);
+  Result.Initialize;
+end;
+
+// AlignElementsToMatrix
+//
+procedure TGLODEStaticDummy.AlignElementsToMatrix(Mat:TMatrix);
+var
+  i : Integer;
+begin
+  if not FInitialized then exit;
+
+  for i:=0 to FElements.Count-1 do
+    TODEBaseElement(FElements[i]).AlignGeomTransformToMatrix(Mat);
+end;
+
+// BuildList
+//
+procedure TGLODEStaticDummy.BuildList(var rci: TRenderContextInfo);
+var
+  i : integer;
+begin
+  if not ((csDesigning in ComponentState) or (FVisibleAtRunTime)) then
+    exit;
+
+  inherited;
+
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+  glDisable(GL_LIGHTING);
+  glEnable(GL_LINE_SMOOTH);
+
+  // Line stipple (why so slow?)
+  //glEnable(GL_LINE_STIPPLE);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //glLineStipple(1, $CCCC);
+
+  glLineWidth(1);
+  rci.GLStates.ResetGLMaterialColors;
+  glColorMaterial(GL_FRONT, GL_EMISSION);
+  glEnable(GL_COLOR_MATERIAL);
+  glColor4fv(FColor.AsAddress);
+
+  for i:=0 to FElements.Count-1 do begin
+    TODEBaseElement(FElements.Items[i]).BuildList(rci);
+  end;
+
+  glPopAttrib;
+end;
+
+// Create
+//
+constructor TGLODEStaticDummy.Create(AOwner: TComponent);
+begin
+  inherited;
+  FElements:=TODEElements.Create(Self);
+  FColor:=TGLColor.Create(self);
+end;
+
+// Destroy
+//
+destructor TGLODEStaticDummy.Destroy;
+begin
+  Deinitialize;
+  FElements.Free;
+  FColor.Free;
+  inherited;
+end;
+
+// Initialize
+//
+procedure TGLODEStaticDummy.Initialize;
+begin
+  if (not Assigned(Manager)) or (FInitialized) then
+    exit;
+
+  FElements.Initialize;
+  Manager.RegisterObject(self);
+
+  inherited;
+end;
+
+// Deinitialize
+//
+procedure TGLODEStaticDummy.Deinitialize;
+begin
+  if not FInitialized then exit;
+  FElements.Deinitialize;
+  if Assigned(FManager) then
+    FManager.UnregisterObject(self);
+
+  inherited;
+end;
+
+// DefineProperties
+//
+procedure TGLODEStaticDummy.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineBinaryProperty('ODEElementsData',
+                             ReadElements, WriteElements,
+                             (Assigned(FElements) and (FElements.Count>0)));
+end;
+
+// WriteElements
+//
+procedure TGLODEStaticDummy.WriteElements(stream : TStream);
+var
+  writer : TWriter;
+begin
+  writer:=TWriter.Create(stream, 16384);
+  try
+    Elements.WriteToFiler(writer);
+  finally
+    writer.Free;
+  end;
+end;
+
+// ReadElements
+//
+procedure TGLODEStaticDummy.ReadElements(stream : TStream);
+var
+  reader : TReader;
+begin
+  reader:=TReader.Create(stream, 16384);
+  try
+    Elements.ReadFromFiler(reader);
+  finally
+    reader.Free;
+  end;
+end;
+
+// StructureChanged
+//
+procedure TGLODEStaticDummy.StructureChanged;
+begin
+  AlignElementsToMatrix(AbsoluteMatrix);
+  inherited;
+end;
+
+// NotifyChange
+//
+procedure TGLODEStaticDummy.NotifyChange(Sender:TObject);
+begin
+  AlignElementsToMatrix(AbsoluteMatrix);
+  inherited;
+end;
+
+// SetColor
+//
+procedure TGLODEStaticDummy.SetColor(const Value: TGLColor);
+begin
+  FColor.Assign(Value);
+  StructureChanged;
 end;
 
 
