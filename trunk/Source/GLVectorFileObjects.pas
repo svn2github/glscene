@@ -3,7 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
-      <li>22/10/02 - EG - Added actor options, fixed skeleton normals transform (thx Marcu)
+      <li>22/10/02 - EG - Added actor options, fixed skeleton normals transform (thx Marcus)
       <li>21/10/02 - EG - Read support for .GTS (GNU Triangulated Surface library) 
       <li>18/10/02 - EG - FindExtByIndex (Adem)
       <li>17/10/02 - EG - TGLSTLVectorFile moved to new GLFileSTL unit
@@ -5693,12 +5693,13 @@ end;
 //
 procedure TGLGTSVectorFile.LoadFromStream(aStream : TStream);
 var
-   i, nv, ne, nf, k, p, ei : Integer;
+   i, nv, ne, nf, k, ei : Integer;
    sl, tl : TStringList;
    mesh : TMeshObject;
    fg : TFGVertexIndexList;
    buf : String;
    vertIndices : array [0..5] of Integer;
+   pEdge, pTri, p : PChar;
 begin
    sl:=TStringList.Create;
    tl:=TStringList.Create;
@@ -5707,35 +5708,34 @@ begin
       mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Mode:=momFaceGroups;
       if sl.Count>0 then begin
-         tl.CommaText:=sl[0];
-         if tl.Count<3 then Exit;
-         nv:=StrToIntDef(tl[0], 0);
-         ne:=StrToIntDef(tl[1], 0);
-         nf:=StrToIntDef(tl[2], 0);
-         if (nv or nf)=0 then Exit;
+         p:=PChar(sl[0]);
+         nv:=ParseInteger(p);
+         ne:=ParseInteger(p);
+         nf:=ParseInteger(p);
+         if (nv or nf or ne)=0 then Exit;
          for i:=1 to nv do begin
             tl.CommaText:=sl[i];
             mesh.Vertices.Add(StrToFloatDef(tl[0]), StrToFloatDef(tl[1]), StrToFloatDef(tl[2]))
          end;
          fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
          for i:=1+nv+ne to nv+ne+nf do begin
-            tl.CommaText:=sl[i];
+            pTri:=PChar(sl[i]);
             for k:=0 to 2 do begin
-               ei:=StrToInt(tl[k]);
+               ei:=ParseInteger(pTri);
                buf:=sl[nv+ei];
-               p:=Pos(' ', buf);
-               vertIndices[k*2+0]:=StrToInt(Copy(buf, 1, p-1))-1;
-               vertIndices[k*2+1]:=StrToInt(Copy(buf, p+1, MaxInt))-1;
+               pEdge:=PChar(sl[nv+ei]);
+               vertIndices[k*2+0]:=ParseInteger(pEdge);
+               vertIndices[k*2+1]:=ParseInteger(pEdge);
             end;
             if (vertIndices[0]=vertIndices[2]) or (vertIndices[0]=vertIndices[3]) then
-               fg.VertexIndices.Add(vertIndices[0])
-            else fg.VertexIndices.Add(vertIndices[1]);
+               fg.VertexIndices.Add(vertIndices[0]-1)
+            else fg.VertexIndices.Add(vertIndices[1]-1);
             if (vertIndices[2]=vertIndices[4]) or (vertIndices[2]=vertIndices[5]) then
-               fg.VertexIndices.Add(vertIndices[2])
-            else fg.VertexIndices.Add(vertIndices[3]);
+               fg.VertexIndices.Add(vertIndices[2]-1)
+            else fg.VertexIndices.Add(vertIndices[3]-1);
             if (vertIndices[4]=vertIndices[0]) or (vertIndices[4]=vertIndices[1]) then
-               fg.VertexIndices.Add(vertIndices[4])
-            else fg.VertexIndices.Add(vertIndices[5]);
+               fg.VertexIndices.Add(vertIndices[4]-1)
+            else fg.VertexIndices.Add(vertIndices[5]-1);
          end;
          mesh.BuildNormals(fg.VertexIndices, momTriangles);
       end;
