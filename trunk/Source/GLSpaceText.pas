@@ -2,7 +2,8 @@
 {: Win32 specific Context.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>30/01/02 - EG - Text Alignment (Sören Mühlbauer)
+      <li>30/01/02 - EG - Text Alignment (Sören Mühlbauer),
+                          TFontManager now GLContext compliant (RenderToBitmap ok!) 
       <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
 	   <li>12/12/01 - EG - Creation (split from GLScene.pas)
 	</ul></font>
@@ -14,7 +15,7 @@ interface
 {$i GLScene.inc}
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
-uses Windows, Classes, GLScene, Graphics, OpenGL12, GLTexture;
+uses Windows, Classes, GLScene, Graphics, OpenGL12, GLTexture, GLContext;
 
 type
 
@@ -54,6 +55,19 @@ type
          property Vert: TGLTextVertAdjust read FVert write SetVert default vaBaseLine;
    end;
 
+   // holds an entry in the font manager list (used in TSpaceText)
+   PFontEntry        = ^TFontEntry;
+   TFontEntry        = record
+                         Name      : String;
+                         FVirtualHandle : TGLVirtualHandle;
+                         Styles    : TFontStyles;
+                         Extrusion : Single;
+                         RefCount  : Integer;
+                         allowedDeviation : Single;
+                         firstChar, lastChar : Integer;
+                         glyphMetrics : array [0..255] of TGlyphMetricsFloat;
+                       end;
+
    // TSpaceText
    //
    {: Renders a text in 3D. }
@@ -81,7 +95,7 @@ type
 
 		protected
 			{ Protected Declarations }
-         BaseList    : TGLuint;
+         FTextFontEntry : PFontEntry;
          FontChanged : Boolean;
          procedure DestroyHandles; override;
          procedure OnFontChange(sender : TObject);
@@ -120,34 +134,31 @@ type
          property Adjust : TGLTextAdjust read FAdjust write SetAdjust;
     end;
 
-   // holds an entry in the font manager list (used in TSpaceText)
-   PFontEntry        = ^TFontEntry;
-   TFontEntry        = record
-                         Name      : String;
-                         Styles    : TFontStyles;
-                         Extrusion : Single;
-                         Base      : TGLuint;
-                         RefCount  : Integer;
-                         allowedDeviation : Single;
-                         firstChar, lastChar : Integer;
-                         glyphMetrics : array [0..255] of TGlyphMetricsFloat;
-                       end;
-
    // TFontManager
    //
    {: Manages a list of fonts for which display lists were created. }
    TFontManager = class(TList)
+	   private
+			{ Private Declarations }
+         FCurrentBase : Integer;
+
+	   protected
+			{ Protected Declarations }
+         procedure VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Integer);
+         procedure VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+
 	   public
 			{ Public Declarations }
+         constructor Create;
          destructor Destroy; override;
+         
          function FindFont(AName: String; FStyles: TFontStyles; FExtrusion: Single;
                            FAllowedDeviation : Single;
                            FFirstChar, FLastChar : Integer) : PFontEntry;
-         function FindFontByList(AList: TGLuint): PFontEntry;
          function GetFontBase(AName: String; FStyles: TFontStyles; FExtrusion: Single;
                               allowedDeviation : Single;
-                              firstChar, lastChar : Integer) : TGLuint;
-         procedure Release(List: TGLuint);
+                              firstChar, lastChar : Integer) : PFontEntry;
+         procedure Release(entry : PFontEntry);
    end;
 
 function FontManager : TFontManager;
@@ -269,19 +280,17 @@ var
    i, firstChar, lastChar : Integer;
    buf : String;
    gmf : TGlyphMetricsFloat;
-   fontEntry : PFontEntry;
 begin
    width:=0;
    maxUnder:=0;
    maxHeight:=0;
-   fontEntry:=FontManager.FindFontByList(BaseList);
-   if Assigned(fontEntry) then begin
+   if Assigned(FTextFontEntry) then begin
       GetFirstAndLastChar(firstChar, lastChar);
       if str='' then
          buf:=FText
       else buf:=str;
       for i:=1 to Length(buf) do begin
-         gmf:=fontEntry.GlyphMetrics[Integer(buf[i])-firstChar];
+         gmf:=FTextFontEntry.GlyphMetrics[Integer(buf[i])-firstChar];
          width:=width+gmf.gmfCellIncX;
          if gmf.gmfptGlyphOrigin.y>maxHeight then
             maxHeight:=gmf.gmfptGlyphOrigin.y;
@@ -328,17 +337,17 @@ begin
    if Length(FText)>0 then begin
       glPushMatrix;
 
-      if FTextHeight<>0 then begin
-         charScale:=FTextHeight/MaxHeight;
-         glScalef(CharScale,CharScale,1);
-      end;
       if FAspectRatio<>0 then
          glScalef(FAspectRatio, 1, 1);
       if FOblique<>0 then
          glRotatef(FOblique, 0, 0, 1);
-         
-      if (FAdjust.Horz<>haLeft) or (FAdjust.Vert<>vaBaseLine) then begin
+
+      if (FAdjust.Horz<>haLeft) or (FAdjust.Vert<>vaBaseLine) or (FTextHeight<>0) then begin
          TextMetrics('', textL, maxHeight, maxUnder);
+         if FTextHeight<>0 then begin
+            charScale:=FTextHeight/MaxHeight;
+            glScalef(CharScale,CharScale,1);
+         end;
          case FAdjust.Horz of
             haLeft : ; // nothing
             haCenter : glTranslatef(-textL*0.5, 0, 0);
@@ -354,10 +363,10 @@ begin
 
       glPushAttrib(GL_POLYGON_BIT);
       case FCharacterRange of
-        stcrAlphaNum: glListBase(BaseList - 32);
-        stcrNumbers: glListBase(BaseList - Cardinal('0'));
+        stcrAlphaNum : glListBase(FTextFontEntry.FVirtualHandle.Handle - 32);
+        stcrNumbers :  glListBase(FTextFontEntry.FVirtualHandle.Handle - Integer('0'));
       else
-        glListBase(BaseList);
+        glListBase(FTextFontEntry.FVirtualHandle.Handle);
       end;
       glCallLists(Length(FText), GL_UNSIGNED_BYTE, PChar(FText));
       glPopAttrib;
@@ -401,13 +410,15 @@ procedure TSpaceText.DoRender(var rci : TRenderContextInfo;
 var
 	firstChar, lastChar : Integer;
 begin
-	if FontChanged and (Length(FText)>0) then with FFont do begin
-		FontManager.Release(BaseList);
-      GetFirstAndLastChar(firstChar, lastChar);
-		BaseList:=FontManager.GetFontBase(Name, Style, FExtrusion,
-													 FAllowedDeviation, firstChar, lastChar);
-		FontChanged:=False;
-	end;
+   if FText<>'' then begin
+   	if FontChanged or (FTextFontEntry.FVirtualHandle.Handle=0) then with FFont do begin
+	   	FontManager.Release(FTextFontEntry);
+         GetFirstAndLastChar(firstChar, lastChar);
+   		FTextFontEntry:=FontManager.GetFontBase(Name, Style, FExtrusion,
+	   					      							 FAllowedDeviation, firstChar, lastChar);
+		   FontChanged:=False;
+   	end;
+   end;
 	inherited;
 end;
 
@@ -510,18 +521,39 @@ end;
 // ------------------ TFontManager ------------------
 // ------------------
 
+// Create
+//
+constructor TFontManager.Create;
+begin
+   inherited;
+end;
+
 // Destroy
 //
 destructor TFontManager.Destroy;
 var
    i : Integer;
 begin
-   for I:=0 to Count-1 do begin
-      if TFontEntry(Items[I]^).Base<>0 then
-         glDeleteLists(TFontEntry(Items[I]^).Base, 255);
-      FreeMem(Items[I], SizeOf(TFontEntry));
+   for i:=0 to Count-1 do begin
+      TFontEntry(Items[i]^).FVirtualHandle.Free;
+      FreeMem(Items[i], SizeOf(TFontEntry));
    end;
    inherited Destroy;
+end;
+
+// VirtualHandleAlloc
+//
+procedure TFontManager.VirtualHandleAlloc(sender : TGLVirtualHandle; var handle : Integer);
+begin
+   handle:=FCurrentBase;
+end;
+
+// VirtualHandleDestroy
+//
+procedure TFontManager.VirtualHandleDestroy(sender : TGLVirtualHandle; var handle : Integer);
+begin
+   if handle<>0 then
+      glDeleteLists(handle, sender.Tag);
 end;
 
 // FindFond
@@ -544,49 +576,41 @@ begin
 		end;
 end;
 
-// FindFontByList
-//
-function TFontManager.FindFontByList(AList: TGLuint): PFontEntry;
-var
-   i : Integer;
-begin
-   Result:=nil;
-   // try to find an entry with the required attributes
-   for I :=0 to Count-1 do
-      with TFontEntry(Items[I]^) do
-         if Base = AList then begin // entry found
-            Result:=Items[I];
-            Break;
-         end;
-end;
-
 // GetFontBase
 //
 function TFontManager.GetFontBase(AName: String; FStyles: TFontStyles; FExtrusion: Single;
 											 allowedDeviation : Single;
-											 firstChar, lastChar : Integer) : TGLuint;
+											 firstChar, lastChar : Integer) : PFontEntry;
 var
    NewEntry : PFontEntry;
 	MemDC    : HDC;
 	AFont    : TFont;
+   nbLists  : Integer;
 begin
    NewEntry:=FindFont(AName, FStyles, FExtrusion, allowedDeviation, firstChar, lastChar);
    if Assigned(NewEntry) then begin
 	   Inc(NewEntry^.RefCount);
-      Result:=NewEntry^.Base;
-      Exit;
-   end;
-   // no entry found, so create one
-   New(NewEntry);
-   try
-      NewEntry^.Name:=AName;
-      NewEntry^.Styles:=FStyles;
-      NewEntry^.Extrusion:=FExtrusion;
-	   NewEntry^.RefCount:=1;
-	   NewEntry^.firstChar:=firstChar;
-	   NewEntry^.lastChar:=lastChar;
-	   NewEntry^.allowedDeviation:=allowedDeviation;
-
+      Result:=NewEntry;
+   end else Result:=nil;
+   if Result=nil then begin
+      // no entry found, or entry was purged
+      nbLists:=lastChar-firstChar+1;
+      if not Assigned(newEntry) then begin
+         // no entry found, so create one
+         New(NewEntry);
+         NewEntry^.Name:=AName;
+         NewEntry^.FVirtualHandle:=TGLVirtualHandle.Create;
+         NewEntry^.FVirtualHandle.OnAllocate:=VirtualHandleAlloc;
+         NewEntry^.FVirtualHandle.OnDestroy:=VirtualHandleDestroy;
+         NewEntry^.FVirtualHandle.Tag:=nbLists;
+         NewEntry^.Styles:=FStyles;
+         NewEntry^.Extrusion:=FExtrusion;
+         NewEntry^.RefCount:=1;
+         NewEntry^.firstChar:=firstChar;
+         NewEntry^.lastChar:=lastChar;
+         NewEntry^.allowedDeviation:=allowedDeviation;
+         Add(NewEntry);
+      end;
       // create a font to be used while display list creation
       AFont:=TFont.Create;
       MemDC:=CreateCompatibleDC(0);
@@ -594,39 +618,33 @@ begin
          AFont.Name:=AName;
          AFont.Style:=FStyles;
          SelectObject(MemDC, AFont.Handle);
-         NewEntry^.Base:=glGenLists(255);
-		   if NewEntry^.Base = 0 then
+         FCurrentBase:=glGenLists(nbLists);
+		   if FCurrentBase = 0 then
 			   raise Exception.Create('FontManager: no more display lists available');
-		   if not OpenGL12.wglUseFontOutlines(MemDC, firstChar, lastChar-firstChar+1,
-                                            NewEntry^.Base, allowedDeviation,
+         NewEntry.FVirtualHandle.AllocateHandle;
+		   if not OpenGL12.wglUseFontOutlines(MemDC, firstChar, nbLists,
+                                            FCurrentBase, allowedDeviation,
                                             FExtrusion, WGL_FONT_POLYGONS,
                                             @NewEntry^.GlyphMetrics) then
-		  	raise Exception.Create('FontManager: font creation failed');
+   		  	raise Exception.Create('FontManager: font creation failed');
       finally
 		   AFont.Free;
          DeleteDC(MemDC);
       end;
-      Add(NewEntry);
-      Result:=NewEntry^.Base;
-   except
-      if NewEntry^.Base<>0 then glDeleteLists(NewEntry^.Base, 255);
-      Dispose(NewEntry);
-      raise;
+      Result:=NewEntry;
    end;
 end;
 
 // Release
 //
-procedure TFontManager.Release(List: TGLuint);
-var
-   entry : PFontEntry;
+procedure TFontManager.Release(entry : PFontEntry);
 begin
-  entry:=FindFontByList(List);
    if Assigned(entry) then begin
       Dec(entry^.RefCount);
-      if entry^.RefCount = 0 then begin
-         glDeleteLists(Entry^.Base, 255);
-         Remove(Entry);
+      if entry^.RefCount=0 then begin
+         entry.FVirtualHandle.Free;
+         Remove(entry);
+         Dispose(entry)
       end;
    end;
 end;
