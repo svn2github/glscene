@@ -292,31 +292,30 @@ begin
       Caption:=cGLSceneEditor+' : '+FScene.Name;
    end else Caption:=cGLSceneEditor;
    TreeChange(Self, nil);
-   if Assigned(FScene) then
-   begin
-         Tree.Enabled:=true;
-         BehavioursListView.Enabled:=true;
-         EffectsListView.Enabled:=true;
+   if Assigned(FScene) then begin
+      Tree.Enabled:=true;
+      BehavioursListView.Enabled:=true;
+      EffectsListView.Enabled:=true;
+      ACLoadScene.Enabled:=True;
+      ACSaveScene.Enabled:=True;
       FSelectedItems:=SCENE_SELECTED;
-      EnableAndDisableActions();
-   end
-   else begin
-         Tree.Enabled:=false;
-         BehavioursListView.Enabled:=false;
-         EffectsListView.Enabled:=false;
-         ACLoadScene.Enabled:=False;
-         ACSaveScene.Enabled:=False;
-         ACAddCamera.Enabled:=False;
-         ACAddObject.Enabled:=False;
-         ACAddBehaviour.Enabled:=False;
-         ACAddEffect.Enabled:=False;
-         ACDeleteObject.Enabled:=False;
-         ACMoveUp.Enabled:=False;
-         ACMoveDown.Enabled:=False;
-         ACCut.Enabled:=False;
-         ACCopy.Enabled:=False;
-         ACPaste.Enabled:=False;
-
+      EnableAndDisableActions;
+   end else begin
+      Tree.Enabled:=False;
+      BehavioursListView.Enabled:=False;
+      EffectsListView.Enabled:=False;
+      ACLoadScene.Enabled:=False;
+      ACSaveScene.Enabled:=False;
+      ACAddCamera.Enabled:=False;
+      ACAddObject.Enabled:=False;
+      ACAddBehaviour.Enabled:=False;
+      ACAddEffect.Enabled:=False;
+      ACDeleteObject.Enabled:=False;
+      ACMoveUp.Enabled:=False;
+      ACMoveDown.Enabled:=False;
+      ACCut.Enabled:=False;
+      ACCopy.Enabled:=False;
+      ACPaste.Enabled:=False;
    end;
    ShowBehavioursAndEffects(nil);
 end;
