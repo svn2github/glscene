@@ -5,6 +5,7 @@
       <li>24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at http://www.sulaco.co.za (http://www.sulaco.co.za/opengl/windows.zip)
       <li>01/06/02 - JAJ - After not having received Jan Horn's blessing, the system have been revised all parts have been rewritten.
       <li>01/01/03 - JAJ - Updated so that focused controls pass focus on hide...
+      <li>05/01/03 - JAJ - Cleaned up the DesignTime AccessViolations...
 	</ul></font>
 }
 
@@ -40,8 +41,6 @@ type
 
     procedure SetGUIRedraw(value : Boolean);
   protected
-    Procedure BlockRender;
-    Procedure UnBlockRender;
     Procedure RenderHeader(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
     Procedure RenderFooter(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
@@ -56,7 +55,11 @@ type
     procedure SetNoZWrite(const val : Boolean);
 
   public
+    Procedure BlockRender;
+    Procedure UnBlockRender;
+
     Constructor Create(AOwner : TComponent); override;
+    Destructor  Destroy; override;
 
     procedure NotifyChange(Sender : TObject); override;
     Procedure DoChanges; virtual;
@@ -128,6 +131,7 @@ type
     Function  GetDefaultColor : TColor;
     procedure SetDefaultColor(value : TColor);
     Procedure SetBitmapFont(NewFont : TGLCustomBitmapFont);
+    Function  GetBitmapFont : TGLCustomBitmapFont;
     Procedure WriteTextAt(Const X,Y : TGLFloat; Const Data : String; const Color : TColorVector); overload;
     Procedure WriteTextAt(Const X1,Y1,X2,Y2 : TGLFloat; Const Data : String; const Color : TColorVector); overload;
     Function  GetFontHeight : Integer;
@@ -136,7 +140,7 @@ type
     Destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   published
-    property BitmapFont : TGLCustomBitmapFont read FBitmapFont write SetBitmapFont;
+    property BitmapFont : TGLCustomBitmapFont read GetBitmapFont write SetBitmapFont;
     property DefaultColor : TColor read GetDefaultColor write SetDefaultColor;
   end;
 
@@ -158,6 +162,7 @@ type
     FOnKeyUp          : TKeyEvent;
     FOnKeyPress       : TKeyPressEvent;
     FShiftState       : TShiftState;
+    FFocusedColor     : TColorVector;
   protected
     Procedure InternalKeyPress(var Key: Char); virtual;
     Procedure InternalKeyDown(var Key: Word; Shift: TShiftState); virtual;
@@ -165,6 +170,8 @@ type
     Procedure SetFocused(Value :Boolean); virtual;
     Function  GetRootControl : TGLBaseControl;
     procedure NotifyHide; override;
+    Function  GetFocusedColor : TColor;
+    Procedure SetFocusedColor(const Val : TColor);
   public
     Procedure SetFocus;
     Procedure PrevControl;
@@ -175,6 +182,7 @@ type
   published
     property  RootControl    : TGLBaseControl   read GetRootControl;
     property  Focused        : Boolean          read FFocused    write SetFocused;
+    property  FocusedColor   : TColor           read GetFocusedColor write SetFocusedColor;
     property  OnKeyDown      : TKeyEvent        read FOnKeyDown  write FOnKeyDown;
     property  OnKeyUp        : TKeyEvent        read FOnKeyUp    write FOnKeyUp;
     property  OnKeyPress     : TKeyPressEvent   read FOnKeyPress write FOnKeyPress;
@@ -303,11 +311,6 @@ type
   published
   end;
 
-Const
-  NormalColor : TColorVector = (1,    1,    1,    1);
-  FocusedColor : TColorVector = (1,        1,        0,        1);
-
-
 implementation
 
 uses GLObjects;
@@ -400,8 +403,7 @@ Begin
         FGuiLayout.AddGuiComponent(Self);
       End;
     End;
-    FReBuildGui := True;
-    GUIRedraw := True;
+    NotifyChange(Self);
   End;
 End;
 
@@ -415,9 +417,8 @@ Begin
     If Assigned(FGuiLayout) then
     Begin
       FGuiComponent := FGuiLayout.GuiComponents.FindItem(FGuiLayoutName);
-      FReBuildGui := True;
-      GUIRedraw := True;
     End;
+    NotifyChange(Self);
   End;
 End;
 
@@ -489,6 +490,13 @@ Begin
   FWidth      := 50;
   FHeight     := 50;
   FReBuildGui := True;
+End;
+
+Destructor  TGLBaseComponent.Destroy;
+
+Begin
+  GuiLayout := Nil;
+  inherited;
 End;
 
 procedure TGLBaseComponent.NotifyChange(Sender : TObject);
@@ -835,6 +843,19 @@ Begin
   End;
 End;
 
+Function  TGLFocusControl.GetFocusedColor : TColor;
+
+Begin
+  Result := ConvertColorVector(FFocusedColor);
+End;
+
+Procedure TGLFocusControl.SetFocusedColor(const Val : TColor);
+
+Begin
+  FFocusedColor := ConvertWinColor(val);
+  GUIRedraw := True;
+End;
+
 Procedure TGLFocusControl.SetFocus;
 
 Begin
@@ -846,12 +867,29 @@ Procedure TGLFocusControl.NextControl;
 Var
   Host : TGLBaseComponent;
   Index : Integer;
+  IndexedChild : TGLBaseComponent;
+  RestartedLoop : Boolean;
 
 Begin
+  RestartedLoop := False;
   If Parent is TGLBaseComponent then
   Begin
     Host := Parent as TGLBaseComponent;
     Index := Host.IndexOfChild(Self);
+    While not Host.RecursiveVisible do
+    Begin
+      If Host.Parent is TGLBaseComponent then
+      Begin
+        IndexedChild := Host;
+        Host := Host.Parent as TGLBaseComponent;
+        Index := Host.IndexOfChild(IndexedChild);
+      End else
+      Begin
+        RootControl.FocusedControl := Nil;
+        Exit;
+      End;
+    End;
+
     While true do
     Begin
       If Index > 0 then
@@ -869,8 +907,12 @@ Begin
         Begin
           If Host.Children[Index] is TGLBaseComponent then
           Begin
-            Host := Host.Children[Index] as TGLBaseComponent;
-            Index := Host.Count;
+            IndexedChild := Host.Children[Index] as TGLBaseComponent;
+            If IndexedChild.RecursiveVisible then
+            Begin
+              Host := IndexedChild;
+              Index := Host.Count;
+            End;
           End;
         End;
       End else
@@ -881,7 +923,13 @@ Begin
           Host := Host.Parent as TGLBaseComponent;
         End else
         Begin
+          If RestartedLoop then
+          Begin
+            SetFocus;
+            Exit;
+          End;
           Index := Host.Count;
+          RestartedLoop := True;
         End;
       End;
     End;
@@ -893,12 +941,30 @@ Procedure TGLFocusControl.PrevControl;
 Var
   Host : TGLBaseComponent;
   Index : Integer;
+  IndexedChild : TGLBaseComponent;
+  CurrentHostStartIndex : Integer;
+  RestartedLoop : Boolean;
 
 Begin
+  RestartedLoop := False;
   If Parent is TGLBaseComponent then
   Begin
     Host := Parent as TGLBaseComponent;
     Index := Host.IndexOfChild(Self);
+    While not Host.RecursiveVisible do
+    Begin
+      If Host.Parent is TGLBaseComponent then
+      Begin
+        IndexedChild := Host;
+        Host := Host.Parent as TGLBaseComponent;
+        Index := Host.IndexOfChild(IndexedChild);
+      End else
+      Begin
+        RootControl.FocusedControl := Nil;
+        Exit;
+      End;
+    End;
+
     While true do
     Begin
       Inc(Index);
@@ -916,18 +982,29 @@ Begin
         End;
         If Host.Children[Index] is TGLBaseComponent then
         Begin
-          Host := Host.Children[Index] as TGLBaseComponent;
-          Index := -1;
+          IndexedChild := Host.Children[Index] as TGLBaseComponent;
+          If IndexedChild.RecursiveVisible then
+          Begin
+            Host := IndexedChild;
+            Index := -1;
+          End;
         End;
       End else
       Begin
         If Host.Parent is TGLBaseComponent then
         Begin
-          Index := Host.Parent.IndexOfChild(Host);
+          IndexedChild := Host;
           Host := Host.Parent as TGLBaseComponent;
+          Index := Host.IndexOfChild(IndexedChild);
         End else
         Begin
+          If RestartedLoop then
+          Begin
+            SetFocus;
+            Exit;
+          End;
           Index := -1;
+          RestartedLoop := True;
         End;
       End;
     End;
@@ -1017,6 +1094,18 @@ Begin
    end;
 End;
 
+Function  TGLBaseFontControl.GetBitmapFont : TGLCustomBitmapFont;
+
+Begin
+  Result := Nil;
+  if Assigned(FBitmapFont) then
+     Result := FBitmapFont
+  else
+  if Assigned(GuiLayout) then
+  if Assigned(GuiLayout.BitmapFont) then
+     Result := GuiLayout.BitmapFont;
+End;
+
 Function  TGLBaseFontControl.GetDefaultColor : TColor;
 
 Begin
@@ -1027,6 +1116,7 @@ procedure TGLBaseFontControl.SetDefaultColor(value : TColor);
 
 Begin
   FDefaultColor := ConvertWinColor(value);
+  GUIRedraw := True;
 End;
 
 procedure TGLBaseFontControl.Notification(AComponent: TComponent; Operation: TOperation);
@@ -1054,13 +1144,13 @@ Procedure TGLBaseFontControl.WriteTextAt(Const X,Y : TGLFloat; Const Data : Stri
 Var
   Position : TVector;
 Begin
-  If Assigned(FBitmapFont) then
+  If Assigned(BitmapFont) then
   Begin
     Position[0] := Round(X);
     Position[1] := Round(Y);
     Position[2] := 0;
     Position[3] := 0;
-    FBitmapFont.RenderString(Data,taLeftJustify,tlTop,Color, @Position);
+    BitmapFont.RenderString(Data,taLeftJustify,tlTop,Color, @Position);
   End;
 End;
 
@@ -1068,13 +1158,13 @@ Procedure TGLBaseFontControl.WriteTextAt(Const X1,Y1,X2,Y2 : TGLFloat; Const Dat
 var
   Position : TVector;
 Begin
-  If Assigned(FBitmapFont) then
+  If Assigned(BitmapFont) then
   Begin
-    Position[0] := Round(((X2+X1-FBitmapFont.CalcStringWidth(Data))*0.5));
+    Position[0] := Round(((X2+X1-BitmapFont.CalcStringWidth(Data))*0.5));
     Position[1] := Round(-((Y2+Y1-GetFontHeight)*0.5));
     Position[2] := 0;
     Position[3] := 0;
-    FBitmapFont.RenderString(Data,taLeftJustify,tlTop,Color,@Position);
+    BitmapFont.RenderString(Data,taLeftJustify,tlTop,Color,@Position);
   End;
 End;
 
@@ -1082,11 +1172,11 @@ End;
 Function  TGLBaseFontControl.GetFontHeight : Integer;
 
 Begin
-  If Assigned(FBitmapFont) then
-    If FBitmapFont is TGLWindowsBitmapFont then
-      Result := Abs((FBitmapFont as TGLWindowsBitmapFont).Font.Height)
+  If Assigned(BitmapFont) then
+    If BitmapFont is TGLWindowsBitmapFont then
+      Result := Abs((BitmapFont as TGLWindowsBitmapFont).Font.Height)
     else
-      Result := FBitmapFont.CharHeight
+      Result := BitmapFont.CharHeight
   else Result := -1;
 End;
 
@@ -1176,6 +1266,7 @@ procedure TGLForm.SetTitleColor(value : TColor);
 
 Begin
   FTitleColor := ConvertWinColor(value);
+  GUIRedraw := True;
 End;
 
 Constructor TGLForm.Create(AOwner : TComponent);
@@ -1248,8 +1339,7 @@ Begin
   If NewChecked <> FChecked then
   begin
     FChecked := NewChecked;
-    FReBuildGui := True;
-    GUIRedraw := True;
+    NotifyChange(Self);
     if Assigned(FOnChange) then FOnChange(Self);
   End;
 End;
@@ -1321,8 +1411,7 @@ Begin
     FPressed := NewPressed;
     If FPressed then
     if Assigned(FOnButtonClick) then FOnButtonClick(Self);
-    FReBuildGui := True;
-    GUIRedraw := True;
+    NotifyChange(Self);
   End;
 End;
 
@@ -1422,14 +1511,14 @@ Begin
     End;
   end;
 
-   If Assigned(FBitmapFont) then
+   If Assigned(BitmapFont) then
    Begin
      If FFocused then
      Begin
-       WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FocusedColor);
+       WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FFocusedColor);
      End else
      Begin
-       WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,NormalColor);
+       WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Caption,FDefaultColor);
      End;
    End;
 End;
@@ -1546,16 +1635,16 @@ Begin
     FGuiComponent.RenderToArea(0,0,Width,Height, FRenderStatus, FReBuildGui);
   End;
 
-  If Assigned(FBitmapFont) then
+  If Assigned(BitmapFont) then
   Begin
     Tekst := Caption;
     If FFocused then
     Begin
       system.insert('*',Tekst,SelStart);
-      WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,FocusedColor);
+      WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,FFocusedColor);
     End else
     Begin
-      WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,NormalColor);
+      WriteTextAt(FRenderStatus[GLALCenter].X1,FRenderStatus[GLALCenter].Y1,FRenderStatus[GLALCenter].X2,FRenderStatus[GLALCenter].Y2,Tekst,FDefaultColor);
     End;
   End;
 End;
@@ -1567,25 +1656,25 @@ Var
   Tekst : String;
 
 Begin
-  If Assigned(FBitmapFont) then
+  If Assigned(BitmapFont) then
   Begin
     SetVector(TekstPos,8,-((Height-GetFontHeight) / 2)+1,0);
     Tekst := Caption;
-    FBitmapFont.RenderString(Tekst,taLeftJustify,tlTop, FDefaultColor, @TekstPos);
+    BitmapFont.RenderString(Tekst,taLeftJustify,tlTop, FDefaultColor, @TekstPos);
   End;
 End;
 
 procedure TGLAdvancedLabel.InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
 Begin
-   If Assigned(FBitmapFont) then
+   If Assigned(BitmapFont) then
    Begin
      If Focused then
      Begin
-       WriteTextAt(8,-((Height-GetFontHeight) / 2)+1,Caption,FocusedColor);
+       WriteTextAt(8,-((Height-GetFontHeight) / 2)+1,Caption,FFocusedColor);
      End else
      Begin
-       WriteTextAt(8,-((Height-GetFontHeight) / 2)+1,Caption,NormalColor);
+       WriteTextAt(8,-((Height-GetFontHeight) / 2)+1,Caption,FDefaultColor);
      End;
    End;
 End;
