@@ -120,6 +120,8 @@ const
   glKey_HOME = VK_HOME;
   glKey_END = VK_END;
   glKey_CANCEL = VK_CANCEL;
+  glKey_UP = VK_UP;
+  glKey_DOWN = VK_DOWN;
 {$endif}
 {$ifdef LINUX}
   glKey_TAB = Key_Tab;
@@ -131,6 +133,8 @@ const
   glKey_HOME = Key_Home;
   glKey_END = Key_End;
   glKey_CANCEL = Key_Escape;   // ?
+  glKey_UP = Key_Up;
+  glKey_DOWN = Key_DOWN;
 {$endif}
 
 // Several define from unit Consts

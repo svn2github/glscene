@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>18/07/04 - LR - Suppress Consts in uses
       <li>20/06/04 - MRQZZZ - Added AutoScaling property to GLBaseMesh to scale a mesh after loading (like Autocentering) 
       <li>30/03/04 - EG - Added TSkeletonBoneList.BoneCount
       <li>23/03/04 - SG - External positions added to skeleton blended lerps.
@@ -1695,7 +1696,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, Consts, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
+uses GLStrings, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
   GLBaseMeshSilhouette;
 
 var
@@ -1857,7 +1858,7 @@ begin
    end;
    if (k>1) and (not formatsThatCanBeSaved) then
       FmtStr(descriptions, '%s (%s)|%1:s|%s',
-             [sAllFilter, filters, descriptions]);
+             [glsAllFilter, filters, descriptions]);
 end;
 
 // FindExtByIndex
@@ -6829,4 +6830,5 @@ finalization
    vVectorFileFormats.Free;
 
 end.
+
 
