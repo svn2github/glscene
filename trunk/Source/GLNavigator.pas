@@ -1,8 +1,12 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {: GLNavigator<p>
 
-   Unit for navigating TGLBaseObjects.<p>
+  Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/12/04 - PhP - Added FlyForward
       <li>03/07/04 - LR - Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
                           GLGetScreenWidth, GLGetScreenHeight for Linux compatibility       
       <li>11/05/04 - JAJ - Added some features and fixed a bug.
@@ -28,11 +32,12 @@ type
 	{: TGLNavigator is the component for moving a TGLBaseSceneObject, and all Classes based on it,
       this includes all the objects from the Scene Editor.<p>
 
-	   The three calls to get you started is
+	   The four calls to get you started is
       <ul>
   	   <li>TurnHorisontal : it turns left and right.
 	   <li>TurnVertical : it turns up and down.
 	   <li>MoveForward :	moves back and forth.
+     <li>FlyForward : moves back and forth in the movingobject's direction
       </ul>
 	   The three properties to get you started is
       <ul>
@@ -48,54 +53,54 @@ type
       to normal.
       </ul>
    }
-   TGLNavigator = class(TComponent)
-      private
-         FObject           : TGLBaseSceneObject;
-         FVirtualRight     : TVector;
-         FVirtualUp        : TGLCoordinates;
-         FUseVirtualUp     : Boolean;
-         FAutoUpdateObject : Boolean;
-         FMaxAngle         : Single;
-         FMinAngle         : Single;
-         FCurrentVAngle    : Single;
-         FCurrentHAngle    : Single;
-         FAngleLock        : Boolean;
-         FMoveUpWhenMovingForward: Boolean;
-         FInvertHorizontalSteeringWhenUpsideDown: Boolean;
-      public
-         Constructor Create(AOwner : TComponent); override;
-         Destructor  Destroy; override;
-         Procedure   SetObject(NewObject : TGLBaseSceneObject);
-         procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
-         Procedure   SetUseVirtualUp(UseIt : Boolean);
-         Procedure   SetVirtualUp(Up : TGLCoordinates);
-         Function    CalcRight : TVector;
-      protected
-      public
-         Procedure   TurnHorizontal(Angle : Single);
-         Procedure   TurnVertical(Angle : Single);
-         Procedure   MoveForward(Distance : Single);
-         Procedure   StrafeHorizontal(Distance : Single);
-         Procedure   StrafeVertical(Distance : Single);
-         Procedure   Straighten;
+  TGLNavigator = class(TComponent)
+  private
+    FObject: TGLBaseSceneObject;
+    FVirtualRight: TVector;
+    FVirtualUp: TGLCoordinates;
+    FUseVirtualUp: boolean;
+    FAutoUpdateObject: boolean;
+    FMaxAngle: single;
+    FMinAngle: single;
+    FCurrentVAngle: single;
+    FCurrentHAngle: single;
+    FAngleLock: boolean;
+    FMoveUpWhenMovingForward: boolean;
+    FInvertHorizontalSteeringWhenUpsideDown: boolean;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure SetObject(NewObject: TGLBaseSceneObject);
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure SetUseVirtualUp(UseIt: boolean);
+    procedure SetVirtualUp(Up: TGLCoordinates);
+    function CalcRight: TVector;
+  protected
+  public
+    procedure TurnHorizontal(Angle: single);
+    procedure TurnVertical(Angle: single);
+    procedure MoveForward(Distance: single);
+    procedure StrafeHorizontal(Distance: single);
+    procedure StrafeVertical(Distance: single);
+    procedure Straighten;
+    procedure FlyForward(Distance: single);
 
-         Procedure   LoadState(Stream : TStream);
-         Procedure   SaveState(Stream : TStream);
+    procedure LoadState(Stream: TStream);
+    procedure SaveState(Stream: TStream);
 
-         property   CurrentVAngle  : Single read FCurrentVAngle;
-         property   CurrentHAngle  : Single read FCurrentHAngle;
-      published
-         property    MoveUpWhenMovingForward : Boolean read FMoveUpWhenMovingForward write FMoveUpWhenMovingForward;
-         property    InvertHorizontalSteeringWhenUpsideDown : Boolean read FInvertHorizontalSteeringWhenUpsideDown write FInvertHorizontalSteeringWhenUpsideDown;
-         property    VirtualUp    : TGLCoordinates read FVirtualUp write SetVirtualUp;
-         property    MovingObject : TGLBaseSceneObject read FObject write SetObject;
-         property    UseVirtualUp : Boolean read FUseVirtualUp write SetUseVirtualUp;
-         property    AutoUpdateObject : Boolean read FAutoUpdateObject write FAutoUpdateObject;
-         property    MaxAngle     : Single read FMaxAngle write FMaxAngle;
-         property    MinAngle     : Single read FMinAngle write FMinAngle;
-         property    AngleLock    : Boolean read FAngleLock write FAngleLock;
-
-   end;
+    property CurrentVAngle: single read FCurrentVAngle;
+    property CurrentHAngle: single read FCurrentHAngle;
+  published
+    property MoveUpWhenMovingForward: boolean read FMoveUpWhenMovingForward write FMoveUpWhenMovingForward;
+    property InvertHorizontalSteeringWhenUpsideDown: boolean read FInvertHorizontalSteeringWhenUpsideDown write FInvertHorizontalSteeringWhenUpsideDown;
+    property VirtualUp: TGLCoordinates read FVirtualUp write SetVirtualUp;
+    property MovingObject: TGLBaseSceneObject read FObject write SetObject;
+    property UseVirtualUp: boolean read FUseVirtualUp write SetUseVirtualUp;
+    property AutoUpdateObject: boolean read FAutoUpdateObject write FAutoUpdateObject;
+    property MaxAngle: single read FMaxAngle write FMaxAngle;
+    property MinAngle: single read FMinAngle write FMinAngle;
+    property AngleLock: boolean read FAngleLock write FAngleLock;
+  end;
 
 	// TGLUserInterface
 	//
@@ -116,41 +121,35 @@ type
       </ul>
    }
 
-   TGLUserInterface = class(TComponent)
-   private
-     point1: TGLPoint;
-     midScreenX, midScreenY: integer;
-     FMouseActive       : Boolean;
-     FMouseSpeed       : Single;
-     FGLNavigator      : TGLNavigator;
-     FGLVertNavigator  : TGLNavigator;
-     FInvertMouse      : Boolean;
-
-     procedure   MouseInitialize;
-     procedure   SetMouseLookActive(const val : Boolean);
-
-   public
-     constructor Create(AOwner : TComponent); override;
-     destructor  Destroy; override;
-
-     procedure   MouseUpdate;
-     function    MouseLook : Boolean;
-     procedure   MouseLookActiveToggle(q: Boolean);
-     procedure   MouseLookActivate;
-     procedure   MouseLookDeactivate;
-     function    IsMouseLookOn: Boolean;
-     procedure   TurnHorizontal(Angle : Double);
-     procedure   TurnVertical(Angle : Double);
-
-
-     property    MouseLookActive : Boolean read FMouseActive write SetMouseLookActive;
-
-   published
-     property    InvertMouse     : Boolean read FInvertMouse write FInvertMouse;
-     property    MouseSpeed      : Single read FMouseSpeed write FMouseSpeed;
-     property    GLNavigator     : TGLNavigator read FGLNavigator write FGLNavigator;
-     property    GLVertNavigator : TGLNavigator read FGLVertNavigator write FGLVertNavigator;
-   End;
+  TGLUserInterface = class(TComponent)
+  private
+    point1: TGLPoint;
+    midScreenX, midScreenY: integer;
+    FMouseActive: boolean;
+    FMouseSpeed: single;
+    FGLNavigator: TGLNavigator;
+    FGLVertNavigator: TGLNavigator;
+    FInvertMouse: boolean;
+    procedure MouseInitialize;
+    procedure SetMouseLookActive(const val: boolean);
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+    procedure MouseUpdate;
+    function MouseLook : Boolean;
+    procedure MouseLookActiveToggle;
+    procedure MouseLookActivate;
+    procedure MouseLookDeactivate;
+    function IsMouseLookOn: Boolean;
+    procedure TurnHorizontal(Angle : Double);
+    procedure TurnVertical(Angle : Double);
+    property MouseLookActive : Boolean read FMouseActive write SetMouseLookActive;
+  published
+    property InvertMouse: boolean read FInvertMouse write FInvertMouse;
+    property MouseSpeed: single read FMouseSpeed write FMouseSpeed;
+    property GLNavigator: TGLNavigator read FGLNavigator write FGLNavigator;
+    property GLVertNavigator: TGLNavigator read FGLVertNavigator write FGLVertNavigator;
+  end;
 
 procedure Register;
 
@@ -321,7 +320,12 @@ Begin
   End else FObject.Position.AsVector := VectorCombine(FObject.Position.AsVector,FObject.Up.AsVector,1,Distance);
 End;
 
-Procedure   TGLNavigator.Straighten;
+procedure TGLNavigator.FlyForward(Distance: single);
+begin
+  FObject.Position.AsVector := VectorCombine(FObject.Position.AsVector, FObject.Direction.AsVector, 1, Distance);
+end;
+
+Procedure TGLNavigator.Straighten;
 
 Var
   R : TVector;
