@@ -3896,13 +3896,12 @@ end;
 //
 procedure TFaceGroup.AttachLightmap(lightMap : TGLTexture; var mrci : TRenderContextInfo);
 begin
-   with lightMap do begin
+   if GL_ARB_multitexture then with lightMap do begin
       Assert(Image.NativeTextureTarget=GL_TEXTURE_2D);
       glActiveTextureARB(GL_TEXTURE1_ARB);
 
       SetGLCurrentTexture(1, GL_TEXTURE_2D, Handle);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
       glActiveTextureARB(GL_TEXTURE0_ARB);
    end;
@@ -3914,16 +3913,18 @@ procedure TFaceGroup.AttachOrDetachLightmap(var mrci : TRenderContextInfo);
 var
    libMat : TGLLibMaterial;
 begin
-   if (not mrci.ignoreMaterials) and Assigned(mrci.lightmapLibrary) then begin
-      if lightMapIndex>=0 then begin
-         // attach and activate lightmap
-         Assert(lightMapIndex<mrci.lightmapLibrary.Materials.Count);
-         libMat:=mrci.lightmapLibrary.Materials[lightMapIndex];
-         AttachLightmap(libMat.Material.Texture, mrci);
-         Owner.Owner.EnableLightMapArray(mrci);
-      end else begin
-         // desactivate lightmap
-         Owner.Owner.DisableLightMapArray(mrci);
+   if GL_ARB_multitexture then begin
+      if (not mrci.ignoreMaterials) and Assigned(mrci.lightmapLibrary) then begin
+         if lightMapIndex>=0 then begin
+            // attach and activate lightmap
+            Assert(lightMapIndex<mrci.lightmapLibrary.Materials.Count);
+            libMat:=mrci.lightmapLibrary.Materials[lightMapIndex];
+            AttachLightmap(libMat.Material.Texture, mrci);
+            Owner.Owner.EnableLightMapArray(mrci);
+         end else begin
+            // desactivate lightmap
+            Owner.Owner.DisableLightMapArray(mrci);
+         end;
       end;
    end;
 end;
