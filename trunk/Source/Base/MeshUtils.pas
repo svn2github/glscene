@@ -3,6 +3,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>05/03/03 - EG - Added RemapIndicesToIndicesMap
       <li>20/01/03 - EG - Added UnifyTrianglesWinding
       <li>15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
       <li>13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
@@ -25,6 +26,8 @@ uses PersistentClasses, VectorLists, Geometry;
    and indexed variants are available, the output is *always* non indexed. }
 procedure ConvertStripToList(const strip : TAffineVectorList;
                              list : TAffineVectorList); overload;
+procedure ConvertStripToList(const strip : TIntegerList;
+                             list : TIntegerList); overload;
 procedure ConvertStripToList(const strip : TAffineVectorList;
                              const indices : TIntegerList;
                              list : TAffineVectorList); overload;
@@ -57,6 +60,14 @@ procedure RemapReferences(reference : TIntegerList;
    coherent. }
 procedure RemapAndCleanupReferences(reference : TAffineVectorList;
                                     indices : TIntegerList);
+{: Creates an indices map from a remap list.<p>
+   The remap list is what BuildVectorCountOptimizedIndices, a list of indices
+   to distinct/unique items, the indices map contains the indices of these items
+   after a remap and cleanup of the set referred by remapIndices... Clear?<br>
+   In short it takes the output of BuildVectorCountOptimizedIndices and can change
+   it to something suitable for RemapTrianglesIndices.<br>
+   Any simpler documentation of this function welcome ;) }
+function RemapIndicesToIndicesMap(remapIndices : TIntegerList) : TIntegerList;
 
 {: Remaps a list of triangles vertex indices and remove degenerate triangles.<p>
    The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
@@ -166,7 +177,7 @@ begin
    Result:=@v0to255reciproquals[0];
 end;
 
-// ConvertStripToList (non-indexed variant)
+// ConvertStripToList (non-indexed vectors variant)
 //
 procedure ConvertStripToList(const strip : TAffineVectorList;
                              list : TAffineVectorList);
@@ -183,7 +194,24 @@ begin
    end;
 end;
 
-// ConvertStripToList (indexed variant)
+// ConvertStripToList (indices)
+//
+procedure ConvertStripToList(const strip : TIntegerList;
+                             list : TIntegerList);
+var
+   i : Integer;
+   stripList : PIntegerArray;
+begin
+   list.AdjustCapacityToAtLeast(list.Count+3*(strip.Count-2));
+   stripList:=strip.List;
+   for i:=0 to strip.Count-3 do begin
+      if (i and 1)=0 then
+         list.Add(stripList[i+0], stripList[i+1], stripList[i+2])
+      else list.Add(stripList[i+2], stripList[i+1], stripList[i+0]);
+   end;
+end;
+
+// ConvertStripToList (indexed vectors variant)
 //
 procedure ConvertStripToList(const strip : TAffineVectorList;
                              const indices : TIntegerList;
@@ -432,6 +460,35 @@ begin
    // 3rd step, remap indices
    for i:=0 to indices.Count-1 do
       indicesList[i]:=tag[indicesList[i]];
+end;
+
+// RemapIndicesToIndicesMap
+//
+function RemapIndicesToIndicesMap(remapIndices : TIntegerList) : TIntegerList;
+var
+   i, n : Integer;
+   tag : array of Integer;
+   remapList, indicesMap : PIntegerArray;
+begin
+   SetLength(tag, remapIndices.Count);
+   // 1st step, tag all used indices
+   remapList:=remapIndices.List;
+   for i:=0 to remapIndices.Count-1 do
+      tag[remapList[i]]:=1;
+   // 2nd step, build indices offset table
+   n:=0;
+   for i:=0 to remapIndices.Count-1 do begin
+      if tag[i]>0 then begin
+         tag[i]:=n;
+         Inc(n);
+      end;
+   end;
+   // 3rd step, fillup indices map
+   Result:=TIntegerList.Create;
+   Result.Count:=remapIndices.Count;
+   indicesMap:=Result.List;
+   for i:=0 to Result.Count-1 do
+      indicesMap[i]:=tag[remapList[i]];
 end;
 
 // RemapTrianglesIndices
