@@ -43,17 +43,17 @@ type
          FHeightData : THeightData; // Referred, not owned
          FHeightRaster : PSmallIntRaster;
          FTLNode, FBRNode : PROAMTriangleNode;
-         FMaxDepth : Integer;
-         FMaxTLVarianceDepth, FMaxBRVarianceDepth : Integer;
          FTLVariance, FBRVariance : array of Cardinal;
          FPatchSize, FTriangleCount : Integer;
          FListHandle : TGLListHandle;
          FTag : Integer;
-         FVertexScale, FVertexOffset : TAffineVector;
-         FTextureScale, FTextureOffset : TAffineVector;
          FObserverPosition : TAffineVector;
          FNorth, FSouth, FWest, FEast : TGLROAMPatch; // neighbours
          FHighRes, FNoDetails : Boolean;
+         FMaxDepth : Integer;
+         FVertexScale, FVertexOffset : TAffineVector;
+         FTextureScale, FTextureOffset : TAffineVector;
+         FMaxTLVarianceDepth, FMaxBRVarianceDepth : Integer;
 
 	   protected
 	      { Protected Declarations }
