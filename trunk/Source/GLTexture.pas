@@ -892,11 +892,9 @@ type
 	TGLLibMaterials = class (TOwnedCollection)
 	   private
 	      { Protected Declarations }
-	      FOwner : TComponent;
 
 	   protected
 	      { Protected Declarations }
-	      function GetOwner: TPersistent; override;
          procedure Loaded;
 
          procedure SetItems(index : Integer; const val : TGLLibMaterial);
@@ -2717,7 +2715,7 @@ var
    i : Integer;
    tryName : String;
 begin
-   mLib:=TGLMaterialLibrary((Collection as TGLLibMaterials).Owner);
+   mLib:=TGLMaterialLibrary((Collection as TGLLibMaterials).GetOwner);
    if mLib is TGLMaterialLibrary then with mLib do
       if Assigned(FOnTextureNeeded) then
          FOnTextureNeeded(mLib, textureFileName);
@@ -2743,15 +2741,7 @@ end;
 //
 constructor TGLLibMaterials.Create(AOwner : TComponent);
 begin
-	FOwner:=AOwner;
 	inherited Create(AOwner, TGLLibMaterial);
-end;
-
-// GetOwner
-//
-function TGLLibMaterials.GetOwner: TPersistent;
-begin
-	Result:=Owner;
 end;
 
 // Loaded

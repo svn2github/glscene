@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/07/01 - Egg - Added pooTransformation
       <li>19/07/01 - Egg - Focal lengths in the ]0; 1[ range are now allowed (beware!)
       <li>18/07/01 - Egg - Added VisibilityCulling
       <li>09/07/01 - Egg - Added BoundingBox methods based on code from Jacques Tur
@@ -157,11 +158,11 @@ type
    // TGLProxyObjectOption
    //
    {: Defines which features are taken from the master object. }
-   TGLProxyObjectOption = (pooEffects, pooObjects);
+   TGLProxyObjectOption = (pooEffects, pooObjects, pooTransformation);
    TGLProxyObjectOptions = set of TGLProxyObjectOption;
 
 const
-   cDefaultProxyOptions = [pooEffects, pooObjects];
+   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
 
 type
   TObjectHandle = TGLUInt; // a display list name or GL_LIGHTx constant
@@ -3875,6 +3876,8 @@ begin
       if pooObjects in FProxyOptions then begin
          oldProxySubObject:=rci.proxySubObject;
          rci.proxySubObject:=True;
+         if pooTransformation in FProxyOptions then
+            glMultMatrixf(@FMasterObject.FLocalMatrix);
          FMasterObject.DoRender(rci, renderSelf, renderChildren);
          rci.proxySubObject:=oldProxySubObject;
       end;

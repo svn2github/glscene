@@ -1048,7 +1048,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Consts, Dialogs, Forms, GLStrings, PlugInIntf, Spline, XOpenGL;
+uses Consts, Dialogs, Forms, GLStrings, Spline, XOpenGL;
 
 var
 	vFontManager : TFontManager;
