@@ -11,6 +11,7 @@
 
   History:
 
+    11/06/03 - SG - Base joint classes implemented and added hinge joint.
     09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
     08/06/03 - SG - Added rolling friction (experimental).
     06/06/03 - SG - Added cylinder element (experimental).
@@ -33,9 +34,6 @@ uses
 
 type
 
-  TODEElements = class;
-  TODEBaseElement = class;
-
   TODECollisionEvent = procedure (Sender : TObject; Object1, Object2 : TObject;
                                   var Contact:TdContact;
                                   var HandleCollision:Boolean) of object;
@@ -47,6 +45,9 @@ type
                               csmMotion1,csmMotion2,csmSlip1,csmSlip2);
   TSurfaceModes = set of TODECollisionSurfaceMode;
 
+  TODEElements = class;
+  TODEBaseElement = class;
+
   {
   TGLODEManager:
   ----------
@@ -56,8 +57,7 @@ type
     private
       FWorld             : PdxWorld;
       FSpace             : PdxSpace;
-      FContactGroup,
-      FJointGroup        : TdJointGroupID;
+      FContactGroup      : TdJointGroupID;
       FGravity           : TGLCoordinates;
       FOnCollision       : TODECollisionEvent;
       FContactJointCount,
@@ -67,10 +67,10 @@ type
       procedure SetGravity(value:TGLCoordinates);
       procedure GravityChange(Sender:TObject);
     protected
-      {: Calculate the contact between 2 objects based on their Collision 
+      {: Calculate the contact between 2 objects based on their Collision
          Surfaces. }
       procedure CalcContact(Object1, Object2 : TObject; var Contact:TdContact);
-      {: ODE collision callback function. Passed through the nearCallback 
+      {: ODE collision callback function. Passed through the nearCallback
          global procedure }
       procedure Collision(g1,g2:PdxGeom);
       {: Register an ODE object for auto updating. Used for aligning dynamic
@@ -89,7 +89,6 @@ type
       property World : PdxWorld read FWorld;
       property Space : PdxSpace read FSpace;
       property NumContactJoints : integer read FNumContactJoints;
-      property JointGroup : TdJointGroupID read FJointGroup;
     published
       {: The world gravity vector. By default this is a zero length vector
          (no gravity). }
@@ -185,7 +184,6 @@ type
     public
       constructor Create(AOwner:TComponent); override;
       destructor Destroy; override;
-      procedure BuildList(var rci : TRenderContextInfo); override;
       procedure StructureChanged; override;
       procedure NotifyChange(Sender:TObject); override;
     published
@@ -199,7 +197,7 @@ type
       property Surface : TODECollisionSurface read FCollisionSurface write SetSurface;
       //: Enable this property to have the objects render at run-time.
       property VisibleAtRunTime : Boolean read FVisibleAtRunTime write SetVisibleAtRuntime;
-      {: Object level collision event. Object2 is the object being collided 
+      {: Object level collision event. Object2 is the object being collided
          with and the contact parameter provides information on the collision. }
       property OnCollision : TODEObjectCollisionEvent read FOnCollision write FOnCollision;
 
@@ -544,7 +542,7 @@ type
   TODEBaseJoint = class;
 
   {
-  TODEJoints:
+  TGLODEJoints:
   -----------
   This is the list class that stores the ODE Joints.
   }
@@ -562,132 +560,18 @@ type
       function Count : integer;
       procedure Delete(index:integer);
       procedure Remove(item:TODEBaseJoint);
+      property Items[index:integer] : TODEBaseJoint read GetItem; default;
       property Owner : TPersistent read FOwner;
-      property Items[index:integer]:TODEBaseJoint read GetItem; default;
   end;
 
-  TJointGetParamsProc = function (const dJointID : TdJointID; const parameter: TJointParams): TdReal;
-  TJointSetParamsProc = procedure (const dJointID : TdJointID; const parameter: TJointParams; const value: TdReal);
-  {
-  TODEJointParams:
-  ----------------
-  This is the list class that stores the ODE Joints.
-  }
-  TODEJointParams = class
+  TGLODEJointList = class(TComponent)
     private
-      FOwner : TODEBaseJoint;
-      FJointGetParamsProc : TJointGetParamsProc;
-      FJointSetParamsProc : TJointSetParamsProc;
-
-      function GetLoStop : TdReal;
-      function GetHiStop : TdReal;
-      function GetVel : TdReal;
-      function GetFMax : TdReal;
-      function GetFudgeFactor : TdReal;
-      function GetBounce : TdReal;
-      function GetCFM : TdReal;
-      function GetStopERP : TdReal;
-      function GetStopCFM : TdReal;
-      function GetSuspensionERP : TdReal;
-      function GetSuspensionCFM : TdReal;
-
-      function GetLoStop2 : TdReal;
-      function GetHiStop2 : TdReal;
-      function GetVel2 : TdReal;
-      function GetFMax2 : TdReal;
-      function GetFudgeFactor2 : TdReal;
-      function GetBounce2 : TdReal;
-      function GetCFM2 : TdReal;
-      function GetStopERP2 : TdReal;
-      function GetStopCFM2 : TdReal;
-      function GetSuspensionERP2 : TdReal;
-      function GetSuspensionCFM2 : TdReal;
-
-      function GetLoStop3 : TdReal;
-      function GetHiStop3 : TdReal;
-      function GetVel3 : TdReal;
-      function GetFMax3 : TdReal;
-      function GetFudgeFactor3 : TdReal;
-      function GetBounce3 : TdReal;
-      function GetCFM3 : TdReal;
-      function GetStopERP3 : TdReal;
-      function GetStopCFM3 : TdReal;
-      function GetSuspensionERP3 : TdReal;
-      function GetSuspensionCFM3 : TdReal;
-
-      procedure SetLoStop(const Value : TdReal);
-      procedure SetHiStop(const Value : TdReal);
-      procedure SetVel(const Value : TdReal);
-      procedure SetFMax(const Value : TdReal);
-      procedure SetFudgeFactor(const Value : TdReal);
-      procedure SetBounce(const Value : TdReal);
-      procedure SetCFM(const Value : TdReal);
-      procedure SetStopERP(const Value : TdReal);
-      procedure SetStopCFM(const Value : TdReal);
-      procedure SetSuspensionERP(const Value : TdReal);
-      procedure SetSuspensionCFM(const Value : TdReal);
-
-      procedure SetLoStop2(const Value : TdReal);
-      procedure SetHiStop2(const Value : TdReal);
-      procedure SetVel2(const Value : TdReal);
-      procedure SetFMax2(const Value : TdReal);
-      procedure SetFudgeFactor2(const Value : TdReal);
-      procedure SetBounce2(const Value : TdReal);
-      procedure SetCFM2(const Value : TdReal);
-      procedure SetStopERP2(const Value : TdReal);
-      procedure SetStopCFM2(const Value : TdReal);
-      procedure SetSuspensionERP2(const Value : TdReal);
-      procedure SetSuspensionCFM2(const Value : TdReal);
-
-      procedure SetLoStop3(const Value : TdReal);
-      procedure SetHiStop3(const Value : TdReal);
-      procedure SetVel3(const Value : TdReal);
-      procedure SetFMax3(const Value : TdReal);
-      procedure SetFudgeFactor3(const Value : TdReal);
-      procedure SetBounce3(const Value : TdReal);
-      procedure SetCFM3(const Value : TdReal);
-      procedure SetStopERP3(const Value : TdReal);
-      procedure SetStopCFM3(const Value : TdReal);
-      procedure SetSuspensionERP3(const Value : TdReal);
-      procedure SetSuspensionCFM3(const Value : TdReal);
+      FJoints : TODEJoints;
     public
-      property Owner : TODEBaseJoint read FOwner;
+      constructor Create(AOwner:TComponent); override;
+      destructor Destroy; override;
     published
-      property LoStop : TdReal read GetLoStop write SetLoStop;
-      property HiStop : TdReal read GetHiStop write SetHiStop;
-      property Vel : TdReal read GetVel write SetVel;
-      property FMax : TdReal read GetFMax write SetFMax;
-      property FudgeFactor : TdReal read GetFudgeFactor write SetFudgeFactor;
-      property Bounce : TdReal read GetBounce write SetBounce;
-      property CFM : TdReal read GetCFM write SetCFM;
-      property StopERP : TdReal read GetStopERP write SetStopERP;
-      property StopCFM : TdReal read GetStopCFM write SetStopCFM;
-      property SuspensionERP : TdReal read GetSuspensionERP write SetSuspensionERP;
-      property SuspensionCFM : TdReal read GetSuspensionCFM write SetSuspensionCFM;
-
-      property LoStop2 : TdReal read GetLoStop2 write SetLoStop2;
-      property HiStop2 : TdReal read GetHiStop2 write SetHiStop2;
-      property Vel2 : TdReal read GetVel2 write SetVel2;
-      property FMax2 : TdReal read GetFMax2 write SetFMax2;
-      property FudgeFactor2 : TdReal read GetFudgeFactor2 write SetFudgeFactor2;
-      property Bounce2 : TdReal read GetBounce2 write SetBounce2;
-      property CFM2 : TdReal read GetCFM2 write SetCFM2;
-      property StopERP2 : TdReal read GetStopERP2 write SetStopERP2;
-      property StopCFM2 : TdReal read GetStopCFM2 write SetStopCFM2;
-      property SuspensionERP2 : TdReal read GetSuspensionERP2 write SetSuspensionERP2;
-      property SuspensionCFM2 : TdReal read GetSuspensionCFM2 write SetSuspensionCFM2;
-
-      property LoStop3 : TdReal read GetLoStop3 write SetLoStop3;
-      property HiStop3 : TdReal read GetHiStop3 write SetHiStop3;
-      property Vel3 : TdReal read GetVel3 write SetVel3;
-      property FMax3 : TdReal read GetFMax3 write SetFMax3;
-      property FudgeFactor3 : TdReal read GetFudgeFactor3 write SetFudgeFactor3;
-      property Bounce3 : TdReal read GetBounce3 write SetBounce3;
-      property CFM3 : TdReal read GetCFM3 write SetCFM3;
-      property StopERP3 : TdReal read GetStopERP3 write SetStopERP3;
-      property StopCFM3 : TdReal read GetStopCFM3 write SetStopCFM3;
-      property SuspensionERP3 : TdReal read GetSuspensionERP3 write SetSuspensionERP3;
-      property SuspensionCFM3 : TdReal read GetSuspensionCFM3 write SetSuspensionCFM3;
+      property Joints : TODEJoints read FJoints;
   end;
 
   {
@@ -695,22 +579,35 @@ type
   --------------
   Base structures for ODE Joints.
   }
-  TODEBaseJoint = class
+  TODEBaseJoint = class (TPersistent)
     private
+      FOwner   : TODEJoints;
       FJointID : TdJointID;
-      FBody1,
-      FBody2   :  PdxBody;
+      FObject1,
+      FObject2 : TObject;
       FManager : TGLODEManager;
-      FJointParams : TODEJointParams;
+      FAnchor,
+      FAxis    : TGLCoordinates;
+      procedure AnchorChange(Sender : TObject);
+      procedure AxisChange(Sender : TObject);
+      procedure SetManager(Value : TGLODEManager);
     protected
       procedure Initialize; virtual;
       procedure Deinitialize; virtual;
+      procedure SetAnchor(Value : TAffineVector); virtual;
+      procedure SetAxis(Value : TAffineVector); virtual;
     public
+      constructor CreateOwned(AOwner:TODEJoints);
+      destructor Destroy; override;
+      procedure Attach(Obj1, Obj2 : TObject);
       property JointID : TdJointID read FJointID;
-      property Body1 : PdxBody read FBody1;
-      property Body2 : PdxBody read FBody2;
+      property Object1 : TObject read FObject1;
+      property Object2 : TObject read FObject2;
+      property Owner   : TODEJoints read FOwner;
     published
-      property JointParams : TODEJointParams read FJointParams;
+      property Manager : TGLODEManager read FManager write SetManager;
+      property Anchor : TGLCoordinates read FAnchor;
+      property Axis : TGLCoordinates read FAxis;
   end;
 
   {
@@ -719,13 +616,34 @@ type
   ODE hinge joint implementation.
   }
   TODEJointHinge = class (TODEBaseJoint)
-    private
-
     protected
       procedure Initialize; override;
-    public
-
+      procedure SetAnchor(Value : TAffineVector); override;
+      procedure SetAxis(Value : TAffineVector); override;
   end;
+
+  {
+  TODEJointBall:
+  ---------------
+  ODE ball joint implementation.
+  }
+  TODEJointBall = class (TODEBaseJoint)
+    protected
+      procedure Initialize; override;
+      procedure SetAnchor(Value : TAffineVector); override;
+  end;
+
+  {
+  TODEJointSlider:
+  ---------------
+  ODE slider joint implementation.
+  }
+  TODEJointSlider = class (TODEBaseJoint)
+    protected
+      procedure Initialize; override;
+      procedure SetAxis(Value : TAffineVector); override;
+  end;
+
 
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
 procedure Register;
@@ -742,6 +660,19 @@ implementation
 // Global Procedures
 // ------------------------------------------------------------------
 
+// Register
+//
+procedure Register;
+begin
+  RegisterClasses([TGLODEManager, TGLODEDummy, TGLODEPlane]);
+  RegisterComponents('GLScene',[TGLODEManager,TGLODEJointList]);
+end;
+
+
+// ------------------------------------------------------------------
+// Misc Procedures
+// ------------------------------------------------------------------
+
 // nearCallBack
 //
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
@@ -749,12 +680,30 @@ begin
   TGLODEManager(Data).Collision(o1,o2);
 end;
 
-// Register
+// GetBodyFromODEObject
 //
-procedure Register;
+function GetBodyFromODEObject(Obj:TObject):PdxBody;
 begin
-  RegisterClasses([TGLODEManager, TGLODEDummy, TGLODEPlane]);
-  RegisterComponents('GLScene',[TGLODEManager]);
+  Result:=nil;
+  if Assigned(Obj) then begin
+    if Obj is TGLODEDummy then
+      Result:=TGLODEDummy(Obj).Body;
+    if Obj is TGLODEDynamicBehaviour then
+      Result:=TGLODEDynamicBehaviour(Obj).Body;
+  end;
+end;
+
+// GetSurfaceFromODEObject
+//
+function GetSurfaceFromODEObject(Obj:TObject):TODECollisionSurface;
+begin
+  Result:=nil;
+  if Assigned(Obj) then begin
+    if Obj is TGLODEDummy then
+      Result:=TGLODEDummy(Obj).Surface;
+    if Obj is TGLODEDynamicBehaviour then
+      Result:=TGLODEDynamicBehaviour(Obj).Surface;
+  end;
 end;
 
 
@@ -774,7 +723,6 @@ begin
   FWorld:=dWorldCreate;
   FSpace:=dHashSpaceCreate(nil);
   FContactGroup:=dJointGroupCreate(100);
-  FJointGroup:=dJointGroupCreate(100);
   FDynamicObjectRegister:=TObjectList.Create;
   FDynamicObjectRegister.OwnsObjects:=False;
   FRFContactList:=TList.Create;
@@ -791,8 +739,8 @@ begin
   FDynamicObjectRegister.Free;
   FGravity.Free;
   FRFContactList.Free;
+  dJointGroupEmpty(FContactGroup);
   dJointGroupDestroy(FContactGroup);
-  dJointGroupDestroy(FJointGroup);
   dSpaceDestroy(FSpace);
   dWorldDestroy(FWorld);
   inherited Destroy;
@@ -833,16 +781,8 @@ var
   Surface1, Surface2 : TODECollisionSurface;
   Body1, Body2 : PdxBody;
 begin
-  Surface1:=nil; Surface2:=nil;
-  if Object1 is TGLODEBaseObject then
-    Surface1:=TGLODEBaseObject(Object1).Surface;
-  if Object1 is TGLODEDynamicBehaviour then
-    Surface1:=TGLODEDynamicBehaviour(Object1).Surface;
-  if Object2 is TGLODEBaseObject then
-    Surface2:=TGLODEBaseObject(Object2).Surface;
-  if Object2 is TGLODEDynamicBehaviour then
-    Surface2:=TGLODEDynamicBehaviour(Object2).Surface;
-
+  Surface1:=GetSurfaceFromODEObject(Object1);
+  Surface2:=GetSurfaceFromODEObject(Object2);
   if not (Assigned(Surface1) and Assigned(Surface2)) then
     exit;
 
@@ -863,15 +803,8 @@ begin
   end;
 
   // Rolling friction
-  Body1:=nil; Body2:=nil;
-  if Object1 is TGLODEDynamicObject then
-    Body1:=TGLODEDynamicObject(Object1).Body;
-  if Object1 is TGLODEDynamicBehaviour then
-    Body1:=TGLODEDynamicBehaviour(Object1).Body;
-  if Object2 is TGLODEDynamicObject then
-    Body2:=TGLODEDynamicObject(Object2).Body;
-  if Object2 is TGLODEDynamicBehaviour then
-    Body2:=TGLODEDynamicBehaviour(Object2).Body;
+  Body1:=GetBodyFromODEObject(Object1);
+  Body2:=GetBodyFromODEObject(Object1);
   if (Surface1.RollingFrictionEnabled) and Assigned(Body1) then
     FRFContactList.Add(Object1);
   if (Surface2.RollingFrictionEnabled) and Assigned(Body2) then
@@ -918,12 +851,12 @@ begin
       // Calculate the contact based on Obj1 and Obj2 surface info
       CalcContact(Obj1,Obj2,Contact[i]);
       if Assigned(FOnCollision) then begin
-        // Fire the Scene level OnCollision event for last minute 
-        // customization to the contact before the contact joint 
+        // Fire the Scene level OnCollision event for last minute
+        // customization to the contact before the contact joint
         // is created
         FOnCollision(Self,Obj1,Obj2,Contact[i],HandleCollision);
       end;
-      // Fire the OnCollision event for each object 
+      // Fire the OnCollision event for each object
       if TObject(Obj1) is TGLODEBaseObject then
         if Assigned(TGLODEBaseObject(Obj1).OnCollision) then
           TGLODEBaseObject(Obj1).OnCollision(Self,Obj2,Contact[i]);
@@ -1025,7 +958,7 @@ begin
     ASurfaceModes:=ASurfaceModes+[csmSoftERP];
   if (FSurfaceParams.Mode and dContactBounce)<>0 then
     ASurfaceModes:=ASurfaceModes+[csmBounce];
-  if (FSurfaceParams.Mode and dContactFDir1)<>0 then 
+  if (FSurfaceParams.Mode and dContactFDir1)<>0 then
     ASurfaceModes:=ASurfaceModes+[csmFDir1];
   if (FSurfaceParams.Mode and dContactMu2)<>0 then
     ASurfaceModes:=ASurfaceModes+[csmMu2];
@@ -1166,13 +1099,6 @@ end;
 // ------------------------------------------------------------------
 // TGLODEBaseObject
 // ------------------------------------------------------------------
-
-// BuildList
-//
-procedure TGLODEBaseObject.BuildList(var rci: TRenderContextInfo);
-begin
-  //
-end;
 
 // Create
 //
@@ -1321,7 +1247,7 @@ end;
 //
 function TGLODEDynamicObject.GetMass: TdMass;
 begin
-  dBodyGetMass(FBody,@FMass);
+  dBodyGetMass(FBody,FMass);
   Result:=FMass;
 end;
 
@@ -1669,7 +1595,7 @@ end;
 //
 function TGLODEDynamicBehaviour.GetMass: TdMass;
 begin
-  dBodyGetMass(FBody,@FMass);
+  dBodyGetMass(FBody,FMass);
   Result:=FMass;
 end;
 
@@ -2541,7 +2467,7 @@ end;
 
 
 // ------------------------------------------------------------------
-// TODEJoints Methods
+// TGLODEJoints Methods
 // ------------------------------------------------------------------
 
 // Add
@@ -2555,7 +2481,6 @@ end;
 //
 constructor TODEJoints.Create(AOwner:TPersistent);
 begin
-  inherited Create;
   FOwner:=AOwner;
   FList:=TList.Create;
 end;
@@ -2580,6 +2505,7 @@ end;
 //
 destructor TODEJoints.Destroy;
 begin
+  Deinitialize;
   FList.Free;
   inherited;
 end;
@@ -2621,343 +2547,49 @@ end;
 
 
 // ------------------------------------------------------------------
-// TODEJointParams
+// TGLODEJointList
 // ------------------------------------------------------------------
 
-function TODEJointParams.GetBounce: TdReal;
+// Create
+//
+constructor TGLODEJointList.Create(AOwner: TComponent);
 begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamBounce);
+  inherited;
+  FJoints:=TODEJoints.Create(Self);
 end;
 
-function TODEJointParams.GetCFM: TdReal;
+// Destroy
+//
+destructor TGLODEJointList.Destroy;
 begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamCFM);
-end;
-
-function TODEJointParams.GetFMax: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamFMax);
-end;
-
-function TODEJointParams.GetFudgeFactor: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamFudgeFactor);
-end;
-
-function TODEJointParams.GetHiStop: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamHiStop);
-end;
-
-function TODEJointParams.GetLoStop: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamLoStop);
-end;
-
-function TODEJointParams.GetStopCFM: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamStopCFM);
-end;
-
-function TODEJointParams.GetStopERP: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamStopERP);
-end;
-
-function TODEJointParams.GetSuspensionCFM: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamSuspensionCFM);
-end;
-
-function TODEJointParams.GetSuspensionERP: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamSuspensionERP);
-end;
-
-function TODEJointParams.GetVel: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamVel);
-end;
-
-function TODEJointParams.GetBounce2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamBounce2);
-end;
-
-function TODEJointParams.GetCFM2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamCFM2);
-end;
-
-function TODEJointParams.GetFMax2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamFMax2);
-end;
-
-function TODEJointParams.GetFudgeFactor2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamFudgeFactor2);
-end;
-
-function TODEJointParams.GetHiStop2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamHiStop2);
-end;
-
-function TODEJointParams.GetLoStop2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamLoStop2);
-end;
-
-function TODEJointParams.GetStopCFM2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamStopCFM2);
-end;
-
-function TODEJointParams.GetStopERP2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamStopERP2);
-end;
-
-function TODEJointParams.GetSuspensionCFM2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamSuspensionCFM2);
-end;
-
-function TODEJointParams.GetSuspensionERP2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamSuspensionERP2);
-end;
-
-function TODEJointParams.GetVel2: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamVel2);
-end;
-
-function TODEJointParams.GetBounce3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamBounce3);
-end;
-
-function TODEJointParams.GetCFM3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamCFM3);
-end;
-
-function TODEJointParams.GetFMax3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamFMax3);
-end;
-
-function TODEJointParams.GetFudgeFactor3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamFudgeFactor3);
-end;
-
-function TODEJointParams.GetHiStop3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamHiStop3);
-end;
-
-function TODEJointParams.GetLoStop3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamLoStop3);
-end;
-
-function TODEJointParams.GetStopCFM3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamStopCFM3);
-end;
-
-function TODEJointParams.GetStopERP3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamStopERP3);
-end;
-
-function TODEJointParams.GetSuspensionCFM3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamSuspensionCFM3);
-end;
-
-function TODEJointParams.GetSuspensionERP3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamSuspensionERP3);
-end;
-
-function TODEJointParams.GetVel3: TdReal;
-begin
-  Result:=FJointGetParamsProc(Owner.JointID, dParamVel3);
-end;
-
-procedure TODEJointParams.SetBounce(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamBounce, Value);
-end;
-
-procedure TODEJointParams.SetCFM(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamCFM, Value);
-end;
-
-procedure TODEJointParams.SetFMax(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamFMax, Value);
-end;
-
-procedure TODEJointParams.SetFudgeFactor(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamFudgeFactor, Value);
-end;
-
-procedure TODEJointParams.SetHiStop(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamHiStop, Value);
-end;
-
-procedure TODEJointParams.SetLoStop(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamLoStop, Value);
-end;
-
-procedure TODEJointParams.SetStopCFM(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamStopCFM, Value);
-end;
-
-procedure TODEJointParams.SetStopERP(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamStopERP, Value);
-end;
-
-procedure TODEJointParams.SetSuspensionCFM(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamSuspensionCFM, Value);
-end;
-
-procedure TODEJointParams.SetSuspensionERP(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamSuspensionERP, Value);
-end;
-
-procedure TODEJointParams.SetVel(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamVel, Value);
-end;
-
-procedure TODEJointParams.SetBounce2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamBounce2, Value);
-end;
-
-procedure TODEJointParams.SetCFM2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamCFM2, Value);
-end;
-
-procedure TODEJointParams.SetFMax2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamFMax2, Value);
-end;
-
-procedure TODEJointParams.SetFudgeFactor2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamFudgeFactor2, Value);
-end;
-
-procedure TODEJointParams.SetHiStop2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamHiStop2, Value);
-end;
-
-procedure TODEJointParams.SetLoStop2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamLoStop2, Value);
-end;
-
-procedure TODEJointParams.SetStopCFM2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamStopCFM2, Value);
-end;
-
-procedure TODEJointParams.SetStopERP2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamStopERP2, Value);
-end;
-
-procedure TODEJointParams.SetSuspensionCFM2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamSuspensionCFM2, Value);
-end;
-
-procedure TODEJointParams.SetSuspensionERP2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamSuspensionERP2, Value);
-end;
-
-procedure TODEJointParams.SetVel2(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamVel2, Value);
-end;
-
-procedure TODEJointParams.SetBounce3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamBounce3, Value);
-end;
-
-procedure TODEJointParams.SetCFM3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamCFM3, Value);
-end;
-
-procedure TODEJointParams.SetFMax3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamFMax3, Value);
-end;
-
-procedure TODEJointParams.SetFudgeFactor3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamFudgeFactor3, Value);
-end;
-
-procedure TODEJointParams.SetHiStop3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamHiStop3, Value);
-end;
-
-procedure TODEJointParams.SetLoStop3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamLoStop3, Value);
-end;
-
-procedure TODEJointParams.SetStopCFM3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamStopCFM3, Value);
-end;
-
-procedure TODEJointParams.SetStopERP3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamStopERP3, Value);
-end;
-
-procedure TODEJointParams.SetSuspensionCFM3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamSuspensionCFM3, Value);
-end;
-
-procedure TODEJointParams.SetSuspensionERP3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamSuspensionERP3, Value);
-end;
-
-procedure TODEJointParams.SetVel3(const Value: TdReal);
-begin
-  FJointSetParamsProc(Owner.JointID, dParamVel3, Value);
+  FJoints.Free;
+  inherited;
 end;
 
 
 // ------------------------------------------------------------------
 // TODEBaseJoint
 // ------------------------------------------------------------------
+
+// CreateOwned
+//
+constructor TODEBaseJoint.CreateOwned(AOwner : TODEJoints);
+begin
+  FOwner:=AOwner;
+  FOwner.Add(Self);
+  FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
+  FAnchor.OnNotifyChange:=AnchorChange;
+  FAxis:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
+  FAxis.OnNotifyChange:=AxisChange;
+end;
+
+// Destroy
+destructor TODEBaseJoint.Destroy;
+begin
+  FAnchor.Free;
+  FAxis.Free;
+  inherited;
+end;
 
 // Initialize
 //
@@ -2970,7 +2602,68 @@ end;
 //
 procedure TODEBaseJoint.Deinitialize;
 begin
+  if FJointID<>0 then
+    dJointDestroy(FJointID);
+end;
 
+// AnchorChange
+//
+procedure TODEBaseJoint.AnchorChange(Sender : TObject);
+begin
+  if FJointID<>0 then
+    SetAnchor(FAnchor.AsAffineVector);
+end;
+
+// AxisChange
+//
+procedure TODEBaseJoint.AxisChange(Sender : TObject);
+begin
+  if FJointID<>0 then
+    SetAxis(FAxis.AsAffineVector);
+end;
+
+// Attach
+//
+procedure TODEBaseJoint.Attach(Obj1, Obj2: TObject);
+var
+  Body1, Body2 : PdxBody;
+begin
+  if FJointID=0 then exit;
+
+  Body1:=GetBodyFromODEObject(Obj1);
+  Body2:=GetBodyFromODEObject(Obj2);
+  if Assigned(Body1) or Assigned(Body2) then begin
+    dJointAttach(FJointID,Body1,Body2);
+  end;
+end;
+
+// SetAnchor
+//
+procedure TODEBaseJoint.SetAnchor(Value: TAffineVector);
+begin
+  //
+end;
+
+// SetAxis
+//
+procedure TODEBaseJoint.SetAxis(Value: TAffineVector);
+begin
+  //
+end;
+
+// SetManager
+//
+procedure TODEBaseJoint.SetManager(Value: TGLODEManager);
+begin
+  if FManager<>Value then begin
+    if Assigned(FManager) then begin
+      Deinitialize;
+    end;
+    FManager:=Value;
+    if Assigned(FManager) then begin
+      Initialize;
+    end;
+  end;
 end;
 
 
@@ -2982,11 +2675,68 @@ end;
 //
 procedure TODEJointHinge.Initialize;
 begin
-  inherited;
-  dJointCreateHinge(FManager.World, FManager.JointGroup);
-  JointParams.FJointGetParamsProc:=@dJointGetHingeParam;
-  JointParams.FJointSetParamsProc:=@dJointSetHingeParam;
+  if not Assigned(FManager) then exit;
+  FJointID:=dJointCreateHinge(FManager.World,0);
 end;
+
+// SetAnchor
+//
+procedure TODEJointHinge.SetAnchor(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetHingeAnchor(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+// SetAxis
+//
+procedure TODEJointHinge.SetAxis(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetHingeAxis(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+
+// ------------------------------------------------------------------
+// TODEJointBall
+// ------------------------------------------------------------------
+
+// Initialize
+//
+procedure TODEJointBall.Initialize;
+begin
+  if not Assigned(FManager) then exit;
+  FJointID:=dJointCreateBall(FManager.World,0);
+end;
+
+// SetAnchor
+//
+procedure TODEJointBall.SetAnchor(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetBallAnchor(FJointID,Value[0],Value[1],Value[2]);
+end;
+
+
+// ------------------------------------------------------------------
+// TODEJointSlider
+// ------------------------------------------------------------------
+
+// Initialize
+//
+procedure TODEJointSlider.Initialize;
+begin
+  if not Assigned(FManager) then exit;
+  FJointID:=dJointCreateSlider(FManager.World,0);
+end;
+
+// SetAxis
+//
+procedure TODEJointSlider.SetAxis(Value : TAffineVector);
+begin
+  if FJointID<>0 then
+    dJointSetSliderAxis(FJointID,Value[0],Value[1],Value[2]);
+end;
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
