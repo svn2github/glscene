@@ -207,6 +207,7 @@ type
             with TGLCanvas }
          procedure TextOut(var rci : TRenderContextInfo; x, y : Single; const text : String; const color : TColorVector); overload;
          procedure TextOut(var rci : TRenderContextInfo; x, y : Single; const text : String; const color : TColor); overload;
+         function TextWidth(const text : String) : Integer;
 
          {: Get the actual width for this char. }
          function GetCharWidth(ch : Char) : Integer;
@@ -927,6 +928,13 @@ procedure TGLCustomBitmapFont.TextOut(var rci : TRenderContextInfo;
             x, y : Single; const text : String; const color : TColor);
 begin
    TextOut(rci, x, y, text, ConvertWinColor(color));
+end;
+
+// TextWidth
+//
+function TGLCustomBitmapFont.TextWidth(const text : String) : Integer;
+begin
+   Result:=CalcStringWidth(text);
 end;
 
 // CharactersPerRow
