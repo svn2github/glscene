@@ -2854,21 +2854,11 @@ end;
 
 // AxisAlignedDimensions
 //
-{function TGLCube.AxisAlignedDimensions : TVector;
-begin
-   Result[0]:=FCubeSize[0]*Scale.DirectX*0.5;
-   Result[1]:=FCubeSize[1]*Scale.DirectY*0.5;
-   Result[2]:=FCubeSize[2]*Scale.DirectZ*0.5;
-   Result[3]:=0;
-end;
-}
-// AxisAlignedDimensions
-//
 function TGLCube.AxisAlignedDimensionsUnscaled : TVector;
 begin
-   Result[0]:=FCubeSize[0]*{Scale.DirectX*}0.5;
-   Result[1]:=FCubeSize[1]*{Scale.DirectY*}0.5;
-   Result[2]:=FCubeSize[2]*{Scale.DirectZ*}0.5;
+   Result[0]:=FCubeSize[0]*0.5;
+   Result[1]:=FCubeSize[1]*0.5;
+   Result[2]:=FCubeSize[2]*0.5;
    Result[3]:=0;
 end;
 
@@ -4337,19 +4327,7 @@ begin
    end;
 end;
 
-// AxisAlignedDimensions
-//
-{function TGLTorus.AxisAlignedDimensions : TVector;
-var
-   r, r1 : TGLFloat;
-begin
-   r:=Abs(FMajorRadius);
-   r1:=Abs(FMinorRadius);
-   Result:=VectorMake(r, r1, r);
-   ScaleVector(Result, Scale.AsVector);
-end;
-}
-// AxisAlignedDimensions
+// AxisAlignedDimensionsUnscaled
 //
 function TGLTorus.AxisAlignedDimensionsUnscaled : TVector;
 var
@@ -4357,16 +4335,14 @@ var
 begin
    r:=Abs(FMajorRadius);
    r1:=Abs(FMinorRadius);
-//   Result:=VectorMake(r, r1, r);
    Result:=VectorMake(r+r1, r+r1, r1); //Danb
 end;
-
 
 // RayCastIntersect
 //
 function TGLTorus.RayCastIntersect(const rayStart, rayVector : TVector;
-                                 intersectPoint : PVector = nil;
-                                 intersectNormal : PVector = nil) : Boolean;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean;
 var
    i : Integer;
    fRo2, fRi2, fDE, fVal, r, nearest : Double;
@@ -4423,7 +4399,9 @@ begin
    end;
 end;
 
-//----------------- TGLTeapot ----------------------------------------------------
+// ------------------
+// ------------------ TGLTeapot ------------------
+// ------------------
 
 // Create
 //
@@ -4433,8 +4411,8 @@ begin
    FGrid:=5;
 end;
 
-//------------------------------------------------------------------------------
-
+// BuildList
+//
 procedure TGLTeapot.BuildList(var rci : TRenderContextInfo);
 
 const PatchData : array[0..9, 0..15] of Integer =
@@ -4529,23 +4507,26 @@ begin
   glPopMatrix;
 end;
 
+// ------------------
+// ------------------ TGLDodecahedron ------------------
+// ------------------
 
-//----------------- TGLDodecahedron ----------------------------------------------
-
+// DodecahedronBuildList
+//
 procedure DodecahedronBuildList;
 const
    A = 1.61803398875; // (Sqrt(5)+1)/2
    B = 0.61803398875; // (Sqrt(5)-1)/2
    C = 1;
 const
-   Vertices : array[0..19, 0..2] of TGLFloat =
+   Vertices : array [0..19, 0..2] of TGLFloat =
       ((-A, 0, B), (-A, 0, -B), (A, 0, -B), (A, 0, B),
        (B, -A, 0), (-B, -A, 0), (-B, A, 0), (B, A, 0),
        (0, B, -A), (0, -B, -A), (0, -B, A), (0, B, A),
        (-C, -C, C), (-C, -C, -C), (C, -C, -C), (C, -C, C),
        (-C, C, C), (-C, C, -C), (C, C, -C), (C, C, C));
 
-   Polygons : array[0..11, 0..4] of TGLInt =
+   Polygons : array [0..11, 0..4] of TGLInt =
       (( 0, 12, 10, 11, 16),
        ( 1, 17, 8, 9, 13),
        ( 2, 14, 9, 8, 18),
@@ -4559,34 +4540,34 @@ const
        (10, 12, 5, 4, 15),
        (11, 19, 7, 6, 16));
 
-var I     : Integer;
-    U, V, N : TAffineVector;
-
+var
+   I     : Integer;
+   U, V, N : TAffineVector;
 begin
-  glPushMatrix;
-  glScalef(0.3, 0.3, 0.3);
-  for I:=0 to 11 do begin
-    U[0]:=Vertices[Polygons[I, 2], 0]-Vertices[Polygons[I, 1], 0];
-    U[1]:=Vertices[Polygons[I, 2], 1]-Vertices[Polygons[I, 1], 1];
-    U[2]:=Vertices[Polygons[I, 2], 2]-Vertices[Polygons[I, 1], 2];
+   glPushMatrix;
+   glScalef(0.3, 0.3, 0.3);
+   for I:=0 to 11 do begin
+      U[0]:=Vertices[Polygons[I, 2], 0]-Vertices[Polygons[I, 1], 0];
+      U[1]:=Vertices[Polygons[I, 2], 1]-Vertices[Polygons[I, 1], 1];
+      U[2]:=Vertices[Polygons[I, 2], 2]-Vertices[Polygons[I, 1], 2];
 
-    V[0]:=Vertices[Polygons[I, 0], 0]-Vertices[Polygons[I, 1], 0];
-    V[1]:=Vertices[Polygons[I, 0], 1]-Vertices[Polygons[I, 1], 1];
-    V[2]:=Vertices[Polygons[I, 0], 2]-Vertices[Polygons[I, 1], 2];
+      V[0]:=Vertices[Polygons[I, 0], 0]-Vertices[Polygons[I, 1], 0];
+      V[1]:=Vertices[Polygons[I, 0], 1]-Vertices[Polygons[I, 1], 1];
+      V[2]:=Vertices[Polygons[I, 0], 2]-Vertices[Polygons[I, 1], 2];
 
-    VectorCrossProduct(U, V, N);
-    NormalizeVector(N);
+      VectorCrossProduct(U, V, N);
+      NormalizeVector(N);
 
-    glBegin(GL_TRIANGLE_FAN);
-       glNormal3fv(@N);
-       glVertex3fv(@Vertices[Polygons[I, 0], 0]);
-       glVertex3fv(@Vertices[Polygons[I, 1], 0]);
-       glVertex3fv(@Vertices[Polygons[I, 2], 0]);
-       glVertex3fv(@Vertices[Polygons[I, 3], 0]);
-       glVertex3fv(@Vertices[Polygons[I, 4], 0]);
-    glEnd;
-  end;
-  glPopMatrix;
+      glBegin(GL_TRIANGLE_FAN);
+         glNormal3fv(@N);
+         glVertex3fv(@Vertices[Polygons[I, 0], 0]);
+         glVertex3fv(@Vertices[Polygons[I, 1], 0]);
+         glVertex3fv(@Vertices[Polygons[I, 2], 0]);
+         glVertex3fv(@Vertices[Polygons[I, 3], 0]);
+         glVertex3fv(@Vertices[Polygons[I, 4], 0]);
+      glEnd;
+   end;
+   glPopMatrix;
 end;
 
 // BuildList
@@ -4596,9 +4577,12 @@ begin
    DodecahedronBuildList;
 end;
 
-//----------------- TGLArrowLine -------------------------------------------------
+// ------------------
+// ------------------ TGLArrowLine ------------------
+// ------------------
 
 // Create
+//
 constructor TGLArrowLine.Create(AOwner:TComponent);
 begin
    inherited;
@@ -4610,7 +4594,7 @@ begin
    fBottomArrowHeadHeight:=0.5;
    FHeadStackingStyle:=ahssStacked;
    { by default there is not much point having the top of the line (cylinder)
-     showing is it is coincidental with the Toparrowhead bottom.
+     showing as it is coincidental with the Toparrowhead bottom.
      Note I've defaulted to "vector" type arrows (arrow head on top only}
    fParts:=[alLine, alTopArrow];
 end;

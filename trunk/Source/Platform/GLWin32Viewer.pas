@@ -490,7 +490,7 @@ var
 begin
    BeginPaint(Handle, PS);
    try
-      if IsOpenGLAvailable then
+     if IsOpenGLAvailable then
          FBuffer.Render;
    finally
       EndPaint(Handle, PS);

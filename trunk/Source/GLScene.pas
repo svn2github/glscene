@@ -242,9 +242,9 @@ type
 
   // TObjectChanges
   //
-  // used to decribe only the changes in an object, which have to be reflected in the scene
-  TObjectChange = (ocSpot, ocAttenuation,
-                   ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
+  // used to decribe only the changes in an object,
+  // which have to be reflected in the scene
+  TObjectChange = (ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
                    ocStructure);
   TObjectChanges = set of TObjectChange;
 
@@ -1269,7 +1269,6 @@ type
 
          procedure DoAfterRender;
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
-         procedure Loaded; override;
          procedure SetChildOrder(AChild: TComponent; Order: Integer); override;
          procedure SetObjectsSorting(const val : TGLObjectsSorting);
          procedure SetVisibilityCulling(const val : TGLVisibilityCulling);
@@ -1290,7 +1289,7 @@ type
 
          procedure AddBuffer(aBuffer : TGLSceneBuffer);
          procedure RemoveBuffer(aBuffer : TGLSceneBuffer);
-         procedure SetupLights(Maximum: Integer);
+         procedure SetupLights(maxLights : Integer);
          procedure RenderScene(aBuffer : TGLSceneBuffer;
                                const viewPortSizeX, viewPortSizeY : Integer;
                                drawState : TDrawState);
@@ -1896,7 +1895,6 @@ type
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
-         destructor  Destroy; override;
 
          procedure Render; override;
 
@@ -5095,9 +5093,8 @@ end;
 procedure TGLLightSource.CoordinateChanged(Sender: TGLCoordinates);
 begin
    inherited;
-   if Sender = FSpotDirection then
-      Include(FChanges, ocSpot);
-   TransformationChanged;
+   if Sender=FSpotDirection then
+      TransformationChanged;
 end;
 
 // GetHandle
@@ -5123,7 +5120,6 @@ procedure TGLLightSource.SetSpotDirection(AVector: TGLCoordinates);
 begin
    FSpotDirection.DirectVector:=AVector.AsVector;
    FSpotDirection.W:=0;
-   Include(FChanges, ocSpot);
    NotifyChange(Self);
 end;
 
@@ -5133,7 +5129,6 @@ procedure TGLLightSource.SetSpotExponent(AValue: Single);
 begin
    if FSpotExponent <> AValue then begin
       FSpotExponent:=AValue;
-      Include(FChanges, ocSpot);
       NotifyChange(Self);
    end;
 end;
@@ -5145,7 +5140,6 @@ begin
    if FSpotCutOff<>val then begin
       if ((val>=0) and (val<=90)) or (val=180) then begin
          FSpotCutOff:=val;
-         Include(FChanges, ocSpot);
          NotifyChange(Self);
       end;
    end;
@@ -5157,7 +5151,6 @@ procedure TGLLightSource.SetLightStyle(const val : TLightStyle);
 begin
    if FLightStyle<>val then begin
       FLightStyle:=val;
-      Include(FChanges, ocSpot);
       NotifyChange(Self);
    end;
 end;
@@ -5190,9 +5183,8 @@ end;
 //
 procedure TGLLightSource.SetConstAttenuation(AValue: Single);
 begin
-   if FConstAttenuation <> AValue then begin
+   if FConstAttenuation<>AValue then begin
       FConstAttenuation:=AValue;
-      Include(FChanges, ocAttenuation);
       NotifyChange(Self);
    end;
 end;
@@ -5201,9 +5193,8 @@ end;
 //
 procedure TGLLightSource.SetLinearAttenuation(AValue: Single);
 begin
-   if FLinearAttenuation <> AValue then begin
+   if FLinearAttenuation<>AValue then begin
       FLinearAttenuation:=AValue;
-      Include(FChanges, ocAttenuation);
       NotifyChange(Self);
    end;
 end;
@@ -5214,117 +5205,9 @@ procedure TGLLightSource.SetQuadraticAttenuation(AValue: Single);
 begin
    if FQuadraticAttenuation <> AValue then begin
       FQuadraticAttenuation:=AValue;
-      Include(FChanges, ocAttenuation);
       NotifyChange(Self);
    end;
 end;
-
-//------------------------------------------------------------------------------
-
-{procedure TGLLightSource.RenderLensFlares(from, at: TAffineVector; near_clip: Single);
-const
-  global_scale = 0.5;
-  MinDot = 1e-20;
-var
-   view_dir, tmp, light_dir, pos, LightPos : TAffineVector;
-   dx, dy, center, axis, sx, sy: TAffineVector;
-   dot: Extended;
-   I: Integer;
-   NewFrom, NewAt: TAffineVector;
-   LightColor: TAffineVector;
-begin
-   // determine current light position
-   LightPos:=MakeAffineVector([FGLobalMatrix[3, 0], FGLobalMatrix[3, 1], FGLobalMatrix[3, 2]]);
-   // take out camera influence
-   Newat:=VectorAffineSubtract(at, from);
-   Newfrom:=NullVector;
-
-   // view_dir = normalize(at-from)
-   view_dir:=VectorAffineSubtract(Newat, NewFrom);
-   VectorNormalize(view_dir);
-
-   // center = from + near_clip * view_dir
-   tmp:=view_dir;
-   VectorScale(tmp, near_clip);
-   center:=VectorAffineAdd(Newfrom, tmp);
-
-   // light_dir = normalize(light-from)
-   light_dir:=VectorAffineSubtract(LightPos, Newfrom);
-   VectorNormalize(light_dir);
-
-   // light = from + dot(light, view_dir) * near_clip * light_dir
-   dot:=VectorAffineDotProduct(light_dir, view_dir);
-   tmp:=light_dir;
-   if Abs(Dot) < MinDot then
-      if Dot < 0 then Dot:=-MinDot else Dot:=MinDot;
-   VectorScale(tmp, near_clip / dot);
-   LightPos:=VectorAffineAdd(Newfrom, tmp);
-
-   // axis = light - center
-   axis:=VectorAffineSubtract(LightPos, center);
-
-   // dx = normalize(axis)
-   dx:=axis;
-   VectorNormalize(dx);
-
-   // dy = cross(dx, view_dir)
-   dy:=VectorCrossProduct(dx, view_dir);
-
-   //glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_LIGHTING_BIT or GL_LINE_BIT
-   //  or GL_COLOR_BUFFER_BIT or GL_TEXTURE_BIT);
-   glPushAttrib(GL_ALL_ATTRIB_BITS);
-   Scene.CurrentViewer.UnnecessaryState([stDepthTest, stLighting]);
-   Scene.CurrentViewer.RequestedState([stBlend, sTGLTexture2D]);
-   glBlendFunc(GL_ONE, GL_ONE);
-   glLoadIdentity;
-
-   for I:=0 to LensFlares.Count - 1 do with LensFlares do begin
-      sx:=dx;
-      VectorScale(sx, Flare[I].Scale * global_scale*10);
-      sy:=dy;
-      VectorScale(sy, Flare[I].Scale * global_scale*10);
-      //sx:=MakeAffineVector(1, 0, 0);
-      //sy:=MakeAffineVector(0, 1, 0);
-
-      //glColor3fv(LensFlares.Flare[I].ColorAddr);
-      LightColor:=MakeAffineVector(Diffuse.Color);
-      LightColor:=VectorAffineAdd(LightColor, LensFlares.Flare[I].Color);;
-      VectorScale(LightColor, 0.5);
-      glColor3fv(@LightColor);
-       glEnable(GL_TEXTURE_2D);;
-      if Flare[I].FlareType < 0 then begin
-         SetGLCurrentTexture(ShineTexture[FlareTic]);
-         FlareTic:=(FlareTic + 1) mod 10;
-      end else SetGLCurrentTexture(FlareTexture[Flare[I].FlareType]);
-
-      // position = center + flare[i].loc * axis
-      tmp:=axis;
-      VectorScale(tmp, Flare[I].Location);
-      Pos:=VectorAffineAdd(center, tmp);
-
-      glBegin(GL_QUADS);
-        xglTexCoord2f(0, 0);
-        tmp:=VectorAffineCombine3(Pos, sx, sy, 1, -1, -1);
-        glVertex3fv(@tmp);
-
-        xglTexCoord2f(128, 0);
-        tmp:=VectorAffineCombine3(Pos, sx, sy, 1, 1, -1);
-        glVertex3fv(@tmp);
-
-        xglTexCoord2f(128, 128);
-        tmp:=VectorAffineCombine3(Pos, sx, sy, 1, 1, 1);
-        glVertex3fv(@tmp);
-
-        xglTexCoord2f(0, 128);
-        tmp:=VectorAffineCombine3(Pos, sx, sy, 1, -1, 1);
-        glVertex3fv(@tmp);
-      glEnd;
-   end;
-   Scene.CurrentViewer.RequestedState([stDepthTest, stLighting]);
-   Scene.CurrentViewer.UnnecessaryState([stBlend, sTGLTexture2D]);
-   glPopAttrib;
-end;
-}
 
 // ------------------
 // ------------------ TGLScene ------------------
@@ -5334,19 +5217,19 @@ end;
 //
 constructor TGLScene.Create(AOwner: TComponent);
 begin
-  inherited;
-  // root creation
-  FObjects:=TGLSceneRootObject.Create(Self);
-  FObjects.Name:='ObjectRoot';
-  FObjects.FScene:=Self;
-  FCameras:=TGLSceneRootObject.Create(Self);
-  FCameras.Name:='CameraRoot';
-  FCameras.FScene:=Self;
-  FLights:=TList.Create;
-  FObjectsSorting:=osRenderBlendedLast;
-  FVisibilityCulling:=vcNone;
-  // actual maximum number of lights is stored in TGLSceneViewer
-  FLights.Count:=8;
+   inherited;
+   // root creation
+   FObjects:=TGLSceneRootObject.Create(Self);
+   FObjects.Name:='ObjectRoot';
+   FObjects.FScene:=Self;
+   FCameras:=TGLSceneRootObject.Create(Self);
+   FCameras.Name:='CameraRoot';
+   FCameras.FScene:=Self;
+   FLights:=TList.Create;
+   FObjectsSorting:=osRenderBlendedLast;
+   FVisibilityCulling:=vcNone;
+   // actual maximum number of lights is stored in TGLSceneViewer
+   FLights.Count:=8;
 end;
 
 // Destroy
@@ -5378,8 +5261,8 @@ var
    i : Integer;
 begin
    for i:=0 to FLights.Count-1 do
-      if FLights[i]=nil then begin
-         FLights[i]:=ALight;
+      if FLights.List[i]=nil then begin
+         FLights.List[i]:=ALight;
          ALight.FLightID:=GL_LIGHT0+i;
          Break;
       end;
@@ -5431,7 +5314,7 @@ procedure TGLScene.ShutdownAllLights;
       if Obj is TGLLightSource then
          TGLLightSource(Obj).Shining:=False;
       for i:=0 to Obj.Count-1 do
-         DoShutDownLight(Obj[I]);
+         DoShutDownLight(Obj[i]);
    end;
 
 begin
@@ -5481,20 +5364,11 @@ begin
    FCameras.GetChildren(AProc, Root);
 end;
 
-//------------------------------------------------------------------------------
-
+// SetChildOrder
+//
 procedure TGLScene.SetChildOrder(AChild: TComponent; Order: Integer);
-
 begin
-  (AChild as TGLBaseSceneObject).Index:=Order;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TGLScene.Loaded;
-
-begin
-  inherited Loaded;
+   (AChild as TGLBaseSceneObject).Index:=Order;
 end;
 
 // IsUpdating
@@ -5807,20 +5681,20 @@ end;
 
 // SetupLights
 //
-procedure TGLScene.SetupLights(Maximum: Integer);
+procedure TGLScene.SetupLights(maxLights : Integer);
 var
    i : Integer;
-   LS: TGLLightSource;
-   Max: Integer;
+   lightSource : TGLLightSource;
+   nbLights : Integer;
 begin
+   nbLights:=FLights.Count;
+   if nbLights>maxLights then
+      nbLights:=maxLights;
+   // setup all light sources
    glPushMatrix;
-   // start searching through all light sources
-   if Maximum<FLights.Count then
-      Max:=Maximum
-   else Max:=FLights.Count;
-   for i:=0 to Max-1 do begin
-      LS:=TGLLightSource(FLights[i]);
-      if Assigned(LS) then with LS do begin
+   for i:=0 to nbLights-1 do begin
+      lightSource:=TGLLightSource(FLights[i]);
+      if Assigned(lightSource) then with lightSource do begin
          if Shining then begin
             glEnable(FLightID);
             glPopMatrix;
@@ -5833,29 +5707,28 @@ begin
                glMultMatrixf(PGLFloat(Parent.AbsoluteMatrixAsAddress));
                glLightfv(FLightID, GL_POSITION, Position.AsAddress);
             end;
-            with FAmbient  do glLightfv(FLightID, GL_AMBIENT, AsAddress);
-            with FDiffuse  do glLightfv(FLightID, GL_DIFFUSE, AsAddress);
-            with FSpecular do glLightfv(FLightID, GL_SPECULAR, AsAddress);
-            case LightStyle of
-               lsSpot : begin
-                  if FSpotCutOff<>180 then begin
-                     glLightfv(FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
-                     glLightfv(FLightID, GL_SPOT_EXPONENT, @FSpotExponent);
-                  end;
-                  glLightfv(FLightID, GL_SPOT_CUTOFF, @FSpotCutOff);
+            glLightfv(FLightID, GL_AMBIENT, FAmbient.AsAddress);
+            glLightfv(FLightID, GL_DIFFUSE, FDiffuse.AsAddress);
+            glLightfv(FLightID, GL_SPECULAR, FSpecular.AsAddress);
+            if LightStyle=lsSpot then begin
+               if FSpotCutOff<>180 then begin
+                  glLightfv(FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
+                  glLightfv(FLightID, GL_SPOT_EXPONENT, @FSpotExponent);
                end;
-               lsOmni :
-                  glLightf(FLightID, GL_SPOT_CUTOFF, 180);
+               glLightfv(FLightID, GL_SPOT_CUTOFF, @FSpotCutOff);
+            end else begin
+               glLightf(FLightID, GL_SPOT_CUTOFF, 180);
             end;
-            Exclude(FChanges, ocSpot);
             glLightfv(FLightID, GL_CONSTANT_ATTENUATION, @FConstAttenuation);
             glLightfv(FLightID, GL_LINEAR_ATTENUATION, @FLinearAttenuation);
             glLightfv(FLightID, GL_QUADRATIC_ATTENUATION, @FQuadraticAttenuation);
-            Exclude(FChanges, ocAttenuation);
          end else glDisable(FLightID);
-      end else glDisable(GL_LIGHT0+I);
+      end else glDisable(GL_LIGHT0+i);
    end;
    glPopMatrix;
+   // turn off other lights
+   for i:=nbLights to maxLights-1 do
+      glDisable(GL_LIGHT0+i);
 end;
 
 //------------------------------------------------------------------------------
@@ -7096,7 +6969,6 @@ begin
                          GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
          end;
          glFlush;
-//         RenderingContext.SwapBuffers;
          RenderingContext.SwapBuffers;
       finally
          RenderingContext.Deactivate;
@@ -7263,7 +7135,7 @@ end;
 //
 procedure TGLSceneBuffer.SetFogEnable(AValue: Boolean);
 begin
-   if FFogEnable <> AValue then begin
+   if FFogEnable<>AValue then begin
       FFogEnable:=AValue;
       NotifyChange(Self);
    end;
@@ -7281,7 +7153,7 @@ end;
 //
 function TGLSceneBuffer.StoreFog : Boolean;
 begin
-   Result:=not FFogEnvironment.IsAtDefaultValues;
+   Result:=(not FFogEnvironment.IsAtDefaultValues);
 end;
 
 // DoChange
@@ -7330,7 +7202,7 @@ end;
 procedure TGLNonVisualViewer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
    inherited;
-   if (Operation = opRemove) and (AComponent = Camera) then
+   if (Operation=opRemove) and (AComponent=Camera) then
       Camera:=nil;
 end;
 
@@ -7577,13 +7449,6 @@ begin
    inherited Create(AOwner);
    Width:=256;
    Height:=256;
-end;
-
-// Destroy
-//
-destructor TGLMemoryViewer.Destroy;
-begin
-   inherited Destroy;
 end;
 
 // Render
