@@ -136,6 +136,7 @@ contains
   GuiSkinEditorFormUnit in '..\Source\DesignTime\GuiSkinEditorFormUnit.pas',
   ApplicationFileIO in '..\Source\Base\ApplicationFileIO.pas',
   TGA in '..\Source\FileFormats\TGA.pas',
-  GLLensFlare in '..\Source\GLLensFlare.pas';
+  GLLensFlare in '..\Source\GLLensFlare.pas',
+  MeshUtils in '..\Source\Base\MeshUtils.pas';
 
 end.
