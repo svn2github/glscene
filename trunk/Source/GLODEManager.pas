@@ -12,6 +12,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>21/04/04 - SG - Changed to dynamic linking DelphiODE,
+                        Design-time no longer makes any DelphiODE calls.
     <li>15/04/04 - SG - Added OnCustomCollision event to TGLODEManager.
     <li>14/04/04 - SG - Minor DelphiODE compatibility changes.
     <li>30/03/04 - SG - Joint objects are now fully persistent.
@@ -61,7 +63,7 @@ unit GLODEManager;
 interface
 
 uses
-  Classes, ODEImport, ODEGL, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
+  Classes, dynode, dynodegl, GLScene, GLMisc, VectorGeometry, GLTexture, OpenGL1x,
   XOpenGL, SysUtils, GLObjects, XCollection, PersistentClasses, VectorLists;
 
 type
@@ -274,13 +276,17 @@ type
     private
       FBody       : PdxBody;
       FMass       : TdMass;
-      FRealignODE : Boolean;
+      FRealignODE,
+      FEnabled    : Boolean;
       procedure AlignBodyToMatrix(Mat: TMatrix);
       procedure SetMass(const value:TdMass);
       function GetMass : TdMass;
       procedure SetEnabled(const Value : Boolean);
       function GetEnabled : Boolean;
+    protected
+      procedure Initialize; override;
     public
+      constructor Create(AOwner : TComponent); override;
       procedure StructureChanged; override;
 
       procedure AddForce(Force : TAffineVector);
@@ -367,6 +373,7 @@ type
       FBody : PdxBody;
       FMass : TdMass;
       FElements : TODEElements;
+      FEnabled : Boolean;
       procedure SetMass(const Value : TdMass);
       function GetMass : TdMass;
       procedure AlignBodyToMatrix(Mat: TMatrix);
@@ -1070,17 +1077,20 @@ constructor TGLODEManager.Create(AOwner:TComponent);
 begin
   inherited;
 
-  FWorld:=dWorldCreate;
-  FSpace:=dHashSpaceCreate(nil);
-  FContactGroup:=dJointGroupCreate(100);
+  if not (csDesigning in ComponentState) then begin
+    InitODE;
+    FWorld:=dWorldCreate;
+    FSpace:=dHashSpaceCreate(nil);
+    dWorldSetCFM(FWorld,1e-5);
+    FContactGroup:=dJointGroupCreate(100);
+  end;
+
   FDynamicObjectRegister:=TPersistentObjectList.Create;
   FJointRegister:=TPersistentObjectList.Create;
   FRFContactList:=TList.Create;
 
   FGravity:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csVector);
   FGravity.OnNotifyChange:=GravityChange;
-
-  dWorldSetCFM(FWorld,1e-5);
 
   FStepFast:=False;
   FFastIterations:=5;
@@ -1106,10 +1116,15 @@ begin
   FJointRegister.Free;
   FGravity.Free;
   FRFContactList.Free;
-  dJointGroupEmpty(FContactGroup);
-  dJointGroupDestroy(FContactGroup);
-  dSpaceDestroy(FSpace);
-  dWorldDestroy(FWorld);
+
+  if not (csDesigning in ComponentState) then begin
+    dJointGroupEmpty(FContactGroup);
+    dJointGroupDestroy(FContactGroup);
+    dSpaceDestroy(FSpace);
+    dWorldDestroy(FWorld);
+    CloseODE;
+  end;
+
   DeregisterManager(Self);
   inherited Destroy;
 end;
@@ -1160,7 +1175,8 @@ end;
 //
 procedure TGLODEManager.GravityChange(Sender:TObject);
 begin
-  dWorldSetGravity(FWorld,FGravity.X,FGravity.Y,FGravity.Z);
+  if not (csDesigning in ComponentState) then
+    dWorldSetGravity(FWorld,FGravity.X,FGravity.Y,FGravity.Z);
 end;
 
 // CalculateContact
@@ -1593,11 +1609,27 @@ end;
 // TGLODEDynamicObject
 // ------------------------------------------------------------------
 
+// Create
+//
+constructor TGLODEDynamicObject.Create(AOwner : TComponent);
+begin
+  inherited;
+  FEnabled:=True;
+end;
+
 // StructureChanged
 //
 procedure TGLODEDynamicObject.StructureChanged;
 begin
   AlignBodyToMatrix(AbsoluteMatrix);
+  inherited;
+end;
+
+// Initialize
+//
+procedure TGLODEDynamicObject.Initialize;
+begin
+  Enabled:=FEnabled;
   inherited;
 end;
 
@@ -1637,11 +1669,12 @@ end;
 procedure TGLODEDynamicObject.SetEnabled(const Value : Boolean);
 begin
   if Assigned(FBody) then
-    if Value <> (dBodyIsEnabled(FBody)=1) then begin
-      if Value then
-        dBodyEnable(FBody)
-      else
-        dBodyDisable(FBody);
+    if Value <> Enabled then begin
+      FEnabled:=Value;
+      if Assigned(FBody) then begin
+        if FEnabled then dBodyEnable(FBody)
+        else dBodyDisable(FBody);
+      end;
     end;
 end;
 
@@ -1649,9 +1682,9 @@ end;
 //
 function TGLODEDynamicObject.GetEnabled : Boolean;
 begin
-  Result:=True; // Not sure if this should be true or false by default
   if Assigned(FBody) then
-    Result:=(dBodyIsEnabled(FBody)=1);
+    FEnabled:=(dBodyIsEnabled(FBody)=1);
+  Result:=FEnabled;
 end;
 
 // AddForce
@@ -2051,6 +2084,7 @@ constructor TGLODEDynamicBehaviour.Create(AOwner : TXCollection);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
+  FEnabled:=True;
 end;
 
 // Destroy
@@ -2082,6 +2116,8 @@ begin
   CalculateMass;
   dBodySetMass(FBody,@FMass);
   Manager.RegisterObject(self);
+  
+  Enabled:=FEnabled;
 
   inherited;
 end;
@@ -2170,6 +2206,8 @@ begin
   dBodySetPosition(FBody,Mat[3][0],Mat[3][1],Mat[3][2]);
 end;
 
+// GetAbsoluteMatrix
+//
 function TGLODEDynamicBehaviour.GetAbsoluteMatrix;
 begin
   Result:=TGLBaseSceneObject(Owner.Owner).AbsoluteMatrix;
@@ -2219,6 +2257,8 @@ begin
   dBodySetMass(FBody,@FMass);
 end;
 
+// UniqueItem
+//
 class function TGLODEDynamicBehaviour.UniqueItem : Boolean;
 begin
   Result:=True;
@@ -2229,11 +2269,12 @@ end;
 procedure TGLODEDynamicBehaviour.SetEnabled(const Value : Boolean);
 begin
   if Assigned(FBody) then
-    if Value <> (dBodyIsEnabled(FBody)=1) then begin
-      if Value then
-        dBodyEnable(FBody)
-      else
-        dBodyDisable(FBody);
+    if Value <> Enabled then begin
+      FEnabled:=Value;
+      if Assigned(FBody) then begin
+        if FEnabled then dBodyEnable(FBody)
+        else dBodyDisable(FBody);
+      end;
     end;
 end;
 
@@ -2241,9 +2282,9 @@ end;
 //
 function TGLODEDynamicBehaviour.GetEnabled : Boolean;
 begin
-  Result:=True; // Not sure if this should be true or false by default
   if Assigned(FBody) then
-    Result:=(dBodyIsEnabled(FBody)=1);
+    FEnabled:=(dBodyIsEnabled(FBody)=1);
+  Result:=FEnabled;
 end;
 
 // AddForce
@@ -2312,7 +2353,7 @@ end;
 
 
 // ------------------------------------------------------------------
-// TGLODEDynamicStatic
+// TGLODEStaticBehaviour
 // ------------------------------------------------------------------
 
 // Create
@@ -2690,8 +2731,10 @@ end;
 //
 procedure TODEBaseElement.ODERebuild;
 begin
-  AlignGeomElementToMatrix(FLocalMatrix);
-  if FDynamic then CalculateMass;
+  if Initialized then begin
+    AlignGeomElementToMatrix(FLocalMatrix);
+    if FDynamic then CalculateMass;
+  end;
 end;
 
 
@@ -4137,6 +4180,7 @@ end;
 constructor TODEBaseJoint.Create(AOwner : TXCollection);
 begin
   inherited;
+  FJointID:=0;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
   FAnchor.OnNotifyChange:=AnchorChange;
   FAxis:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
@@ -4277,7 +4321,7 @@ procedure TODEBaseJoint.Attach(Obj1, Obj2: TGLBaseSceneObject);
 var
   Body1, Body2 : PdxBody;
 begin
-  if FJointID=0 then exit;
+  if (FJointID=0) or not FInitialized then exit;
 
   FObject1:=Obj1;
   FObject2:=Obj2;
@@ -4315,11 +4359,13 @@ end;
 procedure TODEBaseJoint.SetManager(const Value: TGLODEManager);
 begin
   if FManager<>Value then begin
-    if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
-      Deinitialize;
+    if Assigned(FManager) then
+      if not (csDesigning in FManager.ComponentState) then
+        Deinitialize;
     FManager:=Value;
-    if Assigned(FManager) and not (csDesigning in TComponent(Owner.Owner).ComponentState) then
-      Initialize;
+    if Assigned(FManager) then
+      if not (csDesigning in FManager.ComponentState) then
+        Initialize;
   end;
 end;
 

@@ -21,7 +21,7 @@ unit GLODECustomColliders;
 interface
 
 uses
-  Classes, GLODEManager, ODEImport, ODEGL, VectorGeometry, GeometryBB,
+  Classes, GLODEManager, dynode, dynodegl, VectorGeometry, GeometryBB,
   VectorLists, GLTerrainRenderer, GLVectorfileObjects;
 
 type

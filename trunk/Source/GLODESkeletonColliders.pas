@@ -12,7 +12,7 @@ interface
 
 uses
   Classes, PersistentClasses, VectorGeometry, GLVectorFileObjects,
-  ODEImport;
+  dynode;
 
 type
   
