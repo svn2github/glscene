@@ -13,7 +13,7 @@ unit USolarSystem;
 
 interface
 
-uses Geometry;
+uses VectorGeometry;
 
 type
 
