@@ -24,6 +24,10 @@
    texture and can be enabled using the boSpecularTexture3
    bump option and setting the SpecularMode to smBlinn or
    smPhong (smOff will disable specular in the shader).<p>
+   
+   With the boLightAttenutation flag set the shader will
+   use the OpenGL light attenuation coefficients when
+   calculating light intensity.<p>
 }
 unit Unit1;
 
