@@ -143,7 +143,7 @@ end;
 procedure TGLTexCombineShader.NotifyLibMaterial4Destruction;
 begin
    FLibMaterial4Name:='';
-   currentLibMaterial3:=nil;
+   currentLibMaterial4:=nil;
 end;
 
 // SetMaterialLibrary
