@@ -16,6 +16,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>08/07/04 - LR - Removed ../ from the GLScene.inc   
       <li>23/05/03 - EG - Support for arbitrary (complex) mappings
       <li>01/02/03 - EG - Added State stack
       <li>01/07/02 - EG - Added mtcmUndefined, fixed initial state
@@ -34,7 +35,7 @@ unit XOpenGL;
 
 interface
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 {.$define MULTITHREADOPENGL}
 

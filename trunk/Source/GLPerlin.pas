@@ -5,6 +5,7 @@
    A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/07/04 - LR - Correction for Linux
       <li>29/01/03 - JaJ - Submitted to GLScene.
 	</ul></font>
 }
@@ -13,7 +14,7 @@ unit GLPerlin;
 interface
 
 uses
-  Classes, SysUtils, Graphics, VectorGeometry, GLPerlinBase, GLHeightData;
+  Classes, SysUtils, VectorGeometry, GLPerlinBase, GLHeightData, GLCrossPlatform;
 
 Type
   TGLPerlinInterpolation = (pi_none, pi_simple, pi_linear,pi_Smoothed, pi_Cosine, pi_cubic);
@@ -92,7 +93,7 @@ Type
     Constructor Create(AOwner : TComponent); override;
     Procedure Generate; override;
     Function GetPerlinValue_2D(X,Y : Double) : Double;
-    Procedure MakeBitmap(Param : TBitmap);
+    Procedure MakeBitmap(Param : TGLBitmap);
     Procedure SetHeightData(heightData : THeightData);
   End;
 
@@ -134,8 +135,6 @@ Type
 procedure Register;
 
 implementation
-
-uses GLCrossPlatform;
 
 type
    PSmallInt = ^SmallInt;
@@ -518,7 +517,7 @@ Begin
   Result := total;
 End;
 
-Procedure TGL2DPerlin.MakeBitmap(Param : TBitmap);
+Procedure TGL2DPerlin.MakeBitmap(Param : TGLBitmap);
 
 Var
   XC, YC : Integer;

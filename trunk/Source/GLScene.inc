@@ -3,6 +3,7 @@
 //                  by Brad Stowers: bstowers@pobox.com
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 //
+// 08/07/04 - LR - BCB5 and BCB6 detection
 // 30/08/02 - EG - Delphi 7 detection
 // 24/01/02 - EG - Linux/Kylix changes (Puthoon)
 // 28/12/01 - EG - Added GLS_Graphics32_SUPPORT
@@ -65,14 +66,24 @@
 
 {$ifdef VER140}
   {$DEFINE GLS_COMPILER_6}
-  {$DEFINE GLS_DELPHI}
   {$DEFINE GLS_DELPHI_6}
+  {$IFDEF BCB}
+    {$DEFINE GLS_CPPB}
+    {$DEFINE GLS_CPPB_6}
+  {$ELSE}      
+    {$DEFINE GLS_DELPHI}       
+  {$ENDIF}
 {$endif}
 
 {$IFDEF VER130}
-  {$DEFINE GLS_COMPILER_5}
-  {$DEFINE GLS_DELPHI}
-  {$DEFINE GLS_DELPHI_5}
+  {$DEFINE GLS_COMPILER_5} 
+  {$DEFINE GLS_DELPHI_5}  
+  {$IFDEF BCB}
+    {$DEFINE GLS_CPPB}
+    {$DEFINE GLS_CPPB_5}
+  {$ELSE}      
+    {$DEFINE GLS_DELPHI}       
+  {$ENDIF}
 {$ENDIF}
 
 {$IFDEF VER125}
@@ -219,6 +230,19 @@
 {$IFDEF GLS_CPPB_4}
   {$DEFINE GLS_CPPB_3_UP}
   {$DEFINE GLS_CPPB_4_UP}
+{$ENDIF}
+
+{$IFDEF GLS_CPPB_5}
+  {$DEFINE GLS_CPPB_3_UP}
+  {$DEFINE GLS_CPPB_4_UP}
+  {$DEFINE GLS_CPPB_5_UP}  
+{$ENDIF}
+
+{$IFDEF GLS_CPPB_6}
+  {$DEFINE GLS_CPPB_3_UP}
+  {$DEFINE GLS_CPPB_4_UP}
+  {$DEFINE GLS_CPPB_5_UP}  
+  {$DEFINE GLS_CPPB_6_UP} 
 {$ENDIF}
 
 {$IFDEF GLS_COMPILER_3_UP}

@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/07/04 - LR - Change case for Linux	
       <li>05/07/04 - LR - Corrections for Linux. Now glX function are directly load
                           by external action (like for Windows). So i suppress
                           the function LoadLinuxOpenGL.
@@ -44,7 +45,7 @@ uses
   {$endif }
 
   {$ifdef LINUX}
-    LibC, XLib, Types
+    Libc, Xlib, Types
   {$endif}
   ;
 

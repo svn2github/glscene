@@ -10,6 +10,7 @@
    Based on David McDuffee's document from www.wotsit.org<p>
 
 	<b>History : </b><font size=-1><ul>
+           <li>08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
 	   <li>21/11/02 - Egg - Creation
 	</ul></font>
 }
@@ -17,7 +18,9 @@ unit TGA;
 
 interface
 
-uses Classes, Graphics, SysUtils;
+{$i GLScene.inc}
+
+uses Classes, SysUtils, GLCrossPlatform;
 
 type
 
@@ -26,7 +29,7 @@ type
    {: TGA image load/save capable class for Delphi.<p>
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
-	TTGAImage = class (TBitmap)
+	TTGAImage = class (TGLBitmap)
 	   private
 	      { Private Declarations }
 
@@ -175,8 +178,8 @@ begin
       raise ETGAException.Create('ColorMapped TGA unsupported');
 
    case header.PixelSize of
-      24 : PixelFormat:=pf24bit;
-      32 : PixelFormat:=pf32bit;
+      24 : PixelFormat:=glpf24bit;
+      32 : PixelFormat:=glpf32bit;
    else
       raise ETGAException.Create('Unsupported TGA ImageType');
    end;
@@ -242,8 +245,10 @@ begin
    header.Width:=Width;
    header.Height:=Height;
    case PixelFormat of
-      pf24bit : header.PixelSize:=24;
-      pf32bit : header.PixelSize:=32;
+   {$IFDEF MSWINDOWS}
+      glpf24bit : header.PixelSize:=24;
+   {$ENDIF}
+      glpf32bit : header.PixelSize:=32;
    else
       raise ETGAException.Create('Unsupported Bitmap format');
    end;
@@ -261,11 +266,10 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   TPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
+   TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
 
 finalization
 
-   TPicture.UnregisterGraphicClass(TTGAImage);
+   TGLPicture.UnregisterGraphicClass(TTGAImage);
 
 end.
-

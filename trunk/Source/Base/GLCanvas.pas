@@ -8,6 +8,7 @@
    to the GLScene core units (only to base units).<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/07/04 - LR - Replace Graphics and TPoint by GLCrossPlatform for Linux
       <li>13/01/04 - EG - Polyline/Polygon fix
       <li>07/05/03 - EG - SetPenWidth now correctly stops the primitive
       <li>08/01/03 - EG - StopPrimitive now public
@@ -26,9 +27,7 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, VectorGeometry
-   {$ifdef GLS_COMPILER_6_UP}, Types{$endif}
-   {$ifdef WIN32}, Windows{$endif};
+uses Classes, VectorGeometry, GLCrossPlatform;
 
 type
 
@@ -112,9 +111,9 @@ type
          {: Draws the set of lines defined by connecting the points.<p>
             Similar to invoking MoveTo on the first point, then LineTo
             on all the following points. }
-         procedure Polyline(const points : array of TPoint);
+         procedure Polyline(const points : array of TGLPoint);
          {: Similar to Polyline but also connects the last point to the first. }
-         procedure Polygon(const points : array of TPoint);
+         procedure Polygon(const points : array of TGLPoint);
 
          {: Plots a pixel at given coordinate.<p>
             PenWidth affects pixel size.<br>
@@ -144,7 +143,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Graphics, OpenGL1x;
+uses OpenGL1x;
 
 const
    cNoPrimitive = MaxInt;
@@ -389,7 +388,7 @@ end;
 
 // Polyline
 //
-procedure TGLCanvas.Polyline(const points : array of TPoint);
+procedure TGLCanvas.Polyline(const points : array of TGLPoint);
 var
    i, n : Integer;
 begin
@@ -405,7 +404,7 @@ end;
 
 // Polygon
 //
-procedure TGLCanvas.Polygon(const points : array of TPoint);
+procedure TGLCanvas.Polygon(const points : array of TGLPoint);
 var
    i, n : Integer;
 begin

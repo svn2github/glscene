@@ -6,7 +6,8 @@
    Cubic spline interpolation functions<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>16/07/02 - Egg - Added methods to access slope per axis
+           <li>08/07/04 - LR - Removed ../ from the GLScene.inc
+           <li>16/07/02 - Egg - Added methods to access slope per axis
 	   <li>28/05/00 - Egg - Javadocisation, minor changes & optimizations,
                            Renamed TSpline to TCubicSpline, added W component
                            and a bunch of helper methods
@@ -19,7 +20,7 @@ interface
 
 uses VectorGeometry;
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 type
 

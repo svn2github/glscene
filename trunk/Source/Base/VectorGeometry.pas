@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/07/04 - LR - Removed ../ from the GLScene.inc	
       <li>26/10/03 - EG - Renamed from "Geometry.pas" to "VectorGeometry.pas"
       <li>17/10/03 - EG - Optimized Min/MaxInteger, some of the Min/MaxFloat
       <li>13/08/03 - SG - Added TQuaternionArray, PQuaternionArray and PQuaternion
@@ -161,7 +162,7 @@ uses VectorTypes;
 const
    cMaxArray = (MaxInt shr 4);
 
-{$i ../GLScene.inc}
+{$i GLScene.inc}
 
 type
    // data types needed for 3D graphics calculation,

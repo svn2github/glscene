@@ -6,6 +6,7 @@
    in the core GLScene units, and have all moved here instead.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>08/07/04 - LR - Added clBlack  
       <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
                           Added function GLOKMessageBox to avoid the uses of Forms
                           Added other abstraction calls
@@ -97,6 +98,7 @@ const
    clGreen = Graphics.clGreen;
    clBlue = Graphics.clBlue;
    clSilver = Graphics.clSilver;
+   clBlack = Graphics.clBlack;
 {$endif}
 {$ifdef LINUX}
    clBtnFace = QGraphics.clBtnFace;
@@ -104,6 +106,7 @@ const
    clGreen = QGraphics.clGreen;
    clBlue = QGraphics.clBlue;
    clSilver = QGraphics.clSilver;
+   clBlack = QGraphics.clBlack;
 {$endif}
 
 // standard keyboard

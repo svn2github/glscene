@@ -2,6 +2,7 @@
 {: Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/07/04 - LR - Suppress CommCtrl in the uses of Linux		
       <li>06/07/04 - LR - Display some infos for Linux	
       <li>03/07/04 - LR - Make change for Linux
       <li>21/02/04 - EG - Added extensions popup menu and hyperlink to
@@ -31,7 +32,7 @@ uses
 {$IFDEF LINUX}
 uses
   XLib, QForms, GLScene, Classes, QControls, QButtons, QStdCtrls, QComCtrls,
-  CommCtrl, QExtCtrls, QGraphics, QMenus; 
+  QExtCtrls, QGraphics, QMenus; 
 {$ENDIF}
 
 
