@@ -1108,6 +1108,8 @@ type
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
          property LightID : Cardinal read FLightID;
+
+         function Attenuated : Boolean;
          
       published
          { Published Declarations }
@@ -5347,6 +5349,14 @@ begin
       FQuadraticAttenuation:=AValue;
       NotifyChange(Self);
    end;
+end;
+
+// Attenuated
+//
+function TGLLightSource.Attenuated : Boolean;
+begin
+   Result:=    (LightStyle<>lsParallel)
+           and ((ConstAttenuation<>1) or (LinearAttenuation<>0) or (QuadraticAttenuation<>0));
 end;
 
 // ------------------
