@@ -5051,7 +5051,7 @@ begin
             rci.proxySubObject:=True;
             if pooTransformation in FProxyOptions then
                glMultMatrixf(PGLFloat(FMasterObject.FLocalMatrix));
-            FMasterObject.DoRender(rci, renderSelf, RenderChildren);
+            FMasterObject.DoRender(rci, renderSelf, (FMasterObject.Count>0));
             rci.proxySubObject:=oldProxySubObject;
          end;
       end;
