@@ -659,7 +659,7 @@ begin
 
       glDepthMask(False);
       rci.ignoreBlendingRequests:=True;
-      rci.ignoreMaterials := true;
+      //rci.ignoreMaterials := true;
       glBlendFunc(GL_SRC_ALPHA, GL_ONE);
       glEnable(GL_STENCIL_TEST);
       glEnable(GL_DEPTH_TEST);
