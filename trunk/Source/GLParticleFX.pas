@@ -256,6 +256,7 @@ type
          FLastSortTime : Double;
          FZWrite : Boolean;
 			FBlendingMode : TBlendingMode;
+         FCurrentRCI : PRenderContextInfo;
 
       protected
          { Protected Declarations }
@@ -273,6 +274,8 @@ type
 
          procedure BuildList(var rci : TRenderContextInfo); override;
 
+         {: Pointer to the current rci, valid only during rendering. }
+         property CurrentRCI : PRenderContextInfo read FCurrentRCI;
          {: Time (in msec) spent sorting the particles for last render. }
          property LastSortTime : Double read FLastSortTime;
 
@@ -484,6 +487,51 @@ type
 	   published
 	      { Published Declarations }
          property BlendingMode default bmAdditive;
+   end;
+
+   TPFXDirectRenderEvent = procedure (Sender : TObject; aParticle : TGLParticle;
+                                      var rci : TRenderContextInfo) of object;
+
+   // TGLCustomPFXManager
+   //
+   {: A particles FX manager offering events for customization/experimentation.<p>
+      This manager essentially surfaces the PFX methods as events, and is best
+      suited when you have specific particles that don't fall into any existing
+      category, or when you want to experiment with particles and later plan to
+      wrap things up in a full-blown manager.<br>
+      If the events aren't handled, nothing will be rendered. }
+   TGLCustomPFXManager = class (TGLLifeColoredPFXManager)
+      private
+         { Private Declarations }
+         FOnInitializeRendering : TDirectRenderEvent;
+         FOnBeginParticles : TDirectRenderEvent;
+         FOnRenderParticle : TPFXDirectRenderEvent;
+         FOnEndParticles : TDirectRenderEvent;
+         FOnFinalizeRendering : TDirectRenderEvent;
+
+      protected
+         { Protected Declarations }
+         procedure InitializeRendering; override;
+         procedure BeginParticles; override;
+         procedure RenderParticle(aParticle : TGLParticle); override;
+         procedure EndParticles; override;
+         procedure FinalizeRendering; override;
+
+      public
+         { Public Declarations }
+
+	   published
+	      { Published Declarations }
+         property OnInitializeRendering : TDirectRenderEvent read FOnInitializeRendering write FOnInitializeRendering;
+         property OnBeginParticles : TDirectRenderEvent read FOnBeginParticles write FOnBeginParticles;
+         property OnRenderParticle : TPFXDirectRenderEvent read FOnRenderParticle write FOnRenderParticle;
+         property OnEndParticles : TDirectRenderEvent read FOnEndParticles write FOnEndParticles;
+         property OnFinalizeRendering : TDirectRenderEvent read FOnFinalizeRendering write FOnFinalizeRendering;
+
+         property ParticleSize;
+         property ColorInner;
+         property ColorOuter;
+         property LifeColors;
    end;
 
    // TGLPolygonPFXManager
@@ -1190,6 +1238,7 @@ var
    currentTexturingMode : Cardinal;
 begin
    if csDesigning in ComponentState then Exit;
+   FCurrentRCI:=@rci;
    timer:=StartPrecisionTimer;
    // precalcs
    with Scene.CurrentGLCamera do begin
@@ -1917,6 +1966,52 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLCustomPFXManager ------------------
+// ------------------
+
+// InitializeRendering
+//
+procedure TGLCustomPFXManager.InitializeRendering;
+begin
+   inherited;
+   if Assigned(FOnInitializeRendering) then
+      FOnInitializeRendering(Self, Renderer.CurrentRCI^);
+end;
+
+// BeginParticles
+//
+procedure TGLCustomPFXManager.BeginParticles;
+begin
+   if Assigned(FOnBeginParticles) then
+      FOnBeginParticles(Self, Renderer.CurrentRCI^);
+end;
+
+// RenderParticle
+//
+procedure TGLCustomPFXManager.RenderParticle(aParticle : TGLParticle);
+begin
+   if Assigned(FOnRenderParticle) then
+      FOnRenderParticle(Self, aParticle, Renderer.CurrentRCI^);
+end;
+
+// EndParticles
+//
+procedure TGLCustomPFXManager.EndParticles;
+begin
+   if Assigned(FOnEndParticles) then
+      FOnEndParticles(Self, Renderer.CurrentRCI^);
+end;
+
+// FinalizeRendering
+//
+procedure TGLCustomPFXManager.FinalizeRendering;
+begin
+   if Assigned(FOnFinalizeRendering) then
+      FOnFinalizeRendering(Self, Renderer.CurrentRCI^);
+   inherited;
+end;
+
+// ------------------
 // ------------------ TGLPolygonPFXManager ------------------
 // ------------------
 
@@ -1925,7 +2020,6 @@ end;
 constructor TGLPolygonPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
-   FNbSides:=6;
 end;
 
 // Destroy
@@ -2327,6 +2421,7 @@ initialization
    // class registrations
    RegisterClasses([TGLParticle, TGLParticleList,
                     TGLParticleFXEffect, TGLParticleFXRenderer,
+                    TGLCustomPFXManager,
                     TGLPolygonPFXManager,
                     TGLPointLightPFXManager]);
    RegisterXCollectionItemClass(TGLSourcePFXEffect);

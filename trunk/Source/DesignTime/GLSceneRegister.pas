@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>12/04/04 - EG - LibMaterialName property editor for SkyBox
       <li>22/08/02 - EG - RegisterPropertiesInCategory (Robin Gerrets)
       <li>08/04/02 - EG - Added verb to TGLSceneEditor
       <li>26/01/02 - EG - Color property drawing in D6 too now
@@ -1376,6 +1377,8 @@ begin
    	ml:=TGLMaterial(obj).MaterialLibrary
    else if obj is TGLLibMaterial then
       ml:=(TGLLibMaterials(TGLLibMaterial(obj).Collection).Owner as TGLMaterialLibrary)
+   else if obj is TGLSkyBox then
+      ml:=TGLSkyBox(obj).MaterialLibrary
    else begin
       ml:=nil;
       Assert(False, 'oops, unsupported...');
@@ -1755,6 +1758,7 @@ begin
                        TGLFullScreenViewer,
                        TGLGuiLayout,
                        TGLCadencer,
+                       TGLCustomPFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLPerlinPFXManager,
                        TGLBitmapFont, TGLWindowsBitmapFont,
@@ -1795,6 +1799,7 @@ begin
 	RegisterPropertyEditor(TypeInfo(TGLMaterial), nil, '', TGLMaterialProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLMaterial, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLLibMaterial, '', TGLLibMaterialNameProperty);
+	RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLSkyBox, '', TGLLibMaterialNameProperty);
 	RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler, '', TGLAnimationNameProperty);
 {$endif}
    RegisterPropertyEditor(TypeInfo(TFileName), TGLFreeForm, 'FileName', TVectorFileProperty);
