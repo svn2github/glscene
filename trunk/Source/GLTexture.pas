@@ -324,6 +324,7 @@ type
       viewPortSize : TGLSize;
       renderDPI : Integer;
       materialLibrary : TGLMaterialLibrary;
+      lightmapLibrary : TGLMaterialLibrary;
       fogDisabledCounter : Integer;
       lightingDisabledCounter : Integer;
       drawState : TDrawState;

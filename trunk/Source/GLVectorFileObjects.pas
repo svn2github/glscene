@@ -449,20 +449,26 @@ type
          { Private Declarations }
          FOwner : TMeshObjectList;
          FTexCoords : TAffineVectorList; // provision for 3D textures
+         FLighmapTexCoords : TTexPointList; // reserved for 2D surface needs
          FColors : TVectorList;
          FFaceGroups: TFaceGroups;
          FMode : TMeshObjectMode;
          FRenderingOptions : TMeshObjectRenderingOptions;
          FArraysDeclared : Boolean; // not persistent
+         FLightMapArrayEnabled : Boolean; // not persistent
 
       protected
          { Protected Declarations }
          procedure SetTexCoords(const val : TAffineVectorList);
+         procedure SetLightmapTexCoords(const val : TTexPointList);
          procedure SetColors(const val : TVectorList);
 
          procedure DeclareArraysToOpenGL(var mrci : TRenderContextInfo;
                                          evenIfAlreadyDeclared : Boolean = False);
          procedure DisableOpenGLArrays(var mrci : TRenderContextInfo);
+
+         procedure EnableLightMapArray(var mrci : TRenderContextInfo);
+         procedure DisableLightMapArray(var mrci : TRenderContextInfo);
 
       public
          { Public Declarations }
@@ -501,6 +507,7 @@ type
          property Owner : TMeshObjectList read FOwner;
          property Mode : TMeshObjectMode read FMode write FMode;
          property TexCoords : TAffineVectorList read FTexCoords write SetTexCoords;
+         property LighmapTexCoords : TTexPointList read FLighmapTexCoords write SetLightmapTexCoords;
          property Colors : TVectorList read FColors write SetColors;
          property FaceGroups : TFaceGroups read FFaceGroups;
          property RenderingOptions : TMeshObjectRenderingOptions read FRenderingOptions write FRenderingOptions;
@@ -711,7 +718,13 @@ type
          FOwner : TFaceGroups;
          FMaterialName : String;
          FMaterialCache : TGLLibMaterial;
+         FLightMapIndex : Integer;
          FRenderGroupID : Integer; // NOT Persistent, internal use only (rendering options)
+
+	   protected
+	      { Protected Declarations }
+         procedure AttachLightmap(lightMap : TGLTexture; var mrci : TRenderContextInfo);
+         procedure AttachOrDetachLightmap(var mrci : TRenderContextInfo);
 
       public
          { Public Declarations }
@@ -723,7 +736,7 @@ type
 
          procedure PrepareMaterialLibraryCache(matLib : TGLMaterialLibrary);
          procedure DropMaterialLibraryCache(matLib : TGLMaterialLibrary);
-         
+
          procedure BuildList(var mrci : TRenderContextInfo); virtual; abstract;
 
          {: Add to the list the triangles corresponding to the facegroup.<p>
@@ -743,7 +756,9 @@ type
 
          property Owner : TFaceGroups read FOwner write FOwner;
          property MaterialName : String read FMaterialName write FMaterialName;
-         property MaterialCache : TGLLibMaterial read FMaterialCache; 
+         property MaterialCache : TGLLibMaterial read FMaterialCache;
+         {: Index of lightmap in the lightmap library. }
+         property LightMapIndex : Integer read FLightMapIndex write FLightMapIndex;
    end;
 
    // TFaceGroupMeshMode
@@ -1044,6 +1059,7 @@ type
          { Private Declarations }
          FNormalsOrientation : TMeshNormalsOrientation;
          FMaterialLibrary : TGLMaterialLibrary;
+         FLightmapLibrary : TGLMaterialLibrary;
          FAxisAlignedDimensionsCache : TVector;
          FUseMeshMaterials : Boolean;
          FOverlaySkeleton : Boolean;
@@ -1057,6 +1073,7 @@ type
          FSkeleton : TSkeleton;              // skeleton data & frames
          procedure SetUseMeshMaterials(const val : Boolean);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
+         procedure SetLightmapLibrary(const val : TGLMaterialLibrary);
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
 
@@ -1157,6 +1174,11 @@ type
          {: Defines wether materials declared in the vector file mesh are used.<p>
             You must also define the MaterialLibrary property. }
          property UseMeshMaterials : Boolean read FUseMeshMaterials write SetUseMeshMaterials default True;
+         {: Lighmap library where lightmaps will be stored/retrieved.<p>
+            If this property is not defined, lightmaps won't be used.
+            Lightmaps currently *always* use the second texture unit (unit 1),
+            and may interfere with multi-texture materials. }
+         property LightmapLibrary : TGLMaterialLibrary read FLightmapLibrary write SetLightmapLibrary;
          {: If True, exceptions about missing textures will be ignored.<p>
             Implementation is up to the file loader class (ie. this property
             may be ignored by some loaders) }
@@ -1209,6 +1231,7 @@ type
          { Published Declarations }
          property AutoCentering;
          property MaterialLibrary;
+         property LightmapLibrary;
          property UseMeshMaterials;
          property NormalsOrientation;
    end;
@@ -1490,6 +1513,7 @@ type
 
          property AutoCentering;
          property MaterialLibrary;
+         property LightmapLibrary;
          property UseMeshMaterials;
          property NormalsOrientation;
          property OverlaySkeleton;
@@ -2692,6 +2716,7 @@ constructor TMeshObject.Create;
 begin
    FMode:=momTriangles;
    FTexCoords:=TAffineVectorList.Create;
+   FLighmapTexCoords:=TTexPointList.Create;
    FColors:=TVectorList.Create;
    FFaceGroups:=TFaceGroups.CreateOwned(Self);
    inherited;
@@ -2704,6 +2729,7 @@ begin
    FFaceGroups.Free;
    FColors.Free;
    FTexCoords.Free;
+   FLighmapTexCoords.Free;
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
@@ -2715,8 +2741,14 @@ procedure TMeshObject.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
-      WriteInteger(0);  // Archive Version 0
-      FTexCoords.WriteToFiler(writer);
+      if LighmapTexCoords.Count>0 then begin
+         WriteInteger(1);        // Archive Version 1, added FLighmapTexCoords
+         FTexCoords.WriteToFiler(writer);
+         FLighmapTexCoords.WriteToFiler(writer);
+      end else begin
+         WriteInteger(0);        // Archive Version 0
+         FTexCoords.WriteToFiler(writer);
+      end;
       FColors.WriteToFiler(writer);
       FFaceGroups.WriteToFiler(writer);
       WriteInteger(Integer(FMode));
@@ -2733,8 +2765,11 @@ var
 begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
-   if archiveVersion=0 then with reader do begin
+   if archiveVersion in [0..1] then with reader do begin
       FTexCoords.ReadFromFiler(reader);
+      if archiveVersion>=1 then
+         FLighmapTexCoords.ReadFromFiler(reader)
+      else FLighmapTexCoords.Clear;
       FColors.ReadFromFiler(reader);
       FFaceGroups.ReadFromFiler(reader);
       FMode:=TMeshObjectMode(ReadInteger);
@@ -2751,6 +2786,7 @@ begin
    FFaceGroups.Clear;
    FColors.Clear;
    FTexCoords.Clear;
+   FLighmapTexCoords.Clear;
 end;
 
 // ExtractTriangles
@@ -2857,6 +2893,13 @@ begin
    FTexCoords.Assign(val);
 end;
 
+// SetLightmapTexCoords
+//
+procedure TMeshObject.SetLightmapTexCoords(const val : TTexPointList);
+begin
+   FLighmapTexCoords.Assign(val);
+end;
+
 // SetColors
 //
 procedure TMeshObject.SetColors(const val : TVectorList);
@@ -2886,6 +2929,11 @@ begin
             xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
             xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
          end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         if LighmapTexCoords.Count>0 then begin
+            glClientActiveTextureARB(GL_TEXTURE1_ARB);
+            glTexCoordPointer(2, GL_FLOAT, SizeOf(TTexPoint), LighmapTexCoords.List);
+            glClientActiveTextureARB(GL_TEXTURE0_ARB);
+         end;
       end else begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -2893,6 +2941,7 @@ begin
       if GL_EXT_compiled_vertex_array then
          glLockArraysEXT(0, vertices.Count);
       FArraysDeclared:=True;
+      FLightMapArrayEnabled:=False;
    end;
 end;
 
@@ -2916,7 +2965,44 @@ begin
          glDisableClientState(GL_COLOR_ARRAY);
          xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
       end;
+      DisableLightMapArray(mrci);
       FArraysDeclared:=False;
+   end;
+end;
+
+// EnableLightMapArray
+//
+procedure TMeshObject.EnableLightMapArray(var mrci : TRenderContextInfo);
+begin
+   if not mrci.ignoreMaterials then begin
+      Assert(FArraysDeclared);
+      if not FLightMapArrayEnabled then begin
+         glClientActiveTextureARB(GL_TEXTURE1_ARB);
+         glActiveTextureARB(GL_TEXTURE1_ARB);
+         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+         glEnable(GL_TEXTURE_2D);
+         glActiveTextureARB(GL_TEXTURE0_ARB);
+         glClientActiveTextureARB(GL_TEXTURE0_ARB);
+         FLightMapArrayEnabled:=True;
+      end;
+   end;
+end;
+
+// DisableLightMapArray
+//
+procedure TMeshObject.DisableLightMapArray(var mrci : TRenderContextInfo);
+begin
+   if not mrci.ignoreMaterials then begin
+      Assert(FArraysDeclared);
+      if FLightMapArrayEnabled then begin
+         glClientActiveTextureARB(GL_TEXTURE1_ARB);
+         glActiveTextureARB(GL_TEXTURE1_ARB);
+         glDisable(GL_TEXTURE_2D);
+         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         glActiveTextureARB(GL_TEXTURE0_ARB);
+         glClientActiveTextureARB(GL_TEXTURE0_ARB);
+         FLightMapArrayEnabled:=False;
+      end;
    end;
 end;
 
@@ -3708,6 +3794,7 @@ end;
 constructor TFaceGroup.CreateOwned(AOwner : TFaceGroups);
 begin
    FOwner:=AOwner;
+   FLightMapIndex:=-1;
    Create;
    if Assigned(FOwner) then
       FOwner.Add(Self);
@@ -3728,8 +3815,14 @@ procedure TFaceGroup.WriteToFiler(writer : TVirtualWriter);
 begin
    inherited WriteToFiler(writer);
    with writer do begin
-      WriteInteger(0);  // Archive Version 0
-      WriteString(FMaterialName);
+      if FLightMapIndex<0 then begin
+         WriteInteger(0);  // Archive Version 0
+         WriteString(FMaterialName);
+      end else begin
+         WriteInteger(1);  // Archive Version 1, added FLightMapIndex
+         WriteString(FMaterialName);
+         WriteInteger(FLightMapIndex);
+      end;
    end;
 end;
 
@@ -3741,9 +3834,48 @@ var
 begin
    inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
-   if archiveVersion=0 then with reader do begin
+   if archiveVersion in [0..1] then with reader do begin
       FMaterialName:=ReadString;
+      if archiveVersion>=1 then
+         FLightMapIndex:=ReadInteger
+      else FLightMapIndex:=-1;
    end else RaiseFilerException(archiveVersion);
+end;
+
+// AttachLightmap
+//
+procedure TFaceGroup.AttachLightmap(lightMap : TGLTexture; var mrci : TRenderContextInfo);
+begin
+   with lightMap do begin
+      Assert(Image.NativeTextureTarget=GL_TEXTURE_2D);
+      glActiveTextureARB(GL_TEXTURE1_ARB);
+
+      SetGLCurrentTexture(1, GL_TEXTURE_2D, Handle);
+//      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+      glActiveTextureARB(GL_TEXTURE1_ARB);
+   end;
+end;
+
+// AttachOrDetachLightmap
+//
+procedure TFaceGroup.AttachOrDetachLightmap(var mrci : TRenderContextInfo);
+var
+   libMat : TGLLibMaterial;
+begin
+   if (not mrci.ignoreMaterials) and Assigned(mrci.lightmapLibrary) then begin
+      if lightMapIndex>=0 then begin
+         // attach and activate lightmap
+         Assert(lightMapIndex<mrci.lightmapLibrary.Materials.Count);
+         libMat:=mrci.lightmapLibrary.Materials[lightMapIndex];
+         AttachLightmap(libMat.Material.Texture, mrci);
+         Owner.Owner.EnableLightMapArray(mrci);
+      end else begin
+         // desactivate lightmap
+         Owner.Owner.DisableLightMapArray(mrci);
+      end;
+   end;
 end;
 
 // PrepareMaterialLibraryCache
@@ -3857,6 +3989,7 @@ begin
       end;
       fgmmTriangleFan : begin
          Owner.Owner.DeclareArraysToOpenGL(mrci, False);
+         AttachOrDetachLightmap(mrci);
          glDrawElements(GL_TRIANGLE_FAN, VertexIndices.Count,
                         GL_UNSIGNED_INT, VertexIndices.List);
       end;
@@ -4784,6 +4917,7 @@ begin
    if Source is TGLBaseMesh then begin
       FNormalsOrientation:=TGLBaseMesh(Source).FNormalsOrientation;
       FMaterialLibrary:=TGLBaseMesh(Source).FMaterialLibrary;
+      FLightmapLibrary:=TGLBaseMesh(Source).FLightmapLibrary;
       FAxisAlignedDimensionsCache:=TGLBaseMesh(Source).FAxisAlignedDimensionsCache;
       FUseMeshMaterials:=TGLBaseMesh(Source).FUseMeshMaterials;
       FOverlaySkeleton:=TGLBaseMesh(Source).FOverlaySkeleton;
@@ -4968,6 +5102,22 @@ begin
    end;
 end;
 
+// SetMaterialLibrary
+//
+procedure TGLBaseMesh.SetLightmapLibrary(const val : TGLMaterialLibrary);
+begin
+   if FLightmapLibrary<>val then begin
+      if Assigned(FLightmapLibrary) then begin
+         DestroyHandle;
+         FLightmapLibrary.RemoveFreeNotification(Self);
+      end;
+      FLightmapLibrary:=val;
+      if Assigned(FLightmapLibrary) then
+         FLightmapLibrary.FreeNotification(Self);
+      StructureChanged;
+   end;
+end;
+
 // SetNormalsOrientation
 //
 procedure TGLBaseMesh.SetNormalsOrientation(const val : TMeshNormalsOrientation);
@@ -4992,8 +5142,12 @@ end;
 //
 procedure TGLBaseMesh.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if (Operation=opRemove) and (AComponent=FMaterialLibrary) then
-      MaterialLibrary:=nil;
+   if Operation=opRemove then begin
+      if AComponent=FMaterialLibrary then
+         MaterialLibrary:=nil
+      else if AComponent=FLightmapLibrary then
+         LightmapLibrary:=nil;
+   end;
    inherited;
 end;
 
@@ -5018,6 +5172,8 @@ procedure TGLBaseMesh.DestroyHandle;
 begin
    if Assigned(FMaterialLibrary) then
       MaterialLibrary.DestroyHandles;
+   if Assigned(FLightmapLibrary) then
+      LightmapLibrary.DestroyHandles;
    inherited;
 end;
 
@@ -5124,6 +5280,9 @@ begin
             if not FMaterialLibraryCachesPrepared then
                PrepareMaterialLibraryCache;
          end else rci.materialLibrary:=nil;
+         if Assigned(LightmapLibrary) then
+            rci.lightmapLibrary:=LightmapLibrary
+         else rci.lightmapLibrary:=nil;
          MeshObjects.PrepareBuildList(rci);
          Material.Apply(rci);
          repeat
