@@ -4,7 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>11/07/03 - DanB - Fixed crash when owner deleted        
+      <li>12/07/03 - DanB - Fixed crash when owner deleted        
       <li>27/02/02 - Egg - Fixed crash after item deletion
       <li>11/04/00 - Egg - Fixed crashes in IDE
 		<li>06/04/00 - Egg - Creation
@@ -57,13 +57,14 @@ type
   private
 	 { Déclarations privées }
 	 FXCollection : TXCollection;
-    ownerComponent : TComponent;
+//    ownerComponent : TComponent;
     FDesigner : {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif};
     updatingListView : Boolean;
 	 procedure PrepareListView;
 	 procedure PrepareXCollectionItemPopup(parent : TMenuItem);
 	 procedure OnAddXCollectionItemClick(Sender : TObject);
     procedure OnNameChanged(Sender : TObject);
+    procedure OnXCollectionDestroyed(Sender : TObject);
   protected
 	 procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -112,6 +113,7 @@ end;
 procedure TXCollectionEditor.FormCreate(Sender: TObject);
 begin
    RegisterGLBehaviourNameChangeEvent(OnNameChanged);
+   RegisterXCollectionDestroyEvent(OnXCollectionDestroyed);
 end;
 
 // FormDestroy
@@ -119,6 +121,7 @@ end;
 procedure TXCollectionEditor.FormDestroy(Sender: TObject);
 begin
 	DeRegisterGLBehaviourNameChangeEvent(OnNameChanged);
+        DeRegisterXCollectionDestroyEvent(OnXCollectionDestroyed);        
 end;
 
 // FormHide
@@ -134,18 +137,18 @@ end;
 procedure TXCollectionEditor.SetXCollection(aXCollection: TXCollection;
    designer: {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif});
 begin
-	if Assigned(ownerComponent) then
-		ownerComponent.RemoveFreeNotification(Self);
+//	if Assigned(ownerComponent) then
+//		ownerComponent.RemoveFreeNotification(Self);
 	FXCollection:=aXCollection;
 	FDesigner:=designer;
 	if Assigned(FXCollection) then begin
-		if Assigned(FXCollection.Owner) and (FXCollection.Owner is TComponent) then
-		ownerComponent:=TComponent(FXCollection.Owner);
-		if Assigned(ownerComponent) then
-			ownerComponent.FreeNotification(Self);
+//		if Assigned(FXCollection.Owner) and (FXCollection.Owner is TComponent) then
+//		ownerComponent:=TComponent(FXCollection.Owner);
+//		if Assigned(ownerComponent) then
+//			ownerComponent.FreeNotification(Self);
       Caption:=FXCollection.GetNamePath;
    end else begin
-      ownerComponent:=nil;
+//      ownerComponent:=nil;
       Caption:=cXCollectionEditor;
    end;
    PrepareListView;
@@ -256,15 +259,24 @@ begin
       PrepareListView;
 end;
 
+// OnXCollectionDestroyed
+//
+procedure TXCollectionEditor.OnXCollectionDestroyed(Sender : TObject);
+begin
+   if TXCollection(Sender)=FXCollection then
+      Close;
+end;
+
 // Notification
 //
 procedure TXCollectionEditor.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-	if (Operation=opRemove) and (AComponent=ownerComponent) then begin
+     {	if (Operation=opRemove) and (AComponent=ownerComponent) then begin
 		ownerComponent:=nil;
 		SetXCollection(nil, nil);
 		Close;
 	end;
+        }
 	inherited;
 end;
 
