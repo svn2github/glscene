@@ -16,7 +16,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, ComCtrls, GLScene, GLVectorFileObjects, GLMisc, GLWin32Viewer,
-  GLCadencer, GLExplosionFx, GLFile3DS;
+  GLCadencer, GLExplosionFx, GLFile3DS, ExtCtrls;
 
 type
   TForm1 = class(TForm)
@@ -25,15 +25,16 @@ type
     Camera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     mesh: TGLFreeForm;
-    MaxStepsBar: TTrackBar;
-    Label1: TLabel;
+    GLCadencer1: TGLCadencer;
+    Panel1: TPanel;
+    CheckOn: TCheckBox;
+    Button1: TButton;
     StepBar: TProgressBar;
     Label2: TLabel;
-    SpeedBar: TTrackBar;
+    MaxStepsBar: TTrackBar;
+    Label1: TLabel;
     Label3: TLabel;
-    Button1: TButton;
-    GLCadencer1: TGLCadencer;
-    CheckOn: TCheckBox;
+    SpeedBar: TTrackBar;
     procedure FormCreate(Sender: TObject);
     procedure CheckOnClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);

@@ -1,8 +1,8 @@
 object Form1: TForm1
-  Left = 192
-  Top = 107
-  Width = 551
-  Height = 402
+  Left = 180
+  Top = 91
+  Width = 582
+  Height = 462
   Caption = 'Form1'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -14,97 +14,107 @@ object Form1: TForm1
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 8
-    Top = 288
-    Width = 47
-    Height = 13
-    Caption = 'MaxSteps'
-  end
-  object Label2: TLabel
-    Left = 8
-    Top = 336
-    Width = 22
-    Height = 13
-    Caption = 'Step'
-  end
-  object Label3: TLabel
-    Left = 424
-    Top = 288
-    Width = 31
-    Height = 13
-    Caption = 'Speed'
-  end
   object viewer: TGLSceneViewer
-    Left = 8
-    Top = 8
-    Width = 529
-    Height = 273
+    Left = 0
+    Top = 0
+    Width = 574
+    Height = 336
     Camera = Camera1
+    Align = alClient
     OnMouseDown = viewerMouseDown
     OnMouseMove = viewerMouseMove
   end
-  object MaxStepsBar: TTrackBar
+  object Panel1: TPanel
     Left = 0
-    Top = 304
-    Width = 409
-    Height = 25
-    Max = 200
-    Orientation = trHorizontal
-    Frequency = 1
-    Position = 0
-    SelEnd = 0
-    SelStart = 0
+    Top = 336
+    Width = 574
+    Height = 97
+    Align = alBottom
+    BevelOuter = bvNone
     TabOrder = 1
-    ThumbLength = 15
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
-    OnChange = MaxStepsBarChange
-  end
-  object StepBar: TProgressBar
-    Left = 8
-    Top = 352
-    Width = 393
-    Height = 16
-    Min = 0
-    Max = 200
-    Smooth = True
-    TabOrder = 2
-  end
-  object SpeedBar: TTrackBar
-    Left = 416
-    Top = 304
-    Width = 121
-    Height = 25
-    Max = 20
-    Orientation = trHorizontal
-    Frequency = 1
-    Position = 1
-    SelEnd = 0
-    SelStart = 0
-    TabOrder = 3
-    ThumbLength = 15
-    TickMarks = tmBottomRight
-    TickStyle = tsAuto
-    OnChange = SpeedBarChange
-  end
-  object Button1: TButton
-    Left = 408
-    Top = 344
-    Width = 75
-    Height = 25
-    Caption = 'Reset'
-    TabOrder = 4
-    OnClick = Button1Click
-  end
-  object CheckOn: TCheckBox
-    Left = 488
-    Top = 344
-    Width = 41
-    Height = 17
-    Caption = 'On'
-    TabOrder = 5
-    OnClick = CheckOnClick
+    object Label2: TLabel
+      Left = 8
+      Top = 56
+      Width = 22
+      Height = 13
+      Caption = 'Step'
+    end
+    object Label1: TLabel
+      Left = 8
+      Top = 8
+      Width = 47
+      Height = 13
+      Caption = 'MaxSteps'
+    end
+    object Label3: TLabel
+      Left = 424
+      Top = 8
+      Width = 31
+      Height = 13
+      Caption = 'Speed'
+    end
+    object CheckOn: TCheckBox
+      Left = 488
+      Top = 64
+      Width = 41
+      Height = 17
+      Caption = 'On'
+      TabOrder = 0
+      OnClick = CheckOnClick
+    end
+    object Button1: TButton
+      Left = 408
+      Top = 64
+      Width = 75
+      Height = 25
+      Caption = 'Reset'
+      TabOrder = 1
+      OnClick = Button1Click
+    end
+    object StepBar: TProgressBar
+      Left = 8
+      Top = 72
+      Width = 393
+      Height = 16
+      Min = 0
+      Max = 200
+      Smooth = True
+      TabOrder = 2
+    end
+    object MaxStepsBar: TTrackBar
+      Left = 0
+      Top = 24
+      Width = 409
+      Height = 25
+      Max = 200
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 0
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 3
+      ThumbLength = 15
+      TickMarks = tmBottomRight
+      TickStyle = tsAuto
+      OnChange = MaxStepsBarChange
+    end
+    object SpeedBar: TTrackBar
+      Left = 416
+      Top = 24
+      Width = 121
+      Height = 25
+      Max = 20
+      Orientation = trHorizontal
+      Frequency = 1
+      Position = 1
+      SelEnd = 0
+      SelStart = 0
+      TabOrder = 4
+      ThumbLength = 15
+      TickMarks = tmBottomRight
+      TickStyle = tsAuto
+      OnChange = SpeedBarChange
+    end
   end
   object GLScene1: TGLScene
     Left = 16
