@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>05/12/03 - Dave - Added GLCamera.PointInFront
+                   - Dave - Remade Data property to use Tag
       <li>05/11/03 - EG - Data pointer made optional (GLS_WANT_DATA define),
                           applications should use VCL's standard (ie. "Tag")
       <li>04/11/03 - Dave - Added Data pointer to GLSceneBaseObject
@@ -355,9 +357,6 @@ type
          FChanges : TObjectChanges;
          FParent : TGLBaseSceneObject;
          FScene : TGLScene;
-         {$ifdef GLS_WANT_DATA}
-         FData : Pointer;
-         {$endif}
 
          FChildren : TList; // created on 1st use
          FVisible : Boolean;
@@ -442,6 +441,8 @@ type
          procedure DestroyHandle; dynamic;
          procedure DestroyHandles;
          procedure DeleteChildCameras;
+         function GetData: pointer;
+         procedure SetData(const Value: pointer);
 
       public
          { Public Declarations }
@@ -673,11 +674,8 @@ type
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
          property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
          property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
-         {$ifdef GLS_WANT_DATA}
-         {: A pointer to attach your data to GLScene.<p>
-            Applications should use VCL's standard instead ("Tag"). }
-         property Data : pointer read FData write FData; {$ifdef GLS_COMPILER_7_UP} deprecated; {$endif}
-         {$endif}
+         {: A pointer to attach your data to GLScene. Uses Tag as a pointer.}
+         property Data : pointer read GetData write SetData;
 
       published
          { Published Declarations }
@@ -1248,6 +1246,8 @@ type
          function ScreenDeltaToVectorXZ(deltaX, deltaY : Integer; ratio : Single) : TVector;
          {: Same as ScreenDeltaToVector but optimized for YZ plane. }
          function ScreenDeltaToVectorYZ(deltaX, deltaY : Integer; ratio : Single) : TVector;
+         {: Returns true if a point is in front of the camera. }
+         function PointInFront(const point: TVector): boolean; overload;
 
       published
          { Published Declarations }
@@ -3090,6 +3090,20 @@ begin
    end else inherited Assign(Source);
 end;
 
+// GetData
+//
+function TGLBaseSceneObject.GetData: pointer;
+begin
+  result := pointer(Tag);
+end;
+
+// SetData
+//
+procedure TGLBaseSceneObject.SetData(const Value: pointer);
+begin
+  Tag := Integer(Value);
+end;
+
 // IsUpdating
 //
 function TGLBaseSceneObject.IsUpdating : Boolean;
@@ -4905,6 +4919,13 @@ begin
    Result[1]:=screenY[2]*dyr+screenY[1]*dzr;
    Result[2]:=screenY[2]*dzr-screenY[1]*dyr;
    Result[3]:=0;
+end;
+
+// PointInFront
+//
+function TGLCamera.PointInFront(const point: TVector): boolean;
+begin
+  result := (PointPlaneDistance(point, AbsolutePosition, AbsoluteDirection)>0);
 end;
 
 // SetDepthOfView
