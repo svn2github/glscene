@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLWin32Viewer, GLMisc, GLODEManager,
-  GLCadencer, GLGeomObjects, dynode;
+  GLCadencer, GLGeomObjects, dynode, GLHUDObjects, GLBitmapFont,
+  GLWindowsFont;
 
 type
   TForm1 = class(TForm)
@@ -25,6 +26,8 @@ type
     Pin2: TGLCylinder;
     GLCadencer1: TGLCadencer;
     ODERenderPoint: TGLRenderPoint;
+    GLHUDText1: TGLHUDText;
+    GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -66,12 +69,17 @@ end;
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
-  Speed : PdVector3;
+  velWheel,
+  velPin2 : PdVector3;
 begin
   GLODEManager1.Step(deltaTime);
 
-  Speed:=dBodyGetAngularVel(TGLODEDynamic(Wheel.Behaviours[0]).Body);
-  Form1.Caption:=Format('Wheel (Angular Velocity = %.2f)', [Speed[1]]);
+  velWheel:=dBodyGetAngularVel(TGLODEDynamic(Wheel.Behaviours[0]).Body);
+  velPin2:=dBodyGetLinearVel(TGLODEDynamic(Pin2.Behaviours[0]).Body);
+  GLHUDText1.Text:=Format(
+    'Wheel Angular Velocity (Y-Axis) = %.1f'+#13#10+
+    'Pin2 Linear Velocity (X-Axis) = %.1f',
+    [velWheel[1], velPin2[0]]);
 end;
 
 end.
