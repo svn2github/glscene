@@ -229,6 +229,12 @@ type
     {: Checks if a BSphere partially or completely contains this sector}
     function BSphereContainsSector(const BSphere : TBSphere) : TSpaceContains; virtual;
 
+    {: Checks if this node partially or completely contains a BSphere}
+    function ContainsBSphere(const aBSphere : TBSphere) : TSpaceContains; virtual;
+
+    {: Checks if this node partially or completely contains an AABB}
+    function ContainsAABB(const aAABB : TAABB) : TSpaceContains; virtual;
+
     {: Adds leaf to this node - or one of it's children. If the node has enough
     leaves and has no children, children will be created and all leaves will be
     spread among the children. }
@@ -351,8 +357,6 @@ type
   public
     {: Create 8 TSPOctreeNode children }
     procedure CreateChildren; override;
-
-    // It may seem wasteful to force users to override all these function
 
     {: Checks if an AABB fits completely inside this node }
     function AABBFitsInNode(const aAABB : TAABB) : boolean; override;
@@ -633,12 +637,12 @@ end;
 
 function TSectorNode.AABBFitsInNode(const aAABB: TAABB): boolean;
 begin
-  Assert(false, 'You must override AABBFitsInNode!');
+  result := ContainsAABB(aAABB) in [scContainsFully];
 end;
 
 function TSectorNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
 begin
-  Assert(false, 'You must override AABBIntersectsNode!');
+  result := ContainsAABB(aAABB) in [scContainsPartially, scContainsFully];
 end;
 
 procedure TSectorNode.AddAllLeavesRecursive(const QueryResult : TSpacePartitionLeafList);
@@ -676,12 +680,12 @@ end;
 
 function TSectorNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
 begin
-  Assert(false,'You must override BSphereIntersectsNode!');
+  result := ContainsBSphere(BSphere) in [scContainsFully];
 end;
 
 function TSectorNode.BSphereIntersectsNode(const BSphere: TBSphere): boolean;
 begin
-  Assert(false,'You must override BSphereIntersectsNode!');
+  result := ContainsBSphere(BSphere) in [scContainsPartially, scContainsFully];
 end;
 
 function TSectorNode.CalcRecursiveLeafCount: integer;
@@ -884,7 +888,7 @@ end;
 
 procedure TSectorNode.CreateChildren;
 begin
-  // VIRTUAL!
+  Assert(false, 'You must override CreateChildren!');
 end;
 
 function TSectorNode.AABBContainsSector(const AABB: TAABB): TSpaceContains;
@@ -896,6 +900,17 @@ function TSectorNode.BSphereContainsSector(
   const BSphere: TBSphere): TSpaceContains;
 begin
   result := BSphereContainsAABB(BSphere, FAABB);
+end;
+
+function TSectorNode.ContainsAABB(const aAABB: TAABB): TSpaceContains;
+begin
+  result := AABBContainsAABB(FAABB, aAABB);
+end;
+
+function TSectorNode.ContainsBSphere(
+  const aBSphere: TBSphere): TSpaceContains;
+begin
+  result := AABBContainsBSphere(FAABB, aBSphere);
 end;
 
 { TSectoredSpacePartition }
@@ -1103,11 +1118,13 @@ end;
 
 function TSPOctreeNode.AABBFitsInNode(const aAABB: TAABB): boolean;
 begin
+  // Faster than inherited method
   result := AABBFitsInAABBAbsolute(aAABB, FAABB);
 end;
 
 function TSPOctreeNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
 begin
+  // Faster than inherited method
   result := IntersectAABBsAbsolute(FAABB, aAABB);
 end;
 
@@ -1115,8 +1132,9 @@ function TSPOctreeNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
 var
   AABB : TAABB;
 begin
+  // Faster than inherited method
   BSphereToAABB(BSphere, AABB);
-  result := AABBFitsInAABBAbsolute(AABB, FAABB);
+  result := AABBFitsInAABBAbsolute(AABB, FAABB);//}
 end;
 
 function TSPOctreeNode.BSphereIntersectsNode(
@@ -1124,8 +1142,9 @@ function TSPOctreeNode.BSphereIntersectsNode(
 var
   AABB : TAABB;
 begin
+  // Faster than inherited method
   BSphereToAABB(BSphere, AABB);
-  result := IntersectAABBsAbsolute(AABB, FAABB);
+  result := IntersectAABBsAbsolute(AABB, FAABB);//}
 end;
 
 procedure TSPOctreeNode.CreateChildren;
