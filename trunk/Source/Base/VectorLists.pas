@@ -3,6 +3,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/10/02 - EG - Added TransformXxxx to TAffineVectorList
       <li>04/07/02 - EG - Fixed TIntegerList.Add( 2 at once )
       <li>15/06/02 - EG - Added TBaseListOption stuff
       <li>28/05/02 - EG - TBaseList.SetCount now properly resets new items
@@ -183,6 +184,14 @@ type
          //: Translates given items
          procedure TranslateItems(index : Integer; const delta : TAffineVector;
                                   nb : Integer);
+
+         {: Transforms all items by the matrix as if they were points.<p>
+            ie. the translation component of the matrix is honoured. }
+         procedure TransformAsPoints(const matrix : TMatrix);
+         {: Transforms all items by the matrix as if they were vectors.<p>
+            ie. the translation component of the matrix is not honoured. }
+         procedure TransformAsVectors(const matrix : TMatrix); overload;
+         procedure TransformAsVectors(const matrix : TAffineMatrix); overload;
 
          procedure Normalize; override;
          procedure Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); override;
@@ -1022,6 +1031,38 @@ begin
       nb:=FCount;
 {$ENDIF}
    VectorArrayAdd(@FList[index], delta, nb-index, @FList[index]);
+end;
+
+// TransformAsPoints
+//
+procedure TAffineVectorList.TransformAsPoints(const matrix : TMatrix);
+var
+    i : Integer;
+begin
+   for i:=0 to FCount-1 do
+      FList[i]:=VectorTransform(FList[i], matrix);
+end;
+
+// TransformAsVectors (hmg)
+//
+procedure TAffineVectorList.TransformAsVectors(const matrix : TMatrix);
+var
+   m : TAffineMatrix;
+begin
+   if FCount>0 then begin
+      SetMatrix(m, matrix);
+      TransformAsVectors(m);
+   end;
+end;
+
+// TransformAsVectors (affine)
+//
+procedure TAffineVectorList.TransformAsVectors(const matrix : TAffineMatrix);
+var
+    i : Integer;
+begin
+   for i:=0 to FCount-1 do
+      FList[i]:=VectorTransform(FList[i], matrix);
 end;
 
 // Normalize
