@@ -6,6 +6,8 @@
    or the casters will be rendered incorrectly.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>29/11/03 - MF - Removed a "feature" that would draw the shadow of
+        (hierarchially) invisible objects
       <li>27/11/03 - MF - TGLShadowVolumeCaster now registers with the FCaster
         for delete notification
       <li>11/06/03 - EG - Added silhouette cache
@@ -625,7 +627,7 @@ begin
          caster:=Occluders[i];
          obj:=caster.Caster;
          if     Assigned(obj)
-            and obj.Visible
+            and obj.IsVisible // <= Was obj.Visible, which drew objects with invisible parents
             and ((caster.EffectiveRadius<=0)
                  or (obj.DistanceTo(rci.cameraPosition)<caster.EffectiveRadius)) then begin
             opaques.Add(obj);
