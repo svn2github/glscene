@@ -1208,7 +1208,7 @@ begin
    FSolidEdges := TVerletEdgeList.Create;
    FCurrentStepCount := 0;
    FUpdateSpacePartion := uspNever;
-   FCollisionConstraintTypes := [cctNode];
+   FCollisionConstraintTypes := [cctNode, cctEdge];
    FSpacePartition := nil;
 end;
 

@@ -214,6 +214,8 @@ begin
   else
     EdgeDetector.AddEdgesAsSprings(VerletWorld, 1000,100, GetSlack);//}
 
+  EdgeDetector.AddEdgesAsSolidEdges(VerletWorld);
+
   // VerletWorld.Nodes[0].NailedDown := true;
 
   TVFGravity.Create(VerletWorld);
@@ -276,9 +278,7 @@ begin
 
   EdgeDetector.ProcessMesh;
 
-  EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack);
-
-  //}
+  EdgeDetector.AddEdgesAsSticks(VerletWorld, GetSlack);//}
 
   TrackBar_FrictionChange(nil);
 end;

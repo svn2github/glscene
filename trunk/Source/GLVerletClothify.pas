@@ -112,6 +112,8 @@ type
     procedure AddNodes(const VerletWorld : TVerletWorld);
     procedure AddEdgesAsSticks(const VerletWorld : TVerletWorld; const Slack : single);
     procedure AddEdgesAsSprings(const VerletWorld : TVerletWorld; const Strength, Damping, Slack : single);
+    procedure AddEdgesAsSolidEdges(const VerletWorld : TVerletWorld);
+    procedure AddOuterEdgesAsSolidEdges(const VerletWorld : TVerletWorld);
 
     procedure RenderEdges(var rci : TRenderContextInfo);
 
@@ -416,14 +418,9 @@ begin
     if FNodeList[FCurrentNodeOffset+Edge.Vertices[0]] <> FNodeList[FCurrentNodeOffset+Edge.Vertices[1]] then
     begin
       VerletWorld.CreateSpring(
-        FNodeList[FCurrentNodeOffset+EdgeList[i].Vertices[0]],
-        FNodeList[FCurrentNodeOffset+EdgeList[i].Vertices[1]],
+        FNodeList[FCurrentNodeOffset+Edge.Vertices[0]],
+        FNodeList[FCurrentNodeOffset+Edge.Vertices[1]],
         Strength, Damping, Slack);
-
-      if EdgeList[i].Solid then
-        VerletWorld.AddSolidEdge(
-          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
-          FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]]);
     end;
   end;
 end;
@@ -443,15 +440,49 @@ begin
     if FNodeList[FCurrentNodeOffset+Edge.Vertices[0]] <> FNodeList[FCurrentNodeOffset+Edge.Vertices[1]] then
     begin
       VerletWorld.CreateStick(
-        FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
-        FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]],
+        FNodeList[FCurrentNodeOffset + Edge.Vertices[0]],
+        FNodeList[FCurrentNodeOffset + Edge.Vertices[1]],
         Slack);
+    end;
+  end;
+end;
 
-      if cctEdge in VerletWorld.CollisionConstraintTypes then
-        if EdgeList[i].Solid then
-          VerletWorld.AddSolidEdge(
-            FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[0]],
-            FNodeList[FCurrentNodeOffset + EdgeList[i].Vertices[1]]);
+procedure TEdgeDetector.AddEdgesAsSolidEdges(
+  const VerletWorld: TVerletWorld);
+var
+  i : integer;
+  Edge : TEdge;
+begin
+  for i := 0 to EdgeList.Count-1 do
+  begin
+    // if not EdgeList[i].SameSame(FNodeList) then
+    Edge := EdgeList[i];
+    if FNodeList[FCurrentNodeOffset+Edge.Vertices[0]] <> FNodeList[FCurrentNodeOffset+Edge.Vertices[1]] then
+    begin
+      if Edge.Solid then
+        VerletWorld.AddSolidEdge(
+          FNodeList[FCurrentNodeOffset + Edge.Vertices[0]],
+          FNodeList[FCurrentNodeOffset + Edge.Vertices[1]]);
+    end;
+  end;
+end;
+
+procedure TEdgeDetector.AddOuterEdgesAsSolidEdges(
+  const VerletWorld: TVerletWorld);
+var
+  i : integer;
+  Edge : TEdge;
+begin
+  for i := 0 to EdgeList.Count-1 do
+  begin
+    // if not EdgeList[i].SameSame(FNodeList) then
+    Edge := EdgeList[i];
+    if FNodeList[FCurrentNodeOffset+Edge.Vertices[0]] <> FNodeList[FCurrentNodeOffset+Edge.Vertices[1]] then
+    begin
+      if Edge.Solid and (Edge.Faces[1]=nil) then
+        VerletWorld.AddSolidEdge(
+          FNodeList[FCurrentNodeOffset + Edge.Vertices[0]],
+          FNodeList[FCurrentNodeOffset + Edge.Vertices[1]]);
     end;
   end;
 end;
