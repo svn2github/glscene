@@ -1626,6 +1626,7 @@ procedure UnRegisterGLTextureImageEditor(texImageEditor : TGLTextureImageEditorC
 
 procedure RegisterTGraphicClassFileExtension(const extension : String;
                                              const aClass : TGraphicClass);
+function CreateGraphicFromFile(const fileName : String) : TGLGraphic;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -1664,6 +1665,36 @@ begin
    SetLength(vTGraphicClass, n+1);
    vTGraphicFileExtension[n]:=LowerCase(extension);
    vTGraphicClass[n]:=aClass;
+end;
+
+// CreateGraphicFromFile
+//
+function CreateGraphicFromFile(const fileName : String) : TGLGraphic;
+var
+   i : Integer;
+   ext : String;
+   fs : TStream;
+begin
+   Result:=nil;
+   if FileStreamExists(fileName) then begin
+      ext:=LowerCase(ExtractFileExt(fileName));
+      for i:=0 to High(vTGraphicFileExtension) do begin
+         if vTGraphicFileExtension[i]=ext then begin
+            Result:=TGraphicClass(vTGraphicClass[i]).Create;
+            try
+               fs:=CreateFileStream(fileName, fmOpenRead);
+               try
+                  Result.LoadFromStream(fs);
+               finally
+                  fs.Free;
+               end;
+            except
+               FreeAndNil(Result);
+               raise;
+            end;
+         end;
+      end;
+   end;
 end;
 
 // EditGLTextureImage
@@ -2536,35 +2567,18 @@ end;
 //
 procedure TGLPersistentImage.LoadFromFile(const fileName : String);
 var
-   i : Integer;
-   buf, ext : String;
-   fs : TStream;
+   buf : String;
    gr : TGLGraphic;
-
 begin
    buf:=fileName;
    if Assigned(FOnTextureNeeded) then
       FOnTextureNeeded(Self, buf);
    if ApplicationFileIODefined then begin
-      if FileStreamExists(buf) then begin
-         ext:=LowerCase(ExtractFileExt(buf));
-         for i:=0 to High(vTGraphicFileExtension) do begin
-            if vTGraphicFileExtension[i]=ext then begin
-               gr:=TGraphicClass(vTGraphicClass[i]).Create;
-               try
-                  fs:=CreateFileStream(buf, fmOpenRead);
-                  try
-                     gr.LoadFromStream(fs);
-                  finally
-                     fs.Free;
-                  end;
-                  Picture.Graphic:=gr;
-               finally
-                  gr.Free;
-               end;
-               Exit;
-            end;
-         end;
+      gr:=CreateGraphicFromFile(buf);
+      if Assigned(gr) then begin
+         Picture.Graphic:=gr;
+         gr.Free;
+         Exit;
       end;
    end else if FileExists(buf) then begin
       Picture.LoadFromFile(buf);
@@ -2646,6 +2660,7 @@ end;
 function TGLPicFileImage.GetBitmap32(target : TGLUInt) : TGLBitmap32;
 var
    buf : String;
+   gr : TGLGraphic;
 begin
 	if (GetWidth<=0) and (PictureFileName<>'') then begin
 		Picture.OnChange:=nil;
@@ -2653,9 +2668,11 @@ begin
          buf:=PictureFileName;
          if Assigned(FOnTextureNeeded) then
             FOnTextureNeeded(Self, buf);
-         if FileExists(buf) then
-   			Picture.LoadFromFile(buf)
-         else begin
+         if FileStreamExists(buf) then begin
+            gr:=CreateGraphicFromFile(buf);
+            Picture.Graphic:=gr;
+            gr.Free;
+         end else begin
             Picture.Graphic:=nil;
             if not FAlreadyWarnedAboutMissingFile then begin
                FAlreadyWarnedAboutMissingFile:=True;
@@ -4801,10 +4818,8 @@ begin
       if not Material.TextureEx.IsTextureEnabled(1) then begin
          libMatTexture2.Material.Texture.ApplyAsTexture2(rci, libMatTexture2);
          // calculate and apply appropriate xgl mode
-
-         if (not Material.Texture.Disabled)
-         and (Material.Texture.MappingMode=tmmUser) then
-           xglMapTexCoordToArbitraryAdd(1);
+         if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
+            xglMapTexCoordToArbitraryAdd(1);
          if libMatTexture2.Material.Texture.MappingMode=tmmUser then
            xglMapTexCoordToArbitraryAdd(2);
 
