@@ -475,7 +475,8 @@ type
       frameIndex1, frameIndex2 : Integer;
       lerpFactor : Single;
       weight : Single;
-      externalFrame : PMatrixArray;
+      externalRotations : TAffineVectorList;
+      externalQuaternions : TQuaternionList;
    end;
 
 	// TSkeleton
@@ -2973,7 +2974,10 @@ begin
             Position.Scale(lerpInfos[i].weight);
          case TransformMode of
             sftRotation : begin
-               blendRotations:=TAffineVectorList.Create;
+               if Assigned(lerpInfos[i].externalRotations) then
+                  blendRotations:=lerpInfos[i].externalRotations
+               else
+                  blendRotations:=TAffineVectorList.Create;
                // lerp first item separately
                Rotation.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
                                   Frames[lerpInfos[i].frameIndex2].Rotation,
@@ -2981,18 +2985,23 @@ begin
                Inc(i);
                // combine the other items
                while i<=High(lerpInfos) do begin
-                  blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
-                                           Frames[lerpInfos[i].frameIndex2].Rotation,
-                                           lerpInfos[i].lerpFactor);
+                  if not Assigned(lerpInfos[i].externalRotations) then
+                     blendRotations.AngleLerp(Frames[lerpInfos[i].frameIndex1].Rotation,
+                                              Frames[lerpInfos[i].frameIndex2].Rotation,
+                                              lerpInfos[i].lerpFactor);
                   Rotation.AngleCombine(blendRotations, 1);
                   //Rotation.AngleCombine(Frames[0].Rotation, -1);
                   Inc(i);
                end;
-               blendRotations.Free;
+               if not Assigned(lerpInfos[i].externalRotations) then
+                  blendRotations.Free;
             end;
-         
+
             sftQuaternion : begin
-               blendQuaternions:=TQuaternionList.Create;
+               if Assigned(lerpInfos[i].externalQuaternions) then
+                  blendQuaternions:=lerpInfos[i].externalQuaternions
+               else
+                  blendQuaternions:=TQuaternionList.Create;
                // Initial frame lerp
                Quaternion.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
                                Frames[lerpInfos[i].frameIndex2].Quaternion,
@@ -3000,13 +3009,15 @@ begin
                Inc(i);
                // Combine the lerped frames together
                while i<=High(lerpInfos) do begin
-                  blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
-                                        Frames[lerpInfos[i].frameIndex2].Quaternion,
-                                        lerpInfos[i].lerpFactor);
+                  if not Assigned(lerpInfos[i].externalQuaternions) then
+                     blendQuaternions.Lerp(Frames[lerpInfos[i].frameIndex1].Quaternion,
+                                           Frames[lerpInfos[i].frameIndex2].Quaternion,
+                                           lerpInfos[i].lerpFactor);
                   Quaternion.Combine(blendQuaternions, 1);
                   Inc(i);
                end;
-               blendQuaternions.Free;
+               if not Assigned(lerpInfos[i].externalQuaternions) then
+                  blendQuaternions.Free;
             end;
          end;
       end;
@@ -6179,6 +6190,8 @@ begin
          lerpFactor:=VectorGeometry.Frac(lerpFactor);
       end;
       weight:=1;
+      externalRotations:=nil;
+      externalQuaternions:=nil;
    end;
 end;
 
@@ -6449,7 +6462,7 @@ begin
             end;
             k:=1;
             for i:=0 to FControlers.Count-1 do
-               if TGLAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
+               if TGLBaseAnimationControler(FControlers[i]).Apply(lerpInfos[k]) then
                   Inc(k);
             SetLength(lerpInfos, k);
             Skeleton.BlendedLerps(lerpInfos);
