@@ -4,6 +4,7 @@
 	<b>History : </b><font size=-1><ul>
       <li>24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at http://www.sulaco.co.za (http://www.sulaco.co.za/opengl/windows.zip)
       <li>01/06/02 - JAJ - After not having received Jan Horn's blessing, the system have been revised all parts have been rewritten.
+      <li>01/01/03 - JAJ - Updated so that focused controls pass focus on hide...
 	</ul></font>
 }
 
@@ -18,7 +19,7 @@ uses
 
 type
 
-  TGLBaseComponent = class(TGLHUDSprite)
+  TGLBaseComponent = class(TGLBaseGuiObject)
   private
     FGUIRedraw : Boolean;
     FGuiLayout     : TGLGuiLayout;
@@ -29,8 +30,18 @@ type
     MoveX, MoveY : TGLFloat;
     FRenderStatus  : TGUIDrawResult;
 
+    FAlphaChannel : Single;
+    FRotation : TGLFloat;
+    FNoZWrite : Boolean;
+
+    BlockRendering : Boolean;
+    RenderingCount : Integer;
+    BlockedCount   : Integer;
+
     procedure SetGUIRedraw(value : Boolean);
   protected
+    Procedure BlockRender;
+    Procedure UnBlockRender;
     Procedure RenderHeader(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
     Procedure RenderFooter(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
@@ -39,19 +50,42 @@ type
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
+    procedure SetRotation(const val : TGLFloat);
+    procedure SetAlphaChannel(const val : Single);
+    function StoreAlphaChannel : Boolean;
+    procedure SetNoZWrite(const val : Boolean);
+
   public
+    Constructor Create(AOwner : TComponent); override;
 
     procedure NotifyChange(Sender : TObject); override;
     Procedure DoChanges; virtual;
     Procedure MoveGUI(XRel, YRel : Single);
     procedure DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
     Procedure InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); Virtual;
-    property  GUIRedraw : Boolean read FGUIRedraw write SetGUIRedraw;
-    property  ReBuildGui : Boolean read FReBuildGui write FReBuildGui;
+    property  GUIRedraw     : Boolean read FGUIRedraw write SetGUIRedraw;
+    property  ReBuildGui    : Boolean read FReBuildGui write FReBuildGui;
   published
-    property  RedrawAtOnce : Boolean read FRedrawAtOnce write FRedrawAtOnce;
+    property  RedrawAtOnce  : Boolean                read FRedrawAtOnce  write FRedrawAtOnce;
     property  GuiLayout     : TGLGuiLayout           read FGuiLayout     write SetGuiLayout;
     property  GuiLayoutName : TGLGuiComponentName    read FGuiLayoutName write SetGuiLayoutName;
+
+    {: This the ON-SCREEN rotation of the GuiComponent.<p>
+       Rotatation=0 is handled faster. }
+    property Rotation : TGLFloat read FRotation write SetRotation;
+    {: If different from 1, this value will replace that of Diffuse.Alpha }
+    property AlphaChannel : Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
+    {: If True, GuiComponent will not write to Z-Buffer.<p>
+       GuiComponent will STILL be maskable by ZBuffer test. }
+    property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
+
+    property Visible;
+    property Width;
+    property Height;
+    property Left;
+    property Top;
+    property Position;
+
   End;
 
   TGLFocusControl = class;
@@ -78,12 +112,12 @@ type
     Procedure KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState); virtual;
     Procedure KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState); virtual;
     property  ActiveControl : TGLBaseControl  read FActiveControl write SetActiveControl;
+    property  KeepMouseEvents : Boolean         read FKeepMouseEvents write FKeepMouseEvents default false;
   published
     property  FocusedControl  : TGLFocusControl read FFocusedControl  write SetFocusedControl;
     property  OnMouseDown     : TMouseEvent     read FOnMouseDown     write FOnMouseDown;
     property  OnMouseMove     : TMouseMoveEvent read FOnMouseMove     write FOnMouseMove;
     property  OnMouseUp       : TMouseEvent     read FOnMouseUp       write FOnMouseUp;
-    property  KeepMouseEvents : Boolean         read FKeepMouseEvents write FKeepMouseEvents default false;
   End;
 
   TGLBaseFontControl = class(TGLBaseControl)
@@ -93,13 +127,14 @@ type
   protected
     Function  GetDefaultColor : TColor;
     procedure SetDefaultColor(value : TColor);
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     Procedure SetBitmapFont(NewFont : TGLCustomBitmapFont);
     Procedure WriteTextAt(Const X,Y : TGLFloat; Const Data : String; const Color : TColorVector); overload;
     Procedure WriteTextAt(Const X1,Y1,X2,Y2 : TGLFloat; Const Data : String; const Color : TColorVector); overload;
     Function  GetFontHeight : Integer;
   public
+    Constructor Create(AOwner : TComponent); override;
     Destructor Destroy; override;
+    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   published
     property BitmapFont : TGLCustomBitmapFont read FBitmapFont write SetBitmapFont;
     property DefaultColor : TColor read GetDefaultColor write SetDefaultColor;
@@ -129,6 +164,7 @@ type
     Procedure InternalKeyUp(var Key: Word; Shift: TShiftState); virtual;
     Procedure SetFocused(Value :Boolean); virtual;
     Function  GetRootControl : TGLBaseControl;
+    procedure NotifyHide; override;
   public
     Procedure SetFocus;
     Procedure PrevControl;
@@ -144,17 +180,22 @@ type
     property  OnKeyPress     : TKeyPressEvent   read FOnKeyPress write FOnKeyPress;
   End;
 
-  TGLFormCanRequest   = procedure (Sender: TObject; var Can: Boolean) of Object;
+  TGLForm = class;
+
+  TGLFormCanRequest   = procedure (Sender: TGLForm; var Can: Boolean) of Object;
   TGLFormCloseOptions = (co_Hide, co_Ignore, co_Destroy);
-  TGLFormCanClose     = procedure (Sender: TObject; var CanMove: TGLFormCloseOptions) of Object;
+  TGLFormCanClose     = procedure (Sender: TGLForm; var CanClose: TGLFormCloseOptions) of Object;
+  TGLFormNotify       = procedure (Sender: TGLForm) of Object;
+
 
   TGLForm = class(TGLBaseTextControl)
   private
     FOnCanMove     : TGLFormCanRequest;
     FOnCanResize   : TGLFormCanRequest;
     FOnCanClose    : TGLFormCanClose;
+    FOnShow        : TGLFormNotify;
+    FOnHide        : TGLFormNotify;
     Moving         : Boolean;
-    Resized        : Boolean;
     OldX           : Integer;
     OldY           : Integer;
     FTitleColor    : TColorVector;
@@ -166,7 +207,10 @@ type
     procedure SetTitleColor(value : TColor);
   public
     Constructor Create(AOwner : TComponent); override;
+    Procedure   Close;
 
+    procedure NotifyShow; override;
+    procedure NotifyHide; override;
     Function  MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer) : Boolean; override;
     Function  MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer) : Boolean; override;
     procedure InternalRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
@@ -175,6 +219,8 @@ type
     property  OnCanMove     : TGLFormCanRequest      read FOnCanMove     write FOnCanMove;
     property  OnCanResize   : TGLFormCanRequest      read FOnCanResize   write FOnCanResize;
     property  OnCanClose    : TGLFormCanClose        read FOnCanClose    write FOnCanClose;
+    property  OnShow        : TGLFormNotify          read FOnShow        write FOnShow;
+    property  OnHide        : TGLFormNotify          read FOnHide        write FOnHide;
   end;
 
   TGLPanel = class(TGLBaseComponent)
@@ -272,7 +318,8 @@ Begin
   FGUIRedraw := Value;
   If Value then
   Begin
-    if FRedrawAtOnce then
+    If csDestroying in ComponentState then Exit;
+    if (FRedrawAtOnce) or (csDesigning in ComponentState) then
     Begin
       FGUIRedraw := False;
       StructureChanged;
@@ -280,13 +327,26 @@ Begin
   End;
 End;
 
+Procedure TGLBaseComponent.BlockRender;
+
+Begin
+  While BlockedCount <> 0 do Sleep(1);
+  BlockRendering := True;
+  While RenderingCount <> BlockedCount do Sleep(1);
+End;
+
+Procedure TGLBaseComponent.UnBlockRender;
+
+Begin
+  BlockRendering := False;
+End;
 
 Procedure TGLBaseComponent.RenderHeader(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
 Var
   f : Single;
 Begin
-  	Material.Apply(rci);
+   FGuiLayout.Material.Apply(rci);
    if AlphaChannel<>1 then
       SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
    // Prepare matrices
@@ -298,7 +358,7 @@ Begin
    else f:=rci.renderDPI/96;
    glScalef(f*2/rci.viewPortSize.cx, f*2/rci.viewPortSize.cy, 1);
    glTranslatef(f*Position.X-rci.viewPortSize.cx*0.5,
-                rci.viewPortSize.cy*0.5-f*Position.Y, Position.Z);
+                rci.viewPortSize.cy*0.5-f*Position.Y, 0);
    if Rotation<>0 then
       glRotatef(Rotation, 0, 0, 1);
    glMatrixMode(GL_PROJECTION);
@@ -317,7 +377,7 @@ Begin
    glPopMatrix;
    glMatrixMode(GL_MODELVIEW);
    glPopMatrix;
-   Material.UnApply(rci);
+   FGuiLayout.Material.UnApply(rci);
 End;
 
 
@@ -339,9 +399,9 @@ Begin
       Begin
         FGuiLayout.AddGuiComponent(Self);
       End;
-      FReBuildGui := True;
-      GUIRedraw := True;
     End;
+    FReBuildGui := True;
+    GUIRedraw := True;
   End;
 End;
 
@@ -364,7 +424,71 @@ End;
 procedure TGLBaseComponent.Notification(AComponent: TComponent; Operation: TOperation);
 
 Begin
+  If Operation = opRemove then
+  Begin
+    If AComponent = FGuiLayout then
+    Begin
+      BlockRender;
+      GuiLayout := Nil;
+      UnBlockRender;
+    End;
+  End;
+
   inherited;
+End;
+
+
+// SetRotation
+//
+procedure TGLBaseComponent.SetRotation(const val : TGLFloat);
+begin
+	if FRotation<>val then begin
+		FRotation:=val;
+		NotifyChange(Self);
+	end;
+end;
+
+// SetAlphaChannel
+//
+procedure TGLBaseComponent.SetAlphaChannel(const val : Single);
+begin
+   if val<>FAlphaChannel then begin
+      if val<0 then
+         FAlphaChannel:=0
+      else if val>1 then
+         FAlphaChannel:=1
+      else FAlphaChannel:=val;
+		NotifyChange(Self);
+   end;
+end;
+
+// StoreAlphaChannel
+//
+function TGLBaseComponent.StoreAlphaChannel : Boolean;
+begin
+	Result:=(FAlphaChannel<>1);
+end;
+
+// SetNoZWrite
+//
+procedure TGLBaseComponent.SetNoZWrite(const val : Boolean);
+begin
+   FNoZWrite:=val;
+   NotifyChange(Self);
+end;
+
+Constructor TGLBaseComponent.Create(AOwner : TComponent);
+
+Begin
+  inherited;
+  FGuiLayout := nil;
+  FGuiComponent := nil;
+  BlockRendering := False;
+  BlockedCount := 0;
+  RenderingCount := 0;
+  FWidth      := 50;
+  FHeight     := 50;
+  FReBuildGui := True;
 End;
 
 procedure TGLBaseComponent.NotifyChange(Sender : TObject);
@@ -374,15 +498,24 @@ Begin
   Begin
     If (FGuiLayoutName <> '') and (GuiLayout <> Nil) then
     Begin
+      BlockRender;
       FGuiComponent := GuiLayout.GuiComponents.FindItem(FGuiLayoutName);
       ReBuildGui := True;
       GUIRedraw := True;
+      UnBlockRender;
     End else
     Begin
+      BlockRender;
       FGuiComponent := Nil;
       ReBuildGui := True;
       GUIRedraw := True;
+      UnBlockRender;
     End;
+  End;
+  If Sender = Self then
+  Begin
+    ReBuildGui := True;
+    GUIRedraw := True;
   End;
   inherited;
 End;
@@ -461,14 +594,31 @@ Procedure TGLBaseComponent.InternalRender(var rci : TRenderContextInfo; renderSe
 Begin
   If Assigned(FGuiComponent) then
   Begin
-    FGuiComponent.RenderToArea(0,0,Width,Height, FRenderStatus, FReBuildGui);
+    try
+      FGuiComponent.RenderToArea(0,0,Width,Height, FRenderStatus, FReBuildGui);
+    except
+      on E : Exception do
+      Application.MessageBox(PChar(E.Message),'Exception in GuiComponents InternalRender function',0);
+    end;
   End;
 End;
 
 procedure TGLBaseComponent.DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
 
+Var
+  B : Boolean;
 Begin
+  Inc(RenderingCount);
+  B := BlockRendering;
+  If B then
+  Begin
+    Inc(BlockedCount);
+    While BlockRendering do sleep(1);
+    Dec(BlockedCount);
+  End;
+
   If RenderSelf then
+  If FGuiLayout <> nil then
   Begin
     RenderHeader(rci,renderSelf,renderChildren);
 
@@ -481,6 +631,7 @@ Begin
   If renderChildren then
   if Count>0 then
     Self.RenderChildren(0, Count-1, rci);
+  Dec(RenderingCount);
 End;
 
 procedure TGLBaseControl.InternalMouseDown(Shift: TShiftState; Button: TMouseButton; X, Y: Integer);
@@ -674,6 +825,16 @@ Begin
   End;
 End;
 
+procedure TGLFocusControl.NotifyHide;
+
+Begin
+  inherited;
+  If RootControl.FFocusedControl = Self then
+  Begin
+    RootControl.FocusedControl.PrevControl;
+  End;
+End;
+
 Procedure TGLFocusControl.SetFocus;
 
 Begin
@@ -698,8 +859,12 @@ Begin
         Dec(Index);
         If Host.Children[Index] is TGLFocusControl then
         Begin
-          (Host.Children[Index] as TGLFocusControl).SetFocus;
-          Exit;
+          With (Host.Children[Index] as TGLFocusControl) do
+          If RecursiveVisible then
+          Begin
+            SetFocus;
+            Exit;
+          End;
         End else
         Begin
           If Host.Children[Index] is TGLBaseComponent then
@@ -742,15 +907,17 @@ Begin
       Begin
         If Host.Children[Index] is TGLFocusControl then
         Begin
-          (Host.Children[Index] as TGLFocusControl).SetFocus;
-          Exit;
-        End else
-        Begin
-          If Host.Children[Index] is TGLBaseComponent then
+          With (Host.Children[Index] as TGLFocusControl) do
+          If RecursiveVisible then
           Begin
-            Host := Host.Children[Index] as TGLBaseComponent;
-            Index := -1;
+            SetFocus;
+            Exit;
           End;
+        End;
+        If Host.Children[Index] is TGLBaseComponent then
+        Begin
+          Host := Host.Children[Index] as TGLBaseComponent;
+          Index := -1;
         End;
       End else
       Begin
@@ -818,6 +985,14 @@ End;
 
 { base font control }
 
+Constructor TGLBaseFontControl.Create(AOwner : TComponent);
+
+Begin
+  inherited;
+  FBitmapFont := nil;
+  FDefaultColor := clrBlack;
+End;
+
 Destructor TGLBaseFontControl.Destroy;
 Begin
   BitmapFont := Nil;
@@ -856,9 +1031,13 @@ End;
 
 procedure TGLBaseFontControl.Notification(AComponent: TComponent; Operation: TOperation);
 begin
+  if (Operation=opRemove) and (AComponent=FBitmapFont) then
+  Begin
+    BlockRender;
+    BitmapFont:=nil;
+    UnBlockRender;
+  End;
   inherited;
-   if (Operation=opRemove) and (AComponent=FBitmapFont) then
-      BitmapFont:=nil;
 end;
 
 { GLWindow }
@@ -925,13 +1104,7 @@ Begin
     Begin
 {      If contains(Width-22,Width-6,XHere) and contains(8,24,YHere) then
       Begin
-        HowClose := co_hide;
-        If Assigned(FOnCanClose) then FOnCanClose(Self,HowClose);
-        Case HowClose of
-          co_hide   : Visible := False;
-          co_ignore : ;
-          co_Destroy : Free;
-        End;
+        Close;
       End else{}
       Begin
         CanMove := True;
@@ -1009,9 +1182,36 @@ Constructor TGLForm.Create(AOwner : TComponent);
 
 Begin
   inherited;
-  Resized := True;
 End;
 
+Procedure   TGLForm.Close;
+
+Var
+  HowClose : TGLFormCloseOptions;
+
+Begin
+  HowClose := co_hide;
+  If Assigned(FOnCanClose) then FOnCanClose(Self,HowClose);
+  Case HowClose of
+    co_hide   : Visible := False;
+    co_ignore : ;
+    co_Destroy : Free;
+  End;
+End;
+
+procedure TGLForm.NotifyShow;
+
+Begin
+  inherited;
+  if Assigned(FOnShow) then FOnShow(Self);
+End;
+
+procedure TGLForm.NotifyHide;
+
+Begin
+  inherited;
+  if Assigned(FOnHide) then FOnHide(Self);
+End;
 
 Function  TGLForm.MouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer) : Boolean;
 

@@ -92,7 +92,7 @@ Type
     function GetItems(index : Integer) : TGLGuiComponent;
   public
     Constructor Create(AOwner : TGLGuiLayout);
-    
+
     function  GetOwner: TPersistent; override;
     function  FindItem(name : TGLGuiComponentName) : TGLGuiComponent;
     property Items[index : Integer] : TGLGuiComponent read GetItems write SetItems; default;
@@ -106,7 +106,7 @@ Type
     FFileName   : String;
     FGuiComponentList : TList;
   protected
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+    procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
 
     Procedure   SetFileName(newName : String);
   public
@@ -123,7 +123,7 @@ Type
     Procedure   AddGuiComponent(Component : TGLUpdateableComponent);
     Procedure   RemoveGuiComponent(Component : TGLUpdateableComponent);
 
-    procedure NotifyChange(Sender : TObject); override;
+    procedure   NotifyChange(Sender : TObject); override;
   published
     property BitmapFont : TGLCustomBitmapFont read FBitmapFont write FBitmapFont;
     property Material   : TGLMaterial read FMaterial write FMaterial;
@@ -220,6 +220,7 @@ End;
 Procedure   TGLGuiLayout.AddGuiComponent(Component : TGLUpdateableComponent);
 
 Begin
+  Component.FreeNotification(Self);
   FGuiComponentList.Add(Component);
 End;
 
@@ -227,6 +228,7 @@ Procedure   TGLGuiLayout.RemoveGuiComponent(Component : TGLUpdateableComponent);
 
 Begin
   FGuiComponentList.Remove(Component);
+  Component.RemoveFreeNotification(Self);
 End;
 
 Procedure   TGLGuiLayout.Clear;
@@ -248,7 +250,8 @@ Var
   XC : Integer;
 Begin
   inherited;
-  For XC := 0 to FGuiComponentList.Count-1 do
+
+  For XC := FGuiComponentList.Count-1 downto 0 do
   TGLUpdateAbleComponent(FGuiComponentList[XC]).NotifyChange(Self);
 End;
 

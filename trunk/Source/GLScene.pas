@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>03/01/03 - JAJ - Added TGLBaseGuiObject as minimal base GUI class.
       <li>31/12/02 - JAJ - NotifyHide/NotifyShow implemented. Crucial for the Gui system.
       <li>14/10/02 - Egg - Camera.TargetObject explicitly registered for notifications
       <li>07/10/02 - Egg - Fixed Remove/Add/Insert (sublights registration bug)
@@ -418,7 +419,6 @@ type
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
-
          {: Controls and adjusts internal optimizations based on object's style.<p>
             Advanced user only. }
          property ObjectStyle : TGLObjectStyles read FObjectStyle write FObjectStyle;
@@ -828,6 +828,27 @@ type
          constructor Create(AOwner: TComponent); override;
    end;
 
+   TGLBaseGuiObject = class (TGLBaseSceneObject)
+      protected
+         FWidth : Single;
+         FHeight : Single;
+         procedure SetLeft(const val : Single);
+         Function  GetLeft : Single;
+         procedure SetTop(const val : Single);
+         Function  GetTop : Single;
+         procedure SetWidth(const val : Single);
+         procedure SetHeight(const val : Single);
+      public
+         {: GuiComponent Width in 3D world units. }
+         property Width : Single read FWidth write SetWidth;
+         {: GuiComponent Height in 3D world units. }
+         property Height : Single read FHeight write SetHeight;
+         {: GuiComponent Left in 3D world units. }
+         property Left : Single read GetLeft write SetLeft;
+         {: GuiComponent Top in 3D world units. }
+         property Top : Single read GetTop write SetTop;
+   end;
+
    // TGLImmaterialSceneObject
    //
    {: Base class for objects that do not have a published "material".<p>
@@ -1235,7 +1256,6 @@ type
          procedure SetVisibilityCulling(const val : TGLVisibilityCulling);
 
          procedure ReadState(Reader: TReader); override;
-
       public
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
@@ -4220,6 +4240,62 @@ begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle+[osDirectDraw];
    FRecursiveVisible := True;
+end;
+
+// ------------------
+// ------------------ TGLBaseGuiObject ------------------
+// ------------------
+
+// SetLeft
+//
+procedure TGLBaseGuiObject.SetLeft(const val : TGLFloat);
+begin
+	if Position.X<>val then begin
+		Position.X:=val;
+	end;
+end;
+
+// GetLeft
+//
+Function  TGLBaseGuiObject.GetLeft : Single;
+begin
+   Result := Position.X;
+end;
+
+// SetTop
+//
+procedure TGLBaseGuiObject.SetTop(const val : TGLFloat);
+begin
+	if Position.Y<>val then begin
+		Position.Y:=val;
+	end;
+end;
+
+// GetTop
+//
+Function  TGLBaseGuiObject.GetTop : Single;
+begin
+   Result := Position.Y;
+end;
+
+// SetWidth
+//
+procedure TGLBaseGuiObject.SetWidth(const val : TGLFloat);
+begin
+	if FWidth<>val then begin
+		FWidth:=val;
+      NotifyChange(Self);
+	end;
+end;
+
+// SetHeight
+//
+procedure TGLBaseGuiObject.SetHeight(const val : TGLFloat);
+begin
+	if FHeight<>val then begin
+		FHeight:=val;
+      NotifyChange(Self);
+	end;
 end;
 
 // ------------------
