@@ -4925,7 +4925,7 @@ end;
 //
 function TGLCamera.PointInFront(const point: TVector): boolean;
 begin
-  result := (PointPlaneDistance(point, AbsolutePosition, AbsoluteDirection)>0);
+  result := PointIsInHalfSpace(point, AbsolutePosition, AbsoluteDirection);
 end;
 
 // SetDepthOfView
