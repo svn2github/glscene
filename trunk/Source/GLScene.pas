@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/02/04 - EG - Children no longer owned 
       <li>13/02/04 - NelC - Added option Modal for ShowInfo
       <li>04/02/04 - SG - Added roNoSwapBuffers option to TContextOptions (Juergen Abel)
       <li>09/01/04 - EG - Added TGLCameraInvariantObject
@@ -2624,7 +2625,7 @@ end;
 //
 function TGLBaseSceneObject.AddNewChild(aChild : TGLSceneObjectClass) : TGLBaseSceneObject;
 begin
-   Result:=aChild.Create(Self);
+   Result:=aChild.Create(nil);
    AddChild(Result);
 end;
 
@@ -2632,7 +2633,7 @@ end;
 //
 function TGLBaseSceneObject.AddNewChildFirst(aChild : TGLSceneObjectClass) : TGLBaseSceneObject;
 begin
-   Result:=aChild.Create(Self);
+   Result:=aChild.Create(nil);
    Insert(0, Result);
 end;
 
@@ -3798,6 +3799,8 @@ begin
    if not Assigned(FChildren) then Exit;
    if Assigned(FScene) then
       FScene.RemoveLights(aChild);
+   if aChild.Owner=Self then
+      RemoveComponent(aChild);
    FChildren.Remove(aChild);
    aChild.FParent:=nil;
    if keepChildren then begin
