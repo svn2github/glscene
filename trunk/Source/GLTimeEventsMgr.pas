@@ -1,4 +1,4 @@
-// GLTimeEventsMGR
+// GLTimeEventsMgr
 //
 // by GliGli
 //
@@ -7,7 +7,7 @@
 //
 // 07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
 //
-unit GLTimeEventsMGR;
+unit GLTimeEventsMgr;
 
 interface
 

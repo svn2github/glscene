@@ -445,6 +445,7 @@ procedure VectorAdd(const V1, V2 : TAffineVector; var vr : TAffineVector); overl
 procedure VectorAdd(const V1, V2 : TAffineVector; vr : PAffineVector); overload;
 //: Returns the sum of two homogeneous vectors
 function VectorAdd(const V1, V2 : TVector) : TVector; overload;
+procedure VectorAdd(const V1, V2 : TVector; var vr : TVector); overload;
 //: Sums up f to each component of the vector
 function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector; overload;
 //: Sums up f to each component of the vector
@@ -1455,6 +1456,40 @@ end;
 // VectorAdd (hmg)
 //
 function VectorAdd(const V1, V2: TVector): TVector; register;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+asm
+         test vSIMD, 1
+         jz @@FPU
+@@3DNow:
+         db $0F,$6F,$00           /// movq  mm0, [eax]
+         db $0F,$0F,$02,$9E       /// pfadd mm0, [edx]
+         db $0F,$7F,$01           /// movq  [ecx], mm0
+         db $0F,$6F,$48,$08       /// movq  mm1, [eax+8]
+         db $0F,$0F,$4A,$08,$9E   /// pfadd mm1, [edx+8]
+         db $0F,$7F,$49,$08       /// movq  [ecx+8], mm1
+         db $0F,$0E               /// femms
+         ret
+
+@@FPU:
+         FLD  DWORD PTR [EAX]
+         FADD DWORD PTR [EDX]
+         FSTP DWORD PTR [ECX]
+         FLD  DWORD PTR [EAX+4]
+         FADD DWORD PTR [EDX+4]
+         FSTP DWORD PTR [ECX+4]
+         FLD  DWORD PTR [EAX+8]
+         FADD DWORD PTR [EDX+8]
+         FSTP DWORD PTR [ECX+8]
+         FLD  DWORD PTR [EAX+12]
+         FADD DWORD PTR [EDX+12]
+         FSTP DWORD PTR [ECX+12]
+end;
+
+// VectorAdd (hmg, proc)
+//
+procedure VectorAdd(const v1, v2 : TVector; var vr : TVector); register;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -5145,6 +5180,24 @@ end;
 //
 function RLength(x, y : Single) : Single;
 asm
+{      test vSIMD, 1
+      jz @@FPU
+@@3DNow:
+      movd        mm0, dword ptr [ebp+8]
+      punpckldq   mm0, qword ptr [ebp+12]
+      pfmul       mm0, mm0
+      pfacc       mm0, mm0
+      pfrsqrt     mm1, mm0
+      movq        mm2, mm1
+      pfmul       mm2, mm1
+      pfrsqit1    mm0, mm2
+      pfrcpit2    mm0, mm1
+      movd        dword ptr [ebp-4], mm0
+      femms
+      fld         dword ptr [ebp-4]
+      jmp @@End           }
+
+@@FPU:
       fld  x
       fmul x
       fld  y
