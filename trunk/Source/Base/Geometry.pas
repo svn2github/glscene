@@ -848,6 +848,7 @@ function IsInCube(const p, d : TVector) : Boolean; overload;
 function MinFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MinFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
 function MinFloat(values : PExtendedArray; nbItems : Integer) : Extended; overload;
+function MinFloat(const v1, v2 : Single) : Single; overload;
 {: Returns the maximum value of the array. }
 function MaxFloat(values : PSingleArray; nbItems : Integer) : Single; overload;
 function MaxFloat(values : PDoubleArray; nbItems : Integer) : Double; overload;
@@ -4599,6 +4600,15 @@ begin
       for i:=1 to nbItems-1 do
          if values[i]<Result then Result:=values[i];
    end else Result:=0;
+end;
+
+// MinFloat (single 2)
+//
+function MinFloat(const v1, v2 : Single) : Single;
+begin
+   if v1<v2 then
+      Result:=v1
+   else Result:=v2;
 end;
 
 // MaxFloat (single)

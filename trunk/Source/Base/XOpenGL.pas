@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall) 
       <li>16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
       <li>14/08/01 - EG - Added xglMapTexCoordToSecond
       <li>21/02/01 - EG - Added TexGen and vertex arrays mappings
@@ -40,25 +41,25 @@ procedure xglMapTexCoordToDual;
 
 var
    // Explicit texture coordinates specification
-   xglTexCoord2f: procedure(s, t: TGLfloat); stdcall;
-   xglTexCoord2fv: procedure(v: PGLfloat); stdcall;
-   xglTexCoord3f: procedure(s, t, r: TGLfloat); stdcall;
-   xglTexCoord3fv: procedure(v: PGLfloat); stdcall;
-   xglTexCoord4f: procedure(s, t, r, q: TGLfloat); stdcall;
-   xglTexCoord4fv: procedure(v: PGLfloat); stdcall;
+   xglTexCoord2f: procedure(s, t: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexCoord2fv: procedure(v: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexCoord3f: procedure(s, t, r: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexCoord3fv: procedure(v: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexCoord4f: procedure(s, t, r, q: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexCoord4fv: procedure(v: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
    // TexGen texture coordinates specification
-   xglTexGenf: procedure(coord, pname: TGLEnum; param: TGLfloat); stdcall;
-   xglTexGenfv: procedure(coord, pname: TGLEnum; params: PGLfloat); stdcall;
-   xglTexGeni: procedure(coord, pname: TGLEnum; param: TGLint); stdcall;
-   xglTexGeniv: procedure(coord, pname: TGLEnum; params: PGLint); stdcall;
+   xglTexGenf: procedure(coord, pname: TGLEnum; param: TGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexGenfv: procedure(coord, pname: TGLEnum; params: PGLfloat); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexGeni: procedure(coord, pname: TGLEnum; param: TGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglTexGeniv: procedure(coord, pname: TGLEnum; params: PGLint); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
    // Vertex Arrays texture coordinates specification
-   xglTexCoordPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); stdcall;
+   xglTexCoordPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei; data: pointer); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
    // Misc
-   xglEnable: procedure(cap: TGLEnum); stdcall;
-   xglDisable: procedure(cap: TGLEnum); stdcall;
+   xglEnable: procedure(cap: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
+   xglDisable: procedure(cap: TGLEnum); {$IFDEF Win32} stdcall; {$ENDIF} {$IFDEF LINUX} cdecl; {$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

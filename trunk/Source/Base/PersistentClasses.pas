@@ -340,8 +340,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses Consts;
-
 resourcestring
    cInvalidFileSignature = 'Invalid file signature';
    cUnknownArchiveVersion = ' : unknown archive version ';

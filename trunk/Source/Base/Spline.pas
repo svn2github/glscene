@@ -89,6 +89,7 @@ implementation
 // ------------------------------------------------------------------
 
 type
+   // local type used by the Hermite/Cholesky code
    TSingleMatrix = array of PFloatArray;
 
 // VECCholeskyTriDiagResol

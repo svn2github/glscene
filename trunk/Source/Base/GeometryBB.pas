@@ -3,6 +3,7 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/08/01 - EG - Removed "math" dependency
       <li>09/07/01 - EG - Added AABB types and functions
 	   <li>31/03/01 - EG - Original Unit by Jacques Tur
 	</ul></font>
@@ -11,7 +12,7 @@ unit GeometryBB;
 
 interface
 
-uses Math, Geometry;
+uses Geometry;
 
 type
 
@@ -30,12 +31,12 @@ type
 function AddBB(var c1 : THmgBoundingBox; const c2 : THmgBoundingBox ) : THmgBoundingBox;
 procedure SetBB(var c : THmgBoundingBox; const v : TVector );
 procedure BBTransform(var c : THmgBoundingBox; const m : TMatrix );
-function BBMinX(c : THmgBoundingBox ) : Double;
-function BBMaxX(c : THmgBoundingBox ) : Double;
-function BBMinY(c : THmgBoundingBox ) : Double;
-function BBMaxY(c : THmgBoundingBox ) : Double;
-function BBMinZ(c : THmgBoundingBox ) : Double;
-function BBMaxZ(c : THmgBoundingBox ) : Double;
+function BBMinX(c : THmgBoundingBox) : Single;
+function BBMaxX(c : THmgBoundingBox) : Single;
+function BBMinY(c : THmgBoundingBox) : Single;
+function BBMaxY(c : THmgBoundingBox) : Single;
+function BBMinZ(c : THmgBoundingBox) : Single;
+function BBMaxZ(c : THmgBoundingBox) : Single;
 
 {: Extract AABB information from a BB. }
 function BBToAABB(const aBB : THmgBoundingBox) : TAABB;
@@ -140,68 +141,68 @@ end;
 
 //BBMinX
 //
-function BBMinX( c : THmgBoundingBox ) : Double;
+function BBMinX( c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   result := c[0][0];
+   Result := c[0][0];
    for i := 1 to 7 do
-      result := Min( Result, c[i][0] );
+      Result := MinFloat(Result, c[i][0]);
 end;
 
 //BBMaxX
 //
-function BBMaxX( c : THmgBoundingBox ) : Double;
+function BBMaxX( c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
    result := c[0][0];
    for i := 1 to 7 do
-      result := Max( Result, c[i][0] );
+      result := MaxFloat( Result, c[i][0] );
 end;
 
 //BBMinY
 //
-function BBMinY( c : THmgBoundingBox ) : Double;
+function BBMinY( c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
    result := c[0][1];
    for i := 1 to 7 do
-      result := Min( Result, c[i][1] );
+      Result := MinFloat( Result, c[i][1] );
 end;
 
 //BBMaxY
 //
-function BBMaxY( c : THmgBoundingBox ) : Double;
+function BBMaxY( c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   result := c[0][1];
+   Result := c[0][1];
    for i := 1 to 7 do
-      result := Max( Result, c[i][1] );
+      Result := MaxFloat( Result, c[i][1] );
 end;
 
 //BBMinZ
 //
-function BBMinZ( c : THmgBoundingBox ) : Double;
-var
-   i : Integer;
-begin
-   result := c[0][2];
-   for i := 1 to 7 do
-      result := Min( Result, c[i][2] );
-end;
-
-//BBMaxZ
-//
-function BBMaxZ( c : THmgBoundingBox ) : Double;
+function BBMinZ( c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
    Result := c[0][2];
    for i := 1 to 7 do
-      result := Max( Result, c[i][2] );
+      Result := MinFloat( Result, c[i][2] );
+end;
+
+//BBMaxZ
+//
+function BBMaxZ( c : THmgBoundingBox ) : Single;
+var
+   i : Integer;
+begin
+   Result := c[0][2];
+   for i := 1 to 7 do
+      Result := MaxFloat( Result, c[i][2] );
 end;
 
 // BBToAABB
