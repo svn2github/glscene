@@ -181,6 +181,9 @@ contains
   GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas',
   GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas',
   GLImposter in '..\Source\GLImposter.pas',
-  GLWaterPlane in '..\Source\GLWaterPlane.pas';
+  GLWaterPlane in '..\Source\GLWaterPlane.pas',
+  GLPerlinPFX in '..\Source\GLPerlinPFX.pas',
+  PerlinNoise in '..\Source\Base\PerlinNoise.pas',
+  GLTexLensFlare in '..\Source\GLTexLensFlare.pas';
 
 end.

@@ -182,6 +182,9 @@ contains
   VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
   GLImposter in '..\Source\GLImposter.pas',
   GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas',
-  GLWaterPlane in '..\Source\GLWaterPlane.pas';
+  GLWaterPlane in '..\Source\GLWaterPlane.pas',
+  GLPerlinPFX in '..\Source\GLPerlinPFX.pas',
+  PerlinNoise in '..\Source\Base\PerlinNoise.pas',
+  GLTexLensFlare in '..\Source\GLTexLensFlare.pas';
 
 end.
