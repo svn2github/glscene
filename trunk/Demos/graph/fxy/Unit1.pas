@@ -23,7 +23,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ComCtrls, GLObjects, GLGraph, GLScene, GLMisc, Geometry;
+  ComCtrls, GLObjects, GLGraph, GLScene, GLMisc, Geometry, VectorTypes;
 
 type
   TForm1 = class(TForm)
@@ -42,10 +42,10 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure HeightField1GetHeight(const x, y: Single; var z: Single;
-      var color: THomogeneousFltVector; var texPoint: TTexPoint);
     procedure CBCenteredClick(Sender: TObject);
     procedure TBXYPositionChange(Sender: TObject);
+    procedure HeightField1GetHeight(const x, y: Single; var z: Single;
+      var color: TVector4f; var texPoint: TTexPoint);
   private
     { Déclarations privées }
   public
@@ -61,7 +61,7 @@ implementation
 {$R *.DFM}
 
 procedure TForm1.HeightField1GetHeight(const x, y: Single; var z: Single;
-  var color: THomogeneousFltVector; var texPoint: TTexPoint);
+  var color: TVector4f; var texPoint: TTexPoint);
 begin
    z:=VectorNorm(x, y);
    z:=cos(z*12)/(2*(z*6.28+1));
