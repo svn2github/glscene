@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>29/01/02 - EG - Fixed ScanLine Index bug with empty bitmaps
       <li>20/01/02 - EG - Fixed BGR24/RGB24 last pixel transfer
       <li>17/01/02 - EG - Faster assignments from bitmaps (approx. x2),
                           Added AssignFromBitmap24WithoutRGBSwap
@@ -388,18 +389,20 @@ begin
    FHeight:=aBitmap.Height;
    FDataSize:=FWidth*FHeight*4;
    ReallocMem(FData, FDataSize);
-   pDest:=@PChar(FData)[Width*4*(Height-1)];
-   if VerticalReverseOnAssignFromBitmap then begin
-      pSrc:=aBitmap.ScanLine[Height-1];
-      rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
-   end else begin
-      pSrc:=aBitmap.ScanLine[0];
-      rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
-   end;
-   for y:=0 to Height-1 do begin
-      BGR24ToRGBA32(pSrc, pDest, Width);
-      Dec(pDest, Width*4);
-      Inc(pSrc, rowOffset);
+   if Height>0 then begin
+      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      if VerticalReverseOnAssignFromBitmap then begin
+         pSrc:=aBitmap.ScanLine[Height-1];
+         rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+      end else begin
+         pSrc:=aBitmap.ScanLine[0];
+         rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+      end;
+      for y:=0 to Height-1 do begin
+         BGR24ToRGBA32(pSrc, pDest, Width);
+         Dec(pDest, Width*4);
+         Inc(pSrc, rowOffset);
+      end;
    end;
 end;
 
@@ -416,18 +419,20 @@ begin
    FHeight:=aBitmap.Height;
    FDataSize:=FWidth*FHeight*4;
    ReallocMem(FData, FDataSize);
-   pDest:=@PChar(FData)[Width*4*(Height-1)];
-   if VerticalReverseOnAssignFromBitmap then begin
-      pSrc:=aBitmap.ScanLine[Height-1];
-      rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
-   end else begin
-      pSrc:=aBitmap.ScanLine[0];
-      rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
-   end;
-   for y:=0 to Height-1 do begin
-      RGB24ToRGBA32(pSrc, pDest, Width);
-      Dec(pDest, Width*4);
-      Inc(pSrc, rowOffset);
+   if Height>0 then begin
+      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      if VerticalReverseOnAssignFromBitmap then begin
+         pSrc:=aBitmap.ScanLine[Height-1];
+         rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+      end else begin
+         pSrc:=aBitmap.ScanLine[0];
+         rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+      end;
+      for y:=0 to Height-1 do begin
+         RGB24ToRGBA32(pSrc, pDest, Width);
+         Dec(pDest, Width*4);
+         Inc(pSrc, rowOffset);
+      end;
    end;
 end;
 
@@ -444,18 +449,20 @@ begin
    FHeight:=aBitmap.Height;
    FDataSize:=FWidth*FHeight*4;
    ReallocMem(FData, FDataSize);
-   pDest:=@PChar(FData)[Width*4*(Height-1)];
-   if VerticalReverseOnAssignFromBitmap then begin
-      pSrc:=aBitmap.ScanLine[Height-1];
-      rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
-   end else begin
-      pSrc:=aBitmap.ScanLine[0];
-      rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
-   end;
-   for y:=0 to Height-1 do begin
-      BGRA32ToRGBA32(pSrc, pDest, Width);
-      Dec(pDest, Width*4);
-      Inc(pSrc, rowOffset);
+   if Height>0 then begin
+      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      if VerticalReverseOnAssignFromBitmap then begin
+         pSrc:=aBitmap.ScanLine[Height-1];
+         rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+      end else begin
+         pSrc:=aBitmap.ScanLine[0];
+         rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+      end;
+      for y:=0 to Height-1 do begin
+         BGRA32ToRGBA32(pSrc, pDest, Width);
+         Dec(pDest, Width*4);
+         Inc(pSrc, rowOffset);
+      end;
    end;
 end;
 
@@ -472,13 +479,15 @@ begin
    FHeight:=aBitmap32.Height;
    FDataSize:=FWidth*FHeight*4;
    ReallocMem(FData, FDataSize);
-   pDest:=@PChar(FData)[Width*4*(Height-1)];
-   for y:=0 to Height-1 do begin
-      if VerticalReverseOnAssignFromBitmap then
-         pSrc:=PChar(aBitmap32.ScanLine[Height-1-y])
-      else pSrc:=PChar(aBitmap32.ScanLine[y]);
-      BGRA32ToRGBA32(pSrc, pDest, Width);
-      Dec(pDest, Width*4);
+   if Height>0 then begin
+      pDest:=@PChar(FData)[Width*4*(Height-1)];
+      for y:=0 to Height-1 do begin
+         if VerticalReverseOnAssignFromBitmap then
+            pSrc:=PChar(aBitmap32.ScanLine[Height-1-y])
+         else pSrc:=PChar(aBitmap32.ScanLine[y]);
+         BGRA32ToRGBA32(pSrc, pDest, Width);
+         Dec(pDest, Width*4);
+      end;
    end;
 end;
 {$endif}
@@ -494,17 +503,19 @@ begin
    Result.PixelFormat:=glpf32bit;
    Result.Width:=Width;
    Result.Height:=Height;
-   pSrc:=@PChar(FData)[Width*4*(Height-1)];
-   for y:=0 to Height-1 do begin
-      pDest:=Result.ScanLine[y];
-      for x:=0 to Width-1 do begin
-         x4:=x*4;
-         pDest[x4+0]:=pSrc[x4+2];
-         pDest[x4+1]:=pSrc[x4+1];
-         pDest[x4+2]:=pSrc[x4+0];
-         pDest[x4+3]:=pSrc[x4+3];
+   if Height>0 then begin
+      pSrc:=@PChar(FData)[Width*4*(Height-1)];
+      for y:=0 to Height-1 do begin
+         pDest:=Result.ScanLine[y];
+         for x:=0 to Width-1 do begin
+            x4:=x*4;
+            pDest[x4+0]:=pSrc[x4+2];
+            pDest[x4+1]:=pSrc[x4+1];
+            pDest[x4+2]:=pSrc[x4+0];
+            pDest[x4+3]:=pSrc[x4+3];
+         end;
+         Dec(pSrc, Width*4);
       end;
-      Dec(pSrc, Width*4);
    end;
 end;
 
