@@ -3,6 +3,7 @@
 
 	<b>History : </b><font size=-1><ul>
       <li>27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
+      <li>23/11/02 - EG - Added X/YTiles to HUDSprite
       <li>12/05/02 - EG - ModulateColor for HUDText (Nelson Chu)
       <li>20/12/01 - EG - PolygonMode properly adjusted for HUDText
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
@@ -41,12 +42,26 @@ type
       Note : since TGLHUDSprite works in absolute coordinates, TGLProxyObject
       can't be used to duplicate an hud sprite. }
 	TGLHUDSprite = class (TGLSprite)
+	   private
+			{ Private Declarations }
+         FXTiles, FYTiles : Integer;
+
+		protected
+			{ Protected Declarations }
+         procedure SetXTiles(const val : Integer);
+         procedure SetYTiles(const val : Integer);
+
 		public
 			{ Public Declarations }
 			constructor Create(AOwner: TComponent); override;
 
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
+
+	   published
+	      { Published Declarations }
+         property XTiles : Integer read FXTiles write SetXTiles default 1;
+         property YTiles : Integer read FYTiles write SetYTiles default 1;
    end;
 
    // TGLHUDText
@@ -128,6 +143,28 @@ begin
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
    Width:=16;
    Height:=16;
+   FXTiles:=1;
+   FYTiles:=1;
+end;
+
+// SetXTiles
+//
+procedure TGLHUDSprite.SetXTiles(const val : Integer);
+begin
+   if val<>FXTiles then begin
+      FXTiles:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetYTiles
+//
+procedure TGLHUDSprite.SetYTiles(const val : Integer);
+begin
+   if val<>FYTiles then begin
+      FYTiles:=val;
+      StructureChanged;
+   end;
 end;
 
 // DoRender
@@ -166,10 +203,10 @@ begin
       // issue quad
       glBegin(GL_QUADS);
          glNormal3fv(@YVector);
-         xglTexCoord2f(0, 0);  glVertex2f( vx, vy1);
-         xglTexCoord2f(1, 0);  glVertex2f(vx1, vy1);
-         xglTexCoord2f(1, 1);  glVertex2f(vx1,  vy);
-         xglTexCoord2f(0, 1);  glVertex2f( vx,  vy);
+         xglTexCoord2f(0, 0);             glVertex2f( vx, vy1);
+         xglTexCoord2f(FXTiles, 0);       glVertex2f(vx1, vy1);
+         xglTexCoord2f(FXTiles, FYTiles); glVertex2f(vx1,  vy);
+         xglTexCoord2f(0, FYTiles);       glVertex2f( vx,  vy);
       glEnd;
       // restore state
       glDepthMask(True);
