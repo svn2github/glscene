@@ -19,7 +19,8 @@ type
    TSrc = record
       fs : TFileStream;
       x, y, w, h : Integer;
-      format : Integer;
+      format : Integer;     
+      
    end;
    PSrc = ^TSrc;
 
@@ -79,6 +80,11 @@ type
     ProgressBar: TProgressBar;
     EDTileSize: TEdit;
     Label6: TLabel;
+    ToolButton8: TToolButton;
+    ACViewer: TAction;
+    N3: TMenuItem;
+    HTFViewer1: TMenuItem;
+    ToolButton9: TToolButton;
     procedure ACExitExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BUDEMPathClick(Sender: TObject);
@@ -96,6 +102,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure EDDefaultZChange(Sender: TObject);
     procedure ACProcessExecute(Sender: TObject);
+    procedure ACViewerExecute(Sender: TObject);
   private
     { Private declarations }
     sources : array of TSrc;
@@ -117,7 +124,7 @@ implementation
 
 {$R *.dfm}
 
-uses HeightTileFile, Math;
+uses HeightTileFile, Math, FViewerForm;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var
@@ -282,6 +289,7 @@ begin
          sg.Free;
       end;
       sl.Free;
+      SDTerrainPack.FileName:=ODTerrainPack.FileName;
    end;
 end;
 
@@ -405,7 +413,7 @@ end;
 
 procedure TMainForm.ACProcessExecute(Sender: TObject);
 var
-   x, y, wx, wy, ts, tx, ty, i : Integer;
+   x, y, wx, wy, ts, tx, ty, i, n, maxN : Integer;
    htf : THeightTileFile;
    buf : array of SmallInt;
    f : file of Byte;
@@ -416,7 +424,10 @@ begin
    Parse;
    SetLength(buf, ts*ts);
    htf:=THeightTileFile.CreateNew(EDHTFName.Text, wx, wy, ts);
-   ProgressBar.Max:=Ceil(wx/ts)*Ceil(wy/ts);
+   htf.DefaultZ:=defaultZ;
+   ProgressBar.Max:=16384;
+   maxN:=Ceil(wx/ts)*Ceil(wy/ts);
+   n:=0;
    ProgressBar.Position:=0;
    y:=0; while y<wy do begin
       ty:=wy-y;
@@ -424,13 +435,16 @@ begin
       x:=0; while x<wx do begin
          tx:=wx-x;
          if tx>ts then tx:=ts;
-         ProgressBar.StepIt;
+         Inc(n);
+         ProgressBar.Position:=(n*16384) div maxN;
          for i:=0 to ty-1 do
             WorldExtract(x, y+i, tx, @buf[i*tx]);
          htf.CompressTile(x, y, tx, ty, @buf[0]);
          Inc(x, ts);
       end;
       Inc(y, ts);
+      Refresh;
+      ProgressBar.Refresh;
    end;
    htf.Free;
    Cleanup;
@@ -442,7 +456,20 @@ begin
 
    ShowMessage( 'HTF file created.'#13#10#13#10
                +IntToStr(i)+' bytes in file'#13#10
-               +'('+IntToStr(wx*wy*2)+' raw bytes)');
+               +'('+IntToStr(wx*wy*2)+' raw bytes)');                                   
+               
+end;
+
+procedure TMainForm.ACViewerExecute(Sender: TObject);
+var
+   viewer : TViewerForm;
+begin
+   viewer:=TViewerForm.Create(nil);
+   try
+      viewer.ShowModal;
+   finally
+      viewer.Free;
+   end;
 end;
 
 end.

@@ -35,7 +35,7 @@ type
    THeightTileInfo = packed record
       left, top, width, height : Integer;
       min, max, average : SmallInt;
-      fileOffset : Integer;   // offset to tile data in the file
+      fileOffset : Int64;   // offset to tile data in the file
    end;
    PHeightTileInfo = ^THeightTileInfo;
 
@@ -51,9 +51,10 @@ type
    //
    THTFHeader = packed record
       FileVersion : array [0..5] of Char;
-      TileIndexOffset : Integer;
+      TileIndexOffset : Int64;
       SizeX, SizeY : Integer;
       TileSize : Integer;
+      DefaultZ : SmallInt;
    end;
 
    // THeightTileFile
@@ -75,7 +76,7 @@ type
          procedure PackTile(aWidth, aHeight : Integer; src : PSmallIntArray);
          procedure UnPackTile(source : PShortIntArray);
 
-         property TileIndexOffset : Integer read FHeader.TileIndexOffset write FHeader.TileIndexOffset;
+         property TileIndexOffset : Int64 read FHeader.TileIndexOffset write FHeader.TileIndexOffset;
 
       public
          { Public Declarations }
@@ -104,9 +105,17 @@ type
          {: Returns the tile that contains x and y. }
          function XYTileInfo(anX, anY : Integer) : PHeightTileInfo;
 
+         {: Clears the list then add all tiles that overlap the rectangular area. }
+         procedure TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
+                               destList : TList);
+
          property SizeX : Integer read FHeader.SizeX;
          property SizeY : Integer read FHeader.SizeY;
+         {: Maximum width and height for a tile.<p>
+            Actual tiles may not be square, can assume random layouts, and may
+            overlap. }
          property TileSize : Integer read FHeader.TileSize;
+         property DefaultZ : SmallInt read FHeader.DefaultZ write FHeader.DefaultZ;
    end;
 
 // ------------------------------------------------------------------
@@ -171,7 +180,7 @@ begin
    end;
    FHeightTile.info.left:=MaxInt; // mark as not loaded
    SetLength(FHeightTile.data, TileSize*TileSize);
-   SetLength(FInBuf, TileSize*(TileSize+1));
+   SetLength(FInBuf, TileSize*(TileSize+1)*2);
 end;
 
 // Destroy
@@ -197,6 +206,8 @@ end;
 // PackTile
 //
 procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArray);
+var
+   packWidth : Integer;
 
    function DiffEncode(src : PSmallIntArray; dest : PShortIntArray) : Integer;
    var
@@ -208,7 +219,7 @@ procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArr
       PSmallIntArray(dest)[0]:=v;
       dest:=PShortIntArray(Integer(dest)+2);
       i:=1;
-      while i<aWidth do begin
+      while i<packWidth do begin
          delta:=src[i]-v;
          v:=src[i];
          if Abs(delta)<=127 then begin
@@ -232,13 +243,13 @@ procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArr
    begin
       i:=0;
       Result:=Integer(dest);
-      while (i<aWidth) do begin
+      while (i<packWidth) do begin
          v:=src[i];
          Inc(i);
          n:=0;
          PSmallIntArray(dest)[0]:=v;
          Inc(dest, 2);
-         while (src[i]=v) and (i<aWidth) do begin
+         while (src[i]=v) and (i<packWidth) do begin
             Inc(n);
             if n=255 then begin
                dest[0]:=#255;
@@ -247,7 +258,7 @@ procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArr
             end;
             Inc(i);
          end;
-         if (i<aWidth) or (n>0) then begin
+         if (i<packWidth) or (n>0) then begin
             dest[0]:=Char(n);
             Inc(dest);
          end;
@@ -260,6 +271,7 @@ var
    p : PSmallIntArray;
    buf, bestBuf : array of Byte;
    bestLength, len : Integer;
+   leftPack, rightPack : Byte;
    bestMethod : Byte;   // 0=RAW, 1=Diff, 2=RLE
    av : Int64;
    v : SmallInt;
@@ -271,23 +283,37 @@ begin
       min:=src[0];
       max:=src[0];
       av:=src[0];
-      for y:=1 to TileSize*TileSize-1 do begin
+      for y:=1 to aWidth*aHeight-1 do begin
          v:=Src[y];
          if v<min then min:=v else if v>max then max:=v;
-         average:=average+v;
+         av:=av+v;
       end;
-      average:=av div (TileSize*TileSize);
+      average:=av div (aWidth*aHeight);
 
       if min=max then Exit; // no need to store anything
 
    end;
 
-   for y:=0 to TileSize-1 do begin
-      p:=@src[TileSize*y];
+   for y:=0 to aHeight-1 do begin
+      p:=@src[aWidth*y];
+      packWidth:=aWidth;
+      // Lookup leftPack
+      leftPack:=0;
+      while (leftPack<255) and (packWidth>0) and (p[0]=DefaultZ) do begin
+         p:=PSmallIntArray(Integer(p)+2);
+         Dec(packWidth);
+         Inc(leftPack);
+      end;
+      // Lookup rightPack
+      rightPack:=0;
+      while (rightPack<255) and (packWidth>0) and (p[packWidth-1]=DefaultZ) do begin
+         Dec(packWidth);
+         Inc(rightPack);
+      end;
       // Default encoding = RAW
-      bestLength:=TileSize*2;
+      bestLength:=packWidth*2;
       bestMethod:=0;
-      Move(src[0], bestBuf[0], bestLength);
+      Move(p^, bestBuf[0], bestLength);
       // Diff encoding
       len:=DiffEncode(p, PShortIntArray(@buf[0]));
       if len<bestLength then begin
@@ -303,8 +329,30 @@ begin
          Move(buf[0], bestBuf[0], bestLength);
       end;
       // Write to file
-      FFile.Write(bestMethod, 1);
-      FFile.Write(bestBuf[0], bestLength);
+      if (leftPack or rightPack)=0 then begin
+         FFile.Write(bestMethod, 1);
+         FFile.Write(bestBuf[0], bestLength);
+      end else begin
+         if leftPack>0 then begin
+            if rightPack>0 then begin
+               bestMethod:=bestMethod+$C0;
+               FFile.Write(bestMethod, 1);
+               FFile.Write(leftPack, 1);
+               FFile.Write(rightPack, 1);
+               FFile.Write(bestBuf[0], bestLength);
+            end else begin
+               bestMethod:=bestMethod+$80;
+               FFile.Write(bestMethod, 1);
+               FFile.Write(leftPack, 1);
+               FFile.Write(bestBuf[0], bestLength);
+            end;
+         end else begin
+            bestMethod:=bestMethod+$40;
+            FFile.Write(bestMethod, 1);
+            FFile.Write(rightPack, 1);
+            FFile.Write(bestBuf[0], bestLength);
+         end;
+      end;
    end;
 end;
 
@@ -312,7 +360,7 @@ end;
 //
 procedure THeightTileFile.UnPackTile(source : PShortIntArray);
 var
-   aWidth : Integer;
+   unpackWidth, tileWidth : Integer;
    src : PShortInt;
    dest : PSmallInt;
 
@@ -325,7 +373,7 @@ var
    begin
       locSrc:=PShortInt(Integer(src)-1);
       locDest:=dest;
-      destEnd:=PSmallInt(Integer(dest)+aWidth*2);
+      destEnd:=PSmallInt(Integer(dest)+unpackWidth*2);
       while Integer(locDest)<Integer(destEnd) do begin
          Inc(locSrc);
          v:=PSmallInt(locSrc)^;
@@ -355,7 +403,7 @@ var
    begin
       locSrc:=src;
       locDest:=dest;
-      destEnd:=PSmallInt(Integer(dest)+aWidth*2);
+      destEnd:=PSmallInt(Integer(dest)+unpackWidth*2);
       while Integer(locDest)<Integer(destEnd) do begin
          v:=PSmallIntArray(locSrc)[0];
          Inc(locSrc, 2);
@@ -379,14 +427,15 @@ var
    end;
 
 var
-   y, s2 : Integer;
+   y, n : Integer;
    method : Byte;
 begin
    src:=PShortInt(source);
    dest:=@FHeightTile.Data[0];
-   
+   n:=0;
+
    with FHeightTile.info do begin
-      aWidth:=width;
+      tileWidth:=width;
       if min=max then begin
          for y:=0 to width*height-1 do
             PSmallIntArray(dest)[y]:=min;
@@ -394,17 +443,41 @@ begin
       end;
    end;
 
-   s2:=FHeightTile.info.width*2;
    for y:=0 to FHeightTile.info.height-1 do begin
       method:=src^;
       Inc(src);
-      case method of
+      unpackWidth:=tileWidth;
+      // Process left pack if any
+      if (method and $80)<>0 then begin
+         PByte(@n)^:=PByte(src)^;
+         Inc(src);
+         Dec(unpackWidth, n);
+         while n>0 do begin ;
+            dest^:=DefaultZ;
+            Inc(dest);
+            Dec(n);
+         end;
+      end;
+      // Read right pack if any
+      if (method and $40)<>0 then begin
+         PByte(@n)^:=PByte(src)^;
+         Inc(src);
+         Dec(unpackWidth, n)
+      end else n:=0;
+      // Process main data
+      case (method and $3F) of
          1 : DiffDecode;
          2 : RLEDecode;
       else
-         Move(src^, dest^, s2);
-         Inc(src, s2);
-         Inc(dest, s2 shr 1);
+         Move(src^, dest^, unpackWidth*2);
+         Inc(src, unpackWidth*2);
+         Inc(dest, unpackWidth);
+      end;
+      // Process right pack if any
+      while n>0 do begin ;
+         dest^:=DefaultZ;
+         Inc(dest);
+         Dec(n);
       end;
    end;
 end;
@@ -460,6 +533,8 @@ end;
 procedure THeightTileFile.CompressTile(aLeft, aTop, aWidth, aHeight : Integer;
                                        aData : PSmallIntArray);
 begin
+   Assert(aWidth<=TileSize);
+   Assert(aHeight<=TileSize);
    with FHeightTile.info do begin
       left:=aLeft;
       top:=aTop;
@@ -488,6 +563,7 @@ begin
       if n>len then n:=len;
       tile:=GetTile(tileInfo.left, tileInfo.top);
       Move(tile.data[(y-tileInfo.top)*tileInfo.width+rx], dest^, n*2);
+      dest:=PSmallIntArray(Integer(dest)+n*2);
       Dec(len, n);
       Inc(x, n);
    end;
@@ -505,6 +581,20 @@ begin
          Result:=@FTileIndex[i];
          Break;
       end;
+   end;
+end;
+
+// TilesInRect
+//
+procedure THeightTileFile.TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
+                                      destList : TList);
+var
+   i : Integer;
+begin
+   destList.Count:=0;
+   for i:=Low(FTileIndex) to High(FTileIndex) do with FTileIndex[i] do begin
+      if (left<=aRight) and (top<=aBottom) and (aLeft<left+width) and (aTop<top+height) then
+         destList.Add(@FTileIndex[i]);
    end;
 end;
 

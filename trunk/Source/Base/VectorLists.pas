@@ -710,7 +710,7 @@ end;
 procedure TAffineVectorList.Add(const i1, i2 : TAffineVector);
 begin
   	Inc(FCount, 2);
-   while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
+   while FCount>FCapacity do SetCapacity(FCapacity+FGrowthDelta);
 	FList[FCount-2] := i1;
 	FList[FCount-1] := i2;
 end;
@@ -720,7 +720,7 @@ end;
 procedure TAffineVectorList.Add(const i1, i2, i3 : TAffineVector);
 begin
   	Inc(FCount, 3);
-   while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
+   while FCount>FCapacity do SetCapacity(FCapacity+FGrowthDelta);
 	FList[FCount-3] := i1;
 	FList[FCount-2] := i2;
 	FList[FCount-1] := i3;
@@ -736,8 +736,16 @@ end;
 // Add
 //
 function TAffineVectorList.Add(const x, y, z : Single) : Integer;
+var
+   v : PAffineVector;
 begin
-   Result:=Add(AffineVectorMake(x, y, z));
+   Result:=FCount;
+  	Inc(FCount);
+   while FCount>FCapacity do SetCapacity(FCapacity+FGrowthDelta);
+   v:=@List[Result];
+   v[0]:=x;
+	v[1]:=y;
+	v[2]:=z;
 end;
 
 // Add

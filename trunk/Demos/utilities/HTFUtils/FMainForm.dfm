@@ -1,6 +1,6 @@
 object MainForm: TMainForm
-  Left = 177
-  Top = 119
+  Left = 169
+  Top = 154
   Width = 557
   Height = 422
   Caption = 'TerrainPack v1.0'
@@ -209,6 +209,19 @@ object MainForm: TMainForm
       Top = 0
       Action = ACProcess
     end
+    object ToolButton8: TToolButton
+      Left = 131
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton8'
+      ImageIndex = 4
+      Style = tbsSeparator
+    end
+    object ToolButton9: TToolButton
+      Left = 139
+      Top = 0
+      Action = ACViewer
+    end
   end
   object CBType: TComboBox
     Left = 392
@@ -294,6 +307,12 @@ object MainForm: TMainForm
       object RemoveDEMsource1: TMenuItem
         Action = ACRemoveDEM
       end
+      object N3: TMenuItem
+        Caption = '-'
+      end
+      object HTFViewer1: TMenuItem
+        Action = ACViewer
+      end
     end
     object MIAbout: TMenuItem
       Caption = 'About...'
@@ -334,6 +353,11 @@ object MainForm: TMainForm
       Caption = 'Process'
       ImageIndex = 3
       OnExecute = ACProcessExecute
+    end
+    object ACViewer: TAction
+      Caption = 'HTFViewer'
+      ImageIndex = 2
+      OnExecute = ACViewerExecute
     end
   end
   object ImageList: TImageList
