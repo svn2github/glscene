@@ -3,6 +3,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
       <li>04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
       <li>02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
                           StripifyMesh slightly faster
@@ -29,6 +30,9 @@ function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList) : 
    coherent. }
 procedure RemapAndCleanupReferences(reference : TAffineVectorList;
                                     indices : TIntegerList);
+{: Remaps a list of triangles vertex indices and remove degenerate triangles.<p>
+   The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
+procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
 
 {: Builds normals for a triangles list.<p>
    Builds one normal per reference vertex (may be NullVector is reference isn't
@@ -36,6 +40,21 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
    Returned list must be freed by caller. }
 function BuildNormals(reference : TAffineVectorList;
                       indices : TIntegerList) : TAffineVectorList;
+
+{: Welds all vertices separated by a distance inferior to weldRadius.<p>
+   Any two vertices whose distance is inferior to weldRadius will be merged
+   (ie. one of them will be removed, and the other replaced by the barycenter).<p>
+   The indicesMap is constructed to allow remapping of indices lists with the
+   simple rule: newVertexIndex:=indicesMap[oldVertexIndex].<p>
+   The logic is protected from chain welding, and only vertices that were
+   initially closer than weldRadius will be welded in the same resulting vertex.<p>
+   This procedure can be used for mesh simplification, but preferably at design-time
+   for it is not optimized for speed, nor for quality. This is more a "fixing"
+   utility for meshes exported from high-polycount CAD tools (remove duplicate
+   vertices, quantification errors, etc.) }
+procedure WeldVertices(vertices : TAffineVectorList;
+                       indicesMap : TIntegerList;
+                       weldRadius : Single);
 
 {: Attempts to create as few as possible triangle strips to cover the mesh.<p>
    The indices parameters define a set of triangles as a set of indices to
@@ -47,6 +66,16 @@ function BuildNormals(reference : TAffineVectorList;
    the agglomerated list of the triangles that couldn't be stripified. }
 function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;
                       agglomerateLoneTriangles : Boolean = False) : TPersistentObjectList;
+{: Increases indices coherency wrt vertex caches.<p>
+   The indices parameters is understood as vertex indices of a triangles set,
+   the triangles are reordered to maximize coherency (vertex reuse) over the
+   cacheSize latest indices. This allows higher rendering performance from
+   hardware renderers that implement vertex cache (nVidia GeForce family f.i.),
+   allowing reuse of T&amp;L performance (similar to stripification without
+   the normals issues of strips).<p>
+   This procedure performs a coherency optimization via a greedy hill-climber
+   algorithm (ie. not optimal but fast). }
+procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -159,6 +188,31 @@ begin
       indicesList[i]:=tag[indicesList[i]];
 end;
 
+// RemapTrianglesIndices
+//
+procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
+var
+   i, k, a, b, c, n : Integer;
+begin
+   Assert((indices.Count mod 3)=0); // must be a multiple of 3
+   n:=indices.Count;
+   i:=0;
+   k:=0;
+   while i<n do begin
+      a:=indicesMap[indices[i]];
+      b:=indicesMap[indices[i+1]];
+      c:=indicesMap[indices[i+2]];
+      if (a<>b) and (b<>c) and (a<>c) then begin
+         indices[k]:=a;
+         indices[k+1]:=b;
+         indices[k+2]:=c;
+         Inc(k, 3);
+      end;
+      Inc(i, 3);
+   end;
+   indices.Count:=k;
+end;
+
 // BuildNormals
 //
 function BuildNormals(reference : TAffineVectorList;
@@ -195,6 +249,142 @@ begin
    finally
       normalsCount.Free;
    end;
+end;
+
+// IncreaseCoherency
+//
+procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
+var
+   i, n, maxVertex, bestCandidate, bestScore, candidateIdx, lastCandidate : Integer;
+   trisOfVertex : array of TIntegerList;
+   candidates : TIntegerList;
+   indicesList : PIntegerArray;
+begin
+   // Alloc lookup structure
+   maxVertex:=indices.MaxInteger;
+   SetLength(trisOfVertex, maxVertex+1);
+   for i:=0 to High(trisOfVertex) do
+      trisOfVertex[i]:=TIntegerList.Create;
+   candidates:=TIntegerList.Create;
+   indicesList:=PIntegerArray(indices.List);
+   // Fillup lookup structure
+   i:=0;
+   while i<indices.Count do begin
+      trisOfVertex[indicesList[i+0]].Add(i);
+      trisOfVertex[indicesList[i+1]].Add(i);
+      trisOfVertex[indicesList[i+2]].Add(i);
+      Inc(i, 3);
+   end;
+   // Optimize
+   i:=0;
+   while i<indices.Count do begin
+      n:=i-cacheSize;
+      if n<0 then n:=0;
+      candidates.Count:=0;
+      while n<i do begin
+         candidates.Add(trisOfVertex[indicesList[n]]);
+         Inc(n);
+      end;
+      bestCandidate:=-1;
+      if candidates.Count>0 then begin
+         candidateIdx:=0;
+         bestScore:=0;
+         candidates.Sort;
+         lastCandidate:=candidates.List[0];
+         for n:=1 to candidates.Count-1 do begin
+            if candidates.List[n]<>lastCandidate then begin
+               if n-candidateIdx>bestScore then begin
+                  bestScore:=n-candidateIdx;
+                  bestCandidate:=lastCandidate;
+               end;
+               lastCandidate:=candidates.List[n];
+               candidateIdx:=n;
+            end;
+         end;
+         if candidates.Count-candidateIdx>bestScore then
+            bestCandidate:=lastCandidate;
+      end;
+      if bestCandidate>=0 then begin
+         trisOfVertex[indicesList[i+0]].Remove(i);
+         trisOfVertex[indicesList[i+1]].Remove(i);
+         trisOfVertex[indicesList[i+2]].Remove(i);
+         trisOfVertex[indicesList[bestCandidate+0]].Remove(bestCandidate);
+         trisOfVertex[indicesList[bestCandidate+1]].Remove(bestCandidate);
+         trisOfVertex[indicesList[bestCandidate+2]].Remove(bestCandidate);
+         trisOfVertex[indicesList[i+0]].Add(bestCandidate);
+         trisOfVertex[indicesList[i+1]].Add(bestCandidate);
+         trisOfVertex[indicesList[i+2]].Add(bestCandidate);
+         indices.Exchange(bestCandidate+0, i+0);
+         indices.Exchange(bestCandidate+1, i+1);
+         indices.Exchange(bestCandidate+2, i+2);
+      end else begin
+         trisOfVertex[indicesList[i+0]].Remove(i);
+         trisOfVertex[indicesList[i+1]].Remove(i);
+         trisOfVertex[indicesList[i+2]].Remove(i);
+      end;
+      Inc(i, 3);
+   end;
+   // Release lookup structure
+   candidates.Free;
+   for i:=0 to High(trisOfVertex) do
+      trisOfVertex[i].Free;
+end;
+
+// WeldVertices
+//
+procedure WeldVertices(vertices : TAffineVectorList;
+                       indicesMap : TIntegerList;
+                       weldRadius : Single);
+var
+   i, j, n, k : Integer;
+   pivot : PAffineVector;
+   sum : TAffineVector;
+   wr2 : Single;
+   mark : packed array of ByteBool;
+begin
+   indicesMap.Count:=vertices.Count;
+   SetLength(mark, vertices.Count);
+   wr2:=Sqr(weldRadius);
+   // mark duplicates, compute barycenters and indicesMap
+   i:=0;
+   k:=0;
+   while i<vertices.Count do begin
+      if not mark[i] then begin
+         pivot:=@vertices.List[i];
+         indicesMap[i]:=k;
+         n:=0;
+         j:=vertices.Count-1;
+         while j>i do begin
+            if not mark[j] then begin
+               if VectorDistance2(pivot^, vertices.List[j])<=wr2 then begin
+                  if n=0 then begin
+                     sum:=VectorAdd(pivot^, vertices.List[j]);
+                     n:=2;
+                  end else begin
+                     AddVector(sum, vertices.List[j]);
+                     Inc(n);
+                  end;
+                  indicesMap[j]:=k;
+                  mark[j]:=True;
+               end;
+            end;
+            Dec(j);
+         end;
+         if n>0 then
+            vertices.List[i]:=VectorScale(sum, 1/n);
+         Inc(k);
+      end;
+      Inc(i);
+   end;
+   // pack vertices list
+   k:=0;
+   for i:=0 to vertices.Count-1 do begin
+      if not mark[i] then begin
+         vertices.List[k]:=vertices.List[i];
+         Inc(k);
+      end;
+   end;
+   vertices.Count:=k;
 end;
 
 // StripifyMesh
