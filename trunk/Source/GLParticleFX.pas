@@ -7,6 +7,8 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+
+      <li>09/09/04 - Mrqzzz - added property TGLParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TGLParticleFXEffect.ArchiveVersion updated to 1
       <li>29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
       <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
       <li>09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
@@ -62,7 +64,7 @@ type
          FRotation: single;
          
          FCreationTime : Double;
-
+         EffectScale : single; 
       protected
          { Protected Declarations }
 
@@ -237,7 +239,7 @@ type
          {: Return the number of particles.<p>
             Note that subclasses may decide to return a particle count inferior
             to Particles.ItemCount, and the value returned by this method will
-            be the one honoured at render time. } 
+            be the one honoured at render time. }
          function ParticleCount : Integer; virtual;
 
 		published
@@ -259,14 +261,17 @@ type
       private
          { Private Declarations }
          FManager : TGLParticleFXManager;
-         FManagerName : String; // NOT persistent, temporarily used for persistence
+         FManagerName : String;
+         FEffectScale: single;
+    procedure SetEffectScale(const Value: single); // NOT persistent, temporarily used for persistence
 
       protected
          { Protected Declarations }
          procedure SetManager(val : TGLParticleFXManager);
 
-			procedure WriteToFiler(writer : TWriter); override;
+         procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
+
          procedure Loaded; override;
          
       public
@@ -278,6 +283,7 @@ type
 			{ Published Declarations }
          {: Reference to the Particle FX manager }
          property Manager : TGLParticleFXManager read FManager write SetManager;
+         property EffectScale : single read FEffectScale write SetEffectScale;
 
    end;
 
@@ -919,6 +925,7 @@ end;
 //
 constructor TGLParticle.Create;
 begin
+   EffectScale :=1;
    inherited Create;
 end;
 
@@ -1228,6 +1235,7 @@ end;
 //
 constructor TGLParticleFXEffect.Create(aOwner : TXCollection);
 begin
+     FEffectScale := 1;
    inherited;
 end;
 
@@ -1239,28 +1247,47 @@ begin
    inherited Destroy;
 end;
 
+
 // WriteToFiler
 //
 procedure TGLParticleFXEffect.WriteToFiler(writer : TWriter);
+var
+   st: string;
 begin
    with writer do begin
-      WriteInteger(0); // ArchiveVersion 0
-      if Assigned(FManager) then
-         WriteString(FManager.GetNamePath)
-      else WriteString('');
+      WriteInteger(1);  // ArchiveVersion 1
+      if Manager<>nil then
+         st := Manager.GetNamePath
+      else
+          st :='';
+      WriteString(st);
+      WriteFloat(FEffectScale);
    end;
 end;
+
 
 // ReadFromFiler
 //
 procedure TGLParticleFXEffect.ReadFromFiler(reader : TReader);
+var
+   archiveVersion : integer;
 begin
    with reader do begin
-      Assert(ReadInteger=0);
-      FManagerName:=ReadString;
-      Manager:=nil;
+      archiveVersion:=ReadInteger;
+      Assert(archiveVersion in [0..1]);
+      if archiveVersion>=0 then
+      begin
+           FManagerName:=ReadString;
+           Manager:=nil;
+      end;
+      if archiveVersion>=1 then
+      begin
+           FEffectScale:=ReadFloat;
+      end;
    end;
 end;
+
+
 
 // Loaded
 //
@@ -1284,6 +1311,12 @@ begin
    FManager:=val;
    // nothing more, yet...
 end;
+
+procedure TGLParticleFXEffect.SetEffectScale(const Value: single);
+begin
+  FEffectScale := Value;
+end;
+
 
 // ------------------
 // ------------------ TGLParticleFXRenderer ------------------
@@ -1759,10 +1792,16 @@ begin
    while nb>0 do
    begin
       particle:=Manager.CreateParticle;
+      particle.EffectScale := FEffectScale; //  particle.EffectScale will be used by the manager to scale the particle
       RndVector(DispersionMode, av, FPositionDispersion, FPositionDispersionRange);
+
+      ScaleVector(av,FEffectScale);
       VectorAdd(pos, av, @particle.Position);
+
       RndVector(DispersionMode, av, FVelocityDispersion, nil);
       VectorAdd(InitialVelocity.AsAffineVector, av, @particle.Velocity);
+
+      particle.Velocity := VectorScale(particle.Velocity,FEffectScale);
       if VelocityMode=svmRelative then
            particle.FVelocity:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity),OwnerBaseSceneObject.LocalToAbsolute(NullVector));
       particle.CreationTime:=time;
@@ -2811,6 +2850,7 @@ begin
    vertexList:=FVertBuf.List;
    if ComputeSizeScale(lifeTime, sizeScale) then
    begin
+        sizeScale := sizeScale*aParticle.EffectScale;
       for i:=0 to FVertBuf.Count-1 do
          vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
    end
@@ -2981,6 +3021,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 
 initialization
 // ------------------------------------------------------------------
