@@ -1051,9 +1051,9 @@ const
 
   //SDL_mouse.h constants
   { Used as a mask when testing buttons in buttonstate
-    Button 1:	Left mouse button
-    Button 2:	Middle mouse button
-    Button 3:	Right mouse button
+    Button 1:   Left mouse button
+    Button 2:   Middle mouse button
+    Button 3:   Right mouse button
   }
   SDL_BUTTON_LEFT = 1;
 {$EXTERNALSYM SDL_BUTTON_LEFT}
@@ -1469,11 +1469,11 @@ type
     which: UInt8; // The joystick device index */
     hat: UInt8; // The joystick hat index */
     value: UInt8; { The hat position value:
-                    8   1   2
-                    7   0   3
-                    6   5   4
+		    8   1   2
+		    7   0   3
+		    6   5   4
 
-                    Note that zero means the POV is centered. }
+		    Note that zero means the POV is centered. }
 
   end;
 
@@ -2430,7 +2430,7 @@ function SDL_PushEvent( event : PSDL_Event ) : Integer; cdecl; external LibName;
   dynamically arriving events.
 
   WARNING:  Be very careful of what you do in the event filter function, as
-            it may run in a different thread!
+	    it may run in a different thread!
 
   There is one caveat when dealing with the SDL_QUITEVENT event type.  The
   event filter is only called when the window manager desires to close the
@@ -2698,9 +2698,9 @@ function SDL_SetColors(surface: PSDL_Surface; colors: PSDL_Color; firstcolor
 { Sets a portion of the colormap for a given 8-bit surface.
   'flags' is one or both of:
   SDL_LOGPAL  -- set logical palette, which controls how blits are mapped
-                 to/from the surface,
+		 to/from the surface,
   SDL_PHYSPAL -- set physical palette, which controls how pixels look on
-                 the screen
+		 the screen
   Only screens have physical palettes. Separate change of physical/logical
   palettes is only possible if the screen has SDL_HWPALETTE set.
 
@@ -3596,7 +3596,7 @@ end;
 function SDL_MustLock(Surface: PSDL_Surface): Boolean;
 begin
   Result := ( ( surface^.offset <> 0 ) or
-           ( ( surface^.flags and ( SDL_HWSURFACE or SDL_ASYNCBLIT or SDL_RLEACCEL ) ) <> 0 ) );
+	   ( ( surface^.flags and ( SDL_HWSURFACE or SDL_ASYNCBLIT or SDL_RLEACCEL ) ) <> 0 ) );
 
 end;
 
