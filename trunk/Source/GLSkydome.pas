@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>09/01/04 - EG - Now based on TGLCameraInvariantObject
       <li>04/08/03 - SG - Fixed small bug with random star creation
       <li>17/06/03 - EG - Fixed PolygonMode (Carlos Ferreira)
       <li>26/02/02 - EG - Enhanced star support (generation and twinkle),
@@ -170,7 +171,7 @@ type
       <li>800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
       <li>Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
       </ul> }
-	TGLSkyDome = class (TGLImmaterialSceneObject)
+	TGLSkyDome = class (TGLCameraInvariantObject)
 	   private
 	      { Private Declarations }
          FOptions : TSkyDomeOptions;
@@ -189,8 +190,6 @@ type
          destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
 
-         procedure DoRender(var rci : TRenderContextInfo;
-                            renderSelf, renderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
 	   published
@@ -748,6 +747,7 @@ end;
 constructor TGLSkyDome.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
+   CamInvarianceMode:=cimPosition;
    ObjectStyle:=ObjectStyle+[osDirectDraw, osNoVisibilityCulling];
    FBands:=TSkyDomeBands.Create(Self);
    with FBands.Add do begin
@@ -821,56 +821,29 @@ end;
 // BuildList
 //
 procedure TGLSkyDome.BuildList(var rci : TRenderContextInfo);
-begin
-   Bands.BuildList(rci);
-   Stars.BuildList(rci, (sdoTwinkle in FOptions));
-end;
-
-// DoRender
-//
-procedure TGLSkyDome.DoRender(var rci : TRenderContextInfo;
-                              renderSelf, renderChildren : Boolean);
 var
    f : Single;
-   mvMat : TMatrix;
 begin
-   // prepare
+   // setup states
+   glPushMatrix;
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    glDisable(GL_FOG);
    glDisable(GL_CULL_FACE);
    glDepthMask(False);
-   glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
-   rci.GLStates.SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-   // compensate camera
-   glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
+
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.95;
    glScalef(f, f, f);
-   // compensate local position
-   glTranslatef(-LocalMatrix[3][0], -LocalMatrix[3][1], -LocalMatrix[3][2]);
-   glMultMatrixf(PGLFloat(LocalMatrix));
 
-   glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
-   Scene.CurrentBuffer.PushModelViewMatrix(mvMat);
-   try
-      // render
-      if (sdoTwinkle in FOptions) or rci.amalgamating then
-         BuildList(rci)
-      else glCallList(GetHandle(rci));
-      // restore
-      glDepthMask(True);
-      glPopAttrib;
-      // process childs
-      if Count>0 then begin
-         f:=1/f;
-         glScalef(f, f, f);
-         Self.RenderChildren(0, Count-1, rci);
-      end;
-   finally
-      Scene.CurrentBuffer.PopModelViewMatrix;
-   end;
+   Bands.BuildList(rci);
+   Stars.BuildList(rci, (sdoTwinkle in FOptions));
+
+   // restore
+   glDepthMask(True);
+   glPopAttrib;
+   glPopMatrix;
 end;
 
 // ------------------

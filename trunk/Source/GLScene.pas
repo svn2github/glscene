@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>09/01/04 - EG - Added TGLCameraInvariantObject
       <li>06/12/03 - EG - TGLColorProxy moved to new GLProxyObjects unit,
                           GLVectorFileObjects dependency cut. 
       <li>06/12/03 - EG - New FramesPerSecond logic
@@ -252,6 +253,10 @@ type
    {: Defines which features are taken from the master object. }
    TGLProxyObjectOption = (pooEffects, pooObjects, pooTransformation);
    TGLProxyObjectOptions = set of TGLProxyObjectOption;
+
+   // TGLCameraInvarianceMode
+   //
+   TGLCameraInvarianceMode = (cimNone, cimPosition, cimOrientation);
 
 const
    cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
@@ -937,6 +942,32 @@ type
          property Hint;
    end;
 
+   // TGLCameraInvariantObject
+   //
+   {: Base class for camera invariant objects.<p>
+      Camera invariant objects bypass camera settings, such as camera
+      position (object is always centered on camera) or camera orientation
+      (object always has same orientation as camera). }
+   TGLCameraInvariantObject = class(TGLImmaterialSceneObject)
+      private
+         { Private Declarations }
+         FCamInvarianceMode : TGLCameraInvarianceMode;
+
+      protected
+         { Protected Declarations }
+         procedure SetCamInvarianceMode(const val : TGLCameraInvarianceMode);
+
+         property CamInvarianceMode : TGLCameraInvarianceMode read FCamInvarianceMode write SetCamInvarianceMode;
+
+      public
+         { Public Declarations }
+         constructor Create(AOwner: TComponent); override;
+
+         procedure Assign(Source: TPersistent); override;
+         procedure DoRender(var rci : TRenderContextInfo;
+                            renderSelf, renderChildren : Boolean); override;
+   end;
+
    // TGLSceneObject
    //
    {: Base class for standard scene objects.<p>
@@ -1219,6 +1250,12 @@ type
             it a target the dummycube. Now, to pan across the scene, just move
             the dummycube, to change viewing angle, use this method. }
          procedure MoveAroundTarget(pitchDelta, turnDelta : Single);
+         {: Moves the camera in eye space coordinates. }
+         procedure MoveInEyeSpace(forwardDistance, rightDistance, upDistance : Single);
+         {: Moves the target in eye space coordinates. }
+         procedure MoveTargetInEyeSpace(forwardDistance, rightDistance, upDistance : Single);
+         {: Computes the absolute vector corresponding to the eye-space translations. }
+         function AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance : Single) : TVector;
          {: Adjusts distance from camera to target by applying a ratio.<p>
             If TargetObject is nil, nothing happens. This method helps in quickly
             implementing camera controls. Only the camera's position is changed. }
@@ -4791,6 +4828,41 @@ begin
    MoveObjectAround(FTargetObject, pitchDelta, turnDelta);
 end;
 
+// MoveInEyeSpace
+//
+procedure TGLCamera.MoveInEyeSpace(forwardDistance, rightDistance, upDistance : Single);
+var
+   trVector : TVector;
+begin
+   trVector:=AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance);
+   Position.Translate(Parent.AbsoluteToLocal(trVector));
+end;
+
+// MoveTargetInEyeSpace
+//
+procedure TGLCamera.MoveTargetInEyeSpace(forwardDistance, rightDistance, upDistance : Single);
+var
+   trVector : TVector;
+begin
+   if TargetObject<>nil then begin
+      trVector:=AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance);
+      TargetObject.Position.Translate(TargetObject.Parent.AbsoluteToLocal(trVector));
+   end;
+end;
+
+// AbsoluteEyeSpaceVector
+//
+function TGLCamera.AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance : Single) : TVector;
+begin
+   Result:=NullHmgVector;
+   if forwardDistance<>0 then
+      CombineVector(Result, AbsoluteVectorToTarget, forwardDistance);
+   if rightDistance<>0 then
+      CombineVector(Result, AbsoluteRightVectorToTarget, rightDistance);
+   if upDistance<>0 then
+      CombineVector(Result, AbsoluteUpVectorToTarget, upDistance);
+end;
+
 // AdjustDistanceToTarget
 //
 procedure TGLCamera.AdjustDistanceToTarget(distanceRatio : Single);
@@ -4999,6 +5071,79 @@ function TGLCamera.RayCastIntersect(const rayStart, rayVector : TVector;
                                     intersectNormal : PVector = nil) : Boolean;
 begin
    Result:=False;
+end;
+
+// ------------------
+// ------------------ TGLCameraInvariantObject ------------------
+// ------------------
+
+// Create
+//
+constructor TGLCameraInvariantObject.Create(AOwner: TComponent);
+begin
+   inherited;
+   FCamInvarianceMode:=cimNone;
+end;
+
+// Assign
+//
+procedure TGLCameraInvariantObject.Assign(Source: TPersistent);
+begin
+   if Source is TGLCameraInvariantObject then begin
+      FCamInvarianceMode:=TGLCameraInvariantObject(Source).FCamInvarianceMode;
+   end;
+   inherited Assign(Source);
+end;
+
+// DoRender
+//
+procedure TGLCameraInvariantObject.DoRender(var rci : TRenderContextInfo;
+                                            renderSelf, renderChildren : Boolean);
+var
+   mvMat : TMatrix;
+begin
+   if CamInvarianceMode<>cimNone then begin
+      // prepare
+      case CamInvarianceMode of
+         cimPosition : begin
+            glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
+            glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
+         end;
+         cimOrientation :  begin
+            glLoadIdentity;
+            // makes the coordinates system more 'intuitive' (Z+ forward)
+            glScalef(1, -1, -1);
+         end;
+      else
+         Assert(False);
+      end;
+      // Apply local transform
+      glMultMatrixf(PGLFloat(LocalMatrix));
+
+      glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
+      Scene.CurrentBuffer.PushModelViewMatrix(mvMat);
+      try
+         if renderSelf then begin
+            if (osDirectDraw in ObjectStyle) or rci.amalgamating then
+               BuildList(rci)
+            else glCallList(GetHandle(rci));
+         end;
+         if renderChildren then
+            Self.RenderChildren(0, Count-1, rci);
+      finally
+         Scene.CurrentBuffer.PopModelViewMatrix;
+      end;
+   end else inherited;
+end;
+
+// SetCamInvarianceMode
+//
+procedure TGLCameraInvariantObject.SetCamInvarianceMode(const val : TGLCameraInvarianceMode);
+begin
+   if FCamInvarianceMode<>val then begin
+      FCamInvarianceMode:=val;
+      NotifyChange(Self);
+   end;
 end;
 
 // ------------------
