@@ -35,22 +35,29 @@ object Form1: TForm1
     TabOrder = 1
     object Label1: TLabel
       Left = 8
-      Top = 8
+      Top = 64
       Width = 83
       Height = 13
       Caption = 'Choose an object'
     end
     object Label2: TLabel
       Left = 8
-      Top = 160
+      Top = 208
       Width = 96
       Height = 26
       Caption = 'HeightField Contact Resolution'
       WordWrap = True
     end
+    object Label3: TLabel
+      Left = 8
+      Top = 8
+      Width = 97
+      Height = 13
+      Caption = 'Choose surface type'
+    end
     object Spawn: TButton
       Left = 40
-      Top = 56
+      Top = 112
       Width = 75
       Height = 25
       Caption = 'Spawn'
@@ -59,7 +66,7 @@ object Form1: TForm1
     end
     object ComboBox1: TComboBox
       Left = 8
-      Top = 24
+      Top = 80
       Width = 137
       Height = 21
       Style = csDropDownList
@@ -76,7 +83,7 @@ object Form1: TForm1
     end
     object CheckBox1: TCheckBox
       Left = 8
-      Top = 96
+      Top = 144
       Width = 129
       Height = 17
       Caption = 'Show ODE Elements'
@@ -85,7 +92,7 @@ object Form1: TForm1
     end
     object CheckBox2: TCheckBox
       Left = 8
-      Top = 120
+      Top = 168
       Width = 129
       Height = 33
       Caption = 'Show HeightField Contacts'
@@ -95,13 +102,28 @@ object Form1: TForm1
     end
     object TrackBar1: TTrackBar
       Left = 8
-      Top = 192
+      Top = 240
       Width = 137
       Height = 34
       TabOrder = 4
       ThumbLength = 10
       TickMarks = tmBoth
       OnChange = TrackBar1Change
+    end
+    object ComboBox2: TComboBox
+      Left = 8
+      Top = 24
+      Width = 137
+      Height = 21
+      Style = csDropDownList
+      ItemHeight = 13
+      ItemIndex = 0
+      TabOrder = 5
+      Text = 'Plane'
+      OnChange = ComboBox2Change
+      Items.Strings = (
+        'Plane'
+        'HeightField')
     end
   end
   object GLScene1: TGLScene
@@ -125,6 +147,7 @@ object Form1: TForm1
     object GLHeightField1: TGLHeightField
       Direction.Coordinates = {000000000000803F0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
+      Visible = False
       XSamplingScale.Min = -10.000000000000000000
       XSamplingScale.Max = 10.000000000000000000
       XSamplingScale.Step = 0.500000000000000000
@@ -134,13 +157,26 @@ object Form1: TForm1
       Options = []
       OnGetHeight = GLHeightField1GetHeight
       BehavioursData = {
-        0201061154474C4F44454865696768744669656C6402000200060D474C4F4445
-        4D616E616765723102000500000000006F1283F53F0800000500000000000000
-        FA08400500000000000000000000050000000000000000000005000000000000
-        0000000005000000000000000000000500000000000000000000050000000000
-        0000000000050000000000000000000005000000000000000000000500000000
-        0000000000000200050000000000000080FF3F080500000000000000C0004000
-        00803F0200}
+        0201061154474C4F44454865696768744669656C640200020006000200050000
+        0000006F1283F53F0800000500000000000000FA084005000000000000000000
+        0005000000000000000000000500000000000000000000050000000000000000
+        0000050000000000000000000005000000000000000000000500000000000000
+        0000000500000000000000000000050000000000000000000002000500000000
+        00000080FF3F080500000000000000C000400000803F0200}
+    end
+    object GLPlane1: TGLPlane
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Up.Coordinates = {00000000000000000000803F00000000}
+      Height = 10.000000000000000000
+      Width = 10.000000000000000000
+      NoZWrite = False
+      BehavioursData = {
+        0201060C54474C4F444553746174696302000200060D474C4F44454D616E6167
+        65723102000500000000006F1283F53F0800000500000000000000FA08400500
+        0000000000000000000500000000000000000000050000000000000000000005
+        0000000000000000000005000000000000000000000500000000000000000000
+        0500000000000000000000050000000000000000000005000000000000000000
+        00020002010610544F4445456C656D656E74506C616E650200}
     end
     object ODEObjects: TGLDummyCube
       CubeSize = 1.000000000000000000
