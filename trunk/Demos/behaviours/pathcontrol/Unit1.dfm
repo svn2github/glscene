@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 83
   Top = 95
   Width = 513
-  Height = 424
+  Height = 414
   Caption = 'Form1'
   Color = clBtnFace
   Constraints.MinHeight = 200
@@ -14,42 +14,33 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnActivate = FormActivate
-  OnCloseQuery = FormCloseQuery
-  OnResize = FormResize
+  DesignSize = (
+    505
+    385)
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 8
     Top = 8
     Width = 489
-    Height = 333
+    Height = 370
     Camera = GLCamera1
     Buffer.BackgroundColor = clAppWorkSpace
     Anchors = [akLeft, akTop, akRight, akBottom]
   end
-  object CBPlay: TCheckBox
-    Left = 64
-    Top = 357
-    Width = 41
-    Height = 17
-    Anchors = [akLeft, akBottom]
-    Caption = 'Play'
-    TabOrder = 1
-    OnClick = CBPlayClick
-  end
   object MoveBtn: TBitBtn
-    Left = 8
-    Top = 351
-    Width = 49
+    Left = 176
+    Top = 13
+    Width = 137
     Height = 25
     Anchors = [akLeft, akBottom]
-    Caption = 'Move'
-    TabOrder = 2
+    Caption = 'Start Movement'
+    TabOrder = 1
     OnClick = MoveBtnClick
   end
   object GLScene1: TGLScene
     Left = 16
-    Top = 40
+    Top = 16
     object DummyCube1: TGLDummyCube
       CubeSize = 2
       VisibleAtRunTime = True
@@ -84,12 +75,12 @@ object Form1: TForm1
     Enabled = False
     TimeMultiplier = 2
     SleepLength = 10
-    Left = 80
-    Top = 40
+    Left = 56
+    Top = 16
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer
-    Left = 120
-    Top = 40
+    Left = 96
+    Top = 16
   end
 end

@@ -1,4 +1,5 @@
 {: This Form demonstrates basic "Pathcontrol" movements.<p>
+
    You can modified the Looped property of the path to enable the path-looping.
    Set ShowPath property to turn on or turn off the path-displaying 
 }
@@ -18,17 +19,13 @@ type
     Cube2: TGLCube;
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
-    CBPlay: TCheckBox;
     DummyCube1: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     MoveBtn: TBitBtn;
     Timer1: TTimer;
     Sphere1: TGLSphere;
-    procedure FormResize(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure FormActivate(Sender: TObject);
     procedure MoveBtnClick(Sender: TObject);
-    procedure CBPlayClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
     procedure PathTravelStop(Sender: TObject; Path: TGLMovementPath; var Looped: Boolean);
@@ -44,30 +41,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, SysUtils, Geometry;
-
-procedure TForm1.FormResize(Sender: TObject);
-begin
-  GLSceneViewer1.ResetPerformanceMonitor;
-end;
-
-procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: boolean);
-begin
-  // We need to stop playing here :
-  // 	since the timer is asynchronous, if we don't stop play,
-  // 	it may get triggered during the form's destruction
-  CBPlay.Checked := False;
-end;
-
-procedure TForm1.PathTravelStop(Sender: TObject; Path: TGLMovementPath; var Looped: Boolean);
-begin
-  MessageBox(0, 'Path Traveled Once', 'Infomation', MB_OK);
-end;
-
-procedure TForm1.PathAllTravelledOver(Sender: TObject);
-begin
-  MessageBox(0, 'All Path(es) Traveled Over', 'Infomation', MB_OK);
-end;
+   SysUtils, Geometry, GLCrossPlatform;
 
 procedure TForm1.FormActivate(Sender: TObject);
 var
@@ -118,13 +92,22 @@ var
   Movement: TGLMovement;
 begin
   Movement := GetMovement(Cube2);
-  if Assigned(Movement) then
-    Movement.StartPathTravel;
+  if Assigned(Movement) then begin
+      Movement.StartPathTravel;
+      GLCadencer1.Enabled := True;
+  end;
 end;
 
-procedure TForm1.CBPlayClick(Sender: TObject);
+procedure TForm1.PathTravelStop(Sender: TObject; Path: TGLMovementPath; var Looped: Boolean);
 begin
-  GLCadencer1.Enabled := TCheckBox(Sender).Checked;
+   if not Application.Terminated then
+      InformationDlg('Path Travel Stopped');
+end;
+
+procedure TForm1.PathAllTravelledOver(Sender: TObject);
+begin
+   if not Application.Terminated then
+      InformationDlg('All Path(es) Traveled Over');
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
