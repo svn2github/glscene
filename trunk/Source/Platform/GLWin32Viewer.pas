@@ -50,6 +50,7 @@ type
 			FOnMouseEnter, FOnMouseLeave : TNotifyEvent;
          FMouseInControl : Boolean;
          FIsOpenGLAvailable : Boolean;
+         FLastScreenPos : TPoint;
 
          procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); Message WM_ERASEBKGND;
          procedure WMPaint(var Message: TWMPaint); Message WM_PAINT;
@@ -348,10 +349,19 @@ end;
 procedure TGLSceneViewer.WMPaint(var Message: TWMPaint);
 var
    PS : TPaintStruct;
+   p : TPoint;
 begin
+   p:=ClientToScreen(Point(0, 0));
+   if (FLastScreenPos.X<>p.X) or (FLastScreenPos.Y<>p.Y) then begin
+      // Workaround for MS OpenGL "black borders" bug
+      if FBuffer.RCInstantiated then
+         PostMessage(Handle, WM_SIZE, SIZE_RESTORED,
+                     Width+(Height shl 16));
+      FLastScreenPos:=p;
+   end;
    BeginPaint(Handle, PS);
    try
-     if IsOpenGLAvailable then
+      if IsOpenGLAvailable then
          FBuffer.Render;
    finally
       EndPaint(Handle, PS);
