@@ -1687,7 +1687,7 @@ function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$ifdef GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
          FLD  DWORD PTR [EAX]
          FADD DWORD PTR [EDX]
