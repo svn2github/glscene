@@ -145,7 +145,7 @@ type
          procedure Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); dynamic; abstract;
          {: Replace content of the list with angle lerp between the two given lists.<p>
             Note: you can't Lerp with Self!!! }
-         procedure AngleLerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); dynamic;
+         procedure AngleLerp(const list1, list2 : TBaseVectorList; lerpFactor : Single);
          procedure AngleCombine(const list1 : TBaseVectorList; intensity : Single);
          {: Linear combination of Self with another list.<p>
             Self[i]:=Self[i]+list2[i]*factor }
