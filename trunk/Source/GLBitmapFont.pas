@@ -1050,6 +1050,10 @@ begin
    if Assigned(FBitmapFont) and (Text<>'') then begin
       SetGLPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       glPushAttrib(GL_ENABLE_BIT);
+      if FModulateColor.Alpha<>1 then begin
+         glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      end;
       FBitmapFont.RenderString(Text, FAlignment, FLayout, FModulateColor.Color);
       glPopAttrib;
    end;
