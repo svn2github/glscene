@@ -1209,7 +1209,7 @@ begin
    Result:=False;  //default: no collision
 
    //quit if no movement
-   if velocity=0 then Exit;
+   if (velocity=0)or(not (VectorNorm(rayVector)>0)) then Exit;
    //How far ahead to check for collisions.
    distanceToTravel:=velocity+radius+cEpsilon;
    distanceToTravelMinusRadius2:=Sqr(velocity+cEpsilon);
