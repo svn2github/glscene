@@ -86,6 +86,8 @@ begin
    if CBShadows.Checked then
       GLShadowPlane1.ShadowedLight:=GLLightSource1
    else GLShadowPlane1.ShadowedLight:=nil;
+   GLShadowPlane2.ShadowedLight:=GLShadowPlane1.ShadowedLight;
+   GLShadowPlane3.ShadowedLight:=GLShadowPlane1.ShadowedLight;
 end;
 
 procedure TForm1.CBStencilClick(Sender: TObject);
@@ -93,6 +95,8 @@ begin
    if CBStencil.Checked then
       GLShadowPlane1.ShadowOptions:=[spoUseStencil]
    else GLShadowPlane1.ShadowOptions:=[];
+   GLShadowPlane2.ShadowOptions:=GLShadowPlane1.ShadowOptions;
+   GLShadowPlane3.ShadowOptions:=GLShadowPlane1.ShadowOptions;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
