@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, GLTexture, GLScene, GLObjects,
-  GLWindows, GLHUDObjects, GLMisc, GLWin32Viewer, GLGui;
+  GLWindows, GLHUDObjects, GLMisc, GLWin32Viewer, GLGui, GLGraphics;
 
 type
   TGUISkinEditor = class(TForm)
@@ -17,15 +17,9 @@ type
     Panel3: TPanel;
     Label2: TLabel;
     Label1: TLabel;
-    ListBox1: TListBox;
-    Label3: TLabel;
-    ComboBox1: TComboBox;
-    Label4: TLabel;
     CheckBox1: TCheckBox;
     Label5: TLabel;
     Label6: TLabel;
-    Button1: TButton;
-    Button2: TButton;
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLPanel1: TGLPanel;
@@ -40,12 +34,26 @@ type
     Button6: TButton;
     Label7: TLabel;
     Label8: TLabel;
-    Label9: TLabel;
-    ScaleXEdit: TEdit;
-    Label10: TLabel;
-    ScaleYEdit: TEdit;
-    GLSceneViewer1: TGLSceneViewer;
     GLLightSource1: TGLLightSource;
+    GroupBox1: TGroupBox;
+    Label3: TLabel;
+    ListBox1: TListBox;
+    Button1: TButton;
+    Button2: TButton;
+    Label4: TLabel;
+    ComboBox1: TComboBox;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    LeftEdit: TEdit;
+    TopEdit: TEdit;
+    RightEdit: TEdit;
+    BottomEdit: TEdit;
+    Label9: TLabel;
+    Label10: TLabel;
+    ScaleXEdit: TEdit;
+    ScaleYEdit: TEdit;
+    Label14: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -70,6 +78,10 @@ type
     procedure CheckBox1Click(Sender: TObject);
     procedure ScaleXEditChange(Sender: TObject);
     procedure ScaleYEditChange(Sender: TObject);
+    procedure LeftEditChange(Sender: TObject);
+    procedure TopEditChange(Sender: TObject);
+    procedure RightEditChange(Sender: TObject);
+    procedure BottomEditChange(Sender: TObject);
   private
   public
     TheGuiComponent : TGLGuiElementList;
@@ -124,11 +136,12 @@ begin
   Begin
     mat := mat.MaterialLibrary.Materials.GetLibMaterialByName(Mat.LibMaterialName).Material;
   End;
+  Width := Mat.Texture.Image.Width;
+  Height := Mat.Texture.Image.Height;
   WidthEdit.Text := IntToStr(Mat.Texture.Image.Width);
   HeightEdit.Text := IntToStr(Mat.Texture.Image.Height);
 
-  GLPanel1.Material.Assign(Mat);
-
+  GLPanel1.GuiLayout.Material.Assign(Mat);
 
   Tex.Assign(mat.Texture);
   Image2.Picture.Bitmap.Canvas.StretchDraw(Image2.ClientRect,(Tex.Image as TGLPersistentImage).Picture.Graphic);
@@ -176,23 +189,28 @@ end;
 procedure TGUISkinEditor.Render;
 Var
   BitMap : TBitmap;
+  Image  : TGLBitmap32;
+  R : TRect;
 begin
   if CheckBox1.Checked then
   Begin
-    Bitmap := TBitmap.Create;
+    GLPanel1.Width := Width;
+    GLPanel1.Height := Height;
+    GLPanel1.Left := 1-ScrollBar2.position;
+    GLPanel1.Top := 1-ScrollBar1.position;
+
+    GLMemoryViewer1.Render;
+    Image := GLMemoryViewer1.Buffer.CreateSnapShot;;
+    Bitmap := Image.Create32BitsBitmap;
     try
-      Bitmap.Width := Width;
-      Bitmap.Height := Height;
-      Bitmap.PixelFormat := pf16bit;
-
-      GLSceneViewer1.Buffer.RenderToBitmap(Bitmap);
-
       Image1.Canvas.Brush.Color := clBlack;
       Image1.Canvas.FillRect(Image1.Canvas.ClipRect);
-      Image1.Canvas.StretchDraw(Rect(Round((1-ScrollBar2.position)*Zoom),Round((1-ScrollBar1.position)*Zoom),Round((1-ScrollBar2.position+(Tex.Image as TGLPersistentImage).Width)*Zoom),Round((1-ScrollBar1.position+(Tex.Image as TGLPersistentImage).Height)*Zoom)),Bitmap);
+      Image1.Canvas.StretchDraw(Rect(0,0,Round(((Tex.Image as TGLPersistentImage).Width)*Zoom),Round(((Tex.Image as TGLPersistentImage).Height)*Zoom)),Bitmap);{}
     finally
-      BitMap.Free;
+      Bitmap.Free;
     end;
+
+//    Image1.Canvas.StretchDraw(Rect(Round((1-ScrollBar2.position)*Zoom),Round((1-ScrollBar1.position)*Zoom),Round((1-ScrollBar2.position+(Tex.Image as TGLPersistentImage).Width)*Zoom),Round((1-ScrollBar1.position+(Tex.Image as TGLPersistentImage).Height)*Zoom)),Bitmap);{}
   End else
   Begin
     Image1.Canvas.Brush.Color := clBlack;
@@ -286,12 +304,12 @@ begin
     S := ComboBox1.Text+IntToStr(Count);
     inc(Count);
   Until ListBox1.Items.IndexOf(S) = -1;
-  ListBox1.Items.Add(S);
   NewElement := TheGuiComponent.Add as TGLGuiElement;
   NewElement.Name := S;
   NewElement.Align := TGUIAlignments(ComboBox1.ItemIndex);
   NewElement.BottomRight.SetPoint(0,0,0);
   NewElement.TopLeft.SetPoint(0,0,0);
+  ListBox1.ItemIndex := ListBox1.Items.Add(S);
 end;
 
 procedure TGUISkinEditor.ListBox1Click(Sender: TObject);
@@ -302,6 +320,10 @@ begin
     ComboBox1.ItemIndex := Integer(SelectedElement.Align);
     ScaleXEdit.Text := FloatToStr(SelectedElement.Scale.X);
     ScaleYEdit.Text := FloatToStr(SelectedElement.Scale.Y);
+    LeftEdit.Text := FloatToStr(SelectedElement.TopLeft.X);
+    TopEdit.Text := FloatToStr(SelectedElement.TopLeft.Y);
+    RightEdit.Text := FloatToStr(SelectedElement.BottomRight.X);
+    BottomEdit.Text := FloatToStr(SelectedElement.BottomRight.Y);
     Render;
   End else SelectedElement := Nil;
 end;
@@ -419,6 +441,86 @@ begin
          GLPanel1.GUIRedraw:=True;
          Render;
       end;
+   end;
+end;
+
+procedure TGUISkinEditor.LeftEditChange(Sender: TObject);
+var
+   res : Single;
+begin
+   if Assigned(SelectedElement) then begin
+      GLPanel1.BlockRender;
+      try
+        res:=StrToFloatDef(LeftEdit.Text, -1);
+        if res>=0 then begin
+           SelectedElement.TopLeft.X:=Res;
+        end;
+      finally
+        GLPanel1.UnBlockRender;
+      end;
+      GLPanel1.ReBuildGui:=True;
+      GLPanel1.GUIRedraw:=True;
+      Render;
+   end;
+end;
+
+procedure TGUISkinEditor.TopEditChange(Sender: TObject);
+var
+   res : Single;
+begin
+   if Assigned(SelectedElement) then begin
+      GLPanel1.BlockRender;
+      try
+        res:=StrToFloatDef(TopEdit.Text, -1);
+        if res>=0 then begin
+           SelectedElement.TopLeft.Y:=Res;
+        end;
+      finally
+        GLPanel1.UnBlockRender;
+      end;
+      GLPanel1.ReBuildGui:=True;
+      GLPanel1.GUIRedraw:=True;
+      Render;
+   end;
+end;
+
+procedure TGUISkinEditor.RightEditChange(Sender: TObject);
+var
+   res : Single;
+begin
+   if Assigned(SelectedElement) then begin
+      GLPanel1.BlockRender;
+      try
+        res:=StrToFloatDef(RightEdit.Text, -1);
+        if res>=0 then begin
+           SelectedElement.BottomRight.X:=Res;
+        end;
+      finally
+        GLPanel1.UnBlockRender;
+      end;
+      GLPanel1.ReBuildGui:=True;
+      GLPanel1.GUIRedraw:=True;
+      Render;
+   end;
+end;
+
+procedure TGUISkinEditor.BottomEditChange(Sender: TObject);
+var
+   res : Single;
+begin
+   if Assigned(SelectedElement) then begin
+      GLPanel1.BlockRender;
+      try
+        res:=StrToFloatDef(BottomEdit.Text, -1);
+        if res>=0 then begin
+           SelectedElement.BottomRight.Y:=Res;
+        end;
+      finally
+        GLPanel1.UnBlockRender;
+      end;
+      GLPanel1.ReBuildGui:=True;
+      GLPanel1.GUIRedraw:=True;
+      Render;
    end;
 end;
 
