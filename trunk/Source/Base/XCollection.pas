@@ -165,6 +165,8 @@ resourcestring
 
 {: Registers a TXCollectionItem subclass for persistence requirements. }
 procedure RegisterXCollectionItemClass(aClass : TXCollectionItemClass);
+{: Removes a TXCollectionItem subclass from the list. }
+procedure UnregisterXCollectionItemClass(aClass : TXCollectionItemClass);
 {: Retrieves a registered TXCollectionItemClass from its classname. }
 function FindXCollectionItemClass(const className : String) : TXCollectionItemClass;
 {: Creates and returns a copy of internal list of TXCollectionItem classes.<p>
@@ -191,6 +193,16 @@ begin
 		vXCollectionItemClasses:=TList.Create;
 	if vXCollectionItemClasses.IndexOf(aClass)<0 then
 		vXCollectionItemClasses.Add(aClass);
+end;
+
+// UnregisterXCollectionItemClass
+//
+procedure UnregisterXCollectionItemClass(aClass : TXCollectionItemClass);
+begin
+	if not Assigned(vXCollectionItemClasses) then
+		exit;
+	if vXCollectionItemClasses.IndexOf(aClass)>=0 then
+		vXCollectionItemClasses.Remove(aClass);
 end;
 
 // FindXCollectionItemClass
