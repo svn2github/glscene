@@ -1877,7 +1877,7 @@ begin
             Break;
          end else min:=mid;
       end else max:=mid;
-   until min>=max;
+   until min+1=max;
 
    if returnBestFit then begin
       if index>=0 then
