@@ -3,13 +3,29 @@
    The terrain HeightData is provided by a TGLBitmapHDS (HDS stands for
    "Height Data Source"), and displayed by a TTerrainRenderer.<p>
 
-   The base terrain renderer uses a brute-force approach to rendering
-   terain, by requesting height data tiles, and rendering them using
-   triangle strips.<p>
+   The base terrain renderer uses a hybrid ROAM/brute-force approach to
+   rendering terrain, by requesting height data tiles, then rendering them
+   using either triangle strips (for those below "QualityDistance") or ROAM
+   tessellation.<br>
+   Note that if the terrain is wrapping in this sample (to reduce the required
+   datasets size), the engine is *not* aware of it and does not exploit this
+   fact in any way: it considers just an infinite terrain.<p>
 
-   Known issue : multitexturing ain't working in this case with 3Dfx OpenGL
-      (the texture mode apparently isn't honoured), and perhaps other ICDs,
-      if it happens to you, set Texture2Name to blank for the "ground" material.
+   Controls:<ul>
+   <li>Direction keys move the camera (shift to speedup)
+   <li>PageUp/PageDown move the camera up and down
+   <li>Orient the camera freely by holding down the left button
+   <li>Toggle wireframe mode with 'w'
+   <li>Increase/decrease the viewing distance with '+'/'-'.
+   <li>Increase/decrease CLOD precision with '*' and '/'.
+   <li>Increase/decrease QualityDistance with '9' and '8'.
+   </ul><p>
+
+   When increasing the range, or moving after having increased the range you
+   may notice a one-time slowdown, this originates in the base height data
+   being duplicated to create the illusion of an "infinite" terrain (at max
+   range the visible area covers 1024x1024 height samples, and with tiles of
+   size 16 or less, this is a lot of tiles to prepare).
 }
 unit Unit1;
 
@@ -67,6 +83,8 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
    SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
    // 8 MB height data cache
+   // Note this is the data size in terms of elevation samples, it does not
+   // take into account all the data required/allocated by the renderer
    GLBitmapHDS1.MaxPoolSize:=8*1024*1024;
    // specify height map data
    GLBitmapHDS1.Picture.LoadFromFile('terrain.bmp');
@@ -90,8 +108,8 @@ var
 begin
    // handle keypresses
    if IsKeyDown(VK_SHIFT) then
-      speed:=3*deltaTime
-   else speed:=deltaTime;
+      speed:=6*deltaTime
+   else speed:=2*deltaTime;
    with GLCamera1.Position do begin
       if IsKeyDown(VK_UP) then
          DummyCube1.Translate(-X*speed, 0, -Z*speed);
@@ -146,6 +164,28 @@ begin
             PolygonMode:=pmFill
          else PolygonMode:=pmLines;
       end;
+      '+' : if GLCamera1.DepthOfView<2000 then begin
+         GLCamera1.DepthOfView:=GLCamera1.DepthOfView*1.2;
+         with GLSceneViewer1.Buffer.FogEnvironment do begin
+            FogEnd:=FogEnd*1.2;
+            FogStart:=FogStart*1.2;
+         end;
+      end;
+      '-' : if GLCamera1.DepthOfView>300 then begin
+         GLCamera1.DepthOfView:=GLCamera1.DepthOfView/1.2;
+         with GLSceneViewer1.Buffer.FogEnvironment do begin
+            FogEnd:=FogEnd/1.2;
+            FogStart:=FogStart/1.2;
+         end;
+      end;
+      '*' : with TerrainRenderer1 do
+         if CLODPrecision>20 then CLODPrecision:=Round(CLODPrecision*0.8);
+      '/' : with TerrainRenderer1 do
+         if CLODPrecision<1000 then CLODPrecision:=Round(CLODPrecision*1.2);
+      '8' : with TerrainRenderer1 do
+         if QualityDistance>40 then QualityDistance:=Round(QualityDistance*0.8);
+      '9' : with TerrainRenderer1 do
+         if QualityDistance<1000 then QualityDistance:=Round(QualityDistance*1.2);
    end;
    Key:=#0;
 end;
