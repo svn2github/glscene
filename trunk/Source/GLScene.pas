@@ -6944,7 +6944,7 @@ begin
          end;
          createTexture:=not aTexture.IsHandleAllocated;
          if createTexture then
-            handle:=aTexture.AllocateHandle(bindTarget)
+            handle:=aTexture.AllocateHandle
          else handle:=aTexture.Handle;
          createTexture:=createTexture or forceCreateTexture;
          GLStates.SetGLCurrentTexture(0, bindTarget, handle);
