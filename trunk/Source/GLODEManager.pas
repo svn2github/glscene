@@ -1513,7 +1513,7 @@ begin
   //glLineStipple(1, $CCCC);
 
   glLineWidth(1);
-  ResetGLMaterialColors;
+  rci.GLStates.ResetGLMaterialColors;
   glColorMaterial(GL_FRONT, GL_EMISSION);
   glEnable(GL_COLOR_MATERIAL);
   glColor4fv(FColor.AsAddress);
