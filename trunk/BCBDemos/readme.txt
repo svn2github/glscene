@@ -9,5 +9,3 @@ according to your configuration.
 
 Library directory contains some usefull library
 
-The following project does not work because use old naming classes :
-- Physics\Physics\Simple
