@@ -2,6 +2,7 @@
 {: Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/05/04 - EG - Perspective distortion properly applied
       <li>06/05/04 - EG - Fixes, improvements, clean ups
       <li>04/05/04 - EG - Reworked architecture
       <li>14/04/04 - SG - Fixed texture clamping for old cards and 
@@ -20,7 +21,8 @@ uses
 type
    // TImposterOptions
    //
-   TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering);
+   TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering,
+                      impoNoPerspectiveCorrection);
    TImposterOptions = set of TImposterOption;
 
 const
@@ -495,11 +497,18 @@ begin
    end else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
    glGetFloatv(GL_MODELVIEW_MATRIX, @mat[0][0]);
-   FVx[0]:=mat[0][0];   FVy[0]:=mat[0][1];
-   FVx[1]:=mat[1][0];   FVy[1]:=mat[1][1];
-   FVx[2]:=mat[2][0];   FVy[2]:=mat[2][1];
+   FVx[0]:=mat[0][0];
+   FVx[1]:=mat[1][0];
+   FVx[2]:=mat[2][0];
    NormalizeVector(FVx);
-   NormalizeVector(FVy);
+   if not (impoNoPerspectiveCorrection in Builder.ImposterOptions) then
+      FVy:=YHmgVector
+   else begin
+      FVy[0]:=mat[0][1];
+      FVy[1]:=mat[1][1];
+      FVy[2]:=mat[2][1];
+      NormalizeVector(FVy);
+   end;
 
    fx:=Sqrt(FAspectRatio);
    fy:=1/fx;
