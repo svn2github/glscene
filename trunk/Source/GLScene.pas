@@ -2288,6 +2288,8 @@ var
    child : TGLBaseSceneObject;
 begin
    DeleteChildCameras;
+   if Assigned(FScene) then
+      FScene.RemoveLights(Self);
    while FChildren.Count>0 do begin
       child:=TGLBaseSceneObject(FChildren.Items[FChildren.Count-1]);
       child.FParent:=nil;
