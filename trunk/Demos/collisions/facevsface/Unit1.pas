@@ -78,7 +78,7 @@ implementation
 
 {$R *.DFM}
 
-uses Math;
+uses Math, GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

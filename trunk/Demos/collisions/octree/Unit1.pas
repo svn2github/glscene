@@ -62,7 +62,7 @@ implementation
 
 {$R *.dfm}
 
-uses Geometry, GLCrossPlatform, VectorLists;
+uses Geometry, GLCrossPlatform, VectorLists, GLFile3DS;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
