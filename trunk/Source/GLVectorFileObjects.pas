@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>25/11/02 - EG - Colors and TexCoords lists now disabled if ignoreMaterials is true
       <li>23/10/02 - EG - Faster .GTS and .PLY imports (parsing)
       <li>22/10/02 - EG - Added actor options, fixed skeleton normals transform (thx Marcus)
       <li>21/10/02 - EG - Read support for .GTS (GNU Triangulated Surface library) 
@@ -445,7 +446,8 @@ type
          procedure SetTexCoords(const val : TAffineVectorList);
          procedure SetColors(const val : TVectorList);
 
-         procedure DeclareArraysToOpenGL(evenIfAlreadyDeclared : Boolean = False);
+         procedure DeclareArraysToOpenGL(var mrci : TRenderContextInfo;
+                                         evenIfAlreadyDeclared : Boolean = False);
 
       public
          { Public Declarations }
@@ -2696,7 +2698,7 @@ end;
 
 // DeclareArraysToOpenGL
 //
-procedure TMeshObject.DeclareArraysToOpenGL(evenIfAlreadyDeclared : Boolean = False);
+procedure TMeshObject.DeclareArraysToOpenGL(var mrci : TRenderContextInfo; evenIfAlreadyDeclared : Boolean = False);
 begin
    if evenIfAlreadyDeclared or (not FArraysDeclared) then begin
       if Vertices.Count>0 then begin
@@ -2707,14 +2709,19 @@ begin
          glEnableClientState(GL_NORMAL_ARRAY);
          glNormalPointer(GL_FLOAT, 0, Normals.List);
       end else glDisableClientState(GL_NORMAL_ARRAY);
-      if Colors.Count>0 then begin
-         glEnableClientState(GL_COLOR_ARRAY);
-         glColorPointer(4, GL_FLOAT, 0, Colors.List);
-      end else glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      if TexCoords.Count>0 then begin
-         xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-         xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
-      end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      if not mrci.ignoreMaterials then begin
+         if (Colors.Count>0) and (not mrci.ignoreMaterials) then begin
+            glEnableClientState(GL_COLOR_ARRAY);
+            glColorPointer(4, GL_FLOAT, 0, Colors.List);
+         end else glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         if TexCoords.Count>0 then begin
+            xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+            xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), TexCoords.List);
+         end else xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      end else begin
+         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      end;
       FArraysDeclared:=True;
    end;
 end;
@@ -2748,7 +2755,7 @@ begin
    FArraysDeclared:=False;
    case Mode of
       momTriangles, momTriangleStrip : if Vertices.Count>0 then begin
-         DeclareArraysToOpenGL;
+         DeclareArraysToOpenGL(mrci);
          if Mode=momTriangles then
             glBegin(GL_TRIANGLES)
          else glBegin(GL_TRIANGLE_STRIP);
@@ -3547,17 +3554,17 @@ procedure TFGVertexIndexList.BuildList(var mrci : TRenderContextInfo);
 begin
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin
-         Owner.Owner.DeclareArraysToOpenGL(False);
+         Owner.Owner.DeclareArraysToOpenGL(mrci, False);
          glDrawElements(GL_TRIANGLES, VertexIndices.Count,
                         GL_UNSIGNED_INT, VertexIndices.List); 
       end;
       fgmmTriangleStrip : begin
-         Owner.Owner.DeclareArraysToOpenGL(False);
+         Owner.Owner.DeclareArraysToOpenGL(mrci, False);
          glDrawElements(GL_TRIANGLE_STRIP, VertexIndices.Count,
                         GL_UNSIGNED_INT, VertexIndices.List);
       end;
       fgmmTriangleFan : begin
-         Owner.Owner.DeclareArraysToOpenGL(False);
+         Owner.Owner.DeclareArraysToOpenGL(mrci, False);
          glDrawElements(GL_TRIANGLE_FAN, VertexIndices.Count,
                         GL_UNSIGNED_INT, VertexIndices.List);
       end;
