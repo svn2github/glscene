@@ -3,6 +3,7 @@
    Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/05/04 - JAJ - Added some features and fixed a bug.
       <li>01/06/03 - JAJ - Added notification to movingobject...
       <li>01/06/03 - fig - CurrentHangle implementet...
       <li>14/07/02 - EG - InvertMouse (Joen A. Joensen)
@@ -38,6 +39,11 @@ type
    		it's more like Descent.
 	   <li>AngleLock : Allows you to block the Vertical angles. Should only be used in
 			conjunction with UseVirtualUp.
+	   <li>MoveUpWhenMovingForward : Changes movement from Quake to Arcade Airplane...
+      (no tilt and flying)
+	   <li>InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
+      rotating beyond 90 degrees, will make steering seem inverted, so we "invert" back
+      to normal.
       </ul>
    }
    TGLNavigator = class(TComponent)
@@ -52,6 +58,8 @@ type
          FCurrentVAngle    : Single;
          FCurrentHAngle    : Single;
          FAngleLock        : Boolean;
+         FMoveUpWhenMovingForward: Boolean;
+         FInvertHorizontalSteeringWhenUpsideDown: Boolean;
       public
          Constructor Create(AOwner : TComponent); override;
          Destructor  Destroy; override;
@@ -75,6 +83,8 @@ type
          property   CurrentVAngle  : Single read FCurrentVAngle;
          property   CurrentHAngle  : Single read FCurrentHAngle;
       published
+         property    MoveUpWhenMovingForward : Boolean read FMoveUpWhenMovingForward write FMoveUpWhenMovingForward;
+         property    InvertHorizontalSteeringWhenUpsideDown : Boolean read FInvertHorizontalSteeringWhenUpsideDown write FInvertHorizontalSteeringWhenUpsideDown;
          property    VirtualUp    : TGLCoordinates read FVirtualUp write SetVirtualUp;
          property    MovingObject : TGLBaseSceneObject read FObject write SetObject;
          property    UseVirtualUp : Boolean read FUseVirtualUp write SetUseVirtualUp;
@@ -217,15 +227,21 @@ Procedure   TGLNavigator.TurnHorizontal(Angle : Single);
 Var
   T : TVector;
   U : TAffineVector;
+  TempVal : Single;
 
 
 Begin
+  If InvertHorizontalSteeringWhenUpsideDown and ((CurrentVAngle < -90) or (CurrentVAngle > 90)) then
+    Angle := -Angle;
 
   FCurrentHAngle:=(FCurrentHAngle-Angle);
-  if FCurrentHAngle>360 then
-    FCurrentHAngle:=FCurrentHAngle-360;
-  if FCurrentHAngle<0 then
-    FCurrentHAngle:=FCurrentHAngle+360;
+
+  If (FCurrentHAngle < 0) or (FCurrentHAngle > 360) then
+  Begin
+    TempVal := (FCurrentHAngle)/360;
+    FCurrentHAngle :=  (TempVal-Floor(TempVal))*360;
+  End;
+
   Angle := DegToRad(Angle); {make it ready for Cos and Sin }
   If FUseVirtualUp Then
   Begin
@@ -243,27 +259,37 @@ End;
 Procedure   TGLNavigator.TurnVertical(Angle : Single);
 
 Var
+  ExpectedAngle : Single;
   CosAngle, SinAngle : Single;
+  TempVal : Single;
   Direction : TVector;
 
 Begin
+  ExpectedAngle := FCurrentVAngle+Angle;
   If FAngleLock then
   Begin
-    CosAngle := FCurrentVAngle+Angle; {used as a temp angle, to save stack}
-    If CosAngle > FMaxAngle then
+    If ExpectedAngle > FMaxAngle then
     Begin
       If FCurrentVAngle = FMaxAngle then Exit;
-      CosAngle := FMaxAngle;
+      Angle := FMaxAngle-FCurrentVAngle;
+      ExpectedAngle := FMaxAngle;
     End else
     Begin
-      If CosAngle < FMinAngle then
+      If ExpectedAngle < FMinAngle then
       Begin
         If FCurrentVAngle = FMinAngle then Exit;
-        CosAngle := FMinAngle;
+        Angle := FMinAngle-FCurrentVAngle;
+        ExpectedAngle := FMinAngle;
       End;
     End;
   End;
-  FCurrentVAngle := CosAngle; {CosAngle temp, use stopped}
+  FCurrentVAngle := ExpectedAngle;
+
+  If (FCurrentVAngle < -180) or (FCurrentVAngle > 180) then
+  Begin
+    TempVal := (FCurrentVAngle+180)/360;
+    FCurrentVAngle := (TempVal-Floor(TempVal))*360-180;
+  End;
 
   Angle := DegToRad(Angle); {make it ready for Cos and Sin }
   SinCos(Angle,SinAngle,CosAngle);
@@ -274,7 +300,7 @@ End;
 
 Procedure   TGLNavigator.MoveForward(Distance : Single);
 Begin
-  If FUseVirtualUp Then
+  If (FUseVirtualUp and (not MoveUpWhenMovingForward)) Then
   Begin
     FObject.Position.AsVector := VectorCombine(FObject.Position.AsVector,VectorCrossProduct(FVirtualUp.AsVector,CalcRight),1,Distance);
   End else FObject.Position.AsVector := VectorCombine(FObject.Position.AsVector,FObject.Direction.AsVector,1,Distance);
