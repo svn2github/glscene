@@ -107,6 +107,7 @@ type
          property Tag : Integer read FTag write FTag;
    end;
 
+   TGLParticleClass = class of TGLParticle;
    TGLParticleArray = array [0..MaxInt shr 4] of TGLParticle;
    PGLParticleArray = ^TGLParticleArray;
 
@@ -179,6 +180,7 @@ type
          FParticles : TGLParticleList;
          FNextID : Integer;
          FOnCreateParticle : TPFXCreateParticleEvent;
+         FAutoFreeWhenEmpty : Boolean;
 
       protected
          { Protected Declarations }
@@ -234,7 +236,10 @@ type
          destructor Destroy; override;
 
 			procedure NotifyChange(Sender : TObject); override;
+         procedure DoProgress(const progressTime : TProgressTimes); override;
 
+         //: Class of particles created by this manager. }
+         class function ParticlesClass : TGLParticleClass; virtual;
          {: Creates a new particle controled by the manager. }
          function CreateParticle : TGLParticle; virtual;
          {: Create several particles at once. }
@@ -247,6 +252,12 @@ type
             to Particles.ItemCount, and the value returned by this method will
             be the one honoured at render time. }
          function ParticleCount : Integer; virtual;
+
+         {: If True the manager will free itself when its particle count reaches zero.<p>
+            Check happens in the progression event, use with caution and only
+            if you know what you're doing! }
+         property AutoFreeWhenEmpty : Boolean read FAutoFreeWhenEmpty write FAutoFreeWhenEmpty;
+
 
 		published
 			{ Published Declarations }
@@ -470,6 +481,8 @@ type
          {: Returns the maximum age for a particle.<p>
             Particles older than that will be killed by DoProgress. }
          function MaxParticleAge : Single; dynamic; abstract;
+
+         property CurrentTime : Double read FCurrentTime;
 
       public
          { Public Declarations }
@@ -1126,14 +1139,29 @@ begin
       Renderer.StructureChanged;
 end;
 
+// DoProgress
+//
+procedure TGLParticleFXManager.DoProgress(const progressTime : TProgressTimes);
+begin
+   inherited;
+   if FAutoFreeWhenEmpty and (FParticles.ItemCount=0) then Free;
+end;
+
+// ParticlesClass
+//
+class function TGLParticleFXManager.ParticlesClass : TGLParticleClass;
+begin
+   Result:=TGLParticle;
+end;
+
 // CreateParticle
 //
 function TGLParticleFXManager.CreateParticle : TGLParticle;
 begin
-   Result:=TGLParticle.Create;
+   Result:=ParticlesClass.Create;
    Result.FID:=FNextID;
-   if assigned(cadencer) then
-     Result.FCreationTime:= Cadencer.GetCurrentTime;   
+   if Assigned(cadencer) then
+      Result.FCreationTime:=Cadencer.GetCurrentTime;   
    Inc(FNextID);
    FParticles.AddItem(Result);
    if Assigned(FOnCreateParticle) then
@@ -1818,11 +1846,13 @@ begin
    pos:=ParticleAbsoluteInitialPos;
    while nb>0 do begin
       particle:=Manager.CreateParticle;
+      particle.FEffectScale:=EffectScale;
       RndVector(DispersionMode, av, FPositionDispersion, FPositionDispersionRange);
       VectorAdd(pos, av, @particle.Position);
       RndVector(DispersionMode, av, FVelocityDispersion, nil);
       if VelocityMode=svmRelative then
-         SetVector(particle.FVelocity, OwnerBaseSceneObject.LocalToAbsolute(InitialVelocity.AsVector));
+         SetVector(particle.FVelocity, OwnerBaseSceneObject.LocalToAbsolute(InitialVelocity.AsVector))
+      else SetVector(particle.FVelocity, InitialVelocity.AsVector);
       AddVector(particle.FVelocity, av);
       particle.CreationTime:=time;
       Dec(nb);
@@ -3043,9 +3073,6 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-
-
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
