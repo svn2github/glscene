@@ -1,5 +1,8 @@
-{: Shadow casting with GLzBuffer by Rene Lindsay.
+{: Shadow casting with GLzBuffer by Rene Lindsay.<p>
 
+   Shadows *require* a board that supports WGL_ARB_pbuffer extension, if you
+   get an error about this, try upgrading your drivers, and if that's not enough,
+   get a new 3D board ;)
 }
 unit Main;
 
