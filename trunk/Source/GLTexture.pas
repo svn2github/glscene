@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>23/05/03 - EG - More generic libmaterial registration
       <li>08/12/02 - EG - Added tiaInverseLuminance
       <li>13/11/02 - EG - Added tmmCubeMapLight0
       <li>18/10/02 - EG - CubeMap texture matrix now setup for 2nd texture unit too
@@ -860,8 +861,12 @@ type
          procedure UnApplyMappingMode;
 			procedure Apply(var rci : TRenderContextInfo);
          procedure UnApply(var rci : TRenderContextInfo);
+         {: Applies to TEXTURE1_ARB }
          procedure ApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
          procedure UnApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
+         {: N=1 for TEXTURE0_ARB, N=2 for TEXTURE1_ARB, etc. }
+         procedure ApplyAsTextureN(n : Integer; var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
+         procedure UnApplyAsTextureN(n : Integer; var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
 
 			procedure Assign(Source: TPersistent); override;
 
@@ -1151,8 +1156,10 @@ type
          //: Restore non-standard material states that were altered
          function  UnApply(var rci : TRenderContextInfo) : Boolean;
 
-         procedure RegisterUser(material : TGLMaterial); overload;
-			procedure UnregisterUser(material : TGLMaterial); overload;
+         procedure RegisterUser(obj : TGLUpdateAbleObject); overload;
+			procedure UnregisterUser(obj : TGLUpdateAbleObject); overload;
+         procedure RegisterUser(comp : TGLUpdateAbleComponent); overload;
+			procedure UnregisterUser(comp : TGLUpdateAbleComponent); overload;
          procedure RegisterUser(libMaterial : TGLLibMaterial); overload;
 			procedure UnregisterUser(libMaterial : TGLLibMaterial); overload;
          procedure NotifyUsers;
@@ -3037,15 +3044,29 @@ end;
 // ApplyAsTexture2
 //
 procedure TGLTexture.ApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
+begin
+   ApplyAsTextureN(2, rci, libMaterial);
+end;
+
+// UnApplyAsTexture2
+//
+procedure TGLTexture.UnApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
+begin
+   UnApplyAsTextureN(2, rci, libMaterial);
+end;
+
+// ApplyAsTextureN
+//
+procedure TGLTexture.ApplyAsTextureN(n : Integer; var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
 var
    m : TMatrix;
 begin
    if not Disabled then begin
-      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glActiveTextureARB(GL_TEXTURE0_ARB+n-1);
 
       if Image.NativeTextureTarget=GL_TEXTURE_2D then begin
          glEnable(Image.NativeTextureTarget);
-         SetGLCurrentTexture(1, Image.NativeTextureTarget, Handle);
+         SetGLCurrentTexture(n-1, Image.NativeTextureTarget, Handle);
 
          if Assigned(libMaterial) and (not libMaterial.FTextureMatrixIsIdentity) then begin
             glMatrixMode(GL_TEXTURE);
@@ -3055,7 +3076,7 @@ begin
 
       end else if GL_ARB_texture_cube_map then begin
          glEnable(Image.NativeTextureTarget);
-         SetGLCurrentTexture(1, Image.NativeTextureTarget, Handle);
+         SetGLCurrentTexture(n-1, Image.NativeTextureTarget, Handle);
 
          // compute model view matrix for proper viewing
          glMatrixMode(GL_TEXTURE);
@@ -3077,11 +3098,11 @@ begin
    end;
 end;
 
-// UnApplyAsTexture2
+// UnApplyAsTextureN
 //
-procedure TGLTexture.UnApplyAsTexture2(var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
+procedure TGLTexture.UnApplyAsTextureN(n : Integer; var rci : TRenderContextInfo; libMaterial : TGLLibMaterial);
 begin
-   glActiveTextureARB(GL_TEXTURE1_ARB);
+   glActiveTextureARB(GL_TEXTURE0_ARB+n-1);
    UnApplyMappingMode;
    if    (Image.NativeTextureTarget<>GL_TEXTURE_2D)
       or (Assigned(libMaterial) and (not libMaterial.FTextureMatrixIsIdentity)) then begin
@@ -3719,6 +3740,7 @@ procedure TGLLibMaterial.Apply(var rci : TRenderContextInfo);
 var
    multitextured : Boolean;
 begin
+   xglBeginUpdate;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
          ssHighLevel : Shader.Apply(rci);
@@ -3746,7 +3768,6 @@ begin
       Material.Apply(rci);
    end else begin
       // multitexturing is ON
-      xglBeginUpdate;
       if not FTextureMatrixIsIdentity then
          SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
@@ -3759,13 +3780,13 @@ begin
       else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
          xglMapTexCoordToSecond
       else xglMapTexCoordToMain;
-      xglEndUpdate;
    end;
    if Assigned(FShader) then begin
       case Shader.ShaderStyle of
          ssLowLevel : Shader.Apply(rci);
       end;
    end;
+   xglEndUpdate;
 end;
 
 // UnApply
@@ -3802,17 +3823,32 @@ end;
 
 // RegisterUser
 //
-procedure TGLLibMaterial.RegisterUser(material : TGLMaterial);
+procedure TGLLibMaterial.RegisterUser(obj : TGLUpdateAbleObject);
 begin
-   Assert(userList.IndexOf(material)<0);
-   userList.Add(material);
+   Assert(userList.IndexOf(obj)<0);
+   userList.Add(obj);
 end;
 
 // UnregisterUser
 //
-procedure TGLLibMaterial.UnRegisterUser(material : TGLMaterial);
+procedure TGLLibMaterial.UnRegisterUser(obj : TGLUpdateAbleObject);
 begin
-   userList.Remove(material);
+   userList.Remove(obj);
+end;
+
+// RegisterUser
+//
+procedure TGLLibMaterial.RegisterUser(comp : TGLUpdateAbleComponent);
+begin
+   Assert(userList.IndexOf(comp)<0);
+   userList.Add(comp);
+end;
+
+// UnregisterUser
+//
+procedure TGLLibMaterial.UnRegisterUser(comp : TGLUpdateAbleComponent);
+begin
+   userList.Remove(comp);
 end;
 
 // RegisterUser
@@ -3842,8 +3878,10 @@ begin
    try
       for i:=0 to userList.Count-1 do begin
          obj:=TObject(userList[i]);
-         if obj is TGLMaterial then
-            TGLMaterial(userList[i]).NotifyChange(Self)
+         if obj is TGLUpdateAbleObject then
+            TGLUpdateAbleObject(userList[i]).NotifyChange(Self)
+         else if obj is TGLUpdateAbleComponent then
+            TGLUpdateAbleComponent(userList[i]).NotifyChange(Self)
          else begin
             Assert(obj is TGLLibMaterial);
             TGLLibMaterial(userList[i]).NotifyUsers;
@@ -3868,10 +3906,12 @@ begin
          obj:=TObject(userList[i]);
          if obj is TGLMaterial then
             TGLMaterial(userList[i]).NotifyTexMapChange(Self)
-         else begin
-            Assert(obj is TGLLibMaterial);
-            TGLLibMaterial(userList[i]).NotifyUsersOfTexMapChange;
-         end;
+         else if obj is TGLLibMaterial then
+            TGLLibMaterial(userList[i]).NotifyUsersOfTexMapChange
+         else if obj is TGLUpdateAbleObject then
+            TGLUpdateAbleObject(userList[i]).NotifyChange(Self)
+         else if obj is TGLUpdateAbleComponent then
+            TGLUpdateAbleComponent(userList[i]).NotifyChange(Self);
       end;
    finally
       notifying:=False;
