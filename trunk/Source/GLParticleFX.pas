@@ -6,8 +6,6 @@
    particle depth-sorting (allowing correct rendering of interwoven separate
    fire and smoke particle systems for instance).<p>
 
-   UNDER CONSTRUCTION.<p>
-
    <b>Historique : </b><font size=-1><ul>
       <li>08/09/01 - EG - Creation (GLParticleFX.omm)
    </ul></font>
@@ -351,16 +349,46 @@ type
          function MaxLifeTime : Double;
    end;
 
+   // TGLDynamicPFXManager
+   //
+   {: An abstract PFX manager for simple dynamic particles.<p>
+      Adds properties and progress implementation for handling moving particles
+      (simple velocity and const acceleration integration). }
+   TGLDynamicPFXManager = class (TGLParticleFXManager)
+      private
+         { Private Declarations }
+         FAcceleration : TGLCoordinates;
+         FCurrentTime : Double;           // NOT persistent
+
+      protected
+         { Protected Declarations }
+         procedure SetAcceleration(const val : TGLCoordinates);
+
+         {: Returns the maximum age for a particle.<p>
+            Particles older than that will be killed by DoProgress. }
+         function MaxParticleAge : Double; dynamic; abstract;
+
+      public
+         { Public Declarations }
+         constructor Create(aOwner : TComponent); override;
+         destructor Destroy; override;
+
+         procedure DoProgress(const deltaTime, newTime : Double); override;
+
+	   published
+	      { Published Declarations }
+         property Acceleration : TGLCoordinates read FAcceleration write SetAcceleration;
+   end;
+
    // TGLPolygonPFXManager
    //
    {: Polygonal particles FX manager.<p>
       The particles of this manager are made of N-face regular polygon with
       a core and edge color. No texturing is available. }
-   TGLPolygonPFXManager = class (TGLParticleFXManager)
+   TGLPolygonPFXManager = class (TGLDynamicPFXManager)
       private
          { Private Declarations }
          FLifeColors : TPFXLifeColors;
-         FAcceleration : TGLCoordinates;
          FParticleSize : Double;
          FNbSides : Integer;
          FColorInner : TGLColor;
@@ -373,11 +401,12 @@ type
       protected
          { Protected Declarations }
          procedure SetLifeColors(const val : TPFXLifeColors);
-         procedure SetAcceleration(const val : TGLCoordinates);
          procedure SetParticleSize(const val : Double);
          procedure SetNbSides(const val : Integer);
          procedure SetColorInner(const val : TGLColor);
          procedure SetColorOuter(const val : TGLColor);
+
+         function MaxParticleAge : Double; override;
 
          procedure InitializeRendering; override;
          procedure BeginParticles; override;
@@ -390,14 +419,11 @@ type
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
-         procedure DoProgress(const deltaTime, newTime : Double); override;
-
 	   published
 	      { Published Declarations }
          property ColorInner : TGLColor read FColorInner write SetColorInner;
          property ColorOuter : TGLColor read FColorOuter write SetColorOuter;
          property LifeColors : TPFXLifeColors read FLifeColors write SetLifeColors;
-         property Acceleration : TGLCoordinates read FAcceleration write SetAcceleration;
          property ParticleSize : Double read FParticleSize write SetParticleSize;
          property NbSides : Integer read FNbSides write SetNbSides default 6;
    end;
@@ -1251,37 +1277,28 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLPolygonPFXManager ------------------
+// ------------------ TGLDynamicPFXManager ------------------
 // ------------------
 
 // Create
 //
-constructor TGLPolygonPFXManager.Create(aOwner : TComponent);
+constructor TGLDynamicPFXManager.Create(aOwner : TComponent);
 begin
    inherited;
-   FLifeColors:=TPFXLifeColors.Create(Self);
    FAcceleration:=TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
-   FNbSides:=6;
-   FColorInner:=TGLColor.CreateInitialized(Self, clrYellow);
-   FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector);
-   with FLifeColors.Add do begin
-      LifeTime:=3;
-   end;
-   FParticleSize:=1;
 end;
 
 // Destroy
 //
-destructor TGLPolygonPFXManager.Destroy;
+destructor TGLDynamicPFXManager.Destroy;
 begin
    FAcceleration.Free;
-   FLifeColors.Free;
    inherited Destroy;
 end;
 
 // DoProgress
 //
-procedure TGLPolygonPFXManager.DoProgress(const deltaTime, newTime : Double);
+procedure TGLDynamicPFXManager.DoProgress(const deltaTime, newTime : Double);
 var
    i : Integer;
    curParticle : TGLParticle;
@@ -1289,7 +1306,7 @@ var
    accelVector : TAffineVector;
    dt : Single;
 begin
-   maxAge:=LifeColors.MaxLifeTime;
+   maxAge:=MaxParticleAge;
    accelVector:=Acceleration.AsAffineVector;
    dt:=deltaTime;
    FCurrentTime:=newTime;
@@ -1309,6 +1326,40 @@ begin
       end;
    end;
    Particles.Pack;
+end;
+
+// SetAcceleration
+//
+procedure TGLDynamicPFXManager.SetAcceleration(const val : TGLCoordinates);
+begin
+   FAcceleration.Assign(val);
+end;
+
+// ------------------
+// ------------------ TGLPolygonPFXManager ------------------
+// ------------------
+
+// Create
+//
+constructor TGLPolygonPFXManager.Create(aOwner : TComponent);
+begin
+   inherited;
+   FLifeColors:=TPFXLifeColors.Create(Self);
+   FNbSides:=6;
+   FColorInner:=TGLColor.CreateInitialized(Self, clrYellow);
+   FColorOuter:=TGLColor.CreateInitialized(Self, NullHmgVector);
+   with FLifeColors.Add do begin
+      LifeTime:=3;
+   end;
+   FParticleSize:=1;
+end;
+
+// Destroy
+//
+destructor TGLPolygonPFXManager.Destroy;
+begin
+   FLifeColors.Free;
+   inherited Destroy;
 end;
 
 // SetColorInner
@@ -1332,13 +1383,6 @@ begin
    FLifeColors.Assign(Self);
 end;
 
-// SetAcceleration
-//
-procedure TGLPolygonPFXManager.SetAcceleration(const val : TGLCoordinates);
-begin
-   FAcceleration.Assign(val);
-end;
-
 // SetParticleSize
 //
 procedure TGLPolygonPFXManager.SetParticleSize(const val : Double);
@@ -1358,6 +1402,13 @@ begin
       if FNbSides<3 then FNbSides:=3;
       NotifyChange(Self);
    end;
+end;
+
+// MaxParticleAge
+//
+function TGLPolygonPFXManager.MaxParticleAge : Double;
+begin
+   Result:=LifeColors.MaxLifeTime;
 end;
 
 // InitializeRendering
@@ -1455,7 +1506,7 @@ initialization
 // ------------------------------------------------------------------
 
    // class registrations
-   RegisterClasses([TGLParticle, TGLParticleList, TGLParticleFXManager,
+   RegisterClasses([TGLParticle, TGLParticleList,
                     TGLParticleFXEffect, TGLParticleFXRenderer,
                     TGLPolygonPFXManager]);
    RegisterXCollectionItemClass(TGLSourcePFXEffect);
