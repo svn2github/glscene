@@ -4,6 +4,9 @@
   overlap.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/06/03 - MF - Separated functionality for Octrees and general
+                          sectored space partitions so Quadtrees will be easy
+                          to add.
       <li>20/06/03 - MF - Created
   </ul></font>
 }
@@ -209,16 +212,22 @@ type
     property NodeDepth : integer read FNodeDepth;
 
     {: Checks if an AABB fits completely inside this node }
-    function AABBFitsInNode(const aAABB : TAABB) : boolean;
+    function AABBFitsInNode(const aAABB : TAABB) : boolean; virtual;
 
     {: Checks if an AABB intersects this node }
-    function AABBIntersectsNode(const aAABB : TAABB) : boolean;
+    function AABBIntersectsNode(const aAABB : TAABB) : boolean; virtual;
 
     {: Checks if a BSphere fits completely inside this node }
-    function BSphereFitsInNode(const BSphere : TBSphere) : boolean;
+    function BSphereFitsInNode(const BSphere : TBSphere) : boolean; virtual;
 
     {: Checks if a BSphere intersects this node }
-    function BSphereIntersectsNode(const BSphere : TBSphere) : boolean;
+    function BSphereIntersectsNode(const BSphere : TBSphere) : boolean; virtual;
+
+    {: Checks if a AABB partially or completely contains this sector}
+    function AABBContainsSector(const AABB : TAABB) : TSpaceContains; virtual;
+
+    {: Checks if a BSphere partially or completely contains this sector}
+    function BSphereContainsSector(const BSphere : TBSphere) : TSpaceContains; virtual;
 
     {: Adds leaf to this node - or one of it's children. If the node has enough
     leaves and has no children, children will be created and all leaves will be
@@ -256,7 +265,8 @@ type
     destructor Destroy; override;
   end;
 
-  {: Implements Sectored space partitioning }
+  {: Implements sectored space partitioning, sectored space partitions include
+  Octrees, Quadtrees and  BSP-trees }
   TSectoredSpacePartition = class(TLeavedSpacePartition)
   private
     FRootNode : TSectorNode;
@@ -335,7 +345,20 @@ type
   {: Implements sector node that handles octrees}
   TSPOctreeNode = class(TSectorNode)
   public
+    {: Create 8 TSPOctreeNode children }
     procedure CreateChildren; override;
+
+    {: Checks if an AABB fits completely inside this node }
+    function AABBFitsInNode(const aAABB : TAABB) : boolean; override;
+
+    {: Checks if an AABB intersects this node }
+    function AABBIntersectsNode(const aAABB : TAABB) : boolean; override;
+
+    {: Checks if a BSphere fits completely inside this node }
+    function BSphereFitsInNode(const BSphere : TBSphere) : boolean; override;
+
+    {: Checks if a BSphere intersects this node }
+    function BSphereIntersectsNode(const BSphere : TBSphere) : boolean; override;
   end;
 
   {: Implements octrees}
@@ -601,12 +624,12 @@ end;
 
 function TSectorNode.AABBFitsInNode(const aAABB: TAABB): boolean;
 begin
-  result := AABBFitsInAABBAbsolute(aAABB, FAABB);
+  Assert(false, 'You must override AABBFitsInNode!');
 end;
 
 function TSectorNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
 begin
-  result := IntersectAABBsAbsolute(FAABB, aAABB);
+  Assert(false, 'You must override AABBIntersectsNode!');
 end;
 
 procedure TSectorNode.AddAllLeavesRecursive(const QueryResult : TSpacePartitionLeafList);
@@ -643,19 +666,13 @@ begin
 end;
 
 function TSectorNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
-var
-  AABB : TAABB;
 begin
-  BSphereToAABB(BSphere, AABB);
-  result := AABBFitsInAABBAbsolute(AABB, FAABB);
+  Assert(false,'You must override BSphereFitsInNode!');
 end;
 
 function TSectorNode.BSphereIntersectsNode(const BSphere: TBSphere): boolean;
-var
-  AABB : TAABB;
 begin
-  BSphereToAABB(BSphere, AABB);
-  result := IntersectAABBsAbsolute(AABB, FAABB);
+  Assert(false,'You must override BSphereIntersectsNode!');
 end;
 
 function TSectorNode.CalcRecursiveLeafCount: integer;
@@ -779,7 +796,7 @@ var
   i : integer;
   SpaceContains : TSpaceContains;
 begin
-  SpaceContains := AABBContainsAABB(aAABB, FAABB);
+  SpaceContains := AABBContainsSector(aAABB);
 
   if SpaceContains = scContainsFully then
   begin
@@ -793,11 +810,8 @@ begin
         QueryResult.Add(FLeaves[i]);
 
     // Recursively let the children add their leaves
-    if not NoChildren then
-    begin
-      for i := 0 to 7 do
-        FChildren[i].QueryAABB(aAABB, QueryResult);
-    end;
+    for i := 0 to FChildCount-1 do
+      FChildren[i].QueryAABB(aAABB, QueryResult);
   end;
 end;
 
@@ -807,7 +821,7 @@ var
   i : integer;
   SpaceContains : TSpaceContains;
 begin
-  SpaceContains := BSphereContainsAABB(aBSphere, FAABB);
+  SpaceContains := BSphereContainsSector(aBSphere);
 
   if SpaceContains = scContainsFully then
   begin
@@ -821,11 +835,8 @@ begin
         QueryResult.Add(FLeaves[i]);
 
     // Recursively let the children add their leaves
-    if not NoChildren then
-    begin
-      for i := 0 to 7 do
-        FChildren[i].QueryBSphere(aBSphere, QueryResult);
-    end;
+    for i := 0 to FChildCount-1 do
+      FChildren[i].QueryBSphere(aBSphere, QueryResult);
   end;
 end;
 
@@ -865,6 +876,17 @@ end;
 procedure TSectorNode.CreateChildren;
 begin
   // VIRTUAL!
+end;
+
+function TSectorNode.AABBContainsSector(const AABB: TAABB): TSpaceContains;
+begin
+  result := AABBContainsAABB(AABB, FAABB);
+end;
+
+function TSectorNode.BSphereContainsSector(
+  const BSphere: TBSphere): TSpaceContains;
+begin
+  result := BSphereContainsAABB(BSphere, FAABB);
 end;
 
 { TSectoredSpacePartition }
@@ -1060,6 +1082,33 @@ begin
 end;
 
 { TSPOctreeNode }
+
+function TSPOctreeNode.AABBFitsInNode(const aAABB: TAABB): boolean;
+begin
+  result := AABBFitsInAABBAbsolute(aAABB, FAABB);
+end;
+
+function TSPOctreeNode.AABBIntersectsNode(const aAABB: TAABB): boolean;
+begin
+  result := IntersectAABBsAbsolute(FAABB, aAABB);
+end;
+
+function TSPOctreeNode.BSphereFitsInNode(const BSphere: TBSphere): boolean;
+var
+  AABB : TAABB;
+begin
+  BSphereToAABB(BSphere, AABB);
+  result := AABBFitsInAABBAbsolute(AABB, FAABB);
+end;
+
+function TSPOctreeNode.BSphereIntersectsNode(
+  const BSphere: TBSphere): boolean;
+var
+  AABB : TAABB;
+begin
+  BSphereToAABB(BSphere, AABB);
+  result := IntersectAABBsAbsolute(AABB, FAABB);
+end;
 
 procedure TSPOctreeNode.CreateChildren;
 var

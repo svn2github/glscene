@@ -87,6 +87,8 @@ function AABBToBB(const anAABB : TAABB; const m : TMatrix) : THmgBoundingBox; ov
 function IntersectAABBs(const aabb1, aabb2 : TAABB; const m1To2, m2To1 : TMatrix) : Boolean; overload;
 {: Checks whether two Bounding boxes aligned with the world axes collide in the XY plane.<p> }
 function IntersectAABBsAbsoluteXY(const aabb1, aabb2 : TAABB) : Boolean;
+{: Checks whether two Bounding boxes aligned with the world axes collide in the XZ plane.<p> }
+function IntersectAABBsAbsoluteXZ(const aabb1, aabb2 : TAABB) : Boolean;
 {: Checks whether two Bounding boxes aligned with the world axes collide.<p> }
 function IntersectAABBsAbsolute(const aabb1, aabb2 : TAABB) : Boolean;
 {: Checks whether one Bounding box aligned with the world axes fits within
@@ -500,6 +502,16 @@ begin
   else if (AABB2.max[0]<AABB1.min[0])or (AABB2.max[1]<AABB1.min[1]) then Exit
   else Result:=true;
 
+end;
+
+function IntersectAABBsAbsoluteXZ(const aabb1, aabb2 : TAABB) : Boolean;
+begin
+  result := 
+   ((AABB1.min[0]<AABB2.max[0]) and
+    (AABB1.min[2]<AABB2.max[2]) and
+
+    (AABB2.min[0]<AABB1.max[0]) and
+    (AABB2.min[2]<AABB1.max[2]));
 end;
 
 // IntersectAABBsAbsolute
