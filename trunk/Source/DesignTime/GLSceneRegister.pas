@@ -1372,7 +1372,7 @@ begin
                        TGLCadencer, TAsyncTimer,
                        TCollisionManager, TGLFireFXManager, TGLThorFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
-                       TBitmapFont, TGLBitmapHDS,
+                       TBitmapFont, TGLBitmapHDS, TGLCustomHDS,
                        TAnimationControler]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);

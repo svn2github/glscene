@@ -12,6 +12,8 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
+                          THeightData now has a MaterialName property
       <li>24/02/02 - EG - Faster Cleanup & cache management
       <li>21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
       <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
@@ -216,6 +218,7 @@ type
          FSmallIntRaster : PSmallIntRaster;
          FSingleData : PSingleArray;
          FSingleRaster : PSingleRaster;
+         FMaterialName : String;
          FObjectTag : TObject;
          FTag, FTag2 : Integer;
          FOnDestroy : TNotifyEvent;
@@ -237,7 +240,6 @@ type
 	      { Protected Declarations }
          FThread : THeightDataThread; // thread used for multi-threaded processing (if any)
 
-         procedure Allocate(const val : THeightDataType);
          procedure SetDataType(const val : THeightDataType);
 
 	   public
@@ -262,6 +264,9 @@ type
             the data becomes dirty, when invoked they should release the heightdata
             immediately after performing their own cleanups. }
          procedure RegisterUse;
+         {: Allocate memory and prepare lookup tables for current datatype.<p>
+            Fails if already allocated. }
+         procedure Allocate(const val : THeightDataType);
          {: Decrements UseCounter.<p>
             When the counter reaches zero, notifies the Owner THeightDataSource
             that the data is no longer used.<p>
@@ -307,6 +312,8 @@ type
          {: Access to data as a Single raster (y, x).<p>
             If THeightData is not of type hdtSingle, this value is nil. }
          property SingleRaster : PSingleRaster read FSingleRaster;
+         {: Name of material for the tile (if terrain uses multiple materials). }
+         property MaterialName : String read FMaterialName write FMaterialName;
 
          {: Height of point x, y as a Byte.<p> }
 	      function ByteHeight(x, y : Integer) : Byte;
@@ -395,6 +402,39 @@ type
          property Picture : TPicture read FPicture write SetPicture;
 
          property MaxPoolSize;
+	end;
+
+   TStartPreparingDataEvent = procedure (heightData : THeightData) of object;
+   TMarkDirtyEvent = procedure (const area : TGLRect) of object;
+
+	// TGLCustomHDS
+	//
+   {: An Height Data Source for custom use.<p>
+      Provides event handlers for the various requests to be implemented
+      application-side (for application-specific needs). }
+	TGLCustomHDS = class (THeightDataSource)
+	   private
+	      { Private Declarations }
+         FOnStartPreparingData : TStartPreparingDataEvent;
+         FOnMarkDirty : TMarkDirtyEvent;
+
+	   protected
+	      { Protected Declarations }
+         procedure StartPreparingData(heightData : THeightData); override;
+
+	   public
+	      { Public Declarations }
+	      constructor Create(AOwner: TComponent); override;
+         destructor Destroy; override;
+
+         procedure MarkDirty(const area : TGLRect); override;
+
+	   published
+	      { Published Declarations }
+         property MaxPoolSize;
+
+         property OnStartPreparingData : TStartPreparingDataEvent read FOnStartPreparingData write FOnStartPreparingData;
+         property OnMarkDirtyEvent : TMarkDirtyEvent read FOnMarkDirty write FOnMarkDirty;
 	end;
 
 	// TGLTerrainBaseHDS
@@ -507,12 +547,12 @@ end;
 //
 destructor THeightDataSource.Destroy;
 begin
+	inherited Destroy;
    FThread.Terminate;
    FThread.WaitFor;
    FThread.Free;
    Clear;
    FData.Free;
-	inherited Destroy;
 end;
 
 {$ifndef GLS_DELPHI_5_UP}
@@ -1150,9 +1190,9 @@ end;
 //
 destructor TGLBitmapHDS.Destroy;
 begin
+	inherited Destroy;
    FreeMonochromeBitmap;
    FPicture.Free;
-	inherited Destroy;
 end;
 
 // SetPicture
@@ -1291,6 +1331,42 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLCustomHDS ------------------
+// ------------------
+
+// Create
+//
+constructor TGLCustomHDS.Create(AOwner: TComponent);
+begin
+	inherited Create(AOwner);
+end;
+
+// Destroy
+//
+destructor TGLCustomHDS.Destroy;
+begin
+	inherited Destroy;
+end;
+
+// MarkDirty
+//
+procedure TGLCustomHDS.MarkDirty(const area : TGLRect);
+begin
+   inherited;
+   if Assigned(FOnMarkDirty) then
+      FOnMarkDirty(area);
+end;
+
+// StartPreparingData
+//
+procedure TGLCustomHDS.StartPreparingData(heightData : THeightData);
+begin
+   if Assigned(FOnStartPreparingData) then
+      FOnStartPreparingData(heightData);
+   inherited;
+end;
+
+// ------------------
 // ------------------ TGLTerrainBaseHDS ------------------
 // ------------------
 
@@ -1356,6 +1432,6 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   Classes.RegisterClasses([TGLBitmapHDS, TGLTerrainBaseHDS]);
+   Classes.RegisterClasses([TGLBitmapHDS, TGLCustomHDS, TGLTerrainBaseHDS]);
 
 end.

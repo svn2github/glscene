@@ -2,13 +2,17 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>16/06/02 - EG - Added support for multi-material terrains
       <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
       <li>18/12/01 - EG - Vertex-cache aware stripifier (+10% on GeForce)
       <li>12/08/01 - EG - Completely rewritten handles management
       <li>21/07/01 - EG - Added Notication registration in SetHeightDataSource
       <li>04/03/01 - EG - Completed for first release
 	   <li>12/02/01 - EG - Creation
-	</ul></font>
+	</ul></font><p>
+
+   NOTA : multi-materials terrain support is not yet optimized to minimize
+          texture switches (in case of resued tile textures).
 }
 unit GLTerrainRenderer;
 
@@ -40,6 +44,7 @@ type
          FBufferVertices : TAffineVectorList;
          FBufferTexPoints : TTexPointList;
          FBufferVertexIndices : TIntegerList;
+         FMaterialLibrary : TGLMaterialLibrary;
 
 	   protected
 	      { Protected Declarations }
@@ -55,6 +60,7 @@ type
          procedure SetTileSize(const val : Integer);
          procedure SetTilesPerTexture(const val : Single);
          procedure SetCLODPrecision(const val : Integer);
+         procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 			procedure DestroyHandle; override;
@@ -87,6 +93,10 @@ type
          property TileSize : Integer read FTileSize write SetTileSize default 16;
          {: Number of tiles required for a full texture map. }
          property TilesPerTexture : Single read FTilesPerTexture write SetTilesPerTexture;
+         {: Link to the material library holding terrain materials.<p>
+            If unspecified, and for all terrain tiles with unspecified material,
+            the terrain renderer's material is used. }
+         property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
 
          {: Quality distance hint.<p>
             This parameter gives an hint to the terrain renderer at which distance
@@ -159,8 +169,12 @@ end;
 //
 procedure TTerrainRenderer.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if (Operation=opRemove) and (AComponent=FHeightDataSource) then
-      HeightDataSource:=nil;
+   if Operation=opRemove then begin
+      if AComponent=FHeightDataSource then
+         HeightDataSource:=nil
+      else if AComponent=FMaterialLibrary then
+         MaterialLibrary:=nil;
+   end;
    inherited;
 end;
 
@@ -227,10 +241,28 @@ var
    patch, prevPatch : TGLROAMPatch;
    patchList, rowList, prevRow, buf : TList;
    rcci : TRenderContextClippingInfo;
+   currentMaterialName : String;
+
+   procedure ApplyMaterial(const materialName : String);
+   begin
+      if (MaterialLibrary<>nil) and (currentMaterialName<>materialName) then begin
+         // unapply current
+         if currentMaterialName='' then
+            Material.UnApply(rci)
+         else MaterialLibrary.UnApplyMaterial(rci);
+         // apply new
+         if materialName='' then
+            Material.Apply(rci)
+         else MaterialLibrary.ApplyMaterial(materialName, rci);
+         currentMaterialName:=materialName;
+      end;
+   end;
+
 //   trackDetails : Boolean;
 begin
    if csDesigning in ComponentState then Exit;
    if HeightDataSource=nil then Exit;
+   currentMaterialName:='';
    // first project eye position into heightdata coordinates
    vEye:=VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
    SetVector(observer, vEye);
@@ -298,6 +330,7 @@ begin
 
             if patch.HighRes then begin
                // high-res patches are issued immediately
+               ApplyMaterial(patch.HeightData.MaterialName);
                patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
                FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
             end else begin
@@ -328,6 +361,7 @@ begin
       end;
       if n>=rpIdxDelta then begin
          patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
+         ApplyMaterial(patch.HeightData.MaterialName);
          patch.Render(FBufferVertices, FBufferVertexIndices, FBufferTexPoints);
          FLastTriangleCount:=FLastTriangleCount+patch.TriangleCount;
       end;
@@ -344,6 +378,7 @@ begin
    rowList.Free;
    prevRow.Free;
    patchList.Free;
+   ApplyMaterial('');
 end;
 
 // MarkAllTilesAsUnused
@@ -502,6 +537,7 @@ var
 begin
    if val<>FCLODPrecision then begin
       FCLODPrecision:=val;
+      // drop all ROAM data (CLOD has changed, rebuild required)
       for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
          for k:=Count-1 downto 0 do begin
             hd:=THeightData(List[k]);
@@ -512,6 +548,16 @@ begin
          end;
          Clear;
       end;
+   end;
+end;
+
+// SetMaterialLibrary
+//
+procedure TTerrainRenderer.SetMaterialLibrary(const val : TGLMaterialLibrary);
+begin
+   if val<>FMaterialLibrary then begin
+      FMaterialLibrary:=val;
+      StructureChanged;
    end;
 end;
 

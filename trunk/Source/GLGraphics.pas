@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>16/06/02 - EG - AssignFrom32BitsBitmap fix for single-line bitmaps
       <li>29/01/02 - EG - Fixed ScanLine Index bug with empty bitmaps
       <li>20/01/02 - EG - Fixed BGR24/RGB24 last pixel transfer
       <li>17/01/02 - EG - Faster assignments from bitmaps (approx. x2),
@@ -453,10 +454,12 @@ begin
       pDest:=@PChar(FData)[Width*4*(Height-1)];
       if VerticalReverseOnAssignFromBitmap then begin
          pSrc:=aBitmap.ScanLine[Height-1];
-         rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+         if Height>1 then
+            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
       end else begin
          pSrc:=aBitmap.ScanLine[0];
-         rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+         if Height>1 then
+            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
       end;
       for y:=0 to Height-1 do begin
          BGRA32ToRGBA32(pSrc, pDest, Width);
