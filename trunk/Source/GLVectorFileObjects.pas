@@ -151,8 +151,10 @@ type
             The resulting list size is a multiple of 3, each group of 3 vertices
             making up and independant triangle.<br>
             The returned list can be used independantly from the mesh object
-            (all data is duplicated) and should be freed by caller. }
-         function ExtractTriangles : TAffineVectorList; dynamic;
+            (all data is duplicated) and should be freed by caller.<p>
+            If texCoords is specified, per vertex texture coordinates will be
+            placed there, when available. }
+         function ExtractTriangles(texCoords : TAffineVectorList = nil) : TAffineVectorList; dynamic;
 
          property Name : String read FName write FName;
          property Visible : Boolean read FVisible write FVisible;
@@ -467,7 +469,7 @@ type
 
          procedure Clear; override;
 
-         function ExtractTriangles : TAffineVectorList; override;
+         function ExtractTriangles(texCoords : TAffineVectorList = nil) : TAffineVectorList; override;
          {: Returns number of triangles in the mesh object. }
          function TriangleCount : Integer; dynamic;
 
@@ -526,7 +528,7 @@ type
 
          procedure GetExtents(var min, max : TAffineVector);
          procedure Translate(const delta : TAffineVector);
-         function ExtractTriangles : TAffineVectorList;
+         function ExtractTriangles(texCoords : TAffineVectorList = nil) : TAffineVectorList;
          {: Returns number of triangles in the meshes of the list. }
          function TriangleCount : Integer;
 
@@ -708,7 +710,8 @@ type
          {: Add to the list the triangles corresponding to the facegroup.<p>
             This function is used by TMeshObjects ExtractTriangles to retrieve
             all the triangles in a mesh. }
-         procedure AddToTriangles(aList : TAffineVectorList); dynamic;
+         procedure AddToTriangles(aList : TAffineVectorList;
+                                  aTexCoords : TAffineVectorList = nil); dynamic;
          {: Returns number of triangles in the facegroup. }
          function TriangleCount : Integer; dynamic; abstract;
          {: Reverses the rendering order of faces.<p>
@@ -758,7 +761,8 @@ type
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
-         procedure AddToTriangles(aList : TAffineVectorList); override;
+         procedure AddToTriangles(aList : TAffineVectorList;
+                                  aTexCoords : TAffineVectorList = nil); override;
          function TriangleCount : Integer; override;
          procedure Reverse; override;
 
@@ -774,7 +778,8 @@ type
    // TFGVertexNormalTexIndexList
    //
    {: Adds normals and texcoords indices.<p>
-      Allows very compact description of a mesh. }
+      Allows very compact description of a mesh. The Normals ad TexCoords
+      indices are optionnal, if missing (empty), VertexIndices will be used. }
    TFGVertexNormalTexIndexList = class (TFGVertexIndexList)
       private
          { Private Declarations }
@@ -795,7 +800,8 @@ type
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
-         procedure AddToTriangles(aList : TAffineVectorList); override;
+         procedure AddToTriangles(aList : TAffineVectorList;
+                                  aTexCoords : TAffineVectorList = nil); override;
 
          procedure Add(vertexIdx, normalIdx, texCoordIdx : Integer);
 
@@ -826,7 +832,8 @@ type
 			procedure ReadFromFiler(reader : TVirtualReader); override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
-         procedure AddToTriangles(aList : TAffineVectorList); override;
+         procedure AddToTriangles(aList : TAffineVectorList;
+                                  aTexCoords : TAffineVectorList = nil); override;
 
          procedure Add(idx : Integer; const texCoord : TAffineVector); overload;
          procedure Add(idx : Integer; const s, t : Single); overload;
@@ -857,7 +864,8 @@ type
          procedure Clear; override;
          property Items[Index: Integer] : TFaceGroup read GetFaceGroup; default;
 
-         procedure AddToTriangles(aList : TAffineVectorList);
+         procedure AddToTriangles(aList : TAffineVectorList;
+                                  aTexCoords : TAffineVectorList = nil);
 
          {: Material Library of the owner TGLBaseMesh. }
          function MaterialLibrary : TGLMaterialLibrary;
@@ -1496,7 +1504,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO, GeometryBB,
-     GLCollision,
+     GLCollision, MeshUtils,
      // 3DS Support
 	  File3DS, Types3DS,
      // MD2 Support
@@ -1890,7 +1898,7 @@ end;
 
 // ExtractTriangles
 //
-function TBaseMeshObject.ExtractTriangles : TAffineVectorList;
+function TBaseMeshObject.ExtractTriangles(texCoords : TAffineVectorList = nil) : TAffineVectorList;
 begin
    Result:=TAffineVectorList.Create;
    if (Vertices.Count mod 3)=0 then
@@ -2697,26 +2705,23 @@ end;
 
 // ExtractTriangles
 //
-function TMeshObject.ExtractTriangles : TAffineVectorList;
-var
-   i : Integer;
+function TMeshObject.ExtractTriangles(texCoords : TAffineVectorList = nil) : TAffineVectorList;
 begin
    case mode of
       momTriangles : begin
          Result:=inherited ExtractTriangles;
+         if Assigned(texCoords) then
+            texCoords.Assign(Self.TexCoords);
       end;
       momTriangleStrip : begin
          Result:=TAffineVectorList.Create;
-         Result.Capacity:=3*(Vertices.Count-2);
-         for i:=0 to Vertices.Count-3 do begin
-            if (i and 1)=0 then
-               Result.Add(Vertices.List[i+0], Vertices.List[i+1], Vertices.List[i+2])
-            else Result.Add(Vertices.List[i+2], Vertices.List[i+1], Vertices.List[i+0]);
-         end;
+         ConvertStripToList(Vertices, Result);
+         if Assigned(texCoords) then
+            ConvertStripToList(Self.TexCoords, texCoords);
       end;
       momFaceGroups : begin
          Result:=TAffineVectorList.Create;
-         FaceGroups.AddToTriangles(Result);
+         FaceGroups.AddToTriangles(Result, texCoords);
       end;
    else
       Result:=nil;
@@ -3087,19 +3092,31 @@ end;
 
 // ExtractTriangles
 //
-function TMeshObjectList.ExtractTriangles : TAffineVectorList;
+function TMeshObjectList.ExtractTriangles(texCoords : TAffineVectorList = nil) : TAffineVectorList;
 var
    i : Integer;
    objTris : TAffineVectorList;
+   objTexCoords : TAffineVectorList;
 begin
    Result:=TAffineVectorList.Create;
-   for i:=0 to Count-1 do begin
-      objTris:=GetMeshObject(i).ExtractTriangles;
-      try
-         Result.Add(objTris);
-      finally
-         objTris.Free;
+   if Assigned(texCoords) then
+      objTexCoords:=TAffineVectorList.Create
+   else objTexCoords:=nil;
+   try
+      for i:=0 to Count-1 do begin
+         objTris:=GetMeshObject(i).ExtractTriangles(objTexCoords);
+         try
+            Result.Add(objTris);
+            if Assigned(texCoords) then begin
+               texCoords.Add(objTexCoords);
+               objTexCoords.Count:=0;
+            end;
+         finally
+            objTris.Free;
+         end;
       end;
+   finally
+      objTexCoords.Free;
    end;
 end;
 
@@ -3613,15 +3630,10 @@ end;
 
 // AddToTriangles
 //
-procedure TFaceGroup.AddToTriangles(aList : TAffineVectorList);
+procedure TFaceGroup.AddToTriangles(aList : TAffineVectorList;
+                                    aTexCoords : TAffineVectorList = nil);
 begin
    // nothing
-
-
-
-
-
-
 end;
 
 // Reverse
@@ -3726,31 +3738,30 @@ end;
 
 // AddToTriangles
 //
-procedure TFGVertexIndexList.AddToTriangles(aList : TAffineVectorList);
+procedure TFGVertexIndexList.AddToTriangles(aList : TAffineVectorList;
+                                            aTexCoords : TAffineVectorList = nil);
 var
    i, n : Integer;
-   vertexList : TAffineVectorList;
+   vertexList, texCoordList : TAffineVectorList;
 begin
    vertexList:=Owner.Owner.Vertices;
+   texCoordList:=Owner.Owner.TexCoords;
    case Mode of
       fgmmTriangles, fgmmFlatTriangles : begin
          n:=(VertexIndices.Count div 3)*3;
          aList.AdjustCapacityToAtLeast(aList.Count+n);
          for i:=0 to n-1 do
             aList.Add(vertexList[VertexIndices[i]]);
+         if Assigned(aTexCoords) then begin
+            aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count+n);
+            for i:=0 to n-1 do
+               aTexCoords.Add(texCoordList[VertexIndices[i]]);
+         end;
       end;
       fgmmTriangleStrip : begin
-         aList.AdjustCapacityToAtLeast(aList.Count+(VertexIndices.Count-2)*3);
-         for i:=0 to VertexIndices.Count-3 do begin
-            if (i and 1)=0 then
-               aList.Add(vertexList[VertexIndices[i+0]],
-                         vertexList[VertexIndices[i+1]],
-                         vertexList[VertexIndices[i+2]])
-            else
-               aList.Add(vertexList[VertexIndices[i+2]],
-                         vertexList[VertexIndices[i+1]],
-                         vertexList[VertexIndices[i+0]]);
-         end;
+         ConvertStripToList(vertexList, aList, VertexIndices);
+         if Assigned(aTexCoords) then
+            ConvertStripToList(aTexCoords, texCoordList, VertexIndices);
       end;
       fgmmTriangleFan : begin
          aList.AdjustCapacityToAtLeast(aList.Count+(VertexIndices.Count-2)*3);
@@ -3758,6 +3769,14 @@ begin
             aList.Add(vertexList[VertexIndices[0]],
                       vertexList[VertexIndices[i-1]],
                       vertexList[VertexIndices[i]]);
+         end;
+         if Assigned(aTexCoords) then begin
+            aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count+(VertexIndices.Count-2)*3);
+            for i:=2 to VertexIndices.Count-1 do begin
+               aTexCoords.Add(texCoordList[VertexIndices[0]],
+                              texCoordList[VertexIndices[i-1]],
+                              texCoordList[VertexIndices[i]]);
+            end;
          end;
       end;
    else
@@ -3900,9 +3919,10 @@ var
    vertexPool : PAffineVectorArray;
    normalPool : PAffineVectorArray;
    texCoordPool : PAffineVectorArray;
+   normalIdxList, texCoordIdxList, vertexIdxList : PIntegerVector;
 begin
-   Assert((VertexIndices.Count=TexCoordIndices.Count)
-          and (VertexIndices.Count=NormalIndices.Count));
+   Assert(    ((TexCoordIndices.Count=0) or (VertexIndices.Count=TexCoordIndices.Count))
+          and ((NormalIndices.Count=0) or (VertexIndices.Count=NormalIndices.Count)));
    vertexPool:=Owner.Owner.Vertices.List;
    normalPool:=Owner.Owner.Normals.List;
    texCoordPool:=Owner.Owner.TexCoords.List;
@@ -3913,19 +3933,68 @@ begin
    else
       Assert(False);
    end;
+   vertexIdxList:=VertexIndices.List;
+   if NormalIndices.Count>0 then
+      normalIdxList:=NormalIndices.List
+   else normalIdxList:=vertexIdxList;
+   if TexCoordIndices.Count>0 then
+      texCoordIdxList:=TexCoordIndices.List
+   else texCoordIdxList:=vertexIdxList;
    for i:=0 to VertexIndices.Count-1 do begin
-      glNormal3fv(@normalPool[NormalIndices.List[i]]);
-      xglTexCoord2fv(@texCoordPool[TexCoordIndices.List[i]]);
-      glVertex3fv(@vertexPool[VertexIndices.List[i]]);
+      glNormal3fv(@normalPool[normalIdxList[i]]);
+      xglTexCoord2fv(@texCoordPool[texCoordIdxList[i]]);
+      glVertex3fv(@vertexPool[vertexIdxList[i]]);
    end;
    glEnd;
 end;
 
 // AddToTriangles
 //
-procedure TFGVertexNormalTexIndexList.AddToTriangles(aList : TAffineVectorList);
+procedure TFGVertexNormalTexIndexList.AddToTriangles(aList : TAffineVectorList;
+                                                     aTexCoords : TAffineVectorList = nil);
+var
+   i, n : Integer;
+   vertexList, texCoordList : TAffineVectorList;
 begin
-   inherited AddToTriangles(aList);
+   vertexList:=Owner.Owner.Vertices;
+   texCoordList:=Owner.Owner.TexCoords;
+   case Mode of
+      fgmmTriangles, fgmmFlatTriangles : begin
+         n:=(VertexIndices.Count div 3)*3;
+         aList.AdjustCapacityToAtLeast(aList.Count+n);
+         for i:=0 to n-1 do
+            aList.Add(vertexList[VertexIndices[i]]);
+         if Assigned(aTexCoords) then begin
+            n:=(TexCoordIndices.Count div 3)*3;
+            aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count+n);
+            for i:=0 to n-1 do
+               aTexCoords.Add(texCoordList[TexCoordIndices[i]]);
+         end;
+      end;
+      fgmmTriangleStrip : begin
+         ConvertStripToList(vertexList, aList, VertexIndices);
+         if Assigned(aTexCoords) then
+            ConvertStripToList(aTexCoords, texCoordList, TexCoordIndices);
+      end;
+      fgmmTriangleFan : begin
+         aList.AdjustCapacityToAtLeast(aList.Count+(VertexIndices.Count-2)*3);
+         for i:=2 to VertexIndices.Count-1 do begin
+            aList.Add(vertexList[VertexIndices[0]],
+                      vertexList[VertexIndices[i-1]],
+                      vertexList[VertexIndices[i]]);
+         end;
+         if Assigned(aTexCoords) then begin
+            aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count+(TexCoordIndices.Count-2)*3);
+            for i:=2 to TexCoordIndices.Count-1 do begin
+               aTexCoords.Add(texCoordList[TexCoordIndices[0]],
+                              texCoordList[TexCoordIndices[i-1]],
+                              texCoordList[TexCoordIndices[i]]);
+            end;
+         end;
+      end;
+   else
+      Assert(False);
+   end;
 end;
 
 // Add
@@ -4031,9 +4100,50 @@ end;
 
 // AddToTriangles
 //
-procedure TFGIndexTexCoordList.AddToTriangles(aList : TAffineVectorList);
+procedure TFGIndexTexCoordList.AddToTriangles(aList : TAffineVectorList;
+                                              aTexCoords : TAffineVectorList = nil);
+var
+   i, n : Integer;
+   vertexList, texCoordList : TAffineVectorList;
 begin
-   inherited AddToTriangles(aList);
+   vertexList:=Owner.Owner.Vertices;
+   texCoordList:=Self.TexCoords;
+   case Mode of
+      fgmmTriangles, fgmmFlatTriangles : begin
+         n:=(VertexIndices.Count div 3)*3;
+         aList.AdjustCapacityToAtLeast(aList.Count+n);
+         for i:=0 to n-1 do
+            aList.Add(vertexList[VertexIndices[i]]);
+         if Assigned(aTexCoords) then begin
+            aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count+n);
+            for i:=0 to n-1 do
+               aTexCoords.Add(texCoordList[i]);
+         end;
+      end;
+      fgmmTriangleStrip : begin
+         ConvertStripToList(vertexList, aList, VertexIndices);
+         if Assigned(aTexCoords) then
+            ConvertStripToList(aTexCoords, texCoordList);
+      end;
+      fgmmTriangleFan : begin
+         aList.AdjustCapacityToAtLeast(aList.Count+(VertexIndices.Count-2)*3);
+         for i:=2 to VertexIndices.Count-1 do begin
+            aList.Add(vertexList[VertexIndices[0]],
+                      vertexList[VertexIndices[i-1]],
+                      vertexList[VertexIndices[i]]);
+         end;
+         if Assigned(aTexCoords) then begin
+            aTexCoords.AdjustCapacityToAtLeast(aTexCoords.Count+(VertexIndices.Count-2)*3);
+            for i:=2 to VertexIndices.Count-1 do begin
+               aTexCoords.Add(texCoordList[0],
+                              texCoordList[i-1],
+                              texCoordList[i]);
+            end;
+         end;
+      end;
+   else
+      Assert(False);
+   end;
 end;
 
 // Add (affine)
@@ -4104,12 +4214,13 @@ end;
 
 // AddToTriangles
 //
-procedure TFaceGroups.AddToTriangles(aList : TAffineVectorList);
+procedure TFaceGroups.AddToTriangles(aList : TAffineVectorList;
+                                     aTexCoords : TAffineVectorList = nil);
 var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      Items[i].AddToTriangles(aList);
+      Items[i].AddToTriangles(aList, aTexCoords);
 end;
 
 // MaterialLibrary
@@ -5052,7 +5163,7 @@ begin
    SetVector(t3, AbsoluteToLocal(v3));
 
    Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
-//   Result:= Octree.TriangleIntersect(t1, t2, t3);
+   Result:= Octree.TriangleIntersect(t1, t2, t3);
 end;
 
 // GetTrianglesInCube
@@ -5085,24 +5196,25 @@ var
    i, t, k : Integer;
    p : POctreeNode;
 begin
-//  Result:= TAffineVectorList.Create;
+  Result:= TAffineVectorList.Create;
   //Calc AABBs
   AABB1:= Obj.AxisAlignedBoundingBox;
   //Calc Conversion Matrixes
   MatrixMultiply(Obj.AbsoluteMatrix, Self.InvAbsoluteMatrix, M1To2);
   MatrixMultiply(Self.AbsoluteMatrix,Obj.InvAbsoluteMatrix,M2To1);
 
-  finalize(Octree.ResultArray);
-  HandleNode(Octree.RootNode);
+  Finalize(Octree.ResultArray);
+  if Assigned(Octree.RootNode) then
+     HandleNode(Octree.RootNode);
 
   //fill the triangles from all nodes in the resultarray to AL
-  for i:=0 to High(Octree.resultarray) do
+  for i:=0 to High(Octree.ResultArray) do
   begin
     p:=Octree.ResultArray[i];
     for t:=0 to High(p.TriArray) do
     begin
       k:=p.triarray[t];
-//      result.Add(Octree.triangleFiler.List[k], Octree.triangleFiler.List[k+1], Octree.triangleFiler.List[k+2]);
+      result.Add(Octree.triangleFiler.List[k], Octree.triangleFiler.List[k+1], Octree.triangleFiler.List[k+2]);
     end;
   end;
 end;
