@@ -1652,5 +1652,6 @@ end;
 initialization
 
 //  RegisterClasses([TGLDynamicImposterBuilder, TGLImposter]);
+    RegisterClasses([TGLImposter]);
 
 end.
