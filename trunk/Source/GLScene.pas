@@ -2,6 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>07/05/03 - Egg - TGLSceneBuffer now invokes BeforeRender and PostRender
+                           events even when no camera has been specified
       <li>13/02/03 - DanB - added unscaled Dimensions and Bounding Box methods
       <li>03/01/03 - JAJ - Added TGLBaseGuiObject as minimal base GUI class.
       <li>31/12/02 - JAJ - NotifyHide/NotifyShow implemented. Crucial for the Gui system.
@@ -7016,16 +7018,21 @@ begin
                     Abs(pickingRect.Bottom - pickingRect.Top),
                     TVector4i(FViewport));
    glGetFloatv(GL_PROJECTION_MATRIX, @FBaseProjectionMatrix);
-   FCamera.ApplyPerspective(aViewport, FViewPort.Width, FViewPort.Height, resolution);
-   glGetFloatv(GL_PROJECTION_MATRIX, @FProjectionMatrix);
-
+   if Assigned(FCamera) then begin
+      // apply camera perpective
+      FCamera.ApplyPerspective(aViewport, FViewPort.Width, FViewPort.Height, resolution);
+      glGetFloatv(GL_PROJECTION_MATRIX, @FProjectionMatrix);
+   end;
    // setup model view matrix
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity;
-   FCamera.Scene.FCurrentGLCamera:=FCamera;
-   FCamera.Apply;
+   if Assigned(FCamera) then begin
+      // apply camera transformation (viewpoint)
+      FCamera.Scene.FCurrentGLCamera:=FCamera;
+      FCamera.Apply;
+      FCameraAbsolutePosition:=FCamera.AbsolutePosition;
+   end;
    glGetFloatv(GL_MODELVIEW_MATRIX, @FModelViewMatrix);
-   FCameraAbsolutePosition:=FCamera.AbsolutePosition;
 end;
 
 // DoBaseRender
@@ -7033,7 +7040,6 @@ end;
 procedure TGLSceneBuffer.DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
                                       drawState : TDrawState);
 begin
-   if (not Assigned(FCamera)) or (not Assigned(FCamera.FScene)) then Exit;
    PrepareRenderingMatrices(aViewPort, resolution);
    xglMapTexCoordToNull; // force XGL rebind
    xglMapTexCoordToMain;
@@ -7041,20 +7047,22 @@ begin
       if Owner is TComponent then
          if not (csDesigning in TComponent(Owner).ComponentState) then
             FBeforeRender(Self);
-   with FCamera.FScene do begin
-      SetupLights(LimitOf[limLights]);
-      if FogEnable then begin
-         glEnable(GL_FOG);
-         FogEnvironment.ApplyFog;
-      end else glDisable(GL_FOG);
-      RenderScene(Self, aViewPort.Width, aViewPort.Height, drawState);
+   if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
+      with FCamera.FScene do begin
+         SetupLights(LimitOf[limLights]);
+         if FogEnable then begin
+            glEnable(GL_FOG);
+            FogEnvironment.ApplyFog;
+         end else glDisable(GL_FOG);
+         RenderScene(Self, aViewPort.Width, aViewPort.Height, drawState);
+      end;
    end;
    if Assigned(FPostRender) then
       if Owner is TComponent then
          if not (csDesigning in TComponent(Owner).ComponentState) then
             FPostRender(Self);
    Assert(Length(FModelViewMatrixStack)=0,
-          'Unbalance Push/PopModelViewMatrix.');  
+          'Unbalance Push/PopModelViewMatrix.');
 end;
 
 // Render
