@@ -453,6 +453,8 @@ type
          function AbsoluteDirection : TVector;
          {: Calculate the up vector in absolute coordinates. }
          function AbsoluteUp : TVector;
+         {: Calculate the right vector in absolute coordinates. }
+         function AbsoluteRight : TVector;
          {: Computes and allows to set the object's absolute coordinates.<p> }
          property AbsolutePosition : TVector read GetAbsolutePosition write SetAbsolutePosition;
          function AbsolutePositionAsAddress : PVector;
@@ -1161,6 +1163,9 @@ type
          {: Computes the absolute normalized vector to the camera target.<p>
             If no target is defined, AbsoluteDirection is returned. } 
          function AbsoluteVectorToTarget : TVector;
+         {: Computes the absolute normalized right vector to the camera target.<p>
+            If no target is defined, AbsoluteRight is returned. }
+         function AbsoluteRightVectorToTarget : TVector;
          {: Calculate an absolute translation vector from a screen vector.<p>
             Ratio is applied to both screen delta, planeNormal should be the
             translation plane's normal. }
@@ -2606,6 +2611,13 @@ end;
 function TGLBaseSceneObject.AbsoluteUp : TVector;
 begin
    Result:=VectorNormalize(AbsoluteMatrixAsAddress^[1]);
+end;
+
+// AbsoluteRight
+//
+function TGLBaseSceneObject.AbsoluteRight : TVector;
+begin
+   Result:=VectorNormalize(AbsoluteMatrixAsAddress^[0]);
 end;
 
 // GetAbsolutePosition
@@ -4350,6 +4362,17 @@ begin
       VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition, Result);
       NormalizeVector(Result);
    end else Result:=AbsoluteDirection;
+end;
+
+// AbsoluteRightVectorToTarget
+//
+function TGLCamera.AbsoluteRightVectorToTarget : TVector;
+begin
+   if TargetObject<>nil then begin
+      VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition, Result);
+      Result:=VectorCrossProduct(Result, AbsoluteUp);
+      NormalizeVector(Result);
+   end else Result:=AbsoluteRight;
 end;
 
 // Apply
