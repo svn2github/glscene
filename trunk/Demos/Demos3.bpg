@@ -13,7 +13,7 @@ PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
   shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe texcombine.exe \
   subdivide.exe machine.exe simple.exe Project1.exe CgSimple.exe CgTexture.exe \
   multimaterial.exe ducky.exe fog.exe shadedterrain.exe waterplane.exe beer.exe \
-  FPSMovement.exe
+  FPSMovement.exe matscript.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -82,6 +82,9 @@ beer.exe: specialsFX\beer\beer.dpr
   $(DCC)
 
 FPSMovement.exe: behaviours\FPSMovement\FPSMovement.dpr
+  $(DCC)
+
+matscript.exe: materials\MaterialScript\matscript.dpr
   $(DCC)
 
 

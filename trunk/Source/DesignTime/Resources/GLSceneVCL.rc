@@ -36,3 +36,4 @@ TGLStaticImposterBuilder BITMAP vcl\glscene_icon_TGLStaticImposterBuilder.bmp
 TGLCelShader BITMAP vcl\glscene_icon_TGLCelShader.bmp
 TGLFPSMovementManager BITMAP vcl\glscene_icon_TGLFPSMovementManager.bmp
 TGLBumpShader BITMAP vcl\glscene_icon_TGLBumpShader.bmp
+TGLMaterialScripter BITMAP vcl\glscene_icon_TGLMaterialScripter.bmp
