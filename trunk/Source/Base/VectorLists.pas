@@ -2572,12 +2572,17 @@ end;
 function TQuaternionList.IndexOf(const item : TQuaternion) : Integer;
 var
    i : Integer;
+   curItem : PQuaternion;
 begin
-   Result:=-1;
-   for i:=0 to Count-1 do if VectorEquals(item.vector, FList[i].vector) then begin
-      Result:=i;
-      Break;
+   for i:=0 to Count-1 do begin
+      curItem:=@FList[i];
+      if     (item.RealPart=curItem.RealPart)
+         and VectorEquals(item.ImagPart, curItem.ImagPart) then begin
+         Result:=i;
+         Exit;
+      end;
    end;
+   Result:=-1;
 end;
 
 // FindOrAdd

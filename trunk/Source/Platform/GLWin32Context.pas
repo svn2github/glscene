@@ -350,7 +350,7 @@ const
    procedure ChoosePixelFormat;
    begin
       if not wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
-                                     32, piFormats, @nNumFormats) then
+                                     32, PGLint(piFormats), @nNumFormats) then
          nNumFormats:=0;
    end;
 

@@ -350,12 +350,8 @@ type
    // q = ([x, y, z], w)
    PQuaternion = ^TQuaternion;
    TQuaternion = record
-     case Integer of
-       0:
-         (ImagPart: TAffineVector;
-          RealPart: Single);
-       1:
-         (Vector: TVector4f);
+      ImagPart: TAffineVector;
+      RealPart: Single;
    end;
 
    PQuaternionArray = ^TQuaternionArray;
@@ -637,7 +633,7 @@ function VectorLength(const v : TVector) : Single; overload;
 {: Calculates the length of a vector following the equation: sqrt(x*x+y*y+...).<p>
    Note: The parameter of this function is declared as open array. Thus
    there's no restriction about the number of the components of the vector. }
-function VectorLength(v : array of Single) : Single; overload;
+function VectorLength(const v : array of Single) : Single; overload;
 
 {: Calculates norm of a vector which is defined as norm = x * x + y * y<p>
    Also known as "Norm 2" in the math world, this is sqr(VectorLength). }
@@ -677,7 +673,7 @@ procedure NegateVector(var V : TAffineVector); overload;
 //: Negates the vector
 procedure NegateVector(var V : TVector); overload;
 //: Negates the vector
-procedure NegateVector(V : array of Single); overload;
+procedure NegateVector(var V : array of Single); overload;
 
 //: Scales given vector by a factor
 procedure ScaleVector(var v : TAffineVector; factor : Single); overload;
@@ -909,7 +905,7 @@ function PointSegmentDistance(const point, segmentStart, segmentStop : TAffineVe
 {: Computes closest point on a line.}
 function PointLineClosestPoint(const point, linePoint, lineDirection : TAffineVector) : TAffineVector;
 {: Computes algebraic distance between point and line.}
-function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : single;
+function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : Single;
 
 {: Computes the closest points (2) given two segments.}
 procedure SegmentSegmentClosestPoint(const S0Start, S0Stop, S1Start, S1Stop : TAffineVector; var Segment0Closest, Segment1Closest : TAffineVector);
@@ -925,7 +921,7 @@ type
    TEulerOrder = (eulXYZ, eulXZY, eulYXZ, eulYZX, eulZXY, eulZYX);
 
 //: Creates a quaternion from the given values
-function QuaternionMake(Imag: array of Single; Real: Single): TQuaternion;
+function QuaternionMake(const Imag: array of Single; Real : Single) : TQuaternion;
 //: Returns the conjugate of a quaternion
 function QuaternionConjugate(const Q : TQuaternion) : TQuaternion;
 //: Returns the magnitude of the quaternion
@@ -957,7 +953,7 @@ function QuaternionFromEuler(const x, y, z: Single; eulerOrder : TEulerOrder) : 
    Note: order is important!<p>
    To combine rotations, use the product QuaternionMuliply(qSecond, qFirst),
    which gives the effect of rotating by qFirst then qSecond. }
-function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
+function QuaternionMultiply(const qL, qR : TQuaternion): TQuaternion;
 
 {: Spherical linear interpolation of unit quaternions with spins.<p>
    QStart, QEnd - start and end unit quaternions<br>
@@ -1058,26 +1054,31 @@ function ISqrt(i : Integer) : Integer;
 function ILength(x, y : Integer) : Integer; overload;
 function ILength(x, y, z : Integer) : Integer; overload;
 
+{$ifndef GEOMETRY_NO_ASM}
 {: Computes Exp(ST(0)) and leaves result on ST(0) }
 procedure RegisterBasedExp;
+{$endif}
 
 {: Generates a random point on the unit sphere.<p>
    Point repartition is correctly isotropic with no privilegied direction. }
 procedure RandomPointOnSphere(var p : TAffineVector);
 
-function Trunc(v : Single) : Integer; overload;
-function Trunc64(v : Extended) : Int64; overload;
-function Int(v : Single) : Single; overload;
-function Int(v : Extended) : Extended; overload;
 {: Rounds the floating point value to the closest integer.<p>
    Behaves like Round but returns a floating point value like Int. }
 function RoundInt(v : Single) : Single; overload;
 function RoundInt(v : Extended) : Extended; overload;
+
+{$ifndef GEOMETRY_NO_ASM}
+function Trunc(v : Single) : Integer; overload;
+function Trunc64(v : Extended) : Int64; overload;
+function Int(v : Single) : Single; overload;
+function Int(v : Extended) : Extended; overload;
 function Frac(v : Single) : Single; overload;
 function Frac(v : Extended) : Extended; overload;
 function Round(v : Single) : Integer; overload;
 function Round64(v : Single) : Int64; overload;
 function Round64(v : Extended) : Int64; overload;
+{$endif}
 
 function Ceil(v : Single) : Integer; overload;
 function Ceil64(v : Extended) : Int64; overload;
@@ -1130,16 +1131,16 @@ function MaxInteger(const v1, v2 : Integer) : Integer; overload;
 function MaxInteger(const v1, v2 : Cardinal) : Cardinal; overload;
 
 {: Computes the triangle's area. }
-function TriangleArea(const p1, p2, p3 : TAffineVector) : Single;
+function TriangleArea(const p1, p2, p3 : TAffineVector) : Single; overload;
 {: Computes the polygons's area.<p>
    Points must be coplanar. Polygon needs not be convex. }
-function PolygonArea(const p : PAffineVectorArray; nSides : Integer) : Single;
+function PolygonArea(const p : PAffineVectorArray; nSides : Integer) : Single; overload;
 {: Computes a 2D triangle's signed area.<p>
    Only X and Y coordinates are used, Z is ignored. }
-function TriangleSignedArea(const p1, p2, p3 : TAffineVector) : Single;
+function TriangleSignedArea(const p1, p2, p3 : TAffineVector) : Single; overload;
 {: Computes a 2D polygon's signed area.<p>
    Only X and Y coordinates are used, Z is ignored. Polygon needs not be convex. }
-function PolygonSignedArea(const p : PAffineVectorArray; nSides : Integer) : Single;
+function PolygonSignedArea(const p : PAffineVectorArray; nSides : Integer) : Single; overload;
 
 {: Multiplies values in the array by factor.<p>
    This function is especially efficient for large arrays, it is not recommended
@@ -1147,7 +1148,7 @@ function PolygonSignedArea(const p : PAffineVectorArray; nSides : Integer) : Sin
    Expected performance is 4 to 5 times that of a Deliph-compiled loop on AMD
    CPUs, and 2 to 3 when 3DNow! isn't available. }
 procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
-                          var factor : Single); register; overload;
+                          var factor : Single); overload;
 procedure ScaleFloatArray(var values : TSingleArray;
                           factor : Single); overload;
 
@@ -1211,25 +1212,25 @@ procedure EndFPUOnlySection;
 // mixed functions
 
 {: Turn a triplet of rotations about x, y, and z (in that order) into an equivalent rotation around a single axis (all in radians).<p> }
-function  ConvertRotation(const Angles: TAffineVector): TVector;
+function ConvertRotation(const Angles : TAffineVector) : TVector;
 
 // miscellaneous functions
 
-function  MakeAffineDblVector(var V: array of Double): TAffineDblVector;
-function  MakeDblVector(var v : array of Double) : THomogeneousDblVector;
-function  VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector;
-function  VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector;
-function  VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
-function  VectorFltToDbl(const V: TVector): THomogeneousDblVector;
+function MakeAffineDblVector(var v : array of Double) : TAffineDblVector;
+function MakeDblVector(var v : array of Double) : THomogeneousDblVector;
+function VectorAffineDblToFlt(const v : TAffineDblVector) : TAffineVector;
+function VectorDblToFlt(const v : THomogeneousDblVector) : THomogeneousVector;
+function VectorAffineFltToDbl(const v : TAffineVector) : TAffineDblVector;
+function VectorFltToDbl(const v : TVector): THomogeneousDblVector;
 
-function  PointInPolygon(var xp, yp : array of Single; x, y: Single): Boolean;
+function PointInPolygon(var xp, yp : array of Single; x, y : Single) : Boolean;
 
 // coordinate system manipulation functions
 
 //: Rotates the given coordinate system (represented by the matrix) around its Y-axis
-function Turn(const Matrix: TMatrix; Angle: Single): TMatrix; overload;
+function Turn(const Matrix: TMatrix; angle : Single) : TMatrix; overload;
 //: Rotates the given coordinate system (represented by the matrix) around MasterUp
-function Turn(const Matrix: TMatrix; const MasterUp: TAffineVector; Angle: Single): TMatrix; overload;
+function Turn(const Matrix: TMatrix; const MasterUp : TAffineVector; Angle : Single) : TMatrix; overload;
 //: Rotates the given coordinate system (represented by the matrix) around its X-axis
 function Pitch(const Matrix: TMatrix; Angle: Single): TMatrix; overload;
 //: Rotates the given coordinate system (represented by the matrix) around MasterRight
@@ -1251,7 +1252,7 @@ function Roll(const Matrix: TMatrix; const MasterDirection: TAffineVector; Angle
    E.Hartmann, Computerunterstützte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
 function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
-                            intersectPoint : PVector = nil) : Integer;
+                            intersectPoint : PVector = nil) : Integer; overload;
 
 {: Compute intersection between a ray and a plane.<p>
    Returns True if an intersection was found, the intersection point is placed
@@ -1261,20 +1262,20 @@ function RayCastPlaneIntersect(const rayStart, rayVector : TVector;
                                intersectPoint : PVector = nil) : Boolean; overload;
 function RayCastPlaneXZIntersect(const rayStart, rayVector : TVector;
                                  const planeY : Single;
-                                 intersectPoint : PVector = nil) : Boolean;
+                                 intersectPoint : PVector = nil) : Boolean; overload;
 
 {: Compute intersection between a ray and a triangle. }
 function RayCastTriangleIntersect(const rayStart, rayVector : TVector;
                                   const p1, p2, p3 : TAffineVector;
                                   intersectPoint : PVector = nil;
-                                  intersectNormal : PVector = nil) : Boolean;
+                                  intersectNormal : PVector = nil) : Boolean; overload;
 {: Compute the min distance a ray will pass to a point.<p> }
 function RayCastMinDistToPoint(const rayStart, rayVector : TVector;
                                const point : TVector) : Single;
 {: Determines if a ray will intersect with a given sphere.<p> }
 function RayCastIntersectsSphere(const rayStart, rayVector : TVector;
                                  const sphereCenter : TVector;
-                                 const sphereRadius : Single) : Boolean;
+                                 const sphereRadius : Single) : Boolean; overload;
 {: Calculates the intersections between a sphere and a ray.<p>
    Returns 0 if no intersection is found (i1 and i2 untouched), 1 if one
    intersection was found (i1 defined, i2 untouched), and 2 is two intersections
@@ -1282,7 +1283,7 @@ function RayCastIntersectsSphere(const rayStart, rayVector : TVector;
 function RayCastSphereIntersect(const rayStart, rayVector : TVector;
                                 const sphereCenter : TVector;
                                 const sphereRadius : Single;
-                                var i1, i2 : TVector) : Integer;
+                                var i1, i2 : TVector) : Integer; overload;
 {: Computes the visible radius of a sphere in a perspective projection.<p>
    This radius can be used for occlusion culling (cone extrusion) or 2D
    intersection testing. }
@@ -1685,7 +1686,7 @@ end;
 
 // VectorAdd (func, affine)
 //
-function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector; register;
+function VectorAdd(const v1, v2 : TAffineVector) : TAffineVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -1760,7 +1761,7 @@ end;
 
 // VectorAdd (hmg)
 //
-function VectorAdd(const v1, v2: TVector): TVector; register;
+function VectorAdd(const v1, v2 : TVector) : TVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -1802,7 +1803,7 @@ end;
 
 // VectorAdd (hmg, proc)
 //
-procedure VectorAdd(const v1, v2: TVector; var vr : TVector); register;
+procedure VectorAdd(const v1, v2: TVector; var vr : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -1863,7 +1864,7 @@ end;
 
 // AddVector (affine)
 //
-procedure AddVector(var v1 : TAffineVector; const v2 : TAffineVector); register;
+procedure AddVector(var v1 : TAffineVector; const v2 : TAffineVector);
 // EAX contains address of V1
 // EDX contains address of V2
 {$ifndef GEOMETRY_NO_ASM}
@@ -1887,7 +1888,7 @@ end;
 
 // AddVector (affine)
 //
-procedure AddVector(var v1 : TAffineVector; const v2 : TVector); register;
+procedure AddVector(var v1 : TAffineVector; const v2 : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 {$ifndef GEOMETRY_NO_ASM}
@@ -1911,7 +1912,7 @@ end;
 
 // AddVector (hmg)
 //
-procedure AddVector(var v1 : TVector; const v2 : TVector); register;
+procedure AddVector(var v1 : TVector; const v2 : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 {$ifndef GEOMETRY_NO_ASM}
@@ -2098,7 +2099,7 @@ end;
 // VectorArrayAdd
 //
 procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVector;
-                         const nb : Integer; dest : PAffineVectorArray); register;
+                         const nb : Integer; dest : PAffineVectorArray);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       or    ecx, ecx
@@ -2164,7 +2165,7 @@ end;
 
 // VectorSubtract (func, affine)
 //
-function VectorSubtract(const v1, v2 : TAffineVector): TAffineVector; register;
+function VectorSubtract(const v1, v2 : TAffineVector): TAffineVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2270,7 +2271,7 @@ end;
 
 // VectorSubtract (hmg)
 //
-function VectorSubtract(const v1, v2 : TVector) : TVector; register;
+function VectorSubtract(const v1, v2 : TVector) : TVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2310,7 +2311,7 @@ end;
 
 // VectorSubtract (proc, hmg)
 //
-procedure VectorSubtract(const v1, v2 : TVector; var result : TVector); register;
+procedure VectorSubtract(const v1, v2 : TVector; var result : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
@@ -2395,7 +2396,7 @@ end;
 
 // SubtractVector (affine)
 //
-procedure SubtractVector(var V1 : TAffineVector; const V2 : TAffineVector); register;
+procedure SubtractVector(var V1 : TAffineVector; const V2 : TAffineVector);
 // EAX contains address of V1
 // EDX contains address of V2
 {$ifndef GEOMETRY_NO_ASM}
@@ -2419,7 +2420,7 @@ end;
 
 // SubtractVector (hmg)
 //
-procedure SubtractVector(var V1 : TVector; const V2 : TVector); register;
+procedure SubtractVector(var V1 : TVector; const V2 : TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 {$ifndef GEOMETRY_NO_ASM}
@@ -2459,7 +2460,7 @@ end;
 
 // CombineVector (var)
 //
-procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; var f : Single); register;
+procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; var f : Single);
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
@@ -2487,7 +2488,7 @@ end;
 
 // CombineVector (pointer)
 //
-procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PFloat); register;
+procedure CombineVector(var vr : TAffineVector; const v : TAffineVector; pf : PFloat);
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
@@ -2523,7 +2524,7 @@ end;
 
 // VectorCombine
 //
-function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; register;
+function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector;
 begin
    Result[X]:=(F1 * V1[X]) + (F2 * V2[X]);
    Result[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]);
@@ -2858,7 +2859,7 @@ end;
 
 // VectorDotProduct (affine)
 //
-function VectorDotProduct(const V1, V2 : TAffineVector): Single; assembler; register;
+function VectorDotProduct(const V1, V2 : TAffineVector): Single;
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
@@ -2880,7 +2881,7 @@ end;
 
 // VectorDotProduct (hmg)
 //
-function VectorDotProduct(const V1, V2 : TVector) : Single; assembler; register;
+function VectorDotProduct(const V1, V2 : TVector) : Single;
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
@@ -2905,7 +2906,7 @@ end;
 
 // VectorDotProduct
 //
-function VectorDotProduct(const V1 : TVector; const V2 : TAffineVector) : Single; register;
+function VectorDotProduct(const V1 : TVector; const V2 : TAffineVector) : Single;
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
@@ -2977,30 +2978,30 @@ end;
 
 // VectorCrossProduct
 //
-function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector; register;
+function VectorCrossProduct(const v1, v2 : TAffineVector) : TAffineVector;
 begin
-   Result[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
-   Result[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
-   Result[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+   Result[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
+   Result[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
+   Result[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
 end;
 
 // VectorCrossProduct
 //
-function VectorCrossProduct(const V1, V2: TVector): TVector;
+function VectorCrossProduct(const v1, v2 : TVector) : TVector;
 begin
-   Result[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
-   Result[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
-   Result[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+   Result[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
+   Result[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
+   Result[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
    Result[W]:=0;
 end;
 
 // VectorCrossProduct
 //
-procedure VectorCrossProduct(const V1, V2: TVector; var vr : TVector);
+procedure VectorCrossProduct(const v1, v2: TVector; var vr : TVector);
 begin
-   vr[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
-   vr[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
-   vr[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
+   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
+   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
    vr[W]:=0;
 end;
 
@@ -3008,9 +3009,9 @@ end;
 //
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TVector); overload;
 begin
-   vr[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
-   vr[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
-   vr[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
+   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
+   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
    vr[W]:=0;
 end;
 
@@ -3018,18 +3019,18 @@ end;
 //
 procedure VectorCrossProduct(const v1, v2 : TVector; var vr : TAffineVector); overload;
 begin
-   vr[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
-   vr[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
-   vr[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
+   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
+   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
 end;
 
 // VectorCrossProduct
 //
 procedure VectorCrossProduct(const v1, v2 : TAffineVector; var vr : TAffineVector); overload;
 begin
-   vr[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
-   vr[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
-   vr[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
+   vr[X]:=v1[Y]*v2[Z]-v1[Z]*v2[Y];
+   vr[Y]:=v1[Z]*v2[X]-v1[X]*v2[Z];
+   vr[Z]:=v1[X]*v2[Y]-v1[Y]*v2[X];
 end;
 
 // Lerp
@@ -3088,7 +3089,7 @@ end;
 
 // VectorLerp
 //
-procedure VectorLerp(const v1, v2 : TAffineVector; t : Single; var vr : TAffineVector); register;
+procedure VectorLerp(const v1, v2 : TAffineVector; t : Single; var vr : TAffineVector);
 // EAX contains address of v1
 // EDX contains address of v2
 // EBX contains address of t
@@ -3144,7 +3145,7 @@ end;
 
 // VectorLerp
 //
-procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector); register;
+procedure VectorLerp(const v1, v2 : TVector; t : Single; var vr : TVector);
 // EAX contains address of v1
 // EDX contains address of v2
 // EBX contains address of t
@@ -3217,6 +3218,7 @@ end;
 
 // VectorArrayLerp_3DNow (hmg)
 //
+{$ifndef GEOMETRY_NO_ASM}
 procedure VectorArrayLerp_3DNow(const src1, src2 : PVectorArray; t : Single; n : Integer; dest : PVectorArray); stdcall; overload;
 var
    pt : ^Single;
@@ -3267,6 +3269,7 @@ begin
       pop ebx
    end;
 end;
+{$endif}
 
 // VectorArrayLerp (hmg)
 //
@@ -3289,6 +3292,7 @@ end;
 
 // VectorArrayLerp_3DNow (affine)
 //
+{$ifndef GEOMETRY_NO_ASM}
 procedure VectorArrayLerp_3DNow(const src1, src2 : PAffineVectorArray; t : Single; n : Integer; dest : PAffineVectorArray); stdcall; overload;
 var
    pt : ^Single;
@@ -3348,6 +3352,7 @@ begin
    if (n and 1)=1 then
       VectorLerp(src1[n-1], src2[n-1], t, dest[n-1]);
 end;
+{$endif}
 
 // VectorArrayLerp (affine)
 //
@@ -3369,7 +3374,7 @@ end;
 
 // VectorLength (array)
 //
-function VectorLength(V: array of Single): Single; assembler;
+function VectorLength(const V : array of Single) : Single;
 // EAX contains address of V
 // EDX contains the highest index of V
 // the result is returned in ST(0)
@@ -3396,7 +3401,7 @@ end;
 
 // VectorLength  (x, y)
 //
-function VectorLength(const x, y : Single) : Single; assembler;
+function VectorLength(const x, y : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
 asm
          FLD X
@@ -3413,7 +3418,7 @@ end;
 
 // VectorLength (x, y, z)
 //
-function VectorLength(const x, y, z : Single) : Single; assembler;
+function VectorLength(const x, y, z : Single) : Single;
 {$ifndef GEOMETRY_NO_ASM}
 asm
          FLD X
@@ -3433,7 +3438,7 @@ end;
 
 // VectorLength
 //
-function VectorLength(const v : TAffineVector) : Single; register;
+function VectorLength(const v : TAffineVector) : Single;
 // EAX contains address of V
 // result is passed in ST(0)
 {$ifndef GEOMETRY_NO_ASM}
@@ -3455,7 +3460,7 @@ end;
 
 // VectorLength
 //
-function VectorLength(const v : TVector) : Single; register;
+function VectorLength(const v : TVector) : Single;
 // EAX contains address of V
 // result is passed in ST(0)
 {$ifndef GEOMETRY_NO_ASM}
@@ -3484,7 +3489,7 @@ end;
 
 // VectorNorm (affine)
 //
-function VectorNorm(const v : TAffineVector) : Single; register;
+function VectorNorm(const v : TAffineVector) : Single;
 // EAX contains address of V
 // result is passed in ST(0)
 {$ifndef GEOMETRY_NO_ASM}
@@ -3505,7 +3510,7 @@ end;
 
 // VectorNorm (hmg)
 //
-function VectorNorm(const v : TVector) : Single; register;
+function VectorNorm(const v : TVector) : Single;
 // EAX contains address of V
 // result is passed in ST(0)
 {$ifndef GEOMETRY_NO_ASM}
@@ -3526,7 +3531,7 @@ end;
 
 // VectorNorm
 //
-function VectorNorm(var V: array of Single): Single; assembler; register;
+function VectorNorm(var V: array of Single): Single;
 // EAX contains address of V
 // EDX contains highest index in V
 // result is passed in ST(0)
@@ -3551,7 +3556,7 @@ end;
 
 // NormalizeVector (affine)
 //
-procedure NormalizeVector(var v : TAffineVector); register;
+procedure NormalizeVector(var v : TAffineVector);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
@@ -3613,7 +3618,7 @@ end;
 
 // VectorNormalize
 //
-function VectorNormalize(const v : TAffineVector) : TAffineVector; register;
+function VectorNormalize(const v : TAffineVector) : TAffineVector;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
@@ -3747,7 +3752,7 @@ end;
 
 // NormalizeVector (hmg)
 //
-procedure NormalizeVector(var v : TVector); register;
+procedure NormalizeVector(var v : TVector);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
@@ -3814,7 +3819,7 @@ end;
 
 // VectorNormalize (hmg, func)
 //
-function VectorNormalize(const v : TVector) : TVector; register;
+function VectorNormalize(const v : TVector) : TVector;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
@@ -3881,7 +3886,7 @@ end;
 
 // VectorAngleCosine
 //
-function VectorAngleCosine(const V1, V2: TAffineVector): Single; assembler;
+function VectorAngleCosine(const V1, V2: TAffineVector): Single;
 // EAX contains address of Vector1
 // EDX contains address of Vector2
 {$ifndef GEOMETRY_NO_ASM}
@@ -3975,7 +3980,7 @@ end;
 
 // NegateVector
 //
-procedure NegateVector(var v : TAffineVector); register;
+procedure NegateVector(var v : TAffineVector);
 // EAX contains address of v
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -3998,7 +4003,7 @@ end;
 
 // NegateVector
 //
-procedure NegateVector(var v : TVector); register;
+procedure NegateVector(var v : TVector);
 // EAX contains address of v
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -4025,7 +4030,7 @@ end;
 
 // NegateVector
 //
-procedure NegateVector(V: array of Single); assembler; register;
+procedure NegateVector(var V : array of Single);
 // EAX contains address of V
 // EDX contains highest index in V
 {$ifndef GEOMETRY_NO_ASM}
@@ -4048,7 +4053,7 @@ end;
 
 // ScaleVector (affine)
 //
-procedure ScaleVector(var v : TAffineVector; factor: Single); register;
+procedure ScaleVector(var v : TAffineVector; factor: Single);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
@@ -4070,7 +4075,7 @@ end;
 
 // ScaleVector (hmg)
 //
-procedure ScaleVector(var v : TVector; factor: Single); register;
+procedure ScaleVector(var v : TVector; factor: Single);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       test     vSIMD, 1
@@ -4138,7 +4143,7 @@ end;
 
 // VectorScale (affine)
 //
-function VectorScale(const v : TAffineVector; factor : Single) : TAffineVector; register;
+function VectorScale(const v : TAffineVector; factor : Single) : TAffineVector;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
@@ -4160,7 +4165,7 @@ end;
 
 // VectorScale (proc, affine)
 //
-procedure VectorScale(const v : TAffineVector; factor : Single; var vr : TAffineVector); register;
+procedure VectorScale(const v : TAffineVector; factor : Single; var vr : TAffineVector);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
@@ -4182,7 +4187,7 @@ end;
 
 // VectorScale (hmg)
 //
-function VectorScale(const v : TVector; factor : Single) : TVector; register;
+function VectorScale(const v : TVector; factor : Single) : TVector;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
@@ -4208,7 +4213,7 @@ end;
 
 // VectorScale (proc, hmg)
 //
-procedure VectorScale(const v : TVector; factor : Single; var vr : TVector); register;
+procedure VectorScale(const v : TVector; factor : Single; var vr : TVector);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
@@ -4234,7 +4239,7 @@ end;
 
 // VectorScale (proc, hmg-affine)
 //
-procedure VectorScale(const v : TVector; factor : Single; var vr : TAffineVector); register;
+procedure VectorScale(const v : TVector; factor : Single; var vr : TAffineVector);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       FLD  DWORD PTR [EAX]
@@ -4298,7 +4303,7 @@ end;
 
 // VectorEquals (affine vector)
 //
-function VectorEquals(const V1, V2: TAffineVector) : Boolean; register;
+function VectorEquals(const V1, V2: TAffineVector) : Boolean;
 // EAX contains address of v1
 // EDX contains highest of v2
 {$ifndef GEOMETRY_NO_ASM}
@@ -4362,7 +4367,7 @@ end;
 
 // VectorSpacing (affine)
 //
-function VectorSpacing(const v1, v2 : TAffineVector) : Single; register;
+function VectorSpacing(const v1, v2 : TAffineVector) : Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
@@ -4387,7 +4392,7 @@ end;
 
 // VectorSpacing (Hmg)
 //
-function VectorSpacing(const v1, v2 : TVector) : Single; register;
+function VectorSpacing(const v1, v2 : TVector) : Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
@@ -4416,7 +4421,7 @@ end;
 
 // VectorDistance (affine)
 //
-function VectorDistance(const v1, v2 : TAffineVector) : Single; register;
+function VectorDistance(const v1, v2 : TAffineVector) : Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
@@ -4442,7 +4447,7 @@ end;
 
 // VectorDistance (hmg)
 //
-function VectorDistance(const v1, v2 : TVector) : Single; register;
+function VectorDistance(const v1, v2 : TVector) : Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
@@ -4468,7 +4473,7 @@ end;
 
 // VectorDistance2 (affine)
 //
-function VectorDistance2(const v1, v2 : TAffineVector) : Single; register;
+function VectorDistance2(const v1, v2 : TAffineVector) : Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result is passed on the stack
@@ -4493,7 +4498,7 @@ end;
 
 // VectorDistance2 (hmg)
 //
-function VectorDistance2(const v1, v2 : TVector) : Single; register;
+function VectorDistance2(const v1, v2 : TVector) : Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result is passed on the stack
@@ -4530,7 +4535,7 @@ end;
 
 // VectorReflect
 //
-function VectorReflect(const V, N: TAffineVector): TAffineVector; register;
+function VectorReflect(const V, N: TAffineVector): TAffineVector;
 begin
    Result:=VectorCombine(V, N, 1, -2*VectorDotProduct(V, N));
 end;
@@ -4698,17 +4703,17 @@ end;
 
 // CreateScaleMatrix (affine)
 //
-function CreateScaleMatrix(const V: TAffineVector): TMatrix; register;
+function CreateScaleMatrix(const v : TAffineVector) : TMatrix;
 begin
    Result:=IdentityHmgMatrix;
-   Result[X, X]:=V[X];
-   Result[Y, Y]:=V[Y];
-   Result[Z, Z]:=V[Z];
+   Result[X, X]:=v[X];
+   Result[Y, Y]:=v[Y];
+   Result[Z, Z]:=v[Z];
 end;
 
 // CreateScaleMatrix (Hmg)
 //
-function CreateScaleMatrix(const V: TVector): TMatrix; register;
+function CreateScaleMatrix(const v : TVector) : TMatrix;
 begin
    Result:=IdentityHmgMatrix;
    Result[X, X]:=V[X];
@@ -4718,7 +4723,7 @@ end;
 
 // CreateTranslationMatrix (affine)
 //
-function CreateTranslationMatrix(const V: TAffineVector): TMatrix; register;
+function CreateTranslationMatrix(const V: TAffineVector): TMatrix;
 begin
    Result:=IdentityHmgMatrix;
    Result[W, X]:=V[X];
@@ -4728,7 +4733,7 @@ end;
 
 // CreateTranslationMatrix (hmg)
 //
-function CreateTranslationMatrix(const V: TVector): TMatrix; register;
+function CreateTranslationMatrix(const V: TVector): TMatrix;
 begin
    Result:=IdentityHmgMatrix;
    Result[W, X]:=V[X];
@@ -4738,7 +4743,7 @@ end;
 
 // CreateScaleAndTranslationMatrix
 //
-function CreateScaleAndTranslationMatrix(const scale, offset : TVector): TMatrix; register;
+function CreateScaleAndTranslationMatrix(const scale, offset : TVector): TMatrix;
 begin
    Result:=IdentityHmgMatrix;
    Result[X, X]:=scale[X];   Result[W, X]:=offset[X];
@@ -4748,7 +4753,7 @@ end;
 
 // CreateRotationMatrixX
 //
-function CreateRotationMatrixX(const sine, cosine: Single) : TMatrix; register;
+function CreateRotationMatrixX(const sine, cosine: Single) : TMatrix;
 begin
    Result:=EmptyHmgMatrix;
    Result[X, X]:=1;
@@ -4761,7 +4766,7 @@ end;
 
 // CreateRotationMatrixX
 //
-function CreateRotationMatrixX(const angle : Single) : TMatrix; register;
+function CreateRotationMatrixX(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
@@ -4771,7 +4776,7 @@ end;
 
 // CreateRotationMatrixY
 //
-function CreateRotationMatrixY(const sine, cosine: Single): TMatrix; register;
+function CreateRotationMatrixY(const sine, cosine: Single): TMatrix;
 begin
    Result:=EmptyHmgMatrix;
    Result[X, X]:=cosine;
@@ -4784,7 +4789,7 @@ end;
 
 // CreateRotationMatrixY
 //
-function CreateRotationMatrixY(const angle : Single) : TMatrix; register;
+function CreateRotationMatrixY(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
@@ -4794,7 +4799,7 @@ end;
 
 // CreateRotationMatrixZ
 //
-function CreateRotationMatrixZ(const sine, cosine: Single): TMatrix; register;
+function CreateRotationMatrixZ(const sine, cosine: Single): TMatrix;
 begin
    Result:=EmptyHmgMatrix;
    Result[X, X]:=cosine;
@@ -4807,7 +4812,7 @@ end;
 
 // CreateRotationMatrixZ
 //
-function CreateRotationMatrixZ(const angle : Single) : TMatrix; register;
+function CreateRotationMatrixZ(const angle : Single) : TMatrix;
 var
    s, c : Single;
 begin
@@ -4817,7 +4822,7 @@ end;
 
 // CreateRotationMatrix (affine)
 //
-function CreateRotationMatrix(const anAxis : TAffineVector; angle : Single) : TMatrix; register;
+function CreateRotationMatrix(const anAxis : TAffineVector; angle : Single) : TMatrix;
 var
    axis : TAffineVector;
    cosine, sine, one_minus_cosine : Single;
@@ -4849,7 +4854,7 @@ end;
 
 // CreateRotationMatrix (hmg)
 //
-function CreateRotationMatrix(const anAxis : TVector; angle : Single) : TMatrix; register;
+function CreateRotationMatrix(const anAxis : TVector; angle : Single) : TMatrix;
 begin
    Result:=CreateRotationMatrix(PAffineVector(@anAxis)^, angle);
 end;
@@ -4880,7 +4885,7 @@ end;
 
 // MatrixMultiply (3x3 func)
 //
-function MatrixMultiply(const M1, M2 : TAffineMatrix) : TAffineMatrix; register;
+function MatrixMultiply(const M1, M2 : TAffineMatrix) : TAffineMatrix;
 begin
 {$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
@@ -4965,7 +4970,7 @@ end;
 
 // MatrixMultiply (4x4, func)
 //
-function MatrixMultiply(const M1, M2: TMatrix): TMatrix; register;
+function MatrixMultiply(const M1, M2: TMatrix): TMatrix;
 begin
 {$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
@@ -5110,14 +5115,14 @@ end;
 
 // MatrixMultiply (4x4, proc)
 //
-procedure MatrixMultiply(const M1, M2: TMatrix; var MResult: TMatrix); register;
+procedure MatrixMultiply(const M1, M2: TMatrix; var MResult: TMatrix);
 begin
    MResult:=MatrixMultiply(M1, M2);
 end;
 
 // VectorTransform
 //
-function VectorTransform(const V: TVector; const M: TMatrix) : TVector; register;
+function VectorTransform(const V: TVector; const M: TMatrix) : TVector;
 begin
 {$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
@@ -5163,7 +5168,7 @@ end;
 
 // VectorTransform
 //
-function VectorTransform(const V: TVector; const M: TAffineMatrix): TVector; overload;
+function VectorTransform(const V: TVector; const M: TAffineMatrix): TVector;
 begin
    Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X];
    Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y];
@@ -5173,7 +5178,7 @@ end;
 
 // VectorTransform
 //
-function VectorTransform(const V: TAffineVector; const M: TMatrix): TAffineVector; register;
+function VectorTransform(const V: TAffineVector; const M: TMatrix): TAffineVector;
 begin
    Result[X]:=V[X] * M[X, X] + V[Y] * M[Y, X] + V[Z] * M[Z, X] + M[W, X];
    Result[Y]:=V[X] * M[X, Y] + V[Y] * M[Y, Y] + V[Z] * M[Z, Y] + M[W, Y];
@@ -5182,7 +5187,7 @@ end;
 
 // VectorTransform
 //
-function VectorTransform(const V: TAffineVector; const M: TAffineMatrix): TAffineVector; register;
+function VectorTransform(const V: TAffineVector; const M: TAffineMatrix): TAffineVector;
 begin
 {$ifndef GEOMETRY_NO_ASM}
    if vSIMD=1 then begin
@@ -5219,7 +5224,7 @@ end;
 
 // MatrixDeterminant (affine)
 //
-function MatrixDeterminant(const M: TAffineMatrix): Single; register;
+function MatrixDeterminant(const M: TAffineMatrix): Single;
 begin
   Result:=  M[X, X] * (M[Y, Y] * M[Z, Z] - M[Z, Y] * M[Y, Z])
           - M[X, Y] * (M[Y, X] * M[Z, Z] - M[Z, X] * M[Y, Z])
@@ -5228,7 +5233,7 @@ end;
 
 // MatrixDetInternal
 //
-function MatrixDetInternal(const a1, a2, a3, b1, b2, b3, c1, c2, c3: Single): Single; register;
+function MatrixDetInternal(const a1, a2, a3, b1, b2, b3, c1, c2, c3: Single): Single;
 // internal version for the determinant of a 3x3 matrix
 begin
   Result:=  a1 * (b2 * c3 - b3 * c2)
@@ -5238,7 +5243,7 @@ end;
 
 // MatrixDeterminant (hmg)
 //
-function MatrixDeterminant(const M: TMatrix): Single; register;
+function MatrixDeterminant(const M: TMatrix): Single;
 begin
   Result:= M[X, X]*MatrixDetInternal(M[Y, Y], M[Z, Y], M[W, Y], M[Y, Z], M[Z, Z], M[W, Z], M[Y, W], M[Z, W], M[W, W])
           -M[X, Y]*MatrixDetInternal(M[Y, X], M[Z, X], M[W, X], M[Y, Z], M[Z, Z], M[W, Z], M[Y, W], M[Z, W], M[W, W])
@@ -5248,7 +5253,7 @@ end;
 
 // AdjointMatrix
 //
-procedure AdjointMatrix(var M : TMatrix); register;
+procedure AdjointMatrix(var M : TMatrix); 
 var
    a1, a2, a3, a4,
    b1, b2, b3, b4,
@@ -5288,7 +5293,7 @@ end;
 
 // AdjointMatrix (affine)
 //
-procedure AdjointMatrix(var M : TAffineMatrix); register;
+procedure AdjointMatrix(var M : TAffineMatrix);
 var
    a1, a2, a3,
    b1, b2, b3,
@@ -5312,7 +5317,7 @@ end;
 
 // ScaleMatrix (affine)
 //
-procedure ScaleMatrix(var M : TAffineMatrix; const factor : Single); register;
+procedure ScaleMatrix(var M : TAffineMatrix; const factor : Single);
 var
    i : Integer;
 begin
@@ -5325,7 +5330,7 @@ end;
 
 // ScaleMatrix (hmg)
 //
-procedure ScaleMatrix(var M : TMatrix; const factor : Single); register;
+procedure ScaleMatrix(var M : TMatrix; const factor : Single);
 var
    i : Integer;
 begin
@@ -5368,7 +5373,7 @@ end;
 
 // TransposeMatrix
 //
-procedure TransposeMatrix(var M: TAffineMatrix); register;
+procedure TransposeMatrix(var M: TAffineMatrix);
 var
    f : Single;
 begin
@@ -5379,7 +5384,7 @@ end;
 
 // TransposeMatrix
 //
-procedure TransposeMatrix(var M: TMatrix); register;
+procedure TransposeMatrix(var M: TMatrix);
 var
    f : Single;
 begin
@@ -5393,7 +5398,7 @@ end;
 
 // InvertMatrix
 //
-procedure InvertMatrix(var M : TMatrix); register;
+procedure InvertMatrix(var M : TMatrix);
 var
    det : Single;
 begin
@@ -5408,7 +5413,7 @@ end;
 
 // InvertMatrix (affine)
 //
-procedure InvertMatrix(var M:TAffineMatrix);register;
+procedure InvertMatrix(var M : TAffineMatrix);
 var
    det : Single;
 begin
@@ -5484,7 +5489,7 @@ end;
 
 // AnglePreservingMatrixInvert
 //
-function AnglePreservingMatrixInvert(const mat : TMatrix) : TMatrix; register;
+function AnglePreservingMatrixInvert(const mat : TMatrix) : TMatrix;
 var
    scale : Single;
 begin
@@ -5523,7 +5528,7 @@ end;
 
 // MatrixDecompose
 //
-function MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean; register;
+function MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean;
 var
    I, J: Integer;
    LocMat, pmat, invpmat, tinvpmat: TMatrix;
@@ -5635,12 +5640,12 @@ begin
   end;
 
   // now, get the rotations out, as described in the gem
-  Tran[ttRotateY]:=arcsin(-row0[Z]);
+  Tran[ttRotateY]:=VectorGeometry.ArcSin(-row0[Z]);
   if cos(Tran[ttRotateY]) <> 0 then begin
-    Tran[ttRotateX]:=arctan2(row1[Z], row2[Z]);
-    Tran[ttRotateZ]:=arctan2(row0[Y], row0[X]);
+    Tran[ttRotateX]:=ArcTan2(row1[Z], row2[Z]);
+    Tran[ttRotateZ]:=ArcTan2(row0[Y], row0[X]);
   end else begin
-    tran[ttRotateX]:=arctan2(row1[X], row1[Y]);
+    tran[ttRotateX]:=ArcTan2(row1[X], row1[Y]);
     tran[ttRotateZ]:=0;
   end;
   // All done!
@@ -6002,7 +6007,7 @@ end;
 
 // QuaternionMake
 //
-function QuaternionMake(Imag: array of Single; Real: Single): TQuaternion; assembler;
+function QuaternionMake(const Imag: array of Single; Real: Single): TQuaternion;
 // EAX contains address of Imag
 // ECX contains address to result vector
 // EDX contains highest index of Imag
@@ -6034,29 +6039,12 @@ end;
 
 // QuaternionConjugate
 //
-function QuaternionConjugate(const Q: TQuaternion): TQuaternion; assembler;
-// EAX contains address of Q
-// EDX contains address of result
-{$ifndef GEOMETRY_NO_ASM}
-asm
-      FLD DWORD PTR [EAX]
-      FCHS
-      FSTP DWORD PTR [EDX]
-      FLD DWORD PTR [EAX + 4]
-      FCHS
-      FSTP DWORD PTR [EDX + 4]
-      FLD DWORD PTR [EAX + 8]
-      FCHS
-      FSTP DWORD PTR [EDX + 8]
-      MOV EAX, [EAX + 12]
-      MOV [EDX + 12], EAX
-{$else}
+function QuaternionConjugate(const Q : TQuaternion) : TQuaternion;
 begin
-   Result.Vector[0]:=-Q.Vector[0];
-   Result.Vector[1]:=-Q.Vector[1];
-   Result.Vector[2]:=-Q.Vector[2];
-   Result.Vector[3]:=Q.Vector[3];
-{$endif}
+   Result.ImagPart[0]:=-Q.ImagPart[0];
+   Result.ImagPart[1]:=-Q.ImagPart[1];
+   Result.ImagPart[2]:=-Q.ImagPart[2];
+   Result.RealPart:=Q.RealPart;
 end;
 
 // QuaternionMagnitude
@@ -6297,18 +6285,21 @@ end;
 
 // QuaternionToPoints
 //
-procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVector); register;
+procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVector);
 var
-   s : Single;
+   s, invS : Single;
 begin
-   S:=Sqrt(Q.ImagPart[X] * Q.ImagPart[X] + Q.ImagPart[Y] * Q.ImagPart[Y]);
-   if S = 0 then
+   s:=Q.ImagPart[X]*Q.ImagPart[X]+Q.ImagPart[Y]*Q.ImagPart[Y];
+   if s=0 then
       SetAffineVector(ArcFrom, 0, 1, 0)
-   else SetAffineVector(ArcFrom, -Q.ImagPart[Y] / S, Q.ImagPart[X] / S, 0);
-   ArcTo[X]:=Q.RealPart * ArcFrom[X] - Q.ImagPart[Z] * ArcFrom[Y];
-   ArcTo[Y]:=Q.RealPart * ArcFrom[Y] + Q.ImagPart[Z] * ArcFrom[X];
-   ArcTo[Z]:=Q.ImagPart[X] * ArcFrom[Y] - Q.ImagPart[Y] * ArcFrom[X];
-   if Q.RealPart < 0 then
+   else begin
+      invS:=RSqrt(s);
+      SetAffineVector(ArcFrom, -Q.ImagPart[Y]*invS, Q.ImagPart[X]*invS, 0);
+   end;
+   ArcTo[X]:=Q.RealPart*ArcFrom[X]-Q.ImagPart[Z]*ArcFrom[Y];
+   ArcTo[Y]:=Q.RealPart*ArcFrom[Y]+Q.ImagPart[Z]*ArcFrom[X];
+   ArcTo[Z]:=Q.ImagPart[X]*ArcFrom[Y]-Q.ImagPart[Y]*ArcFrom[X];
+   if Q.RealPart<0 then
       SetAffineVector(ArcFrom, -ArcFrom[X], -ArcFrom[Y], 0);
 end;
 
@@ -6400,7 +6391,7 @@ end;
 
 // IntPower
 //
-function IntPower(Base: Extended; Exponent: Integer): Extended; register;
+function IntPower(Base: Extended; Exponent: Integer) : Extended;
 {$ifndef GEOMETRY_NO_ASM}
 asm
         mov     ecx, eax
@@ -6480,7 +6471,7 @@ end;
 
 // DegToRad (single)
 //
-function DegToRad(const Degrees : Single) : Single; register;
+function DegToRad(const Degrees : Single) : Single;
 //   Result:=Degrees * cPIdiv180;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
@@ -6541,7 +6532,7 @@ end;
 
 // SinCos (Extended)
 //
-procedure SinCos(const Theta: Extended; var Sin, Cos: Extended); register;
+procedure SinCos(const Theta: Extended; var Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -6559,7 +6550,7 @@ end;
 
 // SinCos (Double)
 //
-procedure SinCos(const Theta: Double; var Sin, Cos: Double); register;
+procedure SinCos(const Theta: Double; var Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -6580,7 +6571,7 @@ end;
 
 // SinCos (Single)
 //
-procedure SinCos(const Theta: Single; var Sin, Cos: Single); register;
+procedure SinCos(const Theta: Single; var Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -6601,7 +6592,7 @@ end;
 
 // SinCos (Extended w radius)
 //
-procedure SinCos(const theta, radius : Double; var Sin, Cos: Extended); register;
+procedure SinCos(const theta, radius : Double; var Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -6624,7 +6615,7 @@ end;
 
 // SinCos (Double w radius)
 //
-procedure SinCos(const theta, radius : Double; var Sin, Cos: Double); register;
+procedure SinCos(const theta, radius : Double; var Sin, Cos: Double);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -6647,7 +6638,7 @@ end;
 
 // SinCos (Single w radius)
 //
-procedure SinCos(const theta, radius : Single; var Sin, Cos: Single); register;
+procedure SinCos(const theta, radius : Single; var Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
@@ -6710,7 +6701,7 @@ end;
 
 // ArcCos (Single)
 //
-function ArcCos(const x : Single): Single; register;
+function ArcCos(const x : Single): Single;
 // Result:=ArcTan2(Sqrt(c1 - X * X), X);
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -6943,7 +6934,7 @@ end;
 
 // ISqrt
 //
-function ISqrt(i : Integer) : Integer; register;
+function ISqrt(i : Integer) : Integer;
 {$ifndef GEOMETRY_NO_ASM}
 asm
       push     eax
@@ -7040,6 +7031,7 @@ end;
 
 // RegisterBasedExp
 //
+{$ifndef GEOMETRY_NO_ASM}
 procedure RegisterBasedExp;
 asm   // Exp(x) = 2^(x.log2(e))
       fldl2e
@@ -7054,6 +7046,7 @@ asm   // Exp(x) = 2^(x.log2(e))
       fscale
       fstp     st(1)
 end;
+{$endif}
 
 // RandomPointOnSphere
 //
@@ -7067,81 +7060,6 @@ begin
    SinCos(t, w, p[1], p[0]);
 end;
 
-// Trunc64 (extended)
-//
-function Trunc64(v : Extended) : Int64; register;
-{$ifndef GEOMETRY_NO_ASM}
-asm
-      SUB     ESP,12
-      FSTCW   [ESP]
-      FLDCW   cwChop
-      FLD     v
-      FISTP   qword ptr [ESP+4]
-      FLDCW   [ESP]
-      POP     ECX
-      POP     EAX
-      POP     EDX
-{$else}
-begin
-   Result:=System.Trunc(v);
-{$endif}
-end;
-
-// Trunc (single)
-//
-function Trunc(v : Single) : Integer; register;
-{$ifndef GEOMETRY_NO_ASM}
-asm
-      SUB     ESP,8
-      FSTCW   [ESP]
-      FLDCW   cwChop
-      FLD     v
-      FISTP   dword ptr [ESP+4]
-      FLDCW   [ESP]
-      POP     ECX
-      POP     EAX
-{$else}
-begin
-   Result:=System.Trunc(v);
-{$endif}
-end;
-
-// Int (Extended)
-//
-function Int(v : Extended) : Extended;
-{$ifndef GEOMETRY_NO_ASM}
-asm
-      SUB     ESP,4
-      FSTCW   [ESP]
-      FLDCW   cwChop
-      FLD     v
-      FRNDINT
-      FLDCW   [ESP]
-      ADD     ESP,4
-{$else}
-begin
-   Result:=System.Int(v);
-{$endif}
-end;
-
-// Int (Single)
-//
-function Int(v : Single) : Single;
-{$ifndef GEOMETRY_NO_ASM}
-asm
-      SUB     ESP,4
-      FSTCW   [ESP]
-      FLDCW   cwChop
-      FLD     v
-      FRNDINT
-      FLDCW   [ESP]
-      ADD     ESP,4
-{$else}
-begin
-   Result:=System.Int(v);
-{$endif}
-end;
-
 // RoundInt (single)
 //
 function RoundInt(v : Single) : Single;
@@ -7151,7 +7069,7 @@ asm
       FRNDINT
 {$else}
 begin
-   Result:=System.Int(v+0.5);
+   Result:=Int(v+0.5);
 {$endif}
 end;
 
@@ -7164,14 +7082,70 @@ asm
       FRNDINT
 {$else}
 begin
-   Result:=System.Int(v+0.5);
+   Result:=Int(v+0.5);
 {$endif}
+end;
+
+{$ifndef GEOMETRY_NO_ASM}
+
+// Trunc64 (extended)
+//
+function Trunc64(v : Extended) : Int64;
+asm
+      SUB     ESP,12
+      FSTCW   [ESP]
+      FLDCW   cwChop
+      FLD     v
+      FISTP   qword ptr [ESP+4]
+      FLDCW   [ESP]
+      POP     ECX
+      POP     EAX
+      POP     EDX
+end;
+
+// Trunc (single)
+//
+function Trunc(v : Single) : Integer;
+asm
+      SUB     ESP,8
+      FSTCW   [ESP]
+      FLDCW   cwChop
+      FLD     v
+      FISTP   dword ptr [ESP+4]
+      FLDCW   [ESP]
+      POP     ECX
+      POP     EAX
+end;
+
+// Int (Extended)
+//
+function Int(v : Extended) : Extended;
+asm
+      SUB     ESP,4
+      FSTCW   [ESP]
+      FLDCW   cwChop
+      FLD     v
+      FRNDINT
+      FLDCW   [ESP]
+      ADD     ESP,4
+end;
+
+// Int (Single)
+//
+function Int(v : Single) : Single;
+asm
+      SUB     ESP,4
+      FSTCW   [ESP]
+      FLDCW   cwChop
+      FLD     v
+      FRNDINT
+      FLDCW   [ESP]
+      ADD     ESP,4
 end;
 
 // Frac (Extended)
 //
 function Frac(v : Extended) : Extended;
-{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,4
       FSTCW   [ESP]
@@ -7182,16 +7156,11 @@ asm
       FSUB
       FLDCW   [ESP]
       ADD     ESP,4
-{$else}
-begin
-   Result:=System.Frac(v);
-{$endif}
 end;
 
 // Frac (Extended)
 //
 function Frac(v : Single) : Single;
-{$ifndef GEOMETRY_NO_ASM}
 asm
       SUB     ESP,4
       FSTCW   [ESP]
@@ -7202,56 +7171,39 @@ asm
       FSUB
       FLDCW   [ESP]
       ADD     ESP,4
-{$else}
-begin
-   Result:=System.Frac(v);
-{$endif}
 end;
 
 // Round64 (Single);
 //
-function Round64(v : Single) : Int64; register;
-{$ifndef GEOMETRY_NO_ASM}
+function Round64(v : Single) : Int64;
 asm
       SUB     ESP,8
       FLD     v
       FISTP   qword ptr [ESP]
       POP     EAX
       POP     EDX
-{$else}
-begin
-   Result:=System.Round(v);
-{$endif}
 end;
 
 // Round64 (Extended);
 //
-function Round64(v : Extended) : Int64; register;
-{$ifndef GEOMETRY_NO_ASM}
+function Round64(v : Extended) : Int64;
 asm
       FLD      v
       FISTP    qword ptr [v]           // use v as storage to place the result
       MOV      EAX, dword ptr [v]
       MOV      EDX, dword ptr [v+4]
-{$else}
-begin
-   Result:=System.Round(v);
-{$endif}
 end;
 
 // Round (Single);
 //
-function Round(v : Single) : Integer; register;
-{$ifndef GEOMETRY_NO_ASM}
+function Round(v : Single) : Integer;
 asm
       FLD     v
       FISTP   DWORD PTR [v]     // use v as storage to place the result
       MOV     EAX, [v]
-{$else}
-begin
-   Result:=System.Round(v);
-{$endif}
 end;
+
+{$endif}
 
 // Ceil64 (Extended)
 //
@@ -7312,7 +7264,7 @@ asm
    pop   eax
 {$else}
 begin
-   Result:=System.Round(i*s);
+   Result:=Round(i*s);
 {$endif}
 end;
 
@@ -7873,7 +7825,7 @@ end;
 // ScaleFloatArray (raw)
 //
 procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
-                          var factor : Single); register;
+                          var factor : Single);
 {$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
@@ -8168,7 +8120,7 @@ end;
 
 // ClampValue (min-max)
 //
-function ClampValue(const aValue, aMin, aMax : Single) : Single; overload;
+function ClampValue(const aValue, aMin, aMax : Single) : Single;
 begin
 {$ifndef GEOMETRY_NO_ASM}
    asm
@@ -8199,7 +8151,7 @@ end;
 
 // ClampValue (min-)
 //
-function ClampValue(const aValue, aMin : Single) : Single; overload;
+function ClampValue(const aValue, aMin : Single) : Single;
 begin
    if aValue<aMin then
       Result:=aMin
@@ -8208,32 +8160,16 @@ end;
 
 // MakeAffineDblVector
 //
-function MakeAffineDblVector(var V: array of Double): TAffineDblVector; assembler;
-// creates a vector from given values
-// EAX contains address of V
-// ECX contains address to result vector
-// EDX contains highest index of V
-{$ifndef GEOMETRY_NO_ASM}
-asm
-              PUSH EDI
-              PUSH ESI
-              MOV EDI, ECX
-              MOV ESI, EAX
-              MOV ECX, 6
-              REP MOVSD
-              POP ESI
-              POP EDI
-{$else}
+function MakeAffineDblVector(var V: array of Double): TAffineDblVector;
 begin
    Result[0]:=V[0];
    Result[1]:=V[1];
    Result[2]:=V[2];
-{$endif}
 end;
 
 // MakeDblVector
 //
-function MakeDblVector(var v : array of Double) : THomogeneousDblVector; assembler;
+function MakeDblVector(var v : array of Double) : THomogeneousDblVector;
 // creates a vector from given values
 // EAX contains address of V
 // ECX contains address to result vector
@@ -8281,7 +8217,7 @@ end;
 
 // ConvertRotation
 //
-function ConvertRotation(const Angles: TAffineVector): TVector; register;
+function ConvertRotation(const Angles: TAffineVector): TVector;
 
 {   Rotation of the Angle t about the axis (X, Y, Z) is given by:
 
@@ -8444,13 +8380,12 @@ var
 // absolute rotations
 begin
    // calc cosine
-   cosom := source.ImagPart[0] * dest.ImagPart[0]
-          + source.ImagPart[1] * dest.ImagPart[1]
-          + source.ImagPart[2] * dest.ImagPart[2]
-	  + source.RealPart * dest.RealPart;
+   cosom:= source.ImagPart[0]*dest.ImagPart[0]
+          +source.ImagPart[1]*dest.ImagPart[1]
+          +source.ImagPart[2]*dest.ImagPart[2]
+	       +source.RealPart   *dest.RealPart;
    // adjust signs (if necessary)
-   if ( cosom < 0.0 )
-   then begin
+   if cosom<0 then begin
       cosom := -cosom;
       to1[0] := - dest.ImagPart[0];
       to1[1] := - dest.ImagPart[1];
@@ -8463,16 +8398,15 @@ begin
       to1[3] := dest.RealPart;
    end;
    // calculate coefficients
-   if ( (1.0 - cosom) > EPSILON2 )
-   then begin // standard case (slerp)
-      omega := arccos(cosom);
-      sinom := sin(omega);
-      scale0 := sin((1.0 - t) * omega) / sinom;
-      scale1 := sin(t * omega) / sinom;
+   if ((1.0-cosom)>EPSILON2) then begin // standard case (slerp)
+      omega:=VectorGeometry.ArcCos(cosom);
+      sinom:=1/Sin(omega);
+      scale0:=Sin((1.0-t)*omega)*sinom;
+      scale1:=Sin(t*omega)*sinom;
    end else begin // "from" and "to" quaternions are very close
 	          //  ... so we can do a linear interpolation
-      scale0 := 1.0 - t;
-      scale1 := t;
+      scale0:=1.0-t;
+      scale1:=t;
    end;
    // calculate final values
    Result.ImagPart[0] := scale0 * source.ImagPart[0] + scale1 * to1[0];
@@ -8484,7 +8418,7 @@ end;
 
 // VectorDblToFlt
 //
-function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector; assembler;
+function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector;
 // converts a vector containing double sized values into a vector with single sized values
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -8507,7 +8441,7 @@ end;
 
 // VectorAffineDblToFlt
 //
-function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector; assembler;
+function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector;
 // converts a vector containing double sized values into a vector with single sized values
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -8527,7 +8461,7 @@ end;
 
 // VectorAffineFltToDbl
 //
-function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector; assembler;
+function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
 // converts a vector containing single sized values into a vector with double sized values
 {$ifndef GEOMETRY_NO_ASM}
 asm
@@ -8547,7 +8481,7 @@ end;
 
 // VectorFltToDbl
 //
-function VectorFltToDbl(const V: TVector): THomogeneousDblVector; assembler;
+function VectorFltToDbl(const V: TVector): THomogeneousDblVector;
 // converts a vector containing single sized values into a vector with double sized values
 {$ifndef GEOMETRY_NO_ASM}
 asm
