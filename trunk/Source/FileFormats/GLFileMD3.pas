@@ -2,10 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLFileMD3 - Code for loading animated MD3 files into GLScene 
+  GLFileMD3 - Code for loading animated MD3 files into GLScene
               FreeForms and Actors.
-              
+
   History :
+    21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
     28/02/03 - SG - Creation
 }
 unit GLFileMD3;
@@ -61,7 +62,7 @@ var
   begin
     // The MD3 normal is a latitude/longitude value that needs
     // to be calculated into cartesian space.
-    lat:=(n[0])*(2*pi)/255; lng:=(n[1])*(2*pi)/255;
+    lat:=(n[1])*(2*pi)/255; lng:=(n[0])*(2*pi)/255;
     result[0]:=cos(lat)*sin(lng);
     result[1]:=sin(lat)*sin(lng);
     result[2]:=cos(lng);
