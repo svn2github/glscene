@@ -9,7 +9,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLObjects, GLMisc, GLWin32Viewer, GLWaterPlane,
   GLCadencer, ExtCtrls, Jpeg, GLTexture, GLUserShader, OpenGL1x,
-  VectorGeometry;
+  VectorGeometry, GLGraph, VectorTypes, GLState;
 
 type
   TForm1 = class(TForm)
@@ -24,6 +24,8 @@ type
     GLUserShader1: TGLUserShader;
     GLSphere1: TGLSphere;
     GLDirectOpenGL1: TGLDirectOpenGL;
+    GLHeightField1: TGLHeightField;
+    GLLightSource1: TGLLightSource;
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -36,13 +38,17 @@ type
       var rci: TRenderContextInfo);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
     procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
+    procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
+      var color: TVector4f; var texPoint: TTexPoint);
+    procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
+      var rci: TRenderContextInfo; var Continue: Boolean);
   private
     { Private declarations }
   public
     { Public declarations }
     mx, my : Integer;
     reflectionToggle : Boolean;
-    procedure ClickPond(x, y : Integer);
+    procedure ClickWater(x, y : Integer);
   end;
 
 var
@@ -52,7 +58,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.ClickPond(x, y : Integer);
+procedure TForm1.ClickWater(x, y : Integer);
 var
    ip : TVector;
 begin
@@ -83,7 +89,10 @@ begin
          Picture[cmtPZ].LoadFromFile('cm_back.jpg');
          Picture[cmtNZ].LoadFromFile('cm_front.jpg');
       end;
-   end;        
+   end;
+
+   GLWaterPlane1.Mask.LoadFromFile('basinMask.bmp');
+   GLHeightField1.Material.Texture.Image.LoadFromFile('clover.jpg');
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -91,16 +100,19 @@ procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
 begin
    mx:=x; my:=y;
    if ssRight in Shift then
-      ClickPond(x, y);
+      ClickWater(x, y);
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
-   if ssLeft in Shift then
-      GLCamera1.MoveAroundTarget(my-y, mx-x)
-   else if ssRight in Shift then
-      ClickPond(x, y);
+   if ssLeft in Shift then begin
+      GLCamera1.MoveAroundTarget(my-y, mx-x);
+      // pseudo-fresnel
+      with GLMaterialLibrary1.LibMaterialByName('CubeMap').Material do
+         FrontProperties.Diffuse.Alpha:=0.3+0.5*Sqr(1-GLCamera1.Position.Y/GLCamera1.DistanceToTarget);
+   end else if ssRight in Shift then
+      ClickWater(x, y);
    mx:=x; my:=y;
 end;
 
@@ -112,13 +124,25 @@ begin
    // Here is the shader trick: the same cubemap is used in reflection mode
    // for the pond, and in normal mode for the environment sphere
    // Our basic user shader takes care of that.
-   if reflectionToggle then
-      cubeMapMode:=GL_REFLECTION_MAP_ARB
-   else cubeMapMode:=GL_NORMAL_MAP_ARB;
-   
+   if reflectionToggle then begin
+      cubeMapMode:=GL_REFLECTION_MAP_ARB;
+      rci.GLStates.SetGLState(stBlend);
+   end else begin
+      cubeMapMode:=GL_NORMAL_MAP_ARB;
+      rci.GLStates.UnSetGLState(stBlend);
+   end;
+
    glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, cubeMapMode);
    glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, cubeMapMode);
    glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, cubeMapMode);
+
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+end;
+
+procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
+  var rci: TRenderContextInfo; var Continue: Boolean);
+begin
+   rci.GLStates.UnSetGLState(stBlend);
 end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
@@ -142,6 +166,12 @@ procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
    GLSceneViewer1.Invalidate;
+end;
+
+procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;
+  var color: TVector4f; var texPoint: TTexPoint);
+begin
+   z:=0.5-(GLWaterPlane1.Mask.Bitmap.Canvas.Pixels[Round(x+64), Round(y+64)] and $FF)/255;
 end;
 
 end.

@@ -1,5 +1,5 @@
 object Form1: TForm1
-  Left = 155
+  Left = 169
   Top = 106
   Width = 544
   Height = 375
@@ -22,7 +22,6 @@ object Form1: TForm1
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FaceCulling = False
-    Buffer.Lighting = False
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -45,6 +44,23 @@ object Form1: TForm1
       UseBuildList = False
       OnRender = GLDirectOpenGL1Render
     end
+    object GLHeightField1: TGLHeightField
+      Material.Texture.MappingMode = tmmObjectLinear
+      Material.Texture.MappingSCoordinates.Coordinates = {CDCC4C3D000000000000000000000000}
+      Material.Texture.MappingTCoordinates.Coordinates = {00000000CDCC4C3D0000000000000000}
+      Material.Texture.Disabled = False
+      Direction.Coordinates = {00000000FFFF7F3F0100003300000000}
+      Position.Coordinates = {00000000000080BF000000000000803F}
+      Scale.Coordinates = {1F85EB3D1F85EB3D0000003F00000000}
+      Up.Coordinates = {2FBD3B3302000033000080BF00000000}
+      XSamplingScale.Min = -63
+      XSamplingScale.Max = 63
+      XSamplingScale.Step = 1
+      YSamplingScale.Min = -63
+      YSamplingScale.Max = 63
+      YSamplingScale.Step = 1
+      OnGetHeight = GLHeightField1GetHeight
+    end
     object GLWaterPlane1: TGLWaterPlane
       Material.MaterialLibrary = GLMaterialLibrary1
       Material.LibMaterialName = 'CubeMap'
@@ -56,6 +72,11 @@ object Form1: TForm1
       Elastic = 10
       Resolution = 128
       SimulationFrequency = 100
+    end
+    object GLLightSource1: TGLLightSource
+      ConstAttenuation = 1
+      Position.Coordinates = {0000E04000007041000040400000803F}
+      SpotCutOff = 180
     end
     object GLCamera1: TGLCamera
       DepthOfView = 100
@@ -79,6 +100,9 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'CubeMap'
+        Material.FrontProperties.Ambient.Color = {0000803F0000803F0000803F0000803F}
+        Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000003F}
+        Material.MaterialOptions = [moNoLighting]
         Material.Texture.TextureMode = tmModulate
         Material.Texture.TextureWrap = twNone
         Material.Texture.MappingMode = tmmCubeMapNormal
@@ -91,6 +115,7 @@ object Form1: TForm1
   end
   object GLUserShader1: TGLUserShader
     OnDoApply = GLUserShader1DoApply
+    OnDoUnApply = GLUserShader1DoUnApply
     ShaderStyle = ssLowLevel
     Left = 120
     Top = 64
