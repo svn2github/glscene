@@ -1,5 +1,5 @@
 {
-  BASS 1.4 Multimedia Library
+  BASS 1.6 Multimedia Library
   -----------------------------
   (c) 1999-2002 Ian Luck.
   Please report bugs/suggestions/etc... to bass@un4seen.com
@@ -9,7 +9,7 @@
 
   See the BASS.CHM file for more complete documentation
 
-  NOTE: This unit will only work with BASS.DLL version 1.4
+  NOTE: This unit will only work with BASS.DLL version 1.6
   Check http://www.un4seen.com/music/ for any later
   versions of BASS.PAS
 
@@ -58,14 +58,15 @@ const
   BASS_ERROR_NOA3D        = 26;   // A3D.DLL is not installed
   BASS_ERROR_NOTFILE      = 27;   // the stream is not a file stream (WAV/MP3/MP2/MP1/OGG)
   BASS_ERROR_NOHW         = 29;   // no hardware voices available
-  BASS_ERROR_NOSYNC       = 30;   // synchronizers have been disabled
-  BASS_ERROR_EMPTY	     = 31;	 // the MOD music has no sequence data
-  BASS_ERROR_NONET	     = 32;	 // no internet connection could be opened
+  BASS_ERROR_EMPTY        = 31;	  // the MOD music has no sequence data
+  BASS_ERROR_NONET        = 32;	  // no internet connection could be opened
   BASS_ERROR_CREATE       = 33;   // couldn't create the file
   BASS_ERROR_NOFX         = 34;   // effects are not enabled
   BASS_ERROR_PLAYING      = 35;   // the channel is playing
-  BASS_ERROR_NOOGG        = 36;   // OGG.DLL/VORBIS.DLL could not be loaded
   BASS_ERROR_NOTAVAIL     = 37;   // requested data is not available
+  BASS_ERROR_DECODE       = 38;   // the channel is a "decoding channel"
+  BASS_ERROR_DX           = 39;   // a sufficient DirectX version is not installed
+  BASS_ERROR_TIMEOUT      = 40;   // connection timedout
   BASS_ERROR_UNKNOWN      = -1;   // some other mystery error
 
   // Device setup flags
@@ -78,11 +79,10 @@ const
     and BASS_MUSIC_3D) are ignored when loading/creating
     a sample/stream/music.
   }
-  BASS_DEVICE_NOSYNC      = 16;   // disable synchronizers
   BASS_DEVICE_LEAVEVOL	  = 32;	  // leave the volume as it is
-  BASS_DEVICE_OGG         = 64;   // enable OGG support (requires OGG.DLL & VORBIS.DLL)
   BASS_DEVICE_NOTHREAD    = 128;  // update buffers manually (using BASS_Update)
   BASS_DEVICE_LATENCY     = 256;  // calculate device latency (BASS_INFO struct)
+  BASS_DEVICE_VOL1000     = 512;  // 0-1000 volume range (else 0-100)
 
   // DirectSound interfaces (for use with BASS_GetDSoundObject)
   BASS_OBJECT_DS          = 1;   // IDirectSound
@@ -105,6 +105,26 @@ const
   DSCAPS_SECONDARY8BIT    = $00000400;     // 8 bit
   DSCAPS_SECONDARY16BIT   = $00000800;     // 16 bit
 
+  // BASS_RECORDINFO flags (from DSOUND.H)
+  DSCCAPS_EMULDRIVER = DSCAPS_EMULDRIVER;
+  { device does NOT have hardware DirectSound recording support }
+  DSCCAPS_CERTIFIED = DSCAPS_CERTIFIED;
+  { device driver has been certified by Microsoft }
+
+  // defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
+  WAVE_FORMAT_1M08       = $00000001;      // 11.025 kHz, Mono,   8-bit
+  WAVE_FORMAT_1S08       = $00000002;      // 11.025 kHz, Stereo, 8-bit
+  WAVE_FORMAT_1M16       = $00000004;      // 11.025 kHz, Mono,   16-bit
+  WAVE_FORMAT_1S16       = $00000008;      // 11.025 kHz, Stereo, 16-bit
+  WAVE_FORMAT_2M08       = $00000010;      // 22.05  kHz, Mono,   8-bit
+  WAVE_FORMAT_2S08       = $00000020;      // 22.05  kHz, Stereo, 8-bit
+  WAVE_FORMAT_2M16       = $00000040;      // 22.05  kHz, Mono,   16-bit
+  WAVE_FORMAT_2S16       = $00000080;      // 22.05  kHz, Stereo, 16-bit
+  WAVE_FORMAT_4M08       = $00000100;      // 44.1   kHz, Mono,   8-bit
+  WAVE_FORMAT_4S08       = $00000200;      // 44.1   kHz, Stereo, 8-bit
+  WAVE_FORMAT_4M16       = $00000400;      // 44.1   kHz, Mono,   16-bit
+  WAVE_FORMAT_4S16       = $00000800;      // 44.1   kHz, Stereo, 16-bit
+
   // Music flags
   BASS_MUSIC_RAMP         = 1;   // normal ramping
   BASS_MUSIC_RAMPS        = 2;   // sensitive ramping
@@ -126,6 +146,7 @@ const
   BASS_MUSIC_FX           = 4096;// enable DX8 effects
   BASS_MUSIC_CALCLEN      = 8192;// calculate playback length
   BASS_MUSIC_DECODE       = $200000;// don't play the music, only decode (BASS_ChannelGetData)
+  BASS_MUSIC_NOSAMPLE     = $400000;// don't load the samples
 
   // Sample info flags
   BASS_SAMPLE_8BITS       = 1;   // 8 bit, else 16 bit
@@ -148,6 +169,7 @@ const
   BASS_STREAM_BLOCK       = $100000;// download & play internet
                                     // file stream (MPx/OGG) in small blocks
   BASS_STREAM_DECODE      = $200000;// don't play the stream, only decode (BASS_ChannelGetData)
+  BASS_STREAM_META        = $400000;// request metadata from a Shoutcast stream
 
   // DX7 voice allocation flags
   BASS_VAM_HARDWARE       = 1;
@@ -302,10 +324,16 @@ const
     param: 0:data=pos, 1:data="x" value
     data : param=0: LOWORD=order HIWORD=row, param=1: "x" value
   }
+  BASS_SYNC_META                    = 4;
+  {
+    Sync when metadata is received in a Shoutcast stream.
+    param: not used
+    data : pointer to the metadata
+  }
   BASS_SYNC_MESSAGE                 = $20000000;
-  { FLAG: send a windows message (instead of callback)
-    When using a window message "callback", the message to send is given in the "proc"
-    parameter of BASS_ChannelSetSync, and is sent to the window specified in the BASS_Init
+  { FLAG: post a Windows message (instead of callback)
+    When using a window message "callback", the message to post is given in the "proc"
+    parameter of BASS_ChannelSetSync, and is posted to the window specified in the BASS_Init
     call. The message parameters are: WPARAM = data, LPARAM = user.
   }
   BASS_SYNC_MIXTIME                 = $40000000;
@@ -313,11 +341,20 @@ const
   BASS_SYNC_ONETIME                 = $80000000;
   { FLAG: sync only once, else continuously }
 
-  CDCHANNEL                         = 0; // CD channel, for use with BASS_Channel functions
+  CDCHANNEL           = 0; // CD channel, for use with BASS_Channel functions
+  RECORDCHAN          = 1; // Recording channel, for use with BASS_Channel functions
+
+  // BASS_ChannelIsActive return values
+  BASS_ACTIVE_STOPPED = 0;
+  BASS_ACTIVE_PLAYING = 1;
+  BASS_ACTIVE_STALLED = 2;
+  BASS_ACTIVE_PAUSED  = 3;
 
   // CD ID flags, use with BASS_CDGetID
   BASS_CDID_IDENTITY  = 0;
   BASS_CDID_UPC       = 1;
+  BASS_CDID_CDDB      = 2;
+  BASS_CDID_CDDB2     = 3;
 
   // BASS_ChannelGetData flags
   BASS_DATA_FFT512  = $80000000; // 512 sample FFT
@@ -330,6 +367,7 @@ const
   BASS_TAG_OGG   = 2; // OGG comments : array of null-terminated strings
   BASS_TAG_HTTP  = 3; // HTTP headers : array of null-terminated strings
   BASS_TAG_ICY   = 4; // ICY headers : array of null-terminated strings
+  BASS_TAG_META  = 5; // ICY metadata : null-terminated string
 
   BASS_FX_CHORUS      = 0;      // GUID_DSFX_STANDARD_CHORUS
   BASS_FX_COMPRESSOR  = 1;      // GUID_DSFX_STANDARD_COMPRESSOR
@@ -347,71 +385,85 @@ const
   BASS_FX_PHASE_90      = 3;
   BASS_FX_PHASE_180     = 4;
 
+  // BASS_RecordSetInput flags
+  BASS_INPUT_OFF    = $10000;
+  BASS_INPUT_ON     = $20000;
+  BASS_INPUT_LEVEL  = $40000;
+
 type
   DWORD = cardinal;
   BOOL = LongBool;
   FLOAT = Single;
+  QWORD = int64;
 
-  HMUSIC = DWORD;               // MOD music handle
-  HSAMPLE = DWORD;              // sample handle
-  HCHANNEL = DWORD;             // playing sample's channel handle
-  HSTREAM = DWORD;              // sample stream handle
-  HSYNC = DWORD;                // synchronizer handle
-  HDSP = DWORD;                 // DSP handle
-  HFX = DWORD;                  // DX8 effect handle
+  HMUSIC = DWORD;       // MOD music handle
+  HSAMPLE = DWORD;      // sample handle
+  HCHANNEL = DWORD;     // playing sample's channel handle
+  HSTREAM = DWORD;      // sample stream handle
+  HSYNC = DWORD;        // synchronizer handle
+  HDSP = DWORD;         // DSP handle
+  HFX = DWORD;          // DX8 effect handle
 
   BASS_INFO = record
-    size: DWORD;               // size of this struct (set this before calling the function)
-    flags: DWORD;              // device capabilities (DSCAPS_xxx flags)
+    size: DWORD;        // size of this struct (set this before calling the function)
+    flags: DWORD;       // device capabilities (DSCAPS_xxx flags)
     {
       The following values are irrelevant if the device
       doesn't have hardware support
       (DSCAPS_EMULDRIVER is specified in flags)
     }
-    hwsize: DWORD;             // size of total device hardware memory
-    hwfree: DWORD;             // size of free device hardware memory
-    freesam: DWORD;            // number of free sample slots in the hardware
-    free3d: DWORD;             // number of free 3D sample slots in the hardware
-    minrate: DWORD;            // min sample rate supported by the hardware
-    maxrate: DWORD;            // max sample rate supported by the hardware
-    eax: BOOL;                 // device supports EAX? (always FALSE if BASS_DEVICE_3D was not used)
-    a3d: DWORD;                // unused
-    dsver: DWORD;              // DirectSound version (use to check for DX5/7 functions)
-    latency: DWORD;            // delay (in ms) before start of playback (requires BASS_DEVICE_LATENCY)
+    hwsize: DWORD;      // size of total device hardware memory
+    hwfree: DWORD;      // size of free device hardware memory
+    freesam: DWORD;     // number of free sample slots in the hardware
+    free3d: DWORD;      // number of free 3D sample slots in the hardware
+    minrate: DWORD;     // min sample rate supported by the hardware
+    maxrate: DWORD;     // max sample rate supported by the hardware
+    eax: BOOL;          // device supports EAX? (always FALSE if BASS_DEVICE_3D was not used)
+    a3d: DWORD;         // unused
+    dsver: DWORD;       // DirectSound version (use to check for DX5/7 functions)
+    latency: DWORD;     // delay (in ms) before start of playback (requires BASS_DEVICE_LATENCY)
+  end;
+
+  BASS_RECORDINFO = record
+    size: DWORD;        // size of this struct (set this before calling the function)
+    flags: DWORD;       // device capabilities (DSCCAPS_xxx flags)
+    formats: DWORD;     // supported standard formats (WAVE_FORMAT_xxx flags)
+    inputs: DWORD;      // number of inputs
+    singlein: BOOL;     // only 1 input can be set at a time
   end;
 
   // Sample info structure
   BASS_SAMPLE = record
-    freq: DWORD;               // default playback rate
-    volume: DWORD;             // default volume (0-100)
-    pan: Integer;              // default pan (-100=left, 0=middle, 100=right)
-    flags: DWORD;              // BASS_SAMPLE_xxx flags
-    length: DWORD;             // length (in samples, not bytes)
-    max: DWORD;                // maximum simultaneous playbacks
+    freq: DWORD;        // default playback rate
+    volume: DWORD;      // default volume (0-100)
+    pan: Integer;       // default pan (-100=left, 0=middle, 100=right)
+    flags: DWORD;       // BASS_SAMPLE_xxx flags
+    length: DWORD;      // length (in samples, not bytes)
+    max: DWORD;         // maximum simultaneous playbacks
     {
       The following are the sample's default 3D attributes
       (if the sample is 3D, BASS_SAMPLE_3D is in flags)
       see BASS_ChannelSet3DAttributes
     }
-    mode3d: DWORD;             // BASS_3DMODE_xxx mode
-    mindist: FLOAT;            // minimum distance
-    maxdist: FLOAT;            // maximum distance
-    iangle: DWORD;             // angle of inside projection cone
-    oangle: DWORD;             // angle of outside projection cone
-    outvol: DWORD;             // delta-volume outside the projection cone
+    mode3d: DWORD;      // BASS_3DMODE_xxx mode
+    mindist: FLOAT;     // minimum distance
+    maxdist: FLOAT;     // maximum distance
+    iangle: DWORD;      // angle of inside projection cone
+    oangle: DWORD;      // angle of outside projection cone
+    outvol: DWORD;      // delta-volume outside the projection cone
     {
       The following are the defaults used if the sample uses the DirectX 7
       voice allocation/management features.
     }
-    vam: DWORD;                // voice allocation/management flags (BASS_VAM_xxx)
-    priority: DWORD;           // priority (0=lowest, 0xffffffff=highest)
+    vam: DWORD;         // voice allocation/management flags (BASS_VAM_xxx)
+    priority: DWORD;    // priority (0=lowest, $ffffffff=highest)
   end;
 
   // 3D vector (for 3D positions/velocities/orientations)
   BASS_3DVECTOR = record
-    x: FLOAT;                  // +=right, -=left
-    y: FLOAT;                  // +=up, -=down
-    z: FLOAT;                  // +=front, -=behind
+    x: FLOAT;           // +=right, -=left
+    y: FLOAT;           // +=up, -=down
+    z: FLOAT;           // +=front, -=behind
   end;
 
   BASS_FXCHORUS = record
@@ -419,9 +471,9 @@ type
     fDepth: FLOAT;
     fFeedback: FLOAT;
     fFrequency: FLOAT;
-    lWaveform: DWORD;      // 0=triangle, 1=sine
+    lWaveform: DWORD;   // 0=triangle, 1=sine
     fDelay: FLOAT;
-    lPhase: DWORD;         // BASS_FX_PHASE_xxx
+    lPhase: DWORD;      // BASS_FX_PHASE_xxx
   end;
 
   BASS_FXCOMPRESSOR = record
@@ -454,9 +506,9 @@ type
     fDepth: FLOAT;
     fFeedback: FLOAT;
     fFrequency: FLOAT;
-    lWaveform: DWORD;      // 0=triangle, 1=sine
+    lWaveform: DWORD;   // 0=triangle, 1=sine
     fDelay: FLOAT;
-    lPhase: DWORD;         // BASS_FX_PHASE_xxx
+    lPhase: DWORD;      // BASS_FX_PHASE_xxx
   end;
 
   BASS_FXGARGLE = record
@@ -505,6 +557,7 @@ type
     RETURN : Number of bytes written. If less than "length" then the
              stream is assumed to be at the end, and is stopped.
   }
+
   SYNCPROC = procedure(handle: HSYNC; channel, data: DWORD; user: DWORD); stdcall;
   {
     Sync callback function. NOTE: a sync callback function should be very
@@ -517,7 +570,7 @@ type
     user   : The 'user' parameter given when calling BASS_ChannelSetSync
   }
 
-  DSPPROC = procedure(handle: HSYNC; channel: DWORD; buffer: Pointer; length: DWORD; user: DWORD); stdcall;
+  DSPPROC = procedure(handle: HDSP; channel: DWORD; buffer: Pointer; length: DWORD; user: DWORD); stdcall;
   {
     DSP callback function. NOTE: A DSP function should obviously be as quick
     as possible... other DSP functions, streams and MOD musics can not be
@@ -529,6 +582,15 @@ type
     user   : The 'user' parameter given when calling BASS_ChannelSetDSP
   }
 
+  RECORDPROC = function(buffer: Pointer; length: DWORD; user: DWORD): BOOL; stdcall;
+  {
+    Recording callback function.
+    buffer : Buffer containing the recorded sample data
+    length : Number of bytes
+    user   : The 'user' parameter value given when calling BASS_RecordStart
+    RETURN : TRUE = continue recording, FALSE = stop
+  }
+
 
 // Functions
 function BASS_GetVersion: DWORD; stdcall; external 'bass.dll' name 'BASS_GetVersion';
@@ -536,12 +598,12 @@ function BASS_GetVersion: DWORD; stdcall; external 'bass.dll' name 'BASS_GetVers
   Retrieve the version number of BASS that is loaded.
   RETURN : The BASS version (LOWORD.HIWORD)
 }
-function BASS_GetDeviceDescription(devnum: Integer; var desc: PChar): BOOL; stdcall; external 'bass.dll' name 'BASS_GetDeviceDescription';
+function BASS_GetDeviceDescription(devnum: DWORD): PChar; stdcall; external 'bass.dll' name 'BASS_GetDeviceDescription';
 {
   Get the text description of a device. This function can
   be used to enumerate the available devices.
   devnum : The device (0=first)
-  desc   : Pointer to store pointer to text description at
+  RETURN : The text description of the device (NULL=error)
 }
 function BASS_SetBufferLength(length: FLOAT): FLOAT; stdcall; external 'bass.dll' name 'BASS_SetBufferLength';
 {
@@ -763,7 +825,7 @@ function BASS_MusicGetLength(handle: HMUSIC; playlen: BOOL): DWORD; stdcall; ext
   or in output bytes (requires BASS_MUSIC_CALCLEN was used with BASS_MusicLoad).
   handle : Music handle
   playlen: TRUE=get the playback length, FALSE=get the pattern length
-  RETURN : The length of the music (0xFFFFFFFF=error)
+  RETURN : The length of the music (-1=error)
 }
 function BASS_MusicPreBuf(handle: HMUSIC): BOOL; stdcall; external 'bass.dll' name 'BASS_MusicPreBuf';
 {
@@ -951,14 +1013,14 @@ procedure BASS_StreamFree(handle: HSTREAM); stdcall; external 'bass.dll' name 'B
   Free a sample stream's resources.
   stream : Stream handle
 }
-function BASS_StreamGetLength(handle: HSTREAM): DWORD; stdcall; external 'bass.dll' name 'BASS_StreamGetLength';
+function BASS_StreamGetLength(handle: HSTREAM): QWORD; stdcall; external 'bass.dll' name 'BASS_StreamGetLength';
 {
   Retrieves the playback length (in bytes) of a file stream. It's not
   always possible to 100% accurately guess the length of a stream, so
   the length returned may be only an approximation when using some WAV
   codecs.
   handle : Stream handle
-  RETURN : The length (0xffffffff=error)
+  RETURN : The length (-1=error)
 }
 function BASS_StreamGetTags(handle: HSTREAM; tags : DWORD): PChar; stdcall; external 'bass.dll' name 'BASS_StreamGetTags';
 {
@@ -988,15 +1050,16 @@ Function BASS_StreamGetFilePosition(handle:HSTREAM; mode:DWORD) : DWORD;stdcall;
   the internet), or the end (total length). Obviously only works with file streams.
   handle : Stream handle
   mode   : The position to retrieve (0=decoding, 1=download, 2=end)
-  RETURN : The position (0xffffffff=error)
+  RETURN : The position (-1=error)
 }
 
-function BASS_CDInit(drive: PChar): BOOL; stdcall; external 'bass.dll' name 'BASS_CDInit';
+function BASS_CDInit(drive: PChar; flags: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_CDInit';
 {
   Initialize the CD functions, must be called before any other CD
   functions. The volume is initially set to 100 (the maximum), use
   BASS_ChannelSetAttributes() to adjust it.
   drive  : The CD drive, for example: "d:" (NULL=use default drive)
+  flags  : BASS_DEVICE_LEAVEVOL = leave the volume as it is
 }
 procedure BASS_CDFree; stdcall; external 'bass.dll' name 'BASS_CDFree';
 {
@@ -1006,16 +1069,21 @@ function BASS_CDInDrive: BOOL; stdcall; external 'bass.dll' name 'BASS_CDInDrive
 {
   Check if there is a CD in the drive.
 }
+function BASS_CDDoor(open:BOOL): BOOL; stdcall; external 'bass.dll' name 'BASS_CDDoor';
+{
+  Opens or closes the CD door.
+  open   : TRUE=open the door
+}
 function BASS_CDGetID(id: DWORD):PChar; stdcall; external 'bass.dll' name 'BASS_CDGetID';
 {
   Retrieves identification info from the CD in the drive.
-  id     : BASS_CDID_IDENTITY or BASS_CDID_UPC
+  id     : BASS_CDID_xxx flag
   RETURN : ID string (NULL=error)
 }
 Function BASS_CDGetTracks:DWORD;stdcall;external 'bass.dll' name 'BASS_CDGetTracks';
 {
   Retrieves the number of tracks on the CD
-  RETURN : The number of tracks (0xffffffff=error)
+  RETURN : The number of tracks (-1=error)
 }
 function BASS_CDPlay(track: DWORD; loop: BOOL; wait: BOOL): BOOL; stdcall; external 'bass.dll' name 'BASS_CDPlay';
 {
@@ -1029,55 +1097,103 @@ Function BASS_CDGetTrackLength(track:DWORD):DWORD;stdcall;external 'bass.dll' na
 {
   Retrieves the playback length (in milliseconds) of a cd track.
   track  : The CD track (1=first)
-  RETURN : The length (0xffffffff=error)
+  RETURN : The length (-1=error)
+}
+
+Function BASS_RecordGetDeviceDescription(devnum: DWORD):PChar;stdcall;external 'bass.dll' name 'BASS_RecordGetDeviceDescription';
+{
+  Get the text description of a recording device. This function can be
+  used to enumerate the available devices.
+  devnum : The device (0=first)
+  RETURN : The text description of the device (NULL=error)
+}
+Function BASS_RecordInit(device: Integer):BOOL;stdcall;external 'bass.dll' name 'BASS_RecordInit';
+{
+  Initialize a recording device.
+  device : Device to use (0=first, -1=default)
+}
+procedure BASS_RecordFree;stdcall;external 'bass.dll' name 'BASS_RecordFree';
+{
+  Free all resources used by the recording device.
+}
+procedure BASS_RecordGetInfo(var info:BASS_RECORDINFO);stdcall;external 'bass.dll' name 'BASS_RecordGetInfo';
+{
+  Retrieve some information on the recording device being used.
+  info   : Pointer to store info at
+}
+Function BASS_RecordGetInputName(input:DWORD):PChar;stdcall;external 'bass.dll' name 'BASS_RecordGetInputName';
+{
+  Get the text description of a recording input.
+  input  : Input number (0=first)
+  RETURN : The text description (NULL=error)
+}
+Function BASS_RecordSetInput(input:DWORD; setting:DWORD):BOOL;stdcall;external 'bass.dll' name 'BASS_RecordSetInput';
+{
+  Adjust the setting of a recording input.
+  input  : Input number (0=first)
+  setting: BASS_INPUT flags (if BASS_INPUT_LEVEL used, LOWORD=volume)
+}
+Function BASS_RecordGetInput(input:DWORD):DWORD;stdcall;external 'bass.dll' name 'BASS_RecordGetInput';
+{
+  Retrieve the setting of a recording input.
+  input  : Input number (0=first)
+  RETURN : The setting (LOWORD=volume, with BASS_INPUT_OFF flag if off, -1=error)
+}
+Function BASS_RecordStart(freq,flags:DWORD; proc:RECORDPROC; user:DWORD):BOOL;stdcall;external 'bass.dll' name 'BASS_RecordStart';
+{
+  Start recording. Use BASS_ChannelStop to stop recording.
+  freq   : Sampling rate
+  flags  : BASS_SAMPLE_8BITS/MONO flags (optional HIWORD=update period)
+  proc   : User defined function to receive the recorded data
+  user   : The 'user' value passed to the callback function
 }
 
 {
-  A "channel" can be a playing sample (HCHANNEL), a MOD music (HMUSIC),
-  a sample stream (HSTREAM), or the CD (CDCHANNEL). The following
-  functions can be used with one or more of these channel types.
+  A "channel" can be a playing sample (HCHANNEL), a MOD music (HMUSIC), a
+  sample stream (HSTREAM), the CD (CDCHANNEL), or recording (RECORDCHAN). The
+  following functions can be used with one or more of these channel types.
 }
 
-Function BASS_ChannelBytes2Seconds(handle: DWORD; pos: DWORD): FLOAT; stdcall;external 'bass.dll' name 'BASS_ChannelBytes2Seconds';
+Function BASS_ChannelBytes2Seconds(handle: DWORD; pos: QWORD): FLOAT; stdcall;external 'bass.dll' name 'BASS_ChannelBytes2Seconds';
 {
   Translate a byte position into time (seconds)
-  handle : Handle of channel (HCHANNEL/HMUSIC/HSTREAM, also HSAMPLE)
+  handle : Handle of channel (HCHANNEL/HMUSIC/HSTREAM, or RECORDCHAN, also HSAMPLE)
   pos    : The position to translate
   RETURN : The millisecond position (<0=error)
 }
-Function BASS_ChannelSeconds2Bytes(handle: DWORD; pos: FLOAT): DWORD; stdcall;external 'bass.dll' name 'BASS_ChannelSeconds2Bytes';
+Function BASS_ChannelSeconds2Bytes(handle: DWORD; pos: FLOAT): QWORD; stdcall;external 'bass.dll' name 'BASS_ChannelSeconds2Bytes';
 {
   Translate a time (seconds) position into bytes
-  handle : Handle of channel (HCHANNEL/HMUSIC/HSTREAM, also HSAMPLE)
+  handle : Handle of channel (HCHANNEL/HMUSIC/HSTREAM, or RECORDCHAN, also HSAMPLE)
   pos    : The position to translate
-  RETURN : The byte position (0xffffffff=error)
+  RETURN : The byte position (-1=error)
 }
-Function BASS_ChannelIsActive(handle: DWORD): integer; stdcall;external 'bass.dll' name 'BASS_ChannelIsActive';
+Function BASS_ChannelIsActive(handle: DWORD): DWORD; stdcall;external 'bass.dll' name 'BASS_ChannelIsActive';
 {
   Check if a channel is active (playing) or stalled.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
-  RETURN : 0=not playing, 1=playing, 2=stalled(internet)
+  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
+  RETURN : One of the BASS_ACTIVE_xxx values
 }
 function BASS_ChannelGetFlags(handle: DWORD): DWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetFlags';
 {
   Get some info about a channel.
   handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM)
-  RETURN : BASS_SAMPLE_xxx flags (0xffffffff=error)
+  RETURN : BASS_SAMPLE_xxx flags (-1=error)
 }
 function BASS_ChannelStop(handle: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelStop';
 {
   Stop a channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
+  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
 }
 function BASS_ChannelPause(handle: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelPause';
 {
   Pause a channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
+  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
 }
 function BASS_ChannelResume(handle: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelResume';
 {
   Resume a paused channel.
-  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
+  handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL/RECORDCHAN)
 }
 function BASS_ChannelSetAttributes(handle: DWORD; freq, volume, pan: Integer): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSetAttributes';
 {
@@ -1147,20 +1263,21 @@ function BASS_ChannelGet3DPosition(handle: DWORD; var pos, orient, vel: BASS_3DV
            omnidirectional sound source (NULL=don't retrieve it)
   vel    : velocity of the sound (NULL=don't retrieve it)
 }
-function BASS_ChannelSetPosition(handle: DWORD; pos: DWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSetPosition';
+function BASS_ChannelSetPosition(handle: DWORD; pos: QWORD): BOOL; stdcall; external 'bass.dll' name 'BASS_ChannelSetPosition';
 {
   Set the current playback position of a channel.
   handle : Channel handle (HCHANNEL/HMUSIC, or CDCHANNEL)
   pos    : the position
            if HCHANNEL: position in bytes
            if HMUSIC: LOWORD=order HIWORD=row ... use MAKELONG(order,row)
+           if HSTREAM: position in bytes, file streams only
            if CDCHANNEL: position in milliseconds from start of track
 }
-function BASS_ChannelGetPosition(handle: DWORD): DWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetPosition';
+function BASS_ChannelGetPosition(handle: DWORD): QWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetPosition';
 {
   Get the current playback position of a channel.
   handle : Channel handle (HCHANNEL/HMUSIC/HSTREAM, or CDCHANNEL)
-  RETURN : the position (0xffffffff=error)
+  RETURN : the position (-1=error)
            if HCHANNEL: position in bytes
            if HMUSIC: LOWORD=order HIWORD=row (see BASS_MusicSetPositionScaler)
            if HSTREAM: total bytes played since the stream was last flushed
@@ -1169,22 +1286,22 @@ function BASS_ChannelGetPosition(handle: DWORD): DWORD; stdcall; external 'bass.
 function BASS_ChannelGetLevel(handle: DWORD): DWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetLevel';
 {
   Calculate a channel's current output level.
-  handle : Channel handle (HMUSIC/HSTREAM)
-  RETURN : LOWORD=left level (0-128) HIWORD=right level (0-128) (0xffffffff=error)
+  handle : Channel handle (HMUSIC/HSTREAM, or RECORDCHAN)
+  RETURN : LOWORD=left level (0-128) HIWORD=right level (0-128) (-1=error)
 }
 function BASS_ChannelGetData(handle: DWORD; buffer: Pointer; length: DWORD): DWORD; stdcall; external 'bass.dll' name 'BASS_ChannelGetData';
 {
   Retrieves upto "length" bytes of the channel's current sample data.
   This is useful if you wish to "visualize" the sound.
-  handle : Channel handle (HMUSIC/HSTREAM)
+  handle : Channel handle (HMUSIC/HSTREAM, or RECORDCHAN)
   buffer : Location to write the data
   length : Number of bytes wanted, or a BASS_DATA_xxx flag
-  RETURN : Number of bytes actually written to the buffer (0xffffffff=error)
+  RETURN : Number of bytes actually written to the buffer (-1=error)
 }
-function BASS_ChannelSetSync(handle: DWORD; atype, param: DWORD; proc: SYNCPROC; user: DWORD): HSYNC; stdcall; external 'bass.dll' name 'BASS_ChannelSetSync';
+function BASS_ChannelSetSync(handle: DWORD; atype: DWORD; param: QWORD; proc: SYNCPROC; user: DWORD): HSYNC; stdcall; external 'bass.dll' name 'BASS_ChannelSetSync';
 {
   Setup a sync on a channel. Multiple syncs may be used per channel.
-  handle : Channel handle (currently there are only HMUSIC syncs)
+  handle : Channel handle
   atype  : Sync type (BASS_SYNC_xxx type & flags)
   param  : Sync parameters (see the BASS_SYNC_xxx type description)
   proc   : User defined callback function
