@@ -117,6 +117,9 @@ function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;
    algorithm (ie. not optimal but fast). }
 procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
 
+type
+   TSubdivideEdgeEvent = procedure (const idxA, idxB, newIdx : Integer); register;
+
 {: Subdivides mesh triangles.<p>
    Splits along edges, each triangle becomes four. The smoothFactor can be
    used to control subdivision smoothing, zero means no smoothing (tesselation
@@ -127,7 +130,8 @@ procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
 procedure SubdivideTriangles(smoothFactor : Single;
                              vertices : TAffineVectorList;
                              triangleIndices : TIntegerList;
-                             normals : TAffineVectorList = nil);
+                             normals : TAffineVectorList = nil;
+                             onSubdivideEdge : TSubdivideEdgeEvent = nil);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -138,6 +142,23 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils;
+
+var
+   v0to255reciproquals : array of Single;
+
+// Get0to255reciproquals
+//
+function Get0to255reciproquals : PSingleArray;
+var
+   i : Integer;
+begin
+   if Length(v0to255reciproquals)<>256 then begin
+      SetLength(v0to255reciproquals, 256);
+      for i:=1 to 255 do
+         v0to255reciproquals[i]:=1/i;
+   end;
+   Result:=@v0to255reciproquals[0];
+end;
 
 // ConvertStripToList (non-indexed variant)
 //
@@ -186,12 +207,24 @@ procedure ConvertIndexedListToList(const data : TAffineVectorList;
 var
    i : Integer;
    indicesList : PIntegerArray;
+   dataList, listList : PAffineVectorArray;
+   oldResetMem : Boolean;
 begin
    Assert(data<>list); // this is not allowed
-   list.AdjustCapacityToAtLeast(indices.Count);
+
+   oldResetMem:=list.SetCountResetsMemory;
+   list.SetCountResetsMemory:=False;
+
+   list.Count:=indices.Count;
+
+   list.SetCountResetsMemory:=oldResetMem;
+
    indicesList:=indices.List;
+   dataList:=data.List;
+   listList:=list.List;
+
    for i:=0 to indices.Count-1 do
-      list.Add(data[indicesList[i]]);
+      listList[i]:=dataList[indicesList[i]];
 end;
 
 // BuildVectorCountOptimizedIndices
@@ -304,29 +337,31 @@ end;
 procedure RemapReferences(reference : TAffineVectorList;
                           const indices : TIntegerList);
 var
-   i, n : Integer;
-   tag : array of Integer;
-   refList : PAffineVectorArray;
+   i : Integer;
+   tag : array of Byte;
+   pTag : PByteArray;
+   refListI, refListN : PAffineVector;
    indicesList : PIntegerArray;
 begin
    Assert(reference.Count=indices.Count);
    SetLength(tag, reference.Count);
    indicesList:=indices.List;
    // 1st step, tag all used references
+   pTag:=@tag[0];
    for i:=0 to indices.Count-1 do
-      tag[indicesList[i]]:=1;
+      pTag[indicesList[i]]:=1;
    // 2nd step, build remap indices and cleanup references
-   n:=0;
-   refList:=reference.List;
+   refListI:=@reference.List[0];
+   refListN:=refListI;
    for i:=0 to High(tag) do begin
       if tag[i]<>0 then begin
-         tag[i]:=n;
-         if n<>i then
-            refList[n]:=refList[i];
-         Inc(n);
+         if refListN<>refListI then
+            refListN^:=refListI^;
+         Inc(refListN);
       end;
+      Inc(refListI);
    end;
-   reference.Count:=n;
+   reference.Count:=(Integer(refListN)-Integer(@reference.List[0])) div 12;
 end;
 
 // RemapReferences (integers)
@@ -335,7 +370,8 @@ procedure RemapReferences(reference : TIntegerList;
                           const indices : TIntegerList);
 var
    i, n : Integer;
-   tag : array of Integer;
+   tag : array of Byte;
+   pTag : PByteArray;
    refList : PIntegerArray;
    indicesList : PIntegerArray;
 begin
@@ -343,14 +379,14 @@ begin
    SetLength(tag, reference.Count);
    indicesList:=indices.List;
    // 1st step, tag all used references
+   pTag:=@tag[0];
    for i:=0 to indices.Count-1 do
-      tag[indicesList[i]]:=1;
+      pTag[indicesList[i]]:=1;
    // 2nd step, build remap indices and cleanup references
    n:=0;
    refList:=reference.List;
    for i:=0 to High(tag) do begin
       if tag[i]<>0 then begin
-         tag[i]:=n;
          if n<>i then
             refList[n]:=refList[i];
          Inc(n);
@@ -437,36 +473,34 @@ function BuildNormals(reference : TAffineVectorList;
                       indices : TIntegerList) : TAffineVectorList;
 var
    i, n, k : Integer;
-   normalsCount : TIntegerList;
+   normalsCount : array of Byte;
    v : TAffineVector;
-   refList : PAffineVectorArray;
+   refList, resultList : PAffineVectorArray;
    indicesList : PIntegerArray;
+   reciproquals : PSingleArray;
 begin
    Result:=TAffineVectorList.Create;
-   normalsCount:=TIntegerList.Create;
-   try
-      Result.Count:=reference.Count;
-      normalsCount.Count:=reference.Count;
-      refList:=reference.List;
-      indicesList:=indices.List;
-      // 1st step, calculate triangle normals and sum
-      i:=0; while i<indices.Count do begin
-         v:=CalcPlaneNormal(refList[indicesList[i]],
-                            refList[indicesList[i+1]],
-                            refList[indicesList[i+2]]);
-         for n:=i to i+2 do begin
-            k:=indicesList[n];
-            Result.TranslateItem(k, v);
-            Inc(normalsCount.List[k]);
-         end;
-         Inc(i, 3);
+   Result.Count:=reference.Count;
+   SetLength(normalsCount, reference.Count);
+   refList:=reference.List;
+   indicesList:=indices.List;
+   // 1st step, calculate triangle normals and sum
+   i:=0; while i<indices.Count do begin
+      v:=CalcPlaneNormal(refList[indicesList[i]],
+                         refList[indicesList[i+1]],
+                         refList[indicesList[i+2]]);
+      for n:=i to i+2 do begin
+         k:=indicesList[n];
+         Result.TranslateItem(k, v);
+         Inc(normalsCount[k]);
       end;
-      // 2nd step, average normals
-      for i:=0 to reference.Count-1 do if normalsCount[i]>1 then
-         ScaleVector(Result.List[i], 1/normalsCount[i]);
-   finally
-      normalsCount.Free;
+      Inc(i, 3);
    end;
+   // 2nd step, average normals
+   resultList:=Result.List;
+   reciproquals:=Get0to255reciproquals;
+   for i:=0 to reference.Count-1 do
+      ScaleVector(resultList[i], reciproquals[normalsCount[i]]);
 end;
 
 {: Builds a list of non-oriented (non duplicated) edges list.<p>
@@ -546,7 +580,7 @@ begin
    end;
    // Destroy Hash
    for i:=0 to High(edgesHash) do
-      edgesHash[i]:=TIntegerList.Create;
+      edgesHash[i].Free;
 end;
 
 // IncreaseCoherency
@@ -811,7 +845,8 @@ end;
 procedure SubdivideTriangles(smoothFactor : Single;
                              vertices : TAffineVectorList;
                              triangleIndices : TIntegerList;
-                             normals : TAffineVectorList = nil);
+                             normals : TAffineVectorList = nil;
+                             onSubdivideEdge : TSubdivideEdgeEvent = nil);
 var
    i, a, b, c, nv : Integer;
    edges : TIntegerList;
@@ -843,7 +878,9 @@ begin
                   CombineVector(p, n, f);
                end;
             end;
-            vertices.Add(p);
+            if Assigned(onSubdivideEdge) then
+               onSubdivideEdge(a, b, vertices.Add(p))
+            else vertices.Add(p);
             Inc(i, 2);
          end;
          // spawn new triangles geometry
