@@ -12,7 +12,7 @@ BRCC = $(ROOT)\bin\brcc32.exe $**
 PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
   shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe texcombine.exe \
   subdivide.exe machine.exe simple.exe Project1.exe CgSimple.exe CgTexture.exe \
-  multimaterial.exe ducky.exe fog.exe
+  multimaterial.exe ducky.exe fog.exe shadedterrain.exe waterplane.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -69,4 +69,10 @@ ducky.exe: meshes\ducky\ducky.dpr
   $(DCC)
 
 fog.exe: rendering\fog\fog.dpr
+  $(DCC)
+
+shadedterrain.exe: meshes\shadedterrain\shadedterrain.dpr
+  $(DCC)
+
+waterplane.exe: specialsFX\waterplane\waterplane.dpr
   $(DCC)
