@@ -23,7 +23,7 @@ type
       csoTextured: Allows for a primary texture that the cel shading
                    is modulated with and forces the shade definition
                    to render as a second texture. }
-   TGLCelShaderOption = (csoOutlines, csoTextured);
+   TGLCelShaderOption = (csoOutlines, csoTextured, csoNoBuildShadeTexture);
    TGLCelShaderOptions = set of TGLCelShaderOption;
 
    // TGLCelShaderGetIntensity
@@ -36,7 +36,7 @@ type
    {: A generic cel shader.<p> }
    TGLCelShader = class (TGLShader)
       private
-         FOutlineWidth : Integer;
+         FOutlineWidth : Single;
          FCelShaderOptions : TGLCelShaderOptions;
          FVertexProgramHandle,
          FVertexProgram2Handle : cardinal;
@@ -49,7 +49,7 @@ type
 
       protected
          procedure SetCelShaderOptions(const val : TGLCelShaderOptions);
-         procedure SetOutlineWidth(const val : Integer);
+         procedure SetOutlineWidth(const val : Single);
          procedure BuildShadeTexture;
          procedure Loaded; override;
 
@@ -60,13 +60,12 @@ type
          procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
          function DoUnApply(var rci: TRenderContextInfo) : Boolean; override;
 
-         procedure NotifyChange(Sender: TObject); override;
-
          property LightPosition : TVector read FLightPosition write SetLightPosition;
+         property ShadeTexture : TGLTexture read FShadeTexture;
 
       published
          property CelShaderOptions : TGLCelShaderOptions read FCelShaderOptions write SetCelShaderOptions;
-         property OutlineWidth : Integer read FOutlineWidth write SetOutlineWidth;
+         property OutlineWidth : Single read FOutlineWidth write SetOutlineWidth;
          property OnGetIntensity : TGLCelShaderGetIntensity read FOnGetIntensity write FOnGetIntensity;
    end;
 
@@ -143,7 +142,13 @@ begin
    FCelShaderOptions:=[csoOutlines];
    FLightPosition:=NullHMGPoint;
    FShadeTexture:=TGLTexture.Create(Self);
-   BuildShadeTexture;
+   with FShadeTexture do begin
+      Enabled:=True;
+      MinFilter:=miNearest;
+      MagFilter:=maNearest;
+      TextureWrap:=twNone;
+      TextureMode:=tmModulate;
+   end;
 
    ShaderStyle:=ssLowLevel;
 end;
@@ -174,13 +179,10 @@ var
    i : Integer;
    intensity : Byte;
 begin
+   if csoNoBuildShadeTexture in FCelShaderOptions then exit;
+   
    with FShadeTexture do begin
-      Enabled:=True;
-      MinFilter:=miNearest;
-      MagFilter:=maNearest;
       ImageClassName:='TGLBlankImage';
-      TextureWrap:=twNone;
-      TextureMode:=tmModulate;
       TGLBlankImage(Image).Width:=128;
       TGLBlankImage(Image).Height:=1;
    end;
@@ -309,11 +311,11 @@ begin
       glEnable(GL_CULL_FACE);
       glEnable(GL_COLOR_MATERIAL);
 
-      glPolygonMode(GL_BACK,GL_LINE);
+      glPolygonMode(GL_BACK, GL_LINE);
       glCullFace(GL_FRONT);
       glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      glDepthFunc(GL_LEQUAL);
+      glDepthFunc(GL_LESS);
       glColor4f(0,0,0,1);
       glLineWidth(FOutlineWidth);
 
@@ -325,27 +327,20 @@ begin
    glPopAttrib;
 end;
 
-// NotifyChange
-//
-procedure TGLCelShader.NotifyChange(Sender: TObject);
-begin
-  inherited;
-  BuildShadeTexture;
-end;
-
 // SetCelShaderOptions
 //
 procedure TGLCelShader.SetCelShaderOptions(const val: TGLCelShaderOptions);
 begin
    if val<>FCelShaderOptions then begin
       FCelShaderOptions:=val;
+      BuildShadeTexture;
       NotifyChange(Self);
    end;
 end;
 
 // SetOutlineWidth
 //
-procedure TGLCelShader.SetOutlineWidth(const val : Integer);
+procedure TGLCelShader.SetOutlineWidth(const val : Single);
 begin
    if val<>FOutlineWidth then begin
       FOutlineWidth:=val;
