@@ -20,15 +20,18 @@ type
 
    TGLShadowVolume = class;
 
+   TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
+
    // TGLShadowVolumeCaster
    //
    {: Specifies an individual shadow caster.<p>
       Can be a light or an opaque object. }
-   TGLShadowVolumeCaster = class(TCollectionItem)
+   TGLShadowVolumeCaster = class (TCollectionItem)
 	   private
 			{ Private Declarations }
          FCaster : TGLBaseSceneObject;
          FEffectiveRadius : Single;
+         FCapping : TGLShadowVolumeCapping;
 
 		protected
 			{ Protected Declarations }
@@ -38,14 +41,20 @@ type
 
 		public
 			{ Public Declarations }
+         constructor Create(Collection: TCollection); override;
+
          procedure Assign(Source: TPersistent); override;
 
          {: Shadow casting object.<p>
             Can be an opaque object or a lightsource. }
          property Caster : TGLBaseSceneObject read FCaster write SetCaster;
+         
          {: Radius beyond which the caster can be ignored.<p>
             Zero (default value) means the caster can never be ignored. }
          property EffectiveRadius : Single read FEffectiveRadius write FEffectiveRadius;
+         {: Specifies if the shadow volume should be capped.<p>
+            Capping helps solve shadowing artefacts, at the cost of performance. }
+         property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcDefault;
    end;
 
    // TGLShadowVolumeCasters
@@ -81,6 +90,7 @@ type
 			{ Private Declarations }
          FRendering : Boolean;
          FCasters : TGLShadowVolumeCasters;
+         FCapping : TGLShadowVolumeCapping;
 
 		protected
 			{ Protected Declarations }
@@ -99,6 +109,10 @@ type
 		published
 			{ Public Declarations }
          property Casters : TGLShadowVolumeCasters read FCasters;
+
+         {: Specifies if the shadow volume should be capped.<p>
+            Capping helps solve shadowing artefacts, at the cost of performance. }
+         property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcAlways;
    end;
 
 //-------------------------------------------------------------
@@ -114,6 +128,24 @@ uses SysUtils;
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------
 // ------------------
+
+constructor TGLShadowVolumeCaster.Create(Collection: TCollection);
+begin
+   ..
+end;
+
+// Assign
+//
+procedure TGLShadowVolumeCaster.Assign(Source: TPersistent);
+begin
+   if Source is TGLShadowVolumeCaster then begin
+      FCaster:=TGLShadowVolumeCaster(Source).FCaster;
+      FEffectiveRadius:=TGLShadowVolumeCaster(Source).FEffectiveRadius;
+      FCapping:=TGLShadowVolumeCaster(Source).FCapping;
+      TGLShadowVolume(TGLShadowVolumeCaster(Collection).GetOwner).StructureChanged;
+   end;
+   inherited;
+end;
 
 // SetCaster
 //
@@ -145,18 +177,6 @@ begin
       if EffectiveRadius>0 then
          Result:=Result+Format(' (%.1f)', [EffectiveRadius]);
    end else Result:='nil';
-end;
-
-// Assign
-//
-procedure TGLShadowVolumeCaster.Assign(Source: TPersistent);
-begin
-   if Source is TGLShadowVolumeCaster then begin
-      FCaster:=TGLShadowVolumeCaster(Source).FCaster;
-      FEffectiveRadius:=TGLShadowVolumeCaster(Source).FEffectiveRadius;
-      TGLShadowVolume(TGLShadowVolumeCaster(Collection).GetOwner).StructureChanged;
-   end;
-   inherited;
 end;
 
 // ------------------
@@ -223,6 +243,7 @@ begin
    ObjectStyle:=ObjectStyle-[osDirectDraw]+[osNoVisibilityCulling];
    FCasters:=TGLShadowVolumeCasters.Create(TGLShadowVolumeCaster);
    FCasters.FOwner:=Self;
+   FCapping:=svcAlways;
 end;
 
 // Destroy
@@ -288,6 +309,8 @@ procedure TGLShadowVolume.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLShadowVolume) then begin
       FCasters.Assign(TGLShadowVolume(Source).Casters);
+      FCapping:=TGLShadowVolume(Source).FCapping;
+      StructureChanged;
    end;
    inherited Assign(Source);
 end;
