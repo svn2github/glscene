@@ -89,28 +89,28 @@ begin
     end;
   end;
 
-  with TODEJointHinge.CreateOwned(GLODEJointList1.Joints) do begin
+  with TODEJointHinge.Create(GLODEJointList1.Joints) do begin
     Manager:=GLODEManager1;
     Attach(WheelBehaviour,nil);
     Axis.SetVector(0,1,0);
     Anchor.AsVector:=Wheel.AbsolutePosition;
   end;
 
-  with TODEJointHinge.CreateOwned(GLODEJointList1.Joints) do begin
+  with TODEJointHinge.Create(GLODEJointList1.Joints) do begin
     Manager:=GLODEManager1;
     Attach(WheelBehaviour,ArmBehaviour);
     Axis.SetVector(0,1,0);
     Anchor.AsVector:=Pin1.AbsolutePosition;
   end;
 
-  with TODEJointHinge.CreateOwned(GLODEJointList1.Joints) do begin
+  with TODEJointHinge.Create(GLODEJointList1.Joints) do begin
     Manager:=GLODEManager1;
     Attach(ArmBehaviour,Pin2Behaviour);
     Axis.SetVector(0,1,0);
     Anchor.AsVector:=Pin2.AbsolutePosition;
   end;
 
-  with TODEJointSlider.CreateOwned(GLODEJointList1.Joints) do begin
+  with TODEJointSlider.Create(GLODEJointList1.Joints) do begin
     Manager:=GLODEManager1;
     Attach(Pin2Behaviour,nil);
     Axis.SetVector(1,0,0);
