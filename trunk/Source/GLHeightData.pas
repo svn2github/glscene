@@ -1172,7 +1172,7 @@ begin
             for x:=XLeft to XLeft+Size-1 do begin
                fs.Seek(offset+(x mod cTBWidth)*2, soFromBeginning);
                fs.Read(b, 2);
-               if b<0 the b:=0;
+               if b<0 then b:=0;
                rasterLine[x-XLeft]:=Word(b);
             end;
          end;
