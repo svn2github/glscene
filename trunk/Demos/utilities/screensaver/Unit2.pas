@@ -117,7 +117,7 @@ var
 begin
 	// Here I used the trick of setting Torus1.Tag=1 and Torus.Tag=2
 	// other objects have a Tag of 0
-	bso:=GLSceneViewer1.GetPickedObject(X, Y);
+	bso:=GLSceneViewer1.Buffer.GetPickedObject(X, Y);
 	if Assigned(bso) and (bso.Tag>0) then
 		SetHot(bso.Tag-1)
 	else SetHot(-1);

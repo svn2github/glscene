@@ -65,7 +65,7 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
 	// get what is under the mouse
-	currentPick:=(GLSceneViewer1.GetPickedObject(x, y) as TGLCustomSceneObject);
+	currentPick:=(GLSceneViewer1.Buffer.GetPickedObject(x, y) as TGLCustomSceneObject);
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
@@ -74,7 +74,7 @@ var
 	pick : TGLCustomSceneObject;
 begin
 	// if an object is picked...
-	pick:=(GLSceneViewer1.GetPickedObject(x, y) as TGLCustomSceneObject);
+	pick:=(GLSceneViewer1.Buffer.GetPickedObject(x, y) as TGLCustomSceneObject);
 	if Assigned(pick) then begin
 		// ...turn it to yellow and show its name
 		pick.Material.FrontProperties.Emission.Color:=clrYellow;

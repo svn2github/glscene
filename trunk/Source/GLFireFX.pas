@@ -182,7 +182,7 @@ type
 			class function FriendlyName : String; override;
 			class function FriendlyDescription : String; override;
 
-         procedure Render(sceneViewer : TGLSceneViewer;
+         procedure Render(sceneBuffer : TGLSceneBuffer;
 								  var rci : TRenderContextInfo); override;
 
 		published
@@ -639,7 +639,7 @@ end;
 
 // Render
 //
-procedure TGLBFireFX.Render(sceneViewer : TGLSceneViewer;
+procedure TGLBFireFX.Render(sceneBuffer : TGLSceneBuffer;
                             var rci : TRenderContextInfo);
 var
    n : Integer;
@@ -658,7 +658,7 @@ begin
    glPushMatrix;
    // revert to the base model matrix in the case of a referenced fire
    if Assigned(Manager.Reference) then begin
-      glLoadMatrixf(@OwnerBaseSceneObject.Scene.CurrentViewer.ModelViewMatrix);
+      glLoadMatrixf(@OwnerBaseSceneObject.Scene.CurrentBuffer.ModelViewMatrix);
    end;
 
    glDisable(GL_CULL_FACE);

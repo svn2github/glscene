@@ -2,6 +2,7 @@
 {: Skydome object<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>26/08/01 - EG - Added SkyDomeStars
       <li>12/08/01 - EG - DepthMask no set to False during rendering
       <li>18/07/01 - EG - VisibilityCulling compatibility changes
       <li>12/03/01 - EG - Reversed polar caps orientation
@@ -14,7 +15,7 @@ unit GLSkydome;
 
 interface
 
-uses Classes, GLScene, GLMisc, GLTexture;
+uses Classes, GLScene, GLMisc, GLTexture, Graphics, Geometry;
 
 type
 
@@ -80,6 +81,68 @@ type
          procedure BuildList(var rci : TRenderContextInfo);
    end;
 
+	// TSkyDomeStar
+	//
+	TSkyDomeStar = class (TCollectionItem)
+	   private
+	      { Private Declarations }
+         FRA, FDec : Single;
+         FMagnitude : Single;
+         FColor : TColor;
+         FCacheCoord : TAffineVector; // cached cartesian coordinates
+
+	   protected
+	      { Protected Declarations }
+         function GetDisplayName : String; override;
+
+      public
+	      { Public Declarations }
+	      constructor Create(Collection : TCollection); override;
+	      destructor Destroy; override;
+
+	      procedure Assign(Source: TPersistent); override;
+
+	   published
+	      { Published Declarations }
+         {: Right Ascension, in degrees. }
+         property RA : Single read FRA write FRA;
+         {: Declination, in degrees. }
+         property Dec : Single read FDec write FDec;
+         {: Absolute magnitude. }
+         property Magnitude : Single read FMagnitude write FMagnitude;
+         {: Color of the star. }
+         property Color : TColor read FColor write FColor;
+
+	end;
+
+	// TSkyDomeStars
+	//
+	TSkyDomeStars = class (TCollection)
+	   protected
+	      { Protected Declarations }
+	      owner : TComponent;
+	      function GetOwner: TPersistent; override;
+         procedure SetItems(index : Integer; const val : TSkyDomeStar);
+	      function GetItems(index : Integer) : TSkyDomeStar;
+
+         procedure CalculateCartesianCoordinates;
+
+      public
+	      { Public Declarations }
+	      constructor Create(AOwner : TComponent);
+
+         function Add: TSkyDomeStar;
+	      function FindItemID(ID: Integer): TSkyDomeStar;
+	      property Items[index : Integer] : TSkyDomeStar read GetItems write SetItems; default;
+
+         procedure BuildList(var rci : TRenderContextInfo);
+
+         {: Adds random stars with colors randomly picken in the given range.<p>
+            Stars are homogenously scattered on the complete sphere, not only the
+            band defined or visible dome. }
+         procedure AddRandomStars(nb : Integer; colorRangeStart, colorRangeEnd : TColorVector);
+   end;
+
 	// TSkyDome
 	//
    {: Renders a sky dome always centered on the camera.<p>
@@ -95,10 +158,12 @@ type
 	   private
 	      { Private Declarations }
          FBands : TSkyDomeBands;
+         FStars : TSkyDomeStars;
 
 	   protected
 	      { Protected Declarations }
          procedure SetBands(const val : TSkyDomeBands);
+         procedure SetStars(const val : TSkyDomeStars);
 
 	   public
 	      { Public Declarations }
@@ -113,6 +178,7 @@ type
 	   published
 	      { Published Declarations }
          property Bands : TSkyDomeBands read FBands write SetBands;
+         property Stars : TSkyDomeStars read FStars write SetStars;
 	end;
 
    // TEarthSkyDome
@@ -190,7 +256,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Geometry, OpenGL12;
+uses SysUtils, OpenGL12;
 
 // ------------------
 // ------------------ TSkyDomeBand ------------------
@@ -429,6 +495,157 @@ begin
 end;
 
 // ------------------
+// ------------------ TSkyDomeStar ------------------
+// ------------------
+
+// Create
+//
+constructor TSkyDomeStar.Create(Collection : TCollection);
+begin
+	inherited Create(Collection);
+end;
+
+// Destroy
+//
+destructor TSkyDomeStar.Destroy;
+begin
+	inherited Destroy;
+end;
+
+// Assign
+//
+procedure TSkyDomeStar.Assign(Source: TPersistent);
+begin
+	if Source is TSkyDomeStar then begin
+      FRA:=TSkyDomeStar(Source).FRA;
+      FDec:=TSkyDomeStar(Source).FDec;
+      FMagnitude:=TSkyDomeStar(Source).FMagnitude;
+      FColor:=TSkyDomeStar(Source).FColor;
+      SetVector(FCacheCoord, TSkyDomeStar(Source).FCacheCoord);
+	end;
+	inherited Destroy;
+end;
+
+// GetDisplayName
+//
+function TSkyDomeStar.GetDisplayName : String;
+begin
+	Result:=Format('RA: %5.1f / Dec: %5.1f', [RA, Dec]);
+end;
+
+// ------------------
+// ------------------ TSkyDomeStars ------------------
+// ------------------
+
+// Create
+//
+constructor TSkyDomeStars.Create(AOwner : TComponent);
+begin
+	Owner:=AOwner;
+	inherited Create(TSkyDomeStar);
+end;
+
+// GetOwner
+//
+function TSkyDomeStars.GetOwner: TPersistent;
+begin
+	Result:=Owner;
+end;
+
+// SetItems
+//
+procedure TSkyDomeStars.SetItems(index : Integer; const val : TSkyDomeStar);
+begin
+	inherited Items[index]:=val;
+end;
+
+// GetItems
+//
+function TSkyDomeStars.GetItems(index : Integer) : TSkyDomeStar;
+begin
+	Result:=TSkyDomeStar(inherited Items[index]);
+end;
+
+// Add
+//
+function TSkyDomeStars.Add: TSkyDomeStar;
+begin
+	Result:=(inherited Add) as TSkyDomeStar;
+end;
+
+// FindItemID
+//
+function TSkyDomeStars.FindItemID(ID: Integer): TSkyDomeStar;
+begin
+	Result:=(inherited FindItemID(ID)) as TSkyDomeStar;
+end;
+
+// CalculateCartesianCoordinates
+//
+procedure TSkyDomeStars.CalculateCartesianCoordinates;
+var
+   i : Integer;
+   star : TSkyDomeStar;
+   raC, raS, decC, decS : Single;
+begin
+   // to be enhanced...
+   for i:=0 to Count-1 do begin
+      star:=Items[i];
+      SinCos(star.RA, raS, raC);
+      SinCos(star.Dec, decS, decC);
+      star.FCacheCoord[0]:=decC*raC;
+      star.FCacheCoord[1]:=decS*raC;
+      star.FCacheCoord[2]:=raS;
+   end;
+end;
+
+// BuildList
+//
+procedure TSkyDomeStars.BuildList(var rci : TRenderContextInfo);
+var
+   i : Integer;
+   star : TSkyDomeStar;
+   color : TColorVector;
+begin
+   if Count=0 then Exit;
+   CalculateCartesianCoordinates;
+   glBegin(GL_POINTS);
+   for i:=0 to Count-1 do begin
+      star:=Items[i];
+      color:=ConvertWinColor(star.FColor);
+      glColor4fv(@color[0]);
+      glVertex3fv(@star.FCacheCoord[0]);
+   end;
+   glEnd;
+end;
+
+// AddRandomStars
+//
+procedure TSkyDomeStars.AddRandomStars(nb : Integer; colorRangeStart, colorRangeEnd : TColorVector);
+var
+   i : Integer;
+   coord : TAffineVector;
+   star : TSkyDomeStar;
+   color : TColorVector;
+begin
+   for i:=1 to nb do begin
+      star:=Add;
+      // pick a point in the half-cube
+      coord[0]:=Random-0.5;
+      coord[1]:=Random-0.5;
+      coord[2]:=Random-0.5;
+      // project it on the sphere
+      NormalizeVector(coord);
+      // calculate RA and Dec
+      star.RA:=ArcSin(coord[2]);
+      star.Dec:=ArcTan2(coord[1], coord[0]);
+      // pick a random color
+      color:=VectorLerp(colorRangeStart, colorRangeEnd, Random);
+      star.Color:=ConvertColorVector(color);
+   end;
+end;
+
+// ------------------
 // ------------------ TSkyDome ------------------
 // ------------------
 
@@ -452,12 +669,14 @@ begin
       Stacks:=4;
       StopColor.Color:=clrNavy;
    end;
+   FStars:=TSkyDomeStars.Create(Self);
 end;
 
 // Destroy
 //
 destructor TSkyDome.Destroy;
 begin
+   FStars.Free;
    FBands.Free;
 	inherited Destroy;
 end;
@@ -468,6 +687,7 @@ procedure TSkyDome.Assign(Source: TPersistent);
 begin
    if Source is TSkyDome then begin
       FBands.Assign(TSkyDome(Source).FBands);
+      FStars.Assign(TSkyDome(Source).FStars);
    end;
    inherited;
 end;
@@ -480,11 +700,20 @@ begin
    StructureChanged;
 end;
 
+// SetStars
+//
+procedure TSkyDome.SetStars(const val : TSkyDomeStars);
+begin
+   FStars.Assign(val);
+   StructureChanged;
+end;
+
 // BuildList
 //
 procedure TSkyDome.BuildList(var rci : TRenderContextInfo);
 begin
    Bands.BuildList(rci);
+   Stars.BuildList(rci);
 end;
 
 // DoRender
@@ -501,7 +730,7 @@ begin
    glDisable(GL_FOG);
    glDepthMask(False);
    glPushMatrix;
-   glLoadMatrixf(@Scene.CurrentViewer.ModelViewMatrix);
+   glLoadMatrixf(@Scene.CurrentBuffer.ModelViewMatrix);
    glTranslatef(rci.cameraPosition[0], rci.cameraPosition[1], rci.cameraPosition[2]);
    with Scene.CurrentGLCamera do
       f:=(NearPlane+DepthOfView)*0.9;

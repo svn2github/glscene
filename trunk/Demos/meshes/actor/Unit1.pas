@@ -68,6 +68,8 @@ type
     procedure Actor1FrameChanged(Sender: TObject);
     procedure CBSmoothClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
   private
     { Déclarations privées }
     mdx, mdy : Integer;
@@ -212,11 +214,16 @@ begin
 	GLCamera1.AdjustDistanceToTarget(Power(1.1, WheelDelta/120));
 end;
 
-
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
    Caption:=Format('%.2f FPS', [GLSceneViewer1.FramesPerSecond]);
    GLSceneViewer1.ResetPerformanceMonitor;
+end;
+
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+   GLSceneViewer1.Invalidate;
 end;
 
 end.

@@ -164,16 +164,16 @@ begin
    with GLSceneViewer1 do begin
       // we render twice to get a fair FPS rating
       ResetPerformanceMonitor;
-      Render;
-      Render;
+      Buffer.Render;
+      Buffer.Render;
       Label1.Caption:=Format('%.2f FPS (mmTriangles)', [FramesPerSecond]);
    end;
    // calculate & display trianglestrip framerate
    with GLSceneViewer2 do begin
       // we render twice to get a fair FPS rating
       ResetPerformanceMonitor;
-      Render;
-      Render;
+      Buffer.Render;
+      Buffer.Render;
       Label2.Caption:=Format('%.2f FPS (mmTriangleStrip)', [FramesPerSecond]);
    end;
 end;

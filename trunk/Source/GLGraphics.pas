@@ -123,9 +123,15 @@ type
             <li>4 : RGB+A (32 bits)
             <li>3 : RGB (24 bits)
             <li>1 : Alpha channel only (8 bits)
-            </ul> }
+            </ul>The texWidth and texHeight parameters are used to return
+            the actual width and height of the texture (that can be different
+            from the size of the bitmap32). }
          procedure RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
-                                           texFormat : Integer = GL_RGBA);
+                                           texFormat : Integer;
+                                           var texWidth, texHeight : Integer); overload;
+         {: Helper version of RegisterAsOpenGLTexture. }
+         procedure RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
+                                           texFormat : Integer); overload;
 
          {: Reads the given area from the current active OpenGL rendering context.<p>
             The best spot for reading pixels is within a SceneViewer's PostRender
@@ -421,7 +427,18 @@ end;
 // RegisterAsOpenGLTexture
 //
 procedure TGLBitmap32.RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
-                                              texFormat : Integer = GL_RGBA);
+                                              texFormat : Integer);
+var
+   tw, th : Integer;
+begin
+   RegisterAsOpenGLTexture(minFilter, texFormat, tw, th);
+end;
+
+// RegisterAsOpenGLTexture
+//
+procedure TGLBitmap32.RegisterAsOpenGLTexture(minFilter : TGLMinFilter;
+                                              texFormat : Integer;
+                                              var texWidth, texHeight : Integer);
 var
    w2, h2, maxSize : Integer;
    buffer : Pointer;
@@ -432,6 +449,8 @@ begin
       glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
       if w2>maxSize then w2:=maxSize;
       if h2>maxSize then h2:=maxSize;
+      texWidth:=w2;
+      texHeight:=h2;
       if (w2<>Width) or (h2<>Height) then begin
          GetMem(buffer, w2*h2*4);
          gluScaleImage(GL_RGBA, Width, Height, GL_UNSIGNED_BYTE, Data, w2, h2,

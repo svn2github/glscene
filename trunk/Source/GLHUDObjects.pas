@@ -135,7 +135,7 @@ begin
    // Prepare matrices
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
-   glLoadMatrixf(@Scene.CurrentViewer.BaseProjectionMatrix);
+   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
    glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
    glTranslatef(Position.X-rci.viewPortSize.cx/2,
                 rci.viewPortSize.cy/2-Position.Y, Position.Z);
@@ -252,7 +252,7 @@ begin
    // Prepare matrices
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
-   glLoadMatrixf(@Scene.CurrentViewer.BaseProjectionMatrix);
+   glLoadMatrixf(@Scene.CurrentBuffer.BaseProjectionMatrix);
    glScalef(2/rci.viewPortSize.cx, 2/rci.viewPortSize.cy, 1);
    glTranslatef(Position.X-rci.viewPortSize.cx/2,
                 rci.viewPortSize.cy/2-Position.Y, Position.Z);

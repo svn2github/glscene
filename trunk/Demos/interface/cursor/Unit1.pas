@@ -109,7 +109,7 @@ begin
    HSCursor.Position.X:=x;
    HSCursor.Position.Y:=y;
    // Update the status bar with some misc. info
-   color:=GLSceneViewer1.GetPixelColor(x, y);
+   color:=GLSceneViewer1.Buffer.GetPixelColor(x, y);
    StatusBar1.SimpleText:=Format('X:%4d Y:%4d, R:%3d G:%3d B:%3d',
                                  [x, y, GetRValue(color), GetGValue(color), GetBValue(color)]);
    // Add a trail particle

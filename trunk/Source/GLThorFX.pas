@@ -134,7 +134,7 @@ type
 			class function FriendlyName : String; override;
 			class function FriendlyDescription : String; override;
 
-         procedure Render(sceneViewer : TGLSceneViewer;
+         procedure Render(sceneBuffer : TGLSceneBuffer;
 								  var rci : TRenderContextInfo); override;
 
 		published
@@ -555,7 +555,7 @@ end;
 
 // Render
 //
-procedure TGLBThorFX.Render(sceneViewer : TGLSceneViewer;
+procedure TGLBThorFX.Render(sceneBuffer : TGLSceneBuffer;
                             var rci : TRenderContextInfo);
 var
    N: Integer;

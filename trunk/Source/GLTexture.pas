@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>25/08/01 - Egg - Added TGLBlankImage
       <li>16/08/01 - Egg - drawState now part of TRenderContextInfo
       <li>15/08/01 - Egg - TexGen support (object_linear, eye_linear and sphere_map)
       <li>13/08/01 - Egg - Fixed OnTextureNeeded handling (paths for mat lib)
@@ -319,7 +320,6 @@ type
 			procedure ReadData(Stream: TStream);
 			procedure WriteData(Stream: TStream);
 
-
 		public
          { Public Properties }
 			constructor Create(AOwner : TPersistent); override;
@@ -333,6 +333,8 @@ type
 
 			property Color : TColorVector read FColor write SetColor;
 			property AsWinColor : TColor read GetAsWinColor write SetAsWinColor;
+
+         property DefaultColor : TColorVector read FColor;
 
 		published
 			property Red:   TGLFloat index 0 read FColor[0] write SetColorComponent stored False;
@@ -430,22 +432,64 @@ type
 				no particular memory cost. }
 			procedure ReleaseBitmap32; virtual;
 
-			property Width: Integer read GetWidth;
-			property Height: Integer read GetHeight;
+			property Width : Integer read GetWidth;
+			property Height : Integer read GetHeight;
 	end;
 
 	TGLTextureImageClass = class of TGLTextureImage;
 
+	// TGLBlankImage
+	//
+	{: A texture image with no specified content, only a size.<p>
+      This texture image type is of use if the context of your texture is
+      calculated at run-time (with a TGLMemoryViewer for instance). }
+	TGLBlankImage = class(TGLTextureImage)
+		private
+         { Private Declarations }
+			FBitmap : TGLBitmap32;
+         FWidth, FHeight : Integer;
+
+		protected
+         { Protected Declarations }
+         procedure SetWidth(val : Integer);
+		   function GetWidth: Integer; override;
+         procedure SetHeight(val : Integer);
+			function GetHeight: Integer; override;
+
+		public
+         { Public Declarations }
+			constructor Create(AOwner: TPersistent); override;
+			destructor Destroy; override;
+
+			procedure Assign(Source: TPersistent); override;
+
+			function GetBitmap32 : TGLBitmap32; override;
+			procedure ReleaseBitmap32; override;
+
+			function Edit : Boolean; override;
+			procedure SaveToFile(const fileName : String); override;
+			procedure LoadFromFile(const fileName : String); override;
+			class function FriendlyName : String; override;
+			class function FriendlyDescription : String; override;
+
+		published
+         { Published Declarations }
+			property Width : Integer read GetWidth write SetWidth default 256;
+			property Height : Integer read GetHeight write SetHeight default 256;
+	end;
+
 	// TGLPictureImage
 	//
-	{: Base class for image data classes internally based on a TPicture ;}
+	{: Base class for image data classes internally based on a TPicture. }
 	TGLPictureImage = class(TGLTextureImage)
 		private
+         { Private Declarations }
 			FBitmap : TGLBitmap32;
 			FPicture : TPicture;
 			FUpdateCounter : Integer;
 
 		protected
+         { Protected Declarations }
 			function GetHeight: Integer; override;
 			function GetWidth: Integer; override;
 
@@ -453,7 +497,7 @@ type
 			procedure PictureChanged(Sender: TObject);
 
 		public
-         { Public Properties }
+         { Public Declarations }
 			constructor Create(AOwner: TPersistent); override;
 			destructor Destroy; override;
 
@@ -479,7 +523,7 @@ type
 		data will be stored in the DFM (compact) }
 	TGLPersistentImage = class(TGLPictureImage)
 		public
-         { Public Properties }
+         { Public Declarations }
 			constructor Create(AOwner: TPersistent); override;
 			destructor Destroy; override;
 
@@ -490,7 +534,7 @@ type
 			class function FriendlyDescription : String; override;
 
 		published
-         { Published Properties }
+         { Published Declarations }
 			property Picture;
 	end;
 
@@ -505,6 +549,7 @@ type
 			procedure SetPictureFileName(const val : String);
 
 		public
+         { Public Declarations }
 			constructor Create(AOwner: TPersistent); override;
 			destructor Destroy; override;
 
@@ -621,6 +666,7 @@ type
          FCompression         : TGLTextureCompression;
          FRequiredMemorySize  : Integer;
          FFilteringQuality    : TGLTextureFilteringQuality;
+         FTexWidth, FTexHeight : Integer;
 
 		protected
 			procedure SetImage(AValue: TGLTextureImage);
@@ -678,6 +724,11 @@ type
 
          property Enabled : Boolean read GetEnabled write SetEnabled;
 			property Handle : TGLuint read GetHandle;
+
+         {: Actual width used for last texture specification binding. }
+         property TexWidth : Integer read FTexWidth;
+         {: Actual width used for last texture specification binding. }
+         property TexHeight : Integer read FTexHeight;
 
 		published
 
@@ -1449,6 +1500,163 @@ begin
       buf:=fileName;
       FOnTextureNeeded(Self, buf);
    end;
+end;
+
+// ------------------
+// ------------------ TGLBlankImage ------------------
+// ------------------
+
+// Create
+//
+constructor TGLBlankImage.Create(AOwner: TPersistent);
+begin
+	inherited;
+	FWidth:=256;
+	FHeight:=256;
+end;
+
+// Destroy
+//
+destructor TGLBlankImage.Destroy;
+begin
+	ReleaseBitmap32;
+	inherited Destroy;
+end;
+
+// Assign
+//
+procedure TGLBlankImage.Assign(Source: TPersistent);
+begin
+	if Assigned(Source) then begin
+      if (Source is TGLBlankImage) then begin
+         FWidth:=TGLBlankImage(Source).FWidth;
+         FHeight:=TGLBlankImage(Source).FHeight;
+         Invalidate;
+      end else inherited;
+	end else inherited;
+end;
+
+// SetWidth
+//
+procedure TGLBlankImage.SetWidth(val : Integer);
+begin
+   if val<>FWidth then begin
+      FWidth:=val;
+      if FWidth<1 then FWidth:=1;
+      Invalidate;
+   end;
+end;
+
+// GetWidth
+//
+function TGLBlankImage.GetWidth: Integer;
+begin
+	Result:=FWidth;
+end;
+
+// SetHeight
+//
+procedure TGLBlankImage.SetHeight(val : Integer);
+begin
+   if val<>FHeight then begin
+      FHeight:=val;
+      if FHeight<1 then FHeight:=1;
+      Invalidate;
+   end;
+end;
+
+// GetHeight
+//
+function TGLBlankImage.GetHeight: Integer;
+begin
+	Result:=FHeight;
+end;
+
+// GetBitmap32
+//
+function TGLBlankImage.GetBitmap32 : TGLBitmap32;
+begin
+	if not Assigned(FBitmap) then begin
+      FBitmap:=TGLBitmap32.Create;
+      FBitmap.Width:=FWidth;
+      FBitmap.Height:=FHeight;
+	end;
+	Result:=FBitmap;
+end;
+
+// ReleaseBitmap32
+//
+procedure TGLBlankImage.ReleaseBitmap32;
+begin
+	if Assigned(FBitmap) then begin
+   	FBitmap.Free;
+		FBitmap:=nil;
+	end;
+end;
+
+// Edit
+//
+function TGLBlankImage.Edit : Boolean;
+var
+   p : Integer;
+   buf : String;
+begin
+	buf:=InputBox('Blank Image', 'Enter size', Format('%d x %d', [FWidth, FHeight]));
+   p:=Pos('x', buf);
+   if p>0 then begin
+      Width:=StrToIntDef(Trim(Copy(buf, 1, p-1)), 256);
+      Height:=StrToIntDef(Trim(Copy(buf, p+1, MaxInt)), 256);
+      Result:=True;
+   end else begin
+      ShowMessage('Invalid size');
+      Result:=False;
+   end;
+end;
+
+// SaveToFile
+//
+procedure TGLBlankImage.SaveToFile(const fileName : String);
+begin
+   SaveStringToFile(fileName, '[BlankImage]'#13#10'Width='+IntToStr(Width)
+                              +#13#10'Height='+IntToStr(Height));
+end;
+
+// LoadFromFile
+//
+procedure TGLBlankImage.LoadFromFile(const fileName : String);
+var
+   sl : TStringList;
+   buf : String;
+begin
+   buf:=fileName;
+   if Assigned(FOnTextureNeeded) then;
+      FOnTextureNeeded(Self, buf);
+   if FileExists(buf) then begin
+      sl:=TStringList.Create;
+      try
+         sl.LoadFromFile(buf);
+         FWidth:=StrToInt(sl.Values['Width']);
+         FHeight:=StrToInt(sl.Values['Height']);
+      finally
+         sl.Free;
+      end;
+   end else begin
+      Assert(False, Format(glsFailedOpenFile, [fileName]));
+   end;
+end;
+
+// FriendlyName
+//
+class function TGLBlankImage.FriendlyName : String;
+begin
+   Result:='Blank Image';
+end;
+
+// FriendlyName
+//
+class function TGLBlankImage.FriendlyDescription : String;
+begin
+   Result:='Blank Image (Width x Height)';
 end;
 
 // ------------------
@@ -2319,7 +2527,7 @@ begin
          Assert(False);
       end;
    end else bitmap32.SetAlphaToValue(255);
-   bitmap32.RegisterAsOpenGLTexture(MinFilter, targetFormat);
+   bitmap32.RegisterAsOpenGLTexture(MinFilter, targetFormat, FTexWidth, FTexHeight);
    if texComp<>tcNone then
       glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE_ARB,
                                @FRequiredMemorySize)
@@ -3610,6 +3818,7 @@ initialization
 // ------------------------------------------------------------------
 
 	InitWinColors;
+	RegisterGLTextureImageClass(TGLBlankImage);
 	RegisterGLTextureImageClass(TGLPersistentImage);
 	RegisterGLTextureImageClass(TGLPicFileImage);
    RegisterClasses([TGLMaterialLibrary]);
@@ -3617,6 +3826,7 @@ initialization
 finalization
 
 	vColorManager.Free;
-	vGLTextureImageClasses.Free; 
+	vGLTextureImageClasses.Free;
+   vGLTextureImageClasses:=nil;
 
 end.

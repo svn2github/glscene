@@ -557,7 +557,7 @@ var
 begin
    source:=Component as TGLSceneViewer;
    case Index of
-      0 : source.ShowInfo;
+      0 : source.Buffer.ShowInfo;
    end;
 end;
 
@@ -1250,10 +1250,12 @@ end;
 procedure Register;
 begin
    RegisterComponents('GLScene',
-                      [TGLScene, TGLSceneViewer, TGLMaterialLibrary, TGLCadencer,
-                       TAsyncTimer, TCollisionManager, TGLFireFXManager,
-                       TBitmapFont, TGLBitmapHDS, TGLThorFXManager,
-                       TAnimationControler]); 
+                      [TGLScene, TGLSceneViewer, TGLMemoryViewer,
+                       TGLMaterialLibrary,
+                       TGLCadencer, TAsyncTimer,
+                       TCollisionManager, TGLFireFXManager, TGLThorFXManager,
+                       TBitmapFont, TGLBitmapHDS,
+                       TAnimationControler]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
    RegisterComponentEditor(TGLScene, TGLSceneEditor);

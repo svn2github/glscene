@@ -63,10 +63,10 @@ begin
    // 1st quad, textured with 'wood', using standard method
    GLMaterialLibrary.ApplyMaterial('wood', rci);
    glBegin(GL_QUADS);
-      glVertex3f(0.5, 0.5, -0.5);   glTexCoord2f(0, 1);
-      glVertex3f(-0.5, 0.5, -0.5);  glTexCoord2f(0, 0);
-      glVertex3f(-0.5, 0, 0.5);     glTexCoord2f(1, 0);
-      glVertex3f(0.5, 0, 0.5);      glTexCoord2f(1, 1);
+      glTexCoord2f(0, 1);  glVertex3f(0.5, 0.5, -0.5);
+      glTexCoord2f(0, 0);  glVertex3f(-0.5, 0.5, -0.5);
+      glTexCoord2f(1, 0);  glVertex3f(-0.5, 0, 0.5);
+      glTexCoord2f(1, 1);  glVertex3f(0.5, 0, 0.5);
    glEnd;
    GLMaterialLibrary.UnApplyMaterial(rci);
    // 2nd quad, textured with 'stone'
@@ -75,10 +75,10 @@ begin
    material:=GLMaterialLibrary.Materials.GetLibMaterialByName('stone');
    material.Material.Apply(rci);
    glBegin(GL_QUADS);
-      glVertex3f(0.5, -0.5, -0.5);  glTexCoord2f(0, 1);
-      glVertex3f(0.5, 0, 0.5);      glTexCoord2f(0, 0);
-      glVertex3f(-0.5, 0, 0.5);     glTexCoord2f(1, 0);
-      glVertex3f(-0.5, -0.5, -0.5); glTexCoord2f(1, 1);
+      glTexCoord2f(0, 1);  glVertex3f(0.5, -0.5, -0.5);
+      glTexCoord2f(0, 0);  glVertex3f(0.5, 0, 0.5);
+      glTexCoord2f(1, 0);  glVertex3f(-0.5, 0, 0.5);
+      glTexCoord2f(1, 1);  glVertex3f(-0.5, -0.5, -0.5); 
    glEnd;
    material.Material.UnApply(rci);
    // enable face culling again

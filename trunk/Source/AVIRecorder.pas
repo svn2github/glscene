@@ -232,14 +232,14 @@ begin
 
    case ImageRetrievalMode of
       irmSnapShot : begin
-         bmp32:=GLSceneViewer.CreateSnapShot;
+         bmp32:=GLSceneViewer.Buffer.CreateSnapShot;
          bmp:=bmp32.Create32BitsBitmap;
          AVIBitmap.Canvas.Draw(0, 0, bmp);
          bmp.Free;
          bmp32.Free;
       end;
       irmRenderToBitmap : begin
-         GLSceneViewer.RenderToBitmap(AVIBitmap, AVI_DPI);
+         GLSceneViewer.Buffer.RenderToBitmap(AVIBitmap, AVI_DPI);
       end;
    else
       Assert(False);

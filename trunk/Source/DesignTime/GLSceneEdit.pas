@@ -660,7 +660,7 @@ begin
 	AScene.Height:=0;
 	AScene.Parent:=Self;
 	try
-		AScene.ShowInfo;
+		AScene.Buffer.ShowInfo;
 	finally
 		AScene.Free;
 	end;

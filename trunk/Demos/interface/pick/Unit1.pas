@@ -52,7 +52,7 @@ var
 	pick : TGLCustomSceneObject;
 begin
 	// find what's under the mouse
-	pick:=(GLSceneViewer1.GetPickedObject(x, y) as TGLCustomSceneObject);
+	pick:=(GLSceneViewer1.Buffer.GetPickedObject(x, y) as TGLCustomSceneObject);
 	// if it has changed since last MouseMove...
 	if (pick<>oldPick) then begin
 		// ...turn to black previous "hot" object...
@@ -72,7 +72,7 @@ var
 	pick : TGLCustomSceneObject;
 begin
 	// if an object is picked...
-	pick:=(GLSceneViewer1.GetPickedObject(x, y) as TGLCustomSceneObject);
+	pick:=(GLSceneViewer1.Buffer.GetPickedObject(x, y) as TGLCustomSceneObject);
 	if Assigned(pick) then begin
 		// ...turn it to yellow and show its name
 		pick.Material.FrontProperties.Emission.Color:=clrYellow;

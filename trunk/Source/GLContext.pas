@@ -5,6 +5,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
       <li>24/08/01 - EG - Fixed PropagateSharedContext
       <li>12/08/01 - EG - Handles management completed
       <li>22/07/01 - EG - Creation (glcontext.omm)
@@ -56,13 +57,14 @@ type
          procedure SetAccumBits(const aAccumBits : Integer);
          procedure SetAuxBuffers(const aAuxBuffers : Integer);
          procedure SetOptions(const aOptions : TGLRCOptions);
-         function GetActive : Boolean;
+         function  GetActive : Boolean;
          procedure SetActive(const aActive : Boolean);
          procedure PropagateSharedContext;
 
-         procedure DoCreateContext(outputDevice : Integer); virtual; abstract;
-         procedure DoShareLists(aContext : TGLContext); virtual; abstract;
-         procedure DoDestroyContext; virtual; abstract;
+         procedure DoCreateContext(outputDevice : Integer); dynamic; abstract;
+         procedure DoCreateMemoryContext(outputDevice, width, height : Integer); dynamic; abstract;
+         procedure DoShareLists(aContext : TGLContext); dynamic; abstract;
+         procedure DoDestroyContext; dynamic; abstract;
          procedure DoActivate; virtual; abstract;
          procedure DoDeactivate; virtual; abstract;
 
@@ -95,10 +97,13 @@ type
          property OnDestroyContext : TNotifyEvent read FOnDestroyContext write FOnDestroyContext;
 
          {: Creates the context.<p>
-            This method must be invoked before the context can be used.<br>
-            The class will monitor the outputDevice, and if itbecomes
-            invalid, attempt to destroy the context. }
+            This method must be invoked before the context can be used. }
          procedure CreateContext(outputDevice : Integer);
+         {: Creates an in-memory context.<p>
+            The function should fail if no hardware-accelerated memory context
+            can be created (the CreateContext method can handle software OpenGL
+            contexts). }
+         procedure CreateMemoryContext(outputDevice, width, height : Integer);
          {: Setup display list sharing between two rendering contexts.<p>
             Both contexts must have the same pixel format. }
          procedure ShareLists(aContext : TGLContext);
@@ -121,6 +126,8 @@ type
             A context is valid from the time it has been successfully
             created to the time of its destruction. }
          function IsValid : Boolean; virtual; abstract;
+         {: Request to swap front and back buffers if they were defined. }
+         procedure SwapBuffers; virtual; abstract;
 
          {: Returns the first compatible context that isn't self in the shares. }
          function FindCompatibleContext : TGLContext;
@@ -257,11 +264,19 @@ type
    TGLWin32Context = class (TGLContext)
       private
          { Private Declarations }
-         FRC, FDC : Integer;
+         FRC, FDC, FHPBUFFER : Integer;
+         FiAttribs : packed array of Integer;
+         FfAttribs : packed array of Single;
 
       protected
          { Protected Declarations }
+         procedure ClearIAttribs;
+         procedure AddIAttrib(attrib, value : Integer);
+         procedure ClearFAttribs;
+         procedure AddFAttrib(attrib, value : Single);
+
          procedure DoCreateContext(outputDevice : Integer); override;
+         procedure DoCreateMemoryContext(outputDevice, width, height : Integer); override;
          procedure DoShareLists(aContext : TGLContext); override;
          procedure DoDestroyContext; override;
          procedure DoActivate; override;
@@ -273,6 +288,7 @@ type
          destructor Destroy; override;
 
          function IsValid : Boolean; override;
+         procedure SwapBuffers; override;
    end;
 
   EOpenGLError = class(Exception);
@@ -348,6 +364,16 @@ begin
 		end;
 		raise EOpenGLError.Create(gluErrorString(GLError));
 	end;
+end;
+
+// ClearGLError
+//
+procedure ClearGLError;
+var
+   n : Integer;
+begin
+   n:=0;
+   while (glGetError<>GL_NO_ERROR) and (n<6) do Inc(n);
 end;
 
 // RegisterGLContextClass
@@ -464,19 +490,30 @@ begin
    Manager.ContextCreatedBy(Self);
 end;
 
+// CreateMemoryContext
+//
+procedure TGLContext.CreateMemoryContext(outputDevice, width, height : Integer);
+begin
+   if IsValid then
+      raise EGLContext.Create(cContextAlreadyCreated);
+   DoCreateMemoryContext(outputDevice, width, height);
+   FSharedContexts.Add(Self);
+   Manager.ContextCreatedBy(Self);
+end;
+
 // PropagateSharedContext
 //
 procedure TGLContext.PropagateSharedContext;
 var
    i, j : Integer;
+   otherContext : TGLContext;
 begin
    for i:=0 to FSharedContexts.Count-1 do begin
       if TGLContext(FSharedContexts[i])<>Self then begin
-         with TGLContext(FSharedContexts[i]).FSharedContexts do begin
-            Clear;
-            for j:=0 to FSharedContexts.Count-1 do
-               Add(FSharedContexts[j]);
-         end;
+         otherContext:=TGLContext(FSharedContexts[i]);
+         otherContext.FSharedContexts.Clear;
+         for j:=0 to FSharedContexts.Count-1 do
+            otherContext.FSharedContexts.Add(FSharedContexts[j]);
       end;
    end;
 end;
@@ -526,10 +563,10 @@ begin
       try
          compatContext:=FindCompatibleContext;
          if Assigned(compatContext) then begin
-            // transfer handle owner ship to a compat context
+            // transfer handle ownerships to the compat context
             for i:=FOwnedHandles.Count-1 downto 0 do begin
                compatContext.FOwnedHandles.Add(FOwnedHandles[i]);
-               TGLContextHandle(FOwnedHandles).FRenderingContext:=compatContext;
+               TGLContextHandle(FOwnedHandles[i]).FRenderingContext:=compatContext;
             end;
          end else begin
             // no compat context, release handles
@@ -746,10 +783,10 @@ end;
 //
 function TGLContextManager.CreateContext : TGLContext;
 begin
-   if Assigned(vContextClasses) and (vContextClasses.Count>0) then
-      Result:=TGLContextClass(vContextClasses[0]).Create
-   else Result:=nil;
-   Result.FManager:=Self;
+   if Assigned(vContextClasses) and (vContextClasses.Count>0) then begin
+      Result:=TGLContextClass(vContextClasses[0]).Create;
+      Result.FManager:=Self;
+   end else Result:=nil;
 end;
 
 // Lock
@@ -914,13 +951,16 @@ end;
 // ------------------
 
 var
-   vLastPixelFormat : Integer; 
+   vLastPixelFormat : Integer;
+   vLastVendor : String;
 
 // Create
 //
 constructor TGLWin32Context.Create;
 begin
    inherited Create;
+   ClearIAttribs;
+   ClearFAttribs;
 end;
 
 // Destroy
@@ -958,6 +998,46 @@ begin
    end else RaiseLastOSError;
 end;
 
+// ClearIAttribs
+//
+procedure TGLWin32Context.ClearIAttribs;
+begin
+   SetLength(FiAttribs, 1);
+   FiAttribs[0]:=0;
+end;
+
+// AddIAttrib
+//
+procedure TGLWin32Context.AddIAttrib(attrib, value : Integer);
+var
+   n : Integer;
+begin
+   n:=Length(FiAttribs);
+   SetLength(FiAttribs, n+2);
+   FiAttribs[n-1]:=attrib;       FiAttribs[n]:=value;
+   FiAttribs[n+1]:=0;
+end;
+
+// ClearFAttribs
+//
+procedure TGLWin32Context.ClearFAttribs;
+begin
+   SetLength(FfAttribs, 1);
+   FfAttribs[0]:=0;
+end;
+
+// AddFAttrib
+//
+procedure TGLWin32Context.AddFAttrib(attrib, value : Single);
+var
+   n : Integer;
+begin
+   n:=Length(FfAttribs);
+   SetLength(FfAttribs, n+2);
+   FfAttribs[n-1]:=attrib;       FfAttribs[n]:=value;
+   FfAttribs[n+1]:=0;
+end;
+
 // DoCreateContext
 //
 procedure TGLWin32Context.DoCreateContext(outputDevice : Integer);
@@ -968,20 +1048,9 @@ var
    pfDescriptor : TPixelFormatDescriptor;
    pixelFormat : Integer;
    aType : DWORD;
-{   iAttribList, iFormats, iValues : array of Integer;
-   fAttribList : array of Single;
+{  iFormats, iValues : array of Integer;
    nbFormats, rc, i : Integer;
-   chooseResult : LongBool;
-
-   procedure AddAttrib(attrib, value : Integer);
-   var
-      n : Integer;
-   begin
-      n:=Length(iAttribList);
-      SetLength(iAttribList, n+2);
-      iAttribList[n]:=attrib;
-      iAttribList[n+1]:=value;
-   end; }
+   chooseResult : LongBool; }
 
 begin
    // Just in case it didn't happen already.
@@ -990,39 +1059,39 @@ begin
    //
 {   if WGL_ARB_pixel_format then begin
       // New pixel format selection via wglChoosePixelFormatARB
-      SetLength(iAttribList, 0);
-      AddAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
-//      AddAttrib(WGL_DRAW_TO_BITMAP_ARB, GL_TRUE);
-      AddAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
-//      AddAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
-//      AddAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB);
+      ClearIAttribs;
+      AddIAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
+//      AddIAttrib(WGL_DRAW_TO_BITMAP_ARB, GL_TRUE);
+      AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
+//      AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
+//      AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB);
       AddAttrib(WGL_SUPPORT_OPENGL_ARB, GL_TRUE);
-      AddAttrib(WGL_COLOR_BITS_ARB, ColorBits);
-//      AddAttrib(WGL_DEPTH_BITS_ARB, 24);
-//      AddAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
-//      AddAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
-//      AddAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-//      AddAttrib(WGL_SAMPLE_BUFFERS_ARB, 4);
-      AddAttrib(0, 0);
-      SetLength(fAttribList, 2); fAttribList[0]:=0; fAttribList[1]:=0;
+      AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+//      AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
+//      AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
+//      AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
+//      AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
+//      AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, 4);
+      ClearFAttribs;
       SetLength(iFormats, 512);
       nbFormats:=1;
       outputDevice:=GetDC(0);
       rc:=CreateRenderingContext(outputDevice, [], 24, 0, 0, 0, 0);
       wglMakeCurrent(outputDevice, rc);
-      chooseResult:=wglChoosePixelFormatARB(outputDevice, @iAttribList[0], @fAttribList[0], 512, @iFormats[0], @nbFormats);
+      chooseResult:=wglChoosePixelFormatARB(outputDevice, @FiAttribList[0], @FfAttribList[0],
+                                            512, @iFormats[0], @nbFormats);
       Assert(chooseResult);
       Assert(nbFormats<>0);
       for i:=0 to nbFormats-1 do begin
-         SetLength(iAttribList, 6);
-         iAttribList[0]:=WGL_ACCELERATION_ARB;
-         iAttribList[1]:=WGL_SWAP_METHOD_ARB;
-         iAttribList[2]:=WGL_COLOR_BITS_ARB;
-         iAttribList[3]:=WGL_DEPTH_BITS_ARB;
-         iAttribList[4]:=WGL_STENCIL_BITS_ARB;
-         iAttribList[5]:=WGL_SAMPLES_ARB;
+         SetLength(FiAttribList, 6);
+         FiAttribList[0]:=WGL_ACCELERATION_ARB;
+         FiAttribList[1]:=WGL_SWAP_METHOD_ARB;
+         FiAttribList[2]:=WGL_COLOR_BITS_ARB;
+         FiAttribList[3]:=WGL_DEPTH_BITS_ARB;
+         FiAttribList[4]:=WGL_STENCIL_BITS_ARB;
+         FiAttribList[5]:=WGL_SAMPLES_ARB;
          SetLength(iValues, 6);
-         wglGetPixelFormatAttribivARB(outputDevice, iFormats[i], 0, 6, @iAttribList[0], @iValues[0]);
+         wglGetPixelFormatAttribivARB(outputDevice, iFormats[i], 0, 6, @FiAttribList[0], @iValues[0]);
       end;
 
    end else begin }
@@ -1044,7 +1113,7 @@ begin
             dwFlags:=dwFlags or PFD_STEREO;
          iPixelType:=PFD_TYPE_RGBA;
          cColorBits:=ColorBits;
-         cDepthBits:=32;
+         cDepthBits:=24;
          cStencilBits:=StencilBits;
          cAccumBits:=AccumBits;
          cAuxBuffers:=AuxBuffers;
@@ -1075,6 +1144,75 @@ begin
 
 end;
 
+// DoCreateMemoryContext
+//
+procedure TGLWin32Context.DoCreateMemoryContext(outputDevice, width, height : Integer);
+var
+   nbFormats : Integer;
+   iFormats : array [0..31] of Integer;
+   iPBufferAttribs : array [0..0] of Integer;
+   localHPBuffer, localDC, localRC, topDC : Integer;
+begin
+   localHPBuffer:=0;
+   localDC:=0;
+   localRC:=0;
+   // the WGL mechanism is a little awkward: we first create a dummy context
+   // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
+   // our stuff, etc.
+   topDC:=GetDC(0);
+   DoCreateContext(topDC);
+   try
+      DoActivate;
+      try
+         ClearGLError;
+         if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
+            ClearIAttribs;
+            AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+            AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
+            if StencilBits>0 then
+               AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
+            AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
+            ClearFAttribs;
+            wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
+                                    32, @iFormats, @nbFormats);
+            if nbFormats=0 then
+               raise Exception.Create('Format not supported for pbuffer operation.');
+            iPBufferAttribs[0]:=0;
+
+            localHPBuffer:=wglCreatePbufferARB(outputDevice, iFormats[0], width, height,
+                                               @iPBufferAttribs[0]);
+            if localHPBuffer=0 then
+               raise Exception.Create('Unabled to create pbuffer.');
+            try
+               localDC:=wglGetPbufferDCARB(localHPBuffer);
+               if localDC=0 then
+                  raise Exception.Create('Unabled to create pbuffer''s DC.');
+               try
+                  localRC:=wglCreateContext(localDC);
+                  if localRC=0 then
+                     raise Exception.Create('Unabled to create pbuffer''s RC.');
+               except
+                  wglReleasePbufferDCARB(localHPBuffer, localDC);
+                  raise;
+               end;
+            except
+               wglDestroyPbufferARB(localHPBuffer);
+               raise;
+            end;
+         end else raise Exception.Create('WGL_ARB_pbuffer support required.');
+         CheckOpenGLError;
+      finally
+         DoDeactivate;
+      end;
+   finally
+      DoDestroyContext;
+      ReleaseDC(0, topDC);
+   end;
+   FHPBUFFER:=localHPBuffer;
+   FDC:=localDC;
+   FRC:=localRC;
+end;
+
 // DoShareLists
 //
 procedure TGLWin32Context.DoShareLists(aContext : TGLContext);
@@ -1090,6 +1228,11 @@ procedure TGLWin32Context.DoDestroyContext;
 begin
    if not wglDeleteContext(FRC) then
       raise EGLContext.Create(cDeleteContextFailed);
+   if FHPBUFFER<>0 then begin
+      wglReleasePbufferDCARB(FHPBuffer, FDC);
+      wglDestroyPbufferARB(FHPBUFFER);
+      FHPBUFFER:=0;
+   end;
    FRC:=0;
    FDC:=0;
 end;
@@ -1107,8 +1250,14 @@ begin
    // contexts of a given pixel format share the same extension function addresses.
    pixelFormat:=GetPixelFormat(FDC);
    if PixelFormat<>vLastPixelFormat then begin
-      ReadImplementationProperties;
-      ReadExtensions;
+      if glGetString(GL_VENDOR)<>vLastVendor then begin
+         ReadExtensions;
+         ReadImplementationProperties;
+         vLastVendor:=glGetString(GL_VENDOR);
+      end else begin
+         ReadWGLExtensions;
+         ReadWGLImplementationProperties;
+      end;
       vLastPixelFormat:=pixelFormat;
    end;
 end;
@@ -1126,6 +1275,14 @@ end;
 function TGLWin32Context.IsValid : Boolean;
 begin
    Result:=(FRC<>0);
+end;
+
+// SwapBuffers
+//
+procedure TGLWin32Context.SwapBuffers;
+begin
+   if (FHPBUFFER=0) and (FDC<>0) and (rcoDoubleBuffered in Options) then
+      Windows.SwapBuffers(FDC);
 end;
 
 // ------------------------------------------------------------------

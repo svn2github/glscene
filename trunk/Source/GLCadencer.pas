@@ -236,14 +236,16 @@ begin
       if (Msg<>WM_TIMER) and (Cardinal(GetMessageTime)=GetTickCount) then begin
          // if we're going too fast, "sleep" for 1 msec
          Inc(FTooFastCounter);
-         if FTooFastCounter>300 then begin
+         if FTooFastCounter>5000 then begin
             if FTimer=0 then
                FTimer:=SetTimer(FWindowHandle, 1, 1, nil);
-      		Result:=0;
             FTooFastCounter:=0;
-            Exit;
          end;
       end else FTooFastCounter:=0;
+      if FTimer<>0 then begin
+         Result:=0;
+         Exit;
+      end;
       if not vWndProcInLoop then begin
          vWndProcInLoop:=True;
          try

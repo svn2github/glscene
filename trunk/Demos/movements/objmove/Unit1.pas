@@ -71,8 +71,8 @@ begin
    if Assigned(currentPick) then begin
       SetVector(v, x, y, 0);
       if movingOnZ then
-         Scn.ScreenVectorIntersectWithPlaneXZ(v, currentPick.Position.Y, Result)
-      else Scn.ScreenVectorIntersectWithPlaneXY(v, currentPick.Position.Z, Result);
+         Scn.Buffer.ScreenVectorIntersectWithPlaneXZ(v, currentPick.Position.Y, Result)
+      else Scn.Buffer.ScreenVectorIntersectWithPlaneXY(v, currentPick.Position.Z, Result);
    end else SetVector(Result, NullVector);
 end;
 
@@ -83,7 +83,7 @@ var
 begin
    movingOnZ:=(ssShift in Shift);
    // If an object is picked...
-   pick:=(Scn.GetPickedObject(x, y) as TGLCustomSceneObject);
+   pick:=(Scn.Buffer.GetPickedObject(x, y) as TGLCustomSceneObject);
    if Assigned(Pick) then begin
       // Only Cube1 and Cube2 can be selected
       if (pick.Name <> 'Cube1') and (pick.Name <> 'Cube2') then
@@ -156,7 +156,7 @@ begin
          canvas.TextOut(3, 3 + 1 * canvas.TextHeight('A'),
                         Format('New Object Position: Xn: %4.4f, Yn: %4.4f, Zn: %4.4f',
                                [objPos[0], objPos[1], objPos[2]]));
-         winPos:=Scn.WorldToScreen(objPos);
+         winPos:=Scn.Buffer.WorldToScreen(objPos);
          canvas.TextOut(Round(winPos[0]), Scn.Height-Round(winPos[1]),
                         currentPick.Name);
       end else begin

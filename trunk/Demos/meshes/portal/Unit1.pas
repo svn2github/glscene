@@ -238,7 +238,7 @@ begin
    if CBFog.Checked then
       GLCamera1.DepthOfView:=11
    else GLCamera1.DepthOfView:=100;
-   GLSceneViewer1.FogEnable:=CBFog.Checked;
+   GLSceneViewer1.Buffer.FogEnable:=CBFog.Checked;
 end;
 
 end.

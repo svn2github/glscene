@@ -492,9 +492,12 @@ var
   GL_WIN_specular_fog,
   GL_WIN_swap_hint,
 
+  // -EGG- ----------------------------
   WGL_EXT_swap_control,
   WGL_ARB_extensions_string,
   WGL_ARB_pixel_format,
+  WGL_ARB_pbuffer,
+  WGL_ARB_buffer_region,
 
   // Extensions (glu)
   GLU_EXT_Texture,
@@ -4294,7 +4297,27 @@ const
   WGL_TYPE_COLORINDEX_ARB                           = $202C;
   {$EXTERNALSYM WGL_TYPE_COLORINDEX_ARB}
 
-  
+  // -EGG- ----------------------------------------
+
+  // WGL_ARB_pbuffer
+type
+  HPBUFFERARB = Integer;
+const
+  WGL_DRAW_TO_PBUFFER_ARB                           = $202D;
+  WGL_MAX_PBUFFER_PIXELS_ARB                        = $202E;
+  WGL_MAX_PBUFFER_WIDTH_ARB                         = $202F;
+  WGL_MAX_PBUFFER_HEIGHT_ARB                        = $2030;
+  WGL_PBUFFER_LARGEST_ARB                           = $2033;
+  WGL_PBUFFER_WIDTH_ARB                             = $2034;
+  WGL_PBUFFER_HEIGHT_ARB                            = $2035;
+  WGL_PBUFFER_LOST_ARB                              = $2036;
+
+  // WGL_ARB_buffer_region
+  WGL_FRONT_COLOR_BUFFER_BIT_ARB                    = $00000001;
+  WGL_BACK_COLOR_BUFFER_BIT_ARB                     = $00000002;
+  WGL_DEPTH_BUFFER_BIT_ARB                          = $00000004;
+  WGL_STENCIL_BUFFER_BIT_ARB                        = $00000008;
+
   // ********** GLU generic constants **********
 
   // Errors: (return value 0 = no error)
@@ -4796,7 +4819,7 @@ type
 
   PGLUNurbsObj = PGLUNurbs; 
   PGLUQuadricObj = PGLUQuadric; 
-  PGLUTesselatorObj = PGLUTesselator; 
+  PGLUTesselatorObj = PGLUTesselator;
   PGLUTriangulatorObj = PGLUTesselator; 
 
   // Callback function prototypes
@@ -5751,6 +5774,27 @@ var
   wglChoosePixelFormatARB: function(DC: HDC; const piAttribIList: PInteger; const pfAttribFList: PGLFloat;
     nMaxFormats: UINT; piFormats: PInteger; nNumFormats: PUINT) : BOOL; stdcall;
   {$EXTERNALSYM wglChoosePixelFormatARB}
+
+  // -EGG- ----------------------------
+
+  wglCreatePbufferARB: function(DC: HDC; iPixelFormat: Integer; iWidth, iHeight : Integer;
+    const piAttribList: PInteger) : HPBUFFERARB; stdcall;
+  wglGetPbufferDCARB: function(hPbuffer: HPBUFFERARB) : HDC; stdcall;
+  wglReleasePbufferDCARB: function(hPbuffer: HPBUFFERARB; DC: HDC) : Integer; stdcall;
+  wglDestroyPbufferARB: function(hPbuffer: HPBUFFERARB): BOOL; stdcall;
+  wglQueryPbufferARB: function(hPbuffer: HPBUFFERARB; iAttribute : Integer;
+    piValue: PInteger) : BOOL; stdcall;
+
+  wglCreateBufferRegionARB: function(DC: HDC; iLayerPlane: Integer; uType: UINT) : Integer; stdcall;
+  wglDeleteBufferRegionARB: procedure(hRegion: Integer); stdcall;
+  wglSaveBufferRegionARB: function(hRegion: Integer; x, y, width, height: Integer): BOOL; stdcall;
+  wglRestoreBufferRegionARB: function(hRegion: Integer; x, y, width, height: Integer;
+    xSrc, ySrc: Integer): BOOL; stdcall;
+
+  // non-ARB wgl extensions
+  wglSwapIntervalEXT: function(interval : Integer) : BOOL; stdcall;
+  wglGetSwapIntervalEXT: function : Integer; stdcall;
+
   {$endif}
 
   // ARB_multitexture
@@ -6921,9 +6965,12 @@ function CurrentDC: HDC;
 procedure DeactivateRenderingContext;
 procedure DestroyRenderingContext(RC: HGLRC); 
 procedure ClearExtensions; 
-function HasActiveContext: Boolean; 
+function HasActiveContext: Boolean;
+
 procedure ReadExtensions;
-procedure ReadImplementationProperties; 
+procedure ReadWGLExtensions;
+procedure ReadImplementationProperties;
+procedure ReadWGLImplementationProperties;
 {$endif}
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -7002,466 +7049,7 @@ end;
 procedure ClearProcAddresses;
 
 begin
-  glAccum := nil; 
-  glAlphaFunc := nil; 
-  glAreTexturesResident := nil; 
-  glArrayElement := nil; 
-  glBegin := nil; 
-  glBindTexture := nil; 
-  glBitmap := nil; 
-  glBlendFunc := nil; 
-  glCallList := nil; 
-  glCallLists := nil; 
-  glClear := nil; 
-  glClearAccum := nil; 
-  glClearColor := nil; 
-  glClearDepth := nil; 
-  glClearIndex := nil; 
-  glClearStencil := nil; 
-  glClipPlane := nil; 
-  glColor3b := nil; 
-  glColor3bv := nil; 
-  glColor3d := nil; 
-  glColor3dv := nil;
-  glColor3f := nil; 
-  glColor3fv := nil; 
-  glColor3i := nil; 
-  glColor3iv := nil; 
-  glColor3s := nil; 
-  glColor3sv := nil; 
-  glColor3ub := nil; 
-  glColor3ubv := nil; 
-  glColor3ui := nil; 
-  glColor3uiv := nil; 
-  glColor3us := nil; 
-  glColor3usv := nil; 
-  glColor4b := nil; 
-  glColor4bv := nil; 
-  glColor4d := nil; 
-  glColor4dv := nil; 
-  glColor4f := nil; 
-  glColor4fv := nil; 
-  glColor4i := nil; 
-  glColor4iv := nil; 
-  glColor4s := nil; 
-  glColor4sv := nil; 
-  glColor4ub := nil; 
-  glColor4ubv := nil; 
-  glColor4ui := nil;
-  glColor4uiv := nil; 
-  glColor4us := nil; 
-  glColor4usv := nil; 
-  glColorMask := nil; 
-  glColorMaterial := nil; 
-  glColorPointer := nil; 
-  glCopyPixels := nil; 
-  glCopyTexImage1D := nil; 
-  glCopyTexImage2D := nil; 
-  glCopyTexSubImage1D := nil; 
-  glCopyTexSubImage2D := nil; 
-  glCullFace := nil; 
-  glDeleteLists := nil; 
-  glDeleteTextures := nil; 
-  glDepthFunc := nil; 
-  glDepthMask := nil; 
-  glDepthRange := nil; 
-  glDisable := nil; 
-  glDisableClientState := nil; 
-  glDrawArrays := nil; 
-  glDrawBuffer := nil; 
-  glDrawElements := nil; 
-  glDrawPixels := nil; 
-  glEdgeFlag := nil; 
-  glEdgeFlagPointer := nil;
-  glEdgeFlagv := nil; 
-  glEnable := nil; 
-  glEnableClientState := nil; 
-  glEnd := nil; 
-  glEndList := nil; 
-  glEvalCoord1d := nil; 
-  glEvalCoord1dv := nil; 
-  glEvalCoord1f := nil; 
-  glEvalCoord1fv := nil; 
-  glEvalCoord2d := nil; 
-  glEvalCoord2dv := nil; 
-  glEvalCoord2f := nil; 
-  glEvalCoord2fv := nil; 
-  glEvalMesh1 := nil; 
-  glEvalMesh2 := nil; 
-  glEvalPoint1 := nil; 
-  glEvalPoint2 := nil; 
-  glFeedbackBuffer := nil; 
-  glFinish := nil; 
-  glFlush := nil; 
-  glFogf := nil; 
-  glFogfv := nil; 
-  glFogi := nil; 
-  glFogiv := nil; 
-  glFrontFace := nil;
-  glFrustum := nil; 
-  glGenLists := nil; 
-  glGenTextures := nil; 
-  glGetBooleanv := nil; 
-  glGetClipPlane := nil; 
-  glGetDoublev := nil; 
-  glGetError := nil; 
-  glGetFloatv := nil; 
-  glGetIntegerv := nil; 
-  glGetLightfv := nil; 
-  glGetLightiv := nil; 
-  glGetMapdv := nil; 
-  glGetMapfv := nil; 
-  glGetMapiv := nil; 
-  glGetMaterialfv := nil; 
-  glGetMaterialiv := nil; 
-  glGetPixelMapfv := nil; 
-  glGetPixelMapuiv := nil; 
-  glGetPixelMapusv := nil; 
-  glGetPointerv := nil; 
-  glGetPolygonStipple := nil; 
-  glGetString := nil; 
-  glGetTexEnvfv := nil; 
-  glGetTexEnviv := nil; 
-  glGetTexGendv := nil;
-  glGetTexGenfv := nil; 
-  glGetTexGeniv := nil; 
-  glGetTexImage := nil; 
-  glGetTexLevelParameterfv := nil; 
-  glGetTexLevelParameteriv := nil; 
-  glGetTexParameterfv := nil; 
-  glGetTexParameteriv := nil; 
-  glHint := nil; 
-  glIndexMask := nil; 
-  glIndexPointer := nil; 
-  glIndexd := nil; 
-  glIndexdv := nil; 
-  glIndexf := nil; 
-  glIndexfv := nil; 
-  glIndexi := nil; 
-  glIndexiv := nil; 
-  glIndexs := nil; 
-  glIndexsv := nil; 
-  glIndexub := nil; 
-  glIndexubv := nil; 
-  glInitNames := nil; 
-  glInterleavedArrays := nil; 
-  glIsEnabled := nil; 
-  glIsList := nil; 
-  glIsTexture := nil;
-  glLightModelf := nil; 
-  glLightModelfv := nil; 
-  glLightModeli := nil; 
-  glLightModeliv := nil; 
-  glLightf := nil; 
-  glLightfv := nil; 
-  glLighti := nil; 
-  glLightiv := nil; 
-  glLineStipple := nil; 
-  glLineWidth := nil; 
-  glListBase := nil; 
-  glLoadIdentity := nil; 
-  glLoadMatrixd := nil; 
-  glLoadMatrixf := nil; 
-  glLoadName := nil; 
-  glLogicOp := nil; 
-  glMap1d := nil; 
-  glMap1f := nil; 
-  glMap2d := nil; 
-  glMap2f := nil; 
-  glMapGrid1d := nil; 
-  glMapGrid1f := nil; 
-  glMapGrid2d := nil; 
-  glMapGrid2f := nil; 
-  glMaterialf := nil;
-  glMaterialfv := nil; 
-  glMateriali := nil; 
-  glMaterialiv := nil; 
-  glMatrixMode := nil; 
-  glMultMatrixd := nil; 
-  glMultMatrixf := nil; 
-  glNewList := nil; 
-  glNormal3b := nil; 
-  glNormal3bv := nil; 
-  glNormal3d := nil; 
-  glNormal3dv := nil; 
-  glNormal3f := nil; 
-  glNormal3fv := nil; 
-  glNormal3i := nil; 
-  glNormal3iv := nil; 
-  glNormal3s := nil; 
-  glNormal3sv := nil; 
-  glNormalPointer := nil; 
-  glOrtho := nil; 
-  glPassThrough := nil; 
-  glPixelMapfv := nil; 
-  glPixelMapuiv := nil; 
-  glPixelMapusv := nil; 
-  glPixelStoref := nil; 
-  glPixelStorei := nil;
-  glPixelTransferf := nil; 
-  glPixelTransferi := nil; 
-  glPixelZoom := nil; 
-  glPointSize := nil; 
-  glPolygonMode := nil; 
-  glPolygonOffset := nil; 
-  glPolygonStipple := nil; 
-  glPopAttrib := nil; 
-  glPopClientAttrib := nil; 
-  glPopMatrix := nil; 
-  glPopName := nil; 
-  glPrioritizeTextures := nil; 
-  glPushAttrib := nil; 
-  glPushClientAttrib := nil; 
-  glPushMatrix := nil; 
-  glPushName := nil; 
-  glRasterPos2d := nil; 
-  glRasterPos2dv := nil; 
-  glRasterPos2f := nil; 
-  glRasterPos2fv := nil; 
-  glRasterPos2i := nil; 
-  glRasterPos2iv := nil; 
-  glRasterPos2s := nil; 
-  glRasterPos2sv := nil; 
-  glRasterPos3d := nil;
-  glRasterPos3dv := nil; 
-  glRasterPos3f := nil; 
-  glRasterPos3fv := nil; 
-  glRasterPos3i := nil; 
-  glRasterPos3iv := nil; 
-  glRasterPos3s := nil; 
-  glRasterPos3sv := nil; 
-  glRasterPos4d := nil; 
-  glRasterPos4dv := nil; 
-  glRasterPos4f := nil; 
-  glRasterPos4fv := nil; 
-  glRasterPos4i := nil; 
-  glRasterPos4iv := nil; 
-  glRasterPos4s := nil; 
-  glRasterPos4sv := nil; 
-  glReadBuffer := nil; 
-  glReadPixels := nil; 
-  glRectd := nil; 
-  glRectdv := nil; 
-  glRectf := nil; 
-  glRectfv := nil; 
-  glRecti := nil; 
-  glRectiv := nil; 
-  glRects := nil; 
-  glRectsv := nil;
-  glRenderMode := nil; 
-  glRotated := nil; 
-  glRotatef := nil; 
-  glScaled := nil; 
-  glScalef := nil; 
-  glScissor := nil; 
-  glSelectBuffer := nil; 
-  glShadeModel := nil; 
-  glStencilFunc := nil; 
-  glStencilMask := nil; 
-  glStencilOp := nil; 
-  glTexCoord1d := nil; 
-  glTexCoord1dv := nil; 
-  glTexCoord1f := nil; 
-  glTexCoord1fv := nil; 
-  glTexCoord1i := nil; 
-  glTexCoord1iv := nil; 
-  glTexCoord1s := nil; 
-  glTexCoord1sv := nil; 
-  glTexCoord2d := nil; 
-  glTexCoord2dv := nil; 
-  glTexCoord2f := nil; 
-  glTexCoord2fv := nil; 
-  glTexCoord2i := nil; 
-  glTexCoord2iv := nil;
-  glTexCoord2s := nil; 
-  glTexCoord2sv := nil; 
-  glTexCoord3d := nil; 
-  glTexCoord3dv := nil; 
-  glTexCoord3f := nil; 
-  glTexCoord3fv := nil; 
-  glTexCoord3i := nil; 
-  glTexCoord3iv := nil; 
-  glTexCoord3s := nil; 
-  glTexCoord3sv := nil; 
-  glTexCoord4d := nil; 
-  glTexCoord4dv := nil; 
-  glTexCoord4f := nil; 
-  glTexCoord4fv := nil; 
-  glTexCoord4i := nil; 
-  glTexCoord4iv := nil; 
-  glTexCoord4s := nil; 
-  glTexCoord4sv := nil; 
-  glTexCoordPointer := nil; 
-  glTexEnvf := nil; 
-  glTexEnvfv := nil; 
-  glTexEnvi := nil; 
-  glTexEnviv := nil; 
-  glTexGend := nil; 
-  glTexGendv := nil;
-  glTexGenf := nil; 
-  glTexGenfv := nil; 
-  glTexGeni := nil; 
-  glTexGeniv := nil; 
-  glTexImage1D := nil; 
-  glTexImage2D := nil; 
-  glTexParameterf := nil; 
-  glTexParameterfv := nil; 
-  glTexParameteri := nil; 
-  glTexParameteriv := nil; 
-  glTexSubImage1D := nil; 
-  glTexSubImage2D := nil; 
-  glTranslated := nil; 
-  glTranslatef := nil; 
-  glVertex2d := nil; 
-  glVertex2dv := nil; 
-  glVertex2f := nil; 
-  glVertex2fv := nil; 
-  glVertex2i := nil; 
-  glVertex2iv := nil; 
-  glVertex2s := nil; 
-  glVertex2sv := nil; 
-  glVertex3d := nil; 
-  glVertex3dv := nil; 
-  glVertex3f := nil;
-  glVertex3fv := nil; 
-  glVertex3i := nil; 
-  glVertex3iv := nil; 
-  glVertex3s := nil; 
-  glVertex3sv := nil; 
-  glVertex4d := nil; 
-  glVertex4dv := nil; 
-  glVertex4f := nil; 
-  glVertex4fv := nil; 
-  glVertex4i := nil; 
-  glVertex4iv := nil; 
-  glVertex4s := nil; 
-  glVertex4sv := nil; 
-  glVertexPointer := nil; 
-  glViewport := nil; 
-
-  {$ifdef Win32}
-  wglGetProcAddress := nil; 
-  wglCopyContext := nil; 
-  wglCreateContext := nil; 
-  wglCreateLayerContext := nil; 
-  wglDeleteContext := nil; 
-  wglDescribeLayerPlane := nil; 
-  wglGetCurrentContext := nil; 
-  wglGetCurrentDC := nil;
-  wglGetLayerPaletteEntries := nil; 
-  wglMakeCurrent := nil; 
-  wglRealizeLayerPalette := nil; 
-  wglSetLayerPaletteEntries := nil; 
-  wglShareLists := nil; 
-  wglSwapLayerBuffers := nil; 
-  wglSwapMultipleBuffers := nil; 
-  wglUseFontBitmapsA := nil; 
-  wglUseFontOutlinesA := nil; 
-  wglUseFontBitmapsW := nil; 
-  wglUseFontOutlinesW := nil; 
-  wglUseFontBitmaps := nil; 
-  wglUseFontOutlines := nil; 
-  {$endif}
-
-  // GL 1.2
-  glDrawRangeElements := nil; 
-  glTexImage3D := nil; 
-
-  // GL 1.2 ARB imaging
-  glBlendColor := nil; 
-  glBlendEquation := nil; 
-  glColorSubTable := nil; 
-  glCopyColorSubTable := nil; 
-  glColorTable := nil;
-  glCopyColorTable := nil; 
-  glColorTableParameteriv := nil; 
-  glColorTableParameterfv := nil; 
-  glGetColorTable := nil; 
-  glGetColorTableParameteriv := nil; 
-  glGetColorTableParameterfv := nil; 
-  glConvolutionFilter1D := nil; 
-  glConvolutionFilter2D := nil; 
-  glCopyConvolutionFilter1D := nil; 
-  glCopyConvolutionFilter2D := nil; 
-  glGetConvolutionFilter := nil; 
-  glSeparableFilter2D := nil; 
-  glGetSeparableFilter := nil; 
-  glConvolutionParameteri := nil; 
-  glConvolutionParameteriv := nil; 
-  glConvolutionParameterf := nil; 
-  glConvolutionParameterfv := nil; 
-  glGetConvolutionParameteriv := nil; 
-  glGetConvolutionParameterfv := nil; 
-  glHistogram := nil; 
-  glResetHistogram := nil; 
-  glGetHistogram := nil; 
-  glGetHistogramParameteriv := nil; 
-  glGetHistogramParameterfv := nil; 
-  glMinmax := nil;
-  glResetMinmax := nil; 
-  glGetMinmax := nil; 
-  glGetMinmaxParameteriv := nil; 
-  glGetMinmaxParameterfv := nil; 
-
-  // GLX
-  {$ifdef LINUX}
-  glXChooseVisual := nil; 
-  glXCreateContext := nil; 
-  glXDestroyContext := nil; 
-  glXMakeCurrent := nil; 
-  glXCopyContext := nil; 
-  glXSwapBuffers := nil; 
-  glXCreateGLXPixmap := nil; 
-  glXDestroyGLXPixmap := nil; 
-  glXQueryExtension := nil; 
-  glXQueryVersion := nil; 
-  glXIsDirect := nil; 
-  glXGetConfig := nil; 
-  glXGetCurrentContext := nil; 
-  glXGetCurrentDrawable := nil; 
-  glXWaitGL := nil; 
-  glXWaitX := nil; 
-  glXUseXFont := nil; 
-
-  // GLX 1.1 and later
-  glXQueryExtensionsString := nil;
-  glXQueryServerString := nil;
-  glXGetClientString := nil;
-
-  // GLX 1.2 and later
-  glXGetCurrentDisplay := nil;
-
-  // GLX 1.3 and later
-  glXChooseFBConfig := nil;
-  glXGetFBConfigAttrib := nil;
-  glXGetFBConfigs := nil;
-  glXGetVisualFromFBConfig := nil;
-  glXCreateWindow := nil;
-  glXDestroyWindow := nil;
-  glXCreatePixmap := nil;
-  glXDestroyPixmap := nil;
-  glXCreatePbuffer := nil;
-  glXDestroyPbuffer := nil;
-  glXQueryDrawable := nil;
-  glXCreateNewContext := nil;
-  glXMakeContextCurrent := nil;
-  glXGetCurrentReadDrawable := nil;
-  glXQueryContext := nil;
-  glXSelectEvent := nil;
-  glXGetSelectedEvent := nil;
-  glXGetVideoSyncSGI := nil;
-  glXWaitVideoSyncSGI := nil;
-  glXFreeContextEXT := nil;
-  glXGetContextIDEXT := nil;
-  glXGetCurrentDisplayEXT := nil;
-  glXImportContextEXT := nil;
-  glXQueryContextInfoEXT := nil; 
-  glXCopySubBufferMESA := nil; 
-  glXCreateGLXPixmapMESA := nil; 
-  glXReleaseBuffersMESA := nil; 
-  glXSet3DfxModeMESA := nil; 
-  {$endif}
-end; 
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -7481,7 +7069,7 @@ begin
     glBindTexture := GetProcAddress(Handle, 'glBindTexture'); 
     glBitmap := GetProcAddress(Handle, 'glBitmap'); 
     glBlendFunc := GetProcAddress(Handle, 'glBlendFunc'); 
-    glCallList := GetProcAddress(Handle, 'glCallList'); 
+    glCallList := GetProcAddress(Handle, 'glCallList');
     glCallLists := GetProcAddress(Handle, 'glCallLists'); 
     glClear := GetProcAddress(Handle, 'glClear'); 
     glClearAccum := GetProcAddress(Handle, 'glClearAccum'); 
@@ -7504,7 +7092,7 @@ begin
     glColor3ubv := GetProcAddress(Handle, 'glColor3ubv'); 
     glColor3ui := GetProcAddress(Handle, 'glColor3ui'); 
     glColor3uiv := GetProcAddress(Handle, 'glColor3uiv'); 
-    glColor3us := GetProcAddress(Handle, 'glColor3us'); 
+    glColor3us := GetProcAddress(Handle, 'glColor3us');
     glColor3usv := GetProcAddress(Handle, 'glColor3usv'); 
     glColor4b := GetProcAddress(Handle, 'glColor4b'); 
     glColor4bv := GetProcAddress(Handle, 'glColor4bv'); 
@@ -7527,7 +7115,7 @@ begin
     glColorPointer := GetProcAddress(Handle, 'glColorPointer'); 
     glCopyPixels := GetProcAddress(Handle, 'glCopyPixels'); 
     glCopyTexImage1D := GetProcAddress(Handle, 'glCopyTexImage1D'); 
-    glCopyTexImage2D := GetProcAddress(Handle, 'glCopyTexImage2D'); 
+    glCopyTexImage2D := GetProcAddress(Handle, 'glCopyTexImage2D');
     glCopyTexSubImage1D := GetProcAddress(Handle, 'glCopyTexSubImage1D'); 
     glCopyTexSubImage2D := GetProcAddress(Handle, 'glCopyTexSubImage2D'); 
     glCullFace := GetProcAddress(Handle, 'glCullFace'); 
@@ -7550,7 +7138,7 @@ begin
     glEnd := GetProcAddress(Handle, 'glEnd');
     glEndList := GetProcAddress(Handle, 'glEndList'); 
     glEvalCoord1d := GetProcAddress(Handle, 'glEvalCoord1d'); 
-    glEvalCoord1dv := GetProcAddress(Handle, 'glEvalCoord1dv'); 
+    glEvalCoord1dv := GetProcAddress(Handle, 'glEvalCoord1dv');
     glEvalCoord1f := GetProcAddress(Handle, 'glEvalCoord1f'); 
     glEvalCoord1fv := GetProcAddress(Handle, 'glEvalCoord1fv'); 
     glEvalCoord2d := GetProcAddress(Handle, 'glEvalCoord2d'); 
@@ -7573,7 +7161,7 @@ begin
     glGenLists := GetProcAddress(Handle, 'glGenLists'); 
     glGenTextures := GetProcAddress(Handle, 'glGenTextures'); 
     glGetBooleanv := GetProcAddress(Handle, 'glGetBooleanv');
-    glGetClipPlane := GetProcAddress(Handle, 'glGetClipPlane'); 
+    glGetClipPlane := GetProcAddress(Handle, 'glGetClipPlane');
     glGetDoublev := GetProcAddress(Handle, 'glGetDoublev'); 
     glGetError := GetProcAddress(Handle, 'glGetError'); 
     glGetFloatv := GetProcAddress(Handle, 'glGetFloatv'); 
@@ -7596,7 +7184,7 @@ begin
     glGetTexGendv := GetProcAddress(Handle, 'glGetTexGendv'); 
     glGetTexGenfv := GetProcAddress(Handle, 'glGetTexGenfv'); 
     glGetTexGeniv := GetProcAddress(Handle, 'glGetTexGeniv'); 
-    glGetTexImage := GetProcAddress(Handle, 'glGetTexImage'); 
+    glGetTexImage := GetProcAddress(Handle, 'glGetTexImage');
     glGetTexLevelParameterfv := GetProcAddress(Handle, 'glGetTexLevelParameterfv');
     glGetTexLevelParameteriv := GetProcAddress(Handle, 'glGetTexLevelParameteriv'); 
     glGetTexParameterfv := GetProcAddress(Handle, 'glGetTexParameterfv'); 
@@ -7619,7 +7207,7 @@ begin
     glIsEnabled := GetProcAddress(Handle, 'glIsEnabled'); 
     glIsList := GetProcAddress(Handle, 'glIsList'); 
     glIsTexture := GetProcAddress(Handle, 'glIsTexture'); 
-    glLightModelf := GetProcAddress(Handle, 'glLightModelf'); 
+    glLightModelf := GetProcAddress(Handle, 'glLightModelf');
     glLightModelfv := GetProcAddress(Handle, 'glLightModelfv'); 
     glLightModeli := GetProcAddress(Handle, 'glLightModeli'); 
     glLightModeliv := GetProcAddress(Handle, 'glLightModeliv');
@@ -7642,7 +7230,7 @@ begin
     glMapGrid1d := GetProcAddress(Handle, 'glMapGrid1d'); 
     glMapGrid1f := GetProcAddress(Handle, 'glMapGrid1f'); 
     glMapGrid2d := GetProcAddress(Handle, 'glMapGrid2d'); 
-    glMapGrid2f := GetProcAddress(Handle, 'glMapGrid2f'); 
+    glMapGrid2f := GetProcAddress(Handle, 'glMapGrid2f');
     glMaterialf := GetProcAddress(Handle, 'glMaterialf'); 
     glMaterialfv := GetProcAddress(Handle, 'glMaterialfv'); 
     glMateriali := GetProcAddress(Handle, 'glMateriali'); 
@@ -7665,7 +7253,7 @@ begin
     glOrtho := GetProcAddress(Handle, 'glOrtho'); 
     glPassThrough := GetProcAddress(Handle, 'glPassThrough'); 
     glPixelMapfv := GetProcAddress(Handle, 'glPixelMapfv'); 
-    glPixelMapuiv := GetProcAddress(Handle, 'glPixelMapuiv'); 
+    glPixelMapuiv := GetProcAddress(Handle, 'glPixelMapuiv');
     glPixelMapusv := GetProcAddress(Handle, 'glPixelMapusv'); 
     glPixelStoref := GetProcAddress(Handle, 'glPixelStoref'); 
     glPixelStorei := GetProcAddress(Handle, 'glPixelStorei'); 
@@ -7688,7 +7276,7 @@ begin
     glRasterPos2d := GetProcAddress(Handle, 'glRasterPos2d'); 
     glRasterPos2dv := GetProcAddress(Handle, 'glRasterPos2dv'); 
     glRasterPos2f := GetProcAddress(Handle, 'glRasterPos2f'); 
-    glRasterPos2fv := GetProcAddress(Handle, 'glRasterPos2fv'); 
+    glRasterPos2fv := GetProcAddress(Handle, 'glRasterPos2fv');
     glRasterPos2i := GetProcAddress(Handle, 'glRasterPos2i'); 
     glRasterPos2iv := GetProcAddress(Handle, 'glRasterPos2iv'); 
     glRasterPos2s := GetProcAddress(Handle, 'glRasterPos2s'); 
@@ -7711,7 +7299,7 @@ begin
     glRasterPos4sv := GetProcAddress(Handle, 'glRasterPos4sv'); 
     glReadBuffer := GetProcAddress(Handle, 'glReadBuffer'); 
     glReadPixels := GetProcAddress(Handle, 'glReadPixels'); 
-    glRectd := GetProcAddress(Handle, 'glRectd'); 
+    glRectd := GetProcAddress(Handle, 'glRectd');
     glRectdv := GetProcAddress(Handle, 'glRectdv'); 
     glRectf := GetProcAddress(Handle, 'glRectf'); 
     glRectfv := GetProcAddress(Handle, 'glRectfv'); 
@@ -7734,7 +7322,7 @@ begin
     glTexCoord1dv := GetProcAddress(Handle, 'glTexCoord1dv'); 
     glTexCoord1f := GetProcAddress(Handle, 'glTexCoord1f'); 
     glTexCoord1fv := GetProcAddress(Handle, 'glTexCoord1fv'); 
-    glTexCoord1i := GetProcAddress(Handle, 'glTexCoord1i'); 
+    glTexCoord1i := GetProcAddress(Handle, 'glTexCoord1i');
     glTexCoord1iv := GetProcAddress(Handle, 'glTexCoord1iv'); 
     glTexCoord1s := GetProcAddress(Handle, 'glTexCoord1s'); 
     glTexCoord1sv := GetProcAddress(Handle, 'glTexCoord1sv'); 
@@ -7757,7 +7345,7 @@ begin
     glTexCoord4d := GetProcAddress(Handle, 'glTexCoord4d'); 
     glTexCoord4dv := GetProcAddress(Handle, 'glTexCoord4dv'); 
     glTexCoord4f := GetProcAddress(Handle, 'glTexCoord4f'); 
-    glTexCoord4fv := GetProcAddress(Handle, 'glTexCoord4fv'); 
+    glTexCoord4fv := GetProcAddress(Handle, 'glTexCoord4fv');
     glTexCoord4i := GetProcAddress(Handle, 'glTexCoord4i'); 
     glTexCoord4iv := GetProcAddress(Handle, 'glTexCoord4iv'); 
     glTexCoord4s := GetProcAddress(Handle, 'glTexCoord4s'); 
@@ -7780,7 +7368,7 @@ begin
     glTexParameteri := GetProcAddress(Handle, 'glTexParameteri'); 
     glTexParameteriv := GetProcAddress(Handle, 'glTexParameteriv'); 
     glTexSubImage1D := GetProcAddress(Handle, 'glTexSubImage1D'); 
-    glTexSubImage2D := GetProcAddress(Handle, 'glTexSubImage2D'); 
+    glTexSubImage2D := GetProcAddress(Handle, 'glTexSubImage2D');
     glTranslated := GetProcAddress(Handle, 'glTranslated'); 
     glTranslatef := GetProcAddress(Handle, 'glTranslatef'); 
     glVertex2d := GetProcAddress(Handle, 'glVertex2d'); 
@@ -7803,7 +7391,7 @@ begin
     glVertex4dv := GetProcAddress(Handle, 'glVertex4dv'); 
     glVertex4f := GetProcAddress(Handle, 'glVertex4f'); 
     glVertex4fv := GetProcAddress(Handle, 'glVertex4fv'); 
-    glVertex4i := GetProcAddress(Handle, 'glVertex4i'); 
+    glVertex4i := GetProcAddress(Handle, 'glVertex4i');
     glVertex4iv := GetProcAddress(Handle, 'glVertex4iv'); 
     glVertex4s := GetProcAddress(Handle, 'glVertex4s'); 
     glVertex4sv := GetProcAddress(Handle, 'glVertex4sv'); 
@@ -7826,7 +7414,7 @@ begin
     wglSetLayerPaletteEntries := GetProcAddress(Handle, 'wglSetLayerPaletteEntries'); 
     wglShareLists := GetProcAddress(Handle, 'wglShareLists'); 
     wglSwapLayerBuffers := GetProcAddress(Handle, 'wglSwapLayerBuffers'); 
-    wglSwapMultipleBuffers := GetProcAddress(Handle, 'wglSwapMultipleBuffers'); 
+    wglSwapMultipleBuffers := GetProcAddress(Handle, 'wglSwapMultipleBuffers');
     wglUseFontBitmapsA := GetProcAddress(Handle, 'wglUseFontBitmapsA'); 
     wglUseFontOutlinesA := GetProcAddress(Handle, 'wglUseFontOutlinesA'); 
     wglUseFontBitmapsW := GetProcAddress(Handle, 'wglUseFontBitmapsW'); 
@@ -7849,7 +7437,7 @@ begin
     glColorTableParameteriv := GetProcAddress(Handle, 'glColorTableParameteriv'); 
     glColorTableParameterfv := GetProcAddress(Handle, 'glColorTableParameterfv');
     glGetColorTable := GetProcAddress(Handle, 'glGetColorTable'); 
-    glGetColorTableParameteriv := GetProcAddress(Handle, 'glGetColorTableParameteriv'); 
+    glGetColorTableParameteriv := GetProcAddress(Handle, 'glGetColorTableParameteriv');
     glGetColorTableParameterfv := GetProcAddress(Handle, 'glGetColorTableParameterfv'); 
     glConvolutionFilter1D := GetProcAddress(Handle, 'glConvolutionFilter1D'); 
     glConvolutionFilter2D := GetProcAddress(Handle, 'glConvolutionFilter2D'); 
@@ -7895,7 +7483,7 @@ begin
     glXUseXFont := GetProcAddress(Handle, 'glXUseXFont'); 
     glXQueryExtensionsString := GetProcAddress(Handle, 'glXQueryExtensionsString'); 
     glXQueryServerString := GetProcAddress(Handle, 'glXQueryServerString'); 
-    glXGetClientString := GetProcAddress(Handle, 'glXGetClientString'); 
+    glXGetClientString := GetProcAddress(Handle, 'glXGetClientString');
     glXGetCurrentDisplay := GetProcAddress(Handle, 'glXGetCurrentDisplay'); 
     glXChooseFBConfig := GetProcAddress(Handle, 'glXChooseFBConfig');
     glXGetFBConfigAttrib := GetProcAddress(Handle, 'glXGetFBConfigAttrib'); 
@@ -7918,7 +7506,7 @@ begin
     glXWaitVideoSyncSGI := GetProcAddress(Handle, 'glXWaitVideoSyncSGI'); 
     glXFreeContextEXT := GetProcAddress(Handle, 'glXFreeContextEXT'); 
     glXGetContextIDEXT := GetProcAddress(Handle, 'glXGetContextIDEXT'); 
-    glXGetCurrentDisplayEXT := GetProcAddress(Handle, 'glXGetCurrentDisplayEXT'); 
+    glXGetCurrentDisplayEXT := GetProcAddress(Handle, 'glXGetCurrentDisplayEXT');
     glXImportContextEXT := GetProcAddress(Handle, 'glXImportContextEXT'); 
     glXQueryContextInfoEXT := GetProcAddress(Handle, 'glXQueryContextInfoEXT'); 
     glXCopySubBufferMESA := GetProcAddress(Handle, 'glXCopySubBufferMESA'); 
@@ -7941,7 +7529,7 @@ begin
     gluCylinder := GetProcAddress(Handle, 'gluCylinder'); 
     gluDeleteNurbsRenderer := GetProcAddress(Handle, 'gluDeleteNurbsRenderer'); 
     gluDeleteQuadric := GetProcAddress(Handle, 'gluDeleteQuadric'); 
-    gluDeleteTess := GetProcAddress(Handle, 'gluDeleteTess'); 
+    gluDeleteTess := GetProcAddress(Handle, 'gluDeleteTess');
     gluDisk := GetProcAddress(Handle, 'gluDisk'); 
     gluEndCurve := GetProcAddress(Handle, 'gluEndCurve'); 
     gluEndPolygon := GetProcAddress(Handle, 'gluEndPolygon'); 
@@ -7964,7 +7552,7 @@ begin
     gluOrtho2D := GetProcAddress(Handle, 'gluOrtho2D'); 
     gluPartialDisk := GetProcAddress(Handle, 'gluPartialDisk'); 
     gluPerspective := GetProcAddress(Handle, 'gluPerspective'); 
-    gluPickMatrix := GetProcAddress(Handle, 'gluPickMatrix'); 
+    gluPickMatrix := GetProcAddress(Handle, 'gluPickMatrix');
     gluProject := GetProcAddress(Handle, 'gluProject'); 
     gluPwlCurve := GetProcAddress(Handle, 'gluPwlCurve'); 
     gluQuadricCallback := GetProcAddress(Handle, 'gluQuadricCallback'); 
@@ -7988,585 +7576,11 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure ClearExtensions; 
+procedure ClearExtensions;
 begin
-  glArrayElementEXT := nil; 
-  glDrawArraysEXT := nil; 
-  glVertexPointerEXT := nil; 
-  glNormalPointerEXT := nil; 
-  glColorPointerEXT := nil; 
-  glIndexPointerEXT := nil; 
-  glTexCoordPointerEXT := nil; 
-  glEdgeFlagPointerEXT := nil;
-  glGetPointervEXT := nil; 
-  glArrayElementArrayEXT := nil; 
-  glAddSwapHintRectWIN := nil; 
-  glColorTableEXT := nil; 
-  glColorSubTableEXT := nil; 
-  glGetColorTableEXT := nil; 
-  glGetColorTablePameterivEXT := nil; 
-  glGetColorTablePameterfvEXT := nil; 
-  gluNurbsCallbackDataEXT := nil; 
-  gluNewNurbsTessellatorEXT := nil; 
-  gluDeleteNurbsTessellatorEXT := nil; 
-  glLockArraysEXT := nil; 
-  glUnlockArraysEXT := nil; 
-  glCopyTexImage1DEXT := nil; 
-  glCopyTexSubImage1DEXT := nil; 
-  glCopyTexImage2DEXT := nil; 
-  glCopyTexSubImage2DEXT := nil; 
-  glCopyTexSubImage3DEXT := nil; 
-  glCullParameterfvEXT := nil; 
-  glCullParameterdvEXT := nil; 
-  glIndexFuncEXT := nil; 
-  glIndexMaterialEXT := nil; 
-  glPolygonOffsetEXT := nil; 
-  glTexSubImage1DEXT := nil; 
-  glTexSubImage2DEXT := nil;
-  glTexSubImage3DEXT := nil; 
-  glGenTexturesEXT := nil; 
-  glDeleteTexturesEXT := nil; 
-  glBindTextureEXT := nil; 
-  glPrioritizeTexturesEXT := nil; 
-  glAreTexturesResidentEXT := nil; 
-  glIsTextureEXT := nil; 
-
-  glMultiTexCoord1dARB := nil; 
-  glMultiTexCoord1dVARB := nil; 
-  glMultiTexCoord1fARBP := nil; 
-  glMultiTexCoord1fVARB := nil; 
-  glMultiTexCoord1iARB := nil; 
-  glMultiTexCoord1iVARB := nil; 
-  glMultiTexCoord1sARBP := nil; 
-  glMultiTexCoord1sVARB := nil; 
-  glMultiTexCoord2dARB := nil; 
-  glMultiTexCoord2dvARB := nil; 
-  glMultiTexCoord2fARB := nil; 
-  glMultiTexCoord2fvARB := nil; 
-  glMultiTexCoord2iARB := nil; 
-  glMultiTexCoord2ivARB := nil; 
-  glMultiTexCoord2sARB := nil; 
-  glMultiTexCoord2svARB := nil; 
-  glMultiTexCoord3dARB := nil;
-  glMultiTexCoord3dvARB := nil; 
-  glMultiTexCoord3fARB := nil; 
-  glMultiTexCoord3fvARB := nil; 
-  glMultiTexCoord3iARB := nil; 
-  glMultiTexCoord3ivARB := nil; 
-  glMultiTexCoord3sARB := nil; 
-  glMultiTexCoord3svARB := nil; 
-  glMultiTexCoord4dARB := nil; 
-  glMultiTexCoord4dvARB := nil; 
-  glMultiTexCoord4fARB := nil; 
-  glMultiTexCoord4fvARB := nil; 
-  glMultiTexCoord4iARB := nil; 
-  glMultiTexCoord4ivARB := nil; 
-  glMultiTexCoord4sARB := nil; 
-  glMultiTexCoord4svARB := nil; 
-  glActiveTextureARB := nil; 
-  glClientActiveTextureARB := nil; 
-
-  // EXT_compiled_vertex_array
-  glLockArrayEXT := nil; 
-  glUnlockArrayEXT := nil; 
-
-  // EXT_cull_vertex
-  glCullParameterdvEXT := nil; 
-  glCullParameterfvEXT := nil;
-
-  // WIN_swap_hint
-  glAddSwapHintRectWIN := nil; 
-
-  // EXT_point_parameter
-  glPointParameterfEXT := nil; 
-  glPointParameterfvEXT := nil; 
-
-  // GL_ARB_transpose_matrix
-  glLoadTransposeMatrixfARB := nil; 
-  glLoadTransposeMatrixdARB := nil; 
-  glMultTransposeMatrixfARB := nil; 
-  glMultTransposeMatrixdARB := nil; 
-
-  glSampleCoverageARB := nil; 
-  glSamplePassARB := nil; 
-
-  // GL_ARB_multisample
-  glCompressedTexImage3DARB := nil; 
-  glCompressedTexImage2DARB := nil; 
-  glCompressedTexImage1DARB := nil; 
-  glCompressedTexSubImage3DARB := nil; 
-  glCompressedTexSubImage2DARB := nil; 
-  glCompressedTexSubImage1DARB := nil; 
-  glGetCompressedTexImageARB := nil;
-
-  // GL_EXT_blend_color
-  glBlendColorEXT := nil; 
-
-  // GL_EXT_texture3D
-  glTexImage3DEXT := nil; 
-
-  // GL_SGIS_texture_filter4
-  glGetTexFilterFuncSGIS := nil; 
-  glTexFilterFuncSGIS := nil; 
-
-  // GL_EXT_histogram
-  glGetHistogramEXT := nil; 
-  glGetHistogramParameterfvEXT := nil; 
-  glGetHistogramParameterivEXT := nil; 
-  glGetMinmaxEXT := nil; 
-  glGetMinmaxParameterfvEXT := nil; 
-  glGetMinmaxParameterivEXT := nil; 
-  glHistogramEXT := nil; 
-  glMinmaxEXT := nil; 
-  glResetHistogramEXT := nil; 
-  glResetMinmaxEXT := nil; 
-
-  // GL_EXT_convolution
-  glConvolutionFilter1DEXT := nil;
-  glConvolutionFilter2DEXT := nil; 
-  glConvolutionParameterfEXT := nil; 
-  glConvolutionParameterfvEXT := nil; 
-  glConvolutionParameteriEXT := nil; 
-  glConvolutionParameterivEXT := nil; 
-  glCopyConvolutionFilter1DEXT := nil; 
-  glCopyConvolutionFilter2DEXT := nil; 
-  glGetConvolutionFilterEXT := nil; 
-  glGetConvolutionParameterfvEXT := nil; 
-  glGetConvolutionParameterivEXT := nil; 
-  glGetSeparableFilterEXT := nil; 
-  glSeparableFilter2DEXT := nil; 
-
-  // GL_SGI_color_table
-  glColorTableSGI := nil; 
-  glColorTableParameterfvSGI := nil; 
-  glColorTableParameterivSGI := nil; 
-  glCopyColorTableSGI := nil; 
-  glGetColorTableSGI := nil; 
-  glGetColorTableParameterfvSGI := nil; 
-  glGetColorTableParameterivSGI := nil; 
-
-  // GL_SGIX_pixel_texture
-  glPixelTexGenSGIX := nil; 
-
-  // GL_SGIS_pixel_texture
-  glPixelTexGenParameteriSGIS := nil; 
-  glPixelTexGenParameterivSGIS := nil; 
-  glPixelTexGenParameterfSGIS := nil; 
-  glPixelTexGenParameterfvSGIS := nil; 
-  glGetPixelTexGenParameterivSGIS := nil; 
-  glGetPixelTexGenParameterfvSGIS := nil; 
-
-  // GL_SGIS_texture4D
-  glTexImage4DSGIS := nil; 
-  glTexSubImage4DSGIS := nil; 
-
-  // GL_SGIS_detail_texture
-  glDetailTexFuncSGIS := nil; 
-  glGetDetailTexFuncSGIS := nil; 
-
-  // GL_SGIS_sharpen_texture
-  glSharpenTexFuncSGIS := nil; 
-  glGetSharpenTexFuncSGIS := nil; 
-
-  // GL_SGIS_multisample
-  glSampleMaskSGIS := nil; 
-  glSamplePatternSGIS := nil; 
-
-  // GL_EXT_blend_minmax
-  glBlendEquationEXT := nil; 
-
-  // GL_SGIX_sprite
-  glSpriteParameterfSGIX := nil; 
-  glSpriteParameterfvSGIX := nil; 
-  glSpriteParameteriSGIX := nil; 
-  glSpriteParameterivSGIX := nil; 
-
-  // GL_EXT_point_parameters
-  glPointParameterfSGIS := nil; 
-  glPointParameterfvSGIS := nil; 
-
-  // GL_SGIX_instruments
-  glGetInstrumentsSGIX := nil; 
-  glInstrumentsBufferSGIX := nil; 
-  glPollInstrumentsSGIX := nil; 
-  glReadInstrumentsSGIX := nil; 
-  glStartInstrumentsSGIX := nil; 
-  glStopInstrumentsSGIX := nil; 
-
-  // GL_SGIX_framezoom
-  glFrameZoomSGIX := nil; 
-
-  // GL_SGIX_tag_sample_buffer
-  glTagSampleBufferSGIX := nil;
-
-  // GL_SGIX_polynomial_ffd
-  glDeformationMap3dSGIX := nil; 
-  glDeformationMap3fSGIX := nil; 
-  glDeformSGIX := nil; 
-  glLoadIdentityDeformationMapSGIX := nil; 
-
-  // GL_SGIX_reference_plane
-  glReferencePlaneSGIX := nil; 
-
-  // GL_SGIX_flush_raster
-  glFlushRasterSGIX := nil; 
-
-  // GL_SGIS_fog_function
-  glFogFuncSGIS := nil; 
-  glGetFogFuncSGIS := nil; 
-
-  // GL_HP_image_transform
-  glImageTransformParameteriHP := nil; 
-  glImageTransformParameterfHP := nil; 
-  glImageTransformParameterivHP := nil; 
-  glImageTransformParameterfvHP := nil; 
-  glGetImageTransformParameterivHP := nil; 
-  glGetImageTransformParameterfvHP := nil; 
-
-  // GL_EXT_color_subtable
-  glCopyColorSubTableEXT := nil; 
-
-  // GL_PGI_misc_hints
-  glHintPGI := nil; 
-
-  // GL_EXT_paletted_texture
-  glGetColorTableParameterivEXT := nil; 
-  glGetColorTableParameterfvEXT := nil; 
-
-  // GL_SGIX_list_priority
-  glGetListParameterfvSGIX := nil; 
-  glGetListParameterivSGIX := nil; 
-  glListParameterfSGIX := nil; 
-  glListParameterfvSGIX := nil; 
-  glListParameteriSGIX := nil; 
-  glListParameterivSGIX := nil; 
-
-  // GL_SGIX_fragment_lighting
-  glFragmentColorMaterialSGIX := nil; 
-  glFragmentLightfSGIX := nil; 
-  glFragmentLightfvSGIX := nil; 
-  glFragmentLightiSGIX := nil; 
-  glFragmentLightivSGIX := nil; 
-  glFragmentLightModelfSGIX := nil;
-  glFragmentLightModelfvSGIX := nil; 
-  glFragmentLightModeliSGIX := nil; 
-  glFragmentLightModelivSGIX := nil; 
-  glFragmentMaterialfSGIX := nil; 
-  glFragmentMaterialfvSGIX := nil; 
-  glFragmentMaterialiSGIX := nil; 
-  glFragmentMaterialivSGIX := nil; 
-  glGetFragmentLightfvSGIX := nil; 
-  glGetFragmentLightivSGIX := nil; 
-  glGetFragmentMaterialfvSGIX := nil; 
-  glGetFragmentMaterialivSGIX := nil; 
-  glLightEnviSGIX := nil; 
-
-  // GL_EXT_draw_range_elements
-  glDrawRangeElementsEXT := nil; 
-
-  // GL_EXT_light_texture
-  glApplyTextureEXT := nil; 
-  glTextureLightEXT := nil; 
-  glTextureMaterialEXT := nil; 
-
-  // GL_SGIX_async
-  glAsyncMarkerSGIX := nil; 
-  glFinishAsyncSGIX := nil; 
-  glPollAsyncSGIX := nil;
-  glGenAsyncMarkersSGIX := nil; 
-  glDeleteAsyncMarkersSGIX := nil; 
-  glIsAsyncMarkerSGIX := nil; 
-
-  // GL_INTEL_parallel_arrays
-  glVertexPointervINTEL := nil; 
-  glNormalPointervINTEL := nil; 
-  glColorPointervINTEL := nil; 
-  glTexCoordPointervINTEL := nil; 
-
-  // GL_EXT_pixel_transform
-  glPixelTransformParameteriEXT := nil; 
-  glPixelTransformParameterfEXT := nil; 
-  glPixelTransformParameterivEXT := nil; 
-  glPixelTransformParameterfvEXT := nil; 
-
-  // GL_EXT_secondary_color
-  glSecondaryColor3bEXT := nil; 
-  glSecondaryColor3bvEXT := nil; 
-  glSecondaryColor3dEXT := nil; 
-  glSecondaryColor3dvEXT := nil; 
-  glSecondaryColor3fEXT := nil; 
-  glSecondaryColor3fvEXT := nil; 
-  glSecondaryColor3iEXT := nil; 
-  glSecondaryColor3ivEXT := nil;
-  glSecondaryColor3sEXT := nil; 
-  glSecondaryColor3svEXT := nil; 
-  glSecondaryColor3ubEXT := nil; 
-  glSecondaryColor3ubvEXT := nil; 
-  glSecondaryColor3uiEXT := nil; 
-  glSecondaryColor3uivEXT := nil; 
-  glSecondaryColor3usEXT := nil; 
-  glSecondaryColor3usvEXT := nil; 
-  glSecondaryColorPointerEXT := nil; 
-
-  // GL_EXT_texture_perturb_normal
-  glTextureNormalEXT := nil; 
-
-  // GL_EXT_multi_draw_arrays
-  glMultiDrawArraysEXT := nil; 
-  glMultiDrawElementsEXT := nil; 
-
-  // GL_EXT_fog_coord
-  glFogCoordfEXT := nil; 
-  glFogCoordfvEXT := nil; 
-  glFogCoorddEXT := nil; 
-  glFogCoorddvEXT := nil; 
-  glFogCoordPointerEXT := nil; 
-
-  // GL_EXT_coordinate_frame
-  glTangent3bEXT := nil; 
-  glTangent3bvEXT := nil; 
-  glTangent3dEXT := nil; 
-  glTangent3dvEXT := nil; 
-  glTangent3fEXT := nil; 
-  glTangent3fvEXT := nil; 
-  glTangent3iEXT := nil; 
-  glTangent3ivEXT := nil; 
-  glTangent3sEXT := nil; 
-  glTangent3svEXT := nil; 
-  glBinormal3bEXT := nil; 
-  glBinormal3bvEXT := nil; 
-  glBinormal3dEXT := nil; 
-  glBinormal3dvEXT := nil; 
-  glBinormal3fEXT := nil; 
-  glBinormal3fvEXT := nil; 
-  glBinormal3iEXT := nil; 
-  glBinormal3ivEXT := nil; 
-  glBinormal3sEXT := nil; 
-  glBinormal3svEXT := nil; 
-  glTangentPointerEXT := nil; 
-  glBinormalPointerEXT := nil; 
-
-  // GL_SUNX_constant_data
-  glFinishTextureSUNX := nil;
-  
-  // GL_SUN_global_alpha
-  glGlobalAlphaFactorbSUN := nil; 
-  glGlobalAlphaFactorsSUN := nil; 
-  glGlobalAlphaFactoriSUN := nil; 
-  glGlobalAlphaFactorfSUN := nil; 
-  glGlobalAlphaFactordSUN := nil; 
-  glGlobalAlphaFactorubSUN := nil; 
-  glGlobalAlphaFactorusSUN := nil; 
-  glGlobalAlphaFactoruiSUN := nil; 
-
-  // GL_SUN_triangle_list
-  glReplacementCodeuiSUN := nil; 
-  glReplacementCodeusSUN := nil; 
-  glReplacementCodeubSUN := nil; 
-  glReplacementCodeuivSUN := nil; 
-  glReplacementCodeusvSUN := nil; 
-  glReplacementCodeubvSUN := nil; 
-  glReplacementCodePointerSUN := nil; 
-
-  // GL_SUN_vertex
-  glColor4ubVertex2fSUN := nil; 
-  glColor4ubVertex2fvSUN := nil; 
-  glColor4ubVertex3fSUN := nil; 
-  glColor4ubVertex3fvSUN := nil;
-  glColor3fVertex3fSUN := nil; 
-  glColor3fVertex3fvSUN := nil; 
-  glNormal3fVertex3fSUN := nil; 
-  glNormal3fVertex3fvSUN := nil; 
-  glColor4fNormal3fVertex3fSUN := nil; 
-  glColor4fNormal3fVertex3fvSUN := nil; 
-  glTexCoord2fVertex3fSUN := nil; 
-  glTexCoord2fVertex3fvSUN := nil; 
-  glTexCoord4fVertex4fSUN := nil; 
-  glTexCoord4fVertex4fvSUN := nil; 
-  glTexCoord2fColor4ubVertex3fSUN := nil; 
-  glTexCoord2fColor4ubVertex3fvSUN := nil; 
-  glTexCoord2fColor3fVertex3fSUN := nil; 
-  glTexCoord2fColor3fVertex3fvSUN := nil; 
-  glTexCoord2fNormal3fVertex3fSUN := nil; 
-  glTexCoord2fNormal3fVertex3fvSUN := nil; 
-  glTexCoord2fColor4fNormal3fVertex3fSUN := nil; 
-  glTexCoord2fColor4fNormal3fVertex3fvSUN := nil; 
-  glTexCoord4fColor4fNormal3fVertex4fSUN := nil; 
-  glTexCoord4fColor4fNormal3fVertex4fvSUN := nil; 
-  glReplacementCodeuiVertex3fSUN := nil; 
-  glReplacementCodeuiVertex3fvSUN := nil; 
-  glReplacementCodeuiColor4ubVertex3fSUN := nil; 
-  glReplacementCodeuiColor4ubVertex3fvSUN := nil; 
-  glReplacementCodeuiColor3fVertex3fSUN := nil;
-  glReplacementCodeuiColor3fVertex3fvSUN := nil; 
-  glReplacementCodeuiNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiNormal3fVertex3fvSUN := nil; 
-  glReplacementCodeuiColor4fNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiColor4fNormal3fVertex3fvSUN := nil; 
-  glReplacementCodeuiTexCoord2fVertex3fSUN := nil; 
-  glReplacementCodeuiTexCoord2fVertex3fvSUN := nil; 
-  glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN := nil; 
-  glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN := nil; 
-  glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN := nil; 
-
-  // GL_EXT_blend_func_separate
-  glBlendFuncSeparateEXT := nil; 
-
-  // GL_EXT_vertex_weighting
-  glVertexWeightfEXT := nil; 
-  glVertexWeightfvEXT := nil; 
-  glVertexWeightPointerEXT := nil; 
-
-  // GL_NV_vertex_array_range
-  glFlushVertexArrayRangeNV := nil; 
-  glVertexArrayRangeNV := nil; 
-  wglAllocateMemoryNV := nil; 
-  wglFreeMemoryNV := nil;
-
-  // GL_NV_register_combiners
-  glCombinerParameterfvNV := nil; 
-  glCombinerParameterfNV := nil; 
-  glCombinerParameterivNV := nil; 
-  glCombinerParameteriNV := nil; 
-  glCombinerInputNV := nil; 
-  glCombinerOutputNV := nil; 
-  glFinalCombinerInputNV := nil; 
-  glGetCombinerInputParameterfvNV := nil; 
-  glGetCombinerInputParameterivNV := nil; 
-  glGetCombinerOutputParameterfvNV := nil; 
-  glGetCombinerOutputParameterivNV := nil; 
-  glGetFinalCombinerInputParameterfvNV := nil; 
-  glGetFinalCombinerInputParameterivNV := nil; 
-
-  // GL_MESA_resize_buffers
-  glResizeBuffersMESA := nil; 
-
-  // GL_MESA_window_pos
-  glWindowPos2dMESA := nil; 
-  glWindowPos2dvMESA := nil; 
-  glWindowPos2fMESA := nil; 
-  glWindowPos2fvMESA := nil; 
-  glWindowPos2iMESA := nil;
-  glWindowPos2ivMESA := nil; 
-  glWindowPos2sMESA := nil; 
-  glWindowPos2svMESA := nil; 
-  glWindowPos3dMESA := nil; 
-  glWindowPos3dvMESA := nil; 
-  glWindowPos3fMESA := nil; 
-  glWindowPos3fvMESA := nil; 
-  glWindowPos3iMESA := nil; 
-  glWindowPos3ivMESA := nil; 
-  glWindowPos3sMESA := nil; 
-  glWindowPos3svMESA := nil; 
-  glWindowPos4dMESA := nil; 
-  glWindowPos4dvMESA := nil; 
-  glWindowPos4fMESA := nil; 
-  glWindowPos4fvMESA := nil; 
-  glWindowPos4iMESA := nil; 
-  glWindowPos4ivMESA := nil; 
-  glWindowPos4sMESA := nil; 
-  glWindowPos4svMESA := nil; 
-
-  // GL_IBM_multimode_draw_arrays
-  glMultiModeDrawArraysIBM := nil; 
-  glMultiModeDrawElementsIBM := nil; 
-
-  // GL_IBM_vertex_array_lists
-  glColorPointerListIBM := nil; 
-  glSecondaryColorPointerListIBM := nil; 
-  glEdgeFlagPointerListIBM := nil; 
-  glFogCoordPointerListIBM := nil; 
-  glIndexPointerListIBM := nil; 
-  glNormalPointerListIBM := nil; 
-  glTexCoordPointerListIBM := nil; 
-  glVertexPointerListIBM := nil; 
-
-  // GL_3DFX_tbuffer
-  glTbufferMask3DFX := nil; 
-
-  // GL_EXT_multisample
-  glSampleMaskEXT := nil; 
-  glSamplePatternEXT := nil; 
-
-  // GL_SGIS_texture_color_mask
-  glTextureColorMaskSGIS := nil; 
-
-  // GL_SGIX_igloo_interface
-  glIglooInterfaceSGIX := nil; 
-
-  // GLU extensions
-  gluNurbsCallbackDataEXT := nil; 
-  gluNewNurbsTessellatorEXT := nil;
-  gluDeleteNurbsTessellatorEXT := nil; 
-
-  // GL_NV_vertex_program
-  glAreProgramsResidentNV := nil; 
-  glBindProgramNV := nil; 
-  glDeleteProgramsNV := nil; 
-  glExecuteProgramNV := nil; 
-  glGenProgramsNV := nil; 
-  glGetProgramParameterdvNV := nil; 
-  glGetProgramParameterfvNV := nil; 
-  glGetProgramivNV := nil; 
-  glGetProgramStringNV := nil; 
-  glGetTrackMatrixivNV := nil; 
-  glGetVertexAttribdvNV:= nil; 
-  glGetVertexAttribfvNV:= nil; 
-  glGetVertexAttribivNV:= nil; 
-  glGetVertexAttribPointervNV := nil; 
-  glIsProgramNV := nil; 
-  glLoadProgramNV := nil; 
-  glProgramParameter4dNV := nil; 
-  glProgramParameter4dvNV := nil; 
-  glProgramParameter4fNV := nil; 
-  glProgramParameter4fvNV := nil; 
-  glProgramParameters4dvNV := nil; 
-  glProgramParameters4fvNV := nil;
-  glRequestResidentProgramsNV := nil; 
-  glTrackMatrixNV := nil; 
-  glVertexAttribPointerNV := nil; 
-  glVertexAttrib1dNV := nil; 
-  glVertexAttrib1dvNV := nil; 
-  glVertexAttrib1fNV := nil; 
-  glVertexAttrib1fvNV := nil; 
-  glVertexAttrib1sNV := nil; 
-  glVertexAttrib1svNV := nil; 
-  glVertexAttrib2dNV := nil; 
-  glVertexAttrib2dvNV := nil; 
-  glVertexAttrib2fNV := nil; 
-  glVertexAttrib2fvNV := nil; 
-  glVertexAttrib2sNV := nil; 
-  glVertexAttrib2svNV := nil; 
-  glVertexAttrib3dNV := nil; 
-  glVertexAttrib3dvNV := nil; 
-  glVertexAttrib3fNV := nil; 
-  glVertexAttrib3fvNV := nil; 
-  glVertexAttrib3sNV := nil; 
-  glVertexAttrib3svNV := nil; 
-  glVertexAttrib4dNV := nil; 
-  glVertexAttrib4dvNV := nil; 
-  glVertexAttrib4fNV := nil; 
-  glVertexAttrib4fvNV := nil;
-  glVertexAttrib4sNV := nil; 
-  glVertexAttrib4svNV := nil; 
-  glVertexAttrib4ubvNV := nil; 
-  glVertexAttribs1dvNV := nil; 
-  glVertexAttribs1fvNV := nil; 
-  glVertexAttribs1svNV := nil; 
-  glVertexAttribs2dvNV := nil; 
-  glVertexAttribs2fvNV := nil; 
-  glVertexAttribs2svNV := nil; 
-  glVertexAttribs3dvNV := nil; 
-  glVertexAttribs3fvNV := nil; 
-  glVertexAttribs3svNV := nil; 
-  glVertexAttribs4dvNV := nil; 
-  glVertexAttribs4fvNV := nil; 
-  glVertexAttribs4svNV := nil; 
-  glVertexAttribs4ubvNV := nil; 
 
   LastPixelFormat := 0; // to get synchronized again, if this proc was called from outside
-end; 
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -8589,7 +7603,7 @@ begin
   glColorTableEXT := wglGetProcAddress('glColorTableEXT');
   glColorSubTableEXT := wglGetProcAddress('glColorSubTableEXT');
   glGetColorTableEXT := wglGetProcAddress('glGetColorTableEXT'); 
-  glGetColorTablePameterivEXT := wglGetProcAddress('glGetColorTablePameterivEXT'); 
+  glGetColorTablePameterivEXT := wglGetProcAddress('glGetColorTablePameterivEXT');
   glGetColorTablePameterfvEXT := wglGetProcAddress('glGetColorTablePameterfvEXT'); 
   glLockArraysEXT := wglGetProcAddress('glLockArraysEXT'); 
   glUnlockArraysEXT := wglGetProcAddress('glUnlockArraysEXT'); 
@@ -9000,7 +8014,7 @@ begin
   glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN'); 
   glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN'); 
   glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN');
-  glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN'); 
+  glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN := wglGetProcAddress('glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN');
 
   // GL_EXT_blend_func_separate
   glBlendFuncSeparateEXT := wglGetProcAddress('glBlendFuncSeparateEXT'); 
@@ -9045,7 +8059,7 @@ begin
   glWindowPos2svMESA := wglGetProcAddress('glWindowPos2svMESA'); 
   glWindowPos3dMESA := wglGetProcAddress('glWindowPos3dMESA'); 
   glWindowPos3dvMESA := wglGetProcAddress('glWindowPos3dvMESA'); 
-  glWindowPos3fMESA := wglGetProcAddress('glWindowPos3fMESA'); 
+  glWindowPos3fMESA := wglGetProcAddress('glWindowPos3fMESA');
   glWindowPos3fvMESA := wglGetProcAddress('glWindowPos3fvMESA'); 
   glWindowPos3iMESA := wglGetProcAddress('glWindowPos3iMESA'); 
   glWindowPos3ivMESA := wglGetProcAddress('glWindowPos3ivMESA'); 
@@ -9075,7 +8089,7 @@ begin
   glVertexPointerListIBM := wglGetProcAddress('glVertexPointerListIBM'); 
 
   // GL_3DFX_tbuffer
-  glTbufferMask3DFX := wglGetProcAddress('glTbufferMask3DFX'); 
+  glTbufferMask3DFX := wglGetProcAddress('glTbufferMask3DFX');
 
   // GL_EXT_multisample
   glSampleMaskEXT := wglGetProcAddress('glSampleMaskEXT'); 
@@ -9090,7 +8104,7 @@ begin
   // GLU extensions
   gluNurbsCallbackDataEXT := wglGetProcAddress('gluNurbsCallbackDataEXT'); 
   gluNewNurbsTessellatorEXT := wglGetProcAddress('gluNewNurbsTessellatorEXT'); 
-  gluDeleteNurbsTessellatorEXT := wglGetProcAddress('gluDeleteNurbsTessellatorEXT'); 
+  gluDeleteNurbsTessellatorEXT := wglGetProcAddress('gluDeleteNurbsTessellatorEXT');
 
   // GL_NV_vertex_program
   glAreProgramsResidentNV := wglGetProcAddress('glAreProgramsResidentNV'); 
@@ -9105,7 +8119,7 @@ begin
   glGetTrackMatrixivNV := wglGetProcAddress('glGetTrackMatrixivNV'); 
   glGetVertexAttribdvNV:= wglGetProcAddress('glGetVertexAttribdvNV'); 
   glGetVertexAttribfvNV:= wglGetProcAddress('glGetVertexAttribfvNV'); 
-  glGetVertexAttribivNV:= wglGetProcAddress('glGetVertexAttribivNV'); 
+  glGetVertexAttribivNV:= wglGetProcAddress('glGetVertexAttribivNV');
   glGetVertexAttribPointervNV := wglGetProcAddress ('glGetVertexAttribPointervNV'); 
   glIsProgramNV := wglGetProcAddress('glIsProgramNV'); 
   glLoadProgramNV := wglGetProcAddress('glLoadProgramNV'); 
@@ -9120,7 +8134,7 @@ begin
   glVertexAttribPointerNV := wglGetProcAddress('glVertexAttribPointerNV'); 
   glVertexAttrib1dNV := wglGetProcAddress('glVertexAttrib1dNV'); 
   glVertexAttrib1dvNV := wglGetProcAddress('glVertexAttrib1dvNV'); 
-  glVertexAttrib1fNV := wglGetProcAddress('glVertexAttrib1fNV'); 
+  glVertexAttrib1fNV := wglGetProcAddress('glVertexAttrib1fNV');
   glVertexAttrib1fvNV := wglGetProcAddress('glVertexAttrib1fvNV'); 
   glVertexAttrib1sNV := wglGetProcAddress('glVertexAttrib1sNV'); 
   glVertexAttrib1svNV := wglGetProcAddress('glVertexAttrib1svNV'); 
@@ -9135,7 +8149,7 @@ begin
   glVertexAttrib3fNV := wglGetProcAddress('glVertexAttrib3fNV'); 
   glVertexAttrib3fvNV := wglGetProcAddress('glVertexAttrib3fvNV'); 
   glVertexAttrib3sNV := wglGetProcAddress('glVertexAttrib3sNV'); 
-  glVertexAttrib3svNV := wglGetProcAddress('glVertexAttrib3svNV'); 
+  glVertexAttrib3svNV := wglGetProcAddress('glVertexAttrib3svNV');
   glVertexAttrib4dNV := wglGetProcAddress('glVertexAttrib4dNV'); 
   glVertexAttrib4dvNV := wglGetProcAddress('glVertexAttrib4dvNV'); 
   glVertexAttrib4fNV := wglGetProcAddress('glVertexAttrib4fNV'); 
@@ -9150,22 +8164,42 @@ begin
   glVertexAttribs2fvNV := wglGetProcAddress('glVertexAttribs2fvNV'); 
   glVertexAttribs2svNV := wglGetProcAddress('glVertexAttribs2svNV'); 
   glVertexAttribs3dvNV := wglGetProcAddress('glVertexAttribs3dvNV');
-  glVertexAttribs3fvNV := wglGetProcAddress('glVertexAttribs3fvNV'); 
+  glVertexAttribs3fvNV := wglGetProcAddress('glVertexAttribs3fvNV');
   glVertexAttribs3svNV := wglGetProcAddress('glVertexAttribs3svNV'); 
   glVertexAttribs4dvNV := wglGetProcAddress('glVertexAttribs4dvNV'); 
   glVertexAttribs4fvNV := wglGetProcAddress('glVertexAttribs4fvNV'); 
   glVertexAttribs4svNV := wglGetProcAddress('glVertexAttribs4svNV'); 
-  glVertexAttribs4ubvNV := wglGetProcAddress('glVertexAttribs4ubvN'); 
+  glVertexAttribs4ubvNV := wglGetProcAddress('glVertexAttribs4ubvN');
 
+  ReadWGLExtensions;
+
+  // to get synchronized again, if this proc was called externally
+  LastPixelFormat := 0;
+end;
+
+procedure ReadWGLExtensions;
+begin
   // ARB wgl extensions
   wglGetExtensionsStringARB := wglGetProcAddress('wglGetExtensionsStringARB');
   wglGetPixelFormatAttribivARB := wglGetProcAddress('wglGetPixelFormatAttribivARB');
   wglGetPixelFormatAttribfvARB := wglGetProcAddress('wglGetPixelFormatAttribfvARB');
   wglChoosePixelFormatARB := wglGetProcAddress('wglChoosePixelFormatARB');
 
-  // to get synchronized again, if this proc was called externally
-  LastPixelFormat := 0; 
-end; 
+  wglCreatePbufferARB := wglGetProcAddress('wglCreatePbufferARB');
+  wglGetPbufferDCARB := wglGetProcAddress('wglGetPbufferDCARB');
+  wglReleasePbufferDCARB := wglGetProcAddress('wglReleasePbufferDCARB');
+  wglDestroyPbufferARB := wglGetProcAddress('wglDestroyPbufferARB');
+  wglQueryPbufferARB := wglGetProcAddress('wglQueryPbufferARB');
+
+  wglCreateBufferRegionARB := wglGetProcAddress('wglCreateBufferRegionARB');
+  wglDeleteBufferRegionARB := wglGetProcAddress('wglDeleteBufferRegionARB');
+  wglSaveBufferRegionARB := wglGetProcAddress('wglSaveBufferRegionARB');
+  wglRestoreBufferRegionARB := wglGetProcAddress('wglRestoreBufferRegionARB');
+
+  // -EGG- ----------------------------
+  wglSwapIntervalEXT := wglGetProcAddress('wglSwapIntervalEXT');
+  wglGetSwapIntervalEXT := wglGetProcAddress('wglGetSwapIntervalEXT');
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -9200,23 +8234,23 @@ begin
       Delete(Buffer, Separator, 255); 
       // Now translate the numbers.
       Separator := Pos('.', Buffer); // This is necessary because the buffer length might have changed.
-      Max := StrToInt(Copy(Buffer, 1, Separator - 1)); 
-      Min := StrToInt(Copy(Buffer, Separator + 1, 255)); 
+      Max := StrToInt(Copy(Buffer, 1, Separator - 1));
+      Min := StrToInt(Copy(Buffer, Separator + 1, 255));
     end
     else
-      Abort; 
+      Abort;
   except
-    Min := 0; 
-    Max := 0; 
-  end; 
-end; 
+    Min := 0;
+    Max := 0;
+  end;
+end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 procedure ReadImplementationProperties;
- 
+
 var
-  Buffer: string; 
+  Buffer: string;
   MajorVersion,
   MinorVersion: Integer;
 
@@ -9231,23 +8265,23 @@ var
 
    begin
      // First find the position of the extension string as substring in Buffer.
-     ExtPos := Pos(Extension, Buffer);
+     ExtPos := Pos(' '+Extension+' ', Buffer);
      Result := ExtPos > 0;
      // Now check that it isn't only a substring of another extension.
-     if Result then
+{     if Result then
        Result := ((ExtPos + Length(Extension) - 1) = Length(Buffer)) or
-         not (Buffer[ExtPos + Length(Extension)] in ['_', 'A'..'Z', 'a'..'z']);
-   end; 
+         not (Buffer[ExtPos + Length(Extension)] in ['_', 'A'..'Z', 'a'..'z']); }
+   end;
 
   //--------------- end local function ----------------------------------------
 
 begin
   // determine version of implementation
   // GL
-  Buffer := glGetString(GL_VERSION); 
-  TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion); 
-  GL_VERSION_1_0 := True; 
-  GL_VERSION_1_1 := False; 
+  Buffer := glGetString(GL_VERSION);
+  TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion);
+  GL_VERSION_1_0 := True;
+  GL_VERSION_1_1 := False;
   GL_VERSION_1_2 := False; 
   if MajorVersion > 0 then
   begin
@@ -9256,8 +8290,8 @@ begin
       GL_VERSION_1_1 := True; 
       if MinorVersion > 1 then
         GL_VERSION_1_2 := True;
-    end; 
-  end; 
+    end;
+  end;
 
   // GLU
   GLU_VERSION_1_1 := False; 
@@ -9266,7 +8300,7 @@ begin
   // gluGetString is valid for version 1.1 or later
   if Assigned(gluGetString) then
   begin
-    Buffer := gluGetString(GLU_VERSION); 
+    Buffer := gluGetString(GLU_VERSION);
     TrimAndSplitVersionString(Buffer, Majorversion, MinorVersion); 
     GLU_VERSION_1_1 := True; 
     if MinorVersion > 1 then
@@ -9279,15 +8313,15 @@ begin
 
   // check supported extensions
   // GL
-  Buffer := glGetString(GL_EXTENSIONS); 
+  Buffer := ' '+glGetString(GL_EXTENSIONS)+' '; 
   GL_3DFX_multisample :=CheckExtension('GL_3DFX_multisample');
-  GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer'); 
-  GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1'); 
+  GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
+  GL_3DFX_texture_compression_FXT1 := CheckExtension('GL_3DFX_texture_compression_FXT1');
 
-  GL_APPLE_specular_vector := CheckExtension('GL_APPLE_specular_vector'); 
-  GL_APPLE_transform_hint := CheckExtension('GL_APPLE_transform_hint'); 
+  GL_APPLE_specular_vector := CheckExtension('GL_APPLE_specular_vector');
+  GL_APPLE_transform_hint := CheckExtension('GL_APPLE_transform_hint');
 
-  GL_ARB_imaging := CheckExtension('GL_ARB_imaging'); 
+  GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
   GL_ARB_multisample := CheckExtension('GL_ARB_multisample'); 
   GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture'); 
   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
@@ -9298,11 +8332,11 @@ begin
   GL_EXT_422_pixels := CheckExtension('GL_EXT_422_pixels'); 
   GL_EXT_abgr := CheckExtension('GL_EXT_abgr'); 
   GL_EXT_bgra := CheckExtension('GL_EXT_bgra'); 
-  GL_EXT_blend_color := CheckExtension('GL_EXT_blend_color'); 
+  GL_EXT_blend_color := CheckExtension('GL_EXT_blend_color');
   GL_EXT_blend_func_separate := CheckExtension('GL_EXT_blend_func_separate'); 
   GL_EXT_blend_logic_op := CheckExtension('GL_EXT_blend_logic_op'); 
   GL_EXT_blend_minmax := CheckExtension('GL_EXT_blend_minmax'); 
-  GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract'); 
+  GL_EXT_blend_subtract := CheckExtension('GL_EXT_blend_subtract');
   GL_EXT_clip_volume_hint := CheckExtension('GL_EXT_clip_volume_hint'); 
   GL_EXT_cmyka := CheckExtension('GL_EXT_cmyka'); 
   GL_EXT_color_subtable := CheckExtension('GL_EXT_color_subtable');
@@ -9317,9 +8351,9 @@ begin
   GL_EXT_index_array_formats := CheckExtension('GL_EXT_index_array_formats'); 
   GL_EXT_index_func := CheckExtension('GL_EXT_index_func'); 
   GL_EXT_index_material := CheckExtension('GL_EXT_index_material'); 
-  GL_EXT_index_texture := CheckExtension('GL_EXT_index_texture'); 
+  GL_EXT_index_texture := CheckExtension('GL_EXT_index_texture');
   GL_EXT_light_max_exponent := CheckExtension('GL_EXT_light_max_exponent'); 
-  GL_EXT_light_texture := CheckExtension('GL_EXT_light_texture'); 
+  GL_EXT_light_texture := CheckExtension('GL_EXT_light_texture');
   GL_EXT_misc_attribute := CheckExtension('GL_EXT_misc_attribute'); 
   GL_EXT_multi_draw_arrays := CheckExtension('GL_EXT_multi_draw_arrays'); 
   GL_EXT_multisample := CheckExtension('GL_EXT_multisample'); 
@@ -9332,7 +8366,7 @@ begin
   GL_EXT_scene_marker := CheckExtension('GL_EXT_scene_marker'); 
   GL_EXT_secondary_color := CheckExtension('GL_EXT_secondary_color');
   GL_EXT_separate_specular_color := CheckExtension('GL_EXT_separate_specular_color'); 
-  GL_EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette'); 
+  GL_EXT_shared_texture_palette := CheckExtension('GL_EXT_shared_texture_palette');
   GL_EXT_stencil_wrap := CheckExtension('GL_EXT_stencil_wrap'); 
   GL_EXT_subtexture := CheckExtension('GL_EXT_subtexture'); 
   GL_EXT_texture_color_table := CheckExtension('GL_EXT_texture_color_table'); 
@@ -9340,14 +8374,14 @@ begin
   GL_EXT_texture_cube_map := CheckExtension('GL_EXT_texture_cube_map'); 
   GL_EXT_texture_edge_clamp := CheckExtension('GL_EXT_texture_edge_clamp'); 
   GL_EXT_texture_env_add := CheckExtension('GL_EXT_texture_env_add'); 
-  GL_EXT_texture_env_combine := CheckExtension('GL_EXT_texture_env_combine'); 
+  GL_EXT_texture_env_combine := CheckExtension('GL_EXT_texture_env_combine');
   GL_EXT_texture_filter_anisotropic := CheckExtension('GL_EXT_texture_filter_anisotropic'); 
   GL_EXT_texture_lod_bias := CheckExtension('GL_EXT_texture_lod_bias'); 
   GL_EXT_texture_object := CheckExtension('GL_EXT_texture_object'); 
   GL_EXT_texture_perturb_normal := CheckExtension('GL_EXT_texture_perturb_normal'); 
   GL_EXT_texture3D := CheckExtension('GL_EXT_texture3D'); 
   GL_EXT_vertex_array := CheckExtension('GL_EXT_vertex_array'); 
-  GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting'); 
+  GL_EXT_vertex_weighting := CheckExtension('GL_EXT_vertex_weighting');
 
   GL_FfdMaskSGIX := CheckExtension('GL_FfdMaskSGIX'); 
   GL_HP_convolution_border_modes := CheckExtension('GL_HP_convolution_border_modes'); 
@@ -9361,7 +8395,7 @@ begin
   GL_IBM_vertex_array_lists := CheckExtension('GL_IBM_vertex_array_lists'); 
 
   GL_INGR_color_clamp := CheckExtension('GL_INGR_color_clamp'); 
-  GL_INGR_interlace_read := CheckExtension('GL_INGR_interlace_read'); 
+  GL_INGR_interlace_read := CheckExtension('GL_INGR_interlace_read');
 
   GL_INTEL_parallel_arrays := CheckExtension('GL_INTEL_parallel_arrays'); 
 
@@ -9377,7 +8411,7 @@ begin
   GL_NV_texgen_emboss := CheckExtension('GL_NV_texgen_emboss'); 
   GL_NV_texgen_reflection := CheckExtension('GL_NV_texgen_reflection'); 
   GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4'); 
-  GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range'); 
+  GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
   GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program'); 
 
   GL_PGI_misc_hints := CheckExtension('GL_PGI_misc_hints');
@@ -9392,7 +8426,7 @@ begin
   GL_SGIS_detail_texture := CheckExtension('GL_SGIS_detail_texture'); 
   GL_SGIS_fog_function := CheckExtension('GL_SGIS_fog_function'); 
   GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap'); 
-  GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample'); 
+  GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample');
   GL_SGIS_multitexture := CheckExtension('GL_SGIS_multitexture'); 
   GL_SGIS_pixel_texture := CheckExtension('GL_SGIS_pixel_texture'); 
   GL_SGIS_point_line_texgen := CheckExtension('GL_SGIS_point_line_texgen'); 
@@ -9403,11 +8437,11 @@ begin
   GL_SGIS_texture_edge_clamp := CheckExtension('GL_SGIS_texture_edge_clamp'); 
   GL_SGIS_texture_filter4 := CheckExtension('GL_SGIS_texture_filter4'); 
   GL_SGIS_texture_lod := CheckExtension('GL_SGIS_texture_lod'); 
-  GL_SGIS_texture_select := CheckExtension('GL_SGIS_texture_select'); 
+  GL_SGIS_texture_select := CheckExtension('GL_SGIS_texture_select');
   GL_SGIS_texture4D := CheckExtension('GL_SGIS_texture4D'); 
 
   GL_SGIX_async := CheckExtension('GL_SGIX_async'); 
-  GL_SGIX_async_histogram := CheckExtension('GL_SGIX_async_histogram'); 
+  GL_SGIX_async_histogram := CheckExtension('GL_SGIX_async_histogram');
   GL_SGIX_async_pixel := CheckExtension('GL_SGIX_async_pixel'); 
   GL_SGIX_blend_alpha_minmax := CheckExtension('GL_SGIX_blend_alpha_minmax'); 
   GL_SGIX_calligraphic_fragment := CheckExtension('GL_SGIX_calligraphic_fragment'); 
@@ -9422,9 +8456,9 @@ begin
   GL_SGIX_igloo_interface := CheckExtension('GL_SGIX_igloo_interface'); 
   GL_SGIX_instruments := CheckExtension('GL_SGIX_instruments'); 
   GL_SGIX_interlace := CheckExtension('GL_SGIX_interlace'); 
-  GL_SGIX_ir_instrument1 := CheckExtension('GL_SGIX_ir_instrument1'); 
+  GL_SGIX_ir_instrument1 := CheckExtension('GL_SGIX_ir_instrument1');
   GL_SGIX_list_priority := CheckExtension('GL_SGIX_list_priority'); 
-  GL_SGIX_pixel_texture := CheckExtension('GL_SGIX_pixel_texture'); 
+  GL_SGIX_pixel_texture := CheckExtension('GL_SGIX_pixel_texture');
   GL_SGIX_pixel_tiles := CheckExtension('GL_SGIX_pixel_tiles'); 
   GL_SGIX_polynomial_ffd := CheckExtension('GL_SGIX_polynomial_ffd'); 
   GL_SGIX_reference_plane := CheckExtension('GL_SGIX_reference_plane'); 
@@ -9437,7 +8471,7 @@ begin
   GL_SGIX_texture_add_env := CheckExtension('GL_SGIX_texture_add_env'); 
   GL_SGIX_texture_lod_bias := CheckExtension('GL_SGIX_texture_lod_bias'); 
   GL_SGIX_texture_multi_buffer := CheckExtension('GL_SGIX_texture_multi_buffer'); 
-  GL_SGIX_texture_scale_bias := CheckExtension('GL_SGIX_texture_scale_bias'); 
+  GL_SGIX_texture_scale_bias := CheckExtension('GL_SGIX_texture_scale_bias');
   GL_SGIX_vertex_preclip := CheckExtension('GL_SGIX_vertex_preclip'); 
   GL_SGIX_ycrcb := CheckExtension('GL_SGIX_ycrcb'); 
   GL_SGIX_ycrcba := CheckExtension('GL_SGIX_ycrcba'); 
@@ -9445,7 +8479,7 @@ begin
   GL_SUN_convolution_border_modes := CheckExtension('GL_SUN_convolution_border_modes'); 
   GL_SUN_global_alpha := CheckExtension('GL_SUN_global_alpha'); 
   GL_SUN_triangle_list := CheckExtension('GL_SUN_triangle_list'); 
-  GL_SUN_vertex := CheckExtension('GL_SUN_vertex'); 
+  GL_SUN_vertex := CheckExtension('GL_SUN_vertex');
 
   GL_SUNX_constant_data := CheckExtension('GL_SUNX_constant_data'); 
 
@@ -9453,26 +8487,48 @@ begin
   GL_WIN_specular_fog := CheckExtension('GL_WIN_specular_fog'); 
   GL_WIN_swap_hint := CheckExtension('GL_WIN_swap_hint'); 
 
-  WGL_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
+  // -EGG- --------------------------
+
   WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
-  WGL_ARB_pixel_format := CheckExtension('WGL_ARB_pixel_format');
 
   // GLU
-  Buffer := gluGetString(GLU_EXTENSIONS); 
-  GLU_EXT_TEXTURE := CheckExtension('GLU_EXT_TEXTURE'); 
-  GLU_EXT_object_space_tess := CheckExtension('GLU_EXT_object_space_tess'); 
+  Buffer := ' '+gluGetString(GLU_EXTENSIONS)+' ';
+  GLU_EXT_TEXTURE := CheckExtension('GLU_EXT_TEXTURE');
+  GLU_EXT_object_space_tess := CheckExtension('GLU_EXT_object_space_tess');
   GLU_EXT_nurbs_tessellator := CheckExtension('GLU_EXT_nurbs_tessellator');
 
+  ReadWGLImplementationProperties;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure ReadWGLImplementationProperties;
+var
+   Buffer: string;
+
+   // Checks if the given Extension string is in Buffer.
+   function CheckExtension(const Extension: string): Boolean;
+   begin
+      Result := (Pos(Extension, Buffer)>0);
+   end;
+
+begin
   // ARB wgl extensions
   if Assigned(wglGetExtensionsStringARB) then
   begin
     Buffer := wglGetExtensionsStringARB(wglGetCurrentDC);
+    WGL_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
+    WGL_ARB_buffer_region := CheckExtension('WGL_ARB_buffer_region');
     WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
+    WGL_ARB_pbuffer := CheckExtension('WGL_ARB_pbuffer ');
     WGL_ARB_pixel_format := CheckExtension('WGL_ARB_pixel_format');
   end
   else
   begin
+    WGL_EXT_swap_control := False;
+    WGL_ARB_buffer_region := False;
     WGL_ARB_extensions_string := False;
+    WGL_ARB_pbuffer := False;
     WGL_ARB_pixel_format := False;
   end;
 end;

@@ -69,7 +69,7 @@ var
 begin
 	// places the ball in the mat center, resets score and ball speed
 	angle:=DegToRad(45+Random(90));
-	MakeVector(ballVector, 2*cos(angle), 2*sin(angle), 0);
+	MakeVector(ballVector, 4*cos(angle), 4*sin(angle), 0);
 	score:=0;
 	gameOver:=False;
 	Ball.Position.AsVector:=NullHmgPoint;

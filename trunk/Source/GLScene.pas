@@ -2,10 +2,13 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/08/01 - Egg - Support for WGL_EXT_swap_control (VSync control),
+                           Added TGLMemoryViewer 
+      <li>24/08/01 - Egg - TGLSceneViewer broken, TGLSceneBuffer born
       <li>23/08/01 - Lin - Added PixelDepthToDistance function (Rene Lindsay)
       <li>23/08/01 - Lin - Added ScreenToVector function (Rene Lindsay)
-      <li>23/08/01 - Lin - Fixed PixelRayToWorld no longer requires the camera to have
-                           a TargetObject set. (Rene Lindsay)
+      <li>23/08/01 - Lin - Fixed PixelRayToWorld no longer requires the camera
+                           to have a TargetObject set. (Rene Lindsay)
       <li>22/08/01 - Egg - Fixed ocStructure not being reset for osDirectDraw objects,
                            Added Absolute-Local conversion helpers,
                            glPopName fix (Puthoon)
@@ -189,10 +192,6 @@ type
   // flags for design notification
   TSceneOperation = (soAdd, soRemove, soMove, soRename, soSelect, soBeginUpdate, soEndUpdate);
 
-  // flags for allocated buffers
-  TBuffer = (buColor, buDepth, buStencil, buAccum);
-  TBuffers = set of TBuffer;
-
   // TContextOption
   //
   {: Options for the rendering context.<p>
@@ -200,8 +199,9 @@ type
      roRenderToWindows: ignored (legacy).<br>
      roTwoSideLighting: enables two-side lighting model.<br>
      roStereo: enables stereo support in the driver (dunno if it works,
-         I don't have a stereo device to test...) } 
-  TContextOption = (roDoubleBuffer, roRenderToWindow, roTwoSideLighting, roStereo);
+         I don't have a stereo device to test...) }
+  TContextOption = (roDoubleBuffer, roStencilBuffer,
+                    roRenderToWindow, roTwoSideLighting, roStereo);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -218,7 +218,7 @@ type
    TGLScene = class;
    TGLBehaviours = class;
    TGLObjectEffects = class;
-   TGLSceneViewer = class;
+   TGLSceneBuffer = class;
 
    // TGLObjectStyle
    //
@@ -600,7 +600,7 @@ type
 
       public
          { Public Declarations }
-         procedure Render(sceneViewer : TGLSceneViewer;
+         procedure Render(sceneBuffer : TGLSceneBuffer;
                           var rci : TRenderContextInfo); virtual;
    end;
 
@@ -644,10 +644,10 @@ type
 
          function CanAdd(aClass : TXCollectionItemClass) : Boolean; override;
          procedure DoProgress(const deltaTime, newTime : Double);
-         procedure RenderPreEffects(sceneViewer : TGLSceneViewer;
+         procedure RenderPreEffects(sceneBuffer : TGLSceneBuffer;
                                     var rci : TRenderContextInfo);
          {: Also take care of registering after effects with the GLSceneViewer. }
-         procedure RenderPostEffects(sceneViewer : TGLSceneViewer;
+         procedure RenderPostEffects(sceneBuffer : TGLSceneBuffer;
                                      var rci : TRenderContextInfo);
    end;
 
@@ -1005,13 +1005,13 @@ type
    TGLScene = class(TGLUpdateAbleComponent)
       private
          { Private Declarations }
-         FUpdateCount: Integer;
-         FObjects: TGLSceneRootObject;
-         FCameras: TGLBaseSceneObject;
-         FBaseContext: TGLContext; //reference, not owned!
-         FLights, FViewers: TList;
-         FLasTGLCamera, FCurrenTGLCamera: TGLCamera;
-         FCurrentViewer: TGLSceneViewer;
+         FUpdateCount : Integer;
+         FObjects : TGLSceneRootObject;
+         FCameras : TGLBaseSceneObject;
+         FBaseContext : TGLContext; //reference, not owned!
+         FLights, FBuffers : TList;
+         FLastGLCamera, FCurrentGLCamera : TGLCamera;
+         FCurrentBuffer : TGLSceneBuffer;
          FObjectsSorting : TGLObjectsSorting;
          FVisibilityCulling : TGLVisibilityCulling;
          FOnProgress : TGLProgressEvent;
@@ -1039,15 +1039,16 @@ type
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 {$endif}
 
-         procedure AddViewer(AViewer: TGLSceneViewer);
          procedure BeginUpdate;
-         procedure RenderScene(AViewer: TGLSceneViewer;
-                               const viewPortSizeX, viewPortSizeY : Integer;
-                               drawState : TDrawState);
          procedure EndUpdate;
          function  IsUpdating: Boolean;
+
+         procedure AddBuffer(aBuffer : TGLSceneBuffer);
+         procedure RemoveViewer(aBuffer : TGLSceneBuffer);
+         procedure RenderScene(aBuffer : TGLSceneBuffer;
+                               const viewPortSizeX, viewPortSizeY : Integer;
+                               drawState : TDrawState);
          procedure NotifyChange(Sender : TObject); override;
-         procedure RemoveViewer(AViewer: TGLSceneViewer);
          procedure ValidateTransformation(ACamera: TGLCamera);
          procedure Progress(const deltaTime, newTime : Double);
 
@@ -1085,7 +1086,7 @@ type
          property CurrentGLCamera: TGLCamera read FCurrentGLCamera;
          property Lights: TList read FLights;
          property Objects: TGLSceneRootObject read FObjects;
-         property CurrentViewer: TGLSceneViewer read FCurrentViewer;
+         property CurrentBuffer : TGLSceneBuffer read FCurrentBuffer;
 
       published
          { Published Declarations }
@@ -1122,7 +1123,7 @@ type
 
       public
          { Public Declarations }
-         constructor Create(SortType: TPickSortType);
+         constructor Create(aSortType : TPickSortType);
          destructor Destroy; override;
          procedure AddHit(obj : TGLBaseSceneObject; subObj : TPickSubObjects;
                           zMin, zMax : Single);
@@ -1151,7 +1152,7 @@ type
    TGLFogEnvironment = class (TGLUpdateAbleObject)
       private
          { Private Declarations }
-         FSceneViewer : TGLSceneViewer;
+         FSceneBuffer : TGLSceneBuffer;
          FFogColor : TGLColor;       // alpha value means the fog density
          FFogStart, FFogEnd : Single;
          FFogMode : TFogMode;
@@ -1175,6 +1176,8 @@ type
          procedure ApplyFog;
          procedure Assign(Source: TPersistent); override;
 
+         function IsAtDefaultValues : Boolean;
+
       published
          { Published Declarations }
          {: Color of the fog when it is at 100% intensity. }
@@ -1184,7 +1187,7 @@ type
          {: Maximum distance for fog, what is farther is at 100% fog intensity. }
          property FogEnd: Single read FFogEnd write SetFogEnd;
          {: The formula used for converting distance to fog intensity. }
-         property FogMode: TFogMode read FFogMode write SetFogMode;
+         property FogMode: TFogMode read FFogMode write SetFogMode default fmLinear;
          {: Adjusts the formula used for calculating fog distances.<p>
             This option is honoured if and only if the OpenGL ICD supports the
             GL_NV_fog_distance extension, otherwise, it is ignored.<ul>
@@ -1199,99 +1202,85 @@ type
    TSpecial = (spLensFlares, spLandScape);
    TSpecials = set of TSpecial;
 
-   // TGLSceneViewer
+   // TGLSceneBuffer
    //
-   {: Component where the GLScene objects get rendered.<p>
-      This component delimits the area where OpenGL renders the scene,
-      it represents the 3D scene viewed from a camera (specified in the
-      camera property). This component can also render to a file or to a bitmap.<p>
-      Even if it is primarily a windowed component, it can handle full-screen
-      operations : adjust display resolution with DisplayOptions, and simply
-      make this component fit the whole screen (use a borderless form).<p>
-      This viewer also allows to define rendering options such a fog, face culling,
-      depth testing, etc. and can take care of framerate calculation.<p> }
-   TGLSceneViewer = class(TWinControl)
+   {: Encapsulates an OpenGL frame/rendering buffer.<p> }
+   TGLSceneBuffer = class (TGLUpdateAbleObject)
       private
          { Private Declarations }
-         // handle
-         FRenderingContext : TGLContext;
-         FIsOpenGLAvailable : Boolean;
-
-         // OpenGL properties
-         FMaxLightSources: Integer;
-         FDoubleBuffered, FFaceCulling, FFogEnable, FLighting : Boolean;
-         FDepthTest, FStencilTest : Boolean;
-
+         // Internal state
          FCurrentStates : TGLStates;
-         FBackgroundColor: TColor;
-         FBackground: TGLTexture;
-
-         // private variables
-         FRenderDC : HDC;
          FRendering : Boolean;
-         FFrames: Longint;          // used to perform monitoring
-         FTicks: TLargeInteger;     // used to perform monitoring
-         FMonitor: Boolean;
-         FFramesPerSecond: Single;
-         FViewPort: TRectangle;
-         FBuffers: TBuffers;
-         FDisplayOptions: TDisplayOptions;
-         FContextOptions: TContextOptions;
-         FCamera: TGLCamera;
-         FFogEnvironment: TGLFogEnvironment;
-         invalidated : Boolean;
-         afterRenderEffects : TList;
+         FRenderingContext : TGLContext;
+         FAfterRenderEffects : TList;
          FProjectionMatrix, FModelViewMatrix : TMatrix;
          FBaseProjectionMatrix : TMatrix;
          FCameraAbsolutePosition : TVector;
 
-         FBeforeRender: TNotifyEvent;
-         FPostRender : TNotifyEvent;
-         FAfterRender: TNotifyEvent;
+         // Options & User Properties
+         FFaceCulling, FFogEnable, FLighting : Boolean;
+         FDepthTest : Boolean;
+         FBackgroundColor: TColor;
 
+         FViewPort : TRectangle;
+         FRenderDPI : Integer;
+         FContextOptions : TContextOptions;
+         FCamera : TGLCamera;
+
+         FFogEnvironment : TGLFogEnvironment;
+
+         // Monitoring
+         FFrames: Longint;
+         FTicks: TLargeInteger;
+         FFramesPerSecond: Single;
+         FLastPerfCounter: Int64;
+
+         // Events
+         FOnChange : TNotifyEvent;
+         FOnStructuralChange : TNotifyEvent;
+
+         FBeforeRender : TNotifyEvent;
+         FPostRender   : TNotifyEvent;
+         FAfterRender  : TNotifyEvent;
+
+      protected
+         { Protected Declarations }
          procedure SetBackgroundColor(AColor: TColor);
-         //: Determine the limit of the given kind from OpenGL implementation
          function  GetLimit(Which: TLimitType): Integer;
          procedure SetCamera(ACamera: TGLCamera);
          procedure SetContextOptions(Options: TContextOptions);
          procedure SetDepthTest(AValue: Boolean);
-         procedure SetStencilTest(val : Boolean);
          procedure SetFaceCulling(AValue: Boolean);
          procedure SetLighting(AValue: Boolean);
          procedure SetFogEnable(AValue: Boolean);
-         procedure SeTGLFogEnvironment(AValue: TGLFogEnvironment);
+         procedure SetGLFogEnvironment(AValue: TGLFogEnvironment);
+         function  StoreFog : Boolean;
 
          procedure PrepareRenderingMatrices(const aViewPort : TRectangle;
                               resolution : Integer; pickingRect : PRect = nil);
          procedure DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
                                 drawState : TDrawState);
 
-         procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); Message WM_ERASEBKGND;
-         procedure WMPaint(var Message: TWMPaint); Message WM_PAINT;
-         procedure WMSize(var Message: TWMSize); Message WM_SIZE;
-         procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
-
-      protected
-         { Protected Declarations }
-         procedure CreateParams(var Params: TCreateParams); override;
-         procedure CreateWnd; override;
-         {: Clear all allocated OpenGL buffers.<p>
-            The color buffer is a special case, because transparency must be
-            simulated if required. }
-         procedure ClearBuffers;
-         procedure DestroyRC;
-         procedure DestroyWindowHandle; override;
-         procedure Loaded; override;
-         function ObjectInScene(Obj: TGLBaseSceneObject): Boolean;
          procedure ReadContextProperties;
          procedure SetupRenderingContext;
 
+         procedure DoChange;
+         procedure DoStructuralChange;
+
+         //: DPI for current/last render
+         property RenderDPI : Integer read FRenderDPI;
+
       public
          { Public Declarations }
-         constructor Create(AOwner: TComponent); override;
+         constructor Create(AOwner: TPersistent); override;
          destructor  Destroy; override;
 
-         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+         procedure NotifyChange(Sender : TObject); override;
+
+         procedure CreateRC(deviceHandle : Integer; memoryContext : Boolean);
+         procedure ClearBuffers;
+         procedure DestroyRC;
+         procedure Resize(newWidth, newHeight : Integer);
 
          //: Fills the PickList with objects in Rect area
          procedure PickObjects(const Rect: TRect; PickList: TGLPickList; ObjectCountGuess: Integer);
@@ -1339,13 +1328,9 @@ type
             The returned TGLBitmap32 should be freed by calling code. }
          function CreateSnapShot : TGLBitmap32;
 
-         procedure Invalidate; override;
          procedure SetViewPort(X, Y, W, H: Integer);
          {: Displays a window with info on current OpenGL ICD and context. }
          procedure ShowInfo;
-         {: Resets the perfomance monitor and begin a new statistics set.<p>
-            See FramesPerSecond. }
-         procedure ResetPerformanceMonitor;
 
          {: Returns the projection matrix in use or used for the last rendering. }
          property ProjectionMatrix : TMatrix read FProjectionMatrix;
@@ -1411,33 +1396,36 @@ type
             some boards (either from compression or resolution approximations). }
          function PixelRayToWorld(x,y : Integer) : TAffineVector;
 
-         property IsOpenGLAvailable : Boolean read FIsOpenGLAvailable;
-         property Buffers : TBuffers read FBuffers;
-         property RenderDC : HDC read FRenderDC;
          property CurrentStates : TGLStates read FCurrentStates;
-         property DoubleBuffered : Boolean read FDoubleBuffered;
+
          {: Current FramesPerSecond rendering speed.<p>
             You must set Monitor to true and keep the renderer busy to get
             accurate figures from this property.<p>
             This is an average value, to reset the counter, call
             ResetPerfomanceMonitor. }
          property FramesPerSecond : Single read FFramesPerSecond;
+         {: Resets the perfomance monitor and begin a new statistics set.<p>
+            See FramesPerSecond. }
+         procedure ResetPerformanceMonitor;
+
          {: Retrieve one the OpenGL limits for the current viewer.<p>
             Limits include max texture size, OpenGL stack depth, etc. }
          property LimitOf[Which : TLimitType] : Integer read GetLimit;
-         property MaxLightSources : Integer read FMaxLightSources;
+         {: Current rendering context. }
          property RenderingContext : TGLContext read FRenderingContext;
 
-      published
-         { Public Declarations }
-         {: Fog environment options. }
-         property FogEnvironment: TGLFogEnvironment read FFogEnvironment write SeTGLFogEnvironment;
-         {: Color used for filling the background prior to any rendering. }
-         property BackgroundColor: TColor read FBackgroundColor write SetBackgroundColor default clBtnFace;
          {: The camera from which the scene is rendered.<p>
             A camera is an object you can add and define in a TGLScene component. }
          property Camera: TGLCamera read FCamera write SetCamera;
-         property Constraints;
+
+      published
+         { Published Declarations }
+         {: Fog environment options. }
+         property FogEnvironment: TGLFogEnvironment read FFogEnvironment write SetGLFogEnvironment stored StoreFog;
+         {: Color used for filling the background prior to any rendering. }
+         property BackgroundColor: TColor read FBackgroundColor write SetBackgroundColor default clBtnFace;
+
+         {: Context options allows to setup specifics of the rendering context. }
          property ContextOptions: TContextOptions read FContextOptions write SetContextOptions default [roDoubleBuffer, roRenderToWindow];
          {: DepthTest enabling.<p>
             When DepthTest is enabled, objects closer to the camera will hide
@@ -1445,14 +1433,6 @@ type
             When DepthTest is disable, the latest objects drawn/rendered overlap
             all previous objects, whatever their distance to the camera. }
          property DepthTest : Boolean read FDepthTest write SetDepthTest default True;
-         {: Request a stencil buffer.<p>
-            When set to True, a Stencil buffer will be requested to OpenGL, the
-            stencil buffer allows a variety of special effects, but be aware that
-            old 3D boards may not accelerate stencil rendering, thus triggering
-            a fallback to software mode (non-accelerated). }  
-         property StencilTest : Boolean read FStencilTest write SetStencilTest default False;
-         {: DisplayOptions allows adjusting screen resolution and color depth. }
-         property DisplayOptions: TDisplayOptions read FDisplayOptions write FDisplayOptions;
          {: Enable or disable face culling in the renderer.<p>
             Face culling is used in hidden faces removal algorithms : each face
             is given a normal or 'outside' direction. When face culling is enabled,
@@ -1466,10 +1446,13 @@ type
             without any shading.<p>
             Lighting does NOT generate shadows in OpenGL. }
          property Lighting: Boolean read FLighting write SetLighting default True;
-         {: Toggle to enable or disable framerate monitoring.<p>
-            When set to true, you can retrieve the rendering framerate with
-            the FramesPerSecond property. }
-         property Monitor: Boolean read FMonitor write FMonitor default False;
+
+         {: Indicates a change in the scene or buffer options.<p>
+            A simple re-render is enough to take into account the changes. }
+         property OnChange : TNotifyEvent read FOnChange write FOnChange;
+         {: Indicates a structural change in the scene or buffer options.<p>
+            A reconstruction of the RC is necessary to take into account the changes. }
+         property OnStructuralChange : TNotifyEvent read FOnStructuralChange write FOnStructuralChange;
 
          {: Triggered before the scene's objects get rendered.<p>
             You may use this event to execute your own OpenGL rendering. }
@@ -1482,6 +1465,157 @@ type
             You cannot issue OpenGL calls in this event, if you want to do your own
             OpenGL stuff, use the PostRender event. }
          property AfterRender: TNotifyEvent read FAfterRender write FAfterRender;
+   end;
+
+   // TGLMemoryViewer
+   //
+   {: Component to render a scene to memory only.<p>
+      This component curently requires that the OpenGL ICD supports the
+      WGL_ARB_pbuffer extension. }
+   TGLMemoryViewer = class (TComponent)
+      private
+         { Private Declarations }
+         FBuffer : TGLSceneBuffer;
+         FWidth, FHeight : Integer;
+
+      protected
+         { Protected Declarations }
+         procedure SetBeforeRender(const val : TNotifyEvent);
+         function GetBeforeRender : TNotifyEvent;
+         procedure SetPostRender(const val : TNotifyEvent);
+         function GetPostRender : TNotifyEvent;
+         procedure SetAfterRender(const val : TNotifyEvent);
+         function GetAfterRender : TNotifyEvent;
+         procedure SetCamera(const val : TGLCamera);
+         function GetCamera : TGLCamera;
+         procedure SetBuffer(const val : TGLSceneBuffer);
+         procedure SetWidth(const val : Integer);
+         procedure SetHeight(const val : Integer);
+
+         procedure DoBufferChange(Sender : TObject); virtual;
+         procedure DoBufferStructuralChange(Sender : TObject); dynamic;
+
+      public
+         { Public Declarations }
+         constructor Create(AOwner: TComponent); override;
+         destructor  Destroy; override;
+
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
+         procedure Render; dynamic;
+         procedure CopyToTexture(aTexture : TGLTexture); overload; dynamic;
+         procedure CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
+                                 xDest, yDest : Integer); overload;
+
+      published
+         { Public Declarations }
+         {: Camera from which the scene is rendered. }
+         property Camera : TGLCamera read GetCamera write SetCamera;
+
+         property Width : Integer read FWidth write SetWidth default 256;
+         property Height : Integer read FHeight write SetHeight default 256;
+
+         {: Triggered before the scene's objects get rendered.<p>
+            You may use this event to execute your own OpenGL rendering. }
+         property BeforeRender : TNotifyEvent read GetBeforeRender write SetBeforeRender;
+         {: Triggered just after all the scene's objects have been rendered.<p>
+            The OpenGL context is still active in this event, and you may use it
+            to execute your own OpenGL rendering.<p> }
+         property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
+         {: Called after rendering.<p>
+            You cannot issue OpenGL calls in this event, if you want to do your own
+            OpenGL stuff, use the PostRender event. }
+         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
+
+         {: Access to buffer properties. }
+         property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
+   end;
+
+   // TVSyncMode
+   //
+   TVSyncMode = (vsmSync, vsmNoSync);
+
+   // TGLSceneViewer
+   //
+   {: Component where the GLScene objects get rendered.<p>
+      This component delimits the area where OpenGL renders the scene,
+      it represents the 3D scene viewed from a camera (specified in the
+      camera property). This component can also render to a file or to a bitmap.<p>
+      Even if it is primarily a windowed component, it can handle full-screen
+      operations : adjust display resolution with DisplayOptions, and simply
+      make this component fit the whole screen (use a borderless form).<p>
+      This viewer also allows to define rendering options such a fog, face culling,
+      depth testing, etc. and can take care of framerate calculation.<p> }
+   TGLSceneViewer = class(TWinControl)
+      private
+         { Private Declarations }
+         FIsOpenGLAvailable : Boolean;
+         FBuffer : TGLSceneBuffer;
+         FBeforeRender : TNotifyEvent;
+         FVSync : TVSyncMode;
+         FOwnDC : HDC;
+
+         procedure WMEraseBkgnd(var Message: TWMEraseBkgnd); Message WM_ERASEBKGND;
+         procedure WMPaint(var Message: TWMPaint); Message WM_PAINT;
+         procedure WMSize(var Message: TWMSize); Message WM_SIZE;
+         procedure WMDestroy(var Message: TWMDestroy); message WM_DESTROY;
+
+      protected
+         { Protected Declarations }
+         procedure SetPostRender(const val : TNotifyEvent);
+         function GetPostRender : TNotifyEvent;
+         procedure SetAfterRender(const val : TNotifyEvent);
+         function GetAfterRender : TNotifyEvent;
+         procedure SetCamera(const val : TGLCamera);
+         function GetCamera : TGLCamera;
+         procedure SetBuffer(const val : TGLSceneBuffer);
+
+         procedure CreateParams(var Params: TCreateParams); override;
+         procedure CreateWnd; override;
+         procedure DestroyWindowHandle; override;
+         procedure Loaded; override;
+         procedure DoBeforeRender(Sender : TObject); dynamic;
+         procedure DoBufferChange(Sender : TObject); virtual;
+         procedure DoBufferStructuralChange(Sender : TObject); dynamic;
+
+      public
+         { Public Declarations }
+         constructor Create(AOwner: TComponent); override;
+         destructor  Destroy; override;
+
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
+
+         property IsOpenGLAvailable : Boolean read FIsOpenGLAvailable;
+
+         function FramesPerSecond : Single;
+         procedure ResetPerformanceMonitor;
+
+         property RenderDC : HDC read FOwnDC;
+
+      published
+         { Public Declarations }
+         {: Camera from which the scene is rendered. }
+         property Camera : TGLCamera read GetCamera write SetCamera;
+
+         {: Specifies if the refresh should be synchronized with the VSync signal.<p>
+            If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
+            extension, this property is ignored.  }
+         property VSync : TVSyncMode read FVSync write FVSync default vsmNoSync;
+
+         {: Triggered before the scene's objects get rendered.<p>
+            You may use this event to execute your own OpenGL rendering. }
+         property BeforeRender : TNotifyEvent read FBeforeRender write FBeforeRender;
+         {: Triggered just after all the scene's objects have been rendered.<p>
+            The OpenGL context is still active in this event, and you may use it
+            to execute your own OpenGL rendering.<p> }
+         property PostRender : TNotifyEvent read GetPostRender write SetPostRender;
+         {: Called after rendering.<p>
+            You cannot issue OpenGL calls in this event, if you want to do your own
+            OpenGL stuff, use the PostRender event. }
+         property AfterRender : TNotifyEvent read GetAfterRender write SetAfterRender;
+
+         {: Access to buffer properties. }
+         property Buffer : TGLSceneBuffer read FBuffer write SetBuffer;
 
          property Align;
          property Anchors;
@@ -1499,14 +1633,13 @@ type
          property OnMouseDown;
          property OnMouseMove;
          property OnMouseUp;
+   end;
 
-         procedure Recreate;
-  end;
-
-  EOpenGLError = class(Exception);
+   EOpenGLError = class(Exception);
 
 {: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
 procedure CheckOpenGLError;
+procedure ClearGLError;
 procedure RaiseOpenGLError(const msg : String);
 
 {: Register an event handler triggered by any TGLBaseSceneObject Name change.<p>
@@ -1566,6 +1699,14 @@ begin
       end;
       raise EOpenGLError.Create(gluErrorString(GLError));
    end;
+end;
+
+procedure ClearGLError;
+var
+   n : Integer;
+begin
+   n:=0;
+   while (glGetError<>GL_NO_ERROR) and (n<16) do Inc(n);
 end;
 
 procedure RaiseOpenGLError(const msg : String);
@@ -1632,56 +1773,57 @@ begin
    vGLBehaviourNameChangeEvent:=nil;
 end;
 
-//----------------- TGLPickList -------------------------------------------------
+// ------------------
+// ------------------ TGLPickList ------------------
+// ------------------
 
 var
-  SortFlag: TPickSortType;
+  vPickListSortFlag : TPickSortType;
 
-constructor TGLPickList.Create(SortType: TPickSortType);
-
+// Create
+//
+constructor TGLPickList.Create(aSortType : TPickSortType);
 begin
-  SortFlag:=SortType;
-  inherited Create;
+   vPickListSortFlag:=aSortType;
+   inherited Create;
 end;
 
-//------------------------------------------------------------------------------
-
+// Destroy
+//
 destructor TGLPickList.Destroy;
-
 begin
-  Clear;
-  inherited Destroy;
+   Clear;
+   inherited Destroy;
 end;
 
-//------------------------------------------------------------------------------
-
+// CompareFunction
+//
 function CompareFunction(Item1, Item2: Pointer): Integer;
-
 var
-  Diff: Single;
-
+   diff: Single;
 begin
-  Result:=0;
-  case SortFlag of
-    psName:
-      Result:=CompareText(PPickRecord(Item1).AObject.Name, PPickRecord(Item2).AObject.Name);
-    psMinDepth:
-      begin
-        Diff:=PPickRecord(Item1).ZMin - PPickRecord(Item2).ZMin;
-        if Diff < 0 then Result:=-1
-                    else
-          if Diff > 0 then Result:=1
-                      else Result:=0;
+   Result:=0;
+   case vPickListSortFlag of
+      psName :
+         Result:=CompareText(PPickRecord(Item1).AObject.Name,
+                             PPickRecord(Item2).AObject.Name);
+      psMinDepth : begin
+         Diff:=PPickRecord(Item1).ZMin - PPickRecord(Item2).ZMin;
+         if Diff < 0 then
+            Result:=-1
+         else if Diff > 0 then
+            Result:=1
+         else Result:=0;
       end;
-    psMaxDepth:
-      begin
-        Diff:=Round(PPickRecord(Item1).ZMax - PPickRecord(Item2).ZMax);
-        if Diff < 0 then Result:=-1
-                    else
-          if Diff > 0 then Result:=1
-                      else Result:=0;
+      psMaxDepth : begin
+         Diff:=Round(PPickRecord(Item1).ZMax - PPickRecord(Item2).ZMax);
+         if Diff < 0 then
+            Result:=-1
+         else if Diff > 0 then
+            Result:=1
+         else Result:=0;
       end;
-  end;
+   end;
 end;
 
 // AddHit
@@ -1698,10 +1840,10 @@ begin
       newRecord.zMin:=zMin;
       newRecord.zMax:=zMax;
       Add(newRecord);
-      if SortFlag<>psDefault then
+      if vPickListSortFlag<>psDefault then
          Sort(CompareFunction);
    except
-        newRecord.SubObjects:=nil;
+      newRecord.SubObjects:=nil;
       Dispose(newRecord);
       raise;
    end;
@@ -1727,11 +1869,12 @@ var
    i : Integer;
 begin
    Result:=-1;
-   if Assigned(AObject) then for i:=0 to Count-1 do
+   if Assigned(AObject) then for i:=0 to Count-1 do begin
       if Hit[i]=AObject then begin
          Result:=i;
          Break;
       end;
+   end;
 end;
 
 // GetFar
@@ -1755,7 +1898,7 @@ begin
    Result:=PPickRecord(Items[AValue]).ZMin;
 end;
 
-// GetSubobjects
+// GetSubObjects
 //
 function TGLPickList.GetSubObjects(aValue : Integer) : TPickSubobjects;
 begin
@@ -1972,7 +2115,7 @@ end;
 //
 procedure TGLBaseSceneObject.DrawAxes(Pattern: TGLushort);
 begin
-   AxesBuildList(Pattern, FScene.CurrentViewer.FCamera.FDepthOfView);
+   AxesBuildList(Pattern, FScene.CurrentBuffer.FCamera.FDepthOfView);
 end;
 
 // GetChildren
@@ -2422,7 +2565,8 @@ begin
       FRotation.X:=r;
    finally
       FIsCalculating:=False;
-   end
+   end;
+   TransformationChanged;
 end;
 
 // SetPitchAngle
@@ -2903,10 +3047,10 @@ begin
             DrawAxes($CCCC);
          if Effects.Count>0 then begin
             glPushMatrix;
-            Effects.RenderPreEffects(Scene.CurrentViewer, rci);
+            Effects.RenderPreEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
             glPushMatrix;
-            if Scene.CurrentViewer.DepthTest and (osIgnoreDepthBuffer in ObjectStyle) then begin
+            if Scene.CurrentBuffer.DepthTest and (osIgnoreDepthBuffer in ObjectStyle) then begin
                UnSetGLState(rci.currentStates, stDepthTest);
                DoRender(rci, True, shouldRenderChildren);
                SetGLState(rci.currentStates, stDepthTest);
@@ -2915,10 +3059,10 @@ begin
                ResetGLPolygonMode;
                ResetGLMaterialColors;
             end;
-            Effects.RenderPostEffects(Scene.CurrentViewer, rci);
+            Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
          end else begin
-            if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentViewer.DepthTest then begin
+            if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentBuffer.DepthTest then begin
                UnSetGLState(rci.currentStates, stDepthTest);
                DoRender(rci, True, shouldRenderChildren);
                SetGLState(rci.currentStates, stDepthTest);
@@ -2929,7 +3073,7 @@ begin
             end;
          end;
       end else begin
-         if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentViewer.DepthTest then begin
+         if (osIgnoreDepthBuffer in ObjectStyle) and Scene.CurrentBuffer.DepthTest then begin
             UnSetGLState(rci.currentStates, stDepthTest);
             DoRender(rci, False, shouldRenderChildren);
             SetGLState(rci.currentStates, stDepthTest);
@@ -3276,7 +3420,9 @@ begin
       TGLBehaviour(Items[i]).DoProgress(deltaTime, newTime);
 end;
 
-//------------------ TGLObjectEffect -------------------------------------------
+// ------------------
+// ------------------ TGLObjectEffect ------------------
+// ------------------
 
 // WriteToFiler
 //
@@ -3300,13 +3446,15 @@ end;
 
 // Render
 //
-procedure TGLObjectEffect.Render(sceneViewer : TGLSceneViewer;
+procedure TGLObjectEffect.Render(sceneBuffer : TGLSceneBuffer;
                                  var rci : TRenderContextInfo);
 begin
    // nothing here, this implem is just to avoid "abstract error"
 end;
 
-//------------------ TGLObjectEffects ------------------------------------------
+// ------------------
+// ------------------ TGLObjectEffects ------------------
+// ------------------
 
 // Create
 //
@@ -3349,7 +3497,7 @@ end;
 
 // RenderPreEffects
 //
-procedure TGLObjectEffects.RenderPreEffects(sceneViewer : TGLSceneViewer;
+procedure TGLObjectEffects.RenderPreEffects(sceneBuffer : TGLSceneBuffer;
                                             var rci : TRenderContextInfo);
 var
    i : Integer;
@@ -3358,13 +3506,13 @@ begin
    for i:=0 to Count-1 do begin
       effect:=TGLObjectEffect(Items[i]);
       if effect is TGLObjectPreEffect then
-         effect.Render(sceneViewer, rci);
+         effect.Render(sceneBuffer, rci);
    end;
 end;
 
 // RenderPostEffects
 //
-procedure TGLObjectEffects.RenderPostEffects(sceneViewer : TGLSceneViewer;
+procedure TGLObjectEffects.RenderPostEffects(sceneBuffer : TGLSceneBuffer;
                                              var rci : TRenderContextInfo);
 var
    i : Integer;
@@ -3373,13 +3521,15 @@ begin
    for i:=0 to Count-1 do begin
       effect:=TGLObjectEffect(Items[i]);
       if effect is TGLObjectPostEffect then
-         effect.Render(sceneViewer, rci)
-      else if Assigned(sceneViewer) and (effect is TGLObjectAfterEffect) then
-         sceneViewer.afterRenderEffects.Add(effect);
+         effect.Render(sceneBuffer, rci)
+      else if Assigned(sceneBuffer) and (effect is TGLObjectAfterEffect) then
+         sceneBuffer.FAfterRenderEffects.Add(effect);
    end;
 end;
 
-//------------------ TGLCustomSceneObject --------------------------------------
+// ------------------
+// ------------------ TGLCustomSceneObject ------------------
+// ------------------
 
 // Create
 //
@@ -3456,7 +3606,9 @@ begin
    ObjectStyle:=ObjectStyle+[osDirectDraw];
 end;
 
-//----------------- TGLCamera --------------------------------------------------
+// ------------------
+// ------------------ TGLCamera ------------------
+// ------------------
 
 // Create
 //
@@ -3610,22 +3762,24 @@ begin
    end;
 end;
 
+// Reset
+//
 procedure TGLCamera.Reset;
 var
    Extent: Single;
 begin
    FRotation.Z:=0;
    FFocalLength:=50;
-   with FScene.CurrentViewer do begin
+   with FScene.CurrentBuffer do begin
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity;
-      ApplyPerspective(FViewport, Width, Height, GetDeviceCaps(RenderDC, LOGPIXELSX));
+      ApplyPerspective(FViewport, FViewport.Width, FViewport.Height, FRenderDPI);
       FUp.DirectVector:=YHmgVector;
       if FViewport.Height<FViewport.Width then
-         Extent:=FViewport.Height * 0.25
-      else Extent:=FViewport.Width * 0.25;
+         Extent:=FViewport.Height*0.25
+      else Extent:=FViewport.Width*0.25;
    end;
-   FPosition.SetVector(0, 0, FNearPlane * Extent, 1);
+   FPosition.SetVector(0, 0, FNearPlane*Extent, 1);
    FDirection.SetVector(0, 0, -1, 0);
    TransformationChanged;
 end;
@@ -3636,7 +3790,7 @@ procedure TGLCamera.ZoomAll;
 var
    extent: Single;
 begin
-   with Scene.CurrentViewer do begin
+   with Scene.CurrentBuffer do begin
       if FViewport.Height<FViewport.Width then
          Extent:=FViewport.Height * 0.25
       else Extent:=FViewport.Width * 0.25;
@@ -3932,7 +4086,7 @@ begin
          rci.proxySubObject:=True;
          if pooTransformation in FProxyOptions then
             glMultMatrixf(@FMasterObject.FLocalMatrix);
-         FMasterObject.DoRender(rci, renderSelf, renderChildren);
+         FMasterObject.DoRender(rci, renderSelf, RenderChildren);
          rci.proxySubObject:=oldProxySubObject;
       end;
    end;
@@ -3940,7 +4094,7 @@ begin
    if renderChildren and (Count>0) then
       Self.RenderChildren(0, Count-1, rci);
    if masterGotEffects then
-      FMasterObject.Effects.RenderPostEffects(Scene.CurrentViewer, rci);
+      FMasterObject.Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
 end;
 
 // AxisAlignedDimensions
@@ -4359,35 +4513,35 @@ end;
 
 // AddViewer
 //
-procedure TGLScene.AddViewer(AViewer: TGLSceneViewer);
+procedure TGLScene.AddBuffer(aBuffer : TGLSceneBuffer);
 begin
-   if not Assigned(FViewers) then
-      FViewers:=TList.Create;
-   if FViewers.IndexOf(AViewer)<0 then begin
-      FViewers.Add(AViewer);
+   if not Assigned(FBuffers) then
+      FBuffers:=TList.Create;
+   if FBuffers.IndexOf(aBuffer)<0 then begin
+      FBuffers.Add(aBuffer);
       if FBaseContext=nil then
-         FBaseContext:=TGLSceneViewer(FViewers[0]).RenderingContext;
-      if FViewers.Count>1 then
-         FBaseContext.ShareLists(AViewer.RenderingContext);
+         FBaseContext:=TGLSceneBuffer(FBuffers[0]).RenderingContext;
+      if FBuffers.Count>1 then
+         FBaseContext.ShareLists(aBuffer.RenderingContext);
    end;
 end;
 
 // RemoveViewer
 //
-procedure TGLScene.RemoveViewer(AViewer: TGLSceneViewer);
+procedure TGLScene.RemoveViewer(aBuffer : TGLSceneBuffer);
 var
    i : Integer;
 begin
-   if Assigned(FViewers) then begin
-      i:=FViewers.IndexOf(AViewer);
+   if Assigned(FBuffers) then begin
+      i:=FBuffers.IndexOf(aBuffer);
       if i>=0 then begin
-         if FViewers.Count=1 then begin
-            FViewers.Free;
-            FViewers:=nil;
+         if FBuffers.Count=1 then begin
+            FBuffers.Free;
+            FBuffers:=nil;
             FBaseContext:=nil;
          end else begin
-            FViewers.Delete(i);
-            FBaseContext:=TGLSceneViewer(FViewers[0]).RenderingContext;
+            FBuffers.Delete(i);
+            FBaseContext:=TGLSceneBuffer(FBuffers[0]).RenderingContext;
          end;
       end;
    end;
@@ -4488,7 +4642,7 @@ end;
 
 // RenderScene
 //
-procedure TGLScene.RenderScene(aViewer: TGLSceneViewer;
+procedure TGLScene.RenderScene(aBuffer : TGLSceneBuffer;
                                const viewPortSizeX, viewPortSizeY : Integer;
                                drawState : TDrawState);
 var
@@ -4497,13 +4651,13 @@ var
 begin
    ResetGLPolygonMode;
    ResetGLMaterialColors;
-   AViewer.afterRenderEffects.Clear;
-   FCurrentViewer:=AViewer;
+   aBuffer.FAfterRenderEffects.Clear;
+   FCurrentBuffer:=aBuffer;
    rci.objectsSorting:=FObjectsSorting;
    rci.visibilityCulling:=FVisibilityCulling;
    rci.drawState:=drawState;
-   with AViewer.Camera do begin
-      rci.cameraPosition:=aViewer.FCameraAbsolutePosition;
+   with aBuffer.Camera do begin
+      rci.cameraPosition:=aBuffer.FCameraAbsolutePosition;
       rci.cameraDirection:=FLastDirection;
       NormalizeVector(rci.cameraDirection);
       rci.cameraDirection[3]:=0;
@@ -4516,15 +4670,15 @@ begin
    end;
    rci.viewPortSize.cx:=viewPortSizeX;
    rci.viewPortSize.cy:=viewPortSizeY;
-   rci.currentStates:=AViewer.FCurrentStates;
+   rci.currentStates:=aBuffer.FCurrentStates;
    rci.materialLibrary:=nil;
    rci.fogDisabledCounter:=0;
    rci.proxySubObject:=False;
    FObjects.Render(rci);
-   with AViewer.afterRenderEffects do if Count>0 then
+   with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
-         TGLObjectAfterEffect(Items[i]).Render(AViewer, rci);
-   AViewer.FCurrentStates:=rci.currentStates;
+         TGLObjectAfterEffect(Items[i]).Render(aBuffer, rci);
+   aBuffer.FCurrentStates:=rci.currentStates;
 end;
 
 // ValidateTransformation
@@ -4627,25 +4781,25 @@ end;
 
 // LoadFromStream
 //
-procedure TGLScene.LoadFromStream(aStream: TStream);
+procedure TGLScene.LoadFromStream(aStream : TStream);
 var
-   Fixups : TStringList;
-   I : Integer;
+   fixups : TStringList;
+   i : Integer;
    obj : TGLBaseSceneObject;
 begin
    Fixups := TStringList.Create;
    try
-      for I:=0 to FViewers.Count-1 do begin
-         Fixups.AddObject(TGLSceneViewer(FViewers[I]).Camera.Name,FViewers[I]);
+      for i:=0 to FBuffers.Count-1 do begin
+         Fixups.AddObject(TGLSceneBuffer(FBuffers[i]).Camera.Name, FBuffers[i]);
       end;
       ShutdownAllLights;
-      Cameras.DeleteChildren; // will remove Viewer from FViewers
+      Cameras.DeleteChildren; // will remove Viewer from FBuffers
       Objects.DeleteChildren;
       aStream.ReadComponent(Self);
-      for I:=0 to Fixups.Count-1 do begin
-         obj := FindSceneObject(Fixups[I]);
+      for i:=0 to Fixups.Count-1 do begin
+         obj:=FindSceneObject(fixups[I]);
          if obj is TGLCamera then
-            TGLSceneViewer(Fixups.Objects[I]).Camera := TGLCamera(obj)
+            TGLSceneBuffer(Fixups.Objects[i]).Camera := TGLCamera(obj)
          else { can assign default camera (if existing, of course) instead };
       end;
    finally
@@ -4717,9 +4871,9 @@ procedure TGLScene.NotifyChange(Sender : TObject);
 var
    i : Integer;
 begin
-   if (not IsUpdating) and assigned(FViewers) then
-      for i:=0 to FViewers.Count-1 do
-         TGLSceneViewer(FViewers[i]).Invalidate;
+   if (not IsUpdating) and Assigned(FBuffers) then
+      for i:=0 to FBuffers.Count-1 do
+         TGLSceneBuffer(FBuffers[i]).NotifyChange(Self);
 end;
 
 // SetupLights
@@ -4790,40 +4944,44 @@ begin
    end;}
 end;
 
-//------------------ TGLFogEnvironment ------------------------------------------------
+// ------------------
+// ------------------ TGLFogEnvironment ------------------
+// ------------------
 
 // Note: The fog implementation is not conformal with the rest of the scene management
 //       because it is viewer bound not scene bound.
 
+// Create
+//
 constructor TGLFogEnvironment.Create(Owner : TPersistent);
 begin
    inherited;
-   FSceneViewer:=(Owner as TGLSceneViewer);
-   FFogColor:=TGLColor.Create(Self);
-   FFogColor.Initialize(clrBlack);
+   FSceneBuffer:=(Owner as TGLSceneBuffer);
+   FFogColor:=TGLColor.CreateInitialized(Self, clrBlack);
    FFogMode:=fmLinear;
    FFogStart:=10;
    FFogEnd:=1000;
    FFogDistance:=fdDefault;
 end;
 
-//------------------------------------------------------------------------------
-
+// Destroy
+//
 destructor TGLFogEnvironment.Destroy;
-
 begin
-  FFogColor.Free;
-  inherited Destroy;
+   FFogColor.Free;
+   inherited Destroy;
 end;
 
-//------------------------------------------------------------------------------
+// NotifyChange
 //
 procedure TGLFogEnvironment.NotifyChange(Sender : TObject);
 begin
    FChanged:=True;
-   FSceneViewer.Invalidate;
+   inherited;
 end;
 
+// SetFogColor
+//
 procedure TGLFogEnvironment.SetFogColor(Value: TGLColor);
 begin
    if Assigned(Value) then begin
@@ -4866,6 +5024,17 @@ begin
    end else inherited Assign(Source);
 end;
 
+// IsAtDefaultValues
+//
+function TGLFogEnvironment.IsAtDefaultValues : Boolean;
+begin
+   Result:=    VectorEquals(FogColor.Color, FogColor.DefaultColor)
+           and (FogStart=10)
+           and (FogEnd=1000)
+           and (FogMode=fmLinear)
+           and (FogDistance=fdDefault);
+end;
+
 // SetFogMode
 //
 procedure TGLFogEnvironment.SetFogMode(Value: TFogMode);
@@ -4893,7 +5062,7 @@ var
    vImplemDependantFogDistanceDefault : Integer = -1;
 procedure TGLFogEnvironment.ApplyFog;
 begin
-   if FChanged then with FSceneViewer do begin
+   if FChanged then with FSceneBuffer do begin
       if Assigned(FRenderingContext) then begin
          FRenderingContext.Activate;
          try
@@ -4934,21 +5103,16 @@ begin
    end;
 end;
 
-//------------------ TGLSceneViewer --------------------------------------------
+// ------------------
+// ------------------ TGLSceneBuffer ------------------
+// ------------------
 
 // Create
 //
-constructor TGLSceneViewer.Create(AOwner: TComponent);
+constructor TGLSceneBuffer.Create(AOwner: TPersistent);
 begin
-   FIsOpenGLAvailable:=InitOpenGL;
    xglMapTexCoordToMain;
    inherited Create(AOwner);
-   ControlStyle:=[csClickEvents, csDoubleClicks, csOpaque, csCaptureMouse];
-   if csDesigning in ComponentState then ControlStyle:=ControlStyle + [csFramed];
-   Width:=100;
-   Height:=100;
-   FDisplayOptions:=TDisplayOptions.Create;
-   FBackground:=TGLTexture.Create(nil);
 
    // initialize private state variables
    FFogEnvironment:=TGLFogEnvironment.Create(Self);
@@ -4957,18 +5121,16 @@ begin
    FFaceCulling:=True;
    FLighting:=True;
    FFogEnable:=False;
-   afterRenderEffects:=TList.Create;
+   FAfterRenderEffects:=TList.Create;
 
    FContextOptions:=[roDoubleBuffer, roRenderToWindow];
 
-   // performance check off
-   FMonitor:=False;
    ResetPerformanceMonitor;
 end;
 
 // Destroy
 //
-destructor TGLSceneViewer.Destroy;
+destructor TGLSceneBuffer.Destroy;
 begin
    // clean up and terminate
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
@@ -4976,247 +5138,96 @@ begin
       FCamera:=nil;
    end;
    DestroyRC;
-   afterRenderEffects.Free;
-   FBackground.Free;
-   FDisplayOptions.Free;
+   FAfterRenderEffects.Free;
    FFogEnvironment.free;
-   //FLandScapeOption.free;
    inherited Destroy;
 end;
 
-// CreateParams
+// CreateRC
 //
-procedure TGLSceneViewer.CreateParams(var Params: TCreateParams);
-begin
-   inherited CreateParams(Params);
-   with Params do begin
-      if (not (csDesigning in ComponentState) and (woDesktop in FDisplayOptions.WindowAttributes))
-            or (not assigned(Parent) and (ParentWindow = 0)) then begin
-         WndParent:=0;
-         Style:=WS_POPUP or WS_VISIBLE;
-       end;
-      Style:=Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
-//      if woTransparent in FDisplayOptions.WindowAttributes then
-//         ExStyle:=ExStyle or WS_EX_TRANSPARENT;
-      WindowClass.Style:=CS_VREDRAW or CS_HREDRAW or CS_OWNDC;
-   end;
-end;
-
-// CreateWnd
-//
-procedure TGLSceneViewer.CreateWnd;
+procedure TGLSceneBuffer.CreateRC(deviceHandle : Integer; memoryContext : Boolean);
 var
-   BackColor: TColorVector;
+   backColor: TColorVector;
    locOptions: TGLRCOptions;
    locStencilBits : Integer;
 begin
-   inherited CreateWnd;
-   FRenderDC:=GetDC(Handle);
-   if IsOpenGLAvailable then begin
-      // initialize and activate the OpenGL rendering context
-      // need to do this only once per window creation as we have a private DC
-      FRendering:=True;
-      try
-         locOptions:=[];
-         if roDoubleBuffer in ContextOptions then
-            locOptions:=locOptions+[rcoDoubleBuffered];
-         if roStereo in ContextOptions then
-            locOptions:=locOptions+[rcoStereo];
-         if StencilTest then
-            locStencilBits:=8
-         else locStencilBits:=0;
-         // will be freed in DestroyWindowHandle
-         FRenderingContext:=GLContextManager.CreateContext;
-         with FRenderingContext do begin
-            Options:=locOptions;
-            ColorBits:=24;
-            StencilBits:=locStencilBits;
-            AccumBits:=0;
-            AuxBuffers:=0;
-            CreateContext(RenderDC);
-         end;
-         FRenderingContext.Activate;
-         try
-            // this one should NOT be replaced with an assert
-            if not GL_VERSION_1_1 then
-               raise EOpenGLError.Create(glsWrongVersion);
-            if StencilTest then
-               FBuffers:=[buColor, buDepth, buStencil]
-            else FBuffers:=[buColor, buDepth];
-            // define viewport, this is necessary because the first WM_SIZE message
-            // is posted before the rendering context has been created
-            with FViewPort do begin
-               Left:=0;
-               Top:=0;
-               Width:=Self.Width;
-               Height:=Self.Height;
-               glViewport(0, 0, Width, Height);
-            end;
-            // set up initial context states
-            ReadContextProperties;
-            SetupRenderingContext;
-            BackColor:=ConvertWinColor(FBackgroundColor);
-            glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
-         finally
-            FRenderingContext.Deactivate;
-            if woStayOnTop in DisplayOptions.WindowAttributes then
-               SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0,
-                            SWP_NOCOPYBITS or SWP_NOMOVE or SWP_NOSIZE);
-         end;
-      finally
-         FRendering:=False;
+   DestroyRC;
+   FRendering:=True;
+   try
+      locOptions:=[];
+      if roDoubleBuffer in ContextOptions then
+         locOptions:=locOptions+[rcoDoubleBuffered];
+      if roStereo in ContextOptions then
+         locOptions:=locOptions+[rcoStereo];
+      if roStencilBuffer in ContextOptions then
+         locStencilBits:=8
+      else locStencilBits:=0;
+      // will be freed in DestroyWindowHandle
+      FRenderingContext:=GLContextManager.CreateContext;
+      with FRenderingContext do begin
+         Options:=locOptions;
+         ColorBits:=24;
+         StencilBits:=locStencilBits;
+         AccumBits:=0;
+         AuxBuffers:=0;
+         if memoryContext then
+            CreateMemoryContext(deviceHandle, FViewPort.Width, FViewPort.Height)
+         else CreateContext(deviceHandle);
       end;
+      FRenderingContext.Activate;
+      try
+         // this one should NOT be replaced with an assert
+         if not GL_VERSION_1_1 then
+            raise EOpenGLError.Create(glsWrongVersion);
+         // define viewport, this is necessary because the first WM_SIZE message
+         // is posted before the rendering context has been created
+         glViewport(0, 0, FViewPort.Width, FViewPort.Height);
+         // set up initial context states
+         ReadContextProperties;
+         SetupRenderingContext;
+         BackColor:=ConvertWinColor(FBackgroundColor);
+         glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
+      finally
+         FRenderingContext.Deactivate;
+      end;
+   finally
+      FRendering:=False;
    end;
-   invalidated:=False;
-end;
-
-// Recreate
-//
-procedure TGLSceneViewer.Recreate;
-begin
-   RecreateWnd;
 end;
 
 // DestroyRC
 //
-procedure TGLSceneViewer.DestroyRC;
+procedure TGLSceneBuffer.DestroyRC;
 begin
    if Assigned(FRenderingContext) then begin
       // for some obscure reason, Mesa3D doesn't like this call... any help welcome
       FRenderingContext.Free;
       FRenderingContext:=nil;
    end;
-   ReleaseDC(0, FRenderDC);
-   FRenderDC:=0;
 end;
 
-// DestroyWindowHandle
+// Resize
 //
-procedure TGLSceneViewer.DestroyWindowHandle;
+procedure TGLSceneBuffer.Resize(newWidth, newHeight : Integer);
 begin
-   DestroyRC;
-   inherited;
-end;
-
-// WMEraseBkgnd
-//
-procedure TGLSceneViewer.WMEraseBkgnd(var Message: TWMEraseBkgnd);
-begin
-   if IsOpenGLAvailable then
-      Message.Result:=1
-   else inherited; 
-end;
-
-// WMSize
-//
-procedure TGLSceneViewer.WMSize(var Message: TWMSize);
-//var
-//   aPoint : TPoint;
-begin
-   inherited;
-   { !!!!!!!!!!!!!! Disabled !!!!!!!!!!!!!!!
-   if (woTransparent in DisplayOptions.WindowAttributes) then begin
-      aPoint.X:=Left;
-      aPoint.Y:=Top;
-      if (not (woDesktop in DisplayOptions.WindowAttributes))
-            or (csDesigning in ComponentState) then
-         aPoint:=Parent.ClientToScreen(aPoint);
-      with FBackground.Image do begin
-         TGLCaptureImage(FBackground.Image).Left:=aPoint.X;
-         TGLCaptureImage(FBackground.Image).Top:=aPoint.Y;
-         Width:=RoundUpToPowerOf2(Message.Width);
-         Height:=RoundUpToPowerOf2(Message.Height);
-      end;
-   end; }
-   // define viewport
+   if newWidth<1 then  newWidth:=1;
+   if newHeight<1 then newHeight:=1;
+   FViewPort.Width:=newWidth;
+   FViewPort.Height:=newHeight;
    if Assigned(FRenderingContext) then begin
       FRenderingContext.Activate;
       try
-         with FViewPort do begin
-            Width:=Message.Width;
-            Height:=Message.Height;
-            if Height = 0 then Height:=1;
-            glViewport(0, 0, Width, Height);
-         end;
+         glViewport(0, 0, FViewPort.Width, FViewPort.Height);
       finally
          FRenderingContext.Deactivate;
       end;
    end;
 end;
 
-// WMPaint
-//
-procedure TGLSceneViewer.WMPaint(var Message: TWMPaint);
-var
-   PS : TPaintStruct;
-   recreate : Boolean;
-begin
-   invalidated:=False;
-   recreate:=False;
-   BeginPaint(Handle, PS);
-   try
-      if IsOpenGLAvailable then begin
-         if csDesigning in ComponentState then begin
-            try
-               Render;
-            except
-               // from time to time, Delphi apparently damages or HDC/RC,
-               // so we need to recreate it... (at least, try to...)
-               on E: EMakeCurrentFaileException do begin
-                  recreate:=True;
-               end else raise;
-            end;
-         end else Render;
-      end;
-   finally
-      EndPaint(Handle, PS);
-      Message.Result:=0;
-   end;
-   if recreate then RecreateWnd;
-end;
-
-// WMDestroy
-//
-procedure TGLSceneViewer.WMDestroy(var Message: TWMDestroy);
-begin
-   if Assigned(FCamera) and Assigned(FCamera.FScene) then
-      FCamera.FScene.RemoveViewer(Self);
-   DestroyRC;
-   inherited;
-end;
-
-//------------------------------------------------------------------------------
-
-function TGLSceneViewer.ObjectInScene(Obj: TGLBaseSceneObject): Boolean;
-
-var
-  ModelMatrix: THomogeneousDblMatrix;
-  ProjectMatrix: THomogeneousDblMatrix;
-  VP: THomogeneousIntVector;
-  WinX, WinY, WinZ: Double;
-  R: TRect;
-  P: TPoint;
-
-begin
-  Result:=True;
-  glGetDoublev(GL_MODELVIEW_MATRIX, @ModelMatrix);
-  glGetDoublev(GL_PROJECTION_MATRIX, @ProjectMatrix);
-  glGetIntegerv(GL_VIEWPORT, @VP);
-  gluProject(Obj.Position.X, Obj.Position.Y, Obj.Position.Z,
-             ModelMatrix, ProjectMatrix, VP, @WinX, @WinY, @WinZ);
-  R:=Rect(Vp[0], Vp[1], Vp[2], Vp[3]);
-  P.x:=Round(WinX);
-  P.y:=Round(WinY);
-  if (not PtInRect(R, P)) then
-    Result:=False;
-end;
-
 // ReadContextProperties
 //
-procedure TGLSceneViewer.ReadContextProperties;
-begin                                
-   FMaxLightSources:=LimitOf[limLights];
-   FDoubleBuffered:=(LimitOf[limDoubleBuffer]>0);
+procedure TGLSceneBuffer.ReadContextProperties;
+begin
    if glIsEnabled(GL_DEPTH_TEST) then
       Include(FCurrentStates, stDepthTest);
    if glIsEnabled(GL_CULL_FACE) then
@@ -5229,11 +5240,10 @@ end;
 
 // SetupRenderingContext
 //
-procedure TGLSceneViewer.SetupRenderingContext;
+procedure TGLSceneBuffer.SetupRenderingContext;
 var
-   ColorDepth: Cardinal;
+   colorDepth : Cardinal;
 begin
-   ColorDepth:=GetDeviceCaps(RenderDC, BITSPIXEL) * GetDeviceCaps(RenderDC, PLANES);
    if roTwoSideLighting in FContextOptions then
       glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
    else glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
@@ -5255,7 +5265,8 @@ begin
       Include(FCurrentStates, stFog);
       glEnable(GL_FOG)
    end else glDisable(GL_FOG);
-   if ColorDepth < 24 then begin
+   glGetIntegerv(GL_BLUE_BITS, @colorDepth); // could've used red or green too
+   if colorDepth<8 then begin
       Include(FCurrentStates, stDither);
       glEnable(GL_DITHER);
    end else glDisable(GL_DITHER);
@@ -5265,7 +5276,7 @@ end;
 
 // GetLimit
 //
-function TGLSceneViewer.GetLimit(Which: TLimitType): Integer;
+function TGLSceneBuffer.GetLimit(Which: TLimitType): Integer;
 var
   VP: array[0..1] of Double;
 begin
@@ -5330,64 +5341,26 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TGLSceneViewer.Loaded;
-
-var
-  NewMode: Integer;
-
-begin
-  inherited Loaded;
-  if not (csDesigning in ComponentState) then
-    // set display mode depending on the different screen options
-    // full screen requested?
-    if DisplayOptions.FullScreen then begin
-      // full screen mode, so check for window fitting
-      case DisplayOptions.WindowFitting of
-        wfFitWindowToScreen: // set screen to the specified size
-          begin
-            NewMode:=DisplayOptions.ScreenResolution;
-            if NewMode <> 0 then SetFullScreenMode(NewMode);
-          end;
-        wfFitScreenToWindow: // adjust screen size to window size
-          begin
-            NewMode:=GetIndexFromResolution(Width, Height, VideoModes[0].ColorDepth);
-            SetFullScreenMode(NewMode);
-          end;
-      end;
-      Left:=0;
-      Top:=0;
-      ShowWindow(Handle, SW_SHOWMAXIMIZED);
-    end else
-      // no full screen mode for the application, but perhaps
-      // a specific resolution or color depth?
-      if DisplayOptions.ScreenResolution <> 0 then
-        SetFullScreenMode(DisplayOptions.ScreenResolution);
-  // initiate window creation
-  HandleNeeded;
-end;
-
 // RenderToFile
 //
-procedure TGLSceneViewer.RenderToFile(const AFile: String; DPI: Integer);
+procedure TGLSceneBuffer.RenderToFile(const aFile : String; DPI : Integer);
 var
-  ABitmap: TBitmap;
-  SaveDialog: TSavePictureDialog;
-  SaveAllowed: Boolean;
-  FName: String;
+   aBitmap : TBitmap;
+   saveDialog : TSavePictureDialog;
+   saveAllowed : Boolean;
+   fileName: String;
 begin
    Assert((not FRendering), glsAlreadyRendering);
-   SaveDialog:=nil;
-   ABitmap:=TBitmap.Create;
+   saveDialog:=nil;
+   aBitmap:=TBitmap.Create;
    try
-      ABitmap.Width:=Width;
-      ABitmap.Height:=Height;
-      ABitmap.PixelFormat:=pf24Bit;
+      aBitmap.Width:=FViewPort.Width;
+      aBitmap.Height:=FViewPort.Height;
+      aBitmap.PixelFormat:=pf24Bit;
       RenderToBitmap(ABitmap, DPI);
-      FName:=AFile;
-      SaveAllowed:=True;
-      if FName = '' then begin
+      fileName:=AFile;
+      saveAllowed:=True;
+      if fileName='' then begin
          SaveDialog:=TSavePictureDialog.Create(Application);
          with SaveDialog do begin
             Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
@@ -5395,12 +5368,13 @@ begin
          end;
       end;
       if SaveAllowed then begin
-         if FName = '' then begin
-            FName:=SaveDialog.FileName;
-            if (FileExists(SaveDialog.FileName)) then
-               SaveAllowed:=MessageDlg(Format('Overwrite file %s?', [SaveDialog.FileName]), mtConfirmation, [mbYes, mbNo], 0) = mrYes;
+         if fileName='' then begin
+            fileName:=SaveDialog.FileName;
+            if FileExists(fileName) then
+               saveAllowed:=MessageDlg(Format('Overwrite file %s?', [fileName]), mtConfirmation, [mbYes, mbNo], 0) = mrYes;
          end;
-         if SaveAllowed then ABitmap.SaveToFile(FName);
+         if SaveAllowed then
+            aBitmap.SaveToFile(fileName);
       end;
    finally
       SaveDialog.Free;
@@ -5410,7 +5384,7 @@ end;
 
 // RenderToFile
 //
-procedure TGLSceneViewer.RenderToFile(const AFile: String; bmpWidth, bmpHeight : Integer);
+procedure TGLSceneBuffer.RenderToFile(const AFile: String; bmpWidth, bmpHeight : Integer);
 var
    ABitmap: TBitmap;
    SaveDialog: TSavePictureDialog;
@@ -5424,7 +5398,7 @@ begin
       ABitmap.Width:=bmpWidth;
       ABitmap.Height:=bmpHeight;
       ABitmap.PixelFormat:=pf24Bit;
-      RenderToBitmap(ABitmap, (GetDeviceCaps(ABitmap.Canvas.Handle, LOGPIXELSX)*bmpWidth) div width);
+      RenderToBitmap(ABitmap, (GetDeviceCaps(ABitmap.Canvas.Handle, LOGPIXELSX)*bmpWidth) div FViewPort.Width);
       FName:=AFile;
       SaveAllowed:=True;
       if FName = '' then begin
@@ -5450,34 +5424,24 @@ end;
 
 // TGLBitmap32
 //
-function TGLSceneViewer.CreateSnapShot : TGLBitmap32;
+function TGLSceneBuffer.CreateSnapShot : TGLBitmap32;
 begin
    Result:=TGLBitmap32.Create;
-   Result.Width:=Width;
-   Result.Height:=Height;
+   Result.Width:=FViewPort.Width;
+   Result.Height:=FViewPort.Height;
    if Assigned(Camera) and Assigned(Camera.Scene) then begin
       FRenderingContext.Activate;
       try
-         Result.ReadPixels(ClientRect);
+         Result.ReadPixels(Rect(0, 0, FViewPort.Width, FViewPort.Height));
       finally
          FRenderingContext.DeActivate;
       end;
    end;
 end;
 
-// Invalidate
-//
-procedure TGLSceneViewer.Invalidate;
-begin
-   if not invalidated then begin
-      inherited Invalidate;
-      invalidated:=True;
-   end;
-end;
-
 // SetViewPort
 //
-procedure TGLSceneViewer.SetViewPort(X, Y, W, H: Integer);
+procedure TGLSceneBuffer.SetViewPort(X, Y, W, H: Integer);
 begin
    with FViewPort do begin
       Left:=X;
@@ -5485,13 +5449,12 @@ begin
       Width:=W;
       Height:=H;
    end;
-   Perform(WM_SIZE, SIZE_RESTORED, MakeLong(Width, Height));
-   if not (csReading in ComponentState) then Invalidate;
+   NotifyChange(Self);
 end;
 
 // RenderToBitmap
 //
-procedure TGLSceneViewer.RenderToBitmap(ABitmap: TBitmap; DPI: Integer);
+procedure TGLSceneBuffer.RenderToBitmap(ABitmap: TBitmap; DPI: Integer);
 var
    bmpContext: TGLContext;
    BackColor: TColorVector;
@@ -5503,6 +5466,7 @@ begin
    Assert((not FRendering), glsAlreadyRendering);
    FRendering:=True;
    try
+      FRenderDPI:=DPI;
       case ABitmap.PixelFormat of
          pfCustom, pfDevice :  // use current color depth
             aColorBits:=VideoModes[CurrentVideoMode].ColorDepth;
@@ -5564,7 +5528,7 @@ end;
 
 // ShowInfo
 //
-procedure TGLSceneViewer.ShowInfo;
+procedure TGLSceneBuffer.ShowInfo;
 var
    infoForm: TInfoForm;
 begin
@@ -5585,7 +5549,7 @@ end;
 (*
 // RequestedState
 //
-procedure TGLSceneViewer.RequestedState(States: TGLStates);
+procedure TGLSceneBuffer.RequestedState(States: TGLStates);
 var
    neededStates: TGLStates;
 begin
@@ -5601,7 +5565,7 @@ end;
 
 // UnnecessaryState
 //
-procedure TGLSceneViewer.UnnecessaryState(States: TGLStates);
+procedure TGLSceneBuffer.UnnecessaryState(States: TGLStates);
 var
    takeOutStates: TGLStates;
 begin
@@ -5619,7 +5583,7 @@ end;
 *)
 // ResetPerformanceMonitor
 //
-procedure TGLSceneViewer.ResetPerformanceMonitor;
+procedure TGLSceneBuffer.ResetPerformanceMonitor;
 begin
    FFramesPerSecond:=0;
    FFrames:=0;
@@ -5628,7 +5592,7 @@ end;
 
 // ScreenToWorld
 //
-function TGLSceneViewer.ScreenToWorld(const aPoint : TAffineVector) : TAffineVector;
+function TGLSceneBuffer.ScreenToWorld(const aPoint : TAffineVector) : TAffineVector;
 var
    proj, mv : THomogeneousDblMatrix;
    x, y, z : Double;
@@ -5645,14 +5609,14 @@ end;
 
 // ScreenToWorld
 //
-function TGLSceneViewer.ScreenToWorld(screenX, screenY : Integer) : TAffineVector;
+function TGLSceneBuffer.ScreenToWorld(screenX, screenY : Integer) : TAffineVector;
 begin
-   Result:=ScreenToWorld(AffineVectorMake(screenX, Height-screenY, 0));
+   Result:=ScreenToWorld(AffineVectorMake(screenX, FViewPort.Height-screenY, 0));
 end;
 
 // WorldToScreen
 //
-function TGLSceneViewer.WorldToScreen(const aPoint : TAffineVector) : TAffineVector;
+function TGLSceneBuffer.WorldToScreen(const aPoint : TAffineVector) : TAffineVector;
 var
    proj, mv : THomogeneousDblMatrix;
    x, y, z : Double;
@@ -5669,7 +5633,7 @@ end;
 
 // ScreenToVector
 //
-function TGLSceneViewer.ScreenToVector(const aPoint : TAffineVector) : TAffineVector;
+function TGLSceneBuffer.ScreenToVector(const aPoint : TAffineVector) : TAffineVector;
 begin
    Result:=VectorSubtract(ScreenToWorld(aPoint),
                           PAffineVector(@FCameraAbsolutePosition)^);
@@ -5677,14 +5641,14 @@ end;
 
 // VectorToScreen
 //
-function TGLSceneViewer.VectorToScreen(const VectToCam : TAffineVector) : TAffineVector;
+function TGLSceneBuffer.VectorToScreen(const VectToCam : TAffineVector) : TAffineVector;
 begin
  Result:=WorldToScreen(VectorAdd(VectToCam,PAffineVector(@FCameraAbsolutePosition)^));
 end;
 
 // ScreenVectorIntersectWithPlane
 //
-function TGLSceneViewer.ScreenVectorIntersectWithPlane(
+function TGLSceneBuffer.ScreenVectorIntersectWithPlane(
       const aScreenPoint : TAffineVector;
       const planePoint, planeNormal : TAffineVector;
       var intersectPoint : TAffineVector) : Boolean;
@@ -5700,7 +5664,7 @@ end;
 
 // ScreenVectorIntersectWithPlaneXY
 //
-function TGLSceneViewer.ScreenVectorIntersectWithPlaneXY(
+function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXY(
    const aScreenPoint : TAffineVector; const z : Single;
    var intersectPoint : TAffineVector) : Boolean;
 begin
@@ -5710,7 +5674,7 @@ end;
 
 // ScreenVectorIntersectWithPlaneYZ
 //
-function TGLSceneViewer.ScreenVectorIntersectWithPlaneYZ(
+function TGLSceneBuffer.ScreenVectorIntersectWithPlaneYZ(
    const aScreenPoint : TAffineVector; const x : Single;
    var intersectPoint : TAffineVector) : Boolean;
 begin
@@ -5720,7 +5684,7 @@ end;
 
 // ScreenVectorIntersectWithPlaneXZ
 //
-function TGLSceneViewer.ScreenVectorIntersectWithPlaneXZ(
+function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXZ(
    const aScreenPoint : TAffineVector; const y : Single;
    var intersectPoint : TAffineVector) : Boolean;
 begin
@@ -5731,7 +5695,7 @@ end;
 
 // PixelRayToWorld
 //
-function TGLSceneViewer.PixelRayToWorld(x, y : Integer) : TAffineVector;
+function TGLSceneBuffer.PixelRayToWorld(x, y : Integer) : TAffineVector;
 var
    dov, np, fp, z, dst,wrpdst : Single;
    vec, cam, targ, rayhit, pix : TAffineVector;
@@ -5748,15 +5712,15 @@ begin
    //z:=1-(fp/d-1)/(fp/np-1);  //calc from world depth to z-buffer value
    //------------------------
    vec[0]:=x;
-   vec[1]:=Height-y;
+   vec[1]:=FViewPort.Height-y;
    vec[2]:=0;
    vec   :=ScreenToVector(vec);
    NormalizeVector(vec);
    cam :=Camera.Position.AsAffineVector;
    //targ:=Camera.TargetObject.Position.AsAffineVector;
    //SubtractVector(targ,cam);
-   pix[0]:=self.width/2;
-   pix[1]:=self.height/2;
+   pix[0]:=FViewPort.Width/2;
+   pix[1]:=FViewPort.Height/2;
    targ:=self.ScreenToVector(pix);
 
    camAng:=VectorAngleCosine(targ,vec);
@@ -5766,79 +5730,28 @@ begin
    result:=rayhit;
 end;
 
-
 // ClearBuffers
 //
-procedure TGLSceneViewer.ClearBuffers;
-type
-   PPixelArray  = ^TByteVector;
+procedure TGLSceneBuffer.ClearBuffers;
 var
    bufferBits : TGLBitfield;
 begin
-   // handle transparency simulation
-{   if (woTransparent in DisplayOptions.WindowAttributes) then begin
-     glPushAttrib(GL_ENABLE_BIT);
-     glEnable(GL_TEXTURE_2D);
-     glDisable(GL_LIGHTING);
-     glDisable(GL_DITHER);
-     glDisable(GL_DEPTH_TEST);
-     glDisable(GL_BLEND);
-     // Invalidate initiated by the scene itself?
-     FBackground.DisableAutoTexture;
-     FBackground.Apply;
-     glMatrixMode(GL_MODELVIEW);
-     glPushMatrix;
-     glLoadIdentity;
-     glMatrixMode(GL_PROJECTION);
-     glPushMatrix;
-     glLoadIdentity;
-     glOrtho(0, Width - 1, 0, Height - 1, 0, 100);
-     glFrontFace(GL_CCW);
-     glBegin(GL_QUADS);
-       xglTexCoord2f(0, 1 - Height / FBackground.Image.Height);
-       glVertex3f(0, 0, 0);
-
-       xglTexCoord2f(Width / FBackground.Image.Width, 1 - Height / FBackground.Image.Height);
-       glVertex3f(Width - 1, 0, 0);
-
-       xglTexCoord2f(Width/FBackground.Image.Width, 1);
-       glVertex3f(Width - 1, Height - 1, 0);
-
-       xglTexCoord2f(0, 1);
-       glVertex3f(0, Height - 1, 0);
-     glEnd;
-     glMatrixMode(GL_MODELVIEW);
-     glPopMatrix;
-     glMatrixMode(GL_PROJECTION);
-     glPopMatrix;
-     glPopAttrib;
-   end;}
-
-   // Convert our buXXX in Buffers to the GL boolean set
-   if (buColor in Buffers) then //and not (woTransparent in DisplayOptions.WindowAttributes) then
-      bufferBits:=GL_COLOR_BUFFER_BIT
-   else bufferBits:=0;
-   if buDepth in Buffers then
-      bufferBits:=bufferBits or GL_DEPTH_BUFFER_BIT;
-   if buStencil in Buffers then
+   bufferBits:=GL_COLOR_BUFFER_BIT+GL_DEPTH_BUFFER_BIT;
+   if roStencilBuffer in ContextOptions then
       bufferBits:=bufferBits or GL_STENCIL_BUFFER_BIT;
-   if buAccum in Buffers then
-      bufferBits:=bufferBits or GL_ACCUM_BUFFER_BIT;
-   if bufferBits<>0 then glClear(BufferBits);
+   glClear(BufferBits);
 end;
 
-// Notification
+// NotifyChange
 //
-procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
+procedure TGLSceneBuffer.NotifyChange(Sender : TObject);
 begin
-   inherited;
-   if (Operation = opRemove) and (AComponent = FCamera) then
-      Camera:=nil;
+   DoChange;
 end;
 
 // PickObjects
 //
-procedure TGLSceneViewer.PickObjects(const Rect: TRect; PickList: TGLPickList;
+procedure TGLSceneBuffer.PickObjects(const Rect: TRect; PickList: TGLPickList;
                                      objectCountGuess: Integer);
 var
    buffer : PCardinalVector;
@@ -5857,8 +5770,7 @@ begin
    try
       buffer:=nil;
       try
-         PrepareRenderingMatrices(FViewPort, GetDeviceCaps(RenderDC, LOGPIXELSX),
-                                  @Rect);
+         PrepareRenderingMatrices(FViewPort, RenderDPI, @Rect);
          // check countguess, memory waste is not an issue here
          if objectCountGuess<8 then objectCountGuess:=8;
          hits:=-1;
@@ -5879,7 +5791,7 @@ begin
             glPushName(0);
             // render the scene (in select mode, nothing is drawn)
             if Assigned(FCamera) and Assigned(FCamera.FScene) then
-               FCamera.FScene.RenderScene(Self, Width, Height, dsPicking);
+               FCamera.FScene.RenderScene(Self, FViewPort.Width, FViewPort.Height, dsPicking);
             glFlush;
             Hits:=glRenderMode(GL_RENDER);
          until Hits>-1; // try again with larger selection buffer
@@ -5914,7 +5826,7 @@ end;
 
 // GetPickedObjects
 //
-function TGLSceneViewer.GetPickedObjects(const Rect: TRect; objectCountGuess : Integer = 64) : TGLPickList;
+function TGLSceneBuffer.GetPickedObjects(const Rect: TRect; objectCountGuess : Integer = 64) : TGLPickList;
 begin
    Result:=TGLPickList.Create(psMinDepth);
    PickObjects(Rect, Result, objectCountGuess);
@@ -5922,7 +5834,7 @@ end;
 
 // GetPickedObject
 //
-function TGLSceneViewer.GetPickedObject(x, y : Integer) : TGLBaseSceneObject;
+function TGLSceneBuffer.GetPickedObject(x, y : Integer) : TGLBaseSceneObject;
 var
    pkList : TGLPickList;
 begin
@@ -5938,7 +5850,7 @@ end;
 
 // GetPixelColor
 //
-function TGLSceneViewer.GetPixelColor(x, y : Integer) : TColor;
+function TGLSceneBuffer.GetPixelColor(x, y : Integer) : TColor;
 var
    buf : array [0..2] of Byte;
 begin
@@ -5948,7 +5860,7 @@ begin
    end;
    FRenderingContext.Activate;
    try
-      glReadPixels(x, Height-y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, @buf[0]);
+      glReadPixels(x, FViewPort.Height-y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, @buf[0]);
    finally
       FRenderingContext.Deactivate;
    end;
@@ -5957,9 +5869,7 @@ end;
 
 // GetPixelDepth
 //
-function TGLSceneViewer.GetPixelDepth(x, y : Integer) : Single;
-//var
-//   v : TAffineVector;
+function TGLSceneBuffer.GetPixelDepth(x, y : Integer) : Single;
 begin
    if not Assigned(FCamera) then begin
       Result:=0;
@@ -5967,9 +5877,7 @@ begin
    end;
    FRenderingContext.Activate;
    try
-      glReadPixels(x, Height-y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, @Result);
-//      v:=ScreenToWorld(AffineVectorMake(x, Height-y, Result));
-//      Result:=v[2];
+      glReadPixels(x, FViewPort.Height-y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, @Result);
    finally
       FRenderingContext.Deactivate;
    end;
@@ -5977,7 +5885,7 @@ end;
 
 // PixelDepthToDistance
 //
-function TGLSceneViewer.PixelDepthToDistance(aDepth : Single) : Single;
+function TGLSceneBuffer.PixelDepthToDistance(aDepth : Single) : Single;
 var
    dov, np, fp : Single;
 begin
@@ -5991,7 +5899,7 @@ end;
 
 // PixelToDistance
 //
-function TGLSceneViewer.PixelToDistance(x,y : integer) : Single;
+function TGLSceneBuffer.PixelToDistance(x,y : integer) : Single;
 var z, dov, np, fp, dst, camAng : Single;
     norm, coord, vec: TAffineVector;
 begin
@@ -6005,8 +5913,8 @@ begin
    coord[0]:=x;
    coord[1]:=y;
    vec:=self.ScreenToVector(coord);     //get the pixel vector
-   coord[0]:=Round(self.width/2);
-   coord[1]:=Round(self.height/2);
+   coord[0]:=Round(FViewPort.Width/2);
+   coord[1]:=Round(FViewPort.Height/2);
    norm:=self.ScreenToVector(coord);    //get the absolute camera direction
    camAng:=VectorAngleCosine(norm,vec);
    result:=dst/camAng;                 //compensate for flat frustrum face
@@ -6014,7 +5922,7 @@ end;
 
 // PrepareRenderingMatrices
 //
-procedure TGLSceneViewer.PrepareRenderingMatrices(const aViewPort : TRectangle;
+procedure TGLSceneBuffer.PrepareRenderingMatrices(const aViewPort : TRectangle;
                            resolution : Integer; pickingRect : PRect = nil);
 begin
    // setup projection matrix
@@ -6022,12 +5930,12 @@ begin
    glLoadIdentity;
    if Assigned(pickingRect) then
       gluPickMatrix((pickingRect.Left+pickingRect.Right) div 2,
-                    Height-((pickingRect.Top+pickingRect.Bottom) div 2),
+                    FViewPort.Height-((pickingRect.Top+pickingRect.Bottom) div 2),
                     Abs(pickingRect.Right - pickingRect.Left),
                     Abs(pickingRect.Bottom - pickingRect.Top),
                     TVector4i(FViewport));
    glGetFloatv(GL_PROJECTION_MATRIX, @FBaseProjectionMatrix);
-   FCamera.ApplyPerspective(aViewport, Width, Height, resolution);
+   FCamera.ApplyPerspective(aViewport, FViewPort.Width, FViewPort.Height, resolution);
    glGetFloatv(GL_PROJECTION_MATRIX, @FProjectionMatrix);
 
    // setup model view matrix
@@ -6040,63 +5948,65 @@ end;
 
 // DoBaseRender
 //
-procedure TGLSceneViewer.DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
+procedure TGLSceneBuffer.DoBaseRender(const aViewPort : TRectangle; resolution : Integer;
                                       drawState : TDrawState);
 begin
    if (not Assigned(FCamera)) or (not Assigned(FCamera.FScene)) then Exit;
    PrepareRenderingMatrices(aViewPort, resolution);
    if Assigned(FBeforeRender) then FBeforeRender(Self);
    with FCamera.FScene do begin
-      SetupLights(FMaxLightSources);
+      SetupLights(LimitOf[limLights]);
       if FogEnable then begin
          glEnable(GL_FOG);
          FogEnvironment.ApplyFog;
       end else glDisable(GL_FOG);
-      RenderScene(Self, Width, Height, drawState);
+      RenderScene(Self, FViewPort.Width, FViewPort.Height, drawState);
    end;
    if Assigned(FPostRender) then FPostRender(Self);
 end;
 
 // Render
 //
-procedure TGLSceneViewer.Render;
+procedure TGLSceneBuffer.Render;
 var
-   Counter1, Counter2: TLargeInteger;
+   perfCounter : Int64;
    BackColor : TColorVector;
 begin
-   if ((not Visible) and (not (csDesigning in ComponentState))) or FRendering then Exit;
+   if FRendering then Exit;
+   if not Assigned(FRenderingContext) then Exit;
    if Assigned(FCamera) and Assigned(FCamera.FScene) then
-      FCamera.FScene.AddViewer(Self);
+      FCamera.FScene.AddBuffer(Self);
    FRenderingContext.Activate;
    FRendering:=True;
    try
-      // performance data demanded?
-      if FMonitor then QueryPerformanceCounter(Counter1);
+      FRenderDPI:=96; // default value for screen
+      ClearGLError;
       // clear the buffers
       BackColor:=ConvertWinColor(FBackgroundColor);
       glClearColor(BackColor[0], BackColor[1], BackColor[2], BackColor[3]);
+      CheckOpenGLError;
       ClearBuffers;
+      CheckOpenGLError;
       // render
-      glEnable(GL_MULTISAMPLE_ARB);
-      DoBaseRender(FViewport, GetDeviceCaps(RenderDC, LOGPIXELSX), dsRendering);
+      DoBaseRender(FViewport, RenderDPI, dsRendering);
+      CheckOpenGLError;
       glFlush;
-      if FDoubleBuffered then SwapBuffers(RenderDC);
+      RenderingContext.SwapBuffers;
 
-      // performance data demanded?
-      if FMonitor then begin
-         // yes, calculate average frames per second...
-         Inc(FFrames);
-         if FFrames > 1 then begin // ...but leave out the very first frame
-            QueryPerformanceCounter(Counter2);
-            // in second run take an 'average' value for the first run into account
-            // by simply using twice the time from this run
-            if FFrames = 2 then
-               FTicks:=FTicks + 2 * (Counter2 - Counter1)
-            else FTicks:=FTicks + Counter2 - Counter1;
-            if FTicks > 0 then
-               FFramesPerSecond:=FFrames * vCounterFrequency / FTicks;
-         end;
+      // yes, calculate average frames per second...
+      Inc(FFrames);
+      perfCounter:=FLastPerfCounter;
+      QueryPerformanceCounter(FLastPerfCounter);
+      if FFrames>1 then begin // ...but leave out the very first frame
+         // in second run take an 'average' value for the first run into account
+         // by simply using twice the time from this run
+         if FFrames=2 then
+            FTicks:=FTicks+2*(FLastPerfCounter-perfCounter)
+         else FTicks:=FTicks+(FLastPerfCounter-perfCounter);
+         if FTicks>0 then
+            FFramesPerSecond:=FFrames*vCounterFrequency/FTicks;
       end;
+      CheckOpenGLError;
    finally
       FRendering:=False;
       FRenderingContext.Deactivate;
@@ -6106,22 +6016,17 @@ end;
 
 // SetBackgroundColor
 //
-procedure TGLSceneViewer.SetBackgroundColor(AColor: TColor);
-var
-   backColor: TColorVector;
+procedure TGLSceneBuffer.SetBackgroundColor(AColor: TColor);
 begin
    if FBackgroundColor<>AColor then begin
       FBackgroundColor:=AColor;
-      if not (csReading in ComponentState) then begin
-         backColor:=ConvertWinColor(FBackgroundColor);
-         Invalidate;
-      end;
+      NotifyChange(Self);
    end;
 end;
 
 // SetCamera
 //
-procedure TGLSceneViewer.SetCamera(ACamera: TGLCamera);
+procedure TGLSceneBuffer.SetCamera(ACamera: TGLCamera);
 begin
    if FCamera <> ACamera then begin
       if Assigned(FCamera) then begin
@@ -6133,86 +6038,489 @@ begin
          FCamera:=ACamera;
          Include(FCamera.FChanges, ocTransformation);
       end;
-      Invalidate;
+      NotifyChange(Self);
    end;
 end;
 
 // SetContextOptions
 //
-procedure TGLSceneViewer.SetContextOptions(Options: TContextOptions);
+procedure TGLSceneBuffer.SetContextOptions(Options: TContextOptions);
 begin
    if FContextOptions<>Options then begin
       FContextOptions:=Options;
-      Invalidate;
+      DoStructuralChange;
    end;
 end;
 
 // SetDepthTest
 //
-procedure TGLSceneViewer.SetDepthTest(AValue: Boolean);
+procedure TGLSceneBuffer.SetDepthTest(AValue: Boolean);
 begin
    if FDepthTest<>AValue then begin
       FDepthTest:=AValue;
-      Invalidate;
-  end;
-end;
-
-// SetStencilTest
-//
-procedure TGLSceneViewer.SetStencilTest(val : Boolean);
-begin
-   if val<>FStencilTest then begin
-      FStencilTest:=val;
-      RecreateWnd;
+      NotifyChange(Self);
    end;
 end;
 
 // SetFaceCulling
 //
-procedure TGLSceneViewer.SetFaceCulling(AValue: Boolean);
+procedure TGLSceneBuffer.SetFaceCulling(AValue: Boolean);
 begin
    if FFaceCulling <> AValue then begin
       FFaceCulling:=AValue;
-      Invalidate;
+      NotifyChange(Self);
    end;
 end;
 
 // SetLighting
 //
-procedure TGLSceneViewer.SetLighting(AValue: Boolean);
+procedure TGLSceneBuffer.SetLighting(AValue: Boolean);
 begin
    if FLighting <> AValue then begin
       FLighting:=AValue;
-      Invalidate;
+      NotifyChange(Self);
    end;
 end;
 
 // SetFogEnable
 //
-procedure TGLSceneViewer.SetFogEnable(AValue: Boolean);
+procedure TGLSceneBuffer.SetFogEnable(AValue: Boolean);
 begin
    if FFogEnable <> AValue then begin
       FFogEnable:=AValue;
-      Invalidate;
+      NotifyChange(Self);
    end;
 end;
 
-//------------------------------------------------------------------------------
-
-{procedure TGLSceneViewer.SetSpecials(Value: TSpecials);
-begin
-   if FSpecials <> Value then begin
-      FSpecials:=Value;
-      Invalidate;
-   end;
-end; }
-
 // SetGLFogEnvironment
 //
-procedure TGLSceneViewer.SetGLFogEnvironment(AValue: TGLFogEnvironment);
+procedure TGLSceneBuffer.SetGLFogEnvironment(AValue: TGLFogEnvironment);
 begin
    FFogEnvironment.Assign(AValue);
+   NotifyChange(Self);
+end;
+
+// StoreFog
+//
+function TGLSceneBuffer.StoreFog : Boolean;
+begin
+   Result:=not FFogEnvironment.IsAtDefaultValues;
+end;
+
+// DoChange
+//
+procedure TGLSceneBuffer.DoChange;
+begin
+   if Assigned(FOnChange) then
+      FOnChange(Self);
+end;
+
+// DoStructuralChange
+//
+procedure TGLSceneBuffer.DoStructuralChange;
+begin
+   if Assigned(FOnStructuralChange) then
+      FOnStructuralChange(Self);
+end;
+
+// ------------------
+// ------------------ TGLMemoryViewer ------------------
+// ------------------
+
+// Create
+//
+constructor TGLMemoryViewer.Create(AOwner: TComponent);
+begin
+   inherited Create(AOwner);
+   FWidth:=256;
+   FHeight:=256;
+   FBuffer:=TGLSceneBuffer.Create(Self);
+   FBuffer.OnChange:=DoBufferChange;
+   FBuffer.OnStructuralChange:=DoBufferStructuralChange;
+end;
+
+// Destroy
+//
+destructor TGLMemoryViewer.Destroy;
+begin
+   FBuffer.Free;
+   inherited Destroy;
+end;
+
+// Notification
+//
+procedure TGLMemoryViewer.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   inherited;
+   if (Operation = opRemove) and (AComponent = Camera) then
+      Camera:=nil;
+end;
+
+// Render
+//
+procedure TGLMemoryViewer.Render;
+var
+   topDC : Integer;
+begin
+   if FBuffer.RenderingContext=nil then begin
+      FBuffer.SetViewPort(0, 0, Width, Height);
+      topDC:=GetDC(0);
+      try
+         FBuffer.CreateRC(topDC, True);
+      finally
+         ReleaseDC(0, topDC);
+      end;
+   end;
+   FBuffer.Render;
+end;
+
+// CopyToTexture
+//
+procedure TGLMemoryViewer.CopyToTexture(aTexture : TGLTexture);
+begin
+   CopyToTexture(aTexture, 0, 0, Width, Height, 0, 0);
+end;
+
+// CopyToTexture
+//
+procedure TGLMemoryViewer.CopyToTexture(aTexture : TGLTexture; xSrc, ySrc, width, height : Integer;
+                                        xDest, yDest : Integer);
+begin
+   if Buffer.RenderingContext<>nil then begin
+      Buffer.RenderingContext.Activate;
+      try
+         glBindTexture(GL_TEXTURE_2D, aTexture.Handle);
+         glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc, width, height);
+         glFinish;
+         CheckOpenGLError;
+      finally
+         Buffer.RenderingContext.Deactivate;
+      end;
+   end;
+end;
+
+// SetBeforeRender
+//
+procedure TGLMemoryViewer.SetBeforeRender(const val : TNotifyEvent);
+begin
+   FBuffer.BeforeRender:=val;
+end;
+
+// GetBeforeRender
+//
+function TGLMemoryViewer.GetBeforeRender : TNotifyEvent;
+begin
+   Result:=FBuffer.BeforeRender;
+end;
+
+// SetPostRender
+//
+procedure TGLMemoryViewer.SetPostRender(const val : TNotifyEvent);
+begin
+   FBuffer.PostRender:=val;
+end;
+
+// GetPostRender
+//
+function TGLMemoryViewer.GetPostRender : TNotifyEvent;
+begin
+   Result:=FBuffer.PostRender;
+end;
+
+// SetAfterRender
+//
+procedure TGLMemoryViewer.SetAfterRender(const val : TNotifyEvent);
+begin
+   FBuffer.AfterRender:=val;
+end;
+
+// GetAfterRender
+//
+function TGLMemoryViewer.GetAfterRender : TNotifyEvent;
+begin
+   Result:=FBuffer.AfterRender;
+end;
+
+// SetCamera
+//
+procedure TGLMemoryViewer.SetCamera(const val : TGLCamera);
+begin
+   FBuffer.Camera:=val;
+end;
+
+// GetCamera
+//
+function TGLMemoryViewer.GetCamera : TGLCamera;
+begin
+   Result:=FBuffer.Camera;
+end;
+
+// SetBuffer
+//
+procedure TGLMemoryViewer.SetBuffer(const val : TGLSceneBuffer);
+begin
+   FBuffer.Assign(val);
+end;
+
+// DoBufferChange
+//
+procedure TGLMemoryViewer.DoBufferChange(Sender : TObject);
+begin
+   // nothing, yet
+end;
+
+// DoBufferStructuralChange
+//
+procedure TGLMemoryViewer.DoBufferStructuralChange(Sender : TObject);
+begin
+   FBuffer.DestroyRC;
+end;
+
+// SetWidth
+//
+procedure TGLMemoryViewer.SetWidth(const val : Integer);
+begin
+   if val<>FWidth then begin
+      FWidth:=val;
+      if FWidth<1 then FWidth:=1;
+      DoBufferStructuralChange(Self);
+   end;
+end;
+
+// SetHeight
+//
+procedure TGLMemoryViewer.SetHeight(const val : Integer);
+begin
+   if val<>FHeight then begin
+      FHeight:=val;
+      if FHeight<1 then FHeight:=1;
+      DoBufferStructuralChange(Self);
+   end;
+end;
+
+// ------------------
+// ------------------ TGLSceneViewer ------------------
+// ------------------
+
+// Create
+//
+constructor TGLSceneViewer.Create(AOwner: TComponent);
+begin
+   FIsOpenGLAvailable:=InitOpenGL;
+   inherited Create(AOwner);
+   ControlStyle:=[csClickEvents, csDoubleClicks, csOpaque, csCaptureMouse];
+   if csDesigning in ComponentState then ControlStyle:=ControlStyle + [csFramed];
+   Width:=100;
+   Height:=100;
+   FVSync:=vsmNoSync;
+   FBuffer:=TGLSceneBuffer.Create(Self);
+   FBuffer.BeforeRender:=DoBeforeRender;
+   FBuffer.OnChange:=DoBufferChange;
+   FBuffer.OnStructuralChange:=DoBufferStructuralChange;
+end;
+
+// Destroy
+//
+destructor TGLSceneViewer.Destroy;
+begin
+   FBuffer.Free;
+   inherited Destroy;
+end;
+
+// Notification
+//
+procedure TGLSceneViewer.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   inherited;
+   if (Operation = opRemove) and (AComponent = Camera) then
+      Camera:=nil;
+end;
+
+// SetPostRender
+//
+procedure TGLSceneViewer.SetPostRender(const val : TNotifyEvent);
+begin
+   FBuffer.PostRender:=val;
+end;
+
+// GetPostRender
+//
+function TGLSceneViewer.GetPostRender : TNotifyEvent;
+begin
+   Result:=FBuffer.PostRender;
+end;
+
+// SetAfterRender
+//
+procedure TGLSceneViewer.SetAfterRender(const val : TNotifyEvent);
+begin
+   FBuffer.AfterRender:=val;
+end;
+
+// GetAfterRender
+//
+function TGLSceneViewer.GetAfterRender : TNotifyEvent;
+begin
+   Result:=FBuffer.AfterRender;
+end;
+
+// SetCamera
+//
+procedure TGLSceneViewer.SetCamera(const val : TGLCamera);
+begin
+   FBuffer.Camera:=val;
+end;
+
+// GetCamera
+//
+function TGLSceneViewer.GetCamera : TGLCamera;
+begin
+   Result:=FBuffer.Camera;
+end;
+
+// SetBuffer
+//
+procedure TGLSceneViewer.SetBuffer(const val : TGLSceneBuffer);
+begin
+   FBuffer.Assign(val);
+end;
+
+// CreateParams
+//
+procedure TGLSceneViewer.CreateParams(var Params: TCreateParams);
+begin
+   inherited CreateParams(Params);
+   with Params do begin
+      Style:=Style or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;
+      WindowClass.Style:=CS_VREDRAW or CS_HREDRAW or CS_OWNDC;
+   end;
+end;
+
+// CreateWnd
+//
+procedure TGLSceneViewer.CreateWnd;
+begin
+   inherited CreateWnd;
+   if IsOpenGLAvailable then begin
+      // initialize and activate the OpenGL rendering context
+      // need to do this only once per window creation as we have a private DC
+      FBuffer.Resize(Self.Width, Self.Height);
+      FOwnDC:=GetDC(Handle);
+      FBuffer.CreateRC(FOwnDC, False);
+   end;
+end;
+
+// DestroyWindowHandle
+//
+procedure TGLSceneViewer.DestroyWindowHandle;
+begin
+   FBuffer.DestroyRC;
+   if FOwnDC<>0 then begin
+      ReleaseDC(Handle, FOwnDC);
+      FOwnDC:=0;
+   end;
+   inherited;
+end;
+
+// WMEraseBkgnd
+//
+procedure TGLSceneViewer.WMEraseBkgnd(var Message: TWMEraseBkgnd);
+begin
+   if IsOpenGLAvailable then
+      Message.Result:=1
+   else inherited; 
+end;
+
+// WMSize
+//
+procedure TGLSceneViewer.WMSize(var Message: TWMSize);
+begin
+   inherited;
+   FBuffer.Resize(Message.Width, Message.Height);
+end;
+
+// WMPaint
+//
+procedure TGLSceneViewer.WMPaint(var Message: TWMPaint);
+var
+   PS : TPaintStruct;
+begin
+   BeginPaint(Handle, PS);
+   try
+      if IsOpenGLAvailable then
+         FBuffer.Render;
+   finally
+      EndPaint(Handle, PS);
+      Message.Result:=0;
+   end;
+end;
+
+// WMDestroy
+//
+procedure TGLSceneViewer.WMDestroy(var Message: TWMDestroy);
+begin
+   FBuffer.DestroyRC;
+   if FOwnDC<>0 then begin
+      ReleaseDC(Handle, FOwnDC);
+      FOwnDC:=0;
+   end;
+   inherited;
+end;
+
+// Loaded
+//
+procedure TGLSceneViewer.Loaded;
+begin
+   inherited Loaded;
+   // initiate window creation
+   HandleNeeded;
+end;
+
+// DoBeforeRender
+//
+procedure TGLSceneViewer.DoBeforeRender(Sender : TObject);
+var
+   i : Integer;
+begin
+   if WGL_EXT_swap_control then begin
+      i:=wglGetSwapIntervalEXT;
+      case VSync of
+         vsmSync    : if i<>1 then wglSwapIntervalEXT(1);
+         vsmNoSync  : if i<>0 then wglSwapIntervalEXT(0);
+      else
+         Assert(False);
+      end;
+   end;
+   if Assigned(FBeforeRender) then
+      FBeforeRender(Self);
+end;
+
+// DoBufferChange
+//
+procedure TGLSceneViewer.DoBufferChange(Sender : TObject);
+begin
    Invalidate;
+end;
+
+// DoBufferStructuralChange
+//
+procedure TGLSceneViewer.DoBufferStructuralChange(Sender : TObject);
+begin
+   RecreateWnd;
+end;
+
+// FramesPerSecond
+//
+function TGLSceneViewer.FramesPerSecond : Single;
+begin
+   Result:=FBuffer.FramesPerSecond;
+end;
+
+// ResetPerformanceMonitor
+//
+procedure TGLSceneViewer.ResetPerformanceMonitor;
+begin
+   FBuffer.ResetPerformanceMonitor;
 end;
 
 //------------------------------------------------------------------------------
@@ -6224,7 +6532,7 @@ initialization
 //------------------------------------------------------------------------------
 
    RegisterClasses([TGLLightSource, TGLCamera, TGLProxyObject, TGLSceneViewer,
-                    TGLScene, TDirectOpenGL]);
+                    TGLScene, TDirectOpenGL, TGLMemoryViewer]);
 
    // preparation for high resolution timer
    if not QueryPerformanceFrequency(vCounterFrequency) then

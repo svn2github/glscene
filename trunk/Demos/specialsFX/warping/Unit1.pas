@@ -142,7 +142,7 @@ var
    bmp32 : TGLBitmap32;
    bmp : TBitmap;
 begin
-   bmp32:=GLSceneViewer.CreateSnapShot;
+   bmp32:=GLSceneViewer.Buffer.CreateSnapShot;
    try
       if SaveDialog.Execute then begin
          bmp:=bmp32.Create32BitsBitmap;

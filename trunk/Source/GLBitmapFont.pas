@@ -463,7 +463,7 @@ begin
    bitmap.Free;
    with bitmap32 do begin
       SetAlphaTransparentForColor(Data[Width*(Height-1)]);
-      RegisterAsOpenGLTexture(MinFilter);
+      RegisterAsOpenGLTexture(MinFilter, GL_RGBA);
       FTextureWidth:=Width;
       FTextureHeight:=Height;
       Free;

@@ -2,6 +2,7 @@
 {: Information sur le driver OpenGL courant<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>24/08/01 - Egg - Compatibility with new Buffer classes
 		<li>17/04/00 - Egg - Creation of header, minor layout changes
 	</ul></font>
 }
@@ -13,6 +14,7 @@ uses Windows, Forms, GLScene, Classes, Controls, Buttons, StdCtrls, ComCtrls,
      CommCtrl, ExtCtrls, Graphics;
 
 type
+
   TInfoForm = class(TForm)
     CloseButton: TSpeedButton;
     PageControl: TPageControl;
@@ -78,7 +80,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
   public
-    procedure GetInfoFrom(AScene: TGLSceneViewer);
+    procedure GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
   end;
 
 implementation
@@ -96,79 +98,82 @@ begin
   Close;
 end;
 
-//------------------------------------------------------------------------------
+// GetInfoFrom
+//
+procedure TInfoForm.GetInfoFrom(aSceneBuffer : TGLSceneBuffer);
+const
+   DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
+var
+   pfd            : TPixelformatDescriptor;
+	i, pixelFormat : Integer;
+	extStr         : String;
 
-procedure TInfoForm.GetInfoFrom(AScene: TGLSceneViewer);
+   procedure IntLimitToLabel(const aLabel : TLabel; const aLimit : TLimitType);
+   begin
+      aLabel.Caption:=IntToStr(aSceneBuffer.LimitOf[aLimit]);
+   end;
 
-const DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
-
-var pfd            : TPixelformatDescriptor;
-	 I, PixelFormat : Integer;
-	 ExtStr         : String;
 begin
-	Caption:=Caption+' (current context in '+AScene.name+')';
-	with AScene do begin
-	 // common properties
-	 VendorLabel.Caption:=StrPas(PChar(glGetString(GL_VENDOR)));
-	 PixelFormat:=GetPixelFormat(Canvas.Handle);
-	 DescribePixelFormat(Canvas.Handle,PixelFormat,SizeOf(pfd), PFD);
-	 // figure out the driver type
-	 if (DRIVER_MASK and pfd.dwFlags) = 0 then AccLabel.Caption:='Installable Client Driver'
-		else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
-		  else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
-	 VersionLabel.Caption:=StrPas(PChar(glGetString(GL_VERSION)));
-    ExtStr:=PChar(glGetString(GL_EXTENSIONS));
-    Extensions.Clear;
-    while Length(ExtStr) > 0 do
-	 begin
-      I:=Pos(' ',ExtStr);
-		if I = 0 then I:=255;
-		Extensions.Lines.Add(Copy(ExtStr,1,I-1));
-		Delete(ExtStr,1,I);
-    end;
-	 if DoubleBuffered then
-    begin
-      DoubleLabel.Caption:='yes';
-		CopyLabel.Caption:='';
-      if (pfd.dwFlags and PFD_SWAP_EXCHANGE) > 0 then CopyLabel.Caption:='exchange';
-      if Length(CopyLabel.Caption) > 0 then CopyLabel.Caption:=CopyLabel.Caption+', ';
-      if (pfd.dwFlags and PFD_SWAP_COPY) > 0 then CopyLabel.Caption:=CopyLabel.Caption+'copy';
-      if Length(CopyLabel.Caption) = 0 then CopyLabel.Caption:='no info available';
-    end
-	 else
-    begin
-		DoubleLabel.Caption:='no';
-		CopyLabel.Caption:='n/a';
-	 end;
-    if (pfd.dwFlags and PFD_STEREO) > 0 then StereoLabel.Caption:='yes'
-													 else StereoLabel.Caption:='no';
-    // buffer and pixel depths
-    ColorLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
-										 [LimitOf[limRedBits], LimitOf[limGreenBits],
-										  LimitOf[limBlueBits], LimitOf[limAlphaBits]]);
-    DepthLabel.Caption:=Format('%d bits',[LimitOf[limDepthBits]]);
-    StencilLabel.Caption:=Format('%d bits',[LimitOf[limStencilBits]]);
-    AccumLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
-                               [LimitOf[limAccumRedBits],LimitOf[limAccumGreenBits],
-										  LimitOf[limAccumBlueBits],LimitOf[limAccumAlphaBits]]);
-    AuxLabel.Caption:=IntToStr(LimitOf[limAuxBuffers]);
-	 SubLabel.Caption:=IntToStr(LimitOf[limSubpixelBits]);
-	 OverlayLabel.Caption:=IntToStr(pfd.bReserved and 7);
-	 UnderlayLabel.Caption:=IntToStr(pfd.bReserved shr 3);
+	Caption:=Caption+' (current context in '+(aSceneBuffer.Owner as TComponent).Name+')';
+	with aSceneBuffer do begin
+      // common properties
+      VendorLabel.Caption:=StrPas(PChar(glGetString(GL_VENDOR)));
+      PixelFormat:=GetPixelFormat(Canvas.Handle);
+      DescribePixelFormat(Canvas.Handle,PixelFormat,SizeOf(pfd), PFD);
+      // figure out the driver type
+      if (DRIVER_MASK and pfd.dwFlags) = 0 then AccLabel.Caption:='Installable Client Driver'
+        else if (DRIVER_MASK and pfd.dwFlags ) = DRIVER_MASK then AccLabel.Caption:='Mini-Client Driver'
+          else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then AccLabel.Caption:='Generic Software Driver';
+      VersionLabel.Caption:=StrPas(PChar(glGetString(GL_VERSION)));
+      ExtStr:=PChar(glGetString(GL_EXTENSIONS));
+      Extensions.Clear;
+      while Length(ExtStr) > 0 do begin
+        I:=Pos(' ',ExtStr);
+        if I = 0 then I:=255;
+        Extensions.Lines.Add(Copy(ExtStr,1,I-1));
+        Delete(ExtStr,1,I);
+      end;
+      if DoubleBuffered then begin
+        DoubleLabel.Caption:='yes';
+        CopyLabel.Caption:='';
+        if (pfd.dwFlags and PFD_SWAP_EXCHANGE) > 0 then CopyLabel.Caption:='exchange';
+        if Length(CopyLabel.Caption) > 0 then CopyLabel.Caption:=CopyLabel.Caption+', ';
+        if (pfd.dwFlags and PFD_SWAP_COPY) > 0 then CopyLabel.Caption:=CopyLabel.Caption+'copy';
+        if Length(CopyLabel.Caption) = 0 then CopyLabel.Caption:='no info available';
+      end else begin
+        DoubleLabel.Caption:='no';
+        CopyLabel.Caption:='n/a';
+      end;
+      if (pfd.dwFlags and PFD_STEREO) > 0 then
+         StereoLabel.Caption:='yes'
+      else StereoLabel.Caption:='no';
+      // buffer and pixel depths
+      ColorLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
+                                 [LimitOf[limRedBits], LimitOf[limGreenBits],
+                                  LimitOf[limBlueBits], LimitOf[limAlphaBits]]);
+      DepthLabel.Caption:=Format('%d bits', [LimitOf[limDepthBits]]);
+      StencilLabel.Caption:=Format('%d bits', [LimitOf[limStencilBits]]);
+      AccumLabel.Caption:=Format('red: %d,  green: %d,  blue: %d,  alpha: %d  bits',
+                                 [LimitOf[limAccumRedBits],LimitOf[limAccumGreenBits],
+                                  LimitOf[limAccumBlueBits],LimitOf[limAccumAlphaBits]]);
+      IntLimitToLabel(AuxLabel, limAuxBuffers);
+      IntLimitToLabel(SubLabel, limSubpixelBits);
+      OverlayLabel.Caption:=IntToStr(pfd.bReserved and 7);
+      UnderlayLabel.Caption:=IntToStr(pfd.bReserved shr 3);
 
-	 // Maximum values
-    ClipLabel.Caption:=IntToStr(LimitOf[limClipPlanes]);
-    EvalLabel.Caption:=IntToStr(LimitOf[limEvalOrder]);
-    LightLabel.Caption:=IntToStr(LimitOf[limLights]);
-    ListLabel.Caption:=IntToStr(LimitOf[limListNesting]);
-    ModelLabel.Caption:=IntToStr(LimitOf[limModelViewStack]);
-    NameLabel.Caption:=IntToStr(LimitOf[limNameStack]);
-    PixelLabel.Caption:=IntToStr(LimitOf[limPixelMapTable]);
-	 ProjLabel.Caption:=IntToStr(LimitOf[limProjectionStack]);
-	 TexSizeLabel.Caption:=IntToStr(LimitOf[limTextureSize]);
-    TexStackLabel.Caption:=IntToStr(LimitOf[limTextureStack]);
-	 ViewLabel.Caption:=IntToStr(LimitOf[limViewportDims]);
-  end;
+      // Maximum values
+      IntLimitToLabel(ClipLabel, limClipPlanes);
+      IntLimitToLabel(EvalLabel, limEvalOrder);
+      IntLimitToLabel(LightLabel, limLights);
+      IntLimitToLabel(ListLabel, limListNesting);
+      IntLimitToLabel(ModelLabel, limModelViewStack);
+      IntLimitToLabel(NameLabel, limNameStack);
+      IntLimitToLabel(PixelLabel, limPixelMapTable);
+      IntLimitToLabel(ProjLabel, limProjectionStack);
+      IntLimitToLabel(TexSizeLabel, limTextureSize);
+      IntLimitToLabel(TexStackLabel, limTextureStack);
+      IntLimitToLabel(ViewLabel, limViewportDims);
+   end;
 end;
 
 //------------------------------------------------------------------------------

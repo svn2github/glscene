@@ -43,7 +43,7 @@ uses Geometry;
 
 procedure TForm1.MoveCenterNodeTo(x, y : Integer);
 begin
-   Lines1.Nodes[1].AsAffineVector:=GLSceneViewer1.ScreenToWorld(x, y);
+   Lines1.Nodes[1].AsAffineVector:=GLSceneViewer1.Buffer.ScreenToWorld(x, y);
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
