@@ -99,7 +99,6 @@ type
          
          property ObjectsSorting;
          property Position;
-         property TransformationMode;
          property Visible;
          property OnProgress;
          property Behaviours;
