@@ -70,13 +70,11 @@ uses
 
   {: Note that this method requires you to manually deallocate vertices and
     indices when you're done with the trimesh }
-  {$if SizeOf(TdReal)=SizeOf(Single)}
   function CreateTriMeshFromBaseMesh(
     GLBaseMesh : TGLBaseMesh;
     Space : PdxSpace;
     var Vertices : PdVector3Array;
     var Indices : PdIntegerArray): PdxGeom;
-  {$ifend}
 
 
   function GLMatrixFromGeom(Geom : PdxGeom) : TMatrix;
@@ -424,7 +422,6 @@ begin
   end;
 end;
 
-{$if SizeOf(TdReal)=SizeOf(Single)}
 function CreateTriMeshFromBaseMesh(
     GLBaseMesh : TGLBaseMesh;
     Space : PdxSpace;
@@ -440,6 +437,9 @@ var
   iMO : integer;
   TriMeshData : PdxTriMeshData;
 begin
+   if not Assigned(EXT_dCreateTriMesh) then
+      raise Exception.Create('TriCollider not supported by ODE.DLL');
+
   OffsetList := nil;
   FaceExtractor := TFaceExtractor.Create(GLBaseMesh);
 
@@ -498,7 +498,6 @@ begin
       OffsetList.Free;
   end;
 end;
-{$ifend}
 
 procedure CopyBodyFromCube(Body : PdxBody; var Geom : PdxGeom; Cube : TGLCube; Space : PdxSpace);
 var
