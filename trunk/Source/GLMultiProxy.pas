@@ -169,7 +169,7 @@ end;
 //
 function TGLMultiProxyMaster.OwnerObject : TGLMultiProxy;
 begin
-   Result:=TGLMultiProxy(TGLMultiProxyMasters(Collection).Owner);
+   Result:=TGLMultiProxy(TGLMultiProxyMasters(Collection).GetOwner);
 end;
 
 // NotifyChange
