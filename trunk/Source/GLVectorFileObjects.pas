@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>30/03/04 - MRQZZZ - Added AutoScaling property to GLBaseMesh to scale a mesh after loading (like Autocentering) 
       <li>30/03/04 - EG - Added TSkeletonBoneList.BoneCount
       <li>23/03/04 - SG - External positions added to skeleton blended lerps.
                           AutoUpdate flag added to skeleton collider list.
@@ -1129,8 +1130,10 @@ type
          FOverlaySkeleton : Boolean;
          FIgnoreMissingTextures : Boolean;
          FAutoCentering : TMeshAutoCenterings;
+         FAutoScaling: TGLCoordinates;
          FMaterialLibraryCachesPrepared : Boolean;
          FConnectivity : TObject;
+
 
       protected
          { Protected Declarations }
@@ -1141,6 +1144,7 @@ type
          procedure SetLightmapLibrary(const val : TGLMaterialLibrary);
          procedure SetNormalsOrientation(const val : TMeshNormalsOrientation);
          procedure SetOverlaySkeleton(const val : Boolean);
+         procedure SetAutoScaling(const Value: TGLCoordinates);
 
          procedure DestroyHandle; override;
 
@@ -1208,7 +1212,9 @@ type
          {: Invoked after a mesh has been loaded.<p>
             Should auto-center according to the AutoCentering property. }
          procedure PerformAutoCentering; dynamic;
-
+         {: Invoked after a mesh has been loaded.<p>
+            Should auto-scale the vertices of the meshobjects to AutoScaling the property. }
+         procedure PerformAutoScaling; dynamic;
          {: Loads a vector file.<p>
             A vector files (for instance a ".3DS") stores the definition of
             a mesh as well as materials property.<p>
@@ -1243,6 +1249,13 @@ type
             If you want to alter mesh data, use direct manipulation methods
             (on the TMeshObjects). }
          property AutoCentering : TMeshAutoCenterings read FAutoCentering write FAutoCentering default [];
+
+         {: Scales vertices to a AutoScaling.<p>
+            AutoScaling is performed <b>only</b> after loading a mesh, it has
+            no effect on already loaded mesh data or when adding from a file/stream.<br>
+            If you want to alter mesh data, use direct manipulation methods
+            (on the TMeshObjects). }
+         property AutoScaling : TGLCoordinates read FAutoScaling write FAutoScaling;
 
          {: Material library where mesh materials will be stored/retrieved.<p>
             If this property is not defined or if UseMeshMaterials is false,
@@ -1310,6 +1323,7 @@ type
       published
          { Published Declarations }
          property AutoCentering;
+         property AutoScaling;
          property MaterialLibrary;
          property LightmapLibrary;
          property UseMeshMaterials;
@@ -5208,6 +5222,7 @@ begin
    FUseMeshMaterials:=True;
    FAutoCentering:=[];
    FAxisAlignedDimensionsCache[0]:=-1;
+   FAutoScaling:=TGLCoordinates.CreateInitialized(Self, XYZWHmgVector, csPoint);   
 end;
 
 // Destroy
@@ -5234,6 +5249,7 @@ begin
       FOverlaySkeleton:=TGLBaseMesh(Source).FOverlaySkeleton;
       FIgnoreMissingTextures:=TGLBaseMesh(Source).FIgnoreMissingTextures;
       FAutoCentering:=TGLBaseMesh(Source).FAutoCentering;
+      FAutoScaling:=TGLBaseMesh(Source).FAutoScaling;
       FSkeleton.Assign(TGLBaseMesh(Source).FSkeleton);
       FMeshObjects.Assign(TGLBaseMesh(Source).FMeshObjects);
    end;
@@ -5280,6 +5296,7 @@ begin
       finally
          newVectorFile.Free;
       end;
+      PerformAutoScaling;
       PerformAutoCentering;
       PrepareMesh;
    end;
@@ -5449,6 +5466,14 @@ begin
    end;
 end;
 
+// SetAutoScaling
+//
+procedure TGLBaseMesh.SetAutoScaling(const Value: TGLCoordinates);
+begin
+  FAutoScaling.SetPoint(Value.DirectX, Value.DirectY, Value.DirectZ);
+end;
+
+
 // Notification
 //
 procedure TGLBaseMesh.Notification(AComponent: TComponent; Operation: TOperation);
@@ -5534,6 +5559,24 @@ begin
    end;
    MeshObjects.Translate(delta);
 end;
+
+// PerformAutoScaling
+//
+procedure TGLBaseMesh.PerformAutoScaling;
+var
+   i: integer;
+   vScal : TAffineFltVector;
+begin
+     if (FAutoScaling.DirectX<>1) or (FAutoScaling.DirectY<>1) or (FAutoScaling.DirectZ<>1) then
+     begin
+          MakeVector(vScal,FAutoScaling.DirectX,FAutoScaling.DirectY,FAutoScaling.DirectZ);
+          for i := 0 to MeshObjects.Count-1 do
+          begin
+               MeshObjects[i].Vertices.Scale(vScal);
+          end;
+     end;
+end;
+
 
 // PrepareMesh
 //
@@ -6767,6 +6810,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
