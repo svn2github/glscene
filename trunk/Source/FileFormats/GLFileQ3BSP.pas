@@ -45,7 +45,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses Q3BSP, VectorGeometry, VectorLists, SysUtils, GLBSP, GLTexture, GLGraphics,
-   Graphics, GLState, GLUtils;
+   GLCrossPlatform, GLState, GLUtils;
 
 // ------------------
 // ------------------ TGLSTLVectorFile ------------------
@@ -106,7 +106,7 @@ var
    i, j, n, y : Integer;
    facePtr : PBSPFace;
    lightmapLib : TGLMaterialLibrary;
-   lightmapBmp : TBitmap;
+   lightmapBmp : TGLBitmap;
    libMat : TGLLibMaterial;
    bspLightMap : PBSPLightmap;
    plane : THmgPlane;
@@ -128,9 +128,9 @@ begin
       if Assigned(lightmapLib) and vGLFileQ3BSPLoadMaterials then begin
          // import lightmaps
          n:=bsp.NumOfLightmaps;
-         lightmapBmp:=TBitmap.Create;
+         lightmapBmp:=TGLBitmap.Create;
          try
-            lightmapBmp.PixelFormat:=pf24bit;
+            lightmapBmp.PixelFormat:=glpf24bit;
             lightmapBmp.Width:=128;
             lightmapBmp.Height:=128;
             for i:=0 to n-1 do begin
