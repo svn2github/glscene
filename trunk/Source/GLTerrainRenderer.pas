@@ -342,6 +342,7 @@ begin
    for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
       for k:=Count-1 downto 0 do begin
          hd:=THeightData(List[k]);
+         OnTileDestroyed(hd);
          hd.OnDestroy:=nil;
          hd.Release;
       end;
@@ -674,7 +675,6 @@ begin
          hd:=THeightData(hashList.List[j]);
          if hd.Tag=0 then begin
             hashList.Delete(j);
-            hd.OnDestroy:=nil;
             hd.Release;
          end;
       end;
