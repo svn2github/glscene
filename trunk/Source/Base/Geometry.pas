@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/05/03 - EG - All vSIMD asm tests should now be under GEOMETRY_NO_ASM control
       <li>20/05/03 - EG - Added MakeParallelProjectionMatrix
       <li>13/05/03 - EG - 3DNow! optimization for ClampValue
       <li>30/04/03 - EG - Hyperbolic trig functions (Aaron Hochwimmer)
@@ -6408,7 +6409,7 @@ end;
 // RSqrt
 //
 function RSqrt(v : Single) : Single;
-{$ifdef GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -6442,7 +6443,7 @@ end;
 // ISqrt
 //
 function ISqrt(i : Integer) : Integer; register;
-{$ifdef GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
       push     eax
       test     vSIMD, 1
@@ -6471,7 +6472,7 @@ end;
 // ILength
 //
 function ILength(x, y : Integer) : Integer;
-{$ifdef GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
       push     edx
       push     eax
@@ -6493,7 +6494,7 @@ end;
 // ILength
 //
 function ILength(x, y, z : Integer) : Integer;
-{$ifdef GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
       push     ecx
       push     edx
@@ -6520,7 +6521,7 @@ end;
 // RLength
 //
 function RLength(x, y : Single) : Single;
-{$ifdef GEOMETRY_NO_ASM}
+{$ifndef GEOMETRY_NO_ASM}
 asm
       fld  x
       fmul x
@@ -7082,6 +7083,7 @@ end;
 //
 procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
                           var factor : Single); register;
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -7139,6 +7141,13 @@ asm
       fstp  dword ptr [eax]
 
 @@End:
+{$else}
+var
+   i : Integer;
+begin
+   for i:=0 to nb-1 do
+      values[i]:=values[i]*factor;
+{$endif}
 end;
 
 // ScaleFloatArray (array)
@@ -7154,6 +7163,7 @@ end;
 //
 procedure OffsetFloatArray(values : PSingleArray; nb : Integer;
                            var delta : Single);
+{$ifndef GEOMETRY_NO_ASM}
 asm
       test vSIMD, 1
       jz @@FPU
@@ -7211,6 +7221,13 @@ asm
       fstp  dword ptr [eax]
 
 @@End:
+{$else}
+var
+   i : Integer;
+begin
+   for i:=0 to nb-1 do
+      values[i]:=values[i]+delta;
+{$endif}
 end;
 
 // ScaleFloatArray (array)
@@ -7231,11 +7248,9 @@ end;
 
 // MaxXYZComponent
 //
-function MaxXYZComponent(const v: TAffineVector): single; overload;
+function MaxXYZComponent(const v : TAffineVector): Single; overload;
 begin
-     result:= v[0];
-     if v[1] > result then result:= v[1];
-     if v[2] > result then result:= v[2];
+   Result:=MaxFloat(v[0], v[1], v[2]);
 end;
 
 // MinXYZComponent
@@ -7257,11 +7272,9 @@ end;
 
 // MinXYZComponent
 //
-function MinXYZComponent(const v: TAffineVector): single; overload;
+function MinXYZComponent(const v : TAffineVector) : Single; overload;
 begin
-     result:= v[0];
-     if v[1] < result then result:= v[1];
-     if v[2] < result then result:= v[2];
+   Result:=MinFloat(v[0], v[1], v[2]);
 end;
 
 // MaxAbsXYZComponent
@@ -7358,7 +7371,6 @@ begin
 
       pop ebp
       ret $C
-
 @@FPU:
    end;
 {$endif}
@@ -7377,8 +7389,6 @@ begin
       Result:=aMin
    else Result:=aValue;
 end;
-
-//----------------- miscellaneous vector functions ---------------------------------------------------------------------
 
 // MakeAffineDblVector
 //
