@@ -206,7 +206,7 @@ resourcestring
    cGLSceneEditor = 'GLScene Editor';
 
 const
-   cRegistryKey = 'Software/GLScene.org/GLSceneEdit';
+   cRegistryKey = 'Software\GLScene.org\GLSceneEdit';
 
 var
 	vGLSceneEditorForm : TGLSceneEditorForm;
