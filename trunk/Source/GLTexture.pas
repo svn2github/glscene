@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>24/07/02 - EG - Added TGLLibMaterials.DeleteUnusedMaterials
       <li>13/07/02 - EG - Improved materials when lighting is off
       <li>10/07/02 - EG - Added basic protection against cyclic material refs
       <li>08/07/02 - EG - Multipass support
@@ -1186,6 +1187,9 @@ type
          function MakeUniqueName(const nameRoot : TGLLibMaterialName) : TGLLibMaterialName;
          function GetLibMaterialByName(const name : TGLLibMaterialName) : TGLLibMaterial;
          procedure SetNamesToTStrings(aStrings : TStrings);
+         {: Deletes all the unused materials in the collection.<p>
+            A material is considered unused if no other material references it. }
+         procedure DeleteUnusedMaterials;
    end;
 
    // TGLMaterialLibrary
@@ -3984,6 +3988,26 @@ begin
       end;
       EndUpdate;
    end;
+end;
+
+// DeleteUnusedMaterials
+//
+procedure TGLLibMaterials.DeleteUnusedMaterials;
+var
+   i : Integer;
+   gotNone : Boolean;
+begin
+   BeginUpdate;
+   repeat
+      gotNone:=True;
+      for i:=Count-1 downto 0 do begin
+         if TGLLibMaterial(inherited Items[i]).userList.Count=0 then begin
+            TGLLibMaterial(inherited Items[i]).Free;
+            gotNone:=False;
+         end;
+      end;
+   until gotNone;
+   EndUpdate;
 end;
 
 // ------------------

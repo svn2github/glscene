@@ -126,8 +126,6 @@ procedure TGLShadowPlane.DoRender(var rci : TRenderContextInfo;
 var
    oldProxySubObject, oldIgnoreMaterials : Boolean;
    curMat, shadowMat : TMatrix;
-   x, y, d : Single;
-   i : Integer;
 begin
    if FRendering then Exit;
    FRendering:=True;
