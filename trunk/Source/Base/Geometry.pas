@@ -528,6 +528,8 @@ function TexPointCombine(const t1, t2 : TTexPoint; f1, f2 : Single) : TTexPoint;
 function VectorCombine(const V1, V2: TAffineVector; const F1, F2: Single): TAffineVector; overload;
 //: Makes a linear combination of three vectors and return the result
 function VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single): TAffineVector; overload;
+procedure VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single; var vr : TAffineVector); overload;
+
 //: Combine the first vector with the second : vr:=vr+v*f
 procedure CombineVector(var vr : TVector; const v : TVector; var f : Single); overload;
 //: Combine the first vector with the second : vr:=vr+v*f
@@ -2475,13 +2477,22 @@ begin
    Result[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]);
 end;
 
-// VectorCombine3
+// VectorCombine3 (func)
 //
 function VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single): TAffineVector;
 begin
   Result[X]:=(F1 * V1[X]) + (F2 * V2[X]) + (F3 * V3[X]);
   Result[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]) + (F3 * V3[Y]);
   Result[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]) + (F3 * V3[Z]);
+end;
+
+// VectorCombine3 (vector)
+//
+procedure VectorCombine3(const V1, V2, V3: TAffineVector; const F1, F2, F3: Single; var vr : TAffineVector);
+begin
+   vr[X]:=(F1 * V1[X]) + (F2 * V2[X]) + (F3 * V3[X]);
+   vr[Y]:=(F1 * V1[Y]) + (F2 * V2[Y]) + (F3 * V3[Y]);
+   vr[Z]:=(F1 * V1[Z]) + (F2 * V2[Z]) + (F3 * V3[Z]);
 end;
 
 // CombineVector
