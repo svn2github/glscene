@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>26/11/04 - MRQZZZ - by Uwe Raabe : fixed TBaseMeshObject.BuildNormals
       <li>26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order to prevent rendering of the GLBaseMesh but allowing the rendering of it's children
       <li>25/11/04 - SG - Fixed memory leak in TMeshObject (kenguru)
       <li>24/11/04 - MF - Added OctreePointInMesh
@@ -2045,18 +2046,19 @@ procedure TBaseMeshObject.BuildNormals(vertexIndices : TIntegerList; mode : TMes
 var
    i, base : Integer;
    n : TAffineVector;
-   newNormals : TList;
+   newNormals : TIntegerList;
 
-   procedure TranslateNewNormal(vertexIndex : Integer; const delta : TAffineVector);
+   function TranslateNewNormal(vertexIndex : Integer; const delta :
+       TAffineVector): Integer;
    var
       pv : PAffineVector;
    begin
-      pv:=PAffineVector(newNormals[vertexIndex]);
-      if not Assigned(pv) then begin
-         Normals.Add(NullVector);
-         pv:=@Normals.List[Normals.Count-1];
-         newNormals[vertexIndex]:=pv;
+      result := newNormals[vertexIndex];
+      if result < base then begin
+         result := Normals.Add(NullVector);
+         newNormals[vertexIndex]:=result;
       end;
+      pv:=@Normals.List[result];
       AddVector(pv^, delta);
    end;
 
@@ -2104,8 +2106,8 @@ begin
    end else begin
       // add new normals
       base:=Normals.Count;
-      newNormals:=TList.Create;
-      newNormals.Count:=Vertices.Count;
+      newNormals:=TIntegerList.Create;
+      newNormals.AddSerie(-1, 0, Vertices.Count);
       case mode of
          momTriangles : begin
             i:=0; while i<=vertexIndices.Count-3 do begin
@@ -2113,11 +2115,9 @@ begin
                   CalcPlaneNormal(Items[vertexIndices[i+0]], Items[vertexIndices[i+1]],
                                   Items[vertexIndices[i+2]], n);
                end;
-               with Normals do begin
-                  TranslateNewNormal(vertexIndices[i+0], n);
-                  TranslateNewNormal(vertexIndices[i+1], n);
-                  TranslateNewNormal(vertexIndices[i+2], n);
-               end;
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+0], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+1], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+2], n));
                Inc(i, 3);
             end;
          end;
@@ -2130,11 +2130,9 @@ begin
                   else CalcPlaneNormal(Items[vertexIndices[i+0]], Items[vertexIndices[i+2]],
                                        Items[vertexIndices[i+1]], n);
                end;
-               with Normals do begin
-                  TranslateNewNormal(vertexIndices[i+0], n);
-                  TranslateNewNormal(vertexIndices[i+1], n);
-                  TranslateNewNormal(vertexIndices[i+2], n);
-               end;
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+0], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+1], n));
+               normalIndices.Add(TranslateNewNormal(vertexIndices[i+2], n));
                Inc(i, 1);
             end;
          end;
@@ -2146,6 +2144,7 @@ begin
       newNormals.Free;
    end;
 end;
+
 
 // ExtractTriangles
 //
