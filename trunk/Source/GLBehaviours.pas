@@ -491,7 +491,6 @@ end;
 procedure TGLBInertia.SurfaceBounce(const surfaceNormal : TVector; restitution : Single);
 var
    f : Single;
-   nonComp, rightVec : TVector;
 begin
    // does the current speed vector comply?
    f:=VectorDotProduct(FTranslationSpeed.AsVector, surfaceNormal);
