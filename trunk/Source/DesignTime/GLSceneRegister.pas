@@ -130,7 +130,7 @@ uses
    GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
    GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
    GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
-   GLWindows, GLShadowPlane, GLWindowsFont, GLLensFlare, GLHeightTileFileHDS
+   GLWindows, GLShadowPlane, GLWindowsFont, GLLensFlare, GLHeightTileFileHDS, GLGui
 {$ifdef WIN32}
    , GLWin32Viewer
 {$endif}
