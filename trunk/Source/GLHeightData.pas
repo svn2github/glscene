@@ -12,9 +12,10 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>10/09/01 - Egg - Added TGLTerrainBaseHDS
-      <li>04/03/01 - Egg - Added InterpolatedHeight
-	   <li>11/02/01 - Egg - Creation
+      <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
+      <li>10/09/01 - EG - Added TGLTerrainBaseHDS
+      <li>04/03/01 - EG - Added InterpolatedHeight
+	   <li>11/02/01 - EG - Creation
 	</ul></font>
 }
 unit GLHeightData;
@@ -334,7 +335,7 @@ type
 	TGLBitmapHDS = class (THeightDataSource)
 	   private
 	      { Private Declarations }
-         FBitmap : TBitmap;
+         FBitmap : Graphics.TBitmap;
          FPicture : TPicture;
 
 	   protected
@@ -399,7 +400,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLMisc, Windows;
+uses SysUtils, Windows, GLMisc;
 
 // ------------------
 // ------------------ THeightDataSourceThread ------------------
@@ -1058,11 +1059,12 @@ procedure TGLBitmapHDS.CreateMonochromeBitmap(size : Integer);
 type
    TLogPal = record
       lpal : TLogPalette;
-      pe : Array[0..255] of TPaletteEntry;
+      pe : array [0..255] of TPaletteEntry;
    end;
 var
    x : Integer;
    logpal : TLogPal;
+   hPal : HPalette;
 begin
    size:=RoundUpToPowerOf2(size);
    FBitmap:=Graphics.TBitmap.Create;
@@ -1079,8 +1081,16 @@ begin
       palVersion:=$300;
       palNumEntries:=256;
    end;
-   FBitmap.Palette:=CreatePalette(logPal.lpal);
-   FBitmap.Canvas.StretchDraw(Rect(0, 0, size, size), Picture.Graphic);
+   hPal:=CreatePalette(logPal.lpal);
+   Assert(hPal<>0);
+   FBitmap.Palette:=hPal;
+   // some picture formats trigger a "change" when drawed
+   Picture.OnChange:=nil;
+   try
+      FBitmap.Canvas.StretchDraw(Rect(0, 0, size-1, size-1), Picture.Graphic);
+   finally
+      Picture.OnChange:=OnPictureChanged;
+   end;
 end;
 
 // FreeMonochromeBitmap
