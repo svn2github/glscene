@@ -1,9 +1,9 @@
 package GLScene6;
 
 {$R *.res}
-{$R '..\Source\GLSceneObjects.dcr'}
-{$R '..\Source\GLSceneVCL.dcr'}
-{$R '..\Source\nonGLSceneVCL.dcr'}
+{$R '..\Source\DesignTime\GLSceneObjects.dcr'}
+{$R '..\Source\DesignTime\GLSceneVCL.dcr'}
+{$R '..\Source\DesignTime\nonGLSceneVCL.dcr'}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
