@@ -17,7 +17,7 @@ uses
   GLObjects, GLShadowPlane, GLWin32Viewer, GLMisc, GLTexture, GLMirror,
   ODEImport, ODEGL, GLCadencer, ExtCtrls, Jpeg, Geometry, GLSkydome,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, StdCtrls, UTheBallStructures,
-  GLParticleFX, KeyBoard, GLSound, GLSMBASS;
+  GLParticleFX, KeyBoard, GLSound, GLSMBASS, Dialogs;
 
 type
    TGameStatus = (gsLevelPreview, gsWarmup, gsPlaying, gsLevelWon, gsLevelLost); 
@@ -52,6 +52,7 @@ type
     DCMapTransparent: TGLDummyCube;
     GLSMBASS: TGLSMBASS;
     SoundLibrary: TGLSoundLibrary;
+    PFXSteam: TGLPolygonPFXManager;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure CadencerProgress(Sender: TObject; const deltaTime,
@@ -92,6 +93,7 @@ type
 
     deflateEnergy : Single;
     deflateVector : TAffineVector;
+    verticalForce : Single;
 
     burnOut : Single;
 
@@ -129,8 +131,8 @@ begin
 
    // initialize world
    dWorldSetGravity(world, 0, 0, 0);
-   dWorldSetCFM(world, 1e-4);
-   dWorldSetERP(world, 0.3);
+   dWorldSetCFM(world, 1e-3);
+   dWorldSetERP(world, 0.4);
 
    planeGeom:=dCreateGeomTransform(space);
    dGeomTransformSetCleanup(planeGeom, 1);
@@ -144,7 +146,7 @@ begin
    if dBoxClass=-1 then
       dBoxClass:=dGeomGetClass(planeGeom);
 
-   currentLevelIdx:=1;
+   currentLevelIdx:=5;
    LoadLevel(ExtractFilePath(Application.ExeName)+Format('Level%.2d.txt', [currentLevelIdx]));
 end;
 
@@ -178,6 +180,12 @@ var
    pt : TProgressTimes;
    sp : TTBSpawnPoint;
 begin
+   if not FileExists(fileName) then begin
+      ShowMessage('Level "'+fileName+'" not available... yet!');
+      Close;
+      Exit;
+   end;
+
    ClearCurrentLevel;
    RandSeed:=0;
    levelWidth:=10;
@@ -394,7 +402,7 @@ procedure TMain.CadencerProgress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
    i : Integer;
-   ballUp, ballDirection : TVector;
+   ballUp, ballDirection, tableUp : TVector;
    pt : TProgressTimes;
    mp : TPoint;
    dmx, dmy : Single;
@@ -404,11 +412,11 @@ begin
    if gameStatus=gsPlaying then begin
       if isMouseDown then begin
          GetCursorPos(mp);
-         d:=0.02/deltaTime;
-         dmx:=ClampValue((mouseDownX-mp.X), -d, d);
-         mouseDownX:=mouseDownX-dmx;
-         dmy:=ClampValue((mp.Y-mouseDownY), -d, d);
-         mouseDownY:=mouseDownY+dmy;
+         d:=ClampValue(200*deltaTime, -1, 1);
+         dmx:=ClampValue((mouseDownX-mp.X)*0.5, -d, d);
+         mouseDownX:=mouseDownX-dmx*2;
+         dmy:=ClampValue((mp.Y-mouseDownY)*0.5, -d, d);
+         mouseDownY:=mouseDownY+dmy*2;
       end else begin
          if IsKeyDown(VK_DOWN) then dmy:=1
          else if IsKeyDown(VK_UP) then dmy:=-1
@@ -418,8 +426,8 @@ begin
          else dmx:=0;
       end;
 
-      tablePitch:=ClampValue(tablePitch+dmx*deltaTime*10, -15, 15);
-      tableRoll:=ClampValue(tableRoll+dmy*deltaTime*10, -15, 15);
+      tablePitch:=ClampValue(tablePitch+dmx*deltaTime*30, -20, 20);
+      tableRoll:=ClampValue(tableRoll+dmy*deltaTime*30, -20, 20);
 
       // update ball position
       PositionSceneObject(DCBallAbsolute, ballGeom);
@@ -467,6 +475,11 @@ begin
 
       // add forces to the ball
       dBodyAddForce(ballBody, 0, -9.81, 0);
+      if verticalForce<>0 then begin
+         tableUp:=VectorScale(DCTable.AbsoluteUp, verticalForce);
+         dBodyAddForce(ballBody, tableUp[0], tableUp[1], tableUp[2]);
+         verticalForce:=0;
+      end;
       if deflateEnergy>0 then begin
          dBodyAddForce(ballBody, 0, 9.81*(3-deflateEnergy)*0.3, 0);
          d:=deflateEnergy*10;

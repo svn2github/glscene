@@ -25,6 +25,7 @@ object Main: TMain
     Camera = Camera
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
+    Buffer.AntiAliasing = aaNone
     Align = alClient
     OnMouseDown = SceneViewerMouseDown
     OnMouseUp = SceneViewerMouseUp
@@ -579,6 +580,7 @@ object Main: TMain
           2929EE71FBD30B2ACB04B6B78291BB1E9F028B996D65C70B6D8E5439CD01022A
           2D1254A4E5437E4834A9241DF247FFD9}
         Material.Texture.TextureMode = tmModulate
+        Material.Texture.FilteringQuality = tfAnisotropic
         Material.Texture.Disabled = False
         Height = 10
         Width = 10
@@ -2392,7 +2394,7 @@ object Main: TMain
       end
       item
         Name = 'glassblock'
-        Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3F0000803FCDCC4C3D}
+        Material.FrontProperties.Diffuse.Color = {CDCC4C3FCDCC4C3F0000803FCDCCCC3D}
         Material.BlendingMode = bmTransparency
         Material.Texture.Image.Picture.Data = {
           0A544A504547496D616765D8740000FFD8FFE000104A46494600010100000100
@@ -5067,5 +5069,23 @@ object Main: TMain
       end>
     Left = 128
     Top = 24
+  end
+  object PFXSteam: TGLPolygonPFXManager
+    Cadencer = Cadencer
+    Renderer = PFXRenderer
+    Acceleration.Coordinates = {00000000000080BF0000000000000000}
+    BlendingMode = bmTransparency
+    NbSides = 7
+    ParticleSize = 0.7
+    ColorInner.Color = {0000803F0000803F0000803F0000003F}
+    ColorOuter.Color = {CDCC4C3FCDCC4C3FCDCC4C3F00000000}
+    LifeColors = <
+      item
+        ColorInner.Color = {0000803F0000803F0000803F00000000}
+        ColorOuter.Color = {0000803F0000803F0000803F00000000}
+        LifeTime = 1
+      end>
+    Left = 72
+    Top = 136
   end
 end
