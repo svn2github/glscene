@@ -18,7 +18,7 @@ PROJECTS = Camera.exe Caterpillar.exe Column.exe Fading.exe \
   Multitexture.exe texformat.exe terrain.exe Recorder.exe bmpfont.exe boom.exe \
   candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering.exe \
   warping.exe raycast.exe memviewer.exe volcano.exe shadows.exe tentacles.exe \
-  pointto.exe
+  pointto.exe cubemap.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -180,4 +180,7 @@ tentacles.exe: extrusion\tentacles\tentacles.dpr
   $(DCC)
 
 pointto.exe: movements\pointto\pointto.dpr
+  $(DCC)
+
+cubemap.exe: materials\cubemap\cubemap.dpr
   $(DCC)
