@@ -1033,6 +1033,8 @@ function  ArcSin(const X : Extended) : Extended; overload;
 function  ArcSin(const X : Single) : Single; overload;
 function  ArcTan2(const Y, X : Extended) : Extended; overload;
 function  ArcTan2(const Y, X : Single) : Single; overload;
+{: Fast ArcTan2 approximation, about 0.07 rads accuracy. }
+function  FastArcTan2(y, x : Single) : Single;
 function  Tan(const X : Extended) : Extended; overload;
 function  Tan(const X : Single) : Single; overload;
 function  CoTan(const X : Extended) : Extended; overload;
@@ -1340,6 +1342,7 @@ const
    c2PI :      Single =  6.283185307;
    cPIdiv2 :   Single =  1.570796326;
    cPIdiv4 :   Single =  0.785398163;
+   c3PIdiv4 :  Single =  2.35619449;
    cInv2PI :   Single = 1/6.283185307;
    cInv360 :   Single = 1/360;
    c180 :      Single = 180;
@@ -6820,6 +6823,27 @@ begin
    Result:=Math.ArcTan2(y, x);
    {$HINTS ON}
 {$endif}
+end;
+
+// FastArcTan2
+//
+function FastArcTan2(y, x : Single) : Single;
+// accuracy of about 0.07 rads
+const
+   cEpsilon : Single = 1e-10;
+var
+   abs_y, angle, r : Single;
+begin
+   abs_y:=Abs(y)+cEpsilon;      // prevent 0/0 condition
+   if y<0 then begin
+      if x>=0 then
+         Result:=cPIdiv4*(x-abs_y)/(x+abs_y)-cPIdiv4
+      else Result:=cPIdiv4*(x+abs_y)/(abs_y-x)-c3PIdiv4;
+   end else begin
+      if x>=0 then
+         Result:=cPIdiv4-cPIdiv4*(x-abs_y)/(x+abs_y)
+      else Result:=c3PIdiv4-cPIdiv4*(x+abs_y)/(abs_y-x);
+   end;
 end;
 
 // Tan (Extended)
