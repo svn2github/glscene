@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>23/03/04 - EG - Added spoTransparent 
       <li>29/11/03 - EG - Scissors turned of if camera is withing bounding volume
       <li>30/10/02 - EG - Added OnBegin/EndRenderingShadows
       <li>25/10/02 - EG - Fixed Stencil cleanup and shadow projection bug
@@ -23,7 +24,7 @@ type
 
    // TShadowPlaneOptions
    //
-   TShadowPlaneOption = (spoUseStencil, spoScissor);
+   TShadowPlaneOption = (spoUseStencil, spoScissor, spoTransparent);
    TShadowPlaneOptions = set of TShadowPlaneOption;
 
 const
@@ -96,6 +97,9 @@ type
             <li>spoScissor: plane area is 'scissored', this should improve
                rendering speed by limiting rendering operations and fill rate,
                may have adverse effects on old hardware in rare cases
+            <li>spoTransparent: does not render the plane's material, may help
+               improve performance if you're fillrate limited, are using the
+               stencil, and your hardware has optimized stencil-only writes
             </ul>
          }
          property ShadowOptions : TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
@@ -156,7 +160,6 @@ begin
       if renderSelf and (VectorDotProduct(VectorSubtract(rci.cameraPosition, AbsolutePosition), AbsoluteDirection)>0) then begin
          glPushAttrib(GL_ENABLE_BIT);
          
-         // "Render" stencil mask
          if     (spoScissor in ShadowOptions)
             and (PointDistance(rci.cameraPosition)>BoundingSphereRadius) then begin
             sr:=ScreenRect;
@@ -176,10 +179,19 @@ begin
 
          glDisable(GL_ALPHA_TEST);
 
-         Material.Apply(rci);
-         repeat
+         // "Render"  plane and stencil mask
+         if (spoTransparent in ShadowOptions) then begin
+            glColorMask(False, False, False, False);
+            glDepthMask(False);
             BuildList(rci);
-         until not Material.UnApply(rci);
+            glDepthMask(True);
+            glColorMask(True, True, True, True);
+         end else begin
+            Material.Apply(rci);
+            repeat
+               BuildList(rci);
+            until not Material.UnApply(rci);
+         end;
 
          if Assigned(FShadowedLight) then begin
 
