@@ -218,10 +218,10 @@ begin
          if Assigned(FMirrorObject) then begin
             if FMirrorObject.Parent<>nil then
                glMultMatrixf(PGLFloat(FMirrorObject.Parent.AbsoluteMatrixAsAddress));
-            glMultMatrixf(@FMirrorObject.LocalMatrix);
-            FMirrorObject.DoRender(rci, renderSelf, renderChildren);
+            glMultMatrixf(PGLFloat(FMirrorObject.LocalMatrix));
+            FMirrorObject.DoRender(rci, renderSelf, True);
          end else begin
-            Scene.Objects.DoRender(rci, renderSelf, renderChildren);
+            Scene.Objects.DoRender(rci, renderSelf, True);
          end;
          if Assigned(FOnBeginRenderingMirrors) then
             FOnBeginRenderingMirrors(Self);
@@ -251,7 +251,7 @@ begin
          
       end;
       
-      if renderChildren and (Count>0) then
+      if renderChildren then
          Self.RenderChildren(0, Count-1, rci);
 
       if Assigned(FMirrorObject) then
