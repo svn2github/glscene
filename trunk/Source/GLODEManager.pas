@@ -63,11 +63,9 @@ type
   TODEBaseElement = class;
   TODEBaseJoint = class;
 
-  {
-  TGLODEManager:
-  ----------
-  This is the main component that houses the links to ODE.
-  }
+  // TGLODEManager
+  //
+  {: This is the main component that houses the links to ODE. }
   TGLODEManager = class (TComponent)
     private
       FWorld             : PdxWorld;
@@ -128,16 +126,15 @@ type
       property FastIterations : Integer read FFastIterations write FFastIterations;
   end;
 
-  {
-  TODECollisionSurface:
-  ---------------------
-  This class is used to describe how an ODE object should behave when it
-  collides with another object. This data is used by the TGLODEManager.CalcContact
-  procedure, averaging the values of the CollisionSurface to produce an ODE
-  contact surface that is (hopefully) accurate. Any fine tuning can be done in
-  the TGLODEManager.OnCollision event which is fired after the TGLODEManager.CalcContact
-  procedure.
-  }
+  // TODECollisionSurface
+  //
+  {: Describes how an ODE object should behave when it collides with another object.<p>
+     This class is used to describe how an ODE object should behave when it
+     collides with another object. This data is used by the TGLODEManager.CalcContact
+     procedure, averaging the values of the CollisionSurface to produce an ODE
+     contact surface that is (hopefully) accurate. Any fine tuning can be done in
+     the TGLODEManager.OnCollision event which is fired after the TGLODEManager.CalcContact
+     procedure. }
   TODECollisionSurface = class (TPersistentObject)
     private
       FSurfaceParams : TdSurfaceParameters;
@@ -187,13 +184,12 @@ type
 
   TODEElementClass = class of TODEBaseElement;
 
-  {
-  TGLODEBaseObject:
-  -----------------
-  This object provides the base level links to the GLScene object
-  heirachy and the GLODEManager. It contains all common properties
-  that GLScene <--> ODE objects will require.
-  }
+  // TGLODEBaseObject
+  //
+  {: Links GLScene object and ODE manager.<p>
+     This object provides the base level links to the GLScene object
+     heirachy and the GLODEManager. It contains all common properties
+     that GLScene &lt;--&gt; ODE objects will require. }
   TGLODEBaseObject = class(TGLBaseSceneObject)
     private
       FManager       : TGLODEManager;
