@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>12/08/02 - Egg - Fixed Effects persistence 'Assert' issue (David Alcelay) 
       <li>13/07/02 - Egg - Fixed CurrentStates computation
       <li>01/07/02 - Egg - Fixed XOpenGL picking state
       <li>03/06/02 - Egg - TGLSceneBuffer.DestroyRC now removes buffer from scene's list
@@ -3867,7 +3868,8 @@ end;
 procedure TGLBaseBehaviour.ReadFromFiler(reader : TReader);
 begin
    with reader do begin
-      Assert(ReadInteger=0);
+      if ReadInteger<>0 then
+         Assert(False);
       // nothing more, yet
    end;
 end;
@@ -3948,7 +3950,8 @@ end;
 procedure TGLObjectEffect.ReadFromFiler(reader : TReader);
 begin
    with reader do begin
-      Assert(ReadInteger=0);
+      if ReadInteger<>0 then
+         Assert(False);
       // nothing more, yet
    end;
 end;
