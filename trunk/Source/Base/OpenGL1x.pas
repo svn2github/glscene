@@ -10,6 +10,7 @@
    please refer to OpenGL12.pas header.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>24/06/04 - SG - Added GL_ARB_fragment_program
       <li>17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
       <li>06/04/04 - EG - Added GL_ARB_shader_objects, GL_ARB_vertex_shader
                           and GL_ARB_fragment_shader, dropped a few oldies
@@ -166,6 +167,7 @@ var
    GL_ARB_shader_objects,
    GL_ARB_vertex_shader,
    GL_ARB_fragment_shader,
+   GL_ARB_fragment_program,
 
    GL_EXT_abgr,
    GL_EXT_bgra,
@@ -1451,6 +1453,9 @@ var
    // ARB_fragment_shader
    GL_FRAGMENT_SHADER_ARB                            = $8B30;
    GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB            = $8B49;
+
+   // ARB_fragment_program
+   GL_FRAGMENT_PROGRAM_ARB                           = $8804;
 
    // NV_texture_env_combine4
    GL_COMBINE4_NV                                    = $8503;
@@ -3987,6 +3992,7 @@ begin
    GL_ARB_shader_objects := CheckExtension('GL_ARB_shader_objects');
    GL_ARB_vertex_shader := CheckExtension('GL_ARB_vertex_shader');
    GL_ARB_fragment_shader := CheckExtension('GL_ARB_fragment_shader');
+   GL_ARB_fragment_program := CheckExtension('GL_ARB_fragment_program');
 
    GL_EXT_abgr := CheckExtension('GL_EXT_abgr');
    GL_EXT_bgra := CheckExtension('GL_EXT_bgra');
