@@ -4,6 +4,7 @@
 	Edits a TXCollection<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>27/02/02 - Egg - Fixed crash after item deletion
       <li>11/04/00 - Egg - Fixed crashes in IDE
 		<li>06/04/00 - Egg - Creation
 	</ul></font>
@@ -83,7 +84,7 @@ implementation
 
 {$R *.DFM}
 
-uses GLMisc, SysUtils, GLBehaviours, GLScene;
+uses GLMisc, SysUtils, GLBehaviours, GLScene, Dialogs;
 
 resourcestring
    cXCollectionEditor = 'XCollection editor';
@@ -101,7 +102,7 @@ end;
 procedure ReleaseXCollectionEditor;
 begin
 	if Assigned(vXCollectionEditor) then begin
-		vXCollectionEditor.Free;
+		vXCollectionEditor.Release;
 		vXCollectionEditor:=nil;
 	end;
 end;
@@ -124,6 +125,7 @@ end;
 procedure TXCollectionEditor.FormHide(Sender: TObject);
 begin
    SetXCollection(nil, nil);
+   ReleaseXCollectionEditor;
 end;
 
 // SetXCollection
@@ -280,9 +282,10 @@ end;
 procedure TXCollectionEditor.ACRemoveExecute(Sender: TObject);
 begin
 	if ListView.Selected<>nil then begin
-		TXCollectionItem(ListView.Selected.Data).Free;
-		PrepareListView;
       FDesigner.Modified;
+      FDesigner.SelectComponent(nil);
+		TXCollectionItem(ListView.Selected.Data).Free;
+      ListView.Selected.Free;
 	end;
 end;
 
