@@ -632,7 +632,7 @@ begin
    FForm:=TForm.Create(nil);
    with FForm do begin
       if StayOnTop then begin
-         FormStyle:=fsStayOnTop
+         FormStyle:=fsStayOnTop;
          FForm.Width:=Self.Width;
          FForm.Height:=Self.Height;
       end else begin
