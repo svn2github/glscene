@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>06/11/02 - EG - Fixed Stencil setup
       <li>30/10/02 - EG - Added OnBegin/EndRenderingMirrors
       <li>25/10/02 - EG - Fixed Stencil cleanup
       <li>22/02/01 - EG - Fixed change notification,
@@ -85,7 +86,8 @@ type
                from popping out of the mirror (for objects behind or halfway through)
             <li>moClearZBuffer: mirror area's ZBuffer is cleared so that background
                objects don't interfere with reflected objects (reflected objects
-               must be rendered AFTER the mirror in the hierarchy)
+               must be rendered AFTER the mirror in the hierarchy). Works only
+               along with stenciling.
             </ul>
          }
          property MirrorOptions : TMirrorOptions read FMirrorOptions write SetMirrorOptions default cDefaultMirrorOptions;
@@ -152,7 +154,7 @@ begin
                glClear(GL_STENCIL_BUFFER_BIT);
                glEnable(GL_STENCIL_TEST);
                glStencilFunc(GL_ALWAYS, 1, 1);
-               glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+               glStencilOp(GL_REPLACE, GL_ZERO, GL_REPLACE);
             end;
             if (moOpaque in MirrorOptions) then begin
                bgColor:=ConvertWinColor(Scene.CurrentBuffer.BackgroundColor);
@@ -166,7 +168,6 @@ begin
             BuildList(rci);
 
             glDepthMask(True);
-
             if (moUseStencil in MirrorOptions) then begin
                glStencilFunc(GL_EQUAL, 1, 1);
                glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
@@ -289,20 +290,24 @@ begin
       glOrtho(0, Width, 0, Height, 1, -1);
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity;
+
       glDepthFunc(GL_ALWAYS);
+      glColorMask(False, False, False, False);
 
       glBegin(GL_QUADS);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(Self.Width*0.5, Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.99);
+         glVertex3f(p[0], p[1], 0.999);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width*0.5, Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.99);
+         glVertex3f(p[0], p[1], 0.999);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width*0.5, -Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.99);
+         glVertex3f(p[0], p[1], 0.999);
          p:=WorldToScreen(VectorTransform(AffineVectorMake(Self.Width*0.5, -Self.Height*0.5, 0), worldMat));
-         glVertex3f(p[0], p[1], 0.99);
+         glVertex3f(p[0], p[1], 0.999);
       glEnd;
 
+      glColorMask(True, True, True, True);
       glDepthFunc(GL_LESS);
+      
       glMatrixMode(GL_PROJECTION);
       glPopMatrix;
       glMatrixMode(GL_MODELVIEW);
