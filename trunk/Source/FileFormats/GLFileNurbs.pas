@@ -107,7 +107,7 @@ procedure TGLNurbsVectorFile.LoadFromStream(stream : TStream);
 var
    sl, buf : TStringList;
    ss : TStringStream;
-   i,j : Integer;
+   i : Integer;
    surface : TMOParametricSurface;
 begin
    ss:=TStringStream.Create('');
