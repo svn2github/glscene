@@ -3,6 +3,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
       <li>02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
                           StripifyMesh slightly faster
 	   <li>18/08/01 - EG - Creation
@@ -36,14 +37,14 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
 function BuildNormals(reference : TAffineVectorList;
                       indices : TIntegerList) : TAffineVectorList;
 
-{: Attempts to create as few as possible triangle strips to cobver the mesh.<p>
+{: Attempts to create as few as possible triangle strips to cover the mesh.<p>
    The indices parameters define a set of triangles as a set of indices to
    vertices in a vertex pool, free of duplicate vertices (or resulting
    stripification will be of lower quality).<br>
    The function returns a list of TIntegerList, each of these lists hosting
    a triangle strip, returned objects must be freed by caller.<br>
    If agglomerateLoneTriangles is True, the first of the lists actually contains
-   an agglomerated lists of the triangles that couldn't be stripified. }
+   the agglomerated list of the triangles that couldn't be stripified. }
 function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;
                       agglomerateLoneTriangles : Boolean = False) : TPersistentObjectList;
 
@@ -133,24 +134,29 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
 var
    i, n : Integer;
    tag : array of Integer;
+   refList : PAffineVectorArray;
+   indicesList : PIntegerArray;
 begin
    SetLength(tag, reference.Count);
+   indicesList:=indices.List;
    // 1st step, tag all used references
    for i:=0 to indices.Count-1 do
-      tag[indices[i]]:=1;
+      tag[indicesList[i]]:=1;
    // 2nd step, build remap indices and cleanup references
    n:=0;
-   for i:=0 to Length(tag)-1 do
+   refList:=reference.List;
+   for i:=0 to High(tag) do begin
       if tag[i]<>0 then begin
          tag[i]:=n;
          if n<>i then
-            reference[n]:=reference[i];
+            refList[n]:=refList[i];
          Inc(n);
       end;
+   end;
    reference.Count:=n;
    // 3rd step, remap indices
    for i:=0 to indices.Count-1 do
-      indices[i]:=tag[indices[i]];
+      indicesList[i]:=tag[indicesList[i]];
 end;
 
 // BuildNormals
@@ -158,23 +164,28 @@ end;
 function BuildNormals(reference : TAffineVectorList;
                       indices : TIntegerList) : TAffineVectorList;
 var
-   i, n : Integer;
+   i, n, k : Integer;
    normalsCount : TIntegerList;
    v : TAffineVector;
+   refList : PAffineVectorArray;
+   indicesList : PIntegerArray;
 begin
    Result:=TAffineVectorList.Create;
    normalsCount:=TIntegerList.Create;
    try
       Result.Count:=reference.Count;
       normalsCount.Count:=reference.Count;
+      refList:=reference.List;
+      indicesList:=indices.List;
       // 1st step, calculate triangle normals and sum
       i:=0; while i<indices.Count do begin
-         v:=CalcPlaneNormal(reference[indices[i]],
-                            reference[indices[i+1]],
-                            reference[indices[i+2]]);
+         v:=CalcPlaneNormal(refList[indicesList[i]],
+                            refList[indicesList[i+1]],
+                            refList[indicesList[i+2]]);
          for n:=i to i+2 do begin
-            Result.TranslateItem(indices[n], v);
-            normalsCount[indices[n]]:=normalsCount[indices[n]]+1;
+            k:=indicesList[n];
+            Result.TranslateItem(k, v);
+            Inc(normalsCount.List[k]);
          end;
          Inc(i, 3);
       end;

@@ -1913,60 +1913,10 @@ end;
 // VectorCrossProduct
 //
 function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector;
-// Temp is necessary because
-// either V1 or V2 could also be the result vector
-//
-// EAX contains address of V1
-// EDX contains address of V2
-// ECX contains address of result
-var
-   temp: TAffineVector;
-asm
-  {Temp[X]:=V1[Y] * V2[Z]-V1[Z] * V2[Y];
-  Temp[Y]:=V1[Z] * V2[X]-V1[X] * V2[Z];
-  Temp[Z]:=V1[X] * V2[Y]-V1[Y] * V2[X];
-  Result:=Temp;}
-
-   PUSH EBX                      // save EBX, must be restored to original value
-   LEA EBX, [Temp]
-   FLD DWORD PTR [EDX + 8]       // first load both vectors onto FPU register stack
-   FLD DWORD PTR [EDX + 4]
-   FLD DWORD PTR [EDX + 0]
-   FLD DWORD PTR [EAX + 8]
-   FLD DWORD PTR [EAX + 4]
-   FLD DWORD PTR [EAX + 0]
-
-   FLD ST(1)                     // ST(0):=V1[Y]
-   FMUL ST, ST(6)                // ST(0):=V1[Y] * V2[Z]
-   FLD ST(3)                     // ST(0):=V1[Z]
-   FMUL ST, ST(6)                // ST(0):=V1[Z] * V2[Y]
-   FSUBP ST(1), ST               // ST(0):=ST(1)-ST(0)
-   FSTP DWORD [EBX]              // Temp[X]:=ST(0)
-   FLD ST(2)                     // ST(0):=V1[Z]
-   FMUL ST, ST(4)                // ST(0):=V1[Z] * V2[X]
-   FLD ST(1)                     // ST(0):=V1[X]
-   FMUL ST, ST(7)                // ST(0):=V1[X] * V2[Z]
-   FSUBP ST(1), ST               // ST(0):=ST(1)-ST(0)
-   FSTP DWORD [EBX + 4]          // Temp[Y]:=ST(0)
-   FLD ST                        // ST(0):=V1[X]
-   FMUL ST, ST(5)                // ST(0):=V1[X] * V2[Y]
-   FLD ST(2)                     // ST(0):=V1[Y]
-   FMUL ST, ST(5)                // ST(0):=V1[Y] * V2[X]
-   FSUBP ST(1), ST               // ST(0):=ST(1)-ST(0)
-   FSTP DWORD [EBX + 8]          // Temp[Z]:=ST(0)
-   FSTP ST(0)                    // clear FPU register stack
-   FSTP ST(0)
-   FSTP ST(0)
-   FSTP ST(0)
-   FSTP ST(0)
-   FSTP ST(0)
-   MOV EAX, [EBX]                // copy Temp to Result
-   MOV [ECX], EAX
-   MOV EAX, [EBX + 4]
-   MOV [ECX + 4], EAX
-   MOV EAX, [EBX + 8]
-   MOV [ECX + 8], EAX
-   POP EBX
+begin
+   Result[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
+   Result[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
+   Result[Z]:=V1[X] * V2[Y] - V1[Y] * V2[X];
 end;
 
 // VectorCrossProduct

@@ -148,6 +148,9 @@ type
 
          //: Translates the given item
          procedure TranslateItem(index : Integer; const delta : TAffineVector);
+         //: Translates given items
+         procedure TranslateItems(index : Integer; const delta : TAffineVector;
+                                  nb : Integer);
 
          procedure Normalize; override;
          procedure Lerp(const list1, list2 : TBaseVectorList; lerpFactor : Single); override;
@@ -830,6 +833,23 @@ begin
    Assert(Cardinal(Index) < Cardinal(FCount));
 {$ENDIF}
    AddVector(FList^[Index], delta);
+end;
+
+// TranslateItems
+//
+procedure TAffineVectorList.TranslateItems(index : Integer; const delta : TAffineVector;
+                                           nb : Integer);
+begin
+   nb:=index+nb;
+{$IFOPT R+}
+   Assert(Cardinal(index) < Cardinal(FCount));
+   if nb>FCount then
+      nb:=FCount;
+{$ENDIF}
+   while index<nb do begin
+      AddVector(FList^[index], delta);
+      Inc(index);
+   end;
 end;
 
 // Normalize
