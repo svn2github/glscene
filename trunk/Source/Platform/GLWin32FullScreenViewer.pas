@@ -368,7 +368,7 @@ begin
    end;
 
    // Restore Taskbar
-   ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_RESTORE);
+   ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_SHOWNA);
    
    FActive:=False;
 end;
