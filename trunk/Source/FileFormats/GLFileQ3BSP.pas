@@ -30,7 +30,7 @@ type
 
 var
    // Q3 lightmaps are quite dark, we brighten them a lot by default
-   vQ3BSPLightmapGammaCorrection : Single = 2.0;
+   vQ3BSPLightmapGammaCorrection : Single = 2.5;
    vQ3BSPLightmapBrightness : Single = 0;   // in percent, 100 = white everywhere
 
 // ------------------------------------------------------------------
