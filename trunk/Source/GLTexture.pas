@@ -1950,6 +1950,8 @@ end;
 // Assign
 //
 procedure TGLPictureImage.Assign(Source: TPersistent);
+var
+   bmp : TBitmap;
 begin
 	if Assigned(Source) then begin
       if (Source is TGLPersistentImage) then
@@ -1958,7 +1960,11 @@ begin
          Picture.Assign(Source)
       else if (Source is TGLPicture) then
          Picture.Assign(Source)
-      else inherited;
+      else if (Source is TGLBitmap32) then begin
+         bmp:=TGLBitmap32(Source).Create32BitsBitmap;
+         Picture.Graphic:=bmp;
+         bmp.Free;
+      end else inherited;
 	end else inherited;
 end;
 
