@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>29/01/02 - EG - Fixed AngleLerp (Alex Grigny de Castro)
       <li>20/01/02 - EG - Added VectorArrayAdd, ScaleFloatArray, OffsetFloatArray
       <li>11/01/02 - EG - 3DNow Optim for VectorAdd (hmg)
       <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1"),
@@ -2215,7 +2216,7 @@ end;
 //
 function Lerp(const start, stop, t : Single) : Single;
 begin
-   Result:=start + (stop - start) * t;
+   Result:=start+(stop-start)*t;
 end;
 
 // Angle Lerp
@@ -2227,14 +2228,14 @@ begin
    start:=NormalizeAngle(start);
    stop:=NormalizeAngle(stop);
    d:=stop-start;
-   if d>=0 then
-      if d<=PI then
-         Result:=start+d*t
-      else Result:=(start+c2PI)+(d-c2PI)*t
-   else
-      if start-stop<=PI then
-         Result:=start+d*t
-      else Result:=start+(d+c2PI)*t;
+   if d>PI then begin
+      // positive d, angle on opposite side, becomes negative i.e. changes direction
+      d:=d-c2PI;
+   end else if d<-PI then begin
+      // negative d, angle on opposite side, becomes positive i.e. changes direction
+      d:=d+c2PI;
+   end;
+   Result:=start+d*t;
 end;
 
 // VectorAffineLerp
