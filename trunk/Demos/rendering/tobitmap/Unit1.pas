@@ -20,7 +20,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLCadencer, GLObjects, GLScene, ExtCtrls, GLMisc, GLWin32Viewer,
+  GLCadencer, GLObjects, GLScene, ExtCtrls, GLMisc, GLWin32Viewer,
   GLHUDObjects, StdCtrls, GLSpaceText;
 
 type

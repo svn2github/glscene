@@ -1,5 +1,6 @@
 {: Basic terrain rendering demo.<p>
 
+   This demo showcases the TerrainRenderer and some of the SkyDome features.<br>
    The terrain HeightData is provided by a TGLBitmapHDS (HDS stands for
    "Height Data Source"), and displayed by a TTerrainRenderer.<p>
 
@@ -20,6 +21,7 @@
    <li>Increase/decrease CLOD precision with '*' and '/'.
    <li>Increase/decrease QualityDistance with '9' and '8'.
    <li>'n' turns on 'night' mode, 'd' turns back to 'day' mode.
+   <li>Toggle star twinkle with 't' (night mode only) 
    </ul><p>
 
    When increasing the range, or moving after having increased the range you
@@ -36,7 +38,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   GLScene, GLTerrainRenderer, GLObjects, GLMisc, jpeg, GLHeightData,
   ExtCtrls, GLCadencer, StdCtrls, GLTexture, GLHUDObjects, GLBitmapFont,
-  GLSkydome, GLWin32Viewer;
+  GLSkydome, GLWin32Viewer, GLSound, GLSMBASS, Geometry;
 
 type
   TForm1 = class(TForm)
@@ -45,7 +47,6 @@ type
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     DummyCube1: TDummyCube;
-    GLLightSource1: TGLLightSource;
     TerrainRenderer1: TTerrainRenderer;
     Timer1: TTimer;
     GLCadencer1: TGLCadencer;
@@ -53,6 +54,12 @@ type
     BitmapFont1: TBitmapFont;
     HUDText1: THUDText;
     SkyDome1: TSkyDome;
+    SPMoon: TSprite;
+    SPSun: TSprite;
+    DCSound: TDummyCube;
+    GLSMBASS1: TGLSMBASS;
+    TISound: TTimer;
+    GLSoundLibrary: TGLSoundLibrary;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -62,6 +69,7 @@ type
       newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure TISoundTimer(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -92,18 +100,25 @@ begin
    // load the texture maps
    GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('snow512.jpg');
    GLMaterialLibrary1.Materials[1].Material.Texture.Image.LoadFromFile('detailmap.jpg');
+   SPMoon.Material.Texture.Image.LoadFromFile('moon.bmp');
+   SPSun.Material.Texture.Image.LoadFromFile('flare1.bmp');
    // apply texture map scale (our heightmap size is 256)
    TerrainRenderer1.TilesPerTexture:=256/TerrainRenderer1.TileSize;
    // load Bitmap Font
    BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
+   // load and setup sound samples
+   with GLSoundLibrary.Samples do begin
+      Add.LoadFromFile('ChillyWind.mp3');
+      Add.LoadFromFile('howl.mp3');
+   end;
    // Could've been done at design time, but it the, it hurts the eyes ;)
    GLSceneViewer1.Buffer.BackgroundColor:=clWhite;
    // Move camera starting point to an interesting hand-picked location
-   DummyCube1.Position.X:=575;
-   DummyCube1.Position.Z:=-390;
-   DummyCube1.Turn(100);
+   DummyCube1.Position.X:=570;
+   DummyCube1.Position.Z:=-385;
+   DummyCube1.Turn(90);
    // Initial camera height offset (controled with pageUp/pageDown)
-   FCamHeight:=0;
+   FCamHeight:=10;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -113,17 +128,17 @@ var
 begin
    // handle keypresses
    if IsKeyDown(VK_SHIFT) then
-      speed:=6*deltaTime
-   else speed:=2*deltaTime;
+      speed:=5*deltaTime
+   else speed:=deltaTime;
    with GLCamera1.Position do begin
       if IsKeyDown(VK_UP) then
-         DummyCube1.Translate(-X*speed, 0, -Z*speed);
-      if IsKeyDown(VK_DOWN) then
-         DummyCube1.Translate(X*speed, 0, Z*speed);
-      if IsKeyDown(VK_LEFT) then
-         DummyCube1.Translate(-Z*speed, 0, X*speed);
-      if IsKeyDown(VK_RIGHT) then
          DummyCube1.Translate(Z*speed, 0, -X*speed);
+      if IsKeyDown(VK_DOWN) then
+         DummyCube1.Translate(-Z*speed, 0, X*speed);
+      if IsKeyDown(VK_LEFT) then
+         DummyCube1.Translate(-X*speed, 0, -Z*speed);
+      if IsKeyDown(VK_RIGHT) then
+         DummyCube1.Translate(X*speed, 0, Z*speed);
       if IsKeyDown(VK_PRIOR) then
          FCamHeight:=FCamHeight+10*speed;
       if IsKeyDown(VK_NEXT) then
@@ -132,7 +147,7 @@ begin
    end;
    // don't drop through terrain!
    with DummyCube1.Position do
-      Y:=TerrainRenderer1.InterpolatedHeight(AsVector)/128+FCamHeight;
+      Y:=TerrainRenderer1.InterpolatedHeight(AsVector)+FCamHeight;
 end;
 
 // Standard mouse rotation & FPS code below
@@ -194,18 +209,22 @@ begin
       'n', 'N' : with SkyDome1 do if Stars.Count=0 then begin
          // turn on 'night' mode
          Bands[1].StopColor.AsWinColor:=RGB(0, 0, 16);
-         Bands[1].StartColor.AsWinColor:=RGB(0, 0, 0);
-         Bands[0].StopColor.AsWinColor:=RGB(0, 0, 0);
-         Bands[0].StartColor.AsWinColor:=RGB(0, 0, 32);
-         Stars.AddRandomStars(700, clWhite);   // many white stars
-         Stars.AddRandomStars(100, RGB(255, 200, 200));  // some redish ones
-         Stars.AddRandomStars(100, RGB(200, 200, 255));  // some blueish ones
-         Stars.AddRandomStars(100, RGB(255, 255, 200));  // some yellowish ones
-         GLSceneViewer1.Buffer.BackgroundColor:=RGB(0, 0, 32);
+         Bands[1].StartColor.AsWinColor:=RGB(0, 0, 8);
+         Bands[0].StopColor.AsWinColor:=RGB(0, 0, 8);
+         Bands[0].StartColor.AsWinColor:=RGB(0, 0, 0);
+         with Stars do begin
+            AddRandomStars(700, clWhite, True);   // many white stars
+            AddRandomStars(100, RGB(255, 200, 200), True);  // some redish ones
+            AddRandomStars(100, RGB(200, 200, 255), True);  // some blueish ones
+            AddRandomStars(100, RGB(255, 255, 200), True);  // some yellowish ones
+         end;
+         GLSceneViewer1.Buffer.BackgroundColor:=clBlack;
          with GLSceneViewer1.Buffer.FogEnvironment do begin
             FogColor.AsWinColor:=clBlack;
             FogStart:=-FogStart; // Fog is used to make things darker
          end;
+         SPMoon.Visible:=True;
+         SPSun.Visible:=False;
       end;
       'd', 'D' : with SkyDome1 do if Stars.Count>0 then begin
          // turn on 'day' mode
@@ -220,9 +239,51 @@ begin
             FogStart:=-FogStart;
          end;
          GLSceneViewer1.Buffer.FogEnvironment.FogStart:=0;
+         SPMoon.Visible:=False;
+         SPSun.Visible:=True;
       end;
+      't' : with SkyDome1 do begin
+         if sdoTwinkle in Options then
+            Options:=Options-[sdoTwinkle]
+         else Options:=Options+[sdoTwinkle];
+      end;
+
    end;
    Key:=#0;
+end;
+
+procedure TForm1.TISoundTimer(Sender: TObject);
+var
+   wolfPos : TVector;
+   c, s : Single;
+begin
+   if SkyDome1.Stars.Count=0 then begin
+      // wind blows around camera
+      with GetOrCreateSoundEmitter(GLCamera1) do begin
+         Source.SoundLibrary:=GLSoundLibrary;
+         Source.SoundName:=GLSoundLibrary.Samples[0].Name;
+         Source.Volume:=Random*0.5+0.5;
+         Playing:=True;
+      end;
+   end else begin
+      // wolf howl at some distance, at ground level
+      wolfPos:=GLCamera1.AbsolutePosition;
+      SinCos(Random*c2PI, Random(500), s, c);
+      wolfPos[0]:=wolfPos[0]+c;
+      wolfPos[2]:=wolfPos[2]+s;
+      wolfPos[1]:=TerrainRenderer1.InterpolatedHeight(wolfPos);
+      DCSound.Position.AsVector:=wolfPos;
+      with GetOrCreateSoundEmitter(DCSound) do begin
+         Source.SoundLibrary:=GLSoundLibrary;
+         Source.SoundName:=GLSoundLibrary.Samples[1].Name;
+         Source.MinDistance:=50;
+         Source.MaxDistance:=550;
+         Playing:=True;
+      end;
+   end;
+   TISound.Enabled:=False;
+   TISound.Interval:=10000+Random(10000);
+   TISound.Enabled:=True;
 end;
 
 end.
