@@ -105,10 +105,11 @@ type
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
-                                   
+
          {: Interpolates height for the given point.<p>
             Expects a point expressed in absolute coordinates. }
-         function InterpolatedHeight(const p : TVector) : Single; virtual;
+         function InterpolatedHeight(const p : TVector) : Single; overload; virtual; 
+         function InterpolatedHeight(const p : TAffineVector) : Single; overload;
          {: Triangle count for the last render. }
          property LastTriangleCount : Integer read FLastTriangleCount;
 
@@ -367,7 +368,7 @@ begin
    end;
 end;
 
-// InterpolatedHeight
+// InterpolatedHeight (hmg)
 //
 function TGLTerrainRenderer.InterpolatedHeight(const p : TVector) : Single;
 var
@@ -377,6 +378,13 @@ begin
       pLocal:=AbsoluteToLocal(p);
       Result:=HeightDataSource.InterpolatedHeight(pLocal[0], pLocal[1], TileSize+1)*Scale.Z*(1/128);
    end else Result:=0;
+end;
+
+// InterpolatedHeight (affine)
+//
+function TGLTerrainRenderer.InterpolatedHeight(const p : TAffineVector) : Single;
+begin
+   Result:=InterpolatedHeight(PointMake(p));
 end;
 
 // BuildList
