@@ -121,7 +121,7 @@ object Form1: TForm1
         MinorRadius = 0.100000001490116
       end
       object Plane1: TGLPlane
-        Material.FrontProperties.Diffuse.Color = {1283003F0000803F1283003F0000803F}
+        Material.FrontProperties.Diffuse.Color = {0000803F0000803F000000000000803F}
         Material.FaceCulling = fcNoCull
         Height = 0.699999988079071
         Width = 0.300000011920929
@@ -134,6 +134,13 @@ object Form1: TForm1
         BottomRadius = 0.100000001490116
         Height = 0.600000023841858
         TopRadius = 0.100000001490116
+      end
+      object GLCube1: TGLCube
+        Direction.Coordinates = {00000000B28F70BF431DAF3E00000000}
+        Position.Coordinates = {000000BF00000000000000000000803F}
+        Up.Coordinates = {00000000431DAF3EB28F703F00000000}
+        Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
+        CubeSize = {CDCC4C3ECDCCCC3D9A99993E}
       end
     end
     object GLLightSource1: TGLLightSource
