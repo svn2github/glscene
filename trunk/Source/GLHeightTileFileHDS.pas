@@ -22,11 +22,13 @@ type
          FInfiniteWrap : Boolean;
          FHTFFileName : String;
          FHTF : THeightTileFile;
+         FMinElevation : Integer;
 
 	   protected
 	      { Protected Declarations }
          procedure SetHTFFileName(const val : String);
          procedure SetInfiniteWrap(val : Boolean);
+         procedure SetMinElevation(val : Integer);
 
          procedure StartPreparingData(heightData : THeightData); override;
 
@@ -37,7 +39,6 @@ type
 
 	   published
 	      { Published Declarations }
-         property MaxPoolSize;
 
          {: FileName of the HTF file.<p>
             Note that it is accessed via the services of ApplicationFileIO,
@@ -45,6 +46,12 @@ type
          property HTFFileName : String read FHTFFileName write SetHTFFileName;
          {: If true the height field is wrapped indefinetely. }
          property InfiniteWrap : Boolean read FInfiniteWrap write SetInfiniteWrap default True;
+         {: Minimum elevation of the tiles that are considered to exist.<p>
+            This property can typically be used to hide underwater tiles. }
+         property MinElevation : Integer read FMinElevation write SetMinElevation default -32768;
+
+         property MaxPoolSize;
+         property DefaultHeight;
 	end;
 
 // ------------------------------------------------------------------
@@ -67,6 +74,7 @@ constructor TGLHeightTileFileHDS.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
    FInfiniteWrap:=True;
+   FMinElevation:=-32768;
 end;
 
 // Destroy
@@ -94,6 +102,16 @@ procedure TGLHeightTileFileHDS.SetInfiniteWrap(val : Boolean);
 begin
    if FInfiniteWrap<>val then begin
       FInfiniteWrap:=val;
+      MarkDirty;
+   end;
+end;
+
+// SetMinElevation
+//
+procedure TGLHeightTileFileHDS.SetMinElevation(val : Integer);
+begin
+   if FMinElevation<>val then begin
+      FMinElevation:=val;
       MarkDirty;
    end;
 end;
@@ -126,7 +144,7 @@ begin
       end else begin
          htfTile:=FHTF.GetTile(XLeft, YTop, @htfTileInfo);
       end;
-      if htfTile=nil then begin
+      if (htfTile=nil) or (htfTileInfo.max<=FMinElevation) then begin
          // non-aligned tiles aren't handled (would be slow anyway)
          DataState:=hdsNone;
       end else begin
