@@ -912,7 +912,7 @@ begin
       WriteBoolean(FMute);
       WriteBoolean(FPause);
       WriteInteger(FNbLoops);
-      WriteInteger(FFrequency);
+//      WriteInteger(FFrequency);
    end;
 end;
 
@@ -937,7 +937,7 @@ begin
       FPause:=ReadBoolean;
       FChanges:=[sscTransformation, sscSample, sscStatus];
       FNbLoops:=ReadInteger;
-      FFrequency:=ReadInteger;
+//      FFrequency:=ReadInteger;
    end;
 end;
 
