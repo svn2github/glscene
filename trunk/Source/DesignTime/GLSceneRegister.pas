@@ -1753,17 +1753,21 @@ begin
                       [TGLScene,
                        TGLSceneViewer, TGLMemoryViewer,
                        TGLMaterialLibrary
-                       {$ifdef WIN32}
+                       {$ifdef MSWINDOWS}
                        ,
+                       TGLCadencer,
                        TGLFullScreenViewer,
                        TGLGuiLayout,
-                       TGLCadencer,
+                       TGLBitmapFont, TGLWindowsBitmapFont
+                       {$endif}
+                      ]);
+
+   RegisterComponents('GLScene PFX',
+                      [
                        TGLCustomPFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLPerlinPFXManager,
-                       TGLBitmapFont, TGLWindowsBitmapFont,
                        TGLFireFXManager, TGLThorFXManager
-                       {$endif}
                       ]);
 
    {$ifdef WIN32}
