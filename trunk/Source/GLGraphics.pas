@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>20/01/02 - EG - Fixed BGR24/RGB24 last pixel transfer
       <li>17/01/02 - EG - Faster assignments from bitmaps (approx. x2),
                           Added AssignFromBitmap24WithoutRGBSwap
       <li>28/12/01 - EG - Graphics32 support added
@@ -30,13 +31,15 @@ interface
 
 {$i GLScene.inc}
 
-uses Classes, Graphics,
+uses Classes,
 {$ifdef GLS_Graphics32_SUPPORT}
    G32,
 {$endif}
    GLMisc, OpenGL12, GLCrossPlatform;
 
 type
+
+   TColor = TDelphiColor;
 
    // TGLPixel24
    //
@@ -80,8 +83,8 @@ type
          procedure SetWidth(val : Integer);
          procedure SetHeight(const val : Integer);
          function GetScanLine(index : Integer) : PGLPixel32Array;
-         procedure AssignFrom24BitsBitmap(aBitmap : TBitmap);
-         procedure AssignFrom32BitsBitmap(aBitmap : TBitmap);
+         procedure AssignFrom24BitsBitmap(aBitmap : TGLBitmap);
+         procedure AssignFrom32BitsBitmap(aBitmap : TGLBitmap);
 {$ifdef GLS_Graphics32_SUPPORT}
          procedure AssignFromBitmap32(aBitmap32 : TBitmap32);
 {$endif}
@@ -99,10 +102,10 @@ type
             if you do you own drawing and reverse RGB on the drawing side.<br>
             If you're after speed, don't forget to set the bitmap's dimensions
             to a power of two! }
-         procedure AssignFromBitmap24WithoutRGBSwap(aBitmap : TBitmap);
+         procedure AssignFromBitmap24WithoutRGBSwap(aBitmap : TGLBitmap);
 
          {: Create a 32 bits TBitmap from self content. }
-         function Create32BitsBitmap : TBitmap;
+         function Create32BitsBitmap : TGLBitmap;
 
          {: True if the bitmap is empty (ie. width or height is zero). }
 	      function IsEmpty : Boolean;
@@ -212,6 +215,8 @@ asm
          cmp   ecx, 0
          jle   @@Done
          mov   edi, eax
+         dec   ecx
+         jz    @@Last
 @@Loop:
          mov   eax, [edi]
          shl   eax, 8
@@ -222,6 +227,15 @@ asm
          add   edx, 4
          dec   ecx
          jnz   @@Loop
+@@Last:
+         mov   cx, [edi+1]
+         shl   ecx, 16
+         mov   ah, [edi]
+         mov   al, $FF
+         and   eax, $FFFF
+         or    eax, ecx
+         bswap eax
+         mov   [edx], eax
 @@Done:
          pop   edi
 end;
@@ -237,6 +251,8 @@ asm
          cmp   ecx, 0
          jle   @@Done
          mov   edi, eax
+         dec   ecx
+         jz    @@Last
 @@Loop:
          mov   eax, [edi]
          or    eax, $FF000000
@@ -245,6 +261,12 @@ asm
          add   edx, 4
          dec   ecx
          jnz   @@Loop
+@@Last:
+         mov   ax, [edi+1]
+         shl   eax, 8
+         mov   al, [edi];
+         or    eax, $FF000000
+         mov   [edx], eax
 @@Done:
          pop   edi
 end;
@@ -307,8 +329,8 @@ end;
 //
 procedure TGLBitmap32.Assign(Source: TPersistent);
 var
-   bmp : TBitmap;
-   graphic : TGraphic;
+   bmp : TGLBitmap;
+   graphic : TGLGraphic;
 begin
    if Source=nil then begin
       FDataSize:=0;
@@ -322,17 +344,17 @@ begin
       FHeight:=TGLBitmap32(Source).Height;
       ReallocMem(FData, FDataSize);
       Move(TGLBitmap32(Source).Data^, Data^, DataSize);
-   end else if Source is TGraphic then begin
-      if (Source is TBitmap) and (TBitmap(Source).PixelFormat in [pf24bit, pf32bit])
-            and ((TBitmap(Source).Width and 3)=0) then begin
-         if TBitmap(Source).PixelFormat=pf24bit then
-            AssignFrom24BitsBitmap(TBitmap(Source))
-         else AssignFrom32BitsBitmap(TBitmap(Source))
+   end else if Source is TGLGraphic then begin
+      if (Source is TGLBitmap) and (TGLBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
+            and ((TGLBitmap(Source).Width and 3)=0) then begin
+         if TGLBitmap(Source).PixelFormat=glpf24bit then
+            AssignFrom24BitsBitmap(TGLBitmap(Source))
+         else AssignFrom32BitsBitmap(TGLBitmap(Source))
       end else begin
-         graphic:=TGraphic(Source);
-         bmp:=TBitmap.Create;
+         graphic:=TGLGraphic(Source);
+         bmp:=TGLBitmap.Create;
          try
-            bmp.PixelFormat:=pf24bit;
+            bmp.PixelFormat:=glpf24bit;
             bmp.Height:=graphic.Height;
             if (graphic.Width and 3)=0 then begin
                bmp.Width:=graphic.Width;
@@ -355,12 +377,12 @@ end;
 
 // AssignFrom24BitsBitmap
 //
-procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TBitmap);
+procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
    pSrc, pDest : PChar;
 begin
-   Assert(aBitmap.PixelFormat=pf24bit);
+   Assert(aBitmap.PixelFormat=glpf24bit);
    Assert((aBitmap.Width and 3)=0);
    FWidth:=aBitmap.Width;
    FHeight:=aBitmap.Height;
@@ -383,12 +405,12 @@ end;
 
 // AssignFromBitmap24WithoutRGBSwap
 //
-procedure TGLBitmap32.AssignFromBitmap24WithoutRGBSwap(aBitmap : TBitmap);
+procedure TGLBitmap32.AssignFromBitmap24WithoutRGBSwap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
    pSrc, pDest : PChar;
 begin
-   Assert(aBitmap.PixelFormat=pf24bit);
+   Assert(aBitmap.PixelFormat=glpf24bit);
    Assert((aBitmap.Width and 3)=0);
    FWidth:=aBitmap.Width;
    FHeight:=aBitmap.Height;
@@ -411,12 +433,12 @@ end;
 
 // AssignFrom32BitsBitmap
 //
-procedure TGLBitmap32.AssignFrom32BitsBitmap(aBitmap : TBitmap);
+procedure TGLBitmap32.AssignFrom32BitsBitmap(aBitmap : TGLBitmap);
 var
    y, rowOffset : Integer;
    pSrc, pDest : PChar;
 begin
-   Assert(aBitmap.PixelFormat=pf32bit);
+   Assert(aBitmap.PixelFormat=glpf32bit);
    Assert((aBitmap.Width and 3)=0);
    FWidth:=aBitmap.Width;
    FHeight:=aBitmap.Height;
@@ -463,13 +485,13 @@ end;
 
 // Create32BitsBitmap
 //
-function TGLBitmap32.Create32BitsBitmap : TBitmap;
+function TGLBitmap32.Create32BitsBitmap : TGLBitmap;
 var
    y, x, x4 : Integer;
    pSrc, pDest : PChar;
 begin
-   Result:=TBitmap.Create;
-   Result.PixelFormat:=pf32bit;
+   Result:=TGLBitmap.Create;
+   Result.PixelFormat:=glpf32bit;
    Result.Width:=Width;
    Result.Height:=Height;
    pSrc:=@PChar(FData)[Width*4*(Height-1)];
