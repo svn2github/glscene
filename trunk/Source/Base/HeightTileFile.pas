@@ -599,6 +599,8 @@ begin
    with FHeightTile.info do
       if (left=aLeft) and (top=aTop) then begin
          Result:=@FHeightTile;
+         if Assigned(pTileInfo) then
+            pTileInfo^:=@Result.info;
          Exit;
       end;
    i:=GetTileIndex(aLeft, aTop);
