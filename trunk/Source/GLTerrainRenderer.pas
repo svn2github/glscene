@@ -166,7 +166,7 @@ var
    hd : THeightData;
 begin
    for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
-      for k:=0 to Count-1 do begin
+      for k:=Count-1 downto 0 do begin
          hd:=THeightData(List[k]);
          hd.Release;
       end;
@@ -177,12 +177,15 @@ end;
 // OnTileDestroyed
 //
 procedure TTerrainRenderer.OnTileDestroyed(sender : TObject);
+var
+   i : Integer;
 begin
    with sender as THeightData do if ObjectTag<>nil then begin
       ObjectTag.Free;
-//      TGLListHandle(Tag).Free;
       ObjectTag:=nil;
    end;
+   for i:=0 to High(FTilesHash) do
+      FTilesHash[i].Remove(Pointer(sender));
 end;
 
 // InterpolatedHeight
@@ -277,7 +280,7 @@ begin
 
    for n:=0 to patchList.Count-1 do begin
       patch:=TGLROAMPatch(patchList[n]);
-      patch.Tesselate(10);
+      patch.Tesselate(400);
    end;
 
    glEnableClientState(GL_VERTEX_ARRAY);
@@ -294,19 +297,14 @@ begin
       vertices.Count:=0;
       patch.Render(vertices, vertexIndices, texPoints);
       vertices.Translate(patch.VertexOffset);
-{      glBegin(GL_TRIANGLES);
-      for i:=0 to vertexIndices.Count-1 do begin
-         k:=vertexIndices.List[i];
-         xglTexCoord2fv(@texPoints.List[k]);
-         glVertex3fv(@vertices.List[k]);
-      end;
-      glEnd; }
       glLockArraysEXT(0, vertices.Count);
       glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
       glUnlockArraysEXT;
 
       FLastTriangleCount:=FLastTriangleCount+vertexIndices.Count div 3;
    end;
+
+   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
    texPoints.Free;
    vertexIndices.Free;
@@ -354,8 +352,9 @@ begin
    // if not, request it
    if not Assigned(tile) then begin
       tile:=HeightDataSource.GetData(xLeft, yTop, TileSize+1, hdtByte);
+      tile.RegisterUse;
       tile.OnDestroy:=OnTileDestroyed;
-      tile.DataType:=hdtWord;
+      tile.DataType:=hdtSmallInt;
       FTilesHash[hash].Add(tile);
       // spawn ROAM patch
       patch:=TGLROAMPatch.Create;
@@ -402,6 +401,7 @@ begin
    // if not, request it
    if not Assigned(tile) then begin
       tile:=HeightDataSource.GetData(xLeft, yTop, TileSize, hdtByte);
+      tile.RegisterUse;
       tile.OnDestroy:=OnTileDestroyed;
       FTilesHash[hash].Add(tile);
    end;

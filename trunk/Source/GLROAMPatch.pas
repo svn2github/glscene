@@ -37,19 +37,22 @@ type
       Z : Integer;
    end;
 
+   TCardinalArray = array [0..MaxInt shr 3] of Cardinal;
+   PCardinalArray = ^TCardinalArray;
+
 	// TGLROAMPatch
 	//
   	TGLROAMPatch = class (TObject)
 	   private
 	      { Private Declarations }
          FHeightData : THeightData; // Referred, not owned
-         FHeightRaster : PWordRaster;
+         FHeightRaster : PSmallIntRaster;
          FTLNode, FBRNode : PROAMTriangleNode;
          FVarianceDepth, FMaxVariance : Integer;
-         FTLVariance, FBRVariance : array of Word;
-         FCurrentVariance : PWordArray;
+         FTLVariance, FBRVariance : array of Cardinal;
+         FCurrentVariance : PCardinalArray;
          FTerrainSize : Integer;
-         FFrameVariance : Integer;
+         FFrameVariance : Cardinal;
          FTargetVertices : TAffineVectorList;
          FTargetVertexIndices : TIntegerList;
          FTargetTexPoints : TTexPointList;
@@ -63,7 +66,7 @@ type
 
          function ROAMVariancePoint(anX, anY : Integer) : TROAMVariancePoint;
          function RecursComputeVariance(const left, right, apex : TROAMVariancePoint;
-                                        node : Integer) : Integer;
+                                        node : Integer) : Word;
          procedure RecursTessellate(tri : PROAMTriangleNode;
                                     const left, right, apex : TGLPoint;
                                     n : Integer);
@@ -234,7 +237,7 @@ procedure TGLROAMPatch.SetHeightData(val : THeightData);
 begin
    FHeightData:=val;
    FTerrainSize:=FHeightData.Size-1;
-   FHeightRaster:=val.WordRaster;
+   FHeightRaster:=val.SmallIntRaster;
 end;
 
 // ROAMVariancePoint
@@ -273,17 +276,19 @@ end;
 // RecursComputeVariance
 //
 function TGLROAMPatch.RecursComputeVariance(const left, right, apex : TROAMVariancePoint;
-                                            node : Integer) : Integer;
+                                            node : Integer) : Word;
 var
    half : TROAMVariancePoint;
-   v : Integer;
+   v : Word;
+   h, hr : SmallInt;
 begin
 	with half do begin
       X:=(left.X+right.X) shr 1;
 	   Y:=(left.Y+right.Y) shr 1;
-      Result:=(left.Z+right.Z) shr 1;
-      Z:=FHeightRaster[Y][X];
-      Result:=Abs(Result-Z);
+      hr:=(left.Z+right.Z) shr 1;
+      h:=FHeightRaster[Y][X];
+      Z:=h;
+      Result:=Abs(hr-h);
    end;
 
 	if node<FMaxVariance then begin
@@ -291,7 +296,7 @@ begin
       if v>Result then Result:=v;
       v:=RecursComputeVariance(right, apex, half, 1+(node*2));
       if v>Result then Result:=v;
-     	FCurrentVariance[node]:=Result*FTerrainSize*4;
+     	FCurrentVariance[node]:=Result*Result;
    end;
 end;
 
@@ -346,8 +351,8 @@ procedure TGLROAMPatch.RecursTessellate(tri : PROAMTriangleNode;
                                         n : Integer);
 var
    half : TGLPoint;
-   d, v : Integer;
-   halfZ : Word;
+   d, v : Cardinal;
+   halfZ : SmallInt;
 
    function GetVariance(n : Integer) : Integer;
    var
@@ -366,16 +371,16 @@ begin
    half.Y:=(left.Y+right.Y) shr 1;
    halfZ:=FHeightRaster[half.Y][half.X];
 
-   d:=1+( Abs(half.x-FObserverPosition[0])
-         +Abs(half.y-FObserverPosition[1])
-         +Abs(halfZ-128-FObserverPosition[2]));
+   d:=1+( Abs(half.x-FObserverPosition[0])*Abs(half.x-FObserverPosition[0])
+         +Abs(half.y-FObserverPosition[1])*Abs(half.y-FObserverPosition[1])
+         +(Abs(halfZ-FObserverPosition[2]) shr 9));
    v:=GetVariance(n);
-   if (v shl 2)>d*FFrameVariance then begin
+   if v>d*FFrameVariance then begin
       if (Abs(left.X-right.X)>=2) or (Abs(left.Y-right.Y)>=2) then begin
          Split(tri);
          if Assigned(tri.leftChild) then begin
-            RecursTessellate(tri.leftChild, apex, left, half, n shl 1);
-            RecursTessellate(tri.rightChild, right, apex, half, 1+(n shl 1));
+            RecursTessellate(tri.leftChild,   apex, left, half,   n*2);
+            RecursTessellate(tri.rightChild, right, apex, half, 1+n*2);
          end;
       end;
    end;
@@ -433,7 +438,7 @@ end;
 procedure TGLROAMPatch.PrepareVertex(var p : TROAMRenderPoint);
 begin
    with p do begin
-      Idx:=FTargetVertices.Add(x, y, FHeightData.WordRaster[y][x]-128);
+      Idx:=FTargetVertices.Add(x, y, FHeightData.SmallIntRaster[y][x]);
       FTargetTexPoints.Add(x*FTextureScale[0]+FTextureOffset[0],
                            FTextureOffset[1]-y*FTextureScale[1]);
    end;

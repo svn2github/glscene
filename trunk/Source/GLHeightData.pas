@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
       <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
       <li>10/09/01 - EG - Added TGLTerrainBaseHDS
       <li>04/03/01 - EG - Added InterpolatedHeight
@@ -22,7 +23,7 @@ unit GLHeightData;
 
 interface
 
-uses Classes, Graphics, Geometry;
+uses Classes, Graphics, Geometry, GLCrossPlatform;
 
 {$i GLScene.inc}
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
@@ -33,10 +34,10 @@ type
    PByteArray = ^TByteArray;
    TByteRaster = array [0..MaxInt shr 3] of PByteArray;
    PByteRaster = ^TByteRaster;
-   TWordArray = array [0..MaxInt shr 2] of Word;
-   PWordArray = ^TWordArray;
-   TWordRaster = array [0..MaxInt shr 3] of PWordArray;
-   PWordRaster = ^TWordRaster;
+   TSmallintArray = array [0..MaxInt shr 2] of SmallInt;
+   PSmallIntArray = ^TSmallIntArray;
+   TSmallIntRaster = array [0..MaxInt shr 3] of PSmallIntArray;
+   PSmallIntRaster = ^TSmallIntRaster;
    TSingleArray = array [0..MaxInt shr 3] of Single;
    PSingleArray = ^TSingleArray;
    TSingleRaster = array [0..MaxInt shr 3] of PSingleArray;
@@ -48,9 +49,9 @@ type
    // THeightDataType
    //
    {: Determines the type of data stored in a THeightData.<p>
-      There are 3 data types (8 bits, 16 bits and 32 bits) possible, the 8 and
-      16 bits types are unsigned, the 32 bits type (single) is signed. }
-   THeightDataType = (hdtByte, hdtWord, hdtSingle);
+      There are 3 data types (8 bits unsigned, signed 16 bits and 32 bits).<p>
+      Conversions: (128*(ByteValue-128)) = SmallIntValue = Round(SingleValue) }
+   THeightDataType = (hdtByte, hdtSmallInt, hdtSingle);
 
 	// THeightDataSource
 	//
@@ -131,6 +132,11 @@ type
             Default behaviour is just to change DataState to hdsReady (ie. return
             the data to the pool) }
          procedure Release(aHeightData : THeightData);
+         {: Marks the given area as "dirty" (ie source data changed).<p>
+            All loaded and in-cache tiles overlapping the area are flushed. }
+         procedure MarkDirty(const area : TGLRect); overload; virtual;
+         procedure MarkDirty(xLeft, yTop, xRight, yBottom : Integer); overload;
+         procedure MarkDirty; overload;
 
          {: Maximum number of background threads.<p>
             If 0 (zero), multithreading is disabled and StartPreparingData
@@ -169,6 +175,12 @@ type
    THeightDataState = ( hdsQueued, hdsPreparing, hdsReady);
 
    THeightDataThread = class;
+   TOnHeightDataDirtyEvent = procedure (sender : THeightData) of object;
+
+   THeightDataUser = record
+      user : TObject;
+      event : TOnHeightDataDirtyEvent;
+   end;
 
 	// THeightData
 	//
@@ -188,6 +200,7 @@ type
 	THeightData = class (TObject)
 	   private
 	      { Private Declarations }
+         FUsers : array of THeightDataUser;
          FOwner : THeightDataSource;
          FDataState : THeightDataState;
          FSize : Integer;
@@ -197,24 +210,25 @@ type
          FDataSize : Integer;
          FByteData : PByteArray;
          FByteRaster : PByteRaster;
-         FWordData : PWordArray;
-         FWordRaster : PWordRaster;
+         FSmallIntData : PSmallIntArray;
+         FSmallIntRaster : PSmallIntRaster;
          FSingleData : PSingleArray;
          FSingleRaster : PSingleRaster;
          FObjectTag : TObject;
          FTag, FTag2 : Integer;
          FOnDestroy : TNotifyEvent;
+         FDirty : Boolean;
 
          procedure BuildByteRaster;
-         procedure BuildWordRaster;
+         procedure BuildSmallIntRaster;
          procedure BuildSingleRaster;
 
-         procedure ConvertByteToWord;
+         procedure ConvertByteToSmallInt;
          procedure ConvertByteToSingle;
-         procedure ConvertWordToByte;
-         procedure ConvertWordToSingle;
+         procedure ConvertSmallIntToByte;
+         procedure ConvertSmallIntToSingle;
          procedure ConvertSingleToByte;
-         procedure ConvertSingleToWord;
+         procedure ConvertSingleToSmallInt;
 
 	   protected
 	      { Protected Declarations }
@@ -239,7 +253,10 @@ type
             A THeightData is not returned to the pool untill this counter reaches
             a value of zero. }
          property UseCounter : Integer read FUseCounter;
-         {: Increments UseCounter.<p> }
+         {: Increments UseCounter.<p>
+            User objects should implement a method that will be notified when
+            the data becomes dirty, when invoked they should release the heightdata
+            immediately after performing their own cleanups. }
          procedure RegisterUse;
          {: Decrements UseCounter.<p>
             When the counter reaches zero, notifies the Owner THeightDataSource
@@ -247,6 +264,9 @@ type
             The renderer should call Release when it no longer needs a THeighData,
             and never free/destroy the object directly. }
          procedure Release;
+         {: Marks the tile as dirty.<p>
+            The immediate effect is currently the destruction of the tile. }
+         procedure MarkDirty;
 
          {: World X coordinate of top left point. }
          property XLeft : Integer read FXLeft;
@@ -259,6 +279,8 @@ type
          property DataState : THeightDataState read FDataState write FDataState;
          {: Size of the data square, in data units. }
          property Size : Integer read FSize;
+         {: True if the data is dirty (ie. no longer up-to-date). }
+         property Dirty : Boolean read FDirty;
 
          {: Memory size of the raw data in bytes. }
          property DataSize : Integer read FDataSize;
@@ -269,12 +291,12 @@ type
          {: Access to data as a byte raster (y, x).<p>
             If THeightData is not of type hdtByte, this value is nil. }
          property ByteRaster : PByteRaster read FByteRaster;
-         {: Access to data as a Word array (n = y*Size+x).<p>
-            If THeightData is not of type hdtWord, this value is nil. }
-         property WordData : PWordArray read FWordData;
-         {: Access to data as a Word raster (y, x).<p>
-            If THeightData is not of type hdtWord, this value is nil. }
-         property WordRaster : PWordRaster read FWordRaster;
+         {: Access to data as a SmallInt array (n = y*Size+x).<p>
+            If THeightData is not of type hdtSmallInt, this value is nil. }
+         property SmallIntData : PSmallIntArray read FSmallIntData;
+         {: Access to data as a SmallInt raster (y, x).<p>
+            If THeightData is not of type hdtSmallInt, this value is nil. }
+         property SmallIntRaster : PSmallIntRaster read FSmallIntRaster;
          {: Access to data as a Single array (n = y*Size+x).<p>
             If THeightData is not of type hdtSingle, this value is nil. }
          property SingleData : PSingleArray read FSingleData;
@@ -284,8 +306,8 @@ type
 
          {: Height of point x, y as a Byte.<p> }
 	      function ByteHeight(x, y : Integer) : Byte;
-         {: Height of point x, y as a Word.<p> }
-	      function WordHeight(x, y : Integer) : Word;
+         {: Height of point x, y as a SmallInt.<p> }
+	      function SmallIntHeight(x, y : Integer) : SmallInt;
          {: Height of point x, y as a Single.<p> }
 	      function SingleHeight(x, y : Integer) : Single;
          {: Interopolated height of point x, y as a Single.<p> }
@@ -298,6 +320,9 @@ type
             Sub classes may provide normal cacheing, the default implementation
             being rather blunt. }
          function Normal(x, y : Integer; const scale : TAffineVector) : TAffineVector; virtual;
+
+         {: Returns True if the data tile overlaps the area. }
+         function OverlapsArea(const area : TGLRect) : Boolean;
 
          {: Reserved for renderer use. }
          property ObjectTag : TObject read FObjectTag write FObjectTag;
@@ -352,6 +377,8 @@ type
 	      { Public Declarations }
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+
+         procedure MarkDirty(const area : TGLRect); override;
 
 	   published
 	      { Published Declarations }
@@ -553,13 +580,12 @@ begin
    end;
    // got one... can be used ?
    while Result.DataState<>hdsReady do Sleep(1);
-   Result.RegisterUse;
 end;
 
 // PreLoad
 //
 function THeightDataSource.PreLoad(xLeft, yTop, size : Integer;
-                  dataType : THeightDataType) : THeightData;
+                                   dataType : THeightDataType) : THeightData;
 begin
    CleanUp;
    Result:=HeightDataClass.Create(Self, xLeft, yTop, size, dataType);
@@ -576,6 +602,48 @@ begin
    CleanUp;
 end;
 
+// MarkDirty (rect)
+//
+procedure THeightDataSource.MarkDirty(const area : TGLRect);
+var
+   i : Integer;
+   hd : THeightData;
+begin
+   with FData.LockList do begin
+      try
+         for i:=Count-1 downto 0 do begin
+            hd:=THeightData(Items[i]);
+            if hd.OverlapsArea(area) then
+               hd.MarkDirty;
+         end;
+      finally
+         FData.UnlockList;
+      end;
+   end;
+end;
+
+// MarkDirty (ints)
+//
+procedure THeightDataSource.MarkDirty(xLeft, yTop, xRight, yBottom : Integer);
+var
+   r : TGLRect;
+begin
+   r.Left:=xLeft;
+   r.Top:=yTop;
+   r.Right:=xRight;
+   r.Bottom:=yBottom;
+   MarkDirty(r);
+end;
+
+// MarkDirty
+//
+procedure THeightDataSource.MarkDirty;
+const
+   m = MaxInt-1;
+begin
+   MarkDirty(-m, -m, m, m);
+end;
+
 // CleanUp
 //
 procedure THeightDataSource.CleanUp;
@@ -586,8 +654,15 @@ begin
    with FData.LockList do begin
       try
          usedMemory:=0;
-         for i:=0 to Count-1 do
-            usedMemory:=usedMemory+THeightData(Items[i]).DataSize;
+         // cleanup dirty tiles and compute used memory
+         for i:=Count-1 downto 0 do with THeightData(Items[i]) do begin
+            if Dirty then begin
+               FOwner:=nil;
+               Free;
+               Delete(i);
+            end else usedMemory:=usedMemory+THeightData(Items[i]).DataSize;
+         end;
+         // if MaxPoolSize exceeded, release all that may be
          if usedMemory>MaxPoolSize then begin
             for i:=Count-1 downto 0 do with THeightData(Items[i]) do begin
                if (DataState=hdsReady) and (UseCounter=0) then begin
@@ -651,11 +726,7 @@ begin
       // request it using "standard" way (takes care of threads)
       foundHd:=GetData(foundHd.XLeft, foundHd.YTop, foundHd.Size, foundHd.DataType);
    end;
-   try
-      Result:=foundHd.InterpolatedHeight(x-foundHd.XLeft, y-foundHd.YTop);
-   finally
-      foundHd.Release;
-   end;
+   Result:=foundHd.InterpolatedHeight(x-foundHd.XLeft, y-foundHd.YTop);
 end;
 
 // ------------------
@@ -681,10 +752,10 @@ begin
          GetMem(FByteData, FDataSize);
          BuildByteRaster;
       end;
-      hdtWord : begin
-         FDataSize:=Size*Size*SizeOf(Word);
-         GetMem(FWordData, FDataSize);
-         BuildWordRaster;
+      hdtSmallInt : begin
+         FDataSize:=Size*Size*SizeOf(SmallInt);
+         GetMem(FSmallIntData, FDataSize);
+         BuildSmallIntRaster;
       end;
       hdtSingle : begin
          FDataSize:=Size*Size*SizeOf(Single);
@@ -700,6 +771,7 @@ end;
 //
 destructor THeightData.Destroy;
 begin
+   Assert(Length(FUsers)=0, 'You should *not* free a THeightData, use "Release" instead');
    Assert(not Assigned(FOwner), 'You should *not* free a THeightData, use "Release" instead');
    if Assigned(FThread) then begin
       FThread.Terminate;
@@ -712,9 +784,9 @@ begin
          FreeMem(FByteData);
          FreeMem(FByteRaster);
       end;
-      hdtWord : begin
-         FreeMem(FWordData);
-         FreeMem(FWordRaster);
+      hdtSmallInt : begin
+         FreeMem(FSmallIntData);
+         FreeMem(FSmallIntRaster);
       end;
       hdtSingle : begin
          FreeMem(FSingleData);
@@ -743,6 +815,17 @@ begin
       Owner.Release(Self);
 end;
 
+// MarkDirty
+//
+procedure THeightData.MarkDirty;
+begin
+   if not Dirty then begin
+      FDirty:=True;
+      FUseCounter:=0;
+      FOwner.Release(Self);
+   end;
+end;
+
 // SetDataType
 //
 procedure THeightData.SetDataType(const val : THeightDataType);
@@ -750,20 +833,20 @@ begin
    if val<>FDataType then begin
       case FDataType of
          hdtByte : case val of
-               hdtWord : ConvertByteToWord;
+               hdtSmallInt : ConvertByteToSmallInt;
                hdtSingle : ConvertByteToSingle;
             else
                Assert(False);
             end;
-         hdtWord : case val of
-               hdtByte : ConvertWordToByte;
-               hdtSingle : ConvertWordToSingle;
+         hdtSmallInt : case val of
+               hdtByte : ConvertSmallIntToByte;
+               hdtSingle : ConvertSmallIntToSingle;
             else
                Assert(False);
             end;
          hdtSingle : case val of
                hdtByte : ConvertSingleToByte;
-               hdtWord : ConvertSingleToWord;
+               hdtSmallInt : ConvertSingleToSmallInt;
             else
                Assert(False);
             end;
@@ -785,15 +868,15 @@ begin
       FByteRaster[i]:=@FByteData[i*Size]
 end;
 
-// BuildWordRaster
+// BuildSmallIntRaster
 //
-procedure THeightData.BuildWordRaster;
+procedure THeightData.BuildSmallIntRaster;
 var
    i : Integer;
 begin
-   GetMem(FWordRaster, Size*SizeOf(PWordArray));
+   GetMem(FSmallIntRaster, Size*SizeOf(PSmallIntArray));
    for i:=0 to Size-1 do
-      FWordRaster[i]:=@FWordData[i*Size]
+      FSmallIntRaster[i]:=@FSmallIntData[i*Size]
 end;
 
 // BuildSingleRaster
@@ -807,21 +890,21 @@ begin
       FSingleRaster[i]:=@FSingleData[i*Size]
 end;
 
-// ConvertByteToWord
+// ConvertByteToSmallInt
 //
-procedure THeightData.ConvertByteToWord;
+procedure THeightData.ConvertByteToSmallInt;
 var
    i : Integer;
 begin
    FreeMem(FByteRaster);
    FByteRaster:=nil;
-   FDataSize:=Size*Size*SizeOf(Word);
-   GetMem(FWordData, FDataSize);
+   FDataSize:=Size*Size*SizeOf(SmallInt);
+   GetMem(FSmallIntData, FDataSize);
    for i:=0 to Size*Size-1 do
-      FWordData[i]:=FByteData[i];
+      FSmallIntData[i]:=(FByteData[i]-128) shl 7;
    FreeMem(FByteData);
    FByteData:=nil;
-   BuildWordRaster;
+   BuildSmallIntRaster;
 end;
 
 // ConvertByteToSingle
@@ -835,43 +918,43 @@ begin
    FDataSize:=Size*Size*SizeOf(Single);
    GetMem(FSingleData, FDataSize);
    for i:=0 to Size*Size-1 do
-      FSingleData[i]:=FByteData[i];
+      FSingleData[i]:=(FByteData[i]-128) shl 7;
    FreeMem(FByteData);
    FByteData:=nil;
    BuildSingleRaster;
 end;
 
-// ConvertWordToByte
+// ConvertSmallIntToByte
 //
-procedure THeightData.ConvertWordToByte;
+procedure THeightData.ConvertSmallIntToByte;
 var
    i : Integer;
 begin
-   FreeMem(FWordRaster);
-   FWordRaster:=nil;
-   FByteData:=Pointer(FWordData);
+   FreeMem(FSmallIntRaster);
+   FSmallIntRaster:=nil;
+   FByteData:=Pointer(FSmallIntData);
    for i:=0 to Size*Size-1 do
-      FByteData[i]:=FWordData[i] shr 8;
+      FByteData[i]:=(FSmallIntData[i] div 128)+128;
    FDataSize:=Size*Size*SizeOf(Byte);
    ReallocMem(FByteData, FDataSize);
-   FWordData:=nil;
+   FSmallIntData:=nil;
    BuildByteRaster;
 end;
 
-// ConvertWordToSingle
+// ConvertSmallIntToSingle
 //
-procedure THeightData.ConvertWordToSingle;
+procedure THeightData.ConvertSmallIntToSingle;
 var
    i : Integer;
 begin
-   FreeMem(FWordRaster);
-   FWordRaster:=nil;
+   FreeMem(FSmallIntRaster);
+   FSmallIntRaster:=nil;
    FDataSize:=Size*Size*SizeOf(Single);
    GetMem(FSingleData, FDataSize);
    for i:=0 to Size*Size-1 do
-      FSingleData[i]:=FWordData[i];
-   FreeMem(FWordData);
-   FWordData:=nil;
+      FSingleData[i]:=FSmallIntData[i];
+   FreeMem(FSmallIntData);
+   FSmallIntData:=nil;
    BuildSingleRaster;
 end;
 
@@ -885,28 +968,28 @@ begin
    FSingleRaster:=nil;
    FByteData:=Pointer(FSingleData);
    for i:=0 to Size*Size-1 do
-      FByteData[i]:=Round(FSingleData[i]);
+      FByteData[i]:=Round(FSingleData[i]) div 128+128;
    FDataSize:=Size*Size*SizeOf(Byte);
    ReallocMem(FByteData, FDataSize);
    FSingleData:=nil;
    BuildByteRaster;
 end;
 
-// ConvertSingleToWord
+// ConvertSingleToSmallInt
 //
-procedure THeightData.ConvertSingleToWord;
+procedure THeightData.ConvertSingleToSmallInt;
 var
    i : Integer;
 begin
    FreeMem(FSingleRaster);
    FSingleRaster:=nil;
-   FWordData:=Pointer(FSingleData);
+   FSmallIntData:=Pointer(FSingleData);
    for i:=0 to Size*Size-1 do
-      FWordData[i]:=Round(FSingleData[i]);
-   FDataSize:=Size*Size*SizeOf(Word);
-   ReallocMem(FWordData, FDataSize);
+      FSmallIntData[i]:=Round(FSingleData[i]);
+   FDataSize:=Size*Size*SizeOf(SmallInt);
+   ReallocMem(FSmallIntData, FDataSize);
    FSingleData:=nil;
-   BuildWordRaster;
+   BuildSmallIntRaster;
 end;
 
 // ByteHeight
@@ -917,12 +1000,12 @@ begin
 	Result:=ByteRaster[y][x];
 end;
 
-// WordHeight
+// SmallIntHeight
 //
-function THeightData.WordHeight(x, y : Integer) : Word;
+function THeightData.SmallIntHeight(x, y : Integer) : SmallInt;
 begin
    Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
-	Result:=WordRaster[y][x];
+	Result:=SmallIntRaster[y][x];
 end;
 
 // SingleHeight
@@ -963,7 +1046,7 @@ function THeightData.Height(x, y : Integer) : Single;
 begin
    case DataType of
       hdtByte : Result:=ByteHeight(x, y);
-      hdtWord : Result:=WordHeight(x, y);
+      hdtSmallInt : Result:=SmallIntHeight(x, y);
       hdtSingle : Result:=SingleHeight(x, y);
    else
       Result:=0;
@@ -991,6 +1074,14 @@ begin
    Result[1]:=dy;
    Result[2]:=1;
    NormalizeVector(Result);
+end;
+
+// OverlapsArea
+//
+function THeightData.OverlapsArea(const area : TGLRect) : Boolean;
+begin
+   Result:=(XLeft<=area.Right) and (YTop<=area.Bottom)
+           and (XLeft+Size>area.Left) and (YTop+Size>area.Top); 
 end;
 
 // ------------------
@@ -1051,6 +1142,16 @@ begin
    size:=Picture.Width;
    if size>0 then
       CreateMonochromeBitmap(size);
+end;
+
+// MarkDirty
+//
+procedure TGLBitmapHDS.MarkDirty(const area : TGLRect);
+begin
+   inherited;
+   FreeMonochromeBitmap;
+   if Picture.Width>0 then
+      CreateMonochromeBitmap(Picture.Width);
 end;
 
 // CreateMonochromeBitmap
@@ -1161,7 +1262,7 @@ const
    cTBHeight : Integer = 2160;
 var
    y, x, offset : Integer;
-   rasterLine : PWordArray;
+   rasterLine : PSmallIntArray;
    oldType : THeightDataType;
    b : SmallInt;
    fs : TFileStream;
@@ -1172,18 +1273,18 @@ begin
       // retrieve data
       with heightData do begin
          oldType:=DataType;
-         DataType:=hdtWord;
+         DataType:=hdtSmallInt;
          for y:=YTop to YTop+Size-1 do begin
             offset:=(y mod cTBHeight)*(cTBWidth*2);
-            rasterLine:=WordRaster[y-YTop];
+            rasterLine:=SmallIntRaster[y-YTop];
             for x:=XLeft to XLeft+Size-1 do begin
                fs.Seek(offset+(x mod cTBWidth)*2, soFromBeginning);
                fs.Read(b, 2);
                if b<0 then b:=0;
-               rasterLine[x-XLeft]:=Word(b);
+               rasterLine[x-XLeft]:=SmallInt(b);
             end;
          end;
-         if oldType<>hdtWord then
+         if oldType<>hdtSmallInt then
             DataType:=oldType;
       end;
       inherited;
