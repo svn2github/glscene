@@ -87,7 +87,7 @@ Begin
   // Select or Create FaceGroup
   If Mesh.MeshObjects.Count = 0 then
   Begin
-    TMeshObject.CreateOwned(Mesh.MeshObjects);
+    TessMesh := TMeshObject.CreateOwned(Mesh.MeshObjects);
     Mesh.MeshObjects[0].Mode := momFaceGroups;
   End else
     TessMesh := Mesh.MeshObjects[0];
