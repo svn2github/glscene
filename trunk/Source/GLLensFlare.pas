@@ -95,6 +95,7 @@ type
          FRaysGradient : TGLFlareGradient;
          FSecondariesGradient : TGLFlareGradient;
          FDynamic : Boolean;
+         FPreRenderPoint : TGLRenderPoint;
 
       protected
          { Protected Declarations }
@@ -116,6 +117,9 @@ type
          procedure SetAutoZTest(aValue : Boolean);
          procedure SetElements(aValue : TFlareElements);
          procedure SetDynamic(aValue : Boolean);
+         procedure SetPreRenderPoint(const val : TGLRenderPoint);
+         procedure PreRenderEvent(Sender : TObject; var rci : TRenderContextInfo);
+         procedure PreRenderPointFreed(Sender : TObject);
 
          procedure SetupRenderingOptions;
          procedure RestoreRenderingOptions;
@@ -129,6 +133,7 @@ type
          { Public Declarations }
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
          procedure BuildList(var rci : TRenderContextInfo); override;
          procedure DoProgress(const progressTime: TProgressTimes); override;
@@ -186,6 +191,10 @@ type
             When false, flare will either be at full size or hidden.<p>
             The flare is always considered non-dynamic at design-time. }
          property Dynamic : Boolean read FDynamic write FDynamic default True;
+
+         {: PreRender point for pre-rendered flare textures.<p>
+            See PreRender method for more details. }
+         property PreRenderPoint : TGLRenderPoint read FPreRenderPoint write SetPreRenderPoint;
 
          property ObjectsSorting;
          property Position;
@@ -306,6 +315,7 @@ end;
 //
 destructor TGLLensFlare.Destroy;
 begin
+   PreRenderPoint:=nil;
    FGlowGradient.Free;
    FRingGradient.Free;
    FStreaksGradient.Free;
@@ -313,6 +323,15 @@ begin
    FSecondariesGradient.Free;
    FOcclusionQuery.Free;
    FTexRays.Free;
+   inherited;
+end;
+
+// Notification
+//
+procedure TGLLensFlare.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   if (Operation=opRemove) and (AComponent=FPreRenderPoint) then
+      PreRenderPoint:=nil;
    inherited;
 end;
 
@@ -863,6 +882,33 @@ begin
       FDynamic:=aValue;
       NotifyChange(Self);
    end;
+end;
+
+// SetPreRenderPoint
+//
+procedure TGLLensFlare.SetPreRenderPoint(const val : TGLRenderPoint);
+begin
+   if val<>FPreRenderPoint then begin
+      if Assigned(FPreRenderPoint) then
+         FPreRenderPoint.UnRegisterCallBack(Self.PreRenderEvent);
+      FPreRenderPoint:=val;
+      if Assigned(FPreRenderPoint) then
+         FPreRenderPoint.RegisterCallBack(Self.PreRenderEvent, Self.PreRenderPointFreed);
+   end;
+end;
+
+// PreRenderEvent
+//
+procedure TGLLensFlare.PreRenderEvent(Sender : TObject; var rci : TRenderContextInfo);
+begin
+   PreRender((rci.scene as TGLScene).CurrentBuffer);
+end;
+
+// PreRenderPointFreed
+//
+procedure TGLLensFlare.PreRenderPointFreed(Sender : TObject);
+begin
+   FPreRenderPoint:=nil;
 end;
 
 // ------------------------------------------------------------------
