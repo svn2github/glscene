@@ -9,6 +9,7 @@
    This unit is still experimental so use at your own risk!<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>28/09/04 - SG - Vertex programs now use ARB_position_invariant option.
       <li>29/06/04 - SG - Quaternion tangent space fix in tangent bump vertex
                           program.
       <li>23/06/04 - SG - Added bsTangent option to TBumpSpace,
@@ -72,17 +73,11 @@ implementation
 const
    cCalcObjectSpaceLightVectorVertexProgram =
       '!!ARBvp1.0'+#13#10+
-      'PARAM mvproj[4] = { state.matrix.mvp };'+
+      'OPTION ARB_position_invariant;'+#13#10+
       'PARAM mvinv[4] = { state.matrix.modelview[0].inverse };'+
       'PARAM lightPos = state.light[%d].position;'+
-      'PARAM vals = { 1.0, 1.0, 0.99999, 0.5 };'+
+      'PARAM vals = { 1.0, 1.0, 1.0, 0.5 };'+
       'TEMP R0, light;'+
-
-      '   DP4 result.position.x, mvproj[0], vertex.position;'+
-      '   DP4 result.position.y, mvproj[1], vertex.position;'+
-      '   DP4 R0.z, mvproj[2], vertex.position;'+
-      '   MUL result.position.z, R0.z, vals.z;'+
-      '   DP4 result.position.w, mvproj[3], vertex.position;'+
 
       '   MOV result.texcoord[0], vertex.texcoord[0];'+
 
@@ -103,8 +98,9 @@ const
    // Cg compiled arbvp1
    cCalcTangentSpaceLightVectorVertexProgram =
       '!!ARBvp1.0'+
+      'OPTION ARB_position_invariant;'+#13#10+
       'PARAM c0 = { 0, 0, 1, 0 };'+
-      'PARAM c1 = { 0.5, 0.99999, 0, 0 };'+
+      'PARAM c1 = { 0.5, 0.0, 0, 0 };'+
       'TEMP R0, R1, R2;'+
       'ATTRIB v24 = vertex.texcoord[0];'+
       'ATTRIB v18 = vertex.normal;'+
@@ -113,11 +109,6 @@ const
       'PARAM s259[4] = { state.matrix.mvp };'+
       'PARAM s359[4] = { state.matrix.modelview[0].inverse };'+
       '   MOV result.texcoord[0].xy, v24;'+
-      '   DP4 result.position.x, s259[0], v16;'+
-      '   DP4 result.position.y, s259[1], v16;'+
-      '   DP4 R1.z, s259[2], v16;'+
-      '   MUL result.position.z, R1.z, c1.y;'+
-      '   DP4 result.position.w, s259[3], v16;'+
       '   MOV R1, s18;'+
       '   DP4 R0.x, s359[0], R1;'+
       '   DP4 R0.y, s359[1], R1;'+
@@ -142,6 +133,7 @@ const
       '   MUL result.color.front.primary.xyz, R0.xyzx, c1.x;'+
       '   MOV result.color.front.primary.w, c0.zxxz;'+
       'END';
+
 // Register
 //
 procedure Register;
