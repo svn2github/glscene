@@ -172,6 +172,8 @@ USEUNIT("..\Source\Shaders\GLPhongShader.pas");
 USEUNIT("..\Source\GLTrail.pas");
 USEUNIT("..\Source\GLScriptBase.pas");
 USEUNIT("..\Source\FileFormats\GLFileMD5.pas");
+USEUNIT("..\Source\GLGameMenu.pas");
+USEUNIT("..\Source\Base\PictureRegisteredFormats.pas");
 USEUNIT("..\Source\GLSpatialPartitioning.pas");
 USEFORMNS("..\Source\DesignTime\FRColorEditor.pas", Frcoloreditor, RColorEditor); /* TFrame: File Type */
 USEFORMNS("..\Source\DesignTime\FRTrackBarEdit.pas", Frtrackbaredit, RTrackBarEdit); /* TFrame: File Type */

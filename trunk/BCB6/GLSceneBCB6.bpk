@@ -98,7 +98,8 @@
       ..\Source\GLPerlinBase.obj ..\Source\GLPerlin.obj 
       ..\Source\Base\ARBProgram.obj ..\Source\Shaders\GLPhongShader.obj 
       ..\Source\GLTrail.obj ..\Source\GLScriptBase.obj
-      ..\Source\FileFormats\GLFileMD5.obj ..\Source\GLSpatialPartitioning.obj
+      ..\Source\FileFormats\GLFileMD5.obj ..\Source\GLGameMenu.obj 
+      ..\Source\Base\PictureRegisteredFormats.obj ..\Source\GLSpatialPartitioning.obj
       ..\Source\FileFormats\VRMLParser.obj ..\Source\FileFormats\GLFileVRML.obj
       ..\Source\GLLinePFX.obj"/>
     <RESFILES value="GLSceneBCB6.res ..\Source\DesignTime\nonGLSceneVCL.dcr 
@@ -344,6 +345,8 @@
       <FILE FILENAME="..\Source\GLTrail.pas" FORMNAME="" UNITNAME="GLTrail" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\GLScriptBase.pas" FORMNAME="" UNITNAME="GLScriptBase" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\FileFormats\GLFileMD5.pas" FORMNAME="" UNITNAME="GLFileMD5" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\GLGameMenu.pas" FORMNAME="" UNITNAME="GLGameMenu" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\Source\Base\PictureRegisteredFormats.pas" FORMNAME="" UNITNAME="PictureRegisteredFormats" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>      
       <FILE FILENAME="..\Source\GLSpatialPartitioning.pas" FORMNAME="" UNITNAME="GLSpatialPartitioning" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\FileFormats\VRMLParser.pas" FORMNAME="" UNITNAME="VRMLParser" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
       <FILE FILENAME="..\Source\FileFormats\GLFileVRML.pas" FORMNAME="" UNITNAME="GLFileVRML" CONTAINERID="PascalCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>

@@ -86,7 +86,9 @@
       ..\Source\GLPerlinBase.obj ..\Source\GLPerlin.obj 
       ..\Source\Base\ARBProgram.obj ..\Source\Shaders\GLPhongShader.obj 
       ..\Source\GLTrail.obj ..\Source\GLScriptBase.obj 
-      ..\Source\FileFormats\GLFileMD5.obj ..\Source\GLSpatialPartitioning.obj 
+      ..\Source\FileFormats\GLFileMD5.obj ..\Source\GLGameMenu.obj 
+      ..\Source\Base\PictureRegisteredFormats.obj  
+      ..\Source\GLSpatialPartitioning.obj 
       ..\Source\DesignTime\FRColorEditor.obj 
       ..\Source\DesignTime\FRTrackBarEdit.obj 
       ..\Source\DesignTime\FRFaceEditor.obj 
