@@ -163,6 +163,8 @@ contains
   GLPerlinPFX in '..\Source\GLPerlinPFX.pas',
   GLImposter in '..\Source\GLImposter.pas',
   GLTilePlane in '..\Source\GLTilePlane.pas',
-  PerlinNoise in '..\Source\Base\PerlinNoise.pas';
+  PerlinNoise in '..\Source\Base\PerlinNoise.pas',
+  TypesMDC in '..\Source\FileFormats\TypesMDC.pas',
+  GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas';
 
 end.
