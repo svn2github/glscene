@@ -405,11 +405,26 @@ type
 
    TGLNodesClass = class of TGLNodes;
 
+   // TGLSilhouetteStyle
+   //
+   TGLSilhouetteStyle = (ssOmni, ssParallel);
+
+   // TGLSilhouetteParameters
+   //
+   {: Silouhette generation parameters.<p>
+      SeenFrom and LightDirection are expected in local coordinates. }
+   TGLSilhouetteParameters = record
+      SeenFrom, LightDirection : TAffineVector;
+      Style : TGLSilhouetteStyle;
+      CappingRequired : Boolean;
+   end;
+
    // TGLBaseSilhouette
    //
    {: Base class storing a volume silhouette.<p>
       Made of a set of indexed vertices defining an outline, and another set
-      of indexed vertices defining a capping volume.<br>
+      of indexed vertices defining a capping volume. Coordinates system
+      is the object's unscaled local coordinates system.<br>
       This is the base class, you can use the TGLSilhouette subclass if you
       need some helper methods for generating the indexed sets. }
    TGLBaseSilhouette = class
