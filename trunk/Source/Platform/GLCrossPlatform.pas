@@ -20,7 +20,7 @@ interface
 
 {$include ../GLScene.inc}
 
-{$ifdef WIN32}
+{$ifdef MSWINDOWS}
 uses Windows, Graphics, Dialogs, SysUtils, ExtDlgs, Controls, Forms;
 {$endif}
 {$ifdef LINUX}
@@ -43,7 +43,7 @@ type
    TGLGraphic = TGraphic;
    TGLBitmap = TBitmap;
 
-{$ifdef GLS_DELPHI5}
+{$ifdef GLS_DELPHI_5}
    EGLOSError = EWin32Error;
 {$else}
    {$ifdef FPC}
@@ -110,9 +110,9 @@ function ApplicationTerminated : Boolean;
 
 procedure RaiseLastOSError;
 
-{$IFNDEF GLS_DELPHI5_UP}
+{$IFNDEF GLS_DELPHI_5_UP}
 procedure FreeAndNil(var anObject);
-{$ENDIF GLS_DELPHI5_UP}
+{$ENDIF GLS_DELPHI_5_UP}
 
 {: Number of pixels per logical inch along the screen width for the device.<p>
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
@@ -359,7 +359,7 @@ begin
    raise e;
 end;
 
-{$IFNDEF GLS_DELPHI5_UP}
+{$IFNDEF GLS_DELPHI_5_UP}
 // FreeAndNil
 //
 procedure FreeAndNil(var anObject);
@@ -370,7 +370,7 @@ begin
   TObject(anObject):=nil;  // clear the reference before destroying the object
   buf.Free;
 end;
-{$ENDIF GLS_DELPHI5_UP}
+{$ENDIF GLS_DELPHI_5_UP}
 
 // GetDeviceLogicalPixelsX
 //
