@@ -98,7 +98,7 @@ const
   {
     The following flags tell what type of samples are
     supported by HARDWARE mixing, all these formats are
-    supported by SOFTWARE mixing
+    supported by SOFTWARE mixing.
   }
   DSCAPS_SECONDARYMONO    = $00000100;     // mono
   DSCAPS_SECONDARYSTEREO  = $00000200;     // stereo
