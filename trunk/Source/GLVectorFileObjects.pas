@@ -886,6 +886,21 @@ type
 
    TVectorFileClass = class of TVectorFile;
 
+   // TGLGLSMVectorFile
+   //
+   {: GLSM (GLScene Mesh) vector file.<p>
+      This corresponds to the 'native' GLScene format, and object persistence
+      stream, which should be the 'fastest' of all formats to load, and supports
+      all of GLScene features. }
+   TGLGLSMVectorFile = class (TVectorFile)
+      public
+         { Public Declarations }
+         class function Capabilities : TDataFileCapabilities; override;
+
+         procedure LoadFromStream(aStream : TStream); override;
+         procedure SaveToStream(aStream : TStream); override;
+   end;
+
    // TGL3DSVectorFile
    //
    {: The 3DStudio vector file.<p>
@@ -893,10 +908,10 @@ type
       A 3DS file may contain material information and require textures when
       loading. Only the primary texture map is used by GLScene, transparency,
       bump mapping, etc. are ignored as of now. }
-   TGL3DSVectorFile = class(TVectorFile)
+   TGL3DSVectorFile = class (TVectorFile)
       public
          { Public Declarations }
-         procedure LoadFromStream(aStream: TStream); override;
+         procedure LoadFromStream(aStream : TStream); override;
    end;
 
    // TGLMD2VectorFile
@@ -909,7 +924,7 @@ type
    TGLMD2VectorFile = class(TVectorFile)
       public
          { Public Declarations }
-         procedure LoadFromStream(aStream: TStream); override;
+         procedure LoadFromStream(aStream : TStream); override;
    end;
 
    // TGLTINVectorFile
@@ -921,7 +936,7 @@ type
    TGLTINVectorFile = class(TVectorFile)
       public
          { Public Declarations }
-         procedure LoadFromStream(aStream: TStream); override;
+         procedure LoadFromStream(aStream : TStream); override;
    end;
 
    // TGLGTSVectorFile
@@ -936,7 +951,7 @@ type
    TGLGTSVectorFile = class(TVectorFile)
       public
          { Public Declarations }
-         procedure LoadFromStream(aStream: TStream); override;
+         procedure LoadFromStream(aStream : TStream); override;
    end;
 
    // TGLPLYVectorFile
@@ -949,7 +964,7 @@ type
    TGLPLYVectorFile = class(TVectorFile)
       public
          { Public Declarations }
-         procedure LoadFromStream(aStream: TStream); override;
+         procedure LoadFromStream(aStream : TStream); override;
    end;
 
    // TGLSMDVectorFile
@@ -963,7 +978,7 @@ type
    TGLSMDVectorFile = class(TVectorFile)
       public
          { Public Declarations }
-         procedure LoadFromStream(aStream: TStream); override;
+         procedure LoadFromStream(aStream : TStream); override;
    end;
 
    // TGLBaseMesh
@@ -1429,8 +1444,13 @@ type
          function FindExt(ext : string) : TVectorFileClass;
          function FindFromFileName(const fileName : String) : TVectorFileClass;
          procedure Remove(AClass: TVectorFileClass);
-         procedure BuildFilterStrings(VectorFileClass: TVectorFileClass; var Descriptions, Filters: string);
-         function FindExtByIndex(index : Integer) : String;
+         procedure BuildFilterStrings(vectorFileClass : TVectorFileClass;
+                                      var descriptions, filters : String;
+                                      formatsThatCanBeOpened : Boolean = True;
+                                      formatsThatCanBeSaved : Boolean = False);
+         function FindExtByIndex(index : Integer;
+                                 formatsThatCanBeOpened : Boolean = True;
+                                 formatsThatCanBeSaved : Boolean = False) : String;
    end;
 
    EInvalidVectorFile = class(Exception);
@@ -1439,6 +1459,8 @@ type
 function GetVectorFileFormats : TVectorFileFormatsList;
 //: A file extension filter suitable for dialog's 'Filter' property
 function VectorFileFormatsFilter : String;
+//: A file extension filter suitable for a savedialog's 'Filter' property
+function VectorFileFormatsSaveFilter : String;
 {: Returns an extension by its index in the vector files dialogs filter.<p>
    Use VectorFileFormatsFilter to obtain the filter. }
 function VectorFileFormatExtensionByIndex(index : Integer) : String;
@@ -1484,6 +1506,15 @@ var
    f : String;
 begin
    GetVectorFileFormats.BuildFilterStrings(TVectorFile, Result, f);
+end;
+
+// VectorFileFormatsSaveFilter
+//
+function VectorFileFormatsSaveFilter : String;
+var
+   f : String;
+begin
+   GetVectorFileFormats.BuildFilterStrings(TVectorFile, Result, f, False, True);
 end;
 
 // RegisterVectorFileFormat
@@ -1587,45 +1618,66 @@ begin
   end;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TVectorFileFormatsList.BuildFilterStrings(VectorFileClass: TVectorFileClass;
-                                                    var Descriptions, Filters: string);
-
-var C, I : Integer;
-    P    : PVectorFileFormat;
-
+// BuildFilterStrings
+//
+procedure TVectorFileFormatsList.BuildFilterStrings(
+                                       vectorFileClass : TVectorFileClass;
+                                       var descriptions, filters : String;
+                                       formatsThatCanBeOpened : Boolean = True;
+                                       formatsThatCanBeSaved : Boolean = False);
+var
+   k, i : Integer;
+   p : PVectorFileFormat;
 begin
-  Descriptions:='';
-  Filters:='';
-  C:=0;
-  for I:=Count-1 downto 0 do
-  begin
-    P:=PVectorFileFormat(Items[I]);
-    if P^.VectorFileClass.InheritsFrom(VectorFileClass) and (P^.Extension <> '') then
-      with P^ do
-      begin
-        if C <> 0 then
-        begin
-          Descriptions:=Descriptions+'|';
-          Filters:=Filters+';';
-        end;
-        if (Description = '') and (DescResID <> 0) then Description:=LoadStr(DescResID);
-        FmtStr(Descriptions, '%s%s (*.%s)|*.%2:s', [Descriptions, Description, Extension]);
-        FmtStr(Filters, '%s*.%s', [Filters, Extension]);
-        Inc(C);
+   descriptions:='';
+   filters:='';
+   k:=0;
+   for i:=0 to Count-1 do begin
+      p:=PVectorFileFormat(Items[i]);
+      if     p.VectorFileClass.InheritsFrom(vectorFileClass) and (p.Extension<>'')
+         and (   (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities))
+              or (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities))) then begin
+         with p^ do begin
+            if k<>0 then begin
+               descriptions:=descriptions+'|';
+               filters:=filters+';';
+            end;
+            if (Description='') and (DescResID<>0) then
+               Description:=LoadStr(DescResID);
+            FmtStr(descriptions, '%s%s (*.%s)|*.%2:s',
+                   [descriptions, Description, Extension]);
+            FmtStr(filters, '%s*.%s', [filters, Extension]);
+            Inc(k);
+         end;
       end;
-  end;
-  if C > 1 then FmtStr(Descriptions, '%s (%s)|%1:s|%s', [sAllFilter, Filters, Descriptions]);
+   end;
+   if (k>1) and (not formatsThatCanBeSaved) then
+      FmtStr(descriptions, '%s (%s)|%1:s|%s',
+             [sAllFilter, filters, descriptions]);
 end;
 
 // FindExtByIndex
 //
-function TVectorFileFormatsList.FindExtByIndex(index : Integer) : String;
+function TVectorFileFormatsList.FindExtByIndex(index : Integer;
+                                       formatsThatCanBeOpened : Boolean = True;
+                                       formatsThatCanBeSaved : Boolean = False) : String;
+var
+   i : Integer;
+   p : PVectorFileFormat;
 begin
    Result:='';
-   if (index>=0) and (index<Count) then
-      Result:=PVectorFileFormat(Items[index]).Extension;
+   if index>0 then begin
+      for i:=0 to Count-1 do begin
+         p:=PVectorFileFormat(Items[i]);
+         if    (formatsThatCanBeOpened and (dfcRead in p.VectorFileClass.Capabilities))
+            or (formatsThatCanBeSaved and (dfcWrite in p.VectorFileClass.Capabilities)) then begin
+            if index=1 then begin
+               Result:=p.Extension;
+               Break;
+            end else Dec(index);
+         end;
+      end;
+   end;
 end;
 
 // ------------------
@@ -4047,6 +4099,31 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLGLSMVectorFile ------------------
+// ------------------
+
+// Capabilities
+//
+class function TGLGLSMVectorFile.Capabilities : TDataFileCapabilities;
+begin
+   Result:=[dfcRead, dfcWrite];
+end;
+
+// LoadFromStream
+//
+procedure TGLGLSMVectorFile.LoadFromStream(aStream : TStream);
+begin
+   Owner.MeshObjects.LoadFromStream(aStream);
+end;
+
+// SaveToStream
+//
+procedure TGLGLSMVectorFile.SaveToStream(aStream : TStream);
+begin
+   Owner.MeshObjects.SaveToStream(aStream);
+end;
+
+// ------------------
 // ------------------ TGL3DSVectorFile ------------------
 // ------------------
 
@@ -6003,6 +6080,7 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
+   RegisterVectorFileFormat('glsm', 'GLScene Mesh', TGLGLSMVectorFile);
    RegisterVectorFileFormat('3ds', '3D Studio files', TGL3DSVectorFile);
    RegisterVectorFileFormat('gts', 'GNU Triangulated Surface', TGLGTSVectorFile);
    RegisterVectorFileFormat('md2', 'Quake II model files', TGLMD2VectorFile);
