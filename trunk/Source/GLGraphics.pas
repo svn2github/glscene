@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/05/03 - EG - Added GrayScaleToNormalMap
       <li>26/08/02 - EG - Fixed loading of 1D horiz textures from 24 bits bitmaps
       <li>16/06/02 - EG - AssignFrom32BitsBitmap fix for single-line bitmaps
       <li>29/01/02 - EG - Fixed ScanLine Index bug with empty bitmaps
@@ -181,6 +182,11 @@ type
             Blending and Alpha channel functions are not altered by this function
             and must be adjusted separately. }
          procedure DrawPixels(const x, y : Single);
+
+         {: Converts a grayscale 'elevation' bitmap to normal map.<p>
+            Actually, only the Green component in the original bitmap is used,
+            and the elevation map is assumed to be wrapping }
+         function GrayScaleToNormalMap(const scale : Single) : Boolean;
 	end;
 
 procedure BGR24ToRGB24(src, dest : Pointer; pixelCount : Integer);
@@ -800,6 +806,56 @@ procedure TGLBitmap32.DrawPixels(const x, y : Single);
 begin
    glRasterPos2f(x, y);
    glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, FData);
+end;
+
+// TGLBitmap32
+//
+function TGLBitmap32.GrayScaleToNormalMap(const scale : Single) : Boolean;
+const
+   cOneDiv255 : Single = 1/255;
+var
+   x, y : Integer;
+   p1, p2, p3 : Single;
+   dcx, dcy : Single;
+   invLen : Single;
+   nx, ny, nz : Single;
+   curRow, nextRow : PGLPixel32Array;
+   curRowZeroG : Byte;
+begin
+   Result := True;
+
+   if Assigned(FData) then begin
+      nextRow:=FData;
+      for y:=0 to Height-1 do begin
+         curRow:=nextRow;
+         if y<Height-1 then
+            nextRow:=@FData[y*Width+Width]
+         else nextRow:=FData;
+         curRowZeroG:=curRow[0].g;
+         for x:=0 to Width-1 do begin
+            p1:=curRow[x].g*cOneDiv255;
+            p2:=nextRow[x].g*cOneDiv255;
+            if x<Width-1 then
+               p3:=curRow[x+1].g*cOneDiv255
+            else p3:=curRowZeroG*cOneDiv255;
+
+            dcx:=scale*(p2-p1);
+            dcy:=scale*(p1-p3);
+
+            invLen:=RSqrt(Sqr(dcx)+Sqr(dcy)+1);
+            nx:=ClampValue( dcy*invLen, -1, 1);
+            ny:=ClampValue(-dcx*invLen, -1, 1);
+            nz:=ClampValue(     invLen, -1, 1);
+
+            with curRow[x] do begin
+               r:=Round(128+127*nx);
+               g:=Round(128+127*ny);
+               b:=Round(128+127*nz);
+               a:=255;
+            end;
+         end;
+      end;
+   end;
 end;
 
 // ------------------------------------------------------------------
