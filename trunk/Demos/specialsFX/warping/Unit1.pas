@@ -1,9 +1,10 @@
 {: Demonstrates how to use texture coordinates to warp an image.<p>
 
-   Load an image (preferably not too big, and less than 256x256 if you have
-   and old hardware, all TNT, GeForce, Radeon and better should have no trouble
-   loading big pictures), then click somewhere in the image to define the warp
-   point. You may use the menu to adjust or choose the effect.<p>
+   Load an image (preferably with dimensions a power of two, not too big,
+   and less than 256x256 if you have and old hardware, all TNT, GeForce,
+   Radeon and better should have no trouble loading big pictures), then click
+   somewhere in the image to define the warp point.<br>
+   You may use the menu to adjust or choose the effect.<p>
 
    This sample displays an image with the help of a single THeightField used
    as a convenient way to specify texture coordinates. The camera is in
