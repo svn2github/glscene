@@ -6,6 +6,7 @@
    being assimilated to a "MeshObject" and sector polygons to facegroups.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>30/01/03 - Egg - Completed class registration
 	   <li>13/08/00 - Egg - Creation
 	</ul></font>
 }
@@ -334,7 +335,7 @@ initialization
 // ------------------------------------------------------------------
 
 	// class registrations
-   RegisterClass(TGLPortal);
+   RegisterClasses([TGLPortal, TSectorMeshObject, TFGPolygon, TFGPortalPolygon]);
 
 end.
 
