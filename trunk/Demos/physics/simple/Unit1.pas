@@ -29,7 +29,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLODEManager, GLScene, GLObjects, GLCadencer,
-  GLWin32Viewer, GLMisc, ODEImport, GLShadowPlane, StdCtrls, ComCtrls,
+  GLWin32Viewer, GLMisc, GLShadowPlane, StdCtrls, ComCtrls,
   ExtCtrls, VectorGeometry;
 
 type
