@@ -93,6 +93,8 @@
 
 //////////////////////////////////////////////////////////////////////////////
 // HISTORY:
+// 23-Apr-04 - Nelson Chu:
+//   - Adopted to use with GLScene (jedi.inc -> GLScene.inc)
 // 04-Mar-04 - Alexey Barkovoy:
 //   - Updated to Release 1.2 of Cg toolkit (published 25-Feb-2004)
 // 21-Mar-03 - Alexey Barkovoy:
@@ -102,7 +104,10 @@
 
 unit cgGL;
 
-{$Include JEDI.inc}
+{$Include GLScene.inc}
+{$ifdef GLS_DELPHI_6}
+  {$DEFINE COMPILER6_UP}
+{$endif}
 
 interface
 
