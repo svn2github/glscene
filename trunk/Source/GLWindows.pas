@@ -12,7 +12,9 @@ unit GLWindows;
 interface
 
 uses
-  Forms, Windows, Messages, SysUtils, Classes, GLMisc, GLScene, GLHudObjects, GLTexture, OpenGL12, GLBitmapFont, GLWindowsFont, stdctrls, geometry, controls, GLGui;
+   Forms, Windows, Messages, SysUtils, Classes, GLMisc, GLScene, GLHudObjects,
+   GLTexture, OpenGL12, GLBitmapFont, GLWindowsFont, StdCtrls, Geometry,
+   Controls, GLGui;
 
 type
 
@@ -875,8 +877,8 @@ Var
 Begin
   If Assigned(FBitmapFont) then
   Begin
-    Position[0] := X;
-    Position[1] := Y;
+    Position[0] := Round(X);
+    Position[1] := Round(Y);
     Position[2] := 0;
     Position[3] := 0;
     FBitmapFont.RenderString(Data,taLeftJustify,tlTop,Color, @Position);
@@ -889,8 +891,8 @@ var
 Begin
   If Assigned(FBitmapFont) then
   Begin
-    Position[0] := ((X2+X1-FBitmapFont.CalcStringWidth(Data)) / 2);
-    Position[1] := -((Y2+Y1-GetFontHeight) / 2);
+    Position[0] := Round(((X2+X1-FBitmapFont.CalcStringWidth(Data))*0.5));
+    Position[1] := Round(-((Y2+Y1-GetFontHeight)*0.5));
     Position[2] := 0;
     Position[3] := 0;
     FBitmapFont.RenderString(Data,taLeftJustify,tlTop,Color,@Position);

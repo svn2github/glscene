@@ -801,7 +801,7 @@ begin
       else
          deltaH:=GetCharWidth(currentChar);
          GetCharTexCoords(currentChar, topLeft, bottomRight);
-         vBottomRight[0]:=vTopLeft[0]+deltaH-1;
+         vBottomRight[0]:=vTopLeft[0]+deltaH;
 
          glTexCoord2fv(@topLeft);
          glVertex4fv(@vTopLeft);
@@ -870,7 +870,7 @@ begin
             carY:=(tileIndex div CharactersPerRow)*(CharHeight+GlyphsIntervalY);
             p[0]:=(carX+0.05)/FTextureWidth;
             p[1]:=(FTextureHeight-(carY+0.05))/FTextureHeight;
-            p[2]:=(carX+GetCharWidth(Char(j))-1.05)/FTextureWidth;
+            p[2]:=(carX+GetCharWidth(Char(j))-0.05)/FTextureWidth;
             p[3]:=(FTextureHeight-(carY+CharHeight-0.05))/FTextureHeight;
             Inc(tileIndex);
          end;

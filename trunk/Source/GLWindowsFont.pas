@@ -156,7 +156,7 @@ var
             if Assigned(canvas) then begin
                SetCharRects(n, VectorMake((px+1.05)/textureWidth,
                                           (textureHeight-(py+0.05))/textureHeight,
-                                          (px+cw-2.05)/textureWidth,
+                                          (px+cw-1.05)/textureWidth,
                                           (textureHeight-(py+CharHeight-0.05))/textureHeight));
                rect.Left:=px;
                rect.Top:=py;
