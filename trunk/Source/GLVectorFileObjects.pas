@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>17/04/03 - SG - Added TMeshObjectList.FindMeshByName method
       <li>01/04/03 - SG - Fixed TGLBaseMesh.Assign
       <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled
       <li>03/02/03 - EG - Faster PrepareBuildList logic
@@ -559,6 +560,8 @@ type
 
          //: Precalculate whatever is needed for rendering, called once
          procedure Prepare; dynamic;
+         
+         function FindMeshByName(MeshName : String) : TMeshObject;
 
          property Owner : TGLBaseMesh read FOwner;
          procedure Clear; override;
@@ -3342,6 +3345,21 @@ begin
    for i:=0 to Count-1 do
       Items[i].Prepare;
 end;
+
+// FindMeshByName
+//
+function TMeshObjectList.FindMeshByName(MeshName : String) : TMeshObject;
+var
+   i : integer;
+begin
+   Result:=nil;
+   for i:=0 to Count-1 do
+      if Items[i].Name = MeshName then begin
+        Result:=Items[i];
+        break;
+      end;
+end;
+
 
 // ------------------
 // ------------------ TMeshMorphTarget ------------------
