@@ -2510,8 +2510,9 @@ end;
 
 //----------------- TSphere ----------------------------------------------------
 
+// Create
+//
 constructor TSphere.Create(AOwner:TComponent);
-
 begin
    inherited Create(AOwner);
    FRadius:=0.5;

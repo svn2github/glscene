@@ -3,7 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>14/08/01 - Egg - TexGen support (object_linear, eye_linear and sphere_map)
+      <li>15/08/01 - Egg - TexGen support (object_linear, eye_linear and sphere_map)
       <li>13/08/01 - Egg - Fixed OnTextureNeeded handling (paths for mat lib)
       <li>12/08/01 - Egg - Completely rewritten handles management
       <li>27/07/01 - Egg - TGLLibMaterials now a TOwnedCollection
@@ -827,6 +827,7 @@ type
          procedure UnApply(var rci : TRenderContextInfo);
 			procedure Assign(Source: TPersistent); override;
 			procedure NotifyChange(Sender : TObject); override;
+			procedure NotifyTexMapChange(Sender : TObject);
          procedure DestroyHandles;
 
 		published
@@ -893,6 +894,7 @@ type
          procedure RegisterUser(libMaterial : TGLLibMaterial); overload;
 			procedure UnregisterUser(libMaterial : TGLLibMaterial); overload;
          procedure NotifyUsers;
+         procedure NotifyUsersOfTexMapChange;
 
 	   published
 	      { Published Declarations }
@@ -1851,8 +1853,8 @@ begin
    FRequiredMemorySize:=-1;
    FTextureHandle:=TGLTextureHandle.Create;
    FMappingMode:=tmmUser;
-   FMappingSCoordinates:=TGLCoordinates.Create(Self);
-   FMappingTCoordinates:=TGLCoordinates.Create(Self);
+   FMappingSCoordinates:=TGLCoordinates.CreateInitialized(Self, XHmgVector, csVector);
+   FMappingTCoordinates:=TGLCoordinates.CreateInitialized(Self, YHmgVector, csVector);
 end;
 
 // Destroy
@@ -2060,10 +2062,19 @@ end;
 // SetMappingMode
 //
 procedure TGLTexture.SetMappingMode(const val : TGLTextureMappingMode);
+var
+   texMapChange : Boolean;
 begin
    if val<>FMappingMode then begin
+      texMapChange:=((val=tmmUser) and (FMappingMode<>tmmUser))
+                    or ((val=tmmUser) and (FMappingMode<>tmmUser));
       FMappingMode:=val;
-		NotifyChange(Self);
+      if texMapChange then begin
+         // when switching between texGen modes and user mode, the geometry
+         // must be rebuilt in whole (to specify/remove texCoord data!)
+         if Assigned(Owner) and (Owner is TGLMaterial) then
+            TGLMaterial(Owner).NotifyTexMapChange(Self);
+      end else	NotifyChange(Self);
    end;
 end;
 
@@ -2503,6 +2514,7 @@ begin
                SetGLState(rci.currentStates, stFog);
          end;
       end;
+      FTexture.UnApply;
    end;
 end;
 
@@ -2524,13 +2536,24 @@ end;
 
 // NotifyChange
 //
-procedure TGLMaterial.NotifyChange;
+procedure TGLMaterial.NotifyChange(Sender : TObject);
 begin
    if Assigned(Owner) then
       if Owner is TGLBaseSceneObject then
          TGLBaseSceneObject(Owner).NotifyChange(Self)
       else if Owner is TGLLibMaterial then
          TGLLibMaterial(Owner).NotifyUsers;
+end;
+
+// NotifyTexMapChange
+//
+procedure TGLMaterial.NotifyTexMapChange(Sender : TObject);
+begin
+   if Assigned(Owner) then
+      if Owner is TGLBaseSceneObject then
+         TGLBaseSceneObject(Owner).StructureChanged
+      else if Owner is TGLLibMaterial then
+         TGLLibMaterial(Owner).NotifyUsersOfTexMapChange;
 end;
 
 // DestroyHandles
@@ -2610,7 +2633,8 @@ begin
          libMatTexture2:=TGLLibMaterials(Collection).GetLibMaterialByName(Texture2Name);
          libMatTexture2.RegisterUser(Self);
       end;
-      multitextured:=Assigned(libMatTexture2);
+      multitextured:=Assigned(libMatTexture2)
+                     and (not libMatTexture2.Material.Texture.Disabled);
    end else begin
       multitextured:=False;
       if Assigned(libMatTexture2) then begin
@@ -2630,7 +2654,7 @@ begin
       Material.Apply(rci);
       libMatTexture2.Material.Texture.ApplyAsTexture2(libMatTexture2);
       // calculate and apply appropriate xgl mode
-      if Material.Texture.MappingMode=tmmUser then
+      if (not Material.Texture.Disabled) and (Material.Texture.MappingMode=tmmUser) then
          if libMatTexture2.Material.Texture.MappingMode=tmmUser then
             xglMapTexCoordToDual
          else xglMapTexCoordToMain
@@ -2700,6 +2724,30 @@ begin
          else begin
             Assert(obj is TGLLibMaterial);
             TGLLibMaterial(userList[i]).NotifyUsers;
+         end;
+      end;
+   finally
+      notifying:=False;
+   end;
+end;
+
+// NotifyUsersOfTexMapChange
+//
+procedure TGLLibMaterial.NotifyUsersOfTexMapChange;
+var
+   i : Integer;
+   obj : TObject;
+begin
+   if notifying then Exit;
+   notifying:=True;
+   try
+      for i:=0 to userList.Count-1 do begin
+         obj:=TObject(userList[i]);
+         if obj is TGLMaterial then
+            TGLMaterial(userList[i]).NotifyTexMapChange(Self)
+         else begin
+            Assert(obj is TGLLibMaterial);
+            TGLLibMaterial(userList[i]).NotifyUsersOfTexMapChange;
          end;
       end;
    finally
