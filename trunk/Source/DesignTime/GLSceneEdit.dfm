@@ -1,8 +1,8 @@
 object GLSceneEditorForm: TGLSceneEditorForm
   Left = 207
-  Top = 224
-  Width = 480
-  Height = 423
+  Top = 217
+  Width = 404
+  Height = 347
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
   Color = clBtnFace
@@ -20,15 +20,15 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Left = 265
     Top = 26
     Width = 4
-    Height = 368
-    Cursor = crHSplit
+    Height = 287
+    Align = alRight
   end
   object Tree: TTreeView
     Left = 0
     Top = 26
     Width = 265
-    Height = 368
-    Align = alLeft
+    Height = 287
+    Align = alClient
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -52,7 +52,7 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 472
+    Width = 396
     Height = 26
     AutoSize = True
     BorderWidth = 1
@@ -94,30 +94,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
       DropdownMenu = PMToolBar
       Style = tbsDropDown
     end
-    object ToolButton17: TToolButton
-      Left = 133
-      Top = 0
-      Width = 8
-      Caption = 'ToolButton17'
-      ImageIndex = 8
-      Style = tbsSeparator
-    end
-    object TBAddBehaviours: TToolButton
-      Left = 141
-      Top = 0
-      Action = ACAddBehaviour
-      DropdownMenu = PMBehavioursToolbar
-      Style = tbsDropDown
-    end
-    object TBAddEffects: TToolButton
-      Left = 182
-      Top = 0
-      Action = ACAddEffect
-      DropdownMenu = PMEffectsToolbar
-      Style = tbsDropDown
-    end
     object ToolButton3: TToolButton
-      Left = 223
+      Left = 133
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
@@ -125,27 +103,27 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton12: TToolButton
-      Left = 231
+      Left = 141
       Top = 0
       Action = ACCut
     end
     object ToolButton13: TToolButton
-      Left = 259
+      Left = 169
       Top = 0
       Action = ACCopy
     end
     object ToolButton14: TToolButton
-      Left = 287
+      Left = 197
       Top = 0
       Action = ACPaste
     end
     object ToolButton5: TToolButton
-      Left = 315
+      Left = 225
       Top = 0
       Action = ACDeleteObject
     end
     object ToolButton6: TToolButton
-      Left = 343
+      Left = 253
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -153,17 +131,17 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 351
+      Left = 261
       Top = 0
       Action = ACMoveUp
     end
     object ToolButton7: TToolButton
-      Left = 379
+      Left = 289
       Top = 0
       Action = ACMoveDown
     end
     object ToolButton10: TToolButton
-      Left = 407
+      Left = 317
       Top = 0
       Width = 8
       Caption = 'ToolButton10'
@@ -171,31 +149,49 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton11: TToolButton
-      Left = 415
+      Left = 325
       Top = 0
       Action = ACInfo
+    end
+    object ToolButton17: TToolButton
+      Left = 353
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton17'
+      ImageIndex = 8
+      Style = tbsSeparator
+    end
+    object ToolButton15: TToolButton
+      Left = 361
+      Top = 0
+      Hint = 'Show behaviours / effects'
+      Caption = 'Show Behaviours/Effects'
+      Down = True
+      ImageIndex = 3
+      Style = tbsCheck
+      OnClick = ToolButton15Click
     end
   end
   object Panel1: TPanel
     Left = 269
     Top = 26
-    Width = 203
-    Height = 368
-    Align = alClient
+    Width = 127
+    Height = 287
+    Align = alRight
     Caption = 'Panel1'
     TabOrder = 2
     object Splitter3: TSplitter
       Left = 1
-      Top = 177
-      Width = 201
+      Top = 153
+      Width = 125
       Height = 4
       Cursor = crVSplit
       Align = alTop
     end
     object Label1: TLabel
       Left = 1
-      Top = 1
-      Width = 201
+      Top = 30
+      Width = 125
       Height = 13
       Align = alTop
       Alignment = taCenter
@@ -203,8 +199,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object Label2: TLabel
       Left = 1
-      Top = 181
-      Width = 201
+      Top = 157
+      Width = 125
       Height = 13
       Align = alTop
       Alignment = taCenter
@@ -212,9 +208,9 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object BehavioursListView: TListView
       Left = 1
-      Top = 14
-      Width = 201
-      Height = 163
+      Top = 43
+      Width = 125
+      Height = 110
       Align = alTop
       Columns = <>
       ReadOnly = True
@@ -226,9 +222,9 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object EffectsListView: TListView
       Left = 1
-      Top = 194
-      Width = 201
-      Height = 173
+      Top = 170
+      Width = 125
+      Height = 116
       Align = alClient
       Columns = <>
       ReadOnly = True
@@ -237,6 +233,38 @@ object GLSceneEditorForm: TGLSceneEditorForm
       ViewStyle = vsList
       OnEnter = EffectsListViewEnter
       OnSelectItem = BehavioursListViewSelectItem
+    end
+    object ToolBar1: TToolBar
+      Left = 1
+      Top = 1
+      Width = 125
+      Height = 29
+      ButtonWidth = 41
+      Caption = 'ToolBar1'
+      Images = ImageList
+      ParentShowHint = False
+      ShowHint = False
+      TabOrder = 2
+      object TBAddBehaviours: TToolButton
+        Left = 0
+        Top = 2
+        Action = ACAddBehaviour
+        Caption = 'Behaviour'
+        DropdownMenu = PMBehavioursToolbar
+        ParentShowHint = False
+        ShowHint = True
+        Style = tbsDropDown
+      end
+      object TBAddEffects: TToolButton
+        Left = 54
+        Top = 2
+        Hint = 'Add effect'
+        Action = ACAddEffect
+        DropdownMenu = PMEffectsToolbar
+        ParentShowHint = False
+        ShowHint = True
+        Style = tbsDropDown
+      end
     end
   end
   object PopupMenu: TPopupMenu
@@ -944,8 +972,8 @@ object GLSceneEditorForm: TGLSceneEditorForm
   end
   object BehavioursPopupMenu: TPopupMenu
     Images = ImageList
-    Left = 280
-    Top = 48
+    Left = 272
+    Top = 72
     object Delete1: TMenuItem
       Action = ACDeleteObject
     end

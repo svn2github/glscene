@@ -99,8 +99,6 @@ type
     EffectsListView: TListView;
     Splitter1: TSplitter;
     PMBehavioursToolbar: TPopupMenu;
-    TBAddBehaviours: TToolButton;
-    TBAddEffects: TToolButton;
     ToolButton17: TToolButton;
     ACAddBehaviour: TAction;
     MIAddBehaviour: TMenuItem;
@@ -116,6 +114,10 @@ type
     Label2: TLabel;
     PMEffectsToolbar: TPopupMenu;
     ACAddEffect: TAction;
+    ToolBar1: TToolBar;
+    TBAddBehaviours: TToolButton;
+    TBAddEffects: TToolButton;
+    ToolButton15: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
@@ -148,6 +150,7 @@ type
       Item: TListItem; Selected: Boolean);
     procedure ACAddEffectExecute(Sender: TObject);
     procedure PopupMenuPopup(Sender: TObject);
+    procedure ToolButton15Click(Sender: TObject);
 
   private
     FSelectedItems:Integer; //
@@ -1282,6 +1285,11 @@ begin
      SetBehavioursSubItems(MIAddBehaviour,object1.Behaviours);
      SetEffectsSubItems(MIAddEffect,object1.Effects);
    end;
+end;
+
+procedure TGLSceneEditorForm.ToolButton15Click(Sender: TObject);
+begin
+  Panel1.Visible:= not Panel1.Visible;
 end;
 
 initialization
