@@ -26,7 +26,7 @@ unit GLContext;
 
 interface
 
-uses Classes, SysUtils, OpenGL1x;
+uses Classes, SysUtils, OpenGL1x, VectorGeometry;
 
 {$i GLScene.inc}
 
@@ -225,6 +225,7 @@ type
       public
          { Public Declarations }
          constructor Create; virtual;
+         constructor CreateAndAllocate;
          destructor Destroy; override;
 
          property Handle : Integer read FHandle;
@@ -388,6 +389,107 @@ type
          constructor Create; override;
    end;
 
+   // TGLSLHandle
+   //
+   {: Base class for GLSL handles (programs and shaders).<p>
+      Do not use this class directly, use one of its subclasses instead. }
+   TGLSLHandle = class (TGLContextHandle)
+      private
+         { Private Declarations }
+
+      protected
+         { Protected Declarations }
+         procedure DoDestroyHandle; override;
+         
+      public
+         { Public Declarations }
+         function InfoLog : String;
+   end;
+
+   // TGLShaderHandle
+   //
+   {: Manages a handle to a Shader Object.<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user.<br>
+      Do not use this class directly, use one of its subclasses instead. }
+   TGLShaderHandle = class (TGLSLHandle)
+      private
+         { Private Declarations }
+         FShaderType : Cardinal;
+
+      protected
+         { Protected Declarations }
+         function DoAllocateHandle : Integer; override;
+
+      public
+         { Public Declarations }
+         procedure ShaderSource(const source : String); overload;
+         //: Returns True if compilation sucessful
+         function CompileShader : Boolean;
+
+         property ShaderType : Cardinal read FShaderType;
+   end;
+
+   TGLShaderHandleClass = class of TGLShaderHandle;
+
+   // TGLVertexShaderHandle
+   //
+   {: Manages a handle to a Vertex Shader Object. }
+   TGLVertexShaderHandle = class (TGLShaderHandle)
+      public
+         { Public Declarations }
+         constructor Create; override;
+   end;
+
+   // TGLFragmentShaderHandle
+   //
+   {: Manages a handle to a Fragment Shader Object. }
+   TGLFragmentShaderHandle = class (TGLShaderHandle)
+      public
+         { Public Declarations }
+         constructor Create; override;
+   end;
+
+   // TGLProgramHandle
+   //
+   {: Manages a GLSL Program Object.<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user.<br> }
+   TGLProgramHandle = class (TGLSLHandle)
+      private
+         { Private Declarations }
+
+      protected
+         { Protected Declarations }
+         function DoAllocateHandle : Integer; override;
+
+         function GetUniform1i(const index : String) : Integer;
+         procedure SetUniform1i(const index : String; val : Integer);
+         function GetUniform3f(const index : String) : TAffineVector;
+         procedure SetUniform3f(const index : String; const val : TAffineVector);
+         function GetUniformMatrix4fv(const index : String) : TMatrix;
+         procedure SetUniformMatrix4fv(const index : String; const val : TMatrix);
+
+      public
+         { Public Declarations }
+         {: Compile and attach a new shader.<p>
+            Raises an EGLShader exception in case of failure. }
+         procedure AddShader(shaderType : TGLShaderHandleClass; const shaderSource : String);
+
+         procedure AttachObject(shader : TGLShaderHandle);
+         procedure BindAttribLocation(index : Integer; const name : String);
+         function LinkProgram : Boolean;
+         function ValidateProgram : Boolean;
+         function GetAttribLocation(const name : String) : Integer;
+         function GetUniformLocation(const name : String) : Integer;
+         procedure UseProgramObject;
+         procedure EndUseProgramObject;
+
+         property Uniform1i[const index : String] : Integer read GetUniform1i write SetUniform1i;
+         property Uniform3f[const index : String] : TAffineVector read GetUniform3f write SetUniform3f;
+         property UniformMatrix4fv[const index : String] : TMatrix read GetUniformMatrix4fv write SetUniformMatrix4fv;
+   end;
+
    // TGLContextNotification
    //
    TGLContextNotification = record
@@ -445,10 +547,9 @@ type
          procedure DestroyAllHandles;
    end;
 
-   // EGLContext
-   //
-   EGLContext = class (Exception)
-   end;
+   EGLContext = class(Exception);
+
+   EGLShader = class(EGLContext);
 
    EOpenGLError = class(Exception);
 
@@ -849,6 +950,14 @@ begin
    inherited Create;
 end;
 
+// CreateAndAllocate
+//
+constructor TGLContextHandle.CreateAndAllocate;
+begin
+   Create;
+   AllocateHandle;
+end;
+
 // Destroy
 //
 destructor TGLContextHandle.Destroy;
@@ -1164,7 +1273,7 @@ end;
 // ------------------ TGLVBOArrayBufferHandle ------------------
 // ------------------
 
-// TGLVBOArrayBufferHandle
+// Create
 //
 constructor TGLVBOArrayBufferHandle.Create;
 begin
@@ -1176,12 +1285,243 @@ end;
 // ------------------ TGLVBOElementArrayHandle ------------------
 // ------------------
 
-// TGLVBOArrayBufferHandle
+// Create
 //
 constructor TGLVBOElementArrayHandle.Create;
 begin
    FVBOTarget:=GL_ELEMENT_ARRAY_BUFFER_ARB;
    inherited;
+end;
+
+// ------------------
+// ------------------ TGLSLHandle ------------------
+// ------------------
+
+// DoDestroyHandle
+//
+procedure TGLSLHandle.DoDestroyHandle;
+begin
+   if not vIgnoreContextActivationFailures then begin
+      // reset error status
+      ClearGLError;
+      // delete
+      glDeleteObjectARB(FHandle);
+      // check for error
+      CheckOpenGLError;
+   end;
+end;
+
+// InfoLog
+//
+function TGLSLHandle.InfoLog : String;
+var
+   maxLength : Integer;
+begin
+   maxLength:=0;
+   glGetObjectParameterivARB(FHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
+   SetLength(Result, maxLength);
+   if maxLength>0 then begin
+      glGetInfoLogARB(FHandle, maxLength, @maxLength, @Result[1]);
+      SetLength(Result, maxLength);
+   end;
+end;
+
+// ------------------
+// ------------------ TGLShaderHandle ------------------
+// ------------------
+
+// DoAllocateHandle
+//
+function TGLShaderHandle.DoAllocateHandle : Integer;
+begin
+   Result:=glCreateShaderObjectARB(FShaderType);
+end;
+
+// ShaderSource
+//
+procedure TGLShaderHandle.ShaderSource(const source : String);
+var
+   p : PChar;
+begin
+   p:=PChar(source);
+   glShaderSourceARB(FHandle, 1, @p, nil);
+end;
+
+// CompileShader
+//
+function TGLShaderHandle.CompileShader : Boolean;
+var
+   compiled : Integer;
+begin
+   glCompileShaderARB(FHandle);
+   compiled:=0;
+   glGetObjectParameterivARB(FHandle, GL_OBJECT_COMPILE_STATUS_ARB, @compiled);
+   Result:=(compiled<>0);
+end;
+
+// ------------------
+// ------------------ TGLVertexShaderHandle ------------------
+// ------------------
+
+// Create
+//
+constructor TGLVertexShaderHandle.Create;
+begin
+   FShaderType:=GL_VERTEX_SHADER_ARB;
+   inherited;
+end;
+
+// ------------------
+// ------------------ TGLFragmentShaderHandle ------------------
+// ------------------
+
+// Create
+//
+constructor TGLFragmentShaderHandle.Create;
+begin
+   FShaderType:=GL_FRAGMENT_SHADER_ARB;
+   inherited;
+end;
+
+// ------------------
+// ------------------ TGLProgramHandle ------------------
+// ------------------
+
+// DoAllocateHandle
+//
+function TGLProgramHandle.DoAllocateHandle : Integer;
+begin
+   Result:=glCreateProgramObjectARB();
+end;
+
+// AddShader
+//
+procedure TGLProgramHandle.AddShader(shaderType : TGLShaderHandleClass; const shaderSource : String);
+var
+   shader : TGLShaderHandle;
+begin
+   shader:=shaderType.CreateAndAllocate;
+   try
+      if shader.Handle=0 then
+         raise EGLShader.Create('Couldn''t allocate '+shaderType.ClassName);
+      shader.ShaderSource(shaderSource);
+      if not shader.CompileShader then
+         raise EGLShader.Create(shader.InfoLog);
+      AttachObject(shader);
+   finally
+      shader.Free;
+   end;
+   CheckOpenGLError;
+end;
+
+// AttachObject
+//
+procedure TGLProgramHandle.AttachObject(shader : TGLShaderHandle);
+begin
+   glAttachObjectARB(FHandle, shader.Handle);
+end;
+
+// BindAttribLocation
+//
+procedure TGLProgramHandle.BindAttribLocation(index : Integer; const name : String);
+begin
+   glBindAttribLocationARB(FHandle, index, PChar(name));
+end;
+
+// LinkProgram
+//
+function TGLProgramHandle.LinkProgram : Boolean;
+var
+   linked : Integer;
+begin
+   glLinkProgramARB(FHandle);
+   linked:=0;
+   glGetObjectParameterivARB(FHandle, GL_OBJECT_LINK_STATUS_ARB, @linked);
+   Result:=(linked<>0);
+end;
+
+// ValidateProgram
+//
+function TGLProgramHandle.ValidateProgram : Boolean;
+var
+   validated : Integer;
+begin
+   glValidateProgramARB(FHandle);
+   validated:=0;
+   glGetObjectParameterivARB(FHandle, GL_OBJECT_VALIDATE_STATUS_ARB, @validated);
+   Result:=(validated<>0);
+end;
+
+// GetAttribLocation
+//
+function TGLProgramHandle.GetAttribLocation(const name : String) : Integer;
+begin
+   Result:=glGetAttribLocationARB(Handle, PChar(name));
+   Assert(Result>=0, 'Unknown attrib "'+name+'" or program not in use');
+end;
+
+// GetUniformLocation
+//
+function TGLProgramHandle.GetUniformLocation(const name : String) : Integer;
+begin
+   Result:=glGetUniformLocationARB(Handle, PChar(name));
+   Assert(Result>=0, 'Unknown uniform "'+name+'" or program not in use');
+end;
+
+// GetAttribLocation
+//
+procedure TGLProgramHandle.UseProgramObject;
+begin
+   glUseProgramObjectARB(FHandle);
+end;
+
+// GetAttribLocation
+//
+procedure TGLProgramHandle.EndUseProgramObject;
+begin
+   glUseProgramObjectARB(0);
+end;
+
+// GetUniform1i
+//
+function TGLProgramHandle.GetUniform1i(const index : String) : Integer;
+begin
+   glGetUniformivARB(FHandle, GetUniformLocation(index), @Result);
+end;
+
+// SetUniform1i
+//
+procedure TGLProgramHandle.SetUniform1i(const index : String; val : Integer);
+begin
+   glUniform1iARB(GetUniformLocation(index), val);
+end;
+
+// GetUniform3f
+//
+function TGLProgramHandle.GetUniform3f(const index : String) : TAffineVector;
+begin
+   glGetUniformfvARB(FHandle, GetUniformLocation(index), @Result);
+end;
+
+// SetUniform3f
+//
+procedure TGLProgramHandle.SetUniform3f(const index : String; const val : TAffineVector);
+begin
+   glUniform3fARB(GetUniformLocation(index), val[0], val[1], val[2]);
+end;
+
+// GetUniformMatrix4fv
+//
+function TGLProgramHandle.GetUniformMatrix4fv(const index : String) : TMatrix;
+begin
+   glGetUniformfvARB(FHandle, GetUniformLocation(index), @Result);
+end;
+
+// SetUniformMatrix4fv
+//
+procedure TGLProgramHandle.SetUniformMatrix4fv(const index : String; const val : TMatrix);
+begin
+   glUniformMatrix4fvARB(GetUniformLocation(index), 1, False, @val);
 end;
 
 // ------------------
