@@ -10,6 +10,8 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>17/02/05 - EG - Restored correct PFXSource.Burst relative/absolute behaviour,
+                          EffectsScale support not added back (no clue what it does... Mrqz?)
       <li>23/11/04 - SG - Fixed memory leak in TGLLifeColoredPFXManager (kenguru)
       <li>03/10/04 - Mrqzzz - added property TGLParticleFXEffect.DisabledIfOwnerInvisible. Fixed PositionDispersionRange to honour VelocityMode=svmRelative
       <li>25/09/04 - Graham Kennedy - Fixed restore of currentTexturingMode
@@ -65,11 +67,10 @@ type
          FOwner : TGLParticleList;  // NOT persistent
          FPosition : TAffineVector;
          FVelocity : TAffineVector;
-         
-         FRotation: single;
-         
+         FRotation : Single;
          FCreationTime : Double;
-         EffectScale : single; 
+         FEffectScale : Single;
+
       protected
          { Protected Declarations }
 
@@ -373,6 +374,10 @@ type
    //
    TGLSourcePFXVelocityMode = (svmAbsolute, svmRelative);
 
+   // TGLSourcePFXPositionMode
+   //
+   TGLSourcePFXPositionMode = (spmAbsoluteOffset, spmRelative);
+
    // TGLSourcePFXDispersionMode
    //
    TGLSourcePFXDispersionMode = (sdmFast, sdmIsotropic);
@@ -390,6 +395,7 @@ type
          FPositionDispersion : Single;
          FParticleInterval : Single;
          FVelocityMode : TGLSourcePFXVelocityMode;
+         FPositionMode : TGLSourcePFXPositionMode;
          FDispersionMode : TGLSourcePFXDispersionMode;
          FEnabled : Boolean;
          FDisabledIfOwnerInvisible: Boolean;
@@ -407,6 +413,8 @@ type
          procedure SetParticleInterval(const val : Single);
          procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
+
+         function ParticleAbsoluteInitialPos : TAffineVector;
 
       public
          { Public Declarations }
@@ -433,6 +441,7 @@ type
          property PositionDispersionRange : TGLCoordinates read FPositionDispersionRange write SetPositionDispersionRange;
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
          property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
+         property PositionMode : TGLSourcePFXPositionMode read FPositionMode write FPositionMode default spmAbsoluteOffset;
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
          property RotationDispersion : Single read FRotationDispersion write SetRotationDispersion;
          property Enabled : boolean read FEnabled write FEnabled;
@@ -581,7 +590,6 @@ type
          function ComputeSizeScale(var lifeTime : Single; var sizeScale : Single) : Boolean;
          
          function ComputeRotateAngle(var lifeTime, rotateAngle: Single): Boolean;
-         
 
       public
          { Public Declarations }
@@ -930,7 +938,7 @@ end;
 //
 constructor TGLParticle.Create;
 begin
-   EffectScale :=1;
+   FEffectScale :=1;
    inherited Create;
 end;
 
@@ -1622,6 +1630,7 @@ begin
    FPositionDispersion:=0;
    FParticleInterval:=0.1;
    FVelocityMode:=svmAbsolute;
+   FPositionMode:=spmAbsoluteOffset;
    FDispersionMode:=sdmFast;
    FEnabled := true;
    FDisabledIfOwnerInvisible := False;
@@ -1657,7 +1666,8 @@ procedure TGLSourcePFXEffect.WriteToFiler(writer : TWriter);
 begin
    inherited;
    with writer do begin
-      WriteInteger(5);  // ArchiveVersion 5, added FDisabledIfOwnerInvisible:
+      WriteInteger(6);  // ArchiveVersion 6, added FPositionMode
+                        // ArchiveVersion 5, added FDisabledIfOwnerInvisible:
                         // ArchiveVersion 4, added FRotationDispersion
                         // ArchiveVersion 3, added FEnabled
                         // ArchiveVersion 2, added FPositionDispersionRange
@@ -1673,6 +1683,7 @@ begin
       WriteBoolean(FEnabled);
       WriteFloat(FRotationDispersion);
       WriteBoolean(FDisabledIfOwnerInvisible);
+      WriteInteger(Integer(FPositionMode));
    end;
 end;
 
@@ -1685,7 +1696,7 @@ begin
    inherited;
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0..5]);
+      Assert(archiveVersion in [0..6]);
       FInitialVelocity.ReadFromFiler(reader);
       FInitialPosition.ReadFromFiler(reader);
       if archiveVersion>=2 then
@@ -1702,6 +1713,8 @@ begin
          FRotationDispersion := ReadFloat;
       if archiveVersion>=5 then
          FDisabledIfOwnerInvisible:=ReadBoolean;
+      if archiveVersion>=6 then
+         FPositionMode:=TGLSourcePFXPositionMode(ReadInteger);
    end;
 end;
 
@@ -1771,16 +1784,26 @@ var
 begin
    if Enabled and Assigned(Manager) and (ParticleInterval>0) then
    begin
-      if OwnerBaseSceneObject.Visible or (not DisabledIfOwnerInvisible) then
-      with progressTime do
-      begin
-         FTimeRemainder:=FTimeRemainder+deltaTime;
+      if OwnerBaseSceneObject.Visible or (not DisabledIfOwnerInvisible) then begin
+         FTimeRemainder:=FTimeRemainder+progressTime.deltaTime;
          if FTimeRemainder>FParticleInterval then begin
             n:=Trunc((FTimeRemainder-FParticleInterval)/FParticleInterval);
-            Burst(newTime, n);
+            Burst(progressTime.newTime, n);
             FTimeRemainder:=FTimeRemainder-n*FParticleInterval;
          end;
       end;
+   end;
+end;
+
+// ParticleAbsoluteInitialPos
+//
+function TGLSourcePFXEffect.ParticleAbsoluteInitialPos : TAffineVector;
+begin
+   if PositionMode=spmRelative then begin
+      Result:=OwnerBaseSceneObject.LocalToAbsolute(InitialPosition.AsAffineVector);
+   end else begin
+      SetVector(Result, OwnerBaseSceneObject.AbsolutePosition);
+      AddVector(Result, InitialPosition.AsAffineVector);
    end;
 end;
 
@@ -1789,50 +1812,19 @@ end;
 procedure TGLSourcePFXEffect.Burst(time : Double; nb : Integer);
 var
    particle : TGLParticle;
-   av, pos: TAffineVector;
-   OwnerObjRelPos : TAffineVector;
+   av, pos : TAffineVector;
 begin
    if Manager=nil then Exit;
-
-   OwnerObjRelPos := OwnerBaseSceneObject.LocalToAbsolute(NullVector);
-
-   SetVector(pos, OwnerBaseSceneObject.AbsolutePosition);
-   if VelocityMode=svmRelative then
-        AddVector(pos, VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(InitialPosition.AsAffineVector),OwnerObjRelPos))
-   else
-        AddVector(pos, InitialPosition.AsAffineVector);
-
-
-   if FManager is TGLDynamicPFXManager then
-   begin
-     TGLDynamicPFXManager(FManager).FRotationCenter := pos;
-   end;
-
-   while nb>0 do
-   begin
+   pos:=ParticleAbsoluteInitialPos;
+   while nb>0 do begin
       particle:=Manager.CreateParticle;
-      particle.EffectScale := FEffectScale; //  particle.EffectScale will be used by the manager to scale the particle
       RndVector(DispersionMode, av, FPositionDispersion, FPositionDispersionRange);
-      if VelocityMode=svmRelative then
-      begin
-           av:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(av),OwnerObjRelPos);
-      end;
-      ScaleVector(av,FEffectScale);
-
       VectorAdd(pos, av, @particle.Position);
-
       RndVector(DispersionMode, av, FVelocityDispersion, nil);
-      VectorAdd(InitialVelocity.AsAffineVector, av, @particle.Velocity);
-
-      particle.Velocity := VectorScale(particle.Velocity,FEffectScale);
       if VelocityMode=svmRelative then
-           particle.FVelocity:=VectorSubtract(OwnerBaseSceneObject.LocalToAbsolute(particle.FVelocity),OwnerObjRelPos);
-
+         SetVector(particle.FVelocity, OwnerBaseSceneObject.LocalToAbsolute(InitialVelocity.AsVector));
+      AddVector(particle.FVelocity, av);
       particle.CreationTime:=time;
-      if FRotationDispersion <> 0 then
-        particle.FRotation := Random * FRotationDispersion
-      else
-        particle.FRotation := 0;
       Dec(nb);
    end;
 end;
@@ -1849,11 +1841,10 @@ var
    fx, fy, d : Single;
 begin
    if (Manager=nil) or (nbParticles<=0) then Exit;
-   SetVector(pos, OwnerBaseSceneObject.AbsolutePosition);
+   pos:=ParticleAbsoluteInitialPos;
    SetVector(ringVectorY, OwnerBaseSceneObject.AbsoluteUp);
    SetVector(ringVectorX, OwnerBaseSceneObject.AbsoluteDirection);
    ringVectorY:=VectorCrossProduct(ringVectorX, ringVectorY);
-   AddVector(pos, InitialPosition.AsAffineVector);
    while (nbParticles>0) do begin
       // okay, ain't exactly an "isotropic" ring...
       fx:=Random-0.5;
@@ -2599,23 +2590,12 @@ begin
 
    vertexList:=FVertBuf.List;
 
+   if aParticle.FEffectScale<>1 then begin
+      for i:=0 to FVertBuf.Count-1 do
+         VectorAdd(VectorScale(FVertices.List[i], aParticle.FEffectScale), pos, vertexList[i])
+   end else VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
 
-   if aParticle.EffectScale<>1 then
-   begin
-        for i:=0 to FVertBuf.Count-1 do
-        begin
-             VectorAdd(VectorScale(FVertices.List[i],aParticle.EffectScale),pos,vertexList[i])
-        end;
-   end
-   else
-   begin
-        VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
-   end;
-
-
-   
-   if ComputeRotateAngle(lifeTime, rotateAngle) and (Renderer <> nil) then
-   begin
+   if ComputeRotateAngle(lifeTime, rotateAngle) and (Renderer <> nil) then begin
       MakeVector(axis, 0, 0, 1);
       axis := VectorTransform(axis, Renderer.Scene.CurrentBuffer.ModelViewMatrix);
       NormalizeVector(axis);
@@ -2631,19 +2611,16 @@ begin
    end;
    
    if ComputeSizeScale(lifeTime, sizeScale) then
-   Begin
-        FVertBuf.Scale(sizeScale);
-   end;
+      FVertBuf.Scale(sizeScale);
 
 
    glBegin(GL_TRIANGLE_FAN);
       glColor4fv(@inner);
       glVertex3fv(@pos);
       glColor4fv(@outer);
-      for i:=0 to FVertBuf.Count-1 do
-      begin
-           //ScaleVector(vertexList[i],aParticle.EffectScale);
-           glVertex3fv(@vertexList[i]);
+      for i:=0 to FVertBuf.Count-1 do begin
+         //ScaleVector(vertexList[i],aParticle.EffectScale);
+         glVertex3fv(@vertexList[i]);
       end;
 
       glVertex3fv(@vertexList[0]);
@@ -2896,21 +2873,17 @@ begin
    pos:=aParticle.Position;
    vertexList:=FVertBuf.List;
    sizeScale :=1;
-   if ComputeSizeScale(lifeTime, sizeScale) or (aParticle.EffectScale<>1) then
-   begin
-        sizeScale := sizeScale*aParticle.EffectScale;
-        for i:=0 to FVertBuf.Count-1 do
-            vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
-   end
-   else
-   begin
-        VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
-        {for i:=0 to FVertBuf.Count-1 do
-            ScaleVector(vertexList[i],aParticle.EffectScale);}
+   if ComputeSizeScale(lifeTime, sizeScale) or (aParticle.FEffectScale<>1) then begin
+      sizeScale := sizeScale*aParticle.FEffectScale;
+      for i:=0 to FVertBuf.Count-1 do
+         vertexList[i]:=VectorCombine(FVertices.List[i], pos, sizeScale, 1);
+   end else begin
+      VectorArrayAdd(FVertices.List, pos, FVertBuf.Count, vertexList);
+      {for i:=0 to FVertBuf.Count-1 do
+          ScaleVector(vertexList[i],aParticle.EffectScale);}
    end;
 
-   if ComputeRotateAngle(lifeTime, rotateAngle) then
-   begin
+   if ComputeRotateAngle(lifeTime, rotateAngle) then begin
       SetVector(axis, Renderer.Scene.CurrentGLCamera.AbsolutePosition);
       SetVector(axis, VectorSubtract(axis, pos));
       NormalizeVector(axis);
@@ -2923,7 +2896,6 @@ begin
       FVertBuf.TransformAsVectors(rotMatrix);
       FVertBuf.Translate(pos);
    end;
-
 
    case ColorMode of
       scmFade : begin
