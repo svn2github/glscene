@@ -23,7 +23,7 @@ unit odeimport;
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.13                                       *
+ * ODE Delphi Import unit : 0.8.14                                       *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -64,6 +64,7 @@ unit odeimport;
 
   Change history
 
+  2004.05.19 - CH - New single and double dll. Added support for the new QuickStep solver
   2004.04.25 - CH - New single and double dll. Trimesh now works in both mode.
   2004.04.22 - MF - Fixes to make DelphiODE behave better when used as dynamic
   2004.04.21 - CH - New single and double dll. Now handles Capped Cylinder vs Trimesh collision
@@ -169,10 +170,10 @@ type
   //   If you choose to run in Single mode, you must deploy the single precision
   //   dll (this is default)
   //
-  //   If you choose to run in Double mode, you must delpoy the double precision
+  //   If you choose to run in Double mode, you must deploy the double precision
   //   dll (named ode-Double.dll and located in the dll directory)
 
-  {$define cSINGLE}  // Add a "$" before "define" to make DelphiODE single based
+  {$define cSINGLE}  // Remove "$" from "$define" to make DelphiODE double based
 
   {$ifdef cSINGLE}
     TdReal = single;
@@ -372,10 +373,6 @@ struct dObject : public dBase {
 
   PTdJointFeedback = ^TdJointFeedback;
 
-  TdJointBreakCallback = procedure(dJointID : TdJointID); cdecl;
-
-  PTdJointBreakCallback = ^TdJointBreakCallback;
-
 (*enum {
   d_ERR_UNKNOWN = 0,		/* unknown error */
   d_ERR_IASSERT,		/* internal assertion failed */
@@ -446,37 +443,6 @@ enum {
     dJOINT_INGROUP: TJointFlag = 1;
     dJOINT_REVERSE: TJointFlag = 2;
     dJOINT_TWOBODIES: TJointFlag = 4;
-
-
-(*/* joint break modes */
-enum {
-  // if this flag is set, the joint wil break
-  dJOINT_BROKEN =             0x0001,
-  // if this flag is set, the joint wil be deleted when it breaks
-  dJOINT_DELETE_ON_BREAK =    0x0002,
-  // if this flag is set, the joint can break at a certain force on body 1
-  dJOINT_BREAK_AT_B1_FORCE =  0x0004,
-  // if this flag is set, the joint can break at a certain torque on body 1
-  dJOINT_BREAK_AT_B1_TORQUE = 0x0008,
-  // if this flag is set, the joint can break at a certain force on body 2
-  dJOINT_BREAK_AT_B2_FORCE =  0x0010,
-  // if this flag is set, the joint can break at a certain torque on body 2
-  dJOINT_BREAK_AT_B2_TORQUE = 0x0020
-};*)
-
-(* Change: New Type added, syntax enforcement *)
-  type
-    TJointBreakMode = Integer;
-
-(* These consts now have defined types *)
-  const
-    dJOINT_BROKEN: TJointBreakMode = $0001;
-    dJOINT_DELETE_ON_BREAK: TJointBreakMode = $0002;
-    dJOINT_BREAK_AT_B1_FORCE: TJointBreakMode = $0004;
-    dJOINT_BREAK_AT_B1_TORQUE: TJointBreakMode = $0008;
-    dJOINT_BREAK_AT_B2_FORCE: TJointBreakMode = $0010;
-    dJOINT_BREAK_AT_B2_TORQUE: TJointBreakMode = $0020;
-
 
   // Space constants
   const
@@ -959,7 +925,19 @@ dSolveLDLT}
   procedure dWorldSetCFM(const World: PdxWorld; cfm: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetCFM'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetERP(const World: PdxWorld; erp: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetERP'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetGravity(const World: PdxWorld; const x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetGravity'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetContactMaxCorrectingVel(const World: PdxWorld; const vel: TdReal); cdecl; external {$IFDEF __GPC__}name 'WorldSetContactMaxCorrectingVel'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetContactMaxCorrectingVel(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetContactMaxCorrectingVel'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetContactSurfaceLayer(const World: PdxWorld; const depth: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetContactSurfaceLayer'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetContactSurfaceLayer(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetContactSurfaceLayer'{$ELSE} ODEDLL{$ENDIF __GPC__};
+
+  // Step
   procedure dWorldStep(const World: PdxWorld; const stepsize: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldStep'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  // QuickStep
+  procedure dWorldQuickStep(const World: PdxWorld; const stepsize: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldQuickStep'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetQuickStepNumIterations(const World: PdxWorld; const num: integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetQuickStepNumIterations'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetQuickStepNumIterations(const World: PdxWorld): integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetQuickStepNumIterations'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetQuickStepW(const World: PdxWorld; const param: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetQuickStepW'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetQuickStepW(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetQuickStepW'{$ELSE} ODEDLL{$ENDIF __GPC__};
   // Stepfast
   procedure dWorldStepFast1(const World: PdxWorld; const stepsize: TdReal; const iterations: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldStepFast1'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetAutoEnableDepthSF1(const World: PdxWorld; autodepth: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoEnableDepthSF1'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1099,20 +1077,9 @@ dSolveLDLT}
   procedure dJointAddSliderForce (const dJointID : TdJointID; force: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddSliderForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dJointAddUniversalTorques (const dJointID : TdJointID; torque1, torque2: TdReal); cdecl; external  {$IFDEF __GPC__}name 'dJointAddUniversalTorques'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
-  // New "callback" routines for feedback of joints
+  // callback routines for feedback of joints
   procedure dJointSetFeedback (const dJointID : TdJointID; Feedback : PTdJointFeedback); cdecl; external {$IFDEF __GPC__}name 'dJointSetFeedback'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dJointGetFeedback (const dJointID : TdJointID) : PTdJointFeedback; cdecl; external {$IFDEF __GPC__}name 'dJointGetFeedback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  // New breakable joints routines
-  procedure dJointSetBreakable(const dJointID : TdJointID; Breakable : Integer); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakable'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetBreakCallback(const dJointID : TdJointID; callback : PTdJointBreakCallback); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetBreakMode(const dJointID : TdJointID; mode : Integer); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakMode'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetBreakForce(const dJointID : TdJointID; body: Integer; x, y, z : TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointSetBreakTorque(const dJointID : TdJointID; body: Integer; x, y, z : TdReal); cdecl; external {$IFDEF __GPC__}name 'dJointSetBreakTorque'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dJointIsBreakable(const dJointID : TdJointID) : Integer; cdecl; external {$IFDEF __GPC__}name 'dJointIsBreakable'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetBreakForce(const dJointID : TdJointID; body : Integer; force : PdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBreakForce'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dJointGetBreakTorque(const dJointID : TdJointID; body : Integer; torque : PdVector3); cdecl; external {$IFDEF __GPC__}name 'dJointGetBreakTorque'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
   procedure dJointCorrectHinge2(const dJointID : TdJointID); cdecl; external {$IFDEF __GPC__}name 'dJointCorrectHinge2'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   //* Auto-disable functions */

@@ -23,7 +23,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.13                                       *
+ * ODE Delphi Import unit : 0.8.14                                       *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -44,7 +44,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 // was initiated by Martin Waldegger <martin.waldegger@chello.at> and
 // auto-created by mattias fagerlund.
 //
-// This version was auto-created on 2004-05-11.
+// This version was auto-created on 2004-07-11.
 
 
  {
@@ -69,6 +69,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 
   Change history
 
+  2004.05.19 - CH - New single and double dll. Added support for the new QuickStep solver
   2004.04.25 - CH - New single and double dll. Trimesh now works in both mode.
   2004.04.22 - MF - Fixes to make DelphiODE behave better when used as dynamic
   2004.04.21 - CH - New single and double dll. Now handles Capped Cylinder vs Trimesh collision
@@ -174,10 +175,10 @@ type
   //   If you choose to run in Single mode, you must deploy the single precision
   //   dll (this is default)
   //
-  //   If you choose to run in Double mode, you must delpoy the double precision
+  //   If you choose to run in Double mode, you must deploy the double precision
   //   dll (named ode-Double.dll and located in the dll directory)
 
-  {$define cSINGLE}  // Add a "$" before "define" to make DelphiODE single based
+  {$define cSINGLE}  // Remove "$" from "$define" to make DelphiODE double based
 
   {$ifdef cSINGLE}
     TdReal = single;
@@ -377,10 +378,6 @@ struct dObject : public dBase {
 
   PTdJointFeedback = ^TdJointFeedback;
 
-  TdJointBreakCallback = procedure(dJointID : TdJointID); cdecl;
-
-  PTdJointBreakCallback = ^TdJointBreakCallback;
-
 (*enum {
   d_ERR_UNKNOWN = 0,		/* unknown error */
   d_ERR_IASSERT,		/* internal assertion failed */
@@ -451,37 +448,6 @@ enum {
     dJOINT_INGROUP: TJointFlag = 1;
     dJOINT_REVERSE: TJointFlag = 2;
     dJOINT_TWOBODIES: TJointFlag = 4;
-
-
-(*/* joint break modes */
-enum {
-  // if this flag is set, the joint wil break
-  dJOINT_BROKEN =             0x0001,
-  // if this flag is set, the joint wil be deleted when it breaks
-  dJOINT_DELETE_ON_BREAK =    0x0002,
-  // if this flag is set, the joint can break at a certain force on body 1
-  dJOINT_BREAK_AT_B1_FORCE =  0x0004,
-  // if this flag is set, the joint can break at a certain torque on body 1
-  dJOINT_BREAK_AT_B1_TORQUE = 0x0008,
-  // if this flag is set, the joint can break at a certain force on body 2
-  dJOINT_BREAK_AT_B2_FORCE =  0x0010,
-  // if this flag is set, the joint can break at a certain torque on body 2
-  dJOINT_BREAK_AT_B2_TORQUE = 0x0020
-};*)
-
-(* Change: New Type added, syntax enforcement *)
-  type
-    TJointBreakMode = Integer;
-
-(* These consts now have defined types *)
-  const
-    dJOINT_BROKEN: TJointBreakMode = $0001;
-    dJOINT_DELETE_ON_BREAK: TJointBreakMode = $0002;
-    dJOINT_BREAK_AT_B1_FORCE: TJointBreakMode = $0004;
-    dJOINT_BREAK_AT_B1_TORQUE: TJointBreakMode = $0008;
-    dJOINT_BREAK_AT_B2_FORCE: TJointBreakMode = $0010;
-    dJOINT_BREAK_AT_B2_TORQUE: TJointBreakMode = $0020;
-
 
   // Space constants
   const
@@ -966,7 +932,19 @@ var
   dWorldSetCFM: procedure(const World: PdxWorld; cfm: TdReal); cdecl;
   dWorldSetERP: procedure(const World: PdxWorld; erp: TdReal); cdecl;
   dWorldSetGravity: procedure(const World: PdxWorld; const x, y, z: TdReal); cdecl;
+  dWorldSetContactMaxCorrectingVel: procedure(const World: PdxWorld; const vel: TdReal); cdecl;
+  dWorldGetContactMaxCorrectingVel: function(const World: PdxWorld):  TdReal; cdecl;
+  dWorldSetContactSurfaceLayer: procedure(const World: PdxWorld; const depth: TdReal); cdecl;
+  dWorldGetContactSurfaceLayer: function(const World: PdxWorld):  TdReal; cdecl;
+
+  // Step
   dWorldStep: procedure(const World: PdxWorld; const stepsize: TdReal); cdecl;
+  // QuickStep
+  dWorldQuickStep: procedure(const World: PdxWorld; const stepsize: TdReal); cdecl;
+  dWorldSetQuickStepNumIterations: procedure(const World: PdxWorld; const num: integer); cdecl;
+  dWorldGetQuickStepNumIterations: function(const World: PdxWorld):  integer; cdecl;
+  dWorldSetQuickStepW: procedure(const World: PdxWorld; const param: TdReal); cdecl;
+  dWorldGetQuickStepW: function(const World: PdxWorld):  TdReal; cdecl;
   // Stepfast
   dWorldStepFast1: procedure(const World: PdxWorld; const stepsize: TdReal; const iterations: Integer); cdecl;
   dWorldSetAutoEnableDepthSF1: procedure(const World: PdxWorld; autodepth: Integer); cdecl;
@@ -1106,20 +1084,9 @@ var
   dJointAddSliderForce: procedure(const dJointID : TdJointID; force: TdReal); cdecl;
   dJointAddUniversalTorques: procedure(const dJointID : TdJointID; torque1, torque2: TdReal); cdecl;
 
-  // New "callback" routines for feedback of joints
+  // callback routines for feedback of joints
   dJointSetFeedback: procedure(const dJointID : TdJointID; Feedback : PTdJointFeedback); cdecl;
   dJointGetFeedback: function(const dJointID : TdJointID):  PTdJointFeedback; cdecl;
-
-  // New breakable joints routines
-  dJointSetBreakable: procedure(const dJointID : TdJointID; Breakable : Integer); cdecl;
-  dJointSetBreakCallback: procedure(const dJointID : TdJointID; callback : PTdJointBreakCallback); cdecl;
-  dJointSetBreakMode: procedure(const dJointID : TdJointID; mode : Integer); cdecl;
-  dJointSetBreakForce: procedure(const dJointID : TdJointID; body: Integer; x, y, z : TdReal); cdecl;
-  dJointSetBreakTorque: procedure(const dJointID : TdJointID; body: Integer; x, y, z : TdReal); cdecl;
-  dJointIsBreakable: function(const dJointID : TdJointID):  Integer; cdecl;
-  dJointGetBreakForce: procedure(const dJointID : TdJointID; body : Integer; force : PdVector3); cdecl;
-  dJointGetBreakTorque: procedure(const dJointID : TdJointID; body : Integer; torque : PdVector3); cdecl;
-
   dJointCorrectHinge2: procedure(const dJointID : TdJointID); cdecl;
 
   //* Auto-disable functions */
@@ -1875,7 +1842,16 @@ begin
   dWorldSetCFM := GetModuleSymbol( vODEHandle, 'dWorldSetCFM' );
   dWorldSetERP := GetModuleSymbol( vODEHandle, 'dWorldSetERP' );
   dWorldSetGravity := GetModuleSymbol( vODEHandle, 'dWorldSetGravity' );
+  dWorldSetContactMaxCorrectingVel := GetModuleSymbol( vODEHandle, 'dWorldSetContactMaxCorrectingVel' );
+  dWorldGetContactMaxCorrectingVel := GetModuleSymbol( vODEHandle, 'dWorldGetContactMaxCorrectingVel' );
+  dWorldSetContactSurfaceLayer := GetModuleSymbol( vODEHandle, 'dWorldSetContactSurfaceLayer' );
+  dWorldGetContactSurfaceLayer := GetModuleSymbol( vODEHandle, 'dWorldGetContactSurfaceLayer' );
   dWorldStep := GetModuleSymbol( vODEHandle, 'dWorldStep' );
+  dWorldQuickStep := GetModuleSymbol( vODEHandle, 'dWorldQuickStep' );
+  dWorldSetQuickStepNumIterations := GetModuleSymbol( vODEHandle, 'dWorldSetQuickStepNumIterations' );
+  dWorldGetQuickStepNumIterations := GetModuleSymbol( vODEHandle, 'dWorldGetQuickStepNumIterations' );
+  dWorldSetQuickStepW := GetModuleSymbol( vODEHandle, 'dWorldSetQuickStepW' );
+  dWorldGetQuickStepW := GetModuleSymbol( vODEHandle, 'dWorldGetQuickStepW' );
   dWorldStepFast1 := GetModuleSymbol( vODEHandle, 'dWorldStepFast1' );
   dWorldSetAutoEnableDepthSF1 := GetModuleSymbol( vODEHandle, 'dWorldSetAutoEnableDepthSF1' );
   dWorldGetAutoEnableDepthSF1 := GetModuleSymbol( vODEHandle, 'dWorldGetAutoEnableDepthSF1' );
@@ -2009,14 +1985,6 @@ begin
   dJointAddUniversalTorques := GetModuleSymbol( vODEHandle, 'dJointAddUniversalTorques' );
   dJointSetFeedback := GetModuleSymbol( vODEHandle, 'dJointSetFeedback' );
   dJointGetFeedback := GetModuleSymbol( vODEHandle, 'dJointGetFeedback' );
-  dJointSetBreakable := GetModuleSymbol( vODEHandle, 'dJointSetBreakable' );
-  dJointSetBreakCallback := GetModuleSymbol( vODEHandle, 'dJointSetBreakCallback' );
-  dJointSetBreakMode := GetModuleSymbol( vODEHandle, 'dJointSetBreakMode' );
-  dJointSetBreakForce := GetModuleSymbol( vODEHandle, 'dJointSetBreakForce' );
-  dJointSetBreakTorque := GetModuleSymbol( vODEHandle, 'dJointSetBreakTorque' );
-  dJointIsBreakable := GetModuleSymbol( vODEHandle, 'dJointIsBreakable' );
-  dJointGetBreakForce := GetModuleSymbol( vODEHandle, 'dJointGetBreakForce' );
-  dJointGetBreakTorque := GetModuleSymbol( vODEHandle, 'dJointGetBreakTorque' );
   dJointCorrectHinge2 := GetModuleSymbol( vODEHandle, 'dJointCorrectHinge2' );
   dWorldGetAutoDisableLinearThreshold := GetModuleSymbol( vODEHandle, 'dWorldGetAutoDisableLinearThreshold' );
   dWorldSetAutoDisableLinearThreshold := GetModuleSymbol( vODEHandle, 'dWorldSetAutoDisableLinearThreshold' );
