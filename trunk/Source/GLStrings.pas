@@ -42,7 +42,8 @@ resourcestring
   glsFailedOpenFile = 'Could not open file: %s';
   glsNoDescriptionAvailable = 'No description available';
   glsUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
-  glsUnknownExtension = 'Unknown file extension (%s)';
+  glsUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
+                       +'unit to your uses? (%s?)' ;
 
   // object categories
   glsOCBasicGeometry = 'Basic geometry';
