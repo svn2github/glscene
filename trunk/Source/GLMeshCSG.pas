@@ -146,7 +146,7 @@ Begin
   b3 := False;
 // This have no effect, however it removes a warning...
 
-  inc(libmatid);
+  //inc(libmatid);
 // normally we use the Node.SplitPlane, however on the last branch this is a NullPlane, so we have to calculate it.
   If VectorEquals(Node.SplitPlane,NullHmgVector) then
     plane := PlaneMake(BSP.Vertices[Node.VertexIndices[0]],BSP.Vertices[Node.VertexIndices[1]],BSP.Vertices[Node.VertexIndices[2]])
@@ -250,7 +250,7 @@ Begin
           Begin
             If B1 then
             Begin
-              inc(libmatid);
+              //inc(libmatid);
               i := intersect_lines[0];
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
@@ -273,7 +273,7 @@ Begin
             End else
             If B2 then
             Begin
-              inc(libmatid);
+              //inc(libmatid);
               i := (intersect_lines[0]+1) mod 3;
               i1 := (i+1) mod 3;
               vertex_offset := ResMesh.Vertices.count;
@@ -375,7 +375,7 @@ Begin
           Begin
             If B1 then
             Begin
-              inc(libmatid);
+              //inc(libmatid);
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(Vec[i]^,intersect_points[p0],Vec[i1]^);
@@ -396,7 +396,7 @@ Begin
             End;
             If B2 then
             Begin
-              inc(libmatid);
+              //inc(libmatid);
               i1 := (i+1) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(intersect_points[p0],Vec[i1]^,intersect_points[p1]);
@@ -418,7 +418,7 @@ Begin
             End;
             If B3 then
             Begin
-              inc(libmatid);
+              //inc(libmatid);
               i1 := (i+2) mod 3;
               vertex_offset := ResMesh.Vertices.count;
               ResMesh.Vertices.Add(intersect_points[p0],intersect_points[p1],Vec[i1]^);
