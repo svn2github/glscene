@@ -3026,6 +3026,8 @@ var
 begin
    if Owner.MeshObjects.Count>0 then begin
       RootBones.PrepareGlobalMatrices;
+      if Colliders.Count>0 then
+         Colliders.AlignColliders;
       for i:=0 to Owner.MeshObjects.Count-1 do begin
          mesh:=Owner.MeshObjects.Items[i];
          if mesh is TSkeletonMeshObject then
