@@ -17,6 +17,8 @@ type
    TCustomCgShader = class;
    TCgProgram = class;
    TCgParameter = class;
+   
+   TcgValueTypes = set of TcgValueType;
 
    TCgApplyEvent = procedure (Sender : TCgProgram; programIterator : PcgProgramIter) of object;
 
@@ -87,7 +89,8 @@ type
 
 	   protected
 	      { Protected Declarations }
-         procedure CheckValueType(aType : TcgValueType);
+         procedure CheckValueType(aType : TcgValueType); overload;
+         procedure CheckValueType(types : TcgValueTypes); overload;
          procedure BindAsVector(const val : TVector);
 
          procedure Bind;
@@ -473,6 +476,13 @@ begin
    Assert(aType=FValueType, ClassName+': Parameter type mismatch.');
 end;
 
+// CheckValueType
+//
+procedure TCgParameter.CheckValueType(types : TcgValueTypes);
+begin
+   Assert(FValueType in types, ClassName+': Parameter type mismatch.');
+end;
+
 // Bind
 //
 procedure TCgParameter.Bind;
@@ -496,7 +506,9 @@ end;
 //
 procedure TCgParameter.BindStateMatrix(matrixType : TCgGLMatrixType; format : Integer);
 begin
-   CheckValueType(cgFloat4x4ValueType);
+   CheckValueType([cgFloat4x4ValueType,
+                   cgFloat4x3ValueType, cgFloat3x4ValueType,
+                   cgFloat3x3ValueType]);
    Bind;
    cgGLBindUniformStateMatrix(Owner.ProgramIter, BindIter, matrixType, format);
 end;
