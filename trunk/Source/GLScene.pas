@@ -1453,6 +1453,12 @@ type
 
          FCamera : TGLCamera;
 
+         // Freezing
+         FFreezeBuffer : Pointer;
+         FFreezed : Boolean;
+         FFreezedViewPort : TRectangle;
+         FFreezedWithBufferRegion : Boolean;
+
          // Monitoring
          FFrames : Longint;
          FTicks  : Cardinal;
@@ -1565,6 +1571,13 @@ type
          procedure SetViewPort(X, Y, W, H: Integer);
          function Width : Integer;
          function Height : Integer;
+
+         {: Experimental frame freezing code, not operationnal yet. }
+         property Freezed : Boolean read FFreezed;
+         {: Experimental frame freezing code, not operationnal yet. }
+         procedure Freeze;
+         {: Experimental frame freezing code, not operationnal yet. }
+         procedure Melt;
 
          {: Displays a window with info on current OpenGL ICD and context. }
          procedure ShowInfo;
@@ -4668,6 +4681,7 @@ end;
 constructor TGLProxyObject.Create(AOwner: TComponent);
 begin
    inherited;
+   ObjectStyle:=ObjectStyle+[osDoesTemperWithColorsOrFaceWinding];
    FProxyOptions:=cDefaultProxyOptions;
 end;
 
@@ -5926,6 +5940,7 @@ end;
 procedure TGLSceneBuffer.DestroyRC;
 begin
    if Assigned(FRenderingContext) then begin
+      Melt;
       // for some obscure reason, Mesa3D doesn't like this call... any help welcome
       FreeAndNil(FRenderingContext);
       if Assigned(FCamera) and Assigned(FCamera.FScene) then
@@ -6171,6 +6186,57 @@ end;
 function TGLSceneBuffer.Height : Integer;
 begin
    Result:=FViewPort.Height;
+end;
+
+// Freeze
+//
+procedure TGLSceneBuffer.Freeze;
+var
+   hr : Integer;
+begin
+   if Freezed then Exit;
+   Render;
+   RenderingContext.Activate;
+   try
+      if WGL_ARB_buffer_region and (RenderingContext.RenderOutputDevice<>0) then begin
+         hr:=wglCreateBufferRegionARB(RenderingContext.RenderOutputDevice, 0,
+                                      WGL_FRONT_COLOR_BUFFER_BIT_ARB);
+         FFreezeBuffer:=Pointer(hr);
+         wglSaveBufferRegionARB(hr,
+                                FViewPort.Left, FViewPort.Top+FViewPort.Height,
+                                FViewport.Width, FViewPort.Height);
+         FFreezedWithBufferRegion:=True;
+      end else begin
+         FFreezeBuffer:=GetMemory(FViewPort.Width*FViewPort.Height*4);
+         glReadPixels(0, 0, FViewport.Width, FViewPort.Height,
+                      GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
+         FFreezedWithBufferRegion:=False;
+      end;
+      FFreezedViewPort:=FViewPort;
+      FFreezed:=True;
+   finally
+      RenderingContext.Deactivate;
+   end;
+end;
+
+// Melt
+//
+procedure TGLSceneBuffer.Melt;
+begin
+   if not Freezed then Exit;
+   if FFreezedWithBufferRegion then begin
+      if RenderingContext.IsValid then begin
+         RenderingContext.Activate;
+         try
+            wglDeleteBufferRegionARB(Integer(FFreezeBuffer));
+         finally
+            RenderingContext.Deactivate;
+         end;
+      end;
+   end else begin
+      FreeMemory(FFreezeBuffer);
+   end;
+   FFreezed:=False;
 end;
 
 // RenderToBitmap
@@ -6783,6 +6849,35 @@ var
 begin
    if FRendering then Exit;
    if not Assigned(FRenderingContext) then Exit;
+
+   if Freezed then begin
+      RenderingContext.Activate;
+      try
+         glMatrixMode(GL_PROJECTION);
+         with FFreezedViewPort do
+            gluOrtho2D(Left, Width, Height, Top);
+         glMatrixMode(GL_MODELVIEW);
+         glLoadIdentity;
+         if FFreezedWithBufferRegion then begin
+            wglRestoreBufferRegionARB(Integer(FFreezeBuffer),
+                                      FFreezedViewPort.Left, FFreezedViewPort.Top,
+                                      FFreezedViewPort.Width, FFreezedViewPort.Height,
+                                      FFreezedViewPort.Left, FFreezedViewPort.Top);
+         end else begin
+            glRasterPos2i(-50, 0);
+            glDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
+                         GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
+         end;
+         glFlush;
+//         RenderingContext.SwapBuffers;
+         RenderingContext.SwapBuffers;
+      finally
+         RenderingContext.Deactivate;
+      end;
+      Exit;
+   end;
+
+
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
       FCamera.AbsoluteMatrixAsAddress;
       FCamera.FScene.AddBuffer(Self);
