@@ -190,6 +190,12 @@ type
     procedure CheckValueType(aType : TCGtype); overload;
     procedure CheckValueType(const types : array of TCGtype); overload;
 
+    procedure CheckAllTextureTypes;
+    procedure CheckAllScalarTypes;
+    procedure CheckAllVector2fTypes;
+    procedure CheckAllVector3fTypes;
+    procedure CheckAllVector4fTypes;
+
     procedure SetAsVector2f(const val : TVector2f);
     procedure SetAsVector3f(const val : TVector3f);
     procedure SetAsVector4f(const val : TVector4f);
@@ -205,7 +211,9 @@ type
     procedure SetAsVector(const val : TVector2f); overload;
     procedure SetAsVector(const val : TVector3f); overload;
     procedure SetAsVector(const val : TVector4f); overload;
-
+    {: This overloaded SetAsVector accepts open array as input. e.g.
+       SetAsVector([0.1, 0.2]). Array length must between 1-4. }
+    procedure SetAsVector(const val : array of single); overload;
     procedure SetAsStateMatrix(matrix, Transform: Cardinal);
 
     {: Procedures for dealing with texture pamareters.}
@@ -389,10 +397,6 @@ implementation
 uses SysUtils, OpenGL1x, Dialogs, Forms;
 
 const
-  // For checking data type
-  AllTextureTypes : array[0..4] of TCGtype =
-     (CG_SAMPLER2D, CG_SAMPLER1D, CG_SAMPLERRECT, CG_SAMPLERCUBE, CG_SAMPLER3D);
-
   CgBoolean : array[false..true] of TCGbool = (CG_FALSE, CG_TRUE);
 
 var
@@ -813,38 +817,64 @@ begin
   Assert(DoCheck, TypeMismatchMessage);
 end;
 
+// CheckAll*Types
+
+procedure TCgParameter.CheckAllScalarTypes;
+begin
+  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED{$ifdef GLS_DELPHI_6_UP}, CG_BOOL{$endif}]);
+end;
+
+procedure TCgParameter.CheckAllTextureTypes;
+begin
+  CheckValueType([CG_SAMPLER2D, CG_SAMPLER1D, CG_SAMPLERRECT, CG_SAMPLERCUBE, CG_SAMPLER3D]);
+end;
+
+procedure TCgParameter.CheckAllVector2fTypes;
+begin
+  CheckValueType([CG_FLOAT2, CG_HALF2, CG_FIXED2]);
+end;
+
+procedure TCgParameter.CheckAllVector3fTypes;
+begin
+  CheckValueType([CG_FLOAT3, CG_HALF3, CG_FIXED3]);
+end;
+
+procedure TCgParameter.CheckAllVector4fTypes;
+begin
+  CheckValueType([CG_FLOAT4, CG_HALF4, CG_FIXED4]);
+end;
+
 // SetAsScalar
 //
 procedure TCgParameter.SetAsScalar(const val : Single);
 begin
-  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED{$ifdef GLS_DELPHI_6_UP}, CG_BOOL{$endif}]);
+  CheckAllScalarTypes;
   cgGLSetParameter1f(FHandle, val);
 end;
 
 procedure TCgParameter.SetAsScalar(const val: boolean);
 const BoolToFloat : array[false..true] of single = (CG_FALSE, CG_TRUE);
 begin
-  CheckValueType([CG_FLOAT, CG_HALF, CG_FIXED{$ifdef GLS_DELPHI_6_UP}, CG_BOOL{$endif}]);
-  cgGLSetParameter1f(FHandle, BoolToFloat[val]);
+  SetAsScalar(BoolToFloat[val]);
 end;
 
 // SetAsVector*
 //
 procedure TCgParameter.SetAsVector2f(const val: TVector2f);
 begin
-  CheckValueType([CG_FLOAT2, CG_HALF2, CG_FIXED2]);
+  CheckAllVector2fTypes;
   cgGLSetParameter2fv(FHandle, @val);
 end;
 
 procedure TCgParameter.SetAsVector3f(const val: TVector3f);
 begin
-  CheckValueType([CG_FLOAT3, CG_HALF3, CG_FIXED3]);
+  CheckAllVector3fTypes;
   cgGLSetParameter3fv(FHandle, @val);
 end;
 
 procedure TCgParameter.SetAsVector4f(const val: TVector4f);
 begin
-  CheckValueType([CG_FLOAT4, CG_HALF4, CG_FIXED4]);
+  CheckAllVector4fTypes;
   cgGLSetParameter4fv(FHandle, @val);
 end;
 
@@ -863,11 +893,23 @@ begin
   SetAsVector4f(val);
 end;
 
+procedure TCgParameter.SetAsVector(const val: array of single);
+begin
+  case high(val) of
+    0 : SetAsScalar(val[0]);
+    1 : begin CheckAllVector2fTypes; cgGLSetParameter2fv(FHandle, @val); end;
+    2 : begin CheckAllVector3fTypes; cgGLSetParameter3fv(FHandle, @val); end;
+    3 : begin CheckAllVector4fTypes; cgGLSetParameter4fv(FHandle, @val); end;
+  else
+    assert(false, 'Vector length must be between 1 to 4');
+  end;
+end;
+
 // SetAsTexture*
 //
 procedure TCgParameter.SetAsTexture(TextureID: Cardinal);
 begin
-  CheckValueType(AllTextureTypes);
+  CheckAllTextureTypes;
   cgGLSetTextureParameter(FHandle, TextureID);
 end;
 
@@ -927,7 +969,7 @@ end;
 //
 procedure TCgParameter.DisableTexture;
 begin
-  CheckValueType(AllTextureTypes);
+  CheckAllTextureTypes;
   cgGLDisableTextureParameter(FHandle);
 end;
 
@@ -935,7 +977,7 @@ end;
 //
 procedure TCgParameter.EnableTexture;
 begin
-  CheckValueType(AllTextureTypes);
+  CheckAllTextureTypes;
   cgGLEnableTextureParameter(FHandle);
 end;
 
