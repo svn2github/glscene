@@ -3,6 +3,8 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
+                          SubdivideTriangles 
       <li>10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
       <li>04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
       <li>02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
@@ -34,12 +36,25 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
    The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
 procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
 
+{: Inverts the triangles winding (vertex order). }
+procedure InvertTrianglesWinding(indices : TIntegerList);
+
 {: Builds normals for a triangles list.<p>
    Builds one normal per reference vertex (may be NullVector is reference isn't
    used), which is the averaged for normals of all adjacent triangles.<p>
    Returned list must be freed by caller. }
 function BuildNormals(reference : TAffineVectorList;
                       indices : TIntegerList) : TAffineVectorList;
+
+{: Builds a list of non-oriented (non duplicated) edges list.<p>
+   Each edge is represented by the two integers of its vertices,
+   sorted in ascending order.<br>
+   If not nil, triangleEdges is filled with the 3 indices of the 3 edges
+   of the triangle, the edges ordering respecting the original triangle
+   orientation.<p>
+   *NOT* optimized, lacks a hash in ProcessEdge }
+function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
+                                   triangleEdges : TIntegerList) : TIntegerList;
 
 {: Welds all vertices separated by a distance inferior to weldRadius.<p>
    Any two vertices whose distance is inferior to weldRadius will be merged
@@ -76,6 +91,18 @@ function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;
    This procedure performs a coherency optimization via a greedy hill-climber
    algorithm (ie. not optimal but fast). }
 procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
+
+{: Subdivides mesh triangles.<p>
+   Splits along edges, each triangle becomes four. The smoothFactor can be
+   used to control subdivision smoothing, zero means no smoothing (tesselation
+   only), while 1 means "sphere" subdivision (a low res sphere will be subdivided
+   in a higher-res sphere), values outside of the [0..1] range are for, er,
+   artistic purposes.<p>
+   The procedure is not intended for real-time use. }
+procedure SubdivideTriangles(smoothFactor : Single;
+                             vertices, normals : TAffineVectorList;
+                             triangleIndices : TIntegerList;
+                             texCoords : TAffineVectorList = nil);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -214,6 +241,20 @@ begin
    indices.Count:=k;
 end;
 
+// InvertTrianglesWinding
+//
+procedure InvertTrianglesWinding(indices : TIntegerList);
+var
+   i : Integer;
+begin
+   Assert((indices.Count mod 3)=0);
+   i:=indices.Count-3;
+   while i>=0 do begin
+      indices.Exchange(i, i+2);
+      Dec(i, 3);
+   end;
+end;
+
 // BuildNormals
 //
 function BuildNormals(reference : TAffineVectorList;
@@ -250,6 +291,76 @@ begin
    finally
       normalsCount.Free;
    end;
+end;
+
+{: Builds a list of non-oriented (non duplicated) edges list.<p>
+   Each edge is represented by the two integers of its vertices,
+   sorted in ascending order.<br>
+   If not nil, triangleEdges is filled with the 3 indices of the 3 edges
+   of the triangle, the edges ordering respecting the original triangle
+   orientation.<p>
+   *NOT* optimized, lacks a hash in ProcessEdge }
+// BuildNonOrientedEdgesList
+//
+function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
+                                   triangleEdges : TIntegerList) : TIntegerList;
+
+   function ProcessEdge(a, b : Integer; edges : TIntegerList) : Integer;
+   var
+      n : Integer;
+   begin
+      if a<=b then begin
+         n:=0;
+         while n<edges.Count do begin
+            if (edges[n]=a) and (edges[n+1]=b) then begin
+               Result:=n;
+               Exit;
+            end;
+            Inc(n, 2);
+         end;
+         Result:=edges.Count;
+         edges.Add(a, b);
+      end else Result:=ProcessEdge(b, a, edges);
+   end;
+
+var
+   i, j : Integer;
+begin
+   Result:=TIntegerList.Create;
+   Result.Capacity:=1024;
+   Result.GrowthDelta:=1024;
+   if Assigned(triangleEdges) then
+      triangleEdges.Count:=triangleIndices.Count;
+   // collect all edges
+   i:=0;
+   if Assigned(triangleEdges) then begin
+      while i<triangleIndices.Count do begin
+         triangleEdges[i  ]:=ProcessEdge(triangleIndices[i  ], triangleIndices[i+1], Result);
+         triangleEdges[i+1]:=ProcessEdge(triangleIndices[i+1], triangleIndices[i+2], Result);
+         triangleEdges[i+2]:=ProcessEdge(triangleIndices[i+2], triangleIndices[i  ], Result);
+         Inc(i, 3);
+      end;
+   end else begin
+      while i<triangleIndices.Count do begin
+         ProcessEdge(triangleIndices[i  ], triangleIndices[i+1], Result);
+         ProcessEdge(triangleIndices[i+1], triangleIndices[i+2], Result);
+         ProcessEdge(triangleIndices[i+2], triangleIndices[i  ], Result);
+         Inc(i, 3);
+      end;
+   end;
+   // Cleanup
+   i:=0;
+   j:=0;
+   while i<=Result.Count-2 do begin
+      if Result[i]<>Result[i+1] then begin
+         Result[j]:=Result[i];
+         Result[j+1]:=Result[i+1];
+         Inc(j, 2);
+      end;
+      Inc(i, 2);
+   end;
+   // Build triangles edges index
+      if Assigned(triangleEdges) then
 end;
 
 // IncreaseCoherency
@@ -507,6 +618,68 @@ begin
    // cleanup
    for i:=0 to High(vertexTris) do
       vertexTris[i].Free;
+end;
+
+// SubdivideTriangles
+//
+procedure SubdivideTriangles(smoothFactor : Single;
+                             vertices, normals : TAffineVectorList;
+                             triangleIndices : TIntegerList;
+                             texCoords : TAffineVectorList = nil);
+var
+   i, a, b, c, nv : Integer;
+   edges : TIntegerList;
+   triangleEdges : TIntegerList;
+   p, n : TAffineVector;
+   f : Single;
+begin
+   // build edges list
+   triangleEdges:=TIntegerList.Create;
+   try
+      edges:=BuildNonOrientedEdgesList(triangleIndices, triangleEdges);
+      try
+         nv:=vertices.Count;
+         // split all edges, add corresponding vertex & normal
+         i:=0;
+         while i<edges.Count do begin
+            a:=edges[i];
+            b:=edges[i+1];
+            p:=VectorLerp(vertices[a], vertices[b], 0.5);
+            n:=VectorNormalize(VectorLerp(normals[a], normals[b], 0.5));
+            if smoothFactor<>0 then begin
+               f:=0.25*smoothFactor*VectorDistance(vertices[a], vertices[b])
+                  *(1-VectorDotProduct(normals[a], normals[b]));
+               if VectorDotProduct(normals[a], VectorSubtract(vertices[b], vertices[a]))
+                  +VectorDotProduct(normals[b], VectorSubtract(vertices[a], vertices[b]))>0 then
+                  f:=-f;
+               CombineVector(p, n, f);
+            end;
+            if Assigned(texCoords) then
+               texCoords.Add(VectorLerp(texCoords[a], texCoords[b], 0.5));
+            vertices.Add(p);
+            normals.Add(n);
+            Inc(i, 2);
+         end;
+         // spawn new triangles
+         i:=triangleIndices.Count-3;
+         while i>=0 do begin
+            a:=nv+triangleEdges[i+0] div 2;
+            b:=nv+triangleEdges[i+1] div 2;
+            c:=nv+triangleEdges[i+2] div 2;
+            triangleIndices.Add(triangleIndices[i+0], a, c);
+            triangleIndices.Add(a, triangleIndices[i+1], b);
+            triangleIndices.Add(b, triangleIndices[i+2], c);
+            triangleIndices[i+0]:=a;
+            triangleIndices[i+1]:=b;
+            triangleIndices[i+2]:=c;
+            Dec(i, 3);
+         end;
+      finally
+         edges.Free;
+      end;
+   finally
+      triangleEdges.Free;
+   end;
 end;
 
 end.
