@@ -372,7 +372,7 @@ begin
          TBEffectsPanelClick(Self);
          Left:=ReadRegistryInteger(reg, 'Left', Left);
          Top:=ReadRegistryInteger(reg, 'Top', Top);
-         Width:=ReadRegistryInteger(reg, 'Width', Width);
+         Width:=ReadRegistryInteger(reg, 'Width', 250);
          Height:=ReadRegistryInteger(reg, 'Height', Height);
       end;
    finally
