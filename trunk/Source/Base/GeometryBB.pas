@@ -3,6 +3,7 @@
 	Calculations and manipulations on Bounding Boxes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/09/03 - EG - New AABB functions
       <li>17/08/01 - EG - Removed "math" dependency
       <li>09/07/01 - EG - Added AABB types and functions
 	   <li>31/03/01 - EG - Original Unit by Jacques Tur
@@ -28,15 +29,24 @@ type
 
 {: Adds a BB into another BB.<p>
    The original BB (c1) is extended if necessary to contain c2. }
-function AddBB(var c1 : THmgBoundingBox; const c2 : THmgBoundingBox ) : THmgBoundingBox;
-procedure SetBB(var c : THmgBoundingBox; const v : TVector );
-procedure BBTransform(var c : THmgBoundingBox; const m : TMatrix );
+function AddBB(var c1 : THmgBoundingBox; const c2 : THmgBoundingBox) : THmgBoundingBox;
+procedure AddAABB(var aabb : TAABB; const aabb1 : TAABB);
+
+procedure SetBB(var c : THmgBoundingBox; const v : TVector);
+procedure SetAABB(var bb : TAABB; const v : TVector);
+
+procedure BBTransform(var c : THmgBoundingBox; const m : TMatrix);
+procedure AABBTransform(var bb : TAABB; const m : TMatrix);
+
 function BBMinX(const c : THmgBoundingBox) : Single;
 function BBMaxX(const c : THmgBoundingBox) : Single;
 function BBMinY(const c : THmgBoundingBox) : Single;
 function BBMaxY(const c : THmgBoundingBox) : Single;
 function BBMinZ(const c : THmgBoundingBox) : Single;
 function BBMaxZ(const c : THmgBoundingBox) : Single;
+
+{: Resize the AABB if necessary to include p. }
+procedure AABBInclude(var bb : TAABB; const p : TAffineVector);
 
 {: Extract AABB information from a BB. }
 function BBToAABB(const aBB : THmgBoundingBox) : TAABB;
@@ -77,10 +87,9 @@ implementation
 //----------------- BB functions -------------------------------------------
 //------------------------------------------------------------------------------
 
-
 // SetPlanBB
 //
-procedure SetPlanBB(var BB : THmgBoundingBox; const NumPlan : Integer; const Valeur : Double );
+procedure SetPlanBB(var BB : THmgBoundingBox; const NumPlan : Integer; const Valeur : Double);
 var
    i : Integer;
 begin
@@ -93,34 +102,38 @@ end;
 
 // AddBB
 //
-function AddBB( var c1 : THmgBoundingBox; const c2 : THmgBoundingBox ) : THmgBoundingBox;
+function AddBB(var c1 : THmgBoundingBox; const c2 : THmgBoundingBox) : THmgBoundingBox;
 
 var
    i, j : Integer;
 begin
-   for i := 0 to 7 do
-   begin
-      for j := 0 to 3 do
-          if c1[cBBFront[j]][0] < c2[i][0]
-          then SetPlanBB( c1, 0, C2[i][0] );
-      for j := 0 to 3 do
-          if c1[cBBBack[j]][0] > c2[i][0]
-          then SetPlanBB( c1, 1, C2[i][0] );
-      for j := 0 to 3 do
-          if c1[cBBLeft[j]][1] < c2[i][1]
-          then SetPlanBB( c1, 2, C2[i][1] );
-      for j := 0 to 3 do
-          if c1[cBBRight[j]][1] > c2[i][1]
-          then SetPlanBB( c1, 3, C2[i][1] );
-      for j := 0 to 3 do
-          if c1[cBBTop[j]][2] < c2[i][2]
-          then SetPlanBB( c1, 4, C2[i][2] );
-      for j := 0 to 3 do
-          if c1[cBBBottom[j]][2] > c2[i][2]
-          then SetPlanBB( c1, 5, C2[i][2] );
+   for i:=0 to 7 do begin
+      for j:=0 to 3 do
+          if c1[cBBFront[j]][0]<c2[i][0] then SetPlanBB(c1, 0, c2[i][0]);
+      for j:=0 to 3 do
+          if c1[cBBBack[j]][0]>c2[i][0] then SetPlanBB(c1, 1, c2[i][0]);
+      for j:=0 to 3 do
+          if c1[cBBLeft[j]][1]<c2[i][1] then SetPlanBB(c1, 2, c2[i][1]);
+      for j:=0 to 3 do
+          if c1[cBBRight[j]][1]>c2[i][1] then SetPlanBB(c1, 3, c2[i][1]);
+      for j:=0 to 3 do
+          if c1[cBBTop[j]][2]<c2[i][2] then SetPlanBB(c1, 4, c2[i][2]);
+      for j:=0 to 3 do
+          if c1[cBBBottom[j]][2]>c2[i][2] then SetPlanBB(c1, 5, c2[i][2]);
    end;
+   Result:=c1;
+end;
 
-   Result := c1;
+// AddAABB
+//
+procedure AddAABB(var aabb : TAABB; const aabb1 : TAABB);
+begin
+   if aabb1.min[0]<aabb.min[0] then aabb.min[0]:=aabb1.min[0];
+   if aabb1.min[1]<aabb.min[1] then aabb.min[1]:=aabb1.min[1];
+   if aabb1.min[2]<aabb.min[2] then aabb.min[2]:=aabb1.min[2];
+   if aabb1.max[0]>aabb.max[0] then aabb.max[0]:=aabb1.max[0];
+   if aabb1.max[1]>aabb.max[1] then aabb.max[1]:=aabb1.max[1];
+   if aabb1.max[2]>aabb.max[2] then aabb.max[2]:=aabb1.max[2];
 end;
 
 // SetBB
@@ -135,14 +148,45 @@ begin
    SetPlanBB( c, 5, -v[2] );
 end;
 
-//BBTransform
+// SetAABB
+//
+procedure SetAABB(var bb : TAABB; const v : TVector);
+begin
+   bb.max[0]:=Abs(v[0]);
+   bb.max[1]:=Abs(v[1]);
+   bb.max[2]:=Abs(v[2]);
+   bb.min[0]:=-bb.max[0];
+   bb.min[1]:=-bb.max[1];
+   bb.min[2]:=-bb.max[2];
+end;
+
+// BBTransform
 //
 procedure BBTransform( var c : THmgBoundingBox; const m : TMatrix );
 var
    i : Integer;
 begin
-   for i := 0 to 7 do
-      c[i] := VectorTransform(c[i], m );
+   for i:=0 to 7 do
+      c[i]:=VectorTransform(c[i], m);
+end;
+
+// AABBTransform
+//
+procedure AABBTransform(var bb : TAABB; const m : TMatrix);
+var
+   oldMin, oldMax : TAffineVector;
+begin
+   oldMin:=bb.min;
+   oldMax:=bb.max;
+   bb.min:=VectorTransform(oldMin , m);
+   bb.max:=bb.min;
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin[0], oldMin[1], oldMax[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin[0], oldMax[1], oldMin[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMin[0], oldMax[1], oldMax[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMin[1], oldMin[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMin[1], oldMax[2]), m));
+   AABBInclude(bb, VectorTransform(AffineVectorMake(oldMax[0], oldMax[1], oldMin[2]), m));
+   AABBInclude(bb, VectorTransform(oldMax , m));
 end;
 
 //BBMinX
@@ -151,9 +195,9 @@ function BBMinX(const c : THmgBoundingBox ) : Single;
 var
    i : Integer;
 begin
-   Result := c[0][0];
-   for i := 1 to 7 do
-      Result := MinFloat(Result, c[i][0]);
+   Result:=c[0][0];
+   for i:=1 to 7 do
+      Result:=MinFloat(Result, c[i][0]);
 end;
 
 //BBMaxX
@@ -200,7 +244,7 @@ begin
       Result := MinFloat( Result, c[i][2] );
 end;
 
-//BBMaxZ
+// BBMaxZ
 //
 function BBMaxZ(const c : THmgBoundingBox ) : Single;
 var
@@ -209,6 +253,18 @@ begin
    Result := c[0][2];
    for i := 1 to 7 do
       Result := MaxFloat( Result, c[i][2] );
+end;
+
+// AABBInclude
+//
+procedure AABBInclude(var bb : TAABB; const p : TAffineVector);
+begin
+   if p[0]<bb.min[0] then bb.min[0]:=p[0];
+   if p[0]>bb.max[0] then bb.max[0]:=p[0];
+   if p[1]<bb.min[1] then bb.min[1]:=p[1];
+   if p[1]>bb.max[1] then bb.max[1]:=p[1];
+   if p[2]<bb.min[2] then bb.min[2]:=p[2];
+   if p[2]>bb.max[2] then bb.max[2]:=p[2];
 end;
 
 // BBToAABB
