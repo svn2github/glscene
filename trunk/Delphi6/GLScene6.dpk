@@ -180,6 +180,7 @@ contains
   GLBumpmapHDS in '..\Source\GLBumpmapHDS.pas',
   GLVerletClasses in '..\Source\GLVerletClasses.pas',
   VerletHairClasses in '..\Source\Base\VerletHairClasses.pas',
-  GLImposter in '..\Source\GLImposter.pas';
+  GLImposter in '..\Source\GLImposter.pas',
+  GLMeshOptimizer in '..\Source\GLMeshOptimizer.pas';
 
 end.
