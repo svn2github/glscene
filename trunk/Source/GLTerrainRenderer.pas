@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/04/04 - EG - Occlusion testing support
       <li>13/01/04 - EG - Leak fix (Phil Scadden)
       <li>05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
       <li>06/02/03 - EG - Fixed speculative range computation, better hashkey
@@ -26,8 +27,8 @@ unit GLTerrainRenderer;
 
 interface
 
-uses Classes, GLScene, GLHeightData, GLTexture, VectorGeometry, GLContext, GLROAMPatch,
-   VectorLists;
+uses Classes, GLScene, GLHeightData, GLTexture, VectorGeometry, GLContext,
+   GLROAMPatch, VectorLists;
 
 type
 
@@ -35,6 +36,7 @@ type
    TPatchPostRenderEvent = procedure (var rci : TRenderContextInfo; const patches : TList) of object;
    THeightDataPostRenderEvent = procedure (var rci : TRenderContextInfo; const heightDatas : TList) of object;
    TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
+   TTerrainOcclusionTesselate = (totTesselateAlways, totTesselateIfVisible);
 
 	// TGLTerrainRenderer
 	//
@@ -62,6 +64,8 @@ type
          FOnPatchPostRender : TPatchPostRenderEvent;
          FOnHeightDataPostRender : THeightDataPostRenderEvent;
          FQualityStyle : TTerrainHighResStyle;
+         FOcclusionFrameSkip : Integer;
+         FOcclusionTesselate : TTerrainOcclusionTesselate;
 
 	   protected
 	      { Protected Declarations }
@@ -80,6 +84,7 @@ type
          procedure SetCLODPrecision(const val : Integer);
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
          procedure SetQualityStyle(const val : TTerrainHighResStyle);
+         procedure SetOcclusionFrameSkip(val : Integer);
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 			procedure DestroyHandle; override;
@@ -144,6 +149,31 @@ type
             Large values will result in coarse terrain.<br>
             high-resolution tiles (closer than QualityDistance) ignore this setting. }
          property CLODPrecision : Integer read FCLODPrecision write SetCLODPrecision default 100;
+         {: Numbers of frames to skip for a tile when occlusion testing found it invisible.<p>
+            Occlusion testing can help reduce CPU, T&L and fillrate requirements
+            when tiles are occluded, either by the terrain itself (tiles behind
+            a mountain or a cliff) or by geometry that was rendered before the
+            terrain (large buildings). If there is little occlusion in your scene
+            (such as in top down or high-altitude view), turning occlusion on
+            may have a slightly negative effect on framerate.<br>
+            It works by turning off rendering of tiles for the specified number
+            of frames if it has been found invisible, after FrameSkip number
+            of frames have been skipped, it will be rendered again, and a new
+            occlusion testing made. This makes occlusion-testing a frame-to-frame
+            coherency optimization, and as such, shouldn't be used for static
+            rendering (ie. leave value to its default of zero).<br>
+            This optimization requires the hardware to support GL_NV_occlusion_query. }
+         property OcclusionFrameSkip : Integer read FOcclusionFrameSkip write SetOcclusionFrameSkip default 0;
+         {: Determines if and how occlusion testing affects tesselation.<p>
+            Turning off tesselation of tiles determined invisible can improve
+            performance, however, it may result in glitches since the tesselation
+            of an ivisible tile can have a slight effect on the tesselation
+            of its adjacent tiles (by forcing higher resolution at the border
+            for instance). This negative effect can be lessened by increasing
+            the QualityDistance, so that glitches will apear farther away
+            (this will mean increasing your triangle count though, so you'll
+            trade CPU power against T&L power). }
+         property OcclusionTesselate : TTerrainOcclusionTesselate read FOcclusionTesselate write FOcclusionTesselate default totTesselateIfVisible;
 
          {: Allows to specify terrain bounds.<p>
             Default rendering bounds will reach depth of view in all direction,
@@ -191,6 +221,7 @@ begin
    FTilesPerTexture:=1;
    FMaxCLODTriangles:=65536;
    FCLODPrecision:=100;
+   FOcclusionTesselate:=totTesselateIfVisible;
    FBufferVertices:=TAffineVectorList.Create;
    FBufferTexPoints:=TTexPointList.Create;
    FBufferVertexIndices:=TIntegerList.Create;
@@ -351,9 +382,11 @@ end;
 //
 procedure TGLTerrainRenderer.BuildList(var rci : TRenderContextInfo);
 var
-   vEye : TVector;
+   vEye, vEyeDirection : TVector;
    tilePos, absTilePos, observer : TAffineVector;
-   delta, n, rpIdxDelta : Integer;
+   deltaX, nbX, iX : Integer;
+   deltaY, nbY, iY : Integer;
+   n, rpIdxDelta : Integer;
    f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist : Single;
    patch, prevPatch : TGLROAMPatch;
    patchList, rowList, prevRow, buf : TList;
@@ -391,6 +424,7 @@ begin
    currentMaterialName:='';
    // first project eye position into heightdata coordinates
    vEye:=VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
+   vEyeDirection:=VectorTransform(rci.cameraDirection, InvAbsoluteMatrix);
    SetVector(observer, vEye);
    vEye[0]:=Round(vEye[0]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
    vEye[1]:=Round(vEye[1]*FinvTileSize-0.5)*TileSize+TileSize*0.5;
@@ -399,7 +433,6 @@ begin
    tileGroundRadius:=Sqrt(tileGroundRadius);
    // now, we render a quad grid centered on eye position
    SetVector(tilePos, vEye);
-   delta:=TileSize;
    tilePos[2]:=0;
    f:=(rci.rcci.farClippingDistance+tileGroundRadius)/Scale.X;
    f:=Round(f*FinvTileSize+1.0)*TileSize;
@@ -439,9 +472,12 @@ begin
       xglPopState;
    end;
 
+   nbX:=Round((maxTilePosX-minTilePosX)/TileSize);
+   nbY:=Round((maxTilePosY-minTilePosY)/TileSize);
    FLastTriangleCount:=0;
 
    patchList:=TList.Create;
+   patchList.Capacity:=(nbX+1)*(nbY+1);
    rowList:=TList.Create;
    prevRow:=TList.Create;
    if Assigned(FOnPatchPostRender) then
@@ -474,14 +510,28 @@ begin
       if minTilePosY<t_b then minTilePosY:=t_b;
    end;
 
+   // determine orientation (to render front-to-back)
+   if vEyeDirection[0]>=0 then
+      deltaX:=TileSize
+   else begin
+      deltaX:=-TileSize;
+      minTilePosX:=maxTilePosX;
+   end;
+   if vEyeDirection[1]>=0 then
+      deltaY:=TileSize
+   else begin
+      deltaY:=-TileSize;
+      minTilePosY:=maxTilePosY;
+   end;
+
    tileRadius:=tileRadius;
 
    tilePos[1]:=minTilePosY;
-   while tilePos[1]<=maxTilePosY do begin
+   for iY:=0 to nbY do begin
       tilePos[0]:=minTilePosX;
       prevPatch:=nil;
       n:=0;
-      while tilePos[0]<=maxTilePosX do begin
+      for iX:=0 to nbX do begin
          absTilePos:=VectorTransform(tilePos, DirectAbsoluteMatrix^);
          if not IsVolumeClipped(absTilePos, tileRadius, rcci) then begin
             patch:=GetPreparedPatch(tilePos, observer, texFactor,
@@ -494,10 +544,16 @@ begin
 
                if not patch.HighRes then
                   patch.ResetTessellation;
-               if Assigned(prevPatch) then
-                  patch.ConnectToTheWest(prevPatch);
-               if (prevRow.Count>n) and (prevRow.List[n]<>nil) then
-                  patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]));
+               if Assigned(prevPatch) then begin
+                  if deltaX>0 then
+                     patch.ConnectToTheWest(prevPatch)
+                  else prevPatch.ConnectToTheWest(patch);
+               end;
+               if (prevRow.Count>n) and (prevRow.List[n]<>nil) then begin
+                  if deltaY>0 then
+                     patch.ConnectToTheNorth(TGLROAMPatch(prevRow.List[n]))
+                  else TGLROAMPatch(prevRow.List[n]).ConnectToTheNorth(patch);
+               end;
 
                if patch.HighRes then begin
                   // high-res patches are issued immediately
@@ -524,23 +580,28 @@ begin
             prevPatch:=nil;
             rowList.Add(nil);
          end;
-         tilePos[0]:=tilePos[0]+delta;
+         tilePos[0]:=tilePos[0]+deltaX;
          Inc(n);
       end;
-      tilePos[1]:=tilePos[1]+delta;
+      tilePos[1]:=tilePos[1]+deltaY;
       buf:=prevRow;
       prevRow:=rowList;
       rowList:=buf;
       rowList.Count:=0;
    end;
 
-   rpIdxDelta:=Round(2*f/delta)+2;
-
+   // Interleave Tesselate and Render so we can send some work to the hardware
+   // while the CPU keeps working
+   rpIdxDelta:=Round(2*f/TileSize)+2;
    for n:=0 to patchList.Count-1+rpIdxDelta do begin
       if n<patchList.Count then begin
          patch:=TGLROAMPatch(patchList[n]);
-         if Assigned(patch) then
-            patch.Tesselate;
+         if Assigned(patch) then begin
+            if    (patch.LastOcclusionTestPassed)
+               or (patch.OcclusionCounter<=0)
+               or (OcclusionTesselate=totTesselateAlways) then
+               patch.Tesselate;
+         end;
       end;
       if n>=rpIdxDelta then begin
          patch:=TGLROAMPatch(patchList[n-rpIdxDelta]);
@@ -706,6 +767,7 @@ begin
          patch.HeightData:=tile;
          patch.VertexScale:=XYZVector;
          patch.VertexOffset:=tilePos;
+         patch.OcclusionSkip:=OcclusionFrameSkip;
          case tile.TextureCoordinatesMode of
             tcmWorld : begin
                patch.TextureScale:=AffineVectorMake(texFactor, -texFactor, texFactor);
@@ -809,6 +871,27 @@ begin
    if val<>FQualityStyle then begin
       FQualityStyle:=val;
       StructureChanged;
+   end;
+end;
+
+// SetOcclusionFrameSkip
+//
+procedure TGLTerrainRenderer.SetOcclusionFrameSkip(val : Integer);
+var
+   i, k : Integer;
+   hd : THeightData;
+begin
+   if val<0 then val:=0;
+   if FOcclusionFrameSkip<>val then begin
+      FOcclusionFrameSkip:=val;
+      for i:=0 to High(FTilesHash) do with FTilesHash[i] do begin
+         for k:=Count-1 downto 0 do begin
+            hd:=THeightData(List[k]);
+            if hd.ObjectTag<>nil then
+               TGLROAMPatch(hd.ObjectTag).OcclusionSkip:=OcclusionFrameSkip;
+         end;
+      end;
+      NotifyChange(Self);
    end;
 end;
 

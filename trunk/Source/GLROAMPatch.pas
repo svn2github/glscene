@@ -2,6 +2,7 @@
 {: Class for managing a ROAM (square) patch.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/04/04 - EG - Occlusion testing support
       <li>06/02/03 - EG - Adaptative variance computation
       <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
       <li>15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
@@ -40,6 +41,7 @@ type
   	TGLROAMPatch = class (TObject)
 	   private
 	      { Private Declarations }
+         FID : Integer;
          FHeightData : THeightData; // Referred, not owned
          FHeightRaster : PSmallIntRaster;
          FTLNode, FBRNode : PROAMTriangleNode;
@@ -55,9 +57,14 @@ type
          FTextureScale, FTextureOffset : TAffineVector;
          FMaxTLVarianceDepth, FMaxBRVarianceDepth : Integer;
 
+         FOcclusionQuery : TGLOcclusionQueryHandle;
+         FOcclusionSkip, FOcclusionCounter : Integer;
+         FLastOcclusionTestPassed : Boolean;
+
 	   protected
 	      { Protected Declarations }
          procedure SetHeightData(val : THeightData);
+         procedure SetOcclusionSkip(val : Integer);
 
          procedure RenderROAM(vertices : TAffineVectorList;
                               vertexIndices : TIntegerList;
@@ -98,6 +105,16 @@ type
          property HighRes : Boolean read FHighRes write FHighRes;
          property NoDetails : Boolean read FNoDetails write FNoDetails;
 
+         {: Number of frames to skip after an occlusion test returned zero pixels. }
+         property OcclusionSkip : Integer read FOcclusionSkip write SetOcclusionSkip;
+         {: Number of frames remaining to next occlusion test. }
+         property OcclusionCounter : Integer read FOcclusionCounter write FOcclusionCounter;
+         {: Result for the last occlusion test.<p>
+            Note that this value is updated upon rendering the tile in
+            non-high-res mode only. }
+         property LastOcclusionTestPassed : Boolean read FLastOcclusionTestPassed;
+
+         property ID : Integer read FID;
          property TriangleCount : Integer read FTriangleCount;
          property Tag : Integer read FTag write FTag;
 	end;
@@ -125,6 +142,7 @@ type
    end;
 
 var
+   vNextPatchID : Integer;
    vNbTris, vTriangleNodesCapacity : Integer;
    vTriangleNodes : array of TROAMTriangleNode;
 
@@ -250,7 +268,10 @@ end;
 constructor TGLROAMPatch.Create;
 begin
 	inherited Create;
+   FID:=vNextPatchID;
+   Inc(vNextPatchID);
    FListHandle:=TGLListHandle.Create;
+   FOcclusionQuery:=TGLOcclusionQueryHandle.Create;
 end;
 
 // Destroy
@@ -258,6 +279,7 @@ end;
 destructor TGLROAMPatch.Destroy;
 begin
    FListHandle.Free;
+   FOcclusionQuery.Free;
 	inherited Destroy;
 end;
 
@@ -268,6 +290,17 @@ begin
    FHeightData:=val;
    FPatchSize:=FHeightData.Size-1;
    FHeightRaster:=val.SmallIntRaster;
+end;
+
+// SetOcclusionSkip
+//
+procedure TGLROAMPatch.SetOcclusionSkip(val : Integer);
+begin
+   if val<0 then val:=0;
+   if FOcclusionSkip<>val then begin
+      FOcclusionSkip:=val;
+      FOcclusionQuery.DestroyHandle;
+   end;
 end;
 
 // ConnectToTheWest
@@ -525,6 +558,7 @@ procedure TGLROAMPatch.Render(vertices : TAffineVectorList;
                               forceROAM : Boolean);
 var
    primitive : TGLEnum;
+   occlusionPassed : Boolean;
 begin
    if FNoDetails then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -559,18 +593,37 @@ begin
       glCallList(FListHandle.Handle);
    end else begin
       // CLOD tiles are rendered via ROAM
-      RenderROAM(vertices, vertexIndices, texCoords);
-      vertices.Translate(VertexOffset);
-      texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
-                                  PTexPoint(@TextureOffset)^);
-      if GL_EXT_compiled_vertex_array then begin
-         glLockArraysEXT(0, vertices.Count);
-         glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
-         glUnLockArraysEXT;
-      end else begin
-         glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
-      end;
-      FTriangleCount:=vertexIndices.Count div 3;
+      if (FOcclusionSkip>0) and GL_NV_occlusion_query then begin
+         if FOcclusionQuery.Handle=0 then begin
+            FOcclusionQuery.AllocateHandle;
+            FOcclusionCounter:=-(ID mod (FOcclusionSkip));
+         end;
+         occlusionPassed:=(FOcclusionCounter<=0) or (FOcclusionQuery.PixelCount>0);
+         Dec(FOcclusionCounter);
+         if occlusionPassed then begin
+            if FOcclusionCounter<=0 then
+               Inc(FOcclusionCounter, FOcclusionSkip);
+            FOcclusionQuery.BeginOcclusionQuery;
+         end;
+      end else occlusionPassed:=True;
+      FLastOcclusionTestPassed:=occlusionPassed;
+      if occlusionPassed then begin
+         RenderROAM(vertices, vertexIndices, texCoords);
+         vertices.Translate(VertexOffset);
+         texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
+                                     PTexPoint(@TextureOffset)^);
+         if GL_EXT_compiled_vertex_array then begin
+            glLockArraysEXT(0, vertices.Count);
+            glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
+            glUnLockArraysEXT;
+         end else begin
+            glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
+         end;
+         FTriangleCount:=vertexIndices.Count div 3;
+
+         if FOcclusionQuery.Active then
+            FOcclusionQuery.EndOcclusionQuery;
+      end else FTriangleCount:=0;
    end;
    if FNoDetails then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
