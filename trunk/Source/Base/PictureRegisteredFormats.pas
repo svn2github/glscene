@@ -13,7 +13,7 @@ interface
 
 uses Classes, Graphics;
 
-{$ifdef VER150} {$define PRF_HACK_PASSES} {$endif} // Delphi 5
+{$ifdef VER130} {$define PRF_HACK_PASSES} {$endif} // Delphi 5
 {$ifdef VER140} {$define PRF_HACK_PASSES} {$endif} // Delphi 6
 {$ifdef VER150} {$define PRF_HACK_PASSES} {$endif} // Delphi 7
 
