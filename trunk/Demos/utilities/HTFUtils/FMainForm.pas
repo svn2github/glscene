@@ -1,7 +1,7 @@
 {: Utility to pack on or many DEM sources into a single HTF.<p>
 
    Note: this is a *basic* tool, error messages are unfriendly and there are
-         memory leaks if you do any, I know. So, don't do errors ;)<p> 
+         memory leaks if you do any, I know. So, don't do errors ;)<p>
 
    Requires Brad Stowers' BrowseDirectoryDialog component<br>
    (http://www.delphifreestuff.com)
@@ -11,9 +11,9 @@ unit FMainForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, ValEdit, Grids, Menus, StdCtrls, ComCtrls, ToolWin, ExtCtrls,
-  ActnList, ImgList, BrowseDr;
+  ActnList, ImgList, HeightTileFile, BrowseDr;
 
 type
    TSrc = record
@@ -124,7 +124,7 @@ implementation
 
 {$R *.dfm}
 
-uses HeightTileFile, Math, FViewerForm;
+uses Math, FViewerForm;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 var

@@ -2,7 +2,8 @@ program boxedin;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1};
+  Unit1 in 'Unit1.pas' {Form1},
+  Octree in '..\..\..\Source\Base\Octree.pas';
 
 {$R *.res}
 
