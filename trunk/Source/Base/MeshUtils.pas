@@ -3,6 +3,7 @@
    General utilities for mesh manipulations.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>20/01/03 - EG - Added UnifyTrianglesWinding
       <li>15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
       <li>13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
                           SubdivideTriangles 
@@ -43,7 +44,7 @@ function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
                                           const normals : TAffineVectorList = nil;
                                           const texCoords : TAffineVectorList = nil) : TIntegerList;
 
-{: Alters a reference array pair and removes unused reference values.<p>
+{: Alters a reference array and removes unused reference values.<p>
    This functions scans the reference list and removes all values that aren't
    referred in the indices list, the indices list is *not* remapped. }
 procedure RemapReferences(reference : TAffineVectorList;
@@ -61,6 +62,12 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
    The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
 procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
 
+{: Attempts to unify triangle winding.<p>
+   Depending on topology, this may or may not be successful (some topologies
+   can't be unified, f.i. those that have duplicate triangles, those that
+   have edges shared by more than two triangles, those that have unconnected
+   submeshes etc.) }
+procedure UnifyTrianglesWinding(indices : TIntegerList);
 {: Inverts the triangles winding (vertex order). }
 procedure InvertTrianglesWinding(indices : TIntegerList);
 
@@ -76,10 +83,9 @@ function BuildNormals(reference : TAffineVectorList;
    sorted in ascending order.<br>
    If not nil, triangleEdges is filled with the 3 indices of the 3 edges
    of the triangle, the edges ordering respecting the original triangle
-   orientation.<p>
-   *NOT* optimized, lacks a hash in ProcessEdge }
+   orientation. }
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
-                                   triangleEdges : TIntegerList) : TIntegerList;
+                                   triangleEdges : TIntegerList = nil) : TIntegerList;
 
 {: Welds all vertices separated by a distance inferior to weldRadius.<p>
    Any two vertices whose distance is inferior to weldRadius will be merged
@@ -89,9 +95,9 @@ function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
    The logic is protected from chain welding, and only vertices that were
    initially closer than weldRadius will be welded in the same resulting vertex.<p>
    This procedure can be used for mesh simplification, but preferably at design-time
-   for it is not optimized for speed, nor for quality. This is more a "fixing"
-   utility for meshes exported from high-polycount CAD tools (remove duplicate
-   vertices, quantification errors, etc.) }
+   for it is not optimized for speed. This is more a "fixing" utility for meshes
+   exported from high-polycount CAD tools (to remove duplicate vertices,
+   quantification errors, etc.) }
 procedure WeldVertices(vertices : TAffineVectorList;
                        indicesMap : TIntegerList;
                        weldRadius : Single);
@@ -361,7 +367,7 @@ begin
       end;
       Inc(refListI);
    end;
-   reference.Count:=(Integer(refListN)-Integer(@reference.List[0])) div 12;
+   reference.Count:=(Integer(refListN)-Integer(@reference.List[0])) div SizeOf(TAffineVector);
 end;
 
 // RemapReferences (integers)
@@ -453,6 +459,76 @@ begin
    indices.Count:=k;
 end;
 
+// UnifyTrianglesWinding
+//
+procedure UnifyTrianglesWinding(indices : TIntegerList);
+var
+   nbTris : Integer;
+   mark : array of ByteBool;     // marks triangles that have been processed
+   triangleStack : TIntegerList; // marks triangles winded, that must be processed
+
+   procedure TestRewind(a, b : Integer);
+   var
+      i, n : Integer;
+      x, y, z : Integer;
+   begin
+      i:=indices.Count-3;
+      n:=nbTris-1;
+      while i>0 do begin
+         if not mark[n] then begin
+            x:=indices[i];
+            y:=indices[i+1];
+            z:=indices[i+2];
+            if ((x=a) and (y=b)) or ((y=a) and (z=b)) or ((z=a) and (x=b)) then begin
+               indices.Exchange(i, i+2);
+               mark[n]:=True;
+               triangleStack.Push(n);
+            end else if ((x=b) and (y=a)) or ((y=b) and (z=a)) or ((z=b) and (x=a)) then begin
+               mark[n]:=True;
+               triangleStack.Push(n);
+            end;
+         end;
+         Dec(i, 3);
+         Dec(n);
+      end;
+   end;
+
+   procedure ProcessTriangleStack;
+   var
+      n, i : Integer;
+   begin
+      while triangleStack.Count>0 do begin
+         // get triangle, it is *assumed* properly winded
+         n:=triangleStack.Pop;
+         i:=n*3;
+         mark[n]:=True;
+         // rewind neighbours
+         TestRewind(indices[i+0], indices[i+1]);
+         TestRewind(indices[i+1], indices[i+2]);
+         TestRewind(indices[i+2], indices[i+0]);
+      end;
+   end;
+
+var
+   n : Integer;
+begin
+   nbTris:=indices.Count div 3;
+   SetLength(mark, nbTris);
+   // Build connectivity data
+   triangleStack:=TIntegerList.Create;
+   try
+      triangleStack.Capacity:=nbTris div 4;
+      // Pick a triangle, adjust normals of neighboring triangles, recurse
+      for n:=0 to nbTris-1 do begin
+         if mark[n] then Continue;
+         triangleStack.Push(n);
+         ProcessTriangleStack;
+      end;
+   finally
+      triangleStack.Free;
+   end;
+end;
+
 // InvertTrianglesWinding
 //
 procedure InvertTrianglesWinding(indices : TIntegerList);
@@ -513,7 +589,7 @@ end;
 // BuildNonOrientedEdgesList
 //
 function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
-                                   triangleEdges : TIntegerList) : TIntegerList;
+                                   triangleEdges : TIntegerList = nil) : TIntegerList;
 var
    edgesHash : array [0..127] of TIntegerList;
 
