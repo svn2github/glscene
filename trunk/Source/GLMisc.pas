@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/09/01 - Egg - Addition of vFileStreamClass
       <li>04/09/01 - Egg - SetGLCurrentTexture stuff
       <li>18/07/01 - Egg - Added TGLVisibilityCulling
       <li>08/07/01 - Egg - Changes in TGLNodes based on code from Uwe Raabe
@@ -421,6 +422,8 @@ type
 	TSqrt255Array = array [0..255] of Byte;
 	PSqrt255Array = ^TSqrt255Array;
 
+   TFileStreamClass = class of TFileStream;
+
 //: Copies the values of Source to Dest (converting word values to integer values)
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
 //: Round ups to the nearest power of two, value must be positive
@@ -480,9 +483,16 @@ procedure RegisterManager(aManager : TComponent);
 procedure DeRegisterManager(aManager : TComponent);
 function FindManager(classType : TComponentClass; const managerName : String) : TComponent;
 
-//------------------------------------------------------------------------------
+var
+   // Class of file streams to use throughout all of GLScene
+   vFileStreamClass : TFileStreamClass = TFileStream;
 
+//------------------------------------------------------
+//------------------------------------------------------
+//------------------------------------------------------
 implementation
+//------------------------------------------------------
+//------------------------------------------------------
 
 uses GLScene, XOpenGL;
 
@@ -729,7 +739,7 @@ procedure SaveStringToFile(const fileName, data : String);
 var
 	fs : TFileStream;
 begin
-	fs:=TFileStream.Create(fileName, fmCreate);
+	fs:=vFileStreamClass.Create(fileName, fmCreate);
 	fs.Write(data[1], Length(data));
 	fs.Free;
 end;
@@ -741,7 +751,7 @@ var
 	fs : TFileStream;
 begin
    if FileExists(fileName) then begin
-   	fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyNone);
+   	fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
 	   SetLength(Result, fs.Size);
    	fs.Read(Result[1], fs.Size);
 	   fs.Free;
@@ -755,7 +765,7 @@ var
 	fs : TFileStream;
 begin
    if FileExists(fileName) then begin
-   	fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyNone);
+   	fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
       Result:=fs.Size;
 	   fs.Free;
    end else Result:=0;
@@ -1758,7 +1768,7 @@ var
    fs : TFileStream;
 begin
    ResourceName:=ExtractFileName(fileName);
-   fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyNone);
+   fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
    try
       LoadFromStream(fs);
    finally
@@ -1773,7 +1783,7 @@ var
    fs : TFileStream;
 begin
    ResourceName:=ExtractFileName(fileName);
-   fs:=TFileStream.Create(fileName, fmCreate);
+   fs:=vFileStreamClass.Create(fileName, fmCreate);
    try
       SaveToStream(fs);
    finally

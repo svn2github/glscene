@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/09/01 - EG - Use of vFileStreamClass
       <li>18/08/01 - EG - Added TriangleCount methods, STL export, PLY import
       <li>15/08/01 - EG - FaceGroups can now be rendered by material group
                           (activate with RenderingOption "moroGroupByMaterial")
@@ -4108,7 +4109,7 @@ var
    fs : TFileStream;
 begin
    if fileName <> '' then begin
-      fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyWrite);
+      fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyWrite);
       try
          LoadFromStream(fileName, fs);
       finally
@@ -4150,7 +4151,7 @@ var
    fs : TFileStream;
 begin
    if fileName <> '' then begin
-      fs:=TFileStream.Create(fileName, fmCreate);
+      fs:=vFileStreamClass.Create(fileName, fmCreate);
       try
          SaveToStream(fileName, fs);
       finally
@@ -4186,7 +4187,7 @@ var
    fs : TFileStream;
 begin
    if fileName <> '' then begin
-      fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyWrite);
+      fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyWrite);
       try
          AddDataFromStream(fileName, fs);
       finally
@@ -4679,7 +4680,7 @@ procedure TActorAnimations.SaveToFile(const fileName : String);
 var
    fs : TFileStream;
 begin
-   fs:=TFileStream.Create(fileName, fmCreate);
+   fs:=vFileStreamClass.Create(fileName, fmCreate);
    try
       SaveToStream(fs);
    finally
@@ -4693,7 +4694,7 @@ procedure TActorAnimations.LoadFromFile(const fileName : String);
 var
    fs : TFileStream;
 begin
-   fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyWrite);
+   fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyWrite);
    try
       LoadFromStream(fs);
    finally

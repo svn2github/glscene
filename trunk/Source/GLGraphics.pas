@@ -3,6 +3,7 @@
 	Fonction utilitaires graphiques<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/09/01 - EG - Use of vFileStreamClass
       <li>31/08/01 - EG - 24bits Bitmaps are now made opaque by default
       <li>12/08/01 - EG - Now detects and uses GL_SGIS_generate_mipmap
       <li>20/02/01 - EG - Fixed SetHeight & SetWidth (thx Nelson Chu)

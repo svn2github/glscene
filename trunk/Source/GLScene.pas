@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>14/09/01 - Egg - Use of vFileStreamClass
       <li>04/09/01 - Egg - Texture binding cache
       <li>25/08/01 - Egg - Support for WGL_EXT_swap_control (VSync control),
                            Added TGLMemoryViewer 
@@ -4709,14 +4710,14 @@ end;
 //
 procedure TGLScene.SaveToFile(const fileName : String);
 var
-  Stream : TFileStream;
+   stream : TFileStream;
 begin
-  Stream := TFileStream.Create(fileName, fmCreate);
-  try
-      SaveToStream(Stream);
-  finally
-      Stream.Free;
-  end;
+   stream:=vFileStreamClass.Create(fileName, fmCreate);
+   try
+      SaveToStream(stream);
+   finally
+      stream.Free;
+   end;
 end;
 
 // LoadFromFile
@@ -4735,14 +4736,14 @@ procedure TGLScene.LoadFromFile(const fileName : String);
    end;
 
 var
-   Stream : TFileStream;
+   stream : TFileStream;
 begin
-   Stream := TFileStream.Create(fileName, fmOpenRead);
+   stream:=vFileStreamClass.Create(fileName, fmOpenRead);
    try
-      CheckResFileStream(Stream);
-      LoadFromStream(Stream);
+      CheckResFileStream(stream);
+      LoadFromStream(stream);
    finally
-      Stream.Free;
+      stream.Free;
    end;
 end;
 
@@ -4754,7 +4755,7 @@ var
   Fil : TFileStream;
 begin
   Mem := TMemoryStream.Create;
-  Fil := TFileStream.Create(fileName,fmCreate);
+  Fil := vFileStreamClass.Create(fileName,fmCreate);
   try
     SaveToStream(Mem);
     Mem.Position := 0;
@@ -4773,7 +4774,7 @@ var
   Fil : TFileStream;
 begin
   Mem := TMemoryStream.Create;
-  Fil := TFileStream.Create(fileName,fmOpenRead);
+  Fil := vFileStreamClass.Create(fileName,fmOpenRead);
   try
     ObjectTextToBinary(Fil,Mem);
     Mem.Position := 0;

@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>14/09/01 - EG - Use of vFileStreamClass
       <li>06/09/01 - EG - No longers depends on 'Windows'
       <li>04/09/01 - EG - Texture binding cache
       <li>31/08/01 - EG - tiaDefault wasn't honoured (Rene Lindsay)
@@ -3354,7 +3355,7 @@ procedure TGLMaterialLibrary.SaveToFile(const fileName : String);
 var
    fs : TFileStream;
 begin
-   fs:=TFileStream.Create(fileName, fmCreate);
+   fs:=vFileStreamClass.Create(fileName, fmCreate);
    try
       SaveToStream(fs);
    finally
@@ -3368,7 +3369,7 @@ procedure TGLMaterialLibrary.LoadFromFile(const fileName : String);
 var
    fs : TFileStream;
 begin
-   fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyNone);
+   fs:=vFileStreamClass.Create(fileName, fmOpenRead+fmShareDenyNone);
    try
       LoadFromStream(fs);
    finally
