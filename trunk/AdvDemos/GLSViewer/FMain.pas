@@ -102,6 +102,11 @@ type
     GLCadencer: TGLCadencer;
     Timer: TTimer;
     GLLightmapLibrary: TGLMaterialLibrary;
+    ACSaveTextures: TAction;
+    SDTextures: TSaveDialog;
+    Savetextures1: TMenuItem;
+    MIOpenTexLib: TMenuItem;
+    ODTextures: TOpenDialog;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -138,6 +143,8 @@ type
       newTime: Double);
     procedure ACFPSExecute(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure ACSaveTexturesExecute(Sender: TObject);
+    procedure MIOpenTexLibClick(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
@@ -477,6 +484,8 @@ begin
 
    StatusBar.Panels[0].Text:=IntToStr(FreeForm.MeshObjects.TriangleCount)+' tris';
    StatusBar.Panels[2].Text:=fileName;
+   ACSaveTextures.Enabled:=(GLMaterialLibrary.Materials.Count>0);
+   MIOpenTexLib.Enabled:=(GLMaterialLibrary.Materials.Count>0);
    lastFileName:=fileName;
    lastLoadWithTextures:=ACTexturing.Enabled;
 
@@ -621,12 +630,27 @@ end;
 
 procedure TMain.MIPickTextureClick(Sender: TObject);
 begin
-   if OpenPictureDialog.Execute then with GLMaterialLibrary.Materials do begin
-      with Items[Count-1] do begin
-         Tag:=1;
-         Material.Texture.Image.LoadFromFile(OpenPictureDialog.FileName);
-         Material.Texture.Enabled:=True;
+   if OpenPictureDialog.Execute then begin
+      with GLMaterialLibrary.Materials do begin
+         with Items[Count-1] do begin
+            Tag:=1;
+            Material.Texture.Image.LoadFromFile(OpenPictureDialog.FileName);
+            Material.Texture.Enabled:=True;
+         end;
       end;
+      ApplyTexturing;
+   end;
+end;
+
+procedure TMain.MIOpenTexLibClick(Sender: TObject);
+var
+   i : Integer;
+begin
+   if ODTextures.Execute then with GLMaterialLibrary do begin
+      LoadFromFile(ODTextures.FileName);
+      for i:=0 to Materials.Count-1 do
+         with Materials[i].Material do BackProperties.Assign(FrontProperties);
+      ApplyShadeMode;
       ApplyTexturing;
    end;
 end;
@@ -732,6 +756,12 @@ procedure TMain.TimerTimer(Sender: TObject);
 begin
    StatusBar.Panels[1].Text:=Format('%.1f FPS', [GLSceneViewer.FramesPerSecond]);
    GLSceneViewer.ResetPerformanceMonitor;
+end;
+
+procedure TMain.ACSaveTexturesExecute(Sender: TObject);
+begin
+   if SDTextures.Execute then
+      GLMaterialLibrary.SaveToFile(SDTextures.FileName);
 end;
 
 end.
