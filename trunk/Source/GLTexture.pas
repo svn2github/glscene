@@ -3243,7 +3243,11 @@ const
 	cTextureSWrap : array [twBoth..twHorizontal] of TGLEnum =
 							( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT );
 	cTextureTWrap : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP_TO_EDGE_SGIS, GL_REPEAT, GL_CLAMP_TO_EDGE );
+							( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE );
+	cTextureSWrapOld : array [twBoth..twHorizontal] of TGLEnum =
+							( GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT );
+	cTextureTWrapOld : array [twBoth..twHorizontal] of TGLEnum =
+							( GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP );
 	cTextureMagFilter : array [maNearest..maLinear] of TGLEnum =
 							( GL_NEAREST, GL_LINEAR );
 	cTextureMinFilter : array [miNearest..miLinearMipmapLinear] of TGLEnum =
@@ -3258,9 +3262,14 @@ begin
 	glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 
-	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
-	glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
-
+   if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
+   	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
+	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
+   end else begin
+   	glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
+	   glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
+   end;
+   
 	glTexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
 	glTexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
 
