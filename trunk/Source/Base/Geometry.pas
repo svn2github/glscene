@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>28/01/03 - EG - Affine matrix inversion and related functions (Dan Barlett)
       <li>29/10/02 - EG - New MinFloat overloads (Bob)
       <li>04/09/02 - EG - New Abs/Max functions, VectorTransform(affine, hmgMatrix)
                           now considers the matrix as 4x3 (was 3x3)
@@ -765,7 +766,10 @@ function MatrixDeterminant(const M: TMatrix): Single; overload;
 
 {: Adjoint of a 4x4 matrix.<p>
    used in the computation of the inverse of a 4x4 matrix }
-procedure AdjointMatrix(var M : TMatrix);
+procedure AdjointMatrix(var M : TMatrix); overload;
+{: Adjoint of a 3x3 matrix.<p>
+   used in the computation of the inverse of a 3x3 matrix }
+procedure AdjointMatrix(var M : TAffineMatrix); overload;
 
 //: Multiplies all elements of a 3x3 matrix with a factor
 procedure ScaleMatrix(var M : TAffineMatrix; const factor : Single); overload;
@@ -786,7 +790,10 @@ procedure TransposeMatrix(var M: TAffineMatrix); overload;
 procedure TransposeMatrix(var M: TMatrix); overload;
 
 //: Finds the inverse of a 4x4 matrix
-procedure InvertMatrix(var M: TMatrix);
+procedure InvertMatrix(var M : TMatrix); overload;
+//: Finds the inverse of a 3x3 matrix;
+procedure InvertMatrix(var M : TAffineMatrix); overload;
+
 {: Finds the inverse of an angle preserving matrix.<p>
    Angle preserving matrices can combine translation, rotation and isotropic
    scaling, other matrices won't be properly inverted by this function. }  
@@ -853,11 +860,13 @@ function QuaternionFromPoints(const V1, V2: TAffineVector): TQuaternion;
 procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVector);
 //: Constructs a unit quaternion from a rotation matrix
 function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
-{: Constructs rotation matrix from (possibly non-unit) quaternion.<p>
+{: Constructs a rotation matrix from (possibly non-unit) quaternion.<p>
    Assumes matrix is used to multiply column vector on the left:<br>
    vnew = mat vold.<p>
    Works correctly for right-handed coordinate system and right-handed rotations. }
 function QuaternionToMatrix(quat : TQuaternion) : TMatrix;
+{: Constructs an affine rotation matrix from (possibly non-unit) quaternion.<p> }
+function QuaternionToAffineMatrix(quat : TQuaternion) : TAffineMatrix;
 //: Constructs quaternion from angle (in deg) and axis
 function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVector) : TQuaternion;
 //: Constructs quaternion from Euler angles
@@ -4668,6 +4677,30 @@ begin
     M[W, W]:= MatrixDetInternal(a1, a2, a3, b1, b2, b3, c1, c2, c3);
 end;
 
+// AdjointMatrix (affine)
+//
+procedure AdjointMatrix(var M : TAffineMatrix); register;
+var
+   a1, a2, a3,
+   b1, b2, b3,
+   c1, c2, c3: Single;
+begin
+   a1:= M[X, X]; a2:= M[X, Y]; a3:= M[X, Z];
+   b1:= M[Y, X]; b2:= M[Y, Y]; b3:= M[Y, Z];
+   c1:= M[Z, X]; c2:= M[Z, Y]; c3:= M[Z, Z];
+   M[X, X]:= (b2*c3-c2*b3);
+   M[Y, X]:=-(b1*c3-c1*b3);
+   M[Z, X]:= (b1*c2-c1*b2);
+
+   M[X, Y]:=-(a2*c3-c2*a3);
+   M[Y, Y]:= (a1*c3-c1*a3);
+   M[Z, Y]:=-(a1*c2-c1*a2);
+
+   M[X, Z]:= (a2*b3-b2*a3);
+   M[Y, Z]:=-(a1*b3-b1*a3);
+   M[Z, Z]:= (a1*b2-b1*a2);
+end;
+
 // ScaleMatrix (affine)
 //
 procedure ScaleMatrix(var M : TAffineMatrix; const factor : Single); register;
@@ -4751,16 +4784,31 @@ end;
 
 // InvertMatrix
 //
-procedure InvertMatrix(var M: TMatrix); register;
+procedure InvertMatrix(var M : TMatrix); register;
 var
    det : Single;
 begin
    det:=MatrixDeterminant(M);
-   if Abs(Det) < EPSILON then
+   if Abs(Det)<EPSILON then
       M:=IdentityHmgMatrix
    else begin
       AdjointMatrix(M);
-      ScaleMatrix(M, 1 / det);
+      ScaleMatrix(M, 1/det);
+   end;
+end;
+
+// InvertMatrix (affine)
+//
+procedure InvertMatrix(var M:TAffineMatrix);register;
+var
+   det : Single;
+begin
+   det:=MatrixDeterminant(M);
+   if Abs(Det)<EPSILON then
+      M:=IdentityMatrix
+   else begin
+      AdjointMatrix(M);
+      ScaleMatrix(M, 1/det);
    end;
 end;
 
@@ -5258,6 +5306,37 @@ begin
    Result[1, 3] := 0;
    Result[2, 3] := 0;
    Result[3, 3] := 1;
+end;
+
+//QuaternionToAffineMatrix
+//
+function QuaternionToAffineMatrix(quat : TQuaternion) : TAffineMatrix;
+var
+   w, x, y, z, xx, xy, xz, xw, yy, yz, yw, zz, zw: Single;
+begin
+   NormalizeQuaternion(quat);
+   w := quat.RealPart;
+   x := quat.ImagPart[0];
+   y := quat.ImagPart[1];
+   z := quat.ImagPart[2];
+   xx := x * x;
+   xy := x * y;
+   xz := x * z;
+   xw := x * w;
+   yy := y * y;
+   yz := y * z;
+   yw := y * w;
+   zz := z * z;
+   zw := z * w;
+   Result[0, 0] := 1 - 2 * ( yy + zz );
+   Result[1, 0] :=     2 * ( xy - zw );
+   Result[2, 0] :=     2 * ( xz + yw );
+   Result[0, 1] :=     2 * ( xy + zw );
+   Result[1, 1] := 1 - 2 * ( xx + zz );
+   Result[2, 1] :=     2 * ( yz - xw );
+   Result[0, 2] :=     2 * ( xz - yw );
+   Result[1, 2] :=     2 * ( yz + xw );
+   Result[2, 2] := 1 - 2 * ( xx + yy );
 end;
 
 // QuaternionFromAngleAxis
