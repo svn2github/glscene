@@ -3583,11 +3583,9 @@ end;
 procedure TGLBaseSceneObject.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
-   list : PPointerList;
 begin
-   list:=FChildren.List;
-   for i:=FChildren.Count-1 downto 0 do 
-      TGLBaseSceneObject(list[i]).DoProgress(progressTime);
+   for i:=FChildren.Count-1 downto 0 do
+      TGLBaseSceneObject(FChildren.List[i]).DoProgress(progressTime);
    if Assigned(FGLBehaviours) then
       FGLBehaviours.DoProgress(progressTime);
    if Assigned(FGLObjectEffects) then
