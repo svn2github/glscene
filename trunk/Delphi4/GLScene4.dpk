@@ -117,6 +117,7 @@ contains
   GLROAMPatch in '..\Source\GLROAMPatch.pas',
   HeightTileFile in '..\Source\Base\HeightTileFile.pas',
   GLSpaceText in '..\Source\GLSpaceText.pas',
-  GLTimeEventsMGR in '..\Source\GLTimeEventsMGR.pas';
+  GLTimeEventsMGR in '..\Source\GLTimeEventsMGR.pas',
+  Octree in '..\Source\Base\Octree.pas';
 
 end.
