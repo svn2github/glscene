@@ -6,6 +6,7 @@
    FPS-like movement behaviour and manager.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
       <li>14/06/04 - MathD - Preventing repeated maps when adding through maps.addMap
       <li>09/06/04 - MathD - Creation
 	</ul></font>
@@ -459,7 +460,10 @@ var
   newDirection, newRay,collisionPosition, pointOnSphere,point2OnSphere:TVector;
   i:integer;
   CollisionState:TCollisionState;
+  SphereRadiusRel : single; //mrqzzz
 begin
+  SphereRadiusRel:=SphereRadius/freeform.Scale.x; // could be Scale.y, or Scale.z assuming they are the same
+
   oldPosition:=SphereStart;
 
   result:= true;
@@ -478,7 +482,7 @@ begin
   for i:=0 to 6 do
   begin
     //if an intersection occurs, will need to do further calculations
-    if (freeform.OctreeSphereSweepIntersect(oldPosition,ray,vel,SphereRadius,@intPoint,@intNormal)) then
+    if (freeform.OctreeSphereSweepIntersect(oldPosition,ray,vel,SphereRadiusRel,@intPoint,@intNormal)) then
     begin
       if VectorDistance2(oldPosition,intPoint)<=sqr(SphereRadius) then
       begin
