@@ -215,7 +215,6 @@ type
       property Position;
       property RollAngle;
       property ShowAxes;
-      property TransformationMode;
       property TurnAngle;
       property Up;
       property Visible;
