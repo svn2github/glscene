@@ -3,6 +3,13 @@
    Caution: this demo mixes several experimental thingies, and will probably be
             cleaned-up/split to be easier to follow, ad interim, you enter
             the jungle below at your own risks :)
+
+	<b>History : </b><font size=-1><ul>
+      <li>1/23/03 - MF - Added shadow volumes. Yeah, more code in this allready
+                         too complex demo.
+      <li>?/?/03 - MF - Created
+  </ul>
+
 }
 unit fClothify;
 
@@ -14,7 +21,7 @@ uses
   GLFileMS3D, VerletClasses, VectorTypes, VectorLists, VectorGeometry, GLTexture,
   OpenGL1x, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
   GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL,
-  GeometryBB, SpatialPartitioning, GLGeomObjects;
+  GeometryBB, SpatialPartitioning, GLGeomObjects, GLShadowVolume;
 
 type
   TfrmClothify = class(TForm)
@@ -64,6 +71,10 @@ type
     TrackBar_Iterations: TTrackBar;
     TrackBar_Friction: TTrackBar;
     CheckBox_ShowOctree: TCheckBox;
+    ComboBox_Shadow: TComboBox;
+    Label8: TLabel;
+    GLShadowVolume1: TGLShadowVolume;
+    GLPlane1: TGLPlane;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -80,6 +91,7 @@ type
     procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
     procedure Button_OpenLoadFormClick(Sender: TObject);
     procedure Button_CancelLoadClick(Sender: TObject);
+    procedure ComboBox_ShadowChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -117,8 +129,12 @@ begin
   ComboBox_ConstraintType.ItemIndex:=0;
   ComboBox_Collider.ItemIndex:=3;
 
+  ComboBox_ShadowChange(nil);
+
   Button_LoadMesh.Click;
   TrackBar_IterationsChange(nil);
+
+  GLShadowVolume1.Occluders.AddCaster(GLActor1);
 end;
 
 procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
@@ -256,6 +272,10 @@ begin
   GLActor1.LoadFromFile(Trim(Copy(s, 1, p-1)));
   PrepareMeshForNormalsRecalc(GLActor1);
   GLActor1.Reference := aarNone;
+
+  // This is what allows for FAST shadow volumes when using actors. Without
+  // this line, it'll be _very_ slow.
+  GLActor1.BuildSilhouetteConnectivityData;
 
   GLActor1.Roll(random*360);
   GLActor1.Turn(random*360);//}
@@ -414,6 +434,7 @@ end;
 procedure TfrmClothify.GLCadencer1Progress(Sender: TObject;
   const deltaTime, newTime: Double);
 begin
+
    {if CheckBox_Pause.Checked then
       VerletWorld.SimTime := newTime
    else//}
@@ -434,8 +455,9 @@ begin
 
       VerletWorld.Progress(VerletWorld.MaxDeltaTime, newTime);
 
-
       RecalcMeshNormals(GLActor1);
+
+      GLActor1.Position.X := GLActor1.Position.X + 0.001;
    end;
 end;
 
@@ -555,6 +577,29 @@ end;
 procedure TfrmClothify.Button_CancelLoadClick(Sender: TObject);
 begin
   GroupBox_LoadForm.Hide;
+end;
+
+procedure TfrmClothify.ComboBox_ShadowChange(Sender: TObject);
+begin
+  GLShadowVolume1.Mode := svmOff;
+  GLShadowPlane1.Visible := false;
+  GLPlane1.Visible := true;
+  GLSceneViewer1.Buffer.ContextOptions := GLSceneViewer1.Buffer.ContextOptions - [roStencilBuffer];
+
+  case ComboBox_Shadow.ItemIndex of
+    0 :;
+    1 :
+    begin
+      GLShadowVolume1.Mode := svmDarkening;
+      GLSceneViewer1.Buffer.ContextOptions := GLSceneViewer1.Buffer.ContextOptions + [roStencilBuffer];
+    end;
+    2 :
+    begin
+      GLShadowPlane1.Visible := true;
+      GLPlane1.Visible := false;
+      GLSceneViewer1.Buffer.ContextOptions := GLSceneViewer1.Buffer.ContextOptions + [roStencilBuffer];
+    end;
+  end;
 end;
 
 end.
