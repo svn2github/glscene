@@ -1277,6 +1277,7 @@ begin
 		FHeight:=TSprite(Source).FHeight;
 		FRotation:=TSprite(Source).FRotation;
       FAlphaChannel:=TSprite(Source).FAlphaChannel;
+      FNoZWrite:=TSprite(Source).FNoZWrite;
 	end;
 	inherited Assign(Source);
 end;
