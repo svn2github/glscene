@@ -5945,7 +5945,7 @@ begin
             Result:=FTargetSmoothAnimation.StartFrame
          else begin
             Result:=CurrentFrame+1;
-            if Result>EndFrame-1 then begin
+            if Result>EndFrame then begin
                Result:=StartFrame+(Result-EndFrame-1);
                if Result>EndFrame then
                   Result:=EndFrame;
@@ -6016,9 +6016,7 @@ begin
          aarMorph : begin
             case FrameInterpolation of
                afpLinear :
-                  if (nextFrameIdx=0) and (CurrentFrame>0) then
-                     MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
-                  else MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
+                  MeshObjects.Lerp(CurrentFrame, nextFrameIdx, CurrentFrameDelta)
             else
                MeshObjects.MorphTo(CurrentFrame);
             end;
