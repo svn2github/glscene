@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/10/03 - NelC - Fixed texture-flipped bug in cubemap generation 
       <li>21/08/03 - EG - Added osRenderNearestFirst
       <li>28/07/03 - aidave - Added TGLColorProxyObject
       <li>22/07/03 - EG - LocalMatrix now a PMatrix, FListHandle and FChildren
@@ -7492,7 +7493,7 @@ procedure TGLNonVisualViewer.SetupCubeMapCamera(Sender : TObject);
 const
    cRot : array [0..5, 0..1] of Single = (
          (   0,   0), (   0, 180),   // PX, NX
-         ( -90,   0), (  90,   0),   // PY, NY
+         ( -90,  90), (  90,  90),   // PY, NY
          (   0,  90), (   0, -90));  // PZ, NZ
 begin
    // Setup appropriate FOV
