@@ -413,11 +413,14 @@ end;
 
 procedure TMainForm.ACProcessExecute(Sender: TObject);
 var
-   x, y, wx, wy, ts, tx, ty, i, n, maxN : Integer;
+   x, y, wx, wy, ts, tx, ty, i : Integer;
+   n, maxN : Cardinal;
    htf : THeightTileFile;
    buf : array of SmallInt;
    f : file of Byte;
 begin
+   Screen.Cursor:=crHourGlass;
+   
    wx:=StrToInt(EDSizeX.Text);
    wy:=StrToInt(EDSizeY.Text);
    ts:=StrToInt(EDTileSize.Text);
@@ -425,7 +428,7 @@ begin
    SetLength(buf, ts*ts);
    htf:=THeightTileFile.CreateNew(EDHTFName.Text, wx, wy, ts);
    htf.DefaultZ:=defaultZ;
-   ProgressBar.Max:=16384;
+   ProgressBar.Max:=1000;
    maxN:=Ceil(wx/ts)*Ceil(wy/ts);
    n:=0;
    ProgressBar.Position:=0;
@@ -436,18 +439,21 @@ begin
          tx:=wx-x;
          if tx>ts then tx:=ts;
          Inc(n);
-         ProgressBar.Position:=(n*16384) div maxN;
+         ProgressBar.Position:=(n*1000) div maxN;
          for i:=0 to ty-1 do
             WorldExtract(x, y+i, tx, @buf[i*tx]);
          htf.CompressTile(x, y, tx, ty, @buf[0]);
          Inc(x, ts);
+         if (n and 15)=0 then begin
+            Application.ProcessMessages;
+         end;
       end;
       Inc(y, ts);
-      Refresh;
-      ProgressBar.Refresh;
    end;
    htf.Free;
    Cleanup;
+
+   Screen.Cursor:=crDefault;
 
    AssignFile(f, EDHTFName.Text);
    Reset(f);
@@ -456,8 +462,8 @@ begin
 
    ShowMessage( 'HTF file created.'#13#10#13#10
                +IntToStr(i)+' bytes in file'#13#10
-               +'('+IntToStr(wx*wy*2)+' raw bytes)');                                   
-               
+               +'('+IntToStr(wx*wy*2)+' raw bytes)');
+
 end;
 
 procedure TMainForm.ACViewerExecute(Sender: TObject);

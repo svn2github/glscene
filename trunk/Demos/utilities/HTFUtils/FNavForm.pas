@@ -33,8 +33,7 @@ uses FViewerForm;
 
 function TNavForm.Execute(htf : THeightTileFile) : Boolean;
 var
-   x, y, w, s, wx, wy : Integer;
-   tileInfo : PHeightTileInfo;
+   i, x, y, w, s, wx, wy : Integer;
 begin
    // Computes scaling so that preview window isn't too small
    with htf do begin
@@ -54,13 +53,11 @@ begin
    with Image.Bitmap do begin
       Width:=wx;
       Height:=wy;
-      for y:=0 to wy-1 do begin
-         for x:=0 to wx-1 do begin
-            tileInfo:=htf.XYTileInfo(x*htf.TileSize, y*htf.TileSize);
-            if Assigned(tileInfo) then begin
-               Pixel[x, y]:=HeightToColor(tileInfo.average)
-            end else Pixel[x, y]:=clGray32;
-         end;
+      Clear(clGray32);
+      for i:=0 to htf.TileCount-1 do with htf.Tiles[i]^ do begin
+         x:=(left+(width div 2)) div htf.TileSize;
+         y:=(top+(height div 2)) div htf.TileSize;
+         PixelS[x, y]:=HeightToColor(average)
       end;
    end;
    // Couldn't get the form's AutoSize to work...

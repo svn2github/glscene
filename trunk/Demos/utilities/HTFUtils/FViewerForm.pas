@@ -34,6 +34,7 @@ type
     ToolButton5: TToolButton;
     ToolButton6: TToolButton;
     ACNavMap: TAction;
+    StatusBar: TStatusBar;
     procedure ACExitExecute(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -45,6 +46,9 @@ type
       Y: Integer);
     procedure TBGridClick(Sender: TObject);
     procedure ACNavMapExecute(Sender: TObject);
+    procedure PaintBoxMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure ACNavMapUpdate(Sender: TObject);
   private
     { Private declarations }
     htf : THeightTileFile;
@@ -70,7 +74,7 @@ function HeightToColor(h : SmallInt) : Integer;
 begin
    if h>0 then begin
       Result:=255-(h shr 5);
-      if Result>255 then Result:=255;
+      if Result<0 then Result:=0;
       Result:=Result shl 8;
    end else begin
       Result:=255-((-h) shr 5);
@@ -121,6 +125,8 @@ begin
    sx:=PaintBox.Width;
    bmp:=PaintBox.Buffer;
    bmp.Clear(clBlack32);
+   if not Assigned(htf) then Exit;
+
    drawTime:=0;
    tileList:=TList.Create;
    try
@@ -180,10 +186,20 @@ procedure TViewerForm.PaintBoxMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
    mx:=X; my:=Y;
+   Screen.Cursor:=crSizeAll;
+end;
+
+procedure TViewerForm.PaintBoxMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+   Screen.Cursor:=crDefault;
 end;
 
 procedure TViewerForm.PaintBoxMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
+var
+   tileIdx, n : Integer;
+   tileInfo : PHeightTileInfo;
 begin
    if Shift<>[] then begin
       curX:=curX-(x-mx);
@@ -192,6 +208,28 @@ begin
       my:=y;
       PrepareBitmap;
       PaintBox.Refresh;
+   end;
+   if Assigned(htf) then begin
+      x:=x+curX;
+      y:=y+curY;
+      StatusBar.Panels[0].Text:=' X: '+IntToStr(x);
+      StatusBar.Panels[1].Text:=' Y: '+IntToStr(y);
+      StatusBar.Panels[2].Text:=' H: '+IntToStr(htf.XYHeight(x, y));
+
+      tileInfo:=htf.XYTileInfo(x, y);
+      if Assigned(tileInfo) then begin
+         tileIdx:=htf.IndexOfTile(tileInfo);
+         StatusBar.Panels[3].Text:=' Tile: '+IntToStr(tileIdx);
+         n:=htf.TileCompressedSize(tileIdx)+SizeOf(THeightTileInfo);
+         StatusBar.Panels[4].Text:=Format(' %.2f kB (%.0f %%)',
+                                          [n/1024, 100-100*n/(htf.TileSize*htf.TileSize*2)]);
+         StatusBar.Panels[5].Text:=Format(' Tile average: %d, range: [%d; %d])',
+                                          [tileInfo.average, tileInfo.min, tileInfo.max]);
+      end else begin
+         StatusBar.Panels[3].Text:=' Tile: N/A';
+         StatusBar.Panels[4].Text:=' N/A';
+         StatusBar.Panels[5].Text:=' N/A';
+      end;
    end;
 end;
 
@@ -209,6 +247,11 @@ begin
       PrepareBitmap;
       PaintBox.Invalidate;
    end;
+end;
+
+procedure TViewerForm.ACNavMapUpdate(Sender: TObject);
+begin
+   ACNavMap.Enabled:=Assigned(htf);
 end;
 
 end.
