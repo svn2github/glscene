@@ -3,7 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
-	   <li>09/02/00 - EG - Added header, now self-registers
+	   <li>03/06/03 - EG - Added header, now self-registers
 	</ul></font>
 }
 unit GLFileMS3D;
