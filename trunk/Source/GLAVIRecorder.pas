@@ -2,6 +2,7 @@
 {: Component to make it easy to record GLScene frames into an AVI file<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>22/10/04 - EG - Can now operate without a SceneViewer
       <li>13/05/04 - EG - Added irmBitBlt mode (now the default mode)
       <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap,
                           Added OnPostProcessEvent
@@ -66,7 +67,7 @@ type
        BitmapBits : Pointer;
        BitmapSize : Dword;
 
-       TempName : String; // so that we know the filename to delete case of user abort
+       FTempName : String; // so that we know the filename to delete case of user abort
 
        FAVIFilename : string;
        FFPS: byte;
@@ -261,9 +262,7 @@ begin
    if RecorderState<>rsRecording then
       raise Exception.create('Cannot add frame to AVI. AVI file not created.');
 
-   Assert(FGLSceneViewer<>nil);
-
-   case ImageRetrievalMode of
+   if GLSceneViewer<>nil then case ImageRetrievalMode of
       irmSnapShot : begin
          bmp32:=GLSceneViewer.Buffer.CreateSnapShot;
          try
@@ -322,125 +321,120 @@ begin
    end;
 end;
 
-function TAVIRecorder.CreateAVIFile(DPI : integer = 0) : boolean;
+function TAVIRecorder.CreateAVIFile(DPI : Integer = 0) : boolean;
 var
    SaveDialog     : TSaveDialog;
-   SaveAllowed    : Boolean;
    gaAVIOptions   : TAVICOMPRESSOPTIONS;
    galpAVIOptions : PAVICOMPRESSOPTIONS;
    BitmapInfoSize : Integer;
    AVIResult      : Cardinal;
-   ResultString   : string;
+   ResultString   : String;
 begin
-  SaveDialog := nil;
-  Assert(FGLSceneViewer<>nil);
+   FTempName:=FAVIFilename;
 
-  try
-    TempName := FAVIFilename;
-    SaveAllowed := True;
-
-    if TempName = '' then begin // if user didn't supply a filename, then ask for it
-      SaveDialog := TSaveDialog.Create(Application);
-      with SaveDialog do begin
-        Options := [ofHideReadOnly, ofNoReadOnlyReturn];
-        DefaultExt:='.avi';
-        Filter := 'AVI Files (*.avi)|*.avi';
-        SaveAllowed := Execute;
+   if FTempName='' then begin
+      // if user didn't supply a filename, then ask for it
+      SaveDialog:=TSaveDialog.Create(Application);
+      try
+         with SaveDialog do begin
+            Options:=[ofHideReadOnly, ofNoReadOnlyReturn];
+            DefaultExt:='.avi';
+            Filter:='AVI Files (*.avi)|*.avi';
+            if Execute then
+               FTempName:=SaveDialog.FileName;
+         end;
+      finally
+         SaveDialog.Free;
       end;
-    end;
+   end;
 
-    if SaveAllowed then begin
-      if TempName = '' then begin
-        TempName := SaveDialog.FileName;
-        if (FileExists(SaveDialog.FileName)) then
-          SaveAllowed := MessageDlg(Format('Overwrite file %s?', [SaveDialog.FileName]),
-                                    mtConfirmation, [mbYes, mbNo], 0) = mrYes;
+   Result:=(FTempName<>'');
+   if Result then begin
+      if FileExists(FTempName) then begin
+         Result:=(MessageDlg(Format('Overwrite file %s?', [FTempName]),
+                             mtConfirmation, [mbYes, mbNo], 0)=mrYes);
+         // AVI streamers don't trim the file they're written to, so start from zero
+         if Result then
+            DeleteFile(FTempName);
       end;
-    end;
-  finally
-    if SaveDialog<>nil then
-      SaveDialog.Free;
-  end;
+   end;
 
-  Result:=SaveAllowed;
+   if not Result then Exit;
 
-  if not SaveAllowed then exit;
+   AVIFileInit; // initialize the AVI lib.
 
-  AVIFileInit; // initialize the AVI lib.
+   AVIBitmap:=TBitmap.Create;
+   AVIFrameIndex:=0;
 
-  AVIBitmap:=TBitmap.Create;
-  AVIFrameIndex:=0;
+   RecorderState:=rsRecording;
 
-  RecorderState:=rsRecording;
+   try
+      AVIBitmap.PixelFormat := pf24Bit;
+      AVIBitmap.Width := FWidth;
+      AVIBitmap.Height := FHeight;
 
-  try
-    AVIBitmap.PixelFormat := pf24Bit;
-    AVIBitmap.Width := FWidth;
-    AVIBitmap.Height := FHeight;
+      // note: a filename with extension other then AVI give generate an error.
+      if AVIFileOpen(pfile, PChar(FTempName), OF_WRITE or OF_CREATE, nil)<>AVIERR_OK then
+         raise Exception.Create('Cannot create AVI file. Disk full or file in use?');
 
-    // note: a filename with extension other then AVI give generate an error.
-    if AVIFileOpen(pfile, PChar(TempName), OF_WRITE or OF_CREATE, nil)<>AVIERR_OK then
-       raise Exception.Create('Cannot create AVI file. Disk full or file in use?');
-
-    with AVIBitmap do begin
-      InternalGetDIBSizes( Handle, BitmapInfoSize, BitmapSize);
-      BitmapInfo:=AllocMem(BitmapInfoSize);
-      BitmapBits:=AllocMem(BitmapSize);
-      InternalGetDIB(Handle, BitmapInfo^, BitmapBits^);
-    end;
-
-    FillChar(asi,sizeof(asi),0);
-
-    with asi do begin
-      fccType   := streamtypeVIDEO; //  Now prepare the stream
-      fccHandler:= 0;
-      dwScale   := 1;         // dwRate / dwScale = frames/second
-      dwRate    := FFPS;
-      dwSuggestedBufferSize:=BitmapSize;
-      rcFrame.Right  := BitmapInfo^.biWidth;
-      rcFrame.Bottom := BitmapInfo^.biHeight;
-    end;
-
-    if AVIFileCreateStream(pfile, Stream, asi)<>AVIERR_OK then
-       raise Exception.Create('Cannot create AVI stream.');
-
-    with AVIBitmap do
-      InternalGetDIB( Handle, BitmapInfo^, BitmapBits^);
-
-    galpAVIOptions:=@gaAVIOptions;
-    fillchar(gaAVIOptions, sizeof(gaAVIOptions), 0);
-
-    if (FCompressor=acShowDialog) and
-      // the following line will call a dialog box for the user to choose the compressor options
-      AVISaveOptions( FGLSceneViewer.parent.Handle,
-                      ICMF_CHOOSE_KEYFRAME or ICMF_CHOOSE_DATARATE, 1, Stream, galpAVIOptions ) then
-    else begin
-      with gaAVIOptions do begin // or, you may want to fill the compression options yourself
-        fccType:=streamtypeVIDEO;
-        fccHandler:=mmioFOURCC('M','S','V','C'); // User MS video 1 as default.
-                                                 // I guess it is installed on every Win95 or later.
-        dwQuality:=7500;     // compress quality 0-10,000
-        dwFlags:=0;          // setting dwFlags to 0 would lead to some default settings
+      with AVIBitmap do begin
+        InternalGetDIBSizes( Handle, BitmapInfoSize, BitmapSize);
+        BitmapInfo:=AllocMem(BitmapInfoSize);
+        BitmapBits:=AllocMem(BitmapSize);
+        InternalGetDIB(Handle, BitmapInfo^, BitmapBits^);
       end;
-    end;
 
-    AVIResult:=AVIMakeCompressedStream(Stream_c, Stream, galpAVIOptions, nil);
+      FillChar(asi,sizeof(asi),0);
 
-    if AVIResult <> AVIERR_OK then begin
-      if AVIResult = AVIERR_NOCOMPRESSOR then
-          ResultString:='No such compressor found'
-      else ResultString:='';
-      raise Exception.Create('Cannot make compressed stream. ' + ResultString);
-    end;
+      with asi do begin
+        fccType   := streamtypeVIDEO; //  Now prepare the stream
+        fccHandler:= 0;
+        dwScale   := 1;         // dwRate / dwScale = frames/second
+        dwRate    := FFPS;
+        dwSuggestedBufferSize:=BitmapSize;
+        rcFrame.Right  := BitmapInfo^.biWidth;
+        rcFrame.Bottom := BitmapInfo^.biHeight;
+      end;
 
-    if AVIStreamSetFormat(Stream_c, 0, BitmapInfo, BitmapInfoSize) <> AVIERR_OK then
-      raise Exception.Create('AVIStreamSetFormat Error'); // no error description found in MSDN.
+      if AVIFileCreateStream(pfile, Stream, asi)<>AVIERR_OK then
+         raise Exception.Create('Cannot create AVI stream.');
 
-    AVI_DPI:=DPI;
+      with AVIBitmap do
+        InternalGetDIB( Handle, BitmapInfo^, BitmapBits^);
 
-  except
-    CloseAVIFile(true);
-  end;
+      galpAVIOptions:=@gaAVIOptions;
+      fillchar(gaAVIOptions, sizeof(gaAVIOptions), 0);
+
+      if (FCompressor=acShowDialog) and
+         // the following line will call a dialog box for the user to choose the compressor options
+         AVISaveOptions(0, ICMF_CHOOSE_KEYFRAME or ICMF_CHOOSE_DATARATE, 1, Stream, galpAVIOptions) then
+      else begin
+         with gaAVIOptions do begin // or, you may want to fill the compression options yourself
+            fccType:=streamtypeVIDEO;
+            fccHandler:=mmioFOURCC('M','S','V','C'); // User MS video 1 as default.
+                                                     // I guess it is installed on every Win95 or later.
+            dwQuality:=7500;     // compress quality 0-10,000
+            dwFlags:=0;          // setting dwFlags to 0 would lead to some default settings
+         end;
+      end;
+
+      AVIResult:=AVIMakeCompressedStream(Stream_c, Stream, galpAVIOptions, nil);
+
+      if AVIResult<>AVIERR_OK then begin
+         if AVIResult=AVIERR_NOCOMPRESSOR then
+            ResultString:='No such compressor found'
+         else ResultString:='';
+         raise Exception.Create('Cannot make compressed stream. '+ResultString);
+      end;
+
+      if AVIStreamSetFormat(Stream_c, 0, BitmapInfo, BitmapInfoSize) <> AVIERR_OK then
+        raise Exception.Create('AVIStreamSetFormat Error'); // no error description found in MSDN.
+
+      AVI_DPI:=DPI;
+
+   except
+     CloseAVIFile(true);
+   end;
 
 end;
 
@@ -463,7 +457,7 @@ begin
    pfile:=nil;
 
    if UserAbort then
-      DeleteFile(TempName);
+      DeleteFile(FTempName);
 
    RecorderState:=rsNone;
 end;
