@@ -693,6 +693,9 @@ type
 
          procedure Assign(Source: TPersistent); override;
          function AxisAlignedDimensions : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
 
       published
          { Published Declarations }
@@ -3078,6 +3081,28 @@ var
 begin
    r:=Abs(FOuterRadius);
    Result:=VectorMake(r*Scale.DirectX, r*Scale.DirectY, 0);
+end;
+
+// RayCastIntersect
+//
+function TDisk.RayCastIntersect(const rayStart, rayVector : TVector;
+                                intersectPoint : PVector = nil;
+                                intersectNormal : PVector = nil) : Boolean;
+var
+   ip : TVector;
+   d : Single;
+begin
+   // start and sweep angle aren't honoured yet!
+   if RayCastPlaneIntersect(rayStart, rayVector, AbsolutePosition, AbsoluteDirection, @ip) then begin
+      if Assigned(intersectPoint) then
+         SetVector(intersectPoint^, ip);
+      d:=VectorNorm(AbsoluteToLocal(ip));
+      if (d>=Sqr(InnerRadius)) and (d<=Sqr(OuterRadius)) then begin
+         if Assigned(intersectNormal) then
+            SetVector(intersectNormal^, AbsoluteUp);
+         Result:=True;
+      end else Result:=False;
+   end else Result:=False;
 end;
 
 //----------------- TCylinderBase ----------------------------------------------
