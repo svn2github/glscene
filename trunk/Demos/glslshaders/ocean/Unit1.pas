@@ -61,10 +61,14 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-   SetCurrentDir('d:\glscene\demos\media');
+   SetCurrentDir(ExtractFilePath(Application.ExeName)+'..\..\media');
 
    // Load the cube map which is used both for environment and as reflection texture
 
+   with matLib.LibMaterialByName('water').Material.Texture do begin
+      Image.LoadFromFile('noise.bmp');
+   end;
+   
    with matLib.LibMaterialByName('cubeMap').Material.Texture do begin
       ImageClassName:=TGLCubeMapImage.ClassName;
       with Image as TGLCubeMapImage do begin
@@ -90,13 +94,16 @@ end;
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
   var rci: TRenderContextInfo);
 begin
+   if not (    GL_ARB_shader_objects and GL_ARB_vertex_program and GL_ARB_vertex_shader
+           and GL_ARB_fragment_shader) then begin
+      ShowMessage('Your hardware/driver doesn''t support GLSL and can''t execute this demo!');
+      Halt;
+   end;
+
    if GLDirectOpenGL1.Tag<>0 then Exit;
    GLDirectOpenGL1.Tag:=1;
 
    GLMemoryViewer1.Buffer.RenderingContext.ShareLists(GLSceneViewer1.Buffer.RenderingContext);
-
-   Assert(    GL_ARB_shader_objects and GL_ARB_vertex_program and GL_ARB_vertex_shader
-          and GL_ARB_fragment_shader);
 
    programObject:=TGLProgramHandle.CreateAndAllocate;
 

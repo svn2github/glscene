@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 194
-  Top = 108
+  Left = 63
+  Top = 64
   Width = 676
   Height = 471
   Caption = 'Form1'
@@ -31,14 +31,14 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLLightSource1: TGLLightSource
-      ConstAttenuation = 1.000000000000000000
+      ConstAttenuation = 1
       Position.Coordinates = {000000400000A040000000000000803F}
-      SpotCutOff = 180.000000000000000000
+      SpotCutOff = 180
       object GLSphere1: TGLSphere
         Material.FrontProperties.Diffuse.Color = {0000803F0000803F0000803F0000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
         Visible = False
-        Radius = 0.050000000745058060
+        Radius = 0.0500000007450581
       end
     end
     object GLDirectOpenGL1: TGLDirectOpenGL
@@ -55,24 +55,24 @@ object Form1: TForm1
     object GLHeightField1: TGLHeightField
       Material.MaterialLibrary = MatLib
       Material.LibMaterialName = 'water'
-      XSamplingScale.Min = -100.000000000000000000
-      XSamplingScale.Max = 100.000000000000000000
-      XSamplingScale.Step = 2.000000000000000000
-      YSamplingScale.Min = -100.000000000000000000
-      YSamplingScale.Max = 100.000000000000000000
-      YSamplingScale.Step = 2.000000000000000000
+      XSamplingScale.Min = -100
+      XSamplingScale.Max = 100
+      XSamplingScale.Step = 2
+      YSamplingScale.Min = -100
+      YSamplingScale.Max = 100
+      YSamplingScale.Step = 2
       OnGetHeight = GLHeightField1GetHeight
     end
     object GLSphere2: TGLSphere
       Material.MaterialLibrary = MatLib
       Material.LibMaterialName = 'cubeMap'
       Up.Coordinates = {00000000000080BF0000008000000000}
-      Radius = 150.000000000000000000
+      Radius = 150
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 200.000000000000000000
-      FocalLength = 30.000000000000000000
-      SceneScale = 2.000000000000000000
+      DepthOfView = 200
+      FocalLength = 30
+      SceneScale = 2
       TargetObject = GLHeightField1
       Position.Coordinates = {0000C84100007041000020410000803F}
       Direction.Coordinates = {0000803F000000000000008000000000}
@@ -83,12 +83,10 @@ object Form1: TForm1
     Materials = <
       item
         Name = 'water'
-        Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'waternoise.tga'
         Material.Texture.TextureMode = tmReplace
         Material.Texture.TextureFormat = tfNormalMap
         Material.Texture.Disabled = False
-        Material.Texture.NormalMapScale = 0.100000001490116100
+        Material.Texture.NormalMapScale = 0.100000001490116
         Tag = 0
         Shader = GLUserShader1
       end
@@ -136,19 +134,19 @@ object Form1: TForm1
     Top = 16
     object GLEarthSkyDome1: TGLEarthSkyDome
       Direction.Coordinates = {FEFF7F27000080A7FFFF7F3F00000000}
-      RollAngle = -45.000000000000000000
+      RollAngle = -45
       Up.Coordinates = {F30435BFF304353FD413D42600000000}
       Bands = <>
       Stars = <>
-      SunElevation = 25.000000000000000000
-      Turbidity = 75.000000000000000000
+      SunElevation = 25
+      Turbidity = 75
       SunDawnColor.Color = {0000803F0000803F0000403F00000000}
       Slices = 48
       Stacks = 24
     end
     object CameraCubeMap: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 50.000000000000000000
+      DepthOfView = 100
+      FocalLength = 50
       Direction.Coordinates = {00000000000000800000803F00000000}
     end
   end
