@@ -2,6 +2,7 @@
 {: Imposter building and rendering implementation for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/05/04 - EG - Reworked architecture
       <li>14/04/04 - SG - Fixed texture clamping for old cards and 
                           switched to GL_NEAREST texture sampling.
       <li>24/03/04 - SG - Initial.
@@ -12,15 +13,15 @@ unit GLImposter;
 interface
 
 uses
-  Classes, GLScene, GLContext, GLTexture, VectorGeometry, GeometryBB, GLMisc,
-  PersistentClasses, GLCrossPlatform;
+  Classes, GLScene, GLContext, GLTexture, VectorTypes, VectorGeometry,
+  GeometryBB, GLMisc, PersistentClasses, GLCrossPlatform;
 
 type
    TGLImposterBuilder = class;
 
    // TImposter
    //
-   TImposterOption = (impoBlended, impoAlphaTest);
+   TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering);
    TImposterOptions = set of TImposterOption;
 
    // TImposter
@@ -35,6 +36,7 @@ type
          FBuilder : TGLImposterBuilder;
          FTexture : TGLTextureHandle;
          FOptions : TImposterOptions;
+         FImpostoredObject : TGLBaseSceneObject;
 
 		protected
 			{ Protected Declarations }
@@ -57,6 +59,7 @@ type
          property Builder : TGLImposterBuilder read FBuilder;
          property Texture : TGLTextureHandle read FTexture;
          property Options : TImposterOptions read FOptions write FOptions;
+         property ImpostoredObject : TGLBaseSceneObject read FImpostoredObject write FImpostoredObject;
    end;
 
    // TGLImposterBuilder
@@ -66,22 +69,32 @@ type
       private
 	      { Private Declarations }
          FImposterRegister : TPersistentObjectList;
+         FRenderPoint : TGLRenderPoint;
 
       protected
 			{ Protected Declarations }
+         procedure SetRenderPoint(val : TGLRenderPoint);
+         procedure RenderPointFreed(Sender : TObject);
+
          procedure InitializeImpostorTexture(const textureSize : TGLPoint);
+
+         property ImposterRegister : TPersistentObjectList read FImposterRegister;
+         procedure UnregisterImposter(imposter : TImposter);
+
+         procedure PrepareImposters(Sender : TObject; var rci : TRenderContextInfo); virtual; abstract;
 
       public
 	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 			procedure NotifyChange(Sender : TObject); override;
 
          function CreateNewImposter : TImposter; virtual;
-         
+
       published
 	      { Published Declarations }
-
+         property RenderPoint : TGLRenderPoint read FRenderPoint write SetRenderPoint;
    end;
 
 	// TGLStaticImposterBuilderCorona
@@ -180,18 +193,18 @@ type
          {: Computes the optimal texture size that would be able to hold all samples. }
          function ComputeOptimalTextureSize : TGLPoint;
 
+         procedure PrepareImposters(Sender : TObject; var rci : TRenderContextInfo); override;
+
       public
 	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
-
          function CreateNewImposter : TImposter; override;
          
          {: Render imposter texture.<p>
             Buffer and object must be compatible, RC must have been activated. }
          procedure Render(var rci : TRenderContextInfo;
                           impostoredObject : TGLBaseSceneObject;
-                          buffer : TGLSceneBuffer;
                           destImposter : TImposter);
          {: Ratio (0..1) of the texture that will be used by samples.<p>
             If this value is below 1, you're wasting texture space and may
@@ -214,26 +227,28 @@ type
    //
    TGLDynamicImposterBuilder = class (TGLImposterBuilder)
       private
+	      { Private Declarations }
          FMinTexSize, FMaxTexSize : Integer;
          FMinDistance, FTolerance : Single;
-         FEnabled, FUseMatrixError : Boolean;
+         FUseMatrixError : Boolean;
 
       protected
+			{ Protected Declarations }
          procedure SetMinDistance(const Value : Single);
-         procedure SetEnabled(const Value : Boolean);
 
       public
+	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
 {         procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override; }
 
       published
+	      { Published Declarations }
          property MinTexSize : Integer read FMinTexSize write FMinTexSize;
          property MaxTexSize : Integer read FMaxTexSize write FMaxTexSize;
          property MinDistance : Single read FMinDistance write SetMinDistance;
          property Tolerance : Single read FTolerance write FTolerance;
-         property Enabled : Boolean read FEnabled write SetEnabled;
          property UseMatrixError : Boolean read FUseMatrixError write FUseMatrixError;
 
    end;
@@ -242,34 +257,37 @@ type
    //
    TGLImposter = class(TGLImmaterialSceneObject)
       private
-         FTextureHandle : Cardinal;
-//         FBuilder : TGLImposterBuilder;
-//         FOldMatrix : TMatrix;
-         FDrawImposter : Boolean;
-         FSize : Single;
-         FTexSize : Integer;
-         FLastTexSize : Integer;
-         FInvalidated,
-         FUseAlphaTest : Boolean;
+	      { Private Declarations }
+         FImposter : TImposter;
+         FBuilder : TGLImposterBuilder;
+         FImpostoredObject : TGLBaseSceneObject;
 
       protected
-{         procedure SetBuilder(const val : TGLImposterBuilder);
-         function CalcError(NewMatrix : TMatrix) : Single;
+			{ Protected Declarations }
+         procedure SetBuilder(const val : TGLImposterBuilder);
+         procedure SetImpostoredObject(const val : TGLBaseSceneObject);
+
+         procedure SetupImposter;
+         
+{         function CalcError(NewMatrix : TMatrix) : Single;
          function GetTextureHandle : Cardinal;}
 
       public
+	      { Public Declarations }
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
+         procedure Notification(AComponent: TComponent; Operation: TOperation); override;
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
 {         procedure Invalidate;
-         function AxisAlignedDimensionsUnscaled : TVector; override;
+         function AxisAlignedDimensionsUnscaled : TVector; override; }
 
-         property TextureHandle : Cardinal read GetTextureHandle;}
+         property Imposter : TImposter read FImposter;
 
       published
-{         property Builder : TGLImposterBuilder read FBuilder write SetBuilder;
-         property AlphaTest : Boolean read FUseAlphaTest write FUseAlphaTest;}
+	      { Published Declarations }
+         property Builder : TGLImposterBuilder read FBuilder write SetBuilder;
+         property ImpostoredObject : TGLBaseSceneObject read FImpostoredObject write SetImpostoredObject;
   end;
 
 //-------------------------------------------------------------
@@ -293,12 +311,15 @@ begin
    inherited Create;
    FBuilder:=aBuilder;
    FTexture:=TGLTextureHandle.Create;
+   aBuilder.FImposterRegister.Add(Self);
 end;
 
 // Destroy
 //
 destructor TImposter.Destroy;
 begin
+   if Assigned(FBuilder) then
+      FBuilder.UnregisterImposter(Self);
    FTexture.Free;
    inherited;
 end;
@@ -345,7 +366,9 @@ begin
    glEnable(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, Texture.Handle);
 
-   filter:=GL_LINEAR;
+   if impoNearestFiltering in Options then
+      filter:=GL_NEAREST
+   else filter:=GL_LINEAR;
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
  	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -408,6 +431,15 @@ begin
    inherited;
 end;
 
+// Notification
+//
+procedure TGLImposterBuilder.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   if (Operation=opRemove) and (AComponent=FRenderPoint) then
+      FRenderPoint:=nil;
+   inherited;
+end;
+
 // CreateNewImposter
 //
 function TGLImposterBuilder.CreateNewImposter : TImposter;
@@ -422,8 +454,32 @@ var
    i : Integer;
 begin
    for i:=0 to FImposterRegister.Count-1 do
-      TImposter(FImposterRegister).Texture.DestroyHandle;
+      TImposter(FImposterRegister[i]).Texture.DestroyHandle;
    inherited;
+end;
+
+// SetRenderPoint
+//
+procedure TGLImposterBuilder.SetRenderPoint(val : TGLRenderPoint);
+begin
+   if val<>FRenderPoint then begin
+      if Assigned(FRenderPoint) then begin
+         FRenderPoint.RemoveFreeNotification(Self);
+         FRenderPoint.UnRegisterCallBack(PrepareImposters);
+      end;
+      FRenderPoint:=val;
+      if Assigned(FRenderPoint) then begin
+         FRenderPoint.FreeNotification(Self);
+         FRenderPoint.RegisterCallBack(PrepareImposters, RenderPointFreed);
+      end;
+   end;
+end;
+
+// RenderPointFreed
+//
+procedure TGLImposterBuilder.RenderPointFreed(Sender : TObject);
+begin
+   FRenderPoint:=nil;
 end;
 
 // InitializeImpostorTexture
@@ -438,6 +494,16 @@ begin
                    GL_RGBA, GL_UNSIGNED_BYTE, memBuffer);
    finally
       FreeMemory(memBuffer);
+   end;
+end;
+
+// UnregisterImposter
+//
+procedure TGLImposterBuilder.UnregisterImposter(imposter : TImposter);
+begin
+   if imposter.Builder=Self then begin
+      FImposterRegister.Remove(imposter);
+      imposter.FBuilder:=nil;
    end;
 end;
 
@@ -720,8 +786,7 @@ end;
 // Render
 //
 procedure TGLStaticImposterBuilder.Render(var rci : TRenderContextInfo;
-            impostoredObject : TGLBaseSceneObject; buffer : TGLSceneBuffer;
-            destImposter : TImposter);
+            impostoredObject : TGLBaseSceneObject; destImposter : TImposter);
 var
    i, coronaIdx, curSample, maxLight : Integer;
    radius : Single;
@@ -729,13 +794,21 @@ var
    xDest, xSrc, yDest, ySrc : Integer;
    corona : TGLStaticImposterBuilderCorona;
    fx, fy : Single;
+   viewPort : TVector4i;
 begin
    FTextureSize:=ComputeOptimalTextureSize;
+   Assert((FTextureSize.X>=0) and (FTextureSize.Y>=0),
+          'Too many samples, can''t fit in a texture!');
+
    FSamplesPerAxis.X:=FTextureSize.X div SampleSize;
    FSamplesPerAxis.Y:=FTextureSize.Y div SampleSize;
 
    radius:=impostoredObject.BoundingSphereRadius/SamplingRatioBias;
    glGetIntegerv(GL_MAX_LIGHTS, @maxLight);
+   glGetIntegerv(GL_VIEWPORT, @viewPort);
+
+   Assert((viewPort[2]>=SampleSize) and (viewPort[3]>=SampleSize),
+          'ViewPort too small to render imposter samples!'); 
 
    // Setup the buffer in a suitable fashion for our needs
    glPushAttrib(GL_ENABLE_BIT+GL_COLOR_BUFFER_BIT);
@@ -746,11 +819,11 @@ begin
    glMatrixMode(GL_PROJECTION);
    glPushMatrix;
    glLoadIdentity;
-   fx:=buffer.Width/SampleSize;
-   fy:=buffer.Height/SampleSize;
+   fx:=viewPort[2]/SampleSize;
+   fy:=viewPort[3]/SampleSize;
    glOrtho(-radius*fx, radius*fx, -radius*fy, radius*fy, radius*0.5, radius*5);
-   xSrc:=(buffer.Width-SampleSize) div 2;
-   ySrc:=(buffer.Height-SampleSize) div 2;
+   xSrc:=(viewPort[2]-SampleSize) div 2;
+   ySrc:=(viewPort[3]-SampleSize) div 2;
 
    glMatrixMode(GL_MODELVIEW);
    glPushMatrix;
@@ -812,7 +885,10 @@ begin
    nbSamples:=Coronas.SampleCount;
    glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
    maxSamples:=Sqr(maxTexSize div SampleSize);
-   Assert(nbSamples<maxSamples, 'Too many samples, can''t fit in a texture!');
+   if nbSamples<maxSamples then begin
+      Result.X:=-1;
+      Result.Y:=-1;
+   end;
    requiredSurface:=nbSamples*SampleSize*SampleSize;
    baseSize:=RoundUpToPowerOf2(SampleSize);
 
@@ -842,6 +918,21 @@ begin
    Result:=bestTexDim;
 end;
 
+// PrepareImposters
+//
+procedure TGLStaticImposterBuilder.PrepareImposters(Sender : TObject; var rci : TRenderContextInfo);
+var
+   i : Integer;
+   imp : TStaticImposter;
+begin
+   for i:=0 to ImposterRegister.Count-1 do begin
+      imp:=TStaticImposter(ImposterRegister[i]);
+      if (imp.ImpostoredObject<>nil) and (imp.Texture.Handle=0) then begin
+         Render(rci, imp.ImpostoredObject, imp);
+      end;
+   end;
+end;
+
 // TextureFillRatio
 //
 function TGLStaticImposterBuilder.TextureFillRatio : Single;
@@ -851,7 +942,6 @@ begin
    texDim:=ComputeOptimalTextureSize;
    Result:=(Coronas.SampleCount*SampleSize*SampleSize)/(texDim.X*texDim.Y);
 end;
-
 
 // ----------
 // ---------- TGLDynamicImposterBuilder ----------
@@ -1001,22 +1091,6 @@ begin
   end;
 end;
 
-// SetEnabled
-//
-procedure TGLDynamicImposterBuilder.SetEnabled(const Value : Boolean);
-var
-  i : Integer;
-begin
-  if Value <> FEnabled then begin
-    FEnabled:=Value;
-    for i:=0 to FImposterRegister.Count-1 do begin
-      if not FEnabled then
-        TGLImposter(FImposterRegister[i]).FDrawImposter:=False;
-      TGLImposter(FImposterRegister[i]).NotifyChange(Self);
-    end;
-  end;
-end;
-
 // ----------
 // ---------- TGLImposter ----------
 // ----------
@@ -1025,24 +1099,27 @@ end;
 //
 constructor TGLImposter.Create(AOwner : TComponent);
 begin
-  inherited;
-  FTextureHandle:=0;
-  FDrawImposter:=False;
-  FInvalidated:=False;
-  FUseAlphaTest:=False;
-  FSize:=1;
-  FTexSize:=0;
-  FLastTexSize:=-1;
-  ObjectStyle:=ObjectStyle+[osDirectDraw];
+   inherited;
+   ObjectStyle:=ObjectStyle+[osDirectDraw];
 end;
 
 // Destroy
 //
 destructor TGLImposter.Destroy;
 begin
-{   Builder:=nil;
-   if FTextureHandle<>0 then
-      glDeleteTextures(1, @FTextureHandle);}
+   FImposter.Free;
+   Builder:=nil;
+   inherited;
+end;
+
+// Notification
+//
+procedure TGLImposter.Notification(AComponent: TComponent; Operation: TOperation);
+begin
+   if Operation=opRemove then begin
+      if AComponent=Builder then Builder:=nil;
+      if AComponent=ImpostoredObject then ImpostoredObject:=nil;
+   end;
    inherited;
 end;
 
@@ -1050,69 +1127,58 @@ end;
 //
 procedure TGLImposter.DoRender(var rci : TRenderContextInfo;
   renderSelf, renderChildren : Boolean);
-{var
-  vx, vy : TAffineVector;
-  s : Single;
-  mat : TMatrix;}
+var
+   camPos : TVector;
 begin
-{  if (not (csDesigning in ComponentState))
-  and FDrawImposter and (FTextureHandle<>0) then begin
-    // Render the imposter sprite
-    glPushAttrib(GL_ENABLE_BIT or GL_COLOR_BUFFER_BIT);
-    glDisable(GL_LIGHTING);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    if AlphaTest then begin
-      glEnable(GL_ALPHA_TEST);
-      glAlphaFunc(GL_GEQUAL, 0.99);
-    end;
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, FTextureHandle);
-
-    if GL_VERSION_1_2 or GL_EXT_texture_edge_clamp then begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    end else begin
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    end;
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
-    glBegin(GL_QUADS);
-      s:=FSize*0.5;
-      vx[0]:=mat[0][0];  vy[0]:=mat[0][1];
-      vx[1]:=mat[1][0];  vy[1]:=mat[1][1];
-      vx[2]:=mat[2][0];  vy[2]:=mat[2][1];
-      ScaleVector(vx, s/VectorLength(vx));
-      ScaleVector(vy, s/VectorLength(vy));
-      glTexCoord2f(1,1);  glVertex3f( vx[0]+vy[0], vx[1]+vy[1], vx[2]+vy[2]);
-      glTexCoord2f(0,1);  glVertex3f(-vx[0]+vy[0],-vx[1]+vy[1],-vx[2]+vy[2]);
-      glTexCoord2f(0,0);  glVertex3f(-vx[0]-vy[0],-vx[1]-vy[1],-vx[2]-vy[2]);
-      glTexCoord2f(1,0);  glVertex3f( vx[0]-vy[0], vx[1]-vy[1], vx[2]-vy[2]);
-    glEnd;
-    glPopAttrib;
-  end else begin
-    Self.RenderChildren(0,Count-1,rci);
-  end; }
+   if renderSelf and Assigned(Imposter) and (Imposter.Texture.Handle<>0) then begin
+      camPos:=AbsoluteToLocal(rci.cameraPosition);
+      Imposter.BeginRender(rci);
+      Imposter.Render(rci, NullHmgPoint, camPos, 2*0.75);
+      Imposter.EndRender(rci);
+   end;
+   if renderChildren then
+       Self.RenderChildren(0, Count-1,rci);
 end;
-{
+
+// SetupImposter
+//
+procedure TGLImposter.SetupImposter;
+begin
+   if Assigned(FBuilder) and Assigned(FImpostoredObject) then begin
+      if not Assigned(FImposter) then
+         FImposter:=FBuilder.CreateNewImposter;
+      FImposter.ImpostoredObject:=ImpostoredObject;
+      FImposter.Texture.DestroyHandle;
+   end else FreeAndNil(FImposter);
+   NotifyChange(Self);
+end;
+
 // SetBuilder
 //
-procedure TGLImposter.SetBuilder(const val : TGLDynamicImposterBuilder);
+procedure TGLImposter.SetBuilder(const val : TGLImposterBuilder);
 begin
-  if val<>FBuilder then begin
-    if Assigned(FBuilder) then
-      FBuilder.UnregisterImposter(Self);
-    FBuilder:=val;
-    if Assigned(FBuilder) then
-      FBuilder.RegisterImposter(Self);
-  end;
+   if val<>FBuilder then begin
+      if Assigned(FBuilder) then
+         FBuilder.RemoveFreeNotification(Self);
+      FreeAndNil(FImposter);
+      FBuilder:=val;
+      if Assigned(FBuilder) then
+         FBuilder.FreeNotification(Self);
+      SetupImposter;
+   end;
 end;
 
+// SetImpostoredObject
+//
+procedure TGLImposter.SetImpostoredObject(const val : TGLBaseSceneObject);
+begin
+   if val<>FImpostoredObject then begin
+      FImpostoredObject:=val;
+      SetupImposter;
+   end;
+end;
+
+{
 // AxisAlignedDimensionsUnscaled
 //
 function TGLImposter.AxisAlignedDimensionsUnscaled : TVector;

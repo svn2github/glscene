@@ -5,8 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, GLTeapot, GLObjects, GLMisc, GLWin32Viewer, OpenGL1x,
-  VectorGeometry, GLTexture, GLCadencer, GLImposter, GLPolyhedron,
-  StdCtrls, ExtCtrls, GLSkydome;
+  VectorGeometry, GLTexture, GLCadencer, GLImposter, StdCtrls, ExtCtrls, GLSkydome;
 
 type
   TForm1 = class(TForm)
@@ -17,10 +16,15 @@ type
     GLLightSource1: TGLLightSource;
     GLDirectOpenGL1: TGLDirectOpenGL;
     GLCadencer1: TGLCadencer;
-    GLDodecahedron1: TGLDodecahedron;
     Timer1: TTimer;
-    Label1: TLabel;
     GLSkyDome1: TGLSkyDome;
+    GLDummyCube1: TGLDummyCube;
+    Panel1: TPanel;
+    Label1: TLabel;
+    CBShowTeapot: TCheckBox;
+    CBShowImposter: TCheckBox;
+    CBSampleSize: TComboBox;
+    Label2: TLabel;
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TRenderContextInfo);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -29,12 +33,16 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
+    procedure CBSampleSizeChange(Sender: TObject);
+    procedure CBShowImposterClick(Sender: TObject);
+    procedure CBShowTeapotClick(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
-    imposter : TImposter;
+    imposter : TGLImposter;
     impBuilder : TGLStaticImposterBuilder;
+    renderPoint : TGLRenderPoint;
     mx, my : Integer;
   end;
 
@@ -47,8 +55,10 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   renderPoint:=TGLRenderPoint(GLDummyCube1.AddNewChild(TGLRenderPoint));
+
    impBuilder:=TGLStaticImposterBuilder.Create(Self);
-   impBuilder.SampleSize:=256;
+   impBuilder.SampleSize:=64;
    impBuilder.SamplingRatioBias:=1.3;
    impBuilder.Coronas.Items[0].Samples:=32;
    impBuilder.Coronas.Add(15, 24);
@@ -57,7 +67,13 @@ begin
    impBuilder.Coronas.Add(60, 12);
    impBuilder.Coronas.Add(75, 12);
    impBuilder.Coronas.Add(89, 12);
-   imposter:=impBuilder.CreateNewImposter;
+   impBuilder.RenderPoint:=renderPoint;
+
+   imposter:=TGLImposter(GLScene1.Objects.AddNewChild(TGLImposter));
+   imposter.Builder:=impBuilder;
+   imposter.ImpostoredObject:=GLTeapot1;
+
+//   imposter:=impBuilder.CreateNewImposter;
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
@@ -65,20 +81,20 @@ procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
 var
    camPos : TVector;
 begin
-   if imposter.Texture.Handle=0 then begin
-      impBuilder.Render(rci, GLTeapot1, GLSceneViewer1.Buffer, imposter);
+{   if imposter.Texture.Handle=0 then begin
+      impBuilder.Render(rci, GLTeapot1, imposter);
       Caption:=Format('%d x %d - %.1f%%',
                       [impBuilder.TextureSize.X, impBuilder.TextureSize.Y,
                        impBuilder.TextureFillRatio*100]);
-   end;
+   end;}
 
 //   camPos:=XHmgVector;
 //   RotateVector(camPos, YHmgVector, GLCadencer1.CurrentTime*30*cPIdiv180);
    camPos:=GLTeapot1.AbsoluteToLocal(GLCamera1.AbsolutePosition);
 
-   imposter.BeginRender(rci);
+{   imposter.BeginRender(rci);
    imposter.Render(rci, NullHmgPoint, camPos, 5*0.75);
-   imposter.EndRender(rci); 
+   imposter.EndRender(rci);} 
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -89,8 +105,13 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Label1.Caption:=GLSceneViewer1.FramesPerSecondText;
+   Caption:=GLSceneViewer1.FramesPerSecondText;
    GLSceneViewer1.ResetPerformanceMonitor;
+
+   Label1.Caption:=Format('%d x %d - %.1f%%',
+                          [impBuilder.TextureSize.X, impBuilder.TextureSize.Y,
+                           impBuilder.TextureFillRatio*100]);
+
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
@@ -100,6 +121,28 @@ begin
       GLCamera1.MoveAroundTarget(my-y, mx-x);
    end;
    mx:=x; my:=y;
+end;
+
+procedure TForm1.CBSampleSizeChange(Sender: TObject);
+var
+   s : Integer;
+begin
+   s:=StrToInt(CBSampleSize.Text);
+   if (GLSceneViewer1.Width>=s) and (GLSceneViewer1.Height>=s) then
+      impBuilder.SampleSize:=s
+   else begin
+      ShowMessage('Viewer is too small to allow rendering the imposter samples');
+   end;
+end;
+
+procedure TForm1.CBShowImposterClick(Sender: TObject);
+begin
+   imposter.Visible:=CBShowImposter.Checked;
+end;
+
+procedure TForm1.CBShowTeapotClick(Sender: TObject);
+begin
+   GLTeapot1.Visible:=CBShowTeapot.Checked;
 end;
 
 end.
