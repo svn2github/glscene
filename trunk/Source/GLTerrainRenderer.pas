@@ -195,7 +195,7 @@ begin
    FBufferVertexIndices.Free;
    ReleaseAllTiles;
    for i:=0 to High(FTilesHash) do
-      FTilesHash[i]:=TList.Create;
+      FTilesHash[i].Free;
 	inherited Destroy;
 end;
 
@@ -397,22 +397,24 @@ begin
    FBufferTexPoints.Capacity:=n;
 
    xglPushState;
-   if GL_ARB_multitexture then
-      xglMapTexCoordToDual
-   else xglMapTexCoordToMain;
+   try
+      if GL_ARB_multitexture then
+         xglMapTexCoordToDual
+      else xglMapTexCoordToMain;
 
-   glPushMatrix;
-   glScalef(1, 1, 1/128);
-   glTranslatef(-0.5*TileSize, -0.5*TileSize, 0);
-   glEnableClientState(GL_VERTEX_ARRAY);
-   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-   glDisableClientState(GL_COLOR_ARRAY);
-   glDisableClientState(GL_NORMAL_ARRAY);
+      glPushMatrix;
+      glScalef(1, 1, 1/128);
+      glTranslatef(-0.5*TileSize, -0.5*TileSize, 0);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glDisableClientState(GL_COLOR_ARRAY);
+      glDisableClientState(GL_NORMAL_ARRAY);
 
-   glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.List);
-   xglTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.List);
-
-   xglPopState;
+      glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.List);
+      xglTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.List);
+   finally
+      xglPopState;
+   end;
 
    FLastTriangleCount:=0;
 
@@ -528,14 +530,16 @@ begin
    end;
 
    xglPushState;
-   if GL_ARB_multitexture then
-      xglMapTexCoordToDual
-   else xglMapTexCoordToMain;
+   try
+      if GL_ARB_multitexture then
+         xglMapTexCoordToDual
+      else xglMapTexCoordToMain;
 
-   glDisableClientState(GL_VERTEX_ARRAY);
-   xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-   xglPopState;
+      glDisableClientState(GL_VERTEX_ARRAY);
+      xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+   finally
+      xglPopState;
+   end;
 
    ApplyMaterial('');
    if Assigned(postRenderPatchList) then begin

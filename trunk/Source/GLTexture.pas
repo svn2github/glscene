@@ -3241,9 +3241,9 @@ end;
 procedure TGLTexture.PrepareParams(target : TGLUInt);
 const
 	cTextureSWrap : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT );
+							( GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT );
 	cTextureTWrap : array [twBoth..twHorizontal] of TGLEnum =
-							( GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP );
+							( GL_REPEAT, GL_CLAMP_TO_EDGE_SGIS, GL_REPEAT, GL_CLAMP_TO_EDGE );
 	cTextureMagFilter : array [maNearest..maLinear] of TGLEnum =
 							( GL_NEAREST, GL_LINEAR );
 	cTextureMinFilter : array [miNearest..miLinearMipmapLinear] of TGLEnum =
