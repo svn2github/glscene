@@ -9,6 +9,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>03/12/04 - MF - Added TGLSprite.AxisAlignedDimensionsUnscaled override
       <li>06/07/04 - SG - TGLCube.RayCastIntersect fix (Eric Pascual)
       <li>20/01/04 - SG - Added IcosahedronBuildList
       <li>30/11/03 - MF - Added TGLSphere.GenerateSilhouette - it now takes the
@@ -298,6 +299,8 @@ type
 
 			procedure Assign(Source: TPersistent); override;
 			procedure BuildList(var rci : TRenderContextInfo); override;
+
+      function AxisAlignedDimensionsUnscaled : TVector; override;
 
 			procedure SetSize(const width, height : TGLFloat);
 			//: Set width and height to "size"
@@ -1503,6 +1506,13 @@ begin
       FNoZWrite:=TGLSprite(Source).FNoZWrite;
 	end;
 	inherited Assign(Source);
+end;
+
+function TGLSprite.AxisAlignedDimensionsUnscaled: TVector;
+begin
+   Result[0]:=0.5*Abs(FWidth);
+   Result[1]:=0.5*Abs(FHeight);
+   Result[2]:=0;
 end;
 
 // BuildList
@@ -3394,6 +3404,7 @@ end;
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
+
 initialization
 //-------------------------------------------------------------
 //-------------------------------------------------------------
