@@ -11,6 +11,7 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.
 
   History:<ul>
+    <li>11/08/03 - SG - Added some force/torque methods to dynamic objects.
     <li>30/07/03 - SG - Split terrain collider into GLODECustomColliders unit.
     <li>25/07/03 - SG - Fixed Manager property persistence, other minor changes.
     <li>24/07/03 - SG - ReadFromFiler and WriteToFiler routines added,
@@ -249,11 +250,23 @@ type
       procedure AlignBodyToMatrix(Mat: TMatrix);
       procedure SetMass(const value:TdMass);
       function GetMass : TdMass;
+      procedure SetEnabled(const Value : Boolean);
+      function GetEnabled : Boolean;
     public
       procedure StructureChanged; override;
 
+      procedure AddForce(Force : TAffineVector);
+      procedure AddForceAtPos(Force, Pos : TAffineVector);
+      procedure AddForceAtRelPos(Force, Pos : TAffineVector);
+      procedure AddRelForce(Force : TAffineVector);
+      procedure AddRelForceAtPos(Force, Pos : TAffineVector);
+      procedure AddRelForceAtRelPos(Force, Pos : TAffineVector);
+      procedure AddTorque(Torque : TAffineVector);
+      procedure AddRelTorque(Torque : TAffineVector);
+
       property Body : PdxBody read FBody;
       property Mass : TdMass read GetMass write SetMass;
+      property Enabled : Boolean read GetEnabled write SetEnabled;
   end;
 
   {
@@ -334,6 +347,8 @@ type
       function GetMass : TdMass;
       procedure AlignBodyToMatrix(Mat: TMatrix);
       function GetAbsoluteMatrix : TMatrix;
+      procedure SetEnabled(const Value : Boolean);
+      function GetEnabled : Boolean;
     protected
       procedure Initialize; override;
       procedure Deinitialize; override;
@@ -348,11 +363,22 @@ type
       procedure AlignObject;
       function CalculateMass : TdMass;
       procedure CalibrateCenterOfMass;
+
+      procedure AddForce(Force : TAffineVector);
+      procedure AddForceAtPos(Force, Pos : TAffineVector);
+      procedure AddForceAtRelPos(Force, Pos : TAffineVector);
+      procedure AddRelForce(Force : TAffineVector);
+      procedure AddRelForceAtPos(Force, Pos : TAffineVector);
+      procedure AddRelForceAtRelPos(Force, Pos : TAffineVector);
+      procedure AddTorque(Torque : TAffineVector);
+      procedure AddRelTorque(Torque : TAffineVector);
+
       property AbsoluteMatrix : TMatrix read GetAbsoluteMatrix;
       property Body : PdxBody read FBody;
       property Mass : TdMass read GetMass write SetMass;
     published
       property Elements : TODEElements read FElements;
+      property Enabled : Boolean read GetEnabled write SetEnabled;
   end;
 
   {
@@ -576,7 +602,7 @@ type
 
   {
   TGLODEJoints:
-  -----------
+  -------------
   This is the list class that stores the ODE Joints.
   }
   TODEJoints = class(TXCollection)
@@ -715,7 +741,7 @@ type
 
   {
   TODEJointHinge2:
-  ---------------
+  ----------------
   ODE hinge2 joint implementation.
   }
   TODEJointHinge2 = class (TODEBaseJoint)
@@ -754,6 +780,8 @@ type
   end;
 
 
+{: ODE nearCallBack, throws near callback to the collision procedure
+   of the ODE manager linked by the Data pointer. }
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
 
 // ------------------------------------------------------------------
@@ -1331,6 +1359,92 @@ begin
   dBodySetMass(FBody,FMass);
 end;
 
+// SetEnabled
+//
+procedure TGLODEDynamicObject.SetEnabled(const Value : Boolean);
+begin
+  if Assigned(FBody) then
+    if Value <> (dBodyIsEnabled(FBody)=1) then begin
+      if Value then
+        dBodyEnable(FBody)
+      else
+        dBodyDisable(FBody);
+    end;
+end;
+
+// GetEnabled
+//
+function TGLODEDynamicObject.GetEnabled : Boolean;
+begin
+  Result:=True; // Not sure if this should be true or false by default
+  if Assigned(FBody) then
+    Result:=(dBodyIsEnabled(FBody)=1);
+end;
+
+// AddForce
+//
+procedure TGLODEDynamicObject.AddForce(Force : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForce(FBody,Force[0],Force[1],Force[2]);
+end;
+
+// AddlForceAtPos
+//
+procedure TGLODEDynamicObject.AddForceAtPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddForceAtRelPos
+//
+procedure TGLODEDynamicObject.AddForceAtRelPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddRelForce
+//
+procedure TGLODEDynamicObject.AddRelForce(Force : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddRelForce(FBody,Force[0],Force[1],Force[2]);
+end;
+
+// AddRelForceAtPos
+//
+procedure TGLODEDynamicObject.AddRelForceAtPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddRelForceAtRelPos
+//
+procedure TGLODEDynamicObject.AddRelForceAtRelPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddRelForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddTorque
+//
+procedure TGLODEDynamicObject.AddTorque(Torque : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddTorque(FBody,Torque[0],Torque[1],Torque[2]);
+end;
+
+// AddRelTorque
+//
+procedure TGLODEDynamicObject.AddRelTorque(Torque : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddRelTorque(FBody,Torque[0],Torque[1],Torque[2]);
+end;
+
 
 // ------------------------------------------------------------------
 // TGLODEDummy
@@ -1795,6 +1909,92 @@ end;
 class function TGLODEDynamicBehaviour.UniqueItem : Boolean;
 begin
   Result:=True;
+end;
+
+// SetEnabled
+//
+procedure TGLODEDynamicBehaviour.SetEnabled(const Value : Boolean);
+begin
+  if Assigned(FBody) then
+    if Value <> (dBodyIsEnabled(FBody)=1) then begin
+      if Value then
+        dBodyEnable(FBody)
+      else
+        dBodyDisable(FBody);
+    end;
+end;
+
+// GetEnabled
+//
+function TGLODEDynamicBehaviour.GetEnabled : Boolean;
+begin
+  Result:=True; // Not sure if this should be true or false by default
+  if Assigned(FBody) then
+    Result:=(dBodyIsEnabled(FBody)=1);
+end;
+
+// AddForce
+//
+procedure TGLODEDynamicBehaviour.AddForce(Force : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForce(FBody,Force[0],Force[1],Force[2]);
+end;
+
+// AddlForceAtPos
+//
+procedure TGLODEDynamicBehaviour.AddForceAtPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddForceAtRelPos
+//
+procedure TGLODEDynamicBehaviour.AddForceAtRelPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddRelForce
+//
+procedure TGLODEDynamicBehaviour.AddRelForce(Force : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddRelForce(FBody,Force[0],Force[1],Force[2]);
+end;
+
+// AddRelForceAtPos
+//
+procedure TGLODEDynamicBehaviour.AddRelForceAtPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddForceAtPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddRelForceAtRelPos
+//
+procedure TGLODEDynamicBehaviour.AddRelForceAtRelPos(Force, Pos : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddRelForceAtRelPos(FBody,Force[0],Force[1],Force[2],Pos[0],Pos[1],Pos[2]);
+end;
+
+// AddTorque
+//
+procedure TGLODEDynamicBehaviour.AddTorque(Torque : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddTorque(FBody,Torque[0],Torque[1],Torque[2]);
+end;
+
+// AddRelTorque
+//
+procedure TGLODEDynamicBehaviour.AddRelTorque(Torque : TAffineVector);
+begin
+  if Assigned(FBody) then
+    dBodyAddRelTorque(FBody,Torque[0],Torque[1],Torque[2]);
 end;
 
 
