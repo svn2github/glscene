@@ -5756,8 +5756,28 @@ end;
 // PointIsInHalfSpace
 //
 function PointIsInHalfSpace(const point, planePoint, planeNormal : TVector) : Boolean;
+{$ifndef GEOMETRY_NO_ASM}
+asm
+   fld   dword ptr [eax]         // 27
+   fsub  dword ptr [edx]
+   fmul  dword ptr [ecx]
+   fld   dword ptr [eax+4]
+   fsub  dword ptr [edx+4]
+   fmul  dword ptr [ecx+4]
+   faddp
+   fld   dword ptr [eax+8]
+   fsub  dword ptr [edx+8]
+   fmul  dword ptr [ecx+8]
+   faddp
+   ftst
+   fstsw
+   sahf
+   setnbe al
+   ffree st(0)
+{$else}
 begin
-   Result:=(PointPlaneDistance(point, planePoint, planeNormal)>0);
+   Result:=(PointPlaneDistance(point, planePoint, planeNormal)>0); // 44
+{$endif}
 end;
 
 // PointPlaneDistance
@@ -5769,6 +5789,8 @@ begin
            +(point[2]-planePoint[2])*planeNormal[2];
 end;
 
+// PointPlaneDistance
+//
 function PointPlaneDistance(const point, planePoint, planeNormal : TAffineVector) : Single;
 begin
    Result:= (point[0]-planePoint[0])*planeNormal[0]
