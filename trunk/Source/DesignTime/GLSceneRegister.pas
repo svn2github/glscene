@@ -1448,7 +1448,7 @@ begin
      TypeInfo(TGLObjectEffects), TypeInfo(TDirectRenderEvent), TypeInfo(TGLCameraStyle),
      TypeInfo(TOnCustomPerspective), TypeInfo(TGLScene)]);
    RegisterPropertiesInCategory(sLayoutCategoryName,
-     [TypeInfo(TGLObjectsSorting), TypeInfo(TTransformationMode), TypeInfo(TNormalDirection)]);
+     [TypeInfo(TGLObjectsSorting), TypeInfo(TNormalDirection)]);
    RegisterPropertiesInCategory(sVisualCategoryName,
      [TypeInfo(TGLVisibilityCulling), TypeInfo(TLightStyle), TypeInfo(TGLColor),
      TypeInfo(TNormalDirection), TypeInfo(TGLCameraStyle)]);
