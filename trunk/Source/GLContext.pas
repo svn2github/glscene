@@ -703,8 +703,8 @@ end;
 procedure TGLContext.ShareLists(aContext : TGLContext);
 begin
    if IsValid then begin
-      DoShareLists(aContext);
       if FSharedContexts.IndexOf(aContext)<0 then begin
+         DoShareLists(aContext);
          FSharedContexts.Add(aContext);
          PropagateSharedContext;
       end;
