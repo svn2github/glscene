@@ -186,7 +186,7 @@ interface
 
 uses
    Classes, GLMisc, GLTexture, SysUtils, Graphics, Geometry, XCollection,
-   GLGraphics, GeometryBB, GLContext, GLCrossPlatform;
+   GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists;
 
 type
 
@@ -314,6 +314,9 @@ type
          FGLObjectEffects : TGLObjectEffects;
          FTagFloat: Single;
 
+         FSortDistList : TSingleList;
+         FSortObjList : TList;
+
          function Get(Index : Integer) : TGLBaseSceneObject;
          function GetCount : Integer;
          function GetIndex : Integer;
@@ -397,6 +400,7 @@ type
          {: Calculates the object's absolute coordinates.<p>
             The current implem is probably buggy and slow... }
          function AbsolutePosition : TVector;
+         function AbsolutePositionAsAddress : PVector;
          {: Returns the Absolute X Vector expressed in local coordinates. }
          function AbsoluteXVector : TVector;
          {: Returns the Absolute Y Vector expressed in local coordinates. }
@@ -1742,7 +1746,7 @@ implementation
 //------------------------------------------------------------------------------
 
 uses
-   GLStrings, Info, VectorLists, XOpenGL, VectorTypes, OpenGL12;
+   GLStrings, Info, XOpenGL, VectorTypes, OpenGL12;
 
 var
    vCounterFrequency : Int64;
@@ -2014,6 +2018,8 @@ begin
    FDirection.Free;
    FUp.Free;
    FScaling.Free;
+   FSortDistList.Free;
+   FSortObjList.Free;
    if Assigned(FParent) then FParent.Remove(Self, False);
    if FChildren.Count>0 then DeleteChildren;
    FChildren.Free;
@@ -2309,23 +2315,28 @@ end;
 //
 function TGLBaseSceneObject.AbsoluteDirection : TVector;
 begin
-   Result:=AbsoluteMatrix[2];
-   NormalizeVector(Result);
+   Result:=VectorNormalize(AbsoluteMatrix[2]);
 end;
 
 // AbsoluteUp
 //
 function TGLBaseSceneObject.AbsoluteUp : TVector;
 begin
-   Result:=AbsoluteMatrix[1];
-   NormalizeVector(Result);
+   Result:=VectorNormalize(AbsoluteMatrix[1]);
 end;
 
 // AbsolutePosition
 //
 function TGLBaseSceneObject.AbsolutePosition : TVector;
 begin
-   Result:=AbsoluteMatrix[3]
+   Result:=AbsoluteMatrixAsAddress^[3];
+end;
+
+// AbsolutePositionAsAddress
+//
+function TGLBaseSceneObject.AbsolutePositionAsAddress : PVector;
+begin
+   Result:=@AbsoluteMatrixAsAddress^[3];
 end;
 
 // AbsoluteXVector
@@ -2401,7 +2412,7 @@ var
    d : TVector;
 begin
    d:=BarycenterAbsolutePosition;
-   Result:=Sqr(d[0]-pt[0])+Sqr(d[1]-pt[1])+Sqr(d[2]-pt[2]);
+   Result:=VectorDistance2(d, pt);
 end;
 
 // AxisAlignedDimensions
@@ -3254,8 +3265,9 @@ procedure TGLBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex : In
                                             var rci : TRenderContextInfo);
 var
    i : Integer;
-   distList : TSingleList;
    objList : TList;
+   distList : TSingleList;
+   plist : PPointerList;
    obj : TGLBaseSceneObject;
    oldSorting : TGLObjectsSorting;
    oldCulling : TGLVisibilityCulling;
@@ -3271,11 +3283,18 @@ begin
          rci.objectsSorting:=Self.ObjectsSorting;
       case rci.objectsSorting of
          osNone : begin
+            plist:=FChildren.List;
             for i:=firstChildIndex to lastChildIndex do
-               TGLBaseSceneObject(FChildren.List[i]).Render(rci);
+               TGLBaseSceneObject(plist[i]).Render(rci);
          end;
          osRenderFarthestFirst, osRenderBlendedLast : begin
-            distList:=TSingleList.Create;
+            if not Assigned(FSortDistList) then
+               FSortDistList:=TSingleList.Create
+            else FSortDistList.Count:=0;
+            distList:=FSortDistList;
+            if not Assigned(FSortObjList) then
+               FSortObjList:=TList.Create
+            else FSortObjList.Count:=0;
             objList:=TList.Create;
             try
                if rci.objectsSorting=osRenderBlendedLast then begin
@@ -3286,7 +3305,7 @@ begin
                         obj.Render(rci)
                      else if obj.Visible then begin
                         objList.Add(obj);
-                        distList.Add(obj.BarycenterSqrDistanceTo(rci.cameraPosition));
+                        distList.Add(1+obj.BarycenterSqrDistanceTo(rci.cameraPosition));
                      end;
                   end;
                end else for i:=firstChildIndex to lastChildIndex do begin
@@ -3298,12 +3317,12 @@ begin
                end;
                if distList.Count>0 then begin
                   if distList.Count>1 then
-                     QuickSortLists(0, distList.Count-1, distList, objList);
+                     FastQuickSortLists(0, distList.Count-1, FSortDistList, objList);
+                  plist:=objList.List;
                   for i:=objList.Count-1 downto 0 do
-                     TGLBaseSceneObject(objList.List[i]).Render(rci);
+                     TGLBaseSceneObject(plist[i]).Render(rci);
                end;
             finally
-               distList.Free;
                objList.Free;
             end;
          end;
@@ -4242,8 +4261,10 @@ end;
 //
 procedure TDirectOpenGL.BuildList(var rci : TRenderContextInfo);
 begin
-   if Assigned(FOnRender) then
+   if Assigned(FOnRender) then begin
+      xglMapTexCoordToMain;   // single texturing by default 
       OnRender(rci);
+   end;
 end;
 
 // SetUseBuildList

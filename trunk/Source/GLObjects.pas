@@ -6,12 +6,12 @@
    More complex or more specialized versions should be placed in dedicated
    units where they can grow and prosper untammed.<p>
 
-   TODO : Classes on the move :<ul>
-      <li>TSpaceText will move to their own units
+   TODO : Classe(s) on the move :<ul>
       <li>TTeapot will move to a 'doodad objects' unit
    </ul>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/01/02 - Egg - TPlane & TCube now osDirectDraw
       <li>20/01/02 - Egg - TSpaceText moved to GLSpaceText
       <li>22/08/01 - Egg - TTorus.RayCastIntersect fixes
       <li>30/07/01 - Egg - Updated AxisAlignedDimensions implems
@@ -1143,6 +1143,7 @@ begin
    FHeight:=1;
    FXTiles:=1;
    FYTiles:=1;
+   ObjectStyle:=ObjectStyle+[osDirectDraw];
 end;
 
 // BuildList
@@ -1858,6 +1859,7 @@ begin
   FCubeDepth:=1;
   FParts:=[cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight];
   FNormalDirection:=ndOutside;
+  ObjectStyle:=ObjectStyle+[osDirectDraw];
 end;
 
 // BuildList

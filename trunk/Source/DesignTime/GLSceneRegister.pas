@@ -3,6 +3,7 @@
       IDE experts.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/01/02 - EG - Color property drawing in D6 too now
       <li>22/08/01 - EG - D6 related changes
       <li>08/07/01 - EG - Register for TExtrusionSolid (Uwe Raabe)
       <li>18/02/01 - EG - Added Terrain/HeightData objects
@@ -113,19 +114,23 @@ implementation
 {$R GLSceneRegister.res}
 
 uses
-  GLScreen, GLObjects, GLTexture, SysUtils, Dialogs, GLVectorFileObjects,
-  ExtDlgs, Forms, GLSceneEdit, Graphics, AsyncTimer, FVectorEditor, Geometry,
-{$ifdef GLS_DELPHI_5_UP}
-  FMaterialEditorForm, FLibMaterialPicker,
-{$endif}
-  TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
-  GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
-  GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
-  GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
+   GLScreen, GLObjects, GLTexture, SysUtils, Dialogs, GLVectorFileObjects,
+   ExtDlgs, Forms, GLSceneEdit, Graphics, AsyncTimer, FVectorEditor, Geometry,
+   TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
+   GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
+   GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
+   GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
 {$ifdef WIN32}
-  GLWin32Viewer,
+   GLWin32Viewer,
 {$endif}
-{$ifdef GLS_DELPHI_6_UP} DesignIntf, DesignEditors {$else} DsgnIntf {$endif};
+{$ifdef GLS_DELPHI_5_UP}
+   FMaterialEditorForm, FLibMaterialPicker,
+{$endif}
+{$ifdef GLS_DELPHI_6_UP}
+   DesignIntf, DesignEditors, VCLEditors
+{$else}
+   DsgnIntf
+{$endif};
 
 var
 	vObjectManager : TObjectManager;
@@ -212,20 +217,43 @@ type
 			procedure SetValue(const value : String); override;
 	end;
 
-  TGLColorProperty = class(TClassProperty)
-  private
-  protected
-	 function GetAttributes: TPropertyAttributes; override;
-	 procedure GetValues(Proc: TGetStrProc); override;
-	 procedure Edit; override;
-  public
-	 {$ifdef GLS_COMPILER_5_UP}
-	 procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
-	 procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
-	 {$endif}
-	 function GetValue: String; override;
-	 procedure SetValue(const Value: string); override;
-  end;
+   // TGLColorProperty
+   //
+   {$ifndef GLS_COMPILER_6}
+   TGLColorProperty = class (TClassProperty)
+   {$else}
+   TGLColorProperty = class (TClassProperty,
+                             ICustomPropertyDrawing, ICustomPropertyListDrawing)
+   {$endif}
+      private
+			{ Private Declarations }
+
+      protected
+			{ Protected Declarations }
+	      function GetAttributes: TPropertyAttributes; override;
+	      procedure GetValues(Proc: TGetStrProc); override;
+	      procedure Edit; override;
+         
+         function ColorToBorderColor(aColor: TColorVector; selected : Boolean) : TColor;
+
+      public
+	      {$ifdef GLS_COMPILER_5}
+	      procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
+	      procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean); override;
+	      {$endif}
+	      {$ifdef GLS_COMPILER_6}
+         // ICustomPropertyListDrawing  stuff
+         procedure ListMeasureHeight(const Value: string; ACanvas: TCanvas; var AHeight: Integer);
+         procedure ListMeasureWidth(const Value: string; ACanvas: TCanvas; var AWidth: Integer);
+         procedure ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+         // CustomPropertyDrawing
+         procedure PropDrawName(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+         procedure PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+         {$endif}
+
+	      function GetValue: String; override;
+	      procedure SetValue(const Value: string); override;
+   end;
 
    // TVectorFileProperty
    //
@@ -279,8 +307,8 @@ type
    // TReuseableDefaultEditor
    //
    {: Editor copied from DsgnIntf.<p>
-      Could have been avoided, if only that short-sighted guy at Borland didn't
-      chose to publish only half of the stuff (and that's not the only class with
+      Could have been avoided, if only that guy at Borland didn't chose to
+      publish only half of the stuff (and that's not the only class with
       that problem, most of the subitems handling code in TGLSceneBaseObject is
       here for the same reason...), the "protected" wasn't meant just to lure
       programmers into code they can't reuse... Arrr! and he did that again
@@ -816,45 +844,45 @@ begin
   Modified;
 end;
 
-{$ifdef GLS_COMPILER_5_UP}
-// Owner draw color values, only available in D5 and higher
-procedure TGLColorProperty.ListDrawValue(const Value: string; ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
-
-   function ColorToBorderColor(AColor: TColorVector): TColor;
-   begin
-      if (AColor[0] > 0.75) or (AColor[1] > 0.75) or (AColor[2] > 0.75) then
-         Result:=clBlack
-      else if ASelected then
-         Result:=clWhite
-      else Result:=ConvertColorVector(AColor);
-   end;
-
-var
-  vRight: Integer;
-  vOldPenColor,
-  vOldBrushColor: TColor;
-  Color: TColorVector;
+// ColorToBorderColor
+//
+function TGLColorProperty.ColorToBorderColor(aColor: TColorVector; selected : Boolean) : TColor;
 begin
-  vRight:=(ARect.Bottom - ARect.Top) + ARect.Left;
-  with ACanvas do
-  try
-    vOldPenColor:=Pen.Color;
-    vOldBrushColor:=Brush.Color;
+   if (aColor[0]>0.75) or (aColor[1]>0.75) or (aColor[2]>0.75) then
+      Result:=clBlack
+   else if selected then
+      Result:=clWhite
+   else Result:=ConvertColorVector(AColor);
+end;
 
-    Pen.Color:=Brush.Color;
-    Rectangle(ARect.Left, ARect.Top, vRight, ARect.Bottom);
+{$ifdef GLS_COMPILER_5}
+procedure TGLColorProperty.ListDrawValue(const Value: string; ACanvas: TCanvas;
+                                         const ARect: TRect; ASelected: Boolean);
+var
+   vRight: Integer;
+   vOldPenColor,
+   vOldBrushColor: TColor;
+   Color: TColorVector;
+begin
+   vRight:=(ARect.Bottom - ARect.Top) + ARect.Left;
+   with ACanvas do try
+      vOldPenColor:=Pen.Color;
+      vOldBrushColor:=Brush.Color;
 
-    Color:=ColorManager.GetColor(Value);
-    Brush.Color:=ConvertColorVector(Color);
-    Pen.Color:=ColorToBorderColor(Color);
+      Pen.Color:=Brush.Color;
+      Rectangle(ARect.Left, ARect.Top, vRight, ARect.Bottom);
 
-    Rectangle(ARect.Left + 1, ARect.Top + 1, vRight - 1, ARect.Bottom - 1);
+      Color:=ColorManager.GetColor(Value);
+      Brush.Color:=ConvertColorVector(Color);
+      Pen.Color:=ColorToBorderColor(Color, ASelected);
 
-    Brush.Color:=vOldBrushColor;
-    Pen.Color:=vOldPenColor;
-  finally
-    inherited ListDrawValue(Value, ACanvas, Rect(vRight, ARect.Top, ARect.Right, ARect.Bottom), ASelected);
-  end;
+      Rectangle(ARect.Left + 1, ARect.Top + 1, vRight - 1, ARect.Bottom - 1);
+
+      Brush.Color:=vOldBrushColor;
+      Pen.Color:=vOldPenColor;
+   finally
+      inherited ListDrawValue(Value, ACanvas, Rect(vRight, ARect.Top, ARect.Right, ARect.Bottom), ASelected);
+   end;
 end;
 
 procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
@@ -863,6 +891,63 @@ begin
    if GetVisualValue<>'' then
       ListDrawValue(GetVisualValue, ACanvas, ARect, True)
    else inherited PropDrawValue(ACanvas, ARect, ASelected);
+end;
+{$endif}
+
+{$ifdef GLS_COMPILER_6}
+procedure TGLColorProperty.PropDrawValue(ACanvas: TCanvas; const ARect: TRect; ASelected: Boolean);
+begin
+   if GetVisualValue <> '' then
+      ListDrawValue(GetVisualValue, ACanvas, ARect, True)
+   else DefaultPropertyDrawValue(Self, ACanvas, ARect);
+end;
+
+procedure TGLColorProperty.ListDrawValue(const Value: string; ACanvas: TCanvas;
+                                         const ARect: TRect; ASelected: Boolean);
+var
+   vRight: Integer;
+   vOldPenColor,
+   vOldBrushColor: TColor;
+   Color: TColorVector;
+begin
+   vRight:=(ARect.Bottom - ARect.Top) + ARect.Left;
+   with ACanvas do try
+      vOldPenColor:=Pen.Color;
+      vOldBrushColor:=Brush.Color;
+
+      Pen.Color:=Brush.Color;
+      Rectangle(ARect.Left, ARect.Top, vRight, ARect.Bottom);
+
+      Color:=ColorManager.GetColor(Value);
+      Brush.Color:=ConvertColorVector(Color);
+      Pen.Color:=ColorToBorderColor(Color, ASelected);
+
+      Rectangle(ARect.Left + 1, ARect.Top + 1, vRight - 1, ARect.Bottom - 1);
+
+      Brush.Color:=vOldBrushColor;
+      Pen.Color:=vOldPenColor;
+   finally
+      DefaultPropertyListDrawValue(Value, ACanvas, Rect(vRight, ARect.Top, ARect.Right, ARect.Bottom),
+                                   ASelected);
+   end;
+end;
+
+procedure TGLColorProperty.ListMeasureWidth(const Value: string;
+  ACanvas: TCanvas; var AWidth: Integer);
+begin
+   AWidth := AWidth + ACanvas.TextHeight('M');
+end;
+
+procedure TGLColorProperty.ListMeasureHeight(const Value: string;
+  ACanvas: TCanvas; var AHeight: Integer);
+begin
+   // Nothing
+end;
+
+procedure TGLColorProperty.PropDrawName(ACanvas: TCanvas; const ARect: TRect;
+  ASelected: Boolean);
+begin
+   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
 {$endif}
 

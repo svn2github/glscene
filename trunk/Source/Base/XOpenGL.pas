@@ -12,6 +12,7 @@
    http://glscene.org<p>
 
    <b>History :</b><ul>
+      <li>26/01/02 - EG - Added xglBegin/EndUpdate mechanism
       <li>21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
       <li>18/12/01 - EG - Added xglEnableClientState
       <li>24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL12)
@@ -40,6 +41,13 @@ procedure xglMapTexCoordToMain;
 procedure xglMapTexCoordToSecond;
 {: xglTexCoord functions will define the two first texture units coordinates. }
 procedure xglMapTexCoordToDual;
+
+{: Defers xglMap calls execution until xglEndUpdate is met.<p>
+   Calls to xglBegin/EndUpdate may be nested. }
+procedure xglBeginUpdate;
+{: Applies xglMap calls if there were any since xglBeginUpdate was invoked.<p>
+   Calls to xglBegin/EndUpdate may be nested. }
+procedure xglEndUpdate;
 
 {$ifdef MULTITHREADOPENGL}
 threadvar
@@ -78,6 +86,10 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
+var
+   vUpdCount : Integer;
+   vUpdNewMode : TMapTexCoordMode;
 
 // ------------------------------------------------------------------
 // Multitexturing coordinates duplication functions
@@ -321,11 +333,36 @@ begin end;
 // Redirections management functions
 // ------------------------------------------------------------------
 
+procedure xglBeginUpdate;
+begin
+   if vUpdCount=0 then begin
+      vUpdCount:=1;
+      vUpdNewMode:=xglMapTexCoordMode;
+   end else Inc(vUpdCount);
+end;
+
+procedure xglEndUpdate;
+begin
+   Dec(vUpdCount);
+   if (vUpdCount=0) and (vUpdNewMode<>xglMapTexCoordMode) then begin
+      case vUpdNewMode of
+         mtcmNull   : xglMapTexCoordToNull;
+         mtcmMain   : xglMapTexCoordToMain;
+         mtcmDual   : xglMapTexCoordToDual;
+         mtcmSecond : xglMapTexCoordToSecond;
+      else
+         Assert(False);
+      end;
+   end;
+end;
+
 // xglMapTexCoordToNull
 //
 procedure xglMapTexCoordToNull;
 begin
-   if xglMapTexCoordMode<>mtcmNull then begin
+   if vUpdCount<>0 then
+      vUpdNewMode:=mtcmNull
+   else if xglMapTexCoordMode<>mtcmNull then begin
       xglMapTexCoordMode:=mtcmNull;
 
       xglTexCoord2f:=glTexCoord2f_Null;
@@ -352,7 +389,9 @@ end;
 //
 procedure xglMapTexCoordToMain;
 begin
-   if xglMapTexCoordMode<>mtcmMain then begin
+   if vUpdCount<>0 then
+      vUpdNewMode:=mtcmMain
+   else if xglMapTexCoordMode<>mtcmMain then begin
       xglMapTexCoordMode:=mtcmMain;
 
       xglTexCoord2f:=glTexCoord2f;
@@ -379,7 +418,9 @@ end;
 //
 procedure xglMapTexCoordToSecond;
 begin
-   if xglMapTexCoordMode<>mtcmSecond then begin
+   if vUpdCount<>0 then
+      vUpdNewMode:=mtcmSecond
+   else if xglMapTexCoordMode<>mtcmSecond then begin
       xglMapTexCoordMode:=mtcmSecond;
       Assert(GL_ARB_multitexture);
 
@@ -407,7 +448,9 @@ end;
 //
 procedure xglMapTexCoordToDual;
 begin
-   if xglMapTexCoordMode<>mtcmDual then begin
+   if vUpdCount<>0 then
+      vUpdNewMode:=mtcmDual
+   else if xglMapTexCoordMode<>mtcmDual then begin
       xglMapTexCoordMode:=mtcmDual;
       Assert(GL_ARB_multitexture);
 

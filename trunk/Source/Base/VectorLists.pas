@@ -306,11 +306,16 @@ type
 
 	      procedure Offset(delta : Single);
 	      procedure Scale(factor : Single);
+         function  Sum : Single;
 	end;
 
 {: Sort the refList in ascending order, ordering objList on the way. }
 procedure QuickSortLists(startIndex, endIndex : Integer;
 							    refList : TSingleList; objList : TList);
+{: Sort the refList in ascending order, ordering objList on the way.<p>
+   Use if, and *ONLY* if refList contains only values superior or equal to 1. }
+procedure FastQuickSortLists(startIndex, endIndex : Integer;
+				      			  refList : TSingleList; objList : TList);
 
 
 // ------------------------------------------------------------------
@@ -352,6 +357,44 @@ begin
 	end else if endIndex-startIndex>0 then begin
 		p:=refList.List[startIndex];
 		if refList.List[endIndex]<p then begin
+			refList.Exchange(startIndex, endIndex);
+			objList.Exchange(startIndex, endIndex);
+		end;
+	end;
+end;
+
+// FastQuickSortLists
+//
+procedure FastQuickSortLists(startIndex, endIndex : Integer;
+								 refList : TSingleList; objList : TList);
+type
+   PSingle = ^Single;
+var
+	I, J : Integer;
+	P : Integer;
+   refInts : PIntegerArray;
+begin
+   // All singles are >=1, so IEEE format allows comparing them as if they were integers
+	if endIndex-startIndex>1 then begin
+      refInts:=PIntegerArray(@refList.List[0]);
+		repeat
+			I:=startIndex; J:=endIndex;
+			PSingle(@P)^:=refList.List[(I + J) shr 1];
+			repeat
+				while refInts[I]<P do Inc(I);
+				while refInts[J]>P do Dec(J);
+				if I <= J then begin
+					refList.Exchange(I, J);
+					objList.Exchange(I, J);
+					Inc(I); Dec(J);
+				end;
+			until I > J;
+			if startIndex < J then
+				QuickSortLists(startIndex, J, refList, objList);
+			startIndex:=I;
+		until I >= endIndex;
+	end else if endIndex-startIndex>0 then begin
+		if refList.List[endIndex]<refList.List[startIndex] then begin
 			refList.Exchange(startIndex, endIndex);
 			objList.Exchange(startIndex, endIndex);
 		end;
@@ -419,7 +462,6 @@ end;
 procedure TBaseList.SetCount(val : Integer);
 begin
    Assert(val>=0);
-	if val>FCapacity then SetCapacity(val);
    if val>FCount then
       AddNulls(val-FCount)
    else FCount:=val;
@@ -1394,8 +1436,9 @@ end;
 function TSingleList.Add(const item : Single): Integer;
 begin
 	Result:=FCount;
-	if Result=FCapacity then SetCapacity(FCapacity + FGrowthDelta);
-	FList^[Result] := Item;
+	if Result=FCapacity then
+      SetCapacity(FCapacity+FGrowthDelta);
+	FList^[Result]:=Item;
   	Inc(FCount);
 end;
 
@@ -1471,6 +1514,16 @@ end;
 procedure TSingleList.Scale(factor : Single);
 begin
    ScaleFloatArray(PFloatVector(FList), FCount, factor);
+end;
+
+// Sum
+//
+function TSingleList.Sum : Single;
+var
+   i : Integer;
+begin
+   Result:=0;
+   for i:=0 to FCount-1 do Result:=Result+FList^[i];
 end;
 
 // ------------------------------------------------------------------

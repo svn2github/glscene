@@ -219,7 +219,7 @@ begin
    SetVector(observer, vEye);
    vEye[0]:=Round(vEye[0]/TileSize-0.5)*TileSize+TileSize*0.5;
    vEye[1]:=Round(vEye[1]/TileSize-0.5)*TileSize+TileSize*0.5;
-   tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(128*Scale.Z));
+   tileRadius:=Sqrt(Sqr(TileSize*0.5*Scale.X)+Sqr(TileSize*0.5*Scale.Y)+Sqr(128*Scale.Z))*1.5;
    // mark all tiles as unused
 //   for n:=0 to FTiles.Count-1 do
 //      THeightData(FTiles[n]).ObjectTag:=nil;
@@ -270,14 +270,14 @@ begin
    end;
 
    vertices:=TAffineVectorList.Create;
-   vertices.Capacity:=Sqr(TileSize+1);
+   vertices.Capacity:=Sqr(TileSize+1)*2;
    texPoints:=TTexPointList.Create;
-   texPoints.Capacity:=Sqr(TileSize+1);
+   texPoints.Capacity:=Sqr(TileSize+1)*2;
    vertexIndices:=TIntegerList.Create;
 
    for n:=0 to patchList.Count-1 do begin
       patch:=TGLROAMPatch(patchList[n]);
-      patch.Tesselate(20);
+      patch.Tesselate(10);
    end;
 
    glEnableClientState(GL_VERTEX_ARRAY);

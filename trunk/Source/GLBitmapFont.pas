@@ -582,16 +582,16 @@ begin
          if idx>=0 then begin
             TileIndexToTexCoords(idx, topLeft, bottomRight);
 
-            xglTexCoord2fv(@topLeft);
+            glTexCoord2fv(@topLeft);
             glVertex4fv(@vTopLeft);
 
-            xglTexCoord2f(topLeft.S, bottomRight.T);
+            glTexCoord2f(topLeft.S, bottomRight.T);
             glVertex2f(vTopLeft[0], vBottomRight[1]);
 
-            xglTexCoord2fv(@bottomRight);
+            glTexCoord2fv(@bottomRight);
             glVertex4fv(@vBottomRight);
 
-            xglTexCoord2f(bottomRight.S, topLeft.T);
+            glTexCoord2f(bottomRight.S, topLeft.T);
             glVertex2f(vBottomRight[0], vTopLeft[1]);
          end;
          vTopLeft[0]:=vTopLeft[0]+deltaH;

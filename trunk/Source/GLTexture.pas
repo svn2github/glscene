@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>26/01/02 - EG - Makes use of new xglBegin/EndUpdate mechanism
       <li>24/01/02 - EG - Added vUseDefaultSets mechanism,
                           TGLPictureImage no longer systematically creates a TPicture 
       <li>21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
@@ -2632,8 +2633,10 @@ begin
       end;
    	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       ApplyMappingMode;
+      xglMapTexCoordToMain;
 	end else begin
       UnSetGLState(rci.currentStates, stTexture2D);
+      xglMapTexCoordToNull;
    end;
 end;
 
@@ -3222,13 +3225,7 @@ begin
       end;
       multitextured:=Assigned(libMatTexture2)
                      and (not libMatTexture2.Material.Texture.Disabled);
-   end else begin
-      multitextured:=False;
-      if Assigned(libMatTexture2) then begin
-         libMatTexture2.RegisterUser(Self);
-         libMatTexture2:=nil;
-      end;
-   end;
+   end else multitextured:=False;
    if not multitextured then begin
       // no multitexturing ("standard" mode)
       if not Material.Texture.Disabled then
@@ -3237,6 +3234,7 @@ begin
       Material.Apply(rci);
    end else begin
       // multitexturing is ON
+      xglBeginUpdate;
       if not FTextureMatrixIsIdentity then
          SetGLTextureMatrix(FTextureMatrix);
       Material.Apply(rci);
@@ -3249,6 +3247,7 @@ begin
       else if libMatTexture2.Material.Texture.MappingMode=tmmUser then
          xglMapTexCoordToSecond
       else xglMapTexCoordToNull;
+      xglEndUpdate;
    end;
 end;
 
