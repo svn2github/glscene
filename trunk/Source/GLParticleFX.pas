@@ -7,6 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>24/04/04 - Mrqzzz - Added property "enabled" to TGLSourcePFXEffect
       <li>15/04/04 - EG - AspectRatio and Rotation added to sprite PFX,
                           improved texturing mode switches 
       <li>26/05/03 - EG - Improved TGLParticleFXRenderer.BuildList
@@ -328,8 +329,8 @@ type
          FParticleInterval : Single;
          FVelocityMode : TGLSourcePFXVelocityMode;
          FDispersionMode : TGLSourcePFXDispersionMode;
-         FTimeRemainder : Double;      // NOT persistent
-
+         FTimeRemainder : Double; // NOT persistent
+         FEnabled: boolean;
       protected
          { Protected Declarations }
          procedure SetInitialVelocity(const val : TGLCoordinates);
@@ -338,10 +339,9 @@ type
          procedure SetVelocityDispersion(const val : Single);
          procedure SetPositionDispersion(const val : Single);
          procedure SetParticleInterval(const val : Single);
-
-			procedure WriteToFiler(writer : TWriter); override;
+         procedure SetEnabled(const Value: boolean);
+         procedure WriteToFiler(writer : TWriter); override;
          procedure ReadFromFiler(reader : TReader); override;
-
       public
          { Public Declarations }
          constructor Create(aOwner : TXCollection); override;
@@ -368,6 +368,7 @@ type
          property ParticleInterval : Single read FParticleInterval write SetParticleInterval;
          property VelocityMode : TGLSourcePFXVelocityMode read FVelocityMode write FVelocityMode default svmAbsolute;
          property DispersionMode : TGLSourcePFXDispersionMode read FDispersionMode write FDispersionMode default sdmFast;
+         property Enabled : boolean read FEnabled write SetEnabled;
    end;
 
    // TGLDynamicPFXManager
@@ -1442,6 +1443,7 @@ begin
    FParticleInterval:=0.1;
    FVelocityMode:=svmAbsolute;
    FDispersionMode:=sdmFast;
+   FEnabled := true;
 end;
 
 // Destroy
@@ -1474,7 +1476,8 @@ procedure TGLSourcePFXEffect.WriteToFiler(writer : TWriter);
 begin
    inherited;
    with writer do begin
-      WriteInteger(2);  // ArchiveVersion 2, added FPositionDispersionRange
+      WriteInteger(3);  // ArchiveVersion 3, added FEnabled
+                        // ArchiveVersion 2, added FPositionDispersionRange
                         // ArchiveVersion 1, added FDispersionMode
       FInitialVelocity.WriteToFiler(writer);
       FInitialPosition.WriteToFiler(writer);
@@ -1484,6 +1487,7 @@ begin
       WriteFloat(FParticleInterval);
       WriteInteger(Integer(FVelocityMode));
       WriteInteger(Integer(FDispersionMode));
+      WriteBoolean(FEnabled);
    end;
 end;
 
@@ -1496,7 +1500,7 @@ begin
    inherited;
    with reader do begin
       archiveVersion:=ReadInteger;
-      Assert(archiveVersion in [0..2]);
+      Assert(archiveVersion in [0..3]);
       FInitialVelocity.ReadFromFiler(reader);
       FInitialPosition.ReadFromFiler(reader);
       if archiveVersion>=2 then
@@ -1507,6 +1511,8 @@ begin
       FVelocityMode:=TGLSourcePFXVelocityMode(ReadInteger);
       if archiveVersion>=1 then
          FDispersionMode:=TGLSourcePFXDispersionMode(ReadInteger);
+      if archiveVersion>=3 then
+         FEnabled:=ReadBoolean;
    end;
 end;
 
@@ -1566,7 +1572,7 @@ procedure TGLSourcePFXEffect.DoProgress(const progressTime : TProgressTimes);
 var
    n : Integer;
 begin
-   if not Assigned(Manager) then Exit;
+   if (not FEnabled) or (not Assigned(Manager)) then Exit;
    if FParticleInterval=0 then Exit;
    with progressTime do begin
       FTimeRemainder:=FTimeRemainder+deltaTime;
@@ -1639,6 +1645,13 @@ begin
       Dec(nbParticles);
    end;
 end;
+
+
+procedure TGLSourcePFXEffect.SetEnabled(const Value: boolean);
+begin
+  FEnabled := Value;
+end;
+
 
 // ------------------
 // ------------------ TPFXLifeColor ------------------
@@ -2578,6 +2591,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
