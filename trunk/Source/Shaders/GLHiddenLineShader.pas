@@ -5,7 +5,7 @@
    so that there is no z-fighting in rendering the same geometry multiple times.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>13/12/03 - NelC - Added SurfaceLit
+      <li>13/12/03 - NelC - Added SurfaceLit, ShadeModel
       <li>05/12/03 - NelC - Added ForceMaterial
       <li>03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
                             the multipass demo.
@@ -16,7 +16,7 @@ unit GLHiddenLineShader;
 interface
 
 uses
-  Classes, GLTexture, OpenGL1x, GLMisc, GLCrossPlatform;
+  Classes, GLTexture, OpenGL1x, GLMisc, GLCrossPlatform, GLScene;
 
 type
   TGLLineSettings = class(TGLUpdateAbleObject)
@@ -64,12 +64,14 @@ type
       FBackLine  : TGLLineSettings;
 
       FLighting : Boolean;
+      FShadeModel : TGLShadeModel;
 
       procedure SetlineSmooth(v : boolean);
       procedure SetBlendline(v : boolean);
       procedure SetSolid(v : boolean);
       procedure SetBackgroundColor(AColor: TGLColor);
       procedure SetLighting(v : boolean);
+      procedure SetShadeModel(const val : TGLShadeModel);
 
     protected
       procedure DoApply(var rci : TRenderContextInfo); override;
@@ -95,6 +97,9 @@ type
       property BackgroundColor: TGLColor read FBackgroundColor write SetBackgroundColor;
       {: When Solid is True, determines if lighting or background color is used. }
       property SurfaceLit : Boolean read FLighting write SetLighting default true;
+      {: Shade model.<p>
+         Default is "Smooth".<p> }
+      property ShadeModel : TGLShadeModel read FShadeModel write SetShadeModel default smDefault;
   end;
 
 procedure Register;
@@ -218,6 +223,7 @@ begin
 
   FLineSmooth:=False;
   FLighting:=true;
+  FShadeModel:=smDefault;
 end;
 
 // Destroy
@@ -236,7 +242,7 @@ begin
    FPassCount:=1;
 
    glPushAttrib(GL_ENABLE_BIT or GL_CURRENT_BIT or GL_POLYGON_BIT or
-                GL_HINT_BIT or GL_DEPTH_BUFFER_BIT or GL_LINE_BIT);
+                GL_HINT_BIT or GL_DEPTH_BUFFER_BIT or GL_LINE_BIT or GL_LIGHTING_BIT);
 
    if LineSmooth then begin
       glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -256,10 +262,18 @@ begin
        // draw filled front faces in first pass
        glPolygonMode(GL_FRONT, GL_FILL);
        glCullFace(GL_BACK);
-       if not FLighting then begin
-         glDisable(GL_LIGHTING);
-         glColor4fv(FBackgroundColor.AsAddress); // use background color
-       end;
+
+       if FLighting then begin
+           case ShadeModel of
+             smDefault, smSmooth : glShadeModel(GL_SMOOTH);
+             smFlat : glShadeModel(GL_FLAT);
+           end
+         end
+       else
+         begin
+           glDisable(GL_LIGHTING);
+           glColor4fv(FBackgroundColor.AsAddress); // use background color
+         end;
        // enable and adjust polygon offset
        glEnable(GL_POLYGON_OFFSET_FILL);
      end
@@ -360,4 +374,16 @@ begin
    end;
 end;
 
+// SetShadeModel
+//
+procedure TGLHiddenLineShader.SetShadeModel(const val : TGLShadeModel);
+begin
+   if FShadeModel<>val then begin
+      FShadeModel:=val;
+      NotifyChange(Self);
+   end;
+end;
+
 end.
+
+
