@@ -11,6 +11,8 @@
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
   History:<ul>
+    <li>01/09/03 - SG - Changed all relevant floating point types to TdReal,
+                        Changed Read/Write Single/Double to Read/Write Float.
     <li>19/08/03 - SG - Added GetBodyFromGLSceneObject (Dan Bartlett),
                         Added StepFast and FastIterations to GLODEManager.
     <li>11/08/03 - SG - Added some force/torque methods to dynamic objects.
@@ -142,44 +144,44 @@ type
       FRFEnabled : Boolean;
 
       function GetSurfaceMode : TSurfaceModes;
-      function GetMu : double;
-      function GetMu2 : double;
-      function GetBounce : double;
-      function GetBounce_Vel : double;
-      function GetSoftERP : double;
-      function GetSoftCFM : double;
-      function GetMotion1 : double;
-      function GetMotion2 : double;
-      function GetSlip1 : double;
-      function GetSlip2 : double;
+      function GetMu : TdReal;
+      function GetMu2 : TdReal;
+      function GetBounce : TdReal;
+      function GetBounce_Vel : TdReal;
+      function GetSoftERP : TdReal;
+      function GetSoftCFM : TdReal;
+      function GetMotion1 : TdReal;
+      function GetMotion2 : TdReal;
+      function GetSlip1 : TdReal;
+      function GetSlip2 : TdReal;
 
       procedure SetSurfaceMode(value:TSurfaceModes);
-      procedure SetMu(value : double);
-      procedure SetMu2(value : double);
-      procedure SetBounce(value : double);
-      procedure SetBounce_Vel(value : double);
-      procedure SetSoftERP(value : double);
-      procedure SetSoftCFM(value : double);
-      procedure SetMotion1(value : double);
-      procedure SetMotion2(value : double);
-      procedure SetSlip1(value : double);
-      procedure SetSlip2(value : double);
+      procedure SetMu(value : TdReal);
+      procedure SetMu2(value : TdReal);
+      procedure SetBounce(value : TdReal);
+      procedure SetBounce_Vel(value : TdReal);
+      procedure SetSoftERP(value : TdReal);
+      procedure SetSoftCFM(value : TdReal);
+      procedure SetMotion1(value : TdReal);
+      procedure SetMotion2(value : TdReal);
+      procedure SetSlip1(value : TdReal);
+      procedure SetSlip2(value : TdReal);
     public
       constructor Create; override;
     published
       property RollingFrictionCoeff : Single read FRFCoeff write FRFCoeff;
       property RollingFrictionEnabled : Boolean read FRFEnabled write FRFEnabled;
       property SurfaceMode : TSurfaceModes read GetSurfaceMode write SetSurfaceMode;
-      property Mu : double read GetMu write SetMu;
-      property Mu2 : double read GetMu2 write SetMu2;
-      property Bounce : double read GetBounce write SetBounce;
-      property Bounce_Vel : double read GetBounce_Vel write SetBounce_Vel;
-      property SoftERP : double read GetSoftERP write SetSoftERP;
-      property SoftCFM : double read GetSoftCFM write SetSoftCFM;
-      property Motion1 : double read GetMotion1 write SetMotion1;
-      property Motion2 : double read GetMotion2 write SetMotion2;
-      property Slip1 : double read GetSlip1 write SetSlip1;
-      property Slip2 : double read GetSlip2 write SetSlip2;
+      property Mu : TdReal read GetMu write SetMu;
+      property Mu2 : TdReal read GetMu2 write SetMu2;
+      property Bounce : TdReal read GetBounce write SetBounce;
+      property Bounce_Vel : TdReal read GetBounce_Vel write SetBounce_Vel;
+      property SoftERP : TdReal read GetSoftERP write SetSoftERP;
+      property SoftCFM : TdReal read GetSoftCFM write SetSoftCFM;
+      property Motion1 : TdReal read GetMotion1 write SetMotion1;
+      property Motion2 : TdReal read GetMotion2 write SetMotion2;
+      property Slip1 : TdReal read GetSlip1 write SetSlip1;
+      property Slip2 : TdReal read GetSlip2 write SetSlip2;
   end;
 
   TODEElementClass = class of TODEBaseElement;
@@ -412,7 +414,7 @@ type
   TODEBaseElement = class (TXCollectionItem)
     private
       FMass  : TdMass;
-      FDensity : single;
+      FDensity : TdReal;
       FGeomTransform,
       FGeomElement   : PdxGeom;
       FPosition,
@@ -422,7 +424,7 @@ type
       FRealignODE : Boolean;
       FInitialized : Boolean;
       procedure AlignGeomToMatrix(Mat:TMatrix);
-      procedure SetDensity(const Value: single);
+      procedure SetDensity(const Value: TdReal);
       procedure SetMatrix(const Value: TMatrix);
       function GetMatrix: TMatrix;
       procedure NotifyChange(Sender:TObject);
@@ -446,7 +448,7 @@ type
       property Geom : PdxGeom read FGeomElement;
       property Initialized : Boolean read FInitialized;
     published
-      property Density : single read FDensity write SetDensity;
+      property Density : TdReal read FDensity write SetDensity;
       property Position : TGLCoordinates read FPosition;
       property Direction : TGLCoordinates read FDirection;
       property Up : TGLCoordinates read FUp;
@@ -461,13 +463,13 @@ type
     private
       FBoxWidth,
       FBoxHeight,
-      FBoxDepth : single;
-      function GetBoxWidth  : single;
-      function GetBoxHeight : single;
-      function GetBoxDepth  : single;
-      procedure SetBoxWidth(const Value: single);
-      procedure SetBoxHeight(const Value: single);
-      procedure SetBoxDepth(const Value: single);
+      FBoxDepth : TdReal;
+      function GetBoxWidth  : TdReal;
+      function GetBoxHeight : TdReal;
+      function GetBoxDepth  : TdReal;
+      procedure SetBoxWidth(const Value: TdReal);
+      procedure SetBoxHeight(const Value: TdReal);
+      procedure SetBoxDepth(const Value: TdReal);
     protected
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
@@ -481,9 +483,9 @@ type
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
     published
-      property BoxWidth : single read GetBoxWidth write SetBoxWidth;
-      property BoxHeight : single read GetBoxHeight write SetBoxHeight;
-      property BoxDepth : single read GetBoxDepth write SetBoxDepth;
+      property BoxWidth : TdReal read GetBoxWidth write SetBoxWidth;
+      property BoxHeight : TdReal read GetBoxHeight write SetBoxHeight;
+      property BoxDepth : TdReal read GetBoxDepth write SetBoxDepth;
   end;
 
   {
@@ -493,9 +495,9 @@ type
   }
   TODEElementSphere = class (TODEBaseElement)
     private
-      FRadius : Single;
-      function GetRadius : single;
-      procedure SetRadius(const Value: single);
+      FRadius : TdReal;
+      function GetRadius : TdReal;
+      procedure SetRadius(const Value: TdReal);
     protected
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
@@ -509,7 +511,7 @@ type
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
     published
-      property Radius : single read GetRadius write SetRadius;
+      property Radius : TdReal read GetRadius write SetRadius;
   end;
 
   {
@@ -520,11 +522,11 @@ type
   TODEElementCapsule = class (TODEBaseElement)
     private
       FRadius,
-      FLength : single;
-      function GetRadius : single;
-      function GetLength : single;
-      procedure SetRadius(const Value: single);
-      procedure SetLength(const Value: single);
+      FLength : TdReal;
+      function GetRadius : TdReal;
+      function GetLength : TdReal;
+      procedure SetRadius(const Value: TdReal);
+      procedure SetLength(const Value: TdReal);
     protected
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
@@ -538,8 +540,8 @@ type
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
     published
-      property Radius : single read GetRadius write SetRadius;
-      property Length : single read GetLength write SetLength;
+      property Radius : TdReal read GetRadius write SetRadius;
+      property Length : TdReal read GetLength write SetLength;
   end;
 
   {
@@ -551,11 +553,11 @@ type
   TODEElementCylinder = class (TODEBaseElement)
     private
       FRadius,
-      FLength : single;
-      function GetRadius : single;
-      function GetLength : single;
-      procedure SetRadius(const Value: single);
-      procedure SetLength(const Value: single);
+      FLength : TdReal;
+      function GetRadius : TdReal;
+      function GetLength : TdReal;
+      procedure SetRadius(const Value: TdReal);
+      procedure SetLength(const Value: TdReal);
     protected
       procedure Initialize; override;
       function CalculateMass : TdMass; override;
@@ -569,8 +571,8 @@ type
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
     published
-      property Radius : single read GetRadius write SetRadius;
-      property Length : single read GetLength write SetLength;
+      property Radius : TdReal read GetRadius write SetRadius;
+      property Length : TdReal read GetLength write SetLength;
   end; //}
 
   {
@@ -1171,102 +1173,102 @@ end;
 
 // CollisionSurface Property methods
 //
-function TODECollisionSurface.GetMu : double;
+function TODECollisionSurface.GetMu : TdReal;
 begin
   result:=FSurfaceParams.Mu;
 end;
 
-function TODECollisionSurface.GetMu2 : double;
+function TODECollisionSurface.GetMu2 : TdReal;
 begin
   result:=FSurfaceParams.Mu2;
 end;
 
-function TODECollisionSurface.GetBounce : double;
+function TODECollisionSurface.GetBounce : TdReal;
 begin
   result:=FSurfaceParams.Bounce;
 end;
 
-function TODECollisionSurface.GetBounce_Vel : double;
+function TODECollisionSurface.GetBounce_Vel : TdReal;
 begin
   result:=FSurfaceParams.Bounce_Vel;
 end;
 
-function TODECollisionSurface.GetSoftERP : double;
+function TODECollisionSurface.GetSoftERP : TdReal;
 begin
   result:=FSurfaceParams.soft_erp;
 end;
 
-function TODECollisionSurface.GetSoftCFM : double;
+function TODECollisionSurface.GetSoftCFM : TdReal;
 begin
   result:=FSurfaceParams.soft_cfm;
 end;
 
-function TODECollisionSurface.GetMotion1 : double;
+function TODECollisionSurface.GetMotion1 : TdReal;
 begin
   result:=FSurfaceParams.Motion1;
 end;
 
-function TODECollisionSurface.GetMotion2 : double;
+function TODECollisionSurface.GetMotion2 : TdReal;
 begin
   result:=FSurfaceParams.Motion2;
 end;
 
-function TODECollisionSurface.GetSlip1 : double;
+function TODECollisionSurface.GetSlip1 : TdReal;
 begin
   result:=FSurfaceParams.Slip1;
 end;
 
-function TODECollisionSurface.GetSlip2 : double;
+function TODECollisionSurface.GetSlip2 : TdReal;
 begin
   result:=FSurfaceParams.Slip2;
 end;
 
-procedure TODECollisionSurface.SetMu(value : double);
+procedure TODECollisionSurface.SetMu(value : TdReal);
 begin
   FSurfaceParams.Mu:=value;
 end;
 
-procedure TODECollisionSurface.SetMu2(value : double);
+procedure TODECollisionSurface.SetMu2(value : TdReal);
 begin
   FSurfaceParams.Mu2:=value;
 end;
 
-procedure TODECollisionSurface.SetBounce(value : double);
+procedure TODECollisionSurface.SetBounce(value : TdReal);
 begin
   FSurfaceParams.Bounce:=value;
 end;
 
-procedure TODECollisionSurface.SetBounce_Vel(value : double);
+procedure TODECollisionSurface.SetBounce_Vel(value : TdReal);
 begin
   FSurfaceParams.Bounce_Vel:=value;
 end;
 
-procedure TODECollisionSurface.SetSoftERP(value : double);
+procedure TODECollisionSurface.SetSoftERP(value : TdReal);
 begin
   FSurfaceParams.soft_erp:=value;
 end;
 
-procedure TODECollisionSurface.SetSoftCFM(value : double);
+procedure TODECollisionSurface.SetSoftCFM(value : TdReal);
 begin
   FSurfaceParams.soft_cfm:=value;
 end;
 
-procedure TODECollisionSurface.SetMotion1(value : double);
+procedure TODECollisionSurface.SetMotion1(value : TdReal);
 begin
   FSurfaceParams.Motion1:=value;
 end;
 
-procedure TODECollisionSurface.SetMotion2(value : double);
+procedure TODECollisionSurface.SetMotion2(value : TdReal);
 begin
   FSurfaceParams.Motion2:=value;
 end;
 
-procedure TODECollisionSurface.SetSlip1(value : double);
+procedure TODECollisionSurface.SetSlip1(value : TdReal);
 begin
   FSurfaceParams.Slip1:=value;
 end;
 
-procedure TODECollisionSurface.SetSlip2(value : double);
+procedure TODECollisionSurface.SetSlip2(value : TdReal);
 begin
   FSurfaceParams.Slip2:=value;
 end;
@@ -2188,7 +2190,7 @@ begin
     FPosition.WriteToFiler(writer);
     FDirection.WriteToFiler(writer);
     FUp.WriteToFiler(writer);
-    WriteSingle(Density);
+    WriteFloat(Density);
   end;
 end;
 
@@ -2202,7 +2204,7 @@ begin
     FPosition.ReadFromFiler(reader);
     FDirection.ReadFromFiler(reader);
     FUp.ReadFromFiler(reader);
-    Density:=ReadSingle;
+    Density:=ReadFloat;
   end;
 end;
 
@@ -2256,7 +2258,7 @@ end;
 
 // SetDensity
 //
-procedure TODEBaseElement.SetDensity(const Value: single);
+procedure TODEBaseElement.SetDensity(const Value: TdReal);
 begin
   FDensity:=Value;
 end;
@@ -2346,9 +2348,9 @@ begin
   inherited;
   with writer do begin
     WriteInteger(0); // Archive version
-    WriteSingle(BoxWidth);
-    WriteSingle(BoxHeight);
-    WriteSingle(BoxDepth);
+    WriteFloat(BoxWidth);
+    WriteFloat(BoxHeight);
+    WriteFloat(BoxDepth);
   end;
 end;
 
@@ -2359,9 +2361,9 @@ begin
   inherited;
   with reader do begin
     Assert(ReadInteger = 0); // Archive version
-    BoxWidth:=ReadSingle;
-    BoxHeight:=ReadSingle;
-    BoxDepth:=ReadSingle;
+    BoxWidth:=ReadFloat;
+    BoxHeight:=ReadFloat;
+    BoxDepth:=ReadFloat;
   end;
 end;
 
@@ -2396,7 +2398,7 @@ end;
 
 // GetBoxWidth
 //
-function TODEElementBox.GetBoxWidth: single;
+function TODEElementBox.GetBoxWidth: TdReal;
 var
   vec : TdVector3;
 begin
@@ -2409,7 +2411,7 @@ end;
 
 // GetBoxHeight
 //
-function TODEElementBox.GetBoxHeight: single;
+function TODEElementBox.GetBoxHeight: TdReal;
 var
   vec : TdVector3;
 begin
@@ -2422,7 +2424,7 @@ end;
 
 // GetBoxDepth
 //
-function TODEElementBox.GetBoxDepth: single;
+function TODEElementBox.GetBoxDepth: TdReal;
 var
   vec : TdVector3;
 begin
@@ -2444,7 +2446,7 @@ end;
 
 // SetBoxWidth
 //
-procedure TODEElementBox.SetBoxWidth(const Value: single);
+procedure TODEElementBox.SetBoxWidth(const Value: TdReal);
 begin
   FBoxWidth:=Value;
   ODERebuild;
@@ -2452,7 +2454,7 @@ end;
 
 // SetBoxHeight
 //
-procedure TODEElementBox.SetBoxHeight(const Value: single);
+procedure TODEElementBox.SetBoxHeight(const Value: TdReal);
 begin
   FBoxHeight:=Value;
   ODERebuild;
@@ -2460,7 +2462,7 @@ end;
 
 // SetBoxDepth
 //
-procedure TODEElementBox.SetBoxDepth(const Value: single);
+procedure TODEElementBox.SetBoxDepth(const Value: TdReal);
 begin
   FBoxDepth:=Value;
   ODERebuild;
@@ -2563,7 +2565,7 @@ begin
   inherited;
   with writer do begin
     WriteInteger(0); // Archive version
-    WriteSingle(Radius);
+    WriteFloat(Radius);
   end;
 end;
 
@@ -2574,7 +2576,7 @@ begin
   inherited;
   with reader do begin
     Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadSingle;
+    Radius:=ReadFloat;
   end;
 end;
 
@@ -2609,7 +2611,7 @@ end;
 
 // GetRadius
 //
-function TODEElementSphere.GetRadius: single;
+function TODEElementSphere.GetRadius: TdReal;
 begin
   if Assigned(FGeomElement) then
     FRadius:=dGeomSphereGetRadius(FGeomElement);
@@ -2628,7 +2630,7 @@ end;
 
 // SetRadius
 //
-procedure TODEElementSphere.SetRadius(const Value: single);
+procedure TODEElementSphere.SetRadius(const Value: TdReal);
 begin
   FRadius:=Value;
   ODERebuild;
@@ -2716,8 +2718,8 @@ begin
   inherited;
   with writer do begin
     WriteInteger(0); // Archive version
-    WriteSingle(Radius);
-    WriteSingle(Length);
+    WriteFloat(Radius);
+    WriteFloat(Length);
   end;
 end;
 
@@ -2728,8 +2730,8 @@ begin
   inherited;
   with reader do begin
     Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadSingle;
-    Length:=ReadSingle;
+    Radius:=ReadFloat;
+    Length:=ReadFloat;
   end;
 end;
 
@@ -2764,9 +2766,9 @@ end;
 
 // GetRadius
 //
-function TODEElementCapsule.GetRadius: single;
+function TODEElementCapsule.GetRadius: TdReal;
 var
-  rad, len : double;
+  rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
     dGeomCCylinderGetParams(Geom,rad,len);
@@ -2777,9 +2779,9 @@ end;
 
 // GetLength
 //
-function TODEElementCapsule.GetLength: single;
+function TODEElementCapsule.GetLength: TdReal;
 var
-  rad, len : double;
+  rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
     dGeomCCylinderGetParams(Geom,rad,len);
@@ -2799,7 +2801,7 @@ end;
 
 // SetRadius
 //
-procedure TODEElementCapsule.SetRadius(const Value: single);
+procedure TODEElementCapsule.SetRadius(const Value: TdReal);
 begin
   FRadius:=Value;
   ODERebuild;
@@ -2807,7 +2809,7 @@ end;
 
 // SetLength
 //
-procedure TODEElementCapsule.SetLength(const Value: single);
+procedure TODEElementCapsule.SetLength(const Value: TdReal);
 begin
   FLength:=Value;
   ODERebuild;
@@ -2892,8 +2894,8 @@ begin
   inherited;
   with writer do begin
     WriteInteger(0); // Archive version
-    WriteSingle(Radius);
-    WriteSingle(Length);
+    WriteFloat(Radius);
+    WriteFloat(Length);
   end;
 end;
 
@@ -2904,8 +2906,8 @@ begin
   inherited;
   with reader do begin
     Assert(ReadInteger = 0); // Archive version
-    Radius:=ReadSingle;
-    Length:=ReadSingle;
+    Radius:=ReadFloat;
+    Length:=ReadFloat;
   end;
 end;
 
@@ -2940,9 +2942,9 @@ end;
 
 // GetRadius
 //
-function TODEElementCylinder.GetRadius: single;
+function TODEElementCylinder.GetRadius: TdReal;
 var
-  rad, len : double;
+  rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
     dGeomCylinderGetParams(Geom,rad,len);
@@ -2953,9 +2955,9 @@ end;
 
 // GetLength
 //
-function TODEElementCylinder.GetLength: single;
+function TODEElementCylinder.GetLength: TdReal;
 var
-  rad, len : double;
+  rad, len : TdReal;
 begin
   if Assigned(FGeomElement) then begin
     dGeomCylinderGetParams(Geom,rad,len);
@@ -2975,7 +2977,7 @@ end;
 
 // SetRadius
 //
-procedure TODEElementCylinder.SetRadius(const Value: single);
+procedure TODEElementCylinder.SetRadius(const Value: TdReal);
 begin
   FRadius:=Value;
   ODERebuild;
@@ -2983,7 +2985,7 @@ end;
 
 // SetLength
 //
-procedure TODEElementCylinder.SetLength(const Value: single);
+procedure TODEElementCylinder.SetLength(const Value: TdReal);
 begin
   FLength:=Value;
   ODERebuild;
@@ -3012,7 +3014,7 @@ end;
 procedure TGLODEPlane.AlignODEPlane;
 var
   Pos, Dir : TVector;
-  d : single;
+  d : TdReal;
 begin
   Dir := AbsoluteDirection;
   Pos := AbsolutePosition;
