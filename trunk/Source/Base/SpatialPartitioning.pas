@@ -343,7 +343,7 @@ type
 
     {: Query the node and its children for leaves that match the extended
     frustum. }
-    function QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum; const QueryResult : TSpacePartitionLeafList) : integer;
+    procedure QueryFrustumEx(const ExtendedFrustum : TExtendedFrustum; const QueryResult : TSpacePartitionLeafList);
 
     {: Adds all leaves to query result without testing if they intersect, and
     then do the same for all children. This is used when QueryAABB or
@@ -1403,9 +1403,9 @@ begin
   // Do nothing in the basic case
 end;
 
-function TSectorNode.QueryFrustumEx(
+procedure TSectorNode.QueryFrustumEx(
   const ExtendedFrustum: TExtendedFrustum;
-  const QueryResult: TSpacePartitionLeafList): integer;
+  const QueryResult: TSpacePartitionLeafList);
 var
   SpaceContains : TSpaceContains;
   i : integer;
@@ -1431,14 +1431,16 @@ begin
     AddAllLeavesRecursive(QueryResult);
   end else
 
-  // If the frustum partiall contains the leaf, then we should add the leaves
+  // If the frustum partially contains the leaf, then we should add the leaves
   // that intersect the frustum and recurse for all children
   if SpaceContains=scContainsPartially then begin
     for i := 0 to FLeaves.Count-1 do begin
+      // Early out
+      if not BSphereIntersectsBSphere(FLeaves[i].FCachedBSphere, ExtendedFrustum.BSphere) then continue;
+
       inc(FSectoredSpacePartition.FQueryInterObjectTests);
 
-      if BSphereIntersectsBSphere(FLeaves[i].FCachedBSphere, ExtendedFrustum.BSphere) and
-         not IsVolumeClipped(FLeaves[i].FCachedBSphere.Center,FLeaves[i].FCachedBSphere.Radius,ExtendedFrustum.Frustum) then
+      if not IsVolumeClipped(FLeaves[i].FCachedBSphere.Center, FLeaves[i].FCachedBSphere.Radius, ExtendedFrustum.Frustum) then
         QueryResult.Add(FLeaves[i]);
     end;
 

@@ -175,11 +175,12 @@ begin
   else
     SpacePartition.QueryFrustum(rci.rcci.frustum);
   visiblecount := SpacePartition.QueryResult.Count;
-  Label2.Caption := Format('Visible = %d, ObjTests = %d, NodeTests = %d, TotalNodes = %d',[
-    SpacePartition.QueryResult.Count,
-    SpacePartition.QueryInterObjectTests,
+  Label2.Caption := Format('NodeTests = %d (of %d), ObjTests = %d (of %d), Visible = %d',[
     SpacePartition.QueryNodeTests,
-    SpacePartition.GetNodeCount]);
+    SpacePartition.GetNodeCount,
+    SpacePartition.QueryInterObjectTests,
+    SpacePartition.Leaves.Count,
+    SpacePartition.QueryResult.Count]);
 
   for i := 0 to SpacePartition.QueryResult.Count - 1 do begin
     TSceneObj(SpacePartition.QueryResult[i]).Obj.Visible := true;
@@ -225,8 +226,8 @@ end;
 
 procedure TfrmQuadtreeVisCulling.GLDirectOpenGL2Render(
   Sender: TObject; var rci: TRenderContextInfo);
-var
-  ExtendendFrustum : TExtendedFrustum;
+{var
+  ExtendendFrustum : TExtendedFrustum;//}
 begin
   RenderSpatialPartitioning(SpacePartition);
 
