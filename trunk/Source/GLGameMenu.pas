@@ -52,6 +52,7 @@ type
          procedure SetDisabledColor(val : TGLColor);
          function  GetEnabled(index : Integer) : Boolean;
          procedure SetEnabled(index : Integer; val : Boolean);
+         procedure SetItems(val : TStrings);
          procedure SetSelected(val : Integer);
          function  GetSelectedText : String;
          procedure SetMaterialLibrary(val : TGLMaterialLibrary);
@@ -94,7 +95,7 @@ type
          property ActiveColor : TGLColor read FActiveColor write SetActiveColor;
          property DisabledColor : TGLColor read FDisabledColor write SetDisabledColor;
 
-         property Items : TStrings read FItems;
+         property Items : TStrings read FItems write SetItems;
          property Selected : Integer read FSelected write SetSelected default -1;
          property OnSelectedChanged : TNotifyEvent read FOnSelectedChanged write FOnSelectedChanged;
    end;
@@ -352,6 +353,14 @@ procedure TGLGameMenu.SetEnabled(index : Integer; val : Boolean);
 begin
    FItems.Objects[index]:=TObject(not val);
    StructureChanged;
+end;
+
+// SetItems
+//
+procedure TGLGameMenu.SetItems(val : TStrings);
+begin
+   FItems.Assign(val);
+   SetSelected(Selected);
 end;
 
 // SetSelected
