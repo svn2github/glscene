@@ -167,8 +167,8 @@ contains
   TypesMDC in '..\Source\FileFormats\TypesMDC.pas',
   GLFileMDC in '..\Source\FileFormats\GLFileMDC.pas',
   GLFPSMovement in '..\Source\GLFPSMovement.pas',
-  GLCelShader in '..\Source\GLCelShader.pas',
-  GLBumpShader in '..\Source\GLBumpShader.pas',
+  GLCelShader in '..\Source\Shaders\GLCelShader.pas',
+  GLBumpShader in '..\Source\Shaders\GLBumpShader.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas';
 
 end.
