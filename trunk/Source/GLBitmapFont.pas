@@ -547,6 +547,7 @@ begin
             SetAlphaFromIntensity;
             SqrtAlpha;
          end;
+         tiaDefault,
          tiaOpaque :
             SetAlphaToValue(255);
          tiaTopLeftPointColorTransparent :
