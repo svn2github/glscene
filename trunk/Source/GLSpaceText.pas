@@ -453,7 +453,9 @@ end;
 procedure TSpaceText.SetAllowedDeviation(const val : Single);
 begin
 	if FAllowedDeviation<>val then begin
-		FAllowedDeviation:=val;
+      if val>0 then
+   		FAllowedDeviation:=val
+      else FAllowedDeviation:=0;
       OnFontChange(nil);
 	end;
 end;
