@@ -554,7 +554,7 @@ function TGLMP3File.CreateCopy(AOwner: TPersistent) : TDataFile;
 begin
    Result:=inherited CreateCopy(AOwner);
    if Assigned(Result) then begin
-      TGLWAVFile(Result).data:=data;
+      TGLMP3File(Result).data:=data;
    end;
 end;
 
