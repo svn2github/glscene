@@ -9,6 +9,7 @@
    objects can be found GLGeomObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>20/01/04 - SG - Added IcosahedronBuildList
       <li>30/11/03 - MF - Added TGLSphere.GenerateSilhouette - it now takes the
                           stacks/slices of the sphere into account 
       <li>10/09/03 - EG - Introduced TGLNodedLines
@@ -832,6 +833,8 @@ procedure CubeWireframeBuildList(var rci : TRenderContextInfo;
                                  const color : TColorVector);
 {: Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
+{: Issues OpenGL for a unit-size icosahedron. }
+procedure IcosahedronBuildList;
 
 //-------------------------------------------------------------
 //-------------------------------------------------------------
@@ -934,6 +937,47 @@ begin
       glEnd;
    end;
 end;
+
+// IcosahedronBuildList
+//
+procedure IcosahedronBuildList;
+const
+   A = 0.5;
+   B = 0.30901699437; // 1/(1+Sqrt(5))
+const
+   vertices : packed array [0..11] of TAffineVector =
+      (( 0,-A,-A), ( 0,-B, A), ( 0, B,-A), ( 0, B, A),
+       (-A, 0,-B), (-A, 0, B), ( A, 0,-B), ( A, 0, B),
+       (-B,-A, 0), (-B, A, 0), ( B,-A, 0), ( B, A, 0));
+
+
+   triangles : packed array [0..19] of packed array [0..2] of Byte =
+      (( 2,11, 9), ( 3, 9,11), ( 3, 1, 5), ( 3, 7, 1),
+       ( 2, 0, 6), ( 2, 4, 0), ( 1,10, 8), ( 0, 8,10),
+       ( 9, 5, 4), ( 8, 4, 5), (11, 6, 7), (10, 7, 6),
+       ( 3, 5, 9), ( 3,11, 7), ( 2, 9, 4), ( 2, 6,11),
+       ( 0, 4, 8), ( 0,10, 6), ( 1, 8, 5), ( 1, 7,10));
+
+var
+   i, j : Integer;
+   n : TAffineVector;
+   faceIndices : PByteArray;
+begin
+   for i:=0 to 19 do begin
+      faceIndices:=@triangles[i, 0];
+
+      n:=CalcPlaneNormal(vertices[faceIndices[0]],
+                         vertices[faceIndices[1]],
+                         vertices[faceIndices[2]]);
+      glNormal3fv(@N);
+
+      glBegin(GL_TRIANGLES);
+      for j:=0 to 2 do
+         glVertex3fv(@vertices[faceIndices[j]]);
+      glEnd;
+   end;
+end;
+
 
 // ------------------
 // ------------------ TGLDummyCube ------------------

@@ -1826,6 +1826,7 @@ initialization
       RegisterSceneObject(TGLCone, 'Cone', glsOCBasicGeometry);
       RegisterSceneObject(TGLCylinder, 'Cylinder', glsOCBasicGeometry);
       RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', glsOCBasicGeometry);
+      RegisterSceneObject(TGLIcosahedron, 'Icosahedron', glsOCBasicGeometry);
 
       RegisterSceneObject(TGLArrowLine, 'ArrowLine', glsOCAdvancedGeometry);
       RegisterSceneObject(TGLAnnulus, 'Annulus', glsOCAdvancedGeometry);
