@@ -86,6 +86,19 @@ type
    TGLShadowVolumeOption = (svoShowVolumes);
    TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
 
+   // TGLShadowVolumeMode
+   //
+   {: Shadow rendering modes.<p>
+      <ul>
+      <li>svmAccurate : will render the scene with ambient lighting only, then
+         for each light will make a diffuse+specular pass
+      <li>svmDarkening : renders the scene with lighting on as usual, then darkens
+         shadowed areas (i.e. inaccurate lighting, but will "shadow" objects
+         that don't honour to diffuse or specular lighting)
+      <li>svmOff : no shadowing will take place
+      </ul> }
+   TGLShadowVolumeMode = (svmAccurate, svmDarkening, svmOff);
+
    // TGLShadowVolume
    //
    {: Simple shadow volumes.<p>
@@ -99,6 +112,8 @@ type
          FCasters : TGLShadowVolumeCasters;
          FCapping : TGLShadowVolumeCapping;
          FOptions : TGLShadowVolumeOptions;
+         FMode : TGLShadowVolumeMode;
+         FDarkeningColor : TGLColor;
 
 		protected
 			{ Protected Declarations }
@@ -106,6 +121,8 @@ type
 
          procedure SetCasters(const val : TGLShadowVolumeCasters);
          procedure SetOptions(const val : TGLShadowVolumeOptions);
+         procedure SetMode(const val : TGLShadowVolumeMode);
+         procedure SetDarkeningColor(const val : TGLColor);
 
 		public
 			{ Public Declarations }
@@ -126,6 +143,10 @@ type
          property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcAlways;
          {: Shadow volume rendering options. }
          property Options : TGLShadowVolumeOptions read FOptions write SetOptions default [];
+         {: Shadow rendering mode. }
+         property Mode : TGLShadowVolumeMode read FMode write SetMode default svmAccurate;
+         {: Darkening color used in svmDarkening mode. }
+         property DarkeningColor : TGLColor read FDarkeningColor write SetDarkeningColor;
    end;
 
 //-------------------------------------------------------------
@@ -260,12 +281,15 @@ begin
    FCasters:=TGLShadowVolumeCasters.Create(TGLShadowVolumeCaster);
    FCasters.FOwner:=Self;
    FCapping:=svcAlways;
+   FMode:=svmAccurate;
+   FDarkeningColor:=TGLColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
 end;
 
 // Destroy
 //
 destructor TGLShadowVolume.Destroy;
 begin
+   FDarkeningColor.Free;
    FCasters.Free;
    inherited;
 end;
@@ -308,6 +332,23 @@ begin
    end;
 end;
 
+// SetMode
+//
+procedure TGLShadowVolume.SetMode(const val : TGLShadowVolumeMode);
+begin
+   if FMode<>val then begin
+      FMode:=val;
+      StructureChanged;
+   end;
+end;
+
+// SetDarkeningColor
+//
+procedure TGLShadowVolume.SetDarkeningColor(const val : TGLColor);
+begin
+   FDarkeningColor.Assign(val);
+end;
+
 // DoRender
 //
 procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
@@ -326,7 +367,7 @@ var
 begin
    if FRendering then Exit;
    if not (renderSelf or renderChildren) then Exit;
-   if (csDesigning in ComponentState) then begin
+   if (csDesigning in ComponentState) or (Mode=svmOff) then begin
       inherited;
       Exit;
    end;
@@ -359,12 +400,15 @@ begin
       // render the shadow volumes
       glPushAttrib(GL_ENABLE_BIT);
 
-      // first turn of all the shadow casting lights diffuse and specular
-      for i:=0 to lights.Count-1 do begin
-         lightID:=TGLLightSource(lights[i]).LightID;
-         glLightfv(lightID, GL_DIFFUSE, @NullHmgVector);
-         glLightfv(lightID, GL_SPECULAR, @NullHmgVector);
+      if Mode=svmAccurate then begin
+         // first turn of all the shadow casting lights diffuse and specular
+         for i:=0 to lights.Count-1 do begin
+            lightID:=TGLLightSource(lights[i]).LightID;
+            glLightfv(lightID, GL_DIFFUSE, @NullHmgVector);
+            glLightfv(lightID, GL_SPECULAR, @NullHmgVector);
+         end;
       end;
+      
       // render shadow receivers with ambient lighting
       Self.RenderChildren(0, Count-1, rci);
 
@@ -501,23 +545,49 @@ begin
             end;
          end;
 
-         glColorMask(True, True, True, True);
-         glDepthFunc(GL_EQUAL);
-         glStencilFunc(GL_EQUAL, 0, 255);
-         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-         glEnable(GL_BLEND);
-
          // re-enable light's diffuse and specular, but no ambient
          glEnable(lightID);
          glLightfv(lightID, GL_AMBIENT, @NullHmgVector);
          glLightfv(lightID, GL_DIFFUSE, lightSource.Diffuse.AsAddress);
          glLightfv(lightID, GL_SPECULAR, lightSource.Specular.AsAddress);
-         glEnable(GL_LIGHTING);
+
+         glColorMask(True, True, True, True);
+         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+         glEnable(GL_BLEND);
 
          glCullFace(GL_BACK);
 
-         Self.RenderChildren(0, Count-1, rci);
+         if Mode=svmAccurate then begin
+            glStencilFunc(GL_EQUAL, 0, 255);
+            glDepthFunc(GL_EQUAL);
+            glEnable(GL_LIGHTING);
+
+            Self.RenderChildren(0, Count-1, rci)
+         end else begin
+            glStencilFunc(GL_NOTEQUAL, 0, 255);
+            glDepthFunc(GL_ALWAYS);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+            glPushMatrix;
+            glLoadIdentity;
+            glMatrixMode(GL_PROJECTION);
+            glPushMatrix;
+            glLoadIdentity;
+            gluOrtho2D(0, 1, 1, 0);
+
+            glColor4fv(FDarkeningColor.AsAddress);
+            glBegin(GL_QUADS);
+               glVertex2f(0, 0); glVertex2f(0, 1);
+               glVertex2f(1, 1); glVertex2f(1, 0);
+            glEnd;
+
+            glPopMatrix;
+            glMatrixMode(GL_MODELVIEW);
+            glPopMatrix;
+
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+         end;
 
          // disable light, but restore its ambient component
          glDisable(lightID);
