@@ -690,7 +690,7 @@ type
          FVirtualHandle : TGLVirtualHandle;
          FShaderStyle : TGLShaderStyle;
          FUpdateCount : Integer;
-         FShaderActive : Boolean;
+         FShaderActive, FShaderInitialized : Boolean;
 
 	   protected
 			{ Protected Declarations }
@@ -2418,9 +2418,11 @@ procedure TGLShader.NotifyChange(Sender : TObject);
 var
    i : Integer;
 begin
-   if FUpdateCount=0 then
+   if FUpdateCount=0 then begin
       for i:=FLibMatUsers.Count-1 downto 0 do
          TGLLibMaterial(FLibMatUsers[i]).NotifyUsers;
+      FinalizeShader;
+   end;
 end;
 
 // BeginUpdate
@@ -2470,6 +2472,7 @@ begin
       FVirtualHandle.OnDestroy:=OnVirtualHandleDestroy;
       FVirtualHandle.AllocateHandle;
       DoInitialize;
+      FShaderInitialized:=True;
    end;
 end;
 
@@ -2480,14 +2483,18 @@ var
    activateContext : Boolean;
 begin
    if FVirtualHandle.Handle<>0 then begin
-      activateContext:=(not FVirtualHandle.RenderingContext.Active);
-      if activateContext then
-         FVirtualHandle.RenderingContext.Activate;
-      try
-         DoFinalize;
-      finally
+      if FShaderInitialized then begin
+         activateContext:=(not FVirtualHandle.RenderingContext.Active);
          if activateContext then
-            FVirtualHandle.RenderingContext.Deactivate;
+            FVirtualHandle.RenderingContext.Activate;
+         try
+            FShaderInitialized:=False;
+            DoFinalize;
+         finally
+            if activateContext then
+               FVirtualHandle.RenderingContext.Deactivate;
+         end;
+         FVirtualHandle.DestroyHandle;
       end;
    end;
 end;
