@@ -51,7 +51,6 @@ var
   mesh        : TMorphableMeshObject;
   faceGroup   : TFGIndexTexCoordList;
   morphTarget : TMeshMorphTarget;
-  str         : string;
 
   function GetNormalFromMD3Normal(n : array of Byte) : TAffineVector;
   var
@@ -65,7 +64,7 @@ var
     result[2]:=cos(lng);
   end;
 
-  procedure AllocateMaterial(meshname,skins:string);
+  procedure AllocateMaterial(meshname:string);
   var
     LibMat : TGLLibMaterial;
   begin
@@ -90,12 +89,7 @@ begin
         Mode:=momFaceGroups;
         faceGroup:=TFGIndexTexCoordList.CreateOwned(FaceGroups);
         with faceGroup do begin
-          str:='';
-          for j:=0 to MeshData[i].MeshHeader.numSkins-1 do begin
-            if j>0 then str:=str+',';
-            str:=lowercase(trim(MeshData[i].Skins[j].strName));
-          end;
-          AllocateMaterial(mesh.Name,str);
+          AllocateMaterial(mesh.Name);
           MaterialName:=mesh.Name;
           numTris:=MeshData[i].MeshHeader.numTriangles;
           VertexIndices.Capacity:=numTris*3;
