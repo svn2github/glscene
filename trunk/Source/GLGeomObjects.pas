@@ -394,7 +394,7 @@ type
          function TopWidth: TGLFloat;
          function AxisAlignedBoundingBox: TAABB;
          function AxisAlignedBoundingBoxUnscaled: TAABB;
-         function AxisAlignedDimensionsUnscaled: TVector;
+         function AxisAlignedDimensionsUnscaled: TVector; override;
       published
 			{ Published Declarations }
          property ApexHeight: TGLFloat read FApexHeight write SetApexHeight stored False;
