@@ -1,8 +1,5 @@
-{: Shadow casting with GLzBuffer by Rene Lindsay.<p>
+{: Shadow casting with GLzBuffer by Rene Lindsay.
 
-   Shadows *require* a board that supports WGL_ARB_pbuffer extension, if you
-   get an error about this, try upgrading your drivers, and if that's not enough,
-   get a new 3D board ;)
 }
 unit Main;
 
@@ -94,6 +91,8 @@ type
     procedure FocalChange(Sender: TObject);
     procedure dovBarChange(Sender: TObject);
     procedure AlphaBarChange(Sender: TObject);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
   private
     { Private declarations }
   public
@@ -121,6 +120,9 @@ procedure TMainFm.ViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
 begin
    if Shift<>[] then GLCamera1.MoveAroundTarget(my-y, mx-x);
    mx:=x; my:=y;
+   GLCadencer1.Progress;
+   Viewer.Refresh;
+   Caster.Refresh;
 end;
 
 procedure TMainFm.CasterMouseDown(Sender: TObject; Button: TMouseButton;
@@ -135,9 +137,12 @@ procedure TMainFm.CasterMouseMove(Sender: TObject; Shift: TShiftState; X,
 begin
    if Shift<>[] then GLCamera2.MoveAroundTarget(my2-y, mx2-x);
    mx2:=x; my2:=y;
-   Shadows1.CastShadow;
-   Caster.refresh;
+   if shift<>[] then begin
+      Shadows1.CastShadow;
+   end;
+   GLCadencer1.Progress;
    Viewer.Refresh;
+   Caster.Refresh;
 end;
 
 procedure TMainFm.DistanceBarChange(Sender: TObject);
@@ -169,10 +174,6 @@ begin
 
  GLMaterialLibrary1.Materials[3].Material.texture.Image.loadFromFile('..\..\media\beigemarble.jpg');
  GLMaterialLibrary1.Materials[3].Material.texture.disabled:=false;
-{
- GLMaterialLibrary1.Materials[4].Material.texture.Image.loadFromFile('marble.jpg');
- GLMaterialLibrary1.Materials[4].Material.texture.disabled:=false;
-}
 end;
 
 procedure TMainFm.CastBtnClick(Sender: TObject);
@@ -214,24 +215,14 @@ end;
 
 procedure TMainFm.AsyncTimer1Timer(Sender: TObject);
 begin
- if RotateBox.checked then begin
-  Torus1.PitchAngle:=Torus1.PitchAngle+4;
-  Teapot1.TurnAngle:=Teapot1.TurnAngle-4;
-  Caster.refresh;
-  Shadows1.CastShadow;
- end;
-
-//  Caption:=Format('%.1f FPS', [Viewer.FramesPerSecond]);
   Caption:=Format('%.2f FPS', [Viewer.FramesPerSecond]);
   Viewer.ResetPerformanceMonitor;
-
-
-
 end;
 
 procedure TMainFm.RotateBoxClick(Sender: TObject);
 begin
 //AsyncTimer1.Enabled:=RotateBox.checked;
+  GLCadencer1.Enabled:=RotateBox.checked;
 end;
 
 procedure TMainFm.ShadowOnBoxClick(Sender: TObject);
@@ -279,7 +270,13 @@ end;
 
 procedure TMainFm.AlphaBarChange(Sender: TObject);
 begin
-   Shadows1.Color.Alpha:=AlphaBar.Position/256;
+Shadows1.Color.Alpha:=AlphaBar.Position/256;
+end;
+
+procedure TMainFm.GLCadencer1Progress(Sender: TObject; const deltaTime,
+  newTime: Double);
+begin
+Shadows1.CastShadow;
 end;
 
 end.
