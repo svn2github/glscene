@@ -775,6 +775,7 @@ procedure TGLSkyDome.DoRender(var rci : TRenderContextInfo;
                               renderSelf, renderChildren : Boolean);
 var
    f : Single;
+   mvMat : TMatrix;
 begin
    // prepare
    glPushAttrib(GL_ENABLE_BIT);
@@ -792,18 +793,25 @@ begin
    // compensate local position
    glTranslatef(-LocalMatrix[3][0], -LocalMatrix[3][1], -LocalMatrix[3][2]);
    glMultMatrixf(@LocalMatrix);
-   // render
-   if (sdoTwinkle in FOptions) or rci.amalgamating then
-      BuildList(rci)
-   else glCallList(GetHandle(rci));
-   // restore
-   glDepthMask(True);
-   glPopAttrib;
-   // process childs
-   if Count>0 then begin
-      f:=1/f;
-      glScalef(f, f, f);
-      Self.RenderChildren(0, Count-1, rci);
+
+   glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
+   Scene.CurrentBuffer.PushModelViewMatrix(mvMat);
+   try
+      // render
+      if (sdoTwinkle in FOptions) or rci.amalgamating then
+         BuildList(rci)
+      else glCallList(GetHandle(rci));
+      // restore
+      glDepthMask(True);
+      glPopAttrib;
+      // process childs
+      if Count>0 then begin
+         f:=1/f;
+         glScalef(f, f, f);
+         Self.RenderChildren(0, Count-1, rci);
+      end;
+   finally
+      Scene.CurrentBuffer.PopModelViewMatrix;
    end;
 end;
 
