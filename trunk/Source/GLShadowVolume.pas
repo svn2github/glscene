@@ -15,7 +15,7 @@ unit GLShadowVolume;
 interface
 
 uses Classes, GLScene, Geometry, OpenGL1x, GLMisc, GLSilhouette, GLTexture,
-  GLCrossPlatform,  PersistentClasses;
+  GLCrossPlatform, PersistentClasses, GeometryBB;
 
 type
 
@@ -88,7 +88,7 @@ type
 
          {: Compute and setup scissor clipping rect for the light.<p>
             Returns true if a scissor rect was setup }
-         function SetupScissorRect(var rci : TRenderContextInfo) : Boolean;
+         function SetupScissorRect(worldAABB : PAABB; var rci : TRenderContextInfo) : Boolean;
 
 		public
 			{ Public Declarations }
@@ -128,7 +128,19 @@ type
 
    // TGLShadowVolumeOption
    //
-   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips);
+   {: Shadow volume rendering options/optimizations.<p>
+      <ul>
+      <li>svoShowVolumes : make the shadow volumes visible
+      <li>svoDesignVisible : the shadow are visible at design-time
+      <li>svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
+         some objects are static relatively to their light(s)
+      <li>svoScissorClips : use scissor clipping per light, beneficial when
+         lights are attenuated and don't illuminate the whole scene
+      <li>svoWorldScissorClip : use scissor clipping for the world, beneficial
+         when shadow receivers don't cover the whole viewer surface
+      </ul> }
+   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips,
+                            svoWorldScissorClip, svoDesignVisible);
    TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
 
    // TGLShadowVolumeMode
@@ -209,7 +221,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, VectorLists, GeometryBB;
+uses SysUtils, VectorLists;
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------
@@ -332,10 +344,9 @@ end;
 
 // TGLShadowVolumeLight
 //
-function TGLShadowVolumeLight.SetupScissorRect(var rci : TRenderContextInfo) : Boolean;
+function TGLShadowVolumeLight.SetupScissorRect(worldAABB : PAABB; var rci : TRenderContextInfo) : Boolean;
 var
   mv, proj, mvp: TMatrix;
-//  vp, scissor: TSVRect;
   lightPos : TAffineVector;
   ls : TGLLightSource;
   aabb : TAABB;
@@ -344,27 +355,30 @@ begin
    ls:=LightSource;
    if (EffectiveRadius<=0) or (not ls.Attenuated) then begin
       // non attenuated lights can't be clipped
-      Result:=False;
-      Exit;
-   end;
-
-   SetVector(lightPos, ls.AbsolutePosition);
-   if VectorDistance2(lightPos, PAffineVector(@rci.cameraPosition)^)<Sqr(EffectiveRadius) then begin
-      // camera inside light radius, can't clip
-      Result:=False;
-      Exit;
+      if not Assigned(worldAABB) then begin
+         Result:=False;
+         Exit;
+      end else aabb:=worldAABB^;
+   end else begin
+      SetVector(lightPos, ls.AbsolutePosition);
+      if VectorDistance2(lightPos, PAffineVector(@rci.cameraPosition)^)<Sqr(EffectiveRadius) then begin
+         // camera inside light radius, can't clip
+         Result:=False;
+         Exit;
+      end;
+      aabb:=BSphereToAABB(lightPos, EffectiveRadius);
+      if Assigned(worldAABB) then
+         aabb:=AABBIntersection(aabb, worldAABB^);
    end;
 
    mv:=rci.modelViewMatrix^;
    glGetFloatv(GL_PROJECTION_MATRIX, @proj);
 
-   aabb:=BSphereToAABB(lightPos, EffectiveRadius);
-
    // Calculate the window-space bounds of the light's bounding box.
    mvp:=MatrixMultiply(mv, proj);
 
    clipRect:=AABBToClipRect(aabb, mvp, rci.viewPortSize.cx, rci.viewPortSize.cy);
-   
+
    if    (clipRect.Right<0) or (clipRect.Left>rci.viewPortSize.cx)
       or (clipRect.Top<0) or (clipRect.Bottom>rci.viewPortSize.cy) then begin
       Result:=False;
@@ -552,14 +566,21 @@ var
    opaques, opaqueCapping : TList;
    silParams : TGLSilhouetteParameters;
    mat : TMatrix;
+   worldAABB : TAABB;
+   pWorldAABB : PAABB;
 begin
    if FRendering then Exit;
    if not (renderSelf or renderChildren) then Exit;
-   if    (csDesigning in ComponentState) or (Mode=svmOff)
+   if    ((csDesigning in ComponentState) and not (svoDesignVisible in Options))
+      or (Mode=svmOff)
       or (rci.drawState=dsPicking) then begin
       inherited;
       Exit;
    end;
+   if svoWorldScissorClip in Options then begin
+      worldAABB:=Self.AxisAlignedBoundingBox;
+      pWorldAABB:=@worldAABB;
+   end else pWorldAABB:=nil;
    opaques:=TList.Create;
    opaqueCapping:=TList.Create;
    FRendering:=True;
@@ -633,10 +654,10 @@ begin
          end;
          silParams.CappingRequired:=True;
 
-         if svoScissorClips in Options then begin
-            if lightCaster.SetupScissorRect(rci) then
+         if Assigned(pWorldAABB) or (svoScissorClips in Options) then begin
+            if lightCaster.SetupScissorRect(pWorldAABB, rci) then
                glEnable(GL_SCISSOR_TEST)
-            else glDisable(GL_SCISSOR_TEST);
+            else glDisable(GL_SCISSOR_TEST)
          end;
 
          // clear the stencil and prepare for shadow volume pass
@@ -777,7 +798,7 @@ begin
 
          // disable light, but restore its ambient component
          glDisable(lightID);
-         glLightfv(lightID, GL_DIFFUSE, lightSource.Ambient.AsAddress);
+         glLightfv(lightID, GL_AMBIENT, lightSource.Ambient.AsAddress);
       end;
 
       // restore OpenGL state
