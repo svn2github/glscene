@@ -447,8 +447,6 @@ type
 
          procedure DrawAxes(var rci : TRenderContextInfo; pattern : Word);
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
-         function  GetHandle(var rci : TRenderContextInfo) : Cardinal; virtual;
-         function  ListHandleAllocated : Boolean;
          //: Should the object be considered as blended for sorting purposes?
          function  Blended : Boolean; virtual;
          procedure RebuildMatrix;
@@ -470,6 +468,11 @@ type
          {: Controls and adjusts internal optimizations based on object's style.<p>
             Advanced user only. }
          property ObjectStyle : TGLObjectStyles read FObjectStyle write FObjectStyle;
+
+         {: Returns the handle to the object's build list.<p>
+            Use with caution! Some objects don't support buildlists! }
+         function GetHandle(var rci : TRenderContextInfo) : Cardinal; virtual;
+         function ListHandleAllocated : Boolean;
 
          {: The local transformation (relative to parent).<p>
             If you're *sure* the local matrix is up-to-date, you may use LocalMatrix
@@ -1009,7 +1012,7 @@ type
    // TDirectRenderEvent
    //
    {: Event for user-specific rendering in a TGLDirectOpenGL object. }
-   TDirectRenderEvent = procedure (var rci : TRenderContextInfo) of object;
+   TDirectRenderEvent = procedure (Sender : TObject; var rci : TRenderContextInfo) of object;
 
    // TGLDirectOpenGL
    //
@@ -1147,9 +1150,6 @@ type
 
       protected
          { Protected Declarations }
-         //: light sources have different handle types than normal scene objects
-         function GetHandle(var rci : TRenderContextInfo) : Cardinal; override;
-
          procedure SetAmbient(AValue: TGLColor);
          procedure SetDiffuse(AValue: TGLColor);
          procedure SetSpecular(AValue: TGLColor);
@@ -1168,6 +1168,8 @@ type
          destructor Destroy; override;
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
+         //: light sources have different handle types than normal scene objects
+         function GetHandle(var rci : TRenderContextInfo) : Cardinal; override;
          function RayCastIntersect(const rayStart, rayVector : TVector;
                                    intersectPoint : PVector = nil;
                                    intersectNormal : PVector = nil) : Boolean; override;
@@ -1551,7 +1553,6 @@ type
          FFogStart, FFogEnd : Single;
          FFogMode : TFogMode;
          FFogDistance : TFogDistance;
-         FChanged : Boolean;
 
       protected
          { Protected Declarations }
@@ -1566,7 +1567,6 @@ type
          constructor Create(Owner : TPersistent); override;
          destructor Destroy; override;
 
-         procedure NotifyChange(Sender : TObject); override;
          procedure ApplyFog;
          procedure Assign(Source: TPersistent); override;
 
@@ -5225,6 +5225,8 @@ procedure TGLDirectOpenGL.Assign(Source: TPersistent);
 begin
    if Source is TGLDirectOpenGL then begin
       UseBuildList:=TGLDirectOpenGL(Source).UseBuildList;
+      FOnRender:=TGLDirectOpenGL(Source).FOnRender;
+      FOnProgress:=TGLDirectOpenGL(Source).FOnProgress;
    end;
    inherited Assign(Source);
 end;
@@ -5235,7 +5237,7 @@ procedure TGLDirectOpenGL.BuildList(var rci : TRenderContextInfo);
 begin
    if Assigned(FOnRender) then begin
       xglMapTexCoordToMain;   // single texturing by default 
-      OnRender(rci);
+      OnRender(Self, rci);
    end;
 end;
 
@@ -6185,14 +6187,6 @@ begin
    inherited Destroy;
 end;
 
-// NotifyChange
-//
-procedure TGLFogEnvironment.NotifyChange(Sender : TObject);
-begin
-   FChanged:=True;
-   inherited;
-end;
-
 // SetFogColor
 //
 procedure TGLFogEnvironment.SetFogColor(Value: TGLColor);
@@ -6233,8 +6227,9 @@ begin
       FFogEnd:=TGLFogEnvironment(Source).FFogEnd;
       FFogMode:=TGLFogEnvironment(Source).FFogMode;
       FFogDistance:=TGLFogEnvironment(Source).FFogDistance;
-      FChanged:=True;
-   end else inherited Assign(Source);
+      NotifyChange(Self);
+   end;
+   inherited;
 end;
 
 // IsAtDefaultValues
@@ -6273,46 +6268,48 @@ end;
 var
    vImplemDependantFogDistanceDefault : Integer = -1;
 procedure TGLFogEnvironment.ApplyFog;
+var
+   tempActivation : Boolean;
 begin
-   if FChanged then with FSceneBuffer do begin
-      if Assigned(FRenderingContext) then begin
+   with FSceneBuffer do begin
+      if not Assigned(FRenderingContext) then Exit;
+      tempActivation:=not FRenderingContext.Active;
+      if tempActivation then
          FRenderingContext.Activate;
-         try
-            case FFogMode of
-               fmLinear : glFogi(GL_FOG_MODE, GL_LINEAR);
-               fmExp : begin
-                  glFogi(GL_FOG_MODE, GL_EXP);
-                  glFogf(GL_FOG_DENSITY, FFogColor.Alpha);
-               end;
-               fmExp2 : begin
-                  glFogi(GL_FOG_MODE, GL_EXP2);
-                  glFogf(GL_FOG_DENSITY, FFogColor.Alpha);
-               end;
-            end;
-            glFogfv(GL_FOG_COLOR, FFogColor.AsAddress);
-            glFogf(GL_FOG_START, FFogStart);
-            glFogf(GL_FOG_END, FFogEnd);
-            if GL_NV_fog_distance then begin
-               case FogDistance of
-                  fdDefault : begin
-                     if vImplemDependantFogDistanceDefault=-1 then
-                        glGetIntegerv(GL_FOG_DISTANCE_MODE_NV, @vImplemDependantFogDistanceDefault)
-                     else glFogi(GL_FOG_DISTANCE_MODE_NV, vImplemDependantFogDistanceDefault);
-                  end;
-                  fdEyePlane :
-                     glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
-                  fdEyeRadial :
-                     glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
-               else
-                  Assert(False);
-               end;
-            end;
-         finally
-            RenderingContext.Deactivate;
-            FChanged:=False;
-         end;
+   end;
+
+   case FFogMode of
+      fmLinear : glFogi(GL_FOG_MODE, GL_LINEAR);
+      fmExp : begin
+         glFogi(GL_FOG_MODE, GL_EXP);
+         glFogf(GL_FOG_DENSITY, FFogColor.Alpha);
+      end;
+      fmExp2 : begin
+         glFogi(GL_FOG_MODE, GL_EXP2);
+         glFogf(GL_FOG_DENSITY, FFogColor.Alpha);
       end;
    end;
+   glFogfv(GL_FOG_COLOR, FFogColor.AsAddress);
+   glFogf(GL_FOG_START, FFogStart);
+   glFogf(GL_FOG_END, FFogEnd);
+   if GL_NV_fog_distance then begin
+      case FogDistance of
+         fdDefault : begin
+            if vImplemDependantFogDistanceDefault=-1 then
+               glGetIntegerv(GL_FOG_DISTANCE_MODE_NV, @vImplemDependantFogDistanceDefault)
+            else glFogi(GL_FOG_DISTANCE_MODE_NV, vImplemDependantFogDistanceDefault);
+         end;
+         fdEyePlane :
+            glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
+         fdEyeRadial :
+            glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
+      else
+         Assert(False);
+      end;
+   end;
+
+   if tempActivation then
+      FSceneBuffer.RenderingContext.Deactivate;
 end;
 
 // ------------------
