@@ -62,11 +62,12 @@ type
       var rci: TRenderContextInfo);
     procedure WaterShaderDoUnApply(Sender: TObject; Pass: Integer;
       var rci: TRenderContextInfo; var Continue: Boolean);
+    procedure FormResize(Sender: TObject);
    private
       { Private declarations }
       hscale, vscale, mapwidth, mapheight : Single;
       lmp : TPoint;
-      camPitch, camTurn : Single;
+      camPitch, camTurn, camTime, curPitch, curTurn : Single;
    public
       { Public declarations }
       L3DTHeightDataSource : TGLL3DTHDS;
@@ -221,11 +222,13 @@ end;
 
 procedure TForm1.PFXTreesRenderParticle(Sender: TObject;
   aParticle: TGLParticle; var rci: TRenderContextInfo);
+const
+   cTreeCenteringOffset : TAffineVector = (0, 30, 0);
 var
    d : Single;
    camPos : TVector;
 begin
-   if not IsVolumeClipped(aParticle.Position, 25, rci.rcci) then begin;
+   if not IsVolumeClipped(VectorAdd(aParticle.Position, cTreeCenteringOffset), 30, rci.rcci) then begin;
       VectorSubtract(rci.cameraPosition, aParticle.Position, camPos);
       d:=VectorNorm(camPos);
       if d>Sqr(180) then begin
@@ -304,14 +307,22 @@ begin
 
    z:=Terrain.InterpolatedHeight(Camera.Position.AsVector);
    if z<0 then z:=0;
-   Camera.Position.Y:=Lerp(Camera.Position.Y, z+3, Power(0.1, deltaTime));
+   if Camera.Position.Y<z+3 then
+      Camera.Position.Y:=z+3;
 
    GetCursorPos(nmp);
    camTurn:=camTurn-(lmp.X-nmp.X)*0.2;
    camPitch:=camPitch+(lmp.Y-nmp.Y)*0.2;
+   camTime:=camTime+deltaTime;
+   while camTime>0 do begin
+      curTurn:=Lerp(curTurn, camTurn, 0.2);
+      curPitch:=Lerp(curPitch, camPitch, 0.2);
+      Camera.Position.Y:=Lerp(Camera.Position.Y, z+3, 0.2);
+      camTime:=camTime-0.01;
+   end;
    Camera.ResetRotations;
-   Camera.Turn(camTurn);
-   Camera.Pitch(camPitch);
+   Camera.Turn(curTurn);
+   Camera.Pitch(curPitch);
    SetCursorPos(lmp.X, lmp.Y);
 
    GLSceneViewer1.Invalidate;
@@ -444,6 +455,11 @@ begin
    glMatrixMode(GL_MODELVIEW);
 
    Continue:=False;
+end;
+
+procedure TForm1.FormResize(Sender: TObject);
+begin
+   Camera.FocalLength:=Width*50/800;
 end;
 
 end.
