@@ -3,6 +3,7 @@
 	Fire special effect<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>12/08/01 - Egg - Fixed leak (color objects)
       <li>09/03/01 - Egg - Fixed MaxParticles change, added RingExplosion 
       <li>08/03/01 - Egg - Revisited the effect and added new parameters,
                            dropped/renamed some, started documentation (just started)
@@ -240,6 +241,8 @@ begin
    DeRegisterAllClients;
    DeRegisterManager(Self);
    FreeMem(FFireParticles);
+   FInnerColor.Free;
+   FOuterColor.Free;
    FClients.Free;
    FFireDir.Free;
    FInitialDir.Free;

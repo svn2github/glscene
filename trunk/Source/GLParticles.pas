@@ -4,6 +4,7 @@
 	Particle systems for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>12/07/01 - Egg - Fixed FEdgeColor memory leak
       <li>18/07/01 - Egg - VisibilityCulling compatibility changes
 		<li>17/04/00 - Egg - Added Assign, Removed ActivateParticle
 	   <li>16/04/00 - Egg - Creation
@@ -138,6 +139,7 @@ end;
 //
 destructor TGLParticles.Destroy;
 begin
+   FEdgeColor.Free;
 	ClearParticlePool;
 	particlePool.Free;
 	inherited;

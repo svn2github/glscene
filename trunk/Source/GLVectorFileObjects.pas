@@ -3,7 +3,9 @@
 	Vector File related objects for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>12/08/01 - Egg - Completely rewritten handles management
+      <li>12/08/01 - Egg - Completely rewritten handles management,
+                           Fixed TActorAnimation.Assign,
+                           Fixed persistence
       <li>08/08/01 - Egg - Added TBaseMesh.AxisAlignedDimensions
       <li>19/07/01 - Egg - AutoCentering is now a property of TBaseMesh,
                            3DS loader no longer auto-centers,
@@ -704,6 +706,8 @@ type
          constructor CreateOwned(AOwner : TMeshObject);
          destructor Destroy; override;
 
+			procedure ReadFromFiler(reader : TVirtualReader); override;
+
          property Owner : TMeshObject read FOwner;
          procedure Clear; override;
          property Items[Index: Integer] : TFaceGroup read GetFaceGroup; default;
@@ -1384,6 +1388,7 @@ procedure TBaseMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       FName:=ReadString;
@@ -2125,6 +2130,7 @@ procedure TMeshObject.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       FTexCoords.ReadFromFiler(reader);
@@ -2924,6 +2930,7 @@ procedure TFaceGroup.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       FMaterialName:=ReadString;
@@ -2990,6 +2997,7 @@ procedure TFGVertexIndexList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       FVertexIndices.ReadFromFiler(reader);
@@ -3150,6 +3158,7 @@ procedure TFGVertexNormalTexIndexList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       FNormalIndices.ReadFromFiler(reader);
@@ -3253,6 +3262,7 @@ procedure TFGIndexTexCoordList.ReadFromFiler(reader : TVirtualReader);
 var
    archiveVersion : Integer;
 begin
+   inherited ReadFromFiler(reader);
    archiveVersion:=reader.ReadInteger;
    if archiveVersion=0 then with reader do begin
       FTexCoords.ReadFromFiler(reader);
@@ -3348,6 +3358,16 @@ destructor TFaceGroups.Destroy;
 begin
    Clear;
    inherited;
+end;
+
+// ReadFromFiler
+//
+procedure TFaceGroups.ReadFromFiler(reader : TVirtualReader);
+var
+   i : Integer;
+begin
+   inherited;
+   for i:=0 to Count-1 do Items[i].FOwner:=Self;
 end;
 
 // Clear
@@ -3561,15 +3581,12 @@ var
    //--------------- end local functions ---------------------------------------
 
 var
-  Size: Cardinal;
   iMaterial, i, j : Integer;
   aFaceGroup : TFGVertexIndexList;
-  V1, V2: TAffineVector;
-  Face, SubFace, Vertex, TargetVertex: Integer;
+  Face, Vertex, TargetVertex: Integer;
   SmoothingGroup: Cardinal;
   CurrentIndex: Word;
   Vector1, Vector2, Normal : TAffineVector;
-  vertexData : TVertexData;
   standardNormalsOrientation : Boolean;
 begin
    with TFile3DS.Create do try
@@ -3579,7 +3596,6 @@ begin
       standardNormalsOrientation:=not (NormalsOrientation=mnoDefault);
       for i:=0 to Objects.MeshCount-1 do with PMesh3DS(Objects.Mesh[I])^ do begin
          if IsHidden or (NVertices<3) then Continue;
-         // New() just calls GetMem, but I want the memory cleared
          mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
          mesh.Name:=PMesh3DS(Objects.Mesh[I])^.Name;
          with mesh do begin
@@ -3790,14 +3806,14 @@ begin
       Skeleton.Clear;
       vectorFileClass:=GetVectorFileFormats.FindFromFileName(filename);
       newVectorFile:=VectorFileClass.Create(Self);
-      newVectorFile.ResourceName:=filename;
-      PrepareVectorFile(newVectorFile);
       try
+         newVectorFile.ResourceName:=filename;
+         PrepareVectorFile(newVectorFile);
          if Assigned(Scene) then Scene.BeginUpdate;
          newVectorFile.LoadFromStream(aStream);
          if Assigned(Scene) then Scene.EndUpdate;
       finally
-         NewVectorFile.Free;
+         newVectorFile.Free;
       end;
       PerformAutoCentering;
       PrepareMesh;
@@ -4066,6 +4082,8 @@ begin
 	inherited Destroy;
 end;
 
+// Assign
+//
 procedure TActorAnimation.Assign(Source: TPersistent);
 begin
 	if Source is TActorAnimation then begin
@@ -4073,8 +4091,7 @@ begin
       FStartFrame:=TActorAnimation(Source).FStartFrame;
       FEndFrame:=TActorAnimation(Source).FEndFrame;
       FReference:=TActorAnimation(Source).FReference;
-	end;
-	inherited Destroy;
+	end else inherited;
 end;
 
 // GetDisplayName

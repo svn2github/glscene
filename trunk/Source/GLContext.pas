@@ -630,7 +630,7 @@ end;
 //
 procedure TGLContextHandle.DestroyHandle;
 var
-   oldContext : TGLContext;
+   oldContext, handleContext : TGLContext;
 begin
    if FHandle<>0 then begin
       FRenderingContext.FOwnedHandles.Remove(Self);
@@ -647,16 +647,16 @@ begin
          if Assigned(oldContext) then
             oldContext.Deactivate;
          FRenderingContext.Activate;
+         handleContext:=FRenderingContext;
          try
             DoDestroyHandle;
             FHandle:=0;
             FRenderingContext:=nil;
          finally
-            FRenderingContext.Deactivate;
+            handleContext.Deactivate;
             if Assigned(oldContext) then
                oldContext.Activate;
          end;
-         Assert(False, cIncompatibleContexts);
       end;
    end;
 end;

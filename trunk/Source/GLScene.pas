@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>12/08/01 - Egg - Completely rewritten handles management
+      <li>12/08/01 - Egg - Completely rewritten handles management,
+                           Faster camera switching 
       <li>29/07/01 - Egg - Added pooTransformation
       <li>19/07/01 - Egg - Focal lengths in the ]0; 1[ range are now allowed (beware!)
       <li>18/07/01 - Egg - Added VisibilityCulling
@@ -5948,10 +5949,6 @@ begin
       if Assigned(ACamera) and Assigned(ACamera.FScene) then begin
          FCamera:=ACamera;
          Include(FCamera.FChanges, ocTransformation);
-         if not (csLoading in ComponentState) then begin
-            RecreateWnd;
-            HandleNeeded;
-         end;
       end;
       Invalidate;
    end;

@@ -449,10 +449,10 @@ end;
 //
 procedure TPersistentObject.Assign(source : TPersistent);
 var
-   ms : TMemoryStream;
+   ms : TStringStream;  // faster than a TMemoryStream...
 begin
    if source.ClassType=Self.ClassType then begin
-      ms:=TMemoryStream.Create;
+      ms:=TStringStream.Create('');
       try
          TPersistentObject(source).SaveToStream(ms);
          ms.Position:=0;

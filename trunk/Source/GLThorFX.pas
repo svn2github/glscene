@@ -1,4 +1,5 @@
-//    12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX) 
+//    12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
+//                    Fixed leaks (colors) 
 //
 unit GLThorFX;       //--René Lindsay 09/03/2001--
 
@@ -194,6 +195,8 @@ begin
    DeRegisterManager(Self);
    FreeMem(FThorpoints);
    FClients.Free;
+   FInnerColor.Free;
+   FOuterColor.Free;
 //   FThorDir.Free;
 //   FWildness.Free;
    FTarget.Free;

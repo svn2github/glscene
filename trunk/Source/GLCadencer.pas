@@ -4,6 +4,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>12/08/01 - Egg - Protection against "timer flood"
       <li>19/07/01 - Egg - Fixed Memory Leak in RegisterASAPCadencer,
                            Added speed limiter TASAPHandler.WndProc
       <li>01/02/01 - Egg - Fixed "Freezing" when Enabled set to False
@@ -139,6 +140,7 @@ type
    TASAPHandler = class
    	FWindowHandle : HWND;
       FTooFastCounter : Integer;
+      FTimer : Cardinal;
 
    	procedure WndProc(var Msg: TMessage);
 
@@ -200,6 +202,8 @@ end;
 //
 destructor TASAPHandler.Destroy;
 begin
+   if FTimer<>0 then
+      KillTimer(FWindowHandle, FTimer);
  	DeallocateHWnd(FWindowHandle);
    inherited Destroy;
 end;
@@ -214,11 +218,16 @@ var
    cad : TGLCadencer;
 begin
    with Msg do begin
+      if Msg=WM_TIMER then begin
+         KillTimer(FWindowHandle, FTimer);
+         FTimer:=0;
+      end;
       if (Msg<>WM_TIMER) and (Cardinal(GetMessageTime)=GetTickCount) then begin
          // if we're going too fast, "sleep" for 1 msec
          Inc(FTooFastCounter);
-         if FTooFastCounter>500 then begin
-            SetTimer(FWindowHandle, 1, 1, nil);
+         if FTooFastCounter>300 then begin
+            if FTimer=0 then
+               FTimer:=SetTimer(FWindowHandle, 1, 1, nil);
       		Result:=0;
             FTooFastCounter:=0;
             Exit;
