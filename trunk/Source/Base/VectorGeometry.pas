@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Geometry<p>
+{: VectorGeometry<p>
 
 	Base classes and structures for GLScene.<p>
 
@@ -32,6 +32,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>26/10/03 - EG - Renamed from "Geometry.pas" to "VectorGeometry.pas"
       <li>17/10/03 - EG - Optimized Min/MaxInteger, some of the Min/MaxFloat
       <li>13/08/03 - SG - Added TQuaternionArray, PQuaternionArray and PQuaternion
       <li>21/07/03 - EG - Added RoundInt, faster Round/Round64, updated Power
@@ -50,7 +51,7 @@
                           now considers the matrix as 4x3 (was 3x3)
       <li>21/08/02 - EG - Added Pack/UnPackRotationMatrix
       <li>13/08/02 - EG - Added Area functions
-      <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits 
+      <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits
       <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)
       <li>22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
       <li>12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
@@ -109,7 +110,7 @@
                           Added homogeneous vector consts, VectorSpacing
    </ul>
 }
-unit Geometry;
+unit VectorGeometry;
 
 // This unit contains many needed types, functions and procedures for
 // quaternion, vector and matrix arithmetics. It is specifically designed
