@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>08/07/03 - EG - Fixed puny bug in skeletal normals transformation 
       <li>05/06/03 - SG - Split SMD, MD2, 3DS, PLY, TIN and GTS code into separate units,
                           FileFormats\GLFile???.pas
       <li>16/05/03 - SG - Fixed OpenGL error caused by glColorMaterial in TMeshObject.BuildList
@@ -3722,7 +3723,7 @@ begin
          Vertices.List[i]:=VectorTransform(refVertices.List[i], bone.GlobalMatrix);
          PAffineVector(@n)^:=refNormals.List[i];
          nt:=VectorTransform(n, bone.GlobalMatrix);
-         Normals.List[i]:=PAffineVector(@n)^;
+         Normals.List[i]:=PAffineVector(@nt)^;
       end;
    end else begin
       // multiple bones per vertex
