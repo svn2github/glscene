@@ -5,6 +5,7 @@
    materials/mirror demo before using this component.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>25/10/02 - EG - Fixed Stencil cleanup
       <li>22/02/01 - EG - Fixed change notification,
                           Fixed special effects support (PFX, etc.) 
       <li>07/12/01 - EG - Creation
@@ -140,10 +141,11 @@ begin
          // "Render" stencil mask
          if MirrorOptions<>[] then begin
             if (moUseStencil in MirrorOptions) then begin
-               glClearStencil(1);
+               glClearStencil(0);
+               glClear(GL_STENCIL_BUFFER_BIT);
                glEnable(GL_STENCIL_TEST);
-               glStencilFunc(GL_ALWAYS, 0, 0);
-               glStencilOp(GL_ZERO, GL_KEEP, GL_ZERO);
+               glStencilFunc(GL_ALWAYS, 1, 1);
+               glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
             end;
             if (moOpaque in MirrorOptions) then begin
                bgColor:=ConvertWinColor(Scene.CurrentBuffer.BackgroundColor);
@@ -159,7 +161,7 @@ begin
             glDepthMask(True);
 
             if (moUseStencil in MirrorOptions) then begin
-               glStencilFunc(GL_EQUAL, 0, 1);
+               glStencilFunc(GL_EQUAL, 1, 1);
                glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             end;
 
@@ -210,14 +212,6 @@ begin
 
          rci.cameraPosition:=cameraPosBackup;
          rci.cameraDirection:=cameraDirectionBackup;
-
-         if moMirrorPlaneClip in MirrorOptions then begin
-            glDisable(GL_CLIP_PLANE0);
-         end;
-
-         if moUseStencil in MirrorOptions then begin
-            glDisable(GL_STENCIL_TEST);
-         end;
 
          // Restore to "normal"
          Scene.CurrentBuffer.PopModelViewMatrix;
