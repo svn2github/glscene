@@ -3,6 +3,8 @@
    Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>01/06/03 - JAJ - Added notification to movingobject...
+      <li>01/06/03 - fig - CurrentHangle implementet...
       <li>14/07/02 - EG - InvertMouse (Joen A. Joensen)
       <li>18/03/02 - EG - Added MouseLookActive property, Fixed framerate dependency
       <li>15/03/02 - JAJ - Structure Change - Mouselook moved to newly created TGLUserInterface.
@@ -47,12 +49,14 @@ type
          FAutoUpdateObject : Boolean;
          FMaxAngle         : Single;
          FMinAngle         : Single;
-         FCurrentAngle     : Single;
+         FCurrentVAngle    : Single;
+         FCurrentHAngle    : Single;
          FAngleLock        : Boolean;
       public
          Constructor Create(AOwner : TComponent); override;
          Destructor  Destroy; override;
          Procedure   SetObject(NewObject : TGLBaseSceneObject);
+         procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
          Procedure   SetUseVirtualUp(UseIt : Boolean);
          Procedure   SetVirtualUp(Up : TGLCoordinates);
          Function    CalcRight : TVector;
@@ -67,6 +71,9 @@ type
 
          Procedure   LoadState(Stream : TStream);
          Procedure   SaveState(Stream : TStream);
+
+         property   CurrentVAngle  : Single read FCurrentVAngle;
+         property   CurrentHAngle  : Single read FCurrentHAngle;
       published
          property    VirtualUp    : TGLCoordinates read FVirtualUp write SetVirtualUp;
          property    MovingObject : TGLBaseSceneObject read FObject write SetObject;
@@ -75,6 +82,7 @@ type
          property    MaxAngle     : Single read FMaxAngle write FMaxAngle;
          property    MinAngle     : Single read FMinAngle write FMinAngle;
          property    AngleLock    : Boolean read FAngleLock write FAngleLock;
+
    end;
 
 	// TGLUserInterface
@@ -145,7 +153,8 @@ Constructor TGLNavigator.Create(AOwner : TComponent);
 Begin
   inherited;
   FVirtualUp    := TGLCoordinates.Create(Self);
-  FCurrentAngle := 0;
+  FCurrentVAngle := 0;
+  FCurrentHAngle := 0;
 End;
 
 Destructor  TGLNavigator.Destroy;
@@ -158,18 +167,38 @@ End;
 
 Procedure   TGLNavigator.SetObject(NewObject : TGLBaseSceneObject);
 Begin
-  FObject := NewObject;
-  If not Assigned(FObject) then Exit;
-  if csdesigning in componentstate then
+  If FObject <> NewObject then
   Begin
-    If VectorLength(FVirtualUp.AsVector) = 0 then
-    Begin
-      FVirtualUp.AsVector := FObject.Up.AsVector;
-    End;
-    Exit;
-  End;
+    If Assigned(FObject) then
+      FObject.RemoveFreeNotification(Self);
 
-  If FUseVirtualUp Then FVirtualRight := CalcRight;
+    FObject := NewObject;
+    If Assigned(FObject) then
+    Begin
+      if csdesigning in componentstate then
+      Begin
+        If VectorLength(FVirtualUp.AsVector) = 0 then
+        Begin
+          FVirtualUp.AsVector := FObject.Up.AsVector;
+        End;
+        Exit;
+      End;
+
+      If FUseVirtualUp Then FVirtualRight := CalcRight;
+
+      FObject.FreeNotification(Self);
+    End;
+  End;
+End;
+
+procedure   TGLNavigator.Notification(AComponent: TComponent; Operation: TOperation);
+
+Begin
+  If Operation = opRemove then
+  If AComponent = FObject then
+    MovingObject := Nil;
+
+  inherited;
 End;
 
 Function    TGLNavigator.CalcRight : TVector;
@@ -192,6 +221,11 @@ Var
 
 Begin
 
+  FCurrentHAngle:=(FCurrentHAngle-Angle);
+  if FCurrentHAngle>360 then
+    FCurrentHAngle:=FCurrentHAngle-360;
+  if FCurrentHAngle<0 then
+    FCurrentHAngle:=FCurrentHAngle+360;
   Angle := DegToRad(Angle); {make it ready for Cos and Sin }
   If FUseVirtualUp Then
   Begin
@@ -215,21 +249,21 @@ Var
 Begin
   If FAngleLock then
   Begin
-    CosAngle := FCurrentAngle+Angle; {used as a temp angle, to save stack}
+    CosAngle := FCurrentVAngle+Angle; {used as a temp angle, to save stack}
     If CosAngle > FMaxAngle then
     Begin
-      If FCurrentAngle = FMaxAngle then Exit;
+      If FCurrentVAngle = FMaxAngle then Exit;
       CosAngle := FMaxAngle;
     End else
     Begin
       If CosAngle < FMinAngle then
       Begin
-        If FCurrentAngle = FMinAngle then Exit;
+        If FCurrentVAngle = FMinAngle then Exit;
         CosAngle := FMinAngle;
       End;
     End;
   End;
-  FCurrentAngle := CosAngle; {CosAngle temp, use stopped}
+  FCurrentVAngle := CosAngle; {CosAngle temp, use stopped}
 
   Angle := DegToRad(Angle); {make it ready for Cos and Sin }
   SinCos(Angle,SinAngle,CosAngle);
@@ -267,7 +301,8 @@ Var
   A : Single;
 
 Begin
-  FCurrentAngle     := 0;
+  FCurrentVAngle     := 0;
+  FCurrentHAngle     := 0;
 
   R := CalcRight;
   A := VectorAngleCosine(AffineVectorMake(MovingObject.Up.AsVector), AffineVectorMake(VirtualUp.AsVector));
@@ -322,7 +357,9 @@ Begin
   Stream.Read(S,SizeOf(Single));
   FMinAngle := S;
   Stream.Read(S,SizeOf(Single));
-  FCurrentAngle := S;
+  FCurrentVAngle := S;
+  Stream.Read(S,SizeOf(Single));
+  FCurrentHAngle := S;
 End;
 
 Procedure   TGLNavigator.SaveState(Stream : TStream);
@@ -347,7 +384,9 @@ Begin
   Stream.Write(S,SizeOf(Single));
   S := FMinAngle;
   Stream.Write(S,SizeOf(Single));
-  S := FCurrentAngle;
+  S := FCurrentVAngle;
+  Stream.Write(S,SizeOf(Single));
+  S := FCurrentHAngle;
   Stream.Write(S,SizeOf(Single));
 End;
 
