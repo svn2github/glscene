@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
       <li>03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
       <li>25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
       <li>10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
@@ -1115,7 +1116,10 @@ begin
    else begin
       ix:=Trunc(x);  x:=Frac(x);
       iy:=Trunc(y);  y:=Frac(y);
-      if x+y<=1 then begin
+
+{
+// Old TopLeft/BottomRight code...
+     if x+y<=1 then begin
          // top-left triangle
          h1:=Height(ix,    iy);
          h2:=Height(ix+1,  iy);
@@ -1127,7 +1131,23 @@ begin
          h2:=Height(ix,    iy+1);
          h3:=Height(ix+1,  iy);
          Result:=h1+(h2-h1)*(1-x)+(h3-h1)*(1-y);
-      end;
+      end;{}
+// New TopRight/BottomLeft code...
+      if x > y then begin
+         // top-right triangle
+         h1:=Height(ix+1,  iy);
+         h2:=Height(ix,    iy);
+         h3:=Height(ix+1,  iy+1);
+         Result:=h1+(h2-h1)*(1-x)+(h3-h1)*y;
+      end else begin
+         // bottom-left triangle
+         h1:=Height(ix,    iy+1);
+         h2:=Height(ix+1,  iy+1);
+         h3:=Height(ix,    iy);
+         Result:=h1+(h2-h1)*(x)+(h3-h1)*(1-y);
+      end;{}
+
+
    end;
 end;
 
