@@ -32,7 +32,8 @@ package GLScene7;
 requires
   vcl,
   designide,
-  rtl;
+  rtl,
+  vcljpg;
 
 {%File '..\Source\GLScene.inc'}
 
@@ -194,6 +195,10 @@ contains
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
   GLFeedback in '..\Source\GLFeedback.pas',
   DDS in '..\Source\FileFormats\DDS.pas',
-  DXTC in '..\Source\FileFormats\DXTC.pas';
+  DXTC in '..\Source\FileFormats\DXTC.pas',
+  GLMaterialScript in '..\Source\GLMaterialScript.pas',
+  GLDCEMisc in '..\Source\GLDCEMisc.pas',
+  GLEllipseCollision in '..\Source\GLEllipseCollision.pas',
+  GLDCE in '..\Source\GLDCE.pas';
 
 end.
