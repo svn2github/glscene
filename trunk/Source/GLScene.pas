@@ -1144,6 +1144,7 @@ type
          FFocalLength: Single;
          FDepthOfView: Single;
          FNearPlane: Single;                  // nearest distance to the camera
+         FNearPlaneBias : Single;             // scaling bias applied to near plane
          FViewPortRadius : Single;            // viewport bounding radius per distance unit
          FTargetObject : TGLBaseSceneObject;
          FLastDirection : TVector; // Not persistent
@@ -1161,6 +1162,8 @@ type
          procedure SetCameraStyle(const val : TGLCameraStyle);
          procedure SetSceneScale(value : Single);
          function StoreSceneScale : Boolean;
+         procedure SetNearPlaneBias(value : Single);
+         function StoreNearPlaneBias : Boolean;
 
       public
          { Public Declarations }
@@ -1246,6 +1249,12 @@ type
             This is a linear 2D scaling of the camera's output, allows for
             linear zooming (use FocalLength for lens zooming). }
          property SceneScale : Single read FSceneScale write SetSceneScale stored StoreSceneScale;
+         {: Scaling bias applied to near-plane calculation.<p>
+            Values inferior to one will move the nearplane nearer, and also
+            reduce medium/long range Z-Buffer precision, values superior
+            to one will move the nearplane farther, and also improve medium/long
+            range Z-Buffer precision. }
+         property NearPlaneBias : Single read FNearPlaneBias write SetNearPlaneBias stored StoreNearPlaneBias;
          {: If set, camera will point to this object.<p>
             When camera is pointing an object, the Direction vector is ignored
             and the Up vector is used as an absolute vector to the up. }
@@ -2967,29 +2976,14 @@ const
    cNbSegments = 21;
 var
    i, j : Integer;
-   ir, tr, d, r, vr, s, c, angleFactor : Single;
+   d, r, vr, s, c, angleFactor : Single;
    sVec, tVec : TAffineVector;
 begin
    r:=BoundingSphereRadiusUnscaled;
    d:=VectorLength(silhouetteParameters.SeenFrom);
    // determine visible radius
    case silhouetteParameters.Style of
-      ssOmni : begin
-         ir:=Sqrt(Sqr(d)-Sqr(r));
-         tr:=(Sqr(d)+Sqr(r)-Sqr(ir))/(2*ir);
-{
-         ir² + r² = d²
-         r² + tr² = vr²
-         vr² + d² = (ir+tr)² = ir² + 2.ir.tr + tr²
-
-         ir² + 2.ir.tr + tr² = d² + r² + tr²
-         2.ir.tr = d² + r² - ir²
-                                     }
-
-         vr:=Sqrt(Sqr(r)+Sqr(tr));
-{         r2:=Sqr(r);
-         vr:=Sqrt(r2-Sqr(r2)*r2/(4*Sqr(d)));}
-      end;
+      ssOmni     : vr:=SphereVisibleRadius(d, r);
       ssParallel : vr:=r;
    else
       Assert(False);
@@ -3704,7 +3698,6 @@ begin
       if Assigned(Parent) then
          newPos:=Parent.AbsoluteToLocal(newPos);
       Position.AsVector:=newPos;
-      TransformationChanged;
    end;
 end;
 
@@ -4547,6 +4540,7 @@ begin
    inherited Create(aOwner);
    FFocalLength:=50;
    FDepthOfView:=100;
+   FNearPlaneBias:=1;
    FDirection.Initialize(VectorMake(0, 0, -1, 0));
    FCameraStyle:=csPerspective;
    FSceneScale:=1;
@@ -4651,8 +4645,8 @@ begin
       // in OGL is the lower left corner
 
       if CameraStyle in [csPerspective, csInfinitePerspective] then
-         f:=1/(Width*FSceneScale)
-      else f:=100/(focalLength*Width*FSceneScale);
+         f:=FNearPlaneBias/(Width*FSceneScale)
+      else f:=100*FNearPlaneBias/(focalLength*Width*FSceneScale);
 
       // calculate window/viewport ratio for right extent
       Ratio:=(2 * Viewport.Width + 2 * Viewport.Left - Width) * f;
@@ -4666,8 +4660,8 @@ begin
       Left:=-Ratio * Width / (2 * MaxDim);
 
       if CameraStyle in [csPerspective, csInfinitePerspective] then
-         f:=1/(Height*FSceneScale)
-      else f:=100/(focalLength*Height*FSceneScale);
+         f:=FNearPlaneBias/(Height*FSceneScale)
+      else f:=100*FNearPlaneBias/(focalLength*Height*FSceneScale);
 
       // top extent (keep in mind the origin is left lower corner):
       Ratio:=(2 * Viewport.Height + 2 * Viewport.Top - Height) * f;
@@ -4677,7 +4671,7 @@ begin
       Ratio:=(Height - 2 * Viewport.Top) * f;
       Bottom:=-Ratio * Height / (2 * MaxDim);
 
-      FNearPlane:=FFocalLength * 2 * DPI / (25.4 * MaxDim);
+      FNearPlane:=FFocalLength * 2 * DPI / (25.4 * MaxDim) * FNearPlaneBias;
       zFar:=FNearPlane + FDepthOfView;
 
       // finally create view frustum (perspective or orthogonal)
@@ -5016,6 +5010,24 @@ end;
 function TGLCamera.StoreSceneScale : Boolean;
 begin
    Result:=(FSceneScale<>1);
+end;
+
+// SetNearPlaneBias
+//
+procedure TGLCamera.SetNearPlaneBias(value : Single);
+begin
+   if value<=0 then value:=1;
+   if FNearPlaneBias<>value then begin
+      FNearPlaneBias:=value;
+      NotifyChange(Self);
+   end;
+end;
+
+// StoreNearPlaneBias
+//
+function TGLCamera.StoreNearPlaneBias : Boolean;
+begin
+   Result:=(FNearPlaneBias<>1);
 end;
 
 // DoRender
@@ -7216,7 +7228,6 @@ begin
          glRasterPos2i(-50, 0);
          glDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
                       GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
-         glFlush;
          RenderingContext.SwapBuffers;
       finally
          RenderingContext.Deactivate;
@@ -7244,7 +7255,6 @@ begin
       // render
       DoBaseRender(FViewport, RenderDPI, dsRendering);
       CheckOpenGLError;
-      glFlush;
       RenderingContext.SwapBuffers;
 
       // yes, calculate average frames per second...
