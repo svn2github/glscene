@@ -287,56 +287,62 @@ function TGLTerrainRenderer.RayCastIntersect(const rayStart, rayVector : TVector
                                            intersectNormal : PVector = nil) : Boolean;
 var
    p1, d, p2, p3 : TVector;
-   step, i, h, minH, maxH : Single;
+   step, i, h, minH, maxH, p1height : Single;
    startedAbove : Boolean;
    failSafe : Integer;
+   AbsX, AbsY, AbsZ : TVector;
 begin
    Result:=False;
    if Assigned(HeightDataSource) then begin
       step:=(Scale.X+Scale.Y); //Initial step size guess
       i:=step;
       d:=VectorNormalize(rayVector);
-      startedAbove:=((InterpolatedHeight(rayStart)-rayStart[1])<0);
+      AbsZ:=VectorNormalize(LocalToAbsolute(ZHMGVector));
+      startedAbove:=((InterpolatedHeight(rayStart)-VectorDotProduct(rayStart, AbsZ))<0);
       maxH:=Scale.Z*256;
       minH:=-Scale.Z*256;
       failSafe:=0;
       while True do begin
          p1:=VectorCombine(rayStart, d, 1, i);
          h:=InterpolatedHeight(p1);
-         if Abs(h-p1[1])<Scale.Z then begin //Need a tolerance variable here (how close is good enough?)
+         p1height:=VectorDotProduct(AbsZ, p1);
+         if Abs(h-p1height)<0.1 then begin //Need a tolerance variable here (how close is good enough?)
             Result:=True;
             Break;
          end else begin
             if startedAbove then begin
-               if h<p1[1] then
+               if h<p1height then
                   i:=i+step;
-               if (h-p1[1])>0 then begin
+               if (h-p1height)>0 then begin
                   step:=step*0.5;
                   i:=i-step;
                end;
             end else begin
-               if h>p1[1] then
+               if h>p1height then
                   i:=i+step;
             end;
          end;
          Inc(failSafe);
          if failSafe>1024 then Break;
-         if d[1]<0 then begin
+         if VectorDotProduct(AbsZ, d)<0 then begin
             if h<minH then Exit
          end else if h>maxH then Exit;
       end;
 
       if Result then begin
+         p1:=VectorAdd(p1, VectorScale(AbsZ, InterpolatedHeight(p1)-VectorDotProduct(p1,AbsZ)));
          if Assigned(intersectPoint) then
             intersectPoint^:=p1;
 
          // Calc Normal
          if Assigned(intersectNormal) then begin
             // Get 2 nearby points for cross-product
-            p2:=VectorMake(p1[0]-0.1, 0, p1[2]);
-            p2[1]:=InterpolatedHeight(p2);
-            p3:=VectorMake(p1[0], 0, p1[2]-0.1);
-            p3[1]:=InterpolatedHeight(p3);
+            AbsX:=VectorNormalize(LocalToAbsolute(XHMGVector));
+            AbsY:=VectorNormalize(LocalToAbsolute(YHMGVector));
+            p2:=VectorAdd(p1, VectorScale(AbsX, 0.1));
+            p2:=VectorAdd(p2, VectorScale(AbsZ, InterpolatedHeight(p2)-VectorDotProduct(p2,AbsZ)));
+            p3:=VectorAdd(p1, VectorScale(AbsY, 0.1));
+            p3:=VectorAdd(p3, VectorScale(AbsZ, InterpolatedHeight(p3)-VectorDotProduct(p3,AbsZ)));
 
             intersectNormal^:=VectorNormalize(VectorCrossProduct(VectorSubtract(p1, p2),
                                                                  VectorSubtract(p3, p1)));
