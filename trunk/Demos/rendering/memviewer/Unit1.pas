@@ -26,7 +26,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, GLScene, StdCtrls, GLObjects, GLMisc, ExtCtrls, GLCadencer,
-  GLTexture, JPeg, GLWin32Viewer;
+  GLTexture, JPeg, GLWin32Viewer, OpenGL12;
 
 type
   TForm1 = class(TForm)
@@ -86,6 +86,12 @@ end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
 begin
+   if not WGL_ARB_pbuffer then begin
+      ShowMessage( 'WGL_ARB_pbuffer not supported...'#13#10#13#10
+                  +'Get newer graphics hardware or try updating your drivers!');
+      GLSceneViewer1.AfterRender:=nil;
+      Exit;
+   end;
    Inc(n);
    try
       if n>=textureFramerateRatio then begin
@@ -96,7 +102,7 @@ begin
          n:=0;
       end;
    except
-      // pbuffer not supported...
+      // pbuffer not supported... catchall for exotic ICDs...
       GLSceneViewer1.AfterRender:=nil;
       raise;
    end;
