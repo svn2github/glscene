@@ -135,7 +135,7 @@ uses
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
    GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
    GLTeapot, GLPolyhedron, GLGeomObjects, GLTextureImageEditors, GLMultiProxy,
-   GLSkyBox,
+   GLSkyBox, GLState,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,

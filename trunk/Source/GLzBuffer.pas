@@ -56,7 +56,7 @@ interface
 
 uses Windows, Classes, Graphics, GLMisc, OpenGL1x, GLScene, VectorGeometry, GLGraphics,
      Dialogs, SysUtils, GLObjects, GLBitmapFont, xopengl, GLTexture, GLWin32Viewer,
-     GLContext, GLBehaviours, XCollection;
+     GLContext, GLBehaviours, XCollection, GLState;
 
 type
   TZArray = array [0..MaxInt shr 3] of Single;

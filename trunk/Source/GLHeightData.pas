@@ -525,7 +525,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, Windows, GLMisc, ApplicationFileIO;
+uses SysUtils, Windows, GLMisc, ApplicationFileIO, GLUtils;
 
 // ------------------
 // ------------------ THeightDataSourceThread ------------------

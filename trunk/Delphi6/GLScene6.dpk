@@ -173,6 +173,8 @@ contains
   GLTree in '..\Source\GLTree.pas',
   GLMeshCSG in '..\Source\GLMeshCSG.pas',
   GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas',
-  GLProxyObjects in '..\Source\GLProxyObjects.pas';
+  GLProxyObjects in '..\Source\GLProxyObjects.pas',
+  GLState in '..\Source\GLState.pas',
+  GLUtils in '..\Source\GLUtils.pas';
 
 end.

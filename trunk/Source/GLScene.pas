@@ -243,7 +243,7 @@ interface
 uses
    Classes, GLMisc, GLTexture, SysUtils, VectorGeometry, XCollection,
    GLGraphics, GeometryBB, GLContext, GLCrossPlatform, VectorLists,
-   GLSilhouette, PersistentClasses;
+   GLSilhouette, PersistentClasses, GLState;
 
 type
 

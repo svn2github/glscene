@@ -66,7 +66,7 @@ implementation
 
 {$R *.DFM}
 
-uses SysUtils, GLMisc;
+uses SysUtils, GLMisc, GLState;
 
 // Create
 //

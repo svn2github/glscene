@@ -159,7 +159,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLMisc, XOpenGL;
+uses SysUtils, OpenGL1x, GLMisc, XOpenGL, GLUtils;
 
 // ------------------
 // ------------------ TGLTerrainRenderer ------------------

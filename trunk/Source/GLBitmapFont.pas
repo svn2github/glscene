@@ -25,7 +25,7 @@ unit GLBitmapFont;
 interface
 
 uses Classes, GLScene, VectorGeometry, GLMisc, StdCtrls, GLContext, GLCrossPlatform,
-   GLTexture;
+   GLTexture, GLState;
 
 type
 
@@ -300,7 +300,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLGraphics, XOpenGL;
+uses SysUtils, OpenGL1x, GLGraphics, XOpenGL, GLUtils;
 
 // ------------------
 // ------------------ TBitmapFontRange ------------------

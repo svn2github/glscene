@@ -1636,7 +1636,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils,
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, MeshUtils, GLState, GLUtils,
   GLBaseMeshSilhouette;
 
 var

@@ -531,7 +531,7 @@ Function  UnpressGroup(CurrentObject : TGLBaseSceneObject; AGroupID : Integer) :
 
 implementation
 
-uses GLObjects;
+uses GLObjects, GLState, GLUtils;
 
 Function  UnpressGroup(CurrentObject : TGLBaseSceneObject; AGroupID : Integer) : Boolean;
 

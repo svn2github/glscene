@@ -19,7 +19,7 @@ interface
 
 uses VectorGeometry;
 
-{$i GLScene.inc}
+{$i ../GLScene.inc}
 
 type
 

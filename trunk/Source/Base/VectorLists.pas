@@ -857,7 +857,7 @@ begin
       Assert(Cardinal(curIndex)<Cardinal(Count));
 {$ENDIF}
       if FItemSize=4 then
-         PInteger(@BufferItem)^:=PInteger(FBaseList[curIndex*FItemSize])^
+         PInteger(BufferItem)^:=PInteger(FBaseList[curIndex*FItemSize])^
       else System.Move(FBaseList[curIndex*FItemSize], BufferItem[0], FItemSize);
       if curIndex<newIndex then begin
          // curIndex+1 necessarily exists since curIndex<newIndex and newIndex<Count
@@ -869,7 +869,7 @@ begin
                      (curIndex-newIndex-1)*FItemSize);
       end;
       if FItemSize=4 then
-         PInteger(@FBaseList[newIndex*FItemSize])^:=PInteger(@BufferItem)^
+         PInteger(@FBaseList[newIndex*FItemSize])^:=PInteger(BufferItem)^
       else System.Move(BufferItem[0], FBaseList[newIndex*FItemSize], FItemSize);
    end;
 end;

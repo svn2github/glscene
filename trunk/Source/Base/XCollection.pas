@@ -22,7 +22,7 @@ interface
 
 uses Classes, SysUtils;
 
-{$i GLScene.inc}
+{$i ../GLScene.inc}
 
 type
 
@@ -244,7 +244,7 @@ begin
 	if Assigned(vXCollectionItemClasses) then
 		for i:=0 to vXCollectionItemClasses.Count-1 do
 			if TXCollectionItemClass(vXCollectionItemClasses[i]).ClassName=className then begin
-				Result:=vXCollectionItemClasses[i];
+				Result:=TXCollectionItemClass(vXCollectionItemClasses[i]);
 				Break;
 			end;
 end;
@@ -526,7 +526,7 @@ begin
 					Assert(Assigned(XCollectionItemClass),
                       'Class '+cName+' unknown. Add the relevant unit to your "uses".');
 					classList.Add(XCollectionItemClass);
-				end else XCollectionItemClass:=classList[ReadInteger];
+				end else XCollectionItemClass:=TXCollectionItemClass(classList[ReadInteger]);
 				XCollectionItem:=XCollectionItemClass.Create(Self);
             XCollectionItem.ReadFromFiler(reader);
 			end;

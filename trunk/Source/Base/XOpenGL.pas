@@ -34,7 +34,7 @@ unit XOpenGL;
 
 interface
 
-{$i GLScene.inc}
+{$i ../GLScene.inc}
 
 {.$define MULTITHREADOPENGL}
 

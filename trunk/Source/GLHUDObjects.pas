@@ -129,7 +129,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, OpenGL1x, GLGraphics, XOpenGL;
+uses SysUtils, OpenGL1x, GLGraphics, XOpenGL, GLState;
 
 // ------------------
 // ------------------ TGLHUDSprite ------------------

@@ -836,7 +836,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Consts, GLStrings, Spline, XOpenGL;
+uses Consts, GLStrings, Spline, XOpenGL, GLState;
 
 const
    cDefaultPointSize : Single = 1.0;

@@ -122,7 +122,7 @@ interface
 
 uses
   Classes, OpenGL1x, VectorGeometry, SysUtils, GLMisc, GLGraphics, GLContext,
-  GLCrossPlatform, PersistentClasses;
+  GLCrossPlatform, PersistentClasses, GLState;
 
 {$i GLScene.inc}
 
@@ -1457,7 +1457,7 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-uses GLScene, GLStrings, XOpenGL, ApplicationFileIO
+uses GLScene, GLStrings, XOpenGL, ApplicationFileIO, GLUtils
    {$ifdef WIN32}, Graphics{$endif} // for standard application colors
    ;
 

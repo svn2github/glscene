@@ -41,7 +41,7 @@ uses Classes,
 {$ifdef GLS_Graphics32_SUPPORT}
    GR32,
 {$endif}
-   GLMisc, OpenGL1x, GLCrossPlatform;
+   OpenGL1x, GLState, GLCrossPlatform;
 
 type
 
@@ -218,7 +218,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, VectorGeometry;
+uses SysUtils, VectorGeometry, GLUtils;
 
 // GammaCorrectRGBArray
 //
