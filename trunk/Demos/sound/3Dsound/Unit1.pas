@@ -102,7 +102,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
    // Load our sound sample
    GLSoundLibrary.Samples.AddFile('..\..\media\drumloop.wav');
-   GLSoundLibrary.Samples.AddFile('..\..\media\chimes2.wav');
+   GLSoundLibrary.Samples.AddFile('..\..\media\chimes.wav');
    GLSoundLibrary.Samples.AddFile('..\..\media\howl.mp3');
 end;
 
@@ -170,7 +170,7 @@ procedure TForm1.Button1Click(Sender: TObject);
 begin
    with TGLBSoundEmitter.Create(Mickey.Behaviours) do begin
       Source.SoundLibrary:=GLSoundLibrary;
-      Source.SoundName:='chimes2.wav';
+      Source.SoundName:='chimes.wav';
       Playing:=True;
    end;
 end;
