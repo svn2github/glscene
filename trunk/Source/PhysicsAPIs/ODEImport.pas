@@ -153,6 +153,9 @@ const
   {$IFDEF MACOS}
   ODEDLL = 'libode.dylib';
   {$ENDIF}
+  {$IFDEF DARWIN} // MacOS X
+  ODEDLL = 'libode.dylib';
+  {$ENDIF}
 
 type
   // ********************************************************************
@@ -1294,6 +1297,7 @@ dSolveLDLT}
   procedure dMassSetTriMeshTotal(var m: TdMass; total_mass: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external {$IFDEF __GPC__}name 'dMassSetTriMeshTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetZero(var m: TdMass); cdecl; external {$IFDEF __GPC__}name 'dMassSetZero'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassTranslate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dMassSetCone(var m : TdMass; const density, radius, length : TdReal); cdecl;
 
   //----- Rotation.h -----
   procedure dQFromAxisAndAngle (var q : TdQuaternion; const ax, ay ,az, angle : TdReal); cdecl; external {$IFDEF __GPC__}name 'dQFromAxisAndAngle'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1657,6 +1661,31 @@ begin
       ODEDebugGeomList.Add(result);
       End ;
 {$ENDIF}
+end;
+
+procedure dMassSetCone(var m : TdMass; const density, radius, length : TdReal); cdecl;
+var
+  ms, Rsqr, Lsqr,
+  Ixx, Iyy, Izz : TdReal;
+begin
+  // Calculate Mass
+  Rsqr:=radius*radius;
+  Lsqr:=length*length;
+  ms:=Pi*Rsqr*length*density/3;
+
+  // Calculate Mass Moments of Inertia about the Centroid
+  Ixx:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
+  Iyy:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
+  Izz:=0.3*ms*Rsqr;
+
+  // Set the ODE Mass parameters
+  with m do begin
+    mass:=ms;
+    c[0]:=0; c[1]:=0; c[2]:=0.25*length;
+    I[0]:=Ixx; I[1]:=0;   I[2]:=0;    I[4]:=0;
+    I[4]:=0;   I[5]:=Iyy; I[6]:=0;    I[7]:=0;
+    I[8]:=0;   I[9]:=0;   I[10]:=Izz; I[11]:=0;
+  end;
 end;
 
 function dCreateTerrainY(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl;

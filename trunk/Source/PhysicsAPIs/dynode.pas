@@ -44,7 +44,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 // was initiated by Martin Waldegger <martin.waldegger@chello.at> and
 // auto-created by mattias fagerlund.
 //
-// This version was auto-created on 2004-04-25.
+// This version was auto-created on 2004-05-11.
 
 
  {
@@ -156,6 +156,9 @@ const
   ODEDLL = 'libode.so';
   {$ENDIF}
   {$IFDEF MACOS}
+  ODEDLL = 'libode.dylib';
+  {$ENDIF}
+  {$IFDEF DARWIN} // MacOS X
   ODEDLL = 'libode.dylib';
   {$ENDIF}
 
@@ -1303,8 +1306,11 @@ var
   dMassSetTriMeshTotal: procedure(var m: TdMass; total_mass: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
   dMassSetZero: procedure(var m: TdMass); cdecl;
   dMassTranslate: procedure(var m: TdMass; x, y, z: TdReal); cdecl;
+  procedure dMassSetCone(var m : TdMass; const density, radius, length : TdReal); cdecl;
 
   //----- Rotation.h -----
+
+var
   dQFromAxisAndAngle: procedure(var q : TdQuaternion; const ax, ay ,az, angle : TdReal); cdecl;
   dRFromAxisAndAngle: procedure(var R : TdMatrix3; const ax, ay ,az, angle : TdReal); cdecl;
   dRSetIdentity: procedure(var R : TdMatrix3); cdecl;
@@ -1668,6 +1674,31 @@ begin
       ODEDebugGeomList.Add(result);
       End ;
 {$ENDIF}
+end;
+
+procedure dMassSetCone(var m : TdMass; const density, radius, length : TdReal); cdecl;
+var
+  ms, Rsqr, Lsqr,
+  Ixx, Iyy, Izz : TdReal;
+begin
+  // Calculate Mass
+  Rsqr:=radius*radius;
+  Lsqr:=length*length;
+  ms:=Pi*Rsqr*length*density/3;
+
+  // Calculate Mass Moments of Inertia about the Centroid
+  Ixx:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
+  Iyy:=0.15*ms*Rsqr+0.0375*ms*Lsqr;
+  Izz:=0.3*ms*Rsqr;
+
+  // Set the ODE Mass parameters
+  with m do begin
+    mass:=ms;
+    c[0]:=0; c[1]:=0; c[2]:=0.25*length;
+    I[0]:=Ixx; I[1]:=0;   I[2]:=0;    I[4]:=0;
+    I[4]:=0;   I[5]:=Iyy; I[6]:=0;    I[7]:=0;
+    I[8]:=0;   I[9]:=0;   I[10]:=Izz; I[11]:=0;
+  end;
 end;
 
 function dCreateTerrainY(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl;
