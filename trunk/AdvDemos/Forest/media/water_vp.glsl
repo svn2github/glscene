@@ -17,7 +17,7 @@ void main()
     EyeVec = gl_Vertex.xyz-EyePos.xyz;
 
     FogColor.rgb = gl_Fog.color.rgb;
-    FogColor.a = clamp((distance(EyePos.xyz, gl_Vertex.xyz)-gl_Fog.start)*gl_Fog.scale, 0, 1);
+    FogColor.a = clamp((distance(EyePos.xyz, gl_Vertex.xyz)-gl_Fog.start)*gl_Fog.scale, 0.0, 1.0);
 
     gl_TexCoord[0] = gl_TextureMatrix[0]*gl_Vertex;
     gl_TexCoord[1] = gl_Vertex*0.01+Time*0.02;
