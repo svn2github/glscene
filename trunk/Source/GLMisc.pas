@@ -239,6 +239,7 @@ type
          procedure Invert;
          procedure Scale(factor : Single);
          function  VectorLength : TGLFloat;
+         function  VectorNorm : TGLFloat;
          function  Equals(const aVector : TVector) : Boolean;
          procedure SetVector(const x, y, z : Single); overload;
          procedure SetVector(const x, y, z, w : Single); overload;
@@ -1300,6 +1301,13 @@ end;
 function TGLCoordinates.VectorLength : TGLFloat;
 begin
    Result:=Geometry.VectorLength(FCoords);
+end;
+
+// VectorNorm
+//
+function TGLCoordinates.VectorNorm : TGLFloat;
+begin
+   Result:=Geometry.VectorNorm(FCoords);
 end;
 
 // Equals
