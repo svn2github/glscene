@@ -3,6 +3,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>History : </b><font size=-1><ul>
+  <li>03/07/04 - LR - Updated for Linux
   <li>18/12/04 - PhP - Added support for deleting objects/effects/behaviours by pressing "Delete"
   <li>03/07/04 - LR - Make change for Linux
   <li>14/12/03 - EG - Paste fix (Mrqzzz)
@@ -236,10 +237,12 @@ implementation
 
 uses
 {$IFDEF MSWINDOWS}
-  GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer;
+  GLSceneRegister, GLStrings, Info, OpenGL1x, ClipBrd, GLWin32Viewer,
+  GLCrossPlatform;
 {$ENDIF}
 {$IFDEF LINUX}
-  GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer;
+  GLSceneRegister, GLStrings, Info, OpenGL1x, QClipbrd, GLLinuxViewer,
+  GLCrossPlatform;
 {$ENDIF}
 
 
@@ -1473,7 +1476,7 @@ end;
 
 procedure TGLSceneEditorForm.TreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if Key = VK_DELETE then begin
+  if Key = glKey_DELETE then begin
     Key := 0;
     ACDeleteObject.Execute;
   end;

@@ -1,37 +1,28 @@
 object InfoForm: TInfoForm
-  Left = 341
-  Top = 127
-  Width = 498
-  Height = 315
-  HorzScrollBar.Range = 497
-  HorzScrollBar.Visible = False
-  VertScrollBar.Range = 314
-  VertScrollBar.Visible = False
+  Left = 333
+  Top = 120
+  Width = 405
+  Height = 256
+  HorzScrollBar.Range = 404
+  VertScrollBar.Range = 255
   ActiveControl = PageControl
   BorderIcons = [biSystemMenu, biHelp]
+  BorderStyle = fbsToolWindow
   Caption = 'OpenGL Driver Info'
-  Color = clButton
-  Font.Color = clBlack
-  Font.Height = 13
-  Font.Name = 'Arial'
-  Font.Pitch = fpVariable
-  Font.Style = []
-  Font.Weight = 0
+  Color = clBackground
   KeyPreview = True
-  ParentFont = False
   Position = poScreenCenter
+  Scaled = False
   ShowHint = True
   OnClose = FormClose
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   PixelsPerInch = 75
-  TextHeight = 15
-  TextWidth = 7
   object CloseButton: TSpeedButton
     Left = 0
-    Top = 286
-    Width = 497
-    Height = 28
+    Top = 232
+    Width = 404
+    Height = 23
     Caption = '&Close'
     Flat = True
     Glyph.Data = {
@@ -53,9 +44,9 @@ object InfoForm: TInfoForm
   object PageControl: TPageControl
     Left = 0
     Top = 0
-    Width = 497
-    Height = 277
-    ActivePage = TabSheet1
+    Width = 404
+    Height = 225
+    ActivePage = Sheet1
     HotTrack = True
     TabOrder = 0
     object Sheet1: TTabSheet
@@ -63,20 +54,19 @@ object InfoForm: TInfoForm
       object Image1: TImage
         Left = 0
         Top = 0
-        Width = 489
-        Height = 247
+        Width = 396
+        Height = 195
         Align = alClient
       end
       object Label1: TLabel
-        Left = 12
-        Top = 12
-        Width = 119
-        Height = 17
+        Left = 10
+        Top = 10
+        Width = 83
+        Height = 19
         Caption = 'OpenGL vendor :'
-        Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -84,15 +74,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label2: TLabel
-        Left = 12
-        Top = 66
-        Width = 96
-        Height = 17
+        Left = 10
+        Top = 54
+        Width = 68
+        Height = 19
         Caption = 'Acceleration :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -100,15 +90,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label3: TLabel
-        Left = 12
-        Top = 95
-        Width = 93
-        Height = 17
+        Left = 10
+        Top = 77
+        Width = 67
+        Height = 19
         Caption = 'Version Info :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -116,15 +106,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label5: TLabel
-        Left = 12
-        Top = 122
-        Width = 120
-        Height = 17
+        Left = 10
+        Top = 99
+        Width = 85
+        Height = 19
         Caption = 'Double buffered :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -132,15 +122,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label6: TLabel
-        Left = 12
-        Top = 177
-        Width = 140
-        Height = 17
+        Left = 10
+        Top = 144
+        Width = 102
+        Height = 19
         Caption = 'Buffer switch mode :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -148,14 +138,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object VendorLabel: TLabel
-        Left = 169
-        Top = 12
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 10
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -163,14 +153,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object AccLabel: TLabel
-        Left = 169
-        Top = 66
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 54
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -178,14 +168,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object VersionLabel: TLabel
-        Left = 169
-        Top = 95
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 77
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -193,14 +183,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object CopyLabel: TLabel
-        Left = 169
-        Top = 177
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 144
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -208,14 +198,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object DoubleLabel: TLabel
-        Left = 169
-        Top = 122
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 99
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -223,15 +213,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label7: TLabel
-        Left = 12
-        Top = 149
-        Width = 114
-        Height = 17
+        Left = 10
+        Top = 121
+        Width = 81
+        Height = 19
         Caption = 'Stereo enabled :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -239,14 +229,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object StereoLabel: TLabel
-        Left = 169
-        Top = 149
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 121
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -254,15 +244,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label13: TLabel
-        Left = 12
-        Top = 39
-        Width = 74
-        Height = 17
+        Left = 10
+        Top = 32
+        Width = 51
+        Height = 19
         Caption = 'Renderer :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -270,14 +260,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object RendererLabel: TLabel
-        Left = 169
-        Top = 39
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 32
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -290,20 +280,20 @@ object InfoForm: TInfoForm
       object Image2: TImage
         Left = 0
         Top = 0
-        Width = 489
-        Height = 247
+        Width = 396
+        Height = 195
         Align = alClient
       end
       object Label8: TLabel
-        Left = 12
-        Top = 12
-        Width = 92
-        Height = 17
+        Left = 10
+        Top = 10
+        Width = 66
+        Height = 19
         Caption = 'Color buffer :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -311,15 +301,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label9: TLabel
-        Left = 12
-        Top = 41
-        Width = 95
-        Height = 17
+        Left = 10
+        Top = 33
+        Width = 68
+        Height = 19
         Caption = 'Depth buffer :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -327,15 +317,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label10: TLabel
-        Left = 12
-        Top = 68
-        Width = 101
-        Height = 17
+        Left = 10
+        Top = 55
+        Width = 73
+        Height = 19
         Caption = 'Stencil buffer :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -343,15 +333,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label11: TLabel
-        Left = 12
-        Top = 96
-        Width = 148
-        Height = 17
+        Left = 10
+        Top = 78
+        Width = 106
+        Height = 19
         Caption = 'Accumulation buffer :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -359,15 +349,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label12: TLabel
-        Left = 12
-        Top = 124
-        Width = 125
-        Height = 17
+        Left = 10
+        Top = 101
+        Width = 94
+        Height = 19
         Caption = 'Auxilliary buffers :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -375,14 +365,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object ColorLabel: TLabel
-        Left = 169
-        Top = 12
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 10
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -390,14 +380,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object DepthLabel: TLabel
-        Left = 169
-        Top = 41
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 33
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -405,14 +395,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object StencilLabel: TLabel
-        Left = 169
-        Top = 68
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 55
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -420,14 +410,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object AuxLabel: TLabel
-        Left = 169
-        Top = 124
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 101
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -435,14 +425,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object AccumLabel: TLabel
-        Left = 169
-        Top = 96
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 78
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -450,14 +440,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object SubLabel: TLabel
-        Left = 169
-        Top = 153
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 124
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -465,15 +455,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label37: TLabel
-        Left = 12
-        Top = 153
-        Width = 77
-        Height = 17
+        Left = 10
+        Top = 124
+        Width = 56
+        Height = 19
         Caption = 'Subpixels :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -481,15 +471,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label18: TLabel
-        Left = 12
-        Top = 180
-        Width = 144
-        Height = 17
+        Left = 10
+        Top = 146
+        Width = 102
+        Height = 19
         Caption = 'supported overlays :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -497,14 +487,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object OverlayLabel: TLabel
-        Left = 169
-        Top = 180
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 146
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -512,14 +502,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object UnderlayLabel: TLabel
-        Left = 169
-        Top = 209
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 170
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -527,15 +517,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label20: TLabel
-        Left = 12
-        Top = 209
-        Width = 154
-        Height = 17
+        Left = 10
+        Top = 170
+        Width = 108
+        Height = 19
         Caption = 'supported underlays :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -548,20 +538,20 @@ object InfoForm: TInfoForm
       object Image3: TImage
         Left = 0
         Top = 0
-        Width = 489
-        Height = 247
+        Width = 396
+        Height = 195
         Align = alClient
       end
       object Label14: TLabel
-        Left = 12
-        Top = 12
-        Width = 87
-        Height = 17
+        Left = 10
+        Top = 10
+        Width = 62
+        Height = 19
         Caption = 'Clip planes :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -569,15 +559,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label15: TLabel
-        Left = 12
-        Top = 41
-        Width = 124
-        Height = 17
+        Left = 10
+        Top = 33
+        Width = 87
+        Height = 19
         Caption = 'Evaluation order :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -585,15 +575,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label16: TLabel
-        Left = 12
-        Top = 68
-        Width = 104
-        Height = 17
+        Left = 10
+        Top = 55
+        Width = 73
+        Height = 19
         Caption = 'Light sources :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -601,15 +591,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label17: TLabel
-        Left = 12
-        Top = 96
-        Width = 90
-        Height = 17
+        Left = 10
+        Top = 78
+        Width = 65
+        Height = 19
         Caption = 'List nesting :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -617,14 +607,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object ClipLabel: TLabel
-        Left = 169
-        Top = 12
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 10
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -632,14 +622,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object EvalLabel: TLabel
-        Left = 169
-        Top = 41
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 33
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -647,14 +637,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object ListLabel: TLabel
-        Left = 169
-        Top = 96
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 78
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -662,14 +652,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object LightLabel: TLabel
-        Left = 169
-        Top = 68
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 55
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -677,15 +667,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label23: TLabel
-        Left = 12
-        Top = 124
-        Width = 123
-        Height = 17
+        Left = 10
+        Top = 101
+        Width = 90
+        Height = 19
         Caption = 'Modelview stack :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -693,14 +683,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object ModelLabel: TLabel
-        Left = 169
-        Top = 124
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 101
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -708,15 +698,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label25: TLabel
-        Left = 240
-        Top = 12
-        Width = 89
-        Height = 17
+        Left = 195
+        Top = 10
+        Width = 65
+        Height = 19
         Caption = 'Name stack :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -724,15 +714,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label26: TLabel
-        Left = 240
-        Top = 41
-        Width = 109
-        Height = 17
+        Left = 195
+        Top = 33
+        Width = 81
+        Height = 19
         Caption = 'Pixel map table:'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -740,15 +730,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label27: TLabel
-        Left = 240
-        Top = 68
-        Width = 122
-        Height = 17
+        Left = 195
+        Top = 55
+        Width = 86
+        Height = 19
         Caption = 'Projection stack :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -756,15 +746,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label28: TLabel
-        Left = 240
-        Top = 96
-        Width = 86
-        Height = 17
+        Left = 195
+        Top = 78
+        Width = 67
+        Height = 19
         Caption = 'Texture size:'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -772,15 +762,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label29: TLabel
-        Left = 240
-        Top = 124
-        Width = 101
-        Height = 17
+        Left = 195
+        Top = 101
+        Width = 76
+        Height = 19
         Caption = 'Texture stack :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -788,14 +778,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object NameLabel: TLabel
-        Left = 396
-        Top = 12
-        Width = 27
-        Height = 17
+        Left = 338
+        Top = 10
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -803,14 +793,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object PixelLabel: TLabel
-        Left = 396
-        Top = 41
-        Width = 27
-        Height = 17
+        Left = 338
+        Top = 33
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -818,14 +808,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object ProjLabel: TLabel
-        Left = 396
-        Top = 68
-        Width = 27
-        Height = 17
+        Left = 338
+        Top = 55
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -833,14 +823,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object TexStackLabel: TLabel
-        Left = 396
-        Top = 124
-        Width = 27
-        Height = 17
+        Left = 338
+        Top = 101
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -848,14 +838,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object TexSizeLabel: TLabel
-        Left = 396
-        Top = 96
-        Width = 27
-        Height = 17
+        Left = 338
+        Top = 78
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -863,15 +853,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label35: TLabel
-        Left = 12
-        Top = 153
-        Width = 156
-        Height = 17
+        Left = 10
+        Top = 124
+        Width = 112
+        Height = 19
         Caption = 'Viewport Dimensions :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -879,14 +869,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object ViewLabel: TLabel
-        Left = 169
-        Top = 153
-        Width = 27
-        Height = 17
+        Left = 160
+        Top = 124
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -894,15 +884,15 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object Label4: TLabel
-        Left = 240
-        Top = 153
-        Width = 99
-        Height = 17
+        Left = 195
+        Top = 124
+        Width = 74
+        Height = 19
         Caption = 'Texture units :'
         Font.CharSet = fcsLatin1
-        Font.Color = clBlack
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Color = clText
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -910,14 +900,14 @@ object InfoForm: TInfoForm
         Transparent = True
       end
       object TexUnitsLabel: TLabel
-        Left = 396
-        Top = 153
-        Width = 27
-        Height = 17
+        Left = 338
+        Top = 124
+        Width = 18
+        Height = 19
         Caption = '???'
         Font.Color = clTeal
-        Font.Height = 15
-        Font.Name = 'adobe-helvetica'
+        Font.Height = 11
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
         Masked = True
@@ -931,8 +921,8 @@ object InfoForm: TInfoForm
       object Extensions: TListBox
         Left = 0
         Top = 0
-        Width = 489
-        Height = 247
+        Width = 396
+        Height = 195
         Hint = 
           'Double-click and extension to go to its OpenGL Extension registr' +
           'y page'
@@ -940,11 +930,11 @@ object InfoForm: TInfoForm
         BorderStyle = bsNone
         Color = clActiveLight
         Font.Color = clMid
-        Font.Height = 15
-        Font.Name = 'Arial'
+        Font.Height = 12
+        Font.Name = 'Verdana'
         Font.Pitch = fpVariable
         Font.Style = [fsBold]
-        ItemHeight = 17
+        ItemHeight = 20
         ParentFont = False
         TabOrder = 0
         OnClick = ExtensionsClick
