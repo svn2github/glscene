@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/08/02 - Egg - Fixed src LocalMatrix computation on Assign
       <li>12/08/02 - Egg - Fixed Effects persistence 'Assert' issue (David Alcelay),
                            TGLSceneBuffer.PickObjects now preserves ProjMatrix 
       <li>13/07/02 - Egg - Fixed CurrentStates computation
@@ -2711,6 +2712,7 @@ begin
    if Source is TGLBaseSceneObject then begin
       DestroyHandles;
       FVisible:=TGLBaseSceneObject(Source).FVisible;
+      TGLBaseSceneObject(Source).RebuildMatrix;
       SetMatrix(TGLCustomSceneObject(Source).FLocalMatrix);
       FShowAxes:=TGLBaseSceneObject(Source).FShowAxes;
       FObjectsSorting:=TGLBaseSceneObject(Source).FObjectsSorting;
