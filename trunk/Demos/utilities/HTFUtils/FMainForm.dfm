@@ -97,6 +97,13 @@ object MainForm: TMainForm
       Height = 13
       Caption = 'Tile overlap'
     end
+    object Label8: TLabel
+      Left = 336
+      Top = 59
+      Width = 72
+      Height = 13
+      Caption = 'Filter to default:'
+    end
     object EDHTFName: TEdit
       Left = 72
       Top = 8
@@ -149,7 +156,7 @@ object MainForm: TMainForm
       TabOrder = 5
     end
     object EDDefaultZ: TEdit
-      Left = 408
+      Left = 416
       Top = 32
       Width = 49
       Height = 21
@@ -176,6 +183,15 @@ object MainForm: TMainForm
         'ow value in place of default value'
       TabOrder = 8
       Text = '0'
+    end
+    object EDZFilter: TEdit
+      Left = 416
+      Top = 56
+      Width = 157
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      TabOrder = 9
+      OnChange = EDZFilterChange
     end
   end
   object ToolBar: TToolBar

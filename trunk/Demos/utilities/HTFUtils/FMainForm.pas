@@ -84,6 +84,8 @@ type
     ODPath: TOpenDialog;
     Label7: TLabel;
     EDTileOverlap: TEdit;
+    Label8: TLabel;
+    EDZFilter: TEdit;
     procedure ACExitExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BUDEMPathClick(Sender: TObject);
@@ -102,10 +104,12 @@ type
     procedure EDDefaultZChange(Sender: TObject);
     procedure ACProcessExecute(Sender: TObject);
     procedure ACViewerExecute(Sender: TObject);
+    procedure EDZFilterChange(Sender: TObject);
   private
     { Private declarations }
     sources : array of TSrc;
     defaultZ : SmallInt;
+    filterZ : SmallInt;
 
     procedure Parse;
     procedure Cleanup;
@@ -255,6 +259,7 @@ begin
          Values['TileSize']:=EDTileSize.Text;
          Values['TileOverlap']:=EDTileOverlap.Text;
          Values['DefaultZ']:=EDDefaultZ.Text;
+         Values['FilterZ']:=EDZFilter.Text;
          Values['DEMPath']:=EDDEMPath.Text;
          sg:=TStringList.Create;
          for i:=1 to StringGrid.RowCount-1 do
@@ -282,6 +287,7 @@ begin
          EDTileSize.Text:=Values['TileSize'];
          EDTileOverlap.Text:=Values['TileOverlap'];
          EDDefaultZ.Text:=Values['DefaultZ'];
+         EDZFilter.Text:=Values['FilterZ'];
          EDDEMPath.Text:=Values['DEMPath'];
          sg:=TStringList.Create;
          sg.CommaText:=Values['DEMs'];
@@ -313,6 +319,13 @@ end;
 procedure TMainForm.EDDefaultZChange(Sender: TObject);
 begin
    defaultZ:=StrToIntDef(EDDefaultZ.Text, 0);
+   if EDZFilter.Text='' then
+      filterZ:=defaultZ;
+end;
+
+procedure TMainForm.EDZFilterChange(Sender: TObject);
+begin
+   filterZ:=StrToIntDef(EDZFilter.Text, defaultZ);
 end;
 
 procedure TMainForm.Parse;
@@ -436,6 +449,11 @@ begin
          if rx+n>src.w then
             n:=src.w-rx;
          SrcExtract(src, rx, ry, n, dest);
+         if filterZ<>defaultZ then begin
+            for i:=0 to n-1 do
+               if PSmallIntArray(dest)[i]=filterZ then
+                  PSmallIntArray(dest)[i]:=defaultZ;
+         end;
          Dec(len, n);
          Inc(dest, n);
          Inc(x, n);
