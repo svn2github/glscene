@@ -3,6 +3,7 @@
    Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>21/06/03 - DanB - Added behaviours/effects listviews
       <li>22/01/02 - Egg - Fixed controls state after drag/drop (Anton Zhuchkov)
       <li>06/08/00 - Egg - Added basic Clipboard support
       <li>14/05/00 - Egg - Added workaround for VCL DesignInfo bug (thx Nelson Chu)
@@ -31,15 +32,21 @@ interface
 {$IFDEF LINUX}{$Message Error 'Unit not supported'}{$ENDIF LINUX}
 
 uses
+   XCollection,
    {$IFDEF GLS_CLX}
    QDialogs, QImgList, QActnList, QForms, QMenus, QTypes, QComCtrls, QControls, Types,
    {$ELSE}
    Controls, Windows, Forms, ComCtrls, ImgList, Dialogs, Menus, ActnList, ToolWin,
    {$ENDIF}
-   GLScene, Classes,
-   {$ifdef GLS_DELPHI_6_UP} DesignIntf {$else} DsgnIntf {$endif};
+   GLScene, Classes, sysutils,
+   {$ifdef GLS_DELPHI_6_UP} DesignIntf, ExtCtrls, StdCtrls {$else} DsgnIntf {$endif};
 
+const
+  SCENE_SELECTED=0;
+  BEHAVIOURS_SELECTED=1;
+  EFFECTS_SELECTED=2;
 type
+  TSetSubItemsEvent = procedure(Sender:TObject) of object;
 
   TGLSceneEditorForm = class(TForm)
     Tree: TTreeView;
@@ -86,7 +93,30 @@ type
     ToolButton12: TToolButton;
     ToolButton13: TToolButton;
     ToolButton14: TToolButton;
-	 procedure FormCreate(Sender: TObject);
+    Panel1: TPanel;
+    BehavioursListView: TListView;
+    Splitter3: TSplitter;
+    EffectsListView: TListView;
+    Splitter1: TSplitter;
+    PMBehavioursToolbar: TPopupMenu;
+    TBAddBehaviours: TToolButton;
+    TBAddEffects: TToolButton;
+    ToolButton17: TToolButton;
+    ACAddBehaviour: TAction;
+    MIAddBehaviour: TMenuItem;
+    MIAddEffect: TMenuItem;
+    N3: TMenuItem;
+    ACDeleteBehaviour: TAction;
+    BehavioursPopupMenu: TPopupMenu;
+    Delete1: TMenuItem;
+    MoveUp1: TMenuItem;
+    MoveDown1: TMenuItem;
+    N4: TMenuItem;
+    Label1: TLabel;
+    Label2: TLabel;
+    PMEffectsToolbar: TPopupMenu;
+    ACAddEffect: TAction;
+    procedure FormCreate(Sender: TObject);
     procedure TreeEditing(Sender: TObject; Node: TTreeNode; var AllowEdit: Boolean);
     procedure TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
     procedure TreeDragOver(Sender, Source: TObject; X, Y: Integer; State: TDragState; var Accept: Boolean);
@@ -107,23 +137,45 @@ type
     procedure ACCopyExecute(Sender: TObject);
     procedure ACCutExecute(Sender: TObject);
     procedure ACPasteExecute(Sender: TObject);
+    procedure BehavioursListViewEnter(Sender: TObject);
+    procedure EffectsListViewEnter(Sender: TObject);
+
+    procedure ACAddBehaviourExecute(Sender: TObject);
+    procedure DeleteBaseBehaviour(ListView:TListView);
+    procedure PMBehavioursToolbarPopup(Sender: TObject);
+    procedure PMEffectsToolbarPopup(Sender: TObject);
+    procedure BehavioursListViewSelectItem(Sender: TObject;
+      Item: TListItem; Selected: Boolean);
+    procedure ACAddEffectExecute(Sender: TObject);
+    procedure PopupMenuPopup(Sender: TObject);
 
   private
+    FSelectedItems:Integer; //
+
     FScene: TGLScene;
     FObjectNode, FCameraNode: TTreeNode;
     FCurrentDesigner: {$ifdef GLS_DELPHI_6_UP} IDesigner {$else} IFormDesigner {$endif};
     FLastMouseDownPos : TPoint;
-	 procedure ReadScene;
+    procedure ReadScene;
     procedure ResetTree;
     function AddNodes(ANode: TTreeNode; AObject: TGLBaseSceneObject): TTreeNode;
     procedure AddObjectClick(Sender: TObject);
-	 procedure SetObjectsSubItems(parent : TMenuItem);
-	 procedure OnBaseSceneObjectNameChanged(Sender : TObject);
+    procedure AddBehaviourClick(Sender: TObject);
+    procedure AddEffectClick(Sender: TObject);
+    procedure SetObjectsSubItems(parent : TMenuItem);
+    procedure SetXCollectionSubItems(parent : TMenuItem ; XCollection: TXCollection; Event:TSetSubItemsEvent);    
+    procedure SetBehavioursSubItems(parent : TMenuItem; XCollection: TXCollection);
+    procedure SetEffectsSubItems(parent : TMenuItem; XCollection: TXCollection);
+    procedure OnBaseSceneObjectNameChanged(Sender : TObject);
     function IsValidClipBoardNode : Boolean;
     function IsPastePossible : Boolean;
     function CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
     function GetComponentFromClipBoard : TComponent;
-
+    procedure RenameObjectToBeUnique(anObject:TGLBaseSceneObject);
+    procedure ShowBehaviours(BaseSceneObject:TGLBaseSceneObject);
+    procedure ShowEffects(BaseSceneObject:TGLBaseSceneObject);
+    procedure ShowBehavioursAndEffects(BaseSceneObject:TGLBaseSceneObject);
+    procedure EnableAndDisableActions();
   protected
 	 procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
@@ -222,7 +274,26 @@ begin
       ReadScene;
       Caption:=cGLSceneEditor+' : '+FScene.Name;
    end else Caption:=cGLSceneEditor;
+   BehavioursListView.Clear;
+   EffectsListView.Clear;
    TreeChange(Self, nil);
+   if Assigned(FScene) then
+   begin
+         ActionList.State:=asNormal;
+         Tree.Enabled:=true;
+         BehavioursListView.Enabled:=true;
+         EffectsListView.Enabled:=true;
+         TBAddObjects.Enabled:=true;
+   end
+   else begin
+         ActionList.State:=asSuspended;
+         Tree.Enabled:=false;
+         BehavioursListView.Enabled:=false;
+         EffectsListView.Enabled:=false;
+         TBAddObjects.Enabled:=false;
+         TBAddEffects.Enabled:=false;
+         TBAddBehaviours.Enabled:=false;
+   end;
 end;
 
 // FormCreate
@@ -261,6 +332,12 @@ begin
 {$endif}
    SetObjectsSubItems(PMToolBar.Items);
    PMToolBar.Images:=ObjectManager.ObjectIcons;
+
+   SetBehavioursSubItems(MIAddBehaviour,nil);
+   SetBehavioursSubItems(PMBehavioursToolBar.Items,nil);
+   SetEffectsSubItems(MIAddEffect,nil);
+   SetEffectsSubItems(PMEffectsToolBar.Items,nil);
+
 end;
 
 // FormDestroy
@@ -374,6 +451,58 @@ begin
    end;
 end;
 
+procedure TGLSceneEditorForm.SetXCollectionSubItems(parent : TMenuItem ; XCollection: TXCollection; Event:TSetSubItemsEvent);
+var
+	i : Integer;
+	list : TList;
+	XCollectionItemClass : TXCollectionItemClass;
+	mi : TMenuItem;
+begin
+        if Assigned(XCollection) then
+        begin
+	list:=GetXCollectionItemClassesList(XCollection.ItemsClass);
+	try
+{$ifdef GLS_DELPHI_5_UP}
+		parent.Clear;
+{$else}
+		for i:=parent.Count-1 downto 0 do parent.Delete(i);
+{$endif}
+		for i:=0 to list.Count-1 do begin
+			XCollectionItemClass:=TXCollectionItemClass(list[i]);
+			mi:=TMenuItem.Create(owner);
+			mi.Caption:=XCollectionItemClass.FriendlyName;
+			mi.OnClick:=Event;//AddBehaviourClick;
+			mi.Tag:=Integer(XCollectionItemClass);
+                        if Assigned(XCollection) then
+                          mi.Enabled:=XCollection.CanAdd(XCollectionItemClass)
+                        else
+                          mi.Enabled:=TBAddBehaviours.enabled;
+			parent.Add(mi);
+		end;
+	finally
+		list.Free;
+	end;
+        end
+        else
+          parent.Clear;
+end;
+
+
+// SetBehavioursSubItems
+//
+procedure TGLSceneEditorForm.SetBehavioursSubItems(parent : TMenuItem ; XCollection: TXCollection);
+begin
+  SetXCollectionSubItems(parent, XCollection, AddBehaviourClick);
+end;
+
+// SetEffectsSubItems
+//
+procedure TGLSceneEditorForm.SetEffectsSubItems(parent : TMenuItem ; XCollection: TXCollection);
+begin
+  SetXCollectionSubItems(parent, XCollection, AddEffectClick);
+end;
+
+
 procedure TGLSceneEditorForm.AddObjectClick(Sender: TObject);
 var
    AParent, AObject: TGLBaseSceneObject;
@@ -382,6 +511,7 @@ begin
    if Assigned(FCurrentDesigner) then with Tree do
       if Assigned(Selected) and (Selected.Level > 0) then begin
          AParent:=TGLBaseSceneObject(Selected.Data);
+       //  FCurrentDesigner.cr
          AObject:=TGLBaseSceneObject(FCurrentDesigner.CreateComponent(TGLSceneObjectClass(TMenuItem(Sender).Tag), AParent, 0, 0, 0, 0));
          TComponent(AObject).DesignInfo:=0;
          AParent.AddChild(AObject);
@@ -389,6 +519,44 @@ begin
          Node.Selected:=True;
          FCurrentDesigner.Modified;
       end;
+end;
+
+procedure TGLSceneEditorForm.AddBehaviourClick(Sender: TObject);
+var
+	XCollectionItemClass : TXCollectionItemClass;
+	XCollectionItem : TXCollectionItem;
+        AParent: TGLBaseSceneObject;
+begin
+        if Assigned(Tree.Selected) then
+        begin
+        AParent:=TGLBaseSceneObject(Tree.Selected.Data);
+	XCollectionItemClass:=TXCollectionItemClass((Sender as TMenuItem).Tag);
+	XCollectionItem:=XCollectionItemClass.Create(AParent.Behaviours);
+       	//PrepareListView;
+        ShowBehaviours(AParent);
+	//ListView.Selected:=ListView.FindData(0, XCollectionItem, True, False);
+   FCurrentDesigner.Modified;
+   end;
+end;
+
+
+procedure TGLSceneEditorForm.AddEffectClick(Sender: TObject);
+var
+	XCollectionItemClass : TXCollectionItemClass;
+	XCollectionItem : TXCollectionItem;
+        AParent: TGLBaseSceneObject;
+begin
+        if Assigned(Tree.Selected) then
+        begin
+
+        AParent:=TGLBaseSceneObject(Tree.Selected.Data);
+	XCollectionItemClass:=TXCollectionItemClass((Sender as TMenuItem).Tag);
+	XCollectionItem:=XCollectionItemClass.Create(AParent.Effects);
+       	//PrepareListView;
+        ShowEffects(AParent);
+	//ListView.Selected:=ListView.FindData(0, XCollectionItem, True, False);
+   FCurrentDesigner.Modified;
+   end;
 end;
 
 procedure TGLSceneEditorForm.TreeDragOver(Sender, Source: TObject; X, Y: Integer;
@@ -449,34 +617,22 @@ end;
 //
 procedure TGLSceneEditorForm.TreeChange(Sender: TObject; Node: TTreeNode);
 var
-   selNode : TTreeNode;
+//   selNode : TTreeNode;
+   BaseSceneObject1:TGLBaseSceneObject;
 begin
    if Assigned(FCurrentDesigner) then begin
-      selNode:=Tree.Selected;
-      // select in Delphi IDE
-      if Assigned(selNode) then begin
-         if Assigned(selNode.Data) then
-            FCurrentDesigner.SelectComponent(selNode.Data)
-         else FCurrentDesigner.SelectComponent(FScene);
-         // enablings
-         ACAddCamera.Enabled:=(selNode=FCameraNode);
-         ACAddObject.Enabled:=((selNode=FObjectNode) or selNode.HasAsParent(FObjectNode));
-         ACDeleteObject.Enabled:=(selNode.Level>1);
-         ACMoveUp.Enabled:=(ACAddObject.Enabled and (selNode.Index>0));
-         ACMoveDown.Enabled:=(ACAddObject.Enabled and (selNode.GetNextSibling<>nil));
-         ACCut.Enabled:=IsValidClipBoardNode;
-         ACPaste.Enabled:=IsPastePossible;
-      end else begin
-         ACAddCamera.Enabled:=False;
-         ACAddObject.Enabled:=False;
-         ACDeleteObject.Enabled:=False;
-         ACMoveUp.Enabled:=False;
-         ACMoveDown.Enabled:=False;
-         ACCut.Enabled:=False;
-         ACPaste.Enabled:=False;
-		end;
+
+   if Node<>nil then
+   begin
+      BaseSceneObject1:=TGLBaseSceneObject(Node.Data);
+      if BaseSceneObject1<>nil then
+      begin
+        ShowBehavioursAndEffects(BaseSceneObject1);
+      end;
    end;
-   ACCopy.Enabled:=ACCut.Enabled;
+
+   EnableAndDisableActions();
+   end;
 end;
 
 // TreeEditing
@@ -487,13 +643,63 @@ begin
    AllowEdit:=(Node.Level>1);
 end;
 
+procedure TGLSceneEditorForm.ShowBehaviours(BaseSceneObject:TGLBaseSceneObject);
+var
+  i:integer;
+begin
+      BehavioursListView.Clear;
+      BehavioursListView.Items.BeginUpdate;
+      if Assigned(BaseSceneObject) then
+      begin
+      for i:=0 to BaseSceneObject.Behaviours.Count-1 do
+      begin
+        BehavioursListView.AddItem(IntToStr(i)+' - '+BaseSceneObject.Behaviours[i].Name,BaseSceneObject.Behaviours[i]);
+      end;
+      end;
+      BehavioursListView.Items.EndUpdate;
+end;
+
+procedure TGLSceneEditorForm.ShowEffects(BaseSceneObject:TGLBaseSceneObject);
+var
+  i:integer;
+begin
+      EffectsListView.Clear;
+      EffectsListView.Items.BeginUpdate;
+      if Assigned(BaseSceneObject) then
+      begin
+      for i:=0 to BaseSceneObject.Effects.Count-1 do
+      begin
+        EffectsListView.AddItem(IntToStr(i)+' - '+BaseSceneObject.Effects[i].Name,BaseSceneObject.Effects[i]);
+      end;
+      end;
+      EffectsListView.Items.EndUpdate;
+end;
+
+
+procedure TGLSceneEditorForm.ShowBehavioursAndEffects(BaseSceneObject:TGLBaseSceneObject);
+begin
+  ShowBehaviours(BaseSceneObject);
+  ShowEffects(BaseSceneObject);
+end;
+
 // TreeEdited
 //
 procedure TGLSceneEditorForm.TreeEdited(Sender: TObject; Node: TTreeNode; var S: String);
+var
+  BaseSceneObject1:TGLBaseSceneObject;
 begin
    if Assigned(FCurrentDesigner) then begin
       // renaming a node means renaming a scene object
-      TGLBaseSceneObject(Node.Data).Name:=S;
+      BaseSceneObject1:=TGLBaseSceneObject(Node.Data);
+      if FScene.FindSceneObject(S)=nil then
+        BaseSceneObject1.Name:=S
+      else
+      begin
+        Messagedlg('A component named '+S+' already exists',mtWarning,[mbok],0);
+        Node.Text:=BaseSceneObject1.Name;
+      end;
+      ShowBehavioursAndEffects(BaseSceneObject1);
+
       FCurrentDesigner.Modified;
    end;
 end;
@@ -526,6 +732,8 @@ procedure TGLSceneEditorForm.TreeEnter(Sender: TObject);
 begin
    if Assigned(FCurrentDesigner) and Assigned(Tree.Selected) then
       FCurrentDesigner.SelectComponent(Tree.Selected.Data);
+   FSelectedItems:=SCENE_SELECTED;
+   EnableAndDisableActions();
 end;
 
 // ACAddCameraExecute
@@ -553,6 +761,20 @@ var
    confirmMsg : String;
    buttons : TMsgDlgButtons;
 begin
+  if FSelectedItems=BEHAVIOURS_SELECTED then
+  begin
+    DeleteBaseBehaviour(BehavioursListView);
+    FCurrentDesigner.SelectComponent(Tree.Selected.data);
+    ShowBehaviours(TGLBaseSceneObject(Tree.Selected.data));
+  end
+  else if FSelectedItems=EFFECTS_SELECTED then
+  begin
+    DeleteBaseBehaviour(EffectsListView);
+    FCurrentDesigner.SelectComponent(Tree.Selected.data);
+    ShowEffects(TGLBaseSceneObject(Tree.Selected.data));
+  end
+  else if FSelectedItems=SCENE_SELECTED then
+  begin
 	if Assigned(Tree.Selected) and (Tree.Selected.Level > 1) then begin
       anObject:=TGLBaseSceneObject(Tree.Selected.Data);
       // ask for confirmation
@@ -572,7 +794,7 @@ begin
 			end;
          mrOK : begin
             keepChildren:=True;
-				allowed:=True;
+            allowed:=True;
          end;
          mrCancel : begin
             allowed:=False;
@@ -590,6 +812,7 @@ begin
          anObject.Free;
       end
    end;
+   end;
 end;
 
 // ACMoveUpExecute
@@ -597,7 +820,26 @@ end;
 procedure TGLSceneEditorForm.ACMoveUpExecute(Sender: TObject);
 var
    node : TTreeNode;
+   prevData:Pointer;
 begin
+  if FSelectedItems=BEHAVIOURS_SELECTED then
+  begin
+        PrevData:=BehavioursListView.Selected.Data;
+        TGLBaseBehaviour(PrevData).MoveUp;
+        ShowBehaviours(TGLBaseSceneObject(Tree.Selected.Data));
+        BehavioursListView.Selected:=BehavioursListView.FindData(0,PrevData,True,False);
+        FCurrentDesigner.Modified;
+  end
+  else if FSelectedItems=EFFECTS_SELECTED then
+  begin
+        PrevData:=EffectsListView.Selected.Data;
+        TGLBaseBehaviour(PrevData).MoveUp;
+        ShowEffects(TGLBaseSceneObject(Tree.Selected.Data));
+        EffectsListView.Selected:=EffectsListView.FindData(0,PrevData,True,False);
+        FCurrentDesigner.Modified;
+  end
+  else if FSelectedItems=SCENE_SELECTED then
+  begin
    if ACMoveUp.Enabled then begin
       node:=Tree.Selected;
       if Assigned(node) then begin
@@ -610,6 +852,7 @@ begin
          FCurrentDesigner.Modified;
       end;
    end;
+  end; 
 end;
 
 // ACMoveDownExecute
@@ -617,7 +860,26 @@ end;
 procedure TGLSceneEditorForm.ACMoveDownExecute(Sender: TObject);
 var
    node : TTreeNode;
+   prevData:Pointer;
 begin
+  if FSelectedItems=BEHAVIOURS_SELECTED then
+  begin
+        PrevData:=BehavioursListView.Selected.Data;
+        TGLBaseBehaviour(PrevData).MoveDown;
+        ShowBehaviours(TGLBaseSceneObject(Tree.Selected.Data));
+        BehavioursListView.Selected:=BehavioursListView.FindData(0,PrevData,True,False);
+        FCurrentDesigner.Modified;
+  end
+  else if FSelectedItems=EFFECTS_SELECTED then
+  begin
+        PrevData:=EffectsListView.Selected.Data;
+        TGLBaseBehaviour(PrevData).MoveDown;
+        ShowEffects(TGLBaseSceneObject(Tree.Selected.Data));
+        EffectsListView.Selected:=EffectsListView.FindData(0,PrevData,True,False);
+        FCurrentDesigner.Modified;
+  end
+  else if FSelectedItems=SCENE_SELECTED then
+  begin
    if ACMoveDown.Enabled then begin
       node:=Tree.Selected;
       if Assigned(node) then begin
@@ -630,6 +892,7 @@ begin
          FCurrentDesigner.Modified;
 		end;
 	end;
+      end;
 end;
 
 // ACAddObjectExecute
@@ -759,6 +1022,7 @@ procedure TGLSceneEditorForm.ACCopyExecute(Sender: TObject);
 begin
    if IsValidClipBoardNode then
       ClipBoard.SetComponent(TGLBaseSceneObject(Tree.Selected.Data));
+   ACPaste.Enabled:=IsPastePossible;
 end;
 
 // ACCutExecute
@@ -778,6 +1042,30 @@ begin
    end;
 end;
 
+procedure TGLSceneEditorForm.RenameObjectToBeUnique(anObject:TGLBaseSceneObject);
+var
+  i:integer;
+  OriginalName,NewName:String;
+begin
+   OriginalName:=anObject.Name;
+   NewName:=OriginalName;
+   i:=1;
+   while FScene.FindSceneObject(NewName)<>nil do
+   begin
+     NewName:=OriginalName+IntToStr(i);
+     i:=i+1;
+   end;
+
+   anObject.Name:=NewName;
+
+   FCurrentDesigner.Modified;
+   for i:=0 to anObject.Count-1 do
+     RenameObjectToBeUnique(anObject.Children[i]);
+
+//         if Assigned(FCurrentDesigner) then
+//           anObject.Name:=FCurrentDesigner.UniqueName(anObject.Name);
+end;
+
 // ACPasteExecute
 //
 procedure TGLSceneEditorForm.ACPasteExecute(Sender: TObject);
@@ -790,10 +1078,186 @@ begin
       anObject:=TGLBaseSceneObject(GetComponentFromClipBoard);
       destination:=TGLBaseSceneObject(selNode.Data);
       if CanPaste(anObject, destination) then begin
+         RenameObjectToBeUnique(anObject);
          destination.AddChild(anObject);
          AddNodes(selNode, anObject);
          selNode.Expand(False);
       end else anObject.Free;
+      FCurrentDesigner.Modified;
+   end;
+end;
+
+
+procedure TGLSceneEditorForm.BehavioursListViewEnter(Sender: TObject);
+begin
+   if Assigned(FCurrentDesigner) and Assigned(BehavioursListView.Selected) then
+      FCurrentDesigner.SelectComponent(BehavioursListView.Selected.Data);
+   FSelectedItems:=BEHAVIOURS_SELECTED;
+   EnableAndDisableActions();
+end;
+
+procedure TGLSceneEditorForm.EffectsListViewEnter(Sender: TObject);
+begin
+   if Assigned(FCurrentDesigner) and Assigned(EffectsListView.Selected) then
+      FCurrentDesigner.SelectComponent(EffectsListView.Selected.Data);
+   FSelectedItems:=EFFECTS_SELECTED;
+   EnableAndDisableActions();   
+end;
+
+procedure TGLSceneEditorForm.ACAddBehaviourExecute(Sender: TObject);
+begin
+  TBAddBehaviours.CheckMenuDropdown
+end;
+
+procedure TGLSceneEditorForm.DeleteBaseBehaviour(ListView:TListView);
+begin
+  if ListView.Selected<>nil then
+  begin
+
+      FCurrentDesigner.Modified;
+{$ifndef GLS_DELPHI_4}
+      FCurrentDesigner.NoSelection;
+{$else}
+      FCurrentDesigner.SelectComponent(nil);
+{$endif}
+      TXCollectionItem(ListView.Selected.Data).Free;
+      ListView.Selected.Free;
+     // ListViewChange(Self, nil, ctState);
+      ShowBehavioursAndEffects(TGLBaseSceneObject(Tree.Selected.Data));
+  end;
+end;
+
+procedure TGLSceneEditorForm.PMBehavioursToolbarPopup(Sender: TObject);
+var
+  object1:TGLBaseSceneObject;
+begin
+   if (Tree.Selected)<>nil then
+   begin
+     object1:=TGLBaseSceneObject(Tree.Selected.Data);
+     SetBehavioursSubItems(PMBehavioursToolbar.Items, object1.Behaviours);
+   end;
+end;
+
+procedure TGLSceneEditorForm.PMEffectsToolbarPopup(Sender: TObject);
+var
+  object1:TGLBaseSceneObject;
+begin
+   if (Tree.Selected)<>nil then
+   begin
+     object1:=TGLBaseSceneObject(Tree.Selected.Data);
+     SetEffectsSubItems(PMEffectsToolbar.Items, object1.Effects);
+   end;
+end;
+
+
+procedure TGLSceneEditorForm.BehavioursListViewSelectItem(Sender: TObject;
+  Item: TListItem; Selected: Boolean);
+begin
+  EnableAndDisableActions();
+end;
+
+procedure TGLSceneEditorForm.ACAddEffectExecute(Sender: TObject);
+begin
+   TBAddEffects.CheckMenuDropdown;
+end;
+
+procedure TGLSceneEditorForm.EnableAndDisableActions();
+var
+  SelNode:TTreeNode;
+begin
+  if FSelectedItems=SCENE_SELECTED then
+  begin
+      selNode:=Tree.Selected;
+      // select in Delphi IDE
+      if Assigned(selNode) then
+      begin
+         if Assigned(selNode.Data) then
+            FCurrentDesigner.SelectComponent(selNode.Data)
+         else FCurrentDesigner.SelectComponent(FScene);
+         // enablings
+         ACAddCamera.Enabled:=(selNode=FCameraNode);
+         ACAddObject.Enabled:=((selNode=FObjectNode) or selNode.HasAsParent(FObjectNode));
+         ACAddBehaviour.Enabled:=(selNode.HasAsParent(FObjectNode));
+         ACAddEffect.Enabled:=(selNode.HasAsParent(FObjectNode));
+         ACDeleteObject.Enabled:=(selNode.Level>1);
+         ACMoveUp.Enabled:=((selNode.Index>0)and(selNode.Level>1));
+         ACMoveDown.Enabled:=((selNode.GetNextSibling<>nil)and(selNode.Level>1));
+         ACCut.Enabled:=IsValidClipBoardNode;
+         ACPaste.Enabled:=IsPastePossible;
+
+      end
+      else
+      begin
+         ACAddCamera.Enabled:=False;
+         ACAddObject.Enabled:=False;
+         ACAddBehaviour.Enabled:=False;
+         ACAddEffect.Enabled:=False;
+         ACDeleteObject.Enabled:=False;
+         ACMoveUp.Enabled:=False;
+         ACMoveDown.Enabled:=False;
+         ACCut.Enabled:=False;
+         ACPaste.Enabled:=False;
+      end;
+//   end;
+   ACCopy.Enabled:=ACCut.Enabled;
+
+  end
+  else if FSelectedItems=BEHAVIOURS_SELECTED then
+  begin
+    if (BehavioursListView.Selected<>nil) then
+    begin
+         FCurrentDesigner.SelectComponent(BehavioursListView.Selected.Data);
+         ACDeleteObject.Enabled:=True;
+         ACMoveUp.Enabled:=(BehavioursListView.Selected.Index>0);
+         ACMoveDown.Enabled:=(BehavioursListView.Selected.Index<BehavioursListView.Selected.Owner.Count-1);
+         ACCut.Enabled:=False;
+         ACCopy.Enabled:=false;
+         ACPaste.Enabled:=False;
+    end
+      else
+      begin
+         ACDeleteObject.Enabled:=false;
+         ACMoveUp.Enabled:=false;
+         ACMoveDown.Enabled:=false;
+         ACCut.Enabled:=false;
+         ACCopy.Enabled:=false;
+         ACPaste.Enabled:=false;
+      end;
+  end
+  else if FSelectedItems=EFFECTS_SELECTED then
+  begin
+    if (EffectsListView.Selected<>nil)then
+    begin
+         FCurrentDesigner.SelectComponent(EffectsListView.Selected.Data);
+         ACDeleteObject.Enabled:=True;
+         ACMoveUp.Enabled:=(EffectsListView.Selected.Index>0);
+         ACMoveDown.Enabled:=(EffectsListView.Selected.Index<EffectsListView.Selected.Owner.Count-1);
+         ACCut.Enabled:=False;
+         ACCopy.Enabled:=false;
+         ACPaste.Enabled:=False;
+    end
+      else
+      begin
+         ACDeleteObject.Enabled:=false;
+         ACMoveUp.Enabled:=false;
+         ACMoveDown.Enabled:=false;
+         ACCut.Enabled:=false;
+         ACCopy.Enabled:=false;
+         ACPaste.Enabled:=false;
+      end;
+  end;
+
+end;
+
+procedure TGLSceneEditorForm.PopupMenuPopup(Sender: TObject);
+var
+  object1:TGLBaseSceneObject;
+begin
+   if (Tree.Selected)<>nil then
+   begin
+     object1:=TGLBaseSceneObject(Tree.Selected.Data);
+     SetBehavioursSubItems(MIAddBehaviour,object1.Behaviours);
+     SetEffectsSubItems(MIAddEffect,object1.Effects);
    end;
 end;
 

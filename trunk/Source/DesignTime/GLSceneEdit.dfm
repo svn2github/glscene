@@ -1,8 +1,8 @@
 object GLSceneEditorForm: TGLSceneEditorForm
-  Left = 403
-  Top = 106
-  Width = 314
-  Height = 323
+  Left = 207
+  Top = 224
+  Width = 480
+  Height = 423
   BorderStyle = bsSizeToolWin
   Caption = 'GLScene editor'
   Color = clBtnFace
@@ -12,17 +12,22 @@ object GLSceneEditorForm: TGLSceneEditorForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  OnActivate = TreeEnter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
+  object Splitter1: TSplitter
+    Left = 265
+    Top = 26
+    Width = 4
+    Height = 363
+  end
   object Tree: TTreeView
     Left = 0
     Top = 26
-    Width = 306
-    Height = 268
-    Align = alClient
+    Width = 265
+    Height = 363
+    Align = alLeft
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -46,10 +51,11 @@ object GLSceneEditorForm: TGLSceneEditorForm
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 306
+    Width = 472
     Height = 26
     AutoSize = True
     BorderWidth = 1
+    ButtonWidth = 28
     Caption = 'ToolBar'
     EdgeBorders = []
     Flat = True
@@ -63,12 +69,12 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Action = ACLoadScene
     end
     object ToolButton9: TToolButton
-      Left = 23
+      Left = 28
       Top = 0
       Action = ACSaveScene
     end
     object ToolButton2: TToolButton
-      Left = 46
+      Left = 56
       Top = 0
       Width = 8
       Caption = 'ToolButton2'
@@ -76,19 +82,41 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton1: TToolButton
-      Left = 54
+      Left = 64
       Top = 0
       Action = ACAddCamera
     end
     object TBAddObjects: TToolButton
-      Left = 77
+      Left = 92
       Top = 0
       Action = ACAddObject
       DropdownMenu = PMToolBar
       Style = tbsDropDown
     end
+    object ToolButton17: TToolButton
+      Left = 133
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton17'
+      ImageIndex = 8
+      Style = tbsSeparator
+    end
+    object TBAddBehaviours: TToolButton
+      Left = 141
+      Top = 0
+      Action = ACAddBehaviour
+      DropdownMenu = PMBehavioursToolbar
+      Style = tbsDropDown
+    end
+    object TBAddEffects: TToolButton
+      Left = 182
+      Top = 0
+      Action = ACAddEffect
+      DropdownMenu = PMEffectsToolbar
+      Style = tbsDropDown
+    end
     object ToolButton3: TToolButton
-      Left = 113
+      Left = 223
       Top = 0
       Width = 8
       Caption = 'ToolButton3'
@@ -96,27 +124,27 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton12: TToolButton
-      Left = 121
+      Left = 231
       Top = 0
       Action = ACCut
     end
     object ToolButton13: TToolButton
-      Left = 144
+      Left = 259
       Top = 0
       Action = ACCopy
     end
     object ToolButton14: TToolButton
-      Left = 167
+      Left = 287
       Top = 0
       Action = ACPaste
     end
     object ToolButton5: TToolButton
-      Left = 190
+      Left = 315
       Top = 0
       Action = ACDeleteObject
     end
     object ToolButton6: TToolButton
-      Left = 213
+      Left = 343
       Top = 0
       Width = 8
       Caption = 'ToolButton6'
@@ -124,17 +152,17 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton4: TToolButton
-      Left = 221
+      Left = 351
       Top = 0
       Action = ACMoveUp
     end
     object ToolButton7: TToolButton
-      Left = 244
+      Left = 379
       Top = 0
       Action = ACMoveDown
     end
     object ToolButton10: TToolButton
-      Left = 267
+      Left = 407
       Top = 0
       Width = 8
       Caption = 'ToolButton10'
@@ -142,13 +170,77 @@ object GLSceneEditorForm: TGLSceneEditorForm
       Style = tbsSeparator
     end
     object ToolButton11: TToolButton
-      Left = 275
+      Left = 415
       Top = 0
       Action = ACInfo
     end
   end
+  object Panel1: TPanel
+    Left = 269
+    Top = 26
+    Width = 203
+    Height = 363
+    Align = alClient
+    Caption = 'Panel1'
+    TabOrder = 2
+    object Splitter3: TSplitter
+      Left = 1
+      Top = 177
+      Width = 201
+      Height = 4
+      Cursor = crVSplit
+      Align = alTop
+    end
+    object Label1: TLabel
+      Left = 1
+      Top = 1
+      Width = 201
+      Height = 13
+      Align = alTop
+      Alignment = taCenter
+      Caption = 'Behaviours'
+    end
+    object Label2: TLabel
+      Left = 1
+      Top = 181
+      Width = 201
+      Height = 13
+      Align = alTop
+      Alignment = taCenter
+      Caption = 'Effects'
+    end
+    object BehavioursListView: TListView
+      Left = 1
+      Top = 14
+      Width = 201
+      Height = 163
+      Align = alTop
+      Columns = <>
+      ReadOnly = True
+      PopupMenu = BehavioursPopupMenu
+      TabOrder = 0
+      ViewStyle = vsList
+      OnEnter = BehavioursListViewEnter
+      OnSelectItem = BehavioursListViewSelectItem
+    end
+    object EffectsListView: TListView
+      Left = 1
+      Top = 194
+      Width = 201
+      Height = 168
+      Align = alClient
+      Columns = <>
+      ReadOnly = True
+      PopupMenu = BehavioursPopupMenu
+      TabOrder = 1
+      ViewStyle = vsList
+      OnEnter = EffectsListViewEnter
+      OnSelectItem = BehavioursListViewSelectItem
+    end
+  end
   object PopupMenu: TPopupMenu
     Images = ImageList
+    OnPopup = PopupMenuPopup
     Left = 8
     Top = 72
     object MIAddCamera: TMenuItem
@@ -156,6 +248,18 @@ object GLSceneEditorForm: TGLSceneEditorForm
     end
     object MIAddObject: TMenuItem
       Action = ACAddObject
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
+    object MIAddBehaviour: TMenuItem
+      Action = ACAddBehaviour
+      Caption = 'Add behaviour'
+    end
+    object MIAddEffect: TMenuItem
+      Action = ACAddEffect
+      Caption = 'Add effect'
+      Hint = 'Add effect'
     end
     object N1: TMenuItem
       Caption = '-'
@@ -198,11 +302,27 @@ object GLSceneEditorForm: TGLSceneEditorForm
       ImageIndex = 3
       OnExecute = ACAddObjectExecute
     end
+    object ACAddBehaviour: TAction
+      Caption = 'ACAddBehaviour'
+      Hint = 'Add behaviour'
+      ImageIndex = 3
+      OnExecute = ACAddBehaviourExecute
+    end
+    object ACAddEffect: TAction
+      Caption = 'ACAddEffect'
+      ImageIndex = 3
+      OnExecute = ACAddEffectExecute
+    end
     object ACDeleteObject: TAction
       Caption = 'Delete object'
       Hint = 'Delete object'
       ImageIndex = 4
       OnExecute = ACDeleteObjectExecute
+    end
+    object ACDeleteBehaviour: TAction
+      Caption = 'ACDeleteBehaviour'
+      Hint = 'Delete behaviour'
+      ImageIndex = 4
     end
     object ACMoveUp: TAction
       Caption = 'Move object up'
@@ -814,5 +934,36 @@ object GLSceneEditorForm: TGLSceneEditorForm
     Options = [ofHideReadOnly, ofPathMustExist, ofEnableSizing]
     Left = 40
     Top = 128
+  end
+  object PMBehavioursToolbar: TPopupMenu
+    Images = ImageList
+    OnPopup = PMBehavioursToolbarPopup
+    Left = 120
+    Top = 40
+  end
+  object BehavioursPopupMenu: TPopupMenu
+    Images = ImageList
+    Left = 280
+    Top = 48
+    object Delete1: TMenuItem
+      Action = ACDeleteObject
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object MoveUp1: TMenuItem
+      Action = ACMoveUp
+      Caption = 'Move up'
+    end
+    object MoveDown1: TMenuItem
+      Action = ACMoveDown
+      Caption = 'Move down'
+    end
+  end
+  object PMEffectsToolbar: TPopupMenu
+    Images = ImageList
+    OnPopup = PMEffectsToolbarPopup
+    Left = 152
+    Top = 40
   end
 end
