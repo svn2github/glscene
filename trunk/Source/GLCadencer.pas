@@ -2,7 +2,8 @@
 
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>19/05/03 - EG - Added Reset (Roberto Bussola)
       <li>04/03/02 - EG - Added SetTimeMultiplier
       <li>01/07/02 - EG - Added TGLCadencedComponent
       <li>05/12/01 - EG - Fix in subscription mechanism (D6 IDE freezes gone?)
@@ -110,6 +111,9 @@ type
             sending messages and progression calls to cadenceable components
             and scenes. }
          function IsBusy : Boolean;
+
+         {: Reset the time parameters and returns to zero.<p>}
+         procedure Reset;
 
 			{: Value soustracted to current time to obtain progression time. }
 			property OriginTime : Double read FOriginTime write FOriginTime;
@@ -579,6 +583,15 @@ end;
 function TGLCadencer.IsBusy : Boolean;
 begin
    Result:=(FProgressing<>0);   
+end;
+
+//  Reset
+//
+procedure TGLCadencer.Reset;
+begin
+   lasttime:=0;
+   downTime:=GetRawReferenceTime;
+   FOriginTime:=downTime;
 end;
 
 // ------------------
