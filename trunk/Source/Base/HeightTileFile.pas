@@ -46,6 +46,7 @@ type
       fileOffset : Int64;   // offset to tile data in the file
    end;
    PHeightTileInfo = ^THeightTileInfo;
+   PPHeightTileInfo = ^PHeightTileInfo;
 
    // THeightTile
    //
@@ -111,7 +112,8 @@ type
          {: Returns tile index for corresponding left/top. }
          function GetTileIndex(aLeft, aTop : Integer) : Integer;
          {: Returns tile of corresponding left/top.<p> }
-         function GetTile(aLeft, aTop : Integer) : PHeightTile;
+         function GetTile(aLeft, aTop : Integer;
+                          pTileInfo : PPHeightTileInfo = nil) : PHeightTile;
 
          {: Stores and compresses give tile data.<p>
             aLeft and top MUST be a multiple of TileSize, aWidth and aHeight
@@ -581,7 +583,8 @@ end;
 
 // GetTile
 //
-function THeightTileFile.GetTile(aLeft, aTop : Integer) : PHeightTile;
+function THeightTileFile.GetTile(aLeft, aTop : Integer;
+                                 pTileInfo : PPHeightTileInfo = nil) : PHeightTile;
 var
    i, n : Integer;
    tileInfo : PHeightTileInfo;
@@ -594,6 +597,8 @@ begin
    i:=GetTileIndex(aLeft, aTop);
    if i>=0 then begin
       tileInfo:=@FTileIndex[i];
+      if Assigned(pTileInfo) then
+         pTileInfo^:=tileInfo;
       if i<High(FTileIndex) then
          n:=FTileIndex[i+1].fileOffset-tileInfo.fileOffset
       else n:=TileIndexOffset-tileInfo.fileOffset;
@@ -602,7 +607,11 @@ begin
       FFile.Position:=tileInfo.fileOffset;
       FFile.Read(FInBuf[0], n);
       UnPackTile(@FInBuf[0]);
-   end else Result:=nil;
+   end else begin
+      Result:=nil;
+      if Assigned(pTileInfo) then
+         pTileInfo^:=nil;
+   end;
 end;
 
 // CompressTile

@@ -12,7 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>06/02/03 - EG - Added Hash index to HeightDataSource
+      <li>06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
       <li>24/01/03 - EG - Fixed ByteHeight normalization scaling
       <li>07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
       <li>03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
@@ -245,6 +245,7 @@ type
          FOnDestroy : TNotifyEvent;
          FReleaseTimeStamp : TDateTime;
          FDirty : Boolean;
+         FHeightMin, FHeightMax : Single;
 
          procedure BuildByteRaster;
          procedure BuildSmallIntRaster;
@@ -262,6 +263,9 @@ type
          FThread : THeightDataThread; // thread used for multi-threaded processing (if any)
 
          procedure SetDataType(const val : THeightDataType);
+
+         function  GetHeightMin : Single;
+         function  GetHeightMax : Single;
 
 	   public
 
@@ -351,6 +355,15 @@ type
 	      function SingleHeight(x, y : Integer) : Single;
          {: Interopolated height of point x, y as a Single.<p> }
          function InterpolatedHeight(x, y : Single) : Single;
+
+         {: Minimum height in the tile.<p>
+            DataSources may assign a value to prevent automatic computation
+            if they have a faster/already computed value. }
+         property HeightMin : Single read GetHeightMin write FHeightMin;
+         {: Maximum height in the tile.<p>
+            DataSources may assign a value to prevent automatic computation
+            if they have a faster/already computed value. }
+         property HeightMax : Single read GetHeightMax write FHeightMax;
 
          {: Returns the height as a single, whatever the DataType (slow). }
 	      function Height(x, y : Integer) : Single;
@@ -877,6 +890,8 @@ begin
    FTCScale:=XYTexPoint;
    FDataType:=aDataType;
    FDataState:=hdsQueued;
+   FHeightMin:=1e30;
+   FHeightMax:=1e30;
 end;
 
 // Destroy
@@ -1198,6 +1213,82 @@ begin
       Result:=0;
       Assert(False);
    end;
+end;
+
+// GetHeightMin
+//
+function THeightData.GetHeightMin : Single;
+var
+   i : Integer;
+   b : Byte;
+   sm : SmallInt;
+   si : Single;
+begin
+   if FHeightMin=1e30 then begin
+      if DataState=hdsReady then begin
+         case DataType of
+            hdtByte : begin
+               b:=FByteData[0];
+               for i:=1 to Size*Size-1 do
+                  if FByteData[i]<b then b:=FByteData[i];
+               FHeightMin:=((Integer(b)-128) shl 7);
+            end;
+            hdtSmallInt : begin
+               sm:=FSmallIntData[0];
+               for i:=1 to Size*Size-1 do
+                  if FSmallIntData[i]<sm then sm:=FSmallIntData[i];
+               FHeightMin:=sm;
+            end;
+            hdtSingle : begin
+               si:=FSingleData[0];
+               for i:=1 to Size*Size-1 do
+                  if FSingleData[i]<si then si:=FSingleData[i];
+               FHeightMin:=si;
+            end;
+         else
+            FHeightMin:=0;
+         end;
+      end else FHeightMin:=0;
+   end;
+   Result:=FHeightMin;
+end;
+
+// GetHeightMax
+//
+function THeightData.GetHeightMax : Single;
+var
+   i : Integer;
+   b : Byte;
+   sm : SmallInt;
+   si : Single;
+begin
+   if FHeightMax=1e30 then begin
+      if DataState=hdsReady then begin
+         case DataType of
+            hdtByte : begin
+               b:=FByteData[0];
+               for i:=1 to Size*Size-1 do
+                  if FByteData[i]>b then b:=FByteData[i];
+               FHeightMax:=((Integer(b)-128) shl 7);
+            end;
+            hdtSmallInt : begin
+               sm:=FSmallIntData[0];
+               for i:=1 to Size*Size-1 do
+                  if FSmallIntData[i]>sm then sm:=FSmallIntData[i];
+               FHeightMax:=sm;
+            end;
+            hdtSingle : begin
+               si:=FSingleData[0];
+               for i:=1 to Size*Size-1 do
+                  if FSingleData[i]>si then si:=FSingleData[i];
+               FHeightMax:=si;
+            end;
+         else
+            FHeightMax:=0;
+         end;
+      end else FHeightMax:=0;
+   end;
+   Result:=FHeightMax;
 end;
 
 // Normal

@@ -104,6 +104,7 @@ procedure TGLHeightTileFileHDS.StartPreparingData(heightData : THeightData);
 var
    oldType : THeightDataType;
    htfTile : PHeightTile;
+   htfTileInfo : PHeightTileInfo;
    x, y : Integer;
 begin
    // access htf data
@@ -121,9 +122,9 @@ begin
       if InfiniteWrap then begin
          x:=XLeft mod FHTF.SizeX;
          y:=YTop mod FHTF.SizeY;
-         htfTile:=FHTF.GetTile(x, y);
+         htfTile:=FHTF.GetTile(x, y, @htfTileInfo);
       end else begin
-         htfTile:=FHTF.GetTile(XLeft, YTop);
+         htfTile:=FHTF.GetTile(XLeft, YTop, @htfTileInfo);
       end;
       if htfTile=nil then begin
          // non-aligned tiles aren't handled (would be slow anyway)
@@ -135,6 +136,8 @@ begin
          if oldType<>hdtSmallInt then
             DataType:=oldType;
          DataState:=hdsReady;
+         HeightMin:=htfTileInfo.min;
+         HeightMax:=htfTileInfo.max;
       end;
    end;
 end;
