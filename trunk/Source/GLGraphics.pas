@@ -821,16 +821,19 @@ var
    nx, ny, nz : Single;
    curRow, nextRow : PGLPixel32Array;
    curRowZeroG : Byte;
+   backupRowZero : PGLPixel32Array;
 begin
    Result := True;
 
    if Assigned(FData) then begin
       nextRow:=FData;
+      backupRowZero:=AllocMem(Width*4);
+      Move(FData[0], backupRowZero[0], Width*4);
       for y:=0 to Height-1 do begin
          curRow:=nextRow;
          if y<Height-1 then
             nextRow:=@FData[y*Width+Width]
-         else nextRow:=FData;
+         else nextRow:=backupRowZero;
          curRowZeroG:=curRow[0].g;
          for x:=0 to Width-1 do begin
             p1:=curRow[x].g*cOneDiv255;
@@ -855,6 +858,7 @@ begin
             end;
          end;
       end;
+      FreeMem(backupRowZero);
    end;
 end;
 
