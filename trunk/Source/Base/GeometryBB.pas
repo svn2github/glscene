@@ -875,7 +875,7 @@ begin
 end;
 
 // FrustumContainsBSphere
-//
+// see http://www.flipcode.com/articles/article_frustumculling.shtml
 function FrustumContainsAABB(const Frustum : TFrustum; const testAABB : TAABB) : TSpaceContains;
 type
   TPlaneArray = array[0..5] of THmgPlane;
