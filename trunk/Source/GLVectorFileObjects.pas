@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>14/01/03 - EG - Added DisableOpenGLArrays
       <li>09/01/03 - EG - Added Clear methods for MeshObjects
       <li>25/11/02 - EG - Colors and TexCoords lists now disabled if ignoreMaterials is true
       <li>23/10/02 - EG - Faster .GTS and .PLY imports (parsing)
@@ -452,6 +453,7 @@ type
 
          procedure DeclareArraysToOpenGL(var mrci : TRenderContextInfo;
                                          evenIfAlreadyDeclared : Boolean = False);
+         procedure DisableOpenGLArrays(var mrci : TRenderContextInfo);
 
       public
          { Public Declarations }
@@ -675,6 +677,7 @@ type
          procedure AddWeightedBone(aBoneID : Integer; aWeight : Single);
          procedure PrepareBoneMatrixInvertedMeshes;
          procedure ApplyCurrentSkeletonFrame(normalize : Boolean);
+
 	end;
 
    // TFaceGroup
@@ -1143,6 +1146,8 @@ type
                                         const velocity, radius: Single;
                                         intersectPoint : PVector = nil;
                                         intersectNormal : PVector = nil) : Boolean;
+         function OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+         function GetTrianglesInCube(Obj: TGLBaseSceneObject): TAffineVectorList; //via Octree
 
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
@@ -1490,7 +1495,8 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO,
+uses GLStrings, consts, XOpenGL, GLCrossPlatform, ApplicationFileIO, GeometryBB,
+     GLCollision,
      // 3DS Support
 	  File3DS, Types3DS,
      // MD2 Support
@@ -1754,6 +1760,7 @@ procedure TBaseMeshObject.Clear;
 begin
    FNormals.Clear;
    FVertices.Clear;
+
 end;
 
 // ContributeToBarycenter
@@ -2813,6 +2820,28 @@ begin
    end;
 end;
 
+// DisableOpenGLArrays
+//
+procedure TMeshObject.DisableOpenGLArrays(var mrci : TRenderContextInfo);
+begin
+   if FArraysDeclared then begin
+      if Vertices.Count>0 then
+         glDisableClientState(GL_VERTEX_ARRAY);
+      if Normals.Count>0 then
+         glDisableClientState(GL_NORMAL_ARRAY);
+      if not mrci.ignoreMaterials then begin
+         if (Colors.Count>0) and (not mrci.ignoreMaterials) then
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         if TexCoords.Count>0 then
+            xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      end else begin
+         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+         xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      end;
+      FArraysDeclared:=False;
+   end;
+end;
+
 // PrepareMaterials
 //
 procedure TMeshObject.PrepareBuildList(var mrci : TRenderContextInfo);
@@ -2908,6 +2937,7 @@ begin
    else
       Assert(False);
    end;
+   DisableOpenGLArrays(mrci);
 end;
 
 // ------------------
@@ -3550,6 +3580,11 @@ begin
    if Assigned(FOwner) then
       FOwner.Remove(Self);
    inherited;
+
+
+
+
+
 end;
 
 // WriteToFiler
@@ -3581,6 +3616,12 @@ end;
 procedure TFaceGroup.AddToTriangles(aList : TAffineVectorList);
 begin
    // nothing
+
+
+
+
+
+
 end;
 
 // Reverse
@@ -3596,6 +3637,13 @@ procedure TFaceGroup.Prepare;
 begin
    // nothing
 end;
+
+
+
+
+
+
+
 
 // ------------------
 // ------------------ TFGVertexIndexList ------------------
@@ -4995,6 +5043,70 @@ begin
    end;
 end;
 
+function TGLFreeForm.OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+var
+  t1, t2, t3: TAffineVector;
+begin
+   SetVector(t1, AbsoluteToLocal(v1));
+   SetVector(t2, AbsoluteToLocal(v2));
+   SetVector(t3, AbsoluteToLocal(v3));
+
+   Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
+//   Result:= Octree.TriangleIntersect(t1, t2, t3);
+end;
+
+// GetTrianglesInCube
+//
+function TGLFreeForm.GetTrianglesInCube(obj : TGLBaseSceneObject) : TAffineVectorList;
+var
+  AABB1: TAABB;
+  M1To2, M2To1: TMatrix;
+
+   procedure HandleNode(Onode: POctreeNode);
+   var
+      AABB2: TAABB;
+      i: integer;
+   begin
+      AABB2.min:= Onode.MinExtent;
+      AABB2.max:= Onode.MaxExtent;
+
+      if IntersectCubes(AABB1, AABB2, M1To2, M2To1) then begin
+         if Assigned(Onode.ChildArray[0]) then begin
+            for i:=0 to 7 do
+               HandleNode(Onode.ChildArray[i])
+         end else begin
+            SetLength(Octree.resultarray, Length(Octree.resultarray)+1);
+            Octree.resultarray[High(Octree.resultarray)]:=Onode;
+         end;
+      end;
+   end;
+
+var
+   i, t, k : Integer;
+   p : POctreeNode;
+begin
+//  Result:= TAffineVectorList.Create;
+  //Calc AABBs
+  AABB1:= Obj.AxisAlignedBoundingBox;
+  //Calc Conversion Matrixes
+  MatrixMultiply(Obj.AbsoluteMatrix, Self.InvAbsoluteMatrix, M1To2);
+  MatrixMultiply(Self.AbsoluteMatrix,Obj.InvAbsoluteMatrix,M2To1);
+
+  finalize(Octree.ResultArray);
+  HandleNode(Octree.RootNode);
+
+  //fill the triangles from all nodes in the resultarray to AL
+  for i:=0 to High(Octree.resultarray) do
+  begin
+    p:=Octree.ResultArray[i];
+    for t:=0 to High(p.TriArray) do
+    begin
+      k:=p.triarray[t];
+//      result.Add(Octree.triangleFiler.List[k], Octree.triangleFiler.List[k+1], Octree.triangleFiler.List[k+2]);
+    end;
+  end;
+end;
+
 // ------------------
 // ------------------ TActorAnimation ------------------
 // ------------------
@@ -5004,6 +5116,7 @@ end;
 constructor TActorAnimation.Create(Collection : TCollection);
 begin
 	inherited Create(Collection);
+
 end;
 
 // Destroy
@@ -5014,6 +5127,132 @@ begin
       if FTargetSmoothAnimation=Self then
          FTargetSmoothAnimation:=nil;
 	inherited Destroy;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 end;
 
 // Assign
@@ -5026,6 +5265,7 @@ begin
       FEndFrame:=TActorAnimation(Source).FEndFrame;
       FReference:=TActorAnimation(Source).FReference;
 	end else inherited;
+
 end;
 
 // GetDisplayName
@@ -5033,6 +5273,9 @@ end;
 function TActorAnimation.GetDisplayName : String;
 begin
 	Result:=Format('%d - %s [%d - %d]', [Index, Name, StartFrame, EndFrame]);
+
+
+
 end;
 
 // FrameCount
@@ -5095,6 +5338,13 @@ begin
       StartFrame:=StartFrame;
       EndFrame:=EndFrame;
    end;
+
+
+
+
+
+
+
 end;
 
 // SetAsString
@@ -5130,6 +5380,7 @@ const
 begin
    Result:=Format('"%s",%d,%d,%s',
                   [FName, FStartFrame, FEndFrame, cAARToString[Reference]]);
+
 end;
 
 // OwnerActor
@@ -5137,6 +5388,24 @@ end;
 function TActorAnimation.OwnerActor : TGLActor;
 begin
    Result:=((Collection as TActorAnimations).GetOwner as TGLActor);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 end;
 
 // MakeSkeletalTranslationStatic
@@ -5144,6 +5413,9 @@ end;
 procedure TActorAnimation.MakeSkeletalTranslationStatic;
 begin
    OwnerActor.Skeleton.MakeSkeletalTranslationStatic(StartFrame, EndFrame);
+
+
+
 end;
 
 // MakeSkeletalRotationDelta
@@ -5177,6 +5449,11 @@ end;
 procedure TActorAnimations.SetItems(index : Integer; const val : TActorAnimation);
 begin
 	inherited Items[index]:=val;
+
+
+
+
+
 end;
 
 // GetItems
@@ -5217,6 +5494,12 @@ end;
 //
 function TActorAnimations.FindFrame(aFrame : Integer;
                         aReference : TActorAnimationReference) : TActorAnimation;
+
+
+
+
+
+
 var
    i : Integer;
 begin
@@ -5232,6 +5515,7 @@ end;
 // SetToStrings
 //
 procedure TActorAnimations.SetToStrings(aStrings : TStrings);
+
 var
    i : Integer;
 begin
@@ -5254,6 +5538,9 @@ begin
    WriteCRLFString(aStream, IntToStr(Count));
    for i:=0 to Count-1 do
       WriteCRLFString(aStream, Items[i].AsString);
+
+
+
 end;
 
 // LoadFromStream
@@ -5306,6 +5593,9 @@ end;
 constructor TGLAnimationControler.Create(AOwner: TComponent);
 begin
 	inherited Create(AOwner);
+
+
+
 end;
 
 // Destroy
@@ -5314,6 +5604,9 @@ destructor TGLAnimationControler.Destroy;
 begin
    SetActor(nil);
 	inherited Destroy;
+
+
+
 end;
 
 // Notification
@@ -5331,6 +5624,14 @@ begin
    if Assigned(FActor) and (AnimationName<>'') then
       FActor.NotifyChange(Self);
 end;
+
+
+
+
+
+
+
+
 
 // SetActor
 //
