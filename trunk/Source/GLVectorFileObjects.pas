@@ -1803,7 +1803,6 @@ procedure TBaseMeshObject.Clear;
 begin
    FNormals.Clear;
    FVertices.Clear;
-
 end;
 
 // ContributeToBarycenter
@@ -2969,7 +2968,7 @@ begin
       end;
       // with lightmap texcoords units active, wee seem to actually lose performance...
       if GL_EXT_compiled_vertex_array and (LighmapTexCoords.Count=0) then
-         glLockArraysEXT(0, vertices.Count);
+         glLockArraysEXT(0, vertices.Count); 
       FArraysDeclared:=True;
       FLightMapArrayEnabled:=False;
    end;

@@ -3913,7 +3913,7 @@ begin
    if not Assigned(FChildren) then Exit;
    oldCulling:=rci.visibilityCulling;
    if Self.VisibilityCulling<>vcInherited then
-      rci.visibilityCulling:=Self.visibilityCulling;
+      rci.visibilityCulling:=Self.VisibilityCulling;
    if lastChildIndex=firstChildIndex then
       Get(firstChildIndex).Render(rci)
    else if lastChildIndex>firstChildIndex then begin
