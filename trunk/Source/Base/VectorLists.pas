@@ -62,7 +62,7 @@ type
 		protected
          { Protected Declarations }
          //: The base list pointer (untyped)
-         FBaseList : PByteArray;
+         FBaseList : VectorGeometry.PByteArray;
          //: Must be defined by all subclasses in their constructor(s)
          FItemSize : Integer;
 
