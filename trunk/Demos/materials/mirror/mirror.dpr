@@ -2,8 +2,7 @@ program mirror;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1},
-  GLMirror in '..\..\Source\GLMirror.pas';
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.RES}
 

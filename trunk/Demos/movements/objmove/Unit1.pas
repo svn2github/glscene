@@ -152,7 +152,7 @@ begin
       canvas.Font.Color := clWhite;
 
       if Assigned(currentPick) then begin
-         objPos:=currentPick.Position.AsAffineVector;
+         SetVector(objPos, currentPick.AbsolutePosition);
          canvas.TextOut(3, 3 + 1 * canvas.TextHeight('A'),
                         Format('New Object Position: Xn: %4.4f, Yn: %4.4f, Zn: %4.4f',
                                [objPos[0], objPos[1], objPos[2]]));
