@@ -6,6 +6,7 @@
 	A polymorphism-enabled TCollection-like set of classes<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/03 - DanB - Added TXCollection.GetOrCreate
       <li>18/02/01 - EG - Fixed TXCollectionItem.Destroy (count decrementation)
       <li>02/02/01 - EG - CanAdd now virtual
       <li>09/06/00 - EG - Added GetByClass
@@ -145,6 +146,7 @@ type
 			property Items[index : Integer] : TXCollectionItem read GetItems; default;
          property Count : Integer read FCount;
 			function Add(anItem : TXCollectionItem) : Integer;
+                        function GetOrCreate(anItem:TXCollectionItemClass) : TXCollectionItem;
 			procedure Delete(index : Integer);
 			procedure Remove(anItem : TXCollectionItem);
 			procedure Clear;
@@ -551,6 +553,20 @@ begin
 	anItem.FOwner:=Self;
 	Result:=FList.Add(anItem);
    FCount:=FList.Count;
+end;
+
+// GetOrCreate
+//
+function TXCollection.GetOrCreate(anItem:TXCollectionItemClass) : TXCollectionItem;
+var
+	i : Integer;
+begin
+        Assert(anItem.InheritsFrom(ItemsClass));
+
+	i:=Self.IndexOfClass(anItem);
+	if i>=0 then
+		Result:=TXCollectionItem(Self[i])
+	else Result:=anItem.Create(Self);
 end;
 
 // Delete
