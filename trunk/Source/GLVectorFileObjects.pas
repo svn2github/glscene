@@ -1375,8 +1375,11 @@ type
                                         intersectPoint : PVector = nil;
                                         intersectNormal : PVector = nil) : Boolean;
          function OctreeTriangleIntersect(const v1, v2, v3: TAffineVector): boolean;
+         {: Returns true if Point is inside the free form - this will only work
+         properly on closed meshes. Requires that Octree has been prepared.}
+         function OctreePointInMesh(const Point : TVector) : boolean;
          function OctreeAABBIntersect(const AABB: TAABB; objMatrix,invObjMatrix: TMatrix; triangles:TAffineVectorList=nil): boolean;
-//         TODO:  function OctreeSphereIntersect         
+//         TODO:  function OctreeSphereIntersect
 
          {: Octree support *experimental*.<p>
             Use only if you understand what you're doing! }
@@ -6420,6 +6423,45 @@ begin
    end;
 end;
 
+// OctreePointInMesh
+//
+function TGLFreeForm.OctreePointInMesh(const Point: TVector): boolean;
+var
+  rayStart, rayVector, hitPoint, hitNormal : TVector;
+  BRad : single;
+  HitCount : integer;
+begin
+  Assert(Assigned(FOctree), 'Octree must have been prepared and setup before use.');
+
+  result := false;
+
+  BRad := BoundingSphereRadius;
+
+  // This could be a fixed vector, but a fixed vector could have a systemic
+  // bug on an non-closed mesh
+  rayVector := VectorMake(2*random-1, 2*random-1, 2*random-1);
+  rayStart := VectorAdd(VectorScale(rayVector, -BRad), Point);
+
+  HitCount := 0;
+
+  while OctreeRayCastIntersect(rayStart, rayVector, @hitPoint, @hitNormal) do
+  begin
+    // Are we past our taget?
+    if VectorDotProduct(rayVector, VectorSubtract(Point, hitPoint))<0 then
+    begin
+      result := HitCount>0;
+      exit;
+    end;
+
+    if VectorDotProduct(hitNormal, rayVector)<0 then
+      inc(HitCount)
+    else
+      dec(HitCount);
+
+    rayStart := VectorAdd(hitPoint, VectorScale(rayVector, BRad/1000));
+  end;
+end;
+
 // OctreeSphereIntersect
 //
 function TGLFreeForm.OctreeSphereSweepIntersect(const rayStart, rayVector : TVector;
@@ -7366,6 +7408,7 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
+
 
 initialization
 // ------------------------------------------------------------------
