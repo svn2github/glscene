@@ -548,6 +548,12 @@ function VectorDotProduct(const V1, V2 : TVector) : Single; overload;
    Result:=V1[X] * V2[X] + V1[Y] * V2[Y] + V1[Z] * V2[Z] }
 function VectorDotProduct(const V1 : TVector; const V2 : TAffineVector) : Single; overload;
 
+{: Projects p on the line defined by o and direction.<p>
+   Performs VectorDotProduct(VectorSubtract(p, origin), direction), which,
+   if direction is normalized, computes the distance between origin and the
+   projection of p on the (origin, direction) line. }
+function PointProject(const p, origin, direction : TAffineVector) : Single;
+
 //: Calculates the cross product between vector 1 and 2
 function VectorCrossProduct(const V1, V2 : TAffineVector): TAffineVector; overload;
 //: Calculates the cross product between vector 1 and 2
@@ -2742,9 +2748,34 @@ begin
 {$endif}
 end;
 
+// PointProject
+//
+function PointProject(const p, origin, direction : TAffineVector) : Single;
+// EAX -> p, EDX -> origin, ECX -> direction
+{$ifndef GEOMETRY_NO_ASM}
+asm
+      fld   dword ptr [eax]
+      fsub  dword ptr [edx]
+      fmul  dword ptr [ecx]
+      fld   dword ptr [eax+4]
+      fsub  dword ptr [edx+4]
+      fmul  dword ptr [ecx+4]
+      fadd
+      fld   dword ptr [eax+8]
+      fsub  dword ptr [edx+8]
+      fmul  dword ptr [ecx+8]
+      fadd
+{$else}
+begin
+   Result:= direction[0]*(p[0]-origin[0])
+           +direction[1]*(p[1]-origin[1])
+           +direction[2]*(p[2]-origin[2]);
+{$endif}
+end;
+
 // VectorCrossProduct
 //
-function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector;
+function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector; register;
 begin
    Result[X]:=V1[Y] * V2[Z] - V1[Z] * V2[Y];
    Result[Y]:=V1[Z] * V2[X] - V1[X] * V2[Z];
