@@ -11,6 +11,7 @@
    It's a matter of leverage. <p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/07/03 - EG - Optimized TVCCube collider
       <li>11/07/03 - MF - A bit of a documentation effort
       <li>10/07/03 - MF - Verlets now use spatial partitioning objects to speed
                           up space queries
@@ -1454,10 +1455,15 @@ end;
 procedure TVerletWorld.SatisfyConstraints(const deltaTime, newTime : Double);
 var
    i, j : Integer;
+   Constraint : TVerletConstraint;
 begin
-   for i:=0 to FConstraints.Count-1 do with FConstraints[i] do
-     if Enabled then
-        BeforeIterations;//}
+   for i:=0 to FConstraints.Count-1 do
+   begin
+     Constraint := FConstraints[i];
+     if not (Constraint is TVCStick) and
+        Constraint.Enabled then//}
+      Constraint.BeforeIterations;
+   end;
 
    if UpdateSpacePartion=uspEveryFrame then
      inc(FCurrentStepCount);
@@ -2008,80 +2014,46 @@ end;//*)
 procedure TVCCube.SatisfyConstraintForNode(const aNode: TVerletNode;
   const iteration, maxIterations: Integer);
 var
-  P, AbsP, dp, ContactNormal, SideSign : TAffineVector;
-  SmallestSide : integer;
-  procedure TestSide(Side : integer);
-  begin
-    if (p[Side])<0 then
-    begin
-      p[Side]:=-FHalfSides[Side]-p[Side];
-      SideSign[Side] := -1;
-    end
-    else
-    begin
-      p[Side]:=FHalfSides[Side]-p[Side];
-      SideSign[Side] := 1;
-    end;
-  end;
+   p, absP, contactNormal : TAffineVector;
+   dp : Single;
+   smallestSide : Integer;
 begin
-  // TODO: Direction of Cube should be used to rotate the nodes location, as it
-  // stands, the cube can only face in one direction.
+   // TODO: Direction of Cube should be used to rotate the nodes location, as it
+   // stands, the cube can only face in one direction.
 
-  P := VectorSubtract(FLocation, aNode.FLocation);
+   p:=VectorSubtract(aNode.FLocation, FLocation);
 
-  if (abs(p[0])>FHalfSides[0]) or (abs(p[1])>FHalfSides[1]) or (abs(p[2])>FHalfSides[2]) then
-  begin
-    exit;
-  end;
+   absP[0]:=FHalfSides[0]-Abs(p[0]);
+   absP[1]:=FHalfSides[1]-Abs(p[1]);
+   absP[2]:=FHalfSides[2]-Abs(p[2]);
 
-  TestSide(0);
-  TestSide(1);
-  TestSide(2);
+   if (PInteger(@absP[0])^<=0) or (PInteger(@absP[1])^<=0) or(PInteger(@absP[2])^<=0) then
+      Exit;
 
-  AbsP := p;
-  AbsVector(AbsP);
+   if absP[0]<absP[1] then
+      if absP[0]<absP[2] then
+         smallestSide:=0
+      else smallestSide:=2
+   else if absP[1]<absP[2] then
+      smallestSide:=1
+   else smallestSide:=2;
 
-  if AbsP[0]<AbsP[1] then
-  begin
-    if AbsP[0]<AbsP[2] then
-    begin
-      // 0 is smallest
-      SmallestSide := 0;
-    end else
-    begin
-      // 2 is smallest
-      SmallestSide := 2;
-    end;
-  end else
-  begin
-    if AbsP[1]<AbsP[2] then
-    begin
-      // 1 is smallest
-      SmallestSide := 1;
-    end else
-    begin
-      // 2 is smallest
-      SmallestSide := 2;
-    end;
-  end;
+   contactNormal:=NullVector;
 
-  // Clear dp
-  dp[0] := 0;
-  dp[1] := 0;
-  dp[2] := 0;
+   // Only move along the "shortest" axis
+   if PInteger(@p[smallestSide])^>=0 then begin
+      dp:=absP[smallestSide];
+      contactNormal[smallestSide]:=1;
+      aNode.ApplyFriction(FFrictionRatio, dp, contactNormal);
+      aNode.FLocation[smallestSide]:=aNode.FLocation[smallestSide]+dp;
+   end else begin
+      dp:=absP[smallestSide];
+      contactNormal[smallestSide]:=-1;
+      aNode.ApplyFriction(FFrictionRatio, dp, contactNormal);
+      aNode.FLocation[smallestSide]:=aNode.FLocation[smallestSide]-dp;
+   end;
 
-  ContactNormal := dp;
-
-  // Only move along the "shortest" axis
-  dp[SmallestSide] := P[SmallestSide];
-  ContactNormal[SmallestSide] := SideSign[SmallestSide];
-
-  // Slow it down!
-  //aNode.OldApplyFriction(0.05, abs(P[SmallestSide]));
-  aNode.ApplyFriction(FFrictionRatio, abs(P[SmallestSide]), ContactNormal);
-
-  SubtractVector(aNode.FLocation, dp);
-  aNode.FChangedOnStep := Owner.CurrentStepCount;
+   aNode.FChangedOnStep:=Owner.CurrentStepCount;
 end;
 
 procedure TVCCube.SetSides(const Value: TAffineVector);

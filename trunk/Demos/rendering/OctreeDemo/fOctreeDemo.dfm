@@ -13,6 +13,7 @@ object frmOctreeDemo: TfrmOctreeDemo
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnMouseWheel = FormMouseWheel
   DesignSize = (
     792

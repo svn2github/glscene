@@ -38,6 +38,7 @@ type
       newTime: Double);
     procedure TrackBar_LeafThresholdChange(Sender: TObject);
     procedure Button_ResetOctreeSizeClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -389,4 +390,10 @@ begin
   Octree.UpdateStructureSize(0.05);
   Octree.GrowMethod := gmIncreaseToFitAll;
 end;
+
+procedure TfrmOctreeDemo.FormDestroy(Sender: TObject);
+begin
+  Octree.Free;
+end;
+
 end.

@@ -202,6 +202,10 @@ begin
 
   if CheckBox_UseOctree.Checked then
     VerletWorld.CreateOctree(
+      AffineVectorMake( -20, -5.5, -20),
+      AffineVectorMake(  20,  20,  20), 25, 5);//}
+
+{    VerletWorld.CreateOctree(
       AffineVectorMake( 0, 0, 0),
       AffineVectorMake( 0, 0, 0), 25, 5);//}
 
