@@ -245,11 +245,7 @@ procedure TGLPerlinPFXManager.PrepareImage(bmp32 : TGLBitmap32; var texFormat : 
 
 var
    s, s2 : Integer;
-   is2, f, fy, pf, nBase, nAmp, df, dfg : Single;
-   invGamma : Single;
-   scanLine : PGLPixel32Array;
    noise : TPerlin3DNoise;
-   gotIntensityCorrection : Boolean;
 begin
    s:=(1 shl TexMapSize);
    bmp32.Width:=s;
