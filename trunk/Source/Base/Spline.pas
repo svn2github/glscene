@@ -2,6 +2,7 @@
 {: Cubic spline interpolation functions<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>16/07/02 - Egg - Added methods to access slope per axis
 	   <li>28/05/00 - Egg - Javadocisation, minor changes & optimizations,
                            Renamed TSpline to TCubicSpline, added W component
                            and a bunch of helper methods
@@ -66,6 +67,14 @@ type
          {: Calculates vector at time t.<p> }
          procedure SplineVector(const t : single; var vector : TVector); overload;
 
+         {: Calculates X component slope at time t.<p> }
+         function SplineSlopeX(const t : Single): Single;
+         {: Calculates Y component slope at time t.<p> }
+         function SplineSlopeY(const t : single): Single;
+         {: Calculates Z component slope at time t.<p> }
+         function SplineSlopeZ(const t : single): Single;
+         {: Calculates W component slope at time t.<p> }
+         function SplineSlopeW(const t : single): Single;
          {: Calculates the spline slope at time t. }
          function SplineSlopeVector(const t : single) : TAffineVector; overload;
 
@@ -344,6 +353,34 @@ begin
    vector[1]:=MATValeurSpline(MatY, t, FNb);
    vector[2]:=MATValeurSpline(MatZ, t, FNb);
    vector[3]:=MATValeurSpline(MatW, t, FNb);
+end;
+
+// SplineSlopeX
+//
+function TCubicSpline.SplineSlopeX(const t : Single): Single;
+begin
+   Result:=MATValeurSplineSlope(MatX, t, FNb);
+end;
+
+// SplineSlopeY
+//
+function TCubicSpline.SplineSlopeY(const t : single): Single;
+begin
+   Result:=MATValeurSplineSlope(MatY, t, FNb);
+end;
+
+// SplineSlopeZ
+//
+function TCubicSpline.SplineSlopeZ(const t : single): Single;
+begin
+   Result:=MATValeurSplineSlope(MatZ, t, FNb);
+end;
+
+// SplineSlopeW
+//
+function TCubicSpline.SplineSlopeW(const t : single): Single;
+begin
+   Result:=MATValeurSplineSlope(MatW, t, FNb);
 end;
 
 // SplineSlopeVector
