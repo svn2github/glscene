@@ -1602,6 +1602,7 @@ begin
       glDisable(GL_TEXTURE_2D);
       currentTexturingMode:=0;
       glDisable(GL_LIGHTING);
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
       case FBlendingMode of
          bmAdditive : begin
