@@ -3469,9 +3469,9 @@ begin
    	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_2D, Handle);
       end
       else
-      // float32 // doesn't affect ATI_float 
+        // NV float needs GL_TEXTURE_RECTANGLE_NV; doesn't affect ATI_float
         if Image.NativeTextureTarget=GL_TEXTURE_RECTANGLE_NV then begin
-   		   rci.GLStates.SetGLState(stTextureRect); // float32
+   		   rci.GLStates.SetGLState(stTextureRect);
      	   rci.GLStates.SetGLCurrentTexture(0, GL_TEXTURE_RECTANGLE_NV, Handle);
         end
       else
