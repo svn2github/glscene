@@ -53,6 +53,17 @@ end;
 //
 procedure TGLQ3BSPVectorFile.LoadFromStream(aStream : TStream);
 
+   function LocateTextureFile(const texName : String) : String;
+   begin
+      if FileStreamExists(texName+'.bmp') then
+         Result:=texName+'.bmp'
+      else if FileStreamExists(texName+'.jpg') then
+         Result:=texName+'.jpg'
+      else if FileStreamExists(texName+'.tga') then
+         Result:=texName+'.tga'
+      else Result:='';
+   end;
+
    function GetOrAllocateMaterial(const matName : String) : String;
    var
       matLib : TGLMaterialLibrary;
@@ -67,10 +78,9 @@ procedure TGLQ3BSPVectorFile.LoadFromStream(aStream : TStream);
             libMat:=matLib.Materials.GetLibMaterialByName(matName);
             if not Assigned(libMat) then begin
                if Pos('.', matName)<1 then begin
-                  texName:='';
-                  if FileStreamExists(matName+'.bmp') then texName:=matName+'.bmp';
-                  if FileStreamExists(matName+'.jpg') then texName:=matName+'.jpg';
-                  if FileStreamExists(matName+'.tga') then texName:=matName+'.tga';
+                  texName:=LocateTextureFile(matName);
+                  if texName='' then
+                     texName:=LocateTextureFile(Copy(matName, LastDelimiter('\/', matName)+1, MaxInt));
                end else texName:=matName;
                with matLib.AddTextureMaterial(matName, texName) do begin
 //                  Material.Texture.TextureMode:=tmModulate;
@@ -141,9 +151,12 @@ begin
                if Cardinal(facePtr.textureID)<=Cardinal(bsp.NumOfTextures) then
                   fg.MaterialName:=Trim(StrPas(bsp.Textures[facePtr.textureID].TextureName));
                lastfg:=fg;
-               // Q3 Polygon Faces are actually fans
+               // Q3 Polygon Faces are actually fans, but winded the other way around!
                fg.Mode:=fgmmTriangleFan;
-               fg.VertexIndices.AddSerie(facePtr.startVertIndex, 1, facePtr.numOfVerts);
+               fg.VertexIndices.Add(facePtr.startVertIndex);
+               fg.VertexIndices.AddSerie(facePtr.startVertIndex+facePtr.numOfVerts-1,
+                                         -1,
+                                         facePtr.numOfVerts-1);
                // there are also per-leaf mesh references... dunno what they
                // are for, did not encounter them so far... If you have a BSP
                // that has some, and if you know how to make use of them, shout!
