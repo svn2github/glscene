@@ -496,7 +496,7 @@ procedure QuickSortLists(startIndex, endIndex : Integer;
 {: Sort the refList in ascending order, ordering objList on the way.<p>
    Use if, and *ONLY* if refList contains only values superior or equal to 1. }
 procedure FastQuickSortLists(startIndex, endIndex : Integer;
-				      			  refList : TSingleList; objList : TList);
+				      			  refList : TSingleList; objList : TPersistentObjectList);
 
 
 // ------------------------------------------------------------------
@@ -581,7 +581,7 @@ end;
 // FastQuickSortLists
 //
 procedure FastQuickSortLists(startIndex, endIndex : Integer;
-								     refList : TSingleList; objList : TList);
+								     refList : TSingleList; objList : TPersistentObjectList);
 type
    PSingle = ^Single;
 var

@@ -151,8 +151,8 @@ type
 
    TPersistentObjectClass = class of TPersistentObject;
 
-	PPointerObjectList = ^TPointerObjectList;
 	TPointerObjectList = array [0..MaxInt shr 3] of TObject;
+	PPointerObjectList = ^TPointerObjectList;
 
    // TPersistentObjectList
    //
