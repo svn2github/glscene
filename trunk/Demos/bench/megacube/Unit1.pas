@@ -8,6 +8,9 @@
 	Results :
 
 	Size	 Triangles     FPS	    CPU      OpenGL     ColorDepth
+
+	  5      15972      99.4     K7-1145    GF2 Pro       32Bits
+   --- 23/01/02 --- Minor structural optimizations
 	  5      15972      92.2     K7-1145    GF2 Pro       32Bits
    --- 20/01/02 --- Long time no bench, fair improvement though :)
 	  5      15972      80.1     K7-1066    GF2 Pro       32Bits
