@@ -3,6 +3,7 @@
    Movement path behaviour by Roger Cao<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
       <li>20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
       <li>14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
                            use of standard classes and documentation
@@ -813,13 +814,16 @@ var
   L:       single;
   Interpolated: boolean;
   T:       double;
+  a:double;
 
-  procedure Interpolation(ReturnNode: TGLPathNode; Time1, Time2: double; Index: integer);
+  procedure Interpolation(ReturnNode: TGLPathNode; Time1, Time2: double;
+Index: integer);
   var
     Ratio: double;
     x, y, z, p, t, r, sx, sy, sz: single;
   begin
-    Ratio := Time2 / Time1 + Index;
+    Ratio:=(Nodes[I - 1].Speed*Time2+0.5*a*time2*time2)/L + Index;
+
     MotionSplineControl.SplineXYZ(Ratio, x, y, z);
     RotationSplineControl.SplineXYZ(Ratio, p, t, r);
     ScaleSplineControl.SplineXYZ(Ratio, sx, sy, sz);
@@ -838,10 +842,10 @@ begin
   Interpolated := False;
   while I < FNodes.Count do
   begin
-    L := NodeDistance(Nodes[I], Nodes[I - 1]);
-    T := L / Nodes[I - 1].Speed;
+    T := L / (Nodes[I - 1].Speed+Nodes[I - 0].Speed)*2;
     if (SumTime + T) >= CurrentTime then
     begin
+      a:=(Nodes[I - 0].Speed-Nodes[I - 1].Speed)/T;
       Interpolation(FCurrentNode, T, CurrentTime - SumTime, I - 1);
       Interpolated := True;
       break;
@@ -858,6 +862,7 @@ begin
     TravelPath(False);
   end;
 end;
+
 
 function TGLMovementPath.CanTravel: boolean;
 var
@@ -1619,3 +1624,4 @@ initialization
   RegisterXCollectionItemClass(TGLMovement);
 
 end.
+
