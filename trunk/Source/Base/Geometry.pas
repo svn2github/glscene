@@ -738,6 +738,8 @@ procedure AbsVector(var v : TVector); overload;
 procedure AbsVector(var v : TAffineVector); overload;
 //: Returns a vector with components replaced by their Abs value. }
 function VectorAbs(const v : TVector) : TVector; overload;
+//: Returns a vector with components replaced by their Abs value. }
+function VectorAbs(const v : TAffineVector) : TAffineVector; overload;
 
 //------------------------------------------------------------------------------
 // Matrix functions
@@ -4557,6 +4559,15 @@ begin
    Result[1]:=Abs(v[1]);
    Result[2]:=Abs(v[2]);
    Result[3]:=Abs(v[3]);
+end;
+
+// VectorAbs (affine)
+//
+function VectorAbs(const v : TAffineVector) : TAffineVector;
+begin
+   Result[0]:=Abs(v[0]);
+   Result[1]:=Abs(v[1]);
+   Result[2]:=Abs(v[2]);
 end;
 
 // SetMatrix (single->double)
