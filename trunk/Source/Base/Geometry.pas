@@ -871,6 +871,10 @@ function MaxAbsXYZComponent(v : TVector) : Single;
 {: Returns the min of the Abs(X), Abs(Y) and Abs(Z) components of a vector (W is ignored). }
 function MinAbsXYZComponent(v : TVector) : Single;
 
+{: Sorts given array in ascending order.<p>
+   NOTE : current implementation is a slow bubble sort... }
+procedure SortArrayAscending(a : PDoubleArray; nbItems : Integer);
+
 {: Clamps aValue in the aMin-aMax interval.<p> }
 function ClampValue(const aValue, aMin, aMax : Single) : Single; overload;
 {: Clamps aValue in the aMin-INF interval.<p> }
@@ -4782,6 +4786,25 @@ function MinAbsXYZComponent(v : TVector) : Single;
 begin
    AbsVector(v);
    Result:=MinXYZComponent(v);
+end;
+
+// SortArrayAscending
+//
+procedure SortArrayAscending(a : PDoubleArray; nbItems : Integer);
+var
+   i, j, m : Integer;
+   buf : Double;
+begin
+   for i:=0 to nbItems-2 do begin
+      m:=i;
+      for j:=i+1 to nbItems-1 do
+         if a[j]<a[m] then m:=j;
+      if m<>i then begin
+         buf:=a[m];
+         a[m]:=a[i];
+         a[i]:=buf;
+      end;
+   end;
 end;
 
 // ClampValue (min-max)

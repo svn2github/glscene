@@ -792,6 +792,9 @@ type
 
          procedure BuildList(var rci : TRenderContextInfo); override;
          function AxisAlignedDimensions : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                   intersectPoint : PAffineVector = nil;
+                                   intersectNormal : PAffineVector = nil) : Boolean; override;
 
       published
 			{ Published Declarations }
@@ -1058,7 +1061,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses Consts, Dialogs, Forms, GLStrings, Spline, XOpenGL;
+uses Consts, Dialogs, Forms, GLStrings, Spline, XOpenGL, Polynomials;
 
 var
 	vFontManager : TFontManager;
@@ -3397,6 +3400,58 @@ begin
    r1:=Abs(FMinorRadius);
    Result:=VectorMake(r, r1, r);
    ScaleVector(Result, Scale.AsVector);
+end;
+
+// RayCastIntersect
+//
+function TTorus.RayCastIntersect(const rayStart, rayVector : TAffineVector;
+                                 intersectPoint : PAffineVector = nil;
+                                 intersectNormal : PAffineVector = nil) : Boolean;
+var
+   i : Integer;
+   fRo2, fRi2, fDE, fVal : Double;
+   polynom : array [0..4] of Double;
+   polyComplexRoots : TComplexArray;
+   v : TAffineVector;
+begin
+    // The ray is p*dir+eye, p >= 0.  The intersection is determined by
+    // p^4+c3*p^3+c2*p^2+c1*p+c0 = 0.  The direction is assumed to be towards
+    // the object from the observer so that the minimum p solution gives the
+    // nearest intersection.
+
+    // compute coefficients of quartic polynomial
+    fRo2 := Sqr(FMajorRadius);
+    fRi2 := Sqr(FMinorRadius);
+    SetVector(v, AbsolutePosition);
+    SubtractVector(v, rayStart);
+    ScaleVector(v, -1);
+    fDE  := VectorDotProduct(v, rayVector);
+    fVal := VectorNorm(v) - (fRo2 + fRi2);
+
+    polynom[0] := Sqr(fVal) - 4.0*fRo2*(fRi2 - Sqr(v[2]));
+    polynom[1] := 4.0*fDE*fVal + 8.0*fRo2*rayVector[2]*v[2];
+    polynom[2] := 2.0*fVal + 4.0*Sqr(fDE) + 4.0*fRo2*Sqr(rayVector[2]);
+    polynom[3] := 4.0*fDE;
+    polynom[4] := 1;
+
+    // solve the quartic
+    polyComplexRoots:=qtcrt(@polynom[0]);
+
+    // search for closest point
+    Result:=False;
+    for i:=Low(polyComplexRoots) to High(polyComplexRoots) do begin
+      if polyComplexRoots[i].Imag=0 then begin
+         v:=VectorCombine(rayStart, rayVector, 1, polyComplexRoots[i].Real);
+         if Assigned(intersectPoint) then begin
+            SetVector(intersectPoint^, v);
+         end;
+         if Assigned(intersectNormal) then begin
+            SetVector(intersectNormal^, XVector);
+         end;
+         Result:=True;
+         Break;
+      end;
+    end;
 end;
 
 //----------------- TTeapot ----------------------------------------------------
