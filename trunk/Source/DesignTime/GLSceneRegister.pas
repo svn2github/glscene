@@ -129,7 +129,8 @@ uses
    TypInfo, GLParticles, GLCadencer, GLStrings, GLCollision, GLSound, GLPortal,
    GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
    GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
-   GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText, GLWindows
+   GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
+   GLWindows, GLShadowPlane
 {$ifdef WIN32}
    , GLWin32Viewer
 {$endif}
@@ -1807,6 +1808,7 @@ initialization
       RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
       RegisterSceneObject(TSkyDome, 'SkyDome', glsOCSpecialObjects);
       RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCSpecialObjects);
+      RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
       RegisterSceneObject(TSpaceText, 'SpaceText', glsOCSpecialObjects);
       RegisterSceneObject(TTeapot, 'Teapot', glsOCSpecialObjects);
       RegisterSceneObject(TTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);

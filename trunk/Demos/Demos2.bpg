@@ -14,7 +14,7 @@ PROJECTS = candles.exe Thor.exe cutoutstar.exe texanim.exe culling.exe centering
   pointto.exe cubemap.exe basicsdl.exe dyncubemap.exe tobitmap.exe meshhit.exe \
   mirror.exe canvas.exe spiral.exe fullscreen.exe megaglasscube.exe events.exe \
   fire2d.exe octreedemo.exe boxedin.exe skeletal.exe meshexplosion.exe hfpick.exe \
-  fontcolor.exe synthterr.exe multipass.exe
+  fontcolor.exe synthterr.exe multipass.exe shadowplane.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -116,4 +116,7 @@ synthterr.exe: meshes\synthterr\synthterr.dpr
   $(DCC)
 
 multipass.exe: materials\multipass\multipass.dpr
+  $(DCC)
+
+shadowplane.exe: specialsFX\shadowplane\shadowplane.dpr
   $(DCC)

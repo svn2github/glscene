@@ -31,7 +31,7 @@ type
    // TGLMirror
    //
    {: A simple plane mirror.<p>
-      This mirror requires a stencil buffer!<p>
+      This mirror requires a stencil buffer for optimal rendering!<p>
       The object is a mix between a plane and a proxy object, in that the plane
       defines the mirror's surface, while the proxy part is used to reference
       the objects that should be mirrored (it is legal to self-mirror, but no
@@ -78,8 +78,8 @@ type
                objects to be visible on the sides of the mirror (stencil buffer
                must be active in the viewer)
             <li>moOpaque: mirror is opaque (ie. painted with background color)
-            <li>moMirrorPlaneClip: a ClipPlane is defined when reflecting objects
-               to prevent reflections from popping out of the mirror
+            <li>moMirrorPlaneClip: a ClipPlane is defined to prevent reflections
+               from popping out of the mirror (for objects behind or halfway through)
             <li>moClearZBuffer: mirror area's ZBuffer is cleared so that background
                objects don't interfere with reflected objects (reflected objects
                must be rendered AFTER the mirror in the hierarchy)
@@ -259,7 +259,7 @@ var
 begin
    hw:=FWidth*0.5;
    hh:=FHeight*0.5;
-   glNormal3fv(@YVector);
+   glNormal3fv(@ZVector);
    glBegin(GL_QUADS);
       glVertex3f( hw,  hh, 0);
       glVertex3f(-hw,  hh, 0);
