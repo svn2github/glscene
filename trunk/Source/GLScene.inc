@@ -3,6 +3,7 @@
 //                  by Brad Stowers: bstowers@pobox.com
 //                  Delphi Free Stuff: http://www.delphifreestuff.com/
 //
+// 24/01/02 - EG - Linux/Kylix changes (Puthoon)
 // 28/12/01 - EG - Added GLS_Graphics32_SUPPORT
 // 27/07/01 - EG - Renamed and made GLScene-specific
 // 26/06/01 - EG - Added Delphi6 stuff
@@ -23,8 +24,18 @@
 
 {$IFDEF WIN32}
   {$DEFINE GLS_WIN32}
+  {$DEFINE MSWINDOWS}
 {$ELSE}
-  {$DEFINE GLS_WIN16}
+  {$IFNDEF LINUX}
+    {$DEFINE GLS_WIN16}
+    {$DEFINE MSWINDOWS}
+  {$ENDIF LINUX}
+{$ENDIF}
+
+{$IFDEF MSWINDOWS}
+  {$DEFINE GLS_VCL}
+{$ELSE}
+  {$DEFINGE GLS_CLX}
 {$ENDIF}
 
 {$ifdef VER140}
@@ -116,6 +127,15 @@
   {$DEFINE GLS_COMPILER_3_UP}
   {$DEFINE GLS_COMPILER_4_UP}
   {$DEFINE GLS_COMPILER_5_UP}
+{$ENDIF}
+
+{$IFDEF GLS_COMPILER_6}
+  {$DEFINE GLS_COMPILER_1_UP}
+  {$DEFINE GLS_COMPILER_2_UP}
+  {$DEFINE GLS_COMPILER_3_UP}
+  {$DEFINE GLS_COMPILER_4_UP}
+  {$DEFINE GLS_COMPILER_5_UP}
+  {$DEFINE GLS_COMPILER_6_UP}
 {$ENDIF}
 
 {$IFDEF GLS_DELPHI_2}
