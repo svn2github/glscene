@@ -135,7 +135,7 @@ uses
    Geometry, GLTexture, SysUtils, GLCrossPlatform, GLStrings, GLScreen, GLMisc,
    GLObjects, GLVectorFileObjects, GLExtrusion, GLMultiPolygon, GLMesh, GLPortal,
    GLGraph, GLParticles, GLHUDObjects, GLSkydome, GLBitmapFont, GLLensFlare,
-   GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer,
+   GLMirror, GLParticleFX, GLShadowPlane, GLTerrainRenderer, GLShadowVolume,
 
 {$ifdef WIN32}
    FVectorEditor, GLSound,
@@ -1830,26 +1830,17 @@ initialization
       RegisterSceneObject(TGLFreeForm, 'FreeForm', glsOCMeshObjects);
       RegisterSceneObject(TGLMesh, 'Mesh', glsOCMeshObjects);
       RegisterSceneObject(TGLPortal, 'Portal', glsOCMeshObjects);
+      RegisterSceneObject(TGLTerrainRenderer, 'TerrainRenderer', glsOCMeshObjects);
 
-      RegisterSceneObject(TGLHeightField, 'HeightField', glsOCProceduralObjects);
-      RegisterSceneObject(TGLParticles, 'Particles', glsOCProceduralObjects);
+      RegisterSceneObject(TGLFlatText, 'FlatText', glsOCGraphPlottingObjects);
+      RegisterSceneObject(TGLHeightField, 'HeightField', glsOCGraphPlottingObjects);
+      RegisterSceneObject(TGLXYZGrid, 'XYZGrid', glsOCGraphPlottingObjects);
 
-      RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCSpecialObjects);
-      RegisterSceneObject(TGLFlatText, 'FlatText', glsOCSpecialObjects);
-      RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
-      RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
-      RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCSpecialObjects);
-      RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCSpecialObjects);
-      RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
-      {$ifdef WIN32}
-      RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCSpecialObjects);
-      {$endif}
-      RegisterSceneObject(TGLTeapot, 'Teapot', glsOCSpecialObjects);
-      RegisterSceneObject(TGLTerrainRenderer, 'TerrainRenderer', glsOCSpecialObjects);
-      RegisterSceneObject(TGLXYZGrid, 'XYZGrid', glsOCSpecialObjects);
-      {$ifdef WIN32}
-      RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
-      {$endif}
+      RegisterSceneObject(TGLParticles, 'Particles', glsOCParticleSystems);
+      RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', glsOCParticleSystems);
+
+      RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects);
+      RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCEnvironmentObjects);
 
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);
@@ -1868,6 +1859,19 @@ initialization
       RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects);
       RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', glsOCGuiObjects);
       {$endif}
+
+      RegisterSceneObject(TGLLensFlare, 'LensFlare', glsOCSpecialObjects);
+      RegisterSceneObject(TGLMirror, 'Mirror', glsOCSpecialObjects);
+      RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', glsOCSpecialObjects);
+      RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', glsOCSpecialObjects);
+      {$ifdef WIN32}
+      RegisterSceneObject(TGLZShadows, 'ZShadows', glsOCSpecialObjects);
+      {$endif}
+
+      {$ifdef WIN32}
+      RegisterSceneObject(TGLSpaceText, 'SpaceText', glsOCDoodad);
+      {$endif}
+      RegisterSceneObject(TGLTeapot, 'Teapot', glsOCDoodad);
 
       RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '');
       RegisterSceneObject(TGLProxyObject, 'ProxyObject', '');

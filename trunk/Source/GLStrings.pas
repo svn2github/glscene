@@ -48,9 +48,11 @@ resourcestring
   glsOCBasicGeometry = 'Basic geometry';
   glsOCAdvancedGeometry = 'Advanced geometry';
   glsOCMeshObjects = 'Mesh objects';
-  glsOCProceduralObjects = 'Procedural objects';
+  glsOCParticleSystems = 'Particle systems';
+  glsOCEnvironmentObjects = 'Environment objects';
   glsOCSpecialObjects = 'Special objects';
   glsOCGraphPlottingObjects = 'Graph-plotting objects';
+  glsOCDoodad = 'Doodad objects';
   glsOCHUDObjects = 'HUD objects';
   glsOCGuiObjects = 'GUI objects';
 
