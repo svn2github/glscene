@@ -187,6 +187,7 @@ type
 {$ifdef GLS_DELPHI_6_UP}
     function CanPaste(obj, destination : TGLBaseSceneObject) : Boolean;
     procedure CopyComponents(Root: TComponent; const Components: IDesignerSelections);
+   procedure MethodError(Reader: TReader; const MethodName: String; var Address: Pointer; var Error: Boolean);
     procedure PasteComponents(AOwner, AParent: TComponent;const Components: IDesignerSelections);
     procedure ReaderSetName(Reader: TReader; Component: TComponent; var Name: string);
     procedure ComponentRead(Component: TComponent);
@@ -1179,6 +1180,13 @@ begin
   end;
 end;
 
+procedure TGLSceneEditorForm.MethodError(Reader: TReader;
+      const MethodName: String; var Address: Pointer; var Error: Boolean);
+begin
+   // error is true because Address is nil in csDesigning
+   Error:=false;
+end;
+
 procedure TGLSceneEditorForm.PasteComponents(AOwner, AParent: TComponent;const Components: IDesignerSelections);
 var
   S: TStream;
@@ -1189,6 +1197,7 @@ begin
     R := TReader.Create(S, 1024);
     try
       R.OnSetName := ReaderSetName;
+      R.OnFindMethod := MethodError;
       FPasteOwner := AOwner;
       FPasteSelection := Components;
       R.ReadComponents(AOwner, AParent, ComponentRead);
