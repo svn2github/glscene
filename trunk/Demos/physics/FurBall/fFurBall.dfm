@@ -87,13 +87,24 @@ object frmFurBall: TfrmFurBall
     OnClick = CheckBox_BaldClick
   end
   object CheckBox_Shadows: TCheckBox
-    Left = 8
-    Top = 16
+    Left = 496
+    Top = 0
     Width = 65
     Height = 17
     Caption = '&Shadows'
     TabOrder = 5
     OnClick = CheckBox_ShadowsClick
+  end
+  object CheckBox_Inertia: TCheckBox
+    Left = 8
+    Top = 16
+    Width = 65
+    Height = 17
+    Caption = 'Fur &Inertia'
+    Checked = True
+    State = cbChecked
+    TabOrder = 6
+    OnClick = CheckBox_InertiaClick
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1

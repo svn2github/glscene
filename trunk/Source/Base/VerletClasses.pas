@@ -478,6 +478,8 @@ type
          FCollisionConstraintTypes: TCollisionConstraintTypesSet;
     FConstraintsWithBeforeIterations: TVerletConstraintList;
     FVerletNodeClass: TVerletNodeClass;
+    FInertia: boolean;
+    FInertaPauseSteps : integer;
 
 		protected
 			{ Protected Declarations }
@@ -499,6 +501,8 @@ type
          function AddForce(const aForce : TVerletForce) : Integer;
          procedure RemoveForce(const aForce : TVerletForce);
          procedure AddSolidEdge(const aNodeA, aNodeB : TVerletNode);
+
+         procedure PauseInertia(const IterationSteps : integer);
 
          function CreateOwnedNode(const location : TAffineVector;
                                   const aRadius : Single = 0;
@@ -538,6 +542,8 @@ type
          property CollisionConstraintTypes : TCollisionConstraintTypesSet read FCollisionConstraintTypes write FCollisionConstraintTypes;
 
          property VerletNodeClass : TVerletNodeClass read FVerletNodeClass write FVerletNodeClass;
+
+         property Inertia : boolean read FInertia write FInertia;
    end;
 
    // TVFGravity
@@ -867,21 +873,33 @@ end;
 //
 procedure TVerletNode.Verlet(const deltaTime, newTime : Double);
 var
-   newLocation, temp, move, accel : TAffineVector;
+  newLocation, temp, move, accel : TAffineVector;
 begin
    if NailedDown then begin
       FOldLocation:=Location;
    end else begin
-      temp:=Location;
-      VectorSubtract(Location, OldLocation, move);
-      ScaleVector(move, 1-Owner.Drag*deltaTime);
+      if Owner.Inertia then
+      begin
+        temp:=Location;
+        VectorSubtract(Location, OldLocation, move);
 
-      VectorAdd(Location, move, newLocation);
-      VectorScale(Force, Sqr(deltaTime)*FInvWeight, accel);
-      AddVector(newLocation, accel);
+        ScaleVector(move, 1-Owner.Drag*deltaTime);
 
-      Location:=newLocation;
-      FOldLocation:=temp;
+        VectorAdd(Location, move, newLocation);
+        VectorScale(Force, Sqr(deltaTime)*FInvWeight, accel);
+        AddVector(newLocation, accel);
+
+        Location:=newLocation;
+        FOldLocation:=temp;
+      end else
+      begin
+        newLocation := Location;
+        VectorScale(Force, Sqr(deltaTime)*FInvWeight, accel);
+        AddVector(newLocation, accel);
+
+        Location := newLocation;
+        FOldLocation:=Location;
+      end;
    end;
 end;
 
@@ -1224,6 +1242,7 @@ begin
    FCollisionConstraintTypes := [cctNode, cctEdge];
    FSpacePartition := nil;
    FVerletNodeClass := TVerletNode;
+   FInertia := true;
 end;
 
 // Destroy
@@ -1437,6 +1456,13 @@ begin
       Verlet(myDeltaTime, FSimTime);
       AccumulateForces(myDeltaTime, FSimTime);
       SatisfyConstraints(myDeltaTime, FSimTime);
+
+      if FInertaPauseSteps>0 then
+      begin
+        dec(FInertaPauseSteps);
+        if FInertaPauseSteps=0 then
+          Inertia := true;
+      end;
 
       Break;
    end;
@@ -2384,4 +2410,11 @@ begin
 
   inherited;
 end;
+
+procedure TVerletWorld.PauseInertia(const IterationSteps: integer);
+begin
+  FInertaPauseSteps := IterationSteps+1;
+  Inertia := false;
+end;
+
 end.

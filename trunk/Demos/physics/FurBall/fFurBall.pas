@@ -36,6 +36,7 @@ type
     Label_FPS: TLabel;
     Timer1: TTimer;
     CheckBox_Shadows: TCheckBox;
+    CheckBox_Inertia: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
@@ -51,6 +52,7 @@ type
     procedure CheckBox_BaldClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure CheckBox_ShadowsClick(Sender: TObject);
+    procedure CheckBox_InertiaClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -367,20 +369,19 @@ procedure TfrmFurBall.CheckBox_BaldClick(Sender: TObject);
 var
   i, j : integer;
 begin
-  if not CheckBox_Bald.Checked then
-    CreateFur else
+  for i := 0 to HairList.Count -1 do
   begin
-    for i := 0 to HairList.Count -1 do
+    with TVerletHair(HairList[i]) do
     begin
-      with TVerletHair(HairList[i]) do
-      begin
-        Anchor.NailedDown := not CheckBox_Bald.Checked;
-        Anchor.OldLocation := Anchor.Location;
-        Root.NailedDown := not CheckBox_Bald.Checked;
-        Root.OldLocation := Root.Location;
-      end;
+      Anchor.NailedDown := not CheckBox_Bald.Checked;
+      Anchor.OldLocation := Anchor.Location;
+      Root.NailedDown := not CheckBox_Bald.Checked;
+      Root.OldLocation := Root.Location;
     end;
   end;
+
+  if not CheckBox_Bald.Checked then
+    VerletWorld.PauseInertia(5);
 end;
 
 procedure TfrmFurBall.Timer1Timer(Sender: TObject);
@@ -403,5 +404,10 @@ begin
   GLShadowPlane_Wall.ShadowedLight := light;
   GLShadowPlane_Wall2.ShadowedLight := light;
   GLShadowPlane_Wall3.ShadowedLight := light;
+end;
+
+procedure TfrmFurBall.CheckBox_InertiaClick(Sender: TObject);
+begin
+  VerletWorld.Inertia := CheckBox_Inertia.Checked;
 end;
 end.
