@@ -1529,40 +1529,6 @@ asm
          FSTP DWORD PTR [ECX+12]
 end;
 
-// VectorAdd (hmg, proc)
-//
-procedure VectorAdd(const v1, v2 : TVector; var vr : TVector); register;
-// EAX contains address of V1
-// EDX contains address of V2
-// ECX contains the result
-asm
-         test vSIMD, 1
-         jz @@FPU
-@@3DNow:
-         db $0F,$6F,$00           /// movq  mm0, [eax]
-         db $0F,$0F,$02,$9E       /// pfadd mm0, [edx]
-         db $0F,$7F,$01           /// movq  [ecx], mm0
-         db $0F,$6F,$48,$08       /// movq  mm1, [eax+8]
-         db $0F,$0F,$4A,$08,$9E   /// pfadd mm1, [edx+8]
-         db $0F,$7F,$49,$08       /// movq  [ecx+8], mm1
-         db $0F,$0E               /// femms
-         ret
-
-@@FPU:
-         FLD  DWORD PTR [EAX]
-         FADD DWORD PTR [EDX]
-         FSTP DWORD PTR [ECX]
-         FLD  DWORD PTR [EAX+4]
-         FADD DWORD PTR [EDX+4]
-         FSTP DWORD PTR [ECX+4]
-         FLD  DWORD PTR [EAX+8]
-         FADD DWORD PTR [EDX+8]
-         FSTP DWORD PTR [ECX+8]
-         FLD  DWORD PTR [EAX+12]
-         FADD DWORD PTR [EDX+12]
-         FSTP DWORD PTR [ECX+12]
-end;
-
 // VectorAdd (affine, single)
 //
 function VectorAdd(const v : TAffineVector; const f : Single) : TAffineVector;
