@@ -27,8 +27,8 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
-      <li>29/01/04 - EG - Added RAISE_EXCEPTION_ON_INVALID_RELEASE logic,
-                          AllocateLGB now properly lets EOutOfMemory surface 
+      <li>14/06/04 - EG - Secured AllocateRMMChunkBatch vs OutOfMemory (Pierre le Riche),
+                          Fixed FindNonFullSMBManager skip of 1st block (Pierre le Riche)
       <li>07/11/03 - EG - Properly checks allocation of LGB, minor optims
       <li>06/11/03 - EG - Changed batch logic, more defines supported
       <li>03/11/03 - EG - Shared Memory support (like ShareMem, but DLL-free)
@@ -78,40 +78,17 @@ uses Windows;
 // if set the RecyclerMM will automatically bind itself as default memory manager
 {$define AUTO_BIND}
 
-// if set and exception will be explicitly raised if your code attempts
-// to release a block that isn't allocated. By default, RMM only detects
-// that issue reliably for large blocks and signals the issue to the Borland RTL,
-// which may then raise an exception. But in some circumstances, the RTL will
-// just ignore the issue. When the option is active, RMM will accurately detect
-// this issue all the time, and trigger an exception itself.
-// Doing so incurs a performance penalty on block release, and should preferably
-// only be used for testing or if memory integrity is of primary importance
-{.$define RAISE_EXCEPTION_ON_INVALID_RELEASE}
-
 // if set invalid pointers free/realloc will be defered to SysFreeMem
 // This allows a mixed mode where the RecyclerMM can replace the default
 // after it has started allocating, but also means the RMM cannot be unbound.
 {$define DEFER_INVALIDATE_POINTERS}
-
-// compile options implicit dependency rules
-
-{$ifdef PATCH_ALLOCMEM}
-   {$define DEFER_INVALIDATE_POINTERS}
-   {$define USES_SYSUTILS}
-{$endif}
-{$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-   {$define DEFER_INVALIDATE_POINTERS}
-   {$define USES_SYSUTILS}
-{$endif}
-
-// compile error when incompatible options have been selected
+{$ifdef PATCH_ALLOCMEM}{$define DEFER_INVALIDATE_POINTERS}{$endif}
 
 {$ifdef PATCH_ALLOCMEM}
 {$ifdef SHARE_MEM}
    Error : you cannot combine PATCH_ALLOCMEM and SHARE_MEM
 {$endif}
 {$endif}
-
 
 const
    // Alignment for SMBs
@@ -259,7 +236,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$ifdef USES_SYSUTILS}
+{$ifdef PATCH_ALLOCMEM}
 uses SysUtils;
 {$endif}
 
@@ -359,12 +336,12 @@ var
 
    // Binding variables
    vOldMemoryManager : TMemoryManager;
+   {$ifndef DEFER_INVALIDATE_POINTERS}
+   vAllocMemPatch : TRedirectPatch;
+   {$endif}
    vAllocatedPatch : TRedirectPatch;
    vRMMUsageSnapShotPatch : TRedirectPatch;
    vRMMBound : Integer;
-   {$ifdef PATCH_ALLOCMEM}
-   vAllocMemPatch : TRedirectPatch;
-   {$endif}
    {$ifdef ALLOW_SSE}
    vSSESupported : Integer;
    {$endif}
@@ -437,16 +414,21 @@ var
    p : Pointer;
 begin
    Result:=SysGetMem(SizeOf(TRMMChunkBatch));
-   p:=VirtualAlloc(nil, cRMMChunkBatchSize,
-                   MEM_COMMIT+MEM_TOP_DOWN, PAGE_READWRITE);
-   if Assigned(p) then begin
-      Inc(vTotalVirtualAllocated, cRMMChunkBatchSize);
-      for i:=0 to cRMMChunkBatchAllocSize-1 do
-         Result.Chunks[i]:=Pointer(Integer(p)+i*cSMBChunkSize);
-      Result.ChunkAllocated:=0;
-      Result.Next:=nil;
-      Result.Prev:=nil;
-   end else Result:=nil;
+   if Result<>nil then begin
+      p:=VirtualAlloc(nil, cRMMChunkBatchSize,
+                      MEM_COMMIT+MEM_TOP_DOWN, PAGE_READWRITE);
+      if Assigned(p) then begin
+         Inc(vTotalVirtualAllocated, cRMMChunkBatchSize);
+         for i:=0 to cRMMChunkBatchAllocSize-1 do
+            Result.Chunks[i]:=Pointer(Integer(p)+i*cSMBChunkSize);
+         Result.ChunkAllocated:=0;
+         Result.Next:=nil;
+         Result.Prev:=nil;
+      end else begin
+         SysFreeMem(Result);
+         Result:=nil;
+      end;
+   end;
 end;
 
 // ReleaseRMMChunkBatch
@@ -558,7 +540,6 @@ var
 begin
    // Spawn manager, allocate block
    Result:=SysGetMem(SizeOf(TLGBManager));
-   if Result=nil then Exit;
    Result.Signature:=cLGBSignature;
    blkSize:=(Size and $FFFF0000);
    if (Size and $FFFF)<>0 then
@@ -1018,7 +999,6 @@ begin
    candidate:=nil;
    candidateFree:=0;
    while True do begin
-      manager:=manager.next;
       if manager=nil then begin
          if candidateFree=0 then
             Result:=AllocateSMB(smbIndex)
@@ -1036,6 +1016,7 @@ begin
             Exit;
          end;
       end;
+      manager:=manager.next;
    end;
 end;
 
@@ -1127,14 +1108,9 @@ end;
 //
 function RFreeMem(P: Pointer): Integer;
 var
-   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-   i : Integer;
-   {$endif}
    n, blkID, locBlkID : Cardinal;
    smbIndex : Integer;
    manager : PSMBManager;
-label
-   lblRFreeMemExit;
 begin
    {$ifdef SECURE_MEMORYMAP}
    if Integer(P)>0 then
@@ -1155,16 +1131,6 @@ begin
          locBlkID:=blkID;  // hints compiler it can place blkID in a register!
          if locBlkID<manager.MaxFreeBlockOffset then begin
             n:=manager.NbFreeBlockOffset;
-            {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-            for i:=n-1 downto 0 do begin
-               if manager.BlockOffsets[i]=locBlkID then begin
-                  if System.IsMultiThread then
-                     LeaveCriticalSection(vSMBLocks[smbIndex]);
-                  Result:=-1;
-                  goto lblRFreeMemExit;
-               end;
-            end;
-            {$endif}
             manager.BlockOffsets[n]:=locBlkID;
             manager.BlockSizes[locBlkID]:=0;
             Inc(n);
@@ -1197,11 +1163,6 @@ begin
       Result:=-1;
       {$endif}
    end;
-   {$ifdef RAISE_EXCEPTION_ON_INVALID_RELEASE}
-lblRFreeMemExit:
-   if Result=-1 then
-      raise Exception.Create('RecyclerMM: attempt to free an unallocated block!');
-   {$endif}
 end;
 
 // RReallocMem
@@ -1514,10 +1475,8 @@ procedure UnBindRMM;
 begin
    Dec(vRMMBound);
    if vRMMBound=0 then begin
-      {$ifdef PATCH_ALLOCMEM}
-      RestorePatch(vAllocMemPatch);
-      {$endif}
       {$ifndef DEFER_INVALIDATE_POINTERS}
+      RestorePatch(vAllocMemPatch);
       RestorePatch(vAllocatedPatch);
       RestorePatch(vRMMUsageSnapShotPatch);
       SetMemoryManager(vOldMemoryManager);
