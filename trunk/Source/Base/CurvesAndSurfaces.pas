@@ -93,17 +93,19 @@ procedure GenerateBezierCurve(Steps : Integer; ControlPoints, Vertices : TAffine
 var
   i : Integer;
 begin
+  Vertices.Count:=Steps+1;
   for i:=0 to Steps do
-    Vertices.Add(BezierCurvePoint(i/Steps,ControlPoints.Count-1,ControlPoints.List));
+    Vertices[i]:=BezierCurvePoint(i/Steps,ControlPoints.Count-1,ControlPoints.List);
 end;
 
 procedure GenerateBezierSurface(Steps, Width, Height : Integer; ControlPoints, Vertices : TAffineVectorList);
 var
   i,j : Integer;
 begin
+  Vertices.Count:=(Steps+1)*(Steps+1);
   for j:=0 to Steps do
     for i:=0 to Steps do
-      Vertices.Add(BezierSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,ControlPoints.List));
+      Vertices[i+j*(Steps+1)]:=BezierSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,ControlPoints.List);
 end;
 
 // ------------------------------------------------------------
@@ -159,6 +161,7 @@ procedure GenerateBSpline(Steps,Order : Integer; KnotVector : TSingleList; Contr
 var
   i : Integer;
 begin
+  Vertices.Count:=Steps+1;
   for i:=0 to Steps do
     Vertices.Add(BSplinePoint(i/Steps,ControlPoints.Count-1,Order+1,KnotVector.List,ControlPoints.List));
 end;
@@ -167,9 +170,10 @@ procedure GenerateBSplineSurface(Steps, UOrder, VOrder, Width, Height : Integer;
 var
   i,j : Integer;
 begin
+  Vertices.Count:=(Steps+1)*(Steps+1);
   for j:=0 to Steps do
     for i:=0 to Steps do
-      Vertices.Add(BSplineSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,UOrder+1,VOrder+1,UKnotVector.List,VKnotVector.List,ControlPoints.List));
+      Vertices[i+j*(Steps+1)]:=BSplineSurfacePoint(i/Steps,j/Steps,Width-1,Height-1,UOrder+1,VOrder+1,UKnotVector.List,VKnotVector.List,ControlPoints.List);
 end;
 
 procedure GenerateKnotVector(KnotVector : TSingleList; NumberOfPoints, Order : Integer; Continuity : TBSplineContinuity);
