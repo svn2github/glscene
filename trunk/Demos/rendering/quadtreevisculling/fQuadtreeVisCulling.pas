@@ -27,7 +27,6 @@ type
     GLCadencer1: TGLCadencer;
     GLNavigator1: TGLNavigator;
     GLUserInterface1: TGLUserInterface;
-    tree: TGLPlane;
     queryVisible: TGLDirectOpenGL;
     Timer1: TTimer;
     GLHUDText1: TGLHUDText;
@@ -40,6 +39,7 @@ type
     Label2: TLabel;
     cbShowQuadtree: TCheckBox;
     GLDirectOpenGL2: TGLDirectOpenGL;
+    tree: TGLSprite;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -160,8 +160,6 @@ procedure TfrmQuadtreeVisCulling.queryVisibleRender(Sender: TObject;
   var rci: TRenderContextInfo);
 var
   i: integer;
-  aobj: TGLBaseSceneObject;
-  v: TVector;
 begin
   if not cbUseQuadtree.Checked then exit;
 
@@ -178,17 +176,8 @@ begin
     SpacePartition.QueryNodeTests,
     SpacePartition.GetNodeCount]);
 
-  v := GLCamera1.AbsoluteVectorToTarget;
-  NegateVector(v);
-  for i := 0 to SpacePartition.QueryResult.Count - 1 do
-  begin
-    aobj := TSceneObj(SpacePartition.QueryResult[i]).Obj;
-    aobj.Visible := true;
-    if aobj.Parent = trees then
-    begin
-      aobj.AbsoluteDirection := v;
-      aobj.Up.AsAffineVector := affinevectormake(0,1,0);
-    end;
+  for i := 0 to SpacePartition.QueryResult.Count - 1 do begin
+    TSceneObj(SpacePartition.QueryResult[i]).Obj.Visible := true;
   end;
   glscene1.EndUpdate;
 end;
