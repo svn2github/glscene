@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>30/01/02 - EG - Added TGLVirtualHandle
       <li>29/01/02 - EG - Improved recovery for context creation failures
       <li>28/01/02 - EG - Activation failures always ignored
       <li>21/01/02 - EG - Activation failures now ignored if application is
@@ -208,6 +209,30 @@ type
 
          procedure AllocateHandle;
          procedure DestroyHandle;
+   end;
+
+   TGLVirtualHandle = class;
+   TGLVirtualHandleEvent = procedure (sender : TGLVirtualHandle; var handle : Integer) of object;
+
+   // TGLVirtualHandle
+   //
+   TGLVirtualHandle = class (TGLContextHandle)
+      private
+         { Private Declarations }
+         FOnAllocate, FOnDestroy : TGLVirtualHandleEvent;
+         FTag : Integer;
+
+      protected
+         { Protected Declarations }
+         function DoAllocateHandle : Integer; override;
+         procedure DoDestroyHandle; override;
+
+      public
+         { Public Declarations }
+         property OnAllocate : TGLVirtualHandleEvent read FOnAllocate write FOnAllocate;
+         property OnDestroy : TGLVirtualHandleEvent read FOnDestroy write FOnDestroy;
+
+         property Tag : Integer read FTag write FTag;
    end;
 
    // TGLListHandle
@@ -732,6 +757,34 @@ begin
       DoDestroyHandle;
       FHandle:=0;
       FRenderingContext:=nil;
+   end;
+end;
+
+// ------------------
+// ------------------ TGLVirtualHandle ------------------
+// ------------------
+
+// DoAllocateHandle
+//
+function TGLVirtualHandle.DoAllocateHandle : Integer;
+begin
+   Result:=0;
+   if Assigned(FOnAllocate) then
+      FOnAllocate(Self, Result);
+end;
+
+// DoDestroyHandle
+//
+procedure TGLVirtualHandle.DoDestroyHandle;
+begin
+   if not vIgnoreContextActivationFailures then begin
+      // reset error status
+      ClearGLError;
+      // delete
+      if Assigned(FOnDestroy) then
+         FOnDestroy(Self, FHandle);
+      // check for error
+      CheckOpenGLError;
    end;
 end;
 
