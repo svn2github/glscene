@@ -3,6 +3,7 @@
 	Cadencing composant for GLScene (ease Progress processing)<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>05/12/01 - EG - Fix in subscription mechanism (D6 IDE freezes gone?)
       <li>30/11/01 - EG - Added IsBusy (thx Chris S)
       <li>08/09/01 - EG - Added MaxDeltaTime limiter
       <li>23/08/01 - EG - No more "deprecated" warning for Delphi6
@@ -311,7 +312,6 @@ begin
 	FSleepLength:=-1;
 	Mode:=cmASAP;
    Enabled:=True;
-   FSubscribedCadenceableComponents:=TList.Create;
 end;
 
 // Destroy
@@ -328,11 +328,12 @@ end;
 //
 procedure TGLCadencer.Subscribe(aComponent : TGLCadenceAbleComponent);
 begin
-   if Assigned(FSubscribedCadenceableComponents) then
-      if FSubscribedCadenceableComponents.IndexOf(aComponent)<0 then begin
-         FSubscribedCadenceableComponents.Add(aComponent);
-         aComponent.FreeNotification(Self);
-      end;
+   if not Assigned(FSubscribedCadenceableComponents) then
+      FSubscribedCadenceableComponents:=TList.Create;
+   if FSubscribedCadenceableComponents.IndexOf(aComponent)<0 then begin
+      FSubscribedCadenceableComponents.Add(aComponent);
+      aComponent.FreeNotification(Self);
+   end;
 end;
 
 // UnSubscribe
@@ -344,7 +345,7 @@ begin
    if Assigned(FSubscribedCadenceableComponents) then begin
       i:=FSubscribedCadenceableComponents.IndexOf(aComponent);
       if i>=0 then begin
-         FSubscribedCadenceableComponents.Remove(aComponent);
+         FSubscribedCadenceableComponents.Delete(i);
          aComponent.RemoveFreeNotification(Self);
       end;
    end;
@@ -471,9 +472,10 @@ begin
                   lastTime:=newTime;
                end;
             end;
-            for i:=0 to FSubscribedCadenceableComponents.Count-1 do
-               with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
-                  DoProgress(deltaTime, newTime);
+            if Assigned(FSubscribedCadenceableComponents) then
+               for i:=0 to FSubscribedCadenceableComponents.Count-1 do
+                  with TGLCadenceAbleComponent(FSubscribedCadenceableComponents[i]) do
+                     DoProgress(deltaTime, newTime);
             if Assigned(FOnProgress) and (not (csDesigning in ComponentState)) then
                FOnProgress(Self, deltaTime, newTime);
          end;

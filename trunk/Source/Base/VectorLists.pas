@@ -3,6 +3,7 @@
 	Lists of vectors<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/12/01 - EG - Added TIntegerList.IndexOf
       <li>18/08/01 - EG - Fixed TAffineVectorList.Add (list)
       <li>03/08/01 - EG - Added TIntegerList.AddSerie
       <li>19/07/01 - EG - Added TAffineVectorList.Add (list variant)
@@ -249,9 +250,10 @@ type
          procedure Add(const i1, i2, i3 : Integer); overload;
          procedure Add(const list : TIntegerList); overload;
 			procedure Push(const val : Integer);
-			function Pop : Integer;
+			function  Pop : Integer;
 			procedure Insert(Index : Integer; const item : Integer);
          procedure Remove(const item : Integer);
+         function  IndexOf(Item: integer): Integer;
 
 			property Items[Index: Integer] : Integer read Get write Put; default;
 			property List: PIntegerArray read FList;
@@ -1264,6 +1266,38 @@ begin
       Inc(v, aDelta);
    end;
    FCount:=Count+aCount;
+end;
+
+// IndexOf
+//
+function TIntegerList.IndexOf(Item: integer): Integer;
+var
+	c : Integer;
+	p : ^Integer;
+begin
+	if FCount<=0 then
+		Result:=-1
+	else begin
+		c:=FCount;
+		p:=@FList^[0];
+		asm
+			mov eax, Item;
+			mov ecx, c;
+         mov edx, ecx;
+			push edi;
+			mov edi, p;
+			repne scasd;
+			je @@FoundIt
+			mov edx, -1;
+			jmp @@SetResult;
+		@@FoundIt:
+			sub edx, ecx;
+			dec edx;
+		@@SetResult:
+			mov Result, edx;
+			pop edi;
+		end;
+	end;
 end;
 
 // ------------------
