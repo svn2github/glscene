@@ -6,6 +6,7 @@
    or the casters will be rendered incorrectly.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>11/06/03 - EG - Added silhouette cache
       <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
    </ul></font>
 }
@@ -13,7 +14,8 @@ unit GLShadowVolume;
 
 interface
 
-uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLCrossPlatform;
+uses Classes, GLScene, Geometry, OpenGL12, GLMisc, GLTexture, GLCrossPlatform,
+   PersistentClasses;
 
 type
 
@@ -44,18 +46,58 @@ type
 
          procedure Assign(Source: TPersistent); override;
 
-		published
-			{ Published Declarations }
          {: Shadow casting object.<p>
             Can be an opaque object or a lightsource. }
          property Caster : TGLBaseSceneObject read FCaster write SetCaster;
          
+		published
+			{ Published Declarations }
+
          {: Radius beyond which the caster can be ignored.<p>
             Zero (default value) means the caster can never be ignored. }
          property EffectiveRadius : Single read FEffectiveRadius write FEffectiveRadius;
          {: Specifies if the shadow volume should be capped.<p>
             Capping helps solve shadowing artefacts, at the cost of performance. }
          property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcDefault;
+   end;
+
+   // TGLShadowVolumeOccluder
+   //
+   {: Specifies an individual shadow casting occluder.<p> }
+   TGLShadowVolumeOccluder = class (TGLShadowVolumeCaster)
+		published
+			{ Published Declarations }
+         property Caster;
+   end;
+
+   // TGLShadowVolumeLight
+   //
+   {: Specifies an individual shadow casting light.<p> }
+   TGLShadowVolumeLight = class (TGLShadowVolumeCaster)
+	   private
+			{ Private Declarations }
+         FSilhouettes : TPersistentObjectList;
+
+		protected
+			{ Protected Declarations }
+         function GetLightSource : TGLLightSource;
+         procedure SetLightSource(const ls : TGLLightSource);
+
+         function GetCachedSilhouette(index : Integer) : TGLBaseSilhouette;
+         procedure StoreCachedSilhouette(index : Integer; sil : TGLBaseSilhouette);
+
+		public
+			{ Public Declarations }
+         constructor Create(Collection: TCollection); override;
+         destructor Destroy; override;
+
+         procedure FlushSilhouetteCache;
+
+		published
+			{ Published Declarations }
+         {: Shadow casting lightsource.<p> }
+         property LightSource : TGLLightSource read GetLightSource write SetLightSource;
+
    end;
 
    // TGLShadowVolumeCasters
@@ -82,7 +124,7 @@ type
 
    // TGLShadowVolumeOption
    //
-   TGLShadowVolumeOption = (svoShowVolumes);
+   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes);
    TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
 
    // TGLShadowVolumeMode
@@ -108,7 +150,8 @@ type
 	   private
 			{ Private Declarations }
          FRendering : Boolean;
-         FCasters : TGLShadowVolumeCasters;
+         FLights : TGLShadowVolumeCasters;
+         FOccluders : TGLShadowVolumeCasters;
          FCapping : TGLShadowVolumeCapping;
          FOptions : TGLShadowVolumeOptions;
          FMode : TGLShadowVolumeMode;
@@ -118,7 +161,8 @@ type
 			{ Protected Declarations }
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
-         procedure SetCasters(const val : TGLShadowVolumeCasters);
+         procedure SetLights(const val : TGLShadowVolumeCasters);
+         procedure SetOccluders(const val : TGLShadowVolumeCasters);
          procedure SetOptions(const val : TGLShadowVolumeOptions);
          procedure SetMode(const val : TGLShadowVolumeMode);
          procedure SetDarkeningColor(const val : TGLColor);
@@ -133,15 +177,20 @@ type
 
 		   procedure Assign(Source: TPersistent); override;
 
+         procedure FlushSilhouetteCache;
+
 		published
 			{ Public Declarations }
-         property Casters : TGLShadowVolumeCasters read FCasters write SetCasters;
+         {: Lights that cast shadow volumes. }
+         property Lights : TGLShadowVolumeCasters read FLights write SetLights;
+         {: Occluders that cast shadow volumes. }
+         property Occluders : TGLShadowVolumeCasters read FOccluders write SetOccluders;
 
          {: Specifies if the shadow volume should be capped.<p>
             Capping helps solve shadowing artefacts, at the cost of performance. }
          property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcAlways;
          {: Shadow volume rendering options. }
-         property Options : TGLShadowVolumeOptions read FOptions write SetOptions default [];
+         property Options : TGLShadowVolumeOptions read FOptions write SetOptions default [svoCacheSilhouettes];
          {: Shadow rendering mode. }
          property Mode : TGLShadowVolumeMode read FMode write SetMode default svmAccurate;
          {: Darkening color used in svmDarkening mode. }
@@ -216,6 +265,68 @@ begin
 end;
 
 // ------------------
+// ------------------ TGLShadowVolumeLight ------------------
+// ------------------
+
+// Create
+//
+constructor TGLShadowVolumeLight.Create(Collection: TCollection);
+begin
+   inherited Create(Collection);
+   FSilhouettes:=TPersistentObjectList.Create;
+end;
+
+// Destroy
+//
+destructor TGLShadowVolumeLight.Destroy;
+begin
+   FlushSilhouetteCache;
+   FSilhouettes.Free;
+   inherited;
+end;
+
+// FlushSilhouetteCache
+//
+procedure TGLShadowVolumeLight.FlushSilhouetteCache;
+begin
+   FSilhouettes.Clean;
+end;
+
+// Create
+//
+function TGLShadowVolumeLight.GetLightSource : TGLLightSource;
+begin
+   Result:=TGLLightSource(Caster);
+end;
+
+// SetLightSource
+//
+procedure TGLShadowVolumeLight.SetLightSource(const ls : TGLLightSource);
+begin
+   SetCaster(ls);
+end;
+
+// GetCachedSilhouette
+//
+function TGLShadowVolumeLight.GetCachedSilhouette(index : Integer) : TGLBaseSilhouette;
+begin
+   if index<FSilhouettes.Count then
+      Result:=TGLBaseSilhouette(FSilhouettes[index])
+   else Result:=nil;
+end;
+
+// StoreCachedSilhouette
+//
+procedure TGLShadowVolumeLight.StoreCachedSilhouette(index : Integer; sil : TGLBaseSilhouette);
+begin
+   while index>=FSilhouettes.Count do FSilhouettes.Add(nil);
+   if sil<>FSilhouettes[index] then begin
+      FSilhouettes[index].Free;
+      FSilhouettes[index]:=sil;
+   end;
+end;
+
+// ------------------
 // ------------------ TGLShadowVolumeCasters ------------------
 // ------------------
 
@@ -277,10 +388,13 @@ constructor TGLShadowVolume.Create(AOwner:Tcomponent);
 begin
    inherited Create(AOwner);
    ObjectStyle:=ObjectStyle-[osDirectDraw]+[osNoVisibilityCulling];
-   FCasters:=TGLShadowVolumeCasters.Create(TGLShadowVolumeCaster);
-   FCasters.FOwner:=Self;
+   FLights:=TGLShadowVolumeCasters.Create(TGLShadowVolumeLight);
+   FLights.FOwner:=Self;
+   FOccluders:=TGLShadowVolumeCasters.Create(TGLShadowVolumeOccluder);
+   FOccluders.FOwner:=Self;
    FCapping:=svcAlways;
    FMode:=svmAccurate;
+   FOptions:=[svoCacheSilhouettes];
    FDarkeningColor:=TGLColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
 end;
 
@@ -289,7 +403,8 @@ end;
 destructor TGLShadowVolume.Destroy;
 begin
    FDarkeningColor.Free;
-   FCasters.Free;
+   FLights.Free;
+   FOccluders.Free;
    inherited;
 end;
 
@@ -297,8 +412,10 @@ end;
 //
 procedure TGLShadowVolume.Notification(AComponent: TComponent; Operation: TOperation);
 begin
-   if Operation=opRemove then
-      FCasters.RemoveNotification(AComponent);
+   if Operation=opRemove then begin
+      FLights.RemoveNotification(AComponent);
+      FOccluders.RemoveNotification(AComponent);
+   end;
    inherited;
 end;
 
@@ -307,18 +424,38 @@ end;
 procedure TGLShadowVolume.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLShadowVolume) then begin
-      FCasters.Assign(TGLShadowVolume(Source).Casters);
+      FLights.Assign(TGLShadowVolume(Source).Lights);
+      FOccluders.Assign(TGLShadowVolume(Source).Occluders);
       FCapping:=TGLShadowVolume(Source).FCapping;
       StructureChanged;
    end;
    inherited Assign(Source);
 end;
 
-// SetCasters
+// FlushSilhouetteCache
 //
-procedure TGLShadowVolume.SetCasters(const val : TGLShadowVolumeCasters);
+procedure TGLShadowVolume.FlushSilhouetteCache;
+var
+   i : Integer;
 begin
-   FCasters.Assign(val);
+   for i:=0 to Lights.Count-1 do
+      (Lights[i] as TGLShadowVolumeLight).FlushSilhouetteCache;
+end;
+
+// SetLights
+//
+procedure TGLShadowVolume.SetLights(const val : TGLShadowVolumeCasters);
+begin
+   Assert(val.ItemClass=TGLShadowVolumeLight);
+   FLights.Assign(val);
+end;
+
+// SetOccluders
+//
+procedure TGLShadowVolume.SetOccluders(const val : TGLShadowVolumeCasters);
+begin
+   Assert(val.ItemClass=TGLShadowVolumeOccluder);
+   FOccluders.Assign(val);
 end;
 
 // SetOptions
@@ -327,6 +464,8 @@ procedure TGLShadowVolume.SetOptions(const val : TGLShadowVolumeOptions);
 begin
    if FOptions<>val then begin
       FOptions:=val;
+      if not (svoCacheSilhouettes in FOptions) then
+         FlushSilhouetteCache;
       StructureChanged;
    end;
 end;
@@ -355,11 +494,12 @@ procedure TGLShadowVolume.DoRender(var rci : TRenderContextInfo;
 var
    i, j, k, n, nv : Integer;
    lightSource : TGLLightSource;
+   lightCaster : TGLShadowVolumeLight;
    sil : TGLBaseSilhouette;
    lightID : Cardinal;
    obj : TGLBaseSceneObject;
    caster : TGLShadowVolumeCaster;
-   lights, opaques, opaqueCapping : TList;
+   opaques, opaqueCapping : TList;
    silParams : TGLSilhouetteParameters;
    mat : TMatrix;
 begin
@@ -369,40 +509,41 @@ begin
       inherited;
       Exit;
    end;
-   lights:=TList.Create;
    opaques:=TList.Create;
    opaqueCapping:=TList.Create;
    FRendering:=True;
    try
-      // collect visible/shining casters
-      for i:=0 to Casters.Count-1 do begin
-         caster:=Casters[i];
+      // collect visible casters
+      for i:=0 to Occluders.Count-1 do begin
+         caster:=Occluders[i];
          obj:=caster.Caster;
          if     Assigned(obj)
+            and obj.Visible
             and ((caster.EffectiveRadius<=0)
                  or (obj.DistanceTo(rci.cameraPosition)<caster.EffectiveRadius)) then begin
-            if obj is TGLLightSource then begin
-               if TGLLightSource(obj).Shining then
-                  lights.Add(obj)
-            end else begin
-               if obj.Visible then begin
-                  opaques.Add(obj);
-                  opaqueCapping.Add(Pointer(   (caster.Capping=svcAlways)
-                                            or ((caster.Capping=svcDefault)
-                                                and (Capping=svcAlways))));
-               end;
-            end;
+            opaques.Add(obj);
+            opaqueCapping.Add(Pointer(   (caster.Capping=svcAlways)
+                                      or ((caster.Capping=svcDefault)
+                                          and (Capping=svcAlways))));
+         end else begin
+            opaques.Add(nil);
+            opaqueCapping.Add(nil);
          end;
       end;
+      
       // render the shadow volumes
       glPushAttrib(GL_ENABLE_BIT);
 
       if Mode=svmAccurate then begin
          // first turn off all the shadow casting lights diffuse and specular
-         for i:=0 to lights.Count-1 do begin
-            lightID:=TGLLightSource(lights[i]).LightID;
-            glLightfv(lightID, GL_DIFFUSE, @NullHmgVector);
-            glLightfv(lightID, GL_SPECULAR, @NullHmgVector);
+         for i:=0 to Lights.Count-1 do begin
+            lightCaster:=TGLShadowVolumeLight(Lights[i]);
+            lightSource:=lightCaster.LightSource;
+            if Assigned(lightSource) and (lightSource.Shining) then begin
+               lightID:=lightSource.LightID;
+               glLightfv(lightID, GL_DIFFUSE, @NullHmgVector);
+               glLightfv(lightID, GL_SPECULAR, @NullHmgVector);
+            end;
          end;
       end;
 
@@ -422,8 +563,15 @@ begin
       glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
 
       // render contribution of all shadow casting lights
-      for i:=0 to lights.Count-1 do begin
-         lightSource:=TGLLightSource(lights[i]);
+      for i:=0 to Lights.Count-1 do begin
+         lightCaster:=TGLShadowVolumeLight(lights[i]);
+         lightSource:=lightCaster.LightSource;
+
+         if    (not Assigned(lightSource)) or (not lightSource.Shining)
+            or ((lightCaster.EffectiveRadius>0)
+                and (lightSource.DistanceTo(rci.cameraPosition)>lightCaster.EffectiveRadius)) then
+            Continue;
+
          lightID:=lightSource.LightID;
 
          SetVector(silParams.LightDirection, lightSource.SpotDirection.DirectVector);
@@ -455,19 +603,24 @@ begin
          // for all opaque shadow casters
          for k:=0 to opaques.Count-1 do begin
             obj:=TGLBaseSceneObject(opaques[k]);
+            if obj=nil then Continue;
 
             SetVector(silParams.SeenFrom, obj.AbsoluteToLocal(lightSource.AbsolutePosition));
 
-            sil:=obj.GenerateSilhouette(silParams);
+            sil:=lightCaster.GetCachedSilhouette(k);
+            if (not Assigned(sil)) or (not CompareMem(@sil.Parameters, @silParams, SizeOf(silParams))) then begin
+               sil:=obj.GenerateSilhouette(silParams);
+               sil.Parameters:=silParams;
+               // extrude vertices to infinity
+               sil.ExtrudeVerticesToInfinity(silParams.SeenFrom);
+            end;
             if Assigned(sil) then try
+               // render the silhouette
                glPushMatrix;
 
                glLoadMatrixf(PGLFloat(rci.modelViewMatrix));
                mat:=obj.AbsoluteMatrix;
                glMultMatrixf(@mat);
-
-               // extrude vertices to infinity
-               sil.ExtrudeVerticesToInfinity(silParams.SeenFrom);
 
                glVertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
@@ -507,7 +660,9 @@ begin
 
                glPopMatrix;
             finally
-               sil.Free;
+               if (svoCacheSilhouettes in Options) and (not (osDirectDraw in ObjectStyle)) then
+                  lightCaster.StoreCachedSilhouette(k, sil)
+               else sil.Free;
             end;
          end;
 
@@ -572,7 +727,6 @@ begin
       FRendering:=False;
       opaques.Free;
       opaqueCapping.Free;
-      lights.Free;
    end;
 end;
 
