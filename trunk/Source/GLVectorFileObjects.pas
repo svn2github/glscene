@@ -6162,7 +6162,7 @@ end;
 function TGLActor.NextFrameIndex : Integer;
 begin
    case AnimationMode of
-      aamNone, aamPlayOnce, aamLoop, aamBounceForward : begin
+      aamLoop, aamBounceForward : begin
          if FTargetSmoothAnimation<>nil then
             Result:=FTargetSmoothAnimation.StartFrame
          else begin
@@ -6172,6 +6172,15 @@ begin
                if Result>EndFrame then
                   Result:=EndFrame;
             end;
+         end;
+      end;
+      aamNone, aamPlayOnce : begin
+         if FTargetSmoothAnimation<>nil then
+            Result:=FTargetSmoothAnimation.StartFrame
+         else begin
+            Result:=CurrentFrame+1;
+            if Result>EndFrame then
+               Result:=EndFrame;
          end;
       end;
       aamBounceBackward : begin
