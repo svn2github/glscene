@@ -338,7 +338,7 @@ begin
   //
   for j:=0 to 3 do
     for i:=0 to 3 do
-      Result[i][j]:=m1[i][j]+(m2[i][j]-m1[i][j])*delta;
+      Result.Coord[i].Coord[j]:=m1.Coord[i].Coord[j]+(m2.Coord[i].Coord[j]-m1.Coord[i].Coord[j])*delta;
 end;
 
 procedure TForm1.ComboSkinChange(Sender: TObject);

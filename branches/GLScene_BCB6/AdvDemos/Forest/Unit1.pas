@@ -342,7 +342,7 @@ end;
 procedure TForm1.PFXTreesRenderParticle(Sender: TObject;
   aParticle: TGLParticle; var rci: TRenderContextInfo);
 const
-   cTreeCenteringOffset : TAffineVector = (0, 30, 0);
+   cTreeCenteringOffset : TAffineVector = (X:0; Y:30; Z:0);
 var
    d : Single;
    camPos : TVector;
@@ -580,10 +580,10 @@ begin
    glMatrixMode(GL_TEXTURE);
 
    tex0Matrix:=IdentityHmgMatrix;
-   tex0Matrix[0][0]:=3*cWaveScale;
-   tex0Matrix[1][1]:=4*cWaveScale;
-   tex0Matrix[3][0]:=tWave*1.1;
-   tex0Matrix[3][1]:=tWave*1.06;
+   tex0Matrix.Coord[0].Coord[0]:=3*cWaveScale;
+   tex0Matrix.Coord[1].Coord[1]:=4*cWaveScale;
+   tex0Matrix.Coord[3].Coord[0]:=tWave*1.1;
+   tex0Matrix.Coord[3].Coord[1]:=tWave*1.06;
    glLoadMatrixf(@tex0Matrix);
    glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
    glEnable(GL_TEXTURE_2D);
@@ -591,10 +591,10 @@ begin
    glActiveTextureARB(GL_TEXTURE1_ARB);
 
    tex1Matrix:=IdentityHmgMatrix;
-   tex1Matrix[0][0]:=cWaveScale;
-   tex1Matrix[1][1]:=cWaveScale;
-   tex1Matrix[3][0]:=tWave*0.83;
-   tex1Matrix[3][1]:=tWave*0.79;
+   tex1Matrix.Coord[0].Coord[0]:=cWaveScale;
+   tex1Matrix.Coord[1].Coord[1]:=cWaveScale;
+   tex1Matrix.Coord[3].Coord[0]:=tWave*0.83;
+   tex1Matrix.Coord[3].Coord[1]:=tWave*0.79;
    glLoadMatrixf(@tex1Matrix);
    glBindTexture(GL_TEXTURE_2D, MLWater.Materials[0].Material.Texture.Handle);
    glEnable(GL_TEXTURE_2D);

@@ -397,12 +397,12 @@ end;
 procedure TTBTableText.Parse(const vals : TStringList);
 begin
    inherited;
-   FPosition[0]:=StrToFloatDef(vals.Values['X'], 0);
-   FPosition[1]:=StrToFloatDef(vals.Values['Y'], 0.01);
-   FPosition[2]:=StrToFloatDef(vals.Values['Z'], 0);
-   FOrientation[0]:=StrToFloatDef(vals.Values['OX'], 1);
-   FOrientation[1]:=StrToFloatDef(vals.Values['OY'], 0);
-   FOrientation[2]:=StrToFloatDef(vals.Values['OZ'], 0);
+   FPosition.Coord[0]:=StrToFloatDef(vals.Values['X'], 0);
+   FPosition.Coord[1]:=StrToFloatDef(vals.Values['Y'], 0.01);
+   FPosition.Coord[2]:=StrToFloatDef(vals.Values['Z'], 0);
+   FOrientation.Coord[0]:=StrToFloatDef(vals.Values['OX'], 1);
+   FOrientation.Coord[1]:=StrToFloatDef(vals.Values['OY'], 0);
+   FOrientation.Coord[2]:=StrToFloatDef(vals.Values['OZ'], 0);
    NormalizeVector(FOrientation);
    FSize:=StrToFloatDef(vals.Values['Size'], 1)*0.01;
    FColor:=StrToIntDef(vals.Values['Color'], 0);
@@ -454,12 +454,12 @@ end;
 procedure TTBCubeArea.Parse(const vals : TStringList);
 begin
    inherited;
-   FPosition[0]:=StrToFloatDef(vals.Values['X'], 0);
-   FPosition[1]:=StrToFloatDef(vals.Values['Y'], 0.5);
-   FPosition[2]:=StrToFloatDef(vals.Values['Z'], 0);
-   FSize[0]:=StrToFloatDef(vals.Values['SX'], 1);
-   FSize[1]:=StrToFloatDef(vals.Values['SY'], 1);
-   FSize[2]:=StrToFloatDef(vals.Values['SZ'], 1);
+   FPosition.Coord[0]:=StrToFloatDef(vals.Values['X'], 0);
+   FPosition.Coord[1]:=StrToFloatDef(vals.Values['Y'], 0.5);
+   FPosition.Coord[2]:=StrToFloatDef(vals.Values['Z'], 0);
+   FSize.Coord[0]:=StrToFloatDef(vals.Values['SX'], 1);
+   FSize.Coord[1]:=StrToFloatDef(vals.Values['SY'], 1);
+   FSize.Coord[2]:=StrToFloatDef(vals.Values['SZ'], 1);
 end;
 
 // Instantiate
@@ -542,12 +542,12 @@ begin
 
    for i:=1 to FNB do begin
       spike:=TGLCone(FDummy.AddNewChild(TGLCone));
-      spike.Height:=(Random*0.4+0.6)*FSize[1];
-      spike.Position.X:=(Random-0.5)*2*FSize[0];
+      spike.Height:=(Random*0.4+0.6)*FSize.Coord[1];
+      spike.Position.X:=(Random-0.5)*2*FSize.Coord[0];
       spike.Position.Y:=spike.Height*0.5;
-      spike.Position.Z:=(Random-0.5)*2*FSize[2];
+      spike.Position.Z:=(Random-0.5)*2*FSize.Coord[2];
       spike.Parts:=[coSides];
-      spike.BottomRadius:=0.1*VectorLength(FSize[0], FSize[1]);
+      spike.BottomRadius:=0.1*VectorLength(FSize.Coord[0], FSize.Coord[1]);
       spike.Stacks:=1;
       spike.Slices:=Random(4)+6;
       spike.Material.MaterialLibrary:=main.MaterialLibrary;
@@ -658,8 +658,8 @@ begin
    FPlane:=TGLPlane(ParentObject.AddNewChild(TGLPlane));
    FPlane.Direction.AsVector:=YHmgVector;
    FPlane.Position.AsAffineVector:=Position;
-   FPlane.Width:=FSize[0];
-   FPlane.Height:=FSize[2];
+   FPlane.Width:=FSize.Coord[0];
+   FPlane.Height:=FSize.Coord[2];
    FPlane.Material.MaterialLibrary:=Main.MaterialLibrary;
    FPlane.Material.LibMaterialName:='chrome';
 
@@ -691,9 +691,9 @@ begin
    if t<=FTimeOn then begin
       src.ParticleInterval:=0.03;
       v:=FPlane.AbsoluteToLocal(Main.DCBallAbsolute.Position.AsVector);
-      if (Abs(v[0])<FSize[0]) and (Abs(v[1])<FSize[2]) and (v[2]>=0) then begin
-         if v[2]<FStrength*0.3 then
-            Main.verticalForce:=Main.verticalForce+FStrength*(1-(v[2]/(FStrength*0.3)))*0.7;
+      if (Abs(v.Coord[0])<FSize.Coord[0]) and (Abs(v.Coord[1])<FSize.Coord[2]) and (v.Coord[2]>=0) then begin
+         if v.Coord[2]<FStrength*0.3 then
+            Main.verticalForce:=Main.verticalForce+FStrength*(1-(v.Coord[2]/(FStrength*0.3)))*0.7;
       end;
    end else src.ParticleInterval:=0.5;
 end;
@@ -804,12 +804,12 @@ procedure TTBBlock.Instantiate;
 begin
    FBlock:=TGLCube(ParentObject.AddNewChild(TGLCube));
    FBlock.Position.AsAffineVector:=FPosition;
-   FBlock.CubeWidth:=FSize[0];
-   FBlock.CubeHeight:=FSize[1];
-   FBlock.CubeDepth:=FSize[2];
+   FBlock.CubeWidth:=FSize.Coord[0];
+   FBlock.CubeHeight:=FSize.Coord[1];
+   FBlock.CubeDepth:=FSize.Coord[2];
    FBlock.Parts:=FBlock.Parts-[cpBottom];
 
-   FBlockGeom:=dCreateBox(Main.space, FSize[0], FSize[1], FSize[2]);
+   FBlockGeom:=dCreateBox(Main.space, FSize.Coord[0], FSize.Coord[1], FSize.Coord[2]);
    CopyPosFromGeomToGL(FBlockGeom, FBlock);
 end;
 

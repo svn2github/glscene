@@ -120,7 +120,7 @@ implementation
 uses GLUtils;
 
 const
-   cCameraPos : TVector = (10, 6, 0, 1);
+   cCameraPos : TVector = (X:10; Y:6; Z:0; W:1);
 
 procedure TMain.FormCreate(Sender: TObject);
 begin
@@ -353,7 +353,7 @@ begin
    DCTable.ResetAndPitchTurnRoll(tablePitch, 0, tableRoll);
    a:=DCTable.Direction.AsAffineVector;
    b:=DCTable.Up.AsAffineVector;
-   dRFrom2Axes(odeMat, a[0], a[1], a[2], b[0], b[1], b[2]);
+   dRFrom2Axes(odeMat, a.Coord[0], a.Coord[1], a.Coord[2], b.Coord[0], b.Coord[1], b.Coord[2]);
    dGeomSetRotation(planeGeom, odeMat);
 
    if Assigned(ballBody) then begin
@@ -496,14 +496,14 @@ begin
       dBodyAddForce(ballBody, 0, -9.81, 0);
       if verticalForce<>0 then begin
          tableUp:=VectorScale(DCTable.AbsoluteUp, verticalForce);
-         dBodyAddForce(ballBody, tableUp[0], tableUp[1], tableUp[2]);
+         dBodyAddForce(ballBody, tableUp.Coord[0], tableUp.Coord[1], tableUp.Coord[2]);
          verticalForce:=0;
       end;
       if deflateEnergy>0 then begin
          dBodyAddForce(ballBody, 0, 9.81*(3-deflateEnergy)*0.3, 0);
          d:=deflateEnergy*10;
          dBodyAddRelForce(ballBody,
-            deflateVector[0]*d, deflateVector[1]*d, deflateVector[2]*d);
+            deflateVector.Coord[0]*d, deflateVector.Coord[1]*d, deflateVector.Coord[2]*d);
          deflateEnergy:=deflateEnergy-deltaTime;
          if deflateEnergy<0.3 then
             LevelLost('You''ve been deflated!');

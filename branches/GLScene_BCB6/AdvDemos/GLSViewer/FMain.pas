@@ -11,14 +11,13 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, Placemnt, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMisc,
+  Dialogs, ActnList, Menus, ImgList, ToolWin, ComCtrls, GLMisc,
   GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects, VectorGeometry,
   GLTexture, OpenGL1x, GLContext, ExtDlgs, VectorLists, GLCadencer,
   ExtCtrls;
 
 type
   TMain = class(TForm)
-    FormStorage: TFormStorage;
     MainMenu: TMainMenu;
     ActionList: TActionList;
     ImageList: TImageList;
@@ -187,7 +186,7 @@ implementation
 
 {$R *.dfm}
 
-uses KeyBoard, GraphicEx, Registry, PersistentClasses, MeshUtils,
+uses KeyBoard, Registry, PersistentClasses, MeshUtils,
    GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
    GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFileTIN,
    GLFilePLY, GLFileGTS, GLMeshOptimizer, GLState;
@@ -515,9 +514,9 @@ begin
 
    FreeForm.GetExtents(min, max);
    with CubeExtents do begin
-      CubeWidth:=max[0]-min[0];
-      CubeHeight:=max[1]-min[1];
-      CubeDepth:=max[2]-min[2];
+      CubeWidth:=max.Coord[0]-min.Coord[0];
+      CubeHeight:=max.Coord[1]-min.Coord[1];
+      CubeDepth:=max.Coord[2]-min.Coord[2];
       Position.AsAffineVector:=VectorLerp(min, max, 0.5);
    end;
 

@@ -79,7 +79,7 @@ implementation
 {$WARN UNIT_PLATFORM OFF}
 {$ENDIF}
 
-uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext, GLUtils;
+uses FileCtrl, Jpeg, OpenGL1x, VectorGeometry, GLContext, GLUtils, VectorTypes;
    // accurate movements left for later... or the astute reader
    // USolarSystem;
 
@@ -115,8 +115,8 @@ const
    cAtmosphereRadius : Single = 0.55;
    // use value slightly lower than actual radius, for antialiasing effect
    cPlanetRadius : Single = 0.495;
-   cLowAtmColor : TColorVector = (1, 1, 1, 1);
-   cHighAtmColor : TColorVector = (0, 0, 1, 1);
+   cLowAtmColor : TColorVector = (X:1; Y:1; Z:1; W:1);
+   cHighAtmColor : TColorVector = (X:0; Y:0; Z:1; W:1);
    cOpacity : Single = 5;
    cIntDivTable : array [2..20] of Single =
                      (1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10,
@@ -152,17 +152,17 @@ var
             intensity:=intensity*contrib;
             alt:=(VectorLength(atmPoint)-cPlanetRadius)*invAtmosphereHeight;
             VectorLerp(cLowAtmColor, cHighAtmColor, alt, altColor);
-            Result[0]:=Result[0]*decay+altColor[0]*intensity;
-            Result[1]:=Result[1]*decay+altColor[1]*intensity;
-            Result[2]:=Result[2]*decay+altColor[2]*intensity;
+            Result.Coord[0]:=Result.Coord[0]*decay+altColor.Coord[0]*intensity;
+            Result.Coord[1]:=Result.Coord[1]*decay+altColor.Coord[1]*intensity;
+            Result.Coord[2]:=Result.Coord[2]*decay+altColor.Coord[2]*intensity;
          end else begin
             // sample on the dark sid
-            Result[0]:=Result[0]*decay;
-            Result[1]:=Result[1]*decay;
-            Result[2]:=Result[2]*decay;
+            Result.Coord[0]:=Result.Coord[0]*decay;
+            Result.Coord[1]:=Result.Coord[1]*decay;
+            Result.Coord[2]:=Result.Coord[2]*decay;
          end;         
       end;
-      Result[3]:=n*contrib*cOpacity*0.1;
+      Result.Coord[3]:=n*contrib*cOpacity*0.1;
    end;
 
    function ComputeColor(var rayDest : TVector; mayHitGround : Boolean) : TColorVector;
@@ -276,9 +276,9 @@ var
    var
       f : Single;
    begin
-      SinCos(lat*(PI/180), Result[1], f);
+      SinCos(lat*(PI/180), Result.Coord[1], f);
       SinCos(lon*(360/24*PI/180), f,
-             Result[0], Result[2]);
+             Result.Coord[0], Result.Coord[2]);
    end;
 
 var
