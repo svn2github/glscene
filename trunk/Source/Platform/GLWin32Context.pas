@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>01/03/02 - EG - Fixed CurrentPixelFormatIsHardwareAccelerated
       <li>22/02/02 - EG - Unified ChooseWGLFormat for visual & non-visual
       <li>21/02/02 - EG - AntiAliasing support *experimental* (Chris N. Strahm)
       <li>05/02/02 - EG - Fixed UnTrackWindow
@@ -400,7 +401,7 @@ const
    cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
 var
    pfDescriptor : TPixelFormatDescriptor;
-   pixelFormat, nbFormats : Integer;
+   pixelFormat, nbFormats, legacyFormat : Integer;
    aType : DWORD;
    iFormats : array [0..31] of Integer;
    tempWnd : HWND;
@@ -416,10 +417,6 @@ var
       with localPFD do begin
          nSize:=SizeOf(localPFD);
          nVersion:=1;
-      end;
-      if GetPixelFormat(outputDC)<>pixelFormat then begin
-         if not SetPixelFormat(outputDC, pixelFormat, @PFDescriptor) then
-            RaiseLastOSError;
       end;
       DescribePixelFormat(outputDC, pixelFormat, SizeOf(localPFD), localPFD);
       Result:=((localPFD.dwFlags and PFD_GENERIC_FORMAT)=0);
@@ -462,6 +459,7 @@ begin
 
    // WGL_ARB_pixel_format is used if available
    //
+   FLegacyContextsOnly:=True;
    if not (FLegacyContextsOnly or (aType in cMemoryDCs)) then begin
       // the WGL mechanism is a little awkward: we first create a dummy context
       // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
@@ -520,7 +518,8 @@ begin
             PFDescriptor.cColorBits:=16;
             pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
          end;
-         // I'm out of options, raise an error
+         // Fallback to 24bits color, 24bits depth, should be supported by software
+         pixelFormat:=ChoosePixelFormat(outputDC, @PFDescriptor);
          if pixelFormat=0 then RaiseLastOSError;
       end;
       ClearGLError;
