@@ -12,6 +12,7 @@
    holds the data a renderer needs.<p>
 
 	<b>History : </b><font size=-1><ul>
+	    <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
       <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
       <li>03/07/04 - LR - Corrections for Linux compatibility
                           CreateMonochromeBitmap NOT implemented for Linux
@@ -1203,7 +1204,7 @@ begin
       ix:=Trunc(x);  x:=Frac(x);
       iy:=Trunc(y);  y:=Frac(y);
       ixn:=ix+1; if ixn>=Size then ixn:=ix;
-      iyn:=iy+1; if iyn>=Size then ixn:=iy;
+      iyn:=iy+1; if iyn>=Size then iyn:=iy;
       if x>y then begin
          // top-right triangle
          h1:=Height(ixn,  iy);
