@@ -1,0 +1,13 @@
+Hello from Lionel : un test de plus !
+hello !EG added this!
+world
+Testing writing -DanB 13-Feb/2003
+and again 21/06/03
+well and i add something in the middle on 02/24/2004 using tortoisecvs 1.6.3
+Test write from Stuart on 5-Mar-2003
+Another Test write from Stuart on 1-Apr-2003
+*Some stuff added by EG at the end 22/11/02*
+!!!!!!!
+
+okey dokey... wanted to add some k3wl quote from The Lord of The rings...
+but *that* would be too long :)
