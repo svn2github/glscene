@@ -3382,6 +3382,7 @@ begin
       if Assigned(Parent) then
          newPos:=Parent.AbsoluteToLocal(newPos);
       Position.AsVector:=newPos;
+      TransformationChanged;
    end;
 end;
 
