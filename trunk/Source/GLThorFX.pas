@@ -1,10 +1,19 @@
-//    06/04/04 - PHP - Removed property Paused use of property Disabled instead
-//    04/15/03 - Added initialization to CalcThor, to fix an error
-//               Thanks to Martin Kirsch for this solution 
-//    12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
-//                    Fixed leaks (colors) 
 //
-unit GLThorFX;       //--René Lindsay 09/03/2001--
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLThorFX<p>
+
+  <b>History : </b><font size=-1><ul>
+    <li>23/12/04 - PhP - GLScenestyled Header
+    <li>06/04/04 - PhP - Removed property Paused use of property Disabled instead
+    <li>04/15/03 - Added initialization to CalcThor, to fix an error
+                   Thanks to Martin Kirsch for this solution
+    <li>12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
+                        Fixed leaks (colors)
+    <li>09/03/01 - René Lindsay - unit created
+  </ul></font>
+}
+unit GLThorFX;
 
 interface
 

@@ -1,5 +1,9 @@
-// GLODEManager
-{: An ODE Manager for GLScene.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLODEManager<p>
+
+  An ODE Manager for GLScene.<p>
 
   Where can I find ... ?<ul>
     <li>GLScene              (http://glscene.org)

@@ -1,5 +1,9 @@
-// GLScene
-{: Base classes and structures for GLScene.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLScene<p>
+
+   Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
       <li>04/12/10 - MF - Changed FieldOfView to work with degrees (not radians)

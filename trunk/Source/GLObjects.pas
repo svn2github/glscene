@@ -1,5 +1,9 @@
-// GLObjects
-{: Implementation of basic scene objects plus some management routines.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{: GLObjects<p>
+
+   Implementation of basic scene objects plus some management routines.<p>
 
    All objects declared in this unit are part of the basic GLScene package,
    these are only simple objects and should be kept simple and lightweight.<br>
