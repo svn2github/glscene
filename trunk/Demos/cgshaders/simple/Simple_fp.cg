@@ -1,7 +1,7 @@
 //
 // Simple Fragment Program
 //
-// - Just do a simple remap of RGB
+// - Just do a simple remap of RGBA
 //
 
 struct FragOut {
@@ -12,8 +12,8 @@ FragOut main(float4 color : COLOR)
 {
   FragOut OUT;
 
-  OUT.color.rg = color.gg;
-  OUT.color.b  = 0.3;
+  OUT.color.rg = color.gg;       // Red, Green channels <- Green value
+  OUT.color.ba = float2(0.3, 1); // Blue <- 0.3; Alpha <- 1
 
   return OUT;
 }
