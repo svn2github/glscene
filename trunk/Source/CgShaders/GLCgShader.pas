@@ -2,6 +2,7 @@
 {: Base Cg shader classes.<p>
 
    <b>History :</b><font size=-1><ul>
+      <li>24/03/04 - NelC - Added GetLatestProfile
       <li>21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
                             Added TCustomCgShader.IsProfileSupported
       <li>16/02/04 - NelC - Added TCgParameter.SetParameterPointer
@@ -97,6 +98,8 @@ type
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
+
+    function GetLatestProfile: TcgProfile; virtual; abstract;
 
     procedure Initialize; dynamic;
     procedure Finalize;
@@ -230,6 +233,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
+    function GetLatestProfile: TcgProfile;  override;
   published
     property Profile : TCgVPProfile read FVPProfile write SetVPProfile default vpDetectLatest;
   end;
@@ -247,6 +251,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
     procedure Initialize; override;
+    function GetLatestProfile: TcgProfile; override;
 
   published
     property Profile : TCgFPProfile read FFPProfile write SetFPProfile default fpDetectLatest;
@@ -511,33 +516,20 @@ var
   buf : String;
 begin
   Assert(FCgContext=nil);
-
+  
   buf := Trim(Code.Text);
-
   if buf='' then exit;
-
   // get a new context
   FCgContext := cgCreateContext;
-
-  CurCgProgram:=self;
-
   Inc(vCgContextCount);
-
+  CurCgProgram:=self;
   try
-    if FDetectProfile then // set profile to latest supported by the hardware
-      case FProgramType of
-        ptVertex   : FProfile := cgGLGetLatestProfile(CG_GL_VERTEX);
-        ptFragment : FProfile := cgGLGetLatestProfile(CG_GL_FRAGMENT);
-      end;
-
+    if FDetectProfile then FProfile:=GetLatestProfile;
     cgGLSetOptimalOptions(FProfile);
-
-    if FProgramName='' then FProgramName:='main';
-
+    if FProgramName='' then FProgramName:='main'; // default program name
     FHandle := cgCreateProgram( FCgContext, CG_SOURCE, PChar(buf), FProfile,
                                 PChar(FProgramName), nil);
     cgGLLoadProgram(FHandle);
-
     // build parameter list for the selected program
     BuildParamsList;
   except
@@ -906,6 +898,13 @@ begin
   FVPProfile:=vpDetectLatest;
 end;
 
+// GetLatestProfile
+//
+function TCgVertexProgram.GetLatestProfile: TcgProfile;
+begin
+  result:=cgGLGetLatestProfile(CG_GL_VERTEX);
+end;
+
 procedure TCgVertexProgram.SetVPProfile(v: TCgVPProfile);
 begin
   if FVPProfile=v then exit;
@@ -951,6 +950,13 @@ begin
   inherited;
   if not FManageTexture then // ManageTexture is on by default
     cgGLSetManageTextureParameters(@FCgContext, CgBoolean[FManageTexture]);
+end;
+
+// GetLatestProfile
+//
+function TCgFragmentProgram.GetLatestProfile: TcgProfile;
+begin
+  result:=cgGLGetLatestProfile(CG_GL_FRAGMENT);
 end;
 
 // SetFPProfile
