@@ -54,7 +54,6 @@ type
    procedure Assign(Source: TPersistent); override;
    function GetBitmap32(target: TGLuint): TGLBitmap32; override;
    procedure ReleaseBitmap32; override;
-   function Edit : Boolean; override;
    procedure SaveToFile(const fileName : String); override;
    procedure LoadFromFile(const fileName : String); override;
    procedure NoiseAnimate( speed : Single );
@@ -65,6 +64,14 @@ type
    property NoiseSharpness : Single read FNoiseSharpness write SetNoiseSharpness;
    property Seamless : Boolean read FSeamless write SetSeamless;
  end;
+
+   // TGLBlankTIE
+   //
+   TGLProcTextureNoiseTIE = class(TGLTextureImageEditor)
+		public
+         { Public Properties }
+			class function Edit(aTexImage : TGLTextureImage) : Boolean; override;
+   end;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -207,33 +214,9 @@ begin
 end;
 
 
-function TGLProcTextureNoise.Edit: Boolean;
-var
-   p : Integer;
-   buf : String;
-begin
-   buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Enter size', Format('%d x %d', [Width, Height]));
-   p:=Pos('x', buf);
-   if p>0 then begin
-      Width:=StrToIntDef(Trim(Copy(buf, 1, p-1)), 256);
-      Height:=StrToIntDef(Trim(Copy(buf, p+1, MaxInt)), 256);
-      buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Minimum Cut', IntToStr(FMinCut));
-      FMinCut := StrToIntDef(buf, 0);
-      buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Noise Sharpness', FloatToStr(FNoiseSharpness));
-      FNoiseSharpness := StrToFloatDef(buf, 0.9);
-      buf := InputDlg(TGLProcTextureNoise.FriendlyName, 'Generate Seamless Texture (0,1)', IntToStr(Ord(FSeamless)));
-      FSeamless := (buf<>'0');
-      Result:=True;
-      Invalidate;
-   end else begin
-      InformationDlg('Invalid size');
-      Result:=False;
-   end;
-end;
-
 procedure TGLProcTextureNoise.LoadFromFile(const fileName: String);
 begin
-
+   Assert(False, 'TGLProcTextureNoise.LoadFromFile not implemented');
 end;
 
 procedure TGLProcTextureNoise.ReleaseBitmap32;
@@ -422,6 +405,34 @@ begin
   Result := Lerp(wz, vz0, vz1);
 end;
 
+// Edit
+//
+class function TGLProcTextureNoiseTIE.Edit(aTexImage : TGLTextureImage) : Boolean;
+var
+   p : Integer;
+   buf : String;
+begin
+   with aTexImage as TGLProcTextureNoise do begin
+      buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Enter size', Format('%d x %d', [Width, Height]));
+      p:=Pos('x', buf);
+      if p>0 then begin
+         Width:=StrToIntDef(Trim(Copy(buf, 1, p-1)), 256);
+         Height:=StrToIntDef(Trim(Copy(buf, p+1, MaxInt)), 256);
+         buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Minimum Cut', IntToStr(FMinCut));
+         FMinCut := StrToIntDef(buf, 0);
+         buf:=InputDlg(TGLProcTextureNoise.FriendlyName, 'Noise Sharpness', FloatToStr(FNoiseSharpness));
+         FNoiseSharpness := StrToFloatDef(buf, 0.9);
+         buf := InputDlg(TGLProcTextureNoise.FriendlyName, 'Generate Seamless Texture (0,1)', IntToStr(Ord(FSeamless)));
+         FSeamless := (buf<>'0');
+         Result:=True;
+         Invalidate;
+      end else begin
+         InformationDlg('Invalid size');
+         Result:=False;
+      end;
+   end;
+end;
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -430,6 +441,11 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  RegisterGLTextureImageClass(TGLProcTextureNoise);
+   RegisterGLTextureImageClass(TGLProcTextureNoise);
+   RegisterGLTextureImageEditor(TGLProcTextureNoise, TGLProcTextureNoiseTIE);
+
+finalization
+
+   UnRegisterGLTextureImageEditor(TGLProcTextureNoiseTIE);
 
 end.
