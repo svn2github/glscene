@@ -2,7 +2,8 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
-      <li>03/02/02 - Egg - InfoForm registration mechanism
+      <li>03/02/02 - Egg - InfoForm registration mechanism,
+                           AbsolutePosition promoted to read/write property
       <li>27/01/02 - Egg - Added TGLCamera.RotateObject, fixed SetMatrix,
                            added RotateAbsolute, ResetRotations
       <li>21/01/02 - Egg - More graceful recovery for ICDs without pbuffer support
@@ -362,6 +363,9 @@ type
          procedure WriteEffects(stream : TStream);
          procedure ReadEffects(stream : TStream);
 
+         procedure SetAbsolutePosition(const v : TVector);
+         function GetAbsolutePosition : TVector;
+
          procedure DrawAxes(Pattern: Word);
          procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
          function  GetHandle(var rci : TRenderContextInfo) : TObjectHandle; virtual;
@@ -407,9 +411,8 @@ type
          function AbsoluteDirection : TVector;
          {: Calculate the up vector in absolute coordinates. }
          function AbsoluteUp : TVector;
-         {: Calculates the object's absolute coordinates.<p>
-            The current implem is probably buggy and slow... }
-         function AbsolutePosition : TVector;
+         {: Computes and allows to set the object's absolute coordinates.<p> }
+         property AbsolutePosition : TVector read GetAbsolutePosition write SetAbsolutePosition;
          function AbsolutePositionAsAddress : PVector;
          {: Returns the Absolute X Vector expressed in local coordinates. }
          function AbsoluteXVector : TVector;
@@ -2392,11 +2395,20 @@ begin
    Result:=VectorNormalize(AbsoluteMatrix[1]);
 end;
 
-// AbsolutePosition
+// GetAbsolutePosition
 //
-function TGLBaseSceneObject.AbsolutePosition : TVector;
+function TGLBaseSceneObject.GetAbsolutePosition : TVector;
 begin
    Result:=AbsoluteMatrixAsAddress^[3];
+end;
+
+// SetAbsolutePosition
+//
+procedure TGLBaseSceneObject.SetAbsolutePosition(const v : TVector);
+begin
+   if Assigned(Parent) then
+      Position.AsVector:=Parent.AbsoluteToLocal(v)
+   else Position.AsVector:=v;
 end;
 
 // AbsolutePositionAsAddress
