@@ -140,9 +140,9 @@ var
 begin
 
   Force := NullVector;
-  if IsKeyDown('w') then Force[2] := cForce;
+  if IsKeyDown('w') or IsKeyDown('z') then Force[2] := cForce;
   if IsKeyDown('s') then Force[2] := -cForce;
-  if IsKeyDown('a') then Force[0] := cForce;
+  if IsKeyDown('a') or IsKeyDown('q') then Force[0] := cForce;
   if IsKeyDown('d') then Force[0] := -cForce;
 
   GetOrCreateDCEDynamic(Player).ApplyAccel(Force);
