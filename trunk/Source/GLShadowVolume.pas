@@ -6,6 +6,7 @@
    or the casters will be rendered incorrectly.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>08/12/04 - DB - Fixed bug in TGLShadowVolumeCaster.SetCaster
       <li>02/12/04 - MF - Added some documentation
       <li>23/03/04 - EG - Added Active property
       <li>29/11/03 - MF - Removed a "feature" that would draw the shadow of
@@ -329,12 +330,12 @@ end;
 //
 procedure TGLShadowVolumeCaster.SetCaster(const val : TGLBaseSceneObject);
 begin
-   if FCaster<>nil then
-      FCaster.RemoveFreeNotification(GLShadowVolume);
-
    if FCaster<>val then begin
+      if FCaster<>nil then
+         FCaster.RemoveFreeNotification(GLShadowVolume);
       FCaster:=val;
-      FCaster.FreeNotification(GLShadowVolume);
+      if FCaster<>nil then
+         FCaster.FreeNotification(GLShadowVolume);
       TGLShadowVolume(TGLShadowVolumeCaster(Collection).GetOwner).StructureChanged;
    end;
 end;
