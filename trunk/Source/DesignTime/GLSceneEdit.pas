@@ -887,70 +887,65 @@ var
    confirmMsg : String;
    buttons : TMsgDlgButtons;
 begin
-  if FSelectedItems=BEHAVIOURS_SELECTED then
-  begin
-    DeleteBaseBehaviour(BehavioursListView);
-    FCurrentDesigner.SelectComponent(TGLBaseSceneObject(Tree.Selected.data));
-    ShowBehaviours(TGLBaseSceneObject(Tree.Selected.data));
-  end
-  else if FSelectedItems=EFFECTS_SELECTED then
-  begin
-    DeleteBaseBehaviour(EffectsListView);
-    FCurrentDesigner.SelectComponent(TGLBaseSceneObject(Tree.Selected.data));
-    ShowEffects(TGLBaseSceneObject(Tree.Selected.data));
-  end
-  else if FSelectedItems=SCENE_SELECTED then
-  begin
-	if Assigned(Tree.Selected) and (Tree.Selected.Level > 1) then begin
-      anObject:=TGLBaseSceneObject(Tree.Selected.Data);
-      // ask for confirmation
-      if anObject.Name<>'' then
-         ConfirmMsg:='Delete '+anObject.Name
-      else ConfirmMsg:='Delete the marked object';
-      buttons:=[mbOK, mbCancel];
-      // are there children to care for?
-      // mbAll exist only on Windows ...
-      {$IFDEF MSWINDOWS}
-      if anObject.Count>0 then begin
-         confirmMsg:=ConfirmMsg+' only or with ALL its children?';
-         buttons:=[mbAll]+Buttons;
-      end else confirmMsg:=confirmMsg+'?';
-      {$ENDIF}
-      {$IFDEF LINUX}
-      confirmMsg:=confirmMsg+'?';
-      {$ENDIF}
-      case MessageDlg(confirmMsg, mtConfirmation, buttons, 0) of
-        {$IFDEF MSWINDOWS}
-         mrAll : begin
-            keepChildren:=False;
-            allowed:=True;
-			end;
+   if FSelectedItems=BEHAVIOURS_SELECTED then begin
+      DeleteBaseBehaviour(BehavioursListView);
+      FCurrentDesigner.SelectComponent(TGLBaseSceneObject(Tree.Selected.data));
+      ShowBehaviours(TGLBaseSceneObject(Tree.Selected.data));
+   end else if FSelectedItems=EFFECTS_SELECTED then begin
+      DeleteBaseBehaviour(EffectsListView);
+      FCurrentDesigner.SelectComponent(TGLBaseSceneObject(Tree.Selected.data));
+      ShowEffects(TGLBaseSceneObject(Tree.Selected.data));
+   end else if FSelectedItems=SCENE_SELECTED then begin
+      if Assigned(Tree.Selected) and (Tree.Selected.Level > 1) then begin
+         anObject:=TGLBaseSceneObject(Tree.Selected.Data);
+         // ask for confirmation
+         if anObject.Name<>'' then
+            ConfirmMsg:='Delete '+anObject.Name
+         else ConfirmMsg:='Delete the marked object';
+         buttons:=[mbOK, mbCancel];
+         // are there children to care for?
+         // mbAll exist only on Windows ...
+         {$IFDEF MSWINDOWS}
+         if anObject.Count>0 then begin
+            confirmMsg:=ConfirmMsg+' only or with ALL its children?';
+            buttons:=[mbAll]+Buttons;
+         end else confirmMsg:=confirmMsg+'?';
          {$ENDIF}
-         mrOK : begin
-            keepChildren:=True;
-            allowed:=True;
-         end;
-         mrCancel : begin
+         {$IFDEF LINUX}
+         confirmMsg:=confirmMsg+'?';
+         {$ENDIF}
+         case MessageDlg(confirmMsg, mtConfirmation, buttons, 0) of
+           {$IFDEF MSWINDOWS}
+            mrAll : begin
+               keepChildren:=False;
+               allowed:=True;
+            end;
+            {$ENDIF}
+            mrOK : begin
+               keepChildren:=True;
+               allowed:=True;
+            end;
+            mrCancel : begin
+               allowed:=False;
+               keepChildren:=True;
+            end;
+         else
             allowed:=False;
             keepChildren:=True;
          end;
-      else
-         allowed:=False;
-         keepChildren:=True;
+         // deletion allowed?
+         if allowed then begin
+            if keepChildren=true then
+               while Tree.Selected.Count>0 do
+                  Tree.Selected.Item[0].MoveTo(Tree.Selected, naAdd);
+            //previous line should be "naInsert" if children are to remain in position of parent
+            // (would require changes to TGLBaseSceneObject.Remove)
+            Tree.Selected.Free;
+            FCurrentDesigner.SelectComponent(nil);
+            anObject.Parent.Remove(anObject, keepChildren);
+            anObject.Free;
+         end
       end;
-      // deletion allowed?
-      if allowed then begin
-         if keepChildren=true then
-           while Tree.Selected.Count>0 do
-             Tree.Selected.Item[0].MoveTo(Tree.Selected,naAdd);
-         //previous line should be "naInsert" if children are to remain in position of parent
-         // (would require changes to TGLBaseSceneObject.Remove)
-         Tree.Selected.free;
-         FCurrentDesigner.SelectComponent(nil);
-         anObject.Parent.Remove(anObject, keepChildren);
-         anObject.Free;
-      end
-   end;
    end;
 end;
 
