@@ -1850,8 +1850,7 @@ initialization
 
       RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', glsOCEnvironmentObjects);
       RegisterSceneObject(TGLSkyDome, 'SkyDome', glsOCEnvironmentObjects);
-      RegisterSceneObject(TGLSkyBox, 'GLSkyBox', glsOCEnvironmentObjects);
-
+      RegisterSceneObject(TGLSkyBox, 'SkyBox', glsOCEnvironmentObjects);
 
       RegisterSceneObject(TGLHUDSprite, 'HUDSprite', glsOCHUDObjects);
       RegisterSceneObject(TGLHUDText, 'HUDText', glsOCHUDObjects);

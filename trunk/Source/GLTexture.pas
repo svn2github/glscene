@@ -1307,7 +1307,7 @@ type
       like texture coordinates transforms. }  
    TGLMaterialLibrary = class (TGLCadenceAbleComponent, IPersistentObject)
 	   private
-	      { Protected Declarations }
+	      { Private Declarations }
          FMaterials : TGLLibMaterials;
          FTexturePaths : String;
          FOnTextureNeeded : TTextureNeededEvent;
