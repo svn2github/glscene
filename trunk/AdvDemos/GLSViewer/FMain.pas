@@ -113,6 +113,9 @@ type
     Stripify1: TMenuItem;
     ACStripify: TAction;
     N6: TMenuItem;
+    ACLighting: TAction;
+    Lighting1: TMenuItem;
+    ToolButton14: TToolButton;
     procedure MIAboutClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ACOpenExecute(Sender: TObject);
@@ -153,6 +156,7 @@ type
     procedure MIOpenTexLibClick(Sender: TObject);
     procedure ACOptimizeExecute(Sender: TObject);
     procedure ACStripifyExecute(Sender: TObject);
+    procedure ACLightingExecute(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
@@ -388,6 +392,7 @@ begin
          Items[i].Shader:=hlShader
       else Items[i].Shader:=nil;
    end;
+   GLSceneViewer.Buffer.Lighting:=ACLighting.Checked;
    FreeForm.StructureChanged;
 end;
 
@@ -805,6 +810,12 @@ procedure TMain.ACFPSExecute(Sender: TObject);
 begin
    ACFPS.Checked:=not ACFPS.Checked;
    ApplyFPS;
+end;
+
+procedure TMain.ACLightingExecute(Sender: TObject);
+begin
+   ACLighting.Checked:=not ACLighting.Checked;
+   GLSceneViewer.Buffer.Lighting:=ACLighting.Checked;
 end;
 
 procedure TMain.TimerTimer(Sender: TObject);
