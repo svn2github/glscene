@@ -382,7 +382,12 @@ type
             Advanced user only. }
          property ObjectStyle : TGLObjectStyles read FObjectStyle write FObjectStyle;
 
-         {: Holds the local transformation (relative to parent). }
+         {: The local transformation (relative to parent).<p>
+            If you're *sure* the local matrix is up-to-date, you may use LocalMatrix
+            for quicker access. }
+         property Matrix: TMatrix read GetMatrix write SetMatrix;
+         {: Holds the local transformation (relative to parent).<p>
+            If you're not *sure* the local matrix is up-to-date, use Matrix property. }
          property LocalMatrix : TMatrix read FLocalMatrix;
          {: The object's absolute matrix by composing all local matrices.<p>
             Multiplying a local coordinate with this matrix gives an absolute coordinate. }
@@ -550,7 +555,6 @@ type
 
          property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
          property Changes: TObjectChanges read FChanges;
-         property Matrix: TMatrix read GetMatrix write SetMatrix;
          property Parent: TGLBaseSceneObject read FParent write SetParent;
          property Position: TGLCoordinates read FPosition write SetPosition;
          property Direction: TGLCoordinates read FDirection write SetDirection;

@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>28/01/02 - EG - Activation failures always ignored
       <li>21/01/02 - EG - Activation failures now ignored if application is
                           terminating (workaround for some weird ICDs)
       <li>15/12/01 - EG - Added support for AlphaBits
@@ -600,6 +601,7 @@ begin
       if Assigned(oldContext) then
          oldContext.Activate;
    end;
+   vIgnoreContextActivationFailures:=False;
    FAcceleration:=chaUnknown;
 end;
 
@@ -613,7 +615,7 @@ begin
       try
          DoActivate;
       except
-         if ApplicationTerminated then
+         if True then // ApplicationTerminated?
             vIgnoreContextActivationFailures:=True
          else raise;
       end;

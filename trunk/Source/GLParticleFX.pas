@@ -2112,7 +2112,6 @@ var
    x, y, d, h2 : Integer;
    ih2, f, fy : Single;
    scanLine1, scanLine2 : PGLPixel32Array;
-   invert : Boolean;
 begin
    s:=(1 shl TexMapSize);
    bmp32.Width:=s;
@@ -2121,7 +2120,6 @@ begin
 
    h2:=s div 2;
    ih2:=1/h2;
-   invert:=False;
    for y:=0 to h2-1 do begin
       fy:=Sqr((y+0.5-h2)*ih2);
       scanLine1:=bmp32.ScanLine[y];
