@@ -33,8 +33,7 @@ type
 var
    vGLFileOCTLightmapBrightness : Single = 1;      // Mrqzzz : scaling factor, 1.0 = unchanged
    vGLFileOCTLightmapGammaCorrection : Single = 1; // Mrqzzz : scaling factor, 1.0 = unchanged
-   vGLFileOCTAllocateMaterials : boolean = True;   // Mrqzzz : Flag to avoid loading materials (useful for IDE Extentions or scene editors)
-
+   vGLFileOCTAllocateMaterials : Boolean = True;   // Mrqzzz : Flag to avoid loading materials (useful for IDE Extensions or scene editors)
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -88,9 +87,13 @@ begin
             for i:=0 to n-1 do begin
                octLightmap:=@oct.Lightmaps[i];
                // Brightness correction
-               BrightenRGBArray(@octLightmap.map, lightmapBmp.Width*lightmapBmp.Height,vGLFileOCTLightmapBrightness);
+               if vGLFileOCTLightmapBrightness<>1.0 then
+                  BrightenRGBArray(@octLightmap.map, lightmapBmp.Width*lightmapBmp.Height,
+                                   vGLFileOCTLightmapBrightness);
                // Gamma correction
-               GammaCorrectRGBArray(@octLightmap.map, lightmapBmp.Width*lightmapBmp.Height,vGLFileOCTLightmapGammaCorrection);
+               if vGLFileOCTLightmapGammaCorrection<>1.0 then
+                  GammaCorrectRGBArray(@octLightmap.map, lightmapBmp.Width*lightmapBmp.Height,
+                                       vGLFileOCTLightmapGammaCorrection);
                // convert RAW RGB to BMP
                for y:=0 to 127 do
                   Move(octLightmap.map[y*128*3], lightmapBmp.ScanLine[127-y]^, 128*3);
