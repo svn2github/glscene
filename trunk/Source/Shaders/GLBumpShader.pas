@@ -10,12 +10,16 @@
 
    The tertiary texture is used for the specular texture,
    to enable set boSpecularTexture3 in the BumpOptions property.
-   The boDisableSpecular with disable specular lighting altogether.<p>
+   The SpecularMode determines the specular highlight calculation
+   (Blinn or Phong), smOff disables specular highlights in the 
+   shader.<p>
 
    External tangent bump space expects tangent data under
    GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>11/10/04 - SG - Added SpecularMode to define the specular highlight equation,
+                          Removed the boDisableSpecular bump option (depricated).
       <li>06/10/04 - SG - Added special functions for generating the ARB programs
                           which replace the string constants.
       <li>02/10/04 - SG - Changed render order a little, minimum texture units
@@ -49,8 +53,10 @@ type
 
    TBumpSpace = (bsObject, bsTangentExternal, bsTangentQuaternion);
 
-   TBumpOption = (boDiffuseTexture2, boSpecularTexture3, boDisableSpecular);
+   TBumpOption = (boDiffuseTexture2, boSpecularTexture3);
    TBumpOptions = set of TBumpOption;
+   
+   TSpecularMode = (smOff, smBlinn, smPhong);
 
    // TGLBumpShader
    //
@@ -64,6 +70,7 @@ type
          FBumpMethod : TBumpMethod;
          FBumpSpace : TBumpSpace;
          FBumpOptions : TBumpOptions;
+         FSpecularMode : TSpecularMode;
          FDesignTimeEnabled : Boolean;
          FAmbientPass : Boolean;
          FDiffusePass : Boolean;
@@ -78,6 +85,7 @@ type
          procedure SetBumpMethod(const Value : TBumpMethod);
          procedure SetBumpSpace(const Value : TBumpSpace);
          procedure SetBumpOptions(const Value : TBumpOptions);
+         procedure SetSpecularMode(const Value : TSpecularMode);
          procedure SetDesignTimeEnabled(const Value : Boolean);
          procedure Loaded; override;
          procedure DeleteVertexPrograms;
@@ -94,6 +102,7 @@ type
          property BumpMethod : TBumpMethod read FBumpMethod write SetBumpMethod;
          property BumpSpace : TBumpSpace read FBumpSpace write SetBumpSpace;
          property BumpOptions : TBumpOptions read FBumpOptions write SetBumpOptions;
+         property SpecularMode : TSpecularMode read FSpecularMode write SetSpecularMode;
          property DesignTimeEnabled : Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
 
    end;
@@ -160,7 +169,7 @@ var
    VP : TStringList;
    DoTangent, DoSpecular : Boolean;
 begin
-   DoSpecular:=(BumpMethod = bmBasicARBFP) and not (boDisableSpecular in BumpOptions);
+   DoSpecular:=(BumpMethod = bmBasicARBFP) and not (SpecularMode = smOff);
    DoTangent:=(BumpSpace = bsTangentExternal) or (BumpSpace = bsTangentQuaternion);
 
    VP:=TStringList.Create;
@@ -285,7 +294,7 @@ var
    FP : TStringList;
    DoSpecular : Boolean;
 begin
-   DoSpecular:=not (boDisableSpecular in BumpOptions);
+   DoSpecular:=not (SpecularMode = smOff);
 
    FP:=TStringList.Create;
 
@@ -296,7 +305,7 @@ begin
    FP.Add('PARAM materialDiffuse = state.material.diffuse;');
    FP.Add('PARAM materialSpecular = state.material.specular;');
    FP.Add('PARAM shininess = state.material.shininess;');
-   FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec, textureColor;');
+   FP.Add('TEMP temp, tex, light, eye, normal, col, diff, spec, textureColor, reflect;');
 
    // Get the normalized normal vector
    FP.Add('   TEX textureColor, fragment.texcoord[0], texture[0], 2D;');
@@ -320,17 +329,29 @@ begin
    end;
 
    if DoSpecular then begin
-      // Get the normalized half vector (eye+light)
+      // Get the eye vector
       FP.Add('   DP3 eye, fragment.texcoord[2], fragment.texcoord[2];');
       FP.Add('   RSQ eye, eye.x;');
       FP.Add('   MUL eye, fragment.texcoord[2], eye.x;');
-      FP.Add('   ADD eye, eye, light;');
-      FP.Add('   DP3 temp, eye, eye;');
-      FP.Add('   RSQ temp, temp.x;');
-      FP.Add('   MUL eye, eye, temp.x;');
+      case SpecularMode of
+         smBlinn : begin
+            FP.Add('   ADD eye, eye, light;');
+            FP.Add('   DP3 temp, eye, eye;');
+            FP.Add('   RSQ temp, temp.x;');
+            FP.Add('   MUL eye, eye, temp.x;');
+            FP.Add('   DP3 spec, normal, eye;');
+         end;
+         smPhong : begin
+            FP.Add('   DP3 reflect, normal, light;');
+            FP.Add('   MUL reflect, reflect.x, normal;');
+            FP.Add('   MUL reflect, 2.0, reflect;');
+            FP.Add('   ADD reflect, reflect, -light;');
+            FP.Add('   DP3 spec, reflect, eye;');
+         end;
+      else
+         Assert(False, 'Invalid specular mode!');
+      end;
 
-      // Calculate the specular color
-      FP.Add('   DP3 spec, normal, eye;');
       FP.Add('   POW spec, spec.x, shininess.x;');
       FP.Add('   MUL spec, spec, materialSpecular;');
       FP.Add('   MUL spec, spec, lightSpecular;');
@@ -640,6 +661,18 @@ procedure TGLBumpShader.SetBumpOptions(const Value: TBumpOptions);
 begin
    if Value<>FBumpOptions then begin
       FBumpOptions:=Value;
+      DeleteVertexPrograms;
+      DeleteFragmentPrograms;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetSpecularMode
+//
+procedure TGLBumpShader.SetSpecularMode(const Value: TSpecularMode);
+begin
+   if Value<>FSpecularMode then begin
+      FSpecularMode:=Value;
       DeleteVertexPrograms;
       DeleteFragmentPrograms;
       NotifyChange(Self);
