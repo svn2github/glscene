@@ -365,6 +365,10 @@ type
      Left, Top, Width, Height: Integer;
    end;
 
+   TFrustum = record
+      pLeft, pTop, pRight, pBottom, pNear, pFar : THmgPlane;
+   end;
+
    TTransType = (ttScaleX, ttScaleY, ttScaleZ,
                  ttShearXY, ttShearXZ, ttShearYZ,
                  ttRotateX, ttRotateY, ttRotateZ,
@@ -383,6 +387,7 @@ type
       clippingDirection : TVector;
       viewPortRadius : Single; // viewport bounding radius per distance unit
       farClippingDistance : Single;
+      frustum : TFrustum;
    end;
 
    TPackedRotationMatrix = array [0..2] of SmallInt;
@@ -871,6 +876,9 @@ function PlaneMake(const point, normal : TVector) : THmgPlane; overload;
 //: Converts from single to double representation
 procedure SetPlane(var dest : TDoubleHmgPlane; const src : THmgPlane);
 
+//: Normalize a plane so that point evaluation = plane distance. }
+procedure NormalizePlane(var plane : THmgPlane);
+
 {: Calculates the cross-product between the plane normal and plane to point vector.<p>
    This functions gives an hint as to were the point is, if the point is in the
    half-space pointed by the vector, result is positive.<p>
@@ -1279,6 +1287,9 @@ function RayCastSphereIntersect(const rayStart, rayVector : TVector;
    This radius can be used for occlusion culling (cone extrusion) or 2D
    intersection testing. }
 function SphereVisibleRadius(distance, radius : Single) : Single;
+
+{: Extracts a TFrustum for combined modelview and projection matrices. }
+function ExtractFrustumFromModelViewProjection(const modelViewProj : TMatrix) : TFrustum;
 
 //: Determines if volume is clipped or not
 function IsVolumeClipped(const objPos : TVector; const objRadius : Single;
@@ -5714,6 +5725,16 @@ begin
    dest[3]:=src[3];
 end;
 
+// NormalizePlane
+//
+procedure NormalizePlane(var plane : THmgPlane);
+var
+   n : Single;
+begin
+   n:=RSqrt(plane[0]*plane[0]+plane[1]*plane[1]+plane[2]*plane[2]+plane[3]*plane[3]);
+   ScaleVector(plane, n);
+end;
+
 // PlaneEvaluatePoint (affine)
 //
 function PlaneEvaluatePoint(const plane : THmgPlane; const point : TAffineVector) : Single;
@@ -5795,7 +5816,6 @@ function PointIsInHalfSpace(const point, planePoint, planeNormal : TAffineVector
 begin
    Result:=(PointPlaneDistance(point, planePoint, planeNormal)>0);
 end;
-
 
 // PointPlaneDistance
 //
@@ -8784,6 +8804,50 @@ begin
    end;
 end;
 
+// ExtractFrustumFromModelViewProjection
+//
+function ExtractFrustumFromModelViewProjection(const modelViewProj : TMatrix) : TFrustum;
+begin
+   with Result do begin
+      // extract left plane
+      pLeft[0]:=modelViewProj[0][3]+modelViewProj[0][0];
+      pLeft[1]:=modelViewProj[1][3]+modelViewProj[1][0];
+      pLeft[2]:=modelViewProj[2][3]+modelViewProj[2][0];
+      pLeft[3]:=modelViewProj[3][3]+modelViewProj[3][0];
+      NormalizePlane(pLeft);
+      // extract top plane
+      pTop[0]:=modelViewProj[0][3]-modelViewProj[0][1];
+      pTop[1]:=modelViewProj[1][3]-modelViewProj[1][1];
+      pTop[2]:=modelViewProj[2][3]-modelViewProj[2][1];
+      pTop[3]:=modelViewProj[3][3]-modelViewProj[3][1];
+      NormalizePlane(pTop);
+      // extract right plane
+      pRight[0]:=modelViewProj[0][3]-modelViewProj[0][0];
+      pRight[1]:=modelViewProj[1][3]-modelViewProj[1][0];
+      pRight[2]:=modelViewProj[2][3]-modelViewProj[2][0];
+      pRight[3]:=modelViewProj[3][3]-modelViewProj[3][0];
+      NormalizePlane(pRight);
+      // extract bottom plane
+      pBottom[0]:=modelViewProj[0][3]+modelViewProj[0][1];
+      pBottom[1]:=modelViewProj[1][3]+modelViewProj[1][1];
+      pBottom[2]:=modelViewProj[2][3]+modelViewProj[2][1];
+      pBottom[3]:=modelViewProj[3][3]+modelViewProj[3][1];
+      NormalizePlane(pBottom);
+      // extract far plane
+      pFar[0]:=modelViewProj[0][3]-modelViewProj[0][2];
+      pFar[1]:=modelViewProj[1][3]-modelViewProj[1][2];
+      pFar[2]:=modelViewProj[2][3]-modelViewProj[2][2];
+      pFar[3]:=modelViewProj[3][3]-modelViewProj[3][2];
+      NormalizePlane(pFar);
+      // extract near plane
+      pNear[0]:=modelViewProj[0][3]+modelViewProj[0][2];
+      pNear[1]:=modelViewProj[1][3]+modelViewProj[1][2];
+      pNear[2]:=modelViewProj[2][3]+modelViewProj[2][2];
+      pNear[3]:=modelViewProj[3][3]+modelViewProj[3][2];
+      NormalizePlane(pNear);
+   end;
+end;
+
 // IsVolumeClipped
 //
 function IsVolumeClipped(const objPos : TVector; const objRadius : Single;
@@ -8797,20 +8861,15 @@ end;
 function IsVolumeClipped(const objPos : TAffineVector; const objRadius : Single;
                          const rcci : TRenderContextClippingInfo) : Boolean;
 var
-   objCenter, objProj : TAffineVector;
-   proj, dist : Single;
+   negRadius : Single;
 begin
-   VectorSubtract(objPos, PAffineVector(@rcci.origin)^, objCenter);
-   proj:=VectorDotProduct(objCenter, PAffineVector(@rcci.clippingDirection)^);
-   if (proj+objRadius>0) and (proj-objRadius<rcci.farClippingDistance) then begin
-      if proj>0 then begin
-         VectorScale(PAffineVector(@rcci.clippingDirection)^, proj, objProj);
-         dist:=proj*1.1*rcci.viewPortRadius;
-         Result:=(VectorDistance2(objCenter, objProj)>Sqr(dist+objRadius));
-      end else begin
-         Result:=(VectorNorm(objCenter)>Sqr(objRadius));
-      end;
-   end else Result:=True;
+   negRadius:=-objRadius;
+   Result:=   (PlaneEvaluatePoint(rcci.frustum.pLeft, objPos)<negRadius)
+           or (PlaneEvaluatePoint(rcci.frustum.pTop, objPos)<negRadius)
+           or (PlaneEvaluatePoint(rcci.frustum.pRight, objPos)<negRadius)
+           or (PlaneEvaluatePoint(rcci.frustum.pBottom, objPos)<negRadius)
+           or (PlaneEvaluatePoint(rcci.frustum.pNear, objPos)<negRadius)
+           or (PlaneEvaluatePoint(rcci.frustum.pFar, objPos)<negRadius);
 end;
 
 // IsVolumeClipped

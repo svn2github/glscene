@@ -2923,41 +2923,15 @@ end;
 // BoundingSphereRadius
 //
 function TGLBaseSceneObject.BoundingSphereRadius : Single;
-{var
-   i : Integer;
-   d : Single;
-   bb : THmgBoundingBox;}
 begin
-   Result:=MaxXYZComponent(AxisAlignedDimensions);
-{  For use when bounding boxes will be cached...
-
-   Result:=0;
-   bb:=BoundingBox;
-   for i:=0 to 7 do begin
-      d:=VectorNorm(bb[i]);
-      if d>Result then Result:=d;
-   end;
-   Result:=Sqrt(Result); }
+   Result:=VectorLength(AxisAlignedDimensions);
 end;
 
 // BoundingSphereRadiusUnscaled
 //
 function TGLBaseSceneObject.BoundingSphereRadiusUnscaled : Single;
-{var
-   i : Integer;
-   d : Single;
-   bb : THmgBoundingBox;}
 begin
-   Result:=MaxXYZComponent(AxisAlignedDimensionsUnscaled);
-{  For use when bounding boxes will be cached...
-
-   Result:=0;
-   bb:=BoundingBox;
-   for i:=0 to 7 do begin
-      d:=VectorNorm(bb[i]);
-      if d>Result then Result:=d;
-   end;
-   Result:=Sqrt(Result); }
+   Result:=VectorLength(AxisAlignedDimensionsUnscaled);
 end;
 
 // PointInObject
@@ -5620,6 +5594,17 @@ procedure TGLScene.RenderScene(aBuffer : TGLSceneBuffer;
                                const viewPortSizeX, viewPortSizeY : Integer;
                                drawState : TDrawState;
                                baseObject : TGLBaseSceneObject);
+
+   function GetMVProj : TMatrix;
+   var
+      projMat, mvMat : TMatrix;
+   begin
+      // Die Matrizen mit Hilfe von OpenGL in Arrays sichern
+      glGetFloatv(GL_PROJECTION_MATRIX, @projMat);
+      glGetFloatv(GL_MODELVIEW_MATRIX, @mvMat);
+      Result:=MatrixMultiply(mvMat, projMat);
+   end;
+
 var
    i : Integer;
    rci : TRenderContextInfo;
@@ -5647,6 +5632,7 @@ begin
          clippingDirection:=rci.cameraDirection;
          viewPortRadius:=FViewPortRadius;
          farClippingDistance:=FNearPlane+FDepthOfView;
+         frustum:=ExtractFrustumFromModelViewProjection(GetMVProj);
       end;
    end;
    rci.viewPortSize.cx:=viewPortSizeX;
