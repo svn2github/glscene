@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>21/05/03 - Egg - RenderToBitmap RC setup fixes (Yurik)
       <li>07/05/03 - Egg - TGLSceneBuffer now invokes BeforeRender and PostRender
                            events even when no camera has been specified
       <li>13/02/03 - DanB - added unscaled Dimensions and Bounding Box methods
@@ -1543,6 +1544,7 @@ type
                                 drawState : TDrawState);
 
          procedure SetupRenderingContext;
+         procedure SetupRCOptions(context : TGLContext);
          procedure PrepareGLContext;
 
          procedure DoChange;
@@ -5963,50 +5965,60 @@ begin
       FOnPrepareGLContext(Self);
 end;
 
-// CreateRC
+// SetupRCOptions
 //
-procedure TGLSceneBuffer.CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
+procedure TGLSceneBuffer.SetupRCOptions(context : TGLContext);
 const
    cColorDepthToColorBits : array [cdDefault..cd24bits] of Integer =
                                     (24, 8, 16, 24);
    cDepthPrecisionToDepthBits : array [dpDefault..dp32bits] of Integer =
                                     (24, 16, 24, 32);
 var
-   backColor: TColorVector;
-   locOptions: TGLRCOptions;
+   locOptions : TGLRCOptions;
    locStencilBits, locAlphaBits, locColorBits : Integer;
+begin
+   locOptions:=[];
+   if roDoubleBuffer in ContextOptions then
+      locOptions:=locOptions+[rcoDoubleBuffered];
+   if roStereo in ContextOptions then
+      locOptions:=locOptions+[rcoStereo];
+   if roNoColorBuffer in ContextOptions then
+      locColorBits:=0
+   else locColorBits:=cColorDepthToColorBits[ColorDepth];
+   if roStencilBuffer in ContextOptions then
+      locStencilBits:=8
+   else locStencilBits:=0;
+   if roDestinationAlpha in ContextOptions then
+      locAlphaBits:=8
+   else locAlphaBits:=0;
+   with context do begin
+      Options:=locOptions;
+      ColorBits:=locColorBits;
+      DepthBits:=cDepthPrecisionToDepthBits[DepthPrecision];
+      StencilBits:=locStencilBits;
+      AlphaBits:=locAlphaBits;
+      AccumBits:=0;
+      AuxBuffers:=0;
+      AntiAliasing:=Self.AntiAliasing;
+      PrepareGLContext;
+   end;
+end;
+
+// CreateRC
+//
+procedure TGLSceneBuffer.CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
+var
+   backColor: TColorVector;
 begin
    DestroyRC;
    FRendering:=True;
    try
-      locOptions:=[];
-      if roDoubleBuffer in ContextOptions then
-         locOptions:=locOptions+[rcoDoubleBuffered];
-      if roStereo in ContextOptions then
-         locOptions:=locOptions+[rcoStereo];
-      if roNoColorBuffer in ContextOptions then
-         locColorBits:=0
-      else locColorBits:=cColorDepthToColorBits[ColorDepth];
-      if roStencilBuffer in ContextOptions then
-         locStencilBits:=8
-      else locStencilBits:=0;
-      if roDestinationAlpha in ContextOptions then
-         locAlphaBits:=8
-      else locAlphaBits:=0;
       // will be freed in DestroyWindowHandle
       FRenderingContext:=GLContextManager.CreateContext;
       if not Assigned(FRenderingContext) then
          raise Exception.Create('Failed to create RenderingContext.');
+      SetupRCOptions(FRenderingContext);
       with FRenderingContext do begin
-         Options:=locOptions;
-         ColorBits:=locColorBits;
-         DepthBits:=cDepthPrecisionToDepthBits[DepthPrecision];
-         StencilBits:=locStencilBits;
-         AlphaBits:=locAlphaBits;
-         AccumBits:=0;
-         AuxBuffers:=0;
-         AntiAliasing:=Self.AntiAliasing;
-         PrepareGLContext;
          try
             if memoryContext then
                CreateMemoryContext(deviceHandle, FViewPort.Width, FViewPort.Height)
@@ -6367,8 +6379,11 @@ begin
          aColorBits:=24;
       end;
       bmpContext:=GLContextManager.CreateContext;
+      SetupRCOptions(bmpContext);
       with bmpContext do begin
-         ColorBits:=aColorBits;
+         Options:=[];            // no such things for bitmap rendering
+         ColorBits:=aColorBits;  // honour Bitmap's pixel depth
+         AntiAliasing:=aaNone;   // no AA for bitmap rendering
          CreateContext(ABitmap.Canvas.Handle);
       end;
       try
