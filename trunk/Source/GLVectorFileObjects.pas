@@ -1376,6 +1376,7 @@ type
          procedure SetEndFrame(val : Integer);
          procedure SetReference(val : TActorAnimationReference);
          procedure SetAnimations(const val : TActorAnimations);
+         function  StoreAnimations : Boolean;
          procedure SetOptions(const val : TGLActorOptions);
 
          procedure PrepareMesh; override;
@@ -1441,7 +1442,7 @@ type
          property OnStartFrameReached : TNotifyEvent read FOnStartFrameReached write FOnStartFrameReached;
 
          {: Collection of animations sequences. }
-         property Animations : TActorAnimations read FAnimations write SetAnimations;
+         property Animations : TActorAnimations read FAnimations write SetAnimations stored StoreAnimations;
 
          property AutoCentering;
          property MaterialLibrary;
@@ -5927,6 +5928,13 @@ begin
    FAnimations.Assign(val);
 end;
 
+// StoreAnimations
+//
+function TGLActor.StoreAnimations : Boolean;
+begin
+   Result:=(FAnimations.Count>0);
+end;
+
 // SetOptions
 //
 procedure TGLActor.SetOptions(const val : TGLActorOptions);
@@ -6570,7 +6578,7 @@ initialization
    RegisterVectorFileFormat('tin', 'Triangular Irregular Network', TGLTINVectorFile);
 
    RegisterClasses([TGLFreeForm, TGLActor, TSkeleton, TSkeletonFrame, TSkeletonBone,
-                    TSkeletonMeshObject, TMeshObject, TSkeletonFrame,
+                    TSkeletonMeshObject, TMeshObject, TSkeletonFrame, TMeshMorphTarget,
                     TMorphableMeshObject, TFaceGroup, TFGVertexIndexList,
                     TFGVertexNormalTexIndexList, TGLAnimationControler,
                     TFGIndexTexCoordList]);
