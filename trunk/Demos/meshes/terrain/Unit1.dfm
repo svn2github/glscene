@@ -23,7 +23,6 @@ object Form1: TForm1
     Width = 603
     Height = 405
     Camera = GLCamera1
-    BeforeRender = GLSceneViewer1BeforeRender
     Buffer.FogEnvironment.FogColor.Color = {0000803F0000803F0000803F0000803F}
     Buffer.FogEnvironment.FogStart = 200
     Buffer.FogEnvironment.FogEnd = 650
@@ -44,6 +43,8 @@ object Form1: TForm1
     ObjectsSorting = osNone
     Left = 56
     Top = 56
+    object InitialRenderPoint: TGLRenderPoint
+    end
     object SkyDome1: TGLSkyDome
       Direction.Coordinates = {000000000000803F2EBD3BB300000000}
       Up.Coordinates = {000000002EBD3BB3000080BF00000000}
@@ -64,8 +65,6 @@ object Form1: TForm1
       Stars = <>
       Options = [sdoTwinkle]
       object SPMoon: TGLSprite
-        Position.Coordinates = {00000C430000C842000096420000803F}
-        Visible = False
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Emission.Color = {0000803F0000803F0000803F0000803F}
@@ -75,6 +74,8 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmReplace
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
+        Position.Coordinates = {00000C430000C842000096420000803F}
+        Visible = False
         Width = 30
         Height = 30
         NoZWrite = True
@@ -82,7 +83,6 @@ object Form1: TForm1
         MirrorV = False
       end
       object SPSun: TGLSprite
-        Position.Coordinates = {00000C430000C842000096420000803F}
         Material.FrontProperties.Ambient.Color = {0000000000000000000000000000803F}
         Material.FrontProperties.Diffuse.Color = {0000000000000000000000000000803F}
         Material.BlendingMode = bmAdditive
@@ -91,6 +91,7 @@ object Form1: TForm1
         Material.Texture.TextureFormat = tfLuminance
         Material.Texture.Compression = tcNone
         Material.Texture.Disabled = False
+        Position.Coordinates = {00000C430000C842000096420000803F}
         Width = 60
         Height = 60
         NoZWrite = True
@@ -111,11 +112,11 @@ object Form1: TForm1
       end
     end
     object TerrainRenderer1: TGLTerrainRenderer
+      Material.MaterialLibrary = GLMaterialLibrary1
+      Material.LibMaterialName = 'ground'
       Direction.Coordinates = {000000000000803F0000000000000000}
       Scale.Coordinates = {00008040000080400000803E00000000}
       Up.Coordinates = {00000000000000000000803F00000000}
-      Material.MaterialLibrary = GLMaterialLibrary1
-      Material.LibMaterialName = 'ground'
       HeightDataSource = GLBitmapHDS1
       TileSize = 32
       TilesPerTexture = 1
@@ -133,6 +134,8 @@ object Form1: TForm1
     object GLLensFlare: TGLLensFlare
       Size = 100
       Seed = 978
+      FlareIsNotOccluded = True
+      PreRenderPoint = InitialRenderPoint
       Position.Coordinates = {9A620252C9B28B51B743BAD10000803F}
       Visible = False
       object GLDummyCube1: TGLDummyCube

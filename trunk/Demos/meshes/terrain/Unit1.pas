@@ -68,6 +68,7 @@ type
     GLSoundLibrary: TGLSoundLibrary;
     GLLensFlare: TGLLensFlare;
     GLDummyCube1: TGLDummyCube;
+    InitialRenderPoint: TGLRenderPoint;
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -78,7 +79,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure TISoundTimer(Sender: TObject);
-    procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Déclarations privées }
   public
@@ -314,10 +314,5 @@ begin
       end;
    end;
 end; }
-
-procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
-begin
-   GLLensFlare.PreRender(Sender as TGLSceneBuffer);
-end;
 
 end.
