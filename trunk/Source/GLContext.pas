@@ -747,13 +747,8 @@ begin
          end;
       end else begin
          // no compat context, release handles
-         for i:=FOwnedHandles.Count-1 downto 0 do begin
-            with TGLContextHandle(FOwnedHandles[i]) do begin
-               DoDestroyHandle;
-               FHandle:=0;
-               FRenderingContext:=nil;
-            end;
-         end;
+         for i:=FOwnedHandles.Count-1 downto 0 do
+            TGLContextHandle(FOwnedHandles[i]).ContextDestroying;
       end;
       FOwnedHandles.Clear;
       Manager.DestroyingContextBy(Self);
@@ -865,8 +860,6 @@ begin
                 and (vCurrentGLContext.FSharedContexts.IndexOf(FRenderingContext)>=0)) then begin
          // current context is ours or compatible one
          DoDestroyHandle;
-         FHandle:=0;
-         FRenderingContext:=nil;
       end else begin
          // some other context (or none)
          oldContext:=vCurrentGLContext;
@@ -876,14 +869,14 @@ begin
          handleContext:=FRenderingContext;
          try
             DoDestroyHandle;
-            FHandle:=0;
-            FRenderingContext:=nil;
          finally
             handleContext.Deactivate;
             if Assigned(oldContext) then
                oldContext.Activate;
          end;
       end;
+      FHandle:=0;
+      FRenderingContext:=nil;
    end;
 end;
 
@@ -971,7 +964,8 @@ begin
       // reset error status
       glGetError;
       // delete
- 	   glDeleteTextures(1, @FHandle);
+      if glIsTexture(FHandle) then
+    	   glDeleteTextures(1, @FHandle);
       // check for error
       CheckOpenGLError;
    end;
