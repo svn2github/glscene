@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>07/05/03 - SG - Added TGLSMDVectorFile.SaveToFile method and [read,write] capabilities
       <li>17/04/03 - SG - Added TMeshObjectList.FindMeshByName method
       <li>01/04/03 - SG - Fixed TGLBaseMesh.Assign
       <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled
@@ -1057,7 +1058,10 @@ type
    TGLSMDVectorFile = class(TVectorFile)
       public
          { Public Declarations }
+         class function Capabilities : TDataFileCapabilities; override;
+
          procedure LoadFromStream(aStream : TStream); override;
+         procedure SaveToStream(aStream : TStream); override;
    end;
 
    // TGLBaseMesh
@@ -6618,6 +6622,13 @@ end;
 // ------------------ TGLSMDVectorFile ------------------
 // ------------------
 
+// Capabilities
+//
+class function TGLSMDVectorFile.Capabilities : TDataFileCapabilities;
+begin
+   Result:=[dfcRead, dfcWrite];
+end;
+
 // LoadFromStream
 //
 procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
@@ -6749,6 +6760,83 @@ begin
       sl.Free;
    end;
 end;
+
+// SaveToStream
+//
+procedure TGLSMDVectorFile.SaveToStream(aStream : TStream);
+var
+   str,
+   nodes     : TStrings;
+   i,j,k,l,b : Integer;
+   p,r,v,n,t : TAffineVector;
+
+   procedure GetNodesFromBonesRecurs(bone : TSkeletonBone; ParentID : Integer; bl : TStrings);
+   var
+      i : Integer;
+   begin
+      bl.Add(Format('%3d "%s" %3d',[bone.BoneID,bone.Name,ParentID]));
+      for i:=0 to bone.Count-1 do
+         GetNodesFromBonesRecurs(bone.Items[i],bone.BoneID,bl);
+   end;
+
+begin
+   str:=TStringList.Create;
+   nodes:=TStringList.Create;
+   try
+      str.Add('version 1');
+
+      // Add the bones
+      str.Add('nodes');
+      for i:=0 to Owner.Skeleton.RootBones.Count-1 do begin
+         GetNodesFromBonesRecurs(Owner.Skeleton.RootBones[i],-1,nodes);
+      end;
+      str.AddStrings(nodes);
+      str.Add('end');
+
+      // Now add the relavent frames
+      if Owner.Skeleton.Frames.Count>0 then begin
+         str.Add('skeleton');
+         for i:=0 to Owner.Skeleton.Frames.Count-1 do begin
+            str.Add(Format('time %d',[i]));
+            for j:=0 to Owner.Skeleton.Frames[i].Position.Count-1 do begin
+               p:=Owner.Skeleton.Frames[i].Position[j];
+               r:=Owner.Skeleton.Frames[i].Rotation[j];
+               str.Add(Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',[j,p[0],p[1],p[2],r[0],r[1],r[2]]));
+            end;
+         end;
+         str.Add('end');
+      end;
+    
+      // Add the mesh data
+      if Owner.MeshObjects.Count>0 then begin
+         str.Add('triangles');
+         for i:=0 to Owner.MeshObjects.Count-1 do
+         if Owner.MeshObjects[i] is TSkeletonMeshObject then
+         with TSkeletonMeshObject(Owner.MeshObjects[i]) do begin
+            for j:=0 to FaceGroups.Count-1 do 
+            with TFGVertexNormalTexIndexList(FaceGroups[j]) do begin
+               for k:=0 to (VertexIndices.Count div 3)-1 do begin
+                  str.Add(MaterialName);
+                  for l:=0 to 2 do begin
+                     v:=Vertices[VertexIndices[3*k+l]];
+                     n:=Normals[NormalIndices[3*k+l]];
+                     t:=TexCoords[TexCoordIndices[3*k+l]];
+                     b:=VerticesBonesWeights[VertexIndices[3*k+l]][0].BoneID;
+                     str.Add(Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',[b,v[0],v[1],v[2],n[0],n[1],n[2],t[0],t[1]]));
+                  end;
+               end;
+            end;
+         end;
+         str.Add('end');
+      end;
+    
+      str.SaveToStream(aStream);
+   finally
+      str.Free;
+      nodes.Free;
+   end;
+end;
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
