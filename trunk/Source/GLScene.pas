@@ -2,6 +2,10 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>23/08/01 - Lin - Added PixelDepthToDistance function (Rene Lindsay)
+      <li>23/08/01 - Lin - Added ScreenToVector function (Rene Lindsay)
+      <li>23/08/01 - Lin - Fixed PixelRayToWorld no longer requires the camera to have
+                           a TargetObject set. (Rene Lindsay)
       <li>22/08/01 - Egg - Fixed ocStructure not being reset for osDirectDraw objects,
                            Added Absolute-Local conversion helpers,
                            glPopName fix (Puthoon)
@@ -1304,9 +1308,15 @@ type
             This value does not map to the actual eye-object distance, but to
             a depth buffer value in the [0; 1] range. }
          function GetPixelDepth(x, y : Integer) : Single;
-         {: Converts a raw depth (Z buffer value) to world distance. }
+         {: Converts a raw depth (Z buffer value) to frustrum distance.
+            This calculation is only accurate for the pixel at the centre of the viewer,
+            because it does not take into account that the corners of the frustrum
+            are further from the eye than its centre. }
          function PixelDepthToDistance(aDepth : Single) : Single;
-
+         {: Converts a raw depth (Z buffer value) to world distance.
+            It also compensates for the fact that the corners of the frustrum
+            are further from the eye, than its centre.}
+         function PixelToDistance(x,y : integer) : Single;
          {: Renders the scene on the viewer.<p>
             You do not need to call this method, unless you explicitly want a
             render at a specific time. If you just want the control to get
@@ -1364,6 +1374,10 @@ type
             expressed in absolute coordinates.<p>
             Note that screen coord (0,0) is the lower left corner. }
          function ScreenToVector(const aPoint : TAffineVector) : TAffineVector;
+         {: Calculates the 2D screen coordinate of a vector from the camera's
+            absolute position and is expressed in absolute coordinates.<p>
+            Note that screen coord (0,0) is the lower left corner. }
+         function VectorToScreen(const VectToCam : TAffineVector) : TAffineVector;
          {: Calculates intersection between a plane and screen vector.<p>
             If an intersection is found, returns True and places result in
             intersectPoint. }
@@ -5661,6 +5675,13 @@ begin
                           PAffineVector(@FCameraAbsolutePosition)^);
 end;
 
+// VectorToScreen
+//
+function TGLSceneViewer.VectorToScreen(const VectToCam : TAffineVector) : TAffineVector;
+begin
+ Result:=WorldToScreen(VectorAdd(VectToCam,PAffineVector(@FCameraAbsolutePosition)^));
+end;
+
 // ScreenVectorIntersectWithPlane
 //
 function TGLSceneViewer.ScreenVectorIntersectWithPlane(
@@ -5707,12 +5728,13 @@ begin
                                           YVector, intersectPoint);
 end;
 
+
 // PixelRayToWorld
 //
 function TGLSceneViewer.PixelRayToWorld(x, y : Integer) : TAffineVector;
 var
    dov, np, fp, z, dst,wrpdst : Single;
-   vec, cam, targ, rayhit : TAffineVector;
+   vec, cam, targ, rayhit, pix : TAffineVector;
    camAng :real;
 begin
    if Camera.CameraStyle=csOrtho2D then
@@ -5731,14 +5753,19 @@ begin
    vec   :=ScreenToVector(vec);
    NormalizeVector(vec);
    cam :=Camera.Position.AsAffineVector;
-   targ:=Camera.TargetObject.Position.AsAffineVector;
-   SubtractVector(targ,cam);
+   //targ:=Camera.TargetObject.Position.AsAffineVector;
+   //SubtractVector(targ,cam);
+   pix[0]:=self.width/2;
+   pix[1]:=self.height/2;
+   targ:=self.ScreenToVector(pix);
+
    camAng:=VectorAngleCosine(targ,vec);
    wrpdst:=dst/camAng;
    rayhit:=cam;
    CombineVector(rayhit,vec,wrpdst);
    result:=rayhit;
 end;
+
 
 // ClearBuffers
 //
@@ -5957,9 +5984,32 @@ begin
    if Camera.CameraStyle=csOrtho2D then
       dov:=2
    else dov:=Camera.DepthOfView;    // Depth of View (from np to fp)
-   np :=Camera.NearPlane;           // Near plane distance
-   fp :=np+dov;                     // Far plane distance
-   Result:=(fp*np)/(fp-aDepth*dov); // calculate world distance from z-buffer value
+   np :=Camera.NearPlane;      // Near plane distance
+   fp :=np+dov;                // Far plane distance
+   Result:=(fp*np)/(fp-aDepth*dov);  // calculate world distance from z-buffer value
+end;
+
+// PixelToDistance
+//
+function TGLSceneViewer.PixelToDistance(x,y : integer) : Single;
+var z, dov, np, fp, dst, camAng : Single;
+    norm, coord, vec: TAffineVector;
+begin
+   z:=GetPixelDepth(x,y);
+   if Camera.CameraStyle=csOrtho2D then
+      dov:=2
+   else dov:=Camera.DepthOfView;    // Depth of View (from np to fp)
+   np :=Camera.NearPlane;      // Near plane distance
+   fp :=np+dov;                // Far plane distance
+   dst:=(np*fp)/(fp-z*dov);     //calculate from z-buffer value to frustrum depth
+   coord[0]:=x;
+   coord[1]:=y;
+   vec:=self.ScreenToVector(coord);     //get the pixel vector
+   coord[0]:=Round(self.width/2);
+   coord[1]:=Round(self.height/2);
+   norm:=self.ScreenToVector(coord);    //get the absolute camera direction
+   camAng:=VectorAngleCosine(norm,vec);
+   result:=dst/camAng;                 //compensate for flat frustrum face
 end;
 
 // PrepareRenderingMatrices
