@@ -3,6 +3,7 @@
 	Misc. lists of vectors and entities<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>04/07/02 - EG - Fixed TIntegerList.Add( 2 at once )
       <li>15/06/02 - EG - Added TBaseListOption stuff
       <li>28/05/02 - EG - TBaseList.SetCount now properly resets new items
       <li>23/02/02 - EG - Added TBaseList.UseMemory
@@ -162,6 +163,7 @@ type
 			procedure Add(const i1, i2 : TAffineVector); overload;
 			procedure Add(const i1, i2, i3 : TAffineVector); overload;
 			function  Add(const item : TTexPoint) : Integer; overload;
+			function  Add(const x, y : Single) : Integer; overload;
 			function  Add(const x, y, z : Single) : Integer; overload;
 			function  Add(const x, y, z : Integer) : Integer; overload;
          procedure Add(const list : TAffineVectorList); overload;
@@ -855,6 +857,21 @@ end;
 
 // Add
 //
+function TAffineVectorList.Add(const x, y : Single) : Integer;
+var
+   v : PAffineVector;
+begin
+   Result:=FCount;
+  	Inc(FCount);
+   while FCount>FCapacity do SetCapacity(FCapacity+FGrowthDelta);
+   v:=@List[Result];
+   v[0]:=x;
+	v[1]:=y;
+	v[2]:=0;
+end;
+
+// Add
+//
 function TAffineVectorList.Add(const x, y, z : Single) : Integer;
 var
    v : PAffineVector;
@@ -1343,7 +1360,7 @@ var
 begin
   	Inc(FCount, 2);
    while FCount>FCapacity do SetCapacity(FCapacity + FGrowthDelta);
-   list:=@FList[FCount-3];
+   list:=@FList[FCount-2];
 	list[0]:=i1;
 	list[1]:=i2;
 end;
