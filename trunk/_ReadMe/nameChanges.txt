@@ -1,5 +1,9 @@
 This document lists the class/unit name changes since v0.9:
 
+30/10/02
+TBitmapFont -> TGLBitmapFont
+TWindowsBitmapFont -> TGLWindowsBitmapFont
+
 04/10/02
 TDummyCube -> TGLDummyCube
 TPlane -> TGLPlane
