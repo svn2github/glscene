@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>04/09/02 - EG - Fixed TBaseMesh.AxisAlignedDimensions 
       <li>23/08/02 - EG - Added TBaseMesh.Visible
       <li>23/07/02 - EG - TBaseMesh.LoadFromStream fix (D. Angilella)
       <li>13/07/02 - EG - AutoCenter on barycenter
@@ -4497,7 +4498,6 @@ begin
       FAxisAlignedDimensionsCache[2]:=MaxFloat(Abs(dMin[2]), Abs(dMax[2]));
    end;
    SetVector(Result, FAxisAlignedDimensionsCache);
-   ScaleVector(Result, Scale.DirectVector);
 end;
 
 // DestroyHandle
