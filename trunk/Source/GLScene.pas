@@ -6347,6 +6347,7 @@ end;
 //
 destructor TGLSceneBuffer.Destroy;
 begin
+   Melt;
    FGLStates.Free;
    // clean up and terminate
    if Assigned(FCamera) and Assigned(FCamera.FScene) then begin
@@ -6797,7 +6798,7 @@ begin
    Render;
    RenderingContext.Activate;
    try
-      FFreezeBuffer:=GetMemory(FViewPort.Width*FViewPort.Height*4);
+      FFreezeBuffer:=AllocMem(FViewPort.Width*FViewPort.Height*4);
       glReadPixels(0, 0, FViewport.Width, FViewPort.Height,
                    GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
       FFreezedViewPort:=FViewPort;
@@ -6812,7 +6813,7 @@ end;
 procedure TGLSceneBuffer.Melt;
 begin
    if not Freezed then Exit;
-   FreeMemory(FFreezeBuffer);
+   FreeMem(FFreezeBuffer);
    FFreezed:=False;
 end;
 
@@ -7433,15 +7434,18 @@ begin
    if FRendering then Exit;
    if not Assigned(FRenderingContext) then Exit;
 
+   backColor:=ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
+
    if Freezed then begin
       RenderingContext.Activate;
       try
+         glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
+         ClearBuffers;
          glMatrixMode(GL_PROJECTION);
-         with FFreezedViewPort do
-            gluOrtho2D(Left, Width, Height, Top);
+         glLoadIdentity;
          glMatrixMode(GL_MODELVIEW);
          glLoadIdentity;
-         glRasterPos2i(-50, 0);
+         glRasterPos2f(-1, -1);
          glDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
                       GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
          if not (roNoSwapBuffers in ContextOptions) then
@@ -7468,7 +7472,6 @@ begin
       ClearGLError;
       SetupRenderingContext;
       // clear the buffers
-      backColor:=ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       glClearColor(backColor[0], backColor[1], backColor[2], backColor[3]);
       ClearBuffers;
       CheckOpenGLError;
