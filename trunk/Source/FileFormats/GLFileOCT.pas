@@ -41,7 +41,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses SysUtils, GLTexture, Graphics,GLGraphics;
+uses SysUtils, GLTexture, GLGraphics, GLCrossPlatform;
 
 // ------------------
 // ------------------ TGLOCTVectorFile ------------------
@@ -65,7 +65,7 @@ var
    mo : TMeshObject;
    fg : TFGVertexIndexList;
    lightmapLib : TGLMaterialLibrary;
-   lightmapBmp : TBitmap;
+   lightmapBmp : TGLBitmap;
    libMat : TGLLibMaterial;
 begin
    oct:=TOCTFile.Create(aStream);
@@ -77,7 +77,7 @@ begin
       if (Assigned(lightmapLib)) and (vGLFileOCTAllocateMaterials) then begin
          // import lightmaps
          n:=oct.Header.numLightmaps;
-         lightmapBmp:=TBitmap.Create;
+         lightmapBmp:=TGLBitmap.Create;
          try
             lightmapBmp.PixelFormat:=pf24bit;
             lightmapBmp.Width:=128;

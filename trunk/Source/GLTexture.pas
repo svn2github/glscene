@@ -2414,12 +2414,12 @@ end;
 procedure TGLCubeMapImage.SaveToFile(const fileName : String);
 var
    fs : TFileStream;
-   bmp : TBitmap;
+   bmp : TGLBitmap;
    i : TGLCubeMapTarget;
    version : Word;
 begin
    fs:=TFileStream.Create(fileName, fmCreate);
-   bmp:=TBitmap.Create;
+   bmp:=TGLBitmap.Create;
    try
       version:=$0100;
       fs.Write(version, 2);
@@ -2438,12 +2438,12 @@ end;
 procedure TGLCubeMapImage.LoadFromFile(const fileName : String);
 var
    fs : TFileStream;
-   bmp : TBitmap;
+   bmp : TGLBitmap;
    i : TGLCubeMapTarget;
    version : Word;
 begin
    fs:=TFileStream.Create(fileName, fmOpenRead+fmShareDenyWrite);
-   bmp:=TBitmap.Create;
+   bmp:=TGLBitmap.Create;
    try
       fs.Read(version, 2);
       Assert(version=$0100);
