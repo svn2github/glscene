@@ -38,9 +38,14 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Torus1: TTorus;
+    Button1: TButton;
     procedure BUCastClick(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
+    procedure Button1Click(Sender: TObject);
+    procedure Image1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Déclarations privées }
   public
@@ -54,7 +59,7 @@ implementation
 
 {$R *.DFM}
 
-uses Geometry;
+uses Geometry, Polynomials;
 
 procedure TForm1.BUCastClick(Sender: TObject);
 var
@@ -104,10 +109,82 @@ begin
    Screen.Cursor:=crDefault;
 end;
 
+procedure TForm1.Image1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+   o, v, iPoint, iNormal : TAffineVector;
+   up, right, dir : TAffineVector;
+   dx, dy : Integer;
+   f, d : Single;
+   color : TColor;
+   iObj : TGLBaseSceneObject;
+begin
+   SetVector(o,   GLCamera1.AbsolutePosition);
+   SetVector(dir, GLCamera1.AbsoluteDirection);
+   SetVector(up,  GLCamera1.AbsoluteUp);
+   right:=VectorCrossProduct(dir, up);
+   f:=1/300;
+   dx:=(Image1.Width div 2);
+   dy:=(Image1.Height div 2);
+   // Calculate our ray vector
+   v:=VectorCombine3(dir, right, up, 1, (x-dx)*f, (dy-y)*f);
+   // ray vectors must be of unit length!
+   NormalizeVector(v);
+   iObj:=GLScene1.RayCastIntersect(o, v, @iPoint, @iNormal);
+   ShowMessage(Format('%f %f %f', [iPoint[0], iPoint[1], iPoint[2]]));
+end;
+
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 begin
-   DummyCube1.TurnAngle:=newTime*60;
+   DummyCube1.TurnAngle:=newTime*50;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+var
+   poly : array of Extended;
+   roots : TComplexArray;
+   trueSolutions, calcSolutions : array of Extended;
+   mark : array of Boolean;
+   a, b, c, d, delta, worstDelta : Extended;
+   i, j, n : Integer;
+begin
+   SetLength(poly, 5);
+   SetLength(trueSolutions, 4);
+   SetLength(calcSolutions, 4);
+   worstDelta:=0;
+   for i:=0 to 50000 do begin
+      a:=(Random*10-5); trueSolutions[0]:=a;
+      b:=(Random*10-5); trueSolutions[1]:=b;
+      c:=(Random*10-5); trueSolutions[2]:=c;
+      d:=(Random*10-5); trueSolutions[3]:=d;
+      // (x-a)*(x-b)*(x-c) = (x2 - (a+b).x + ab)*(x-c)
+      //                   = x3 - (a+b).x2 + ab.x - c.x2 + c(a+b).x - abc
+      //                   = x3 - (a+b+c).x2 +(ab+c(a+b)).x - abc          *(x-d)
+      // x4 - (a+b+c).x3 + (ab+c(a+b)).x2 - abc.x - d.x3 + d(a+b+c).x2 - d(ab+c(a+b)).x + abcd
+      // x4 - (a+b+c+d).x3 + (ab+c(a+b)+d(a+b+c)).x2 - (abc+d(ab+c(a+b))).x +abcd
+      poly[0]:=a*b*c*d;
+      poly[1]:=-(a*b*c+d*(a*b+c*(a+b)));
+      poly[2]:=a*b+c*(a+b)+d*(a+b+c);
+      poly[3]:=-(a+b+c+d);
+      poly[4]:=1;
+      roots:=qtcrt(@poly[0]);
+      Assert(Length(roots)=4, 'Found '+IntToStr(Length(roots))+' roots');
+      SetLength(mark, Length(roots));
+      for j:=0 to High(roots) do begin
+         Assert(Abs(roots[j].Imag)=0);
+         calcSolutions[j]:=roots[j].Real;
+         mark[j]:=False;
+      end;
+      SortArrayAscending(trueSolutions);
+      SortArrayAscending(calcSolutions);
+      for j:=0 to High(roots) do begin
+         delta:=Abs(calcSolutions[j]-trueSolutions[j]);
+         if delta>worstDelta then
+            worstDelta:=delta;
+      end;
+   end;
+   ShowMessage('Worst Delta : '+FloatToStr(worstDelta));
 end;
 
 end.
