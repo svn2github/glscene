@@ -149,6 +149,18 @@ type
    //
    TMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
 
+   // TBlendedLerpInfo
+   //
+   {: Small structure to store a weighted lerp for use in blending. }
+   TBlendedLerpInfo = record
+      frameIndex1, frameIndex2 : Integer;
+      lerpFactor : Single;
+      weight : Single;
+      externalPositions : TAffineVectorList;
+      externalRotations : TAffineVectorList;
+      externalQuaternions : TQuaternionList;
+   end;
+
    // TBaseMeshObject
    //
    {: A base class for mesh objects.<p>
@@ -491,18 +503,6 @@ type
    end;
 
    TGLBaseMesh = class;
-
-   // TBlendedLerpInfo
-   //
-   {: Small structure to store a weighted lerp for use in blending. }
-   TBlendedLerpInfo = record
-      frameIndex1, frameIndex2 : Integer;
-      lerpFactor : Single;
-      weight : Single;
-      externalPositions : TAffineVectorList;
-      externalRotations : TAffineVectorList;
-      externalQuaternions : TQuaternionList;
-   end;
 
 	// TSkeleton
 	//
