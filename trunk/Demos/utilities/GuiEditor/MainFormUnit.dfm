@@ -1,6 +1,6 @@
 object Form1: TForm1
-  Left = 138
-  Top = 165
+  Left = 140
+  Top = 116
   Width = 561
   Height = 391
   Caption = 'Gui Skin Editor and Manager'
@@ -164,8 +164,11 @@ object Form1: TForm1
     end
   end
   object WindowsBitmapFont1: TWindowsBitmapFont
-    GlyphsIntervalX = 0
-    GlyphsIntervalY = 0
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -16
+    Font.Name = 'Verdana'
+    Font.Style = []
     Ranges = <
       item
         StartASCII = 'A'
@@ -187,17 +190,6 @@ object Form1: TForm1
         StopASCII = ' '
         StartGlyphIdx = 36
       end>
-    CharWidth = 32
-    CharHeight = 32
-    GlyphsAlpha = tiaTopLeftPointColorTransparent
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -16
-    Font.Name = 'Verdana'
-    Font.Style = []
-    Width = 256
-    Height = 256
-    BGColor = clRed
     Left = 80
     Top = 48
   end

@@ -17,7 +17,7 @@ unit MainFormUnit;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, GLMisc, GLGui, StdCtrls, GLScene, GLWin32Viewer,
   GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont, ExtDlgs,
   GLTexture;
@@ -156,17 +156,12 @@ begin
 end;
 
 Procedure TForm1.UpdateLayoutList;
-
-Var
-  XC : Integer;
-Begin
+var
+  i : Integer;
+begin
   ListBox.Clear;
-
-  With GLGuiLayout1.GuiComponents do
-  For XC := 0 to Count-1 do
-  Begin
-    ListBox.addItem(Items[XC].Name,Items[XC]);
-  End;
+  With GLGuiLayout1.GuiComponents do for i:=0 to Count-1 do
+    ListBox.Items.AddObject(Items[i].Name, Items[i]);
 End;
 
 procedure TForm1.Add1Click(Sender: TObject);
@@ -181,7 +176,7 @@ begin
     GuiComp.Name := 'Newly Added';
   end else GuiComp.Name := Edit3.Text;
 
-  ListBox.addItem(GuiComp.Name,GuiComp);
+  ListBox.Items.AddObject(GuiComp.Name, GuiComp);
 end;
 
 procedure TForm1.Remove1Click(Sender: TObject);
@@ -191,7 +186,7 @@ begin
     GLScene1.BeginUpdate;
     try
       GLGuiLayout1.GUIComponents.Delete(ListBox.ItemIndex);
-      ListBox.DeleteSelected;
+      ListBox.Items.Delete(ListBox.ItemIndex);
     finally
       GLScene1.EndUpdate;
     end;
