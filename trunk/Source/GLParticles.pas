@@ -1,13 +1,12 @@
 // GLParticles
-{: Egg<p>
+{: Particle systems for GLScene, based on replication of full-featured scene objects.<p>
 
-	Particle systems for GLScene<p>
-
-	<b>Historique : </b><font size=-1><ul>
-      <li>12/07/01 - Egg - Fixed FEdgeColor memory leak
-      <li>18/07/01 - Egg - VisibilityCulling compatibility changes
-		<li>17/04/00 - Egg - Added Assign, Removed ActivateParticle
-	   <li>16/04/00 - Egg - Creation
+	<b>History : </b><font size=-1><ul>
+      <li>18/04/04 - EG - Added Before/After events
+      <li>12/07/01 - EG - Fixed FEdgeColor memory leak
+      <li>18/07/01 - EG - VisibilityCulling compatibility changes
+		<li>17/04/00 - EG - Added Assign, Removed ActivateParticle
+	   <li>16/04/00 - EG - Creation
 	</ul></font>
 }
 unit GLParticles;
@@ -23,7 +22,7 @@ type
 	// TGLParticles
 	//
 	{: Manager object of a particle system.<p>
-		Particle systems in GLScene are described as normal scene objects,
+		Particles in a TGLParticles system are described as normal scene objects,
 		however their children are to be :<ul>
 		<li>"particle template" : the first object (index=0), this one will be
 			duplicated to create new particles, it does not receive progression
@@ -39,8 +38,11 @@ type
 		new objects when new particles are requested. To take advantage of this
 		behaviour, you should set the ParticlePoolSize property to a non-null
 		value and use the KillParticle function instead of "Free" to kill a
-      particle.<p>
-      All direct access to a TGLParticles children should be avoided.
+      particle.<br>
+      All direct access to a TGLParticles children should be avoided.<p>
+      For high-performance particle systems of basic particles, you should
+      look into GLParticleFX instead, TGLParticles being rather focused on
+      complex particles.
 	}
 	TGLParticles = class (TGLImmaterialSceneObject)
 		private
@@ -54,6 +56,7 @@ type
          FOnActivateParticle : TGLParticleEvent;
          FOnKillParticle : TGLParticleEvent;
          FOnDestroyParticle : TGLParticleEvent;
+         FOnBeforeRenderParticles, FOnAfterRenderParticles : TDirectRenderEvent;
 
 		protected
 			{ Protected Declarations }
@@ -109,6 +112,10 @@ type
          {: Triggered just before destroying a particle.<p>
             The particle can be in the pool (ie. not parented). }
          property OnDestroyParticle : TGLParticleEvent read FOnDestroyParticle write FOnDestroyParticle;
+         {: Fired before rendering the first of the particles. }
+         property OnBeforeRenderParticles : TDirectRenderEvent read FOnBeforeRenderParticles write FOnBeforeRenderParticles;
+         {: Fired after rendering the last of the particles. }
+         property OnAfterRenderParticles : TDirectRenderEvent read FOnAfterRenderParticles write FOnAfterRenderParticles;
 	end;
 
 // ------------------------------------------------------------------
@@ -227,6 +234,8 @@ procedure TGLParticles.DoRender(var rci : TRenderContextInfo;
 begin
    if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
       BuildList(rci);
+   if Assigned(FOnBeforeRenderParticles) then
+      FOnBeforeRenderParticles(Self, rci);
    if csDesigning in ComponentState then begin
       // design-time, everything is visible for user convenience
       if Count>0 then
@@ -236,6 +245,8 @@ begin
       if Count>1 then
          Self.RenderChildren(1, Count-1, rci);
    end;
+   if Assigned(FOnAfterRenderParticles) then
+      FOnAfterRenderParticles(Self, rci);
 end;
 
 // DoProgress
