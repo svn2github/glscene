@@ -160,7 +160,7 @@ type
 
     {: Query space for Leaves that intersect a cone, result is returned through
     QueryResult}
-    function QueryCone(const aCone : TCone) : integer; virtual;
+    function QueryCone(const aCone : TCone) : integer; override;
   public
     {: Clear all internal storage Leaves }
     procedure Clear; override;
@@ -438,8 +438,6 @@ type
     function CreateNewNode(aParent : TSectorNode) : TSectorNode; override;
   end;
 
-  {: Determines to which extent one Cone contains an AABB}
-  function ConeContainsAABB(const Cone : TCone; AABB : TAABB) : TSpaceContains;
   {: Determines to which extent one Cone contains an BSphere}
   function ConeContainsBSphere(const Cone : TCone; BSphere : TBSphere) : TSpaceContains;
 
@@ -487,15 +485,13 @@ const
       (cMID,cMIN,cMIN)  //Lower Back Right
     );
 
-function ConeContainsAABB(const Cone : TCone; AABB : TAABB) : TSpaceContains;
-begin
-end;
-
 function ConeContainsBSphere(const Cone : TCone; BSphere : TBSphere) : TSpaceContains;
 var
   U, D : TAffineVector;
   e, dsqr : single;
 begin
+  // NOTE: This code hasn't been verified
+
   // U = K.vertex - (Sphere.radius/K.sin)*K.axis;
   U := VectorSubtract(Cone.Base, VectorScale(Cone.Axis, BSphere.Radius / sin(Cone.Angle)));
 
@@ -530,7 +526,7 @@ begin
       result := scContainsPartially;
   end else
     result := scNoOverlap;
-end;
+end;//}
 
 { TSpacePartitionLeaf }
 

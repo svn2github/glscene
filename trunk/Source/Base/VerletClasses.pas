@@ -63,43 +63,76 @@ type
          FFriction: single;
          FChangedOnStep: integer;
          procedure SetLocation(const Value: TAffineVector);
-
+         function GetSpeed: TAffineVector;
 		protected
 			{ Protected Declarations }
          procedure SetWeight(const value : Single);
 
          procedure AfterProgress; virtual;
 
-         function GetSpeed: TAffineVector;
-
       public
 			{ Public Declarations }
          constructor Create(aOwner : TVerletWorld); virtual;
          destructor Destroy; override;
 
+         {: Applies friction }
          procedure ApplyFriction(const friction, penetrationDepth : Single;
                                  const surfaceNormal : TAffineVector);
+         {: Simple and less accurate method for friction }
          procedure OldApplyFriction(const friction, penetrationDepth : Single);
 
+         {: Perform Verlet integration }
          procedure Verlet(const deltaTime, newTime : Double); virtual;
 
+         {: Initlializes the node. For the base class, it just makes sure that
+         FOldPosition = FPosition, so that speed is zero }
          procedure Initialize; dynamic;
 
+         {: Calculates the distance to another node }
          function DistanceToNode(const node : TVerletNode) : Single;
+
+         {: Calculates the movement of the node }
          function GetMovement : TAffineVector;
 
+         {: The TVerletNode inherits from TSpacePartitionLeaf, and it needs to
+         know how to publish itself. The owner ( a TVerletWorld ) has a spatial
+         partitioning object}
          procedure UpdateCachedAABBAndBSphere; override;
 
+         {: The VerletWorld that owns this verlet }
          property Owner : TVerletWorld read FOwner;
+
+         {: The location of the verlet }
          property Location : TAffineVector read FLocation write SetLocation;
+
+         {: The old location of the verlet. This is used for verlet integration }
          property OldLocation : TAffineVector read FOldLocation write FOldLocation;
+
+         {: The radius of the verlet node - this has been more or less deprecated }
          property Radius : Single read FRadius write FRadius;
+
+         {: A sum of all forces that has been applied to this verlet node during
+         a step }
          property Force : TAffineVector read FForce write FForce;
+
+         {: If the node is nailed down, it can't be moved by either force,
+         constraint or verlet integration - but you can still move it by hand }
          property NailedDown : Boolean read FNailedDown write FNailedDown;
+
+         {: The weight of a node determines how much it's affected by a force }
          property Weight : Single read FWeight write SetWeight;
+
+         {: InvWeight is 1/Weight, and is kept up to date automatically }
          property InvWeight : Single read FInvWeight;
+
+         {: Returns the speed of the verlet node. Speed = Movement / deltatime }
          property Speed : TAffineVector read GetSpeed;
+
+         {: Each node has a friction that effects how it reacts during contacts.}
          property Friction : single read FFriction write FFriction;
+
+         {: What phyisics step was this node last changed? Used to keep track
+         of when the spatial partitioning needs to be updated }
          property ChangedOnStep : integer read FChangedOnStep;
    end;
 
