@@ -101,6 +101,8 @@ type
          procedure SwapBuffers; override;
 
          function RenderOutputDevice : Integer; override;
+
+         property SDLWindow : TSDLWindow read FSDLWin;
    end;
 
 procedure Register;
