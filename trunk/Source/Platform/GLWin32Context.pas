@@ -3,6 +3,7 @@
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>22/02/02 - EG - Unified ChooseWGLFormat for visual & non-visual
       <li>21/02/02 - EG - AntiAliasing support *experimental* (Chris N. Strahm)
       <li>05/02/02 - EG - Fixed UnTrackWindow
       <li>03/02/02 - EG - Added experimental Hook-based window tracking
@@ -47,11 +48,14 @@ type
          procedure ClearIAttribs;
          procedure AddIAttrib(attrib, value : Integer);
          procedure ChangeIAttrib(attrib, newValue : Integer);
+         procedure DropIAttrib(attrib : Integer);
          procedure ClearFAttribs;
          procedure AddFAttrib(attrib, value : Single);
 
          procedure DestructionEarlyWarning(sender : TObject);
 
+         procedure ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger;
+                                   var nNumFormats: Integer);
          procedure DoCreateContext(outputDevice : Integer); override;
          procedure DoCreateMemoryContext(outputDevice, width, height : Integer); override;
          procedure DoShareLists(aContext : TGLContext); override;
@@ -278,6 +282,27 @@ begin
    AddIAttrib(attrib, newValue);
 end;
 
+// DropIAttrib
+//
+procedure TGLWin32Context.DropIAttrib(attrib : Integer);
+var
+   i : Integer;
+begin
+   i:=0;
+   while i<Length(FiAttribs) do begin
+      if FiAttribs[i]=attrib then begin
+         Inc(i, 2);
+         while i<Length(FiAttribs) do begin
+            FiAttribs[i-2]:=FiAttribs[i];
+            Inc(i);
+         end;
+         SetLength(FiAttribs, Length(FiAttribs)-2);
+         Exit;
+      end;
+      Inc(i, 2);
+   end;
+end;
+
 // ClearFAttribs
 //
 procedure TGLWin32Context.ClearFAttribs;
@@ -305,13 +330,51 @@ begin
    DestroyContext;
 end;
 
+// ChooseWGLFormat
+//
+procedure TGLWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal; piFormats: PInteger;
+                                          var nNumFormats: Integer);
+const
+   cAAToSamples : array [aaNone..aa4xHQ] of Integer = (1, 2, 2, 4, 4);
+begin
+   AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
+   if AlphaBits>0 then
+      AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
+   AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
+   if StencilBits>0 then
+      AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
+   if AccumBits>0 then
+      AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
+   if AuxBuffers>0 then
+      AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
+   if (AntiAliasing<>aaDefault) and WGL_ARB_multisample and GL_ARB_multisample then begin
+       AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_TRUE);
+       AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
+   end;
+   ClearFAttribs;
+   wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
+                           32, piFormats, @nNumFormats);
+   if (nNumFormats=0) and (AntiAliasing<>aaDefault) then begin
+      // couldn't find AA buffer, try without
+      DropIAttrib(WGL_SAMPLE_BUFFERS_ARB);
+      DropIAttrib(WGL_SAMPLES_ARB);
+      wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
+                              32, piFormats, @nNumFormats);
+   end;
+   if nNumFormats=0 then begin
+      // couldn't find 24 bits depth buffer, 16 bits one available?
+      ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
+      wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0],
+                              32, piFormats, @nNumFormats);
+   end;
+end;
+
 // DoCreateContext
 //
 procedure TGLWin32Context.DoCreateContext(outputDevice : Integer);
 const
    cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
    cBoolToInt : array [False..True] of Integer = (GL_FALSE, GL_TRUE);
-   cAAToSamples : array [aa2x..aa4xHQ] of Integer = (2, 2, 4, 4);
 var
    pfDescriptor : TPixelFormatDescriptor;
    pixelFormat, nbFormats : Integer;
@@ -375,32 +438,9 @@ begin
                   // New pixel format selection via wglChoosePixelFormatARB
                   ClearIAttribs;
                   AddIAttrib(WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
-                  AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
                   AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
-                  AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
-                  if AlphaBits>0 then
-                     AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
-                  AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
-                  if StencilBits>0 then
-                     AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
-                  if AccumBits>0 then
-                     AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
-                  if AuxBuffers>0 then
-                     AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-                  if (AntiAliasing<>aaNone) and GL_ARB_multisample then begin
-                      AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_TRUE);
-                      AddIAttrib(WGL_SAMPLES_ARB, cAAToSamples[AntiAliasing]);
-                  end;
-                  ClearFAttribs;
-                  wglChoosePixelFormatARB(outputDC,
-                                          @FiAttribs[0], @FfAttribs[0],
-                                          32, @iFormats, @nbFormats);
-                  if nbFormats=0 then begin
-                     // couldn't find 24 bits depth buffer, 16 bits one available?
-                     ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
-                     wglChoosePixelFormatARB(outputDC, @FiAttribs[0], @FfAttribs[0],
-                                             32, @iFormats, @nbFormats);
-                  end;
+                  AddIAttrib(WGL_DOUBLE_BUFFER_ARB, cBoolToInt[rcoDoubleBuffered in Options]);
+                  ChooseWGLFormat(outputDC, 32, @iFormats, nbFormats);
                   if nbFormats>0 then begin
                      pixelFormat:=iFormats[0];
                      if GetPixelFormat(outputDC)<>pixelFormat then begin
@@ -505,21 +545,8 @@ begin
                ClearGLError;
                if WGL_ARB_pixel_format and WGL_ARB_pbuffer then begin
                   ClearIAttribs;
-                  AddIAttrib(WGL_COLOR_BITS_ARB, ColorBits);
-                  AddIAttrib(WGL_ALPHA_BITS_ARB, AlphaBits);
-                  AddIAttrib(WGL_DEPTH_BITS_ARB, 24);
-                  if StencilBits>0 then
-                     AddIAttrib(WGL_STENCIL_BITS_ARB, StencilBits);
                   AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
-                  ClearFAttribs;
-                  wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
-                                          32, @iFormats, @nbFormats);
-                  if nbFormats=0 then begin
-                     // couldn't find 24 bits depth buffer, 16 bits one available?
-                     ChangeIAttrib(WGL_DEPTH_BITS_ARB, 16);
-                     wglChoosePixelFormatARB(outputDevice, @FiAttribs[0], @FfAttribs[0],
-                                             32, @iFormats, @nbFormats);
-                  end;
+                  ChooseWGLFormat(Cardinal(outputDevice), 32, @iFormats, nbFormats);
                   if nbFormats=0 then
                      raise Exception.Create('Format not supported for pbuffer operation.');
                   iPBufferAttribs[0]:=0;
@@ -621,9 +648,9 @@ begin
 
    // If we are using AntiAliasing, adjust filtering hints
    if (AntiAliasing in [aa2xHQ, aa4xHQ]) and GL_ARB_multisample then begin
-      // nVidia HQ modes (Quincunx etc.)
+      // Hint for nVidia HQ modes (Quincunx etc.)
       if GL_NV_multisample_filter_hint then
-         glHint(GL_MULTISAMPLE_FILTER_HINT_NV,GL_NICEST);
+         glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
    end;
 end;
 

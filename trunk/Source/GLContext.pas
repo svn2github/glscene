@@ -40,7 +40,7 @@ type
 
    // TGLAntiAliasing
    //
-   TGLAntiAliasing = (aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ);
+   TGLAntiAliasing = (aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ);
 
    // TGLContext
    //

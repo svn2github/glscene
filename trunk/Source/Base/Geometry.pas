@@ -464,6 +464,13 @@ procedure AddVector(var v : TAffineVector; const f : Single); overload;
 //: Sums up f to each component of the vector
 procedure AddVector(var v : TVector; const f : Single); overload;
 
+//: Adds delta to nb texpoints in src and places result in dest
+procedure TexPointArrayAdd(const src : PTexPointArray; const delta : TTexPoint;
+                           const nb : Integer;
+                           dest : PTexPointArray); overload;
+procedure TexPointArrayScaleAndAdd(const src : PTexPointArray; const delta : TTexPoint;
+                           const nb : Integer; const scale : TTexPoint;
+                           dest : PTexPointArray); overload;
 //: Adds delta to nb vectors in src and places result in dest
 procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVector;
                          const nb : Integer;
@@ -1634,6 +1641,111 @@ begin
    v[3]:=v[3]+f;
 end;
 
+// TexPointArrayAdd
+//
+procedure TexPointArrayAdd(const src : PTexPointArray; const delta : TTexPoint;
+                           const nb : Integer;
+                           dest : PTexPointArray); overload;
+asm
+      or    ecx, ecx
+      jz    @@End
+
+      test  vSIMD, 1
+      jnz   @@3DNow
+
+      push edi
+      mov   edi, dest
+
+@@FPULoop:
+      fld   dword ptr [eax]
+      fadd  dword ptr [edx]
+      fstp  dword ptr [edi]
+      fld   dword ptr [eax+4]
+      fadd  dword ptr [edx+4]
+      fstp  dword ptr [edi+4]
+
+      add   eax, 8
+      add   edi, 8
+      dec   ecx
+      jnz   @@FPULoop
+
+      pop edi
+      jmp   @@End
+
+@@3DNow:
+      db $0F,$6F,$02           /// movq  mm0, [edx]
+      mov   edx, dest
+
+@@3DNowLoop:
+      db $0F,$6F,$10           /// movq  mm2, [eax]
+      db $0F,$0F,$D0,$9E       /// pfadd mm2, mm0
+      db $0F,$7F,$12           /// movq  [edx], mm2
+
+      add   eax, 8
+      add   edx, 8
+      dec   ecx
+      jnz   @@3DNowLoop
+
+      db $0F,$0E               /// femms
+
+@@End:
+end;
+
+procedure TexPointArrayScaleAndAdd(const src : PTexPointArray; const delta : TTexPoint;
+                                   const nb : Integer; const scale : TTexPoint;
+                                   dest : PTexPointArray); overload;
+asm
+      or    ecx, ecx
+      jz    @@End
+
+      test  vSIMD, 1
+      jnz   @@3DNow
+
+      push  edi
+      push  esi
+      mov   edi, dest
+      mov   esi, scale
+
+@@FPULoop:
+      fld   dword ptr [eax]
+      fmul  dword ptr [esi]
+      fadd  dword ptr [edx]
+      fstp  dword ptr [edi]
+      fld   dword ptr [eax+4]
+      fmul  dword ptr [esi+4]
+      fadd  dword ptr [edx+4]
+      fstp  dword ptr [edi+4]
+
+      add   eax, 8
+      add   edi, 8
+      dec   ecx
+      jnz   @@FPULoop
+
+      pop   esi
+      pop   edi
+      jmp   @@End
+
+@@3DNow:
+      db $0F,$6F,$02           /// movq  mm0, [edx]
+      mov   edx, scale
+      db $0F,$6F,$0A           /// movq  mm1, [edx]
+      mov   edx, dest
+
+@@3DNowLoop:
+      db $0F,$6F,$10           /// movq  mm2, [eax]
+      db $0F,$0F,$D1,$B4       /// pfmul mm2, mm1
+      db $0F,$0F,$D0,$9E       /// pfadd mm2, mm0
+      db $0F,$7F,$12           /// movq  [edx], mm2
+
+      add   eax, 8
+      add   edx, 8
+      dec   ecx
+      jnz   @@3DNowLoop
+
+      db $0F,$0E               /// femms 
+@@End:
+end;
+
 // VectorArrayAdd
 //
 procedure VectorArrayAdd(const src : PAffineVectorArray; const delta : TAffineVector;
@@ -1683,7 +1795,7 @@ asm
       add   eax, 12
       add   edx, 12
       dec   ecx
-      jnz   @@3DNowLoop 
+      jnz   @@3DNowLoop
 
       db $0F,$0E               /// femms
 

@@ -1,3 +1,4 @@
+// 23/02/02 - EG - Added GL_NV_fence
 {******************************************************************************}
 {                                                       	               }
 {       Borland Delphi Runtime Library                  		       }
@@ -419,6 +420,7 @@ var
   GL_NV_vertex_array_range,
   GL_NV_vertex_program,
   GL_NV_multisample_filter_hint,
+  GL_NV_fence,
 
   GL_PGI_misc_hints,
   GL_PGI_vertex_hints,
@@ -495,6 +497,7 @@ var
 
   // -EGG- ----------------------------
   WGL_EXT_swap_control,
+  WGL_ARB_multisample,
   WGL_ARB_extensions_string,
   WGL_ARB_pixel_format,
   WGL_ARB_pbuffer,
@@ -503,7 +506,7 @@ var
   // Extensions (glu)
   GLU_EXT_Texture,
   GLU_EXT_object_space_tess,
-  GLU_EXT_nurbs_tessellator: Boolean; 
+  GLU_EXT_nurbs_tessellator: Boolean;
 
 const
   // ********** GL generic constants **********
@@ -2505,6 +2508,11 @@ const
   GL_REFLECTION_MAP_NV                              = $8512;
   {$EXTERNALSYM GL_REFLECTION_MAP_NV}
 
+  // NV_fence
+  GL_ALL_COMPLETED_NV                               = $84F2;
+  GL_FENCE_STATUS_NV                                = $84F3;
+  GL_FENCE_CONDITION_NV                             = $84F4;
+
   // EXT_texture_env_combine
   GL_COMBINE_EXT                                    = $8570;
   {$EXTERNALSYM GL_COMBINE_EXT}
@@ -3741,6 +3749,9 @@ const
   {$EXTERNALSYM GL_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV}
   GL_VERTEX_ARRAY_RANGE_POINTER_NV                  = $8521;
   {$EXTERNALSYM GL_VERTEX_ARRAY_RANGE_POINTER_NV}
+
+  // GL_NV_vertex_array_range2
+  GL_VERTEX_ARRAY_RANGE_WITHOUT_FLUSH_NV           = $8533;
 
   // GL_NV_register_combiners
   GL_REGISTER_COMBINERS_NV                          = $8522;
@@ -6604,6 +6615,15 @@ var
   glGetFinalCombinerInputParameterivNV: procedure(variable, pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glGetFinalCombinerInputParameterivNV}
 
+   // GL_NV_fence
+   glGenFencesNV: procedure(n: TGLsizei; fences: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glDeleteFencesNV: procedure(n: TGLsizei; fences: PGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glSetFenceNV: procedure(fence: TGLuint; condition: TGLenum); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glTestFenceNV: function(fence: TGLuint): TGLboolean; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glFinishFenceNV: procedure(fence: TGLuint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glIsFenceNV: function(fence: TGLuint): TGLboolean; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+   glGetFenceivNV: procedure(fence: TGLuint; pname: TGLenum; params: PGLint); {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
+
   // GL_MESA_resize_buffers
   glResizeBuffersMESA: procedure; {$ifdef Win32} stdcall; {$endif} {$ifdef LINUX} cdecl; {$endif}
   {$EXTERNALSYM glResizeBuffersMESA}
@@ -8047,7 +8067,16 @@ begin
   glGetCombinerOutputParameterfvNV := wglGetProcAddress('glGetCombinerOutputParameterfvNV'); 
   glGetCombinerOutputParameterivNV := wglGetProcAddress('glGetCombinerOutputParameterivNV'); 
   glGetFinalCombinerInputParameterfvNV := wglGetProcAddress('glGetFinalCombinerInputParameterfvNV'); 
-  glGetFinalCombinerInputParameterivNV := wglGetProcAddress('glGetFinalCombinerInputParameterivNV'); 
+  glGetFinalCombinerInputParameterivNV := wglGetProcAddress('glGetFinalCombinerInputParameterivNV');
+
+  // GL_NV_fence
+  glGenFencesNV := wglGetProcAddress('glGenFencesNV');
+  glDeleteFencesNV := wglGetProcAddress('glDeleteFencesNV');
+  glSetFenceNV := wglGetProcAddress('glSetFenceNV');
+  glTestFenceNV := wglGetProcAddress('glTestFenceNV');
+  glFinishFenceNV := wglGetProcAddress('glFinishFenceNV');
+  glIsFenceNV := wglGetProcAddress('glIsFenceNV');
+  glGetFenceivNV := wglGetProcAddress('glGetFenceivNV');
 
   // GL_MESA_resize_buffers
   glResizeBuffersMESA := wglGetProcAddress('glResizeBuffersMESA'); 
@@ -8115,7 +8144,7 @@ begin
   glBindProgramNV := wglGetProcAddress('glBindProgramNV'); 
   glDeleteProgramsNV := wglGetProcAddress('glDeleteProgramsNV'); 
   glExecuteProgramNV := wglGetProcAddress('glExecuteProgramNV'); 
-  glGenProgramsNV := wglGetProcAddress('glGenProgramsNV'); 
+  glGenProgramsNV := wglGetProcAddress('glGenProgramsNV');
   glGetProgramParameterdvNV := wglGetProcAddress('glGetProgramParameterdvNV'); 
   glGetProgramParameterfvNV := wglGetProcAddress('glGetProgramParameterfvNV');
   glGetProgramivNV := wglGetProcAddress('glGetProgramivNV'); 
@@ -8314,11 +8343,11 @@ begin
       if MinorVersion > 2 then
         GLU_VERSION_1_3 := True; 
     end;
-  end; 
+  end;
 
   // check supported extensions
   // GL
-  Buffer := glGetString(GL_EXTENSIONS);
+  Buffer := StrPas(glGetString(GL_EXTENSIONS));
 
   GL_3DFX_multisample := CheckExtension('GL_3DFX_multisample');
   GL_3DFX_tbuffer := CheckExtension('GL_3DFX_tbuffer');
@@ -8328,7 +8357,7 @@ begin
   GL_APPLE_transform_hint := CheckExtension('GL_APPLE_transform_hint');
 
   GL_ARB_imaging := CheckExtension('GL_ARB_imaging');
-  GL_ARB_multisample := CheckExtension('GL_ARB_multisample');
+  GL_ARB_multisample := CheckExtension(' GL_ARB_multisample'); // ' ' to avoid collision with WGL variant
   GL_ARB_multitexture := CheckExtension('GL_ARB_multitexture'); 
   GL_ARB_texture_compression := CheckExtension('GL_ARB_texture_compression'); 
   GL_ARB_texture_cube_map := CheckExtension('GL_ARB_texture_cube_map');
@@ -8419,7 +8448,8 @@ begin
   GL_NV_texture_env_combine4 := CheckExtension('GL_NV_texture_env_combine4'); 
   GL_NV_vertex_array_range := CheckExtension('GL_NV_vertex_array_range');
   GL_NV_multisample_filter_hint  := CheckExtension('GL_NV_multisample_filter_hint');
-  GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program'); 
+  GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
+  GL_NV_fence := CheckExtension('GL_NV_fence');
 
   GL_PGI_misc_hints := CheckExtension('GL_PGI_misc_hints');
   GL_PGI_vertex_hints := CheckExtension('GL_PGI_vertex_hints');
@@ -8524,6 +8554,7 @@ begin
   if Assigned(wglGetExtensionsStringARB) then
   begin
     Buffer := wglGetExtensionsStringARB(wglGetCurrentDC);
+    WGL_ARB_multisample := CheckExtension('WGL_ARB_multisample');
     WGL_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
     WGL_ARB_buffer_region := CheckExtension('WGL_ARB_buffer_region');
     WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
@@ -8532,6 +8563,7 @@ begin
   end
   else
   begin
+    WGL_ARB_multisample := False;
     WGL_EXT_swap_control := False;
     WGL_ARB_buffer_region := False;
     WGL_ARB_extensions_string := False;

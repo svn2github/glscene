@@ -131,6 +131,7 @@ procedure THUDSprite.DoRender(var rci : TRenderContextInfo;
 var
 	vx, vy, vx1, vy1, f : Single;
 begin
+   if rci.ignoreMaterials then Exit;
   	Material.Apply(rci);
    if AlphaChannel<>1 then
       SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
@@ -151,6 +152,7 @@ begin
    glLoadIdentity;
    glPushAttrib(GL_ENABLE_BIT);
    glDisable(GL_DEPTH_TEST);
+   glDepthMask(False);
    // precalc coordinates
    vx:=-Width*0.5;    vx1:=vx+Width;
    vy:=+Height*0.5;   vy1:=vy-Height;
@@ -163,6 +165,7 @@ begin
       xglTexCoord2f(0, 1);  glVertex2f( vx,  vy);
 	glEnd;
    // restore state
+   glDepthMask(True);
    glPopAttrib;
    glPopMatrix;
    glMatrixMode(GL_MODELVIEW);

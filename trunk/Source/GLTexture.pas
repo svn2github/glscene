@@ -312,20 +312,21 @@ type
    //
    {: Stores contextual info useful during rendering methods. }
    TRenderContextInfo = record
-      drawState: TDrawState;
-      objectsSorting : TGLObjectsSorting;
-      visibilityCulling : TGLVisibilityCulling;
-      bufferFaceCull : Boolean;
       cameraPosition : TVector;
       cameraDirection : TVector;
       modelViewMatrix : PMatrix;
-      rcci : TRenderContextClippingInfo;
       viewPortSize : TGLSize;
       renderDPI : Integer;
-      currentStates : TGLStates;
       materialLibrary : TGLMaterialLibrary;
       fogDisabledCounter : Integer;
+      drawState : TDrawState;
+      objectsSorting : TGLObjectsSorting;
+      visibilityCulling : TGLVisibilityCulling;
+      currentStates : TGLStates;
+      bufferFaceCull : Boolean;
       proxySubObject : Boolean;
+      ignoreMaterials : Boolean;
+      rcci : TRenderContextClippingInfo;
    end;
    PRenderContextInfo = ^TRenderContextInfo;
 

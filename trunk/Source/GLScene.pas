@@ -408,6 +408,10 @@ type
          function AbsoluteMatrix : TMatrix;
          {: See AbsoluteMatrix. }
          function AbsoluteMatrixAsAddress : PMatrix;
+         {: Holds the absolute transformation matrix.<p>
+            If you're not *sure* the absolute matrix is up-to-date,
+            use the AbsoluteMatrix property, this one may be nil... }
+         property DirectAbsoluteMatrix : PMatrix read FAbsoluteMatrix;
 
          {: Calculates the object's absolute inverse matrix.<p>
             Multiplying an absolute coordinate with this matrix gives a local coordinate.<p>
@@ -1385,13 +1389,14 @@ type
          FModelViewMatrixStack : array of TMatrix;
          FBaseProjectionMatrix : TMatrix;
          FCameraAbsolutePosition : TVector;
+         FViewPort : TRectangle;
 
          // Options & User Properties
          FFaceCulling, FFogEnable, FLighting : Boolean;
          FDepthTest : Boolean;
          FBackgroundColor: TColor;
+         FAntiAliasing : TGLAntiAliasing;
 
-         FViewPort : TRectangle;
          FRenderDPI : Integer;
          FContextOptions : TContextOptions;
          FCamera : TGLCamera;
@@ -1422,6 +1427,7 @@ type
          procedure SetDepthTest(AValue: Boolean);
          procedure SetFaceCulling(AValue: Boolean);
          procedure SetLighting(AValue: Boolean);
+         procedure SetAntiAliasing(const val : TGLAntiAliasing);
          procedure SetFogEnable(AValue: Boolean);
          procedure SetGLFogEnvironment(AValue: TGLFogEnvironment);
          function  StoreFog : Boolean;
@@ -1640,6 +1646,9 @@ type
             without any shading.<p>
             Lighting does NOT generate shadows in OpenGL. }
          property Lighting: Boolean read FLighting write SetLighting default True;
+         {: AntiAliasing option.<p>
+            Ignored if not hardware supported, currently based on ARB_multisample. }
+         property AntiAliasing : TGLAntiAliasing read FAntiAliasing write SetAntiAliasing default aaDefault;
 
          {: Indicates a change in the scene or buffer options.<p>
             A simple re-render is enough to take into account the changes. }
@@ -2546,7 +2555,7 @@ begin
    SetBB(Result, AxisAlignedDimensions);
    for i:=0 to FChildren.Count-1 do begin
       bb:=TGLBaseSceneObject(FChildren[i]).BoundingBox;
-      BBTransform(bb, TGLBaseSceneObject(FChildren[i]).LocalMatrix);
+      BBTransform(bb, TGLBaseSceneObject(FChildren[i]).Matrix);
       AddBB(Result, bb);
    end;
 end;
@@ -3917,11 +3926,17 @@ procedure TGLCustomSceneObject.DoRender(var rci : TRenderContextInfo;
 begin
    // start rendering self
    if renderSelf then begin
-      FMaterial.Apply(rci);
-      if osDirectDraw in ObjectStyle then
-         BuildList(rci)
-      else glCallList(GetHandle(rci));
-      FMaterial.UnApply(rci);
+      if not rci.ignoreMaterials then begin
+         FMaterial.Apply(rci);
+         if osDirectDraw in ObjectStyle then
+            BuildList(rci)
+         else glCallList(GetHandle(rci));
+         FMaterial.UnApply(rci);
+      end else begin
+         if osDirectDraw in ObjectStyle then
+            BuildList(rci)
+         else glCallList(GetHandle(rci));
+      end;
    end;
    // start rendering children (if any)
    if renderChildren then begin
@@ -5116,6 +5131,10 @@ begin
    rci.materialLibrary:=nil;
    rci.fogDisabledCounter:=0;
    rci.proxySubObject:=False;
+   rci.ignoreMaterials:=(roNoColorBuffer in aBuffer.ContextOptions);
+   if rci.ignoreMaterials then
+      glColorMask(False, False, False, False)
+   else glColorMask(True, True, True, True);
    FObjects.Render(rci);
    with aBuffer.FAfterRenderEffects do if Count>0 then
       for i:=0 to Count-1 do
@@ -5559,6 +5578,7 @@ begin
    FDepthTest:=True;
    FFaceCulling:=True;
    FLighting:=True;
+   FAntiAliasing:=aaNone;
    FFogEnable:=False;
    FAfterRenderEffects:=TList.Create;
 
@@ -5626,6 +5646,7 @@ begin
          AlphaBits:=locAlphaBits;
          AccumBits:=0;
          AuxBuffers:=0;
+         AntiAliasing:=Self.AntiAliasing;
          PrepareGLContext;
          try
             if memoryContext then
@@ -6554,6 +6575,16 @@ procedure TGLSceneBuffer.SetLighting(AValue: Boolean);
 begin
    if FLighting <> AValue then begin
       FLighting:=AValue;
+      NotifyChange(Self);
+   end;
+end;
+
+// SetAntiAliasing
+//
+procedure TGLSceneBuffer.SetAntiAliasing(const val : TGLAntiAliasing);
+begin
+   if FAntiAliasing<>val then begin
+      FAntiAliasing:=val;
       NotifyChange(Self);
    end;
 end;

@@ -4400,16 +4400,22 @@ begin
       else
          Assert(False);
       end;
-      if UseMeshMaterials and Assigned(MaterialLibrary) then
-         rci.materialLibrary:=MaterialLibrary
-      else rci.materialLibrary:=nil;
-      MeshObjects.PrepareBuildList(rci);
-      Material.Apply(rci);
-      if osDirectDraw in ObjectStyle then
-         BuildList(rci)
-      else glCallList(GetHandle(rci));
-      Material.UnApply(rci);
-      rci.materialLibrary:=nil;
+      if not rci.ignoreMaterials then begin
+         if UseMeshMaterials and Assigned(MaterialLibrary) then
+            rci.materialLibrary:=MaterialLibrary
+         else rci.materialLibrary:=nil;
+         MeshObjects.PrepareBuildList(rci);
+         Material.Apply(rci);
+         if osDirectDraw in ObjectStyle then
+            BuildList(rci)
+         else glCallList(GetHandle(rci));
+         Material.UnApply(rci);
+         rci.materialLibrary:=nil;
+      end else begin
+         if osDirectDraw in ObjectStyle then
+            BuildList(rci)
+         else glCallList(GetHandle(rci));
+      end;
       if FNormalsOrientation<>mnoDefault then
          InvertGLFrontFace;
    end;
