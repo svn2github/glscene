@@ -874,6 +874,11 @@ function PointLineClosestPoint(const point, linePoint, lineDirection : TAffineVe
 {: Computes algebraic distance between point and line.}
 function PointLineDistance(const point, linePoint, lineDirection : TAffineVector) : single;
 
+{: Computes the closest points (2) given two segments.}
+procedure SegmentSegmentClosestPoint(const S0Start, S0Stop, S1Start, S1Stop : TAffineVector; var Segment0Closest, Segment1Closest : TAffineVector);
+
+{: Computes the closest distance between two segments.}
+function SegmentSegmentDistance(const S0Start, S0Stop, S1Start, S1Stop : TAffineVector) : single;
 
 //------------------------------------------------------------------------------
 // Quaternion functions
@@ -5612,6 +5617,113 @@ begin
   Pb := PointSegmentClosestPoint(segmentStart, segmentStop, Point);
 
   result := VectorLength(VectorSubtract(point, Pb));
+end;
+
+// http://geometryalgorithms.com/Archive/algorithm_0104/algorithm_0104B.htm
+// SegmentSegmentClosestPoint
+//
+procedure SegmentSegmentClosestPoint(const S0Start, S0Stop, S1Start, S1Stop : TAffineVector; var Segment0Closest, Segment1Closest : TAffineVector);
+const
+  cSMALL_NUM = 0.000000001;
+var
+  u, v,w : TAffineVector;
+  a,b,c,smalld,e, largeD, sc, sn, sD, tc, tb, tN, tD, dP : single;
+begin
+  VectorSubtract(S0Stop, S0Start, u);
+  VectorSubtract(S1Stop, S1Start, v);
+  VectorSubtract(S0Start, S1Start, w);
+
+  a := VectorDotProduct(u,u);
+  b := VectorDotProduct(u,v);
+  c := VectorDotProduct(v,v);
+  smalld := VectorDotProduct(u,w);
+  e := VectorDotProduct(v,w);
+  largeD := a*c - b*b;
+
+  sc := largeD; sN := largeD; sD := largeD;
+  tc := largeD; tN := largeD; tD := largeD;
+
+  if LargeD<cSMALL_NUM then
+  begin
+    sN := 0.0;
+    sD := 1.0;
+    tN := e;
+    tD := c;
+  end else
+  begin
+    sN := (b*e - c*smallD);
+    tN := (a*e - b*smallD);
+    if (sN < 0.0) then
+    begin
+      sN := 0.0;
+      tN := e;
+      tD := c;
+    end
+    else if (sN > sD) then
+    begin
+      sN := sD;
+      tN := e + b;
+      tD := c;
+    end;
+  end;
+
+  if (tN < 0.0) then
+  begin
+      tN := 0.0;
+      // recompute sc for this edge
+      if (-smalld < 0.0) then
+          sN := 0.0
+      else if (-smalld > a) then
+          sN := sD
+      else
+      begin
+          sN := -smalld;
+          sD := a;
+      end;
+  end
+  else if (tN > tD) then
+  begin
+      tN := tD;
+      // recompute sc for this edge
+      if ((-smallD + b) < 0.0) then
+          sN := 0
+      else if ((-smallD + b) > a) then
+          sN := sD
+      else
+      begin
+          sN := (-smallD + b);
+          sD := a;
+      end;
+   end;
+
+  // finally do the division to get sc and tc
+  //sc := (abs(sN) < SMALL_NUM ? 0.0 : sN / sD);
+  if abs(sN) < cSMALL_NUM then
+    sc := 0
+  else
+    sc := sN/sD;
+
+  //tc := (abs(tN) < SMALL_NUM ? 0.0 : tN / tD);
+  if abs(tN) < cSMALL_NUM then
+    tc := 0
+  else
+    tc := tN/tD;
+
+  // get the difference of the two closest points
+  //Vector   dP = w + (sc * u) - (tc * v);  // = S0(sc) - S1(tc)
+
+  Segment0Closest := VectorAdd(S0Start, VectorScale(u, sc));
+  Segment1Closest := VectorAdd(S1Start, VectorScale(v, tc));
+end;
+
+// SegmentSegmentDistance
+//
+function SegmentSegmentDistance(const S0Start, S0Stop, S1Start, S1Stop : TAffineVector) : single;
+var
+  Pb0, PB1 : TAffineVector;
+begin
+  SegmentSegmentClosestPoint(S0Start, S0Stop, S1Start, S1Stop, PB0, PB1);
+  result := VectorDistance(PB0, PB1);
 end;
 
 // QuaternionMake

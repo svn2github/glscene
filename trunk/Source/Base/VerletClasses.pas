@@ -7,6 +7,8 @@
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>19/06/03 - MF - Added TVerletGlobalConstraint.SatisfyConstraintForEdge
+                          and implemented for TVCSphere 
       <li>19/06/03 - MF - Added friction to TVCCylinder
       <li>19/06/03 - MF - Added surface normals to all colliders - surface
                           normal is identical to Normalize(Movement)!
@@ -158,6 +160,35 @@ type
          property Nodes : TVerletNodeList read FNodes;
    end;
 
+   TVerletEdgeList = class;
+
+   // TVerletEdge
+   // Verlet edges simulate rigid collission edges
+   TVerletEdge = class
+      private
+			{ Private Declarations }
+         FNodeA: TVerletNode;
+         FNodeB: TVerletNode;
+
+      public
+			{ Public Declarations }
+         property NodeA : TVerletNode read FNodeA write FNodeA;
+         property NodeB : TVerletNode read FNodeB write FNodeB;
+
+         constructor Create(aNodeA, aNodeB : TVerletNode);
+   end;
+
+   TVerletEdgeList = class(TList)
+      private
+			{ Private Declarations }
+         function GetItems(i: integer): TVerletEdge;
+         procedure SetItems(i: integer; const Value: TVerletEdge);
+
+      public
+			{ Public Declarations }
+         property Items[i : integer] : TVerletEdge read GetItems write SetItems; default;
+   end;
+
    // TVerletGlobalConstraint
    //
    TVerletGlobalConstraint = class (TVerletConstraint)
@@ -171,6 +202,8 @@ type
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); override;
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                         const iteration, maxIterations : Integer); virtual; abstract;
+         procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
+                        const iteration, maxIterations : Integer); virtual;
    end;
 
    // TVerletGlobalFrictionConstraint
@@ -302,6 +335,7 @@ type
          FMaxDeltaTime, FSimTime : Single;
          FDrag : Single;
          FCurrentDeltaTime: single;
+         FSolidEdges: TVerletEdgeList;
 
 		protected
 			{ Protected Declarations }
@@ -322,6 +356,7 @@ type
          procedure RemoveConstraint(aConstraint : TVerletConstraint);
          function AddForce(aForce : TVerletForce) : Integer;
          procedure RemoveForce(aForce : TVerletForce);
+         procedure AddSolidEdge(aNodeA, aNodeB : TVerletNode);
 
          function CreateOwnedNode(const location : TAffineVector;
                                   const aRadius : Single = 0;
@@ -345,6 +380,8 @@ type
          property MaxDeltaTime : Single read FMaxDeltaTime write FMaxDeltaTime;
 
          property CurrentDeltaTime : single read FCurrentDeltaTime;
+
+         property SolidEdges : TVerletEdgeList read FSolidEdges write FSolidEdges;
    end;
 
    // TVFGravity
@@ -468,6 +505,9 @@ type
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
 
+         procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
+                        const iteration, maxIterations : Integer); override;
+
          property Location : TAffineVector read FLocation write FLocation;
          property Radius : Single read FRadius write FRadius;
    end;
@@ -490,6 +530,9 @@ type
 			{ Public Declarations }
          procedure SatisfyConstraintForNode(aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
+
+         procedure SatisfyConstraintForEdge(aEdge : TVerletEdge;
+                        const iteration, maxIterations : Integer); override;
 
          {: A base point on the cylinder axis.<p>
             Can theoretically be anywhere, however, to reduce floating point
@@ -810,6 +853,17 @@ begin
       if not node.NailedDown then
          SatisfyConstraintForNode(node, iteration, maxIterations);
    end;
+   for i:=0 to Owner.SolidEdges.Count-1 do begin
+         SatisfyConstraintForEdge(Owner.SolidEdges[i], iteration, maxIterations);
+   end;
+end;
+
+// SatisfyConstraintForEdge
+//
+procedure TVerletGlobalConstraint.SatisfyConstraintForEdge(
+  aEdge: TVerletEdge; const iteration, maxIterations: Integer);
+begin
+  // Purely virtual, but can't be abstract...
 end;
 
 // ------------------
@@ -966,6 +1020,7 @@ begin
    FForces:=TVerletForceList.Create;
    FMaxDeltaTime:=0.02;
    FIterations:=3;
+   FSolidEdges := TVerletEdgeList.Create;
 end;
 
 // Destroy
@@ -992,6 +1047,11 @@ begin
       Free;
    end;
    FreeAndNil(FForces);
+
+   for i := 0 to FSolidEdges.Count-1 do
+    FSolidEdges[i].Free;
+   FreeAndNil(FSolidEdges);
+
    inherited;
 end;
 
@@ -1075,6 +1135,16 @@ begin
       FForces.Remove(aForce);
       aForce.FOwner:=nil;
    end;
+end;
+
+// AddSolidEdge
+//
+procedure TVerletAssembly.AddSolidEdge(aNodeA, aNodeB: TVerletNode);
+var
+  VerletEdge : TVerletEdge;
+begin
+  VerletEdge := TVerletEdge.Create(aNodeA, aNodeB);
+  SolidEdges.Add(VerletEdge);
 end;
 
 // FirstNode
@@ -1438,10 +1508,38 @@ end;
 // ------------------ TVCSphere ------------------
 // ------------------
 
+
+// SatisfyConstraintForEdge
+//
+procedure TVCSphere.SatisfyConstraintForEdge(aEdge: TVerletEdge;
+  const iteration, maxIterations: Integer);
+var
+  closestPoint, move, delta : TAffineVector;
+  deltaLength, diff : single;
+begin
+  // If the edge penetrates the sphere, try pushing the nodes until it no
+  // longer does
+  closestPoint := PointSegmentClosestPoint(FLocation, aEdge.NodeA.FLocation, aEdge.NodeB.FLocation);
+
+  // Find the distance between the two
+  VectorSubtract(closestPoint, Location, delta);
+
+  deltaLength := VectorLength(delta);
+
+  if deltaLength<Radius then  begin
+      // Move it outside the sphere!
+      diff:=(Radius-deltaLength)/deltaLength;
+      VectorScale(delta, diff, move);
+
+      AddVector(aEdge.NodeA.FLocation, move);
+      AddVector(aEdge.NodeB.FLocation, move);
+  end;
+end;
+
 // SatisfyConstraintForNode
 //
 procedure TVCSphere.SatisfyConstraintForNode(aNode : TVerletNode;
-                                    const iteration, maxIterations : Integer);
+  const iteration, maxIterations : Integer);
 var
    delta, move, contactNormal : TAffineVector;
    deltaLength, diff : Single;
@@ -1600,6 +1698,7 @@ end;
 // ------------------ TVCCapsule ------------------
 // ------------------
 
+{ TVCCapsule }
 // SetAxis
 //
 procedure TVCCapsule.SetAxis(const val : TAffineVector);
@@ -1657,5 +1756,62 @@ begin
 
       aNode.FLocation:=newLocation;
    end;
+end;
+
+procedure TVCCylinder.SatisfyConstraintForEdge(aEdge: TVerletEdge;
+  const iteration, maxIterations: Integer);
+var
+   closestLocation, dummy, delta, move, contactNormal : TAffineVector;
+   deltaLength, diff : Single;
+begin
+{   SEgme
+   closestLocation
+   VectorSubtract(aNode.Location, Location, delta);
+
+   // Is it inside the sphere?
+   deltaLength:=VectorLength(delta)-aNode.Radius;
+   if Abs(deltaLength)<Radius then begin
+      if deltaLength>0 then begin
+         contactNormal := VectorScale(delta, 1/deltaLength);
+         aNode.ApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength), contactNormal);
+      end
+      else
+        // Slow it down - this part should not be fired
+        aNode.OldApplyFriction(FFrictionRatio, Radius-Abs(DeltaLength));
+
+      // Move it outside the sphere!
+      diff:=(Radius-deltaLength)/deltaLength;
+      VectorScale(delta, diff, move);
+
+      AddVector(aNode.FLocation, move);
+   end;//}
+end;
+
+// ------------------
+// ------------------ TVerletEdge ------------------
+// ------------------
+
+{ TVerletEdge }
+
+constructor TVerletEdge.Create(aNodeA, aNodeB: TVerletNode);
+begin
+  FNodeA := aNodeA;
+  FNodeB := aNodeB;
+end;
+
+// ------------------
+// ------------------ TVerletEdgeList ------------------
+// ------------------
+
+{ TVerletEdgeList }
+
+function TVerletEdgeList.GetItems(i: integer): TVerletEdge;
+begin
+  result := Get(i);
+end;
+
+procedure TVerletEdgeList.SetItems(i: integer; const Value: TVerletEdge);
+begin
+  put(i, Value);
 end;
 end.
