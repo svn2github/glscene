@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>17/06/03 - EG - New TryStrToFloat, updated StrToFloatDef
       <li>05/06/03 - EG - TDataFile moved out to ApplicationFileIO,
                           added Silhouette classes
       <li>13/03/03 - Dave - Added TGLCoordinates.SetToZero
@@ -473,8 +474,11 @@ function IsPowerOf2(value : Integer) : Boolean;
 function ReadCRLFString(aStream : TStream) : String;
 //: Write the string and a CRLF in the stream
 procedure WriteCRLFString(aStream : TStream; const aString : String);
+//: TryStrToFloat
+function TryStrToFloat(const strValue : String; var val : Extended) : Boolean;
 //: StrToFloatDef
-function StrToFloatDef(strValue : String; defValue : Extended = 0) : Extended;
+function StrToFloatDef(const strValue : String; defValue : Extended = 0) : Extended;
+
 {: Parses the next integer in the string.<p>
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. '+' and '-' are acknowledged. }
@@ -1033,44 +1037,89 @@ begin
    end;
 end;
 
-// StrToFloatDef
+// TryStrToFloat
 //
-function StrToFloatDef(strValue : String; defValue : Extended = 0) : Extended;
+function TryStrToFloat(const strValue : String; var val : Extended): Boolean;
 var
-   i, divider, lLen : Integer;
+   i, j, divider, lLen, exponent : Integer;
    c : Char;
+   v : Extended;
 begin
-   Result:=0;
-   if strValue='' then Exit;
-   divider:=MaxInt;
-   strValue:=Trim(StrValue);
-   lLen:=length(strValue);
+   if strValue='' then begin
+      Result:=False;
+      Exit;
+   end else v:=0;
+   lLen:=Length(strValue);
+   while (lLen>0) and (strValue[lLen]=' ') do Dec(lLen);
+   divider:=lLen+1;
+   exponent:=0;
 	for i:=1 to lLen do begin
       c:=strValue[i];
       case c of
-         '0'..'9' : Result:=(Result*10)+Integer(c)-Integer('0');
+         ' ' : if v<>0 then begin
+            Result:=False;
+            Exit;
+         end;
+         '0'..'9' : v:=(v*10)+Integer(c)-Integer('0');
          ',', '.' : begin
-            if (divider=MaxInt) then
-               divider:=i
+            if (divider>lLen) then
+               divider:=i+1
             else begin
-               Result:=defValue;
+               Result:=False;
                Exit;
             end;
          end;
          '-', '+' : if i>1 then begin
-            Result:=defValue;
+            Result:=False;
             Exit;
+         end;
+         'e', 'E' : begin
+            if i+1>lLen then begin
+               Result:=False;
+               Exit;
+            end;
+            for j:=i+1 to lLen do begin
+               c:=strValue[j];
+               case c of
+                  '-', '+' : if j<>i+1 then begin
+         				Result:=False;
+                     Exit;
+                  end;
+                  '0'..'9' : exponent:=(exponent*10)+Integer(c)-Integer('0');
+               else
+                  Result:=False;
+                  Exit;
+               end;
+            end;
+            if strValue[i+1]<>'-' then
+               exponent:=-exponent;
+            exponent:=exponent-1;
+            lLen:=i;
+            if divider>lLen then
+               divider:=lLen;
+            Break;
          end;
 		else
-         if (c<>' ') or (divider<>MaxInt) then begin
-            Result:=defValue;
-            Exit;
-         end;
+         Result:=False;
+         Exit;
       end;
    end;
-   divider:=lLen-divider;
-   if divider>0 then Result:=Result*Exp(-divider*Ln(10));
-   if (strValue[1]='-') then Result:=-Result;
+   divider:=lLen-divider+exponent+1;
+   if strValue[1]='-' then begin
+      v:=-v;
+   end;
+   if divider<>0 then
+      v:=v*Exp(-divider*Ln(10));
+   val:=v;
+   Result:=True;
+end;
+
+// StrToFloatDef
+//
+function StrToFloatDef(const strValue : String; defValue : Extended = 0) : Extended;
+begin
+   if not TryStrToFloat(strValue, Result) then
+      result:=defValue;
 end;
 
 // ParseInteger
