@@ -1,8 +1,9 @@
 {: VectorLists<p>
 
-	Lists of vectors<p>
+	Misc. lists of vectors and entities<p>
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>History : </b><font size=-1><ul>
+      <li>28/05/02 - EG - TBaseList.SetCount now properly resets new items
       <li>23/02/02 - EG - Added TBaseList.UseMemory
       <li>20/01/02 - EG - Now uses new funcs Add/ScaleVectorArray and VectorArrayAdd
       <li>06/12/01 - EG - Added Sort & MaxInteger to TIntegerList
@@ -74,7 +75,8 @@ type
          procedure Exchange(Index1, Index2 : Integer);
          procedure Reverse;
 
-         {: Nb of items in the list }
+         {: Nb of items in the list.<p>
+            When assigning a Count, added items are reset to zero. }
 			property Count: Integer read FCount write SetCount;
          {: Current list capacity.<p>
             Not persistent. }
@@ -478,6 +480,8 @@ begin
    Assert(val>=0);
    if val>FCapacity then
       SetCapacity(val);
+   if val>FCount then
+      FillChar(FBaseList[FItemSize*FCount], (val-FCount)*FItemSize, 0);
    FCount:=val;
 end;
 
