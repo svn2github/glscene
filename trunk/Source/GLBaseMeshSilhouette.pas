@@ -144,7 +144,8 @@ begin
   // Create a list of edges for the meshobject
   for iFaceGroup := 0 to FMeshObject.FaceGroups.Count-1 do
   begin
-    Assert(FMeshObject.FaceGroups[iFaceGroup] is TFGVertexIndexList,'Method only works for descendants of TFGVertexIndexList.');
+    Assert(FMeshObject.FaceGroups[iFaceGroup] is TFGVertexIndexList,
+           'Method only works for descendants of TFGVertexIndexList.');
     FaceGroup := TFGVertexIndexList(FMeshObject.FaceGroups[iFaceGroup]);
 
     case FaceGroup.Mode of

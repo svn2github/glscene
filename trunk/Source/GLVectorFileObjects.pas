@@ -1193,9 +1193,9 @@ type
                                    intersectNormal : PVector = nil) : Boolean; override;
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
-         {: This method allows fast shadow volumes for GLActors. If your actor/
-         mesh doesn't change, you don't need to call this. It basically caches
-         the connectivity data.}
+         {: This method allows fast shadow volumes for GLActors.<p>
+            If your actor/mesh doesn't change, you don't need to call this.
+            It basically caches the connectivity data.}
          procedure BuildSilhouetteConnectivityData;
 
          property MeshObjects : TMeshObjectList read FMeshObjects;
