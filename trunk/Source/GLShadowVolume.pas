@@ -86,6 +86,10 @@ type
          function GetCachedSilhouette(index : Integer) : TGLSilhouette;
          procedure StoreCachedSilhouette(index : Integer; sil : TGLSilhouette);
 
+         {: Compute and setup scissor clipping rect for the light.<p>
+            Returns true if a scissor rect was setup }
+         function SetupScissorRect(var rci : TRenderContextInfo) : Boolean;
+
 		public
 			{ Public Declarations }
          constructor Create(Collection: TCollection); override;
@@ -124,7 +128,7 @@ type
 
    // TGLShadowVolumeOption
    //
-   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes);
+   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips);
    TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
 
    // TGLShadowVolumeMode
@@ -190,7 +194,7 @@ type
             Capping helps solve shadowing artefacts, at the cost of performance. }
          property Capping : TGLShadowVolumeCapping read FCapping write FCapping default svcAlways;
          {: Shadow volume rendering options. }
-         property Options : TGLShadowVolumeOptions read FOptions write SetOptions default [svoCacheSilhouettes];
+         property Options : TGLShadowVolumeOptions read FOptions write SetOptions default [svoCacheSilhouettes, svoScissorClips];
          {: Shadow rendering mode. }
          property Mode : TGLShadowVolumeMode read FMode write SetMode default svmAccurate;
          {: Darkening color used in svmDarkening mode. }
@@ -205,7 +209,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-uses SysUtils, VectorLists;
+uses SysUtils, VectorLists, GeometryBB;
 
 // ------------------
 // ------------------ TGLShadowVolumeCaster ------------------
@@ -326,6 +330,52 @@ begin
    end;
 end;
 
+// TGLShadowVolumeLight
+//
+function TGLShadowVolumeLight.SetupScissorRect(var rci : TRenderContextInfo) : Boolean;
+var
+  mv, proj, mvp: TMatrix;
+//  vp, scissor: TSVRect;
+  lightPos : TAffineVector;
+  ls : TGLLightSource;
+  aabb : TAABB;
+  clipRect : TClipRect;
+begin
+   ls:=LightSource;
+   if (EffectiveRadius<=0) or (not ls.Attenuated) then begin
+      // non attenuated lights can't be clipped
+      Result:=False;
+      Exit;
+   end;
+
+   SetVector(lightPos, ls.AbsolutePosition);
+   if VectorDistance2(lightPos, PAffineVector(@rci.cameraPosition)^)<Sqr(EffectiveRadius) then begin
+      // camera inside light radius, can't clip
+      Result:=False;
+      Exit;
+   end;
+
+   mv:=rci.modelViewMatrix^;
+   glGetFloatv(GL_PROJECTION_MATRIX, @proj);
+
+   aabb:=BSphereToAABB(lightPos, EffectiveRadius);
+
+   // Calculate the window-space bounds of the light's bounding box.
+   mvp:=MatrixMultiply(mv, proj);
+
+   clipRect:=AABBToClipRect(aabb, mvp, rci.viewPortSize.cx, rci.viewPortSize.cy);
+   
+   if    (clipRect.Right<0) or (clipRect.Left>rci.viewPortSize.cx)
+      or (clipRect.Top<0) or (clipRect.Bottom>rci.viewPortSize.cy) then begin
+      Result:=False;
+      Exit;
+   end;
+
+   with clipRect do
+      glScissor(Round(Left), Round(Top), Round(Right-Left), Round(Bottom-Top));
+   Result:=True;
+end;
+
 // ------------------
 // ------------------ TGLShadowVolumeCasters ------------------
 // ------------------
@@ -394,7 +444,7 @@ begin
    FOccluders.FOwner:=Self;
    FCapping:=svcAlways;
    FMode:=svmAccurate;
-   FOptions:=[svoCacheSilhouettes];
+   FOptions:=[svoCacheSilhouettes, svoScissorClips];
    FDarkeningColor:=TGLColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
 end;
 
@@ -568,9 +618,9 @@ begin
          lightCaster:=TGLShadowVolumeLight(lights[i]);
          lightSource:=lightCaster.LightSource;
 
-         if    (not Assigned(lightSource)) or (not lightSource.Shining)
-            or ((lightCaster.EffectiveRadius>0)
-                and (lightSource.DistanceTo(rci.cameraPosition)>lightCaster.EffectiveRadius)) then
+         if    (not Assigned(lightSource)) or (not lightSource.Shining) then
+{            or ((lightCaster.EffectiveRadius>0)
+                and (lightSource.DistanceTo(rci.cameraPosition)>lightCaster.EffectiveRadius+rci.)) then}
             Continue;
 
          lightID:=lightSource.LightID;
@@ -582,6 +632,12 @@ begin
             silParams.Style:=ssOmni;
          end;
          silParams.CappingRequired:=True;
+
+         if svoScissorClips in Options then begin
+            if lightCaster.SetupScissorRect(rci) then
+               glEnable(GL_SCISSOR_TEST)
+            else glDisable(GL_SCISSOR_TEST);
+         end;
 
          // clear the stencil and prepare for shadow volume pass
          glClear(GL_STENCIL_BUFFER_BIT);
@@ -627,6 +683,9 @@ begin
 
                if Boolean(opaqueCapping[k]) then begin
                   // z-fail
+                  if GL_EXT_compiled_vertex_array then
+                     glLockArraysEXT(0, sil.Vertices.Count);
+
                   glCullFace(GL_FRONT);
                   glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
 
@@ -646,6 +705,9 @@ begin
                      glDrawElements(GL_TRIANGLES, CapIndices.Count, GL_UNSIGNED_INT, CapIndices.List);
                      glDisable(GL_POLYGON_OFFSET_FILL);
                   end;
+
+                  if GL_EXT_compiled_vertex_array then
+                     glUnlockArraysEXT;
                end else begin
                   // z-pass
                   glCullFace(GL_BACK);
