@@ -4,5 +4,6 @@ Testing writing -DanB 13-Feb/2003
 and again 21/06/03
 Test write from Stuart on 5-Mar-2003
 Another Test write from Stuart on 1-Apr-2003
+12/11/03 - SG - Testing 0.9.1 branch ... hi there!
 *Some stuff added by EG at the end 22/11/02*
 !!!!!!!
