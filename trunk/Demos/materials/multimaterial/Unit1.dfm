@@ -63,7 +63,6 @@ object Form1: TForm1
   end
   object GLMultiMaterialShader1: TGLMultiMaterialShader
     MaterialLibrary = GLMaterialLibrary2
-    DesignTimeEnabled = False
     Left = 8
     Top = 40
   end
@@ -76,7 +75,6 @@ object Form1: TForm1
   object GLTexCombineShader1: TGLTexCombineShader
     Combiners.Strings = (
       'Tex0:=PrimaryColor dot3 Tex0;')
-    DesignTimeEnabled = False
     Left = 40
     Top = 72
   end
