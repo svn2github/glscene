@@ -193,7 +193,7 @@ var
   MemDC       : HDC;
 begin
   glGenTextures(1,@Result);
-  glBindTexture(GL_TEXTURE_2D,Result);
+  SetGLCurrentTexture(Result);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
   glPixelStorei(GL_UNPACK_ALIGNMENT,4);
   glPixelStorei(GL_UNPACK_ROW_LENGTH,0);
@@ -696,7 +696,7 @@ begin
   glPushMatrix;
   Camera.RestoreMatrix;
 
-  glBindTexture(GL_TEXTURE_2D, FLandTexture);
+  SetGLCurrentTexture(FLandTexture);
   if(FFullView) then
   begin
     X := 0;
@@ -812,7 +812,7 @@ begin
   }
   (*
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, FOcenTexture);
+    SetGLCurrentTexture(FOcenTexture);
     glEnable(GL_BLEND);
 
     glColor4f(0.0, 0.3, 0.6, 0.5);

@@ -3,6 +3,7 @@
    Miscellaneous support routines & classes.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/09/01 - Egg - SetGLCurrentTexture stuff
       <li>18/07/01 - Egg - Added TGLVisibilityCulling
       <li>08/07/01 - Egg - Changes in TGLNodes based on code from Uwe Raabe
       <li>19/06/01 - Egg - Added StrToFloatDef
@@ -465,6 +466,9 @@ procedure SetGLMaterialColors(const aFace : TGLEnum;
 procedure SetGLMaterialAlphaChannel(const aFace : TGLEnum; const alpha : TGLFloat);
 procedure ResetGLMaterialColors;
 
+procedure SetGLCurrentTexture(const textureUnit, handle : Integer);
+procedure ResetGLCurrentTexture;
+
 {: Defines the OpenGL texture matrix.<p>
    Assumed texture mode is GL_MODELVIEW. }
 procedure SetGLTextureMatrix(const matrix : TMatrix);
@@ -651,6 +655,28 @@ begin
    FillChar(vBackColors, SizeOf(THomogeneousFltVectorArray), 127);
    vFrontShininess:=0;
    vBackShininess:=0;
+end;
+
+// SetGLCurrentTexture
+//
+var
+   lastTextureHandle : array [0..7] of Integer;
+procedure SetGLCurrentTexture(const textureUnit, handle : Integer);
+begin
+   if handle<>lastTextureHandle[textureUnit] then begin
+      glBindTexture(GL_TEXTURE_2D, Handle);
+      lastTextureHandle[textureUnit]:=handle;
+   end;
+end;
+
+// ResetGLCurrentTexture
+//
+procedure ResetGLCurrentTexture;
+var
+   i : Integer;
+begin
+   for i:=0 to 7 do
+      lastTextureHandle[i]:=-1;
 end;
 
 // SetGLTextureMatrix

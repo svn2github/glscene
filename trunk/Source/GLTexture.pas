@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>04/09/01 - Egg - Texture binding cache
       <li>31/08/01 - Egg - tiaDefault wasn't honoured (Rene Lindsay)
       <li>25/08/01 - Egg - Added TGLBlankImage
       <li>16/08/01 - Egg - drawState now part of TRenderContextInfo
@@ -2387,7 +2388,7 @@ procedure TGLTexture.Apply(var currentStates : TGLStates);
 begin
 	if not Disabled then begin
 		SetGLState(currentStates, stTexture2D);
-	   glBindTexture(GL_TEXTURE_2D, Handle);
+	   SetGLCurrentTexture(0, Handle);
    	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       ApplyMappingMode;
 	end else begin
@@ -2409,7 +2410,7 @@ begin
    if not Disabled then begin
       glActiveTextureARB(GL_TEXTURE1_ARB);
       glEnable(GL_TEXTURE_2D);
-      glBindTexture(GL_TEXTURE_2D, Handle);
+      SetGLCurrentTexture(1, Handle);
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       ApplyMappingMode;
       if not libMaterial.FTextureMatrixIsIdentity then begin
@@ -2446,7 +2447,7 @@ begin
 			Assert(FTextureHandle.Handle<>0);
 		end;
       // bind texture
-		glBindTexture(GL_TEXTURE_2D, FTextureHandle.Handle);
+		SetGLCurrentTexture(0, FTextureHandle.Handle);
 		PrepareParams;
 		PrepareImage;
 		FChanges:=[];
@@ -2727,7 +2728,7 @@ begin
             UnSetGLState(rci.currentStates, stFog);
             Inc(rci.fogDisabledCounter);
          end;
-      end;
+      end; 
    	FTexture.Apply(rci.currentStates);
 	end;
 end;
@@ -2792,8 +2793,6 @@ end;
 //
 procedure TGLMaterial.DestroyHandles;
 begin
-	if Assigned(currentLibMaterial) then
-		currentLibMaterial.DestroyHandles;
    Texture.DestroyHandles;
 end;
 

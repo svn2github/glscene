@@ -2,6 +2,7 @@
 {: Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>04/09/01 - Egg - Texture binding cache
       <li>25/08/01 - Egg - Support for WGL_EXT_swap_control (VSync control),
                            Added TGLMemoryViewer 
       <li>24/08/01 - Egg - TGLSceneViewer broken, TGLSceneBuffer born
@@ -3059,6 +3060,7 @@ begin
             if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then begin
                ResetGLPolygonMode;
                ResetGLMaterialColors;
+               ResetGLCurrentTexture;
             end;
             Effects.RenderPostEffects(Scene.CurrentBuffer, rci);
             glPopMatrix;
@@ -3071,6 +3073,7 @@ begin
             if osDoesTemperWithColorsOrFaceWinding in ObjectStyle then begin
                ResetGLPolygonMode;
                ResetGLMaterialColors;
+               ResetGLCurrentTexture;
             end;
          end;
       end else begin
@@ -3131,7 +3134,7 @@ begin
       case rci.objectsSorting of
          osNone : begin
             for i:=firstChildIndex to lastChildIndex do
-               Get(i).Render(rci);
+               TGLBaseSceneObject(FChildren.List[i]).Render(rci);
          end;
          osRenderFarthestFirst, osRenderBlendedLast : begin
             distList:=TSingleList.Create;
@@ -3582,7 +3585,7 @@ procedure TGLCustomSceneObject.DoRender(var rci : TRenderContextInfo;
 begin
    // start rendering self
    if renderSelf then begin
-        FMaterial.Apply(rci);
+      FMaterial.Apply(rci);
       if osDirectDraw in ObjectStyle then
          BuildList(rci)
       else glCallList(GetHandle(rci));
@@ -4402,9 +4405,9 @@ begin
       glColor3fv(@LightColor);
        glEnable(GL_TEXTURE_2D);;
       if Flare[I].FlareType < 0 then begin
-         glBindTexture(GL_TEXTURE_2D, ShineTexture[FlareTic]);
+         SetGLCurrentTexture(ShineTexture[FlareTic]);
          FlareTic:=(FlareTic + 1) mod 10;
-      end else glBindTexture(GL_TEXTURE_2D, FlareTexture[Flare[I].FlareType]);
+      end else SetGLCurrentTexture(FlareTexture[Flare[I].FlareType]);
 
       // position = center + flare[i].loc * axis
       tmp:=axis;
@@ -4652,6 +4655,7 @@ var
 begin
    ResetGLPolygonMode;
    ResetGLMaterialColors;
+   ResetGLCurrentTexture;
    aBuffer.FAfterRenderEffects.Clear;
    FCurrentBuffer:=aBuffer;
    rci.objectsSorting:=FObjectsSorting;
@@ -5509,6 +5513,7 @@ begin
             ClearBuffers;
             ResetGLPolygonMode;
             ResetGLMaterialColors;
+            ResetGLCurrentTexture;
             Resolution:=DPI;
             if Resolution=0 then
                Resolution:=GetDeviceCaps(ABitmap.Canvas.Handle, LOGPIXELSX);
@@ -6207,7 +6212,7 @@ begin
    if Buffer.RenderingContext<>nil then begin
       Buffer.RenderingContext.Activate;
       try
-         glBindTexture(GL_TEXTURE_2D, aTexture.Handle);
+         SetGLCurrentTexture(0, aTexture.Handle);
          glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc, width, height);
          glFinish;
          CheckOpenGLError;
