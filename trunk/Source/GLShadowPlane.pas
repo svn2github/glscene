@@ -24,7 +24,7 @@ type
 
    // TShadowPlaneOptions
    //
-   TShadowPlaneOption = (spoUseStencil, spoScissor, spoTransparent);
+   TShadowPlaneOption = (spoUseStencil, spoScissor, spoTransparent, spoIgnoreZ);
    TShadowPlaneOptions = set of TShadowPlaneOption;
 
 const
@@ -176,6 +176,9 @@ begin
             glStencilFunc(GL_ALWAYS, 1, 1);
             glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
          end;
+
+         if spoIgnoreZ in ShadowOptions then
+            glDisable(GL_DEPTH_TEST);
 
          glDisable(GL_ALPHA_TEST);
 
