@@ -2443,8 +2443,8 @@ begin
        reader.OnReferenceName      := OnReferenceName;
        reader.OnAncestorNotFound   := OnAncestorNotFound;
        reader.OnCreateComponent    := OnCreateComponent;
-       reader.OnFindComponentClass := OnFindComponentClass;
-       Behaviours.ReadFromFiler(reader); }
+       reader.OnFindComponentClass := OnFindComponentClass;}
+       Behaviours.ReadFromFiler(reader);
     finally
        reader.Free;
     end;
@@ -4350,7 +4350,7 @@ var
    i : Integer;
 begin
    for i:=0 to Count-1 do
-      TGLBehaviour(Items[i]).DoProgress(progressTime);
+      TGLObjectEffect(Items[i]).DoProgress(progressTime);
 end;
 
 // RenderPreEffects
