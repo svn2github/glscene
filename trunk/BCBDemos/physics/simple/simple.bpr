@@ -11,7 +11,6 @@
     <LIBFILES value=""/>
     <LIBRARIES value=""/>
     <SPARELIBS value="Vcl50.lib"/>
-    <PACKAGES value="Vcl50.bpi"/>
     <PATHCPP value=".;"/>
     <PATHPAS value=".;"/>
     <PATHRC value=".;"/>
@@ -20,7 +19,7 @@
     <RELEASELIBPATH value="$(BCB)\lib\release"/>
     <LINKER value="tlink32"/>
     <USERDEFINES value="_DEBUG"/>
-    <SYSDEFINES value="_RTLDLL;NO_STRICT;USEPACKAGES"/>
+    <SYSDEFINES value="_RTLDLL;NO_STRICT"/>
     <MAINSOURCE value="simple.cpp"/>
     <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\vcl;..\..\..\..\include"/>
     <LIBPATH value="$(BCB)\lib\obj;$(BCB)\lib;..\..\..\..\lib;..\..\..\..\dcu"/>
@@ -66,6 +65,24 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
+
+[HistoryLists\hlIncludePath]
+Count=2
+Item0=$(BCB)\include;$(BCB)\include\vcl;D:\Composants\BCB5\include
+Item1=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=2
+Item0=$(BCB)\lib\obj;$(BCB)\lib;D:\Composants\BCB5\lib;D:\Composants\BCB5\dcu
+Item1=$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
 
 [Debugging]
 DebugSourceDirs=$(BCB)\source\vcl
