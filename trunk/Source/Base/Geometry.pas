@@ -29,6 +29,7 @@
    all Intel processors after Pentium should be immune to this.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1")
       <li>04/01/02 - EG - Updated/fixed RayCastTriangleIntersect
       <li>13/12/01 - EG - Fixed MakeReflectionMatrix
       <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)  
@@ -2804,7 +2805,7 @@ asm
       cmp eax, [ecx+$C]
       jne @@Diff
 @@Equal:
-      mov al, -1
+      mov al, 1
       jmp @@End
 @@Diff:
       xor eax, eax
@@ -2828,7 +2829,7 @@ asm
       cmp eax, [ecx+$8]
       jne @@Diff
 @@Equal:
-      mov al, -1
+      mov al, 1
       jmp @@End
 @@Diff:
       xor eax, eax
