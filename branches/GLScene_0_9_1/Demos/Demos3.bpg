@@ -1,0 +1,72 @@
+#------------------------------------------------------------------------------
+VERSION = BWS.01
+#------------------------------------------------------------------------------
+!ifndef ROOT
+ROOT = $(MAKEDIR)\..
+!endif
+#------------------------------------------------------------------------------
+MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
+DCC = $(ROOT)\bin\dcc32.exe $**
+BRCC = $(ROOT)\bin\brcc32.exe $**
+#------------------------------------------------------------------------------
+PROJECTS = winfont.exe procedural.exe facevsface.exe projection.exe \
+  shadowvolumes.exe motionblur.exe OctreeDemo.exe Clothify.exe texcombine.exe \
+  subdivide.exe machine.exe simple.exe Project1.exe CgSimple.exe CgTexture.exe \
+  multimaterial.exe ducky.exe fog.exe
+#------------------------------------------------------------------------------
+default: $(PROJECTS)
+#------------------------------------------------------------------------------
+
+winfont.exe: interface\winfont\winfont.dpr
+  $(DCC)
+
+procedural.exe: materials\procedural\procedural.dpr
+  $(DCC)
+
+facevsface.exe: collisions\facevsface\facevsface.dpr
+  $(DCC)
+
+projection.exe: graph\projection\projection.dpr
+  $(DCC)
+
+shadowvolumes.exe: specialsFX\shadowvolumes\shadowvolumes.dpr
+  $(DCC)
+
+motionblur.exe: specialsFX\motionblur\motionblur.dpr
+  $(DCC)
+
+OctreeDemo.exe: rendering\OctreeDemo\OctreeDemo.dpr
+  $(DCC)
+
+Clothify.exe: physics\Clothify\Clothify.dpr
+  $(DCC)
+
+texcombine.exe: materials\texcombine\texcombine.dpr
+  $(DCC)
+
+subdivide.exe: meshes\subdivide\subdivide.dpr
+  $(DCC)
+
+machine.exe: physics\machine\machine.dpr
+  $(DCC)
+
+simple.exe: physics\simple\simple.dpr
+  $(DCC)
+
+Project1.exe: sound\3Dsound\Project1.dpr
+  $(DCC)
+
+CgSimple.exe: cgshaders\simple\CgSimple.dpr
+  $(DCC)
+
+CgTexture.exe: cgshaders\texturing\CgTexture.dpr
+  $(DCC)
+
+multimaterial.exe: materials\multimaterial\multimaterial.dpr
+  $(DCC)
+
+ducky.exe: meshes\ducky\ducky.dpr
+  $(DCC)
+
+fog.exe: rendering\fog\fog.dpr
+  $(DCC)
