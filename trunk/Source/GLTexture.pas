@@ -3,6 +3,7 @@
 	Handles all the color and texture stuff.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>05/06/03 - EG - Assign fixes (Andrzej Kaluza)
       <li>23/05/03 - EG - More generic libmaterial registration
       <li>08/12/02 - EG - Added tiaInverseLuminance
       <li>13/11/02 - EG - Added tmmCubeMapLight0
@@ -3724,6 +3725,7 @@ procedure TGLLibMaterial.Assign(Source: TPersistent);
 begin
 	if Source is TGLLibMaterial then begin
       FName:=TGLLibMaterials(Collection).MakeUniqueName(TGLLibMaterial(Source).Name);
+      FNameHashKey:=ComputeNameHashKey(FName);
       FMaterial.Assign(TGLLibMaterial(Source).Material);
       FTextureOffset.Assign(TGLLibMaterial(Source).TextureOffset);
       FTextureScale.Assign(TGLLibMaterial(Source).TextureScale);
