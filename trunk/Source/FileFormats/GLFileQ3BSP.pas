@@ -31,7 +31,7 @@ type
 var
    // Q3 lightmaps are quite dark, we brighten them a lot by default
    vQ3BSPLightmapGammaCorrection : Single = 2.5;
-   vQ3BSPLightmapBrightness : Single = 0;   // in percent, 100 = white everywhere
+   vQ3BSPLightmapBrightness : Single = 2;   // scaling factor, 1.0 = unchanged
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -129,7 +129,7 @@ begin
             for i:=0 to n-1 do begin
                bspLightMap:=@bsp.Lightmaps[i];
                // apply brightness correction if ant
-               if vQ3BSPLightmapBrightness<>0 then
+               if vQ3BSPLightmapBrightness<>1 then
                   BrightenRGBArray(@bspLightMap.imageBits[0], 128*128,
                                    vQ3BSPLightmapBrightness);
                // apply gamma correction if any
@@ -138,11 +138,14 @@ begin
                                        vQ3BSPLightmapGammaCorrection);
                // convert RAW RGB to BMP
                for y:=0 to 127 do
-                  Move(bspLightMap.imageBits[y*128*3], lightmapBmp.ScanLine[127-y]^, 128*3);
+                  BGR24ToRGB24(@bspLightMap.imageBits[y*128*3],
+                               lightmapBmp.ScanLine[127-y], 128);
                // spawn lightmap
                libMat:=lightmapLib.AddTextureMaterial(IntToStr(i), lightmapBmp);
                with libMat.Material.Texture do begin
+                  MinFilter:=miLinear;
                   TextureWrap:=twNone;
+                  TextureFormat:=tfRGB;
                end;
             end;
          finally
@@ -161,6 +164,8 @@ begin
          if Assigned(lightMapLib) then
             mo.LighmapTexCoords.Add(bsp.Vertices[i].LightmapCoord)
       end;
+      mo.TexCoords.Scale(AffineVectorMake(1, -1, 0));
+      mo.TexCoords.Translate(YVector);
       mo.RenderSort:=rsBackToFront;
       // Q3 BSP separates tree nodes from leafy nodes, we don't,
       // so we place nodes first, then all leafs afterwards
