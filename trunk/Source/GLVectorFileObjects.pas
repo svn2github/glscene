@@ -3,6 +3,7 @@
 	Vector File related objects for GLScene<p>
 
 	<b>History :</b><font size=-1><ul>
+      <li>13/07/02 - EG - AutoCenter on barycenter
       <li>22/03/02 - EG - TAnimationControler basics now functional
       <li>13/03/02 - EG - Octree support (experimental)
       <li>18/02/02 - EG - Fixed persistence of skeletal meshes
@@ -82,7 +83,7 @@ type
 
    // TMeshAutoCentering
    //
-   TMeshAutoCentering = (macCenterX, macCenterY, macCenterZ);
+   TMeshAutoCentering = (macCenterX, macCenterY, macCenterZ, macUseBarycenter);
    TMeshAutoCenterings = set of TMeshAutoCentering;
 
    // TMeshObjectMode
@@ -103,6 +104,9 @@ type
          { Protected Declarations }
          procedure SetVertices(const val : TAffineVectorList);
          procedure SetNormals(const val : TAffineVectorList);
+
+         procedure ContributeToBarycenter(var currentSum : TAffineVector;
+                                          var nb : Integer); dynamic;
 
       public
          { Public Declarations }
@@ -943,10 +947,11 @@ type
          { Private Declarations }
          FNormalsOrientation : TMeshNormalsOrientation;
          FMaterialLibrary : TGLMaterialLibrary;
+         FAxisAlignedDimensionsCache : TVector;
          FUseMeshMaterials : Boolean;
          FOverlaySkeleton : Boolean;
+         FIgnoreMissingTextures : Boolean;
          FAutoCentering : TMeshAutoCenterings;
-         FAxisAlignedDimensionsCache : TVector;
 
       protected
          { Protected Declarations }
@@ -994,8 +999,10 @@ type
          property MeshObjects : TMeshObjectList read FMeshObjects;
          property Skeleton : TSkeleton read FSkeleton;
 
-         {: Calculates the extents of a mesh.<p> }
+         {: Computes the extents of the mesh.<p> }
          procedure GetExtents(var min, max : TAffineVector);
+         {: Computes the barycenter of the mesh.<p> }
+         function GetBarycenter : TAffineVector;
 
          {: Loads a vector file.<p>
             A vector files (for instance a ".3DS") stores the definition of
@@ -1040,6 +1047,10 @@ type
          {: Defines wether materials declared in the vector file mesh are used.<p>
             You must also define the MaterialLibrary property. }
          property UseMeshMaterials : Boolean read FUseMeshMaterials write SetUseMeshMaterials default True;
+         {: If True, exceptions about missing textures will be ignored.<p>
+            Implementation is up to the file loader class (ie. this property
+            may be ignored by some loaders) }
+         property IgnoreMissingTextures : Boolean read FIgnoreMissingTextures write FIgnoreMissingTextures default False;
 
          {: Normals orientation for owned mesh.<p> }
          property NormalsOrientation : TMeshNormalsOrientation read FNormalsOrientation write SetNormalsOrientation default mnoDefault;
@@ -1352,6 +1363,9 @@ type
    EInvalidVectorFile = class(Exception);
 
 function GetVectorFileFormats : TVectorFileFormatsList;
+//: A file extension filter suitable for dialog's 'Filter' property
+function VectorFileFormatsFilter : String;
+
 procedure RegisterVectorFileFormat(const aExtension, aDescription: String;
                                    aClass : TVectorFileClass);
 procedure UnregisterVectorFileClass(aClass : TVectorFileClass);
@@ -1379,6 +1393,8 @@ var
 const
    cAAFHeader = 'AAF';
 
+// GetVectorFileFormats
+//
 function GetVectorFileFormats: TVectorFileFormatsList;
 begin
    if not Assigned(vVectorFileFormats)then
@@ -1386,12 +1402,25 @@ begin
    Result:=vVectorFileFormats;
 end;
 
+// VectorFileFormatsFilter
+//
+function VectorFileFormatsFilter : String;
+var
+   f : String;
+begin
+   GetVectorFileFormats.BuildFilterStrings(TVectorFile, Result, f);
+end;
+
+// RegisterVectorFileFormat
+//
 procedure RegisterVectorFileFormat(const AExtension, ADescription: String; AClass: TVectorFileClass);
 begin
    RegisterClass(AClass);
 	GetVectorFileFormats.Add(AExtension, ADescription, 0, AClass);
 end;
 
+// UnregisterVectorFileClass
+//
 procedure UnregisterVectorFileClass(AClass: TVectorFileClass);
 begin
 	if Assigned(vVectorFileFormats) then
@@ -1556,6 +1585,15 @@ begin
       FVertices.ReadFromFiler(reader);
       FNormals.ReadFromFiler(reader);
    end else RaiseFilerException(archiveVersion);
+end;
+
+// ContributeToBarycenter
+//
+procedure TBaseMeshObject.ContributeToBarycenter(var currentSum : TAffineVector;
+                                                 var nb : Integer);
+begin
+   AddVector(currentSum, FVertices.Sum);
+   nb:=nb+FVertices.Count;
 end;
 
 // Translate
@@ -3906,8 +3944,15 @@ var
                   Shininess:=Round((1 - material.ShinStrength) * 128);
                end;
                if Trim(material.Texture.Map.Name)<>'' then begin
-                  libMat.Material.Texture.Image.LoadFromFile(material.Texture.Map.Name);
-                  libMat.Material.Texture.Disabled:=False;
+                  try
+                     libMat.Material.Texture.Image.LoadFromFile(material.Texture.Map.Name);
+                     libMat.Material.Texture.Disabled:=False;
+                  except
+                     on E: ETexture do begin
+                        if not Owner.IgnoreMissingTextures then
+                           raise;
+                     end;
+                  end;
                end;
             end;
          end else Result:='';
@@ -4330,6 +4375,20 @@ begin
    end;
 end;
 
+// GetBarycenter
+//
+function TBaseMesh.GetBarycenter : TAffineVector;
+var
+   i, nb : Integer;
+begin
+   Result:=NullVector;
+   nb:=0;
+   for i:=0 to MeshObjects.Count-1 do
+      TMeshObject(MeshObjects[i]).ContributeToBarycenter(Result, nb);
+   if nb>0 then
+      ScaleVector(Result, 1/nb);
+end;
+
 // SetMaterialLibrary
 //
 procedure TBaseMesh.SetMaterialLibrary(const val : TGLMaterialLibrary);
@@ -4413,16 +4472,20 @@ procedure TBaseMesh.PerformAutoCentering;
 var
    delta, min, max : TAffineVector;
 begin
-   GetExtents(min, max);
-   if macCenterX in AutoCentering then
-      delta[0]:=-0.5*(min[0]+max[0])
-   else delta[0]:=0;
-   if macCenterY in AutoCentering then
-      delta[1]:=-0.5*(min[1]+max[1])
-   else delta[1]:=0;
-   if macCenterZ in AutoCentering then
-      delta[2]:=-0.5*(min[2]+max[2])
-   else delta[2]:=0;
+   if macUseBarycenter in AutoCentering then begin
+      delta:=VectorNegate(GetBarycenter);
+   end else begin
+      GetExtents(min, max);
+      if macCenterX in AutoCentering then
+         delta[0]:=-0.5*(min[0]+max[0])
+      else delta[0]:=0;
+      if macCenterY in AutoCentering then
+         delta[1]:=-0.5*(min[1]+max[1])
+      else delta[1]:=0;
+      if macCenterZ in AutoCentering then
+         delta[2]:=-0.5*(min[2]+max[2])
+      else delta[2]:=0;
+   end;
    MeshObjects.Translate(delta);
 end;
 
@@ -5472,6 +5535,8 @@ begin
             else EndFrame:=m_iFrames-1;
          end;
       end;
+      if mesh.MorphTargets.Count>0 then
+         mesh.MorphTo(0);
    finally
       MD2File.Free;
    end;
@@ -5655,11 +5720,20 @@ procedure TGLSMDVectorFile.LoadFromStream(aStream : TStream);
    begin
       if Owner is TBaseMesh then begin
          matLib:=TBaseMesh(GetOwner).MaterialLibrary;
-         if Assigned(matLib) then
-            if matLib.Materials.GetLibMaterialByName(name)=nil then
-               if CompareText(name, 'null.bmp')<>0 then
-                  matLib.AddTextureMaterial(name, name)
-               else matLib.AddTextureMaterial(name, '');
+         if Assigned(matLib) then begin
+            if matLib.Materials.GetLibMaterialByName(name)=nil then begin
+               if CompareText(name, 'null.bmp')<>0 then begin
+                  try
+                     matLib.AddTextureMaterial(name, name)
+                  except
+                     on E: ETexture do begin
+                        if not Owner.IgnoreMissingTextures then
+                           raise;
+                     end;
+                  end;
+               end else matLib.AddTextureMaterial(name, '');
+            end;
+         end;
       end;
    end;
 
