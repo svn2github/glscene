@@ -23,7 +23,7 @@ unit odeimport;
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.12                                       *
+ * ODE Delphi Import unit : 0.8.13                                       *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -64,6 +64,7 @@ unit odeimport;
 
   Change history
 
+  2004.04.25 - CH - New single and double dll. Trimesh now works in both mode.
   2004.04.22 - MF - Fixes to make DelphiODE behave better when used as dynamic
   2004.04.21 - CH - New single and double dll. Now handles Capped Cylinder vs Trimesh collision
                     Added dJointGetUniversalAngle and dJointGetUniversalAngleRate, ...
@@ -167,10 +168,6 @@ type
   //
   //   If you choose to run in Double mode, you must delpoy the double precision
   //   dll (named ode-Double.dll and located in the dll directory)
-  //
-  //  A major issue is that Single and Double support different function sets,
-  //  but we gope this will be sorted out in the future. The TriList only
-  //  works in single mode.
 
   {$define cSINGLE}  // Add a "$" before "define" to make DelphiODE single based
 
@@ -1122,6 +1119,10 @@ dSolveLDLT}
   procedure dWorldSetAutoDisableAngularThreshold(const World: PdxWorld; angThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableAngularThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dWorldGetAutoDisableSteps(const World: PdxWorld): Integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dWorldSetAutoDisableSteps(const World: PdxWorld; steps: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableTime(const World: PdxWorld): TdReal; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableTime(const World: PdxWorld; time: TdReal); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dWorldGetAutoDisableFlag(const World: PdxWorld): Integer; cdecl; external {$IFDEF __GPC__}name 'dWorldGetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dWorldSetAutoDisableFlag(const World: PdxWorld; do_auto_disable: Integer); cdecl; external {$IFDEF __GPC__}name 'dWorldSetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   function dBodyGetAutoDisableLinearThreshold(const Body: PdxBody): TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dBodySetAutoDisableLinearThreshold(const Body: PdxBody; linThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableLinearThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1129,8 +1130,10 @@ dSolveLDLT}
   procedure dBodySetAutoDisableAngularThreshold(const Body: PdxBody; angThreshold: TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableAngularThreshold'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dBodyGetAutoDisableSteps(const Body: PdxBody): Integer; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dBodySetAutoDisableSteps(const Body: PdxBody; steps: Integer); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableSteps'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dBodyGetAutoDisable(const Body: PdxBody): Integer; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisable'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dBodySetAutoDisable(const Body: PdxBody; doAutoDisable: Integer); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisable'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBodyGetAutoDisableTime(const Body: PdxBody): TdReal; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetAutoDisableTime(const Body: PdxBody; time: TdReal); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableTime'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dBodyGetAutoDisableFlag(const Body: PdxBody): Integer; cdecl; external {$IFDEF __GPC__}name 'dBodyGetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dBodySetAutoDisableFlag(const Body: PdxBody; do_auto_disable: Integer); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableFlag'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dBodySetAutoDisableDefaults(const Body: PdxBody); cdecl; external {$IFDEF __GPC__}name 'dBodySetAutoDisableDefaults'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   //----- dGeom -----
@@ -1146,14 +1149,6 @@ dSolveLDLT}
   function dGeomGetRotation(const Geom : PdxGeom): PdMatrix3; cdecl; external {$IFDEF __GPC__}name 'dGeomGetRotation'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomGetQuaternion(const Geom : PdxGeom; var result: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dGeomGetQuaternion'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dGeomGetSpace(const Geom : PdxGeom): PdxSpace; cdecl; external {$IFDEF __GPC__}name 'dGeomGetSpace'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  // Deprecated!
-  //function dGeomGetSpaceAABB(const Geom : PdxGeom): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomGetSpaceAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  // Deprecated!
-  //function dGeomGroupGetGeom(const Geom : PdxGeom; const i: Integer): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dGeomGroupGetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  //function dGeomGroupGetNumGeoms(const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomGroupGetNumGeoms'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  //procedure dGeomGroupRemove(const group, x: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomGroupRemove'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   procedure dGeomPlaneGetParams(const Geom : PdxGeom; var result: TdVector4); cdecl; external {$IFDEF __GPC__}name 'dGeomPlaneGetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dGeomPlaneSetParams (const Geom : PdxGeom; const a, b, c, d: TdReal); cdecl; external {$IFDEF __GPC__}name 'dGeomPlaneSetParams'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1211,9 +1206,7 @@ dSolveLDLT}
   function EXT_dCreateTerrainZ(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer): PdxGeom; cdecl; external ODEDLL name 'dCreateTerrainZ';
   function EXT_dCreateRay(const Space : PdxSpace; length : TdReal) : PdxGeom; cdecl; external ODEDLL name 'dCreateRay';
   function EXT_dCreateGeomTransform(const Space : PdxSpace): PdxGeom; cdecl; external ODEDLL name 'dCreateGeomTransform';
-
-var
-   EXT_dCreateTriMesh : function(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
+  function EXT_dCreateTriMesh(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl; external ODEDLL name 'dCreateTriMesh';
   // ***************
 
   // dCone
@@ -1239,31 +1232,30 @@ var
 
   function dCreateGeomClass(const classptr : TdGeomClass) : Integer; cdecl; external {$IFDEF __GPC__}name 'dCreateGeomClass'{$ELSE} ODEDLL{$ENDIF __GPC__};
   function dGeomGetClassData(o : PdxGeom) : Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomGetClassData'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  function dCreateGeom (classnum : Integer) : PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dCreateGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};    
+  function dCreateGeom (classnum : Integer) : PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dCreateGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   //----- dTrilistCollider -----
-var
-  dGeomTriMeshDataBuildSimple : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
-  dGeomTriMeshDataBuildSimple1 : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer; Normals: PdVector3Array); cdecl;
-  dGeomTriMeshDataBuildDouble : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl;
-  dGeomTriMeshDataBuildDouble1 : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl;
-  dGeomTriMeshDataBuildSingle : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl;
-  dGeomTriMeshDataBuildSingle1 : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl;
-  dGeomTriMeshDataCreate : function: PdxTriMeshData; cdecl;
-  dGeomTriMeshDataSet : procedure(g: PdxTriMeshData; data_id: Integer; data: Pointer); cdecl;
-  dGeomTriMeshDataDestroy : procedure(g: PdxTriMeshData); cdecl;
-  dGeomTriMeshGetTriangle : procedure(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl;
-  dGeomTriMeshGetPoint : procedure(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl;
-  dGeomTriMeshClearTCCache : procedure(g: PdxGeom); cdecl;
-  dGeomTriMeshEnableTC : procedure(g: PdxGeom; geomClass, enable: Integer); cdecl;
-  dGeomTriMeshIsTCEnabled : function(g: PdxGeom; geomClass: Integer): Integer; cdecl;
-  dGeomTriMeshGetArrayCallback : function(g: PdxGeom): Pointer; cdecl;
-  dGeomTriMeshGetCallback : function(g: PdxGeom): Pointer; cdecl;
-  dGeomTriMeshGetRayCallback : function(g: PdxGeom): Pointer; cdecl;
-  dGeomTriMeshSetArrayCallback : procedure(g: PdxGeom; ArrayCallback: Pointer); cdecl;
-  dGeomTriMeshSetCallback : procedure(g: PdxGeom; Callback: Pointer); cdecl;
-  dGeomTriMeshSetRayCallback : procedure(g: PdxGeom; RayCallback: Pointer); cdecl;
-  dGeomTriMeshSetData : procedure(g: PdxGeom; Data: PdxTriMeshData); cdecl;
+  procedure dGeomTriMeshDataBuildSimple(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSimple'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataBuildSimple1(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer; Normals: PdVector3Array); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSimple1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataBuildDouble(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildDouble'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataBuildDouble1(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildDouble1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataBuildSingle(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSingle'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataBuildSingle1(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataBuildSingle1'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshDataCreate: PdxTriMeshData; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataCreate'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataSet(g: PdxTriMeshData; data_id: Integer; data: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataSet'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshDataDestroy(g: PdxTriMeshData); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshDataDestroy'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshGetTriangle(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetTriangle'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshGetPoint(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetPoint'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshClearTCCache(g: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshClearTCCache'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshEnableTC(g: PdxGeom; geomClass, enable: Integer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshEnableTC'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshIsTCEnabled(g: PdxGeom; geomClass: Integer): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshIsTCEnabled'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetArrayCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetArrayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  function dGeomTriMeshGetRayCallback(g: PdxGeom): Pointer; cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshGetRayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshSetArrayCallback(g: PdxGeom; ArrayCallback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetArrayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshSetCallback(g: PdxGeom; Callback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshSetRayCallback(g: PdxGeom; RayCallback: Pointer); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetRayCallback'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dGeomTriMeshSetData(g: PdxGeom; Data: PdxTriMeshData); cdecl; external {$IFDEF __GPC__}name 'dGeomTriMeshSetData'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   {MethodVariables}
 
@@ -1298,6 +1290,8 @@ var
   procedure dMassSetParameters(var m: TdMass; themass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetParameters'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetSphere(var m: TdMass; density, radius: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetSphere'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetSphereTotal(var m: TdMass; total_mass, radius: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassSetSphereTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dMassSetTriMesh(var m: TdMass; density: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external {$IFDEF __GPC__}name 'dMassSetTriMesh'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dMassSetTriMeshTotal(var m: TdMass; total_mass: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl; external {$IFDEF __GPC__}name 'dMassSetTriMeshTotal'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassSetZero(var m: TdMass); cdecl; external {$IFDEF __GPC__}name 'dMassSetZero'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dMassTranslate(var m: TdMass; x, y, z: TdReal); cdecl; external {$IFDEF __GPC__}name 'dMassTranslate'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
@@ -1317,9 +1311,9 @@ var
   procedure dQMultiply1 (var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dQMultiply1'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dQMultiply2 (var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dQMultiply2'{$ELSE} ODEDLL{$ENDIF __GPC__};
   procedure dQMultiply3 (var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dQMultiply3'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dQtoR (const q : TdQuaternion; var R : TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dQtoR'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dRtoQ (const R : TdMatrix3; var q : TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dRtoQ'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  procedure dWtoDQ (const w : TdVector3; const q: TdQuaternion; var dq : TdVector4); cdecl; external {$IFDEF __GPC__}name 'dWtoDQ'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dRfromQ (var R : TdMatrix3; const q : TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dRfromQ'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dQfromR (var q : TdQuaternion; const R : TdMatrix3); cdecl; external {$IFDEF __GPC__}name 'dQfromR'{$ELSE} ODEDLL{$ENDIF __GPC__};
+  procedure dDQfromW (var dq : TdVector4; const w : TdVector3; const q: TdQuaternion); cdecl; external {$IFDEF __GPC__}name 'dDQfromW'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   //----- Math -----
   procedure dNormalize3 (var a : TdVector3); cdecl; external {$IFDEF __GPC__}name 'dNormalize3'{$ELSE} ODEDLL{$ENDIF __GPC__};
@@ -1829,34 +1823,6 @@ begin
 
   if IsODEInitialized then
   begin
-    EXT_dCreateTriMesh := GetModuleSymbol( vODEHandle, 'dCreateTriMesh' );
-    dGeomTriMeshDataBuildSimple := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple' );
-    dGeomTriMeshDataBuildSimple1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple1' );
-    dGeomTriMeshDataBuildDouble := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble' );
-    dGeomTriMeshDataBuildDouble1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble1' );
-    dGeomTriMeshDataBuildSingle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle' );
-    dGeomTriMeshDataBuildSingle1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle1' );
-
-    dGeomTriMeshDataCreate := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataCreate' );
-    dGeomTriMeshDataSet := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataSet' );
-    dGeomTriMeshDataDestroy := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataDestroy' );
-
-    dGeomTriMeshGetTriangle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetTriangle' );
-    dGeomTriMeshGetPoint := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetPoint' );
-
-    dGeomTriMeshClearTCCache := GetModuleSymbol( vODEHandle, 'dGeomTriMeshClearTCCache' );
-    dGeomTriMeshEnableTC := GetModuleSymbol( vODEHandle, 'dGeomTriMeshEnableTC' );
-    dGeomTriMeshIsTCEnabled := GetModuleSymbol( vODEHandle, 'dGeomTriMeshIsTCEnabled' );
-
-    dGeomTriMeshGetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetArrayCallback' );
-    dGeomTriMeshGetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetCallback' );
-    dGeomTriMeshGetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetRayCallback' );
-    dGeomTriMeshSetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetArrayCallback' );
-    dGeomTriMeshSetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetCallback' );
-    dGeomTriMeshSetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetRayCallback' );
-
-    dGeomTriMeshSetData := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetData' );
-
     {DynamicLoadMarker}
   end;
 end;

@@ -23,7 +23,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.8.12                                       *
+ * ODE Delphi Import unit : 0.8.13                                       *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -44,7 +44,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 // was initiated by Martin Waldegger <martin.waldegger@chello.at> and
 // auto-created by mattias fagerlund.
 //
-// This version was auto-created on 2004-04-22.
+// This version was auto-created on 2004-04-25.
 
 
  {
@@ -69,6 +69,7 @@ unit dynode; // Autocreated dynamic version of odeimport.pas.
 
   Change history
 
+  2004.04.25 - CH - New single and double dll. Trimesh now works in both mode.
   2004.04.22 - MF - Fixes to make DelphiODE behave better when used as dynamic
   2004.04.21 - CH - New single and double dll. Now handles Capped Cylinder vs Trimesh collision
                     Added dJointGetUniversalAngle and dJointGetUniversalAngleRate, ...
@@ -172,10 +173,6 @@ type
   //
   //   If you choose to run in Double mode, you must delpoy the double precision
   //   dll (named ode-Double.dll and located in the dll directory)
-  //
-  //  A major issue is that Single and Double support different function sets,
-  //  but we gope this will be sorted out in the future. The TriList only
-  //  works in single mode.
 
   {$define cSINGLE}  // Add a "$" before "define" to make DelphiODE single based
 
@@ -1129,6 +1126,10 @@ var
   dWorldSetAutoDisableAngularThreshold: procedure(const World: PdxWorld; angThreshold: TdReal); cdecl;
   dWorldGetAutoDisableSteps: function(const World: PdxWorld):  Integer; cdecl;
   dWorldSetAutoDisableSteps: procedure(const World: PdxWorld; steps: Integer); cdecl;
+  dWorldGetAutoDisableTime: function(const World: PdxWorld):  TdReal; cdecl;
+  dWorldSetAutoDisableTime: procedure(const World: PdxWorld; time: TdReal); cdecl;
+  dWorldGetAutoDisableFlag: function(const World: PdxWorld):  Integer; cdecl;
+  dWorldSetAutoDisableFlag: procedure(const World: PdxWorld; do_auto_disable: Integer); cdecl;
 
   dBodyGetAutoDisableLinearThreshold: function(const Body: PdxBody):  TdReal; cdecl;
   dBodySetAutoDisableLinearThreshold: procedure(const Body: PdxBody; linThreshold: TdReal); cdecl;
@@ -1136,8 +1137,10 @@ var
   dBodySetAutoDisableAngularThreshold: procedure(const Body: PdxBody; angThreshold: TdReal); cdecl;
   dBodyGetAutoDisableSteps: function(const Body: PdxBody):  Integer; cdecl;
   dBodySetAutoDisableSteps: procedure(const Body: PdxBody; steps: Integer); cdecl;
-  dBodyGetAutoDisable: function(const Body: PdxBody):  Integer; cdecl;
-  dBodySetAutoDisable: procedure(const Body: PdxBody; doAutoDisable: Integer); cdecl;
+  dBodyGetAutoDisableTime: function(const Body: PdxBody):  TdReal; cdecl;
+  dBodySetAutoDisableTime: procedure(const Body: PdxBody; time: TdReal); cdecl;
+  dBodyGetAutoDisableFlag: function(const Body: PdxBody):  Integer; cdecl;
+  dBodySetAutoDisableFlag: procedure(const Body: PdxBody; do_auto_disable: Integer); cdecl;
   dBodySetAutoDisableDefaults: procedure(const Body: PdxBody); cdecl;
 
   //----- dGeom -----
@@ -1153,14 +1156,6 @@ var
   dGeomGetRotation: function(const Geom : PdxGeom):  PdMatrix3; cdecl;
   dGeomGetQuaternion: procedure(const Geom : PdxGeom; var result: TdQuaternion); cdecl;
   dGeomGetSpace: function(const Geom : PdxGeom):  PdxSpace; cdecl;
-
-  // Deprecated!
-  //function dGeomGetSpaceAABB(const Geom : PdxGeom): TdReal; cdecl; external {$IFDEF __GPC__}name 'dGeomGetSpaceAABB'{$ELSE} ODEDLL{$ENDIF __GPC__};
-
-  // Deprecated!
-  //function dGeomGroupGetGeom(const Geom : PdxGeom; const i: Integer): PdxGeom; cdecl; external {$IFDEF __GPC__}name 'dGeomGroupGetGeom'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  //function dGeomGroupGetNumGeoms(const Geom : PdxGeom): Integer; cdecl; external {$IFDEF __GPC__}name 'dGeomGroupGetNumGeoms'{$ELSE} ODEDLL{$ENDIF __GPC__};
-  //procedure dGeomGroupRemove(const group, x: PdxGeom); cdecl; external {$IFDEF __GPC__}name 'dGeomGroupRemove'{$ELSE} ODEDLL{$ENDIF __GPC__};
 
   dGeomPlaneGetParams: procedure(const Geom : PdxGeom; var result: TdVector4); cdecl;
   dGeomPlaneSetParams: procedure(const Geom : PdxGeom; const a, b, c, d: TdReal); cdecl;
@@ -1220,9 +1215,7 @@ var
   EXT_dCreateTerrainZ: function(const Space: PdxSpace; pHeights: PdRealHugeArray; vLength: TdReal; nNumNodesPerSide: Integer; bFinite, bPlaceable: Integer):  PdxGeom; cdecl;
   EXT_dCreateRay: function(const Space : PdxSpace; length : TdReal):  PdxGeom; cdecl;
   EXT_dCreateGeomTransform: function(const Space : PdxSpace):  PdxGeom; cdecl;
-
-var
-   EXT_dCreateTriMesh : function(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer): PdxGeom; cdecl;
+  EXT_dCreateTriMesh: function(const Space : PdxSpace; Data: PdxTriMeshData; Callback, ArrayCallback, RayCallback: Pointer):  PdxGeom; cdecl;
   // ***************
 
   // dCone
@@ -1251,28 +1244,27 @@ var
   dCreateGeom: function(classnum : Integer):  PdxGeom; cdecl;
 
   //----- dTrilistCollider -----
-var
-  dGeomTriMeshDataBuildSimple : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
-  dGeomTriMeshDataBuildSimple1 : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer; Normals: PdVector3Array); cdecl;
-  dGeomTriMeshDataBuildDouble : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl;
-  dGeomTriMeshDataBuildDouble1 : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl;
-  dGeomTriMeshDataBuildSingle : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl;
-  dGeomTriMeshDataBuildSingle1 : procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl;
-  dGeomTriMeshDataCreate : function: PdxTriMeshData; cdecl;
-  dGeomTriMeshDataSet : procedure(g: PdxTriMeshData; data_id: Integer; data: Pointer); cdecl;
-  dGeomTriMeshDataDestroy : procedure(g: PdxTriMeshData); cdecl;
-  dGeomTriMeshGetTriangle : procedure(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl;
-  dGeomTriMeshGetPoint : procedure(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl;
-  dGeomTriMeshClearTCCache : procedure(g: PdxGeom); cdecl;
-  dGeomTriMeshEnableTC : procedure(g: PdxGeom; geomClass, enable: Integer); cdecl;
-  dGeomTriMeshIsTCEnabled : function(g: PdxGeom; geomClass: Integer): Integer; cdecl;
-  dGeomTriMeshGetArrayCallback : function(g: PdxGeom): Pointer; cdecl;
-  dGeomTriMeshGetCallback : function(g: PdxGeom): Pointer; cdecl;
-  dGeomTriMeshGetRayCallback : function(g: PdxGeom): Pointer; cdecl;
-  dGeomTriMeshSetArrayCallback : procedure(g: PdxGeom; ArrayCallback: Pointer); cdecl;
-  dGeomTriMeshSetCallback : procedure(g: PdxGeom; Callback: Pointer); cdecl;
-  dGeomTriMeshSetRayCallback : procedure(g: PdxGeom; RayCallback: Pointer); cdecl;
-  dGeomTriMeshSetData : procedure(g: PdxGeom; Data: PdxTriMeshData); cdecl;
+  dGeomTriMeshDataBuildSimple: procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
+  dGeomTriMeshDataBuildSimple1: procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexCount: Integer; Indices: PdIntegerArray; IndexCount: Integer; Normals: PdVector3Array); cdecl;
+  dGeomTriMeshDataBuildDouble: procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl;
+  dGeomTriMeshDataBuildDouble1: procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl;
+  dGeomTriMeshDataBuildSingle: procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer); cdecl;
+  dGeomTriMeshDataBuildSingle1: procedure(g: PdxTriMeshData; Vertices: PdVector3Array; VertexStride, VertexCount: Integer; Indices: PdIntegerArray; IndexCount, TriStride: Integer; Normals: PdVector3Array); cdecl;
+  dGeomTriMeshDataCreate: function: PdxTriMeshData; cdecl;
+  dGeomTriMeshDataSet: procedure(g: PdxTriMeshData; data_id: Integer; data: Pointer); cdecl;
+  dGeomTriMeshDataDestroy: procedure(g: PdxTriMeshData); cdecl;
+  dGeomTriMeshGetTriangle: procedure(g: PdxGeom; Index: Integer; v0, v1, v2: PdVector3); cdecl;
+  dGeomTriMeshGetPoint: procedure(g: PdxGeom; Index: Integer; u, v: TdReal; result: TdVector3); cdecl;
+  dGeomTriMeshClearTCCache: procedure(g: PdxGeom); cdecl;
+  dGeomTriMeshEnableTC: procedure(g: PdxGeom; geomClass, enable: Integer); cdecl;
+  dGeomTriMeshIsTCEnabled: function(g: PdxGeom; geomClass: Integer):  Integer; cdecl;
+  dGeomTriMeshGetArrayCallback: function(g: PdxGeom):  Pointer; cdecl;
+  dGeomTriMeshGetCallback: function(g: PdxGeom):  Pointer; cdecl;
+  dGeomTriMeshGetRayCallback: function(g: PdxGeom):  Pointer; cdecl;
+  dGeomTriMeshSetArrayCallback: procedure(g: PdxGeom; ArrayCallback: Pointer); cdecl;
+  dGeomTriMeshSetCallback: procedure(g: PdxGeom; Callback: Pointer); cdecl;
+  dGeomTriMeshSetRayCallback: procedure(g: PdxGeom; RayCallback: Pointer); cdecl;
+  dGeomTriMeshSetData: procedure(g: PdxGeom; Data: PdxTriMeshData); cdecl;
 
   {MethodVariables}
 
@@ -1307,6 +1299,8 @@ var
   dMassSetParameters: procedure(var m: TdMass; themass, cgx, cgy, cgz, I11, I22, I33, I12, I13, I23: TdReal); cdecl;
   dMassSetSphere: procedure(var m: TdMass; density, radius: TdReal); cdecl;
   dMassSetSphereTotal: procedure(var m: TdMass; total_mass, radius: TdReal); cdecl;
+  dMassSetTriMesh: procedure(var m: TdMass; density: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
+  dMassSetTriMeshTotal: procedure(var m: TdMass; total_mass: TdReal; Vertices: PdVector3Array; nVertexStride, nVertices: Integer; Indices: PdIntegerArray; IndexCount: Integer); cdecl;
   dMassSetZero: procedure(var m: TdMass); cdecl;
   dMassTranslate: procedure(var m: TdMass; x, y, z: TdReal); cdecl;
 
@@ -1326,9 +1320,9 @@ var
   dQMultiply1: procedure(var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl;
   dQMultiply2: procedure(var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl;
   dQMultiply3: procedure(var qa: TdQuaternion; const qb, qc: TdQuaternion); cdecl;
-  dQtoR: procedure(const q : TdQuaternion; var R : TdMatrix3); cdecl;
-  dRtoQ: procedure(const R : TdMatrix3; var q : TdQuaternion); cdecl;
-  dWtoDQ: procedure(const w : TdVector3; const q: TdQuaternion; var dq : TdVector4); cdecl;
+  dRfromQ: procedure(var R : TdMatrix3; const q : TdQuaternion); cdecl;
+  dQfromR: procedure(var q : TdQuaternion; const R : TdMatrix3); cdecl;
+  dDQfromW: procedure(var dq : TdVector4; const w : TdVector3; const q: TdQuaternion); cdecl;
 
   //----- Math -----
   dNormalize3: procedure(var a : TdVector3); cdecl;
@@ -1840,34 +1834,6 @@ begin
 
   if IsODEInitialized then
   begin
-    EXT_dCreateTriMesh := GetModuleSymbol( vODEHandle, 'dCreateTriMesh' );
-    dGeomTriMeshDataBuildSimple := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple' );
-    dGeomTriMeshDataBuildSimple1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple1' );
-    dGeomTriMeshDataBuildDouble := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble' );
-    dGeomTriMeshDataBuildDouble1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble1' );
-    dGeomTriMeshDataBuildSingle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle' );
-    dGeomTriMeshDataBuildSingle1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle1' );
-
-    dGeomTriMeshDataCreate := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataCreate' );
-    dGeomTriMeshDataSet := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataSet' );
-    dGeomTriMeshDataDestroy := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataDestroy' );
-
-    dGeomTriMeshGetTriangle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetTriangle' );
-    dGeomTriMeshGetPoint := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetPoint' );
-
-    dGeomTriMeshClearTCCache := GetModuleSymbol( vODEHandle, 'dGeomTriMeshClearTCCache' );
-    dGeomTriMeshEnableTC := GetModuleSymbol( vODEHandle, 'dGeomTriMeshEnableTC' );
-    dGeomTriMeshIsTCEnabled := GetModuleSymbol( vODEHandle, 'dGeomTriMeshIsTCEnabled' );
-
-    dGeomTriMeshGetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetArrayCallback' );
-    dGeomTriMeshGetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetCallback' );
-    dGeomTriMeshGetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetRayCallback' );
-    dGeomTriMeshSetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetArrayCallback' );
-    dGeomTriMeshSetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetCallback' );
-    dGeomTriMeshSetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetRayCallback' );
-
-    dGeomTriMeshSetData := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetData' );
-
   // These lines are auto-created
   dWorldCreate := GetModuleSymbol( vODEHandle, 'dWorldCreate' );
   dWorldDestroy := GetModuleSymbol( vODEHandle, 'dWorldDestroy' );
@@ -2027,14 +1993,20 @@ begin
   dWorldSetAutoDisableAngularThreshold := GetModuleSymbol( vODEHandle, 'dWorldSetAutoDisableAngularThreshold' );
   dWorldGetAutoDisableSteps := GetModuleSymbol( vODEHandle, 'dWorldGetAutoDisableSteps' );
   dWorldSetAutoDisableSteps := GetModuleSymbol( vODEHandle, 'dWorldSetAutoDisableSteps' );
+  dWorldGetAutoDisableTime := GetModuleSymbol( vODEHandle, 'dWorldGetAutoDisableTime' );
+  dWorldSetAutoDisableTime := GetModuleSymbol( vODEHandle, 'dWorldSetAutoDisableTime' );
+  dWorldGetAutoDisableFlag := GetModuleSymbol( vODEHandle, 'dWorldGetAutoDisableFlag' );
+  dWorldSetAutoDisableFlag := GetModuleSymbol( vODEHandle, 'dWorldSetAutoDisableFlag' );
   dBodyGetAutoDisableLinearThreshold := GetModuleSymbol( vODEHandle, 'dBodyGetAutoDisableLinearThreshold' );
   dBodySetAutoDisableLinearThreshold := GetModuleSymbol( vODEHandle, 'dBodySetAutoDisableLinearThreshold' );
   dBodyGetAutoDisableAngularThreshold := GetModuleSymbol( vODEHandle, 'dBodyGetAutoDisableAngularThreshold' );
   dBodySetAutoDisableAngularThreshold := GetModuleSymbol( vODEHandle, 'dBodySetAutoDisableAngularThreshold' );
   dBodyGetAutoDisableSteps := GetModuleSymbol( vODEHandle, 'dBodyGetAutoDisableSteps' );
   dBodySetAutoDisableSteps := GetModuleSymbol( vODEHandle, 'dBodySetAutoDisableSteps' );
-  dBodyGetAutoDisable := GetModuleSymbol( vODEHandle, 'dBodyGetAutoDisable' );
-  dBodySetAutoDisable := GetModuleSymbol( vODEHandle, 'dBodySetAutoDisable' );
+  dBodyGetAutoDisableTime := GetModuleSymbol( vODEHandle, 'dBodyGetAutoDisableTime' );
+  dBodySetAutoDisableTime := GetModuleSymbol( vODEHandle, 'dBodySetAutoDisableTime' );
+  dBodyGetAutoDisableFlag := GetModuleSymbol( vODEHandle, 'dBodyGetAutoDisableFlag' );
+  dBodySetAutoDisableFlag := GetModuleSymbol( vODEHandle, 'dBodySetAutoDisableFlag' );
   dBodySetAutoDisableDefaults := GetModuleSymbol( vODEHandle, 'dBodySetAutoDisableDefaults' );
   dGeomBoxGetLengths := GetModuleSymbol( vODEHandle, 'dGeomBoxGetLengths' );
   dGeomBoxSetLengths := GetModuleSymbol( vODEHandle, 'dGeomBoxSetLengths' );
@@ -2086,6 +2058,7 @@ begin
   EXT_dCreateTerrainZ := GetModuleSymbol( vODEHandle, 'dCreateTerrainZ' );
   EXT_dCreateRay := GetModuleSymbol( vODEHandle, 'dCreateRay' );
   EXT_dCreateGeomTransform := GetModuleSymbol( vODEHandle, 'dCreateGeomTransform' );
+  EXT_dCreateTriMesh := GetModuleSymbol( vODEHandle, 'dCreateTriMesh' );
   dGeomConeSetParams := GetModuleSymbol( vODEHandle, 'dGeomConeSetParams' );
   dGeomConeGetParams := GetModuleSymbol( vODEHandle, 'dGeomConeGetParams' );
   dGeomConePointDepth := GetModuleSymbol( vODEHandle, 'dGeomConePointDepth' );
@@ -2102,6 +2075,27 @@ begin
   dCreateGeomClass := GetModuleSymbol( vODEHandle, 'dCreateGeomClass' );
   dGeomGetClassData := GetModuleSymbol( vODEHandle, 'dGeomGetClassData' );
   dCreateGeom := GetModuleSymbol( vODEHandle, 'dCreateGeom' );
+  dGeomTriMeshDataBuildSimple := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple' );
+  dGeomTriMeshDataBuildSimple1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSimple1' );
+  dGeomTriMeshDataBuildDouble := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble' );
+  dGeomTriMeshDataBuildDouble1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildDouble1' );
+  dGeomTriMeshDataBuildSingle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle' );
+  dGeomTriMeshDataBuildSingle1 := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataBuildSingle1' );
+  dGeomTriMeshDataCreate := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataCreate' );
+  dGeomTriMeshDataSet := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataSet' );
+  dGeomTriMeshDataDestroy := GetModuleSymbol( vODEHandle, 'dGeomTriMeshDataDestroy' );
+  dGeomTriMeshGetTriangle := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetTriangle' );
+  dGeomTriMeshGetPoint := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetPoint' );
+  dGeomTriMeshClearTCCache := GetModuleSymbol( vODEHandle, 'dGeomTriMeshClearTCCache' );
+  dGeomTriMeshEnableTC := GetModuleSymbol( vODEHandle, 'dGeomTriMeshEnableTC' );
+  dGeomTriMeshIsTCEnabled := GetModuleSymbol( vODEHandle, 'dGeomTriMeshIsTCEnabled' );
+  dGeomTriMeshGetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetArrayCallback' );
+  dGeomTriMeshGetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetCallback' );
+  dGeomTriMeshGetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshGetRayCallback' );
+  dGeomTriMeshSetArrayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetArrayCallback' );
+  dGeomTriMeshSetCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetCallback' );
+  dGeomTriMeshSetRayCallback := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetRayCallback' );
+  dGeomTriMeshSetData := GetModuleSymbol( vODEHandle, 'dGeomTriMeshSetData' );
   dSpaceAdd := GetModuleSymbol( vODEHandle, 'dSpaceAdd' );
   dSpaceDestroy := GetModuleSymbol( vODEHandle, 'dSpaceDestroy' );
   dSpaceClean := GetModuleSymbol( vODEHandle, 'dSpaceClean' );
@@ -2129,6 +2123,8 @@ begin
   dMassSetParameters := GetModuleSymbol( vODEHandle, 'dMassSetParameters' );
   dMassSetSphere := GetModuleSymbol( vODEHandle, 'dMassSetSphere' );
   dMassSetSphereTotal := GetModuleSymbol( vODEHandle, 'dMassSetSphereTotal' );
+  dMassSetTriMesh := GetModuleSymbol( vODEHandle, 'dMassSetTriMesh' );
+  dMassSetTriMeshTotal := GetModuleSymbol( vODEHandle, 'dMassSetTriMeshTotal' );
   dMassSetZero := GetModuleSymbol( vODEHandle, 'dMassSetZero' );
   dMassTranslate := GetModuleSymbol( vODEHandle, 'dMassTranslate' );
   dQFromAxisAndAngle := GetModuleSymbol( vODEHandle, 'dQFromAxisAndAngle' );
@@ -2145,9 +2141,9 @@ begin
   dQMultiply1 := GetModuleSymbol( vODEHandle, 'dQMultiply1' );
   dQMultiply2 := GetModuleSymbol( vODEHandle, 'dQMultiply2' );
   dQMultiply3 := GetModuleSymbol( vODEHandle, 'dQMultiply3' );
-  dQtoR := GetModuleSymbol( vODEHandle, 'dQtoR' );
-  dRtoQ := GetModuleSymbol( vODEHandle, 'dRtoQ' );
-  dWtoDQ := GetModuleSymbol( vODEHandle, 'dWtoDQ' );
+  dRfromQ := GetModuleSymbol( vODEHandle, 'dRfromQ' );
+  dQfromR := GetModuleSymbol( vODEHandle, 'dQfromR' );
+  dDQfromW := GetModuleSymbol( vODEHandle, 'dDQfromW' );
   dNormalize3 := GetModuleSymbol( vODEHandle, 'dNormalize3' );
   dNormalize4 := GetModuleSymbol( vODEHandle, 'dNormalize4' );
   dClosestLineSegmentPoints := GetModuleSymbol( vODEHandle, 'dClosestLineSegmentPoints' );
