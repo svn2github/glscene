@@ -710,15 +710,13 @@ begin
 
    FForm:=TForm.Create(nil);
    with FForm do begin
-      if StayOnTop then begin
-         FormStyle:=fsStayOnTop;
-         FForm.Width:=Self.Width;
-         FForm.Height:=Self.Height;
-      end else begin
-         FormStyle:=fsNormal;
-         FForm.WindowState:=wsMaximized;
-         FForm.Align:=alClient;
-      end;
+      WindowState:=wsMaximized;
+      Width:=Self.Width;
+      Height:=Self.Height;
+
+      if StayOnTop then
+         FormStyle:=fsStayOnTop
+      else FormStyle:=fsNormal;
 
       BorderStyle:=bsNone;
       Cursor:=Self.Cursor;
@@ -729,6 +727,10 @@ begin
       WindowProc:=WndProc;
    end;
 
+   // Hides Taskbar
+   ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_HIDE);
+
+   // Switch videom mode
    if (Screen.Width<>Width) or (Screen.Height<>Height)
          or (GetCurrentColorDepth<>cScreenDepthToBPP[ScreenDepth]) then begin
       SetFullscreenMode(res, FRefreshRate);
@@ -762,6 +764,10 @@ begin
       if FSwitchedResolution then
          RestoreDefaultMode;
    end;
+
+   // Restore Taskbar
+   ShowWindow(FindWindow('Shell_TrayWnd', nil), SW_RESTORE);
+   
    FActive:=False;
 end;
 
