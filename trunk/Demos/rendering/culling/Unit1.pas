@@ -70,7 +70,7 @@ implementation
 
 {$R *.DFM}
 
-uses Jpeg;
+uses Jpeg, GLFileMD2;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
