@@ -981,9 +981,9 @@ type
          procedure StructureChanged; override;
 
          {: BEWARE! Utterly inefficient implementation! }
-         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : Boolean; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
 
          property MeshObjects : TMeshObjectList read FMeshObjects;
          property Skeleton : TSkeleton read FSkeleton;
@@ -4418,20 +4418,20 @@ end;
 
 // RayCastIntersect
 //
-function TBaseMesh.RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                    intersectPoint : PAffineVector = nil;
-                                    intersectNormal : PAffineVector = nil) : Boolean;
+function TBaseMesh.RayCastIntersect(const rayStart, rayVector : TVector;
+                                    intersectPoint : PVector = nil;
+                                    intersectNormal : PVector = nil) : Boolean;
 var
    i : Integer;
    tris : TAffineVectorList;
-   locRayStart, locRayVector, iPoint, iNormal : TAffineVector;
+   locRayStart, locRayVector, iPoint, iNormal : TVector;
    d, minD : Single;
 begin
    // BEWARE! Utterly inefficient implementation!
    tris:=MeshObjects.ExtractTriangles;
    try
-      SetVector(locRayStart,  AbsoluteToLocal(VectorMake(rayStart, 1)));
-      SetVector(locRayVector, AbsoluteToLocal(VectorMake(rayVector, 0)));
+      SetVector(locRayStart,  AbsoluteToLocal(rayStart));
+      SetVector(locRayVector, AbsoluteToLocal(rayVector));
       minD:=-1;
       i:=0; while i<tris.Count do begin
          if RayCastTriangleIntersect(locRayStart, locRayVector,
@@ -4454,9 +4454,9 @@ begin
    Result:=(minD>=0);
    if Result then begin
       if intersectPoint<>nil then
-         SetVector(intersectPoint^,  LocalToAbsolute(VectorMake(intersectPoint^, 1)));
+         SetVector(intersectPoint^,  LocalToAbsolute(intersectPoint^));
       if intersectNormal<>nil then begin
-         SetVector(intersectNormal^, LocalToAbsolute(VectorMake(intersectNormal^, 0)));
+         SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
          if NormalsOrientation=mnoInvert then
             NegateVector(intersectNormal^);
       end;

@@ -115,9 +115,9 @@ type
 			procedure Assign(Source: TPersistent); override;
 
          function AxisAlignedDimensions : TVector; override;
-         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : Boolean; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
 			procedure BuildList(var rci : TRenderContextInfo); override;
 			function BarycenterAbsolutePosition : TVector; override;
 
@@ -575,6 +575,9 @@ type
 
          procedure BuildList(var rci : TRenderContextInfo); override;
          function AxisAlignedDimensions : TVector; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
 
       published
          { Published Declarations }
@@ -793,9 +796,9 @@ type
 
          procedure BuildList(var rci : TRenderContextInfo); override;
          function AxisAlignedDimensions : TVector; override;
-         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : Boolean; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
 
       published
 			{ Published Declarations }
@@ -1300,9 +1303,9 @@ end;
 
 // RayCastIntersect
 //
-function TDummyCube.RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                     intersectPoint : PAffineVector = nil;
-                                     intersectNormal : PAffineVector = nil) : Boolean;
+function TDummyCube.RayCastIntersect(const rayStart, rayVector : TVector;
+                                     intersectPoint : PVector = nil;
+                                     intersectNormal : PVector = nil) : Boolean;
 begin
    Result:=False;
 end;
@@ -2699,6 +2702,30 @@ begin
    glPopAttrib;
 end;
 
+// RayCastIntersect
+//
+function TSphere.RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
+var
+   i1, i2 : TVector;
+   localStart, localVector : TVector;
+begin
+   // compute coefficients of quartic polynomial
+   SetVector(localStart,  AbsoluteToLocal(rayStart));
+   SetVector(localVector, AbsoluteToLocal(rayVector));
+   NormalizeVector(localVector);
+   if RayCastSphereIntersect(localStart, localVector, NullHmgVector, Radius, i1, i2)>0 then begin
+      Result:=True;
+      if Assigned(intersectPoint) then
+         SetVector(intersectPoint^,  LocalToAbsolute(i1));
+      if Assigned(intersectNormal) then begin
+         i1[3]:=0; // vector transform
+         SetVector(intersectNormal^, LocalToAbsolute(i1));
+      end;
+   end else Result:=False;
+end;
+
 // SetBottom
 //
 procedure TSphere.SetBottom(AValue: TAngleLimit1);
@@ -3398,22 +3425,22 @@ end;
 
 // RayCastIntersect
 //
-function TTorus.RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                 intersectPoint : PAffineVector = nil;
-                                 intersectNormal : PAffineVector = nil) : Boolean;
+function TTorus.RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
 var
    i : Integer;
    fRo2, fRi2, fDE, fVal, r, nearest : Double;
    polynom : array [0..4] of Double;
    polyRoots : TDoubleArray;
-   localStart, localVector : TAffinevector;
-   vi, vc : TAffineVector;
+   localStart, localVector : TVector;
+   vi, vc : TVector;
 begin
    // compute coefficients of quartic polynomial
    fRo2 := Sqr(MajorRadius);
    fRi2 := Sqr(MinorRadius);
-   SetVector(localStart, AbsoluteToLocal(VectorMake(rayStart, 1)));
-   SetVector(localVector, AbsoluteToLocal(VectorMake(rayVector, 0)));
+   SetVector(localStart, AbsoluteToLocal(rayStart));
+   SetVector(localVector, AbsoluteToLocal(rayVector));
    NormalizeVector(localVector);
    fDE  := VectorDotProduct(localStart, localVector);
    fVal := VectorNorm(localStart) - (fRo2 + fRi2);
@@ -3428,19 +3455,19 @@ begin
    polyRoots:=SolveQuartic(@polynom[0]);
 
    // search for closest point
-   Result:=False;
-   nearest:=1e20;
-   for i:=0 to High(polyRoots) do begin
-      r:=polyRoots[i];
-      if (r>=0) and (r<nearest) then begin
-         nearest:=r;
-         Result:=True;
-      end;
-   end;
+   Result:=(Length(polyRoots)>0);
    if Result then begin
+      nearest:=1e20;
+      for i:=0 to High(polyRoots) do begin
+         r:=polyRoots[i];
+         if (r>=0) and (r<nearest) then begin
+            nearest:=r;
+            Result:=True;
+         end;
+      end;
       vi:=VectorCombine(localStart, localVector, 1, nearest);
       if Assigned(intersectPoint) then
-         SetVector(intersectPoint^, LocalToAbsolute(VectorMake(vi, 1)));
+         SetVector(intersectPoint^, LocalToAbsolute(vi));
       if Assigned(intersectNormal) then begin
          // project vi on local torus plane
          vc[0]:=vi[0];
@@ -3451,8 +3478,8 @@ begin
          // calculate circle to intersect vector (gives normal);
          SubtractVector(vi, vc);
          // return to absolute coordinates and normalize
-         SetVector(intersectNormal^, LocalToAbsolute(VectorMake(vi, 0)));
-         NormalizeVector(intersectNormal^);
+         vi[3]:=0;
+         SetVector(intersectNormal^, LocalToAbsolute(vi));
       end;
    end;
 end;

@@ -246,7 +246,7 @@ begin
          nSize:=SizeOf(PFDescriptor);
          nVersion:=1;
          dwFlags:=PFD_SUPPORT_OPENGL;
-         aType:=GetObjectType(outputDevice);
+         aType:=GetObjectType(Cardinal(outputDevice));
          if aType=0 then
             RaiseLastOSError;
          if aType in cMemoryDCs then
@@ -266,18 +266,18 @@ begin
          iLayerType:=PFD_MAIN_PLANE;
       end;
 
-      pixelFormat:=ChoosePixelFormat(outputDevice, @PFDescriptor);
+      pixelFormat:=ChoosePixelFormat(Cardinal(outputDevice), @PFDescriptor);
 //   end;
 
    if pixelFormat=0 then RaiseLastOSError;
 
-   if GetPixelFormat(outputDevice)<>pixelFormat then begin
-      if not SetPixelFormat(outputDevice, pixelFormat, @PFDescriptor) then
+   if GetPixelFormat(Cardinal(outputDevice))<>pixelFormat then begin
+      if not SetPixelFormat(Cardinal(outputDevice), pixelFormat, @PFDescriptor) then
          RaiseLastOSError;
    end;
 
    // Check the properties we just set.
-   DescribePixelFormat(outputDevice, pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
+   DescribePixelFormat(Cardinal(outputDevice), pixelFormat, SizeOf(PFDescriptor), PFDescriptor);
    with pfDescriptor do
       if (dwFlags and PFD_NEED_PALETTE) <> 0 then
          SetupPalette(outputDevice, PFDescriptor);
@@ -286,7 +286,7 @@ begin
       FAcceleration:=chaSoftware
    else FAcceleration:=chaHardware;
 
-   FRC:=wglCreateContext(outputDevice);
+   FRC:=wglCreateContext(Cardinal(outputDevice));
    if FRC=0 then
       RaiseLastOSError
    else vLastPixelFormat:=0;
@@ -439,12 +439,12 @@ procedure TGLWin32Context.DoActivate;
 var
    pixelFormat : Integer;
 begin
-   if not wglMakeCurrent(FDC, FRC) then
+   if not wglMakeCurrent(Cardinal(FDC), Cardinal(FRC)) then
       raise EGLContext.Create(Format(cContextActivationFailed, [GetLastError]));
 
    // The extension function addresses are unique for each pixel format. All rendering
    // contexts of a given pixel format share the same extension function addresses.
-   pixelFormat:=GetPixelFormat(FDC);
+   pixelFormat:=GetPixelFormat(Cardinal(FDC));
    if PixelFormat<>vLastPixelFormat then begin
       if glGetString(GL_VENDOR)<>vLastVendor then begin
          ReadExtensions;
@@ -478,7 +478,7 @@ end;
 procedure TGLWin32Context.SwapBuffers;
 begin
    if (FHPBUFFER=0) and (FDC<>0) and (rcoDoubleBuffered in Options) then
-      Windows.SwapBuffers(FDC);
+      Windows.SwapBuffers(Cardinal(FDC));
 end;
 
 // ------------------------------------------------------------------

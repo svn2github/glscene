@@ -47,10 +47,10 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
   private
-    lastMouseWorldPos : TAffineVector;
+    lastMouseWorldPos : TVector;
     movingOnZ : Boolean;
     CurrentPick: TGLCustomSceneObject;
-    function MouseWorldPos(x, y : Integer) : TAffineVector;
+    function MouseWorldPos(x, y : Integer) : TVector;
   end;
 
 const
@@ -63,9 +63,9 @@ implementation
 
 {$R *.DFM}
 
-function TForm1.MouseWorldPos(x, y : Integer) : TAffineVector;
+function TForm1.MouseWorldPos(x, y : Integer) : TVector;
 var
-   v : TAffineVector;
+   v : TVector;
 begin
    y:=Scn.Height-y;
    if Assigned(currentPick) then begin
@@ -104,7 +104,7 @@ end;
 procedure TForm1.ScnMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 var
-   newPos : TAffineVector;
+   newPos : TVector;
 begin
    if ssLeft in Shift then begin
       // handle hold/unhold of shift

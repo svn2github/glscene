@@ -1,6 +1,6 @@
 {: Polynomials.<p>
 
-   ********* IN PROGRESS - NOT FULLY STABLE **********
+   ********* IN PROGRESS - LIMITED PRECISION **********
 
    Utility functions for manipulationg and solving polynomials.<p>
 
@@ -16,7 +16,9 @@
    properly handled, these are marked by comments in the code.<p>
 
 	<b>Historique : </b><font size=-1><ul>
-      <li>14/01/02 - EG - Switched to Jochen Schwarze's solver, droped complex stuff
+      <li>14/01/02 - EG - Switched to Jochen Schwarze's solver,
+                          droped complex stuff,
+                          added utility funcs 
       <li>22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
 	   <li>21/08/01 - EG - Creation
 	</ul></font>
@@ -30,6 +32,14 @@ uses Geometry;
 
 type
    TDoubleArray = array of Double;
+
+{: Computes polynom's value for given x. }
+function EvalPolynom(const poly : TDoubleArray; const x : Double) : Double;
+{: Calculates the polynom's derivative. }
+function DerivatedPolynom(const poly : TDoubleArray) : TDoubleArray;
+{: Finds a root between min and max with a precision of epsilon.<p>
+   The evaluation of min/max must be of opposit sign } 
+function FindRoot(const poly : TDoubleArray; min, max, epsilon : Double) : Double;
 
 {: Calculates the cube root of its parameter. }
 function cbrt(const x : Double) : Double;
@@ -58,13 +68,93 @@ implementation
 //--------------------------------------------------------------
 
 const
-   cEpsilon : Double = 1e-50;
+   cEpsilon : Double = 1e-40;
+   c1div3 : Double = 0.3333333333333333333333333333333;
+   cHalf : Double = 0.5;
 
 // IsZero
 //
-function IsZero(var v : Double) : Boolean;
+function IsZero(var v : Double) : Boolean; overload;
 begin
-   Result:=(Abs(v)<cEpsilon);
+   Result:=(Abs(v)<=cEpsilon);
+end;
+
+// IsZero
+//
+function IsZero(var v : Extended) : Boolean; overload;
+begin
+   Result:=(Abs(v)<=cEpsilon);
+end;
+
+// EvalPolynom
+//
+function EvalPolynom(const poly : TDoubleArray; const x : Double) : Double;
+var
+   i, n : Integer;
+begin
+   n:=Length(poly);
+   if n>0 then begin
+      Result:=poly[n-1];
+      for i:=n-2 downto 0 do
+         Result:=Result*x+poly[i];
+   end else Result:=0;
+end;
+
+// DerivatedPolynom
+//
+function DerivatedPolynom(const poly : TDoubleArray) : TDoubleArray;
+var
+   n, i : Integer;
+begin
+   n:=Length(poly);
+   if n>1 then begin
+      SetLength(Result, n-1);
+      for i:=1 to n-1 do
+         Result[i-1]:=poly[i]*i;
+   end else begin
+      SetLength(Result, 1);
+      Result[0]:=0;
+   end;
+end;
+
+// FindRoot
+//
+function FindRoot(const poly : TDoubleArray; min, max, epsilon : Double) : Double;
+var
+   evMin, evMax, mid, evMid : Double;
+begin
+   // handle degenerate cases first
+   Assert(min<max);
+   evMin:=EvalPolynom(poly, min);
+   if evMin=0 then begin
+      Result:=min;
+      Exit;
+   end;
+   evMax:=EvalPolynom(poly, max);
+   if evMax=0 then begin
+      Result:=max;
+      Exit;
+   end;
+   if evMax<0 then begin
+      Assert(evMin>0);
+      while Abs(max-min)>epsilon do begin
+         mid:=(max+min)*0.5;
+         evMid:=EvalPolynom(poly, mid);
+         if evMid>0 then
+            min:=mid
+         else max:=mid;
+      end;
+   end else begin
+      Assert(evMin<0);
+      while Abs(max-min)>epsilon do begin
+         mid:=(max+min)*0.5;
+         evMid:=EvalPolynom(poly, mid);
+         if evMid>0 then
+            max:=mid
+         else min:=mid;
+      end;
+   end;
+   Result:=(max+min)*cHalf;
 end;
 
 // cbrt
@@ -72,9 +162,9 @@ end;
 function cbrt(const x : Double) : Double;
 begin
    if x>0 then
-      Result:=Power(x, 1/3)
+      Result:=Power(x, c1div3)
    else if x<0 then
-      Result:=-Power(-x, 1/3)
+      Result:=-Power(-x, c1div3)
    else Result:=0;
 end;
 
@@ -112,25 +202,31 @@ var
    A, B, Cc : Double;
    sq_A, p, q : Double;
    cb_p, D : Double;
-   u, v, phi, t, sqrt_D : Double;
+   u, v, phi, t, sqrt_D, invC3 : Double;
 begin
+   if IsZero(c[3]) then begin
+      Result:=SolveQuadric(c);
+      Exit;
+   end;
+
    // normal form: x^3 + Ax^2 + Bx + C = 0
 
-   A := c[2]/c[3];
-   B := c[1]/c[3];
-   Cc := c[0]/c[3];
+   invC3:=1/c[3];
+   A := c[2]*invC3;
+   B := c[1]*invC3;
+   Cc:= c[0]*invC3;
 
    // substitute x = y - A/3 to eliminate quadric term:
 	// x^3 +px + q = 0
 
    sq_A := Sqr(A);
-   p := 1.0/3 * (- 1.0/3 * sq_A + B);
-   q := 1.0/2 * (2.0/27 * A * sq_A - 1.0/3 * A * B + Cc);
+   p := c1div3*(B-c1div3*sq_A);
+   q := cHalf*(2.0/27*A*sq_A-c1div3*A*B+Cc);
 
    // use Cardano's formula
 
-   cb_p := Sqr(p) * p;
-   D := Sqr(q) + cb_p;
+   cb_p := Sqr(p)*p;
+   D := Sqr(q)+cb_p;
 
    if IsZero(D) then begin
 	   if IsZero(q) then begin // one triple solution
@@ -143,7 +239,7 @@ begin
 	      Result[1]:=-u;
       end;
    end else if D<0 then begin // Casus irreducibilis: three real solutions
-	   phi:=1.0/3*ArcCos(-q/Sqrt(-cb_p));
+	   phi:=c1div3*ArcCos(-q*RSqrt(-cb_p));
 	   t:=2*Sqrt(-p);
       SetLength(Result, 3);
 	   Result[0]:= t*Cos(phi);
@@ -159,7 +255,7 @@ begin
 
    // resubstitute
 
-   sub := 1.0/3 * A;
+   sub := c1div3*A;
 
    for i:=0 to High(Result) do
 	   Result[i]:=Result[i]-sub;
@@ -172,60 +268,68 @@ var
    coeffs : array [0..3] of Double;
    z, u, v, sub : Double;
    A, B, Cc, D : Double;
-   sq_A, p, q, r : Double;
-   i, n, num : Integer;
+   sq_A, p, q, r, invC4 : Double;
+   i, n, nt : Integer;
    temp : TDoubleArray;
 begin
+   if IsZero(c[4]) then begin
+      Result:=SolveCubic(c);
+      Exit;
+   end;
+
    // normal form: x^4 + Ax^3 + Bx^2 + Cx + D = 0
 
-   A := c[ 3 ] / c[ 4 ];
-   B := c[ 2 ] / c[ 4 ];
-   Cc:= c[ 1 ] / c[ 4 ];
-   D := c[ 0 ] / c[ 4 ];
+   invC4:=1/c[4];
+   A := c[3]*invC4;
+   B := c[2]*invC4;
+   Cc:= c[1]*invC4;
+   D := c[0]*invC4;
 
    // substitute x = y - A/4 to eliminate cubic term:
 	// x^4 + px^2 + qx + r = 0
 
    sq_A := Sqr(A);
-   p := - 3.0/8 * sq_A + B;
-   q := 1.0/8 * sq_A * A - 1.0/2 * A * B + Cc;
-   r := - 3.0/256*Sqr(sq_A) + 1.0/16*sq_A*B - 1.0/4*A*Cc + D;
+   p := -3.0/8*sq_A+B;
+   q := 0.125*sq_A*A-0.5*A*B+Cc;
+   r := -3.0/256*Sqr(sq_A)+1.0/16*sq_A*B-0.25*A*Cc+D;
 
    if IsZero(r) then begin
 	   // no absolute term: y(y^3 + py + q) = 0
 
-	   coeffs[ 0 ] := q;
-	   coeffs[ 1 ] := p;
-	   coeffs[ 2 ] := 0;
-	   coeffs[ 3 ] := 1;
+	   coeffs[0]:=q;
+	   coeffs[1]:=p;
+	   coeffs[2]:=0;
+	   coeffs[3]:=1;
 
 	   Result:=SolveCubic(@coeffs[0]);
-      SetLength(Result, Length(Result)+1);
-      Result[High(Result)]:=0;
+      n:=Length(Result);
+      SetLength(Result, n+1);
+      Result[n]:=0;
 
       SetLength(temp, 0);
    end else begin
 	   // solve the resolvent cubic ...
 
-      coeffs[ 0 ] := 1.0/2 * r * p - 1.0/8 * q * q;
-      coeffs[ 1 ] := - r;
-      coeffs[ 2 ] := - 1.0/2 * p;
-      coeffs[ 3 ] := 1;
+      coeffs[0] := 0.5*r*p-0.125*Sqr(q);
+      coeffs[1] := -r;
+      coeffs[2] := -0.5*p;
+      coeffs[3] := 1;
 
 	   Result:=SolveCubic(@coeffs[0]);
 
 	   // ... and take the one real solution ...
 
+      Assert(Length(Result)>0);
    	z := Result[0];
 
 	   // ... to build two quadric equations
 
-   	u := Sqr(z) - r;
-	   v := 2 * z - p;
+   	u := Sqr(z)-r;
+	   v := 2*z-p;
 
 	   if IsZero(u) then
 	      u := 0
-	   else if u > 0 then
+	   else if u>0 then
 	      u := Sqrt(u)
 	   else begin
          SetLength(Result, 0);
@@ -234,36 +338,39 @@ begin
 
 	   if IsZero(v) then
 	      v := 0
-	   else if v > 0 then
+	   else if v>0 then
 	      v := Sqrt(v)
 	   else begin
          SetLength(Result, 0);
          Exit;
       end;
 
-	   coeffs[ 0 ] := z - u;
+	   coeffs[0]:=z-u;
       if q<0 then
-      	coeffs[ 1 ] := -v
-      else coeffs[ 1 ] := v;
-	   coeffs[ 2 ] := 1;
+      	coeffs[1]:=-v
+      else coeffs[1]:=v;
+	   coeffs[2]:=1;
 
 	   Result:=SolveQuadric(@coeffs[0]);
 
    	coeffs[0]:=z+u;
       if q<0 then
-      	coeffs[ 1 ] := v
-      else coeffs[ 1 ] := -v;
+      	coeffs[1]:=v
+      else coeffs[1]:=-v;
    	coeffs[2]:=1;
 
       temp:=SolveQuadric(@coeffs[0]);
-      n:=Length(Result);
-      SetLength(Result, n+Length(temp));
-      for i:=0 to High(temp) do
-         Result[n+i]:=temp[i];
+      nt:=Length(temp);
+      if nt>0 then begin
+         n:=Length(Result);
+         SetLength(Result, n+nt);
+         for i:=0 to nt-1 do
+            Result[n+i]:=temp[i];
+      end;
 
       // resubstitute
 
-      sub := 1.0/4 * A;
+      sub := 0.25*A;
 
       for i:=0 to High(Result) do
          Result[i]:=Result[i]-sub;

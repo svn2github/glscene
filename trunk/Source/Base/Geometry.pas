@@ -423,9 +423,11 @@ procedure SetVector(var v : TVector; const av : TAffineVector; w : Single = 0); 
 procedure SetVector(var v : TVector; const vSrc : TVector); overload;
 procedure MakePoint(var v : TVector; const x, y, z: Single); overload;
 procedure MakePoint(var v : TVector; const av : TAffineVector); overload;
+procedure MakePoint(var v : TVector; const av : TVector); overload;
 procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;
 procedure MakeVector(var v : TVector; const x, y, z: Single); overload;
 procedure MakeVector(var v : TVector; const av : TAffineVector); overload;
+procedure MakeVector(var v : TVector; const av : TVector); overload;
 
 //: Returns the sum of two affine vectors
 function VectorAdd(const V1, V2 : TAffineVector) : TAffineVector; overload;
@@ -450,6 +452,10 @@ procedure AddVector(var v : TVector; const f : Single); overload;
 function VectorSubtract(const V1, V2 : TAffineVector) : TAffineVector; overload;
 //: Subtracts V2 from V1 and return value in result
 procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TAffineVector); overload;
+//: Subtracts V2 from V1 and return value in result
+procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TVector); overload;
+//: Subtracts V2 from V1 and return value in result
+procedure VectorSubtract(const v1 : TVector; v2 : TAffineVector; var result : TVector); overload;
 //: Returns V1-V2
 function VectorSubtract(const V1, V2 : TVector) : TVector; overload;
 //: Subtracts V2 from V1 and return value in result
@@ -543,13 +549,13 @@ function VectorLength(v : array of Single) : Single; overload;
 {: Calculates norm of a vector which is defined as norm = x * x + y * y<p>
    Also known as "Norm 2" in the math world, this is sqr(VectorLength). }
 function VectorNorm(const x, y : Single) : Single; overload;
-{: Calculates norm of a vector which is defined as norm = x * x + y * y + ...<p>
+{: Calculates norm of a vector which is defined as norm = x*x + y*y + z*z<p>
    Also known as "Norm 2" in the math world, this is sqr(VectorLength). }
 function VectorNorm(const v : TAffineVector) : Single; overload;
-{: Calculates norm of a vector which is defined as norm = x * x + y * y + ...<p>
+{: Calculates norm of a vector which is defined as norm = x*x + y*y + z*z<p>
    Also known as "Norm 2" in the math world, this is sqr(VectorLength). }
 function VectorNorm(const v : TVector) : Single; overload;
-{: Calculates norm of a vector which is defined as norm = x * x + y * y + ...<p>
+{: Calculates norm of a vector which is defined as norm = v[0]*v[0] + ...<p>
    Also known as "Norm 2" in the math world, this is sqr(VectorLength). }
 function VectorNorm(var V: array of Single) : Single; overload;
 
@@ -559,6 +565,8 @@ procedure NormalizeVector(var v : TAffineVector); overload;
 procedure NormalizeVector(var v : TVector); overload;
 //: Returns the vector transformed to unit length
 function VectorNormalize(const v : TAffineVector) : TAffineVector; overload;
+//: Returns the vector transformed to unit length (w component dropped)
+function VectorNormalize(const v : TVector) : TVector; overload;
 
 //: Transforms vectors to unit length
 procedure NormalizeVectorArray(list : PAffineVectorArray; n : Integer); overload;
@@ -620,14 +628,14 @@ function VectorSpacing(const v1, v2 : TVector): Single; overload;
    ie. sqrt(sqr(v1[x]-v2[x])+...) }
 function VectorDistance(const v1, v2 : TAffineVector): Single; overload;
 {: Calculates distance between two vectors.<p>
-   ie. sqrt(sqr(v1[x]-v2[x])+...) }
+   ie. sqrt(sqr(v1[x]-v2[x])+...) (w component ignored) }
 function VectorDistance(const v1, v2 : TVector): Single; overload;
 
 {: Calculates the "Norm 2" between two vectors.<p>
    ie. sqr(v1[x]-v2[x])+... }
 function VectorDistance2(const v1, v2 : TAffineVector): Single; overload;
 {: Calculates the "Norm 2" between two vectors.<p>
-   ie. sqr(v1[x]-v2[x])+... }
+   ie. sqr(v1[x]-v2[x])+... (w component ignored) }
 function VectorDistance2(const v1, v2 : TVector): Single; overload;
 
 {: Calculates a vector perpendicular to N.<p>
@@ -744,7 +752,8 @@ procedure SetPlane(var dest : TDoubleHmgPlane; const src : THmgPlane);
    This functions gives an hint as to were the point is, if the point is in the
    half-space pointed by the vector, result is positive.<p>
    This function performs an homogeneous space dot-product. }
-function PlaneEvaluatePoint(const plane : THmgPlane; const point : TAffineVector) : Single;
+function PlaneEvaluatePoint(const plane : THmgPlane; const point : TAffineVector) : Single; overload;
+function PlaneEvaluatePoint(const plane : THmgPlane; const point : TVector) : Single; overload;
 
 {: Calculate the normal of a plane defined by three points. }
 function CalcPlaneNormal(const p1, p2, p3 : TAffineVector) : TAffineVector; overload;
@@ -976,36 +985,36 @@ function Roll(const Matrix: TMatrix; const MasterDirection: TAffineVector; Angle
    </ul><br>
    Adapted from:<br>
       E.Hartmann, Computerunterstützte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
-function IntersectLinePlane(const point, direction : TAffineVector;
+function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
-                            intersectPoint : PAffineVector = nil) : Integer;
+                            intersectPoint : PVector = nil) : Integer;
 
                             {: Calculate intersection between a ray and a plane.<p>
    Returns True if an intersection was found, the intersection point is placed
    in intersectPoint is the reference is not nil. }
-function RayCastPlaneIntersect(const rayStart, rayVector : TAffineVector;
-                               const planePoint, planeNormal : TAffineVector;
-                               intersectPoint : PAffineVector = nil) : Boolean; overload;
+function RayCastPlaneIntersect(const rayStart, rayVector : TVector;
+                               const planePoint, planeNormal : TVector;
+                               intersectPoint : PVector = nil) : Boolean; overload;
 {: Calculate intersection between a ray and a triangle. }
-function RayCastTriangleIntersect(const rayStart, rayVector : TAffineVector;
+function RayCastTriangleIntersect(const rayStart, rayVector : TVector;
                                   const p1, p2, p3 : TAffineVector;
-                                  intersectPoint : PAffineVector = nil;
-                                  intersectNormal : PAffineVector = nil) : Boolean;
+                                  intersectPoint : PVector = nil;
+                                  intersectNormal : PVector = nil) : Boolean;
 {: Calculate the min distance a ray will pass to a point.<p> }
-function RayCastMinDistToPoint(const rayStart, rayVector : TAffineVector;
-                               const point : TAffineVector) : Single;
+function RayCastMinDistToPoint(const rayStart, rayVector : TVector;
+                               const point : TVector) : Single;
 {: Determines if a ray will intersect with a given sphere.<p> }
-function RayCastIntersectsSphere(const rayStart, rayVector : TAffineVector;
-                                 const sphereCenter : TAffineVector;
+function RayCastIntersectsSphere(const rayStart, rayVector : TVector;
+                                 const sphereCenter : TVector;
                                  const sphereRadius : Single) : Boolean;
 {: Calculates the intersections between a sphere and a ray.<p>
    Returns 0 if no intersection is found (i1 and i2 untouched), 1 if one
    intersection was found (i1 defined, i2 untouched), and 2 is two intersections
    were found (i1 and i2 defined). }
-function RayCastSphereIntersect(const rayStart, rayVector : TAffineVector;
-                                const sphereCenter : TAffineVector;
+function RayCastSphereIntersect(const rayStart, rayVector : TVector;
+                                const sphereCenter : TVector;
                                 const sphereRadius : Single;
-                                var i1, i2 : TAffineVector) : Integer;
+                                var i1, i2 : TVector) : Integer;
 
 //: Determines if volume is clipped or not
 function IsVolumeClipped(const objPos : TVector; const objRadius : Single;
@@ -1276,6 +1285,16 @@ begin
 	v[3]:=cOne;
 end;
 
+// MakePoint
+//
+procedure MakePoint(var v : TVector; const av : TVector);
+begin
+	v[0]:=av[0];
+	v[1]:=av[1];
+	v[2]:=av[2];
+	v[3]:=cOne;
+end;
+
 // MakeVector
 //
 procedure MakeVector(var v : TAffineVector; const x, y, z: Single); overload;
@@ -1298,6 +1317,16 @@ end;
 // MakeVector
 //
 procedure MakeVector(var v : TVector; const av : TAffineVector);
+begin
+	v[0]:=av[0];
+	v[1]:=av[1];
+	v[2]:=av[2];
+	v[3]:=cZero;
+end;
+
+// MakeVector
+//
+procedure MakeVector(var v : TVector; const av : TVector);
 begin
 	v[0]:=av[0];
 	v[1]:=av[1];
@@ -1497,6 +1526,46 @@ asm
       FLD  DWORD PTR [EAX+8]
       FSUB DWORD PTR [EDX+8]
       FSTP DWORD PTR [ECX+8]
+end;
+
+// VectorSubtract (proc, affine-hmg)
+//
+procedure VectorSubtract(const v1, v2 : TAffineVector; var result : TVector); overload;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+asm
+      FLD  DWORD PTR [EAX]
+      FSUB DWORD PTR [EDX]
+      FSTP DWORD PTR [ECX]
+      FLD  DWORD PTR [EAX+4]
+      FSUB DWORD PTR [EDX+4]
+      FSTP DWORD PTR [ECX+4]
+      FLD  DWORD PTR [EAX+8]
+      FSUB DWORD PTR [EDX+8]
+      FSTP DWORD PTR [ECX+8]
+      xor   eax, eax
+      mov   [ECX+12], eax
+end;
+
+// VectorSubtract
+//
+procedure VectorSubtract(const v1 : TVector; v2 : TAffineVector; var result : TVector); overload;
+// EAX contains address of V1
+// EDX contains address of V2
+// ECX contains the result
+asm
+      FLD  DWORD PTR [EAX]
+      FSUB DWORD PTR [EDX]
+      FSTP DWORD PTR [ECX]
+      FLD  DWORD PTR [EAX+4]
+      FSUB DWORD PTR [EDX+4]
+      FSTP DWORD PTR [ECX+4]
+      FLD  DWORD PTR [EAX+8]
+      FSUB DWORD PTR [EDX+8]
+      FSTP DWORD PTR [ECX+8]
+      mov   edx, [eax+12]
+      mov   [ECX+12], eax
 end;
 
 // VectorSubtract (hmg)
@@ -2409,9 +2478,6 @@ asm
       FLD DWORD PTR [EAX+8];
       FMUL ST, ST
       FADD
-      FLD DWORD PTR [EAX+12];
-      FMUL ST, ST
-      FADD
 end;
 
 // VectorNorm
@@ -2617,15 +2683,44 @@ procedure NormalizeVector(var v : TVector); register;
 //   Result:=VectorLength(v);
 //   ScaleVector(v, 1/Result);
 asm
+      test vSIMD, 1
+      jz @@FPU
+@@3DNow:
+      db $0F,$6F,$00           /// movq        mm0,[eax]
+      db $0F,$6E,$48,$08       /// movd        mm1,[eax+8]
+      db $0F,$6F,$E0           /// movq        mm4,mm0
+      db $0F,$6F,$D9           /// movq        mm3,mm1
+      db $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
+      db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
+      db $0F,$7E,$C2           /// movd        edx,mm0
+      db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
+      db $0F,$6F,$D1           /// movq        mm2,mm1
+      cmp  edx, $0038D1B717    // = 1.0 / 10000.0
+      jl   @@norm_end
+
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
+      db $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
+      db $0F,$62,$C9           /// punpckldq   mm1,mm1
+      db $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
+      db $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
+      db $0F,$7E,$58,$08       /// movd        [eax+8],mm3
+      db $0F,$7F,$20           /// movq        [eax],mm4
+@@norm_end:
+      db $0F,$0E               /// femms
+      xor   edx, edx
+      mov   [eax+12], edx
+      ret
+
+@@FPU:
       FLD  DWORD PTR [EAX]
       FMUL ST, ST
       FLD  DWORD PTR [EAX+4]
       FMUL ST, ST
       FADD
       FLD  DWORD PTR [EAX+8]
-      FMUL ST, ST
-      FADD
-      FLD  DWORD PTR [EAX+12]
       FMUL ST, ST
       FADD
       FSQRT
@@ -2637,11 +2732,71 @@ asm
       FLD  ST
       FMUL DWORD PTR [EAX+4]
       FSTP DWORD PTR [EAX+4]
-      FLD ST
       FMUL DWORD PTR [EAX+8]
       FSTP DWORD PTR [EAX+8]
-      FMUL DWORD PTR [EAX+12]
-      FSTP DWORD PTR [EAX+12]
+      xor   edx, edx
+      mov   [eax+12], edx
+end;
+
+// VectorNormalize (hmg)
+//
+function VectorNormalize(const v : TVector) : TVector; register;
+//   Result:=VectorLength(v);
+//   ScaleVector(v, 1/Result);
+asm
+      test vSIMD, 1
+      jz @@FPU
+@@3DNow:
+      db $0F,$6F,$00           /// movq        mm0,[eax]
+      db $0F,$6E,$48,$08       /// movd        mm1,[eax+8]
+      db $0F,$6F,$E0           /// movq        mm4,mm0
+      db $0F,$6F,$D9           /// movq        mm3,mm1
+      db $0F,$0F,$C0,$B4       /// pfmul       mm0,mm0
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C0,$AE       /// pfacc       mm0,mm0
+      db $0F,$0F,$C1,$9E       /// pfadd       mm0,mm1
+      db $0F,$7E,$C1           /// movd        ecx,mm0
+      db $0F,$0F,$C8,$97       /// pfrsqrt     mm1,mm0
+      db $0F,$6F,$D1           /// movq        mm2,mm1
+      cmp  ecx, $0038D1B717    // = 1.0 / 10000.0
+      jl   @@norm_end
+
+      db $0F,$0F,$C9,$B4       /// pfmul       mm1,mm1
+      db $0F,$0F,$C8,$A7       /// pfrsqit1    mm1,mm0
+      db $0F,$0F,$CA,$B6       /// pfrcpit2    mm1,mm2
+      db $0F,$62,$C9           /// punpckldq   mm1,mm1
+      db $0F,$0F,$D9,$B4       /// pfmul       mm3,mm1
+      db $0F,$0F,$E1,$B4       /// pfmul       mm4,mm1
+      db $0F,$7E,$5A,$08       /// movd        [edx+8],mm3
+      db $0F,$7F,$22           /// movq        [edx],mm4
+@@norm_end:
+      db $0F,$0E               /// femms
+      xor   eax, eax
+      mov   [edx+12], eax
+      ret
+
+@@FPU:
+      FLD  DWORD PTR [EAX]
+      FMUL ST, ST
+      FLD  DWORD PTR [EAX+4]
+      FMUL ST, ST
+      FADD
+      FLD  DWORD PTR [EAX+8]
+      FMUL ST, ST
+      FADD
+      FSQRT
+      FLD1
+      FDIVR
+      FLD  ST
+      FMUL DWORD PTR [EAX]
+      FSTP DWORD PTR [EDX]
+      FLD  ST
+      FMUL DWORD PTR [EAX+4]
+      FSTP DWORD PTR [EDX+4]
+      FMUL DWORD PTR [EAX+8]
+      FSTP DWORD PTR [EDX+8]
+      xor   eax, eax
+      mov   [edx+12], eax
 end;
 
 // VectorAngleCosine
@@ -3043,10 +3198,6 @@ asm
       FSUB DWORD PTR [EDX+8]
       FMUL ST, ST
       FADD
-      FLD  DWORD PTR [EAX+12]
-      FSUB DWORD PTR [EDX+12]
-      FMUL ST, ST
-      FADD
       FSQRT
 end;
 
@@ -3086,10 +3237,6 @@ asm
       FADD
       FLD  DWORD PTR [EAX+8]
       FSUB DWORD PTR [EDX+8]
-      FMUL ST, ST
-      FADD
-      FLD  DWORD PTR [EAX+12]
-      FSUB DWORD PTR [EDX+12]
       FMUL ST, ST
       FADD
 end;
@@ -3458,9 +3605,7 @@ function MatrixMultiply(const M1, M2: TMatrix): TMatrix; register;
 begin
    if vSIMD=1 then begin
       asm
-         db $0F,$0E               /// femms
          xchg eax, ecx
-
          db $0F,$6F,$01           /// movq        mm0,[ecx]
          db $0F,$6F,$49,$08       /// movq        mm1,[ecx+8]
          db $0F,$6F,$22           /// movq        mm4,[edx]
@@ -3611,8 +3756,6 @@ function VectorTransform(const V: TVector; const M: TMatrix) : TVector; register
 begin
    if vSIMD=1 then begin
       asm
-        db $0F,$0E               /// femms
-
         db $0F,$6F,$00           /// movq        mm0,[eax]
         db $0F,$6F,$48,$08       /// movq        mm1,[eax+8]
         db $0F,$6F,$22           /// movq        mm4,[edx]
@@ -4044,9 +4187,28 @@ begin
    dest[3]:=src[3];
 end;
 
-// PlaneEvaluatePoint
+// PlaneEvaluatePoint (affine)
 //
 function PlaneEvaluatePoint(const plane : THmgPlane; const point : TAffineVector) : Single;
+// EAX contains address of plane
+// EDX contains address of point
+// result is stored in ST(0)
+asm
+      FLD DWORD PTR [EAX]
+      FMUL DWORD PTR [EDX]
+      FLD DWORD PTR [EAX + 4]
+      FMUL DWORD PTR [EDX + 4]
+      FADDP
+      FLD DWORD PTR [EAX + 8]
+      FMUL DWORD PTR [EDX + 8]
+      FADDP
+      FLD DWORD PTR [EAX + 12]
+      FADDP
+end;
+
+// PlaneEvaluatePoint (hmg)
+//
+function PlaneEvaluatePoint(const plane : THmgPlane; const point : TVector) : Single;
 // EAX contains address of plane
 // EDX contains address of point
 // result is stored in ST(0)
@@ -5371,11 +5533,11 @@ end;
 
 // RayCastPlaneIntersect (plane defined by point+normal)
 //
-function RayCastPlaneIntersect(const rayStart, rayVector : TAffineVector;
-                               const planePoint, planeNormal : TAffineVector;
-                               intersectPoint : PAffineVector = nil) : Boolean;
+function RayCastPlaneIntersect(const rayStart, rayVector : TVector;
+                               const planePoint, planeNormal : TVector;
+                               intersectPoint : PVector = nil) : Boolean;
 var
-   sp : TAffineVector;
+   sp : TVector;
    t, d : Single;
 begin
    d:=VectorDotProduct(rayVector, planeNormal);
@@ -5393,17 +5555,18 @@ end;
 
 // RayCastTriangleIntersect
 //
-function RayCastTriangleIntersect(const rayStart, rayVector : TAffineVector;
+function RayCastTriangleIntersect(const rayStart, rayVector : TVector;
                                   const p1, p2, p3 : TAffineVector;
-                                  intersectPoint : PAffineVector = nil;
-                                  intersectNormal : PAffineVector = nil) : Boolean;
+                                  intersectPoint : PVector = nil;
+                                  intersectNormal : PVector = nil) : Boolean;
 var
-   v1, v2, pvec, tvec, qvec : TAffineVector;
+   pvec : TAffineVector;
+   v1, v2, qvec, tvec : TVector;
    t, u, v, det, invDet : Single;
 begin
-   v1:=VectorSubtract(p2, p1);
-   v2:=VectorSubtract(p3, p1);
-   pvec:=VectorCrossProduct(rayVector, v2);
+   VectorSubtract(p2, p1, v1);
+   VectorSubtract(p3, p1, v2);
+   VectorCrossProduct(rayVector, v2, pvec);
    det:=VectorDotProduct(v1, pvec);
    if ((det<EPSILON2) and (det>-EPSILON2)) then begin // vector is parallel to triangle's plane
       Result:=False;
@@ -5430,8 +5593,8 @@ end;
 
 // RayCastMinDistToPoint
 //
-function RayCastMinDistToPoint(const rayStart, rayVector : TAffineVector;
-                               const point : TAffineVector) : Single;
+function RayCastMinDistToPoint(const rayStart, rayVector : TVector;
+                               const point : TVector) : Single;
 var
    proj : Single;
 begin
@@ -5442,8 +5605,8 @@ end;
 
 // RayCastIntersectsSphere
 //
-function RayCastIntersectsSphere(const rayStart, rayVector : TAffineVector;
-                                 const sphereCenter : TAffineVector;
+function RayCastIntersectsSphere(const rayStart, rayVector : TVector;
+                                 const sphereCenter : TVector;
                                  const sphereRadius : Single) : Boolean;
 var
    proj : Single;
@@ -5455,10 +5618,10 @@ end;
 
 // RayCastSphereIntersect
 //
-function RayCastSphereIntersect(const rayStart, rayVector : TAffineVector;
-                                 const sphereCenter : TAffineVector;
+function RayCastSphereIntersect(const rayStart, rayVector : TVector;
+                                 const sphereCenter : TVector;
                                  const sphereRadius : Single;
-                                 var i1, i2 : TAffineVector) : Integer;
+                                 var i1, i2 : TVector) : Integer;
 var
    proj, d2 : Single;
 begin
@@ -5484,9 +5647,9 @@ end;
 
 // IntersectLinePlane
 //
-function IntersectLinePlane(const point, direction : TAffineVector;
+function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
-                            intersectPoint : PAffineVector = nil) : Integer;
+                            intersectPoint : PVector = nil) : Integer;
 var
    a, b : Extended;
    t : Single;

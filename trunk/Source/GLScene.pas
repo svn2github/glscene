@@ -395,10 +395,14 @@ type
          function AbsoluteYVector : TVector;
          {: Returns the Absolute Z Vector expressed in local coordinates. }
          function AbsoluteZVector : TVector;
-         {: Converts a vertor/point from absolute coordinates to local coordinates.<p> }
-         function AbsoluteToLocal(const v : TVector) : TVector;
-         {: Converts a vertor/point from local coordinates to absolute coordinates.<p> }
-         function LocalToAbsolute(const v : TVector) : TVector;
+         {: Converts a vector/point from absolute coordinates to local coordinates.<p> }
+         function AbsoluteToLocal(const v : TVector) : TVector; overload;
+         {: Converts a vector from absolute coordinates to local coordinates.<p> }
+         function AbsoluteToLocal(const v : TAffineVector) : TAffineVector; overload;
+         {: Converts a vector/point from local coordinates to absolute coordinates.<p> }
+         function LocalToAbsolute(const v : TVector) : TVector; overload;
+         {: Converts a vector from local coordinates to absolute coordinates.<p> }
+         function LocalToAbsolute(const v : TAffineVector) : TAffineVector; overload;
 
          {: Calculates the object's square distance to a point.<p>
             pt is assumed to be in absolute coordinates,
@@ -446,9 +450,9 @@ type
             is found, non nil parameters should be defined.<p>
             The intersectNormal needs NOT be normalized by the implementations.<p>
             Default value is based on bounding sphere. }
-         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : Boolean; virtual;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; virtual;
 
          property Children[Index: Integer]: TGLBaseSceneObject read Get; default;
          property Count: Integer read GetCount;
@@ -931,9 +935,9 @@ type
          destructor Destroy; override;
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
-         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : Boolean; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
          procedure CoordinateChanged(Sender: TGLCoordinates); override;
 
       published
@@ -1001,9 +1005,9 @@ type
          procedure Apply;
          procedure DoRender(var rci : TRenderContextInfo;
                             renderSelf, renderChildren : Boolean); override;
-         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : Boolean; override;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : Boolean; override;
 
          procedure ApplyPerspective(Viewport: TRectangle; Width, Height: Integer; DPI: Integer);
          procedure AutoLeveling(Factor: Single);
@@ -1144,9 +1148,9 @@ type
             accurate only for objects that overrided their RayCastIntersect
             method with accurate code, otherwise, bounding sphere intersections
             will be returned. }
-         function RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : TGLBaseSceneObject; virtual;
+         function RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : TGLBaseSceneObject; virtual;
 
          procedure ShutdownAllLights;
 
@@ -1453,6 +1457,7 @@ type
             This methods wraps a call to gluUnProject.<p>
             Note that screen coord (0,0) is the lower left corner. }
          function ScreenToWorld(const aPoint : TAffineVector) : TAffineVector; overload;
+         function ScreenToWorld(const aPoint : TVector) : TVector; overload;
          {: Converts a screen pixel coordinate into 3D world coordinates.<p>
             This function accepts standard canvas coordinates, with (0,0) being
             the top left corner. }
@@ -1465,7 +1470,8 @@ type
             The vector originates from the camera's absolute position and is
             expressed in absolute coordinates.<p>
             Note that screen coord (0,0) is the lower left corner. }
-         function ScreenToVector(const aPoint : TAffineVector) : TAffineVector;
+         function ScreenToVector(const aPoint : TAffineVector) : TAffineVector; overload;
+         function ScreenToVector(const aPoint : TVector) : TVector; overload;
          {: Calculates the 2D screen coordinate of a vector from the camera's
             absolute position and is expressed in absolute coordinates.<p>
             Note that screen coord (0,0) is the lower left corner. }
@@ -1474,27 +1480,27 @@ type
             If an intersection is found, returns True and places result in
             intersectPoint. }
          function ScreenVectorIntersectWithPlane(
-               const aScreenPoint : TAffineVector;
-               const planePoint, planeNormal : TAffineVector;
-               var intersectPoint : TAffineVector) : Boolean;
+               const aScreenPoint : TVector;
+               const planePoint, planeNormal : TVector;
+               var intersectPoint : TVector) : Boolean;
          {: Calculates intersection between plane XY and screen vector.<p>
             If an intersection is found, returns True and places result in
             intersectPoint. }
          function ScreenVectorIntersectWithPlaneXY(
-               const aScreenPoint : TAffineVector; const z : Single;
-               var intersectPoint : TAffineVector) : Boolean;
+               const aScreenPoint : TVector; const z : Single;
+               var intersectPoint : TVector) : Boolean;
          {: Calculates intersection between plane YZ and screen vector.<p>
             If an intersection is found, returns True and places result in
             intersectPoint. }
          function ScreenVectorIntersectWithPlaneYZ(
-               const aScreenPoint : TAffineVector; const x : Single;
-               var intersectPoint : TAffineVector) : Boolean;
+               const aScreenPoint : TVector; const x : Single;
+               var intersectPoint : TVector) : Boolean;
          {: Calculates intersection between plane XZ and screen vector.<p>
             If an intersection is found, returns True and places result in
             intersectPoint. }
          function ScreenVectorIntersectWithPlaneXZ(
-               const aScreenPoint : TAffineVector; const y : Single;
-               var intersectPoint : TAffineVector) : Boolean;
+               const aScreenPoint : TVector; const y : Single;
+               var intersectPoint : TVector) : Boolean;
          {: Calculates a 3D coordinate from screen position and ZBuffer.<p>
             This function returns a world absolute coordinate from a 2D point
             in the viewer, the depth being extracted from the ZBuffer data
@@ -2089,6 +2095,7 @@ end;
 procedure TGLBaseSceneObject.Loaded;
 begin
    inherited;
+   FChanges:=[ocTransformation, ocStructure];
    FPosition.W:=1;
    FBehaviours.Loaded;
    FObjectEffects.Loaded;
@@ -2189,10 +2196,10 @@ begin
       ScaleVector(FLocalMatrix[0], Scale.X);
       VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix[1]);
       VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix[2]);
-      FLocalMatrix[3]:=FPosition.AsVector;
+      SetVector(FLocalMatrix[3], FPosition.AsVector);
       FAbsoluteMatrixDirty:=True;
       FInvAbsoluteMatrixDirty:=True;
-     end;
+   end;
 end;
 
 // Get
@@ -2319,16 +2326,30 @@ begin
    SetVector(Result, PAffineVector(@FAbsoluteMatrix[2])^);
 end;
 
-// AbsoluteToLocal
+// AbsoluteToLocal (hmg)
 //
 function TGLBaseSceneObject.AbsoluteToLocal(const v : TVector) : TVector;
 begin
    Result:=VectorTransform(v, InvAbsoluteMatrix);
 end;
 
-// LocalToAbsolute
+// AbsoluteToLocal (affine)
+//
+function TGLBaseSceneObject.AbsoluteToLocal(const v : TAffineVector) : TAffineVector;
+begin
+   Result:=VectorTransform(v, InvAbsoluteMatrix);
+end;
+
+// LocalToAbsolute (hmg)
 //
 function TGLBaseSceneObject.LocalToAbsolute(const v : TVector) : TVector;
+begin
+   Result:=VectorTransform(v, AbsoluteMatrix);
+end;
+
+// LocalToAbsolute (affine)
+//
+function TGLBaseSceneObject.LocalToAbsolute(const v : TAffineVector) : TAffineVector;
 begin
    Result:=VectorTransform(v, AbsoluteMatrix);
 end;
@@ -2420,12 +2441,11 @@ end;
 
 // RayCastIntersect
 //
-function TGLBaseSceneObject.RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                 intersectPoint : PAffineVector = nil;
-                                 intersectNormal : PAffineVector = nil) : Boolean;
+function TGLBaseSceneObject.RayCastIntersect(const rayStart, rayVector : TVector;
+                                 intersectPoint : PVector = nil;
+                                 intersectNormal : PVector = nil) : Boolean;
 var
-   i1, i2, absPos : TAffineVector;
-
+   i1, i2, absPos : TVector;
 begin
    SetVector(absPos, AbsolutePosition);
    if RayCastSphereIntersect(rayStart, rayVector, absPos, BoundingSphereRadius, i1, i2)>0 then begin
@@ -2913,6 +2933,7 @@ procedure TGLBaseSceneObject.TransformationChanged;
 begin
    FLocalMatrixDirty:=True;
    FAbsoluteMatrixDirty:=True;
+   FInvAbsoluteMatrixDirty:=True;
    if not (csLoading in ComponentState) then
       if not (ocTransformation in FChanges) then begin
          Include(FChanges, ocTransformation);
@@ -3272,16 +3293,15 @@ var
 begin
    // determine predecessor in transformation pipeline
    if not Assigned(FParent) then begin
-      Include(FChanges, ocTransformation);
-      if ocTransformation in Changes then begin
+      if ocTransformation in Changes then
          RebuildMatrix;
-         FAbsoluteMatrixDirty:=True;
-      end;
    end else begin
-      if ocTransformation in Changes then begin
-         RebuildMatrix;
-         FAbsoluteMatrixDirty:=True;
-      end else FAbsoluteMatrixDirty:=FParent.FAbsoluteMatrixDirty;
+      if ocTransformation in Changes then
+         RebuildMatrix
+      else begin
+         FAbsoluteMatrixDirty:=FParent.FAbsoluteMatrixDirty or FAbsoluteMatrixDirty;
+         FInvAbsoluteMatrixDirty:=FAbsoluteMatrixDirty or FInvAbsoluteMatrixDirty;
+      end;
    end;
    // validate for children
    for i:=0 to Count-1 do
@@ -4109,9 +4129,9 @@ end;
 
 // RayCastIntersect
 //
-function TGLCamera.RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                    intersectPoint : PAffineVector = nil;
-                                    intersectNormal : PAffineVector = nil) : Boolean;
+function TGLCamera.RayCastIntersect(const rayStart, rayVector : TVector;
+                                    intersectPoint : PVector = nil;
+                                    intersectNormal : PVector = nil) : Boolean;
 begin
    Result:=False;
 end;
@@ -4317,9 +4337,9 @@ end;
 
 // RayCastIntersect
 //
-function TGLLightSource.RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                         intersectPoint : PAffineVector = nil;
-                                         intersectNormal : PAffineVector = nil) : Boolean;
+function TGLLightSource.RayCastIntersect(const rayStart, rayVector : TVector;
+                                         intersectPoint : PVector = nil;
+                                         intersectNormal : PVector = nil) : Boolean;
 begin
    Result:=False;
 end;
@@ -4954,14 +4974,14 @@ end;
 
 // RayCastIntersect
 //
-function TGLScene.RayCastIntersect(const rayStart, rayVector : TAffineVector;
-                                   intersectPoint : PAffineVector = nil;
-                                   intersectNormal : PAffineVector = nil) : TGLBaseSceneObject;
+function TGLScene.RayCastIntersect(const rayStart, rayVector : TVector;
+                                   intersectPoint : PVector = nil;
+                                   intersectNormal : PVector = nil) : TGLBaseSceneObject;
 var
    bestDist2 : Single;
    bestHit : TGLBaseSceneObject;
-   iPoint, iNormal : TAffineVector;
-   pINormal : PAffineVector;
+   iPoint, iNormal : TVector;
+   pINormal : PVector;
 
    function RecursiveDive(baseObject : TGLBaseSceneObject) : TGLBaseSceneObject;
    var
@@ -4972,17 +4992,19 @@ var
       Result:=nil;
       for i:=0 to baseObject.Count-1 do begin
          curObj:=baseObject.Children[i];
-         if curObj.RayCastIntersect(rayStart, rayVector, @iPoint, pINormal) then begin
-            dist2:=VectorDistance2(rayStart, iPoint);
-            if dist2<bestDist2 then begin
-               bestHit:=curObj;
-               bestDist2:=dist2;
-               if Assigned(intersectPoint) then
-                  intersectPoint^:=iPoint;
-               if Assigned(intersectNormal) then
-                  intersectNormal^:=iNormal;
-            end;
-         end else RecursiveDive(curObj);
+         if curObj.Visible then begin
+            if curObj.RayCastIntersect(rayStart, rayVector, @iPoint, pINormal) then begin
+               dist2:=VectorDistance2(rayStart, iPoint);
+               if dist2<bestDist2 then begin
+                  bestHit:=curObj;
+                  bestDist2:=dist2;
+                  if Assigned(intersectPoint) then
+                     intersectPoint^:=iPoint;
+                  if Assigned(intersectNormal) then
+                     intersectNormal^:=iNormal;
+               end;
+            end else RecursiveDive(curObj);
+         end;
       end;
    end;
 
@@ -5740,7 +5762,7 @@ begin
    FTicks:=0;
 end;
 
-// ScreenToWorld
+// ScreenToWorld (affine)
 //
 function TGLSceneBuffer.ScreenToWorld(const aPoint : TAffineVector) : TAffineVector;
 var
@@ -5757,7 +5779,24 @@ begin
    end else Result:=aPoint;
 end;
 
-// ScreenToWorld
+// ScreenToWorld (hmg)
+//
+function TGLSceneBuffer.ScreenToWorld(const aPoint : TVector) : TVector;
+var
+   proj, mv : THomogeneousDblMatrix;
+   x, y, z : Double;
+begin
+   if Assigned(FCamera) then begin
+      SetMatrix(proj, ProjectionMatrix);
+      SetMatrix(mv, ModelViewMatrix);
+      gluUnProject(aPoint[0], aPoint[1], aPoint[2],
+                   mv, proj, PHomogeneousIntVector(@FViewPort)^,
+                   @x, @y, @z);
+      SetVector(Result, x, y, z);
+   end else Result:=aPoint;
+end;
+
+// ScreenToWorld (x, y)
 //
 function TGLSceneBuffer.ScreenToWorld(screenX, screenY : Integer) : TAffineVector;
 begin
@@ -5781,12 +5820,20 @@ begin
    end else Result:=aPoint;
 end;
 
-// ScreenToVector
+// ScreenToVector (affine)
 //
 function TGLSceneBuffer.ScreenToVector(const aPoint : TAffineVector) : TAffineVector;
 begin
    Result:=VectorSubtract(ScreenToWorld(aPoint),
                           PAffineVector(@FCameraAbsolutePosition)^);
+end;
+
+// ScreenToVector (hmg)
+//
+function TGLSceneBuffer.ScreenToVector(const aPoint : TVector) : TVector;
+begin
+   SetVector(Result, VectorSubtract(ScreenToWorld(aPoint),
+                                    FCameraAbsolutePosition));
 end;
 
 // VectorToScreen
@@ -5799,15 +5846,15 @@ end;
 // ScreenVectorIntersectWithPlane
 //
 function TGLSceneBuffer.ScreenVectorIntersectWithPlane(
-      const aScreenPoint : TAffineVector;
-      const planePoint, planeNormal : TAffineVector;
-      var intersectPoint : TAffineVector) : Boolean;
+      const aScreenPoint : TVector;
+      const planePoint, planeNormal : TVector;
+      var intersectPoint : TVector) : Boolean;
 var
-   v : TAffineVector;
+   v : TVector;
 begin
    if Assigned(FCamera) then begin
-      v:=ScreenToVector(aScreenPoint);
-      Result:=RayCastPlaneIntersect(PAffineVector(@FCameraAbsolutePosition)^,
+      SetVector(v, ScreenToVector(aScreenPoint));
+      Result:=RayCastPlaneIntersect(FCameraAbsolutePosition,
                                     v, planePoint, planeNormal, @intersectPoint);
    end else Result:=False;
 end;
@@ -5815,31 +5862,31 @@ end;
 // ScreenVectorIntersectWithPlaneXY
 //
 function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXY(
-   const aScreenPoint : TAffineVector; const z : Single;
-   var intersectPoint : TAffineVector) : Boolean;
+   const aScreenPoint : TVector; const z : Single;
+   var intersectPoint : TVector) : Boolean;
 begin
-   Result:=ScreenVectorIntersectWithPlane(aScreenPoint, AffineVectorMake(0, 0, z),
-                                          ZVector, intersectPoint);
+   Result:=ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, 0, z),
+                                          ZHmgVector, intersectPoint);
 end;
 
 // ScreenVectorIntersectWithPlaneYZ
 //
 function TGLSceneBuffer.ScreenVectorIntersectWithPlaneYZ(
-   const aScreenPoint : TAffineVector; const x : Single;
-   var intersectPoint : TAffineVector) : Boolean;
+   const aScreenPoint : TVector; const x : Single;
+   var intersectPoint : TVector) : Boolean;
 begin
-   Result:=ScreenVectorIntersectWithPlane(aScreenPoint, AffineVectorMake(x, 0, 0),
-                                          XVector, intersectPoint);
+   Result:=ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(x, 0, 0),
+                                          XHmgVector, intersectPoint);
 end;
 
 // ScreenVectorIntersectWithPlaneXZ
 //
 function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXZ(
-   const aScreenPoint : TAffineVector; const y : Single;
-   var intersectPoint : TAffineVector) : Boolean;
+   const aScreenPoint : TVector; const y : Single;
+   var intersectPoint : TVector) : Boolean;
 begin
-   Result:=ScreenVectorIntersectWithPlane(aScreenPoint, AffineVectorMake(0, y, 0),
-                                          YVector, intersectPoint);
+   Result:=ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, y, 0),
+                                          YHmgVector, intersectPoint);
 end;
 
 

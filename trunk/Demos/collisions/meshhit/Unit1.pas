@@ -57,7 +57,7 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-   rayStart, rayVector, iPoint, iNormal : TAffineVector;
+   rayStart, rayVector, iPoint, iNormal : TVector;
 begin
    // retrieve raycasting data:
    //    rayStart is the eye (camera) position
@@ -70,8 +70,8 @@ begin
    // Here we require RauCast intersection
    if FreeForm1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then begin
       // got one, move the sphere there and orient it appropriately
-      Sphere1.Position.AsAffineVector:=iPoint;
-      Sphere1.Direction.AsAffineVector:=VectorNormalize(iNormal);
+      Sphere1.Position.AsVector:=iPoint;
+      Sphere1.Direction.AsVector:=VectorNormalize(iNormal);
    end;
 end;
 
@@ -87,14 +87,14 @@ end;
 procedure TForm1.GLSceneViewer2MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-   rayStart, rayVector, iPoint, iNormal : TAffineVector;
+   rayStart, rayVector, iPoint, iNormal : TVector;
 begin
    SetVector(rayStart, GLCamera2.AbsolutePosition);
    SetVector(rayVector, GLSceneViewer2.Buffer.ScreenToVector(AffineVectorMake(x, GLSceneViewer2.Height-y, 0)));
    NormalizeVector(rayVector);
    if FreeForm1.RayCastIntersect(rayStart, rayVector, @iPoint, @iNormal) then begin
-      Sphere1.Position.AsAffineVector:=iPoint;
-      Sphere1.Direction.AsAffineVector:=VectorNormalize(iNormal);
+      Sphere1.Position.AsVector:=iPoint;
+      Sphere1.Direction.AsVector:=VectorNormalize(iNormal);
    end;
 end;
 
