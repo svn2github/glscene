@@ -41,6 +41,9 @@ uses
   function ConvertdVector3ToVector4f(R : TdVector3) : TVector4f; overload;
   function ConvertdVector3ToVector4f(R : PdVector3) : TVector4f; overload;
 
+  function ConvertdVector3ToAffineVector(R : PdVector3) : TAffineVector; overload;
+  function ConvertdVector3ToAffineVector(R : TdVector3) : TAffineVector; overload;
+
   // Converting between GLScene and ODE formats
   function ConvertVector3fTodVector3(R : TVector3f) : TdVector3;
   function ConvertVector3fToPdVector3(R : TVector3f) : PdVector3;
@@ -221,6 +224,20 @@ begin
   result[3] := 0;
 end;
 
+function ConvertdVector3ToAffineVector(R : PdVector3) : TAffineVector; overload;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+end;
+
+function ConvertdVector3ToAffineVector(R : TdVector3) : TAffineVector; overload;
+begin
+  result[0] := R[0];
+  result[1] := R[1];
+  result[2] := R[2];
+end;
+
 function ConvertVector3fTodVector3(R : TVector3f) : TdVector3;
 begin
   result[0] := R[0];
@@ -319,9 +336,9 @@ var
 begin
   dGeomBoxGetLengths(Geom, Sides);
 
-  Cube.CubeWidth := Sides[0]; // 0
-  Cube.CubeHeight := Sides[1]; // 1
-  Cube.CubeDepth := Sides[2]; // 2
+  Cube.CubeWidth := Sides[0];   // 0
+  Cube.CubeHeight := Sides[1];  // 1
+  Cube.CubeDepth := Sides[2];   // 2
 end;
 
 procedure CopyPosFromGeomToGL(Geom : PdxGeom; GLBaseSceneObject : TGLBaseSceneObject);

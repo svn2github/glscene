@@ -22,7 +22,7 @@
 
 {*************************************************************************
  *                                                                       *
- * ODE Delphi Import unit : 0.7.0                                        *
+ * ODE Delphi Import unit : 0.7.1                                        *
  *                                                                       *
  *   Created by Mattias Fagerlund ( mattias@cambrianlabs.com )  and      *
  *              Christophe ( chroma@skynet.be ) Hosten                   *
@@ -77,7 +77,9 @@
   2003.02.01 Mattias added a few new functions
   2003.02.01 Christophe removed dGeomGroup and all it's procedures / functions
     due to deprecation
-  2003.02.11 John Villar added syntax enforcement on some enumerated types 
+  2003.02.11 John Villar added syntax enforcement on some enumerated types
+  2003.06.10 MAttias Fagerlund removed GeomTransformGroup as they're not in
+    the DLL.
  }
 
 unit ODEImport;
@@ -1002,7 +1004,8 @@ dWtoDQ}
   // ***************
 
   // New geom - dGeomTransformGroupClass, transforms several geoms...?
-  function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
+  // REMOVED DUE TO THE FACT THAT THEY'RE NOT IN THE DLL!
+  {function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
   function EXT_dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl; external ODEDLL name 'dCreateGeomTransformGroup';
 
   procedure dGeomTransformGroupSetRelativePosition (Geom : PdxGeom; x, y, z : TdReal); cdecl; external ODEDLL;
@@ -1012,7 +1015,7 @@ dWtoDQ}
   procedure dGeomTransformGroupAddGeom (Geom : PdxGeom; Obj : PdxGeom); cdecl; external ODEDLL;
   procedure dGeomTransformGroupRemoveGeom (Geom : PdxGeom; Obj : PdxGeom); cdecl; external ODEDLL;
   function dGeomTransformGroupGetGeom (Geom : PdxGeom; i : integer) : PdxGeom; cdecl; external ODEDLL;
-  function dGeomTransformGroupGetNumGeoms (Geom : PdxGeom) : integer; cdecl; external ODEDLL;
+  function dGeomTransformGroupGetNumGeoms (Geom : PdxGeom) : integer; cdecl; external ODEDLL;//}
 
   // New geom - dCylinder (not a capped cylinder).
   function dCreateCylinder(const Space : PdxSpace; r, lz : TdReal) : PdxGeom; cdecl;
@@ -1115,6 +1118,9 @@ dWtoDQ}
   function Vector3SUB(a, b : TdVector3) : TdVector3;
   function Vector3Length(a : TdVector3) : TdReal;
   function Vector3Cross(V1, V2 : TdVector3) : TdVector3;
+  function Vector3Make(x,y,z : TdReal) : TdVector3;
+
+  procedure DisableStillBodies(World : PdxWorld; Threshold : single=0.0001);
 
 var
   // These must be set up, so I catch the first time a user creates a new
@@ -1133,6 +1139,8 @@ var
 
 implementation
 
+var
+  WasStillBefore, WasStillBeforeOld : TList;
 
 const
   // to be used as descriptive indices (from GLScene)
@@ -1171,10 +1179,10 @@ var
 begin
   for i := 0 to Count-1 do
   begin
-    dGeomDestroy(Items[i]);
-
     if DeleteDataAsObject and (Items[i].data<>nil) then
       TObject(Items[i].data).Free;
+
+    dGeomDestroy(Items[i]);
   end;
 
   Clear;
@@ -1369,12 +1377,52 @@ begin
     dRayClass := dGeomGetClass(result);
 end;
 
-function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
+{function dCreateGeomTransformGroup (const Space : PdxSpace) : PdxGeom; cdecl;
 begin
   result := EXT_dCreateGeomTransformGroup(Space);
 
   if dGeomTransformGroupClass=-1 then
     dGeomTransformGroupClass := dGeomGetClass(result);
-end;
+end;//}
 
+procedure DisableStillBodies(World : PdxWorld; Threshold : single=0.0001);
+var
+  Body : PdxBody;
+  TempList : TList;
+begin
+  if not Assigned(WasStillBefore) then
+  begin
+    WasStillBefore := TList.Create;
+    WasStillBeforeOld := TList.Create;
+  end;
+
+  Body := World.FirstBody;
+
+  WasStillBefore.Clear;
+
+  // We can't disable bodies just as soon as they're still - that could disable
+  // bodies that are just slowed down or titering on an edge. If they've been
+  // still for two frames, we consider them truly still. 
+  while Assigned(Body) do
+  begin
+    if dBodyIsEnabled(Body)=1 then
+    begin
+      // Is the body still?
+      if (abs(Body.lvel[0])<Threshold) and (abs(Body.lvel[1])<Threshold) and (abs(Body.lvel[2])<Threshold) and
+         (abs(Body.avel[0])<Threshold) and (abs(Body.avel[1])<Threshold) and (abs(Body.avel[2])<Threshold) then
+      begin
+        if WasStillBeforeOld.IndexOf(Body)<>-1 then
+          dBodyDisable(Body)
+        else
+          WasStillBefore.Add(Body);
+      end;
+    end;
+
+    Body := PdxBody(Body.BaseObject.next);
+  end;
+
+  TempList := WasStillBeforeOld;
+  WasStillBeforeOld := WasStillBefore;
+  WasStillBefore := TempList;
+end;
 end.
