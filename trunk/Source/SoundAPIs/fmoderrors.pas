@@ -1,22 +1,21 @@
 { =============================================================================================== }
-{ FMOD Main header file. Copyright (c), FireLight Technologies Pty, Ltd. 1999-2002.               }
-{ =============================================================================================== }
-{ =============================================================================================== }
-{ HISTORY                                                                                         }
+{ FMOD Main header file. Copyright (c), Firelight Technologies Pty, Ltd. 1999-2003.               }
 { =============================================================================================== }
 {
-  08-Dec-2000 Sly
-  - Conversion of fmod_errors.h.  Slight name change was required because Pascal
-    is not case-sensitive and confuses the unit name with the type FMOD_ERRORS.
+  NOTE: For the demos to run you must have either fmod.dll (in Windows)
+  or libfmod-3.70.so (in Linux) installed.
 
-  14-Dec-2000 Sly
-  - Updated to version 3.30
+  In Windows, copy the fmod.dll file found in the api directory to either of
+  the following locations (in order of preference)
+  - your application directory
+  - Windows\System (95/98) or WinNT\System32 (NT/2000/XP)
 
-  30-Jan-2002 Sly FMOD Version 3.50
-  - Removed FMOD_ERR_NO_EAX2
-
-  18-Aug-2002 Sly FMOD Version 2.60
-  - Added FMOD_ERR_CDDEVICE
+  In Linux, make sure you are signed in as root and copy the libfmod-3.70.so
+  file from the api directory to your /usr/lib/ directory.
+  Then via a command line, navigate to the /usr/lib/ directory and create
+  a symbolic link between libfmod-3.70.so and libfmod.so. This is done with
+  the following command (assuming you are in /usr/lib/)...
+  ln -s libfmod-3.70.so libfmod.so.
 }
 { =============================================================================================== }
 
@@ -25,7 +24,14 @@ unit fmoderrors;
 interface
 
 uses
-  fmod;
+  fmodtypes;
+
+{
+  Disable warning for unsafe types in Delphi 7
+}
+{$IFDEF VER150}
+{$WARN UNSAFE_TYPE OFF}
+{$ENDIF}
 
 function FMOD_ErrorString(ErrorCode: TFModErrors): PChar;
 
@@ -37,9 +43,9 @@ begin
     FMOD_ERR_NONE:              Result := 'No errors';
     FMOD_ERR_BUSY:              Result := 'Cannot call this command after FSOUND_Init.  Call FSOUND_Close first';
     FMOD_ERR_UNINITIALIZED:     Result := 'This command failed because FSOUND_Init was not called';
+    FMOD_ERR_PLAY:              Result := 'Playing the sound failed';
     FMOD_ERR_INIT:              Result := 'Error initializing output device';
     FMOD_ERR_ALLOCATED:         Result := 'The output device is already in use and cannot be reused';
-    FMOD_ERR_PLAY:              Result := 'Playing the sound failed';
     FMOD_ERR_OUTPUT_FORMAT:     Result := 'Soundcard does not support the features needed for this soundsystem (16bit stereo output)';
     FMOD_ERR_COOPERATIVELEVEL:  Result := 'Error setting cooperative level for hardware';
     FMOD_ERR_CREATEBUFFER:      Result := 'Error creating hardware sound buffer';
@@ -53,7 +59,6 @@ begin
     FMOD_ERR_CHANNEL_ALLOC:     Result := 'Failed to allocate a new channel';
     FMOD_ERR_RECORD:            Result := 'Recording is not supported on this machine';
     FMOD_ERR_MEDIAPLAYER:       Result := 'Required Mediaplayer codec is not installed';
-    FMOD_ERR_CDDEVICE:          Result := 'An error occured trying to open the specified CD device';
   else
     Result := 'Unknown error';
   end;

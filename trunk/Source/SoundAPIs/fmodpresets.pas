@@ -1,13 +1,47 @@
 { =============================================================================================== }
 { FMOD presets header file. Copyright (c), FireLight Technologies Pty, Ltd. 1999-2002.            }
 { =============================================================================================== }
+{
+  NOTE: For the demos to run you must have either fmod.dll (in Windows)
+  or libfmod-3.6.so (in Linux) installed.
+
+  In Windows, copy the fmod.dll file found in the api directory to either of
+  the following locations (in order of preference)
+  - your application directory
+  - Windows\System (95/98) or WinNT\System32 (NT/2000/XP)
+
+  In Linux, make sure you are signed in as root and copy the libfmod-3.6.so
+  file from the api directory to your /usr/lib/ directory.
+  Then via a command line, navigate to the /usr/lib/ directory and create
+  a symbolic link between libfmod-3.5.so and libfmod.so. This is done with
+  the following command (assuming you are in /usr/lib/)...
+  ln -s libfmod-3.6.so libfmod.so.
+}
+{ =============================================================================================== }
+{ HISTORY                                                                                         }
+{ =============================================================================================== }
+{
+  03-Nov-2002 Sly
+  - Separated the dynamic library version into fmoddyn.pas
+  - Separated the types into fmodtypes.pas to avoid duplication in fmod.pas and fmoddyn.pas.
+    fmodtypes.pas is also used by fmodpresets.pas.
+}
+{ =============================================================================================== }
 
 unit fmodpresets;
 
 interface
 
 uses
-  fmod;
+  fmodtypes;
+
+{$IFDEF VER140}
+{$DEFINE COMPILER6_UP}
+{$ELSE}
+  {$IFDEF VER150}
+  {$DEFINE COMPILER6_UP}
+  {$ENDIF}
+{$ENDIF}
 
 (*
 [DEFINE_START]
@@ -26,6 +60,7 @@ uses
 ]
 *)
 
+{$IFDEF COMPILER6_UP}{$J+}{$ENDIF}
 const
   FSOUND_PRESET_OFF:              TFSoundReverbProperties = (Environment: 0;  EnvSize: 7.5;   EnvDiffusion: 1.00;   Room: -10000; RoomHF: -10000; RoomLF: 0;  DecayTime: 1.00;  DecayHFRatio: 1.00; DecayLFRatio: 1.0;  Reflections: -2602; ReflectionsDelay: 0.007;  ReflectionsPan: (0.0, 0.0, 0.0);  Reverb: 200;  ReverbDelay: 0.011; ReverbPan: (0.0, 0.0, 0.0); EchoTime: 0.250;  EchoDepth: 0.00;  ModulationTime: 0.25; ModulationDepth: 0.000; AirAbsorptionHF: -5.0;  HFReference: 5000.0;  LFReference: 250.0; RoomRolloffFactor: 0.0; Diffusion: 0.0;   Density: 0.0;   Flags: $33f);
   FSOUND_PRESET_GENERIC:          TFSoundReverbProperties = (Environment: 0;  EnvSize: 7.5;   EnvDiffusion: 1.00;   Room: -1000;  RoomHF: -100;   RoomLF: 0;  DecayTime: 1.49;  DecayHFRatio: 0.83; DecayLFRatio: 1.0;  Reflections: -2602; ReflectionsDelay: 0.007;  ReflectionsPan: (0.0, 0.0, 0.0);  Reverb: 200;  ReverbDelay: 0.011; ReverbPan: (0.0, 0.0, 0.0); EchoTime: 0.250;  EchoDepth: 0.00;  ModulationTime: 0.25; ModulationDepth: 0.000; AirAbsorptionHF: -5.0;  HFReference: 5000.0;  LFReference: 250.0; RoomRolloffFactor: 0.0; Diffusion: 100.0; Density: 100.0; Flags: $3f);
@@ -61,6 +96,7 @@ const
 (* PlayStation 2 Only presets *)
 (* Delphi/Kylix cannot create PlayStation 2 executables, so there is no need to
    convert the PlayStation 2 presets. *)
+{$IFDEF COMPILER6_UP}{$J-}{$ENDIF}
 
 (* [DEFINE_END] *)
 

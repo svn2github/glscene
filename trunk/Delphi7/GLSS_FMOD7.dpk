@@ -28,11 +28,15 @@ package GLSS_FMOD7;
 
 requires
   vcl,
-  GLScene7;
+  GLScene7,
+  rtl;
 
 contains
   FMOD in '..\Source\SoundAPIs\fmod.pas',
   FMODPresets in '..\Source\SoundAPIs\fmodpresets.pas',
-  GLSMFMOD in '..\Source\GLSMFMOD.pas';
+  GLSMFMOD in '..\Source\GLSMFMOD.pas',
+  fmoderrors in '..\Source\SoundAPIs\fmoderrors.pas',
+  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas',
+  fmoddyn in '..\Source\SoundAPIs\fmoddyn.pas';
 
 end.

@@ -9,6 +9,7 @@
    </ul><p>
 
 	<b>History : </b><font size=-1><ul>
+      <li>18/09/03 - ARH - updated for fmod 3.7
       <li>24/09/02 - EG - FMOD activation errors no longer result in Asserts (ignored)
       <li>28/08/02 - EG - Fixed EAX capability detection
       <li>27/08/02 - EG - Now uses dynamically linked version by Steve Williams,
@@ -76,7 +77,8 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-uses SysUtils, FMod, Geometry, FModPresets;
+
+uses SysUtils, FMod, Geometry, FModPresets, FModtypes;
 
 type
    TFMODInfo =  record
@@ -124,7 +126,8 @@ function TGLSMFMOD.DoActivate : Boolean;
 var
    cap : Cardinal;
 begin
-   FMOD_Load;
+// ARH changed API in 3.7 expects a libname pchar unused?
+   FMOD_Load('fmod');
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then begin
       Result:=False;
       Exit;
@@ -170,9 +173,9 @@ end;
 procedure TGLSMFMOD.Notify3DFactorsChanged;
 begin
    if FActivated then begin
-      FSOUND_3D_Listener_SetDistanceFactor(DistanceFactor);
-      FSOUND_3D_Listener_SetRolloffFactor(RollOffFactor);
-      FSOUND_3D_Listener_SetDopplerFactor(DopplerFactor);
+      FSOUND_3D_SetDistanceFactor(DistanceFactor);
+      FSOUND_3D_SetRolloffFactor(RollOffFactor);
+      FSOUND_3D_SetDopplerFactor(DopplerFactor);
    end;
 end;
 
@@ -248,9 +251,13 @@ begin
    end else begin
       p:=AllocMem(SizeOf(TFMODInfo));
       p.channel:=-1;
+// ARH fmod 3.7 changed FSOUND_Sample_Load API to include an offset.
+// Unsure of appropriate value so used a zero offset
       p.pfs:=FSOUND_Sample_Load(FSOUND_FREE, aSource.Sample.Data.WAVData,
                                 FSOUND_HW3D+FSOUND_LOOP_OFF+FSOUND_LOADMEMORY,
+                                0, //offset?
                                 aSource.Sample.Data.WAVDataSize);
+
       if aSource.NbLoops>1 then
          FSOUND_Sample_SetMode(p.pfs, FSOUND_LOOP_NORMAL);
       FSOUND_Sample_SetMinMaxDistance(p.pfs, aSource.MinDistance, aSource.MaxDistance);
@@ -318,7 +325,7 @@ begin
                                     top.x, top.y, top.z);
    // update sources
    inherited;
-   FSOUND_3D_Update;
+   FSOUND_Update;
 end;
 
 // CPUUsagePercent
