@@ -1620,6 +1620,7 @@ type
          procedure CreateRC(deviceHandle : Cardinal; memoryContext : Boolean);
          procedure ClearBuffers;
          procedure DestroyRC;
+         function  RCInstantiated : Boolean;
          procedure Resize(newWidth, newHeight : Integer);
          //: Indicates hardware acceleration support
          function Acceleration : TGLContextAcceleration;
@@ -6205,6 +6206,13 @@ begin
    end;
 end;
 
+// RCInstantiated
+//
+function TGLSceneBuffer.RCInstantiated : Boolean;
+begin
+   Result:=Assigned(FRenderingContext);
+end;
+
 // Resize
 //
 procedure TGLSceneBuffer.Resize(newWidth, newHeight : Integer);
@@ -6216,6 +6224,7 @@ begin
    if Assigned(FRenderingContext) then begin
       FRenderingContext.Activate;
       try
+         // Part of workaround for MS OpenGL "black borders" bug
          glViewport(0, 0, FViewPort.Width, FViewPort.Height);
       finally
          FRenderingContext.Deactivate;
