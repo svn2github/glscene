@@ -1171,8 +1171,7 @@ end;
 //
 function THeightData.SmallIntHeight(x, y : Integer) : SmallInt;
 begin
-   if (Cardinal(x)>=Cardinal(Size)) or (Cardinal(y)>=Cardinal(Size)) then
-      Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
+   Assert((Cardinal(x)<Cardinal(Size)) and (Cardinal(y)<Cardinal(Size)));
 	Result:=SmallIntRaster[y][x];
 end;
 
