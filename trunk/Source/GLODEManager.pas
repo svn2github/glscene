@@ -8,11 +8,11 @@
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
-  To install use the GLS_ODE6.dpk in the GLScene/Delphi6 folder. (Delphi6 only 
-  at the moment)
+  To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.
 
   History:
 
+    20/06/03 - SG - Added GLODEHeightDataCollider (experimental)
     13/06/03 - SG - Added more joints.
     11/06/03 - SG - Base joint classes implemented and added hinge joint.
     09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
@@ -220,37 +220,6 @@ type
   end;
 
   {
-  TGLODEStaticObject:
-  -------------------
-  This object provides decendant classes for static ODE implementations
-  which have a geom for collisions but no body or mass for motion.
-  }
-  TGLODEStaticObject = class (TGLODEBaseObject)
-    private
-      FGeom : PdxGeom;
-    public
-      property Geom : PdxGeom read FGeom;
-  end;
-
-  {
-  TGLODEPlane:
-  ------------
-  The ODE plane geom implementation. Use the direction and position to set
-  up the plane (just like a normal GLScene plane).
-  }
-  TGLODEPlane = class (TGLODEStaticObject)
-    private
-      procedure AlignODEPlane;
-    protected
-      procedure Initialize; override;
-    public
-      constructor Create(AOwner:TComponent); override;
-      procedure BuildList(var rci : TRenderContextInfo); override;
-      procedure NotifyChange(Sender:TObject); override;
-      procedure StructureChanged; override;
-  end;
-
-  {
   TGLODEDynamicObject:
   --------------------
   This object provides decendant classes for dynamic ODE implementations.
@@ -347,6 +316,7 @@ type
       constructor Create(AOwner : TXCollection); override;
       destructor Destroy; override;
       class function FriendlyName : String; override;
+      class function UniqueItem : Boolean; override;
       function AddNewElement(AChild:TODEElementClass):TODEBaseElement; dynamic;
       procedure AlignObject;
       function CalculateMass : TdMass;
@@ -533,6 +503,59 @@ type
       property Radius : single read GetRadius write SetRadius;
       property Length : single read GetLength write SetLength;
   end; //}
+
+  {
+  TGLODEStaticObject:
+  -------------------
+  This object provides decendant classes for static ODE implementations
+  which have a geom for collisions but no body or mass for motion.
+  }
+  TGLODEStaticObject = class (TGLODEBaseObject)
+    private
+      FGeom : PdxGeom;
+    public
+      property Geom : PdxGeom read FGeom;
+  end;
+
+  {
+  TGLODEPlane:
+  ------------
+  The ODE plane geom implementation. Use the direction and position to set
+  up the plane (just like a normal GLScene plane).
+  }
+  TGLODEPlane = class (TGLODEStaticObject)
+    private
+      procedure AlignODEPlane;
+    protected
+      procedure Initialize; override;
+    public
+      constructor Create(AOwner:TComponent); override;
+      procedure NotifyChange(Sender:TObject); override;
+  end;
+
+  TOnGetHeightDataEvent = procedure(px,py:single; var pz:single;
+                                    var nx,ny,nz:single) of Object;
+
+  TCustomCollider = function(o1, o2 : PdxGeom; flags : Integer;
+    contact : PdContactGeom; skip : Integer) : Integer of Object; cdecl;
+
+  {
+  TGLODEHeightDataCollider:
+  -------------------------
+  The height data is obtained through an OnGetHeightValue event.
+  }
+  TGLODEHeightDataCollider = class (TGLODEStaticObject)
+    private
+      FOnGetHeightData : TOnGetHeightDataEvent;
+      FColliderClass : TdGeomClass;
+      FClassNum : integer;
+    protected
+      procedure Initialize; override;
+    public
+      constructor Create(AOwner:TComponent); override;
+    published
+      property OnGetHeightData : TOnGetHeightDataEvent read FOnGetHeightData write FOnGetHeightData;
+  end;
 
   TODEBaseJoint = class;
 
@@ -745,6 +768,148 @@ begin
     if Obj is TGLODEBaseBehaviour then
       Result:=TGLODEBaseBehaviour(Obj).Surface;
   end;
+end;
+
+// CustomCollideSphere
+//
+function CustomCollideSphere(o1, o2 : PdxGeom; flags : Integer;
+                             contact : PdContactGeom;
+                             skip : Integer) : Integer; cdecl;
+
+  procedure AddContact(x, y, z : Single; var nb : Integer);
+  var
+    pz,
+    nx,ny,nz : Single;
+  begin
+    if nb>=flags then Exit;
+    TGLODEHeightDataCollider(dGeomGetData(o1)).OnGetHeightData(x,y, pz,nx,ny,nz);
+    if z<pz then begin
+      contact.pos[0]:=x;
+      contact.pos[1]:=y;
+      contact.pos[2]:=pz;
+      contact.pos[3]:=1;
+      contact.normal[0]:=-nx;
+      contact.normal[1]:=-ny;
+      contact.normal[2]:=-nz;
+      contact.normal[3]:=0;
+      contact.depth:=pz-z;
+      contact.g1:=o1;
+      contact.g2:=o2;
+      contact:=PdContactGeom(Integer(contact)+skip);
+      Inc(nb);
+    end;
+  end;
+
+var
+   pos : PdVector3;
+   r, dx, dy, dz : Single;
+   i : Integer;
+begin
+  if not Assigned(o1.data) then Exit;
+  if not Assigned(TGLODEHeightDataCollider(o1.data).OnGetHeightData) then Exit;
+
+  // collide o2 (a sphere) against a formula
+  pos:=dGeomGetPosition(o2);
+  r:=dGeomSphereGetRadius(o2);
+  Result:=0;
+
+  // collide below sphere center
+  AddContact(pos[0],pos[1],pos[2]-r,Result);
+  // test corona at 0.4 and 0.8 radius
+  for i:=0 to 5 do begin
+    SinCos(DegToRad(i*60), r*0.4, dy, dx);
+    dz:=r-Sqrt(Sqr(r)-Sqr(dx)-Sqr(dy));
+    AddContact(pos[0]+dx,pos[1]+dy,pos[2]-r+dz,Result);
+    SinCos(DegToRad(i*60), r*0.8, dy, dx);
+    dz:=r-Sqrt(Sqr(r)-Sqr(dx)-Sqr(dy));
+    AddContact(pos[0]+dx,pos[1]+dy,pos[2]-r+dz,Result);
+  end;
+end;
+
+// CustomCollideBox
+//
+function CustomCollideBox(o1, o2 : PdxGeom; flags : Integer;
+                          contact : PdContactGeom;
+                          skip : Integer) : Integer; cdecl;
+var
+  Corner : array[0..7] of TVector;
+  CornerCount : Integer;
+  nx,ny,nz : single;
+  i : integer;
+  pos : PdVector3;
+  sides,dPos : TdVector3;
+  Bod : PdxBody;
+
+  procedure AddContact(x, y, z : Single);
+  var
+    pz,dummy : Single;
+  begin
+    TGLODEHeightDataCollider(o1.data).OnGetHeightData(x,y, pz,dummy,dummy,dummy);
+    if z<pz then begin
+      Corner[CornerCount][0]:=x;
+      Corner[CornerCount][1]:=y;
+      Corner[CornerCount][2]:=pz;
+      Corner[CornerCount][3]:=pz-z; // Depth
+      Inc(CornerCount);
+    end;
+  end;
+
+begin
+  Result:=0;
+  if not Assigned(dGeomGetData(o1)) then exit;
+  if not Assigned(TGLODEHeightDataCollider(dGeomGetData(o1)).OnGetHeightData) then Exit;
+
+  pos:=dGeomGetPosition(o2);
+  dGeomBoxGetLengths(o2,Sides);
+  Result:=0;
+
+  Bod:=dGeomGetBody(o2);
+  dGeomBoxGetLengths(o2, Sides);
+
+  dBodyVectorToWorld(Bod, sides[0]/2,sides[1]/2,sides[2]/2, dPos);
+  AddContact(pos[0]+dpos[0],pos[1]+dpos[1],pos[2]+dpos[2]);
+  AddContact(pos[0]-dpos[0],pos[1]-dpos[1],pos[2]-dpos[2]);
+
+  dBodyVectorToWorld(Bod, sides[0]/2,sides[1]/2, -sides[2]/2, dPos);
+  AddContact(pos[0]+dpos[0],pos[1]+dpos[1],pos[2]+dpos[2]);
+  AddContact(pos[0]-dpos[0],pos[1]-dpos[1],pos[2]-dpos[2]);
+
+  dBodyVectorToWorld(Bod, sides[0]/2,-sides[1]/2, sides[2]/2, dPos);
+  AddContact(pos[0]+dpos[0],pos[1]+dpos[1],pos[2]+dpos[2]);
+  AddContact(pos[0]-dpos[0],pos[1]-dpos[1],pos[2]-dpos[2]);
+
+  dBodyVectorToWorld(Bod, -sides[0]/2,sides[1]/2, sides[2]/2, dPos);
+  AddContact(pos[0]+dpos[0],pos[1]+dpos[1],pos[2]+dpos[2]);
+  AddContact(pos[0]-dpos[0],pos[1]-dpos[1],pos[2]-dpos[2]);
+
+  for i := 0 to CornerCount-1 do
+  begin
+    if Result>=flags then Exit;
+    TGLODEHeightDataCollider(o1.data).OnGetHeightData(Corner[i][0],Corner[i][1],Corner[i][2],nx,ny,nz);
+    contact.pos[0]:=Corner[i][0];
+    contact.pos[1]:=Corner[i][1];
+    contact.pos[2]:=Corner[i][2];
+    contact.depth :=Corner[i][3];
+    contact.normal[0]:=-nx;
+    contact.normal[1]:=-ny;
+    contact.normal[2]:=-nz;
+    contact.g1:=o1;
+    contact.g2:=o2;
+    contact:=PdContactGeom(Integer(contact)+skip);
+    Inc(Result);
+  end;
+end;
+
+// GetColliderFn
+//
+function GetColliderFn(num:Integer):TdColliderFn; cdecl;
+begin
+  if num = dSphereClass then
+    Result:=CustomCollideSphere
+  else if num = dBoxClass then
+    Result:=CustomCollideBox
+  else
+    Result:=nil;
 end;
 
 
@@ -1618,6 +1783,11 @@ begin
   dBodySetMass(FBody,FMass);
 end;
 
+class function TGLODEDynamicBehaviour.UniqueItem : Boolean;
+begin
+  Result:=True;
+end;
+
 
 // ------------------------------------------------------------------
 // TODEElements Methods
@@ -2412,20 +2582,10 @@ end;
 
 procedure TGLODEPlane.Initialize;
 begin
-  inherited;
-  FGeom:=dCreatePlane(FManager.Space,0,1,0,0);
+  if not Assigned(Manager) then exit;
+  FGeom:=dCreatePlane(Manager.Space,0,1,0,0);
   dGeomSetData(FGeom,Self);
   AlignODEPlane;
-end;
-
-procedure TGLODEPlane.BuildList(var rci: TRenderContextInfo);
-begin
-  inherited;
-end;
-
-procedure TGLODEPlane.StructureChanged;
-begin
-  inherited;
 end;
 
 procedure TGLODEPlane.NotifyChange(Sender: TObject);
@@ -2434,6 +2594,34 @@ begin
   AlignODEPlane;
 end;
 
+
+// -----------------------------------------------------------------------------
+// TGLODEHeightDataCollider
+// -----------------------------------------------------------------------------
+
+// Create
+//
+constructor TGLODEHeightDataCollider.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+
+  FColliderClass.bytes:=0;
+  FColliderClass.collider:=GetColliderFn;
+  FColliderClass.aabb:=dInfiniteAABB;
+  FColliderClass.aabb_test:=nil;
+  FColliderClass.dtor:=nil;
+end;
+
+// Initialize
+//
+procedure TGLODEHeightDataCollider.Initialize;
+begin
+  if not Assigned(Manager) then exit;
+  FClassNum:=dCreateGeomClass(FColliderClass);
+  FGeom:=dCreateGeom(FClassNum);
+  dGeomSetData(FGeom,Self);
+  dSpaceAdd(Manager.Space,FGeom);
+end;
 
 // ------------------------------------------------------------------
 // TGLODEJoints Methods
