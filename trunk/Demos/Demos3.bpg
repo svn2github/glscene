@@ -9,10 +9,13 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = winfont.exe
+PROJECTS = winfont.exe procedural.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
 winfont.exe: interface\winfont\winfont.dpr
+  $(DCC)
+
+procedural.exe: materials\procedural\procedural.dpr
   $(DCC)
