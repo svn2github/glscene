@@ -130,7 +130,7 @@ uses
    GLSoundFileObjects, GLMesh, GLGraph, GLMisc, GLExtrusion, GLFireFX, GLThorFX,
    GLMultiPolygon, GLSkyDome, GLHUDObjects, GLBitmapFont, GLHeightData,
    GLParticleFX, GLTerrainRenderer, GLzBuffer, GLMirror, GLSpaceText,
-   GLWindows, GLShadowPlane, GLWindowsFont, GLLensFlare
+   GLWindows, GLShadowPlane, GLWindowsFont, GLLensFlare, GLHeightTileFileHDS
 {$ifdef WIN32}
    , GLWin32Viewer
 {$endif}
@@ -1730,10 +1730,10 @@ begin
                        TGLSceneViewer, TGLMemoryViewer, TGLFullScreenViewer,
                        TGLMaterialLibrary,
                        TGLCadencer, TAsyncTimer,
-                       TCollisionManager, TGLFireFXManager, TGLThorFXManager,
                        TGLPolygonPFXManager, TGLPointLightPFXManager,
                        TGLBitmapFont, TGLWindowsBitmapFont,
-                       TGLBitmapHDS, TGLCustomHDS,
+                       TGLBitmapHDS, TGLCustomHDS, TGLHeightTileFileHDS,
+                       TCollisionManager, TGLFireFXManager, TGLThorFXManager,
                        TGLAnimationControler]);
 
    RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
