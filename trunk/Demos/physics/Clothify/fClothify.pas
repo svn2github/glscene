@@ -1,13 +1,19 @@
+{: Clothify demo.<p>
+
+   Caution: this demo mixes several experimental thingies, and will probably be
+            cleaned-up/splitted to be easier to follow, ad interim, you enter
+            the jungle below at your own risks :) 
+}
 unit fClothify;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer, GLMisc,
+  GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer, GLMisc,
   GLFileMS3D, VerletClasses, VectorTypes, VectorLists, Geometry, GLTexture,
   OpenGL12, StdCtrls, GLFileSMD, GLCadencer, ExtCtrls, GLShadowPlane,
-  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, GLShadowVolume, ODEImport, ODEGL;
+  GLVerletClothify, ComCtrls, jpeg, GLFile3DS, ODEImport, ODEGL;
 
 type
   TfrmClothify = class(TForm)
@@ -50,10 +56,8 @@ type
     TrackBar_Friction: TTrackBar;
     Label7: TLabel;
     GLDummyCube_Light: TGLDummyCube;
-    GLDirectOpenGL1: TGLDirectOpenGL;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure GLDirectOpenGL1Render(var rci: TRenderContextInfo);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
@@ -69,6 +73,8 @@ type
     { Private declarations }
   public
     { Public declarations }
+    mx, my : integer;
+
     VerletAssembly : TVerletAssembly;
     EdgeDetector : TEdgeDetector;
 
@@ -148,6 +154,7 @@ var
 
     PositionSceneObjectForGeom(ODESphere);
   end;
+  
 begin
   randomize;
 
@@ -209,9 +216,6 @@ begin
 
   TVFGravity.Create(VerletAssembly);
 
-  {AirResistance := TVFAirResistance.Create(VerletAssembly);
-  AirResistance.DragCoeff := 0.00001;//}
-
   Floor := TVCFloor.Create(VerletAssembly);
   Floor.Location := VectorAdd(GLShadowPlane1.Position.AsAffineVector, myVectorMake2(0,0.1,0));
   Floor.Normal := GLShadowPlane1.Direction.AsAffineVector;
@@ -229,11 +233,6 @@ begin
   end;
 
   if GLCylinder1.Visible then begin
-     {Cylinder := TVCCylinder.Create(VerletAssembly);
-     Cylinder.Radius := GLCylinder1.TopRadius;
-     Cylinder.Base := AffineVectorMake(GLCylinder1.AbsolutePosition);
-     Cylinder.Axis := AffineVectorMake(GLCylinder1.AbsoluteUp);//}
-
      Capsule := TVCCapsule.Create(VerletAssembly);
      Capsule.Radius := GLCylinder1.TopRadius;
      Capsule.Location := AffineVectorMake(GLCylinder1.AbsolutePosition);
@@ -263,15 +262,6 @@ begin
   VerletAssembly.Iterations := TrackBar_Iterations.Position;
 
   TrackBar_FrictionChange(nil);
-
-  // Caption := Format('Edges = %d, EdgeDoublesSkipped = %d',[EdgeDetector.EdgeList.Count, EdgeDetector.EdgeDoublesSkipped]);
-end;
-
-var
-  mx, my : integer;
-procedure TfrmClothify.GLDirectOpenGL1Render(var rci: TRenderContextInfo);
-begin
-  // EdgeDetector.RenderEdges(rci);
 end;
 
 procedure TfrmClothify.GLSceneViewer1MouseMove(Sender: TObject;
@@ -328,30 +318,30 @@ end;
 
 procedure TfrmClothify.GLCadencer1Progress(Sender: TObject;
   const deltaTime, newTime: Double);
+var
+   i : Integer;
 begin
-  if CheckBox_Pause.Checked then
-    VerletAssembly.SimTime := newTime
-  else
-  begin
-    if world <> nil then
-    begin
-      PositionSceneObjectForGeom(ODESphere);
-      VCSphere.Location := GLSphere1.Position.AsAffineVector;
+   if CheckBox_Pause.Checked then
+      VerletAssembly.SimTime := newTime
+   else begin
+      if world <> nil then begin
+         PositionSceneObjectForGeom(ODESphere);
+         VCSphere.Location := GLSphere1.Position.AsAffineVector;
 
-      dBodyAddForce(dGeomGetBody(ODESphere),
-        VCSphere.KickbackForce[0],
-        VCSphere.KickbackForce[1],
-        VCSphere.KickbackForce[2]);
+         dBodyAddForce(dGeomGetBody(ODESphere),
+                       VCSphere.KickbackForce[0],
+                       VCSphere.KickbackForce[1],
+                       VCSphere.KickbackForce[2]);
 
-      dSpaceCollide (space,nil,nearCallback);
-      dWorldStep(World, VerletAssembly.MaxDeltaTime);
-      dJointGroupEmpty (contactgroup);
-    end;
+         dSpaceCollide (space,nil,nearCallback);
+         dWorldStep(World, VerletAssembly.MaxDeltaTime);
+         dJointGroupEmpty (contactgroup);
+      end;
 
-    VerletAssembly.Progress(VerletAssembly.MaxDeltaTime, newTime);
+      VerletAssembly.Progress(VerletAssembly.MaxDeltaTime, newTime);
 
-    GLActor1.StructureChanged;
-  end;
+      GLActor1.StructureChanged;
+   end;
 end;
 
 procedure TfrmClothify.Timer1Timer(Sender: TObject);
@@ -362,10 +352,7 @@ end;
 
 procedure TfrmClothify.FormCreate(Sender: TObject);
 begin
-  if DirectoryExists('Media') then
-    SetCurrentDir('Media')
-  else
-    SetCurrentDir('..\..\Media\');
+  SetCurrentDir('..\..\Media\');
 
   Button_LoadMesh.Click;
   TrackBar_IterationsChange(nil);
@@ -408,4 +395,5 @@ begin
     if VerletAssembly.Constraints[i] is TVerletGlobalFrictionConstraint then
       TVerletGlobalFrictionConstraint(VerletAssembly.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
 end;
+
 end.
