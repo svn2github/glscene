@@ -34,6 +34,7 @@ type
    TAABB = record
       min, max : TAffineVector;
    end;
+   PAABB = ^TAABB;
 
    // TBSphere
    //
@@ -85,6 +86,9 @@ function BBMaxZ(const c : THmgBoundingBox) : Single;
 procedure AABBInclude(var bb : TAABB; const p : TAffineVector);
 {: Make an AABB that is formed by sweeping a sphere (or AABB) from Start to Dest}
 procedure AABBFromSweep(var SweepAABB:TAABB; const Start,Dest:TVector; const Radius:Single);
+{: Returns the intersection AABB of two AABBs.<p>
+   If the AABBs don't intersect, will return a degenerated AABB (plane, line or point). }
+function AABBIntersection(const aabb1, aabb2 : TAABB) : TAABB;
 
 {: Extract AABB information from a BB. }
 function BBToAABB(const aBB : THmgBoundingBox) : TAABB;
@@ -397,6 +401,18 @@ begin
    begin
      SweepAABB.min[2]:=Dest[2]-radius;
      SweepAABB.max[2]:=Start[2]+radius;
+   end;
+end;
+
+// AABBIntersection
+//
+function AABBIntersection(const aabb1, aabb2 : TAABB) : TAABB;
+var
+   i : Integer;
+begin
+   for i:=0 to 2 do begin
+      Result.min[i]:=MaxFloat(aabb1.min[i], aabb2.min[i]);
+      Result.max[i]:=MinFloat(aabb1.max[i], aabb2.max[i]);
    end;
 end;
 
