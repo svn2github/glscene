@@ -1,20 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFPSMovement<p>
+{: GLMaterialScript<p>
 
-   FPS-like movement behaviour and manager.<p>
+   Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
 
-	<b>History : </b><font size=-1><ul>	
+	<b>History : </b><font size=-1><ul>
       <li>09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
 	</ul></font>
 }
-
 {
    Author : Kenneth Poulter (aka SpiriT aka Difacane)
    Base : none, apart from glscene materiallibrary
-
-   Description : Material Script Batch loader for GLScene's TGLMaterialLibrary for runtime purposes usually
 
    History :
    26/06/2004 - KP - started basic script idea using repeat statements
@@ -22,18 +19,13 @@
    27/06/2004 - KP - finished script, but not dynamic, error handling needs some work
    28/06/2004 - KP - cleaned it all up, nearly ready for realease
    29/06/2004 - KP - Converted to a component class, ready for release
-
-   Notes :
-   1.ImageClass Script is theoritecally correct, hasn't been tested yet, only Persistent image has been checked.
-   2.Keep to the guidelines of the script with syntax involved etc, meaning, don't bash my scripter around :P
-   3.The script isn't very dynamic at all, but works if used correctly, follow the demos and sure to work
-   4.Reference to materiallibraries in script isn't implemented yet, need collection classes
-   5.Reference to shaders in script isn't implemented yet, need collection classes
-
+   29/06/2004 - KP - Updated strtofloat to strtofloatdef and replaced "," with ";"
+   29/06/2004 - KP - Added MaterialLibraries and Shaders for use
+   06/07/2004 - KP - Added Append and Overwrite
+   
    Future notes :
    Implementation of variables
    Implementation of constants
-   Effects addition (already in source, but not implemented, have to write an "effectslibrary"
 
    This source falls under the GNU GPL license, unless stated otherwise by the author(Kenneth Poulter).
 
@@ -46,119 +38,207 @@ unit GLMaterialScript;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, jpeg, tga, StdCtrls, GLTexture, GLMisc,
-  ExtCtrls, GLUtils;
+  Windows, Messages, SysUtils, Classes, jpeg, tga, StdCtrls, GLTexture, GLMisc, ExtCtrls, Variants, GLUtils;
 
 type
+   TGLShaderItem = class (TCollectionItem)
+	            private
+                       FShader: TGLShader;
+                       FName: String;
+                       procedure SetShader(const Value: TGLShader);
+                       procedure SetName(const Value: String);
+	            { Private Declarations }
+
+	            protected
+	            { Protected Declarations }
+                       function GetDisplayName : String; override;
+
+                    public
+	            { Public Declarations }
+	               constructor Create(Collection : TCollection); override;
+	               destructor Destroy; override;
+                       procedure Assign(Source: TPersistent); override;
+
+                    published
+	            { Published Declarations }
+                       property Shader : TGLShader read FShader write SetShader;
+                       property Name : String read FName write SetName;
+	            end;
+
+   TGLShaderItems = class (TCollection)
+	             protected
+	             { Protected Declarations }
+             	        Owner : TComponent;
+	                function GetOwner: TPersistent; override;
+                        procedure SetItems(index : Integer; const val : TGLShaderItem);
+	                function GetItems(index : Integer) : TGLShaderItem;
+
+                     public
+	             { Public Declarations }
+	                constructor Create(AOwner : TComponent);
+                        property Items[index : Integer] : TGLShaderItem read GetItems write SetItems; default;
+
+                     end;
+
+   TGLMaterialLibraryItem = class (TCollectionItem)
+	                     private
+                                FMaterialLibrary: TGLMaterialLibrary;
+                                FName: String;
+                                procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
+                                procedure SetName(const Value: String);
+	                     { Private Declarations }
+
+	                     protected
+	                     { Protected Declarations }
+                                function GetDisplayName : String; override;
+
+                             public
+	                     { Public Declarations }
+	                        constructor Create(Collection : TCollection); override;
+	                        destructor Destroy; override;
+                                procedure Assign(Source: TPersistent); override;
+
+                             published
+	                     { Published Declarations }
+                             property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+                             property Name : String read FName write SetName;
+	                  end;
+
+   TGLMaterialLibraryItems = class (TCollection)
+	                      protected
+	                      { Protected Declarations }
+             	                 Owner : TComponent;
+	                         function GetOwner: TPersistent; override;
+                                 procedure SetItems(index : Integer; const val : TGLMaterialLibraryItem);
+	                         function GetItems(index : Integer) : TGLMaterialLibraryItem;
+
+                              public
+	                      { Public Declarations }
+	                         constructor Create(AOwner : TComponent);
+                                 property Items[index : Integer] : TGLMaterialLibraryItem read GetItems write SetItems; default;
+
+                           end;
+
+
    TGLMaterialScripter = class(TComponent)
-   protected
-   { Protected declarations }
+                         protected
+                         { Protected declarations }
 
-      FScript : TStrings;
-      FMemo: TMemo;
-      FMaterialLibrary: TGLMaterialLibrary;
+                            FScript : TStrings;
+                            FMemo: TMemo;
+                            FMaterialLibrary: TGLMaterialLibrary;
 
-      Count  : longint;
-      infini : longint;
-      done : boolean;
+                            Count  : longint;
+                            infini : longint;
+                            done : boolean;
 
-      NewMat : TGLLibMaterial;
+                            NewMat : TGLLibMaterial;
 
-      tmpcoords : TGLCoordinates;
-      tmpcolor : TGLColor;
-      tmpcoords4 : TGLCoordinates4;
-      tmpstr : string;
+                            tmpcoords : TGLCoordinates;
+                            tmpcolor : TGLColor;
+                            tmpcoords4 : TGLCoordinates4;
+                            tmpstr : string;
 
-      procedure SetScript(const Value: TStrings);
-      procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
-      procedure SetMemo(const Value: TMemo);
+                            procedure SetScript(const Value: TStrings);
+                            procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
+                            procedure SetMemo(const Value: TMemo);
 
-      // error checking
-      procedure CheckError;
-      function  ClassExists(arguement : string) : boolean;
-      function  CheckRepeatDone : boolean;
-      // extraction functions
-      function  ExtractValue : string;
-      procedure ExtractCoords3;
-      procedure ExtractCoords4;
-      procedure ExtractColors;
-      function  DeleteSpaces(value : string) : string;
-      function  SubstrExists(substr : string) : boolean;
-      function  ValueExists(value : string) : boolean;
-      // these are our viable scripts
-      procedure ZMaterial;
-      procedure ZEffect;
-      // internally called scripts for value extraction
-      procedure XMaterial;
-      procedure XName;
-      procedure XShader;
-      procedure XTexture2Name;
-      procedure XTextureOffset;
-      procedure XTextureScale;
-      procedure XTexture;
-      procedure XCompression;
-      procedure XEnvColor;
-      procedure XFilteringQuality;
-      procedure XImageAlpha;
-      procedure XImageBrightness;
-      procedure XImageClass;
-      procedure XImageGamma;
-      procedure XMagFilter;
-      procedure XMappingMode;
-      procedure XMappingSCoordinates;
-      procedure XMappingTCoordinates;
-      procedure XMinFilter;
-      procedure XNormalMapScale;
-      procedure XTextureFormat;
-      procedure XTextureMode;
-      procedure XTextureWrap;
-      procedure XBlendingMode;
-      procedure XFacingCulling;
-      procedure XLibMaterialName;
-      procedure XMaterialOptions;
-      procedure XMaterialLibrary;
-      procedure XBackProperties;
-      procedure XBackAmbient;
-      procedure XBackDiffuse;
-      procedure XBackEmission;
-      procedure XBackPolygonMode;
-      procedure XBackShininess;
-      procedure XBackSpecular;
-      procedure XFrontProperties;
-      procedure XFrontAmbient;
-      procedure XFrontDiffuse;
-      procedure XFrontEmission;
-      procedure XFrontPolygonMode;
-      procedure XFrontShininess;
-      procedure XFrontSpecular;
-      procedure XPersistantImage;
-      procedure XBlankImage;
-      procedure XPictureFileName;
-      procedure XPicturePX;
-      procedure XPictureNX;
-      procedure XPicturePY;
-      procedure XPictureNY;
-      procedure XPicturePZ;
-      procedure XPictureNZ;
-   private
-   { Private declarations }
+                            // error checking
+                            procedure CheckError;
+                            function  ClassExists(arguement : string) : boolean;
+                            function  CheckRepeatDone : boolean;
+                            // extraction functions
+                            function  ExtractValue : string;
+                            procedure ExtractCoords3;
+                            procedure ExtractCoords4;
+                            procedure ExtractColors;
+                            function  DeleteSpaces(value : string) : string;
+                            function  SubstrExists(substr : string) : boolean;
+                            function  ValueExists(value : string) : boolean;
+                            // these are our viable scripts
+                            procedure ZMaterial;
+                            // internally called scripts for value extraction
+                            procedure XMaterial;
+                            procedure XName;
+                            procedure XShader;
+                            procedure XTexture2Name;
+                            procedure XTextureOffset;
+                            procedure XTextureScale;
+                            procedure XTexture;
+                            procedure XCompression;
+                            procedure XEnvColor;
+                            procedure XFilteringQuality;
+                            procedure XImageAlpha;
+                            procedure XImageBrightness;
+                            procedure XImageClass;
+                            procedure XImageGamma;
+                            procedure XMagFilter;
+                            procedure XMappingMode;
+                            procedure XMappingSCoordinates;
+                            procedure XMappingTCoordinates;
+                            procedure XMinFilter;
+                            procedure XNormalMapScale;
+                            procedure XTextureFormat;
+                            procedure XTextureMode;
+                            procedure XTextureWrap;
+                            procedure XBlendingMode;
+                            procedure XFacingCulling;
+                            procedure XLibMaterialName;
+                            procedure XMaterialOptions;
+                            procedure XMaterialLibrary;
+                            procedure XBackProperties;
+                            procedure XBackAmbient;
+                            procedure XBackDiffuse;
+                            procedure XBackEmission;
+                            procedure XBackPolygonMode;
+                            procedure XBackShininess;
+                            procedure XBackSpecular;
+                            procedure XFrontProperties;
+                            procedure XFrontAmbient;
+                            procedure XFrontDiffuse;
+                            procedure XFrontEmission;
+                            procedure XFrontPolygonMode;
+                            procedure XFrontShininess;
+                            procedure XFrontSpecular;
+                            procedure XPersistantImage;
+                            procedure XBlankImage;
+                            procedure XPictureFileName;
+                            procedure XPicturePX;
+                            procedure XPictureNX;
+                            procedure XPicturePY;
+                            procedure XPictureNY;
+                            procedure XPicturePZ;
+                            procedure XPictureNZ;
+                         private
+                            FShaderItems: TGLShaderItems;
+                            FMaterialLibraryItems: TGLMaterialLibraryItems;
+                            FAppend: boolean;
+                            FOverwrite: boolean;
+                            procedure SeTGLShaderItems(const Value: TGLShaderItems);
+                            procedure SeTGLMaterialLibraryItems(const Value: TGLMaterialLibraryItems);
+                            procedure SetAppend(const Value: boolean);
+                            procedure SetOverwrite(const Value: boolean);
+                         { Private declarations }
 
+                         public
+                         { Public declarations }
 
-   public
-   { Public declarations }
+                            property DebugMemo : TMemo read FMemo write SetMemo;
+                            constructor Create(AOwner : TComponent); override;
+                            destructor  Destroy; override;
 
-      property DebugMemo : TMemo read FMemo write SetMemo;
-      constructor Create(AOwner : TComponent); override;
-      destructor  Destroy; override;
+                            procedure CompileScript;
 
-      procedure CompileScript;
-
-   published
-   { Published declarations }
-      property Script : TStrings read FScript write SetScript;
-      property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
-
-   end;
+                         published
+                         { Published declarations }
+                            property Script : TStrings read FScript write SetScript;
+                            property MaterialLibrary : TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
+                            property Shaders : TGLShaderItems read FShaderItems write SeTGLShaderItems;
+                            property MaterialLibraries : TGLMaterialLibraryItems read FMaterialLibraryItems write SeTGLMaterialLibraryItems;
+                            property AppendToMaterialLibrary : boolean read FAppend write SetAppend;
+                            property OverwriteToMaterialLibrary : boolean read FOverwrite write SetOverwrite;
+                            
+                         end;
 
 procedure Register;
 
@@ -167,6 +247,76 @@ implementation
 procedure Register;
 begin
   RegisterComponents('GLScene Utils', [TGLMaterialScripter]);
+end;
+
+procedure TGLShaderItem.SetShader(const Value: TGLShader);
+begin
+  if assigned(Value) then
+  begin
+     FShader := Value;
+     FName := FShader.Name;
+  end;
+end;
+
+procedure TGLShaderItem.Assign(Source: TPersistent);
+begin
+  if Source is TGLShaderItem then
+  begin
+     FShader := TGLShaderItem(Source).FShader;
+  end;
+  inherited Destroy;
+end;
+
+constructor TGLShaderItem.Create(Collection: TCollection);
+begin
+   inherited Create(Collection);
+   FName := 'Shader';
+end;
+
+destructor TGLShaderItem.Destroy;
+begin
+  inherited Destroy;
+end;
+
+function TGLShaderItem.GetDisplayName : String;
+begin
+   if FName = '' then
+   Result:='Shader'
+   else
+   Result := FName;
+end;
+
+{ TGLShaderItems }
+
+constructor TGLShaderItems.Create(AOwner: TComponent);
+begin
+   Owner := AOwner;
+   inherited Create(TGLShaderItem);
+end;
+
+function TGLShaderItems.GetItems(index: Integer): TGLShaderItem;
+begin
+   Result:=TGLShaderItem(inherited Items[index]);
+end;
+
+function TGLShaderItems.GetOwner: TPersistent;
+begin
+   Result:=Owner;
+end;
+
+procedure TGLShaderItems.SetItems(index: Integer; const val: TGLShaderItem);
+begin
+   inherited Items[index]:=val;
+end;
+
+procedure TGLMaterialScripter.SeTGLShaderItems(const Value: TGLShaderItems);
+begin
+   FShaderItems.Assign(Value);
+end;
+
+procedure TGLShaderItem.SetName(const Value: String);
+begin
+  FName := Value;
 end;
 
 procedure TGLMaterialScripter.CompileScript;
@@ -189,7 +339,6 @@ begin
       begin
 
          if substrexists('material') then ZMaterial;
-         if substrexists('effect') then ZEffect;
 
       end;
       checkerror;
@@ -201,20 +350,21 @@ end;
 procedure TGLMaterialScripter.SetMaterialLibrary(
   const Value: TGLMaterialLibrary);
 begin
+  if assigned(value) then
   FMaterialLibrary := Value;
 end;
 
 procedure TGLMaterialScripter.SetMemo(const Value: TMemo);
 begin
+  if assigned(value) then
   FMemo := Value;
 end;
 
 procedure TGLMaterialScripter.SetScript(const Value: TStrings);
 begin
+  if assigned(value) then
   FScript := Value;
 end;
-
-
 
 procedure TGLMaterialScripter.CheckError;
 begin
@@ -278,6 +428,10 @@ constructor TGLMaterialScripter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FScript := TStringList.Create;
+  FShaderItems:=TGLShaderItems.Create(Self);
+  FMaterialLibraryItems:=TGLMaterialLibraryItems.Create(Self);
+  FAppend := true;
+  FOverwrite := false;
 end;
 
 function TGLMaterialScripter.DeleteSpaces(value: string): string;
@@ -292,6 +446,8 @@ end;
 
 destructor TGLMaterialScripter.Destroy;
 begin
+  FShaderItems.Free;
+  FMaterialLibraryItems.Free;
   inherited Destroy;
 end;
 
@@ -376,7 +532,11 @@ procedure TGLMaterialScripter.XPictureFileName;
 begin
    if classexists('picturefilename') then
       with NewMat.Material.Texture.Image as TGLPicFileImage do
-         if fileexists(extractvalue) then picturefilename := extractvalue;
+         if fileexists(extractvalue) then
+         begin
+            picturefilename := extractvalue;
+            NewMat.Material.Texture.Disabled := false;
+         end;
 end;
 
 procedure TGLMaterialScripter.XPictureNX;
@@ -435,22 +595,30 @@ begin
 end;
 
 procedure TGLMaterialScripter.XMaterialLibrary;
+var i : word;
 begin
-   // again, we need collection class items
+   if classexists('materiallibrary') then
+   if MaterialLibraries.count > 0 then
+      for i := 0 to MaterialLibraries.Count - 1 do
+         if assigned(MaterialLibraries.Items[i].MaterialLibrary) then
+            if uppercase(MaterialLibraries.Items[i].MaterialLibrary.Name) = uppercase(extractvalue) then
+            NewMat.Material.MaterialLibrary := MaterialLibraries.Items[i].MaterialLibrary;
 end;
 
 procedure TGLMaterialScripter.XShader;
+var i : word;
 begin
-   // can't do this yet, need collection class, add shader library etc etc
-end;
-
-procedure TGLMaterialScripter.ZEffect;
-begin
-   // we have an effects script here
+   if classexists('shader') then
+   if Shaders.count > 0 then
+      for i := 0 to Shaders.Count - 1 do
+         if assigned(Shaders.Items[i].Shader) then
+            if uppercase(Shaders.Items[i].Shader.Name) = uppercase(extractvalue) then
+            NewMat.Shader := Shaders.Items[i].Shader;
 end;
 
 procedure TGLMaterialScripter.ZMaterial;
 var i : byte;
+    exists : boolean;
 begin
 
    if assigned(FMaterialLibrary) then
@@ -470,7 +638,37 @@ begin
          checkerror;
 
       until checkrepeatdone;
-      NewMat := nil;  // prepare for next material in script
+
+      // now we use append and overwrite settings to find out what is what
+
+      tmpstr := NewMat.Name;
+      delete(tmpstr,1,3); // removes the "TAG" not to confuse the system
+
+      exists := false;
+      if FMaterialLibrary.Materials.Count > 0 then
+      for i := 0 to FMaterialLibrary.Materials.Count - 1 do
+      if tmpstr = FMaterialLibrary.Materials.Items[i].Name then
+         exists := true;
+
+      if Exists then // does exist
+      begin
+         if FOverwrite then
+         begin
+            FMaterialLibrary.Materials.Delete(FMaterialLibrary.LibMaterialByName(tmpstr).Index);
+            NewMat.Name := tmpstr;
+         end
+         else
+         if FAppend then
+         begin
+            NewMat.Free;
+         end;
+      end
+      else           // doesn't exist
+      begin
+         NewMat.Name := tmpstr;
+         if not FAppend then
+         NewMat.Free;
+      end;
 
    end;
 
@@ -680,7 +878,7 @@ procedure TGLMaterialScripter.XImageBrightness;
 begin
    if classexists('imagebrightness') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.ImageBrightness := strtofloatdef(extractvalue);
+      NewMat.Material.Texture.ImageBrightness := strtofloatDef(extractvalue);
 end;
 
 
@@ -688,7 +886,7 @@ procedure TGLMaterialScripter.XImageGamma;
 begin
    if classexists('imagegamma') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.ImageGamma := strtofloatdef(extractvalue);
+      NewMat.Material.Texture.ImageGamma := strtofloatDef(extractvalue);
 end;
 
 procedure TGLMaterialScripter.XLibMaterialName;
@@ -746,9 +944,10 @@ end;
 procedure TGLMaterialScripter.XMaterialOptions;
 var a,b : boolean;
 begin
-   a:= false; b:= false;
    if classexists('materialoptions') then
    begin
+      a := false;
+      b := false;
       tmpstr := extractvalue;
       if uppercase(copy(tmpstr, pos('[',tmpstr) + 1, pos(',',tmpstr) - 2)) = uppercase('true') then a := true
       else
@@ -782,14 +981,14 @@ end;
 
 procedure TGLMaterialScripter.XName;
 begin
-   if classexists('name') then NewMat.Name := Extractvalue;
+   if classexists('name') then NewMat.Name := 'TAG' + Extractvalue; // we gonna use for appending and such, quick fix style
 end;
 
 procedure TGLMaterialScripter.XNormalMapScale;
 begin
    if classexists('normalmapscale') then
    if extractvalue <> '' then
-      NewMat.Material.Texture.NormalMapScale := strtofloatdef(extractvalue);
+      NewMat.Material.Texture.NormalMapScale := strtofloatDef(extractvalue);
 end;
 
 
@@ -938,44 +1137,43 @@ begin
    begin
 
       tmpstr := extractvalue;
-      // set these first, so we have the class already generated by SetImageClassName in GLTexture.pas
-      if valueexists('Persistent Image') then Newmat.Material.Texture.ImageClassName := TGLPersistentImage.ClassName;
-      if valueexists('Blank Image') then Newmat.Material.Texture.ImageClassName := TGLBlankImage.ClassName;
-      if valueexists('PicFile Image') then Newmat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName;
-      if valueexists('CubeMap Image') then Newmat.Material.Texture.ImageClassName := TGLCubeMapImage.ClassName;
-
       tmpstr := deletespaces(tmpstr);
 
       if valueexists('persistentimage{') then // loadfromfile
       repeat
          inc(count);
+         Newmat.Material.Texture.ImageClassName := TGLPersistentImage.ClassName;
          XPersistantImage;
          checkerror;
       until checkrepeatdone;
 
-      if substrexists('blankimage{') then // loadfromfile
+      if valueexists('blankimage{') then // loadfromfile
       repeat
          inc(count);
+         Newmat.Material.Texture.ImageClassName := TGLBlankImage.ClassName;
          XBlankImage;
          checkerror;
       until checkrepeatdone;
 
-      if substrexists('picfileimage{') then //picturefilename
+      if valueexists('picfileimage{') then //picturefilename
       repeat
          inc(count);
+         Newmat.Material.Texture.ImageClassName := TGLPicFileImage.ClassName;
          XPictureFilename;
          checkerror;
       until checkrepeatdone;
 
-      if substrexists('cubemapimage{') then  // px, nx, py, ny, pz, nz
+      if valueexists('cubemapimage{') then  // px, nx, py, ny, pz, nz
       repeat
          inc(count);
+         Newmat.Material.Texture.ImageClassName := TGLCubeMapImage.ClassName;
          XPicturePX;
          XPictureNX;
          XPicturePY;
          XPictureNY;
          XPicturePZ;
          XPictureNZ;
+         NewMat.Material.Texture.Disabled := false;
          checkerror;
       until checkrepeatdone;
 
@@ -1007,5 +1205,91 @@ begin
    end;
 end;
 
+
+{ TGLMaterialLibraryItems }
+
+constructor TGLMaterialLibraryItems.Create(AOwner: TComponent);
+begin
+   Owner := AOwner;
+   inherited Create(TGLMaterialLibraryItem);
+end;
+
+function TGLMaterialLibraryItems.GetItems(index: Integer): TGLMaterialLibraryItem;
+begin
+   Result:=TGLMaterialLibraryItem(inherited Items[index]);
+
+end;
+
+function TGLMaterialLibraryItems.GetOwner: TPersistent;
+begin
+   Result:=Owner;
+end;
+
+procedure TGLMaterialLibraryItems.SetItems(index: Integer;
+  const val: TGLMaterialLibraryItem);
+begin
+   inherited Items[index]:=val;
+end;
+
+{ TGLMaterialLibraryItem }
+
+procedure TGLMaterialLibraryItem.Assign(Source: TPersistent);
+begin
+  if Source is TGLMaterialLibraryItem then
+  begin
+     FMaterialLibrary := TGLMaterialLibraryItem(Source).FMaterialLibrary;
+  end;
+  inherited Destroy;
+end;
+
+constructor TGLMaterialLibraryItem.Create(Collection: TCollection);
+begin
+   inherited Create(Collection);
+   FName := 'MaterialLibrary';
+end;
+
+destructor TGLMaterialLibraryItem.Destroy;
+begin
+  inherited Destroy;
+end;
+
+function TGLMaterialLibraryItem.GetDisplayName: String;
+begin
+   if FName = '' then
+   Result:='MaterialLibrary'
+   else
+   Result := FName;
+end;
+
+procedure TGLMaterialLibraryItem.SetMaterialLibrary(
+  const Value: TGLMaterialLibrary);
+begin
+  if assigned(Value) then
+  begin
+     FMaterialLibrary := Value;
+     FName := FMaterialLibrary.Name;
+  end;
+end;
+
+procedure TGLMaterialLibraryItem.SetName(const Value: String);
+begin
+   FName := Value;
+end;
+
+procedure TGLMaterialScripter.SeTGLMaterialLibraryItems(
+  const Value: TGLMaterialLibraryItems);
+begin
+   FMaterialLibraryItems.Assign(Value);
+end;
+
+procedure TGLMaterialScripter.SetAppend(const Value: boolean);
+begin
+  FAppend := Value;
+end;
+
+procedure TGLMaterialScripter.SetOverwrite(const Value: boolean);
+begin
+  FOverwrite := Value;
+end;
 
 end.
