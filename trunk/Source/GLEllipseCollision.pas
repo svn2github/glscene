@@ -19,7 +19,7 @@ unit GLEllipseCollision;
 
 interface
 
-uses Types,VectorGeometry, GLTerrainRenderer;
+uses {$IFNDEF GLS_DELPHI_5}Types,{$ENDIF} VectorGeometry, GLTerrainRenderer;
 
 type
   TECPlane = class
