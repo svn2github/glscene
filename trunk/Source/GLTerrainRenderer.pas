@@ -351,6 +351,7 @@ begin
    n:=aTile.Normal(x, x, scale);
    glBegin(GL_TRIANGLE_FAN);
       glNormal3fv(@n);
+      xglTexCoord2f(p[0]*texFactor, -p[1]*texFactor);
       glVertex3fv(@p);
       p[1]:=leftTop[1]+1*scale[0];
       row:=aTile.ByteRaster[1];
