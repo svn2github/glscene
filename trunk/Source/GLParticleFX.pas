@@ -7,6 +7,7 @@
    fire and smoke particle systems for instance).<p>
 
    <b>Historique : </b><font size=-1><ul>
+      <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
       <li>08/09/01 - EG - Creation (GLParticleFX.omm)
    </ul></font>
 }
@@ -1491,8 +1492,8 @@ begin
       end;
    else
       f:=(lifeTime-LifeColors[k-1].LifeTime)/LifeColors[k].LifeTime;
-      inner:=VectorLerp(LifeColors[k-1].ColorInner.Color, LifeColors[k-1].ColorOuter.Color, f);
-      outer:=VectorLerp(LifeColors[k].ColorInner.Color,   LifeColors[k].ColorOuter.Color, f);
+      inner:=VectorLerp(LifeColors[k-1].ColorInner.Color, LifeColors[k-1].ColorInner.Color, f);
+      outer:=VectorLerp(LifeColors[k].ColorOuter.Color,   LifeColors[k].ColorOuter.Color, f);
    end;
    glTranslatef(aParticle.Position[0]-FLastPos[0],
                 aParticle.Position[1]-FLastPos[1],
