@@ -1,0 +1,43 @@
+package GLS_DWS7;
+
+{$R *.res}
+{$R '..\Source\ScriptingAPIs\GLSceneVCLDWS2.dcr'}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'GLScene - DelphiWebScriptII'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  GLScene7,
+  dws2Runtime;
+
+contains
+  GLDWS2Objects in '..\Source\GLDWS2Objects.pas',
+  dws2HelperFunc in '..\Source\ScriptingAPIs\dws2HelperFunc.pas',
+  dws2Classes in '..\Source\ScriptingAPIs\dws2Classes.pas',
+  dws2VectorGeometry in '..\Source\ScriptingAPIs\dws2VectorGeometry.pas',
+  dws2GLScene in '..\Source\ScriptingAPIs\dws2GLScene.pas';
+
+end.
