@@ -204,6 +204,7 @@ interface
 
 // Deactived by Eric Grange - GLScene is not thread-safe, so get best performance
 {.$define MULTITHREADOPENGL}
+{$i ..\GLScene.inc}
 
 uses
    VectorTypes, // Added by Eric Grange for GLScene Compatibility
@@ -7042,7 +7043,7 @@ resourcestring
 
 {$ifdef Win32}
   SDefaultGLLibrary = 'OpenGL32.dll'; 
-  SDefaultGLULibrary = 'GLU32.dll'; 
+  SDefaultGLULibrary = 'GLU32.dll';
 {$endif}
 
 {$ifdef LINUX}
@@ -7060,15 +7061,14 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-{$ifndef VER140}
+{$ifndef GLS_DELPHI_6_UP}
 
 procedure RaiseLastOSError;
-
 begin
-  RaiseLastWin32Error;
+   RaiseLastWin32Error;
 end;
 
-{$endif VER140}
+{$endif}
 
 // ClearProcAddresses
 //
