@@ -4,6 +4,7 @@
    Currently NOT thread-safe.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>25/09/03 - EG - Added TGLVBOHandle
       <li>20/09/03 - EG - Added TGLOcclusionQueryHandle
       <li>30/01/02 - EG - Added TGLVirtualHandle
       <li>29/01/02 - EG - Improved recovery for context creation failures
@@ -24,7 +25,7 @@ unit GLContext;
 
 interface
 
-uses Classes, SysUtils;
+uses Classes, SysUtils, OpenGL1x;
 
 type
 
@@ -306,6 +307,70 @@ type
          function PixelCount : Integer;
    end;
 
+   // TGLVBOHandle
+   //
+   {: Manages a handle to an Vertex Buffer Object.<br>
+      Does *NOT* check for extension availability, this is assumed to have been
+      checked by the user.<br>
+      Do not use this class directly, use one of its subclasses instead. }
+   TGLVBOHandle = class (TGLContextHandle)
+      private
+         { Private Declarations }
+         FVBOTarget : TGLuint;
+
+      protected
+         { Protected Declarations }
+         function DoAllocateHandle : Integer; override;
+         procedure DoDestroyHandle; override;
+
+      public
+         { Public Declarations }
+         {: Creates the VBO buffer and initializes it. }
+         constructor CreateFromData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+
+         procedure Bind;
+         {: Note that it is not necessary to UnBind before Binding another buffer. }
+         procedure UnBind;
+         {: Specifies buffer content.<p>
+            Common bufferUsage values are GL_STATIC_DRAW_ARB for data that will
+            change rarely, but be used often, GL_STREAM_DRAW_ARB for data specified
+            once but used only a few times, and GL_DYNAMIC_DRAW_ARB for data
+            that is re-specified very often.<p>
+            Valid only if the buffer has been bound. }
+         procedure BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+         {: Map buffer content to memory.<p>
+            Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
+            GL_READ_WRITE_ARB.<p>
+            Valid only if the buffer has been bound, must be followed by
+            an UnmapBuffer, only one buffer may be mapped at a time. }
+         function MapBuffer(access : TGLuint) : Pointer;
+         {: Unmap buffer content from memory.<p>
+            Must follow a MapBuffer, and happen before the buffer is unbound. }
+         function UnmapBuffer : Boolean;
+
+         property VBOTarget : TGLuint read FVBOTarget;
+   end;
+
+   // TGLVBOArrayBufferHandle
+   //
+   {: Manages a handle to VBO Array Buffer.<p>
+      Typically used to store vertices, normals, texcoords, etc. }
+   TGLVBOArrayBufferHandle = class (TGLVBOHandle)
+      public
+         { Public Declarations }
+         constructor Create; override;
+   end;
+
+   // TGLVBOElementArrayHandle
+   //
+   {: Manages a handle to VBO Element Array Buffer.<p>
+      Typically used to store vertex indices. }
+   TGLVBOElementArrayHandle = class (TGLVBOHandle)
+      public
+         { Public Declarations }
+         constructor Create; override;
+   end;
+
    // TGLContextNotification
    //
    TGLContextNotification = record
@@ -395,7 +460,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses OpenGL1x, GLCrossPlatform;
+uses GLCrossPlatform;
 
 resourcestring
    cCannotAlterAnActiveContext = 'Cannot alter an active context';
@@ -960,6 +1025,102 @@ begin
    Assert(FHandle<>0);
    Result:=0;
    glGetOcclusionQueryuivNV(Handle, GL_PIXEL_COUNT_NV, @Result);
+end;
+
+// ------------------
+// ------------------ TGLVBOHandle ------------------
+// ------------------
+
+// CreateFromData
+//
+constructor TGLVBOHandle.CreateFromData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+begin
+   Create;
+   AllocateHandle;
+   Bind;
+   BufferData(p, size, bufferUsage);
+   UnBind;
+end;
+
+// DoAllocateHandle
+//
+function TGLVBOHandle.DoAllocateHandle : Integer;
+begin
+   Assert((FVBOTarget=GL_ARRAY_BUFFER_ARB) or (FVBOTarget=GL_ELEMENT_ARRAY_BUFFER_ARB));
+   glGenBuffersARB(1, @Result);
+end;
+
+// DoDestroyHandle
+//
+procedure TGLVBOHandle.DoDestroyHandle;
+begin
+   if not vIgnoreContextActivationFailures then begin
+      // reset error status
+      glGetError;
+      // delete
+ 	   glDeleteBuffersARB(1, @FHandle);
+      // check for error
+      CheckOpenGLError;
+   end;
+end;
+
+// BindAsArrayBuffer
+//
+procedure TGLVBOHandle.Bind;
+begin
+   glBindBufferARB(FVBOTarget, Handle);
+end;
+
+// UnBind
+//
+procedure TGLVBOHandle.UnBind;
+begin
+   glBindBufferARB(FVBOTarget, 0);
+end;
+
+// BufferData
+//
+procedure TGLVBOHandle.BufferData(p : Pointer; size : Integer; bufferUsage : TGLuint);
+begin
+   glBufferDataARB(FVBOTarget, size, p, bufferUsage);
+end;
+
+// MapBuffer
+//
+function TGLVBOHandle.MapBuffer(access : TGLuint) : Pointer;
+begin
+   Result:=glMapBufferARB(FVBOTarget, access);
+end;
+
+// UnmapBuffer
+//
+function TGLVBOHandle.UnmapBuffer : Boolean;
+begin
+   Result:=glUnmapBufferARB(FVBOTarget);
+end;
+
+// ------------------
+// ------------------ TGLVBOArrayBufferHandle ------------------
+// ------------------
+
+// TGLVBOArrayBufferHandle
+//
+constructor TGLVBOArrayBufferHandle.Create;
+begin
+   FVBOTarget:=GL_ARRAY_BUFFER_ARB;
+   inherited;
+end;
+
+// ------------------
+// ------------------ TGLVBOElementArrayHandle ------------------
+// ------------------
+
+// TGLVBOArrayBufferHandle
+//
+constructor TGLVBOElementArrayHandle.Create;
+begin
+   FVBOTarget:=GL_ELEMENT_ARRAY_BUFFER_ARB;
+   inherited;
 end;
 
 // ------------------
