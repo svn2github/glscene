@@ -269,13 +269,14 @@ begin
 	FScene:=Scene;
    FCurrentDesigner:=Designer;
    ResetTree;
+   BehavioursListView.Clear;
+   EffectsListView.Clear;
+
    if Assigned(FScene) then begin
       FScene.FreeNotification(Self);
       ReadScene;
       Caption:=cGLSceneEditor+' : '+FScene.Name;
    end else Caption:=cGLSceneEditor;
-   BehavioursListView.Clear;
-   EffectsListView.Clear;
    TreeChange(Self, nil);
    if Assigned(FScene) then
    begin
@@ -294,6 +295,7 @@ begin
          TBAddEffects.Enabled:=false;
          TBAddBehaviours.Enabled:=false;
    end;
+   ShowBehavioursAndEffects(nil);
 end;
 
 // FormCreate
@@ -918,6 +920,7 @@ begin
 		FScene.LoadFromFile(OpenDialog.FileName);
 		ResetTree;
 		ReadScene;
+                ShowBehavioursAndEffects(nil);
 	end;
 end;
 
