@@ -41,6 +41,7 @@ type
     BUBitmap600: TButton;
     BUBitmap300: TButton;
     SpaceText1: TGLSpaceText;
+    BUViewerSnapShot: TButton;
     procedure Sphere1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -50,6 +51,7 @@ type
     procedure BUBitmapx2Click(Sender: TObject);
     procedure BUBitmap600Click(Sender: TObject);
     procedure BUBitmap300Click(Sender: TObject);
+    procedure BUViewerSnapShotClick(Sender: TObject);
   private
     { Private declarations }
     procedure RenderToBitmap(scale : Single);
@@ -87,6 +89,23 @@ begin
    f.Image1.Width:=aBitmap.Width;
    f.Image1.Height:=aBitmap.Height;
    f.Show;
+end;
+
+procedure TForm1.BUViewerSnapShotClick(Sender: TObject);
+var
+   pt : Int64;
+   bmp : TBitmap;
+   delta : Double;
+begin
+   pt:=StartPrecisionTimer;
+   // Create a snapshot directly from the viewer content
+   bmp:=GLSceneViewer1.CreateSnapShotBitmap;
+   delta:=StopPrecisionTimer(pt);
+   // Display the bitmap for the user to see and gaze in everlasting awe...
+   ViewBitmap(bmp, Format('SnapShot %dx%d - %.3f ms',
+                          [bmp.Width, bmp.Height, delta*1000]));
+   // Release the bitmap
+   bmp.Free;
 end;
 
 procedure TForm1.BUSnapShotClick(Sender: TObject);

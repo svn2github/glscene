@@ -33,16 +33,16 @@ object Form1: TForm1
     TabOrder = 1
     object BUSnapShot: TButton
       Left = 8
-      Top = 8
+      Top = 40
       Width = 97
       Height = 25
-      Caption = 'SnapShot'
+      Caption = 'Buffer SnapShot'
       TabOrder = 0
       OnClick = BUSnapShotClick
     end
     object BURenderToBitmap: TButton
       Left = 8
-      Top = 48
+      Top = 72
       Width = 97
       Height = 25
       Caption = 'Render To Bitmap'
@@ -51,7 +51,7 @@ object Form1: TForm1
     end
     object BUBitmapx2: TButton
       Left = 8
-      Top = 96
+      Top = 120
       Width = 97
       Height = 25
       Caption = 'Bitmap x2'
@@ -60,7 +60,7 @@ object Form1: TForm1
     end
     object BUBitmap600: TButton
       Left = 8
-      Top = 176
+      Top = 200
       Width = 97
       Height = 25
       Caption = 'Bitmap 600 dpi'
@@ -69,12 +69,21 @@ object Form1: TForm1
     end
     object BUBitmap300: TButton
       Left = 8
-      Top = 136
+      Top = 160
       Width = 97
       Height = 25
       Caption = 'Bitmap 300 dpi'
       TabOrder = 4
       OnClick = BUBitmap300Click
+    end
+    object BUViewerSnapShot: TButton
+      Left = 8
+      Top = 8
+      Width = 97
+      Height = 25
+      Caption = 'Viewer SnapShot'
+      TabOrder = 5
+      OnClick = BUViewerSnapShotClick
     end
   end
   object GLScene1: TGLScene
@@ -91,19 +100,22 @@ object Form1: TForm1
       Width = 16
       Height = 16
       NoZWrite = True
+      MirrorU = False
+      MirrorV = False
     end
     object Plane1: TGLPlane
-      Direction.Coordinates = {000000000000803F0000000000000000}
-      Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Disabled = False
+      Direction.Coordinates = {000000000000803F0000000000000000}
+      Up.Coordinates = {E9DC72BF000000009BE8A13E00000000}
       Height = 6
       Width = 6
+      NoZWrite = False
       object SpaceText1: TGLSpaceText
-        Position.Coordinates = {000020C000000000CDCC4C3D0000803F}
-        Up.Coordinates = {0000803F000000800000000000000000}
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
         Material.FrontProperties.Specular.Color = {FA7EAA3EFA7EAA3E000000000000803F}
+        Position.Coordinates = {000020C000000000CDCC4C3D0000803F}
+        Up.Coordinates = {0000803F000000800000000000000000}
         Extrusion = 0.0500000007450581
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -120,11 +132,11 @@ object Form1: TForm1
       end
     end
     object Sphere1: TGLSphere
-      OnProgress = Sphere1Progress
       Material.FrontProperties.Diffuse.Color = {9A99393F9A99393F0000803F0000803F}
       Material.Texture.TextureMode = tmModulate
       Material.Texture.MappingMode = tmmSphere
       Material.Texture.Disabled = False
+      OnProgress = Sphere1Progress
       Radius = 1
       Slices = 24
     end
