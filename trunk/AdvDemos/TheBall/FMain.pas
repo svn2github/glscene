@@ -117,6 +117,8 @@ implementation
 
 {$R *.dfm}
 
+uses GLUtils;
+
 const
    cCameraPos : TVector = (10, 6, 0, 1);
 

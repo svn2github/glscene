@@ -69,6 +69,8 @@ implementation
 
 {$R *.dfm}
 
+uses GLState;
+
 type
    // Structures used in our binary file
    // The structure is quite simplified here, original data came from a FEM
