@@ -623,9 +623,9 @@ function VectorDistance2(const v1, v2 : TVector): Single; overload;
 function VectorPerpendicular(const V, N: TAffineVector): TAffineVector;
 //: Reflects vector V against N (assumes N is normalized)
 function VectorReflect(const V, N: TAffineVector): TAffineVector;
-//: Rotates Vector about Axis with Angle radiants
+//: Rotates Vector about Axis with Angle radians
 procedure RotateVector(var vector : TVector; const axis : TAffineVector; angle : Single); overload;
-//: Rotates Vector about Axis with Angle radiants
+//: Rotates Vector about Axis with Angle radians
 procedure RotateVector(var vector : TVector; const axis : TVector; angle : Single); overload;
 
 //: Rotate given vector around the Y axis (alpha is in rad)
