@@ -250,10 +250,8 @@ procedure TGLCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
       errPos : Integer;
       errString : String;
    begin
-      if not GL_ARB_vertex_program then begin
-         Exception.Create('GL_ARB_vertex_program required!');
-         Exit;
-      end;
+      if not GL_ARB_vertex_program then
+         raise Exception.Create('GL_ARB_vertex_program required!');
       glGenProgramsARB(1, @VPHandle);
       glBindProgramARB(GL_VERTEX_PROGRAM_ARB,VPHandle);
       glProgramStringARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_FORMAT_ASCII_ARB,
