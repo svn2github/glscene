@@ -1,12 +1,15 @@
 {: GLGraphics<p>
 
-	Fonction utilitaires graphiques<p>
+	Utility class and functions to manipulate a bitmap in OpenGL's default
+   byte order (GL_RGBA vs TBitmap's GL_BGRA)<p>
 
    Nota: TGLBitmap32 has support for Alex Denissov's Graphics32 library
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>17/01/02 - EG - Faster assignments from bitmaps (approx. x2),
+                          Added AssignFromBitmap24WithoutRGBSwap
       <li>28/12/01 - EG - Graphics32 support added
       <li>15/12/01 - EG - Texture target support
       <li>14/09/01 - EG - Use of vFileStreamClass
@@ -58,11 +61,12 @@ type
       This is the base class for preparing and manipulating textures in GLScene,
       this function does not rely on a windows handle and should be used for
       in-memory manipulations only.<br>
-      16 bits textures are automatically converted to 24 bits and a null (zero)
+      16 bits textures are automatically converted to 24 bits and an opaque (255)
       alpha channel is assumed for all planes, the byte order is as specified
-      in GL_RGBA.<p>
-      If 32 bits is used in this class, it can however output 16 bits texture
-      data for use in OpenGL. }
+      in GL_RGBA. If 32 bits is used in this class, it can however output 16 bits texture
+      data for use in OpenGL.<p>
+      The class has support for registering its content as a texture, as well
+      as for directly drawing/reading from the current OpenGL buffer. }
 	TGLBitmap32 = class (TPersistent)
 	   private
 	      { Private Declarations }
@@ -89,6 +93,13 @@ type
 
          {: Accepts TGLBitmap32 and TGraphic subclasses. }
          procedure Assign(Source: TPersistent); override;
+         {: Assigns from a 24 bits bitmap without swapping RGB.<p>
+            This is faster than a regular assignment, but R and B channels
+            will be reversed (from what you would view in a TImage). Suitable
+            if you do you own drawing and reverse RGB on the drawing side.<br>
+            If you're after speed, don't forget to set the bitmap's dimensions
+            to a power of two! }
+         procedure AssignFromBitmap24WithoutRGBSwap(aBitmap : TBitmap);
 
          {: Create a 32 bits TBitmap from self content. }
          function Create32BitsBitmap : TBitmap;
@@ -114,7 +125,7 @@ type
          property VerticalReverseOnAssignFromBitmap : Boolean read FVerticalReverseOnAssignFromBitmap write FVerticalReverseOnAssignFromBitmap;
 
          {: Grants direct access to the bitmap's data.<p>
-            This property is equivalent to ScanLine[0], and may be nil is the
+            This property is equivalent to ScanLine[0], and may be nil if the
             bitmap is empty. }
          property Data : PGLPixel32Array read FData;
 
@@ -157,7 +168,7 @@ type
          {: Reads the given area from the current active OpenGL rendering context.<p>
             The best spot for reading pixels is within a SceneViewer's PostRender
             event : the scene has been fully rendered and the OpenGL context
-            is still active. } 
+            is still active. }
          procedure ReadPixels(const area : TGLRect);
          {: Draws the whole bitmap at given position in the current OpenGL context.<p>
             This function must be called with a rendering context active.<p>
@@ -165,6 +176,10 @@ type
             and must be adjusted separately. }
          procedure DrawPixels(const x, y : Single);
 	end;
+
+procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
+procedure RGB24ToRGBA32(src, dest : Pointer; pixelCount : Integer);
+procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -175,6 +190,99 @@ implementation
 // ------------------------------------------------------------------
 
 uses SysUtils, Geometry;
+
+// BGR24ToRGBA32
+//
+procedure BGR24ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
+{begin
+   while pixelCount>0 do begin
+      PChar(dest)[0]:=PChar(src)[2];
+      PChar(dest)[1]:=PChar(src)[1];
+      PChar(dest)[2]:=PChar(src)[0];
+      PChar(dest)[3]:=#255;
+      dest:=Pointer(Integer(dest)+4);
+      src:=Pointer(Integer(src)+3);
+      Dec(pixelCount);
+   end; }
+// EAX stores src
+// EDX stores dest
+// ECX stores pixelCount
+asm
+         push  edi
+         cmp   ecx, 0
+         jle   @@Done
+         mov   edi, eax
+@@Loop:
+         mov   eax, [edi]
+         shl   eax, 8
+         or    eax, $FF
+         bswap eax
+         mov   [edx], eax
+         add   edi, 3
+         add   edx, 4
+         dec   ecx
+         jnz   @@Loop
+@@Done:
+         pop   edi
+end;
+
+// RGB24ToRGBA32
+//
+procedure RGB24ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
+// EAX stores src
+// EDX stores dest
+// ECX stores pixelCount
+asm
+         push  edi
+         cmp   ecx, 0
+         jle   @@Done
+         mov   edi, eax
+@@Loop:
+         mov   eax, [edi]
+         or    eax, $FF000000
+         mov   [edx], eax
+         add   edi, 3
+         add   edx, 4
+         dec   ecx
+         jnz   @@Loop
+@@Done:
+         pop   edi
+end;
+
+// BGRA32ToRGBA32
+//
+procedure BGRA32ToRGBA32(src, dest : Pointer; pixelCount : Integer); register;
+{begin
+   while pixelCount>0 do begin
+      PChar(dest)[0]:=PChar(src)[2];
+      PChar(dest)[1]:=PChar(src)[1];
+      PChar(dest)[2]:=PChar(src)[0];
+      PChar(dest)[3]:=PChar(src)[3];
+      dest:=Pointer(Integer(dest)+4);
+      src:=Pointer(Integer(src)+4);
+      Dec(pixelCount);
+   end; }
+// EAX stores src
+// EDX stores dest
+// ECX stores pixelCount
+asm
+         push  edi
+         cmp   ecx, 0
+         jle   @@Done
+         mov   edi, eax
+@@Loop:
+         mov   eax, [edi]
+         shl   eax, 8
+         mov   al, [edi+3]
+         bswap eax
+         mov   [edx], eax
+         add   edi, 4
+         add   edx, 4
+         dec   ecx
+         jnz   @@Loop
+@@Done:
+         pop   edi 
+end;
 
 // ------------------
 // ------------------ TGLBitmap32 ------------------
@@ -249,7 +357,7 @@ end;
 //
 procedure TGLBitmap32.AssignFrom24BitsBitmap(aBitmap : TBitmap);
 var
-   y, x : Integer;
+   y, rowOffset : Integer;
    pSrc, pDest : PChar;
 begin
    Assert(aBitmap.PixelFormat=pf24bit);
@@ -259,17 +367,45 @@ begin
    FDataSize:=FWidth*FHeight*4;
    ReallocMem(FData, FDataSize);
    pDest:=@PChar(FData)[Width*4*(Height-1)];
+   if VerticalReverseOnAssignFromBitmap then begin
+      pSrc:=aBitmap.ScanLine[Height-1];
+      rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+   end else begin
+      pSrc:=aBitmap.ScanLine[0];
+      rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+   end;
    for y:=0 to Height-1 do begin
-      if VerticalReverseOnAssignFromBitmap then
-         pSrc:=aBitmap.ScanLine[Height-1-y]
-      else pSrc:=aBitmap.ScanLine[y];
-      for x:=0 to Width-1 do begin
-         pDest[x*4+0]:=pSrc[x*3+2];
-         pDest[x*4+1]:=pSrc[x*3+1];
-         pDest[x*4+2]:=pSrc[x*3+0];
-         pDest[x*4+3]:=#255;
-      end;
+      BGR24ToRGBA32(pSrc, pDest, Width);
       Dec(pDest, Width*4);
+      Inc(pSrc, rowOffset);
+   end;
+end;
+
+// AssignFromBitmap24WithoutRGBSwap
+//
+procedure TGLBitmap32.AssignFromBitmap24WithoutRGBSwap(aBitmap : TBitmap);
+var
+   y, rowOffset : Integer;
+   pSrc, pDest : PChar;
+begin
+   Assert(aBitmap.PixelFormat=pf24bit);
+   Assert((aBitmap.Width and 3)=0);
+   FWidth:=aBitmap.Width;
+   FHeight:=aBitmap.Height;
+   FDataSize:=FWidth*FHeight*4;
+   ReallocMem(FData, FDataSize);
+   pDest:=@PChar(FData)[Width*4*(Height-1)];
+   if VerticalReverseOnAssignFromBitmap then begin
+      pSrc:=aBitmap.ScanLine[Height-1];
+      rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+   end else begin
+      pSrc:=aBitmap.ScanLine[0];
+      rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+   end;
+   for y:=0 to Height-1 do begin
+      RGB24ToRGBA32(pSrc, pDest, Width);
+      Dec(pDest, Width*4);
+      Inc(pSrc, rowOffset);
    end;
 end;
 
@@ -277,7 +413,7 @@ end;
 //
 procedure TGLBitmap32.AssignFrom32BitsBitmap(aBitmap : TBitmap);
 var
-   y, x : Integer;
+   y, rowOffset : Integer;
    pSrc, pDest : PChar;
 begin
    Assert(aBitmap.PixelFormat=pf32bit);
@@ -287,17 +423,17 @@ begin
    FDataSize:=FWidth*FHeight*4;
    ReallocMem(FData, FDataSize);
    pDest:=@PChar(FData)[Width*4*(Height-1)];
+   if VerticalReverseOnAssignFromBitmap then begin
+      pSrc:=aBitmap.ScanLine[Height-1];
+      rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+   end else begin
+      pSrc:=aBitmap.ScanLine[0];
+      rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+   end;
    for y:=0 to Height-1 do begin
-      if VerticalReverseOnAssignFromBitmap then
-         pSrc:=aBitmap.ScanLine[Height-1-y]
-      else pSrc:=aBitmap.ScanLine[y];
-      for x:=0 to Width-1 do begin
-         pDest[x*4+0]:=pSrc[x*4+2];
-         pDest[x*4+1]:=pSrc[x*4+1];
-         pDest[x*4+2]:=pSrc[x*4+0];
-         pDest[x*4+3]:=pSrc[x*4+3];
-      end;
+      BGRA32ToRGBA32(pSrc, pDest, Width);
       Dec(pDest, Width*4);
+      Inc(pSrc, rowOffset);
    end;
 end;
 
@@ -306,7 +442,7 @@ end;
 //
 procedure TGLBitmap32.AssignFromBitmap32(aBitmap32 : TBitmap32);
 var
-   y, x : Integer;
+   y : Integer;
    pSrc, pDest : PChar;
 begin
    Assert((aBitmap32.Width and 3)=0);
@@ -319,12 +455,7 @@ begin
       if VerticalReverseOnAssignFromBitmap then
          pSrc:=PChar(aBitmap32.ScanLine[Height-1-y])
       else pSrc:=PChar(aBitmap32.ScanLine[y]);
-      for x:=0 to Width-1 do begin
-         pDest[x*4+0]:=pSrc[x*4+2];
-         pDest[x*4+1]:=pSrc[x*4+1];
-         pDest[x*4+2]:=pSrc[x*4+0];
-         pDest[x*4+3]:=pSrc[x*4+3];
-      end;
+      BGRA32ToRGBA32(pSrc, pDest, Width);
       Dec(pDest, Width*4);
    end;
 end;
