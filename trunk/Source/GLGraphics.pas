@@ -8,6 +8,7 @@
    is active in GLScene.inc and recompile.<p>
 
 	<b>Historique : </b><font size=-1><ul>
+      <li>26/08/02 - EG - Fixed loading of 1D horiz textures from 24 bits bitmaps
       <li>16/06/02 - EG - AssignFrom32BitsBitmap fix for single-line bitmaps
       <li>29/01/02 - EG - Fixed ScanLine Index bug with empty bitmaps
       <li>20/01/02 - EG - Fixed BGR24/RGB24 last pixel transfer
@@ -392,17 +393,21 @@ begin
    ReallocMem(FData, FDataSize);
    if Height>0 then begin
       pDest:=@PChar(FData)[Width*4*(Height-1)];
-      if VerticalReverseOnAssignFromBitmap then begin
-         pSrc:=aBitmap.ScanLine[Height-1];
-         rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+      if Height=1 then begin
+         BGR24ToRGBA32(aBitmap.ScanLine[0], pDest, Width);
       end else begin
-         pSrc:=aBitmap.ScanLine[0];
-         rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
-      end;
-      for y:=0 to Height-1 do begin
-         BGR24ToRGBA32(pSrc, pDest, Width);
-         Dec(pDest, Width*4);
-         Inc(pSrc, rowOffset);
+         if VerticalReverseOnAssignFromBitmap then begin
+            pSrc:=aBitmap.ScanLine[Height-1];
+            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+         end else begin
+            pSrc:=aBitmap.ScanLine[0];
+            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+         end;
+         for y:=0 to Height-1 do begin
+            BGR24ToRGBA32(pSrc, pDest, Width);
+            Dec(pDest, Width*4);
+            Inc(pSrc, rowOffset);
+         end;
       end;
    end;
 end;
@@ -422,17 +427,21 @@ begin
    ReallocMem(FData, FDataSize);
    if Height>0 then begin
       pDest:=@PChar(FData)[Width*4*(Height-1)];
-      if VerticalReverseOnAssignFromBitmap then begin
-         pSrc:=aBitmap.ScanLine[Height-1];
-         rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+      if Height=1 then begin
+         RGB24ToRGBA32(aBitmap.ScanLine[0], pDest, Width);
       end else begin
-         pSrc:=aBitmap.ScanLine[0];
-         rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
-      end;
-      for y:=0 to Height-1 do begin
-         RGB24ToRGBA32(pSrc, pDest, Width);
-         Dec(pDest, Width*4);
-         Inc(pSrc, rowOffset);
+         if VerticalReverseOnAssignFromBitmap then begin
+            pSrc:=aBitmap.ScanLine[Height-1];
+            rowOffset:=Integer(aBitmap.ScanLine[Height-2])-Integer(pSrc);
+         end else begin
+            pSrc:=aBitmap.ScanLine[0];
+            rowOffset:=Integer(aBitmap.ScanLine[1])-Integer(pSrc);
+         end;
+         for y:=0 to Height-1 do begin
+            RGB24ToRGBA32(pSrc, pDest, Width);
+            Dec(pDest, Width*4);
+            Inc(pSrc, rowOffset);
+         end;
       end;
    end;
 end;
