@@ -59,6 +59,13 @@ type
     Panel2: TPanel;
     CBTextureFiltering: TCheckBox;
     CBBackground: TComboBox;
+    ools1: TMenuItem;
+    ACColorDilatation: TAction;
+    Colormapdilatation1: TMenuItem;
+    ACAlphaErosion: TAction;
+    Alphamaperosion1: TMenuItem;
+    ACExport: TAction;
+    ToolButton1: TToolButton;
     procedure PAPreviewResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ACImportExecute(Sender: TObject);
@@ -72,6 +79,9 @@ type
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure CBBackgroundChange(Sender: TObject);
+    procedure ACColorDilatationExecute(Sender: TObject);
+    procedure ACAlphaErosionExecute(Sender: TObject);
+    procedure ACExportExecute(Sender: TObject);
 
   private
     { Private declarations }
@@ -140,6 +150,15 @@ begin
          NormalizeAlpha;
       end;
       TextureChanged;
+   end;
+end;
+
+procedure TTTBMain.ACExportExecute(Sender: TObject);
+begin
+   if SaveDialog.Execute then begin
+      if PageControl.ActivePage=TSRGB then
+         IMRGB.Picture.SaveToFile(SaveDialog.FileName)
+      else IMAlpha.Picture.SaveToFile(SaveDialog.FileName);
    end;
 end;
 
@@ -355,6 +374,85 @@ begin
       2 : GLSceneViewer.Buffer.BackgroundColor:=clSilver;
       3 : GLSceneViewer.Buffer.BackgroundColor:=clWhite;
    end;
+end;
+
+procedure TTTBMain.ACColorDilatationExecute(Sender: TObject);
+var
+   x, y, sx, sy : Integer;
+   bmRGB, bmAlpha : TBitmap;
+   r, g, b : Single;
+   weightSum, iw : Single;
+
+   procedure WeightIn(x, y : Integer; wBase : Single);
+   var
+      w : Single;
+      rgb, alpha : Integer;
+   begin
+      if (Cardinal(x)<Cardinal(sx)) and (Cardinal(y)<Cardinal(sy)) then begin
+         alpha:=bmAlpha.Canvas.Pixels[x, y];
+         if alpha>0 then begin
+            w:=((alpha shr 8) and $FF)*(1/255)*wBase;
+            weightSum:=weightSum+w;
+            rgb:=bmRGB.Canvas.Pixels[x, y];
+            r:=r+GetRValue(rgb)*w;
+            g:=g+GetGValue(rgb)*w;
+            b:=b+GetBValue(rgb)*w;
+         end;
+      end;
+   end;
+
+begin
+   // for all pixels in the color map that are fully transparent,
+   // change their color to the average of the weighted average of their
+   // opaque neighbours
+   bmRGB:=IMRGB.Picture.Bitmap;
+   bmAlpha:=IMAlpha.Picture.Bitmap;
+   sx:=StrToInt(CBWidth.Text);
+   sy:=StrToInt(CBHeight.Text);
+   for y:=0 to sy-1 do begin
+      for x:=0 to sx-1 do begin
+         // if pixel fully opaque
+         if bmAlpha.Canvas.Pixels[x, y]=0 then begin
+            // weight-in all neighbours
+            r:=0; g:=0; b:=0; weightSum:=0;
+            WeightIn(x-1, y-1, 0.7);  WeightIn(x , y-1, 1.0);  WeightIn(x+1, y-1, 0.7);
+            WeightIn(x-1, y  , 1.0);  WeightIn(x , y  , 4.0);  WeightIn(x+1, y  , 1.0);
+            WeightIn(x-1, y+1, 0.7);  WeightIn(x , y+1, 1.0);  WeightIn(x+1, y+1, 0.7);
+            if weightSum>0 then begin
+               iw:=1/weightSum;
+               bmRGB.Canvas.Pixels[x, y]:=RGB(Round(r*iw), Round(g*iw), Round(b*iw));
+            end;
+         end;
+      end;
+   end;
+   TextureChanged;
+end;
+
+procedure TTTBMain.ACAlphaErosionExecute(Sender: TObject);
+var
+   x, y, sx, sy : Integer;
+   bmp, bmAlpha : TBitmap;
+begin
+   // make fully transparent all pixels in the color for all pixels in the alpha map
+   // that are adjacent to a fully transparent one
+   bmAlpha:=IMAlpha.Picture.Bitmap;
+   sx:=StrToInt(CBWidth.Text);
+   sy:=StrToInt(CBHeight.Text);
+   bmp:=SpawnBitmap;
+   for y:=0 to sy-1 do begin
+      for x:=0 to sx-1 do begin
+         if bmAlpha.Canvas.Pixels[x, y]<>0 then with bmAlpha.Canvas do begin
+            if                         (Pixels[x  , y-1]=0)
+               or (Pixels[x-1, y  ]=0)                      or (Pixels[x+1, y  ]=0)
+                                    or (Pixels[x  , y+1]=0)  then
+               bmp.Canvas.Pixels[x, y]:=0
+            else bmp.Canvas.Pixels[x, y]:=bmAlpha.Canvas.Pixels[x, y];
+         end else bmp.Canvas.Pixels[x, y]:=0;
+      end;
+   end;
+   IMAlpha.Picture.Bitmap:=bmp;
+   bmp.Free;
+   TextureChanged;
 end;
 
 end.
