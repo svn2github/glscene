@@ -1,4 +1,4 @@
-program liningshaders;
+program lining;
 
 uses
   Forms,
