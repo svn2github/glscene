@@ -441,8 +441,10 @@ type
          procedure DestroyHandle; dynamic;
          procedure DestroyHandles;
          procedure DeleteChildCameras;
+         {$ifdef GLS_WANT_DATA}
          function GetData: pointer;
          procedure SetData(const Value: pointer);
+         {$endif}
 
       public
          { Public Declarations }
@@ -674,8 +676,11 @@ type
          property OnProgress : TGLProgressEvent read FOnProgress write FOnProgress;
          property Behaviours : TGLBehaviours read GetBehaviours write SetBehaviours stored False;
          property Effects : TGLObjectEffects read GetEffects write SetEffects stored False;
-         {: A pointer to attach your data to GLScene. Uses Tag as a pointer.}
+         {$ifdef GLS_WANT_DATA}
+         {: A pointer to attach your data to GLScene. Uses Tag as a pointer.<p>
+            Note: for temporary backward compatibility only, migrate code!!!}
          property Data : pointer read GetData write SetData;
+         {$endif}
 
       published
          { Published Declarations }
@@ -3090,6 +3095,7 @@ begin
    end else inherited Assign(Source);
 end;
 
+{$ifdef GLS_WANT_DATA}
 // GetData
 //
 function TGLBaseSceneObject.GetData: pointer;
@@ -3103,6 +3109,7 @@ procedure TGLBaseSceneObject.SetData(const Value: pointer);
 begin
   Tag := Integer(Value);
 end;
+{$endif}
 
 // IsUpdating
 //
