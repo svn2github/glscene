@@ -346,8 +346,7 @@ end;
 //
 function TGLShadowVolumeLight.SetupScissorRect(worldAABB : PAABB; var rci : TRenderContextInfo) : Boolean;
 var
-  mv, proj, mvp: TMatrix;
-  lightPos : TAffineVector;
+  mv, proj, mvp : TMatrix;
   ls : TGLLightSource;
   aabb : TAABB;
   clipRect : TClipRect;
@@ -360,15 +359,15 @@ begin
          Exit;
       end else aabb:=worldAABB^;
    end else begin
-      SetVector(lightPos, ls.AbsolutePosition);
-      if VectorDistance2(lightPos, PAffineVector(@rci.cameraPosition)^)<Sqr(EffectiveRadius) then begin
-         // camera inside light radius, can't clip
-         Result:=False;
-         Exit;
-      end;
-      aabb:=BSphereToAABB(lightPos, EffectiveRadius);
+      aabb:=BSphereToAABB(ls.AbsolutePosition, EffectiveRadius);
       if Assigned(worldAABB) then
          aabb:=AABBIntersection(aabb, worldAABB^);
+   end;
+
+   if PointInAABB(rci.cameraPosition, aabb) then begin
+      // camera inside light volume radius, can't clip
+      Result:=False;
+      Exit;
    end;
 
    mv:=rci.modelViewMatrix^;
