@@ -3113,6 +3113,14 @@ begin
                   end else BuildList(mrci);
                end;
             end;
+            // restore faceculling
+            if (stCullFace in mrci.currentStates) then begin
+               if not mrci.bufferFaceCull then
+                  UnSetGLState(mrci.currentStates, stCullFace);
+            end else begin
+               if mrci.bufferFaceCull then
+                  SetGLState(mrci.currentStates, stCullFace);
+            end;
          end else for i:=0 to FaceGroups.Count-1 do
             FaceGroups[i].BuildList(mrci);
       end;
