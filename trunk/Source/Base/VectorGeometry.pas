@@ -167,15 +167,16 @@ type
    // data types needed for 3D graphics calculation,
    // included are 'C like' aliases for each type (to be
    // conformal with OpenGL types)
-
+{$ifndef FPC}
    PByte = ^Byte;
    PWord = ^Word;
    PInteger = ^Integer;
-   PFloat = ^Single;
    PSingle = ^Single;
    PDouble = ^Double;
    PExtended = ^Extended;
    PPointer = ^Pointer;
+{$endif}
+   PFloat = ^Single;
 
   	PTexPoint = ^TTexPoint;
 	TTexPoint = packed record
@@ -1372,10 +1373,6 @@ uses SysUtils{$ifdef GEOMETRY_NO_ASM}, Math{$endif};
 
 const
   // FPU status flags (high order byte)
-  C0 = 1;
-  C1 = 2;
-  C2 = 4;
-  C3 = $40;
   cwChop : Word = $1F3F;
 
   // to be used as descriptive indices
@@ -5844,16 +5841,16 @@ end;
 //
 function PointLineClosestPoint(const point, linePoint, lineDirection : TAffineVector) : TAffineVector;
 var
-  w : TAffineVector;
-  c1, c2, b : double;
+   w : TAffineVector;
+   c1, c2, b : Single;
 begin
-  w := VectorSubtract(Point, linePoint);
+   w:=VectorSubtract(point, linePoint);
 
-  c1 := VectorDotProduct(w, LineDirection);
-  c2 := VectorDotProduct(lineDirection, lineDirection);
-  b := c1 / c2;
+   c1:=VectorDotProduct(w, LineDirection);
+   c2:=VectorDotProduct(lineDirection, lineDirection);
+   b:=c1/c2;
 
-  result := VectorAdd(linePoint, VectorScale(lineDirection, b));
+   VectorAdd(linePoint, VectorScale(lineDirection, b), Result);
 end;
 
 // PointLineDistance
@@ -5870,22 +5867,17 @@ end;
 //
 function PointSegmentClosestPoint(const point, segmentStart, segmentStop : TAffineVector) : TAffineVector;
 var
-  w, lineDirection : TAffineVector;
-  c1, c2, b : double;
+   w, lineDirection : TAffineVector;
+   c1, c2, b : Single;
 begin
-  LineDirection := VectorSubtract(segmentStop, segmentStart);
-  w := VectorSubtract(point, segmentStart);
+   lineDirection:=VectorSubtract(segmentStop, segmentStart);
+   w:=VectorSubtract(point, segmentStart);
 
-  c1 := VectorDotProduct(w, lineDirection);
-  c2 := VectorDotProduct(lineDirection, lineDirection);
-  b := c1 / c2;
+   c1:=VectorDotProduct(w, lineDirection);
+   c2:=VectorDotProduct(lineDirection, lineDirection);
+   b:=ClampValue(c1/c2, 0, 1);
 
-  if b>1 then
-    b := 1
-  else if b<0 then
-    b := 0;
-
-  result := VectorAdd(segmentStart, VectorScale(lineDirection, b));
+   VectorAdd(segmentStart, VectorScale(lineDirection, b), Result);
 end;
 
 // PointSegmentDistance
@@ -6208,7 +6200,7 @@ function QuaternionFromAngleAxis(const angle  : Single; const axis : TAffineVect
 var
    f, s, c : Single;
 begin
-   SinCos(DegToRad(angle*0.5), s, c);
+   SinCos(DegToRad(angle*cOneDotFive), s, c);
 	Result.RealPart:=c;
    f:=s/VectorLength(axis);
    Result.ImagPart[0]:=axis[0]*f;
