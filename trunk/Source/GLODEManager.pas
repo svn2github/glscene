@@ -3329,17 +3329,17 @@ begin
   for j:=0 to Stacks-1 do begin
     glBegin(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
+        glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
     glEnd;
   end;
 
   // Middle vertical lines
   glBegin(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
-      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
+      glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
+      glVertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
     end;
   glEnd;
 
@@ -3347,12 +3347,12 @@ begin
   glPushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
     glBegin(GL_LINES);
-      glVertex3f(-FRadius,0,FLength/2);
-      glVertex3f(FRadius,0,FLength/2);
-      glVertex3f(-FRadius,0,-FLength/2);
-      glVertex3f(FRadius,0,-FLength/2);
+      glVertex3f(-FRadius,FLength/2,0);
+      glVertex3f(FRadius,FLength/2,0);
+      glVertex3f(-FRadius,-FLength/2,0);
+      glVertex3f(FRadius,-FLength/2,0);
     glEnd;
-    glRotatef(360/Slices,0,0,1);
+    glRotatef(360/Slices,0,1,0);
   end;
   glPopMatrix;
 
