@@ -134,7 +134,7 @@ var
 
 implementation
 
-uses GLTexture, GLGraphics, VectorGeometry, GLState;
+uses GLTexture, GLGraphics, VectorGeometry, GLState, GLUtils;
 
 {$R *.dfm}
 
