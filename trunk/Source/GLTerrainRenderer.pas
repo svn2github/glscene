@@ -2,6 +2,7 @@
 {: GLScene's brute-force terrain renderer.<p>
 
    <b>History : </b><font size=-1><ul>
+      <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
       <li>25/04/04 - EG - Occlusion testing support
       <li>13/01/04 - EG - Leak fix (Phil Scadden)
       <li>05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
@@ -297,7 +298,7 @@ begin
       d:=VectorNormalize(rayVector);
       startedAbove:=((InterpolatedHeight(rayStart)-rayStart[1])<0);
       maxH:=Scale.Z*256;
-      minH:=Scale.Z*256;
+      minH:=-Scale.Z*256;
       failSafe:=0;
       while True do begin
          p1:=VectorCombine(rayStart, d, 1, i);
